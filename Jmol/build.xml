@@ -1207,7 +1207,7 @@ all support for previous versions removed
 		<include name="JSpecViewApplet*.jar" />
 	  </fileset>
 	</copy>
-    <zip zipfile="appletweb/dist.zip" basedir="build/js"
+    <zip zipfile="appletweb/jsmol-java.zip" basedir="build/js"
          includes="**/*" />
   </target>
 

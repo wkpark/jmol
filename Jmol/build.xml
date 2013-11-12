@@ -1196,7 +1196,9 @@ all support for previous versions removed
         </signjar>
       </else>
     </if>
+    	<!--
   	<echo> re-packaging appletweb/dist.zip with signed files</echo>
+  	
   	<delete dir="build/js" />
     <unzip dest="build/js" src="appletweb/jsmol.zip" />
 	<copy todir="build/js/jsmol/java" >
@@ -1209,6 +1211,8 @@ all support for previous versions removed
 	</copy>
     <zip zipfile="appletweb/jsmol-java.zip" basedir="build/js"
          includes="**/*" />
+         
+         -->
   </target>
 
   <target name="smiles-applet-jar" id="smiles-applet-jar"

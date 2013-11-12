@@ -997,13 +997,13 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (cmd.charAt(0) != '#') {
       if (allowMesh)
         appendCmd(sb, imesh.getState(myType));
-      if (!imesh.isColorSolid && C.isColixTranslucent(imesh.colix))
+      if (!imesh.isColorSolid && imesh.colorType == 0 && C.isColixTranslucent(imesh.colix))
         appendCmd(sb, "color " + myType + " " + getTranslucentLabel(imesh.colix));
-      if (imesh.colorCommand != null && !imesh.colorCommand.equals("#inherit;")) {
+      if (imesh.colorCommand != null && imesh.colorType == 0 && !imesh.colorCommand.equals("#inherit;")) {
         appendCmd(sb, imesh.colorCommand);
       }
       boolean colorArrayed = (imesh.isColorSolid && imesh.polygonColixes != null);
-      if (imesh.isColorSolid && !colorArrayed) {
+      if (imesh.isColorSolid && imesh.colorType == 0 && !colorArrayed) {
         appendCmd(sb, getColorCommandUnk(myType, imesh.colix, translucentAllowed));
       } else if (imesh.jvxlData.isBicolorMap && imesh.colorPhased) {
         appendCmd(sb, "color isosurface phase "

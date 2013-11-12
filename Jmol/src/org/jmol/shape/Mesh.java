@@ -313,18 +313,6 @@ public class Mesh extends MeshSurface {
       s.append(" ID ").append(Escape.eS(thisID));
     if (lattice != null)
       s.append(" lattice ").append(Escape.eP(lattice));
-    if (colorType != 0)
-      s.append(" color " + T.nameOf(colorType));
-    if (symops != null) {
-      s.append(" symmetry");
-//      + symops.length + " [");
-//      float[] mtemp = new float[16];
-//      for (int i = 0; i < symops.length; i++) {
-//        symops[i].toA(mtemp);
-//        s.append(Escape.eAF(mtemp));
-//      }
-//      s.append("] ");
-    }
     if (meshColix != 0)
       s.append(" color mesh ").append(C.getHexCode(meshColix));
     s.append(getRendering());

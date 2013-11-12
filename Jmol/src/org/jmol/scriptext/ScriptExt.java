@@ -1266,7 +1266,9 @@ public class ScriptExt implements JmolScriptExtension {
           BSUtil.invertInPlace(bsIgnore, viewer.getAtomCount());
           isFrontOnly = true;
           addShapeProperty(propertyList, "ignore", bsIgnore);
+          sbCommand.append(" ignore ").append(Escape.eBS(bsIgnore));
         }
+        sbCommand.append(" symmetry");
         if (color == 0)
           addShapeProperty(propertyList, "colorRGB", Integer.valueOf(T.symop));
         symops = viewer.modelSet.getSymMatrices(modelIndex);

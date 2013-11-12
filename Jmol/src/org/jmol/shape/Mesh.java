@@ -68,8 +68,11 @@ public class Mesh extends MeshSurface {
   public String scriptCommand;
   public String colorCommand;
   public P3 lattice;
+  public M4[] symops;
+  public short[][] symopNormixes;
   public boolean visible = true;
   public int lighting = T.frontlit;
+  public int colorType; // could be T.symop
 
   public boolean haveXyPoints;
   public int diameter;
@@ -134,6 +137,8 @@ public class Mesh extends MeshSurface {
     bsDisplay = null;
     bsSlabDisplay = null;
     bsSlabGhost = null;
+    symops = null;
+    symopColixes = null;
     bsTransPolygons = null;
     cappingObject = null;
     colix = C.GOLD;
@@ -159,6 +164,7 @@ public class Mesh extends MeshSurface {
     slabbingObject = null;
     slabOptions = null;
     spanningVectors = null;    
+    symopNormixes = null;
     title = null;
     unitCell = null;
     useColix = true;
@@ -181,7 +187,7 @@ public class Mesh extends MeshSurface {
     setLighting(lighting);
   }
 
-  public void setNormixes(V3[] normals) {
+  public short[] setNormixes(V3[] normals) {
     normixes = new short[normixCount];
     if (bsTemp == null)
       bsTemp = Normix.newVertexBitSet();
@@ -191,6 +197,7 @@ public class Mesh extends MeshSurface {
     else
       for (int i = normixCount; --i >= 0;)
         normixes[i] = Normix.getNormixV(normals[i], bsTemp);
+    return normixes;
   }
 
   public V3[] getNormals(P3[] vertices, P4 plane) {
@@ -253,6 +260,8 @@ public class Mesh extends MeshSurface {
   public int[] connections;
 
   public boolean recalcAltVertices;
+
+  public short[] symopColixes;
   
   protected void sumVertexNormals(P3[] vertices, V3[] normals) {
     sumVertexNormals2(vertices, normals);
@@ -304,6 +313,18 @@ public class Mesh extends MeshSurface {
       s.append(" ID ").append(Escape.eS(thisID));
     if (lattice != null)
       s.append(" lattice ").append(Escape.eP(lattice));
+    if (colorType != 0)
+      s.append(" color " + T.nameOf(colorType));
+    if (symops != null) {
+      s.append(" symmetry");
+//      + symops.length + " [");
+//      float[] mtemp = new float[16];
+//      for (int i = 0; i < symops.length; i++) {
+//        symops[i].toA(mtemp);
+//        s.append(Escape.eAF(mtemp));
+//      }
+//      s.append("] ");
+    }
     if (meshColix != 0)
       s.append(" color mesh ").append(C.getHexCode(meshColix));
     s.append(getRendering());

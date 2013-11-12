@@ -33,6 +33,9 @@ import org.jmol.shape.MeshCollection;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.GData;
+
+import javajs.util.AU;
+import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.P3i;
 import javajs.util.P4;
@@ -94,35 +97,71 @@ public abstract class MeshRenderer extends ShapeRenderer {
     if (!doRender)
       return mesh.title != null;
     latticeOffset.set(0, 0, 0);
-    for (int i = vertexCount; --i >= 0;)
-      if (vertices[i] != null)
-        viewer.transformPtScr(vertices[i], screens[i]);
-    if (mesh.lattice == null || mesh.modelIndex < 0) {
+    if (mesh.lattice == null && mesh.symops == null || mesh.modelIndex < 0) {
+      for (int i = vertexCount; --i >= 0;)
+        if (vertices[i] != null)
+          viewer.transformPtScr(vertices[i], screens[i]);
       render2(isExport);
     } else {
-      SymmetryInterface unitcell = mesh.unitCell;
-      if (unitcell == null)
-        unitcell = viewer.getModelUnitCell(mesh.modelIndex);
-      if (unitcell == null) 
+      P3 vTemp = new P3();
+      SymmetryInterface unitcell;
+      if ((unitcell = mesh.unitCell) == null
+          && (unitcell = viewer.modelSet.models[mesh.modelIndex].biosymmetry) == null
+          && (unitcell = viewer.getModelUnitCell(mesh.modelIndex)) == null)
         unitcell = mesh.getUnitCell();
-      if (unitcell != null) {
-        P3 vTemp = new P3();
-        P3i minXYZ = new P3i();
-        P3i maxXYZ = P3i.new3((int) mesh.lattice.x,
-            (int) mesh.lattice.y, (int) mesh.lattice.z);
-        unitcell.setMinMaxLatticeParameters(minXYZ, maxXYZ);
-        for (int tx = minXYZ.x; tx < maxXYZ.x; tx++)
-          for (int ty = minXYZ.y; ty < maxXYZ.y; ty++)
-            for (int tz = minXYZ.z; tz < maxXYZ.z; tz++) {
-              latticeOffset.set(tx, ty, tz);
-              unitcell.toCartesian(latticeOffset, false);
-              for (int i = vertexCount; --i >= 0;) {
-                vTemp.setT(vertices[i]);
-                vTemp.add(latticeOffset);
-                viewer.transformPtScr(vTemp, screens[i]);
-              }
-              render2(isExport);
+      if (mesh.symops != null) {
+        if (mesh.symopNormixes == null)
+          mesh.symopNormixes = AU.newShort2(mesh.symops.length);
+        P3[] verticesTemp = null;
+        int max = mesh.symops.length;
+        short c = mesh.colix;
+        for (int j = max; --j >= 0;) {
+          M4 m = mesh.symops[j];
+          if (m == null)
+            continue;
+          if (mesh.colorType == T.symop)
+            mesh.colix = mesh.symopColixes[j];
+          short[] normals = mesh.symopNormixes[j];
+          boolean needNormals = (normals == null);
+          verticesTemp = (needNormals ? new P3[vertexCount] : null);
+          for (int i = vertexCount; --i >= 0;) {
+            vTemp.setT(vertices[i]);
+            unitcell.toFractional(vTemp, true);
+            m.transform(vTemp);
+            unitcell.toCartesian(vTemp, true);
+            viewer.transformPtScr(vTemp, screens[i]);
+            if (needNormals) {
+              verticesTemp[i] = vTemp;
+              vTemp = new P3();
             }
+          }
+          if (needNormals)
+            normixes = mesh.symopNormixes[j] = mesh.setNormixes(mesh.getNormals(
+                verticesTemp, null));
+          else
+            normixes = mesh.normixes = mesh.symopNormixes[j];
+          render2(isExport);
+        }
+        mesh.colix = c;
+      } else {
+        if (unitcell != null) {
+          P3i minXYZ = new P3i();
+          P3i maxXYZ = P3i.new3((int) mesh.lattice.x, (int) mesh.lattice.y,
+              (int) mesh.lattice.z);
+          unitcell.setMinMaxLatticeParameters(minXYZ, maxXYZ);
+          for (int tx = minXYZ.x; tx < maxXYZ.x; tx++)
+            for (int ty = minXYZ.y; ty < maxXYZ.y; ty++)
+              for (int tz = minXYZ.z; tz < maxXYZ.z; tz++) {
+                latticeOffset.set(tx, ty, tz);
+                unitcell.toCartesian(latticeOffset, false);
+                for (int i = vertexCount; --i >= 0;) {
+                  vTemp.setT(vertices[i]);
+                  vTemp.add(latticeOffset);
+                  viewer.transformPtScr(vTemp, screens[i]);
+                }
+                render2(isExport);
+              }
+        }
       }
     }
 

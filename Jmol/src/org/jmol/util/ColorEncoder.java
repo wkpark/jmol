@@ -501,6 +501,11 @@ import javajs.util.P3;
         : getArgbFromPalette(val, lo, hi, currentPalette));
   }
   
+  public int getArgbMinMax(float val, float min, float max) {
+    return (isReversed ? getArgbFromPalette(-val, -max, -min, currentPalette)
+        : getArgbFromPalette(val, min, max, currentPalette));
+  }
+  
   public short getColorIndex(float val) {
     return (isReversed ? getColorIndexFromPalette(-val, -hi, -lo, currentPalette, isTranslucent)
         : getColorIndexFromPalette(val, lo, hi, currentPalette, isTranslucent));

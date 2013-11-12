@@ -2078,6 +2078,12 @@ abstract public class AtomCollection {
 
     int i = 0;
     switch (tokType) {
+    case T.symop:
+      iSpec = ((Integer) specInfo).intValue();
+      for (i = atomCount; --i >= 0;)
+        if (atoms[i].getSymOp() == iSpec)
+          bs.set(i);
+      break;
     case T.atomno:
       iSpec = ((Integer) specInfo).intValue();
       for (i = atomCount; --i >= 0;)

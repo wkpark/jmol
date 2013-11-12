@@ -1199,6 +1199,7 @@ public class ScriptExt implements JmolScriptExtension {
     P4 plane = null;
     P3 lattice = null;
     P3[] pts;
+    int color = 0;
     String str = null;
     int modelIndex = (chk ? 0 : Integer.MIN_VALUE);
     eval.setCursorWait(true);
@@ -1210,6 +1211,7 @@ public class ScriptExt implements JmolScriptExtension {
     String translucency = null;
     String colorScheme = null;
     String mepOrMlp = null;
+    M4[] symops = null;
     short[] discreteColixes = null;
     List<Object[]> propertyList = new List<Object[]>();
     boolean defaultMesh = false;
@@ -1241,6 +1243,34 @@ public class ScriptExt implements JmolScriptExtension {
           invArg();
         propertyValue = getToken(i++).value;
         break;
+      case T.symop:
+        float[][] ff = floatArraySet(i + 2, intParameter(i + 1), 16);
+        symops = new M4[ff.length];
+        for (int j = symops.length; --j >= 0;)
+          symops[j] = M4.newA(ff[j]);
+        i = eval.iToken;
+        break;
+      case T.symmetry:
+        if (modelIndex < 0)
+          modelIndex = Math.min(viewer.getCurrentModelIndex(), 0);
+        boolean needIgnore = (bsIgnore == null);
+        if (bsSelect == null)
+          bsSelect = BSUtil.copy(viewer.getSelectionSet(false));
+        // and in symop=1
+        bsSelect.and(viewer.getAtomBits(T.symop, Integer.valueOf(1)));
+        if (!needIgnore)
+          bsSelect.andNot(bsIgnore);
+        addShapeProperty(propertyList, "select", bsSelect);
+        if (needIgnore) {
+          bsIgnore = BSUtil.copy(bsSelect);
+          BSUtil.invertInPlace(bsIgnore, viewer.getAtomCount());
+          isFrontOnly = true;
+          addShapeProperty(propertyList, "ignore", bsIgnore);
+        }
+        if (color == 0)
+          addShapeProperty(propertyList, "colorRGB", Integer.valueOf(T.symop));
+        symops = viewer.modelSet.getSymMatrices(modelIndex);
+        break;
       case T.offset:
         propertyName = "offset";
         propertyValue = centerParameter(++i);
@@ -1271,8 +1301,8 @@ public class ScriptExt implements JmolScriptExtension {
         break;
       case T.boundbox:
         if (fullCommand.indexOf("# BBOX=") >= 0) {
-          String[] bbox = PT.split(PT.getQuotedAttribute(
-              fullCommand, "# BBOX"), ",");
+          String[] bbox = PT.split(
+              PT.getQuotedAttribute(fullCommand, "# BBOX"), ",");
           pts = new P3[] { (P3) Escape.uP(bbox[0]), (P3) Escape.uP(bbox[1]) };
         } else if (eval.isCenterParameter(i + 1)) {
           pts = new P3[] { getPoint3f(i + 1, true),
@@ -1382,7 +1412,8 @@ public class ScriptExt implements JmolScriptExtension {
         if (fullCommand.indexOf("# WITHIN=") >= 0)
           bs = Escape.uB(PT.getQuotedAttribute(fullCommand, "# WITHIN"));
         else if (!havePt)
-          bs = (eval.expressionResult instanceof BS ? (BS) eval.expressionResult : null);
+          bs = (eval.expressionResult instanceof BS ? (BS) eval.expressionResult
+              : null);
         if (!chk) {
           if (bs != null && modelIndex >= 0) {
             bs.and(viewer.getModelUndeletedAtomsBitSet(modelIndex));
@@ -1493,8 +1524,8 @@ public class ScriptExt implements JmolScriptExtension {
       case T.model:
         if (surfaceObjectSeen)
           invArg();
-        modelIndex = (eval.theTok == T.modelindex ? intParameter(++i)
-            : eval.modelNumberParameter(++i));
+        modelIndex = (eval.theTok == T.modelindex ? intParameter(++i) : eval
+            .modelNumberParameter(++i));
         sbCommand.append(" modelIndex " + modelIndex);
         if (modelIndex < 0) {
           propertyName = "fixed";
@@ -1516,10 +1547,10 @@ public class ScriptExt implements JmolScriptExtension {
         boolean isOnly = (tokAt(i + 1) == T.only);
         if (isOnly) {
           i++;
-          BS bs2 = BSUtil.copy(bs1);
-          BSUtil.invertInPlace(bs2, viewer.getAtomCount());
-          addShapeProperty(propertyList, "ignore", bs2);
-          sbCommand.append(" ignore ").append(Escape.eBS(bs2));
+          bsIgnore = BSUtil.copy(bs1);
+          BSUtil.invertInPlace(bsIgnore, viewer.getAtomCount());
+          addShapeProperty(propertyList, "ignore", bsIgnore);
+          sbCommand.append(" ignore ").append(Escape.eBS(bsIgnore));
           isFrontOnly = true;
         }
         if (surfaceObjectSeen || isMapped) {
@@ -1541,7 +1572,6 @@ public class ScriptExt implements JmolScriptExtension {
         break;
       case T.sign:
       case T.color:
-        int color;
         idSeen = true;
         boolean isSign = (eval.theTok == T.sign);
         if (isSign) {
@@ -2150,9 +2180,10 @@ public class ScriptExt implements JmolScriptExtension {
             if (xyzdata.length != nX || xyzdata[0].length != nY
                 || xyzdata[0][0].length != nZ) {
               eval.iToken = ptX;
-              eval.errorStr(ScriptEvaluator.ERROR_what, "xyzdata[" + xyzdata.length + "]["
-                  + xyzdata[0].length + "][" + xyzdata[0][0].length
-                  + "] is not of size [" + nX + "][" + nY + "][" + nZ + "]");
+              eval.errorStr(ScriptEvaluator.ERROR_what, "xyzdata["
+                  + xyzdata.length + "][" + xyzdata[0].length + "]["
+                  + xyzdata[0][0].length + "] is not of size [" + nX + "]["
+                  + nY + "][" + nZ + "]");
             }
             vxy.addLast(xyzdata); // (5) = float[][][] data
             //if (!surfaceObjectSeen)
@@ -2177,13 +2208,15 @@ public class ScriptExt implements JmolScriptExtension {
             }
             if (fdata.length != nX && !isXYZ) {
               eval.iToken = ptX;
-              eval.errorStr(ScriptEvaluator.ERROR_what, "fdata length is not correct: "
-                  + fdata.length + " " + nX + ".");
+              eval.errorStr(ScriptEvaluator.ERROR_what,
+                  "fdata length is not correct: " + fdata.length + " " + nX
+                      + ".");
             }
             for (int j = 0; j < nX; j++) {
               if (fdata[j] == null) {
                 eval.iToken = ptY;
-                eval.errorStr(ScriptEvaluator.ERROR_what, "fdata[" + j + "] is null.");
+                eval.errorStr(ScriptEvaluator.ERROR_what, "fdata[" + j
+                    + "] is null.");
               }
               if (fdata[j].length != nY) {
                 eval.iToken = ptY;
@@ -2246,9 +2279,9 @@ public class ScriptExt implements JmolScriptExtension {
         isMapped = true;
         if ((isCavity || haveRadius || haveIntersection) && !surfaceObjectSeen) {
           surfaceObjectSeen = true;
-          addShapeProperty(propertyList, "bsSolvent",
-              (haveRadius || haveIntersection ? new BS()
-                  : eval.lookupIdentifierValue("solvent")));
+          addShapeProperty(propertyList, "bsSolvent", (haveRadius
+              || haveIntersection ? new BS() : eval
+              .lookupIdentifierValue("solvent")));
           addShapeProperty(propertyList, "sasurface", Float.valueOf(0));
         }
         if (sbCommand.length() == 0) {
@@ -2304,8 +2337,8 @@ public class ScriptExt implements JmolScriptExtension {
           sbCommand.append(" molecular");
           radius = (isFloatParameter(i + 1) ? floatParameter(++i) : 1.4f);
         } else {
-          addShapeProperty(propertyList, "bsSolvent",
-              eval.lookupIdentifierValue("solvent"));
+          addShapeProperty(propertyList, "bsSolvent", eval
+              .lookupIdentifierValue("solvent"));
           propertyName = (eval.theTok == T.sasurface ? "sasurface" : "solvent");
           sbCommand.append(" ").appendO(eval.theToken.value);
           radius = (isFloatParameter(i + 1) ? floatParameter(++i) : viewer
@@ -2463,8 +2496,7 @@ public class ScriptExt implements JmolScriptExtension {
         if (propertyValue == null) {
           if (fullCommand.indexOf("# FILE" + nFiles + "=") >= 0) {
             // old way, abandoned
-            filename = PT
-                .getQuotedAttribute(fullCommand, "# FILE" + nFiles);
+            filename = PT.getQuotedAttribute(fullCommand, "# FILE" + nFiles);
             if (tokAt(i + 1) == T.as)
               i += 2; // skip that
           } else if (tokAt(i + 1) == T.as) {
@@ -2486,8 +2518,8 @@ public class ScriptExt implements JmolScriptExtension {
           fullPathNameOrError = viewer.getFullPathNameOrError(filename);
           filename = fullPathNameOrError[0];
           if (fullPathNameOrError[1] != null)
-            eval.errorStr(ScriptEvaluator.ERROR_fileNotFoundException, filename + ":"
-                + fullPathNameOrError[1]);
+            eval.errorStr(ScriptEvaluator.ERROR_fileNotFoundException, filename
+                + ":" + fullPathNameOrError[1]);
         }
         Logger.info("reading isosurface data from " + filename);
 
@@ -2617,8 +2649,8 @@ public class ScriptExt implements JmolScriptExtension {
         if (onlyOneModel != null) {
           BS bsModels = viewer.getModelBitSet(bsSelect, false);
           if (bsModels.cardinality() != 1)
-            eval.errorStr(ScriptEvaluator.ERROR_multipleModelsDisplayedNotOK, "ISOSURFACE "
-                + onlyOneModel);
+            eval.errorStr(ScriptEvaluator.ERROR_multipleModelsDisplayedNotOK,
+                "ISOSURFACE " + onlyOneModel);
           if (needSelect) {
             propertyList.add(0, new Object[] { "select", bsSelect });
             if (sbCommand.indexOf("; isosurface map") == 0) {
@@ -2653,7 +2685,9 @@ public class ScriptExt implements JmolScriptExtension {
       }
     }
     if (lattice != null) // before MAP, this is a display option
-      setShapeProperty(JC.SHAPE_ISOSURFACE, "lattice", lattice);
+      setShapeProperty(iShape, "lattice", lattice);
+    if (symops != null) // before MAP, this is a display option
+      setShapeProperty(iShape, "symops", symops);
     if (isFrontOnly)
       setShapeProperty(iShape, "token", Integer.valueOf(T.frontonly));
     if (iptDisplayProperty > 0) {

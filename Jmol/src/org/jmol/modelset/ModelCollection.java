@@ -81,7 +81,7 @@ abstract public class ModelCollection extends BondCollection {
 
   /**
    * initial transfer of model data from old to new model set. Note that all new
-   * models are added later, AFTER the old ones. This is very important, because
+   * models are added later, AFTER thfe old ones. This is very important, because
    * all of the old atom numbers must map onto the same numbers in the new model
    * set, or the state script will not run properly, among other problems.
    * 
@@ -1496,21 +1496,19 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public int getModelSymmetryCount(int modelIndex) {
-    String[] operations;
-    return (models[modelIndex].biosymmetryCount > 0 || unitCells == null
-        || unitCells[modelIndex] == null
-        || (operations = unitCells[modelIndex].getSymmetryOperations()) == null ? models[modelIndex].biosymmetryCount
-        : operations.length);
+    return (models[modelIndex].biosymmetryCount > 0 ? models[modelIndex].biosymmetryCount
+        : unitCells == null || unitCells[modelIndex] == null ? 0
+            : unitCells[modelIndex].getSpaceGroupOperationCount());
   }
 
-  public String getSymmetryOperation(int modelIndex, String spaceGroup,
+  public String getSymmetryInfoString(int modelIndex, String spaceGroup,
                                      int symOp, P3 pt1, P3 pt2,
                                      String drawID, boolean labelOnly) {
     Map<String, Object> sginfo = getSymTemp(true).getSpaceGroupInfo((ModelSet) this, modelIndex, spaceGroup,
         symOp, pt1, pt2, drawID);
     if (sginfo == null)
       return "";
-    return symTemp.getSymmetryOperationInfo(sginfo, symOp, drawID, labelOnly);
+    return symTemp.getSymmetryInfoString(sginfo, symOp, drawID, labelOnly);
   }
 
   public int[] getModelCellRange(int modelIndex) {

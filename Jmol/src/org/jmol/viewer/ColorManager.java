@@ -305,7 +305,7 @@ class ColorManager {
     colorData = data;
     propertyColorEncoder.currentPalette = propertyColorEncoder.createColorScheme(
         colorScheme, true, false);
-    propertyColorEncoder.hi = PT.FLOAT_MIN_SAFE;
+    propertyColorEncoder.hi = -Float.MAX_VALUE;
     propertyColorEncoder.lo = Float.MAX_VALUE;
     if (data == null)
       return;
@@ -323,7 +323,8 @@ class ColorManager {
 
   void setPropertyColorRange(float min, float max) {
     propertyColorEncoder.setRange(min, max, min > max);
-    Logger.info("ColorManager: color \""
+    if (Logger.debugging)
+      Logger.debug("ColorManager: color \""
         + propertyColorEncoder.getCurrentColorSchemeName() + "\" range " + min + " "
         + max);
   }

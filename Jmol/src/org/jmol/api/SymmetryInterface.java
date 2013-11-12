@@ -153,7 +153,7 @@ public interface SymmetryInterface {
 
   public boolean isSupercell();
 
-  public String getSymmetryOperationInfo(Map<String, Object> sginfo, int symOp, String drawID, boolean labelOnly);
+  public String getSymmetryInfoString(Map<String, Object> sginfo, int symOp, String drawID, boolean labelOnly);
 
   public Map<String, Object> getSpaceGroupInfo(ModelSet modelSet, int modelIndex,
                                                String spaceGroup, int symOp,
@@ -180,6 +180,6 @@ public interface SymmetryInterface {
 
   public int getSiteMultiplicity(P3 a);
 
-  public void setBioMolecules(String name, List<M4> vBiomts);
+  //public void setBioMolecules(String name, List<M4> vBiomts);
   
 }

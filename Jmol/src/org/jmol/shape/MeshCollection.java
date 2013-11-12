@@ -41,6 +41,7 @@ import org.jmol.util.Escape;
 import javajs.util.AU;
 import javajs.util.List;
 import javajs.util.SB;
+import javajs.util.M4;
 
 import org.jmol.util.Logger;
 import javajs.util.P3;
@@ -172,6 +173,19 @@ public abstract class MeshCollection extends Shape {
     if ("lattice" == propertyName) {
       if (currentMesh != null)
         currentMesh.lattice = (P3) value;
+      return;
+    }
+
+    if ("symops" == propertyName) {
+      if (currentMesh != null) {
+        currentMesh.symops = (M4[]) value;
+        if (currentMesh.symops == null)
+          return;
+        int n = currentMesh.symops.length;
+        currentMesh.symopColixes = new short[n];
+        for (int i = n; --i >= 0;)
+        currentMesh.symopColixes[i] = C.getColix(viewer.getArgbMinMax(i + 1, 1, n));        
+      }
       return;
     }
 

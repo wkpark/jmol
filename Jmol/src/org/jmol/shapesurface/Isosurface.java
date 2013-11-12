@@ -180,6 +180,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   private int atomIndex;
   private int moNumber;
   private float[] moLinearCombination;
+  private int colorType;
   private short defaultColix;
   private short meshColix;
   private P3 center;
@@ -575,7 +576,12 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       center.setT((P3) value);
     } else if ("colorRGB" == propertyName) {
       int rgb = ((Integer) value).intValue();
-      defaultColix = C.getColix(rgb);
+      if (rgb == T.symop) {
+        colorType = rgb;
+      } else {
+        colorType = 0;
+        defaultColix = C.getColix(rgb);
+      }
     } else if ("contour" == propertyName) {
       explicitContours = true;
     } else if ("functionXY" == propertyName) {
@@ -1088,7 +1094,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     colix = C.ORANGE;
     connections = null;
     cutoffRange = null;
-    defaultColix = meshColix = 0;
+    colorType = defaultColix = meshColix = 0;
     displayWithinPoints = null;
     explicitContours = false;
     isFixed = (modelIndex < 0);
@@ -1317,6 +1323,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         thisMesh.clearType(myType, sg.getIAddGridPoints());
       thisMesh.connections = connections;
       thisMesh.colix = getDefaultColix();
+      thisMesh.colorType = colorType;
       thisMesh.meshColix = meshColix;
       if (isPhaseColored || thisMesh.jvxlData.isBicolorMap)
         thisMesh.isColorSolid = false;

@@ -77,6 +77,7 @@ public class Symmetry implements SymmetryInterface {
   private SpaceGroup spaceGroup;
   private SymmetryInfo symmetryInfo;
   private UnitCell unitCell;
+  private boolean isBio;
   
   public Symmetry() {
     // instantiated ONLY using
@@ -124,6 +125,7 @@ public class Symmetry implements SymmetryInterface {
   }
 
   public int addBioMoleculeOperation(M4 mat, boolean isReverse) {
+    isBio = spaceGroup.isBio = true;
     return spaceGroup.addSymmetry((isReverse ? "!" : "") + "[[bio" + mat, 0);    
   }
 
@@ -153,10 +155,10 @@ public class Symmetry implements SymmetryInterface {
     return spaceGroup != null;
   }
 
-  public void setBioMolecules(String name, List<M4> vBiomts) {
-    unitCell = UnitCell.newA(null);
-    spaceGroup = SpaceGroup.createSpaceGroup(-1, name, vBiomts);
-  }
+//  public void setBioMolecules(String name, List<M4> vBiomts) {
+//    unitCell = UnitCell.newA(null);
+//    spaceGroup = SpaceGroup.createSpaceGroup(-1, name, vBiomts);
+//  }
 
   public boolean haveSpaceGroup() {
     return (spaceGroup != null);
@@ -179,11 +181,11 @@ public class Symmetry implements SymmetryInterface {
   }
 
   public int getSpaceGroupOperationCount() {
-    return spaceGroup.finalOperations.length;
+    return (spaceGroup == null ? 0 : spaceGroup.finalOperations.length);
   }  
   
   public M4 getSpaceGroupOperation(int i) {
-    return spaceGroup.finalOperations[i];
+    return (i < spaceGroup.finalOperations.length ? spaceGroup.finalOperations[i] : null);
   }
   
 
@@ -296,7 +298,8 @@ public class Symmetry implements SymmetryInterface {
   }
 
   public void toCartesian(T3 fpt, boolean isAbsolute) {
-    unitCell.toCartesian(fpt, isAbsolute);    
+    if (!isBio)
+      unitCell.toCartesian(fpt, isAbsolute);    
   }
 
   public P3 toSupercell(P3 fpt) {
@@ -304,7 +307,8 @@ public class Symmetry implements SymmetryInterface {
   }
 
   public void toFractional(T3 pt, boolean isAbsolute) {
-    unitCell.toFractional(pt, isAbsolute);
+    if (!isBio)
+      unitCell.toFractional(pt, isAbsolute);
   }
 
   public float[] getNotionalUnitCell() {
@@ -397,7 +401,7 @@ public class Symmetry implements SymmetryInterface {
     return unitCell.isSupercell();
   }
 
-  public String getSymmetryOperationInfo(Map<String, Object> sginfo, int symOp, String drawID, boolean labelOnly) {
+  public String getSymmetryInfoString(Map<String, Object> sginfo, int symOp, String drawID, boolean labelOnly) {
     Object[][] infolist = (Object[][]) sginfo.get("operations");
     if (infolist == null)
       return "";
@@ -505,7 +509,7 @@ public class Symmetry implements SymmetryInterface {
   public Object getSymmetryInfo(ModelSet modelSet, int iModel, int iAtom, SymmetryInterface uc, String xyz, int op,
                                 P3 pt, P3 pt2, String id, int type) {
     if (pt2 != null)
-      return modelSet.getSymmetryOperation(iModel, null, op, pt, pt2,
+      return modelSet.getSymmetryInfoString(iModel, null, op, pt, pt2,
           (id == null ? "sym" : id), type == T.label);
     SymmetryInterface symTemp = modelSet.getSymTemp(false);
 

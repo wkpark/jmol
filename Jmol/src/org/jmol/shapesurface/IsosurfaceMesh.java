@@ -666,7 +666,8 @@ public class IsosurfaceMesh extends Mesh {
   void setColorsFromJvxlData(int colorRgb) {
     diameter = jvxlData.diameter;
     if (colorRgb == -1) {
-    } else if (colorRgb != Integer.MIN_VALUE) {
+    } else if (colorRgb != Integer.MIN_VALUE && colorRgb != Integer.MAX_VALUE) {
+      // max value set when second color option given in isosurface command
       colix = C.getColix(colorRgb);
     } else if (jvxlData.color != null) {
       colix = C.getColixS(jvxlData.color);

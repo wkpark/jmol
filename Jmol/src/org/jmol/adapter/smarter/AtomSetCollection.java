@@ -1446,7 +1446,7 @@ public class AtomSetCollection {
     if (!Float.isNaN(notionalUnitCell[0])) // PDB can do this; 
       setNotionalUnitCell(notionalUnitCell, null, unitCellOffset);
     getSymmetry().setSpaceGroup(doNormalize);
-    symmetry.setUnitCell(null);
+    //symmetry.setUnitCell(null);
     addSpaceGroupOperation("x,y,z");
     String name = (String) thisBiomolecule.get("name");
     setAtomSetSpaceGroupName(name);
@@ -1547,11 +1547,11 @@ public class AtomSetCollection {
           errorMessage = "appendAtomCollection error: " + e;
         }
       }
-      mat.m03 /= notionalUnitCell[0]; // PDB could have set this to Float.NaN
-      if (Float.isNaN(mat.m03))
-        mat.m03 = 1;
-      mat.m13 /= notionalUnitCell[1];
-      mat.m23 /= notionalUnitCell[2];
+//      mat.m03 /= notionalUnitCell[0]; // PDB could have set this to Float.NaN
+//      if (Float.isNaN(mat.m03))
+//        mat.m03 = 1;
+//      mat.m13 /= notionalUnitCell[1];
+//      mat.m23 /= notionalUnitCell[2];
       if (i > 0)
         symmetry.addBioMoleculeOperation(mat, false);
     }

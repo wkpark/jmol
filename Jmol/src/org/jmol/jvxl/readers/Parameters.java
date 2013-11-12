@@ -561,12 +561,16 @@ public class Parameters {
       solventExtendedAtomRadius = 0f;
       if (bsIgnore == null)
         bsIgnore = bsSolvent;
+      else if (bsSolvent != null)
+        bsIgnore.or(bsSolvent);
       break;
     case SURFACE_SASURFACE:
       solventExtendedAtomRadius = solventRadius;
       solventRadius = 0f;
       if (bsIgnore == null)
         bsIgnore = bsSolvent;
+      else if (bsSolvent != null)
+        bsIgnore.or(bsSolvent);
       break;
     }
   }

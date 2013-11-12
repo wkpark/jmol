@@ -518,7 +518,7 @@ public class PT {
   }
 
   public final static float FLOAT_MIN_SAFE = 2E-45f; 
-  // Float.MIN_ VALUE is not reliable with JavaScript because of the float/double difference there
+  // Float.MIN_VALUE (1.45E-45) is not reliable with JavaScript because of the float/double difference there
   
   /// general static string-parsing class ///
 

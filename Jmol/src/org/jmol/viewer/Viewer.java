@@ -3210,7 +3210,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public String getSymmetryOperation(String spaceGroup, int symop, P3 pt1,
                                      P3 pt2, boolean labelOnly) {
-    return modelSet.getSymmetryOperation(animationManager.currentModelIndex,
+    return modelSet.getSymmetryInfoString(animationManager.currentModelIndex,
         spaceGroup, symop, pt1, pt2, null, labelOnly);
   }
 
@@ -3650,6 +3650,10 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public void setCurrentColorRange(float min, float max) {
     colorManager.setPropertyColorRange(min, max);
+  }
+
+  public int getArgbMinMax(float val, float min, float max) {
+    return colorManager.propertyColorEncoder.getArgbMinMax(val, min, max);
   }
 
   public void setData(String type, Object[] data, int arrayCount,

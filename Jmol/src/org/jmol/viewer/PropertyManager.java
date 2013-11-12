@@ -749,9 +749,9 @@ public class PropertyManager implements JmolPropertyManager {
     if (iAtom < 0)
       return "";
     iModel = viewer.modelSet.atoms[iAtom].modelIndex;
-    SymmetryInterface uc = viewer.modelSet.getUnitCell(iModel);
+    SymmetryInterface uc = viewer.modelSet.models[iModel].biosymmetry;
     if (uc == null)
-      uc = viewer.modelSet.models[iModel].biosymmetry;
+      uc = viewer.modelSet.getUnitCell(iModel);
     if (uc == null)
       return "";
     return uc.getSymmetryInfo(viewer.modelSet, iModel, iAtom, uc, xyz, op, pt,

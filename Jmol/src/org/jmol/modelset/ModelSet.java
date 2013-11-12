@@ -960,5 +960,17 @@ import java.util.Map;
     return bsBranches;
   }
 
+  public M4[] getSymMatrices(int modelIndex) {
+    int n = getModelSymmetryCount(modelIndex);
+    if (n == 0)
+      return null;
+    M4[] ops = new M4[n];
+    SymmetryInterface unitcell = models[modelIndex].biosymmetry;
+    if (unitcell == null)
+      unitcell = viewer.getModelUnitCell(modelIndex);
+    for (int i = n; --i >= 0;)
+      ops[i] = unitcell.getSpaceGroupOperation(i);
+    return ops;
+  }
 }
 

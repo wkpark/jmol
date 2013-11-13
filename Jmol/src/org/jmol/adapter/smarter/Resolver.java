@@ -741,7 +741,7 @@ public class Resolver {
   { "Jana", "Version Jana" };
 
   private final static String[] jsonStartRecords = 
-  { "JSON", "{\"mol\":", "{\"m\":" };
+  { "JSON", "{\"mol\":" };
 
   private final static String[][] fileStartsWithRecords =
   { sptContainsRecords, cubeFileStartRecords, mol2Records, webmoFileStartRecords, 

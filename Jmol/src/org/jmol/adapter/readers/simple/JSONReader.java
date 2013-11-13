@@ -37,9 +37,9 @@ public class JSONReader extends AtomSetCollectionReader {
    * a simple JSON-format file reader
    * See, for example, http://web.chemdoodle.com/docs/chemdoodle-json-format
    * 
+   * feature request #210
    * 
-   * 
-   * Bob Hanson hansonr@stolaf.edu 4/11/2010
+   * Bob Hanson hansonr@stolaf.edu 11/13/2013 
    */
 
   /*

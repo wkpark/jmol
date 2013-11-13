@@ -6470,8 +6470,12 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   private void setIntPropertyTok(String key, int tok, int value) {
     switch (tok) {
+    case T.ambientocclusion:
+      // 13.3.9
+      gdata.setAmbientOcclusion(value);
+      break;
     case T.platformspeed:
-      // 13.4.4
+      // 13.3.4
       global.platformSpeed = Math.min(Math.max(value, 0), 10); // 0 could mean "adjust as needed"
       break;
     case T.meshscale:
@@ -8199,7 +8203,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     String exp = "";
     if (type.equalsIgnoreCase("MOL") || type.equalsIgnoreCase("SDF")
         || type.equalsIgnoreCase("V2000") || type.equalsIgnoreCase("V3000")
-        || type.equalsIgnoreCase("XYZVIB") || type.equalsIgnoreCase("CD"))
+        || type.equalsIgnoreCase("XYZVIB") || type.equalsIgnoreCase("CD") || type.equalsIgnoreCase("JSON"))
       return getModelExtract(atomExpression, false, false, type);
     if (type.toLowerCase().indexOf("property_") == 0)
       exp = "{selected}.label(\"%{" + type + "}\")";

@@ -49,7 +49,7 @@ public class Resolver {
                  "WebMO;",
     "pdb.", ";Pdb;",
     "pymol.", ";PyMOL;",
-    "simple.", ";Alchemy;Ampac;Cube;FoldingXyz;GhemicalMM;HyperChem;Jme;Mopac;MopacArchive;ZMatrix;", 
+    "simple.", ";Alchemy;Ampac;Cube;FoldingXyz;GhemicalMM;HyperChem;Jme;Mopac;MopacArchive;ZMatrix;JSON;", 
     "xtal.", ";Abinit;Aims;Castep;Crystal;Dmol;Espresso;Gulp;Jana;Magres;Shelx;Siesta;VaspOutcar;" +
              "VaspPoscar;Wien2k;Xcrysden;"
   };
@@ -740,10 +740,13 @@ public class Resolver {
   private final static String[] janaStartRecords = 
   { "Jana", "Version Jana" };
 
+  private final static String[] jsonStartRecords = 
+  { "JSON", "{\"mol\":", "{\"m\":" };
+
   private final static String[][] fileStartsWithRecords =
   { sptContainsRecords, cubeFileStartRecords, mol2Records, webmoFileStartRecords, 
     moldenFileStartRecords, dcdFileStartRecords, tlsDataOnlyFileStartRecords,
-    zMatrixFileStartRecords, magresFileStartRecords, pymolStartRecords, janaStartRecords };
+    zMatrixFileStartRecords, magresFileStartRecords, pymolStartRecords, janaStartRecords, jsonStartRecords };
 
   ////////////////////////////////////////////////////////////////
   // these test lines that startWith one of these strings

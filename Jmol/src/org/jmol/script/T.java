@@ -888,6 +888,7 @@ public class T {
   public final static int vibrationscale                 = floatparam | 70;
   public final static int visualrange                    = floatparam | 72;
 
+  public final static int ambientocclusion               = intparam | 1;               
   public final static int ambientpercent                 = intparam | 2;               
   public final static int animationfps                   = intparam | 4;
   public final static int axesmode                       = intparam | 6;
@@ -1778,6 +1779,7 @@ public class T {
       "all",             tokenAll,
       "altloc",          T.t(altloc),
       "altlocs",         null,
+      "ambientOcclusion", T.t(ambientocclusion),
       "amino",           T.t(amino),
       "angle",           T.t(angle),
       "array",           T.t(array),

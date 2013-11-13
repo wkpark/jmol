@@ -535,5 +535,48 @@ public class Shader {
       sphereShapeCache[i] = null;
     ellipsoidShades = null;
   }
-  
+
+  /**
+   * not implemented; just experimenting here
+   * @param pbuf
+   * @param zbuf
+   * @param aobuf
+   * @param width
+   * @param height
+   * @param ambientOcclusion
+   */
+  public void occludePixels(int[] pbuf, int[] zbuf, int[] aobuf, int width,
+                            int height, int ambientOcclusion) {
+    int n = zbuf.length;
+    for (int x = 0, y = 0, offset = 0; offset < n; offset++) {
+      int z = zbuf[offset];
+      int xymax = Math.min(z >> 5, 0);
+      if (xymax == 0)
+        continue;
+      int r2max = xymax * xymax;
+      int pxmax = Math.min(width, x + xymax);
+      int pymax = Math.min(height, y + xymax);
+      for (int px = Math.max(0, x - xymax); px < pxmax; px++) {
+        for (int py = Math.max(0, y - xymax); py < pymax; py++) {
+          int dx = px - x;
+          int dy = py - y;
+          int r2 = dx * dx + dy * dy;
+          if (r2 > r2max)
+            continue;
+          int pt = offset + width * dy + dx;
+          int dz = zbuf[pt] - z;
+          if(dz <= z || dz * dz > r2)
+            continue;
+          // TODO
+        }
+      }
+      
+      
+      if (++x == width) {
+        x = 0;
+        y++;
+      }
+    }
+  }
+
 }

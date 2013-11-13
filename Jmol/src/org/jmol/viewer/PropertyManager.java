@@ -765,9 +765,10 @@ public class PropertyManager implements JmolPropertyManager {
     boolean asSDF = type.equalsIgnoreCase("SDF");
     boolean asXYZVIB = type.equalsIgnoreCase("XYZVIB");
     boolean asChemDoodle = type.equalsIgnoreCase("CD");
+    boolean asJSON = type.equalsIgnoreCase("JSON") || asChemDoodle;
     SB mol = new SB();
     ModelSet ms = viewer.modelSet;
-    if (!asXYZVIB && !asChemDoodle) {
+    if (!asXYZVIB && !asJSON) {
       mol.append(isModelKit ? "Jmol Model Kit" : viewer.getFullPathName()
           .replace('\\', '/'));
       String version = Viewer.getJmolVersion();
@@ -823,7 +824,7 @@ public class PropertyManager implements JmolPropertyManager {
         BS bsTemp = BSUtil.copy(bsAtoms);
         bsTemp.and(ms.getModelAtomBitSetIncludingDeleted(i, false));
         bsBonds = getCovalentBondsForAtoms(ms.bonds, ms.bondCount, bsTemp);
-        if (!(isOK = addMolFile(mol, bsTemp, bsBonds, false, false, q)))
+        if (!(isOK = addMolFile(mol, bsTemp, bsBonds, false, false, false, q)))
           break;
         mol.append("$$$$\n");
       }
@@ -870,31 +871,31 @@ public class PropertyManager implements JmolPropertyManager {
               null));
       }
     } else {
-      isOK = addMolFile(mol, bsAtoms, bsBonds, asV3000, asChemDoodle, q);
+      isOK = addMolFile(mol, bsAtoms, bsBonds, asV3000, asJSON, asChemDoodle, q);
     }
     return (isOK ? mol.toString()
         : "ERROR: Too many atoms or bonds -- use V3000 format.");
   }
 
   private boolean addMolFile(SB mol, BS bsAtoms, BS bsBonds,
-                             boolean asV3000, boolean asChemDoodle, Quaternion q) {
+                             boolean asV3000, boolean asJSON, boolean asChemDoodle, Quaternion q) {
     int nAtoms = bsAtoms.cardinality();
     int nBonds = bsBonds.cardinality();
-    if (!asV3000 && !asChemDoodle && (nAtoms > 999 || nBonds > 999))
+    if (!asV3000 && !asJSON && (nAtoms > 999 || nBonds > 999))
       return false;
     ModelSet ms = viewer.modelSet;
     int[] atomMap = new int[ms.atomCount];
     P3 pTemp = new P3();
     if (asV3000) {
       mol.append("  0  0  0  0  0  0            999 V3000");
-    } else if (asChemDoodle) {
-      mol.append("{\"mol\":{\"scaling\":[20,-20,20],\"a\":[");
+    } else if (asJSON) {
+      mol.append(asChemDoodle ? "{\"m\":{\"scaling\":[20,-20,20],\"a\":[" : "{\"mol\":{\"a\":[");
     } else {
       Txt.rightJustify(mol, "   ", "" + nAtoms);
       Txt.rightJustify(mol, "   ", "" + nBonds);
       mol.append("  0  0  0  0              1 V2000");
     }
-    if (!asChemDoodle)
+    if (!asJSON)
       mol.append("\n");
     if (asV3000) {
       mol.append("M  V30 BEGIN CTAB\nM  V30 COUNTS ").appendI(nAtoms)
@@ -905,20 +906,20 @@ public class PropertyManager implements JmolPropertyManager {
     for (int i = bsAtoms.nextSetBit(0), n = 0; i >= 0; i = bsAtoms
         .nextSetBit(i + 1))
       getAtomRecordMOL(ms, mol, atomMap[i] = ++n, ms.atoms[i], q, pTemp, ptTemp, asV3000,
-          asChemDoodle);
+          asJSON, asChemDoodle);
     if (asV3000) {
       mol.append("M  V30 END ATOM\nM  V30 BEGIN BOND\n");
-    } else if (asChemDoodle) {
+    } else if (asJSON) {
       mol.append("],\"b\":[");
     }
     for (int i = bsBonds.nextSetBit(0), n = 0; i >= 0; i = bsBonds
         .nextSetBit(i + 1))
-      getBondRecordMOL(mol, ++n, ms.bonds[i], atomMap, asV3000, asChemDoodle);
+      getBondRecordMOL(mol, ++n, ms.bonds[i], atomMap, asV3000, asJSON, asChemDoodle);
     // 21 21 0 0 0
     if (asV3000) {
       mol.append("M  V30 END BOND\nM  V30 END CTAB\n");
     }
-    if (asChemDoodle)
+    if (asJSON)
       mol.append("]}}");
     else {
       mol.append("M  END\n");
@@ -975,7 +976,7 @@ public class PropertyManager implements JmolPropertyManager {
 
   private void getAtomRecordMOL(ModelSet ms, SB mol, int n, Atom a, Quaternion q,
                                 P3 pTemp, P3 ptTemp, boolean asV3000,
-                                boolean asChemDoodle) {
+                                boolean asJSON, boolean asChemDoodle) {
     //   -0.9920    3.2030    9.1570 Cl  0  0  0  0  0
     //    3.4920    4.0920    5.8700 Cl  0  0  0  0  0
     //012345678901234567890123456789012
@@ -1001,7 +1002,7 @@ public class PropertyManager implements JmolPropertyManager {
       if (iso != 0)
         mol.append(" MASS=").appendI(iso);
       mol.append("\n");
-    } else if (asChemDoodle) {
+    } else if (asJSON) {
       if (n != 1)
         mol.append(",");
       mol.append("{");
@@ -1011,8 +1012,11 @@ public class PropertyManager implements JmolPropertyManager {
         mol.append("\"c\":").appendI(charge).append(",");
       if (iso != 0 && iso != Elements.getNaturalIsotope(elemNo))
         mol.append("\"m\":").appendI(iso).append(",");
-      mol.append("\"x\":").appendF(a.x*20).append(",\"y\":").appendF(-a.y*20).append(
-          ",\"z\":").appendF(a.z*20).append("}");
+      float x = a.x * (asChemDoodle ? 20 : 1);
+      float y = a.y * (asChemDoodle ? -20 : 1);
+      float z = a.z * (asChemDoodle ? 20 : 1);
+      mol.append("\"x\":").appendF(x).append(",\"y\":").appendF(y).append(
+          ",\"z\":").appendF(z).append("}");
     } else {
       mol.append(Txt.sprintf("%10.5p%10.5p%10.5p",
           "p", new Object[] {pTemp }));
@@ -1029,7 +1033,7 @@ public class PropertyManager implements JmolPropertyManager {
   }
 
   private void getBondRecordMOL(SB mol, int n, Bond b, int[] atomMap,
-                                boolean asV3000, boolean asChemDoodle) {
+                                boolean asV3000, boolean asJSON, boolean asChemDoodle) {
     //  1  2  1  0
     int a1 = atomMap[b.atom1.index];
     int a2 = atomMap[b.atom2.index];
@@ -1056,7 +1060,7 @@ public class PropertyManager implements JmolPropertyManager {
     if (asV3000) {
       mol.append("M  V30 ").appendI(n).append(" ").appendI(order).append(" ")
           .appendI(a1).append(" ").appendI(a2).appendC('\n');
-    } else if (asChemDoodle) {
+    } else if (asJSON) {
       if (n != 1)
         mol.append(",");
       mol.append("{\"b\":").appendI(a1 - 1).append(",\"e\":").appendI(a2 - 1);

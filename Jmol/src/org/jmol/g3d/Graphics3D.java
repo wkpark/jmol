@@ -226,6 +226,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   private Pixelator pixel;
 
   protected int zMargin;
+  private int[] aobuf;
   
   void setZMargin(int dz) {
     zMargin = dz;
@@ -320,6 +321,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                               antialiasThisFrame, isImageWrite);
       pbuf = platform.pBuffer;
       zbuf = platform.zBuffer;
+      aobuf = null;
     }
     setWidthHeight(antialiasThisFrame);
     platform.clearBuffer();
@@ -338,6 +340,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     zbuf = null;
     pbufT = null;
     zbufT = null;
+    aobuf = null;
     platform.releaseBuffers();
     line3d.clearLineCache();
   }
@@ -367,8 +370,18 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     if (!currentlyRendering)
       return;
     if (pbuf != null) {
-      if (isPass2)
-        mergeOpaqueAndTranslucentBuffers();
+      if (isPass2 && pbufT != null)
+        for (int offset = pbufT.length; --offset >= 0;)
+          mergeBufferPixel(pbuf, offset, pbufT[offset], bgcolor);
+      if (ambientOcclusion != 0) {
+        if (aobuf == null)
+          aobuf = new int[pbuf.length];
+        else
+          for (int offset = pbuf.length; --offset >= 0;)
+            aobuf[offset] = 0;
+        shader
+            .occludePixels(pbuf, zbuf, aobuf, width, height, ambientOcclusion);
+      }
       if (antialiasThisFrame)
         downsampleFullSceneAntialiasing(false);
     }
@@ -377,6 +390,64 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     //setWidthHeight(antialiasEnabled);
     currentlyRendering = false;
   }
+
+  public static void mergeBufferPixel(int[] pbuf, int offset, int argbB, int bgcolor) {
+    if (argbB == 0)
+      return;
+    int argbA = pbuf[offset];
+    if (argbA == argbB)
+      return;
+    if (argbA == 0)
+      argbA = bgcolor;
+    int rbA = (argbA & 0x00FF00FF);
+    int gA = (argbA & 0x0000FF00);
+    int rbB = (argbB & 0x00FF00FF);
+    int gB = (argbB & 0x0000FF00);
+    int logAlpha = (argbB >> 24) & 0xF;
+    //just for now:
+    //0 or 1=100% opacity, 2=87.5%, 3=75%, 4=50%, 5=50%, 6 = 25%, 7 = 12.5% opacity.
+    switch (logAlpha) {
+    // 0.0 to 1.0 ==> MORE translucent   
+    //                1/8  1/4 3/8 1/2 5/8 3/4 7/8
+    //     t           32  64  96  128 160 192 224
+    //     t >> 5       1   2   3   4   5   6   7
+
+    case 0: // 8:0
+      rbA = rbB;
+      gA = gB;
+      break;
+    case 1: // 7:1
+      rbA = (((rbB << 2) + (rbB << 1) + rbB  + rbA) >> 3) & 0x00FF00FF;
+      gA = (((gB << 2) + + (gB << 1) + gB + gA) >> 3) & 0x0000FF00;
+      break;
+    case 2: // 3:1
+      rbA = (((rbB << 1) + rbB + rbA) >> 2) & 0x00FF00FF;
+      gA = (((gB << 1) + gB + gA) >> 2) & 0x0000FF00;
+      break;
+    case 3: // 5:3
+      rbA = (((rbB << 2) + rbB + (rbA << 1) + rbA) >> 3) & 0x00FF00FF;
+      gA = (((gB << 2) + gB  + (gA << 1) + gA) >> 3) & 0x0000FF00;
+      break;
+    case 4: // 1:1
+      rbA = ((rbA + rbB) >> 1) & 0x00FF00FF;
+      gA = ((gA + gB) >> 1) & 0x0000FF00;
+      break;
+    case 5: // 3:5
+      rbA = (((rbB << 1) + rbB + (rbA << 2) + rbA) >> 3) & 0x00FF00FF;
+      gA = (((gB << 1) + gB  + (gA << 2) + gA) >> 3) & 0x0000FF00;
+      break;
+    case 6: // 1:3
+      rbA = (((rbA << 1) + rbA + rbB) >> 2) & 0x00FF00FF;
+      gA = (((gA << 1) + gA + gB) >> 2) & 0x0000FF00;
+      break;
+    case 7: // 1:7
+      rbA = (((rbA << 2) + (rbA << 1) + rbA + rbB) >> 3) & 0x00FF00FF;
+      gA = (((gA << 2) + (gA << 1) + gA + gB) >> 3) & 0x0000FF00;
+      break;
+    }
+    pbuf[offset] = 0xFF000000 | rbA | gA;    
+  }
+  
 
   @Override
   public Object getScreenImage(boolean isImageWrite) {
@@ -499,7 +570,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     
     if (downsampleZBuffer)
       bgcheck += ((bgcheck & 0xFF) == 0xFF ? -1 : 1);
-    for (int i =0; i < pbuf.length; i++)
+    for (int i = pbuf.length; --i >= 0;)
       if (pbuf[i] == 0)
         pbuf[i] = bgcheck;
     bgcheck &= 0xFFFFFF;
@@ -553,70 +624,6 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     }    
   }
 
-  void mergeOpaqueAndTranslucentBuffers() {
-    if (pbufT == null)
-      return;
-    for (int offset = 0; offset < bufferSize; offset++)
-      mergeBufferPixel(pbuf, offset, pbufT[offset], bgcolor);
-  }
-
-  static void mergeBufferPixel(int[] pbuf, int offset, int argbB, int bgcolor) {
-    if (argbB == 0)
-      return;
-    int argbA = pbuf[offset];
-    if (argbA == argbB)
-      return;
-    if (argbA == 0)
-      argbA = bgcolor;
-    int rbA = (argbA & 0x00FF00FF);
-    int gA = (argbA & 0x0000FF00);
-    int rbB = (argbB & 0x00FF00FF);
-    int gB = (argbB & 0x0000FF00);
-    int logAlpha = (argbB >> 24) & 0xF;
-    //just for now:
-    //0 or 1=100% opacity, 2=87.5%, 3=75%, 4=50%, 5=50%, 6 = 25%, 7 = 12.5% opacity.
-    switch (logAlpha) {
-    // 0.0 to 1.0 ==> MORE translucent   
-    //                1/8  1/4 3/8 1/2 5/8 3/4 7/8
-    //     t           32  64  96  128 160 192 224
-    //     t >> 5       1   2   3   4   5   6   7
-
-    case 0: // 8:0
-      rbA = rbB;
-      gA = gB;
-      break;
-    case 1: // 7:1
-      rbA = (((rbB << 2) + (rbB << 1) + rbB  + rbA) >> 3) & 0x00FF00FF;
-      gA = (((gB << 2) + + (gB << 1) + gB + gA) >> 3) & 0x0000FF00;
-      break;
-    case 2: // 3:1
-      rbA = (((rbB << 1) + rbB + rbA) >> 2) & 0x00FF00FF;
-      gA = (((gB << 1) + gB + gA) >> 2) & 0x0000FF00;
-      break;
-    case 3: // 5:3
-      rbA = (((rbB << 2) + rbB + (rbA << 1) + rbA) >> 3) & 0x00FF00FF;
-      gA = (((gB << 2) + gB  + (gA << 1) + gA) >> 3) & 0x0000FF00;
-      break;
-    case 4: // 1:1
-      rbA = ((rbA + rbB) >> 1) & 0x00FF00FF;
-      gA = ((gA + gB) >> 1) & 0x0000FF00;
-      break;
-    case 5: // 3:5
-      rbA = (((rbB << 1) + rbB + (rbA << 2) + rbA) >> 3) & 0x00FF00FF;
-      gA = (((gB << 1) + gB  + (gA << 2) + gA) >> 3) & 0x0000FF00;
-      break;
-    case 6: // 1:3
-      rbA = (((rbA << 1) + rbA + rbB) >> 2) & 0x00FF00FF;
-      gA = (((gA << 1) + gA + gB) >> 2) & 0x0000FF00;
-      break;
-    case 7: // 1:7
-      rbA = (((rbA << 2) + (rbA << 1) + rbA + rbB) >> 3) & 0x00FF00FF;
-      gA = (((gA << 2) + (gA << 1) + gA + gB) >> 3) & 0x0000FF00;
-      break;
-    }
-    pbuf[offset] = 0xFF000000 | rbA | gA;    
-  }
-  
   public boolean hasContent() {
     return platform.hasContent();
   }

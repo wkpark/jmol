@@ -32,4 +32,6 @@ public interface JmolGraphicsInterface {
 
   public abstract void renderAllStrings(Object jmolRenderer);
 
+  public abstract void setAmbientOcclusion(int value);
+
 }

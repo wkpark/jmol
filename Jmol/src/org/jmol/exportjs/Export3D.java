@@ -910,5 +910,10 @@ final public class Export3D implements JmolRendererInterface {
       hermite3d = (HermiteRenderer) new HermiteRenderer().set(this);
   }
 
+  public void setAmbientOcclusion(int value) {
+    // TODO
+    
+  }
+
 
 }

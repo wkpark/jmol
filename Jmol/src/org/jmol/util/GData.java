@@ -147,6 +147,10 @@ public class GData implements JmolGraphicsInterface {
     this.zShadePower = zPower;
   }
 
+  public void setAmbientOcclusion(int value) {
+    ambientOcclusion = value;
+  }
+
   /**
    * gets g3d width
    * 
@@ -638,6 +642,8 @@ public class GData implements JmolGraphicsInterface {
   }
 
   public boolean isPass2;
+
+  public int ambientOcclusion;
   
   public boolean isPass2() {
     return isPass2;
@@ -715,5 +721,6 @@ public class GData implements JmolGraphicsInterface {
   public void addRenderer(int tok) {
     // needed for JavaScript implementation to avoid unnecessary core loading
   }
+
 
 }

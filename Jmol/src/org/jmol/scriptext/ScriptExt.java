@@ -4781,7 +4781,7 @@ public class ScriptExt implements JmolScriptExtension {
         if (tokAtArray(pt + 1, args) == T.integer)
           quality = SV.iValue(tokenAt(++pt, args));
       } else if (PT.isOneOf(val.toLowerCase(),
-          ";xyz;xyzrn;xyzvib;mol;sdf;v2000;v3000;cd;pdb;pqr;cml;")) {
+          ";xyz;xyzrn;xyzvib;mol;sdf;v2000;v3000;cd;json;pdb;pqr;cml;")) {
         type = val.toUpperCase();
         if (pt + 1 == argCount)
           pt++;
@@ -4883,13 +4883,13 @@ public class ScriptExt implements JmolScriptExtension {
           && !PT
               .isOneOf(
                   type,
-                  ";SCENE;JMOL;ZIP;ZIPALL;SPT;HISTORY;MO;ISOSURFACE;MESH;PMESH;VAR;FILE;FUNCTION;CD;CML;XYZ;XYZRN;XYZVIB;MENU;MOL;PDB;PGRP;PQR;QUAT;RAMA;SDF;V2000;V3000;INLINE;"))
+                  ";SCENE;JMOL;ZIP;ZIPALL;SPT;HISTORY;MO;ISOSURFACE;MESH;PMESH;VAR;FILE;FUNCTION;CD;CML;JSON;XYZ;XYZRN;XYZVIB;MENU;MOL;PDB;PGRP;PQR;QUAT;RAMA;SDF;V2000;V3000;INLINE;"))
         eval
             .errorStr2(
                 ScriptEvaluator.ERROR_writeWhat,
                 "COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|INLINE|ISOSURFACE|JMOL|MENU|MO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
                     + "|RAMACHANDRAN|SPT|STATE|VAR x|ZIP|ZIPALL  CLIPBOARD",
-                "CML|GIF|JPG|JPG64|JMOL|JVXL|MESH|MOL|PDB|PMESH|PNG|PNGJ|PNGT|PPM|PQR|SDF|V2000|V3000|SPT|XJVXL|XYZ|XYZRN|XYZVIB|ZIP"
+                "CML|GIF|JPG|JPG64|JMOL|JVXL|MESH|MOL|PDB|PMESH|PNG|PNGJ|PNGT|PPM|PQR|SDF|CD|JSON|V2000|V3000|SPT|XJVXL|XYZ|XYZRN|XYZVIB|ZIP"
                     + driverList.toUpperCase().replace(';', '|'));
       if (chk)
         return "";
@@ -4962,14 +4962,14 @@ public class ScriptExt implements JmolScriptExtension {
           if ("?".equals(fileName))
             fileName = "?Jmol." + viewer.getParameter("_fileType");
         } else if ((data == "SDF" || data == "MOL" || data == "V2000"
-            || data == "V3000" || data == "CD")
+            || data == "V3000" || data == "CD"  || data == "JSON")
             && isCoord) {
           data = viewer.getModelExtract("selected", true, false, data);
           if (data.startsWith("ERROR:"))
             bytes = data;
         } else if (data == "XYZ" || data == "XYZRN" || data == "XYZVIB"
             || data == "MOL" || data == "SDF" || data == "V2000"
-            || data == "V3000" || data == "CML" || data == "CD") {
+            || data == "V3000" || data == "CML" || data == "CD" || data == "JSON") {
           data = viewer.getData("selected", data);
           if (data.startsWith("ERROR:"))
             bytes = data;

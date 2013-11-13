@@ -6154,6 +6154,7 @@ public class ScriptExt implements JmolScriptExtension {
     // compare {model1} ATOMS {bsAtoms1} [coords]
     // compare {model1} [coords] ATOMS {bsAtoms1} [coords]
     // compare {model1} {model2} BONDS "....."   /// flexible fit
+    // compare {model1} {model2} BONDS SMILES   /// flexible fit
 
     boolean isQuaternion = false;
     boolean doRotate = false;
@@ -6202,7 +6203,11 @@ public class ScriptExt implements JmolScriptExtension {
       case T.bonds:
         isFlexFit = true;
         doRotate = true;
-        strSmiles = stringParameter(++i);
+        strSmiles = parameterAsString(++i);
+        if (strSmiles.equalsIgnoreCase("SMILES")) {
+          isSmiles = true;
+          strSmiles = viewer.getSmiles(0, 0, bsFrom, false, false, false, false);
+        }
         break;
       case T.decimal:
       case T.integer:
@@ -6383,7 +6388,7 @@ public class ScriptExt implements JmolScriptExtension {
         center = new P3();
         if (isFlexFit) {
           float[] list;
-          if (bsFrom == null || bsTo == null || (list = getFlexFitList(bsFrom, bsTo, strSmiles)) == null)
+          if (bsFrom == null || bsTo == null || (list = getFlexFitList(bsFrom, bsTo, strSmiles, !isSmiles)) == null)
             return;
           viewer.setDihedrals(list, null, 1);
         }
@@ -6772,11 +6777,13 @@ public class ScriptExt implements JmolScriptExtension {
     }
   }
 
-  private float[] getFlexFitList(BS bs1, BS bs2, String smiles1)
+  private float[] getFlexFitList(BS bs1, BS bs2, String smiles1, boolean isSmarts)
       throws ScriptException {
     int[][] mapSet = AU.newInt2(2);
-    getSmilesCorrelation(bs1, bs2, smiles1, null, null, null, null, true,
+    getSmilesCorrelation(bs1, bs2, smiles1, null, null, null, null, isSmarts,
         false, mapSet, null);
+    if (mapSet[0] == null)
+      return null;
     int[][] bondMap1 = viewer.getDihedralMap(mapSet[0]);
     int[][] bondMap2 = (bondMap1 == null ? null : viewer
         .getDihedralMap(mapSet[1]));
@@ -7096,13 +7103,13 @@ public class ScriptExt implements JmolScriptExtension {
     return mp.addXMap(viewer.cacheList());
   }
 
-  private boolean evaluateCompare(SV[] args)
-      throws ScriptException {
-    // compare({bitset} or [{positions}],{bitset} or [{positions}] [,"stddev"])
+  private boolean evaluateCompare(SV[] args) throws ScriptException {
+    // compare([{bitset} or {positions}],[{bitset} or {positions}] [,"stddev"])
     // compare({bitset},{bitset}[,"SMARTS"|"SMILES"],smilesString [,"stddev"])
     // returns matrix4f for rotation/translation or stddev
     // compare({bitset},{bitset},"ISOMER")  12.1.5
-    // compare({bitset},{bitset},"BONDS",smilesString) 13.1.17
+    // compare({bitset},{bitset},smartsString, "BONDS") 13.1.17
+    // compare({bitset},{bitset},"SMILES", "BONDS") 13.3.9
 
     if (args.length < 2 || args.length > 5)
       return false;
@@ -7111,8 +7118,7 @@ public class ScriptExt implements JmolScriptExtension {
     boolean isStdDev = sOpt.equalsIgnoreCase("stddev");
     boolean isIsomer = sOpt.equalsIgnoreCase("ISOMER");
     boolean isBonds = sOpt.equalsIgnoreCase("BONDS");
-    boolean isSmiles = (isBonds || !isIsomer
-        && args.length > (isStdDev ? 3 : 2));
+    boolean isSmiles = (!isIsomer && args.length > (isStdDev ? 3 : 2));
     BS bs1 = (args[0].tok == T.bitset ? (BS) args[0].value : null);
     BS bs2 = (args[1].tok == T.bitset ? (BS) args[1].value : null);
     String smiles1 = (bs1 == null ? SV.sValue(args[0]) : "");
@@ -7128,7 +7134,10 @@ public class ScriptExt implements JmolScriptExtension {
       if (args.length != 4)
         return false;
       smiles1 = SV.sValue(args[2]);
-      float[] data = getFlexFitList(bs1, bs2, smiles1);
+      isSmiles = smiles1.equalsIgnoreCase("SMILES");
+      if (isSmiles)
+        smiles1 = viewer.getSmiles(0, 0, bs1, false, false, false, false);       
+      float[] data = getFlexFitList(bs1, bs2, smiles1, !isSmiles);
       return (data == null ? mp.addXStr("") : mp.addXAF(data));
     }
     if (isIsomer) {

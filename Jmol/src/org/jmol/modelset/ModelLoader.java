@@ -340,7 +340,7 @@ public final class ModelLoader {
 
     // only now can we access all of the atom's properties
 
-    if (is2D) {
+    if (is2D && doMinimize) {
       applyStereochemistry();
     }
 

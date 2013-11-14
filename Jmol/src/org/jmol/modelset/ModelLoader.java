@@ -180,9 +180,10 @@ public final class ModelLoader {
     isPyMOLsession  = modelSet.getModelSetAuxiliaryInfoBoolean("isPyMOL");
     doAddHydrogens = (jbr != null && !isTrajectory && !isPyMOLsession
         && !modelSet.getModelSetAuxiliaryInfoBoolean("pdbNoHydrogens")
-        && viewer.getBooleanProperty("pdbAddHydrogens"));
+        && (modelSet.getModelSetAuxiliaryInfoBoolean("pdbAddHydrogens") || viewer.getBooleanProperty("pdbAddHydrogens")));
     if (info != null) {
       info.remove("pdbNoHydrogens");
+      info.remove("pdbAddHydrogens");
       info.remove("trajectorySteps");
       if (isTrajectory)
         modelSet.vibrationSteps = (List<V3[]>) info.remove("vibrationSteps");

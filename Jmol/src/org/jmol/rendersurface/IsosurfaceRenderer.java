@@ -158,21 +158,28 @@ public class IsosurfaceRenderer extends MeshRenderer {
   private boolean renderMeshSlab() {
     volumeRender = (imesh.jvxlData.colorDensity && imesh.jvxlData.allowVolumeRender);
     int thisSlabValue = mySlabValue;
+    frontOnly = mesh.frontOnly;
     if (!isNavigationMode) {
-      int meshSlabValue = imesh.jvxlData.slabValue;
+      meshSlabValue = imesh.jvxlData.slabValue; 
       if (meshSlabValue != Integer.MIN_VALUE  
           && imesh.jvxlData.isSlabbable) {
         P3[] points = imesh.jvxlData.boundingBox;
-        pt2f.setT(points[0]);
-        pt2f.add(points[1]);
-        pt2f.scale(0.5f); // center
-        viewer.transformPt3f(pt2f, pt2f);
-        float r = viewer.scaleToScreen((int)pt2f.z, Math.round(points[0].distance(points[1]) * 500f));
-        thisSlabValue = Math.round(pt2f.z + r * (1 - meshSlabValue / 50f));
+        float z0 = Float.MAX_VALUE;
+        float z1 = Float.MIN_VALUE;
+        for (int i = points.length; --i >= 0;) {
+          pt2f.setT(points[i]);
+          viewer.transformPt3f(pt2f, pt2f);
+          if (pt2f.z < z0)
+            z0 = pt2f.z;
+          if (pt2f.z > z1)
+            z1 = pt2f.z;
+        }
+        thisSlabValue = Math.round(z0 + (z1 - z0) * (100f - meshSlabValue)/100);
+        frontOnly &= (meshSlabValue >= 100);
       }
     }
     boolean tcover = g3d.getTranslucentCoverOnly();
-    g3d.setTranslucentCoverOnly(imesh.frontOnly || !viewer.getBoolean(T.translucent));
+    g3d.setTranslucentCoverOnly(frontOnly || !viewer.getBoolean(T.translucent));
     thePlane = imesh.jvxlData.jvxlPlane;
     vertexValues = mesh.vertexValues;
     boolean isOK;

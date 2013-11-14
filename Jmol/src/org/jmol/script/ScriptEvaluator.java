@@ -5183,7 +5183,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (chk)
       return true;
     String script = viewer.getInsertedCommand();
-    if (script != "") {
+    if (!"".equals(script)) {
       runScriptBuffer(script, null);
     } else if (isSpt && debugScript && viewer.getBoolean(T.messagestylechime)) {
       // specifically for ProteinExplorer
@@ -5235,7 +5235,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       }
       if (!chk) {
         String script = viewer.getInsertedCommand();
-        if (script != "")
+        if (!"".equals(script))
           runScript(script);
       }
       if (!setStatement(pc)) {

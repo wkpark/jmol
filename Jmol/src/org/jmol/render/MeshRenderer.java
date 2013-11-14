@@ -174,7 +174,8 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected boolean volumeRender;
   protected BS bsPolygons;
   protected boolean isTranslucentInherit;
-  protected boolean renderLow;  
+  protected boolean renderLow;
+  protected int meshSlabValue = 100;  
   
   private boolean setVariables() {
     if (mesh.visibilityFlags == 0)
@@ -212,7 +213,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
       
       renderLow = (!isExport && !viewer.checkMotionRendering(T.mesh));
       frontOnly = renderLow || !viewer.getSlabEnabled() && mesh.frontOnly
-          && !mesh.isTwoSided && !selectedPolyOnly;
+          && !mesh.isTwoSided && !selectedPolyOnly && meshSlabValue  >= 100;
       screens = viewer.allocTempScreens(vertexCount);
       if (frontOnly)
         transformedVectors = g3d.getTransformedVertexVectors();

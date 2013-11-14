@@ -60,6 +60,8 @@ final public class Atom extends Point3fi implements JmolNode {
   private final static byte FLAG_MASK = 3;
   
   public static final int RADIUS_MAX = 16;
+  public static final float RADIUS_GLOBAL = 16.1f;
+  public static short MAD_GLOBAL = 32200;
 
   public char altloc = '\0';
   public byte atomID;
@@ -282,6 +284,8 @@ final public class Atom extends Point3fi implements JmolNode {
         f += r;
       break;
     case ABSOLUTE:
+      if (f == RADIUS_GLOBAL)
+        return MAD_GLOBAL;
       break;
     }
     short mad = (short) (f < 0 ? f: f * 2000);

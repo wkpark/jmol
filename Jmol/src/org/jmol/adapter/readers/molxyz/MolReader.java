@@ -79,6 +79,7 @@ public class MolReader extends AtomSetCollectionReader {
   private boolean haveAtomSerials;
   protected String dimension;
   protected boolean allow2D = true;
+  private int iatom0;
   
   @Override
   public void initializeReader() throws Exception {
@@ -101,6 +102,7 @@ public class MolReader extends AtomSetCollectionReader {
     if (doGetModel(++modelNumber, null)) {
       processMolSdHeader();
       processCtab(isMDL);
+      iatom0 = atomSetCollection.getAtomCount();
       isV3000 = false;
       if (isLastModel(modelNumber)) {
         continuing = false;
@@ -281,11 +283,11 @@ public class MolReader extends AtomSetCollectionReader {
                 isotope += code;
               }
             }
-            if (len >= 63) {
-              iAtom = parseIntRange(line, 60, 63);
-              if (iAtom == 0)
-                iAtom = Integer.MIN_VALUE;
-            }
+            //if (len >= 63) {  this field is not really an atom number. It's for atom-atom mapping in reaction files
+            //  iAtom = parseIntRange(line, 60, 63);
+            //  if (iAtom == 0)
+            //    iAtom = Integer.MIN_VALUE;
+            //}
             // previous model in series may have atom numbers indicated
             if (iAtom == Integer.MIN_VALUE && haveAtomSerials)
               iAtom = i + 1;
@@ -372,7 +374,7 @@ public class MolReader extends AtomSetCollectionReader {
       if (haveAtomSerials)
         atomSetCollection.addNewBondWithMappedSerialNumbers(iAtom1, iAtom2, order);
       else
-        atomSetCollection.addNewBondWithOrder(iAtom1 - 1, iAtom2 - 1, order);        
+        atomSetCollection.addNewBondWithOrder(iatom0 + iAtom1 - 1, iatom0 + iAtom2 - 1, order);        
     }
     if (isV3000)
       discardLinesUntilContains("END BOND");

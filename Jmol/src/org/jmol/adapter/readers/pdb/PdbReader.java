@@ -157,6 +157,9 @@ public class PdbReader extends AtomSetCollectionReader {
   private int tlsGroupID;
   private int atomTypePt0;
   private int atomTypeLen;
+  private boolean byChain;
+  private boolean bySymop;
+  private boolean isCourseGrained;
 
   final private static String lineOptions = 
    "ATOM    " + //0
@@ -190,6 +193,9 @@ public class PdbReader extends AtomSetCollectionReader {
    pdbHeader = (getHeader ? new SB() : null);
    applySymmetry = !checkFilterKey("NOSYMMETRY");
    getTlsGroups = checkFilterKey("TLS");
+   byChain = checkFilterKey("BYCHAIN");
+   bySymop = checkFilterKey("BYSYMOP");
+   isCourseGrained = byChain || bySymop; 
    if (checkFilterKey("ASSEMBLY")) // CIF syntax
      filter = javajs.util.PT.simpleReplace(filter, "ASSEMBLY", "BIOMOLECULE");
    if (htParams.containsKey("vTlsModels")) {
@@ -1202,6 +1208,8 @@ Polyproline 10
     atomSetCollection.newAtomSet();
     atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
     atomSetCollection.setCurrentAtomSetNumber(modelNumber);
+    if (isCourseGrained)
+      atomSetCollection.setAtomSetAuxiliaryInfo("courseGrained", Boolean.TRUE);
   }
 
   private void checkNotPDB() {

@@ -446,8 +446,10 @@ public class ShapeManager {
       atom.screenX = screen.x;
       atom.screenY = screen.y;
       atom.screenZ = screen.z;
-      atom.screenDiameter = (short) viewer.scaleToScreen(screen.z, Math
-          .abs(atom.madAtom));
+      int d = Math.abs(atom.madAtom);
+      if (d == Atom.MAD_GLOBAL)
+        d = (int) (viewer.getFloat(T.atoms) * 2000);
+      atom.screenDiameter = (short) viewer.scaleToScreen(screen.z, d);
     }
     if (viewer.getSlabEnabled()) {
       boolean slabByMolecule = viewer.getBoolean(T.slabbymolecule);

@@ -5972,6 +5972,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   @Override
   public float getFloat(int tok) {
     switch (tok) {
+    case T.atoms:
+      return global.particleRadius;
     case T.axesscale:
       return global.axesScale;
     case T.bondtolerance:
@@ -6269,6 +6271,10 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   private void setFloatPropertyTok(String key, int tok, float value) {
     switch (tok) {
+    // 13.3.9
+    case T.particleradius:
+      global.particleRadius = Math.abs(value);
+      break;
     case T.drawfontsize:
       // 13.3.6
       global.drawFontSize = value;

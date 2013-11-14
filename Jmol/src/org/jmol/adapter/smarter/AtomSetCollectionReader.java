@@ -362,8 +362,6 @@ public abstract class AtomSetCollectionReader {
   protected void finalizeReaderASCR() throws Exception {
     applySymmetryAndSetTrajectory();
     setLoadNote();
-    if (checkFilterKey("ADDHYDROGENS"))
-      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("pdbAddHydrogens", Boolean.TRUE);
     atomSetCollection.finalizeStructures();
     if (doCentralize)
       atomSetCollection.centralize();

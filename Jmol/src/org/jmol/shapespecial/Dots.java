@@ -106,7 +106,7 @@ public class Dots extends AtomShape {
     if ("radius" == propertyName) {
       thisRadius = ((Float) value).floatValue();
       if (thisRadius > Atom.RADIUS_MAX)
-        thisRadius = Atom.RADIUS_MAX;
+        thisRadius = Atom.RADIUS_GLOBAL;
       return;
     }
     if ("colorRGB" == propertyName) {

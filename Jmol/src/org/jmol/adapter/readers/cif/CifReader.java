@@ -41,7 +41,6 @@ import javajs.util.List;
 import java.util.Hashtable;
 import java.util.Map;
 
-
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
@@ -101,7 +100,9 @@ public class CifReader extends ModulationReader implements JmolLineReader {
   private int conformationIndex;
   private int nMolecular = 0;
   private boolean readIdeal = true;
-  
+  private boolean byChain, bySymop, isCourseGrained;
+  private Map<String, P3> chainAtomMap;
+  private Map<String, int[]> chainAtomCounts;
 
   private  List<Map<String, Object>> vBiomolecules;
   private Map<String, Object> thisBiomolecule;
@@ -116,6 +117,8 @@ public class CifReader extends ModulationReader implements JmolLineReader {
 
   private String auditBlockCode;
   private String lastSpaceGroupName;
+
+  private boolean isBiomolecule;
   
   @Override
   public void initializeReader() throws Exception {
@@ -124,11 +127,19 @@ public class CifReader extends ModulationReader implements JmolLineReader {
 
   protected void initializeReaderCif() throws Exception {
     appendedData = (String) htParams.get("appendedData");
+    byChain = checkFilterKey("BYCHAIN");
+    bySymop = checkFilterKey("BYSYMOP");
+    isCourseGrained = byChain || bySymop;
+    if (byChain) {
+      chainAtomMap = new Hashtable<String, P3>();
+      chainAtomCounts = new Hashtable<String, int[]>();
+    }
     String conf = getFilter("CONF ");
     if (conf != null)
       configurationPtr = parseIntStr(conf);
     if (checkFilterKey("BIOMOLECULE")) // PDB format
       filter = javajs.util.PT.simpleReplace(filter, "BIOMOLECULE","ASSEMBLY");
+    isBiomolecule = checkFilterKey("ASSEMBLY");
     isMolecular = checkFilterKey("MOLECUL"); // molecular; molecule
     readIdeal = !checkFilterKey("NOIDEAL");
     filterAssembly = checkFilterKey("$");
@@ -238,6 +249,9 @@ public class CifReader extends ModulationReader implements JmolLineReader {
         processSymmetrySpaceGroupName();
       } else if (key.startsWith("_atom_sites_fract_tran")) {
         processUnitCellTransformMatrix();
+        
+        
+        
       } else if (key.startsWith("_pdbx_entity_nonpoly")) {
         processNonpolyData();
       } else if (key.startsWith("_pdbx_struct_assembly_gen")) {
@@ -267,28 +281,33 @@ public class CifReader extends ModulationReader implements JmolLineReader {
     return javajs.util.PT.simpleReplace(key, ".", "_").toLowerCase();
   }
 
-  protected void newModel(int modelNo) throws Exception {    
+  protected void newModel(int modelNo) throws Exception {
     if (isPDB)
       setIsPDB();
     skipping = !doGetModel(modelNumber = modelNo, null);
     if (skipping) {
       tokenizer.getTokenPeeked();
-    } else {
-      chemicalName = "";
-      thisStructuralFormula = "";
-      thisFormula = "";
-      if (nAtoms == atomSetCollection.getAtomCount())
-        // we found no atoms -- must revert
-        atomSetCollection.removeCurrentAtomSet();
-      else
-        applySymmetryAndSetTrajectory();
-      iHaveDesiredModel = isLastModel(modelNumber);
+      return;
     }
+    chemicalName = "";
+    thisStructuralFormula = "";
+    thisFormula = "";
+    if (isCourseGrained)
+      atomSetCollection.setAtomSetAuxiliaryInfo("courseGrained", Boolean.TRUE);
+    if (nAtoms == atomSetCollection.getAtomCount())
+      // we found no atoms -- must revert
+      atomSetCollection.removeCurrentAtomSet();
+    else
+      applySymmetryAndSetTrajectory();
+    iHaveDesiredModel = isLastModel(modelNumber);
   }
 
   @Override
   protected void finalizeReader() throws Exception {
-    if (atomSetCollection.getAtomCount() == nAtoms)
+    if (byChain && !isBiomolecule)
+      for (String id: chainAtomMap.keySet())
+        createParticle(id);
+    if (!isCourseGrained && atomSetCollection.getAtomCount() == nAtoms)
       atomSetCollection.removeCurrentAtomSet();
     else
       applySymmetryAndSetTrajectory();
@@ -300,7 +319,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
       atomSetCollection.setCollectionName("<collection of "
           + n + " models>");
     if (vBiomolecules != null && vBiomolecules.size() == 1
-        && atomSetCollection.getAtomCount() > 0) {
+        && (isCourseGrained || atomSetCollection.getAtomCount() > 0)) {
       atomSetCollection.setAtomSetAuxiliaryInfo("biomolecules", vBiomolecules);
       setBiomolecules();
       if (thisBiomolecule != null)
@@ -318,15 +337,15 @@ public class CifReader extends ModulationReader implements JmolLineReader {
   private void setBiomolecules() {
     M4 mident = new M4();
     mident.setIdentity();
-    if (assemblyIdAtoms == null)
+    if (!isBiomolecule || assemblyIdAtoms == null && chainAtomCounts == null)
       return;
     for (int i = vBiomolecules.size(); --i >= 0;) {
       Map<String, Object> biomolecule = vBiomolecules.get(i);
       String[] ops = PT.split((String) biomolecule.get("operators"), ",");
       String assemblies = (String) biomolecule.get("assemblies");
-      List<M4> biomts = new  List<M4>();
+      List<M4> biomts = new List<M4>();
       biomolecule.put("biomts", biomts);
-      biomts.addLast  (mident);
+      biomts.addLast(mident);
       for (int j = 0; j < ops.length; j++) {
         M4 m = getOpMatrix(ops[j]);
         if (m != null && !m.equals(mident))
@@ -335,17 +354,57 @@ public class CifReader extends ModulationReader implements JmolLineReader {
       if (biomts.size() < 2)
         return;
       BS bsAll = new BS();
+      P3 sum = new P3();
+      int count = 0;
+      int nAtoms = 0;
       for (int j = assemblies.length() - 1; --j >= 0;)
         if (assemblies.charAt(j) == '$') {
-          BS bs = assemblyIdAtoms.get("" + assemblies.charAt(j + 1));
-          if (bs != null)
-            bsAll.or(bs);
+          String id = "" + assemblies.charAt(j + 1);
+          if (assemblyIdAtoms != null) {
+            BS bs = assemblyIdAtoms.get(id);
+            if (bs != null)
+              bsAll.or(bs);
+          } else if (isCourseGrained) {
+            P3 asum = chainAtomMap.get(id);
+            int c = chainAtomCounts.get(id)[0];
+            if (asum != null) {
+              if (bySymop) {
+                sum.add(asum);
+                count += c;
+              } else {
+                createParticle(id);
+                nAtoms++;
+              }
+            }
+          }
         }
-      int nAtoms = bsAll.cardinality();
-      if (nAtoms < atomSetCollection.getAtomCount())
-        atomSetCollection.bsAtoms = bsAll;
+      if (isCourseGrained) {
+        if (bySymop) {
+          nAtoms = 1;
+          Atom a1 = new Atom();
+          a1.setT(sum);
+          a1.scale(1f / count);
+          a1.radius = 16;
+        }
+      } else {
+        nAtoms = bsAll.cardinality();
+        if (nAtoms < atomSetCollection.getAtomCount())
+          atomSetCollection.bsAtoms = bsAll;
+      }
       biomolecule.put("atomCount", Integer.valueOf(nAtoms * ops.length));
     }
+  }
+
+  private void createParticle(String id) {
+    P3 asum = chainAtomMap.get(id);
+    int c = chainAtomCounts.get(id)[0];
+    Atom a = new Atom();
+    a.setT(asum);
+    a.scale(1f/c);
+    a.elementSymbol = "Pt";
+    a.chainID = parseIntStr(id);
+    a.radius = 16;
+    atomSetCollection.addAtom(a);
   }
 
   private M4 getOpMatrix(String ops) {
@@ -547,15 +606,8 @@ public class CifReader extends ModulationReader implements JmolLineReader {
       return;
     boolean isLigand = false;
     str = fixKey(str);
-    if (incommensurate && (str.startsWith("_cell_wave") || str.contains("fourier")
-        || str.contains("_special_func"))) {
-      if (modAverage)
-        skipLoop();
-      else
-        processModulationLoopBlock();
-      return;
-    }
-    if (str.startsWith("_atom_site_") || (isLigand = str.equals("_chem_comp_atom_comp_id"))) {
+    if (str.startsWith("_atom_site_")
+        || (isLigand = str.equals("_chem_comp_atom_comp_id"))) {
       if (!processAtomSiteLoopBlock(isLigand))
         return;
       atomSetCollection.setAtomSetName(thisDataSetName);
@@ -563,6 +615,48 @@ public class CifReader extends ModulationReader implements JmolLineReader {
       atomSetCollection.setAtomSetAuxiliaryInfo("structuralFormula",
           thisStructuralFormula);
       atomSetCollection.setAtomSetAuxiliaryInfo("formula", thisFormula);
+      return;
+    }
+    if (str.startsWith("_symmetry_equiv_pos")
+        || str.startsWith("_space_group_symop")
+        || str.startsWith("_symmetry_ssg_equiv")) {
+      if (ignoreFileSymmetryOperators) {
+        Logger.warn("ignoring file-based symmetry operators");
+        skipLoop();
+      } else {
+        processSymmetryOperationsLoopBlock();
+      }
+      return;
+    }
+    if (str.startsWith("_pdbx_struct_oper_list")) {
+      processStructOperListBlock();
+      return;
+    }
+    if (str.startsWith("_pdbx_struct_assembly_gen")) {
+      processAssemblyGenBlock();
+      return;
+    }
+
+    if (isCourseGrained) {
+      skipLoop();
+      return;
+    }
+
+    if (str.startsWith("_struct_site")) {
+      processStructSiteBlock();
+      return;
+    }
+    if (str.startsWith("_chem_comp")) {
+      processChemCompLoopBlock();
+      return;
+    }
+    if (incommensurate
+        && (str.startsWith("_cell_wave") || str.contains("fourier") || str
+            .contains("_special_func"))) {
+      if (modAverage)
+        skipLoop();
+      else
+        processModulationLoopBlock();
       return;
     }
     if (str.startsWith("_atom_type")) {
@@ -578,56 +672,31 @@ public class CifReader extends ModulationReader implements JmolLineReader {
       return;
     }
 
-    if (str.startsWith("_geom_bond")) {
-      if (!doApplySymmetry) {
-        isMolecular = true;
-        doApplySymmetry = true;
-        latticeCells[0] = latticeCells[1] = latticeCells[2] = 1;
+    if (!isCourseGrained) {
+      if (str.startsWith("_pdbx_entity_nonpoly")) {
+        processNonpolyLoopBlock();
+        return;
       }
-      if (isMolecular)
-        processGeomBondLoopBlock();
-      else
-        skipLoop();
-      return;
-    }
-    if (str.startsWith("_pdbx_entity_nonpoly")) {
-      processNonpolyLoopBlock();
-      return;
-    }
-    if (str.startsWith("_chem_comp")) {
-      processChemCompLoopBlock();
-      return;
-    }
-    if (str.startsWith("_struct_conf") && !str.startsWith("_struct_conf_type")) {
-      processStructConfLoopBlock();
-      return;
-    }
-    if (str.startsWith("_struct_sheet_range")) {
-      processStructSheetRangeLoopBlock();
-      return;
-    }
-    if (str.startsWith("_symmetry_equiv_pos")
-        || str.startsWith("_space_group_symop")
-        || str.startsWith("_symmetry_ssg_equiv")) {
-      if (ignoreFileSymmetryOperators) {
-        Logger.warn("ignoring file-based symmetry operators");
-        skipLoop();
-      } else {
-        processSymmetryOperationsLoopBlock();
+      if (str.startsWith("_struct_conf")
+          && !str.startsWith("_struct_conf_type")) {
+        processStructConfLoopBlock();
+        return;
       }
-      return;
-    }
-    if (str.startsWith("_struct_site")) {
-      processStructSiteBlock();
-      return;
-    }
-    if (str.startsWith("_pdbx_struct_oper_list")) {
-      processStructOperListBlock();
-      return;
-    }
-    if (str.startsWith("_pdbx_struct_assembly_gen")) {
-      processAssemblyGenBlock();
-      return;
+      if (str.startsWith("_struct_sheet_range")) {
+        processStructSheetRangeLoopBlock();
+        return;
+      }
+      if (str.startsWith("_geom_bond")) {
+        if (!doApplySymmetry) {
+          isMolecular = true;
+          doApplySymmetry = true;
+          latticeCells[0] = latticeCells[1] = latticeCells[2] = 1;
+        }
+        if (isMolecular) {
+          processGeomBondLoopBlock();
+          return;
+        }
+      }
     }
     skipLoop();
   }
@@ -721,6 +790,11 @@ public class CifReader extends ModulationReader implements JmolLineReader {
 
   private String disorderAssembly = ".";
   private String lastDisorderAssembly;
+
+  private int thisChain = -1;
+
+  private P3 chainSum;
+  private int[] chainAtomCount;
 
   final private static byte ATOM_TYPE_SYMBOL = 0;
   final private static byte ATOM_TYPE_OXIDATION_NUMBER = 1;
@@ -1161,7 +1235,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
           break;
         case SITE_MULT:
           if (incommensurate)
-            siteMult = parseIntStr(field); 
+            siteMult = parseIntStr(field);
         }
       }
       if (isAnisoData)
@@ -1174,6 +1248,32 @@ public class CifReader extends ModulationReader implements JmolLineReader {
       if (!filterCIFAtom(atom, iAtom, assemblyId))
         continue;
       setAtomCoord(atom);
+
+      if (byChain && !isBiomolecule) {
+        if (thisChain != atom.chainID) {
+          thisChain = atom.chainID;
+          String id = "" + atom.chainID;
+          chainSum = chainAtomMap.get(id);
+          if (chainSum == null) {
+            chainAtomMap.put(id, chainSum = new P3());
+            chainAtomCounts.put(id, chainAtomCount = new int[1]);
+          }
+        }
+        chainSum.add(atom);
+        chainAtomCount[0]++;
+        continue;
+      }
+      if (isBiomolecule && isCourseGrained) {
+        String id = "" + assemblyId;
+        P3 sum = chainAtomMap.get(id);
+        if (sum == null) {
+          chainAtomMap.put(id, sum = new P3());
+          chainAtomCounts.put(id, new int[1]);
+        }
+        chainAtomCounts.get(id)[0]++;
+        sum.add(atom);
+        continue;
+      }
       if (atom.elementSymbol == null && atom.atomName != null) {
         String sym = atom.atomName;
         int pt = 0;
@@ -1200,7 +1300,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
         addSubsystem(subid, null, atom.atomName);
       if (siteMult != 0)
         atom.vib = V3.new3(siteMult, 0, Float.NaN);
-        
+
     }
     if (isPDB)
       setIsPDB();

@@ -1475,6 +1475,7 @@ public class AtomSetCollection {
         bsAtoms.set(atomMax + i);
         Atom a = new Atom();
         a.set(0, 0, 0);
+        a.radius = 16;
         addAtom(a);
       }
       int ichain = 0;
@@ -1499,6 +1500,7 @@ public class AtomSetCollection {
         a.add(atoms[i]);
       a.scale(1f / (atomMax - iAtomFirst));
       a.atomName = "Pt";
+      a.radius = 16;
       iAtomFirst = atomMax++;
       break;
     }

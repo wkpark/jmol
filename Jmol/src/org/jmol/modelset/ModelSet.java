@@ -679,7 +679,7 @@ import java.util.Map;
       int mar = 0;
       if (values == null) {
         if (fValue > Atom.RADIUS_MAX)
-          fValue = Atom.RADIUS_MAX;
+          fValue = Atom.RADIUS_GLOBAL;
         if (fValue < 0)
           fValue = 0;
         mar = (int) Math.floor(fValue * 2000);

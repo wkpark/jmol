@@ -869,6 +869,7 @@ public class T {
   public final static int navx                           = floatparam | 32;
   public final static int navy                           = floatparam | 34;
   public final static int navz                           = floatparam | 36;
+  public final static int particleradius                 = floatparam | 37;
   public final static int pointgroupdistancetolerance    = floatparam | 38;
   public final static int pointgrouplineartolerance      = floatparam | 40;
   public final static int rotationradius                 = floatparam | 44;
@@ -2273,6 +2274,7 @@ public class T {
       "navX",                                     T.t(navx),
       "navY",                                     T.t(navy),
       "navZ",                                     T.t(navz),
+      "particleRadius",                           T.t(particleradius),
       "pointGroupDistanceTolerance",              T.t(pointgroupdistancetolerance),
       "pointGroupLinearTolerance",                T.t(pointgrouplineartolerance),
       "radius",                                   T.t(radius),

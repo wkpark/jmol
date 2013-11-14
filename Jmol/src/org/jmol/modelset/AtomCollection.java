@@ -651,7 +651,7 @@ abstract public class AtomCollection {
         if (fValue < 0)
           fValue = 0;
         else if (fValue > Atom.RADIUS_MAX)
-          fValue = Atom.RADIUS_MAX;
+          fValue = Atom.RADIUS_GLOBAL;
         atom.madAtom = ((short) (fValue * 2000));
         break;
       case T.selected:

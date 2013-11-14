@@ -10207,16 +10207,21 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         break;
       }
-      value = floatParameterRange(index,
-          (isOnly || !allowAbsolute ? -Atom.RADIUS_MAX : 0), Atom.RADIUS_MAX);
+      float max;
       if (tok == T.plus || !allowAbsolute) {
         factorType = EnumType.OFFSET;
+        max = Atom.RADIUS_MAX;
       } else {
         factorType = EnumType.ABSOLUTE;
         vdwType = EnumVdw.NADA;
+        max = 100;
       }
+      value = floatParameterRange(index,
+          (isOnly || !allowAbsolute ? -max : 0), max);
       if (isOnly)
         value = -value;
+      if (value > Atom.RADIUS_MAX)
+        value = Atom.RADIUS_GLOBAL;
       break;
     default:
       if (value == 1)

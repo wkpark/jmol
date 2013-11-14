@@ -1136,7 +1136,7 @@ abstract public class GenericPopup implements GenericMenuInterface,
     updateModelSetComputedMenu();
 
     subMenu = menuNewSubMenu("Jmol " + JC.version
-        + (isSigned ? " (signed)" : ""), "aboutJmolMenu");
+        + (viewer.isWebGL ? " (WebGL)" : viewer.isJS ? " (HTML5)" : isSigned ? " (signed)" : ""), "aboutJmolMenu");
     menuAddSubMenu(menu, subMenu);
     htMenus.put("aboutJmolMenu", subMenu);
     addMenuItem(subMenu, JC.date);

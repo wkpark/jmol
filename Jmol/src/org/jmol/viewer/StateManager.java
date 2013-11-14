@@ -877,6 +877,7 @@ public class StateManager {
       setB("forceAutoBond", forceAutoBond);
       setS("forceField", forceField);
       setB("fractionalRelative", fractionalRelative);
+      setF("particleRadius", particleRadius);
       setB("greyscaleRendering", greyscaleRendering);
       setF("hbondsAngleMinimum", hbondsAngleMinimum);
       setF("hbondsDistanceMaximum", hbondsDistanceMaximum);
@@ -1171,6 +1172,7 @@ public class StateManager {
     boolean atomPicking = true;
     boolean autoFps = false;
     EnumAxesMode axesMode = EnumAxesMode.BOUNDBOX;
+    float particleRadius = 20;
     float axesScale = 2;
     float starScale = 0.05f;
     boolean bondPicking = false;

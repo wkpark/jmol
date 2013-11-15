@@ -23,10 +23,7 @@
  */
 package org.jmol.quantum;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -289,26 +286,15 @@ public class NMRCalculation implements JmolNMRInterface {
    */
   private void getData() {
     BufferedReader br = null;
-    boolean debugging = Logger.debugging;
     try {
-      InputStream is;
-      Object url = null;
-      if ((url = this.getClass().getResource("nmr_data.txt")) == null) {
-        Logger.error("Couldn't find file: " + resource);
-        return;
-      }
-      if (url instanceof URL) {
-        is = (InputStream) ((URL) url).getContent();
-      } else {
-        // JavaScript
-        is = viewer.getBufferedInputStream((String) url);
-      }
-      br = JmolBinary.getBufferedReader(new BufferedInputStream(is), null);
-      String line;
-      // "#extracted by Simone Sturniolo from ROBIN K. HARRIS, EDWIN D. BECKER, SONIA M. CABRAL DE MENEZES, ROBIN GOODFELLOW, AND PIERRE GRANGER, Pure Appl. Chem., Vol. 73, No. 11, pp. 1795–1818, 2001. NMR NOMENCLATURE. NUCLEAR SPIN PROPERTIES AND CONVENTIONS FOR CHEMICAL SHIFTS (IUPAC Recommendations 2001)"
+      boolean debugging = Logger.debugging;
+      br = JmolBinary.getBufferedReaderForResource(viewer, this, "org/jmol/quantum/",
+          "nmr_data.txt");
+      // #extracted by Simone Sturniolo from ROBIN K. HARRIS, EDWIN D. BECKER, SONIA M. CABRAL DE MENEZES, ROBIN GOODFELLOW, AND PIERRE GRANGER, Pure Appl. Chem., Vol. 73, No. 11, pp. 1795–1818, 2001. NMR NOMENCLATURE. NUCLEAR SPIN PROPERTIES AND CONVENTIONS FOR CHEMICAL SHIFTS (IUPAC Recommendations 2001)
       // #element atomNo  isotopeDef  isotope1  G1  Q1  isotope2  G2  Q2  isotope3  G3  Q3
       // H 1 1 1 26.7522128  0 2 4.10662791  0.00286 3 28.5349779  0
       isotopeData = new Hashtable<String, double[]>();
+      String line;
       while ((line = br.readLine()) != null) {
         if (debugging)
           Logger.info(line);
@@ -338,9 +324,9 @@ public class NMRCalculation implements JmolNMRInterface {
         defdata[0] = -defdata[0];
         isotopeData.put(name, defdata);
       }
-      br.close();
     } catch (Exception e) {
       Logger.error("Exception " + e.toString() + " reading " + resource);
+    } finally {
       try {
         br.close();
       } catch (Exception ee) {

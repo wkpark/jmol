@@ -66,7 +66,6 @@ import org.jmol.api.JmolScriptManager;
 import org.jmol.api.JmolSelectionListener;
 import org.jmol.api.JmolStatusListener;
 import org.jmol.api.JmolViewer;
-import org.jmol.api.MepCalculationInterface;
 import org.jmol.api.MinimizerInterface;
 import org.jmol.api.SmilesMatcherInterface;
 import org.jmol.api.SymmetryInterface;
@@ -2650,7 +2649,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         String jmolScript = (String) modelSet
             .getModelSetAuxiliaryInfoValue("jmolscript");
         if (modelSet.getModelSetAuxiliaryInfoBoolean("doMinimize"))
-          minimize(Integer.MAX_VALUE, 0, bsNew, null, 0, true, true, true);
+          minimize(Integer.MAX_VALUE, 0, bsNew, null, 0, true, true, true, true);
         else
           addHydrogens(bsNew, false, true);
         // no longer necessary? -- this is the JME/SMILES data:
@@ -8839,27 +8838,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return modelSet.getPartialCharges();
   }
 
-  /**
-   * 
-   * @param isMep
-   * @param bsSelected
-   * @param bsIgnore
-   * @param fileName
-   * @return calculated atom potentials
-   */
-  public float[] getAtomicPotentials(boolean isMep, BS bsSelected, BS bsIgnore,
-                                     String fileName) {
-    float[] potentials = new float[getAtomCount()];
-    MepCalculationInterface m = (MepCalculationInterface) Interface
-        .getOptionInterface("quantum.MlpCalculation");
-    m.set(this);
-    String data = (fileName == null ? null : getFileAsString(fileName));
-    m.assignPotentials(modelSet.atoms, potentials, getSmartsMatch("a",
-        bsSelected), getSmartsMatch("/noAromatic/[$(C=O),$(O=C),$(NC=O)]",
-        bsSelected), bsIgnore, data);
-    return potentials;
-  }
-
   public void setProteinType(EnumStructure type, BS bs) {
     modelSet.setProteinType(bs == null ? getSelectionSet(false) : bs, type);
   }
@@ -9336,7 +9314,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     refreshMeasures(true);
     if (!global.monitorEnergy)
       return;
-    minimize(0, 0, getModelUndeletedAtomsBitSet(-1), null, 0, false, true,
+    minimize(0, 0, getModelUndeletedAtomsBitSet(-1), null, 0, false, false, true,
         false);
     echoMessage(getParameter("_minimizationForceField") + " Energy = "
         + getParameter("_minimizationEnergy"));
@@ -9350,15 +9328,15 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
    *        -1 --> use defaults
    * @param bsSelected
    * @param bsFixed
-   *        TODO
    * @param rangeFixed
    * @param addHydrogen
+   * @param isOnly
    * @param isSilent
    * @param isLoad2D
    */
   public void minimize(int steps, float crit, BS bsSelected, BS bsFixed,
-                       float rangeFixed, boolean addHydrogen, boolean isSilent,
-                       boolean isLoad2D) {
+                       float rangeFixed, boolean addHydrogen, boolean isOnly,
+                       boolean isSilent, boolean isLoad2D) {
 
     // We only work on atoms that are in frame
 
@@ -9387,7 +9365,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     // are in the visible frame set and are within 5 angstroms
     // and are not already selected
 
-    BS bsNearby = getAtomsWithinRadius(rangeFixed, bsSelected, true, null);
+    BS bsNearby = (isOnly ? new BS() : getAtomsWithinRadius(rangeFixed, bsSelected, true, null));
     bsNearby.andNot(bsSelected);
     if (haveFixed) {
       bsMotionFixed.and(bsNearby);

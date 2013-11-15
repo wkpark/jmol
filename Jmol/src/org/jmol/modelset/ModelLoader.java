@@ -948,8 +948,6 @@ public final class ModelLoader {
       Logger.error("bondAtoms cannot find atomUid2?:" + atomUid2);
       return null;
     }
-    System.out.println("modelloader bondAtoms " + atomUid1 + " " + atomUid2 + " "+ atom1.index + " " + atom2.index);
-    
     // note that if the atoms are already bonded then
     // Atom.bondMutually(...) will return null
     if (atom1.isBonded(atom2))

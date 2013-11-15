@@ -275,7 +275,7 @@ public class ForceFieldMMFF extends ForceField {
   private void getChargeParameters() {
     if (ffParams != null)
       return;
-    getAtomTypes("MMFF94-smarts.txt");
+    getAtomTypes();
     Hashtable<Integer, Object> data = new Hashtable<Integer, Object>();
     getMmffParameters("mmffpbci.par.txt", data, TYPE_PBCI);
     getMmffParameters("mmffchg.par.txt", data, TYPE_CHRG);
@@ -297,7 +297,7 @@ public class ForceFieldMMFF extends ForceField {
     ffParams.put(Integer.valueOf(-1), Boolean.TRUE);
   }
 
-  private void getMmffParameters(String fileName, Map<Integer, Object> data, int dataType) { 
+  private void getMmffParameters(String resourceName, Map<Integer, Object> data, int dataType) { 
     String line = null;
     
     // parameters are keyed by a 32-bit Integer 
@@ -306,9 +306,9 @@ public class ForceFieldMMFF extends ForceField {
     
     Object value = null;
     if (Logger.debugging)
-      Logger.debug("reading data from " + fileName);
+      Logger.debug("reading data from " + resourceName);
     try {
-      BufferedReader br = getBufferedReader(fileName);
+      BufferedReader br = getBufferedReader(resourceName);
       while ((line = br.readLine()) != null && line.length() < 5 || !line.startsWith("*"))
         continue; // skip header
       int a1 = 0, a2 = 127, a3 = 127, a4 = 127;
@@ -449,16 +449,17 @@ public class ForceFieldMMFF extends ForceField {
       br.close();
     } catch (Exception e) {
       System.err.println("Exception " + e.toString() + " in getResource "
-          + fileName + " line=" + line);
+          + resourceName + " line=" + line);
     }
   }
 
   
-  private void getAtomTypes(String fileName) {
+  private void getAtomTypes() {
+    String resourceName = "MMFF94-smarts.txt";
     List<AtomType> types = new  List<AtomType>();
     String line = null;
     try {
-      BufferedReader br = getBufferedReader(fileName);
+      BufferedReader br = getBufferedReader(resourceName);
       
       //turns out from the Jar file
       // it's a sun.net.www.protocol.jar.JarURLConnection$JarURLInputStream
@@ -486,7 +487,7 @@ public class ForceFieldMMFF extends ForceField {
       br.close();
     } catch (Exception e) {
       System.err.println("Exception " + e.toString() + " in getResource "
-          + fileName + " line=" + line);
+          + resourceName + " line=" + line);
 
     }
     Logger.info((types.size()-1) + " SMARTS-based atom types read");

@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolNMRInterface;
 import org.jmol.api.JmolPatternMatcher;
+import org.jmol.api.MepCalculationInterface;
 import org.jmol.api.MinimizerInterface;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
@@ -1893,7 +1894,7 @@ public class ScriptExt implements JmolScriptExtension {
         if (!chk)
           try {
             data = (fname == null && isMep ? viewer.getPartialCharges()
-                : viewer.getAtomicPotentials(isMep, bsSelect, bsIgnore, fname));
+                : getAtomicPotentials(bsSelect, bsIgnore, fname));
           } catch (Exception e) {
             // ignore
           }
@@ -2774,6 +2775,26 @@ public class ScriptExt implements JmolScriptExtension {
       setShapeProperty(iShape, "cache", null);
     listIsosurface(iShape);
     return true;
+  }
+
+  /**
+   * 
+   * @param bsSelected
+   * @param bsIgnore
+   * @param fileName
+   * @return calculated atom potentials
+   */
+  private float[] getAtomicPotentials(BS bsSelected, BS bsIgnore,
+                                     String fileName) {
+    float[] potentials = new float[viewer.getAtomCount()];
+    MepCalculationInterface m = (MepCalculationInterface) Interface
+        .getOptionInterface("quantum.MlpCalculation");
+    m.set(viewer);
+    String data = (fileName == null ? null : viewer.getFileAsString(fileName));
+    m.assignPotentials(viewer.modelSet.atoms, potentials, viewer.getSmartsMatch("a",
+        bsSelected), viewer.getSmartsMatch("/noAromatic/[$(C=O),$(O=C),$(NC=O)]",
+        bsSelected), bsIgnore, data);
+    return potentials;
   }
 
   private boolean lcaoCartoon() throws ScriptException {
@@ -5982,6 +6003,7 @@ public class ScriptExt implements JmolScriptExtension {
     boolean addHydrogen = false;
     boolean isSilent = false;
     BS bsFixed = null;
+    boolean isOnly = false;
     MinimizerInterface minimizer = viewer.getMinimizer(false);
     // may be null
     for (int i = 1; i < slen; i++)
@@ -6042,9 +6064,19 @@ public class ScriptExt implements JmolScriptExtension {
         if (i + 1 == slen)
           return;
         continue;
+      case T.bitset:
+      case T.expressionBegin:
+        isOnly = true;
+        //$FALL-THROUGH$
       case T.select:
-        bsSelected = atomExpressionAt(++i);
+        if (eval.theTok == T.select)
+          i++;
+        bsSelected = atomExpressionAt(i);
         i = eval.iToken;
+        if (tokAt(i + 1) == T.only) {
+          i++;
+          isOnly = true;
+        }
         continue;
       case T.silent:
         isSilent = true;
@@ -6057,7 +6089,7 @@ public class ScriptExt implements JmolScriptExtension {
         break;
       }
     if (!chk)
-      viewer.minimize(steps, crit, bsSelected, bsFixed, 0, addHydrogen,
+      viewer.minimize(steps, crit, bsSelected, bsFixed, 0, addHydrogen, isOnly,
           isSilent, false);
   }
 

@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 
 import java.util.Map;
 
@@ -50,6 +51,7 @@ import javajs.util.SB;
 import org.jmol.util.Logger;
 import org.jmol.viewer.FileManager;
 import org.jmol.viewer.JC;
+import org.jmol.viewer.Viewer;
 
 
 public class JmolBinary {
@@ -639,5 +641,34 @@ public class JmolBinary {
   public static int getCrcValue(byte[] bytes) {
     return getJzu().getCrcValue(bytes);
   }
+
+  public static BufferedReader getBufferedReaderForResource(Viewer viewer, 
+                                                            Object resourceClass,
+                                              String classPath,
+                                              String resourceName)
+       throws IOException {
+
+     /**
+      * @j2sNative
+      * 
+      *            resourceName = viewer.viewerOptions.get("codeBase") +
+      *            classPath + resourceName;
+      * 
+      */
+     {
+       URL url = resourceClass.getClass().getResource(resourceName);
+       boolean ret = true;
+       if (url == null) {
+         System.err.println("Couldn't find file: " + classPath + resourceName);
+         throw new IOException();
+       }
+       if (ret) // avoids dead code message
+         return JmolBinary.getBufferedReader(new BufferedInputStream(
+             (InputStream) url.getContent()), null);
+     }
+     // JavaScript only; here and not in JavaDoc to preserve Eclipse search reference
+     return (BufferedReader) viewer.getBufferedReaderOrErrorMessageFromName(
+         resourceName, new String[] { null, null }, false);
+   }
 }
 

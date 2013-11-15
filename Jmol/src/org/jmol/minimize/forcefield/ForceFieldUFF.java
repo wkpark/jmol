@@ -186,10 +186,10 @@ public class ForceFieldUFF extends ForceField {
     Map<Object, FFParam> temp = new Hashtable<Object, FFParam>();
 
     // open UFF.txt
-    String fileName = "UFF.txt";
+    String resourceName = "UFF.txt";
     BufferedReader br = null;
     try {
-      br = getBufferedReader(fileName);
+      br = getBufferedReader(resourceName);
       String line;
       while ((line = br.readLine()) != null) {
         String[] vs = PT.getTokens(line);
@@ -244,7 +244,7 @@ public class ForceFieldUFF extends ForceField {
       br.close();
     } catch (Exception e) {
       System.err.println("Exception " + e.toString() + " in getResource "
-          + fileName);
+          + resourceName);
       try{
         br.close();
       } catch (Exception ee) {
@@ -252,7 +252,7 @@ public class ForceFieldUFF extends ForceField {
       }
       return null;
     }
-    Logger.info(temp.size() + " atom types read from " + fileName);
+    Logger.info(temp.size() + " atom types read from " + resourceName);
     return temp;
   }
 

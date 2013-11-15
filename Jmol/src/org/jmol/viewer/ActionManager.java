@@ -1751,7 +1751,7 @@ public class ActionManager implements EventManager {
     BS bs = (viewer.getMotionFixedAtoms().cardinality() == 0 ? viewer
         .getAtomBits((viewer.isAtomPDB(iAtom) ? T.group : T.molecule), BSUtil
             .newAndSetBit(iAtom)) : BSUtil.setAll(viewer.getAtomCount()));
-    viewer.minimize(Integer.MAX_VALUE, 0, bs, null, 0, false, false, false);
+    viewer.minimize(Integer.MAX_VALUE, 0, bs, null, 0, false, false, false, false);
   }
 
   private int queueAtom(int atomIndex, Point3fi ptClicked) {

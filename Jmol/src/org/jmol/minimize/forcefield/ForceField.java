@@ -25,11 +25,8 @@
 package org.jmol.minimize.forcefield;
 
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 
 import org.jmol.io.JmolBinary;
 import org.jmol.java.BS;
@@ -494,42 +491,9 @@ abstract public class ForceField {
     calc.appendLogData(s);
   }
 
-
-  protected BufferedReader getBufferedReader(String fileName) throws IOException {
-    URL url = null;
-    if ((url = getResourceUrl(fileName)) == null) {
-      System.err.println("Couldn't find file: " + fileName);
-      throw new NullPointerException();
-    }
-    return getResource(url);
+  protected BufferedReader getBufferedReader(String resourceName) throws IOException {
+    return JmolBinary.getBufferedReaderForResource(minimizer.viewer, this,
+        "org/jmol/minimize/forcefield/", "data/" + resourceName);
   }
-
-  String base;
-  
-  private URL getResourceUrl(String fileName) {
-    fileName = "data/" + fileName;
-    /**
-     * @j2sNative
-     *  
-     *      if (this.base == null)
-     *         this.base = this.minimizer.viewer.viewerOptions.get("codeBase");
-     *      fileName = this.base + "org/jmol/minimize/forcefield/" + fileName;
-     *      return new java.net.URL(null, fileName, null);       
-     *
-     */
-    { 
-      return this.getClass().getResource(fileName);
-    }
-  }
-  
-  protected BufferedReader getResource(URL url) throws IOException {
-    if (this.minimizer.viewer.isJS)
-      return (BufferedReader) this.minimizer.viewer
-          .getBufferedReaderOrErrorMessageFromName(url.toString(),
-              new String[] { null, null }, false);
-    return JmolBinary.getBufferedReader(new BufferedInputStream(
-        (InputStream) url.getContent()), null);
-  }
-
 
 }

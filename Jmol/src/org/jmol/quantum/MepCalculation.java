@@ -23,11 +23,7 @@
  */
 package org.jmol.quantum;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -217,25 +213,9 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
     BufferedReader br = null;
     htAtomicPotentials = new Hashtable<String, Object>();
     try {
-      InputStream is;
-      if (data == null) {
-        Object url = null;
-        if ((url = this.getClass().getResource(resourceName)) == null) {
-          Logger.error("Couldn't find file: " + resourceName);
-          return;
-        }
-        if (url instanceof URL) // Java
-          is = (InputStream) ((URL) url).getContent();
-        else // JavaScript
-          is = viewer.getBufferedInputStream((String) url);
-      } else {
-        is = new ByteArrayInputStream(data.getBytes());
-      }
-      //turns out from the Jar file
-      // it's a sun.net.www.protocol.jar.JarURLConnection$JarURLInputStream
-      // and within Eclipse it's a BufferedInputStream
-
-      br = JmolBinary.getBufferedReader(new BufferedInputStream(is), null);
+      br = (data == null ? JmolBinary.getBufferedReaderForResource(viewer,
+          this, "org/jmol/quantum/", resourceName) : JmolBinary
+          .getBufferedReaderForString(data));
       String line;
       while ((line = br.readLine()) != null) {
         if (line.startsWith("#"))

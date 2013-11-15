@@ -878,7 +878,7 @@ public class Resolver {
     "WELCOME TO SIESTA" };
   
   private final static String[] xcrysDenContainsRecords = 
-  { "Xcrysden", "PRIMVEC", "CONVVEC", "PRIMCOORD" };
+  { "Xcrysden", "PRIMVEC", "CONVVEC", "PRIMCOORD", "ANIMSTEP" };
 
   private final static String[] mopacArchiveContainsRecords =
   { "MopacArchive", "SUMMARY OF PM" };

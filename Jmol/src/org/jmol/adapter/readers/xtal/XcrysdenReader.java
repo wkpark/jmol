@@ -11,12 +11,13 @@ import org.jmol.adapter.smarter.Atom;
  * 
  *         http://www.xcrysden.org
  * 
- * @version 1.0
+ * @version 1.1
  */
 
 public class XcrysdenReader extends AtomSetCollectionReader {
 
   private int nAtoms;
+  private boolean aNimation = false;
 
   @Override
   protected void initializeReader() throws Exception {
@@ -25,7 +26,9 @@ public class XcrysdenReader extends AtomSetCollectionReader {
 
   @Override
   protected boolean checkLine() throws Exception {
-    if (line.contains("CRYSTAL")) {
+    if (line.contains("ANIMSTEP")) {
+      readNostep();
+    } else if (line.contains("CRYSTAL")) {
       setFractionalCoordinates(false);
     } else if (line.contains("PRIMVEC")) {
       readUnitCell();
@@ -33,7 +36,12 @@ public class XcrysdenReader extends AtomSetCollectionReader {
       readCoordinates();
     }
     return true;
-
+  }
+  
+  
+  
+  private void readNostep() throws Exception { 
+    aNimation = true;
   }
 
   private float[] unitCellData = new float[9];
@@ -68,13 +76,14 @@ public class XcrysdenReader extends AtomSetCollectionReader {
       6  -0.916425367  5.375190418 -7.209984663
       6  -4.773254987  4.300512942  6.348687286
   */
+  private int step = 0;
   private void readCoordinates() throws Exception {
     String[] atomStr = getTokensStr(readLine());
     nAtoms = Integer.parseInt(atomStr[0]);
 
     setFractionalCoordinates(false);
     int counter = 0;
-    while (counter < nAtoms && readLine() != null) {
+    while (counter < nAtoms && readLine() != null) { 
       Atom atom = atomSetCollection.addNewAtom();
       String[] tokens = getTokens();
       atom.atomName = getElementSymbol(Integer.parseInt(tokens[0]));
@@ -84,7 +93,9 @@ public class XcrysdenReader extends AtomSetCollectionReader {
       setAtomCoordXYZ(atom, x, y, z);
       counter++;
     }
-    atomSetCollection.setAtomSetName("Initial Coordinates");
+    atomSetCollection.setAtomSetName("Initial coordinates");
+    if (aNimation)
+      atomSetCollection.setAtomSetName("Structure " + Integer.toString(step++));
   }
 
 }

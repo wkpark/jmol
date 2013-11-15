@@ -109,6 +109,10 @@ public class M3 implements Serializable {
    */
   public static M3 newM(M3 m1) {
     M3 m = new M3();
+    if (m1 == null) {
+      m.setIdentity();
+      return m;
+    }
     m.m00 = m1.m00;
     m.m01 = m1.m01;
     m.m02 = m1.m02;

@@ -1213,8 +1213,7 @@ public class TransformManager {
 
   M4 getUnscaledTransformMatrix() {
     //for povray only
-    M4 unscaled = new M4();
-    unscaled.setIdentity();
+    M4 unscaled = M4.newM(null);
     vectorTemp.setT(fixedRotationCenter);
     matrixTemp.setZero();
     matrixTemp.setTranslation(vectorTemp);

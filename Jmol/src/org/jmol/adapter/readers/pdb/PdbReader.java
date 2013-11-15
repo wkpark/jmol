@@ -585,8 +585,7 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
     boolean needLine = true;
     Map<String, Object> info = null;
     int nBiomt = 0;
-    M4 mIdent = new M4();
-    mIdent.setIdentity();
+    M4 mIdent = M4.newM(null);
     while (true) {
       if (needLine)
         readLine();
@@ -602,6 +601,7 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
           info = new Hashtable<String, Object>();
           biomts = new  List<M4>();
           iMolecule = parseIntStr(line.substring(line.indexOf(":") + 1));
+
           title = line.trim();
           info.put("name", "biomolecule " + iMolecule);
           info.put("molecule", Integer.valueOf(iMolecule));
@@ -620,7 +620,9 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
             line = "REMARK 350 BIOMOLECULE: 1  APPLY THE FOLLOWING TO CHAINS:";
             continue;
           }
-          chainlist = ":" + line.substring(41).trim().replace(' ', ':');
+          String list = line.substring(41).trim();
+          appendLoadNote("found biomolecule " + iMolecule + ": " + list);
+          chainlist = ":" + list.replace(' ', ':');
           needLine = false;
           while (readLine() != null && line.indexOf("BIOMT") < 0 && line.indexOf("350") == 7)
             chainlist += ":" + line.substring(11).trim().replace(' ', ':');

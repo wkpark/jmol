@@ -512,10 +512,8 @@ public class Mesh extends MeshSurface {
     }
     M3 m3 = new M3();
     V3 v = new V3();
-    if (mat4 == null) {
-      mat4 = new M4();
-      mat4.setIdentity();
-    }
+    if (mat4 == null)
+      mat4 = M4.newM(null);
     mat4.getRotationScale(m3);
     mat4.get(v);
     if (q == null) {

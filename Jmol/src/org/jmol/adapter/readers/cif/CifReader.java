@@ -241,6 +241,8 @@ public class CifReader extends ModulationReader implements JmolLineReader {
         processChemicalInfo("formula");
       } else if (key.equals("_cell_modulation_dimension") && !modAverage) {
         setModDim(parseIntStr(data));
+      } else if (key.equals("_citation_title")) {
+        appendLoadNote("TITLE: " + tokenizer.fullTrim(data));
       } else if (key.startsWith("_cell_")) {
         processCellParameter();
       } else if (key.startsWith("_symmetry_space_group_name_h-m")
@@ -321,7 +323,9 @@ public class CifReader extends ModulationReader implements JmolLineReader {
     if (vBiomolecules != null && vBiomolecules.size() == 1
         && (isCourseGrained || atomSetCollection.getAtomCount() > 0)) {
       atomSetCollection.setAtomSetAuxiliaryInfo("biomolecules", vBiomolecules);
-      setBiomolecules();
+      Map<String, Object> ht = vBiomolecules.get(0);
+      appendLoadNote("Constructing biomolecule " + ht.get("name"));
+      setBiomolecules(ht);
       if (thisBiomolecule != null)
         atomSetCollection.applySymmetryBio(thisBiomolecule, notionalUnitCell, applySymmetryToBonds, filter);
     }
@@ -334,13 +338,10 @@ public class CifReader extends ModulationReader implements JmolLineReader {
       addJmolScript("calculate aromatic");
   }
 
-  private void setBiomolecules() {
-    M4 mident = new M4();
-    mident.setIdentity();
+  private void setBiomolecules(Map<String, Object> biomolecule) {
     if (!isBiomolecule || assemblyIdAtoms == null && chainAtomCounts == null)
       return;
-    for (int i = vBiomolecules.size(); --i >= 0;) {
-      Map<String, Object> biomolecule = vBiomolecules.get(i);
+    M4 mident = M4.newM(null);
       String[] ops = PT.split((String) biomolecule.get("operators"), ",");
       String assemblies = (String) biomolecule.get("assemblies");
       List<M4> biomts = new List<M4>();
@@ -392,7 +393,6 @@ public class CifReader extends ModulationReader implements JmolLineReader {
           atomSetCollection.bsAtoms = bsAll;
       }
       biomolecule.put("atomCount", Integer.valueOf(nAtoms * ops.length));
-    }
   }
 
   private void createParticle(String id) {
@@ -408,6 +408,8 @@ public class CifReader extends ModulationReader implements JmolLineReader {
   }
 
   private M4 getOpMatrix(String ops) {
+    if (htBiomts == null)
+      return M4.newM(null);
     int pt = ops.indexOf("|");
     if (pt >= 0) {
       M4 m = M4.newM(htBiomts.get(ops.substring(0, pt)));
@@ -626,6 +628,10 @@ public class CifReader extends ModulationReader implements JmolLineReader {
       } else {
         processSymmetryOperationsLoopBlock();
       }
+      return;
+    }
+    if (str.startsWith("_citation")) {
+      processCitationListBlock();
       return;
     }
     if (str.startsWith("_pdbx_struct_oper_list")) {
@@ -1442,6 +1448,8 @@ _pdbx_struct_oper_list.vector[3]
 
   private void addAssembly() throws Exception {
     int iMolecule = parseIntStr(assem[ASSEM_ID]);
+    String list = assem[ASSEM_LIST];
+    appendLoadNote("found biomolecule " + iMolecule + ": " + list);
     if (!checkFilterKey("ASSEMBLY " + iMolecule + ";"))
       return;
     if (vBiomolecules == null) {
@@ -1450,7 +1458,7 @@ _pdbx_struct_oper_list.vector[3]
     Map<String, Object> info = new Hashtable<String, Object>();
     info.put("name", "biomolecule " + iMolecule);
     info.put("molecule", Integer.valueOf(iMolecule));
-    info.put("assemblies", "$" + assem[ASSEM_LIST].replace(',', '$'));
+    info.put("assemblies", "$" + list.replace(',', '$'));
     info.put("operators", decodeAssemblyOperators(assem[ASSEM_OPERS]));
     info.put("biomts", new  List<M4>());
     thisBiomolecule = info;
@@ -1534,6 +1542,36 @@ _pdbx_struct_oper_list.vector[3]
         if (htBiomts == null)
           htBiomts = new Hashtable<String, M4>();
         htBiomts.put(id, m4);
+      }
+    }
+  }
+
+  
+  ////////////////////////////////////////////////////////////////
+  // HETATM identity
+  ////////////////////////////////////////////////////////////////
+
+  final private static byte CITATION_ID = 0;
+  final private static byte CITATION_TITLE = 1;
+
+  final private static String[] citationFields = { 
+      "_citation_id",
+      "_citation_title" 
+  };
+  
+  private void processCitationListBlock() throws Exception {
+    parseLoopParameters(citationFields);
+    float[] m = new float[16];
+    m[15] = 1;
+    while (tokenizer.getData()) {
+      for (int i = 0; i < tokenizer.fieldCount; ++i) {
+        switch (fieldProperty(i)) {
+        case CITATION_ID:
+          break;
+        case CITATION_TITLE:
+          appendLoadNote("TITLE: " + field);
+          break;
+        }
       }
     }
   }

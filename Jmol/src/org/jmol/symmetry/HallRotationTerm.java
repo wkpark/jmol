@@ -159,10 +159,8 @@ class HallRotationTerm {
     }
 
     if (hallInfo.vectorCode.length() > 0) {
-      M4 m1 = new M4();
-      M4 m2 = new M4();
-      m1.setIdentity();
-      m2.setIdentity();
+      M4 m1 = M4.newM(null);
+      M4 m2 = M4.newM(null);
       P3i v = hallInfo.vector12ths;
       m1.m03 = v.x;
       m1.m13 = v.y;

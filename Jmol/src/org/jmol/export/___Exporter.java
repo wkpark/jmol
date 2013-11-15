@@ -424,8 +424,7 @@ public abstract class ___Exporter {
     M3 m = new M3();
     M3 m1;
     if (pt2.x == pt1.x && pt2.y == pt1.y) {
-      m1 = new M3();
-      m1.setIdentity();
+      m1 = M3.newM(null);
       if (pt1.z > pt2.z) // 180-degree rotation about X
         m1.m11 = m1.m22 = -1;
     } else {

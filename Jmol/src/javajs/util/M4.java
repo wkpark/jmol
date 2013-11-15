@@ -157,6 +157,10 @@ public class M4 implements Serializable {
    */
   public static M4 newM(M4 m1) {
     M4 m = new M4();
+    if (m1 == null) {
+      m.setIdentity();
+      return m;
+    }
     m.m00 = m1.m00;
     m.m01 = m1.m01;
     m.m02 = m1.m02;

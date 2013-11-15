@@ -394,8 +394,7 @@ public class Parameters {
     ecc.normalize();
     if (Float.isNaN(ecc.x)) // was exactly {0 0 -1} -- just rotate about x
       ecc.set(1, 0, 0);
-    eccentricityMatrix = new M3();
-    eccentricityMatrix.setIdentity();
+    eccentricityMatrix = M3.newM(null);
     eccentricityMatrix.setAA(A4.newVA(ecc, (float) Math.PI));
     eccentricityMatrixInverse = new M3();
     eccentricityMatrixInverse.invertM(eccentricityMatrix);

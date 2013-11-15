@@ -6,8 +6,11 @@ import org.jmol.adapter.smarter.Atom;
 /**
  * 
  * 
- * @author Pieremanuele Canepa, Wake Forest University, Department of Physics
- *         Winston Salem, NC 27106, canepap@wfu.edu
+ * @author Pieremanuele Canepa, Massachusetts Institute of Technology, 
+ *         Room 13-5001 Department of Materials Science and Engineering
+ *         Massachusetts Institute of Technology 
+ *         77 Massachusetts Avenue
+ *         Cambridge, MA 02139 
  * 
  *         http://www.xcrysden.org
  * 

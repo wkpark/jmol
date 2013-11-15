@@ -20,7 +20,10 @@ import org.jmol.adapter.smarter.Atom;
 public class XcrysdenReader extends AtomSetCollectionReader {
 
   private int nAtoms;
-  private boolean aNimation = false;
+  private boolean animation = false;
+  private float[] unitCellData = new float[9];
+  private int animationStep;
+
 
   @Override
   protected void initializeReader() throws Exception {
@@ -41,13 +44,9 @@ public class XcrysdenReader extends AtomSetCollectionReader {
     return true;
   }
   
-  
-  
   private void readNostep() throws Exception { 
-    aNimation = true;
+    animation = true;
   }
-
-  private float[] unitCellData = new float[9];
 
   private void readUnitCell() throws Exception {
     setSymmetry();
@@ -79,7 +78,6 @@ public class XcrysdenReader extends AtomSetCollectionReader {
       6  -0.916425367  5.375190418 -7.209984663
       6  -4.773254987  4.300512942  6.348687286
   */
-  private int step = 0;
   private void readCoordinates() throws Exception {
     String[] atomStr = getTokensStr(readLine());
     nAtoms = Integer.parseInt(atomStr[0]);
@@ -96,9 +94,7 @@ public class XcrysdenReader extends AtomSetCollectionReader {
       setAtomCoordXYZ(atom, x, y, z);
       counter++;
     }
-    atomSetCollection.setAtomSetName("Initial coordinates");
-    if (aNimation)
-      atomSetCollection.setAtomSetName("Structure " + Integer.toString(step++));
+    atomSetCollection.setAtomSetName(animation ? "Structure " + (animationStep++) : "Initial coordinates");
   }
 
 }

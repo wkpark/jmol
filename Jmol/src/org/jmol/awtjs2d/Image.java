@@ -208,7 +208,7 @@ class Image {
      * 
      var buf8 = canvas.buf8;
      var buf32 = canvas.buf32;
-      var n = (buf8.length >> 2) * (width / canvas.width);
+      var n = width * height;
       var dw = (canvas.width - width) * 4;
       for (var i = 0, j = x * 4; i < n;) {
         buf8[j++] = (buf32[i] >> 16) & 0xFF;

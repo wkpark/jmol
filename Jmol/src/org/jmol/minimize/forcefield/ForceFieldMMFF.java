@@ -308,6 +308,8 @@ public class ForceFieldMMFF extends ForceField {
     ffParams = data;
   }
 
+  private String line;
+  
   private void readParams(BufferedReader br, int dataType, Map<Integer, Object> data) throws Exception {
     // parameters are keyed by a 32-bit Integer 
     // that is composed of four 7-bit atom types and one 4-bit parameter type
@@ -345,7 +347,6 @@ public class ForceFieldMMFF extends ForceField {
         type = KEY_VDW;
         break;
       }
-      String line;
       while (!br.readLine().startsWith("*")){}
       while ((line = br.readLine()).startsWith("*")){}
       do {
@@ -373,52 +374,52 @@ public class ForceFieldMMFF extends ForceField {
         switch (dataType) {
         case TYPE_OOP:
         case TYPE_TORSION: 
-          a4 = javajs.util.PT.parseInt(line.substring(18,20).trim());
+          a4 = ival(18,20);
           //$FALL-THROUGH$
         case TYPE_ANGLE:
         case TYPE_SB:
         case TYPE_SBDEF:
-          a3 = javajs.util.PT.parseInt(line.substring(13,15).trim());
+          a3 = ival(13,15);
           //$FALL-THROUGH$
         case TYPE_BNDK:
         case TYPE_BOND:
         case TYPE_CHRG:
-          a2 = javajs.util.PT.parseInt(line.substring(8,10).trim());
+          a2 = ival(8,10);
           //$FALL-THROUGH$
         case TYPE_PBCI:
         case TYPE_VDW:
-          a1 = javajs.util.PT.parseInt(line.substring(3,5).trim());
+          a1 = ival(3,5);
           break;
         }
         switch (dataType) {
         case TYPE_BNDK: // empirical bond stretch: kb, r0 (reversed in file) 
           value = new double[] {
-              PT.dVal(line.substring(19,25).trim()),
-              PT.dVal(line.substring(13,18).trim()) };
+              dval(19,25),
+              dval(13,18) };
           break;
         case TYPE_BOND: // bond stretch: kb, r0 
           value = new double[] {
-              PT.dVal(line.substring(14,20).trim()),
-              PT.dVal(line.substring(25,31).trim()) };
+              dval(14,20),
+              dval(25,31) };
          break;
         case TYPE_ANGLE:   // angles: ka, theta0
         case TYPE_SB:  // stretch-bend: kbaIJK, kbaKJI
           value = new double[] {
-              PT.dVal(line.substring(19,25).trim()),
-              PT.dVal(line.substring(28,35).trim()) };
+              dval(19,25),
+              dval(28,35) };
           break;
         case TYPE_CHRG: // bond chrg
-          value = Float.valueOf(PT.fVal(line.substring(10,20).trim()));
+          value = Float.valueOf(fval(10,20));
           break;
         case TYPE_OOP: // oop: koop  
-          value = new double[] { PT.dVal(line.substring(24,30).trim()) };
+          value = new double[] { dval(24,30) };
           break;
         case TYPE_PBCI:
-          value = Float.valueOf(PT.fVal(line.substring(5,15).trim()));
+          value = Float.valueOf(fval(5,15));
           break;
         case TYPE_SBDEF: // default stretch-bend: F(I_J,K),F(K_J,I)  
-          double v1 = PT.dVal(line.substring(19,25).trim());
-          double v2 = PT.dVal(line.substring(28,35).trim());
+          double v1 = dval(19,25);
+          double v2 = dval(28,35);
           value = new double[] { v1, v2 };
           Integer key = MinObject.getKey(type, a1, a2, a3, a4);
           data.put(key, value);
@@ -429,17 +430,17 @@ public class ForceFieldMMFF extends ForceField {
           break;
         case TYPE_TORSION: // tor: v1, v2, v3
           value = new double[] {
-              PT.dVal(line.substring(22,28).trim()),
-              PT.dVal(line.substring(30,36).trim()),
-              PT.dVal(line.substring(38,44).trim())
+              dval(22,28),
+              dval(30,36),
+              dval(38,44)
               };
           break;
         case TYPE_VDW: // vdw alpha-i, N-i, A-i, G-i, DA
           value = new double[] {
-              PT.dVal(line.substring(10,15).trim()),
-              PT.dVal(line.substring(20,25).trim()),
-              PT.dVal(line.substring(30,35).trim()),
-              PT.dVal(line.substring(40,45).trim()),
+              dval(10,15),
+              dval(20,25),
+              dval(30,35),
+              dval(40,45),
               line.charAt(46) // '-', 'A', 'D'
               };
           break;
@@ -451,10 +452,21 @@ public class ForceFieldMMFF extends ForceField {
       } while (!(line = br.readLine()).startsWith("$"));
   }
   
+  private int ival(int i, int j) {
+    return PT.parseInt(line.substring(i,j).trim());
+  }
+
+  private float fval(int i, int j) {
+    return PT.fVal(line.substring(i,j).trim());
+  }
+
+  private double dval(int i, int j) {
+    return PT.dVal(line.substring(i,j).trim());
+  }
+
   private void getAtomTypes() {
     String resourceName = "MMFF94-smarts.txt";
     List<AtomType> types = new  List<AtomType>();
-    String line = null;
     try {
       BufferedReader br = getBufferedReader(resourceName);      
       //turns out from the Jar file
@@ -470,11 +482,11 @@ public class ForceFieldMMFF extends ForceField {
         //0123456789012345678901234567890123456789012345678901234567890123456789
         //Mg 12 99  0  24  0 DIPOSITIVE MAGNESIUM CATI [MgD0]
         //#AtSym ElemNo mmType HType formalCharge*12 val Desc Smiles
-        int elemNo = javajs.util.PT.parseInt(line.substring(3,5).trim());
-        int mmType = javajs.util.PT.parseInt(line.substring(6,8).trim());
-        int hType = javajs.util.PT.parseInt(line.substring(9,11).trim());
-        float formalCharge = PT.fVal(line.substring(12,15).trim())/12;
-        int val = javajs.util.PT.parseInt(line.substring(16,18).trim());
+        int elemNo = ival(3,5);
+        int mmType = ival(6,8);
+        int hType = ival(9,11);
+        float formalCharge = fval(12,15)/12;
+        int val = ival(16,18);
         String desc = line.substring(19,44).trim();
         String smarts = line.substring(45).trim();
         types.addLast(at = new AtomType(elemNo, mmType, hType, formalCharge, val, desc, smarts));

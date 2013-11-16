@@ -286,11 +286,11 @@ public class ForceFieldMMFF extends ForceField {
     String line = null;
     try {
       br = getBufferedReader(resourceName);
+      int pt = 0;
+      int dataType = 0;
       while (true) {
-        int pt = 0;
         while ((pt = (line = br.readLine()).indexOf(".PAR")) < 0) {}
-        int dataType = types[names.indexOf(line.substring(pt - 3, pt + 1)) / 4];
-        if (dataType < 1)
+        if ((dataType = types[names.indexOf(line.substring(pt - 3, pt + 1)) / 4]) < 1)
           break;
         readParams(br, dataType, data);
       }

@@ -25,6 +25,7 @@
 package org.jmol.minimize.forcefield;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 
 import javajs.util.AU;
 import javajs.util.List;
@@ -232,7 +233,7 @@ public class ForceFieldMMFF extends ForceField {
   public ForceFieldMMFF(Minimizer m) {
     this.minimizer = m;
     this.name = "MMFF";
-    getChargeParameters();
+    getParameters();
   }
   
   @Override
@@ -244,7 +245,6 @@ public class ForceFieldMMFF extends ForceField {
 
   @Override
   public boolean setModel(BS bsElements, int elemnoMax) {
-    getMinimizationParameters();
     Minimizer m = minimizer;
     if (!setArrays(m.atoms, m.bsAtoms, m.bonds, m.rawBondCount, false, false))
       return false;  
@@ -271,46 +271,48 @@ public class ForceFieldMMFF extends ForceField {
         rawAtomTypes, bsAtoms, doRound);
     return true;
   }
+  private final static String names = "END.BCI.CHG.ANG.NDK.OND.OOP.TBN.FSB.TOR.VDW.";
+  private final static int[] types = {0, TYPE_PBCI, TYPE_CHRG, TYPE_ANGLE, TYPE_BNDK, TYPE_BOND, TYPE_OOP, TYPE_SB, TYPE_SBDEF, TYPE_TORSION, TYPE_VDW };
   
-  private void getChargeParameters() {
+  private void getParameters() {
     if (ffParams != null)
       return;
     getAtomTypes();
     Hashtable<Integer, Object> data = new Hashtable<Integer, Object>();
-    getMmffParameters("mmffpbci.par.txt", data, TYPE_PBCI);
-    getMmffParameters("mmffchg.par.txt", data, TYPE_CHRG);
+    String resourceName = "mmff94.par.txt";
+    if (Logger.debugging)
+      Logger.debug("reading data from " + resourceName);
+    BufferedReader br = null;
+    String line = null;
+    try {
+      br = getBufferedReader(resourceName);
+      while (true) {
+        int pt = 0;
+        while ((pt = (line = br.readLine()).indexOf(".PAR")) < 0) {}
+        int dataType = types[names.indexOf(line.substring(pt - 3, pt + 1)) / 4];
+        if (dataType < 1)
+          break;
+        readParams(br, dataType, data);
+      }
+      br.close();
+    } catch (Exception e) {
+      System.err.println("Exception " + e.toString() + " in getResource "
+          + resourceName + " line=" + line);
+    } finally {
+      try {
+        br.close();
+      } catch (IOException e) {
+        //ignore
+      }
+    }
     ffParams = data;
   }
 
-  private void getMinimizationParameters() {
-    // presumes charge parameters have been loaded
-    if (ffParams.containsKey(Integer.valueOf(-1)))
-      return;
-    getMmffParameters("mmffang.par.txt",  ffParams, TYPE_ANGLE);
-    getMmffParameters("mmffbndk.par.txt", ffParams, TYPE_BNDK);
-    getMmffParameters("mmffbond.par.txt", ffParams, TYPE_BOND);
-    getMmffParameters("mmffoop.par.txt",  ffParams, TYPE_OOP);
-    getMmffParameters("mmffstbn.par.txt", ffParams, TYPE_SB);
-    getMmffParameters("mmffdfsb.par.txt", ffParams, TYPE_SBDEF);
-    getMmffParameters("mmfftor.par.txt",  ffParams, TYPE_TORSION);
-    getMmffParameters("mmffvdw.par.txt",  ffParams, TYPE_VDW);
-    ffParams.put(Integer.valueOf(-1), Boolean.TRUE);
-  }
-
-  private void getMmffParameters(String resourceName, Map<Integer, Object> data, int dataType) { 
-    String line = null;
-    
+  private void readParams(BufferedReader br, int dataType, Map<Integer, Object> data) throws Exception {
     // parameters are keyed by a 32-bit Integer 
     // that is composed of four 7-bit atom types and one 4-bit parameter type
     // in some cases, the last 7-bit atom type (a4) is used for additional parameter typing
-    
     Object value = null;
-    if (Logger.debugging)
-      Logger.debug("reading data from " + resourceName);
-    try {
-      BufferedReader br = getBufferedReader(resourceName);
-      while ((line = br.readLine()) != null && line.length() < 5 || !line.startsWith("*"))
-        continue; // skip header
       int a1 = 0, a2 = 127, a3 = 127, a4 = 127;
       int type = 0;
       switch (dataType) {
@@ -343,9 +345,10 @@ public class ForceFieldMMFF extends ForceField {
         type = KEY_VDW;
         break;
       }
-      while ((line = br.readLine()) != null) {
-        if (line.length() < 5 || line.startsWith("*"))
-          continue;
+      String line;
+      while (!br.readLine().startsWith("*")){}
+      while ((line = br.readLine()).startsWith("*")){}
+      do {
         switch (dataType) {
         case TYPE_BNDK:
         case TYPE_OOP:
@@ -445,22 +448,15 @@ public class ForceFieldMMFF extends ForceField {
         data.put(key, value);
         if (Logger.debugging)
           Logger.debug(MinObject.decodeKey(key) + " " + (value instanceof Float ? value : Escape.eAD((double[])value)));
-      }
-      br.close();
-    } catch (Exception e) {
-      System.err.println("Exception " + e.toString() + " in getResource "
-          + resourceName + " line=" + line);
-    }
+      } while (!(line = br.readLine()).startsWith("$"));
   }
-
   
   private void getAtomTypes() {
     String resourceName = "MMFF94-smarts.txt";
     List<AtomType> types = new  List<AtomType>();
     String line = null;
     try {
-      BufferedReader br = getBufferedReader(resourceName);
-      
+      BufferedReader br = getBufferedReader(resourceName);      
       //turns out from the Jar file
       // it's a sun.net.www.protocol.jar.JarURLConnection$JarURLInputStream
       // and within Eclipse it's a BufferedInputStream

@@ -1196,19 +1196,6 @@ all support for previous versions removed
         </signjar>
       </else>
     </if>
-  	<echo> re-packaging appletweb/dist.zip with signed files</echo>  	
-  	<delete dir="build/js" />
-    <unzip dest="build/js" src="appletfiles/jsmol_nojars.zip" />
-	<copy todir="build/js/jsmol/java" >
-	  <fileset dir="build">
-	    <include name="JmolApplet*.jar" />
-	  </fileset>
-	  <fileset dir="appletfiles">
-		<include name="JSpecViewApplet*.jar" />
-	  </fileset>
-	</copy>
-    <zip zipfile="appletweb/jsmol.zip" basedir="build/js"
-         includes="**/*" />
   </target>
 
   <target name="smiles-applet-jar" id="smiles-applet-jar"
@@ -1251,6 +1238,23 @@ all support for previous versions removed
 
 	<target name="dist" id="dist"
           depends="doc,main-i18n,main,signed-applet">
+		
+		
+	  	<echo> re-packaging appletweb/dist.zip with signed files</echo>  	
+	  	<delete dir="build/js" />
+	    <unzip dest="build/js" src="appletfiles/jsmol_nojars.zip" />
+		<copy todir="build/js/jsmol/java" >
+		  <fileset dir="build">
+		    <include name="JmolApplet*.jar" />
+		  </fileset>
+		  <fileset dir="appletfiles">
+			<include name="JSpecViewApplet*.jar" />
+		  </fileset>
+		</copy>
+	    <zip zipfile="appletweb/jsmol.zip" basedir="build/js"
+	         includes="**/*" />
+		
+		
     <!-- first build binary distribution -->
     <delete dir="build/dist/jmol-${version}"/>
     <mkdir dir="build/dist/jmol-${version}"/>

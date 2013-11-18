@@ -282,8 +282,8 @@ abstract public class JSPopup extends GenericPopup {
      * @j2sNative
      * 
      *            var p = menuGetParent(menu); if (p != null) for (var i =
-     *            p.getItemCount(); --i >= 0;) if (p.getItem(i) == menu) return
-     *            i;
+     *            p.getItemCount(); --i >= 0;) if (p.getItem(i) == menu) {
+     *            return i;}
      */
     {
     }

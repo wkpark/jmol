@@ -70,11 +70,11 @@ public class NMRCalculation implements JmolNMRInterface {
   private Viewer viewer;
 
   public NMRCalculation() {
-    getData();
   }
 
   public JmolNMRInterface setViewer(Viewer viewer) {
     this.viewer = viewer;
+    getData();
     return this;
   }
 
@@ -256,10 +256,10 @@ public class NMRCalculation implements JmolNMRInterface {
   /**
    * NOTE! Do not change this txt file! Instead, edit
    * trunk/Jmol/_documents/nmr_data.xls and then clip its contents to
-   * nmr_data.txt.
+   * org/jmol/quantum/nmr_data.txt.
    * 
    */
-  private final static String resource = "org/jmol/quantum/nmr_data.txt";
+  private final static String resource = "nmr_data.txt";
 
   /**
    * Get magnetogyricRatio (gamma/10^7 rad s^-1 T^-1) and quadrupoleMoment
@@ -289,7 +289,7 @@ public class NMRCalculation implements JmolNMRInterface {
     try {
       boolean debugging = Logger.debugging;
       br = JmolBinary.getBufferedReaderForResource(viewer, this, "org/jmol/quantum/",
-          "nmr_data.txt");
+          resource);
       // #extracted by Simone Sturniolo from ROBIN K. HARRIS, EDWIN D. BECKER, SONIA M. CABRAL DE MENEZES, ROBIN GOODFELLOW, AND PIERRE GRANGER, Pure Appl. Chem., Vol. 73, No. 11, pp. 1795–1818, 2001. NMR NOMENCLATURE. NUCLEAR SPIN PROPERTIES AND CONVENTIONS FOR CHEMICAL SHIFTS (IUPAC Recommendations 2001)
       // #element atomNo  isotopeDef  isotope1  G1  Q1  isotope2  G2  Q2  isotope3  G3  Q3
       // H 1 1 1 26.7522128  0 2 4.10662791  0.00286 3 28.5349779  0

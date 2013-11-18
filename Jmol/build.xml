@@ -1205,7 +1205,7 @@ all support for previous versions removed
 	  <fileset dir="build">
 	    <include name="JmolApplet*.jar" />
 	  </fileset>
-	  <fileset dir="jars">
+	  <fileset dir="appletfiles">
 		<include name="JSpecViewApplet*.jar" />
 	  </fileset>
 	</copy>

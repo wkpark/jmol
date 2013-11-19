@@ -894,6 +894,7 @@ public class T {
   public final static int animationfps                   = intparam | 4;
   public final static int axesmode                       = intparam | 6;
   public final static int bondradiusmilliangstroms       = intparam | 8;
+  public final static int celshadingpower                = intparam | 9;
   public final static int delaymaximumms                 = intparam | 10;
   public final static int diffusepercent                 = intparam | 14;
   public final static int dotdensity                     = intparam | 15;
@@ -956,8 +957,8 @@ public class T {
 // set mathproperty  public final static int bonds                          = booleanparam | 40;
   public final static int cartoonbaseedges               = booleanparam | 41;
   public final static int cartoonrockets                 = booleanparam | 42;
-  public final static int cartoonsfancy                   = booleanparam | 43;
-  public final static int cartoonladders                  = booleanparam | 44;
+  public final static int cartoonsfancy                  = booleanparam | 43;
+  public final static int cartoonladders                 = booleanparam | 44;
   public final static int celshading                     = booleanparam | 45;
   public final static int chaincasesensitive             = booleanparam | 46;
   public final static int colorrasmol                    = booleanparam | 47;
@@ -2183,7 +2184,8 @@ public class T {
       // set params
 
       "backgroundModel",                          T.t(backgroundmodel),
-      "celShading",                                T.t(celshading),
+      "celShading",                               T.t(celshading),
+      "celShadingPower",                          T.t(celshadingpower),
       "debug",                                    T.t(debug),
       "defaultLattice",                           T.t(defaultlattice),
       "measurements",                             T.t(measurements),

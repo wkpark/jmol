@@ -460,6 +460,7 @@ public class StateCreator extends JmolStateCreator {
     appendCmd(str, "set specularPercent " + g.getSpecularPercent());
     appendCmd(str, "set specularPower " + g.getSpecularPower());
     appendCmd(str, "set celShading " + g.getCel());
+    appendCmd(str, "set celShadingPower " + g.getCelPower());
     int se = g.getSpecularExponent();
     int pe = g.getPhongExponent();
     if (Math.pow(2, se) == pe)

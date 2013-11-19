@@ -107,26 +107,32 @@ public class Shader {
   
   private int[][] ashades = AU.newInt2(128);
   private int[][] ashadesGreyscale;
-  private int rgbContrast;
+  public boolean celOn;
+  public int celPower = 10;
+  private int celRGB;
+  private float celZ;
+  private boolean useLight;
 
-  public void setCel(boolean celOn, int argb) {
+  public void setCel(boolean celShading, int celShadingPower, int argb) {
+    celShading = celShading && celShadingPower != 0;
     argb = C.getArgb(C.getBgContrast(argb));
-    if (argb == 0xFF000000)
-      argb = 0xFF040404; // problem here is with antialiasDisplay on white background
-    if (this.celOn == celOn && rgbContrast == argb)
+ // problem here is with antialiasDisplay on white background
+    argb = (argb == 0xFF000000 ? 0xFF040404 
+          : argb == -1 ? -2 
+          : argb + 1);
+    if (celOn == celShading && celRGB == argb && celPower == celShadingPower)
       return;
-    this.celOn = celOn;
-    rgbContrast = argb;
+    celOn = celShading;
+    celPower = celShadingPower;
+    useLight = (!celOn || celShadingPower > 0);
+    celZ = 1 - (float) Math.pow(2, -Math.abs(celShadingPower)/10f);
+    celRGB = argb;
     flushCaches();
   }
   
   public void flushCaches() {
     flushShades();
     flushSphereCache();
-  }
-  
-  public boolean getCelOn() {
-    return celOn;
   }
   
   public void setLastColix(int argb, boolean asGrey) {
@@ -170,7 +176,7 @@ public class Shader {
     checkShades();
     for (int i = C.colixMax; --i >= 0; )
       ashades[i] = null;
-    sphereShadingCalculated = false;
+    calcSphereShading();
   }
 
   /*
@@ -221,43 +227,38 @@ public class Shader {
       break;
     }
 
-    int i;
-    
-   if (celOn) {
+    int i = 0;
 
-     int max = shadeIndexMax/2;
+    f = (1 - f) / shadeIndexNormal;
 
-     f = (1 - f) /shadeIndexNormal;
+    float redStep = red0 * f;
+    float grnStep = grn0 * f;
+    float bluStep = blu0 * f;
 
-     float redStep = red0 * f;
-     float grnStep = grn0 * f;
-     float bluStep = blu0 * f;
+    if (celOn) {
 
-     int _rgb = CU.rgb((int) Math.floor(red), (int) Math.floor(grn),
-         (int) Math.floor(blu));
-     for (i = 0; i < max; ++i)
-       shades[i] = _rgb;
+      int max = shadeIndexMax / 2;
 
-     red += redStep * max;
-     grn += grnStep * max;
-     blu += bluStep * max;
+      int _rgb = CU.rgb((int) Math.floor(red), (int) Math.floor(grn),
+          (int) Math.floor(blu));
+      if (celPower >= 0)
+        for (; i < max; ++i)
+          shades[i] = _rgb;
+      
+      red += redStep * max;
+      grn += grnStep * max;
+      blu += bluStep * max;
+      _rgb = CU.rgb((int) Math.floor(red), (int) Math.floor(grn),
+          (int) Math.floor(blu));
+      for (; i < shadeIndexMax; i++)
+        shades[i] = _rgb;
 
-     _rgb = CU.rgb((int) Math.floor(red), (int) Math.floor(grn),
-         (int) Math.floor(blu));
-     for (; i < shadeIndexMax; i++)
-       shades[i] = _rgb;
+      // Min r,g,b is 4,4,4 or else antialiasing bleeds background colour into edges.
+      // 0 and 1 here prevents dithering of the outline
+        shades[0] = shades[1] = celRGB;
+    } else {
 
-     // Min r,g,b is 4,4,4 or else antialiasing bleeds background colour into edges.
-     shades[0] = shades[1] = rgbContrast;
-
-   } else {
-
-      f = (1 - f) / shadeIndexNormal;
-      float redStep = red0 * f;
-      float grnStep = grn0 * f;
-      float bluStep = blu0 * f;
-
-      for (i = 0; i < shadeIndexNormal; ++i) {
+      for (; i < shadeIndexNormal; ++i) {
         shades[i] = CU.rgb((int) Math.floor(red), (int) Math.floor(grn),
             (int) Math.floor(blu));
         red += redStep;
@@ -312,7 +313,7 @@ public class Shader {
   }
 
   private float getShadeF(float x, float y, float z) {
-    float NdotL = x * xLight + y * yLight + z * zLight;
+    float NdotL = (useLight ? x * xLight + y * yLight + z * zLight : z);
     if (NdotL <= 0)
       return 0;
     // I = k_diffuse * f_diffuse + k_specular * f_specular
@@ -353,7 +354,7 @@ public class Shader {
         intensity += k_specular * specularFactor;
       }
     }
-    return (celOn && z < 0.5f ? 0f : intensity > 1 ? 1f : intensity);
+    return (celOn && z < celZ ? 0f : intensity > 1 ? 1f : intensity);
   }
 
   /*
@@ -385,6 +386,8 @@ public class Shader {
     // this cannot overflow because the if the float shadeIndex is 1.0
     // then shadeIndex will be == shadeLast
     // but there will be no fractional component, so the next test will fail
+    if (!useLight)
+      return (byte) shadeIndex;
     if ((fp8ShadeIndex & 0xFF) > nextRandom8Bit())
       ++shadeIndex;
     int random16bit = seed & 0xFFFF;
@@ -414,17 +417,17 @@ public class Shader {
   // Sphere shading cache for Large spheres
   ////////////////////////////////////////////////////////////////
 
-  public boolean sphereShadingCalculated = false;
   public byte[] sphereShadeIndexes = new byte[256 * 256];
 
-  public synchronized void calcSphereShading() {
-    //if (!sphereShadingCalculated) { //unnecessary -- but be careful!
+  private synchronized void calcSphereShading() {
     float xF = -127.5f;
+    float r2 = 130 * 130;
     for (int i = 0; i < 256; ++xF, ++i) {
       float yF = -127.5f;
+      float xF2 = xF * xF;
       for (int j = 0; j < 256; ++yF, ++j) {
         byte shadeIndex = 0;
-        float z2 = 130 * 130 - xF * xF - yF * yF;
+        float z2 = r2 - xF2 - yF * yF;
         if (z2 > 0) {
           float z = (float) Math.sqrt(z2);
           shadeIndex = getShadeN(xF, yF, z, 130);
@@ -432,7 +435,6 @@ public class Shader {
         sphereShadeIndexes[(j << 8) + i] = shadeIndex;
       }
     }
-    sphereShadingCalculated = true;
   }
   
   /*
@@ -481,7 +483,6 @@ public class Shader {
   public byte[][][] ellipsoidShades;
   public int nOut;
   public int nIn;
-  private boolean celOn;
 
   // Cel shading.
   // @author N David Brown

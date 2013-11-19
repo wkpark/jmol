@@ -792,6 +792,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     gdata.setDiffusePercent(global.diffusePercent);
     gdata.setSpecular(global.specular);
     gdata.setCel(global.celShading);
+    gdata.setCelPower(global.celShadingPower);
     gdata.setSpecularPercent(global.specularPercent);
     gdata.setSpecularPower(-global.specularExponent);
     gdata.setPhongExponent(global.phongExponent);
@@ -6475,6 +6476,11 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   private void setIntPropertyTok(String key, int tok, int value) {
     switch (tok) {
+    case T.celshadingpower:
+      // 13.3.9
+      global.celShadingPower = value;
+      gdata.setCelPower(value);
+      break;
     case T.ambientocclusion:
       // 13.3.9
       gdata.setAmbientOcclusion(value);

@@ -385,8 +385,7 @@ public class SphereRenderer {
         shader.createEllipsoidShades();
       if (octantPoints != null)
         setPlaneDerivatives();
-    } else if (!shader.sphereShadingCalculated)
-      shader.calcSphereShading();
+    }
     renderQuadrant(-1, -1);
     renderQuadrant(-1, 1);
     renderQuadrant(1, -1);

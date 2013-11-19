@@ -370,11 +370,19 @@ public class GData implements JmolGraphicsInterface {
   }
 
   public void setCel(boolean val) {
-    shader.setCel(val, bgcolor);
+    shader.setCel(val, shader.celPower, bgcolor);
   }
 
   public boolean getCel() {
-    return shader.getCelOn();
+    return shader.celOn;
+  }
+
+  public int getCelPower() {
+    return shader.celPower;
+  }
+
+  public void setCelPower(int celPower) {
+    shader.setCel(shader.celOn || shader.celPower == 0, celPower, bgcolor);
   }
 
   public V3 getLightSource() {
@@ -493,7 +501,7 @@ public class GData implements JmolGraphicsInterface {
    */
   public void setBackgroundArgb(int argb) {
     bgcolor = argb;
-    setCel(getCel());
+    setCel(shader.celOn);
     // background of Jmol transparent in front of certain applications (VLC Player)
     // when background [0,0,1]. 
   }

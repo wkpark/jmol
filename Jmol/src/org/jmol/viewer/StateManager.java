@@ -567,7 +567,8 @@ public class StateManager {
         + ";pathforallfiles;perspectivedepth;phongexponent;perspectivemodel;platformspeed"
         + ";preservestate;refreshing;repaintwaitms;rotationradius"
         + ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showtiming;showunitcell"
-        + ";slabenabled;slab;slabrange;depth;zshade;zshadepower;specular;specularexponent;specularpercent;celshading;specularpower;stateversion"
+        + ";slabenabled;slab;slabrange;depth;zshade;zshadepower;specular;specularexponent;specularpercent"
+        + ";celshading;celshadingpower;specularpower;stateversion"
         + ";statusreporting;stereo;stereostate;vibrationperiod"
         + ";unitcellcolor;visualrange;windowcentered;zerobasedxyzrasmol;zoomenabled;mousedragfactor;mousewheelfactor"
         //    saved in the hash table but not considered part of the state:
@@ -828,6 +829,7 @@ public class StateManager {
       setB("cartoonRockets", cartoonRockets);
       setB("chainCaseSensitive", chainCaseSensitive);
       setB("celShading", celShading);
+      setI("celShadingPower", celShadingPower);
       setS("dataSeparator", dataSeparator);
       setB("debugScript", debugScript);
       setS("defaultAngleLabel", defaultAngleLabel);
@@ -1178,6 +1180,7 @@ public class StateManager {
     boolean bondPicking = false;
     float defaultCameraDepth = 3.0f;
     boolean celShading = false;
+    int celShadingPower = 10;
     String dataSeparator = "~~~";
     boolean debugScript = false;
     float defaultDrawArrowScale = 0.5f;

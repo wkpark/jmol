@@ -234,10 +234,10 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
       case 'F':
         // convert JANA Fourier descriptions to standard descriptions
         if (key.indexOf("_q_") >= 0) {
-          // d > 1 -- already set
+          // d > 1 -- already set from coefficients
           appendLoadNote("Wave vector " + key + "=" + pt);
         } else {
-          P3 ptHarmonic = getHarmonicCoef(pt); 
+          P3 ptHarmonic = getQCoefs(pt); 
           if (ptHarmonic == null) {
             appendLoadNote("Cannot match atom wave vector " + key + " " + pt
                 + " to a cell wave vector or its harmonic");
@@ -246,7 +246,7 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
             if (!htModulation.containsKey(k2 + suffix)) {
               addModulation(map, k2, ptHarmonic, iModel);
               if (key.startsWith("F_"))
-                appendLoadNote("atom wave vector " + key + " = " + pt + " n = " + (int) ptHarmonic.length());
+                appendLoadNote("atom wave vector " + key + " = " + pt + " fn = " + ptHarmonic);
             }
           }
         }
@@ -315,29 +315,41 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
     htAtomMods = null;
   }
 
-  private P3 getHarmonicCoef(P3 pt) {
-    for (int i = 1; i <= 3; i++) {
-      P3 q = getMod("W_" + i);
-      if (q != null) {
-        float fn = pt.dot(q) / q.dot(q) * 1.01f;
-        int ifn = (int) fn;
-        if (Math.abs(fn/ifn - 1) < 0.02f) {
-          P3 p = new P3();
-          switch (i) {
-          case 1:
-            p.x = ifn;
-            break;
-          case 2:
-            p.y = ifn;
-            break;
-          case 3:
-            p.z = ifn;
-            break;
-          }
-          return p;
-        }
-      }
+  private P3[] qs;
+
+  /**
+   * determine simple linear combination assuming simple -3 to 3
+   * no more than two dimensions.
+   * 
+   * @param p
+   * @return {i j k}
+   */
+  private P3 getQCoefs(P3 p) {
+    if (qs == null) {
+      qs = new P3[3];
+      for (int i = 0; i < 3; i++)
+        qs[i] = getMod("W_" + (i + 1));
     }
+    // for d < 3 only:
+    P3 pt = new P3();
+    int jmin = (modDim < 2 ? 0 : -3);
+    int jmax = (modDim < 2 ? 0 : 3);
+    int kmin = (modDim < 3 ? 0 : -3);
+    int kmax = (modDim < 3 ? 0 : 3);
+    for (int i = -3; i <= 3; i++)
+      for (int j = jmin; j <= jmax; j++)
+        for (int k = kmin; k <= kmax; k++) {
+          pt.setT(qs[0]);
+          pt.scale(i);
+          if (qs[1] != null)
+            pt.scaleAdd2(j, qs[1], pt);
+          if (qs[2] != null)
+            pt.scaleAdd2(j, qs[2], pt);
+          if (pt.distanceSquared(p) < 0.001f) {
+            pt.set(i, j, 0);
+            return pt;
+          }
+        }
     return null;
   }
 

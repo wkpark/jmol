@@ -14,7 +14,12 @@ import org.jmol.util.Logger;
 
 public class CifDataReader {
   /**
+   *
    * A special tokenizer class for dealing with quoted strings in CIF files.
+   * 
+   * Greek letters implemented in Jmol 13.3.9 and only for 
+   * titles and space groups. All other mark ups ignored.
+   * 
    *<p>
    * regarding the treatment of single quotes vs. primes in
    * cif file, PMR wrote:
@@ -431,5 +436,37 @@ public class CifDataReader {
         ((List<String>)data.get(keyWords.get(i))).addLast(loopData[i]);
       }
     }
+  }
+
+  private final static String grABC =
+  		"ABX\u0394E\u03A6\u0393H"   // ABCDEFGH
+  		+ "I_K\u039BMNO\u03A0"      // I_KLMNOP
+  		+ "\u0398P\u03A3TY_\u03A9\u039E\u03A5Z"; // QRSTU_WXYZ
+  private final static String grabc =
+      "\u03B1\u03B2\u03C7\u03A4\u03A5\u03C6\u03B3\u03B7" // abcdefgh
+      + "\u03B9_\u03BA\u03BB\u03BC\u03BD\u03BF\u03C0"    // i_klmnop
+      + "\u03B8\u03C1\u03C3\u03C4\u03C5_\u03C9\u03BE\u03C5\u03B6"; // qrstu_wxyz
+
+  /**
+   * Only translating the basic Greek set here, not all the other stuff. See
+   * http://www.iucr.org/resources/cif/spec/version1.1/semantics#markup
+   * 
+   * @param data
+   * @return cleaned string
+   */
+  public String toUnicode(String data) {
+    int pt;
+    try {
+      while ((pt = data.indexOf('\\')) >= 0) {
+        int c = data.charAt(pt + 1);
+        String ch = (c >= 65 && c <= 90 ? grABC.substring(c - 65, c - 64)
+            : c >= 97 && c <= 122 ? grabc.substring(c - 97, c - 96) : "_");
+        data = data.substring(0, pt) + ch + data.substring(pt + 2);
+      }
+    } catch (Exception e) {
+      // ignore
+    }
+
+    return data;
   }  
 }

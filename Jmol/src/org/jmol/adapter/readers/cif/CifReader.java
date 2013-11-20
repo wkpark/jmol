@@ -508,6 +508,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
       incommensurate = true;
     else if (incommensurate)
       return;
+    data = tokenizer.toUnicode(data);
     setSpaceGroupName(lastSpaceGroupName = (key.indexOf("h-m") > 0 ? "HM:" : incommensurate ? "SSG:" : "Hall:") + data);
   }
 
@@ -1569,7 +1570,7 @@ _pdbx_struct_oper_list.vector[3]
         case CITATION_ID:
           break;
         case CITATION_TITLE:
-          appendLoadNote("TITLE: " + field);
+          appendLoadNote("TITLE: " + tokenizer.toUnicode(field));
           break;
         }
       }

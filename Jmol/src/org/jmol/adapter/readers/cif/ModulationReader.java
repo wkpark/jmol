@@ -344,7 +344,7 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
           if (qs[1] != null)
             pt.scaleAdd2(j, qs[1], pt);
           if (qs[2] != null)
-            pt.scaleAdd2(j, qs[2], pt);
+            pt.scaleAdd2(k, qs[2], pt);
           if (pt.distanceSquared(p) < 0.001f) {
             pt.set(i, j, 0);
             return pt;

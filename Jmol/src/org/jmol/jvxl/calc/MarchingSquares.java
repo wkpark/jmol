@@ -331,14 +331,10 @@ public class MarchingSquares {
       contourValuesUsed[i] = cutoff;
 
       Logger.info("#contour " + (i + 1)+ " " + cutoff);
-      int n = 0;
       htPts.clear();
-      for (int ii = triangleCount; --ii >= 0;) {
+      for (int ii = triangleCount; --ii >= 0;)
         if (triangles[ii].isValid)
           triangles[ii].checkContour(i, cutoff);
-        else
-          n++;
-      }
       if (thisContour > 0) {
         if (i + 1 == thisContour)
           minCutoff = cutoff;

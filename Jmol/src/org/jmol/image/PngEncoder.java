@@ -308,7 +308,7 @@ public class PngEncoder extends CRCEncoder {
     //boolean doFilter = (filter != FILTER_NONE);
 
     int rowsLeft = height; // number of rows remaining to write
-    int startRow = 0; // starting row to process this time through
+    //int startRow = 0; // starting row to process this time through
     int nRows; // how many rows to grab at a time
 
     int scanPos; // where we are in the scan lines
@@ -367,7 +367,7 @@ public class PngEncoder extends CRCEncoder {
          */
         compBytes.write(scanLines, 0, scanPos);
 
-        startRow += nRows;
+        //startRow += nRows;
         rowsLeft -= nRows;
       }
       compBytes.close();

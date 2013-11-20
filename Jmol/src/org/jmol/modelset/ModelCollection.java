@@ -1652,20 +1652,20 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   private BS selectedMolecules = new BS();
-  private int selectedMoleculeCount;
+  //private int selectedMoleculeCount;
 
   public void calcSelectedMoleculesCount(BS bsSelected) {
     if (moleculeCount == 0)
       getMolecules();
     selectedMolecules.xor(selectedMolecules);
-    selectedMoleculeCount = 0;
+    //selectedMoleculeCount = 0;
     BS bsTemp = new BS();
     for (int i = 0; i < moleculeCount; i++) {
       BSUtil.copy2(bsSelected, bsTemp);
       bsTemp.and(molecules[i].atomList);
       if (bsTemp.length() > 0) {
         selectedMolecules.set(i);
-        selectedMoleculeCount++;
+        //selectedMoleculeCount++;
       }
     }
   }

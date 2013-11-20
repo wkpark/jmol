@@ -1712,9 +1712,9 @@ public class ForceFieldMMFF extends ForceField {
     }
   }
 
-  private final static double[] r0reductions = new double[] { 
-    0.08, 0.03, 0.10, 0.17, 0.075, 0.04 
-  };
+//  private final static double[] r0reductions = new double[] { 
+//    0.08, 0.03, 0.10, 0.17, 0.075, 0.04 
+//  };
 
   private static double getRuleBondLength(MinAtom a, MinAtom b, int boAB,
                                           boolean isAromatic) {
@@ -1759,7 +1759,6 @@ public class ForceFieldMMFF extends ForceField {
         break;
       }
 
-    double red = 0;
     switch (boAB) {
     case 1:
       // only single bonds involve hybridization
@@ -1770,11 +1769,11 @@ public class ForceFieldMMFF extends ForceField {
       case 0:                   // sp3 "H = 3"
         break;
       case 1:
-      case 2:
-        red += r0reductions[1]; // sp2  "H = 2"
+      case 2:   
+        //red += r0reductions[1]; // sp2  "H = 2"
         break;
       case 3:
-        red += r0reductions[0]; // sp   "H = 1"
+        //red += r0reductions[0]; // sp   "H = 1"
         break;
       }
       
@@ -1785,15 +1784,15 @@ public class ForceFieldMMFF extends ForceField {
         break;
       case 1:
       case 2:
-        red += r0reductions[1]; // sp2  "H = 2"
+        //red += r0reductions[1]; // sp2  "H = 2"
         break;
       case 3:
-        red += r0reductions[0]; // sp   "H = 1"
+        //red += r0reductions[0]; // sp   "H = 1"
         break;
       }
       break;
     default:
-      red += 2 * r0reductions[boAB];
+      //red += 2 * r0reductions[boAB];
       break;
     }
     r -= c * Math.pow(Math.abs(Xa - Xb), n);

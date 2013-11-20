@@ -74,13 +74,11 @@ public class HistoryFile {
    * @param properties the properties to add.
    */
   public void addProperties(Properties properties) {
-
     Enumeration<Object> keys = properties.keys();
-    boolean modified = false;
     while (keys.hasMoreElements()) {
       String key = (String) keys.nextElement();
       String value = properties.getProperty(key);
-      modified |= addProperty(key, value);
+      addProperty(key, value);
     }
     save();
   }

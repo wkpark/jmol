@@ -284,6 +284,8 @@ public class NMRCalculation implements JmolNMRInterface {
    * float[+/-isotopeNumber, g, Q], where [0] < 0 for the default value.
    * 
    */
+  @SuppressWarnings("resource")
+  // Resource leak: 'br' is not closed at this location -- Nonsense -- there's a finally{} block
   private void getData() {
     BufferedReader br = null;
     try {

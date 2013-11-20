@@ -361,7 +361,7 @@ abstract public class ForceField {
 
   private void linearSearch() {
 
-    double alpha = 0.0; // Scale factor along direction vector
+    //double alpha = 0.0; // Scale factor along direction vector
     double step = 0.23;
     double trustRadius = 0.3; // don't move further than 0.3 Angstroms
     double trustRadius2 = trustRadius * trustRadius;
@@ -414,7 +414,7 @@ abstract public class ForceField {
         restoreCoordinates();
       } else if (e2 < e1) {
         e1 = e2;
-        alpha += step;
+        //alpha += step;
         step *= 2.15;
         if (step > 1.0)
           step = 1.0;

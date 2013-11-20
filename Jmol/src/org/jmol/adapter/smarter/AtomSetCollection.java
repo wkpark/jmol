@@ -1866,15 +1866,16 @@ public class AtomSetCollection {
     p.put(key, value);
   }
 
-
   public void setAtomSetAtomProperty(String key, String data, int atomSetIndex) {
     if (!data.endsWith("\n"))
       data += "\n";
     if (atomSetIndex < 0)
       atomSetIndex = currentAtomSetIndex;
-    Map p = (Map) getAtomSetAuxiliaryInfoValue(atomSetIndex, "atomProperties");
+    Map<String, String> p = (Map<String, String>) getAtomSetAuxiliaryInfoValue(
+        atomSetIndex, "atomProperties");
     if (p == null)
-      setAtomSetAuxiliaryInfoForSet("atomProperties", p = new Hashtable(), atomSetIndex);
+      setAtomSetAuxiliaryInfoForSet("atomProperties",
+          p = new Hashtable<String, String>(), atomSetIndex);
     p.put(key, data);
   }
 

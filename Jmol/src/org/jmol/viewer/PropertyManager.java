@@ -533,7 +533,6 @@ public class PropertyManager implements JmolPropertyManager {
     return info.toString();
   }
 
-  @SuppressWarnings("unchecked")
   static Object getFileInfo(Object objHeader, String type) {
     Map<String, String> ht = new Hashtable<String, String>();
     if (objHeader == null)

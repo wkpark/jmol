@@ -3313,7 +3313,7 @@ public class ScriptExt implements JmolScriptExtension {
       if (modelIndex < 0)
         eval.errorStr(ScriptEvaluator.ERROR_multipleModelsDisplayedNotOK, "MO isosurfaces");
     }
-    Map moData = (Map) viewer.getModelAuxiliaryInfoValue(modelIndex, "moData");
+    Map<String, Object> moData = (Map<String, Object>) viewer.getModelAuxiliaryInfoValue(modelIndex, "moData");
     List<Map<String, Object>> mos = null;
     Map<String, Object> mo;
     Float f;

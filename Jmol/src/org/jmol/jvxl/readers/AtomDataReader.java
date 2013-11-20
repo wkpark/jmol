@@ -189,7 +189,6 @@ abstract class AtomDataReader extends VolumeDataReader {
       atomData.bsSelected = null;
     atomCount = atomData.atomCount;
     modelIndex = atomData.firstModelIndex;
-    int nSelected = 0;
     boolean needRadius = false;
     for (int i = 0; i < atomCount; i++) {
       if ((bsSelected == null || bsSelected.get(i)) && (!bsMyIgnored.get(i))) {
@@ -198,7 +197,6 @@ abstract class AtomDataReader extends VolumeDataReader {
                 i, marginAtoms)))
           continue;
         bsMySelected.set(i);
-        nSelected++;
         needRadius = !havePlane;
       }
       if (getRadii && (addNearbyAtoms || needRadius))

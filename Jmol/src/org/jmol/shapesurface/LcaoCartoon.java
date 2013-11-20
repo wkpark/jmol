@@ -57,7 +57,6 @@ public class LcaoCartoon extends Isosurface {
   //persistent
   private Float lcaoScale;
   private boolean isTranslucent;
-  private float translucentLevel;
   private Integer lcaoColorPos;
   private Integer lcaoColorNeg;
   boolean isLonePair;

@@ -243,7 +243,7 @@ class PickleReader {
         o = peek();
         if (o instanceof List) {
           for (i = 0; i < l.size(); i++)
-            ((List) o).addLast(l.get(i));
+            ((List<Object>) o).addLast(l.get(i));
         } else {
         map = (Map<String, Object>) o;
         for (i = l.size(); --i >= 0;) {

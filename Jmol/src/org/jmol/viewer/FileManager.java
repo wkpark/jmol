@@ -603,12 +603,8 @@ public class FileManager implements BytePoster {
       if (JmolBinary.isZipS(bis)) {
         if (allowZipStream)
           return JmolBinary.newZipInputStream(bis);
-        if (forceInputStream)
-          return JmolBinary.getZipFileContents(bis, subFileList, 1, true);
-        String s = (String) JmolBinary.getZipFileContents(bis, subFileList, 1,
-            false);
-        bis.close();
-        return JmolBinary.getBufferedReaderForString(s);
+        Object o = JmolBinary.getZipFileContents(bis, subFileList, 1, forceInputStream);
+        return (o instanceof String ? JmolBinary.getBufferedReaderForString((String) o) : o);
       }
       return (forceInputStream ? bis : JmolBinary.getBufferedReader(bis, null));
     } catch (Exception ioe) {

@@ -69,7 +69,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected final P3 pt1f = new P3();
   protected final P3 pt2f = new P3();
 
-  protected final P3i pt1i = new P3i();
+  protected P3i pt1i = new P3i();
   protected P3i pt2i = new P3i();
   protected final P3i pt3i = new P3i();
   protected int exportPass;

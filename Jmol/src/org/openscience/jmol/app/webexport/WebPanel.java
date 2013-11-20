@@ -157,7 +157,6 @@ abstract class WebPanel extends JPanel implements ActionListener,
 
   // Need the panel maker and the action listener.
 
-  @SuppressWarnings("unchecked")
   JPanel getPanel(int infoWidth, int infoHeight) {
 
     // For layout purposes, put things in separate panels
@@ -879,7 +878,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
     enableButtons(instanceList);
   }
 
-  void enableButtons(JList<JmolInstance> list) {
+  void enableButtons(JList<?> list) {
     int nSelected = list.getSelectedIndices().length;
     int nListed = list.getModel().getSize();
     saveButton.setEnabled(nListed > 0);
@@ -887,9 +886,8 @@ abstract class WebPanel extends JPanel implements ActionListener,
 //    showInstanceButton.setEnabled(nSelected == 1);
   }
 
-  @SuppressWarnings("unchecked")
-  class InstanceCellRenderer extends JLabel implements ListCellRenderer {
-    public Component getListCellRendererComponent(JList list, Object value,
+  class InstanceCellRenderer extends JLabel implements ListCellRenderer<Object> {
+    public Component getListCellRendererComponent(JList<?> list, Object value,
                                                   int index,
                                                   boolean isSelected,
                                                   boolean cellHasFocus) {
@@ -984,7 +982,7 @@ class ArrayListTransferHandler extends TransferHandler {
       }
     }
 
-    DefaultListModel listModel = (DefaultListModel) target.getModel();
+    DefaultListModel<?> listModel = (DefaultListModel<?>) target.getModel();
     int max = listModel.getSize();
     if (targetIndex < 0) {
       targetIndex = max;
@@ -998,7 +996,8 @@ class ArrayListTransferHandler extends TransferHandler {
     addIndex = targetIndex;
     addCount = alist.size();
     for (int i = 0; i < alist.size(); i++) {
-      listModel.add(targetIndex++, objectOf(listModel, alist.get(i)));
+      ((DefaultListModel<Object>) listModel).add(targetIndex++,
+          objectOf(listModel, alist.get(i)));
     }
     return true;
   }

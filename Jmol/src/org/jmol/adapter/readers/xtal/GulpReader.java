@@ -32,7 +32,6 @@ import javajs.util.V3;
 
 public class GulpReader extends AtomSetCollectionReader {
 
-  private String spaceGroup;
   private boolean isSlab;
   private boolean isPolymer;
   private boolean isMolecular;

@@ -102,7 +102,6 @@ public class JaguarReader extends MOReader {
     atomSetCollection.discardPreviousAtoms();
     // start parsing the atoms
     readLines(2);
-    int atomCount = 0;
     while (readLine() != null && line.length() >= 60 && line.charAt(2) != ' ') {
       String[] tokens = getTokens();
       String atomName = tokens[0];
@@ -122,7 +121,6 @@ public class JaguarReader extends MOReader {
       atom.elementSymbol = elementSymbol;
       atom.atomName = atomName;
       setAtomCoordXYZ(atom, x, y, z);
-      atomCount++;
     }
   }
 

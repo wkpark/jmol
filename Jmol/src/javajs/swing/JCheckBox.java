@@ -1,7 +1,5 @@
 package javajs.swing;
 
-import javajs.util.SB;
-
 public class JCheckBox extends JComponent {
 
 	public JCheckBox() {

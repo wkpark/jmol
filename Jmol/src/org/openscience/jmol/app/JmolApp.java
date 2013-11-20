@@ -527,6 +527,7 @@ public class JmolApp implements JmolAppAPI {
         while (scan.hasNextLine() && (linein = scan.nextLine()) != null
             && !linein.equals("!quit"))
           script.append(linein).append("\n");
+        scan.close();
         runScript(script.toString(), isJmolData, viewer);
       } else {
         viewer.evalFile(scriptFilename);

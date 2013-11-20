@@ -723,6 +723,7 @@ abstract class OutputManager {
         Logger.info(data);
         return;
       }
+      @SuppressWarnings("resource")
       OC out = (viewer.haveAccess(ACCESS.ALL) ? openOutputChannel(privateKey,
           viewer.logFileName, true, !doClear) : null);
       if (!doClear) {

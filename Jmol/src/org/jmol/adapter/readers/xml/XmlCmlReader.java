@@ -106,7 +106,7 @@ public class XmlCmlReader extends XmlReader {
   // tokenCount holds the current number of tokens
   // see breakOutTokens
   private int tokenCount;
-  private int nModules = 0;
+  //private int nModules = 0;
   private int moduleNestingLevel = 0;
   private boolean haveMolecule = false;
   private String localSpaceGroupName;
@@ -195,7 +195,7 @@ public class XmlCmlReader extends XmlReader {
         }
       } else if (name.equals("module")) {
         moduleNestingLevel++;
-        nModules++;
+        //nModules++;
       } else if (name.equalsIgnoreCase("latticeVector")) {
         state = LATTICE_VECTOR;
         setKeepChars(true);

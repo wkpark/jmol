@@ -608,6 +608,15 @@ public class CifReader extends ModulationReader implements JmolLineReader {
       return;
     boolean isLigand = false;
     str = fixKey(str);
+    if (incommensurate
+        && (str.startsWith("_cell_wave") || str.contains("fourier") || str
+            .contains("_special_func"))) {
+      if (modAverage)
+        skipLoop();
+      else
+        processModulationLoopBlock();
+      return;
+    }
     if (str.startsWith("_atom_site_")
         || (isLigand = str.equals("_chem_comp_atom_comp_id"))) {
       if (!processAtomSiteLoopBlock(isLigand))
@@ -654,15 +663,6 @@ public class CifReader extends ModulationReader implements JmolLineReader {
     }
     if (str.startsWith("_chem_comp")) {
       processChemCompLoopBlock();
-      return;
-    }
-    if (incommensurate
-        && (str.startsWith("_cell_wave") || str.contains("fourier") || str
-            .contains("_special_func"))) {
-      if (modAverage)
-        skipLoop();
-      else
-        processModulationLoopBlock();
       return;
     }
     if (str.startsWith("_atom_type")) {

@@ -204,7 +204,7 @@ public class SV extends T {
     if (x instanceof Map)
       return getVariableMap((Map<String, ?>)x);
     if (x instanceof List)
-      return getVariableList((List) x);
+      return getVariableList((List<?>) x);
     if (Escape.isAV(x))
       return getVariableAV((SV[]) x);
     if (PT.isAI(x))

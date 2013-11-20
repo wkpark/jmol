@@ -20,7 +20,7 @@ public class JScrollPane extends JContainer {
 		return sb.toString();
 	}
 	
-	public void setMinimumSize(Dimension dimension) {
+  public void setMinimumSize(Dimension dimension) {
 		// TODO Auto-generated method stub
 		
 	}

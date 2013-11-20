@@ -377,7 +377,6 @@ public class DrawRenderer extends MeshRenderer {
 
   private final P3 pt0f = new P3();
   protected P3i pt0i = new P3i();
-  protected P3i pt1i = new P3i();
 
   private void renderArrowHead(P3 pt1, P3 pt2, float factor2,
                                boolean isTransformed, boolean withShaft,

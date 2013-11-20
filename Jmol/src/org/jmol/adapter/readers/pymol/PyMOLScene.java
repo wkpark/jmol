@@ -930,7 +930,7 @@ class PyMOLScene implements JmolSceneGenerator {
         || (setting = uniqueSettings.get(Integer.valueOf((id << 10) + key))) == null)
       return pt;
     pt = new P3();
-    pointAt((List) setting.get(2), 0, pt);
+    pointAt((List<Object>) setting.get(2), 0, pt);
     Logger.info("Pymol unique setting for " + id + ": " + key + " = " + pt);
     return pt;
   }

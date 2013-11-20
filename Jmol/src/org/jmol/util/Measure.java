@@ -408,14 +408,13 @@ final public class Measure {
     V3 a = V3.newV(axisUnitVector);
 
     float sum_Xi2 = 0;
-    float sum_Yi2 = 0;
     for (int i = nPoints; --i >= 0;) {
       pt.setT(points[i]);
       ptProj.setT(pt);
       projectOntoAxis(ptProj, axisA, axisUnitVector,
           vectorProjection);
       vTemp.sub2(pt, ptProj);
-      sum_Yi2 += vTemp.lengthSquared();
+      //sum_Yi2 += vTemp.lengthSquared();
       vTemp.cross(vectorProjection, vTemp);
       sumXiYi.add(vTemp);
       sum_Xi2 += vectorProjection.lengthSquared();

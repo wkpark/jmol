@@ -47,6 +47,7 @@ public class OutputManagerJS extends OutputManager {
     return "Clipboard not available";
   }
 
+  @SuppressWarnings("resource")
   @Override
   OC openOutputChannel(double privateKey, String fileName,
                                       boolean asWriter, boolean asAppend) {

@@ -72,6 +72,7 @@ public class ZipUtil implements JmolZipUtility {
     return newZIS(is);
   }
 
+  @SuppressWarnings("resource")
   private static ZInputStream newZIS(InputStream is) {
     return (is instanceof ZInputStream ? (ZInputStream) is
         : is instanceof BufferedInputStream ? new JmolZipInputStream(is)
@@ -179,37 +180,38 @@ public class ZipUtil implements JmolZipUtility {
         }
         String str = ret.toString();
         if (asBufferedInputStream)
-          return new BufferedInputStream(new ByteArrayInputStream(str
-              .getBytes()));
+          return new BufferedInputStream(new ByteArrayInputStream(
+              str.getBytes()));
         return str;
       }
-      boolean asBinaryString = false;
-      if (fileName.indexOf(":asBinaryString") > 0) {
-        fileName = fileName.substring(0, fileName.indexOf(":asBinaryString"));
-        asBinaryString = true;
+      int pt = fileName.indexOf(":asBinaryString");
+      boolean asBinaryString = (pt > 0);
+      if (asBinaryString)
+        fileName = fileName.substring(0, pt);
+      while ((ze = zis.getNextEntry()) != null
+          && !fileName.equals(ze.getName())) {
       }
-      while ((ze = zis.getNextEntry()) != null) {
-        if (!fileName.equals(ze.getName()))
-          continue;
-        byte[] bytes = JmolBinary.getStreamBytes(zis, ze.getSize());
-        //System.out.println("ZipUtil::ZipEntry.name = " + ze.getName() + " " + bytes.length);
-        if (JmolBinary.isZipB(bytes))
-          return getZipFileContents(new BufferedInputStream(
-              new ByteArrayInputStream(bytes)), list, ++listPtr,
-              asBufferedInputStream);
-        if (asBufferedInputStream)
-          return new BufferedInputStream(new ByteArrayInputStream(bytes));
-        if (asBinaryString) {
-          ret = new SB();
-          for (int i = 0; i < bytes.length; i++)
-            ret.append(Integer.toHexString(bytes[i] & 0xFF)).appendC(' ');
-          return ret.toString();
-        }
-        return JmolBinary.fixUTF(bytes);
+      byte[] bytes = (ze == null ? null : JmolBinary.getStreamBytes(zis, ze.getSize()));
+      ze = null;
+      zis.close();
+      if (bytes == null)
+        return "";
+      if (JmolBinary.isZipB(bytes))
+        return getZipFileContents(new BufferedInputStream(
+            new ByteArrayInputStream(bytes)), list, ++listPtr,
+            asBufferedInputStream);
+      if (asBufferedInputStream)
+        return new BufferedInputStream(new ByteArrayInputStream(bytes));
+      if (asBinaryString) {
+        ret = new SB();
+        for (int i = 0; i < bytes.length; i++)
+          ret.append(Integer.toHexString(bytes[i] & 0xFF)).appendC(' ');
+        return ret.toString();
       }
+      return JmolBinary.fixUTF(bytes);
     } catch (Exception e) {
+      return "";
     }
-    return "";
   }
 
   public byte[] getZipFileContentsAsBytes(BufferedInputStream bis,

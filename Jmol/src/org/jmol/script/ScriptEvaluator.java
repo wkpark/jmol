@@ -210,7 +210,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   public ScriptEvaluator() {
     currentThread = Thread.currentThread();
-    evalID++;
+    //evalID++;
   }
 
   public void setCompiler() {
@@ -1785,7 +1785,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   // ///////////////////// general fields //////////////////////
 
   private final static int scriptLevelMax = 100;
-  private static int evalID;
+  //private static int evalID;
 
   private Thread currentThread;
   public Viewer viewer;

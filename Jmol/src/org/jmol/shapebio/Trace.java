@@ -103,8 +103,8 @@ public class Trace extends BioShapeCollection {
       nonlinear = true;
       break;
     }
-    for (int i = bsAtoms.nextSetBit(0), pt = 0; i >= 0; i = bsAtoms
-        .nextSetBit(i + 1), pt++) {
+    for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms
+        .nextSetBit(i + 1)) {
       float scale = Atom.atomPropertyFloat(null, atoms[i], T.temperature);
       switch (transform) {
       case PUTTY_AbsoluteNonlinear:

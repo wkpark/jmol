@@ -401,12 +401,8 @@ public final class ModelLoader {
   @SuppressWarnings("unchecked")
   private void setAtomProperties() {
     // Crystal reader, PDB tlsGroup
-    int atomIndex = baseAtomIndex;
-    int modelAtomCount = 0;
     int modelCount = modelSet.modelCount;
-    Model[] models = modelSet.models;
-    for (int i = baseModelIndex; i < modelCount; atomIndex += modelAtomCount, i++) {
-      modelAtomCount = models[i].bsAtoms.cardinality();
+    for (int i = baseModelIndex; i < modelCount; i++) {
       Map<String, String> atomProperties = (Map<String, String>) modelSet.getModelAuxiliaryInfoValue(i,
           "atomProperties");
       if (atomProperties == null)
@@ -1058,7 +1054,6 @@ public final class ModelLoader {
       modelSet.setPdbConectBonding(baseAtomIndex, baseModelIndex, bsExclude);
 
     // 2. for each model in the collection,
-    int atomIndex = baseAtomIndex;
     int modelAtomCount = 0;
     boolean symmetryAlreadyAppliedToBonds = viewer.getBoolean(T.applysymmetrytobonds);
     boolean doAutoBond = viewer.getBoolean(T.autobond);
@@ -1068,7 +1063,7 @@ public final class ModelLoader {
     int modelCount = modelSet.modelCount;
     Model[] models = modelSet.models;
     if (!noAutoBond)
-      for (int i = baseModelIndex; i < modelCount; atomIndex += modelAtomCount, i++) {
+      for (int i = baseModelIndex; i < modelCount; i++) {
         modelAtomCount = models[i].bsAtoms.cardinality();
         int modelBondCount = modelSet.getModelAuxiliaryInfoInt(i,
             "initialBondCount");

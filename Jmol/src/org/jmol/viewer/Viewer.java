@@ -2120,9 +2120,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       atomSetCollection = fileManager.createAtomSetCollectionFromFiles(
           fileNames, setLoadParameters(htParams, isAppend), isAppend);
       long ms = System.currentTimeMillis() - timeBegin;
-      String msg = "";
-      for (int i = 0; i < fileNames.length; i++)
-        msg += (i == 0 ? "" : ",") + fileNames[i];
       Logger.info("openFiles(" + fileNames.length + ") " + ms + " ms");
       fileNames = (String[]) htParams.get("fullPathNames");
       String[] fileTypes = (String[]) htParams.get("fileTypes");

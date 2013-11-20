@@ -798,8 +798,8 @@ class IsoSolventReader extends AtomDataReader {
 
   private class Edge {
     int ia, ib;
-    int nFaces;
-    int nInvalid;
+    //int nFaces;
+    //int nInvalid;
     //int type; // > 0 nFaces; < 0 -nInvalid; otherwise 0;
 
     Edge(int ia, int ib) {
@@ -810,13 +810,13 @@ class IsoSolventReader extends AtomDataReader {
     private List<Face> aFaces;
     void addFace(Face f) {
       if (f == null) {
-        nInvalid++;
+        //nInvalid++;
         return;
       }
       if (aFaces == null)
         aFaces = new  List<Face>();
       aFaces.addLast(f);
-      nFaces++;
+      //nFaces++;
     }
 
     //void setType() {

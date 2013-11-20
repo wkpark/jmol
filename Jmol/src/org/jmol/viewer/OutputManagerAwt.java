@@ -81,6 +81,7 @@ final public class OutputManagerAwt extends OutputManager {
     return AwtClipboard.getClipboardText();
   }
 
+  @SuppressWarnings("resource")
   @Override
   OC openOutputChannel(double privateKey, String fileName,
                                       boolean asWriter, boolean asAppend)

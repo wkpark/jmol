@@ -231,7 +231,7 @@ public class MarchingCubes extends TriangleData {
      * Feb 10, 2009 -- Bob Hanson
      */
 
-    int insideCount = 0, outsideCount = 0, surfaceCount = 0;
+    //int insideCount = 0, outsideCount = 0, surfaceCount = 0;
     edgeCount = 0;
 
     int x0, x1, xStep, ptStep, pt, ptX;
@@ -344,14 +344,14 @@ public class MarchingCubes extends TriangleData {
           if (noValues && !Float.isNaN(v))
             noValues = false;
           if (insideMask == 0) {
-            ++outsideCount;
+            //++outsideCount;
             continue;
           }
           if (insideMask == 0xFF) {
-            ++insideCount;
+            //++insideCount;
             continue;
           }
-          ++surfaceCount;
+          //++surfaceCount;
 
           // This cube is straddling the cutoff. We must check all edges
           // Note that we do not process it if it has an NaN values

@@ -80,6 +80,7 @@ public class JmolTouchSimulator implements JmolTouchSimulatorInterface {
         //_in = new DataInputStream(socket.getInputStream());
 	      _out = new DataOutputStream(socket.getOutputStream());
 	      _out.writeByte(ConnectionType.INPUT_DEVICE);
+	      socket.close();
 	      return true;
 	    } catch (UnknownHostException e) {
 	      Logger.error("Could not locate a server at " + address);

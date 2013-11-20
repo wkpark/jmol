@@ -117,8 +117,8 @@ public void initShape() {
   private int indicatedModelIndex = -1;
   private int[] modelInfo;
   private boolean makePoints;
-  private int nidentifiers;
-  private int nbitsets;
+  //private int nidentifiers;
+  //private int nbitsets;
   private P4 plane;
   private BS bsAllModels;
   private List<Object> polygon;
@@ -328,7 +328,7 @@ public void initShape() {
         vData.addLast(new Object[] { Integer.valueOf(PT_IDENTIFIER),
             new int[] { meshIndex, isReversed ? 1 : 0, isVertices ? 1 : 0 } });
         isReversed = isVertices = false;
-        nidentifiers++;
+        //nidentifiers++;
       } else {
         Logger.error("draw identifier " + value + " not found");
         isValid = false;
@@ -362,7 +362,7 @@ public void initShape() {
         return;
       BS bsAtoms = (BS) value;
       vData.addLast(new Object[] { Integer.valueOf(PT_BITSET), bsAtoms });
-      nbitsets++;
+      //nbitsets++;
       if (isCircle && diameter == 0 && width == 0)
         width = viewer.calcRotationRadiusBs(bsAtoms) * 2.0f;
       return;
@@ -451,7 +451,7 @@ private void initDraw() {
    length = Float.MAX_VALUE;
    lineData = null;
    newScale = 0;
-   nidentifiers = nbitsets = 0;
+   //nidentifiers = nbitsets = 0;
    offset = null;
    plane = null;
    polygon = null;

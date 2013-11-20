@@ -122,7 +122,6 @@ class SurfaceToolGUI extends JPanel implements WindowConstants, WindowListener,
    * @param slicer
    *        (SurfaceTool) the surfaceTool that activated this GUI
    */
-  @SuppressWarnings("unchecked")
   SurfaceToolGUI(JmolViewer viewer, HistoryFile hfile, String winName,
       SurfaceTool slicer) {
     super(new BorderLayout());
@@ -651,10 +650,9 @@ class SurfaceToolGUI extends JPanel implements WindowConstants, WindowListener,
 
   }
 
-  @SuppressWarnings("unchecked")
-  class SurfaceListCellRenderer extends JLabel implements ListCellRenderer {
+  class SurfaceListCellRenderer extends JLabel implements ListCellRenderer<Object> {
 
-    public Component getListCellRendererComponent(JList list, Object value,
+    public Component getListCellRendererComponent(JList<?> list, Object value,
                                                   int index,
                                                   boolean isSelected,
                                                   boolean cellHasFocus) {

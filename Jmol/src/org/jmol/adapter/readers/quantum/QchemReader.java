@@ -579,14 +579,13 @@ $end
      * qchem: f 1=f3-, f 2=f2-, f 3=f1-, f 4=f0, f 5=f1+, f 6=f2+, f 7=f3+
      * 
      */
-    int nMOs; // total number of MOs that were read
     String orbitalType = getTokensStr(line)[0]; // is RESTRICTED or ALPHA
     alphaBeta = (orbitalType.equals("RESTRICTTED") ? "" : "A");
-    nMOs = readMOs(orbitalType.equals("RESTRICTED"), alphas);
+    readMOs(orbitalType.equals("RESTRICTED"), alphas);
     if (orbitalType.equals("ALPHA")) { // we also have BETA orbitals....
       discardLinesUntilContains("BETA");
       alphaBeta = "B";
-      nMOs += readMOs(false, betas);
+      readMOs(false, betas);
     }
     boolean isOK = true;
     if (dList.length() > 0) {

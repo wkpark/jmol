@@ -185,7 +185,7 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
     String key;
     if (htModulation.containsKey("X_" + suffix))
       return;
-    htModulation.put("X_" +suffix, new P3());
+    htModulation.put("X_" + suffix, new P3());
     q123 = new M3();
     qlen = new double[modDim];
     for (int i = 0; i < modDim; i++) {
@@ -194,6 +194,7 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
         Logger.info("Not enough cell wave vectors for d=" + modDim);
         return;
       }
+      appendLoadNote("W_" + (i + 1) + " = " + pt);
       if (i == 0)
         q1 = P3.newP(pt);
       q123.setRowV(i, pt);
@@ -201,7 +202,7 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
     }
     q1Norm = V3.new3(q1.x == 0 ? 0 : 1, q1.y == 0 ? 0 : 1, q1.z == 0 ? 0 : 1);
     P3 qlist100 = P3.new3(1, 0, 0);
-    P3 pt;    
+    P3 pt;
     int n = atomSetCollection.getAtomCount();
     Map<String, P3> map = new Hashtable<String, P3>();
     for (Entry<String, P3> e : htModulation.entrySet()) {
@@ -230,17 +231,23 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
           continue;
         }
         //$FALL-THROUGH$
-      case 'F': 
-        // convert JAVA Fourier descriptions to standard descriptions
+      case 'F':
+        // convert JANA Fourier descriptions to standard descriptions
         if (key.indexOf("_q_") >= 0) {
           // d > 1 -- already set
           appendLoadNote("Wave vector " + key + "=" + pt);
         } else {
-          int fn = (int) (pt.dot(q1) / q1.dot(q1) * 1.01f);
-          String k2 = key  + "_q_";
-          if (!htModulation.containsKey(k2 + suffix)) {
-            addModulation(map, k2, P3.new3(fn, 0, 0), iModel);
-            //appendLoadNote("Wave vector " + key + " = " + pt + " n = " + fn);
+          P3 ptHarmonic = getHarmonicCoef(pt); 
+          if (ptHarmonic == null) {
+            appendLoadNote("Cannot match atom wave vector " + key + " " + pt
+                + " to a cell wave vector or its harmonic");
+          } else {
+            String k2 = key + "_q_";
+            if (!htModulation.containsKey(k2 + suffix)) {
+              addModulation(map, k2, ptHarmonic, iModel);
+              if (key.startsWith("F_"))
+                appendLoadNote("atom wave vector " + key + " = " + pt + " n = " + (int) ptHarmonic.length());
+            }
           }
         }
         break;
@@ -272,11 +279,11 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
       case 'D':
         char id = key.charAt(2);
         char axis = key.charAt(pt_);
-        type = (id == 'S' ? Modulation.TYPE_DISP_SAWTOOTH 
-            : id == '0' ? Modulation.TYPE_OCC_CRENEL 
-            : type == 'O' ? Modulation.TYPE_OCC_FOURIER
-            : type == 'U' ? Modulation.TYPE_U_FOURIER
-            : Modulation.TYPE_DISP_FOURIER);
+        type = (id == 'S' ? Modulation.TYPE_DISP_SAWTOOTH
+            : id == '0' ? Modulation.TYPE_OCC_CRENEL
+                : type == 'O' ? Modulation.TYPE_OCC_FOURIER
+                    : type == 'U' ? Modulation.TYPE_U_FOURIER
+                        : Modulation.TYPE_DISP_FOURIER);
         if (htAtomMods == null)
           htAtomMods = new Hashtable<String, List<Modulation>>();
         int fn = (id == 'S' ? 0 : parseIntStr(key.substring(2)));
@@ -286,8 +293,11 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
           P3 qlist = getMod("F_" + fn + "_q_");
           if (qlist == null) {
             Logger.error("Missing qlist for F_" + fn);
+            appendLoadNote("Missing cell wave vector for atom wave vector "
+                + fn + " for " + key + " " + params);
+          } else {
+            addAtomModulation(atomName, axis, type, params, utens, qlist);
           }
-          addAtomModulation(atomName, axis, type, params, utens, qlist);
         }
         haveAtomMods = true;
         break;
@@ -303,6 +313,32 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
       modulateAtom(atoms[i], sb);
     atomSetCollection.setAtomSetAtomProperty("modt", sb.toString(), -1);
     htAtomMods = null;
+  }
+
+  private P3 getHarmonicCoef(P3 pt) {
+    for (int i = 1; i <= 3; i++) {
+      P3 q = getMod("W_" + i);
+      if (q != null) {
+        float fn = pt.dot(q) / q.dot(q) * 1.01f;
+        int ifn = (int) fn;
+        if (Math.abs(fn/ifn - 1) < 0.02f) {
+          P3 p = new P3();
+          switch (i) {
+          case 1:
+            p.x = ifn;
+            break;
+          case 2:
+            p.y = ifn;
+            break;
+          case 3:
+            p.z = ifn;
+            break;
+          }
+          return p;
+        }
+      }
+    }
+    return null;
   }
 
   private void addAtomModulation(String atomName, char axis, int type,
@@ -399,8 +435,7 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
 //          a.foccupancy = 1;
 //        }
 //      } 
-    }
-    if (ms.htUij != null) {
+    } else if (ms.htUij != null) {
       // Uiso or Uij. We add the displacements, create the tensor, then rotate it, 
       // replacing the tensor already present for that atom.
       if (Logger.debuggingHigh) {
@@ -421,6 +456,8 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
             + "\n");
         Logger.debug("setModulation tensor=" + ((Tensor) a.tensors.get(0)).getInfo("all"));
       }
+    } else {
+      a.vib = ms;
     }
 
     // set property_modT to be Math.floor (q.r/|q|) -- really only for d=1

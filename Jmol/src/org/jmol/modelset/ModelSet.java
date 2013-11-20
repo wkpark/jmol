@@ -576,7 +576,6 @@ import java.util.Map;
     moleculeCount = 0;
     BS bsModels = getModelBitSet(bsAtoms, false);
     includeAllRelatedFrames(bsModels);
-    int nAtomsDeleted = 0;
 
     int nModelsDeleted = BSUtil.cardinalityOf(bsModels);
     if (nModelsDeleted == 0)
@@ -627,7 +626,6 @@ import java.util.Map;
       int nAtoms = oldModels[i].atomCount;
       if (nAtoms == 0)
         continue;
-      nAtomsDeleted += nAtoms;
       BS bs = oldModels[i].bsAtoms;
       int firstAtomIndex = oldModels[i].firstAtomIndex;
 

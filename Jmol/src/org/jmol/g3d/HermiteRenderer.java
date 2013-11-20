@@ -118,7 +118,6 @@ public class HermiteRenderer implements G3DRenderer {
     sRight[0] = 1;
     pRight[0].setT(p2);
     int sp = 0;
-    int n=0;
     int dDiameterFirstHalf = 0;
     int dDiameterSecondHalf = 0;
     if (fill) {
@@ -135,7 +134,6 @@ public class HermiteRenderer implements G3DRenderer {
           // mth 2003 10 13
           // I tried drawing short cylinder segments here,
           // but drawing spheres was faster
-          n++;
           float s = sLeft[sp];
           if (fill) {
             int d =(s < 0.5f

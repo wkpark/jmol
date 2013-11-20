@@ -144,7 +144,6 @@ import javajs.util.OC;
 import javajs.util.PT;
 import javajs.util.P3;
 import javajs.util.P4;
-import org.jmol.util.Txt;
 import javajs.util.V3;
 
 public class SurfaceGenerator {

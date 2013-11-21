@@ -318,8 +318,8 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
   private P3[] qs;
 
   /**
-   * determine simple linear combination assuming simple -3 to 3
-   * no more than two dimensions.
+   * determine simple linear combination assuming simple -3 to 3 no more than
+   * two dimensions.
    * 
    * @param p
    * @return {i j k}
@@ -330,8 +330,28 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
       for (int i = 0; i < 3; i++)
         qs[i] = getMod("W_" + (i + 1));
     }
-    // for d < 3 only:
     P3 pt = new P3();
+    // test n * q
+    for (int i = 0; i < 3; i++)
+      if (qs[i] != null) {
+        float fn = p.dot(qs[i]) / qs[i].dot(qs[i]);
+        int ifn = Math.round(fn);
+        if (Math.abs(fn - ifn) < 0.001f) {
+          switch(i) {
+          case 0:
+            pt.x = ifn;
+            break;
+          case 1:
+            pt.y = ifn;
+            break;
+          case 2:
+            pt.z = ifn;
+            break;
+          }
+          return pt; 
+        }
+      }
+    // test linear combination -3 to +3:
     int jmin = (modDim < 2 ? 0 : -3);
     int jmax = (modDim < 2 ? 0 : 3);
     int kmin = (modDim < 3 ? 0 : -3);

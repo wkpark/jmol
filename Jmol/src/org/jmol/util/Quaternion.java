@@ -801,23 +801,15 @@ public class Quaternion {
    * @return     standard deviation in units of degrees
    */
   private static float stdDev(Quaternion[] data, Quaternion mean) {
-    double sum = 0;
+    // the quaternion dot product gives q0 for dq (i.e. q / mean)
+    // that is, cos(theta/2) for theta between them
     double sum2 = 0;
     int n = data.length;
-    // the quaternion dot product gives q0 for dq
-    // that is, cos(theta/2) for theta between them
-    
     for (int i = n; --i >= 0;) {
-      Quaternion dq = data[i].div(mean);
-      float theta = dq.getTheta();
-      //System.out.println("stdDev " + dq + " "+ mean + " " + theta);
-      sum += theta;
+      float theta = data[i].div(mean).getTheta(); 
       sum2 += theta * theta;
     }
-    sum2 = sum2 - sum * sum / n;
-    if (sum2 < 0)
-      sum2 = 0;
-    return (float) Math.sqrt(sum2 / (n - 1));
+    return (float) Math.sqrt(sum2 / n);
   }
 
   public float[] getEulerZYZ() {

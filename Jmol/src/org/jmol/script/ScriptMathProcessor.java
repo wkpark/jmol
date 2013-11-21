@@ -27,6 +27,7 @@ import javajs.util.AU;
 import javajs.util.List;
 import java.util.Arrays;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Set;
 
@@ -336,6 +337,7 @@ public class ScriptMathProcessor {
 
   private boolean haveSpaceBeforeSquare;
   private int equalCount;
+  private static final String qMods = "w:0 x:1 y:2 z:3 normal:4 eulerzxz:5 eulerzyz:6 vector:-1 theta:-2 axisx:-3 axisy:-4 axisz:-5 axisangle:-6 matrix:-9";
   
   boolean addOpAllowMath(T op, boolean allowMathFunc) throws ScriptException {
 
@@ -1258,6 +1260,11 @@ public class ScriptMathProcessor {
           P4 v4 = P4.newPt((P4) x2.value);
           (Quaternion.newP4(pt4)).getThetaDirected(v4);
           return addXPt4(v4);
+        }
+        if (n == 0 && x2.tok == T.string) {
+          s = x2.value.toString().trim().toLowerCase() + ":";
+          int i = qMods.indexOf(s);
+          n = (i >= 0 ? PT.parseInt(qMods.substring(i + s.length())) : -99);
         }
         switch (n) {
         // q%0 w

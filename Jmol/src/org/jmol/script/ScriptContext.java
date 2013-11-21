@@ -73,6 +73,8 @@ public class ScriptContext {
   int statementLength;
   ContextToken token;
   int tryPt;
+  T theToken;
+  int theTok;
   
   ScriptContext() {
     id = ++contextCount;

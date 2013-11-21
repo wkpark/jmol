@@ -2573,6 +2573,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     context.lineEnd = lineEnd;
     context.pcEnd = pcEnd;
     context.iToken = iToken;
+    context.theToken = theToken;
+    context.theTok = theTok;
     context.outputBuffer = outputBuffer;
     context.contextVariables = contextVariables;
     context.isStateScript = isStateScript;
@@ -2651,6 +2653,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       parallelProcessor = context.parallelProcessor;
       functionName = context.functionName;
       iToken = context.iToken;
+      theToken = context.theToken;
+      theTok = context.theTok;
+
       outputBuffer = context.outputBuffer;
       isStateScript = context.isStateScript;
       thisContext = context.parentContext;

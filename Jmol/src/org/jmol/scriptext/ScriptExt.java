@@ -102,7 +102,6 @@ import org.jmol.viewer.Viewer.ACCESS;
 public class ScriptExt implements JmolScriptExtension {
   private Viewer viewer;
   private ScriptEvaluator eval;
-  private ScriptMathProcessor mp;
   private ShapeManager sm;
   private boolean chk;
   private String fullCommand;
@@ -7011,7 +7010,6 @@ public class ScriptExt implements JmolScriptExtension {
   // ScriptMathProcessor extensions
   
   public boolean evaluate(ScriptMathProcessor mp, T op, SV[] args, int tok) throws ScriptException {
-    this.mp = mp;
     switch (tok) {
     case T.abs:
     case T.acos:
@@ -7019,101 +7017,101 @@ public class ScriptExt implements JmolScriptExtension {
     case T.now:
     case T.sin:
     case T.sqrt:
-      return evaluateMath(args, tok);
+      return evaluateMath(mp, args, tok);
     case T.add:
     case T.div:
     case T.mul:
     case T.sub:
-      return evaluateList(op.intValue, args);
+      return evaluateList(mp, op.intValue, args);
     case T.array:
     case T.leftsquare:
-      return evaluateArray(args, tok == T.leftsquare);
+      return evaluateArray(mp, args, tok == T.leftsquare);
     case T.axisangle:
     case T.quaternion:
-      return evaluateQuaternion(args, tok);
+      return evaluateQuaternion(mp, args, tok);
     case T.bin:
-      return evaluateBin(args);
+      return evaluateBin(mp, args);
     case T.col:
     case T.row:
-      return evaluateRowCol(args, tok);
+      return evaluateRowCol(mp, args, tok);
     case T.color:
-      return evaluateColor(args);
+      return evaluateColor(mp, args);
     case T.compare:
-      return evaluateCompare(args);
+      return evaluateCompare(mp, args);
     case T.connected:
-      return evaluateConnected(args);
+      return evaluateConnected(mp, args);
     case T.cross:
-      return evaluateCross(args);
+      return evaluateCross(mp, args);
     case T.data:
-      return evaluateData(args);
+      return evaluateData(mp, args);
     case T.distance:
     case T.dot:
       if (op.tok == T.propselector)
-        return evaluateDot(args, tok, op.intValue);
+        return evaluateDot(mp, args, tok, op.intValue);
       //$FALL-THROUGH$
     case T.angle:
     case T.measure:
-      return evaluateMeasure(args, op.tok);
+      return evaluateMeasure(mp, args, op.tok);
     case T.file:
     case T.load:
-      return evaluateLoad(args, tok);
+      return evaluateLoad(mp, args, tok);
     case T.find:
-      return evaluateFind(args);
+      return evaluateFind(mp, args);
     case T.function:
-      return evaluateUserFunction((String) op.value, args, op.intValue,
+      return evaluateUserFunction(mp, (String) op.value, args, op.intValue,
           op.tok == T.propselector);
     case T.format:
     case T.label:
-      return evaluateLabel(op.intValue, args);
+      return evaluateLabel(mp, op.intValue, args);
     case T.getproperty:
-      return evaluateGetProperty(args);
+      return evaluateGetProperty(mp, args);
     case T.helix:
-      return evaluateHelix(args);
+      return evaluateHelix(mp, args);
     case T.hkl:
     case T.plane:
     case T.intersection:
-      return evaluatePlane(args, tok);
+      return evaluatePlane(mp, args, tok);
     case T.javascript:
     case T.script:
-      return evaluateScript(args, tok);
+      return evaluateScript(mp, args, tok);
     case T.join:
     case T.split:
     case T.trim:
-      return evaluateString(op.intValue, args);
+      return evaluateString(mp, op.intValue, args);
     case T.point:
-      return evaluatePoint(args);
+      return evaluatePoint(mp, args);
     case T.prompt:
-      return evaluatePrompt(args);
+      return evaluatePrompt(mp, args);
     case T.random:
-      return evaluateRandom(args);
+      return evaluateRandom(mp, args);
     case T.replace:
-      return evaluateReplace(args);
+      return evaluateReplace(mp, args);
     case T.search:
     case T.smiles:
     case T.substructure:
-      return evaluateSubstructure(args, tok);
+      return evaluateSubstructure(mp, args, tok);
     case T.cache:
-      return evaluateCache(args);
+      return evaluateCache(mp, args);
     case T.sort:
     case T.count:
-      return evaluateSort(args, tok);
+      return evaluateSort(mp, args, tok);
     case T.symop:
-      return evaluateSymop(args, op.tok == T.propselector);
+      return evaluateSymop(mp, args, op.tok == T.propselector);
 //    case Token.volume:
   //    return evaluateVolume(args);
     case T.tensor:
-      return evaluateTensor(args);
+      return evaluateTensor(mp, args);
     case T.within:
-      return evaluateWithin(args);
+      return evaluateWithin(mp, args);
     case T.contact:
-      return evaluateContact(args);
+      return evaluateContact(mp, args);
     case T.write:
-      return evaluateWrite(args);
+      return evaluateWrite(mp, args);
     }
     return false;
   }
 
-  private boolean evaluateTensor(SV[] args) throws ScriptException {
+  private boolean evaluateTensor(ScriptMathProcessor mp, SV[] args) throws ScriptException {
     // {*}.tensor()
     // {*}.tensor("isc")            // only within this atom set
     // {atomindex=1}.tensor("isc")  // all to this atom
@@ -7129,13 +7127,13 @@ public class ScriptExt implements JmolScriptExtension {
     return mp.addXList(calc.getTensorInfo(tensorType, infoType, bs));
   }
 
-  private boolean evaluateCache(SV[] args) {
+  private boolean evaluateCache(ScriptMathProcessor mp, SV[] args) {
     if (args.length > 0)
       return false;
     return mp.addXMap(viewer.cacheList());
   }
 
-  private boolean evaluateCompare(SV[] args) throws ScriptException {
+  private boolean evaluateCompare(ScriptMathProcessor mp, SV[] args) throws ScriptException {
     // compare([{bitset} or {positions}],[{bitset} or {positions}] [,"stddev"])
     // compare({bitset},{bitset}[,"SMARTS"|"SMILES"],smilesString [,"stddev"])
     // returns matrix4f for rotation/translation or stddev
@@ -7273,7 +7271,7 @@ public class ScriptExt implements JmolScriptExtension {
         .addXM4(m));
   }
 
-  private boolean evaluateContact(SV[] args) {
+  private boolean evaluateContact(ScriptMathProcessor mp, SV[] args) {
     if (args.length < 1 || args.length > 3)
       return false;
     int i = 0;
@@ -7312,7 +7310,7 @@ public class ScriptExt implements JmolScriptExtension {
 //    return mp.addX(viewer.getVolume((BitSet) x1.value, type));
 //  }
 
-  private boolean evaluateSort(SV[] args, int tok)
+  private boolean evaluateSort(ScriptMathProcessor mp, SV[] args, int tok)
       throws ScriptException {
     if (args.length > 1)
       return false;
@@ -7368,19 +7366,10 @@ public class ScriptExt implements JmolScriptExtension {
 
   }
 
-  /**
-   * 
-   * {xxx}.symop()
-   * 
-   * symop({xxx}
-   * 
-   * @param args
-   * @param haveBitSet
-   * @return true/false
-   * @throws ScriptException
-   */
-  private boolean evaluateSymop(SV[] args, boolean haveBitSet)
-      throws ScriptException {
+  private boolean evaluateSymop(ScriptMathProcessor mp, SV[] args,
+                                boolean haveBitSet) throws ScriptException {
+    // {xxx}.symop()
+    // symop({xxx}    
     if (args.length == 0)
       return false;
     SV x1 = (haveBitSet ? mp.getX() : null);
@@ -7405,8 +7394,8 @@ public class ScriptExt implements JmolScriptExtension {
     if (args.length == 2 && !Float.isNaN(pt.x))
       return mp.addXObj(viewer.getSymmetryInfo(bs, xyz, iOp, pt, null, null,
           T.point));
-    String desc = (args.length == 1 ? "" : SV
-        .sValue(args[args.length - 1])).toLowerCase();
+    String desc = (args.length == 1 ? "" : SV.sValue(args[args.length - 1]))
+        .toLowerCase();
     int tok = T.draw;
     if (args.length == 1 || desc.equalsIgnoreCase("matrix")) {
       tok = T.matrix4f;
@@ -7429,10 +7418,11 @@ public class ScriptExt implements JmolScriptExtension {
     } else if (desc.equalsIgnoreCase("center")) {
       tok = T.center;
     }
-    return mp.addXObj(viewer.getSymmetryInfo(bs, xyz, iOp, pt, null, desc, tok));
+    return mp
+        .addXObj(viewer.getSymmetryInfo(bs, xyz, iOp, pt, null, desc, tok));
   }
 
-  private boolean evaluateBin(SV[] args) throws ScriptException {
+  private boolean evaluateBin(ScriptMathProcessor mp, SV[] args) throws ScriptException {
     if (args.length != 3)
       return false;
     SV x1 = mp.getX();
@@ -7466,7 +7456,7 @@ public class ScriptExt implements JmolScriptExtension {
     return mp.addXAI(array);
   }
 
-  private boolean evaluateHelix(SV[] args) throws ScriptException {
+  private boolean evaluateHelix(ScriptMathProcessor mp, SV[] args) throws ScriptException {
     if (args.length < 1 || args.length > 5)
       return false;
     // helix({resno=3})
@@ -7531,17 +7521,9 @@ public class ScriptExt implements JmolScriptExtension {
     return false;
   }
 
-  /**
-   * distance, dot
-   * 
-   * @param args
-   * @param tok
-   * @param intValue
-   * @return variable
-   * @throws ScriptException
-   */
-  private boolean evaluateDot(SV[] args, int tok, int intValue)
+  private boolean evaluateDot(ScriptMathProcessor mp, SV[] args, int tok, int intValue)
       throws ScriptException {
+    // distance and dot
     if (args.length != 1)
       return false;
     SV x1 = mp.getX();
@@ -7571,10 +7553,10 @@ public class ScriptExt implements JmolScriptExtension {
         }
       }
     }
-    return mp.addXFloat(getDistance(x1, x2, tok));
+    return mp.addXFloat(getDistance(mp, x1, x2, tok));
   }
 
-  private float getDistance(SV x1, SV x2, int tok) throws ScriptException {
+  private float getDistance(ScriptMathProcessor mp, SV x1, SV x2, int tok) throws ScriptException {
     P3 pt1 = mp.ptValue(x1, true);
     P4 plane1 = mp.planeValue(x1);
     P3 pt2 = mp.ptValue(x2, true);
@@ -7599,7 +7581,7 @@ public class ScriptExt implements JmolScriptExtension {
     return Measure.distanceToPlane(plane1, pt2);
   }
 
-  private boolean evaluateMeasure(SV[] args, int tok)
+  private boolean evaluateMeasure(ScriptMathProcessor mp, SV[] args, int tok)
       throws ScriptException {
     int nPoints = 0;
     switch (tok) {
@@ -7710,7 +7692,7 @@ public class ScriptExt implements JmolScriptExtension {
         points);
   }
 
-  private boolean evaluateUserFunction(String name, SV[] args,
+  private boolean evaluateUserFunction(ScriptMathProcessor mp, String name, SV[] args,
                                        int tok, boolean isSelector)
       throws ScriptException {
     SV x1 = null;
@@ -7733,7 +7715,7 @@ public class ScriptExt implements JmolScriptExtension {
     return (var == null ? false : mp.addXVar(var));
   }
 
-  private boolean evaluateFind(SV[] args) throws ScriptException {
+  private boolean evaluateFind(ScriptMathProcessor mp, SV[] args) throws ScriptException {
     if (args.length == 0)
       return false;
 
@@ -7859,7 +7841,7 @@ public class ScriptExt implements JmolScriptExtension {
     return (pm == null ? pm = (JmolPatternMatcher) Interface.getOptionInterface("util.PatternMatcher") : pm);
   }
 
-  private boolean evaluateGetProperty(SV[] args) {
+  private boolean evaluateGetProperty(ScriptMathProcessor mp, SV[] args) {
     int pt = 0;
     String propertyName = (args.length > pt ? SV.sValue(args[pt++])
         .toLowerCase() : "");
@@ -7893,7 +7875,7 @@ public class ScriptExt implements JmolScriptExtension {
         .toReadable(propertyName, property));
   }
 
-  private boolean evaluatePlane(SV[] args, int tok)
+  private boolean evaluatePlane(ScriptMathProcessor mp, SV[] args, int tok)
       throws ScriptException {
     if (tok == T.hkl && args.length != 3 
         || tok == T.intersection && args.length != 2 && args.length != 3 
@@ -8048,7 +8030,7 @@ public class ScriptExt implements JmolScriptExtension {
     return mp.addXPt4(P4.new4(x, y, z, w));
   }
 
-  private boolean evaluatePoint(SV[] args) {
+  private boolean evaluatePoint(ScriptMathProcessor mp, SV[] args) {
     if (args.length != 1 && args.length != 3 && args.length != 4)
       return false;
     switch (args.length) {
@@ -8070,7 +8052,7 @@ public class ScriptExt implements JmolScriptExtension {
     return false;
   }
 
-  private boolean evaluatePrompt(SV[] args) {
+  private boolean evaluatePrompt(ScriptMathProcessor mp, SV[] args) {
     //x = prompt("testing")
     //x = prompt("testing","defaultInput")
     //x = prompt("testing","yes|no|cancel", true)
@@ -8087,7 +8069,7 @@ public class ScriptExt implements JmolScriptExtension {
     return (asButtons && buttonArray != null ? mp.addXInt(Integer.parseInt(s) + 1) : mp.addXStr(s));
   }
 
-  private boolean evaluateReplace(SV[] args) throws ScriptException {
+  private boolean evaluateReplace(ScriptMathProcessor mp, SV[] args) throws ScriptException {
     if (args.length != 2)
       return false;
     SV x = mp.getX();
@@ -8102,7 +8084,7 @@ public class ScriptExt implements JmolScriptExtension {
     return mp.addXAS(list);
   }
 
-  private boolean evaluateString(int tok, SV[] args)
+  private boolean evaluateString(ScriptMathProcessor mp, int tok, SV[] args)
       throws ScriptException {
     if (args.length > 1)
       return false;
@@ -8142,7 +8124,8 @@ public class ScriptExt implements JmolScriptExtension {
     return mp.addXStr("");
   }
 
-  private boolean evaluateList(int tok, SV[] args)
+  private boolean evaluateList(ScriptMathProcessor mp, 
+                               int tok, SV[] args)
       throws ScriptException {
     if (args.length != 1
         && !(tok == T.add && (args.length == 0 || args.length == 2)))
@@ -8271,7 +8254,7 @@ public class ScriptExt implements JmolScriptExtension {
     return mp.addXAV(olist);
   }
 
-  private boolean evaluateRowCol(SV[] args, int tok)
+  private boolean evaluateRowCol(ScriptMathProcessor mp, SV[] args, int tok)
       throws ScriptException {
     if (args.length != 1)
       return false;
@@ -8314,7 +8297,8 @@ public class ScriptExt implements JmolScriptExtension {
 
   }
 
-  private boolean evaluateArray(SV[] args, boolean allowMatrix) {
+  private boolean evaluateArray(ScriptMathProcessor mp, 
+                                SV[] args, boolean allowMatrix) {
     int len = args.length;
     if (allowMatrix && (len == 4 || len == 3)) {
       boolean isMatrix = true;
@@ -8347,7 +8331,7 @@ public class ScriptExt implements JmolScriptExtension {
     return mp.addXAV(a);
   }
 
-  private boolean evaluateMath(SV[] args, int tok) {
+  private boolean evaluateMath(ScriptMathProcessor mp, SV[] args, int tok) {
     if (tok == T.now) {
       if (args.length == 1 && args[0].tok == T.string)
         return mp.addXStr((new Date()) + "\t" + SV.sValue(args[0]));
@@ -8375,7 +8359,7 @@ public class ScriptExt implements JmolScriptExtension {
     return false;
   }
 
-  private boolean evaluateQuaternion(SV[] args, int tok)
+  private boolean evaluateQuaternion(ScriptMathProcessor mp, SV[] args, int tok)
       throws ScriptException {
     P3 pt0 = null;
     // quaternion([quaternion array]) // mean
@@ -8535,7 +8519,7 @@ public class ScriptExt implements JmolScriptExtension {
     return mp.addXPt4((q == null ? Quaternion.newP4(p4) : q).toPoint4f());
   }
 
-  private boolean evaluateRandom(SV[] args) {
+  private boolean evaluateRandom(ScriptMathProcessor mp, SV[] args) {
     if (args.length > 2)
       return false;
     float lower = (args.length < 2 ? 0 : SV.fValue(args[0]));
@@ -8545,7 +8529,7 @@ public class ScriptExt implements JmolScriptExtension {
     return mp.addXFloat((float) (Math.random() * range) + lower);
   }
 
-  private boolean evaluateCross(SV[] args) {
+  private boolean evaluateCross(ScriptMathProcessor mp, SV[] args) {
     if (args.length != 2)
       return false;
     SV x1 = args[0];
@@ -8558,7 +8542,7 @@ public class ScriptExt implements JmolScriptExtension {
     return mp.addXPt(P3.newP(a));
   }
 
-  private boolean evaluateLoad(SV[] args, int tok) throws ScriptException {
+  private boolean evaluateLoad(ScriptMathProcessor mp, SV[] args, int tok) throws ScriptException {
     if (args.length > 2 || args.length < 1)
       return false;
     String file = SV.sValue(args[0]);
@@ -8578,13 +8562,13 @@ public class ScriptExt implements JmolScriptExtension {
         false, false) : viewer.getFilePath(file, false));
   }
 
-  private boolean evaluateWrite(SV[] args) throws ScriptException {
+  private boolean evaluateWrite(ScriptMathProcessor mp, SV[] args) throws ScriptException {
     if (args.length == 0)
       return false;
     return mp.addXStr(write(args));
   }
 
-  private boolean evaluateScript(SV[] args, int tok)
+  private boolean evaluateScript(ScriptMathProcessor mp, SV[] args, int tok)
       throws ScriptException {
     if (tok == T.javascript && args.length != 1 || args.length == 0
         || args.length > 2)
@@ -8610,7 +8594,7 @@ public class ScriptExt implements JmolScriptExtension {
         .indexOf(".") >= 0 ? mp.addXFloat(f) : mp.addXInt(javajs.util.PT.parseInt(s)));
   }
 
-  private boolean evaluateData(SV[] args) {
+  private boolean evaluateData(ScriptMathProcessor mp, SV[] args) {
 
     // x = data("somedataname") # the data
     // x = data("data2d_xxxx") # 2D data (x,y paired values)
@@ -8679,7 +8663,7 @@ public class ScriptExt implements JmolScriptExtension {
     return mp.addXStr(viewer.getData(selected, type));
   }
 
-  private boolean evaluateLabel(int intValue, SV[] args)
+  private boolean evaluateLabel(ScriptMathProcessor mp, int intValue, SV[] args)
       throws ScriptException {
     // NOT {xxx}.label
     // {xxx}.label("....")
@@ -8699,7 +8683,7 @@ public class ScriptExt implements JmolScriptExtension {
           x1.value, true, x1.index, asArray));
   }
 
-  private boolean evaluateWithin(SV[] args) throws ScriptException {
+  private boolean evaluateWithin(ScriptMathProcessor mp, SV[] args) throws ScriptException {
     if (args.length < 1 || args.length > 5)
       return false;
     int i = args.length;
@@ -8881,7 +8865,7 @@ public class ScriptExt implements JmolScriptExtension {
       return viewer.getAtomsNearPt(distance, (P3) data[2]);
     return new BS();
   }
-  private boolean evaluateColor(SV[] args) {
+  private boolean evaluateColor(ScriptMathProcessor mp, SV[] args) {
     // color("hsl", {r g b})         # r g b in 0 to 255 scale 
     // color("rwb")                  # "" for most recently used scheme for coloring by property
     // color("rwb", min, max)        # min/max default to most recent property mapping 
@@ -8934,7 +8918,7 @@ public class ScriptExt implements JmolScriptExtension {
     return mp.addXVar(SV.getVariableMap(key));
   }
 
-  private boolean evaluateConnected(SV[] args) {
+  private boolean evaluateConnected(ScriptMathProcessor mp, SV[] args) {
     /*
      * Two options here:
      * 
@@ -9028,7 +9012,7 @@ public class ScriptExt implements JmolScriptExtension {
     return mp.addXBs(viewer.getAtomsConnected(min, max, order, atoms1));
   }
 
-  private boolean evaluateSubstructure(SV[] args, int tok)
+  private boolean evaluateSubstructure(ScriptMathProcessor mp, SV[] args, int tok)
       throws ScriptException {
     // select substucture(....) legacy - was same as smiles(), now search()
     // select smiles(...)

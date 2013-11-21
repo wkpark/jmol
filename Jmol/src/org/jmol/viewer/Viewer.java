@@ -2700,7 +2700,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       modelManager.createAtomDataSet(atomSetCollection, tokType);
       switch (tokType) {
       case T.vibration:
-        setStatusFrameChanged(true);
+        setStatusFrameChanged(true, true);
         break;
       case T.vanderwaals:
         shapeManager.deleteVdwDependentShapes(null);
@@ -5137,7 +5137,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   int prevFrame = Integer.MIN_VALUE;
 
-  void setStatusFrameChanged(boolean isVib) {
+  void setStatusFrameChanged(boolean isVib, boolean doNotify) {
     if (isVib) {
       // force reset (reading vibrations)
       prevFrame = Integer.MIN_VALUE;
@@ -5183,8 +5183,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     global.setI("_frameID", frameID);
     global.setS("_modelNumber", strModelNo);
     global.setS("_modelName", (modelIndex < 0 ? "" : getModelName(modelIndex)));
-    global.setS("_modelTitle",
-        (modelIndex < 0 ? "" : getModelTitle(modelIndex)));
+    String title = (modelIndex < 0 ? "" : getModelTitle(modelIndex));
+    global.setS("_modelTitle", title == null ? "" : title);
     global.setS("_modelFile", (modelIndex < 0 ? "" : modelSet
         .getModelFileName(modelIndex)));
     global.setS("_modelType", (modelIndex < 0 ? "" : modelSet
@@ -5388,6 +5388,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     setErrorMessage(strError, null);
     global.setI("_loadPoint", ptLoad.getCode());
     boolean doCallback = (ptLoad != EnumFileStatus.CREATING_MODELSET);
+    if (doCallback)
+      setStatusFrameChanged(false, false);
     statusManager.setFileLoadStatus(fullPathName, fileName, modelName,
         strError, ptLoad.getCode(), doCallback, isAsync);
     if (doCallback && doHaveJDX())

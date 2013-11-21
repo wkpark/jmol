@@ -78,7 +78,7 @@ public class AnimationManager {
       viewer.refresh(3, "Viewer:setAnimationOff");
     animation(false);
     stopModulationThread();
-    viewer.setStatusFrameChanged(false);
+    viewer.setStatusFrameChanged(false, true);
     
   }
 
@@ -452,7 +452,7 @@ public class AnimationManager {
       setBackgroundModelIndex(-1);  
     viewer.setTainted(true);
     setFrameRangeVisible();
-    viewer.setStatusFrameChanged(false);
+    viewer.setStatusFrameChanged(false, true);
     if (viewer.modelSet != null && !viewer.global.selectAllModels)
         viewer.setSelectionSubset(viewer.getModelUndeletedAtomsBitSet(currentModelIndex));
   }

@@ -1218,12 +1218,8 @@ class SymmetryOperation extends M4 {
         uc.toFractional(ptemp, false);
         ftrans = V3.newV(ptemp);
       }
-      if (haveinversion && pitch1 != 0) {
-      }
     }
     if (ismirrorplane) {
-      if (trans != null) {
-      }
       ang1 = 0;
     }
     if (haveinversion) {

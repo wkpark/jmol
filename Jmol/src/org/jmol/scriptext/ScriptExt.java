@@ -8389,7 +8389,7 @@ public class ScriptExt implements JmolScriptExtension {
         nArgs--;
         isRelative = true;
       }
-      if (nArgs > 1 && args[nArgs - 1].tok == T.integer 
+      if (nArgs > 1 && args[nArgs - 1].tok == T.integer
           && args[0].tok == T.bitset) {
         nMax = args[nArgs - 1].asInt();
         if (nMax <= 0)
@@ -8405,7 +8405,7 @@ public class ScriptExt implements JmolScriptExtension {
       break;
     case 2:
       if (tok == T.quaternion) {
-        if (args[0].tok == T.varray && args[1].tok == T.varray)
+        if (args[0].tok == T.varray && (args[1].tok == T.varray || args[1].tok == T.on))
           break;
         if (args[0].tok == T.bitset
             && (args[1].tok == T.integer || args[1].tok == T.bitset))
@@ -8435,7 +8435,8 @@ public class ScriptExt implements JmolScriptExtension {
     P4 p4 = null;
     switch (nArgs) {
     case 0:
-      return mp.addXPt4(Quaternion.newQ(viewer.getRotationQuaternion()).toPoint4f());
+      return mp.addXPt4(Quaternion.newQ(viewer.getRotationQuaternion())
+          .toPoint4f());
     case 1:
     default:
       if (tok == T.quaternion && args[0].tok == T.varray) {
@@ -8451,7 +8452,8 @@ public class ScriptExt implements JmolScriptExtension {
         p4 = (P4) args[0].value;
       } else {
         String s = SV.sValue(args[0]);
-        Object v = Escape.uP(s.equalsIgnoreCase("best") ? viewer.getOrientationText(T.best, null) : s);
+        Object v = Escape.uP(s.equalsIgnoreCase("best") ? viewer
+            .getOrientationText(T.best, null) : s);
         if (!(v instanceof P4))
           return false;
         p4 = (P4) v;
@@ -8466,6 +8468,12 @@ public class ScriptExt implements JmolScriptExtension {
           Quaternion[] data2 = getQuaternionArray(args[1].getList(), T.list);
           qs = Quaternion.div(data2, data1, nMax, isRelative);
           break;
+        }
+        if (args[0].tok == T.varray  && args[1].tok == T.on) {
+          Quaternion[] data1 = getQuaternionArray(args[0].getList(), T.list);
+          float[] stddev = new float[1];
+          Quaternion.sphereMean(data1, stddev, 0.0001f);
+          return mp.addXFloat(stddev[0]);
         }
         if (args[0].tok == T.bitset && args[1].tok == T.bitset) {
           Quaternion[] data1 = viewer.getAtomGroupQuaternions(
@@ -8485,31 +8493,31 @@ public class ScriptExt implements JmolScriptExtension {
       break;
     case 3:
       if (args[0].tok == T.point4f) {
-        P3 pt = (args[2].tok == T.point3f ? (P3) args[2].value
-            : viewer.getAtomSetCenter((BS) args[2].value));
+        P3 pt = (args[2].tok == T.point3f ? (P3) args[2].value : viewer
+            .getAtomSetCenter((BS) args[2].value));
         return mp.addXStr((Quaternion.newP4((P4) args[0].value)).draw("q",
             SV.sValue(args[1]), pt, 1f));
       }
       P3[] pts = new P3[3];
       for (int i = 0; i < 3; i++)
-        pts[i] = (args[i].tok == T.point3f ? (P3) args[i].value
-            : viewer.getAtomSetCenter((BS) args[i].value));
+        pts[i] = (args[i].tok == T.point3f ? (P3) args[i].value : viewer
+            .getAtomSetCenter((BS) args[i].value));
       q = Quaternion.getQuaternionFrame(pts[0], pts[1], pts[2]);
       break;
     case 4:
       if (tok == T.quaternion)
-        p4 = P4.new4(SV.fValue(args[1]), SV
-            .fValue(args[2]), SV.fValue(args[3]), SV
-            .fValue(args[0]));
+        p4 = P4.new4(SV.fValue(args[1]), SV.fValue(args[2]),
+            SV.fValue(args[3]), SV.fValue(args[0]));
       else
-        q = Quaternion.newVA(P3.new3(SV.fValue(args[0]),
-            SV.fValue(args[1]), SV.fValue(args[2])),
-            SV.fValue(args[3]));
+        q = Quaternion
+            .newVA(
+                P3.new3(SV.fValue(args[0]), SV.fValue(args[1]),
+                    SV.fValue(args[2])), SV.fValue(args[3]));
       break;
     }
     if (qs != null) {
       if (nMax != Integer.MAX_VALUE) {
-        List<P4> list = new  List<P4>();
+        List<P4> list = new List<P4>();
         for (int i = 0; i < qs.length; i++)
           list.addLast(qs[i].toPoint4f());
         return mp.addXList(list);

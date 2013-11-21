@@ -36,7 +36,7 @@ public class BC {
      * 
      *       if (x == 0) return 0;
      *       var o = javajs.util.BC;
-     *       if (o.fracIEEE == null);
+     *       if (o.fracIEEE == null)
      *         o.setFracIEEE();
      *       var m = ((x & 0x7F800000) >> 23);
      *       return ((x & 0x80000000) == 0 ? 1 : -1) * o.shiftIEEE((x & 0x7FFFFF) | 0x800000, m - 149);

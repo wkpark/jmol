@@ -857,23 +857,22 @@ public class FileManager implements BytePoster {
          * for the image to load, and it is single-threaded
          * 
          * @j2sNative
-         * 
-         *            return;
+         *   
+         *   fullPathName = null; break;
          */
-        {}
-
+        {
+          if (apiPlatform.getImageWidth(image) < 1) {
+            fullPathName = "invalid or missing image " + fullPathName;
+            image = null;
+          }
+          break;
+        }
       } catch (Exception e) {
         System.out.println(e.toString());
         fullPathName = e.toString() + " opening 4 " + fullPathName;
         image = null;
         break;
       }
-      if (apiPlatform.getImageWidth(image) < 1) {
-        fullPathName = "invalid or missing image " + fullPathName;
-        image = null;
-        break;
-      }
-      break;
     }
     viewer.loadImageData(image, fullPathName, echoName, null);
   }

@@ -128,8 +128,8 @@ final class InfBlocks{
   }
 
   void reset(){
-    if(mode==BTREE || mode==DTREE){
-    }
+    //if(mode==BTREE || mode==DTREE){
+    //}
     if(mode==CODES){
       codes.free(z);
     }
@@ -400,9 +400,9 @@ final class InfBlocks{
 	    k+=8;
 	  }
 
-	  if(tb[0]==-1){
-            //System.err.println("null...");
-	  }
+	  //if(tb[0]==-1){
+    //        //System.err.println("null...");
+	  //}
 
 	  t=hufts[(tb[0]+(b&inflate_mask[t]))*3+1];
 	  c=hufts[(tb[0]+(b&inflate_mask[t]))*3+2];

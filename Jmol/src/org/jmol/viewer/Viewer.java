@@ -9045,6 +9045,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   void loadImageData(Object image, String nameOrError, String echoName,
                      ScriptContext sc) {
+    if (nameOrError == null)
+      return;
     if (image == null)
       Logger.info(nameOrError);
     if (echoName == null) {

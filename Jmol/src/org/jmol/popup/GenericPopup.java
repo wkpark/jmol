@@ -48,7 +48,7 @@ abstract public class GenericPopup implements GenericMenuInterface,
     JmolAbstractMenu {
 
   //list is saved in http://www.stolaf.edu/academics/chemapps/jmol/docs/misc
-  protected final static boolean dumpList = false;
+  //protected final static boolean dumpList = false;
   protected final static int UPDATE_NEVER = -1;
   private final static int UPDATE_ALL = 0;
   private final static int UPDATE_CONFIG = 1;
@@ -533,12 +533,12 @@ abstract public class GenericPopup implements GenericMenuInterface,
       if (item.indexOf("SPECIAL") >= 0)
         Special.addLast(newMenu);
 
-      if (dumpList) {
-        String str = item.endsWith("Menu") ? "----" : id + "." + item + "\t"
-            + label + "\t" + fixScript(id + "." + item, script);
-        str = "addMenuItem('\t" + str + "\t')";
-        Logger.info(str);
-      }
+//      if (dumpList) {
+//        String str = item.endsWith("Menu") ? "----" : id + "." + item + "\t"
+//            + label + "\t" + fixScript(id + "." + item, script);
+//        str = "addMenuItem('\t" + str + "\t')";
+//        Logger.info(str);
+//      }
     }
   }
 

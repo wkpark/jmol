@@ -180,6 +180,12 @@ public class AlphaMonomer extends Monomer {
     return getQuaternionFrameCenterAlpha(qType);
   }
 
+  @Override
+  public boolean isWithinStructure(EnumStructure type) {
+    ProteinStructure s = (ProteinStructure) getStructure();
+    return (s != null && s.type == type && s.isWithin(monomerIndex));
+  }
+  
   protected P3 getQuaternionFrameCenterAlpha(char qType) {
     switch (qType) {
     case 'b':

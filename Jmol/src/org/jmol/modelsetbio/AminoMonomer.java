@@ -383,12 +383,6 @@ public class AminoMonomer extends AlphaMonomer {
   }
   
   @Override
-  public boolean isWithinStructure(EnumStructure type) {
-    ProteinStructure s = (ProteinStructure) getStructure();
-    return (s != null && s.isWithin(monomerIndex) && s.type == type);
-  }
-  
-  @Override
   public String getStructureId() {
     if (proteinStructure == null || proteinStructure.structureID == null)
       return "";

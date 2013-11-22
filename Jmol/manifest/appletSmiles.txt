@@ -1,6 +1,8 @@
 Main-Class: JmolSmiles
 Sealed: true
 Application-Name: JmolSmiles
+Codebase: *
+Caller-Allowable-Codebase: *
 Application-Library-Allowable-Codebase: *
 Permissions: sandbox
 

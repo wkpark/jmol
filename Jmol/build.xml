@@ -2,6 +2,52 @@
   <!--
       DocumentId  $Id$
   -->
+<!--
+
+Developer note from Bob Hanson, 11/2013
+
+The Jmol project uses resources from two other projects, JSmol and JSpecView.
+You can modify Jmol without those projects, but both of these projects share code
+from Jmol and, though separate projects, provide the files in Jmol for final distribution.
+
+Required checkouts include:
+
+svn+ssh://svn.code.sf.net/p/jsmol/code, Trunk:trunk
+svn+ssh://svn.code.sf.net/p/jspecview/svn:dev2/JSpecView
+svn+ssh://svn.code.sf.net/p/jspecview/svn:dev2/JSpecViewLib
+
+Relevant files created in this project by build scripts in those projects include:
+
+  appletfiles/JSmol_nojars.zip
+  appletfiles/JSpecViewApplet.jar
+  appletfiles/JSpecViewAppletSigned.jar
+  jars/JSpecView.jar
+  
+Jmol/JSmol_nojars.zip is created using:
+
+   JSmol/build_01_fromjmol.xml
+   JSmol/build_02_fromjspecview.xml 
+   JSmol/build_03b_tojs.xml
+   
+JSpecView*.jar files are created using 
+
+   JSpecviewLib/build.xml
+   JSpecview/build.xml
+
+Note that if you modify Jmol source without also running the JSmol build scripts, particularly
+build_01_fromjmol.xml, then the HTML5 version of Jmol will not reflect your modifications.
+
+The overall sequence for full HTML5 code creation
+when the Jmol or JSpecView code is modified, is as follows:
+
+1) Do all coding modifications in the Jmol and JSpecView projects. Never modify JSmol/src.
+2) Build JSpecViewLib and JSpecView if there are changes there. 
+   The JSpecView*.jar files will be copied into this project.
+3) Build JSmol using the build_01.., build_02.., build_03b.. 
+   JSmol_nojava.zip will be created and copied to this project.
+4) Use this build.xml to create and trusted-sign all the jar files and create appletweb/jsmol.zip
+
+  -->
 	
   <!-- Contributions -->
   <!-- <for list ...> construct needs ant-contrib.jar -->
@@ -1099,10 +1145,28 @@ all support for previous versions removed
       <param name="sign-jar-file-name"  value="JSpecViewApplet*.jar" />
     </antcall>
 
+  	<echo> re-packaging appletweb/dist.zip with signed files</echo>  	
+  	<delete dir="build/js" />
+    <unzip dest="build/js" src="appletfiles/jsmol_nojars.zip" />
+	<copy todir="build/js/jsmol/java" >
+	  <fileset dir="build">
+	    <include name="JmolApplet*.jar" />
+	  </fileset>
+	  <fileset dir="appletfiles">
+		<include name="JSpecViewApplet*.jar" />
+	  </fileset>
+	</copy>
+    <zip zipfile="appletweb/jsmol.zip" basedir="build/js"
+         includes="**/*" />
+	
+
   </target>
 
   <target name="smiles-applet-jar" id="smiles-applet-jar"
           depends="applet-classes">
+  	
+ <!-- JmolSmilesApplet.jar is skipped for now because it has no HTML5 equivalent
+  	
     <echo message="Creating JmolSmilesApplet.jar" />
     <jar destfile="build/JmolSmilesApplet.jar"
          manifest="manifest/appletSmiles.txt" index="true" >
@@ -1137,7 +1201,10 @@ all support for previous versions removed
       <param name="sign-jar-file-dir" value="build" />
       <param name="sign-jar-file-name"  value="JmolSmilesApplet.jar" />
     </antcall>
+    
+    -->
   </target>
+  
 
 	  <!-- target name="dist" id="dist"
 	          depends="main-i18n,main,signed-applet" 
@@ -1146,20 +1213,6 @@ all support for previous versions removed
 	<target name="dist" id="dist"
           depends="doc,main-i18n,main,signed-applet">
 		
-		
-	  	<echo> re-packaging appletweb/dist.zip with signed files</echo>  	
-	  	<delete dir="build/js" />
-	    <unzip dest="build/js" src="appletfiles/jsmol_nojars.zip" />
-		<copy todir="build/js/jsmol/java" >
-		  <fileset dir="build">
-		    <include name="JmolApplet*.jar" />
-		  </fileset>
-		  <fileset dir="appletfiles">
-			<include name="JSpecViewApplet*.jar" />
-		  </fileset>
-		</copy>
-	    <zip zipfile="appletweb/jsmol.zip" basedir="build/js"
-	         includes="**/*" />
 		
 		
     <!-- first build binary distribution -->

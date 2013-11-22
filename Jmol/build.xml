@@ -1211,8 +1211,14 @@ all support for previous versions removed
 	          Bob's computer chokes on doc -->
 
 	<target name="dist" id="dist"
-          depends="doc,main-i18n,main,signed-applet">
+          depends="doc">
 		
+		  <!-- 
+		  
+		  Bob had problems with Eclipse Juno repeating the entire
+		  signing process twice here and crashing (io error in jarsigner) 
+		  close to the end of the second round. 	 -->
+
 		
 		
     <!-- first build binary distribution -->

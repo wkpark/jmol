@@ -734,13 +734,13 @@ all support for previous versions removed
         <include name="org/jmol/parallel/**" />
       </fileset>
     </jar>
-
+<!--
     <jar destfile="build/JmolApplet0_Spectrum.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/spectrum/**" />
       </fileset>
     </jar>
-
+-->
   	<jar destfile="build/JmolApplet0_Symmetry.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/symmetry/**" />
@@ -803,8 +803,9 @@ all support for previous versions removed
         <pathelement path="build/JmolApplet0_ShapeSpecial.jar" />
         <pathelement path="build/JmolApplet0_ShapeSurface.jar" />
         <pathelement path="build/JmolApplet0_Smiles.jar" />
-      	
+<!--      	
         <pathelement path="build/JmolApplet0_Spectrum.jar" />
+        -->
         <pathelement path="build/JmolApplet0_Symmetry.jar" />
         <fileset dir="build" includes="JmolApplet0_i18n_*.jar" />
       </indexjars>
@@ -1014,13 +1015,15 @@ all support for previous versions removed
         <include name="org/jmol/smiles/**" />
       </fileset>
     </jar>
-
+  	
+<!--      	
     <jar destfile="build/JmolAppletSigned0_Spectrum.jar" manifest="manifest/appletSigned.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/spectrum/**" />
       </fileset>
     </jar>
-
+-->
+  	
     <jar destfile="build/JmolAppletSigned0_Symmetry.jar" manifest="manifest/appletSigned.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/symmetry/**" />
@@ -1079,7 +1082,9 @@ all support for previous versions removed
         <pathelement path="build/JmolAppletSigned0_ShapeSpecial.jar" />
         <pathelement path="build/JmolAppletSigned0_ShapeSurface.jar" />
         <pathelement path="build/JmolAppletSigned0_Smiles.jar" />
+      	<!--      	
         <pathelement path="build/JmolAppletSigned0_Spectrum.jar" />
+        -->
         <pathelement path="build/JmolAppletSigned0_Symmetry.jar" />
         <fileset dir="build" includes="JmolAppletSigned0_i18n_*.jar" />
       </indexjars>
@@ -1128,6 +1133,10 @@ all support for previous versions removed
         <include name="org/jmol/util/Txt.class" />
       </fileset>
     </jar>
+    <antcall target="sign-jar-file">
+      <param name="sign-jar-file-dir" value="build" />
+      <param name="sign-jar-file-name"  value="JmolSmilesApplet.jar" />
+    </antcall>
   </target>
 
 	  <!-- target name="dist" id="dist"
@@ -1396,20 +1405,10 @@ all support for previous versions removed
     <delete dir="${appjars.dir}"/>
     <delete dir="build/dist"/>
     <delete>
-      <fileset dir=".">
-        <include name="Jmol.jar" />
-        <include name="JmolData.jar" />
-        <include name="JmolSmiles.jar" />
-        <include name="JmolApplet*.jar" />
-        <include name="build/Jmol.jar" />
-        <include name="build/JmolApplet*.jar" />
-        <include name="build/JmolData.jar" />
-        <include name="build/JmolSmiles.jar" />
+      <fileset dir="build">
+        <include name="*.jar" />
       </fileset>
     </delete>
-  </target>
-
-  <target name="xclean" id="xclean">
   </target>
 
   <target name="spotless" id="spotless" depends="clean,spotless-i18n">

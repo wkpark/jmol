@@ -96,7 +96,7 @@ when the Jmol or JSpecView code is modified, is as follows:
   <input message="private property file:" addproperty="Private.propertyFile" defaultValue="none" />
   <if><available file="${Private.propertyFile}" /><then>
   	<property file="${Private.propertyFile}" />
-	<echo>using ${Private.propertyFile}  ${Private.keystore}</echo>
+	<echo>using ${Private.propertyFile}  ${Private.keystore} ${Private.storetype}</echo>
   </then></if>
   <property name="tests.source.dir" value="source-tests" />
   <property name="lib.dir" value="jars" />
@@ -1694,6 +1694,7 @@ all support for previous versions removed
     <if><available file="${Private.propertyFile}" /><then>
       	<echo>using keystore="${Private.keystore}" alias="${Private.alias}"</echo> 
         <signjar keystore="${Private.keystore}"
+                 storetype="${Private.storetype}"
                  storepass="${Private.storepass}"
                  keypass="${Private.keypass}"
                  alias="${Private.alias}"

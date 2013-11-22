@@ -47,18 +47,21 @@
   <echo message="version=${version}" />
   <property name="jvxl_version" value="0.1" />
 
+  <input message="private property file:" addproperty="Private.propertyFile" defaultValue="none" />
+  <if><available file="${Private.propertyFile}" /><then>
+  	<property file="${Private.propertyFile}" />
+	<echo>using ${Private.propertyFile}  ${Private.keystore}</echo>
+  </then></if>
   <property name="tests.source.dir" value="source-tests" />
   <property name="lib.dir" value="jars" />
   <property name="plugin.dir" value="plugin-jars" />
   <property name="appjars.dir" value="build/appjars" />
   <property name="classes.dir" value="build/classes" />
   <property name="test-classes.dir" value="build/test-classes" />
-  <property name="appletjars.dir" value="build/appletjars" />
   <property name="applet.classes.dir" value="build/applet-classes" />
   <property name="apisio.classes.dir" value="build/apisio-classes" />
   <property name="tests.dir" value="build/unit.tests" />
   <property name="javadoc.dir" value="build/javadoc" />
-  <property name="tempjar" value="build/tempjar" />
   <property name="jmol.applet.web.dir" value="appletweb" />
   <property name="docbook-xsl" value="docbook-xsl-1.76.1" />
   <property name="docbook-xml" value="docbook-xml-4.4" />
@@ -66,9 +69,10 @@
   <property name="commons-cli.jar" value="commons-cli-1.0.jar" />
   <property name="saxon.jar" value="saxon.jar" />
   <property name="saxon.main" value="com.icl.saxon.StyleSheet" />
-  <property name="sign.store" value="ca-cert/selfSignedCertificate/selfSignedCertificate.store" />
-  <property name="sign.pass" value="selfSignedCertificate" />
-  <property name="sign.alias" value="selfSignedCertificate" />
+  <property name="selfsign.store" value="ca-cert/selfSignedCertificate/selfSignedCertificate.store" />
+  <property name="selfsign.pass" value="selfSignedCertificate" />
+  <property name="selfsign.alias" value="selfSignedCertificate" />
+
 
 	<!-- you can set this by defining it in ~/.jmol.build.properties -->
   <property name="keystore.name" value="Must be set by user." />
@@ -236,6 +240,7 @@
     </javac>
     <copy todir="${classes.dir}" >
       <fileset dir="src">
+        <include name="**/license.txt" />
         <include name="**/*.jpg" />
         <include name="**/*.gif" />
       	<include name="**/*.png" />
@@ -324,6 +329,9 @@ all support for previous versions removed
     <copy todir="${applet.classes.dir}" >
       <fileset dir="${classes.dir}">
         <include name="**/JmolApplet/*/*.class" />
+      </fileset>
+      <fileset dir="src">
+        <include name="**/license.txt" />
       </fileset>
     </copy>
   </target>
@@ -432,7 +440,7 @@ all support for previous versions removed
         <include name="**/*.html" />
       </fileset>
     </copy>
-    <jar destfile="${tempjar}"
+    <jar destfile="build/Jmol.jar"
          manifest="manifest/application.txt">
       <fileset dir="${classes.dir}" >
         <exclude name="**/.*" />
@@ -453,11 +461,11 @@ all support for previous versions removed
       <fileset dir="src/org/jmol/translation/Jmol" includes="Messages*.class"/>
     </jar>
     <antcall target="sign-jar-file">
-      <param name="sign-jar-file-src"  value="${tempjar}" />
-      <param name="sign-jar-file-dest" value="Jmol.jar" />
+      <param name="sign-jar-file-dir" value="build" />
+      <param name="sign-jar-file-name"  value="Jmol.jar" />
     </antcall>
   	
-    <jar destfile="${tempjar}"
+    <jar destfile="build/JmolData.jar"
          manifest="manifest/applicationData.txt">
       <fileset dir="${classes.dir}" >
         <exclude name="**/.*" />
@@ -487,8 +495,8 @@ all support for previous versions removed
       <fileset dir="src/org/jmol/translation/Jmol" includes="Messages*.class"/>
     </jar>
     <antcall target="sign-jar-file">
-      <param name="sign-jar-file-src"  value="${tempjar}" />
-      <param name="sign-jar-file-dest" value="JmolData.jar" />
+      <param name="sign-jar-file-dir" value="build" />
+      <param name="sign-jar-file-name"  value="JmolData.jar" />
     </antcall>
 
     <copy todir="build">
@@ -499,7 +507,7 @@ all support for previous versions removed
       </fileset>
     </copy>
 
-    <jar destfile="${tempjar}"
+    <jar destfile="build/Jvxl.jar"
          manifest="manifest/jvxl.txt">
       <fileset dir="${classes.dir}" >
         <exclude name="**/.*" />
@@ -519,23 +527,21 @@ all support for previous versions removed
       <fileset dir="${appjars.dir}" includes="**/*"/>
     </jar>
     <antcall target="sign-jar-file">
-      <param name="sign-jar-file-src"  value="${tempjar}" />
-      <param name="sign-jar-file-dest" value="Jvxl.jar" />
+      <param name="sign-jar-file-dir" value="build" />
+      <param name="sign-jar-file-name"  value="Jvxl.jar" />
     </antcall>
-
-    <jar destfile="${tempjar}"
+  	<!--
+    <jar destfile="ChimeToJmol.jar"
          manifest="manifest/chimetojmol.txt">
       <fileset dir="${classes.dir}" >
         <include name="org/openscience/chimetojmol/*" />
       </fileset>
     </jar>
     <antcall target="sign-jar-file">
-      <param name="sign-jar-file-src"  value="${tempjar}" />
-      <param name="sign-jar-file-dest" value="ChimeToJmol.jar" />
+      <param name="sign-jar-file-dir" value="build" />
+      <param name="sign-jar-file-name" value="ChimeToJmol.jar" />
     </antcall>
-
-  	<delete file="${tempjar}" />
-
+    -->
   </target>
 
   <target name="apis-jar" id="apis-jar" depends="init,apisio-classes">
@@ -560,66 +566,9 @@ all support for previous versions removed
     </jar>
   </target>
 
-  <target name="check.appletjars" id="check.appletjars">
-    <condition property="appletjars.uptodate">
-      <and>
-        <uptodate targetfile="${appletjars.dir}">
-          <!-- srcfiles dir="${lib.dir}"
-                      includes="jmolappletcdk.jar,${vecmath.jar}"/ -->
-          <srcfiles dir="${lib.dir}"
-                    includes="jmolappletcdk.jar"/>
-        </uptodate>
-        <uptodate targetfile="build/appletjars.timestamp"
-                  srcfile="${appletjars.dir}"/>
-      </and>
-    </condition>
-  </target>
   
-  <target name="appletjars" id="appletjars" depends="check.appletjars"
-          unless="appletjars.uptodate">
-    <delete file="build/appletjars.timestamp"/>
-    <delete dir="${appletjars.dir}"/>
-    <mkdir dir="${appletjars.dir}"/>
-  	
-    <copy todir="${appletjars.dir}" >
-      <fileset dir="src">
-        <include name="com/obrador/license.txt" />
-      </fileset>
-    </copy>
-
-    <!-- unjar dest="${appletjars.dir}" src="${lib.dir}/${vecmath.jar}">
-      <patternset>
-        <include name="**/Point3f.class"/>
-        <include name="**/Vector3f.class"/>
-        <include name="**/Matrix3f.class"/>
-        <include name="**/Matrix4f.class"/>
-        <include name="**/AxisAngle4f.class"/>
-        <include name="**/Quat4f.class"/>
-        <include name="**/Point3i.class"/>
-        <include name="**/Tuple3i.class"/>
-        <include name="**/Tuple3f.class"/>
-        <include name="**/Tuple4f.class"/>
-        <include name="**/Vector4f.class"/>
-        <include name="**/Tuple3d.class"/>
-        <include name="**/Tuple4d.class"/>
-        <include name="**/Vector3d.class"/>
-        <include name="**/Quat4d.class"/>
-        <include name="**/Point4f.class"/>
-        <include name="**/Point3d.class"/>
-        <include name="**/Point4d.class"/>
-        <include name="**/Tuple2d.class"/>
-        <include name="**/Point2d.class"/>
-        <include name="**/Matrix3d.class"/>
-        <include name="**/Matrix4d.class"/>
-        <include name="**/AxisAngle4d.class"/>
-        <include name="**/SingularMatrixException.class"/>
-      </patternset>
-    </unjar -->
-    <touch file="build/appletjars.timestamp"/>
-  </target>
-
   <target name="applet-jar" id="applet-jar"
-          depends="applet-classes,appletjars">
+          depends="applet-classes">
   	
     <delete dir="build">
       <include name="JmolApplet*"/>
@@ -638,10 +587,9 @@ all support for previous versions removed
         <exclude name="com/sparshui/**/*" />
         <exclude name="com/json/**/*" />
       </fileset>
-      <fileset dir="${appletjars.dir}" includes="**/*"/>
     </jar>
 
-    <echo message="Creating JmolApplet0xxx.jar" />
+    <echo message="Creating JmolApplet0*.jar" />
     <for list="${all.JmolApplet.languages}" delimiter=","
          param="current.Jmol.language">
       <sequential>
@@ -804,8 +752,6 @@ all support for previous versions removed
     <!-- changes to this must be replicated below for the signed applet -->
     <jar destfile="build/JmolApplet0.jar"  manifest="manifest/applet0.txt"
          index="true" >
-      <!-- javax/vecmath -->
-      <fileset dir="${appletjars.dir}" includes="**/*"/>
       <fileset dir="${applet.classes.dir}">
         <include name="JmolApplet*.class" />
         <include name="jmol75x29x8.gif" />
@@ -863,38 +809,11 @@ all support for previous versions removed
         <fileset dir="build" includes="JmolApplet0_i18n_*.jar" />
       </indexjars>
     </jar>
-    <if>
-      <available file="ca-cert/certificate/Jmol.p12" />
-      <then>
-        <signjar keystore="ca-cert/certificate/Jmol.p12"
-                 storetype="pkcs12"
-                 storepass="${Jmol.p12.password}"
-                 alias="${Jmol.p12.alias}"
-                 keypass="${Jmol.p12key.password}"
-                 tsaurl="http://time.certum.pl/">
-          <fileset dir="build" >
-            <include name="JmolApplet.jar" />
-            <include name="JmolApplet0*.jar" />
-          </fileset>
-        </signjar>
-      </then>
-      <else>
-        <signjar keystore="${sign.store}"
-                 storepass="${sign.pass}"
-                 alias="${sign.alias}">
-          <fileset dir="build" >
-            <include name="JmolApplet.jar" />
-            <include name="JmolApplet0*.jar" />
-          </fileset>
-        </signjar>
-      </else>
-    </if>
-
 	<echo message="creating JmolLib.jar" level="info" />
     <jar destfile="build/JmolLib.jar"
          manifest="manifest/jmolLib.txt" index="true" >
       <fileset dir="${applet.classes.dir}" >
-        <include name="**/*" />
+	        <include name="**/*" />
         <exclude name="JmolSmiles*" />
         <exclude name="org/jmol/applet/**/*" />
         <exclude name="org/jmol/appletjs/**/*" />
@@ -922,7 +841,6 @@ all support for previous versions removed
         <exclude name="com/json/**/*" />
         <exclude name="JmolApplet*" />
       </fileset>
-      <fileset dir="${appletjars.dir}" includes="**/*"/>
     </jar>
 
 
@@ -941,10 +859,9 @@ all support for previous versions removed
         <include name="javajs/swing/**" />
         <exclude name="org/openscience/**/*" />
       </fileset>
-      <fileset dir="${appletjars.dir}" includes="**/*"/>
     </jar>
 
-  	<echo message="Creating JmolAppletsigned0xxx.jar" />
+  	<echo message="Creating JmolAppletsigned0*.jar" />
     <for list="${all.JmolApplet.languages}" delimiter=","
          param="current.Jmol.language">
       <sequential>
@@ -1113,8 +1030,6 @@ all support for previous versions removed
     <jar destfile="build/JmolAppletSigned0.jar"
          manifest="manifest/appletSigned0.txt"
          index="true">
-      <!-- javax/vecmath -->
-      <fileset dir="${appletjars.dir}" includes="**/*"/>
       <fileset dir="${applet.classes.dir}">
         <include name="JmolApplet*.class" />
         <include name="jmol75x29x8.gif" />
@@ -1169,33 +1084,16 @@ all support for previous versions removed
         <fileset dir="build" includes="JmolAppletSigned0_i18n_*.jar" />
       </indexjars>
     </jar>
-  	<echo> signing JmolAppletSigned*.jar </echo>
-    <if>
-      <available file="ca-cert/certificate/Jmol.p12" />
-      <then>
-        <signjar keystore="ca-cert/certificate/Jmol.p12"
-                 storetype="pkcs12"
-                 storepass="${Jmol.p12.password}"
-                 alias="${Jmol.p12.alias}"
-                 keypass="${Jmol.p12key.password}"
-                 tsaurl="http://time.certum.pl/">
-          <fileset dir="build" >
-            <include name="JmolAppletSigned.jar" />
-            <include name="JmolAppletSigned0*.jar" />
-          </fileset>
-        </signjar>
-      </then>
-      <else>
-        <signjar keystore="${sign.store}"
-                 storepass="${sign.pass}"
-                 alias="${sign.alias}">
-          <fileset dir="build" >
-            <include name="JmolAppletSigned.jar" />
-            <include name="JmolAppletSigned0*.jar" />
-          </fileset>
-        </signjar>
-      </else>
-    </if>
+  	<echo> signing JmolApplet*.jar and JSpecViewApplet*.jar </echo>
+    <antcall target="sign-jar-file">
+      <param name="sign-jar-file-dir" value="build" />
+      <param name="sign-jar-file-name"  value="JmolApplet*.jar" />
+    </antcall>
+    <antcall target="sign-jar-file">
+      <param name="sign-jar-file-dir" value="appletfiles" />
+      <param name="sign-jar-file-name"  value="JSpecViewApplet*.jar" />
+    </antcall>
+
   </target>
 
   <target name="smiles-applet-jar" id="smiles-applet-jar"
@@ -1496,7 +1394,6 @@ all support for previous versions removed
     <delete dir="${apisio.classes.dir}"/>
     <delete dir="${test-classes.dir}"/>
     <delete dir="${appjars.dir}"/>
-    <delete dir="${appletjars.dir}"/>
     <delete dir="build/dist"/>
     <delete>
       <fileset dir=".">
@@ -1736,26 +1633,37 @@ all support for previous versions removed
 
   <!-- tools -->
   <target name="sign-jar-file" >
-    <if>
-      <available file="ca-cert/certificate/Jmol.p12" />
-      <then>
-        <signjar jar="${sign-jar-file-src}"
-                 signedjar="build/${sign-jar-file-dest}"
-                 keystore="ca-cert/certificate/Jmol.p12"
+    <if><available file="${Private.propertyFile}" /><then>
+      	<echo>using keystore="${Private.keystore}" alias="${Private.alias}"</echo> 
+        <signjar keystore="${Private.keystore}"
+                 storepass="${Private.storepass}"
+                 keypass="${Private.keypass}"
+                 alias="${Private.alias}"
+                 tsaurl="http://tsa.starfieldtech.com/">
+          <fileset dir="${sign-jar-file-dir}" >
+            <include name="${sign-jar-file-name}" />
+          </fileset>
+        </signjar>
+    </then><elseif><available file="ca-cert/certificate/Jmol.p12" /><then>
+        <signjar keystore="ca-cert/certificate/Jmol.p12"
                  storetype="pkcs12"
                  storepass="${Jmol.p12.password}"
-                 alias="wpcleaner-sign"
+                 alias="${Jmol.p12.alias}"
                  keypass="${Jmol.p12key.password}"
-                 tsaurl="http://time.certum.pl/" />
-      </then>
-      <else>
-        <signjar jar="${sign-jar-file-src}"
-                 signedjar="build/${sign-jar-file-dest}"
-                 keystore="${sign.store}"
-                 storepass="${sign.pass}"
-                 alias="${sign.alias}" />
-      </else>
-    </if>
+                 tsaurl="http://time.certum.pl/">
+            <fileset dir="${sign-jar-file-dir}" >
+              <include name="${sign-jar-file}" />
+            </fileset>
+        </signjar>
+    </then></elseif><else>
+	        <signjar keystore="${selfsign.store}"
+	                 storepass="${selfsign.pass}"
+	                 alias="${selfsign.alias}">
+	            <fileset dir="${sign-jar-file-dir}" >
+	              <include name="${sign-jar-file}" />
+	            </fileset>
+	        </signjar>
+	</else></if>
     <!-- to verify that a .jar file is signed: jarsigner -verify foo.jar -->
   </target>
 

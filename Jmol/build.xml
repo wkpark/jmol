@@ -466,6 +466,7 @@ all support for previous versions removed
     <unjar dest="${appjars.dir}" src="${lib.dir}/JSpecView.jar"/>
   	<delete dir="${appjars.dir}/javajs" />
   	<delete dir="${appjars.dir}/org/jmol" />
+  	<delete dir="${appjars.dir}/META-INF" />
     <touch file="build/libjars.timestamp"/>
   </target>
 
@@ -1701,6 +1702,7 @@ all support for previous versions removed
           </fileset>
         </signjar>
     </then><elseif><available file="ca-cert/certificate/Jmol.p12" /><then>
+      	<echo>using ca-cert/certificate/Jmol.12</echo> 
         <signjar keystore="ca-cert/certificate/Jmol.p12"
                  storetype="pkcs12"
                  storepass="${Jmol.p12.password}"
@@ -1708,17 +1710,18 @@ all support for previous versions removed
                  keypass="${Jmol.p12key.password}"
                  tsaurl="http://time.certum.pl/">
             <fileset dir="${sign-jar-file-dir}" >
-              <include name="${sign-jar-file}" />
+              <include name="${sign-jar-file-name}" />
             </fileset>
         </signjar>
     </then></elseif><else>
+      	<echo>using self-signed certificate</echo> 
 	        <signjar keystore="${selfsign.store}"
 	                 storepass="${selfsign.pass}"
 	                 alias="${selfsign.alias}">
 	            <fileset dir="${sign-jar-file-dir}" >
-	              <include name="${sign-jar-file}" />
+	              <include name="${sign-jar-file-name}" />
 	            </fileset>
-	        </signjar>
+	        </signjar>    	
 	</else></if>
     <!-- to verify that a .jar file is signed: jarsigner -verify foo.jar -->
   </target>

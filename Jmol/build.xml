@@ -1717,6 +1717,7 @@ all support for previous versions removed
     </then></elseif><else>
       	<echo>using self-signed certificate</echo> 
 	        <signjar keystore="${selfsign.store}"
+       		         storetype="${selfsign.storetype}"
 	                 storepass="${selfsign.storepass}"
 	                 alias="${selfsign.alias}">
 	            <fileset dir="${sign-jar-file-dir}" >

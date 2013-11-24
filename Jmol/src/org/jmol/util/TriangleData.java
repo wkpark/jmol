@@ -315,6 +315,7 @@ public class TriangleData implements Triangulator {
    */
 
 
+  @Override
   public List<Object> intersectPlane(P4 plane, List<Object> v, int flags) {
     if (plane == null) {
       v.addLast(fullCubePolygon);

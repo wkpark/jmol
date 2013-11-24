@@ -26,11 +26,13 @@ public class SinglePointGesture implements Gesture {
   private TouchPoint _birth;
 
   // @override
+  @Override
   public String getName() {
     return "SinglePointGesture";
   }
 
   // @override
+  @Override
   public int getGestureType() {
     return GestureType.TOUCH_GESTURE;
   }
@@ -46,6 +48,7 @@ public class SinglePointGesture implements Gesture {
    */
   // @override
   
+  @Override
   public List<Event> processChange(List<TouchPoint> touchPoints, TouchPoint changedTouchPoint) {
     List<Event> retEvents = new ArrayList<Event>();
     int nPoints = touchPoints.size();

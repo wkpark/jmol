@@ -168,7 +168,8 @@ public class InputDeviceConnection implements Runnable {
 	 * Begin receiving data from the input device.
 	 */
 	//@override
-	public void run() {
+	@Override
+  public void run() {
 		receiveData();
 	}
 	

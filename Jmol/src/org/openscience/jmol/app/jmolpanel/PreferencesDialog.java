@@ -319,6 +319,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     vdwPercentSlider.setPaintLabels(true);
     vdwPercentSlider.addChangeListener(new ChangeListener() {
 
+      @Override
       public void stateChanged(ChangeEvent e) {
         rebond();
       }
@@ -373,6 +374,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     abYes.setSelected(viewer.getBoolean(T.autobond));
     abYes.addActionListener(new ActionListener() {
 
+      @Override
       public void actionPerformed(ActionEvent e) {
         viewer.setBooleanProperty("autoBond", true);        
         currentProperties.put("autoBond", "" + "true");
@@ -382,6 +384,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     abNo.setSelected(!viewer.getBoolean(T.autobond));
     abNo.addActionListener(new ActionListener() {
 
+      @Override
       public void actionPerformed(ActionEvent e) {
         viewer.setBooleanProperty("autoBond", false);
         currentProperties.put("autoBond", "" + "false");          
@@ -414,6 +417,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     }
     bwSlider.addChangeListener(new ChangeListener() {
 
+      @Override
       public void stateChanged(ChangeEvent e) {
         rebond();
       }
@@ -456,6 +460,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
     btSlider.addChangeListener(new ChangeListener() {
 
+      @Override
       public void stateChanged(ChangeEvent e) {
         rebond();
       }
@@ -496,6 +501,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     bdSlider.setLabelTable(labelTable);
 
     bdSlider.addChangeListener(new ChangeListener() {
+      @Override
       public void stateChanged(ChangeEvent e) {
         rebond();
       }
@@ -668,6 +674,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
       this.setEnabled(true);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
       setVisible(true);
     }
@@ -689,6 +696,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     //Component c;
     //AbstractButton b;
 
+    @Override
     public void itemStateChanged(ItemEvent e) {
 
       JmolAbstractButton cb = (JmolAbstractButton) e.getSource();
@@ -739,6 +747,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private JButton cancelButton;
   private JButton okButton;
   
+  @Override
   public void actionPerformed(ActionEvent event) {
     if (event.getSource() == applyButton) {
       apply();

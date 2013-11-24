@@ -498,6 +498,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
     md.define(this, modelSet);
   }
 
+  @Override
   public void processNextMeasure(Measurement m) {
     // a callback from Measurement.define
     // all atom bitsets have been iterated

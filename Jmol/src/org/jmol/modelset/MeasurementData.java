@@ -124,6 +124,7 @@ public class MeasurementData implements JmolMeasurementClient {
    * @param m 
    * 
    */
+  @Override
   public void processNextMeasure(Measurement m) {
     float value = m.getMeasurement();
     // here's where we check vdw

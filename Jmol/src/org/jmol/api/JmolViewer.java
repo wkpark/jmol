@@ -225,6 +225,7 @@ abstract public class JmolViewer implements JSInterface {
 
 
   // change this to width, height
+  @Override
   abstract public void setScreenDimension(int width, int height);
   abstract public int getScreenWidth();
   abstract public int getScreenHeight();
@@ -499,6 +500,7 @@ abstract public class JmolViewer implements JSInterface {
 
   abstract public JmolAdapter getModelAdapter();
 
+  @Override
   abstract public void openFileAsyncSpecial(String fileName, int flags);
   public void openFileAsync(String fileName) {
     openFileAsyncSpecial(fileName, 0);    
@@ -516,6 +518,7 @@ abstract public class JmolViewer implements JSInterface {
   abstract public void processMultitouchEvent(int groupID, int eventType, int touchID, int iData,
                            P3 pt, long time);
 
+  @Override
   abstract public boolean processMouseEvent(int id, int x, int y, int modifiers,
                                      long when);
 
@@ -546,6 +549,7 @@ abstract public class JmolViewer implements JSInterface {
     return (jmolViewer == null ? "" : "" + jmolViewer.getParameter(var));
   }
 
+  @Override
   abstract public void cachePut(String key, Object data);
 
   abstract public void renderScreenImage(Object g, int width, int height);
@@ -602,6 +606,7 @@ abstract public class JmolViewer implements JSInterface {
    * @param isAdd
    * @return number of bytes cached
    */
+  @Override
   abstract public int cacheFileByName(String fileName, boolean isAdd);
   
   abstract public String getClipboardText();

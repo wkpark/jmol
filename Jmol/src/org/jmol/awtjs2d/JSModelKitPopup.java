@@ -40,6 +40,7 @@ public class JSModelKitPopup extends JSPopup {
     // required by reflection
   }
   
+  @Override
   public void jpiInitialize(PlatformViewer viewer, String menu) {
     updateMode = UPDATE_NEVER;
     boolean doTranslate = GT.setDoTranslate(true);

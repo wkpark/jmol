@@ -84,6 +84,7 @@ abstract public class SwingPopup extends GenericPopup {
       b.setActionCommand(script);
   }
 
+  @Override
   public void updateSpecialMenuItem(Object menuItem) {
     AbstractButton m = (AbstractButton) menuItem;
     m.setText(getSpecialLabel(m.getName(), m.getText()));
@@ -105,6 +106,7 @@ abstract public class SwingPopup extends GenericPopup {
     
     protected MenuItemListener(){}
     
+    @Override
     public void actionPerformed(ActionEvent e) {
       checkMenuClick(e.getSource(), e.getActionCommand());
     }
@@ -114,9 +116,11 @@ abstract public class SwingPopup extends GenericPopup {
 
     protected MenuMouseListener(){}
 
+    @Override
     public void mouseClicked(MouseEvent e) {
     }
 
+    @Override
     public void mouseEntered(MouseEvent e) {
       if (e.getSource() instanceof JMenuItem) {
         JMenuItem jmi = (JMenuItem) e.getSource();
@@ -124,6 +128,7 @@ abstract public class SwingPopup extends GenericPopup {
       }
     }
 
+    @Override
     public void mouseExited(MouseEvent e) {
       if (e.getSource() instanceof JMenuItem) {
         JMenuItem jmi = (JMenuItem) e.getSource();
@@ -131,9 +136,11 @@ abstract public class SwingPopup extends GenericPopup {
       }
     }
 
+    @Override
     public void mousePressed(MouseEvent e) {
     }
 
+    @Override
     public void mouseReleased(MouseEvent e) {
     }
 
@@ -143,6 +150,7 @@ abstract public class SwingPopup extends GenericPopup {
 
     protected CheckboxMenuItemListener(){}
 
+    @Override
     public void itemStateChanged(ItemEvent e) {
       checkBoxStateChanged(e.getSource());
     }
@@ -150,12 +158,14 @@ abstract public class SwingPopup extends GenericPopup {
 
   /// JmolAbstractMenu ///
 
+  @Override
   public void menuAddButtonGroup(Object newMenu) {
     if (buttonGroup == null)
       buttonGroup = new ButtonGroup();
     ((ButtonGroup) buttonGroup).add((JMenuItem) newMenu);
   }
 
+  @Override
   public void menuAddItem(Object menu, Object item) {
     if (menu instanceof JPopupMenu) {
       ((JPopupMenu) menu).add((JComponent) item);
@@ -166,6 +176,7 @@ abstract public class SwingPopup extends GenericPopup {
     }
   }
 
+  @Override
   public void menuAddSeparator(Object menu) {
     if (menu instanceof JPopupMenu)
       ((JPopupMenu) menu).addSeparator();
@@ -173,10 +184,12 @@ abstract public class SwingPopup extends GenericPopup {
       ((JMenu) menu).addSeparator();
   }
 
+  @Override
   public void menuAddSubMenu(Object menu, Object subMenu) {
     menuAddItem(menu, subMenu);
   }
 
+  @Override
   public void menuClearListeners(Object menu) {
     if (menu == null)
       return;
@@ -198,6 +211,7 @@ abstract public class SwingPopup extends GenericPopup {
     }
   }
 
+  @Override
   public Object menuCreateCheckboxItem(Object menu, String entry,
                                        String basename, String id,
                                        boolean state, boolean isRadio) {
@@ -216,6 +230,7 @@ abstract public class SwingPopup extends GenericPopup {
     return newMenuItem(jmi, menu, entry, basename, id);
   }
 
+  @Override
   public Object menuCreateItem(Object menu, String entry, String script,
                                String id) {
     JMenuItem jmi = new JMenuItem(entry);
@@ -223,10 +238,12 @@ abstract public class SwingPopup extends GenericPopup {
     return newMenuItem(jmi, menu, entry, script, id);
   }
 
+  @Override
   public Object menuCreatePopup(String title) {
     return new JPopupMenu(title);
   }
 
+  @Override
   public void menuEnable(Object menu, boolean enable) {
     if (menu instanceof JMenuItem) {
       menuEnableItem(menu, enable);
@@ -239,6 +256,7 @@ abstract public class SwingPopup extends GenericPopup {
     }
   }
 
+  @Override
   public void menuEnableItem(Object item, boolean enable) {
     try {
       ((JMenuItem) item).setEnabled(enable);
@@ -247,6 +265,7 @@ abstract public class SwingPopup extends GenericPopup {
     }
   }
 
+  @Override
   public void menuGetAsText(SB sb, int level, Object menu,
                             String menuName) {
     String name = menuName;
@@ -274,18 +293,22 @@ abstract public class SwingPopup extends GenericPopup {
     }
   }
 
+  @Override
   public String menuGetId(Object menu) {
     return ((Component) menu).getName();
   }
 
+  @Override
   public int menuGetItemCount(Object menu) {
     return ((JMenu) menu).getItemCount();
   }
 
+  @Override
   public Object menuGetParent(Object menu) {
     return ((JMenu) menu).getParent();
   }
 
+  @Override
   public int menuGetPosition(Object menu) {
     Object p = menuGetParent(menu);
     if (p instanceof JPopupMenu) {
@@ -300,6 +323,7 @@ abstract public class SwingPopup extends GenericPopup {
     return -1;
   }
 
+  @Override
   public void menuInsertSubMenu(Object menu, Object subMenu, int index) {
     if (menu instanceof JPopupMenu)
       ((JPopupMenu) menu).insert((JMenu) subMenu, index);
@@ -307,6 +331,7 @@ abstract public class SwingPopup extends GenericPopup {
       ((JMenu) menu).insert((JMenu) subMenu, index);
   }
 
+  @Override
   public Object menuNewSubMenu(String entry, String id) {
     JMenu jm = new JMenu(entry);
     updateButton(jm, entry, null);
@@ -315,6 +340,7 @@ abstract public class SwingPopup extends GenericPopup {
     return jm;
   }
 
+  @Override
   public void menuRemoveAll(Object menu, int indexFrom) {
     if (indexFrom > 0) {
       for (int i = menuGetItemCount(menu); --i >= indexFrom;)
@@ -327,10 +353,12 @@ abstract public class SwingPopup extends GenericPopup {
       ((JPopupMenu)menu).removeAll();
   }
 
+  @Override
   public void menuSetAutoscrolls(Object menu) {
     ((JMenu) menu).setAutoscrolls(true);
   }
 
+  @Override
   public void menuSetCheckBoxState(Object item, boolean state) {
     if (item instanceof JCheckBoxMenuItem)
       ((JCheckBoxMenuItem) item).setState(state);
@@ -339,15 +367,18 @@ abstract public class SwingPopup extends GenericPopup {
     ((JMenuItem) item).setSelected(state);
   }
 
+  @Override
   public String menuSetCheckBoxOption(Object item, String name, String what) {
     return null;
   }
 
+  @Override
   public void menuSetCheckBoxValue(Object source) {
     JMenuItem jcmi = (JMenuItem) source;
     setCheckBoxValue(jcmi, jcmi.getActionCommand(), jcmi.isSelected());
   }
 
+  @Override
   public void menuSetLabel(Object menu, String entry) {
     if (menu instanceof JMenuItem)
       ((JMenuItem) menu).setText(entry);
@@ -355,12 +386,14 @@ abstract public class SwingPopup extends GenericPopup {
       ((JMenu) menu).setText(entry);
   }
 
+  @Override
   public void menuSetListeners() {
     mil = new MenuItemListener();
     cmil = new CheckboxMenuItemListener();
     mfl = new MenuMouseListener();
   }
   
+  @Override
   public void menuShowPopup(Object popup, int x, int y) {
     try {
       ((JPopupMenu)popup).show((Component) viewer.getDisplay(), x, y);

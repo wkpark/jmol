@@ -58,11 +58,13 @@ public class DataManager implements JmolDataManager {
     // for reflection
   }
   
+  @Override
   public JmolDataManager set(Viewer viewer) {
     this.viewer = viewer;
     return this;
   }
 
+  @Override
   public void clear() {
     dataValues.clear();
   }
@@ -77,6 +79,7 @@ public class DataManager implements JmolDataManager {
   private final static int DATA_TYPE = 3;
   private final static int DATA_SAVE_IN_STATE = 4;
     
+  @Override
   public void setData(String type, Object[] data, int arrayCount, int actualAtomCount,
                int matchField, int matchFieldColumnCount, int field,
                int fieldColumnCount) {
@@ -205,6 +208,7 @@ public class DataManager implements JmolDataManager {
       data[i] = f;
   }
 
+  @Override
   public Object[] getData(String type) {
     if (dataValues.size() == 0 || type == null)
       return null;
@@ -219,6 +223,7 @@ public class DataManager implements JmolDataManager {
     return info;
   }
 
+  @Override
   public float[] getDataFloatA(String label) {
     if (dataValues.size() == 0)
       return null;
@@ -228,6 +233,7 @@ public class DataManager implements JmolDataManager {
     return (float[]) data[DATA_VALUE];
   }
 
+  @Override
   public float getDataFloat(String label, int atomIndex) {
     if (dataValues.size() > 0) {
       Object[] data = getData(label);
@@ -240,6 +246,7 @@ public class DataManager implements JmolDataManager {
     return Float.NaN;
   }
 
+  @Override
   public float[][] getDataFloat2D(String label) {
     if (dataValues.size() == 0)
       return null;
@@ -249,6 +256,7 @@ public class DataManager implements JmolDataManager {
     return (float[][]) data[DATA_VALUE];
   }
 
+  @Override
   public float[][][] getDataFloat3D(String label) {
     if (dataValues.size() == 0)
       return null;
@@ -258,6 +266,7 @@ public class DataManager implements JmolDataManager {
     return (float[][][]) data[DATA_VALUE];
   }
 
+  @Override
   public void deleteModelAtoms(int firstAtomIndex, int nAtoms, BS bsDeleted) {
     if (dataValues.size() == 0)
       return;
@@ -280,6 +289,7 @@ public class DataManager implements JmolDataManager {
     }    
   }
 
+  @Override
   public String getDefaultVdwNameOrData(EnumVdw type, BS bs) {
     SB sb = new SB();
     sb.append(type.getVdwLabel()).append("\n");
@@ -296,6 +306,7 @@ public class DataManager implements JmolDataManager {
         + sb.append("  end \"element_vdw\";\n\n").toString());
   }
 
+  @Override
   public boolean getDataState(JmolStateCreator sc, SB sb) {
     if (dataValues.size() == 0)
       return false;

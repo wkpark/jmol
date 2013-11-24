@@ -882,6 +882,7 @@ public class ActionManager implements EventManager {
    * @param modifiers
    * @return true if handled 
    */
+  @Override
   public boolean keyPressed(int key, int modifiers) {
     if (keyProcessing)
       return false;
@@ -924,6 +925,7 @@ public class ActionManager implements EventManager {
     return true;
   }
 
+  @Override
   public void keyReleased(int key) {
     switch (key) {
     case Event.VK_ALT:
@@ -955,6 +957,7 @@ public class ActionManager implements EventManager {
     }
   }
 
+  @Override
   public void mouseEnterExit(long time, int x, int y, boolean isExit) {
     setCurrent(time, x, y, 0);
     if (isExit && measurementPending != null) {
@@ -985,6 +988,7 @@ public class ActionManager implements EventManager {
    * @param buttonMods
    *        LEFT RIGHT MIDDLE WHEEL SHIFT ALT CTRL
    */
+  @Override
   public void mouseAction(int mode, long time, int x, int y, int count,
                           int buttonMods) {
     if (!viewer.getMouseEnabled())
@@ -2151,7 +2155,7 @@ public class ActionManager implements EventManager {
     viewer.setStatusAtomPicked(atomIndex, null);
   }
 
-
+  @Override
   public boolean keyTyped(int keyChar, int modifiers) {
     return false;
   }

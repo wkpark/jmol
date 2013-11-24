@@ -22,7 +22,8 @@ public class JTable extends JComponent implements ListSelectionModel, ColumnSele
 		this.bsSelectedRows = new BS();
 	}
 
-	public ListSelectionModel getSelectionModel() {
+	@Override
+  public ListSelectionModel getSelectionModel() {
 		return this;
 	}
 
@@ -61,11 +62,13 @@ public class JTable extends JComponent implements ListSelectionModel, ColumnSele
 	 * @param listener 
 	 * 
 	 */
-	public void addListSelectionListener(Object listener) {
+	@Override
+  public void addListSelectionListener(Object listener) {
 		selectionListener = listener;
 	}
 
-	public TableColumn getColumn(int i) {
+	@Override
+  public TableColumn getColumn(int i) {
 		return tableModel.getColumn(i);
 	}
 

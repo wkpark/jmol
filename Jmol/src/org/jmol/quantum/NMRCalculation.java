@@ -72,12 +72,14 @@ public class NMRCalculation implements JmolNMRInterface {
   public NMRCalculation() {
   }
 
+  @Override
   public JmolNMRInterface setViewer(Viewer viewer) {
     this.viewer = viewer;
     getData();
     return this;
   }
 
+  @Override
   public float getQuadrupolarConstant(Tensor efg) {
     if (efg == null)
       return 0;
@@ -145,6 +147,7 @@ public class NMRCalculation implements JmolNMRInterface {
 //      return (t.atomIndex1 == iAtom ? t.atomIndex2 : t.atomIndex1);
 //  }
   
+  @Override
   public BS getUniqueTensorSet(BS bsAtoms) {
     BS bs = new BS();
     Atom[] atoms = viewer.modelSet.atoms;
@@ -197,6 +200,7 @@ public class NMRCalculation implements JmolNMRInterface {
     return getIsoOrAnisoHz(true, a1, a2, type, isc);
   }
   
+  @Override
   public float getIsoOrAnisoHz(boolean isIso, Atom a1, Atom a2, String type, Tensor isc) {
     if (isc == null) {
       type = getISCtype(a1, type);
@@ -232,6 +236,7 @@ public class NMRCalculation implements JmolNMRInterface {
     return type;
  }
 
+  @Override
   public float getDipolarConstantHz(Atom a1, Atom a2) {
     if (Logger.debugging)
       Logger.debug(a1 + " g=" + getIsotopeData(a1, MAGNETOGYRIC_RATIO) + "; " + a2 + " g=" + getIsotopeData(a2, MAGNETOGYRIC_RATIO));
@@ -240,6 +245,7 @@ public class NMRCalculation implements JmolNMRInterface {
     return (v == 0 || a1 == a2 ? Float.NaN : v);
   }
 
+  @Override
   public float getDipolarCouplingHz(Atom a1, Atom a2, V3 vField) {
     V3 v12 = V3.newVsub(a2, a1);
     double r = v12.length();
@@ -337,6 +343,7 @@ public class NMRCalculation implements JmolNMRInterface {
     }
   }
 
+  @Override
   public Object getInfo(String what) {
     if (what.equals("all")) {
       Map<String, Object> map = new Hashtable<String, Object>();
@@ -355,6 +362,7 @@ public class NMRCalculation implements JmolNMRInterface {
     return info;
   }
 
+  @Override
   public float getChemicalShift(Atom atom) {
     float v = getMagneticShielding(atom);
     if (Float.isNaN(v))
@@ -363,6 +371,7 @@ public class NMRCalculation implements JmolNMRInterface {
     return (ref == null ? 0 : ref.floatValue()) - v;
   }
 
+  @Override
   public float getMagneticShielding(Atom atom) {
     Tensor t = viewer.modelSet.getAtomTensor(atom.index, "ms");
     return (t == null ? Float.NaN : t.isotropy());
@@ -370,6 +379,7 @@ public class NMRCalculation implements JmolNMRInterface {
 
   private Map<String, Float> shiftRefsPPM = new Hashtable<String, Float>();
   
+  @Override
   public boolean getState(SB sb) {
     if (shiftRefsPPM.isEmpty())
       return false;
@@ -378,6 +388,7 @@ public class NMRCalculation implements JmolNMRInterface {
     return true;
   }
   
+  @Override
   public boolean setChemicalShiftReference(String element, float value) {
     if (element == null) {
       shiftRefsPPM.clear();
@@ -388,6 +399,7 @@ public class NMRCalculation implements JmolNMRInterface {
     return true;
   }
 
+  @Override
   public List<Object> getTensorInfo(String tensorType, String infoType,
                                         BS bs) {
     if ("".equals(tensorType))
@@ -444,6 +456,7 @@ public class NMRCalculation implements JmolNMRInterface {
     return data;
   }
 
+  @Override
   public Map<String, Integer> getMinDistances(MeasurementData md) {
     BS bsPoints1 = (BS) md.points.get(0);
     int n1 = bsPoints1.cardinality(); 

@@ -115,6 +115,7 @@ public class ScriptExt implements JmolScriptExtension {
     // used by Reflection
   }
 
+  @Override
   public JmolScriptExtension init(Object se) {
     eval = (ScriptEvaluator) se;
     viewer = eval.viewer;
@@ -122,6 +123,7 @@ public class ScriptExt implements JmolScriptExtension {
     return this;
   }
 
+  @Override
   public boolean dispatch(int iTok, boolean b, T[] st) throws ScriptException {
     chk = eval.chk;
     fullCommand = eval.fullCommand;
@@ -3415,6 +3417,7 @@ public class ScriptExt implements JmolScriptExtension {
     addShapeProperty(propertyList, "clear", null);
   }
 
+  @Override
   public String plot(T[] args) throws ScriptException {
     st = eval.st;
     chk = eval.chk;
@@ -4144,6 +4147,7 @@ public class ScriptExt implements JmolScriptExtension {
     return true;
   }
 
+  @Override
   @SuppressWarnings("static-access")
   public Object getBitsetIdent(BS bs, String label, Object tokenValue,
                         boolean useAtomMap, int index, boolean isExplicitlyAll) {
@@ -4576,6 +4580,7 @@ public class ScriptExt implements JmolScriptExtension {
    * @param shapeManager
    * @return true if successful; false if not
    */
+  @Override
   public boolean evaluateParallel(ScriptContext context,
                                   ShapeManager shapeManager) {
     ScriptEvaluator e = new ScriptEvaluator();
@@ -4602,6 +4607,7 @@ public class ScriptExt implements JmolScriptExtension {
     return true;
   }
 
+  @Override
   public String write(T[] args) throws ScriptException {
     int pt = 0, pt0 = 0;
     boolean isCommand, isShow;
@@ -6930,6 +6936,7 @@ public class ScriptExt implements JmolScriptExtension {
     }
   }
 
+  @Override
   public Object getSmilesMatches(String pattern, String smiles, BS bsSelected,
                                  BS bsMatch3D, boolean isSmarts,
                                  boolean asOneBitset) throws ScriptException {
@@ -7009,6 +7016,7 @@ public class ScriptExt implements JmolScriptExtension {
 
   // ScriptMathProcessor extensions
   
+  @Override
   public boolean evaluate(ScriptMathProcessor mp, T op, SV[] args, int tok) throws ScriptException {
     switch (tok) {
     case T.abs:
@@ -9168,6 +9176,7 @@ public class ScriptExt implements JmolScriptExtension {
     return data;
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public Object getMinMax(Object floatOrSVArray, int tok) {
     float[] data = null;

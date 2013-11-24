@@ -75,6 +75,7 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
     final Viewer v = viewer;
     active = new JCheckBox(GT._("Preview"), false);
     active.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         if (active.isSelected()) {
           updatePreview(v, chooser.getSelectedFile());
@@ -97,6 +98,7 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
       box.add(append);
       cartoons = new JCheckBox(GT._("PDB cartoons"), pdbCartoonChecked);
       cartoons.addActionListener(new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
           if (active.isSelected()) {
             updatePreview(v, chooser.getSelectedFile());
@@ -130,6 +132,7 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
   /* (non-Javadoc)
    * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
    */
+  @Override
   public void propertyChange(PropertyChangeEvent evt) {
     if (active.isSelected()) {
       String prop = evt.getPropertyName();

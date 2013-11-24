@@ -13,10 +13,12 @@ import javajs.util.PT;
 public class JSpecView implements JmolJSpecView {
 
   private Viewer viewer;
+  @Override
   public void setViewer(Viewer viewer) {
     this.viewer = viewer;
   }
   
+  @Override
   public void atomPicked(int atomIndex) {
     if (atomIndex < 0)
       return;
@@ -84,6 +86,7 @@ public class JSpecView implements JmolJSpecView {
     viewer.statusManager.syncSend(peak, ">", 0);
   }
 
+  @Override
   public void setModel(int modelIndex) {
     int syncMode = ("sync on".equals(viewer.modelSet
         .getModelSetAuxiliaryInfoValue("jmolscript")) ? StatusManager.SYNC_DRIVER
@@ -96,6 +99,7 @@ public class JSpecView implements JmolJSpecView {
       sendJSpecView(peak);
   }
 
+  @Override
   public int getBaseModelIndex(int modelIndex) {
     String baseModel = (String) viewer.getModelAuxiliaryInfoValue(modelIndex,
         "jdxBaseModel");

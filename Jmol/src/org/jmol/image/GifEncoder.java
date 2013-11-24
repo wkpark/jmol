@@ -122,6 +122,7 @@ public class GifEncoder extends ImageEncoder {
     }
 
     static class CountComparator implements Comparator<ColorItem> {
+      @Override
       public int compare(ColorItem a, ColorItem b) {
         return (a == null ? 1 : b == null ? -1 : a.count < b.count ? -1
             : a.count > b.count ? 1 : 0);

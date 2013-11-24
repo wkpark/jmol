@@ -127,6 +127,7 @@ public class MOCalculation extends QuantumCalculation implements
   public MOCalculation() {
   }
 
+  @Override
   public boolean setupCalculation(VolumeDataInterface volumeData, BS bsSelected,
                         BS bsExclude, BS[] bsMolecules,
                         String calculationType, P3[] atomCoordAngstroms,
@@ -178,6 +179,7 @@ public class MOCalculation extends QuantumCalculation implements
     EZ = new double[this.nZ];
   }
 
+  @Override
   public void createCube() {
     setXYZBohr(points);
     processPoints();

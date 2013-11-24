@@ -356,6 +356,7 @@ public class Jmol implements JmolSyncInterface {
     return str;
   }
 
+  @Override
   synchronized public void syncScript(String script) {
     viewer.syncScript(script, "~", 0);
   }
@@ -381,6 +382,7 @@ public class Jmol implements JmolSyncInterface {
    * @return value
    * 
    */
+  @Override
   public Object getProperty(String infoType) {
     return viewer.getProperty(null, infoType, "");
   }
@@ -489,6 +491,7 @@ public class Jmol implements JmolSyncInterface {
     return errMsg;
   }
 
+  @Override
   public void register(String id, JmolSyncInterface jsi) {
     JmolAppletRegistry.checkIn(id, jsi);
   }
@@ -692,15 +695,18 @@ public class Jmol implements JmolSyncInterface {
  
   class MyStatusListener implements JmolStatusListener {
 
+    @Override
     public Map<String, Object> getRegistryInfo() {
       JmolAppletRegistry.checkIn(null, null); //cleans registry
       return JmolAppletRegistry.htRegistry;
     }
 
+    @Override
     public Dimension resizeInnerPanel(String data) {
       return new Dimension(0, 0);
     }
 
+    @Override
     public boolean notifyEnabled(EnumCallback type) {
       switch (type) {
       case ANIMFRAME:
@@ -726,6 +732,7 @@ public class Jmol implements JmolSyncInterface {
       return (callbacks.get(type) != null);
     }
 
+    @Override
     @SuppressWarnings("incomplete-switch")
     public void notifyCallback(EnumCallback type, Object[] data) {
       String callback = callbacks.get(type);
@@ -900,6 +907,7 @@ public class Jmol implements JmolSyncInterface {
       // this had to do with button callbacks
     }
 
+    @Override
     public void setCallbackFunction(String callbackName, String callbackFunction) {
       if (callbackName.equalsIgnoreCase("modelkit"))
         return;
@@ -921,6 +929,7 @@ public class Jmol implements JmolSyncInterface {
           + EnumCallback.getNameList().replace(';', ' ').trim());
     }
 
+    @Override
     public String eval(String strEval) {
       // may be appletName\1script
       int pt = strEval.indexOf("\1");
@@ -944,19 +953,23 @@ public class Jmol implements JmolSyncInterface {
      * @param quality
      * @return null (canceled) or a message starting with OK or an error message
      */
+    @Override
     public String createImage(String fileName, String type,
                               Object text_or_bytes, int quality) {
       return null;
     }
 
+    @Override
     public float[][] functionXY(String functionName, int nX, int nY) {
       return doFunctionXY(functionName, nX, nY);
     }
 
+    @Override
     public float[][][] functionXYZ(String functionName, int nX, int nY, int nZ) {
       return doFunctionXYZ(functionName, nX, nY, nZ);
     }
 
+    @Override
     public void showUrl(String urlString) {
       if (!doShowUrl(urlString))
         consoleMessage("Malformed URL:" + urlString);
@@ -1036,6 +1049,7 @@ public class Jmol implements JmolSyncInterface {
       return (isSync ? "" : sb.toString());
     }
 
+    @Override
     public Map<String, Object> getProperty(String type) {
       // only used on JSpecView side
       return null;

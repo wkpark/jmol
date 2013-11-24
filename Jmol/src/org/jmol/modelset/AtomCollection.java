@@ -2046,6 +2046,7 @@ abstract public class AtomCollection {
   }
 
   class AtomSorter implements Comparator<Atom>{
+    @Override
     public int compare(Atom a1, Atom a2) {
       return (a1.index > a2.index ? 1 : a1.index < a2.index ? -1 : 0);
     }    

@@ -59,6 +59,7 @@ public final class Navigator extends JmolThread implements
     // for Reflection from TransformManager.java
   }
 
+  @Override
   public void set(TransformManager tm, Viewer viewer) {
     this.tm = tm;
     setViewer(viewer, "navigator");
@@ -99,6 +100,7 @@ public final class Navigator extends JmolThread implements
 
   private boolean isStep;
 
+  @Override
   public void navigateList(JmolScriptEvaluator eval, List<Object[]> list) {
     // needs testing in Jmol/Java
     // still not correct for JS
@@ -185,6 +187,7 @@ public final class Navigator extends JmolThread implements
     pt1.y = y;
   }
 
+  @Override
   public void navigateTo(float seconds, V3 axis, float degrees,
                          P3 center, float depthPercent, float xTrans,
                          float yTrans) {
@@ -210,6 +213,7 @@ public final class Navigator extends JmolThread implements
     run();
   }
 
+  @Override
   public void navigate(float seconds, P3[][] pathGuide, P3[] path,
                        float[] theta, int indexStart, int indexEnd) {
     //this.theta = theta;
@@ -422,6 +426,7 @@ public final class Navigator extends JmolThread implements
     m.transform2(ptVectorWing, pt2s);
   }
 
+  @Override
   public void zoomByFactor(float factor, int x, int y) {
     float navZ = tm.navZ;
     if (navZ > 0) {
@@ -450,6 +455,7 @@ public final class Navigator extends JmolThread implements
     */
   }
 
+  @Override
   public void calcNavigationPoint() {
     // called by finalize
     calcNavigationDepthPercent();
@@ -591,6 +597,7 @@ public final class Navigator extends JmolThread implements
     tm.mode = TransformManager.MODE_NAVIGATION;
   }
 
+  @Override
   public void setNavigationOffsetRelative() {//boolean navigatingSurface) {
   //    if (navigatingSurface) {
   //      navigateSurface(Integer.MAX_VALUE);
@@ -610,6 +617,7 @@ public final class Navigator extends JmolThread implements
     tm.setNavigatePt(pt);
   }
 
+  @Override
   public void navigateKey(int keyCode, int modifiers) {
     // 0 0 here means "key released"
     String key = null;
@@ -764,6 +772,7 @@ public final class Navigator extends JmolThread implements
   //    viewer.requestRepaintAndWait();
   //  }
 
+  @Override
   public void setNavigationDepthPercent(float percent) {
     // navigation depth 0 # place user at rear plane of the model
     // navigation depth 100 # place user at front plane of the model
@@ -783,6 +792,7 @@ public final class Navigator extends JmolThread implements
             / tm.modelRadiusPixels));
   }
 
+  @Override
   public String getNavigationState() {
     return "# navigation state;\nnavigate 0 center "
         + Escape.eP(tm.getNavigationCenter())
@@ -797,6 +807,7 @@ public final class Navigator extends JmolThread implements
     return 50 * tm.navigationSlabOffset / tm.modelRadiusPixels;
   }
 
+  @Override
   public void navigateAxis(V3 rotAxis, float degrees) {
     if (degrees == 0)
       return;
@@ -808,6 +819,7 @@ public final class Navigator extends JmolThread implements
     tm.navigating = false;
   }
 
+  @Override
   public void navTranslatePercentOrTo(float seconds, float x, float y) {
     // from MoveToThread and Viewer
     // if either is Float.NaN, then the other is RELATIVE to current

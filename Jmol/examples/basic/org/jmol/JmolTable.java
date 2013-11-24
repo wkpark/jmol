@@ -141,12 +141,16 @@ public class JmolTable {
         public JmolColumnModelListener(JTable t) {
             this.table = t;
         }
+        @Override
         public void columnAdded(TableColumnModelEvent e) {
         }
+        @Override
         public void columnRemoved(TableColumnModelEvent e) {
         }
+        @Override
         public void columnMoved(TableColumnModelEvent e) {
         }
+        @Override
         public void columnMarginChanged(ChangeEvent e) {
             int colwidth = this.table.getColumnModel().getColumn(STRUCTURE_COL).getWidth();
             for (int i = 0; i < this.table.getRowCount(); i++) {
@@ -154,6 +158,7 @@ public class JmolTable {
             }
 
         }
+        @Override
         public void columnSelectionChanged(ListSelectionEvent e) {
         }
     }
@@ -172,14 +177,17 @@ public class JmolTable {
             return columns[column];
         }
 
+        @Override
         public int getRowCount() {
             return rows.length;
         }
 
+        @Override
         public int getColumnCount() {
             return columns.length;
         }
 
+        @Override
         public Object getValueAt(int row, int column) { 
             return rows[row][column];
         }
@@ -201,6 +209,7 @@ public class JmolTable {
             
                 
     static class JmolPanelCellRenderer extends JmolPanel implements TableCellRenderer{
+        @Override
         public Component getTableCellRendererComponent( 
                 JTable table,  Object value, boolean isSelected, 
                 boolean hasFocus, int rowIndex, int vColIndex ) {
@@ -220,11 +229,13 @@ public class JmolTable {
 
     static class JmolPanelCellEditor extends AbstractCellEditor implements TableCellEditor{
 
+        @Override
         public Component getTableCellEditorComponent(
                 JTable table, Object value, boolean isSelected,
                 int row, int column) {
             return (JmolPanel)value;
                 }
+        @Override
         public Object getCellEditorValue() {
             return new Object();
         }

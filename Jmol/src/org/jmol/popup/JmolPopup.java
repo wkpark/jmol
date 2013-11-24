@@ -44,6 +44,7 @@ public class JmolPopup extends SwingPopup {
     // required by reflection
   }
 
+  @Override
   public void jpiInitialize(PlatformViewer viewer, String menu) {
     boolean doTranslate = GT.setDoTranslate(true);
     PopupResource bundle = new MainPopupResourceBundle(strMenuStructure = menu,

@@ -97,10 +97,12 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   private final static int MODE_ARRAY = 2;
   private final static int MODE_MAP = 3;
 
+  @Override
   public String getLastException() {
     return InvalidSmilesException.getLastError();
   }
 
+  @Override
   public String getMolecularFormula(String pattern, boolean isSmarts) {
     InvalidSmilesException.setLastError(null);
     try {
@@ -130,6 +132,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     }
   }
 
+  @Override
   public String getSmiles(JmolNode[] atoms, int atomCount, BS bsSelected,
                           boolean asBioSmiles, boolean allowUnmatchedRings, boolean addCrossLinks, String comment) {    
     InvalidSmilesException.setLastError(null);
@@ -145,6 +148,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     }
   }
 
+  @Override
   public int areEqual(String smiles1, String smiles2) {
     BS[] result = find(smiles1, smiles2, false, false);
     return (result == null ? -1 : result.length);
@@ -175,6 +179,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    * @param firstMatchOnly 
    * @return number of occurances of pattern within smiles
    */
+  @Override
   public BS[] find(String pattern, String smiles, boolean isSmarts,
                        boolean firstMatchOnly) {
 
@@ -190,6 +195,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     }
   }
 
+  @Override
   public String getRelationship(String smiles1, String smiles2) {
     if (smiles1 == null || smiles2 == null
         || smiles1.length() == 0 || smiles2.length() == 0)
@@ -226,6 +232,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   }
     
 
+  @Override
   public String reverseChirality(String smiles) {
     smiles = javajs.util.PT.simpleReplace(smiles, "@@", "!@");
     smiles = javajs.util.PT.simpleReplace(smiles, "@", "@@");
@@ -249,6 +256,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    * @return BitSet indicating which atoms match the pattern.
    */
 
+  @Override
   public BS getSubstructureSet(String pattern, JmolNode[] atoms,
                                    int atomCount, BS bsSelected,
                                    boolean isSmarts, boolean firstMatchOnly) {
@@ -256,6 +264,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
         false, firstMatchOnly, MODE_BITSET);
   }
 
+  @Override
   public void getSubstructureSets(String[] smarts, JmolNode[] atoms, int atomCount,
                                   int flags, BS bsSelected, List<BS> ret, 
                                   List<BS>[] vRings) {
@@ -317,6 +326,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    * @param firstMatchOnly
    * @return BitSet Array indicating which atoms match the pattern.
    */
+  @Override
   public BS[] getSubstructureSetArray(String pattern, JmolNode[] atoms,
                                           int atomCount, BS bsSelected,
                                           BS bsAromatic, boolean isSmarts,
@@ -340,6 +350,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    * @return      a set of atom correlations
    * 
    */
+  @Override
   public int[][] getCorrelationMaps(String pattern, JmolNode[] atoms,
                                     int atomCount, BS bsSelected,
                                     boolean isSmarts, boolean firstMatchOnly) {

@@ -72,6 +72,8 @@ public class AppletConsole extends JmolConsole {
       outputDocument = getDocument();
     }
 
+ 
+    @Override
     public void append(String message) {
       try {
         outputDocument.insertString(outputDocument.getLength(), message, null);
@@ -82,6 +84,8 @@ public class AppletConsole extends JmolConsole {
     }
   }
   
+
+  @Override
   public void start(JmolViewer viewer) {
     setViewer(viewer);
     Component display = (Component) viewer.getDisplay();

@@ -74,6 +74,7 @@ public class DragEvent implements Event {
   }
 
   //@override
+  @Override
   public int getEventType() {
     return EventType.DRAG_EVENT; 
   }
@@ -97,6 +98,7 @@ public class DragEvent implements Event {
    * - 21 bytes total
    * @return serialized data
    */
+  @Override
   public byte[] serialize() {
     byte[] data = new byte[21];
     Converter.intToByteArray(data, 0, getEventType());

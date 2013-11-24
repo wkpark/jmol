@@ -296,6 +296,7 @@ public class SmilesAtom extends P3 implements JmolNode {
    * 
    * @return Atom index.
    */
+  @Override
   public int getIndex() {
     return index;
   }
@@ -347,6 +348,7 @@ public class SmilesAtom extends P3 implements JmolNode {
    * 
    * @return atomicNumber
    */
+  @Override
   public int getElementNumber() {
     return elementNumber;
   }
@@ -491,14 +493,17 @@ public class SmilesAtom extends P3 implements JmolNode {
     ringConnectivity = rc;
   }
 
+  @Override
   public int getModelIndex() {
     return component;
   }
 
+  @Override
   public int getAtomSite() {
     return atomSite;
   }
 
+  @Override
   public int getImplicitHydrogenCount() {
     // searching a SMILES string all H atoms will 
     // be explicitly defined
@@ -509,26 +514,32 @@ public class SmilesAtom extends P3 implements JmolNode {
     return missingHydrogenCount;
   }
 
+  @Override
   public int getFormalCharge() {
     return charge;
   }
 
+  @Override
   public int getIsotopeNumber() {
     return atomicMass;
   }
 
+  @Override
   public int getAtomicAndIsotopeNumber() {
     return Elements.getAtomicAndIsotopeNumber(elementNumber, atomicMass);
   }
 
+  @Override
   public String getAtomName() {
     return atomName == null ? "" : atomName;
   }
 
+  @Override
   public String getGroup3(boolean allowNull) {
     return residueName == null ? "" : residueName;
   }
 
+  @Override
   public String getGroup1(char c0) {
     return residueChar == null ? "" : residueChar;
   }
@@ -570,6 +581,7 @@ public class SmilesAtom extends P3 implements JmolNode {
     }
   }
 
+  @Override
   public JmolEdge[] getEdges() {
     return (parent != null ? parent.getEdges() : bonds);
   }
@@ -590,6 +602,7 @@ public class SmilesAtom extends P3 implements JmolNode {
    * 
    * @return Number of bonds.
    */
+  @Override
   public int getCovalentBondCount() {
     return getBondCount();
   }
@@ -607,11 +620,13 @@ public class SmilesAtom extends P3 implements JmolNode {
     return (b.getAtom1() == this ? b.getAtom2() : b.getAtom1()).matchingAtom;
   }
 
+  @Override
   public int getBondedAtomIndex(int j) {
     return (parent != null ? parent.getBondedAtomIndex(j) : bonds[j]
         .getOtherAtom(this).index);
   }
 
+  @Override
   public int getCovalentHydrogenCount() {
     if (covalentHydrogenCount >= 0)
       return covalentHydrogenCount;
@@ -624,6 +639,7 @@ public class SmilesAtom extends P3 implements JmolNode {
     return covalentHydrogenCount;
   }
 
+  @Override
   public int getValence() {
     if (parent != null)
       return parent.getValence();
@@ -669,10 +685,12 @@ public class SmilesAtom extends P3 implements JmolNode {
     return null;
   }
 
+  @Override
   public boolean isLeadAtom() {
     return isLeadAtom;
   }
 
+  @Override
   public int getOffsetResidueAtom(String name, int offset) {
     if (isBioAtom)
       for (int k = 0; k < bonds.length; k++)
@@ -682,16 +700,19 @@ public class SmilesAtom extends P3 implements JmolNode {
     return -1;
   }
 
+  @Override
   public void getGroupBits(BS bs) {
     bs.set(index);
     return;
   }
 
+  @Override
   public boolean isCrossLinked(JmolNode node) {
     SmilesBond bond = getBondTo((SmilesAtom) node);
     return bond.isHydrogen();
   }
 
+  @Override
   public boolean getCrossLinkLeadAtomIndexes(List<Integer> vLinks) {
     for (int k = 0; k < bonds.length; k++)
       if (bonds[k].order == SmilesBond.TYPE_BIO_PAIR)
@@ -699,18 +720,22 @@ public class SmilesAtom extends P3 implements JmolNode {
     return true;
   }
 
+  @Override
   public String getBioStructureTypeName() {
     return null;
   }
 
+  @Override
   public int getResno() {
     return 0;
   }
 
+  @Override
   public int getChainID() {
     return 0;
   }
 
+  @Override
   public String getChainIDStr() {
     return "";
   }
@@ -732,31 +757,38 @@ public class SmilesAtom extends P3 implements JmolNode {
         + (nH > 1 ? "H" + nH : nH == 1 ? "H" : "") + "]");
   }
 
+  @Override
   public boolean isDna() {
     return bioType == 'd';
   }
 
+  @Override
   public boolean isRna() {
     return bioType == 'r';
   }
 
+  @Override
   public boolean isNucleic() {
     return bioType == 'n' || bioType == 'r' || bioType == 'd';
   }
 
+  @Override
   public boolean isProtein() {
     return bioType == 'p';
   }
 
+  @Override
   public boolean isPurine() {
     return residueChar != null && isNucleic() && "AG".indexOf(residueChar) >= 0;
   }
 
+  @Override
   public boolean isPyrimidine() {
     return residueChar != null && isNucleic()
         && "CTUI".indexOf(residueChar) >= 0;
   }
 
+  @Override
   public boolean isDeleted() {
     return false;
   }
@@ -765,10 +797,12 @@ public class SmilesAtom extends P3 implements JmolNode {
     this.atomType = type;
   }
 
+  @Override
   public String getAtomType() {
     return (atomType == null ? atomName : atomType);
   }
 
+  @Override
   public BS findAtomsLike(String substring) {
     return null;
   }

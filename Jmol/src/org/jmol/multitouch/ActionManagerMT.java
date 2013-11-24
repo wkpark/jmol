@@ -199,6 +199,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     }
   }
   
+  @Override
   public List<GestureType> getAllowedGestures(int groupID) {
     //System.out.println("ActionManagerMT getAllowedGestures " + groupID);
     if (groupID != this.groupID || !viewer.getBoolean(T.allowmultitouch))
@@ -217,6 +218,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     return list;
   }
 
+  @Override
   public int getGroupID(int x, int y) {
     int gid = 0;
     try {

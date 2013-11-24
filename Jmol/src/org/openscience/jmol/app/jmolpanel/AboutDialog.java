@@ -169,6 +169,7 @@ class AboutDialog extends JDialog implements HyperlinkListener {
     SwingUtilities.invokeLater(new PageLoader(url, cursor));
   }
 */
+  @Override
   public void hyperlinkUpdate(HyperlinkEvent e) {
     if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
       linkActivated(e.getURL());

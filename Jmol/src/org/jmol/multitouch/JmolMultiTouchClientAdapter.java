@@ -35,14 +35,17 @@ public abstract class JmolMultiTouchClientAdapter implements JmolMultiTouchAdapt
   private Viewer viewer;
   private int[] screen = new int[2];  
   
+  @Override
   public boolean isServer() {
     return isServer;
   }
   
   // methods Jmol needs -- from viewer.ActionManagerMT
 
+  @Override
   public abstract void dispose();
 
+  @Override
   public boolean setMultiTouchClient(Viewer viewer, JmolMultiTouchClient client,
                               boolean isSimulation) {
     this.viewer = viewer;
@@ -53,6 +56,7 @@ public abstract class JmolMultiTouchClientAdapter implements JmolMultiTouchAdapt
     return true;
   }
   
+  @Override
   public void mouseMoved(int x, int y) {
     // for debugging purposes
     //System.out.println("mouseMove " + x + " " + y);

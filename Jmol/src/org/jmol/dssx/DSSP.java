@@ -221,6 +221,8 @@ public class DSSP implements DSSPInterface {
    * @return helix-5, helix-4, helix-3, and SUMMARY lines
    */
 
+  
+  @Override
   @SuppressWarnings("unchecked")
   public String calculateDssp(Object[] objBioPolymers, int bioPolymerCount,
                               Object objVHBonds, boolean doReport,

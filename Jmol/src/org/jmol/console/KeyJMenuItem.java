@@ -34,6 +34,7 @@ import org.jmol.api.JmolAbstractButton;
 public class KeyJMenuItem extends JMenuItem implements JmolAbstractButton {
 
   private String key;
+  @Override
   public String getKey() {
     return key;
   }
@@ -43,6 +44,7 @@ public class KeyJMenuItem extends JMenuItem implements JmolAbstractButton {
     GenericConsole.map(this, this.key = key, label, menuMap);
   }
 
+  @Override
   public void addConsoleListener(Object console) {
   }
 

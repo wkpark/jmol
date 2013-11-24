@@ -37,6 +37,7 @@ public class FilesReader implements JmolFilesReaderInterface {
   public FilesReader() {
   }
 
+  @Override
   public void set(FileManager fileManager, Viewer viewer, String[] name,
                   String[] nameAsGiven, String[] types, DataReader[] readers,
                   Map<String, Object> htParams, boolean isAppend) {
@@ -50,6 +51,7 @@ public class FilesReader implements JmolFilesReaderInterface {
     this.isAppend = isAppend;
   }
 
+  @Override
   public void run() {
 
     if (!isAppend && viewer.displayLoadErrors)
@@ -84,6 +86,7 @@ public class FilesReader implements JmolFilesReaderInterface {
    * @return a BufferedReader or null in the case of an error
    * 
    */
+  @Override
   public Object getBufferedReaderOrBinaryDocument(int i, boolean forceBinary) {
     if (dataReaders != null)
       return (forceBinary ? null : dataReaders[i].getBufferedReader()); // no binary strings
@@ -115,6 +118,7 @@ public class FilesReader implements JmolFilesReaderInterface {
       t == null ? "error opening:" + namesAsGivenIn[i] : (String) t);
   }
 
+  @Override
   public Object getAtomSetCollection() {
     return atomSetCollection;
   }

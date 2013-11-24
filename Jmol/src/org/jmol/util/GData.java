@@ -88,6 +88,7 @@ public class GData implements JmolGraphicsInterface {
    * @param depthValue
    *        rear clipping percentage [0,100]
    */
+  @Override
   public void setDepth(int depthValue) {
     depth = depthValue < 0 ? 0 : depthValue;
   }
@@ -110,6 +111,7 @@ public class GData implements JmolGraphicsInterface {
    * @param slabValue
    *        front clipping percentage [0,100]
    */
+  @Override
   public void setSlab(int slabValue) {
     slab = slabValue < 0 ? 0 : slabValue;
   }
@@ -147,6 +149,7 @@ public class GData implements JmolGraphicsInterface {
     this.zShadePower = zPower;
   }
 
+  @Override
   public void setAmbientOcclusion(int value) {
     ambientOcclusion = value;
   }
@@ -156,6 +159,7 @@ public class GData implements JmolGraphicsInterface {
    * 
    * @return width pixel count;
    */
+  @Override
   public int getRenderWidth() {
     return width;
   }
@@ -165,6 +169,7 @@ public class GData implements JmolGraphicsInterface {
    * 
    * @return height pixel count
    */
+  @Override
   public int getRenderHeight() {
     return height;
   }
@@ -174,6 +179,7 @@ public class GData implements JmolGraphicsInterface {
    * 
    * @return slab
    */
+  @Override
   public int getSlab() {
     return slab;
   }
@@ -183,6 +189,7 @@ public class GData implements JmolGraphicsInterface {
    * 
    * @return depth
    */
+  @Override
   public int getDepth() {
     return depth;
   }
@@ -202,6 +209,7 @@ public class GData implements JmolGraphicsInterface {
    * 
    * @return the answer
    */
+  @Override
   public boolean isAntialiased() {
     return antialiasThisFrame;
   }
@@ -223,6 +231,7 @@ public class GData implements JmolGraphicsInterface {
     return bgcolixes;
   }
 
+  @Override
   public int getColorArgbOrGray(short colix) {
     if (colix < 0)
       colix = changeableColixMap[colix & C.UNMASK_CHANGEABLE_TRANSLUCENT];
@@ -398,15 +407,18 @@ public class GData implements JmolGraphicsInterface {
     return (x < 0 || x >= width || y < 0 || y >= height);
   }
 
+  @Override
   public boolean isInDisplayRange(int x, int y) {
     return (x >= displayMinX && x < displayMaxX && y >= displayMinY && y < displayMaxY);
   }
 
+  @Override
   public boolean isClippedXY(int diameter, int x, int y) {
     int r = (diameter + 1) >> 1;
     return (x < -r || x >= width + r || y < -r || y >= height + r);
   }
 
+  @Override
   public boolean isClippedZ(int z) {
     return (z != Integer.MIN_VALUE && (z < slab || z > depth));
   }
@@ -472,6 +484,7 @@ public class GData implements JmolGraphicsInterface {
         fontSize, apiPlatform, graphicsForMetrics);
   }
 
+  @Override
   public Font getFont3DScaled(Font font, float scale) {
     // TODO: problem here is that we are assigning a bold font, then not DEassigning it
     float newScale = font.fontSizeNominal * scale;
@@ -479,6 +492,7 @@ public class GData implements JmolGraphicsInterface {
         font.idFontFace, font.idFontStyle, newScale, font.fontSizeNominal, apiPlatform, graphicsForMetrics));
   }
 
+  @Override
   public byte getFontFid(float fontSize) {
     return getFont3D(fontSize).fid;
   }
@@ -709,6 +723,7 @@ public class GData implements JmolGraphicsInterface {
     // only in Graphics3D
   }
 
+  @Override
   public void renderAllStrings(Object jmolRenderer) {
     // only in Graphics3D
   }

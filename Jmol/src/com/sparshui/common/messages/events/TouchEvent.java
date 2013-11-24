@@ -77,6 +77,7 @@ public class TouchEvent implements Event {
 	} 
 
   //@override
+  @Override
   public int getEventType() {
     return EventType.TOUCH_EVENT;
   }
@@ -116,6 +117,7 @@ public class TouchEvent implements Event {
    *    - 28 bytes total
 	 * @return serialized data
    */
+  @Override
   public byte[] serialize() {
     byte[] data = new byte[28];
     Converter.intToByteArray(data, 0, getEventType());

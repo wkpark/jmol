@@ -111,6 +111,7 @@ public class ChimePanel extends JPanel implements ItemListener, ActionListener {
 
   }
 
+  @Override
   public void actionPerformed(ActionEvent e) {
     Object source = e.getSource();
     if (source == goButton) {
@@ -120,6 +121,7 @@ public class ChimePanel extends JPanel implements ItemListener, ActionListener {
     }
   }
 
+  @Override
   public void itemStateChanged(ItemEvent e) {
     Object source = e.getSource();
     int stateChange = e.getStateChange();

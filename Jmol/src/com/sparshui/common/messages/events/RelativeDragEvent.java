@@ -62,7 +62,8 @@ public class RelativeDragEvent implements Event
   }
 
 	//@override
-	public int getEventType() 
+	@Override
+  public int getEventType() 
 	{
 		return EventType.RELATIVE_DRAG_EVENT;
 	}
@@ -77,7 +78,8 @@ public class RelativeDragEvent implements Event
 	 * - 12 bytes total
    * @return serialized data
 	 */
-	public byte[] serialize() 
+	@Override
+  public byte[] serialize() 
 	{
 		byte[] data = new byte[12];
     Converter.intToByteArray(data, 0, getEventType());

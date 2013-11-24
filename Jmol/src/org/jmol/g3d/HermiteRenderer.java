@@ -71,6 +71,7 @@ public class HermiteRenderer implements G3DRenderer {
   public HermiteRenderer() {
   }
 
+  @Override
   public G3DRenderer set(JmolRendererInterface g3d) {
     this.g3d = g3d;
     return this;

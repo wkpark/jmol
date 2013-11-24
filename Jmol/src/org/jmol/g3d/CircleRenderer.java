@@ -40,6 +40,8 @@ public final class CircleRenderer implements G3DRenderer {
     // for reflection
   }
   
+  
+  @Override
   public G3DRenderer set(JmolRendererInterface g3d) {
     try {
       this.g3d = (Graphics3D) g3d;

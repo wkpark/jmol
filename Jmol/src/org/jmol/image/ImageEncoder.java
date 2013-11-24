@@ -91,6 +91,7 @@ public abstract class ImageEncoder implements JmolImageEncoder {
    * @param errRet  
    * @return  true if successful
    */
+  @Override
   public boolean createImage(GenericPlatform apiPlatform, String type,
                               Object objImage, OC out,
                               Map<String, Object> params, String[] errRet) {

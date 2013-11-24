@@ -60,8 +60,11 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
   abstract protected boolean isMenuItem(Object source);  
   abstract protected void layoutWindow(String enabledButtons);
   abstract protected void setTitle();  
+  @Override
   abstract public void setVisible(boolean visible);
+  @Override
   abstract public JmolScriptEditorInterface getScriptEditor();
+  @Override
   abstract public void dispose();
 
   abstract protected JmolAbstractButton setButton(String text);
@@ -293,6 +296,7 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
   // Allowing for just the callbacks needed to provide status feedback to the console.
   // For applications that embed Jmol, see the example application Integration.java.
 
+  @Override
   public boolean notifyEnabled(EnumCallback type) {
     // See org.jmol.viewer.JmolConstants.java for a complete list
     switch (type) {
@@ -319,10 +323,12 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
     return false;
   }
 
+  @Override
   public String getText() {
     return output.getText();
   }
 
+  @Override
   public void sendConsoleEcho(String strEcho) {
     if (strEcho == null) {
       // null here means new language
@@ -347,6 +353,7 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
     output.setText(text);
   }
   
+  @Override
   public void sendConsoleMessage(String strInfo) {
     // null here indicates "clear console"
     if (strInfo != null && output.getText().startsWith(defaultMessage))
@@ -354,6 +361,7 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
     outputMsg(strInfo);
   }
   
+  @Override
   @SuppressWarnings("incomplete-switch")
   public void notifyCallback(EnumCallback type, Object[] data) {
     String strInfo = (data == null || data[1] == null ? null : data[1]
@@ -379,10 +387,12 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
     }
   }
 
+  @Override
   public void setCallbackFunction(String callbackType, String callbackFunction) {
     // application-dependent option
   }
 
+  @Override
   public void zap() {
   }
 

@@ -11,7 +11,8 @@ public class SpinEvent implements Event {
 	private float _rotationZ;
 	
 	//@override
-	public int getEventType() {
+	@Override
+  public int getEventType() {
 		return EventType.SPIN_EVENT;
 	}
 	
@@ -77,6 +78,7 @@ public class SpinEvent implements Event {
    *  - 16 bytes total
    * @return serialized data
    */
+  @Override
   public byte[] serialize() {
     byte[] data = new byte[16];
     Converter.intToByteArray(data, 0, getEventType());

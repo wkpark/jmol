@@ -432,6 +432,7 @@ class PyMOLScene implements JmolSceneGenerator {
    * @param scene
    * 
    */
+  @Override
   @SuppressWarnings("unchecked")
   public void generateScene(Map<String, Object> scene) {
     Logger.info("PyMOLScene - generateScene " + scene.get("name"));

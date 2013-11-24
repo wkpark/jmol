@@ -86,6 +86,7 @@ public class LoopedStreams {
 
     new Thread(new Runnable() {
 
+      @Override
       public void run() {
 
         while (keepRunning) {

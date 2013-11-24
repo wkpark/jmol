@@ -1307,14 +1307,17 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   /////////////// meshDataServer interface /////////////////
 
+  @Override
   public void invalidateTriangles() {
     thisMesh.invalidatePolygons();
   }
 
+  @Override
   public void setOutputChannel(JmolDocument binaryDoc, OC out) {
     binaryDoc.setOutputChannel(out);
   }
 
+  @Override
   public void fillMeshData(MeshData meshData, int mode, IsosurfaceMesh mesh) {
     if (meshData == null) {
       if (thisMesh == null)
@@ -1389,6 +1392,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     }
   }
 
+  @Override
   public void notifySurfaceGenerationCompleted() {
     setMeshI();
     setBsVdw();
@@ -1414,6 +1418,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     
   }
 
+  @Override
   public void notifySurfaceMappingCompleted() {
     if (!thisMesh.isMerged) {
       thisMesh.initialize(sg.isFullyLit() ? T.fullylit
@@ -1450,6 +1455,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     thisMesh.bsVdw.or(bs);
   }
 
+  @Override
   public P3[] calculateGeodesicSurface(BS bsSelected,
                                             float envelopeRadius) {
     return viewer.calculateSurface(bsSelected, envelopeRadius);
@@ -1457,6 +1463,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   /////////////  VertexDataServer interface methods ////////////////
 
+  @Override
   public int getSurfacePointIndexAndFraction(float cutoff, boolean isCutoffAbsolute,
                                   int x, int y, int z, P3i offset, int vA,
                                   int vB, float valueA, float valueB,
@@ -1467,6 +1474,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   private boolean associateNormals;
 
+  @Override
   public int addVertexCopy(P3 vertexXYZ, float value, int assocVertex) {
     if (cutoffRange != null && (value < cutoffRange[0] || value > cutoffRange[1]))
       return -1;
@@ -1475,6 +1483,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         associateNormals));
   }
 
+  @Override
   public int addTriangleCheck(int iA, int iB, int iC, int check,
                               int check2, boolean isAbsolute, int color) {
    return (iA < 0 || iB < 0 || iC < 0 
@@ -1513,6 +1522,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       thisMesh.thisID = PT.getQuotedStringAt(script, pt);
   }
 
+  @Override
   public void addRequiredFile(String fileName) {
     fileName = " # /*file*/\"" + fileName + "\"";
     if (scriptAppendix.indexOf(fileName) < 0)
@@ -1570,11 +1580,13 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       info.put("contours", mesh.getContourList(viewer));
   }
 
+  @Override
   public float[] getPlane(int x) {
     // only for surface readers
     return null;
   }
   
+  @Override
   public float getValue(int x, int y, int z, int ptyz) {
     return 0;
   }

@@ -55,6 +55,7 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
   /**
    * two independent threads -- one accepting multiple clients, one not.
    */
+  @Override
   public void startGestureServer() {
     clientServer = new GestureServer(NetworkConfiguration.CLIENT_PORT, this);
     clientThread = new Thread(clientServer);
@@ -68,6 +69,7 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
     deviceThread.start();
   }
 
+  @Override
   public void dispose() {
     try {
       _clientSocket.close();
@@ -100,6 +102,7 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
   /**
    * Start accepting connections.
    */
+  @Override
   public void run() {
     try {
       openSocket();
@@ -283,6 +286,7 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
   }
 
   private int myState;
+  @Override
   public int getState() {
     return myState;
   }

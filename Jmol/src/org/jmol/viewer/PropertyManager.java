@@ -82,21 +82,25 @@ public class PropertyManager implements JmolPropertyManager {
   Viewer viewer;
   private Map<String, Integer> map = new Hashtable<String, Integer>();
 
+  @Override
   public void setViewer(Viewer viewer) {
     this.viewer = viewer;
     for (int i = 0, p = 0; i < propertyTypes.length; i += 3)
       map.put(propertyTypes[i].toLowerCase(), Integer.valueOf(p++));
   }
 
+  @Override
   public int getPropertyNumber(String infoType) {
     Integer n = map.get(infoType == null ? "" : infoType.toLowerCase());
     return (n == null ? -1 : n.intValue());
   }
 
+  @Override
   public String getDefaultPropertyParam(int propID) {
     return (propID < 0 ? "" : propertyTypes[propID * 3 + 2]);
   }
 
+  @Override
   public boolean checkPropertyParameter(String name) {
     int propID = getPropertyNumber(name);
     String type = getParamType(propID);
@@ -205,6 +209,7 @@ public class PropertyManager implements JmolPropertyManager {
 
   //// static methods used by Eval and Viewer ////
 
+  @Override
   public Object getProperty(String returnType, String infoType, Object paramInfo) {
     if (propertyTypes.length != PROP_COUNT * 3)
       Logger.warn("propertyTypes is not the right length: "
@@ -248,6 +253,7 @@ public class PropertyManager implements JmolPropertyManager {
         args, 1);
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public Object extractProperty(Object property, SV[] args, int ptr) {
     if (ptr >= args.length)
@@ -610,6 +616,7 @@ public class PropertyManager implements JmolPropertyManager {
     return V;
   }
 
+  @Override
   public Map<String, Object> getModelInfo(Object atomExpression) {
 
     BS bsModels = viewer.getModelBitSet(viewer
@@ -669,6 +676,7 @@ public class PropertyManager implements JmolPropertyManager {
     return info;
   }
 
+  @Override
   public Map<String, Object> getLigandInfo(Object atomExpression) {
     BS bsAtoms = viewer.getAtomBitSet(atomExpression);
     BS bsSolvent = viewer.getAtomBitSet("solvent");
@@ -735,6 +743,7 @@ public class PropertyManager implements JmolPropertyManager {
     return info;
   }
 
+  @Override
   public Object getSymmetryInfo(BS bsAtoms, String xyz, int op, P3 pt,
                                 P3 pt2, String id, int type) {
     int iModel = -1;
@@ -758,6 +767,7 @@ public class PropertyManager implements JmolPropertyManager {
   }
 
   
+  @Override
   public String getModelExtract(BS bs, boolean doTransform,
                                 boolean isModelKit, String type) {
     boolean asV3000 = type.equalsIgnoreCase("V3000");
@@ -1073,6 +1083,7 @@ public class PropertyManager implements JmolPropertyManager {
     }
   }
 
+  @Override
   public String getChimeInfo(int tok, BS bs) {
     switch (tok) {
     case T.info:
@@ -1158,6 +1169,7 @@ public class PropertyManager implements JmolPropertyManager {
     return info.toString().substring(1);
   }
 
+  @Override
   public String getModelFileInfo(BS frames) {
     ModelSet ms = viewer.modelSet;
     SB sb = new SB();

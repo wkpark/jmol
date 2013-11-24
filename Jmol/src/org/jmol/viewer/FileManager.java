@@ -1265,6 +1265,7 @@ public class FileManager implements BytePoster {
     return (names == null ? pathName : names[2]);
   }
 
+  @Override
   public String postByteArray(String fileName, byte[] bytes) {
     Object ret = getBufferedInputStreamOrErrorMessageFromName(fileName, null, false,
             false, bytes, false);

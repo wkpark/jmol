@@ -184,6 +184,8 @@ public class CifReader extends ModulationReader implements JmolLineReader {
     }
   }
 
+  
+  @Override
   public String readNextLine() throws Exception {
     // from CifDataReader
     if (readLine() != null && line.indexOf("#jmolscript:") >= 0)

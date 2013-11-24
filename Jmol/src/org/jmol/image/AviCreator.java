@@ -106,6 +106,8 @@ public class AviCreator implements JmolMovieCreatorInterface {
 */
   String errorMsg;
 
+ 
+  @Override
   public String createMovie(Viewer viewer, String[] files, int width,
                             int height, int fps, String fileName) {
     /*

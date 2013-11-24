@@ -195,6 +195,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
    * @return "this" in the case of Graphics3D and this.g3d in the case of Export3D
    * 
    */
+  @Override
   public GData getGData() {
     return this;
   }
@@ -274,6 +275,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     return ((G3DRenderer) Interface.getOptionInterface("g3d." + type + "Renderer")).set(this);
   }
 
+  @Override
   public boolean currentlyRendering() {
     return currentlyRendering;
   }
@@ -285,6 +287,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
       endRendering();
   }
   
+  @Override
   public boolean checkTranslucent(boolean isAlphaTranslucent) {
     if (isAlphaTranslucent)
       haveTranslucentObjects = true;
@@ -534,6 +537,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     platform.clearScreenBufferThreaded();
   }
 
+  @Override
   public boolean haveTranslucentObjects() {
     return haveTranslucentObjects;
   }
@@ -687,6 +691,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     pixel.clearPixel(offset, z);
   }
   
+  @Override
   public void drawFilledCircle(short colixRing, short colixFill, int diameter,
                                int x, int y, int z) {
     // Halos, Draw handles
@@ -710,6 +715,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     }
   }
 
+  @Override
   public void volumeRender4(int diameter, int x, int y, int z) {
     if (diameter == 1) {
       plotPixelClippedXYZ(x, y, z);
@@ -735,6 +741,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
    * @param y center y
    * @param z center z
    */
+  @Override
   public void fillSphereXYZ(int diameter, int x, int y, int z) {
     switch (diameter) {
     case 1:
@@ -751,6 +758,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
 
   private int saveAmbient, saveDiffuse;
 
+  @Override
   public void volumeRender(boolean TF) {
     if (TF) {
       saveAmbient = shader.ambientPercent;
@@ -769,6 +777,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
    * @param center javax.vecmath.Point3i defining the center
    */
 
+  @Override
   public void fillSphereI(int diameter, P3i center) {
     fillSphereXYZ(diameter, center.x, center.y, center.z);
   }
@@ -779,11 +788,13 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
    * @param diameter pixel count
    * @param center a javax.vecmath.Point3f ... floats are casted to ints
    */
+  @Override
   public void fillSphere(int diameter, P3 center) {
     // from hermite ribbon
     fillSphereXYZ(diameter, Math.round(center.x), Math.round(center.y), Math.round(center.z));
   }
 
+  @Override
   public void fillEllipsoid(P3 center, P3[] points, int x, int y,
                               int z, int diameter, M3 mToEllipsoidal,
                               double[] coef, M4 mDeriv,
@@ -811,6 +822,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
    * @param rWidth pixel count
    * @param rHeight pixel count
    */
+  @Override
   public void drawRect(int x, int y, int z, int zSlab, int rWidth, int rHeight) {
     // labels (and rubberband, not implemented) and navigation cursor
     if (zSlab != 0 && isClippedZ(zSlab))
@@ -900,6 +912,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
    * @param widthFill pixel count
    * @param heightFill pixel count
    */
+  @Override
   public void fillRect(int x, int y, int z, int zSlab, int widthFill, int heightFill) {
     // hover and labels only -- slab at atom or front -- simple Z/window clip
     if (isClippedZ(zSlab))
@@ -940,6 +953,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
    * @param bgColix 
    */
   
+  @Override
   public void drawString(String str, Font font3d,
                          int xBaseline, int yBaseline, int z, int zSlab, short bgColix) {
     //axis, labels, measures, echo    
@@ -963,6 +977,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
    * @param bgColix 
    */
   
+  @Override
   public void drawStringNoSlab(String str, Font font3d, 
                                int xBaseline, int yBaseline,
                                int z, short bgColix) {
@@ -1009,6 +1024,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
         jmolRenderer, antialiasThisFrame);    
   }
   
+  @Override
   public void drawImage(Object objImage, int x, int y, int z, int zSlab, 
                         short bgcolix, int width, int height) {
     if (objImage == null || width == 0 || height == 0 || isClippedZ(zSlab))
@@ -1075,11 +1091,13 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
    * ***************************************************************/
 
   
+  @Override
   public void drawPixel(int x, int y, int z) {
     // measures - render angle
     plotPixelClippedXYZ(x, y, z);
   }
 
+  @Override
   public void drawPoints(int count, int[] coordinates, int scale) {
     // for dots only
     if (scale > 1) {
@@ -1101,6 +1119,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
    * lines and cylinders
    * ***************************************************************/
 
+  @Override
   public void drawDashedLine(int run, int rise, P3i pointA, P3i pointB) {
     // measures only
     line3d.plotDashedLine(argbCurrent, !addAllPixels, run, rise, 
@@ -1108,6 +1127,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
         pointB.x, pointB.y, pointB.z, true);
   }
 
+  @Override
   public void drawDottedLine(P3i pointA, P3i pointB) {
      //axes, bbcage only
     line3d.plotDashedLine(argbCurrent, !addAllPixels, 2, 1,
@@ -1115,12 +1135,14 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                           pointB.x, pointB.y, pointB.z, true);
   }
 
+  @Override
   public void drawLineXYZ(int x1, int y1, int z1, int x2, int y2, int z2) {
     // stars
     line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels,
                     x1, y1, z1, x2, y2, z2, true);
   }
 
+  @Override
   public void drawLine(short colixA, short colixB,
                        int x1, int y1, int z1, int x2, int y2, int z2) {
     // backbone and sticks
@@ -1136,6 +1158,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                     x1, y1, z1, x2, y2, z2, true);
   }
   
+  @Override
   public void drawLineAB(P3i pointA, P3i pointB) {
     // draw quadrilateral and hermite
     line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels,
@@ -1143,6 +1166,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                     pointB.x, pointB.y, pointB.z, true);
   }
   
+  @Override
   public void fillCylinderXYZ(short colixA, short colixB, byte endcaps,
                            int diameter,
                            int xA, int yA, int zA, int xB, int yB, int zB) {
@@ -1158,6 +1182,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                       xA, yA, zA, xB, yB, zB);
   }
 
+  @Override
   public void fillCylinderScreen(byte endcaps,
                            int diameter,
                            int xA, int yA, int zA, int xB, int yB, int zB) {
@@ -1166,6 +1191,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                       xA, yA, zA, xB, yB, zB);
   }
 
+  @Override
   public void fillCylinderScreen3I(byte endcaps, int diameter,
                            P3i screenA, P3i screenB, P3 pt0f, P3 pt1f, float radius) {
     //draw
@@ -1174,6 +1200,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                       screenB.x, screenB.y, screenB.z);
   }
 
+  @Override
   public void fillCylinder(byte endcaps, int diameter,
                            P3i screenA, P3i screenB) {
     //axes, bbcage, uccage, cartoon, dipoles, mesh
@@ -1182,6 +1209,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                       screenB.x, screenB.y, screenB.z);
   }
 
+  @Override
   public void fillCylinderBits(byte endcaps, int diameter,
                                P3 screenA, P3 screenB) {
    // dipole cross, cartoonRockets, draw line
@@ -1190,6 +1218,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
        screenB.x, screenB.y, screenB.z);
  }
 
+  @Override
   public void fillConeScreen(byte endcap, int screenDiameter,
                        P3i screenBase, P3i screenTip, boolean isBarb) {
     // dipoles, mesh, vectors
@@ -1198,6 +1227,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                           screenTip.x, screenTip.y, screenTip.z, false, isBarb);
   }
 
+  @Override
   public void fillConeSceen3f(byte endcap, int screenDiameter,
                        P3 screenBase, P3 screenTip) {
     // cartoons, rockets
@@ -1206,12 +1236,14 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                           screenTip.x, screenTip.y, screenTip.z, true, false);
   }
 
+  @Override
   public void drawHermite4(int tension,
                           P3i s0, P3i s1, P3i s2, P3i s3) {
     // bioShapeRenderer
     ((HermiteRenderer) hermite3d).renderHermiteRope(false, tension, 0, 0, 0, s0, s1, s2, s3);
   }
 
+  @Override
   public void drawHermite7(boolean fill, boolean border, int tension,
                            P3i s0, P3i s1, P3i s2, P3i s3,
                            P3i s4, P3i s5, P3i s6, P3i s7,
@@ -1230,6 +1262,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     setColix(colix);
   }
 
+  @Override
   public void fillHermite(int tension, int diameterBeg,
                           int diameterMid, int diameterEnd,
                           P3i s0, P3i s1, P3i s2, P3i s3) {
@@ -1238,6 +1271,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                      s0, s1, s2, s3);
   }
   
+  @Override
   public void drawTriangle3C(P3i screenA, short colixA, P3i screenB,
                            short colixB, P3i screenC, short colixC,
                            int check) {
@@ -1253,6 +1287,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
           screenC.y, screenC.z);
   }
 
+  @Override
   public void drawTriangle3I(P3i screenA, P3i screenB, P3i screenC,
                            int check) {
     // primary method for unmapped monochromatic Mesh
@@ -1283,6 +1318,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     ((TriangleRenderer) triangle3d).fillTriangle(xA, yA, zA, xB, yB, zB, xC, yC, zC, false);
   }
   */
+  @Override
   public void fillTriangleTwoSided(short normix,
                            int xScreenA, int yScreenA, int zScreenA,
                            int xScreenB, int yScreenB, int zScreenB,
@@ -1294,6 +1330,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
         xScreenC, yScreenC, zScreenC, false);
   }
 
+  @Override
   public void fillTriangle3f(P3 screenA, P3 screenB, P3 screenC, boolean setNoisy) {
     // rockets
     int i = getShadeIndexP3(screenA, screenB, screenC);
@@ -1304,12 +1341,14 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     ((TriangleRenderer) triangle3d).fillTriangleP3f(screenA, screenB, screenC, false);
   }
 
+  @Override
   public void fillTriangle3i(P3i screenA, P3i screenB, P3i screenC,
                              P3 ptA, P3 ptB, P3 ptC) {
     // cartoon DNA plates
     ((TriangleRenderer) triangle3d).fillTriangleP3i(screenA, screenB, screenC, false);
   }
 
+  @Override
   public void fillTriangle(P3i screenA, short colixA,
                                    short normixA, P3i screenB,
                                    short colixB, short normixB,
@@ -1333,6 +1372,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
         useGouraud);
   }
 
+  @Override
   public void fillTriangle3CN(P3i screenA, short colixA, short normixA,
                            P3i screenB, short colixB, short normixB,
                            P3i screenC, short colixC, short normixC) {
@@ -1380,6 +1420,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
    * quadrilaterals
    * ***************************************************************/
   
+  @Override
   public void drawQuadrilateral(short colix, P3i screenA, P3i screenB,
                                 P3i screenC, P3i screenD) {
     //mesh only -- translucency has been checked
@@ -1390,6 +1431,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     drawLineAB(screenD, screenA);
   }
 
+  @Override
   public void fillQuadrilateral(P3 screenA, P3 screenB,
                                 P3 screenC, P3 screenD) {
     // hermite, rockets, cartoons
@@ -1398,6 +1440,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     ((TriangleRenderer) triangle3d).fillTriangleP3f(screenA, screenC, screenD, false);
   }
 
+  @Override
   public void fillQuadrilateral3i(P3i screenA, short colixA, short normixA,
                                 P3i screenB, short colixB, short normixB,
                                 P3i screenC, short colixC, short normixC,
@@ -1411,6 +1454,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                  screenD, colixD, normixD);
   }
 
+  @Override
   public void drawSurface(MeshSurface meshSurface, short colix) {
     // Export3D only
   }
@@ -1424,6 +1468,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
       addPixel(offset, z, argbCurrent);
   }
 
+  @Override
   public void plotPixelClippedP3i(P3i screen) {
     // hermite only
     plotPixelClippedXYZ(screen.x, screen.y, screen.z);
@@ -1438,6 +1483,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
       addPixel(offset, z, argb);
   }
 
+  @Override
   public void plotImagePixel(int argb, int x, int y, int z, int shade, int bgargb) {
     // drawString via text3d.plotClipped
     if (isClipped(x, y))
@@ -1840,6 +1886,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
           jmolRenderer, (short) 0, 0, 0);
   }
 
+  @Override
   public void drawAtom(Atom atom) {
     fillSphereXYZ(atom.screenDiameter,
         atom.screenX, atom.screenY, atom.screenZ);
@@ -1847,10 +1894,12 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
 
   // implemented only for Export3D:
 
+  @Override
   public int getExportType() {
     return GData.EXPORT_NOT;
   }
 
+  @Override
   public String getExportName() {
     return null;
   }
@@ -1863,19 +1912,23 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     return false;
   }
 
+  @Override
   public JmolRendererInterface initializeExporter(Viewer viewer, double privateKey, GData g3d,
                                     Map<String, Object> params) {
     return null;
   }
 
+  @Override
   public String finalizeOutput() {
     return null;
   }
 
+  @Override
   public void drawBond(P3 atomA, P3 atomB, short colixA, short colixB,
                            byte endcaps, short mad, int bondOrder) {
   }
 
+  @Override
   public boolean drawEllipse(P3 ptAtom, P3 ptX, P3 ptY,
                            boolean fillArc, boolean wireframeOnly) {
     return false;
@@ -1947,6 +2000,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
    * @param navOffset 
    * @param navDepth 
    */
+  @Override
   public void renderCrossHairs(int[] minMax, int screenWidth, 
                                int screenHeight, P3 navOffset, float navDepth) {
     // this is the square and crosshairs for the navigator
@@ -1979,6 +2033,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     drawRect(x, y + h, z, 0, w, h);
   }
 
+  @Override
   public boolean initializeOutput(Viewer viewer,
                                   double privateKey, GData gdata, Map<String, Object> params) {
     // N/A

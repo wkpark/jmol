@@ -545,16 +545,17 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         Logger.info("setting current directory to " + path);
         cd(path);
       }
-      jsDocumentBase = appletDocumentBase;
-      i = jsDocumentBase.indexOf("#");
+      path = appletDocumentBase;
+      i = path.indexOf("#");
       if (i >= 0)
-        jsDocumentBase = jsDocumentBase.substring(0, i);
-      i = jsDocumentBase.lastIndexOf("?");
+        path = path.substring(0, i);
+      i = path.lastIndexOf("?");
       if (i >= 0)
-        jsDocumentBase = jsDocumentBase.substring(0, i);
-      i = jsDocumentBase.lastIndexOf("/");
+        path = path.substring(0, i);
+      i = path.lastIndexOf("/");
       if (i >= 0)
-        jsDocumentBase = jsDocumentBase.substring(0, i);
+        path = path.substring(0, i);
+      jsDocumentBase = path;
       fileManager.setAppletContext(appletDocumentBase);
       String appletProxy = (String) info.get("appletProxy");
       if (appletProxy != null)
@@ -709,6 +710,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     mouse = null;
   }
 
+  @Override
   public void processTwoPointGesture(float[][][] touches) {
     mouse.processTwoPointGesture(touches);
   }
@@ -1919,6 +1921,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return apiPlatform.getLocalUrl(fileName);
   }
 
+  @Override
   public BufferedInputStream getBufferedInputStream(String fullPathName) {
     // used by some JVXL readers
     return fileManager.getBufferedInputStream(fullPathName);
@@ -2868,6 +2871,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         global.dsspCalcHydrogen, setStructure);
   }
 
+  @Override
   public AtomIndexIterator getSelectedAtomIterator(BS bsSelected,
                                                    boolean isGreaterOnly,
                                                    boolean modelZeroBased,
@@ -2876,16 +2880,19 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         modelZeroBased, false, isMultiModel);
   }
 
+  @Override
   public void setIteratorForAtom(AtomIndexIterator iterator, int atomIndex,
                                  float distance) {
     modelSet.setIteratorForAtom(iterator, -1, atomIndex, distance, null);
   }
 
+  @Override
   public void setIteratorForPoint(AtomIndexIterator iterator, int modelIndex,
                                   P3 pt, float distance) {
     modelSet.setIteratorForPoint(iterator, modelIndex, pt, distance);
   }
 
+  @Override
   public void fillAtomData(AtomData atomData, int mode) {
     atomData.programInfo = "Jmol Version " + getJmolVersion();
     atomData.fileName = getFileName();
@@ -3026,6 +3033,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     finalizeTransformParameters();
   }
 
+  @Override
   public void startHoverWatcher(boolean tf) {
     if (!haveDisplay || tf && (!hoverEnabled || animationManager.animationOn))
       return;
@@ -4313,6 +4321,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
    * @param width
    * @param height
    */
+  @Override
   public void updateJS(int width, int height) {
     if (this.isWebGL) {
       if (jsParams == null) {
@@ -10166,6 +10175,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return eval.addHydrogensInline(bsAtoms, vConnections, pts);
   }
 
+  @Override
   public float evalFunctionFloat(Object func, Object params, float[] values) {
     return (getScriptManager() == null ? 0 : eval.evalFunctionFloat(func,
         params, values));
@@ -10441,6 +10451,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   /*default*/ String logFileName;
   
+  @Override
   public void log(String data) {
     if (data != null)
       getOutputManager().logToFile(data);
@@ -10464,6 +10475,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         .getOptionInterface("modelset.MeasurementPending")).set(modelSet);
   }
 
+  @Override
   public Object getApplet() {
     return applet;
   }

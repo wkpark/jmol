@@ -50,6 +50,7 @@ public class RepaintManager implements JmolRepaintManager {
   
   private final BS bsTranslucent = BS.newN(JC.SHAPE_MAX);
   
+  @Override
   public void set(Viewer viewer, ShapeManager shapeManager) {
     this.viewer = viewer;
     this.shapeManager = shapeManager;
@@ -60,14 +61,17 @@ public class RepaintManager implements JmolRepaintManager {
   public int holdRepaint = 0;
   private boolean repaintPending;
   
+  @Override
   public boolean isRepaintPending() {
     return repaintPending;
   }
   
+  @Override
   public void pushHoldRepaint(String why) {
     ++holdRepaint;
   }
   
+  @Override
   public void popHoldRepaint(boolean andRepaint, String why) {
     --holdRepaint;
     if (holdRepaint <= 0) {
@@ -79,6 +83,7 @@ public class RepaintManager implements JmolRepaintManager {
     }
   }
 
+  @Override
   synchronized public void requestRepaintAndWait(String why) {
     /**
      * @j2sNative
@@ -104,6 +109,7 @@ public class RepaintManager implements JmolRepaintManager {
     //System.out.println("repaintManager requestRepaintAndWait I am no longer waiting for a repaint: thread=" + Thread.currentThread().getName());
   }
 
+  @Override
   public boolean repaintIfReady(String why) {
     if (repaintPending)
       return false;
@@ -143,6 +149,7 @@ public class RepaintManager implements JmolRepaintManager {
      
   }
 
+  @Override
   synchronized public void repaintDone() {
     repaintPending = false;
     /**
@@ -160,6 +167,7 @@ public class RepaintManager implements JmolRepaintManager {
   /////////// renderer management ///////////
   
   
+  @Override
   public void clear(int iShape) {
     if (renderers ==  null)
       return;
@@ -187,6 +195,7 @@ public class RepaintManager implements JmolRepaintManager {
 
   /////////// actual rendering ///////////
   
+  @Override
   public void render(GData gdata, ModelSet modelSet, boolean isFirstPass, int[] minMax) {
     boolean logTime = viewer.getBoolean(T.showtiming);
     try {
@@ -226,6 +235,7 @@ public class RepaintManager implements JmolRepaintManager {
     }
   }
   
+  @Override
   public String renderExport(GData gdata, ModelSet modelSet, Map<String, Object> params) {
     boolean isOK;
     boolean logTime = viewer.getBoolean(T.showtiming);

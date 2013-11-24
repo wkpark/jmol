@@ -12,17 +12,21 @@ public class JmolLabel extends JLabel implements JmolAbstractButton {
 
   // unused:
   
+  @Override
   public String getKey() {
     return null;
   }
 
+  @Override
   public boolean isSelected() {
     return false;
   }
 
+  @Override
   public void setMnemonic(char mnemonic) {
   }
 
+  @Override
   public void addConsoleListener(Object console) {
   }
 

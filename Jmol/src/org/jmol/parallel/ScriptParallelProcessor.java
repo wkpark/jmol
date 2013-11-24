@@ -45,6 +45,7 @@ public class ScriptParallelProcessor extends ScriptFunction implements JmolParal
   public ScriptParallelProcessor() {    
   }
   
+  @Override
   public Object getExecutor() {
     return Executors.newCachedThreadPool();
   }
@@ -54,6 +55,7 @@ public class ScriptParallelProcessor extends ScriptFunction implements JmolParal
   public volatile Error error = null;
   Object lock = new Object() ;
   
+  @Override
   public void runAllProcesses(Viewer viewer) {
     if (processes.size() == 0)
       return;
@@ -111,6 +113,7 @@ public class ScriptParallelProcessor extends ScriptFunction implements JmolParal
 
   private List<ScriptProcess> processes = new  List<ScriptProcess>();
 
+  @Override
   public void addProcess(String name, ScriptContext context) {
     processes.addLast(new ScriptProcess(name, context));
   }

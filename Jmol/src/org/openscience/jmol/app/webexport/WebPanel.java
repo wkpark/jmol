@@ -412,6 +412,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
     return editorScrollPane.getHeight();
   }
 
+  @Override
   public void itemStateChanged(ItemEvent e) {
     DefaultListModel<JmolInstance> listModel = (DefaultListModel<JmolInstance>) instanceList.getModel();
     int[] list = instanceList.getSelectedIndices();
@@ -432,6 +433,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
     }
   }
   
+  @Override
   public void actionPerformed(ActionEvent e) {
 
     if (e.getSource() == helpButton) {
@@ -566,6 +568,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
     
   }
 
+  @Override
   public void valueChanged(ListSelectionEvent e) {
     if (e.getValueIsAdjusting())
       return; // wait until done
@@ -887,6 +890,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
   }
 
   class InstanceCellRenderer extends JLabel implements ListCellRenderer<Object> {
+    @Override
     public Component getListCellRendererComponent(JList<?> list, Object value,
                                                   int index,
                                                   boolean isSelected,
@@ -1113,6 +1117,7 @@ class ArrayListTransferHandler extends TransferHandler {
       data = alist;
     }
 
+    @Override
     public Object getTransferData(DataFlavor flavor)
         throws UnsupportedFlavorException {
       if (!isDataFlavorSupported(flavor)) {
@@ -1121,10 +1126,12 @@ class ArrayListTransferHandler extends TransferHandler {
       return data;
     }
 
+    @Override
     public DataFlavor[] getTransferDataFlavors() {
       return new DataFlavor[] { localArrayListFlavor, serialArrayListFlavor };
     }
 
+    @Override
     public boolean isDataFlavorSupported(DataFlavor flavor) {
       if (localArrayListFlavor.equals(flavor)) {
         return true;

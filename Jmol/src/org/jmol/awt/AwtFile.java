@@ -24,11 +24,10 @@ class AwtFile extends File implements GenericFileInterface {
 
   AwtFile(String name) {
     super(name);
-    System.out.println("AwtFIle:" + name);
   }
 
+  @Override
   public GenericFileInterface getParentAsFile() {
-    System.out.println("AwtFIle.getParentAsFile called");
     AwtFile f = null;
     try {
       File file = getParentFile();
@@ -76,15 +75,14 @@ class AwtFile extends File implements GenericFileInterface {
     }
   }
 
+  @Override
   public String getFullPath() {
-    String path = null;
     try {
-      path = getAbsolutePath();
-    } catch (AccessControlException e) {
+     return getAbsolutePath();
+    } catch (Exception e) {
+     return null;
       // Unsigned applet cannot do this.
     }
-    System.out.println("AwtFIle.getFullPath for " + path);
-    return path;
   }
   
   private final static String[] urlPrefixPairs = { "http:", "http://", "www.",

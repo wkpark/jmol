@@ -47,6 +47,8 @@ class BondIteratorSelected implements BondIterator {
     this.bondSelectionModeOr = bondSelectionModeOr;
   }
 
+ 
+  @Override
   public boolean hasNext() {
     if (bondType == JmolEdge.BOND_ORDER_NULL) {
       iBond = bsSelected.nextSetBit(iBond);
@@ -69,10 +71,14 @@ class BondIteratorSelected implements BondIterator {
     return false;
   }
 
+ 
+  @Override
   public int nextIndex() {
     return iBond;
   }
 
+  
+  @Override
   public Bond next() {
     return bonds[iBond++];
   }

@@ -33,6 +33,7 @@ import org.jmol.api.JmolPatternMatcher;
 
 public class PatternMatcher implements JmolPatternMatcher {
 
+  @Override
   public Pattern compile(String sFind, boolean isCaseInsensitive) {
     // used to avoid core loading of rarely used java classes
     return Pattern.compile(sFind,

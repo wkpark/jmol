@@ -101,6 +101,7 @@ public class MeasurementTable extends JDialog {
     measurementTable.setColumnSelectionAllowed(false);
     ListSelectionModel measurementSelection = measurementTable.getSelectionModel();
     measurementSelection.addListSelectionListener(new ListSelectionListener() {
+        @Override
         public void valueChanged(ListSelectionEvent e) {
           if (e.getValueIsAdjusting()) return;
           ListSelectionModel lsm = (ListSelectionModel)e.getSource();
@@ -123,6 +124,7 @@ public class MeasurementTable extends JDialog {
 
     deleteButton = new JButton(GT._("Delete"));
     deleteButton.addActionListener(new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
           viewer.script("measures delete " + (selectedMeasurementRow + 1) + JC.SCRIPT_EDITOR_IGNORE);
           updateMeasurementTableData();
@@ -132,6 +134,7 @@ public class MeasurementTable extends JDialog {
     
     deleteAllButton = new JButton(GT._("DeleteAll"));
     deleteAllButton.addActionListener(new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
           viewer.script("measures delete" + JC.SCRIPT_EDITOR_IGNORE);
           updateMeasurementTableData();
@@ -150,6 +153,7 @@ public class MeasurementTable extends JDialog {
 
     JButton dismissButton = new JButton(GT._("Dismiss"));
     dismissButton.addActionListener(new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
           close();
         }
@@ -206,13 +210,16 @@ public class MeasurementTable extends JDialog {
     public String getColumnName(int col) { 
       return measurementHeaders[col];
     } 
+    @Override
     public int getRowCount() { return viewer.getMeasurementCount(); }
+    @Override
     public int getColumnCount() { return 5; }
 
     @Override
     public Class<? extends String> getColumnClass(int col) {
       return stringClass;
     }
+    @Override
     public Object getValueAt(int row, int col) {
       //System.out.println("meata " + row + " " + col);
       if (col == 0) {

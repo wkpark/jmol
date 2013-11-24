@@ -97,6 +97,7 @@ abstract public class JSPopup extends GenericPopup {
 
   /// JmolAbstractMenu ///
 
+  @Override
   public void menuAddButtonGroup(Object newMenu) {
     /**
      * @j2sNative
@@ -110,6 +111,7 @@ abstract public class JSPopup extends GenericPopup {
     }
   }
 
+  @Override
   public void menuAddItem(Object menu, Object item) {
     /**
      * @j2sNative
@@ -121,6 +123,7 @@ abstract public class JSPopup extends GenericPopup {
     }
   }
 
+  @Override
   public void menuAddSeparator(Object menu) {
     /**
      * @j2sNative
@@ -133,10 +136,12 @@ abstract public class JSPopup extends GenericPopup {
     }
   }
 
+  @Override
   public void menuAddSubMenu(Object menu, Object subMenu) {
     menuAddItem(menu, subMenu);
   }
 
+  @Override
   public void menuClearListeners(Object menu) {
     /**
      * @j2sNative
@@ -148,6 +153,7 @@ abstract public class JSPopup extends GenericPopup {
     }
   }
 
+  @Override
   public Object menuCreateCheckboxItem(Object menu, String entry,
                                        String basename, String id,
                                        boolean state, boolean isRadio) {
@@ -165,6 +171,7 @@ abstract public class JSPopup extends GenericPopup {
     return newMenuItem(menu, item, entry, basename, id);
   }
 
+  @Override
   public Object menuCreateItem(Object menu, String entry, String script,
                                String id) {
     Object item = null;
@@ -181,6 +188,7 @@ abstract public class JSPopup extends GenericPopup {
     return newMenuItem(menu, item, entry, script, id);
   }
 
+  @Override
   public Object menuCreatePopup(String name) {
     /**
      * @j2sNative
@@ -193,6 +201,7 @@ abstract public class JSPopup extends GenericPopup {
     }
   }
 
+  @Override
   public void menuEnable(Object menu, boolean enable) {
     /**
      * @j2sNative
@@ -207,6 +216,7 @@ abstract public class JSPopup extends GenericPopup {
     }
   }
 
+  @Override
   public void menuEnableItem(Object item, boolean enable) {
     /**
      * @j2sNative
@@ -219,6 +229,7 @@ abstract public class JSPopup extends GenericPopup {
     }
   }
 
+  @Override
   public void menuGetAsText(SB sb, int level, Object menu,
                             String menuName) {
     /**
@@ -241,6 +252,7 @@ abstract public class JSPopup extends GenericPopup {
     }
   }
 
+  @Override
   public String menuGetId(Object menu) {
     /**
      * @j2sNative
@@ -253,6 +265,7 @@ abstract public class JSPopup extends GenericPopup {
     }
   }
 
+  @Override
   public int menuGetItemCount(Object menu) {
     /**
      * @j2sNative
@@ -265,6 +278,7 @@ abstract public class JSPopup extends GenericPopup {
     }
   }
 
+  @Override
   public Object menuGetParent(Object menu) {
     /**
      * @j2sNative
@@ -277,6 +291,7 @@ abstract public class JSPopup extends GenericPopup {
     }
   }
 
+  @Override
   public int menuGetPosition(Object menu) {
     /**
      * @j2sNative
@@ -290,10 +305,12 @@ abstract public class JSPopup extends GenericPopup {
     return -1;
   }
 
+  @Override
   public void menuInsertSubMenu(Object menu, Object subMenu, int index) {
     // not applicable
   }
 
+  @Override
   public Object menuNewSubMenu(String entry, String id) {
     /**
      * @j2sNative
@@ -307,6 +324,7 @@ abstract public class JSPopup extends GenericPopup {
     }
   }
 
+  @Override
   public void menuRemoveAll(Object menu, int indexFrom) {
     /**
      * @j2sNative
@@ -318,6 +336,7 @@ abstract public class JSPopup extends GenericPopup {
     }
   }
 
+  @Override
   public void menuSetAutoscrolls(Object menu) {
     /**
      * @j2sNative
@@ -329,6 +348,7 @@ abstract public class JSPopup extends GenericPopup {
     }
   }
 
+  @Override
   public void menuSetCheckBoxState(Object item, boolean state) {
     /**
      * @j2sNative
@@ -340,10 +360,12 @@ abstract public class JSPopup extends GenericPopup {
     }
   }
 
+  @Override
   public String menuSetCheckBoxOption(Object item, String name, String what) {
     return null;
   }
 
+  @Override
   public void menuSetCheckBoxValue(Object source) {
     /**
      * @j2sNative
@@ -356,6 +378,7 @@ abstract public class JSPopup extends GenericPopup {
     }
   }
 
+  @Override
   public void menuSetLabel(Object menu, String entry) {
     /**
      * @j2sNative
@@ -367,10 +390,12 @@ abstract public class JSPopup extends GenericPopup {
     }
   }
 
+  @Override
   public void menuSetListeners() {
     // ignored
   }
 
+  @Override
   public void menuShowPopup(Object popup, int x, int y) {
     /**
      * @j2sNative
@@ -383,6 +408,7 @@ abstract public class JSPopup extends GenericPopup {
     
   }
 
+  @Override
   public void updateSpecialMenuItem(Object m) {
     /**
      * @j2sNative

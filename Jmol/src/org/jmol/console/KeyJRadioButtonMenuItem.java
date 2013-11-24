@@ -36,6 +36,7 @@ public class KeyJRadioButtonMenuItem extends JRadioButtonMenuItem implements Jmo
   // currently application-only
   
   private String key;
+  @Override
   public String getKey() {
     return key;
   }
@@ -45,6 +46,7 @@ public class KeyJRadioButtonMenuItem extends JRadioButtonMenuItem implements Jmo
     GenericConsole.map(this, this.key = key, label, menuMap);
   }
   
+  @Override
   public void addConsoleListener(Object console) {
   }
 

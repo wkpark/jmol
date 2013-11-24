@@ -69,6 +69,7 @@ public class DefaultLogger implements LoggerInterface {
   /* (non-Javadoc)
    * @see org.jmol.util.LoggerInterface#debug(java.lang.String)
    */
+  @Override
   public void debug(String txt) {
     log(System.out, Logger.LEVEL_DEBUG, txt, null);
   }
@@ -76,6 +77,7 @@ public class DefaultLogger implements LoggerInterface {
   /* (non-Javadoc)
    * @see org.jmol.util.LoggerInterface#info(java.lang.String)
    */
+  @Override
   public void info(String txt) {
     log(System.out, Logger.LEVEL_INFO, txt, null);
   }
@@ -83,6 +85,7 @@ public class DefaultLogger implements LoggerInterface {
   /* (non-Javadoc)
    * @see org.jmol.util.LoggerInterface#warn(java.lang.String)
    */
+  @Override
   public void warn(String txt) {
     log(System.out, Logger.LEVEL_WARN, txt, null);
   }
@@ -90,6 +93,7 @@ public class DefaultLogger implements LoggerInterface {
   /* (non-Javadoc)
    * @see org.jmol.util.LoggerInterface#warn(java.lang.String, java.lang.Throwable)
    */
+  @Override
   public void warnEx(String txt, Throwable e) {
     log(System.out, Logger.LEVEL_WARN, txt, e);
   }
@@ -97,6 +101,7 @@ public class DefaultLogger implements LoggerInterface {
   /* (non-Javadoc)
    * @see org.jmol.util.LoggerInterface#error(java.lang.String)
    */
+  @Override
   public void error(String txt) {
     log(System.err, Logger.LEVEL_ERROR, txt, null);
   }
@@ -104,6 +109,7 @@ public class DefaultLogger implements LoggerInterface {
   /* (non-Javadoc)
    * @see org.jmol.util.LoggerInterface#error(java.lang.String, java.lang.Exception)
    */
+  @Override
   public void errorEx(String txt, Throwable e) {
     log(System.err, Logger.LEVEL_ERROR, txt, e);
   }
@@ -111,6 +117,7 @@ public class DefaultLogger implements LoggerInterface {
   /* (non-Javadoc)
    * @see org.jmol.util.LoggerInterface#fatal(java.lang.String)
    */
+  @Override
   public void fatal(String txt) {
     log(System.err, Logger.LEVEL_FATAL, txt, null);
   }
@@ -118,6 +125,7 @@ public class DefaultLogger implements LoggerInterface {
   /* (non-Javadoc)
    * @see org.jmol.util.LoggerInterface#fatal(java.lang.String, java.lang.Exception)
    */
+  @Override
   public void fatalEx(String txt, Throwable e) {
     log(System.err, Logger.LEVEL_FATAL, txt, e);
   }

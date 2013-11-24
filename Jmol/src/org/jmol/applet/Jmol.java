@@ -190,12 +190,14 @@ public class Jmol implements WrappedApplet {
   protected JmolViewer viewer;
   protected Map<EnumCallback, String> callbacks = new Hashtable<EnumCallback, String>();
   
+  @Override
   public void paint(Graphics g) {
     //paint is invoked for system-based updates (obscurring, for example)
     //Opera has a bug in relation to displaying the Java Console. 
     update(g, "paint ");
   }
 
+  @Override
   public void update(Graphics g) {
     //update is called in response to repaintManager's repaint() request.
     update(g, "update");
@@ -219,15 +221,18 @@ public class Jmol implements WrappedApplet {
    * static String appletInfo = GT._("Jmol Applet. Part of the OpenScience
    * project. " + "See http://www.jmol.org for more information");
    */
+  @Override
   public void setAppletWrapper(AppletWrapper appletWrapper) {
     this.appletWrapper = appletWrapper;
   }
 
+  @Override
   public void jmolReady() {
     System.out.println("Jmol applet " + fullName + " ready");
     viewer.getBooleanProperty("__appletReady");
   }
   
+  @Override
   public void destroy() {
     gRight = null;
     JmolAppletRegistry.checkOut(fullName);
@@ -241,6 +246,7 @@ public class Jmol implements WrappedApplet {
     System.out.println("Jmol applet " + fullName + " destroyed");
   }
 
+  @Override
   public Object setStereoGraphics(boolean isStereo) {
     isStereoSlave = isStereo;
     return (isStereo ? appletWrapper.getGraphics() : null);
@@ -251,6 +257,7 @@ public class Jmol implements WrappedApplet {
   //  super.finalize();
   //}
 
+  @Override
   public void init() {
     htmlName = getParameter("name");
     syncId = getParameter("syncId");
@@ -603,6 +610,7 @@ public class Jmol implements WrappedApplet {
     }
   }
 
+  @Override
   public boolean handleEvent(Event e) {
     if (viewer == null)
       return false;
@@ -673,26 +681,31 @@ public class Jmol implements WrappedApplet {
     }
   }
 
+  @Override
   public void script(String script) {
     scriptNoWait(script);
   }
 
+  @Override
   public String scriptNoWait(String script) {
     if (script == null || script.length() == 0)
       return "";
     return scriptProcessor(script, null, SCRIPT_NOWAIT);
   }
 
+  @Override
   public String scriptCheck(String script) {
     if (script == null || script.length() == 0)
       return "";
     return scriptProcessor(script, null, SCRIPT_CHECK);
   }
 
+  @Override
   public String scriptWait(String script) {
     return scriptWait(script, null);
   }
 
+  @Override
   public String scriptWait(String script, String statusParams) {
     if (script == null || script.length() == 0)
       return "";
@@ -700,6 +713,7 @@ public class Jmol implements WrappedApplet {
     return scriptProcessor(script, statusParams, SCRIPT_WAIT);
   }
 
+  @Override
   public String scriptWaitOutput(String script) {
     if (script == null || script.length() == 0)
       return "";
@@ -710,10 +724,12 @@ public class Jmol implements WrappedApplet {
     return str;
   }
 
+  @Override
   synchronized public void syncScript(String script) {
     viewer.syncScript(script, "~", 0);
   }
 
+  @Override
   public String getAppletInfo() {
     return GT
         ._(
@@ -729,30 +745,37 @@ public class Jmol implements WrappedApplet {
         + Escape.eS("" + appletWrapper.getCodeBase());
   }
 
+  @Override
   public Object getProperty(String infoType) {
     return viewer.getProperty(null, infoType, "");
   }
 
+  @Override
   public Object getProperty(String infoType, String paramInfo) {
     return viewer.getProperty(null, infoType, paramInfo);
   }
 
+  @Override
   public String getPropertyAsString(String infoType) {
     return viewer.getProperty("readable", infoType, "").toString();
   }
 
+  @Override
   public String getPropertyAsString(String infoType, String paramInfo) {
     return viewer.getProperty("readable", infoType, paramInfo).toString();
   }
 
+  @Override
   public String getPropertyAsJSON(String infoType) {
     return viewer.getProperty("JSON", infoType, "").toString();
   }
 
+  @Override
   public String getPropertyAsJSON(String infoType, String paramInfo) {
     return viewer.getProperty("JSON", infoType, paramInfo).toString();
   }
 
+  @Override
   public String loadInlineString(String strModel, String script, boolean isAppend) {
     String errMsg = viewer.loadInlineAppend(strModel, isAppend);
     if (errMsg == null)
@@ -768,6 +791,7 @@ public class Jmol implements WrappedApplet {
    * @return null or error message
    */
   
+  @Override
   public String loadInlineArray(String[] strModels, String script,
                               boolean isAppend) {
     if (strModels == null || strModels.length == 0)
@@ -783,6 +807,7 @@ public class Jmol implements WrappedApplet {
    * @param strModel
    * @return         error or null
    */
+  @Override
   @Deprecated
   public String loadInline(String strModel) {
     return loadInlineString(strModel, "", false);
@@ -794,6 +819,7 @@ public class Jmol implements WrappedApplet {
    * @param script
    * @return         error or null
    */
+  @Override
   @Deprecated
   public String loadInline(String strModel, String script) {
     return loadInlineString(strModel, script, false);
@@ -804,6 +830,7 @@ public class Jmol implements WrappedApplet {
    * @param strModels
    * @return         error or null
    */
+  @Override
   @Deprecated
   public String loadInline(String[] strModels) {
     return loadInlineArray(strModels, "", false);
@@ -815,6 +842,7 @@ public class Jmol implements WrappedApplet {
    * @param script
    * @return       error or null
    */
+  @Override
   @Deprecated
   public String loadInline(String[] strModels, String script) {
     return loadInlineArray(strModels, script, false);
@@ -830,6 +858,7 @@ public class Jmol implements WrappedApplet {
     return errMsg;
   }
 
+  @Override
   public String loadDOMNode(JSObject DOMNode) {
     // This should provide a route to pass in a browser DOM node
     // directly as a JSObject. Unfortunately does not seem to work with
@@ -837,6 +866,7 @@ public class Jmol implements WrappedApplet {
     return viewer.openDOM(DOMNode);
   }
 
+  @Override
   public String loadNodeId(String nodeId) {
     if (!haveDocumentAccess)
       return "ERROR: NO DOCUMENT ACCESS";
@@ -878,15 +908,18 @@ public class Jmol implements WrappedApplet {
 
   class MyStatusListener implements JmolStatusListener {
 
+    @Override
     public Map<String, Object>  getRegistryInfo() {
       JmolAppletRegistry.checkIn(null, null); //cleans registry
       return JmolAppletRegistry.htRegistry;
     }
 
+    @Override
     public javajs.awt.Dimension resizeInnerPanel(String data) {
       return new javajs.awt.Dimension(0, 0);
     }
 
+    @Override
     public boolean notifyEnabled(EnumCallback type) {
       switch (type) {
       case ANIMFRAME:
@@ -914,6 +947,7 @@ public class Jmol implements WrappedApplet {
 
     private boolean haveNotifiedError;
 
+    @Override
     @SuppressWarnings("incomplete-switch")
     public void notifyCallback(EnumCallback type, Object[] data) {
       String callback = callbacks.get(type);
@@ -1103,6 +1137,7 @@ public class Jmol implements WrappedApplet {
       return info;
     }
 
+    @Override
     public void setCallbackFunction(String callbackName, String callbackFunction) {
       if (callbackName.equalsIgnoreCase("modelkit"))
         return;
@@ -1125,6 +1160,7 @@ public class Jmol implements WrappedApplet {
 
     private Boolean allowJSEval;
     
+    @Override
     public String eval(String strEval) {
       // may be appletName\1script
       int pt = strEval.indexOf("\1");
@@ -1184,11 +1220,13 @@ public class Jmol implements WrappedApplet {
      * @param quality
      * @return          null (canceled) or a message starting with OK or an error message
      */
+    @Override
     public String createImage(String fileName, String type, Object text_or_bytes,
                               int quality) {
       return null;
     }
 
+    @Override
     public float[][] functionXY(String functionName, int nX, int nY) {
       /*three options:
        * 
@@ -1236,6 +1274,7 @@ public class Jmol implements WrappedApplet {
       return fxy;
     }
 
+    @Override
     public float[][][] functionXYZ(String functionName, int nX, int nY, int nZ) {
       float[][][] fxyz = new float[Math.abs(nX)][Math.abs(nY)][Math.abs(nZ)];
       if (!mayScript || nX == 0 || nY == 0 || nZ == 0)
@@ -1255,6 +1294,7 @@ public class Jmol implements WrappedApplet {
       return fxyz;
     }
 
+    @Override
     public void showUrl(String urlString) {
       if (Logger.debugging) {
         Logger.debug("showUrl(" + urlString + ")");
@@ -1340,6 +1380,7 @@ public class Jmol implements WrappedApplet {
       return (isSync ? "" : sb.toString());
     }
 
+    @Override
     public Map<String, Object> getProperty(String type) {
       // only used on JSpecView side
       return null;
@@ -1365,6 +1406,7 @@ public class Jmol implements WrappedApplet {
     return "" + jso.call(callback, data);
   }
 
+  @Override
   public void register(String id, JmolSyncInterface jsi) {
     JmolAppletRegistry.checkIn(id, jsi); 
   }

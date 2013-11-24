@@ -139,6 +139,7 @@ public class TestSmarterJmolAdapter extends TestSuite {
     for (int ie = 0; ie < exts.length; ie++) {
       final String e = exts[ie];
       String[] files = dir.list(new FilenameFilter() {
+        @Override
         public boolean accept(File dir, String name) {
           return name.endsWith("." + e);
         }

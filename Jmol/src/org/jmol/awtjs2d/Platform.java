@@ -32,7 +32,8 @@ public class Platform implements GenericPlatform {
   PlatformViewer viewer;
   Object context;
   
-	public void setViewer(PlatformViewer viewer, Object canvas) {
+	@Override
+  public void setViewer(PlatformViewer viewer, Object canvas) {
 	  /**
 	   * @j2sNative
 	   * 
@@ -53,10 +54,12 @@ public class Platform implements GenericPlatform {
 		}
 	}
 
+  @Override
   public boolean isSingleThreaded() {
     return true;
   }
 
+  @Override
   public Object getJsObjectInfo(Object[] jsObject, String method, Object[] args) {
     /**
      * we must use Object[] here to hide [HTMLUnknownElement] and [Attribute] from Java2Script
@@ -72,25 +75,30 @@ public class Platform implements GenericPlatform {
     }
   }
 
+  @Override
   public boolean isHeadless() {
     return false;
   }
 
+  @Override
   public GenericMouseInterface getMouseManager(double privateKey, Object display) {
     return new Mouse(privateKey, viewer, display);
   }
 
   // /// Display
 
-	public void convertPointFromScreen(Object canvas, P3 ptTemp) {
+	@Override
+  public void convertPointFromScreen(Object canvas, P3 ptTemp) {
 	  // from JmolMultiTouchClientAdapter.fixXY
 		Display.convertPointFromScreen(canvas, ptTemp);
 	}
 
-	public void getFullScreenDimensions(Object canvas, int[] widthHeight) {
+	@Override
+  public void getFullScreenDimensions(Object canvas, int[] widthHeight) {
 		Display.getFullScreenDimensions(canvas, widthHeight);
 	}
 
+  @Override
   public GenericMenuInterface getMenuPopup(String menuStructure,
                                          char type) {
     String c = (type == 'j' ? "awtjs2d.JSmolPopup" : "awtjs2d.JSModelKitPopup");
@@ -107,11 +115,13 @@ public class Platform implements GenericPlatform {
     return jmolpopup;
   }
 
-	public boolean hasFocus(Object canvas) {
+	@Override
+  public boolean hasFocus(Object canvas) {
 		return Display.hasFocus(canvas);
 	}
 
-	public String prompt(String label, String data, String[] list,
+	@Override
+  public String prompt(String label, String data, String[] list,
 			boolean asButtons) {
 		return Display.prompt(label, data, list, asButtons);
 	}
@@ -122,10 +132,12 @@ public class Platform implements GenericPlatform {
 	 * @param context
 	 * @param size
 	 */
-	public void renderScreenImage(Object context, Object size) {
+	@Override
+  public void renderScreenImage(Object context, Object size) {
 		Display.renderScreenImage(viewer, context, size);
 	}
 
+  @Override
   public void drawImage(Object context, Object canvas, int x, int y, int width,
                         int height) {
     
@@ -133,30 +145,36 @@ public class Platform implements GenericPlatform {
     Image.drawImage(context, canvas, x, y, width, height);
   }
 
-	public void requestFocusInWindow(Object canvas) {
+	@Override
+  public void requestFocusInWindow(Object canvas) {
 		Display.requestFocusInWindow(canvas);
 	}
 
-	public void repaint(Object canvas) {
+	@Override
+  public void repaint(Object canvas) {
 		Display.repaint(canvas);
 	}
 
-	public void setTransparentCursor(Object canvas) {
+	@Override
+  public void setTransparentCursor(Object canvas) {
 		Display.setTransparentCursor(canvas);
 	}
 
-	public void setCursor(int c, Object canvas) {
+	@Override
+  public void setCursor(int c, Object canvas) {
 		Display.setCursor(c, canvas);
 	}
 
 	// //// Image
 
-	public Object allocateRgbImage(int windowWidth, int windowHeight,
+	@Override
+  public Object allocateRgbImage(int windowWidth, int windowHeight,
 			int[] pBuffer, int windowSize, boolean backgroundTransparent, boolean isImageWrite) {
 		return Image.allocateRgbImage(windowWidth, windowHeight, pBuffer,
 				windowSize, backgroundTransparent, (isImageWrite ? null : canvas));
 	}
 
+  @Override
   public void notifyEndOfRendering() {
   }
 
@@ -166,16 +184,19 @@ public class Platform implements GenericPlatform {
    * @return image object
    * 
    */
-	public Object createImage(Object data) {
+	@Override
+  public Object createImage(Object data) {
 	  // N/A in JS
 	  return null;
 	}
 
-	public void disposeGraphics(Object gOffscreen) {
+	@Override
+  public void disposeGraphics(Object gOffscreen) {
 	  // N/A
 	}
 
-	public int[] grabPixels(Object canvas, int width, int height, 
+	@Override
+  public int[] grabPixels(Object canvas, int width, int height, 
                           int[] pixels, int startRow, int nRows) {
 	  // from PNG and JPG image creators, also g3d.ImageRenderer.plotImage via drawImageToBuffer
 	  
@@ -201,37 +222,45 @@ public class Platform implements GenericPlatform {
     return buf;
 	}
 
-	public int[] drawImageToBuffer(Object gOffscreen, Object imageOffscreen,
+	@Override
+  public int[] drawImageToBuffer(Object gOffscreen, Object imageOffscreen,
 			Object canvas, int width, int height, int bgcolor) {
 	  return grabPixels(canvas, width, height, null, 0, 0);
 	}
 
-	public int[] getTextPixels(String text, Font font3d, Object context,
+	@Override
+  public int[] getTextPixels(String text, Font font3d, Object context,
 			Object image, int width, int height, int ascent) {
 		return Image.getTextPixels(text, font3d, context, width, height, ascent);
 	}
 
-	public void flushImage(Object imagePixelBuffer) {
+	@Override
+  public void flushImage(Object imagePixelBuffer) {
 	  // N/A
 	}
 
-	public Object getGraphics(Object image) {
+	@Override
+  public Object getGraphics(Object image) {
 		return Image.getGraphics(image);
 	}
 
+  @Override
   public int getImageHeight(Object canvas) {
 		return (canvas == null ? -1 : Image.getHeight(canvas));
 	}
 
-	public int getImageWidth(Object canvas) {
+	@Override
+  public int getImageWidth(Object canvas) {
 		return (canvas == null ? -1 : Image.getWidth(canvas));
 	}
 
-	public Object getStaticGraphics(Object image, boolean backgroundTransparent) {
+	@Override
+  public Object getStaticGraphics(Object image, boolean backgroundTransparent) {
 		return Image.getStaticGraphics(image, backgroundTransparent);
 	}
 
-	public Object newBufferedImage(Object image, int w, int h) {
+	@Override
+  public Object newBufferedImage(Object image, int w, int h) {
     /**
      * @j2sNative
      * 
@@ -242,7 +271,8 @@ public class Platform implements GenericPlatform {
     return null;
 	}
 
-	public Object newOffScreenImage(int w, int h) {
+	@Override
+  public Object newOffScreenImage(int w, int h) {
     /**
      * @j2sNative
      * 
@@ -253,7 +283,8 @@ public class Platform implements GenericPlatform {
     return null;
 	}
 
-	public boolean waitForDisplay(Object echoNameAndPath, Object zipBytes)
+	@Override
+  public boolean waitForDisplay(Object echoNameAndPath, Object zipBytes)
 			throws InterruptedException {
   
 	  /**
@@ -282,27 +313,33 @@ public class Platform implements GenericPlatform {
 
 	// /// FONT
 
-	public int fontStringWidth(Font font, String text) {
+	@Override
+  public int fontStringWidth(Font font, String text) {
 		return JSFont.stringWidth(font, context, text);
 	}
 
-	public int getFontAscent(Object context) {
+	@Override
+  public int getFontAscent(Object context) {
 		return JSFont.getAscent(context);
 	}
 
-	public int getFontDescent(Object context) {
+	@Override
+  public int getFontDescent(Object context) {
 		return JSFont.getDescent(context);
 	}
 
-	public Object getFontMetrics(Font font, Object context) {
+	@Override
+  public Object getFontMetrics(Font font, Object context) {
 		return JSFont.getFontMetrics(font, context);
 	}
 
-	public Object newFont(String fontFace, boolean isBold, boolean isItalic,
+	@Override
+  public Object newFont(String fontFace, boolean isBold, boolean isItalic,
 			float fontSize) {
 		return JSFont.newFont(fontFace, isBold, isItalic, fontSize, "px");
 	}
 
+  @Override
   public String getDateFormat(boolean isoiec8824) {
     /**
      * 
@@ -325,20 +362,24 @@ public class Platform implements GenericPlatform {
     }
   }
 
+  @Override
   public GenericFileInterface newFile(String name) {
     return new JSFile(name);
   }
 
+  @Override
   public Object getBufferedFileInputStream(String name) {
     // n/a for any applet
     return null; 
   }
 
+  @Override
   public Object getBufferedURLInputStream(URL url, byte[] outputBytes,
                                           String post) {
     return JSFile.getBufferedURLInputStream(url, outputBytes, post);
   }
 
+  @Override
   public String getLocalUrl(String fileName) {
     // n/a (dialogs only)
     return null;

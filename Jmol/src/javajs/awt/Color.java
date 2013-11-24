@@ -6,15 +6,21 @@ public class Color implements GenericColor {
 
 	public int argb;
 
-	public int getRGB() {
+
+  @Override
+  public int getRGB() {
 		return argb & 0x00FFFFFF;
 	}
 
-	public int getOpacity255() {
+
+  @Override
+  public int getOpacity255() {
 		return ((argb >> 24) & 0xFF);
 	}
 
-	public void setOpacity255(int a) {
+	
+  @Override
+  public void setOpacity255(int a) {
 		argb = argb & 0xFFFFFF | ((a & 0xFF) << 24);
 	}
 

@@ -312,25 +312,32 @@ public class WebExport extends JPanel implements WindowListener {
   }
 
   /* Window event code for cleanup*/
+  @Override
   public void windowClosing(WindowEvent e) {
   }
 
+  @Override
   public void windowClosed(WindowEvent e) {
     //cleanUp(); Should do this, but then states during a session loose their .png files if window is closed.
   }
 
+  @Override
   public void windowOpened(WindowEvent e) {
   }
 
+  @Override
   public void windowIconified(WindowEvent e) {
   }
 
+  @Override
   public void windowDeiconified(WindowEvent e) {
   }
 
+  @Override
   public void windowActivated(WindowEvent e) {
   }
 
+  @Override
   public void windowDeactivated(WindowEvent e) {
   }
 

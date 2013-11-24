@@ -167,6 +167,7 @@ class RecentFilesDialog extends JDialog implements ActionListener,
     return selectedFileName;
   }
 
+  @Override
   public void windowClosing(java.awt.event.WindowEvent e) {
     cancel();
     close();
@@ -190,6 +191,7 @@ class RecentFilesDialog extends JDialog implements ActionListener,
     setVisible(false);
   }
 
+  @Override
   public void actionPerformed(java.awt.event.ActionEvent e) {
 
     if (e.getSource() == okButton) {
@@ -207,21 +209,27 @@ class RecentFilesDialog extends JDialog implements ActionListener,
     }
   }
 
+  @Override
   public void windowClosed(java.awt.event.WindowEvent e) {
   }
 
+  @Override
   public void windowOpened(java.awt.event.WindowEvent e) {
   }
 
+  @Override
   public void windowIconified(java.awt.event.WindowEvent e) {
   }
 
+  @Override
   public void windowDeiconified(java.awt.event.WindowEvent e) {
   }
 
+  @Override
   public void windowActivated(java.awt.event.WindowEvent e) {
   }
 
+  @Override
   public void windowDeactivated(java.awt.event.WindowEvent e) {
   }
 

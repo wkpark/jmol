@@ -177,6 +177,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
     return b;
   }
   
+  @Override
   public void notifyScriptStart() {
     runButton.setEnabled(false);
     resumeButton.setEnabled(false);
@@ -184,6 +185,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
     pauseButton.setEnabled(true);
   }
 
+  @Override
   public void notifyScriptTermination() {
     runButton.setEnabled(true);
     pauseButton.setEnabled(false);
@@ -201,11 +203,13 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
       editor.grabFocus();
   }
   
+  @Override
   public String getText() {
     return editor.getText();
   }
 
   
+  @Override
   public void output(String message) {
     editor.clearContent(message);
   }
@@ -234,6 +238,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
               strErrorMessageUntranslated });
    */
   
+  @Override
   public void notifyContext(ScriptContext context, Object[] data) {
     haltButton.setEnabled(context.errorMessage == null);
     pauseButton.setEnabled(context.errorMessage == null);
@@ -295,6 +300,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
     }    
   }
 
+  @Override
   public void actionPerformed(ActionEvent e) {
     checkAction(e);
   }
@@ -504,6 +510,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
     protected UndoManager undo = new UndoManager();
 
     protected class MyUndoableEditListener implements UndoableEditListener {
+      @Override
       public void undoableEditHappened(UndoableEditEvent e) {
         // Remember the edit and update the menus
         undo.addEdit(e.getEdit());
@@ -554,10 +561,12 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
     }
   }
 
+  @Override
   public void setFilename(String filename) {
     this.filename = filename;
   }
 
+  @Override
   public void show(String[] fileText) {
     if (fileText == null)
       fileText = new String[] { null, null };

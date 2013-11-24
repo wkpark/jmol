@@ -90,6 +90,8 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
   private Viewer viewer;
   
   
+ 
+  @Override
   public void setModel(ModelCollection modelSet, int modelIndex, int firstModelAtom, int atomIndex, P3 center, float distance, RadiusData rd) {
     if (threadSafe)
       modelIndex = -1 - modelIndex; // no caching
@@ -114,6 +116,8 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
     setCenter(center, distance);
   }
 
+
+  @Override
   public void setCenter(P3 center, float distance) {
     setCenter2(center, distance);
   }
@@ -126,6 +130,8 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
   }
 
   private int iNext;
+ 
+  @Override
   public boolean hasNext() {
     return hasNext2();
   }
@@ -150,10 +156,14 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
   }
 
 
+ 
+  @Override
   public int next() {
     return iNext - zeroBase;
   }
   
+ 
+  @Override
   public float foundDistance2() {
     return (cubeIterator == null ? -1 : cubeIterator.foundDistance2());
   }
@@ -165,6 +175,8 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
    * @param bsResult 
    * 
    */
+  
+  @Override
   @SuppressWarnings("incomplete-switch")
   public void addAtoms(BS bsResult) {
     int iAtom;
@@ -190,6 +202,8 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
       }
   }
 
+  
+  @Override
   public void release() {
     if (cubeIterator != null) {
       cubeIterator.release();

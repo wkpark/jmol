@@ -73,16 +73,19 @@ public class TwoPointGesture implements Gesture /*extends StandardDynamicGesture
 
 
   // @override
+  @Override
   public String getName() {
     return "TwoPointGesture";
   }
 
   // @override
+  @Override
   public int getGestureType() {
     return _myType;
   }
 
   //@override
+  @Override
   public List<Event> processChange(List<TouchPoint> touchPoints,
       TouchPoint changedPoint) {
     return processChangeSync(changedPoint);

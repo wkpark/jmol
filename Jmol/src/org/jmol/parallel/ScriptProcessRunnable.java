@@ -51,6 +51,7 @@ public class ScriptProcessRunnable implements Runnable {
     this.shapeManager = shapeManager;
   }
 
+  @Override
   public void run() {
     try {
       if (this.parallelProcessor.error == null) {

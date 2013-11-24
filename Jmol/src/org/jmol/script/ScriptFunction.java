@@ -171,6 +171,7 @@ public class ScriptFunction implements JmolScriptFunction {
     return s.toString();
   }
 
+  @Override
   public String getSignature() {
     SB s = new SB().append(typeName)
       .append(" ").append(name).append(" (");
@@ -183,14 +184,17 @@ public class ScriptFunction implements JmolScriptFunction {
     return s.toString();
   }
 
+  @Override
   public Object geTokens() {
     return aatoken;
   }
 
+  @Override
   public String getName() {
     return name;
   }
   
+  @Override
   public int getTok() {
     return tok;
   }

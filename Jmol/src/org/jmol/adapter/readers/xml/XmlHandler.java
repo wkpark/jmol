@@ -47,6 +47,7 @@ public class XmlHandler extends DefaultHandler implements JmolXmlHandler {
     // for reflection
   }
   
+  @Override
   public void parseXML(XmlReader xmlReader, Object saxReaderObj, BufferedReader reader) throws Exception {
     this.xmlReader = xmlReader;
     XMLReader saxReader = (XMLReader) saxReaderObj;

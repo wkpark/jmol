@@ -555,14 +555,17 @@ public class JmolApp implements JmolAppAPI {
       viewer.script(script);
   }
   
+  @Override
   public void addHistoryWindowInfo(String name, Component window, Point border) {
     historyFile.addWindowInfo(name, window, border);
   }
 
+  @Override
   public Point getHistoryWindowPosition(String name) {
     return historyFile.getWindowPosition(name);
   }
 
+  @Override
   public Dimension getHistoryWindowSize(String name) {
     return historyFile.getWindowSize(name);
   }

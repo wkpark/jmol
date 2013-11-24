@@ -81,6 +81,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
   private static FileChooser openChooser;
   private FilePreview openPreview;
 
+  @Override
   public String getOpenFileNameFromDialog(Map<String, Object> viewerOptions,
                                           Viewer viewer,
                                           String fileName, JmolAppAPI jmolApp,
@@ -160,6 +161,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     return null;
   }
   
+  @Override
   public String getSaveFileNameFromDialog(Viewer viewer, String fileName,
                                           String type) {
     if (saveChooser == null) {
@@ -190,6 +192,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
   }
 
   
+  @Override
   public String getImageFileNameFromDialog(Viewer viewer, String fileName,
                                            String type, String[] imageChoices,
                                            String[] imageExtensions,
@@ -318,6 +321,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
       this.slider = slider;
     }
 
+    @Override
     public void stateChanged(ChangeEvent arg0) {
       int value = slider.getValue();
       if (isJPEG) {
@@ -332,6 +336,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
   }
 
   public class ExportChoiceListener implements ItemListener {
+    @Override
     @SuppressWarnings("unchecked")
     public void itemStateChanged(ItemEvent e) {
 
@@ -360,6 +365,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
   /* (non-Javadoc)
    * @see org.jmol.export.JmolImageTyperInterface#getType()
    */
+  @Override
   public String getType() {
     return choice;
   }
@@ -367,6 +373,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
   /* (non-Javadoc)
    * @see org.jmol.export.JmolImageTyperInterface#getQuality(java.lang.String)
    */
+  @Override
   public int getQuality(String sType) {
     return (sType.equals("JPEG") || sType.equals("JPG") ? qualityJPG : sType
         .equals("PNG") ? qualityPNG : -1);
@@ -421,6 +428,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
 
   static boolean haveTranslations = false;
 
+  @Override
   public void setupUI(boolean forceNewTranslation) {
     if (forceNewTranslation || !haveTranslations)
       setupUIManager();
@@ -524,12 +532,14 @@ public class Dialog extends JPanel implements JmolDialogInterface {
   protected int qualityP = -1;
   protected String imageType;
   
+  @Override
   public void setImageInfo(int qualityJPG, int qualityPNG, String imageType) {
     qualityJ = qualityJPG;
     qualityP = qualityPNG;
     this.imageType = imageType;
   }
   
+  @Override
   public String getFileNameFromDialog(Viewer v, String dType, String iFileName) {
     this.viewer = v;
     this.dialogType = dType;
@@ -537,6 +547,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     outputFileName = null;
     try {
       SwingUtilities.invokeAndWait(new Runnable() {
+        @Override
         public void run() {
           if (dialogType.equals("Load")) {
             outputFileName = getOpenFileNameFromDialog(

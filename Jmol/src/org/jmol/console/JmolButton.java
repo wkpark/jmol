@@ -17,10 +17,12 @@ public class JmolButton extends JButton implements JmolAbstractButton {
     super(ii);
   }
 
+  @Override
   public void addConsoleListener(Object console) {
     addActionListener((ActionListener) console);
   }
 
+  @Override
   public String getKey() {
     return null;
   }

@@ -143,6 +143,7 @@ public abstract class JmolConsole extends GenericConsole implements ActionListen
       this.stub = stub.toLowerCase();
     }
 
+    @Override
     public boolean accept(File dir, String name) {
       if (!name.toLowerCase().startsWith(stub))
         return false;
@@ -155,6 +156,7 @@ public abstract class JmolConsole extends GenericConsole implements ActionListen
     }
   }
   
+  @Override
   public void actionPerformed(ActionEvent e) {
     doAction(e.getSource());
   }
@@ -179,13 +181,16 @@ public abstract class JmolConsole extends GenericConsole implements ActionListen
    * @param we 
    * 
    */
+  @Override
   public void windowActivated(WindowEvent we) {
   }
 
+  @Override
   public void windowClosed(WindowEvent we) {
     destroyConsole();
   }
 
+  @Override
   public void windowClosing(WindowEvent we) {
     destroyConsole();
   }
@@ -194,6 +199,7 @@ public abstract class JmolConsole extends GenericConsole implements ActionListen
    * @param we 
    * 
    */
+  @Override
   public void windowDeactivated(WindowEvent we) {
   }
 
@@ -201,6 +207,7 @@ public abstract class JmolConsole extends GenericConsole implements ActionListen
    * @param we 
    * 
    */
+  @Override
   public void windowDeiconified(WindowEvent we) {
   }
 
@@ -208,6 +215,7 @@ public abstract class JmolConsole extends GenericConsole implements ActionListen
    * @param we 
    * 
    */
+  @Override
   public void windowIconified(WindowEvent we) {
   }
 
@@ -215,6 +223,7 @@ public abstract class JmolConsole extends GenericConsole implements ActionListen
    * @param we 
    * 
    */
+  @Override
   public void windowOpened(WindowEvent we) {
   }
 

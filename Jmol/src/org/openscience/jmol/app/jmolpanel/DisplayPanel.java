@@ -66,6 +66,7 @@ public class DisplayPanel extends JPanel
 
   private JFrame frame;
   
+  @Override
   public JFrame getFrame() {
     return frame;
   }
@@ -126,19 +127,23 @@ public class DisplayPanel extends JPanel
     viewer.setSelectionHalos(false);
   }
 
+  @Override
   public void componentHidden(java.awt.event.ComponentEvent e) {
     //System.out.println("DisplayPanel.componentHidden");
   }
 
+  @Override
   public void componentMoved(java.awt.event.ComponentEvent e) {
     //System.out.println("DisplayPanel.componentMoved " + e.getComponent().getX() + " " + e.getComponent().getY());
   }
 
+  @Override
   public void componentResized(java.awt.event.ComponentEvent e) {
     //System.out.println("DisplayPanel.componentResized");
     updateSize(true);
   }
 
+  @Override
   public void componentShown(java.awt.event.ComponentEvent e) {
     //System.out.println("DisplayPanel.componentShown");
     updateSize(true);
@@ -184,6 +189,7 @@ public class DisplayPanel extends JPanel
     haveBorder = true;    
   }
   
+  @Override
   public int print(Graphics g, PageFormat pf, int pageIndex) {
     Graphics2D g2 = (Graphics2D)g;
     if (pageIndex > 0)
@@ -249,6 +255,7 @@ public class DisplayPanel extends JPanel
       this.setEnabled(true);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
       viewer.setSelectionHalos(false);
       if (statusText != null) {
@@ -271,6 +278,7 @@ public class DisplayPanel extends JPanel
       this.setEnabled(true);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
       if (viewer.getShowBbcage() || viewer.getBooleanProperty("showUnitCell")) {
         viewer.evalStringQuiet(action);
@@ -287,6 +295,7 @@ public class DisplayPanel extends JPanel
       this.setEnabled(true);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
       viewer.evalStringQuiet("center (selected)");
       setRotateMode();
@@ -300,6 +309,7 @@ public class DisplayPanel extends JPanel
       this.setEnabled(true);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
       viewer.homePosition();
       setRotateMode();
@@ -318,6 +328,7 @@ public class DisplayPanel extends JPanel
       this.setEnabled(true);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
       JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
       viewer.evalStringQuiet(action + " " + cbmi.isSelected());

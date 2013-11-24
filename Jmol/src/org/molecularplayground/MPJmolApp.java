@@ -194,6 +194,7 @@ public class MPJmolApp implements JsonNioClient {
   /// JsonNiosClient ///
 
   private boolean haveStarted = false;
+  @Override
   public synchronized void nioRunContent(JsonNioServer jns) {
     if (contentDisabled && (jns == null || !haveStarted)) {
       // needs to be run from the NIO thread, just once.
@@ -206,10 +207,12 @@ public class MPJmolApp implements JsonNioClient {
     }
   }
   
+  @Override
   public void setBannerLabel(String label) {
     bannerFrame.setLabel(label);
   }
 
+  @Override
   public void nioClosed(JsonNioServer jns) {
     try {
       jmolViewer.setModeMouse(-1);
@@ -243,6 +246,7 @@ public class MPJmolApp implements JsonNioClient {
     }
 
     // / JmolCallbackListener interface ///
+    @Override
     public boolean notifyEnabled(EnumCallback type) {
       switch (type) {
       case SCRIPT:
@@ -268,6 +272,7 @@ public class MPJmolApp implements JsonNioClient {
       return false;
     }
 
+    @Override
     public void notifyCallback(EnumCallback type, Object[] data) {
       if (service == null || jmolViewer == null)
         return;
@@ -289,6 +294,7 @@ public class MPJmolApp implements JsonNioClient {
       }
     }
 
+    @Override
     public void setCallbackFunction(String callbackType, String callbackFunction) {
       // ignore
     }

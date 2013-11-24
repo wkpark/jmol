@@ -130,6 +130,7 @@ class PopInJmol extends WebPanel implements ChangeListener {
     return html;
   }
 
+  @Override
   public void stateChanged(ChangeEvent e) {
     if (e.getSource() == appletSizeSpinnerW
         || e.getSource() == appletSizeSpinnerH) {

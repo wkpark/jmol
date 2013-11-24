@@ -41,6 +41,7 @@ public interface JmolAppletInterface extends JmolScriptInterface {
   public String getPropertyAsString(String infoType, String paramInfo);
   public String getPropertyAsJSON(String infoType);
   public String getPropertyAsJSON(String infoType, String paramInfo);
+  @Override
   public Object getProperty(String infoType);
   public Object getProperty(String infoType, String paramInfo);
   public String loadInlineString(String strModel, String script, boolean isAppend);

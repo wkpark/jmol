@@ -68,6 +68,7 @@ public class ZipUtil implements JmolZipUtility {
     // for reflection
   }
 
+  @Override
   public ZInputStream newZipInputStream(InputStream is) {
     return newZIS(is);
   }
@@ -95,6 +96,7 @@ public class ZipUtil implements JmolZipUtility {
    *        strings. The directory listing is appended with ":asBinaryString"
    * @param fileData
    */
+  @Override
   public void getAllZipData(InputStream is, String[] subfileList, String name0,
                             String binaryFileList, Map<String, String> fileData) {
     getAllZipDataStatic(is, subfileList, name0, binaryFileList, fileData);
@@ -160,6 +162,7 @@ public class ZipUtil implements JmolZipUtility {
    *        for Pmesh
    * @return directory listing or subfile contents
    */
+  @Override
   public Object getZipFileContents(BufferedInputStream bis, String[] list,
                                    int listPtr, boolean asBufferedInputStream) {
     SB ret;
@@ -214,6 +217,7 @@ public class ZipUtil implements JmolZipUtility {
     }
   }
 
+  @Override
   public byte[] getZipFileContentsAsBytes(BufferedInputStream bis,
                                           String[] list, int listPtr) {
     byte[] ret = new byte[0];
@@ -238,6 +242,7 @@ public class ZipUtil implements JmolZipUtility {
     return ret;
   }
 
+  @Override
   public String getZipDirectoryAsStringAndClose(BufferedInputStream bis) {
     SB sb = new SB();
     String[] s = new String[0];
@@ -252,6 +257,7 @@ public class ZipUtil implements JmolZipUtility {
     return sb.toString();
   }
 
+  @Override
   public String[] getZipDirectoryAndClose(BufferedInputStream bis,
                                           boolean addManifest) {
     String[] s = new String[0];
@@ -301,6 +307,7 @@ public class ZipUtil implements JmolZipUtility {
    * @param cache
    * @return file listing, separated by \n
    */
+  @Override
   public String cacheZipContents(BufferedInputStream bis, String fileName,
                                  Map<String, byte[]> cache) {
     ZipInputStream zis = (ZipInputStream) newZipInputStream(bis);
@@ -330,6 +337,7 @@ public class ZipUtil implements JmolZipUtility {
     return listing.toString();
   }
 
+  @Override
   public String getGzippedBytesAsString(byte[] bytes) {
     return staticGetGzippedBytesAsString(bytes);
   }
@@ -360,11 +368,13 @@ public class ZipUtil implements JmolZipUtility {
     }
   }
 
+  @Override
   public InputStream newGZIPInputStream(BufferedInputStream bis)
       throws IOException {
     return new GZIPInputStream(bis, 512);
   }
 
+  @Override
   public Object getAtomSetCollectionOrBufferedReaderFromZip(
                                                             JmolAdapter adapter,
                                                             InputStream is,
@@ -660,6 +670,7 @@ public class ZipUtil implements JmolZipUtility {
    * @param type
    * @return array detailing action for this set of files
    */
+  @Override
   public String[] spartanFileList(String name, String type) {
     // make list of required files
     String[] dirNums = getSpartanDirs(type);
@@ -782,6 +793,7 @@ public class ZipUtil implements JmolZipUtility {
         : null);
   }
 
+  @Override
   public byte[] getCachedPngjBytes(FileManager fm, String pathName) {
     if (pathName.indexOf(".png") < 0)
       return null;
@@ -813,6 +825,7 @@ public class ZipUtil implements JmolZipUtility {
     return pngjCache.get(shortName);
   }
 
+  @Override
   public boolean cachePngjFile(FileManager fm, String[] data) {
     Map<String, byte[]> pngjCache = fm.pngjCache = new Hashtable<String, byte[]>();
     if (data == null)
@@ -860,14 +873,17 @@ public class ZipUtil implements JmolZipUtility {
         + (pt2 > 0 ? pathName.substring(pt2) : "");
   }
 
+  @Override
   public void addZipEntry(Object zos, String fileName) throws IOException {
     ((ZipOutputStream) zos).putNextEntry(new ZipEntry(fileName));
   }
 
+  @Override
   public void closeZipEntry(Object zos) throws IOException {
     ((ZipOutputStream) zos).closeEntry();
   }
 
+  @Override
   public Object getZipOutputStream(Object bos) {
     /**
      * @j2sNative
@@ -880,6 +896,7 @@ public class ZipUtil implements JmolZipUtility {
     }
   }
 
+  @Override
   public int getCrcValue(byte[] bytes) {
     CRC32 crc = new CRC32();
     crc.update(bytes, 0, bytes.length);

@@ -76,6 +76,7 @@ public class AppConsole extends JmolConsole implements EnterListener {
     // appConsole.start(viewer);
   }
 
+  @Override
   public void start(JmolViewer viewer) {
     setup(viewer, null, null);
   }
@@ -272,6 +273,8 @@ public class AppConsole extends JmolConsole implements EnterListener {
     isError = TF;
   }
 
+
+  @Override
   public void enterPressed() {
     executeCommandAsThread(null);
   }

@@ -112,6 +112,7 @@ public class NciCalculation extends QuantumCalculation implements
   private float dataScaling = 1; // set to 0.01 to read NCIPLOT-generated density files
   private boolean dataIsReducedDensity; // for mapping actual NCIPLOT data and doing -1 or -2 flags
   
+  @Override
   public float getNoValue() {
     return (float) NO_VALUE;
   }
@@ -128,6 +129,7 @@ public class NciCalculation extends QuantumCalculation implements
   private boolean noValuesAtAll;
   private boolean useAbsolute;
 
+  @Override
   public boolean setupCalculation(VolumeDataInterface volumeData,
                                   BS bsSelected, BS bsExcluded,
                                   BS[] bsMolecules, String calculationType,
@@ -272,6 +274,7 @@ public class NciCalculation extends QuantumCalculation implements
     Logger.info("NCI calculation SCF " + (type == TYPE_INTRA ? "intra" : "inter") + "molecular grid points = " + bsOK.cardinality());
   }
 
+  @Override
   public void createCube() {
     setXYZBohr(points);
     process();
@@ -297,6 +300,7 @@ public class NciCalculation extends QuantumCalculation implements
   private double[][] hess;
   private double grad, gxTemp, gyTemp, gzTemp, gxxTemp, gyyTemp, gzzTemp, gxyTemp, gyzTemp, gxzTemp;
   
+  @Override
   public void getPlane(int ix, float[] yzPlane) {
     if (noValuesAtAll) {
       for (int j = 0; j < yzCount; j++)
@@ -481,6 +485,7 @@ public class NciCalculation extends QuantumCalculation implements
    * 
    * @param planes 
    */
+  @Override
   public void setPlanes(float[][] planes) {
     yzPlanesRaw = planes;
     yzCount = nY * nZ;
@@ -498,6 +503,7 @@ public class NciCalculation extends QuantumCalculation implements
    *        an OUTPUT plane, to be filled here and used by MarchingCubes
    * 
    */
+  @Override
   public void calcPlane(int x, float[] plane) {
 
     // (1) shift planes:
@@ -577,6 +583,7 @@ public class NciCalculation extends QuantumCalculation implements
    * @return value at point f-way between vA and vB
    * 
    */
+  @Override
   public float process(int vA, int vB, float f) {
     double valueA = getPlaneValue(vA);
     double valueB = getPlaneValue(vB);

@@ -462,6 +462,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
           java.awt.BorderLayout.CENTER);
         JButton buttonClear = jmol.guimap.newJButton("JavaConsole.Clear");
         buttonClear.addActionListener(new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
           consoleTextArea.setText("");
         }
@@ -538,6 +539,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     return window;
   }
 
+  @Override
   public void showStatus(String message) {
     splash.showStatus(message);    
   }
@@ -953,13 +955,16 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       }
     }
     menu.addMenuListener(new MenuListener() {
+        @Override
         public void menuSelected(MenuEvent e) {
           String menuKey = ((JmolAbstractButton) e.getSource()).getKey();
           if (menuKey.equals("display") || menuKey.equals("tools"))
             setMenuState();
         }
+        @Override
         public void menuDeselected(MenuEvent e) {
         }
+        @Override
         public void menuCanceled(MenuEvent e) {
         }
     });
@@ -984,6 +989,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       this.button = button;
     }
 
+    @Override
     public void propertyChange(PropertyChangeEvent e) {
 
       String propertyName = e.getPropertyName();
@@ -1018,6 +1024,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       super(closeAction);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
       if (!doClose(true)) {
         viewer.script("zap");
@@ -1031,6 +1038,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       super("jconsole");
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
       if (consoleframe != null)
         consoleframe.setVisible(true);
@@ -1044,6 +1052,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       super(aboutAction);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
       AboutDialog ad = new AboutDialog(frame, viewer);
       ad.setVisible(true);
@@ -1057,6 +1066,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       super(whatsnewAction);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
       WhatsNewDialog wnd = new WhatsNewDialog(frame);
       wnd.setVisible(true);
@@ -1068,6 +1078,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       super(gaussianAction);
     }
     
+    @Override
     public void actionPerformed(ActionEvent e) {
       if (gaussianDialog == null)
         gaussianDialog = new GaussianDialog(frame, viewer);
@@ -1081,6 +1092,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       super(newwinAction);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
       doNew();
     }
@@ -1099,6 +1111,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       super(uguideAction);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
       (new HelpDialog(frame)).setVisible(true);
     }
@@ -1110,6 +1123,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       super(pasteClipboardActionProperty);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
       viewer.loadInlineAppend(viewer.getClipboardText(), false);
     }
@@ -1124,6 +1138,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       super(copyImageActionProperty);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
       viewer.clipImageOrPasteText(null);
     }
@@ -1135,6 +1150,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       super(copyScriptActionProperty);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
       viewer.clipImageOrPasteText((String) viewer.getProperty(
           "string", "stateInfo", null));
@@ -1147,6 +1163,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       super(printActionProperty);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
       print();
     }
@@ -1240,6 +1257,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       super(nm);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
       if (script == null)
         revalidate();
@@ -1254,6 +1272,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       super(exitAction);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
       saveWindowSizes();
       System.exit(0);
@@ -1269,6 +1288,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       super(exportActionProperty);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
 
       Dialog sd = new Dialog();
@@ -1305,6 +1325,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       super(recentFilesAction);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
 
       recentFiles.setVisible(true);
@@ -1324,6 +1345,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       super(consoleAction);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
       AppConsole console = (AppConsole) viewer.getProperty("DATA_API","getAppConsole", null);
       if (console != null)
@@ -1337,6 +1359,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       super(editorAction);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
       Component c = (Component) viewer.getProperty("DATA_API","getScriptEditor", null);
       if (c != null)
@@ -1349,6 +1372,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       super(atomsetchooserAction);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
       atomSetChooser.setVisible(true);
     }
@@ -1360,6 +1384,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       super(povrayActionProperty);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
       new PovrayDialog(frame, viewer);
     }
@@ -1372,6 +1397,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       super(writeActionProperty);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
       String fileName = (new Dialog()).getSaveFileNameFromDialog((Viewer) viewer,
           null, "SPT");
@@ -1421,8 +1447,10 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       super(toWebActionProperty);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
       javax.swing.SwingUtilities.invokeLater(new Runnable() {
+        @Override
         public void run() {
           createWebExport();
         }
@@ -1436,6 +1464,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       super("viewMeasurementTable");
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
       display.measurementTable.activate();
     }
@@ -1456,8 +1485,10 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       super(surfaceToolActionProperty);
     }
     
+    @Override
     public void actionPerformed(ActionEvent e){
       javax.swing.SwingUtilities.invokeLater(new Runnable() {
+        @Override
         public void run() {
           createSurfaceTool();
         }
@@ -1511,6 +1542,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       super("executeScriptAction");
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
       String script = e.getActionCommand();
       if (script.indexOf("#showMeasurementTable") >= 0)
@@ -1524,6 +1556,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     public ResizeAction() {
       super(resizeAction);
     }
+    @Override
     public void actionPerformed(ActionEvent e) {
       resizeInnerPanel(null);
     } 
@@ -1585,10 +1618,12 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
   ////////// JSON/NIO SERVICE //////////
   
+  @Override
   public void nioRunContent(JsonNioServer jns) {
     // ignore
   }
   
+  @Override
   public void nioClosed(JsonNioServer jns) {
     if (bannerFrame != null) {
       viewer.scriptWait("delay 2");
@@ -1604,6 +1639,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     
   }
 
+  @Override
   public void setBannerLabel(String label) {
     if (bannerFrame != null)
       bannerFrame.setLabel(label);
@@ -1666,21 +1702,26 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       addMouseListener(this);
     }
 
+    @Override
     public void mousePressed(MouseEvent e) {
       viewer.evalStringQuiet(script);
       viewer.evalStringQuiet("timeout '__animBtn' -100 \"" + script + "\"");
     }
 
+    @Override
     public void mouseReleased(MouseEvent e) {
       viewer.evalStringQuiet("timeout '__animBtn' OFF");
     }
 
+    @Override
     public void mouseClicked(MouseEvent e) {
     }
 
+    @Override
     public void mouseEntered(MouseEvent e) {
     }
 
+    @Override
     public void mouseExited(MouseEvent e) {
     }
 

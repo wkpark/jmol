@@ -417,6 +417,7 @@ ActionListener, ChangeListener, Runnable {
     return controlPanel;
   }
   
+  @Override
   public void valueChanged(TreeSelectionEvent e) {
     DefaultMutableTreeNode node = (DefaultMutableTreeNode)
     tree.getLastSelectedPathComponent();
@@ -480,6 +481,7 @@ ActionListener, ChangeListener, Runnable {
     selectSlider.setMaximum(atomSetCount-1);
   }
   
+  @Override
   public void actionPerformed (ActionEvent e) {
     String cmd = e.getActionCommand();
     String parts[]=cmd.split("\\.");
@@ -600,6 +602,7 @@ ActionListener, ChangeListener, Runnable {
 
   private int radiusValue = 1;
   
+  @Override
   public void stateChanged(ChangeEvent e) {
     Object src = e.getSource();
     int value = ((JSlider) src).getValue();
@@ -776,6 +779,7 @@ ActionListener, ChangeListener, Runnable {
   // the underlying AtomSetCollection has changed
   ////////////////////////////////////////////////////////////////
   
+  @Override
   public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
     String eventName = propertyChangeEvent.getPropertyName();
     if (eventName.equals(JmolPanel.chemFileProperty)) {
@@ -786,6 +790,7 @@ ActionListener, ChangeListener, Runnable {
   /* (non-Javadoc)
    * @see java.lang.Runnable#run()
    */
+  @Override
   public void run() {
     Thread myThread = Thread.currentThread();
     myThread.setPriority(Thread.MIN_PRIORITY);

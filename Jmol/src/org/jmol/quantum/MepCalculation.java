@@ -97,10 +97,12 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
     unitFactor = 1;
   }
   
+  @Override
   public void set(Viewer viewer) {
     this.viewer = viewer;
   }
 
+  @Override
   public void assignPotentials(Atom[] atoms, float[] potentials,
                                BS bsAromatic, BS bsCarbonyl,
                                BS bsIgnore, String data) {
@@ -129,6 +131,7 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
     this.bsSelected = bsSelected;
   }
   
+  @Override
   public void calculate(VolumeDataInterface volumeData, BS bsSelected,
                         P3[] atomCoordAngstroms, float[] potentials,
                         int calcType) {
@@ -175,6 +178,7 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
     
   }
 
+  @Override
   public float valueFor(float x0, float d2, int distanceMode) {
     switch (distanceMode) {
     case ONE_OVER_D:

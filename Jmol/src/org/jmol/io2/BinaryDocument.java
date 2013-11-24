@@ -62,6 +62,7 @@ public class BinaryDocument extends BC implements JmolDocument {
   protected boolean isRandom = false;
   protected boolean isBigEndian = true;
 
+  @Override
   public void close() {
     if (stream != null)
       try {
@@ -73,12 +74,14 @@ public class BinaryDocument extends BC implements JmolDocument {
        out.closeChannel();
   }
   
+  @Override
   public void setStream(BufferedInputStream bis, boolean isBigEndian) {
     if (bis != null)
       stream = new DataInputStream(bis);
     this.isBigEndian = isBigEndian;
   }
   
+  @Override
   public void setStreamData(DataInputStream stream, boolean isBigEndian) {
     if (stream != null)
       this.stream = stream;
@@ -90,6 +93,7 @@ public class BinaryDocument extends BC implements JmolDocument {
     //CANNOT be random for web 
   }
   
+  @Override
   public byte readByte() throws Exception {
     nBytes++;
     return ioReadByte();
@@ -102,6 +106,7 @@ public class BinaryDocument extends BC implements JmolDocument {
     return b;
   }
 
+  @Override
   public int readByteArray(byte[] b, int off, int len) throws Exception {
     int n = ioRead(b, off, len);
     if (n > 0)
@@ -132,12 +137,14 @@ public class BinaryDocument extends BC implements JmolDocument {
     out.write(b, off, n);
   }
 
+  @Override
   public String readString(int nChar) throws Exception {
     byte[] temp = new byte[nChar];
     int n = readByteArray(temp, 0, nChar);
     return new String(temp, 0, n, "UTF-8");
   }
   
+  @Override
   public short readShort() throws Exception {
     nBytes += 2;
     return (isBigEndian ? ioReadShort()
@@ -158,11 +165,13 @@ public class BinaryDocument extends BC implements JmolDocument {
     out.writeByteAsInt(i);
   }
 
+  @Override
   public int readIntLE() throws Exception {
     nBytes += 4;
     return readLEInt();
   }
   
+  @Override
   public int readInt() throws Exception {
     nBytes += 4;
     return (isBigEndian ? ioReadInt() : readLEInt());
@@ -182,6 +191,7 @@ public class BinaryDocument extends BC implements JmolDocument {
     out.writeByteAsInt(i);
   }
 
+  @Override
   public int swapBytesI(int n) {
     return (((n >> 24) & 0xff)
         | ((n >> 16) & 0xff) << 8
@@ -189,12 +199,14 @@ public class BinaryDocument extends BC implements JmolDocument {
         | (n & 0xff) << 24);
   }
 
+  @Override
   public short swapBytesS(short n) {
     return (short) ((((n >> 8) & 0xff)
         | (n & 0xff) << 8));
   }
 
   
+  @Override
   public int readUnsignedShort() throws Exception {
     nBytes += 2;
     int a = (ioReadByte() & 0xff);
@@ -202,6 +214,7 @@ public class BinaryDocument extends BC implements JmolDocument {
     return (isBigEndian ? (a << 8) + b : (b << 8) + a);
   }
   
+  @Override
   public long readLong() throws Exception {
     nBytes += 8;
     return (isBigEndian ? ioReadLong()
@@ -234,10 +247,12 @@ public class BinaryDocument extends BC implements JmolDocument {
 
   byte[] t8 = new byte[8];
   
+  @Override
   public float readFloat() throws Exception {
     return intToFloat(readInt());
   }
 
+  @Override
   public double readDouble() throws Exception {
     /**
      * 
@@ -273,6 +288,7 @@ public class BinaryDocument extends BC implements JmolDocument {
           | (((long) ioReadByte()) & 0xff) << 56);
   }
 
+  @Override
   public void seek(long offset) {
     // slower, but all that is available using the applet
     try {
@@ -293,19 +309,23 @@ public class BinaryDocument extends BC implements JmolDocument {
 
   long nBytes;
   
+  @Override
   public long getPosition() {
     return nBytes;
   }
 
   OC out;
+  @Override
   public void setOutputChannel(OC out) {
       this.out = out;
   }
 
+  @Override
   public SB getAllDataFiles(String binaryFileList, String firstFile) {
     return null;
   }
 
+  @Override
   public void getAllDataMapped(String replace, String string,
                                Map<String, String> fileData) {
   }

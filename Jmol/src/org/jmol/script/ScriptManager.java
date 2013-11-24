@@ -49,6 +49,7 @@ public class ScriptManager implements JmolScriptManager {
   private Viewer viewer;
   private JmolScriptEvaluator eval;
   
+  @Override
   public JmolScriptEvaluator getEval() {
     return eval;
   }
@@ -62,10 +63,12 @@ public class ScriptManager implements JmolScriptManager {
 
   public List<List<Object>> scriptQueue = new  List<List<Object>>();
 
+  @Override
   public List<List<Object>> getScriptQueue() {
     return scriptQueue;
   }
 
+  @Override
   public boolean isScriptQueued() {
     return isScriptQueued;
   }
@@ -74,6 +77,7 @@ public class ScriptManager implements JmolScriptManager {
     // by reflection only
   }
   
+  @Override
   public void setViewer(Viewer viewer) {
     this.viewer = viewer;
     eval = newScriptEvaluator();
@@ -85,6 +89,7 @@ public class ScriptManager implements JmolScriptManager {
         .getOptionInterface("script.ScriptEvaluator")).setViewer(viewer);
   }
 
+  @Override
   public void clear(boolean isAll) {
     if (!isAll) {
       evalTemp = null;
@@ -94,6 +99,7 @@ public class ScriptManager implements JmolScriptManager {
     interruptQueueThreads();
   }
 
+  @Override
   public String addScript(String strScript, boolean isScriptFile,
                           boolean isQuiet) {
     return (String) addScr("String", strScript, "", isScriptFile, isQuiet);
@@ -144,10 +150,12 @@ public class ScriptManager implements JmolScriptManager {
   //  return scriptQueue.size();
   //}
 
+  @Override
   public void clearQueue() {
     scriptQueue.clear();
   }
 
+  @Override
   public void waitForQueue() {
     // just can't do this in JavaScript. 
     // if we are here and it is single-threaded, and there is
@@ -170,6 +178,7 @@ public class ScriptManager implements JmolScriptManager {
     }
   }
 
+  @Override
   public boolean isQueueProcessing() {
     return queueThreads[0] != null || queueThreads[1] != null;
   }
@@ -195,6 +204,7 @@ public class ScriptManager implements JmolScriptManager {
     queueThreads[pt].start();
   }
 
+  @Override
   public List<Object> getScriptItem(boolean watching, boolean isByCommandWatcher) {
     if (viewer.isSingleThreaded && viewer.queueOnHold)
       return null;
@@ -209,6 +219,7 @@ public class ScriptManager implements JmolScriptManager {
 
  private boolean useCommandWatcherThread = false;
 
+  @Override
   synchronized public void startCommandWatcher(boolean isStart) {
     useCommandWatcherThread = isStart;
     if (isStart) {
@@ -276,6 +287,7 @@ public class ScriptManager implements JmolScriptManager {
     commandWatcherThread = null;
   }
 
+  @Override
   public void queueThreadFinished(int pt) {
     queueThreads[pt].interrupt();
     scriptQueueRunning[pt] = false;
@@ -297,6 +309,7 @@ public class ScriptManager implements JmolScriptManager {
   private int scriptIndex;
   private boolean isScriptQueued = true;
 
+  @Override
   public Object evalStringWaitStatusQueued(String returnType, String strScript,
                                            String statusList,
                                            boolean isScriptFile,
@@ -397,6 +410,7 @@ public class ScriptManager implements JmolScriptManager {
     return false;
   }
 
+  @Override
   public String evalStringQuietSync(String strScript, boolean isQuiet,
                                     boolean allowSyncScript) {
     // central point for all incoming script processing
@@ -430,6 +444,7 @@ public class ScriptManager implements JmolScriptManager {
         && !viewer.getBoolean(T.messagestylechime));
   }
 
+  @Override
   public boolean checkHalt(String str, boolean isInsert) {
     if (str.equalsIgnoreCase("pause")) {
       viewer.pauseScriptExecution();
@@ -470,6 +485,7 @@ public class ScriptManager implements JmolScriptManager {
     return exitScript;
   }
 
+  @Override
   public BS getAtomBitSetEval(JmolScriptEvaluator eval,
                                   Object atomExpression) {
     if (eval == null) {
@@ -480,6 +496,7 @@ public class ScriptManager implements JmolScriptManager {
     return eval.getAtomBitSet(atomExpression);
   }
 
+  @Override
   public Object scriptCheckRet(String strScript, boolean returnContext) {
     // from ConsoleTextPane.checkCommand() and applet Jmol.scriptProcessor()
     if (strScript.indexOf(")") == 0 || strScript.indexOf("!") == 0) // history
@@ -501,6 +518,7 @@ public class ScriptManager implements JmolScriptManager {
    * @param flags 1=pdbCartoons 
    * 
    */
+  @Override
   public void openFileAsync(String fileName, int flags) {
     boolean pdbCartoons = (flags == 1);
     String cmd = null;

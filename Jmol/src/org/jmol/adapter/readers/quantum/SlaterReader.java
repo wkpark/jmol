@@ -115,6 +115,7 @@ abstract class SlaterReader extends BasisFunctionReader {
   }
 
   class SlaterSorter implements Comparator<SlaterData> {
+    @Override
     public int compare(SlaterData sd1, SlaterData sd2) {
       return ( sd1.iAtom < sd2.iAtom ? -1 : sd1.iAtom > sd2.iAtom ? 1 : 0);
     }    
@@ -163,6 +164,7 @@ abstract class SlaterReader extends BasisFunctionReader {
   }
   
   class OrbitalSorter implements Comparator<Map<String, Object>> {
+    @Override
     public int compare(Map<String, Object> mo1, Map<String, Object> mo2) {
       float e1 = ((Float) mo1.get("energy")).floatValue();
       float e2 = ((Float) mo2.get("energy")).floatValue();

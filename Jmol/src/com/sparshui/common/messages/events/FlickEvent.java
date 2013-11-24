@@ -78,7 +78,8 @@ public class FlickEvent implements Event {
 
 
 	//@override
-	public int getEventType() {
+	@Override
+  public int getEventType() {
 		return EventType.FLICK_EVENT;
 	}
 
@@ -100,7 +101,8 @@ public class FlickEvent implements Event {
 	 * - 16 bytes total
    * @return serialized data
 	 */
-	public byte[] serialize() {
+	@Override
+  public byte[] serialize() {
 		byte[] data = new byte[16];
     Converter.intToByteArray(data, 0, getEventType());
     Converter.floatToByteArray(data, 4, speedLevel);

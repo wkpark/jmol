@@ -50,7 +50,8 @@ class AtomIterator implements JmolAdapterAtomIterator {
 		iatom = 0;
 	}
 
-	public boolean hasNext() {
+	@Override
+  public boolean hasNext() {
 		if (iatom == atomCount)
 			return false;
 		while ((atom = atoms[iatom++]) == null
@@ -61,108 +62,129 @@ class AtomIterator implements JmolAdapterAtomIterator {
 		return true;
 	}
 
-	public int getAtomSetIndex() {
+	@Override
+  public int getAtomSetIndex() {
 		return atom.atomSetIndex;
 	}
 
 	
-	public BS getAtomSymmetry() {
+	@Override
+  public BS getAtomSymmetry() {
 		return atom.bsSymmetry;
 	}
 
 	
-	public int getAtomSite() {
+	@Override
+  public int getAtomSite() {
 		return atom.atomSite + 1;
 	}
 
 	
-	public Object getUniqueID() {
+	@Override
+  public Object getUniqueID() {
 		return Integer.valueOf(atom.index);
 	}
 
 	
-	public int getElementNumber() {
+	@Override
+  public int getElementNumber() {
 		return (atom.elementNumber > 0 ? atom.elementNumber : JmolAdapter
 				.getElementNumber(atom.getElementSymbol()));
 	}
 
 	
-	public String getAtomName() {
+	@Override
+  public String getAtomName() {
 		return atom.atomName;
 	}
 
 	
-	public int getFormalCharge() {
+	@Override
+  public int getFormalCharge() {
 		return atom.formalCharge;
 	}
 
 	
-	public float getPartialCharge() {
+	@Override
+  public float getPartialCharge() {
 		return atom.partialCharge;
 	}
 
 	
-	public List<Object> getTensors() {
+	@Override
+  public List<Object> getTensors() {
 		return atom.tensors;
 	}
 
 	
-	public float getRadius() {
+	@Override
+  public float getRadius() {
 		return atom.radius;
 	}
 	
-	public V3 getVib() {
+	@Override
+  public V3 getVib() {
 	  return (atom.vib == null || Float.isNaN(atom.vib.z) ? null : atom.vib);
 	}
 
 	
-	public float getBfactor() {
+	@Override
+  public float getBfactor() {
 		return Float.isNaN(atom.bfactor) && atom.anisoBorU != null ? atom.anisoBorU[7] * 100f
 				: atom.bfactor;
 	}
 
 	
-	public int getOccupancy() {
+	@Override
+  public int getOccupancy() {
 		return (int) (atom.foccupancy * 100);
 	}
 
 	
-	public boolean getIsHetero() {
+	@Override
+  public boolean getIsHetero() {
 		return atom.isHetero;
 	}
 
 	
-	public int getAtomSerial() {
+	@Override
+  public int getAtomSerial() {
 		return atom.atomSerial;
 	}
 
 	
-	public int getChainID() {
+	@Override
+  public int getChainID() {
 		return atom.chainID;
 	}
 
 	
-	public char getAlternateLocationID() {
+	@Override
+  public char getAlternateLocationID() {
 		return JmolAdapter.canonizeAlternateLocationID(atom.alternateLocationID);
 	}
 
 	
-	public String getGroup3() {
+	@Override
+  public String getGroup3() {
 		return atom.group3;
 	}
 
 	
-	public int getSequenceNumber() {
+	@Override
+  public int getSequenceNumber() {
 		return atom.sequenceNumber;
 	}
 
 	
-	public char getInsertionCode() {
+	@Override
+  public char getInsertionCode() {
 		return JmolAdapter.canonizeInsertionCode(atom.insertionCode);
 	}
 
 	
-	public P3 getXYZ() {
+	@Override
+  public P3 getXYZ() {
 		return atom;
 	}
 

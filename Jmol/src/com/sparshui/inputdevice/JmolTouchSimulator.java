@@ -50,7 +50,8 @@ public class JmolTouchSimulator implements JmolTouchSimulatorInterface {
 	public JmolTouchSimulator() {
 	}
 
-	public void dispose() {
+	@Override
+  public void dispose() {
     try {
       //_in.close();
     } catch (Exception e) {
@@ -71,7 +72,8 @@ public class JmolTouchSimulator implements JmolTouchSimulatorInterface {
 	/* (non-Javadoc)
    * @see com.sparshui.inputdevice.JmolTouchSimulatorInterface#initialize(java.awt.Component)
    */
-	public boolean startSimulator(Object display) {
+	@Override
+  public boolean startSimulator(Object display) {
 	   _display = (Component) display;
 	   String address = "localhost";
 	    _timer = new Timer();
@@ -93,7 +95,8 @@ public class JmolTouchSimulator implements JmolTouchSimulatorInterface {
 	/* (non-Javadoc)
    * @see com.sparshui.inputdevice.JmolTouchSimulatorInterface#toggleMode()
    */
-	public void toggleMode() {
+	@Override
+  public void toggleMode() {
 		if(_recording) {
 			endRecording();
 		} else {
@@ -102,12 +105,14 @@ public class JmolTouchSimulator implements JmolTouchSimulatorInterface {
 
 	}
 	
-	public void startRecording() {
+	@Override
+  public void startRecording() {
 		_recording = true;
 		_active.clear();
 	}
 	
-	public void endRecording() {
+	@Override
+  public void endRecording() {
 		_recording = false;
 		dispatchTouchEvents();
 	}
@@ -115,21 +120,24 @@ public class JmolTouchSimulator implements JmolTouchSimulatorInterface {
 	/* (non-Javadoc)
    * @see com.sparshui.inputdevice.JmolTouchSimulatorInterface#mousePressed(java.awt.event.MouseEvent)
    */
-	public void mousePressed(long time, int x, int y) {
+	@Override
+  public void mousePressed(long time, int x, int y) {
 		handleMouseEvent(time, x, y, TouchState.BIRTH);
 	}
 
 	/* (non-Javadoc)
    * @see com.sparshui.inputdevice.JmolTouchSimulatorInterface#mouseReleased(java.awt.event.MouseEvent)
    */
-	public void mouseReleased(long time, int x, int y) {
+	@Override
+  public void mouseReleased(long time, int x, int y) {
 		handleMouseEvent(time, x, y, TouchState.DEATH);
 	}
 
 	/* (non-Javadoc)
    * @see com.sparshui.inputdevice.JmolTouchSimulatorInterface#mouseDragged(java.awt.event.MouseEvent)
    */
-	public void mouseDragged(long time, int x, int y) {
+	@Override
+  public void mouseDragged(long time, int x, int y) {
 		handleMouseEvent(time, x, y, TouchState.MOVE);
 	}
 
@@ -220,7 +228,8 @@ public class JmolTouchSimulator implements JmolTouchSimulatorInterface {
 	
 	protected class TouchDataComparator implements Comparator<TouchData> {
 
-		public int compare(TouchData o1, TouchData o2) {
+		@Override
+    public int compare(TouchData o1, TouchData o2) {
       return (o1.delay == o2.delay ? (o1.when < o2.when ? -1 : 1) 
           : o1.delay < o2.delay ? -1 : 1);
     }

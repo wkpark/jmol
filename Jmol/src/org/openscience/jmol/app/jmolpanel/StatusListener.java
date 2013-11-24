@@ -86,6 +86,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
   }
   
   // / JmolCallbackListener interface ///
+  @Override
   public boolean notifyEnabled(EnumCallback type) {
     switch (type) {
     case ANIMFRAME:
@@ -112,6 +113,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
     return false;
   }
 
+  @Override
   @SuppressWarnings("incomplete-switch")
   public void notifyCallback(EnumCallback type, Object[] data) {
     String strInfo = (data == null || data[1] == null ? null : data[1]
@@ -219,6 +221,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
     }
   }
 
+  @Override
   public void setCallbackFunction(String callbackType, String callbackFunction) {
     if (callbackType.equals("modelkit")) {
       if (callbackFunction.equals("ON"))
@@ -250,6 +253,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
 
   // / end of JmolCallbackListener interface ///
 
+  @Override
   public String eval(String strEval) {
    String msg = "# this funcationality is implemented only for the applet.\n" + strEval;
    sendConsoleMessage(msg);
@@ -265,6 +269,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
    * @return null ("you do it" or canceled) or a message starting with OK or an
    *         error message
    */
+  @Override
   public String createImage(String fileName, String type, Object text_or_bytes,
                             int quality) {
     return null;
@@ -316,6 +321,7 @@ System.out.println("StatusListener notifyFileLoaded: " + fileName);
       appConsole.sendConsoleMessage(strStatus);
   }
 
+  @Override
   public void showUrl(String url) {
     try {
       Class<?> c = Class.forName("java.awt.Desktop");
@@ -349,6 +355,7 @@ System.out.println("StatusListener notifyFileLoaded: " + fileName);
    * @return f(x,y) as a 2D array
    * 
    */
+  @Override
   public float[][] functionXY(String functionName, int nX, int nY) {
     nX = Math.abs(nX);
     nY = Math.abs(nY);
@@ -371,6 +378,7 @@ System.out.println("StatusListener notifyFileLoaded: " + fileName);
               // hanson)
   }
 
+  @Override
   public float[][][] functionXYZ(String functionName, int nX, int nY, int nZ) {
     nX = Math.abs(nX);
     nY = Math.abs(nY);
@@ -391,10 +399,12 @@ System.out.println("StatusListener notifyFileLoaded: " + fileName);
               // hanson)
   }
 
+  @Override
   public Map<String, Object> getRegistryInfo() {
     return null;
   }
 
+  @Override
   public Dimension resizeInnerPanel(String data) {
     return jmol.resizeInnerPanel(data);
   }
@@ -448,11 +458,13 @@ System.out.println("StatusListener notifyFileLoaded: " + fileName);
     jSpecViewFrame.syncScript(peaks);
   }
 
+  @Override
   public void register(String id, JmolSyncInterface jsi) {
     // this would be a call from JSpecView requesting that Jmol 
     // register the JSpecView applet in the JmolAppletRegistry. 
   }
 
+  @Override
   public void syncScript(String script) {
     // called from JSpecView to send "Select: <Peaks...." script
     jmol.syncScript(script);    
@@ -463,6 +475,7 @@ System.out.println("StatusListener notifyFileLoaded: " + fileName);
   
   private static String propertiesFileName = "jspecview.properties";
 
+  @Override
   public void setProperties(Properties properties) {
     try {
       FileInputStream fileIn = new FileInputStream(propertiesFileName);
@@ -471,6 +484,7 @@ System.out.println("StatusListener notifyFileLoaded: " + fileName);
     }
   }
 
+  @Override
   public void saveProperties(Properties properties) {
     // Write out current properties
     try {
@@ -484,6 +498,7 @@ System.out.println("StatusListener notifyFileLoaded: " + fileName);
    * @param withDialog  
    * @param frame 
    */
+  @Override
   public void exitJSpecView(boolean withDialog, Object frame) {
     // no exit from Jmol
   }
@@ -493,6 +508,7 @@ System.out.println("StatusListener notifyFileLoaded: " + fileName);
    * 
    * @param script 
    */
+  @Override
   public void runScript(String script) {
     jSpecViewFrame.runScriptNow(script);
     
@@ -501,10 +517,12 @@ System.out.println("StatusListener notifyFileLoaded: " + fileName);
   /**
    * @param msg
    */
+  @Override
   public void syncToJmol(String msg) {
     // not utilized in Jmol application -- jmolSyncInterface used instead
   }
 
+  @Override
   public Map<String, Object> getProperty(String type) {
     if (type.toLowerCase().startsWith("jspecview")) {
       type = type.substring(9);

@@ -219,6 +219,7 @@ public class MeshData extends MeshSurface {
   
   protected class SortSet implements Comparator<SSet> {
 
+    @Override
     public int compare(SSet o1, SSet o2) {
       return (o1.n > o2.n ? -1 : o1.n < o2.n ? 1 : 0);
     }  

@@ -91,6 +91,7 @@ abstract class BasisFunctionReader extends AtomSetCollectionReader {
   }
   
   public class MOEnergySorter implements Comparator<Object>{
+    @Override
     @SuppressWarnings("unchecked")
     public int compare(Object a, Object b) {
       float ea = ((Float) ((Map<String, Object>)a).get("energy")).floatValue();

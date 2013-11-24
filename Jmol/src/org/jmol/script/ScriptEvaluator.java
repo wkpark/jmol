@@ -192,6 +192,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   public boolean allowJSThreads = true;
 
+  @Override
   public boolean getAllowJSThreads() {
     return allowJSThreads;
   }
@@ -199,6 +200,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private boolean listCommands;
   public boolean isJS;
 
+  @Override
   public JmolScriptEvaluator setViewer(Viewer viewer) {
     this.viewer = viewer;
     this.compiler = (compiler == null ? (ScriptCompiler) viewer.compiler
@@ -213,6 +215,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     //evalID++;
   }
 
+  @Override
   public void setCompiler() {
     viewer.compiler = compiler = new ScriptCompiler(viewer);
   }
@@ -222,18 +225,21 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   /*
    * see Viewer.evalStringWaitStatus for how these are implemented
    */
+  @Override
   public boolean compileScriptString(String script, boolean tQuiet) {
     clearState(tQuiet);
     contextPath = "[script]";
     return compileScript(null, script, debugScript);
   }
 
+  @Override
   public boolean compileScriptFile(String filename, boolean tQuiet) {
     clearState(tQuiet);
     contextPath = filename;
     return compileScriptFileInternal(filename, null, null, null);
   }
 
+  @Override
   public void evaluateCompiledScript(boolean isCmdLine_c_or_C_Option,
                                      boolean isCmdLine_C_Option,
                                      boolean historyDisabled,
@@ -335,6 +341,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    * @param sc
    */
 
+  @Override
   public void resumeEval(ScriptContext sc) {
 
     // 
@@ -381,6 +388,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     executeCommands(sc.isTryCatch);
   }
 
+  @Override
   public void runScript(String script) throws ScriptException {
     if (!viewer.isPreviewOnly())
       runScriptBuffer(script, outputBuffer);
@@ -393,6 +401,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    * @param outputBuffer
    * @throws ScriptException
    */
+  @Override
   public void runScriptBuffer(String script, SB outputBuffer)
       throws ScriptException {
     pushContext(null, "runScriptBuffer");
@@ -414,6 +423,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    *         the compiler and the evaluator
    * 
    */
+  @Override
   public ScriptContext checkScriptSilent(String script) {
     ScriptContext sc = compiler.compile(null, script, false, true, false, true);
     if (sc.errorType != null)
@@ -454,6 +464,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   public boolean logMessages;
   private boolean debugScript;
 
+  @Override
   public void setDebugging() {
     debugScript = viewer.getBoolean(T.debugscript);
     logMessages = (debugScript && Logger.debugging);
@@ -473,11 +484,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return (int) (timeEndExecution - timeBeginExecution);
   }
 
+  @Override
   public void haltExecution() {
     resumePausedExecution();
     executionStopped = true;
   }
 
+  @Override
   public void pauseExecution(boolean withDelay) {
     if (chk || viewer.isHeadless())
       return;
@@ -488,6 +501,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     executionPaused = true;
   }
 
+  @Override
   public void stepPausedExecution() {
     executionStepping = true;
     executionPaused = false;
@@ -495,23 +509,28 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     // sets it to pause for the next command.
   }
 
+  @Override
   public void resumePausedExecution() {
     executionPaused = false;
     executionStepping = false;
   }
 
+  @Override
   public boolean isExecuting() {
     return executing && !executionStopped;
   }
 
+  @Override
   public boolean isPaused() {
     return executionPaused;
   }
 
+  @Override
   public boolean isStepping() {
     return executionStepping;
   }
 
+  @Override
   public boolean isStopped() {
     return executionStopped || !isJS && currentThread != Thread.currentThread();
   }
@@ -521,6 +540,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    * 
    * @return a string indicating the statement
    */
+  @Override
   public String getNextStatement() {
     return (pc < aatoken.length ? getErrorLineMessage(functionName,
         scriptFileName, getLinenumber(null), pc, statementAsString(viewer,
@@ -621,6 +641,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    *         String, Point3f, BitSet
    */
 
+  @Override
   public Object evaluateExpression(Object expr, boolean asVariable) {
     // Text.formatText for MESSAGE and ECHO
     // prior to 12.[2/3].32 was not thread-safe for compilation.
@@ -666,6 +687,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    * @return is a bitset indicating the selected atoms
    * 
    */
+  @Override
   public BS getAtomBitSet(Object atomExpression) {
     if (atomExpression instanceof BS)
       return (BS) atomExpression;
@@ -693,6 +715,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    * @param atomExpression
    * @return vector list of selected atoms
    */
+  @Override
   public List<Integer> getAtomBitSetVector(int atomCount,
                                                Object atomExpression) {
     List<Integer> V = new List<Integer>();
@@ -1792,6 +1815,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   public ScriptCompiler compiler;
   public Map<String, Object> definedAtomSets;
 
+  @Override
   public Map<String, Object> getDefinedAtomSets() {
     return definedAtomSets;
   }
@@ -1813,12 +1837,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private int[][] lineIndices;
   public Map<String, SV> contextVariables;
 
+  @Override
   public Map<String, SV> getContextVariables() {
     return contextVariables;
   }
 
   private String script;
 
+  @Override
   public String getScript() {
     return script;
   }
@@ -2014,6 +2040,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private JmolParallelProcessor parallelProcessor;
 
+  @Override
   @SuppressWarnings("unchecked")
   public float evalFunctionFloat(Object func, Object params, float[] values) {
     try {
@@ -2298,6 +2325,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return lookupValue(setName, true);
   }
 
+  @Override
   public void deleteAtomsInVariables(BS bsDeleted) {
     for (Map.Entry<String, Object> entry : definedAtomSets.entrySet()) {
       Object value = entry.getValue();
@@ -2512,10 +2540,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   public ScriptContext thisContext;
 
+  @Override
   public ScriptContext getThisContext() {
     return thisContext;
   }
 
+  @Override
   public void pushContextDown(String why) {
     scriptLevel--;
     pushContext2(null, why);
@@ -2552,6 +2582,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           + thisContext.id);
   }
 
+  @Override
   public ScriptContext getScriptContext(String why) {
     ScriptContext context = new ScriptContext();
     if (debugScript)
@@ -2676,6 +2707,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   // /////////////// error message support /////////////////
 
+  @Override
   public void setException(ScriptException sx, String msg, String untranslated) {
     // from ScriptException, while initializing
     sx.untranslated = (untranslated == null ? msg : untranslated);
@@ -2705,10 +2737,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   protected String errorType;
   protected int iCommandError;
 
+  @Override
   public String getErrorMessage() {
     return errorMessage;
   }
 
+  @Override
   public String getErrorMessageUntranslated() {
     return errorMessageUntranslated == null ? errorMessage
         : errorMessageUntranslated;
@@ -5135,6 +5169,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return !error && !executionStopped;
   }
 
+  @Override
   public void notifyResumeStatus() {
     if (!chk && !executionStopped && !executionStepping) {
       viewer.scriptStatus("script execution "
@@ -7080,6 +7115,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return setObjectProp(id, tokCommand, iTok);
   }
 
+  @Override
   public String setObjectPropSafe(String id, int tokCommand, int iTok) {
     try {
       return setObjectProp(id, tokCommand, iTok);
@@ -12872,6 +12908,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return getPartialBondOrderFromFloatEncodedInt(getFloatEncodedInt(s));
   }
 
+  @Override
   public BS addHydrogensInline(BS bsAtoms, List<Atom> vConnections, P3[] pts)
       throws Exception {
     int modelIndex = viewer.getAtomModelIndex(bsAtoms.nextSetBit(0));
@@ -12909,6 +12946,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private JmolThread scriptDelayThread, fileLoadThread;
 
+  @Override
   public void stopScriptThreads() {
     if (scriptDelayThread != null) {
       scriptDelayThread.interrupt();
@@ -12940,6 +12978,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             logMessages));
   }
 
+  @Override
   public boolean evaluateParallel(ScriptContext context,
                                   ShapeManager shapeManager) {
     return getExtension().evaluateParallel(context, shapeManager);

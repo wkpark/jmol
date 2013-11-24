@@ -61,36 +61,43 @@ public class JmolApplet extends AppletWrapper implements
     //"org.jmol.popup.JmolPopup", 
     };
 
+  @Override
   public String getPropertyAsString(String infoType) {
     return (wrappedApplet == null ? null : ""
         + wrappedApplet.getPropertyAsString("" + infoType));
   }
 
+  @Override
   public String getPropertyAsString(String infoType, String paramInfo) {
     return (wrappedApplet == null ? null : ""
         + wrappedApplet.getPropertyAsString("" + infoType, "" + paramInfo));
   }
 
+  @Override
   public String getPropertyAsJSON(String infoType) {
     return (wrappedApplet == null ? null : ""
         + wrappedApplet.getPropertyAsJSON("" + infoType));
   }
 
+  @Override
   public String getPropertyAsJSON(String infoType, String paramInfo) {
     return (wrappedApplet == null ? null : ""
         + wrappedApplet.getPropertyAsJSON("" + infoType, "" + paramInfo));
   }
 
+  @Override
   public Object getProperty(String infoType) {
     return (wrappedApplet == null ? null : wrappedApplet.getProperty(""
         + infoType));
   }
 
+  @Override
   public Object getProperty(String infoType, String paramInfo) {
     return (wrappedApplet == null ? null : wrappedApplet.getProperty(""
         + infoType, "" + paramInfo));
   }
 
+  @Override
   public String loadInlineArray(String[] strModels, String script, boolean isAppend) {
     if (wrappedApplet == null || strModels == null || strModels.length == 0)
         return null;
@@ -107,6 +114,7 @@ public class JmolApplet extends AppletWrapper implements
       return wrappedApplet.loadInlineString(sb.toString(), "" + script, isAppend);
   }
 
+  @Override
   public String loadInlineString(String strModel, String script, boolean isAppend) {
     return (wrappedApplet == null ? null :
       wrappedApplet.loadInlineString("" + strModel, "" + script, isAppend));
@@ -121,6 +129,7 @@ public class JmolApplet extends AppletWrapper implements
    * @param strModel
    * @return         error or null
    */
+  @Override
   @Deprecated
   public String loadInline(String strModel) {
     return (wrappedApplet == null ? null :
@@ -133,6 +142,7 @@ public class JmolApplet extends AppletWrapper implements
    * @param script
    * @return         error or null
    */
+  @Override
   @Deprecated
   public String loadInline(String strModel, String script) {
     return (wrappedApplet == null ? null :
@@ -144,6 +154,7 @@ public class JmolApplet extends AppletWrapper implements
    * @param strModels
    * @return         error or null
    */
+  @Override
   @Deprecated
   public String loadInline(String[] strModels) {
     return (wrappedApplet == null ? null :
@@ -156,55 +167,65 @@ public class JmolApplet extends AppletWrapper implements
    * @param script
    * @return         error or null
    */
+  @Override
   @Deprecated
   public String loadInline(String[] strModels, String script) {
     return (wrappedApplet == null ? null :
       wrappedApplet.loadInline(strModels, script));
   }
 
+  @Override
   public String loadNodeId(String nodeId) {
     return (wrappedApplet == null ? null :
       wrappedApplet.loadNodeId("" + nodeId));
   }
 
+  @Override
   public String loadDOMNode(JSObject DOMNode) {
     return (wrappedApplet == null ? null : wrappedApplet.loadDOMNode(DOMNode));
   }
 
+  @Override
   public void script(String script) {
     //System.out.println("JmolApplet script test " + script + " " + wrappedApplet);
     if (wrappedApplet != null)
       wrappedApplet.script("" + script);
   }
 
+  @Override
   public void syncScript(String script) {
     if (wrappedApplet != null)
       wrappedApplet.syncScript("" + script);
   }
 
+  @Override
   public Object setStereoGraphics(boolean isStereo) {
     return (wrappedApplet == null ? null : 
         wrappedApplet.setStereoGraphics(isStereo));
   }
 
+  @Override
   public String scriptNoWait(String script) {
     if (wrappedApplet != null)
       return "" + (wrappedApplet.scriptNoWait("" + script));
     return null;
   }
 
+  @Override
   public String scriptCheck(String script) {
     if (wrappedApplet != null)
       return "" + (wrappedApplet.scriptCheck("" + script));
     return null;
   }
 
+  @Override
   public String scriptWait(String script) {
     if (wrappedApplet != null)
       return "" + (wrappedApplet.scriptWait("" + script));
     return null;
   }
 
+  @Override
   public String scriptWait(String script, String statusParams) {
     if (statusParams == null)
       statusParams = "";
@@ -213,6 +234,7 @@ public class JmolApplet extends AppletWrapper implements
     return null;
   }
   
+  @Override
   public String scriptWaitOutput(String script) {
     if (wrappedApplet != null)
       return "" + (wrappedApplet.scriptWaitOutput("" + script));
@@ -227,6 +249,7 @@ public class JmolApplet extends AppletWrapper implements
     register(fullName, applet);
   }
   
+  @Override
   public void register(String id, JmolSyncInterface jsi) {
     if (wrappedApplet != null)
       wrappedApplet.register(id, jsi);

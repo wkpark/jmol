@@ -35,6 +35,7 @@ public class KeyJCheckBox extends JCheckBox implements JmolAbstractButton {
   // application only
   
   private String key;
+    @Override
     public String getKey() {
       return key;
     }
@@ -45,6 +46,7 @@ public class KeyJCheckBox extends JCheckBox implements JmolAbstractButton {
     GenericConsole.map(this, this.key = key, label, menuMap);
   }
 
+  @Override
   public void addConsoleListener(Object console) {
   }
 

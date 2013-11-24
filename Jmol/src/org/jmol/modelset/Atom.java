@@ -221,6 +221,7 @@ final public class Atom extends Point3fi implements JmolNode {
     bonds = null;
   }
 
+  @Override
   public int getBondedAtomIndex(int bondIndex) {
     return bonds[bondIndex].getOtherAtom(this).index;
   }
@@ -314,6 +315,7 @@ final public class Atom extends Point3fi implements JmolNode {
     return Math.abs(madAtom / 8); //  1000r = 1000d / 2; rr = (1000r / 4);
   }
 
+  @Override
   public int getCovalentBondCount() {
     if (bonds == null)
       return 0;
@@ -326,6 +328,7 @@ final public class Atom extends Point3fi implements JmolNode {
     return n;
   }
 
+  @Override
   public int getCovalentHydrogenCount() {
     if (bonds == null)
       return 0;
@@ -340,6 +343,7 @@ final public class Atom extends Point3fi implements JmolNode {
     return n;
   }
 
+  @Override
   public JmolEdge[] getEdges() {
     return bonds;
   }
@@ -360,14 +364,17 @@ final public class Atom extends Point3fi implements JmolNode {
     return C.isColixTranslucent(colixAtom);
   }
 
+  @Override
   public int getElementNumber() {
     return Elements.getElementNumber(atomicAndIsotopeNumber);
   }
   
+  @Override
   public int getIsotopeNumber() {
     return Elements.getIsotopeNumber(atomicAndIsotopeNumber);
   }
   
+  @Override
   public int getAtomicAndIsotopeNumber() {
     return atomicAndIsotopeNumber;
   }
@@ -418,6 +425,7 @@ final public class Atom extends Point3fi implements JmolNode {
     formalChargeAndFlags |= VIBRATION_VECTOR_FLAG;
   }
   
+  @Override
   public int getFormalCharge() {
     return formalChargeAndFlags >> 2;
   }
@@ -459,6 +467,7 @@ final public class Atom extends Point3fi implements JmolNode {
     bonds = null;
   }
 
+  @Override
   public boolean isDeleted() {
     return (valence < 0);
   }
@@ -469,6 +478,7 @@ final public class Atom extends Point3fi implements JmolNode {
     valence = (byte) (nBonds < 0 ? 0 : nBonds < 0xEF ? nBonds : 0xEF);
   }
 
+  @Override
   public int getValence() {
     if (isDeleted())
       return -1;
@@ -479,6 +489,7 @@ final public class Atom extends Point3fi implements JmolNode {
     return n;
   }
 
+  @Override
   public int getImplicitHydrogenCount() {
     return group.chain.model.modelSet.getImplicitHydrogenCount(this, false);
   }
@@ -598,10 +609,12 @@ final public class Atom extends Point3fi implements JmolNode {
     return Math.abs(madAtom / (1000f * 2));
   }
 
+  @Override
   public int getIndex() {
     return index;
   }
 
+  @Override
   public int getAtomSite() {
     return atomSite;
   }
@@ -622,16 +635,19 @@ final public class Atom extends Point3fi implements JmolNode {
      return group;
    }
    
-   public void getGroupBits(BS bs) {
+   @Override
+  public void getGroupBits(BS bs) {
      group.selectAtoms(bs);
    }
    
-   public String getAtomName() {
+   @Override
+  public String getAtomName() {
      return (atomID > 0 ? JC.getSpecialAtomName(atomID) 
          : group.chain.model.modelSet.atomNames[index]);
    }
    
-   public String getAtomType() {
+   @Override
+  public String getAtomType() {
     String[] atomTypes = group.chain.model.modelSet.atomTypes;
     String type = (atomTypes == null ? null : atomTypes[index]);
     return (type == null ? getAtomName() : type);
@@ -738,6 +754,7 @@ final public class Atom extends Point3fi implements JmolNode {
     return (str.length() == 0 ? "" : str.substring(1));
   }
    
+  @Override
   public int getModelIndex() {
     return modelIndex;
   }
@@ -940,6 +957,7 @@ final public class Atom extends Point3fi implements JmolNode {
     return info.toString();
   }
 
+  @Override
   public String getGroup3(boolean allowNull) {
     String group3 = group.getGroup3();
     return (allowNull 
@@ -947,11 +965,13 @@ final public class Atom extends Point3fi implements JmolNode {
         ? group3 : "UNK");
   }
 
+  @Override
   public String getGroup1(char c0) {
     char c = group.getGroup1();
     return (c != '\0' ? "" + c : c0 != '\0' ? "" + c0 : "");
   }
 
+  @Override
   public boolean isProtein() {
     return group.isProtein();
   }
@@ -960,22 +980,27 @@ final public class Atom extends Point3fi implements JmolNode {
     return group.isCarbohydrate();
   }
 
+  @Override
   public boolean isNucleic() {
     return group.isNucleic();
   }
 
+  @Override
   public boolean isDna() {
     return group.isDna();
   }
   
+  @Override
   public boolean isRna() {
     return group.isRna();
   }
 
+  @Override
   public boolean isPurine() {
     return group.isPurine();
   }
 
+  @Override
   public boolean isPyrimidine() {
     return group.isPyrimidine();
   }
@@ -984,6 +1009,7 @@ final public class Atom extends Point3fi implements JmolNode {
     return group.seqcode;
   }
 
+  @Override
   public int getResno() {
     return group.getResno();   
   }
@@ -1035,6 +1061,7 @@ final public class Atom extends Point3fi implements JmolNode {
     return ((flags & ~JC.ATOM_IN_FRAME) != 0);
   }
 
+  @Override
   public boolean isLeadAtom() {
     return group.isLeadAtom(index);
   }
@@ -1043,10 +1070,12 @@ final public class Atom extends Point3fi implements JmolNode {
     return group.getGroupParameter(tok);
   }
 
+  @Override
   public int getChainID() {
     return group.chain.chainID;
   }
 
+  @Override
   public String getChainIDStr() {
     return group.chain.getIDStr();
   }
@@ -1112,6 +1141,7 @@ final public class Atom extends Point3fi implements JmolNode {
     return group.chain.model.modelSet.getModelFileNumber(modelIndex);
   }
   
+  @Override
   public String getBioStructureTypeName() {
     return getProteinStructureType().getBioStructureTypeName(true);
   }
@@ -1469,14 +1499,17 @@ final public class Atom extends Point3fi implements JmolNode {
     return group.isWithinStructure(type);
   }
   
+  @Override
   public int getOffsetResidueAtom(String name, int offset) {
     return group.chain.model.modelSet.getGroupAtom(this, offset, name);
   }
   
+  @Override
   public boolean isCrossLinked(JmolNode node) {
     return group.isCrossLinked(((Atom) node).getGroup());
   }
 
+  @Override
   public boolean getCrossLinkLeadAtomIndexes(List<Integer> vReturn) {
     return group.getCrossLinkLead(vReturn);
   }
@@ -1503,6 +1536,7 @@ final public class Atom extends Point3fi implements JmolNode {
     return false;
   }
 
+  @Override
   public BS findAtomsLike(String atomExpression) {
     // for SMARTS searching
     return group.chain.model.modelSet.viewer.getAtomBitSet(atomExpression);

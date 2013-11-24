@@ -70,6 +70,7 @@ public final class Resolver implements JmolBioResolver {
     // only implemented via reflection, and only for PDB/mmCIF files
   }
   
+  @Override
   public Model getBioModel(int modelIndex,
                         int trajectoryBaseIndex, String jmolData,
                         Properties modelProperties,
@@ -78,6 +79,7 @@ public final class Resolver implements JmolBioResolver {
         jmolData, modelProperties, modelAuxiliaryInfo);
   }
 
+  @Override
   public Group distinguishAndPropagateGroup(Chain chain, String group3,
                                             int seqcode, int firstAtomIndex,
                                             int maxAtomIndex, int modelIndex,
@@ -179,6 +181,7 @@ public final class Resolver implements JmolBioResolver {
   private int baseBondIndex = 0;
   private boolean haveHsAlready;
   
+  @Override
   public void setHaveHsAlready(boolean b) {
     haveHsAlready = b;
   }
@@ -188,11 +191,13 @@ public final class Resolver implements JmolBioResolver {
   private V3 vNorm;
   private P4 plane;
 
+  @Override
   public void initialize(ModelLoader modelLoader) {
     this.modelLoader = modelLoader;
     this.modelSet = modelLoader.modelSet;
   }
   
+  @Override
   public void initializeHydrogenAddition() {
     baseBondIndex = modelLoader.modelSet.bondCount;
     bsAddedHydrogens = new BS();
@@ -206,6 +211,7 @@ public final class Resolver implements JmolBioResolver {
     plane = new P4();
   }
   
+  @Override
   public void addImplicitHydrogenAtoms(JmolAdapter adapter, int iGroup, int nH) {
     String group3 = modelLoader.getGroup3(iGroup);
     int nH1;
@@ -339,6 +345,7 @@ public final class Resolver implements JmolBioResolver {
   }
   
   class BondSorter implements Comparator<String[]>{
+    @Override
     public int compare(String[] a, String[] b) {
       return (b == null ? (a == null ? 0 : -1) : a == null ? 1 : a[0]
           .compareTo(b[0]) < 0 ? -1 : a[0].compareTo(b[0]) > 0 ? 1 : a[3]
@@ -347,6 +354,7 @@ public final class Resolver implements JmolBioResolver {
     }
   }
   
+  @Override
   public void finalizeHydrogens() {
     modelSet.viewer.getLigandModel(null, null, null, null);
     finalizePdbMultipleBonds();
@@ -595,6 +603,7 @@ public final class Resolver implements JmolBioResolver {
         modelSet.getDefaultMadFromOrder(JmolEdge.BOND_COVALENT_SINGLE), null, 0, true, false);
   }
 
+  @Override
   public String fixPropertyValue(BS bsAtoms, String data) {
     String[] aData = PT.split(data, "\n");
     Atom[] atoms = modelSet.atoms;
@@ -656,6 +665,7 @@ public final class Resolver implements JmolBioResolver {
    * @param adapter
    * @param atomSetCollection
    */
+  @Override
   public void iterateOverAllNewStructures(JmolAdapter adapter,
                                           Object atomSetCollection) {
     JmolAdapterStructureIterator iterStructure = adapter

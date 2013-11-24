@@ -89,6 +89,7 @@ public class WhatsNewDialog extends JDialog implements HyperlinkListener {
     JButton ok = new JButton(GT._("OK"));
     ok.addActionListener(new ActionListener() {
 
+      @Override
       public void actionPerformed(ActionEvent e) {
         OKPressed();
       }
@@ -107,6 +108,7 @@ public class WhatsNewDialog extends JDialog implements HyperlinkListener {
     centerDialog();
   }
 
+  @Override
   public void hyperlinkUpdate(HyperlinkEvent e) {
     if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
       linkActivated(e.getURL());
@@ -143,6 +145,7 @@ public class WhatsNewDialog extends JDialog implements HyperlinkListener {
       cursor = c;
     }
 
+    @Override
     public void run() {
 
       if (url == null) {

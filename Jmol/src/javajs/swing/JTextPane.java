@@ -20,7 +20,8 @@ public class JTextPane extends JComponent implements Document {
 		return this;
 	}
 
-	public void insertString(int i, String s, Object object) {
+	@Override
+  public void insertString(int i, String s, Object object) {
 		i = Math.min(i, text.length());
 		text = text.substring(0, i) + s + text.substring(i);
 	}

@@ -542,6 +542,7 @@ public abstract class SurfaceReader implements VertexDataServer {
 
   protected QuantumPlaneCalculationInterface qpc;
   
+  @Override
   public float[] getPlane(int x) {
     return getPlane2(x);
   }
@@ -563,6 +564,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     yzPlanes[1] = new float[yzCount];
   }
 
+  @Override
   public float getValue(int x, int y, int z, int ptyz) {
     return getValue2(x, y, z, ptyz);
   }
@@ -617,6 +619,7 @@ public abstract class SurfaceReader implements VertexDataServer {
 
   protected final P3 ptTemp = new P3();
 
+  @Override
   public int getSurfacePointIndexAndFraction(float cutoff, boolean isCutoffAbsolute,
                                   int x, int y, int z, P3i offset, int vA,
                                   int vB, float valueA, float valueB,
@@ -700,6 +703,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     return valueA + fraction * diff;
   }
 
+  @Override
   public int addVertexCopy(P3 vertexXYZ, float value, int assocVertex) {
     return addVC(vertexXYZ, value, assocVertex);
   }
@@ -712,6 +716,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     return meshDataServer.addVertexCopy(vertexXYZ, value, assocVertex);
   }
 
+  @Override
   public int addTriangleCheck(int iA, int iB, int iC, int check, int check2,
                               boolean isAbsolute, int color) {
     if (marchingSquares != null && params.isContoured) {

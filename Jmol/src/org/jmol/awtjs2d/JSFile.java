@@ -32,24 +32,29 @@ class JSFile implements GenericFileInterface {
   	name = name.substring(name.lastIndexOf("/") + 1);
   }
 
+  @Override
   public GenericFileInterface getParentAsFile() {
   	int pt = fullName.lastIndexOf("/");
   	return (pt < 0 ? null : new JSFile(fullName.substring(0, pt)));
   }
 
-	public String getFullPath() {
+	@Override
+  public String getFullPath() {
 		return fullName;
 	}
 
-	public String getName() {
+	@Override
+  public String getName() {
     return name;
 	}
 
-	public boolean isDirectory() {
+	@Override
+  public boolean isDirectory() {
 		return fullName.endsWith("/");
 	}
 
-	public long length() {
+	@Override
+  public long length() {
 		return 0; // can't do this, shouldn't be necessary
 	}
 

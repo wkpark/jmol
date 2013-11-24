@@ -68,6 +68,7 @@ class MyStatusListener implements JmolStatusListener {
   // JTextField monitor used to broadcast atom tracking out of Jmol
   public JTextField monitor;
   
+  @Override
   public boolean notifyEnabled(EnumCallback type) {
     // indicate here any callbacks you will be working with.
     // some of these flags are not tested. See org.jmol.viewer.StatusManager.java
@@ -95,6 +96,7 @@ class MyStatusListener implements JmolStatusListener {
     return false;
   }
   
+  @Override
   @SuppressWarnings("incomplete-switch")
   public void notifyCallback(EnumCallback type, Object[] data) {
     // this method as of 11.5.23 gets all the callback notifications for
@@ -142,6 +144,7 @@ class MyStatusListener implements JmolStatusListener {
   /* (non-Javadoc)
    * @see org.jmol.api.JmolStatusListener#showUrl(java.lang.String)
    */
+  @Override
   public void showUrl(String url) {
     System.out.println(url);
   }
@@ -162,6 +165,7 @@ class MyStatusListener implements JmolStatusListener {
   /* (non-Javadoc)
    * @see org.jmol.api.JmolStatusListener#functionXY(java.lang.String, int, int)
    */
+  @Override
   public float[][] functionXY(String functionName, int nx, int ny) {
     return null;
   }
@@ -169,6 +173,7 @@ class MyStatusListener implements JmolStatusListener {
   /* (non-Javadoc)
    * @see org.jmol.api.JmolStatusListener#functionXY(java.lang.String, int, int)
    */
+  @Override
   public float[][][] functionXYZ(String functionName, int nx, int ny, int nz) {
     return null;
   }
@@ -196,6 +201,7 @@ class MyStatusListener implements JmolStatusListener {
   /* (non-Javadoc)
    * @see org.jmol.api.JmolStatusListener#setCallbackFunction(java.lang.String, java.lang.String)
    */
+  @Override
   public void setCallbackFunction(String callbackType, String callbackFunction) {
     //
   }
@@ -203,15 +209,18 @@ class MyStatusListener implements JmolStatusListener {
   /* (non-Javadoc)
    * @see org.jmol.api.JmolStatusListener#eval(java.lang.String)
    */
+  @Override
   public String eval(String strEval) {
     return null;
   }
 
 
+  @Override
   public Map<String, Object> getRegistryInfo() {
     return null;
   }
 
+  @Override
   public String createImage(String file, String type, Object text_or_bytes, int quality) {
     return null;
   }
@@ -225,10 +234,12 @@ class MyStatusListener implements JmolStatusListener {
     return null;
   }
 
+  @Override
   public javajs.awt.Dimension resizeInnerPanel(String data) {
     return new javajs.awt.Dimension(0, 0);
   }
 
+  @Override
   public Map<String, Object> getProperty(String type) {
     // TODO
     return null;

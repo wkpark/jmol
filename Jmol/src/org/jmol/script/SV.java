@@ -1176,6 +1176,7 @@ public class SV extends T {
       this.arrayPt = arrayPt;
     }
     
+    @Override
     public int compare(SV x, SV y) {
       if (x.tok != y.tok) {
         if (x.tok == T.decimal || x.tok == T.integer

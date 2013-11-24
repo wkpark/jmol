@@ -132,16 +132,19 @@ abstract public class GenericPopup implements GenericMenuInterface,
 
   private final static int MENUITEM_HEIGHT = 20;
 
+  @Override
   public void jpiDispose() {
     menuClearListeners(popupMenu);
     menuClearListeners(frankPopup);
     popupMenu = frankPopup = thisPopup = null;
   }
 
+  @Override
   public Object jpiGetMenuAsObject() {
     return popupMenu;
   }
 
+  @Override
   public String jpiGetMenuAsString(String title) {
     updateForShow();
     int pt = title.indexOf("|");
@@ -159,6 +162,7 @@ abstract public class GenericPopup implements GenericMenuInterface,
         .getMenuAsText(title);
   }
 
+  @Override
   public void jpiShow(int x, int y) {
     // main entry point from Viewer
     // called via JmolPopupInterface
@@ -179,6 +183,7 @@ abstract public class GenericPopup implements GenericMenuInterface,
     menuShowPopup(popupMenu, thisx, thisy);
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public void jpiUpdateComputedMenus() {
     if (updateMode == UPDATE_NEVER)
@@ -592,6 +597,7 @@ abstract public class GenericPopup implements GenericMenuInterface,
     viewer.evalStringQuiet(what);
   }
 
+  @Override
   public void checkMenuClick(Object source, String script) {
     checkMenuClickGP(source, script);
   }

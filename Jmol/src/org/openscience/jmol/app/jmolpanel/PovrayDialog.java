@@ -126,6 +126,7 @@ public class PovrayDialog extends JDialog {
 
     // Event management
     ActionListener updateActionListener = new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         updateScreen();
       }
@@ -138,6 +139,7 @@ public class PovrayDialog extends JDialog {
       }
     };
     ItemListener updateItemListener = new ItemListener() {
+      @Override
       public void itemStateChanged(ItemEvent e) {
         updateScreen();
       }
@@ -180,6 +182,7 @@ public class PovrayDialog extends JDialog {
     JButton savePathButton = new JButton(text);
     savePathButton.addActionListener(new ActionListener() {
 
+      @Override
       public void actionPerformed(ActionEvent e) {
         showSavePathDialog();
       }
@@ -276,6 +279,7 @@ public class PovrayDialog extends JDialog {
     imageSizeTextWidth.setValue(Integer.valueOf(outputWidth));
     imageSizeTextWidth.addPropertyChangeListener("value",
       new PropertyChangeListener() {
+        @Override
         public void propertyChange(PropertyChangeEvent e) {
           imageSizeChanged();
           updateCommandLine();
@@ -293,6 +297,7 @@ public class PovrayDialog extends JDialog {
     imageSizeTextHeight.setValue(Integer.valueOf(outputHeight));
     imageSizeTextHeight.addPropertyChangeListener("value",
       new PropertyChangeListener() {
+        @Override
         public void propertyChange(PropertyChangeEvent e) {
           imageSizeChanged();
           updateCommandLine();
@@ -308,6 +313,7 @@ public class PovrayDialog extends JDialog {
     text = GT._("Use a fixed ratio for width:height");
     imageSizeRatioBox.setToolTipText(text);
     imageSizeRatioBox.addItemListener(new ItemListener() {
+      @Override
       public void itemStateChanged(ItemEvent e) {
         imageSizeChanged();
         updateCommandLine();
@@ -326,6 +332,7 @@ public class PovrayDialog extends JDialog {
     imageSizeRatioCombo.addItem(text);
     imageSizeRatioCombo.setSelectedIndex(1);
     imageSizeRatioCombo.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         imageSizeChanged();
         updateCommandLine();
@@ -371,6 +378,7 @@ public class PovrayDialog extends JDialog {
     outputFormatCombo.addItem(text);
     outputFormatCombo.setSelectedIndex(0);
     outputFormatCombo.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         outputFormatChanged();
         updateCommandLine();
@@ -388,6 +396,7 @@ public class PovrayDialog extends JDialog {
     text = GT._("Output Alpha transparency data");
     outputAlphaCheck.setToolTipText(text);
     outputAlphaCheck.addItemListener(new ItemListener() {
+      @Override
       public void itemStateChanged(ItemEvent e) {
         updateCommandLine();
       }
@@ -403,6 +412,7 @@ public class PovrayDialog extends JDialog {
     text = GT._("Render the image in several passes");
     mosaicPreviewCheck.setToolTipText(text);
     mosaicPreviewCheck.addItemListener(new ItemListener() {
+      @Override
       public void itemStateChanged(ItemEvent e) {
       	mosaicPreviewChanged();
       	updateCommandLine();
@@ -421,6 +431,7 @@ public class PovrayDialog extends JDialog {
     }
     mosaicPreviewComboStart.setSelectedIndex(3);
     mosaicPreviewComboStart.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         mosaicPreviewChanged();
         updateCommandLine();
@@ -439,6 +450,7 @@ public class PovrayDialog extends JDialog {
     }
     mosaicPreviewComboEnd.setSelectedIndex(0);
     mosaicPreviewComboEnd.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         mosaicPreviewChanged();
         updateCommandLine();
@@ -463,6 +475,7 @@ public class PovrayDialog extends JDialog {
     povrayPathButton = new JButton(text);
     povrayPathButton.addActionListener(new ActionListener() {
 
+      @Override
       public void actionPerformed(ActionEvent e) {
         showPovrayPathDialog();
       }
@@ -496,6 +509,7 @@ public class PovrayDialog extends JDialog {
     goButton.setToolTipText(text);
     goButton.addActionListener(new ActionListener() {
 
+      @Override
       public void actionPerformed(ActionEvent e) {
         goPressed();
       }
@@ -507,6 +521,7 @@ public class PovrayDialog extends JDialog {
     cancelButton.setToolTipText(text);
     cancelButton.addActionListener(new ActionListener() {
 
+      @Override
       public void actionPerformed(ActionEvent e) {
         cancelPressed();
       }

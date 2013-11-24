@@ -86,6 +86,7 @@ public class Minimizer implements MinimizerInterface {
   public Minimizer() {
   }
 
+  @Override
   public void setProperty(String propertyName, Object value) {
     if (propertyName.equals("ff")) {
       // UFF or MMFF
@@ -124,6 +125,7 @@ public class Minimizer implements MinimizerInterface {
     }
   }
 
+  @Override
   public Object getProperty(String propertyName, int param) {
     if (propertyName.equals("log")) {
       return (pFF == null ? "" : pFF.getLogData());
@@ -186,6 +188,7 @@ public class Minimizer implements MinimizerInterface {
     pFF = null;
   }
   
+  @Override
   public boolean minimize(int steps, double crit, BS bsSelected,
                           BS bsFixed, boolean haveFixed, boolean forceSilent, 
                           String ff) {
@@ -506,6 +509,7 @@ public class Minimizer implements MinimizerInterface {
    ****************************************************************/
 
   private boolean minimizationOn;
+  @Override
   public boolean minimizationOn() {
     return minimizationOn;
   }
@@ -544,6 +548,7 @@ public class Minimizer implements MinimizerInterface {
     viewer.setFloatProperty("_minimizationEnergy", pFF.toUserUnits(pFF.getEnergy()));
   }
 
+  @Override
   public boolean startMinimization() {
    try {
       Logger.info("minimizer: startMinimization");
@@ -564,6 +569,7 @@ public class Minimizer implements MinimizerInterface {
     return true;
   }
 
+  @Override
   public boolean stepMinimization() {
     if (!minimizationOn)
       return false;
@@ -582,6 +588,7 @@ public class Minimizer implements MinimizerInterface {
     return going;
   }
 
+  @Override
   public void endMinimization() {
     updateAtomXYZ();
     setMinimizationOn(false);
@@ -656,6 +663,7 @@ public class Minimizer implements MinimizerInterface {
       viewer.scriptEcho(msg);    
   }
 
+  @Override
   public void calculatePartialCharges(Bond[] bonds, int bondCount,
                                       Atom[] atoms, BS bsAtoms) {
     //TODO -- combine SMILES and MINIMIZER in same JAR file

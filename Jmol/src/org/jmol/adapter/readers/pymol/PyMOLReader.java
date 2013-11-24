@@ -1346,22 +1346,27 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
 
   /// PymolAtomReader interface
   
+  @Override
   public int getUniqueID(int iAtom) {
     return (int) atoms[iAtom].vib.x;
   }
 
+  @Override
   public int getCartoonType(int iAtom) {
     return (int) atoms[iAtom].vib.y;
   }
 
+  @Override
   public float getVDW(int iAtom) {
     return atoms[iAtom].radius;
   }
 
+  @Override
   public int getSequenceNumber(int iAtom) {
     return atoms[iAtom].sequenceNumber;
   }
 
+  @Override
   public boolean compareAtoms(int iPrev, int i) {
     return atoms[iPrev].chainID != atoms[i].chainID;
   }

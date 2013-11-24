@@ -496,6 +496,7 @@ public class GaussianDialog extends JDialog implements ActionListener,
       "\n" + data + "\n");
   }
 
+  @Override
   public void actionPerformed(ActionEvent event) {
 	  if (event.getSource() == saveButton) {
 	    save();
@@ -508,6 +509,7 @@ public class GaussianDialog extends JDialog implements ActionListener,
 	  }
   }
   
+  @Override
   public void stateChanged(ChangeEvent event) {
 	  if (event.getSource() == inputTabs) {
 	    tabSwitched();

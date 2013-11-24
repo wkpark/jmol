@@ -156,10 +156,12 @@ public class JmolSparshClientAdapter extends JmolMultiTouchClientAdapter impleme
   
   // methods the Sparsh server needs -- from com.sparshui.client.ClientToServerProtocol
   
+  @Override
   public List<GestureType> getAllowedGestures(int groupID) {
     return (actionManager == null ? null : actionManager.getAllowedGestures(groupID));
   }
 
+  @Override
   public int getGroupID(Location location) {
     if (actionManager == null)
       return 0;
@@ -187,6 +189,7 @@ ActionManagerMT.processEvent groupID=16777100 eventType=6 iData=0 pt=(-1.0, -1.0
    * @param event 
    * 
    */
+  @Override
   public void processEvent(int groupID, Event event) {
     if (actionManager == null)
       return;

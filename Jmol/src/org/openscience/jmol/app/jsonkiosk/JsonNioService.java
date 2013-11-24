@@ -183,6 +183,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
   /* (non-Javadoc)
    * @see org.openscience.jmol.app.jsonkiosk.JsonNioServer#scriptCallback(java.lang.String)
    */
+  @Override
   public void scriptCallback(String msg) {
     if (msg == null)
       return;
@@ -198,6 +199,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
   /* (non-Javadoc)
    * @see org.openscience.jmol.app.jsonkiosk.JsonNioServer#getPort()
    */
+  @Override
   public int getPort() {
     return port;
   }
@@ -205,6 +207,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
   /* (non-Javadoc)
    * @see org.openscience.jmol.app.jsonkiosk.JsonNioServer#send(int, java.lang.String)
    */
+  @Override
   public void send(int port, String msg) {
     try {
       if (port != this.port) {
@@ -233,6 +236,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
   /* (non-Javadoc)
    * @see org.openscience.jmol.app.jsonkiosk.JsonNioServer#startService(int, org.openscience.jmol.app.jsonkiosk.JsonNioClient, org.jmol.api.JmolViewer, java.lang.String)
    */
+  @Override
   public void startService(int port, JsonNioClient client,
                            JmolViewer jmolViewer, String name, int version)
       throws IOException {
@@ -276,20 +280,24 @@ public class JsonNioService extends NIOService implements JsonNioServer {
       inSocket.setPacketWriter(RawPacketWriter.INSTANCE);
       inSocket.listen(new SocketObserver() {
 
+        @Override
         public void connectionOpened(NIOSocket nioSocket) {
           initialize("out", nioSocket);
         }
 
+        @Override
         public void packetReceived(NIOSocket socket, byte[] packet) {
           processMessage(packet, null);
         }
 
+        @Override
         public void connectionBroken(NIOSocket nioSocket, Exception exception) {
           halt = true;
           Logger.info(Thread.currentThread().getName()
               + " inSocket connectionBroken");
         }
 
+        @Override
         public void packetSent(NIOSocket arg0, Object arg1) {
           // TODO
           
@@ -306,21 +314,25 @@ public class JsonNioService extends NIOService implements JsonNioServer {
         outSocket.setPacketWriter(RawPacketWriter.INSTANCE);
         outSocket.listen(new SocketObserver() {
 
+          @Override
           public void connectionOpened(NIOSocket nioSocket) {
             initialize("in", nioSocket);
           }
 
+          @Override
           public void packetReceived(NIOSocket nioSocket, byte[] packet) {
             Logger.info("outpacketreceived");
             // not used
           }
 
+          @Override
           public void connectionBroken(NIOSocket nioSocket, Exception exception) {
             halt = true;
             Logger.info(Thread.currentThread().getName()
                 + " outSocket connectionBroken");
           }
 
+          @Override
           public void packetSent(NIOSocket arg0, Object arg1) {
             // TODO
             
@@ -344,6 +356,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
 
   protected class JsonNioThread implements Runnable {
 
+    @Override
     public void run() {
       Logger.info(Thread.currentThread().getName() + " JsonNioSocket on " + port);
       try {
@@ -441,6 +454,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
       });
 
       serverSocket.setConnectionAcceptor(new ConnectionAcceptor() {
+        @Override
         public boolean acceptConnection(InetSocketAddress arg0) {
           boolean isOK = arg0.getAddress().isLoopbackAddress();
           return isOK;
@@ -459,6 +473,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
   }
 
   protected class JsonNioServerThread implements Runnable {
+    @Override
     public void run() {
       Logger.info(Thread.currentThread().getName() + " JsonNioServerSocket on " + port);
       try {

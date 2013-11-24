@@ -160,6 +160,7 @@ public final class EnvelopeCalculation implements JmolEnvCalc {
    * @param mads
    * @return this
    */
+  @Override
   public EnvelopeCalculation set(AtomDataServer viewer, int atomCount, short[] mads) {
     this.viewer = viewer;
     this.atomCount = atomCount; //preliminary, for setFromBits()
@@ -198,6 +199,7 @@ public final class EnvelopeCalculation implements JmolEnvCalc {
   private int geodesicCount;
   private BS bsSurface;
   
+  @Override
   public BS getBsSurfaceClone() {
     return BSUtil.copy(bsSurface);
   }
@@ -289,6 +291,7 @@ public final class EnvelopeCalculation implements JmolEnvCalc {
    * @param isSurface
    * @param multiModel
    */
+  @Override
   public void calculate(RadiusData rd, float maxRadius, BS bsSelected,
                         BS bsIgnore, boolean disregardNeighbors,
                         boolean onlySelectedDots, boolean isSurface,
@@ -349,6 +352,7 @@ public final class EnvelopeCalculation implements JmolEnvCalc {
     
   private P3[] currentPoints;
   
+  @Override
   public P3[] getPoints() {
     if (dotsConvexMaps == null) {
       calculate(new RadiusData(null, JC.ENC_CALC_MAX_DIST, EnumType.ABSOLUTE, null),

@@ -64,14 +64,17 @@ public class Mouse implements GenericMouseInterface {
     this.manager = this.viewer.getActionManager();
   }
 
+  @Override
   public void clear() {
     // nothing to do here now -- see ActionManager
   }
 
+  @Override
   public void dispose() {
     // nothing to do here
   }
 
+  @Override
   public boolean processEvent(int id, int x, int y, int modifiers, long time) {
     if (id != -1)
       modifiers = applyLeftMouse(modifiers);
@@ -121,6 +124,7 @@ public class Mouse implements GenericMouseInterface {
    *     where finger touches are [[x0,y0],[x1,y1],[x2,y2],...] 
    *    
    */
+  @Override
   public void processTwoPointGesture(float[][][] touches) {
     
     if (touches[0].length < 2)

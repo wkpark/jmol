@@ -88,6 +88,7 @@ public class Splash extends Window implements SplashInterface {
     g.drawString(status, BORDERSIZE, textY);
   }
 
+  @Override
   public void showStatus(String message) {
 
     if (message != null) {

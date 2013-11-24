@@ -53,6 +53,7 @@ public class AppletConsole extends GenericConsole {
 
   Object jsConsole;
 
+  @Override
   public void start(JmolViewer viewer) {
     setViewer(viewer);
     setLabels();

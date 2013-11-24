@@ -116,7 +116,8 @@ when the Jmol or JSpecView code is modified, is as follows:
   <property name="saxon.jar" value="saxon.jar" />
   <property name="saxon.main" value="com.icl.saxon.StyleSheet" />
   <property name="selfsign.store" value="ca-cert/selfSignedCertificate/selfSignedCertificate.store" />
-  <property name="selfsign.pass" value="selfSignedCertificate" />
+  <property name="selfsign.storetype" value="jks" />
+  <property name="selfsign.storepass" value="selfSignedCertificate" />
   <property name="selfsign.alias" value="selfSignedCertificate" />
 
 
@@ -1716,7 +1717,8 @@ all support for previous versions removed
     </then></elseif><else>
       	<echo>using self-signed certificate</echo> 
 	        <signjar keystore="${selfsign.store}"
-	                 storepass="${selfsign.pass}"
+	                 storepass="${selfsign.storepass}"
+	        		 type="${selfsign.storetype}"
 	                 alias="${selfsign.alias}">
 	            <fileset dir="${sign-jar-file-dir}" >
 	              <include name="${sign-jar-file-name}" />

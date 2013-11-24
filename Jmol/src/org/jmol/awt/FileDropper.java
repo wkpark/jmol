@@ -72,6 +72,7 @@ public class FileDropper implements DropTargetListener {
     fd_propSupport = new PropertyChangeSupport(this);
     this.viewer = viewer;
     addPropertyChangeListener((pcl = new PropertyChangeListener() {
+      @Override
       public void propertyChange(PropertyChangeEvent evt) {
         doDrop(evt);
       }
@@ -131,25 +132,30 @@ public class FileDropper implements DropTargetListener {
     fd_propSupport.removePropertyChangeListener(l);
   }
 
+  @Override
   public void dragOver(DropTargetDragEvent dtde) {
     if (Logger.debugging)
       Logger.debug("DropOver detected...");
   }
 
+  @Override
   public void dragEnter(DropTargetDragEvent dtde) {
     if (Logger.debugging)
       Logger.debug("DropEnter detected...");
     dtde.acceptDrag(DnDConstants.ACTION_COPY_OR_MOVE);
   }
 
+  @Override
   public void dragExit(DropTargetEvent dtde) {
     if (Logger.debugging)
       Logger.debug("DropExit detected...");
   }
 
+  @Override
   public void dropActionChanged(DropTargetDragEvent dtde) {
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public void drop(DropTargetDropEvent dtde) {
     if (Logger.debugging)

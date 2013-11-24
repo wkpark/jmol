@@ -1718,7 +1718,6 @@ all support for previous versions removed
       	<echo>using self-signed certificate</echo> 
 	        <signjar keystore="${selfsign.store}"
 	                 storepass="${selfsign.storepass}"
-	        		 type="${selfsign.storetype}"
 	                 alias="${selfsign.alias}">
 	            <fileset dir="${sign-jar-file-dir}" >
 	              <include name="${sign-jar-file-name}" />

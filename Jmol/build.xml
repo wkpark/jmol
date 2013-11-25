@@ -61,10 +61,10 @@ when the Jmol or JSpecView code is modified, is as follows:
   <property file="${user.home}/.jmol.build.properties" />
   <!-- compile options -->
   <property name="build.sysclasspath" value="ignore" />
-  <property name="build.compiler" value="javac1.5" />
+  <property name="build.compiler" value="javac1.6" />
   <!-- for some reason, I can't get ant to use this ${java.version}
        property as the value of the source parameter -->
-  <property name="java.version" value="1.5" />
+  <property name="java.version" value="1.6" />
   <property name="debug" value="off" />
   <property name="deprecation" value="off" />
   <property name="optimization" value="off" />
@@ -276,7 +276,7 @@ when the Jmol or JSpecView code is modified, is as follows:
     <mkdir dir="${classes.dir}"/>
     <javac srcdir="src" destdir="${classes.dir}" encoding="UTF8"
            debug="${debug}" deprecation="${deprecation}"
-           optimize="${optimization}" source="1.5" target="1.5">
+           optimize="${optimization}" source="1.6" target="1.6">
       <classpath refid="project.class.path" />
       <!-- removed all CDK based code, use BioClipse instead -->
       <exclude name="org/openscience/jmol/app/JmolEditBus.java"/>
@@ -318,8 +318,13 @@ when the Jmol or JSpecView code is modified, is as follows:
       </fileset>
     </copy>
 
-    <property name="build.compiler" value="javac1.5" />
-    <!-- mth 20040713 ... with the Sun Java 1.5 compiler the default
+    <property name="build.compiler" value="javac1.6" />
+  	
+    <!-- 
+      	
+bh 20131124  changed to 1.6, 1.6
+  	
+mth 20040713 ... with the Sun Java 1.5 compiler the default
          source code version is 1.5. And one cannot generate code for
          a 1.1 virtual machine from 1.5 source. Therefore, in order to
          compile for the 1.1 jvm, we need to specify that the source
@@ -357,7 +362,7 @@ all support for previous versions removed
     <javac srcdir="src" destdir="${applet.classes.dir}"
            debug="${debug}" deprecation="${deprecation}"
            optimize="${optimization}"
-           source="1.5" target="1.5" encoding="UTF8"
+           source="1.6" target="1.6" encoding="UTF8"
            includesfile="applet.classes"
            classpathref="applet-project.class.path" />
 
@@ -387,7 +392,7 @@ all support for previous versions removed
     <mkdir dir="${apisio.classes.dir}"/>
     <javac srcdir="src" destdir="${apisio.classes.dir}"
            debug="${debug}" deprecation="${deprecation}"
-           optimize="${optimization}" source="1.5" encoding="UTF8"
+           optimize="${optimization}" source="1.6" encoding="UTF8"
            includesfile="apisio.classes"
            classpathref="apisio-project.class.path" />
     <copy todir="${apisio.classes.dir}" >
@@ -1518,7 +1523,7 @@ all support for previous versions removed
              excludepackagenames="org.jmol.jcamp.*">
       <classpath refid="project.class.path" />
       <link href="http://download.oracle.com/javase/6/docs/api/" />
-      <link href="http://download.java.net/media/java3d/javadoc/1.5.0/" />
+      <link href="http://download.java.net/media/java3d/javadoc/1.6.0/" />
       <tag name="j2sIgnore" enabled="false" />
       <tag name="j2sIgnoreSuperConstructor" enabled="false" />
       <tag name="j2sOverride" enabled="false" />
@@ -1678,7 +1683,7 @@ all support for previous versions removed
     <mkdir dir="${test-classes.dir}"/>
     <javac srcdir="test" destdir="${test-classes.dir}"
            debug="off" deprecation="on"
-           optimize="off" source="1.5" encoding="UTF8">
+           optimize="off" source="1.6" encoding="UTF8">
       <classpath>
         <pathelement location="build/Jmol.jar" />
         <pathelement location="./jars/junit.jar" />

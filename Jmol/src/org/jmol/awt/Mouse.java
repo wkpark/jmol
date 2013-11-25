@@ -175,8 +175,8 @@ class Mouse implements MouseWheelListener, MouseListener,
   @Override
   public void mouseWheelMoved(MouseWheelEvent e) {
     e.consume();
-    mouseWheel(e.getWhen(), e.getWheelRotation(), e.getModifiers()
-        | Event.MOUSE_WHEEL);
+    mouseWheel(e.getWhen(), e.getWheelRotation(), 
+        (e.getModifiers() & ~Event.MOUSE_MIDDLE) | Event.MOUSE_WHEEL);
   }
 
   @Override
@@ -306,10 +306,12 @@ class Mouse implements MouseWheelListener, MouseListener,
   }
 
   private void mouseEntered(long time, int x, int y) {
+    wheeling = false;
     manager.mouseEnterExit(time, x, y, false);
   }
 
   private void mouseExited(long time, int x, int y) {
+    wheeling = false;
     manager.mouseEnterExit(time, x, y, true);
   }
 
@@ -329,6 +331,7 @@ class Mouse implements MouseWheelListener, MouseListener,
   }
 
   private boolean isMouseDown; // Macintosh may not recognize CTRL-SHIFT-LEFT as drag, only move
+  private boolean wheeling;
   
   private void mouseMoved(long time, int x, int y, int modifiers) {
     clearKeyBuffer();
@@ -340,6 +343,7 @@ class Mouse implements MouseWheelListener, MouseListener,
 
   private void mouseWheel(long time, int rotation, int modifiers) {
     clearKeyBuffer();
+    wheeling = true;
     manager.mouseAction(Event.WHEELED, time, 0, rotation, 0, modifiers);
   }
 
@@ -355,15 +359,19 @@ class Mouse implements MouseWheelListener, MouseListener,
                     boolean isPopupTrigger) {
     clearKeyBuffer();
     isMouseDown = true;
+    wheeling = false;
     manager.mouseAction(Event.PRESSED, time, x, y, 0, modifiers);
   }
 
   private void mouseReleased(long time, int x, int y, int modifiers) {
     isMouseDown = false;
+    wheeling = false;
     manager.mouseAction(Event.RELEASED, time, x, y, 0, modifiers);
   }
 
   private void mouseDragged(long time, int x, int y, int modifiers) {
+    if (wheeling)
+      return;
     if ((modifiers & Event.MAC_COMMAND) == Event.MAC_COMMAND)
       modifiers = modifiers & ~Event.MOUSE_RIGHT | Event.CTRL_MASK; 
     manager.mouseAction(Event.DRAGGED, time, x, y, 0, modifiers);

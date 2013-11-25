@@ -993,6 +993,8 @@ public class ActionManager implements EventManager {
                           int buttonMods) {
     if (!viewer.getMouseEnabled())
       return;
+    //if (mode != 0)
+      //System.out.println(mode + " " +  buttonMods);
     switch (mode) {
     case Event.MOVED:
       setCurrent(time, x, y, buttonMods);

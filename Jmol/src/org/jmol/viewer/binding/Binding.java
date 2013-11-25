@@ -129,18 +129,16 @@ abstract public class Binding {
       mouseAction |= DRAG;
     else if (desc.indexOf("UP") >= 0)
       mouseAction |= UP;
-    else 
+    else if (mouseAction != WHEEL)
       mouseAction |= CLICK;
 
-    if (mouseAction != WHEEL) {
-      if (desc.indexOf("DOUBLE") >= 0)
+      if (mouseAction != WHEEL && desc.indexOf("DOUBLE") >= 0)
         mouseAction |= DOUBLE;
       else if (mouseAction > 0)
         mouseAction |= SINGLE;
 
-      if (desc.indexOf("ALT") >= 0)
+      if (mouseAction != (SINGLE | WHEEL) && desc.indexOf("ALT") >= 0)
         mouseAction |= ALT;
-    }
 
     if (desc.indexOf("CTRL") >= 0)
       mouseAction |= CTRL;

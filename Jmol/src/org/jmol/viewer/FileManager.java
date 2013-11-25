@@ -455,14 +455,14 @@ public class FileManager implements BytePoster {
     String[] dir = null;
     dir = getZipDirectory(fileName, false);
     if (dir.length == 0) {
-      String state = viewer.getFileAsString4(fileName, -1, false, true);
+      String state = viewer.getFileAsString4(fileName, -1, false, true, false);
       return (state.indexOf(JC.EMBEDDED_SCRIPT_TAG) < 0 ? ""
           : JmolBinary.getEmbeddedScript(state));
     }
     for (int i = 0; i < dir.length; i++)
       if (dir[i].indexOf(".spt") >= 0) {
         String[] data = new String[] { fileName + "|" + dir[i], null };
-        getFileDataOrErrorAsString(data, -1, false, false);
+        getFileDataOrErrorAsString(data, -1, false, false, false);
         return data[1];
       }
     return "";
@@ -781,11 +781,13 @@ public class FileManager implements BytePoster {
    * @param nBytesMax or -1
    * @param doSpecialLoad
    * @param allowBinary 
+   * @param checkProtected TODO
    * @return true if successful; false on error
    */
 
   boolean getFileDataOrErrorAsString(String[] data, int nBytesMax,
-                                     boolean doSpecialLoad, boolean allowBinary) {
+                                     boolean doSpecialLoad, boolean allowBinary, 
+                                     boolean checkProtected) {
     data[1] = "";
     String name = data[0];
     if (name == null)
@@ -795,6 +797,16 @@ public class FileManager implements BytePoster {
     if (t instanceof String) {
       data[1] = (String) t;
       return false;
+    }
+    if (checkProtected && data[0].startsWith("file:") 
+    		&& (data[0].indexOf("/.") >= 0 || data[0].lastIndexOf('.') < data[0].lastIndexOf('/')
+    		|| data[0].lastIndexOf(":/") == data[0].lastIndexOf('/') - 1)) {
+    	// when load() function and local file: 
+    	// no hidden files 
+    	// no files without extension
+    	// no root directory files
+    	data[1] = "Security exception: cannot read file " + data[0];
+    	return false;
     }
     try {
     return JmolBinary.readAll((BufferedReader) t, nBytesMax, allowBinary, data, 1);

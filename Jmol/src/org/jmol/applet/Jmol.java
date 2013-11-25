@@ -894,21 +894,20 @@ public class Jmol implements WrappedApplet {
 
     @Override
     public boolean notifyEnabled(EnumCallback type) {
-      if (isJNLP)
-        return false;
       switch (type) {
-      case ANIMFRAME:
       case ECHO:
+      case MESSAGE:
+      case MEASURE: 
+      case PICK:
+      case SYNC:
+        return true;
+      case ANIMFRAME:
       case ERROR:
       case EVAL:
       case LOADSTRUCT:
-      case MEASURE: 
-      case MESSAGE:
-      case PICK:
       case STRUCTUREMODIFIED:
-      case SYNC:
       case SCRIPT:
-        return true;
+        return !isJNLP;
       case APPLETREADY:  // Jmol 12.1.48
       case ATOMMOVED:  // Jmol 12.1.48
       case CLICK:

@@ -2748,7 +2748,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     String pathName = modelManager.getModelSetPathName();
     if (pathName == null)
       return null;
-    return getFileAsString4(pathName, -1, true, false);
+    return getFileAsString4(pathName, -1, true, false, false);
   }
 
   public String getFullPathName() {
@@ -2771,23 +2771,24 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   @Override
   public String getFileAsString(String name) {
-    return getFileAsString4(name, -1, false, false);
+    return getFileAsString4(name, -1, false, false, false);
   }
 
   public String getFileAsString4(String name, int nBytesMax,
-                                 boolean doSpecialLoad, boolean allowBinary) {
+                                 boolean doSpecialLoad, boolean allowBinary, 
+                                 boolean checkProtected) {
     if (name == null)
       return getCurrentFileAsString();
     String[] data = new String[2];
     data[0] = name;
     // ignore error completely
     fileManager.getFileDataOrErrorAsString(data, nBytesMax, doSpecialLoad,
-        allowBinary);
+        allowBinary, checkProtected);
     return data[1];
   }
 
   public boolean getFileAsStringBin(String[] data) {
-    return fileManager.getFileDataOrErrorAsString(data, -1, false, true);
+    return fileManager.getFileDataOrErrorAsString(data, -1, false, true, false);
   }
 
   public String getFilePath(String name, boolean asShortName) {
@@ -8676,7 +8677,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     String s = (String) setLoadFormat("_" + smiles, type, false);
     if (type == '/')
       s += javajs.util.PT.simpleReplace(info, " ", "%20");
-    return getFileAsString4(s, -1, false, false);
+    return getFileAsString4(s, -1, false, false, false);
   }
 
   // ///////////////////////////////////////////////////////////////

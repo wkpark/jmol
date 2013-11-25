@@ -8562,6 +8562,7 @@ public class ScriptExt implements JmolScriptExtension {
     if (args.length > 2 || args.length < 1)
       return false;
     String file = SV.sValue(args[0]);
+    file = file.replace('\\', '/');
     int nBytesMax = (args.length == 2 ? args[1].asInt() : -1);
     if (viewer.isJS && file.startsWith("?")) {
       if (tok == T.file)
@@ -8575,7 +8576,7 @@ public class ScriptExt implements JmolScriptExtension {
       // x = (i++) + load("?") would increment i twice.
     }
     return mp.addXStr(tok == T.load ? viewer.getFileAsString4(file, nBytesMax,
-        false, false) : viewer.getFilePath(file, false));
+        false, false, true) : viewer.getFilePath(file, false));
   }
 
   private boolean evaluateWrite(ScriptMathProcessor mp, SV[] args) throws ScriptException {

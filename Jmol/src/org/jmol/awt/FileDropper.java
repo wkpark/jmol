@@ -80,11 +80,13 @@ public class FileDropper implements DropTargetListener {
     Component display = (Component) viewer.getDisplay();
     display.setDropTarget(new DropTarget(display, this));
     display.setEnabled(true);
+    System.out.println("File dropper enabled for " + display);
   }
 
   public void dispose() {
     removePropertyChangeListener(pcl);
     viewer = null;
+    System.out.println("File dropper disposed.");
   }
 
   private void loadFile(String fname) {
@@ -153,6 +155,7 @@ public class FileDropper implements DropTargetListener {
 
   @Override
   public void dropActionChanged(DropTargetDragEvent dtde) {
+    System.out.println("dropactionchanged");
   }
 
   @Override

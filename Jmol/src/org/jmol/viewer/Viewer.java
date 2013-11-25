@@ -222,7 +222,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public ModelSet modelSet;
   public FileManager fileManager;
 
-  private boolean isApplet;
+  private boolean isApplet, isJNLP;
 
   @Override
   public boolean isApplet() {
@@ -439,7 +439,11 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     if (info.containsKey("debug") || commandOptions.indexOf("-debug") >= 0)
       Logger.setLogLevel(Logger.LEVEL_DEBUG);
 
-    isSignedApplet = checkOption2("signedApplet", "-signed");
+    isJNLP = checkOption2("isJNLP", "-jnlp");
+    if (isJNLP)
+      Logger.info("setting JNLP mode TRUE");
+
+    isSignedApplet = isJNLP || checkOption2("signedApplet", "-signed");
     isApplet = isSignedApplet || checkOption2("applet", "-applet");
     allowScripting = !checkOption2("noscripting", "-noscripting");
     int i = fullName.indexOf("__");
@@ -4609,7 +4613,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public void exitJmol() {
-    if (isApplet)
+    if (isApplet && !isJNLP)
       return;
     if (headlessImageParams != null) {
       try {

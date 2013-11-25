@@ -55,20 +55,21 @@ import javax.swing.UIManager;
 import netscape.javascript.JSObject;
 
 /*
- * these are *required*:
  * 
- * [param name="progressbar" value="true" /] [param name="progresscolor"
- * value="blue" /] [param name="boxmessage" value="your-favorite-message" /]
- * [param name="boxbgcolor" value="#112233" /] [param name="boxfgcolor"
- * value="#778899" /]
  * 
- * these are *optional*:
+ * all parameters are optional:
+ * 
+ * [param name="name" value="jmolApplet0_object" /]
+ * 
+ * If name is null, it is assumed that this is a JNLP load outside of a browser.
+ * 
+ * [param name="boxbgcolor" value="#112233" /]
  * 
  * [param name="syncId" value="nnnnn" /]
  * 
  * determines the subset of applets *across pages* that are to be synchronized
- * (usually just a random number assigned in Jmol.js)
- * if this is fiddled with, it still should be a random number, not
+ * (usually just a random number assigned by the JavaScript on the page).
+ * If this is fiddled with, it still should be a random number, not
  * one that is assigned statically for a given web page.
  * 
  * [param name="menuFile" value="myMenu.mnu" /]
@@ -93,8 +94,10 @@ import netscape.javascript.JSObject;
  * [param name="maximumSize" value="nnnn" /]
  * 
  * 
- * You can specify that the signed or unsign applet or application should
- * use an independent command thread (EXCEPT for scripts containing the "javascript" command)  
+ * You can specify that the "signed" (privileged, all-permissions) or 
+ * "unsigned" (actually, just sandboxed)applet or application should
+ * use an independent command thread (EXCEPT for scripts containing 
+ * the "javascript" command)  
  * 
  * [param name="useCommandThread" value="true"]
  * 
@@ -135,9 +138,6 @@ import netscape.javascript.JSObject;
  * 
  * see org.jmol.viewer.JC for callback types.
  * 
- * The use of jmolButtons is fully deprecated and NOT recommended.
- * 
- * 
  * 
  * new for Jmol 11.9.11:
  * 
@@ -153,17 +153,14 @@ import netscape.javascript.JSObject;
 
 public class Jmol implements WrappedApplet {
 
-  private final static boolean REQUIRE_PROGRESSBAR = true;
   private final static int SCRIPT_CHECK = 0;
   private final static int SCRIPT_WAIT = 1;
   private final static int SCRIPT_NOWAIT = 2;
 
-  private boolean hasProgressBar;
   private boolean isSigned;
   private boolean isUpdating;
   private boolean showPaintTime;
 
-  private int paintCounter;
   private int timeLast, timeCount, timeTotal;
   private int lastMotionEventNumber;
   private long timeBegin;
@@ -189,6 +186,7 @@ public class Jmol implements WrappedApplet {
   protected Object gRight;
   protected JmolViewer viewer;
   protected Map<EnumCallback, String> callbacks = new Hashtable<EnumCallback, String>();
+  boolean isJNLP;
   
   @Override
   public void paint(Graphics g) {
@@ -244,6 +242,8 @@ public class Jmol implements WrappedApplet {
       dropper = null;
     }
     System.out.println("Jmol applet " + fullName + " destroyed");
+    if (isJNLP)
+      System.exit(0);
   }
 
   @Override
@@ -261,6 +261,7 @@ public class Jmol implements WrappedApplet {
   public void init() {
     htmlName = getParameter("name");
     syncId = getParameter("syncId");
+    isJNLP = (htmlName == null);
     fullName = htmlName + "__" + syncId + "__";
     System.out.println("Jmol applet " + fullName + " initializing");
     setLogging();
@@ -275,7 +276,7 @@ public class Jmol implements WrappedApplet {
   private void initWindows() {
     Map<String, Object> info = new Hashtable<String, Object>();
     addValue(info, null, "applet", Boolean.TRUE);
-    isSigned = getBooleanValue("signed", false) || appletWrapper.isSigned();
+    isSigned = isJNLP || getBooleanValue("signed", false) || appletWrapper.isSigned();
     if (isSigned)
       addValue(info, null, "signedApplet", Boolean.TRUE);
     if (getBooleanValue("useCommandThread", isSigned))
@@ -293,7 +294,8 @@ public class Jmol implements WrappedApplet {
     addValue(info, null, "codeBase", appletWrapper.getCodeBase());
     if (getBooleanValue("noScripting", false))
       addValue(info, null, "noScripting", Boolean.TRUE);
-
+    if (isJNLP)
+      addValue(info, null, "isJNLP", Boolean.TRUE);
     addValue(info, "MaximumSize", "maximumSize", null);
     addValue(info, "JmolAppletProxy", "appletProxy", null);
     addValue(info, "documentLocation",  null, null);
@@ -334,9 +336,7 @@ public class Jmol implements WrappedApplet {
           haveDocumentAccess = true;
         }
       } catch (Exception e) {
-        Logger
-            .error("Microsoft MSIE bug -- http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5012558 "
-                + e);
+        // ignore
       }
       if (Logger.debugging) {
         Logger.debug("jsoWindow:" + jsoWindow + " jsoDocument:" + jsoDocument
@@ -357,8 +357,6 @@ public class Jmol implements WrappedApplet {
   private void initApplication() {
     viewer.pushHoldRepaint();
     {
-      // REQUIRE that the progressbar be shown
-      hasProgressBar = getBooleanValue("progressbar", false);
       String emulate = getValueLowerCase("emulate", "jmol");
       setStringProperty("defaults", emulate.equals("chime") ? "RasMol" : "Jmol");
       setStringProperty("backgroundColor", getValue("bgcolor", getValue(
@@ -469,7 +467,7 @@ public class Jmol implements WrappedApplet {
   }
 
   private void setLogging() {
-    int iLevel = (getValue("logLevel", (getBooleanValue("debug", false) ? "5"
+    int iLevel = (getValue("logLevel", (isJNLP || getBooleanValue("debug", false) ? "5"
         : "4"))).charAt(0) - '0';
     if (iLevel != 4)
       System.out.println("setting logLevel=" + iLevel
@@ -576,38 +574,13 @@ public class Jmol implements WrappedApplet {
     Dimension size = new Dimension();
     appletWrapper.getSize(size);
     viewer.setScreenDimension(size.width, size.height);
-    //Rectangle rectClip = jvm12orGreater ? jvm12.getClipBounds(g) : g.getClipRect();
-    ++paintCounter;
-    if (REQUIRE_PROGRESSBAR && !isSigned && !hasProgressBar
-        && paintCounter < 30 && (paintCounter & 1) == 0) {
-      printProgressbarMessage(g);
-      viewer.notifyViewerRepaintDone();
-    } else {
       if (!isStereoSlave)
         viewer.renderScreenImageStereo(g, gRight, size.width, size.height);
-    }
-
     if (showPaintTime) {
       stopPaintClock();
       showTimes(10, 10, g);
     }
     isUpdating = false;
-  }
-
-  private final static String[] progressbarMsgs = {
-      "Jmol developer alert!",
-      "",
-      "Please use jmol.js. You are missing the ",
-      "required 'progressbar' parameter.",
-      "  <param name='progressbar' value='true' />", };
-
-  private void printProgressbarMessage(Graphics g) {
-    g.setColor(Color.yellow);
-    g.fillRect(0, 0, 10000, 10000);
-    g.setColor(Color.black);
-    for (int i = 0, y = 13; i < progressbarMsgs.length; ++i, y += 13) {
-      g.drawString(progressbarMsgs[i], 10, y);
-    }
   }
 
   @Override
@@ -921,6 +894,8 @@ public class Jmol implements WrappedApplet {
 
     @Override
     public boolean notifyEnabled(EnumCallback type) {
+      if (isJNLP)
+        return false;
       switch (type) {
       case ANIMFRAME:
       case ECHO:

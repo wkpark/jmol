@@ -48,7 +48,7 @@ var	basefile = base + "core.z.js";
 	
 	ClazzLoader.loadZJar (basefile, ClazzLoader.runtimeKeyClass);
 
-  if (Jmol.debugCode)
+  if (Jmol._debugCode)
     return;
 
 	ClazzLoader.jarClasspath (base + "coretext.z.js",	[    

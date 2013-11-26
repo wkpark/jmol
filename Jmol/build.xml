@@ -97,7 +97,7 @@ Note that I have had trouble with signjar ramdomly stopping.
   <input message="private property file:" addproperty="Private.propertyFile" defaultValue="none" />
   <if><available file="${Private.propertyFile}" /><then>
   	<property file="${Private.propertyFile}" />
-	<echo>using ${Private.propertyFile}  ${Private.keystore} ${Private.storetype}</echo>
+	<echo>using ${Private.keystore} ${Private.storetype}</echo>
   </then></if>
   <property name="tests.source.dir" value="source-tests" />
   <property name="lib.dir" value="jars" />
@@ -643,7 +643,10 @@ all support for previous versions removed
       </fileset>
     </jar>
 
+  	
     <echo message="Creating JmolApplet0*.jar" />
+  	
+  	<!-- 
     <for list="${all.JmolApplet.languages}" delimiter=","
          param="current.Jmol.language">
       <sequential>
@@ -655,7 +658,7 @@ all support for previous versions removed
         </jar>
       </sequential>
     </for>
-
+    -->
     <jar destfile="build/JmolApplet0_Image.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/dialog/**" />
@@ -857,11 +860,9 @@ all support for previous versions removed
         <pathelement path="build/JmolApplet0_ShapeSpecial.jar" />
         <pathelement path="build/JmolApplet0_ShapeSurface.jar" />
         <pathelement path="build/JmolApplet0_Smiles.jar" />
-<!--      	
-        <pathelement path="build/JmolApplet0_Spectrum.jar" />
-        -->
         <pathelement path="build/JmolApplet0_Symmetry.jar" />
-        <fileset dir="build" includes="JmolApplet0_i18n_*.jar" />
+<!-- <pathelement path="build/JmolApplet0_Spectrum.jar" />
+        <fileset dir="build" includes="JmolApplet0_i18n_*.jar" />   -->
       </indexjars>
     </jar>
 	<echo message="creating JmolLib.jar" level="info" />
@@ -917,6 +918,8 @@ all support for previous versions removed
     </jar>
 
   	<echo message="Creating JmolAppletsigned0*.jar" />
+  	
+  	<!--
     <for list="${all.JmolApplet.languages}" delimiter=","
          param="current.Jmol.language">
       <sequential>
@@ -928,7 +931,7 @@ all support for previous versions removed
         </jar>
       </sequential>
     </for>
-
+	-->
     <jar destfile="build/JmolAppletSigned0_Console.jar" manifest="manifest/appletSigned.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/console/**" />
@@ -1136,11 +1139,12 @@ all support for previous versions removed
         <pathelement path="build/JmolAppletSigned0_ShapeSpecial.jar" />
         <pathelement path="build/JmolAppletSigned0_ShapeSurface.jar" />
         <pathelement path="build/JmolAppletSigned0_Smiles.jar" />
+        <pathelement path="build/JmolAppletSigned0_Symmetry.jar" />
       	<!--      	
         <pathelement path="build/JmolAppletSigned0_Spectrum.jar" />
-        -->
-        <pathelement path="build/JmolAppletSigned0_Symmetry.jar" />
         <fileset dir="build" includes="JmolAppletSigned0_i18n_*.jar" />
+        -->
+      	
       </indexjars>
     </jar>
   	<echo> signing JmolApplet*.jar</echo>

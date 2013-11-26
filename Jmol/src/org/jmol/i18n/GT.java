@@ -30,7 +30,9 @@ import java.util.Map;
 
 import javajs.J2SRequireImport;
 
+import org.jmol.api.JmolViewer;
 import org.jmol.util.Logger; 
+import org.jmol.viewer.Viewer;
 
 /**
  * 
@@ -53,13 +55,14 @@ public class GT {
   private boolean doTranslate = true;
   private String language;
   private static boolean allowDebug = false;
+  static Viewer viewer;
 
   public GT() {
-   // testing here  
+   //  
   }
   
-  
-  public GT(String langCode) {
+  public GT(JmolViewer viewer, String langCode) {
+    GT.viewer = (Viewer) viewer;
     /**
      * @j2sIgnore
      * 
@@ -217,7 +220,7 @@ public class GT {
   }
 
   private static GT getTextWrapper() {
-    return (getTextWrapper == null ? getTextWrapper = new GT(null)
+    return (getTextWrapper == null ? getTextWrapper = new GT(null, null)
         : getTextWrapper);
   }
 

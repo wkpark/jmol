@@ -126,7 +126,6 @@ public class FileManager implements BytePoster {
 
   void setAppletContext(String documentBase) {
     try {
-      // local-file applet will deliver "" here.
       System.out.println("setting document base to \"" + documentBase + "\"");      
       appletDocumentBaseURL = (documentBase.length() == 0 ? null : new URL((URL) null, documentBase, null));
     } catch (MalformedURLException e) {

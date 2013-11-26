@@ -290,8 +290,8 @@ public class Jmol implements WrappedApplet {
     addValue(info, null, "display", appletWrapper);
     addValue(info, null, "statusListener", new MyStatusListener());
     addValue(info, null, "fullName", fullName);
-    addValue(info, null, "documentBase", appletWrapper.getDocumentBase());
-    addValue(info, null, "codeBase", appletWrapper.getCodeBase());
+    addValue(info, null, "documentBase", getParameter("documentBase"));
+    addValue(info, null, "codePath", getParameter("codePath"));
     if (getBooleanValue("noScripting", false))
       addValue(info, null, "noScripting", Boolean.TRUE);
     if (isJNLP)
@@ -369,10 +369,9 @@ public class Jmol implements WrappedApplet {
       loading = false;
 
       language = getParameter("language");
-      if (language != null) {
+      new GT(viewer, language);
+      if (language != null)
         System.out.print("requested language=" + language + "; ");
-        new GT(language);
-      }
       doTranslate = (!"none".equals(language) && getBooleanValue("doTranslate",
           true));
       language = GT.getLanguage();
@@ -467,7 +466,7 @@ public class Jmol implements WrappedApplet {
   }
 
   private void setLogging() {
-    int iLevel = (getValue("logLevel", (isJNLP || getBooleanValue("debug", false) ? "5"
+    int iLevel = (getValue("logLevel", (getBooleanValue("debug", false) ? "5"
         : "4"))).charAt(0) - '0';
     if (iLevel != 4)
       System.out.println("setting logLevel=" + iLevel
@@ -486,10 +485,9 @@ public class Jmol implements WrappedApplet {
   }
 
   private String getValue(String propertyName, String defaultValue) {
-    String stringValue = getParameter(propertyName);
-    if (stringValue != null)
-      return stringValue;
-    return defaultValue;
+    String s = getParameter(propertyName);
+    System.out.println("Jmol getValue " + propertyName + " " + s);
+    return (s == null ? defaultValue : s);
   }
 
   private String getValueLowerCase(String paramName, String defaultValue) {
@@ -713,9 +711,9 @@ public class Jmol implements WrappedApplet {
         + "\nsyncId = "
         + Escape.eS(syncId)
         + "\ndocumentBase = "
-        + Escape.eS("" + appletWrapper.getDocumentBase())
+        + Escape.eS("" + getParameter("documentBase"))
         + "\ncodeBase = "
-        + Escape.eS("" + appletWrapper.getCodeBase());
+        + Escape.eS("" + getParameter("codeBase"));
   }
 
   @Override

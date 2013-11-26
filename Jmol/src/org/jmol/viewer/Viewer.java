@@ -210,6 +210,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public String fullName = "";
   public String appletDocumentBase = "";
   public String appletCodeBase = "";
+  public String appletIdiomaBase;
 
   public static String jsDocumentBase = "";
 
@@ -429,8 +430,11 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     fullName = (String) info.get("fullName");
     if (fullName == null)
       fullName = "";
-    Object o = info.get("codeBase");
-    appletCodeBase = (o == null ? "" : o.toString());
+    Object o = info.get("codePath");
+    if (o == null)
+      o = "../java/";
+    appletCodeBase = o.toString();
+    appletIdiomaBase = appletCodeBase.substring(0, appletCodeBase.lastIndexOf("/", appletCodeBase.length() - 2) + 1) + "idioma";
     o = info.get("documentBase");
     appletDocumentBase = (o == null ? "" : o.toString());
     o = info.get("options");
@@ -6157,7 +6161,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       // /11.1.30//
       // fr cs en none, etc.
       // also serves to change language for callbacks and menu
-      new GT(value);
+      new GT(this, value);
       language = GT.getLanguage();
       modelkitPopup = null;
       if (jmolpopup != null) {

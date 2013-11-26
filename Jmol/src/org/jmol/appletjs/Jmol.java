@@ -166,10 +166,9 @@ public class Jmol implements JmolSyncInterface {
     }
     loading = false;
     language = getParameter("language");
-    if (language != null) {
-      System.out.println("requested language=" + language);
-      new GT(language);
-    }
+    new GT(viewer, language);
+    if (language != null)
+      System.out.print("requested language=" + language + "; ");
     doTranslate = (!"none".equals(language) && getBooleanValue("doTranslate",
         true));
     language = GT.getLanguage();
@@ -371,9 +370,9 @@ public class Jmol implements JmolSyncInterface {
         + "\nsyncId = "
         + Escape.eS(syncId)
         + "\ndocumentBase = "
-        + Escape.eS("" + getProperty("documentBase"))
+        + Escape.eS("" + viewerOptions.get("documentBase"))
         + "\ncodeBase = "
-        + Escape.eS("" + getProperty("codeBase"));
+        + Escape.eS("" + viewerOptions.get("codePath"));
   }
 
   /**

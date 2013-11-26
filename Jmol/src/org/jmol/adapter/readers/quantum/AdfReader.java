@@ -32,6 +32,8 @@ import org.jmol.util.Logger;
 
 import javajs.util.AU;
 import javajs.util.List;
+import javajs.util.PT;
+
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -325,7 +327,7 @@ OR
     
     discardLinesUntilContains("(power of)");
     readLines(2);
-    while (readLine() != null && line.length() > 2 && line.charAt(2) == ' ') {
+    while (readLine() != null && line.length() > 3 && line.charAt(3) == ' ') {
       String data = line;
       while (readLine().indexOf("---") < 0)
         data += line;
@@ -358,10 +360,10 @@ OR
 
   private void readMolecularOrbitals(String sym) throws Exception {
     /*
- ======  Eigenvectors (rows) in BAS representation
+    ======  Eigenvectors (rows) in BAS representation
 
-  column           1                   2                   3                   4
-  row   
+    column           1                   2                   3                   4
+    row   
     1    2.97448635016195E-01  7.07156589388012E-01  6.86546190383583E-03 -1.61065890134540E-03
     2   -1.38294969376236E-01 -1.62913073678337E-02 -1.31464541737858E-01  5.35848303329039E-01
     3    3.86427624200707E-02  2.84046375688973E-02  3.66872765902448E-02 -2.21326610798233E-01
@@ -396,35 +398,62 @@ OR
     }
     if (!isLast)
       return;
-   /*
- Orbital Energies, all Irreps
- ========================================
+    int nSym = htSymmetries.size();
 
- Irrep        no.  (spin)   Occup              E (au)                E (eV)
- ---------------------------------------------------------------------------
- A1            1             2.00       -0.18782651837132E+02      -511.1020
- A1            2             2.00       -0.93500325051330E+00       -25.4427
-    */
-    discardLinesUntilContains("Orbital Energies, all Irreps");
+    /*
+    Scaled ZORA Orbital Energies, per Irrep and Spin:
+    =================================================
+                      Occup              E (au)              E (eV)       Diff (eV) with prev. cycle
+                                                                          (Including levelshift (eV)
+                      -----      --------------------        ------       --------------------------
+    A
+            32        2.000     -0.74325831542570E+00       -20.225               1.82E-09
+            33        2.000     -0.45059367525444E+00       -12.261              -5.41E-10
+            34        2.000     -0.36437125017094E+00        -9.915              -3.42E-09
+            35        2.000     -0.36433628606164E+00        -9.914               1.26E-09
+            36        2.000     -0.32374039794317E+00        -8.809              -1.16E-09
+            37        2.000     -0.30337693645922E+00        -8.255              -3.54E-09
+            38        2.000     -0.30336321188240E+00        -8.255               8.49E-10
+            39        2.000     -0.30216236922833E+00        -8.222              -4.25E-09
+            40        2.000     -0.30213095951623E+00        -8.221               1.49E-09
+            41        2.000     -0.29100668702532E+00        -7.919              -1.44E-09
+            42        0.000     -0.11635248827995E+00        -3.166  (      -3.139)
+            43        0.000     -0.76614528258569E-01        -2.085  (      -2.058)
+            44        0.000     -0.25381641140969E-02        -0.069  (      -0.042)
+            45        0.000     -0.23982740441974E-02        -0.065  (      -0.038)
+            46        0.000      0.13429238347442E-01         0.365  (       0.393)
+            47        0.000      0.52569195633736E-01         1.430  (       1.458)
+            48        0.000      0.57620545273285E-01         1.568  (       1.595)
+            49        0.000      0.57659418273279E-01         1.569  (       1.596)
+            50        0.000      0.17278009002144E+00         4.702  (       4.729)
+            51        0.000      0.19150012638228E+00         5.211  (       5.238)
+     */
+    /*
+    Orbital Energies, all Irreps
+    ========================================
+
+    Irrep        no.  (spin)   Occup              E (au)                E (eV)
+    ---------------------------------------------------------------------------
+    A1            1             2.00       -0.18782651837132E+02      -511.1020
+    A1            2             2.00       -0.93500325051330E+00       -25.4427
+     */
+    discardLinesUntilContains(nSym == 1 ? "Orbital Energies, per Irrep"
+        : "Orbital Energies, all Irreps");
     readLines(4);
+    int pt = (nSym == 1 ? 0 : 1);
+    if (nSym == 1)
+      sym = readLine().trim();
     while (readLine() != null && line.length() > 10) {
+      line = line.replace('(', ' ').replace(')', ' ');
       String[] tokens = getTokens();
       int len = tokens.length;
-      sym = tokens[0];
-      int moPt = parseIntStr(tokens[1]);
+      if (nSym > 1)
+        sym = tokens[0];
+      int moPt = parseIntStr(tokens[pt]);
       // could be spin here?
-      float occ = parseFloatStr(tokens[len - 3]);
-      float energy = parseFloatStr(tokens[len - 1]); // eV
-      sd = htSymmetries.get(sym);
-      if (sd == null) {
-        for (Map.Entry<String, SymmetryData> entry : htSymmetries.entrySet()) {
-          String symfull = entry.getKey();
-          if (symfull.startsWith(sym + ":"))
-            addMo(entry.getValue(), moPt, (occ > 2 ? 2 : occ), energy);            
-        }
-      } else {
-        addMo(sd, moPt, occ, energy);
-      }
+      float occ = parseFloatStr(tokens[len - 4 + pt]);
+      float energy = parseFloatStr(tokens[len - 2 + pt]); // eV
+      addMo(sym, moPt, occ, energy);
     }
     int iAtom0 = atomSetCollection.getLastAtomSetAtomIndex();
     for (int i = 0; i < nBF; i++)
@@ -434,9 +463,19 @@ OR
     setMOs("eV");
   }
 
-  private void addMo(SymmetryData sd, int moPt, float occ, float energy) {
+  private void addMo(String sym, int moPt, float occ, float energy) {
+    SymmetryData sd = htSymmetries.get(sym);
+    if (sd == null) {
+      for (Map.Entry<String, SymmetryData> entry : htSymmetries.entrySet())
+        if (entry.getKey().startsWith(sym + ":")) {
+          sd = entry.getValue();
+          break;
+        }
+      if (sd == null)
+        return;
+    }
     Map<String, Object> mo = sd.mos[moPt - 1];
-    mo.put("occupancy", Float.valueOf(occ));
+    mo.put("occupancy", Float.valueOf(occ > 2 ? 2 : occ));
     mo.put("energy", Float.valueOf(energy)); //eV
     mo.put("symmetry", sd.sym + "_" + moPt);
     setMO(mo);

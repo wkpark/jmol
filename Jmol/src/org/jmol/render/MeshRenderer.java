@@ -213,7 +213,8 @@ public abstract class MeshRenderer extends ShapeRenderer {
       
       renderLow = (!isExport && !viewer.checkMotionRendering(T.mesh));
       frontOnly = renderLow || !viewer.getSlabEnabled() && mesh.frontOnly
-          && !mesh.isTwoSided && !selectedPolyOnly && meshSlabValue  >= 100;
+          && !mesh.isTwoSided && !selectedPolyOnly 
+          && (meshSlabValue == Integer.MIN_VALUE || meshSlabValue >= 100);
       screens = viewer.allocTempScreens(vertexCount);
       if (frontOnly)
         transformedVectors = g3d.getTransformedVertexVectors();

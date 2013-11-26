@@ -1,0 +1,33 @@
+<project name="Jmol" default="create_jsmol.zip" basedir=".">
+	
+	  <!--
+	      run buildjsmolzip.xml as step 4 in:
+	      
+1) Do all coding modifications in the Jmol and JSpecView projects. Never modify JSmol/src.
+2) Build JSpecViewLib and JSpecView if there are changes there. 
+   The JSpecView*.jar files will be copied into this project.
+3) Build JSmol using the build_01.., build_02.., build_03b.. 
+   JSmol_nojars.zip will be created and copied to this project.
+4) Use buildjsmolzip.xml to create appletweb/jsmol.zip from JSmol_nojars.zip
+
+   There is no need to re-run build.xml if no changes to Java were made. 
+	      
+	  -->
+
+  <target name="create_jsmol.zip" id="create_jsmol.zip">
+  	<echo> re-packaging appletweb/jsmol.zip with signed files</echo>  	
+  	<delete dir="build/js" />
+    <unzip dest="build/js" src="appletfiles/jsmol_nojars.zip" />
+	<copy todir="build/js/jsmol/java" >
+	  <fileset dir="build">
+	    <include name="JmolApplet*.jar" />
+	  </fileset>
+	  <fileset dir="appletfiles">
+		<include name="JSpecViewApplet*.jar" />
+	  </fileset>
+	</copy>
+    <zip zipfile="appletweb/jsmol.zip" basedir="build/js"
+         includes="**/*" />
+  </target>
+  	
+</project>

@@ -44,9 +44,10 @@ when the Jmol or JSpecView code is modified, is as follows:
 2) Build JSpecViewLib and JSpecView if there are changes there. 
    The JSpecView*.jar files will be copied into this project.
 3) Build JSmol using the build_01.., build_02.., build_03b.. 
-   JSmol_nojava.zip will be created and copied to this project.
-4) Use this build.xml to create and trusted-sign all the jar files and create appletweb/jsmol.zip
+   JSmol_nojars.zip will be created and copied to this project.
+4) Use buildjsmolzip.xml to create appletweb/jsmol.zip from JSmol_nojars.zip
 
+Note that I have had trouble with signjar ramdomly stopping. 
   -->
 	
   <!-- Contributions -->
@@ -1147,21 +1148,6 @@ all support for previous versions removed
       <param name="sign-jar-file-dir" value="build" />
       <param name="sign-jar-file-name"  value="JmolApplet*.jar" />
     </antcall>
-
-  	<echo> re-packaging appletweb/jsmol.zip with signed files</echo>  	
-  	<delete dir="build/js" />
-    <unzip dest="build/js" src="appletfiles/jsmol_nojars.zip" />
-	<copy todir="build/js/jsmol/java" >
-	  <fileset dir="build">
-	    <include name="JmolApplet*.jar" />
-	  </fileset>
-	  <fileset dir="appletfiles">
-		<include name="JSpecViewApplet*.jar" />
-	  </fileset>
-	</copy>
-    <zip zipfile="appletweb/jsmol.zip" basedir="build/js"
-         includes="**/*" />
-	
 
   </target>
 

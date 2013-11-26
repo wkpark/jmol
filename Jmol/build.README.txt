@@ -7,31 +7,36 @@ JSmol
 JSpecView
 
 - JSpecView: Jmol needs JSpecView's jar file, so if there are changes, to JSpecView, start there.
-  Copy JSpecView.jar into jmol/jars
+  The build.xml in JSpecView will copy files to Jmol (to appletfiles/ and jars/).
 
 - Jmol: update org.jmol.viewer.Jmol.properties and check it in so that it gets a new time stamp.
         Jmol.properties is also used by JSmol (along with all the Jmol java files).
 
-- JSmol: for testing, run buildfromjmol.xml, then buildtojstest.xml. This replaces ALL the files in
-         jsmol/src/org and also create jsmol/site, which you can then run test.htm in. 
-         buildtojstest.xml does not create minified files, so it is faster than buildtojs.xml.
-         
-         Test test test
-         
-- JSmol: run buildfromjmol.xml, then buildtojs.xml. This produces minified files and ultimately 
-         creates dist/jsmol.zip, copying that also to jmol/appletweb. 
+- JSmol: run:
 
-         Unzip dist/jsmol.zip and test it out, this time using jsmol.htm, which uses the minified 
-         library.
+			 build_01_fromjmol.xml
+			 build_02_fromjspecview.xml
+			 build_03a_tojstest.xml
+			 
+			 This is a fast build because it does not create the minified versions. 
+			 Test files are in site/jsmol.
+			 
+			 
+         Test test test!  (test2.htm, testjsv.htm, etc)
          
-         Test test test
-                  
+- JSmol: run:
+
+			 build_01_fromjmol.xml
+			 build_02_fromjspecview.xml
+			 build_03b_tojs.xml
+			 
+    		 This produces the minified files. Test files are in site/jsmol.
+    
+         Test test test!  (jsmol.htm, simple2.htm, supersimple.htm)
+	     
 - JSmol: Update and check in jsmol files
 
-- Jmol: Update and check in jmol files
+- Jmol: run buildjsmolzip.xml
 
-    It is at this point that I make my own ZIP files and upload them into chemapps.stolaf.edu/jmol/zip.
-    When I am creating chemapps.stolaf.edu/jmol/jsmol, I upload first as j
-         
-         
+- Jmol: Update and check in jmol files
 

@@ -326,7 +326,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
         && (isCourseGrained || atomSetCollection.getAtomCount() > 0)) {
       atomSetCollection.setAtomSetAuxiliaryInfo("biomolecules", vBiomolecules);
       Map<String, Object> ht = vBiomolecules.get(0);
-      appendLoadNote("Constructing biomolecule " + ht.get("name"));
+      appendLoadNote("Constructing " + ht.get("name"));
       setBiomolecules(ht);
       if (thisBiomolecule != null)
         atomSetCollection.applySymmetryBio(thisBiomolecule, notionalUnitCell, applySymmetryToBonds, filter);
@@ -344,57 +344,57 @@ public class CifReader extends ModulationReader implements JmolLineReader {
     if (!isBiomolecule || assemblyIdAtoms == null && chainAtomCounts == null)
       return;
     M4 mident = M4.newM(null);
-      String[] ops = PT.split((String) biomolecule.get("operators"), ",");
-      String assemblies = (String) biomolecule.get("assemblies");
-      List<M4> biomts = new List<M4>();
-      biomolecule.put("biomts", biomts);
-      biomts.addLast(mident);
-      for (int j = 0; j < ops.length; j++) {
-        M4 m = getOpMatrix(ops[j]);
-        if (m != null && !m.equals(mident))
-          biomts.addLast(m);
-      }
-      if (biomts.size() < 2)
-        return;
-      BS bsAll = new BS();
-      P3 sum = new P3();
-      int count = 0;
-      int nAtoms = 0;
-      for (int j = assemblies.length() - 1; --j >= 0;)
-        if (assemblies.charAt(j) == '$') {
-          String id = "" + assemblies.charAt(j + 1);
-          if (assemblyIdAtoms != null) {
-            BS bs = assemblyIdAtoms.get(id);
-            if (bs != null)
-              bsAll.or(bs);
-          } else if (isCourseGrained) {
-            P3 asum = chainAtomMap.get(id);
-            int c = chainAtomCounts.get(id)[0];
-            if (asum != null) {
-              if (bySymop) {
-                sum.add(asum);
-                count += c;
-              } else {
-                createParticle(id);
-                nAtoms++;
-              }
+    String[] ops = PT.split((String) biomolecule.get("operators"), ",");
+    String assemblies = (String) biomolecule.get("assemblies");
+    List<M4> biomts = new List<M4>();
+    biomolecule.put("biomts", biomts);
+    biomts.addLast(mident);
+    for (int j = 0; j < ops.length; j++) {
+      M4 m = getOpMatrix(ops[j]);
+      if (m != null && !m.equals(mident))
+        biomts.addLast(m);
+    }
+    BS bsAll = new BS();
+    P3 sum = new P3();
+    int count = 0;
+    int nAtoms = 0;
+    String[] ids = PT.split(assemblies, "$");
+    for (int j = 1; j < ids.length; j++) {
+        String id = ids[j];
+        if (assemblyIdAtoms != null) {
+          BS bs = assemblyIdAtoms.get(id);
+          if (bs != null) {
+            System.out.println(id + " " + bs.cardinality());
+            bsAll.or(bs);
+          }
+        } else if (isCourseGrained) {
+          P3 asum = chainAtomMap.get(id);
+          int c = chainAtomCounts.get(id)[0];
+          if (asum != null) {
+            if (bySymop) {
+              sum.add(asum);
+              count += c;
+            } else {
+              createParticle(id);
+              nAtoms++;
             }
           }
         }
-      if (isCourseGrained) {
-        if (bySymop) {
-          nAtoms = 1;
-          Atom a1 = new Atom();
-          a1.setT(sum);
-          a1.scale(1f / count);
-          a1.radius = 16;
-        }
-      } else {
-        nAtoms = bsAll.cardinality();
-        if (nAtoms < atomSetCollection.getAtomCount())
-          atomSetCollection.bsAtoms = bsAll;
       }
-      biomolecule.put("atomCount", Integer.valueOf(nAtoms * ops.length));
+    if (isCourseGrained) {
+      if (bySymop) {
+        nAtoms = 1;
+        Atom a1 = new Atom();
+        a1.setT(sum);
+        a1.scale(1f / count);
+        a1.radius = 16;
+      }
+    } else {
+      nAtoms = bsAll.cardinality();
+      if (nAtoms < atomSetCollection.getAtomCount())
+        atomSetCollection.bsAtoms = bsAll;
+    }
+    biomolecule.put("atomCount", Integer.valueOf(nAtoms * ops.length));
   }
 
   private void createParticle(String id) {
@@ -660,7 +660,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
       return;
     }
 
-    if (str.startsWith("_struct_site")) {
+    if (str.startsWith("_struct_site_gen")) {
       processStructSiteBlock();
       return;
     }
@@ -1006,7 +1006,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
   boolean processAtomSiteLoopBlock(boolean isLigand) throws Exception {
     int currentModelNO = -1; // PDBX
     boolean isAnisoData = false;
-    char assemblyId = '\0';
+    String assemblyId = null;
     parseLoopParameters(atomFields);
     if (fieldOf[CHEM_COMP_AC_X_IDEAL] != NONE) {
       isPDB = false;
@@ -1038,7 +1038,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
     int siteMult = 0;
     while (tokenizer.getData()) {
       Atom atom = new Atom();
-      assemblyId = '\0';
+      assemblyId = null;
       if (isPDBX) {
         if (modelField == -1) {
           for (int i = 0; i < tokenizer.fieldCount; ++i)
@@ -1150,7 +1150,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
           atom.group3 = field;
           break;
         case ASYM_ID:
-          assemblyId = firstChar;
+          assemblyId = field;
           break;
         case AUTH_ASYM_ID:
           atom.chainID = viewer.getChainID(field);
@@ -1273,13 +1273,12 @@ public class CifReader extends ModulationReader implements JmolLineReader {
         continue;
       }
       if (isBiomolecule && isCourseGrained) {
-        String id = "" + assemblyId;
-        P3 sum = chainAtomMap.get(id);
+        P3 sum = chainAtomMap.get(assemblyId);
         if (sum == null) {
-          chainAtomMap.put(id, sum = new P3());
-          chainAtomCounts.put(id, new int[1]);
+          chainAtomMap.put(assemblyId, sum = new P3());
+          chainAtomCounts.put(assemblyId, new int[1]);
         }
-        chainAtomCounts.get(id)[0]++;
+        chainAtomCounts.get(assemblyId)[0]++;
         sum.add(atom);
         continue;
       }
@@ -1291,12 +1290,12 @@ public class CifReader extends ModulationReader implements JmolLineReader {
         atom.elementSymbol = (pt == 0 || pt > 2 ? "Xx" : sym.substring(0, pt));
       }
       atomSetCollection.addAtomWithMappedName(atom);
-      if (assemblyId != '\0') {
+      if (assemblyId != null) {
         if (assemblyIdAtoms == null)
           assemblyIdAtoms = new Hashtable<String, BS>();
-        BS bs = assemblyIdAtoms.get("" + assemblyId);
+        BS bs = assemblyIdAtoms.get(assemblyId);
         if (bs == null)
-          assemblyIdAtoms.put("" + assemblyId, bs = new BS());
+          assemblyIdAtoms.put(assemblyId, bs = new BS());
         bs.set(atom.index);
       }
       if (atom.isHetero && htHetero != null) {
@@ -1319,10 +1318,10 @@ public class CifReader extends ModulationReader implements JmolLineReader {
     return true;
   }
      
-  protected boolean filterCIFAtom(Atom atom, int iAtom, char assemblyId) {
+  protected boolean filterCIFAtom(Atom atom, int iAtom, String assemblyId) {
     if (!filterAtom(atom, iAtom))
       return false;
-    if (filterAssembly && filterReject(filter, "$", "" + assemblyId))
+    if (filterAssembly && filterReject(filter, "$", assemblyId))
       return false;
     if (configurationPtr > 0) {
       if (!disorderAssembly.equals(lastDisorderAssembly)) {
@@ -1730,7 +1729,7 @@ _pdbx_struct_oper_list.vector[3]
     parseLoopParameters(structConfFields);
     for (int i = propertyCount; --i >= 0;)
       if (fieldOf[i] == NONE) {
-        Logger.warn("?que? missing _struct_conf property:" + i);
+        Logger.warn("?que? missing property: " + structConfFields[i]);
         skipLoop();
         return;
       }
@@ -1808,7 +1807,7 @@ _pdbx_struct_oper_list.vector[3]
     parseLoopParameters(structSheetRangeFields);
     for (int i = propertyCount; --i >= 0;)
       if (fieldOf[i] == NONE) {
-        Logger.warn("?que? missing _struct_conf property:" + i);
+        Logger.warn("?que? missing property:" + structSheetRangeFields[i]);
         skipLoop();
         return;
       }
@@ -1894,7 +1893,7 @@ _pdbx_struct_oper_list.vector[3]
     parseLoopParameters(structSiteRangeFields);
     for (int i = 3; --i >= 0;)
       if (fieldOf[i] == NONE) {
-        Logger.warn("?que? missing _struct_site property:" + i);
+        Logger.warn("?que? missing property: " + structSiteRangeFields[i]);
         skipLoop();
         return;
       }
@@ -2037,7 +2036,7 @@ _pdbx_struct_oper_list.vector[3]
     parseLoopParameters(chemCompBondFields);
     for (int i = propertyCount; --i >= 0;)
       if (fieldOf[i] == NONE) {
-        Logger.warn("?que? missing _chem_comp_bond property:" + i);
+        Logger.warn("?que? missing property: " + chemCompBondFields[i]);
         skipLoop();
         return;
       }
@@ -2124,7 +2123,7 @@ _pdbx_struct_oper_list.vector[3]
     parseLoopParameters(geomBondFields);
     for (int i = propertyCount; --i >= 0;)
       if (propertyOf[i] != CCDC_GEOM_BOND_TYPE && fieldOf[i] == NONE) {
-        Logger.warn("?que? missing _geom_bond property:" + i);
+        Logger.warn("?que? missing property: " + geomBondFields[i]);
         skipLoop();
         return;
       }

@@ -569,10 +569,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         } else if (lineNumbers[i] == 0 || lineNumbers[i] > lineNumbers[pc]) {
           break;
         }
-      if (pt1 == script.length() - 1 && script.endsWith("}"))
+      String s = script;
+      if (s.indexOf('\1') >= 0)
+        s = s.substring(0,  s.indexOf('\1'));
+      if (pt1 == s.length() - 1 && s.endsWith("}"))
         pt1++;
-      return (pt0 == script.length() || pt1 < pt0 ? "" : script.substring(Math
-          .max(pt0, 0), Math.min(script.length(), pt1)));
+      return (pt0 == s.length() || pt1 < pt0 ? "" : s.substring(Math
+          .max(pt0, 0), Math.min(s.length(), pt1)));
     }
     int ichBegin = lineIndices[pc][0];
     int ichEnd = lineIndices[pc][1];
@@ -5202,17 +5205,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    */
   public boolean dispatchCommands(boolean isSpt, boolean fromFunc)
       throws ScriptException {
-    long timeBegin = 0;
     if (sm == null)
       sm = viewer.getShapeManager();
     debugScript = logMessages = false;
     if (!chk)
       setDebugging();
-    if (logMessages) {
-      timeBegin = System.currentTimeMillis();
-      viewer.scriptStatus("Eval.dispatchCommands():" + timeBegin);
-      viewer.scriptStatus(script);
-    }
     if (pcEnd == 0)
       pcEnd = Integer.MAX_VALUE;
     if (lineEnd == 0)
@@ -5258,6 +5255,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         break;
       if (lineNumbers[pc] > lineEnd)
         break;
+      if (logMessages) {
+        long timeBegin = 0;
+        timeBegin = System.currentTimeMillis();
+        viewer.scriptStatus("Eval.dispatchCommands():" + timeBegin);
+        viewer.scriptStatus(script);
+      }
+
       if (debugScript && !chk)
         Logger.info("Command " + pc);
       theToken = (aatoken[pc].length == 0 ? null : aatoken[pc][0]);

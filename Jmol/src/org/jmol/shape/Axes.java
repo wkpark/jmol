@@ -118,19 +118,20 @@ public class Axes extends FontLineShape {
         && modelSet.unitCells != null) {
       SymmetryInterface unitcell = viewer.getCurrentUnitCell();
       if (unitcell != null) {
-        P3[] vectors = unitcell.getUnitCellVertices();
+        P3[] vertices = unitcell.getUnitCellVertices();
         P3 offset = unitcell.getCartesianOffset();
         if (fixedOrigin == null) {
           originPoint.setT(offset);
+          originPoint.add(vertices[0]);
         } else {
           offset = fixedOrigin;
         }
         scale = viewer.getFloat(T.axesscale) / 2f;
         // We must divide by 2 because that is the default for ALL axis types.
         // Not great, but it will have to do.
-        axisPoints[0].scaleAdd2(scale, vectors[4], offset);
-        axisPoints[1].scaleAdd2(scale, vectors[2], offset);
-        axisPoints[2].scaleAdd2(scale, vectors[1], offset);
+        axisPoints[0].scaleAdd2(scale, vertices[4], offset);
+        axisPoints[1].scaleAdd2(scale, vertices[2], offset);
+        axisPoints[2].scaleAdd2(scale, vertices[1], offset);
         return;
       }
     } else if (axesMode == EnumAxesMode.BOUNDBOX) {

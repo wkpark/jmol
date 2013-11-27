@@ -929,8 +929,10 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         }
       } else {
         addTokenToPrefix(T.o(T.string, str));
-        if (implicitString)
+        if (implicitString) {
+          ichEnd = ichToken + cchToken;
           isEndOfCommand = true;
+        }
       }
       return CONTINUE;
     }

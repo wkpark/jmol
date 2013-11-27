@@ -80,7 +80,7 @@ public class Mouse implements GenericMouseInterface {
       modifiers = applyLeftMouse(modifiers);
     switch (id) {
     case -1: // JavaScript
-      wheeled(time, x, modifiers | Event.MOUSE_WHEEL);
+      wheeled(time, x, modifiers);
       break;
     case Event.MOUSE_DOWN:
       xWhenPressed = x;
@@ -180,19 +180,23 @@ public class Mouse implements GenericMouseInterface {
   }
 
   public void mouseEntered(MouseEvent e) {
+    wheeling = false;
     entered(e.getWhen(), e.getX(), e.getY());
   }
 
   public void mouseExited(MouseEvent e) {
+    wheeling = false;
     exited(e.getWhen(), e.getX(), e.getY());
   }
 
   public void mousePressed(MouseEvent e) {
+    wheeling = false;
     pressed(e.getWhen(), e.getX(), e.getY(), e.getModifiers(), e
         .isPopupTrigger());
   }
 
   public void mouseReleased(MouseEvent e) {
+    wheeling = false;
     released(e.getWhen(), e.getX(), e.getY(), e.getModifiers());
   }
 
@@ -214,8 +218,7 @@ public class Mouse implements GenericMouseInterface {
 
   public void mouseWheelMoved(MouseWheelEvent e) {
     e.consume();
-    wheeled(e.getWhen(), e.getWheelRotation(), e.getModifiers()
-        | Event.MOUSE_WHEEL);
+    wheeled(e.getWhen(), e.getWheelRotation(), e.getModifiers());
   }
 
   public void keyTyped(KeyEvent ke) {
@@ -353,6 +356,7 @@ public class Mouse implements GenericMouseInterface {
   }
 
   private boolean isMouseDown; // Macintosh may not recognize CTRL-SHIFT-LEFT as drag, only move
+  private boolean wheeling;
   
   private void moved(long time, int x, int y, int modifiers) {
     clearKeyBuffer();
@@ -364,7 +368,9 @@ public class Mouse implements GenericMouseInterface {
 
   private void wheeled(long time, int rotation, int modifiers) {
     clearKeyBuffer();
-    manager.mouseAction(Event.WHEELED, time, 0, rotation, 0, modifiers);
+    wheeling = true;
+    manager.mouseAction(Event.WHEELED, time, 0, rotation, 0, 
+        modifiers & ~Event.BUTTON_MASK | Event.MOUSE_WHEEL);
   }
 
   /**
@@ -388,6 +394,8 @@ public class Mouse implements GenericMouseInterface {
   }
 
   private void dragged(long time, int x, int y, int modifiers) {
+    if (wheeling)
+      return;
     if ((modifiers & Event.MAC_COMMAND) == Event.MAC_COMMAND)
       modifiers = modifiers & ~Event.MOUSE_RIGHT | Event.CTRL_MASK; 
     manager.mouseAction(Event.DRAGGED, time, x, y, 0, modifiers);

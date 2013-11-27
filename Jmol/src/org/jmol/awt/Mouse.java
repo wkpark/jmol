@@ -175,8 +175,7 @@ class Mouse implements MouseWheelListener, MouseListener,
   @Override
   public void mouseWheelMoved(MouseWheelEvent e) {
     e.consume();
-    mouseWheel(e.getWhen(), e.getWheelRotation(), 
-        (e.getModifiers() & ~Event.MOUSE_MIDDLE) | Event.MOUSE_WHEEL);
+    mouseWheel(e.getWhen(), e.getWheelRotation(), e.getModifiers());
   }
 
   @Override
@@ -344,7 +343,8 @@ class Mouse implements MouseWheelListener, MouseListener,
   private void mouseWheel(long time, int rotation, int modifiers) {
     clearKeyBuffer();
     wheeling = true;
-    manager.mouseAction(Event.WHEELED, time, 0, rotation, 0, modifiers);
+    manager.mouseAction(Event.WHEELED, time, 0, rotation, 0, 
+        modifiers & ~Event.MOUSE_MIDDLE | Event.MOUSE_WHEEL);
   }
 
   /**

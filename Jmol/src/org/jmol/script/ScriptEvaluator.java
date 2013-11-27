@@ -5243,9 +5243,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     List<T[]> vProcess = null;
     long lastTime = System.currentTimeMillis();
     for (; pc < aatoken.length && pc < pcEnd; pc++) {
-      if (!chk && isJS && allowJSThreads && !fromFunc) {
-        // every 100-ms check for interruptions
-        if (!executionPaused && System.currentTimeMillis() - lastTime > 100) {
+      if (!chk && isJS && useThreads() && !fromFunc) {
+        // every 1 s check for interruptions
+        if (!executionPaused && System.currentTimeMillis() - lastTime > 1000) {
           pc--;
           doDelay(-1);
         }

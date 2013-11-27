@@ -41,7 +41,6 @@ import javajs.util.SB;
 import javajs.util.P3;
 
 import org.jmol.viewer.Viewer;
-import org.jmol.viewer.StateManager.Orientation;
 
 public class Model {
 

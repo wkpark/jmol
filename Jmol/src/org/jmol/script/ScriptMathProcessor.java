@@ -27,7 +27,6 @@ import javajs.util.AU;
 import javajs.util.List;
 import java.util.Arrays;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Set;
 

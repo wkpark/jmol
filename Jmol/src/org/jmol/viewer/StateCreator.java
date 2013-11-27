@@ -34,6 +34,7 @@ import java.util.Hashtable;
 
 import java.util.Map;
 
+import org.jmol.api.JmolModulationSet;
 import org.jmol.api.JmolScriptFunction;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.constant.EnumPalette;
@@ -49,9 +50,9 @@ import org.jmol.modelset.Group;
 import org.jmol.modelset.Measurement;
 import org.jmol.modelset.Model;
 import org.jmol.modelset.ModelSet;
+import org.jmol.modelset.StateScript;
 import org.jmol.modelset.Text;
 import org.jmol.modelset.TickInfo;
-import org.jmol.modelset.ModelCollection.StateScript;
 import org.jmol.script.SV;
 import org.jmol.script.T;
 import org.jmol.shape.AtomShape;
@@ -69,10 +70,8 @@ import org.jmol.util.Escape;
 import org.jmol.util.GData;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
-import org.jmol.util.ModulationSet;
 import javajs.util.P3;
 import javajs.util.V3;
-import org.jmol.viewer.StateManager.GlobalSettings;
 
 /**
  * StateCreator handles all aspects of working with the "state" as
@@ -128,7 +127,7 @@ public class StateCreator extends JmolStateCreator {
       s.append("\n");
     }
 
-    StateManager.GlobalSettings global = viewer.global;
+    GlobalSettings global = viewer.global;
     // window state
     if (isAll || type.equalsIgnoreCase("windowState"))
       s.append(getWindowState(sfunc, width, height));
@@ -378,8 +377,8 @@ public class StateCreator extends JmolStateCreator {
           for (int i = modelCount; --i >= 0;) {
             if ((ivib = viewer.modelGetLastVibrationIndex(i, T.modulation)) >= 0)
               for (int j = models[i].firstAtomIndex; j <= ivib; j++) {
-                ModulationSet mset = (ModulationSet) viewer.getVibration(j);
-                if (mset != null && mset.enabled) {
+                JmolModulationSet mset = (JmolModulationSet) viewer.getVibration(j);
+                if (mset != null && mset.isEnabled()) {
                   BSUtil.setMapBitSet(temp, j, j, mset.getState());
                 }
               }
@@ -621,7 +620,7 @@ public class StateCreator extends JmolStateCreator {
     return commands.toString();
   }
 
-  private String getVariableState(StateManager.GlobalSettings global, SB sfunc) {
+  private String getVariableState(GlobalSettings global, SB sfunc) {
     String[] list = new String[global.htBooleanParameterFlags.size()
         + global.htNonbooleanParameterValues.size()];
     SB commands = new SB();
@@ -633,11 +632,11 @@ public class StateCreator extends JmolStateCreator {
     int n = 0;
     //booleans
     for (String key : global.htBooleanParameterFlags.keySet())
-      if (StateManager.doReportProperty(key))
+      if (GlobalSettings.doReportProperty(key))
         list[n++] = "set " + key + " "
             + global.htBooleanParameterFlags.get(key);
     for (String key : global.htNonbooleanParameterValues.keySet())
-      if (StateManager.doReportProperty(key)) {
+      if (GlobalSettings.doReportProperty(key)) {
         Object value = global.htNonbooleanParameterValues.get(key);
         if (key.charAt(0) == '=') {
           //save as =xxxx if you don't want "set" to be there first

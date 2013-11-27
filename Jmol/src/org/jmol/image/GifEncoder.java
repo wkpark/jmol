@@ -103,7 +103,7 @@ public class GifEncoder extends ImageEncoder {
   private Map<Integer, AdaptiveColorCollection> colorMap;
   protected int[] red, green, blue;
 
-  static class ColorItem {
+  private class ColorItem {
 
     AdaptiveColorCollection acc;
     int rgb;
@@ -115,13 +115,14 @@ public class GifEncoder extends ImageEncoder {
     }
   }
 
-  static class ColorVector extends List<ColorItem> {
+  protected class ColorVector extends List<ColorItem> {
+
     void sort() {
       CountComparator comparator = new CountComparator();
       Collections.sort(this, comparator);
     }
 
-    static class CountComparator implements Comparator<ColorItem> {
+    protected class CountComparator implements Comparator<ColorItem> {
       @Override
       public int compare(ColorItem a, ColorItem b) {
         return (a == null ? 1 : b == null ? -1 : a.count < b.count ? -1
@@ -130,8 +131,8 @@ public class GifEncoder extends ImageEncoder {
     }
   }
 
-  class AdaptiveColorCollection {
-    protected int rgb;
+  private class AdaptiveColorCollection {
+    //int rgb;
     protected int index;
     // counts here are counts of color occurances for this grouped set.
     // ints here allow for 2147483647/0x100 = count of 8388607 for THIS average color, which should be fine.
@@ -141,7 +142,7 @@ public class GifEncoder extends ImageEncoder {
     private int count;
 
     AdaptiveColorCollection(int rgb, int index) {
-      this.rgb = rgb;
+      //this.rgb = rgb;
       this.index = index;
       if (rgb >= 0)
         transparentIndex = index;

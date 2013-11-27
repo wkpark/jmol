@@ -46,14 +46,14 @@ class Platform3D {
   Object offscreenImage;
   Object graphicsForTextOrImage;
   
-  final static boolean desireClearingThread = false;
-  boolean useClearingThread = false;
+  //final static boolean desireClearingThread = false;
+  //boolean useClearingThread = false;
 
-  private ClearingThread clearingThread;
+  //private ClearingThread clearingThread;
   GenericPlatform apiPlatform;
 
   Platform3D(GenericPlatform apiPlatform) {
-    initialize(desireClearingThread);
+    //initialize(desireClearingThread);
     this.apiPlatform = apiPlatform;
   }
   
@@ -61,14 +61,14 @@ class Platform3D {
     return apiPlatform.getGraphics(allocateOffscreenImage(1, 1));
   }
   
-  final void initialize(boolean useClearingThread) {
-    this.useClearingThread = useClearingThread;
-    if (useClearingThread) {
-      //Logger.debug("using ClearingThread");
-      clearingThread = new ClearingThread();
-      clearingThread.start();
-    }
-  }
+//  final void initialize(boolean useClearingThread) {
+//    this.useClearingThread = useClearingThread;
+//    if (useClearingThread) {
+//      //Logger.debug("using ClearingThread");
+//      clearingThread = new ClearingThread();
+//      clearingThread.start();
+//    }
+//  }
 
   void allocateTBuffers(boolean antialiasTranslucent) {
     bufferSizeT = (antialiasTranslucent ? bufferSize : windowSize);
@@ -145,16 +145,16 @@ class Platform3D {
   }
   
   final void clearBuffer() {
-    if (useClearingThread) {
-      clearingThread.clearClientBuffer();
-    } else {
+    //if (useClearingThread) {
+    //  clearingThread.clearClientBuffer();
+    //} else {
       clearScreenBuffer();
-    }
+    //}
   }
 
   final void clearScreenBufferThreaded() {
-    if (useClearingThread)
-      clearingThread.releaseBufferForClearing();
+//    if (useClearingThread)
+//      clearingThread.releaseBufferForClearing();
   }
   
   void notifyEndOfRendering() {
@@ -185,62 +185,62 @@ class Platform3D {
     backgroundTransparent = tf;
   }
 
-  class ClearingThread extends Thread {
-
-
-    boolean bufferHasBeenCleared = false;
-    boolean clientHasBuffer = false;
-
-    /**
-     * 
-     * @param argbBackground
-     */
-    synchronized void notifyBackgroundChange(int argbBackground) {
-      //Logger.debug("notifyBackgroundChange");
-      bufferHasBeenCleared = false;
-      notify();
-      // for now do nothing
-    }
-
-    synchronized void clearClientBuffer() {
-      //Logger.debug("obtainBufferForClient()");
-      while (! bufferHasBeenCleared)
-        try { wait(); } catch (InterruptedException ie) {}
-      clientHasBuffer = true;
-    }
-
-    synchronized void releaseBufferForClearing() {
-      //Logger.debug("releaseBufferForClearing()");
-      clientHasBuffer = false;
-      bufferHasBeenCleared = false;
-      notify();
-    }
-
-    synchronized void waitForClientRelease() {
-      //Logger.debug("waitForClientRelease()");
-      while (clientHasBuffer || bufferHasBeenCleared)
-        try { wait(); } catch (InterruptedException ie) {}
-    }
-
-    synchronized void notifyBufferReady() {
-      //Logger.debug("notifyBufferReady()");
-      bufferHasBeenCleared = true;
-      notify();
-    }
-
-    @Override
-    public void run() {
-      /*
-      Logger.debug("running clearing thread:" +
-                         Thread.currentThread().getPriority());
-      */
-      while (true) {
-        waitForClientRelease();
-        clearScreenBuffer();
-        notifyBufferReady();
-      }
-    }
-  }
+//  class ClearingThread extends Thread {
+//
+//
+//    boolean bufferHasBeenCleared = false;
+//    boolean clientHasBuffer = false;
+//
+//    /**
+//     * 
+//     * @param argbBackground
+//     */
+//    synchronized void notifyBackgroundChange(int argbBackground) {
+//      //Logger.debug("notifyBackgroundChange");
+//      bufferHasBeenCleared = false;
+//      notify();
+//      // for now do nothing
+//    }
+//
+//    synchronized void clearClientBuffer() {
+//      //Logger.debug("obtainBufferForClient()");
+//      while (! bufferHasBeenCleared)
+//        try { wait(); } catch (InterruptedException ie) {}
+//      clientHasBuffer = true;
+//    }
+//
+//    synchronized void releaseBufferForClearing() {
+//      //Logger.debug("releaseBufferForClearing()");
+//      clientHasBuffer = false;
+//      bufferHasBeenCleared = false;
+//      notify();
+//    }
+//
+//    synchronized void waitForClientRelease() {
+//      //Logger.debug("waitForClientRelease()");
+//      while (clientHasBuffer || bufferHasBeenCleared)
+//        try { wait(); } catch (InterruptedException ie) {}
+//    }
+//
+//    synchronized void notifyBufferReady() {
+//      //Logger.debug("notifyBufferReady()");
+//      bufferHasBeenCleared = true;
+//      notify();
+//    }
+//
+//    @Override
+//    public void run() {
+//      /*
+//      Logger.debug("running clearing thread:" +
+//                         Thread.currentThread().getPriority());
+//      */
+//      while (true) {
+//        waitForClientRelease();
+//        clearScreenBuffer();
+//        notifyBufferReady();
+//      }
+//    }
+//  }
 
   private static boolean backgroundTransparent = false;
   

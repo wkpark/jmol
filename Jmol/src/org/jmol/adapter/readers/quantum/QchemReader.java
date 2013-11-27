@@ -708,7 +708,7 @@ $end
   // inner class moInfo for storing occupancy and symmetry info from the
   // orbital energies and symmetrys block
   protected class MOInfo {
-    int ne = 0;      // 0 or 1
-    String moSymmetry = "";
+    protected int ne = 0;      // 0 or 1
+    protected String moSymmetry = "";
   }
 }

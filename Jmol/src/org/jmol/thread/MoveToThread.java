@@ -243,7 +243,7 @@ public class MoveToThread extends JmolThread {
     super.interrupt();
   }
  
-  class Slider{
+  private class Slider{
     float start;
     float delta;
     float value;

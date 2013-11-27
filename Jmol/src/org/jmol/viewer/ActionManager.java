@@ -176,7 +176,7 @@ public class ActionManager implements EventManager {
 
   protected Gesture dragGesture = new Gesture(20);
 
-  protected class Gesture {
+  public class Gesture {
     private int action;
     MotionPoint[] nodes;
     private int ptNext;
@@ -194,11 +194,6 @@ public class ActionManager implements EventManager {
       time0 = time;
       for (int i = 0; i < nodes.length; i++)
         nodes[i].index = -1;
-    }
-
-    int getAction() {
-      // never used -- informational only?
-      return action;
     }
 
     int add(int action, int x, int y, long time) {

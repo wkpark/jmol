@@ -433,7 +433,7 @@ public class ShapeManager {
   }
 
   public int[] transformAtoms() {
-    Vibration[] vibrationVectors = modelSet.vibrations;
+    Object[] vibrationVectors = modelSet.vibrations;
     Atom[] atoms = modelSet.atoms;
     for (int i = bsRenderableAtoms.nextSetBit(0); i >= 0; i = bsRenderableAtoms.nextSetBit(i + 1)) {
       // note that this vibration business is not compatible with
@@ -441,7 +441,7 @@ public class ShapeManager {
       // use Cartesian coordinates, not screen coordinates
       Atom atom = atoms[i];
       P3i screen = (vibrationVectors != null && atom.hasVibration() ? viewer
-          .transformPtVib(atom, vibrationVectors[i])
+          .transformPtVib(atom, (Vibration) vibrationVectors[i])
           : viewer.transformPt(atom));
       atom.screenX = screen.x;
       atom.screenY = screen.y;

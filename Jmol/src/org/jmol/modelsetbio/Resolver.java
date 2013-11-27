@@ -344,7 +344,7 @@ public final class Resolver implements JmolBioResolver {
     return bondInfo;
   }
   
-  class BondSorter implements Comparator<String[]>{
+  protected class BondSorter implements Comparator<String[]>{
     @Override
     public int compare(String[] a, String[] b) {
       return (b == null ? (a == null ? 0 : -1) : a == null ? 1 : a[0]

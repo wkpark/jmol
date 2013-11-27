@@ -34,7 +34,6 @@ import javajs.util.P3;
 
 import org.jmol.java.BS;
 
-import org.jmol.smiles.SmilesSearch.VTemp;
 
 import org.jmol.util.BSUtil;
 import org.jmol.util.Elements;

@@ -1721,18 +1721,6 @@ public class SmilesSearch extends JmolMolecule {
     }
     return map;
   }
-  static class VTemp {
-    final V3 vTemp = new V3();
-    final V3 vA = new V3();
-    final V3 vB = new V3();
-    final V3 vTemp1 = new V3();
-    final V3 vTemp2 = new V3();
-    final V3 vNorm1 = new V3();
-    final V3 vNorm2 = new V3();
-    final V3 vNorm3 = new V3();
-    final BS bsTemp = new BS();
-  }
-  
   VTemp v = new VTemp();
   
   static boolean isDiaxial(JmolNode atomA, JmolNode atomB, JmolNode atom1, JmolNode atom2, VTemp v, float f) {

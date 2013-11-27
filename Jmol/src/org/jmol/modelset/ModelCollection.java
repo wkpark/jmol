@@ -30,6 +30,7 @@ import javajs.util.OC;
 import javajs.util.List;
 import javajs.util.PT;
 import javajs.util.SB;
+import javajs.util.T3;
 
 import java.util.Date;
 import java.util.Enumeration;
@@ -42,6 +43,7 @@ import java.util.Properties;
 
 import org.jmol.api.AtomIndexIterator;
 import org.jmol.api.Interface;
+import org.jmol.api.JmolModulationSet;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.api.Triangulator;
 import org.jmol.atomdata.AtomData;
@@ -56,7 +58,6 @@ import org.jmol.util.Escape;
 
 import org.jmol.util.BoxInfo;
 import org.jmol.util.Elements;
-import org.jmol.util.ModulationSet;
 import javajs.util.P3;
 import javajs.util.P4;
 
@@ -75,7 +76,6 @@ import org.jmol.io.XmlUtil;
 import org.jmol.java.BS;
 import org.jmol.script.T;
 import org.jmol.viewer.Viewer;
-import org.jmol.viewer.StateManager.Orientation;
 
 abstract public class ModelCollection extends BondCollection {
 
@@ -573,77 +573,6 @@ abstract public class ModelCollection extends BondCollection {
       stateScripts.addLast(stateScript);
     }
     return stateScript;
-  }
-
-  public static class StateScript {
-    private int modelIndex;
-    private BS bsBonds;
-    private BS bsAtoms1;
-    private BS bsAtoms2;
-    private String script1;
-    private String script2;
-    public boolean inDefinedStateBlock;
-
-    StateScript(int modelIndex, String script1, BS bsBonds,
-        BS bsAtoms1, BS bsAtoms2, String script2,
-        boolean inDefinedStateBlock) {
-      this.modelIndex = modelIndex;
-      this.script1 = script1;
-      this.bsBonds = BSUtil.copy(bsBonds);
-      this.bsAtoms1 = BSUtil.copy(bsAtoms1);
-      this.bsAtoms2 = BSUtil.copy(bsAtoms2);
-      this.script2 = script2;
-      this.inDefinedStateBlock = inDefinedStateBlock;
-    }
-
-    public boolean isValid() {
-      return script1 != null && script1.length() > 0
-          && (bsBonds == null || bsBonds.nextSetBit(0) >= 0)
-          && (bsAtoms1 == null || bsAtoms1.nextSetBit(0) >= 0)
-          && (bsAtoms2 == null || bsAtoms2.nextSetBit(0) >= 0);
-    }
-
-    @Override
-    public String toString() {
-      if (!isValid())
-        return "";
-      
-      SB sb = SB.newS(script1);
-      if (bsBonds != null)
-        sb.append(" ").append(Escape.eBond(bsBonds));
-      if (bsAtoms1 != null)
-        sb.append(" ").append(Escape.eBS(bsAtoms1));
-      if (bsAtoms2 != null)
-        sb.append(" ").append(Escape.eBS(bsAtoms2));
-      if (script2 != null)
-        sb.append(" ").append(script2);
-      String s = sb.toString();
-      if (!s.endsWith(";"))
-        s += ";";
-      return s;
-    }
-
-    public boolean isConnect() {
-      return (script1.indexOf("connect") >= 0);
-    }
-
-    public boolean deleteAtoms(int modelIndex, BS bsBonds, BS bsAtoms) {
-      //false return means delete this script
-      if (modelIndex == this.modelIndex)
-        return false;
-      if (modelIndex > this.modelIndex) {
-        //        this.modelIndex--;
-        return true;
-      }
-      BSUtil.deleteBits(this.bsBonds, bsBonds);
-      BSUtil.deleteBits(this.bsAtoms1, bsAtoms);
-      BSUtil.deleteBits(this.bsAtoms2, bsAtoms);
-      return isValid();
-    }
-
-    public void setModelIndex(int index) {
-      modelIndex = index; // for creating data frames 
-    }
   }
 
   /**
@@ -1523,7 +1452,7 @@ abstract public class ModelCollection extends BondCollection {
         if ((modelIndex < 0 || atoms[i].modelIndex == modelIndex)
             && vibrations[i] != null
             && vibrations[i].length() > 0
-            && (tok == 0 || (tok == T.modulation) == (vibrations[i] instanceof ModulationSet)))
+            && (tok == 0 || (tok == T.modulation) == (vibrations[i] instanceof JmolModulationSet)))
           return i;
     return -1;
   }
@@ -3467,37 +3396,37 @@ abstract public class ModelCollection extends BondCollection {
     //System.out.println("setModulation " + isOn + " " + t);
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       Vibration v = getVibration(i, false);
-      if (!(v instanceof ModulationSet))
+      if (!(v instanceof JmolModulationSet))
         continue;
-      ModulationSet ms = (ModulationSet) v;
+      JmolModulationSet ms = (JmolModulationSet) v;
       Atom a = atoms[i];
-      boolean wasEnabled = ms.enabled;
+      boolean wasEnabled = ms.isEnabled();
       //System.out.println(a.x + " " + a.y + " " + a.z + " ms was " + ms + " " + wasEnabled + " " + ms.t);
       switch (ms.setModT(isOn, t)) {
       case 0:
         continue;
       case 1: // now off
       case 2: // now on
-        a.sub(ms);
+        a.sub((T3) ms);
         break;
       case 3: // new t
         // will turn on modulation
         // must convert to Cartesians
-        getUnitCell(a.modelIndex).toCartesian(ms, true);
+        getUnitCell(a.modelIndex).toCartesian((T3) ms, true);
         //System.out.println("ms now1 " + ms + " " + ms.enabled + " " + ms.t);
         if (wasEnabled)
-          a.add(ms.prevSetting);
+          a.add(ms.getPrevSetting());
         ms.setModT(true, Integer.MAX_VALUE);
-        a.sub(ms);
+        a.sub((T3) ms);
         //System.out.println(a.x + " " + a.y + " " + a.z + " ms now " + ms + " " + ms.enabled + " " + ms.t);
         break;
       case 4: // unchanged t
         ms.setModT(true, Integer.MAX_VALUE);
         if (!wasEnabled)
-          a.sub(ms);
+          a.sub((T3) ms);
         break;
       }
-      bsModulated.setBitTo(i, ms.enabled);
+      bsModulated.setBitTo(i, ms.isEnabled());
       //System.out.println(a.x + " " + a.y + " " + a.z + " ms is " + ms + " " + ms.enabled + " " + ms.t);
     }
   }

@@ -5,7 +5,6 @@ import org.jmol.util.MeshSurface;
 
 import javajs.util.AU;
 import javajs.util.P3;
-import javajs.util.T3;
 import javajs.util.V3;
 
 /**
@@ -16,55 +15,55 @@ import javajs.util.V3;
  */
 class MeshData {
 
-  /**
-   * This internal class is a container for the return values of the getXxxData
-   * methods.
-   */
-  static class Data {
-    private int[][] faces;
-    private T3[] normals;
-    private int nVertices;
-    private int nNormals;
-
-    /**
-     * Constructor.
-     * 
-     * @param faces
-     * @param vertexes
-     * @param nVertices TODO
-     * @param normals
-     * @param nNormals TODO
-     */
-
-    /**
-     * @return The faces.
-     */
-    int[][] getFaces() {
-      return faces;
-    }
-
-    /**
-     * @return vertex count
-     */
-    int getVertexCount() {
-      return nVertices;
-    }
-    
-    /**
-     * @return vertex count
-     */
-    int getNormalCount() {
-      return nNormals;
-    }
-    
-
-    /**
-     * @return The normals.
-     */
-    T3[] getNormals() {
-      return normals;
-    }
-  }
+//  /**
+//   * This internal class is a container for the return values of the getXxxData
+//   * methods.
+//   */
+//  static class Data {
+//    private int[][] faces;
+//    private T3[] normals;
+//    private int nVertices;
+//    private int nNormals;
+//
+//    /**
+//     * Constructor.
+//     * 
+//     * @param faces
+//     * @param vertexes
+//     * @param nVertices TODO
+//     * @param normals
+//     * @param nNormals TODO
+//     */
+//
+//    /**
+//     * @return The faces.
+//     */
+//    int[][] getFaces() {
+//      return faces;
+//    }
+//
+//    /**
+//     * @return vertex count
+//     */
+//    int getVertexCount() {
+//      return nVertices;
+//    }
+//    
+//    /**
+//     * @return vertex count
+//     */
+//    int getNormalCount() {
+//      return nNormals;
+//    }
+//    
+//
+//    /**
+//     * @return The normals.
+//     */
+//    T3[] getNormals() {
+//      return normals;
+//    }
+//  }
 
   /**
    * Calculates the data (faces, vertices, normals) for a circle.

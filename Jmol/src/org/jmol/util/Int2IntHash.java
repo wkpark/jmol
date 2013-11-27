@@ -77,10 +77,10 @@ public class Int2IntHash {
     entries = newEntries;
   }
 
-  static class Entry {
-    int key;
-    int value;
-    Entry next;
+  private class Entry {
+    protected int key;
+    protected int value;
+    protected Entry next;
     
     Entry(int key, int value, Entry next) {
       this.key = key;

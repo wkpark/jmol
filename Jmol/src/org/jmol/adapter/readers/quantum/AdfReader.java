@@ -28,11 +28,9 @@ import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.JmolAdapter;
 import org.jmol.quantum.SlaterData;
 import org.jmol.util.Logger;
-//import org.jmol.util.Escape;
 
 import javajs.util.AU;
 import javajs.util.List;
-import javajs.util.PT;
 
 import java.util.Hashtable;
 
@@ -248,7 +246,7 @@ OR
     }
   }
 
-  class SymmetryData {
+  private class SymmetryData {
     int index;
     String sym;
     int nSFO;

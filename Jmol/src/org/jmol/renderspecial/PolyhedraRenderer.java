@@ -28,6 +28,7 @@ import org.jmol.modelset.Atom;
 import org.jmol.render.ShapeRenderer;
 import org.jmol.script.T;
 import org.jmol.shapespecial.Polyhedra;
+import org.jmol.shapespecial.Polyhedron;
 import org.jmol.util.C;
 import org.jmol.util.GData;
 import javajs.util.P3;
@@ -43,7 +44,7 @@ public class PolyhedraRenderer extends ShapeRenderer {
   @Override
   protected boolean render() {
     Polyhedra polyhedra = (Polyhedra) shape;
-    Polyhedra.Polyhedron[] polyhedrons = polyhedra.polyhedrons;
+    Polyhedron[] polyhedrons = polyhedra.polyhedrons;
     drawEdges = polyhedra.drawEdges;
     g3d.addRenderer(T.triangles);
     short[] colixes = polyhedra.colixes;
@@ -58,7 +59,7 @@ public class PolyhedraRenderer extends ShapeRenderer {
     return needTranslucent;
   }
 
-  private boolean render1(Polyhedra.Polyhedron p, short colix) {
+  private boolean render1(Polyhedron p, short colix) {
     if (p.visibilityFlags == 0)
       return false;
     colix = C.getColixInherited(colix, p.centralAtom.getColix());

@@ -33,7 +33,6 @@ import org.jmol.script.T;
 import org.jmol.shape.AtomShape;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
-import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Normix;
 
@@ -528,7 +527,7 @@ public class Polyhedra extends AtomShape {
       }
     //Logger.debug("planeCount="+planeCount + " nPoints="+nPoints);
     return new Polyhedron(centralAtom, ptCenter, nPoints, planeCount,
-        otherAtoms, normixesT, planesT);
+        otherAtoms, normixesT, planesT, isCollapsed, faceCenterOffset, distanceFactor);
   }
 
   private String faceId(int i, int j, int k) {
@@ -561,54 +560,6 @@ public class Polyhedra extends AtomShape {
     float w = Measure.getNormalThroughPoints(pt1, pt2, pt3, norm, vAB, vAC);
     float d = Measure.distanceToPlaneV(norm, w, ptX);
     return (Math.abs(d) < minDistanceForPlanarity);
-  }
-
-  public class Polyhedron {
-    int modelIndex;
-    public final Atom centralAtom;
-    public final P3[] vertices;
-    int ptCenter;
-    boolean visible;
-    public final short[] normixes;
-    public byte[] planes;
-    //int planeCount;
-    public int visibilityFlags = 0;
-    boolean collapsed = false;
-    float myFaceCenterOffset, myDistanceFactor;
-    boolean isFullyLit;
-
-    Polyhedron(Atom centralAtom, int ptCenter, int nPoints, int planeCount,
-        P3[] otherAtoms, short[] normixes, byte[] planes) {
-      this.collapsed = isCollapsed;
-      this.centralAtom = centralAtom;
-      modelIndex = centralAtom.getModelIndex();
-      this.ptCenter = ptCenter;
-      this.vertices = new P3[nPoints];
-      this.visible = true;
-      this.normixes = new short[planeCount];
-      //this.planeCount = planeCount;
-      this.planes = new byte[planeCount * 3];
-      myFaceCenterOffset = faceCenterOffset;
-      myDistanceFactor = distanceFactor;
-      for (int i = nPoints; --i >= 0;)
-        vertices[i] = otherAtoms[i];
-      for (int i = planeCount; --i >= 0;)
-        this.normixes[i] = normixes[i];
-      for (int i = planeCount * 3; --i >= 0;)
-        this.planes[i] = planes[i];
-    }
-
-    protected String getState() {
-      BS bs = new BS();
-      for (int i = 0; i < ptCenter; i++)
-        bs.set(((Atom) vertices[i]).getIndex());
-      return "  polyhedra ({" + centralAtom.getIndex() + "}) to "
-      + Escape.eBS(bs) + (collapsed ? " collapsed" : "") 
-      +  " distanceFactor " + myDistanceFactor
-      +  " faceCenterOffset " + myFaceCenterOffset 
-      + (isFullyLit ? " fullyLit" : "" ) + ";"
-      + (visible ? "" : "polyhedra off;") + "\n";
-    }
   }
 
   @Override

@@ -83,7 +83,7 @@ import org.jmol.java.BS;
  * http://www.netsci.org/Science/Compchem/feature14e.html
  * 
  * In March 2007, Bob refactored all Geodesic business that was here 
- * into the static class g3d.Geodesic, made GeoSurface an extension of Dots,
+ * into the class Geodesic, made GeoSurface an extension of Dots,
  * and generally similified the code. 
  * 
  */

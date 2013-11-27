@@ -689,20 +689,21 @@ abstract public class AtomCollection {
   }
 
   public float getVibrationCoord(int atomIndex, char c) {
-    if (vibrations == null || vibrations[atomIndex] == null)
+    Vibration v;
+    if (vibrations == null || (v = vibrations[atomIndex]) == null)
       return 0;
     switch (c) {
     case 'X':
-      return vibrations[atomIndex].x;
+      return v.x;
     case 'Y':
-      return vibrations[atomIndex].y;
+      return v.y;
     default:
-      return vibrations[atomIndex].z;
+      return v.z;
     }
   }
 
   public Vibration getVibration(int atomIndex, boolean forceNew) {
-    Vibration v = (vibrations == null  ? null : vibrations[atomIndex]);
+    Vibration v = (vibrations == null  ? null : (Vibration) vibrations[atomIndex]);
     return (v == null && forceNew ? new Vibration() : v);
   }
 
@@ -2045,7 +2046,7 @@ abstract public class AtomCollection {
     return bs;
   }
 
-  class AtomSorter implements Comparator<Atom>{
+  protected class AtomSorter implements Comparator<Atom>{
     @Override
     public int compare(Atom a1, Atom a2) {
       return (a1.index > a2.index ? 1 : a1.index < a2.index ? -1 : 0);

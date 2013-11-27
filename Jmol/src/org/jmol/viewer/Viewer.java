@@ -43,8 +43,9 @@ import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.Measurement;
 import org.jmol.modelset.MeasurementPending;
 import org.jmol.modelset.ModelSet;
+import org.jmol.modelset.Orientation;
+import org.jmol.modelset.StateScript;
 import org.jmol.modelset.TickInfo;
-import org.jmol.modelset.ModelCollection.StateScript;
 
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.JmolDataManager;
@@ -121,7 +122,6 @@ import org.jmol.util.Measure;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TempArray;
 import org.jmol.util.Txt;
-import org.jmol.viewer.StateManager.Orientation;
 import org.jmol.viewer.binding.Binding;
 
 import javajs.util.AU;
@@ -259,7 +259,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   ShapeManager shapeManager;
   SelectionManager selectionManager;
   JmolRepaintManager repaintManager;
-  public StateManager.GlobalSettings global;
+  public GlobalSettings global;
   public StatusManager statusManager;
   TransformManager transformManager;
 
@@ -302,7 +302,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   private ModelManager modelManager;
   private StateManager stateManager;
   private JmolScriptManager scriptManager;
-  JmolScriptEvaluator eval;
+  public JmolScriptEvaluator eval;
   private TempArray tempArray;
 
   private static String version_date;
@@ -850,13 +850,13 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   void restoreModelOrientation(int modelIndex) {
-    StateManager.Orientation o = modelSet.getModelOrientation(modelIndex);
+    Orientation o = modelSet.getModelOrientation(modelIndex);
     if (o != null)
       o.restore(-1, true);
   }
 
   void restoreModelRotation(int modelIndex) {
-    StateManager.Orientation o = modelSet.getModelOrientation(modelIndex);
+    Orientation o = modelSet.getModelOrientation(modelIndex);
     if (o != null)
       o.restore(-1, false);
   }
@@ -985,7 +985,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return transformManager.getNavigationOffset();
   }
 
-  float getNavigationOffsetPercent(char XorY) {
+  public float getNavigationOffsetPercent(char XorY) {
     return transformManager.getNavigationOffsetPercent(XorY);
   }
 
@@ -1009,7 +1009,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     transformManager.stopMotion();
   }
 
-  void setRotationMatrix(M3 rotationMatrix) {
+  public void setRotationMatrix(M3 rotationMatrix) {
     transformManager.setRotation(rotationMatrix);
   }
 
@@ -1035,7 +1035,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       setSync();
   }
 
-  String getMoveToText(float timespan) {
+  public String getMoveToText(float timespan) {
     return transformManager.getMoveToText(timespan, false);
   }
 
@@ -1503,7 +1503,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return transformManager.getTransformText();
   }
 
-  void getRotation(M3 matrixRotation) {
+  public void getRotation(M3 matrixRotation) {
     transformManager.getRotation(matrixRotation);
   }
 

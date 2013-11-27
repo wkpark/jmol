@@ -3,6 +3,8 @@ package org.jmol.util;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.jmol.api.JmolModulationSet;
+
 import javajs.util.List;
 import javajs.util.M3;
 import javajs.util.M4;
@@ -17,23 +19,27 @@ import javajs.util.V3;
  * 
  */
 
-public class ModulationSet extends Vibration {
+public class ModulationSet extends Vibration implements JmolModulationSet {
 
   public float vOcc = Float.NaN;
   public Map<String, Float> htUij;
-  public boolean enabled = false;
-  public String id;
-  public V3 prevSetting;
-
   public float vOcc0;
 
+  String id;
+  V3 x456;
+  
+  private V3 prevSetting;
   private List<Modulation> mods;
   private M3 gammaE;
   private int t = Integer.MAX_VALUE;  
   private double[] qlen;
+  private int modDim;
+  private boolean enabled = false;
   
-  int modDim;
-  V3 x456;
+  @Override
+  public boolean isEnabled() {
+    return enabled;
+  }
 
   /**
    * A collection of modulations for a specific atom. 
@@ -131,7 +137,8 @@ public class ModulationSet extends Vibration {
    * @param t
    * @return 0 (no change), 1 (disabled), 2 (enabled), 3 (new t), 4 (same t)
    * 
-   */
+   */ 
+  @Override
   public int setModT(boolean isOn, int t) {
     if (t == Integer.MAX_VALUE) {
       if (enabled == isOn)
@@ -151,8 +158,14 @@ public class ModulationSet extends Vibration {
     return 3;
   }
 
+  @Override
   public String getState() {
     return "modulation " + (!enabled ? "OFF" : t == Integer.MAX_VALUE ? "ON" : "" + t);
   }
 
+  @Override
+  public V3 getPrevSetting() {
+    return prevSetting;
+  }
+  
 }

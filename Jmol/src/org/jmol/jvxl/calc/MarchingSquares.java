@@ -107,7 +107,7 @@ public class MarchingSquares {
   public int contourVertexCount;
   ContourVertex[] contourVertexes = new ContourVertex[1000];
 
-  private static class ContourVertex extends P3 {
+  private class ContourVertex extends P3 {
     float value;
 
     ContourVertex(P3 vertexXYZ) {
@@ -185,10 +185,10 @@ public class MarchingSquares {
   Map<String, Integer> htPts = new Hashtable<String, Integer>();
 
   private class Triangle {
-    int[] pts;
-    int check;
-    boolean isValid = true;
-    int contourIndex;
+    protected int[] pts;
+    protected int check;
+    protected boolean isValid = true;
+    protected int contourIndex;
 
     Triangle(int iA, int iB, int iC, int check, int contourIndex) {
       pts = new int[] { iA, iB, iC };

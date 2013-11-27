@@ -25,37 +25,12 @@
 
 package org.jmol.modelset;
 
-
-
-import org.jmol.java.BS;
-import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolNode;
 import org.jmol.viewer.JC;
 
 public class Bond extends JmolEdge {
-
-  public static class BondSet extends BS {
-
-    public BondSet() {
-    }
-
-    private int[] associatedAtoms;
-    
-    public int[] getAssociatedAtoms() {
-      return associatedAtoms;
-    }
-
-    public BondSet(BS bs) {
-      BSUtil.copy2(bs, this);
-    }
-
-    public BondSet(BS bs, int[] atoms) {
-      this(bs);
-      associatedAtoms = atoms;
-    }
-  }
 
   public Atom atom1;
   public Atom atom2;

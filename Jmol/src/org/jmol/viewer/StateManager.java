@@ -336,15 +336,15 @@ public class StateManager {
     return (Scene) getNoCase(saved, name);
   }
 
-  public class Scene {
-    String  saveName;
+  private class Scene {
+    protected String  saveName;
     private Map<String, Object> scene;
     
-    public Scene(Map<String, Object> scene) {
+    protected Scene(Map<String, Object> scene) {
       this.scene = scene;
     }
 
-    public boolean restore(float timeSeconds) {
+    protected boolean restore(float timeSeconds) {
       JmolSceneGenerator gen = (JmolSceneGenerator) scene.get("generator");
       if (gen != null)
         gen.generateScene(scene);
@@ -475,13 +475,13 @@ public class StateManager {
     return (c != null && c.restore());
   }
 
-  class Connections {
+  private class Connections {
 
-    String saveName;
-    int bondCount;
-    Connection[] connections;
+    protected String saveName;
+    protected int bondCount;
+    protected Connection[] connections;
 
-    Connections() {
+    protected Connections() {
       ModelSet modelSet = viewer.getModelSet();
       if (modelSet == null)
         return;
@@ -495,7 +495,7 @@ public class StateManager {
       }
     }
 
-    boolean restore() {
+    protected boolean restore() {
       ModelSet modelSet = viewer.getModelSet();
       if (modelSet == null)
         return false;
@@ -517,16 +517,16 @@ public class StateManager {
     }
   }
 
-  static class Connection {
-    int atomIndex1;
-    int atomIndex2;
-    short mad;
-    short colix;
-    int order;
-    float energy;
-    int shapeVisibilityFlags;
+  private class Connection {
+    protected int atomIndex1;
+    protected int atomIndex2;
+    protected short mad;
+    protected short colix;
+    protected int order;
+    protected float energy;
+    protected int shapeVisibilityFlags;
 
-    Connection(int atom1, int atom2, short mad, short colix, int order, float energy,
+    protected Connection(int atom1, int atom2, short mad, short colix, int order, float energy,
         int shapeVisibilityFlags) {
       atomIndex1 = atom1;
       atomIndex2 = atom2;

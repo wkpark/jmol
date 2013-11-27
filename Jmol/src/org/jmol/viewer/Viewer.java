@@ -37,13 +37,13 @@ import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
+import org.jmol.modelset.BondSet;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.Measurement;
 import org.jmol.modelset.MeasurementPending;
 import org.jmol.modelset.ModelSet;
 import org.jmol.modelset.TickInfo;
-import org.jmol.modelset.Bond.BondSet;
 import org.jmol.modelset.ModelCollection.StateScript;
 
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
@@ -359,10 +359,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public Viewer(Map<String, Object> info) {
     setOptions(info);
-  }
-
-  public StateManager.GlobalSettings getGlobalSettings() {
-    return global;
   }
 
   StatusManager getStatusManager() {

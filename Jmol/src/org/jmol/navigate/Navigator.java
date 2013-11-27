@@ -759,7 +759,7 @@ public final class Navigator extends JmolThread implements
       return;
     }
     if (key != null)
-      viewer.getGlobalSettings().setF(key, value);
+      viewer.global.setF(key, value);
     tm.navigating = true;
     tm.finalizeTransformParameters();
   }
@@ -777,7 +777,7 @@ public final class Navigator extends JmolThread implements
     // navigation depth 0 # place user at rear plane of the model
     // navigation depth 100 # place user at front plane of the model
 
-    viewer.getGlobalSettings().setF("navigationDepth", percent);
+    viewer.global.setF("navigationDepth", percent);
     tm.calcCameraFactors(); // current
     tm.modelCenterOffset = tm.referencePlaneOffset - (1 - percent / 50)
         * tm.modelRadiusPixels;

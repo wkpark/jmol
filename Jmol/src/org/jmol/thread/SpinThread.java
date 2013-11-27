@@ -106,8 +106,7 @@ public class SpinThread extends JmolThread {
       switch (mode) {
       case INIT:
         myFps = (isNav ? transformManager.navFps : transformManager.spinFps);
-        viewer.getGlobalSettings().setB(
-            isNav ? "_navigating" : "_spinning", true);
+        viewer.global.setB(isNav ? "_navigating" : "_spinning", true);
         viewer.startHoverWatcher(false);
         mode = MAIN;
         break;
@@ -133,7 +132,7 @@ public class SpinThread extends JmolThread {
         }
         //navigatingSurface = viewer.getNavigateSurface();
         boolean refreshNeeded = (isNav ? //navigatingSurface ||
-            transformManager.navX != 0 || transformManager.navY != 0
+        transformManager.navX != 0 || transformManager.navY != 0
             || transformManager.navZ != 0
             : transformManager.isSpinInternal
                 && transformManager.internalRotationAxis.angle != 0
@@ -176,7 +175,8 @@ public class SpinThread extends JmolThread {
         else
           viewer.requestRepaintAndWait("spin thread");
         //System.out.println(angle * degreesPerRadian + " " + count + " " + nDegrees + " " + endDegrees);
-        if (!isNav && endDegrees >= 0? nDegrees >= endDegrees - 0.001 : -nDegrees <= endDegrees + 0.001) {
+        if (!isNav && endDegrees >= 0 ? nDegrees >= endDegrees - 0.001
+            : -nDegrees <= endDegrees + 0.001) {
           isDone = true;
           transformManager.setSpinOff();
         }

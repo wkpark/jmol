@@ -828,17 +828,17 @@ public class TransformManager {
 
   void setSlabEnabled(boolean slabEnabled) {
     this.slabEnabled = slabEnabled;
-    viewer.getGlobalSettings().setB("slabEnabled", slabEnabled);
+    viewer.global.setB("slabEnabled", slabEnabled);
   }
 
   void setZShadeEnabled(boolean zShadeEnabled) {
     this.zShadeEnabled = zShadeEnabled;
-    viewer.getGlobalSettings().setB("zShade", zShadeEnabled);
+    viewer.global.setB("zShade", zShadeEnabled);
   }
 
   void setZoomEnabled(boolean zoomEnabled) {
     this.zoomEnabled = zoomEnabled;
-    viewer.getGlobalSettings().setB("zoomEnabled", zoomEnabled);
+    viewer.global.setB("zoomEnabled", zoomEnabled);
   }
 
   P4 slabPlane = null;
@@ -866,8 +866,8 @@ public class TransformManager {
   }
 
   private void slabDepthChanged() {
-    viewer.getGlobalSettings().setI("slab", slabPercentSetting);
-    viewer.getGlobalSettings().setI("depth", depthPercentSetting);
+    viewer.global.setI("slab", slabPercentSetting);
+    viewer.global.setI("depth", depthPercentSetting);
   }
 
   void depthByPercentagePoints(int percentage) {
@@ -896,7 +896,7 @@ public class TransformManager {
   }
 
   void depthToPercent(int percentDepth) {
-    viewer.getGlobalSettings().setI("depth", percentDepth);
+    viewer.global.setI("depth", percentDepth);
     depthPercentSetting = percentDepth;
     if (slabPercentSetting <= depthPercentSetting)
       slabPercentSetting = depthPercentSetting + 1;
@@ -1432,9 +1432,9 @@ public class TransformManager {
       }
     }
 
-    viewer.getGlobalSettings().setS("_slabPlane",
+    viewer.global.setS("_slabPlane",
         Escape.eP4(getSlabDepthPlane(false)));
-    viewer.getGlobalSettings().setS("_depthPlane",
+    viewer.global.setS("_depthPlane",
         Escape.eP4(getSlabDepthPlane(true)));
     if (slabEnabled)
       return;
@@ -2013,7 +2013,7 @@ public class TransformManager {
     if (this.spinOn == spinOn)
       return;
     this.spinOn = spinOn;
-    viewer.getGlobalSettings().setB("_spinning", spinOn);
+    viewer.global.setB("_spinning", spinOn);
     if (spinOn) {
       if (spinThread == null) {
         spinThread = (JmolThread) Interface
@@ -2042,7 +2042,7 @@ public class TransformManager {
     if (navOn && spinOn)
       setSpin(null, false, 0, null, null, null, false);
     this.navOn = navOn;
-    viewer.getGlobalSettings().setB("_navigating", navOn);
+    viewer.global.setB("_navigating", navOn);
     if (!navOn)
       navInterrupt();
     if (navOn) {
@@ -2597,7 +2597,7 @@ public class TransformManager {
   }
 
   void setNavigationSlabOffsetPercent(float percent) {
-    viewer.getGlobalSettings().setF("navigationSlab", percent);
+    viewer.global.setF("navigationSlab", percent);
     calcCameraFactors(); // current
     navigationSlabOffset = percent / 50 * modelRadiusPixels;
   }

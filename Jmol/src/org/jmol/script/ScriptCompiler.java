@@ -34,8 +34,8 @@ import org.jmol.api.Interface;
 import org.jmol.i18n.GT;
 import org.jmol.io.JmolBinary;
 import org.jmol.java.BS;
+import org.jmol.modelset.BondSet;
 import org.jmol.modelset.Group;
-import org.jmol.modelset.Bond.BondSet;
 
 import javajs.util.AU;
 import javajs.util.List;

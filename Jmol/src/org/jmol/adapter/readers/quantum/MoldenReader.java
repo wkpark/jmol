@@ -69,6 +69,8 @@ public class MoldenReader extends MopacSlaterReader {
     }
     if (line.indexOf("[GTO]") == 0)
       return readGaussianBasis();
+    if (line.indexOf("[STO]") == 0)
+      return readSlaterBasis();
     if (line.indexOf("[MO]") == 0) 
       return (!doReadMolecularOrbitals || readMolecularOrbitals());
     if (line.indexOf("[FREQ]") == 0)
@@ -164,6 +166,28 @@ public class MoldenReader extends MopacSlaterReader {
   private int[] nSPDF;
   private boolean haveEnergy = true;
   
+  boolean readSlaterBasis() throws Exception {
+    /*
+    1    0    0    0    1             1.5521451600        0.9776767193          
+    1    1    0    0    0             1.5521451600        1.6933857512          
+    1    0    1    0    0             1.5521451600        1.6933857512          
+    1    0    0    1    0             1.5521451600        1.6933857512          
+    2    0    0    0    0             1.4738648100        1.0095121222          
+    3    0    0    0    0             1.4738648100        1.0095121222          
+     */
+    while (readLine() != null && line.indexOf("[") < 0) {
+      String[] tokens = getTokens();
+      if (tokens.length < 7)
+        continue;
+      addSlater(parseIntStr(tokens[0]) - 1, parseIntStr(tokens[1]),
+          parseIntStr(tokens[2]), parseIntStr(tokens[3]), parseIntStr(tokens[4]),
+          parseFloatStr(tokens[5]), parseFloatStr(tokens[6]));
+    }
+    setSlaters(false, false);
+    //moData.put("isNormalized", Boolean.TRUE);
+    return false;
+  }
+
   private boolean readGaussianBasis() throws Exception {
     /* 
      [GTO]

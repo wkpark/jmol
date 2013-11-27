@@ -18,24 +18,22 @@ svn+ssh://svn.code.sf.net/p/jspecview/svn:dev2/JSpecViewLib
 
 Relevant files created in this project by build scripts in those projects include:
 
-  appletfiles/JSmol_nojars.zip
-  appletfiles/JSpecViewApplet.jar
-  appletfiles/JSpecViewAppletSigned.jar
+  appletweb/jsmol.zip
   jars/JSpecView.jar
   
-Jmol/JSmol_nojars.zip is created using:
+  appletweb/jsmol.zip is created using:
 
    JSmol/build_01_fromjmol.xml
    JSmol/build_02_fromjspecview.xml 
    JSmol/build_03b_tojs.xml
    
-JSpecView*.jar files are created using 
+  jars/JSpecView.jar is created using 
 
    JSpecviewLib/build.xml
    JSpecview/build.xml
 
-Note that if you modify Jmol source without also running the JSmol build scripts, particularly
-build_01_fromjmol.xml, then the HTML5 version of Jmol will not reflect your modifications.
+Note that if you modify Jmol source without also running the JSmol build scripts, 
+then JSmol will not reflect your modifications.
 
 The overall sequence for full HTML5 code creation
 when the Jmol or JSpecView code is modified, is as follows:
@@ -44,10 +42,13 @@ when the Jmol or JSpecView code is modified, is as follows:
 2) Build JSpecViewLib and JSpecView if there are changes there. 
    The JSpecView*.jar files will be copied into this project.
 3) Build JSmol using the build_01.., build_02.., build_03b.. 
-   JSmol_nojars.zip will be created and copied to this project.
-4) Use buildjsmolzip.xml to create appletweb/jsmol.zip from JSmol_nojars.zip
+   jsmol.zip will be created and copied to appletweb/.
 
-Note that I have had trouble with signjar ramdomly stopping. 
+Note that I have had trouble with signjar ramdomly stopping with an IOException. 
+I just do it a second time, and it works.
+
+Bob Hanson hansonr@stolaf.edu 11/26/2013
+
   -->
 	
   <!-- Contributions -->

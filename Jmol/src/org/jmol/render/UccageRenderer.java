@@ -87,6 +87,10 @@ public class UccageRenderer extends CageRenderer {
     isSlab = unitcell.isSlab();
     P3[] vertices = unitcell.getUnitCellVertices();
     offset.setT(unitcell.getCartesianOffset());
+    offsetT.set(0, 0, 0);
+    unitcell.toCartesian(offsetT, true);
+    offset.sub(offsetT);
+
     P3 fset = unitcell.getUnitCellMultiplier();
     boolean haveMultiple = (fset != null);
     if (!haveMultiple) 

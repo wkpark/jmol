@@ -187,6 +187,8 @@ public class Jmol implements WrappedApplet {
   protected JmolViewer viewer;
   protected Map<EnumCallback, String> callbacks = new Hashtable<EnumCallback, String>();
   boolean isJNLP;
+  private String codeBase;
+  private String documentBase;
   
   @Override
   public void paint(Graphics g) {
@@ -265,7 +267,13 @@ public class Jmol implements WrappedApplet {
     fullName = htmlName + "__" + syncId + "__";
     System.out.println("Jmol applet " + fullName + " initializing");
     setLogging();
-
+    // using JApplet calls for older installations
+    URL base = appletWrapper.getDocumentBase();
+    documentBase = (base == null ? getValue("documentBase", null) : base.toString());
+    base = appletWrapper.getCodeBase();
+    codeBase = (base == null ? getValue("codePath", getValue("codeBase", null)) : base.toString());
+    if (codeBase != null && !codeBase.endsWith("/"))
+      codeBase += "/";
     String ms = getParameter("mayscript");
     mayScript = (ms != null) && (!ms.equalsIgnoreCase("false"));
     JmolAppletRegistry.checkIn(fullName, (JmolSyncInterface) appletWrapper);
@@ -290,8 +298,8 @@ public class Jmol implements WrappedApplet {
     addValue(info, null, "display", appletWrapper);
     addValue(info, null, "statusListener", new MyStatusListener());
     addValue(info, null, "fullName", fullName);
-    addValue(info, null, "documentBase", getParameter("documentBase"));
-    addValue(info, null, "codePath", getParameter("codePath"));
+    addValue(info, null, "documentBase", documentBase);
+    addValue(info, null, "codePath", codeBase);
     if (getBooleanValue("noScripting", false))
       addValue(info, null, "noScripting", Boolean.TRUE);
     if (isJNLP)
@@ -711,9 +719,9 @@ public class Jmol implements WrappedApplet {
         + "\nsyncId = "
         + Escape.eS(syncId)
         + "\ndocumentBase = "
-        + Escape.eS("" + getParameter("documentBase"))
+        + Escape.eS(documentBase)
         + "\ncodeBase = "
-        + Escape.eS("" + getParameter("codeBase"));
+        + Escape.eS(codeBase);
   }
 
   @Override

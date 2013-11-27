@@ -988,8 +988,9 @@ public class ActionManager implements EventManager {
                           int buttonMods) {
     if (!viewer.getMouseEnabled())
       return;
-    //if (mode != 0)
-      //System.out.println(mode + " " +  buttonMods);
+    if (Logger.debuggingHigh && mode != Event.MOVED)
+      viewer.showString("mouse action: " + mode + " " + buttonMods + " " + Binding.getMouseActionName(Binding.getMouseAction(count, buttonMods, mode), false), false);
+
     switch (mode) {
     case Event.MOVED:
       setCurrent(time, x, y, buttonMods);

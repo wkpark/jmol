@@ -146,7 +146,7 @@ abstract public class JSPopup extends GenericPopup {
     /**
      * @j2sNative
      * 
-     *            menu.dispose();
+     *            if (menu)menu.dispose();
      */
     {
       

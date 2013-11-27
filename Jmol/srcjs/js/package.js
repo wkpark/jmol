@@ -274,7 +274,8 @@ var	basefile = base + "core.z.js";
 
 	ClazzLoader.jarClasspath (base + "coresmiles.z.js",	[
     "J.api.SmilesMatcherInterface",
-    "J.smiles.SmilesMatcher",
+    "J.smiles.VTemp",
+    "$.SmilesMatcher",
     "$.InvalidSmilesException",
     "$.SmilesSearch",
     "$.SmilesGenerator",

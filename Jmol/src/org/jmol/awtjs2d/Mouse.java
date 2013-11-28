@@ -180,23 +180,19 @@ public class Mouse implements GenericMouseInterface {
   }
 
   public void mouseEntered(MouseEvent e) {
-    wheeling = false;
     entered(e.getWhen(), e.getX(), e.getY());
   }
 
   public void mouseExited(MouseEvent e) {
-    wheeling = false;
     exited(e.getWhen(), e.getX(), e.getY());
   }
 
   public void mousePressed(MouseEvent e) {
-    wheeling = false;
     pressed(e.getWhen(), e.getX(), e.getY(), e.getModifiers(), e
         .isPopupTrigger());
   }
 
   public void mouseReleased(MouseEvent e) {
-    wheeling = false;
     released(e.getWhen(), e.getX(), e.getY(), e.getModifiers());
   }
 
@@ -334,10 +330,12 @@ public class Mouse implements GenericMouseInterface {
   }
 
   private void entered(long time, int x, int y) {
+    wheeling = false;
     manager.mouseEnterExit(time, x, y, false);
   }
 
   private void exited(long time, int x, int y) {
+    wheeling = false;
     manager.mouseEnterExit(time, x, y, true);
   }
   /**
@@ -385,11 +383,13 @@ public class Mouse implements GenericMouseInterface {
                     boolean isPopupTrigger) {
     clearKeyBuffer();
     isMouseDown = true;
+    wheeling = false;
     manager.mouseAction(Event.PRESSED, time, x, y, 0, modifiers);
   }
 
   private void released(long time, int x, int y, int modifiers) {
     isMouseDown = false;
+    wheeling = false;
     manager.mouseAction(Event.RELEASED, time, x, y, 0, modifiers);
   }
 

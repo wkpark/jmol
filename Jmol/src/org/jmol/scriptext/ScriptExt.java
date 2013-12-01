@@ -5749,7 +5749,7 @@ public class ScriptExt implements JmolScriptExtension {
         if (chk)
           return;
         n = viewer.calculateFormalCharges(null);
-        showString(GT._("{0} charges modified", n));
+        showString(GT.i(GT._("{0} charges modified"), n));
         return;
       case T.aromatic:
         checkLength(2);
@@ -5771,7 +5771,7 @@ public class ScriptExt implements JmolScriptExtension {
           return;
         n = viewer.autoHbond(bs1, bs2, false);
         if (n != Integer.MIN_VALUE)
-          eval.scriptStatusOrBuffer(GT._("{0} hydrogen bonds", Math.abs(n)));
+          eval.scriptStatusOrBuffer(GT.i(GT._("{0} hydrogen bonds"), Math.abs(n)));
         return;
       case T.hydrogen:
         bs1 = (slen == 2 ? null : atomExpressionAt(2));
@@ -5830,7 +5830,7 @@ public class ScriptExt implements JmolScriptExtension {
             setShapeProperty(JC.SHAPE_STICKS, "type", Integer
                 .valueOf(JmolEdge.BOND_COVALENT_MASK));
           }
-          showString(GT._("{0} struts mp.added", n));
+          showString(GT.i(GT._("{0} struts mp.added"), n));
         }
         return;
       case T.surface:

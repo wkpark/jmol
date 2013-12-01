@@ -646,8 +646,8 @@ abstract class OutputManager {
                   viewer.captureParams = null;
                   viewer.prompt(GT._("Capture")
                       + ": "
-                      + (captureMode == T.cancel ? GT._("canceled") : GT._(
-                          "{0} saved", new Object[] { fileName })), "OK", null,
+                      + (captureMode == T.cancel ? GT._("canceled") : GT.o(GT._(
+                          "{0} saved"), fileName)), "OK", null,
                       true);
                 }
                 break;
@@ -702,7 +702,7 @@ abstract class OutputManager {
     if (path == null)
       value = null;
     else
-      Logger.info(GT._("Setting log file to {0}", path));
+      Logger.info(GT.o(GT._("Setting log file to {0}"), path));
     if (value == null || !viewer.haveAccess(ACCESS.ALL)) {
       Logger.info(GT._("Cannot set log file path."));
       value = null;

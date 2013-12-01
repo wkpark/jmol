@@ -267,7 +267,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     executionStopped = executionPaused = false;
     executionStepping = false;
     executing = true;
-    viewer.pushHoldRepaint("runEval");
+    viewer.pushHoldRepaintWhy("runEval");
     setScriptExtensions();
     executeCommands(false);
   }
@@ -5165,7 +5165,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       // JavaScript will not reach this point, 
       // but no need to pop anyway, because
       // we will be out of this thread.
-      viewer.pushHoldRepaint("pause");
+      viewer.pushHoldRepaintWhy("pause");
     }
     notifyResumeStatus();
     // once more to trap quit during pause
@@ -5725,9 +5725,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       mode = T.movie;
       params = new Hashtable<String, Object>();
       if (!looping)
-        showString(GT._("Note: Enable looping using {0}",
+        showString(GT.o(GT._("Note: Enable looping using {0}"),
             new Object[] { "ANIMATION MODE LOOP" }));
-      showString(GT._("Animation delay based on: {0}",
+      showString(GT.o(GT._("Animation delay based on: {0}"),
           new Object[] { "ANIMATION FPS " + fps }));
       params.put("captureFps", Integer.valueOf(fps));
       break;
@@ -7004,7 +7004,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
     if (isDelete) {
       if (!(tQuiet || scriptLevel > scriptReportingLevel))
-        scriptStatusOrBuffer(GT._("{0} connections deleted", nModified));
+        scriptStatusOrBuffer(GT.i(GT._("{0} connections deleted"), nModified));
       return;
     }
     if (isColorOrRadius) {
@@ -7016,7 +7016,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       viewer.selectBonds(null);
     }
     if (!(tQuiet || scriptLevel > scriptReportingLevel))
-      scriptStatusOrBuffer(GT._("{0} new bonds; {1} modified", new Object[] {
+      scriptStatusOrBuffer(GT.o(GT._("{0} new bonds; {1} modified"), new Object[] {
           Integer.valueOf(nNew), Integer.valueOf(nModified) }));
   }
 
@@ -8436,7 +8436,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         isAppend, htParams, loadScript, tokType);
     if (out != null) {
       viewer.setFileInfo(new String[] { localName, localName, localName });
-      Logger.info(GT._("file {0} created", localName));
+      Logger.info(GT.o(GT._("file {0} created"), localName));
       showString(viewer.getFilePath(localName, false) + " created");
       out.closeChannel();
     }
@@ -9496,7 +9496,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       bs = viewer.getModelUndeletedAtomsBitSet(-1);
     int nDeleted = viewer.deleteAtoms(bs, false);
     if (!(tQuiet || scriptLevel > scriptReportingLevel))
-      scriptStatusOrBuffer(GT._("{0} atoms deleted", nDeleted));
+      scriptStatusOrBuffer(GT.i(GT._("{0} atoms deleted"), nDeleted));
   }
 
   private void select(int i) throws ScriptException {
@@ -9679,7 +9679,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     int nDeleted = viewer.deleteAtoms(bs, true);
     boolean isQuiet = (tQuiet || scriptLevel > scriptReportingLevel);
     if (!isQuiet)
-      scriptStatusOrBuffer(GT._("{0} atoms deleted", nDeleted));
+      scriptStatusOrBuffer(GT.i(GT._("{0} atoms deleted"), nDeleted));
     viewer.select(null, false, 0, isQuiet);
   }
 
@@ -10332,7 +10332,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (chk)
         return;
       int n = viewer.autoHbond(null, null, false);
-      scriptStatusOrBuffer(GT._("{0} hydrogen bonds", Math.abs(n)));
+      scriptStatusOrBuffer(GT.i(GT._("{0} hydrogen bonds"), Math.abs(n)));
       return;
     }
     if (slen == 2 && getToken(1).tok == T.delete) {

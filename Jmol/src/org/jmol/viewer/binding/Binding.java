@@ -211,18 +211,13 @@ abstract public class Binding {
         .toString());
   }
 
-  private String name;
+  public String name;
   private Map<String, Object> bindings = new Hashtable<String, Object>();
   public Map<String, Object> getBindings() {
     return bindings;
   }
     
-  public Binding(String name) {
-    this.name = name;  
-  }
-  
-  public final String getName() {
-    return name;
+  public Binding() {
   }
   
   public final void bindAction(int mouseAction, int jmolAction) {

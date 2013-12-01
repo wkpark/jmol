@@ -131,7 +131,6 @@ public abstract class JmolAdapter {
   //////////////////////////////////////////////////////////////////
 
 
-  String adapterName;
   final public static String[] cellParamNames = { 
     "_cell_length_a", 
     "_cell_length_b",
@@ -141,14 +140,6 @@ public abstract class JmolAdapter {
     "_cell_angle_gamma" 
   };
 
-  public JmolAdapter(String adapterName) {
-    this.adapterName = adapterName;
-  }
-
-  public String getAdapterName() {
-    return adapterName;
-  }
-  
 /**
  * Read an atomSetCollection object from a bufferedReader and close the reader.
  * 

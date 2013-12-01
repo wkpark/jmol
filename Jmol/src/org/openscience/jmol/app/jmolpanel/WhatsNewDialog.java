@@ -65,7 +65,7 @@ public class WhatsNewDialog extends JDialog implements HyperlinkListener {
         html = new JEditorPane(changeLogURL);
       } else {
         html = new JEditorPane("text/plain", 
-            GT._("Unable to find url \"{0}\".", 
+            GT.o(GT._("Unable to find url \"{0}\"."), 
                 JmolResourceHandler.getStringX("WhatsNew.changeLogURL")));
       }
       html.setEditable(false);

@@ -106,10 +106,10 @@ class PopInJmol extends WebPanel implements ChangeListener {
    }
     if (useAppletJS) {
       appletInfoDivs += "\n<div id=\"" + javaname + "_caption\">\n"
-          + GT.escapeHTML(GT._("insert a caption for {0} here.", name))
+          + GT.escapeHTML(GT.o(GT._("insert a caption for {0} here."), name))
           + "\n</div>";
       appletInfoDivs += "\n<div id=\"" + javaname + "_note\">\n"
-          + GT.escapeHTML(GT._("insert a note for {0} here.", name))
+          + GT.escapeHTML(GT.o(GT._("insert a note for {0} here."), name))
           + "\n</div>";
       //TODO fix pure javascript to work with widgets...
       appletDefs.append("\naddJmolDiv(" + i + ",'" + divClass + "','"

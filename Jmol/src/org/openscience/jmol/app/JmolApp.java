@@ -214,7 +214,7 @@ public class JmolApp implements JmolAppAPI {
     OptionBuilder.withLongOpt("geometry");
     // OptionBuilder.withDescription(GT._("overall window width x height, e.g. {0}",
     // "-g512x616"));
-    OptionBuilder.withDescription(GT._("window width x height, e.g. {0}",
+    OptionBuilder.withDescription(GT.o(GT._("window width x height, e.g. {0}"),
         "-g500x500"));
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("g"));
@@ -229,7 +229,7 @@ public class JmolApp implements JmolAppAPI {
     options.addOption(OptionBuilder.create("q"));
 
     OptionBuilder.withLongOpt("write");
-    OptionBuilder.withDescription(GT._("{0} or {1}:filename", new Object[] {
+    OptionBuilder.withDescription(GT.o(GT._("{0} or {1}:filename"), new Object[] {
         "CLIP", "GIF|JPG|JPG64|PNG|PPM" }));
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("w"));

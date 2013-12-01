@@ -193,20 +193,17 @@ public class GT {
   }
 
   public static String _(String string) {
-    return getTextWrapper().getString(string, null);
+    return getTextWrapper().getString(string);
   }
 
-  public static String _(String string, String item) {
-    return getTextWrapper().getString(string, new Object[] { item });
+  public static String o(String s, Object o) {
+    if (!(o instanceof Object[]))
+      o = new Object[] { o };
+    return MessageFormat.format(s, (Object[]) o);
   }
 
-  public static String _(String string, int item) {
-    return getTextWrapper().getString(string,
-        new Object[] { Integer.valueOf(item) });
-  }
-
-  public static String _(String string, Object[] objects) {
-    return getTextWrapper().getString(string, objects);
+  public static String i(String s, int n) {
+    return o(s, "" + n);
   }
 
   public static String escapeHTML(String msg) {
@@ -274,26 +271,26 @@ public class GT {
     }
   }
 
-  private String getString(String string, Object[] objects) {
+  private String getString(String s) {
     String trans = null;
     if (doTranslate) {
       for (int bundle = resourceCount; --bundle >= 0;) {
-        trans = resources[bundle].getString(string);
+        trans = resources[bundle].getString(s);
         if (trans != null) {
-          string = trans;
+          s = trans;
           break;
         }
       }
       if (resourceCount > 0 && trans == null && allowDebug && Logger.debugging)
-        Logger.debug("No trans, using default: " + string);
+        Logger.debug("No trans, using default: " + s);
 
     }
     if (trans == null) {
-      if (string.startsWith("["))
-        string = string.substring(string.indexOf("]") + 1);
-      else if (string.endsWith("]"))
-        string = string.substring(0, string.indexOf("["));
+      if (s.startsWith("["))
+        s = s.substring(s.indexOf("]") + 1);
+      else if (s.endsWith("]"))
+        s = s.substring(0, s.indexOf("["));
     }
-    return (objects == null ? string : MessageFormat.format(string, objects));
+    return s;
   }
 }

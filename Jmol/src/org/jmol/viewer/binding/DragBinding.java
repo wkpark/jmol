@@ -5,7 +5,7 @@ import org.jmol.viewer.ActionManager;
 public class DragBinding extends JmolBinding {
 
   public DragBinding() {
-    super("drag");
+    set("drag");
   }
     
   @Override

@@ -710,9 +710,9 @@ public class Jmol implements WrappedApplet {
 
   @Override
   public String getAppletInfo() {
-    return GT
+    return GT.o(GT
         ._(
-            "Jmol Applet version {0} {1}.\n\nAn OpenScience project.\n\nSee http://www.jmol.org for more information",
+            "Jmol Applet version {0} {1}.\n\nAn OpenScience project.\n\nSee http://www.jmol.org for more information"),
             new Object[] { JC.version, JC.date })
         + "\nhtmlName = "
         + Escape.eS(htmlName)

@@ -63,15 +63,6 @@ final public class CommandHistory {
   }
   
   /**
-   * Creates a new instance.
-   * 
-   * @param maxSize maximum size for the command queue
-   */
-  public CommandHistory(int maxSize) {
-    reset(maxSize);
-  }
-
-  /**
    * clears the history.
    * 
    */

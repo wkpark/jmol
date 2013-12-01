@@ -5,7 +5,7 @@ import org.jmol.viewer.ActionManager;
 public class RasmolBinding extends JmolBinding {
 
   public RasmolBinding() {
-    super("selectOrToggle");
+    set("selectOrToggle");
   }
     
   @Override

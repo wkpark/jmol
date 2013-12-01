@@ -5,7 +5,7 @@ import org.jmol.viewer.ActionManager;
 public class PfaatBinding extends JmolBinding {
 
   public PfaatBinding() {
-    super("extendedSelect");
+    set("extendedSelect");
   }
 
   @Override

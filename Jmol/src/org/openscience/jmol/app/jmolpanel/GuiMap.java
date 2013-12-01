@@ -121,16 +121,16 @@ public class GuiMap {
     labels.put("display", GT._("&Display"));
     labels.put("atomMenu", GT._("&Atom"));
     labels.put("atomNoneScript", GT._("&None"));
-    labels.put("atom15Script", GT._("{0}% van der Waals", "15"));
-    labels.put("atom20Script", GT._("{0}% van der Waals", "20"));
-    labels.put("atom25Script", GT._("{0}% van der Waals", "25"));
-    labels.put("atom100Script", GT._("{0}% van der Waals", "100"));
+    labels.put("atom15Script", GT.o(GT._("{0}% van der Waals"), "15"));
+    labels.put("atom20Script", GT.o(GT._("{0}% van der Waals"), "20"));
+    labels.put("atom25Script", GT.o(GT._("{0}% van der Waals"), "25"));
+    labels.put("atom100Script", GT.o(GT._("{0}% van der Waals"), "100"));
     labels.put("bondMenu", GT._("&Bond"));
     labels.put("bondNoneScript", GT._("&None"));
     labels.put("bondWireframeScript", GT._("&Wireframe"));
-    labels.put("bond100Script", GT._("{0} \u00C5", "0.10"));
-    labels.put("bond150Script", GT._("{0} \u00C5", "0.15"));
-    labels.put("bond200Script", GT._("{0} \u00C5", "0.20"));
+    labels.put("bond100Script", GT.o(GT._("{0} \u00C5"), "0.10"));
+    labels.put("bond150Script", GT.o(GT._("{0} \u00C5"), "0.15"));
+    labels.put("bond200Script", GT.o(GT._("{0} \u00C5"), "0.20"));
     labels.put("labelMenu", GT._("&Label"));
     labels.put("labelNoneScript", GT._("&None"));
     labels.put("labelSymbolScript", GT._("&Symbol"));
@@ -141,20 +141,20 @@ public class GuiMap {
     labels.put("vectorMenu", GT._("&Vector"));
     labels.put("vectorOffScript", GT._("&None"));
     labels.put("vectorOnScript", GT._("&On"));
-    labels.put("vector3Script", GT._("{0} pixels", "3"));
-    labels.put("vector005Script", GT._("{0} \u00C5", "0.05"));
-    labels.put("vector01Script", GT._("{0} \u00C5", "0.1"));
-    labels.put("vectorScale02Script", GT._("Scale {0}", "0.2"));
-    labels.put("vectorScale05Script", GT._("Scale {0}", "0.5"));
-    labels.put("vectorScale1Script", GT._("Scale {0}", "1"));
-    labels.put("vectorScale2Script", GT._("Scale {0}", "2"));
-    labels.put("vectorScale5Script", GT._("Scale {0}", "5"));
+    labels.put("vector3Script", GT.o(GT._("{0} pixels"), "3"));
+    labels.put("vector005Script", GT.o(GT._("{0} \u00C5"), "0.05"));
+    labels.put("vector01Script", GT.o(GT._("{0} \u00C5"), "0.1"));
+    labels.put("vectorScale02Script", GT.o(GT._("Scale {0}"), "0.2"));
+    labels.put("vectorScale05Script", GT.o(GT._("Scale {0}"), "0.5"));
+    labels.put("vectorScale1Script", GT.o(GT._("Scale {0}"), "1"));
+    labels.put("vectorScale2Script", GT.o(GT._("Scale {0}"), "2"));
+    labels.put("vectorScale5Script", GT.o(GT._("Scale {0}"), "5"));
     labels.put("zoomMenu", GT._("&Zoom"));
-    labels.put("zoom100Script", GT._("{0}%", "100"));
-    labels.put("zoom150Script", GT._("{0}%", "150"));
-    labels.put("zoom200Script", GT._("{0}%", "200"));
-    labels.put("zoom400Script", GT._("{0}%", "400"));
-    labels.put("zoom800Script", GT._("{0}%", "800"));
+    labels.put("zoom100Script", GT.o(GT._("{0}%"), "100"));
+    labels.put("zoom150Script", GT.o(GT._("{0}%"), "150"));
+    labels.put("zoom200Script", GT.o(GT._("{0}%"), "200"));
+    labels.put("zoom400Script", GT.o(GT._("{0}%"), "400"));
+    labels.put("zoom800Script", GT.o(GT._("{0}%"), "800"));
     labels.put("perspectiveCheck", GT._("&Perspective Depth"));
     labels.put("axesCheck", GT._("A&xes"));
     labels.put("boundboxCheck", GT._("B&ounding Box"));
@@ -363,18 +363,18 @@ public class GuiMap {
   private static void setTranslations() {
     // for all templates and JmolPopIn.js
     translations = new String[] {
-        "GT_JmolPopIn.js_TOGETA3DMODEL", GT.escapeHTML(GT._("To get a 3-D model you can manipulate, click {0}here{1}. Download time may be significant the first time the applet is loaded.", new String[] {"<a href=\"HREF\">", "</a>"})),
+        "GT_JmolPopIn.js_TOGETA3DMODEL", GT.escapeHTML(GT.o(GT._("To get a 3-D model you can manipulate, click {0}here{1}. Download time may be significant the first time the applet is loaded."), new String[] {"<a href=\"HREF\">", "</a>"})),
         
         "GT_pop_in_template.html_INSERTTITLE", GT.escapeHTML(GT._("Insert the page TITLE here.")), 
         "GT_pop_in_template.html_INSERTINTRO", GT.escapeHTML(GT._("Insert the page INTRODUCTION here.")),
         
-        "GT_pop_in_template2.html_INSERTCAPTION", GT.escapeHTML(GT._("Insert a caption for {0} here.","@NAME@")),
-        "GT_pop_in_template2.html_INSERTADDITIONAL", GT.escapeHTML(GT._("Insert additional explanatory text here. Long text will wrap around Jmol model {0}.","@NAME@")),
+        "GT_pop_in_template2.html_INSERTCAPTION", GT.escapeHTML(GT.o(GT._("Insert a caption for {0} here."),"@NAME@")),
+        "GT_pop_in_template2.html_INSERTADDITIONAL", GT.escapeHTML(GT.o(GT._("Insert additional explanatory text here. Long text will wrap around Jmol model {0}."),"@NAME@")),
         
         "GT_script_button_template.html_INSERT", GT.escapeHTML(GT._("Insert your TITLE and INTRODUCTION here.")),
         
-        "GT_script_button_template2.html_BUTTONINFO", GT.escapeHTML(GT._("The button {0} will appear in the box below.  Insert information for {0} here and below.", "@NAME@")),
-        "GT_script_button_template2.html_MORE", GT.escapeHTML(GT._("Insert more information for {0} here.", "@NAME@")),
+        "GT_script_button_template2.html_BUTTONINFO", GT.escapeHTML(GT.o(GT._("The button {0} will appear in the box below.  Insert information for {0} here and below."), "@NAME@")),
+        "GT_script_button_template2.html_MORE", GT.escapeHTML(GT.o(GT._("Insert more information for {0} here."), "@NAME@")),
         
         "About.html#weblinks", 
     "<p><b>Jmol " + JC.version + " (" + JC.date + ")</b></p>"

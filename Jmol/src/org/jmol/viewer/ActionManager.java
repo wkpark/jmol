@@ -73,7 +73,7 @@ public class ActionManager implements EventManager {
    */
   public void setViewer(Viewer viewer, String commandOptions) {
     this.viewer = viewer;
-    setBinding(jmolBinding = new JmolBinding("toggle"));
+    setBinding(jmolBinding = new JmolBinding());
     LEFT_CLICKED = Binding.getMouseAction(1, Binding.LEFT, Event.CLICKED);
     LEFT_DRAGGED = Binding.getMouseAction(1, Binding.LEFT, Event.DRAGGED);
   }
@@ -132,7 +132,7 @@ public class ActionManager implements EventManager {
   }
 
   protected void clearBindings() {
-    setBinding(jmolBinding = new JmolBinding("toggle"));
+    setBinding(jmolBinding = new JmolBinding());
     pfaatBinding = null;
     dragBinding = null;
     rasmolBinding = null;
@@ -334,119 +334,119 @@ public class ActionManager implements EventManager {
   }
 
   static {
-    newAction(ACTION_assignNew, "_assignNew", GT._(
-        "assign/new atom or bond (requires {0})",
+    newAction(ACTION_assignNew, "_assignNew", GT.o(GT._(
+        "assign/new atom or bond (requires {0})"),
         "set picking assignAtom_??/assignBond_?"));
     newAction(ACTION_center, "_center", GT._("center"));
     newAction(ACTION_clickFrank, "_clickFrank", GT
         ._("pop up recent context menu (click on Jmol frank)"));
-    newAction(ACTION_deleteAtom, "_deleteAtom", GT._(
-        "delete atom (requires {0})", "set picking DELETE ATOM"));
-    newAction(ACTION_deleteBond, "_deleteBond", GT._(
-        "delete bond (requires {0})", "set picking DELETE BOND"));
-    newAction(ACTION_depth, "_depth", GT._(
-        "adjust depth (back plane; requires {0})", "SLAB ON"));
-    newAction(ACTION_dragAtom, "_dragAtom", GT._("move atom (requires {0})",
+    newAction(ACTION_deleteAtom, "_deleteAtom", GT.o(GT._(
+        "delete atom (requires {0})"), "set picking DELETE ATOM"));
+    newAction(ACTION_deleteBond, "_deleteBond", GT.o(GT._(
+        "delete bond (requires {0})"), "set picking DELETE BOND"));
+    newAction(ACTION_depth, "_depth", GT.o(GT._(
+        "adjust depth (back plane; requires {0})"), "SLAB ON"));
+    newAction(ACTION_dragAtom, "_dragAtom", GT.o(GT._("move atom (requires {0})"),
         "set picking DRAGATOM"));
-    newAction(ACTION_dragDrawObject, "_dragDrawObject", GT._(
-        "move whole DRAW object (requires {0})", "set picking DRAW"));
-    newAction(ACTION_dragDrawPoint, "_dragDrawPoint", GT._(
-        "move specific DRAW point (requires {0})", "set picking DRAW"));
-    newAction(ACTION_dragLabel, "_dragLabel", GT._("move label (requires {0})",
+    newAction(ACTION_dragDrawObject, "_dragDrawObject", GT.o(GT._(
+        "move whole DRAW object (requires {0})"), "set picking DRAW"));
+    newAction(ACTION_dragDrawPoint, "_dragDrawPoint", GT.o(GT._(
+        "move specific DRAW point (requires {0})"), "set picking DRAW"));
+    newAction(ACTION_dragLabel, "_dragLabel", GT.o(GT._("move label (requires {0})"),
         "set picking LABEL"));
-    newAction(ACTION_dragMinimize, "_dragMinimize", GT._(
-        "move atom and minimize molecule (requires {0})",
+    newAction(ACTION_dragMinimize, "_dragMinimize", GT.o(GT._(
+        "move atom and minimize molecule (requires {0})"),
         "set picking DRAGMINIMIZE"));
-    newAction(ACTION_dragMinimizeMolecule, "_dragMinimizeMolecule", GT._(
-        "move and minimize molecule (requires {0})",
+    newAction(ACTION_dragMinimizeMolecule, "_dragMinimizeMolecule", GT.o(GT._(
+        "move and minimize molecule (requires {0})"),
         "set picking DRAGMINIMIZEMOLECULE"));
-    newAction(ACTION_dragSelected, "_dragSelected", GT._(
-        "move selected atoms (requires {0})", "set DRAGSELECTED"));
-    newAction(ACTION_dragZ, "_dragZ", GT._(
-        "drag atoms in Z direction (requires {0})", "set DRAGSELECTED"));
+    newAction(ACTION_dragSelected, "_dragSelected", GT.o(GT._(
+        "move selected atoms (requires {0})"), "set DRAGSELECTED"));
+    newAction(ACTION_dragZ, "_dragZ", GT.o(GT._(
+        "drag atoms in Z direction (requires {0})"), "set DRAGSELECTED"));
     newAction(ACTION_multiTouchSimulation, "_multiTouchSimulation", GT
         ._("simulate multi-touch using the mouse)"));
-    newAction(ACTION_navTranslate, "_navTranslate", GT._(
-        "translate navigation point (requires {0} and {1})", new String[] {
+    newAction(ACTION_navTranslate, "_navTranslate", GT.o(GT._(
+        "translate navigation point (requires {0} and {1})"), new String[] {
             "set NAVIGATIONMODE", "set picking NAVIGATE" }));
     newAction(ACTION_pickAtom, "_pickAtom", GT._("pick an atom"));
-    newAction(ACTION_connectAtoms, "_pickConnect", GT._(
-        "connect atoms (requires {0})", "set picking CONNECT"));
-    newAction(ACTION_pickIsosurface, "_pickIsosurface", GT._(
-        "pick an ISOSURFACE point (requires {0}", "set DRAWPICKING"));
-    newAction(ACTION_pickLabel, "_pickLabel", GT._(
-        "pick a label to toggle it hidden/displayed (requires {0})",
+    newAction(ACTION_connectAtoms, "_pickConnect", GT.o(GT._(
+        "connect atoms (requires {0})"), "set picking CONNECT"));
+    newAction(ACTION_pickIsosurface, "_pickIsosurface", GT.o(GT._(
+        "pick an ISOSURFACE point (requires {0}"), "set DRAWPICKING"));
+    newAction(ACTION_pickLabel, "_pickLabel", GT.o(GT._(
+        "pick a label to toggle it hidden/displayed (requires {0})"),
         "set picking LABEL"));
     newAction(
         ACTION_pickMeasure,
         "_pickMeasure",
-        GT
+        GT.o(GT
             ._(
-                "pick an atom to include it in a measurement (after starting a measurement or after {0})",
+                "pick an atom to include it in a measurement (after starting a measurement or after {0})"),
                 "set picking DISTANCE/ANGLE/TORSION"));
-    newAction(ACTION_pickNavigate, "_pickNavigate", GT._(
-        "pick a point or atom to navigate to (requires {0})",
+    newAction(ACTION_pickNavigate, "_pickNavigate", GT.o(GT._(
+        "pick a point or atom to navigate to (requires {0})"),
         "set NAVIGATIONMODE"));
-    newAction(ACTION_pickPoint, "_pickPoint", GT
-        ._("pick a DRAW point (for measurements) (requires {0}",
+    newAction(ACTION_pickPoint, "_pickPoint", GT.o(GT
+        ._("pick a DRAW point (for measurements) (requires {0}"),
             "set DRAWPICKING"));
     newAction(ACTION_popupMenu, "_popupMenu", GT
         ._("pop up the full context menu"));
     newAction(ACTION_reset, "_reset", GT
         ._("reset (when clicked off the model)"));
     newAction(ACTION_rotate, "_rotate", GT._("rotate"));
-    newAction(ACTION_rotateBranch, "_rotateBranch", GT._(
-        "rotate branch around bond (requires {0})", "set picking ROTATEBOND"));
-    newAction(ACTION_rotateSelected, "_rotateSelected", GT._(
-        "rotate selected atoms (requires {0})", "set DRAGSELECTED"));
+    newAction(ACTION_rotateBranch, "_rotateBranch", GT.o(GT._(
+        "rotate branch around bond (requires {0})"), "set picking ROTATEBOND"));
+    newAction(ACTION_rotateSelected, "_rotateSelected", GT.o(GT._(
+        "rotate selected atoms (requires {0})"), "set DRAGSELECTED"));
     newAction(ACTION_rotateZ, "_rotateZ", GT._("rotate Z"));
     newAction(
         ACTION_rotateZorZoom,
         "_rotateZorZoom",
         GT
             ._("rotate Z (horizontal motion of mouse) or zoom (vertical motion of mouse)"));
-    newAction(ACTION_select, "_select", GT._("select an atom (requires {0})",
+    newAction(ACTION_select, "_select", GT.o(GT._("select an atom (requires {0})"),
         "set pickingStyle EXTENDEDSELECT"));
-    newAction(ACTION_selectAndDrag, "_selectAndDrag", GT._(
-        "select and drag atoms (requires {0})", "set DRAGSELECTED"));
-    newAction(ACTION_selectAndNot, "_selectAndNot", GT._(
-        "unselect this group of atoms (requires {0})",
+    newAction(ACTION_selectAndDrag, "_selectAndDrag", GT.o(GT._(
+        "select and drag atoms (requires {0})"), "set DRAGSELECTED"));
+    newAction(ACTION_selectAndNot, "_selectAndNot", GT.o(GT._(
+        "unselect this group of atoms (requires {0})"),
         "set pickingStyle DRAG/EXTENDEDSELECT"));
-    newAction(ACTION_selectNone, "_selectNone", GT._(
-        "select NONE (requires {0})", "set pickingStyle EXTENDEDSELECT"));
-    newAction(ACTION_selectOr, "_selectOr", GT._(
-        "add this group of atoms to the set of selected atoms (requires {0})",
+    newAction(ACTION_selectNone, "_selectNone", GT.o(GT._(
+        "select NONE (requires {0})"), "set pickingStyle EXTENDEDSELECT"));
+    newAction(ACTION_selectOr, "_selectOr", GT.o(GT._(
+        "add this group of atoms to the set of selected atoms (requires {0})"),
         "set pickingStyle DRAG/EXTENDEDSELECT"));
-    newAction(ACTION_selectToggle, "_selectToggle", GT._(
-        "toggle selection (requires {0})",
+    newAction(ACTION_selectToggle, "_selectToggle", GT.o(GT._(
+        "toggle selection (requires {0})"),
         "set pickingStyle DRAG/EXTENDEDSELECT/RASMOL"));
     newAction(
         ACTION_selectToggleExtended,
         "_selectToggleOr",
-        GT
+        GT.o(GT
             ._(
-                "if all are selected, unselect all, otherwise add this group of atoms to the set of selected atoms (requires {0})",
+                "if all are selected, unselect all, otherwise add this group of atoms to the set of selected atoms (requires {0})"),
                 "set pickingStyle DRAG"));
     newAction(ACTION_setMeasure, "_setMeasure", GT
         ._("pick an atom to initiate or conclude a measurement"));
-    newAction(ACTION_slab, "_slab", GT._(
-        "adjust slab (front plane; requires {0})", "SLAB ON"));
-    newAction(ACTION_slabAndDepth, "_slabAndDepth", GT._(
-        "move slab/depth window (both planes; requires {0})", "SLAB ON"));
+    newAction(ACTION_slab, "_slab", GT.o(GT._(
+        "adjust slab (front plane; requires {0})"), "SLAB ON"));
+    newAction(ACTION_slabAndDepth, "_slabAndDepth", GT.o(GT._(
+        "move slab/depth window (both planes; requires {0})"), "SLAB ON"));
     newAction(ACTION_slideZoom, "_slideZoom", GT
         ._("zoom (along right edge of window)"));
     newAction(
         ACTION_spinDrawObjectCCW,
         "_spinDrawObjectCCW",
-        GT
+        GT.o(GT
             ._(
-                "click on two points to spin around axis counterclockwise (requires {0})",
+                "click on two points to spin around axis counterclockwise (requires {0})"),
                 "set picking SPIN"));
-    newAction(ACTION_spinDrawObjectCW, "_spinDrawObjectCW", GT._(
-        "click on two points to spin around axis clockwise (requires {0})",
+    newAction(ACTION_spinDrawObjectCW, "_spinDrawObjectCW", GT.o(GT._(
+        "click on two points to spin around axis clockwise (requires {0})"),
         "set picking SPIN"));
-    newAction(ACTION_stopMotion, "_stopMotion", GT._(
-        "stop motion (requires {0})", "set waitForMoveTo FALSE"));
+    newAction(ACTION_stopMotion, "_stopMotion", GT.o(GT._(
+        "stop motion (requires {0})"), "set waitForMoveTo FALSE"));
     newAction(
         ACTION_swipe,
         "_swipe",
@@ -659,18 +659,18 @@ public class ActionManager implements EventManager {
     rubberbandSelectionMode = false;
     switch (pickingStyleSelect) {
     case PICKINGSTYLE_SELECT_PFAAT:
-      if (!binding.getName().equals("extendedSelect"))
+      if (!binding.name.equals("extendedSelect"))
         setBinding(pfaatBinding == null ? pfaatBinding = Binding
             .newBinding("Pfaat") : pfaatBinding);
       break;
     case PICKINGSTYLE_SELECT_DRAG:
-      if (!binding.getName().equals("drag"))
+      if (!binding.name.equals("drag"))
         setBinding(dragBinding == null ? dragBinding = Binding
             .newBinding("Drag") : dragBinding);
       rubberbandSelectionMode = true;
       break;
     case PICKINGSTYLE_SELECT_RASMOL:
-      if (!binding.getName().equals("selectOrToggle"))
+      if (!binding.name.equals("selectOrToggle"))
         setBinding(rasmolBinding == null ? rasmolBinding = Binding
             .newBinding("Rasmol") : rasmolBinding);
       break;
@@ -678,7 +678,7 @@ public class ActionManager implements EventManager {
       if (binding != jmolBinding)
         setBinding(jmolBinding);
     }
-    if (!binding.getName().equals("drag"))
+    if (!binding.name.equals("drag"))
       predragBinding = binding;
   }
 
@@ -698,7 +698,7 @@ public class ActionManager implements EventManager {
       vb.addLast(obj);
     }
     info.put("bindings", vb);
-    info.put("bindingName", binding.getName());
+    info.put("bindingName", binding.name);
     info.put("actionNames", actionNames);
     info.put("actionInfo", actionInfo);
     info.put("bindingInfo", PT.split(getBindingInfo(null), "\n"));
@@ -1377,7 +1377,7 @@ public class ActionManager implements EventManager {
     boolean isRbAction = isRubberBandSelect(clickAction);
     if (isRbAction)
       selectRb(clickAction);
-    rubberbandSelectionMode = (binding.getName().equals("drag"));
+    rubberbandSelectionMode = (binding.name.equals("drag"));
     rectRubber.x = Integer.MAX_VALUE;
     if (dragRelease) {
       viewer.notifyMouseClicked(x, y, Binding.getMouseAction(pressedCount, 0,

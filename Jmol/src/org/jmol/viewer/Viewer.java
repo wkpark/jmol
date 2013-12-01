@@ -453,8 +453,10 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       /**
        * @j2sNative
        * 
-       *            if(typeof Jmol != "undefined") this.applet =
-       *            Jmol._applets[this.htmlName.split("_object")[0]];
+       *            if(self.Jmol) { 
+       *            this.applet = Jmol._applets[this.htmlName.split("_object")[0]];
+       *            this.strJavaVersion = org.jmol.viewer.Viewer.strJavaVersion = Jmol._version;
+       *            }
        * 
        * 
        */
@@ -2643,7 +2645,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         null, null, null);
 
     // null fullPathName implies we are doing a merge
-    pushHoldRepaint("createModelSet");
+    pushHoldRepaintWhy("createModelSet");
     setErrorMessage(null, null);
     try {
       BS bsNew = new BS();
@@ -3040,7 +3042,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   @Override
   public void startHoverWatcher(boolean tf) {
-    if (!haveDisplay || tf && (!hoverEnabled || animationManager.animationOn))
+    if (tf && inMotion || !haveDisplay || tf && (!hoverEnabled || animationManager.animationOn))
       return;
     actionManager.startHoverWatcher(tf);
   }
@@ -4074,14 +4076,14 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   @Override
   public void pushHoldRepaint() {
-    pushHoldRepaint(null);
+    pushHoldRepaintWhy(null);
   }
 
   /**
    * 
    * @param why
    */
-  public void pushHoldRepaint(String why) {
+  public void pushHoldRepaintWhy(String why) {
     if (repaintManager != null)
       repaintManager.pushHoldRepaint(why);
   }
@@ -6151,7 +6153,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       break;
     case T.defaultvdw:
       // /11.5.11//
-      setDefaultVdw(value);
+      setVdwStr(value);
       return;
     case T.language:
       // /11.1.30//
@@ -8913,16 +8915,10 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return (Elements.getVanderwaalsMar(atomicAndIsotopeNumber, type));
   }
 
-  void setDefaultVdw(String type) {
-    EnumVdw vType = EnumVdw.getVdwType(type);
-    if (vType == null)
-      vType = EnumVdw.AUTO;
-    setDefaultVdw(vType);
-    global.setS("defaultVDW", getDefaultVdwNameOrData(Integer.MIN_VALUE,
-        null, null));
-  }
-
-  public void setDefaultVdw(EnumVdw type) {
+  void setVdwStr(String name) {
+    EnumVdw type = EnumVdw.getVdwType(name);
+    if (type == null)
+      type = EnumVdw.AUTO;
     // only allowed types here are VDW_JMOL, VDW_BABEL, VDW_RASMOL, VDW_USER, VDW_AUTO
     switch (type) {
     case JMOL:
@@ -8938,6 +8934,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         && bsUserVdws == null)
       setUserVdw(defaultVdw);
     defaultVdw = type;    
+    global.setS("defaultVDW", type.getVdwLabel());
   }
 
   BS bsUserVdws;
@@ -10169,7 +10166,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         setAppendNew(true);
     }
     if (!isSilent)
-      scriptStatus(GT._("{0} hydrogens added", pts.length));
+      scriptStatus(GT.i(GT._("{0} hydrogens added"), pts.length));
     return bsB;
   }
 

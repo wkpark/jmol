@@ -4,12 +4,16 @@ import org.jmol.viewer.ActionManager;
 
 public class JmolBinding extends Binding {
 
-  public JmolBinding(String name) {
-    super(name);
+  public JmolBinding() {
+    set("toggle");
+  }
+    
+  protected void set(String name) {
+    this.name = name;
     setGeneralBindings();
     setSelectBindings();
   }
-    
+  
   protected void setSelectBindings() {
     // these are only utilized for  set picking select
     bindAction(DOUBLE|CLICK|LEFT, ActionManager.ACTION_select);

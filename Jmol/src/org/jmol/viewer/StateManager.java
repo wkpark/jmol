@@ -160,7 +160,7 @@ public class StateManager {
         JC.DEFAULT_PERCENT_VDW_ATOM);
     viewer.setIntProperty("bondRadiusMilliAngstroms",
         JC.DEFAULT_BOND_MILLIANGSTROM_RADIUS);
-    viewer.setDefaultVdw("auto");
+    viewer.setVdwStr("auto");
   }
 
   void setRasMolDefaults() {
@@ -170,7 +170,7 @@ public class StateManager {
     viewer.setBooleanProperty("zeroBasedXyzRasmol", true);
     viewer.setIntProperty("percentVdwAtom", 0);
     viewer.setIntProperty("bondRadiusMilliAngstroms", 1);
-    viewer.setDefaultVdw("Rasmol");
+    viewer.setVdwStr("Rasmol");
   }
 
   void setPyMOLDefaults() {

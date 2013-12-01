@@ -642,7 +642,7 @@ abstract public class GenericPopup implements GenericMenuInterface,
       menuSetLabel(menu, GT._("No atoms loaded"));
       menuEnableItem(menu, false);
     } else {
-      menuSetLabel(menu, GT._(text, modelSetFileName));
+      menuSetLabel(menu, GT.o(GT._(text), modelSetFileName));
       menuEnableItem(menu, true);
     }
   }
@@ -657,7 +657,7 @@ abstract public class GenericPopup implements GenericMenuInterface,
     if (menu == null)
       return;
     menuEnable(menu, atomCount != 0);
-    menuSetLabel(menu, GT._(getMenuText("selectMenuText"), viewer
+    menuSetLabel(menu, gti("selectMenuText", viewer
         .getSelectionCount()));
   }
 
@@ -763,11 +763,11 @@ abstract public class GenericPopup implements GenericMenuInterface,
     int nOrb = (mos == null ? 0 : mos.size());
     String text = getMenuText("surfMoComputedMenuText");
     if (nOrb == 0) {
-      menuSetLabel(menu, GT._(text, ""));
+      menuSetLabel(menu, GT.o(GT._(text), ""));
       menuEnable(menu, false);
       return;
     }
-    menuSetLabel(menu, GT._(text, nOrb));
+    menuSetLabel(menu, GT.i(GT._(text), nOrb));
     menuEnable(menu, true);
     Object subMenu = menu;
     int nmod = (nOrb % itemMax);
@@ -980,8 +980,9 @@ abstract public class GenericPopup implements GenericMenuInterface,
     if (menu == null)
       return;
     menuEnable(menu, (modelCount > 0));
-    menuSetLabel(menu, (modelIndex < 0 ? GT._(getMenuText("allModelsText"),
-        modelCount) : getModelLabel()));
+    menuSetLabel(menu, (modelIndex < 0 ? gti("allModelsText",
+        modelCount) : gto("modelMenuText", (modelIndex + 1) + "/"
+            + modelCount)));
     menuRemoveAll(menu, 0);
     if (modelCount < 1)
       return;
@@ -1033,7 +1034,7 @@ abstract public class GenericPopup implements GenericMenuInterface,
     if (!isMultiConfiguration)
       return;
     int nAltLocs = altlocs.length();
-    menuSetLabel(menu, GT._(getMenuText("configurationMenuText"), nAltLocs));
+    menuSetLabel(menu, gti("configurationMenuText", nAltLocs));
     menuRemoveAll(menu, 0);
     String script = "hide none ##CONFIG";
     menuCreateCheckboxItem(menu, GT._("All"), script, null,
@@ -1068,7 +1069,7 @@ abstract public class GenericPopup implements GenericMenuInterface,
     if (modelSetName == null || isZapped)
       return;
     if (isMultiFrame) {
-      modelSetName = GT._(getMenuText("modelSetCollectionText"), modelCount);
+      modelSetName = gti("modelSetCollectionText", modelCount);
       if (modelSetName.length() > titleWidthMax)
         modelSetName = modelSetName.substring(0, titleWidthMax) + "...";
     } else if (viewer.getBooleanProperty("hideNameInPopup")) {
@@ -1080,16 +1081,16 @@ abstract public class GenericPopup implements GenericMenuInterface,
     menuEnable(menu, true);
     // 100 here is totally arbitrary. You can do a minimization on any number of atoms
     menuEnable(htMenus.get("computationMenu"), atomCount <= 100);
-    addMenuItem(menu, GT._(getMenuText("atomsText"), atomCount));
-    addMenuItem(menu, GT._(getMenuText("bondsText"), viewer
+    addMenuItem(menu, gti("atomsText", atomCount));
+    addMenuItem(menu, gti("bondsText", viewer
         .getBondCountInModel(modelIndex)));
     if (isPDB) {
       menuAddSeparator(menu);
-      addMenuItem(menu, GT._(getMenuText("groupsText"), viewer
+      addMenuItem(menu, gti("groupsText", viewer
           .getGroupCountInModel(modelIndex)));
-      addMenuItem(menu, GT._(getMenuText("chainsText"), viewer
+      addMenuItem(menu, gti("chainsText", viewer
           .getChainCountInModel(modelIndex)));
-      addMenuItem(menu, GT._(getMenuText("polymersText"), viewer
+      addMenuItem(menu, gti("polymersText", viewer
           .getPolymerCountInModel(modelIndex)));
       Object submenu = htMenus.get("BiomoleculesMenu");
       if (submenu == null) {
@@ -1111,8 +1112,8 @@ abstract public class GenericPopup implements GenericMenuInterface,
                   + "\";restore orientation;");
           int nAtoms = ((Integer) biomolecules.get(i).get("atomCount"))
               .intValue();
-          String entryName = GT._(getMenuText(isMultiFrame ? "biomoleculeText"
-              : "loadBiomoleculeText"), new Object[] { Integer.valueOf(i + 1),
+          String entryName = gto(isMultiFrame ? "biomoleculeText"
+              : "loadBiomoleculeText", new Object[] { Integer.valueOf(i + 1),
               Integer.valueOf(nAtoms) });
           menuCreateItem(submenu, entryName, script, null);
         }
@@ -1120,14 +1121,17 @@ abstract public class GenericPopup implements GenericMenuInterface,
     }
     if (isApplet && !viewer.getBooleanProperty("hideNameInPopup")) {
       menuAddSeparator(menu);
-      menuCreateItem(menu, GT._(getMenuText("viewMenuText"), modelSetFileName),
+      menuCreateItem(menu, gto("viewMenuText", modelSetFileName),
           "show url", null);
     }
   }
 
-  private String getModelLabel() {
-    return GT._(getMenuText("modelMenuText"), (modelIndex + 1) + "/"
-        + modelCount);
+  private String gti(String s, int n) {
+    return GT.i(GT._(getMenuText(s)), n);
+  }
+
+  private String gto(String s, Object o) {
+    return GT.o(GT._(getMenuText(s)), o);
   }
 
   private void updateAboutSubmenu() {
@@ -1141,8 +1145,10 @@ abstract public class GenericPopup implements GenericMenuInterface,
     htMenus.put("modelSetMenu", subMenu);
     updateModelSetComputedMenu();
 
-    subMenu = menuNewSubMenu("Jmol " + JC.version
-        + (viewer.isWebGL ? " (WebGL)" : viewer.isJS ? " (HTML5)" : isSigned ? " (signed)" : ""), "aboutJmolMenu");
+    subMenu = menuNewSubMenu("Jmol "
+        + JC.version
+        + (viewer.isWebGL ? " (WebGL)" : viewer.isJS ? " (HTML5)"
+            : isSigned ? " (signed)" : ""), "aboutJmolMenu");
     menuAddSubMenu(menu, subMenu);
     htMenus.put("aboutJmolMenu", subMenu);
     addMenuItem(subMenu, JC.date);
@@ -1162,35 +1168,27 @@ abstract public class GenericPopup implements GenericMenuInterface,
     addMenuItem(subMenu, GT._("Java version:"));
     addMenuItem(subMenu, viewer.getJavaVendor());
     addMenuItem(subMenu, viewer.getJavaVersion());
-    Runtime runtime = null;
     /**
      * @j2sNative
      * 
      */
     {
-      runtime = Runtime.getRuntime();
-    }
-    if (runtime != null) {
+      Runtime runtime = Runtime.getRuntime();
       int availableProcessors = runtime.availableProcessors();
       if (availableProcessors > 0)
         addMenuItem(subMenu, (availableProcessors == 1) ? GT._("1 processor")
-            : GT._("{0} processors", availableProcessors));
+            : GT.i(GT._("{0} processors"), availableProcessors));
       else
         addMenuItem(subMenu, GT._("unknown processor count"));
       addMenuItem(subMenu, GT._("Java memory usage:"));
       //runtime.gc();
-      long mbTotal = convertToMegabytes(runtime.totalMemory());
-      long mbFree = convertToMegabytes(runtime.freeMemory());
-      long mbMax = convertToMegabytes(runtime.maxMemory());
-      addMenuItem(subMenu, GT._("{0} MB total",
-          new Object[] { new Long(mbTotal) }));
-      addMenuItem(subMenu, GT._("{0} MB free",
-          new Object[] { new Long(mbFree) }));
+      int mbTotal = convertToMegabytes(runtime.totalMemory());
+      int mbFree = convertToMegabytes(runtime.freeMemory());
+      int mbMax = convertToMegabytes(runtime.maxMemory());
+      addMenuItem(subMenu, GT.i(GT._("{0} MB total"), mbTotal));
+      addMenuItem(subMenu, GT.i(GT._("{0} MB free"), mbFree));
       if (mbMax > 0)
-        addMenuItem(subMenu, GT._("{0} MB maximum", new Object[] { new Long(
-            mbMax) }));
-      else
-        addMenuItem(subMenu, GT._("unknown maximum"));
+        addMenuItem(subMenu, GT.i(GT._("{0} MB maximum"), mbMax));
     }
   }
 
@@ -1221,10 +1219,10 @@ abstract public class GenericPopup implements GenericMenuInterface,
     }
   }
 
-  private long convertToMegabytes(long num) {
+  private int convertToMegabytes(long num) {
     if (num <= Long.MAX_VALUE - 512 * 1024)
       num += 512 * 1024;
-    return num / (1024 * 1024);
+    return (int) (num / (1024 * 1024));
   }
 
   private void updateForShow() {

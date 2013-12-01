@@ -147,7 +147,7 @@ public abstract class AtomSetCollectionReader {
   // buffer
   public String line, prevline;
   protected int[] next = new int[1];
-  protected long ptLine;
+  protected int ptLine;
 
   // protected/public state variables
   public int[] latticeCells;

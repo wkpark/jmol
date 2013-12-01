@@ -44,10 +44,6 @@ import java.util.Map;
 
 public class SmarterJmolAdapter extends JmolAdapter {
 
-  public SmarterJmolAdapter() {
-    super("SmarterJmolAdapter");
-  }
-
   /**************************************************************
    * 
    * AtomSetCollectionReader.readData() will close any BufferedReader

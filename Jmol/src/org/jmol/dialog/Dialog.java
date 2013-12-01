@@ -285,7 +285,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
 
     qPanelJPEG = new JPanel();
     qPanelJPEG.setLayout(new BorderLayout());
-    qPanelJPEG.setBorder(new TitledBorder(GT._("JPEG Quality ({0})",
+    qPanelJPEG.setBorder(new TitledBorder(GT.i(GT._("JPEG Quality ({0})"),
         qualityJPG)));
     qSliderJPEG = new JSlider(SwingConstants.HORIZONTAL, 50, 100, qualityJPG);
     qSliderJPEG.putClientProperty("JSlider.isFilled", Boolean.TRUE);
@@ -299,7 +299,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     qPanelPNG = new JPanel();
     qPanelPNG.setLayout(new BorderLayout());
     qPanelPNG
-        .setBorder(new TitledBorder(GT._("PNG Compression  ({0})", qualityPNG)));
+        .setBorder(new TitledBorder(GT.i(GT._("PNG Compression  ({0})"), qualityPNG)));
     qSliderPNG = new JSlider(SwingConstants.HORIZONTAL, 0, 9, qualityPNG);
     qSliderPNG.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     qSliderPNG.setPaintTicks(true);
@@ -327,10 +327,10 @@ public class Dialog extends JPanel implements JmolDialogInterface {
       if (isJPEG) {
         qualityJPG = value;
         qPanelJPEG
-            .setBorder(new TitledBorder(GT._("JPEG Quality ({0})", value)));
+            .setBorder(new TitledBorder(GT.i(GT._("JPEG Quality ({0})"), value)));
       } else {
         qualityPNG = value;
-        qPanelPNG.setBorder(new TitledBorder(GT._("PNG Quality ({0})", value)));
+        qPanelPNG.setBorder(new TitledBorder(GT.i(GT._("PNG Quality ({0})"), value)));
       }
     }
   }
@@ -381,8 +381,8 @@ public class Dialog extends JPanel implements JmolDialogInterface {
 
   private static boolean doOverWrite(JFileChooser chooser, File file) {
     Object[] options = { GT._("Yes"), GT._("No") };
-    int opt = JOptionPane.showOptionDialog(chooser, GT._(
-        "Do you want to overwrite file {0}?", file.getAbsolutePath()), GT
+    int opt = JOptionPane.showOptionDialog(chooser, GT.o(GT._(
+        "Do you want to overwrite file {0}?"), file.getAbsolutePath()), GT
         ._("Warning"), JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
         null, options, options[0]);
     return (opt == 0);

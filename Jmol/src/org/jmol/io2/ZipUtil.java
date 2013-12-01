@@ -857,9 +857,8 @@ public class ZipUtil implements JmolZipUtility {
     /**
      * @j2sNative
      * 
-     *            return
-     *            J.api.Interface.getInterface("java.util.zip.ZipOutputStream"
-     *            ).setZOS(bos);
+     *            return J.api.Interface.getInterface(
+     *            "java.util.zip.ZipOutputStream").setZOS(bos);
      * 
      */
     {

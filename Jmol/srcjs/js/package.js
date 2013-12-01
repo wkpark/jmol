@@ -13,7 +13,8 @@ window["java.packaged"] = true;
 
 var	base = ClazzLoader.fastGetJ2SLibBase() + "core/";
 
-ClazzLoader.loadZJar (base + "core.z.js", ClazzLoader.runtimeKeyClass);
+for (var i = 0; i < Jmol._coreFiles.length; i++)
+  ClazzLoader.loadZJar (Jmol._coreFiles[i], ClazzLoader.runtimeKeyClass);
 
   if (Jmol._debugCode)
     return;

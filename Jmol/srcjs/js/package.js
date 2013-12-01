@@ -11,42 +11,9 @@ if (!window["java.registered"])
 if (window["java.packaged"]) return;
 window["java.packaged"] = true;
 
+var	base = ClazzLoader.fastGetJ2SLibBase() + "core/";
 
-	ClazzLoader.registerPackages ("java", [
-			"io", "lang", 
-			//"lang.annotation", 
-			"lang.reflect",
-			"util", 
-			//"util.concurrent", "util.concurrent.atomic", "util.concurrent.locks",
-			//"util.jar", "util.logging", "util.prefs", 
-			"util.regex",
-			"util.zip",
-			"net", "text"]);
-			
-	window["reflect"] = java.lang.reflect;
-
-var	base = ClazzLoader.fastGetJ2SLibBase ();//ClazzLoader.getClasspathFor ("core.*");
-	base += "core/"
-var	basefile = base + "core.z.js";
-
-	ClazzLoader.ignore([
-		"net.sf.j2s.ajax.HttpRequest",
-		"java.util.MapEntry.Type",
-		"java.net.UnknownServiceException",
-		"java.lang.Runtime",
-		"java.security.AccessController",
-		"java.security.PrivilegedExceptionAction",
-		"java.io.File",
-		"java.io.FileInputStream",
-		"java.io.FileWriter",
-		"java.io.OutputStreamWriter",
-		"java.util.Calendar", // bypassed in ModelCollection
-		"java.text.SimpleDateFormat", // not used
-		"java.text.DateFormat", // not used
-		"java.util.concurrent.Executors"
-	])
-	
-	ClazzLoader.loadZJar (basefile, ClazzLoader.runtimeKeyClass);
+ClazzLoader.loadZJar (base + "core.z.js", ClazzLoader.runtimeKeyClass);
 
   if (Jmol._debugCode)
     return;

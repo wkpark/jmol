@@ -116,7 +116,6 @@ package org.jmol.jvxl.readers;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.StringReader;
 
 import java.util.Map;
 
@@ -1271,7 +1270,7 @@ public class SurfaceGenerator {
       data = (String) value;
       // this will be OK, because any string will be a simple string, 
       // not a binary file.
-      value = new BufferedReader(new StringReader((String) value));
+      value = JmolBinary.getBR((String) value);
     }
     BufferedReader br = (BufferedReader) value;
     if (fileType == null)

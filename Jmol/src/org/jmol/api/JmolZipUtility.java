@@ -16,9 +16,7 @@ public interface JmolZipUtility {
   
   public String getZipDirectoryAsStringAndClose(BufferedInputStream t);
 
-  public InputStream newGZIPInputStream(BufferedInputStream bis) throws IOException;
-
-  public String getGzippedBytesAsString(byte[] t);
+  public InputStream newGZIPInputStream(InputStream bis) throws IOException;
 
   public Object getZipFileContents(BufferedInputStream bis,
                                           String[] subFileList, int listPtr, boolean asBufferedInputStream);

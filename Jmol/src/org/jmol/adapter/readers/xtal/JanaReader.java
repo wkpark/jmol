@@ -262,7 +262,7 @@ public class JanaReader extends ModulationReader {
     String id = name.substring(0, ipt);
     ipt = id.lastIndexOf("/");
     id = id.substring(ipt + 1);
-    BufferedReader r = JmolBinary.getBufferedReaderForString((String) viewer
+    BufferedReader r = JmolBinary.getBR((String) viewer
         .getLigandModel(id, name, "_file", "----"));
     if (readM40Floats(r).startsWith("command"))
       readM40WaveVectors(r);

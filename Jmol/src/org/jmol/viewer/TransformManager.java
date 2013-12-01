@@ -2754,10 +2754,10 @@ public class TransformManager {
     scaleFitToScreen(false, zoomLarge, false, true);
   }
 
-  public void setAll(P3 center, M3 m, P3 navCenter, float zoom,
-                     float xTrans, float yTrans, float rotationRadius,
-                     float pixelScale, float navDepth, float xNav,
-                     float yNav, float cameraDepth, float cameraX, float cameraY) {
+  public void setAll(P3 center, M3 m, P3 navCenter, float zoom, float xTrans,
+                     float yTrans, float rotationRadius, float pixelScale,
+                     float navDepth, float xNav, float yNav, float cameraDepth,
+                     float cameraX, float cameraY) {
     setRotation(m);
     if (center != null)
       moveRotationCenter(center, !windowCentered);
@@ -2777,10 +2777,13 @@ public class TransformManager {
       translateToPercent('x', xTrans);
       translateToPercent('y', yTrans);
     }
-    if (!Float.isNaN(xNav) && !Float.isNaN(yNav))
-      navTranslatePercentOrTo(0, xNav, yNav);
-    if (!Float.isNaN(navDepth))
-      setNavigationDepthPercent(navDepth);
+
+    if (mode == MODE_NAVIGATION) {
+      if (!Float.isNaN(xNav) && !Float.isNaN(yNav))
+        navTranslatePercentOrTo(0, xNav, yNav);
+      if (!Float.isNaN(navDepth))
+        setNavigationDepthPercent(navDepth);
+    }
   }
 
 }

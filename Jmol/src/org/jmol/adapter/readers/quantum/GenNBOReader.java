@@ -26,10 +26,10 @@ package org.jmol.adapter.readers.quantum;
 
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.JmolAdapter;
+import org.jmol.io.JmolBinary;
 import org.jmol.util.Logger;
 
 import java.io.BufferedReader;
-import java.io.StringReader;
 
 import javajs.util.AU;
 import javajs.util.List;
@@ -138,7 +138,7 @@ public class GenNBOReader extends MOReader {
           return true;
       }
       BufferedReader readerSave = reader;
-      reader = new BufferedReader(new StringReader(data));
+      reader = JmolBinary.getBR(data);
       readLine();
       readLine();
       readMOs();
@@ -173,7 +173,7 @@ public class GenNBOReader extends MOReader {
   private boolean readFile31() throws Exception {
     String data = getFileData(".31");
     BufferedReader readerSave = reader;
-    reader = new BufferedReader(new StringReader(data));
+    reader = JmolBinary.getBR(data);
     if (!readData31(null, null))
       return false;
     reader = readerSave;
@@ -183,7 +183,7 @@ public class GenNBOReader extends MOReader {
   private void readFile46() throws Exception {
     String data = getFileData(".46");
     BufferedReader readerSave = reader;
-    reader = new BufferedReader(new StringReader(data));
+    reader = JmolBinary.getBR(data);
     readData46();
     reader = readerSave;
   }

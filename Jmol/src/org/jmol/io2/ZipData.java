@@ -25,6 +25,8 @@
 
 package org.jmol.io2;
 
+import java.io.BufferedInputStream;
+
 import org.jmol.io.JmolBinary;
 
 import javajs.util.SB;
@@ -55,8 +57,20 @@ public class ZipData {
   }    
 
   public void addTo(SB data) {
-    data.append(ZipUtil.staticGetGzippedBytesAsString(buf));
+    data.append(getGzippedBytesAsString(buf));
   }
-  
+
+  static String getGzippedBytesAsString(byte[] bytes) {
+    try {
+      BufferedInputStream bis = ZipUtil.getUnGzippedInputStream(bytes);
+      String s = ZipUtil.getStreamAsString(bis);
+      bis.close();
+      return s;
+    } catch (Exception e) {
+      return "";
+    }
+  }
+
+ 
 }
 

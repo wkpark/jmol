@@ -24,10 +24,10 @@
 package org.jmol.popup;
 
 import java.io.BufferedReader;
-import java.io.StringReader;
 import java.util.Properties;
 
 import org.jmol.i18n.GT;
+import org.jmol.io.JmolBinary;
 
 public abstract class PopupResource {
 
@@ -71,7 +71,7 @@ public abstract class PopupResource {
   protected void setStructure(String slist) {
     if (slist == null)
       return;
-    BufferedReader br = new BufferedReader(new StringReader(slist));
+    BufferedReader br = JmolBinary.getBR(slist);
     String line;
     int pt;
     try {

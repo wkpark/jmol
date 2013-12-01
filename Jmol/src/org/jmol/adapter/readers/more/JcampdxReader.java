@@ -24,8 +24,6 @@
 
 package org.jmol.adapter.readers.more;
 
-import java.io.BufferedReader;
-import java.io.StringReader;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -39,6 +37,7 @@ import org.jmol.adapter.smarter.Bond;
 import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
+import org.jmol.io.JmolBinary;
 import org.jmol.java.BS;
 
 import org.jmol.util.Escape;
@@ -246,7 +245,7 @@ public class JcampdxReader extends MolReader {
       sb.append(line).appendC('\n');
     String data = sb.toString();
     Object ret = SmarterJmolAdapter.staticGetAtomSetCollectionReader(filePath,
-        modelType, new BufferedReader(new StringReader(data)), htParams);
+        modelType, JmolBinary.getBR(data), htParams);
     if (ret instanceof String) {
       Logger.warn("" + ret);
       return null;

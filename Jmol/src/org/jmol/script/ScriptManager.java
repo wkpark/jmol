@@ -591,7 +591,7 @@ public class ScriptManager implements JmolScriptManager {
       if (zipDirectory.indexOf("JmolManifest") >= 0)
         return "Jmol";
       return viewer.getModelAdapter().getFileTypeName(
-          JmolBinary.getBufferedReaderForString(zipDirectory));
+          JmolBinary.getBR(zipDirectory));
     }
     if (PT.isAS(br)) {
       return ((String[]) br)[0];

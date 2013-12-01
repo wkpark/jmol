@@ -140,7 +140,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StringReader;
 
 /*
  * 
@@ -2274,7 +2273,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         Map<String, Object> htParams = new Hashtable<String, Object>();
         htParams.put("modelOnly", Boolean.TRUE);
         model = getModelAdapter().getAtomSetCollectionReader("ligand", null,
-            JmolBinary.getBufferedReaderForString(data), htParams);
+            JmolBinary.getBR(data), htParams);
         isError = (model instanceof String);
         if (!isError) {
           model = getModelAdapter().getAtomSetCollection(model);
@@ -2550,7 +2549,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
                                              boolean isAppend) {
     // loadInline, openStringInline
 
-    BufferedReader br = new BufferedReader(new StringReader(strModel));
+    BufferedReader br = JmolBinary.getBR(strModel);
     String type = getModelAdapter().getFileTypeName(br);
     if (type == null)
       return "unknown file type";
@@ -3594,7 +3593,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     if (data == null)
       return null;
     return CifDataReader
-        .readCifData(new BufferedReader(new StringReader(data)));
+        .readCifData(JmolBinary.getBR(data));
   }
 
   public String getPDBHeader() {

@@ -19,12 +19,12 @@ public abstract class DataReader extends BufferedReader {
   
   protected int ptMark;
 
-  protected DataReader(Reader in) {
-    super(in);
-  }
-
   public DataReader() {
     super(new StringReader(""));
+  }
+
+  protected DataReader(Reader in) {
+    super(in);
   }
 
   public BufferedReader getBufferedReader() {

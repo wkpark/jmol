@@ -27,11 +27,9 @@ package org.jmol.io2;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.StringReader;
 
 import javajs.J2SIgnoreImport;
 import javajs.api.ZInputStream;
@@ -60,8 +58,8 @@ import org.jmol.util.Logger;
 import org.jmol.util.Txt;
 import org.jmol.viewer.FileManager;
 
-
-@J2SIgnoreImport({java.io.BufferedOutputStream.class, java.util.zip.ZipOutputStream.class})
+@J2SIgnoreImport({ java.io.BufferedOutputStream.class,
+    java.util.zip.ZipOutputStream.class })
 public class ZipUtil implements JmolZipUtility {
 
   public ZipUtil() {
@@ -101,9 +99,10 @@ public class ZipUtil implements JmolZipUtility {
                             String binaryFileList, Map<String, String> fileData) {
     getAllZipDataStatic(is, subfileList, name0, binaryFileList, fileData);
   }
-  
-  private static void getAllZipDataStatic(InputStream is, String[] subfileList, String name0,
-                            String binaryFileList, Map<String, String> fileData) {
+
+  private static void getAllZipDataStatic(InputStream is, String[] subfileList,
+                                          String name0, String binaryFileList,
+                                          Map<String, String> fileData) {
     ZipInputStream zis = (ZipInputStream) newZIS(is);
     ZipEntry ze;
     SB listing = new SB();
@@ -182,10 +181,8 @@ public class ZipUtil implements JmolZipUtility {
             ret.append(name).appendC('\n');
         }
         String str = ret.toString();
-        if (asBufferedInputStream)
-          return new BufferedInputStream(new ByteArrayInputStream(
-              str.getBytes()));
-        return str;
+        return (asBufferedInputStream ? JmolBinary.getBIS(str
+            .getBytes()) : str);
       }
       int pt = fileName.indexOf(":asBinaryString");
       boolean asBinaryString = (pt > 0);
@@ -194,17 +191,17 @@ public class ZipUtil implements JmolZipUtility {
       while ((ze = zis.getNextEntry()) != null
           && !fileName.equals(ze.getName())) {
       }
-      byte[] bytes = (ze == null ? null : JmolBinary.getStreamBytes(zis, ze.getSize()));
+      byte[] bytes = (ze == null ? null : JmolBinary.getStreamBytes(zis,
+          ze.getSize()));
       ze = null;
       zis.close();
       if (bytes == null)
         return "";
       if (JmolBinary.isZipB(bytes))
-        return getZipFileContents(new BufferedInputStream(
-            new ByteArrayInputStream(bytes)), list, ++listPtr,
-            asBufferedInputStream);
+        return getZipFileContents(JmolBinary.getBIS(bytes), list,
+            ++listPtr, asBufferedInputStream);
       if (asBufferedInputStream)
-        return new BufferedInputStream(new ByteArrayInputStream(bytes));
+        return JmolBinary.getBIS(bytes);
       if (asBinaryString) {
         ret = new SB();
         for (int i = 0; i < bytes.length; i++)
@@ -232,10 +229,8 @@ public class ZipUtil implements JmolZipUtility {
         if (!fileName.equals(ze.getName()))
           continue;
         byte[] bytes = JmolBinary.getStreamBytes(zis, ze.getSize());
-        if (JmolBinary.isZipB(bytes) && ++listPtr < list.length)
-          return getZipFileContentsAsBytes(new BufferedInputStream(
-              new ByteArrayInputStream(bytes)), list, listPtr);
-        return bytes;
+        return (JmolBinary.isZipB(bytes) && ++listPtr < list.length ? getZipFileContentsAsBytes(
+            JmolBinary.getBIS(bytes), list, listPtr) : bytes);
       }
     } catch (Exception e) {
     }
@@ -274,14 +269,14 @@ public class ZipUtil implements JmolZipUtility {
                                                   boolean addManifest)
       throws IOException {
     bis = JmolBinary.checkPngZipStream(bis);
-    List<String> v = new  List<String>();
+    List<String> v = new List<String>();
     ZipInputStream zis = new ZipInputStream(bis);
     ZipEntry ze;
     String manifest = null;
     while ((ze = zis.getNextEntry()) != null) {
       String fileName = ze.getName();
       if (addManifest && isJmolManifest(fileName))
-        manifest = getZipEntryAsString(zis);
+        manifest = getStreamAsString(zis);
       else if (!fileName.startsWith("__MACOS")) // resource fork not nec.
         v.addLast(fileName);
     }
@@ -291,7 +286,7 @@ public class ZipUtil implements JmolZipUtility {
     return v.toArray(new String[v.size()]);
   }
 
-  private static String getZipEntryAsString(InputStream is) throws IOException {
+  static String getStreamAsString(InputStream is) throws IOException {
     return JmolBinary.fixUTF(JmolBinary.getStreamBytes(is, -1));
   }
 
@@ -337,46 +332,22 @@ public class ZipUtil implements JmolZipUtility {
     return listing.toString();
   }
 
-  @Override
-  public String getGzippedBytesAsString(byte[] bytes) {
-    return staticGetGzippedBytesAsString(bytes);
-  }
-
-  static String staticGetGzippedBytesAsString(byte[] bytes) {
+  static BufferedInputStream getUnGzippedInputStream(byte[] bytes) {
     try {
-      InputStream is = new ByteArrayInputStream(bytes);
-      do {
-        is = new BufferedInputStream(new GZIPInputStream(is, 512));
-      } while (JmolBinary.isGzipS(is));
-      String s = getZipEntryAsString(is);
-      is.close();
-      return s;
-    } catch (Exception e) {
-      return "";
-    }
-  }
-
-  private InputStream getUnGzippedInputStream(byte[] bytes) {
-    try {
-      InputStream is = new ByteArrayInputStream(bytes);
-      do {
-        is = new BufferedInputStream(new GZIPInputStream(is, 512));
-      } while (JmolBinary.isGzipS(is));
-      return is;
+      return JmolBinary
+          .getUnzippedInputStream(JmolBinary.getBIS(bytes));
     } catch (Exception e) {
       return null;
     }
   }
 
   @Override
-  public InputStream newGZIPInputStream(BufferedInputStream bis)
-      throws IOException {
-    return new GZIPInputStream(bis, 512);
+  public InputStream newGZIPInputStream(InputStream is) throws IOException {
+    return new BufferedInputStream(new GZIPInputStream(is, 512));
   }
 
   @Override
-  public Object getAtomSetCollectionOrBufferedReaderFromZip(
-                                                            JmolAdapter adapter,
+  public Object getAtomSetCollectionOrBufferedReaderFromZip(JmolAdapter adapter,
                                                             InputStream is,
                                                             String fileName,
                                                             String[] zipDirectory,
@@ -424,7 +395,7 @@ public class ZipUtil implements JmolZipUtility {
       if (path != null)
         return JmolAdapter.NOTE_SCRIPT_FILE + fileName + path + "\n";
     }
-    List<Object> vCollections = new  List<Object>();
+    List<Object> vCollections = new List<Object>();
     Map<String, Object> htCollections = (haveManifest ? new Hashtable<String, Object>()
         : null);
     int nFiles = 0;
@@ -441,12 +412,11 @@ public class ZipUtil implements JmolZipUtility {
     SB data = (SB) ret;
     try {
       if (data != null) {
-        BufferedReader reader = new BufferedReader(new StringReader(data
-            .toString()));
-        if (asBufferedReader) {
+        BufferedReader reader = JmolBinary.getBR(data.toString());
+        if (asBufferedReader)
           return reader;
-        }
-        ret = adapter.getAtomSetCollectionFromReader(fileName, reader, htParams);
+        ret = adapter
+            .getAtomSetCollectionFromReader(fileName, reader, htParams);
         if (ret instanceof String)
           return ret;
         if (ret instanceof AtomSetCollection) {
@@ -481,13 +451,14 @@ public class ZipUtil implements JmolZipUtility {
             && exceptFiles == manifest.indexOf("|" + thisEntry + "|") >= 0)
           continue;
         byte[] bytes = JmolBinary.getStreamBytes(zis, ze.getSize());
-//        String s = new String(bytes);
-//        System.out.println("ziputil " + s.substring(0, 100));
+        //        String s = new String(bytes);
+        //        System.out.println("ziputil " + s.substring(0, 100));
+        if (JmolBinary.isGzipB(bytes))
+          bytes = JmolBinary.getStreamBytes(getUnGzippedInputStream(bytes), -1);
         if (JmolBinary.isZipB(bytes)) {
-          BufferedInputStream bis = new BufferedInputStream(
-              new ByteArrayInputStream(bytes));
+          BufferedInputStream bis = JmolBinary.getBIS(bytes);
           String[] zipDir2 = JmolBinary.getZipDirectoryAndClose(bis, true);
-          bis = new BufferedInputStream(new ByteArrayInputStream(bytes));
+          bis = JmolBinary.getBIS(bytes);
           Object atomSetCollections = getAtomSetCollectionOrBufferedReaderFromZip(
               adapter, bis, fileName + "|" + thisEntry, zipDir2, htParams,
               ++subFilePtr, asBufferedReader);
@@ -512,11 +483,8 @@ public class ZipUtil implements JmolZipUtility {
             zis.close();
             return "unknown zip reader error";
           }
-        } else if (JmolBinary.isGzipB(bytes)) {
-            return getUnGzippedInputStream(bytes);
         } else if (JmolBinary.isPickleB(bytes)) {
-          BufferedInputStream bis = new BufferedInputStream(
-              new ByteArrayInputStream(bytes));
+          BufferedInputStream bis = JmolBinary.getBIS(bytes);
           if (doCombine)
             zis.close();
           return bis;
@@ -525,15 +493,13 @@ public class ZipUtil implements JmolZipUtility {
           if (JmolBinary.isCompoundDocumentB(bytes)) {
             JmolDocument jd = (JmolDocument) Interface
                 .getInterface("jmol.util.CompoundDocument");
-            jd.setStream(new BufferedInputStream(
-                new ByteArrayInputStream(bytes)), true);
+            jd.setStream(JmolBinary.getBIS(bytes), true);
             sData = jd.getAllDataFiles("Molecule", "Input").toString();
-          } else if (JmolBinary.isGzipB(bytes)) {
-            sData = JmolBinary.getGzippedBytesAsString(bytes);
           } else {
+            // could be a PNGJ file with an internal pdb.gz entry, for instance
             sData = JmolBinary.fixUTF(bytes);
           }
-          BufferedReader reader = new BufferedReader(new StringReader(sData));
+          BufferedReader reader = JmolBinary.getBR(sData);
           if (asBufferedReader) {
             if (doCombine)
               zis.close();
@@ -608,13 +574,13 @@ public class ZipUtil implements JmolZipUtility {
   }
 
   /**
-   * called by SmarterJmolAdapter to see if we have a Spartan directory and, if so,
-   * open it and get all the data into the correct order.
+   * called by SmarterJmolAdapter to see if we have a Spartan directory and, if
+   * so, open it and get all the data into the correct order.
    * 
    * @param is
    * @param zipDirectory
    * @return String data for processing
-   */  
+   */
   private static SB checkSpecialData(InputStream is, String[] zipDirectory) {
     boolean isSpartan = false;
     // 0 entry is not used here
@@ -628,8 +594,8 @@ public class ZipUtil implements JmolZipUtility {
     if (!isSpartan)
       return null;
     SB data = new SB();
-    data.append("Zip File Directory: ").append("\n").append(
-        Escape.eAS(zipDirectory, true)).append("\n");
+    data.append("Zip File Directory: ").append("\n")
+        .append(Escape.eAS(zipDirectory, true)).append("\n");
     Map<String, String> fileData = new Hashtable<String, String>();
     getAllZipDataStatic(is, new String[] {}, "", "Molecule", fileData);
     String prefix = "|";
@@ -689,21 +655,21 @@ public class ZipUtil implements JmolZipUtility {
 
   /**
    * read the output file from the Spartan directory and decide from that what
-   * files need to be read and in what order - usually M0001 or a set of Profiles.
-   * But Spartan saves the Profiles in alphabetical order, not numerical. So we
-   * fix that here.
+   * files need to be read and in what order - usually M0001 or a set of
+   * Profiles. But Spartan saves the Profiles in alphabetical order, not
+   * numerical. So we fix that here.
    * 
    * @param outputFileData
    * @return String[] list of files to read
    */
   private static String[] getSpartanDirs(String outputFileData) {
     if (outputFileData == null)
-      return new String[]{};
+      return new String[] {};
     if (outputFileData.startsWith("java.io.FileNotFoundException")
         || outputFileData.startsWith("FILE NOT FOUND")
         || outputFileData.indexOf("<html") >= 0)
       return new String[] { "M0001" };
-    List<String> v = new  List<String>();
+    List<String> v = new List<String>();
     String token;
     String lasttoken = "";
     try {
@@ -732,7 +698,8 @@ public class ZipUtil implements JmolZipUtility {
          */
         if ((token = tokens.nextToken()).equals(")"))
           v.addLast(lasttoken);
-        else if (token.equals("Start-") && tokens.nextToken().equals("Molecule"))
+        else if (token.equals("Start-")
+            && tokens.nextToken().equals("Molecule"))
           v.addLast(PT.split(tokens.nextToken(), "\"")[1]);
         lasttoken = token;
       }
@@ -741,7 +708,7 @@ public class ZipUtil implements JmolZipUtility {
     }
     return v.toArray(new String[v.size()]);
   }
-  
+
   /**
    * returns the list of files to read for every Spartan spardir. Simple numbers
    * are assumed to be Profiles; others are models.
@@ -751,8 +718,8 @@ public class ZipUtil implements JmolZipUtility {
    * @return String[] list of files to read given a list of directory names
    * 
    */
-  private static String[] getSpartanFileList(String name, String[] dirNums) {    
-    String[] files = new String[2 + dirNums.length*5];
+  private static String[] getSpartanFileList(String name, String[] dirNums) {
+    String[] files = new String[2 + dirNums.length * 5];
     files[0] = "SpartanSmol";
     files[1] = "Directory Entry ";
     int pt = 2;
@@ -760,8 +727,9 @@ public class ZipUtil implements JmolZipUtility {
     if (name.endsWith("/"))
       name = name.substring(0, name.length() - 1);
     for (int i = 0; i < dirNums.length; i++) {
-      String path = name + (Character.isDigit(dirNums[i].charAt(0)) ? 
-          "/Profile." + dirNums[i] : "/" + dirNums[i]);
+      String path = name
+          + (Character.isDigit(dirNums[i].charAt(0)) ? "/Profile." + dirNums[i]
+              : "/" + dirNums[i]);
       files[pt++] = path + "/#JMOL_MODEL " + dirNums[i];
       files[pt++] = path + "/input";
       files[pt++] = path + "/archive";
@@ -774,7 +742,7 @@ public class ZipUtil implements JmolZipUtility {
   /**
    * called by SmarterJmolAdapter to see if we can automatically assign a file
    * from the zip file. If so, return a subfile list for this file. The first
-   * element of the list is left empty -- it would be the zipfile name. 
+   * element of the list is left empty -- it would be the zipfile name.
    * 
    * Assignment can be made if (1) there is only one file in the collection or
    * (2) if the first file is xxxx.spardir/
@@ -786,10 +754,9 @@ public class ZipUtil implements JmolZipUtility {
    */
   static String[] checkSpecialInZip(String[] zipDirectory) {
     String name;
-    return (zipDirectory.length < 2 ? null 
-        : (name = zipDirectory[1]).endsWith(".spardir/") || zipDirectory.length == 2 ?
-        new String[] { "",
-          (name.endsWith("/") ? name.substring(0, name.length() - 1) : name) } 
+    return (zipDirectory.length < 2 ? null : (name = zipDirectory[1])
+        .endsWith(".spardir/") || zipDirectory.length == 2 ? new String[] { "",
+        (name.endsWith("/") ? name.substring(0, name.length() - 1) : name) }
         : null);
   }
 
@@ -799,7 +766,8 @@ public class ZipUtil implements JmolZipUtility {
       return null;
     Logger.info("FileManager checking PNGJ cache for " + pathName);
     String shortName = shortSceneFilename(pathName);
-    if (fm.pngjCache == null && !cachePngjFile(fm, new String[] { pathName, null }))
+    if (fm.pngjCache == null
+        && !cachePngjFile(fm, new String[] { pathName, null }))
       return null;
     Map<String, byte[]> pngjCache = fm.pngjCache;
     boolean isMin = (pathName.indexOf(".min.") >= 0);
@@ -815,10 +783,10 @@ public class ZipUtil implements JmolZipUtility {
       Logger.info("FileManager using memory cache " + shortName);
       return pngjCache.get(shortName);
     }
-//    for (String key : pngjCache.keySet())
-  //    System.out.println(" key=" + key);
+    //    for (String key : pngjCache.keySet())
+    //    System.out.println(" key=" + key);
     //System.out.println("FileManager memory cache size=" + pngjCache.size()
-      //  + " did not find " + pathName + " as " + shortName);
+    //  + " did not find " + pathName + " as " + shortName);
     if (!isMin || !cachePngjFile(fm, new String[] { pathName, null }))
       return null;
     Logger.info("FileManager using memory cache " + shortName);
@@ -837,8 +805,9 @@ public class ZipUtil implements JmolZipUtility {
     String shortName = shortSceneFilename(data[0]);
     try {
       data[1] = cacheZipContents(
-          JmolBinary.checkPngZipStream((BufferedInputStream) fm.getBufferedInputStreamOrErrorMessageFromName(
-              data[0], null, false, false, null, false)), shortName, fm.pngjCache);
+          JmolBinary.checkPngZipStream((BufferedInputStream) fm
+              .getBufferedInputStreamOrErrorMessageFromName(data[0], null,
+                  false, false, null, false)), shortName, fm.pngjCache);
     } catch (Exception e) {
       return false;
     }
@@ -849,10 +818,10 @@ public class ZipUtil implements JmolZipUtility {
     if (shortName.indexOf("_scene_") >= 0) {
       pngjCache.put(shortSceneFilename(data[0]), bytes); // good for all .min. files of this scene set
       bytes = pngjCache.remove(shortName + "|state.spt");
-      if (bytes != null) 
+      if (bytes != null)
         pngjCache.put(shortSceneFilename(data[0] + "|state.spt"), bytes);
     }
-    for (String key: pngjCache.keySet())
+    for (String key : pngjCache.keySet())
       System.out.println(key);
     return true;
   }
@@ -888,11 +857,13 @@ public class ZipUtil implements JmolZipUtility {
     /**
      * @j2sNative
      * 
-     * return J.api.Interface.getInterface("java.util.zip.ZipOutputStream").setZOS(bos);
+     *            return
+     *            J.api.Interface.getInterface("java.util.zip.ZipOutputStream"
+     *            ).setZOS(bos);
      * 
      */
     {
-    return new ZipOutputStream((OutputStream) bos);
+      return new ZipOutputStream((OutputStream) bos);
     }
   }
 

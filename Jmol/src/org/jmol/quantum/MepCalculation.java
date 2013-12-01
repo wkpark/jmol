@@ -219,7 +219,7 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
     try {
       br = (data == null ? JmolBinary.getBufferedReaderForResource(viewer,
           this, "org/jmol/quantum/", resourceName) : JmolBinary
-          .getBufferedReaderForString(data));
+          .getBR(data));
       String line;
       while ((line = br.readLine()) != null) {
         if (line.startsWith("#"))

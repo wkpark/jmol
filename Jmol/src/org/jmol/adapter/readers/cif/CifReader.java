@@ -31,10 +31,8 @@ import org.jmol.api.JmolLineReader;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.constant.EnumStructure;
 import org.jmol.io.CifDataReader;
+import org.jmol.io.JmolBinary;
 import org.jmol.java.BS;
-
-import java.io.BufferedReader;
-import java.io.StringReader;
 
 import org.jmol.script.T;
 import javajs.util.List;
@@ -176,8 +174,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
       if (!readAllData())
         break;
     if (appendedData != null) {
-      tokenizer = new CifDataReader(new BufferedReader(new StringReader(
-          appendedData)));
+      tokenizer = new CifDataReader(JmolBinary.getBR(appendedData));
       while ((key = tokenizer.peekToken()) != null)
         if (!readAllData())
           break;

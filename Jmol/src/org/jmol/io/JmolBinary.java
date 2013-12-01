@@ -388,10 +388,6 @@ public class JmolBinary {
     return getJzu().newGZIPInputStream(bis);
   }
 
-  public static String getGzippedBytesAsString(byte[] t) {
-    return getJzu().getGzippedBytesAsString(t);
-  }
-
   public static ZInputStream newZipInputStream(InputStream in) {
     return getJzu().newZipInputStream(in);
   }
@@ -449,11 +445,11 @@ public class JmolBinary {
     return (isBase64(sb) ? Base64.decodeBase64(sb.substring(8)) : sb.toBytes(0, -1));    
   }
   
-  public static BufferedInputStream getBISForStringXBuilder(SB sb) {
-    return new BufferedInputStream(new ByteArrayInputStream(getBytesFromSB(sb)));
+  public static BufferedInputStream getBIS(byte[] bytes) {
+    return new BufferedInputStream(new ByteArrayInputStream(bytes));
   }
 
-  public static BufferedReader getBufferedReaderForString(String string) {
+  public static BufferedReader getBR(String string) {
     return new BufferedReader(new StringReader(string));
   }
 
@@ -531,7 +527,7 @@ public class JmolBinary {
     } catch (Throwable e) {
       data = new byte[0];
     }
-    return new BufferedInputStream(new ByteArrayInputStream(data));
+    return getBIS(data);
   }
 
   /**
@@ -547,7 +543,7 @@ public class JmolBinary {
       return new BufferedReader(new InputStreamReader(bis, (charSet == null ? "UTF-8" : charSet)));
     byte[] bytes = getStreamBytes(bis, -1);
     bis.close();
-    return getBufferedReaderForString(charSet == null ? fixUTF(bytes) : new String(bytes, charSet));
+    return getBR(charSet == null ? fixUTF(bytes) : new String(bytes, charSet));
   }
 
   /**
@@ -670,5 +666,11 @@ public class JmolBinary {
      return (BufferedReader) viewer.getBufferedReaderOrErrorMessageFromName(
          resourceName, new String[] { null, null }, false);
    }
+
+  public static BufferedInputStream getUnzippedInputStream(BufferedInputStream bis) throws IOException {
+    while (isGzipS(bis))
+      bis = new BufferedInputStream(newGZIPInputStream(bis));
+    return bis;
+  }
 }
 

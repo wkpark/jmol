@@ -26,7 +26,6 @@ package org.jmol.viewer;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.net.URLEncoder;
-import java.io.ByteArrayInputStream;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -226,7 +225,7 @@ public class FileManager implements BytePoster {
     boolean isAddH = (strModel.indexOf(JC.ADD_HYDROGEN_TITLE) >= 0);
     String[] fnames = (isAddH ? getFileInfo() : null);
     FileReader fileReader = new FileReader(this, viewer, "string", "string", "string", null,
-        JmolBinary.getBufferedReaderForString(strModel), htParams, isAppend);
+        JmolBinary.getBR(strModel), htParams, isAppend);
     fileReader.run();
     if (fnames != null)
       setFileInfo(fnames);
@@ -404,15 +403,17 @@ public class FileManager implements BytePoster {
           if (showMsg && name.toLowerCase().indexOf("password") < 0)
             Logger.info("FileManager opening 1 " + name);
           ret = viewer.apiPlatform.getBufferedURLInputStream(url, outputBytes, post);
+          byte[] bytes = null;
           if (ret instanceof SB) {
             SB sb = (SB) ret;
             if (allowReader && !JmolBinary.isBase64(sb))
-              return JmolBinary.getBufferedReaderForString(sb.toString());
-            ret = JmolBinary.getBISForStringXBuilder(sb);
+              return JmolBinary.getBR(sb.toString());
+            bytes = JmolBinary.getBytesFromSB(sb);
           } else if (PT.isAB(ret)) {
-            ret = new BufferedInputStream(
-                new ByteArrayInputStream((byte[]) ret));
+            bytes = (byte[]) ret;
           }
+          if (bytes != null)
+            ret = JmolBinary.getBIS(bytes);
         } else if ((cacheBytes = (byte[]) cacheGet(name, true)) == null) {
           if (showMsg)
             Logger.info("FileManager opening 2 " + name);
@@ -421,11 +422,7 @@ public class FileManager implements BytePoster {
         if (ret instanceof String)
           return ret;
       }
-
-      if (cacheBytes == null)
-        bis = (BufferedInputStream) ret;
-      else
-        bis = new BufferedInputStream(new ByteArrayInputStream(cacheBytes));
+      bis = (cacheBytes == null ? (BufferedInputStream) ret : JmolBinary.getBIS(cacheBytes));
       if (checkOnly) {
         bis.close();
         bis = null;
@@ -498,7 +495,7 @@ public class FileManager implements BytePoster {
       if (isBytes) {
         bytes = (byte[]) data;
       } else {
-        return JmolBinary.getBufferedReaderForString((String) data);
+        return JmolBinary.getBR((String) data);
       }
     }
     String[] names = classifyName(name, true);
@@ -554,7 +551,7 @@ public class FileManager implements BytePoster {
         if (spardirCache == null)
           spardirCache = new Hashtable<String, byte[]>();
         spardirCache.put(name00.replace('\\', '/'), s.getBytes());
-        return JmolBinary.getBufferedReaderForString(s);
+        return JmolBinary.getBR(s);
       }
       // continuing...
       // here, for example, for an SPT file load that is not just a type check
@@ -577,23 +574,18 @@ public class FileManager implements BytePoster {
     }
     Object t = (bytes == null ? getBufferedInputStreamOrErrorMessageFromName(
         name, fullName, true, false, null, !forceInputStream)
-        : new BufferedInputStream(new ByteArrayInputStream(bytes)));
+        : JmolBinary.getBIS(bytes));
     try {
       if (t instanceof String)
         return t;
       if (t instanceof BufferedReader)
         return t;
-      BufferedInputStream bis = (BufferedInputStream) t;
-      if (JmolBinary.isGzipS(bis)) {
-        do {
-          bis = new BufferedInputStream(JmolBinary.newGZIPInputStream(bis));
-        } while (JmolBinary.isGzipS(bis));
-      }
+      BufferedInputStream bis = JmolBinary.getUnzippedInputStream((BufferedInputStream) t);
       if (JmolBinary.isCompoundDocumentS(bis)) {
         JmolDocument doc = (JmolDocument) Interface
             .getOptionInterface("io2.CompoundDocument");
         doc.setStream(bis, true);
-        return JmolBinary.getBufferedReaderForString(doc.getAllDataFiles(
+        return JmolBinary.getBR(doc.getAllDataFiles(
             "Molecule", "Input").toString());
       }
       if (JmolBinary.isPickleS(bis))
@@ -603,7 +595,7 @@ public class FileManager implements BytePoster {
         if (allowZipStream)
           return JmolBinary.newZipInputStream(bis);
         Object o = JmolBinary.getZipFileContents(bis, subFileList, 1, forceInputStream);
-        return (o instanceof String ? JmolBinary.getBufferedReaderForString((String) o) : o);
+        return (o instanceof String ? JmolBinary.getBR((String) o) : o);
       }
       return (forceInputStream ? bis : JmolBinary.getBufferedReader(bis, null));
     } catch (Exception ioe) {

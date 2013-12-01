@@ -8384,12 +8384,12 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public void moveAtoms(M3 mNew, M3 matrixRotate, V3 translation,
-                        P3 center, boolean isInternal, BS bsAtoms) {
+                        P3 center, boolean isInternal, BS bsAtoms, boolean translationOnly) {
     // from TransformManager exclusively
     if (bsAtoms.cardinality() == 0)
       return;
     modelSet.moveAtoms(mNew, matrixRotate, translation, bsAtoms, center,
-        isInternal);
+        isInternal, translationOnly);
     checkMinimization();
     statusManager.setStatusAtomMoved(bsAtoms);
   }

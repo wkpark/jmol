@@ -284,13 +284,13 @@ public class TransformManager {
   }
 
   private void applyRotation(M3 mNew, boolean isInternal, BS bsAtoms,
-                             V3 translation) {
+                             V3 translation, boolean translationOnly) {
     if (bsAtoms == null) {
       matrixRotate.mul2(mNew, matrixRotate);
       return;
     }
-    viewer.moveAtoms(mNew, matrixRotate, translation, internalRotationCenter,
-        isInternal, bsAtoms);
+      viewer.moveAtoms(mNew, matrixRotate, translation, internalRotationCenter,
+        isInternal, bsAtoms, translationOnly);
     if (translation != null) {
       internalRotationCenter.add(translation);
     }
@@ -298,17 +298,17 @@ public class TransformManager {
 
   public synchronized void rotateXRadians(float angleRadians, BS bsAtoms) {
     matrixTemp3.rotX(angleRadians);
-    applyRotation(matrixTemp3, false, bsAtoms, null);
+    applyRotation(matrixTemp3, false, bsAtoms, null, false);
   }
 
   public synchronized void rotateYRadians(float angleRadians, BS bsAtoms) {
     matrixTemp3.rotY(angleRadians);
-    applyRotation(matrixTemp3, false, bsAtoms, null);
+    applyRotation(matrixTemp3, false, bsAtoms, null, false);
   }
 
   public synchronized void rotateZRadians(float angleRadians) {
     matrixTemp3.rotZ(angleRadians);
-    applyRotation(matrixTemp3, false, null, null);
+    applyRotation(matrixTemp3, false, null, null, false);
   }
 
   public void rotateAxisAngle(V3 rotAxis, float radians) {
@@ -319,7 +319,7 @@ public class TransformManager {
   private synchronized void rotateAxisAngle2(A4 axisAngle, BS bsAtoms) {
     //matrixTemp3.setIdentity();
     matrixTemp3.setAA(axisAngle);
-    applyRotation(matrixTemp3, false, bsAtoms, null);
+    applyRotation(matrixTemp3, false, bsAtoms, null, false);
   }
 
   /*
@@ -402,8 +402,7 @@ public class TransformManager {
                                     float endDegrees, boolean isClockwise,
                                     boolean isSpin, BS bsAtoms,
                                     boolean isGesture, V3 translation,
-                                    List<P3> finalPoints,
-                                    float[] dihedralList) {
+                                    List<P3> finalPoints, float[] dihedralList) {
 
     // *THE* Viewer INTERNAL frame rotation entry point
 
@@ -448,7 +447,9 @@ public class TransformManager {
           if (translation != null)
             internalTranslation.scale(1f / (nFrames));
         }
-        internalRotationAxis.setVA(axis, rotationRate * JC.radiansPerDegree);
+        internalRotationAxis.setVA(axis,
+            (Float.isNaN(rotationRate) ? 0 : rotationRate)
+                * JC.radiansPerDegree);
         isSpinInternal = true;
         isSpinFixed = false;
         isSpinSelected = isSelected;
@@ -472,17 +473,16 @@ public class TransformManager {
 
     // trick is to apply the current rotation to the internal rotation axis
     // and then save the angle for generating a new fixed point later
-
-    internalRotationAngle = radians;
-    vectorT.set(internalRotationAxis.x, internalRotationAxis.y,
-        internalRotationAxis.z);
-    matrixRotate.transform2(vectorT, vectorT2);
-    axisangleT.setVA(vectorT2, radians);
+      internalRotationAngle = radians;
+      vectorT.set(internalRotationAxis.x, internalRotationAxis.y,
+          internalRotationAxis.z);
+      matrixRotate.transform2(vectorT, vectorT2);
+      axisangleT.setVA(vectorT2, radians);
 
     // NOW apply that rotation  
 
     matrixTemp3.setAA(axisangleT);
-    applyRotation(matrixTemp3, true, bsAtoms, internalTranslation);
+    applyRotation(matrixTemp3, true, bsAtoms, internalTranslation, radians > 1e6f);
     if (bsAtoms == null)
       getNewFixedRotationCenter();
   }

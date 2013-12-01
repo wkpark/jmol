@@ -6455,7 +6455,7 @@ public class ScriptExt implements JmolScriptExtension {
       if (doTranslate) {
         if (translation == null)
           translation = V3.newVsub(centerAndPoints[1][0], center);
-        endDegrees = 0;
+        endDegrees = 1e10f;
       }
       if (doRotate) {
         if (q == null)
@@ -6463,6 +6463,12 @@ public class ScriptExt implements JmolScriptExtension {
         pt1.setT(center);
         pt1.add(q.getNormal());
         endDegrees = q.getTheta();
+        if (endDegrees == 0 && doTranslate) {
+          if (translation.length() > 0.01f)
+            endDegrees= 1e10f;
+          else
+            doRotate = doTranslate = doAnimate = false;
+        }
       }
       if (Float.isNaN(endDegrees) || Float.isNaN(pt1.x))
         continue;

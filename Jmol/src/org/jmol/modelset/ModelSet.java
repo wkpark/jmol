@@ -822,7 +822,7 @@ import java.util.Map;
       pt = Measure.getCenterAndPoints(vNot)[0];
       V3 v = V3.newVsub(thisAtom, pt);
       Quaternion q = Quaternion.newVA(v, 180);
-      moveAtoms(null, q.getMatrix(), null, bsAtoms, thisAtom, true);
+      moveAtoms(null, q.getMatrix(), null, bsAtoms, thisAtom, true, false);
     }
   }
 
@@ -855,53 +855,56 @@ import java.util.Map;
     }    
   }
 
-  public void moveAtoms(M3 mNew, M3 matrixRotate,
-                        V3 translation, BS bs, P3 center,
-                        boolean isInternal) {
-    if (mNew == null) {
-      matTemp.setM(matrixRotate);
-    } else {
-      matInv.setM(matrixRotate);
-      matInv.invert();
-      ptTemp.set(0, 0, 0);
-      matTemp.mul2(mNew, matrixRotate);
-      matTemp.mul2(matInv, matTemp);
-    }
-    if (isInternal) {
-      vTemp.setT(center);
-      mat4.setIdentity();
-      mat4.setTranslation(vTemp);
-      mat4t.setM3(matTemp);
-      mat4.mulM4(mat4t);
-      mat4t.setIdentity();
-      vTemp.scale(-1);
-      mat4t.setTranslation(vTemp);
-      mat4.mulM4(mat4t);
-    } else {
-      mat4.setM3(matTemp);
-    }
-    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-      if (isInternal) {
-        mat4.transform(atoms[i]);
+  public void moveAtoms(M3 mNew, M3 matrixRotate, V3 translation, BS bs,
+                        P3 center, boolean isInternal, boolean translationOnly) {
+    if (!translationOnly) {
+      if (mNew == null) {
+        matTemp.setM(matrixRotate);
       } else {
-        ptTemp.add(atoms[i]);
-        mat4.transform(atoms[i]);
-        ptTemp.sub(atoms[i]);
+        matInv.setM(matrixRotate);
+        matInv.invert();
+        ptTemp.set(0, 0, 0);
+        matTemp.mul2(mNew, matrixRotate);
+        matTemp.mul2(matInv, matTemp);
       }
-      taintAtom(i, TAINT_COORD);
-    }
-    if (!isInternal) {
-      ptTemp.scale(1f / bs.cardinality());
-      if (translation == null)
-        translation = new V3();
-      translation.add(ptTemp);
+      if (isInternal) {
+        vTemp.setT(center);
+        mat4.setIdentity();
+        mat4.setTranslation(vTemp);
+        mat4t.setM3(matTemp);
+        mat4.mulM4(mat4t);
+        mat4t.setIdentity();
+        vTemp.scale(-1);
+        mat4t.setTranslation(vTemp);
+        mat4.mulM4(mat4t);
+      } else {
+        mat4.setM3(matTemp);
+      }
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+        if (isInternal) {
+          mat4.transform(atoms[i]);
+        } else {
+          ptTemp.add(atoms[i]);
+          mat4.transform(atoms[i]);
+          ptTemp.sub(atoms[i]);
+        }
+        taintAtom(i, TAINT_COORD);
+      }
+      if (!isInternal) {
+        ptTemp.scale(1f / bs.cardinality());
+        if (translation == null)
+          translation = new V3();
+        translation.add(ptTemp);
+      }
     }
     if (translation != null) {
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
         atoms[i].add(translation);
-      mat4t.setIdentity();
-      mat4t.setTranslation(translation);
-      mat4.mul2(mat4t, mat4);
+      if (!translationOnly) {
+        mat4t.setIdentity();
+        mat4t.setTranslation(translation);
+        mat4.mul2(mat4t, mat4);
+      }
     }
     recalculatePositionDependentQuantities(bs, mat4);
   }

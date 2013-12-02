@@ -304,7 +304,7 @@ public final class Logger {
       htTiming.put(msg, Integer.valueOf((int) System.currentTimeMillis()));
   }
 
-  public static String getTimerMsg(String msg, int time) {
+  public static String getTimerMsg(String msg, long time) {
     if (time == 0)
       time = getTimeFrom(msg);
     return "Time for " + msg + ": " + (time) + " ms";
@@ -326,16 +326,16 @@ public final class Logger {
   }
   
   public static void checkMemory() {
-    int bTotal = 0, bFree = 0, bMax = 0;
+    long bTotal = 0, bFree = 0, bMax = 0;
     /**
      * @j2sIgnore
      */
     {
       Runtime runtime = Runtime.getRuntime();
       runtime.gc();
-      bTotal = (int)runtime.totalMemory();
-      bFree = (int)runtime.freeMemory();
-      bMax = (int)runtime.maxMemory();
+      bTotal = runtime.totalMemory();
+      bFree = runtime.freeMemory();
+      bMax = runtime.maxMemory();
     }
     info("Memory: Total-Free="+ (bTotal - bFree)+"; Total=" +  bTotal + "; Free=" + bFree 
         + "; Max=" + bMax);

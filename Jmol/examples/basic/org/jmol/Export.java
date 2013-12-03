@@ -240,7 +240,7 @@ class MyStatusListener implements JmolStatusListener {
   }
 
   @Override
-  public Map<String, Object> getProperty(String type) {
+  public Map<String, Object> getJSpecViewProperty(String type) {
     // TODO
     return null;
   }

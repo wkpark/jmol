@@ -1,6 +1,5 @@
 package org.jmol.util;
 
-import java.applet.Applet;
 import java.awt.Event;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -94,7 +93,7 @@ public abstract class GenericApplet implements JmolAppletInterface,
   abstract protected void doShowStatus(String errorMsg);
 
   protected void init(Object applet) {
-    this.appletObject = applet;
+    appletObject = applet;
     htmlName = getParameter("name");
     syncId = getParameter("syncId");
     fullName = htmlName + "__" + syncId + "__";

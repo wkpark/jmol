@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-02-07 06:40:01 -0600 (Tue, 07 Feb 2012) $
- * $Revision: 16744 $
+ * $Date: 2013-12-02 23:05:12 -0600 (Mon, 02 Dec 2013) $
+ * $Revision: 19049 $
  *
  * Copyright (C) 2002-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -22,11 +22,14 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.appletjs;
-//
+package unused;//org.jmol.applet;
+
+//import java.applet.Applet;
 //import java.util.Hashtable;
 //
 //import java.util.Map;
+//
+//import netscape.javascript.JSObject;
 //
 //import org.jmol.api.JmolSyncInterface;
 //import javajs.util.List;
@@ -39,13 +42,6 @@ final class JmolAppletRegistry {
 //  static Map<String, Object> htRegistry = new Hashtable<String, Object>();
 //
 //  synchronized static void checkIn(String name, JmolSyncInterface applet) {
-//    /**
-//     * @j2sNative
-//     * 
-//     * if (Jmol._htRegistry) {J.appletjs.JmolAppletRegistry.htRegistry = Jmol._htRegistry} else {Jmol._htRegistry = J.appletjs.JmolAppletRegistry.htRegistry};
-//     * 
-//     */
-//    {}
 //    cleanRegistry();
 //    if (name != null) {
 //      Logger.info("AppletRegistry.checkIn(" + name + ")");
@@ -74,7 +70,7 @@ final class JmolAppletRegistry {
 //    String ext = "__" + mySyncId + "__";
 //    if (appletName == null || appletName.equals("*") || appletName.equals(">")) {
 //      for (String appletName2 : htRegistry.keySet()) {
-//        if (!appletName2.equals(excludeName)/* && appletName2.indexOf(ext) > 0 unnec. */) {
+//        if (!appletName2.equals(excludeName) && appletName2.indexOf(ext) > 0) {
 //          apps.addLast(appletName2);
 //        }
 //      }
@@ -90,6 +86,32 @@ final class JmolAppletRegistry {
 //  }
 //
 //  synchronized private static void cleanRegistry() {
+//    Applet app = null;
+//    boolean closed = true;
+//    for (Map.Entry<String, Object> entry : htRegistry.entrySet()) {
+//      String theApplet = entry.getKey();
+//      try {
+//        app = (Applet) (entry.getValue());
+//        JSObject theWindow = JSObject.getWindow(app);
+//        //System.out.print("checking " + app + " window : ");
+//        closed = ((Boolean) theWindow.getMember("closed")).booleanValue();
+//        //System.out.println(closed);
+//        if (closed || theWindow.hashCode() == 0) {
+//          //error trap
+//        }
+//        if (Logger.debugging)
+//          Logger.debug("Preserving registered applet " + theApplet
+//              + " window: " + theWindow.hashCode());
+//      } catch (Exception e) {
+//        closed = true;
+//      }
+//      if (closed) {
+//        if (Logger.debugging)
+//          Logger.debug("Dereferencing closed window applet " + theApplet);
+//        htRegistry.remove(theApplet);
+//        app.destroy();
+//      }
+//    }
 //  }
-
+//
 }

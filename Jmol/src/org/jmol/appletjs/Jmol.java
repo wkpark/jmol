@@ -246,10 +246,14 @@ public class Jmol extends GenericApplet {
       /**
        * @j2sNative
        * 
-       *            try{ var o = window[tokens[0]]; for (i = 1; i <
-       *            tokens.length; i++){ o = o[tokens[i]] } return o(data[0],data
-       *            [1],data[2],data[3],data[4],data[5],data[6],data[7]); }
-       *            catch (e) { System.out.println(callback + " failed " + e); }
+       *            try{ 
+       *            var o = window[tokens[0]]; 
+       *            for (var i = 1; i < tokens.length; i++) 
+       *              o = o[tokens[i]];
+       *            for (var i = 0; i < data.length; i++) 
+       *              data[i] && data[i].booleanValue && (data[i] = data[i].booleanValue());
+       *            return o(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7]); 
+       *            } catch (e) { System.out.println(callback + " failed " + e); }
        */
       {
         System.out.println(tokens + " " + data);

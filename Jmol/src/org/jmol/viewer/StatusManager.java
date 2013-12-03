@@ -699,8 +699,7 @@ public class StatusManager {
 
   Map<String, Object> getJspecViewProperties(String myParam) {
     return (jmolStatusListener == null ? null : jmolStatusListener
-        .getProperty("JSpecView"
-            + (myParam == null || myParam.length() == 0 ? "" : ":" + myParam)));
+        .getJSpecViewProperty(myParam == null || myParam.length() == 0 ? "" : ":" + myParam));
   }
 
   public Dimension resizeInnerPanel(int width, int height) {

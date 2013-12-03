@@ -40,12 +40,12 @@ import javajs.util.PT;
 
 import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
+import org.jmol.util.GenericApplet;
 
 public class AppletWrapper extends Applet {
 
   public WrappedApplet wrappedApplet;
 
-  private String wrappedAppletClassName;
   private String preloadImageName;
   private String preloadTextMessage;
   private String previousClassName;
@@ -84,7 +84,7 @@ public class AppletWrapper extends Applet {
   public void destroy() {
     //System.out.println("AppletWrapper destroy called");
     try {
-      wrappedApplet.destroy();
+      ((GenericApplet) wrappedApplet).destroy();
     } catch (Exception e) {
       // no matter -- Firefox/Mac destroys wrappedApplet for us
     }
@@ -92,12 +92,9 @@ public class AppletWrapper extends Applet {
     super.destroy();
   }
 
-  public AppletWrapper(String wrappedAppletClassName,
-                       String preloadImageName,
+  public AppletWrapper(String preloadImageName,
                        int preloadThreadCount,
                        String[] preloadClassNames) {
-    GT.ignoreApplicationBundle();
-    this.wrappedAppletClassName = wrappedAppletClassName;
     this.preloadImageName = preloadImageName;
     this.preloadTextMessage = GT._("Loading Jmol applet ...");
     this.preloadThreadCount = preloadThreadCount;
@@ -118,13 +115,13 @@ public class AppletWrapper extends Applet {
   
   @Override
   public String getAppletInfo() {
-    return (wrappedApplet != null ? wrappedApplet.getAppletInfo() : null);
+    return (wrappedApplet != null ? ((GenericApplet)wrappedApplet).getAppletInfo() : null);
   }
 
   @Override
   public void init() {
     startTime = System.currentTimeMillis();
-    new WrappedAppletLoader(this, wrappedAppletClassName).start();
+    new WrappedAppletLoader(this, isSigned).start();
     for (int i = preloadThreadCount; --i >= 0; )
       new ClassPreloader(this).start();
   }
@@ -198,7 +195,7 @@ public class AppletWrapper extends Applet {
   @Override
   public boolean handleEvent(Event e) {
     if (wrappedApplet != null)
-      return wrappedApplet.handleEvent(e);
+      return ((GenericApplet) wrappedApplet).handleEvent(e);
     return false;
   }
   

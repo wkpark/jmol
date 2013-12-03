@@ -21,11 +21,10 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.jmol.applet;
+package org.jmol.api;
 
-import org.jmol.api.JmolScriptInterface;
+import java.awt.Event;
 
-import netscape.javascript.JSObject;
 
 /**
  * This is the API of methods that are available to JavaScript
@@ -35,19 +34,29 @@ import netscape.javascript.JSObject;
  * 
  */
 
-public interface JmolAppletInterface extends JmolScriptInterface {
+public interface JmolAppletInterface extends JmolSyncInterface {
+
+  public boolean handleEvent(Event event);  
+  public String getAppletInfo();
+  public void destroy();
+
+  public Object setStereoGraphics(boolean isStereo);
+  Object getProperty(String infoType);
+  public void script(String script);
+  public String scriptCheck(String script);
+  public String scriptWait(String script);
+  public String scriptWaitOutput(String script);
+  public String scriptWait(String script, String statusParams);
+  public String scriptNoWait(String script);
 
   public String getPropertyAsString(String infoType);
   public String getPropertyAsString(String infoType, String paramInfo);
   public String getPropertyAsJSON(String infoType);
   public String getPropertyAsJSON(String infoType, String paramInfo);
-  @Override
-  public Object getProperty(String infoType);
   public Object getProperty(String infoType, String paramInfo);
   public String loadInlineString(String strModel, String script, boolean isAppend);
   public String loadInlineArray(String[] strModels, String script, boolean isAppend);
-  public String loadNodeId(String nodeId);
-  public String loadDOMNode(JSObject DOMNode);
+  public String loadDOMNode(Object DOMNode);
 
   // Note -- some Macintosh-based browsers cannot distinguish methods
   // with the same name but with different method signatures

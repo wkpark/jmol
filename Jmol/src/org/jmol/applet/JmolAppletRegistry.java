@@ -24,94 +24,94 @@
 
 package org.jmol.applet;
 
-import java.applet.Applet;
-import java.util.Hashtable;
-
-import java.util.Map;
-
-import netscape.javascript.JSObject;
-
-import org.jmol.api.JmolSyncInterface;
-import javajs.util.List;
-import javajs.util.PT;
-
-import org.jmol.util.Logger;
+//import java.applet.Applet;
+//import java.util.Hashtable;
+//
+//import java.util.Map;
+//
+//import netscape.javascript.JSObject;
+//
+//import org.jmol.api.JmolSyncInterface;
+//import javajs.util.List;
+//import javajs.util.PT;
+//
+//import org.jmol.util.Logger;
 
 final class JmolAppletRegistry {
-
-  static Map<String, Object> htRegistry = new Hashtable<String, Object>();
-
-  synchronized static void checkIn(String name, JmolSyncInterface applet) {
-    cleanRegistry();
-    if (name != null) {
-      Logger.info("AppletRegistry.checkIn(" + name + ")");
-      htRegistry.put(name, applet);
-    }
-    if (Logger.debugging) {
-      for (Map.Entry<String, Object> entry : htRegistry.entrySet()) {
-        String theApplet = entry.getKey();
-        Logger.debug(theApplet + " " + entry.getValue());
-      }
-    }
-  }
-
-  synchronized static void checkOut(String name) {
-    htRegistry.remove(name);
-  }
-
-  synchronized static void findApplets(String appletName, String mySyncId,
-                                       String excludeName, List<String> apps) {
-    if (appletName != null && appletName.indexOf(",") >= 0) {
-      String[] names = PT.split(appletName, ",");
-      for (int i = 0; i < names.length; i++)
-        findApplets(names[i], mySyncId, excludeName, apps);
-      return;
-    }
-    String ext = "__" + mySyncId + "__";
-    if (appletName == null || appletName.equals("*") || appletName.equals(">")) {
-      for (String appletName2 : htRegistry.keySet()) {
-        if (!appletName2.equals(excludeName) && appletName2.indexOf(ext) > 0) {
-          apps.addLast(appletName2);
-        }
-      }
-      return;
-    }
-    if (appletName.indexOf("__") < 0)
-      appletName += ext;
-    if (!htRegistry.containsKey(appletName))
-      appletName = "jmolApplet" + appletName;
-    if (!appletName.equals(excludeName) && htRegistry.containsKey(appletName)) {
-      apps.addLast(appletName);
-    }
-  }
-
-  synchronized private static void cleanRegistry() {
-    Applet app = null;
-    boolean closed = true;
-    for (Map.Entry<String, Object> entry : htRegistry.entrySet()) {
-      String theApplet = entry.getKey();
-      try {
-        app = (Applet) (entry.getValue());
-        JSObject theWindow = JSObject.getWindow(app);
-        //System.out.print("checking " + app + " window : ");
-        closed = ((Boolean) theWindow.getMember("closed")).booleanValue();
-        //System.out.println(closed);
-        if (closed || theWindow.hashCode() == 0) {
-          //error trap
-        }
-        if (Logger.debugging)
-          Logger.debug("Preserving registered applet " + theApplet
-              + " window: " + theWindow.hashCode());
-      } catch (Exception e) {
-        closed = true;
-      }
-      if (closed) {
-        if (Logger.debugging)
-          Logger.debug("Dereferencing closed window applet " + theApplet);
-        htRegistry.remove(theApplet);
-        app.destroy();
-      }
-    }
-  }
-
+//
+//  static Map<String, Object> htRegistry = new Hashtable<String, Object>();
+//
+//  synchronized static void checkIn(String name, JmolSyncInterface applet) {
+//    cleanRegistry();
+//    if (name != null) {
+//      Logger.info("AppletRegistry.checkIn(" + name + ")");
+//      htRegistry.put(name, applet);
+//    }
+//    if (Logger.debugging) {
+//      for (Map.Entry<String, Object> entry : htRegistry.entrySet()) {
+//        String theApplet = entry.getKey();
+//        Logger.debug(theApplet + " " + entry.getValue());
+//      }
+//    }
+//  }
+//
+//  synchronized static void checkOut(String name) {
+//    htRegistry.remove(name);
+//  }
+//
+//  synchronized static void findApplets(String appletName, String mySyncId,
+//                                       String excludeName, List<String> apps) {
+//    if (appletName != null && appletName.indexOf(",") >= 0) {
+//      String[] names = PT.split(appletName, ",");
+//      for (int i = 0; i < names.length; i++)
+//        findApplets(names[i], mySyncId, excludeName, apps);
+//      return;
+//    }
+//    String ext = "__" + mySyncId + "__";
+//    if (appletName == null || appletName.equals("*") || appletName.equals(">")) {
+//      for (String appletName2 : htRegistry.keySet()) {
+//        if (!appletName2.equals(excludeName) && appletName2.indexOf(ext) > 0) {
+//          apps.addLast(appletName2);
+//        }
+//      }
+//      return;
+//    }
+//    if (appletName.indexOf("__") < 0)
+//      appletName += ext;
+//    if (!htRegistry.containsKey(appletName))
+//      appletName = "jmolApplet" + appletName;
+//    if (!appletName.equals(excludeName) && htRegistry.containsKey(appletName)) {
+//      apps.addLast(appletName);
+//    }
+//  }
+//
+//  synchronized private static void cleanRegistry() {
+//    Applet app = null;
+//    boolean closed = true;
+//    for (Map.Entry<String, Object> entry : htRegistry.entrySet()) {
+//      String theApplet = entry.getKey();
+//      try {
+//        app = (Applet) (entry.getValue());
+//        JSObject theWindow = JSObject.getWindow(app);
+//        //System.out.print("checking " + app + " window : ");
+//        closed = ((Boolean) theWindow.getMember("closed")).booleanValue();
+//        //System.out.println(closed);
+//        if (closed || theWindow.hashCode() == 0) {
+//          //error trap
+//        }
+//        if (Logger.debugging)
+//          Logger.debug("Preserving registered applet " + theApplet
+//              + " window: " + theWindow.hashCode());
+//      } catch (Exception e) {
+//        closed = true;
+//      }
+//      if (closed) {
+//        if (Logger.debugging)
+//          Logger.debug("Dereferencing closed window applet " + theApplet);
+//        htRegistry.remove(theApplet);
+//        app.destroy();
+//      }
+//    }
+//  }
+//
 }

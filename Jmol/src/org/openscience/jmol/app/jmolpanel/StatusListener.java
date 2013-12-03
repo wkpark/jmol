@@ -523,12 +523,12 @@ System.out.println("StatusListener notifyFileLoaded: " + fileName);
   }
 
   @Override
-  public Map<String, Object> getProperty(String type) {
+  public Map<String, Object> getJSpecViewProperty(String type) {
     if (type.toLowerCase().startsWith("jspecview")) {
       type = type.substring(9);
       if (type.startsWith(":"))
           type = type.substring(1);
-      return (jSpecViewFrame == null ? null : jSpecViewFrame.getProperty(type));
+      return (jSpecViewFrame == null ? null : jSpecViewFrame.getJSpecViewProperty(type));
     }
     return null;
   }

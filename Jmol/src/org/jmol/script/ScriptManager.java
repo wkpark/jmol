@@ -293,6 +293,7 @@ public class ScriptManager implements JmolScriptManager {
     scriptQueueRunning[pt] = false;
     queueThreads[pt] = null;
     viewer.setSyncDriver(StatusManager.SYNC_ENABLE);
+    viewer.queueOnHold = false;
   }
 
   public void runScriptNow() {

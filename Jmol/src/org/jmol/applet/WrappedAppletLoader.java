@@ -24,57 +24,52 @@
 
 package org.jmol.applet;
 
+import java.applet.Applet;
+
+import org.jmol.api.Interface;
 import org.jmol.util.Logger;
 
 class WrappedAppletLoader extends Thread {
 
-  private AppletWrapper appletWrapper;
-  private String wrappedAppletClassName;
+  private Applet applet;
+  private boolean isSigned;
 
   //private final static int minimumLoadSeconds = 0;
 
-  WrappedAppletLoader(AppletWrapper appletWrapper, String wrappedAppletClassName) {
-    this.appletWrapper = appletWrapper;
-    this.wrappedAppletClassName = wrappedAppletClassName;
+  WrappedAppletLoader(Applet applet, boolean isSigned) {
+    this.applet = applet;
+    this.isSigned = isSigned;
   }
 
   @Override
   public void run() {
     long startTime = System.currentTimeMillis();
     if (Logger.debugging) {
-      Logger.debug("WrappedAppletLoader.run(" + wrappedAppletClassName + ")");
+      Logger.debug("WrappedAppletLoader.run(org.jmol.applet.Jmol)");
     }
-    TickerThread tickerThread = new TickerThread(appletWrapper);
+    TickerThread tickerThread = new TickerThread(applet);
     tickerThread.start();
-    WrappedApplet wrappedApplet = null;
     try {
-      Class<?> wrappedAppletClass = Class.forName(wrappedAppletClassName);
-      wrappedApplet = (WrappedApplet) wrappedAppletClass.newInstance();
-      wrappedApplet.setAppletWrapper(appletWrapper);
-      wrappedApplet.init();
+      WrappedApplet jmol = ((AppletWrapper) applet).wrappedApplet = (WrappedApplet) Interface.getInterface("org.jmol.applet.Jmol");
+      jmol.setApplet(applet, isSigned);
     } catch (Exception e) {
-      Logger.errorEx("Could not instantiate wrappedApplet class"
-          + wrappedAppletClassName, e);
+      Logger.errorEx("Could not instantiate applet", e);
     }
     long loadTimeSeconds = (System.currentTimeMillis() - startTime + 500) / 1000;
-    if (Logger.debugging) {
-      Logger.debug(wrappedAppletClassName + " load time = " + loadTimeSeconds
-          + " seconds");
-    }
+    if (Logger.debugging)
+      Logger.debug("applet load time = " + loadTimeSeconds + " seconds");
     tickerThread.keepRunning = false;
     tickerThread.interrupt();
-    appletWrapper.wrappedApplet = wrappedApplet;
-    appletWrapper.repaint();
-    wrappedApplet.jmolReady();
+    applet.repaint();
   }
 }
 
 class TickerThread extends Thread {
-  AppletWrapper appletWrapper;
+  Object applet;
   boolean keepRunning = true;
 
-  TickerThread(AppletWrapper appletWrapper) {
-    this.appletWrapper = appletWrapper;
+  TickerThread(Applet applet) {
+    this.applet = applet;
     this.setName("AppletLoaderTickerThread");
   }
 
@@ -86,7 +81,7 @@ class TickerThread extends Thread {
       } catch (InterruptedException ie) {
         break;
       }
-      appletWrapper.repaintClock();
+      ((AppletWrapper) applet).repaintClock();
     } while (keepRunning);
   }
 }

@@ -612,6 +612,7 @@ abstract public class JmolViewer implements JSInterface {
   abstract public String getClipboardText();
   
   abstract public String clipImageOrPasteText(String text);
+  abstract public void notifyStatusReady(boolean isReady);
  
 }
 

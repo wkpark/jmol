@@ -647,7 +647,7 @@ public class JmolBinary {
      /**
       * @j2sNative
       * 
-      *            resourceName = viewer.viewerOptions.get("codeBase") +
+      *            resourceName = viewer.viewerOptions.get("codePath") +
       *            classPath + resourceName;
       * 
       */

@@ -82,6 +82,6 @@ public interface JmolStatusListener extends JmolCallbackListener {
 
   public Dimension resizeInnerPanel(String data);
 
-  public Map<String, Object> getProperty(String type);
+  public Map<String, Object> getJSpecViewProperty(String type);
 
 }

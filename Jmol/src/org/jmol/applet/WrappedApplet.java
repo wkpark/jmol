@@ -24,16 +24,11 @@
 
 package org.jmol.applet;
 
-import java.awt.Event;
+import java.applet.Applet;
 import java.awt.Graphics;
 
-public interface WrappedApplet extends JmolAppletInterface {
-  public String getAppletInfo();
-  public void setAppletWrapper(AppletWrapper appletWrapper);
-  public void init();
-  public void jmolReady();
+public interface WrappedApplet {
+  public void setApplet(Applet applet, boolean isSigned);
   public void update(Graphics g);
   public void paint(Graphics g);
-  public boolean handleEvent(Event e);
-  public void destroy();
 }

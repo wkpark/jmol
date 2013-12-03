@@ -4339,16 +4339,19 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       this.notifyViewerRepaintDone();
     } else {
       Object g = null;
+      Object gright = null;
       /**
        * @j2sNative
-       * 
+       *
+       * if (this.statusManager.jmolStatusListener.isStereoSlave) return;
        * g = this.apiPlatform.context;
-       * 
+       * gright = this.statusManager.jmolStatusListener.gright;
+       *
        * 
        */
       {
       }
-      renderScreenImageStereo(g, null,width, height);
+      renderScreenImageStereo(g, gright, width, height);
     }
   }
 
@@ -4604,14 +4607,15 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
      * @j2sNative
      * 
      *            if (strScript.indexOf("JSCONSOLE") == 0) {
-     *            this.applet._showInfo(true); return null; }
+     *            this.applet._showInfo(strScript.indexOf("CLOSE")<0); if
+     *            (strScript.indexOf("CLEAR") >= 0) this.applet._clearConsole();
+     *            return null; }
      */
     {
     }
-    if (getScriptManager() == null)
-      return null;
-    return scriptManager.evalStringWaitStatusQueued(returnType, strScript,
-        statusList, isScriptFile, isQuiet, isQueued);
+    return (getScriptManager() == null ? null :
+      scriptManager.evalStringWaitStatusQueued(returnType, strScript,
+        statusList, isScriptFile, isQuiet, isQueued));
   }
 
   public void exitJmol() {
@@ -5714,6 +5718,14 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   @Override
+  public void notifyStatusReady(boolean isReady) {
+    System.out.println("Jmol applet " + fullName + (isReady ? " ready" : " destroyed"));
+    if (!isReady)
+      setModeMouse(JC.MOUSE_NONE);  
+    statusManager.setStatusAppletReady(fullName, isReady);
+  }
+
+  @Override
   public boolean getBooleanProperty(String key) {
     key = key.toLowerCase();
     if (global.htBooleanParameterFlags.containsKey(key))
@@ -5725,16 +5737,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       String s = actionManager.getPickingState().toLowerCase();
       key = key.substring(0, key.length() - 2) + ";";
       return (s.indexOf(key) >= 0);
-    }
-    if (key.equalsIgnoreCase("__appletReady")) {
-      // used as a simple way to communicate this from org.jmol.applet.jmol
-      statusManager.setStatusAppletReady(fullName, true);
-      return true;
-    }
-    if (key.equalsIgnoreCase("__appletDestroyed")) {
-      // used as a simple way to communicate this from org.jmol.applet.jmol
-      statusManager.setStatusAppletReady(htmlName, false);
-      return true;
     }
     if (key.equalsIgnoreCase("executionPaused"))
       return (eval != null && eval.isPaused());

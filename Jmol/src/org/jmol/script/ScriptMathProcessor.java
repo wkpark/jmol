@@ -336,7 +336,7 @@ public class ScriptMathProcessor {
 
   private boolean haveSpaceBeforeSquare;
   private int equalCount;
-  private static final String qMods = "w:0 x:1 y:2 z:3 normal:4 eulerzxz:5 eulerzyz:6 vector:-1 theta:-2 axisx:-3 axisy:-4 axisz:-5 axisangle:-6 matrix:-9";
+  private static final String qMods = " w:0 x:1 y:2 z:3 normal:4 eulerzxz:5 eulerzyz:6 vector:-1 theta:-2 axisx:-3 axisy:-4 axisz:-5 axisangle:-6 matrix:-9";
   
   boolean addOpAllowMath(T op, boolean allowMathFunc) throws ScriptException {
 
@@ -1261,7 +1261,7 @@ public class ScriptMathProcessor {
           return addXPt4(v4);
         }
         if (n == 0 && x2.tok == T.string) {
-          s = x2.value.toString().trim().toLowerCase() + ":";
+          s = " " + x2.value.toString().trim().toLowerCase() + ":";
           int i = qMods.indexOf(s);
           n = (i >= 0 ? PT.parseInt(qMods.substring(i + s.length())) : -99);
         }
@@ -1314,7 +1314,7 @@ public class ScriptMathProcessor {
         case -9:
           return addXM3(q.getMatrix());
         default:
-          return addXPt4(pt4);
+          return addXStr("NaN");
         }
       case T.matrix4f:
         M4 m4 = (M4) x1.value;

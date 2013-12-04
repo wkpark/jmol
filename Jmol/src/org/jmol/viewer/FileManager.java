@@ -789,14 +789,8 @@ public class FileManager implements BytePoster {
       data[1] = (String) t;
       return false;
     }
-    if (checkProtected && data[0].startsWith("file:") 
-    		&& (data[0].indexOf("/.") >= 0 || data[0].lastIndexOf('.') < data[0].lastIndexOf('/')
-    		|| data[0].lastIndexOf(":/") == data[0].lastIndexOf('/') - 1)) {
-    	// when load() function and local file: 
-    	// no hidden files 
-    	// no files without extension
-    	// no root directory files
-    	data[1] = "Security exception: cannot read file " + data[0];
+    if (checkProtected && !checkSecurity(data[0])) {
+      data[1] = "java.io. Security exception: cannot read file " + data[0];
     	return false;
     }
     try {
@@ -804,6 +798,21 @@ public class FileManager implements BytePoster {
     } catch (Exception e) {
       return false;
     }
+  }
+
+  private boolean checkSecurity(String f) {
+    // when load() function and local file: 
+    if (!f.startsWith("file:"))
+       return true;
+    int pt = f.lastIndexOf('/');
+    // root directory C:/foo or file:///c:/foo or "/foo"
+    // no hidden files 
+    // no files without extension
+    if (f.lastIndexOf(":/") == pt - 1 
+      || f.indexOf("/.") >= 0 
+      || f.lastIndexOf('.') < f.lastIndexOf('/'))
+      return false;
+    return true;
   }
 
   void loadImage(String name, String echoName) {

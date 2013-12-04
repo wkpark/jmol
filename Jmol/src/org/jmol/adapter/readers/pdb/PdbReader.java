@@ -581,7 +581,7 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
     chainAtomCounts = new int[255];
     String title = "";
     String chainlist = "";
-    int iMolecule = 0;
+    String id = "";
     boolean needLine = true;
     Map<String, Object> info = null;
     int nBiomt = 0;
@@ -596,15 +596,15 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
       try {
         if (line.startsWith("REMARK 350 BIOMOLECULE:")) {
           if (nBiomt > 0)
-            Logger.info("biomolecule " + iMolecule + ": number of transforms: "
+            Logger.info("biomolecule " + id + ": number of transforms: "
                 + nBiomt);
           info = new Hashtable<String, Object>();
           biomts = new  List<M4>();
-          iMolecule = parseIntStr(line.substring(line.indexOf(":") + 1));
+          id = line.substring(line.indexOf(":") + 1).trim();
 
           title = line.trim();
-          info.put("name", "biomolecule " + iMolecule);
-          info.put("molecule", Integer.valueOf(iMolecule));
+          info.put("name", "biomolecule " + id);
+          info.put("molecule", id.length() == 3 ? id : Integer.valueOf(parseIntStr(id)));
           info.put("title", title);
           info.put("chains", "");
           info.put("biomts", biomts);
@@ -621,12 +621,12 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
             continue;
           }
           String list = line.substring(41).trim();
-          appendLoadNote("found biomolecule " + iMolecule + ": " + list);
+          appendLoadNote("found biomolecule " + id + ": " + list);
           chainlist = ":" + list.replace(' ', ':');
           needLine = false;
           while (readLine() != null && line.indexOf("BIOMT") < 0 && line.indexOf("350") == 7)
             chainlist += ":" + line.substring(11).trim().replace(' ', ':');
-          if (checkFilterKey("BIOMOLECULE " + iMolecule + ";")) {
+          if (checkFilterKey("BIOMOLECULE " + id + ";")) {
             setFilter(filter.replace(':', '_') + chainlist);
             Logger.info("filter set to \"" + filter + "\"");
             thisBiomolecule = info;
@@ -668,7 +668,7 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
       }
     }
     if (nBiomt > 0)
-      Logger.info("biomolecule " + iMolecule + ": number of transforms: "
+      Logger.info("biomolecule " + id + ": number of transforms: "
           + nBiomt);
   }
 

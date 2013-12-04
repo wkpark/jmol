@@ -401,7 +401,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
     a.setT(asum);
     a.scale(1f/c);
     a.elementSymbol = "Pt";
-    a.chainID = parseIntStr(id);
+    a.chainID = viewer.getChainID(id);
     a.radius = 16;
     atomSetCollection.addAtom(a);
   }
@@ -1446,22 +1446,23 @@ _pdbx_struct_oper_list.vector[3]
   }
 
   private void addAssembly() throws Exception {
-    int iMolecule = parseIntStr(assem[ASSEM_ID]);
+    String id = assem[ASSEM_ID];
+    int iMolecule = parseIntStr(id);
     String list = assem[ASSEM_LIST];
-    appendLoadNote("found biomolecule " + iMolecule + ": " + list);
-    if (!checkFilterKey("ASSEMBLY " + iMolecule + ";"))
+    appendLoadNote("found biomolecule " + id + ": " + list);
+    if (!checkFilterKey("ASSEMBLY " + id + ";"))
       return;
     if (vBiomolecules == null) {
       vBiomolecules = new  List<Map<String,Object>>();
     }
     Map<String, Object> info = new Hashtable<String, Object>();
-    info.put("name", "biomolecule " + iMolecule);
-    info.put("molecule", Integer.valueOf(iMolecule));
+    info.put("name", "biomolecule " + id);
+    info.put("molecule", iMolecule == Integer.MIN_VALUE ? id : Integer.valueOf(iMolecule));
     info.put("assemblies", "$" + list.replace(',', '$'));
     info.put("operators", decodeAssemblyOperators(assem[ASSEM_OPERS]));
     info.put("biomts", new  List<M4>());
     thisBiomolecule = info;
-    Logger.info("assembly " + iMolecule + " operators " + assem[ASSEM_OPERS] + " ASYM_IDs " + assem[ASSEM_LIST]);
+    Logger.info("assembly " + id + " operators " + assem[ASSEM_OPERS] + " ASYM_IDs " + assem[ASSEM_LIST]);
     vBiomolecules.addLast(info);
     assem = null;
   }

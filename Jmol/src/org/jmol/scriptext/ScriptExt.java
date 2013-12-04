@@ -4807,7 +4807,7 @@ public class ScriptExt implements JmolScriptExtension {
         if (tokAtArray(pt + 1, args) == T.integer)
           quality = SV.iValue(tokenAt(++pt, args));
       } else if (PT.isOneOf(val.toLowerCase(),
-          ";xyz;xyzrn;xyzvib;mol;sdf;v2000;v3000;cd;json;pdb;pqr;cml;")) {
+          ";xyz;xyzrn;xyzvib;mol;sdf;v2000;v3000;json;pdb;pqr;cml;")) {
         type = val.toUpperCase();
         if (pt + 1 == argCount)
           pt++;
@@ -4909,7 +4909,7 @@ public class ScriptExt implements JmolScriptExtension {
           && !PT
               .isOneOf(
                   type,
-                  ";SCENE;JMOL;ZIP;ZIPALL;SPT;HISTORY;MO;ISOSURFACE;MESH;PMESH;VAR;FILE;FUNCTION;CD;CML;JSON;XYZ;XYZRN;XYZVIB;MENU;MOL;PDB;PGRP;PQR;QUAT;RAMA;SDF;V2000;V3000;INLINE;"))
+                  ";SCENE;JMOL;ZIP;ZIPALL;SPT;HISTORY;MO;ISOSURFACE;MESH;PMESH;VAR;FILE;FUNCTION;CML;JSON;XYZ;XYZRN;XYZVIB;MENU;MOL;PDB;PGRP;PQR;QUAT;RAMA;SDF;V2000;V3000;INLINE;"))
         eval
             .errorStr2(
                 ScriptEvaluator.ERROR_writeWhat,

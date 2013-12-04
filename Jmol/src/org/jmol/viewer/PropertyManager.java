@@ -773,8 +773,7 @@ public class PropertyManager implements JmolPropertyManager {
     boolean asV3000 = type.equalsIgnoreCase("V3000");
     boolean asSDF = type.equalsIgnoreCase("SDF");
     boolean asXYZVIB = type.equalsIgnoreCase("XYZVIB");
-    boolean asChemDoodle = type.equalsIgnoreCase("CD");
-    boolean asJSON = type.equalsIgnoreCase("JSON") || asChemDoodle;
+    boolean asJSON = type.equalsIgnoreCase("JSON") || type.equalsIgnoreCase("CD");
     SB mol = new SB();
     ModelSet ms = viewer.modelSet;
     if (!asXYZVIB && !asJSON) {
@@ -833,7 +832,7 @@ public class PropertyManager implements JmolPropertyManager {
         BS bsTemp = BSUtil.copy(bsAtoms);
         bsTemp.and(ms.getModelAtomBitSetIncludingDeleted(i, false));
         bsBonds = getCovalentBondsForAtoms(ms.bonds, ms.bondCount, bsTemp);
-        if (!(isOK = addMolFile(mol, bsTemp, bsBonds, false, false, false, q)))
+        if (!(isOK = addMolFile(mol, bsTemp, bsBonds, false, false, q)))
           break;
         mol.append("$$$$\n");
       }
@@ -880,14 +879,14 @@ public class PropertyManager implements JmolPropertyManager {
               null));
       }
     } else {
-      isOK = addMolFile(mol, bsAtoms, bsBonds, asV3000, asJSON, asChemDoodle, q);
+      isOK = addMolFile(mol, bsAtoms, bsBonds, asV3000, asJSON, q);
     }
     return (isOK ? mol.toString()
         : "ERROR: Too many atoms or bonds -- use V3000 format.");
   }
 
   private boolean addMolFile(SB mol, BS bsAtoms, BS bsBonds,
-                             boolean asV3000, boolean asJSON, boolean asChemDoodle, Quaternion q) {
+                             boolean asV3000, boolean asJSON, Quaternion q) {
     int nAtoms = bsAtoms.cardinality();
     int nBonds = bsBonds.cardinality();
     if (!asV3000 && !asJSON && (nAtoms > 999 || nBonds > 999))
@@ -898,7 +897,7 @@ public class PropertyManager implements JmolPropertyManager {
     if (asV3000) {
       mol.append("  0  0  0  0  0  0            999 V3000");
     } else if (asJSON) {
-      mol.append(asChemDoodle ? "{\"m\":{\"scaling\":[20,-20,20],\"a\":[" : "{\"mol\":{\"a\":[");
+       mol.append("{\"mol\":{\"createdBy\":\"Jmol "+ Viewer.getJmolVersion() + "\",\"a\":[");
     } else {
       Txt.rightJustify(mol, "   ", "" + nAtoms);
       Txt.rightJustify(mol, "   ", "" + nBonds);
@@ -915,7 +914,7 @@ public class PropertyManager implements JmolPropertyManager {
     for (int i = bsAtoms.nextSetBit(0), n = 0; i >= 0; i = bsAtoms
         .nextSetBit(i + 1))
       getAtomRecordMOL(ms, mol, atomMap[i] = ++n, ms.atoms[i], q, pTemp, ptTemp, asV3000,
-          asJSON, asChemDoodle);
+          asJSON);
     if (asV3000) {
       mol.append("M  V30 END ATOM\nM  V30 BEGIN BOND\n");
     } else if (asJSON) {
@@ -923,7 +922,7 @@ public class PropertyManager implements JmolPropertyManager {
     }
     for (int i = bsBonds.nextSetBit(0), n = 0; i >= 0; i = bsBonds
         .nextSetBit(i + 1))
-      getBondRecordMOL(mol, ++n, ms.bonds[i], atomMap, asV3000, asJSON, asChemDoodle);
+      getBondRecordMOL(mol, ++n, ms.bonds[i], atomMap, asV3000, asJSON);
     // 21 21 0 0 0
     if (asV3000) {
       mol.append("M  V30 END BOND\nM  V30 END CTAB\n");
@@ -933,7 +932,7 @@ public class PropertyManager implements JmolPropertyManager {
     else {
       mol.append("M  END\n");
     }
-    if (!asChemDoodle && !asV3000) {
+    if (!asJSON && !asV3000) {
       float[] pc = ms.getPartialCharges();
       if (pc != null) {
         mol.append("> <JMOL_PARTIAL_CHARGES>\n").appendI(nAtoms)
@@ -985,7 +984,7 @@ public class PropertyManager implements JmolPropertyManager {
 
   private void getAtomRecordMOL(ModelSet ms, SB mol, int n, Atom a, Quaternion q,
                                 P3 pTemp, P3 ptTemp, boolean asV3000,
-                                boolean asJSON, boolean asChemDoodle) {
+                                boolean asJSON) {
     //   -0.9920    3.2030    9.1570 Cl  0  0  0  0  0
     //    3.4920    4.0920    5.8700 Cl  0  0  0  0  0
     //012345678901234567890123456789012
@@ -1021,11 +1020,8 @@ public class PropertyManager implements JmolPropertyManager {
         mol.append("\"c\":").appendI(charge).append(",");
       if (iso != 0 && iso != Elements.getNaturalIsotope(elemNo))
         mol.append("\"m\":").appendI(iso).append(",");
-      float x = a.x * (asChemDoodle ? 20 : 1);
-      float y = a.y * (asChemDoodle ? -20 : 1);
-      float z = a.z * (asChemDoodle ? 20 : 1);
-      mol.append("\"x\":").appendF(x).append(",\"y\":").appendF(y).append(
-          ",\"z\":").appendF(z).append("}");
+      mol.append("\"x\":").appendF(a.x).append(",\"y\":").appendF(a.y).append(
+          ",\"z\":").appendF(a.z).append("}");
     } else {
       mol.append(Txt.sprintf("%10.5p%10.5p%10.5p",
           "p", new Object[] {pTemp }));
@@ -1042,7 +1038,7 @@ public class PropertyManager implements JmolPropertyManager {
   }
 
   private void getBondRecordMOL(SB mol, int n, Bond b, int[] atomMap,
-                                boolean asV3000, boolean asJSON, boolean asChemDoodle) {
+                                boolean asV3000, boolean asJSON) {
     //  1  2  1  0
     int a1 = atomMap[b.atom1.index];
     int a2 = atomMap[b.atom2.index];
@@ -1051,19 +1047,19 @@ public class PropertyManager implements JmolPropertyManager {
       order = 1;
     switch (b.order & ~JmolEdge.BOND_NEW) {
     case JmolEdge.BOND_AROMATIC:
-      order = (asChemDoodle ? 2: 4);
+      order = (asJSON ? -3 : 4);
       break;
     case JmolEdge.BOND_PARTIAL12:
-      order = (asChemDoodle ? 1: 5);
+      order = (asJSON ? -3 : 5);
       break;
     case JmolEdge.BOND_AROMATIC_SINGLE:
-      order = (asChemDoodle ? 1: 6);
+      order = (asJSON ? 1: 6);
       break;
     case JmolEdge.BOND_AROMATIC_DOUBLE:
-      order = (asChemDoodle ? 2: 7);
+      order = (asJSON ? 2: 7);
       break;
     case JmolEdge.BOND_PARTIAL01:
-      order = (asChemDoodle ? 1: 8);
+      order = (asJSON ? -1: 8);
       break;
     }
     if (asV3000) {
@@ -1073,8 +1069,14 @@ public class PropertyManager implements JmolPropertyManager {
       if (n != 1)
         mol.append(",");
       mol.append("{\"b\":").appendI(a1 - 1).append(",\"e\":").appendI(a2 - 1);
-      if (order != 1)
-        mol.append(",\"o\":").appendI(order);
+      if (order != 1) {
+        mol.append(",\"o\":");
+        if (order < 0) {
+          mol.appendF(-order / 2f);
+        } else {
+          mol.appendI(order);   
+        }
+      }
       mol.append("}");
     } else {
       Txt.rightJustify(mol, "   ", "" + a1);

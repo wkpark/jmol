@@ -380,6 +380,8 @@ public abstract class AtomSetCollectionReader {
     if (htParams.get("pdbNoHydrogens") != null)
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo("pdbNoHydrogens",
           htParams.get("pdbNoHydrogens"));
+    if (checkFilterKey("ADDHYDROGENS"))
+      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("pdbAddHydrogens",Boolean.TRUE);      
   }
 
   protected void setPdb() {

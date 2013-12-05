@@ -19,6 +19,9 @@ for (var i = 0; i < Jmol._coreFiles.length; i++)
   if (Jmol._debugCode)
     return;
 
+// note - we don't need to list ALL the classes -- only the ones that are entry points.
+// several more classe are in each of these files -- see build_03_tojs.xml
+
 	ClazzLoader.jarClasspath (base + "coretext.z.js",	[    
 	"J.modelset.Object2d",
 	"$.Text",
@@ -26,11 +29,7 @@ for (var i = 0; i < Jmol._coreFiles.length; i++)
 	"$.TextShape",
 	"$.Labels",
 	"$.Echo",
-	"$.Hover",
-	"J.render.TextRenderer",
-	"$.LabelsRenderer",
-	"$.EchoRenderer",
-	"$.HoverRenderer"
+	"$.Hover"
 	]);
 
 	ClazzLoader.jarClasspath (base + "corescript.z.js",	[  
@@ -39,11 +38,6 @@ for (var i = 0; i < Jmol._coreFiles.length; i++)
     "$.JmolScriptFunction",
     "J.script.ScriptEvaluator", 
     "$.ScriptCompiler", 
-    "$.ScriptCompilationTokenParser",
-    "$.ScriptFlowContext", 
-    "$.ScriptFunction", 
-    "$.ScriptInterruption", 
-    "$.ScriptMathProcessor", 
     "$.CommandWatcherThread", 
     "$.ScriptQueueThread", 
     "$.ScriptDelayThread", 
@@ -123,83 +117,20 @@ for (var i = 0; i < Jmol._coreFiles.length; i++)
 		"J.thread.MinimizationThread"
 	]);
 
-/*
 	ClazzLoader.jarClasspath (base + "corezip.z.js",	[
-		"JZ.Checksum",
-		"$.CRC32",
-		"$.InflaterInputStream",
-		"$.ZStream",
-		"$.Inflater",
-		"$.Adler32",
-		"$.Tree",
-		"$.GZIPHeader",
-		"$.StaticTree",
-		"$.Inflate",
-		"$.InfTree",
-		"$.InfBlocks",
-		"$.InfCodes",
-		"$.Inflater",
-		"$.InflaterInputStream",
-		"$.GZIPInputStream",
-		"$.PushbackInputStream",
-		"java.util.zip.CRC32",
-		"$.CheckedInputStream",
-		"$.GZIPInputStream",
-		"$.Inflater",
-		"$.InflaterInputStream",
-		"$.ZipException",
-		"$.ZipConstants",
-		"$.ZipEntry",
-		"$.ZipConstants64",
-		"$.ZipInputStream",
 		"J.api.JmolZipUtility",
 		"$.ZInputStream",
 		"J.io2.ZipUtil",
 		"$.JmolZipInputStream"
 	]);
-	*/ 
+
 	ClazzLoader.jarClasspath (base + "corebio.z.js",	[
 		"J.adapter.readers.pdb.PdbReader",
 		"J.adapter.smarter.Structure",
-		"J.dssx.Bridge",
-		"J.dssx.DSSP",		
 		"J.api.JmolBioResolver",
 		"J.modelsetbio.Resolver",
-		"$.Monomer",
-		"$.AlphaMonomer",
-		"$.ProteinStructure",
-		"$.Helix",
-		"$.Sheet",
-		"$.Turn",
-		"$.BioPolymer", 
-		"$.AlphaPolymer",
-		"$.AminoMonomer",
-		"$.AminoPolymer",
-		"$.BioModel",
-		"$.CarbohydrateMonomer",
-		"$.CarbohydratePolymer",
-		"$.PhosphorusMonomer", 
-		"$.NucleicMonomer",
-		"$.NucleicPolymer",
-		"$.PhosphorusPolymer",
-		"J.shapebio.BioShape",
-		"$.BioShapeCollection",
-		"$.Ribbons",	
-		"$.MeshRibbons",
-		"$.Strands",
-		"$.Rockets",
-		"$.Cartoon",
-	    "$.Backbone",
-	    "$.Trace",
-		"J.renderbio.BioShapeRenderer",
-		"$.StrandsRenderer",
-		"$.RibbonsRenderer",
-		"$.MeshRibbonsRenderer",
-		"$.RocketsRenderer",
-		"$.CartoonRenderer",
-	    "$.BackboneRenderer",
-	    "$.TraceRenderer"
-	]);
+		"$.BioModel"
+ ]);
 
 
 	ClazzLoader.jarClasspath (base + "coresurface.z.js",	[
@@ -255,9 +186,6 @@ for (var i = 0; i < Jmol._coreFiles.length; i++)
     "$.SmilesParser"
 	]);
 
-// note - we don't need to list ALL the classes -- only the ones that are entry points.
-// several moe classe are in each fo these files -- see build_03_tojs.xml
-
 	ClazzLoader.jarClasspath (base + "corejsvmenu.z.js",	[
           	"JSV.js2d.JsPopup"
   ]);
@@ -273,6 +201,7 @@ for (var i = 0; i < Jmol._coreFiles.length; i++)
           "$.OverlayLegendDialog",
           "$.ViewsDialog"
 	]);
+
 
 
 }) ();

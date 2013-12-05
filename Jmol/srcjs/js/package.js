@@ -123,6 +123,7 @@ for (var i = 0; i < Jmol._coreFiles.length; i++)
 		"J.thread.MinimizationThread"
 	]);
 
+/*
 	ClazzLoader.jarClasspath (base + "corezip.z.js",	[
 		"JZ.Checksum",
 		"$.CRC32",
@@ -156,7 +157,7 @@ for (var i = 0; i < Jmol._coreFiles.length; i++)
 		"J.io2.ZipUtil",
 		"$.JmolZipInputStream"
 	]);
-	
+	*/ 
 	ClazzLoader.jarClasspath (base + "corebio.z.js",	[
 		"J.adapter.readers.pdb.PdbReader",
 		"J.adapter.smarter.Structure",
@@ -253,6 +254,26 @@ for (var i = 0; i < Jmol._coreFiles.length; i++)
     "$.SmilesMeasure",
     "$.SmilesParser"
 	]);
+
+// note - we don't need to list ALL the classes -- only the ones that are entry points.
+// several moe classe are in each fo these files -- see build_03_tojs.xml
+
+	ClazzLoader.jarClasspath (base + "corejsvmenu.z.js",	[
+          	"JSV.js2d.JsPopup"
+  ]);
+
+	ClazzLoader.jarClasspath (base + "corejsvexport.z.js",	[
+          	"JSV.export.Exporter"
+	]);
+
+	ClazzLoader.jarClasspath (base + "corejsvdialog.z.js",	[
+        	"JSV.dialog.IntegrationDialog",
+        	"$.PeakListDialog",
+          "$.MeasurementsDialog",
+          "$.OverlayLegendDialog",
+          "$.ViewsDialog"
+	]);
+
 
 }) ();
 window["java.registered"] = true;

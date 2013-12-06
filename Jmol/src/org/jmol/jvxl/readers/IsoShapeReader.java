@@ -36,7 +36,8 @@ import javajs.util.P3;
 import javajs.util.T3;
 import javajs.util.V3;
 
-class IsoShapeReader extends VolumeDataReader {
+final class IsoShapeReader extends VolumeDataReader {
+  // final because we are initiating static fields using static{}
 
   private int psi_n = 2;
   private int psi_l = 1;

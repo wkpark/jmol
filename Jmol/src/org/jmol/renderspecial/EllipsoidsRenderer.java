@@ -47,8 +47,10 @@ import org.jmol.shapespecial.Ellipsoid;
 import org.jmol.shapespecial.Ellipsoids;
 import org.jmol.viewer.JC;
 
-public class EllipsoidsRenderer extends ShapeRenderer {
-
+final public class EllipsoidsRenderer extends ShapeRenderer {
+  
+  // final because we are initializing static fields using static{}
+  
   private Ellipsoids ellipsoids;
 
   private boolean[] bGlobals = new boolean[7];
@@ -102,6 +104,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   private final static float[] cossin = new float[36];
 
   static {
+    // OK for J2S compilation because this is a final class
     for (int i = 5, pt = 0; i <= 90; i += 5) {
       cossin[pt++] = (float) Math.cos(i * toRadians);
       cossin[pt++] = (float) Math.sin(i * toRadians);

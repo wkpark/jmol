@@ -241,16 +241,19 @@ public class Group {
 
   private static Map<String, Short> htGroup = new Hashtable<String, Short>();
 
-  static String[] group3Names = new String[128];
-  static short group3NameCount = 0;
+  private static String[] group3Names = new String[128];
+  private static short group3NameCount = 0;
   
   static {
+    // this is acceptable for J2S compilation SPECIFICALLY 
+    // because even though this class is not final, 
+    // group3Names is a private field.
     for (int i = 0; i < JC.predefinedGroup3Names.length; ++i) {
       addGroup3Name(JC.predefinedGroup3Names[i]);
     }
   }
   
-  synchronized static short addGroup3Name(String group3) {
+  private synchronized static short addGroup3Name(String group3) {
     if (group3NameCount == group3Names.length)
       group3Names = AU.doubleLengthS(group3Names);
     short groupID = group3NameCount++;
@@ -259,7 +262,7 @@ public class Group {
     return groupID;
   }
 
-  public static short getGroupIdFor(String group3) {
+  private static short getGroupIdFor(String group3) {
     if (group3 == null)
       return -1;
     short groupID = lookupGroupID(group3);

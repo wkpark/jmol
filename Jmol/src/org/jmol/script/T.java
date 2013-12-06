@@ -1497,6 +1497,9 @@ public class T {
 
   static {
 
+    // OK for J2S compiler even though T is not final because 
+    // tokenMap is private
+    
     Object[] arrayPairs  = {
 
     // atom expressions

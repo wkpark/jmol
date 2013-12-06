@@ -334,6 +334,7 @@ public class ActionManager implements EventManager {
   }
 
   static {
+    // OK for J2S because actionInfo and actionNames are both private
     newAction(ACTION_assignNew, "_assignNew", GT.o(GT._(
         "assign/new atom or bond (requires {0})"),
         "set picking assignAtom_??/assignBond_?"));

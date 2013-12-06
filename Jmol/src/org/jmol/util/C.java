@@ -61,8 +61,10 @@ import org.jmol.constant.EnumPalette;
  * @author Miguel, miguel@jmol.org 
  */
 
-public class C {
+public final class C {
 
+  // final here because we are initializing public static fields using static{}
+  
   /* ***************************************************************
    * color indexes -- colix
    * ***************************************************************/
@@ -283,6 +285,7 @@ public class C {
   };
 
   static {
+    // OK for J2S compiler because this is a final class
     for (int i = 0; i < predefinedArgbs.length; ++i)
       getColix(predefinedArgbs[i]);
   }

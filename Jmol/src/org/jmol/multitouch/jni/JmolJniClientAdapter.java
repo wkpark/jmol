@@ -32,13 +32,13 @@ public class JmolJniClientAdapter extends JmolMultiTouchClientAdapter {
   // not implemented. A stub only for a potential Java Native Interface.
   // not currently in applet.classes
   // would need to set isServer flag
-/*
-  static {
-    System.loadLibrary("JmolMultiTouchJNI");
-  }  
- 
-  native void nativeMethod(); // should report "In C\nIn Java\n"
-*/  
+
+//  static {
+//    System.loadLibrary("JmolMultiTouchJNI");
+//  }  
+// 
+//  native void nativeMethod(); // should report "In C\nIn Java\n"
+
   @Override
   public void dispose() {
     //TODO

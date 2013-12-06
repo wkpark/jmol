@@ -44,7 +44,7 @@ import java.util.Properties;
 
 @J2SIgnoreImport({java.util.Properties.class,java.io.BufferedInputStream.class})
 @J2SRequireImport({javajs.util.SB.class, org.jmol.util.Txt.class})
-public class JC {
+public final class JC {
 
   // axes mode constants --> org.jmol.constant.EnumAxesMode
   // callback constants --> org.jmol.constant.EnumCallback
@@ -1560,30 +1560,35 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   }
 
   static {
-    if (argbsFormalCharge.length != Elements.FORMAL_CHARGE_MAX
-        - Elements.FORMAL_CHARGE_MIN + 1) {
-      Logger.error("formal charge color table length");
-      throw new NullPointerException();
-    }
-    if (shapeClassBases.length != SHAPE_MAX) {
-      Logger.error("shapeClassBases wrong length");
-      throw new NullPointerException();
-    }
-    if (argbsAmino.length != GROUPID_AMINO_MAX) {
-      Logger.error("argbsAmino wrong length");
-      throw new NullPointerException();
-    }
-    if (argbsShapely.length != GROUPID_WATER) {
-      Logger.error("argbsShapely wrong length");
-      throw new NullPointerException();
-    }
-    if (argbsChainHetero.length != argbsChainAtom.length) {
-      Logger.error("argbsChainHetero wrong length");
-      throw new NullPointerException();
-    }
-    if (shapeClassBases.length != SHAPE_MAX) {
-      Logger.error("the shapeClassBases array has the wrong length");
-      throw new NullPointerException();
+    /**
+     * @j2sNative
+     */
+    {
+      if (argbsFormalCharge.length != Elements.FORMAL_CHARGE_MAX
+          - Elements.FORMAL_CHARGE_MIN + 1) {
+        Logger.error("formal charge color table length");
+        throw new NullPointerException();
+      }
+      if (shapeClassBases.length != SHAPE_MAX) {
+        Logger.error("shapeClassBases wrong length");
+        throw new NullPointerException();
+      }
+      if (argbsAmino.length != GROUPID_AMINO_MAX) {
+        Logger.error("argbsAmino wrong length");
+        throw new NullPointerException();
+      }
+      if (argbsShapely.length != GROUPID_WATER) {
+        Logger.error("argbsShapely wrong length");
+        throw new NullPointerException();
+      }
+      if (argbsChainHetero.length != argbsChainAtom.length) {
+        Logger.error("argbsChainHetero wrong length");
+        throw new NullPointerException();
+      }
+      if (shapeClassBases.length != SHAPE_MAX) {
+        Logger.error("the shapeClassBases array has the wrong length");
+        throw new NullPointerException();
+      }
     }
   }
 

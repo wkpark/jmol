@@ -697,12 +697,10 @@ public class NciCalculation extends QuantumCalculation implements
        4.251312809,  4.503309314,           4.047465141, 4.666024968, 4.265151411, 3.955710076, 4.040067606, 3.776022242
   };
 
-/*
-  static {
-    for (int i = 1; i <= 18; i++) {
-      double x = coef1[i] * Math.exp(-dMax[i] / zeta1[i]) + coef2[i] * Math.exp(-dMax[i] / zeta2[i]) + coef3[i] * Math.exp(-dMax[i] / zeta3[i]);
-      System.out.println("ncicalc \t" + i + "\t" + coef1[i] + "\t"+ coef2[i] + "\t"+ coef3[i] + "\t"+ zeta1[i] + "\t"+ zeta2[i] + "\t"+ zeta3[i] + "\t" + x);
-    }
-  }
-*/  
+//  static {
+//    for (int i = 1; i <= 18; i++) {
+//      double x = coef1[i] * Math.exp(-dMax[i] / zeta1[i]) + coef2[i] * Math.exp(-dMax[i] / zeta2[i]) + coef3[i] * Math.exp(-dMax[i] / zeta3[i]);
+//      System.out.println("ncicalc \t" + i + "\t" + coef1[i] + "\t"+ coef2[i] + "\t"+ coef3[i] + "\t"+ zeta1[i] + "\t"+ zeta2[i] + "\t"+ zeta3[i] + "\t" + x);
+//    }
+//  }
 }

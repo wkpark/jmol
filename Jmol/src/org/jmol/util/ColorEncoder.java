@@ -718,17 +718,16 @@ import javajs.util.P3;
     int i = (int) Math.floor(q <= 0 ? 0 : q);
     return i % segmentCount;
   }
-/*  
-  static {
-    for (int i = 0; i < 10; i++) {
-      System.out.println(i + " " + quantize(i, 0, 10, 10));
-    }
-    for (int i = -10; i < 0; i++) {
-      System.out.println((i) + " " + quantize(i, -10, 0, 10));
-    }
-    System.out.println("ColorEncoder test");
-  }
-*/
+//  static {
+//    for (int i = 0; i < 10; i++) {
+//      System.out.println(i + " " + quantize(i, 0, 10, 10));
+//    }
+//    for (int i = -10; i < 0; i++) {
+//      System.out.println((i) + " " + quantize(i, -10, 0, 10));
+//    }
+//    System.out.println("ColorEncoder test");
+//  }
+
 
   public String getColorScheme() {
     return (isTranslucent ? "translucent " : "")

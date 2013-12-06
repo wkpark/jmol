@@ -55,6 +55,9 @@ public final class Logger {
   public static boolean debuggingHigh;
   
   static {
+    
+    // OK for J2S because this is a final class
+    
     _activeLevels[LEVEL_DEBUGHIGH] = getProperty("debugHigh",    false);
     _activeLevels[LEVEL_DEBUG] = getProperty("debug",    false);
     _activeLevels[LEVEL_INFO]  = getProperty("info",     true);

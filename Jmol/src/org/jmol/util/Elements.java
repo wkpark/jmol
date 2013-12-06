@@ -1020,6 +1020,7 @@ public class Elements {
   private final static BS bsAnions = new BS();
 
   static {
+    // OK for J2S compiler because these fields are private
     for (int i = 0; i < anionLookupTable.length; i+=2)
       bsAnions.set(anionLookupTable[i]>>4);
     for (int i = 0; i < cationLookupTable.length; i+=2)

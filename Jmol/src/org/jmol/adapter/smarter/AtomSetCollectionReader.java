@@ -1595,13 +1595,6 @@ public abstract class AtomSetCollectionReader {
     }
     return vdata;
   }
-  /*
-    static {
-      System.out.println(Escape.toJSON(null, getFortranFormatLengths("(5A10")));    
-      System.out.println(Escape.toJSON(null, getFortranFormatLengths("(5E10.3,2A4.6")));    
-      System.out.println(Escape.toJSON(null, getFortranFormatLengths("(5A4,2X,2I20")));
-    }
-  */
 
   /**
    * read three vectors, as for unit cube definitions

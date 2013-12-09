@@ -973,5 +973,6 @@ import java.util.Map;
       ops[i] = unitcell.getSpaceGroupOperation(i);
     return ops;
   }
+
 }
 

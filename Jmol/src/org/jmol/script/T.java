@@ -702,7 +702,7 @@ public class T {
   public final static int write            = 21 | 0 << 9 | mathfunc | scriptCommand;
   public final static int cache            = 22 | 0 << 9 | mathfunc | scriptCommand; // new in Jmol 13.1.2
   public final static int tensor           = 23 | 0 << 9 | mathfunc | mathproperty;
-  public final static int modulation       = 24 | 0 << 9 | mathfunc | scriptCommand;
+  public final static int modulation       = 24 | 0 << 9 | mathfunc | mathproperty | scriptCommand;
   
   // xxx(a)
   

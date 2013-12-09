@@ -221,7 +221,7 @@ abstract public class Binding {
   }
   
   public final void bindAction(int mouseAction, int jmolAction) {
-    //System.out.println("binding " + mouseAction + "\t" + jmolAction);
+    //System.out.println("binding " + mouseAction + " " + getMouseActionName(mouseAction, false) + "\t" + jmolAction);
     addBinding(mouseAction + "\t" + jmolAction, new int[] {mouseAction, jmolAction});
   }
   
@@ -290,6 +290,7 @@ abstract public class Binding {
   }
   
   public final boolean isBound(int mouseAction, int jmolAction) {
+    //System.out.println("checking isBound " + mouseAction + " " + getMouseActionName(mouseAction, false) + "\t" + jmolAction);
     return bindings.containsKey(mouseAction + "\t" + jmolAction);
   }
   

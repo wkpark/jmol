@@ -933,7 +933,7 @@ public class AtomSetCollection {
    
   private void applySymmetryLattice(int maxX, int maxY, int maxZ)
       throws Exception {
-    if (!coordinatesAreFractional || !getSymmetry().haveSpaceGroup())
+    if (!coordinatesAreFractional || getSymmetry().getSpaceGroup() == null)
       return;
     if (fmatSupercell != null) {
 
@@ -1073,6 +1073,8 @@ public class AtomSetCollection {
   }
   
   private void applyAllSymmetry() throws Exception {
+    if (atomCount == 0)
+      return;
     int noSymmetryCount = (baseSymmetryAtomCount == 0 ? getLastAtomSetAtomCount() : baseSymmetryAtomCount);
     int iAtomFirst = getLastAtomSetAtomIndex();
     setTensors();

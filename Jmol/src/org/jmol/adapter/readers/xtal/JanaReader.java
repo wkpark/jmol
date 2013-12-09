@@ -1,4 +1,4 @@
-/* $RCSfile$
+  /* $RCSfile$
  * $Author: hansonr $
  * $Date: 2006-09-30 10:16:53 -0500 (Sat, 30 Sep 2006) $
  * $Revision: 5778 $
@@ -27,9 +27,10 @@ import java.io.BufferedReader;
 import java.util.Hashtable;
 import java.util.Map;
 
-
-import org.jmol.adapter.readers.cif.ModulationReader;
 import org.jmol.adapter.smarter.Atom;
+import org.jmol.adapter.smarter.AtomSetCollectionReader;
+import org.jmol.adapter.smarter.MSInterface;
+import org.jmol.api.Interface;
 import org.jmol.io.JmolBinary;
 import org.jmol.java.BS;
 
@@ -44,16 +45,21 @@ import javajs.util.P3;
  * @author Bob Hanson hansonr@stolaf.edu 8/7/2013  
  */
 
-public class JanaReader extends ModulationReader {
+public class JanaReader extends AtomSetCollectionReader {
 
   private List<float[]> lattvecs;
   private int thisSub;
+  private MSInterface mr;
+  private boolean modAverage;
+  private String modAxes;
+  private int modDim;
   
   @Override
   public void initializeReader() throws Exception {
-      setFractionalCoordinates(true);
-      initializeModulation();
-      atomSetCollection.newAtomSet();
+    modAverage = checkFilterKey("MODAVE");
+    modAxes = getFilter("MODAXES=");
+    setFractionalCoordinates(true);
+    atomSetCollection.newAtomSet();
   }
   
   final static String records = "tit  cell ndim qi   lat  sym  spg  end  wma";
@@ -123,14 +129,13 @@ public class JanaReader extends ModulationReader {
         M4 m = new M4();
         if (thisSub++ == 0) {
           m.setIdentity();
-          addSubsystem("1", m, null);
-          thisSub++;
+          mr.addSubsystem("1", m, null);
           m = new M4();
         }
         float[] data = new float[16];
         fillFloatArray(null, 0, data);
         m.setA(data, 0);
-        addSubsystem("" + thisSub, m, null);
+        mr.addSubsystem("" + thisSub, m, null);
     }
     return true;
   }
@@ -142,8 +147,10 @@ public class JanaReader extends ModulationReader {
       atomSetCollection.getSymmetry().addLatticeVectors(lattvecs);
     applySymmetryAndSetTrajectory();
     adjustM40Occupancies();
-    setModulation();
-    finalizeModulation();
+    if (mr != null) {
+      mr.setModulation();
+      mr.finalizeModulation();
+    }
     finalizeReaderASCR();
   }
   
@@ -152,15 +159,17 @@ public class JanaReader extends ModulationReader {
       setUnitCellItem(ipt, parseFloat());
   }
 
-  private void ndim() {
-    setModDim(parseIntStr(getTokens()[1]) - 3);
+  private void ndim() throws Exception {
+    mr = (MSInterface) Interface
+        .getInterface("org.jmol.adapter.readers.cif.MSReader");
+    modDim = mr.initialize(this, "" + (parseIntStr(getTokens()[1]) - 3));
   }
 
   private int qicount;
 
   private void qi() {
     P3 pt = P3.new3(parseFloat(), parseFloat(), parseFloat());
-    addModulation(null, "W_" + (++qicount), pt, -1);
+    mr.addModulation(null, "W_" + (++qicount), pt, -1);
     pt = new P3();
     switch (qicount) {
     case 1:
@@ -173,7 +182,7 @@ public class JanaReader extends ModulationReader {
       pt.z = 1;
       break;
     }
-    addModulation(null, "F_" + qicount + "_q_", pt, -1);
+    mr.addModulation(null, "F_" + qicount + "_q_", pt, -1);
   }
    private void lattvec(String data) throws Exception {
     float[] a;
@@ -285,12 +294,12 @@ public class JanaReader extends ModulationReader {
       if (iSub > 0) {
         if (newSub.get(nAtoms))
           iSub++;
-        addSubsystem("" + iSub, null, atom.atomName);
+        mr.addSubsystem("" + iSub, null, atom.atomName);
       }
       float o_site = atom.foccupancy = floats[2];
       setAtomCoordXYZ(atom, floats[3], floats[4], floats[5]);
       atomSetCollection.addAtom(atom);
-      if (!incommensurate)
+      if (modDim == 0)
         continue;
       String label = ";" + atom.atomName;
       boolean haveSpecialOcc = (getInt(60, 61) > 0);
@@ -326,7 +335,7 @@ public class JanaReader extends ModulationReader {
       // However, first we need to adjust o_0 because the value given in m40 is 
       // divided by the number of operators giving this site.
       if (o_0 != 1) {
-        addModulation(null, "J_O#0;" + atom.atomName, P3.new3(o_site, o_0, 0), -1);
+        mr.addModulation(null, "J_O#0;" + atom.atomName, P3.new3(o_site, o_0, 0), -1);
       }
       atom.foccupancy = o_0 * o_site;
       int wv = 0;
@@ -345,7 +354,7 @@ public class JanaReader extends ModulationReader {
         id = "O_" + wv + "#0" + label;
         pt = P3.new3(a1, a2, 0);
         if (a1 != 0 || a2 != 0)
-          addModulation(null, id, pt, -1);
+          mr.addModulation(null, id, pt, -1);
       }
 
       // read displacement data
@@ -356,7 +365,7 @@ public class JanaReader extends ModulationReader {
           float w = floats[4];
           for (int k = 0; k < 3; k++)
             if (floats[k] != 0)
-              addModulation(null, "D_S#" + LABELS.charAt(k) + label, P3.new3(c,
+              mr.addModulation(null, "D_S#" + LABELS.charAt(k) + label, P3.new3(c,
                   w, floats[k]), -1);
         } else {
           // Fourier
@@ -377,7 +386,7 @@ public class JanaReader extends ModulationReader {
           } else {
             float[][] data = readM40FloatLines(2, 6, r);
             for (int k = 0, p = 0; k < 6; k++, p += 3)
-              addModulation(null, "U_" + (j + 1) + "#"
+              mr.addModulation(null, "U_" + (j + 1) + "#"
                   + U_LIST.substring(p, p + 3) + label, P3.new3(data[1][k],
                   data[0][k], 0), -1);
           }
@@ -387,8 +396,10 @@ public class JanaReader extends ModulationReader {
     r.close();
   }
 
+  public final static String U_LIST = "U11U22U33U12U13U23UISO";
+  
   private BS getSubSystemList() {
-    if (htSubsystems == null)
+    if (thisSub == 0)
       return null;
     BS bs = new BS();
     String[] tokens = getTokens();
@@ -416,7 +427,7 @@ public class JanaReader extends ModulationReader {
         case 1:
           pt.x = parseFloatStr(tokens[2]);
         }
-        addModulation(null, "F_" + parseIntStr(tokens[1]) + "_q_", pt, -1);
+        mr.addModulation(null, "F_" + parseIntStr(tokens[1]) + "_q_", pt, -1);
       }
     readM40Floats(r);
   }
@@ -434,16 +445,22 @@ public class JanaReader extends ModulationReader {
         continue;
       String id = key + (j + 1) + "#" + axis + label;
       P3 pt = P3.new3(ccos, csin, 0);
-      addModulation(null, id, pt, -1);
+      mr.addModulation(null, id, pt, -1);
     }
   }
 
+  /**
+   * presumption here is that there is only one model 
+   * (that atModel is "@0")
+   * 
+   * @param j
+   */
   private void checkFourier(int j) {
     P3 pt;
-    if (j > 0 && getModulationVector("F_" + (j + 1) + "_q_") == null && (pt = getModulationVector("F_1_q_")) != null) {
+    if (j > 0 && mr.getMod("F_" + (j + 1) + "_q_") == null && (pt = mr.getMod("F_1_q_")) != null) {
       pt = P3.newP(pt);
       pt.scale(j + 1);
-      addModulation(null, "F_" + (j + 1) + "_q_", pt, -1);
+      mr.addModulation(null, "F_" + (j + 1) + "_q_", pt, -1);
     }
   }
 

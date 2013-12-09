@@ -7106,6 +7106,8 @@ public class ScriptExt implements JmolScriptExtension {
       return evaluateSubstructure(mp, args, tok);
     case T.cache:
       return evaluateCache(mp, args);
+    case T.modulation:
+      return evaluateModulation(mp, args);
     case T.sort:
     case T.count:
       return evaluateSort(mp, args, tok);
@@ -7123,6 +7125,26 @@ public class ScriptExt implements JmolScriptExtension {
       return evaluateWrite(mp, args);
     }
     return false;
+  }
+
+  private boolean evaluateModulation(ScriptMathProcessor mp, SV[] args) throws ScriptException {
+    String type = "D";
+    float t = 0;
+    switch (args.length) {
+    case 0:
+      break;
+    case 1:
+      t = SV.fValue(args[0]);
+      break;
+    case 2:
+      type = SV.sValue(args[0]).toUpperCase();
+      t = SV.fValue(args[1]);
+      break;
+    default:
+      return false;
+    }
+    BS bs = SV.getBitSet(mp.getX(), false);
+    return mp.addXList(viewer.getModulationList(bs, type, t));
   }
 
   private boolean evaluateTensor(ScriptMathProcessor mp, SV[] args) throws ScriptException {

@@ -106,14 +106,21 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
     
   }
 
-  public void calculate() {
+  public void calculate(float fracT) {
     x = y = z = 0;
     htUij = null;
     vOcc = Float.NaN;
-    double offset = (t == Integer.MAX_VALUE ? 0 : qlen[0] * t);
+    double offset = (t == Integer.MAX_VALUE ? 0 : qlen[0] * t) + fracT;
     for (int i = mods.size(); --i >= 0;)
       mods.get(i).apply(this, offset);
     gammaE.transform(this);
+  }
+  
+  @Override
+  public void getModulation(float t, P3 pt) {
+    calculate(t);
+    pt.setT(this);
+    calculate(0);
   }
 
   public void addUTens(String utens, float v) {
@@ -153,7 +160,7 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
       prevSetting = new V3(); 
     prevSetting.setT(this);
     this.t = t;
-    calculate();
+    calculate(0);
     enabled = false;
     return 3;
   }
@@ -166,6 +173,16 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
   @Override
   public V3 getPrevSetting() {
     return prevSetting;
+  }
+
+  @Override
+  public Object getModulationData(String type, float t) {
+    if (type.equals("D")) {
+      P3 pt = new P3();
+      getModulation(t, pt);
+      return pt;
+    }
+    return null;
   }
   
 }

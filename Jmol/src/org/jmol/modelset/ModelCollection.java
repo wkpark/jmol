@@ -1457,6 +1457,17 @@ abstract public class ModelCollection extends BondCollection {
     return -1;
   }
 
+  public List<Object> getModulationList(BS bs, String type, float t) {
+    List<Object> list = new List<Object>();
+    if (vibrations != null)
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
+        if (vibrations[i] instanceof JmolModulationSet)
+          list.addLast(((JmolModulationSet) vibrations[i]).getModulationData(type, t));
+        else
+          list.addLast(null);         
+    return list;
+  }
+
   public BS getElementsPresentBitSet(int modelIndex) {
     if (modelIndex >= 0)
       return elementsPresent[modelIndex];

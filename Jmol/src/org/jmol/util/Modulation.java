@@ -122,7 +122,7 @@ public class Modulation {
    * 
    * 
    * @param ms
-   * @param offset
+   * @param offset only for 1D
    * 
    * 
    */

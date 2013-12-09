@@ -53,8 +53,6 @@ public interface SymmetryInterface {
                                            String name,
                                            float[] notionalUnitCell);
 
-  public boolean haveSpaceGroup();
-
   public String getSpaceGroupInfo(String name, SymmetryInterface cellInfo);
 
   public Object getLatticeDesignation();

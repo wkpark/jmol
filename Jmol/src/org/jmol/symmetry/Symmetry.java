@@ -166,17 +166,6 @@ public class Symmetry implements SymmetryInterface {
     return spaceGroup != null;
   }
 
-//  public void setBioMolecules(String name, List<M4> vBiomts) {
-//    unitCell = UnitCell.newA(null);
-//    spaceGroup = SpaceGroup.createSpaceGroup(-1, name, vBiomts);
-//  }
-
-  @Override
-  public boolean haveSpaceGroup() {
-    return (spaceGroup != null);
-  }
-  
-  
 
   @Override
   public String getSpaceGroupInfo(String name, SymmetryInterface cellInfo) {
@@ -197,7 +186,8 @@ public class Symmetry implements SymmetryInterface {
 
   @Override
   public int getSpaceGroupOperationCount() {
-    return (spaceGroup == null ? 0 : spaceGroup.finalOperations.length);
+    return (symmetryInfo != null ? symmetryInfo.symmetryOperations.length
+        : spaceGroup != null ? spaceGroup.finalOperations.length : 0);
   }  
   
   @Override
@@ -578,7 +568,7 @@ public class Symmetry implements SymmetryInterface {
     Symmetry sym = (Symmetry) uc;
     int iop = op;
     if (xyz == null) {
-      String[] ops = uc.getSymmetryOperations();
+      String[] ops = sym.getSymmetryOperations();
       if (ops == null || op == 0 || Math.abs(op) > ops.length)
         return "";
       if (op > 0) {

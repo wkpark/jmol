@@ -1375,7 +1375,7 @@ public class ActionManager implements EventManager {
       return;
     }
     dragAtomIndex = -1;
-    boolean isRbAction = isRubberBandSelect(clickAction);
+    boolean isRbAction = isRubberBandSelect(dragAction);
     if (isRbAction)
       selectRb(clickAction);
     rubberbandSelectionMode = (binding.name.equals("drag"));
@@ -1620,6 +1620,8 @@ public class ActionManager implements EventManager {
   }
 
   private boolean isRubberBandSelect(int action) {
+    // drag and wheel and release
+    action = action & ~Binding.DRAG | Binding.CLICK;
     return rubberbandSelectionMode
         && (isBound(action, ACTION_selectToggle)
             || isBound(action, ACTION_selectOr) || isBound(action,

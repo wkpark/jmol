@@ -175,9 +175,9 @@ public abstract class AtomSetCollectionReader {
   protected String spaceGroup;
   protected boolean ignoreFileUnitCell;
   protected boolean ignoreFileSpaceGroupName;
-  protected float[] notionalUnitCell; //0-5 a b c alpha beta gamma; 6-21 matrix c->f
+  public float[] notionalUnitCell; //0-5 a b c alpha beta gamma; 6-21 matrix c->f
   protected int desiredModelNumber = Integer.MIN_VALUE;
-  protected SymmetryInterface symmetry;
+  public SymmetryInterface symmetry;
   protected OC out;
   protected boolean iHaveFractionalCoordinates;
   protected boolean doPackUnitCell;
@@ -336,7 +336,7 @@ public abstract class AtomSetCollectionReader {
     return (desiredModelNumber > 0 || modelNumber >= lastModelNumber);
   }
 
-  protected String appendLoadNote(String info) {
+  public String appendLoadNote(String info) {
     loadNote.append(info).append("\n");
     Logger.info(info);
     return info;
@@ -382,9 +382,6 @@ public abstract class AtomSetCollectionReader {
           htParams.get("pdbNoHydrogens"));
     if (checkFilterKey("ADDHYDROGENS"))
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo("pdbAddHydrogens",Boolean.TRUE);      
-  }
-
-  protected void setPdb() {
   }
 
   private Object finish() {
@@ -793,7 +790,7 @@ public abstract class AtomSetCollectionReader {
   /////////// FILTER /////////////////
 
   protected BS bsFilter;
-  protected String filter;
+  public String filter;
   private boolean haveAtomFilter;
   private boolean filterAltLoc;
   private boolean filterGroup3;
@@ -904,12 +901,12 @@ public abstract class AtomSetCollectionReader {
 
   private String filter1, filter2;
 
-  protected String getFilter(String key) {
+  public String getFilter(String key) {
     int pt = (filter == null ? -1 : filter.indexOf(key));
     return (pt < 0 ? null : filter.substring(pt + key.length(), filter.indexOf(";", pt)));
   }
 
-  protected boolean checkFilterKey(String key) {
+  public boolean checkFilterKey(String key) {
     return (filter != null && filter.indexOf(key) >= 0);
   }
 
@@ -953,7 +950,7 @@ public abstract class AtomSetCollectionReader {
             atom.isHetero ? "HETATM" : "ATOM"));
   }
 
-  protected boolean rejectAtomName(String name) {
+  public boolean rejectAtomName(String name) {
     return filterAtomName && !allowAtomName(name, filter);
   }
 
@@ -1035,7 +1032,7 @@ public abstract class AtomSetCollectionReader {
     doCheckUnitCell = true;
   }
 
-  protected void addSites(Map<String, Map<String, Object>> htSites) {
+  public void addSites(Map<String, Map<String, Object>> htSites) {
     atomSetCollection.setAtomSetAuxiliaryInfo("pdbSites", htSites);
     String sites = "";
     for (Map.Entry<String, Map<String, Object>> entry : htSites.entrySet()) {
@@ -1409,7 +1406,7 @@ public abstract class AtomSetCollectionReader {
 
   private String previousScript;
 
-  protected void addJmolScript(String script) {
+  public void addJmolScript(String script) {
     Logger.info("#jmolScript: " + script);
     if (previousScript == null)
       previousScript = "";
@@ -1649,5 +1646,15 @@ public abstract class AtomSetCollectionReader {
   public void setChainID(Atom atom, char ch) {
     atom.chainID = viewer.getChainID("" + ch);    
   }
+
+  public void setU(Atom atom, int i, float val) {
+    // Ortep Type 8: D = 2pi^2, C = 2, a*b*
+    float[] data = atomSetCollection.getAnisoBorU(atom);
+    if (data == null)
+      atomSetCollection.setAnisoBorU(atom, data = new float[8], 8);
+    data[i] = val;
+  }
+
+
 
 }

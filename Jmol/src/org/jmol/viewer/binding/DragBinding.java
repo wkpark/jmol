@@ -15,7 +15,7 @@ public class DragBinding extends JmolBinding {
     bindAction(SINGLE|CLICK|ALT|LEFT, ActionManager.ACTION_selectOr);
     bindAction(SINGLE|CLICK|ALT|SHIFT|LEFT, ActionManager.ACTION_selectAndNot);
     bindAction(SINGLE|DOWN|LEFT, ActionManager.ACTION_selectAndDrag);
-    bindAction(SINGLE|CLICK|LEFT|DRAG, ActionManager.ACTION_dragSelected);
+    bindAction(SINGLE|LEFT|DRAG, ActionManager.ACTION_dragSelected);
     bindAction(SINGLE|CLICK|LEFT, ActionManager.ACTION_pickAtom);
   }
 

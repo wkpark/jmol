@@ -10483,4 +10483,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return applet;
   }
 
+  public List<Object> getModulationList(BS bs, String type, float t) {
+    return modelSet.getModulationList(bs, type, t);
+  }
+
 }

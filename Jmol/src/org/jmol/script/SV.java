@@ -59,8 +59,8 @@ import javajs.util.V3;
  */
 public class SV extends T {
 
-  final private static SV vT = newScriptVariableIntValue(on, 1, "true");
-  final private static SV vF = newScriptVariableIntValue(off, 0, "false");
+  final private static SV vT = newSV(on, 1, "true");
+  final private static SV vF = newSV(off, 0, "false");
 
   public int index = Integer.MAX_VALUE;    
 
@@ -70,33 +70,30 @@ public class SV extends T {
   private int flags = ~FLAG_CANINCREMENT & FLAG_LOCALVAR;
   private String myName;
 
-  public static SV newVariable(int tok, Object value) {
+  public static SV newV(int tok, Object value) {
     SV sv = new SV();
     sv.tok = tok;
     sv.value = value;
     return sv;
   }
 
-  public static SV newScriptVariableInt(int i) {
+  public static SV newI(int i) {
     SV sv = new SV();
     sv.tok = integer;
     sv.intValue = i;
     return sv;
   }
   
-  static SV newScriptVariableBs(BS bs, int index) {
-    SV sv = newVariable(bitset, bs);
-    if (index >= 0)
-      sv.index = index;
-    return sv;
+  public static SV newS(String s) {
+    return newV(string, s);
+  }
+  
+  public static SV newT(T x) {
+    return newSV(x.tok, x.intValue, x.value);
   }
 
-  public static SV newScriptVariableToken(T x) {
-    return newScriptVariableIntValue(x.tok, x.intValue, x.value);
-  }
-
-  static SV newScriptVariableIntValue(int tok, int intValue, Object value) {
-    SV sv = newVariable(tok, value);
+  static SV newSV(int tok, int intValue, Object value) {
+    SV sv = newV(tok, value);
     sv.intValue = intValue;
     return sv;
   }
@@ -125,7 +122,7 @@ public class SV extends T {
       return ((String) x.value).length();
     case varray:
       return x.intValue == Integer.MAX_VALUE ? ((SV)x).getList().size()
-          : sizeOf(selectItemTok(x));
+          : sizeOf(selectItemTok(x, Integer.MIN_VALUE));
     case hash:
       return ((Map<String, SV>) x.value).size();
     default:
@@ -159,7 +156,7 @@ public class SV extends T {
   public
   static SV getVariable(Object x) {
     if (x == null)
-      return newVariable(T.string, "");
+      return newS("");
     if (x instanceof SV)
       return (SV) x;
 
@@ -172,23 +169,23 @@ public class SV extends T {
     if (x instanceof Boolean)
       return getBoolean(((Boolean) x).booleanValue());
     if (x instanceof Integer)
-      return newScriptVariableInt(((Integer) x).intValue());
+      return newI(((Integer) x).intValue());
     if (x instanceof Float)
-      return newVariable(decimal, x);
+      return newV(decimal, x);
     if (x instanceof String) {
       x = unescapePointOrBitsetAsVariable(x);
       if (x instanceof SV)
         return (SV) x;
-      return newVariable(string, x);
+      return newV(string, x);
     }
     if (x instanceof P3)
-      return newVariable(point3f, x);
+      return newV(point3f, x);
     if (x instanceof V3) // point3f is not mutable anyway
-      return newVariable(point3f, P3.newP((V3) x));
+      return newV(point3f, P3.newP((V3) x));
     if (x instanceof BS)
-      return newVariable(bitset, x);
+      return newV(bitset, x);
     if (x instanceof P4)
-      return newVariable(point4f, x);
+      return newV(point4f, x);
     // note: for quaternions, we save them {q1, q2, q3, q0} 
     // While this may seem odd, it is so that for any point4 -- 
     // planes, axisangles, and quaternions -- we can use the 
@@ -196,11 +193,11 @@ public class SV extends T {
     // the fourth then gives us offset to {0,0,0} (plane), 
     // rotation angle (axisangle), and cos(theta/2) (quaternion).
     if (x instanceof Quaternion)
-      return newVariable(point4f, ((Quaternion) x).toPoint4f());
+      return newV(point4f, ((Quaternion) x).toPoint4f());
     if (x instanceof M3)
-      return newVariable(matrix3f, x);
+      return newV(matrix3f, x);
     if (x instanceof M4)
-      return newVariable(matrix4f, x);
+      return newV(matrix4f, x);
     if (x instanceof Map)
       return getVariableMap((Map<String, ?>)x);
     if (x instanceof List)
@@ -224,8 +221,8 @@ public class SV extends T {
     if (PT.isAFF(x))
       return getVariableAFF((float[][]) x);
     if (PT.isAFloat(x))
-      return newVariable(listf, x);
-    return newVariable(string, Escape.toReadable(null, x));
+      return newV(listf, x);
+    return newS(Escape.toReadable(null, x));
   }
 
   private static boolean isArray(Object x) {
@@ -263,85 +260,85 @@ public class SV extends T {
       for (Map.Entry<String, Object> entry : ht.entrySet()) {
         String key = entry.getKey();
         o = entry.getValue();
-        x2.put(key, isVariableType(o) ? getVariable(o) : newVariable(string,
+        x2.put(key, isVariableType(o) ? getVariable(o) : newV(string,
             Escape.toReadable(null, o)));
       }
       x = x2;
     }
-    return newVariable(hash, x);
+    return newV(hash, x);
   }
 
   public static SV getVariableList(List<?> v) {
     int len = v.size();
     if (len > 0 && v.get(0) instanceof SV)
-      return newVariable(varray, v);
+      return newV(varray, v);
     List<SV> objects = new  List<SV>();
     for (int i = 0; i < len; i++)
       objects.addLast(getVariable(v.get(i)));
-    return newVariable(varray, objects);
+    return newV(varray, objects);
   }
 
   static SV getVariableAV(SV[] v) {
     List<SV> objects = new  List<SV>();
     for (int i = 0; i < v.length; i++)
       objects.addLast(v[i]);
-    return newVariable(varray, objects);
+    return newV(varray, objects);
   }
 
   public static SV getVariableAD(double[] f) {
     List<SV> objects = new  List<SV>();
     for (int i = 0; i < f.length; i++)
-      objects.addLast(newVariable(decimal, Float.valueOf((float) f[i])));
-    return newVariable(varray, objects);
+      objects.addLast(newV(decimal, Float.valueOf((float) f[i])));
+    return newV(varray, objects);
   }
 
   static SV getVariableAS(String[] s) {
     List<SV> objects = new  List<SV>();
     for (int i = 0; i < s.length; i++)
-      objects.addLast(newVariable(string, s[i]));
-    return newVariable(varray, objects);
+      objects.addLast(newV(string, s[i]));
+    return newV(varray, objects);
   }
 
   static SV getVariableAP(P3[] p) {
     List<SV> objects = new  List<SV>();
     for (int i = 0; i < p.length; i++)
-      objects.addLast(newVariable(point3f, p[i]));
-    return newVariable(varray, objects);
+      objects.addLast(newV(point3f, p[i]));
+    return newV(varray, objects);
   }
 
   static SV getVariableAFF(float[][] fx) {
     List<SV> objects = new  List<SV>();
     for (int i = 0; i < fx.length; i++)
       objects.addLast(getVariableAF(fx[i]));
-    return newVariable(varray, objects);
+    return newV(varray, objects);
   }
 
   static SV getVariableAII(int[][] ix) {
     List<SV> objects = new  List<SV>();
     for (int i = 0; i < ix.length; i++)
       objects.addLast(getVariableAI(ix[i]));
-    return newVariable(varray, objects);
+    return newV(varray, objects);
   }
 
   static SV getVariableAF(float[] f) {
     List<SV> objects = new  List<SV>();
     for (int i = 0; i < f.length; i++)
-      objects.addLast(newVariable(decimal, Float.valueOf(f[i])));
-    return newVariable(varray, objects);
+      objects.addLast(newV(decimal, Float.valueOf(f[i])));
+    return newV(varray, objects);
   }
 
   static SV getVariableAI(int[] ix) {
     List<SV> objects = new  List<SV>();
     for (int i = 0; i < ix.length; i++)
-      objects.addLast(newScriptVariableInt(ix[i]));
-    return newVariable(varray, objects);
+      objects.addLast(newI(ix[i]));
+    return newV(varray, objects);
   }
 
   static SV getVariableAB(byte[] ix) {
     List<SV> objects = new  List<SV>();
     for (int i = 0; i < ix.length; i++)
-      objects.addLast(newScriptVariableInt(ix[i]));
-    return newVariable(varray, objects);
+      objects.addLast(newI(ix[i]));
+    return newV(varray, objects);
   }
 
   @SuppressWarnings("unchecked")
@@ -456,9 +453,8 @@ public class SV extends T {
     case integer:
       return Integer.valueOf(x.intValue);
     case bitset:
-//      return bsSelect(x);
     case array:
-      return selectItemVar(x).value;
+      return selectItemVar(x).value; // TODO: matrix3f?? 
     default:
       return x.value;
     }
@@ -733,7 +729,7 @@ public class SV extends T {
     List<SV> v2 = x2.getList();
     if (!asNew) {
       if (v2 == null)
-        v1.addLast(newScriptVariableToken(x2));
+        v1.addLast(newT(x2));
       else
         for (int i = 0; i < v2.size(); i++)
           v1.addLast(v2.get(i));
@@ -755,7 +751,7 @@ public class SV extends T {
   }
 
   static BS bsSelectToken(T x) {
-    x = selectItemTok2(x, Integer.MIN_VALUE);
+    x = selectItemTok(x, Integer.MIN_VALUE);
     return (BS) x.value;
   }
 
@@ -766,9 +762,9 @@ public class SV extends T {
   }
 
   static BS bsSelectRange(T x, int n) {
-    x = selectItemTok(x);
-    x = selectItemTok2(x, (n <= 0 ? n : 1));
-    x = selectItemTok2(x, (n <= 0 ? Integer.MAX_VALUE - 1 : n));
+    x = selectItemTok(x, Integer.MIN_VALUE);
+    x = selectItemTok(x, (n <= 0 ? n : 1));
+    x = selectItemTok(x, (n <= 0 ? Integer.MAX_VALUE - 1 : n));
     return (BS) x.value;
   }
 
@@ -778,18 +774,10 @@ public class SV extends T {
     if (var.index != Integer.MAX_VALUE || 
         var.tok == varray && var.intValue == Integer.MAX_VALUE)
       return var;
-    return selectItemVar2(var, Integer.MIN_VALUE);
+    return (SV) selectItemTok(var, Integer.MIN_VALUE);
   }
 
-  static T selectItemTok(T var) {
-    return selectItemTok2(var, Integer.MIN_VALUE);
-  }
-
-  static SV selectItemVar2(SV var, int i2) {
-    return (SV) selectItemTok2(var, i2);
-  }
-
-  static T selectItemTok2(T tokenIn, int i2) {
+  static T selectItemTok(T tokenIn, int i2) {
     switch (tokenIn.tok) {
     case matrix3f:
     case matrix4f:
@@ -814,12 +802,11 @@ public class SV extends T {
       // the selected value or "ALL" (max_value)
       if (i2 == Integer.MIN_VALUE)
         i2 = i1;
-      SV v = newScriptVariableIntValue(tokenIn.tok, i2, tokenIn.value);
-      return v;
+      return newSV(tokenIn.tok, i2, tokenIn.value);
     }
     int len = 0;
     boolean isInputSelected = (tokenIn instanceof SV && ((SV) tokenIn).index != Integer.MAX_VALUE);
-    SV tokenOut = newScriptVariableIntValue(tokenIn.tok, Integer.MAX_VALUE, null);
+    SV tokenOut = newSV(tokenIn.tok, Integer.MAX_VALUE, null);
 
     switch (tokenIn.tok) {
     case bitset:
@@ -855,15 +842,15 @@ public class SV extends T {
         int row = (i1 - col) / 10;
         if (col > 0 && col <= len && row <= len) {
           if (tokenIn.tok == matrix3f)
-            return newVariable(decimal, Float.valueOf(
+            return newV(decimal, Float.valueOf(
                 ((M3) tokenIn.value).getElement(row - 1, col - 1)));
-          return newVariable(decimal, Float.valueOf(
+          return newV(decimal, Float.valueOf(
               ((M4) tokenIn.value).getElement(row - 1, col - 1)));
         }
-        return newVariable(string, "");
+        return newV(string, "");
       }
       if (Math.abs(i1) > len)
-        return newVariable(string, "");
+        return newV(string, "");
       float[] data = new float[len];
       if (len == 3) {
         if (i1 < 0)
@@ -879,8 +866,8 @@ public class SV extends T {
       if (i2 == Integer.MIN_VALUE)
         return getVariableAF(data);
       if (i2 < 1 || i2 > len)
-        return newVariable(string, "");
-      return newVariable(decimal, Float.valueOf(data[i2 - 1]));
+        return newV(string, "");
+      return newV(decimal, Float.valueOf(data[i2 - 1]));
     }
 
     // "testing"[0] gives "g"
@@ -923,14 +910,14 @@ public class SV extends T {
       break;
     case varray:
       if (i1 < 1 || i1 > len || i2 > len)
-        return newVariable(string, "");
+        return newV(string, "");
       if (i2 == i1)
         return ((SV) tokenIn).getList().get(i1 - 1);
       List<SV> o2 = new  List<SV>();
       List<SV> o1 = ((SV) tokenIn).getList();
       n = i2 - i1 + 1;
       for (int i = 0; i < n; i++)
-        o2.addLast(newScriptVariableToken(o1.get(i + i1 - 1)));
+        o2.addLast(newT(o1.get(i + i1 - 1)));
       tokenOut.value = o2;
       break;
     }
@@ -998,7 +985,7 @@ public class SV extends T {
         selector = 0;
       if (len <= selector) {
         for (int i = len; i <= selector; i++)
-          getList().addLast(newVariable(string, ""));
+          getList().addLast(newV(string, ""));
       }
       getList().set(selector, var);
       return true;
@@ -1051,23 +1038,23 @@ public class SV extends T {
     if (v == null)
       v = Escape.uABsM(s);
     if (v instanceof P3)
-      return (newVariable(point3f, v));
+      return (newV(point3f, v));
     if (v instanceof P4)
-      return newVariable(point4f, v);
+      return newV(point4f, v);
     if (v instanceof BS) {
       if (s != null && s.indexOf("[{") == 0)
         v = new BondSet((BS) v);
-      return newVariable(bitset, v);
+      return newV(bitset, v);
     }
     if (v instanceof M3)
-      return (newVariable(matrix3f, v));
+      return (newV(matrix3f, v));
     if (v instanceof M4)
-      return newVariable(matrix4f, v);
+      return newV(matrix4f, v);
     return o;
   }
 
   public static SV getBoolean(boolean value) {
-    return newScriptVariableToken(value ? vT : vF);
+    return newT(value ? vT : vF);
   }
   
   public static Object sprintf(String strFormat, SV var) {
@@ -1334,6 +1321,17 @@ public class SV extends T {
   @SuppressWarnings("unchecked")
   public List<SV> getList() {
     return (tok == varray ? (List<SV>) value : null);
+  }
+
+  public static boolean isScalar(SV x) {
+    switch (x.tok) {
+    case T.varray:
+      return false;
+    case T.string:
+      return (((String) x.value).indexOf("\n") < 0);
+    default:
+      return true;
+    }
   }
 
 }

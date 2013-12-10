@@ -827,7 +827,7 @@ public class ScriptExt implements JmolScriptExtension {
         switch (getToken(++eval.iToken).tok) {
         case T.matrix3f:
         case T.matrix4f:
-          SV sv = SV.newScriptVariableToken(eval.theToken);
+          SV sv = SV.newT(eval.theToken);
           sv.toArray();
           vpolygons = sv.getList();
           nTriangles = vpolygons.size();
@@ -4059,7 +4059,7 @@ public class ScriptExt implements JmolScriptExtension {
           + ret + "}", false);
       List<SV> params = new List<SV>();
       for (int i = 0; i < xyz.length(); i += 2)
-        params.addLast(SV.newVariable(T.decimal, Float.valueOf(0f)).setName(
+        params.addLast(SV.newV(T.decimal, Float.valueOf(0f)).setName(
             xyz.substring(i, i + 1)));
       return new Object[] { e.aatoken[0][1].value, params };
     } catch (Exception ex) {
@@ -7035,6 +7035,7 @@ public class ScriptExt implements JmolScriptExtension {
     case T.add:
     case T.div:
     case T.mul:
+    case T.mul3:
     case T.sub:
       return evaluateList(mp, op.intValue, args);
     case T.array:
@@ -7391,7 +7392,7 @@ public class ScriptExt implements JmolScriptExtension {
         y.addLast(count);
         counts.addLast(SV.getVariableList(y));
       }
-      count = SV.newScriptVariableInt(1);
+      count = SV.newI(1);
       last = a; 
     }
     if (match == null)
@@ -8186,31 +8187,11 @@ public class ScriptExt implements JmolScriptExtension {
             + (i >= sList2.length ? "" : sList2[i]);
       return mp.addXAS(sList3);
     }
-    x2 = (args.length == 0 ? SV.newVariable(T.all, "all") : args[0]);
+    x2 = (args.length == 0 ? SV.newV(T.all, "all") : args[0]);
     boolean isAll = (x2.tok == T.all);
-    if (x1.tok != T.varray && x1.tok != T.string) {
-      mp.wasX = false;
-      mp.addOp(T.tokenLeftParen);
-      mp.addXVar(x1);
-      switch (tok) {
-      case T.add:
-        mp.addOp(T.tokenPlus);
-        break;
-      case T.sub:
-        mp.addOp(T.tokenMinus);
-        break;
-      case T.mul:
-        mp.addOp(T.tokenTimes);
-        break;
-      case T.div:
-        mp.addOp(T.tokenDivide);
-        break;
-      }
-      mp.addXVar(x2);
-      return mp.addOp(T.tokenRightParen);
-    }
-    boolean isScalar = (x2.tok != T.varray && SV.sValue(x2)
-        .indexOf("\n") < 0);
+    if (x1.tok != T.varray && x1.tok != T.string)
+      return mp.binaryOp(opTokenFor(tok), x1, x2);
+    boolean isScalar = SV.isScalar(x2);
 
     float[] list1 = null;
     float[] list2 = null;
@@ -8220,7 +8201,7 @@ public class ScriptExt implements JmolScriptExtension {
     if (x1.tok == T.varray) {
       len = alist1.size();
     } else {
-      sList1 = (PT.split((String) x1.value, "\n"));
+      sList1 = (PT.split(SV.sValue(x1), "\n"));
       list1 = new float[len = sList1.length];
       PT.parseFloatArrayData(sList1, list1);
     }
@@ -8244,50 +8225,55 @@ public class ScriptExt implements JmolScriptExtension {
     } else if (x2.tok == T.varray) {
       len = Math.min(len, alist2.size());
     } else {
-      sList2 = PT.split((String) x2.value, "\n");
+      sList2 = PT.split(SV.sValue(x2), "\n");
       list2 = new float[sList2.length];
       PT.parseFloatArrayData(sList2, list2);
       len = Math.min(list1.length, list2.length);
     }
     
-    T token = null;
-    switch (tok) {
-    case T.add:
-      token = T.tokenPlus;
-      break;
-    case T.sub:
-      token = T.tokenMinus;
-      break;
-    case T.mul:
-      token = T.tokenTimes;
-      break;
-    case T.div:
-      token = T.tokenDivide;
-      break;
-    }
+    T token = opTokenFor(tok);
 
     SV[] olist = new SV[len];
     
+    SV a, b;
+    
     for (int i = 0; i < len; i++) {
       if (x1.tok == T.varray)
-        mp.addXVar(alist1.get(i));
+        a = alist1.get(i);
       else if (Float.isNaN(list1[i]))
-        mp.addXObj(SV.unescapePointOrBitsetAsVariable(sList1[i]));
+        a = SV.getVariable(SV.unescapePointOrBitsetAsVariable(sList1[i]));
       else
-        mp.addXFloat(list1[i]);
+        a = SV.newV(T.decimal, Float.valueOf(list1[i]));
 
       if (isScalar)
-        mp.addXVar(scalar);
+        b = scalar;
       else if (x2.tok == T.varray)
-        mp.addXVar(alist2.get(i));
+        b = alist2.get(i);
       else if (Float.isNaN(list2[i]))
-        mp.addXObj(SV.unescapePointOrBitsetAsVariable(sList2[i]));
+        b = SV.getVariable(SV.unescapePointOrBitsetAsVariable(sList2[i]));
       else
-        mp.addXFloat(list2[i]);
-      if ((olist[i] = mp.evalOp(token)) == null)
+        b = SV.newV(T.decimal, Float.valueOf(list2[i]));
+      if (!mp.binaryOp(token,  a,  b))
         return false;
+      olist[i] = mp.getX();
     }
     return mp.addXAV(olist);
+  }
+
+  private T opTokenFor(int tok) {
+    switch (tok) {
+    case T.add:
+      return T.tokenPlus;
+    case T.sub:
+      return T.tokenMinus;
+    case T.mul:
+      return T.tokenTimes;
+    case T.mul3:
+      return T.tokenMul3;
+    case T.div:
+      return T.tokenDivide;
+    }
+    return null;
   }
 
   private boolean evaluateRowCol(ScriptMathProcessor mp, SV[] args, int tok)
@@ -8363,7 +8349,7 @@ public class ScriptExt implements JmolScriptExtension {
     }
     SV[] a = new SV[args.length];
     for (int i = a.length; --i >= 0;)
-      a[i] = SV.newScriptVariableToken(args[i]);
+      a[i] = SV.newT(args[i]);
     return mp.addXAV(a);
   }
 
@@ -9051,7 +9037,7 @@ public class ScriptExt implements JmolScriptExtension {
           .makeConnections(fmin, fmax, order,
               T.identify, atoms1, atoms2, bsBonds,
               isBonds, false, 0);
-      return mp.addXVar(SV.newVariable(T.bitset, new BondSet(bsBonds, viewer
+      return mp.addXVar(SV.newV(T.bitset, new BondSet(bsBonds, viewer
           .getAtomIndices(viewer.getAtomBits(T.bonds, bsBonds)))));
     }
     return mp.addXBs(viewer.getAtomsConnected(min, max, order, atoms1));

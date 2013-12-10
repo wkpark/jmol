@@ -672,7 +672,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       } else if (expr instanceof T[]) {
         contextVariables = viewer.getContextVariables();
         BS bs = atomExpression((T[]) expr, 0, 0, true, false, true, false);
-        return (asVariable ? SV.newScriptVariableBs(bs, -1) : bs);
+        return (asVariable ? SV.newV(T.bitset, bs) : bs);
 
       }
     } catch (Exception ex) {
@@ -751,7 +751,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private SV parameterExpressionToken(int pt) throws ScriptException {
     List<SV> result = parameterExpressionList(pt, -1, false);
-    return (result.size() > 0 ? result.get(0) : SV.newVariable(T.string, ""));
+    return (result.size() > 0 ? result.get(0) : SV.newS(""));
   }
 
   /**
@@ -915,7 +915,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if (localVars == null)
           localVars = new Hashtable<String, SV>();
         bsX.set(0);
-        SV t = SV.newScriptVariableBs(bsX, 0);
+        SV t = SV.newV(T.bitset, bsX);
+        t.index = 0;
         localVars.put(dummy, t.setName(dummy));
         // one test just to check for errors and get iToken
         int pt2 = -1;
@@ -966,11 +967,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.semicolon: // for (i = 1; i < 3; i=i+1)
         break out;
       case T.decimal:
-        rpn.addXNum(SV.newVariable(T.decimal, theToken.value));
+        rpn.addXNum(SV.newV(T.decimal, theToken.value));
         break;
       case T.spec_seqcode:
       case T.integer:
-        rpn.addXNum(SV.newScriptVariableInt(theToken.intValue));
+        rpn.addXNum(SV.newI(theToken.intValue));
         break;
       // these next are for the within() command
       case T.plane:
@@ -979,7 +980,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             invArg();
           break;
         }
-        rpn.addXVar(SV.newScriptVariableToken(theToken));
+        rpn.addXVar(SV.newT(theToken));
         break;
       // for within:
       case T.atomname:
@@ -1008,14 +1009,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.matrix4f:
       case T.bitset:
       case T.hash:
-        rpn.addXVar(SV.newScriptVariableToken(theToken));
+        rpn.addXVar(SV.newT(theToken));
         break;
       case T.dollarsign:
         ignoreError = true;
         P3 ptc;
         try {
           ptc = centerParameter(i);
-          rpn.addXVar(SV.newVariable(T.point3f, ptc));
+          rpn.addXVar(SV.newV(T.point3f, ptc));
         } catch (Exception e) {
           rpn.addXStr("");
         }
@@ -1146,7 +1147,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           }
           if (v == null) {
             if (T.tokAttr(theTok, T.identifier) && viewer.isFunction(name)) {
-              if (!rpn.addOp(SV.newVariable(T.function, theToken.value)))
+              if (!rpn.addOp(SV.newV(T.function, theToken.value)))
                 invArg();
               if (!haveParens) {
                 rpn.addOp(T.tokenLeftParen);
@@ -1220,7 +1221,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   List<SV> bitsetVariableVector(Object v) {
     List<SV> resx = new List<SV>();
     if (v instanceof BS) {
-      resx.addLast(SV.newVariable(T.bitset, v));
+      resx.addLast(SV.newV(T.bitset, v));
     }
     return resx;
   }
@@ -1253,7 +1254,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
     if (mustBeSettable && !T.tokAttr(tok, T.settable))
       return null;
-    return SV.newScriptVariableIntValue(T.propselector, tok, parameterAsString(
+    return SV.newSV(T.propselector, tok, parameterAsString(
         i).toLowerCase());
   }
 
@@ -1377,7 +1378,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       userFunction = (String) ((Object[]) opValue)[0];
       params = (List<SV>) ((Object[]) opValue)[1];
       bsAtom = BSUtil.newBitSet(atomCount);
-      tokenAtom = SV.newVariable(T.bitset, bsAtom);
+      tokenAtom = SV.newV(T.bitset, bsAtom);
       break;
     case T.straightness:
     case T.surfacedistance:
@@ -2009,7 +2010,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       Object val = viewer.getParameter(var);
       if (!(val instanceof String))
         return val;
-      v = SV.newVariable(T.string, val);
+      v = SV.newS((String) val);
     }
     return SV.nValue(v);
   }
@@ -2037,7 +2038,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       return s;
     Object v = SV.unescapePointOrBitsetAsVariable(s);
     if (v instanceof String && key != null)
-      v = viewer.setUserVariable(key, SV.newVariable(T.string, v));
+      v = viewer.setUserVariable(key, SV.newS((String)v));
     return v;
   }
 
@@ -2090,8 +2091,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       viewer.displayLoadErrors = false;
       restoreFunction(function, params, tokenAtom);
       contextVariables.put("_breakval", SV
-          .newScriptVariableInt(Integer.MAX_VALUE));
-      contextVariables.put("_errorval", SV.newVariable(T.string, ""));
+          .newI(Integer.MAX_VALUE));
+      contextVariables.put("_errorval", SV.newS(""));
       Map<String, SV> cv = contextVariables;
       executeCommands(true);
       //JavaScript will not return here after DELAY
@@ -2122,7 +2123,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     popContext(false, false);
     String err = (String) viewer.getParameter("_errormessage");
     if (err.length() > 0) {
-      cv.put("_errorval", SV.newVariable(T.string, err));
+      cv.put("_errorval", SV.newS(err));
       viewer.resetError();
     }
     cv.put("_tryret", cv.get("_retval"));
@@ -2144,7 +2145,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       // set the intValue positive to indicate "not done" for the IF evaluation
       ContextToken ct = (ContextToken) aatoken[pc + 1][0];
       if (ct.contextVariables != null && ct.name0 != null)
-        ct.contextVariables.put(ct.name0, SV.newVariable(T.string, errMsg));
+        ct.contextVariables.put(ct.name0, SV.newS(errMsg));
       ct.intValue = (errMsg.length() > 0 ? 1 : -1) * Math.abs(ct.intValue);
     }
   }
@@ -2335,8 +2336,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (value instanceof BS) {
         BSUtil.deleteBits((BS) value, bsDeleted);
         if (!entry.getKey().startsWith("!"))
-          viewer.setUserVariable("@" + entry.getKey(), SV.newVariable(T.bitset,
-              value));
+          viewer.setUserVariable("@" + entry.getKey(), SV.newV(T.bitset, value));
       }
     }
   }
@@ -2427,7 +2427,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             BS bs = SV.getBitSet((SV) v, true);
             // I can't remember why we have to be checking list variables
             // for atom names. 
-            fixed[j] = SV.newVariable(T.bitset, bs == null ? getAtomBitSet(SV
+            fixed[j] = SV.newV(T.bitset, bs == null ? getAtomBitSet(SV
                 .sValue(fixed[j])) : bs);
           }
         } else if (v instanceof Boolean) {
@@ -2485,17 +2485,17 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             }
           }
         } else if (v instanceof BS) {
-          fixed[j] = SV.newVariable(T.bitset, v);
+          fixed[j] = SV.newV(T.bitset, v);
         } else if (v instanceof P3) {
-          fixed[j] = SV.newVariable(T.point3f, v);
+          fixed[j] = SV.newV(T.point3f, v);
         } else if (v instanceof P4) {
-          fixed[j] = SV.newVariable(T.point4f, v);
+          fixed[j] = SV.newV(T.point4f, v);
         } else if (v instanceof M3) {
-          fixed[j] = SV.newVariable(T.matrix3f, v);
+          fixed[j] = SV.newV(T.matrix3f, v);
         } else if (v instanceof M4) {
-          fixed[j] = SV.newVariable(T.matrix4f, v);
+          fixed[j] = SV.newV(T.matrix4f, v);
         } else if (v instanceof Map<?, ?>) {
-          fixed[j] = SV.newVariable(T.hash, v);
+          fixed[j] = SV.newV(T.hash, v);
         } else if (v instanceof List<?>) {
           List<SV> sv = (List<SV>) v;
           BS bs = null;
@@ -3529,17 +3529,17 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         rpn.addXBs(getAtomBitSet(value));
         break;
       case T.hkl:
-        rpn.addXVar(SV.newScriptVariableToken(instruction));
-        rpn.addXVar(SV.newVariable(T.point4f, hklParameter(pc + 2)));
+        rpn.addXVar(SV.newT(instruction));
+        rpn.addXVar(SV.newV(T.point4f, hklParameter(pc + 2)));
         pc = iToken;
         break;
       case T.plane:
-        rpn.addXVar(SV.newScriptVariableToken(instruction));
-        rpn.addXVar(SV.newVariable(T.point4f, planeParameter(pc + 2)));
+        rpn.addXVar(SV.newT(instruction));
+        rpn.addXVar(SV.newV(T.point4f, planeParameter(pc + 2)));
         pc = iToken;
         break;
       case T.coord:
-        rpn.addXVar(SV.newScriptVariableToken(instruction));
+        rpn.addXVar(SV.newT(instruction));
         rpn.addXPt(getPoint3f(pc + 2, true));
         pc = iToken;
         break;
@@ -3552,10 +3552,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             break;
           }
         }
-        rpn.addXVar(SV.newScriptVariableToken(instruction));
+        rpn.addXVar(SV.newT(instruction));
         // note that the compiler has changed all within() types to strings.
         if (s.equals("hkl")) {
-          rpn.addXVar(SV.newVariable(T.point4f, hklParameter(pc + 2)));
+          rpn.addXVar(SV.newV(T.point4f, hklParameter(pc + 2)));
           pc = iToken;
         }
         break;
@@ -3576,7 +3576,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         break;
       case T.on:
       case T.off:
-        rpn.addXVar(SV.newScriptVariableToken(instruction));
+        rpn.addXVar(SV.newT(instruction));
         break;
       case T.selected:
         rpn.addXBs(BSUtil.copy(viewer.getSelectionSet(false)));
@@ -3666,16 +3666,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         break;
       case T.spec_seqcode:
         if (isInMath)
-          rpn.addXNum(SV.newScriptVariableInt(instruction.intValue));
+          rpn.addXNum(SV.newI(instruction.intValue));
         else
           rpn.addXBs(getAtomBits(T.spec_seqcode, Integer
               .valueOf(getSeqCode(instruction))));
         break;
       case T.spec_seqcode_range:
         if (isInMath) {
-          rpn.addXNum(SV.newScriptVariableInt(instruction.intValue));
+          rpn.addXNum(SV.newI(instruction.intValue));
           rpn.addOp(T.tokenMinus);
-          rpn.addXNum(SV.newScriptVariableInt(code[++pc].intValue));
+          rpn.addXNum(SV.newI(code[++pc].intValue));
           break;
         }
         int chainID = (pc + 3 < code.length && code[pc + 2].tok == T.opAND
@@ -3837,7 +3837,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         break;
       case T.decimal:
       case T.integer:
-        rpn.addXNum(SV.newScriptVariableToken(instruction));
+        rpn.addXNum(SV.newT(instruction));
         break;
       case T.bitset:
         BS bs1 = BSUtil.copy((BS) value);
@@ -6339,7 +6339,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (chk)
       return;
     if (tv == null)
-      tv = (v == null ? SV.newScriptVariableInt(0) : v);
+      tv = (v == null ? SV.newI(0) : v);
     t.value = tv.value;
     t.intValue = tv.intValue;
     t.tok = tv.tok;
@@ -7690,7 +7690,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       BS bs = atomExpressionAt(2);
       definedAtomSets.put(setName, bs);
       if (!chk)
-        viewer.setUserVariable("@" + setName, SV.newVariable(T.bitset, bs));
+        viewer.setUserVariable("@" + setName, SV.newV(T.bitset, bs));
     }
   }
 
@@ -12124,7 +12124,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
 
     if (isArrayItem) {
-      SV tnew = (SV.newVariable(T.string, "")).setv(tv, false);
+      SV tnew = SV.newS("").setv(tv, false);
       int nParam = v.size() / 2;
       for (int i = 0; i < nParam; i++) {
         boolean isLast = (i + 1 == nParam);

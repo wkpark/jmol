@@ -832,7 +832,7 @@ public class GlobalSettings {
         name = "x";
       Object v = getParam(name, true);
       return (v == null && doSet && name.charAt(0) != '_' ?
-        setUserVariable(name, SV.newVariable(T.string, ""))
+        setUserVariable(name, SV.newV(T.string, ""))
          : SV.getVariable(v));
     }
 
@@ -910,7 +910,7 @@ public class GlobalSettings {
         pickedSet = (SV) getParam("picked", true);
       }
       if (pickedSet == null || pickedSet.tok != T.bitset) {
-        pickedSet = SV.newVariable(T.bitset, new BS());
+        pickedSet = SV.newV(T.bitset, new BS());
         setUserVariable("picked", pickedSet);
       }
       if (atomIndex >= 0)

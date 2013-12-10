@@ -112,7 +112,7 @@ public class ScriptMathProcessor {
         List<SV> result = new  List<SV>();
         for (int i = 0; i <= xPt; i++)
           result.addLast(SV.selectItemVar(xStack[i]));
-        return SV.newVariable(T.vector, result);
+        return SV.newV(T.vector, result);
       }
       if (xPt == 0) {
         SV x = xStack[0];
@@ -122,7 +122,7 @@ public class ScriptMathProcessor {
           x = SV.selectItemVar(x);
         if (asBitSet && x.tok == 
           T.varray)
-          x = SV.newVariable(T.bitset, SV.unEscapeBitSetArray((List<SV>)x.value, false));
+          x = SV.newV(T.bitset, SV.unEscapeBitSetArray((List<SV>)x.value, false));
         return x;
       }
     }
@@ -176,7 +176,7 @@ public class ScriptMathProcessor {
   }
 
   public boolean addXStr(String x) {
-    putX(SV.newVariable(T.string, x));
+    putX(SV.newS(x));
     return wasX = true;
   }
 
@@ -187,7 +187,7 @@ public class ScriptMathProcessor {
 
   public boolean addXInt(int x) {
     // no check for unary minus
-    putX(SV.newScriptVariableInt(x));
+    putX(SV.newI(x));
     return wasX = true;
   }
 
@@ -202,35 +202,35 @@ public class ScriptMathProcessor {
   }
 
   public boolean addXM3(M3 x) {
-    putX(SV.newVariable(T.matrix3f, x));
+    putX(SV.newV(T.matrix3f, x));
     return wasX = true;
   }
 
   public boolean addXM4(M4 x) {
-    putX(SV.newVariable(T.matrix4f, x));
+    putX(SV.newV(T.matrix4f, x));
     return wasX = true;
   }
 
   public boolean addXFloat(float x) {
     if (Float.isNaN(x))
       return addXStr("NaN");
-    putX(SV.newVariable(T.decimal, Float.valueOf(x)));
+    putX(SV.newV(T.decimal, Float.valueOf(x)));
     return wasX = true;
   }
 
   public boolean addXBs(BS bs) {
     // the standard entry point for bit sets
-    putX(SV.newVariable(T.bitset, bs));
+    putX(SV.newV(T.bitset, bs));
     return wasX = true;
   }
 
   public boolean addXPt(P3 pt) {
-    putX(SV.newVariable(T.point3f, pt));
+    putX(SV.newV(T.point3f, pt));
     return wasX = true;
   }
 
   public boolean addXPt4(P4 pt) {
-    putX(SV.newVariable(T.point4f, pt));
+    putX(SV.newV(T.point4f, pt));
     return wasX = true;
   }
 
@@ -242,14 +242,14 @@ public class ScriptMathProcessor {
       case T.integer:
         if (x.intValue < 0) {
           addOp(T.tokenMinus);
-          x = SV.newScriptVariableInt(-x.intValue);
+          x = SV.newI(-x.intValue);
         }
         break;
       case T.decimal:
         float f = ((Float) x.value).floatValue();
         if (f < 0 || f == 0 && 1 / f == Float.NEGATIVE_INFINITY) {
           addOp(T.tokenMinus);
-          x = SV.newVariable(T.decimal, Float.valueOf(-f));
+          x = SV.newV(T.decimal, Float.valueOf(-f));
         }
         break;
       }
@@ -444,7 +444,7 @@ public class ScriptMathProcessor {
         if (chk)
           return true;
         SV x = xStack[xPt];
-        xStack[xPt] = SV.newVariable(T.string, "").setv(x, false);
+        xStack[xPt] = SV.newS("").setv(x, false);
         return x.increment(incrementX);
       }
       break;
@@ -452,7 +452,7 @@ public class ScriptMathProcessor {
       if (wasX)
         break;
       addXInt(0);
-      op = SV.newVariable(T.unaryMinus, "-");
+      op = SV.newV(T.unaryMinus, "-");
       break;
     case T.rightparen: // () without argument allowed only for math funcs
       if (!wasX && oPt >= 1 && tok0 == T.leftparen
@@ -505,7 +505,7 @@ public class ScriptMathProcessor {
       }
       if (op.tok == T.rightsquare && tok0 == T.leftsquare) {
         if (isArrayItem && squareCount == 1 && equalCount == 0) {
-          addXVar(SV.newScriptVariableToken(T.tokenArraySelector));
+          addXVar(SV.newT(T.tokenArraySelector));
           break;
         }
         if (!doBitsetSelect())
@@ -523,7 +523,7 @@ public class ScriptMathProcessor {
     // now add a marker on the xStack if necessary
 
     if (newOp != null)
-      addXVar(SV.newVariable(T.opEQ, newOp));
+      addXVar(SV.newV(T.opEQ, newOp));
 
     // fix up counts and operand flag
     // right ) and ] are not added to the stack
@@ -652,24 +652,24 @@ public class ScriptMathProcessor {
       // allow for x[1]["test"][1]["here"]
       // common in getproperty business
       // prior to 12.2/3.18, x[1]["id"] was misread as x[1][0]
-      var = SV.selectItemVar2(var, Integer.MIN_VALUE);
+      var = (SV) SV.selectItemTok(var, Integer.MIN_VALUE);
     }
     if (var.tok == T.hash) {
       SV v = var.mapValue(SV.sValue(var1));
-      xStack[xPt] = (v == null ? SV.newVariable(T.string, "") : v);
+      xStack[xPt] = (v == null ? SV.newS("") : v);
       return true;
     }
     int i = var1.asInt();
     switch (var.tok) {
     default:
-      var = SV.newVariable(T.string, SV.sValue(var));
+      var = SV.newS(SV.sValue(var));
       //$FALL-THROUGH$
     case T.bitset:
     case T.varray:
     case T.string:
     case T.matrix3f:
     case T.matrix4f:
-      xStack[xPt] = SV.selectItemVar2(var, i);
+      xStack[xPt] = (SV) SV.selectItemTok(var, i);
       break;
     }
     return true;
@@ -720,15 +720,15 @@ public class ScriptMathProcessor {
     return (!chk ? eval.getExtension().evaluate(this, op, args, tok)
         : op.tok == T.propselector ? true : addXBool(true));
   }
+  
+  
   @SuppressWarnings("unchecked")
   private boolean operate() throws ScriptException {
 
     T op = oStack[oPt--];
     P3 pt;
-    P4 pt4;
     M3 m;
     String s;
-    float f;
 
     if (logMessages) {
       dumpStacks("operate: " + op);
@@ -744,11 +744,9 @@ public class ScriptMathProcessor {
     if (x2 == T.tokenArraySelector)
       return false;
 
-    // unary:
+    //unnecessary  -- getX() does this. x2 = selectX(x2);
 
-    if (x2.tok == T.varray || x2.tok == T.matrix3f
-        || x2.tok == T.matrix4f)
-      x2 = SV.selectItemVar(x2);
+    // unary:
 
     if (op.tok == T.minusMinus || op.tok == T.plusPlus) {
       if (!chk && !x2.increment(incrementX))
@@ -855,8 +853,25 @@ public class ScriptMathProcessor {
     if (chk) {
       if (op == T.tokenAndFALSE || op == T.tokenOrTRUE)
         chk = false;
-      return addXVar(SV.newScriptVariableToken(x1));
+      return addXVar(SV.newT(x1));
     }
+    
+    return binaryOp(op, x1, x2);
+  }
+
+//  public SV selectX(SV x2) {
+//    return (x2.tok == T.varray || x2.tok == T.matrix3f || x2.tok == T.matrix4f ? SV
+//        .selectItemVar(x2) : x2);
+//  }
+
+  @SuppressWarnings("unchecked")
+  public boolean binaryOp(T op, SV x1, SV x2) throws ScriptException {
+    P3 pt;
+    P4 pt4;
+    M3 m;
+    String s;
+    float f;
+
     switch (op.tok) {
     case T.opAND:
     case T.opAnd:
@@ -947,8 +962,7 @@ public class ScriptMathProcessor {
         }
         return addXInt(x1.intValue + x2.asInt());
       case T.string:
-        return addXVar(SV.newVariable(T.string,
-            SV.sValue(x1) + SV.sValue(x2)));
+        return addXVar(SV.newS(SV.sValue(x1) + SV.sValue(x2)));
       case T.point4f:
         Quaternion q1 = Quaternion.newP4((P4) x1.value);
         switch (x2.tok) {
@@ -1077,6 +1091,13 @@ public class ScriptMathProcessor {
             (x2.value instanceof BondSet ? viewer.getBondCount() : viewer
                 .getAtomCount())));
       }
+    case T.mul3:
+      if (x1.tok == T.point3f && x2.tok == T.point3f) {
+         pt = (P3) x1.value;
+         P3 pt2 = (P3) x2.value;
+         return addXPt(P3.new3(pt.x*pt2.x,pt.y*pt2.y,pt.z*pt2.z));
+      }
+      //$FALL-THROUGH$
     case T.times:
       if (x1.tok == T.integer && x2.tok != T.decimal)
         return addXInt(x1.intValue * x2.asInt());
@@ -1595,7 +1616,7 @@ public class ScriptMathProcessor {
           x2.value, op.value, false, x2.index, true);
       if (op.intValue != T.bonds)
         return addXObj(val);
-      return addXVar(SV.newVariable(T.bitset, new BondSet(
+      return addXVar(SV.newV(T.bitset, new BondSet(
           (BS) val, viewer.getAtomIndices(bs))));
     }
     return false;

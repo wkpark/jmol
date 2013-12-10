@@ -725,12 +725,13 @@ public class T {
   public final static int dot          = 1 | 1 << 9 | mathfunc | mathproperty;
   public final static int join         = 2 | 1 << 9 | mathfunc | mathproperty;
   public final static int mul          = 3 | 1 << 9 | mathfunc | mathproperty;
-  public final static int split        = 4 | 1 << 9 | mathfunc | mathproperty;
-  public final static int sub          = 5 | 1 << 9 | mathfunc | mathproperty;
-  public final static int trim         = 6 | 1 << 9 | mathfunc | mathproperty;  
-  public final static int volume = 7 | 1 << 9 | mathfunc | mathproperty | floatproperty;  
-  public final static int col           = 8 | 1 << 9 | mathfunc | mathproperty;
-  public final static int row           = 9 | 1 << 9 | mathfunc | mathproperty;
+  public final static int mul3         = 4 | 1 << 9 | mathfunc | mathproperty;
+  public final static int split        = 5 | 1 << 9 | mathfunc | mathproperty;
+  public final static int sub          = 6 | 1 << 9 | mathfunc | mathproperty;
+  public final static int trim         = 7 | 1 << 9 | mathfunc | mathproperty;  
+  public final static int volume       = 8 | 1 << 9 | mathfunc | mathproperty | floatproperty;  
+  public final static int col          = 9 | 1 << 9 | mathfunc | mathproperty;
+  public final static int row         = 10 | 1 << 9 | mathfunc | mathproperty;
 
   // xxx(a,b)
   
@@ -1324,6 +1325,7 @@ public class T {
   public final static T tokenDefineString = tv(define, string, "@");
   public final static T tokenPlus = o(plus, "+");
   public final static T tokenMinus = o(minus, "-");
+  public final static T tokenMul3 = o(mul3, "mul3"); // used only in internal calc.
   public final static T tokenTimes = o(times, "*");
   public final static T tokenDivide = o(divide, "/");
 
@@ -1922,6 +1924,7 @@ public class T {
       "morph",           T.t(morph),
       "movie",           T.t(movie),
       "mul",             T.t(mul),
+      "mul3",            T.t(mul3),
       "nci",             T.t(nci),
       "next",            T.t(next),
       "noDots",          T.t(nodots),

@@ -91,11 +91,11 @@ public class ScriptFunction implements JmolScriptFunction {
       String name = names.get(i).toLowerCase();
       SV var = (i < nParameters && i < nParams ? params.get(i) : null);
       if (var != null && var.tok != T.varray)  // TODO: list type?
-        var = SV.newScriptVariableToken(var);
+        var = SV.newT(var);
       contextVariables.put(name, (var == null ? 
-          SV.newVariable(T.string, "").setName(name) : var));
+          SV.newS("").setName(name) : var));
     }
-    contextVariables.put("_retval", SV.newScriptVariableInt(tok == T.trycmd ? Integer.MAX_VALUE : 0));
+    contextVariables.put("_retval", SV.newI(tok == T.trycmd ? Integer.MAX_VALUE : 0));
   }
 
   void unsetVariables(Map<String, SV> contextVariables, List<SV> params) {

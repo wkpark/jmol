@@ -190,7 +190,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   }
   
   static void addContextVariable(Map<String, SV> contextVariables, String name) {
-    contextVariables.put(name, SV.newVariable(T.string, "").setName(name));
+    contextVariables.put(name, SV.newS("").setName(name));
   }
 
   private boolean isContextVariable(String ident) {

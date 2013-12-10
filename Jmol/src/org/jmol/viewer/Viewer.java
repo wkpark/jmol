@@ -6054,11 +6054,11 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     int tok = T.getTokFromName(key);
     switch (T.getParamType(tok)) {
     case T.booleanparam:
-      setBooleanPropertyTok(key, tok, SV.newVariable(T.string, value)
+      setBooleanPropertyTok(key, tok, SV.newV(T.string, value)
           .asBoolean());
       break;
     case T.intparam:
-      setIntPropertyTok(key, tok, SV.newVariable(T.string, value).asInt());
+      setIntPropertyTok(key, tok, SV.newV(T.string, value).asInt());
       break;
     case T.floatparam:
       setFloatPropertyTok(key, tok, PT.parseFloat(value));
@@ -6251,7 +6251,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         break;
       }
       if (!global.htNonbooleanParameterValues.containsKey(key.toLowerCase())) {
-        global.setUserVariable(key, SV.newVariable(T.string, value));
+        global.setUserVariable(key, SV.newV(T.string, value));
         return;
       }
       // a few String parameters may not be tokenized. Save them anyway.
@@ -6458,7 +6458,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       break;
     default:
       if (!global.htNonbooleanParameterValues.containsKey(key.toLowerCase())) {
-        global.setUserVariable(key, SV.newVariable(T.decimal, Float
+        global.setUserVariable(key, SV.newV(T.decimal, Float
             .valueOf(value)));
         return;
       }
@@ -6663,7 +6663,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     default:
       // stateversion is not tokenized
       if (!global.htNonbooleanParameterValues.containsKey(key)) {
-        global.setUserVariable(key, SV.newScriptVariableInt(value));
+        global.setUserVariable(key, SV.newI(value));
         return;
       }
     }

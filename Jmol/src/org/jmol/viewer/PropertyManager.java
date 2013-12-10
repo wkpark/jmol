@@ -245,9 +245,9 @@ public class PropertyManager implements JmolPropertyManager {
     int n;
     for (int i = 1; i < names.length; i++) {
       if ((n = javajs.util.PT.parseInt(names[i])) != Integer.MIN_VALUE)
-        args[i] = SV.newScriptVariableInt(n);
+        args[i] = SV.newI(n);
       else
-        args[i] = SV.newVariable(T.string, names[i]);
+        args[i] = SV.newV(T.string, names[i]);
     }
     return extractProperty(getProperty(null, propertyName, propertyValue),
         args, 1);

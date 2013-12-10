@@ -35,6 +35,7 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
   private double[] qlen;
   private int modDim;
   private boolean enabled = false;
+  private P3 r0;
   
   @Override
   public boolean isEnabled() {
@@ -89,6 +90,7 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
     M3 gammaIinv = new M3();
     gammaIS.getRotationScale(gammaIinv);
     V3 sI = new V3();
+    r0 = P3.newP(r);
     
     gammaIS.get(sI);
     gammaIinv.invert();
@@ -118,6 +120,10 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
   
   @Override
   public void getModulation(float t, P3 pt) {
+    if (Math.abs(t) >= 1e6) {
+      pt.setT(r0);
+      return;
+    }
     calculate(t);
     pt.setT(this);
     calculate(0);

@@ -119,9 +119,10 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
     q123w.transform(x456);
     x456.sub(sI);
     gammaIinv.transform(x456);
-    //if (Logger.debuggingHigh)
-      //Logger.debug
-      Logger.info("MODSET create r=" + Escape.eP(r)
+    if (Logger.debuggingHigh)
+      Logger.debug
+      //Logger.info
+      ("MODSET create r=" + Escape.eP(r)
         + " si=" + Escape.eP(sI) + " ginv=" + gammaIinv.toString().replace('\n',' ') + " x4=" + x456.x);
     return this;
   }

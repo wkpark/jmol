@@ -851,29 +851,29 @@ final public class Atom extends Point3fi implements JmolNode {
 
   boolean isCursorOnTopOf(int xCursor, int yCursor,
                         int minRadius, Atom competitor) {
-    int r = screenDiameter / 2;
+    int r = sD / 2;
     if (r < minRadius)
       r = minRadius;
     int r2 = r * r;
-    int dx = screenX - xCursor;
+    int dx = sX - xCursor;
     int dx2 = dx * dx;
     if (dx2 > r2)
       return false;
-    int dy = screenY - yCursor;
+    int dy = sY - yCursor;
     int dy2 = dy * dy;
     int dz2 = r2 - (dx2 + dy2);
     if (dz2 < 0)
       return false;
     if (competitor == null)
       return true;
-    int z = screenZ;
-    int zCompetitor = competitor.screenZ;
-    int rCompetitor = competitor.screenDiameter / 2;
+    int z = sZ;
+    int zCompetitor = competitor.sZ;
+    int rCompetitor = competitor.sD / 2;
     if (z < zCompetitor - rCompetitor)
       return true;
-    int dxCompetitor = competitor.screenX - xCursor;
+    int dxCompetitor = competitor.sX - xCursor;
     int dx2Competitor = dxCompetitor * dxCompetitor;
-    int dyCompetitor = competitor.screenY - yCursor;
+    int dyCompetitor = competitor.sY - yCursor;
     int dy2Competitor = dyCompetitor * dyCompetitor;
     int r2Competitor = rCompetitor * rCompetitor;
     int dz2Competitor = r2Competitor - (dx2Competitor + dy2Competitor);
@@ -1339,11 +1339,11 @@ final public class Atom extends Point3fi implements JmolNode {
     case T.fuz:
       return atom.getFractionalCoord('Z', false);
     case T.screenx:
-      return atom.screenX;
+      return atom.sX;
     case T.screeny:
-      return atom.group.chain.model.modelSet.viewer.getScreenHeight() - atom.screenY;
+      return atom.group.chain.model.modelSet.viewer.getScreenHeight() - atom.sY;
     case T.screenz:
-      return atom.screenZ;
+      return atom.sZ;
     case T.ionic:
       return atom.getBondingRadiusFloat();
     case T.mass:
@@ -1479,7 +1479,7 @@ final public class Atom extends Point3fi implements JmolNode {
       return (atom.group.chain.model.isJmolDataFrame ? atom.getFractionalCoordPt(false) 
           : atom.getFractionalUnitCoordPt(false));
     case T.screenxyz:
-      return P3.new3(atom.screenX, atom.group.chain.model.modelSet.viewer.getScreenHeight() - atom.screenY, atom.screenZ);
+      return P3.new3(atom.sX, atom.group.chain.model.modelSet.viewer.getScreenHeight() - atom.sY, atom.sZ);
     case T.vibxyz:
       V3 v = atom.getVibrationVector();
       if (v == null)

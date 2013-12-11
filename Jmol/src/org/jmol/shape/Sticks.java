@@ -268,7 +268,7 @@ public class Sticks extends Shape {
       v.scale(0.5f);
       int d2 = coordinateInRange(x, y, v, dmin2, ptXY);
       if (d2 >= 0) {
-        float f = 1f * (ptXY.x - atom1.screenX) / (atom2.screenX - atom1.screenX);
+        float f = 1f * (ptXY.x - atom1.sX) / (atom2.sX - atom1.sX);
         if (f < 0.4f || f > 0.6f)
           continue;
         dmin2 = d2;

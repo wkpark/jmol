@@ -49,29 +49,4 @@ public class P3 extends T3 {
     return p;
   }
 
-  /**
-   * Computes the square of the distance between this point and point p1.
-   * 
-   * @param p1
-   *        the other point
-   * @return the square of distance between these two points as a float
-   */
-  public final float distanceSquared(T3 p1) {
-    double dx = x - p1.x;
-    double dy = y - p1.y;
-    double dz = z - p1.z;
-    return (float) (dx * dx + dy * dy + dz * dz);
-  }
-
-  /**
-   * Returns the distance between this point and point p1.
-   * 
-   * @param p1
-   *        the other point
-   * @return the distance between these two points
-   */
-  public final float distance(T3 p1) {
-    return (float) Math.sqrt(distanceSquared(p1));
-  }
-
 }

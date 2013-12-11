@@ -146,15 +146,13 @@ public class SV extends T {
         || isArray(x)); // stored as list
   }
 
-
   /**
    * @param x
    * @return a ScriptVariable of the input type, or if x is null, then a new
    *         ScriptVariable, or, if the type is not found, a string version
    */
   @SuppressWarnings("unchecked")
-  public
-  static SV getVariable(Object x) {
+  public static SV getVariable(Object x) {
     if (x == null)
       return newS("");
     if (x instanceof SV)
@@ -1199,24 +1197,39 @@ public class SV extends T {
   
   /**
    * 
-   * @param arrayPt   1-based or Integer.MIN_VALUE to reverse
+   * @param arrayPt
+   *        1-based or Integer.MIN_VALUE to reverse
    * @return sorted or reversed array
    */
   public SV sortOrReverse(int arrayPt) {
     List<SV> x = getList();
-    if (x == null || x.size() < 2) 
-      return this;
-    if (arrayPt == Integer.MIN_VALUE) {
-      // reverse
-      int n = x.size();
-      for (int i = 0; i < n; i++) {
-        SV v = x.get(i);
-        x.set(i, x.get(--n));
-        x.set(n, v);
+    if (x != null && x.size() > 1) {
+      if (arrayPt == Integer.MIN_VALUE) {
+        // reverse
+        int n = x.size();
+        for (int i = 0; i < n; i++) {
+          SV v = x.get(i);
+          x.set(i, x.get(--n));
+          x.set(n, v);
+        }
+      } else {
+        Collections.sort(getList(), new Sort(--arrayPt));
       }
-    } else {
-      Collections.sort(getList(), new Sort(--arrayPt));
     }
+    return this;
+  }
+
+  /**
+   * 
+   * @param o
+   *        null to pop
+   * @return array
+   */
+  public SV pushPop(SV o) {
+    List<SV> x = getList();
+    if (o == null || x == null)
+      return (x == null || x.size() == 0 ? newS("") : x.remove(x.size() - 1));
+      x.addLast(getVariable(selectItemVar(o).value));
     return this;
   }
 

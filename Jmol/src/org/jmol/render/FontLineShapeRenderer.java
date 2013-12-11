@@ -42,7 +42,7 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
   // Axes, Bbcage, Measures, Uccage, also Sticks
 
   protected float imageFontScaling;
-  protected Point3fi atomA, atomB, atomC, atomD;
+  protected Point3fi atomA, atomB;
   protected Font font3d;
 
   final protected P3i pt0i = new P3i();
@@ -104,12 +104,12 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
     if (!drawTicks || tickInfo == null)
       return;
     // AtomA and AtomB molecular coordinates must be set previously
-    atomA.screenX = pt0.x;
-    atomA.screenY = pt0.y;
-    atomA.screenZ = pt0.z;
-    atomB.screenX = pt1.x;
-    atomB.screenY = pt1.y;
-    atomB.screenZ = pt1.z;
+    atomA.sX = pt0.x;
+    atomA.sY = pt0.y;
+    atomA.sZ = pt0.z;
+    atomB.sX = pt1.x;
+    atomB.sY = pt1.y;
+    atomB.sZ = pt1.z;
     drawTicks(atomA, atomB, diameter, true);
   }
 
@@ -137,8 +137,8 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
     if (g3d.isAntialiased())
       length *= 2;
     // perpendicular to line on screen:
-    vectorT2.set(ptB.screenX, ptB.screenY, 0);
-    vectorT.set(ptA.screenX, ptA.screenY, 0);
+    vectorT2.set(ptB.sX, ptB.sY, 0);
+    vectorT.set(ptA.sX, ptA.sY, 0);
     vectorT2.sub(vectorT);
     if (vectorT2.length() < 50)
       return;
@@ -165,14 +165,14 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
       return;
     float f = dx / d * d0 / d;
     vectorT.scale(f);
-    float dz = (ptB.screenZ - ptA.screenZ) / (d / dx);
+    float dz = (ptB.sZ - ptA.sZ) / (d / dx);
     // vectorT is now the length of the spacing between ticks
     // but we may have an offset.
     d += tickInfo.first;
     float p = ((int) Math.floor(tickInfo.first / dx)) * dx - tickInfo.first;
     pointT.scaleAdd2(p / dx, vectorT, ptA);
     p += tickInfo.first;
-    float z = ptA.screenZ;
+    float z = ptA.sZ;
     if (diameter < 0)
       diameter = 1;
     vectorT2.set(-vectorT2.y, vectorT2.x, 0);

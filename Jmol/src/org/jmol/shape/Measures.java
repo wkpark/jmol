@@ -133,7 +133,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
       for (int i = measurements.size(); --i >= 0;)
         if ((mt = measurements.get(i)) != null
             && (isRefresh || mt.isTrajectory))
-          mt.refresh();
+          mt.refresh(null);
       return;
     }
 
@@ -519,7 +519,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
   }
 
   private void defineMeasurement(int i, Measurement m, boolean doSelect) {
-    float value = m.getMeasurement();
+    float value = m.getMeasurement(null);
     if (htMin != null && !m.isMin(htMin) 
         || radiusData != null && !m.isInRange(radiusData, value))
       return;

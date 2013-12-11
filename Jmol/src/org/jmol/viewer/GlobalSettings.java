@@ -257,7 +257,6 @@ public class GlobalSettings {
       setF("drawFontSize", drawFontSize);
       setB("drawPicking", drawPicking);
       setB("dsspCalculateHydrogenAlways", dsspCalcHydrogen);
-      setB("dynamicMeasurements", dynamicMeasurements);
       setS("edsUrlFormat", edsUrlFormat);
       //setParameterValue("edsUrlOptions", edsUrlOptions);
       setS("edsUrlCutoff", edsUrlCutoff);
@@ -316,6 +315,7 @@ public class GlobalSettings {
       setB("minimizationSilent", minimizationSilent);
       setF("minimizationCriterion", minimizationCriterion);
       setB("modelKitMode", modelKitMode);
+      setF("modulationScale", modulationScale);
       setB("monitorEnergy", monitorEnergy);
       setF("multipleBondRadiusFactor", multipleBondRadiusFactor);
       setF("multipleBondSpacing", multipleBondSpacing);
@@ -512,7 +512,6 @@ public class GlobalSettings {
     int dotDensity = 3;
     int dotScale = 1;
     int meshScale = 1;
-    boolean dynamicMeasurements = false;
     boolean greyscaleRendering = false;
     boolean isosurfaceKey = false;
     boolean isosurfacePropertySmoothing = true;
@@ -573,7 +572,6 @@ public class GlobalSettings {
     boolean atomPicking = true;
     boolean autoFps = false;
     EnumAxesMode axesMode = EnumAxesMode.BOUNDBOX;
-    float particleRadius = 20;
     float axesScale = 2;
     float starScale = 0.05f;
     boolean bondPicking = false;
@@ -610,7 +608,9 @@ public class GlobalSettings {
     boolean measurementLabels = true;
     boolean messageStyleChime = false;
     boolean monitorEnergy = false;
+    float modulationScale = 1;
     boolean multiProcessor = true;
+    float particleRadius = 20;
     int pickingSpinRate = 10;
     String pickLabel = "";
     float pointGroupDistanceTolerance = 0.2f;

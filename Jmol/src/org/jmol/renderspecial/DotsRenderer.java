@@ -85,11 +85,11 @@ public class DotsRenderer extends ShapeRenderer {
       Atom atom = modelSet.atoms[i];
       BS map = maps[i];
       if (map == null || !atom.isVisible(myVisibilityFlag)
-          || !g3d.isInDisplayRange(atom.screenX, atom.screenY))
+          || !g3d.isInDisplayRange(atom.sX, atom.sY))
         continue;
       try {
         int nPoints = calcScreenPoints(map, dots.ec.getAppropriateRadius(i) + testRadiusAdjust,
-            atom.screenX, atom.screenY, atom.screenZ);
+            atom.sX, atom.sY, atom.sZ);
         if (nPoints != 0)
           renderConvex(C.getColixInherited(dots.colixes[i],
               atom.getColix()), map, nPoints);

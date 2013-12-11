@@ -82,7 +82,7 @@ public class PolyhedraRenderer extends ShapeRenderer {
       if (atom == null)
         viewer.transformPtScr(vertices[i], screens[i]);
       else
-        screens[i].set(atom.screenX, atom.screenY, atom.screenZ);
+        screens[i].set(atom.sX, atom.sY, atom.sZ);
     }
 
     isAll = (drawEdges == Polyhedra.EDGES_ALL);

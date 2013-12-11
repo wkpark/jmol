@@ -32,28 +32,14 @@ public class MeasurementPending extends Measurement {
    * the user initiates this with a mouse action
    * 
    */
-  private boolean haveTarget = false;
-  private boolean haveModified = false;
+  public boolean haveTarget;
+  public boolean haveModified;
+  public int numSet = 0;
   
-  public boolean haveTarget() {
-    return haveTarget;
-  }
-  
-  public boolean haveModified() {
-    return haveModified;
-  }
-  
-  private int numSet = 0;
-  
-  public int getNumSet() {
-    return numSet;
-  }
-
   public MeasurementPending set(ModelSet modelSet) {
     return (MeasurementPending) setM(modelSet, null, Float.NaN, (short) 0,
         null, 0);
   }
-
 
   private boolean checkPoint(Point3fi ptClicked) {
     for (int i = 1; i <= numSet; i++)
@@ -107,7 +93,7 @@ public class MeasurementPending extends Measurement {
     countPlusIndices[0] = count;
     if (doSet)
       numSet = count;
-    value = getMeasurement();
+    value = getMeasurement(null);
     strFormat = null;
     formatMeasurement(null);
     return count;

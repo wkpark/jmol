@@ -236,13 +236,6 @@ public class Symmetry implements SymmetryInterface {
     return SymmetryOperation.getMatrixFromString(null, xyz, rotTransMatrix, allowScaling);
   }
 
-  @Override
-  public P3 ijkToPoint3f(int nnn) {
-    P3 cell = new P3();
-    SimpleUnitCell.ijkToPoint3f(nnn, cell, 0);
-    return cell;
-  }
-
   /// symmetryInfo ////
   
   @Override
@@ -382,7 +375,9 @@ public class Symmetry implements SymmetryInterface {
 
   @Override
   public void setOffset(int nnn) {
-    unitCell.setOffset(ijkToPoint3f(nnn));
+    P3 pt = new P3();
+    SimpleUnitCell.ijkToPoint3f(nnn, pt, 0);
+    unitCell.setOffset(pt);
   }
 
   @Override
@@ -584,10 +579,12 @@ public class Symmetry implements SymmetryInterface {
       symTemp.addSpaceGroupOperation((op < 0 ? "!" : "=") + xyz, Math.abs(op)));
     if (iSym < 0)
       return "";
-    symTemp.setUnitCell(uc.getNotionalUnitCell());
     Object[] info;
     pt = P3.newP(pt == null ? modelSet.atoms[iAtom] : pt);
     if (type == T.point) {
+      if (isBio)
+        return "";
+      symTemp.setUnitCell(uc.getNotionalUnitCell());
       uc.toFractional(pt, false);
       if (Float.isNaN(pt.x))
         return "";
@@ -745,7 +742,7 @@ public class Symmetry implements SymmetryInterface {
 
   @Override
   public boolean isBio() {
-    return spaceGroup.isBio;
+    return isBio;
   }
 
 }  

@@ -126,7 +126,7 @@ public class MeasurementData implements JmolMeasurementClient {
    */
   @Override
   public void processNextMeasure(Measurement m) {
-    float value = m.getMeasurement();
+    float value = m.getMeasurement(null);
     // here's where we check vdw
     if (htMin != null && !m.isMin(htMin) || radiusData != null && !m.isInRange(radiusData, value))
       return;
@@ -141,7 +141,7 @@ public class MeasurementData implements JmolMeasurementClient {
     if (measurementStrings != null)
       measurementStrings.addLast(m.getStringUsing(viewer, strFormat, units));
     else
-      measurements.addLast(Float.valueOf(m.getMeasurement()));   
+      measurements.addLast(Float.valueOf(m.getMeasurement(null)));   
   }
 
   /**

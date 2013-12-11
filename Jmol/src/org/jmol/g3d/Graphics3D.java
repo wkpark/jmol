@@ -1888,8 +1888,8 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
 
   @Override
   public void drawAtom(Atom atom) {
-    fillSphereXYZ(atom.screenDiameter,
-        atom.screenX, atom.screenY, atom.screenZ);
+    fillSphereXYZ(atom.sD,
+        atom.sX, atom.sY, atom.sZ);
   }
 
   // implemented only for Export3D:

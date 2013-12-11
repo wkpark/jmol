@@ -289,14 +289,7 @@ public class RocketsRenderer extends StrandsRenderer {
   private final P3 pointCorner = new P3();
 
   void drawBox(P3 pointA, P3 pointB) {
-    Sheet sheet = (Sheet)proteinstructurePending;
-    float scale = mad / 1000f;
-    scaledWidthVector.setT(sheet.getWidthUnitVector());
-    scaledWidthVector.scale(scale);
-    scaledHeightVector.setT(sheet.getHeightUnitVector());
-    scaledHeightVector.scale(scale / 4);
-    pointCorner.add2(scaledWidthVector, scaledHeightVector);
-    pointCorner.scaleAdd(-0.5f, pointA);
+    setBox(1f, 0.25f, pointA);
     lengthVector.sub2(pointB, pointA);
     buildBox(pointCorner, scaledWidthVector,
              scaledHeightVector, lengthVector);
@@ -312,17 +305,20 @@ public class RocketsRenderer extends StrandsRenderer {
     }
   }
 
-  void drawArrowHeadBox(P3 base, P3 tip) {
+  private void setBox(float width, float height, P3 pt) {
     Sheet sheet = (Sheet)proteinstructurePending;
     float scale = mad / 1000f;
     scaledWidthVector.setT(sheet.getWidthUnitVector());
-    scaledWidthVector.scale(scale * 1.25f);
+    scaledWidthVector.scale(scale * width);
     scaledHeightVector.setT(sheet.getHeightUnitVector());
-    scaledHeightVector.scale(scale / 3);
-    pointCorner.add2(scaledWidthVector, scaledHeightVector);
-    pointCorner.scaleAdd(-0.5f, base);
-    pointTipOffset.setT(scaledHeightVector);
-    pointTipOffset.scaleAdd(-0.5f, tip);
+    scaledHeightVector.scale(scale * height);
+    pointCorner.scaleAdd2(-0.5f, pt, scaledHeightVector);
+    pointCorner.add(scaledWidthVector);
+  }
+
+  void drawArrowHeadBox(P3 base, P3 tip) {
+    setBox(1.25f, 0.333f, base);
+    pointTipOffset.scaleAdd2(-0.5f, tip, scaledHeightVector);
     buildArrowHeadBox(pointCorner, scaledWidthVector,
                       scaledHeightVector, pointTipOffset);
     g3d.fillTriangle3f(screenCorners[0],

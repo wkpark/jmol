@@ -88,6 +88,7 @@ import org.jmol.util.BoxInfo;
 import org.jmol.util.C;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.CommandHistory;
+import org.jmol.util.Point3fi;
 
 import javajs.api.GenericPlatform;
 import javajs.api.GenericMouseInterface;
@@ -1356,7 +1357,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public void transformPtNoClip(P3 pointAngstroms, P3 pt) {
-    transformManager.transformPointNoClip2(pointAngstroms, pt);
+    transformManager.transformPointNoClip(pointAngstroms, pt);
   }
 
   public void transformPt3f(P3 pointAngstroms, P3 pointScreen) {
@@ -1954,7 +1955,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     if (global.atomTypes.length() > 0)
       htParams.put("atomTypes", global.atomTypes);
     if (!htParams.containsKey("lattice"))
-      htParams.put("lattice", global.getDefaultLattice());
+      htParams.put("lattice", getDefaultLattice());
     if (global.applySymmetryToBonds)
       htParams.put("applySymmetryToBonds", Boolean.TRUE);
     if (global.pdbGetHeader)
@@ -4313,7 +4314,9 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     }
     if (captureParams != null && Boolean.FALSE != captureParams.get("captureEnabled")) {
       //showString(transformManager.matrixRotate.toString(), false);
-      processWriteOrCapture(captureParams);
+      if (System.currentTimeMillis() >= ((Long)captureParams.get("endTime")).longValue())
+        captureParams.put("captureMode", Integer.valueOf(T.end));
+        processWriteOrCapture(captureParams);
     }
     notifyViewerRepaintDone();
   }
@@ -5863,8 +5866,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       return global.dotsSelectedOnly;
     case T.drawpicking:
       return global.drawPicking;
-    case T.dynamicmeasurements:
-      return global.dynamicMeasurements;
     case T.fontcaching:
       return global.fontCaching;
     case T.fontscaling:
@@ -6012,6 +6013,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       return global.loadAtomDataTolerance;
     case T.minbonddistance:
       return global.minBondDistance;
+    case T.modulation:
+      return global.modulationScale;
     case T.multiplebondspacing:
       return global.multipleBondSpacing;
     case T.multiplebondradiusfactor:
@@ -6287,8 +6290,14 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   private void setFloatPropertyTok(String key, int tok, float value) {
     switch (tok) {
-    // 13.3.9
+    case T.modulationscale:
+      // 14.0.1
+      modelSet.setModulation(null, false, null, false);
+      global.modulationScale = Math.max(1, value);
+      modelSet.setModulation(null, true, null, false);
+      break;
     case T.particleradius:
+      // 13.3.9
       global.particleRadius = Math.abs(value);
       break;
     case T.drawfontsize:
@@ -6973,9 +6982,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       break;
     case T.solventprobe:
       global.solventOn = value;
-      break;
-    case T.dynamicmeasurements:
-      setDynamicMeasurements(value);
       break;
     case T.allowrotateselected:
       // 11.1.14
@@ -8514,7 +8520,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       atom1 = b.getAtom1();
       atom2 = b.getAtom2();
       undoMoveActionClear(atom1.index, AtomCollection.TAINT_COORD, true);
-      P3 pt = P3.new3(x, y, (atom1.screenZ + atom2.screenZ) / 2);
+      P3 pt = P3.new3(x, y, (atom1.sZ + atom2.sZ) / 2);
       transformManager.unTransformPoint(pt, pt);
       if (atom2.getCovalentBondCount() == 1
           || pt.distance(atom1) < pt.distance(atom2)
@@ -8544,8 +8550,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       atom1 = modelSet.atoms[rotatePrev1];
       atom2 = modelSet.atoms[rotatePrev2];
     }
-    V3 v1 = V3.new3(atom2.screenX - atom1.screenX, atom2.screenY
-        - atom1.screenY, 0);
+    V3 v1 = V3.new3(atom2.sX - atom1.sX, atom2.sY
+        - atom1.sY, 0);
     V3 v2 = V3.new3(deltaX, deltaY, 0);
     v1.cross(v1, v2);
     float degrees = (v1.z > 0 ? 1 : -1) * v2.length();
@@ -8561,10 +8567,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     setShapeProperty(JC.SHAPE_MEASURES, "refresh", null);
     if (andStopMinimization)
       stopMinimization();
-  }
-
-  void setDynamicMeasurements(boolean TF) { // deprecated; unnecessary
-    global.dynamicMeasurements = TF;
   }
 
   /**
@@ -10368,16 +10370,15 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return (!getTestFlag(1));
   }
 
-  public void setModulation(boolean isOn, int[] t1, int t2, boolean isThread) {
-    int t = (t1 == null ? Integer.MAX_VALUE : t1[0]);
-    if (t2 == Integer.MAX_VALUE) {
+  public void setModulation(boolean isOn, P3 t1, boolean isQ, int t2, boolean isThread) {
+    if (t2 == Integer.MAX_VALUE || !isQ) {
       if (!isThread)
         animationManager.setModulationPlay(Integer.MAX_VALUE, 0);
-      if (t1 != null)
-        global.setI("_modt", t1[0]);
-      modelSet.setModulation(getSelectionSet(false), isOn, t);
+      if (isQ)
+        global.setI("_modt", (int) t1.x);
+      modelSet.setModulation(getSelectionSet(false), isOn, t1, isQ);
     } else {
-      animationManager.setModulationPlay(t, t2);
+      animationManager.setModulationPlay((int) t1.x, t2);
     }
     refreshMeasures(true);
   }
@@ -10483,8 +10484,12 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return applet;
   }
 
-  public List<Object> getModulationList(BS bs, String type, float t) {
-    return modelSet.getModulationList(bs, type, t);
+  public List<Object> getModulationList(BS bs, String type, P3 t456) {
+    return modelSet.getModulationList(bs, type, t456);
+  }
+
+  public Point3fi getVibrationPoint(Vibration vibration, Point3fi pt) {
+    return transformManager.getVibrationPoint(vibration, pt);
   }
 
 }

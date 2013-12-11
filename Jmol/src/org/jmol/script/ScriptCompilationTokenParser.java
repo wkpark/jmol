@@ -171,14 +171,20 @@ abstract class ScriptCompilationTokenParser {
       if (tok == T.bonds) 
         firstToken = 2;
       break;
+    case T.select:
+      switch(tok) {
+      case T.on:
+      case T.off:
+        tok = tokAt(++firstToken);
+        break;
+      }
+      //$FALL-THROUGH$
     case T.hide:
     case T.display:
-    case T.select:
       switch(tok) {
       case T.add:
       case T.remove:
-        firstToken = 2;
-        tok = tokAt(2);
+        tok = tokAt(++firstToken);
         break;
       }
       if (tok == T.group)

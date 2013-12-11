@@ -61,11 +61,15 @@ public class VibrationThread extends JmolThread {
       case CHECK1:
         lastRepaintTime = System.currentTimeMillis();
         elapsed = (int) (lastRepaintTime - startTime);
-        float t = (float) (elapsed % transformManager.vibrationPeriodMs)
-            / transformManager.vibrationPeriodMs;
-        transformManager.setVibrationT(t);
-        viewer.refresh(3, "VibrationThread:run()");
-        mode = (checkInterrupted() ? FINISH : MAIN);
+        if (transformManager.vibrationPeriodMs == 0) {
+          mode = FINISH;
+        } else {
+          float t = (float) (elapsed % transformManager.vibrationPeriodMs)
+              / transformManager.vibrationPeriodMs;
+          transformManager.setVibrationT(t);
+          viewer.refresh(3, "VibrationThread:run()");
+          mode = (checkInterrupted() ? FINISH : MAIN);
+        }
         break;
       case FINISH:
         viewer.startHoverWatcher(true);

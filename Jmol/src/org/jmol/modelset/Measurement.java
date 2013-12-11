@@ -56,7 +56,6 @@ public class Measurement {
   public int index;
   public boolean isVisible = true;
   public boolean isHidden = false;
-  public boolean isDynamic = false;
   public boolean isTrajectory = false;
   public boolean isValid = true;
   public short colix;
@@ -103,7 +102,7 @@ public class Measurement {
       System.arraycopy(indices, 0, countPlusIndices, 0, count + 1);
       isTrajectory = modelSet.isTrajectoryMeasurement(countPlusIndices);
     }
-    this.value = (Float.isNaN(value) || isTrajectory ? getMeasurement() : value);
+    this.value = (Float.isNaN(value) || isTrajectory ? getMeasurement(null) : value);
     formatMeasurement(null);
     return this;
   }
@@ -144,8 +143,8 @@ public class Measurement {
     return (n > 0 && n <= count ? countPlusIndices[n] : -1);
   }
 
-  public Point3fi getAtom(int i) {
-    int pt = countPlusIndices[i];
+  public Point3fi getAtom(int n) {
+    int pt = countPlusIndices[n];
     return (pt < -1 ? pts[-2 - pt] : modelSet.atoms[pt]);
   }
 
@@ -159,7 +158,7 @@ public class Measurement {
 
   public String getStringUsing(Viewer viewer, String strFormat, String units) {
     this.viewer = viewer;
-    value = getMeasurement();
+    value = getMeasurement(null);
     formatMeasurementAs(strFormat, units, true);
     if (strFormat == null)
       return getInfoAsString(units);
@@ -187,8 +186,8 @@ public class Measurement {
     return pointArc;
   }
 
-  public void refresh() {
-    value = getMeasurement();
+  public void refresh(Point3fi[] pts) {
+    value = getMeasurement(pts);
     isTrajectory = modelSet.isTrajectoryMeasurement(countPlusIndices);
     formatMeasurement(null);
   }
@@ -420,7 +419,8 @@ public class Measurement {
     return V;
   }
 
-  public float getMeasurement() {
+  
+  public float getMeasurement(Point3fi[] pts) {
     if (countPlusIndices == null)
       return Float.NaN;
     if (count < 2)
@@ -429,18 +429,18 @@ public class Measurement {
       if (countPlusIndices[i + 1] == -1) {
         return Float.NaN;
       }
-    Point3fi ptA = getAtom(1);
-    Point3fi ptB = getAtom(2);
-    Point3fi ptC, ptD;
+    Point3fi ptA = (pts == null ? getAtom(1) : pts[0]);
+    Point3fi ptB = (pts == null ? getAtom(2) : pts[1]);
+    Point3fi ptC;
     switch (count) {
     case 2:
       return ptA.distance(ptB);
     case 3:
-      ptC = getAtom(3);
+      ptC = (pts == null ? getAtom(3) : pts[2]);
       return Measure.computeAngleABC(ptA, ptB, ptC, true);
     case 4:
-      ptC = getAtom(3);
-      ptD = getAtom(4);
+      ptC = (pts == null ? getAtom(3) : pts[2]);
+      Point3fi ptD = (pts == null ? getAtom(4) : pts[3]);
       return Measure.computeTorsion(ptA, ptB, ptC, ptD, true);
     default:
       return Float.NaN;

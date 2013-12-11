@@ -29,6 +29,7 @@ import org.jmol.util.BSUtil;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Measure;
+import org.jmol.util.Point3fi;
 
 import javajs.util.A4;
 import javajs.util.M3;

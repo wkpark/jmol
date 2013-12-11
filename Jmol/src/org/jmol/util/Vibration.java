@@ -1,6 +1,8 @@
 package org.jmol.util;
 
-import javajs.util.P3;
+import java.util.Map;
+
+import javajs.util.T3;
 import javajs.util.V3;
 
 /**
@@ -15,8 +17,18 @@ public class Vibration extends V3 {
 
   protected final static double twoPI = 2 * Math.PI;
 
-  public void setTempPoint(P3 pt, double t, double scale) {
-    pt.scaleAdd2((float) (Math.cos(t * twoPI) * scale), this, pt); 
+  /**
+   * @param pt 
+   * @param t456 
+   * @param scale 
+   * @param modulationScale 
+   */
+  public void setTempPoint(T3 pt, T3 t456, float scale, float modulationScale) {
+    pt.scaleAdd2((float) (Math.cos(t456.x * twoPI) * scale), this, pt); 
+  }
+
+  public void getInfo(Map<String, Object> info) {
+    info.put("vibVector", V3.newV(this));
   }
 
 }

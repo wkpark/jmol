@@ -319,8 +319,7 @@ final public class Measure {
                                      V3 vectorProjection) {
     vectorProjection.sub2(point, axisA);
     float projectedLength = vectorProjection.dot(axisUnitVector);
-    point.setT(axisUnitVector);
-    point.scaleAdd(projectedLength, axisA);
+    point.scaleAdd2(projectedLength, axisA, axisUnitVector);
     vectorProjection.sub2(point, axisA);
   }
   

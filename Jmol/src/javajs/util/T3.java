@@ -32,20 +32,7 @@ import java.io.Serializable;
  */
 public abstract class T3 implements Serializable {
 
-  /**
-   * The x coordinate.
-   */
-  public float x;
-
-  /**
-   * The y coordinate.
-   */
-  public float y;
-
-  /**
-   * The z coordinate.
-   */
-  public float z;
+  public float x, y, z;
 
   public T3() {
   }
@@ -118,6 +105,31 @@ public abstract class T3 implements Serializable {
   }
 
   /**
+   * Computes the square of the distance between this point and point p1.
+   * 
+   * @param p1
+   *        the other point
+   * @return the square of distance between these two points as a float
+   */
+  public final float distanceSquared(T3 p1) {
+    double dx = x - p1.x;
+    double dy = y - p1.y;
+    double dz = z - p1.z;
+    return (float) (dx * dx + dy * dy + dz * dz);
+  }
+
+  /**
+   * Returns the distance between this point and point p1.
+   * 
+   * @param p1
+   *        the other point
+   * @return the distance between these two points
+   */
+  public final float distance(T3 p1) {
+    return (float) Math.sqrt(distanceSquared(p1));
+  }
+
+  /**
    * Sets the value of this tuple to the vector difference of tuple t1 and t2
    * (this = t1 - t2).
    * 
@@ -174,21 +186,6 @@ public abstract class T3 implements Serializable {
     z = s * t1.z + t2.z;
   }
 
-  /**
-   * Sets the value of this tuple to the scalar multiplication of itself and
-   * then adds tuple t1 (this = s*this + t1).
-   * 
-   * @param s
-   *        the scalar value
-   * @param t1
-   *        the tuple to be added
-   */
-  public final void scaleAdd(float s, T3 t1) {
-    x = s * x + t1.x;
-    y = s * y + t1.y;
-    z = s * z + t1.z;
-  }
-  
   /**
    * Vector dot product. Was in Vector3f; more useful here, though.
    * 

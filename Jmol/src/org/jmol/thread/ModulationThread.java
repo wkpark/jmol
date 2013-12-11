@@ -25,6 +25,8 @@
 
 package org.jmol.thread;
 
+import javajs.util.P3;
+
 import org.jmol.util.Logger;
 import org.jmol.viewer.AnimationManager;
 import org.jmol.viewer.Viewer;
@@ -33,7 +35,7 @@ public class ModulationThread extends JmolThread {
   /**
    * 
    */
-  private int modT;
+  private P3 modT;
   private int modT2;
 
   private AnimationManager animationManager;
@@ -45,7 +47,8 @@ public class ModulationThread extends JmolThread {
   @Override
   public int setManager(Object manager, Viewer viewer, Object params) {
     int[] options = (int[]) params;
-    modT = options[0];
+    int t = options[0];
+    modT = P3.new3(t, t, t);
     modT2 = options[1];
     animationManager = (AnimationManager) manager;
     setViewer(viewer, "ModulationThread");
@@ -82,14 +85,15 @@ public class ModulationThread extends JmolThread {
         break;
       case MAIN:
         //System.out.println("anim thred " + animationManager.getCurrentFrame() +" "+ framePointer);
-        if (checkInterrupted() || !animationManager.modulationPlay || modT > modT2) {
+        if (checkInterrupted() || !animationManager.modulationPlay || modT.x > modT2) {
           mode = FINISH;
           break;
         }
         mode = CHECK1;
         break;
       case CHECK1:
-        viewer.setModulation(true, new int[] {modT++}, Integer.MAX_VALUE, true);
+        modT.x++;
+        viewer.setModulation(true, modT, true, Integer.MAX_VALUE, true);
         mode = CHECK2;
         break;
       case CHECK2:

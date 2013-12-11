@@ -51,7 +51,7 @@ public class HoverRenderer extends ShapeRenderer {
       if (label == null)
         return false;
       text.setText(label);
-      text.setXYZs(atom.screenX, atom.screenY, 1, Integer.MIN_VALUE);
+      text.setXYZs(atom.sX, atom.sY, 1, Integer.MIN_VALUE);
     } else if (hover.text != null) {
       text.setText(hover.text);
       text.setXYZs(hover.xy.x, hover.xy.y, 1, Integer.MIN_VALUE);

@@ -60,9 +60,9 @@ public class StarsRenderer extends ShapeRenderer {
   }
 
   private void render1(Atom atom, short mad) {
-    int x = atom.screenX;
-    int y = atom.screenY;
-    int z = atom.screenZ;
+    int x = atom.sX;
+    int y = atom.sY;
+    int z = atom.sZ;
     int d = (int) viewer.scaleToScreen(z, mad);
     d -= (d & 1) ^ 1; // round down to odd value
     int r = d / 2;

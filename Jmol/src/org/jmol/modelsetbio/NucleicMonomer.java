@@ -309,7 +309,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
     short mar = (short)(madBegin / 2);
     if (mar < 1900)
       mar = 1900;
-    int radius = (int) scaleToScreen(lead.screenZ, mar);
+    int radius = (int) scaleToScreen(lead.sZ, mar);
     if (radius < 4)
       radius = 4;
     if (isCursorOnTopOf(lead, x, y, radius, competitor)

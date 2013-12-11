@@ -41,10 +41,10 @@ import javajs.util.P3i;
  */
 public class Point3fi extends P3 {
   public int index;
-  public int screenX;
-  public int screenY;
-  public int screenZ;
-  public short screenDiameter = -1;
+  public int sX;
+  public int sY;
+  public int sZ;
+  public short sD = -1;
   public short modelIndex = -1;
 
   public static void set2(P3 p3f, P3i p3i) {

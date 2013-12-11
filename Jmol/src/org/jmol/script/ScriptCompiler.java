@@ -625,7 +625,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         if (nTokens > 2 
             && !(tokAt(2) == T.leftparen && ltoken.get(1).value.toString().endsWith(".spt")) 
             || s != null && (s.endsWith(".SORT") || s.endsWith(".REVERSE") 
-                || s.indexOf(".SORT(") >= 0 || s.indexOf(".REVERSE(") >= 0)) {
+                || s.indexOf(".SORT(") >= 0 || s.indexOf(".REVERSE(") >= 0
+                || s.indexOf(".POP(") >= 0 || s.indexOf(".PUSH(") >= 0)) {
           // check for improperly parsed implied script command:
           // only two tokens:
           //   [implied script] xxx.SORT
@@ -641,11 +642,11 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         }
       }
       if (isNewSet && nTokens > 2 && tokAt(2) == T.per
-          && (tokAt(3) == T.sort || tokAt(3) == T.reverse)) {
-        // check for x.sort or x.reverse
+          && (tokAt(3) == T.sort || tokAt(3) == T.reverse || tokAt(3) == T.push || tokAt(3) == T.pop)) {
+        // check for x.sort or x.reverse or a.push(xxx)
         // x.sort / x.reverse ==> x = x.sort / x = x.reverse
         ltoken.set(0, T.tokenSet);
-        ltoken.add(1, ltoken.get(1));
+        ltoken.add(1, tokAt(3) ==  T.pop ? T.tokenAll : ltoken.get(1));
       } else if (tokInitialPlusPlus != T.nada) {
         // check for ++x or --x
         if (!isNewSet)
@@ -905,8 +906,9 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
    * Check for special parameters, including:
    * 
    * +, -, \, *, /, &, |, =, period, or [, single or double quote,
-   * command-specific parameters, $.... identifiers, exponential notation, decimal
-   * numbers, sequence codes, integers, bitsets ({....}) or [{....}], or matrices
+   * command-specific parameters, $.... identifiers, exponential notation,
+   * decimal numbers, sequence codes, integers, bitsets ({....}) or [{....}], or
+   * matrices
    * 
    * @return OK, CONTINUE, or ERROR
    * 
@@ -936,8 +938,9 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       }
       return CONTINUE;
     }
-    if (lastToken.tok == T.id && lookingAtImpliedString(false, false, false)) { 
-      addTokenToPrefix(T.o(T.string, script.substring(ichToken, ichToken + cchToken)));
+    if (lastToken.tok == T.id && lookingAtImpliedString(false, false, false)) {
+      addTokenToPrefix(T.o(T.string,
+          script.substring(ichToken, ichToken + cchToken)));
       return CONTINUE;
     }
     char ch;
@@ -1052,9 +1055,15 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           && lookingAtImpliedString(false, tokCommand == T.load, nTokens > 1
               || tokCommand != T.script)) {
         String str = script.substring(ichToken, ichToken + cchToken);
-        if (tokCommand == T.script && str.startsWith("javascript:")) {
-          lookingAtImpliedString(true, true, true);
-          str = script.substring(ichToken, ichToken + cchToken);
+        if (tokCommand == T.script) {
+          if (str.startsWith("javascript:")) {
+            lookingAtImpliedString(true, true, true);
+            str = script.substring(ichToken, ichToken + cchToken);
+          } else if (str.toUpperCase().indexOf(".PUSH(") >= 0) {
+            cchToken = 0;
+            iHaveQuotedString = true;
+            return CONTINUE;
+          }          
         }
         iHaveQuotedString = true;
         addTokenToPrefix(T.o(T.string, str));
@@ -1110,8 +1119,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     }
     if (lookingAtObjectID()) {
       addTokenToPrefix(T.getTokenFromName("$"));
-      addTokenToPrefix(T.o(T.identifier, script.substring(ichToken, ichToken
-          + cchToken)));
+      addTokenToPrefix(T.o(T.identifier,
+          script.substring(ichToken, ichToken + cchToken)));
       return CONTINUE;
     }
     float value;
@@ -1184,8 +1193,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       if (isBondOrMatrix) {
         Object m = lookingAtMatrix();
         if (m instanceof M3 || m instanceof M4) {
-          addTokenToPrefix(T.o(
-              (m instanceof M3 ? T.matrix3f : T.matrix4f), m));
+          addTokenToPrefix(T.o((m instanceof M3 ? T.matrix3f : T.matrix4f), m));
           return CONTINUE;
         }
       }

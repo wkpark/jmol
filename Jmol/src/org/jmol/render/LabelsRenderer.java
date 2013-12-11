@@ -123,7 +123,7 @@ public class LabelsRenderer extends FontLineShapeRenderer {
       offset = offsetFull >> JC.LABEL_FLAG_OFFSET;
       textAlign = Labels.getAlignment(offsetFull);
       pointer = offsetFull & JC.LABEL_POINTER_FLAGS;
-      zSlab = atom.screenZ - atom.screenDiameter / 2 - 3;
+      zSlab = atom.sZ - atom.sD / 2 - 3;
       if (zCutoff > 0 && zSlab > zCutoff)
         continue;
       if (zSlab < 1)
@@ -165,11 +165,11 @@ public class LabelsRenderer extends FontLineShapeRenderer {
     if (text != null) {
       if (text.font == null)
         text.setFontFromFid(fid);
-      text.atomX = atomPt.screenX; // just for pointer
-      text.atomY = atomPt.screenY;
+      text.atomX = atomPt.sX; // just for pointer
+      text.atomY = atomPt.sY;
       text.atomZ = zSlab;
       if (text.pymolOffset == null) {
-        text.setXYZs(atomPt.screenX, atomPt.screenY, zBox, zSlab);
+        text.setXYZs(atomPt.sX, atomPt.sY, zBox, zSlab);
         text.setColix(labelColix);
         text.setBgColix(bgcolix);
       } else {
@@ -202,8 +202,8 @@ public class LabelsRenderer extends FontLineShapeRenderer {
         boolean doPointer = ((pointer & JC.POINTER_ON) != 0);
         short pointerColix = ((pointer & JC.POINTER_BACKGROUND) != 0
             && bgcolix != 0 ? bgcolix : labelColix);
-        boxXY[0] = atomPt.screenX;
-        boxXY[1] = atomPt.screenY;
+        boxXY[0] = atomPt.sX;
+        boxXY[1] = atomPt.sY;
         TextRenderer.renderSimpleLabel(g3d, font3d, label, labelColix, bgcolix,
             boxXY, zBox, zSlab, JC.getXOffset(offset), JC
                 .getYOffset(offset), ascent, descent, doPointer, pointerColix,
@@ -212,10 +212,10 @@ public class LabelsRenderer extends FontLineShapeRenderer {
       } else {
         text = Text.newLabel(g3d.getGData(), font3d, label, labelColix,
             bgcolix, textAlign, 0, null);
-        text.atomX = atomPt.screenX; // just for pointer
-        text.atomY = atomPt.screenY;
+        text.atomX = atomPt.sX; // just for pointer
+        text.atomY = atomPt.sY;
         text.atomZ = zSlab;
-        text.setXYZs(atomPt.screenX, atomPt.screenY, zBox, zSlab);
+        text.setXYZs(atomPt.sX, atomPt.sY, zBox, zSlab);
         newText = true;
       }
     }

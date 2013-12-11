@@ -435,21 +435,22 @@ public class ShapeManager {
   public int[] transformAtoms() {
     Object[] vibrationVectors = modelSet.vibrations;
     Atom[] atoms = modelSet.atoms;
+    boolean vibs = (vibrationVectors != null && viewer.isVibrationOn());
     for (int i = bsRenderableAtoms.nextSetBit(0); i >= 0; i = bsRenderableAtoms.nextSetBit(i + 1)) {
       // note that this vibration business is not compatible with
       // PDB objects such as cartoons and traces, which 
       // use Cartesian coordinates, not screen coordinates
       Atom atom = atoms[i];
-      P3i screen = (vibrationVectors != null && atom.hasVibration() ? viewer
+      P3i screen = (vibs && atom.hasVibration() ? viewer
           .transformPtVib(atom, (Vibration) vibrationVectors[i])
           : viewer.transformPt(atom));
-      atom.screenX = screen.x;
-      atom.screenY = screen.y;
-      atom.screenZ = screen.z;
+      atom.sX = screen.x;
+      atom.sY = screen.y;
+      atom.sZ = screen.z;
       int d = Math.abs(atom.madAtom);
       if (d == Atom.MAD_GLOBAL)
         d = (int) (viewer.getFloat(T.atoms) * 2000);
-      atom.screenDiameter = (short) viewer.scaleToScreen(screen.z, d);
+      atom.sD = (short) viewer.scaleToScreen(screen.z, d);
     }
     if (viewer.getSlabEnabled()) {
       boolean slabByMolecule = viewer.getBoolean(T.slabbymolecule);
@@ -466,14 +467,14 @@ public class ShapeManager {
           if (!bsRenderableAtoms.get(pt))
             continue;
           for (; j < m.atomCount; j++, pt++)
-            if (gdata.isClippedZ(atoms[pt].screenZ
-                - (atoms[pt].screenDiameter >> 1)))
+            if (gdata.isClippedZ(atoms[pt].sZ
+                - (atoms[pt].sD >> 1)))
               break;
           if (j != m.atomCount) {
             pt = m.firstAtomIndex;
             for (int k = 0; k < m.atomCount; k++) {
               bsRenderableAtoms.clear(pt);
-              atoms[pt++].screenZ = 0;
+              atoms[pt++].sZ = 0;
             }
           }
         }
@@ -481,14 +482,14 @@ public class ShapeManager {
       for (int i = bsRenderableAtoms.nextSetBit(0); i >= 0; i = bsRenderableAtoms
           .nextSetBit(i + 1)) {
         Atom atom = atoms[i];
-        if (gdata.isClippedZ(atom.screenZ
-            - (slabByAtom ? atoms[i].screenDiameter >> 1 : 0))) {
+        if (gdata.isClippedZ(atom.sZ
+            - (slabByAtom ? atoms[i].sD >> 1 : 0))) {
           atom.setClickable(0);
           // note that in the case of navigation,
           // maxZ is set to Integer.MAX_VALUE.
-          int r = (slabByAtom ? -1 : 1) * atom.screenDiameter / 2;
-          if (atom.screenZ + r < minZ || atom.screenZ - r > maxZ
-              || !gdata.isInDisplayRange(atom.screenX, atom.screenY)) {
+          int r = (slabByAtom ? -1 : 1) * atom.sD / 2;
+          if (atom.sZ + r < minZ || atom.sZ - r > maxZ
+              || !gdata.isInDisplayRange(atom.sX, atom.sY)) {
             bsRenderableAtoms.clear(i);
           }
         }
@@ -504,14 +505,14 @@ public class ShapeManager {
     for (int i = bsRenderableAtoms.nextSetBit(0); i >= 0; i = bsRenderableAtoms
         .nextSetBit(i + 1)) {
       Atom atom = atoms[i];
-      if (atom.screenX < minX)
-        minX = atom.screenX;
-      if (atom.screenX > maxX)
-        maxX = atom.screenX;
-      if (atom.screenY < minY)
-        minY = atom.screenY;
-      if (atom.screenY > maxY)
-        maxY = atom.screenY;
+      if (atom.sX < minX)
+        minX = atom.sX;
+      if (atom.sX > maxX)
+        maxX = atom.sX;
+      if (atom.sY < minY)
+        minY = atom.sY;
+      if (atom.sY > maxY)
+        maxY = atom.sY;
     }
     navigationCrossHairMinMax[0] = minX;
     navigationCrossHairMinMax[1] = maxX;

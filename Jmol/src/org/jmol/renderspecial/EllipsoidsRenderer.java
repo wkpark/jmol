@@ -211,7 +211,7 @@ final public class EllipsoidsRenderer extends ShapeRenderer {
         colix = ellipsoid.colix;
       } else {
         atom = modelSet.atoms[ellipsoid.tensor.atomIndex1];
-        if (atom.screenZ <= 1 || !atom.isVisible(myVisibilityFlag))
+        if (atom.sZ <= 1 || !atom.isVisible(myVisibilityFlag))
           continue;
         colix = C.getColixInherited(ellipsoid.colix, atom.getColix());
       }

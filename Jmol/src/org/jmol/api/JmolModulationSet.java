@@ -1,20 +1,19 @@
 package org.jmol.api;
 
-import javajs.util.P3;
-import javajs.util.V3;
+import javajs.util.T3;
 
 public interface JmolModulationSet {
 
-  boolean isEnabled();
+  Object getModulation(String type, T3 t456);
 
   String getState();
 
-  int setModT(boolean isOn, int t);
+  boolean isEnabled();
 
-  void getModulation(float t, P3 pt);
-  
-  V3 getPrevSetting();
+  void setModTQ(boolean isOn, T3 qtOffset, boolean isQ, float scale, SymmetryInterface uc);
 
-  Object getModulationData(String type, float t);
+  float getScale();
+
+  void addTo(T3 a, float scale);
 
 }

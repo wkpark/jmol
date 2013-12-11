@@ -335,10 +335,9 @@ public class T {
 //public final static int quaternion   see mathfunc
   public final static int parallel     = flowCommand   | 36;
   public final static int plot         = scriptCommand | 37;
-  public final static int pop          = scriptCommand | 38 | noArgs; //internal only
   public final static int process      = flowCommand   | 39;
 //  public final static int prompt     see mathfunc
-  public final static int push         = scriptCommand | 40 | noArgs; //internal only
+//  public final static int push       see mathfunc  = scriptCommand | 40 | noArgs; //internal only
   public final static int quit         = scriptCommand | 41 | noArgs;
   public final static int ramachandran = scriptCommand | 42 | expression;
   public final static int redomove = scriptCommand | 43;
@@ -679,30 +678,31 @@ public class T {
 
   // xxx(a,b,c,d,e,...)
   
-  public final static int angle     = 1 | 0 << 9 | mathfunc;
-  public final static int array     = 2 | 0 << 9 | mathfunc;
+  public final static int angle            = 1 | 0 << 9 | mathfunc;
+  public final static int array            = 2 | 0 << 9 | mathfunc;
   public final static int axisangle        = 3 | 0 << 9 | mathfunc;
-  public final static int color     = 4 | 0 << 9 | mathfunc | intproperty | scriptCommand | deprecatedparam | settable;
+  public final static int color            = 4 | 0 << 9 | mathfunc | intproperty | scriptCommand | deprecatedparam | settable;
   public final static int compare          = 5 | 0 << 9 | mathfunc | scriptCommand;
-  public final static int connected = 6 | 0 << 9 | mathfunc;
-  public final static int data      = 7 | 0 << 9 | mathfunc | scriptCommand;
-  public final static int format    = 8 | 0 << 9 | mathfunc | mathproperty | strproperty | settable;
+  public final static int connected        = 6 | 0 << 9 | mathfunc;
+  public final static int data             = 7 | 0 << 9 | mathfunc | scriptCommand;
+  public final static int format           = 8 | 0 << 9 | mathfunc | mathproperty | strproperty | settable;
   public final static int function         = 9 | 0 << 9 | mathfunc | flowCommand;
   public final static int getproperty      = 10 | 0 << 9 | mathfunc | scriptCommand;
-  public final static int label     = 11 /* must be odd */| 0 << 9 | mathfunc | mathproperty | strproperty | settable | implicitStringCommand | shapeCommand | defaultON | deprecatedparam; 
-  public final static int helix     = 12 | 0 << 9 | mathfunc | predefinedset;
-  public final static int measure   = 13 | 0 << 9| mathfunc | shapeCommand | deprecatedparam | defaultON;
+  public final static int label            = 11 /* must be odd */| 0 << 9 | mathfunc | mathproperty | strproperty | settable | implicitStringCommand | shapeCommand | defaultON | deprecatedparam; 
+  public final static int helix            = 12 | 0 << 9 | mathfunc | predefinedset;
+  public final static int measure          = 13 | 0 << 9| mathfunc | shapeCommand | deprecatedparam | defaultON;
   public final static int now              = 14 | 0 << 9 | mathfunc;
-  public final static int plane     = 15 | 0 << 9 | mathfunc;
-  public final static int point     = 16 | 0 << 9 | mathfunc;
-  public final static int quaternion       = 17 | 0 << 9 | mathfunc | scriptCommand;
-  public final static int sort             = 18 | 0 << 9 | mathfunc | mathproperty;
-  public final static int count            = 19 | 0 << 9 | mathfunc | mathproperty;
-  public final static int within    = 20 | 0 << 9 | mathfunc;
-  public final static int write            = 21 | 0 << 9 | mathfunc | scriptCommand;
-  public final static int cache            = 22 | 0 << 9 | mathfunc | scriptCommand; // new in Jmol 13.1.2
-  public final static int tensor           = 23 | 0 << 9 | mathfunc | mathproperty;
-  public final static int modulation       = 24 | 0 << 9 | mathfunc | mathproperty | scriptCommand;
+  public final static int plane            = 15 | 0 << 9 | mathfunc;
+  public final static int point            = 16 | 0 << 9 | mathfunc;
+  public final static int pop              = 17 | 0 << 9 | mathfunc | mathproperty | scriptCommand | noArgs; //internal only;
+  public final static int quaternion       = 18 | 0 << 9 | mathfunc | scriptCommand;
+  public final static int sort             = 19 | 0 << 9 | mathfunc | mathproperty;
+  public final static int count            = 20 | 0 << 9 | mathfunc | mathproperty;
+  public final static int within           = 21 | 0 << 9 | mathfunc;
+  public final static int write            = 22 | 0 << 9 | mathfunc | scriptCommand;
+  public final static int cache            = 23 | 0 << 9 | mathfunc | scriptCommand; // new in Jmol 13.1.2
+  public final static int tensor           = 24 | 0 << 9 | mathfunc | mathproperty;
+  public final static int modulation       = 25 | 0 << 9 | mathfunc | mathproperty | scriptCommand;
   
   // xxx(a)
   
@@ -726,12 +726,13 @@ public class T {
   public final static int join         = 2 | 1 << 9 | mathfunc | mathproperty;
   public final static int mul          = 3 | 1 << 9 | mathfunc | mathproperty;
   public final static int mul3         = 4 | 1 << 9 | mathfunc | mathproperty;
-  public final static int split        = 5 | 1 << 9 | mathfunc | mathproperty;
-  public final static int sub          = 6 | 1 << 9 | mathfunc | mathproperty;
-  public final static int trim         = 7 | 1 << 9 | mathfunc | mathproperty;  
-  public final static int volume       = 8 | 1 << 9 | mathfunc | mathproperty | floatproperty;  
-  public final static int col          = 9 | 1 << 9 | mathfunc | mathproperty;
-  public final static int row         = 10 | 1 << 9 | mathfunc | mathproperty;
+  public final static int push         = 5 | 1 << 9 | mathfunc | mathproperty | scriptCommand | noArgs; //internal only;
+  public final static int split        = 6 | 1 << 9 | mathfunc | mathproperty;
+  public final static int sub          = 7 | 1 << 9 | mathfunc | mathproperty;
+  public final static int trim         = 8 | 1 << 9 | mathfunc | mathproperty;  
+  public final static int volume       = 9 | 1 << 9 | mathfunc | mathproperty | floatproperty;  
+  public final static int col         = 10 | 1 << 9 | mathfunc | mathproperty;
+  public final static int row         = 11 | 1 << 9 | mathfunc | mathproperty;
 
   // xxx(a,b)
   
@@ -859,13 +860,14 @@ public class T {
   public final static int loadatomdatatolerance          = floatparam | 19;  
   public final static int minbonddistance                = floatparam | 20;
   public final static int minimizationcriterion          = floatparam | 21;
-  public final static int mousedragfactor                = floatparam | 22;
-  public final static int mousewheelfactor               = floatparam | 23;
-  public final static int multiplebondradiusfactor       = floatparam | 24;
-  public final static int multiplebondspacing            = floatparam | 25;
-  public final static int navfps                         = floatparam | 26;
-  public final static int navigationdepth                = floatparam | 27;
-  public final static int navigationslab                 = floatparam | 28;
+  public final static int modulationscale                = floatparam | 22;
+  public final static int mousedragfactor                = floatparam | 23;
+  public final static int mousewheelfactor               = floatparam | 24;
+  public final static int multiplebondradiusfactor       = floatparam | 25;
+  public final static int multiplebondspacing            = floatparam | 26;
+  public final static int navfps                         = floatparam | 27;
+  public final static int navigationdepth                = floatparam | 28;
+  public final static int navigationslab                 = floatparam | 29;
   public final static int navigationspeed                = floatparam | 30;
   public final static int navx                           = floatparam | 32;
   public final static int navy                           = floatparam | 34;
@@ -1959,6 +1961,7 @@ public class T {
       "points",          null,
       "pointGroup",      T.t(pointgroup),
       "polymerLength",   T.t(polymerlength),
+      "pop",             T.t(pop),
       "previous",        T.t(prev),
       "prev",            null,
       "probe",           T.t(probe),
@@ -1967,6 +1970,7 @@ public class T {
       "protein",         T.t(protein),
       "psi",             T.t(psi),
       "purine",          T.t(purine),
+      "push",            T.t(push),
       "PyMOL",           T.t(pymol),
       "pyrimidine",      T.t(pyrimidine),
       "random",          T.t(random),
@@ -2273,6 +2277,7 @@ public class T {
       "loadAtomDataTolerance",                    T.t(loadatomdatatolerance),
       "minBondDistance",                          T.t(minbonddistance),
       "minimizationCriterion",                    T.t(minimizationcriterion),
+      "modulationScale",                          T.t(modulationscale),
       "mouseDragFactor",                          T.t(mousedragfactor),
       "mouseWheelFactor",                         T.t(mousewheelfactor),
       "navFPS",                                   T.t(navfps),

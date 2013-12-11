@@ -95,10 +95,10 @@ public class HalosRenderer extends ShapeRenderer {
       if (colixFill == 0 || !g3d.setColix(colixFill))
         return needTranslucent;      
     }
-    int z = atom.screenZ;
+    int z = atom.sZ;
     float d = mad;
     if (d < 0) { //unsized selection
-      d = atom.screenDiameter;
+      d = atom.sD;
       if (d == 0) {
         float ellipsemax = (atom.isShapeVisible(JC.SHAPE_ELLIPSOIDS) ? atom.getADPMinMax(true) : 0);
         if (ellipsemax > 0)
@@ -126,7 +126,7 @@ public class HalosRenderer extends ShapeRenderer {
     if (d < 1)
       return false;
     g3d.drawFilledCircle(colix, colixFill, (int) Math.floor(d),
-        atom.screenX, atom.screenY, atom.screenZ);
+        atom.sX, atom.sY, atom.sZ);
     return needTranslucent;
   }  
 }

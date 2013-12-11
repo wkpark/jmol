@@ -1,6 +1,9 @@
 package org.jmol.util;
 
+import java.util.Hashtable;
+
 import javajs.util.P3;
+import javajs.util.T3;
 
 /**
  * A class to allow for more complex vibrations and associated phenomena, such
@@ -24,8 +27,11 @@ public class Modulation {
 
   private char axis;
   private final int type;
+  private P3 params;
 
   private String utens;
+
+  private final static String typeNames = "DF DS OF OC UF";
 
   public static final int TYPE_DISP_FOURIER = 0;
   public static final int TYPE_DISP_SAWTOOTH = 1;
@@ -51,6 +57,7 @@ public class Modulation {
     this.axis = axis;
     this.type = type;
     this.utens = utens;
+    this.params = params;
     this.qCoefs = qCoefs;
     switch (type) {
     case TYPE_DISP_FOURIER:
@@ -117,18 +124,17 @@ public class Modulation {
    * (n m) is an array of Fourier number coefficients, such as (1 0), (1 -1), or
    * (0 2)
    * 
-   * Offset here is only for d=1 case.
-   * 
-   * 
+   * In Jmol we precalculate Gamma_I^-1(X - S_I) as x456, 
+   * but we still have to add in Gamma_I^-1(t). 
    * 
    * @param ms
-   * @param offset only for 1D
+   * @param x456  -- Vector of x4, x5 and x6
    * 
    * 
    */
 
-  void apply(ModulationSet ms, double offset) {
-    double x = qCoefs.dot(ms.x456) + qCoefs.x * offset;
+  void apply(ModulationSet ms, T3 x456) {
+    double x = qCoefs.dot(x456);
     double v = 0;
     //if (type == TYPE_OCC_CRENEL)
     //delta = 0;
@@ -267,6 +273,16 @@ public class Modulation {
   private boolean range(double x4) {
     return (left < right ? left <= x4 && x4 <= right : left <= x4
         || x4 <= right);
+  }
+
+  public Hashtable<String, Object> getInfo() {
+    Hashtable<String, Object> info = new Hashtable<String, Object>();
+    info.put("type", typeNames.substring(type*3, type*3 + 2).trim() + axis);
+    info.put("params", params);
+    info.put("qCoefs", qCoefs);
+    if (utens != null)
+      info.put("Utens",utens);
+    return info;
   }
 
 }

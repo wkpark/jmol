@@ -522,12 +522,9 @@ abstract class OutputManager {
    * @return null (canceled) or a message starting with OK or an error message
    */
   protected String handleOutputToFile(Map<String, Object> params, boolean doCheck) {
-    /*
-     * 
-     * org.jmol.image.AviCreator does create AVI animations from JPEGs
-     * but these aren't read by standard readers, so that's pretty much useless.
-     * 
-     */
+
+    // org.jmol.image.AviCreator does create AVI animations from JPEGs
+    //but these aren't read by standard readers, so that's pretty much useless.
 
     String sret = null;
     String fileName = (String) params.get("fileName");

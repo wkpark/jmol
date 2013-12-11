@@ -213,7 +213,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
           || modelSet.isAtomHidden(leadAtomIndices[i]) || bsDeleted != null && bsDeleted.get(leadAtomIndices[i]))
         continue;
       Atom lead = modelSet.atoms[leadAtomIndices[i]];
-      if (!g3d.isInDisplayRange(lead.screenX, lead.screenY))
+      if (!g3d.isInDisplayRange(lead.sX, lead.sY))
         continue;
       bsVisible.set(i);
       haveVisible = true;
@@ -295,9 +295,8 @@ abstract class BioShapeRenderer extends MeshRenderer {
 
   private void calc1Screen(P3 center, V3 vector, short mad,
                            float offset_1000, P3i screen) {
-    pointT.setT(vector);
     float scale = mad * offset_1000;
-    pointT.scaleAdd(scale, center);
+    pointT.scaleAdd2(scale, center, vector);
     viewer.transformPtScr(pointT, screen);
   }
 
@@ -353,7 +352,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
         madEnd = (short) (((mads[iNext] == 0 ? madMid : mads[iNext]) + madMid) >> 1);
     }
     diameterBeg = (int) viewer.scaleToScreen(controlPointScreens[i].z, madBeg);
-    diameterMid = (int) viewer.scaleToScreen(monomers[i].getLeadAtom().screenZ,
+    diameterMid = (int) viewer.scaleToScreen(monomers[i].getLeadAtom().sZ,
         madMid);
     diameterEnd = (int) viewer.scaleToScreen(controlPointScreens[iNext].z, madEnd);
     doCap0 = (i == iPrev || thisTypeOnly

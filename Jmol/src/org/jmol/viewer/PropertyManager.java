@@ -61,7 +61,6 @@ import javajs.util.M3;
 import javajs.util.P3;
 import org.jmol.util.Quaternion;
 import org.jmol.util.Txt;
-import javajs.util.V3;
 
 /**
  * 
@@ -1209,9 +1208,8 @@ public class PropertyManager implements JmolPropertyManager {
     info.put("y", Float.valueOf(atom.y));
     info.put("z", Float.valueOf(atom.z));
     info.put("coord", P3.newP(atom));
-    if (ms.vibrations != null && ms.vibrations[i] != null) {
-      info.put("vibVector", V3.newV(ms.vibrations[i]));
-    }
+    if (ms.vibrations != null && ms.vibrations[i] != null)
+      ms.vibrations[i].getInfo(info);
     info.put("bondCount", Integer.valueOf(atom.getCovalentBondCount()));
     info.put("radius", Float.valueOf((float) (atom.getRasMolRadius() / 120.0)));
     info.put("model", atom.getModelNumberForLabel());

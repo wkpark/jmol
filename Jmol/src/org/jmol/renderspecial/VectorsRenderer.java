@@ -121,8 +121,8 @@ public class VectorsRenderer extends ShapeRenderer {
   
   private void renderVector(Atom atom) {
     if (doShaft)
-      g3d.fillCylinderScreen(GData.ENDCAPS_OPEN, diameter, atom.screenX,
-          atom.screenY, atom.screenZ, screenArrowHead.x, screenArrowHead.y,
+      g3d.fillCylinderScreen(GData.ENDCAPS_OPEN, diameter, atom.sX,
+          atom.sY, atom.sZ, screenArrowHead.x, screenArrowHead.y,
           screenArrowHead.z);
     g3d.fillConeScreen(GData.ENDCAPS_FLAT, headWidthPixels, screenArrowHead,
         screenVectorEnd, false);

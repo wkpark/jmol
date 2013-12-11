@@ -1102,8 +1102,8 @@ abstract public class AtomCollection {
    */
   boolean isCursorOnTopOf(Atom contender, int x, int y, int radius,
                           Atom champion) {
-    return contender.screenZ > 1 && !g3d.isClippedZ(contender.screenZ)
-        && g3d.isInDisplayRange(contender.screenX, contender.screenY)
+    return contender.sZ > 1 && !g3d.isClippedZ(contender.sZ)
+        && g3d.isInDisplayRange(contender.sX, contender.sY)
         && contender.isCursorOnTopOf(x, y, radius, champion);
   }
 
@@ -1117,7 +1117,7 @@ abstract public class AtomCollection {
     for (int i = atomCount; --i >= 0;) {
       Atom atom = atoms[i];
       if (bsModels.get(atom.modelIndex) && atom.isVisible(0) 
-          && rect.contains(atom.screenX, atom.screenY))
+          && rect.contains(atom.sX, atom.sY))
         bsFoundRectangle.set(i);
     }
     return bsFoundRectangle;
@@ -2542,7 +2542,7 @@ abstract public class AtomCollection {
     return bs;
   }
 
-  BS bsModulated;
+  public BS bsModulated;
   
   public boolean isModulated(int i) {
     return bsModulated != null && bsModulated.get(i);

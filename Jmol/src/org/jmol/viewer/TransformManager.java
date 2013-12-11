@@ -31,6 +31,8 @@ import org.jmol.java.BS;
 import org.jmol.script.T;
 import org.jmol.thread.JmolThread;
 import org.jmol.util.Escape;
+import org.jmol.util.Point3fi;
+
 import javajs.util.List;
 import javajs.util.SB;
 
@@ -1350,7 +1352,7 @@ public class TransformManager {
   protected final P3 point3fScreenTemp = new P3();
   protected final P3i point3iScreenTemp = new P3i();
 
-  private final P3 ptVibTemp = new P3();
+  private final Point3fi ptVibTemp = new Point3fi();
 
   public boolean navigating = false;
   protected final static int MODE_STANDARD = 0;
@@ -1491,28 +1493,24 @@ public class TransformManager {
       screens[i].setT(transformPoint(angstroms[i]));
   }
 
-  void transformPointScr(P3 pointAngstroms, P3i pointScreen) {
-    pointScreen.setT(transformPoint(pointAngstroms));
+  void transformPointScr(P3 ptXYZ, P3i pointScreen) {
+    pointScreen.setT(transformPoint(ptXYZ));
   }
 
-  void transformPointNoClip2(P3 pointAngstroms, P3 pointScreen) {
-    pointScreen.setT(transformPointNoClip(pointAngstroms));
+  void transformPointNoClip(P3 ptXYZ, P3 pointScreen) {
+    getTempScreenPt(ptXYZ, null);
+    pointScreen.setT(point3fScreenTemp);
   }
 
   /**
    * CAUTION! returns a POINTER TO A TEMPORARY VARIABLE
    * 
-   * @param pointAngstroms
+   * @param ptXYZ
    * @return POINTER TO point3iScreenTemp
    */
-  synchronized P3i transformPoint(P3 pointAngstroms) {
-    if (pointAngstroms.z == Float.MAX_VALUE
-        || pointAngstroms.z == -Float.MAX_VALUE)
-      return transformScreenPoint(pointAngstroms);
-    getTemporaryScreenPoint(pointAngstroms, (internalSlab ? pointAngstroms : null));
-    //if (!(pointAngstroms instanceof Atom))
-      //System.out.println("pt=" + pointAngstroms + " " + point3iScreenTemp + " " + Thread.currentThread());
-    return point3iScreenTemp;
+  synchronized P3i transformPoint(P3 ptXYZ) {
+    return (ptXYZ.z == Float.MAX_VALUE || ptXYZ.z == -Float.MAX_VALUE ? transformScreenPoint(ptXYZ)
+        : getTempScreenPt(ptXYZ, internalSlab ? ptXYZ : null));
   }
 
   private final P3 pointTsp = new P3();
@@ -1537,37 +1535,29 @@ public class TransformManager {
   }
 
   /**
-   * CAUTION! returns a POINTER TO A TEMPORARY VARIABLE
-   * 
-   * @param pointAngstroms
-   * @return POINTER TO point3iScreenTemp
-   */
-  synchronized P3 transformPointNoClip(P3 pointAngstroms) {
-    getTemporaryScreenPoint(pointAngstroms, null);
-    return point3fScreenTemp;
-  }
-
-  /**
-   * @param pointAngstroms
+   * @param ptXYZ
    * @param v
    * @return POINTER TO TEMPORARY VARIABLE (caution!) point3iScreenTemp
    */
-  P3i transformPointVib(P3 pointAngstroms, Vibration v) {
-    ptVibTemp.setT(pointAngstroms);
-    if (vibrationOn && v != null)
-      v.setTempPoint(ptVibTemp, vibrationT, vibrationScale);
-    getTemporaryScreenPoint(ptVibTemp, pointAngstroms);
-    return point3iScreenTemp;
+  P3i transformPointVib(P3 ptXYZ, Vibration v) {
+    ptVibTemp.setT(ptXYZ);
+    return getTempScreenPt(getVibrationPoint(v, ptVibTemp), ptXYZ);
   }
 
-  public void transformPoint2(P3 pointAngstroms, P3 screen) {
-    getTemporaryScreenPoint(pointAngstroms, pointAngstroms);
+  public Point3fi getVibrationPoint(Vibration v, Point3fi pt) {
+    v.setTempPoint(pt, vibrationT, vibrationScale, viewer.global.modulationScale);
+    return pt; 
+  }
+
+
+  public void transformPoint2(P3 ptXYZ, P3 screen) {
+    getTempScreenPt(ptXYZ, ptXYZ);
     screen.setT(point3fScreenTemp);
   }
 
   void transformVector(V3 vectorAngstroms, V3 vectorTransformed) {
     //dots renderer, geodesic only
-    matrixTransform.transformV2(vectorAngstroms, vectorTransformed);
+    matrixTransform.rotate(vectorAngstroms, vectorTransformed);
   }
 
   final protected P3 untransformedPoint = new P3();
@@ -2068,7 +2058,9 @@ public class TransformManager {
   float vibrationPeriod;
   public int vibrationPeriodMs;
   private float vibrationScale;
-  private double vibrationT;
+  private P3 vibrationT = new P3(); 
+  // only vibrationT.x is used for vibration; modulation options not implemented
+  // but they could be implemented as a "slice"
 
   void setVibrationScale(float scale) {
     vibrationScale = scale;
@@ -2100,7 +2092,7 @@ public class TransformManager {
   }
 
   public void setVibrationT(float t) {
-    vibrationT = t;    
+    vibrationT.x = t;    
     if (vibrationScale == 0)
       vibrationScale = viewer.global.vibrationScale;
   }
@@ -2428,13 +2420,14 @@ public class TransformManager {
   /**
    * adjusts the temporary point for perspective and offsets
    * 
-   * @param pointAngstroms
-   * @param pt0
+   * @param ptXYZ
+   * @param ptRef
+   * @return  temporary point!!!
    * 
    */
-  protected void getTemporaryScreenPoint(P3 pointAngstroms, P3 pt0) {
+  protected P3i getTempScreenPt(P3 ptXYZ, P3 ptRef) {
 
-    matrixTransform.transform2(pointAngstroms, point3fScreenTemp);
+    matrixTransform.transform2(ptXYZ, point3fScreenTemp);
 
     // fixedRotation point is at the origin initially
 
@@ -2500,15 +2493,15 @@ public class TransformManager {
     point3iScreenTemp.set((int) point3fScreenTemp.x, (int) point3fScreenTemp.y,
         (int) point3fScreenTemp.z);
 
-    if (pt0 != null
+    if (ptRef != null
         && (slabPlane != null
-            && pt0.x * slabPlane.x + pt0.y * slabPlane.y + pt0.z * slabPlane.z
+            && ptRef.x * slabPlane.x + ptRef.y * slabPlane.y + ptRef.z * slabPlane.z
                 + slabPlane.w > 0 
                 || depthPlane != null
-            && pt0.x * depthPlane.x + pt0.y * depthPlane.y + pt0.z
+            && ptRef.x * depthPlane.x + ptRef.y * depthPlane.y + ptRef.z
                 * depthPlane.z + depthPlane.w < 0))
       point3iScreenTemp.z = 1;
-
+    return point3iScreenTemp;
   }
 
   public void unTransformPoint(P3 screenPt, P3 coordPt) {

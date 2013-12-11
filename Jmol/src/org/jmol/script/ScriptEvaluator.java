@@ -63,6 +63,8 @@ import org.jmol.util.GData;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
+import org.jmol.util.SimpleUnitCell;
+
 import javajs.util.PT;
 import org.jmol.util.Parser;
 
@@ -5384,9 +5386,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         case T.cache:
           cache();
           break;
-        case T.capture:
-          capture();
-          break;
         case T.cd:
           cd();
           break;
@@ -5605,6 +5604,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           zoom(true);
           break;
         case T.calculate:
+        case T.capture:
         case T.compare:
         case T.configuration:
         case T.mapProperty:
@@ -5652,102 +5652,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     default:
       invArg();
     }
-  }
-
-  private void capture() throws ScriptException {
-    // capture "filename"
-    // capture "filename" ROTATE axis degrees // y 5 assumed; axis and degrees optional
-    // capture "filename" SPIN axis  // y assumed; axis optional
-    // capture off/on
-    // capture "" or just capture   -- end
-    if (!chk && !viewer.allowCapture()) {
-      showString("Cannot capture on this platform");
-      return;
-    }
-    int fps = viewer.getInt(T.animationfps);
-    int mode = 0;
-    String fileName = "";
-    Map<String, Object> params = viewer.captureParams;
-    boolean looping = !viewer.getAnimationReplayMode().name().equals("ONCE");
-    int tok = tokAt(1);
-    String sfps = "";
-    switch (tok) {
-    case T.nada:
-      mode = T.end;
-      break;
-    case T.string:
-      fileName = optParameterAsString(1);
-      if (fileName.length() == 0) {
-        mode = T.end;
-        break;
-      }
-      if (!fileName.endsWith(".gif"))
-        fileName += ".gif";
-      String s = null;
-      String axis = "y";
-      int i = 2;
-      switch (tokAt(i)) {
-      case T.rock:
-        looping = true;
-        i = 3;
-        axis = (tokAt(3) == T.integer ? "y" : optParameterAsString(i++)
-            .toLowerCase());
-        int n = (tokAt(i) == T.nada ? 5 : intParameter(i++));
-        s = "; rotate Y 10 10;delay 2.0; rotate Y -10 -10; delay 2.0;rotate Y -10 -10; delay 2.0;rotate Y 10 10;delay 2.0";
-        s = javajs.util.PT.simpleReplace(s, "10", "" + n);
-        break;
-      case T.spin:
-        looping = true;
-        i = 3;
-        axis = optParameterAsString(i).toLowerCase();
-        if (axis.length() > 0)
-          i++;
-        s = "; rotate Y 360 30;delay 15.0;";
-        if (tokAt(i) == T.integer)
-          sfps = " " + (fps = intParameter(i++));
-        break;
-      case T.integer:
-        fps = intParameter(2);
-        break;
-      }
-      if (s != null) {
-        if (!chk)
-          viewer.setNavigationMode(false);
-        if (axis == "" || "xyz".indexOf(axis) < 0)
-          axis = "y";
-        s = javajs.util.PT.simpleReplace(s, "Y", axis);
-        s = "capture " + Escape.eS(fileName) + sfps + s + ";capture;";
-        script(0, null, s);
-        return;
-      }
-      if (params != null)
-        params = new Hashtable<String, Object>();
-      mode = T.movie;
-      params = new Hashtable<String, Object>();
-      if (!looping)
-        showString(GT.o(GT._("Note: Enable looping using {0}"),
-            new Object[] { "ANIMATION MODE LOOP" }));
-      showString(GT.o(GT._("Animation delay based on: {0}"),
-          new Object[] { "ANIMATION FPS " + fps }));
-      params.put("captureFps", Integer.valueOf(fps));
-      break;
-    case T.cancel:
-    case T.on:
-    case T.off:
-      checkLength(2);
-      mode = tok;
-      break;
-    default:
-      invArg();
-    }
-    if (chk || params == null)
-      return;
-    params.put("type", "GIF");
-    params.put("fileName", fileName);
-    params.put("quality", Integer.valueOf(-1));
-    params.put("captureMode", Integer.valueOf(mode));
-    params.put("captureLooping", looping ? Boolean.TRUE : Boolean.FALSE);
-    Logger.info(viewer.processWriteOrCapture(params));
   }
 
   public void setCursorWait(boolean TF) {
@@ -9203,7 +9107,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         : null);
   }
 
-  private void script(int tok, String filename, String theScript) throws ScriptException {
+  public void script(int tok, String filename, String theScript) throws ScriptException {
     boolean loadCheck = true;
     boolean isCheck = false;
     boolean doStep = false;
@@ -9531,7 +9435,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     BS bs;
     int addRemove = 0;
     boolean isGroup = false;
-    if (getToken(1).intValue == 0) {
+    if (getToken(1).intValue == 0 && theTok != T.off) {
       Object v = parameterExpressionToken(0).value;
       if (!(v instanceof BS))
         invArg();
@@ -9539,6 +9443,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       bs = (BS) v;
     } else {
       int tok = tokAt(i);
+      switch (tok) {
+      case T.on:
+      case T.off:
+        if (!chk)
+          viewer.setSelectionHalos(tok == T.on);
+        tok = tokAt(++i);
+        break;
+      }
       switch (tok) {
       case T.add:
       case T.remove:
@@ -10403,7 +10315,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       period = floatParameter(1);
       break;
     case T.scale:
-      setFloatProperty("vibrationScale", floatParameterRange(2, -10, 10));
+      setFloatProperty("vibrationScale", floatParameterRange(2, -100, 100));
       return;
     case T.period:
       setFloatProperty("vibrationPeriod", floatParameter(2));
@@ -11239,10 +11151,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           pt = (P3) var.value;
         else {
           int ijk = var.asInt();
-          if (ijk < 555)
-            pt = new P3();
-          else
-            pt = viewer.getSymmetry().ijkToPoint3f(ijk + 111);
+          pt = new P3();
+          if (ijk >= 555)
+            SimpleUnitCell.ijkToPoint3f(ijk + 111, pt, 0);
         }
         if (!chk)
           viewer.setDefaultLattice(pt);
@@ -12075,7 +11986,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     boolean settingProperty = false;
     boolean isExpression = false;
     boolean settingData = (key.startsWith("property_"));
-    SV t = (settingData ? null : getContextVariableAsVariable(key));
+    boolean isNull = key.equals("all");
+    SV t = (settingData || isNull ? null : getContextVariableAsVariable(key));
     boolean isUserVariable = (t != null);
     if (pt > 0 && tokAt(pt - 1) == T.expressionBegin) {
       bs = atomExpressionAt(pt - 1);
@@ -12100,6 +12012,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
     List<SV> v = (List<SV>) parameterExpression(pt, ptMax, key, true,
         true, -1, isArrayItem, null, null);
+    if (isNull)
+      return;
     int nv = v.size();
     if (nv == 0 || !isArrayItem && nv > 1 || isArrayItem
         && (nv < 3 || nv % 2 != 1))

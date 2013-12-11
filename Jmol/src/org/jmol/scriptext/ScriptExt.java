@@ -134,6 +134,9 @@ public class ScriptExt implements JmolScriptExtension {
     case T.calculate:
       calculate();
       break;
+    case T.capture:
+      capture();
+      break;
     case T.compare:
       compare();
       break;
@@ -6099,30 +6102,51 @@ public class ScriptExt implements JmolScriptExtension {
   }
 
   private void modulation() throws ScriptException {
-    boolean mod = false;
+    P3 qtOffset = null;
+    int frameN = Integer.MAX_VALUE;
+    boolean mod = true;
+    boolean isQ = false;
     switch (getToken(1).tok) {
-    case T.on:
-      mod = true;
-      //$FALL-THROUGH$
     case T.off:
-      if (!chk)
-        viewer.setModulation(mod, null, Integer.MAX_VALUE, false);
+      mod = false;
+      //$FALL-THROUGH$
+    case T.on:
+      break;
+    case T.leftbrace:
+    case T.point3f:
+      qtOffset = eval.getPoint3f(1, false);
+      break;
+    case T.decimal:
+      float t1 = floatParameter(1);
+      qtOffset = P3.new3(t1, t1, t1);
       break;
     case T.integer:
-      if (!chk)
-        viewer.setModulation(true, new int[] { intParameter(1) },
-            Integer.MAX_VALUE, false);
+      int t = intParameter(1);
+      qtOffset = P3.new3(t, t, t);
+      isQ = true;
       break;
     case T.fps:
+      float f = floatParameter(2);
       if (!chk)
-        viewer.setModulationFps(floatParameter(2));
-      break;
+        viewer.setModulationFps(f);
+      return;
+    case T.scale:
+      float scale = floatParameter(2);
+      if (!chk)
+        viewer.setFloatProperty("modulationScale", scale);
+      return;
     case T.play:
-      if (!chk)
-        viewer.setModulation(true, new int[] { intParameter(2) },
-            intParameter(3), false);
+      int t0 = intParameter(2);
+      frameN = intParameter(3);
+      qtOffset = P3.new3(t0, t0, t0);
+      isQ = true;
       break;
+    default:
+      invArg();
     }
+    if (!chk)
+      viewer.setModulation(mod, qtOffset, isQ, frameN, false);
+
   }
 
   private BS setContactBitSets(BS bsA, BS bsB, boolean localOnly,
@@ -7037,6 +7061,8 @@ public class ScriptExt implements JmolScriptExtension {
     case T.mul:
     case T.mul3:
     case T.sub:
+    case T.push:
+    case T.pop:
       return evaluateList(mp, op.intValue, args);
     case T.array:
     case T.leftsquare:
@@ -7130,12 +7156,14 @@ public class ScriptExt implements JmolScriptExtension {
 
   private boolean evaluateModulation(ScriptMathProcessor mp, SV[] args) throws ScriptException {
     String type = "D";
-    float t = 0;
+    float t = Float.NaN;
+    P3 t456 = null;
+    int pt = -1;
     switch (args.length) {
     case 0:
       break;
     case 1:
-      t = SV.fValue(args[0]);
+      pt = 0;
       break;
     case 2:
       type = SV.sValue(args[0]).toUpperCase();
@@ -7144,8 +7172,16 @@ public class ScriptExt implements JmolScriptExtension {
     default:
       return false;
     }
+    if (pt >= 0) {
+      if (args[pt].tok == T.point3f)
+        t456 = (P3) args[pt].value;
+      else
+        t = SV.fValue(args[pt]);
+    }
+    if (t456 == null && t < 1e6)
+      t456 = P3.new3(t,  t,  t);
     BS bs = SV.getBitSet(mp.getX(), false);
-    return mp.addXList(viewer.getModulationList(bs, type, t));
+    return mp.addXList(viewer.getModulationList(bs, type, t456));
   }
 
   private boolean evaluateTensor(ScriptMathProcessor mp, SV[] args) throws ScriptException {
@@ -8161,18 +8197,44 @@ public class ScriptExt implements JmolScriptExtension {
     return mp.addXStr("");
   }
 
+  /**
+   * array.add(x)
+   * array.add(sep, x)
+   * array.sub(x)
+   * array.mul(x)
+   * array.mul3(x)
+   * array.div(x)
+   * array.push()
+   * array.pop()
+   * 
+   * @param mp
+   * @param tok
+   * @param args
+   * @return T/F
+   * @throws ScriptException
+   */
   private boolean evaluateList(ScriptMathProcessor mp, 
                                int tok, SV[] args)
       throws ScriptException {
-    if (args.length != 1
-        && !(tok == T.add && (args.length == 0 || args.length == 2)))
-      return false;
+    int len = args.length;
     SV x1 = mp.getX();
     SV x2;
-    int len;
+    switch (tok) {
+    case T.push:
+      return (len == 1 && mp.addXVar(x1.pushPop(args[0])));
+    case T.pop:
+      return (len == 0 && mp.addXVar(x1.pushPop(null)));
+    case T.add:
+      if (len != 1 && len != 2)
+        return false;
+      break;
+     default:
+       if (len != 1)
+         return false;
+    }
     String[] sList1 = null, sList2 = null, sList3 = null;
 
-    if (args.length == 2) {
+    if (len == 2) {
       // [xxxx].add("\t", [...])
       int itab = (args[0].tok == T.string ? 0 : 1);
       String tab = SV.sValue(args[itab]);
@@ -8187,7 +8249,7 @@ public class ScriptExt implements JmolScriptExtension {
             + (i >= sList2.length ? "" : sList2[i]);
       return mp.addXAS(sList3);
     }
-    x2 = (args.length == 0 ? SV.newV(T.all, "all") : args[0]);
+    x2 = (len == 0 ? SV.newV(T.all, "all") : args[0]);
     boolean isAll = (x2.tok == T.all);
     if (x1.tok != T.varray && x1.tok != T.string)
       return mp.binaryOp(opTokenFor(tok), x1, x2);
@@ -9280,5 +9342,108 @@ public class ScriptExt implements JmolScriptExtension {
     }
     return "NaN";
   }
+
+  private void capture() throws ScriptException {
+    // capture "filename"
+    // capture "filename" ROTATE axis degrees // y 5 assumed; axis and degrees optional
+    // capture "filename" SPIN axis  // y assumed; axis optional
+    // capture off/on
+    // capture "" or just capture   -- end
+    if (!chk && !viewer.allowCapture()) {
+      showString("Cannot capture on this platform");
+      return;
+    }
+    int fps = viewer.getInt(T.animationfps);
+    float endTime = 10; // ten seconds by default
+    int mode = 0;
+    String fileName = "";
+    Map<String, Object> params = viewer.captureParams;
+    boolean looping = !viewer.getAnimationReplayMode().name().equals("ONCE");
+    int tok = tokAt(1);
+    String sfps = "";
+    switch (tok) {
+    case T.nada:
+      mode = T.end;
+      break;
+    case T.string:
+      fileName = eval.optParameterAsString(1);
+      if (fileName.length() == 0) {
+        mode = T.end;
+        break;
+      }
+      if (!fileName.endsWith(".gif"))
+        fileName += ".gif";
+      String s = null;
+      String axis = "y";
+      int i = 2;
+      switch (tokAt(i)) {
+      case T.rock:
+        looping = true;
+        i = 3;
+        axis = (tokAt(3) == T.integer ? "y" : eval.optParameterAsString(i++)
+            .toLowerCase());
+        int n = (tokAt(i) == T.nada ? 5 : intParameter(i++));
+        s = "; rotate Y 10 10;delay 2.0; rotate Y -10 -10; delay 2.0;rotate Y -10 -10; delay 2.0;rotate Y 10 10;delay 2.0";
+        s = javajs.util.PT.simpleReplace(s, "10", "" + n);
+        break;
+      case T.spin:
+        looping = true;
+        i = 3;
+        axis = eval.optParameterAsString(i).toLowerCase();
+        if (axis.length() > 0)
+          i++;
+        s = "; rotate Y 360 30;delay 15.0;";
+        if (tokAt(i) == T.integer)
+          sfps = " " + (fps = intParameter(i++));
+        break;
+      case T.decimal:
+        endTime = floatParameter(2);
+        break;
+      case T.integer:
+        fps = intParameter(2);
+        break;
+      }
+      if (s != null) {
+        if (!chk)
+          viewer.setNavigationMode(false);
+        if (axis == "" || "xyz".indexOf(axis) < 0)
+          axis = "y";
+        s = javajs.util.PT.simpleReplace(s, "Y", axis);
+        s = "capture " + Escape.eS(fileName) + sfps + s + ";capture;";
+        eval.script(0, null, s);
+        return;
+      }
+      if (params != null)
+        params = new Hashtable<String, Object>();
+      mode = T.movie;
+      params = new Hashtable<String, Object>();
+      if (!looping)
+        showString(GT.o(GT._("Note: Enable looping using {0}"),
+            new Object[] { "ANIMATION MODE LOOP" }));
+      showString(GT.o(GT._("Animation delay based on: {0}"),
+          new Object[] { "ANIMATION FPS " + fps }));
+      params.put("captureFps", Integer.valueOf(fps));
+      break;
+    case T.cancel:
+    case T.on:
+    case T.off:
+      checkLength(2);
+      mode = tok;
+      break;
+    default:
+      invArg();
+    }
+    if (chk || params == null)
+      return;
+    params.put("type", "GIF");
+    params.put("fileName", fileName);
+    params.put("quality", Integer.valueOf(-1));
+    params.put("endTime", Long.valueOf(System.currentTimeMillis() + (long)(endTime * 1000)));
+    params.put("captureMode", Integer.valueOf(mode));
+    params.put("captureLooping", looping ? Boolean.TRUE : Boolean.FALSE);
+    String msg = viewer.processWriteOrCapture(params);
+    Logger.info(msg);
+  }
+
 
 }

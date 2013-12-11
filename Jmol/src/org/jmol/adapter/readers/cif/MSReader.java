@@ -14,7 +14,6 @@ import javajs.util.V3;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.MSInterface;
-import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Modulation;
@@ -194,7 +193,6 @@ public class MSReader implements MSInterface {
   }
 
   private M3 q123;
-  private double[] qlen;
   private boolean haveOccupancy;
   private Atom[] atoms;
 
@@ -219,7 +217,6 @@ public class MSReader implements MSInterface {
     // along with their lengths as an array.
 
     q123 = new M3();
-    qlen = new double[modDim];
     qs = null;
 
     // we should have W_1, W_2, W_3 up to the modulation dimension
@@ -234,7 +231,6 @@ public class MSReader implements MSInterface {
       if (i == 0)
         q1 = P3.newP(pt);
       q123.setRowV(i, pt);
-      qlen[i] = pt.length();
     }
 
     // q1Norm is used specifically for occupancy modulation, where dim = 1 only
@@ -550,15 +546,15 @@ public class MSReader implements MSInterface {
           + cr.symmetry.getSpaceGroupXyz(iop, false) + " " + a.bsSymmetry);
     }
 
-    // TODO: subsystem matrices are not implemeneted yet.
+    // TODO: subsystem matrices are not implemented yet.
     M4 q123w = M4.newMV(q123, new V3());
     setSubsystemMatrix(a.atomName, q123w);
 
     // The magic happens here.
 
-    ModulationSet ms = new ModulationSet(a.index + " " + a.atomName,
-        P3.newP(a), modDim, list, gammaE, gammaIS, q123w, qlen);
-    ms.calculate(0);
+    ModulationSet ms = new ModulationSet().set(a.index + " " + a.atomName,
+        P3.newP(a), modDim, list, gammaE, gammaIS, q123w, iop);
+    ms.calculate(null, false);
 
     // ms parameter values are used to set occupancies, 
     // vibrations, and anisotropy tensors.
@@ -624,7 +620,6 @@ public class MSReader implements MSInterface {
     //    a.add(ms);
     //  ms.setModT(true, Integer.MAX_VALUE);
     // }
-    cr.symmetry.toCartesian(ms, true);
     //System.out.println("a.vib(xyz)=" + a.vib);
   }
 

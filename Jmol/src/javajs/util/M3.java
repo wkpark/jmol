@@ -887,6 +887,13 @@ public class M3 implements Serializable {
         * t.z, m20 * t.x + m21 * t.y + m22 * t.z);
   }
 
+  public void transformAdd(T3 t, float scale, T3 t2) {
+    t2.x += scale * (m00 * t.x + m01 * t.y + m02 * t.z); 
+    t2.y += scale * (m10 * t.x + m11 * t.y + m12 * t.z);
+    t2.z += scale * (m20 * t.x + m21 * t.y + m22 * t.z);
+  }
+
+
   /**
    * Sets 9 values
    * 

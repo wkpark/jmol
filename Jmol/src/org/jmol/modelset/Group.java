@@ -561,7 +561,7 @@ public class Group {
   }
 
   private void checkMinZ(Atom atom, int[] minZ) {
-      int z = atom.screenZ - atom.screenDiameter / 2 - 2;
+      int z = atom.sZ - atom.sD / 2 - 2;
       if (z < minZ[0])
         minZ[0] = Math.max(1, z);
   }

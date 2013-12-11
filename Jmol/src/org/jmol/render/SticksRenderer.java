@@ -146,21 +146,21 @@ public class SticksRenderer extends FontLineShapeRenderer {
     }
     if (!isPass2
         && (!a.isInFrame() || !b.isInFrame()
-            || !g3d.isInDisplayRange(a.screenX, a.screenY)
-            || !g3d.isInDisplayRange(b.screenX, b.screenY)
+            || !g3d.isInDisplayRange(a.sX, a.sY)
+            || !g3d.isInDisplayRange(b.sX, b.sY)
             || modelSet.isAtomHidden(a.getIndex()) || modelSet
             .isAtomHidden(b.getIndex())))
       return false;
 
     if (slabbing) {
-      if (g3d.isClippedZ(a.screenZ) && g3d.isClippedZ(b.screenZ))
+      if (g3d.isClippedZ(a.sZ) && g3d.isClippedZ(b.sZ))
         return false;
       if (slabByAtom
-          && (g3d.isClippedZ(a.screenZ) || g3d.isClippedZ(b.screenZ)))
+          && (g3d.isClippedZ(a.sZ) || g3d.isClippedZ(b.sZ)))
         return false;
     }
-    zA = a.screenZ;
-    zB = b.screenZ;
+    zA = a.sZ;
+    zB = b.sZ;
     if (zA == 1 || zB == 1)
       return false;
     colixA = atomA0.getColix();
@@ -238,10 +238,10 @@ public class SticksRenderer extends FontLineShapeRenderer {
 
     // set the diameter
 
-    xA = a.screenX;
-    yA = a.screenY;
-    xB = b.screenX;
-    yB = b.screenY;
+    xA = a.sX;
+    yA = a.sY;
+    xB = b.sX;
+    yB = b.sY;
 
     mad = bond.mad;
     if (multipleBondRadiusFactor > 0 && bondOrder > 1)
@@ -390,8 +390,8 @@ public class SticksRenderer extends FontLineShapeRenderer {
     Atom atomC = b.findAromaticNeighbor(a.getIndex());
     if (atomC == null)
       return 1;
-    int dxAC = atomC.screenX - xA;
-    int dyAC = atomC.screenY - yA;
+    int dxAC = atomC.sX - xA;
+    int dyAC = atomC.sY - yA;
     return ((dx * dyAC - dy * dxAC) < 0 ? 2 : 1);
   }
 

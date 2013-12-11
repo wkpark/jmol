@@ -1465,7 +1465,7 @@ public class ActionManager implements EventManager {
       if (nearestPoint != null
           || measurementPending.getIndexOf(nearestAtomIndex) == 0)
         measurementPending.addPoint(nearestAtomIndex, nearestPoint, false);
-      if (measurementPending.haveModified())
+      if (measurementPending.haveModified)
         viewer.setPendingMeasurement(measurementPending);
       viewer.refresh(3, "measurementPending");
       return;
@@ -2026,7 +2026,7 @@ public class ActionManager implements EventManager {
         if (a.getElementNumber() == 1) {
           runScript("assign atom ({" + dragAtomIndex + "}) \"X\"");
         } else {
-          P3 ptNew = P3.new3(x, y, a.screenZ);
+          P3 ptNew = P3.new3(x, y, a.sZ);
           viewer.unTransformPoint(ptNew, ptNew);
           runScript("assign atom ({" + dragAtomIndex + "}) \""
               + pickAtomAssignType + "\" " + Escape.eP(ptNew));

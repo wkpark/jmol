@@ -80,8 +80,6 @@ public interface SymmetryInterface {
 
   public Tensor getTensor(float[] parBorU);
 
-  public P3 ijkToPoint3f(int nnn);
-
   public void toFractional(T3 pt, boolean isAbsolute);
 
   public P3[] getUnitCellVertices();

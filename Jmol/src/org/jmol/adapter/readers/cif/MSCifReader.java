@@ -421,7 +421,10 @@ public class MSCifReader extends MSReader implements MSCifInterface {
     M4 m4 = new M4();
     float[] a = new float[16];
     for (; i < cr.tokenizer.fieldCount; ++i) {
-      String key = cr.fields[fieldProperty(cr, i)];
+      int p = fieldProperty(cr, i);
+      if (p < 0)
+        continue;
+      String key = cr.fields[p];
       if (!key.contains("_w_"))
         continue;
       int r = key.charAt(key.length() - 3) - '1';

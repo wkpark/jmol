@@ -451,7 +451,7 @@ public class MSReader implements MSInterface {
    * @param utens
    * @param qcoefs
    */
-  private void addAtomModulation(String atomName, char axis, int type,
+  private void addAtomModulation(String atomName, char axis, char type,
                                  P3 params, String utens, P3 qcoefs) {
     List<Modulation> list = htAtomMods.get(atomName);
     if (list == null) {
@@ -524,8 +524,9 @@ public class MSReader implements MSInterface {
       return;
     int iop = Math.max(a.bsSymmetry.nextSetBit(0), 0);
     if (modLast)
-      iop = Math.max((a.bsSymmetry.length() - 1)% nOps, iop);
-    System.out.println(a.index + " " + a.atomName + " " + iop + " " + a.bsSymmetry);
+      iop = Math.max((a.bsSymmetry.length() - 1) % nOps, iop);
+    System.out.println(a.index + " " + a.atomName + " " + iop + " "
+        + a.bsSymmetry);
     if (Logger.debuggingHigh)
       Logger.debug("\nsetModulation: i=" + a.index + " " + a.atomName + " xyz="
           + a + " occ=" + a.foccupancy);

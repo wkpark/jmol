@@ -102,12 +102,8 @@ class MeshData {
   static MeshSurface getTriangleData(P3 pt1, P3 pt2,
                                               P3 pt3) {
     P3[] vertexes = new P3[] { pt1, pt2, pt3 };
-    V3 v1 = new V3();
-    V3 v2 = new V3();
-    v1.setT(pt3);
-    v1.sub(pt1);
-    v2.setT(pt2);
-    v2.sub(pt1);
+    V3 v1 = V3.newVsub(pt3, pt1);
+    V3 v2 = V3.newVsub(pt2, pt1);
     v2.cross(v2, v1);
     v2.normalize();
     V3[] normals = new V3[] { v2, v2, v2 };

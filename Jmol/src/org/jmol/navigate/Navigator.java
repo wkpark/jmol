@@ -330,9 +330,8 @@ public final class Navigator extends JmolThread implements
       yTransStart = tm.navigationOffset.y;
       yTransDelta = yTrans - yTransStart;
       degreeStep = degrees / (totalSteps + 1);
-      aaStepCenter = new V3();
-      aaStepCenter.setT(center == null ? tm.navigationCenter : center);
-      aaStepCenter.sub(tm.navigationCenter);
+      aaStepCenter = V3.newVsub(center == null ? tm.navigationCenter : center,
+          tm.navigationCenter);
       aaStepCenter.scale(1f / (totalSteps + 1));
       centerStart = P3.newP(tm.navigationCenter);
     }
@@ -406,8 +405,7 @@ public final class Navigator extends JmolThread implements
     pt2.add(pt0);
     P3 pt2s = new P3();
     m.transform2(pt2, pt2s);
-    vPath.setT(pt2s);
-    vPath.sub(pt0s);
+    vPath.sub2(pt2s, pt0s);
     vPath.z = 0; // just use projection
     v.set(-1, 0, 0); // puts alpha helix sidechain above
     angle = vPath.angle(v);

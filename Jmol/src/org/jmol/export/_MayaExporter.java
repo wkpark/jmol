@@ -114,9 +114,7 @@ public class _MayaExporter extends __CartesianExporter {
     id = "nurbsCylinderShape" + nCyl;
     output(" createNode transform -n \"" + name + "\";\n");
     float length = pt1.distance(pt2);
-    tempV1.setT(pt2);
-    tempV1.add(pt1);
-    tempV1.scale(0.5f);
+    tempV1.ave(pt2, pt1);
     setAttr("t", tempV1);
     tempV1.sub(pt1);
     tempV2.setT(tempV1);

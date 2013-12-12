@@ -94,9 +94,7 @@ public class CartoonRenderer extends RocketsRenderer {
             (controlPointScreens[i].x + controlPointScreens[i + 1].x) / 2,
             (controlPointScreens[i].y + controlPointScreens[i + 1].y) / 2,
             (controlPointScreens[i].z + controlPointScreens[i + 1].z) / 2);
-        ptConnect.setT(controlPoints[i]);
-        ptConnect.scale(0.5f);
-        ptConnect.scaleAdd2(0.5f, controlPoints[i + 1], ptConnect);
+        ptConnect.ave(controlPoints[i], controlPoints[i + 1]);
       } else {
         ptConnectScr.setT(controlPointScreens[i + 1]);
         ptConnect.setT(controlPoints[i + 1]);

@@ -105,14 +105,11 @@ public class SmilesMeasure  {
     // We cross dihedral bonds with the bond axis
     // to get two vector projections in the
     // plane perpendicular to the bond axis
-    v.vTemp1.setT(pt1a);
-    v.vTemp1.sub(pt1);
-    v.vTemp2.setT(pt2a);
-    v.vTemp2.sub(pt2);
+    v.vTemp1.sub2(pt1a, pt1);
+    v.vTemp2.sub2(pt2a, pt2);
     if (!isAll)
       return;
-    v.vNorm1.setT(pt1);
-    v.vNorm1.sub(pt2);
+    v.vNorm1.sub2(pt1, pt2);
     v.vNorm1.normalize();
     v.vTemp1.cross(v.vTemp1, v.vNorm1);
     v.vTemp1.normalize();

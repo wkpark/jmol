@@ -409,8 +409,7 @@ class PointGroup {
         P3 a1 = points[i];
         int e1 = elements[i];
         if (q != null) {
-          pt.setT(a1);
-          pt.sub(center);
+          pt.sub2(a1, center);
           q.transformP2(pt, pt).add(center);
         } else {
           pt.setT(a1);
@@ -520,9 +519,7 @@ class PointGroup {
         // look for all axes to average position of A and B
 
         if (nAxes[c2] < axesMaxN[c2]) {
-          v3.setT(a1);
-          v3.add(a2);
-          v3.scale(0.5f);
+          v3.ave(a1, a2);
           v3.sub(center);
           getAllAxes(v3);
         }
@@ -555,8 +552,7 @@ class PointGroup {
     for (int i = vs.length; --i >= 2;)
       for (int j = i; --j >= 1;)
         for (int k = j; --k >= 0;) {
-          v3.setT(vs[i]);
-          v3.add(vs[j]);
+          v3.add2(vs[i], vs[j]);
           v3.add(vs[k]);
           if (v3.length() < 1.0)
             continue;
@@ -596,8 +592,7 @@ class PointGroup {
                 v3.cross(v1, v2);
                 getAllAxes(v3);
 //                checkAxisOrder(3, v3, center);
-                v1.setT(points[i]);
-                v1.add(points[j]);
+                v1.add2(points[i], points[j]);
                 v1.add(points[k]);
                 v1.normalize();
                 if (!isParallel(v1, v3))
@@ -632,12 +627,10 @@ class PointGroup {
         for (int j = 0; j < maxElement; j++) {
           if (i == j || vs[j] == null)
             continue;
-          if (haveInversionCenter) {
+          if (haveInversionCenter)
            v1.cross(vs[i], vs[j]);
-          } else {
-            v1.setT(vs[i]);
-            v1.sub(vs[j]);
-          }
+          else
+            v1.sub2(vs[i], vs[j]);
           checkAxisOrder(c2, v1, center);
           
         }
@@ -782,8 +775,7 @@ class PointGroup {
 
         // second, look for planes perpendicular to the A -- B line
 
-        v3.setT(a2);
-        v3.sub(a1);
+        v3.sub2(a2, a1);
         v3.normalize();
         nPlanes = getPlane(v3);
         if (nPlanes == axesMaxN[0])
@@ -935,8 +927,7 @@ class PointGroup {
             if (index > 0 && j + 1 != index)
               continue;
             op = axes[i][j];
-            v.setT(op.normalOrAxis);
-            v.add(center);
+            v.add2(op.normalOrAxis, center);
             if (op.type == OPERATION_IMPROPER_AXIS)
               scale = -scale;
             sb.append("draw pgva").append(m).append(label).append("_").appendI(
@@ -958,11 +949,9 @@ class PointGroup {
           sb.append("draw pgvp").append(m).appendI(j + 1).append(
               "disk scale ").appendF(scaleFactor * radius * 2).append(" CIRCLE PLANE ")
               .append(Escape.eP(center));
-          v.setT(op.normalOrAxis);
-          v.add(center);
+          v.add2(op.normalOrAxis, center);
           sb.append(Escape.eP(v)).append(" color translucent yellow;\n");
-          v.setT(op.normalOrAxis);
-          v.add(center);
+          v.add2(op.normalOrAxis, center);
           sb.append("draw pgvp").append(m).appendI(j + 1).append(
               "ring width 0.05 scale ").appendF(scaleFactor * radius * 2).append(" arc ")
               .append(Escape.eP(v));

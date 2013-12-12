@@ -922,8 +922,7 @@ protected void resetObjects() {
         dist = (length == Float.MAX_VALUE ? ptList[0].distance(center) : length);
         normal.scale(dist);
         ptList[0].setT(center);
-        ptList[1].setT(center);
-        ptList[1].add(normal);
+        ptList[1].add2(center, normal);
         nVertices = 2;
       } else if (nVertices == 2 && isPerpendicular) {
         // perpendicular line to line or plane to line
@@ -950,8 +949,7 @@ protected void resetObjects() {
           normal.scale(dist);
           ptList[3] = P3.newP(center);
           ptList[3].add(normal);
-          ptList[1].setT(center);
-          ptList[1].sub(normal);
+          ptList[1].sub2(center, normal);
           ptList[0].setT(pt);
           //             
           // pt,0 1
@@ -968,24 +966,19 @@ protected void resetObjects() {
           }
           nVertices = 4;
         } else {
-          ptList[0].setT(center);
-          ptList[1].setT(center);
-          ptList[0].sub(normal);
-          ptList[1].add(normal);
+          ptList[0].sub2(center, normal);
+          ptList[1].add2(center, normal);
         }
         if (isArrow && nVertices != -2)
           isArrow = false;
       } else if (nVertices == 2 && length != Float.MAX_VALUE) {
         Measure.calcAveragePoint(ptList[0], ptList[1], center);
-        normal.setT(ptList[1]);
-        normal.sub(center);
+        normal.sub2(ptList[1], center);
         normal.scale(0.5f / normal.length() * (length == 0 ? 0.01f : length));
         if (length == 0)
           center.setT(ptList[0]);
-        ptList[0].setT(center);
-        ptList[1].setT(ptList[0]);
-        ptList[0].sub(normal);
-        ptList[1].add(normal);
+        ptList[0].sub2(center, normal);
+        ptList[1].add2(ptList[0], normal);
       }
       if (nVertices > 4)
         nVertices = 4; // for now
@@ -1232,8 +1225,7 @@ protected void resetObjects() {
     pt.x = x;
     pt.y = y;
     viewer.unTransformPoint(pt, newcoord);
-    move.setT(newcoord);
-    move.sub(coord);
+    move.sub2(newcoord, coord);
     if (mesh.isTriangleSet)
       iVertex = ptVertex; // operate on entire set of vertices, not just the
                           // one for this model

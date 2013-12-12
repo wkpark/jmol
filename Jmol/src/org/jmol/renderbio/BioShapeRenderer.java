@@ -295,8 +295,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
 
   private void calc1Screen(P3 center, V3 vector, short mad,
                            float offset_1000, P3i screen) {
-    float scale = mad * offset_1000;
-    pointT.scaleAdd2(scale, center, vector);
+    pointT.scaleAdd2(mad * offset_1000, vector, center);
     viewer.transformPtScr(pointT, screen);
   }
 

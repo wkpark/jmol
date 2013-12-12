@@ -233,8 +233,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       v2.normalize();
       float f = viewer.scaleToScreen((int)pt1f.z, 100);
       v2.scale(f);
-      pt1f.setT(pt2f);
-      pt1f.add(v2);
+      pt1f.add2(pt2f, v2);
       pt2f.sub(v2);
       screens[0].set(Math.round(pt1f.x),Math.round(pt1f.y),Math.round(pt1f.z));
       g3d.fillSphereI(r, screens[0]);
@@ -522,9 +521,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       // -n is an intensity2sided and does not correspond to a true normal
       // index
       if (n >= 0) {
-        ptTemp.add(vertexVectors[n]);
-        ptTemp.add(vertexVectors[n]);
-        ptTemp.add(vertexVectors[n]);
+        ptTemp.scaleAdd2(3, vertexVectors[n], ptTemp);
         viewer.transformPtScr(ptTemp, ptTempi);
         g3d.drawLineAB(screens[i], ptTempi);
         //g3d.drawStringNoSlab("" + n, null, ptTempi.x, ptTempi.y, ptTempi.z);

@@ -1359,8 +1359,7 @@ public final class ModelLoader {
   }
 
   private static void setAtom2dZ(Atom atomRef, Atom atom2, V3 v, V3 v0, V3 v1) {
-    v.setT(atom2);
-    v.sub(atomRef);
+    v.sub2(atom2, atomRef);
     v.z = 0;
     v.normalize();
     v1.cross(v0, v);

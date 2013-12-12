@@ -263,9 +263,7 @@ public class Sticks extends Shape {
       Atom atom2 = bond.getAtom2();
       if (!atom1.isVisible(0) || !atom2.isVisible(0))
         continue;
-      v.setT(atom1);
-      v.add(atom2);
-      v.scale(0.5f);
+      v.ave(atom1, atom2);
       int d2 = coordinateInRange(x, y, v, dmin2, ptXY);
       if (d2 >= 0) {
         float f = 1f * (ptXY.x - atom1.sX) / (atom2.sX - atom1.sX);

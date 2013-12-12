@@ -275,8 +275,7 @@ abstract class AtomDataReader extends VolumeDataReader {
       v.scale(0.5f);
       xyzMin.add(v);
       v.scale(params.scale);
-      xyzMax.setT(xyzMin);
-      xyzMax.add(v);
+      xyzMax.add2(xyzMin, v);
       xyzMin.sub(v);
     }
 

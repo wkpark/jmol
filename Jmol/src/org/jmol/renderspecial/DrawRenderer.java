@@ -183,19 +183,14 @@ public class DrawRenderer extends MeshRenderer {
       if (theta == 0)
         return;
       float fractionalOffset = (vertexCount > 3 ? vertices[3].z : 0);
-      vTemp.setT(vertices[1]);
-      vTemp.sub(vertices[0]);
+      vTemp.sub2(vertices[1], vertices[0]);
       // crossing point
       pt1f.scaleAdd2(fractionalOffset, vTemp, vertices[0]);
       // define rotational axis
       M3 mat = new M3();
       mat.setAA(A4.newVA(vTemp, (float) (nDegreesOffset * Math.PI / 180)));
       // vector to rotate
-      if (vertexCount > 2)
-        vTemp2.setT(vertices[2]);
-      else
-        vTemp2.setT(Draw.randomPoint());
-      vTemp2.sub(vertices[0]);
+      vTemp2.sub2(vertexCount > 2 ? vertices[2] : Draw.randomPoint(), vertices[0]);
       vTemp2.cross(vTemp, vTemp2);
       vTemp2.cross(vTemp2, vTemp);
       vTemp2.normalize();
@@ -285,15 +280,9 @@ public class DrawRenderer extends MeshRenderer {
           j0 = j;
         }
       }
-    pt0.setT(vertices[0]);
-    pt0.add(vertices[1]);
-    pt0.scale(0.5f);
-    pt2.setT(vertices[2]);
-    pt2.add(vertices[3]);
-    pt2.scale(0.5f);
-    pt1.setT(pt0);
-    pt1.add(pt2);
-    pt1.scale(0.5f);
+    pt0.ave(vertices[0], vertices[1]);
+    pt2.ave(vertices[2], vertices[3]);
+    pt1.ave(pt0, pt2);
     vertices[3] = P3.newP(vertices[i0]);
     vertices[3].add(vertices[j0]);
     vertices[3].scale(0.5f);
@@ -322,12 +311,10 @@ public class DrawRenderer extends MeshRenderer {
     pt1.add(pt2);
     viewer.unTransformPoint(pt1, vertices[1]);
     pt2.scale(offsetside);
-    vTemp.setT(vertices[1]);
-    vTemp.sub(vertices[0]);
+    vTemp.sub2(vertices[1], vertices[0]);
     vTemp.scale(endoffset); 
     vertices[0].add(vTemp);
-    vTemp.setT(vertices[1]);
-    vTemp.sub(vertices[2]);
+    vTemp.sub2(vertices[1], vertices[2]);
     vTemp.scale(endoffset); 
     vertices[2].add(vTemp);
     for (int i = 0; i < 3; i++) {
@@ -394,15 +381,13 @@ public class DrawRenderer extends MeshRenderer {
     float d = pt0f.distance(pt2f);
     if (d == 0)
       return;
-    vTemp.setT(pt2f);
-    vTemp.sub(pt0f);
+    vTemp.sub2(pt2f, pt0f);
     vTemp.normalize();
     vTemp.scale(fScale / 5);
     if (!withShaft)
       pt2f.add(vTemp);
     vTemp.scale(5);
-    pt1f.setT(pt2f);
-    pt1f.sub(vTemp);
+    pt1f.sub2(pt2f, vTemp);
     if (isTransformed) {
       pt1i.set(Math.round(pt1f.x),Math.round(pt1f.y),Math.round(pt1f.z));
       pt2i.set(Math.round(pt2f.x), Math.round(pt2f.y), Math.round(pt2f.z));

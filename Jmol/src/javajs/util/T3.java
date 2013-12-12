@@ -187,6 +187,18 @@ public abstract class T3 implements Serializable {
   }
 
   /**
+   * average of two tuples
+   * 
+   * @param a
+   * @param b
+   */
+  public void ave(T3 a, T3 b) {
+    x = (a.x + b.x) / 2f;
+    y = (a.y + b.y) / 2f;
+    z = (a.z + b.z) / 2f; 
+  }
+
+  /**
    * Vector dot product. Was in Vector3f; more useful here, though.
    * 
    * @param v

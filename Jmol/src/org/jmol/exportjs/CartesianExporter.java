@@ -207,17 +207,13 @@ abstract public class CartesianExporter extends Exporter {
   @Override
   boolean drawEllipse(P3 ptCenter, P3 ptX, P3 ptY, short colix,
                       boolean doFill) {
-    tempV1.setT(ptX);
-    tempV1.sub(ptCenter);
-    tempV2.setT(ptY);
-    tempV2.sub(ptCenter);
+    tempV1.sub2(ptX, ptCenter);
+    tempV2.sub2(ptY, ptCenter);
     tempV2.cross(tempV1, tempV2);
     tempV2.normalize();
     tempV2.scale(doFill ? 0.002f : 0.005f);
-    tempP1.setT(ptCenter);
-    tempP1.sub(tempV2);
-    tempP2.setT(ptCenter);
-    tempP2.add(tempV2);
+    tempP1.sub2(ptCenter, tempV2);
+    tempP2.add2(ptCenter, tempV2);
     return outputCylinder(ptCenter, tempP1, tempP2, colix,
         doFill ? GData.ENDCAPS_FLAT : GData.ENDCAPS_NONE, 1.01f, ptX,
         ptY, true);
@@ -250,9 +246,7 @@ abstract public class CartesianExporter extends Exporter {
     if (colix1 == colix2) {
       outputCylinder(null, tempP1, tempP2, colix1, endcaps, radius, null, null, bondOrder != -1);
     } else {
-      tempV2.setT(tempP2);
-      tempV2.add(tempP1);
-      tempV2.scale(0.5f);
+      tempV2.ave(tempP2, tempP1);
       tempP3.setT(tempV2);
       outputCylinder(null, tempP1, tempP3, colix1,
           (endcaps == GData.ENDCAPS_SPHERICAL ? GData.ENDCAPS_NONE

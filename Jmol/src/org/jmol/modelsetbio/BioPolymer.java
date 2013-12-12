@@ -163,9 +163,7 @@ public abstract class BioPolymer {
     if (groupIndex == monomerCount) {
       --groupIndex;
     } else if (groupIndex > 0) {
-      midPoint.setT(getLeadPoint(groupIndex));
-      midPoint.add(getLeadPoint(groupIndex - 1));
-      midPoint.scale(0.5f);
+      midPoint.ave(getLeadPoint(groupIndex), getLeadPoint(groupIndex - 1));
       return;
     }
     midPoint.setT(getLeadPoint(groupIndex));
@@ -301,9 +299,8 @@ public abstract class BioPolymer {
     for (int i = 1; i < monomerCount; ++i) {
       leadPointPrev = leadPoint;
       leadPoints[i] = leadPoint = getLeadPoint(i);
-      P3 midpoint = P3.newP(leadPoint);
-      midpoint.add(leadPointPrev);
-      midpoint.scale(0.5f);
+      P3 midpoint = new P3();
+      midpoint.ave(leadPoint, leadPointPrev);
       leadMidpoints[i] = midpoint;
       if (hasWingPoints) {
         vectorA.sub2(leadPoint, leadPointPrev);

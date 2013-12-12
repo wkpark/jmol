@@ -133,9 +133,7 @@ public class _X3dExporter extends _VrmlExporter {
       // draw filled circle
       
       output("<Transform translation='");
-      tempV1.setT(tempP3);
-      tempV1.add(pt1);
-      tempV1.scale(0.5f);
+      tempV1.ave(tempP3, pt1);
       output(tempV1);
       output("'><Billboard axisOfRotation='0 0 0'><Transform rotation='1 0 0 1.5708'>");
       outputCylinderChildScaled(pt1, tempP3, colix, GData.ENDCAPS_FLAT, radius);

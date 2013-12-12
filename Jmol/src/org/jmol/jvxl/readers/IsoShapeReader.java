@@ -165,8 +165,7 @@ final class IsoShapeReader extends VolumeDataReader {
 
   @Override
   public float getValueAtPoint(P3 pt, boolean getSource) {
-    ptTemp.setT(pt);
-    ptTemp.sub(center);
+    ptTemp.sub2(pt, center);
     if (isEccentric)
       eccentricityMatrixInverse.transform(ptTemp);
     if (isAnisotropic) {

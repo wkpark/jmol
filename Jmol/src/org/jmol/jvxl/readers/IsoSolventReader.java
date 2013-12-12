@@ -970,18 +970,15 @@ class IsoSolventReader extends AtomDataReader {
     if (Math.abs(cosTheta) >= 0.99) 
       return false; // very close to all points A, B, P, S, T, and C all in same plane
     V3 vXS = vTemp2;
-    vXS.setT(ptTemp);
-    vXS.sub(p);
+    vXS.sub2(ptTemp, p);
     vXS.normalize();
     dPX = (float) (dPS * cosTheta);
     ptTemp.scaleAdd2(dPX, vXS, p);
     vXS.cross(vTemp, vXS);
     vXS.normalize();
     vXS.scale((float) (Math.sqrt(1 - cosTheta * cosTheta) * dPS));
-    ptS1.setT(ptTemp);
-    ptS1.add(vXS);
-    ptS2.setT(ptTemp);
-    ptS2.sub(vXS);
+    ptS1.add2(ptTemp, vXS);
+    ptS2.add2(ptTemp, vXS);
     return true;
   }
 
@@ -1322,8 +1319,7 @@ class IsoSolventReader extends AtomDataReader {
     P3 ptB = atomXyz[ib];
     float rAS = atomRadius[ia] + solventRadius;
     float rBS = atomRadius[ib] + solventRadius;
-    vTemp.setT(ptB);
-    vTemp.sub(ptA);
+    vTemp.sub2(ptB, ptA);
     float dAB = vTemp.length();
     vTemp.normalize();
     double rAS2 = rAS * rAS;

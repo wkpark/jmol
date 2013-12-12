@@ -119,8 +119,7 @@ public abstract class ProteinStructure {
     axis.scale(axisB.distance(axisA) / monomerCount);
     for (int i = 1; i < monomerCount; i++) {
       P3 point = segments[i] = new P3();
-      point.setT(segments[i - 1]);
-      point.add(axis);
+      point.add2(segments[i - 1], axis);
       //now it's just a constant-distance segmentation. 
       //there isn't anything significant about seeing the
       //amino colors in different-sized slices, and (IMHO)

@@ -144,8 +144,7 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
       return;
 
     float signFactor = tickInfo.signFactor;
-    vectorT.setT(ptB);
-    vectorT.sub(ptA);
+    vectorT.sub2(ptB, ptA);
     float d0 = vectorT.length();
     if (tickInfo.scale != null) {
       if (Float.isNaN(tickInfo.scale.x)) { // unitcell

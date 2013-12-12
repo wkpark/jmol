@@ -179,6 +179,8 @@ public class HermiteRenderer implements G3DRenderer {
   private final P3 c2 = new P3();
   private final P3 d1 = new P3();
   private final P3 d2 = new P3();
+  private final V3 T1 = new V3();
+  private final V3 T2 = new V3();
   private final V3 depth1 = new V3();
   private final boolean[] needToFill = new boolean[16];
 
@@ -269,15 +271,19 @@ public class HermiteRenderer implements G3DRenderer {
 
               if (needToFill[sp]) {
                 if (aspectRatio > 0) {
-                  setDepth(depth1, c, a, b, ratio);
-                  setPoint(a1, a, depth1, 1);
-                  setPoint(a2, a, depth1, -1);
-                  setPoint(b1, b, depth1, 1);
-                  setPoint(b2, b, depth1, -1);
-                  setPoint(c1, c, depth1, 1);
-                  setPoint(c2, c, depth1, -1);
-                  setPoint(d1, d, depth1, 1);
-                  setPoint(d2, d, depth1, -1);
+                  T1.sub2(a, c);
+                  T1.scale(ratio);
+                  T2.sub2(a, b);
+                  depth1.cross(T1, T2);
+                  depth1.scale(T1.length() / depth1.length());
+                  a1.add2(a, depth1);
+                  a2.sub2(a, depth1);
+                  b1.add2(b, depth1);
+                  b2.sub2(b, depth1);
+                  c1.add2(c, depth1);
+                  c2.sub2(c, depth1);
+                  d1.add2(d, depth1);
+                  d2.sub2(d, depth1);
                   g3d.fillQuadrilateral(a1, b1, d1, c1);
                   g3d.fillQuadrilateral(a2, b2, d2, c2);
                   g3d.fillQuadrilateral(a1, b1, b2, a2);
@@ -511,25 +517,6 @@ public class HermiteRenderer implements G3DRenderer {
             top < numTopStrandPoints && (top + numTopStrandPoints) < size; top++)
          g3d.drawLineAB(points.get(top),
              points.get(top + numTopStrandPoints));
-     //}
-
   }
 
-  private final V3 T1 = new V3();
-  private final V3 T2 = new V3();
-  private void setDepth(V3 depth, P3 c, P3 a, P3 b, float ratio) {
-    T1.sub2(a, c);
-    T1.scale(ratio);
-    T2.sub2(a, b);
-    depth.cross(T1, T2);
-    depth.scale(T1.length() / depth.length());
-  }
-  
-  private static void setPoint(P3 a1, P3 a, V3 depth, int direction) {
-    a1.setT(a);
-    if (direction == 1)
-      a1.add(depth);
-    else
-      a1.sub(depth);
-  }
 }

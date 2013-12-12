@@ -1584,9 +1584,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         case T.xyz:
           switch (minmaxtype) {
           case T.all:
-            pt.setT(bond.getAtom1());
-            pt.add(bond.getAtom2());
-            pt.scale(0.5f);
+            pt.ave(bond.getAtom1(), bond.getAtom2());
             vout.addLast(P3.newP(pt));
             break;
           default:

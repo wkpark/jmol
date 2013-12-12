@@ -1437,8 +1437,7 @@ public class SmilesSearch extends JmolMolecule {
           || v.vNorm2.dot(v.vNorm3) < 0))
         return false;
       // now check rotation in relation to the first atom
-      v.vNorm2.setT((P3) atom0);
-      v.vNorm2.sub((P3) atom1);
+      v.vNorm2.sub2((P3) atom0, (P3) atom1);
       return (isNot == ((v.vNorm1.dot(v.vNorm2) < 0 ? 2 : 1) == order));
     //case SmilesAtom.STEREOCHEMISTRY_DOUBLE_BOND:
       //System.out.println("draw p1 @{point" + Point3f.new3((Point3f)atom1)+"} color red");
@@ -1724,10 +1723,8 @@ public class SmilesSearch extends JmolMolecule {
   VTemp v = new VTemp();
   
   static boolean isDiaxial(JmolNode atomA, JmolNode atomB, JmolNode atom1, JmolNode atom2, VTemp v, float f) {
-    v.vA.setT((P3) atomA);
-    v.vB.setT((P3) atomB);
-    v.vA.sub((P3) atom1);
-    v.vB.sub((P3) atom2);
+    v.vA.sub2((P3) atomA, (P3) atom1);
+    v.vB.sub2((P3) atomB, (P3) atom2);
     v.vA.normalize();
     v.vB.normalize();
     // -0.95f about 172 degrees

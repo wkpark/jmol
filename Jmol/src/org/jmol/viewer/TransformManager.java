@@ -512,8 +512,7 @@ public class TransformManager {
     // apply this to the fixed center point in the internal frame
 
     vectorT.setT(internalRotationCenter);
-    pointT2.setT(fixedRotationCenter);
-    pointT2.sub(vectorT);
+    pointT2.sub2(fixedRotationCenter, vectorT);
     P3 pt = new P3();
     matrixTemp4.transform2(pointT2, pt);
 
@@ -1454,8 +1453,7 @@ public class TransformManager {
 
     // first, translate the coordinates back to the center
 
-    vectorTemp.setT(fixedRotationCenter);
-    vectorTemp.sub(frameOffset);
+    vectorTemp.sub2(fixedRotationCenter, frameOffset);
     matrixTemp.setZero();
     matrixTemp.setTranslation(vectorTemp);
     matrixTransform.sub(matrixTemp);

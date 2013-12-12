@@ -985,9 +985,8 @@ public abstract class AtomSetCollectionReader {
     if (matrixRotate != null || !doSetOrientation)
       return;
     matrixRotate = new M3();
-    V3 v = new V3();
+    V3 v = V3.new3(x1, y1, z1);
     // rows in Sygress/CAChe and Spartan become columns here
-    v.set(x1, y1, z1);
     v.normalize();
     matrixRotate.setColumnV(0, v);
     v.set(x2, y2, z2);

@@ -3599,11 +3599,9 @@ public class ScriptExt implements JmolScriptExtension {
         maxXYZ = P3.new3(getPlotMinMax(dataX, true, propertyX), getPlotMinMax(
             dataY, true, propertyY), getPlotMinMax(dataZ, true, propertyZ));
       Logger.info("plot min/max: " + minXYZ + " " + maxXYZ);
-      P3 center = P3.newP(maxXYZ);
-      center.add(minXYZ);
-      center.scale(0.5f);
-      factors.setT(maxXYZ);
-      factors.sub(minXYZ);
+      P3 center = new P3();
+      center.ave(maxXYZ, minXYZ);
+      factors.sub2(maxXYZ, minXYZ);
       factors.set(factors.x / 200, factors.y / 200, factors.z / 200);
       if (T.tokAttr(propertyX, T.intproperty)) {
         factors.x = 1;
@@ -6505,8 +6503,7 @@ public class ScriptExt implements JmolScriptExtension {
       if (doRotate) {
         if (q == null)
           eval.evalError("option not implemented", null);
-        pt1.setT(center);
-        pt1.add(q.getNormal());
+        pt1.add2(center, q.getNormal());
         endDegrees = q.getTheta();
         if (endDegrees == 0 && doTranslate) {
           if (translation.length() > 0.01f)

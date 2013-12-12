@@ -244,8 +244,7 @@ final public class Measure {
       P3 pt0 = P3.newP(pointA);
       pt0.add(vNorm);
       float d = pt0.distance(ptRef);
-      pt0.setT(pointA);
-      pt0.sub(vNorm);
+      pt0.sub2(pointA, vNorm);
       if (d > pt0.distance(ptRef)) {
         vNorm.scale(-1);
         nd = -nd;
@@ -269,8 +268,7 @@ final public class Measure {
     vNorm.set(plane.x, plane.y, plane.z);
     vNorm.normalize();
     vNorm.scale(-dist);
-    ptProj.setT(pt);
-    ptProj.add(vNorm);
+    ptProj.add2(pt, vNorm);
   }
 
   /**
@@ -319,7 +317,7 @@ final public class Measure {
                                      V3 vectorProjection) {
     vectorProjection.sub2(point, axisA);
     float projectedLength = vectorProjection.dot(axisUnitVector);
-    point.scaleAdd2(projectedLength, axisA, axisUnitVector);
+    point.scaleAdd2(projectedLength, axisUnitVector, axisA);
     vectorProjection.sub2(point, axisA);
   }
   
@@ -422,10 +420,9 @@ final public class Measure {
     m.scale(1 / sum_Xi2);
     vTemp.cross(m, axisUnitVector);
     axisUnitVector.add(vTemp);
-    axisUnitVector.normalize();
+    axisUnitVector.normalize();  
     //check for change in direction by measuring vector difference length
-    vTemp.setT(axisUnitVector);
-    vTemp.sub(a);
+    vTemp.sub2(axisUnitVector, a);
     return vTemp.length();
   }
   
@@ -465,8 +462,7 @@ final public class Measure {
     float[] retStddev = new float[2];
     Quaternion q = calculateQuaternionRotation(new P3[][] { cptsA,
         cptsB }, retStddev, true); // was false
-    V3 v = V3.newV(cptsB[0]);
-    v.sub(cptsA[0]);
+    V3 v = V3.newVsub(cptsB[0], cptsA[0]);
     m.setMV(q.getMatrix(), v);
     if (centerA != null)
       centerA.setT(cptsA[0]);
@@ -531,10 +527,8 @@ final public class Measure {
     for (int i = n + 1; --i >= 1;) {
       P3 aij = centerAndPoints[0][i];
       P3 bij = centerAndPoints[1][i];
-      ptA.setT(aij);
-      ptA.sub(centerAndPoints[0][0]);
-      ptB.setT(bij);
-      ptB.sub(centerAndPoints[0][1]);
+      ptA.sub2(aij, centerAndPoints[0][0]);
+      ptB.sub2(bij, centerAndPoints[0][1]);
       Sxx += (double) ptA.x * (double) ptB.x;
       Sxy += (double) ptA.x * (double) ptB.y;
       Sxz += (double) ptA.x * (double) ptB.z;
@@ -581,8 +575,7 @@ final public class Measure {
     P3 ptAnew = new P3();
     
     for (int i = n + 1; --i >= 1;) {
-      ptAnew.setT(ptsA[i]);
-      ptAnew.sub(cA);
+      ptAnew.sub2(ptsA[i], cA);
       q.transformP2(ptAnew, ptAnew).add(cB);
       sum2 += ptAnew.distanceSquared(ptsB[i]);
     }
@@ -695,8 +688,7 @@ final public class Measure {
       v = V3.newV(tempNorm);
     float l_dot_n = v.dot(tempNorm);
     if (Math.abs(l_dot_n) < 0.01) return null;
-    vTemp.setT(ptRet);
-    vTemp.sub(pt1);
+    vTemp.sub2(ptRet, pt1);
     ptRet.scaleAdd2(vTemp.dot(tempNorm) / l_dot_n, v, pt1);
     return ptRet;
   }

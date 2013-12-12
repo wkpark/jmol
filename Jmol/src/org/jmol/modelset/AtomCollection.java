@@ -1453,7 +1453,6 @@ abstract public class AtomCollection {
     int pt = lcaoType.charAt(lcaoType.length() - 1) - 'a';
     if (pt < 0 || pt > 6)
       pt = 0;
-    V3 vTemp = new V3();
     z.set(0, 0, 0);
     x.set(0, 0, 0);
     V3[] v = new V3[4];
@@ -1465,6 +1464,7 @@ abstract public class AtomCollection {
     if (nAttached > 0)
       x.setT(v[0]);
     boolean isPlanar = false;
+    V3 vTemp = new V3();
     if (nAttached >= 3) {
       if (x.angle(v[1]) < almost180)
         vTemp.cross(x, v[1]);

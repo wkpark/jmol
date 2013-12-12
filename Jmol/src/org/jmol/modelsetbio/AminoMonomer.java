@@ -226,8 +226,7 @@ public class AminoMonomer extends AlphaMonomer {
       */
       vNH.sub2(nitrogenPoint, getLeadAtom());
       vNH.normalize();
-      V3 v = new V3();
-      v.sub2(nitrogenPoint, prev.getCarbonylCarbonAtom());
+      V3 v = V3.newVsub(nitrogenPoint, prev.getCarbonylCarbonAtom());
       v.normalize();
       vNH.add(v);
     } else {
@@ -268,9 +267,8 @@ public class AminoMonomer extends AlphaMonomer {
       if (monomerIndex == bioPolymer.monomerCount - 1)
         return null;
       AminoMonomer mNext = ((AminoMonomer) bioPolymer.getGroups()[monomerIndex + 1]);
-      P3 pt = P3.newP(getCarbonylCarbonAtom());
-      pt.add(mNext.getNitrogenAtom());
-      pt.scale(0.5f);
+      P3 pt = new P3();
+      pt.ave(getCarbonylCarbonAtom(), mNext.getNitrogenAtom());
       return pt;
     }
   }

@@ -108,8 +108,7 @@ public class VectorsRenderer extends ShapeRenderer {
     headOffsetVector.setT(vibrationVector);
     headOffsetVector.scale(headScale / len);
     pointVectorEnd.scaleAdd2(vectorScale, vibrationVector, atom);
-    pointArrowHead.setT(pointVectorEnd);
-    pointArrowHead.add(headOffsetVector);
+    pointArrowHead.add2(pointVectorEnd, headOffsetVector);
     screenArrowHead.setT(viewer.transformPtVib(pointArrowHead, vibrationVector));
     screenVectorEnd.setT(viewer.transformPtVib(pointVectorEnd, vibrationVector));
     diameter = (int) (mad < 1 ? 1 : mad <= 20 ? mad : viewer.scaleToScreen(screenVectorEnd.z, mad));

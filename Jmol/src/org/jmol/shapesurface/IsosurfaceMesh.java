@@ -204,8 +204,7 @@ public class IsosurfaceMesh extends Mesh {
       int[] pi = polygonIndexes[i];
       if (pi == null)
         continue;
-      P3 pt = centers[i] = new P3();
-      pt.add(vertices[pi[0]]);
+      P3 pt = centers[i] = P3.newP(vertices[pi[0]]);
       pt.add(vertices[pi[1]]);
       pt.add(vertices[pi[2]]);
       pt.scale(1 / 3f);
@@ -399,10 +398,8 @@ public class IsosurfaceMesh extends Mesh {
   private static P3 getContourPoint(P3[] vertices, int i, int j,
                                          float f) {
     P3 pt = new P3();
-    pt.setT(vertices[j]);
-    pt.sub(vertices[i]);
-    pt.scale(f);
-    pt.add(vertices[i]);
+    pt.sub2(vertices[j], vertices[i]);
+    pt.scaleAdd2(f, pt, vertices[i]);
     return pt;
   }
 

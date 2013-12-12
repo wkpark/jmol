@@ -467,10 +467,8 @@ final public class EllipsoidsRenderer extends ShapeRenderer {
   }
   
   private void renderArc(int ptA, int ptB) {
-    v1.setT(points[ptA]);
-    v1.sub(center);
-    v2.setT(points[ptB]);
-    v2.sub(center);
+    v1.sub2(points[ptA], center);
+    v2.sub2(points[ptB], center);
     float d1 = v1.length();
     float d2 = v2.length();
     v1.normalize();

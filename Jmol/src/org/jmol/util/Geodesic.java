@@ -415,10 +415,8 @@ public class Geodesic {
     if (iv != null) {
       return iv.shortValue();
     }
-    V3 newVertexVector = V3.newV(vertexVectors[v1]);
-    vertexVectors[vertexNext] = newVertexVector;
-    newVertexVector.add(vertexVectors[v2]);
-    newVertexVector.scale(0.5f);
+    V3 newVertexVector = vertexVectors[vertexNext] = new V3();
+    newVertexVector.add2(vertexVectors[v1], vertexVectors[v2]);
     newVertexVector.normalize();
     htVertex.put(hashKey, Short.valueOf(vertexNext));
     return vertexNext++;

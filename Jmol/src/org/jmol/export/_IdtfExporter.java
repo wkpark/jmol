@@ -627,9 +627,8 @@ public class _IdtfExporter extends __CartesianExporter {
     if (ptX != null) {
       if (endcaps == GData.ENDCAPS_FLAT) {
         outputEllipse(ptCenter, pt1, ptX, ptY, colix);
-        tempP3.setT(ptCenter);
+        tempP3.add2(ptCenter, ptCenter);
         tempP3.sub(ptX);
-        tempP3.add(ptCenter);
         outputEllipse(ptCenter, pt2, tempP3, ptY, colix);
       }
 
@@ -1009,10 +1008,8 @@ public class _IdtfExporter extends __CartesianExporter {
   private String getTriangleResource(String key, P3 pt1,
                                      P3 pt2, P3 pt3) {
     P3[] vertexes = new P3[] { pt1, pt2, pt3 };
-    tempV1.setT(pt3);
-    tempV1.sub(pt1);
-    tempV2.setT(pt2);
-    tempV2.sub(pt1);
+    tempV1.sub2(pt3, pt1);
+    tempV2.sub2(pt2, pt1);
     tempV2.cross(tempV2, tempV1);
     tempV2.normalize();
     V3[] normals = new V3[] { tempV2, tempV2, tempV2 };

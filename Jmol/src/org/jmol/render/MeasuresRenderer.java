@@ -202,8 +202,7 @@ public class MeasuresRenderer extends LabelsRenderer {
           && (x - a.sX) * (y - a.sY) > 0, false, false,
           (doJustify ? 0 : Integer.MAX_VALUE), s);
     } else {
-      atomPt.add2(a, b);
-      atomPt.scale(0.5f);
+      atomPt.ave(a, b);
       atomPt.sX = (a.sX + b.sX) / 2;
       atomPt.sY = (a.sY + b.sY) / 2;
       renderLabelOrMeasure(m.text, s);

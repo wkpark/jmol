@@ -523,10 +523,8 @@ public class JvxlCoder {
 
   private static P3 getContourPoint(P3[] vertices, int i, int j, float f) {
     P3 pt = new P3();
-    pt.setT(vertices[j]);
-    pt.sub(vertices[i]);
-    pt.scale(f);
-    pt.add(vertices[i]);
+    pt.sub2(vertices[j], vertices[i]);
+    pt.scaleAdd2(f, pt, vertices[i]);
     return pt;
   }
 

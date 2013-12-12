@@ -816,8 +816,7 @@ class SymmetryOperation extends M4 {
       case 180: // 2_1 to mirror plane
         // C2 with inversion is a mirror plane -- but could have a glide
         // component.
-        pt0 = new P3();
-        pt0.setT(pt00);
+        pt0 = P3.newP(pt00);
         pt0.add(d);
         pa1.scaleAdd2(0.5f, d, pt00);
         if (pt0.distance(p0) > 0.1f) {
@@ -835,8 +834,7 @@ class SymmetryOperation extends M4 {
       if (f != 0) {
         // pa1 = pa1 + ((pt00 - pa1) + (p0 - (pa1 + d))) * f
 
-        vtemp.setT(pt00);
-        vtemp.sub(pa1);
+        vtemp.sub2(pt00, pa1);
         vtemp.add(p0);
         vtemp.sub(pa1);
         vtemp.sub(d);
@@ -885,16 +883,14 @@ class SymmetryOperation extends M4 {
 
       int ang2 = ang1;
       if (haveinversion) {
-        pt1.setT(pa1);
-        pt1.add(vtemp);
+        pt1.add2(pa1, vtemp);
         ang2 = Math.round(Measure.computeTorsion(ptinv, pa1, pt1, p0, true));
       } else if (pitch1 == 0) {
         pt1.setT(pa1);
         ptemp.scaleAdd2(1, pt1, vtemp);
         ang2 = Math.round(Measure.computeTorsion(pt00, pa1, ptemp, p0, true));
       } else {
-        ptemp.setT(pa1);
-        ptemp.add(vtemp);
+        ptemp.add2(pa1, vtemp);
         pt1.scaleAdd2(0.5f, vtemp, pa1);
         ang2 = Math.round(Measure.computeTorsion(pt00, pa1, ptemp, p0, true));
       }
@@ -983,16 +979,13 @@ class SymmetryOperation extends M4 {
       // draw the final frame just a bit fatter and shorter, in case they
       // overlap
 
-      ptemp.setT(p1);
-      ptemp.sub(p0);
+      ptemp.sub2(p1, p0);
       ptemp.scaleAdd2(0.9f, ptemp, p0);
       drawLine(draw1, drawid + "frame2X", 0.2f, p0, ptemp, "red");
-      ptemp.setT(p2);
-      ptemp.sub(p0);
+      ptemp.sub2(p2, p0);
       ptemp.scaleAdd2(0.9f, ptemp, p0);
       drawLine(draw1, drawid + "frame2Y", 0.2f, p0, ptemp, "green");
-      ptemp.setT(p3);
-      ptemp.sub(p0);
+      ptemp.sub2(p3, p0);
       ptemp.scaleAdd2(0.9f, ptemp, p0);
       drawLine(draw1, drawid + "frame2Z", 0.2f, p0, ptemp, "purple");
 
@@ -1011,8 +1004,7 @@ class SymmetryOperation extends M4 {
         // draw the lines associated with a rotation
 
         if (haveinversion) {
-          pt1.setT(pa1);
-          pt1.add(vtemp);
+          pt1.add2(pa1, vtemp);
           if (pitch1 == 0) {
             pt1.setT(ipt);
             vtemp.scale(3);
@@ -1045,8 +1037,7 @@ class SymmetryOperation extends M4 {
           color = "orange";
           draw1.append(drawid).append("rotLine1 ").append(Escape.eP(pt00))
               .append(Escape.eP(pa1)).append(" color red");
-          ptemp.setT(pa1);
-          ptemp.add(vtemp);
+          ptemp.add2(pa1, vtemp);
           draw1.append(drawid).append("rotLine2 ").append(Escape.eP(p0))
               .append(Escape.eP(ptemp)).append(" color red");
           pt1.scaleAdd2(0.5f, vtemp, pa1);
@@ -1054,8 +1045,7 @@ class SymmetryOperation extends M4 {
 
         // draw arc arrow
 
-        ptemp.setT(pt1);
-        ptemp.add(vtemp);
+        ptemp.add2(pt1, vtemp);
         if (haveinversion && pitch1 != 0) {
           draw1.append(drawid).append("rotRotLine1").append(Escape.eP(pt1))
               .append(Escape.eP(ptinv)).append(" color red");
@@ -1065,10 +1055,7 @@ class SymmetryOperation extends M4 {
         draw1.append(drawid).append(
             "rotRotArrow arrow width 0.10 scale " + scale + " arc ").append(
             Escape.eP(pt1)).append(Escape.eP(ptemp));
-        if (haveinversion)
-          ptemp.setT(ptinv);
-        else
-          ptemp.setT(pt00);
+        ptemp.setT(haveinversion ? ptinv : pt00);
         if (ptemp.distance(p0) < 0.1f)
           ptemp.set((float) Math.random(), (float) Math.random(), (float) Math
               .random());
@@ -1138,8 +1125,7 @@ class SymmetryOperation extends M4 {
         // and JUST in case that does not work, at least draw a circle
 
         if (v.size() == 0) {
-          ptemp.setT(pa1);
-          ptemp.add(ax1);
+          ptemp.add2(pa1, ax1);
           draw1.append(drawid).append("planeCircle scale 2.0 circle ").append(
               Escape.eP(pa1)).append(Escape.eP(ptemp)).append(
               " color translucent ").append(color).append(" mesh fill");
@@ -1155,18 +1141,15 @@ class SymmetryOperation extends M4 {
         draw1.append(drawid).append("invArrow arrow ").append(Escape.eP(pt00))
             .append(Escape.eP(ptinv)).append(" color indigo");
         if (!isinversion) {
-          ptemp.setT(ptinv);
-          ptemp.add(pt00);
+          ptemp.add2(ptinv, pt00);
           ptemp.sub(pt01);
           drawLine(draw1, drawid + "invFrameX", 0.15f, ptinv, ptemp,
               "translucent red");
-          ptemp.setT(ptinv);
-          ptemp.add(pt00);
+          ptemp.add2(ptinv, pt00);
           ptemp.sub(pt02);
           drawLine(draw1, drawid + "invFrameY", 0.15f, ptinv, ptemp,
               "translucent green");
-          ptemp.setT(ptinv);
-          ptemp.add(pt00);
+          ptemp.add2(ptinv, pt00);
           ptemp.sub(pt03);
           drawLine(draw1, drawid + "invFrameZ", 0.15f, ptinv, ptemp,
               "translucent blue");

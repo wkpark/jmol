@@ -204,9 +204,8 @@ public class _ObjExporter extends __CartesianExporter {
     if (ptX != null) {
       if (endcaps == GData.ENDCAPS_FLAT) {
         outputEllipse1(ptCenter, pt1, ptX, ptY, colix);
-        tempP3.setT(ptCenter);
+        tempP3.add2(ptCenter, ptCenter);
         tempP3.sub(ptX);
-        tempP3.add(ptCenter);
         outputEllipse1(ptCenter, pt2, tempP3, ptY, colix);
       }
 

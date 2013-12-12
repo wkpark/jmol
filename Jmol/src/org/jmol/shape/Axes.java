@@ -60,8 +60,7 @@ public class Axes extends FontLineShape {
   public P3 getAxisPoint(int i, boolean isDataFrame) {
     if (!isDataFrame && axisXY.z == 0)
       return axisPoints[i];
-    ptTemp.setT(axisPoints[i]);
-    ptTemp.sub(originPoint);
+    ptTemp.sub2(axisPoints[i], originPoint);
     ptTemp.scale(0.5f);
     return ptTemp; 
   }
@@ -121,8 +120,7 @@ public class Axes extends FontLineShape {
         P3[] vertices = unitcell.getUnitCellVertices();
         P3 offset = unitcell.getCartesianOffset();
         if (fixedOrigin == null) {
-          originPoint.setT(offset);
-          originPoint.add(vertices[0]);
+          originPoint.add2(offset, vertices[0]);
         } else {
           offset = fixedOrigin;
         }

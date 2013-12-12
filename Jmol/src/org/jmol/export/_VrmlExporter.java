@@ -134,9 +134,7 @@ public class _VrmlExporter extends __CartesianExporter {
       // draw filled circle
 
       output("Transform{translation ");
-      tempV1.setT(pt1);
-      tempV1.add(pt2);
-      tempV1.scale(0.5f);
+      tempV1.ave(pt1, pt2);
       output(tempV1);
       output(" children Billboard{axisOfRotation 0 0 0 children Transform{rotation 1 0 0 1.5708");
       outputCylinderChildScaled(pt1, pt2, colix, GData.ENDCAPS_FLAT,
@@ -454,9 +452,7 @@ public class _VrmlExporter extends __CartesianExporter {
   
   protected void outputTransRot(P3 pt1, P3 pt2, int x, int y, int z,
                                 String pre, String post) {
-    tempV1.setT(pt2);
-    tempV1.add(pt1);
-    tempV1.scale(0.5f);
+    tempV1.ave(pt2, pt1);
     output("translation");
     output(pre);
     output(tempV1);

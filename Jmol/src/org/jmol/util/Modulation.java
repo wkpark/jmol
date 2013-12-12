@@ -26,18 +26,18 @@ public class Modulation {
   private double left, right;
 
   private char axis;
-  private final int type;
+  private final char type;
   private P3 params;
 
   private String utens;
 
   private final static String typeNames = "DF DS OF OC UF";
 
-  public static final int TYPE_DISP_FOURIER = 0;
-  public static final int TYPE_DISP_SAWTOOTH = 1;
-  public static final int TYPE_OCC_FOURIER = 2;
-  public static final int TYPE_OCC_CRENEL = 3;
-  public static final int TYPE_U_FOURIER = 4;
+  public static final char TYPE_DISP_FOURIER = 'f';
+  public static final char TYPE_DISP_SAWTOOTH = 's';
+  public static final char TYPE_OCC_FOURIER = 'o';
+  public static final char TYPE_OCC_CRENEL = 'c';
+  public static final char TYPE_U_FOURIER = 'u';
 
   /**
    * Each atomic modulation involves a fractional coordinate wave vector q, a
@@ -51,7 +51,7 @@ public class Modulation {
    * @param utens TODO
    * @param qCoefs
    */
-  public Modulation(char axis, int type, P3 params, String utens, P3 qCoefs) {
+  public Modulation(char axis, char type, P3 params, String utens, P3 qCoefs) {
     if (Logger.debuggingHigh)
       Logger.debug("MOD create " + Escape.eP(qCoefs) + " axis=" + axis + " type=" + type + " params=" + params + " utens=" + utens);
     this.axis = axis;
@@ -277,7 +277,8 @@ public class Modulation {
 
   public Hashtable<String, Object> getInfo() {
     Hashtable<String, Object> info = new Hashtable<String, Object>();
-    info.put("type", typeNames.substring(type*3, type*3 + 2).trim() + axis);
+    int t = (0 + type) * 3;
+    info.put("type", typeNames.substring(t, t + 2).trim() + axis);
     info.put("params", params);
     info.put("qCoefs", qCoefs);
     if (utens != null)

@@ -328,7 +328,7 @@ public class MSReader implements MSInterface {
       }
       if (Logger.debuggingHigh)
         Logger.debug("SetModulation: " + key + " " + params);
-      int type = key.charAt(0);
+      char type = key.charAt(0);
       pt_ = key.indexOf("#") + 1;
       String utens = null;
       switch (type) {

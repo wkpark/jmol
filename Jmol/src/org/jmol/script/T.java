@@ -124,6 +124,7 @@ public class T {
    *    |   |   |   |   |   |   |     
    *  x                  xxxxxxxxxxx setparam  "set THIS ...."
    *  x     x                        strparam
+   *  x    x                         intparam
    *  x   x                          floatparam
    *  x  x                           booleanparam
    * xx                              deprecatedparam
@@ -974,7 +975,6 @@ public class T {
   public final static int drawhover                      = booleanparam | 56;
   public final static int drawpicking                    = booleanparam | 57;
   public final static int dsspcalchydrogen               = booleanparam | 58;
-  public final static int dynamicmeasurements            = booleanparam | 59;
   public final static int ellipsoidarcs                  = booleanparam | 60;  
   public final static int ellipsoidarrows                = booleanparam | 61;  
   public final static int ellipsoidaxes                  = booleanparam | 62;  
@@ -2399,7 +2399,6 @@ public class T {
       "drawHover",                                T.t(drawhover),
       "drawPicking",                              T.t(drawpicking),
       "dsspCalculateHydrogenAlways",              T.t(dsspcalchydrogen),
-      "dynamicMeasurements",                      T.t(dynamicmeasurements),
       "ellipsoidArcs",                            T.t(ellipsoidarcs),
       "ellipsoidArrows",                          T.t(ellipsoidarrows),
       "ellipsoidAxes",                            T.t(ellipsoidaxes),

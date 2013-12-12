@@ -32,7 +32,6 @@ import javajs.util.A4;
 import javajs.util.P3;
 
 import org.jmol.util.Measure;
-import javajs.util.V3;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.constant.EnumVdw;
@@ -64,19 +63,28 @@ public class Measurement {
   public TickInfo tickInfo;
   public int traceX = Integer.MIN_VALUE, traceY;
 
-  protected int count;
-  protected int[] countPlusIndices = new int[5];
-  protected Point3fi[] pts;
-  protected float value;
+  public int count;
+  public int[] countPlusIndices = new int[5];
+  public Point3fi[] pts;
+  public float value;
+  
   public String strFormat;
+  public Text text;
 
   private Viewer viewer;
   private String strMeasurement;
-  private A4 aa;
-  private P3 pointArc;
-  public Text text;
   private String type;
 
+  // next three are used by MeaurementRenderer
+  
+  private boolean tainted;
+  public A4 renderAxis;
+  public P3 renderArc;
+  
+  public boolean isTainted() {
+    return (tainted && !(tainted = false));
+  }
+  
   public Measurement setM(ModelSet modelSet, Measurement m, float value, short colix,
                           String strFormat, int index) {
     //value Float.isNaN ==> pending
@@ -119,24 +127,12 @@ public class Measurement {
     return this;
   }
 
-  public int getCount() {
-    return count;
-  }
-
   public void setCount(int count) {
     setCountM(count);
   }
 
   protected void setCountM(int count) {
     this.count = countPlusIndices[0] = count;
-  }
-
-  public int[] getCountPlusIndices() {
-    return countPlusIndices;
-  }
-
-  public Point3fi[] getPoints() {
-    return pts;
   }
 
   public int getAtomIndex(int n) {
@@ -168,22 +164,6 @@ public class Measurement {
   public String getStringDetail() {
     return (count == 2 ? "Distance" : count == 3 ? "Angle" : "Torsion")
         + getMeasurementScript(" - ", false) + " : " + value;
-  }
-
-  public String getStrFormat() {
-    return strFormat;
-  }
-
-  public float getValue() {
-    return value;
-  }
-
-  public A4 getAxisAngle() {
-    return aa;
-  }
-
-  public P3 getPointArc() {
-    return pointArc;
   }
 
   public void refresh(Point3fi[] pts) {
@@ -220,32 +200,15 @@ public class Measurement {
   }
 
   protected void formatMeasurement(String units) {
-    strMeasurement = null;
-    if (Float.isNaN(value) || count == 0)
+    tainted = true;
+    switch (Float.isNaN(value) ? 0 : count) {
+    default:
+      strMeasurement = null;
       return;
-    switch (count) {
     case 2:
       strMeasurement = formatDistance(units);
       return;
     case 3:
-      if (value == 180) {
-        aa = null;
-        pointArc = null;
-      } else {
-        V3 vectorBA = new V3();
-        V3 vectorBC = new V3();
-        float radians = Measure.computeAngle(getAtom(1), getAtom(2),
-            getAtom(3), vectorBA, vectorBC, false);
-        V3 vectorAxis = new V3();
-        vectorAxis.cross(vectorBA, vectorBC);
-        aa = A4
-            .new4(vectorAxis.x, vectorAxis.y, vectorAxis.z, radians);
-
-        vectorBA.normalize();
-        vectorBA.scale(0.5f);
-        pointArc = P3.newP(vectorBA);
-      }
-      //$FALL-THROUGH$
     case 4:
       strMeasurement = formatAngle(value);
       return;
@@ -473,8 +436,8 @@ public class Measurement {
   }
 
   public static int find(List<Measurement> measurements, Measurement m) {
-    int[] indices = m.getCountPlusIndices();
-    Point3fi[] points = m.getPoints();
+    int[] indices = m.countPlusIndices;
+    Point3fi[] points = m.pts;
     for (int i = measurements.size(); --i >= 0;)
       if (measurements.get(i).sameAsPoints(indices, points))
         return i;

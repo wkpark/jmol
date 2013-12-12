@@ -24,12 +24,16 @@
 
 package org.jmol.render;
 
+import java.util.Hashtable;
+import java.util.Map;
+
 import org.jmol.modelset.Measurement;
 import org.jmol.modelset.MeasurementPending;
 import org.jmol.script.T;
 import org.jmol.shape.Measures;
 import org.jmol.util.C;
 import org.jmol.util.GData;
+import org.jmol.util.Measure;
 import org.jmol.util.Point3fi;
 
 import javajs.util.A4;
@@ -41,12 +45,29 @@ import javajs.util.P3i;
 
 public class MeasuresRenderer extends LabelsRenderer {
 
-  private Measurement m;
   private boolean doJustify;
-  private short mad0;
-  protected Point3fi[] p = new Point3fi[4];
   private boolean modulating;
+  private short mad0;
+  
+  /**
+   * modulation points, which must be refreshed based on
+   * phase of the vibration; keyed on atom index.
+   * 
+   */
+  private Map<Integer, Point3fi> mpts;
+
+  private Measurement m;
+  private Point3fi[] p;
   private int count;
+
+  private A4 aaT;
+  private M3 matrixT;
+  
+  @Override
+  protected void initRenderer() {
+    mpts = new Hashtable<Integer, Point3fi>();
+    p = new Point3fi[4];
+  }
   
   @Override
   protected boolean render() {
@@ -56,13 +77,13 @@ public class MeasuresRenderer extends LabelsRenderer {
       atomPt = new Point3fi();
     Measures measures = (Measures) shape;
     doJustify = viewer.getBoolean(T.justifymeasurements);
-    modulating = viewer.isVibrationOn() && modelSet.bsModulated != null; 
+    modulating = modelSet.bsModulated != null; 
     // note that this COULD be screen pixels if <= 20. 
     imageFontScaling = viewer.getImageFontScaling();
     mad0 = measures.mad;
     font3d = g3d.getFont3DScaled(measures.font3d, imageFontScaling);
     m = measures.measurementPending;
-    if (!isExport && m != null && (count = m.getCount())!= 0)
+    if (!isExport && m != null && (count = m.count)!= 0)
       renderPendingMeasurement();
     if (!viewer.getBoolean(T.showmeasurements))
       return false;
@@ -70,7 +91,7 @@ public class MeasuresRenderer extends LabelsRenderer {
     measures.setVisibilityInfo();
     for (int i = measures.measurementCount; --i >= 0;) {
       m = measures.measurements.get(i);
-      if (!m.isVisible || !m.isValid || (count = m.getCount()) == 1 && m.traceX == Integer.MIN_VALUE)
+      if (!m.isVisible || !m.isValid || (count = m.count) == 1 && m.traceX == Integer.MIN_VALUE)
         continue;
       getPoints();
       colix = m.colix;
@@ -86,31 +107,38 @@ public class MeasuresRenderer extends LabelsRenderer {
       g3d.setColix(colix);
       colixA = colixB = colix;
       renderMeasurement(showMeasurementLabels);
+      //checkAtoms("m3");
     }
     return false;
   }
 
   private void getPoints() {
-    for (int j = count; --j >= 0;)
-      p[j] = getAtom(j);
-    m.refresh(p);
+    for (int j = count; --j >= 0;) {
+      int i = m.getAtomIndex(j + 1);
+      Point3fi pt = (i >= 0 && modulating ? getModAtom(i) : m.getAtom(j + 1));
+      if (pt.sD < 0) {
+        viewer.transformPtScr(pt, pt0i);
+        pt.sX = pt0i.x;
+        pt.sY = pt0i.y;
+        pt.sZ = pt0i.z;
+      }
+      p[j] = pt;
+    }
+    if (modulating)
+      m.refresh(p);
   }
 
-  private Point3fi[] mpts = new Point3fi[4];
-  
-  private Point3fi getAtom(int n) {
-    int i = m.getAtomIndex(n + 1);
-    Point3fi pt = (i < 0 || !modulating ? m.getAtom(n + 1)
-        : (mpts[n] = modelSet.getDynamicAtom(i, mpts[n])));
-    if (pt.sD < 0) {
-      viewer.transformPtScr(pt, pt0i);
-      pt.sX = pt0i.x;
-      pt.sY = pt0i.y;
-      pt.sZ = pt0i.z;
-    }
+  private Point3fi getModAtom(int i) {
+    Integer ii = Integer.valueOf(i);
+    Point3fi pt = mpts.get(ii);
+    if (pt != null)
+      ii = null;
+    pt = modelSet.getDynamicAtom(i, pt);    
+    if (ii != null)
+      mpts.put(ii,  pt);
     return pt;
   }
-
+ 
   private void renderMeasurement(boolean renderLabel) {
     String s = (renderLabel ? m.getString() : null);
     if (s != null) {
@@ -182,9 +210,6 @@ public class MeasuresRenderer extends LabelsRenderer {
     }
   }
                           
-  private A4 aaT = new A4();
-  private M3 matrixT = new M3();
-
   private void renderAngle(String s, Point3fi a, Point3fi b, Point3fi c) {
     int zOffset = b.sD + 10;
     int zA = a.sZ - a.sD - 10;
@@ -197,9 +222,7 @@ public class MeasuresRenderer extends LabelsRenderer {
     if (s == null)
       return;
     radius = (radius + 1) / 2;
-
-    A4 aa = m.getAxisAngle();
-    if (aa == null) { // 180 degrees
+    if (m.value > 175) {
       if (m.text == null) {
         int offset = (int) Math.floor(5 * imageFontScaling);
         g3d.setColix(labelColix);
@@ -211,15 +234,27 @@ public class MeasuresRenderer extends LabelsRenderer {
       }
       return;
     }
-    int dotCount = (int) Math.floor((aa.angle / (2 * Math.PI)) * 64);
-    float stepAngle = aa.angle / dotCount;
-    aaT.setAA(aa);
+    if (m.isTainted()) {
+      float radians = Measure.computeAngle(p[0], p[1], p[2],
+          vectorT2, vectorT3, false);
+      vectorT.cross(vectorT2, vectorT3);
+      m.renderAxis = A4.new4(vectorT.x, vectorT.y, vectorT.z, radians);
+      vectorT2.normalize();
+      vectorT2.scale(0.5f);
+      m.renderArc = P3.newP(vectorT2);
+    }
+    if (aaT == null) {
+      aaT = new A4();
+      matrixT = new M3();
+    }
+    int dotCount = (int) Math.floor((m.renderAxis.angle / (2 * Math.PI)) * 64);
+    float stepAngle = m.renderAxis.angle / dotCount;
+    aaT.setAA(m.renderAxis);
     int iMid = dotCount / 2;
-    P3 ptArc = m.getPointArc();
     for (int i = dotCount; --i >= 0;) {
       aaT.angle = i * stepAngle;
       matrixT.setAA(aaT);
-      pointT.setT(ptArc);
+      pointT.setT(m.renderArc);
       matrixT.transform(pointT);
       pointT.add(b);
       // NOTE! Point3i screen is just a pointer 
@@ -231,7 +266,7 @@ public class MeasuresRenderer extends LabelsRenderer {
       g3d.drawPixel(p3i.x, p3i.y, zArc);
       if (i != iMid)
         continue;
-      pointT.setT(ptArc);
+      pointT.setT(m.renderArc);
       pointT.scale(1.1f);
       // next line modifies Point3i point3iScreenTemp
       matrixT.transform(pointT);

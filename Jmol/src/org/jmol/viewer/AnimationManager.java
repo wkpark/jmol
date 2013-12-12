@@ -38,7 +38,6 @@ import org.jmol.modelset.ModelSet;
 public class AnimationManager {
 
   private JmolThread animationThread;
-  private JmolThread modulationThread;
   public Viewer viewer;
   
   AnimationManager(Viewer viewer) {
@@ -77,7 +76,7 @@ public class AnimationManager {
     if (stopped && !viewer.getSpinOn())
       viewer.refresh(3, "Viewer:setAnimationOff");
     animation(false);
-    stopModulationThread();
+    //stopModulationThread();
     viewer.setStatusFrameChanged(false, true);
     
   }
@@ -309,19 +308,6 @@ public class AnimationManager {
     lastFramePainted = currentAnimationFrame;
   }
   
-  public void setModulationPlay(int modT1, int modT2) {
-    if (modT1 == Integer.MAX_VALUE || !viewer.haveModelSet() || viewer.isHeadless()) {
-      stopThread(false);
-      return;
-    }
-    if (modulationThread == null) {
-      modulationPlay = true;
-      modulationThread = (JmolThread) Interface.getOptionInterface("thread.ModulationThread");
-      modulationThread.setManager(this, viewer, new int[] {modT1, modT2} );
-      modulationThread.start();
-    }
-  }
-  
   void resumeAnimation() {
     if(currentModelIndex < 0)
       setAnimationRange(firstFrameIndex, lastFrameIndex);
@@ -434,17 +420,6 @@ public class AnimationManager {
   private int lastFramePainted;
   private int lastModelPainted;
   private int intAnimThread;
-  public boolean modulationPlay;
-  public float modulationFps = 1;
-  public BS bsModulating;
-  
-  public void setModulationFps(float fps) {
-    if (fps > 0)
-      modulationFps = fps;
-    else
-      stopModulationThread();
-  }
-  
   private void setViewer(boolean clearBackgroundModel) {
     viewer.setTrajectory(currentModelIndex);
     viewer.setFrameOffset(currentModelIndex);
@@ -544,13 +519,38 @@ public class AnimationManager {
     return frameStep * direction * currentDirection;
   }
 
-  public void stopModulationThread() {
-    if (modulationThread != null) {
-      modulationThread.interrupt();
-      modulationThread = null;
-    }
-    modulationPlay = false;
-  }
+//private JmolThread modulationThread;
+//public boolean modulationPlay;
+//public float modulationFps = 1;
+//public BS bsModulating;
+//
+//public void setModulationFps(float fps) {
+//  if (fps > 0)
+//    modulationFps = fps;
+//  else
+//    stopModulationThread();
+//}
+
+//public void setModulationPlay(int modT1, int modT2) {
+//if (modT1 == Integer.MAX_VALUE || !viewer.haveModelSet() || viewer.isHeadless()) {
+//  stopThread(false);
+//  return;
+//}
+//if (modulationThread == null) {
+//  modulationPlay = true;
+//  modulationThread = (JmolThread) Interface.getOptionInterface("thread.ModulationThread");
+//  modulationThread.setManager(this, viewer, new int[] {modT1, modT2} );
+//  modulationThread.start();
+//}
+//}
+//public void stopModulationThread() {
+//if (modulationThread != null) {
+//  modulationThread.interrupt();
+//  modulationThread = null;
+//}
+//modulationPlay = false;
+//}
+//
 
 
 }

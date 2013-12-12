@@ -1035,7 +1035,7 @@ public class StateCreator extends JmolStateCreator {
     appendCmd(commands, "measures delete");
     for (int i = 0; i < measurementCount; i++) {
       Measurement m = mList.get(i);
-      int count = m.getCount();
+      int count = m.count;
       SB sb = new SB().append("measure");
       if (m.thisID != null)
         sb.append(" ID ").append(Escape.eS(m.thisID));
@@ -1072,9 +1072,9 @@ public class StateCreator extends JmolStateCreator {
       if (shape.bsColixSet != null && shape.bsColixSet.get(i))
         BSUtil.setMapBitSet(temp, i, i, Shape.getColorCommandUnk("measure",
             m.colix, shape.translucentAllowed));
-      if (m.getStrFormat() != null)
+      if (m.strFormat != null)
         BSUtil.setMapBitSet(temp, i, i, "measure "
-            + Escape.eS(m.getStrFormat()));
+            + Escape.eS(m.strFormat));
     }
     if (nHidden > 0)
       if (nHidden == measurementCount)

@@ -298,7 +298,7 @@ public class LabelToken {
       return "";
     setValues(tokens, htValues);
     Atom[] atoms = m.modelSet.atoms;
-    int[] indices = m.getCountPlusIndices();
+    int[] indices = m.countPlusIndices;
     for (int i = indices[0]; i >= 1; --i)
       if (indices[i] >= 0)
         formatLabelAtomArray(viewer, atoms[indices[i]], tokens, (char) ('0' + i), null);

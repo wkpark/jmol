@@ -1044,7 +1044,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         //$FALL-THROUGH$
       case T.all:
         if (tok == T.all)
-          v = viewer.getModelUndeletedAtomsBitSet(-1);
+          v = viewer.getAllAtoms();
         else
           v = atomExpression(st, i, 0, true, true, true, true);
         i = iToken;
@@ -3571,7 +3571,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         rpn.addOp(instruction);
         break;
       case T.all:
-        rpn.addXBs(viewer.getModelUndeletedAtomsBitSet(-1));
+        rpn.addXBs(viewer.getAllAtoms());
         break;
       case T.none:
         rpn.addXBs(new BS());
@@ -8956,7 +8956,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (nPoints == 0 && translation != null)
         points[0] = viewer.getAtomSetCenter(bsAtoms != null ? bsAtoms
             : isSelected ? viewer.getSelectionSet(false) : viewer
-                .getModelUndeletedAtomsBitSet(-1));
+                .getAllAtoms());
       if (helicalPath && translation != null) {
         points[1] = P3.newP(points[0]);
         points[1].add(translation);
@@ -9401,7 +9401,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (chk)
       return;
     if (bs == null)
-      bs = viewer.getModelUndeletedAtomsBitSet(-1);
+      bs = viewer.getAllAtoms();
     int nDeleted = viewer.deleteAtoms(bs, false);
     if (!(tQuiet || scriptLevel > scriptReportingLevel))
       scriptStatusOrBuffer(GT.i(GT._("{0} atoms deleted"), nDeleted));
@@ -9472,7 +9472,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       viewer.selectBonds(bs);
     } else {
       if (bs.length() > viewer.getAtomCount()) {
-        BS bs1 = viewer.getModelUndeletedAtomsBitSet(-1);
+        BS bs1 = viewer.getAllAtoms();
         bs1.and(bs);
         bs = bs1;
       }
@@ -11127,7 +11127,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     case T.vanderwaals:
       if (chk)
         return;
-      viewer.setAtomProperty(viewer.getModelUndeletedAtomsBitSet(-1),
+      viewer.setAtomProperty(viewer.getAllAtoms(),
           T.vanderwaals, -1, Float.NaN, null, null, null);
       switch (tokAt(2)) {
       case T.probe:

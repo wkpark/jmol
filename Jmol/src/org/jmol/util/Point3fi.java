@@ -39,7 +39,7 @@ import javajs.util.P3i;
  * associated modelIndex (for measurement points)
  * 
  */
-public class Point3fi extends P3 {
+public class Point3fi extends P3 implements Cloneable {
   public int index;
   public int sX;
   public int sY;
@@ -51,6 +51,14 @@ public class Point3fi extends P3 {
     p3f.x = p3i.x;
     p3f.y = p3i.y;
     p3f.z = p3i.z;
+  }
+  
+ public Point3fi copy() {
+    try {
+      return (Point3fi) clone();
+    } catch (CloneNotSupportedException e) {
+      return null;
+    }
   }
 
 }

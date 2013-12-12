@@ -120,10 +120,10 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
       this.measurementPending = (MeasurementPending) value;
       if (measurementPending == null)
         return;
-      if (measurementPending.getCount() > 1)
+      if (measurementPending.count > 1)
         viewer.setStatusMeasuring("measurePending", measurementPending
-            .getCount(), measurementPending.toVector(false).toString(),
-            measurementPending.getValue());
+            .count, measurementPending.toVector(false).toString(),
+            measurementPending.value);
       return;
     }
 
@@ -257,7 +257,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
       int atomMax = firstAtomDeleted + nAtomsDeleted;
       for (int i = measurementCount; --i >= 0;) {
         mt = measurements.get(i);
-        int[] indices = mt.getCountPlusIndices();
+        int[] indices = mt.countPlusIndices;
         for (int j = 1; j <= indices[0]; j++) {
           int iAtom = indices[j];
           if (iAtom >= firstAtomDeleted) {
@@ -351,7 +351,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
       return Integer.valueOf(measurementCount);
     if ("countPlusIndices".equals(property))
       return (index < measurementCount ? 
-          measurements.get(index).getCountPlusIndices() : null);
+          measurements.get(index).countPlusIndices : null);
     if ("stringValue".equals(property))
       return (index < measurementCount ? measurements.get(index).getString() : null);
     if ("pointInfo".equals(property))
@@ -470,7 +470,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
     // we create a set of atoms involving all atoms with the
     // same atom number in each model
     List<Object> points = new  List<Object>();
-    int nPoints = m.getCount();
+    int nPoints = m.count;
     for (int i = 1; i <= nPoints; i++) {
       int atomIndex = m.getAtomIndex(i);
       points.addLast(atomIndex >= 0 ? (Object) viewer.getAtomBits(T.atomno,
@@ -537,7 +537,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
       return;
     measurements.addLast(measureNew);
     viewer.setStatusMeasuring("measureCompleted", measurementCount++,
-        measureNew.toVector(false).toString(), measureNew.getValue());
+        measureNew.toVector(false).toString(), measureNew.value);
   }
 
   private void deleteI(int i) {
@@ -606,14 +606,14 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
   
   private Map<String, Object> getInfo(int index) {
     Measurement m = measurements.get(index);
-    int count = m.getCount();
+    int count = m.count;
     Map<String, Object> info = new Hashtable<String, Object>();
     info.put("index", Integer.valueOf(index));
     info.put("type", (count == 2 ? "distance" : count == 3 ? "angle"
         : "dihedral"));
     info.put("strMeasurement", m.getString());
     info.put("count", Integer.valueOf(count));
-    info.put("value", Float.valueOf(m.getValue()));
+    info.put("value", Float.valueOf(m.value));
     TickInfo tickInfo = m.tickInfo;
     if (tickInfo != null) {
       info.put("ticks", tickInfo.ticks);
@@ -651,7 +651,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
       m.isVisible = false;
       if(mad == 0 || m.isHidden)
         continue;
-      for (int iAtom = m.getCount(); iAtom > 0; iAtom--) {
+      for (int iAtom = m.count; iAtom > 0; iAtom--) {
         int atomIndex = m.getAtomIndex(iAtom);
         if (atomIndex >= 0) {
           if (!modelSet.atoms[atomIndex].isClickable())

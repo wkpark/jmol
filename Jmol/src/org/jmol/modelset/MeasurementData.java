@@ -245,7 +245,7 @@ public class MeasurementData implements JmolMeasurementClient {
       return;
     }
     BS bs = (BS) points.get(thispt);
-    int[] indices = m.getCountPlusIndices();
+    int[] indices = m.countPlusIndices;
     int thisAtomIndex = (thispt == 0 ? Integer.MAX_VALUE : indices[thispt]);
     if (thisAtomIndex < 0) {
       nextMeasure(thispt + 1, ptLastAtom, m, thisModel);

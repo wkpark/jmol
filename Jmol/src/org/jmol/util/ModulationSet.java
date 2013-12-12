@@ -129,6 +129,7 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
 
   private P3 tinv = new P3();
   private SymmetryInterface unitCell;
+  private boolean isQ;
   
   public synchronized ModulationSet calculate(T3 fracT, boolean isQ) {
     x = y = z = 0;
@@ -173,17 +174,25 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
    * 
    */
   @Override
-  public void setModTQ(boolean isOn, T3 qtOffset, boolean isQ, float scale, SymmetryInterface uc) {
+  public synchronized void setModTQ(T3 a, boolean isOn, T3 qtOffset, boolean isQ,
+                       float scale, SymmetryInterface uc) {
+    if (enabled)
+      addTo(a, -1);
+    enabled = false;
     this.scale = scale;
-    this.enabled = isOn;
     unitCell = uc;
-    if (qtOffset == null)
-      return;
-    if (isQ) {
-      this.qtOffset.setT(qtOffset);
-      qtOffset = null;
+    if (qtOffset != null) {
+      if (isQ) {
+        this.isQ = isQ;
+        this.qtOffset.setT(qtOffset);
+        qtOffset = null;
+      }
+      calculate(qtOffset, isQ);
     }
-    calculate(qtOffset, isQ);
+    if (isOn) {
+      addTo(a, 1);
+      enabled = true;
+    }
   }
 
   @Override
@@ -196,7 +205,7 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
     
   @Override
   public String getState() {
-    return "modulation " + (!enabled ? "OFF" : qtOffset == null ? "ON" : Escape.eP(qtOffset));
+    return "modulation " + (!enabled ? "OFF" : qtOffset == null ? "ON" : Escape.eP(qtOffset) + " " + isQ);
   }
 
   @Override

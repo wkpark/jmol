@@ -1718,7 +1718,7 @@ public class ActionManager implements EventManager {
       exitMeasurementMode();
       return 0;
     }
-    int measurementCount = measurementPending.getCount();
+    int measurementCount = measurementPending.count;
     if (measurementPending.traceX != Integer.MIN_VALUE && measurementCount == 2)
       measurementPending.setCount(measurementCount = 1);
     return (measurementCount == 4 && !dblClick ? measurementCount
@@ -1823,8 +1823,8 @@ public class ActionManager implements EventManager {
       if (!isBound(clickAction, (isDelete ? ACTION_deleteBond
           : ACTION_connectAtoms)))
         return;
-      if (measurementQueued == null || measurementQueued.getCount() == 0
-          || measurementQueued.getCount() > 2) {
+      if (measurementQueued == null || measurementQueued.count == 0
+          || measurementQueued.count > 2) {
         resetMeasurement();
         enterMeasurementMode(atomIndex);
       }
@@ -1849,14 +1849,14 @@ public class ActionManager implements EventManager {
     case PICKING_MEASURE_SEQUENCE:
       if (!isBound(clickAction, ACTION_pickMeasure))
         return;
-      if (measurementQueued == null || measurementQueued.getCount() == 0
-          || measurementQueued.getCount() > n) {
+      if (measurementQueued == null || measurementQueued.count == 0
+          || measurementQueued.count > n) {
         resetMeasurement();
         enterMeasurementMode(atomIndex);
       }
       addToMeasurement(atomIndex, ptClicked, true);
       queueAtom(atomIndex, ptClicked);
-      int i = measurementQueued.getCount();
+      int i = measurementQueued.count;
       if (i == 1) {
         viewer.setPicked(-1);
         viewer.setPicked(atomIndex);
@@ -1867,7 +1867,7 @@ public class ActionManager implements EventManager {
         getSequence();
       } else {
         viewer.setStatusMeasuring("measurePicked", n, measurementQueued
-            .getStringDetail(), measurementQueued.getValue());
+            .getStringDetail(), measurementQueued.value);
         if (atomPickingMode == PICKING_MEASURE
             || pickingStyleMeasure == PICKINGSTYLE_MEASURE_ON) {
           runScript("measure "
@@ -2001,7 +2001,7 @@ public class ActionManager implements EventManager {
   private void assignNew(int x, int y) {
     // H C + -, etc.
     // also check valence and add/remove H atoms as necessary?
-    if (measurementPending.getCount() == 2) {
+    if (measurementPending.count == 2) {
       viewer.undoMoveActionClear(-1, T.save, true);
       runScript("assign connect "
           + measurementPending.getMeasurementScript(" ", false));
@@ -2062,9 +2062,9 @@ public class ActionManager implements EventManager {
         runScript("spin off");
       return;
     }
-    if (measurementQueued.getCount() >= 2)
+    if (measurementQueued.count >= 2)
       resetMeasurement();
-    int queuedAtomCount = measurementQueued.getCount();
+    int queuedAtomCount = measurementQueued.count;
     if (queuedAtomCount == 1) {
       if (ptClicked == null) {
         if (measurementQueued.getAtomIndex(1) == atomIndex)
@@ -2144,7 +2144,7 @@ public class ActionManager implements EventManager {
   private void toggleMeasurement() {
     if (measurementPending == null)
       return;
-    int measurementCount = measurementPending.getCount();
+    int measurementCount = measurementPending.count;
     if (measurementCount >= 2 && measurementCount <= 4)
       runScript("!measure "
           + measurementPending.getMeasurementScript(" ", true));

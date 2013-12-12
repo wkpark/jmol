@@ -3122,6 +3122,10 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return modelSet.getMoleculeBitSetForAtom(atomIndex);
   }
 
+  public BS getAllAtoms() {
+    return getModelUndeletedAtomsBitSet(-1);
+  }
+
   public BS getModelUndeletedAtomsBitSet(int modelIndex) {
     BS bs = modelSet.getModelAtomBitSetIncludingDeleted(modelIndex, true);
     excludeAtoms(bs, false);
@@ -7740,7 +7744,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   private void setDefaults() {
-    setShapeSizeRD(JC.SHAPE_BALLS, rd, getModelUndeletedAtomsBitSet(-1));
+    setShapeSizeRD(JC.SHAPE_BALLS, rd, getAllAtoms());
   }
 
   private void setAntialias(int tok, boolean TF) {
@@ -9335,7 +9339,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     refreshMeasures(true);
     if (!global.monitorEnergy)
       return;
-    minimize(0, 0, getModelUndeletedAtomsBitSet(-1), null, 0, false, false, true,
+    minimize(0, 0, getAllAtoms(), null, 0, false, false, true,
         false);
     echoMessage(getParameter("_minimizationForceField") + " Energy = "
         + getParameter("_minimizationEnergy"));
@@ -10370,22 +10374,22 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return (!getTestFlag(1));
   }
 
-  public void setModulation(boolean isOn, P3 t1, boolean isQ, int t2, boolean isThread) {
-    if (t2 == Integer.MAX_VALUE || !isQ) {
-      if (!isThread)
-        animationManager.setModulationPlay(Integer.MAX_VALUE, 0);
+  public void setModulation(BS bs, boolean isOn, P3 t1, boolean isQ) {
+//    if (t2 == Integer.MAX_VALUE || !isQ) {
+//      if (!isThread)
+//        animationManager.setModulationPlay(Integer.MAX_VALUE, 0);
       if (isQ)
-        global.setI("_modt", (int) t1.x);
-      modelSet.setModulation(getSelectionSet(false), isOn, t1, isQ);
-    } else {
-      animationManager.setModulationPlay((int) t1.x, t2);
-    }
+        global.setS("_modt", Escape.eP(t1));
+      modelSet.setModulation(bs == null ? getAllAtoms() : bs, isOn, t1, isQ);
+//    } else {
+//      animationManager.setModulationPlay((int) t1.x, t2);
+//    }
     refreshMeasures(true);
   }
 
-  public void setModulationFps(float fps) {
-    animationManager.setModulationFps(fps);
-  }
+//  public void setModulationFps(float fps) {
+//    animationManager.setModulationFps(fps);
+//  }
 
   public void checkInMotion(int state) {
     switch (state) {

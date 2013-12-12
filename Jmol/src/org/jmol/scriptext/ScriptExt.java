@@ -4749,7 +4749,7 @@ public class ScriptExt implements JmolScriptExtension {
           bsAtoms = eval.atomExpression(args, pt, 0, true, false, true, true);
           pt = eval.iToken + 1;
         } else {
-          bsAtoms = viewer.getModelUndeletedAtomsBitSet(-1);
+          bsAtoms = viewer.getAllAtoms();
         }
         if (!chk)
           bsFrames = viewer.getModelBitSet(bsAtoms, true);
@@ -6101,20 +6101,41 @@ public class ScriptExt implements JmolScriptExtension {
           isSilent, false);
   }
 
+  /**
+   * Allows for setting one or more specific t-values
+   * as well as full unit-cell shifts (multiples of q).
+   * 
+   * @throws ScriptException
+   */
   private void modulation() throws ScriptException {
+    
+    // modulation on/off  (all atoms)
+    // moduation {atom set} on/off
+    // modulation int  q-offset
+    // modulation x.x  t-offset
+    // modulation {t1 t2 t3} 
+    // modulation {q1 q2 q3} TRUE 
     P3 qtOffset = null;
-    int frameN = Integer.MAX_VALUE;
+//    int frameN = Integer.MAX_VALUE;
     boolean mod = true;
     boolean isQ = false;
+    BS bs = null;
     switch (getToken(1).tok) {
     case T.off:
       mod = false;
       //$FALL-THROUGH$
+    case T.nada:
     case T.on:
+      break;
+    case T.bitset:
+    case T.expressionBegin:
+      bs = atomExpressionAt(1);
+      mod = (tokAt(2) != T.off);
       break;
     case T.leftbrace:
     case T.point3f:
       qtOffset = eval.getPoint3f(1, false);
+      isQ = (tokAt(eval.iToken) == T.on);
       break;
     case T.decimal:
       float t1 = floatParameter(1);
@@ -6125,27 +6146,27 @@ public class ScriptExt implements JmolScriptExtension {
       qtOffset = P3.new3(t, t, t);
       isQ = true;
       break;
-    case T.fps:
-      float f = floatParameter(2);
-      if (!chk)
-        viewer.setModulationFps(f);
-      return;
     case T.scale:
       float scale = floatParameter(2);
       if (!chk)
         viewer.setFloatProperty("modulationScale", scale);
       return;
-    case T.play:
-      int t0 = intParameter(2);
-      frameN = intParameter(3);
-      qtOffset = P3.new3(t0, t0, t0);
-      isQ = true;
-      break;
+//    case T.fps:
+//      float f = floatParameter(2);
+//      if (!chk)
+//        viewer.setModulationFps(f);
+//      return;
+//    case T.play:
+//      int t0 = intParameter(2);
+//      frameN = intParameter(3);
+//      qtOffset = P3.new3(t0, t0, t0);
+//      isQ = true;
+//      break;
     default:
       invArg();
     }
     if (!chk)
-      viewer.setModulation(mod, qtOffset, isQ, frameN, false);
+      viewer.setModulation(bs, mod, qtOffset, isQ);
 
   }
 
@@ -7450,7 +7471,7 @@ public class ScriptExt implements JmolScriptExtension {
       return false;
     BS bs = (x1 != null ? (BS) x1.value : args.length > 2
         && args[1].tok == T.bitset ? (BS) args[1].value : viewer
-        .getModelUndeletedAtomsBitSet(-1));
+        .getAllAtoms());
     String xyz;
     switch (args[0].tok) {
     case T.string:
@@ -9090,7 +9111,7 @@ public class ScriptExt implements JmolScriptExtension {
       fmin = JC.DEFAULT_MIN_CONNECT_DISTANCE;
     }
     if (atoms1 == null)
-      atoms1 = viewer.getModelUndeletedAtomsBitSet(-1);
+      atoms1 = viewer.getAllAtoms();
     if (haveDecimal && atoms2 == null)
       atoms2 = atoms1;
     if (atoms2 != null) {

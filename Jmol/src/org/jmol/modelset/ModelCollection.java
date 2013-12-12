@@ -30,7 +30,6 @@ import javajs.util.OC;
 import javajs.util.List;
 import javajs.util.PT;
 import javajs.util.SB;
-import javajs.util.T3;
 
 import java.util.Date;
 import java.util.Enumeration;
@@ -2058,7 +2057,7 @@ abstract public class ModelCollection extends BondCollection {
     BS bsB = null;
     List<Bond> vHBonds = new List<Bond>();
     if (specInfo.length() == 0) {
-      bsA = bsB = viewer.getModelUndeletedAtomsBitSet(-1);
+      bsA = bsB = viewer.getAllAtoms();
       calcRasmolHydrogenBonds(bsA, bsB, vHBonds, true, 1, false, null);
     } else {
       for (int i = 0; i < specInfo.length();) {
@@ -2082,7 +2081,7 @@ abstract public class ModelCollection extends BondCollection {
 
   public BS getSequenceBits(String specInfo, BS bs) {
     if (bs == null)
-      bs = viewer.getModelUndeletedAtomsBitSet(-1);
+      bs = viewer.getAllAtoms();
     BS bsResult = new BS();
     if (specInfo.length() > 0)
       for (int i = 0; i < modelCount; ++i)
@@ -3424,13 +3423,7 @@ abstract public class ModelCollection extends BondCollection {
       if (!(v instanceof JmolModulationSet))
         continue;
       JmolModulationSet ms = (JmolModulationSet) v;
-      Atom a = atoms[i];
-      SymmetryInterface uc = getUnitCell(a.modelIndex); 
-      if (ms.isEnabled())
-        ms.addTo(a, -1);
-      ms.setModTQ(isOn, qtOffset, isQ, scale, uc);
-      if (isOn)
-        ms.addTo(a, 1);
+      ms.setModTQ(atoms[i], isOn, qtOffset, isQ, scale, getUnitCell(atoms[i].modelIndex));
       if (bsModulated != null)
         bsModulated.setBitTo(i, isOn);
       //System.out.println(a.x + " " + a.y + " " + a.z + " ms is " + ms + " " + ms.enabled + " " + ms.t);
@@ -3438,13 +3431,15 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public Point3fi getDynamicAtom(int i, Point3fi pt) {
-    if (!bsModulated.get(i))
+    Vibration v = getVibration(i, false);
+    if (v == null)
       return atoms[i];
     if (pt == null)
       pt = new Point3fi();
-    pt.sD = -1;
     pt.setT(atoms[i]);
-    return viewer.getVibrationPoint(vibrations[i], pt);
+    pt = viewer.getVibrationPoint(v, pt);
+    pt.sD = -1;
+    return pt;
   }
 
   private Quaternion[] vOrientations;

@@ -1955,7 +1955,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     if (global.atomTypes.length() > 0)
       htParams.put("atomTypes", global.atomTypes);
     if (!htParams.containsKey("lattice"))
-      htParams.put("lattice", getDefaultLattice());
+      htParams.put("lattice", global.ptDefaultLattice);
     if (global.applySymmetryToBonds)
       htParams.put("applySymmetryToBonds", Boolean.TRUE);
     if (global.pdbGetHeader)
@@ -8220,7 +8220,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public P3 getDefaultLattice() {
-    return global.getDefaultLattice();
+    return global.ptDefaultLattice;
   }
 
   public BS getTaintedAtoms(byte type) {

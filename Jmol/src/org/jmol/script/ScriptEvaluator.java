@@ -5038,6 +5038,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         coordinatesAreFractional = true;
         break;
+      case T.spec_chain: //? 
+      case T.misc: // NaN
+          coord[n++] = Float.NaN;
+        break;
       case T.decimal:
       case T.spec_model2:
         if (integerOnly)

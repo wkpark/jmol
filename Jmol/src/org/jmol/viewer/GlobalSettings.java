@@ -466,13 +466,10 @@ public class GlobalSettings {
     boolean legacyAutoBonding = false;
     boolean legacyHAddition = false;
 
-    void setDefaultLattice(P3 ptLattice) {
-      ptDefaultLattice.setT(ptLattice);
-    }
-
-    P3 getDefaultLattice() {
-      return ptDefaultLattice;
-    }
+  void setDefaultLattice(P3 p) {
+    if (!Float.isNaN(p.x + p.y + p.z))
+      ptDefaultLattice.setT(p);
+  }
 
     //centering and perspective
 

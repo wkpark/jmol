@@ -124,7 +124,6 @@ public class T {
    *    |   |   |   |   |   |   |     
    *  x                  xxxxxxxxxxx setparam  "set THIS ...."
    *  x     x                        strparam
-   *  x    x                         intparam
    *  x   x                          floatparam
    *  x  x                           booleanparam
    * xx                              deprecatedparam

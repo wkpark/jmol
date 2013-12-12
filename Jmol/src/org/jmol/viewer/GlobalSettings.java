@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import javajs.util.DF;
+import javajs.util.List;
 import javajs.util.P3;
 
 import org.jmol.constant.EnumAxesMode;
@@ -14,6 +15,7 @@ import org.jmol.constant.EnumStructure;
 import org.jmol.java.BS;
 import org.jmol.script.SV;
 import org.jmol.script.T;
+import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Txt;
@@ -902,16 +904,27 @@ public class GlobalSettings {
 
     void setPicked(int atomIndex) {
       SV pickedSet = null;
+      SV pickedList = null;
       if (atomIndex >= 0) {
         setI("_atompicked", atomIndex);
         pickedSet = (SV) getParam("picked", true);
+        pickedList = (SV) getParam("pickedList", true);
       }
       if (pickedSet == null || pickedSet.tok != T.bitset) {
         pickedSet = SV.newV(T.bitset, new BS());
+        pickedList = SV.getVariableList(new List<Object>());
         setUserVariable("picked", pickedSet);
+        setUserVariable("pickedList", pickedList);
       }
-      if (atomIndex >= 0)
-        SV.getBitSet(pickedSet, false).set(atomIndex);
+      if (atomIndex < 0)
+        return;
+       SV.getBitSet(pickedSet, false).set(atomIndex);
+       SV p = pickedList.pushPop(null);
+       // don't allow double click
+       if (p.tok == T.bitset)
+         pickedList.pushPop(p);
+       if (p.tok != T.bitset || !((BS) p.value).get(atomIndex))
+         pickedList.pushPop(SV.newV(T.bitset, BSUtil.newAndSetBit(atomIndex)));
     }
 
     String resolveDataBase(String database, String id) {

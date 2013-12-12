@@ -870,7 +870,7 @@ public class Parameters {
     origin = null;
     steps = null;
     volumeData = null;
-    center = null;
+    center.x = Float.MAX_VALUE;
     isAnisotropic = false;
   }
 

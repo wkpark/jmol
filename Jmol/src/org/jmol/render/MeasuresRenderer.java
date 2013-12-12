@@ -56,6 +56,7 @@ public class MeasuresRenderer extends LabelsRenderer {
       atomPt = new Point3fi();
     Measures measures = (Measures) shape;
     doJustify = viewer.getBoolean(T.justifymeasurements);
+    modulating = viewer.isVibrationOn() && modelSet.bsModulated != null; 
     // note that this COULD be screen pixels if <= 20. 
     imageFontScaling = viewer.getImageFontScaling();
     mad0 = measures.mad;
@@ -67,7 +68,6 @@ public class MeasuresRenderer extends LabelsRenderer {
       return false;
     boolean showMeasurementLabels = viewer.getBoolean(T.measurementlabels);
     measures.setVisibilityInfo();
-    modulating = viewer.isVibrationOn() && modelSet.bsModulated != null; 
     for (int i = measures.measurementCount; --i >= 0;) {
       m = measures.measurements.get(i);
       if (!m.isVisible || !m.isValid || (count = m.getCount()) == 1 && m.traceX == Integer.MIN_VALUE)
@@ -286,10 +286,10 @@ public class MeasuresRenderer extends LabelsRenderer {
     if (((MeasurementPending) m).haveTarget) {
       renderMeasurement(renderLabel);
       return;
-    }
+    }    
+    Point3fi atomLast = p[count - 1];
     if (count > 1)
       renderMeasurement(false);
-    Point3fi atomLast = p[count - 1];
     int lastZ = atomLast.sZ - atomLast.sD - 10;
     int x = viewer.getCursorX();
     int y = viewer.getCursorY();

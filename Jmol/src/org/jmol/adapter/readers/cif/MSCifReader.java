@@ -420,12 +420,11 @@ public class MSCifReader extends MSReader implements MSCifInterface {
   private M4 getMatrix4(CifReader cr, int i) {
     M4 m4 = new M4();
     float[] a = new float[16];
+    String key;
+    int p;
     for (; i < cr.tokenizer.fieldCount; ++i) {
-      int p = fieldProperty(cr, i);
-      if (p < 0)
-        continue;
-      String key = cr.fields[p];
-      if (!key.contains("_w_"))
+      if ((p = fieldProperty(cr, i)) < 0 
+          || !(key = cr.fields[p]).contains("_w_"))
         continue;
       int r = key.charAt(key.length() - 3) - '1';
       int c = key.charAt(key.length() - 1) - '1';

@@ -773,7 +773,7 @@ public class BS implements Cloneable, JSONEncodable {
     int numBits = (wordsInUse > 128) ? cardinality() : wordsInUse
         * BITS_PER_WORD;
     SB b = SB.newN(6 * numBits + 2);
-    b.appendC('{');
+    b.appendC('[');
 
     int i = nextSetBit(0);
     if (i != -1) {
@@ -786,7 +786,7 @@ public class BS implements Cloneable, JSONEncodable {
       }
     }
 
-    b.appendC('}');
+    b.appendC(']');
     return b.toString();
   }
   

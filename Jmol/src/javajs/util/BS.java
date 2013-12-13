@@ -25,6 +25,8 @@
 
 package javajs.util;
 
+import javajs.api.JSONEncodable;
+
 
 
 /**
@@ -72,7 +74,7 @@ package javajs.util;
  * @author Martin Buchholz
  * @since JDK1.0
  */
-public class BS implements Cloneable {
+public class BS implements Cloneable, JSONEncodable {
   /*
    * BitSets are packed into arrays of "words."
    * 
@@ -830,5 +832,9 @@ public class BS implements Cloneable {
     return n;
   }
 
+  @Override
+  public String toJSON() {
+    return toString();
+  }
 
 }

@@ -5720,7 +5720,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     global.unsetUserVariable(key);
   }
 
-  public String getVariableList() {
+  public Object getVariableList() {
     return global.getVariableList();
   }
 

@@ -155,6 +155,7 @@ public class PropertyManager implements JmolPropertyManager {
     "JSpecView"       , "<key>", "",
     "scriptQueueInfo" , "", "",
     "nmrInfo" , "<elementSymbol> or 'all' or 'shifts'", "all",
+    "variableInfo","<name>","all"
   };
 
   private final static int PROP_APPLET_INFO = 0;
@@ -204,7 +205,8 @@ public class PropertyManager implements JmolPropertyManager {
   private final static int PROP_JSPECVIEW = 38;
   private final static int PROP_SCRIPT_QUEUE_INFO = 39;
   private final static int PROP_NMR_INFO = 40;
-  private final static int PROP_COUNT = 41;
+  private final static int PROP_VAR_INFO = 41;
+  private final static int PROP_COUNT = 42;
 
   //// static methods used by Eval and Viewer ////
 
@@ -480,6 +482,8 @@ public class PropertyManager implements JmolPropertyManager {
       return viewer.getShapeProperty(JC.SHAPE_ISOSURFACE, "getData");
     case PROP_NMR_INFO:
       return viewer.getNMRCalculation().getInfo(myParam.toString());
+    case PROP_VAR_INFO:
+      return getVariables(myParam.toString());
     case PROP_JMOL_STATUS:
       return viewer.getStatusChanged(myParam.toString());
     case PROP_JMOL_VIEWER:
@@ -536,6 +540,11 @@ public class PropertyManager implements JmolPropertyManager {
       if (data[i].length() > 0)
         info.append("\n getProperty ").append(data[i]);
     return info.toString();
+  }
+
+  private Object getVariables(String name) {
+    return (name.toLowerCase().equals("all") ? viewer.global.getAllVariables()
+        : viewer.evaluateExpressionAsVariable(name));
   }
 
   static Object getFileInfo(Object objHeader, String type) {

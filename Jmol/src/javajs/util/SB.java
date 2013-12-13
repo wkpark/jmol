@@ -162,14 +162,16 @@ public class SB {
   }
 
   public SB appendO(Object data) {
-    /**
-     * @j2sNative
-     * 
-     *            this.s += data.toString();
-     * 
-     */
+    if (data != null) {
+      /**
+       * @j2sNative
+       * 
+       *            this.s += data.toString();
+       * 
+       */
     {
       sb.append(data);
+    }
     }
     return this;
   }

@@ -7936,6 +7936,12 @@ public class ScriptExt implements JmolScriptExtension {
     int pt = 0;
     String propertyName = (args.length > pt ? SV.sValue(args[pt++])
         .toLowerCase() : "");
+    boolean isJSON = false;
+    if (propertyName.equals("json") && args.length > pt) {
+      isJSON = true;
+      propertyName = SV.sValue(args[pt++]);
+    }
+      
     if (propertyName.startsWith("$")) {
       // TODO
     }
@@ -7962,7 +7968,8 @@ public class ScriptExt implements JmolScriptExtension {
     Object property = viewer.getProperty(null, propertyName, propertyValue);
     if (pt < args.length)
       property = viewer.extractProperty(property, args, pt);
-    return mp.addXObj(SV.isVariableType(property) ? property : Escape
+    return mp.addXObj(isJSON ? PT.toJSON(null, property) : 
+      SV.isVariableType(property) ? property : Escape
         .toReadable(propertyName, property));
   }
 
@@ -8180,6 +8187,10 @@ public class ScriptExt implements JmolScriptExtension {
     if (args.length > 1)
       return false;
     SV x = mp.getX();
+    if (x.tok == T.varray) {
+      mp.addXVar(x);
+      return evaluateList(mp, tok, args);
+    }
     String s = (tok == T.split && x.tok == T.bitset
         || tok == T.trim && x.tok == T.varray ? null : SV
         .sValue(x));
@@ -8297,6 +8308,12 @@ public class ScriptExt implements JmolScriptExtension {
       }
       return mp.addXFloat(sum);
     }
+    if (tok == T.join && x2.tok == T.string) {
+      SB sb = new SB();
+      for (int i = 0; i < len; i++)
+        sb.appendO(i > 0 ? x2.value : null).append(SV.sValue(alist1.get(i)));
+      return mp.addXStr(sb.toString());
+    }
 
     SV scalar = null;
 
@@ -8310,7 +8327,7 @@ public class ScriptExt implements JmolScriptExtension {
       PT.parseFloatArrayData(sList2, list2);
       len = Math.min(list1.length, list2.length);
     }
-    
+
     T token = opTokenFor(tok);
 
     SV[] olist = new SV[len];
@@ -8333,6 +8350,13 @@ public class ScriptExt implements JmolScriptExtension {
         b = SV.getVariable(SV.unescapePointOrBitsetAsVariable(sList2[i]));
       else
         b = SV.newV(T.decimal, Float.valueOf(list2[i]));
+      if (tok == T.join) {
+        if (a.tok != T.varray) {
+          List<SV> l = new List<SV>();
+          l.addLast(a);
+          a = SV.getVariableList(l);
+        }
+      }
       if (!mp.binaryOp(token,  a,  b))
         return false;
       olist[i] = mp.getX();
@@ -8343,6 +8367,7 @@ public class ScriptExt implements JmolScriptExtension {
   private T opTokenFor(int tok) {
     switch (tok) {
     case T.add:
+    case T.join:
       return T.tokenPlus;
     case T.sub:
       return T.tokenMinus;

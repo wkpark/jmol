@@ -1032,5 +1032,13 @@ public class GlobalSettings {
       return version;
     }
 
+    Object getAllVariables() {
+      Map<String, Object> map = new Hashtable<String, Object>();
+      map.putAll(htBooleanParameterFlags);
+      map.putAll(htNonbooleanParameterValues);
+      map.putAll(htUserVariables);
+      return map;
+    }
+
 
   }

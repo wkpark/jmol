@@ -25,6 +25,7 @@
 
 package org.jmol.java;
 
+import javajs.api.JSONEncodable;
 import javajs.util.SB;
 
 
@@ -67,7 +68,7 @@ import javajs.util.SB;
  * @author Martin Buchholz
  * @since JDK1.0
  */
-public class BS implements Cloneable {
+public class BS implements Cloneable, JSONEncodable {
   /*
    * BitSets are packed into arrays of "words." Currently a word is a long,
    * which consists of 64 bits, requiring 6 address bits. The choice of word
@@ -962,7 +963,7 @@ public class BS implements Cloneable {
     int numBits = (wordsInUse > 128) ? cardinality() : wordsInUse
         * BITS_PER_WORD;
     SB b = SB.newN(6 * numBits + 2);
-    b.appendC('{');
+    b.appendC('[');
 
     int i = nextSetBit(0);
     if (i != -1) {
@@ -975,7 +976,7 @@ public class BS implements Cloneable {
       }
     }
 
-    b.appendC('}');
+    b.appendC(']');
     return b.toString();
   }
   
@@ -991,6 +992,11 @@ public class BS implements Cloneable {
       if (get(i))
         n--;
     return n;
+  }
+
+  @Override
+  public String toJSON() {
+    return toString();
   }
 
 }

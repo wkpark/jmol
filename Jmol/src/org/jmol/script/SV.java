@@ -37,6 +37,8 @@ import org.jmol.java.BS;
 import org.jmol.modelset.BondSet;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
+
+import javajs.api.JSONEncodable;
 import javajs.util.List;
 import javajs.util.SB;
 
@@ -57,7 +59,7 @@ import javajs.util.V3;
  * ScriptVariable class
  * 
  */
-public class SV extends T {
+public class SV extends T implements JSONEncodable {
 
   final private static SV vT = newSV(on, 1, "true");
   final private static SV vF = newSV(off, 0, "false");
@@ -721,7 +723,7 @@ public class SV extends T {
     return PT.parseFloatStrict(s);
   }
 
-  static SV concatList(SV x1, SV x2,
+  public static SV concatList(SV x1, SV x2,
                                           boolean asNew) {
     List<SV> v1 = x1.getList();
     List<SV> v2 = x2.getList();
@@ -1266,24 +1268,27 @@ public class SV extends T {
     return list;
   }
 
-  static List<Object> listAny(SV x) {
-    List<Object> list = new List<Object>();
-    List<SV> l = x.getList();
-    for (int i = 0; i < l.size(); i++) {
-      SV v = l.get(i);
-      List<SV> l2 = v.getList();
-      if (l2 == null) {
-        list.addLast(v.value);        
-      } else {
-        List<Object> o = new List<Object>();
-        for (int j = 0; j < l2.size(); j++) {
-          v = l2.get(j);
-        }
-        list.addLast(o);
-      }
-    }
-    return list;    
-  }
+// I have no idea! 
+//
+//  static List<Object> listAny(SV x) {
+//    List<Object> list = new List<Object>();
+//    List<SV> l = x.getList();
+//    for (int i = 0; i < l.size(); i++) {
+//      SV v = l.get(i);
+//      List<SV> l2 = v.getList();
+//      if (l2 == null) {
+//        list.addLast(v.value);        
+//      } else {
+//        List<Object> o = new List<Object>();
+//        for (int j = 0; j < l2.size(); j++) {
+//          v = l2.get(j);
+//        }
+//        list.addLast(o);
+//      }
+//    }
+//    return list;    
+//  }
+  
   public static float[] flistValue(T x, int nMin) {
     if (x.tok != varray)
       return new float[] { fValue(x) };
@@ -1346,5 +1351,19 @@ public class SV extends T {
       return true;
     }
   }
+
+  @Override
+  public String toJSON() {
+    switch (tok) {
+    case on:
+    case off:
+    case integer:
+    case decimal:
+      return sValue(this);
+    default:
+     return PT.toJSON(null, value);
+    }
+  }
+
 
 }

@@ -26,6 +26,8 @@ package javajs.util;
 
 import java.util.Map;
 
+import javajs.api.JSONEncodable;
+
 /**
  * a combination of Parsing and Text-related utility classes
  * 
@@ -715,19 +717,22 @@ public class PT {
 
   @SuppressWarnings("unchecked")
   public static String toJSON(String infoType, Object info) {
-  
+
     //Logger.debug(infoType+" -- "+info);
-  
+
     SB sb = new SB();
     String sep = "";
     if (info == null)
       return packageJSON(infoType, null);
     if (info instanceof Integer || info instanceof Float
-        || info instanceof Double)
+        || info instanceof Double) {
       return packageJSON(infoType, info.toString());
-    if (info instanceof String)
-      return packageJSON(infoType, fixString((String) info));
-    if (isAS(info)) {
+    } 
+    if (info instanceof String) {
+      sb.append(fixString((String) info));
+    } else if (info instanceof JSONEncodable) {
+      sb.append(((JSONEncodable) info).toJSON());
+    } else if (isAS(info)) {
       sb.append("[");
       int imax = ((String[]) info).length;
       for (int i = 0; i < imax; i++) {
@@ -735,9 +740,7 @@ public class PT {
         sep = ",";
       }
       sb.append("]");
-      return packageJSONSb(infoType, sb);
-    }
-    if (isAI(info)) {
+    } else if (isAI(info)) {
       sb.append("[");
       int imax = ((int[]) info).length;
       for (int i = 0; i < imax; i++) {
@@ -745,9 +748,7 @@ public class PT {
         sep = ",";
       }
       sb.append("]");
-      return packageJSONSb(infoType, sb);
-    }
-    if (isAF(info)) {
+    } else if (isAF(info)) {
       sb.append("[");
       int imax = ((float[]) info).length;
       for (int i = 0; i < imax; i++) {
@@ -755,9 +756,7 @@ public class PT {
         sep = ",";
       }
       sb.append("]");
-      return packageJSONSb(infoType, sb);
-    }
-    if (isAD(info)) {
+    } else if (isAD(info)) {
       sb.append("[");
       int imax = ((double[]) info).length;
       for (int i = 0; i < imax; i++) {
@@ -765,9 +764,7 @@ public class PT {
         sep = ",";
       }
       sb.append("]");
-      return packageJSONSb(infoType, sb);
-    }
-    if (isAP(info)) {
+    } else if (isAP(info)) {
       sb.append("[");
       int imax = ((P3[]) info).length;
       for (int i = 0; i < imax; i++) {
@@ -776,9 +773,7 @@ public class PT {
         sep = ",";
       }
       sb.append("]");
-      return packageJSONSb(infoType, sb);
-    }
-    if (isASS(info)) {
+    } else if (isASS(info)) {
       sb.append("[");
       int imax = ((String[][]) info).length;
       for (int i = 0; i < imax; i++) {
@@ -786,9 +781,7 @@ public class PT {
         sep = ",";
       }
       sb.append("]");
-      return packageJSONSb(infoType, sb);
-    }
-    if (isAII(info)) {
+    } else if (isAII(info)) {
       sb.append("[");
       int imax = ((int[][]) info).length;
       for (int i = 0; i < imax; i++) {
@@ -796,9 +789,7 @@ public class PT {
         sep = ",";
       }
       sb.append("]");
-      return packageJSONSb(infoType, sb);
-    }
-    if (isAFF(info)) {
+    } else if (isAFF(info)) {
       sb.append("[");
       int imax = ((float[][]) info).length;
       for (int i = 0; i < imax; i++) {
@@ -806,9 +797,7 @@ public class PT {
         sep = ",";
       }
       sb.append("]");
-      return packageJSONSb(infoType, sb);
-    }
-    if (isAFFF(info)) {
+    } else if (isAFFF(info)) {
       sb.append("[");
       int imax = ((float[][][]) info).length;
       for (int i = 0; i < imax; i++) {
@@ -816,9 +805,7 @@ public class PT {
         sep = ",";
       }
       sb.append("]");
-      return packageJSONSb(infoType, sb);
-    }
-    if (info instanceof List) {
+    } else if (info instanceof List) {
       sb.append("[ ");
       int imax = ((List<?>) info).size();
       for (int i = 0; i < imax; i++) {
@@ -826,9 +813,7 @@ public class PT {
         sep = ",";
       }
       sb.append(" ]");
-      return packageJSONSb(infoType, sb);
-    }
-    if (info instanceof M4) {
+    } else if (info instanceof M4) {
       float[] x = new float[4];
       M4 m4 = (M4) info;
       sb.appendC('[');
@@ -839,9 +824,7 @@ public class PT {
         sb.append(toJSON(null, x));
       }
       sb.appendC(']');
-      return packageJSONSb(infoType, sb);
-    }
-    if (info instanceof M3) {
+    } else if (info instanceof M3) {
       float[] x = new float[3];
       M3 m3 = (M3) info;
       sb.appendC('[');
@@ -852,27 +835,17 @@ public class PT {
         sb.append(toJSON(null, x));
       }
       sb.appendC(']');
-      return packageJSONSb(infoType, sb);
-    }
-    if (info instanceof T3) {
+    } else if (info instanceof T3) {
       addJsonTuple(sb, (T3) info);
-      return packageJSONSb(infoType, sb);
-    }
-    if (info instanceof A4) {
-      sb.append("[").appendF(((A4) info).x).append(",").appendF(
-          ((A4) info).y).append(",").appendF(((A4) info).z)
-          .append(",").appendF(
-              (float) (((A4) info).angle * 180d / Math.PI))
-          .append("]");
-      return packageJSONSb(infoType, sb);
-    }
-    if (info instanceof P4) {
+    } else if (info instanceof A4) {
+      sb.append("[").appendF(((A4) info).x).append(",").appendF(((A4) info).y)
+          .append(",").appendF(((A4) info).z).append(",")
+          .appendF((float) (((A4) info).angle * 180d / Math.PI)).append("]");
+    } else if (info instanceof P4) {
       sb.append("[").appendF(((P4) info).x).append(",").appendF(((P4) info).y)
           .append(",").appendF(((P4) info).z).append(",")
           .appendF(((P4) info).w).append("]");
-      return packageJSONSb(infoType, sb);
-    }
-    if (info instanceof Map) {
+    } else if (info instanceof Map) {
       sb.append("{ ");
       for (String key : ((Map<String, ?>) info).keySet()) {
         sb.append(sep).append(
@@ -880,19 +853,14 @@ public class PT {
         sep = ",";
       }
       sb.append(" }");
-      return packageJSONSb(infoType, sb);
+    } else {
+      sb.append(fixString(info.toString()));
     }
-    return packageJSON(infoType, fixString(info.toString()));
-  }
-
-  public static String packageJSONSb(String infoType, SB sb) {
     return packageJSON(infoType, sb.toString());
   }
 
   public static String packageJSON(String infoType, String info) {
-    if (infoType == null)
-      return info;
-    return "\"" + infoType + "\": " + info;
+    return (infoType == null ? info : "\"" + infoType + "\": " + info);
   }
 
   public static String fixString(String s) {
@@ -905,8 +873,8 @@ public class PT {
     {}
     if (s == null || s.indexOf("{\"") == 0) //don't doubly fix JSON strings when retrieving status
       return s;
-    s = simpleReplace(s, "\"", "''");
-    s = simpleReplace(s, "\n", " | ");
+    s = simpleReplace(s, "\"", "\\\"");
+    s = simpleReplace(s, "\n", "\\n");
     return "\"" + s + "\"";
   }
 

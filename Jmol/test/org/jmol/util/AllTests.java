@@ -32,8 +32,6 @@ public class AllTests {
     TestSuite suite = new TestSuite("Test for org.jmol.util");
     //$JUnit-BEGIN$
     suite.addTestSuite(TestCommandHistory.class);
-    suite.addTestSuite(TestIntInt2ObjHash.class);
-    suite.addTestSuite(TestInt2ObjHash.class);
     //$JUnit-END$
     return suite;
   }

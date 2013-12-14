@@ -6128,9 +6128,15 @@ public class ScriptExt implements JmolScriptExtension {
     case T.bitset:
     case T.expressionBegin:
       bs = atomExpressionAt(1);
-      if (tokAt(eval.iToken + 1) == T.off) {
-        eval.iToken++;
+      switch (tokAt(eval.iToken + 1)) {
+      case T.nada:
+        break;
+      case T.off:
         mod = false;
+        //$FALL-THROUGH$
+      case T.on:
+        eval.iToken++;
+        break;
       }
       eval.checkLast(eval.iToken);
       break;

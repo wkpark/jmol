@@ -1,4 +1,4 @@
-//Jmol Documentation JavaScript 11.6
+//Jmol Documentation JavaScript
 //BH 8:26 PM 9/28/2005 HTML 4.0 STRICT compatibility; fix for popup under Opera--NO! Breaks Mac!
 //BH 2:45 PM 12/2/2005 added ?docbook 3:19 PM 12/09/2005
 //BH 8:14 AM 1/30/2006 minor improvements
@@ -19,9 +19,9 @@ showrecent = !dowritexml && !dowritedocbook
 
 lastupdate = ""
 startmessage ="See an error? Something missing? Please <a href=\"mailto:hansonr@stolaf.edu?subject=Jmol applet documentation\">let us know</a>. For a wide variety of interactive examples, see <a href=examples-12/new.htm>new.htm</a> and <a href=../jsmol/jsmol.htm>jsmol.htm</a>."
-defaultversion = "13.2"
-removelist = ";13.4;13.2;13.0;12.4;12.2;12.0;11.8;11.6;11.4;11.2;11.0;10.2" //semis on LEFT ONLY
-versionlist = ";13.4;13.2;13.0;12.4;12.2;12.0;" //semis on BOTH SIDES
+defaultversion = "14.0"
+removelist = ";14.0;13.2;13.0;12.4;12.2;12.0;11.8;11.6;11.4;11.2;11.0;10.2" //semis on LEFT ONLY
+versionlist = ";14.0;13.2;13.0;12.4;12.2;12.0;" //semis on BOTH SIDES
 exampledir = "examples/" //will be ignored if the example has a / in the name
 datadir = "examples/"
 jmoljs = "Jmol.js"

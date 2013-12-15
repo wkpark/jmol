@@ -541,7 +541,7 @@ public class ScriptManager implements JmolScriptManager {
         cmd = "isosurface ";
         return;
       }
-      if (!fileName.endsWith(".spt")) {
+      if (!fileName.toLowerCase().endsWith(".spt")) {
         String type = getFileTypeName(fileName);
         if (type == null) {
           type = JmolBinary.determineSurfaceTypeIs(viewer

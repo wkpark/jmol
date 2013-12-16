@@ -9418,21 +9418,19 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     viewer.setNoneSelected(slen == 4 && tokAt(2) == T.none);
     // select beginexpr bonds ( {...} ) endex pr
     if (tokAt(2) == T.bitset && getToken(2).value instanceof BondSet
-        || getToken(2).tok == T.bonds && getToken(3).tok == T.bitset) {
-      if (slen == iToken + 2) {
-        if (!chk)
-          viewer.selectBonds((BS) theToken.value);
-        return;
-      }
-      invArg();
+        || tokAt(2) == T.bonds && getToken(3).tok == T.bitset) {
+      if (slen != iToken + 2)
+        invArg();
+      if (!chk)
+        viewer.selectBonds((BS) theToken.value);
+      return;
     }
-    if (getToken(2).tok == T.measure) {
-      if (slen == 5 && getToken(3).tok == T.bitset) {
-        if (!chk)
-          setShapeProperty(JC.SHAPE_MEASURES, "select", theToken.value);
-        return;
-      }
-      invArg();
+    if (tokAt(2) == T.measure) {
+      if (slen != 5 || getToken(3).tok != T.bitset)
+        invArg();
+      if (!chk)
+        setShapeProperty(JC.SHAPE_MEASURES, "select", theToken.value);
+      return;
     }
     BS bs;
     int addRemove = 0;
@@ -9451,6 +9449,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if (!chk)
           viewer.setSelectionHalos(tok == T.on);
         tok = tokAt(++i);
+        if (tok == T.nada)
+          return;
         break;
       }
       switch (tok) {

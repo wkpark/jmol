@@ -1116,6 +1116,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           setU(atom, (propertyOf[i] - ANISO_BETA_11) % 6, parseFloatStr(field));
           break;
         case SUBSYS_ID:
+          atom.alternateLocationID = firstChar;
           subid = field;
           break;
         case SITE_MULT:

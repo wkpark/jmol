@@ -7642,11 +7642,9 @@ public class ScriptExt implements JmolScriptExtension {
             BS bs2 = SV.bsSelectVar(x2);
             float[] data = new float[bs.cardinality()];
             Atom[] atoms = viewer.modelSet.atoms;
-            for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-              pt2 = atoms[i];
-              data[i] = ((Float) eval.getBitsetProperty(bs2, intValue, pt2,
+            for (int i = bs.nextSetBit(0), p = 0; i >= 0; i = bs.nextSetBit(i + 1))
+              data[p++] = ((Float) eval.getBitsetProperty(bs2, intValue, atoms[i],
                   plane2, x1.value, null, false, x1.index, false)).floatValue();
-            }
             return mp.addXAF(data);
           }
           return mp.addXObj(eval.getBitsetProperty(bs, intValue, pt2, plane2,

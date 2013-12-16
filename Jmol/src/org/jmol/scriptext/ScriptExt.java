@@ -7625,23 +7625,49 @@ public class ScriptExt implements JmolScriptExtension {
   private boolean evaluateDot(ScriptMathProcessor mp, SV[] args, int tok, int intValue)
       throws ScriptException {
     // distance and dot
-    if (args.length != 1)
-      return false;
+    switch (args.length) {
+    case 1:
+      if (tok == T.dot)
+        return false;      
+      //$FALL-THROUGH$
+    case 2:
+      break;
+     default:
+       return false;
+    }
     SV x1 = mp.getX();
     SV x2 = args[0];
     P3 pt2 = (x2.tok == T.varray ? null : mp.ptValue(x2, false));
     P4 plane2 = mp.planeValue(x2);
     if (tok == T.distance) {
       int minMax = intValue & T.minmaxmask;
+      boolean isMinMax = (minMax == T.min || minMax == T.max);
       switch (x1.tok) {
       case T.bitset:
+        BS bs = SV.bsSelectVar(x1);
+        BS bs2 = null;
+        boolean returnAtom = (isMinMax && args.length == 2 && args[1].asBoolean());
         switch (x2.tok) {
         case T.bitset:
-          BS bs = SV.bsSelectVar(x1);
-          if (minMax == T.min || minMax == T.max) {
-            BS bs2 = SV.bsSelectVar(x2);
+          bs2 = (x2.tok == T.bitset ? SV.bsSelectVar(x2) : null);
+          //$FALL-THROUGH$
+        case T.point3f:
+          Atom[] atoms = viewer.modelSet.atoms;
+          if (returnAtom) {
+            float dMinMax = Float.NaN;
+            int iMinMax = Integer.MAX_VALUE;
+            for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+              float d = (bs2 == null ? atoms[i].distanceSquared(pt2) : ((Float) eval.getBitsetProperty(bs2, intValue, atoms[i],
+                  plane2, x1.value, null, false, x1.index, false)).floatValue());
+              if (minMax == T.min ? d >= dMinMax : d <= dMinMax)
+                  continue;
+              dMinMax = d;
+              iMinMax = i;              
+            }
+            return mp.addXBs(iMinMax == Integer.MAX_VALUE ? new BS() : BSUtil.newAndSetBit(iMinMax));
+          }
+          if (isMinMax) {
             float[] data = new float[bs.cardinality()];
-            Atom[] atoms = viewer.modelSet.atoms;
             for (int i = bs.nextSetBit(0), p = 0; i >= 0; i = bs.nextSetBit(i + 1))
               data[p++] = ((Float) eval.getBitsetProperty(bs2, intValue, atoms[i],
                   plane2, x1.value, null, false, x1.index, false)).floatValue();

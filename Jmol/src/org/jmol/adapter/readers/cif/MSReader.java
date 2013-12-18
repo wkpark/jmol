@@ -347,7 +347,12 @@ public class MSReader implements MSInterface {
     // Loop through all modulations, selecting only those for the current model.
     // Process O, D, and U modulations via method addAtomModulation
 
-    haveAtomMods = false;
+    if (htSubsystems == null) {
+      haveAtomMods = false;
+    } else {
+      haveAtomMods = true;
+      htAtomMods = new Hashtable<String, List<Modulation>>();
+    }
     for (Entry<String, P3> e : htModulation.entrySet()) {
       if ((key = checkKey(e.getKey(), true)) == null)
         continue;
@@ -532,6 +537,10 @@ public class MSReader implements MSInterface {
     // (Special positions should generate the same atom regardless of which operation is employed.)
 
     List<Modulation> list = htAtomMods.get(a.atomName);
+    if (list == null && a.altLoc != '\0' && htSubsystems != null) {
+      // force treatment if a subsystem
+      list = new List<Modulation>();
+    }
     if (list == null || cr.symmetry == null || a.bsSymmetry == null)
       return;
     int iop = Math.max(a.bsSymmetry.nextSetBit(0), 0);

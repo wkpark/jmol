@@ -569,16 +569,9 @@ public class CifReader extends AtomSetCollectionReader implements
     if (mr != null && str.equals("_cell_subsystem_code"))
       mr.processSubsystemLoopBlock();
 
-    if (str.startsWith("_geom_bond")) {
-      if (!doApplySymmetry) {
-        isMolecular = true;
-        doApplySymmetry = true;
-        latticeCells[0] = latticeCells[1] = latticeCells[2] = 1;
-      }
-      if (isMolecular) {
-        processGeomBondLoopBlock();
-        return;
-      }
+    if (str.startsWith("_geom_bond") && (isMolecular || !doApplySymmetry)) {
+      processGeomBondLoopBlock();
+      return;
     }
     skipLoop();
   }
@@ -1281,6 +1274,7 @@ public class CifReader extends AtomSetCollectionReader implements
     String name1 = null;
     String name2 = null;
     Integer order = Integer.valueOf(1);
+    int bondCount = 0;
     while (tokenizer.getData()) {
       int atomIndex1 = -1;
       int atomIndex2 = -1;
@@ -1328,11 +1322,19 @@ public class CifReader extends AtomSetCollectionReader implements
         //break;
         }
       }
-      if (atomIndex1 < 0 || atomIndex2 < 0)
+      if (atomIndex1 < 0 || atomIndex2 < 0 || distance == 0)
         continue;
-      if (distance > 0)
-        bondTypes.addLast(new Object[] { name1, name2, Float.valueOf(distance),
-            Float.valueOf(dx), order });
+      bondCount++;
+      bondTypes.addLast(new Object[] { name1, name2, Float.valueOf(distance),
+          Float.valueOf(dx), order });
+    }
+    if (bondCount > 0) {
+      Logger.info(bondCount + " bonds read");
+      if (!doApplySymmetry) {
+        isMolecular = true;
+        doApplySymmetry = true;
+        latticeCells[0] = latticeCells[1] = latticeCells[2] = 1;
+      }
     }
   }
 

@@ -42,15 +42,12 @@ public class UccageRenderer extends CageRenderer {
   byte fid;
   //boolean doLocalize;
   
-  private final P3[] verticesT = new P3[8];  
-  {
-    for (int i = 8; --i >= 0; ) {
-      verticesT[i] = new P3();
-    }
-  }
+  private final P3[] verticesT = new P3[8]; 
 
   @Override
   protected void initRenderer() {
+    for (int i = 8; --i >= 0; ) 
+      verticesT[i] = new P3();
     tickEdges = BoxInfo.uccageTickEdges;    
     draw000 = false;
   }

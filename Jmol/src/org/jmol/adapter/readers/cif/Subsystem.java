@@ -1,5 +1,6 @@
 package org.jmol.adapter.readers.cif;
 
+import javajs.util.List;
 import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.Matrix;
@@ -29,8 +30,8 @@ class Subsystem {
       for (int j = n; --j >= 0;)
         a[i][j] = iw[i][j];
     w = new Matrix(a, n, n);
-    if (w.trace() == n)
-      w = null;
+    //if (w.trace() == n)
+      //w = null;
   }
 
   public SymmetryInterface getSymmetry() {
@@ -107,8 +108,8 @@ class Subsystem {
     // 
 
     Matrix winv = w.inverse();
-    symmetry.createSpaceGroup(-1, "P1", symmetry.getNotionalUnitCell());
     SymmetryInterface s0 = msReader.cr.atomSetCollection.symmetry;
+    symmetry.createSpaceGroup(-1, "[subsystem " + code + "]", new List<M4>());
     int nOps = s0.getSpaceGroupOperationCount();
     for (int iop = 0; iop < nOps; iop++) {
       M3 gammaE = new M3();

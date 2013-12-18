@@ -78,7 +78,8 @@ class SpaceGroup {
   private static String[] canonicalSeitzList;
   
   int index;
-  
+
+  boolean isSSG;
   String name = "unknown!";
   String hallSymbol;
   //String schoenfliesSymbol; //parsed but not read
@@ -106,7 +107,7 @@ class SpaceGroup {
   int latticeOp = -1;
   Map<String, Integer> xyzList = new Hashtable<String, Integer>();
 
-  private int modulationDimension;
+  private int modDim;
 
   boolean doNormalize = true;
 
@@ -188,7 +189,7 @@ class SpaceGroup {
     }
     finalOperations = null;
     isBio = (name.indexOf("bio") >= 0);
-    if (index >= getSpaceGroups().length && !isBio) {
+    if (index >= getSpaceGroups().length && !isBio && name.indexOf("SSG:") < 0) {
       SpaceGroup sg = getDerivedSpaceGroup();
       if (sg != null)
         name = sg.getName();
@@ -343,7 +344,7 @@ class SpaceGroup {
    * @return valid space group or null
    */
   SpaceGroup getDerivedSpaceGroup() {
-    if (index >= 0 && index < spaceGroupDefinitions.length)
+    if (index >= 0 && index < spaceGroupDefinitions.length || modDim > 0)
       return this;
     if (finalOperations != null)
       setFinalOperations(null, 0, 0, false);
@@ -432,16 +433,16 @@ class SpaceGroup {
       xyz0 = xyz0.substring(1);
     if (xyzList.containsKey(xyz0))
       return xyzList.get(xyz0).intValue();
-    if (xyz0.startsWith("x1,x2,x3,x4") && modulationDimension == 0) {
+    if (xyz0.startsWith("x1,x2,x3,x4") && modDim == 0) {
       xyzList.clear();
       operationCount = 0;
-      modulationDimension = javajs.util.PT.parseInt(xyz0.substring(xyz0
+      modDim = javajs.util.PT.parseInt(xyz0.substring(xyz0
           .lastIndexOf("x") + 1)) - 3;
     }
 
     SymmetryOperation op = new SymmetryOperation(null, null, 0, opId,
         doNormalize);
-    if (!op.setMatrixFromXYZ(xyz0, modulationDimension)) {
+    if (!op.setMatrixFromXYZ(xyz0, modDim)) {
       Logger.error("couldn't interpret symmetry operation: " + xyz0);
       return -1;
     }
@@ -1406,14 +1407,14 @@ class SpaceGroup {
     int nOps = latticeOp = operationCount;
     for (int j = 0; j < lattvecs.size(); j++) {
       float[] data = lattvecs.get(j);
-      if (data.length > modulationDimension + 3)
+      if (data.length > modDim + 3)
         return;
       for (int i = 0; i < nOps; i++) {
         SymmetryOperation op = operations[i];
         float[] rotTrans = op.rotTransMatrix;
         SymmetryOperation newOp = new SymmetryOperation(null, null, 0, 0,
             doNormalize);
-        newOp.modDim = modulationDimension;
+        newOp.modDim = modDim;
         newOp.rotTransMatrix = AU.arrayCopyF(rotTrans, -1);
         newOp.setFromMatrix(data, false);
         newOp.xyzOriginal = newOp.xyz;

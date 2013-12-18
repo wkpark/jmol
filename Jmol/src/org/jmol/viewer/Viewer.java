@@ -4321,7 +4321,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     }
     if (captureParams != null && Boolean.FALSE != captureParams.get("captureEnabled")) {
       //showString(transformManager.matrixRotate.toString(), false);
-      if (System.currentTimeMillis() >= ((Long)captureParams.get("endTime")).longValue())
+      if (System.currentTimeMillis() + 50 > ((Long)captureParams.get("endTime")).longValue())
         captureParams.put("captureMode", Integer.valueOf(T.end));
         processWriteOrCapture(captureParams);
     }

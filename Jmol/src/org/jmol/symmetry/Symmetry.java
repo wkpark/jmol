@@ -160,9 +160,9 @@ public class Symmetry implements SymmetryInterface {
 
   @Override
   public boolean createSpaceGroup(int desiredSpaceGroupIndex, String name,
-                                  float[] notionalUnitCell) {
+                                  Object object) {
     spaceGroup = SpaceGroup.createSpaceGroup(desiredSpaceGroupIndex, name,
-        notionalUnitCell);
+        object);
     if (spaceGroup != null && Logger.debugging)
       Logger.debug("using generated space group " + spaceGroup.dumpInfo(null));
     return spaceGroup != null;
@@ -810,6 +810,7 @@ public class Symmetry implements SymmetryInterface {
    * @return Jones-Faithful representation
    */
   public String addOp(double[][] rot, double[][] trans) {
+    spaceGroup.isSSG = true;
     int d = rot.length;
     String s = "";
     for (int i = 0; i < d; i++) {

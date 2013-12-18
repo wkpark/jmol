@@ -52,7 +52,7 @@ public interface SymmetryInterface {
 
   public boolean createSpaceGroup(int desiredSpaceGroupIndex,
                                            String name,
-                                           float[] notionalUnitCell);
+                                           Object object);
 
   public String getSpaceGroupInfo(String name, SymmetryInterface cellInfo);
 

@@ -528,7 +528,6 @@ all support for previous versions removed
         <exclude name="**/Test*.class" />
         <exclude name="ant/**" />
         <exclude name="com/**" />
-        <include name="com/jama/**" />
         <include name="javajs/api/**" />
         <include name="javajs/awt/**" />
         <include name="javajs/export/**" />

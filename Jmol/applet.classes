@@ -1,7 +1,6 @@
 JmolApplet.java
 JmolSmilesApplet.java
 
-com/jama/*.java
 com/sparshui/client/*.java
 com/sparshui/common/*.java
 com/sparshui/common/messages/events/*.java

@@ -387,9 +387,10 @@ public class MSReader implements MSInterface {
             Logger.error("Missing qlist for F_" + fn);
             cr.appendLoadNote("Missing cell wave vector for atom wave vector "
                 + fn + " for " + key + " " + params);
-          } else {
-            addAtomModulation(atomName, axis, type, params, utens, qlist);
           }
+          qlist = getMod("F_1_q_");
+          if (qlist != null)
+            addAtomModulation(atomName, axis, type, params, utens, qlist);
         }
         haveAtomMods = true;
         break;

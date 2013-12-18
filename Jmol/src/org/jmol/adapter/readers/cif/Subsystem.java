@@ -58,10 +58,10 @@ class Subsystem {
       a[i] = new double[] { t[0], t[1], t[2] };
     }
     Matrix sd3 = new Matrix(a, d, 3);
-    Matrix w33 = w.getMatrix4(0, 0, 3, 3);
-    Matrix w3d = w.getMatrix4(0, 3, 3, d);
-    Matrix wd3 = w.getMatrix4(3, 0, d, 3);
-    Matrix wdd = w.getMatrix4(3, 3, d, d);
+    Matrix w33 = w.getSubmatrix(0, 0, 3, 3);
+    Matrix w3d = w.getSubmatrix(0, 3, 3, d);
+    Matrix wd3 = w.getSubmatrix(3, 0, d, 3);
+    Matrix wdd = w.getSubmatrix(3, 3, d, d);
     Matrix sd3new = wdd.times(sd3).add(wd3)
         .times(w3d.times(sd3).add(w33).inverse());
     q123 = new M3();

@@ -2,51 +2,11 @@ package javajs.util;
 
 /**
  * 
- * abbreviated for Jmol by Bob Hanson
+ * streamlined and refined for Jmol by Bob Hanson
+ * 
+ * from http://math.nist.gov/javanumerics/jama/
  * 
  * Jama = Java Matrix class.
- * <P>
- * The Java Matrix Class provides the fundamental operations of numerical linear
- * algebra. Various constructors create Matrices from two dimensional arrays of
- * double precision floating point numbers. Various "gets" and "sets" provide
- * access to submatrices and matrix elements. Several methods implement basic
- * matrix arithmetic, including matrix addition and multiplication, matrix
- * norms, and element-by-element array operations. Methods for reading and
- * printing matrices are also included. All the operations in this version of
- * the Matrix Class involve real matrices. Complex matrices may be handled in a
- * future version.
- * <P>
- * Five fundamental matrix decompositions, which consist of pairs or triples of
- * matrices, permutation vectors, and the like, produce results in five
- * decomposition classes. These decompositions are accessed by the Matrix class
- * to compute solutions of simultaneous linear equations, determinants, inverses
- * and other matrix functions. The five decompositions are:
- * <P>
- * <UL>
- * <LI>Cholesky Decomposition of symmetric, positive definite matrices.
- * <LI>LU Decomposition of rectangular matrices.
- * <LI>QR Decomposition of rectangular matrices.
- * <LI>Singular Value Decomposition of rectangular matrices.
- * <LI>Eigenvalue Decomposition of both symmetric and nonsymmetric square
- * matrices.
- * </UL>
- * <DL>
- * <DT><B>Example of use:</B></DT>
- * <P>
- * <DD>Solve a linear system A x = b and compute the residual norm, ||b - A x||.
- * <P>
- * 
- * <PRE>
- * double[][] vals = { { 1., 2., 3 }, { 4., 5., 6. }, { 7., 8., 10. } };
- * Matrix A = new Matrix(vals);
- * Matrix b = Matrix.random(3, 1);
- * Matrix x = A.solve(b);
- * Matrix r = A.times(x).minus(b);
- * double rnorm = r.normInf();
- * </PRE>
- * 
- * </DD>
- * </DL>
  * 
  * @author The MathWorks, Inc. and the National Institute of Standards and
  *         Technology.
@@ -55,31 +15,14 @@ package javajs.util;
 
 public class Matrix implements Cloneable {
 
-  /* ------------------------
-     Class variables
-   * ------------------------ */
-
-  /**
-   * Array for internal storage of elements.
-   * 
-   */
   protected double[][] a;
-
-  /**
-   * Row and column dimensions.
-   * 
-   */
   protected int m, n;
-
-  /* ------------------------
-     Constructors
-   * ------------------------ */
 
   /**
    * Construct a matrix quickly without checking arguments.
    * 
    * @param a
-   *        Two-dimensional array of doubles.
+   *        Two-dimensional array of doubles or null
    * @param m
    *        Number of rows.
    * @param n
@@ -93,27 +36,23 @@ public class Matrix implements Cloneable {
   }
 
   /**
-   * Make a deep copy of a matrix
+   * Get row dimension.
    * 
-   * @return copy
+   * @return m, the number of rows.
    */
 
-  public Matrix copy() {
-    Matrix x = new Matrix(null, m, n);
-    double[][] c = x.a;
-    for (int i = m; --i >= 0;)
-      for (int j = n; --j >= 0;)
-        c[i][j] = a[i][j];
-    return x;
+  public int getRowDimension() {
+    return m;
   }
 
   /**
-   * Clone the Matrix object.
+   * Get column dimension.
+   * 
+   * @return n, the number of columns.
    */
 
-  @Override
-  public Object clone() {
-    return this.copy();
+  public int getColumnDimension() {
+    return n;
   }
 
   /**
@@ -141,23 +80,27 @@ public class Matrix implements Cloneable {
   }
 
   /**
-   * Get row dimension.
+   * Make a deep copy of a matrix
    * 
-   * @return m, the number of rows.
+   * @return copy
    */
 
-  public int getRowDimension() {
-    return m;
+  public Matrix copy() {
+    Matrix x = new Matrix(null, m, n);
+    double[][] c = x.a;
+    for (int i = m; --i >= 0;)
+      for (int j = n; --j >= 0;)
+        c[i][j] = a[i][j];
+    return x;
   }
 
   /**
-   * Get column dimension.
-   * 
-   * @return n, the number of columns.
+   * Clone the Matrix object.
    */
 
-  public int getColumnDimension() {
-    return n;
+  @Override
+  public Object clone() {
+    return copy();
   }
 
   /**
@@ -167,45 +110,40 @@ public class Matrix implements Cloneable {
    *        Initial row index
    * @param j0
    *        Initial column index
-   * @param r
+   * @param nrows
    *        Number of rows
-   * @param c
+   * @param ncols
    *        Number of columns
-   * @return A(i0:i1,j0:j1)
+   * @return submatrix
    * 
    */
 
-  public Matrix getMatrix4(int i0, int j0, int r, int c) {
-    Matrix x = new Matrix(null, r, c);
+  public Matrix getSubmatrix(int i0, int j0, int nrows, int ncols) {
+    Matrix x = new Matrix(null, nrows, ncols);
     double[][] xa = x.a;
-    for (int i = r; --i >= 0;)
-      for (int j = c; --j >= 0;)
+    for (int i = nrows; --i >= 0;)
+      for (int j = ncols; --j >= 0;)
         xa[i][j] = a[i0 + i][j0 + j];
     return x;
   }
 
   /**
-   * Get a submatrix.
+   * Get a submatrix for a give number of columns and selected row set.
    * 
    * @param r
    *        Array of row indices.
-   * @param j0
-   *        Initial column index
-   * @param j1
-   *        Final column index
-   * @return A(r(:),j0:j1)
-   * @exception ArrayIndexOutOfBoundsException
+   * @param n
+   *        number of rows 
+   * @return submatrix
    */
 
-  public Matrix getMatrix(int[] r, int j0, int j1) {
-    Matrix x = new Matrix(null, r.length, ++j1 - j0);
+  public Matrix getMatrixSelected(int[] r, int n) {
+    Matrix x = new Matrix(null, r.length, n);
     double[][] xa = x.a;
-    //      for (int i = 0; i < r.length; i++) {
-    //        for (int j = j0; j <= j1; j++) {
     for (int i = r.length; --i >= 0;) {
       double[] b = a[r[i]];
-      for (int j = j1; --j >= j0;)
-        xa[i][j - j0] = b[j];
+      for (int j = n; --j >= 0;)
+        xa[i][j] = b[j];
     }
     return x;
   }
@@ -219,8 +157,8 @@ public class Matrix implements Cloneable {
   public Matrix transpose() {
     Matrix x = new Matrix(null, n, m);
     double[][] c = x.a;
-    for (int i = 0; i < m; i++)
-      for (int j = 0; j < n; j++)
+    for (int i = m; --i >= 0;)
+      for (int j = n; --j >= 0;)
         c[j][i] = a[i][j];
     return x;
   }
@@ -240,9 +178,7 @@ public class Matrix implements Cloneable {
    * 
    * @param b
    *        another matrix
-   * @return Matrix product, A * B
-   * @exception IllegalArgumentException
-   *            Matrix inner dimensions must agree.
+   * @return Matrix product, A * B or null for wrong dimension
    */
 
   public Matrix times(Matrix b) {
@@ -265,15 +201,11 @@ public class Matrix implements Cloneable {
   /**
    * Matrix inverse or pseudoinverse
    * 
-   * @return inverse(A) if A is square, pseudoinverse otherwise.
+   * @return inverse (m == n) or pseudoinverse (m != n)
    */
 
   public Matrix inverse() {
-    try {
-      return new LUDecomp().solve(identity(m, m));
-    } catch (Exception e) {
-      return null;
-    }
+    return new LUDecomp().solve(identity(m, m));
   }
 
   /**
@@ -302,9 +234,8 @@ public class Matrix implements Cloneable {
   public static Matrix identity(int m, int n) {
     Matrix x = new Matrix(null, m, n);
     double[][] xa = x.a;
-    for (int i = m; --i >= 0;)
-      for (int j = n; --j >= 0;)
-        xa[i][j] = (i == j ? 1.0 : 0.0);
+    for (int i = Math.min(m, n); --i >= 0;)
+      xa[i][i] = 1;
     return x;
   }
 
@@ -439,41 +370,34 @@ public class Matrix implements Cloneable {
      * 
      * @param b
      *        A Matrix with as many rows as A and any number of columns.
-     * @return X so that L*U*X = B(piv,:) or null for exception
-     * @throws Exception
-     *         if singular
+     * @return X so that L*U*X = B(piv,:) or null for wrong size or singular matrix
      */
 
-    Matrix solve(Matrix b) throws Exception {
+    Matrix solve(Matrix b) {
       if (b.m != m)
         return null;
       for (int j = 0; j < n; j++)
         if (LU[j][j] == 0)
-          throw new Exception("Matrix is singular.");
+          return null; // matrix is singular
 
       // Copy right hand side with pivoting
-      int nx = b.getColumnDimension();
-      Matrix x = b.getMatrix(piv, 0, nx - 1);
+      int nx = b.n;
+      Matrix x = b.getMatrixSelected(piv, nx);
       double[][] a = x.a;
 
       // Solve L*Y = B(piv,:)
-      for (int k = 0; k < n; k++) {
-        for (int i = k + 1; i < n; i++) {
-          for (int j = 0; j < nx; j++) {
+      for (int k = 0; k < n; k++)
+        for (int i = k + 1; i < n; i++)
+          for (int j = 0; j < nx; j++)
             a[i][j] -= a[k][j] * LU[i][k];
-          }
-        }
-      }
+
       // Solve U*X = Y;
-      for (int k = n - 1; k >= 0; k--) {
-        for (int j = 0; j < nx; j++) {
+      for (int k = n; --k >= 0;) {
+        for (int j = nx; --j >= 0;)
           a[k][j] /= LU[k][k];
-        }
-        for (int i = 0; i < k; i++) {
-          for (int j = 0; j < nx; j++) {
+        for (int i = k; --i >= 0;)
+          for (int j = nx; --j >= 0;)
             a[i][j] -= a[k][j] * LU[i][k];
-          }
-        }
       }
       return x;
     }

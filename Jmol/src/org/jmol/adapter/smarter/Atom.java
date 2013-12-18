@@ -51,7 +51,7 @@ public class Atom extends P3 implements Cloneable {
   public int atomSerial = Integer.MIN_VALUE;
   public int chainID; // not public -- set using AtomSetCollectionReader.setChainID
   
-  public char alternateLocationID = '\0';
+  public char altLoc = '\0';
   public String group3;
   public int sequenceNumber = Integer.MIN_VALUE;
   public char insertionCode = '\0';
@@ -316,4 +316,5 @@ public class Atom extends P3 implements Cloneable {
       return;
     vib.scale(vibScale);
   }
+
 }

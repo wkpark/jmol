@@ -137,6 +137,7 @@ public final class ModelLoader {
 */
 
   private boolean someModelsHaveUnitcells;
+  private boolean someModelsAreModulated;
   private boolean is2D;
   private boolean isPDB;
   public boolean isTrajectory; 
@@ -197,6 +198,8 @@ public final class ModelLoader {
         .getModelSetAuxiliaryInfoBoolean("someModelsHaveSymmetry");
     someModelsHaveUnitcells = modelSet
         .getModelSetAuxiliaryInfoBoolean("someModelsHaveUnitcells");
+    someModelsAreModulated = modelSet
+        .getModelSetAuxiliaryInfoBoolean("someModelsAreModulated");
     modelSet.someModelsHaveFractionalCoordinates = modelSet
         .getModelSetAuxiliaryInfoBoolean("someModelsHaveFractionalCoordinates");
     if (merging) {
@@ -786,7 +789,7 @@ public final class ModelLoader {
           group3,
           iterAtom.getVib(), 
           iterAtom.getAlternateLocationID(),
-          iterAtom.getRadius()
+          iterAtom.getRadius()          
           );
     }
     if (groupCount > 0 && addH) {
@@ -985,6 +988,8 @@ public final class ModelLoader {
      * 
      */
 
+    if (someModelsAreModulated && modelSet.bsModulated == null)
+      modelSet.bsModulated = new BS();
     if (someModelsHaveUnitcells) {
       modelSet.unitCells = new SymmetryInterface[modelSet.modelCount];
       modelSet.haveUnitCells = true;
@@ -1024,8 +1029,10 @@ public final class ModelLoader {
           modelIndex = atoms[i].modelIndex;
           c = modelSet.getUnitCell(modelIndex);
         }
-        if (c != null && c.getCoordinatesAreFractional())
+        if (c != null && c.getCoordinatesAreFractional()) {
+          c = atoms[i].getUnitCell();
           c.toCartesian(c.toSupercell(atoms[i]), false);
+        }
       }
       for (int imodel = baseModelIndex; imodel < modelSet.modelCount; imodel++) {
         if (modelSet.isTrajectory(imodel)) {

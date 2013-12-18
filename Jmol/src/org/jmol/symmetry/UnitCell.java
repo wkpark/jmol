@@ -439,13 +439,13 @@ class UnitCell extends SimpleUnitCell {
     return unitCellMultiplier ;
   }
 
-  public P3[] getUnitCellVectors() {
+  public V3[] getUnitCellVectors() {
     M4 m = matrixFractionalToCartesian;
-    return new P3[] { 
-        P3.newP(cartesianOffset),
-        P3.new3(m.m00, m.m10, m.m20), 
-        P3.new3(m.m01, m.m11, m.m21), 
-        P3.new3(m.m02, m.m12, m.m22) };
+    return new V3[] { 
+        V3.newV(cartesianOffset),
+        V3.new3(m.m00, m.m10, m.m20), 
+        V3.new3(m.m01, m.m11, m.m21), 
+        V3.new3(m.m02, m.m12, m.m22) };
   }
 
   public boolean isSameAs(UnitCell uc) {

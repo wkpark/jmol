@@ -31,8 +31,6 @@ public class Modulation {
 
   private String utens;
 
-  private final static String typeNames = "DF DS OF OC UF";
-
   public static final char TYPE_DISP_FOURIER = 'f';
   public static final char TYPE_DISP_SAWTOOTH = 's';
   public static final char TYPE_OCC_FOURIER = 'o';
@@ -277,8 +275,7 @@ public class Modulation {
 
   public Hashtable<String, Object> getInfo() {
     Hashtable<String, Object> info = new Hashtable<String, Object>();
-    int t = (0 + type) * 3;
-    info.put("type", typeNames.substring(t, t + 2).trim() + axis);
+    info.put("type", "" + type + axis);
     info.put("params", params);
     info.put("qCoefs", qCoefs);
     if (utens != null)

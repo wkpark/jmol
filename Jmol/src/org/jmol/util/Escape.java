@@ -303,7 +303,7 @@ public class Escape {
     return s.append("]").toString();
   }
 
-  public static String eAP(P3[] plist) {
+  public static String eAP(T3[] plist) {
     if (plist == null)
       return eS("");
     SB s = new SB();

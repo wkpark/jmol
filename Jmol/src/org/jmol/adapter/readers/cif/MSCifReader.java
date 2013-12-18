@@ -25,7 +25,6 @@ package org.jmol.adapter.readers.cif;
 
 import org.jmol.adapter.smarter.MSCifInterface;
 
-import javajs.util.M4;
 import javajs.util.P3;
 
 
@@ -413,13 +412,12 @@ public class MSCifReader extends MSReader implements MSCifInterface {
     while (cr.tokenizer.getData()) {
       fieldProperty(cr, 0);
       String id = field;
-      addSubsystem(id, getMatrix4(cr, 1), null);
+      addSubsystem(id, getSubSystemMatrix(cr, 1));
     }
   }
 
-  private M4 getMatrix4(CifReader cr, int i) {
-    M4 m4 = new M4();
-    float[] a = new float[16];
+  private int[][] getSubSystemMatrix(CifReader cr, int i) {
+    int[][] m = new int[3 + modDim][3 + modDim];
     String key;
     int p;
     for (; i < cr.tokenizer.fieldCount; ++i) {
@@ -428,10 +426,9 @@ public class MSCifReader extends MSReader implements MSCifInterface {
         continue;
       int r = key.charAt(key.length() - 3) - '1';
       int c = key.charAt(key.length() - 1) - '1';
-      a[r * 4 + c] = cr.parseFloatStr(cr.field);
+      m[r][c] = cr.parseIntStr(field);
     }
-    m4.setA(a, 0);
-    return m4;
+    return m;
   }
 
   private int fieldProperty(CifReader cr, int i) {

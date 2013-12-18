@@ -794,7 +794,7 @@ REMARK 290 REMARK: NULL
     atom.atomName = name;
     char ch = altID;
     if (ch != ' ')
-      atom.alternateLocationID = ch;
+      atom.altLoc = ch;
     atom.group3 = group3;
     ch = chain < 256 ? (char) chain : 0;
     if (chainAtomCounts != null)
@@ -906,19 +906,19 @@ REMARK 290 REMARK: NULL
         lastAltLoc = '\0';
       }
       // ignore atoms that have no designation
-      if (atom.alternateLocationID != '\0') {
+      if (atom.altLoc != '\0') {
         // count down until we get the desired index into the list
         String msg = " atom [" + atom.group3 + "]"
                            + atom.sequenceNumber 
                            + (atom.insertionCode == '\0' ? "" : "^" + atom.insertionCode)
                            + (atom.chainID == 0 ? "" : ":" + viewer.getChainIDStr(atom.chainID))
                            + "." + atom.atomName
-                           + "%" + atom.alternateLocationID + "\n";
-        if (conformationIndex >= 0 && atom.alternateLocationID != lastAltLoc) {
-          lastAltLoc = atom.alternateLocationID;
+                           + "%" + atom.altLoc + "\n";
+        if (conformationIndex >= 0 && atom.altLoc != lastAltLoc) {
+          lastAltLoc = atom.altLoc;
           conformationIndex--;
         }
-        if (conformationIndex < 0 && atom.alternateLocationID != lastAltLoc) {
+        if (conformationIndex < 0 && atom.altLoc != lastAltLoc) {
           sbIgnored.append("ignoring").append(msg);
           return false;
         }

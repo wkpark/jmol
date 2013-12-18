@@ -161,7 +161,7 @@ class AtomIterator implements JmolAdapterAtomIterator {
 	
 	@Override
   public char getAlternateLocationID() {
-		return JmolAdapter.canonizeAlternateLocationID(atom.alternateLocationID);
+		return JmolAdapter.canonizeAlternateLocationID(atom.altLoc);
 	}
 
 	

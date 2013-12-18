@@ -150,20 +150,20 @@ class SymmetryOperation extends M4 {
 
   final static String dumpSeitz(M4 s) {
     return new SB().append("{\t").appendI((int) s.m00).append("\t").appendI((int) s.m01)
-        .append("\t").appendI((int) s.m02).append("\t").append(twelfthsOf(s.m03)).append("\t}\n")
+        .append("\t").appendI((int) s.m02).append("\t").append(Symmetry.twelfthsOf(s.m03)).append("\t}\n")
         .append("{\t").appendI((int) s.m10).append("\t").appendI((int) s.m11).append("\t").appendI((int) s.m12)
-        .append("\t").append(twelfthsOf(s.m13)).append("\t}\n")
+        .append("\t").append(Symmetry.twelfthsOf(s.m13)).append("\t}\n")
         .append("{\t").appendI((int) s.m20).append("\t").appendI((int) s.m21).append("\t").appendI((int) s.m22)
-        .append("\t").append(twelfthsOf(s.m23)).append("\t}\n").append("{\t0\t0\t0\t1\t}\n").toString();
+        .append("\t").append(Symmetry.twelfthsOf(s.m23)).append("\t}\n").append("{\t0\t0\t0\t1\t}\n").toString();
   }
   
   final static String dumpCanonicalSeitz(M4 s) {
     return new SB().append("{\t").appendI((int) s.m00).append("\t").appendI((int) s.m01)
-        .append("\t").appendI((int) s.m02).append("\t").append(twelfthsOf((s.m03+12)%12)).append("\t}\n")
+        .append("\t").appendI((int) s.m02).append("\t").append(Symmetry.twelfthsOf((s.m03+12)%12)).append("\t}\n")
         .append("{\t").appendI((int) s.m10).append("\t").appendI((int) s.m11).append("\t").appendI((int) s.m12)
-        .append("\t").append(twelfthsOf((s.m13+12)%12)).append("\t}\n").append("{\t").appendI((int) s.m20)
+        .append("\t").append(Symmetry.twelfthsOf((s.m13+12)%12)).append("\t}\n").append("{\t").appendI((int) s.m20)
         .append("\t").appendI((int) s.m21).append("\t")
-        .appendI((int) s.m22).append("\t").append(twelfthsOf((s.m23+12)%12)).append("\t}\n")
+        .appendI((int) s.m22).append("\t").append(Symmetry.twelfthsOf((s.m23+12)%12)).append("\t}\n")
         .append("{\t0\t0\t0\t1\t}\n").toString();
   }
   
@@ -376,7 +376,7 @@ class SymmetryOperation extends M4 {
         strT += plusMinus(strT, x, myLabels[pt++]);
         strT += plusMinus(strT, y, myLabels[pt++]);
         strT += plusMinus(strT, z, myLabels[pt++]);
-        strT += xyzFraction(iValue, false, true);
+        strT += Symmetry.xyzFraction(iValue, false, true);
         strOut += (strOut == "" ? "" : ",") + strT;
         //note: when ptLatt[3] = -1, ptLatt[rowPt] MUST be 0.
         if (rowPt == nRows - 2)
@@ -458,70 +458,11 @@ class SymmetryOperation extends M4 {
       for (int j = 0; j < 3; j++)
         if (row[j] != 0)
           term += plusMinus(term, row[j], thisLabels[j + lpt]);
-      term += xyzFraction((is12ths ? row[3] : row[3] * 12), allPositive,
+      term += Symmetry.xyzFraction((is12ths ? row[3] : row[3] * 12), allPositive,
           halfOrLess);
       str += "," + term;
     }
     return str.substring(1);
-  }
-
-  private final static String twelfthsOf(float n12ths) {
-    String str = "";
-    int i12ths = Math.round(n12ths);
-    if (i12ths == 12)
-      return "1";
-    if (i12ths == -12)
-      return "-1";
-    if (i12ths < 0) {
-      i12ths = -i12ths;
-      if (i12ths % 12 != 0)
-        str = "-";
-    }
-    int n = i12ths / 12;
-    if (n < 1)
-      return str + twelfths[i12ths % 12];
-    int m = 0;
-    switch (i12ths % 12) {
-    case 0:
-      return str + n;
-    case 1:
-    case 5:
-    case 7:
-    case 11:
-      m = 12;
-      break;
-    case 2:
-    case 10:
-      m = 6;
-      break;
-    case 3:
-    case 9:
-      m = 4;
-      break;
-    case 4:
-    case 8:
-      m = 3;
-      break;
-    case 6:
-      m = 2;
-      break;
-    }
-    return str + (i12ths * m / 12) + "/" + m;
-  }
-  
-  private final static String[] twelfths = { "0", "1/12", "1/6", "1/4", "1/3",
-      "5/12", "1/2", "7/12", "2/3", "3/4", "5/6", "11/12" };
-
-  private final static String xyzFraction(float n12ths, boolean allPositive, boolean halfOrLess) {
-    n12ths = Math.round(n12ths);
-    if (allPositive) {
-      while (n12ths < 0)
-        n12ths += 12f;
-    } else if (halfOrLess && n12ths > 6f) {
-      n12ths -= 12f;
-    }
-    String s = twelfthsOf(n12ths);
-    return (s.charAt(0) == '0' ? "" : n12ths > 0 ? "+" + s : s);
   }
 
   private void setOffset(P3[] atoms, int atomIndex, int count) {
@@ -1254,7 +1195,7 @@ class SymmetryOperation extends M4 {
     int x24 = (int) approxF(xabs * 24);
     String m = (x < 0 ? "-" : "");
     if (x24%8 != 0)
-      return m + twelfthsOf(x24 >> 1);
+      return m + Symmetry.twelfthsOf(x24 >> 1);
     return (x24 == 0 ? "0" : x24 == 24 ? m + "1" : m + (x24/8) + "/3");
   }
 

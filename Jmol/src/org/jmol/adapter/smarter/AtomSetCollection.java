@@ -35,7 +35,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Map.Entry;
 
-
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.SymmetryInterface;
@@ -440,7 +439,7 @@ public class AtomSetCollection {
   private void getList(boolean isAltLoc) {
     int i;
     for (i = atomCount; --i >= 0;)
-      if (atoms[i] != null && (isAltLoc ? atoms[i].alternateLocationID : atoms[i].insertionCode) != '\0')
+      if (atoms[i] != null && (isAltLoc ? atoms[i].altLoc : atoms[i].insertionCode) != '\0')
         break;
     if (i < 0)
       return;
@@ -451,7 +450,7 @@ public class AtomSetCollection {
     for (i = 0; i < atomCount; i++) {
       if (atoms[i] == null)
         continue;
-      char id = (isAltLoc ? atoms[i].alternateLocationID
+      char id = (isAltLoc ? atoms[i].altLoc
           : atoms[i].insertionCode);
       if (id != '\0' && lists[pt = atoms[i].atomSetIndex].indexOf(id) < 0)
         lists[pt] += id;
@@ -921,17 +920,17 @@ public class AtomSetCollection {
     symmetry.setLattice(latt);
   }
   
-  void applySymmetry(SymmetryInterface symmetry) throws Exception {
+  void applySymmetry(SymmetryInterface symmetry, MSInterface ms) throws Exception {
     if (symmetry != null)
       getSymmetry().setSpaceGroupS(symmetry);
     //parameters are counts of unit cells as [a b c]
-    applySymmetryLattice(latticeCells[0], latticeCells[1], Math.abs(latticeCells[2]));
+    applySymmetryLattice(latticeCells[0], latticeCells[1], Math.abs(latticeCells[2]), ms);
   }
 
   boolean doNormalize = true;
   boolean doPackUnitCell = false;
    
-  private void applySymmetryLattice(int maxX, int maxY, int maxZ)
+  private void applySymmetryLattice(int maxX, int maxY, int maxZ, MSInterface ms)
       throws Exception {
     if (!coordinatesAreFractional || getSymmetry().getSpaceGroup() == null)
       return;
@@ -954,7 +953,7 @@ public class AtomSetCollection {
 
       minXYZ = P3i.new3((int) rminx, (int) rminy, (int) rminz);
       maxXYZ = P3i.new3((int) rmaxx, (int) rmaxy, (int) rmaxz);
-      applyAllSymmetry();
+      applyAllSymmetry(ms);
 
       // 2) set all atom coordinates to Cartesians
 
@@ -989,7 +988,7 @@ public class AtomSetCollection {
 
     minXYZ = new P3i();
     maxXYZ = P3i.new3(maxX, maxY, maxZ);
-    applyAllSymmetry();
+    applyAllSymmetry(ms);
     fmatSupercell = null;
   }
 
@@ -1067,22 +1066,30 @@ public class AtomSetCollection {
   
   private int latticeOp;
   private boolean latticeOnly;
+
+  private int noSymmetryCount;
+
+  private int firstSymmetryAtom;
   
   public void setBaseSymmetryAtomCount(int n) {
     baseSymmetryAtomCount = n;
   }
   
-  private void applyAllSymmetry() throws Exception {
+  /**
+   * @param ms  modulated structure interface
+   * @throws Exception 
+   */
+  private void applyAllSymmetry(MSInterface ms) throws Exception {
     if (atomCount == 0)
       return;
-    int noSymmetryCount = (baseSymmetryAtomCount == 0 ? getLastAtomSetAtomCount() : baseSymmetryAtomCount);
-    int iAtomFirst = getLastAtomSetAtomIndex();
+    noSymmetryCount = (baseSymmetryAtomCount == 0 ? getLastAtomSetAtomCount() : baseSymmetryAtomCount);
+    firstSymmetryAtom = getLastAtomSetAtomIndex();
     setTensors();
     bondCount0 = bondCount;
-    finalizeSymmetry(iAtomFirst, noSymmetryCount);
+    finalizeSymmetry(this.symmetry);
     int operationCount = symmetry.getSpaceGroupOperationCount();
-    getSymmetry().setMinMaxLatticeParameters(minXYZ, maxXYZ);
-    dtype = (int) getSymmetry().getUnitCellInfoType(SimpleUnitCell.INFO_DIMENSIONS);
+    dtype = (int) symmetry.getUnitCellInfoType(SimpleUnitCell.INFO_DIMENSIONS);
+    symmetry.setMinMaxLatticeParameters(minXYZ, maxXYZ);
     if (doCentroidUnitCell)
       setAtomSetCollectionAuxiliaryInfo("centroidMinMax", new int[] {
           minXYZ.x, minXYZ.y, minXYZ.z, 
@@ -1141,7 +1148,7 @@ public class AtomSetCollection {
     );
     P3[] cartesians = new P3[cartesianCount];
     for (int i = 0; i < noSymmetryCount; i++)
-      atoms[i + iAtomFirst].bsSymmetry = BSUtil.newBitSet(operationCount
+      atoms[i + firstSymmetryAtom].bsSymmetry = BSUtil.newBitSet(operationCount
           * (nCells + 1));
     int pt = 0;
     int[] unitCells = new int[nCells];
@@ -1164,7 +1171,9 @@ public class AtomSetCollection {
     
     // incommensurate symmetry can have lattice centering, resulting in 
     // duplication of operators. There's a bug later on that requires we 
-    // only do this with the first atom set for now, at least. 
+    // only do this with the first atom set for now, at least.
+    SymmetryInterface symmetry = this.symmetry;
+    SymmetryInterface lastSymmetry = symmetry;
     latticeOp = symmetry.getLatticeOp();
     checkAll = (atomSetCount == 1 && checkSpecial && latticeOp >= 0);
     latticeOnly = (checkLatticeOnly && latticeOp >= 0);
@@ -1178,10 +1187,24 @@ public class AtomSetCollection {
           unitCells[iCell++] = 555 + tx * 100 + ty * 10 + tz;
           if (tx != 0 || ty != 0 || tz != 0 || cartesians.length == 0)
             continue;
+          
+          // base cell only
+          
           for (pt = 0; pt < noSymmetryCount; pt++) {
-            Atom atom = atoms[iAtomFirst + pt];
+            Atom atom = atoms[firstSymmetryAtom + pt];
+            
+            if (ms != null) {
+              symmetry = ms.getAtomSymmetry(atom, this.symmetry);
+              if (symmetry != lastSymmetry) {
+                if (symmetry.getSpaceGroupOperationCount() == 0)
+                  finalizeSymmetry(lastSymmetry = symmetry);
+                op = symmetry.getSpaceGroupOperation(0);
+              }
+            }
+            
             P3 c = P3.newP(atom);
             op.transform(c);
+                        
             symmetry.toCartesian(c, false);
             if (doPackUnitCell) {
               symmetry.toUnitCell(c, ptOffset);
@@ -1203,8 +1226,8 @@ public class AtomSetCollection {
             rmaxy += absRange;
             rmaxz += absRange;
           }
-          cell555Count = pt = symmetryAddAtoms(iAtomFirst, noSymmetryCount, 0,
-              0, 0, 0, pt, iCell * operationCount, cartesians);
+          cell555Count = pt = symmetryAddAtoms(firstSymmetryAtom, noSymmetryCount, 0,
+              0, 0, 0, pt, iCell * operationCount, cartesians, ms);
         }
     if (checkRange111) {
       rminx -= absRange;
@@ -1222,13 +1245,13 @@ public class AtomSetCollection {
         for (int tz = minXYZ.z; tz < maxXYZ.z; tz++) {
           iCell++;
           if (tx != 0 || ty != 0 || tz != 0)
-            pt = symmetryAddAtoms(iAtomFirst, noSymmetryCount, tx, ty, tz,
-                cell555Count, pt, iCell * operationCount, cartesians);
+            pt = symmetryAddAtoms(firstSymmetryAtom, noSymmetryCount, tx, ty, tz,
+                cell555Count, pt, iCell * operationCount, cartesians, ms);
         }
-    if (iCell * noSymmetryCount == atomCount - iAtomFirst)
+    if (iCell * noSymmetryCount == atomCount - firstSymmetryAtom)
       appendAtomProperties(iCell);
     setSymmetryOps();
-    setAtomSetAuxiliaryInfo("presymmetryAtomIndex", Integer.valueOf(iAtomFirst));
+    setAtomSetAuxiliaryInfo("presymmetryAtomIndex", Integer.valueOf(firstSymmetryAtom));
     setAtomSetAuxiliaryInfo("presymmetryAtomCount", Integer
         .valueOf(noSymmetryCount));
     setAtomSetAuxiliaryInfo("latticeDesignation", symmetry
@@ -1244,9 +1267,9 @@ public class AtomSetCollection {
   }
 
   
-  private void finalizeSymmetry(int iAtomFirst, int noSymmetryCount) {
+  private void finalizeSymmetry(SymmetryInterface symmetry) {
     String name = (String) getAtomSetAuxiliaryInfoValue(-1, "spaceGroup");
-    symmetry.setFinalOperations(name, atoms, iAtomFirst, noSymmetryCount, doNormalize);
+    symmetry.setFinalOperations(name, atoms, firstSymmetryAtom, noSymmetryCount, doNormalize);
     if (name == null || name.equals("unspecified!"))
       setAtomSetSpaceGroupName(symmetry.getSpaceGroupName());
   }
@@ -1278,7 +1301,8 @@ public class AtomSetCollection {
   private int symmetryAddAtoms(int iAtomFirst, int noSymmetryCount, 
                                int transX, int transY, int transZ, 
                                int baseCount, int pt,
-                               int iCellOpPt, P3[] cartesians) throws Exception {
+                               int iCellOpPt, P3[] cartesians,
+                               MSInterface ms) throws Exception {
     boolean isBaseCell = (baseCount == 0);
     boolean addBonds = (bondCount0 > bondIndex0 && applySymmetryToBonds);
     int[] atomMap = (addBonds ? new int[noSymmetryCount] : null);
@@ -1304,6 +1328,7 @@ public class AtomSetCollection {
     boolean checkSymmetryRange = (checkRangeNoSymmetry || checkRange111);
     boolean checkDistances = (checkSpecial || checkSymmetryRange);
     boolean addCartesian = (checkSpecial || checkSymmetryMinMax);
+    SymmetryInterface symmetry = this.symmetry;
     if (checkRangeNoSymmetry)
       baseCount = noSymmetryCount;
     int atomMax = iAtomFirst + noSymmetryCount;
@@ -1329,6 +1354,8 @@ public class AtomSetCollection {
         if (bsAtoms != null && !bsAtoms.get(i))
           continue;
 
+        if (ms != null)
+          symmetry = ms.getAtomSymmetry(atoms[i], this.symmetry);        
         symmetry.newSpaceGroupPoint(iSym, atoms[i], ptAtom, transX, transY,
             transZ);
         Atom special = null;
@@ -1342,6 +1369,7 @@ public class AtomSetCollection {
               maxXYZ0.y, minXYZ0.z, maxXYZ0.z))
             continue;
         }
+        
         if (checkSymmetryMinMax)
           setSymmetryMinMax(cartesian);
         if (checkDistances) {
@@ -1392,7 +1420,7 @@ public class AtomSetCollection {
               if (nOperations == 1)
                 atom1.addTensor(t.copyTensor(), null, false);
               else
-                addRotatedTensor(atom1, t, iSym, false);
+                addRotatedTensor(atom1, t, iSym, false, symmetry);
             }
           }
         }
@@ -1415,7 +1443,7 @@ public class AtomSetCollection {
     return pt;
   }
   
-  public Tensor addRotatedTensor(Atom a, Tensor t, int iSym, boolean reset) {
+  public Tensor addRotatedTensor(Atom a, Tensor t, int iSym, boolean reset, SymmetryInterface symmetry) {
     if (ptTemp == null) {
       ptTemp = new P3();
       mTemp = new M3();
@@ -1457,13 +1485,13 @@ public class AtomSetCollection {
     bondCount0 = bondCount;
     boolean addBonds = (bondCount0 > bondIndex0 && applySymmetryToBonds);
     int[] atomMap = (addBonds ? new int[atomCount] : null);
-    int iAtomFirst = getLastAtomSetAtomIndex();
+    firstSymmetryAtom = getLastAtomSetAtomIndex();
     int atomMax = atomCount;
     Map<Integer, BS> ht = new Hashtable<Integer, BS>();
     int nChain = 0;
     switch (particleMode) {
     case PARTICLE_CHAIN:
-      for (int i = atomMax; --i >= iAtomFirst;) {
+      for (int i = atomMax; --i >= firstSymmetryAtom;) {
         Integer id = Integer.valueOf(atoms[i].chainID);
         BS bs = ht.get(id);
         if (bs == null) {
@@ -1490,7 +1518,7 @@ public class AtomSetCollection {
         a.atomName = "Pt" + ichain;
         a.chainID = e.getKey().intValue();
       }
-      iAtomFirst = atomMax;
+      firstSymmetryAtom = atomMax;
       atomMax += nChain;
       break;
     case PARTICLE_SYMOP:
@@ -1498,12 +1526,12 @@ public class AtomSetCollection {
       bsAtoms.set(atomMax);
       Atom a = atoms[atomMax] = new Atom();
       a.set(0, 0, 0);
-      for (int i = atomMax; --i >= iAtomFirst;)
+      for (int i = atomMax; --i >= firstSymmetryAtom;)
         a.add(atoms[i]);
-      a.scale(1f / (atomMax - iAtomFirst));
+      a.scale(1f / (atomMax - firstSymmetryAtom));
       a.atomName = "Pt";
       a.radius = 16;
-      iAtomFirst = atomMax++;
+      firstSymmetryAtom = atomMax++;
       break;
     }
     if (filter.indexOf("#<") >= 0) {
@@ -1511,7 +1539,7 @@ public class AtomSetCollection {
           .indexOf("#<") + 2)) - 1);
       filter = javajs.util.PT.simpleReplace(filter, "#<", "_<");
     }
-    for (int iAtom = iAtomFirst; iAtom < atomMax; iAtom++)
+    for (int iAtom = firstSymmetryAtom; iAtom < atomMax; iAtom++)
       atoms[iAtom].bsSymmetry = BSUtil.newAndSetBit(0);
     for (int i = 1; i < len; i++) {
       if (filter.indexOf("!#") >= 0) {
@@ -1523,7 +1551,7 @@ public class AtomSetCollection {
       }
       M4 mat = biomts.get(i);
       //Vector3f trans = new Vector3f();    
-      for (int iAtom = iAtomFirst; iAtom < atomMax; iAtom++) {
+      for (int iAtom = firstSymmetryAtom; iAtom < atomMax; iAtom++) {
         if (bsAtoms != null && !bsAtoms.get(iAtom))
           continue;
         try {
@@ -1559,13 +1587,13 @@ public class AtomSetCollection {
       if (i > 0)
         symmetry.addBioMoleculeOperation(mat, false);
     }
-    int noSymmetryCount = atomMax - iAtomFirst;
-    setAtomSetAuxiliaryInfo("presymmetryAtomIndex", Integer.valueOf(iAtomFirst));
+    noSymmetryCount = atomMax - firstSymmetryAtom;
+    setAtomSetAuxiliaryInfo("presymmetryAtomIndex", Integer.valueOf(firstSymmetryAtom));
     setAtomSetAuxiliaryInfo("presymmetryAtomCount", Integer
         .valueOf(noSymmetryCount));
     setAtomSetAuxiliaryInfo("biosymmetryCount", Integer.valueOf(len));
     setAtomSetAuxiliaryInfo("biosymmetry", symmetry);
-    finalizeSymmetry(iAtomFirst, noSymmetryCount);
+    finalizeSymmetry(this.symmetry);
     setSymmetryOps();
     symmetry = null;
     coordinatesAreFractional = false;

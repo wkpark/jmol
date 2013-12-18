@@ -8,6 +8,7 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.ModelSet;
 import javajs.util.List;
 import javajs.util.P3;
+
 import org.jmol.util.Tensor;
 
 import javajs.util.M3;
@@ -141,7 +142,7 @@ public interface SymmetryInterface {
 
   public void setCartesianOffset(T3 origin);
 
-  public P3[] getUnitCellVectors();
+  public V3[] getUnitCellVectors();
 
   public SymmetryInterface getUnitCell(T3[] points);
 
@@ -176,6 +177,6 @@ public interface SymmetryInterface {
 
   public int getSiteMultiplicity(P3 a);
 
-  //public void setBioMolecules(String name, List<M4> vBiomts);
-  
+  public String addOp(double[][] rot, double[][] trans);
+
 }

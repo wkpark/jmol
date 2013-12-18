@@ -2,7 +2,8 @@ package org.jmol.adapter.smarter;
 
 import java.util.Map;
 
-import javajs.util.M4;
+import org.jmol.api.SymmetryInterface;
+
 import javajs.util.P3;
 
 
@@ -16,7 +17,7 @@ public interface MSInterface {
   
   void addModulation(Map<String, P3> map, String id, P3 pt, int iModel);
 
-  void addSubsystem(String code, M4 m4, String atomName);
+  void addSubsystem(String code, int[][] wmatrix);
 
   void finalizeModulation();
 
@@ -24,6 +25,8 @@ public interface MSInterface {
 
   int initialize(AtomSetCollectionReader r, String data) throws Exception;
 
-  void setModulation();
+  void setModulation(boolean isPost);
+
+  SymmetryInterface getAtomSymmetry(Atom a, SymmetryInterface symmetry);
 
 }

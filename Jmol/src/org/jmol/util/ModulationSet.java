@@ -39,7 +39,7 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
   private ModulationSet modTemp;
   private int iop;
   private M3 gammaIinv;
-  private M4 q123w;
+  private M3 q123;
   private V3 sI;
   private float scale = 1;
  
@@ -87,8 +87,9 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
    * @param mods 
    * @param gammaE 
    * @param gammaIS 
-   * @param q123w 
+   * @param q123 
    * @param iop 
+   * @param uc 
    * @return  this
    * 
    * 
@@ -97,12 +98,13 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
   public ModulationSet set(
   String id, P3 r, int modDim,
   List<Modulation> mods, M3 gammaE, 
-                       M4 gammaIS, M4 q123w, int iop) {
+                       M4 gammaIS, M3 q123, int iop, SymmetryInterface uc) {
     this.id = id;
     this.modDim = modDim;
     this.mods = mods;
     this.gammaE = gammaE;
     this.iop = iop;
+    this.unitCell = uc;
     
     // set up x456
     
@@ -112,11 +114,11 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
     gammaIS.get(sI);
     gammaIinv.invert();
        
-    this.q123w = q123w;
+    this.q123 = q123;
 
     r0 = P3.newP(r);    
     x456 = V3.newV(r0);
-    q123w.transform(x456);
+    q123.transform(x456);
     x456.sub(sI);
     gammaIinv.transform(x456);
     if (Logger.debuggingHigh)
@@ -129,6 +131,12 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
 
   private P3 tinv = new P3();
   private SymmetryInterface unitCell;
+  
+  @Override
+  public SymmetryInterface getUnitCell() {
+    return unitCell;
+  }
+  
   private boolean isQ;
   
   public synchronized ModulationSet calculate(T3 fracT, boolean isQ) {
@@ -138,7 +146,7 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
     tinv.set(0, 0, 0);
     if (isQ && qtOffset != null) {
       tinv.setT(qtOffset);     
-      q123w.transform(tinv);
+      q123.transform(tinv);
     }
     if (fracT != null)
       tinv.add(fracT);
@@ -175,12 +183,11 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
    */
   @Override
   public synchronized void setModTQ(T3 a, boolean isOn, T3 qtOffset, boolean isQ,
-                       float scale, SymmetryInterface uc) {
+                       float scale) {
     if (enabled)
       addTo(a, -1);
     enabled = false;
     this.scale = scale;
-    unitCell = uc;
     if (qtOffset != null) {
       if (isQ) {
         this.isQ = isQ;
@@ -238,7 +245,7 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
     modTemp.gammaE = gammaE;
     modTemp.modDim = modDim;
     modTemp.gammaIinv = gammaIinv;
-    modTemp.q123w = q123w;
+    modTemp.q123 = q123;
     modTemp.r0 = r0;
     modTemp.unitCell = unitCell;
   }
@@ -253,7 +260,7 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
     modInfo.put("gammaE", gammaE);
     modInfo.put("gammaIinv", gammaIinv);
     modInfo.put("sI", sI);
-    modInfo.put("q123w", q123w);
+    modInfo.put("q123", q123);
     modInfo.put("symop", Integer.valueOf(iop + 1));
 
     List<Hashtable<String, Object>> mInfo = new List<Hashtable<String, Object>>();

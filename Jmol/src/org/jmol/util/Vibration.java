@@ -2,6 +2,8 @@ package org.jmol.util;
 
 import java.util.Map;
 
+import org.jmol.api.SymmetryInterface;
+
 import javajs.util.T3;
 import javajs.util.V3;
 
@@ -29,6 +31,11 @@ public class Vibration extends V3 {
 
   public void getInfo(Map<String, Object> info) {
     info.put("vibVector", V3.newV(this));
+  }
+
+  public SymmetryInterface getUnitCell() {
+    // ModulationSet only
+    return null;
   }
 
 }

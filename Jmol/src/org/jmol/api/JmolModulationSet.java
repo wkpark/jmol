@@ -10,7 +10,7 @@ public interface JmolModulationSet {
 
   boolean isEnabled();
 
-  void setModTQ(T3 a, boolean isOn, T3 qtOffset, boolean isQ, float scale, SymmetryInterface uc);
+  void setModTQ(T3 a, boolean isOn, T3 qtOffset, boolean isQ, float scale);
 
   float getScale();
 

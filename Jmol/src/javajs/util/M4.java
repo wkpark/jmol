@@ -380,62 +380,63 @@ public class M4 implements Serializable {
    * 
    * @param row
    *        the row number to be retrieved (zero indexed)
-   * @param column
+   * @param col
    *        the column number to be retrieved (zero indexed)
    * @return the value at the indexed element
    */
-  public final float getElement(int row, int column) {
-    if (row == 0)
-      if (column == 0)
+  public final float getElement(int row, int col) {
+    switch (row) {
+    case 0:
+      switch (col) {
+      case 0:
         return m00;
-      else if (column == 1)
+      case 1:
         return m01;
-      else if (column == 2)
+      case 2:
         return m02;
-      else if (column == 3)
+      case 3:
         return m03;
-      else
-        throw new ArrayIndexOutOfBoundsException(
-            "column must be 0 to 3 and is " + column);
-    else if (row == 1)
-      if (column == 0)
+      }
+      break;
+    case 1:
+      switch (col) {
+      case 0:
         return m10;
-      else if (column == 1)
+      case 1:
         return m11;
-      else if (column == 2)
+      case 2:
         return m12;
-      else if (column == 3)
+      case 3:
         return m13;
-      else
-        throw new ArrayIndexOutOfBoundsException(
-            "column must be 0 to 3 and is " + column);
-    else if (row == 2)
-      if (column == 0)
+      }
+      break;
+    case 2:
+      switch (col) {
+      case 0:
         return m20;
-      else if (column == 1)
+      case 1:
         return m21;
-      else if (column == 2)
+      case 2:
         return m22;
-      else if (column == 3)
+      case 3:
         return m23;
-      else
-        throw new ArrayIndexOutOfBoundsException(
-            "column must be 0 to 3 and is " + column);
-    else if (row == 3)
-      if (column == 0)
+      }
+      break;
+    case 3:
+      switch (col) {
+      case 0:
         return m30;
-      else if (column == 1)
+      case 1:
         return m31;
-      else if (column == 2)
+      case 2:
         return m32;
-      else if (column == 3)
+      case 3:
         return m33;
-      else
-        throw new ArrayIndexOutOfBoundsException(
-            "column must be 0 to 3 and is " + column);
-    else
-      throw new ArrayIndexOutOfBoundsException("row must be 0 to 3 and is "
-          + row);
+      }
+      break;
+    }
+    throw new ArrayIndexOutOfBoundsException(
+        "matrix column/row out of bounds");
   }
 
   /**

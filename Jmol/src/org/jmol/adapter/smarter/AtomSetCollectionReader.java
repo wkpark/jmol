@@ -944,8 +944,8 @@ public abstract class AtomSetCollectionReader {
             atom.elementSymbol.toUpperCase() + ";"))
         && (!filterChain || atom.chainID == 0 || !filterReject(f, ":", ""
             + viewer.getChainIDStr(atom.chainID)))
-        && (!filterAltLoc || atom.alternateLocationID == '\0' || !filterReject(
-            f, "%", "" + atom.alternateLocationID))
+        && (!filterAltLoc || atom.altLoc == '\0' || !filterReject(
+            f, "%", "" + atom.altLoc))
         && (!filterHetero || !filterReject(f, "HETATM",
             atom.isHetero ? "HETATM" : "ATOM"));
   }
@@ -979,6 +979,8 @@ public abstract class AtomSetCollectionReader {
   }
 
   private M3 matrixRotate;
+
+  public MSInterface ms;
 
   public void setTransform(float x1, float y1, float z1, float x2, float y2,
                            float z2, float x3, float y3, float z3) {
@@ -1070,17 +1072,20 @@ public abstract class AtomSetCollectionReader {
       atomSetCollection.setSymmetryRange(symmetryRange);
       if (doConvertToFractional || fileCoordinatesAreFractional) {
         setLatticeCells(false);
+        
+        
         if (ignoreFileSpaceGroupName || !iHaveSymmetryOperators) {
           if (!merging || symmetry == null)
             getSymmetry();
           if (symmetry.createSpaceGroup(desiredSpaceGroupIndex,
               (spaceGroup.indexOf("!") >= 0 ? "P1" : spaceGroup), notionalUnitCell)) {
-            atomSetCollection.applySymmetry(symmetry);
+            atomSetCollection.applySymmetry(symmetry, ms);
             atomSetCollection.setAtomSetSpaceGroupName(symmetry
                 .getSpaceGroupName());
           }
         } else {
-          atomSetCollection.applySymmetry(null);
+          doPreSymmetry();
+          atomSetCollection.applySymmetry(null, ms);
         }
       }
       if (iHaveFractionalCoordinates && merging && symmetry != null) {
@@ -1096,6 +1101,9 @@ public abstract class AtomSetCollectionReader {
       atomSetCollection.setTrajectory();
     initializeSymmetry();
     return sym;
+  }
+
+  protected void doPreSymmetry() {
   }
 
   @SuppressWarnings("unchecked")
@@ -1653,7 +1661,5 @@ public abstract class AtomSetCollectionReader {
       atomSetCollection.setAnisoBorU(atom, data = new float[8], 8);
     data[i] = val;
   }
-
-
 
 }

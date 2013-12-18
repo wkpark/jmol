@@ -3097,13 +3097,14 @@ abstract public class ModelCollection extends BondCollection {
       atomSerials = AU.arrayCopyI(atomSerials, newLength);
   }
 
+
   public Atom addAtom(int modelIndex, Group group, int atomicAndIsotopeNumber,
                       String atomName, int atomSerial, int atomSite, P3 xyz,
                       float radius, V3 vib, int formalCharge,
                       float partialCharge, int occupancy, float bfactor,
                       List<Object> tensors, boolean isHetero,
                       byte specialAtomID, BS atomSymmetry) {
-    Atom atom = new Atom(modelIndex, atomCount, xyz, radius, atomSymmetry,
+    Atom atom = new Atom().setAtom(modelIndex, atomCount, xyz, radius, atomSymmetry,
         atomSite, (short) atomicAndIsotopeNumber, formalCharge, isHetero);
     models[modelIndex].atomCount++;
     models[modelIndex].bsAtoms.set(atomCount);
@@ -3423,7 +3424,7 @@ abstract public class ModelCollection extends BondCollection {
       if (!(v instanceof JmolModulationSet))
         continue;
       JmolModulationSet ms = (JmolModulationSet) v;
-      ms.setModTQ(atoms[i], isOn, qtOffset, isQ, scale, getUnitCell(atoms[i].modelIndex));
+      ms.setModTQ(atoms[i], isOn, qtOffset, isQ, scale);
       if (bsModulated != null)
         bsModulated.setBitTo(i, isOn);
       //System.out.println(a.x + " " + a.y + " " + a.z + " ms is " + ms + " " + ms.enabled + " " + ms.t);
@@ -3542,5 +3543,15 @@ abstract public class ModelCollection extends BondCollection {
         .getOptionInterface("util.TriangleData")) : triangulator)
         .intersectPlane(plane, v, i);
   }
+
+  SymmetryInterface getUnitCellForAtom(Atom atom) {
+    if (bsModulated != null) {
+      Vibration v = getVibration(atom.index, false);
+      if (v != null)
+        return v.getUnitCell();
+    }
+      return getUnitCell(atom.modelIndex);
+  }
+
 
 }

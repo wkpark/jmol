@@ -53,7 +53,7 @@ import org.jmol.viewer.Viewer;
 
 
 
-final public class Atom extends Point3fi implements JmolNode {
+public class Atom extends Point3fi implements JmolNode {
 
   private final static byte VIBRATION_VECTOR_FLAG = 1;
   private final static byte IS_HETERO_FLAG = 2;
@@ -122,8 +122,10 @@ final public class Atom extends Point3fi implements JmolNode {
    * @param atomicAndIsotopeNumber
    * @param formalCharge
    * @param isHetero
+   * @return this
    */
-  public Atom(int modelIndex, int atomIndex,
+  
+  public Atom setAtom(int modelIndex, int atomIndex,
         P3 xyz, float radius,
         BS atomSymmetry, int atomSite,
         short atomicAndIsotopeNumber, int formalCharge, 
@@ -139,6 +141,7 @@ final public class Atom extends Point3fi implements JmolNode {
       setFormalCharge(formalCharge);
     userDefinedVanDerWaalRadius = radius;
     setT(xyz);
+    return this;
   }
 
   public void setAltLoc(char altLoc) {
@@ -770,12 +773,16 @@ final public class Atom extends Point3fi implements JmolNode {
     
   private P3 getFractionalCoordPt(boolean asAbsolute) {
     // asAbsolute TRUE uses the original unshifted matrix
-    SymmetryInterface c = group.chain.model.modelSet.getUnitCell(modelIndex);
+    SymmetryInterface c = getUnitCell();
     if (c == null) 
       return this;
     P3 pt = P3.newP(this);
     c.toFractional(pt, asAbsolute);
     return pt;
+  }
+  
+  SymmetryInterface getUnitCell() {
+    return group.chain.model.modelSet.getUnitCellForAtom(this);
   }
   
   private float getFractionalUnitCoord(char ch) {
@@ -784,7 +791,7 @@ final public class Atom extends Point3fi implements JmolNode {
   }
 
   P3 getFractionalUnitCoordPt(boolean asCartesian) {
-    SymmetryInterface c = group.chain.model.modelSet.getUnitCell(modelIndex);
+    SymmetryInterface c = getUnitCell();
     if (c == null)
       return this;
     P3 pt = P3.newP(this);
@@ -801,7 +808,7 @@ final public class Atom extends Point3fi implements JmolNode {
   }
   
   float getFractionalUnitDistance(P3 pt, P3 ptTemp1, P3 ptTemp2) {
-    SymmetryInterface c = group.chain.model.modelSet.getUnitCell(modelIndex);
+    SymmetryInterface c = getUnitCell();
     if (c == null) 
       return distance(pt);
     ptTemp1.setT(this);
@@ -817,7 +824,7 @@ final public class Atom extends Point3fi implements JmolNode {
   }
   
   void setFractionalCoord(int tok, float fValue, boolean asAbsolute) {
-    SymmetryInterface c = group.chain.model.modelSet.getUnitCell(modelIndex);
+    SymmetryInterface c = getUnitCell();
     if (c != null)
       c.toFractional(this, asAbsolute);
     switch (tok) {
@@ -844,7 +851,7 @@ final public class Atom extends Point3fi implements JmolNode {
   
   public void setFractionalCoordPt(P3 pt, P3 ptNew, boolean asAbsolute) {
     pt.setT(ptNew);
-    SymmetryInterface c = group.chain.model.modelSet.getUnitCell(modelIndex);
+    SymmetryInterface c = getUnitCell();
     if (c != null)
       c.toCartesian(pt, asAbsolute && !group.chain.model.isJmolDataFrame);
   }

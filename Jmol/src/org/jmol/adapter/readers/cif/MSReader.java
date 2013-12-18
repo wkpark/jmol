@@ -14,6 +14,7 @@ import javajs.util.V3;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.MSInterface;
+import org.jmol.api.SymmetryInterface;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Modulation;
@@ -55,7 +56,6 @@ public class MSReader implements MSInterface {
   private V3 q1Norm;
   private Map<String, P3> htModulation;
   private Map<String, List<Modulation>> htAtomMods;
-  protected Map<String, Object> htSubsystems;
 
   public MSReader() {
     // for reflection from Jana
@@ -142,12 +142,13 @@ public class MSReader implements MSInterface {
    * 
    */
   @Override
-  public void setModulation() {
+  public void setModulation(boolean isPost) {
     if (modDim == 0 || htModulation == null)
       return;
     if (modDebug)
       Logger.debugging = Logger.debuggingHigh = true;
-    setModulationForStructure(cr.atomSetCollection.getCurrentAtomSetIndex());
+    cr.atomSetCollection.setAtomSetCollectionAuxiliaryInfo("someModelsAreModulated", Boolean.TRUE);
+    setModulationForStructure(cr.atomSetCollection.getCurrentAtomSetIndex(), isPost);
     if (modDebug)
       Logger.debugging = Logger.debuggingHigh = false;
   }
@@ -192,27 +193,59 @@ public class MSReader implements MSInterface {
     return htModulation.get(key + atModel);
   }
 
-  private M3 q123;
+  M3 q123;
   private boolean haveOccupancy;
   private Atom[] atoms;
 
   private int atomCount;
+
+  private boolean haveAtomMods;
 
   /**
    * Called when structure creation is complete and all modulation data has been
    * collected.
    * 
    * @param iModel
+   * @param isPost
    */
-  private void setModulationForStructure(int iModel) {
+  private void setModulationForStructure(int iModel, boolean isPost) {
     atModel = "@" + iModel;
-    String key;
-
-    // check to see we have not already done this.
 
     if (htModulation.containsKey("X_" + atModel))
       return;
+
+    if (!isPost) {
+      initModForStructure(iModel);
+      return;
+    }
+
+    // check to see we have not already done this.
+
     htModulation.put("X_" + atModel, new P3());
+
+    if (!haveAtomMods)
+      return;
+
+    // here we go -- apply all atom modulations. 
+
+    int n = cr.atomSetCollection.getAtomCount();
+    atoms = cr.atomSetCollection.getAtoms();
+    cr.symmetry = cr.atomSetCollection.getSymmetry();
+    if (cr.symmetry != null)
+      nOps = cr.symmetry.getSpaceGroupOperationCount();
+    iopLast = -1;
+    SB sb = new SB();
+    for (int i = cr.atomSetCollection.getLastAtomSetAtomIndex(); i < n; i++)
+      modulateAtom(atoms[i], sb);
+    cr.atomSetCollection.setAtomSetAtomProperty("modt", sb.toString(), -1);
+    cr.appendLoadNote(modCount + " modulations for " + atomCount + " atoms");
+    htAtomMods = null;
+    htSubsystems = null;
+  }
+
+  private void initModForStructure(int iModel) {
+    String key;
+
     // we allow for up to three wave vectors in the form of a matrix
     // along with their lengths as an array.
 
@@ -238,7 +271,6 @@ public class MSReader implements MSInterface {
     q1Norm = V3.new3(q1.x == 0 ? 0 : 1, q1.y == 0 ? 0 : 1, q1.z == 0 ? 0 : 1);
     P3 qlist100 = P3.new3(1, 0, 0);
     P3 pt;
-    int n = cr.atomSetCollection.getAtomCount();
 
     // Take care of loose ends.
     // O: occupation   (set haveOccupancy; set a cos(theta) + b sin(theta) format)
@@ -292,8 +324,8 @@ public class MSReader implements MSInterface {
         } else {
           P3 ptHarmonic = getQCoefs(pt);
           if (ptHarmonic == null) {
-            cr.appendLoadNote("Cannot match atom wave vector " + key + " " + pt
-                + " to a cell wave vector or its harmonic");
+            cr.appendLoadNote("Cannot match atom wave vector " + key + " "
+                + pt + " to a cell wave vector or its harmonic");
           } else {
             String k2 = key + "_q_";
             if (!htModulation.containsKey(k2 + atModel)) {
@@ -315,7 +347,7 @@ public class MSReader implements MSInterface {
     // Loop through all modulations, selecting only those for the current model.
     // Process O, D, and U modulations via method addAtomModulation
 
-    boolean haveAtomMods = false;
+    haveAtomMods = false;
     for (Entry<String, P3> e : htModulation.entrySet()) {
       if ((key = checkKey(e.getKey(), true)) == null)
         continue;
@@ -363,22 +395,6 @@ public class MSReader implements MSInterface {
         break;
       }
     }
-    if (!haveAtomMods)
-      return;
-
-    // here we go -- apply all atom modulations. 
-
-    atoms = cr.atomSetCollection.getAtoms();
-    cr.symmetry = cr.atomSetCollection.getSymmetry();
-    if (cr.symmetry != null)
-      nOps = cr.symmetry.getSpaceGroupOperationCount();
-    iopLast = -1;
-    SB sb = new SB();
-    for (int i = cr.atomSetCollection.getLastAtomSetAtomIndex(); i < n; i++)
-      modulateAtom(atoms[i], sb);
-    cr.atomSetCollection.setAtomSetAtomProperty("modt", sb.toString(), -1);
-    cr.appendLoadNote(modCount + " modulations for " + atomCount + " atoms");
-    htAtomMods = null;
   }
 
   private P3[] qs;
@@ -462,27 +478,22 @@ public class MSReader implements MSInterface {
     modCount++;
   }
 
-  private void setSubsystemMatrix(String atomName, M4 q123w) {
-    Object o;
-    if (true || htSubsystems == null
-        || (o = htSubsystems.get(";" + atomName)) == null)
-      return;
-    // not sure what to do yet.
-    String subcode = (String) o;
-    M4 wmatrix = (M4) htSubsystems.get(subcode);
-    q123w.mulM4(wmatrix);
-  }
-
   @Override
-  public void addSubsystem(String code, M4 m4, String atomName) {
-    if (htSubsystems == null)
-      htSubsystems = new Hashtable<String, Object>();
-    if (m4 == null)
-      htSubsystems.put(";" + atomName, code);
-    else
-      htSubsystems.put(code, m4);
+  public void addSubsystem(String code, int[][] wmatrix) {
+    if (code == null)
+      return;
+    Subsystem ss = new Subsystem(this, code, wmatrix);
+    if (ss.w != null)
+      setSubsystem(code, ss);
   }
 
+//  private void setSubsystems() {
+//    atoms = cr.atomSetCollection.getAtoms();
+//    int n = cr.atomSetCollection.getAtomCount();
+//    for (int i = cr.atomSetCollection.getLastAtomSetAtomIndex(); i < n; i++) 
+//      getUnitCell(atoms[i]);
+//  }
+  
   private final static String U_LIST = "U11U22U33U12U13U23UISO";
 
   private void addUStr(Atom atom, String id, float val) {
@@ -514,7 +525,7 @@ public class MSReader implements MSInterface {
    * @param a
    * @param sb
    */
-  public void modulateAtom(Atom a, SB sb) {
+  private void modulateAtom(Atom a, SB sb) {
 
     // Modulation is based on an atom's first symmetry operation.
     // (Special positions should generate the same atom regardless of which operation is employed.)
@@ -547,14 +558,10 @@ public class MSReader implements MSInterface {
           + cr.symmetry.getSpaceGroupXyz(iop, false) + " " + a.bsSymmetry);
     }
 
-    // TODO: subsystem matrices are not implemented yet.
-    M4 q123w = M4.newMV(q123, new V3());
-    setSubsystemMatrix(a.atomName, q123w);
-
     // The magic happens here.
 
     ModulationSet ms = new ModulationSet().set(a.index + " " + a.atomName,
-        P3.newP(a), modDim, list, gammaE, gammaIS, q123w, iop);
+        P3.newP(a), modDim, list, gammaE, gammaIS, getQ123(a), iop, getUnitCell(a));
     ms.calculate(null, false);
 
     // ms parameter values are used to set occupancies, 
@@ -597,8 +604,9 @@ public class MSReader implements MSInterface {
 
       if (a.tensors != null)
         ((Tensor) a.tensors.get(0)).isUnmodulated = true;
+      SymmetryInterface symmetry = getAtomSymmetry(a, cr.symmetry);
       Tensor t = cr.atomSetCollection.addRotatedTensor(a,
-          cr.symmetry.getTensor(a.anisoBorU), iop, false);
+          symmetry.getTensor(a.anisoBorU), iop, false, symmetry);
       t.isModulated = true;
       if (Logger.debuggingHigh) {
         Logger.debug("setModulation Uij(final)=" + Escape.eAF(a.anisoBorU)
@@ -616,12 +624,36 @@ public class MSReader implements MSInterface {
         t = (int) Math.floor(t);
       sb.append(((int) t) + "\n");
     }
-    // displace the atom and reverse the vector only if not filter "MODVIB"
-    //    if (!modVib) {
-    //    a.add(ms);
-    //  ms.setModT(true, Integer.MAX_VALUE);
-    // }
-    //System.out.println("a.vib(xyz)=" + a.vib);
   }
+
+  private M3 getQ123(Atom a) {
+    Subsystem ss = getSubsystem(a);
+    return (ss == null ? q123 : ss.getQ123());
+  }
+
+  private SymmetryInterface getUnitCell(Atom a) {
+    Subsystem ss = getSubsystem(a);
+    return (ss == null ? cr.symmetry : ss.getSymmetry());
+  }
+
+  private Map<String, Subsystem> htSubsystems;
+  private void setSubsystem(String code, Subsystem system) {
+    if (htSubsystems == null)
+      htSubsystems = new Hashtable<String, Subsystem>();
+    htSubsystems.put(code, system);
+  }
+
+  private Subsystem getSubsystem(Atom a) {
+    return (htSubsystems == null ? null : htSubsystems.get("" + a.altLoc));
+  }
+
+  @Override
+  public SymmetryInterface getAtomSymmetry(Atom a, SymmetryInterface symmetry) {
+    if (htSubsystems == null)
+      return symmetry;
+    Subsystem s = getSubsystem(a);
+    return (s == null ? symmetry : s.getSymmetry());
+  }
+  
 
 }

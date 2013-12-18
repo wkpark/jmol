@@ -37,7 +37,6 @@ import org.jmol.java.BS;
 import javajs.util.List;
 import org.jmol.util.Logger;
 
-import javajs.util.M4;
 import javajs.util.P3;
 
 /**
@@ -126,16 +125,19 @@ public class JanaReader extends AtomSetCollectionReader {
         continuing = false;
         break;
       case WMATRIX:
-        M4 m = new M4();
+        int[][] m = new int[3 + modDim][3 + modDim];
         if (thisSub++ == 0) {
-          m.setIdentity();
-          mr.addSubsystem("1", m, null);
-          m = new M4();
+          for (int i = 3 + modDim; --i >= 0;)
+            m[i][i] = 1;
+          mr.addSubsystem("" + thisSub, m);
+          m = new int[12][12];
         }
         float[] data = new float[16];
         fillFloatArray(null, 0, data);
-        m.setA(data, 0);
-        mr.addSubsystem("" + thisSub, m, null);
+        for (int i = 0, pt = 0; i < 4; i++)
+          for (int j = 0; j < 4; j++, pt++)
+             m[i][j] = (int) data[pt];
+        mr.addSubsystem("" + thisSub, m);
     }
     return true;
   }
@@ -145,10 +147,13 @@ public class JanaReader extends AtomSetCollectionReader {
     readM40Data();
     if (lattvecs != null)
       atomSetCollection.getSymmetry().addLatticeVectors(lattvecs);
+    if (mr != null) {
+      mr.setModulation(false);
+    }
     applySymmetryAndSetTrajectory();
     adjustM40Occupancies();
     if (mr != null) {
-      mr.setModulation();
+      mr.setModulation(true);
       mr.finalizeModulation();
     }
     finalizeReaderASCR();
@@ -294,7 +299,8 @@ public class JanaReader extends AtomSetCollectionReader {
       if (iSub > 0) {
         if (newSub.get(nAtoms))
           iSub++;
-        mr.addSubsystem("" + iSub, null, atom.atomName);
+        atom.altLoc = ("" + iSub).charAt(0);
+        //mr.addSubsystem("" + iSub, null, atom.atomName);
       }
       float o_site = atom.foccupancy = floats[2];
       setAtomCoordXYZ(atom, floats[3], floats[4], floats[5]);

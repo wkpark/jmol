@@ -807,8 +807,8 @@ Species   Ion     s      p      d      f     Total  Charge (e)
   }
 
   private String getFractionalCoord(V3 qvec) {
-    return (isInt(qvec.x * 12) && isInt(qvec.y * 12) && isInt(qvec.z * 12) ? getSymmetry()
-        .fcoord(qvec)
+    return (symmetry != null && isInt(qvec.x * 12) 
+        && isInt(qvec.y * 12) && isInt(qvec.z * 12) ? symmetry.fcoord(qvec)
         : null);
   }
 

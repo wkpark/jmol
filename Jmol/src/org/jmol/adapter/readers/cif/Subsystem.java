@@ -2,12 +2,12 @@ package org.jmol.adapter.readers.cif;
 
 import javajs.util.M3;
 import javajs.util.M4;
+import javajs.util.Matrix;
 import javajs.util.V3;
 
 import org.jmol.api.SymmetryInterface;
 import org.jmol.util.Logger;
 
-import com.jama.Matrix;
 
 class Subsystem {
 

@@ -12364,6 +12364,15 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       index++;
       id = objectNameParameter(++index);
       break;
+    case T.bitset:
+    case T.expressionBegin:
+      int iAtom = atomExpressionAt(1).nextSetBit(0);
+      if (!chk)
+        viewer.setCurrentAtom(iAtom);
+      if (iAtom < 0)
+        return;
+      index = iToken;
+      break;
     case T.center:
       ++index;
       switch (tokAt(++index)) {
@@ -12402,6 +12411,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     checkLast(iToken);
     if (chk)
       return;
+    if (mad == Integer.MAX_VALUE)
+      viewer.setCurrentAtom(-1);
     if (icell != Integer.MAX_VALUE)
       viewer.setCurrentUnitCellOffset(icell);
     else if (id != null)

@@ -138,6 +138,7 @@ public class AnimationManager {
     setAnimationOn(false);
     setModel(0, true);
     currentDirection = 1;
+    currentAtomIndex = -1;
     setAnimationDirection(1);
     setAnimationFps(10);
     setAnimationReplayMode(EnumAnimationMode.ONCE, 0, 0);
@@ -420,6 +421,7 @@ public class AnimationManager {
   private int lastFramePainted;
   private int lastModelPainted;
   private int intAnimThread;
+  public int currentAtomIndex = -1;
   private void setViewer(boolean clearBackgroundModel) {
     viewer.setTrajectory(currentModelIndex);
     viewer.setFrameOffset(currentModelIndex);

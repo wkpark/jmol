@@ -3544,13 +3544,15 @@ abstract public class ModelCollection extends BondCollection {
         .intersectPlane(plane, v, i);
   }
 
-  SymmetryInterface getUnitCellForAtom(Atom atom) {
+  public SymmetryInterface getUnitCellForAtom(int index) {
+    if (index < 0 || index > atomCount)
+      return null;
     if (bsModulated != null) {
-      Vibration v = getVibration(atom.index, false);
+      Vibration v = getVibration(index, false);
       if (v != null)
         return v.getUnitCell();
     }
-      return getUnitCell(atom.modelIndex);
+    return getUnitCell(atoms[index].modelIndex);
   }
 
 

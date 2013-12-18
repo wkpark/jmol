@@ -3734,6 +3734,9 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public SymmetryInterface getCurrentUnitCell() {
+    if (animationManager.currentAtomIndex >= 0)
+      return modelSet.getUnitCellForAtom(animationManager.currentAtomIndex);
+    
     if (animationManager.currentModelIndex >= 0)
       return modelSet.getUnitCell(animationManager.currentModelIndex);
     BS models = getVisibleFramesBitSet();
@@ -10494,6 +10497,14 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public Point3fi getVibrationPoint(Vibration vibration, Point3fi pt) {
     return transformManager.getVibrationPoint(vibration, pt);
+  }
+
+  public void setCurrentAtom(int iAtom) {
+    animationManager.currentAtomIndex = iAtom;
+  }
+
+  public int getCurrentAtom() {
+    return animationManager.currentAtomIndex;
   }
 
 }

@@ -782,7 +782,7 @@ public class Atom extends Point3fi implements JmolNode {
   }
   
   SymmetryInterface getUnitCell() {
-    return group.chain.model.modelSet.getUnitCellForAtom(this);
+    return group.chain.model.modelSet.getUnitCellForAtom(this.index);
   }
   
   private float getFractionalUnitCoord(char ch) {

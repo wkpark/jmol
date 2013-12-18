@@ -262,7 +262,7 @@ public class Symmetry implements SymmetryInterface {
 
   @Override
   public boolean isPeriodic() {
-    return (symmetryInfo == null || symmetryInfo.isPeriodic());
+    return (symmetryInfo == null ? false : symmetryInfo.isPeriodic());
   }
 
   @Override

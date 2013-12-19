@@ -1410,12 +1410,11 @@ class SpaceGroup {
       if (data.length > modDim + 3)
         return;
       for (int i = 0; i < nOps; i++) {
-        SymmetryOperation op = operations[i];
-        float[] rotTrans = op.rotTransMatrix;
         SymmetryOperation newOp = new SymmetryOperation(null, null, 0, 0,
             doNormalize);
         newOp.modDim = modDim;
-        newOp.rotTransMatrix = AU.arrayCopyF(rotTrans, -1);
+        SymmetryOperation op = operations[i];
+        newOp.linearRotTrans = AU.arrayCopyF(op.linearRotTrans, -1);
         newOp.setFromMatrix(data, false);
         newOp.xyzOriginal = newOp.xyz;
         addOp(newOp, newOp.xyz, true);
@@ -1437,10 +1436,8 @@ class SpaceGroup {
           break;
         }      
       }
-      if (pt1 != null) {
-        //System.out.println(pt + " to " + pt1 + " by " + i + ": " + finalOperations[i].xyz);
+      if (pt1 != null)
         pts.addLast(pt1);
-      }
     }
     return n / pts.size();
   }

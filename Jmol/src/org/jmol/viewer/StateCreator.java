@@ -378,9 +378,8 @@ public class StateCreator extends JmolStateCreator {
             if ((ivib = viewer.modelGetLastVibrationIndex(i, T.modulation)) >= 0)
               for (int j = models[i].firstAtomIndex; j <= ivib; j++) {
                 JmolModulationSet mset = (JmolModulationSet) viewer.getVibration(j);
-                if (mset != null && mset.isEnabled()) {
+                if (mset != null)
                   BSUtil.setMapBitSet(temp, j, j, mset.getState());
-                }
               }
           }
           String s = getCommands(temp, null, "select");

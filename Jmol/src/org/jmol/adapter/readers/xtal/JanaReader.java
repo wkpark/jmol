@@ -35,9 +35,9 @@ import org.jmol.io.JmolBinary;
 import org.jmol.java.BS;
 
 import javajs.util.List;
-import org.jmol.util.Logger;
+import javajs.util.Matrix;
 
-import javajs.util.P3;
+import org.jmol.util.Logger;
 
 /**
  * A reader for Jana M50+M40 file pairs.  *
@@ -48,7 +48,6 @@ public class JanaReader extends AtomSetCollectionReader {
 
   private List<float[]> lattvecs;
   private int thisSub;
-  private MSInterface mr;
   private boolean modAverage;
   private String modAxes;
   private int modDim;
@@ -125,19 +124,21 @@ public class JanaReader extends AtomSetCollectionReader {
         continuing = false;
         break;
       case WMATRIX:
-        int[][] m = new int[3 + modDim][3 + modDim];
+        Matrix m = new Matrix(null, 3 + modDim, 3 + modDim);
+        double[][] a = m.getArray();
         if (thisSub++ == 0) {
           for (int i = 3 + modDim; --i >= 0;)
-            m[i][i] = 1;
-          mr.addSubsystem("" + thisSub, m);
-          m = new int[12][12];
+            a[i][i] = 1;
+          ms.addSubsystem("" + thisSub++, m);
+          m = new Matrix(null, 3 + modDim, 3 + modDim);
         }
+        a = m.getArray();
         float[] data = new float[16];
         fillFloatArray(null, 0, data);
         for (int i = 0, pt = 0; i < 4; i++)
           for (int j = 0; j < 4; j++, pt++)
-             m[i][j] = (int) data[pt];
-        mr.addSubsystem("" + thisSub, m);
+             a[i][j] = data[pt];
+        ms.addSubsystem("" + thisSub, m);
     }
     return true;
   }
@@ -146,15 +147,15 @@ public class JanaReader extends AtomSetCollectionReader {
   public void finalizeReader() throws Exception {
     readM40Data();
     if (lattvecs != null)
-      atomSetCollection.getSymmetry().addLatticeVectors(lattvecs);
-    if (mr != null) {
-      mr.setModulation(false);
+      atomSetCollection.symmetry.addLatticeVectors(lattvecs);
+    if (ms != null) {
+      ms.setModulation(false);
     }
     applySymmetryAndSetTrajectory();
     adjustM40Occupancies();
-    if (mr != null) {
-      mr.setModulation(true);
-      mr.finalizeModulation();
+    if (ms != null) {
+      ms.setModulation(true);
+      ms.finalizeModulation();
     }
     finalizeReaderASCR();
   }
@@ -165,29 +166,18 @@ public class JanaReader extends AtomSetCollectionReader {
   }
 
   private void ndim() throws Exception {
-    mr = (MSInterface) Interface
+    ms = (MSInterface) Interface
         .getInterface("org.jmol.adapter.readers.cif.MSReader");
-    modDim = mr.initialize(this, "" + (parseIntStr(getTokens()[1]) - 3));
+    modDim = ms.initialize(this, "" + (parseIntStr(getTokens()[1]) - 3));
   }
 
   private int qicount;
 
   private void qi() {
-    P3 pt = P3.new3(parseFloat(), parseFloat(), parseFloat());
-    mr.addModulation(null, "W_" + (++qicount), pt, -1);
-    pt = new P3();
-    switch (qicount) {
-    case 1:
-      pt.x = 1;
-      break;
-    case 2:
-      pt.y = 1;
-      break;
-    case 3:
-      pt.z = 1;
-      break;
-    }
-    mr.addModulation(null, "F_" + qicount + "_q_", pt, -1);
+    double[] pt = new double[modDim];
+    pt[qicount] = 1;
+    ms.addModulation(null, "W_" + (++qicount), new double[] {parseFloat(), parseFloat(), parseFloat()}, -1);
+    ms.addModulation(null, "F_" + qicount + "_coefs_", pt, -1);
   }
    private void lattvec(String data) throws Exception {
     float[] a;
@@ -265,7 +255,7 @@ public class JanaReader extends AtomSetCollectionReader {
   /**
    * read the M40 file
    * 
-   * @throws Exception 
+   * @throws Exception
    */
   private void readM40Data() throws Exception {
     String name = filePath;
@@ -276,16 +266,16 @@ public class JanaReader extends AtomSetCollectionReader {
     String id = name.substring(0, ipt);
     ipt = id.lastIndexOf("/");
     id = id.substring(ipt + 1);
-    BufferedReader r = JmolBinary.getBR((String) viewer
-        .getLigandModel(id, name, "_file", "----"));
+    BufferedReader r = JmolBinary.getBR((String) viewer.getLigandModel(id,
+        name, "_file", "----"));
     if (readM40Floats(r).startsWith("command"))
       readM40WaveVectors(r);
     BS newSub = getSubSystemList();
     int iSub = (newSub == null ? 0 : 1);
     int nAtoms = -1;
     while (readM40Floats(r) != null) {
-      while (line != null && (line.length() == 0 || line.charAt(0) == ' '
-          || line.charAt(0) == '-')) {
+      while (line != null
+          && (line.length() == 0 || line.charAt(0) == ' ' || line.charAt(0) == '-')) {
         readM40Floats(r);
       }
       if (line == null)
@@ -331,8 +321,9 @@ public class JanaReader extends AtomSetCollectionReader {
       }
 
       // read occupancy parameters
-      P3 pt;
-      float o_0 = (nOcc > 0 && !haveSpecialOcc ? parseFloatStr(r.readLine()) : 1);
+      double[] pt;
+      float o_0 = (nOcc > 0 && !haveSpecialOcc ? parseFloatStr(r.readLine())
+          : 1);
       // we add a pt that save the original (unadjusted) o_0 and o_site
       // will implement 
       //
@@ -341,7 +332,8 @@ public class JanaReader extends AtomSetCollectionReader {
       // However, first we need to adjust o_0 because the value given in m40 is 
       // divided by the number of operators giving this site.
       if (o_0 != 1) {
-        mr.addModulation(null, "J_O#0;" + atom.atomName, P3.new3(o_site, o_0, 0), -1);
+        ms.addModulation(null, "J_O#0;" + atom.atomName, new double[] { o_site,
+            o_0, 0 }, -1);
       }
       atom.foccupancy = o_0 * o_site;
       int wv = 0;
@@ -354,13 +346,13 @@ public class JanaReader extends AtomSetCollectionReader {
         } else {
           wv = j + 1;
           readM40Floats(r);
-          a2 = floats[0];  // sin (first line)
-          a1 = floats[1];  // cos (second line)
+          a2 = floats[0]; // sin (first line)
+          a1 = floats[1]; // cos (second line)
         }
         id = "O_" + wv + "#0" + label;
-        pt = P3.new3(a1, a2, 0);
+        pt = new double[] {a1, a2, 0};
         if (a1 != 0 || a2 != 0)
-          mr.addModulation(null, id, pt, -1);
+          ms.addModulation(null, id, pt, -1);
       }
 
       // read displacement data
@@ -371,8 +363,8 @@ public class JanaReader extends AtomSetCollectionReader {
           float w = floats[4];
           for (int k = 0; k < 3; k++)
             if (floats[k] != 0)
-              mr.addModulation(null, "D_S#" + LABELS.charAt(k) + label, P3.new3(c,
-                  w, floats[k]), -1);
+              ms.addModulation(null, "D_S#" + LABELS.charAt(k) + label,
+                  new double[] {c, w, floats[k]}, -1);
         } else {
           // Fourier
           addSinCos(j, "D_", label, r);
@@ -392,9 +384,9 @@ public class JanaReader extends AtomSetCollectionReader {
           } else {
             float[][] data = readM40FloatLines(2, 6, r);
             for (int k = 0, p = 0; k < 6; k++, p += 3)
-              mr.addModulation(null, "U_" + (j + 1) + "#"
-                  + U_LIST.substring(p, p + 3) + label, P3.new3(data[1][k],
-                  data[0][k], 0), -1);
+              ms.addModulation(null,
+                  "U_" + (j + 1) + "#" + U_LIST.substring(p, p + 3) + label,
+                  new double[] {data[1][k], data[0][k], 0}, -1);
           }
         }
       }
@@ -422,18 +414,10 @@ public class JanaReader extends AtomSetCollectionReader {
     while (!readM40Floats(r).contains("end"))
       if (line.startsWith("wave")) {
         String[] tokens = getTokens();
-        P3 pt = new P3();
-        switch (modDim) {
-        case 3:
-          pt.z = parseFloatStr(tokens[4]);
-          //$FALL-THROUGH$
-        case 2:
-          pt.y = parseFloatStr(tokens[3]);
-          //$FALL-THROUGH$
-        case 1:
-          pt.x = parseFloatStr(tokens[2]);
-        }
-        mr.addModulation(null, "F_" + parseIntStr(tokens[1]) + "_q_", pt, -1);
+        double[] pt = new double[modDim];
+        for (int i = 0; i < modDim; i++)
+          pt[i] = parseFloatStr(tokens[i + 2]);
+        ms.addModulation(null, "F_" + parseIntStr(tokens[1]) + "_coefs_", pt, -1);
       }
     readM40Floats(r);
   }
@@ -450,23 +434,23 @@ public class JanaReader extends AtomSetCollectionReader {
       if (modAxes != null && modAxes.indexOf(axis.toUpperCase()) < 0)
         continue;
       String id = key + (j + 1) + "#" + axis + label;
-      P3 pt = P3.new3(ccos, csin, 0);
-      mr.addModulation(null, id, pt, -1);
+      ms.addModulation(null, id, new double[] { ccos, csin, 0 }, -1);
     }
   }
 
   /**
    * presumption here is that there is only one model 
-   * (that atModel is "@0")
+   * (that atModel is "@0") and that there is just one dimension?
    * 
    * @param j
    */
   private void checkFourier(int j) {
-    P3 pt;
-    if (j > 0 && mr.getMod("F_" + (j + 1) + "_q_") == null && (pt = mr.getMod("F_1_q_")) != null) {
-      pt = P3.newP(pt);
-      pt.scale(j + 1);
-      mr.addModulation(null, "F_" + (j + 1) + "_q_", pt, -1);
+    double[] pt;
+    if (j > 0 && ms.getMod("F_" + (++j) + "_coefs_") == null && (pt = ms.getMod("F_1_coefs_")) != null) {
+      double[] p = new double[modDim];
+      for (int i = modDim; --i >= 0;)
+        p[i] = pt[i] * j;
+      ms.addModulation(null, "F_" + j + "_coefs_", p, -1);
     }
   }
 
@@ -509,11 +493,17 @@ public class JanaReader extends AtomSetCollectionReader {
     for (int i = atomSetCollection.getAtomCount(); --i >= 0;) {
       Atom a = atoms[i];
       Integer ii = htSiteMult.get(a.atomName);
-      if (ii == null) {
-        htSiteMult.put(a.atomName, ii = Integer.valueOf(atomSetCollection.getSymmetry().getSiteMultiplicity(a)));
-        //System.out.println(a.atomName + " " + ii + " " + a.bsSymmetry + " " + a.foccupancy);
-      }
+      if (ii == null)
+        htSiteMult.put(a.atomName, ii = Integer.valueOf(atomSetCollection.symmetry.getSiteMultiplicity(a)));
       a.foccupancy *= ii.intValue();
     }
   }
+
+  @Override
+  protected void doPreSymmetry() {
+    if (ms != null)
+      ms.setModulation(false);
+  }
+
+
 }

@@ -13,6 +13,7 @@ import org.jmol.util.Tensor;
 
 import javajs.util.M3;
 import javajs.util.M4;
+import javajs.util.Matrix;
 import javajs.util.P3i;
 import javajs.util.T3;
 import javajs.util.V3;
@@ -131,7 +132,7 @@ public interface SymmetryInterface {
 
   public void setUnitCellOrientation(M3 matUnitCellOrientation);
 
-  public String getMatrixFromString(String xyz, float[] temp, boolean allowScaling);
+  public String getMatrixFromString(String xyz, float[] temp, boolean allowScaling, int modDim);
 
   public boolean checkDistance(P3 f1, P3 f2, float distance, 
                                         float dx, int iRange, int jRange, int kRange, P3 ptOffset);
@@ -173,10 +174,10 @@ public interface SymmetryInterface {
 
   public int getLatticeOp();
 
-  public M4 getOperationGammaIS(int iop);
+  public Matrix getOperationRsVs(int iop);
 
   public int getSiteMultiplicity(P3 a);
 
-  public String addOp(double[][] rot, double[][] trans);
+  public String addOp(Matrix rs, Matrix vs);
 
 }

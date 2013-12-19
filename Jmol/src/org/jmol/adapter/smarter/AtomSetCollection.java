@@ -870,7 +870,7 @@ public class AtomSetCollection {
     if (fmatSupercell != null)
       return;
     fmatSupercell = new float[16];
-    if (getSymmetry().getMatrixFromString(supercell, fmatSupercell, true) == null) {
+    if (getSymmetry().getMatrixFromString(supercell, fmatSupercell, true, 0) == null) {
       fmatSupercell = null;
       return;
     }
@@ -920,20 +920,26 @@ public class AtomSetCollection {
     symmetry.setLattice(latt);
   }
   
+  boolean doNormalize = true;
+  boolean doPackUnitCell = false;
+   
   void applySymmetry(SymmetryInterface symmetry, MSInterface ms) throws Exception {
     if (symmetry != null)
       getSymmetry().setSpaceGroupS(symmetry);
     //parameters are counts of unit cells as [a b c]
-    applySymmetryLattice(latticeCells[0], latticeCells[1], Math.abs(latticeCells[2]), ms);
+    applySymmetryLattice(ms);
   }
 
-  boolean doNormalize = true;
-  boolean doPackUnitCell = false;
-   
-  private void applySymmetryLattice(int maxX, int maxY, int maxZ, MSInterface ms)
+  private void applySymmetryLattice(MSInterface ms)
       throws Exception {
+    
     if (!coordinatesAreFractional || getSymmetry().getSpaceGroup() == null)
       return;
+    
+    int maxX = latticeCells[0];
+    int maxY = latticeCells[1];
+    int maxZ = Math.abs(latticeCells[2]);
+    
     if (fmatSupercell != null) {
 
       // supercell of the form nx + ny + nz

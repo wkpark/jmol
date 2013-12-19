@@ -6,10 +6,9 @@ import java.util.Map.Entry;
 
 import javajs.util.List;
 import javajs.util.M3;
-import javajs.util.M4;
+import javajs.util.Matrix;
 import javajs.util.P3;
 import javajs.util.SB;
-import javajs.util.V3;
 
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
@@ -52,10 +51,25 @@ public class MSReader implements MSInterface {
 
   protected int modDim;
 
-  private P3 q1;
-  private V3 q1Norm;
-  private Map<String, P3> htModulation;
+  private Matrix sigma;
+  
+  Matrix getSigma() {
+    return sigma;
+  }
+
+  private double[] q1;
+  private P3 q1Norm;
+  private Map<String, double[]> htModulation;
   private Map<String, List<Modulation>> htAtomMods;
+
+  private int iopLast = -1;
+  private M3 gammaE;
+  private Matrix gammaRsVs;
+  private int nOps;
+  private boolean haveOccupancy;
+  private Atom[] atoms;
+  private int atomCount;
+  private boolean haveAtomMods;
 
   public MSReader() {
     // for reflection from Jana
@@ -88,12 +102,12 @@ public class MSReader implements MSInterface {
       modAverage = true;
     } else {
       cr.appendLoadNote("Modulation dimension = " + modDim);
-      htModulation = new Hashtable<String, P3>();
+      htModulation = new Hashtable<String, double[]>();
     }
   }
 
   /**
-   * Types include O (occupation) D (displacement) U (anisotropy) _q_ indicates
+   * Types include O (occupation) D (displacement) U (anisotropy) _coefs_ indicates
    * this is a wave description
    * 
    * 
@@ -103,7 +117,8 @@ public class MSReader implements MSInterface {
    * @param iModel
    */
   @Override
-  public void addModulation(Map<String, P3> map, String id, P3 pt, int iModel) {
+  public void addModulation(Map<String, double[]> map, String id, double[] pt,
+                            int iModel) {
     char ch = id.charAt(0);
     switch (ch) {
     case 'O':
@@ -114,25 +129,22 @@ public class MSReader implements MSInterface {
         return;
       break;
     }
-    if (modSelected > 0 && id.contains("_q_"))
-      switch (modSelected) {
-      case 1:
-        pt.y = pt.z = 0;
-        break;
-      case 2:
-        pt.x = pt.z = 0;
-        break;
-      case 3:
-        pt.x = pt.y = 0;
+    boolean isOK = false;
+    for (int i = pt.length; --i >= 0;) {
+      if (modSelected > 0 && i + 1 != modSelected && id.contains("_coefs_")) {
+        pt[i] = 0;
+      } else if (pt[i] != 0) {
+        isOK = true;
         break;
       }
-    if (pt.x == 0 && pt.y == 0 && pt.z == 0)
+    }
+    if (!isOK)
       return;
     if (map == null)
       map = htModulation;
     id += "@"
         + (iModel >= 0 ? iModel : cr.atomSetCollection.getCurrentAtomSetIndex());
-    Logger.info("Adding " + id + " " + pt);
+    Logger.info("Adding " + id + " " + Escape.e(pt));
     map.put(id, pt);
   }
 
@@ -189,17 +201,10 @@ public class MSReader implements MSInterface {
    * @return modulation data
    */
   @Override
-  public P3 getMod(String key) {
+  public double[] getMod(String key) {
     return htModulation.get(key + atModel);
   }
 
-  M3 q123;
-  private boolean haveOccupancy;
-  private Atom[] atoms;
-
-  private int atomCount;
-
-  private boolean haveAtomMods;
 
   /**
    * Called when structure creation is complete and all modulation data has been
@@ -221,7 +226,7 @@ public class MSReader implements MSInterface {
 
     // check to see we have not already done this.
 
-    htModulation.put("X_" + atModel, new P3());
+    htModulation.put("X_" + atModel, new double[0]);
 
     if (!haveAtomMods)
       return;
@@ -249,28 +254,29 @@ public class MSReader implements MSInterface {
     // we allow for up to three wave vectors in the form of a matrix
     // along with their lengths as an array.
 
-    q123 = new M3();
+    sigma = new Matrix(null, modDim, 3);
     qs = null;
 
     // we should have W_1, W_2, W_3 up to the modulation dimension
 
     for (int i = 0; i < modDim; i++) {
-      P3 pt = getMod("W_" + (i + 1));
+      double[] pt = getMod("W_" + (i + 1));
       if (pt == null) {
         Logger.info("Not enough cell wave vectors for d=" + modDim);
         return;
       }
-      cr.appendLoadNote("W_" + (i + 1) + " = " + pt);
-      if (i == 0)
-        q1 = P3.newP(pt);
-      q123.setRowV(i, pt);
+      cr.appendLoadNote("W_" + (i + 1) + " = " + Escape.e(pt));
+
+      sigma.getArray()[i] = new double[] {pt[0], pt[1], pt[2]};
     }
+    q1 = sigma.getArray()[0];
 
     // q1Norm is used specifically for occupancy modulation, where dim = 1 only
 
-    q1Norm = V3.new3(q1.x == 0 ? 0 : 1, q1.y == 0 ? 0 : 1, q1.z == 0 ? 0 : 1);
-    P3 qlist100 = P3.new3(1, 0, 0);
-    P3 pt;
+    q1Norm = P3.new3(q1[0] == 0 ? 0 : 1, q1[1] == 0 ? 0 : 1, q1[2] == 0 ? 0 : 1);
+    double[] qlist100 = new double[modDim];
+    qlist100[0] = 1;
+    double[] pt;
 
     // Take care of loose ends.
     // O: occupation   (set haveOccupancy; set a cos(theta) + b sin(theta) format)
@@ -279,8 +285,8 @@ public class MSReader implements MSInterface {
     // W: primary wave vector (see F if dim > 1)
     // F: Jana-type wave vector, referencing W vectors (set pt to coefficients, including harmonics)
 
-    Map<String, P3> map = new Hashtable<String, P3>();
-    for (Entry<String, P3> e : htModulation.entrySet()) {
+    Map<String, double[]> map = new Hashtable<String, double[]>();
+    for (Entry<String, double[]> e : htModulation.entrySet()) {
       if ((key = checkKey(e.getKey(), false)) == null)
         continue;
       pt = e.getValue();
@@ -291,7 +297,7 @@ public class MSReader implements MSInterface {
       case 'U':
       case 'D':
         // fix modulus/phase option only for non-special modulations;
-        if (pt.z == 1 && key.charAt(2) != 'S') {
+        if (pt[2] == 1 && key.charAt(2) != 'S') {
           int ipt = key.indexOf("?");
           if (ipt >= 0) {
             String s = key.substring(ipt + 1);
@@ -302,12 +308,12 @@ public class MSReader implements MSInterface {
           } else {
             // modulus/phase M cos(2pi(q.r) + 2pi(p))
             //  --> A cos(2pi(p)) cos(2pi(q.r)) + A sin(-2pi(p)) sin(2pi(q.r))
-            double a = pt.x;
-            double d = 2 * Math.PI * pt.y;
-            pt.x = (float) (a * Math.cos(d));
-            pt.y = (float) (a * Math.sin(-d));
-            pt.z = 0;
-            Logger.info("msCIF setting " + key + " " + pt);
+            double a = pt[0];
+            double d = 2 * Math.PI * pt[1];
+            pt[0] = (float) (a * Math.cos(d));
+            pt[1] = (float) (a * Math.sin(-d));
+            pt[2] = 0;
+            Logger.info("msCIF setting " + key + " " + Escape.e(pt));
           }
         }
         break;
@@ -318,21 +324,21 @@ public class MSReader implements MSInterface {
         //$FALL-THROUGH$
       case 'F':
         // convert JANA Fourier descriptions to standard descriptions
-        if (key.indexOf("_q_") >= 0) {
+        if (key.indexOf("_coefs_") >= 0) {
           // d > 1 -- already set from coefficients
-          cr.appendLoadNote("Wave vector " + key + "=" + pt);
+          cr.appendLoadNote("Wave vector " + key + "=" + Escape.e(pt));
         } else {
-          P3 ptHarmonic = getQCoefs(pt);
+          double[] ptHarmonic = getQCoefs(pt);
           if (ptHarmonic == null) {
             cr.appendLoadNote("Cannot match atom wave vector " + key + " "
                 + pt + " to a cell wave vector or its harmonic");
           } else {
-            String k2 = key + "_q_";
+            String k2 = key + "_coefs_";
             if (!htModulation.containsKey(k2 + atModel)) {
               addModulation(map, k2, ptHarmonic, iModel);
               if (key.startsWith("F_"))
-                cr.appendLoadNote("atom wave vector " + key + " = " + pt
-                    + " fn = " + ptHarmonic);
+                cr.appendLoadNote("atom wave vector " + key + " = " + Escape.e(pt)
+                    + " fn = " + Escape.e(ptHarmonic));
             }
           }
         }
@@ -353,10 +359,10 @@ public class MSReader implements MSInterface {
       haveAtomMods = true;
       htAtomMods = new Hashtable<String, List<Modulation>>();
     }
-    for (Entry<String, P3> e : htModulation.entrySet()) {
+    for (Entry<String, double[]> e : htModulation.entrySet()) {
       if ((key = checkKey(e.getKey(), true)) == null)
         continue;
-      P3 params = e.getValue();
+      double[] params = e.getValue();
       String atomName = key.substring(key.indexOf(";") + 1);
       int pt_ = atomName.indexOf("#=");
       if (pt_ >= 0) {
@@ -384,18 +390,20 @@ public class MSReader implements MSInterface {
         if (htAtomMods == null)
           htAtomMods = new Hashtable<String, List<Modulation>>();
         int fn = (id == 'S' ? 0 : cr.parseIntStr(key.substring(2)));
+        double[] p = new double[] { params[0], params[1], params[2] };
         if (fn == 0) {
-          addAtomModulation(atomName, axis, type, params, utens, qlist100);
+          addAtomModulation(atomName, axis, type, p, utens, qlist100);
         } else {
-          P3 qlist = getMod("F_" + fn + "_q_");
+          double[] qlist = getMod("F_" + fn + "_coefs_");
           if (qlist == null) {
             Logger.error("Missing qlist for F_" + fn);
             cr.appendLoadNote("Missing cell wave vector for atom wave vector "
-                + fn + " for " + key + " " + params);
+                + fn + " for " + key + " " + Escape.e(params));
           }
-          qlist = getMod("F_1_q_");
-          if (qlist != null)
-            addAtomModulation(atomName, axis, type, params, utens, qlist);
+          qlist = getMod("F_1_coefs_");
+          if (qlist != null) {
+            addAtomModulation(atomName, axis, type, p, utens, qlist);
+          }
         }
         haveAtomMods = true;
         break;
@@ -414,33 +422,26 @@ public class MSReader implements MSInterface {
    * @param p
    * @return {i j k}
    */
-  private P3 getQCoefs(P3 p) {
+  private double[] getQCoefs(double[] p) {
     if (qs == null) {
-      qs = new P3[3];
-      for (int i = 0; i < 3; i++)
-        qs[i] = getMod("W_" + (i + 1));
+      qs = new P3[modDim];
+      for (int i = 0; i < modDim; i++) {
+        qs[i] = toP3(getMod("W_" + (i + 1)));
+      }      
     }
-    P3 pt = new P3();
+    P3 pt = toP3(p);
     // test n * q
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < modDim; i++)
       if (qs[i] != null) {
-        float fn = p.dot(qs[i]) / qs[i].dot(qs[i]);
+        float fn = pt.dot(qs[i]) / qs[i].dot(qs[i]);
         int ifn = Math.round(fn);
         if (Math.abs(fn - ifn) < 0.001f) {
-          switch (i) {
-          case 0:
-            pt.x = ifn;
-            break;
-          case 1:
-            pt.y = ifn;
-            break;
-          case 2:
-            pt.z = ifn;
-            break;
-          }
-          return pt;
+          p = new double[modDim];
+          p[i] = ifn;
+          return p;
         }
       }
+    P3 p3 = toP3(p);
     // test linear combination -3 to +3:
     int jmin = (modDim < 2 ? 0 : -3);
     int jmax = (modDim < 2 ? 0 : 3);
@@ -455,12 +456,27 @@ public class MSReader implements MSInterface {
             pt.scaleAdd2(j, qs[1], pt);
           if (qs[2] != null)
             pt.scaleAdd2(k, qs[2], pt);
-          if (pt.distanceSquared(p) < 0.0001f) {
-            pt.set(i, j, 0);
-            return pt;
+          if (pt.distanceSquared(p3) < 0.0001f) {
+            p = new double[modDim];
+            switch (modDim) {
+            default:
+              p[2] = k;
+              //$FALL-THROUGH$
+            case 2:
+              p[1] = j;
+              //$FALL-THROUGH$
+            case 1:
+              p[0] = i;
+              break;
+            }
+            return p;
           }
         }
     return null;
+  }
+
+  private P3 toP3(double[] x) {
+    return P3.new3((float) x[0], (float) x[1], (float) x[2]);
   }
 
   /**
@@ -474,7 +490,7 @@ public class MSReader implements MSInterface {
    * @param qcoefs
    */
   private void addAtomModulation(String atomName, char axis, char type,
-                                 P3 params, String utens, P3 qcoefs) {
+                                 double[] params, String utens, double[] qcoefs) {
     List<Modulation> list = htAtomMods.get(atomName);
     if (list == null) {
       atomCount++;
@@ -485,10 +501,10 @@ public class MSReader implements MSInterface {
   }
 
   @Override
-  public void addSubsystem(String code, int[][] wmatrix) {
+  public void addSubsystem(String code, Matrix w) {
     if (code == null)
       return;
-    Subsystem ss = new Subsystem(this, code, wmatrix);
+    Subsystem ss = new Subsystem(this, code, w);
     if (ss.w != null)
       setSubsystem(code, ss);
   }
@@ -515,10 +531,6 @@ public class MSReader implements MSInterface {
       cr.setU(atom, i, val + atom.anisoBorU[i]);
   }
 
-  private int iopLast = -1;
-  private M3 gammaE;
-  private M4 gammaIS;
-  private int nOps;
 
   /**
    * The displacement will be set as the atom vibration vector; the string
@@ -546,8 +558,6 @@ public class MSReader implements MSInterface {
     int iop = Math.max(a.bsSymmetry.nextSetBit(0), 0);
     if (modLast)
       iop = Math.max((a.bsSymmetry.length() - 1) % nOps, iop);
-    System.out.println(a.index + " " + a.atomName + " " + iop + " "
-        + a.bsSymmetry);
     if (Logger.debuggingHigh)
       Logger.debug("\nsetModulation: i=" + a.index + " " + a.atomName + " xyz="
           + a + " occ=" + a.foccupancy);
@@ -556,12 +566,10 @@ public class MSReader implements MSInterface {
       // gammaE is the pure rotation part of the operation;
       // gammaIS is a full rotation/translation matrix in fractional coordinates.
       // nOps is used as a factor in occupation modulation only.
-
-      //System.out.println("mdim=" + mdim + " op=" + (iop + 1) + " " + symmetry.getSpaceGroupOperation(iop) + " " + symmetry.getSpaceGroupXyz(iop, false));
       iopLast = iop;
       gammaE = new M3();
       cr.symmetry.getSpaceGroupOperation(iop).getRotationScale(gammaE);
-      gammaIS = cr.symmetry.getOperationGammaIS(iop);
+      gammaRsVs = cr.symmetry.getOperationRsVs(iop);
     }
     if (Logger.debugging) {
       Logger.debug("setModulation iop = " + iop + " "
@@ -571,16 +579,16 @@ public class MSReader implements MSInterface {
     // The magic happens here.
 
     ModulationSet ms = new ModulationSet().set(a.index + " " + a.atomName,
-        P3.newP(a), modDim, list, gammaE, gammaIS, getQ123(a), iop, getUnitCell(a));
+        P3.newP(a), modDim, list, gammaE, gammaRsVs, getSigma(a), iop, getUnitCell(a));
     ms.calculate(null, false);
 
     // ms parameter values are used to set occupancies, 
     // vibrations, and anisotropy tensors.
 
     if (!Float.isNaN(ms.vOcc)) {
-      P3 pt = getMod("J_O#0;" + a.atomName);
+      double[] pt = getMod("J_O#0;" + a.atomName);
       float occ0 = ms.vOcc0;
-      float occ;
+      double occ;
       if (Float.isNaN(occ0)) {
         // Crenel
         occ = ms.vOcc;
@@ -591,15 +599,15 @@ public class MSReader implements MSInterface {
       } else if (a.vib != null) {
         // cif with m40 Fourier
         // occ_site * (occ_0 + SUM)
-        float site_mult = a.vib.x;
-        float o_site = a.foccupancy * site_mult / nOps / pt.y;
-        occ = o_site * (pt.y + ms.vOcc);
+        double site_mult = a.vib.x;
+        double o_site = a.foccupancy * site_mult / nOps / pt[1];
+        occ = o_site * (pt[1] + ms.vOcc);
       } else {
         // m40 Fourier
         // occ_site * (occ_0 + SUM)
-        occ = pt.x * (pt.y + ms.vOcc);
+        occ = pt[0] * (pt[1] + ms.vOcc);
       }
-      a.foccupancy = Math.min(1, Math.max(0, occ));
+      a.foccupancy = (float) Math.min(1, Math.max(0, occ));
     }
     if (ms.htUij != null) {
       // Uiso or Uij. We add the displacements, create the tensor, then rotate it, 
@@ -636,9 +644,9 @@ public class MSReader implements MSInterface {
     }
   }
 
-  private M3 getQ123(Atom a) {
+  private Matrix getSigma(Atom a) {
     Subsystem ss = getSubsystem(a);
-    return (ss == null ? q123 : ss.getQ123());
+    return (ss == null ? sigma : ss.getSigma());
   }
 
   private SymmetryInterface getUnitCell(Atom a) {

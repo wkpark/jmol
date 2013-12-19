@@ -332,7 +332,7 @@ _pdbx_struct_oper_list.vector[3]
         Logger.info("assembly operator " + id + " " + xyz);
         M4 m4 = new M4();
         if (count != 12) {
-          cr.symmetry.getMatrixFromString(xyz, m, false);
+          cr.symmetry.getMatrixFromString(xyz, m, false, 0);
           m[3] *= cr.symmetry.getUnitCellInfoType(SimpleUnitCell.INFO_A) / 12;
           m[7] *= cr.symmetry.getUnitCellInfoType(SimpleUnitCell.INFO_B) / 12;
           m[11] *= cr.symmetry.getUnitCellInfoType(SimpleUnitCell.INFO_C) / 12;

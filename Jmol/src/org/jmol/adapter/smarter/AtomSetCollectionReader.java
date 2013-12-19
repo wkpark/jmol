@@ -202,11 +202,9 @@ public abstract class AtomSetCollectionReader {
   private P3 unitCellOffset;
   private boolean unitCellOffsetFractional;
 
-  /*  
-    public void finalize() {
-      System.out.println(this + " finalized");
-    }
-  */
+//    public void finalize() {
+//      System.out.println(this + " finalized");
+//    }
 
   protected String filePath;
   protected String fileName;
@@ -709,7 +707,6 @@ public abstract class AtomSetCollectionReader {
     if (Logger.debugging) {
       Logger.debug("setunitcellitem " + i + " " + x);
     }
-    //System.out.println("atomSetCollection unitcell item " + i + " = " + x);
     if (i < 6 || Float.isNaN(x))
       iHaveUnitCell = checkUnitCell(6);
     else if (++nMatrixElements == 12)
@@ -1361,27 +1358,11 @@ public abstract class AtomSetCollectionReader {
         setUnitCell(plotScale.x * 2 / (maxXYZ.x - minXYZ.x), plotScale.y * 2
             / (maxXYZ.y - minXYZ.y), plotScale.z * 2
             / (maxXYZ.z == minXYZ.z ? 1 : maxXYZ.z - minXYZ.z), 90, 90, 90);
-        /*
-        unitCellOffset = Point3f.new3(minXYZ);
-        symmetry.toCartesian(unitCellOffset);
-        System.out.println(unitCellOffset);
-        unitCellOffset = Point3f.new3(maxXYZ);
-        symmetry.toCartesian(unitCellOffset);
-        System.out.println(unitCellOffset);
-        */
         unitCellOffset = P3.newP(plotScale);
         unitCellOffset.scale(-1);
         symmetry.toFractional(unitCellOffset, false);
         unitCellOffset.scaleAdd2(-1f, minXYZ, unitCellOffset);
         symmetry.setOffsetPt(unitCellOffset);
-        /*
-        Point3f pt = Point3f.new3(minXYZ);
-        symmetry.toCartesian(pt);
-        System.out.println("ASCR minXYZ " + pt);
-        pt.set(maxXYZ);
-        symmetry.toCartesian(pt);
-        System.out.println("ASCR maxXYZ " + pt);
-        */
         atomSetCollection.setAtomSetCollectionAuxiliaryInfo("jmolDataScaling",
             new P3[] { minXYZ, maxXYZ, plotScale });
       }
@@ -1451,7 +1432,6 @@ public abstract class AtomSetCollectionReader {
     ptLine++;
     if (Logger.debugging)
       Logger.debug(line);
-    //System.out.println("readLine " + ptLine + " " + line);
     return line;
   }
 

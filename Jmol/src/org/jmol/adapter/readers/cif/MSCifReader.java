@@ -25,7 +25,7 @@ package org.jmol.adapter.readers.cif;
 
 import org.jmol.adapter.smarter.MSCifInterface;
 
-import javajs.util.P3;
+import javajs.util.Matrix;
 
 
 public class MSCifReader extends MSReader implements MSCifInterface {
@@ -206,9 +206,9 @@ public class MSCifReader extends MSReader implements MSCifInterface {
       String id = null;
       String atomLabel = null;
       String axis = null;
-      P3 pt = P3.new3(Float.NaN, Float.NaN, Float.NaN);
-      float c = Float.NaN;
-      float w = Float.NaN;
+      double[] pt = new double[] { Double.NaN, Double.NaN, Double.NaN };
+      double c = Double.NaN;
+      double w = Double.NaN;
       String fid = null;
       for (int i = 0; i < cr.tokenizer.fieldCount; ++i) {
         switch (tok = fieldProperty(cr, i)) {
@@ -217,7 +217,7 @@ public class MSCifReader extends MSReader implements MSCifInterface {
         case FU_ID:
         case WV_ID:
         case FWV_ID:
-          pt.x = pt.y = pt.z = 0;
+          pt[0] = pt[1] = pt[2] = 0;
           //$FALL-THROUGH$
         case FWV_DISP_SEQ_ID:
         case FWV_OCC_SEQ_ID:
@@ -236,7 +236,7 @@ public class MSCifReader extends MSReader implements MSCifInterface {
           case FO_ID:
           case FU_ID:
             fid = "?" + field;
-            pt.z = 1;
+            pt[2] = 1;
             continue;
           case FDP_ID:
           case FOP_ID:
@@ -254,7 +254,7 @@ public class MSCifReader extends MSReader implements MSCifInterface {
           break;
         case JANA_OCC_ABS_LABEL:
           id = "J_O";
-          pt.x = pt.z = 1;
+          pt[0] = pt[2] = 1;
           //$FALL-THROUGH$
         case DISP_SPEC_LABEL:
           if (id == null)
@@ -285,29 +285,23 @@ public class MSCifReader extends MSReader implements MSCifInterface {
         case FWV_DISP_COS:
         case FWV_U_COS:
         case OCC_CRENEL_C:
-          pt.z = 0;
+          pt[2] = 0;
           //$FALL-THROUGH$
         case WV_X:
         case FWV_X:
         case DISP_SAW_AX:
-          pt.x = cr.parseFloatStr(field);
+          pt[0] = cr.parseFloatStr(field);
           break;
         case FWV_Q1_COEF:
-          id += "_q_";
-          pt.x = cr.parseFloatStr(field);
-          switch (modDim) {
-          case 1:
-            pt.y = 0;
-            //$FALL-THROUGH$
-          case 2:
-            pt.z = 0;
-          }
+          id += "_coefs_";
+          pt = new double[modDim];
+          pt[0] = cr.parseFloatStr(field);
           break;
         case FWV_DISP_MODULUS:
         case FWV_OCC_MODULUS:
         case FWV_U_MODULUS:
-          pt.x = cr.parseFloatStr(field);
-          pt.z = 1;
+          pt[0] = cr.parseFloatStr(field);
+          pt[2] = 1;
           break;
         case DEPR_FO_SIN:
         case FWV_OCC_SIN:
@@ -326,13 +320,13 @@ public class MSCifReader extends MSReader implements MSCifInterface {
         case JANA_OCC_ABS_O_0:
         case DEPR_FU_SIN:
         case DEPR_FD_SIN:
-          pt.y = cr.parseFloatStr(field);
+          pt[1] = cr.parseFloatStr(field);
           break;
         case WV_Z:
         case FWV_Z:
         case FWV_Q3_COEF:
         case DISP_SAW_AZ:
-          pt.z = cr.parseFloatStr(field);
+          pt[2] = cr.parseFloatStr(field);
           break;
         case DISP_SAW_C:
           c = cr.parseFloatStr(field);
@@ -341,9 +335,13 @@ public class MSCifReader extends MSReader implements MSCifInterface {
           w = cr.parseFloatStr(field);
           break;
         }
-        if (ignore || Float.isNaN(pt.x + pt.y + pt.z) || pt.x == 0 && pt.y == 0
-            && pt.z == 0 || id == null || atomLabel != null
+        if (ignore || id == null || atomLabel != null
             && !atomLabel.equals("*") && cr.rejectAtomName(atomLabel))
+          continue;
+        double d = 0;
+        for (int j = 0; j < pt.length; j++)
+          d += pt[j];
+        if (Double.isNaN(d) || d > 1e10 || d == 0)
           continue;
         switch (id.charAt(0)) {
         case 'W':
@@ -357,14 +355,14 @@ public class MSCifReader extends MSReader implements MSCifInterface {
             continue;
           if (id.equals("D_S")) {
             // saw tooth displacement  center/width/Axyz
-            if (Float.isNaN(c) || Float.isNaN(w))
+            if (Double.isNaN(c) || Double.isNaN(w))
               continue;
-            if (pt.x != 0)
-              addMod("D_S#x;" + atomLabel, fid, P3.new3(c, w, pt.x));
-            if (pt.y != 0)
-              addMod("D_S#y;" + atomLabel, fid, P3.new3(c, w, pt.y));
-            if (pt.z != 0)
-              addMod("D_S#z;" + atomLabel, fid, P3.new3(c, w, pt.z));
+            if (pt[0] != 0)
+              addMod("D_S#x;" + atomLabel, fid, new double[] {c, w, pt[0]});
+            if (pt[1] != 0)
+              addMod("D_S#y;" + atomLabel, fid, new double[] {c, w, pt[1]});
+            if (pt[2] != 0)
+              addMod("D_S#z;" + atomLabel, fid, new double[] {c, w, pt[2]});
             continue;
           }
           id += "#" + axis + ";" + atomLabel;
@@ -376,7 +374,7 @@ public class MSCifReader extends MSReader implements MSCifInterface {
     return true;
   }
     
-  private void addMod(String id, String fid, P3 params) {
+  private void addMod(String id, String fid, double[] params) {
     if (fid != null)
       id += fid;
     addModulation(null, id, params, -1);
@@ -416,8 +414,9 @@ public class MSCifReader extends MSReader implements MSCifInterface {
     }
   }
 
-  private int[][] getSubSystemMatrix(CifReader cr, int i) {
-    int[][] m = new int[3 + modDim][3 + modDim];
+  private Matrix getSubSystemMatrix(CifReader cr, int i) {
+    Matrix m = new Matrix(null, 3 + modDim, 3 + modDim);
+    double[][] a = m.getArray();
     String key;
     int p;
     for (; i < cr.tokenizer.fieldCount; ++i) {
@@ -426,7 +425,7 @@ public class MSCifReader extends MSReader implements MSCifInterface {
         continue;
       int r = key.charAt(key.length() - 3) - '1';
       int c = key.charAt(key.length() - 1) - '1';
-      m[r][c] = cr.parseIntStr(field);
+      a[r][c] = cr.parseIntStr(field);
     }
     return m;
   }
@@ -437,5 +436,4 @@ public class MSCifReader extends MSReader implements MSCifInterface {
             cr.propertyOf[i] : NONE);
   }
 
-
-}
+  }

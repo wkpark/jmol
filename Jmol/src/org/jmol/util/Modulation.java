@@ -2,8 +2,6 @@ package org.jmol.util;
 
 import java.util.Hashtable;
 
-import javajs.util.P3;
-import javajs.util.T3;
 
 /**
  * A class to allow for more complex vibrations and associated phenomena, such
@@ -18,7 +16,7 @@ public class Modulation {
 
   private static final double TWOPI = 2 * Math.PI;
 
-  private P3 qCoefs;
+  private double[] qCoefs;
   
   private double a1;
   private double a2;
@@ -27,7 +25,7 @@ public class Modulation {
 
   private char axis;
   private final char type;
-  private P3 params;
+  private double[] params;
 
   private String utens;
 
@@ -49,9 +47,9 @@ public class Modulation {
    * @param utens TODO
    * @param qCoefs
    */
-  public Modulation(char axis, char type, P3 params, String utens, P3 qCoefs) {
+  public Modulation(char axis, char type, double[] params, String utens, double[] qCoefs) {
     if (Logger.debuggingHigh)
-      Logger.debug("MOD create " + Escape.eP(qCoefs) + " axis=" + axis + " type=" + type + " params=" + params + " utens=" + utens);
+      Logger.debug("MOD create " + Escape.e(qCoefs) + " axis=" + axis + " type=" + type + " params=" + params + " utens=" + utens);
     this.axis = axis;
     this.type = type;
     this.utens = utens;
@@ -61,14 +59,14 @@ public class Modulation {
     case TYPE_DISP_FOURIER:
     case TYPE_OCC_FOURIER:
     case TYPE_U_FOURIER:
-      a1 = params.x;  // cos
-      a2 = params.y;  // sin
+      a1 = params[0];  // cos
+      a2 = params[1];  // sin
       //System.out.println("ccos=" + a1 + " csin=" + a2);
       break;
     case TYPE_DISP_SAWTOOTH:
     case TYPE_OCC_CRENEL:
-      center = params.x;
-      float width = params.y;
+      center = params[0];
+      double width = params[1];
       if (width > 1)
         width = 1; // http://b-incstrdb.ehu.es/incstrdb/CIFFile.php?RefCode=Bi-Sr-Ca-Cu-O_rNdCbetq
       left = center - width / 2;
@@ -79,7 +77,7 @@ public class Modulation {
         right -= 1;
       if (left >= right && left - right < 0.01f)
         left = right + 0.01f;
-      a1 = 2 * params.z / params.y;
+      a1 = 2 * params[2] / params[1];
       break;
     }
   }
@@ -131,8 +129,10 @@ public class Modulation {
    * 
    */
 
-  void apply(ModulationSet ms, T3 x456) {
-    double x = qCoefs.dot(x456);
+  void apply(ModulationSet ms, double[][] x456) {
+    double x = 0;
+    for (int i = qCoefs.length; --i >= 0;)
+      x += qCoefs[i] * x456[i][0];
     double v = 0;
     //if (type == TYPE_OCC_CRENEL)
     //delta = 0;
@@ -147,7 +147,7 @@ public class Modulation {
       if (a2 != 0)
         v += a2 * Math.sin(theta);
       if (Logger.debuggingHigh)
-        Logger.debug("MOD " + ms.id + " " + Escape.eP(qCoefs) + " axis=" + axis
+        Logger.debug("MOD " + ms.id + " " + Escape.e(qCoefs) + " axis=" + axis
             + " v=" + v + " ccos,csin=" + a1 + "," + a2 + " / theta=" + theta);
       break;
     case TYPE_OCC_CRENEL:

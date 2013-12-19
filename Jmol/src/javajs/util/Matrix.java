@@ -164,12 +164,27 @@ public class Matrix implements Cloneable {
   }
 
   public Matrix add(Matrix b) {
+    return scaleAdd(b, 1);
+  }
+
+  public Matrix sub(Matrix b) {
+    return scaleAdd(b, -1);
+  }
+  
+  /**
+   * X = A + B*scale
+   * @param b 
+   * @param scale 
+   * @return X
+   * 
+   */
+  public Matrix scaleAdd(Matrix b, double scale) {
     Matrix x = new Matrix(null, m, n);
     double[][] xa = x.a;
     double[][] ba = b.a;
     for (int i = m; --i >= 0;)
       for (int j = n; --j >= 0;)
-        xa[i][j] = ba[i][j] + a[i][j];
+        xa[i][j] = ba[i][j] * scale + a[i][j];
     return x;
   }
 
@@ -181,7 +196,7 @@ public class Matrix implements Cloneable {
    * @return Matrix product, A * B or null for wrong dimension
    */
 
-  public Matrix times(Matrix b) {
+  public Matrix mul(Matrix b) {
     if (b.m != n)
       return null;
     Matrix x = new Matrix(null, m, b.n);
@@ -401,6 +416,31 @@ public class Matrix implements Cloneable {
       }
       return x;
     }
+  }
+
+  /**
+   * similarly to M3/M4 standard rotation/translation matrix
+   * we set a rotationTranslation matrix to be:
+   * 
+   * [   nxn rot    nx1 trans
+   * 
+   *     1xn  0     1x1 1      ]
+   * 
+   * 
+   * @return rotation matrix
+   */
+  public Matrix getRotation() {
+    return getSubmatrix(0, 0, m - 1, n - 1);
+  }
+
+  public Matrix getTranslation() {
+    return getSubmatrix(0, n - 1, m - 1, 1);
+  }
+
+  public static Matrix newT(P3 r, boolean asColumn) {
+    return (asColumn ? new Matrix(new double[][] { new double[] { r.x },
+        new double[] { r.y }, new double[] { r.z } }, 3, 1) : new Matrix(
+        new double[][] { new double[] { r.x, r.y, r.z } }, 1, 3));
   }
 
 }

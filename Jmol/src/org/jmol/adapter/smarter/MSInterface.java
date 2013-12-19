@@ -4,7 +4,7 @@ import java.util.Map;
 
 import org.jmol.api.SymmetryInterface;
 
-import javajs.util.P3;
+import javajs.util.Matrix;
 
 
 /**
@@ -15,13 +15,13 @@ public interface MSInterface {
 
   // methods called from org.jmol.adapters.readers.xtal.JanaReader
   
-  void addModulation(Map<String, P3> map, String id, P3 pt, int iModel);
+  void addModulation(Map<String, double[]> map, String id, double[] pt, int iModel);
 
-  void addSubsystem(String code, int[][] wmatrix);
+  void addSubsystem(String code, Matrix w);
 
   void finalizeModulation();
 
-  P3 getMod(String key);
+  double[] getMod(String key);
 
   int initialize(AtomSetCollectionReader r, String data) throws Exception;
 

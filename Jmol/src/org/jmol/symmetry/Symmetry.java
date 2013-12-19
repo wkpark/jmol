@@ -45,6 +45,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.SimpleUnitCell;
 import javajs.util.M3;
 import javajs.util.M4;
+import javajs.util.Matrix;
 import javajs.util.P3i;
 import javajs.util.T3;
 import javajs.util.V3;
@@ -78,8 +79,6 @@ public class Symmetry implements SymmetryInterface {
   private SymmetryInfo symmetryInfo;
   private UnitCell unitCell;
   private boolean isBio;
-  public final static String[] twelfths = { "0", "1/12", "1/6", "1/4", "1/3",
-  "5/12", "1/2", "7/12", "2/3", "3/4", "5/6", "11/12" };
   
   public Symmetry() {
     // instantiated ONLY using
@@ -234,7 +233,7 @@ public class Symmetry implements SymmetryInterface {
   }
 
   @Override
-  public String getMatrixFromString(String xyz, float[] rotTransMatrix, boolean allowScaling) {
+  public String getMatrixFromString(String xyz, float[] rotTransMatrix, boolean allowScaling, int modDim) {
     return SymmetryOperation.getMatrixFromString(null, xyz, rotTransMatrix, allowScaling);
   }
 
@@ -693,7 +692,6 @@ public class Symmetry implements SymmetryInterface {
   private boolean isNotCentroid(P3 center, int n, int[] minmax, boolean centroidPacked) {
     center.scale(1f/n);
     toFractional(center, false);
-    //System.out.println("isCentroid ? " + center);
     // we have to disallow just a tiny slice of atoms due to rounding errors
     // so  -0.000001 is OK, but 0.999991 is not.
     if (centroidPacked)
@@ -733,8 +731,8 @@ public class Symmetry implements SymmetryInterface {
   }
 
   @Override
-  public M4 getOperationGammaIS(int iop) {
-    return spaceGroup.finalOperations[iop].gammaIS;
+  public Matrix getOperationRsVs(int iop) {
+    return spaceGroup.finalOperations[iop].rsvs;
   }
 
   @Override
@@ -747,85 +745,16 @@ public class Symmetry implements SymmetryInterface {
     return isBio;
   }
 
-  public final static String xyzFraction(float n12ths, boolean allPositive, boolean halfOrLess) {
-    n12ths = Math.round(n12ths);
-    if (allPositive) {
-      while (n12ths < 0)
-        n12ths += 12f;
-    } else if (halfOrLess && n12ths > 6f) {
-      n12ths -= 12f;
-    }
-    String s = twelfthsOf(n12ths);
-    return (s.charAt(0) == '0' ? "" : n12ths > 0 ? "+" + s : s);
-  }
-
-  public final static String twelfthsOf(float n12ths) {
-    String str = "";
-    int i12ths = Math.round(n12ths);
-    if (i12ths == 12)
-      return "1";
-    if (i12ths == -12)
-      return "-1";
-    if (i12ths < 0) {
-      i12ths = -i12ths;
-      if (i12ths % 12 != 0)
-        str = "-";
-    }
-    int n = i12ths / 12;
-    if (n < 1)
-      return str + Symmetry.twelfths[i12ths % 12];
-    int m = 0;
-    switch (i12ths % 12) {
-    case 0:
-      return str + n;
-    case 1:
-    case 5:
-    case 7:
-    case 11:
-      m = 12;
-      break;
-    case 2:
-    case 10:
-      m = 6;
-      break;
-    case 3:
-    case 9:
-      m = 4;
-      break;
-    case 4:
-    case 8:
-      m = 3;
-      break;
-    case 6:
-      m = 2;
-      break;
-    }
-    return str + (i12ths * m / 12) + "/" + m;
-  }
-
   @Override
   /**
    * @param rot is a full (3+d)x(3+d) array of epsilons
    * @param trans is a (3+d)x(1) array of translations
    * @return Jones-Faithful representation
    */
-  public String addOp(double[][] rot, double[][] trans) {
+  public String addOp(Matrix rs, Matrix vs) {
     spaceGroup.isSSG = true;
-    int d = rot.length;
-    String s = "";
-    for (int i = 0; i < d; i++) {
-      for (int j = 0; j < d; j++) {
-        if (rot[i][j] != 0) {
-          s += (rot[i][j] > 0 ? "," : ",-") + "x" + (j + 1);
-          s += xyzFraction((int) (trans[i][0] * 12), false, true);
-          break;
-        }
-      }
-    }
-    s = s.substring(1);
+    String s = SymmetryOperation.getXYZFromRsVs(rs, vs, false);
     addSpaceGroupOperation(s, -1);
     return s;
   }
-
-
 }  

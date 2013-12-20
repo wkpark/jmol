@@ -228,7 +228,8 @@ class SpaceGroup {
   }
 
   String getXyz(int i, boolean doNormalize) {
-    return finalOperations[i].getXyz(doNormalize);
+  return (finalOperations == null ? operations[i].getXyz(doNormalize)
+      : finalOperations[i].getXyz(doNormalize));
   }
 
   void newPoint(int i, P3 atom1, P3 atom2,

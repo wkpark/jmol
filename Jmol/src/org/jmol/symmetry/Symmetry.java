@@ -193,13 +193,14 @@ public class Symmetry implements SymmetryInterface {
   
   @Override
   public M4 getSpaceGroupOperation(int i) {
-    return (i < spaceGroup.finalOperations.length ? spaceGroup.finalOperations[i] : null);
+    return (i >= spaceGroup.operations.length ? null 
+        : spaceGroup.finalOperations == null ? spaceGroup.operations[i] : spaceGroup.finalOperations[i]);
   }
   
 
   @Override
   public String getSpaceGroupXyz(int i, boolean doNormalize) {
-    return spaceGroup.finalOperations[i].getXyz(doNormalize);
+    return spaceGroup.getXyz(i, doNormalize);
   }
 
   @Override
@@ -732,7 +733,7 @@ public class Symmetry implements SymmetryInterface {
 
   @Override
   public Matrix getOperationRsVs(int iop) {
-    return spaceGroup.finalOperations[iop].rsvs;
+    return (spaceGroup.finalOperations == null ? spaceGroup.operations : spaceGroup.finalOperations)[iop].rsvs;
   }
 
   @Override

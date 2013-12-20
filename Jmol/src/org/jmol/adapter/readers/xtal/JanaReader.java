@@ -282,8 +282,8 @@ public class JanaReader extends AtomSetCollectionReader {
         break;
       nAtoms++;
       Atom atom = new Atom();
-      atom.atomName = line.substring(0, 9).trim();
       Logger.info(line);
+      atom.atomName = line.substring(0, 9).trim();
       if (!filterAtom(atom, 0))
         continue;
       if (iSub > 0) {
@@ -476,7 +476,7 @@ public class JanaReader extends AtomSetCollectionReader {
       return (line = null);
     if (Logger.debugging)
       Logger.debug(line);
-    int ptLast = line.length() - 10;
+    int ptLast = line.length() - 9;
     for (int i = 0, pt = 0; i < 6 && pt <= ptLast; i++, pt += 9)
       floats[i] = parseFloatStr(line.substring(pt, pt + 9));
     return line;

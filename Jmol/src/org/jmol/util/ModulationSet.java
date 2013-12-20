@@ -33,7 +33,7 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
   private int iop;
   private P3 r0;
   
-  private SymmetryInterface unitCell;  
+  private SymmetryInterface symmetry;  
   private M3 gammaE;
   private Matrix gammaIinv;
   private Matrix sigma;
@@ -46,9 +46,12 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
   private P3 qtOffset = new P3();
   private boolean isQ;
 
-  private Matrix tinv;
+  private Matrix t;
   
   private ModulationSet modTemp;
+  private String strop;
+  private boolean isSubsystem;
+  private Matrix tFactor;
 
   @Override
   public float getScale() {
@@ -68,49 +71,88 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
   /**
    * A collection of modulations for a specific atom.
    * 
-   * We treat the set of modulation vectors q1,q2,q3,... as a matrix Q with row
-   * 1 = q1, row 2 = q2, etc. Then we have Qr = [q1.r, q2.r, q3.r,...].
+   * The set of cell wave vectors form the sigma (d x 3) array, one vector per row. 
+   * Muliplying sigma by the atom vector r (3 x 1) gives us a (d x 1) column vector.
+   * This column vector is the set of coefficients of [x4, x5, x6...] that I will
+   * call X. 
+
+   * Similarly, we express the x1' - xn' aspects of the operators as the matrices
+   * Gamma_I (d x d epsilons) and s_I (d x 1 shifts). 
    * 
-   * Similarly, we express the x1' - xn' aspects of the operators as the matrix
-   * Gamma_I (epsilons) and s_I (shifts). However, since we are only considering
-   * up to n = 3, we can express these together as a 4x4 matrix just for
-   * storage.
+   * In the case of subsystems, these are extracted from:
    * 
-   * Then for X defined as [x4,x5,x6...] (column vector, really) we have:
+   * {Rs_nu | Vs_nu} = W_nu {Rs|Vs} W_nu^-1
    * 
-   * X' = Gamma_I * X + s_I
+   * Then for X defined as [x4,x5,x6...] we have:
    * 
-   * and
+   * X' = Gamma_I * X + S_I
    * 
-   * X = Gamma_I^-1(X' - S_I)
+   * or
+   * 
+   * X = (Gamma_I^-1)(X' - S_I)
+   * 
+   * I call this array "xmod". Ultimately we will need to add in 
+   * a term allowing us to adjust the t-value:
+   * 
+   * X = (Gamma_I^-1)(X' - S_I + t)
+   * 
+   * X = xmod + (Gamma_I^-1)(t)
+   * 
+   * or, below:
+   * 
+   *   xt = gammaIinv.mul(t).add(xmod)
+   * 
+   * For subsystem nu, we need to use t_nu, which will be
+   * 
+   * t_nu = (W_dd - sigma W_3d) t   (van Smaalen, p. 101)
+   * 
+   * t_nu = (tFactor) t
+   * 
+   * so this becomes
+   * 
+   * xt = gammaIinv.mul(tFactor.mul(t)).add(xmod)
+   * 
+   * Thus we have two subsystem-dependent modulation factors we
+   * need to bring in, sigma and tFactor, and two we need to compute,
+   * GammaIinv and xmod.
    * 
    * @param id
    * @param r
    * @param modDim
    * @param mods
    * @param gammaE
-   * @param rsvs
-   * @param sigma
+   * @param factors   including sigma and tFactor
    * @param iop
-   * @param uc
+   * @param symmetry
    * @return this
    * 
    * 
    */
 
   public ModulationSet set(String id, P3 r, int modDim, List<Modulation> mods,
-                           M3 gammaE, Matrix rsvs, Matrix sigma, int iop,
-                           SymmetryInterface uc) {
-    this.id = id;
+                           M3 gammaE, Matrix[] factors, int iop,
+                           SymmetryInterface symmetry) {
+    this.id = id + "_" + symmetry.getSpaceGroupName();
+    strop = symmetry.getSpaceGroupXyz(iop, false);
     this.modDim = modDim;
     this.mods = mods;
-    this.gammaE = gammaE;
     this.iop = iop;
-    this.unitCell = uc;
-    this.sigma = sigma;
-
-    // set up xmod
-
+    this.symmetry = symmetry;
+    sigma = factors[0];
+    tFactor = factors[1];
+    isSubsystem = (tFactor != null);
+    
+    if (isSubsystem) {
+      tFactor = tFactor.inverse();
+      //gammaE = new M3();
+      //symmetry.getSpaceGroupOperation(iop).getRotationScale(gammaE);
+    // no, didn't work, but it really should work, I think....
+      // why would we want to use the global gammaE?
+    }
+    
+    this.gammaE = gammaE; // ?? should be gammaE_nu?
+    
+    Matrix rsvs = symmetry.getOperationRsVs(iop);
     gammaIinv = rsvs.getSubmatrix(3,  3,  modDim,  modDim).inverse();
     sI = rsvs.getSubmatrix(3, 3 + modDim, modDim, 1);
     r0 = P3.newP(r);
@@ -121,20 +163,64 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
           ("MODSET create r=" + Escape.eP(r) + " si=" + Escape.e(sI.getArray())
               + " ginv=" + gammaIinv.toString().replace('\n', ' '));
     
-    tinv = new Matrix(null, modDim, 1);
+    t = new Matrix(null, modDim, 1);
     return this;
   }
 
   @Override
   public SymmetryInterface getUnitCell() {
-    return unitCell;
+    return symmetry;
   }
+  /**
+   * In general, we have, for Fourier:
+   * 
+   * u_axis(x) = sum[A1 cos(theta) + B1 sin(theta)]
+   * 
+   * where axis is x, y, or z, and theta = 2n pi x
+   * 
+   * More generally, we have for a given rotation that is characterized by
+   * 
+   * X {x4 x5 x6 ...}
+   * 
+   * Gamma_E (R3 rotation)
+   * 
+   * Gamma_I (X rotation)
+   * 
+   * S_I (X translation)
+   * 
+   * We allow here only up to x6, simply because we are using standard R3
+   * rotation objects Matrix3f, P3, V3.
+   * 
+   * We desire:
+   * 
+   * u'(X') = Gamma_E u(X)
+   * 
+   * which is defined as [private communication, Vaclav Petricek]:
+   * 
+   * u'(X') = Gamma_E sum[ U_c cos(2 pi (n m).Gamma_I^-1{X - S_I}) + U_s sin(2
+   * pi (n m).Gamma_I^-1{X - S_I}) ]
+   * 
+   * where
+   * 
+   * U_c and U_s are coefficients for cos and sin, respectively (will be a1 and
+   * a2 here)
+   * 
+   * (n m) is an array of Fourier number coefficients, such as (1 0), (1 -1), or
+   * (0 2)
+   * 
+   * In Jmol we precalculate Gamma_I^-1(X - S_I) as xmod, but we still have to
+   * factor in Gamma_I^-1(t).
+   * 
+   * @param fracT
+   * @param isQ
+   * @return this
+   */
   
   public synchronized ModulationSet calculate(T3 fracT, boolean isQ) {
     x = y = z = 0;
     htUij = null;
     vOcc = Float.NaN;
-    double[][] a = tinv.getArray();
+    double[][] a = t.getArray();
     for (int i = modDim; --i >= 0;)
       a[0][0] = 0;
     if (isQ && qtOffset != null) {
@@ -149,7 +235,7 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
         a[0][0] = qtOffset.x;
         break;
       }
-      tinv = sigma.mul(tinv);
+      t = sigma.mul(t);
     }
     if (fracT != null) {
       switch (modDim) {
@@ -164,9 +250,11 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
         break;
       }
     }
-    tinv = gammaIinv.mul(tinv).add(xmod);
+    if (isSubsystem)
+      t = tFactor.mul(t);
+    t = gammaIinv.mul(t).add(xmod);
     for (int i = mods.size(); --i >= 0;)
-      mods.get(i).apply(this, tinv.getArray());
+      mods.get(i).apply(this, t.getArray());
     gammaE.transform(this);
     return this;
   }
@@ -219,7 +307,7 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
   public void addTo(T3 a, float scale) {
     ptTemp.setT(this);
     ptTemp.scale(this.scale * scale);
-    unitCell.toCartesian(ptTemp, true);
+    symmetry.toCartesian(ptTemp, true);
     a.add(ptTemp);
   }
     
@@ -264,7 +352,8 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
     modTemp.gammaIinv = gammaIinv;
     modTemp.sigma = sigma;
     modTemp.r0 = r0;
-    modTemp.unitCell = unitCell;
+    modTemp.symmetry = symmetry;
+    modTemp.t = t;
   }
 
   @Override
@@ -272,15 +361,15 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
     Hashtable<String, Object> modInfo = new Hashtable<String, Object>();
     modInfo.put("id", id);
     modInfo.put("r0", r0);
-    modInfo.put("xmod", xmod);
+    modInfo.put("xmod", xmod.getArray());
     modInfo.put("modDim", Integer.valueOf(modDim));
     modInfo.put("gammaE", gammaE);
-    modInfo.put("gammaIinv", gammaIinv);
-    modInfo.put("sI", sI);
-    modInfo.put("q123", sigma);
+    modInfo.put("gammaIinv", gammaIinv.getArray());
+    modInfo.put("sI", sI.getArray());
+    modInfo.put("sigma", sigma.getArray());
     modInfo.put("symop", Integer.valueOf(iop + 1));
-//    modInfo.put("strop", unitCell.getSpaceGroupXyz(iop, false));
-    modInfo.put("unitcell", unitCell.getUnitCellInfo());
+    modInfo.put("strop", strop);
+    modInfo.put("unitcell", symmetry.getUnitCellInfo());
 
     List<Hashtable<String, Object>> mInfo = new List<Hashtable<String, Object>>();
     for (int i = 0; i < mods.size(); i++)

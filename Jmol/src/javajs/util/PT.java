@@ -797,6 +797,14 @@ public class PT {
         sep = ",";
       }
       sb.append("]");
+    } else if (isADD(info)) {
+      sb.append("[");
+      int imax = ((double[][]) info).length;
+      for (int i = 0; i < imax; i++) {
+        sb.append(sep).append(toJSON(null, ((double[][]) info)[i]));
+        sep = ",";
+      }
+      sb.append("]");
     } else if (isAFFF(info)) {
       sb.append("[");
       int imax = ((float[][][]) info).length;
@@ -947,6 +955,16 @@ public class PT {
      */
     {
     return x instanceof double[];
+    }
+  }
+
+  public static boolean isADD(Object x) {
+    /**
+     * @j2sNative
+     *  return Clazz.isAFF(x);
+     */
+    {
+    return x instanceof double[][];
     }
   }
 

@@ -63,8 +63,7 @@ public class MSReader implements MSInterface {
   private Map<String, List<Modulation>> htAtomMods;
 
   private int iopLast = -1;
-  private M3 gammaE;
-  private Matrix gammaRsVs;
+  private M3 gammaE; // standard operator rotation matrix
   private int nOps;
   private boolean haveOccupancy;
   private Atom[] atoms;
@@ -179,6 +178,8 @@ public class MSReader implements MSInterface {
 
   private String atModel = "@0";
 
+  private Matrix[] modMatrices;
+
   /**
    * Filter keys only for this model.
    * 
@@ -256,6 +257,8 @@ public class MSReader implements MSInterface {
 
     sigma = new Matrix(null, modDim, 3);
     qs = null;
+    
+    modMatrices = new Matrix[] { sigma, null } ;
 
     // we should have W_1, W_2, W_3 up to the modulation dimension
 
@@ -370,7 +373,7 @@ public class MSReader implements MSInterface {
         atomName = atomName.substring(0, pt_);
       }
       if (Logger.debuggingHigh)
-        Logger.debug("SetModulation: " + key + " " + params);
+        Logger.debug("SetModulation: " + key + " " + Escape.e(params));
       char type = key.charAt(0);
       pt_ = key.indexOf("#") + 1;
       String utens = null;
@@ -399,8 +402,8 @@ public class MSReader implements MSInterface {
             Logger.error("Missing qlist for F_" + fn);
             cr.appendLoadNote("Missing cell wave vector for atom wave vector "
                 + fn + " for " + key + " " + Escape.e(params));
+            qlist = getMod("F_1_coefs_");
           }
-          qlist = getMod("F_1_coefs_");
           if (qlist != null) {
             addAtomModulation(atomName, axis, type, p, utens, qlist);
           }
@@ -556,6 +559,8 @@ public class MSReader implements MSInterface {
     }
     if (list == null || cr.symmetry == null || a.bsSymmetry == null)
       return;
+    
+    
     int iop = Math.max(a.bsSymmetry.nextSetBit(0), 0);
     if (modLast)
       iop = Math.max((a.bsSymmetry.length() - 1) % nOps, iop);
@@ -570,7 +575,6 @@ public class MSReader implements MSInterface {
       iopLast = iop;
       gammaE = new M3();
       cr.symmetry.getSpaceGroupOperation(iop).getRotationScale(gammaE);
-      gammaRsVs = cr.symmetry.getOperationRsVs(iop);
     }
     if (Logger.debugging) {
       Logger.debug("setModulation iop = " + iop + " "
@@ -580,7 +584,7 @@ public class MSReader implements MSInterface {
     // The magic happens here.
 
     ModulationSet ms = new ModulationSet().set(a.index + " " + a.atomName,
-        P3.newP(a), modDim, list, gammaE, gammaRsVs, getSigma(a), iop, getUnitCell(a));
+        P3.newP(a), modDim, list, gammaE, getMatrices(a), iop, getSymmetry(a));
     ms.calculate(null, false);
 
     // ms parameter values are used to set occupancies, 
@@ -647,34 +651,40 @@ public class MSReader implements MSInterface {
     }
   }
 
-  private Matrix getSigma(Atom a) {
-    Subsystem ss = getSubsystem(a);
-    return (ss == null ? sigma : ss.getSigma());
+  /**
+   * When applying symmetry, this method allows us to use a set of symmetry
+   * operators unique to this particular atom -- or in this case, to its subsystem.
+   * 
+   */
+  @Override
+  public SymmetryInterface getAtomSymmetry(Atom a, SymmetryInterface defaultSymmetry) {
+    Subsystem ss;
+    return (htSubsystems == null || (ss = getSubsystem(a)) == null ? 
+        defaultSymmetry : ss.getSymmetry());
   }
-
-  private SymmetryInterface getUnitCell(Atom a) {
-    Subsystem ss = getSubsystem(a);
-    return (ss == null ? cr.symmetry : ss.getSymmetry());
-  }
+  
 
   private Map<String, Subsystem> htSubsystems;
+  
   private void setSubsystem(String code, Subsystem system) {
     if (htSubsystems == null)
       htSubsystems = new Hashtable<String, Subsystem>();
     htSubsystems.put(code, system);
   }
 
+  private Matrix[] getMatrices(Atom a) {
+    Subsystem ss = getSubsystem(a);
+    return (ss == null ? modMatrices : ss.getModMatrices());
+  }
+
+  private SymmetryInterface getSymmetry(Atom a) {
+    Subsystem ss = getSubsystem(a);
+    return (ss == null ? cr.symmetry : ss.getSymmetry());
+  }
+
   private Subsystem getSubsystem(Atom a) {
     return (htSubsystems == null ? null : htSubsystems.get("" + a.altLoc));
   }
 
-  @Override
-  public SymmetryInterface getAtomSymmetry(Atom a, SymmetryInterface symmetry) {
-    if (htSubsystems == null)
-      return symmetry;
-    Subsystem s = getSubsystem(a);
-    return (s == null ? symmetry : s.getSymmetry());
-  }
-  
 
 }

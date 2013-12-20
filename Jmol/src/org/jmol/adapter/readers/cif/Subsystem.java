@@ -14,10 +14,10 @@ class Subsystem {
   private String code;
   SymmetryInterface symmetry;
   private MSReader msReader;
-  private Matrix sigma_nu;
   
   Matrix w;
   private int d;
+  private Matrix[] modMatrices;
 
   Subsystem(MSReader msReader, String code, Matrix w) {
     this.msReader = msReader;
@@ -27,15 +27,15 @@ class Subsystem {
   }
 
   public SymmetryInterface getSymmetry() {
-    if (symmetry == null)
+    if (modMatrices == null)
       setSymmetry();
     return symmetry;
   }
 
-  public Matrix getSigma() {
-    if (sigma_nu == null)
+  public Matrix[] getModMatrices() {
+    if (modMatrices == null)
       setSymmetry();
-    return sigma_nu;
+    return modMatrices;
   }
 
   private void setSymmetry() {
@@ -50,9 +50,11 @@ class Subsystem {
     Matrix w3d = w.getSubmatrix(0, 3, 3, d);
     Matrix wd3 = w.getSubmatrix(3, 0, d, 3);
     Matrix wdd = w.getSubmatrix(3, 3, d, d);
-    sigma_nu = wdd.mul(sigma).add(wd3)
+    Matrix sigma_nu = wdd.mul(sigma).add(wd3)
         .mul(w3d.mul(sigma).add(w33).inverse());
-
+    Matrix tFactor = wdd.sub(sigma_nu.mul(w3d)); 
+    modMatrices = new Matrix[] { sigma_nu, tFactor };
+    
     // Part 2: Get the new unit cell and symmetry operators (not!)
 
     a = w.getArray();

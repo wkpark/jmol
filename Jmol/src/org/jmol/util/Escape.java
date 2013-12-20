@@ -116,7 +116,7 @@ public class Escape {
     }    
     if (x instanceof Map)
       return escapeMap((Map<String, Object>) x);
-    if (PT.isAII(x) || PT.isAFF(x) || PT.isAFFF(x)) 
+    if (PT.isAII(x) || PT.isAFF(x) || PT.isADD(x) || PT.isAFFF(x)) 
       return PT.toJSON(null, x);
     return x.toString();
   }
@@ -588,6 +588,16 @@ public class Escape {
       }
       sb.append("]");
       return packageReadableSb(name, "float[][]", sb);
+    }
+    if (PT.isADD(info)) {
+      sb.append("[\n");
+      int imax = ((double[][]) info).length;
+      for (int i = 0; i < imax; i++) {
+        sb.append(sep).append(toReadable(null, ((double[][]) info)[i]));
+        sep = ",\n";
+      }
+      sb.append("]");
+      return packageReadableSb(name, "double[][]", sb);
     }
     if (info instanceof List<?>) {
       int imax = ((List<?>) info).size();

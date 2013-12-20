@@ -306,6 +306,11 @@ public class JanaReader extends AtomSetCollectionReader {
       int nUij = getInt(71, 74);
       // read anisotropies
       readM40Floats(r);
+      boolean extended = false;
+      if (Float.isNaN(floats[0])) {
+        extended = true;
+        readM40Floats(r); // second atom line
+      }
       boolean isIso = true;
       for (int j = 1; j < 6; j++)
         if (floats[j] != 0) {
@@ -318,6 +323,11 @@ public class JanaReader extends AtomSetCollectionReader {
       } else {
         for (int j = 0; j < 6; j++)
           setU(atom, j, floats[j]);
+      }
+
+      if (extended) {
+        r.readLine();
+        r.readLine(); //???
       }
 
       // read occupancy parameters
@@ -346,8 +356,8 @@ public class JanaReader extends AtomSetCollectionReader {
         } else {
           wv = j + 1;
           readM40Floats(r);
-          a2 = floats[0]; // sin (first line)
-          a1 = floats[1]; // cos (second line)
+          a2 = floats[0]; // sin (first on line)
+          a1 = floats[1]; // cos (second on line)
         }
         id = "O_" + wv + "#0" + label;
         pt = new double[] {a1, a2, 0};

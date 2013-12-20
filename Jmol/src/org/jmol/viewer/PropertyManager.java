@@ -1222,7 +1222,9 @@ public class PropertyManager implements JmolPropertyManager {
     info.put("bondCount", Integer.valueOf(atom.getCovalentBondCount()));
     info.put("radius", Float.valueOf((float) (atom.getRasMolRadius() / 120.0)));
     info.put("model", atom.getModelNumberForLabel());
-    info.put("shape", Atom.atomPropertyString(viewer, atom, T.shape));
+    String shape = Atom.atomPropertyString(viewer, atom, T.shape);
+    if (shape != null)
+      info.put("shape", shape);
     info.put("visible", Boolean.valueOf(atom.isVisible(0)));
     info.put("clickabilityFlags", Integer.valueOf(atom.clickabilityFlags));
     info.put("visibilityFlags", Integer.valueOf(atom.shapeVisibilityFlags));

@@ -505,6 +505,7 @@ public class MSReader implements MSInterface {
     if (code == null)
       return;
     Subsystem ss = new Subsystem(this, code, w);
+    cr.appendLoadNote("subsystem " + code + "\n" + w);
     if (ss.w != null)
       setSubsystem(code, ss);
   }
@@ -633,6 +634,8 @@ public class MSReader implements MSInterface {
             + ((Tensor) a.tensors.get(0)).getInfo("all"));
       }
     }
+    if (Float.isNaN(ms.x))
+      ms.set(0, 0, 0);
     a.vib = ms;
     // set property_modT to be Math.floor (q.r/|q|) -- really only for d=1
 

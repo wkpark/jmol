@@ -859,10 +859,10 @@ public class ScriptMathProcessor {
     return binaryOp(op, x1, x2);
   }
 
-//  public SV selectX(SV x2) {
-//    return (x2.tok == T.varray || x2.tok == T.matrix3f || x2.tok == T.matrix4f ? SV
-//        .selectItemVar(x2) : x2);
-//  }
+  //  public SV selectX(SV x2) {
+  //    return (x2.tok == T.varray || x2.tok == T.matrix3f || x2.tok == T.matrix4f ? SV
+  //        .selectItemVar(x2) : x2);
+  //  }
 
   @SuppressWarnings("unchecked")
   public boolean binaryOp(T op, SV x1, SV x2) throws ScriptException {
@@ -879,13 +879,13 @@ public class ScriptMathProcessor {
       case T.bitset:
         BS bs = SV.bsSelectVar(x1);
         switch (x2.tok) {
+        case T.integer:
+          int x = x2.asInt();
+          return (addXBool(x < 0 ? false : bs.get(x)));
         case T.bitset:
           bs = BSUtil.copy(bs);
           bs.and(SV.bsSelectVar(x2));
           return addXBs(bs);
-        case T.integer:
-          int x = x2.asInt();
-          return (addXBool(x < 0 ? false : bs.get(x)));
         }
         break;
       }
@@ -909,7 +909,7 @@ public class ScriptMathProcessor {
           for (int i = sv.size(); --i >= 0;) {
             int b = sv.get(i).asInt();
             if (b >= 0)
-              bs.set(b); 
+              bs.set(b);
           }
           return addXBs(bs);
         }
@@ -930,8 +930,8 @@ public class ScriptMathProcessor {
     case T.opToggle:
       if (x1.tok != T.bitset || x2.tok != T.bitset)
         return false;
-      return addXBs(BSUtil.toggleInPlace(BSUtil.copy(SV
-          .bsSelectVar(x1)), SV.bsSelectVar(x2)));
+      return addXBs(BSUtil.toggleInPlace(BSUtil.copy(SV.bsSelectVar(x1)),
+          SV.bsSelectVar(x2)));
     case T.opLE:
       return addXBool(x1.asFloat() <= x2.asFloat());
     case T.opGE:
@@ -946,21 +946,10 @@ public class ScriptMathProcessor {
       return addXBool(!SV.areEqual(x1, x2));
     case T.plus:
       switch (x1.tok) {
-      default:
-        return addXFloat(x1.asFloat() + x2.asFloat());
-      case T.varray:
-        return addXVar(SV.concatList(x1, x2, true));
       case T.integer:
-        switch (x2.tok) {
-        case T.string:
-          if ((s = SV.sValue(x2).trim()).indexOf(".") < 0
-              && s.indexOf("+") <= 0 && s.lastIndexOf("-") <= 0)
-            return addXInt(x1.intValue + x2.asInt());
-          break;
-        case T.decimal:
-          return addXFloat(x1.intValue + x2.asFloat());
-        }
-        return addXInt(x1.intValue + x2.asInt());
+        if (!isDecimal(x2))
+          return addXInt(x1.intValue + x2.asInt());
+        break;
       case T.string:
         return addXVar(SV.newS(SV.sValue(x1) + SV.sValue(x2)));
       case T.point4f:
@@ -969,8 +958,7 @@ public class ScriptMathProcessor {
         default:
           return addXPt4(q1.add(x2.asFloat()).toPoint4f());
         case T.point4f:
-          return addXPt4(q1.mulQ(Quaternion.newP4((P4) x2.value))
-              .toPoint4f());
+          return addXPt4(q1.mulQ(Quaternion.newP4((P4) x2.value)).toPoint4f());
         }
       case T.point3f:
         pt = P3.newP((P3) x1.value);
@@ -998,53 +986,40 @@ public class ScriptMathProcessor {
         case T.point3f:
           return addXM4(getMatrix4f((M3) x1.value, (P3) x2.value));
         }
+      case T.varray:
+        return addXVar(SV.concatList(x1, x2, true));
       }
+      return addXFloat(x1.asFloat() + x2.asFloat());
     case T.minus:
-      if (x1.tok == T.integer) {
-        if (x2.tok == T.string) {
-          if ((s = (SV.sValue(x2)).trim()).indexOf(".") < 0
-              && s.indexOf("+") <= 0 && s.lastIndexOf("-") <= 0)
-            return addXInt(x1.intValue - x2.asInt());
-        } else if (x2.tok != T.decimal)
-          return addXInt(x1.intValue - x2.asInt());
-      }
-      if (x1.tok == T.string && x2.tok == T.integer) {
-        if ((s = (SV.sValue(x1)).trim()).indexOf(".") < 0
-            && s.indexOf("+") <= 0 && s.lastIndexOf("-") <= 0)
-          return addXInt(x1.asInt() - x2.intValue);
-      }
       switch (x1.tok) {
-      default:
-        return addXFloat(x1.asFloat() - x2.asFloat());
+      case T.integer:
+        if (!isDecimal(x2))
+          return addXInt(x1.intValue - x2.asInt());
+        break;
+      case T.string:
+        if (!isDecimal(x2) && !isDecimal(x1))
+          return addXInt(x1.asInt() - x2.asInt());
+        break;
       case T.hash:
         Map<String, SV> ht = new Hashtable<String, SV>(
             (Map<String, SV>) x1.value);
         ht.remove(SV.sValue(x2));
         return addXVar(SV.getVariableMap(ht));
       case T.matrix3f:
-        switch (x2.tok) {
-        default:
-          return addXFloat(x1.asFloat() - x2.asFloat());
-        case T.matrix3f:
-          m = M3.newM((M3) x1.value);
-          m.sub((M3) x2.value);
-          return addXM3(m);
-        }
+        if (x2.tok != T.matrix3f)
+          break;
+        m = M3.newM((M3) x1.value);
+        m.sub((M3) x2.value);
+        return addXM3(m);
       case T.matrix4f:
-        switch (x2.tok) {
-        default:
-          return addXFloat(x1.asFloat() - x2.asFloat());
-        case T.matrix4f:
-          M4 m4 = M4.newM((M4) x1.value);
-          m4.sub((M4) x2.value);
-          return addXM4(m4);
-        }
+        if (x2.tok != T.matrix4f)
+          break;
+        M4 m4 = M4.newM((M4) x1.value);
+        m4.sub((M4) x2.value);
+        return addXM4(m4);
       case T.point3f:
         pt = P3.newP((P3) x1.value);
         switch (x2.tok) {
-        default:
-          f = x2.asFloat();
-          return addXPt(P3.new3(pt.x - f, pt.y - f, pt.z - f));
         case T.point3f:
           pt.sub((P3) x2.value);
           return addXPt(pt);
@@ -1054,20 +1029,19 @@ public class ScriptMathProcessor {
           pt.sub(P3.new3(pt4.x, pt4.y, pt4.z));
           return addXPt(pt);
         }
+        f = x2.asFloat();
+        return addXPt(P3.new3(pt.x - f, pt.y - f, pt.z - f));
       case T.point4f:
         Quaternion q1 = Quaternion.newP4((P4) x1.value);
-        switch (x2.tok) {
-        default:
-          return addXPt4(q1.add(-x2.asFloat()).toPoint4f());
-        case T.point4f:
+        if (x2.tok == T.point4f) {
           Quaternion q2 = Quaternion.newP4((P4) x2.value);
           return addXPt4(q2.mulQ(q1.inv()).toPoint4f());
         }
+        return addXPt4(q1.add(-x2.asFloat()).toPoint4f());
       }
+      return addXFloat(x1.asFloat() - x2.asFloat());
     case T.unaryMinus:
       switch (x2.tok) {
-      default:
-        return addXFloat(-x2.asFloat());
       case T.integer:
         return addXInt(-x2.asInt());
       case T.point3f:
@@ -1087,20 +1061,30 @@ public class ScriptMathProcessor {
         m4.transpose();
         return addXM4(m4);
       case T.bitset:
-        return addXBs(BSUtil.copyInvert(SV.bsSelectVar(x2),
+        return addXBs(BSUtil.copyInvert(
+            SV.bsSelectVar(x2),
             (x2.value instanceof BondSet ? viewer.getBondCount() : viewer
                 .getAtomCount())));
       }
+      return addXFloat(-x2.asFloat());
     case T.mul3:
       if (x1.tok == T.point3f && x2.tok == T.point3f) {
-         pt = (P3) x1.value;
-         P3 pt2 = (P3) x2.value;
-         return addXPt(P3.new3(pt.x*pt2.x,pt.y*pt2.y,pt.z*pt2.z));
+        pt = (P3) x1.value;
+        P3 pt2 = (P3) x2.value;
+        return addXPt(P3.new3(pt.x * pt2.x, pt.y * pt2.y, pt.z * pt2.z));
       }
       //$FALL-THROUGH$
     case T.times:
-      if (x1.tok == T.integer && x2.tok != T.decimal)
-        return addXInt(x1.intValue * x2.asInt());
+      switch (x1.tok) {
+      case T.integer:
+        return (isDecimal(x2) ?
+            addXFloat(x1.intValue * x2.asFloat())
+                : addXInt(x1.intValue * x2.asInt()));
+      case T.string:
+        return (isDecimal(x2) || isDecimal(x1) ?
+            addXFloat(x1.asFloat() * x2.asFloat()) : 
+              addXInt(x1.asInt() * x2.asInt()));
+      }      
       pt = (x1.tok == T.matrix3f ? ptValue(x2, false)
           : x2.tok == T.matrix3f ? ptValue(x1, false) : null);
       pt4 = (x1.tok == T.matrix4f ? planeValue(x2)
@@ -1116,16 +1100,14 @@ public class ScriptMathProcessor {
           m3b.transpose();
           m3b.transform(pt);
           if (x1.tok == T.varray)
-            return addXVar(SV.getVariableAF(new float[] { pt.x, pt.y,
-                pt.z }));
+            return addXVar(SV.getVariableAF(new float[] { pt.x, pt.y, pt.z }));
           return addXPt(pt);
         }
-        if (pt4 != null) {
+        if (pt4 != null)
           // q * m --> q
           return addXPt4((Quaternion.newP4(pt4).mulQ(Quaternion
               .newM((M3) x2.value))).toPoint4f());
-        }
-        break;
+          break;
       case T.matrix4f:
         // pt4 * m4
         // [a b c d] * m4
@@ -1134,22 +1116,19 @@ public class ScriptMathProcessor {
           m4b.transpose();
           m4b.transform4(pt4);
           if (x1.tok == T.varray)
-            return addXVar(SV.getVariableAF(new float[] { pt4.x,
-                pt4.y, pt4.z, pt4.w }));
+            return addXVar(SV.getVariableAF(new float[] { pt4.x, pt4.y, pt4.z,
+                pt4.w }));
           return addXPt4(pt4);
         }
         break;
       }
       switch (x1.tok) {
-      default:
-        return addXFloat(x1.asFloat() * x2.asFloat());
       case T.matrix3f:
         M3 m3 = (M3) x1.value;
         if (pt != null) {
           m3.transform(pt);
           if (x2.tok == T.varray)
-            return addXVar(SV.getVariableAF(new float[] { pt.x, pt.y,
-                pt.z }));
+            return addXVar(SV.getVariableAF(new float[] { pt.x, pt.y, pt.z }));
           return addXPt(pt);
         }
         switch (x2.tok) {
@@ -1159,63 +1138,98 @@ public class ScriptMathProcessor {
           return addXM3(m);
         case T.point4f:
           // m * q
-          return addXM3(Quaternion.newM(m3).mulQ(
-              Quaternion.newP4((P4) x2.value)).getMatrix());
-        default:
-          f = x2.asFloat();
-          A4 aa = new A4();
-          aa.setM(m3);
-          aa.angle *= f;
-          M3 m2 = new M3();
-          m2.setAA(aa);
-          return addXM3(m2);
+          return addXM3(Quaternion.newM(m3)
+              .mulQ(Quaternion.newP4((P4) x2.value)).getMatrix());
         }
+        f = x2.asFloat();
+        A4 aa = new A4();
+        aa.setM(m3);
+        aa.angle *= f;
+        M3 m2 = new M3();
+        m2.setAA(aa);
+        return addXM3(m2);
       case T.matrix4f:
         M4 m4 = (M4) x1.value;
         if (pt != null) {
           m4.transform(pt);
           if (x2.tok == T.varray)
-            return addXVar(SV.getVariableAF(new float[] { pt.x, pt.y,
-                pt.z }));
+            return addXVar(SV.getVariableAF(new float[] { pt.x, pt.y, pt.z }));
           return addXPt(pt);
         }
         if (pt4 != null) {
           m4.transform4(pt4);
           if (x2.tok == T.varray)
-            return addXVar(SV.getVariableAF(new float[] { pt4.x,
-                pt4.y, pt4.z, pt4.w }));
+            return addXVar(SV.getVariableAF(new float[] { pt4.x, pt4.y, pt4.z,
+                pt4.w }));
           return addXPt4(pt4);
         }
-        switch (x2.tok) {
-        case T.matrix4f:
+        if (x2.tok == T.matrix4f) {
           M4 m4b = M4.newM((M4) x2.value);
           m4b.mul2(m4, m4b);
           return addXM4(m4b);
-        default:
-          return addXStr("NaN");
         }
+        return addXStr("NaN");
       case T.point3f:
         pt = P3.newP((P3) x1.value);
         switch (x2.tok) {
         case T.point3f:
           P3 pt2 = ((P3) x2.value);
           return addXFloat(pt.x * pt2.x + pt.y * pt2.y + pt.z * pt2.z);
-        default:
-          f = x2.asFloat();
-          return addXPt(P3.new3(pt.x * f, pt.y * f, pt.z * f));
         }
+        f = x2.asFloat();
+        return addXPt(P3.new3(pt.x * f, pt.y * f, pt.z * f));
       case T.point4f:
-        switch (x2.tok) {
-        case T.point4f:
+        if (x2.tok == T.point4f)
           // quaternion multiplication
           // note that Point4f is {x,y,z,w} so we use that for
           // quaternion notation as well here.
           return addXPt4(Quaternion.newP4((P4) x1.value)
               .mulQ(Quaternion.newP4((P4) x2.value)).toPoint4f());
-        }
-        return addXPt4(Quaternion.newP4((P4) x1.value).mul(
-            x2.asFloat()).toPoint4f());
+        return addXPt4(Quaternion.newP4((P4) x1.value).mul(x2.asFloat())
+            .toPoint4f());
       }
+      return addXFloat(x1.asFloat() * x2.asFloat());
+    case T.divide:
+      float f2;
+      switch (x1.tok) {
+      case T.integer:
+        if (x2.tok == T.integer && x2.intValue != 0)
+          return addXInt(x1.intValue / x2.intValue);
+        if (!isDecimal(x2))
+          return addXInt(x1.intValue / x2.asInt());
+        break;
+      case T.string:
+        int i2;
+        if (!isDecimal(x1) && !isDecimal(x2) && (i2 = x2.asInt()) != 0)
+          return addXInt(x1.asInt() / i2);
+        break;
+      case T.point3f:
+        pt = P3.newP((P3) x1.value);
+        return addXPt((f2 = x2.asFloat()) == 0 ? P3.new3(Float.NaN, Float.NaN,
+            Float.NaN) : P3.new3(pt.x / f2, pt.y / f2, pt.z / f2));
+      case T.point4f:
+        return addXPt4(x2.tok == T.point4f ? Quaternion.newP4((P4) x1.value)
+            .div(Quaternion.newP4((P4) x2.value)).toPoint4f() : (f2 = x2
+            .asFloat()) == 0 ? P4.new4(Float.NaN, Float.NaN, Float.NaN,
+            Float.NaN) : Quaternion.newP4((P4) x1.value).mul(1 / f2)
+            .toPoint4f());
+      }
+      return addXFloat(x1.asFloat() / x2.asFloat());
+    case T.leftdivide:
+      f = x2.asFloat();
+      if (x1.tok == T.point4f) {
+        if (f == 0)
+          return addXPt4(P4.new4(Float.NaN, Float.NaN, Float.NaN, Float.NaN));
+        if (x2.tok == T.point4f)
+          return addXPt4(Quaternion.newP4((P4) x1.value)
+              .divLeft(Quaternion.newP4((P4) x2.value)).toPoint4f());
+        return addXPt4(Quaternion.newP4((P4) x1.value).mul(1 / f).toPoint4f());
+      }
+      return addXInt(f == 0 ? 0 : (int) Math.floor(x1.asFloat() / x2.asFloat()));
+    case T.timestimes:
+      f = (float) Math.pow(x1.asFloat(), x2.asFloat());
+      return (x1.tok == T.integer && x2.tok == T.integer ? addXInt((int) f)
+          : addXFloat(f));
     case T.percent:
       // more than just modulus
 
@@ -1236,9 +1250,7 @@ public class ScriptMathProcessor {
       case T.off:
       case T.integer:
       default:
-        if (n == 0)
-          return addXInt(0);
-        return addXInt(x1.asInt() % n);
+        break;
       case T.decimal:
         f = x1.asFloat();
         // neg is scientific notation
@@ -1311,7 +1323,7 @@ public class ScriptMathProcessor {
           return addXFloat(pt4.z);
         }
         Quaternion q = Quaternion.newP4(pt4);
-        switch(n) {
+        switch (n) {
         case 4:
           return addXPt(P3.newP(q.getNormal()));
         case 5:
@@ -1354,53 +1366,16 @@ public class ScriptMathProcessor {
       case T.bitset:
         return addXBs(SV.bsSelectRange(x1, n));
       }
-    case T.divide:
-      if (x1.tok == T.integer && x2.tok == T.integer
-          && x2.intValue != 0)
-        return addXInt(x1.intValue / x2.intValue);
-      float f2 = x2.asFloat();
-      switch (x1.tok) {
-      default:
-        float f1 = x1.asFloat();
-        return addXFloat(f1 / f2);
-      case T.point3f:
-        pt = P3.newP((P3) x1.value);
-        if (f2 == 0)
-          return addXPt(P3.new3(Float.NaN, Float.NaN, Float.NaN));
-        return addXPt(P3.new3(pt.x / f2, pt.y / f2, pt.z / f2));
-      case T.point4f:
-        if (x2.tok == T.point4f)
-          return addXPt4(Quaternion.newP4((P4) x1.value).div(
-              Quaternion.newP4((P4) x2.value)).toPoint4f());
-        if (f2 == 0)
-          return addXPt4(P4.new4(Float.NaN, Float.NaN, Float.NaN,
-              Float.NaN));
-        return addXPt4(Quaternion.newP4((P4) x1.value).mul(1 / f2)
-            .toPoint4f());
-      }
-    case T.leftdivide:
-      f = x2.asFloat();
-      switch (x1.tok) {
-      default:
-        return addXInt(f == 0 ? 0
-            : (int) Math.floor(x1.asFloat() / x2.asFloat()));
-      case T.point4f:
-        if (f == 0)
-          return addXPt4(P4.new4(Float.NaN, Float.NaN, Float.NaN,
-              Float.NaN));
-        if (x2.tok == T.point4f)
-          return addXPt4(Quaternion.newP4((P4) x1.value).divLeft(
-              Quaternion.newP4((P4) x2.value)).toPoint4f());
-        return addXPt4(Quaternion.newP4((P4) x1.value).mul(1 / f)
-            .toPoint4f());
-      }
-    case T.timestimes:
-      f = (float) Math
-          .pow(x1.asFloat(), x2.asFloat());
-      return (x1.tok == T.integer && x2.tok == T.integer ? addXInt((int) f)
-          : addXFloat(f));
+      return addXInt(n == 0 ? 0 : x1.asInt() % n);
     }
     return true;
+  }
+
+  private boolean isDecimal(SV x) {
+    String s;
+    return (x.tok == T.decimal || x.tok == T.string
+        && ((s = SV.sValue(x).trim()).indexOf(".") >= 0 || s.indexOf("+") > 0 || s
+            .lastIndexOf("-") > 0));
   }
 
   public P3 ptValue(SV x, boolean allowFloat) throws ScriptException {

@@ -110,7 +110,7 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
    * 
    * so this becomes
    * 
-   * xt = gammaIinv.mul(tFactor.mul(t)).add(xmod)
+   * xt = gammaIinv.mul(tFactor.inverse().mul(t)).add(xmod)
    * 
    * Thus we have two subsystem-dependent modulation factors we
    * need to bring in, sigma and tFactor, and two we need to compute,

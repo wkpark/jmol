@@ -2622,7 +2622,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   private String createModelSetAndReturnError(Object atomSetCollection,
                                               boolean isAppend, SB loadScript,
                                               Map<String, Object> htParams) {
-    String fullPathName = fileManager.getFullPathName();
+    String fullPathName = fileManager.getFullPathName(false);
     String fileName = fileManager.getFileName();
     String errMsg;
     if (loadScript == null) {
@@ -2740,7 +2740,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public String getCurrentFileAsString() {
-    String filename = getFullPathName();
+    String filename = getFullPathName(false);
     if (filename.equals("string") || filename.equals(JC.MODELKIT_ZAP_TITLE))
       return modelSet.getInlineData(getCurrentModelIndex());
     if (filename.indexOf("[]") >= 0)
@@ -2753,8 +2753,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return getFileAsString4(pathName, -1, true, false, false);
   }
 
-  public String getFullPathName() {
-    return fileManager.getFullPathName();
+  public String getFullPathName(boolean orPrevious) {
+    return fileManager.getFullPathName(orPrevious);
   }
 
   public String getFileName() {
@@ -5652,7 +5652,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     if (urlString.indexOf(":") < 0) {
       String base = fileManager.getAppletDocumentBase();
       if (base == "")
-        base = fileManager.getFullPathName();
+        base = fileManager.getFullPathName(false);
       if (base.indexOf("/") >= 0) {
         base = base.substring(0, base.lastIndexOf("/") + 1);
       } else if (base.indexOf("\\") >= 0) {

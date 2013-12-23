@@ -444,7 +444,7 @@ public class PropertyManager implements JmolPropertyManager {
     case PROP_FILE_INFO:
       return getFileInfo(viewer.getFileData(), myParam.toString());
     case PROP_FILENAME:
-      return viewer.getFullPathName();
+      return viewer.getFullPathName(false);
     case PROP_FILEHEADER:
       return viewer.getFileHeader();
     case PROP_FILECONTENTS:
@@ -785,7 +785,7 @@ public class PropertyManager implements JmolPropertyManager {
     SB mol = new SB();
     ModelSet ms = viewer.modelSet;
     if (!asXYZVIB && !asJSON) {
-      mol.append(isModelKit ? "Jmol Model Kit" : viewer.getFullPathName()
+      mol.append(isModelKit ? "Jmol Model Kit" : viewer.getFullPathName(false)
           .replace('\\', '/'));
       String version = Viewer.getJmolVersion();
       mol.append("\n__Jmol-").append(version.substring(0, 2));

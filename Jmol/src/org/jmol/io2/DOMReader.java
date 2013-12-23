@@ -57,6 +57,6 @@ public class DOMReader {
     if (atomSetCollection instanceof String)
       return;
     viewer.zap(false, true, false);
-    fm.fullPathName = fm.fileName = fm.nameAsGiven = "JSNode";
+    fm.setFileInfo(new String[] { "JSNode" });
   }
 }

@@ -455,7 +455,7 @@ abstract class OutputManager {
     if (out == null)
       return "";
     fileName = fullPath[0];
-    String pathName = (type.equals("FILE") ? viewer.getFullPathName() : null);
+    String pathName = (type.equals("FILE") ? viewer.getFullPathName(false) : null);
     boolean getCurrentFile = (pathName != null && (pathName.equals("string")
         || pathName.indexOf("[]") >= 0 || pathName.equals("JSNode")));
     boolean asBytes = (pathName != null && !getCurrentFile);

@@ -687,7 +687,7 @@ public class T {
   public final static int data             = 7 | 0 << 9 | mathfunc | scriptCommand;
   public final static int format           = 8 | 0 << 9 | mathfunc | mathproperty | strproperty | settable;
   public final static int function         = 9 | 0 << 9 | mathfunc | flowCommand;
-  public final static int getproperty      = 10 | 0 << 9 | mathfunc | scriptCommand;
+  public final static int getproperty      = 10 | 0 << 9 | mathfunc | mathproperty | scriptCommand;
   public final static int label            = 11 /* must be odd */| 0 << 9 | mathfunc | mathproperty | strproperty | settable | implicitStringCommand | shapeCommand | defaultON | deprecatedparam; 
   public final static int helix            = 12 | 0 << 9 | mathfunc | predefinedset;
   public final static int measure          = 13 | 0 << 9| mathfunc | shapeCommand | deprecatedparam | defaultON;

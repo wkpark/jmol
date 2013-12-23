@@ -139,10 +139,7 @@ public class FileReader {
     if (!isAppend && !viewer.displayLoadErrors)
       viewer.zap(false, true, false);
 
-    fm.fullPathName = fullPathNameIn;
-    fm.nameAsGiven = nameAsGivenIn;
-    fm.fileName = fileNameIn;
-
+    fm.setFileInfo(new String[] { fullPathNameIn, nameAsGivenIn, fileNameIn });
   }
   
   public Object getAtomSetCollection() {

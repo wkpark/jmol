@@ -7881,7 +7881,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
       if (i == 0 || filenames == null
           && (filename = parameterAsString(filePt)).length() == 0)
-        filename = viewer.getFullPathName();
+        filename = getFullPathName();
       if (filename == null && filenames == null) {
         zap(false);
         return;
@@ -7943,7 +7943,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       // LOAD "" --> prevous file      
 
       if ((filename = parameterAsString(filePt)).length() == 0
-          && (filename = viewer.getFullPathName()) == null) {
+          && (filename = getFullPathName()) == null) {
         // no previously loaded file
         zap(false);
         return;
@@ -8341,7 +8341,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     errMsg = viewer.loadModelFromFile(null, filename, filenames, null,
         isAppend, htParams, loadScript, tokType);
     if (out != null) {
-      viewer.setFileInfo(new String[] { localName, localName, localName });
+      viewer.setFileInfo(new String[] { localName });
       Logger.info(GT.o(GT._("file {0} created"), localName));
       showString(viewer.getFilePath(localName, false) + " created");
       out.closeChannel();
@@ -8489,7 +8489,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   public String getFullPathName() throws ScriptException {
-    String filename = (!chk || isCmdLine_C_Option ? viewer.getFullPathName()
+    String filename = (!chk || isCmdLine_C_Option ? viewer.getFullPathName(true)
         : "test.xyz");
     if (filename == null)
       invArg();

@@ -135,7 +135,7 @@ public class Test extends JPanel implements ActionListener {
     }
     if (e.getSource() == PathButton) {// Handle getting the path to the file...
       String Str = null;
-      Str = viewer.getFullPathName();
+      Str = viewer.getFullPathName(false);
       if (Str == null) {
         LogPanel
             .log("Something didn't work when selecting the Path button in Test module");

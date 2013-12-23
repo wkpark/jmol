@@ -7133,7 +7133,7 @@ public class ScriptExt implements JmolScriptExtension {
     case T.label:
       return evaluateLabel(mp, op.intValue, args);
     case T.getproperty:
-      return evaluateGetProperty(mp, args);
+      return evaluateGetProperty(mp, args, op.tok == T.propselector);
     case T.helix:
       return evaluateHelix(mp, args);
     case T.hkl:
@@ -7966,7 +7966,8 @@ public class ScriptExt implements JmolScriptExtension {
     return (pm == null ? pm = (JmolPatternMatcher) Interface.getOptionInterface("util.PatternMatcher") : pm);
   }
 
-  private boolean evaluateGetProperty(ScriptMathProcessor mp, SV[] args) {
+  private boolean evaluateGetProperty(ScriptMathProcessor mp, SV[] args, boolean isAtomProperty) 
+    throws ScriptException {
     int pt = 0;
     String propertyName = (args.length > pt ? SV.sValue(args[pt++])
         .toLowerCase() : "");
@@ -7979,6 +7980,8 @@ public class ScriptExt implements JmolScriptExtension {
     if (propertyName.startsWith("$")) {
       // TODO
     }
+    if (isAtomProperty && !propertyName.equalsIgnoreCase("bondInfo"))
+      propertyName = "atomInfo." + propertyName;      
     Object propertyValue = "";
     if (propertyName.equalsIgnoreCase("fileContents") && args.length > 2) {
       String s = SV.sValue(args[1]);
@@ -7999,6 +8002,8 @@ public class ScriptExt implements JmolScriptExtension {
         break;
       }
     }
+    if (isAtomProperty)
+      propertyValue = SV.bsSelectVar(mp.getX());
     Object property = viewer.getProperty(null, propertyName, propertyValue);
     if (pt < args.length)
       property = viewer.extractProperty(property, args, pt);

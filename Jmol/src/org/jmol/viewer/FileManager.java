@@ -68,7 +68,7 @@ public class FileManager implements BytePoster {
 
   void clear() {
     // from zap
-    fullPathName = fileName = nameAsGiven = viewer.getZapName();
+    setFileInfo(new String[] { viewer.getZapName() });
     spardirCache = null;
    
   }
@@ -91,15 +91,17 @@ public class FileManager implements BytePoster {
     return pathForAllFiles = value;
   }
 
-  public String nameAsGiven = "zapped";
-  public String fullPathName;
-  public String fileName;
+  private String nameAsGiven = "zapped", fullPathName, lastFullPathName, lastNameAsGiven = "zapped", fileName;
 
-  void setFileInfo(String[] fileInfo) {
+  public void setFileInfo(String[] fileInfo) {
     // used by ScriptEvaluator dataFrame and load methods to temporarily save the state here
     fullPathName = fileInfo[0];
-    fileName = fileInfo[1];
-    nameAsGiven = fileInfo[2];
+    fileName = fileInfo[Math.min(1,  fileInfo.length - 1)];
+    nameAsGiven = fileInfo[Math.min(2, fileInfo.length - 1)];
+    if (!nameAsGiven.equals("zapped")) {
+      lastNameAsGiven = nameAsGiven;
+      lastFullPathName = fullPathName;
+    }
   }
 
   String[] getFileInfo() {
@@ -107,8 +109,9 @@ public class FileManager implements BytePoster {
     return new String[] { fullPathName, fileName, nameAsGiven };
   }
 
-  String getFullPathName() {
-    return fullPathName != null ? fullPathName : nameAsGiven;
+  String getFullPathName(boolean orPrevious) {
+    String f =(fullPathName != null ? fullPathName : nameAsGiven);
+    return (!orPrevious || !f.equals("zapped") ? f : lastFullPathName != null ? lastFullPathName : lastNameAsGiven);
   }
 
   String getFileName() {
@@ -231,8 +234,8 @@ public class FileManager implements BytePoster {
       setFileInfo(fnames);
     if (!isAppend && !(fileReader.getAtomSetCollection() instanceof String)) {
       viewer.zap(false, true, false);
-      fullPathName = fileName = (strModel == JC.MODELKIT_ZAP_STRING ? JC.MODELKIT_ZAP_TITLE
-          : "string");
+      setFileInfo(new String[] { strModel == JC.MODELKIT_ZAP_STRING ? JC.MODELKIT_ZAP_TITLE
+          : "string"});
     }
     return fileReader.getAtomSetCollection();
   }

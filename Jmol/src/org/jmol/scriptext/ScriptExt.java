@@ -8002,11 +8002,20 @@ public class ScriptExt implements JmolScriptExtension {
         break;
       }
     }
-    if (isAtomProperty)
-      propertyValue = SV.bsSelectVar(mp.getX());
+    if (isAtomProperty) {
+      SV x = mp.getX();
+      if (x.tok != T.bitset)
+        return false;
+      int iAtom = SV.bsSelectVar(x).nextSetBit(0);
+      if (iAtom < 0)
+        return mp.addXStr("");
+      propertyValue = BSUtil.newAndSetBit(iAtom);
+    }
     Object property = viewer.getProperty(null, propertyName, propertyValue);
     if (pt < args.length)
       property = viewer.extractProperty(property, args, pt);
+    if (isAtomProperty && property instanceof List)
+      property = (((List<?>) property).size() > 0 ? ((List<?>) property).get(0) : "");
     return mp.addXObj(isJSON ? PT.toJSON(null, property) : 
       SV.isVariableType(property) ? property : Escape
         .toReadable(propertyName, property));

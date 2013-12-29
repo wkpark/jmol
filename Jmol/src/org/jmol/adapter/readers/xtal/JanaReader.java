@@ -126,15 +126,13 @@ public class JanaReader extends AtomSetCollectionReader {
         break;
       case WMATRIX:
         int n = 3 + modDim;
-        Matrix m = new Matrix(null, n, n);
-        double[][] a = m.getArray();
+        Matrix m;
         if (thisSub++ == 0) {
-          for (int i = 3 + modDim; --i >= 0;)
-            a[i][i] = 1;
+          m = Matrix.identity(n, n);
           ms.addSubsystem("" + thisSub++, m);
-          m = new Matrix(null, n, n);
         }
-        a = m.getArray();
+        m = new Matrix(null, n, n);
+        double[][] a = m.getArray();
         float[] data = new float[n * n];
         fillFloatArray(null, 0, data);
         for (int i = 0, pt = 0; i < n; i++)

@@ -158,9 +158,7 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
     r0 = P3.newP(r);
     xmod = gammaIinv.mul(sigma.mul(Matrix.newT(r, true)).sub(sI));
     if (Logger.debuggingHigh)
-      Logger.debug
-      //Logger.info
-          ("MODSET create r=" + Escape.eP(r) + " si=" + Escape.e(sI.getArray())
+      Logger.debug("MODSET create r=" + Escape.eP(r) + " si=" + Escape.e(sI.getArray())
               + " ginv=" + gammaIinv.toString().replace('\n', ' '));
     
     t = new Matrix(null, modDim, 1);
@@ -220,15 +218,15 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
     x = y = z = 0;
     htUij = null;
     vOcc = Float.NaN;
-    double[][] a;
+    double[][] a = t.getArray();
+    for (int i = 0; i < modDim; i++)
+      a[i][0] = 0;
     if (isQ && qtOffset != null) {
       Matrix q = new Matrix(null, 3, 1);
-      a = q.getArray();
-      a[0] = new double[] { qtOffset.z, qtOffset.y, qtOffset.z };
-      t = sigma.mul(q);
+      q.getArray()[0] = new double[] { qtOffset.x, qtOffset.y, qtOffset.z };
+      a = (t = sigma.mul(q)).getArray();
     }
     if (fracT != null) {
-      a = t.getArray();
       switch (modDim) {
       default:
         a[2][0] += fracT.z;
@@ -240,9 +238,9 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
         a[0][0] += fracT.x;
         break;
       }
+      if (isSubsystem)
+        t = tFactor.mul(t);
     }
-    if (isSubsystem)
-      t = tFactor.mul(t);
     t = gammaIinv.mul(t).add(xmod);
     for (int i = mods.size(); --i >= 0;)
       mods.get(i).apply(this, t.getArray());
@@ -281,11 +279,10 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
     enabled = false;
     this.scale = scale;
     if (qtOffset != null) {
-      if (isQ) {
-        this.isQ = isQ;
-        this.qtOffset.setT(qtOffset);
+      this.qtOffset.setT(qtOffset);
+      this.isQ = isQ;
+      if (isQ)
         qtOffset = null;
-      }
       calculate(qtOffset, isQ);
     }
     if (isOn) {

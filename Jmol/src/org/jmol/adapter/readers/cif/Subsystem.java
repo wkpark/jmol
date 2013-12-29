@@ -87,7 +87,7 @@ class Subsystem {
     for (int i = 0; i < 3; i++)
       uc_nu[i + 1] = V3.new3((float) a[i][0], (float) a[i][1], (float) a[i][2]);    
     uc_nu = reciprocalsOf(uc_nu);
-    symmetry = msReader.cr.symmetry.getUnitCell(uc_nu);
+    symmetry = msReader.cr.symmetry.getUnitCell(uc_nu, false);
 
     // Part 3: Transform the operators 
     // 

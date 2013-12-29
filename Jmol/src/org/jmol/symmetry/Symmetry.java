@@ -435,9 +435,9 @@ public class Symmetry implements SymmetryInterface {
   }
 
   @Override
-  public SymmetryInterface getUnitCell(T3[] points) {
+  public SymmetryInterface getUnitCell(T3[] points, boolean setRelative) {
     Symmetry sym = new Symmetry();
-    sym.unitCell = UnitCell.newP(points);
+    sym.unitCell = UnitCell.newP(points, setRelative);
     return sym;
   }
 
@@ -757,5 +757,10 @@ public class Symmetry implements SymmetryInterface {
     String s = SymmetryOperation.getXYZFromRsVs(rs, vs, false);
     addSpaceGroupOperation(s, -1);
     return s;
+  }
+
+  @Override
+  public String getUnitCellState() {
+    return (unitCell == null ? "" : unitCell.getState());
   }
 }  

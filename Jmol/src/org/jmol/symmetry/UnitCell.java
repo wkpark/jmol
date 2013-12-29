@@ -60,13 +60,13 @@ class UnitCell extends SimpleUnitCell {
     
   }
   
-  static UnitCell newP(T3[] points) {
+  static UnitCell newP(T3[] points, boolean setRelative) {
     UnitCell c = new UnitCell();
     float[] parameters = new float[] { -1, 0, 0, 0, 0, 0, points[1].x,
         points[1].y, points[1].z, points[2].x, points[2].y, points[2].z,
         points[3].x, points[3].y, points[3].z };
     c.set(parameters);
-    c.allFractionalRelative = true;
+    c.allFractionalRelative = setRelative;
     c.calcUnitcellVertices();
     c.setCartesianOffset(points[0]);
     return c;
@@ -479,6 +479,15 @@ class UnitCell extends SimpleUnitCell {
     if (fractionalOffset.distanceSquared(uc.fractionalOffset) != 0)
       return false;
     return true;
+  }
+
+  public String getState() {
+    String s = "";
+    if (fractionalOffset != null)
+      s += "  unitcell " + Escape.eP(fractionalOffset) + ";\n";
+    if (unitCellMultiplier != null)
+      s += "  unitcell " + Escape.eP(unitCellMultiplier) + ";\n";
+    return s;
   }
   
 

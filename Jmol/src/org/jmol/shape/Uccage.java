@@ -23,6 +23,7 @@
  */
 package org.jmol.shape;
 
+import org.jmol.api.SymmetryInterface;
 import org.jmol.java.BS;
 import org.jmol.viewer.JC;
 
@@ -41,6 +42,9 @@ public class Uccage extends FontLineShape {
     int iAtom = viewer.getCurrentAtom();
     if (iAtom >= 0)
       s += "  unitcell ({" + iAtom + "});\n"; 
+    SymmetryInterface uc = viewer.getCurrentUnitCell();
+    if (uc != null)
+      s += uc.getUnitCellState();
     return s;
   }
 

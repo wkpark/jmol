@@ -220,24 +220,15 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
     x = y = z = 0;
     htUij = null;
     vOcc = Float.NaN;
-    double[][] a = t.getArray();
-    for (int i = modDim; --i >= 0;)
-      a[0][0] = 0;
+    double[][] a;
     if (isQ && qtOffset != null) {
-      switch (modDim) {
-      default:
-        a[2][0] = qtOffset.z;
-        //$FALL-THROUGH$
-      case 2:
-        a[1][0] = qtOffset.y;
-        //$FALL-THROUGH$
-      case 1:
-        a[0][0] = qtOffset.x;
-        break;
-      }
-      t = sigma.mul(t);
+      Matrix q = new Matrix(null, 3, 1);
+      a = q.getArray();
+      a[0] = new double[] { qtOffset.z, qtOffset.y, qtOffset.z };
+      t = sigma.mul(q);
     }
     if (fracT != null) {
+      a = t.getArray();
       switch (modDim) {
       default:
         a[2][0] += fracT.z;

@@ -145,7 +145,7 @@ public interface SymmetryInterface {
 
   public V3[] getUnitCellVectors();
 
-  public SymmetryInterface getUnitCell(T3[] points);
+  public SymmetryInterface getUnitCell(T3[] points, boolean setRelative);
 
   public P3 toSupercell(P3 fpt);
 
@@ -179,5 +179,7 @@ public interface SymmetryInterface {
   public int getSiteMultiplicity(P3 a);
 
   public String addOp(Matrix rs, Matrix vs);
+
+  public String getUnitCellState();
 
 }

@@ -3453,7 +3453,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public void setCurrentCagePts(P3[] points) {
     modelSet.setModelCage(getCurrentModelIndex(), getSymmetry().getUnitCell(
-        points));
+        points, true));
   }
 
   public void setCurrentUnitCellOffset(P3 pt, int ijk) {
@@ -10374,21 +10374,11 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public void setModulation(BS bs, boolean isOn, P3 t1, boolean isQ) {
-//    if (t2 == Integer.MAX_VALUE || !isQ) {
-//      if (!isThread)
-//        animationManager.setModulationPlay(Integer.MAX_VALUE, 0);
       if (isQ)
         global.setS("_modt", Escape.eP(t1));
       modelSet.setModulation(bs == null ? getAllAtoms() : bs, isOn, t1, isQ);
-//    } else {
-//      animationManager.setModulationPlay((int) t1.x, t2);
-//    }
     refreshMeasures(true);
   }
-
-//  public void setModulationFps(float fps) {
-//    animationManager.setModulationFps(fps);
-//  }
 
   public void checkInMotion(int state) {
     switch (state) {

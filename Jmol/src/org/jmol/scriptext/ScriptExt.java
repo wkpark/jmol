@@ -6143,7 +6143,7 @@ public class ScriptExt implements JmolScriptExtension {
     case T.leftbrace:
     case T.point3f:
       qtOffset = eval.getPoint3f(1, false);
-      isQ = (tokAt(eval.iToken) == T.on);
+      isQ = (tokAt(eval.iToken + 1) == T.on);
       break;
     case T.decimal:
       float t1 = floatParameter(1);

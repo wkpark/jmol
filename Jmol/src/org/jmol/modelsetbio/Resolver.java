@@ -547,7 +547,7 @@ public final class Resolver implements JmolBioResolver {
       if (type == null)
         continue;
       htKeysUsed.put(skey, Boolean.TRUE);
-      bonds[i].setOrder(javajs.util.PT.parseInt(type));
+      bonds[i].setOrder(PT.parseInt(type));
     }
 
     for (String key : htBondMap.keySet()) {
@@ -581,7 +581,7 @@ public final class Resolver implements JmolBioResolver {
       if ((value = htKeysBad.get(a1.getGroup3(false) + ":" + a1.getAtomName())) == null
           && ((value = htKeysBad.get(a2.getGroup3(false) + ":" + a2.getAtomName())) == null))
         continue;
-      bonds[i].setOrder(javajs.util.PT.parseInt(value));
+      bonds[i].setOrder(PT.parseInt(value));
       Logger.info("assigning order " + bonds[i].order + " to bond " + bonds[i]);
     }
   }

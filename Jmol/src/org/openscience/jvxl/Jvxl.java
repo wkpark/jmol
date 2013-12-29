@@ -184,7 +184,7 @@ public class Jvxl {
     blockData = (line.hasOption("B"));
 
     if (line.hasOption("i")) {
-      fileIndex = javajs.util.PT.parseInt(line.getOptionValue("i"));
+      fileIndex = PT.parseInt(line.getOptionValue("i"));
     }
 
     if (line.hasOption("f")) {

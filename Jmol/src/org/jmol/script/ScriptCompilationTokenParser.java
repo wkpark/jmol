@@ -24,6 +24,7 @@
 package org.jmol.script;
 
 import javajs.util.List;
+import javajs.util.PT;
 
 import java.util.Map;
 
@@ -1414,9 +1415,9 @@ abstract class ScriptCompilationTokenParser {
       if (value != null)
         msg += ": " + value;
     } else {
-      msg = javajs.util.PT.simpleReplace(msg, "{0}", value);
+      msg = PT.simpleReplace(msg, "{0}", value);
       if (msg.indexOf("{1}") >= 0)
-        msg = javajs.util.PT.simpleReplace(msg, "{1}", more);
+        msg = PT.simpleReplace(msg, "{1}", more);
       else if (more != null)
         msg += ": " + more;
     }

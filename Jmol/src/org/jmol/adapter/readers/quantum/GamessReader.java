@@ -26,6 +26,8 @@ package org.jmol.adapter.readers.quantum;
 
 import javajs.util.AU;
 import javajs.util.List;
+import javajs.util.PT;
+
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -309,7 +311,7 @@ $SYSTEM OPTIONS
         if (calculationType.length() > 0)
           calculationType += " ";
         calculationType += igauss + "-"
-            + javajs.util.PT.simpleReplace(gbasis, "N", "");
+            + PT.simpleReplace(gbasis, "N", "");
         if ("T".equals(calcOptions.get("basis_options_DIFFSP"))) {
           // check if we have diffuse S on H's too => "++" instead of "+"
           if ("T".equals(calcOptions.get("basis_options_DIFFS")))
@@ -381,7 +383,7 @@ $SYSTEM OPTIONS
     while (readLine() != null && (line = line.trim()).length() > 0) {
       if (line.indexOf("=") < 0)
         continue;
-      String[] tokens = getTokensStr(javajs.util.PT.simpleReplace(line, "="," = ") + " ?");
+      String[] tokens = getTokensStr(PT.simpleReplace(line, "="," = ") + " ?");
       for (int i = 0; i < tokens.length; i++) {
         if (!tokens[i].equals("="))
           continue;

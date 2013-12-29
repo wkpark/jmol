@@ -108,7 +108,7 @@ abstract public class MOReader extends BasisFunctionReader {
     getNBOCharges = (filter != null && filterMO());
     if (filter == null)
       return;
-    String f = javajs.util.PT.simpleReplace(filter, "NBOCHARGES", "");
+    String f = PT.simpleReplace(filter, "NBOCHARGES", "");
     if (f.length() < 3)
       filter = null;
   }
@@ -577,15 +577,15 @@ xxxxxxxxxxxxxxxxxxxxxxxxxx yyyyyyyyyyyyyyyyyyyyyyyyyyy zzzzzzz ....... ffffffff
       return;
     Hashtable<String, Integer> ht = new Hashtable<String, Integer>();
     for (int i = moTypes.size(); --i >= 0;)
-      ht.put(javajs.util.PT.simpleReplace(moTypes.get(i).substring(10), " ", ""),
+      ht.put(PT.simpleReplace(moTypes.get(i).substring(10), " ", ""),
           Integer.valueOf(i + iMo0));
     List<String[]> strSecondOrderData = new  List<String[]>();
     while (readLine() != null && line.indexOf("NBO") < 0) {
       if (line.length() < 5 || line.charAt(4) != '.')
         continue;
       strSecondOrderData.addLast(new String[] {
-          javajs.util.PT.simpleReplace(line.substring(5, 27).trim(), " ", ""),
-          javajs.util.PT.simpleReplace(line.substring(32, 54).trim(), " ", ""),
+          PT.simpleReplace(line.substring(5, 27).trim(), " ", ""),
+          PT.simpleReplace(line.substring(32, 54).trim(), " ", ""),
           line.substring(55, 62).trim(), line.substring(71).trim() });
     }
     float[][] secondOrderData = new float[strSecondOrderData.size()][4];

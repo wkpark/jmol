@@ -25,6 +25,8 @@ package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
 
+import javajs.util.PT;
+
 import org.jmol.io.JmolBinary;
 import org.jmol.util.Logger;
 
@@ -63,7 +65,7 @@ class MsmsReader extends PmeshReader {
   @Override
   protected boolean readPolygons() throws Exception {
     br.close();
-    fileName = javajs.util.PT.simpleReplace(fileName, ".vert", ".face");
+    fileName = PT.simpleReplace(fileName, ".vert", ".face");
     Logger.info("reading from file " + fileName);
     try {
       br = JmolBinary.getBufferedReader(sg.getAtomDataServer()

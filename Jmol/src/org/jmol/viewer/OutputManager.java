@@ -147,7 +147,7 @@ abstract class OutputManager {
       Object stateData = null;
       params.put("date", viewer.apiPlatform.getDateFormat(false));
       if (type.startsWith("JP")) {
-        type = javajs.util.PT.simpleReplace(type, "E", "");
+        type = PT.simpleReplace(type, "E", "");
         if (type.equals("JPG64")) {
           params.put("outputChannelTemp", getOutputChannel(null, null));
           comment = "";
@@ -714,7 +714,7 @@ abstract class OutputManager {
     try {
       boolean doClear = (data.equals("$CLEAR$"));
       if (data.indexOf("$NOW$") >= 0)
-        data = javajs.util.PT.simpleReplace(data, "$NOW$", viewer.apiPlatform
+        data = PT.simpleReplace(data, "$NOW$", viewer.apiPlatform
             .getDateFormat(false));
       if (viewer.logFileName == null) {
         Logger.info(data);

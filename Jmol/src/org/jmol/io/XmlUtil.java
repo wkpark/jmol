@@ -25,6 +25,7 @@
 
 package org.jmol.io;
 
+import javajs.util.PT;
 import javajs.util.SB;
 
 //import javajs.util.List;
@@ -102,7 +103,7 @@ public class XmlUtil {
   public static String wrapCdata(Object data) {
     String s = "" + data;
     return (s.indexOf("&") < 0 && s.indexOf("<") < 0 ? (s.startsWith("\n") ? "" : "\n") + s 
-        : "<![CDATA[" + javajs.util.PT.simpleReplace(s, "]]>", "]]]]><![CDATA[>") + "]]>");
+        : "<![CDATA[" + PT.simpleReplace(s, "]]>", "]]]]><![CDATA[>") + "]]>");
   }
   
   /**
@@ -111,7 +112,7 @@ public class XmlUtil {
    */
   public static String unwrapCdata(String s) {
     return (s.startsWith("<![CDATA[") && s.endsWith("]]>") ?
-        javajs.util.PT.simpleReplace(s.substring(9, s.length()-3),"]]]]><![CDATA[>", "]]>") : s);
+        PT.simpleReplace(s.substring(9, s.length()-3),"]]]]><![CDATA[>", "]]>") : s);
   }
   
   /**

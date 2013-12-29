@@ -189,6 +189,7 @@ public final class ModelLoader {
       if (isTrajectory)
         modelSet.vibrationSteps = (List<V3[]>) info.remove("vibrationSteps");
     }
+    modulationOn = modelSet.getModelSetAuxiliaryInfoBoolean("modulationOn");
     noAutoBond = modelSet.getModelSetAuxiliaryInfoBoolean("noAutoBond");
     is2D = modelSet.getModelSetAuxiliaryInfoBoolean("is2D");
     doMinimize = is2D && modelSet.getModelSetAuxiliaryInfoBoolean("doMinimize");
@@ -259,6 +260,7 @@ public final class ModelLoader {
   private int adapterModelCount = 0;
   private int adapterTrajectoryCount = 0;
   private boolean noAutoBond;
+  private boolean modulationOn;
   
   public int getAtomCount() {
     return modelSet.atomCount;
@@ -1109,6 +1111,8 @@ public final class ModelLoader {
         }
       }
     if (autoBonding) {
+      if (modulationOn)
+        modelSet.setModulation(null, true, null, false);
       modelSet.autoBondBs4(bs, bs, bsExclude, null,
           modelSet.defaultCovalentMad, viewer.getBoolean(T.legacyautobonding));
       Logger

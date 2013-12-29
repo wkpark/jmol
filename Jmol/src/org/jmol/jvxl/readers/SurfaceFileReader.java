@@ -116,16 +116,16 @@ abstract class SurfaceFileReader extends SurfaceReader {
   }
 
   protected int parseInt() {
-    return javajs.util.PT.parseIntNext(line, next);
+    return PT.parseIntNext(line, next);
   }
 
   protected int parseIntStr(String s) {
     next[0] = 0;
-    return javajs.util.PT.parseIntNext(s, next);
+    return PT.parseIntNext(s, next);
   }
 
   protected int parseIntNext(String s) {
-    return javajs.util.PT.parseIntNext(s, next);
+    return PT.parseIntNext(s, next);
   }
 
   protected float[] parseFloatArrayStr(String s) {

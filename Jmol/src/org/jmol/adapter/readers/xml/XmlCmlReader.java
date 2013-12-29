@@ -31,6 +31,8 @@ import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
+import javajs.util.PT;
+
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
 
@@ -362,11 +364,11 @@ public class XmlCmlReader extends XmlReader {
           // (as in PDB files)
           // but it causes problems in cif-derived files that involve a1 and a1_1, for instance
           isSerial = (id != null && id.length() > 1 && id.startsWith("a")
-              && javajs.util.PT.parseInt(id.substring(1)) != Integer.MIN_VALUE);
+              && PT.parseInt(id.substring(1)) != Integer.MIN_VALUE);
           checkedSerial = true;
         } 
         if (isSerial)
-          atom.atomSerial = javajs.util.PT.parseInt(id.substring(1));
+          atom.atomSerial = PT.parseInt(id.substring(1));
         if (atts.containsKey("xFract")
             && (parent.iHaveUnitCell || !atts.containsKey("x3"))) {
           parent.setFractionalCoordinates(true);
@@ -597,8 +599,8 @@ public class XmlCmlReader extends XmlReader {
     parent.applySymmetryToBonds = true;
     //System.out.println("atomsetcollection addnewbond " + a1 + " " + a2);
     if (isSerial)
-      atomSetCollection.addNewBondWithMappedSerialNumbers(javajs.util.PT.parseInt(a1.substring(1)),
-          javajs.util.PT.parseInt(a2.substring(1)), order);
+      atomSetCollection.addNewBondWithMappedSerialNumbers(PT.parseInt(a1.substring(1)),
+          PT.parseInt(a2.substring(1)), order);
       else
         atomSetCollection.addNewBondFromNames(a1, a2, order);
   }

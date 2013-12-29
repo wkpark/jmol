@@ -43,6 +43,7 @@ import org.jmol.util.BoxInfo;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Logger;
 import javajs.util.P3;
+import javajs.util.PT;
 import javajs.util.V3;
 
 /**
@@ -294,7 +295,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
         String name = e.getKey();
         if (!"names".equals(name)) {
           viewer.log("\n===" + name + "===");
-          viewer.log(javajs.util.PT.simpleReplace(e.getValue().toString(), "[",
+          viewer.log(PT.simpleReplace(e.getValue().toString(), "[",
               "\n["));
         }
       }
@@ -304,7 +305,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
         List<Object> list = (List<Object>) names.get(i);
         viewer.log(" =" + list.get(0).toString() + "=");
         try {
-          viewer.log(javajs.util.PT.simpleReplace(list.toString(), "[", "\n["));
+          viewer.log(PT.simpleReplace(list.toString(), "[", "\n["));
         } catch (Throwable e) {
           //
         }

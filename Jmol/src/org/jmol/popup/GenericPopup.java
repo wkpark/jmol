@@ -283,13 +283,13 @@ abstract public class GenericPopup implements GenericMenuInterface,
       id = id.replace('_', ' ');
       if (script.indexOf("[]") < 0)
         script = "[] " + script;
-      return javajs.util.PT.simpleReplace(script, "[]", id);
+      return PT.simpleReplace(script, "[]", id);
     } else if (script.indexOf("?FILEROOT?") >= 0) {
-      script = javajs.util.PT.simpleReplace(script, "FILEROOT?", modelSetRoot);
+      script = PT.simpleReplace(script, "FILEROOT?", modelSetRoot);
     } else if (script.indexOf("?FILE?") >= 0) {
-      script = javajs.util.PT.simpleReplace(script, "FILE?", modelSetFileName);
+      script = PT.simpleReplace(script, "FILE?", modelSetFileName);
     } else if (script.indexOf("?PdbId?") >= 0) {
-      script = javajs.util.PT.simpleReplace(script, "PdbId?", "=xxxx");
+      script = PT.simpleReplace(script, "PdbId?", "=xxxx");
     }
     return script;
   }
@@ -591,7 +591,7 @@ abstract public class GenericPopup implements GenericMenuInterface,
         what = what.substring(pt + 1);
         if ((pt = what.indexOf("|")) >= 0)
           what = (TF ? what.substring(0, pt) : what.substring(pt + 1)).trim();
-        what = javajs.util.PT.simpleReplace(what, "T/F", (TF ? " TRUE" : " FALSE"));
+        what = PT.simpleReplace(what, "T/F", (TF ? " TRUE" : " FALSE"));
       }
     }
     viewer.evalStringQuiet(what);
@@ -725,7 +725,7 @@ abstract public class GenericPopup implements GenericMenuInterface,
       String atoms = PT.getQuotedAttribute(peak, "atoms");
       if (atoms != null)
         menuCreateItem(menu, title, "select visible & (@"
-            + javajs.util.PT.simpleReplace(atoms, ",", " or @") + ")", "Focus" + i);
+            + PT.simpleReplace(atoms, ",", " or @") + ")", "Focus" + i);
     }
     menuEnable(menu, true);
     return true;

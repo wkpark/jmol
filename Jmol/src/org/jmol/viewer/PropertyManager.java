@@ -238,14 +238,14 @@ public class PropertyManager implements JmolPropertyManager {
   private Object getModelProperty(String propertyName, Object propertyValue) {
     propertyName = propertyName.replace(']', ' ').replace('[', ' ').replace(
         '.', ' ');
-    propertyName = javajs.util.PT.simpleReplace(propertyName, "  ", " ");
+    propertyName = PT.simpleReplace(propertyName, "  ", " ");
     String[] names = PT.split(PT.trim(propertyName, " "),
         " ");
     SV[] args = new SV[names.length];
     propertyName = names[0];
     int n;
     for (int i = 1; i < names.length; i++) {
-      if ((n = javajs.util.PT.parseInt(names[i])) != Integer.MIN_VALUE)
+      if ((n = PT.parseInt(names[i])) != Integer.MIN_VALUE)
         args[i] = SV.newI(n);
       else
         args[i] = SV.newV(T.string, names[i]);
@@ -458,9 +458,9 @@ public class PropertyManager implements JmolPropertyManager {
       width = -1;
       int pt;
       if ((pt = params.indexOf("height=")) >= 0)
-        height = javajs.util.PT.parseInt(params.substring(pt + 7));
+        height = PT.parseInt(params.substring(pt + 7));
       if ((pt = params.indexOf("width=")) >= 0)
-        width = javajs.util.PT.parseInt(params.substring(pt + 6));
+        width = PT.parseInt(params.substring(pt + 6));
       if (width < 0 && height < 0)
         height = width = -1;
       else if (width < 0)

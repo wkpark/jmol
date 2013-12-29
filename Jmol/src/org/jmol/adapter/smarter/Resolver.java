@@ -607,7 +607,7 @@ public class Resolver {
   }
   
   private static boolean checkGromacs(String[] lines) {
-    if (javajs.util.PT.parseInt(lines[1]) == Integer.MIN_VALUE)
+    if (PT.parseInt(lines[1]) == Integer.MIN_VALUE)
       return false;
     int len = -1;
     for (int i = 2; i < 16 && len != 0; i++)

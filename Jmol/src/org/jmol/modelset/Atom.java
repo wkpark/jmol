@@ -400,7 +400,7 @@ public class Atom extends Point3fi implements JmolNode {
     return altloc;
   }
   
-  boolean isAlternateLocationMatch(String strPattern) {
+  boolean isAltLoc(String strPattern) {
     if (strPattern == null)
       return (altloc == '\0');
     if (strPattern.length() != 1)
@@ -1433,7 +1433,7 @@ public class Atom extends Point3fi implements JmolNode {
     char ch;
     switch (tokWhat) {
     case T.altloc:
-      ch = atom.getAlternateLocationID();
+      ch = atom.altloc;
       return (ch == '\0' ? "" : "" + ch);
     case T.atomname:
       return atom.getAtomName();

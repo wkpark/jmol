@@ -968,10 +968,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     int modelCount = viewer.getModelCount();
     if (modelCount > 1)
       appendCmd(sb, "frame " + viewer.getModelNumberDotted(imesh.modelIndex));
-    cmd = javajs.util.PT.simpleReplace(cmd, ";; isosurface map"," map");
-    cmd = javajs.util.PT.simpleReplace(cmd, "; isosurface map", " map");
+    cmd = PT.simpleReplace(cmd, ";; isosurface map"," map");
+    cmd = PT.simpleReplace(cmd, "; isosurface map", " map");
     cmd = cmd.replace('\t', ' ');
-    cmd = javajs.util.PT.simpleReplace(cmd, ";#", "; #");
+    cmd = PT.simpleReplace(cmd, ";#", "; #");
     int pt = cmd.indexOf("; #");
     if (pt >= 0)
       cmd = cmd.substring(0, pt);

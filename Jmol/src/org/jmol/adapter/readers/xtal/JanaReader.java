@@ -36,6 +36,7 @@ import org.jmol.java.BS;
 
 import javajs.util.List;
 import javajs.util.Matrix;
+import javajs.util.PT;
 
 import org.jmol.util.Logger;
 
@@ -124,19 +125,20 @@ public class JanaReader extends AtomSetCollectionReader {
         continuing = false;
         break;
       case WMATRIX:
-        Matrix m = new Matrix(null, 3 + modDim, 3 + modDim);
+        int n = 3 + modDim;
+        Matrix m = new Matrix(null, n, n);
         double[][] a = m.getArray();
         if (thisSub++ == 0) {
           for (int i = 3 + modDim; --i >= 0;)
             a[i][i] = 1;
           ms.addSubsystem("" + thisSub++, m);
-          m = new Matrix(null, 3 + modDim, 3 + modDim);
+          m = new Matrix(null, n, n);
         }
         a = m.getArray();
-        float[] data = new float[16];
+        float[] data = new float[n * n];
         fillFloatArray(null, 0, data);
-        for (int i = 0, pt = 0; i < 4; i++)
-          for (int j = 0; j < 4; j++, pt++)
+        for (int i = 0, pt = 0; i < n; i++)
+          for (int j = 0; j < n; j++, pt++)
              a[i][j] = data[pt];
         ms.addSubsystem("" + thisSub, m);
     }
@@ -214,7 +216,7 @@ public class JanaReader extends AtomSetCollectionReader {
   }
 
   private void symmetry() throws Exception {
-    setSymmetryOperator(javajs.util.PT.simpleReplace(line.substring(9).trim()," ", ","));
+    setSymmetryOperator(PT.simpleReplace(line.substring(9).trim()," ", ","));
   }
 
   private final String LABELS = "xyz";

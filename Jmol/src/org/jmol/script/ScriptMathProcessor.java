@@ -802,7 +802,7 @@ public class ScriptMathProcessor {
         case T.matrix3f:
         case T.matrix4f:
           s = SV.sValue(x2);
-          s = javajs.util.PT.simpleReplace(s.substring(1, s.length() - 1), "],[",
+          s = PT.simpleReplace(s.substring(1, s.length() - 1), "],[",
               "]\n[");
           break;
         case T.string:
@@ -811,7 +811,7 @@ public class ScriptMathProcessor {
         default:
           s = SV.sValue(x2);
         }
-        s = javajs.util.PT.simpleReplace(s, "\n\r", "\n").replace('\r', '\n');
+        s = PT.simpleReplace(s, "\n\r", "\n").replace('\r', '\n');
         return addXAS(PT.split(s, "\n"));
       case T.color:
         switch (x2.tok) {

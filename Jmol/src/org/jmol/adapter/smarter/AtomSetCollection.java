@@ -47,25 +47,26 @@ import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.P3i;
+import javajs.util.PT;
 
 import org.jmol.util.Tensor;
 import org.jmol.util.Logger;
 import org.jmol.util.SimpleUnitCell;
 import javajs.util.V3;
 
-
 @SuppressWarnings("unchecked")
 public class AtomSetCollection {
 
   public BS bsAtoms; // required for CIF reader
-    
+
   private String fileTypeName;
-  
+
   public String getFileTypeName() {
     return fileTypeName;
   }
-  
+
   private String collectionName;
+
   public String getCollectionName() {
     return collectionName;
   }
@@ -80,12 +81,14 @@ public class AtomSetCollection {
   }
 
   private Map<String, Object> atomSetCollectionAuxiliaryInfo = new Hashtable<String, Object>();
+
   public Map<String, Object> getAtomSetCollectionAuxiliaryInfoMap() {
     return atomSetCollectionAuxiliaryInfo;
   }
-  
-  private final static String[] globalBooleans = {"someModelsHaveFractionalCoordinates",
-    "someModelsHaveSymmetry", "someModelsHaveUnitcells", "someModelsHaveCONECT", "isPDB"};
+
+  private final static String[] globalBooleans = {
+      "someModelsHaveFractionalCoordinates", "someModelsHaveSymmetry",
+      "someModelsHaveUnitcells", "someModelsHaveCONECT", "isPDB" };
 
   public final static int GLOBAL_FRACTCOORD = 0;
   public final static int GLOBAL_SYMMETRY = 1;
@@ -96,19 +99,20 @@ public class AtomSetCollection {
   public void clearGlobalBoolean(int globalIndex) {
     atomSetCollectionAuxiliaryInfo.remove(globalBooleans[globalIndex]);
   }
-  
+
   public void setGlobalBoolean(int globalIndex) {
     setAtomSetCollectionAuxiliaryInfo(globalBooleans[globalIndex], Boolean.TRUE);
   }
-  
+
   boolean getGlobalBoolean(int globalIndex) {
     return (getAtomSetCollectionAuxiliaryInfo(globalBooleans[globalIndex]) == Boolean.TRUE);
   }
-  
-  final public static String[] notionalUnitcellTags =
-  { "a", "b", "c", "alpha", "beta", "gamma" };
+
+  final public static String[] notionalUnitcellTags = { "a", "b", "c", "alpha",
+      "beta", "gamma" };
 
   private int atomCount;
+
   public int getAtomCount() {
     return atomCount;
   }
@@ -120,49 +124,57 @@ public class AtomSetCollection {
         n++;
     return n;
   }
-  
+
   private Atom[] atoms = new Atom[256];
+
   public Atom[] getAtoms() {
     return atoms;
   }
-  
+
   public Atom getAtom(int i) {
     return atoms[i];
   }
-  
+
   private int bondCount;
+
   public int getBondCount() {
     return bondCount;
   }
-  
+
   private Bond[] bonds = new Bond[256];
+
   public Bond[] getBonds() {
     return bonds;
   }
-  
+
   public Bond getBond(int i) {
     return bonds[i];
   }
-  
+
   private int structureCount;
+
   public int getStructureCount() {
     return structureCount;
   }
-  
+
   private Structure[] structures = new Structure[16];
+
   public Structure[] getStructures() {
     return structures;
   }
-  
+
   private int atomSetCount;
+
   public int getAtomSetCount() {
     return atomSetCount;
   }
-  
+
   private int currentAtomSetIndex = -1;
+
   public int getCurrentAtomSetIndex() {
     return currentAtomSetIndex;
   }
+
   public void setCurrentAtomSetIndex(int i) {
     currentAtomSetIndex = i;
   }
@@ -177,31 +189,31 @@ public class AtomSetCollection {
   public String errorMessage;
 
   public boolean coordinatesAreFractional;
-  boolean isTrajectory;    
+  boolean isTrajectory;
   private int trajectoryStepCount = 0;
-  
+
   private List<P3[]> trajectorySteps;
   private List<V3[]> vibrationSteps;
   private List<String> trajectoryNames;
   boolean doFixPeriodic;
+
   public void setDoFixPeriodic() {
     doFixPeriodic = true;
   }
 
-  public float[] notionalUnitCell = new float[6]; 
+  public float[] notionalUnitCell = new float[6];
   // expands to 22 for cartesianToFractional matrix as array (PDB)
 
   public boolean allowMultiple;
   AtomSetCollectionReader reader;
 
   private List<AtomSetCollectionReader> readerList;
-  
-  public AtomSetCollection(String fileTypeName,
-      AtomSetCollectionReader reader, 
+
+  public AtomSetCollection(String fileTypeName, AtomSetCollectionReader reader,
       AtomSetCollection[] array, List<?> list) {
-    
+
     // merging files
-    
+
     this.fileTypeName = fileTypeName;
     this.reader = reader;
     allowMultiple = (reader == null || reader.desiredVibrationNumber < 0);
@@ -213,8 +225,9 @@ public class AtomSetCollection {
     if (array != null) {
       int n = 0;
       readerList = new List<AtomSetCollectionReader>();
-      for (int i = 0; i < array.length; i++) 
-        if (array[i].atomCount > 0 || array[i].reader != null && array[i].reader.mustFinalizeModelSet) 
+      for (int i = 0; i < array.length; i++)
+        if (array[i].atomCount > 0 || array[i].reader != null
+            && array[i].reader.mustFinalizeModelSet)
           appendAtomSetCollection(n++, array[i]);
       if (n > 1)
         setAtomSetCollectionAuxiliaryInfo("isMultiFile", Boolean.TRUE);
@@ -231,24 +244,24 @@ public class AtomSetCollection {
       errorMessage = "No file found!";
       return;
     }
-      
+
     for (int i = 0; i < n; i++) {
       Object o = list.get(i);
       if (o instanceof List)
         appendAtomSetCollectionList((List<?>) o);
       else
         appendAtomSetCollection(i, (AtomSetCollection) o);
-    }  
+    }
   }
-  
+
   public void setTrajectory() {
     if (!isTrajectory) {
-      trajectorySteps = new  List<P3[]>();
+      trajectorySteps = new List<P3[]>();
     }
     isTrajectory = true;
     addTrajectoryStep();
   }
-  
+
   /**
    * Appends an AtomSetCollection
    * 
@@ -267,8 +280,8 @@ public class AtomSetCollection {
     int existingAtomsCount = atomCount;
 
     // auxiliary info
-    setAtomSetCollectionAuxiliaryInfo("loadState", collection
-        .getAtomSetCollectionAuxiliaryInfo("loadState"));
+    setAtomSetCollectionAuxiliaryInfo("loadState",
+        collection.getAtomSetCollectionAuxiliaryInfo("loadState"));
 
     // append to bsAtoms if necessary (CIF reader molecular mode)
     if (collection.bsAtoms != null) {
@@ -334,9 +347,9 @@ public class AtomSetCollection {
   }
 
   void setNoAutoBond() {
-      setAtomSetCollectionAuxiliaryInfo("noAutoBond", Boolean.TRUE);
+    setAtomSetCollectionAuxiliaryInfo("noAutoBond", Boolean.TRUE);
   }
-  
+
   void freeze(boolean reverseModels) {
     if (atomSetCount == 1 && collectionName == null)
       collectionName = (String) getAtomSetAuxiliaryInfoValue(0, "name");
@@ -348,10 +361,10 @@ public class AtomSetCollection {
     getList(true);
     getList(false);
     for (int i = 0; i < atomSetCount; i++) {
-      setAtomSetAuxiliaryInfoForSet("initialAtomCount", Integer
-          .valueOf(atomSetAtomCounts[i]), i);
-      setAtomSetAuxiliaryInfoForSet("initialBondCount", Integer
-          .valueOf(atomSetBondCounts[i]), i);
+      setAtomSetAuxiliaryInfoForSet("initialAtomCount",
+          Integer.valueOf(atomSetAtomCounts[i]), i);
+      setAtomSetAuxiliaryInfoForSet("initialBondCount",
+          Integer.valueOf(atomSetBondCounts[i]), i);
     }
   }
 
@@ -363,28 +376,30 @@ public class AtomSetCollection {
     reverseList(trajectorySteps);
     reverseList(trajectoryNames);
     reverseList(vibrationSteps);
-    reverseObject(atomSetAuxiliaryInfo);  
-    for (int i = 0; i < atomCount; i++)    
+    reverseObject(atomSetAuxiliaryInfo);
+    for (int i = 0; i < atomCount; i++)
       atoms[i].atomSetIndex = atomSetCount - 1 - atoms[i].atomSetIndex;
     for (int i = 0; i < structureCount; i++) {
       int m = structures[i].modelStartEnd[0];
       if (m >= 0) {
-         structures[i].modelStartEnd[0] = atomSetCount - 1 - structures[i].modelStartEnd[1];
-         structures[i].modelStartEnd[1] = atomSetCount - 1 - m;         
+        structures[i].modelStartEnd[0] = atomSetCount - 1
+            - structures[i].modelStartEnd[1];
+        structures[i].modelStartEnd[1] = atomSetCount - 1 - m;
       }
     }
-    for (int i = 0; i < bondCount; i++)    
-      bonds[i].atomSetIndex = atomSetCount - 1 - atoms[bonds[i].atomIndex1].atomSetIndex;
+    for (int i = 0; i < bondCount; i++)
+      bonds[i].atomSetIndex = atomSetCount - 1
+          - atoms[bonds[i].atomIndex1].atomSetIndex;
     reverseSets(bonds, bondCount);
     //getAtomSetAuxiliaryInfo("PDB_CONECT_firstAtom_count_max" ??
     List<Atom>[] lists = AU.createArrayOfArrayList(atomSetCount);
     for (int i = 0; i < atomSetCount; i++)
-      lists[i] = new  List<Atom>();
+      lists[i] = new List<Atom>();
     for (int i = 0; i < atomCount; i++)
       lists[atoms[i].atomSetIndex].addLast(atoms[i]);
     int[] newIndex = new int[atomCount];
     int n = atomCount;
-    for (int i = atomSetCount; --i >= 0; )
+    for (int i = atomSetCount; --i >= 0;)
       for (int j = lists[i].size(); --j >= 0;) {
         Atom a = atoms[--n] = lists[i].get(j);
         newIndex[a.index] = n;
@@ -395,7 +410,8 @@ public class AtomSetCollection {
       bonds[i].atomIndex2 = newIndex[bonds[i].atomIndex2];
     }
     for (int i = 0; i < atomSetCount; i++) {
-      int[] conect = (int[]) getAtomSetAuxiliaryInfoValue(i, "PDB_CONECT_firstAtom_count_max");
+      int[] conect = (int[]) getAtomSetAuxiliaryInfoValue(i,
+          "PDB_CONECT_firstAtom_count_max");
       if (conect == null)
         continue;
       conect[0] = newIndex[conect[0]];
@@ -406,40 +422,41 @@ public class AtomSetCollection {
   private void reverseSets(AtomSetObject[] o, int n) {
     List<AtomSetObject>[] lists = AU.createArrayOfArrayList(atomSetCount);
     for (int i = 0; i < atomSetCount; i++)
-      lists[i] = new  List<AtomSetObject>();
+      lists[i] = new List<AtomSetObject>();
     for (int i = 0; i < n; i++) {
       int index = o[i].atomSetIndex;
       if (index < 0)
         return;
       lists[o[i].atomSetIndex].addLast(o[i]);
     }
-    for (int i = atomSetCount; --i >= 0; )
+    for (int i = atomSetCount; --i >= 0;)
       for (int j = lists[i].size(); --j >= 0;)
         o[--n] = lists[i].get(j);
   }
-  
+
   private void reverseObject(Object[] o) {
     int n = atomSetCount;
-    for (int i = n/2; --i >= 0; )
+    for (int i = n / 2; --i >= 0;)
       AU.swap(o, i, n - 1 - i);
   }
 
   private static void reverseList(List<?> list) {
     if (list == null)
       return;
-    Collections.reverse(list); 
+    Collections.reverse(list);
   }
 
   private void reverseArray(int[] a) {
     int n = atomSetCount;
-    for (int i = n/2; --i >= 0; )
+    for (int i = n / 2; --i >= 0;)
       AU.swapInt(a, i, n - 1 - i);
   }
 
   private void getList(boolean isAltLoc) {
     int i;
     for (i = atomCount; --i >= 0;)
-      if (atoms[i] != null && (isAltLoc ? atoms[i].altLoc : atoms[i].insertionCode) != '\0')
+      if (atoms[i] != null
+          && (isAltLoc ? atoms[i].altLoc : atoms[i].insertionCode) != '\0')
         break;
     if (i < 0)
       return;
@@ -450,8 +467,7 @@ public class AtomSetCollection {
     for (i = 0; i < atomCount; i++) {
       if (atoms[i] == null)
         continue;
-      char id = (isAltLoc ? atoms[i].altLoc
-          : atoms[i].insertionCode);
+      char id = (isAltLoc ? atoms[i].altLoc : atoms[i].insertionCode);
       if (id != '\0' && lists[pt = atoms[i].atomSetIndex].indexOf(id) < 0)
         lists[pt] += id;
     }
@@ -462,7 +478,7 @@ public class AtomSetCollection {
   }
 
   void finish() {
-    if (reader != null) 
+    if (reader != null)
       reader.finalizeModelSet();
     else if (readerList != null)
       for (int i = 0; i < readerList.size(); i++)
@@ -489,13 +505,13 @@ public class AtomSetCollection {
   }
 
   public void discardPreviousAtoms() {
-    for (int i = atomCount; --i >= 0; )
+    for (int i = atomCount; --i >= 0;)
       atoms[i] = null;
     atomCount = 0;
     clearSymbolicMap();
     atomSetCount = 0;
     currentAtomSetIndex = -1;
-    for (int i = atomSetAuxiliaryInfo.length; --i >= 0; ) {
+    for (int i = atomSetAuxiliaryInfo.length; --i >= 0;) {
       atomSetAtomCounts[i] = 0;
       atomSetBondCounts[i] = 0;
       atomSetAuxiliaryInfo[i] = null;
@@ -537,7 +553,7 @@ public class AtomSetCollection {
     if (n > 0) {
       Structure[] ss = new Structure[structureCount - n];
       for (int i = 0, pt = 0; i < structureCount; i++)
-        if (structures[i] != null) 
+        if (structures[i] != null)
           ss[pt++] = structures[i];
       structures = ss;
     }
@@ -546,14 +562,14 @@ public class AtomSetCollection {
       bonds[i].atomSetIndex = atoms[bonds[i].atomIndex1].atomSetIndex;
     atomSetAuxiliaryInfo[--atomSetCount] = null;
   }
-  
+
   public void removeCurrentAtomSet() {
     if (currentAtomSetIndex < 0)
       return;
     currentAtomSetIndex--;
     atomSetCount--;
   }
-  
+
   Atom newCloneAtom(Atom atom) throws Exception {
     Atom clone = atom.getClone();
     addAtom(clone);
@@ -580,16 +596,17 @@ public class AtomSetCollection {
     int firstCount = atomSetAtomCounts[0];
     for (int bondNum = 0; bondNum < nBonds; bondNum++) {
       Bond bond = bonds[bondCount - nBonds];
-      addNewBondWithOrder(bond.atomIndex1 + firstCount, bond.atomIndex2 + firstCount,
-          bond.order);
+      addNewBondWithOrder(bond.atomIndex1 + firstCount, bond.atomIndex2
+          + firstCount, bond.order);
     }
   }
 
   public void cloneLastAtomSet() throws Exception {
     cloneLastAtomSetFromPoints(0, null);
   }
-  
-  public void cloneLastAtomSetFromPoints(int atomCount, P3[] pts) throws Exception {
+
+  public void cloneLastAtomSetFromPoints(int atomCount, P3[] pts)
+      throws Exception {
     if (!allowMultiple)
       return;
     int count = (atomCount > 0 ? atomCount : getLastAtomSetAtomCount());
@@ -601,7 +618,7 @@ public class AtomSetCollection {
         atom.setT(pts[i]);
     }
   }
-  
+
   public int getFirstAtomSetAtomCount() {
     return atomSetAtomCounts[0];
   }
@@ -624,9 +641,9 @@ public class AtomSetCollection {
   public void addAtom(Atom atom) {
     if (atomCount == atoms.length) {
       if (atomCount > 200000)
-        atoms = (Atom[])AU.ensureLength(atoms, atomCount + 50000);
+        atoms = (Atom[]) AU.ensureLength(atoms, atomCount + 50000);
       else
-        atoms = (Atom[])AU.doubleLength(atoms);
+        atoms = (Atom[]) AU.doubleLength(atoms);
     }
     if (atomSetCount == 0)
       newAtomSet();
@@ -647,27 +664,24 @@ public class AtomSetCollection {
   }
 
   public Bond addNewBondWithOrder(int atomIndex1, int atomIndex2, int order) {
-    if (atomIndex1 < 0 || atomIndex1 >= atomCount ||
-        atomIndex2 < 0 || atomIndex2 >= atomCount)
+    if (atomIndex1 < 0 || atomIndex1 >= atomCount || atomIndex2 < 0
+        || atomIndex2 >= atomCount)
       return null;
     Bond bond = new Bond(atomIndex1, atomIndex2, order);
     addBond(bond);
     return bond;
   }
-  
+
   public Bond addNewBondFromNames(String atomName1, String atomName2, int order) {
     return addNewBondWithOrder(getAtomIndexFromName(atomName1),
-                      getAtomIndexFromName(atomName2),
-                      order);
+        getAtomIndexFromName(atomName2), order);
   }
 
-  public Bond addNewBondWithMappedSerialNumbers(int atomSerial1, int atomSerial2,
-                                         int order) {
+  public Bond addNewBondWithMappedSerialNumbers(int atomSerial1,
+                                                int atomSerial2, int order) {
     return addNewBondWithOrder(getAtomIndexFromSerial(atomSerial1),
-                      getAtomIndexFromSerial(atomSerial2),
-                      order);
+        getAtomIndexFromSerial(atomSerial2), order);
   }
-
 
   List<int[]> vConnect;
   int connectNextAtomIndex = 0;
@@ -677,11 +691,10 @@ public class AtomSetCollection {
   public void addConnection(int[] is) {
     if (vConnect == null) {
       connectLast = null;
-      vConnect = new  List<int[]>();
+      vConnect = new List<int[]>();
     }
     if (connectLast != null) {
-      if (is[0] == connectLast[0] 
-          && is[1] == connectLast[1] 
+      if (is[0] == connectLast[0] && is[1] == connectLast[1]
           && is[2] != JmolAdapter.ORDER_HBOND) {
         connectLast[2]++;
         return;
@@ -697,8 +710,8 @@ public class AtomSetCollection {
     // BOND indexes in the state script. It was when we added reading of H atoms
     int firstAtom = connectNextAtomIndex;
     for (int i = connectNextAtomSet; i < atomSetCount; i++) {
-      setAtomSetAuxiliaryInfoForSet("PDB_CONECT_firstAtom_count_max", new int[] {
-          firstAtom, atomSetAtomCounts[i], maxSerial }, i);
+      setAtomSetAuxiliaryInfoForSet("PDB_CONECT_firstAtom_count_max",
+          new int[] { firstAtom, atomSetAtomCounts[i], maxSerial }, i);
       if (vConnect != null) {
         setAtomSetAuxiliaryInfoForSet("PDB_CONECT_bonds", vConnect, i);
         setGlobalBoolean(GLOBAL_CONECT);
@@ -709,7 +722,6 @@ public class AtomSetCollection {
     connectNextAtomSet = currentAtomSetIndex + 1;
     connectNextAtomIndex = firstAtom;
   }
-
 
   public void connectAll(int maxSerial, boolean isConnectStateBug) {
     if (currentAtomSetIndex < 0)
@@ -737,25 +749,25 @@ public class AtomSetCollection {
   public void addBond(Bond bond) {
     if (trajectoryStepCount > 0)
       return;
-    if (bond.atomIndex1 < 0 ||
-        bond.atomIndex2 < 0 ||
-        bond.order < 0 ||
+    if (bond.atomIndex1 < 0 || bond.atomIndex2 < 0
+        || bond.order < 0
+        ||
         //do not allow bonds between models
         atoms[bond.atomIndex1].atomSetIndex != atoms[bond.atomIndex2].atomSetIndex) {
       if (Logger.debugging) {
-        Logger.debug(
-            ">>>>>>BAD BOND:" + bond.atomIndex1 + "-" +
-            bond.atomIndex2 + " order=" + bond.order);
+        Logger.debug(">>>>>>BAD BOND:" + bond.atomIndex1 + "-"
+            + bond.atomIndex2 + " order=" + bond.order);
       }
       return;
     }
     if (bondCount == bonds.length)
-      bonds = (Bond[])AU.arrayCopyObject(bonds, bondCount + 1024);
+      bonds = (Bond[]) AU.arrayCopyObject(bonds, bondCount + 1024);
     bonds[bondCount++] = bond;
     atomSetBondCounts[currentAtomSetIndex]++;
   }
 
   public BS bsStructuredModels;
+
   public void finalizeStructures() {
     if (structureCount == 0)
       return;
@@ -772,25 +784,26 @@ public class AtomSetCollection {
         continue;
       String key = s.structureID + " " + s.modelStartEnd[0];
       Integer v = map.get(key);
-      int  count = (v == null ? 0 : v.intValue()) + 1;
+      int count = (v == null ? 0 : v.intValue()) + 1;
       map.put(key, Integer.valueOf(count));
     }
-    for (int i = 0; i < structureCount; i++){
+    for (int i = 0; i < structureCount; i++) {
       Structure s = structures[i];
       if (s.strandCount == 1)
-        s.strandCount = map.get(s.structureID + " " + s.modelStartEnd[0]).intValue();      
+        s.strandCount = map.get(s.structureID + " " + s.modelStartEnd[0])
+            .intValue();
     }
   }
-  
+
   public void addStructure(Structure structure) {
     if (structureCount == structures.length)
-      structures = (Structure[])AU.arrayCopyObject(structures,
-                                                      structureCount + 32);
+      structures = (Structure[]) AU.arrayCopyObject(structures,
+          structureCount + 32);
     structures[structureCount++] = structure;
   }
 
-  public void addVibrationVectorWithSymmetry(int iatom, float vx, float vy, float vz,
-                                 boolean withSymmetry) {
+  public void addVibrationVectorWithSymmetry(int iatom, float vx, float vy,
+                                             float vz, boolean withSymmetry) {
     if (!withSymmetry) {
       addVibrationVector(iatom, vx, vy, vz);
       return;
@@ -810,30 +823,31 @@ public class AtomSetCollection {
   }
 
   void setAtomSetSpaceGroupName(String spaceGroupName) {
-    setAtomSetAuxiliaryInfo("spaceGroup", spaceGroupName+"");
+    setAtomSetAuxiliaryInfo("spaceGroup", spaceGroupName + "");
   }
-    
+
   public void setCoordinatesAreFractional(boolean tf) {
     coordinatesAreFractional = tf;
     setAtomSetAuxiliaryInfo("coordinatesAreFractional", Boolean.valueOf(tf));
     if (tf)
       setGlobalBoolean(GLOBAL_FRACTCOORD);
   }
-  
+
   float symmetryRange;
 
   private boolean doCentroidUnitCell;
 
   private boolean centroidPacked;
+
   void setSymmetryRange(float factor) {
     symmetryRange = factor;
     setAtomSetCollectionAuxiliaryInfo("symmetryRange", Float.valueOf(factor));
   }
-  
-  void setLatticeCells(int[] latticeCells, boolean applySymmetryToBonds, 
-                       boolean doPackUnitCell, boolean doCentroidUnitCell, 
-                       boolean centroidPacked,
-                       String strSupercell, P3 ptSupercell) {
+
+  void setLatticeCells(int[] latticeCells, boolean applySymmetryToBonds,
+                       boolean doPackUnitCell, boolean doCentroidUnitCell,
+                       boolean centroidPacked, String strSupercell,
+                       P3 ptSupercell) {
     //set when unit cell is determined
     // x <= 555 and y >= 555 indicate a range of cells to load
     // AROUND the central cell 555 and that
@@ -843,11 +857,12 @@ public class AtomSetCollection {
     // Normalization is the moving of the center of mass into the unit cell.
     // Starting with Jmol 12.0.RC23 we do not normalize a CIF file that 
     // is being loaded without {i j k} indicated.
-    
+
     this.latticeCells = latticeCells;
-    boolean isLatticeRange = (latticeCells[0] <= 555  && latticeCells[1] >= 555
-        && (latticeCells[2] == 0 || latticeCells[2] == 1 || latticeCells[2] == -1));
-    doNormalize = latticeCells[0] != 0 && (!isLatticeRange || latticeCells[2] == 1);
+    boolean isLatticeRange = (latticeCells[0] <= 555 && latticeCells[1] >= 555 && (latticeCells[2] == 0
+        || latticeCells[2] == 1 || latticeCells[2] == -1));
+    doNormalize = latticeCells[0] != 0
+        && (!isLatticeRange || latticeCells[2] == 1);
     this.applySymmetryToBonds = applySymmetryToBonds;
     this.doPackUnitCell = doPackUnitCell;
     this.doCentroidUnitCell = doCentroidUnitCell;
@@ -857,13 +872,14 @@ public class AtomSetCollection {
     else
       this.ptSupercell = ptSupercell;
   }
-  
+
   public P3 ptSupercell;
+
   public void setSupercellFromPoint(P3 pt) {
     ptSupercell = pt;
     Logger.info("Using supercell " + Escape.eP(pt));
   }
-  
+
   public float[] fmatSupercell;
 
   private void setSuperCell(String supercell) {
@@ -876,20 +892,20 @@ public class AtomSetCollection {
     }
     Logger.info("Using supercell \n" + M4.newA(fmatSupercell));
   }
- 
+
   public SymmetryInterface symmetry;
+
   public SymmetryInterface getSymmetry() {
     if (symmetry == null)
-      symmetry = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
+      symmetry = (SymmetryInterface) Interface
+          .getOptionInterface("symmetry.Symmetry");
     return symmetry;
   }
-  
-  
-  
-  
+
   boolean haveUnitCell = false;
-  
-  public void setNotionalUnitCell(float[] info, M3 matUnitCellOrientation, P3 unitCellOffset) {
+
+  public void setNotionalUnitCell(float[] info, M3 matUnitCellOrientation,
+                                  P3 unitCellOffset) {
     notionalUnitCell = new float[info.length];
     this.unitCellOffset = unitCellOffset;
     for (int i = 0; i < info.length; i++)
@@ -900,7 +916,7 @@ public class AtomSetCollection {
     getSymmetry().setUnitCell(notionalUnitCell);
     // we need to set the auxiliary info as well, because 
     // ModelLoader creates a new symmetry object.
-    if (unitCellOffset != null){
+    if (unitCellOffset != null) {
       symmetry.setOffsetPt(unitCellOffset);
       setAtomSetAuxiliaryInfo("unitCellOffset", unitCellOffset);
     }
@@ -914,32 +930,32 @@ public class AtomSetCollection {
     getSymmetry().setSpaceGroup(doNormalize);
     return symmetry.addSpaceGroupOperation(xyz, 0);
   }
-  
+
   public void setLatticeParameter(int latt) {
     getSymmetry().setSpaceGroup(doNormalize);
     symmetry.setLattice(latt);
   }
-  
+
   boolean doNormalize = true;
   boolean doPackUnitCell = false;
-   
-  void applySymmetry(SymmetryInterface symmetry, MSInterface ms) throws Exception {
+
+  void applySymmetry(SymmetryInterface symmetry, MSInterface ms)
+      throws Exception {
     if (symmetry != null)
       getSymmetry().setSpaceGroupS(symmetry);
     //parameters are counts of unit cells as [a b c]
     applySymmetryLattice(ms);
   }
 
-  private void applySymmetryLattice(MSInterface ms)
-      throws Exception {
-    
+  private void applySymmetryLattice(MSInterface ms) throws Exception {
+
     if (!coordinatesAreFractional || getSymmetry().getSpaceGroup() == null)
       return;
-    
+
     int maxX = latticeCells[0];
     int maxY = latticeCells[1];
     int maxZ = Math.abs(latticeCells[2]);
-    
+
     if (fmatSupercell != null) {
 
       // supercell of the form nx + ny + nz
@@ -1007,7 +1023,7 @@ public class AtomSetCollection {
   }
 
   private float rminx, rminy, rminz, rmaxx, rmaxy, rmaxz;
-   
+
   private void setSymmetryMinMax(P3 c) {
     if (rminx > c.x)
       rminx = c.x;
@@ -1022,39 +1038,43 @@ public class AtomSetCollection {
     if (rmaxz < c.z)
       rmaxz = c.z;
   }
-   
+
   private boolean isInSymmetryRange(P3 c) {
-    return (c.x >= rminx && c.y >= rminy && c.z >= rminz 
-        && c.x <= rmaxx && c.y <= rmaxy && c.z <= rmaxz);
+    return (c.x >= rminx && c.y >= rminy && c.z >= rminz && c.x <= rmaxx
+        && c.y <= rmaxy && c.z <= rmaxz);
   }
 
   private final P3 ptOffset = new P3();
-  
+
   public P3 unitCellOffset;
-  
-  private P3i minXYZ, maxXYZ, minXYZ0, maxXYZ0;
-  
-  private static boolean isWithinCell(int dtype, P3 pt, int minX, int maxX, int minY, int maxY, int minZ, int maxZ) {
-    float slop = 0.02f;
-    return (pt.x > minX - slop && pt.x < maxX + slop 
-        && (dtype < 2 || pt.y > minY - slop && pt.y < maxY + slop) 
-        && (dtype < 3 || pt.z > minZ - slop && pt.z < maxZ + slop));
+
+  private P3i minXYZ, maxXYZ;
+  private P3 minXYZ0, maxXYZ0;
+
+  public boolean isWithinCell(int dtype, P3 pt, float minX, float maxX,
+                              float minY, float maxY, float minZ, float maxZ,
+                              float slop) {
+    return (pt.x > minX - slop && pt.x < maxX + slop
+        && (dtype < 2 || pt.y > minY - slop && pt.y < maxY + slop) && (dtype < 3 || pt.z > minZ
+        - slop
+        && pt.z < maxZ + slop));
   }
 
   public boolean haveAnisou;
+
   public void setAnisoBorU(Atom atom, float[] data, int type) {
     haveAnisou = true;
     atom.anisoBorU = data;
     data[6] = type;
   }
-  
+
   public float[] getAnisoBorU(Atom atom) {
     return atom.anisoBorU;
   }
-  
+
   private int dtype = 3;
   private V3[] unitCellTranslations;
-  
+
   public void setTensors() {
     if (!haveAnisou)
       return;
@@ -1062,33 +1082,36 @@ public class AtomSetCollection {
     for (int i = getLastAtomSetAtomIndex(); i < atomCount; i++)
       atoms[i].addTensor(symmetry.getTensor(atoms[i].anisoBorU), null, false); // getTensor will return correct type 
   }
-  
+
   public int baseSymmetryAtomCount;
 
   private boolean checkLatticeOnly;
+
   public void setLatticeOnly(boolean b) {
     checkLatticeOnly = b;
   }
-  
+
   private int latticeOp;
   private boolean latticeOnly;
 
   private int noSymmetryCount;
 
   private int firstSymmetryAtom;
-  
+
   public void setBaseSymmetryAtomCount(int n) {
     baseSymmetryAtomCount = n;
   }
-  
+
   /**
-   * @param ms  modulated structure interface
-   * @throws Exception 
+   * @param ms
+   *        modulated structure interface
+   * @throws Exception
    */
   private void applyAllSymmetry(MSInterface ms) throws Exception {
     if (atomCount == 0)
       return;
-    noSymmetryCount = (baseSymmetryAtomCount == 0 ? getLastAtomSetAtomCount() : baseSymmetryAtomCount);
+    noSymmetryCount = (baseSymmetryAtomCount == 0 ? getLastAtomSetAtomCount()
+        : baseSymmetryAtomCount);
     firstSymmetryAtom = getLastAtomSetAtomIndex();
     setTensors();
     bondCount0 = bondCount;
@@ -1097,10 +1120,9 @@ public class AtomSetCollection {
     dtype = (int) symmetry.getUnitCellInfoType(SimpleUnitCell.INFO_DIMENSIONS);
     symmetry.setMinMaxLatticeParameters(minXYZ, maxXYZ);
     if (doCentroidUnitCell)
-      setAtomSetCollectionAuxiliaryInfo("centroidMinMax", new int[] {
-          minXYZ.x, minXYZ.y, minXYZ.z, 
-          maxXYZ.x, maxXYZ.y, maxXYZ.z, 
-          (centroidPacked ? 1 : 0) } );
+      setAtomSetCollectionAuxiliaryInfo("centroidMinMax", new int[] { minXYZ.x,
+          minXYZ.y, minXYZ.z, maxXYZ.x, maxXYZ.y, maxXYZ.z,
+          (centroidPacked ? 1 : 0) });
     if (ptSupercell != null) {
       setAtomSetAuxiliaryInfo("supercell", ptSupercell);
       switch (dtype) {
@@ -1120,11 +1142,17 @@ public class AtomSetCollection {
         maxXYZ.x *= (int) Math.abs(ptSupercell.x);
       }
     }
-    if (doCentroidUnitCell || doPackUnitCell || symmetryRange != 0 && maxXYZ.x - minXYZ.x == 1
-        && maxXYZ.y - minXYZ.y == 1 && maxXYZ.z - minXYZ.z == 1) {
+    if (doCentroidUnitCell || doPackUnitCell || symmetryRange != 0
+        && maxXYZ.x - minXYZ.x == 1 && maxXYZ.y - minXYZ.y == 1
+        && maxXYZ.z - minXYZ.z == 1) {
       // weird Mac bug does not allow   Point3i.new3(minXYZ) !!
-      minXYZ0 = P3i.new3(minXYZ.x, minXYZ.y, minXYZ.z);
-      maxXYZ0 = P3i.new3(maxXYZ.x, maxXYZ.y, maxXYZ.z);
+      minXYZ0 = P3.new3(minXYZ.x, minXYZ.y, minXYZ.z);
+      maxXYZ0 = P3.new3(maxXYZ.x, maxXYZ.y, maxXYZ.z);
+      if (ms != null) {
+        ms.setMinMax0(minXYZ0, maxXYZ0);
+        minXYZ.set((int)minXYZ0.x, (int)minXYZ0.y, (int)minXYZ0.z);
+        maxXYZ.set((int)maxXYZ0.x, (int)maxXYZ0.y, (int)maxXYZ0.z);
+      }
       switch (dtype) {
       case 3:
         // standard
@@ -1147,8 +1175,8 @@ public class AtomSetCollection {
     int cartesianCount = (checkSpecial ? noSymmetryCount * operationCount
         * nCells : symmetryRange > 0 ? noSymmetryCount * operationCount // checking
     // against
-        // {1 1
-        // 1}
+    // {1 1
+    // 1}
         : symmetryRange < 0 ? 1 // checking against symop=1555 set; just a box
             : 1 // not checking
     );
@@ -1174,7 +1202,7 @@ public class AtomSetCollection {
       rmaxz = -Float.MAX_VALUE;
     }
     // always do the 555 cell first
-    
+
     // incommensurate symmetry can have lattice centering, resulting in 
     // duplication of operators. There's a bug later on that requires we 
     // only do this with the first atom set for now, at least.
@@ -1193,12 +1221,12 @@ public class AtomSetCollection {
           unitCells[iCell++] = 555 + tx * 100 + ty * 10 + tz;
           if (tx != 0 || ty != 0 || tz != 0 || cartesians.length == 0)
             continue;
-          
+
           // base cell only
-          
+
           for (pt = 0; pt < noSymmetryCount; pt++) {
             Atom atom = atoms[firstSymmetryAtom + pt];
-            
+
             if (ms != null) {
               symmetry = ms.getAtomSymmetry(atom, this.symmetry);
               if (symmetry != lastSymmetry) {
@@ -1207,10 +1235,9 @@ public class AtomSetCollection {
                 op = symmetry.getSpaceGroupOperation(0);
               }
             }
-            
+
             P3 c = P3.newP(atom);
             op.transform(c);
-                        
             symmetry.toCartesian(c, false);
             if (doPackUnitCell) {
               symmetry.toUnitCell(c, ptOffset);
@@ -1232,8 +1259,9 @@ public class AtomSetCollection {
             rmaxy += absRange;
             rmaxz += absRange;
           }
-          cell555Count = pt = symmetryAddAtoms(firstSymmetryAtom, noSymmetryCount, 0,
-              0, 0, 0, pt, iCell * operationCount, cartesians, ms);
+          cell555Count = pt = symmetryAddAtoms(firstSymmetryAtom,
+              noSymmetryCount, 0, 0, 0, 0, pt, iCell * operationCount,
+              cartesians, ms);
         }
     if (checkRange111) {
       rminx -= absRange;
@@ -1243,7 +1271,7 @@ public class AtomSetCollection {
       rmaxy += absRange;
       rmaxz += absRange;
     }
-    
+
     // now apply all the translations
     iCell = 0;
     for (int tx = minXYZ.x; tx < maxXYZ.x; tx++)
@@ -1251,17 +1279,18 @@ public class AtomSetCollection {
         for (int tz = minXYZ.z; tz < maxXYZ.z; tz++) {
           iCell++;
           if (tx != 0 || ty != 0 || tz != 0)
-            pt = symmetryAddAtoms(firstSymmetryAtom, noSymmetryCount, tx, ty, tz,
-                cell555Count, pt, iCell * operationCount, cartesians, ms);
+            pt = symmetryAddAtoms(firstSymmetryAtom, noSymmetryCount, tx, ty,
+                tz, cell555Count, pt, iCell * operationCount, cartesians, ms);
         }
     if (iCell * noSymmetryCount == atomCount - firstSymmetryAtom)
       appendAtomProperties(iCell);
     setSymmetryOps();
-    setAtomSetAuxiliaryInfo("presymmetryAtomIndex", Integer.valueOf(firstSymmetryAtom));
-    setAtomSetAuxiliaryInfo("presymmetryAtomCount", Integer
-        .valueOf(noSymmetryCount));
-    setAtomSetAuxiliaryInfo("latticeDesignation", symmetry
-        .getLatticeDesignation());
+    setAtomSetAuxiliaryInfo("presymmetryAtomIndex",
+        Integer.valueOf(firstSymmetryAtom));
+    setAtomSetAuxiliaryInfo("presymmetryAtomCount",
+        Integer.valueOf(noSymmetryCount));
+    setAtomSetAuxiliaryInfo("latticeDesignation",
+        symmetry.getLatticeDesignation());
     setAtomSetAuxiliaryInfo("unitCellRange", unitCells);
     setAtomSetAuxiliaryInfo("unitCellTranslations", unitCellTranslations);
     //symmetry.setSpaceGroupS(null);
@@ -1272,10 +1301,10 @@ public class AtomSetCollection {
     setGlobalBoolean(GLOBAL_SYMMETRY);
   }
 
-  
   private void finalizeSymmetry(SymmetryInterface symmetry) {
     String name = (String) getAtomSetAuxiliaryInfoValue(-1, "spaceGroup");
-    symmetry.setFinalOperations(name, atoms, firstSymmetryAtom, noSymmetryCount, doNormalize);
+    symmetry.setFinalOperations(name, atoms, firstSymmetryAtom,
+        noSymmetryCount, doNormalize);
     if (name == null || name.equals("unspecified!"))
       setAtomSetSpaceGroupName(symmetry.getSpaceGroupName());
   }
@@ -1300,15 +1329,14 @@ public class AtomSetCollection {
   public void setCheckSpecial(boolean TF) {
     checkSpecial = TF;
   }
-  
+
   private P3 ptTemp;
   private M3 mTemp;
-  
-  private int symmetryAddAtoms(int iAtomFirst, int noSymmetryCount, 
-                               int transX, int transY, int transZ, 
-                               int baseCount, int pt,
-                               int iCellOpPt, P3[] cartesians,
-                               MSInterface ms) throws Exception {
+
+  private int symmetryAddAtoms(int iAtomFirst, int noSymmetryCount, int transX,
+                               int transY, int transZ, int baseCount, int pt,
+                               int iCellOpPt, P3[] cartesians, MSInterface ms)
+      throws Exception {
     boolean isBaseCell = (baseCount == 0);
     boolean addBonds = (bondCount0 > bondIndex0 && applySymmetryToBonds);
     int[] atomMap = (addBonds ? new int[noSymmetryCount] : null);
@@ -1340,7 +1368,8 @@ public class AtomSetCollection {
     int atomMax = iAtomFirst + noSymmetryCount;
     P3 ptAtom = new P3();
     for (int iSym = 0; iSym < nOperations; iSym++) {
-      if (isBaseCell && iSym == 0 || latticeOnly && iSym > 0 && iSym != latticeOp)
+      if (isBaseCell && iSym == 0 || latticeOnly && iSym > 0
+          && iSym != latticeOp)
         continue;
 
       /* pt0 sets the range of points cross-checked. 
@@ -1361,21 +1390,21 @@ public class AtomSetCollection {
           continue;
 
         if (ms != null)
-          symmetry = ms.getAtomSymmetry(atoms[i], this.symmetry);        
+          symmetry = ms.getAtomSymmetry(atoms[i], this.symmetry);
         symmetry.newSpaceGroupPoint(iSym, atoms[i], ptAtom, transX, transY,
             transZ);
         Atom special = null;
         P3 cartesian = P3.newP(ptAtom);
-        symmetry. toCartesian(cartesian, false);
+        symmetry.toCartesian(cartesian, false);
         if (doPackUnitCell) {
           symmetry.toUnitCell(cartesian, ptOffset);
           ptAtom.setT(cartesian);
           symmetry.toFractional(ptAtom, false);
           if (!isWithinCell(dtype, ptAtom, minXYZ0.x, maxXYZ0.x, minXYZ0.y,
-              maxXYZ0.y, minXYZ0.z, maxXYZ0.z))
+              maxXYZ0.y, minXYZ0.z, maxXYZ0.z, 0.02f))
             continue;
         }
-        
+
         if (checkSymmetryMinMax)
           setSymmetryMinMax(cartesian);
         if (checkDistances) {
@@ -1391,7 +1420,8 @@ public class AtomSetCollection {
             float d2 = cartesian.distanceSquared(cartesians[j]);
             if (checkSpecial && d2 < 0.0001) {
               special = atoms[iAtomFirst + j];
-              if (special.atomName == null || special.atomName.equals(atoms[i].atomName))
+              if (special.atomName == null
+                  || special.atomName.equals(atoms[i].atomName))
                 break;
               special = null;
             }
@@ -1448,15 +1478,17 @@ public class AtomSetCollection {
     }
     return pt;
   }
-  
-  public Tensor addRotatedTensor(Atom a, Tensor t, int iSym, boolean reset, SymmetryInterface symmetry) {
+
+  public Tensor addRotatedTensor(Atom a, Tensor t, int iSym, boolean reset,
+                                 SymmetryInterface symmetry) {
     if (ptTemp == null) {
       ptTemp = new P3();
       mTemp = new M3();
     }
-    return a.addTensor(((Tensor) Interface.getOptionInterface("util.Tensor")).setFromEigenVectors(symmetry
-        .rotateAxes(iSym, t.eigenVectors, ptTemp, mTemp),
-        t.eigenValues, t.isIsotropic ? "iso" : t.type, t.id), null, reset);
+    return a.addTensor(((Tensor) Interface.getOptionInterface("util.Tensor"))
+        .setFromEigenVectors(
+            symmetry.rotateAxes(iSym, t.eigenVectors, ptTemp, mTemp),
+            t.eigenValues, t.isIsotropic ? "iso" : t.type, t.id), null, reset);
   }
 
   private final static int PARTICLE_NONE = 0;
@@ -1541,9 +1573,10 @@ public class AtomSetCollection {
       break;
     }
     if (filter.indexOf("#<") >= 0) {
-      len = Math.min(len, javajs.util.PT.parseInt(filter.substring(filter
-          .indexOf("#<") + 2)) - 1);
-      filter = javajs.util.PT.simpleReplace(filter, "#<", "_<");
+      len = Math
+          .min(len, PT.parseInt(filter.substring(filter
+              .indexOf("#<") + 2)) - 1);
+      filter = PT.simpleReplace(filter, "#<", "_<");
     }
     for (int iAtom = firstSymmetryAtom; iAtom < atomMax; iAtom++)
       atoms[iAtom].bsSymmetry = BSUtil.newAndSetBit(0);
@@ -1585,18 +1618,19 @@ public class AtomSetCollection {
           errorMessage = "appendAtomCollection error: " + e;
         }
       }
-//      mat.m03 /= notionalUnitCell[0]; // PDB could have set this to Float.NaN
-//      if (Float.isNaN(mat.m03))
-//        mat.m03 = 1;
-//      mat.m13 /= notionalUnitCell[1];
-//      mat.m23 /= notionalUnitCell[2];
+      //      mat.m03 /= notionalUnitCell[0]; // PDB could have set this to Float.NaN
+      //      if (Float.isNaN(mat.m03))
+      //        mat.m03 = 1;
+      //      mat.m13 /= notionalUnitCell[1];
+      //      mat.m23 /= notionalUnitCell[2];
       if (i > 0)
         symmetry.addBioMoleculeOperation(mat, false);
     }
     noSymmetryCount = atomMax - firstSymmetryAtom;
-    setAtomSetAuxiliaryInfo("presymmetryAtomIndex", Integer.valueOf(firstSymmetryAtom));
-    setAtomSetAuxiliaryInfo("presymmetryAtomCount", Integer
-        .valueOf(noSymmetryCount));
+    setAtomSetAuxiliaryInfo("presymmetryAtomIndex",
+        Integer.valueOf(firstSymmetryAtom));
+    setAtomSetAuxiliaryInfo("presymmetryAtomCount",
+        Integer.valueOf(noSymmetryCount));
     setAtomSetAuxiliaryInfo("biosymmetryCount", Integer.valueOf(len));
     setAtomSetAuxiliaryInfo("biosymmetry", symmetry);
     finalizeSymmetry(this.symmetry);
@@ -1607,7 +1641,7 @@ public class AtomSetCollection {
     setGlobalBoolean(GLOBAL_SYMMETRY);
     //TODO: need to clone bonds
   }
-  
+
   private Map<Object, Integer> atomSymbolicMap = new Hashtable<Object, Integer>();
 
   private void mapMostRecentAtomName() {
@@ -1654,7 +1688,7 @@ public class AtomSetCollection {
   public int getAtomIndexFromSerial(int serialNumber) {
     return getMapIndex(Integer.valueOf(serialNumber));
   }
-  
+
   private int getMapIndex(Object nameOrNum) {
     Integer value = atomSymbolicMap.get(nameOrNum);
     return (value == null ? -1 : value.intValue());
@@ -1666,54 +1700,57 @@ public class AtomSetCollection {
     else
       atomSetCollectionAuxiliaryInfo.put(key, value);
   }
-  
+
   /**
    * Sets the partial atomic charges based on atomSetCollection auxiliary info
-   *
-   * @param auxKey The auxiliary key name that contains the charges
-   * @return true if the data exist; false if not  
+   * 
+   * @param auxKey
+   *        The auxiliary key name that contains the charges
+   * @return true if the data exist; false if not
    */
 
   public boolean setAtomSetCollectionPartialCharges(String auxKey) {
-    if (! atomSetCollectionAuxiliaryInfo.containsKey(auxKey)) {
+    if (!atomSetCollectionAuxiliaryInfo.containsKey(auxKey)) {
       return false;
     }
-    List<Float> atomData = (List<Float>) atomSetCollectionAuxiliaryInfo.get(auxKey);
+    List<Float> atomData = (List<Float>) atomSetCollectionAuxiliaryInfo
+        .get(auxKey);
     for (int i = atomData.size(); --i >= 0;)
       atoms[i].partialCharge = atomData.get(i).floatValue();
     Logger.info("Setting partial charges type " + auxKey);
     return true;
   }
-  
+
   public void mapPartialCharge(String atomName, float charge) {
-    atoms[getAtomIndexFromName(atomName)].partialCharge = charge;  
+    atoms[getAtomIndexFromName(atomName)].partialCharge = charge;
   }
-  
+
   public Object getAtomSetCollectionAuxiliaryInfo(String key) {
     return atomSetCollectionAuxiliaryInfo.get(key);
   }
-  
+
   ////////////////////////////////////////////////////////////////
   // atomSet stuff
   ////////////////////////////////////////////////////////////////
-  
+
   private void addTrajectoryStep() {
     P3[] trajectoryStep = new P3[atomCount];
-    boolean haveVibrations = (atomCount > 0 && atoms[0].vib != null && !Float.isNaN(atoms[0].vib.z));
+    boolean haveVibrations = (atomCount > 0 && atoms[0].vib != null && !Float
+        .isNaN(atoms[0].vib.z));
     V3[] vibrationStep = (haveVibrations ? new V3[atomCount] : null);
-    P3[] prevSteps = (trajectoryStepCount == 0 ? null 
-        : (P3[]) trajectorySteps.get(trajectoryStepCount - 1));
+    P3[] prevSteps = (trajectoryStepCount == 0 ? null : (P3[]) trajectorySteps
+        .get(trajectoryStepCount - 1));
     for (int i = 0; i < atomCount; i++) {
       P3 pt = P3.newP(atoms[i]);
       if (doFixPeriodic && prevSteps != null)
         pt = fixPeriodic(pt, prevSteps[i]);
       trajectoryStep[i] = pt;
-      if (haveVibrations) 
+      if (haveVibrations)
         vibrationStep[i] = atoms[i].vib;
     }
     if (haveVibrations) {
       if (vibrationSteps == null) {
-        vibrationSteps = new  List<V3[]>();
+        vibrationSteps = new List<V3[]>();
         for (int i = 0; i < trajectoryStepCount; i++)
           vibrationSteps.addLast(null);
       }
@@ -1722,11 +1759,11 @@ public class AtomSetCollection {
     trajectorySteps.addLast(trajectoryStep);
     trajectoryStepCount++;
   }
-  
+
   private static P3 fixPeriodic(P3 pt, P3 pt0) {
-    pt.x = fixPoint(pt.x, pt0.x);   
-    pt.y = fixPoint(pt.y, pt0.y);   
-    pt.z = fixPoint(pt.z, pt0.z);   
+    pt.x = fixPoint(pt.x, pt0.x);
+    pt.y = fixPoint(pt.y, pt0.y);
+    pt.z = fixPoint(pt.z, pt0.z);
     return pt;
   }
 
@@ -1740,7 +1777,8 @@ public class AtomSetCollection {
     return x;
   }
 
-  public void finalizeTrajectoryAs(List<P3[]> trajectorySteps, List<V3[]> vibrationSteps) {
+  public void finalizeTrajectoryAs(List<P3[]> trajectorySteps,
+                                   List<V3[]> vibrationSteps) {
     this.trajectorySteps = trajectorySteps;
     this.vibrationSteps = vibrationSteps;
     trajectoryStepCount = trajectorySteps.size();
@@ -1752,11 +1790,10 @@ public class AtomSetCollection {
       return;
     //reset atom positions to original trajectory
     P3[] trajectory = trajectorySteps.get(0);
-    V3[] vibrations = (vibrationSteps == null ? null : vibrationSteps
-        .get(0));
+    V3[] vibrations = (vibrationSteps == null ? null : vibrationSteps.get(0));
     V3 v = new V3();
-    if (vibrationSteps != null && vibrations != null && vibrations.length < atomCount 
-        || trajectory.length < atomCount) {
+    if (vibrationSteps != null && vibrations != null
+        && vibrations.length < atomCount || trajectory.length < atomCount) {
       errorMessage = "File cannot be loaded as a trajectory";
       return;
     }
@@ -1770,57 +1807,60 @@ public class AtomSetCollection {
     if (vibrationSteps != null)
       setAtomSetCollectionAuxiliaryInfo("vibrationSteps", vibrationSteps);
   }
- 
+
   public void newAtomSet() {
     newAtomSetClear(true);
   }
-  
+
   public void newAtomSetClear(boolean doClearMap) {
-    
+
     if (!allowMultiple && currentAtomSetIndex >= 0)
       discardPreviousAtoms();
     bondIndex0 = bondCount;
     if (isTrajectory) {
       discardPreviousAtoms();
-    }    
+    }
     currentAtomSetIndex = atomSetCount++;
     if (atomSetCount > atomSetNumbers.length) {
       atomSetAtomIndexes = AU.doubleLengthI(atomSetAtomIndexes);
       atomSetAtomCounts = AU.doubleLengthI(atomSetAtomCounts);
       atomSetBondCounts = AU.doubleLengthI(atomSetBondCounts);
-      atomSetAuxiliaryInfo = (Map<String, Object>[]) AU.doubleLength(atomSetAuxiliaryInfo);
+      atomSetAuxiliaryInfo = (Map<String, Object>[]) AU
+          .doubleLength(atomSetAuxiliaryInfo);
     }
     atomSetAtomIndexes[currentAtomSetIndex] = atomCount;
     if (atomSetCount + trajectoryStepCount > atomSetNumbers.length) {
       atomSetNumbers = AU.doubleLengthI(atomSetNumbers);
     }
     if (isTrajectory) {
-      atomSetNumbers[currentAtomSetIndex + trajectoryStepCount] = atomSetCount + trajectoryStepCount;
+      atomSetNumbers[currentAtomSetIndex + trajectoryStepCount] = atomSetCount
+          + trajectoryStepCount;
     } else {
       atomSetNumbers[currentAtomSetIndex] = atomSetCount;
     }
     if (doClearMap)
       atomSymbolicMap.clear();
-    setAtomSetAuxiliaryInfo("title", collectionName);    
+    setAtomSetAuxiliaryInfo("title", collectionName);
   }
 
   public int getAtomSetAtomIndex(int i) {
     return atomSetAtomIndexes[i];
   }
-  
+
   public int getAtomSetAtomCount(int i) {
     return atomSetAtomCounts[i];
   }
-  
+
   public int getAtomSetBondCount(int i) {
     return atomSetBondCounts[i];
   }
-  
+
   /**
-  * Sets the name for the current AtomSet
-  *
-  * @param atomSetName The name to be associated with the current AtomSet
-  */
+   * Sets the name for the current AtomSet
+   * 
+   * @param atomSetName
+   *        The name to be associated with the current AtomSet
+   */
   public void setAtomSetName(String atomSetName) {
     if (isTrajectory) {
       setTrajectoryName(atomSetName);
@@ -1831,12 +1871,12 @@ public class AtomSetCollection {
     if (!allowMultiple)
       setCollectionName(atomSetName);
   }
-  
+
   private void setTrajectoryName(String name) {
     if (trajectoryStepCount == 0)
       return;
     if (trajectoryNames == null) {
-      trajectoryNames = new  List<String>();
+      trajectoryNames = new List<String>();
     }
     for (int i = trajectoryNames.size(); i < trajectoryStepCount; i++)
       trajectoryNames.addLast(null);
@@ -1847,10 +1887,10 @@ public class AtomSetCollection {
    * Sets the atom set names of the last n atomSets
    * 
    * @param atomSetName
-   *          The name
+   *        The name
    * @param n
-   *          The number of last AtomSets that needs these set
-   * @param namedSets 
+   *        The number of last AtomSets that needs these set
+   * @param namedSets
    */
   public void setAtomSetNames(String atomSetName, int n, BS namedSets) {
     for (int i = currentAtomSetIndex; --n >= 0 && i >= 0; --i)
@@ -1868,18 +1908,19 @@ public class AtomSetCollection {
     setAtomSetNumber(currentAtomSetIndex
         + (isTrajectory ? trajectoryStepCount : 0), atomSetNumber);
   }
-  
+
   public void setAtomSetNumber(int index, int atomSetNumber) {
     atomSetNumbers[index] = atomSetNumber;
   }
-  
+
   /**
-   * Sets a property for the current AtomSet
-   * used specifically for creating directories and plots of frequencies and 
-   * molecular energies
-   *
-   * @param key The key for the property
-   * @param value The value to be associated with the key
+   * Sets a property for the current AtomSet used specifically for creating
+   * directories and plots of frequencies and molecular energies
+   * 
+   * @param key
+   *        The key for the property
+   * @param value
+   *        The value to be associated with the key
    */
   public void setAtomSetModelProperty(String key, String value) {
     setAtomSetModelPropertyForSet(key, value, currentAtomSetIndex);
@@ -1887,12 +1928,16 @@ public class AtomSetCollection {
 
   /**
    * Sets the a property for the an AtomSet
-   *
-   * @param key The key for the property
-   * @param value The value for the property
-   * @param atomSetIndex The index of the AtomSet to get the property
+   * 
+   * @param key
+   *        The key for the property
+   * @param value
+   *        The value for the property
+   * @param atomSetIndex
+   *        The index of the AtomSet to get the property
    */
-  public void setAtomSetModelPropertyForSet(String key, String value, int atomSetIndex) {
+  public void setAtomSetModelPropertyForSet(String key, String value,
+                                            int atomSetIndex) {
     // lazy instantiation of the Properties object
     Properties p = (Properties) getAtomSetAuxiliaryInfoValue(atomSetIndex,
         "modelProperties");
@@ -1916,7 +1961,8 @@ public class AtomSetCollection {
   }
 
   private void appendAtomProperties(int nTimes) {
-    Map<String, String> p = (Map<String, String>) getAtomSetAuxiliaryInfoValue(-1, "atomProperties");
+    Map<String, String> p = (Map<String, String>) getAtomSetAuxiliaryInfoValue(
+        -1, "atomProperties");
     if (p == null) {
       return;
     }
@@ -1924,53 +1970,61 @@ public class AtomSetCollection {
       String key = entry.getKey();
       String data = entry.getValue();
       SB s = new SB();
-      for (int i = nTimes; --i >= 0; )
-        s.append(data);   
+      for (int i = nTimes; --i >= 0;)
+        s.append(data);
       p.put(key, s.toString());
     }
   }
 
-
   /**
    * Sets the partial atomic charges based on atomSet auxiliary info
-   *
-   * @param auxKey The auxiliary key name that contains the charges
-   * @return true if the data exist; false if not  
+   * 
+   * @param auxKey
+   *        The auxiliary key name that contains the charges
+   * @return true if the data exist; false if not
    */
 
   boolean setAtomSetPartialCharges(String auxKey) {
     if (!atomSetAuxiliaryInfo[currentAtomSetIndex].containsKey(auxKey)) {
       return false;
     }
-    List<Float> atomData = (List<Float>) getAtomSetAuxiliaryInfoValue(currentAtomSetIndex, auxKey);
+    List<Float> atomData = (List<Float>) getAtomSetAuxiliaryInfoValue(
+        currentAtomSetIndex, auxKey);
     for (int i = atomData.size(); --i >= 0;) {
       atoms[i].partialCharge = atomData.get(i).floatValue();
     }
     return true;
   }
-  
+
   public Object getAtomSetAuxiliaryInfoValue(int index, String key) {
-    return  atomSetAuxiliaryInfo[index >= 0 ? index : currentAtomSetIndex].get(key);
+    return atomSetAuxiliaryInfo[index >= 0 ? index : currentAtomSetIndex]
+        .get(key);
   }
-  
+
   /**
    * Sets auxiliary information for the AtomSet
-   *
-   * @param key The key for the property
-   * @param value The value to be associated with the key
+   * 
+   * @param key
+   *        The key for the property
+   * @param value
+   *        The value to be associated with the key
    */
-   public void setAtomSetAuxiliaryInfo(String key, Object value) {
-     setAtomSetAuxiliaryInfoForSet(key, value, currentAtomSetIndex);
-   }
+  public void setAtomSetAuxiliaryInfo(String key, Object value) {
+    setAtomSetAuxiliaryInfoForSet(key, value, currentAtomSetIndex);
+  }
 
   /**
    * Sets auxiliary information for an AtomSet
-   *
-   * @param key The key for the property
-   * @param value The value for the property
-   * @param atomSetIndex The index of the AtomSet to get the property
+   * 
+   * @param key
+   *        The key for the property
+   * @param value
+   *        The value for the property
+   * @param atomSetIndex
+   *        The index of the AtomSet to get the property
    */
-  public void setAtomSetAuxiliaryInfoForSet(String key, Object value, int atomSetIndex) {
+  public void setAtomSetAuxiliaryInfoForSet(String key, Object value,
+                                            int atomSetIndex) {
     if (atomSetIndex < 0)
       return;
     if (atomSetAuxiliaryInfo[atomSetIndex] == null)
@@ -1985,35 +2039,38 @@ public class AtomSetCollection {
    * Sets the same properties for the last n atomSets.
    * 
    * @param key
-   *          The key for the property
+   *        The key for the property
    * @param value
-   *          The value of the property
+   *        The value of the property
    * @param n
-   *          The number of last AtomSets that needs these set
+   *        The number of last AtomSets that needs these set
    */
   public void setAtomSetPropertyForSets(String key, String value, int n) {
     for (int idx = currentAtomSetIndex; --n >= 0 && idx >= 0; --idx)
       setAtomSetModelPropertyForSet(key, value, idx);
   }
-  
 
   /**
-   * Clones the properties of the last atom set and associates it
-   * with the current atom set. 
+   * Clones the properties of the last atom set and associates it with the
+   * current atom set.
    */
   public void cloneLastAtomSetProperties() {
     cloneAtomSetProperties(currentAtomSetIndex - 1);
   }
 
   /**
-   * Clones the properties of an atom set and associated it with the
-   * current atom set.
-   * @param index The index of the atom set whose properties are to be cloned.
+   * Clones the properties of an atom set and associated it with the current
+   * atom set.
+   * 
+   * @param index
+   *        The index of the atom set whose properties are to be cloned.
    */
   void cloneAtomSetProperties(int index) {
-    Properties p = (Properties) getAtomSetAuxiliaryInfoValue(index, "modelProperties");
+    Properties p = (Properties) getAtomSetAuxiliaryInfoValue(index,
+        "modelProperties");
     if (p != null)
-      setAtomSetAuxiliaryInfoForSet("modelProperties", p.clone(), currentAtomSetIndex);
+      setAtomSetAuxiliaryInfoForSet("modelProperties", p.clone(),
+          currentAtomSetIndex);
   }
 
   int getAtomSetNumber(int atomSetIndex) {
@@ -2027,13 +2084,14 @@ public class AtomSetCollection {
       atomSetIndex = atomSetCount - 1;
     return (String) getAtomSetAuxiliaryInfoValue(atomSetIndex, "name");
   }
-  
+
   Map<String, Object> getAtomSetAuxiliaryInfo(int atomSetIndex) {
-    return atomSetAuxiliaryInfo[atomSetIndex >= atomSetCount ? atomSetCount - 1 : atomSetIndex];
+    return atomSetAuxiliaryInfo[atomSetIndex >= atomSetCount ? atomSetCount - 1
+        : atomSetIndex];
   }
 
   //// for XmlChem3dReader, but could be for CUBE
-  
+
   public Properties setAtomNames(Properties atomIdNames) {
     // for CML reader "a3" --> "N3"
     if (atomIdNames == null)
@@ -2048,13 +2106,15 @@ public class AtomSetCollection {
   public void setAtomSetEnergy(String energyString, float value) {
     if (currentAtomSetIndex < 0)
       return;
-    Logger.info("Energy for model " + (currentAtomSetIndex + 1) + " = " + energyString);
+    Logger.info("Energy for model " + (currentAtomSetIndex + 1) + " = "
+        + energyString);
     setAtomSetAuxiliaryInfo("EnergyString", energyString);
     setAtomSetAuxiliaryInfo("Energy", Float.valueOf(value));
     setAtomSetModelProperty("Energy", "" + value);
   }
 
-  public String setAtomSetFrequency(String pathKey, String label, String freq, String units) {
+  public String setAtomSetFrequency(String pathKey, String label, String freq,
+                                    String units) {
     freq += " " + (units == null ? "cm^-1" : units);
     String name = (label == null ? "" : label + " ") + freq;
     setAtomSetName(name);
@@ -2075,8 +2135,8 @@ public class AtomSetCollection {
   public String[][] getBondList() {
     String[][] info = new String[bondCount][];
     for (int i = 0; i < bondCount; i++) {
-      info[i] = new String[] { atoms[bonds[i].atomIndex1].atomName, 
-        atoms[bonds[i].atomIndex2].atomName, "" + bonds[i].order };
+      info[i] = new String[] { atoms[bonds[i].atomIndex1].atomName,
+          atoms[bonds[i].atomIndex2].atomName, "" + bonds[i].order };
     }
     return info;
   }
@@ -2084,17 +2144,17 @@ public class AtomSetCollection {
   public void centralize() {
     P3 pt = new P3();
     for (int i = 0; i < atomSetCount; i++) {
-       int n = atomSetAtomCounts[i];
-       int atom0 = atomSetAtomIndexes[i];
-       pt.set(0,0,0);
-       for (int j = atom0 + n; --j >= atom0; )
-         pt.add(atoms[j]);
-       pt.scale(1f/n);
-       for (int j = atom0 + n; --j >= atom0; )
-         atoms[j].sub(pt);
+      int n = atomSetAtomCounts[i];
+      int atom0 = atomSetAtomIndexes[i];
+      pt.set(0, 0, 0);
+      for (int j = atom0 + n; --j >= atom0;)
+        pt.add(atoms[j]);
+      pt.scale(1f / n);
+      for (int j = atom0 + n; --j >= atom0;)
+        atoms[j].sub(pt);
     }
   }
-  
+
   void mergeTrajectories(AtomSetCollection a) {
     if (!isTrajectory || !a.isTrajectory || vibrationSteps != null)
       return;
@@ -2102,5 +2162,5 @@ public class AtomSetCollection {
       trajectorySteps.add(trajectoryStepCount++, a.trajectorySteps.get(i));
     setAtomSetCollectionAuxiliaryInfo("trajectorySteps", trajectorySteps);
   }
-  
+
 }

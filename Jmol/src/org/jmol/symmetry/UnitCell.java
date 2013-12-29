@@ -53,7 +53,7 @@ import org.jmol.viewer.JC;
 class UnitCell extends SimpleUnitCell {
   
   private P3[] vertices; // eight corners
-  private P3 cartesianOffset = new P3();
+  private final P3 cartesianOffset = new P3();
   private P3 fractionalOffset;
   
   UnitCell() {
@@ -124,8 +124,8 @@ class UnitCell extends SimpleUnitCell {
     }
   }
 
-  private boolean allFractionalRelative = false;
-  private P3 unitCellMultiplier = null;
+  private boolean allFractionalRelative;
+  private P3 unitCellMultiplier;
   
   void setAllFractionalRelative(boolean TF) {
     allFractionalRelative = TF;
@@ -371,12 +371,28 @@ class UnitCell extends SimpleUnitCell {
     return t.setFromThermalEquation(Bcart, Escape.eAF(parBorU));
   }
   
-  P3[] getCanonicalCopy(float scale) {
+  P3[] getCanonicalCopy(float scale, boolean withOffset) {
     P3[] pts = new P3[8];
+    P3 cell0 = null;
+    P3 cell1 = null;
+    if (withOffset && unitCellMultiplier != null) {
+      cell0 = new P3();
+      cell1 = new P3();
+      ijkToPoint3f((int) unitCellMultiplier.x, cell0, 0);
+      ijkToPoint3f((int) unitCellMultiplier.y, cell1, 0);
+      cell1.sub(cell0);
+    }
     for (int i = 0; i < 8; i++) {
       pts[i] = P3.newP(BoxInfo.unitCubePoints[i]);
+      if (cell0 != null) {
+        scale *= unitCellMultiplier.z;
+        pts[i].x += cell0.x + cell1.x * pts[i].x;
+        pts[i].y += cell0.y + cell1.y * pts[i].y;
+        pts[i].z += cell0.z + cell1.z * pts[i].z;
+      }
       matrixFractionalToCartesian.transform(pts[i]);
-      //pts[i].add(cartesianOffset);
+      if (withOffset)
+        pts[i].add(cartesianOffset);
     }
     return BoxInfo.getCanonicalCopy(pts, scale);
   }

@@ -12,6 +12,7 @@ import java.util.Map;
 
 import org.jmol.util.Escape;
 import javajs.util.List;
+import javajs.util.PT;
 import javajs.util.SB;
 
 import org.jmol.util.Logger;
@@ -122,8 +123,8 @@ public class MagresReader extends AtomSetCollectionReader {
     if (!(line.startsWith("<") && line.endsWith(">"))
        && !(line.startsWith("[") && line.endsWith("]")))      
       return currentBlock;
-    line = javajs.util.PT.simpleReplace(line, "<", "[");
-    line = javajs.util.PT.simpleReplace(line, ">", "]");
+    line = PT.simpleReplace(line, "<", "[");
+    line = PT.simpleReplace(line, ">", "]");
     switch (("..............." +
     		     "[calculation].." +
     		     "[/calculation]." +

@@ -1777,8 +1777,8 @@ public class StateCreator extends JmolStateCreator {
         // must save current state, coord, etc.
         // but this destroys actionStatesRedo
         int[] pt = new int[] { 1 };
-        type = javajs.util.PT.parseIntNext(s, pt);
-        taintedAtom = javajs.util.PT.parseIntNext(s, pt);
+        type = PT.parseIntNext(s, pt);
+        taintedAtom = PT.parseIntNext(s, pt);
         undoMoveActionClear(taintedAtom, type, false);
       }
       //System.out.println("redo type = " + type + " size=" + actionStates.size()
@@ -1922,12 +1922,12 @@ public class StateCreator extends JmolStateCreator {
           return; // file was found, or no file was indicated, but not this model -- ignore
         script = (modelIndex == -1 && filename != null ? script = "load "
             + Escape.eS(filename) : "");
-        script = javajs.util.PT.simpleReplace(script, SIMULATION_PROTOCOL, "");
+        script = PT.simpleReplace(script, SIMULATION_PROTOCOL, "");
         if (id != null)
           script += ";model " + Escape.eS(id);
         if (atoms != null)
           script += ";select visible & (@"
-              + javajs.util.PT.simpleReplace(atoms, ",", " or @") + ")";
+              + PT.simpleReplace(atoms, ",", " or @") + ")";
         else if (select != null)
           script += ";select visible & (" + select + ")";
         if (script2 != null)
@@ -1970,26 +1970,26 @@ public class StateCreator extends JmolStateCreator {
           return;
         case 5:
           viewer.zoomByFactor(PT.parseFloat(tokens[2]), javajs.util.PT
-              .parseInt(tokens[3]), javajs.util.PT.parseInt(tokens[4]));
+              .parseInt(tokens[3]), PT.parseInt(tokens[4]));
           return;
         }
         break;
       case 15: //zoomby
         switch (tokens.length) {
         case 3:
-          viewer.zoomBy(javajs.util.PT.parseInt(tokens[2]));
+          viewer.zoomBy(PT.parseInt(tokens[2]));
           return;
         }
         break;
       case 30: // rotatezby
         switch (tokens.length) {
         case 3:
-          viewer.rotateZBy(javajs.util.PT.parseInt(tokens[2]), Integer.MAX_VALUE,
+          viewer.rotateZBy(PT.parseInt(tokens[2]), Integer.MAX_VALUE,
               Integer.MAX_VALUE);
           return;
         case 5:
-          viewer.rotateZBy(javajs.util.PT.parseInt(tokens[2]), javajs.util.PT
-              .parseInt(tokens[3]), javajs.util.PT.parseInt(tokens[4]));
+          viewer.rotateZBy(PT.parseInt(tokens[2]), javajs.util.PT
+              .parseInt(tokens[3]), PT.parseInt(tokens[4]));
         }
         break;
       case 45: // rotatexyby
@@ -1997,7 +1997,7 @@ public class StateCreator extends JmolStateCreator {
             .parseFloat(tokens[3]));
         return;
       case 60: // translatexyby
-        viewer.translateXYBy(javajs.util.PT.parseInt(tokens[2]), javajs.util.PT
+        viewer.translateXYBy(PT.parseInt(tokens[2]), javajs.util.PT
             .parseInt(tokens[3]));
         return;
       case 75: // rotatemolecule
@@ -2005,11 +2005,11 @@ public class StateCreator extends JmolStateCreator {
             .parseFloat(tokens[3]), null);
         return;
       case 90:// spinxyby
-        viewer.spinXYBy(javajs.util.PT.parseInt(tokens[2]), javajs.util.PT.parseInt(tokens[3]),
+        viewer.spinXYBy(PT.parseInt(tokens[2]), PT.parseInt(tokens[3]),
             PT.parseFloat(tokens[4]));
         return;
       case 105: // rotatearcball
-        viewer.rotateArcBall(javajs.util.PT.parseInt(tokens[2]), javajs.util.PT
+        viewer.rotateArcBall(PT.parseInt(tokens[2]), javajs.util.PT
             .parseInt(tokens[3]), PT.parseFloat(tokens[4]));
         return;
       }

@@ -147,14 +147,14 @@ class ObjReader extends PmeshReader {
         if (vertexCount == 4)
           htPymol = null;
         if (htPymol == null) {
-          ia = javajs.util.PT.parseInt(tokens[1]) - 1;
-          ib = javajs.util.PT.parseInt(tokens[2]) - 1;
-          ic = javajs.util.PT.parseInt(tokens[3]) - 1;
+          ia = PT.parseInt(tokens[1]) - 1;
+          ib = PT.parseInt(tokens[2]) - 1;
+          ic = PT.parseInt(tokens[3]) - 1;
           pmeshError = " " + ia + " " + ib + " " + ic + " " + line;
           if (!bsOK.get(ia) || !bsOK.get(ib) || !bsOK.get(ic))
             continue;
           if (vertexCount == 4) {
-            id = javajs.util.PT.parseInt(tokens[4]) - 1;
+            id = PT.parseInt(tokens[4]) - 1;
             boolean isOK = (bsOK.get(id));
             nTriangles = addTriangleCheck(ia, ib, ic, (isOK ? 3 : 7), 0, false, color);
             if (isOK)

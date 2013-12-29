@@ -197,7 +197,7 @@ public class PdbReader extends AtomSetCollectionReader {
    bySymop = checkFilterKey("BYSYMOP");
    isCourseGrained = byChain || bySymop; 
    if (checkFilterKey("ASSEMBLY")) // CIF syntax
-     filter = javajs.util.PT.simpleReplace(filter, "ASSEMBLY", "BIOMOLECULE");
+     filter = PT.simpleReplace(filter, "ASSEMBLY", "BIOMOLECULE");
    if (htParams.containsKey("vTlsModels")) {
      // from   load files "tls.out" "xxxx.pdb"
      vTlsModels = ( List<Map<String, Object>>) htParams.remove("vTlsModels");
@@ -523,7 +523,7 @@ public class PdbReader extends AtomSetCollectionReader {
     currentCompnd.put(currentKey, value);
     if (currentKey.equals("CHAIN"))
       currentCompnd.put("select", "(:"
-          + javajs.util.PT.simpleReplace(javajs.util.PT
+          + PT.simpleReplace(javajs.util.PT
               .simpleReplace(value, ", ", ",:"), " ", "") + ")");
   }
 

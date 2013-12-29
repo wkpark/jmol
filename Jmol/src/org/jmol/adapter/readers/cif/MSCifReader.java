@@ -26,6 +26,7 @@ package org.jmol.adapter.readers.cif;
 import org.jmol.adapter.smarter.MSCifInterface;
 
 import javajs.util.Matrix;
+import javajs.util.PT;
 
 
 public class MSCifReader extends MSReader implements MSCifInterface {
@@ -423,9 +424,10 @@ public class MSCifReader extends MSReader implements MSCifInterface {
       if ((p = fieldProperty(cr, i)) < 0 
           || !(key = cr.fields[p]).contains("_w_"))
         continue;
-      int r = key.charAt(key.length() - 3) - '1';
-      int c = key.charAt(key.length() - 1) - '1';
-      a[r][c] = cr.parseIntStr(field);
+      String[] tokens = PT.split(key, "_");
+      int r = cr.parseIntStr(tokens[tokens.length - 2]) - 1;
+      int c = cr.parseIntStr(tokens[tokens.length - 1]) - 1;
+      a[r][c] = cr.parseFloatStr(field);
     }
     return m;
   }

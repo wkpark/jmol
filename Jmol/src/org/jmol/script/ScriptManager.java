@@ -558,8 +558,8 @@ public class ScriptManager implements JmolScriptManager {
           cmd = "isosurface sign red blue ";
         } else if (!type.equals("spt")) {
           cmd = viewer.global.defaultDropScript;
-          cmd = javajs.util.PT.simpleReplace(cmd, "%FILE", fileName);
-          cmd = javajs.util.PT.simpleReplace(cmd, "%ALLOWCARTOONS", ""
+          cmd = PT.simpleReplace(cmd, "%FILE", fileName);
+          cmd = PT.simpleReplace(cmd, "%ALLOWCARTOONS", ""
               + pdbCartoons);
           if (cmd.toLowerCase().startsWith("zap") && isCached)
             cmd = cmd.substring(3);

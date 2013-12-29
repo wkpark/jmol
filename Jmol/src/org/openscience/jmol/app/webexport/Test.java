@@ -31,6 +31,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
+import javajs.util.PT;
+
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -152,9 +154,9 @@ public class Test extends JPanel implements ActionListener {
       }
       // Change the state string so that it will work as a script with an
       // animated moveto...
-      statestr = javajs.util.PT.simpleReplace(statestr, "set refreshing false;",
+      statestr = PT.simpleReplace(statestr, "set refreshing false;",
           "set refreshing true;");
-      statestr = javajs.util.PT.simpleReplace(statestr,
+      statestr = PT.simpleReplace(statestr,
           "moveto /* time, axisAngle */ 0.0",
           "moveto /* time, axisAngle */ 5.0");
       LogPanel.log("The state below should have a 5 second moveto time...");

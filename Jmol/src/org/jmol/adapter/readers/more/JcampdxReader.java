@@ -430,7 +430,7 @@ public class JcampdxReader extends MolReader {
   }
 
   private String simpleReplace(String s, String sfrom, String sto) {
-    return javajs.util.PT.simpleReplace(s, sfrom, sto);
+    return PT.simpleReplace(s, sfrom, sto);
   }
 
   private String escape(String s) {

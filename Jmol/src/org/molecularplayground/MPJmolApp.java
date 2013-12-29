@@ -22,6 +22,8 @@ package org.molecularplayground;
 import java.awt.Dimension;
 import java.awt.Graphics;
 
+import javajs.util.PT;
+
 import javax.swing.JPanel;
 
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
@@ -144,7 +146,7 @@ public class MPJmolApp implements JsonNioClient {
       Logger.info(script);
       if (script.indexOf("java.io") >= 0)
         script = "";
-      String s = javajs.util.PT.simpleReplace(script.toLowerCase(), " ", "");
+      String s = PT.simpleReplace(script.toLowerCase(), " ", "");
       if (s.indexOf("niocontentpath=") < 0) {
         String path = System.getProperty("user.dir").replace('\\', '/')
         + "/Content-Cache/%ID%/%ID%.json";

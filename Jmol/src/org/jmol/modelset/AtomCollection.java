@@ -842,11 +842,11 @@ abstract public class AtomCollection {
     int[] lines = Parser.markLines(dataString, ';');
     int n = 0;
     try {
-      int nData = javajs.util.PT.parseInt(dataString.substring(0, lines[0] - 1));
+      int nData = PT.parseInt(dataString.substring(0, lines[0] - 1));
       for (int i = 1; i <= nData; i++) {
         String[] tokens = PT.getTokens(PT.parseTrimmed(dataString.substring(
             lines[i], lines[i + 1] - 1)));
-        int atomIndex = javajs.util.PT.parseInt(tokens[0]) - 1;
+        int atomIndex = PT.parseInt(tokens[0]) - 1;
         if (atomIndex < 0 || atomIndex >= atomCount)
           continue;
         Atom atom = atoms[atomIndex];
@@ -908,11 +908,11 @@ abstract public class AtomCollection {
     int[] lines = Parser.markLines(data, ';');
     V3 v = (isVibrationVectors ? new V3() : null);
     try {
-      int nData = javajs.util.PT.parseInt(data.substring(0, lines[0] - 1));
+      int nData = PT.parseInt(data.substring(0, lines[0] - 1));
       for (int i = 1; i <= nData; i++) {
         String[] tokens = PT.getTokens(PT.parseTrimmed(data.substring(
             lines[i], lines[i + 1])));
-        int atomIndex = javajs.util.PT.parseInt(tokens[0]) - 1;
+        int atomIndex = PT.parseInt(tokens[0]) - 1;
         float x = PT.parseFloat(tokens[3]);
         float y = PT.parseFloat(tokens[4]);
         float z = PT.parseFloat(tokens[5]);
@@ -2195,7 +2195,7 @@ abstract public class AtomCollection {
     case T.spec_atom:
       String atomSpec = ((String) specInfo).toUpperCase();
       if (atomSpec.indexOf("\\?") >= 0)
-        atomSpec = javajs.util.PT.simpleReplace(atomSpec, "\\?", "\1");
+        atomSpec = PT.simpleReplace(atomSpec, "\\?", "\1");
       // / here xx*yy is NOT changed to "xx??????????yy"
       for (i = atomCount; --i >= 0;)
         if (isAtomNameMatch(atoms[i], atomSpec, false))
@@ -2204,7 +2204,7 @@ abstract public class AtomCollection {
     case T.spec_alternate:
       String spec = (String) specInfo;
       for (i = atomCount; --i >= 0;)
-        if (atoms[i].isAlternateLocationMatch(spec))
+        if (atoms[i].isAltLoc(spec))
           bs.set(i);
       break;
     case T.spec_name_pattern:
@@ -2325,7 +2325,7 @@ abstract public class AtomCollection {
     BS bs = getSpecNameOrNull(identifier, false);
     
     if (identifier.indexOf("\\?") >= 0)
-      identifier = javajs.util.PT.simpleReplace(identifier, "\\?","\1");
+      identifier = PT.simpleReplace(identifier, "\\?","\1");
     if (bs != null || identifier.indexOf("?") > 0)
       return bs;
     // now check with * option ON
@@ -2394,7 +2394,7 @@ abstract public class AtomCollection {
     BS bs = null;
     name = name.toUpperCase();
     if (name.indexOf("\\?") >= 0)
-      name = javajs.util.PT.simpleReplace(name, "\\?","\1");
+      name = PT.simpleReplace(name, "\\?","\1");
     for (int i = atomCount; --i >= 0;) {
       String g3 = atoms[i].getGroup3(true);
       if (g3 != null && g3.length() > 0) {

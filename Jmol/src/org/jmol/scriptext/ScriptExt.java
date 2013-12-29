@@ -4312,17 +4312,17 @@ public class ScriptExt implements JmolScriptExtension {
         if (tokens.length == 3) {
           // DATA "property_whatever [atomField] [propertyField]"
           dataLabel = tokens[0];
-          atomNumberField = javajs.util.PT.parseInt(tokens[1]);
-          propertyField = javajs.util.PT.parseInt(tokens[2]);
+          atomNumberField = PT.parseInt(tokens[1]);
+          propertyField = PT.parseInt(tokens[2]);
         }
         if (tokens.length == 5) {
           // DATA
           // "property_whatever [atomField] [atomFieldColumnCount] [propertyField] [propertyDataColumnCount]"
           dataLabel = tokens[0];
-          atomNumberField = javajs.util.PT.parseInt(tokens[1]);
-          atomNumberFieldColumnCount = javajs.util.PT.parseInt(tokens[2]);
-          propertyField = javajs.util.PT.parseInt(tokens[3]);
-          propertyFieldColumnCount = javajs.util.PT.parseInt(tokens[4]);
+          atomNumberField = PT.parseInt(tokens[1]);
+          atomNumberFieldColumnCount = PT.parseInt(tokens[2]);
+          propertyField = PT.parseInt(tokens[3]);
+          propertyFieldColumnCount = PT.parseInt(tokens[4]);
         }
       }
       if (atomNumberField < 0)
@@ -5455,7 +5455,7 @@ public class ScriptExt implements JmolScriptExtension {
       } else {
         String sg = parameterAsString(2);
         if (!chk)
-          info = viewer.getSpaceGroupInfo(javajs.util.PT.simpleReplace(sg, "''",
+          info = viewer.getSpaceGroupInfo(PT.simpleReplace(sg, "''",
               "\""));
       }
       if (info != null)
@@ -8223,10 +8223,10 @@ public class ScriptExt implements JmolScriptExtension {
     String sReplace = SV.sValue(args[1]);
     String s = (x.tok == T.varray ? null : SV.sValue(x));
     if (s != null)
-      return mp.addXStr(javajs.util.PT.simpleReplace(s, sFind, sReplace));
+      return mp.addXStr(PT.simpleReplace(s, sFind, sReplace));
     String[] list = SV.listValue(x);
     for (int i = list.length; --i >= 0;)
-      list[i] = javajs.util.PT.simpleReplace(list[i], sFind, sReplace);
+      list[i] = PT.simpleReplace(list[i], sFind, sReplace);
     return mp.addXAS(list);
   }
 
@@ -8262,7 +8262,7 @@ public class ScriptExt implements JmolScriptExtension {
     case T.join:
       if (s.length() > 0 && s.charAt(s.length() - 1) == '\n')
         s = s.substring(0, s.length() - 1);
-      return mp.addXStr(javajs.util.PT.simpleReplace(s, "\n", sArg));
+      return mp.addXStr(PT.simpleReplace(s, "\n", sArg));
     case T.trim:
       if (s != null)
         return mp.addXStr(PT.trim(s, sArg));      
@@ -8775,7 +8775,7 @@ public class ScriptExt implements JmolScriptExtension {
     s = sb.toString();
     float f;
     return (Float.isNaN(f = PT.parseFloatStrict(s)) ? mp.addXStr(s) : s
-        .indexOf(".") >= 0 ? mp.addXFloat(f) : mp.addXInt(javajs.util.PT.parseInt(s)));
+        .indexOf(".") >= 0 ? mp.addXFloat(f) : mp.addXInt(PT.parseInt(s)));
   }
 
   private boolean evaluateData(ScriptMathProcessor mp, SV[] args) {
@@ -9475,7 +9475,7 @@ public class ScriptExt implements JmolScriptExtension {
             .toLowerCase());
         int n = (tokAt(i) == T.nada ? 5 : intParameter(i++));
         s = "; rotate Y 10 10;delay 2.0; rotate Y -10 -10; delay 2.0;rotate Y -10 -10; delay 2.0;rotate Y 10 10;delay 2.0";
-        s = javajs.util.PT.simpleReplace(s, "10", "" + n);
+        s = PT.simpleReplace(s, "10", "" + n);
         break;
       case T.spin:
         looping = true;
@@ -9499,7 +9499,7 @@ public class ScriptExt implements JmolScriptExtension {
           viewer.setNavigationMode(false);
         if (axis == "" || "xyz".indexOf(axis) < 0)
           axis = "y";
-        s = javajs.util.PT.simpleReplace(s, "Y", axis);
+        s = PT.simpleReplace(s, "Y", axis);
         s = "capture " + Escape.eS(fileName) + sfps + s + ";capture;";
         eval.script(0, null, s);
         return;

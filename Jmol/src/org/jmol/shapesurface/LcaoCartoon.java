@@ -32,6 +32,7 @@ import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.Txt;
 
+import javajs.util.PT;
 import javajs.util.SB;
 import javajs.util.V3;
 
@@ -327,7 +328,7 @@ public class LcaoCartoon extends Isosurface {
     // both "pz" and "-pz" on the same atom
     // but we can have "-sp3a" and "sp3a"
     return (id != null ? id : (isLonePair || isRadical ? "lp_" : "lcao_") + (i + 1) + "_")
-        + (thisType == null ? "" : javajs.util.PT.simpleReplace(thisType, "-",
+        + (thisType == null ? "" : PT.simpleReplace(thisType, "-",
             (thisType.indexOf("-p") == 0 ? "" : "_")));
   }
 

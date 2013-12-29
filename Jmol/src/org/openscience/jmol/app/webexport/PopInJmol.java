@@ -27,6 +27,8 @@ package org.openscience.jmol.app.webexport;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javajs.util.PT;
+
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -116,15 +118,15 @@ class PopInJmol extends WebPanel implements ChangeListener {
           + javaname + "'," + JmolSizeW + "," + JmolSizeH + ")");
     } else {
       String s = htmlAppletTemplate;
-      s = javajs.util.PT.simpleReplace(s, "@CLASS@", "" + divClass);
-      s = javajs.util.PT.simpleReplace(s, "@I@", "" + i);
-      s = javajs.util.PT.simpleReplace(s, "@WIDTH@", "" + JmolSizeW);
-      s = javajs.util.PT.simpleReplace(s, "@HEIGHT@", "" + JmolSizeH);
-      s = javajs.util.PT.simpleReplace(s, "@NAME@", GT.escapeHTML(name));
-      s = javajs.util.PT.simpleReplace(s, "@APPLETNAME@", GT.escapeHTML(javaname));
-      s = javajs.util.PT.simpleReplace(s, "@LEFTWIDGETS@", "");// no left widgets
+      s = PT.simpleReplace(s, "@CLASS@", "" + divClass);
+      s = PT.simpleReplace(s, "@I@", "" + i);
+      s = PT.simpleReplace(s, "@WIDTH@", "" + JmolSizeW);
+      s = PT.simpleReplace(s, "@HEIGHT@", "" + JmolSizeH);
+      s = PT.simpleReplace(s, "@NAME@", GT.escapeHTML(name));
+      s = PT.simpleReplace(s, "@APPLETNAME@", GT.escapeHTML(javaname));
+      s = PT.simpleReplace(s, "@LEFTWIDGETS@", "");// no left widgets
                                                            // for now
-      s = javajs.util.PT.simpleReplace(s, "@RIGHTWIDGETS@", widgetDefs);
+      s = PT.simpleReplace(s, "@RIGHTWIDGETS@", widgetDefs);
       appletDefs.append(s);
     }
     return html;

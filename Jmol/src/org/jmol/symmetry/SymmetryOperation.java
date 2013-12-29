@@ -230,7 +230,7 @@ float[] linearRotTrans;
     this.modDim = modDim;
     if (modDim > 0) {
       n = 16 + (modDim + 1) * (modDim + 1); // x4, x5, x6..., and twelfths
-      myLabels = labelsX1_9;
+      myLabels = labelsXn;
     }
     linearRotTrans = new float[n];
     boolean isReverse = (xyz.startsWith("!"));
@@ -296,7 +296,7 @@ float[] linearRotTrans;
   boolean setFromMatrix(float[] offset, boolean isReverse) {
     float v = 0;
     int pt = 0;
-    myLabels = (modDim == 0 ? labelsXYZ : labelsX1_9);
+    myLabels = (modDim == 0 ? labelsXYZ : labelsXn);
     int rowPt = 0;
     for (int i = 0; rowPt < modDim + 3; i++) {
       if (Float.isNaN(linearRotTrans[i]))
@@ -361,27 +361,19 @@ float[] linearRotTrans;
     String[] myLabels = (op == null || modDim == 0 ? null : op.myLabels);
     if (myLabels == null)
       myLabels = labelsXYZ;
-    char ch;
-    float iValue = 0;
-    String strOut = "";
-    String strT = "";
-    int rowPt = 0;
     xyz = xyz.toLowerCase();
-    float decimalMultiplier = 1f;
     xyz += ",";
-    if (modDim > 0) {
-      xyz = javajs.util.PT.simpleReplace(xyz, "x1", "x");
-      xyz = javajs.util.PT.simpleReplace(xyz, "x2", "y");
-      xyz = javajs.util.PT.simpleReplace(xyz, "x3", "z");
-      xyz = javajs.util.PT.simpleReplace(xyz, "x4", "a");
-      xyz = javajs.util.PT.simpleReplace(xyz, "x5", "b");
-      xyz = javajs.util.PT.simpleReplace(xyz, "x6", "c");
-      xyz = javajs.util.PT.simpleReplace(xyz, "x7", "d");
-      xyz = javajs.util.PT.simpleReplace(xyz, "x8", "e");
-      xyz = javajs.util.PT.simpleReplace(xyz, "x9", "f");
-    }
+    if (modDim > 0)
+      for (int i = labelsXn.length; --i >= 0;)
+        xyz = PT.simpleReplace(xyz, labelsXn[i], labelsXnSub[i]);
     int tpt0 = 0;
     int tpt = 0;
+    int rowPt = 0;
+    char ch;
+    float iValue = 0;
+    float decimalMultiplier = 1f;
+    String strT = "";
+    String strOut = "";
     for (int i = 0; i < xyz.length(); i++) {
       switch (ch = xyz.charAt(i)) {
       case '\'':
@@ -408,6 +400,8 @@ float[] linearRotTrans;
       case 'd':
       case 'e':
       case 'f':
+      case 'g':
+      case 'h':
         int val = (isNegative ? -1 : 1);
         if (allowScaling && iValue != 0) {
           val *= iValue;
@@ -544,7 +538,8 @@ float[] linearRotTrans;
 
   final static String[] labelsXYZ = new String[] {"x", "y", "z"};
 
-  final static String[] labelsX1_9 = new String[] {"x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9"};
+  final static String[] labelsXn = new String[] {"x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9", "x10", "x11", "x12", "x13"};
+  final static String[] labelsXnSub = new String[] {"x", "y", "z", "a",  "b",  "c",  "d",  "e",  "f",  "g",   "h",   "i",   "j"};
 
   final static String getXYZFromMatrix(M4 mat, boolean is12ths,
                                        boolean allPositive, boolean halfOrLess) {
@@ -1153,7 +1148,7 @@ float[] linearRotTrans;
         float w = -vtemp.x * pa1.x - vtemp.y * pa1.y - vtemp.z * pa1.z;
         P4 plane = P4.new4(vtemp.x, vtemp.y, vtemp.z, w);
         List<Object> v = new List<Object>();
-        v.addLast(uc.getCanonicalCopy(1.05f));
+        v.addLast(uc.getCanonicalCopy(1.05f, false));
         modelSet.intersectPlane(plane, v, 3);
 
         // returns triangles and lines

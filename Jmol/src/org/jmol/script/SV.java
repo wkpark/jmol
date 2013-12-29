@@ -1107,7 +1107,7 @@ public class SV extends T implements JSONEncodable {
     case 1:
       return sValue(args[0]);
     }
-    String[] format = PT.split(javajs.util.PT.simpleReplace(sValue(args[0]), "%%","\1"), "%");
+    String[] format = PT.split(PT.simpleReplace(sValue(args[0]), "%%","\1"), "%");
     SB sb = new SB();
     sb.append(format[0]);
     for (int i = 1; i < format.length; i++) {

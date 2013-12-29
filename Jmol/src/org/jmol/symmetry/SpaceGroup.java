@@ -189,7 +189,7 @@ class SpaceGroup {
     }
     finalOperations = null;
     isBio = (name.indexOf("bio") >= 0);
-    if (index >= getSpaceGroups().length && !isBio && name.indexOf("SSG:") < 0) {
+    if (index >= getSpaceGroups().length && !isBio && name.indexOf("SSG:") < 0  && name.indexOf("[subsystem") < 0) {
       SpaceGroup sg = getDerivedSpaceGroup();
       if (sg != null)
         name = sg.getName();
@@ -437,7 +437,7 @@ class SpaceGroup {
     if (xyz0.startsWith("x1,x2,x3,x4") && modDim == 0) {
       xyzList.clear();
       operationCount = 0;
-      modDim = javajs.util.PT.parseInt(xyz0.substring(xyz0
+      modDim = PT.parseInt(xyz0.substring(xyz0
           .lastIndexOf("x") + 1)) - 3;
     }
 
@@ -456,7 +456,7 @@ class SpaceGroup {
       // ! in character 0 indicates we are using the symop() function and want to be explicit
       if (xyzList.containsKey(xyz))
         return xyzList.get(xyz).intValue();
-      if (latticeOp < 0 && xyzList.containsKey(javajs.util.PT.simpleReplace(javajs.util.PT.simpleReplace(xyz, "+1/2", ""), "+1/2", "")))
+      if (latticeOp < 0 && xyzList.containsKey(PT.simpleReplace(PT.simpleReplace(xyz, "+1/2", ""), "+1/2", "")))
         latticeOp = operationCount;
       xyzList.put(xyz, Integer.valueOf(operationCount));
     }
@@ -784,9 +784,9 @@ class SpaceGroup {
         hmSymbolAlternative = (hmSymbol.substring(0, pt) + " 3"
             + hmSymbol.substring(pt + 3)).toLowerCase();
       }
-    hmSymbolAbbr = javajs.util.PT.simpleReplace(hmSymbol, " ", "");
-    hmSymbolAbbrShort = javajs.util.PT.simpleReplace(hmSymbol, " 1", "");
-    hmSymbolAbbrShort = javajs.util.PT.simpleReplace(hmSymbolAbbrShort, " ", "");
+    hmSymbolAbbr = PT.simpleReplace(hmSymbol, " ", "");
+    hmSymbolAbbrShort = PT.simpleReplace(hmSymbol, " 1", "");
+    hmSymbolAbbrShort = PT.simpleReplace(hmSymbolAbbrShort, " ", "");
 
     hallSymbol = terms[3];
     if (hallSymbol.length() > 1)

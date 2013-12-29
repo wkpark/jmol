@@ -11,9 +11,13 @@ import javajs.util.P3;
 import javajs.util.SB;
 
 import org.jmol.adapter.smarter.Atom;
+import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.MSInterface;
 import org.jmol.api.SymmetryInterface;
+import org.jmol.java.BS;
+import org.jmol.util.BSUtil;
+import org.jmol.util.BoxInfo;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Modulation;
@@ -41,18 +45,19 @@ public class MSReader implements MSInterface {
 
   protected AtomSetCollectionReader cr;
 
-  protected boolean modVib;
+  protected int modDim;
   protected String modAxes;
   protected boolean modAverage;
-  protected String modType;
-  protected boolean modDebug;
-  protected int modSelected = -1;
-  protected boolean modLast;
 
-  protected int modDim;
+  private boolean modPack;
+  private boolean modVib;
+  private String modType;
+  private String modCell;
+  private boolean modDebug;
+  private int modSelected = -1;
+  private boolean modLast;
 
-  private Matrix sigma;
-  
+  private Matrix sigma;  
   Matrix getSigma() {
     return sigma;
   }
@@ -79,14 +84,28 @@ public class MSReader implements MSInterface {
       throws Exception {
     cr = r;
     modDebug = r.checkFilterKey("MODDEBUG");
+    modPack = !r.checkFilterKey("MODNOPACK");
     modLast = r.checkFilterKey("MODLAST"); // select last symmetry, not first, for special positions  
     modAxes = r.getFilter("MODAXES="); // xyz
     modType = r.getFilter("MODTYPE="); //ODU
+    modCell = r.getFilter("MODCELL="); // substystem for cell
     modSelected = r.parseIntStr("" + r.getFilter("MOD="));
     modVib = r.checkFilterKey("MODVIB"); // then use MODULATION ON  to see modulation
     modAverage = r.checkFilterKey("MODAVE");
     setModDim(r.parseIntStr(data));
     return modDim;
+  }
+
+  private void setSubsystemOptions() {
+    cr.doPackUnitCell = modPack;
+    if (!cr.doApplySymmetry) {
+      cr.doApplySymmetry = true;
+      cr.latticeCells[0] = 1;
+      cr.latticeCells[1] = 1;
+      cr.latticeCells[2] = 1;
+    }
+    if (modCell != null)
+      cr.addJmolScript("unitcell {%" + modCell + "}");
   }
 
   protected void setModDim(int ndim) {
@@ -166,14 +185,15 @@ public class MSReader implements MSInterface {
 
   /**
    * Create a script that will run to turn modulation on and to display only
-   * atoms with modulated occupancy > 0.5.
+   * atoms with modulated occupancy >= 0.5.
    * 
    */
   @Override
   public void finalizeModulation() {
-    if (modDim > 0 && !modVib)
-      cr.addJmolScript("modulation on"
-          + (haveOccupancy ? ";display occupancy > 0.5" : ""));
+    if (modDim > 0 && !modVib) {
+      cr.atomSetCollection.setAtomSetCollectionAuxiliaryInfo("modulationOn", Boolean.TRUE);
+      cr.addJmolScript((haveOccupancy ? ";display occupancy >= 0.5" : ""));
+    }
   }
 
   private String atModel = "@0";
@@ -246,6 +266,8 @@ public class MSReader implements MSInterface {
     cr.atomSetCollection.setAtomSetAtomProperty("modt", sb.toString(), -1);
     cr.appendLoadNote(modCount + " modulations for " + atomCount + " atoms");
     htAtomMods = null;
+    if (minXYZ0 != null)
+      trimAtomSet();
     htSubsystems = null;
   }
 
@@ -509,8 +531,7 @@ public class MSReader implements MSInterface {
       return;
     Subsystem ss = new Subsystem(this, code, w);
     cr.appendLoadNote("subsystem " + code + "\n" + w);
-    if (ss.w != null)
-      setSubsystem(code, ss);
+    setSubsystem(code, ss);
   }
 
 //  private void setSubsystems() {
@@ -670,6 +691,7 @@ public class MSReader implements MSInterface {
     if (htSubsystems == null)
       htSubsystems = new Hashtable<String, Subsystem>();
     htSubsystems.put(code, system);
+    setSubsystemOptions();
   }
 
   private Matrix[] getMatrices(Atom a) {
@@ -684,6 +706,79 @@ public class MSReader implements MSInterface {
 
   private Subsystem getSubsystem(Atom a) {
     return (htSubsystems == null ? null : htSubsystems.get("" + a.altLoc));
+  }
+
+  private P3 minXYZ0, maxXYZ0;
+  
+  @Override
+  public void setMinMax0(P3 minXYZ, P3 maxXYZ) {
+    if (htSubsystems == null)
+      return;
+    SymmetryInterface symmetry = getDefaultUnitCell();
+    minXYZ0 = P3.newP(minXYZ);
+    maxXYZ0 = P3.newP(maxXYZ);
+    P3 pt0 = P3.newP(minXYZ);
+    P3 pt1 = P3.newP(maxXYZ);
+    P3 pt = new P3();
+    symmetry.toCartesian(pt0, true);
+    symmetry.toCartesian(pt1, true);
+    P3[] pts = BoxInfo.unitCubePoints;
+    for (Entry<String, Subsystem> e : htSubsystems.entrySet()) {
+      SymmetryInterface sym = e.getValue().getSymmetry();
+      for (int i = 8; --i >= 0;) {
+        pt.x = (pts[i].x == 0 ? pt0.x : pt1.x);
+        pt.y = (pts[i].y == 0 ? pt0.y : pt1.y);
+        pt.z = (pts[i].z == 0 ? pt0.z : pt1.z);
+        expandMinMax(pt, sym, minXYZ, maxXYZ);
+      }
+    }
+    //System.out.println("msreader min max " + minXYZ + " " + maxXYZ);
+  }
+
+  private void expandMinMax(P3 pt, SymmetryInterface sym, P3 minXYZ, P3 maxXYZ) {
+    P3 pt2 = P3.newP(pt);
+    float slop = 0.0001f;
+    sym.toFractional(pt2, false);
+    if (minXYZ.x > pt2.x + slop)
+      minXYZ.x = (int) Math.floor(pt2.x) - 1;
+    if (minXYZ.y > pt2.y + slop)
+      minXYZ.y = (int) Math.floor(pt2.y) - 1;
+    if (minXYZ.z > pt2.z + slop)
+      minXYZ.z = (int) Math.floor(pt2.z) - 1;
+    if (maxXYZ.x < pt2.x - slop)
+      maxXYZ.x = (int) Math.ceil(pt2.x) + 1;
+    if (maxXYZ.y < pt2.y - slop)
+      maxXYZ.y = (int) Math.ceil(pt2.y) + 1;
+    if (maxXYZ.z < pt2.z - slop)
+      maxXYZ.z = (int) Math.ceil(pt2.z) + 1;
+  }
+
+  private void trimAtomSet() {
+    if (!cr.doApplySymmetry)
+      return;
+    AtomSetCollection ac = cr.atomSetCollection;
+    BS bs = ac.bsAtoms;
+    SymmetryInterface sym = getDefaultUnitCell();
+    Atom[] atoms = ac.getAtoms();
+    P3 pt = new P3();
+    if (bs == null)
+      bs = ac.bsAtoms = BSUtil.newBitSet2(0, ac.getAtomCount());
+    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+      Atom a = atoms[i];
+      pt.setT(a);
+      pt.add(a.vib);
+      getSymmetry(a).toCartesian(pt, false);
+      sym.toFractional(pt, false);
+      if (!ac.isWithinCell(3, pt, minXYZ0.x, maxXYZ0.x, minXYZ0.y, maxXYZ0.y,
+          minXYZ0.z, maxXYZ0.z, 0.001f))
+        bs.clear(i);
+    }
+  }
+
+  private SymmetryInterface getDefaultUnitCell() {
+    return (modCell != null
+        && htSubsystems.containsKey(modCell) ? htSubsystems.get(modCell)
+        .getSymmetry() : cr.atomSetCollection.symmetry);
   }
 
 

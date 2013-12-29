@@ -44,6 +44,7 @@ package org.jmol.adapter.readers.xtal;
 
 import javajs.util.DF;
 import javajs.util.List;
+import javajs.util.PT;
 
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
@@ -119,11 +120,11 @@ public class CastepReader extends AtomSetCollectionReader {
       if (chargeType != null && chargeType.length() > 4)
         chargeType = chargeType.substring(0, 4);
       filter = filter.replace('(', '{').replace(')', '}');
-      filter = javajs.util.PT.simpleReplace(filter, "  ", " ");
+      filter = PT.simpleReplace(filter, "  ", " ");
       isAllQ = checkFilterKey("Q=ALL");
       if (!isAllQ && filter.indexOf("{") >= 0)
         setDesiredQpt(filter.substring(filter.indexOf("{")));
-      filter = javajs.util.PT.simpleReplace(filter, "-PT", "");
+      filter = PT.simpleReplace(filter, "-PT", "");
     }
     continuing = readFileData();
   }

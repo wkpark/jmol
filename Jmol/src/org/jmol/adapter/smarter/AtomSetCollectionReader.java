@@ -158,7 +158,7 @@ public abstract class AtomSetCollectionReader {
   
   public Viewer viewer; // used by GenNBOReader and by CifReader
 
-  protected boolean doApplySymmetry;
+  public boolean doApplySymmetry;
   protected boolean ignoreFileSymmetryOperators;
   protected boolean isTrajectory;
   public boolean applySymmetryToBonds;
@@ -180,7 +180,7 @@ public abstract class AtomSetCollectionReader {
   public SymmetryInterface symmetry;
   protected OC out;
   protected boolean iHaveFractionalCoordinates;
-  protected boolean doPackUnitCell;
+  public boolean doPackUnitCell;
   protected String strSupercell;
   protected P3 ptSupercell;
   protected boolean mustFinalizeModelSet;
@@ -856,8 +856,8 @@ public abstract class AtomSetCollectionReader {
         nameRequired = PT.split(nameRequired, "'")[1]; 
       else if (nameRequired.startsWith("\""))
         nameRequired = PT.split(nameRequired, "\"")[1]; 
-      filter0 = filter = javajs.util.PT.simpleReplace(filter, nameRequired,"");
-      filter0 = filter = javajs.util.PT.simpleReplace(filter, "NAME=","");
+      filter0 = filter = PT.simpleReplace(filter, nameRequired,"");
+      filter0 = filter = PT.simpleReplace(filter, "NAME=","");
     }
     if (filter == null)
       return;
@@ -1483,17 +1483,17 @@ public abstract class AtomSetCollectionReader {
   }
 
   protected int parseInt() {
-    return javajs.util.PT.parseIntNext(line, next);
+    return PT.parseIntNext(line, next);
   }
 
   public int parseIntStr(String s) {
     next[0] = 0;
-    return javajs.util.PT.parseIntNext(s, next);
+    return PT.parseIntNext(s, next);
   }
 
   protected int parseIntAt(String s, int iStart) {
     next[0] = iStart;
-    return javajs.util.PT.parseIntNext(s, next);
+    return PT.parseIntNext(s, next);
   }
 
   protected int parseIntRange(String s, int iStart, int iEnd) {

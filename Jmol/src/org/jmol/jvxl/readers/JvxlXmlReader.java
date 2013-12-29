@@ -607,7 +607,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     if ("none".equals(jvxlColorEncodingRead)) {
       jvxlData.vertexColors = new int[vertexCount];
       int[] nextc = new int[1];
-      int n = javajs.util.PT.parseIntNext(jvxlColorDataRead, nextc);
+      int n = PT.parseIntNext(jvxlColorDataRead, nextc);
       n = Math.min(n, vertexCount);
       String[] tokens = PT.getTokens(jvxlColorDataRead.substring(nextc[0]));
       boolean haveTranslucent = false;
@@ -846,7 +846,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     if (nTriangles < 0)
       return;
     int[] nextc = new int[1];
-    int nColors = (colorData == null ? -1 : javajs.util.PT.parseIntNext(colorData,
+    int nColors = (colorData == null ? -1 : PT.parseIntNext(colorData,
         nextc));
     int color = 0;
     Logger.info("Reading " + nTriangles + " triangles");
@@ -864,11 +864,11 @@ public class JvxlXmlReader extends VolumeFileReader {
       edata = JvxlCoder.jvxlDecompressString(edata).trim();
       haveEdgeInfo = (edata.length() == nTriangles);
     } else {
-      int n = javajs.util.PT.parseIntNext(tdata, nextp);
+      int n = PT.parseIntNext(tdata, nextp);
       haveEdgeInfo = (edata.length() > 0);
       if (haveEdgeInfo) {
         nexte = new int[1];
-        javajs.util.PT.parseIntNext(edata, nexte); // throw away count
+        PT.parseIntNext(edata, nexte); // throw away count
       } else if (n > 0) {
         Logger.info("JvxlXmlReader: jvxlTriangleEdgeData count=" + n
             + "; expected " + nTriangles);
@@ -902,7 +902,7 @@ public class JvxlXmlReader extends VolumeFileReader {
         case '8':
         case '9':
           nextp[0] = pt;
-          diff = javajs.util.PT.parseIntNext(tdata, nextp);
+          diff = PT.parseIntNext(tdata, nextp);
           pt = nextp[0] - 1;
           break;
         default:
@@ -910,7 +910,7 @@ public class JvxlXmlReader extends VolumeFileReader {
         }
         v += diff;
       } else {
-        v = javajs.util.PT.parseIntNext(tdata, nextp) - 1;
+        v = PT.parseIntNext(tdata, nextp) - 1;
       }
       vertex[p] = v;
       if (++p == 3) {
@@ -922,7 +922,7 @@ public class JvxlXmlReader extends VolumeFileReader {
             edgeMask = 7;
         }
         if (nColors > 0) {
-          int c = javajs.util.PT.parseIntNext(colorData, nextc);
+          int c = PT.parseIntNext(colorData, nextc);
           if (c == Integer.MIN_VALUE)
             nColors = 0;
           else

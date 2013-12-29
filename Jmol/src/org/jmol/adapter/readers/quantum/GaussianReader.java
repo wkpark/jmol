@@ -405,7 +405,7 @@ public class GaussianReader extends MOReader {
           gaussianCount += nGaussians;
           for (int i = 0; i < nGaussians; i++) {
             readLine();
-            line = javajs.util.PT.simpleReplace(line, "D ", "D+");
+            line = PT.simpleReplace(line, "D ", "D+");
             tokens = getTokens();
             if (Logger.debugging)
               Logger.debug("Gaussians " + (i + 1) + " " + Escape.eAS(tokens, true));
@@ -533,7 +533,7 @@ public class GaussianReader extends MOReader {
       }
       try {
         // must fix "7D 0 " to be "7D0  " and "7F 0 " to be "7F0  " Jmol 13.0.RC6
-        line = javajs.util.PT.simpleReplace(line, " 0 ", "0  ");
+        line = PT.simpleReplace(line, " 0 ", "0  ");
         tokens = getTokens();
         String type = tokens[tokens.length - nThisLine - 1].substring(1);
         if (Character.isDigit(type.charAt(0)))

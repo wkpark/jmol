@@ -101,7 +101,7 @@ final public class OutputManagerAwt extends OutputManager {
     String script0 = viewer.getFileAsString(sceneFile);
     if (script0 == null)
       return "no such file: " + sceneFile;
-    sceneFile = javajs.util.PT.simpleReplace(sceneFile, ".spt", "");
+    sceneFile = PT.simpleReplace(sceneFile, ".spt", "");
     String fileRoot = sceneFile;
     String fileExt = type.toLowerCase();
     String[] scenes = PT.split(script0, "pause scene ");
@@ -110,7 +110,7 @@ final public class OutputManagerAwt extends OutputManager {
     String script = getSceneScript(scenes, htScenes, list);
     if (Logger.debugging)
       Logger.debug(script);
-    script0 = javajs.util.PT.simpleReplace(script0, "pause scene", "delay "
+    script0 = PT.simpleReplace(script0, "pause scene", "delay "
         + viewer.animationManager.lastFrameDelay + " # scene");
     String[] str = new String[] { script0, script, null };
     viewer.saveState("_scene0");
@@ -170,7 +170,7 @@ final public class OutputManagerAwt extends OutputManager {
     for (int i = 1; i < scenes.length; i++) {
       scenes[i - 1] = PT.trim(scenes[i - 1], "\t\n\r ");
       int[] pt = new int[1];
-      iScene = javajs.util.PT.parseIntNext(scenes[i], pt);
+      iScene = PT.parseIntNext(scenes[i], pt);
       if (iScene == Integer.MIN_VALUE)
         return "bad scene ID: " + iScene;
       scenes[i] = scenes[i].substring(pt[0]);

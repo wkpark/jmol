@@ -33,6 +33,8 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.Map;
 
+import javajs.util.PT;
+
 import javax.swing.Box;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
@@ -165,9 +167,9 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
       if (fileName.indexOf(".spt") >= 0) {
         script = "script " + script;
       } else {
-        script = javajs.util.PT.simpleReplace((String) display.getViewer()
+        script = PT.simpleReplace((String) display.getViewer()
             .getParameter("defaultdropscript"), "%FILE", script + " 1");
-        script = javajs.util.PT.simpleReplace(script, "%ALLOWCARTOONS", ""
+        script = PT.simpleReplace(script, "%ALLOWCARTOONS", ""
             + isCartoonsSelected());
       }
     }

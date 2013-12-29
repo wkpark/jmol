@@ -1382,13 +1382,13 @@ public class SmilesParser {
    */
   static String cleanPattern(String pattern) {
     pattern = PT.replaceAllCharacters(pattern, " \t\n\r", "");
-    pattern = javajs.util.PT.simpleReplace(pattern, "^^", "'");
+    pattern = PT.simpleReplace(pattern, "^^", "'");
     int i = 0;
     int i2 = 0;
     while ((i = pattern.indexOf("//*")) >= 0
         && (i2 = pattern.indexOf("*//")) >= i)
       pattern = pattern.substring(0, i) + pattern.substring(i2 + 3);
-    pattern = javajs.util.PT.simpleReplace(pattern, "//", "");
+    pattern = PT.simpleReplace(pattern, "//", "");
     return pattern;
   }
 

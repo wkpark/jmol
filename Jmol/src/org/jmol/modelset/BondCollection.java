@@ -275,7 +275,7 @@ abstract public class BondCollection extends AtomCollection {
         return false;
     }
     if (atomA.altloc != atomB.altloc
-        && atomA.altloc != '\0' && atomB.altloc != '\0')
+        && atomA.altloc != '\0' && atomB.altloc != '\0' && getVibration(atomA.index, false) == null)
       return false;
     getOrAddBond(atomA, atomB, order, mad, bsBonds, 0, false);
     return true;

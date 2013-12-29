@@ -5,6 +5,7 @@ import java.util.Map;
 import org.jmol.api.SymmetryInterface;
 
 import javajs.util.Matrix;
+import javajs.util.P3;
 
 
 /**
@@ -28,5 +29,7 @@ public interface MSInterface {
   void setModulation(boolean isPost);
 
   SymmetryInterface getAtomSymmetry(Atom a, SymmetryInterface symmetry);
+
+  void setMinMax0(P3 minXYZ0, P3 maxXYZ0);
 
 }

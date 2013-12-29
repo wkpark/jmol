@@ -29,6 +29,8 @@ import org.jmol.api.JmolAdapter;
 
 import javajs.util.AU;
 import javajs.util.List;
+import javajs.util.PT;
+
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -227,7 +229,7 @@ public class CsfReader extends MopacSlaterReader {
             continue out;
           break;
         case objID1:
-          thisAtomID = javajs.util.PT.parseInt(field);
+          thisAtomID = PT.parseInt(field);
           break;
         case objID2:
           thisBondID = field2+field;
@@ -297,7 +299,7 @@ public class CsfReader extends MopacSlaterReader {
           Logger.warn("field == null in " + line);
         switch (fieldTypes[i]) {
         case ID:
-          atom.atomSerial = javajs.util.PT.parseInt(field);
+          atom.atomSerial = PT.parseInt(field);
           break;
         case sym:
           atom.elementSymbol = field;

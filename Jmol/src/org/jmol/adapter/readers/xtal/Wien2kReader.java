@@ -23,6 +23,8 @@
  */
 package org.jmol.adapter.readers.xtal;
 
+import javajs.util.PT;
+
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
 
@@ -152,7 +154,7 @@ public class Wien2kReader extends AtomSetCollectionReader {
       String sym = atomName.substring(0,2).trim();
       if (sym.length() == 2 && Character.isDigit(sym.charAt(1)))
         sym = sym.substring(0, 1);
-      atomName = javajs.util.PT.simpleReplace(atomName, " ", "");
+      atomName = PT.simpleReplace(atomName, " ", "");
       int n = 0;
       for (int i = atomSetCollection.getAtomCount(); --i >= thisAtom; ) {
         Atom atom = atomSetCollection.getAtom(i);

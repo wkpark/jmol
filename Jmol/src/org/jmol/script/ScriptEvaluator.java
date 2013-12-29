@@ -590,9 +590,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     try {
       s = script.substring(ichBegin, ichEnd);
       if (s.indexOf("\\\n") >= 0)
-        s = javajs.util.PT.simpleReplace(s, "\\\n", "  ");
+        s = PT.simpleReplace(s, "\\\n", "  ");
       if (s.indexOf("\\\r") >= 0)
-        s = javajs.util.PT.simpleReplace(s, "\\\r", "  ");
+        s = PT.simpleReplace(s, "\\\r", "  ");
       // int i;
       // for (i = s.length(); --i >= 0 && !ScriptCompiler.eol(s.charAt(i), 0);
       // ){
@@ -701,7 +701,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       pushContext(null, "getAtomBitSet");
       String scr = "select (" + atomExpression + ")";
       scr = PT.replaceAllCharacters(scr, "\n\r", "),(");
-      scr = javajs.util.PT.simpleReplace(scr, "()", "(none)");
+      scr = PT.simpleReplace(scr, "()", "(none)");
       if (compileScript(null, scr, false)) {
         st = aatoken[0];
         bs = atomExpression(st, 1, 0, false, false, true, true);
@@ -1891,9 +1891,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       // we first check for paths into ZIP files and adjust accordingly
       int pt = Math.max(filename.lastIndexOf("|"), filename.lastIndexOf("/"));
       path = path.substring(0, pt + 1);
-      strScript = javajs.util.PT.simpleReplace(strScript, "$SCRIPT_PATH$/", path);
+      strScript = PT.simpleReplace(strScript, "$SCRIPT_PATH$/", path);
       // now replace the variable itself
-      strScript = javajs.util.PT.simpleReplace(strScript, "$SCRIPT_PATH$", path);
+      strScript = PT.simpleReplace(strScript, "$SCRIPT_PATH$", path);
     }
     return strScript;
   }
@@ -1909,7 +1909,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     pt = extensions.indexOf("##SCRIPT_START=");
     if (pt < 0)
       return 0;
-    pt = javajs.util.PT.parseInt(extensions.substring(pt + 15));
+    pt = PT.parseInt(extensions.substring(pt + 15));
     if (pt == Integer.MIN_VALUE)
       return 0;
     for (pc = 0; pc < lineIndices.length; pc++) {
@@ -3095,13 +3095,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (value != null)
         msg += ": " + value;
     } else {
-      msg = javajs.util.PT.simpleReplace(msg, "{0}", value);
+      msg = PT.simpleReplace(msg, "{0}", value);
       if (msg.indexOf("{1}") >= 0)
-        msg = javajs.util.PT.simpleReplace(msg, "{1}", more);
+        msg = PT.simpleReplace(msg, "{1}", more);
       else if (more != null)
         msg += ": " + more;
       if (msg.indexOf("{2}") >= 0)
-        msg = javajs.util.PT.simpleReplace(msg, "{2}", more);
+        msg = PT.simpleReplace(msg, "{2}", more);
     }
     if (doTranslate)
       GT.setDoTranslate(true);
@@ -7578,7 +7578,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (slen < 3 || !(getToken(1).value instanceof String))
       invArg();
     String setName = ((String) getToken(1).value).toLowerCase();
-    if (javajs.util.PT.parseInt(setName) != Integer.MIN_VALUE)
+    if (PT.parseInt(setName) != Integer.MIN_VALUE)
       invArg();
     if (chk)
       return;
@@ -8097,7 +8097,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         int iGroup = Integer.MIN_VALUE;
         if (tokAt(i) == T.spacegroup) {
           ++i;
-          spacegroup = javajs.util.PT.simpleReplace(parameterAsString(i++), "''",
+          spacegroup = PT.simpleReplace(parameterAsString(i++), "''",
               "\"");
           sOptions += " spacegroup " + Escape.eS(spacegroup);
           if (spacegroup.equalsIgnoreCase("ignoreOperators")) {
@@ -9281,7 +9281,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     checkLength(-3);
     String text = "";
     String applet = "";
-    int port = javajs.util.PT.parseInt(optParameterAsString(1));
+    int port = PT.parseInt(optParameterAsString(1));
     if (port == Integer.MIN_VALUE) {
       port = 0;
       switch (slen) {
@@ -11109,7 +11109,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         int modelNumber;
         boolean useModelNumber = false;
         if (modelDotted.indexOf(".") < 0) {
-          modelNumber = javajs.util.PT.parseInt(modelDotted);
+          modelNumber = PT.parseInt(modelDotted);
           useModelNumber = true;
         } else {
           modelNumber = getFloatEncodedInt(modelDotted);
@@ -12414,14 +12414,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (mad == Integer.MAX_VALUE)
       viewer.setCurrentAtom(-1);
     if (icell != Integer.MAX_VALUE)
-      viewer.setCurrentUnitCellOffset(icell);
+      viewer.setCurrentUnitCellOffset(null, icell);
     else if (id != null)
       viewer.setCurrentCage(id);
     else if (points != null)
       viewer.setCurrentCagePts(points);
     setObjectMad(JC.SHAPE_UCCAGE, "unitCell", mad);
     if (pt != null)
-      viewer.setCurrentUnitCellOffsetPt(pt);
+      viewer.setCurrentUnitCellOffset(pt, 0);
     if (tickInfo != null)
       setShapeProperty(JC.SHAPE_UCCAGE, "tickInfo", tickInfo);
   }

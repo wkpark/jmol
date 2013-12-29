@@ -153,20 +153,19 @@ abstract public class ModelCollection extends BondCollection {
    * @param type
    * @param plane
    * @param scale
-   * @param modelIndex
+   * @param uc
    * @param flags
    *        1 -- edges only 2 -- triangles only 3 -- both
    * @return Vector
    */
   public List<Object> getPlaneIntersection(int type, P4 plane, float scale,
-                                           int flags, int modelIndex) {
+                                           int flags, SymmetryInterface uc) {
     P3[] pts = null;
     switch (type) {
     case T.unitcell:
-      SymmetryInterface uc = getUnitCell(modelIndex);
       if (uc == null)
         return null;
-      pts = uc.getCanonicalCopy(scale);
+      pts = uc.getCanonicalCopy(scale, true);
       break;
     case T.boundbox:
       pts = boxInfo.getCanonicalCopy(scale);
@@ -3001,7 +3000,7 @@ abstract public class ModelCollection extends BondCollection {
         break;
       Atom atom = atoms[i];
       String name = atom.getAtomName();
-      javajs.util.PT.simpleReplace(name, "\"", "''");
+      PT.simpleReplace(name, "\"", "''");
       bsAtoms.set(atom.index);
       xmlUtil.appendTag(sb, "atom/", new String[] { "id",
           "a" + (atom.index + 1), "title", atom.getAtomName(), "elementType",
@@ -3255,19 +3254,19 @@ abstract public class ModelCollection extends BondCollection {
     }
   }
 
-  public void setUnitCellOffset(int modelIndex, P3 pt, int ijk) {
-    for (int i = modelIndex; i < modelCount; i++) {
-      if (i < 0 || modelIndex >= 0 && i != modelIndex
-          && models[i].trajectoryBaseIndex != modelIndex)
-        continue;
-      SymmetryInterface unitCell = getUnitCell(i);
+  public void setUnitCellOffset(SymmetryInterface unitCell, P3 pt, int ijk) {
+//    for (int i = modelIndex; i < modelCount; i++) {
+//      if (i < 0 || modelIndex >= 0 && i != modelIndex
+//          && models[i].trajectoryBaseIndex != modelIndex)
+//        continue;
+//      unitCell = getUnitCell(i);
       if (unitCell == null)
-        continue;
+        return;
       if (pt == null)
         unitCell.setOffset(ijk);
       else
         unitCell.setOffsetPt(pt);
-    }
+//    }
   }
 
   public void connect(float[][] connections) {

@@ -32,6 +32,8 @@ import java.net.URL;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javajs.util.PT;
+
 import javax.swing.JButton;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -285,7 +287,7 @@ public class GuiMap {
       setTranslations();
     language = GT.getLanguage();
     for (int i = 0; i < translations.length; i += 2)
-      str = javajs.util.PT.simpleReplace(str, translations[i], translations[i + 1]);
+      str = PT.simpleReplace(str, translations[i], translations[i + 1]);
     return str;
   }
 

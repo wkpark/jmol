@@ -162,19 +162,19 @@ public class JmolBinary {
 
     String[] tokens = PT.getTokens(line);
     String line2 = br.readLineWithNewline();// second line
-    if (tokens.length == 2 && javajs.util.PT.parseInt(tokens[0]) == 3
-        && javajs.util.PT.parseInt(tokens[1]) != Integer.MIN_VALUE) {
+    if (tokens.length == 2 && PT.parseInt(tokens[0]) == 3
+        && PT.parseInt(tokens[1]) != Integer.MIN_VALUE) {
       tokens = PT.getTokens(line2);
-      if (tokens.length == 3 && javajs.util.PT.parseInt(tokens[0]) != Integer.MIN_VALUE
-          && javajs.util.PT.parseInt(tokens[1]) != Integer.MIN_VALUE
-          && javajs.util.PT.parseInt(tokens[2]) != Integer.MIN_VALUE)
+      if (tokens.length == 3 && PT.parseInt(tokens[0]) != Integer.MIN_VALUE
+          && PT.parseInt(tokens[1]) != Integer.MIN_VALUE
+          && PT.parseInt(tokens[2]) != Integer.MIN_VALUE)
         return "PltFormatted";
     }
     String line3 = br.readLineWithNewline(); // third line
     if (line.startsWith("v ") && line2.startsWith("v ") && line3.startsWith("v "))
         return "Obj";
     //next line should be the atom line
-    int nAtoms = javajs.util.PT.parseInt(line3);
+    int nAtoms = PT.parseInt(line3);
     if (nAtoms == Integer.MIN_VALUE)
       return (line3.indexOf("+") == 0 ? "Jvxl+" : null);
     if (nAtoms >= 0)
@@ -183,7 +183,7 @@ public class JmolBinary {
     for (int i = 4 + nAtoms; --i >= 0;)
       if ((line = br.readLineWithNewline()) == null)
         return null;
-    int nSurfaces = javajs.util.PT.parseInt(line);
+    int nSurfaces = PT.parseInt(line);
     if (nSurfaces == Integer.MIN_VALUE)
       return null;
     return (nSurfaces < 0 ? "Jvxl" : "Cube"); //Final test looks at surface definition line

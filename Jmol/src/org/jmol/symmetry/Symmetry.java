@@ -388,8 +388,8 @@ public class Symmetry implements SymmetryInterface {
   }
 
   @Override
-  public P3[] getCanonicalCopy(float scale) {
-    return unitCell.getCanonicalCopy(scale);
+  public P3[] getCanonicalCopy(float scale, boolean withOffset) {
+    return unitCell.getCanonicalCopy(scale, withOffset);
   }
 
   @Override

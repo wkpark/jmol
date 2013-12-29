@@ -792,14 +792,14 @@ public class ActionManager implements EventManager {
         return;
         //break;
       }
-    exitMeasurementMode();
+    exitMeasurementMode(null);
   }
 
   protected void clearMouseInfo() {
     // when a second touch is made, this clears all record of first touch
     pressedCount = clickedCount = 0;
     dragGesture.setAction(0, 0);
-    exitMeasurementMode();
+    exitMeasurementMode(null);
   }
 
   private boolean hoverActive = false;
@@ -898,6 +898,10 @@ public class ActionManager implements EventManager {
       break;
     case Event.VK_CONTROL:
       moved.modifiers |= Binding.CTRL;
+      break;
+    case Event.VK_ESCAPE:
+      exitMeasurementMode("escape");
+      break;
     }
     int action = Binding.LEFT | Binding.SINGLE | Binding.DRAG | moved.modifiers;
     if (!labelMode && !binding.isUserAction(action))
@@ -956,10 +960,8 @@ public class ActionManager implements EventManager {
   @Override
   public void mouseEnterExit(long time, int x, int y, boolean isExit) {
     setCurrent(time, x, y, 0);
-    if (isExit && measurementPending != null) {
-      exitMeasurementMode();
-      viewer.refresh(3, "mouseExit");
-    }
+    if (isExit)
+      exitMeasurementMode("mouseExit");
   }
 
   private int pressAction;
@@ -1034,7 +1036,7 @@ public class ActionManager implements EventManager {
       setCurrent(time, x, y, buttonMods);
       dragged.setCurrent(current, -1);
       if (atomPickingMode != PICKING_ASSIGN_ATOM)
-        exitMeasurementMode();
+        exitMeasurementMode(null);
       dragGesture.add(dragAction, x, y, time);
       checkDragWheelAction(dragAction, x, y, deltaX, deltaY, time,
           Event.DRAGGED);
@@ -1546,10 +1548,10 @@ public class ActionManager implements EventManager {
       P3 nearestPoint = null;
       if (script.indexOf("_ATOM") >= 0) {
         int iatom = findNearestAtom(x, y, null, true);
-        script = javajs.util.PT.simpleReplace(script, "_ATOM", "({"
+        script = PT.simpleReplace(script, "_ATOM", "({"
             + (iatom >= 0 ? "" + iatom : "") + "})");
         if (iatom >= 0)
-          script = javajs.util.PT.simpleReplace(script, "_POINT", Escape.eP(viewer
+          script = PT.simpleReplace(script, "_POINT", Escape.eP(viewer
               .getModelSet().atoms[iatom]));
       }
       if (!drawMode
@@ -1559,25 +1561,25 @@ public class ActionManager implements EventManager {
         if (t != null && (nearestPoint = (P3) t.get("pt")) != null) {
           boolean isBond = t.get("type").equals("bond");
           if (isBond)
-            script = javajs.util.PT.simpleReplace(script, "_BOND", "[{"
+            script = PT.simpleReplace(script, "_BOND", "[{"
                 + t.get("index") + "}]");
-          script = javajs.util.PT.simpleReplace(script, "_POINT", Escape
+          script = PT.simpleReplace(script, "_POINT", Escape
               .eP(nearestPoint));
-          script = javajs.util.PT.simpleReplace(script, "_OBJECT", Escape
+          script = PT.simpleReplace(script, "_OBJECT", Escape
               .escapeMap(t));
         }
-        script = javajs.util.PT.simpleReplace(script, "_BOND", "[{}]");
-        script = javajs.util.PT.simpleReplace(script, "_OBJECT", "{}");
+        script = PT.simpleReplace(script, "_BOND", "[{}]");
+        script = PT.simpleReplace(script, "_OBJECT", "{}");
       }
-      script = javajs.util.PT.simpleReplace(script, "_POINT", "{}");
-      script = javajs.util.PT.simpleReplace(script, "_ACTION", "" + mouseAction);
-      script = javajs.util.PT.simpleReplace(script, "_X", "" + x);
-      script = javajs.util.PT.simpleReplace(script, "_Y", ""
+      script = PT.simpleReplace(script, "_POINT", "{}");
+      script = PT.simpleReplace(script, "_ACTION", "" + mouseAction);
+      script = PT.simpleReplace(script, "_X", "" + x);
+      script = PT.simpleReplace(script, "_Y", ""
           + (viewer.getScreenHeight() - y));
-      script = javajs.util.PT.simpleReplace(script, "_DELTAX", "" + deltaX);
-      script = javajs.util.PT.simpleReplace(script, "_DELTAY", "" + deltaY);
-      script = javajs.util.PT.simpleReplace(script, "_TIME", "" + time);
-      script = javajs.util.PT.simpleReplace(script, "_MODE", "" + mode);
+      script = PT.simpleReplace(script, "_DELTAX", "" + deltaX);
+      script = PT.simpleReplace(script, "_DELTAY", "" + deltaY);
+      script = PT.simpleReplace(script, "_TIME", "" + time);
+      script = PT.simpleReplace(script, "_MODE", "" + mode);
       if (script.startsWith("+:")) {
         passThrough = true;
         script = script.substring(2);
@@ -1715,7 +1717,7 @@ public class ActionManager implements EventManager {
   private int addToMeasurement(int atomIndex, Point3fi nearestPoint,
                                boolean dblClick) {
     if (atomIndex == -1 && nearestPoint == null || measurementPending == null) {
-      exitMeasurementMode();
+      exitMeasurementMode(null);
       return 0;
     }
     int measurementCount = measurementPending.count;
@@ -1728,15 +1730,17 @@ public class ActionManager implements EventManager {
   private void resetMeasurement() {
     // doesn't reset the measurement that is being picked using
     // double-click, just the one using set picking measure.
-    exitMeasurementMode();
+    exitMeasurementMode(null);
     measurementQueued = viewer.getMP();
   }
 
-  private void exitMeasurementMode() {
+  private void exitMeasurementMode(String refreshWhy) {
     if (measurementPending == null)
       return;
     viewer.setPendingMeasurement(measurementPending = null);
     viewer.setCursor(GenericPlatform.CURSOR_DEFAULT);
+    if (refreshWhy != null)
+      viewer.refresh(3, refreshWhy);
   }
 
   private void getSequence() {
@@ -2006,8 +2010,7 @@ public class ActionManager implements EventManager {
       runScript("assign connect "
           + measurementPending.getMeasurementScript(" ", false));
     } else if (pickAtomAssignType.equals("Xx")) {
-      exitMeasurementMode();
-      viewer.refresh(3, "bond dropped");
+      exitMeasurementMode("bond dropped");
     } else {
       if (pressed.inRange(xyRange, dragged.x, dragged.y)) {
         String s = "assign atom ({" + dragAtomIndex + "}) \""
@@ -2033,7 +2036,7 @@ public class ActionManager implements EventManager {
         }
       }
     }
-    exitMeasurementMode();
+    exitMeasurementMode(null);
   }
 
   private void bondPicked(int index) {    
@@ -2148,7 +2151,7 @@ public class ActionManager implements EventManager {
     if (measurementCount >= 2 && measurementCount <= 4)
       runScript("!measure "
           + measurementPending.getMeasurementScript(" ", true));
-    exitMeasurementMode();
+    exitMeasurementMode(null);
   }
 
   private void zoomTo(int atomIndex) {

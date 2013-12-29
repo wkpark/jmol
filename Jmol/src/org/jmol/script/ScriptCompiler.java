@@ -1073,7 +1073,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     case T.sync:
       if (nTokens == 1 && lookForSyncID()) {
         String ident = script.substring(ichToken, ichToken + cchToken);
-        int iident = javajs.util.PT.parseInt(ident);
+        int iident = PT.parseInt(ident);
         if (iident == Integer.MIN_VALUE || Math.abs(iident) < 1000)
           addTokenToPrefix(T.o(T.identifier, ident));
         else

@@ -35,6 +35,8 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.Properties;
 
+import javajs.util.PT;
+
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
@@ -76,9 +78,9 @@ public class WebExport extends JPanel implements WindowListener {
     localAppletPath = historyFile.getProperty("webMakerLocalAppletPath", "..");
     pageAuthorName = historyFile.getProperty("webMakerPageAuthorName",
         GT._("Jmol Web Page Maker"));
-    popInWidth=javajs.util.PT.parseInt(historyFile.getProperty("webMakerPopInWidth", "300"));
-    popInHeight=javajs.util.PT.parseInt(historyFile.getProperty("webMakerPopInHeight", "300"));
-    scriptButtonPercent = javajs.util.PT.parseInt(historyFile.getProperty(
+    popInWidth=PT.parseInt(historyFile.getProperty("webMakerPopInWidth", "300"));
+    popInHeight=PT.parseInt(historyFile.getProperty("webMakerPopInHeight", "300"));
+    scriptButtonPercent = PT.parseInt(historyFile.getProperty(
         "webMakerScriptButtonPercent", "60"));
 
     //Define the tabbed pane

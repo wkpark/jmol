@@ -130,7 +130,7 @@ public class ForceFieldUFF extends ForceField {
       n = 0;
     boolean isAromatic = false;
     if (smarts.charAt(1) == '#') {
-      elemNo = javajs.util.PT.parseInt(smarts.substring(2, len - 1));
+      elemNo = PT.parseInt(smarts.substring(2, len - 1));
     } else {
       String s = smarts.substring(1, (n > 0 ? len - 3 : len - 1));
       if (s.equals(s.toLowerCase())) {

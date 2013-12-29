@@ -28,6 +28,7 @@ import javajs.awt.Dimension;
 import org.jmol.util.Logger;
 import javajs.util.P3;
 import javajs.util.List;
+import javajs.util.PT;
 
 import java.util.Hashtable;
 
@@ -228,10 +229,10 @@ public class StatusManager {
     boolean isAdd = (newStatusList.length() > 0 && newStatusList.charAt(0) == '+');
     boolean getList = false;
     if (isRemove) {
-      statusList = javajs.util.PT.simpleReplace(statusList, newStatusList
+      statusList = PT.simpleReplace(statusList, newStatusList
           .substring(1, newStatusList.length()), "");
     } else {
-      newStatusList = javajs.util.PT.simpleReplace(newStatusList, "+", "");
+      newStatusList = PT.simpleReplace(newStatusList, "+", "");
       if (statusList.equals(newStatusList) || isAdd
           && statusList.indexOf(newStatusList) >= 0) {
         getList = true;

@@ -86,7 +86,7 @@ public interface SymmetryInterface {
 
   public P3[] getUnitCellVertices();
 
-  public P3[] getCanonicalCopy(float scale);
+  public P3[] getCanonicalCopy(float scale, boolean withOffset);
 
   public P3 getCartesianOffset();
 

@@ -44,6 +44,7 @@ import org.jmol.viewer.Viewer;
 //import javajs.util.List;
 import javajs.util.AU;
 import javajs.util.List;
+import javajs.util.PT;
 import javajs.util.SB;
 
 import java.util.Hashtable;
@@ -663,7 +664,7 @@ public class DSSP implements DSSPInterface {
   private String dumpTags(AminoPolymer ap, String lines, BS bsBad, int mode) {
     String prefix = ap.monomers[0].getLeadAtom().getChainID() + "."
         + (ap.bioPolymerIndexInModel + 1);
-    lines = javajs.util.PT.simpleReplace(lines, "$", prefix);
+    lines = PT.simpleReplace(lines, "$", prefix);
     int iFirst = ap.monomers[0].getResno();
     String pre = "\n" + prefix;
     SB sb = new SB();

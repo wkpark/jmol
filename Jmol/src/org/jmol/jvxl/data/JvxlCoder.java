@@ -204,7 +204,7 @@ public class JvxlCoder {
     int r = (int) (jvxlData.nBytes > 0 ? ((float) jvxlData.nBytes) / len
         : ((float) (jvxlData.nPointsX
           * jvxlData.nPointsY * jvxlData.nPointsZ * 13)) / len);
-    return javajs.util.PT.simpleReplace(s, "\"not calculated\"", (r > 0 ? "\"" + r +":1\"": "\"?\""));
+    return PT.simpleReplace(s, "\"not calculated\"", (r > 0 ? "\"" + r +":1\"": "\"?\""));
   }
 
   private static void appendXmlEdgeData(SB sb, JvxlData jvxlData) {
@@ -1084,7 +1084,7 @@ public class JvxlCoder {
     boolean isset = false;
     int[] next = new int[1];
     while (true) {
-      dataCount = (nPrev++ < 0 ? dataCount : javajs.util.PT.parseIntNext(data, next));
+      dataCount = (nPrev++ < 0 ? dataCount : PT.parseIntNext(data, next));
       if (dataCount == Integer.MIN_VALUE) 
         break;
       if (dataCount < 0) {
@@ -1206,7 +1206,7 @@ public class JvxlCoder {
         case '7':
         case '8':
         case '9':
-          int nChar = javajs.util.PT.parseIntNext(data, next);
+          int nChar = PT.parseIntNext(data, next);
           for (int c = 0; c < nChar; c++)
             dataOut.appendC(chLast);
           i = next[0];

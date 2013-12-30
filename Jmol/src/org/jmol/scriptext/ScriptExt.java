@@ -7622,18 +7622,18 @@ public class ScriptExt implements JmolScriptExtension {
     return false;
   }
 
-  private boolean evaluateDot(ScriptMathProcessor mp, SV[] args, int tok, int intValue)
-      throws ScriptException {
+  private boolean evaluateDot(ScriptMathProcessor mp, SV[] args, int tok,
+                              int intValue) throws ScriptException {
     // distance and dot
     switch (args.length) {
     case 1:
       if (tok == T.dot)
-        return false;      
+        return false;
       //$FALL-THROUGH$
     case 2:
       break;
-     default:
-       return false;
+    default:
+      return false;
     }
     SV x1 = mp.getX();
     SV x2 = args[0];
@@ -7642,11 +7642,13 @@ public class ScriptExt implements JmolScriptExtension {
     if (tok == T.distance) {
       int minMax = intValue & T.minmaxmask;
       boolean isMinMax = (minMax == T.min || minMax == T.max);
+      boolean isAll = minMax == T.minmaxmask;
       switch (x1.tok) {
       case T.bitset:
         BS bs = SV.bsSelectVar(x1);
         BS bs2 = null;
-        boolean returnAtom = (isMinMax && args.length == 2 && args[1].asBoolean());
+        boolean returnAtom = (isMinMax && args.length == 2 && args[1]
+            .asBoolean());
         switch (x2.tok) {
         case T.bitset:
           bs2 = (x2.tok == T.bitset ? SV.bsSelectVar(x2) : null);
@@ -7657,20 +7659,41 @@ public class ScriptExt implements JmolScriptExtension {
             float dMinMax = Float.NaN;
             int iMinMax = Integer.MAX_VALUE;
             for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-              float d = (bs2 == null ? atoms[i].distanceSquared(pt2) : ((Float) eval.getBitsetProperty(bs2, intValue, atoms[i],
-                  plane2, x1.value, null, false, x1.index, false)).floatValue());
+              float d = (bs2 == null ? atoms[i].distanceSquared(pt2)
+                  : ((Float) eval.getBitsetProperty(bs2, intValue, atoms[i],
+                      plane2, x1.value, null, false, x1.index, false))
+                      .floatValue());
               if (minMax == T.min ? d >= dMinMax : d <= dMinMax)
-                  continue;
+                continue;
               dMinMax = d;
-              iMinMax = i;              
+              iMinMax = i;
             }
-            return mp.addXBs(iMinMax == Integer.MAX_VALUE ? new BS() : BSUtil.newAndSetBit(iMinMax));
+            return mp.addXBs(iMinMax == Integer.MAX_VALUE ? new BS() : BSUtil
+                .newAndSetBit(iMinMax));
+          }
+          if (isAll) {
+            if (bs2 == null) {
+              float[] data = new float[bs.cardinality()];
+              for (int p = 0, i = bs.nextSetBit(0); i >= 0; i = bs
+                  .nextSetBit(i + 1), p++)
+                data[p] = atoms[i].distance(pt2);
+              return mp.addXAF(data);
+            }
+            float[][] data2 = new float[bs.cardinality()][bs2.cardinality()];
+            for (int p = 0, i = bs.nextSetBit(0); i >= 0; i = bs
+                .nextSetBit(i + 1), p++)
+              for (int q = 0, j = bs2.nextSetBit(0); j >= 0; j = bs2
+                  .nextSetBit(j + 1), q++)
+                data2[p][q] = atoms[i].distance(atoms[j]);
+            return mp.addXAFF(data2);
           }
           if (isMinMax) {
             float[] data = new float[bs.cardinality()];
-            for (int i = bs.nextSetBit(0), p = 0; i >= 0; i = bs.nextSetBit(i + 1))
-              data[p++] = ((Float) eval.getBitsetProperty(bs2, intValue, atoms[i],
-                  plane2, x1.value, null, false, x1.index, false)).floatValue();
+            for (int i = bs.nextSetBit(0), p = 0; i >= 0; i = bs
+                .nextSetBit(i + 1))
+              data[p++] = ((Float) eval.getBitsetProperty(bs2, intValue,
+                  atoms[i], plane2, x1.value, null, false, x1.index, false))
+                  .floatValue();
             return mp.addXAF(data);
           }
           return mp.addXObj(eval.getBitsetProperty(bs, intValue, pt2, plane2,

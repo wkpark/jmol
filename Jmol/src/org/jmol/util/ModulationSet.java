@@ -38,7 +38,7 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
   private Matrix gammaIinv;
   private Matrix sigma;
   private Matrix sI;
-  private Matrix xmod;
+  private Matrix tau;
   
   private boolean enabled;
   private float scale = 1;
@@ -91,16 +91,18 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
    * 
    * X = (Gamma_I^-1)(X' - S_I)
    * 
-   * I call this array "xmod". Ultimately we will need to add in 
-   * a term allowing us to adjust the t-value:
+   * I call this array "tau". We can think of this as a
+   * distance along the asn axis, as in a t-plot. 
+   * Ultimately we will need to add in a term allowing 
+   * us to adjust the t-value:
    * 
    * X = (Gamma_I^-1)(X' - S_I + t)
    * 
-   * X = xmod + (Gamma_I^-1)(t)
+   * X = tau + (Gamma_I^-1)(t)
    * 
    * or, below:
    * 
-   *   xt = gammaIinv.mul(t).add(xmod)
+   *   xt = gammaIinv.mul(t).add(tau)
    * 
    * For subsystem nu, we need to use t_nu, which will be
    * 
@@ -110,11 +112,11 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
    * 
    * so this becomes
    * 
-   * xt = gammaIinv.mul(tFactor.inverse().mul(t)).add(xmod)
+   * xt = gammaIinv.mul(tFactor.inverse().mul(t)).add(tau)
    * 
    * Thus we have two subsystem-dependent modulation factors we
    * need to bring in, sigma and tFactor, and two we need to compute,
-   * GammaIinv and xmod.
+   * GammaIinv and tau.
    * 
    * @param id
    * @param r
@@ -156,7 +158,7 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
     gammaIinv = rsvs.getSubmatrix(3,  3,  modDim,  modDim).inverse();
     sI = rsvs.getSubmatrix(3, 3 + modDim, modDim, 1);
     r0 = P3.newP(r);
-    xmod = gammaIinv.mul(sigma.mul(Matrix.newT(r, true)).sub(sI));
+    tau = gammaIinv.mul(sigma.mul(Matrix.newT(r, true)).sub(sI));
     if (Logger.debuggingHigh)
       Logger.debug("MODSET create r=" + Escape.eP(r) + " si=" + Escape.e(sI.getArray())
               + " ginv=" + gammaIinv.toString().replace('\n', ' '));
@@ -206,7 +208,7 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
    * (n m) is an array of Fourier number coefficients, such as (1 0), (1 -1), or
    * (0 2)
    * 
-   * In Jmol we precalculate Gamma_I^-1(X - S_I) as xmod, but we still have to
+   * In Jmol we precalculate Gamma_I^-1(X - S_I) as tau, but we still have to
    * factor in Gamma_I^-1(t).
    * 
    * @param fracT
@@ -241,7 +243,7 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
       if (isSubsystem)
         t = tFactor.mul(t);
     }
-    t = gammaIinv.mul(t).add(xmod);
+    t = gammaIinv.mul(t).add(tau);
     for (int i = mods.size(); --i >= 0;)
       mods.get(i).apply(this, t.getArray());
     gammaE.transform(this);
@@ -333,7 +335,7 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
       return;
     modTemp = new ModulationSet();
     modTemp.id = id;
-    modTemp.xmod = xmod;
+    modTemp.tau = tau;
     modTemp.mods = mods;
     modTemp.gammaE = gammaE;
     modTemp.modDim = modDim;
@@ -349,7 +351,7 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
     Hashtable<String, Object> modInfo = new Hashtable<String, Object>();
     modInfo.put("id", id);
     modInfo.put("r0", r0);
-    modInfo.put("xmod", xmod.getArray());
+    modInfo.put("tau", tau.getArray());
     modInfo.put("modDim", Integer.valueOf(modDim));
     modInfo.put("gammaE", gammaE);
     modInfo.put("gammaIinv", gammaIinv.getArray());

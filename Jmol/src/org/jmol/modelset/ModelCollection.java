@@ -1858,6 +1858,8 @@ abstract public class ModelCollection extends BondCollection {
       return bs;
     case T.cell:
       // select cell=555 (an absolute quantity)
+      // select cell=1505050
+      // select cell=1500500500
       bs = new BS();
       info = (int[]) specInfo;
       ptTemp1.set(info[0] / 1000f, info[1] / 1000f, info[2] / 1000f);

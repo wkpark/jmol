@@ -308,11 +308,25 @@ public class SimpleUnitCell {
     return Float.NaN;
   }
 
-  public static void ijkToPoint3f(int nnn, P3 cell, int c) {
-    c -= 5;
-    cell.x = nnn / 100 + c;
-    cell.y = (nnn % 100) / 10 + c;
-    cell.z = (nnn % 10) + c;
+  /**
+   * Expanded cell notation:
+   * 
+   *   111 - 1000  --> center 5,5,5; range 0 to 9 or -5 to +4
+   *    
+   *   1000000 - 1999999 --> center 50,50,50; range 0 to 99 or -50 to +49
+   *   1000000000 - 1999999999 --> center 500, 500, 500; range 0 to 999 or -500 to +499
+   *   
+   * @param nnn
+   * @param cell
+   * @param offset  0 or 1 typically; < 0 means "apply no offset"
+   */
+  public static void ijkToPoint3f(int nnn, P3 cell, int offset) {
+    int f = (nnn > 1000000000 ? 1000 : nnn > 1000000 ? 100 : 10);
+    int f2 = f * f;
+    offset -= (offset >= 0 ? 5 * f / 10 : offset);
+    cell.x = ((nnn / f2) % f) + offset;
+    cell.y = (nnn % f2) / f + offset;
+    cell.z = (nnn % f) + offset;
   }
 
 }

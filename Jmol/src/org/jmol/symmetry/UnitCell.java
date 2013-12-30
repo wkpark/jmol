@@ -180,7 +180,7 @@ class UnitCell extends SimpleUnitCell {
   }
 
   void setMinMaxLatticeParameters(P3i minXYZ, P3i maxXYZ) {
-    if (maxXYZ.x <= 555 && maxXYZ.y >= 555) {
+    if (maxXYZ.x <= maxXYZ.y && maxXYZ.y >= 555) {
       //alternative format for indicating a range of cells:
       //{111 666}
       //555 --> {0 0 0}

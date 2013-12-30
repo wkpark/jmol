@@ -11153,9 +11153,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           pt = (P3) var.value;
         else {
           int ijk = var.asInt();
-          pt = new P3();
-          if (ijk >= 555)
-            SimpleUnitCell.ijkToPoint3f(ijk + 111, pt, 0);
+          pt = P3.new3(1, 1, 1);
+          if (ijk >= 100)
+            SimpleUnitCell.ijkToPoint3f(ijk, pt, -1);
         }
         if (!chk)
           viewer.setDefaultLattice(pt);

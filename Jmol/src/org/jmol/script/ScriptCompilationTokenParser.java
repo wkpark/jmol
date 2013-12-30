@@ -30,6 +30,8 @@ import java.util.Map;
 
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
+import org.jmol.util.SimpleUnitCell;
+
 import javajs.util.P3;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
@@ -950,10 +952,7 @@ abstract class ScriptCompilationTokenParser {
     // 555 = {1 1 1}
     //Token coord = tokenNext(); // 555 == {1 1 1}
     if (isToken(T.integer)) {
-      int nnn = theToken.intValue;
-      cell.x = nnn / 100 - 4;
-      cell.y = (nnn % 100) / 10 - 4;
-      cell.z = (nnn % 10) - 4;
+      SimpleUnitCell.ijkToPoint3f(theToken.intValue,  cell,  1);
       return addTokenToPostfix(tok, cell);
     }
     if (!isToken(T.leftbrace) || !getNumericalToken())

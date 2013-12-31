@@ -2710,14 +2710,6 @@ abstract public class ModelCollection extends BondCollection {
     return bsResult;
   }
 
-  public String getUnitCellInfoText() {
-    int modelIndex = viewer.getCurrentModelIndex();
-    if (modelIndex < 0)
-      return "no single current model";
-    SymmetryInterface c = getUnitCell(modelIndex);
-    return (c == null ? "not applicable" : c.getUnitCellInfo());
-  }
-
   private SymmetryInterface symTemp;
 
   public Hashtable<String, BS> htPeaks;

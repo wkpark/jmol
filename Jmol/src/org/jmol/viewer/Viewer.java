@@ -3060,7 +3060,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public String getUnitCellInfoText() {
-    return modelSet.getUnitCellInfoText();
+    SymmetryInterface c = getCurrentUnitCell();
+    return (c == null ? "not applicable" : c.getUnitCellInfo());
   }
 
   public float getUnitCellInfo(int infoType) {

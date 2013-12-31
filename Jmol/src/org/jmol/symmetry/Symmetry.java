@@ -127,13 +127,13 @@ public class Symmetry implements SymmetryInterface {
 
   @Override
   public int addSpaceGroupOperation(String xyz, int opId) {
-    return spaceGroup.addSymmetry(xyz, opId);
+    return spaceGroup.addSymmetry(xyz, opId, false);
   }
 
   @Override
   public int addBioMoleculeOperation(M4 mat, boolean isReverse) {
     isBio = spaceGroup.isBio = true;
-    return spaceGroup.addSymmetry((isReverse ? "!" : "") + "[[bio" + mat, 0);    
+    return spaceGroup.addSymmetry((isReverse ? "!" : "") + "[[bio" + mat, 0, false);    
   }
 
   @Override
@@ -752,10 +752,11 @@ public class Symmetry implements SymmetryInterface {
    * @param trans is a (3+d)x(1) array of translations
    * @return Jones-Faithful representation
    */
-  public String addOp(Matrix rs, Matrix vs) {
+  public String addOp(Matrix rs, Matrix vs, Matrix sigma) {
     spaceGroup.isSSG = true;
     String s = SymmetryOperation.getXYZFromRsVs(rs, vs, false);
-    addSpaceGroupOperation(s, -1);
+    int i = spaceGroup.addSymmetry(s, -1, true);
+    spaceGroup.operations[i].setSigma(sigma);
     return s;
   }
 

@@ -69,7 +69,8 @@ class SymmetryOperation extends M4 {
   private int opId;
 
   private P3 atomTest;
-  private P3 temp3;
+  private P3 temp3 = new P3();
+  private P3 temp3b;
 
   private String[] myLabels;
   int modDim;
@@ -93,7 +94,14 @@ float[] linearRotTrans;
   
   Matrix rsvs;
   private boolean isBio;
-
+  private M3 mComplex;
+  private boolean isComplex;
+  private Matrix sigma;
+  int index;
+  
+  void setSigma(Matrix sigma) {
+    this.sigma = sigma;
+  }
 
   /**
    * @j2sIgnoreSuperConstructor
@@ -121,10 +129,10 @@ float[] linearRotTrans;
     opId = op.opId;
     modDim = op.modDim;
     myLabels = op.myLabels;
-    setM(op); // sets the underlying Matrix4f
+    index = op.index;
     linearRotTrans = op.linearRotTrans;
-    if (linearRotTrans.length > 16)
-       setGamma();
+    sigma = op.sigma;
+    setMatrix(false);
     if (!op.isFinalized)
       doFinalize();
     if (doNormalize)
@@ -137,9 +145,10 @@ float[] linearRotTrans;
    * rsvs is the superspace group rotation-translation matrix.
    * It is a (3 + modDim + 1) x (3 + modDim + 1) matrix from 
    * which we can extract all necessary parts;
+   * @param isReverse 
    * 
    */
-  private void setGamma() {
+  private void setGamma(boolean isReverse) {
   // standard M4 (this)
   //
   //  [ [rot]   | [trans] 
@@ -153,19 +162,26 @@ float[] linearRotTrans;
     
     int n = 3 + modDim;
     double[][] a = (rsvs = new Matrix(null, n + 1, n + 1)).getArray();
+    double[] t = new double[n];
     int pt = 0;
-    for (int i = 0; i < 3; i++) {
-      for (int j = 0; j < 3; j++)
+    for (int i = 0; i < n; i++) {
+      for (int j = 0; j < n; j++) {
         a[i][j] = linearRotTrans[pt++];
-      a[i][n] = linearRotTrans[pt++];
-    }
-    pt += 4;
-    for (int i = 3; i < 3 + modDim; i++) {
-      for (int j = 3; j < 3 + modDim; j++)
-        a[i][j] = linearRotTrans[pt++];
-      a[i][n] = linearRotTrans[pt++];
+        if (i < 3 && j >= 3 && a[i][j] != 0)
+          isComplex = true;
+      }
+      t[i] = (isReverse ? -1 : 1) * linearRotTrans[pt++];
     }
     a[n][n] = 1;
+    if (isReverse)
+      rsvs = rsvs.inverse();
+    for (int i = 0; i < n; i++)
+      a[i][n] = t[i];
+    a = rsvs.getSubmatrix(0,  0,  3,  3).getArray();
+    for (int i = 0; i < 3; i++)
+      for (int j = 0; j < 4; j++)
+        setElement(i,  j, (float) (j < 3 ? a[i][j] : t[i]));
+    setElement(3,3,1);
   }
 
   void doFinalize() {
@@ -184,13 +200,37 @@ float[] linearRotTrans;
     return (normalized && modDim == 0 || xyzOriginal == null ? xyz : xyzOriginal);
   }
 
-  void newPoint(P3 atom1, P3 atom2,
-                       int transX, int transY, int transZ) {
-    if (temp3 == null)
-      temp3 = new P3();
+  void newPoint(P3 atom1, P3 atom2, int transX, int transY, int transZ) {
     temp3.setT(atom1);
     transform2(temp3, temp3);
+    if (isComplex) {
+      if (mComplex == null) {
+        mComplex = new M3();
+        Matrix w = rsvs.getSubmatrix(0, 3, 3, modDim);
+        w = w.mul(sigma);
+        double[][] a = w.getArray();
+        for (int i = 0; i < 3; i++)
+          for (int j = 0; j < 3; j++)
+            mComplex.setElement(i, j, (float) a[i][j]);
+        temp3b = new P3();
+      }
+      temp3b.setT(atom1);
+      mComplex.transform2(temp3b, temp3b);
+      temp3.x += temp3b.x;
+      temp3.y += temp3b.y;
+      temp3.z += temp3b.z;
+    }
     atom2.set(temp3.x + transX, temp3.y + transY, temp3.z + transZ);
+    if (isComplex && index==3 && transX == 0 && transY == 0 && transZ == 0) {
+      System.out.println("op=" + index + " " + xyz);
+      //System.out.println(this);
+      //System.out.println("rsvs=" + rsvs);
+      //System.out.println("r3d=" + rsvs.getSubmatrix(0, 3, 3, modDim));
+      //System.out.println("sigma=" + sigma);
+      //System.out.println("rot2=" + mComplex);
+    System.out.println("atom1=" + ((org.jmol.adapter.smarter.Atom) atom1).atomName + " " + atom1);
+    System.out.println("atom2=" + atom2);
+    }
   }
 
   String dumpInfo() {
@@ -217,7 +257,7 @@ float[] linearRotTrans;
         .append("{\t0\t0\t0\t1\t}\n").toString();
   }
   
-  boolean setMatrixFromXYZ(String xyz, int modDim) {
+  boolean setMatrixFromXYZ(String xyz, int modDim, boolean allowScaling) {
     /*
      * sets symmetry based on an operator string "x,-y,z+1/2", for example
      * 
@@ -226,12 +266,10 @@ float[] linearRotTrans;
       return false;
     xyzOriginal = xyz;
     xyz = xyz.toLowerCase();
-    int n = 16;
+    int n = (modDim + 4) * (modDim + 4);
     this.modDim = modDim;
-    if (modDim > 0) {
-      n = 16 + (modDim + 1) * (modDim + 1); // x4, x5, x6..., and twelfths
+    if (modDim > 0)
       myLabels = labelsXn;
-    }
     linearRotTrans = new float[n];
     boolean isReverse = (xyz.startsWith("!"));
     if (isReverse)
@@ -265,47 +303,47 @@ float[] linearRotTrans;
         if (Float.isNaN(v))
           return false;
       }
-      setA(linearRotTrans, 0);
-      if (n > 16)
-        setGamma();
+      setMatrix(isReverse);
       isFinalized = true;
-      if (isReverse)
-        invertM(this);
       isBio = (xyz.indexOf("bio") >= 0);
       this.xyz = (isBio ? toString() : getXYZFromMatrix(this, false, false, false));
       return true;
     }
-    String strOut = getMatrixFromString(this, xyz, linearRotTrans, false);
+    String strOut = getMatrixFromString(this, xyz, linearRotTrans, allowScaling);
     if (strOut == null)
       return false;
-    setA(linearRotTrans, 0);
-    if (n > 16)
-      setGamma();
-    if (isReverse) {
-      invertM(this);
-      this.xyz = getXYZFromMatrix(this, true, false, false);
-    } else {
-      this.xyz = strOut;
-    }
+    setMatrix(isReverse);
+    this.xyz = (isReverse ? getXYZFromMatrix(this, true, false, false) : strOut);
+    //System.out.println("testing " + xyz +  " == " + this.xyz + " " + this + "\n" + Escape.eAF(linearRotTrans));
     if (Logger.debugging)
       Logger.debug("" + this);
     return true;
   }
 
 
+  private void setMatrix(boolean isReverse) {
+    if (linearRotTrans.length > 16) {
+      setGamma(isReverse);
+    } else {
+      setA(linearRotTrans, 0);
+      if (isReverse)
+        invertM(this);
+    }
+  }
+
   boolean setFromMatrix(float[] offset, boolean isReverse) {
     float v = 0;
     int pt = 0;
     myLabels = (modDim == 0 ? labelsXYZ : labelsXn);
     int rowPt = 0;
-    for (int i = 0; rowPt < modDim + 3; i++) {
+    int n = 3 + modDim;
+    for (int i = 0; rowPt < n; i++) {
       if (Float.isNaN(linearRotTrans[i]))
         return false;
       v = linearRotTrans[i];
       if (Math.abs(v) < 0.00001f)
         v = 0;
-      boolean isTrans = (i < 16 ? i % 4 == 3
-          : (i - 16) % (modDim + 1) == modDim);
+      boolean isTrans = ((i + 1) % (n + 1) == 0);
       if (isTrans) {
         if (offset != null) {
           v /= 12;
@@ -317,29 +355,19 @@ float[] linearRotTrans;
         rowPt++;
       }
       linearRotTrans[i] = v;
-      if (i == 11)
-        i += 4;
     }
-    linearRotTrans[15] = 1;
-    setA(linearRotTrans, 0);
-    if (linearRotTrans.length > 16)
-      setGamma();
+    linearRotTrans[linearRotTrans.length - 1] = 1;
+    setMatrix(isReverse);
     isFinalized = (offset == null);
-    if (isReverse)
-      invertM(this);
     xyz = getXYZFromMatrix(this, true, false, false);
+    //System.out.println("testing " + xyz + " " + this + "\n" + Escape.eAF(linearRotTrans));
     return true;
   }
 
   /**
    * Convert the Jones-Faithful notation 
    *   "x, -z+1/2, y"  or "x1, x3-1/2, x2, x5+1/2, -x6+1/2, x7..."
-   * to a linear array that consists of
-   * 
-   * [3*x + 1][3*x + 1][3*x + 1][4*0][modDim*x+1] [modDim*x+1] [modDim*x+1]...
-   * 
-   * for which the first 16 are the rot/trans matrix for standard operations
-   * and the rest are additional Gamma_epsilon and Gamma_delta for superspace operations
+   * to a linear array
    * 
    * @param op
    * @param xyz
@@ -355,19 +383,16 @@ float[] linearRotTrans;
     int modDim = (op == null ? 0 : op.modDim);
     int nRows = 4 + modDim;
     boolean doNormalize = (op != null && op.doNormalize);
-    linearRotTrans[15] = 1;
-    if (modDim > 0)
-      linearRotTrans[linearRotTrans.length - 1] = 1;
+    linearRotTrans[linearRotTrans.length - 1] = 1;
     String[] myLabels = (op == null || modDim == 0 ? null : op.myLabels);
     if (myLabels == null)
       myLabels = labelsXYZ;
     xyz = xyz.toLowerCase();
     xyz += ",";
     if (modDim > 0)
-      for (int i = labelsXn.length; --i >= 0;)
+      for (int i = modDim + 3; --i >= 0;)
         xyz = PT.simpleReplace(xyz, labelsXn[i], labelsXnSub[i]);
     int tpt0 = 0;
-    int tpt = 0;
     int rowPt = 0;
     char ch;
     float iValue = 0;
@@ -404,19 +429,18 @@ float[] linearRotTrans;
       case 'h':
         int val = (isNegative ? -1 : 1);
         if (allowScaling && iValue != 0) {
-          val *= iValue;
+          val = (int) iValue;
           iValue = 0;
         }
-        tpt = tpt0 = ( rowPt < 3 ? rowPt * 4 : 16 + (rowPt - 3) * (modDim + 1));
-        int ipt = ch - (ch >= 'x' ? 'x' : 'a');
+        tpt0 = rowPt * nRows;
+        int ipt = (ch >= 'x' ? ch - 'x' :ch - 'a' + 3);
         linearRotTrans[tpt0 + ipt] = val; 
-        strT += plusMinus(strT, val, myLabels[ipt + (rowPt < 3 ? 0 : 3)]);
+        strT += plusMinus(strT, val, myLabels[ipt]);
         break;
       case ',':
         // add translation in 12ths
         iValue = normalizeTwelfths(iValue, doNormalize);
-        tpt = tpt0 + (rowPt > 2 ? modDim : 3);
-        linearRotTrans[tpt] = iValue;
+        linearRotTrans[tpt0 + nRows - 1] = iValue;
         strT += xyzFraction(iValue, false, true);
         strOut += (strOut == "" ? "" : ",") + strT;
         if (rowPt == nRows - 2)
@@ -522,7 +546,7 @@ float[] linearRotTrans;
   "5/12", "1/2", "7/12", "2/3", "3/4", "5/6", "11/12" };
 
   private static String plusMinus(String strT, float x, String sx) {
-    return (x == 0 ? "" : (x < 0 ? "-" : strT.length() == 0 ? "" : "+") + sx);
+    return (x == 0 ? "" : (x < 0 ? "-" : strT.length() == 0 ? "" : "+") + (x == 1 || x == -1 ? "" : "" + (int) Math.abs(x)) + sx);
   }
 
   private static float normalizeTwelfths(float iValue, boolean doNormalize) {
@@ -1334,19 +1358,20 @@ float[] linearRotTrans;
     int d = ra.length;
     String s = "";
     for (int i = 0; i < d; i++) {
+      s += ",";
       for (int j = 0; j < d; j++) {
-        if (ra[i][j] != 0) {
-          s += (ra[i][j] > 0 ? "," : ",-") + "x" + (j + 1);
-          s += xyzFraction((int) (va[i][0] * (is12ths ? 1 : 12)), false, true);
-          break;
+        double r = ra[i][j];
+        if (r != 0) {
+          s += (r < 0 ? "-" : s.endsWith(",") ? "" : "+") + (Math.abs(r) == 1 ? "" : "" + (int) Math.abs(r)) + "x" + (j + 1);
         }
       }
+      s += xyzFraction((int) (va[i][0] * (is12ths ? 1 : 12)), false, true);
     }
-    return s.substring(1);
+    return PT.simpleReplace(s.substring(1), ",+", ",");
   }
 
   @Override
   public String toString() {
-    return (rsvs == null ? super.toString() : rsvs.toString());
+    return (rsvs == null ? super.toString() : super.toString() + " " + rsvs.toString());
   }
 }

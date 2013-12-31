@@ -44,6 +44,8 @@ class Subsystem {
     // Part 1: Get sigma_nu
     // van Smaalen, p. 92.
 
+    Logger.info("[subsystem " + code + "]");
+
     Matrix w33 = w.getSubmatrix(0, 0, 3, 3);
     Matrix wd3 = w.getSubmatrix(3, 0, d, 3);
     Matrix w3d = w.getSubmatrix(0, 3, 3, d);
@@ -52,6 +54,8 @@ class Subsystem {
     Matrix sigma_nu = wdd.mul(sigma).add(wd3).mul(w3d.mul(sigma).add(w33).inverse());
     Matrix tFactor = wdd.sub(sigma_nu.mul(w3d)); 
     modMatrices = new Matrix[] { sigma_nu, tFactor };
+    
+    Logger.info("sigma_nu = " + sigma_nu);
     
     // Part 2: Get the new unit cell and symmetry operators
 
@@ -93,14 +97,16 @@ class Subsystem {
     // 
 
     Matrix winv = w.inverse();
-    Logger.info("[subsystem " + code + "]");
+    Logger.info("w=" + w);
+    Logger.info("w_inv=" + winv);
+    Logger.info("unit cell parameters: " + symmetry.getUnitCellInfo());
     symmetry.createSpaceGroup(-1, "[subsystem " + code + "]", new List<M4>());
     int nOps = s0.getSpaceGroupOperationCount();
     for (int iop = 0; iop < nOps; iop++) {
       Matrix rv = s0.getOperationRsVs(iop);
       Matrix r = w.mul(rv.getRotation()).mul(winv);
       Matrix v = w.mul(rv.getTranslation());
-      String jf = symmetry.addOp(r, v);
+      String jf = symmetry.addOp(r, v, sigma_nu);
       Logger.info(jf);
     }
   }

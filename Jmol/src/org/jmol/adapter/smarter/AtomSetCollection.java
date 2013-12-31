@@ -1099,6 +1099,7 @@ public class AtomSetCollection {
   private int firstSymmetryAtom;
 
   public void setBaseSymmetryAtomCount(int n) {
+    // Vasp reader needs to do this.
     baseSymmetryAtomCount = n;
   }
 
@@ -1150,8 +1151,8 @@ public class AtomSetCollection {
       maxXYZ0 = P3.new3(maxXYZ.x, maxXYZ.y, maxXYZ.z);
       if (ms != null) {
         ms.setMinMax0(minXYZ0, maxXYZ0);
-        minXYZ.set((int)minXYZ0.x, (int)minXYZ0.y, (int)minXYZ0.z);
-        maxXYZ.set((int)maxXYZ0.x, (int)maxXYZ0.y, (int)maxXYZ0.z);
+        minXYZ.set((int) minXYZ0.x, (int) minXYZ0.y, (int) minXYZ0.z);
+        maxXYZ.set((int) maxXYZ0.x, (int) maxXYZ0.y, (int) maxXYZ0.z);
       }
       switch (dtype) {
       case 3:
@@ -1211,6 +1212,7 @@ public class AtomSetCollection {
     latticeOp = symmetry.getLatticeOp();
     checkAll = (atomSetCount == 1 && checkSpecial && latticeOp >= 0);
     latticeOnly = (checkLatticeOnly && latticeOp >= 0);
+
     M4 op = symmetry.getSpaceGroupOperation(0);
     if (doPackUnitCell)
       ptOffset.set(0, 0, 0);
@@ -1259,9 +1261,8 @@ public class AtomSetCollection {
             rmaxy += absRange;
             rmaxz += absRange;
           }
-          cell555Count = pt = symmetryAddAtoms(firstSymmetryAtom,
-              noSymmetryCount, 0, 0, 0, 0, pt, iCell * operationCount,
-              cartesians, ms);
+          cell555Count = pt = symmetryAddAtoms(0, 0, 0, 0, pt, iCell
+              * operationCount, cartesians, ms);
         }
     if (checkRange111) {
       rminx -= absRange;
@@ -1279,8 +1280,8 @@ public class AtomSetCollection {
         for (int tz = minXYZ.z; tz < maxXYZ.z; tz++) {
           iCell++;
           if (tx != 0 || ty != 0 || tz != 0)
-            pt = symmetryAddAtoms(firstSymmetryAtom, noSymmetryCount, tx, ty,
-                tz, cell555Count, pt, iCell * operationCount, cartesians, ms);
+            pt = symmetryAddAtoms(tx, ty, tz, cell555Count, pt, iCell
+                * operationCount, cartesians, ms);
         }
     if (iCell * noSymmetryCount == atomCount - firstSymmetryAtom)
       appendAtomProperties(iCell);
@@ -1333,9 +1334,9 @@ public class AtomSetCollection {
   private P3 ptTemp;
   private M3 mTemp;
 
-  private int symmetryAddAtoms(int iAtomFirst, int noSymmetryCount, int transX,
-                               int transY, int transZ, int baseCount, int pt,
-                               int iCellOpPt, P3[] cartesians, MSInterface ms)
+  private int symmetryAddAtoms(int transX, int transY, int transZ,
+                               int baseCount, int pt, int iCellOpPt,
+                               P3[] cartesians, MSInterface ms)
       throws Exception {
     boolean isBaseCell = (baseCount == 0);
     boolean addBonds = (bondCount0 > bondIndex0 && applySymmetryToBonds);
@@ -1365,7 +1366,7 @@ public class AtomSetCollection {
     SymmetryInterface symmetry = this.symmetry;
     if (checkRangeNoSymmetry)
       baseCount = noSymmetryCount;
-    int atomMax = iAtomFirst + noSymmetryCount;
+    int atomMax = firstSymmetryAtom + noSymmetryCount;
     P3 ptAtom = new P3();
     for (int iSym = 0; iSym < nOperations; iSym++) {
       if (isBaseCell && iSym == 0 || latticeOnly && iSym > 0
@@ -1383,7 +1384,7 @@ public class AtomSetCollection {
        */
 
       int pt0 = (checkSpecial ? pt : checkRange111 ? baseCount : 0);
-      for (int i = iAtomFirst; i < atomMax; i++) {
+      for (int i = firstSymmetryAtom; i < atomMax; i++) {
         if (atoms[i].ignoreSymmetry)
           continue;
         if (bsAtoms != null && !bsAtoms.get(i))
@@ -1391,6 +1392,7 @@ public class AtomSetCollection {
 
         if (ms != null)
           symmetry = ms.getAtomSymmetry(atoms[i], this.symmetry);
+        
         symmetry.newSpaceGroupPoint(iSym, atoms[i], ptAtom, transX, transY,
             transZ);
         Atom special = null;
@@ -1419,7 +1421,7 @@ public class AtomSetCollection {
           for (int j = j0; --j >= 0;) {
             float d2 = cartesian.distanceSquared(cartesians[j]);
             if (checkSpecial && d2 < 0.0001) {
-              special = atoms[iAtomFirst + j];
+              special = atoms[firstSymmetryAtom + j];
               if (special.atomName == null
                   || special.atomName.equals(atoms[i].atomName))
                 break;

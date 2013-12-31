@@ -125,7 +125,7 @@ class SpaceGroup {
     if (!doInit)
       return;
     if (cifLine == null) {
-      addSymmetry("x,y,z", 0);
+      addSymmetry("x,y,z", 0, false);
     } else {
       buildSpaceGroup(cifLine);
     }
@@ -170,12 +170,12 @@ class SpaceGroup {
     return sg;
   }
 
-  int addSymmetry(String xyz, int opId) {
+  int addSymmetry(String xyz, int opId, boolean allowScaling) {
     xyz = xyz.toLowerCase();
     if (xyz.indexOf("[[") < 0 && xyz.indexOf("x4") < 0 &&
         (xyz.indexOf("x") < 0 || xyz.indexOf("y") < 0 || xyz.indexOf("z") < 0))
       return -1;
-    return addOperation(xyz, opId);
+    return addOperation(xyz, opId, allowScaling);
   }
    
   void setFinalOperations(P3[] atoms, int atomIndex, int count,
@@ -424,7 +424,7 @@ class SpaceGroup {
     return sg;
   }
   
-  private int addOperation(String xyz0, int opId) {
+  private int addOperation(String xyz0, int opId, boolean allowScaling) {
     if (xyz0 == null || xyz0.length() < 3) {
       xyzList = new Hashtable<String, Integer>();
       return -1;
@@ -443,7 +443,7 @@ class SpaceGroup {
 
     SymmetryOperation op = new SymmetryOperation(null, null, 0, opId,
         doNormalize);
-    if (!op.setMatrixFromXYZ(xyz0, modDim)) {
+    if (!op.setMatrixFromXYZ(xyz0, modDim, allowScaling)) {
       Logger.error("couldn't interpret symmetry operation: " + xyz0);
       return -1;
     }
@@ -468,6 +468,7 @@ class SpaceGroup {
       operations = (SymmetryOperation[]) AU.arrayCopyObject(operations,
           operationCount * 2);
     operations[operationCount++] = op;
+    op.index = operationCount;
     if (Logger.debugging)
         Logger.debug("\naddOperation " + operationCount
         + op.dumpInfo());
@@ -475,11 +476,11 @@ class SpaceGroup {
   }
 
   private void generateOperatorsFromXyzInfo(String xyzInfo) {
-    addOperation(null, 0);
-    addSymmetry("x,y,z", 0);
+    addOperation(null, 0, false);
+    addSymmetry("x,y,z", 0, false);
     String[] terms = PT.split(xyzInfo.toLowerCase(), ";");
     for (int i = 0; i < terms.length; i++)
-      addSymmetry(terms[i], 0);
+      addSymmetry(terms[i], 0, false);
   }
   
   /// operation based on Hall name and unit cell parameters only
@@ -493,8 +494,8 @@ class SpaceGroup {
       if (hallInfo == null || hallInfo.nRotations == 0)
         h = hallInfo = new HallInfo(hallSymbol);
       setLattice(hallInfo.latticeCode, hallInfo.isCentrosymmetric);
-      addOperation(null, 0);
-      addSymmetry("x,y,z", 0);
+      addOperation(null, 0, false);
+      addSymmetry("x,y,z", 0, false);
     }
     M4 mat1 = new M4();
     M4 operation = new M4();
@@ -514,7 +515,6 @@ class SpaceGroup {
         newOps[j].mul2(mat1, newOps[0]);
         newOps[0].setM(newOps[j]);
         for (int k = 0; k < nOps; k++) {
-          
           operation.mul2(newOps[j], operations[k]);
           SymmetryOperation.normalizeTranslation(operation);
           String xyz = SymmetryOperation.getXYZFromMatrix(operation, true, true, true);
@@ -525,7 +525,7 @@ class SpaceGroup {
   }
 
   int addSymmetrySM(String xyz, M4 operation) {
-    int iop = addOperation(xyz, 0);
+    int iop = addOperation(xyz, 0, false);
     if (iop >= 0) {
     SymmetryOperation symmetryOperation = operations[iop];
     symmetryOperation.setM(operation);

@@ -43,6 +43,9 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipEntry;
+import java.util.Enumeration;
 
 import javajs.util.List;
 import javajs.util.PT;
@@ -121,7 +124,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
   private JTextField remoteAppletPath, localAppletPath, pageAuthorName,
       webPageTitle;
   private JFileChooser fc;
-  private JList<JmolInstance> instanceList;
+  protected JList<JmolInstance> instanceList;
   protected Widgets theWidgets;
   protected int nWidgets;
   private Checkbox[] widgetCheckboxes;
@@ -225,6 +228,8 @@ abstract class WebPanel extends JPanel implements ActionListener,
         ._("Jmol Instances:")));
 
     //Create the Widget Panel
+    //TODO this is not being used while widgets are updated to be
+    //JSmol compatible.
     JPanel widgetPanel = new JPanel();
     widgetPanel.setMinimumSize(new Dimension(150,150));
     widgetPanel.setLayout(new BoxLayout(widgetPanel,BoxLayout.Y_AXIS));
@@ -244,83 +249,16 @@ abstract class WebPanel extends JPanel implements ActionListener,
     // Add everything to this panel.
     panel.add(leftPanel, BorderLayout.WEST);
     panel.add(rightPanel, BorderLayout.CENTER);
-    panel.add(widgetPanel, BorderLayout.EAST);
+    //TODO uncomment when widgets are fixed to be JSmol compatible.
+    //panel.add(widgetPanel, BorderLayout.EAST);
 
     enableButtons(instanceList);
     return panel;
   }
 
-  JList<JmolInstance> getInstanceList() {
+  protected JList<JmolInstance> getInstanceList() {
     return instanceList;
   }
-
-//  private static byte[] getResourceAsBytes(String fullPath) {
-//    byte[] buf = new byte[1024];
-//    byte[] bytes = new byte[4096];
-//    BufferedInputStream bis = new BufferedInputStream(ClassLoader
-//        .getSystemResourceAsStream(fullPath));
-//    int len = 0;
-//    int totalLen = 0;
-//    try {
-//      while ((len = bis.read(buf)) > 0) {
-//        totalLen += len;
-//        if (totalLen >= bytes.length)
-//          bytes = ArrayUtil.ensureLength(bytes, totalLen * 2);
-//        System.arraycopy(buf, 0, bytes, totalLen - len, len);
-//      }
-//      buf = new byte[totalLen];
-//      System.arraycopy(bytes, 0, buf, 0, totalLen);
-//    } catch (Exception IOException) {
-//      Logger.error("WebPanel IO ERROR reading resource " + fullPath);
-//      return null;
-//    }
-//    return buf;
-//  }
-
-  /*
-   * for example:
-   * getResourceAsBytes("org/openscience/jmol/app/images/angleButton.gif")
-   * 
-   * private static byte[] getResourceAsBytes(String fullPath) { byte[] buf =
-   * new byte[1024]; byte[] bytes = new byte[4096]; InputStream is =
-   * ClassLoader.getSystemResourceAsStream(fullPath); BufferedInputStream bis =
-   * new BufferedInputStream(is); int len = 0; int totalLen = 0; try { while
-   * ((len = bis.read(buf)) > 0) { totalLen += len; if (totalLen >=
-   * bytes.length) bytes = ArrayUtil.ensureLength(bytes, totalLen * 2);
-   * System.arraycopy(buf, 0, bytes, totalLen - len, len); } buf = new
-   * byte[totalLen]; System.arraycopy(bytes, 0, buf, 0, totalLen); } catch
-   * (Exception IOException) {
-   * Logger.error("WebPanel IO ERROR reading resource " + fullPath); return
-   * null; } return buf; }
-   * 
-   */
-
-  /* for example: Bytes[] data =
-   * getResourceAsBytes("org/openscience/jmol/app/images/angleButton.gif")
-   */
-
-  /*private static byte[] getResourceAsBytes(String fullPath) {
-    byte[] buf = new byte[1024];
-    byte[] bytes = new byte[4096];
-    BufferedInputStream bis = new BufferedInputStream(ClassLoader
-        .getSystemResourceAsStream(fullPath));
-    int len = 0;
-    int totalLen = 0;
-    try {
-      while ((len = bis.read(buf)) > 0) {
-        totalLen += len;
-        if (totalLen >= bytes.length)
-          bytes = ArrayUtil.ensureLength(bytes, totalLen * 2);
-        System.arraycopy(buf, 0, bytes, totalLen - len, len);
-      }
-      buf = new byte[totalLen];
-      System.arraycopy(bytes, 0, buf, 0, totalLen);
-    } catch (Exception IOException) {
-      Logger.error("WebPanel IO ERROR reading resource " + fullPath);
-      return null;
-    }
-    return buf;
-  }*/
 
   
   /**
@@ -661,8 +599,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
         List<String> filesToCopy = new List<String>();
         String localPath = localAppletPath.getText();
         if (localPath.equals(".") || remoteAppletPath.getText().equals(".")) {
-          filesToCopy.addLast(localPath + "/Jmol.js");
-          filesToCopy.addLast(localPath + "/JmolApplet.jar");
+          filesToCopy.addLast(localPath + "/jsmol.zip");
         }
         JmolBinary.getFileReferences(script, filesToCopy);
         ArrayList<String> copiedFileNames = new  ArrayList<String>();
@@ -735,8 +672,12 @@ abstract class WebPanel extends JPanel implements ActionListener,
           .escapeHTML(webPageTitle.getText()));
       html = PT.simpleReplace(html, "@REMOTEAPPLETPATH@",
           remoteAppletPath.getText());
+      String localPath=localAppletPath.getText();
+      if (localPath.contentEquals(".")){
+        localPath= "jsmol";
+      }
       html = PT.simpleReplace(html, "@LOCALAPPLETPATH@",
-          localAppletPath.getText());
+          localPath);
       html = PT.simpleReplace(html, "@DATADIRNAME@", datadirName);
       if (appletInfoDivs.length() > 0)
         appletInfoDivs = "\n<div style='display:none'>\n" + appletInfoDivs
@@ -760,7 +701,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
       LogPanel.log("      ..." + GT.o(GT._("creating {0}"), fileName));
       viewer.writeTextFile(fileName, html);
     } else {
-      IOException IOe = new IOException("Error creating directory: "
+      IOException IOe = new IOException(GT._("Error creating directory: ")
           + datadirPath);
       throw IOe;
     }
@@ -793,6 +734,11 @@ abstract class WebPanel extends JPanel implements ActionListener,
   private String copyBinaryFile(String fullPathName, String dataPath) {
     String name = fullPathName.substring(fullPathName.lastIndexOf('/') + 1)
         .replace('|', '_'); // xxx.zip|filename
+    if (name.contentEquals("jsmol.zip")){
+      LogPanel.log(GT.o(GT._("copying and unzipping jsmol.zip directory into {0}"),dataPath));
+      String tempDP = copyandUnzip(fullPathName,dataPath, name);
+      return (tempDP);
+    }
     name = dataPath + "/" + name;
     String gzname = name + ".gz";
     File outFile = new File(name);
@@ -865,7 +811,71 @@ abstract class WebPanel extends JPanel implements ActionListener,
     }
     return err;
   }
+/******
+*  Based on code available at Java2s.com
+*  @param fullPathName String containing path to the zip file being copied and expanded
+*  @param dataPath String containing path to the directory into which the file will be unzipped
+*  @param name String containing name of the zipfile without the path (e.g. xxx.zip)
+*  @return string containing path to where file copied.
+*/
+  private String copyandUnzip(String fullPathName,String dataPath, String name){
+    ZipFile zipFile = null;
+    try{
+      zipFile = new ZipFile(fullPathName);
+      Enumeration<? extends ZipEntry>  files = zipFile.entries();
+      File f = null;
+      FileOutputStream fos = null;
+      
+      while (files.hasMoreElements()) {
+        try {
+          ZipEntry entry = files.nextElement();
+          if (!entry.getName().endsWith(".htm")&&!entry.getName().contains("data"+
+          File.separator)&&!entry.getName().contains(".html")){//don't need testing files
+            InputStream eis = zipFile.getInputStream(entry);
+            byte[] buffer = new byte[1024];
+            int bytesRead = 0;
+      
+            f = new File(dataPath + File.separator + entry.getName());
 
+            if (entry.isDirectory()) {
+              f.mkdirs();
+            } else {
+              f.getParentFile().mkdirs();
+              f.createNewFile();
+            }
+            
+            fos = new FileOutputStream(f);
+      
+            while ((bytesRead = eis.read(buffer)) != -1) {
+              fos.write(buffer, 0, bytesRead);
+            } 
+          }
+          
+
+        } catch (IOException e) {
+          e.printStackTrace();
+          continue;
+        } finally {
+          if (fos != null) {
+            try {
+              fos.close();
+            } catch (IOException e) {
+              // ignore
+            }
+          }
+        }
+      }
+    }catch(IOException e){
+      LogPanel.log(GT._("Error encountered while openning zip file. You may not have\n"
+          + "a complete copy of the Jmol distribution.  Check for the file jsmol.zip.\n"
+          +e.getMessage()));
+      errCount+=1; 
+      }
+    try{zipFile.close();}catch (IOException e){
+      //ignore
+      }
+    return(dataPath);
+  }
   void syncLists() {
     DefaultListModel<JmolInstance> model1 = (DefaultListModel<JmolInstance>) instanceList.getModel();
     for (int j = 0; j < webPanels.length; j++) {

@@ -370,12 +370,16 @@ public class GuiMap {
         "GT_pop_in_template.html_INSERTTITLE", GT.escapeHTML(GT._("Insert the page TITLE here.")), 
         "GT_pop_in_template.html_INSERTINTRO", GT.escapeHTML(GT._("Insert the page INTRODUCTION here.")),
         
-        "GT_pop_in_template2.html_INSERTCAPTION", GT.escapeHTML(GT.o(GT._("Insert a caption for {0} here."),"@NAME@")),
+        "GT_pop_in_template2.html_INSERTCAPTION", GT.escapeHTML(GT.o(GT._("CLICK IMAGE TO ACTIVATE 3D <br/> Insert a caption for {0} here."),"@NAME@")),
         "GT_pop_in_template2.html_INSERTADDITIONAL", GT.escapeHTML(GT.o(GT._("Insert additional explanatory text here. Long text will wrap around Jmol model {0}."),"@NAME@")),
         
         "GT_script_button_template.html_INSERT", GT.escapeHTML(GT._("Insert your TITLE and INTRODUCTION here.")),
-        
-        "GT_script_button_template2.html_BUTTONINFO", GT.escapeHTML(GT.o(GT._("The button {0} will appear in the box below.  Insert information for {0} here and below."), "@NAME@")),
+        "GT_script_button_template.html_LOADING",GT.escapeHTML(GT._("Once the molecule file is fully loaded the image at right will become live.  At that time the \"activate 3-D\" icon")),
+        "GT_script_button_template.html_DISAPPEAR",GT.escapeHTML(GT._("will disappear.")),
+        "GT_script_button_template.html_VIEWAGAIN",GT.escapeHTML(GT._("You may look at any of these intermediate views again by clicking on the appropriate button.")),
+        "GT_script_button_template.html_JAVACAPABLE",GT.escapeHTML(GT._("If your browser/OS combination is Java capable you will get snappier performance if you")),
+        "GT_script_button_template.html_USEJAVA",GT.escapeHTML(GT._("use Java.")),
+        "GT_script_button_template2.html_BUTTONINFO", GT.escapeHTML(GT.o(GT._("The button {0} will appear below.  Insert information for {0} here and below."), "@NAME@")),
         "GT_script_button_template2.html_MORE", GT.escapeHTML(GT.o(GT._("Insert more information for {0} here."), "@NAME@")),
         
         "About.html#weblinks", 

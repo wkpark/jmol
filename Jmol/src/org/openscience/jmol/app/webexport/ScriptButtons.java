@@ -64,7 +64,7 @@ class ScriptButtons extends WebPanel {
   String fixHtml(String html) {
     int size = ((SpinnerNumberModel) (appletSizeSpinnerP.getModel()))
         .getNumber().intValue();
-    int leftpercent = 100 - size;
+    double leftpercent = 99.5 - size;
     int appletheightpercent = 100;
     int nbuttons = getInstanceList().getModel().getSize();
     if (!allSelectedWidgets().isEmpty())

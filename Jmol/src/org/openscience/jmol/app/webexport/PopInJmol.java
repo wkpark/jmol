@@ -82,6 +82,16 @@ class PopInJmol extends WebPanel implements ChangeListener {
 
   @Override
   String fixHtml(String html) {
+    String s = "";
+    int nApplets = getInstanceList().getModel().getSize();
+    for (int i=0;i<nApplets;i++){
+      String javaname = getInstanceList().getModel().getElementAt(i).javaname;
+      s+="   var jmolInfo"+i+"=jmolInfo;\n";
+      s+="   jmolInfo"+i+".coverImage=\"load "+javaname+".png\";\n";
+      s+="   jmolInfo"+i+".script=\"load "+javaname+".spt\";\n";
+      s+="   $(\"#Jmol"+i+"\").html(Jmol.getAppletHtml(\"jmolApplet"+i+"\",jmolInfo"+i+"));\n";
+    }
+    html = javajs.util.PT.simpleReplace(html,"@APPLETINITIALIZATION@",s);
     return html;
   }
 
@@ -108,7 +118,7 @@ class PopInJmol extends WebPanel implements ChangeListener {
    }
     if (useAppletJS) {
       appletInfoDivs += "\n<div id=\"" + javaname + "_caption\">\n"
-          + GT.escapeHTML(GT.o(GT._("insert a caption for {0} here."), name))
+          + GT.escapeHTML(GT.o(GT._("CLICK TO ACTIVATE 3D<br/>insert a caption for {0} here."), name))
           + "\n</div>";
       appletInfoDivs += "\n<div id=\"" + javaname + "_note\">\n"
           + GT.escapeHTML(GT.o(GT._("insert a note for {0} here."), name))

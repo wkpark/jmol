@@ -1317,7 +1317,7 @@ public class T {
   public final static T tokenAll = o(all, "all");
   public final static T tokenIf = o(ifcmd, "if");
   public final static T tokenAnd = o(opAnd, "and");
-  public final static T tokenAND = o(opAND, "");
+  public final static T tokenAndSpec = o(opAND, "");
   public final static T tokenOr  = o(opOr, "or");
   public final static T tokenAndFALSE = o(opAnd, "and");
   public final static T tokenOrTRUE = o(opOr, "or");

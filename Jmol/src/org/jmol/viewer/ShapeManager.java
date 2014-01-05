@@ -196,7 +196,7 @@ public class ShapeManager {
     viewer.setShapeErrorState(-1, null);
   }
 
-  public void setLabel(String strLabel, BS bsSelection) {
+  public void setLabel(Object strLabel, BS bsSelection) {
     if (strLabel == null) {
       if (shapes[JC.SHAPE_LABELS] == null)
         return;

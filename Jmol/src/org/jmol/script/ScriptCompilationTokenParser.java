@@ -911,6 +911,26 @@ abstract class ScriptCompilationTokenParser {
         && tokenComparator.tok != T.opEQ 
         && tokenComparator.tok != T.opNE)
       return errorStr(ERROR_tokenExpected, "== !=");
+    if (tokPeek() == T.leftsquare) {
+      getToken();
+      addTokenToPostfixToken(T.tokenLeftParen);
+      while (true) {
+        if (!addCompare(tokenAtomProperty, tokenComparator))
+          return false;
+        if (tokPeek() == T.comma)
+          getToken();
+        else if (tokPeek() == T.rightsquare)
+          break;
+        addTokenToPostfixToken(tokenComparator.tok == T.opNE ? T.tokenAnd : T.tokenOr);
+      }
+      getToken();
+      addTokenToPostfixToken(T.tokenRightParen);
+      return true;
+    }
+    return addCompare(tokenAtomProperty, tokenComparator);
+  }
+
+  private boolean addCompare(T tokenAtomProperty, T tokenComparator) {
     if (getToken() == null)
       return errorStr(ERROR_unrecognizedExpressionToken, "" + valuePeek());
     boolean isNegative = (isToken(T.minus));
@@ -1000,7 +1020,7 @@ abstract class ScriptCompilationTokenParser {
 
   private boolean generateResidueSpecCode(T token) {
     if (residueSpecCodeGenerated)
-      addTokenToPostfixToken(T.tokenAND);
+      addTokenToPostfixToken(T.tokenAndSpec);
     addTokenToPostfixToken(token);
     residueSpecCodeGenerated = true;
     return true;

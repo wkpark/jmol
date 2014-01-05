@@ -46,6 +46,10 @@ class Subsystem {
 
     Logger.info("[subsystem " + code + "]");
 
+    Matrix winv = w.inverse();
+    Logger.info("w=" + w);
+    Logger.info("w_inv=" + winv);
+
     Matrix w33 = w.getSubmatrix(0, 0, 3, 3);
     Matrix wd3 = w.getSubmatrix(3, 0, d, 3);
     Matrix w3d = w.getSubmatrix(0, 3, 3, d);
@@ -96,19 +100,35 @@ class Subsystem {
     // Part 3: Transform the operators 
     // 
 
-    Matrix winv = w.inverse();
-    Logger.info("w=" + w);
-    Logger.info("w_inv=" + winv);
+//    Matrix w3 = msReader.htSubsystems.get("3").w;
+//    Matrix w3inv = w3.inverse();
+//    Matrix w2 = msReader.htSubsystems.get("2").w;
+//    Matrix w2inv = w2.inverse();
+//    System.out.println(w3inv.mul(w2));
+//    System.out.println(w2inv.mul(w3));
+//    System.out.println(w3.mul(w2inv));
+//    System.out.println(w2.mul(w3inv));
     Logger.info("unit cell parameters: " + symmetry.getUnitCellInfo());
     symmetry.createSpaceGroup(-1, "[subsystem " + code + "]", new List<M4>());
     int nOps = s0.getSpaceGroupOperationCount();
     for (int iop = 0; iop < nOps; iop++) {
       Matrix rv = s0.getOperationRsVs(iop);
-      Matrix r = w.mul(rv.getRotation()).mul(winv);
-      Matrix v = w.mul(rv.getTranslation());
+      Matrix r = rv.getRotation();
+      Matrix v = rv.getTranslation();
+//      System.out.println("op " + (iop + 1) + ".1: "+ r);
+//      r = w2.mul(r).mul(w2inv);
+//      System.out.println("op " + (iop + 1) + ".2: "+ r);
+//      r = w3.mul(rv.getRotation()).mul(w3inv);
+//      System.out.println("op " + (iop + 1) + ".3: "+ r);
+//      System.out.println("=====");
+//
+//      r = rv.getRotation();
+      r = w.mul(r).mul(winv);
+      v = w.mul(v);
       String jf = symmetry.addOp(r, v, sigma_nu);
       Logger.info(jf);
     }
+    System.out.println("====");
   }
 
   private V3[] reciprocalsOf(V3[] abc) {

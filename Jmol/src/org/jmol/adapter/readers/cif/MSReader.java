@@ -75,6 +75,8 @@ public class MSReader implements MSInterface {
   private int atomCount;
   private boolean haveAtomMods;
 
+  private boolean modCoord;
+
   public MSReader() {
     // for reflection from Jana
   }
@@ -83,6 +85,7 @@ public class MSReader implements MSInterface {
   public int initialize(AtomSetCollectionReader r, String data)
       throws Exception {
     cr = r;
+    modCoord = r.checkFilterKey("MODCOORD");
     modDebug = r.checkFilterKey("MODDEBUG");
     modPack = !r.checkFilterKey("MODNOPACK");
     modLast = r.checkFilterKey("MODLAST"); // select last symmetry, not first, for special positions  
@@ -573,6 +576,30 @@ public class MSReader implements MSInterface {
     // Modulation is based on an atom's first symmetry operation.
     // (Special positions should generate the same atom regardless of which operation is employed.)
 
+    if (modCoord && htSubsystems != null) {
+      P3 pt = new P3();
+      P3 ptc = P3.newP(a);
+      SymmetryInterface spt = getSymmetry(a);
+      spt.toCartesian(ptc, true);
+
+      boolean ok = true;
+      Subsystem ss3 = htSubsystems.get("3");
+      if (ss3 != null) {
+        pt.setT(ptc);
+        ss3.getSymmetry().toFractional(pt, true);
+        if (pt.x < 0 || pt.y < 0 || pt.z != 1)
+          ok = false;
+      }
+      if (ok) {
+        System.out.println(a.index + " " + a.atomName + " " + ptc);
+        for (Entry<String, Subsystem> e : htSubsystems.entrySet()) {
+          SymmetryInterface sym = e.getValue().getSymmetry();
+          pt.setT(ptc);
+          sym.toFractional(pt, true);
+          System.out.println("ss" + e.getKey() + " " + pt);
+        }
+      }
+    }
     List<Modulation> list = htAtomMods.get(a.atomName);
     if (list == null && a.altLoc != '\0' && htSubsystems != null) {
       // force treatment if a subsystem
@@ -580,8 +607,7 @@ public class MSReader implements MSInterface {
     }
     if (list == null || cr.symmetry == null || a.bsSymmetry == null)
       return;
-    
-    
+
     int iop = Math.max(a.bsSymmetry.nextSetBit(0), 0);
     if (modLast)
       iop = Math.max((a.bsSymmetry.length() - 1) % nOps, iop);
@@ -685,7 +711,7 @@ public class MSReader implements MSInterface {
   }
   
 
-  private Map<String, Subsystem> htSubsystems;
+  Map<String, Subsystem> htSubsystems;
   
   private void setSubsystem(String code, Subsystem system) {
     if (htSubsystems == null)

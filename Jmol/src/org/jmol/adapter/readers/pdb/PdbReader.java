@@ -157,8 +157,6 @@ public class PdbReader extends AtomSetCollectionReader {
   private int tlsGroupID;
   private int atomTypePt0;
   private int atomTypeLen;
-  private boolean byChain;
-  private boolean bySymop;
   private boolean isCourseGrained;
 
   final private static String lineOptions = 
@@ -189,15 +187,17 @@ public class PdbReader extends AtomSetCollectionReader {
  @SuppressWarnings("unchecked")
 @Override
  protected void initializeReader() throws Exception {
-   setIsPDB();
    pdbHeader = (getHeader ? new SB() : null);
    applySymmetry = !checkFilterKey("NOSYMMETRY");
    getTlsGroups = checkFilterKey("TLS");
-   byChain = checkFilterKey("BYCHAIN");
-   bySymop = checkFilterKey("BYSYMOP");
-   isCourseGrained = byChain || bySymop; 
    if (checkFilterKey("ASSEMBLY")) // CIF syntax
      filter = PT.simpleReplace(filter, "ASSEMBLY", "BIOMOLECULE");
+   boolean isbiomol = checkFilterKey("BIOMOLECULE");
+   boolean byChain = isbiomol && checkFilterKey("BYCHAIN");
+   boolean bySymop = isbiomol && checkFilterKey("BYSYMOP");
+   isCourseGrained = byChain || bySymop;
+   if (!isCourseGrained)
+     setIsPDB();
    if (htParams.containsKey("vTlsModels")) {
      // from   load files "tls.out" "xxxx.pdb"
      vTlsModels = ( List<Map<String, Object>>) htParams.remove("vTlsModels");
@@ -251,7 +251,8 @@ public class PdbReader extends AtomSetCollectionReader {
         handleTlsMissingModels();
         return checkLastModel();
       }
-      atomSetCollection.connectAll(maxSerial, isConnectStateBug);
+      if (!isCourseGrained)
+        atomSetCollection.connectAll(maxSerial, isConnectStateBug);
       if (atomCount > 0)
         applySymmetryAndSetTrajectory();
       // supposedly MODEL is only for NMR
@@ -357,7 +358,8 @@ public class PdbReader extends AtomSetCollectionReader {
   
   protected void finalizeReaderPDB() throws Exception {
     checkNotPDB();
-    atomSetCollection.connectAll(maxSerial, isConnectStateBug);
+    if (!isCourseGrained)
+      atomSetCollection.connectAll(maxSerial, isConnectStateBug);
     SymmetryInterface symmetry;
     if (vBiomolecules != null && vBiomolecules.size() > 0
         && atomSetCollection.getAtomCount() > 0) {
@@ -833,7 +835,7 @@ REMARK 290 REMARK: NULL
       atomSetCollection.addAtomWithMappedSerialNumber(atom);
     else
       atomSetCollection.addAtom(atom);
-    if (atomCount++ == 0)
+    if (atomCount++ == 0 && !isCourseGrained)
       atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
     // note that values are +1 in this serial map
     if (atom.isHetero) {
@@ -1208,14 +1210,15 @@ Polyproline 10
     haveMappedSerials = false;
     sbConect = null;
     atomSetCollection.newAtomSet();
-    atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
+    if (!isCourseGrained)
+      atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
     atomSetCollection.setCurrentAtomSetNumber(modelNumber);
     if (isCourseGrained)
       atomSetCollection.setAtomSetAuxiliaryInfo("courseGrained", Boolean.TRUE);
   }
 
   private void checkNotPDB() {
-    boolean isPDB = (nRes == 0 || nUNK != nRes);
+    boolean isPDB = (!isCourseGrained && (nRes == 0 || nUNK != nRes));
     // This speeds up calculation, because no crosschecking
     // No special-position atoms in mmCIF files, because there will
     // be no center of symmetry, no rotation-inversions, 

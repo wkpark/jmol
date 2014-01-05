@@ -4078,6 +4078,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             }
             continue;
           }
+          BS bs1 = BSUtil.copy(propertyBitSet);
+          bs1.clearBits(nOps,  bs1.length());
+          propertyBitSet = bs1;
+          
         }
         switch (bitsetComparator) {
         case T.opLT:
@@ -7648,7 +7652,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (chk)
       return;
     sm.loadShape(JC.SHAPE_LABELS);
-    String strLabel = null;
+    Object strLabel = null;
     switch (getToken(index).tok) {
     case T.on:
       strLabel = viewer.getStandardLabelFormat(0);
@@ -7660,6 +7664,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       setShapeProperty(JC.SHAPE_LABELS, "display",
           theTok == T.display ? Boolean.TRUE : Boolean.FALSE);
       return;
+    case T.varray:
+      strLabel = theToken.value;
+      break;
     default:
       strLabel = parameterAsString(index);
     }

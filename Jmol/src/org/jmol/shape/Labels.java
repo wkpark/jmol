@@ -29,6 +29,7 @@ import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.Text;
+import org.jmol.script.SV;
 import org.jmol.script.T;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
@@ -127,7 +128,8 @@ public class Labels extends AtomShape {
           continue;
         text = getLabel(i);
         if (text == null) {
-          text = Text.newLabel(gdata, null, strings[i], C.INHERIT_ALL, (short) 0, 0, scalePixelsPerMicron, null);
+          text = Text.newLabel(gdata, null, strings[i], C.INHERIT_ALL,
+              (short) 0, 0, scalePixelsPerMicron, null);
           putLabel(i, text);
         } else {
           text.setScalePixelsPerMicron(scalePixelsPerMicron);
@@ -138,12 +140,28 @@ public class Labels extends AtomShape {
 
     if ("label" == propertyName) {
       setScaling();
-      String strLabel = (String) value;
-      LabelToken[][] tokens = (strLabel == null || strLabel.length() == 0 ? nullToken
-          : new LabelToken[][] { null });
-      for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
-          .nextSetBit(i + 1))
-        setLabel(tokens, strLabel, i);
+      LabelToken[][] tokens = null;
+      if (value instanceof List) {
+        List<SV> list = (List<SV>) value;
+        int n = list.size();
+        tokens = new LabelToken[][] { null };
+        for (int pt = 0, i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
+            .nextSetBit(i + 1)) {
+          if (pt >= n) {
+            setLabel(nullToken, "", i);
+            return;
+          }
+          tokens[0] = null;
+          setLabel(tokens, SV.sValue(list.get(pt++)), i);
+        }
+      } else {
+        String strLabel = (String) value;
+        tokens = (strLabel == null || strLabel.length() == 0 ? nullToken
+            : new LabelToken[][] { null });
+        for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
+            .nextSetBit(i + 1))
+          setLabel(tokens, strLabel, i);
+      }
       return;
     }
 
@@ -233,7 +251,7 @@ public class Labels extends AtomShape {
             setPymolOffset(i, (float[]) value);
         return;
       }
-      
+
       int offset = ((Integer) value).intValue();
       // 0 must be the default, because we initialize the array
       // in segments and so there will be extra 0s.
@@ -367,10 +385,9 @@ public class Labels extends AtomShape {
       labelBoxes = null;
       int firstAtomDeleted = ((int[]) ((Object[]) value)[2])[1];
       int nAtomsDeleted = ((int[]) ((Object[]) value)[2])[2];
-      fids = (byte[]) AU.deleteElements(fids, firstAtomDeleted,
+      fids = (byte[]) AU.deleteElements(fids, firstAtomDeleted, nAtomsDeleted);
+      bgcolixes = (short[]) AU.deleteElements(bgcolixes, firstAtomDeleted,
           nAtomsDeleted);
-      bgcolixes = (short[]) AU.deleteElements(bgcolixes,
-          firstAtomDeleted, nAtomsDeleted);
       offsets = (int[]) AU.deleteElements(offsets, firstAtomDeleted,
           nAtomsDeleted);
       formats = (String[]) AU.deleteElements(formats, firstAtomDeleted,

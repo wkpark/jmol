@@ -8313,8 +8313,7 @@ public class ScriptExt implements JmolScriptExtension {
    * @return T/F
    * @throws ScriptException
    */
-  private boolean evaluateList(ScriptMathProcessor mp, 
-                               int tok, SV[] args)
+  private boolean evaluateList(ScriptMathProcessor mp, int tok, SV[] args)
       throws ScriptException {
     int len = args.length;
     SV x1 = mp.getX();
@@ -8328,9 +8327,9 @@ public class ScriptExt implements JmolScriptExtension {
       if (len != 1 && len != 2)
         return false;
       break;
-     default:
-       if (len != 1)
-         return false;
+    default:
+      if (len != 1)
+        return false;
     }
     String[] sList1 = null, sList2 = null, sList3 = null;
 
@@ -8338,11 +8337,11 @@ public class ScriptExt implements JmolScriptExtension {
       // [xxxx].add("\t", [...])
       int itab = (args[0].tok == T.string ? 0 : 1);
       String tab = SV.sValue(args[itab]);
-      sList1 = (x1.tok == T.varray ? SV.listValue(x1)
-          : PT.split(SV.sValue(x1), "\n"));
+      sList1 = (x1.tok == T.varray ? SV.listValue(x1) : PT.split(SV.sValue(x1),
+          "\n"));
       x2 = args[1 - itab];
-      sList2 = (x2.tok == T.varray ? SV.listValue(x2)
-          : PT.split(SV.sValue(x2), "\n"));
+      sList2 = (x2.tok == T.varray ? SV.listValue(x2) : PT.split(SV.sValue(x2),
+          "\n"));
       sList3 = new String[len = Math.max(sList1.length, sList2.length)];
       for (int i = 0; i < len; i++)
         sList3[i] = (i >= sList1.length ? "" : sList1[i]) + tab
@@ -8353,7 +8352,8 @@ public class ScriptExt implements JmolScriptExtension {
     boolean isAll = (x2.tok == T.all);
     if (x1.tok != T.varray && x1.tok != T.string)
       return mp.binaryOp(opTokenFor(tok), x1, x2);
-    boolean isScalar = SV.isScalar(x2);
+    boolean isScalar1 = SV.isScalar(x1);
+    boolean isScalar2 = SV.isScalar(x2);
 
     float[] list1 = null;
     float[] list2 = null;
@@ -8362,18 +8362,19 @@ public class ScriptExt implements JmolScriptExtension {
 
     if (x1.tok == T.varray) {
       len = alist1.size();
+    } else if (isScalar1) {
+      len = Integer.MAX_VALUE;
     } else {
       sList1 = (PT.split(SV.sValue(x1), "\n"));
       list1 = new float[len = sList1.length];
       PT.parseFloatArrayData(sList1, list1);
     }
-
     if (isAll) {
       float sum = 0f;
       if (x1.tok == T.varray) {
         for (int i = len; --i >= 0;)
           sum += SV.fValue(alist1.get(i));
-      } else {
+      } else if (!isScalar1) {
         for (int i = len; --i >= 0;)
           sum += list1[i];
       }
@@ -8381,14 +8382,16 @@ public class ScriptExt implements JmolScriptExtension {
     }
     if (tok == T.join && x2.tok == T.string) {
       SB sb = new SB();
-      for (int i = 0; i < len; i++)
-        sb.appendO(i > 0 ? x2.value : null).append(SV.sValue(alist1.get(i)));
+      if (isScalar1)
+        sb.append(SV.sValue(x1));
+      else
+        for (int i = 0; i < len; i++)
+          sb.appendO(i > 0 ? x2.value : null).append(SV.sValue(alist1.get(i)));
       return mp.addXStr(sb.toString());
     }
 
     SV scalar = null;
-
-    if (isScalar) {
+    if (isScalar2) {
       scalar = x2;
     } else if (x2.tok == T.varray) {
       len = Math.min(len, alist2.size());
@@ -8396,24 +8399,17 @@ public class ScriptExt implements JmolScriptExtension {
       sList2 = PT.split(SV.sValue(x2), "\n");
       list2 = new float[sList2.length];
       PT.parseFloatArrayData(sList2, list2);
-      len = Math.min(list1.length, list2.length);
+      len = Math.min(len, list2.length);
     }
 
     T token = opTokenFor(tok);
 
     SV[] olist = new SV[len];
-    
-    SV a, b;
-    
-    for (int i = 0; i < len; i++) {
-      if (x1.tok == T.varray)
-        a = alist1.get(i);
-      else if (Float.isNaN(list1[i]))
-        a = SV.getVariable(SV.unescapePointOrBitsetAsVariable(sList1[i]));
-      else
-        a = SV.newV(T.decimal, Float.valueOf(list1[i]));
 
-      if (isScalar)
+    SV a = (isScalar1 ? x1 : null);
+    SV b;
+    for (int i = 0; i < len; i++) {
+      if (isScalar2)
         b = scalar;
       else if (x2.tok == T.varray)
         b = alist2.get(i);
@@ -8421,6 +8417,14 @@ public class ScriptExt implements JmolScriptExtension {
         b = SV.getVariable(SV.unescapePointOrBitsetAsVariable(sList2[i]));
       else
         b = SV.newV(T.decimal, Float.valueOf(list2[i]));
+      if (!isScalar1) {
+        if (x1.tok == T.varray)
+          a = alist1.get(i);
+        else if (Float.isNaN(list1[i]))
+          a = SV.getVariable(SV.unescapePointOrBitsetAsVariable(sList1[i]));
+        else
+          a = SV.newV(T.decimal, Float.valueOf(list1[i]));
+      }
       if (tok == T.join) {
         if (a.tok != T.varray) {
           List<SV> l = new List<SV>();
@@ -8428,7 +8432,7 @@ public class ScriptExt implements JmolScriptExtension {
           a = SV.getVariableList(l);
         }
       }
-      if (!mp.binaryOp(token,  a,  b))
+      if (!mp.binaryOp(token, a, b))
         return false;
       olist[i] = mp.getX();
     }

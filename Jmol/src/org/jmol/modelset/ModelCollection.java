@@ -2177,6 +2177,7 @@ abstract public class ModelCollection extends BondCollection {
         if (atomA.isDeleted())
           continue;
       }
+      char altloc = (isModulated(iA) ? '\0' : atomA.altloc);
       for (int iB = (isBonds ? m : bsB.nextSetBit(0)); iB >= 0; iB = (isBonds ? iB - 1
           : bsB.nextSetBit(iB + 1))) {
         if (!isBonds) {
@@ -2185,7 +2186,7 @@ abstract public class ModelCollection extends BondCollection {
           atomB = atoms[iB];
           if (atomA.modelIndex != atomB.modelIndex || atomB.isDeleted())
             continue;
-          if (atomA.altloc != atomB.altloc && atomA.altloc != '\0'
+          if (altloc != '\0' && altloc != atomB.altloc 
               && atomB.altloc != '\0')
             continue;
           bondAB = atomA.getBond(atomB);
@@ -3090,15 +3091,15 @@ abstract public class ModelCollection extends BondCollection {
       atomSerials = AU.arrayCopyI(atomSerials, newLength);
   }
 
-
   public Atom addAtom(int modelIndex, Group group, int atomicAndIsotopeNumber,
                       String atomName, int atomSerial, int atomSite, P3 xyz,
                       float radius, V3 vib, int formalCharge,
                       float partialCharge, int occupancy, float bfactor,
                       List<Object> tensors, boolean isHetero,
                       byte specialAtomID, BS atomSymmetry) {
-    Atom atom = new Atom().setAtom(modelIndex, atomCount, xyz, radius, atomSymmetry,
-        atomSite, (short) atomicAndIsotopeNumber, formalCharge, isHetero);
+    Atom atom = new Atom().setAtom(modelIndex, atomCount, xyz, radius,
+        atomSymmetry, atomSite, (short) atomicAndIsotopeNumber, formalCharge,
+        isHetero);
     models[modelIndex].atomCount++;
     models[modelIndex].bsAtoms.set(atomCount);
     if (Elements.isElement(atomicAndIsotopeNumber, 1))
@@ -3249,18 +3250,18 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public void setUnitCellOffset(SymmetryInterface unitCell, P3 pt, int ijk) {
-//    for (int i = modelIndex; i < modelCount; i++) {
-//      if (i < 0 || modelIndex >= 0 && i != modelIndex
-//          && models[i].trajectoryBaseIndex != modelIndex)
-//        continue;
-//      unitCell = getUnitCell(i);
-      if (unitCell == null)
-        return;
-      if (pt == null)
-        unitCell.setOffset(ijk);
-      else
-        unitCell.setOffsetPt(pt);
-//    }
+    //    for (int i = modelIndex; i < modelCount; i++) {
+    //      if (i < 0 || modelIndex >= 0 && i != modelIndex
+    //          && models[i].trajectoryBaseIndex != modelIndex)
+    //        continue;
+    //      unitCell = getUnitCell(i);
+    if (unitCell == null)
+      return;
+    if (pt == null)
+      unitCell.setOffset(ijk);
+    else
+      unitCell.setOffsetPt(pt);
+    //    }
   }
 
   public void connect(float[][] connections) {
@@ -3547,6 +3548,5 @@ abstract public class ModelCollection extends BondCollection {
     }
     return getUnitCell(atoms[index].modelIndex);
   }
-
 
 }

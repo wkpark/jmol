@@ -36,7 +36,6 @@ import org.jmol.util.GData;
 import javajs.util.P3;
 import javajs.util.V3;
 
-
 public class RocketsRenderer extends StrandsRenderer {
 
   //private final static float MIN_CONE_HEIGHT = 0.05f;
@@ -57,7 +56,7 @@ public class RocketsRenderer extends StrandsRenderer {
       bioShape.falsifyMesh();
       renderArrowHeads = val;
     }
-    calcRopeMidPoints(newRockets);    
+    calcRopeMidPoints(newRockets);
     calcScreenControlPoints(cordMidPoints);
     controlPoints = cordMidPoints;
     renderRockets();
@@ -79,18 +78,18 @@ public class RocketsRenderer extends StrandsRenderer {
       point = cordMidPoints[i];
       Monomer residue = monomers[i];
       if (isNewStyle && renderArrowHeads) {
-          point.setT(controlPoints[i]);
-      } else if (isHelix(i) ||  !isNewStyle && isSheet(i)) {
+        point.setT(controlPoints[i]);
+      } else if (isHelix(i) || !isNewStyle && isSheet(i)) {
         ProteinStructure proteinstructure = residue.getProteinStructure();
-        point.setT(i - 1 != proteinstructure.getMonomerIndex() ?
-            proteinstructure.getAxisStartPoint() :
-            proteinstructure.getAxisEndPoint());
+        point
+            .setT(i - 1 != proteinstructure.getMonomerIndex() ? proteinstructure
+                .getAxisStartPoint() : proteinstructure.getAxisEndPoint());
         proteinstructurePrev = proteinstructure;
       } else {
         if (proteinstructurePrev != null)
           point.setT(proteinstructurePrev.getAxisEndPoint());
         else {
-          point.setT(controlPoints[i]);        
+          point.setT(controlPoints[i]);
         }
         proteinstructurePrev = null;
       }
@@ -99,7 +98,7 @@ public class RocketsRenderer extends StrandsRenderer {
     if (proteinstructurePrev != null)
       point.setT(proteinstructurePrev.getAxisEndPoint());
     else {
-      point.setT(controlPoints[monomerCount]);        
+      point.setT(controlPoints[monomerCount]);
     }
   }
 
@@ -118,7 +117,8 @@ public class RocketsRenderer extends StrandsRenderer {
     renderPending();
   }
 
-  protected void renderSpecialSegment(Monomer monomer, short thisColix, short thisMad) {
+  protected void renderSpecialSegment(Monomer monomer, short thisColix,
+                                      short thisMad) {
     ProteinStructure proteinstructure = monomer.getProteinStructure();
     if (tPending) {
       if (proteinstructure == proteinstructurePending && thisMad == mad
@@ -162,11 +162,12 @@ public class RocketsRenderer extends StrandsRenderer {
   private V3 vtemp = new V3();
 
   /**
-   * @param i 
-   * @param pointStart 
-   * @param pointBeforeEnd  ignored now that arrow heads protrude beyond end of rocket  
-   * @param pointEnd 
-   * @param tEnd 
+   * @param i
+   * @param pointStart
+   * @param pointBeforeEnd
+   *        ignored now that arrow heads protrude beyond end of rocket
+   * @param pointEnd
+   * @param tEnd
    */
   private void renderPendingRocketSegment(int i, P3 pointStart,
                                           P3 pointBeforeEnd, P3 pointEnd,
@@ -207,55 +208,79 @@ public class RocketsRenderer extends StrandsRenderer {
   protected void renderCone(int i, P3 pointBegin, P3 pointEnd,
                             P3 screenPtBegin, P3 screenPtEnd) {
     int coneDiameter = (mad << 1) - (mad >> 1);
-    coneDiameter = (int) viewer.scaleToScreen((int) Math.floor(screenPtBegin.z),
-        coneDiameter);
+    coneDiameter = (int) viewer.scaleToScreen(
+        (int) Math.floor(screenPtBegin.z), coneDiameter);
     g3d.fillConeSceen3f(GData.ENDCAPS_FLAT, coneDiameter, screenPtBegin,
         screenPtEnd);
   }
 
-  private void renderPendingSheet(P3 pointStart, P3 pointBeforeEnd,
-                          P3 pointEnd, boolean tEnd) {
+  private void renderPendingSheet(P3 ptStart, P3 pointBeforeEnd,
+                                  P3 ptEnd, boolean tEnd) {
     if (!g3d.setColix(colix))
       return;
+    if (corners[0] == null)
+      for (int i = 8; --i >= 0;) {
+        corners[i] = new P3();
+        screenCorners[i] = new P3();
+      }
     if (tEnd && renderArrowHeads) {
-      drawArrowHeadBox(pointBeforeEnd, pointEnd);
-      drawBox(pointStart, pointBeforeEnd);
-    } else {
-      drawBox(pointStart, pointEnd);
+      setBox(1.25f, 0.333f, pointBeforeEnd);
+      ptTip.scaleAdd2(-0.5f, vH, ptEnd);
+      for (int i = 4; --i >= 0;) {
+        P3 corner = corners[i];
+        corner.setT(ptC);
+        if ((i & 1) != 0)
+          corner.add(vW);
+        if ((i & 2) != 0)
+          corner.add(vH);
+        viewer.transformPt3f(corner, screenCorners[i]);
+      }
+      corners[4].setT(ptTip);
+      viewer.transformPt3f(ptTip, screenCorners[4]);
+      corners[5].add2(ptTip, vH);
+      viewer.transformPt3f(corners[5], screenCorners[5]);
+
+      g3d.fillTriangle3f(screenCorners[0], screenCorners[1], screenCorners[4],
+          true);
+      g3d.fillTriangle3f(screenCorners[2], screenCorners[3], screenCorners[5],
+          true);
+      for (int i = 0; i < 12; i += 4) {
+        int i0 = arrowHeadFaces[i];
+        int i1 = arrowHeadFaces[i + 1];
+        int i2 = arrowHeadFaces[i + 2];
+        int i3 = arrowHeadFaces[i + 3];
+        g3d.fillQuadrilateral(screenCorners[i0], screenCorners[i1],
+            screenCorners[i2], screenCorners[i3]);
+      }
+      ptEnd = pointBeforeEnd;
+    }
+    setBox(1f, 0.25f, ptStart);
+    vTemp.sub2(ptEnd, ptStart);
+    buildBox(ptC, vW, vH, vTemp);
+    for (int i = 0; i < 6; ++i) {
+      int i0 = boxFaces[i * 4];
+      int i1 = boxFaces[i * 4 + 1];
+      int i2 = boxFaces[i * 4 + 2];
+      int i3 = boxFaces[i * 4 + 3];
+      g3d.fillQuadrilateral(screenCorners[i0], screenCorners[i1],
+          screenCorners[i2], screenCorners[i3]);
     }
   }
 
-  private final static byte[] boxFaces =
-  {
-    0, 1, 3, 2,
-    0, 2, 6, 4,
-    0, 4, 5, 1,
-    7, 5, 4, 6,
-    7, 6, 2, 3,
-    7, 3, 1, 5 };
-
-  private final P3[] corners = new P3[8];
-  private final P3[] screenCorners = new P3[8];
-  {
-    for (int i = 8; --i >= 0; ) {
-      screenCorners[i] = new P3();
-      corners[i] = new P3();
-    }
+  private void setBox(float w, float h, P3 pt) {
+    Sheet sheet = (Sheet) proteinstructurePending;
+    float scale = mad / 1000f;
+    vW.setT(sheet.getWidthUnitVector());
+    vW.scale(scale * w);
+    vH.setT(sheet.getHeightUnitVector());
+    vH.scale(scale * h);
+    ptC.ave(vW, vH);
+    ptC.sub2(pt, ptC);
   }
 
-  private final P3 pointTipOffset = new P3();
-
-  private final V3 scaledWidthVector = new V3();
-  private final V3 scaledHeightVector = new V3();
-
-  private final static byte arrowHeadFaces[] =
-  {0, 1, 3, 2,
-   0, 4, 5, 2,
-   1, 4, 5, 3};
-
-  void buildBox(P3 pointCorner, V3 scaledWidthVector,
-                V3 scaledHeightVector, V3 lengthVector) {
-    for (int i = 8; --i >= 0; ) {
+  private void buildBox(P3 pointCorner, V3 scaledWidthVector,
+                        V3 scaledHeightVector, V3 lengthVector) {
+    for (int i = 8; --i >= 0;) {
       P3 corner = corners[i];
       corner.setT(pointCorner);
       if ((i & 1) != 0)
@@ -268,74 +293,26 @@ public class RocketsRenderer extends StrandsRenderer {
     }
   }
 
-  void buildArrowHeadBox(P3 pointCorner, V3 scaledWidthVector,
-                         V3 scaledHeightVector, P3 pointTip) {
-    for (int i = 4; --i >= 0; ) {
-      P3 corner = corners[i];
-      corner.setT(pointCorner);
-      if ((i & 1) != 0)
-        corner.add(scaledWidthVector);
-      if ((i & 2) != 0)
-        corner.add(scaledHeightVector);
-      viewer.transformPt3f(corner, screenCorners[i]);
-    }
-    corners[4].setT(pointTip);
-    viewer.transformPt3f(pointTip, screenCorners[4]);
-    corners[5].add2(pointTip, scaledHeightVector);
-    viewer.transformPt3f(corners[5], screenCorners[5]);
-  }
+  private final V3 vTemp = new V3();
+  private final P3 ptC = new P3();
+  private final P3 ptTip = new P3();
+  private final V3 vW = new V3();
+  private final V3 vH = new V3();
+  private final P3[] corners = new P3[8];
+  private final P3[] screenCorners = new P3[8];
 
-  private final V3 lengthVector = new V3();
-  private final P3 pointCorner = new P3();
+  private final static byte[] boxFaces =
+  {
+    0, 1, 3, 2,
+    0, 2, 6, 4,
+    0, 4, 5, 1,
+    7, 5, 4, 6,
+    7, 6, 2, 3,
+    7, 3, 1, 5 };
 
-  void drawBox(P3 pointA, P3 pointB) {
-    setBox(1f, 0.25f, pointA);
-    lengthVector.sub2(pointB, pointA);
-    buildBox(pointCorner, scaledWidthVector,
-             scaledHeightVector, lengthVector);
-    for (int i = 0; i < 6; ++i) {
-      int i0 = boxFaces[i * 4];
-      int i1 = boxFaces[i * 4 + 1];
-      int i2 = boxFaces[i * 4 + 2];
-      int i3 = boxFaces[i * 4 + 3];
-      g3d.fillQuadrilateral(screenCorners[i0],
-                              screenCorners[i1],
-                              screenCorners[i2],
-                              screenCorners[i3]);
-    }
-  }
+  private final static byte arrowHeadFaces[] =
+  {0, 1, 3, 2,
+   0, 4, 5, 2,
+   1, 4, 5, 3};
 
-  private void setBox(float width, float height, P3 pt) {
-    Sheet sheet = (Sheet)proteinstructurePending;
-    float scale = mad / 1000f;
-    scaledWidthVector.setT(sheet.getWidthUnitVector());
-    scaledWidthVector.scale(scale * width);
-    scaledHeightVector.setT(sheet.getHeightUnitVector());
-    scaledHeightVector.scale(scale * height);
-    pointCorner.scaleAdd2(-0.5f, pt, scaledHeightVector);
-    pointCorner.add(scaledWidthVector);
-  }
-
-  void drawArrowHeadBox(P3 base, P3 tip) {
-    setBox(1.25f, 0.333f, base);
-    pointTipOffset.scaleAdd2(-0.5f, tip, scaledHeightVector);
-    buildArrowHeadBox(pointCorner, scaledWidthVector,
-                      scaledHeightVector, pointTipOffset);
-    g3d.fillTriangle3f(screenCorners[0],
-                     screenCorners[1],
-                     screenCorners[4], true);
-    g3d.fillTriangle3f(screenCorners[2],
-                     screenCorners[3],
-                     screenCorners[5], true);
-    for (int i = 0; i < 12; i += 4) {
-      int i0 = arrowHeadFaces[i];
-      int i1 = arrowHeadFaces[i + 1];
-      int i2 = arrowHeadFaces[i + 2];
-      int i3 = arrowHeadFaces[i + 3];
-      g3d.fillQuadrilateral(screenCorners[i0],
-                              screenCorners[i1],
-                              screenCorners[i2],
-                              screenCorners[i3]);
-    }
-  }  
 }

@@ -35,6 +35,7 @@ import org.jmol.adapter.smarter.Atom;
 
 /**
  * http://cms.mpi.univie.ac.at/vasp/
+ * 
  * @author Pieremanuele Canepa, Room 104, FM Group School of Physical Sciences,
  *         Ingram Building, University of Kent, Canterbury, Kent, CT2 7NH United
  *         Kingdom, pc229@kent.ac.uk
@@ -45,7 +46,6 @@ import org.jmol.adapter.smarter.Atom;
 public class VaspOutcarReader extends AtomSetCollectionReader {
 
   private String[] atomNames;
-  private List<String> elementNames; //this array is to store the name of the element 
   private int atomCount = 0;
   private boolean inputOnly;
   private boolean mDsimulation = false; //this is for MD simulations
@@ -64,7 +64,7 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
     //reads if output is from vasp5
     if (line.contains(" vasp.5")) {
       isVersion5 = true;
-    } else if (line.toUpperCase().contains("INCAR:")) {
+    } else if (line.toUpperCase().contains("TITEL")) {
       //reads the kind of atoms namely H, Ca etc
       readElementNames();
     } else if (line.contains("ions per type")) {
@@ -97,28 +97,18 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
     setSymmetry();
   }
 
-  /*  
-    POTCAR:    PAW H                                 
-    POTCAR:    PAW O                                 
-    POTCAR:    PAW Pd                                
-    POTCAR:    PAW H                                 
-      VRHFIN =H: ultrasoft test 
-   */
+
+
+  private List<String> elementNames = new List<String>();
+  private String elementList = "";
+
   private void readElementNames() throws Exception {
-    elementNames = new  List<String>();
-    String elementList = "";
-    while (readLine() != null && line.indexOf("VRHFIN") < 0) {
-      int pt = (line.contains("_") ? 2 : 1);
-      if (pt == 2)
-        line = line.replace('_', ' ');
-      String[] tokens = getTokensStr(line.substring(line.indexOf(":") + 1));
-      String sym = tokens[pt];
-      String key = ";" + sym + ";";
-      if (elementList.indexOf(key) >= 0)
-        continue;
-      elementList += key;
-      elementNames.addLast(sym);
-    }
+    //TITEL  = PAW_PBE Al 04Jan2001
+    String[] tokens = getTokensStr(line);
+    String sym = tokens[3];
+    String key = ";" + sym + ";";
+    elementList += key;
+    elementNames.addLast(sym);
   }
 
   /*  
@@ -306,9 +296,8 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
   }
 
   private void setAtomSetInfoMd() {
-    atomSetCollection.setAtomSetName("Temp. = "
-        + DF.formatDecimal((temp), 2) + " K, Energy = " + totEne
-        + " eV");
+    atomSetCollection.setAtomSetName("Temp. = " + DF.formatDecimal((temp), 2)
+        + " K, Energy = " + totEne + " eV");
     atomSetCollection.setAtomSetAuxiliaryInfo("Energy", totEne);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Energy", totEne);
     atomSetCollection.setAtomSetAuxiliaryInfo("EleEnergy", kinEne);

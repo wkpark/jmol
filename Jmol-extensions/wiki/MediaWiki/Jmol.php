@@ -45,9 +45,13 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 }
 
 # Initialisation
-$jsmolWikiDir = dirname(__FILE__);
-$wgAutoloadClasses['Jmol'] = "$jsmolWikiDir/Jmol.body.php";
-$wgExtensionMessagesFiles['Jmol'] = "$jsmolWikiDir/Jmol.i18n.php";
+// $jsmolWikiDir = dirname(__FILE__);
+// $wgAutoloadClasses['Jmol'] = "$jsmolWikiDir/Jmol.body.php";
+// $wgExtensionMessagesFiles['Jmol'] = "$jsmolWikiDir/Jmol.i18n.php";
+
+$dir = dirname(__FILE__) . '/';
+$wgExtensionMessagesFiles['Jmol'] = $dir  . 'Jmol.i18n.php';
+$wgAutoloadClasses['Jmol'] = $dir  . 'Jmol.body.php';
 
 $wgJmolVersion = '4.0_dev';
 
@@ -57,9 +61,9 @@ $wgJmolScriptVersion = $wgJmolVersion . '_1';
 // Extension credits that will show up on Special:Version
 $wgExtensionCredits['parserhook'][] = array(
 	'path'           => __FILE__,
-	'name'           => 'Jmol',
-	'descriptionmsg' => 'jmol-desc',
-	'version'        => $wgJmolVersion,
+	'name'           => 'JmolExtension',
+	'description'    => currentJmolVersion(),
+	'version'        => $wgJmolScriptVersion,
 	'author'         => array( 'Nicolas Vervelle', 'Angel Herraez', 'Jaime Prilusky', 'Jmol Development Team' ),
 	'url'            => 'http://www.mediawiki.org/wiki/Extension:Jmol',
 );
@@ -76,9 +80,11 @@ global $wgJmolDefaultAppletSize;
 global $wgJmolDefaultScript;
 global $wgJmolExtensionPath;
 global $wgJmolForceNameSpace;
+global $wgJmolDrawControls;
 global $wgJmolForceHTML5;
 global $wgJmolShowWarnings;
 global $wgJmolUsingSignedAppletByDefault;
+global $wgJmolMaxAppletSize;
 
 // These are the default (recommended) values.
 // They can be changed here, but it is advisable to change them in LocalSettings.php
@@ -89,19 +95,35 @@ $wgJmolAuthorizeJmolSmilesTag = true;
 $wgJmolAuthorizeJmolTag = true;
 $wgJmolAuthorizeUploadedFile = true;
 $wgJmolAuthorizeUrl = false;
-$wgJmolDefaultAppletSize = "400";
 $wgJmolDefaultScript = "";
 $wgJmolExtensionPath = $wgScriptPath."/extensions/jsmol/wiki"; // Jmol";
 $wgJmolForceNameSpace = "";
 $wgJmolShowWarnings = true;
 $wgJmolUsingSignedAppletByDefault = false;
+$wgJmolDefaultAppletSize = "400";
+$wgJmolMaxAppletSize = "600";
+$wgJmolDrawControls = false;
 
 global $wgHooks;
-$wgHooks['ParserFirstCallInit'][] = 'wfJmolParserInit';
+if ( defined( 'MW_SUPPORTS_PARSERFIRSTCALLINIT' ) ) {
+  $wgHooks['ParserFirstCallInit'][] = 'wfJmolParserInit';
+} else { # support mediawiki < 1.20
+  $wgExtensionFunctions[] = 'wfJmolParserInit';
+}
 
-function wfJmolParserInit( &$parser ) {
-	new Jmol;
-	return true;
+function wfJmolParserInit( ) {
+  new Jmol;  return true;
+}
+
+function currentJmolVersion() {
+  $propF = dirname(dirname(__FILE__)) . '/j2s/Jmol.properties';
+  $version = 'Enables access to local Jmol ';
+  if (file_exists($propF)) {
+    $txt = file_get_contents($propF);
+    preg_match('/___JmolVersion=(.+)/', $txt, $matches);
+    $version .= "( now loaded Jmol version " . preg_replace('/\"/','',$matches[1]) . ")";
+  }
+  return $version;
 }
 
 //</source>

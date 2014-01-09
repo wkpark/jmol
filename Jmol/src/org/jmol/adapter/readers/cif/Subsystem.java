@@ -1,6 +1,9 @@
 package org.jmol.adapter.readers.cif;
 
+import java.util.Map.Entry;
+
 import javajs.util.List;
+import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.Matrix;
 import javajs.util.V3;
@@ -28,17 +31,17 @@ class Subsystem {
 
   public SymmetryInterface getSymmetry() {
     if (modMatrices == null)
-      setSymmetry();
+      setSymmetry(true);
     return symmetry;
   }
 
   public Matrix[] getModMatrices() {
     if (modMatrices == null)
-      setSymmetry();
+      setSymmetry(true);
     return modMatrices;
   }
 
-  private void setSymmetry() {
+  private void setSymmetry(boolean setOperators) {
     double[][] a;
 
     // Part 1: Get sigma_nu
@@ -57,7 +60,6 @@ class Subsystem {
     Matrix sigma = msReader.getSigma();
     Matrix sigma_nu = wdd.mul(sigma).add(wd3).mul(w3d.mul(sigma).add(w33).inverse());
     Matrix tFactor = wdd.sub(sigma_nu.mul(w3d)); 
-    modMatrices = new Matrix[] { sigma_nu, tFactor };
     
     Logger.info("sigma_nu = " + sigma_nu);
     
@@ -96,6 +98,10 @@ class Subsystem {
       uc_nu[i + 1] = V3.new3((float) a[i][0], (float) a[i][1], (float) a[i][2]);    
     uc_nu = reciprocalsOf(uc_nu);
     symmetry = msReader.cr.symmetry.getUnitCell(uc_nu, false);
+    if (!setOperators)
+      return;
+    
+    modMatrices = new Matrix[] { sigma_nu, tFactor };
 
     // Part 3: Transform the operators 
     // 
@@ -113,8 +119,8 @@ class Subsystem {
     int nOps = s0.getSpaceGroupOperationCount();
     for (int iop = 0; iop < nOps; iop++) {
       Matrix rv = s0.getOperationRsVs(iop);
-      Matrix r = rv.getRotation();
-      Matrix v = rv.getTranslation();
+      Matrix r0 = rv.getRotation();
+      Matrix v0 = rv.getTranslation();
 //      System.out.println("op " + (iop + 1) + ".1: "+ r);
 //      r = w2.mul(r).mul(w2inv);
 //      System.out.println("op " + (iop + 1) + ".2: "+ r);
@@ -123,12 +129,42 @@ class Subsystem {
 //      System.out.println("=====");
 //
 //      r = rv.getRotation();
-      r = w.mul(r).mul(winv);
-      v = w.mul(v);
-      String jf = symmetry.addOp(r, v, sigma_nu);
+      Matrix r = w.mul(r0).mul(winv);
+      Matrix v = w.mul(v0);
+      M3 jToi = null;
+      if(isComplex(r)) {
+        // must find 3+d subsystem
+        for (Entry<String, Subsystem> e: msReader.htSubsystems.entrySet()){
+          Subsystem ss = e.getValue();
+          if (ss == this)
+            continue;
+          Matrix rj = ss.w.mul(r0).mul(winv);
+          if (!isComplex(rj)) {
+            // result of this operation will be in other system.
+            jToi = M3.newM(symmetry.getMatrix("toFractional"));
+            if (ss.symmetry == null)
+              ss.setSymmetry(false);
+            jToi.mul(ss.symmetry.getMatrix("toCartesian"));
+            r = rj;
+            v = ss.w.mul(v0);
+            break;
+          }
+        }
+      }
+      String jf = symmetry.addOp(code, r, v, sigma_nu, jToi);
+      
       Logger.info(jf);
     }
     System.out.println("====");
+  }
+
+  private boolean isComplex(Matrix r) {
+    double[][] a = r.getArray();
+    for (int i = 3; --i >= 0;)
+      for (int j = 3 + d; --j >= 3;)
+        if (a[i][j] != 0)
+          return true;
+    return false;
   }
 
   private V3[] reciprocalsOf(V3[] abc) {

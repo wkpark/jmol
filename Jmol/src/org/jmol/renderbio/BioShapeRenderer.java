@@ -179,7 +179,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
 
   protected boolean setBioColix(short colix) {
     if (g3d.setColix(colix))
-      return  true;
+      return true;
     needTranslucent = true;
     return false;
   }

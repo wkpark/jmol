@@ -33,6 +33,8 @@ import org.jmol.util.C;
 import org.jmol.util.GData;
 import javajs.util.List;
 import org.jmol.util.Normix;
+import org.jmol.viewer.JC;
+
 import javajs.util.P3;
 import javajs.util.P3i;
 import javajs.util.V3;
@@ -158,7 +160,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
   private boolean renderMeshSlab() {
     volumeRender = (imesh.jvxlData.colorDensity && imesh.jvxlData.allowVolumeRender);
     int thisSlabValue = mySlabValue;
-    frontOnly = mesh.frontOnly;
+    frontOnly = mesh.frontOnly || shapeID == JC.SHAPE_LCAOCARTOON;
     if (!isNavigationMode) {
       meshSlabValue = imesh.jvxlData.slabValue; 
       if (meshSlabValue != Integer.MIN_VALUE  

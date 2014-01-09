@@ -867,14 +867,6 @@ public abstract class GenericApplet implements JmolAppletInterface,
   //////////// applet registration for direct applet-applet communication ////////////
 
   synchronized static void checkIn(String name, Object applet) {
-    /**
-     * @j2sNative
-     * 
-     *            if (Jmol._htRegistry) {J.util.GenericApplet.htRegistry =
-     *            Jmol._htRegistry} else {Jmol._htRegistry =
-     *            J.util.GenericApplet.htRegistry};
-     * 
-     */
     if (name != null) {
       Logger.info("AppletRegistry.checkIn(" + name + ")");
       htRegistry.put(name, applet);
@@ -900,20 +892,26 @@ public abstract class GenericApplet implements JmolAppletInterface,
       return;
     }
     String ext = "__" + mySyncId + "__";
+    //System.out.println("findApplet looking for " + ext + " appletName=" + appletName + " " + htRegistry.containsKey(appletName));
     if (appletName == null || appletName.equals("*") || appletName.equals(">")) {
       for (String appletName2 : htRegistry.keySet()) {
+        //System.out.println("findApplet key=" + appletName2);
         if (!appletName2.equals(excludeName) && appletName2.indexOf(ext) > 0) {
+          //System.out.println("findApplet found " + appletName2);
           apps.addLast(appletName2);
         }
       }
       return;
     }
+    if (excludeName.indexOf("_object") >= 0 && appletName.indexOf("_object") < 0)
+      appletName += "_object";
     if (appletName.indexOf("__") < 0)
       appletName += ext;
     if (!htRegistry.containsKey(appletName))
       appletName = "jmolApplet" + appletName;
     if (!appletName.equals(excludeName) && htRegistry.containsKey(appletName)) {
       apps.addLast(appletName);
+      //System.out.println("findApplet found2 " + appletName);
     }
   }
  

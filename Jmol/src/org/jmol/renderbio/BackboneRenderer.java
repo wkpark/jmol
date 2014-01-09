@@ -47,15 +47,8 @@ public class BackboneRenderer extends BioShapeRenderer {
         continue;
       short colixA = C.getColixInherited(colixes[i], atomA.getColix());
       short colixB = C.getColixInherited(colixes[i + 1], atomB.getColix());
-      if (!isExport && !isPass2) {
-        boolean doA = !C.isColixTranslucent(colixA);
-        boolean doB = !C.isColixTranslucent(colixB);
-        if (!doA || !doB) {
-          if (!doA && !doB)
-            continue;
-          needTranslucent = true;
-        }
-      }
+      if (!isExport && !isPass2 && !setBioColix(colixA) && !setBioColix(colixB))
+        continue;
       int xA = atomA.sX, yA = atomA.sY, zA = atomA.sZ;
       int xB = atomB.sX, yB = atomB.sY, zB = atomB.sZ;
       mad = mads[i];

@@ -57,7 +57,8 @@ public class LcaoCartoon extends Isosurface {
 
   //persistent
   private Float lcaoScale;
-  private boolean isTranslucent;
+  private boolean lcaoTranslucent;
+  private float lcaoTranslucentLevel;
   private Integer lcaoColorPos;
   private Integer lcaoColorNeg;
   boolean isLonePair;
@@ -128,17 +129,17 @@ public class LcaoCartoon extends Isosurface {
     }
 
     if ("translucentLevel" == propertyName) {
-      translucentLevel = ((Float) value).floatValue();
+      lcaoTranslucentLevel = ((Float) value).floatValue();
       //pass through
     }
 
     if ("settranslucency" == propertyName) {
-      isTranslucent = (((String) value).equals("translucent"));
+      lcaoTranslucent = (((String) value).equals("translucent"));
       return;
     }
 
     if ("translucency" == propertyName) {
-      isTranslucent = (((String) value).equals("translucent"));
+      lcaoTranslucent = (((String) value).equals("translucent"));
       if (lcaoID == null)
         return;
     }
@@ -272,6 +273,7 @@ public class LcaoCartoon extends Isosurface {
       if (meshes[i].thisID.indexOf(id) == 0)
         deleteMeshI(i);
     setPropI("init", null, null);
+    translucentLevel = lcaoTranslucentLevel;
     setPropI("thisID", id, null);
     //System.out.println("lcaocartoon: " + id);
     if (lcaoScale != null)
@@ -317,7 +319,7 @@ public class LcaoCartoon extends Isosurface {
         setPropI("translucentLevel", Float.valueOf(C.getColixTranslucencyLevel(colix)), null);
         setPropI("translucency", "translucent", null);
       }
-    } else if (isTranslucent)
+    } else if (lcaoTranslucent)
       for (int i = meshCount; --i >= 0;)
         if (meshes[i].thisID.indexOf(id) == 0)
           meshes[i].setTranslucent(true, translucentLevel);
@@ -341,7 +343,7 @@ public class LcaoCartoon extends Isosurface {
       appendCmd(sb, "lcaoCartoon color "
           + Escape.escapeColor(lcaoColorNeg.intValue()) + " "
           + Escape.escapeColor(lcaoColorPos.intValue()));
-    if (isTranslucent)
+    if (lcaoTranslucent)
       appendCmd(sb, "lcaoCartoon translucent " + translucentLevel);
     for (int i = meshCount; --i >= 0;)
       if (!meshes[i].visible)
@@ -354,7 +356,8 @@ public class LcaoCartoon extends Isosurface {
     LcaoCartoon lc = (LcaoCartoon) shape;
     lcaoScale = lc.lcaoScale;
     lcaoColorNeg = lc.lcaoColorNeg;
-    isTranslucent = lc.isTranslucent;
+    lcaoTranslucent = lc.lcaoTranslucent;
+    lcaoTranslucentLevel = lc.lcaoTranslucentLevel;
     super.merge(shape);
   }
   

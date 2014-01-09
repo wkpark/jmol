@@ -538,9 +538,7 @@ public class IsosurfaceMesh extends Mesh {
     if (isAtoms)
       for (int i = 0; i < vertexCount; i++) {
         int pt = vertexSource[i]; 
-        if (pt < 0)
-          continue;
-        if (bs.get(pt)) {
+        if (pt >= 0 && bs.get(pt)) {
           vertexColixes[i] = colix;
           if (bsVertices != null)
             bsVertices.set(i);
@@ -752,7 +750,7 @@ public class IsosurfaceMesh extends Mesh {
       Atom[] atoms = viewer.getModelSet().atoms;
       for (int i = mergeVertexCount0; i < vertexCount; i++) {
         int pt = vertexSource[i];
-        if (pt < atoms.length)
+        if (pt >= 0 && pt < atoms.length)
           jvxlData.vertexColors[i] = viewer.getColorArgbOrGray(vertexColixes[i] = C.copyColixTranslucency(colix,
             atoms[pt].getColix()));
       }

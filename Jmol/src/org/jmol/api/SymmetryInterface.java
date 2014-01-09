@@ -178,8 +178,10 @@ public interface SymmetryInterface {
 
   public int getSiteMultiplicity(P3 a);
 
-  public String addOp(Matrix rs, Matrix vs, Matrix sigma);
+  public String addOp(String code, Matrix rs, Matrix vs, Matrix sigma, M3 jToi);
 
   public String getUnitCellState();
+
+  public M3 getMatrix(String type);
 
 }

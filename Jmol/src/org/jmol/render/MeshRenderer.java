@@ -190,7 +190,9 @@ public abstract class MeshRenderer extends ShapeRenderer {
       needTranslucent = true;
     doRender = (setColix(mesh.colix) || mesh.showContourLines);
     if (!doRender || isGhostPass && !(doRender = g3d.setColix(mesh.slabColix))) {
-      vertices = mesh.vertices;      
+      vertices = mesh.vertices;
+      if (needTranslucent)
+        g3d.setColix(C.getColixTranslucent3(C.BLACK, true, 0.5f));
       return true;
     }
     vertices = (mesh.scale3d == 0 && mesh.mat4 == null ? mesh.vertices : mesh.getOffsetVertices(thePlane));

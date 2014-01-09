@@ -1069,6 +1069,21 @@ public class Elements {
     return (i < 1 || i >= Elements.hydrophobicities.length ? 0 : Elements.hydrophobicities[i]);
   }
 
+  // source: Bioinformatics explained: Hydrophobicity
+  // December 17, 2005
+  // CLC bio; Gustav Wieds Vej 10 8000 Aarhus C Denmark;
+  // www.clcbio.com info@clcbio.com  
+  // http://home.hiroshima-u.ac.jp/kei/IdentityX/picts/BE-hydrophobicity.pdf
+  //
+  // "Rose scale. The hydrophobicity scale by Rose et al. 
+  // is correlated to the average area of buried
+  // amino acids in globular proteins [Rose et al., 1985]. 
+  // This results in a scale which is not showing the helices 
+  // of a protein, but rather the surface accessibility."
+  // [Rose et al., 1985] Rose, G. D., Geselowitz, A. R., Lesser, 
+  // G. J., Lee, R. H., and Zehfus, M. H. (1985). 
+  // Hydrophobicity of amino acid residues in globular proteins. 
+  // Science, 229(4716):834-838.
 
   private final static float[] hydrophobicities = {
                 0f,

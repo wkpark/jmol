@@ -752,16 +752,28 @@ public class Symmetry implements SymmetryInterface {
    * @param trans is a (3+d)x(1) array of translations
    * @return Jones-Faithful representation
    */
-  public String addOp(Matrix rs, Matrix vs, Matrix sigma) {
+  public String addOp(String code, Matrix rs, Matrix vs, Matrix sigma, M3 jtoi) {
     spaceGroup.isSSG = true;
     String s = SymmetryOperation.getXYZFromRsVs(rs, vs, false);
     int i = spaceGroup.addSymmetry(s, -1, true);
-    spaceGroup.operations[i].setSigma(sigma);
-    return s;
+    spaceGroup.operations[i].setSigma(code, sigma, jtoi);
+    System.out.println(spaceGroup.operations[i]);
+      return s;
   }
 
   @Override
   public String getUnitCellState() {
     return (unitCell == null ? "" : unitCell.getState());
+  }
+
+  @Override
+  public M3 getMatrix(String type) {
+    M3 m = new M3();
+    if (type.equals("toFractional")) {
+      unitCell.matrixCartesianToFractional.getRotationScale(m);
+    } else if (type.equals("toCartesian")) {
+      unitCell.matrixFractionalToCartesian.getRotationScale(m);
+    }
+    return m;
   }
 }  

@@ -2777,7 +2777,8 @@ public class ScriptExt implements JmolScriptExtension {
     setShapeProperty(iShape, "clear", null);
     if (toCache)
       setShapeProperty(iShape, "cache", null);
-    listIsosurface(iShape);
+    if (iShape != JC.SHAPE_LCAOCARTOON)
+      listIsosurface(iShape);
     return true;
   }
 
@@ -8313,7 +8314,8 @@ public class ScriptExt implements JmolScriptExtension {
    * @return T/F
    * @throws ScriptException
    */
-  private boolean evaluateList(ScriptMathProcessor mp, int tok, SV[] args)
+  private boolean evaluateList(ScriptMathProcessor mp, 
+                               int tok, SV[] args)
       throws ScriptException {
     int len = args.length;
     SV x1 = mp.getX();

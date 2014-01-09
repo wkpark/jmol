@@ -69,8 +69,6 @@ class SymmetryOperation extends M4 {
   private int opId;
 
   private P3 atomTest;
-  private P3 temp3 = new P3();
-  private P3 temp3b;
 
   private String[] myLabels;
   int modDim;
@@ -86,13 +84,15 @@ class SymmetryOperation extends M4 {
   
   Matrix rsvs;
   private boolean isBio;
-  private M3 mComplex;
-  private boolean isComplex;
   private Matrix sigma;
   int index;
+  private M3 jtoi;
+  private String subsystemCode;
   
-  void setSigma(Matrix sigma) {
+  void setSigma(String subsystemCode, Matrix sigma, M3 jtoi) {
+    this.subsystemCode = subsystemCode;
     this.sigma = sigma;
+    this.jtoi = jtoi;
   }
 
   /**
@@ -124,6 +124,8 @@ class SymmetryOperation extends M4 {
     index = op.index;
     linearRotTrans = op.linearRotTrans;
     sigma = op.sigma;
+    jtoi = op.jtoi;
+    subsystemCode = op.subsystemCode;
     setMatrix(false);
     if (!op.isFinalized)
       doFinalize();
@@ -157,11 +159,8 @@ class SymmetryOperation extends M4 {
     double[] t = new double[n];
     int pt = 0;
     for (int i = 0; i < n; i++) {
-      for (int j = 0; j < n; j++) {
+      for (int j = 0; j < n; j++)
         a[i][j] = linearRotTrans[pt++];
-        if (i < 3 && j >= 3 && a[i][j] != 0)
-          isComplex = true;
-      }
       t[i] = (isReverse ? -1 : 1) * linearRotTrans[pt++];
     }
     a[n][n] = 1;
@@ -193,45 +192,15 @@ class SymmetryOperation extends M4 {
   }
 
   void newPoint(P3 atom1, P3 atom2, int transX, int transY, int transZ) {
-    temp3.setT(atom1);
-    if (isComplex) {
-      if (mComplex == null) {
-        mComplex = new M3();
-        Matrix w = rsvs.getSubmatrix(0, 3, 3, modDim);
-        w = w.mul(sigma);
-        double[][] a = w.getArray();
-        for (int i = 0; i < 3; i++)
-          for (int j = 0; j < 3; j++)
-            mComplex.setElement(i, j, (float) a[i][j]);
-        temp3b = new P3();
-      }
-      temp3b.setT(atom1);
-//      temp3b.x += transX;
-//      temp3b.y += transY;
-//      temp3b.z += transZ;
-      mComplex.transform2(temp3b, temp3b);
-//      temp3.x += transX;
-//      temp3.y += transY;
-//      temp3.z += transZ;
-      transform2(temp3, temp3);
-      temp3.x += temp3b.x;
-      temp3.y += temp3b.y;
-      temp3.z += temp3b.z;
-//      atom2.set(temp3.x, temp3.y, temp3.z);
-//      if (index==3) {
-        System.out.println("op=" + index + " " + xyz + " " + transX + " " + transY + " " + transZ);
-        //System.out.println(this);
-        //System.out.println("rsvs=" + rsvs);
-        //System.out.println("r3d=" + rsvs.getSubmatrix(0, 3, 3, modDim));
-        //System.out.println("sigma=" + sigma);
-        //System.out.println("rot2=" + mComplex);
-//      System.out.println("atom1=" + ((org.jmol.adapter.smarter.Atom) atom1).atomName + " " + atom1);
-//      System.out.println("atom2=" + atom2);
-//      }
-    } else {
-      transform2(temp3, temp3);
+    transform2(atom1, atom2);
+    atom2.x += transX;
+    atom2.y += transY;
+    atom2.z += transZ;
+    if (jtoi != null) {
+      System.out.print(subsystemCode + "." + index + " " + atom1 + " " + atom2);
+      jtoi.transform(atom2);
+      System.out.println(" " + atom2);
     }
-    atom2.set(temp3.x + transX, temp3.y + transY, temp3.z + transZ);
   }
 
   String dumpInfo() {

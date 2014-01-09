@@ -44,7 +44,7 @@ import javajs.util.T3;
 public class SimpleUnitCell {
 
   protected float[] notionalUnitcell; //6 parameters + optional 16 matrix items
-  protected M4 matrixCartesianToFractional;
+  public M4 matrixCartesianToFractional;
   public M4 matrixFractionalToCartesian;
 
   protected final static float toRadians = (float) Math.PI * 2 / 360;

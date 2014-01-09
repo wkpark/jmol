@@ -1050,6 +1050,7 @@ public class AtomSetCollection {
 
   private P3i minXYZ, maxXYZ;
   private P3 minXYZ0, maxXYZ0;
+  private P3 minXYZ00, maxXYZ00;
 
   public boolean isWithinCell(int dtype, P3 pt, float minX, float maxX,
                               float minY, float maxY, float minZ, float maxZ,
@@ -1150,9 +1151,13 @@ public class AtomSetCollection {
       minXYZ0 = P3.new3(minXYZ.x, minXYZ.y, minXYZ.z);
       maxXYZ0 = P3.new3(maxXYZ.x, maxXYZ.y, maxXYZ.z);
       if (ms != null) {
+        minXYZ00 = P3.newP(minXYZ0);
+        maxXYZ00 = P3.newP(maxXYZ0);
         ms.setMinMax0(minXYZ0, maxXYZ0);
         minXYZ.set((int) minXYZ0.x, (int) minXYZ0.y, (int) minXYZ0.z);
         maxXYZ.set((int) maxXYZ0.x, (int) maxXYZ0.y, (int) maxXYZ0.z);
+        //minXYZ0 = minXYZ00;
+        //maxXYZ0 = maxXYZ00;
       }
       switch (dtype) {
       case 3:
@@ -1392,7 +1397,7 @@ public class AtomSetCollection {
 
         if (ms != null)
           symmetry = ms.getAtomSymmetry(atoms[i], this.symmetry);
-        
+
         symmetry.newSpaceGroupPoint(iSym, atoms[i], ptAtom, transX, transY,
             transZ);
         Atom special = null;
@@ -1405,6 +1410,23 @@ public class AtomSetCollection {
           if (!isWithinCell(dtype, ptAtom, minXYZ0.x, maxXYZ0.x, minXYZ0.y,
               maxXYZ0.y, minXYZ0.z, maxXYZ0.z, 0.02f))
             continue;
+        
+//          if (ms == null) {
+//            symmetry.toUnitCell(cartesian, ptOffset);
+//            ptAtom.setT(cartesian);
+//            symmetry.toFractional(ptAtom, false);
+//            if (!isWithinCell(dtype, ptAtom, minXYZ0.x, maxXYZ0.x, minXYZ0.y,
+//                maxXYZ0.y, minXYZ0.z, maxXYZ0.z, 0.02f)) {
+//              continue;
+//            }
+//          } else {
+//            //symmetry.toUnitCell(cartesian, ptOffset);
+//            ptAtom.setT(cartesian);
+//            this.symmetry.toFractional(ptAtom, false);
+//            toUnitCell(ptAtom, 0.02f);
+//            this.symmetry.toCartesian(ptAtom, false);
+//            symmetry.toFractional(ptAtom, false);
+//          }
         }
 
         if (checkSymmetryMinMax)
@@ -1479,6 +1501,21 @@ public class AtomSetCollection {
       }
     }
     return pt;
+  }
+
+  private void toUnitCell(P3 ptAtom, float f) {
+    while (ptAtom.x > maxXYZ00.x + f)
+      ptAtom.x -= 1;
+    while (ptAtom.y > maxXYZ00.y + f)
+      ptAtom.y -= 1;
+    while (ptAtom.z > maxXYZ00.z + f)
+      ptAtom.z -= 1;
+    while (ptAtom.x < minXYZ00.x - f)
+      ptAtom.x += 1;
+    while (ptAtom.y < minXYZ00.y - f)
+      ptAtom.y += 1;
+    while (ptAtom.z < minXYZ00.z - f)
+      ptAtom.z += 1;
   }
 
   public Tensor addRotatedTensor(Atom a, Tensor t, int iSym, boolean reset,

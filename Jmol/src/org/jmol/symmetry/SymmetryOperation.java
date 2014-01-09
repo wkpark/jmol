@@ -193,13 +193,23 @@ class SymmetryOperation extends M4 {
 
   void newPoint(P3 atom1, P3 atom2, int transX, int transY, int transZ) {
     transform2(atom1, atom2);
-    atom2.x += transX;
-    atom2.y += transY;
-    atom2.z += transZ;
-    if (jtoi != null) {
-      System.out.print(subsystemCode + "." + index + " " + atom1 + " " + atom2);
+    if (jtoi == null) {
+      atom2.x += transX;
+      atom2.y += transY;
+      atom2.z += transZ;
+    } else {
+      atom2.x += transX - Math.floor(atom2.x);
+      atom2.y += transY - Math.floor(atom2.y);
+      atom2.z += transZ - Math.floor(atom2.z);
+      if (subsystemCode.equals("2") && index == 3 && transX >= 0 && transX < 4 && transY >= -2 && transY <= 0 && transZ >= -1 && transZ <= 1) {
+      System.out.print(subsystemCode + "." + index 
+          + " " + transX + " " + transY + " " + transZ 
+          + " " + atom1 + " " + atom2);
       jtoi.transform(atom2);
       System.out.println(" " + atom2);
+      } else {
+        jtoi.transform(atom2);        
+      }
     }
   }
 
@@ -1344,4 +1354,5 @@ class SymmetryOperation extends M4 {
   public String toString() {
     return (rsvs == null ? super.toString() : super.toString() + " " + rsvs.toString());
   }
+  
 }

@@ -1684,7 +1684,7 @@ all support for previous versions removed
     <jar destfile="${tests.dir}/Tests.jar" basedir="${test-classes.dir}" />
   </target>
 
-  <!-- tools -->
+  <!-- tools  -->
   <target name="sign-jar-file" >
     <if><available file="${Private.propertyFile}" /><then>
       	<echo>using keystore="${Private.keystore}" alias="${Private.alias}"</echo> 
@@ -1693,7 +1693,8 @@ all support for previous versions removed
                  storepass="${Private.storepass}"
                  keypass="${Private.keypass}"
                  alias="${Private.alias}"
-                 tsaurl="http://tsa.starfieldtech.com/">
+		       	 tsaurl="http://tsa.starfieldtech.com/"
+        	>
           <fileset dir="${sign-jar-file-dir}" >
             <include name="${sign-jar-file-name}" />
           </fileset>
@@ -1703,9 +1704,10 @@ all support for previous versions removed
         <signjar keystore="ca-cert/certificate/Jmol.p12"
                  storetype="pkcs12"
                  storepass="${Jmol.p12.password}"
+	             keypass="${Jmol.p12key.password}"
                  alias="${Jmol.p12.alias}"
-                 keypass="${Jmol.p12key.password}"
-                 tsaurl="http://time.certum.pl/">
+		       	 tsaurl="http://tsa.starfieldtech.com/"
+        	>
             <fileset dir="${sign-jar-file-dir}" >
               <include name="${sign-jar-file-name}" />
             </fileset>

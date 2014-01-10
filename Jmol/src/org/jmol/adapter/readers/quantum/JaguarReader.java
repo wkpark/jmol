@@ -140,7 +140,7 @@ public class JaguarReader extends MOReader {
         continue;
       String[] tokens = getTokens();
       for (int i = 1; i < tokens.length; i++)
-        atomSetCollection.getAtom(iAtom++).partialCharge = parseFloatStr(tokens[i]);
+        atomSetCollection.atoms[iAtom++].partialCharge = parseFloatStr(tokens[i]);
     }
   }
 
@@ -390,7 +390,7 @@ public class JaguarReader extends MOReader {
     int atomCount = atomSetCollection.getLastAtomSetAtomCount();
     discardLinesUntilStartsWith("  frequencies ");
     while (line != null && line.startsWith("  frequencies ")) {
-      int iAtom0 = atomSetCollection.getAtomCount();
+      int iAtom0 = atomSetCollection.atomCount;
       String[] frequencies = getTokens();
       int frequencyCount = frequencies.length - 1;
       boolean[] ignore = new boolean[frequencyCount];

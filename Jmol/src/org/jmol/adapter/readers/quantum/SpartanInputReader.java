@@ -69,7 +69,7 @@ public abstract class SpartanInputReader extends BasisFunctionReader {
         readLine();
       if (line != null && line.indexOf("MOLSTATE") >= 0)
         readTransform();
-      if (atomSetCollection.getAtomCount() > 0)
+      if (atomSetCollection.atomCount > 0)
         atomSetCollection.setAtomSetName(modelName);
   }
 
@@ -119,7 +119,7 @@ public abstract class SpartanInputReader extends BasisFunctionReader {
       setAtomCoordXYZ(atom, parseFloatStr(tokens[1]), parseFloatStr(tokens[2]), parseFloatStr(tokens[3]));
       modelAtomCount++;
     }
-    atomCount = atomSetCollection.getAtomCount();
+    atomCount = atomSetCollection.atomCount;
     if (Logger.debugging)
       Logger.debug(atomCount + " atoms read");
   }
@@ -131,7 +131,7 @@ public abstract class SpartanInputReader extends BasisFunctionReader {
     for (int i = 0; i < modelAtomCount; i++) {
       line = readLine().trim();
       String name = line.substring(1, line.length() - 1);
-      atomSetCollection.getAtom(atom0 + i).atomName = name;
+      atomSetCollection.atoms[atom0 + i].atomName = name;
     }
   }
   
@@ -164,6 +164,6 @@ public abstract class SpartanInputReader extends BasisFunctionReader {
     }
     readLine();
     if (Logger.debugging)
-      Logger.debug(atomSetCollection.getBondCount() + " bonds read");
+      Logger.debug(atomSetCollection.bondCount + " bonds read");
   }
 }

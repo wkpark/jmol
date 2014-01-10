@@ -177,7 +177,7 @@ abstract public class GamessReader extends MOReader {
         intensities = getTokens();
       }
       int atomCount = atomSetCollection.getLastAtomSetAtomCount();
-      int iAtom0 = atomSetCollection.getAtomCount();
+      int iAtom0 = atomSetCollection.atomCount;
       boolean[] ignore = new boolean[frequencyCount];
       for (int i = 0; i < frequencyCount; i++) {
         ignore[i] = !doGetVibration(++vibrationNumber);

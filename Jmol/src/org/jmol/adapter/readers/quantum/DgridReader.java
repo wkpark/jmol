@@ -155,7 +155,7 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
       String[] tokens = getTokensStr(data.toString());
       int nFuncs = tokens.length / 2;
       int[] ptSlater = new int[nFuncs];
-      Atom[] atoms = atomSetCollection.getAtoms();
+      Atom[] atoms = atomSetCollection.atoms;
       for (int i = 0, pt = 0; i < tokens.length;) {
         int iAtom = parseIntStr(tokens[i++]) - 1;
         String code = tokens[i++];

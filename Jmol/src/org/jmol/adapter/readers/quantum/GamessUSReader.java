@@ -215,7 +215,7 @@ public class GamessUSReader extends GamessReader {
     //it's really too bad that the EFP information is nowhere near
     //the ab initio molecule for single-point runs.
 
-    int atomCountInFirstModel = atomSetCollection.getAtomCount();
+    int atomCountInFirstModel = atomSetCollection.atomCount;
     //should only contain the $DATA card
     discardLinesUntilContains("MULTIPOLE COORDINATES");
 
@@ -424,9 +424,9 @@ ATOM         MULL.POP.    CHARGE          LOW.POP.     CHARGE
         break;
     if (++poploc >= tokens.length || !"CHARGE".equals(tokens[poploc++]))
       return; // Not as expected don't read
-    Atom[] atoms = atomSetCollection.getAtoms();
+    Atom[] atoms = atomSetCollection.atoms;
     int startAtom = atomSetCollection.getLastAtomSetAtomIndex();
-    int endAtom = atomSetCollection.getAtomCount();
+    int endAtom = atomSetCollection.atomCount;
     for (int i = startAtom; i < endAtom && readLine() != null; ++i)
       atoms[i].partialCharge = parseFloatStr(getTokensStr(prevline)[poploc]);
   }
@@ -455,7 +455,7 @@ ATOM         MULL.POP.    CHARGE          LOW.POP.     CHARGE
       V3 dipole = V3.new3(parseFloatStr(tokens[0]),
           parseFloatStr(tokens[1]), parseFloatStr(tokens[2]));
       Logger.info("Molecular dipole for model "
-          + atomSetCollection.getAtomSetCount() + " = " + dipole);
+          + atomSetCollection.atomSetCount + " = " + dipole);
       atomSetCollection.setAtomSetAuxiliaryInfo("dipole", dipole);
     }
   }

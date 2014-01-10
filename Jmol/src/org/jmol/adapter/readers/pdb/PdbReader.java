@@ -24,6 +24,7 @@
 
 package org.jmol.adapter.readers.pdb;
 
+import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.Structure;
@@ -252,7 +253,7 @@ public class PdbReader extends AtomSetCollectionReader {
         return checkLastModel();
       }
       if (!isCourseGrained)
-        atomSetCollection.connectAll(maxSerial, isConnectStateBug);
+        connectAll(maxSerial, isConnectStateBug);
       if (atomCount > 0)
         applySymmetryAndSetTrajectory();
       // supposedly MODEL is only for NMR
@@ -359,20 +360,21 @@ public class PdbReader extends AtomSetCollectionReader {
   protected void finalizeReaderPDB() throws Exception {
     checkNotPDB();
     if (!isCourseGrained)
-      atomSetCollection.connectAll(maxSerial, isConnectStateBug);
+      connectAll(maxSerial, isConnectStateBug);
     SymmetryInterface symmetry;
     if (vBiomolecules != null && vBiomolecules.size() > 0
-        && atomSetCollection.getAtomCount() > 0) {
+        && atomSetCollection.atomCount > 0) {
       atomSetCollection.setAtomSetAuxiliaryInfo("biomolecules", vBiomolecules);
       setBiomoleculeAtomCounts();
       if (thisBiomolecule != null && applySymmetry) {
-        atomSetCollection.applySymmetryBio(thisBiomolecule, notionalUnitCell, applySymmetryToBonds, filter);
+        atomSetCollection.getXSymmetry().applySymmetryBio(thisBiomolecule, notionalUnitCell, applySymmetryToBonds, filter);
         vTlsModels = null; // for now, no TLS groups for biomolecules
+        atomSetCollection.xtalSymmetry = null;
       }
     }
     if (vTlsModels != null) {
       symmetry = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
-      int n = atomSetCollection.getAtomSetCount();
+      int n = atomSetCollection.atomSetCount;
       if (n == vTlsModels.size()) {
         for (int i = n; --i >= 0;)
           setTlsGroups(i, i, symmetry);
@@ -394,7 +396,7 @@ public class PdbReader extends AtomSetCollectionReader {
     finalizeReaderASCR();
     if (vCompnds != null)
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo("compoundSource", vCompnds);
-    if (htSites != null) { // && atomSetCollection.getAtomSetCount() == 1)
+    if (htSites != null) {
       addSites(htSites);
     }
     if (pdbHeader != null)
@@ -407,9 +409,9 @@ public class PdbReader extends AtomSetCollectionReader {
   }
 
   private void checkForResidualBFactors(SymmetryInterface symmetry) {
-    Atom[] atoms = atomSetCollection.getAtoms();
+    Atom[] atoms = atomSetCollection.atoms;
     boolean isResidual = false;
-     for (int i = atomSetCollection.getAtomCount(); --i >= 0;) {
+     for (int i = atomSetCollection.atomCount; --i >= 0;) {
       float[] anisou = tlsU.get(atoms[i]);
       if (anisou == null)
         continue;
@@ -1082,7 +1084,7 @@ REMARK 290 REMARK: NULL
       } else {
         sbConect.append(st);
       }
-      atomSetCollection.addConnection(new int[] { i1, targetSerial,
+      addConnection(new int[] { i1, targetSerial,
           i < 4 ? 1 : JmolAdapter.ORDER_HBOND });
     }
     sbConect.appendSB(sb);
@@ -1387,7 +1389,7 @@ Details
       //System.out.println("ERROR: ANISOU record does not correspond to known atom");
       return;
     }
-    Atom atom = atomSetCollection.getAtom(index);
+    Atom atom = atomSetCollection.atoms[index];
     for (int i = 28, pt = 0; i < 70; i += 7, pt++)
       data[pt] = parseFloatRange(line, i, i + 7);
     for (int i = 0; i < 6; i++) {
@@ -1703,7 +1705,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     int index0 = atomSetCollection.getAtomSetAtomIndex(iModel);
     int[] data = new int[atomSetCollection.getAtomSetAtomCount(iModel)];
     int indexMax = index0 + data.length;
-    Atom[] atoms = atomSetCollection.getAtoms();
+    Atom[] atoms = atomSetCollection.atoms;
     int nGroups = groups.size();
     for (int i = 0; i < nGroups; i++) {
       Map<String, Object> group = groups.get(i);
@@ -1757,7 +1759,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
   }
 
   private int findAtom(int atom1, int atom2, int chain, int resno, boolean isTrue) {
-    Atom[] atoms = atomSetCollection.getAtoms();
+    Atom[] atoms = atomSetCollection.atoms;
     for (int i = atom1; i < atom2; i++) {
      Atom atom = atoms[i];
      if ((atom.chainID == chain && atom.sequenceNumber == resno) == isTrue)
@@ -1860,5 +1862,71 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     // SWANSON forcefield, HW (on water) will be given 0 radius, and H on oxygen given 0.9170
   }
 
+  private List<int[]> vConnect;
+  private int connectNextAtomIndex = 0;
+  private int connectNextAtomSet = 0;
+  private int[] connectLast;
+
+  private void addConnection(int[] is) {
+    if (vConnect == null) {
+      connectLast = null;
+      vConnect = new List<int[]>();
+    }
+    if (connectLast != null) {
+      if (is[0] == connectLast[0] && is[1] == connectLast[1]
+          && is[2] != JmolAdapter.ORDER_HBOND) {
+        connectLast[2]++;
+        return;
+      }
+    }
+    vConnect.addLast(connectLast = is);
+  }
+
+  private void connectAllBad(int maxSerial) {
+    // between 12.1.51-12.2.20 and 12.3.0-12.3.20 we have 
+    // a problem in that this method was used for connect
+    // this means that scripts created during this time could have incorrect 
+    // BOND indexes in the state script. It was when we added reading of H atoms
+    int firstAtom = connectNextAtomIndex;
+    for (int i = connectNextAtomSet; i < atomSetCollection.atomSetCount; i++) {
+      int count = atomSetCollection.getAtomSetAtomCount(i);
+      atomSetCollection.setAtomSetAuxiliaryInfoForSet("PDB_CONECT_firstAtom_count_max",
+          new int[] { firstAtom, count, maxSerial }, i);
+      if (vConnect != null) {
+        atomSetCollection.setAtomSetAuxiliaryInfoForSet("PDB_CONECT_bonds", vConnect, i);
+        atomSetCollection.setGlobalBoolean(AtomSetCollection.GLOBAL_CONECT);
+      }
+      firstAtom += count;
+    }
+    vConnect = null;
+    connectNextAtomSet = atomSetCollection.currentAtomSetIndex + 1;
+    connectNextAtomIndex = firstAtom;
+  }
+
+  private void connectAll(int maxSerial, boolean isConnectStateBug) {
+    AtomSetCollection ac = atomSetCollection;
+    int index = ac.currentAtomSetIndex;
+    if (index < 0)
+      return;
+    if (isConnectStateBug) {
+      connectAllBad(maxSerial);
+      return;
+    }
+    ac.setAtomSetAuxiliaryInfo(
+        "PDB_CONECT_firstAtom_count_max",
+        new int[] { ac.getAtomSetAtomIndex(index),
+            ac.getAtomSetAtomCount(index), maxSerial });
+    if (vConnect == null)
+      return;
+    int firstAtom = connectNextAtomIndex;
+    for (int i = ac.atomSetCount; --i >= connectNextAtomSet;) {
+      ac.setAtomSetAuxiliaryInfoForSet("PDB_CONECT_bonds", vConnect, i);
+      ac.setGlobalBoolean(AtomSetCollection.GLOBAL_CONECT);
+      firstAtom += ac.getAtomSetAtomCount(i);
+    }
+    vConnect = null;
+    connectNextAtomSet = index + 1;
+    connectNextAtomIndex = firstAtom;
+  }
 }
 

@@ -77,7 +77,7 @@ public class SiestaReader extends AtomSetCollectionReader {
       float z = parseFloatStr(tokens[2]);
       setAtomCoordXYZ(atom, x, y, z); // will be set after reading unit cell
     }
-    noAtoms = atomSetCollection.getAtomCount();
+    noAtoms = atomSetCollection.atomCount;
   }
 
   private void newAtomSet() throws Exception {
@@ -90,7 +90,7 @@ public class SiestaReader extends AtomSetCollectionReader {
   private void readAtomsCartGeomThenCell() throws Exception {
     readLines(1);
     newAtomSet();
-    int atom0 = atomSetCollection.getAtomCount();
+    int atom0 = atomSetCollection.atomCount;
     for (int i = 0; i < noAtoms; i++) {
       String[] tokens = getTokens();
       Atom atom = atomSetCollection.addNewAtom();
@@ -103,8 +103,8 @@ public class SiestaReader extends AtomSetCollectionReader {
     }
     discardLinesUntilContains("outcell: Unit cell vectors");
     setCell();
-    Atom[] atoms = atomSetCollection.getAtoms();
-    int atomCount = atomSetCollection.getAtomCount();
+    Atom[] atoms = atomSetCollection.atoms;
+    int atomCount = atomSetCollection.atomCount;
     for (int i = atom0; i < atomCount; i++)
       setAtomCoord(atoms[i]);
     discardLinesUntilContains("siesta: E_KS(eV) = ");

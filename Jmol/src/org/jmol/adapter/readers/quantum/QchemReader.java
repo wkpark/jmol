@@ -196,7 +196,7 @@ public class QchemReader extends MOReader {
       int frequencyCount = frequencies.length - 1;
       boolean[] ignore = new boolean[frequencyCount];
       int atomCount = atomSetCollection.getLastAtomSetAtomCount();
-      int iAtom0 = atomSetCollection.getAtomCount();
+      int iAtom0 = atomSetCollection.atomCount;
       for (int i = 0; i < frequencyCount; ++i) {
         ignore[i] = !doGetVibration(++vibrationNumber);
         if (ignore[i])
@@ -215,7 +215,7 @@ public class QchemReader extends MOReader {
 
   private void readPartialCharges() throws Exception {
     readLines(3);
-    Atom[] atoms = atomSetCollection.getAtoms();
+    Atom[] atoms = atomSetCollection.atoms;
     int atomCount = atomSetCollection.getLastAtomSetAtomCount();
     for (int i = 0; i < atomCount && readLine() != null; ++i)
       atoms[i].partialCharge = parseFloatStr(getTokens()[2]);

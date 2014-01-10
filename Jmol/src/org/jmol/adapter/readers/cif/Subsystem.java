@@ -65,7 +65,7 @@ class Subsystem {
     
     // Part 2: Get the new unit cell and symmetry operators
 
-    SymmetryInterface s0 = msReader.cr.atomSetCollection.symmetry;
+    SymmetryInterface s0 = msReader.cr.atomSetCollection.getSymmetry();
     V3[] vu43 = s0.getUnitCellVectors();
     V3[] vr43 = reciprocalsOf(vu43);
 

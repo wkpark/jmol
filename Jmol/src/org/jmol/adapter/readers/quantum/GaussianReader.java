@@ -140,7 +140,7 @@ public class GaussianReader extends MOReader {
         return checkLastModel();
       equivalentAtomSets++;
       //if (Logger.debugging)
-        Logger.info(atomSetCollection.getAtomSetCount() + " model " + modelNumber + " step " + stepNumber
+        Logger.info(atomSetCollection.atomSetCount + " model " + modelNumber + " step " + stepNumber
             + " equivalentAtomSet " + equivalentAtomSets + " calculation "
             + calculationNumber + " scan point " + scanPoint + line);
       readAtoms();
@@ -554,8 +554,8 @@ public class GaussianReader extends MOReader {
       }
     }
     addMOData(nThisLine, data, mos);
-    setMOData(moModelSet  != atomSetCollection.getAtomSetCount()); 
-    moModelSet = atomSetCollection.getAtomSetCount();
+    setMOData(moModelSet  != atomSetCollection.atomSetCount); 
+    moModelSet = atomSetCollection.atomSetCount;
   }
 
   /* SAMPLE FREQUENCY OUTPUT */
@@ -622,7 +622,7 @@ public class GaussianReader extends MOReader {
           discardLinesUntilStartsWith(" Frc consts"), 15);
       String[] intensities = getTokensAt(
           discardLinesUntilStartsWith(" IR Inten"), 15);
-      int iAtom0 = atomSetCollection.getAtomCount();
+      int iAtom0 = atomSetCollection.atomCount;
       int atomCount = atomSetCollection.getLastAtomSetAtomCount();
       int frequencyCount = frequencies.length;
       boolean[] ignore = new boolean[frequencyCount];
@@ -633,8 +633,8 @@ public class GaussianReader extends MOReader {
         atomSetCollection.cloneLastAtomSet();
         // set the properties
         String name = atomSetCollection.setAtomSetFrequency("Calculation " + calculationNumber, symmetries[i], frequencies[i], null);
-        appendLoadNote("model " + atomSetCollection.getAtomSetCount() + ": " + name);
-        namedSets.set(atomSetCollection.getCurrentAtomSetIndex());
+        appendLoadNote("model " + atomSetCollection.atomSetCount + ": " + name);
+        namedSets.set(atomSetCollection.currentAtomSetIndex);
         atomSetCollection.setAtomSetModelProperty("ReducedMass",
             red_masses[i]+" AMU");
         atomSetCollection.setAtomSetModelProperty("ForceConstant",
@@ -654,7 +654,7 @@ public class GaussianReader extends MOReader {
       return;
     V3 dipole = V3.new3(parseFloatStr(tokens[1]),
         parseFloatStr(tokens[3]), parseFloatStr(tokens[5]));
-    Logger.info("Molecular dipole for model " + atomSetCollection.getAtomSetCount()
+    Logger.info("Molecular dipole for model " + atomSetCollection.atomSetCount
         + " = " + dipole);
     atomSetCollection.setAtomSetAuxiliaryInfo("dipole", dipole);
   }
@@ -679,9 +679,9 @@ public class GaussianReader extends MOReader {
   // being careful about the dummy atoms...
   void readPartialCharges() throws Exception {
     readLine();
-    int atomCount = atomSetCollection.getAtomCount();
+    int atomCount = atomSetCollection.atomCount;
     int i0 = atomSetCollection.getLastAtomSetAtomIndex();
-    Atom[] atoms = atomSetCollection.getAtoms();
+    Atom[] atoms = atomSetCollection.atoms;
     for (int i = i0; i < atomCount; ++i) {
       // first skip over the dummy atoms
       while (atoms[i].elementNumber == 0)
@@ -690,7 +690,7 @@ public class GaussianReader extends MOReader {
       float charge = parseFloatStr(getTokensStr(readLine())[2]);
       atoms[i].partialCharge = charge;
     }
-    Logger.info("Mulliken charges found for Model " + atomSetCollection.getAtomSetCount());
+    Logger.info("Mulliken charges found for Model " + atomSetCollection.atomSetCount);
   }
   
 }

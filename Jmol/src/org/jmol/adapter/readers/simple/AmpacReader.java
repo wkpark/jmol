@@ -108,8 +108,8 @@ public class AmpacReader extends AtomSetCollectionReader {
   }
 
   private void setPositions() {
-    int maxAtom = atomSetCollection.getAtomCount();
-    Atom[] atoms = atomSetCollection.getAtoms();
+    int maxAtom = atomSetCollection.atomCount;
+    Atom[] atoms = atomSetCollection.atoms;
     for (int i = freqAtom0; i <  maxAtom; i++) {
       atoms[i].setT(atomPositions[i % atomCount]);
       atoms[i].partialCharge = partialCharges[i % atomCount];  
@@ -184,7 +184,7 @@ public class AmpacReader extends AtomSetCollectionReader {
       String[] frequencies = getTokens();
       while (readLine() != null && line.indexOf("IR I") < 0) {
       }
-      int iAtom0 = atomSetCollection.getAtomCount();
+      int iAtom0 = atomSetCollection.atomCount;
       if (vibrationNumber == 0)
         freqAtom0 = iAtom0;
       int frequencyCount = frequencies.length - 2;

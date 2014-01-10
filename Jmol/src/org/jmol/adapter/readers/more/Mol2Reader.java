@@ -163,7 +163,7 @@ public class Mol2Reader extends ForceFieldReader {
     // free format, but no blank lines
     if (atomCount == 0)
       return;
-    int i0 = atomSetCollection.getAtomCount();
+    int i0 = atomSetCollection.atomCount;
     for (int i = 0; i < atomCount; ++i) {
       Atom atom = atomSetCollection.addNewAtom();
       String[] tokens = getTokensStr(readLine());
@@ -197,7 +197,7 @@ public class Mol2Reader extends ForceFieldReader {
 
     // trying to guess if this is a PDB-type file
 
-    Atom[] atoms = atomSetCollection.getAtoms();
+    Atom[] atoms = atomSetCollection.atoms;
 
     // 1. Does the very first atom have a group name?
 
@@ -209,8 +209,8 @@ public class Mol2Reader extends ForceFieldReader {
 
     // 2. If so, is there more than one kind of group?
 
-    for (int i = atomSetCollection.getAtomCount(); --i >= i0;)
-      if (!g3.equals(atoms[atomSetCollection.getAtomCount() - 1].group3)) {
+    for (int i = atomSetCollection.atomCount; --i >= i0;)
+      if (!g3.equals(atoms[atomSetCollection.atomCount - 1].group3)) {
         isPDB = true;
         break;
       }
@@ -219,7 +219,7 @@ public class Mol2Reader extends ForceFieldReader {
 
     if (isPDB) {
       isPDB = false;
-      for (int i = atomSetCollection.getAtomCount(); --i >= i0;) {
+      for (int i = atomSetCollection.atomCount; --i >= i0;) {
         Atom atom = atoms[i];
         if (atom.group3.length() <= 3
             && JmolAdapter.lookupGroupID(atom.group3) >= 0) {
@@ -229,7 +229,7 @@ public class Mol2Reader extends ForceFieldReader {
       }
     }
     
-    for (int i = atomSetCollection.getAtomCount(); --i >= i0;)
+    for (int i = atomSetCollection.atomCount; --i >= i0;)
       if (isPDB)
         atoms[i].isHetero = JmolAdapter.isHetero(atoms[i].group3);
       else
@@ -279,7 +279,7 @@ public class Mol2Reader extends ForceFieldReader {
       return;
     for (int i = 0; i < 6; i++)
       setUnitCellItem(i, parseFloatStr(tokens[i]));
-    Atom[] atoms = atomSetCollection.getAtoms();
+    Atom[] atoms = atomSetCollection.atoms;
     for (int i = 0; i < atomCount; ++i)
       setAtomCoord(atoms[nAtoms + i]);
   }

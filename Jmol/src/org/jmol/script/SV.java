@@ -1107,8 +1107,8 @@ public class SV extends T implements JSONEncodable {
     case 1:
       return sValue(args[0]);
     }
-    String[] format = PT.split(PT.simpleReplace(sValue(args[0]), "%%","\1"), "%");
     SB sb = new SB();
+    String[] format = PT.split(PT.simpleReplace(sValue(args[0]), "%%","\1"), "%");
     sb.append(format[0]);
     for (int i = 1; i < format.length; i++) {
       Object ret = sprintf(Txt.formatCheck("%" + format[i]), (i < args.length ? args[i] : null));

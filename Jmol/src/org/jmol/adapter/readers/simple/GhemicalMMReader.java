@@ -108,7 +108,7 @@ public class GhemicalMMReader extends AtomSetCollectionReader {
     int atomCount = parseIntAt(line, 6);
     //Logger.debug("atomCount=" + atomCount);
     for (int i = 0; i < atomCount; ++i) {
-      if (atomSetCollection.getAtomCount() != i)
+      if (atomSetCollection.atomCount != i)
         throw new Exception("GhemicalMMReader error #1");
       readLine();
       int atomIndex = parseIntStr(line);
@@ -149,8 +149,8 @@ public class GhemicalMMReader extends AtomSetCollectionReader {
   }
 
   void processCoord() throws Exception {
-    Atom[] atoms = atomSetCollection.getAtoms();
-    int atomCount = atomSetCollection.getAtomCount();
+    Atom[] atoms = atomSetCollection.atoms;
+    int atomCount = atomSetCollection.atomCount;
     for (int i = 0; i < atomCount; ++i) {
       readLine();
       int atomIndex = parseIntStr(line);
@@ -162,8 +162,8 @@ public class GhemicalMMReader extends AtomSetCollectionReader {
   }
 
   void processCharges() throws Exception {
-    Atom[] atoms = atomSetCollection.getAtoms();
-    int atomCount = atomSetCollection.getAtomCount();
+    Atom[] atoms = atomSetCollection.atoms;
+    int atomCount = atomSetCollection.atomCount;
     for (int i = 0; i < atomCount; ++i) {
       readLine();
       int atomIndex = parseIntStr(line);

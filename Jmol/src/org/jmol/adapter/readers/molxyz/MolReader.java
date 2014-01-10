@@ -102,7 +102,7 @@ public class MolReader extends AtomSetCollectionReader {
     if (doGetModel(++modelNumber, null)) {
       processMolSdHeader();
       processCtab(isMDL);
-      iatom0 = atomSetCollection.getAtomCount();
+      iatom0 = atomSetCollection.atomCount;
       isV3000 = false;
       if (isLastModel(modelNumber)) {
         continuing = false;
@@ -120,7 +120,7 @@ public class MolReader extends AtomSetCollectionReader {
     while (readLine() != null && line.indexOf("$$$$") != 0) {
       if (line.toUpperCase().contains("_PARTIAL_CHARGES")) {
         try {
-          Atom[] atoms = atomSetCollection.getAtoms();
+          Atom[] atoms = atomSetCollection.atoms;
           for (int i = parseIntStr(readLine()); --i >= 0;) {
             String[] tokens = getTokensStr(readLine());
             int atomIndex = parseIntStr(tokens[0]) + atom0 - 1;
@@ -212,7 +212,7 @@ public class MolReader extends AtomSetCollectionReader {
       return;
     int atomCount = (isV3000 ? parseIntStr(tokens[3]) : parseIntRange(line, 0, 3));
     int bondCount = (isV3000 ? parseIntStr(tokens[4]) : parseIntRange(line, 3, 6));
-    int atom0 = atomSetCollection.getAtomCount();
+    int atom0 = atomSetCollection.atomCount;
     readAtoms(atomCount);
     readBonds(bondCount);
     readUserData(atom0);

@@ -96,20 +96,22 @@ public class MMCifReader implements MMCifInterface {
       for (String id: chainAtomMap.keySet())
         createParticle(id);
     AtomSetCollection ac = cr.atomSetCollection;
-    if (!isCourseGrained && ac.getAtomCount() == nAtoms)
+    if (!isCourseGrained && ac.atomCount == nAtoms)
       ac.removeCurrentAtomSet();
     else
       cr.applySymmetryAndSetTrajectory();
     if (htSites != null)
       cr.addSites(htSites);
     if (vBiomolecules != null && vBiomolecules.size() == 1
-        && (isCourseGrained || ac.getAtomCount() > 0)) {
+        && (isCourseGrained || ac.atomCount > 0)) {
       ac.setAtomSetAuxiliaryInfo("biomolecules", vBiomolecules);
       Map<String, Object> ht = vBiomolecules.get(0);
       cr.appendLoadNote("Constructing " + ht.get("name"));
       setBiomolecules(ht);
-      if (thisBiomolecule != null)
-        ac.applySymmetryBio(thisBiomolecule, cr.notionalUnitCell, cr.applySymmetryToBonds, cr.filter);
+      if (thisBiomolecule != null) {
+        ac.getXSymmetry().applySymmetryBio(thisBiomolecule, cr.notionalUnitCell, cr.applySymmetryToBonds, cr.filter);
+        ac.xtalSymmetry = null;
+      }
     }
 
   }
@@ -793,7 +795,7 @@ _pdbx_struct_oper_list.vector[3]
       }
     } else {
       nAtoms = bsAll.cardinality();
-      if (nAtoms < cr.atomSetCollection.getAtomCount())
+      if (nAtoms < cr.atomSetCollection.atomCount)
         cr.atomSetCollection.bsAtoms = bsAll;
     }
     biomolecule.put("atomCount", Integer.valueOf(nAtoms * ops.length));

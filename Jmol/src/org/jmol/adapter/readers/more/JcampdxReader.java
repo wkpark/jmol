@@ -164,7 +164,7 @@ public class JcampdxReader extends MolReader {
   }
   
   private int findModelById(String modelID) {
-    for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;)
+    for (int i = atomSetCollection.atomSetCount; --i >= 0;)
       if (modelID.equals(atomSetCollection
           .getAtomSetAuxiliaryInfoValue(i, "modelID")))
         return i;
@@ -184,7 +184,7 @@ public class JcampdxReader extends MolReader {
     thisModelID = "";
     boolean isFirst = true;
     while (true) {
-      int model0 = atomSetCollection.getCurrentAtomSetIndex();
+      int model0 = atomSetCollection.currentAtomSetIndex;
       discardLinesUntilNonBlank();
       if (line == null || !line.contains("<ModelData"))
         break;
@@ -207,7 +207,7 @@ public class JcampdxReader extends MolReader {
    * @param isFirst
    */
   private void updateModelIDs(int model0, boolean isFirst) {
-    int n = atomSetCollection.getAtomSetCount();
+    int n = atomSetCollection.atomSetCount;
     if (isFirst && n == model0 + 2) {
       atomSetCollection.setAtomSetAuxiliaryInfo("modelID", thisModelID);
       return;
@@ -264,20 +264,20 @@ public class JcampdxReader extends MolReader {
       if (ibase >= 0) {
         atomSetCollection
             .setAtomSetAuxiliaryInfoForSet("jdxModelID", baseModel, ibase);
-        for (int i = a.getAtomSetCount(); --i >= 0;)
+        for (int i = a.atomSetCount; --i >= 0;)
           a.setAtomSetAuxiliaryInfoForSet("jdxBaseModel", baseModel, i);
-        if (a.getBondCount() == 0)
+        if (a.bondCount == 0)
           setBonding(a, ibase);
       }
     }
     if (!Float.isNaN(vibScale)) {
       Logger.info("jdx applying vibrationScale of " + vibScale + " to "
-          + a.getAtomCount() + " atoms");
-      Atom[] atoms = a.getAtoms();
-      for (int i = a.getAtomCount(); --i >= 0;)
+          + a.atomCount + " atoms");
+      Atom[] atoms = a.atoms;
+      for (int i = a.atomCount; --i >= 0;)
         atoms[i].scaleVector(vibScale);
     }
-    Logger.info("jdx model=" + thisModelID + " type=" + a.getFileTypeName());
+    Logger.info("jdx model=" + thisModelID + " type=" + a.fileTypeName);
     return a;
   }
 
@@ -290,18 +290,18 @@ public class JcampdxReader extends MolReader {
    */
   private void setBonding(AtomSetCollection a, int ibase) {
     int n0 = atomSetCollection.getAtomSetAtomCount(ibase);
-    int n = a.getAtomCount();
+    int n = a.atomCount;
     if (n % n0 != 0) {
       Logger.warn("atom count in secondary model (" + n + ") is not a multiple of " + n0 + " -- bonding ignored");
       return;
     }
-    Bond[] bonds = atomSetCollection.getBonds();
+    Bond[] bonds = atomSetCollection.bonds;
     int b0 = 0;
     for (int i = 0; i < ibase; i++)
       b0 += atomSetCollection.getAtomSetBondCount(i);
     int b1 = b0 + atomSetCollection.getAtomSetBondCount(ibase);
     int ii0 = atomSetCollection.getAtomSetAtomIndex(ibase);
-    int nModels = a.getAtomSetCount();
+    int nModels = a.atomSetCount;
     for (int j = 0; j < nModels; j++) {
       int i0 = a.getAtomSetAtomIndex(j) - ii0;
       if (a.getAtomSetAtomCount(j) != n0) {
@@ -519,7 +519,7 @@ public class JcampdxReader extends MolReader {
       }
       Logger.info(s + line);
     }
-    n = atomSetCollection.getAtomSetCount();
+    n = atomSetCollection.atomSetCount;
     for (int i = n; --i >= 0;) {
       thisModelID = (String) atomSetCollection
           .getAtomSetAuxiliaryInfoValue(i, "modelID");
@@ -534,13 +534,13 @@ public class JcampdxReader extends MolReader {
     } else {
       if (selectedModel == 0)
         selectedModel = n - 1;
-      for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;)
+      for (int i = atomSetCollection.atomSetCount; --i >= 0;)
         if (i + 1 != selectedModel)
           atomSetCollection.removeAtomSet(i);
       if (n > 0)
         appendLoadNote((String) atomSetCollection.getAtomSetAuxiliaryInfoValue(0, "name"));
     }
-    for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;)
+    for (int i = atomSetCollection.atomSetCount; --i >= 0;)
       atomSetCollection.setAtomSetNumber(i, i + 1);
     atomSetCollection.centralize();
   }

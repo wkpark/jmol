@@ -88,7 +88,7 @@ public class MdTopReader extends ForceFieldReader {
   @Override
   protected void finalizeReader() throws Exception {
     finalizeReaderASCR();
-    Atom[] atoms = atomSetCollection.getAtoms();
+    Atom[] atoms = atomSetCollection.atoms;
     Atom atom;
     for (int i = 0; i < atomCount; i++) {
       atom = atoms[i];
@@ -226,7 +226,7 @@ public class MdTopReader extends ForceFieldReader {
     String[] data = getDataBlock();
     if (data.length != atomCount)
       return;
-    Atom[] atoms = atomSetCollection.getAtoms();
+    Atom[] atoms = atomSetCollection.atoms;
     for (int i = atomCount; --i >= 0;)
       atoms[i].partialCharge = parseFloatStr(data[i]);
   }
@@ -236,7 +236,7 @@ public class MdTopReader extends ForceFieldReader {
     Logger.info("Total number of residues=" + resPtrs.length);
     int pt1 = atomCount;
     int pt2;
-    Atom[] atoms = atomSetCollection.getAtoms();
+    Atom[] atoms = atomSetCollection.atoms;
     for (int i = resPtrs.length; --i >= 0;) {
       int ptr = pt2 = parseIntStr(resPtrs[i]) - 1;
       while (ptr < pt1) {
@@ -265,7 +265,7 @@ public class MdTopReader extends ForceFieldReader {
  
   private void getAtomNames() throws Exception {
     String[] names = getDataBlock();
-    Atom[] atoms = atomSetCollection.getAtoms();
+    Atom[] atoms = atomSetCollection.atoms;
     for (int i = 0; i < atomCount; i++)
       atoms[i].atomName = names[i];
   }

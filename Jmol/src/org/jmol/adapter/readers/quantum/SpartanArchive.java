@@ -145,7 +145,7 @@ class SpartanArchive {
     for (int i = 0; i < modelAtomCount; i++) {
       String tokens[] = getTokens(readLine());
       Atom atom = (doAddAtoms ? r.atomSetCollection.addNewAtom()
-          : r.atomSetCollection.getAtom(atomCount0 - modelAtomCount + i));
+          : r.atomSetCollection.atoms[atomCount0 - modelAtomCount + i]);
       atom.elementSymbol = AtomSetCollectionReader
           .getElementSymbol(parseInt(tokens[0]));
       r.setAtomCoordXYZ(atom, parseFloat(tokens[1]) * AtomSetCollectionReader.ANGSTROMS_PER_BOHR, 
@@ -180,7 +180,7 @@ class SpartanArchive {
             bondOrder < 4 ? bondOrder : bondOrder == 5 ? JmolAdapter.ORDER_AROMATIC : 1));
       }
     }
-    int bondCount = r.atomSetCollection.getBondCount();
+    int bondCount = r.atomSetCollection.bondCount;
     if (Logger.debugging) {
       Logger.debug(bondCount + " bonds read");
     }
@@ -475,7 +475,7 @@ class SpartanArchive {
     }
     boolean[] ignore = new boolean[frequencyCount];
     for (int i = 0; i < frequencyCount; ++i) {
-      int atomCount0 = r.atomSetCollection.getAtomCount();
+      int atomCount0 = r.atomSetCollection.atomCount;
       ignore[i] = !r.doGetVibration(i + 1);
       if (!ignore[i] && r.desiredVibrationNumber <= 0) {
         r.atomSetCollection.cloneLastAtomSet();
@@ -546,7 +546,7 @@ class SpartanArchive {
     }
     Float v;
     for (int i = 0; i < frequencyCount; ++i) {
-      int atomCount0 = r.atomSetCollection.getAtomCount();
+      int atomCount0 = r.atomSetCollection.atomCount;
       r.atomSetCollection.cloneLastAtomSet();
       addBonds(bondData, atomCount0);
       Map<String, Object> info = new Hashtable<String, Object>();

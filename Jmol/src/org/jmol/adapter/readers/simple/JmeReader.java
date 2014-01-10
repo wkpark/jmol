@@ -97,7 +97,7 @@ public class JmeReader extends AtomSetCollectionReader {
     /*
     if (!doMinimize)
       return;
-    Atom[] atoms = atomSetCollection.getAtoms();
+    Atom[] atoms = atomSetCollection.atoms;
     for (int i = 0; i < atomCount; i++) {
       atoms[i].z += ((i % 2) == 0 ? 0.05f : -0.05f);
     }

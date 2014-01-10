@@ -134,9 +134,9 @@ public class GromacsReader extends AtomSetCollectionReader {
     float c = 10 * parseFloatStr(tokens[2]);
     setUnitCell(a, b, c, 90, 90, 90);
     setSpaceGroupName("P1");
-    Atom[] atoms = atomSetCollection.getAtoms();
+    Atom[] atoms = atomSetCollection.atoms;
     P3 pt = P3.new3(0.5f, 0.5f, 0.5f);
-    for (int i = atomSetCollection.getAtomCount(); --i >= 0;) {
+    for (int i = atomSetCollection.atomCount; --i >= 0;) {
       setAtomCoord(atoms[i]);
       atoms[i].add(pt);
     }

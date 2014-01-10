@@ -144,7 +144,7 @@ public class PsiReader extends MOReader {
     while (readLine() != null && line.length() > 0) {
       String[] tokens = getTokens(); // get the tokens in the line
       Atom atom = (isInitial ? atomSetCollection.addNewAtom()
-          : atomSetCollection.getAtom(atomPt++));
+          : atomSetCollection.atoms[atomPt++]);
       if (isInitial) {
         atomNames.addLast(tokens[0]);
         if (tokens[0].length() <= 2)
@@ -434,7 +434,7 @@ Orbital energies (a.u.):
     String tokens[];
     while (readLine() != null && line.indexOf("Frequency") >= 0) {
       tokens = getTokens();
-      int iAtom0 = atomSetCollection.getAtomCount();
+      int iAtom0 = atomSetCollection.atomCount;
       boolean[] ignore = new boolean[1];
       if (!doGetVibration(++vibrationNumber))
         continue;

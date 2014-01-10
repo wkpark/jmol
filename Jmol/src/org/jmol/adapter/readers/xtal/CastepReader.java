@@ -380,13 +380,13 @@ public class CastepReader extends AtomSetCollectionReader {
     } else {
       doApplySymmetry = true;
       setLatticeVectors();
-      int nAtoms = atomSetCollection.getAtomCount();
+      int nAtoms = atomSetCollection.atomCount;
       /*
        * this needs to be run either way (i.e. even if coordinates are already
        * fractional) - to satisfy the logic in AtomSetCollectionReader()
        */
       for (int i = 0; i < nAtoms; i++)
-        setAtomCoord(atomSetCollection.getAtom(i));
+        setAtomCoord(atomSetCollection.atoms[i]);
     }
     finalizeReaderASCR();
   }
@@ -550,7 +550,7 @@ public class CastepReader extends AtomSetCollectionReader {
   private void readOutputBornChargeTensors() throws Exception {
     if (readLine().indexOf("--------") < 0)
       return;
-    Atom[] atoms = atomSetCollection.getAtoms();
+    Atom[] atoms = atomSetCollection.atoms;
     appendLoadNote("Ellipsoids: Born Charge Tensors");
     while (readLine().indexOf('=') < 0)
       getTensor(atoms[readOutputAtomIndex()], line.substring(12));
@@ -615,7 +615,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
     readLines(2);
     boolean haveSpin = (line.indexOf("Spin") >= 0);
     readLine();
-    Atom[] atoms = atomSetCollection.getAtoms();
+    Atom[] atoms = atomSetCollection.atoms;
     String[] spins = (haveSpin ? new String[atoms.length] : null);
     if (spins != null)
       for (int i = 0; i < spins.length; i++)
@@ -663,11 +663,11 @@ Species   Ion     s      p      d      f     Total  Charge (e)
       atom.elementSymbol = tokens[4];
       atom.bfactor = parseFloatStr(tokens[5]); // mass, actually
     }
-    atomCount = atomSetCollection.getAtomCount();
+    atomCount = atomSetCollection.atomCount;
     // we collect the atom points, because any supercell business
     // will trash those, and we need the originals
     atomPts = new P3[atomCount];
-    Atom[] atoms = atomSetCollection.getAtoms();
+    Atom[] atoms = atomSetCollection.atoms;
     for (int i = 0; i < atomCount; i++)
       atomPts[i] = P3.newP(atoms[i]);
   }
@@ -730,7 +730,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
     boolean isGammaPoint = (qvec.length() == 0);
     float nx = 1, ny = 1, nz = 1;
     if (ptSupercell != null && !isOK && !isSecond) {
-      atomSetCollection.setSupercellFromPoint(ptSupercell);
+      atomSetCollection.getXSymmetry().setSupercellFromPoint(ptSupercell);
       nx = ptSupercell.x;
       ny = ptSupercell.y;
       nz = ptSupercell.z;
@@ -782,8 +782,8 @@ Species   Ion     s      p      d      f     Total  Charge (e)
       symmetry = atomSetCollection.getSymmetry();
       int iatom = atomSetCollection.getLastAtomSetAtomIndex();
       float freq = freqs.get(i).floatValue();
-      Atom[] atoms = atomSetCollection.getAtoms();
-      int aCount = atomSetCollection.getAtomCount();
+      Atom[] atoms = atomSetCollection.atoms;
+      int aCount = atomSetCollection.atomCount;
       for (int j = 0; j < atomCount; j++) {
         fillFloatArray(null, 0, data);
         for (int k = iatom++; k < aCount; k++)

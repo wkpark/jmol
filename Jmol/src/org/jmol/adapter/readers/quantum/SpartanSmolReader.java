@@ -140,7 +140,7 @@ public class SpartanSmolReader extends SpartanInputReader {
     finalizeReaderASCR();
     // info out of order -- still a chance, at least for first model
     if (atomCount > 0 && spartanArchive != null
-        && atomSetCollection.getBondCount() == 0 && bondData != null)
+        && atomSetCollection.bondCount == 0 && bondData != null)
       spartanArchive.addBonds(bondData, 0);
     if (moData != null) {
       Float n = (Float) atomSetCollection
@@ -202,7 +202,7 @@ public class SpartanSmolReader extends SpartanInputReader {
   private boolean haveCharges;
 
   private void setCharges() {
-    if (haveCharges || atomSetCollection.getAtomCount() == 0)
+    if (haveCharges || atomSetCollection.atomCount == 0)
       return;
     haveCharges = (espCharges
         && atomSetCollection.setAtomSetCollectionPartialCharges("ESPCHARGES")

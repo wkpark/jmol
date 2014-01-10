@@ -98,7 +98,7 @@ public class XmlVaspReader extends XmlReader {
         return;
       }
       parent.setFractionalCoordinates(true);
-      atomSetCollection.setDoFixPeriodic();
+      atomSetCollection.doFixPeriodic = true;
       atomSetCollection.newAtomSet();
       if (enthalpy != null) {
         atomSetCollection.setAtomSetAuxiliaryInfo("enthalpy", Double.valueOf(PT.dVal(enthalpy)));

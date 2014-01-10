@@ -169,7 +169,7 @@ public class MSReader implements MSInterface {
     if (map == null)
       map = htModulation;
     id += "@"
-        + (iModel >= 0 ? iModel : cr.atomSetCollection.getCurrentAtomSetIndex());
+        + (iModel >= 0 ? iModel : cr.atomSetCollection.currentAtomSetIndex);
     Logger.info("Adding " + id + " " + Escape.e(pt));
     map.put(id, pt);
   }
@@ -186,7 +186,7 @@ public class MSReader implements MSInterface {
     if (modDebug)
       Logger.debugging = Logger.debuggingHigh = true;
     cr.atomSetCollection.setAtomSetCollectionAuxiliaryInfo("someModelsAreModulated", Boolean.TRUE);
-    setModulationForStructure(cr.atomSetCollection.getCurrentAtomSetIndex(), isPost);
+    setModulationForStructure(cr.atomSetCollection.currentAtomSetIndex, isPost);
     if (modDebug)
       Logger.debugging = Logger.debuggingHigh = false;
   }
@@ -263,8 +263,8 @@ public class MSReader implements MSInterface {
 
     // here we go -- apply all atom modulations. 
 
-    int n = cr.atomSetCollection.getAtomCount();
-    atoms = cr.atomSetCollection.getAtoms();
+    int n = cr.atomSetCollection.atomCount;
+    atoms = cr.atomSetCollection.atoms;
     cr.symmetry = cr.atomSetCollection.getSymmetry();
     if (cr.symmetry != null)
       nOps = cr.symmetry.getSpaceGroupOperationCount();
@@ -544,8 +544,8 @@ public class MSReader implements MSInterface {
   }
 
 //  private void setSubsystems() {
-//    atoms = cr.atomSetCollection.getAtoms();
-//    int n = cr.atomSetCollection.getAtomCount();
+//    atoms = cr.atomSetCollection.atoms;
+//    int n = cr.atomSetCollection.atomCount;
 //    for (int i = cr.atomSetCollection.getLastAtomSetAtomIndex(); i < n; i++) 
 //      getUnitCell(atoms[i]);
 //  }
@@ -662,7 +662,7 @@ public class MSReader implements MSInterface {
       if (a.tensors != null)
         ((Tensor) a.tensors.get(0)).isUnmodulated = true;
       SymmetryInterface symmetry = getAtomSymmetry(a, cr.symmetry);
-      Tensor t = cr.atomSetCollection.addRotatedTensor(a,
+      Tensor t = cr.atomSetCollection.getXSymmetry().addRotatedTensor(a,
           symmetry.getTensor(a.anisoBorU), iop, false, symmetry);
       t.isModulated = true;
       if (Logger.debuggingHigh) {
@@ -772,17 +772,17 @@ public class MSReader implements MSInterface {
     AtomSetCollection ac = cr.atomSetCollection;
     BS bs = ac.bsAtoms;
     SymmetryInterface sym = getDefaultUnitCell();
-    Atom[] atoms = ac.getAtoms();
+    Atom[] atoms = ac.atoms;
     P3 pt = new P3();
     if (bs == null)
-      bs = ac.bsAtoms = BSUtil.newBitSet2(0, ac.getAtomCount());
+      bs = ac.bsAtoms = BSUtil.newBitSet2(0, ac.atomCount);
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       Atom a = atoms[i];
       pt.setT(a);
       pt.add(a.vib);
       getSymmetry(a).toCartesian(pt, false);
       sym.toFractional(pt, false);
-      if (!ac.isWithinCell(3, pt, minXYZ0.x, maxXYZ0.x, minXYZ0.y, maxXYZ0.y,
+      if (!ac.xtalSymmetry.isWithinCell(3, pt, minXYZ0.x, maxXYZ0.x, minXYZ0.y, maxXYZ0.y,
           minXYZ0.z, maxXYZ0.z, 0.001f) || isCommensurate && a.foccupancy < 0.5f)
         bs.clear(i);
     }
@@ -791,7 +791,7 @@ public class MSReader implements MSInterface {
   private SymmetryInterface getDefaultUnitCell() {
     return (modCell != null
         && htSubsystems.containsKey(modCell) ? htSubsystems.get(modCell)
-        .getSymmetry() : cr.atomSetCollection.symmetry);
+        .getSymmetry() : cr.atomSetCollection.getSymmetry());
   }
 
   @Override

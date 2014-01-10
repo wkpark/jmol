@@ -101,7 +101,7 @@ public class Wien2kReader extends AtomSetCollectionReader {
     else if (line.startsWith("B"))
       latticeCode = 'I'; // x+1/2,y+1/2,z+1/2
     if (latticeCode != 'R' && latticeCode != 'H')
-      atomSetCollection.setLatticeParameter(latticeCode);
+      atomSetCollection.getXSymmetry().setLatticeParameter(latticeCode);
     if (line.length() > 32) {
       String name = line.substring(32).trim();
       if (name.indexOf(" ") >= 0)
@@ -140,7 +140,7 @@ public class Wien2kReader extends AtomSetCollectionReader {
     
     readLine();
     while (line != null && (line.indexOf("ATOM") == 0 || !doSymmetry && line.indexOf(":") == 8)) {
-      int thisAtom = atomSetCollection.getAtomCount();
+      int thisAtom = atomSetCollection.atomCount;
       addAtom();
       if (readLine().indexOf("MULT=") == 10)
         for (int i = parseIntRange(line, 15,18); --i >= 0; ) { 
@@ -156,8 +156,8 @@ public class Wien2kReader extends AtomSetCollectionReader {
         sym = sym.substring(0, 1);
       atomName = PT.simpleReplace(atomName, " ", "");
       int n = 0;
-      for (int i = atomSetCollection.getAtomCount(); --i >= thisAtom; ) {
-        Atom atom = atomSetCollection.getAtom(i);
+      for (int i = atomSetCollection.atomCount; --i >= thisAtom; ) {
+        Atom atom = atomSetCollection.atoms[i];
         atom.elementSymbol = sym;
         atom.atomName = atomName + "_" + (n++);
       }

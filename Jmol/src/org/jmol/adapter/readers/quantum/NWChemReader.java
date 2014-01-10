@@ -462,7 +462,7 @@ public class NWChemReader extends MOReader {
    * @throws Exception If an error occurs.
    **/
   private void readFrequencies() throws Exception {
-    int firstFrequencyAtomSetIndex = atomSetCollection.getAtomSetCount();
+    int firstFrequencyAtomSetIndex = atomSetCollection.atomSetCount;
     String path = "Task " + taskNumber + SmarterJmolAdapter.PATH_SEPARATOR
         + "Frequencies";
 
@@ -487,7 +487,7 @@ public class NWChemReader extends MOReader {
     while (readLine() != null && line.indexOf("P.Frequency") >= 0) {
       tokens = getTokensAt(line, 12);
       int frequencyCount = tokens.length;
-      int iAtom0 = atomSetCollection.getAtomCount();
+      int iAtom0 = atomSetCollection.atomCount;
       int atomCount = atomSetCollection.getLastAtomSetAtomCount();
       if (firstTime)
         iAtom0 -= atomCount;
@@ -522,12 +522,12 @@ public class NWChemReader extends MOReader {
         if (!doGetVibration(i + 1))
           continue;
         tokens = getTokens();
-        int iset = atomSetCollection.getCurrentAtomSetIndex();
-        atomSetCollection.setCurrentAtomSetIndex(idx++);
+        int iset = atomSetCollection.currentAtomSetIndex;
+        atomSetCollection.currentAtomSetIndex = idx++;
         atomSetCollection.setAtomSetFrequency(null, null, tokens[i], null);
         atomSetCollection.setAtomSetModelProperty("IRIntensity", tokens[5]
             + " KM/mol");
-        atomSetCollection.setCurrentAtomSetIndex(iset);
+        atomSetCollection.currentAtomSetIndex = iset;
       }
     } catch (Exception e) {
       // If exception was thrown, don't do anything here...
@@ -541,9 +541,9 @@ public class NWChemReader extends MOReader {
   void readPartialCharges() throws Exception {
     String tokens[];
     readLines(4);
-    int atomCount = atomSetCollection.getAtomCount();
+    int atomCount = atomSetCollection.atomCount;
     int i0 = atomSetCollection.getLastAtomSetAtomIndex();
-    Atom[] atoms = atomSetCollection.getAtoms();
+    Atom[] atoms = atomSetCollection.atoms;
     for (int i = i0; i < atomCount; ++i) {
       // first skip over the dummy atoms (not sure whether that really is needed..)
       while (atoms[i].elementNumber == 0)

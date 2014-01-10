@@ -44,8 +44,8 @@ class AtomIterator implements JmolAdapterAtomIterator {
 	private BS bsAtoms;
 
 	AtomIterator(AtomSetCollection atomSetCollection) {
-		atomCount = atomSetCollection.getAtomCount();
-		atoms = atomSetCollection.getAtoms();
+		atomCount = atomSetCollection.atomCount;
+		atoms = atomSetCollection.atoms;
 		bsAtoms = atomSetCollection.bsAtoms;
 		iatom = 0;
 	}

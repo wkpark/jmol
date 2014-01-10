@@ -88,7 +88,7 @@ public class XmlQEReader extends XmlReader {
         return;
       }
       parent.setFractionalCoordinates(true);
-      atomSetCollection.setDoFixPeriodic();
+      atomSetCollection.doFixPeriodic = true;
       atomSetCollection.newAtomSet();
       return;
     }

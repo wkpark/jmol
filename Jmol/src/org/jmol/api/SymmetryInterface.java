@@ -49,7 +49,7 @@ public interface SymmetryInterface {
 
   public Object getSpaceGroup();
 
-  public void setSpaceGroupS(SymmetryInterface symmetry);
+  public void setSpaceGroupFrom(SymmetryInterface symmetry);
 
   public boolean createSpaceGroup(int desiredSpaceGroupIndex,
                                            String name,

@@ -121,7 +121,7 @@ public class MopacReader extends AtomSetCollectionReader {
 void processAtomicCharges() throws Exception {
     readLines(2);
     atomSetCollection.newAtomSet(); // charges before coords, see JavaDoc
-    baseAtomIndex = atomSetCollection.getAtomCount();
+    baseAtomIndex = atomSetCollection.atomCount;
     int expectedAtomNumber = 0;
     while (readLine() != null) {
       int atomNumber = parseIntStr(line);
@@ -167,11 +167,11 @@ void processAtomicCharges() throws Exception {
     int expectedAtomNumber = 0;
     if (!chargesFound) {
       atomSetCollection.newAtomSet();
-      baseAtomIndex = atomSetCollection.getAtomCount();
+      baseAtomIndex = atomSetCollection.atomCount;
     } else {
       chargesFound = false;
     }
-    Atom[] atoms = atomSetCollection.getAtoms();
+    Atom[] atoms = atomSetCollection.atoms;
     while (readLine() != null) {
       int atomNumber = parseIntStr(line);
       if (atomNumber == Integer.MIN_VALUE) // blank line
@@ -225,7 +225,7 @@ void processAtomicCharges() throws Exception {
   private void readFrequencies() throws Exception {
     
     BS bsOK = new BS();
-    int n0 = atomSetCollection.getCurrentAtomSetIndex() + 1;
+    int n0 = atomSetCollection.currentAtomSetIndex + 1;
     String[] tokens;
 
     boolean done = false;
@@ -240,7 +240,7 @@ void processAtomicCharges() throws Exception {
         }
         int frequencyCount = tokens.length;
         readLine();
-        int iAtom0 = atomSetCollection.getAtomCount();
+        int iAtom0 = atomSetCollection.atomCount;
         int atomCount = atomSetCollection.getLastAtomSetAtomCount();
         boolean[] ignore = new boolean[frequencyCount];
         float freq1 = PT.parseFloatStrict(tokens[0]);
@@ -276,7 +276,7 @@ void processAtomicCharges() throws Exception {
     for (int i = 0, n = n0; i < vibrationNumber; i++) {
       if (!bsOK.get(i))
         continue;
-      atomSetCollection.setCurrentAtomSetIndex(n++);
+      atomSetCollection.currentAtomSetIndex = n++;
       atomSetCollection.setAtomSetFrequency(null, info[i][2], info[i][0], null);
     }
   }

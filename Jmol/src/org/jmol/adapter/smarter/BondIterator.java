@@ -36,8 +36,8 @@ class BondIterator extends JmolAdapterBondIterator {
 
 	BondIterator(AtomSetCollection atomSetCollection) {
 		bsAtoms = atomSetCollection.bsAtoms;
-		bonds = atomSetCollection.getBonds();
-		bondCount = atomSetCollection.getBondCount();
+		bonds = atomSetCollection.bonds;
+		bondCount = atomSetCollection.bondCount;
 		ibond = 0;
 	}
 

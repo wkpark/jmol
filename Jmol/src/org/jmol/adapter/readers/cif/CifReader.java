@@ -178,7 +178,7 @@ public class CifReader extends AtomSetCollectionReader implements
       newModel(++modelNumber);
       if (!skipping)
         processDataParameter();
-      nAtoms = atomSetCollection.getAtomCount();
+      nAtoms = atomSetCollection.atomCount;
       return true;
     }
     if (lookingForPDB && !isPDBX && key.indexOf(".pdb") >= 0)
@@ -242,9 +242,9 @@ public class CifReader extends AtomSetCollectionReader implements
         if (htAudit != null && auditBlockCode.contains("_MOD_")) {
           String key = PT.simpleReplace(auditBlockCode, "_MOD_",
               "_REFRNCE_");
-          if ((atomSetCollection.symmetry = (SymmetryInterface) htAudit
+          if (atomSetCollection.setSymmetry((SymmetryInterface) htAudit
               .get(key)) != null) {
-            notionalUnitCell = atomSetCollection.symmetry.getNotionalUnitCell();
+            notionalUnitCell = atomSetCollection.getSymmetry().getNotionalUnitCell();
             iHaveUnitCell = true;
           }
         } else if (htAudit != null && symops != null) {
@@ -296,7 +296,7 @@ public class CifReader extends AtomSetCollectionReader implements
     thisFormula = "";
     if (isCourseGrained)
       atomSetCollection.setAtomSetAuxiliaryInfo("courseGrained", Boolean.TRUE);
-    if (nAtoms == atomSetCollection.getAtomCount())
+    if (nAtoms == atomSetCollection.atomCount)
       // we found no atoms -- must revert
       atomSetCollection.removeCurrentAtomSet();
     else
@@ -310,7 +310,7 @@ public class CifReader extends AtomSetCollectionReader implements
       pr.finalizeReader(nAtoms);
     else
       applySymmetryAndSetTrajectory();
-    int n = atomSetCollection.getAtomSetCount();
+    int n = atomSetCollection.atomSetCount;
     if (n > 1)
       atomSetCollection.setCollectionName("<collection of " + n + " models>");
     finalizeReaderASCR();
@@ -322,7 +322,7 @@ public class CifReader extends AtomSetCollectionReader implements
   }
 
   @Override
-  protected void doPreSymmetry() {
+  public void doPreSymmetry() {
     if (mr != null)
       mr.setModulation(false);
   }
@@ -350,7 +350,7 @@ public class CifReader extends AtomSetCollectionReader implements
     if (doCheck && (bondTypes.size() > 0 || isMolecular))
       setBondingAndMolecules();
     atomSetCollection.setAtomSetAuxiliaryInfo("fileHasUnitCell", Boolean.TRUE);
-    atomSetCollection.symmetry = null;
+    atomSetCollection.xtalSymmetry = null;
   }
 
   ////////////////////////////////////////////////////////////////
@@ -378,7 +378,7 @@ public class CifReader extends AtomSetCollectionReader implements
 
   private void nextAtomSet() {
     atomSetCollection.setAtomSetAuxiliaryInfo("isCIF", Boolean.TRUE);
-    if (atomSetCollection.getCurrentAtomSetIndex() >= 0) {
+    if (atomSetCollection.currentAtomSetIndex >= 0) {
       // note that there can be problems with multi-data mmCIF sets each with
       // multiple models; and we could be loading multiple files!
       atomSetCollection.newAtomSet();
@@ -1032,10 +1032,10 @@ public class CifReader extends AtomSetCollectionReader implements
           iAtom = atomSetCollection.getAtomIndexFromName(field);
           if (iAtom < 0)
             continue;
-          atom = atomSetCollection.getAtom(iAtom);
+          atom = atomSetCollection.atoms[iAtom];
           break;
         case ANISO_MMCIF_ID:
-          atom = atomSetCollection.getAtom(++iAtom);
+          atom = atomSetCollection.atoms[++iAtom];
           break;
         case ANISO_U11:
         case ANISO_U22:
@@ -1366,7 +1366,7 @@ public class CifReader extends AtomSetCollectionReader implements
   private void setBondingAndMolecules() {
     Logger.info("CIF creating molecule "
         + (bondTypes.size() > 0 ? " using GEOM_BOND records" : ""));
-    atoms = atomSetCollection.getAtoms();
+    atoms = atomSetCollection.atoms;
     firstAtom = atomSetCollection.getLastAtomSetAtomIndex();
     int nAtoms = atomSetCollection.getLastAtomSetAtomCount();
     atomCount = firstAtom + nAtoms;
@@ -1439,7 +1439,7 @@ public class CifReader extends AtomSetCollectionReader implements
               + atoms[i].atomName + " " + atoms[i]);
       }
       atomSetCollection.setAtomSetAuxiliaryInfo("notionalUnitcell", null);
-      if (nMolecular++ == atomSetCollection.getCurrentAtomSetIndex()) {
+      if (nMolecular++ == atomSetCollection.currentAtomSetIndex) {
         atomSetCollection
             .clearGlobalBoolean(AtomSetCollection.GLOBAL_FRACTCOORD);
         atomSetCollection.clearGlobalBoolean(AtomSetCollection.GLOBAL_SYMMETRY);

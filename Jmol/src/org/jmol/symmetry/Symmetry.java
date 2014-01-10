@@ -153,8 +153,8 @@ public class Symmetry implements SymmetryInterface {
   }
   
   @Override
-  public void setSpaceGroupS(SymmetryInterface symmetry) {
-    spaceGroup = (symmetry == null ? null : (SpaceGroup) symmetry.getSpaceGroup());
+  public void setSpaceGroupFrom(SymmetryInterface symmetry) {
+    spaceGroup = (SpaceGroup) symmetry.getSpaceGroup();
   }
 
   @Override

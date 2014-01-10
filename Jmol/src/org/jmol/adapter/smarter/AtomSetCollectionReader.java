@@ -189,17 +189,17 @@ public abstract class AtomSetCollectionReader {
   // private state variables
 
   private SB loadNote = new SB();
-  private boolean doConvertToFractional;
-  private boolean fileCoordinatesAreFractional;
-  private boolean merging;
-  private float symmetryRange;
+  boolean doConvertToFractional;
+  boolean fileCoordinatesAreFractional;
+  boolean merging;
+  float symmetryRange;
   private int[] firstLastStep;
   private int lastModelNumber = Integer.MAX_VALUE;
-  private int desiredSpaceGroupIndex = -1;
+  int desiredSpaceGroupIndex = -1;
   protected P3 fileScaling;
   protected P3 fileOffset;
   private P3 fileOffsetFractional;
-  private P3 unitCellOffset;
+  P3 unitCellOffset;
   private boolean unitCellOffsetFractional;
 
 //    public void finalize() {
@@ -262,8 +262,8 @@ public abstract class AtomSetCollectionReader {
     try {
     int baseAtomIndex = ((Integer) htParams.get("baseAtomIndex")).intValue();
     int baseModelIndex = ((Integer) htParams.get("baseModelIndex")).intValue();
-    baseAtomIndex += atomSetCollection.getAtomCount();
-    baseModelIndex += atomSetCollection.getAtomSetCount();
+    baseAtomIndex += atomSetCollection.atomCount;
+    baseModelIndex += atomSetCollection.atomSetCount;
     htParams.put("baseAtomIndex", Integer.valueOf(baseAtomIndex));
     htParams.put("baseModelIndex", Integer.valueOf(baseModelIndex));
     } catch (Exception e) {
@@ -391,7 +391,7 @@ public abstract class AtomSetCollectionReader {
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo("smilesString", s);
     if (!htParams.containsKey("templateAtomCount"))
       htParams.put("templateAtomCount", Integer.valueOf(atomSetCollection
-          .getAtomCount()));
+          .atomCount));
     if (htParams.containsKey("bsFilter"))
       htParams.put("filteredAtomCount", Integer.valueOf(BSUtil
           .cardinalityOf((BS) htParams.get("bsFilter"))));
@@ -399,11 +399,11 @@ public abstract class AtomSetCollectionReader {
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo("calculationType",
           calculationType);
 
-    String name = atomSetCollection.getFileTypeName();
+    String name = atomSetCollection.fileTypeName;
     String fileType = name;
     if (fileType.indexOf("(") >= 0)
       fileType = fileType.substring(0, fileType.indexOf("("));
-    for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;) {
+    for (int i = atomSetCollection.atomSetCount; --i >= 0;) {
       atomSetCollection.setAtomSetAuxiliaryInfoForSet("fileName", filePath, i);
       atomSetCollection.setAtomSetAuxiliaryInfoForSet("fileType", fileType, i);
     }
@@ -411,7 +411,7 @@ public abstract class AtomSetCollectionReader {
     if (atomSetCollection.errorMessage != null)
       return atomSetCollection.errorMessage + "\nfor file " + filePath
           + "\ntype " + name;
-    if ((atomSetCollection.bsAtoms == null ? atomSetCollection.getAtomCount()
+    if ((atomSetCollection.bsAtoms == null ? atomSetCollection.atomCount
         : atomSetCollection.bsAtoms.cardinality()) == 0
         && fileType.indexOf("DataOnly") < 0 && atomSetCollection.getAtomSetCollectionAuxiliaryInfo("dataOnly") == null)
       return "No atoms found\nfor file " + filePath + "\ntype " + name;
@@ -563,27 +563,26 @@ public abstract class AtomSetCollectionReader {
 
   protected void initializeSymmetryOptions() {
     latticeCells = new int[3];
-    P3 pt = ((P3) htParams.get("lattice"));
-    if (forcePacked && pt == null)
+    doApplySymmetry = false;
+    P3 pt = (P3) htParams.get("lattice");
+    if (pt == null) {
+      if (!forcePacked)
+        return;
       pt = P3.new3(1, 1, 1);
-    if (pt != null) {
-      latticeCells[0] = (int) pt.x;
-      latticeCells[1] = (int) pt.y;
-      latticeCells[2] = (int) pt.z;
-      doCentroidUnitCell = (htParams.containsKey("centroid"));
-      if (doCentroidUnitCell && (latticeCells[2] == -1 || latticeCells[2] == 0))
-        latticeCells[2] = 1;
-      boolean isPacked = forcePacked || htParams.containsKey("packed");
-      centroidPacked = doCentroidUnitCell && isPacked;
-      doPackUnitCell = !doCentroidUnitCell && (isPacked || latticeCells[2] < 0);      
     }
+    latticeCells[0] = (int) pt.x;
+    latticeCells[1] = (int) pt.y;
+    latticeCells[2] = (int) pt.z;
+    doCentroidUnitCell = (htParams.containsKey("centroid"));
+    if (doCentroidUnitCell && (latticeCells[2] == -1 || latticeCells[2] == 0))
+      latticeCells[2] = 1;
+    boolean isPacked = forcePacked || htParams.containsKey("packed");
+    centroidPacked = doCentroidUnitCell && isPacked;
+    doPackUnitCell = !doCentroidUnitCell && (isPacked || latticeCells[2] < 0);
     doApplySymmetry = (latticeCells[0] > 0 && latticeCells[1] > 0);
     //allows for {1 1 1} or {1 1 -1} or {555 555 0|1|-1} (-1  being "packed")
-    if (!doApplySymmetry) {
-      latticeCells[0] = 0;
-      latticeCells[1] = 0;
-      latticeCells[2] = 0;
-    }
+    if (!doApplySymmetry)
+      latticeCells = new int[3];
   }
 
   public boolean haveModel;
@@ -637,14 +636,14 @@ public abstract class AtomSetCollectionReader {
   }
 
   protected void newAtomSet(String name) {
-    if (atomSetCollection.getCurrentAtomSetIndex() >= 0) {
+    if (atomSetCollection.currentAtomSetIndex >= 0) {
       atomSetCollection.newAtomSet();
       atomSetCollection.setCollectionName("<collection of "
-          + (atomSetCollection.getCurrentAtomSetIndex() + 1) + " models>");
+          + (atomSetCollection.currentAtomSetIndex + 1) + " models>");
     } else {
       atomSetCollection.setCollectionName(name);
     }
-    atomSetCollection.setAtomSetAuxiliaryInfoForSet("name", name, Math.max(0, atomSetCollection.getCurrentAtomSetIndex()));
+    atomSetCollection.setAtomSetAuxiliaryInfoForSet("name", name, Math.max(0, atomSetCollection.currentAtomSetIndex));
   }
 
   protected int cloneLastAtomSet(int atomCount, P3[] pts) throws Exception {
@@ -669,8 +668,7 @@ public abstract class AtomSetCollectionReader {
   public int setSymmetryOperator(String xyz) {
     if (ignoreFileSymmetryOperators)
       return -1;
-    setLatticeCells(false);
-    int isym = atomSetCollection.addSpaceGroupOperation(xyz);
+    int isym = atomSetCollection.getXSymmetry().addSpaceGroupOperation(this, xyz);
     if (isym < 0)
       Logger.warn("Skipping symmetry operation " + xyz);
     iHaveSymmetryOperators = true;
@@ -753,7 +751,7 @@ public abstract class AtomSetCollectionReader {
     for (int i = 0; i < n; i++)
       if (Float.isNaN(notionalUnitCell[i]))
         return false;
-    getSymmetry().setUnitCell(notionalUnitCell);
+    getNewSymmetry().setUnitCell(notionalUnitCell);
     if (doApplySymmetry)
       doConvertToFractional = !fileCoordinatesAreFractional;
     //if (but not only if) applying symmetry do we force conversion
@@ -773,7 +771,7 @@ public abstract class AtomSetCollectionReader {
     }
   }
 
-  protected SymmetryInterface getSymmetry() {
+  protected SymmetryInterface getNewSymmetry() {
     symmetry = (SymmetryInterface) Interface
         .getOptionInterface("symmetry.Symmetry");
     return symmetry;
@@ -808,8 +806,8 @@ public abstract class AtomSetCollectionReader {
   public boolean doReadMolecularOrbitals;
   protected boolean reverseModels;
   private String nameRequired;
-  private boolean doCentroidUnitCell;
-  private boolean centroidPacked;
+  boolean doCentroidUnitCell;
+  boolean centroidPacked;
 
 
   // ALL:  "CENTER" "REVERSEMODELS"
@@ -921,7 +919,7 @@ public abstract class AtomSetCollectionReader {
       isOK |= checkFilter(atom, filter2);
     if (isOK && filterEveryNth)
       isOK = (((nFiltered++) % filterN) == 0);
-    bsFilter.setBitTo(iAtom >= 0 ? iAtom : atomSetCollection.getAtomCount(), isOK);
+    bsFilter.setBitTo(iAtom >= 0 ? iAtom : atomSetCollection.atomCount, isOK);
     return isOK;
   }
 
@@ -1053,47 +1051,15 @@ public abstract class AtomSetCollectionReader {
   }
 
   public void applySymmetryAndSetTrajectory() throws Exception {
+    // overridden in many readers
     applySymTrajASCR();
   }
   
   public SymmetryInterface applySymTrajASCR() throws Exception {
     if (forcePacked)
       initializeSymmetryOptions();
-    SymmetryInterface sym = null;
-    if (iHaveUnitCell && doCheckUnitCell) {
-      atomSetCollection.setCoordinatesAreFractional(iHaveFractionalCoordinates);
-      atomSetCollection.setNotionalUnitCell(notionalUnitCell,
-          matUnitCellOrientation, unitCellOffset);
-      sym = atomSetCollection.symmetry;
-      atomSetCollection.setAtomSetSpaceGroupName(spaceGroup);
-      atomSetCollection.setSymmetryRange(symmetryRange);
-      if (doConvertToFractional || fileCoordinatesAreFractional) {
-        setLatticeCells(false);
-        
-        
-        if (ignoreFileSpaceGroupName || !iHaveSymmetryOperators) {
-          if (!merging || symmetry == null)
-            getSymmetry();
-          if (symmetry.createSpaceGroup(desiredSpaceGroupIndex,
-              (spaceGroup.indexOf("!") >= 0 ? "P1" : spaceGroup), notionalUnitCell)) {
-            atomSetCollection.applySymmetry(symmetry, ms);
-            atomSetCollection.setAtomSetSpaceGroupName(symmetry
-                .getSpaceGroupName());
-          }
-        } else {
-          doPreSymmetry();
-          atomSetCollection.applySymmetry(null, ms);
-        }
-      }
-      if (iHaveFractionalCoordinates && merging && symmetry != null) {
-        // when merging (with appendNew false), we must return cartesians
-        atomSetCollection.toCartesian(symmetry);
-        atomSetCollection.setCoordinatesAreFractional(false);
-        // We no longer allow merging of multiple-model files
-        // when the file to be appended has fractional coordinates and vibrations
-        addVibrations = false;
-      }
-    }
+    SymmetryInterface sym = (iHaveUnitCell && doCheckUnitCell ? atomSetCollection
+        .getXSymmetry().applySymmetryFromReader(this, symmetry) : null);
     if (isTrajectory)
       atomSetCollection.setTrajectory();
     initializeSymmetry();
@@ -1112,7 +1078,7 @@ public abstract class AtomSetCollectionReader {
         .get("mos");
     if (orbitals != null)
       Logger.info(orbitals.size() + " molecular orbitals read in model "
-          + atomSetCollection.getAtomSetCount());
+          + atomSetCollection.atomSetCount);
   }
 
   public static String getElementSymbol(int elementNumber) {
@@ -1354,7 +1320,7 @@ public abstract class AtomSetCollectionReader {
           fileScaling.z = 1;
         setFractionalCoordinates(true);
         latticeCells = new int[3];
-        setLatticeCells(true);
+        atomSetCollection.xtalSymmetry = null;
         setUnitCell(plotScale.x * 2 / (maxXYZ.x - minXYZ.x), plotScale.y * 2
             / (maxXYZ.y - minXYZ.y), plotScale.z * 2
             / (maxXYZ.z == minXYZ.z ? 1 : maxXYZ.z - minXYZ.z), 90, 90, 90);
@@ -1381,16 +1347,6 @@ public abstract class AtomSetCollectionReader {
       line = line.substring(0, pt).trim();
     }
   }
-
-  private void setLatticeCells(boolean isReset) {
-    if (isReset)
-      atomSetCollection.setLatticeCells(latticeCells, true, false, false,
-          false, null, null);
-    else
-      atomSetCollection.setLatticeCells(latticeCells, applySymmetryToBonds,
-          doPackUnitCell, doCentroidUnitCell, centroidPacked, strSupercell,
-          ptSupercell);
- }
 
   private String previousScript;
 

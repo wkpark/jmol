@@ -51,9 +51,9 @@ public class GulpReader extends AtomSetCollectionReader {
   protected void finalizeReader() {
     if (atomCharges == null)
       return;
-    Atom[] atoms = atomSetCollection.getAtoms();
+    Atom[] atoms = atomSetCollection.atoms;
     Float f;
-    for (int i = atomSetCollection.getAtomCount(); --i >= 0;)
+    for (int i = atomSetCollection.atomCount; --i >= 0;)
       if ((f = atomCharges.get(atoms[i].atomName)) != null
           || (f = atomCharges.get(atoms[i].getElementSymbol())) != null)
         atoms[i].partialCharge = f.floatValue();
@@ -309,9 +309,9 @@ public class GulpReader extends AtomSetCollectionReader {
       setModelParameters(true);
       // Full cell -- must convert primitive to conventional
       
-      Atom[] atoms = atomSetCollection.getAtoms();
+      Atom[] atoms = atomSetCollection.atoms;
       int i0 = atomSetCollection.getLastAtomSetAtomIndex();
-      int i1 = atomSetCollection.getAtomCount();
+      int i1 = atomSetCollection.atomCount;
       for (int i = i0; i < i1; i++) {
         Atom atom = atoms[i];
         symmetry.toCartesian(atom, true);

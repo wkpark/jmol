@@ -78,7 +78,7 @@ public class HyperChemReader extends AtomSetCollectionReader {
     String molName = getMolName();
     atomSetCollection.setAtomSetName(molName);
     atomIndex = 0;
-    baseAtomIndex = atomSetCollection.getAtomCount();
+    baseAtomIndex = atomSetCollection.atomCount;
   }
 
   private String getMolName() {

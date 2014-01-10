@@ -391,7 +391,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       if (!doGetModel(++nModels, null))
         continue;
       model(nModels);
-      pymolScene.currentAtomSetIndex = atomSetCollection.getCurrentAtomSetIndex();
+      pymolScene.currentAtomSetIndex = atomSetCollection.currentAtomSetIndex;
       if (isTrajectory) {
         trajectoryStep = new P3[totalAtomCount];
         trajectorySteps.addLast(trajectoryStep);
@@ -859,7 +859,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     if (n == 0)
       return null;
 
-    atomCount = atomCount0 = atomSetCollection.getAtomCount();
+    atomCount = atomCount0 = atomSetCollection.atomCount;
     int nAtoms = intAt(pymolObject, 3);
     if (nAtoms == 0)
       return null;
@@ -889,7 +889,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       }
     addBonds(bonds);
     addMolStructures();
-    atoms = atomSetCollection.getAtoms();
+    atoms = atomSetCollection.atoms;
     if (!isStateScript)
       createShapeObjects();
     ssMapSeq = null;
@@ -1134,7 +1134,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     int istart = -1;
     int iend = -1;
     int ichain = 0;
-    Atom[] atoms = atomSetCollection.getAtoms();
+    Atom[] atoms = atomSetCollection.atoms;
     BS bsSeq = null;
     BS bsAtom = pymolScene.getSSMapAtom(ssType);
     int n = atomCount + 1;

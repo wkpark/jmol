@@ -163,9 +163,9 @@ abstract public class MOReader extends BasisFunctionReader {
     discardLinesUntilContains("----");
     discardLinesUntilContains("----");
     haveNboCharges = true;
-    int atomCount = atomSetCollection.getAtomCount();
+    int atomCount = atomSetCollection.atomCount;
     int i0 = atomSetCollection.getLastAtomSetAtomIndex();
-    Atom[] atoms = atomSetCollection.getAtoms();
+    Atom[] atoms = atomSetCollection.atoms;
     for (int i = i0; i < atomCount; ++i) {
       // first skip over the dummy atoms
       while (atoms[i].elementNumber == 0)
@@ -181,7 +181,7 @@ abstract public class MOReader extends BasisFunctionReader {
       if (Logger.debugging)
         Logger.debug("Atom " + i + " using NBOcharge: " + charge);
     }
-    Logger.info("Using NBO charges for Model " + atomSetCollection.getAtomSetCount());
+    Logger.info("Using NBO charges for Model " + atomSetCollection.atomSetCount);
   }
   
   

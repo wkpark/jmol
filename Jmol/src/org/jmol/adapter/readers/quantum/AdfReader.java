@@ -206,7 +206,7 @@ OR
         return;
       String[] frequencies = getTokens();
       readLine(); // -------- -------- --------
-      int iAtom0 = atomSetCollection.getAtomCount();
+      int iAtom0 = atomSetCollection.atomCount;
       int atomCount = atomSetCollection.getLastAtomSetAtomCount();
       int frequencyCount = frequencies.length;
       boolean[] ignore = new boolean[frequencyCount];

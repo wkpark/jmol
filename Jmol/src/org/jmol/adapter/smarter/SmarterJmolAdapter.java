@@ -64,7 +64,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
   @Override
   public String getFileTypeName(Object atomSetCollectionOrReader) {
     if (atomSetCollectionOrReader instanceof AtomSetCollection)
-      return ((AtomSetCollection)atomSetCollectionOrReader).getFileTypeName();
+      return ((AtomSetCollection)atomSetCollectionOrReader).fileTypeName;
     if (atomSetCollectionOrReader instanceof BufferedReader)
       return Resolver.getFileType((BufferedReader)atomSetCollectionOrReader);
     return null;
@@ -333,17 +333,17 @@ public class SmarterJmolAdapter extends JmolAdapter {
   
   @Override
   public String getAtomSetCollectionName(Object atomSetCollection) {
-    return ((AtomSetCollection)atomSetCollection).getCollectionName();
+    return ((AtomSetCollection)atomSetCollection).collectionName;
   }
   
   @Override
   public Map<String, Object> getAtomSetCollectionAuxiliaryInfo(Object atomSetCollection) {
-    return ((AtomSetCollection)atomSetCollection).getAtomSetCollectionAuxiliaryInfoMap();
+    return ((AtomSetCollection)atomSetCollection).atomSetCollectionAuxiliaryInfo;
   }
 
   @Override
   public int getAtomSetCount(Object atomSetCollection) {
-    return ((AtomSetCollection)atomSetCollection).getAtomSetCount();
+    return ((AtomSetCollection)atomSetCollection).atomSetCount;
   }
 
   @Override
@@ -380,7 +380,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
   @Override
   public int getAtomCount(Object atomSetCollection) {
     AtomSetCollection a = (AtomSetCollection)atomSetCollection; 
-    return (a.bsAtoms == null ? a.getAtomCount() : a.bsAtoms.cardinality());
+    return (a.bsAtoms == null ? a.atomCount : a.bsAtoms.cardinality());
   }
 
   @Override
@@ -388,34 +388,6 @@ public class SmarterJmolAdapter extends JmolAdapter {
     return ((AtomSetCollection)atomSetCollection).coordinatesAreFractional;
   }
 
-  @Override
-  public float[] getNotionalUnitcell(Object atomSetCollection) {
-    return ((AtomSetCollection)atomSetCollection).notionalUnitCell;
-  }
-
-  @Override
-  public float[] getPdbScaleMatrix(Object atomSetCollection) {
-    float[] a = ((AtomSetCollection)atomSetCollection).notionalUnitCell;
-    if (a.length < 22)
-      return null;
-    float[] b = new float[16];
-    for (int i = 0; i < 16; i++)
-      b[i] = a[6 + i];
-    return b;
-  }
-
-  @Override
-  public float[] getPdbScaleTranslate(Object atomSetCollection) {
-    float[] a = ((AtomSetCollection)atomSetCollection).notionalUnitCell;
-    if (a.length < 22)
-      return null;
-    float[] b = new float[3];
-    b[0] = a[6 + 4*0 + 3];
-    b[1] = a[6 + 4*1 + 3];
-    b[2] = a[6 + 4*2 + 3];
-    return b;
-  }
-  
   ////////////////////////////////////////////////////////////////
 
   @Override
@@ -430,7 +402,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
 
   @Override
   public JmolAdapterStructureIterator getStructureIterator(Object atomSetCollection) {
-    return ((AtomSetCollection)atomSetCollection).getStructureCount() == 0 ? 
+    return ((AtomSetCollection)atomSetCollection).structureCount == 0 ? 
         null : new StructureIterator((AtomSetCollection)atomSetCollection);
   }
 

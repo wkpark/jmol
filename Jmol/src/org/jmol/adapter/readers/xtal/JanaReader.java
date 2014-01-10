@@ -31,6 +31,7 @@ import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.MSInterface;
 import org.jmol.api.Interface;
+import org.jmol.api.SymmetryInterface;
 import org.jmol.io.JmolBinary;
 import org.jmol.java.BS;
 
@@ -147,7 +148,7 @@ public class JanaReader extends AtomSetCollectionReader {
   public void finalizeReader() throws Exception {
     readM40Data();
     if (lattvecs != null)
-      atomSetCollection.symmetry.addLatticeVectors(lattvecs);
+      atomSetCollection.getSymmetry().addLatticeVectors(lattvecs);
     if (ms != null) {
       ms.setModulation(false);
     }
@@ -499,18 +500,19 @@ public class JanaReader extends AtomSetCollectionReader {
    */
   private void adjustM40Occupancies() {
     Map<String, Integer> htSiteMult = new Hashtable<String, Integer>();    
-    Atom[] atoms = atomSetCollection.getAtoms();
-    for (int i = atomSetCollection.getAtomCount(); --i >= 0;) {
+    Atom[] atoms = atomSetCollection.atoms;
+    SymmetryInterface symmetry = atomSetCollection.getSymmetry();
+    for (int i = atomSetCollection.atomCount; --i >= 0;) {
       Atom a = atoms[i];
       Integer ii = htSiteMult.get(a.atomName);
       if (ii == null)
-        htSiteMult.put(a.atomName, ii = Integer.valueOf(atomSetCollection.symmetry.getSiteMultiplicity(a)));
+        htSiteMult.put(a.atomName, ii = Integer.valueOf(symmetry.getSiteMultiplicity(a)));
       a.foccupancy *= ii.intValue();
     }
   }
 
   @Override
-  protected void doPreSymmetry() {
+  public void doPreSymmetry() {
     if (ms != null)
       ms.setModulation(false);
   }

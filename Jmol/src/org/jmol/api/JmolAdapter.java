@@ -348,38 +348,7 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
    * @return true if the coordinates are fractional, default <code>false</code>
    */
   abstract public boolean coordinatesAreFractional(Object atomSetCollection);
-
-  /**
-   * Get the notional unit cell.
-   * 
-   * <p>This method returns the parameters that define a crystal unitcell
-   * the parameters are returned in a float[] in the following order
-   * <code>a, b, c, alpha, beta, gamma</code>
-   * <br><code>a, b, c</code> : angstroms
-   * <br><code>alpha, beta, gamma</code> : degrees
-   * <br>if there is no unit cell data then return null
-   * @param atomSetCollection The client file
-   * @return The array of the values or <code>null</code>
-   */
-  abstract public float[] getNotionalUnitcell(Object atomSetCollection);
   
-  /**
-   * Get the PDB scale matrix.
-   * 
-   * <p>Does not seem to be overriden by any descendent
-   * @param atomSetCollection The client file
-   * @return The array of 9 floats for the matrix or <code>null</code>
-   */
-  abstract public float[] getPdbScaleMatrix(Object atomSetCollection);
-  
-  /**
-   * Get the PDB scale translation vector.
-   * <p>Does not seem to be overriden by any descendent
-   * @param atomSetCollection The client file
-   * @return The x, y and z translation values or <code>null</code>
-   */
-  abstract public float[] getPdbScaleTranslate(Object atomSetCollection);
-
   /**
    * Get an AtomIterator for retrieval of all atoms in the file.
    * 

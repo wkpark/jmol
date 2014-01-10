@@ -87,7 +87,7 @@ class PopInJmol extends WebPanel implements ChangeListener {
     for (int i=0;i<nApplets;i++){
       String javaname = getInstanceList().getModel().getElementAt(i).javaname;
       s+="   var jmolInfo"+i+"=jmolInfo;\n";
-      s+="   jmolInfo"+i+".coverImage=\"load "+javaname+".png\";\n";
+      s+="   jmolInfo"+i+".coverImage=\""+javaname+".png\";\n";
       s+="   jmolInfo"+i+".script=\"load "+javaname+".spt\";\n";
       s+="   $(\"#Jmol"+i+"\").html(Jmol.getAppletHtml(\"jmolApplet"+i+"\",jmolInfo"+i+"));\n";
     }

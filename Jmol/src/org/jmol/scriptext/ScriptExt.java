@@ -8883,29 +8883,27 @@ public class ScriptExt implements JmolScriptExtension {
     // {xxx}.yyy.format("...")
     // (value).format("...")
     // format("....",a,b,c...)
-
+    // format("....",[a1, a2, a3, a3....])
     SV x1 = (args.length < 2 ? mp.getX() : null);
     String format = (args.length == 0 ? "%U" : SV.sValue(args[0]));
     boolean asArray = T.tokAttr(intValue, T.minmaxmask);
     if (x1 == null) {
-      if (args.length >= 2 && args[1].tok == T.varray) {
+      if (args.length < 2 || args[1].tok != T.varray)
+        return mp.addXStr(SV.sprintfArray(args));
       List<SV> a = args[1].getList();
-      SV[] args2 = new SV[] {args[0], null};
+      SV[] args2 = new SV[] { args[0], null };
       String[] sa = new String[a.size()];
       for (int i = sa.length; --i >= 0;) {
         args2[1] = a.get(i);
         sa[i] = SV.sprintfArray(args2);
       }
-      return mp.addXAS(sa);      
-    }
-
-      return mp.addXStr(SV.sprintfArray(args));
+      return mp.addXAS(sa);
     }
     BS bs = SV.getBitSet(x1, true);
     if (bs == null)
       return mp.addXObj(SV.sprintf(Txt.formatCheck(format), x1));
-    return mp.addXObj(getBitsetIdent(bs, format,
-          x1.value, true, x1.index, asArray));
+    return mp.addXObj(getBitsetIdent(bs, format, x1.value, true, x1.index,
+        asArray));
   }
 
   private boolean evaluateWithin(ScriptMathProcessor mp, SV[] args) throws ScriptException {

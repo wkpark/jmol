@@ -170,6 +170,20 @@ public abstract class T3 implements Serializable {
   }
 
   /**
+   * Add {a b c}
+   * 
+   * @param a
+   * @param b
+   * @param c
+   */
+  public final void add3(float a, float b, float c) {
+    x += a;
+    y += b;
+    z += c;
+  }
+
+  
+  /**
    * Sets the value of this tuple to the scalar multiplication of tuple t1 and
    * then adds tuple t2 (this = s*t1 + t2).
    * 
@@ -186,6 +200,7 @@ public abstract class T3 implements Serializable {
     z = s * t1.z + t2.z;
   }
 
+  
   /**
    * average of two tuples
    * 

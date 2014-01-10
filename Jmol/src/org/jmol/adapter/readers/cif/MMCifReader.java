@@ -34,7 +34,6 @@ import javajs.util.SB;
 
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollection;
-import org.jmol.adapter.smarter.MMCifInterface;
 import org.jmol.adapter.smarter.Structure;
 import org.jmol.api.JmolAdapter;
 import org.jmol.constant.EnumStructure;
@@ -181,14 +180,14 @@ _pdbx_struct_oper_list.vector[3]
    */
 
   private String[] assem = null;
-  private String data;
-  private String key;
+  //private String data;
+  //private String key;
   
   @Override
-  public void processData(String key) throws Exception {
-    if (key.startsWith("_pdbx_entity_nonpoly"))
+  public void processEntry() throws Exception {
+    if (cr.key.startsWith("_pdbx_entity_nonpoly"))
       processDataNonpoly();
-    else if (key.startsWith("_pdbx_struct_assembly_gen"))
+    else if (cr.key.startsWith("_pdbx_struct_assembly_gen"))
       processDataAssemblyGen();
   }
   
@@ -207,16 +206,14 @@ _pdbx_struct_oper_list.vector[3]
   }
 
   private void processDataAssemblyGen() throws Exception {
-    data = cr.data;
-    key = cr.key;
     if (assem == null)
       assem = new String[3];
-    if (key.indexOf("assembly_id") >= 0)
-      assem[ASSEM_ID] = data = cr.tokenizer.fullTrim(data);
-    else if (key.indexOf("oper_expression") >= 0)
-      assem[ASSEM_OPERS] = data = cr.tokenizer.fullTrim(data);
-    else if (key.indexOf("asym_id_list") >= 0)
-      assem[ASSEM_LIST] = data = cr.tokenizer.fullTrim(data);
+    if (cr.key.indexOf("assembly_id") >= 0)
+      assem[ASSEM_ID] = cr.tokenizer.fullTrim(cr.data);
+    else if (cr.key.indexOf("oper_expression") >= 0)
+      assem[ASSEM_OPERS] = cr.tokenizer.fullTrim(cr.data);
+    else if (cr.key.indexOf("asym_id_list") >= 0)
+      assem[ASSEM_LIST] = cr.tokenizer.fullTrim(cr.data);
     if (assem[0] != null && assem[1] != null && assem[2] != null)
       addAssembly();
   }
@@ -932,27 +929,28 @@ _pdbx_struct_oper_list.vector[3]
   }
 
   @Override
-  public boolean processPDBLoops(String str) throws Exception {
-    if (str.startsWith("_pdbx_struct_oper_list"))
+  public boolean processLoopBlock() throws Exception {
+    String key = cr.key;
+    if (key.startsWith("_pdbx_struct_oper_list"))
       return processStructOperListBlock();
-    if (str.startsWith("_pdbx_struct_assembly_gen"))
+    if (key.startsWith("_pdbx_struct_assembly_gen"))
       return processAssemblyGenBlock();
 
     if (isCourseGrained)
       return false;
 
-    if (str.startsWith("_struct_site_gen"))
+    if (key.startsWith("_struct_site_gen"))
       return processStructSiteBlock();
-    if (str.startsWith("_chem_comp_bond"))
+    if (key.startsWith("_chem_comp_bond"))
       return processLigandBondLoopBlock();
-    if (str.startsWith("_chem_comp"))
+    if (key.startsWith("_chem_comp"))
       return processChemCompLoopBlock();
-    if (str.startsWith("_pdbx_entity_nonpoly"))
+    if (key.startsWith("_pdbx_entity_nonpoly"))
       return processNonpolyLoopBlock();
-    if (str.startsWith("_struct_conf")
-        && !str.startsWith("_struct_conf_type"))
+    if (key.startsWith("_struct_conf")
+        && !key.startsWith("_struct_conf_type"))
       return processStructConfLoopBlock();
-    if (str.startsWith("_struct_sheet_range"))
+    if (key.startsWith("_struct_sheet_range"))
       return processStructSheetRangeLoopBlock();
     return false;
   }

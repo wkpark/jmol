@@ -386,9 +386,9 @@ class UnitCell extends SimpleUnitCell {
       pts[i] = P3.newP(BoxInfo.unitCubePoints[i]);
       if (cell0 != null) {
         scale *= unitCellMultiplier.z;
-        pts[i].x += cell0.x + cell1.x * pts[i].x;
-        pts[i].y += cell0.y + cell1.y * pts[i].y;
-        pts[i].z += cell0.z + cell1.z * pts[i].z;
+        pts[i].add3(cell0.x + cell1.x * pts[i].x, 
+            cell0.y + cell1.y * pts[i].y,
+            cell0.z + cell1.z * pts[i].z);
       }
       matrixFractionalToCartesian.transform(pts[i]);
       if (withOffset)

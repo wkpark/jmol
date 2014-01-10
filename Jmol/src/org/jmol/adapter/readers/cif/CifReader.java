@@ -26,8 +26,6 @@ package org.jmol.adapter.readers.cif;
 import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
-import org.jmol.adapter.smarter.MMCifInterface;
-import org.jmol.adapter.smarter.MSCifInterface;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolLineReader;
@@ -257,7 +255,9 @@ public class CifReader extends AtomSetCollectionReader implements
         if (lastSpaceGroupName != null)
           setSpaceGroupName(lastSpaceGroupName);
       } else if (pr != null) {
-        pr.processData(key);
+        pr.processEntry();
+      } else if (mr != null) {
+          mr.processEntry();
       }
     }
     return true;
@@ -518,22 +518,26 @@ public class CifReader extends AtomSetCollectionReader implements
    */
   private void processLoopBlock() throws Exception {
     tokenizer.getTokenPeeked(); //loop_
-    String str = tokenizer.peekToken();
-    if (str == null)
+    key = tokenizer.peekToken();
+    if (key == null)
       return;
     boolean isLigand = false;
-    str = fixKey(str);
-    if (lookingForPDB && !isPDBX && str.indexOf("_pdb") >= 0)
+    key = fixKey(key);
+    if (lookingForPDB && !isPDBX && key.indexOf("_pdb") >= 0)
       initializeMMCIF();
-    if (modulated
-        && (str.startsWith("_cell_wave") || str.contains("fourier") || str
-            .contains("_special_func"))) {
-      if (!mr.processModulationLoopBlock())
+    
+    if (mr != null)
+      switch (mr.processLoopBlock()) {
+      case 0:
+        break;
+      case -1:
         skipLoop();
-      return;
-    }
-    if (str.startsWith("_atom_site_")
-        || (isLigand = str.equals("_chem_comp_atom_comp_id"))) {
+        //$FALL-THROUGH$
+      case 1:
+        return;
+      }
+    if (key.startsWith("_atom_site_")
+        || (isLigand = key.equals("_chem_comp_atom_comp_id"))) {
       if (!processAtomSiteLoopBlock(isLigand))
         return;
       atomSetCollection.setAtomSetName(thisDataSetName);
@@ -543,9 +547,9 @@ public class CifReader extends AtomSetCollectionReader implements
       atomSetCollection.setAtomSetAuxiliaryInfo("formula", thisFormula);
       return;
     }
-    if (str.startsWith("_symmetry_equiv_pos")
-        || str.startsWith("_space_group_symop")
-        || str.startsWith("_symmetry_ssg_equiv")) {
+    if (key.startsWith("_symmetry_equiv_pos")
+        || key.startsWith("_space_group_symop")
+        || key.startsWith("_symmetry_ssg_equiv")) {
       if (ignoreFileSymmetryOperators) {
         Logger.warn("ignoring file-based symmetry operators");
         skipLoop();
@@ -554,26 +558,20 @@ public class CifReader extends AtomSetCollectionReader implements
       }
       return;
     }
-    if (str.startsWith("_citation")) {
+    if (key.startsWith("_citation")) {
       processCitationListBlock();
       return;
     }
-
-    if (pr != null && pr.processPDBLoops(str))
-      return;
-
-    if (str.startsWith("_atom_type")) {
+    if (key.startsWith("_atom_type")) {
       processAtomTypeLoopBlock();
       return;
     }
-
-    if (mr != null && str.equals("_cell_subsystem_code"))
-      mr.processSubsystemLoopBlock();
-
-    if (str.startsWith("_geom_bond") && (isMolecular || !doApplySymmetry)) {
+    if (key.startsWith("_geom_bond") && (isMolecular || !doApplySymmetry)) {
       processGeomBondLoopBlock();
       return;
     }
+    if (pr != null && pr.processLoopBlock())
+      return;
     skipLoop();
   }
 

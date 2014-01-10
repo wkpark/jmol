@@ -180,9 +180,7 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
     if (ptRef == null) {
       pointT3.setT(viewer.getBoundBoxCenter());
       if (viewer.getAxesMode() == EnumAxesMode.BOUNDBOX) {
-        pointT3.x += 1.0;
-        pointT3.y += 1.0;
-        pointT3.z += 1.0;
+        pointT3.add3(1, 1, 1);
       }
     } else {
       pointT3.setT(ptRef);

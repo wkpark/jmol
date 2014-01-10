@@ -538,9 +538,7 @@ abstract public class AtomCollection {
     if (atomIndex < 0 || atomIndex >= atomCount)
       return;
     Atom a = atoms[atomIndex];
-    a.x += x;
-    a.y += y;
-    a.z += z;
+    a.add3(x, y, z);
     fixTrajectory(a);
     taintAtom(atomIndex, TAINT_COORD);
   }

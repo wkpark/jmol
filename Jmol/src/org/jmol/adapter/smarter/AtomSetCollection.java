@@ -1373,6 +1373,7 @@ public class AtomSetCollection {
       baseCount = noSymmetryCount;
     int atomMax = firstSymmetryAtom + noSymmetryCount;
     P3 ptAtom = new P3();
+    String code = null;
     for (int iSym = 0; iSym < nOperations; iSym++) {
       if (isBaseCell && iSym == 0 || latticeOnly && iSym > 0
           && iSym != latticeOp)
@@ -1390,43 +1391,38 @@ public class AtomSetCollection {
 
       int pt0 = (checkSpecial ? pt : checkRange111 ? baseCount : 0);
       for (int i = firstSymmetryAtom; i < atomMax; i++) {
-        if (atoms[i].ignoreSymmetry)
+        Atom a = atoms[i];
+        if (a.ignoreSymmetry)
           continue;
         if (bsAtoms != null && !bsAtoms.get(i))
           continue;
 
-        if (ms != null)
-          symmetry = ms.getAtomSymmetry(atoms[i], this.symmetry);
-
-        symmetry.newSpaceGroupPoint(iSym, atoms[i], ptAtom, transX, transY,
-            transZ);
+        if (ms == null) {
+          symmetry.newSpaceGroupPoint(iSym, a, ptAtom, transX, transY,
+              transZ);
+        } else {
+          symmetry = ms.getAtomSymmetry(a, this.symmetry);
+          symmetry.newSpaceGroupPoint(iSym, a, ptAtom, transX, transY,
+              transZ);
+          // COmmensurate structures may use a symmetry operator
+          // to changes space groups.
+          code = symmetry.getSpaceGroupOperationCode(iSym);
+          symmetry = ms.getSymmetryFromCode(code);
+          if (symmetry.getSpaceGroupOperationCount() == 0)
+            finalizeSymmetry(symmetry);
+        }
         Atom special = null;
         P3 cartesian = P3.newP(ptAtom);
         symmetry.toCartesian(cartesian, false);
         if (doPackUnitCell) {
+          // note that COmmensurate structures may need 
+          // modulation at this point.
           symmetry.toUnitCell(cartesian, ptOffset);
           ptAtom.setT(cartesian);
           symmetry.toFractional(ptAtom, false);
           if (!isWithinCell(dtype, ptAtom, minXYZ0.x, maxXYZ0.x, minXYZ0.y,
               maxXYZ0.y, minXYZ0.z, maxXYZ0.z, 0.02f))
             continue;
-        
-//          if (ms == null) {
-//            symmetry.toUnitCell(cartesian, ptOffset);
-//            ptAtom.setT(cartesian);
-//            symmetry.toFractional(ptAtom, false);
-//            if (!isWithinCell(dtype, ptAtom, minXYZ0.x, maxXYZ0.x, minXYZ0.y,
-//                maxXYZ0.y, minXYZ0.z, maxXYZ0.z, 0.02f)) {
-//              continue;
-//            }
-//          } else {
-//            //symmetry.toUnitCell(cartesian, ptOffset);
-//            ptAtom.setT(cartesian);
-//            this.symmetry.toFractional(ptAtom, false);
-//            toUnitCell(ptAtom, 0.02f);
-//            this.symmetry.toCartesian(ptAtom, false);
-//            symmetry.toFractional(ptAtom, false);
-//          }
         }
 
         if (checkSymmetryMinMax)
@@ -1440,12 +1436,14 @@ public class AtomSetCollection {
           if (checkSymmetryRange && !isInSymmetryRange(cartesian))
             continue;
           int j0 = (checkAll ? atomCount : pt0);
+          String name = a.atomName;
+          char altloc = a.altLoc;
           for (int j = j0; --j >= 0;) {
             float d2 = cartesian.distanceSquared(cartesians[j]);
             if (checkSpecial && d2 < 0.0001) {
               special = atoms[firstSymmetryAtom + j];
-              if (special.atomName == null
-                  || special.atomName.equals(atoms[i].atomName))
+              if ((special.atomName == null || special.atomName.equals(name))
+                  && special.altLoc == altloc)
                 break;
               special = null;
             }
@@ -1455,7 +1453,7 @@ public class AtomSetCollection {
           if (checkRange111 && minDist2 > range2)
             continue;
         }
-        int atomSite = atoms[i].atomSite;
+        int atomSite = a.atomSite;
         if (special != null) {
           if (addBonds)
             atomMap[atomSite] = special.index;
@@ -1464,17 +1462,20 @@ public class AtomSetCollection {
         } else {
           if (addBonds)
             atomMap[atomSite] = atomCount;
-          Atom atom1 = newCloneAtom(atoms[i]);
+          Atom atom1 = newCloneAtom(a);
           atom1.setT(ptAtom);
           atom1.atomSite = atomSite;
+          if (code != null)
+            atom1.altLoc = code.charAt(0);
           atom1.bsSymmetry = BSUtil.newAndSetBit(iCellOpPt + iSym);
           atom1.bsSymmetry.set(iSym);
           if (addCartesian)
             cartesians[pt++] = cartesian;
-          if (atoms[i].tensors != null) {
+          List<Object> tensors = a.tensors;
+          if (tensors != null) {
             atom1.tensors = null;
-            for (int j = atoms[i].tensors.size(); --j >= 0;) {
-              Tensor t = (Tensor) atoms[i].tensors.get(j);
+            for (int j = tensors.size(); --j >= 0;) {
+              Tensor t = (Tensor) tensors.get(j);
               if (t == null)
                 continue;
               if (nOperations == 1)
@@ -1503,20 +1504,20 @@ public class AtomSetCollection {
     return pt;
   }
 
-  private void toUnitCell(P3 ptAtom, float f) {
-    while (ptAtom.x > maxXYZ00.x + f)
-      ptAtom.x -= 1;
-    while (ptAtom.y > maxXYZ00.y + f)
-      ptAtom.y -= 1;
-    while (ptAtom.z > maxXYZ00.z + f)
-      ptAtom.z -= 1;
-    while (ptAtom.x < minXYZ00.x - f)
-      ptAtom.x += 1;
-    while (ptAtom.y < minXYZ00.y - f)
-      ptAtom.y += 1;
-    while (ptAtom.z < minXYZ00.z - f)
-      ptAtom.z += 1;
-  }
+//  private void toUnitCell(P3 ptAtom, float f) {
+//    while (ptAtom.x > maxXYZ00.x + f)
+//      ptAtom.x -= 1;
+//    while (ptAtom.y > maxXYZ00.y + f)
+//      ptAtom.y -= 1;
+//    while (ptAtom.z > maxXYZ00.z + f)
+//      ptAtom.z -= 1;
+//    while (ptAtom.x < minXYZ00.x - f)
+//      ptAtom.x += 1;
+//    while (ptAtom.y < minXYZ00.y - f)
+//      ptAtom.y += 1;
+//    while (ptAtom.z < minXYZ00.z - f)
+//      ptAtom.z += 1;
+//  }
 
   public Tensor addRotatedTensor(Atom a, Tensor t, int iSym, boolean reset,
                                  SymmetryInterface symmetry) {

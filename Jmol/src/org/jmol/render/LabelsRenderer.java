@@ -177,9 +177,7 @@ public class LabelsRenderer extends FontLineShapeRenderer {
           pTemp.setT(atomPt);
         else
           pTemp.set(0, 0, 0);
-        pTemp.x += text.pymolOffset[4];
-        pTemp.y += text.pymolOffset[5];
-        pTemp.z += text.pymolOffset[6];
+        pTemp.add3(text.pymolOffset[4], text.pymolOffset[5], text.pymolOffset[6]);
         viewer.transformPtScr(pTemp, screen);
         text.setXYZs(screen.x, screen.y, screen.z, zSlab);
         text.setScalePixelsPerMicron(sppm);

@@ -152,7 +152,7 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
       // why would we want to use the global gammaE?
     }
     
-    this.gammaE = gammaE; // ?? should be gammaE_nu?
+    this.gammaE = gammaE; // gammaE_nu
     
     Matrix rsvs = symmetry.getOperationRsVs(iop);
     gammaIinv = rsvs.getSubmatrix(3,  3,  modDim,  modDim).inverse();

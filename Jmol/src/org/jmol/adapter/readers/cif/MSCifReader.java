@@ -23,7 +23,6 @@
  */
 package org.jmol.adapter.readers.cif;
 
-import org.jmol.adapter.smarter.MSCifInterface;
 
 import javajs.util.Matrix;
 import javajs.util.PT;
@@ -36,7 +35,7 @@ public class MSCifReader extends MSReader implements MSCifInterface {
   }
   
   private String field;
-  
+
   // incommensurate modulation
   ////////////////////////////////////////////////////////////////
  
@@ -180,7 +179,16 @@ public class MSCifReader extends MSReader implements MSCifInterface {
       "_atom_site_u_fourier_sin"
   };
   private static final int NONE = -1;
-  
+
+  @Override
+  public void processEntry() throws Exception {
+    CifReader cr = (CifReader) this.cr;
+    if (cr.key.equals("_jana_cell_commen_t_section_1")) {
+      isCommensurate = true;
+      commensurateSection1 = cr.parseIntStr(cr.data);
+    }
+  }
+
   /**
    * creates entries in htModulation with a key of the form:
    * 
@@ -191,13 +199,21 @@ public class MSCifReader extends MSReader implements MSCifInterface {
    * 0|x|y|z (0 indicates irrelevant -- occupancy); and ;atomLabel is only for D
    * and O.
    * 
+   * @return 1:handled; -1: skip; 0: unrelated
    * @throws Exception
    */
   @Override
-  public boolean processModulationLoopBlock() throws Exception {
-    if (modAverage)
-      return false;
+  public int processLoopBlock() throws Exception {
     CifReader cr = (CifReader) this.cr;
+    if (cr.key.equals("_cell_subsystem_code")) {
+      processSubsystemLoopBlock();
+      return 1;
+    }
+    if (!cr.key.startsWith("_cell_wave") && !cr.key.contains("fourier")
+        && !cr.key.contains("_special_func"))
+      return 0;
+    if (modAverage)
+      return -1;
     if (cr.atomSetCollection.getCurrentAtomSetIndex() < 0)
       cr.atomSetCollection.newAtomSet();
     cr.parseLoopParameters(modulationFields);
@@ -372,7 +388,7 @@ public class MSCifReader extends MSReader implements MSCifInterface {
         addMod(id, fid, pt);
       }
     }
-    return true;
+    return 1;
   }
     
   private void addMod(String id, String fid, double[] params) {
@@ -404,8 +420,7 @@ public class MSCifReader extends MSReader implements MSCifInterface {
   //2 '2-nd subsystem' 1 0 0 1 0 1 0 0 0 0 1 0 0 0 0 1
   //
   
-  @Override
-  public void processSubsystemLoopBlock() throws Exception {
+  private void processSubsystemLoopBlock() throws Exception {
     CifReader cr = (CifReader) this.cr;
     cr.parseLoopParameters(null);
     while (cr.tokenizer.getData()) {

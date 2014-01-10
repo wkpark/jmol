@@ -86,13 +86,11 @@ class SymmetryOperation extends M4 {
   private boolean isBio;
   private Matrix sigma;
   int index;
-  private M3 jtoi;
-  private String subsystemCode;
+  String subsystemCode;
   
-  void setSigma(String subsystemCode, Matrix sigma, M3 jtoi) {
+  void setSigma(String subsystemCode, Matrix sigma) {
     this.subsystemCode = subsystemCode;
     this.sigma = sigma;
-    this.jtoi = jtoi;
   }
 
   /**
@@ -124,12 +122,11 @@ class SymmetryOperation extends M4 {
     index = op.index;
     linearRotTrans = op.linearRotTrans;
     sigma = op.sigma;
-    jtoi = op.jtoi;
     subsystemCode = op.subsystemCode;
     setMatrix(false);
     if (!op.isFinalized)
       doFinalize();
-    if (doNormalize)
+    if (doNormalize && sigma == null)
       setOffset(atoms, atomIndex, countOrId);
   }
 
@@ -191,26 +188,9 @@ class SymmetryOperation extends M4 {
     return (normalized && modDim == 0 || xyzOriginal == null ? xyz : xyzOriginal);
   }
 
-  void newPoint(P3 atom1, P3 atom2, int transX, int transY, int transZ) {
+  void newPoint(P3 atom1, P3 atom2, int x, int y, int z) {
     transform2(atom1, atom2);
-    if (jtoi == null) {
-      atom2.x += transX;
-      atom2.y += transY;
-      atom2.z += transZ;
-    } else {
-      atom2.x += transX - Math.floor(atom2.x);
-      atom2.y += transY - Math.floor(atom2.y);
-      atom2.z += transZ - Math.floor(atom2.z);
-      if (subsystemCode.equals("2") && index == 3 && transX >= 0 && transX < 4 && transY >= -2 && transY <= 0 && transZ >= -1 && transZ <= 1) {
-      System.out.print(subsystemCode + "." + index 
-          + " " + transX + " " + transY + " " + transZ 
-          + " " + atom1 + " " + atom2);
-      jtoi.transform(atom2);
-      System.out.println(" " + atom2);
-      } else {
-        jtoi.transform(atom2);        
-      }
-    }
+    atom2.add3(x,  y,  z);
   }
 
   String dumpInfo() {
@@ -471,8 +451,11 @@ class SymmetryOperation extends M4 {
     if (allPositive) {
       while (n12ths < 0)
         n12ths += 12f;
-    } else if (halfOrLess && n12ths > 6f) {
-      n12ths -= 12f;
+    } else if (halfOrLess) {
+      while (n12ths > 6f)
+        n12ths -= 12f;
+      while (n12ths < -6f)
+        n12ths += 12f;
     }
     String s = twelfthsOf(n12ths);
     return (s.charAt(0) == '0' ? "" : n12ths > 0 ? "+" + s : s);

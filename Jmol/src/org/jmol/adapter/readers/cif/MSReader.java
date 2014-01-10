@@ -43,11 +43,14 @@ import org.jmol.util.Tensor;
 
 public class MSReader implements MSInterface {
 
-  protected AtomSetCollectionReader cr;
+  protected AtomSetCollectionReader cr; // Cif or Jana
 
   protected int modDim;
   protected String modAxes;
   protected boolean modAverage;
+  protected boolean isCommensurate; 
+  protected int commensurateSection1;  // TODO
+  
 
   private boolean modPack;
   private boolean modVib;
@@ -76,6 +79,8 @@ public class MSReader implements MSInterface {
   private boolean haveAtomMods;
 
   private boolean modCoord;
+
+  private boolean finalized;
 
   public MSReader() {
     // for reflection from Jana
@@ -193,10 +198,11 @@ public class MSReader implements MSInterface {
    */
   @Override
   public void finalizeModulation() {
-    if (modDim > 0 && !modVib) {
+    if (!finalized && modDim > 0 && !modVib) {
       cr.atomSetCollection.setAtomSetCollectionAuxiliaryInfo("modulationOn", Boolean.TRUE);
-      cr.addJmolScript((haveOccupancy ? ";display occupancy >= 0.5" : ""));
+      cr.addJmolScript((haveOccupancy && !isCommensurate ? ";display occupancy >= 0.5" : ""));
     }
+    finalized = true;
   }
 
   private String atModel = "@0";
@@ -577,28 +583,9 @@ public class MSReader implements MSInterface {
     // (Special positions should generate the same atom regardless of which operation is employed.)
 
     if (modCoord && htSubsystems != null) {
-      P3 pt = new P3();
       P3 ptc = P3.newP(a);
       SymmetryInterface spt = getSymmetry(a);
       spt.toCartesian(ptc, true);
-
-      boolean ok = true;
-      Subsystem ss3 = htSubsystems.get("3");
-      if (ss3 != null) {
-        pt.setT(ptc);
-        ss3.getSymmetry().toFractional(pt, true);
-        if (pt.x < 0 || pt.y < 0 || pt.z != 1)
-          ok = false;
-      }
-      if (ok) {
-        System.out.println(a.index + " " + a.atomName + " " + ptc);
-        for (Entry<String, Subsystem> e : htSubsystems.entrySet()) {
-          SymmetryInterface sym = e.getValue().getSymmetry();
-          pt.setT(ptc);
-          sym.toFractional(pt, true);
-          System.out.println("ss" + e.getKey() + " " + pt);
-        }
-      }
     }
     List<Modulation> list = htAtomMods.get(a.atomName);
     if (list == null && a.altLoc != '\0' && htSubsystems != null) {
@@ -621,7 +608,7 @@ public class MSReader implements MSInterface {
       // nOps is used as a factor in occupation modulation only.
       iopLast = iop;
       gammaE = new M3();
-      cr.symmetry.getSpaceGroupOperation(iop).getRotationScale(gammaE);
+      getSymmetry(a).getSpaceGroupOperation(iop).getRotationScale(gammaE);
     }
     if (Logger.debugging) {
       Logger.debug("setModulation iop = " + iop + " "
@@ -796,7 +783,7 @@ public class MSReader implements MSInterface {
       getSymmetry(a).toCartesian(pt, false);
       sym.toFractional(pt, false);
       if (!ac.isWithinCell(3, pt, minXYZ0.x, maxXYZ0.x, minXYZ0.y, maxXYZ0.y,
-          minXYZ0.z, maxXYZ0.z, 0.001f))
+          minXYZ0.z, maxXYZ0.z, 0.001f) || isCommensurate && a.foccupancy < 0.5f)
         bs.clear(i);
     }
   }
@@ -807,5 +794,9 @@ public class MSReader implements MSInterface {
         .getSymmetry() : cr.atomSetCollection.symmetry);
   }
 
+  @Override
+  public SymmetryInterface getSymmetryFromCode(String code) {
+    return htSubsystems.get(code).getSymmetry();
+  }
 
 }

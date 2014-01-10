@@ -957,11 +957,8 @@ class PointGroup {
               .append(Escape.eP(v));
           v.scaleAdd2(-2, op.normalOrAxis, v);
           sb.append(Escape.eP(v));
-          v.x += 0.011;
-          v.y += 0.012;
-          v.z += 0.013;
-          sb
-              .append(Escape.eP(v))
+          v.add3(0.011f,  0.012f,  0.013f);
+          sb.append(Escape.eP(v))
               .append("{0 360 0.5} color ")
               .append(
                   principalPlane != null && op.index == principalPlane.index ? "red"

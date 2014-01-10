@@ -32,4 +32,6 @@ public interface MSInterface {
 
   void setMinMax0(P3 minXYZ0, P3 maxXYZ0);
 
+  SymmetryInterface getSymmetryFromCode(String spaceGroupOperationCode);
+
 }

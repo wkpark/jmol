@@ -3,7 +3,6 @@ package org.jmol.adapter.readers.cif;
 import java.util.Map.Entry;
 
 import javajs.util.List;
-import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.Matrix;
 import javajs.util.V3;
@@ -21,6 +20,7 @@ class Subsystem {
 
   private SymmetryInterface symmetry;
   private Matrix[] modMatrices;
+  private boolean isFinalized;
 
   Subsystem(MSReader msReader, String code, Matrix w) {
     this.msReader = msReader;
@@ -30,13 +30,13 @@ class Subsystem {
   }
 
   public SymmetryInterface getSymmetry() {
-    if (modMatrices == null)
+    if (!isFinalized)
       setSymmetry(true);
     return symmetry;
   }
 
   public Matrix[] getModMatrices() {
-    if (modMatrices == null)
+    if (!isFinalized)
       setSymmetry(true);
     return modMatrices;
   }
@@ -75,8 +75,6 @@ class Subsystem {
     // mard3 = full (3+d)x3 matrix of ai* (a*, b*, c*, x4*, x5*,....)
     //       = [ mard3 | sigma * mard3 ]
     // 
-    // We need top half of W*mard3 here
-    
     Matrix mard3 = new Matrix(null, 3 + d, 3); 
     Matrix mar3 = new Matrix(null, 3, 3); 
     double[][] mard3a = mard3.getArray();
@@ -98,22 +96,14 @@ class Subsystem {
       uc_nu[i + 1] = V3.new3((float) a[i][0], (float) a[i][1], (float) a[i][2]);    
     uc_nu = reciprocalsOf(uc_nu);
     symmetry = msReader.cr.symmetry.getUnitCell(uc_nu, false);
+    modMatrices = new Matrix[] { sigma_nu, tFactor };
     if (!setOperators)
       return;
-    
-    modMatrices = new Matrix[] { sigma_nu, tFactor };
+    isFinalized = true;
 
     // Part 3: Transform the operators 
     // 
 
-//    Matrix w3 = msReader.htSubsystems.get("3").w;
-//    Matrix w3inv = w3.inverse();
-//    Matrix w2 = msReader.htSubsystems.get("2").w;
-//    Matrix w2inv = w2.inverse();
-//    System.out.println(w3inv.mul(w2));
-//    System.out.println(w2inv.mul(w3));
-//    System.out.println(w3.mul(w2inv));
-//    System.out.println(w2.mul(w3inv));
     Logger.info("unit cell parameters: " + symmetry.getUnitCellInfo());
     symmetry.createSpaceGroup(-1, "[subsystem " + code + "]", new List<M4>());
     int nOps = s0.getSpaceGroupOperationCount();
@@ -121,44 +111,41 @@ class Subsystem {
       Matrix rv = s0.getOperationRsVs(iop);
       Matrix r0 = rv.getRotation();
       Matrix v0 = rv.getTranslation();
-//      System.out.println("op " + (iop + 1) + ".1: "+ r);
-//      r = w2.mul(r).mul(w2inv);
-//      System.out.println("op " + (iop + 1) + ".2: "+ r);
-//      r = w3.mul(rv.getRotation()).mul(w3inv);
-//      System.out.println("op " + (iop + 1) + ".3: "+ r);
-//      System.out.println("=====");
-//
-//      r = rv.getRotation();
       Matrix r = w.mul(r0).mul(winv);
       Matrix v = w.mul(v0);
-      M3 jToi = null;
-      if(isComplex(r)) {
-        // must find 3+d subsystem
+      String code = this.code;
+      if(isMixed(r)) {
+        // This operator mixes x4,x5... into x1,x2,x3. 
+        // It is not a pure operation. Instead, it correlates one
+        // subsystem with another. Our job is to find the other
+        // subsystem "j" that will satisfy the following condition:
+        //
+        // (Wj R Wi_inv).submatrix(0,3,3,d) == all_zeros
+        //
         for (Entry<String, Subsystem> e: msReader.htSubsystems.entrySet()){
           Subsystem ss = e.getValue();
           if (ss == this)
             continue;
           Matrix rj = ss.w.mul(r0).mul(winv);
-          if (!isComplex(rj)) {
-            // result of this operation will be in other system.
-            jToi = M3.newM(symmetry.getMatrix("toFractional"));
-            if (ss.symmetry == null)
-              ss.setSymmetry(false);
-            jToi.mul(ss.symmetry.getMatrix("toCartesian"));
+          if (!isMixed(rj)) {
+            // We have found the corresponding subsystem.
+            // The result of this operation will be in other system,
+            // and the operation itself will be used to rotate the modulation.
+            // ss.code will be used to mark any atom created by this operation as
+            // part of the other system.
             r = rj;
             v = ss.w.mul(v0);
+            code = ss.code;
             break;
           }
         }
       }
-      String jf = symmetry.addOp(code, r, v, sigma_nu, jToi);
-      
-      Logger.info(jf);
+      String jf = symmetry.addOp(code, r, v, sigma_nu);      
+      Logger.info(this.code + "." + (iop + 1) + (this.code.equals(code) ? "   " : ">" + code + " ") + jf);
     }
-    System.out.println("====");
   }
 
-  private boolean isComplex(Matrix r) {
+  private boolean isMixed(Matrix r) {
     double[][] a = r.getArray();
     for (int i = 3; --i >= 0;)
       for (int j = 3 + d; --j >= 3;)

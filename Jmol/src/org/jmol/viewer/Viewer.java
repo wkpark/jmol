@@ -4336,14 +4336,14 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
    */
   @Override
   public void updateJS(int width, int height) {
-    if (this.isWebGL) {
+    if (isWebGL) {
       if (jsParams == null) {
         jsParams = new Hashtable<String, Object>();
         jsParams.put("type", "JS");
       }
       if (updateWindow(width, height))
-        this.render();
-      this.notifyViewerRepaintDone();
+        render();
+      notifyViewerRepaintDone();
     } else {
       Object g = null;
       Object gright = null;
@@ -4437,7 +4437,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         transformManager.ptOffset);
     int[] minMax = shapeManager.transformAtoms();
     transformManager.bsSelectedAtoms = null;
-    if (this.isWebGL) {
+    if (isWebGL) {
       repaintManager.renderExport(gdata, modelSet, jsParams);
       notifyViewerRepaintDone();
       return;
@@ -5791,9 +5791,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       return global.percentVdwAtom;
     case T.pickingspinrate:
       return global.pickingSpinRate;
-    case T.platformspeed:
-      return global.platformSpeed;
-    case T.ribbonaspectratio:
+   case T.ribbonaspectratio:
       return global.ribbonAspectRatio;
     case T.showscript:
       return global.scriptDelay;

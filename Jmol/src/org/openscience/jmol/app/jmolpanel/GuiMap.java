@@ -76,7 +76,9 @@ public class GuiMap {
     labels.put("openmol", GT._("Get &MOL"));
     labels.put("reloadScript", GT._("&Reload"));
     
-    labels.put("openJSpecViewScript", "JSpecView");
+    labels.put("spectrumMenu", "&Spectra");
+    
+    labels.put("openJSpecViewScript", "1H Spectrum");
     
     labels.put("editor", GT._("Scrip&t Editor..."));  // new %t 11.7.45
     labels.put("console", GT._("Conso&le..."));

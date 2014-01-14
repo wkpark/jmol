@@ -56,9 +56,14 @@ public class XtalSymmetry {
 
   private AtomSetCollection ac;
 
-  XtalSymmetry(AtomSetCollection ac) {
-    this.ac = ac;
+  XtalSymmetry() {
+    // for reflection
+  }
+
+  public XtalSymmetry set(AtomSetCollection atomSetCollection) {
+    ac = atomSetCollection;
     getSymmetry();
+    return this;
   }
 
   private SymmetryInterface symmetry;

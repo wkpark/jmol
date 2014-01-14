@@ -33,6 +33,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
 
+import org.jmol.api.Interface;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.java.BS;
 
@@ -702,7 +703,7 @@ public class AtomSetCollection {
 
   public XtalSymmetry getXSymmetry() {
     if (xtalSymmetry == null)
-      xtalSymmetry = new XtalSymmetry(this);
+      xtalSymmetry = ((XtalSymmetry) Interface.getInterface("org.jmol.adapter.smarter.XtalSymmetry")).set(this);
     return xtalSymmetry;
   }
 

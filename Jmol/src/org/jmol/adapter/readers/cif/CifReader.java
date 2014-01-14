@@ -240,7 +240,7 @@ public class CifReader extends AtomSetCollectionReader implements
         auditBlockCode = tokenizer.fullTrim(data).toUpperCase();
         appendLoadNote(auditBlockCode);
         if (htAudit != null && auditBlockCode.contains("_MOD_")) {
-          String key = PT.simpleReplace(auditBlockCode, "_MOD_",
+          String key = PT.rep(auditBlockCode, "_MOD_",
               "_REFRNCE_");
           if (atomSetCollection.setSymmetry((SymmetryInterface) htAudit
               .get(key)) != null) {
@@ -280,7 +280,7 @@ public class CifReader extends AtomSetCollectionReader implements
   }
 
   private String fixKey(String key) {
-    return PT.simpleReplace(key, ".", "_").toLowerCase();
+    return PT.rep(key, ".", "_").toLowerCase();
   }
 
   protected void newModel(int modelNo) throws Exception {
@@ -1204,7 +1204,7 @@ public class CifReader extends AtomSetCollectionReader implements
         case SYM_SSG_XYZ:
           // check for non-standard record x~1~,x~2~,x~3~,x~4~  kIsfCqpM.cif
           if (field.indexOf('~') >= 0)
-            field = PT.simpleReplace(field, "~", "");
+            field = PT.rep(field, "~", "");
           //$FALL-THROUGH$
         case SYM_SSG_OP:
           modulated = true;

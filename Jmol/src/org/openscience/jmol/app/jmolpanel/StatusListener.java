@@ -32,7 +32,8 @@ import org.jmol.api.JmolViewer;
 import org.jmol.constant.EnumCallback;
 import org.jmol.dialog.Dialog;
 import javajs.awt.Dimension;
-import org.jmol.util.Escape;
+import javajs.util.PT;
+
 import org.jmol.util.Logger;
 import org.openscience.jmol.app.jmolpanel.console.AppConsole;
 import org.openscience.jmol.app.webexport.WebExport;
@@ -432,7 +433,7 @@ System.out.println("StatusListener notifyFileLoaded: " + fileName);
         String file = "" + viewer.getParameter("_modelFile");
         if (file.indexOf("/") < 0)
           return;
-        peaks = "hidden true; load CHECK " + Escape.eS(file) + ";hidden false";
+        peaks = "hidden true; load CHECK " + PT.esc(file) + ";hidden false";
       } else if (isFileLoad && !jSpecViewForceNew) {
         return;
       } else {
@@ -442,7 +443,7 @@ System.out.println("StatusListener notifyFileLoaded: " + fileName);
         if (data == null)
           return;
         peaks = "hidden true; load CHECK MOL "
-            + Escape.eS("id='~" + model + "';" + data) + ";hidden false #SYNC_PEAKS";
+            + PT.esc("id='~" + model + "';" + data) + ";hidden false #SYNC_PEAKS";
       }
     }
     if (!jSpecViewFrame.isVisible() && peaks.contains("<PeakData"))

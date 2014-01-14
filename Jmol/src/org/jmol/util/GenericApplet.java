@@ -288,12 +288,12 @@ public abstract class GenericApplet implements JmolAppletInterface,
             ._("Jmol Applet version {0} {1}.\n\nAn OpenScience project.\n\nSee http://www.jmol.org for more information"),
             new Object[] { JC.version, JC.date })
         + "\nhtmlName = "
-        + Escape.eS(htmlName)
+        + PT.esc(htmlName)
         + "\nsyncId = "
-        + Escape.eS(syncId)
+        + PT.esc(syncId)
         + "\ndocumentBase = "
-        + Escape.eS(documentBase)
-        + "\ncodeBase = " + Escape.eS(codeBase);
+        + PT.esc(documentBase)
+        + "\ncodeBase = " + PT.esc(codeBase);
   }
 
   @Override

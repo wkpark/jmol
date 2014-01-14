@@ -854,8 +854,8 @@ public abstract class AtomSetCollectionReader {
         nameRequired = PT.split(nameRequired, "'")[1]; 
       else if (nameRequired.startsWith("\""))
         nameRequired = PT.split(nameRequired, "\"")[1]; 
-      filter0 = filter = PT.simpleReplace(filter, nameRequired,"");
-      filter0 = filter = PT.simpleReplace(filter, "NAME=","");
+      filter0 = filter = PT.rep(filter, nameRequired,"");
+      filter0 = filter = PT.rep(filter, "NAME=","");
     }
     if (filter == null)
       return;

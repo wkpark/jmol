@@ -134,7 +134,7 @@ class Resource {
   }
 
   static String fix(String line) {
-    return PT.simpleReplace(line.substring(line.indexOf("\"") + 1, line
+    return PT.rep(line.substring(line.indexOf("\"") + 1, line
         .lastIndexOf("\"")), "\\n", "\n");
   }
 

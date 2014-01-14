@@ -260,15 +260,15 @@ class JmolObject {
         return;
       }
       sb = new SB();
-      sb.append("isosurface ID ").append(Escape.eS(sID));
+      sb.append("isosurface ID ").append(PT.esc(sID));
       if (modelIndex < 0)
         modelIndex = sm.viewer.getCurrentModelIndex();
       if (bsAtoms == null) {
         // point display of map 
         sb.append(" model ")
             .append(m.models[modelIndex].getModelNumberDotted()).append(
-                " color density sigma 1.0 ").append(Escape.eS(cacheID)).append(" ").append(
-                Escape.eS(sID));
+                " color density sigma 1.0 ").append(PT.esc(cacheID)).append(" ").append(
+                PT.esc(sID));
         if (doCache)
           sb.append(";isosurface cache");
       } else {
@@ -318,8 +318,8 @@ class JmolObject {
       float min = PyMOLScene.floatAt(PyMOLScene.listAt(mep, 3), 0);
       float max = PyMOLScene.floatAt(PyMOLScene.listAt(mep, 3), 2);
       sb = new SB();
-      sb.append(";isosurface ID ").append(Escape.eS(sID)).append(" map ").append(Escape.eS(cacheID)).append(" ")
-          .append(Escape.eS(mapID)).append(
+      sb.append(";isosurface ID ").append(PT.esc(sID)).append(" map ").append(PT.esc(cacheID)).append(" ")
+          .append(PT.esc(mapID)).append(
               ";color isosurface range " + min + " " + max
                   + ";isosurface colorscheme rwb;set isosurfacekey true");
       if (translucency > 0)
@@ -332,10 +332,10 @@ class JmolObject {
       List<Object> mesh = (List<Object>) info;
       sID = mesh.get(mesh.size() - 2).toString();
       sb = new SB();
-      sb.append("isosurface ID ").append(Escape.eS(sID)).append(" model ")
+      sb.append("isosurface ID ").append(PT.esc(sID)).append(" model ")
           .append(m.models[modelIndex].getModelNumberDotted())
-          .append(" color ").append(Escape.escapeColor(argb)).append("  ").append(Escape.eS(cacheID)).append(" ")
-          .append(Escape.eS(sID)).append(" mesh nofill frontonly");
+          .append(" color ").append(Escape.escapeColor(argb)).append("  ").append(PT.esc(cacheID)).append(" ")
+          .append(PT.esc(sID)).append(" mesh nofill frontonly");
       float within = PyMOLScene.floatAt(PyMOLScene.listAt(PyMOLScene.listAt(
           mesh, 2), 0), 11);
       List<Object> list = PyMOLScene.listAt(PyMOLScene.listAt(PyMOLScene

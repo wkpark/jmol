@@ -85,7 +85,7 @@ public class MMCifReader implements MMCifInterface {
       chainAtomCounts = new Hashtable<String, int[]>();
     }
     if (cr.checkFilterKey("BIOMOLECULE")) // PDB format
-     cr.filter = PT.simpleReplace(cr.filter, "BIOMOLECULE","ASSEMBLY");
+     cr.filter = PT.rep(cr.filter, "BIOMOLECULE","ASSEMBLY");
     isBiomolecule = cr.checkFilterKey("ASSEMBLY");
     return isCourseGrained;
   }
@@ -285,7 +285,7 @@ _pdbx_struct_oper_list.vector[3]
     if (ops.startsWith("(")) {
       if (ops.indexOf("-") >= 0)
         ops = Escape.uB("({" + ops.substring(1, ops.length() - 1).replace('-', ':') + "})").toString();
-      ops = PT.simpleReplace(ops, " ", "");
+      ops = PT.rep(ops, " ", "");
       ops = ops.substring(1, ops.length() - 1);
     }
     return ops;

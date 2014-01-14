@@ -235,12 +235,12 @@ public class SmilesMatcher implements SmilesMatcherInterface {
 
   @Override
   public String reverseChirality(String smiles) {
-    smiles = PT.simpleReplace(smiles, "@@", "!@");
-    smiles = PT.simpleReplace(smiles, "@", "@@");
-    smiles = PT.simpleReplace(smiles, "!@@", "@");
-    smiles = PT.simpleReplace(smiles, "@@SP", "@SP");
-    smiles = PT.simpleReplace(smiles, "@@OH", "@OH");
-    smiles = PT.simpleReplace(smiles, "@@TB", "@TB");
+    smiles = PT.rep(smiles, "@@", "!@");
+    smiles = PT.rep(smiles, "@", "@@");
+    smiles = PT.rep(smiles, "!@@", "@");
+    smiles = PT.rep(smiles, "@@SP", "@SP");
+    smiles = PT.rep(smiles, "@@OH", "@OH");
+    smiles = PT.rep(smiles, "@@TB", "@TB");
     return smiles;
   }
 
@@ -413,7 +413,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   }
 
   private int countStereo(String s) {
-    s = PT.simpleReplace(s, "@@","@");
+    s = PT.rep(s, "@@","@");
     int i = s.lastIndexOf('@') + 1;
     int n = 0;
     for (; --i >= 0;)

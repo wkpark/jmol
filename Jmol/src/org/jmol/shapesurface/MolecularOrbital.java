@@ -27,6 +27,7 @@ package org.jmol.shapesurface;
 
 import javajs.util.AU;
 import javajs.util.List;
+import javajs.util.PT;
 import javajs.util.SB;
 
 import java.util.Hashtable;
@@ -505,7 +506,7 @@ public class MolecularOrbital extends Isosurface {
       appendCmd(s, "mo plane {" + moPlane.x + " " + moPlane.y + " " + moPlane.z
           + " " + moPlane.w + "}");
     if (moTitleFormat != null)
-      appendCmd(s, "mo titleFormat " + Escape.eS(moTitleFormat));
+      appendCmd(s, "mo titleFormat " + PT.esc(moTitleFormat));
     //the following is a correct object==object test
     if (moColorNeg != null)
       appendCmd(s, "mo color "

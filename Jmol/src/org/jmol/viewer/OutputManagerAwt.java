@@ -32,7 +32,6 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.jmol.awt.AwtClipboard;
-import org.jmol.util.Escape;
 
 import javajs.util.OC;
 import javajs.util.List;
@@ -101,7 +100,7 @@ final public class OutputManagerAwt extends OutputManager {
     String script0 = viewer.getFileAsString(sceneFile);
     if (script0 == null)
       return "no such file: " + sceneFile;
-    sceneFile = PT.simpleReplace(sceneFile, ".spt", "");
+    sceneFile = PT.rep(sceneFile, ".spt", "");
     String fileRoot = sceneFile;
     String fileExt = type.toLowerCase();
     String[] scenes = PT.split(script0, "pause scene ");
@@ -110,7 +109,7 @@ final public class OutputManagerAwt extends OutputManager {
     String script = getSceneScript(scenes, htScenes, list);
     if (Logger.debugging)
       Logger.debug(script);
-    script0 = PT.simpleReplace(script0, "pause scene", "delay "
+    script0 = PT.rep(script0, "pause scene", "delay "
         + viewer.animationManager.lastFrameDelay + " # scene");
     String[] str = new String[] { script0, script, null };
     viewer.saveState("_scene0");
@@ -179,8 +178,8 @@ final public class OutputManagerAwt extends OutputManager {
       htScenes.put(key, scenes[i - 1]);
       if (i > 1)
         sceneScript.append(",");
-      sceneScript.appendC('\n').append(Escape.eS(key)).append(": ")
-          .append(Escape.eS(scenes[i - 1]));
+      sceneScript.appendC('\n').append(PT.esc(key)).append(": ")
+          .append(PT.esc(scenes[i - 1]));
       iSceneLast = iScene;
     }
     sceneScript.append("\n}\n");

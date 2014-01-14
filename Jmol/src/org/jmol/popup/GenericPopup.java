@@ -28,7 +28,6 @@ import org.jmol.i18n.Language;
 import org.jmol.java.BS;
 import org.jmol.script.T;
 import org.jmol.util.Elements;
-import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
 import javajs.api.GenericMenuInterface;
@@ -283,13 +282,13 @@ abstract public class GenericPopup implements GenericMenuInterface,
       id = id.replace('_', ' ');
       if (script.indexOf("[]") < 0)
         script = "[] " + script;
-      return PT.simpleReplace(script, "[]", id);
+      return PT.rep(script, "[]", id);
     } else if (script.indexOf("?FILEROOT?") >= 0) {
-      script = PT.simpleReplace(script, "FILEROOT?", modelSetRoot);
+      script = PT.rep(script, "FILEROOT?", modelSetRoot);
     } else if (script.indexOf("?FILE?") >= 0) {
-      script = PT.simpleReplace(script, "FILE?", modelSetFileName);
+      script = PT.rep(script, "FILE?", modelSetFileName);
     } else if (script.indexOf("?PdbId?") >= 0) {
-      script = PT.simpleReplace(script, "PdbId?", "=xxxx");
+      script = PT.rep(script, "PdbId?", "=xxxx");
     }
     return script;
   }
@@ -591,7 +590,7 @@ abstract public class GenericPopup implements GenericMenuInterface,
         what = what.substring(pt + 1);
         if ((pt = what.indexOf("|")) >= 0)
           what = (TF ? what.substring(0, pt) : what.substring(pt + 1)).trim();
-        what = PT.simpleReplace(what, "T/F", (TF ? " TRUE" : " FALSE"));
+        what = PT.rep(what, "T/F", (TF ? " TRUE" : " FALSE"));
       }
     }
     viewer.evalStringQuiet(what);
@@ -725,7 +724,7 @@ abstract public class GenericPopup implements GenericMenuInterface,
       String atoms = PT.getQuotedAttribute(peak, "atoms");
       if (atoms != null)
         menuCreateItem(menu, title, "select visible & (@"
-            + PT.simpleReplace(atoms, ",", " or @") + ")", "Focus" + i);
+            + PT.rep(atoms, ",", " or @") + ")", "Focus" + i);
     }
     menuEnable(menu, true);
     return true;
@@ -807,7 +806,7 @@ abstract public class GenericPopup implements GenericMenuInterface,
     if (scenes == null)
       return;
     for (int i = 0; i < scenes.length; i++)
-      menuCreateItem(menu, scenes[i], "restore scene " + Escape.eS(scenes[i])
+      menuCreateItem(menu, scenes[i], "restore scene " + PT.esc(scenes[i])
           + " 1.0", null);
     menuEnable(menu, true);
   }

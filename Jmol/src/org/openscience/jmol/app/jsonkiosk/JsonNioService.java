@@ -547,7 +547,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
         break;
       }
       String id = json.getString("id");
-      String path = PT.simpleReplace(contentPath, "%ID%", id).replace(
+      String path = PT.rep(contentPath, "%ID%", id).replace(
           '\\', '/');
       File f = new File(path);
       Logger.info("JsonNiosService Setting path to " + f.getAbsolutePath());
@@ -795,7 +795,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
       sb.append("{");
       String sep = "";
       for (Entry<String, Object>e : entrySet()) {
-        sb.append(sep).append(Escape.eS(e.getKey())).append(":").append(Escape.e(e.getValue()));
+        sb.append(sep).append(PT.esc(e.getKey())).append(":").append(Escape.e(e.getValue()));
         sep = ",";
       }      
       return sb.append("}").toString(); 

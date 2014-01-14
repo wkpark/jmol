@@ -2650,7 +2650,7 @@ abstract public class ModelCollection extends BondCollection {
         String propertyName = (String) e.nextElement();
         sb.append("\n <property name=\"").append(propertyName)
             .append("\" value=")
-            .append(Escape.eS(modelSetProperties.getProperty(propertyName)))
+            .append(PT.esc(modelSetProperties.getProperty(propertyName)))
             .append(" />");
       }
       sb.append("\n</properties>");
@@ -2658,13 +2658,13 @@ abstract public class ModelCollection extends BondCollection {
     for (int i = 0; i < modelCount; ++i) {
       sb.append("\n<model index=\"").appendI(i).append("\" n=\"")
           .append(getModelNumberDotted(i)).append("\" id=")
-          .append(Escape.eS("" + getModelAuxiliaryInfoValue(i, "modelID")));
+          .append(PT.esc("" + getModelAuxiliaryInfoValue(i, "modelID")));
       int ib = viewer.getJDXBaseModelIndex(i);
       if (ib != i)
         sb.append(" baseModelId=").append(
-            Escape.eS((String) getModelAuxiliaryInfoValue(ib, "jdxModelID")));
-      sb.append(" name=").append(Escape.eS(getModelName(i))).append(" title=")
-          .append(Escape.eS(getModelTitle(i)))
+            PT.esc((String) getModelAuxiliaryInfoValue(ib, "jdxModelID")));
+      sb.append(" name=").append(PT.esc(getModelName(i))).append(" title=")
+          .append(PT.esc(getModelTitle(i)))
           .append(" hasVibrationVectors=\"")
           .appendB(viewer.modelHasVibrationVectors(i)).append("\" />");
     }
@@ -2995,7 +2995,7 @@ abstract public class ModelCollection extends BondCollection {
         break;
       Atom atom = atoms[i];
       String name = atom.getAtomName();
-      PT.simpleReplace(name, "\"", "''");
+      PT.rep(name, "\"", "''");
       bsAtoms.set(atom.index);
       xmlUtil.appendTag(sb, "atom/", new String[] { "id",
           "a" + (atom.index + 1), "title", atom.getAtomName(), "elementType",

@@ -215,7 +215,7 @@ public class JanaReader extends AtomSetCollectionReader {
   }
 
   private void symmetry() throws Exception {
-    setSymmetryOperator(PT.simpleReplace(line.substring(9).trim()," ", ","));
+    setSymmetryOperator(PT.rep(line.substring(9).trim()," ", ","));
   }
 
   private final String LABELS = "xyz";

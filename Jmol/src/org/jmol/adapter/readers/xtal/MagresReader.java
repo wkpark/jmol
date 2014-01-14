@@ -123,8 +123,8 @@ public class MagresReader extends AtomSetCollectionReader {
     if (!(line.startsWith("<") && line.endsWith(">"))
        && !(line.startsWith("[") && line.endsWith("]")))      
       return currentBlock;
-    line = PT.simpleReplace(line, "<", "[");
-    line = PT.simpleReplace(line, ">", "]");
+    line = PT.rep(line, "<", "[");
+    line = PT.rep(line, ">", "]");
     switch (("..............." +
     		     "[calculation].." +
     		     "[/calculation]." +
@@ -181,7 +181,7 @@ public class MagresReader extends AtomSetCollectionReader {
     String[] tokens = getTokens();
     String id = tokens[1];
     if (isMagresBlock)
-      appendLoadNote("Ellipsoid set " + Escape.eS(id) + ": "
+      appendLoadNote("Ellipsoid set " + PT.esc(id) + ": "
           + (id.startsWith("ms") ? "Magnetic Shielding"
               : id.startsWith("efg") ? "Electric Field Gradient" : id
                   .startsWith("isc") ? "J-Coupling" : "?"));

@@ -30,6 +30,7 @@ import org.jmol.util.Point3fi;
 
 import javajs.util.A4;
 import javajs.util.P3;
+import javajs.util.PT;
 
 import org.jmol.util.Measure;
 import org.jmol.atomdata.RadiusData;
@@ -463,7 +464,7 @@ public class Measurement {
     SB sb = new SB();
     sb.append(count == 2 ? (type == null ? "distance" : type) : count == 3 ? "angle" : "dihedral");
     sb.append(" \t").appendF(f);
-    sb.append(" \t").append(Escape.eS(strMeasurement));
+    sb.append(" \t").append(PT.esc(strMeasurement));
     for (int i = 1; i <= count; i++)
       sb.append(" \t").append(getLabel(i, false, false));
     if (thisID != null)

@@ -1548,10 +1548,10 @@ public class ActionManager implements EventManager {
       P3 nearestPoint = null;
       if (script.indexOf("_ATOM") >= 0) {
         int iatom = findNearestAtom(x, y, null, true);
-        script = PT.simpleReplace(script, "_ATOM", "({"
+        script = PT.rep(script, "_ATOM", "({"
             + (iatom >= 0 ? "" + iatom : "") + "})");
         if (iatom >= 0)
-          script = PT.simpleReplace(script, "_POINT", Escape.eP(viewer
+          script = PT.rep(script, "_POINT", Escape.eP(viewer
               .getModelSet().atoms[iatom]));
       }
       if (!drawMode
@@ -1561,25 +1561,25 @@ public class ActionManager implements EventManager {
         if (t != null && (nearestPoint = (P3) t.get("pt")) != null) {
           boolean isBond = t.get("type").equals("bond");
           if (isBond)
-            script = PT.simpleReplace(script, "_BOND", "[{"
+            script = PT.rep(script, "_BOND", "[{"
                 + t.get("index") + "}]");
-          script = PT.simpleReplace(script, "_POINT", Escape
+          script = PT.rep(script, "_POINT", Escape
               .eP(nearestPoint));
-          script = PT.simpleReplace(script, "_OBJECT", Escape
+          script = PT.rep(script, "_OBJECT", Escape
               .escapeMap(t));
         }
-        script = PT.simpleReplace(script, "_BOND", "[{}]");
-        script = PT.simpleReplace(script, "_OBJECT", "{}");
+        script = PT.rep(script, "_BOND", "[{}]");
+        script = PT.rep(script, "_OBJECT", "{}");
       }
-      script = PT.simpleReplace(script, "_POINT", "{}");
-      script = PT.simpleReplace(script, "_ACTION", "" + mouseAction);
-      script = PT.simpleReplace(script, "_X", "" + x);
-      script = PT.simpleReplace(script, "_Y", ""
+      script = PT.rep(script, "_POINT", "{}");
+      script = PT.rep(script, "_ACTION", "" + mouseAction);
+      script = PT.rep(script, "_X", "" + x);
+      script = PT.rep(script, "_Y", ""
           + (viewer.getScreenHeight() - y));
-      script = PT.simpleReplace(script, "_DELTAX", "" + deltaX);
-      script = PT.simpleReplace(script, "_DELTAY", "" + deltaY);
-      script = PT.simpleReplace(script, "_TIME", "" + time);
-      script = PT.simpleReplace(script, "_MODE", "" + mode);
+      script = PT.rep(script, "_DELTAX", "" + deltaX);
+      script = PT.rep(script, "_DELTAY", "" + deltaY);
+      script = PT.rep(script, "_TIME", "" + time);
+      script = PT.rep(script, "_MODE", "" + mode);
       if (script.startsWith("+:")) {
         passThrough = true;
         script = script.substring(2);

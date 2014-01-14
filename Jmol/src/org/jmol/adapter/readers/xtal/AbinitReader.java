@@ -72,9 +72,9 @@ public class AbinitReader extends AtomSetCollectionReader {
     while (line != null && line.indexOf("wtk") < 0) {
       String tmp = line;
       if (line.contains("type"))
-        tmp = PT.simpleReplace(tmp, "type", "");
+        tmp = PT.rep(tmp, "type", "");
       if (line.contains("typat"))
-        tmp = PT.simpleReplace(tmp, "typat", "");
+        tmp = PT.rep(tmp, "typat", "");
 
       String[] tokens = getTokensStr(tmp);
       for (int j = 0; j < tokens.length; j++) {
@@ -94,7 +94,7 @@ public class AbinitReader extends AtomSetCollectionReader {
     for (int i = 0; i < nType; i++) { //is this ntype or sequence type ?
       int tokenIndex = 0;
       discardLinesUntilContains("zion");
-      String tmp = PT.simpleReplace(line, ".", " ");
+      String tmp = PT.rep(line, ".", " ");
       String[] tokens = getTokensStr(tmp);
       if (tokens[0] == "-")
         tokenIndex = 1;
@@ -124,7 +124,7 @@ public class AbinitReader extends AtomSetCollectionReader {
     int counter = 0;
     while (readLine() != null && line.indexOf("Unit cell volume") < 0) {
       data = line;
-      data = PT.simpleReplace(data, "=", "= ");
+      data = PT.rep(data, "=", "= ");
       String[] tokens = getTokensStr(data);
       cellLattice[counter++] = parseFloatStr(tokens[1]) * ANGSTROMS_PER_BOHR;
       cellLattice[counter++] = parseFloatStr(tokens[2]) * ANGSTROMS_PER_BOHR;
@@ -151,7 +151,7 @@ public class AbinitReader extends AtomSetCollectionReader {
       atom.atomName = atomList[count++];
       data = line;
       if (data.contains("xred"))
-        PT.simpleReplace(data, "xred", "");
+        PT.rep(data, "xred", "");
       String[] tokens = getTokensStr(data);
       float x = parseFloatStr(tokens[0]);
       float y = parseFloatStr(tokens[1]);

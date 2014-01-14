@@ -192,7 +192,7 @@ public class PdbReader extends AtomSetCollectionReader {
    applySymmetry = !checkFilterKey("NOSYMMETRY");
    getTlsGroups = checkFilterKey("TLS");
    if (checkFilterKey("ASSEMBLY")) // CIF syntax
-     filter = PT.simpleReplace(filter, "ASSEMBLY", "BIOMOLECULE");
+     filter = PT.rep(filter, "ASSEMBLY", "BIOMOLECULE");
    boolean isbiomol = checkFilterKey("BIOMOLECULE");
    boolean byChain = isbiomol && checkFilterKey("BYCHAIN");
    boolean bySymop = isbiomol && checkFilterKey("BYSYMOP");
@@ -527,8 +527,8 @@ public class PdbReader extends AtomSetCollectionReader {
     currentCompnd.put(currentKey, value);
     if (currentKey.equals("CHAIN"))
       currentCompnd.put("select", "(:"
-          + PT.simpleReplace(javajs.util.PT
-              .simpleReplace(value, ", ", ",:"), " ", "") + ")");
+          + PT.rep(javajs.util.PT
+              .rep(value, ", ", ",:"), " ", "") + ")");
   }
 
   @SuppressWarnings("unchecked")

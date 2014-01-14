@@ -29,7 +29,7 @@ class JSFile implements GenericFileInterface {
   	fullName = name;
   	if (!fullName.startsWith("/") && FileManager.urlTypeIndex(name) < 0)
   		fullName = Viewer.jsDocumentBase + "/" + fullName;
-  	fullName = PT.simpleReplace(fullName, "/./", "/");
+  	fullName = PT.rep(fullName, "/./", "/");
   	name = name.substring(name.lastIndexOf("/") + 1);
   }
 

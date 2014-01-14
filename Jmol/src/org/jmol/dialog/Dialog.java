@@ -33,6 +33,8 @@ import java.awt.event.ItemListener;
 import java.io.File;
 import java.util.Map;
 
+import javajs.util.PT;
+
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -51,7 +53,6 @@ import javax.swing.filechooser.FileFilter;
 import org.jmol.api.JmolAppAPI;
 import org.jmol.api.JmolDialogInterface;
 import org.jmol.i18n.GT;
-import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.viewer.FileManager;
 import org.jmol.viewer.Viewer;
@@ -152,7 +153,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     closePreview();
     if (fileName.startsWith("/"))
       fileName = "file://" + fileName; // for Macs
-    return (!allowAppend || doCartoons ? "" : "#NOC#;") + (doAppend ? "load append " + Escape.eS(fileName) : fileName);
+    return (!allowAppend || doCartoons ? "" : "#NOC#;") + (doAppend ? "load append " + PT.esc(fileName) : fileName);
   }
 
   String closePreview() {

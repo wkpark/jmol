@@ -40,6 +40,7 @@ import org.jmol.util.Escape;
 
 import javajs.util.AU;
 import javajs.util.List;
+import javajs.util.PT;
 import javajs.util.SB;
 import javajs.util.M4;
 
@@ -581,10 +582,10 @@ public abstract class MeshCollection extends Shape {
  
   protected void setStatusPicked(int flag, P3 v) {
     // for draw and isosurface
-    viewer.setStatusAtomPicked(flag, "[\"" + myType + "\"," + Escape.eS(pickedMesh.thisID) + "," +
+    viewer.setStatusAtomPicked(flag, "[\"" + myType + "\"," + PT.esc(pickedMesh.thisID) + "," +
         + pickedModel + "," + pickedVertex + "," + v.x + "," + v.y + "," + v.z + "," 
         + (pickedMesh.title == null ? "\"\"" 
-               : Escape.eS(pickedMesh.title[0]))+"]");
+               : PT.esc(pickedMesh.title[0]))+"]");
   }
 
   protected Map<String, Object> getPickedPoint(P3 v, int modelIndex) {

@@ -228,9 +228,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       setPropI("modelIndex", Integer.valueOf(imodel), null);
       setPropI("fileName", "cache://isosurface_" + id, null);
       setPropI("readFile", null, null);
-      setPropI("finalize", "isosurface ID " + Escape.eS(id)
+      setPropI("finalize", "isosurface ID " + PT.esc(id)
           + (imodel >= 0 ? " modelIndex " + imodel : "") + " /*file*/"
-          + Escape.eS("cache://isosurface_" + id), null);
+          + PT.esc("cache://isosurface_" + id), null);
       setPropI("clear", null, null);
       return;
     }
@@ -968,10 +968,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     int modelCount = viewer.getModelCount();
     if (modelCount > 1)
       appendCmd(sb, "frame " + viewer.getModelNumberDotted(imesh.modelIndex));
-    cmd = PT.simpleReplace(cmd, ";; isosurface map"," map");
-    cmd = PT.simpleReplace(cmd, "; isosurface map", " map");
+    cmd = PT.rep(cmd, ";; isosurface map"," map");
+    cmd = PT.rep(cmd, "; isosurface map", " map");
     cmd = cmd.replace('\t', ' ');
-    cmd = PT.simpleReplace(cmd, ";#", "; #");
+    cmd = PT.rep(cmd, ";#", "; #");
     int pt = cmd.indexOf("; #");
     if (pt >= 0)
       cmd = cmd.substring(0, pt);
@@ -983,7 +983,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (myType == "lcaoCartoon" && imesh.atomIndex >= 0)
       cmd += " ATOMINDEX " + imesh.atomIndex;
     appendCmd(sb, cmd);
-    String id = myType + " ID " + Escape.eS(imesh.thisID);
+    String id = myType + " ID " + PT.esc(imesh.thisID);
     if (imesh.jvxlData.thisSet >= 0)
       appendCmd(sb, id + " set " + (imesh.jvxlData.thisSet + 1));
     if (imesh.mat4 != null)
@@ -1510,7 +1510,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     thisMesh.scale3d = sg.getParams().scale3d;
     if (script != null) {
       if (script.charAt(0) == ' ') {
-        script = myType + " ID " + Escape.eS(thisMesh.thisID) + script;
+        script = myType + " ID " + PT.esc(thisMesh.thisID) + script;
         pt = script.indexOf("; isosurface map");
       }
     }    

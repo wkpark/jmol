@@ -121,9 +121,9 @@ public class StateCreator extends JmolStateCreator {
     if (isAll)
       s.append(JC.STATE_VERSION_STAMP + Viewer.getJmolVersion() + ";\n");
     if (viewer.isApplet() && isAll) {
-      appendCmd(s, "# fullName = " + Escape.eS(viewer.fullName));
-      appendCmd(s, "# documentBase = " + Escape.eS(viewer.appletDocumentBase));
-      appendCmd(s, "# codeBase = " + Escape.eS(viewer.appletCodeBase));
+      appendCmd(s, "# fullName = " + PT.esc(viewer.fullName));
+      appendCmd(s, "# documentBase = " + PT.esc(viewer.appletDocumentBase));
+      appendCmd(s, "# codeBase = " + PT.esc(viewer.appletCodeBase));
       s.append("\n");
     }
 
@@ -322,11 +322,11 @@ public class StateCreator extends JmolStateCreator {
         String s = (String) ms.getModelAuxiliaryInfoValue(i, "modelID");
         if (s != null
             && !s.equals(ms.getModelAuxiliaryInfoValue(i, "modelID0")))
-          commands.append(fcmd).append("; frame ID ").append(Escape.eS(s))
+          commands.append(fcmd).append("; frame ID ").append(PT.esc(s))
               .append(";\n");
         String t = ms.frameTitles[i];
         if (t != null && t.length() > 0)
-          commands.append(fcmd).append("; frame title ").append(Escape.eS(t))
+          commands.append(fcmd).append("; frame title ").append(PT.esc(t))
               .append(";\n");
         if (needOrientations && models[i].orientation != null
             && !ms.isTrajectorySubFrame(i))
@@ -440,7 +440,7 @@ public class StateCreator extends JmolStateCreator {
             + Escape.escapeColor(global.objColors[i]) + '"');
     if (global.backgroundImageFileName != null)
       appendCmd(str, "background IMAGE /*file*/"
-          + Escape.eS(global.backgroundImageFileName));
+          + PT.esc(global.backgroundImageFileName));
     str.append(getSpecularState());
     appendCmd(str, "statusReporting  = " + global.statusReporting);
     if (sfunc != null)
@@ -542,7 +542,7 @@ public class StateCreator extends JmolStateCreator {
     String tag = (isAppend ? "append" : "model") + " inline";
     loadScript.append("load /*data*/ data \"").append(tag).append("\"\n")
         .append(strModel).append("end \"").append(tag)
-        .append(loadFilter == null || loadFilter.length() == 0 ? "" : " filter" + Escape.eS(loadFilter))
+        .append(loadFilter == null || loadFilter.length() == 0 ? "" : " filter" + PT.esc(loadFilter))
         .append("\";");
   }
 
@@ -1037,7 +1037,7 @@ public class StateCreator extends JmolStateCreator {
       int count = m.count;
       SB sb = new SB().append("measure");
       if (m.thisID != null)
-        sb.append(" ID ").append(Escape.eS(m.thisID));
+        sb.append(" ID ").append(PT.esc(m.thisID));
       if (m.mad != 0)
         sb.append(" radius ").appendF(
             m.thisID == null || m.mad > 0 ? m.mad / 2000f : 0);
@@ -1073,7 +1073,7 @@ public class StateCreator extends JmolStateCreator {
             m.colix, shape.translucentAllowed));
       if (m.strFormat != null)
         BSUtil.setMapBitSet(temp, i, i, "measure "
-            + Escape.eS(m.strFormat));
+            + PT.esc(m.strFormat));
     }
     if (nHidden > 0)
       if (nHidden == measurementCount)
@@ -1181,7 +1181,7 @@ public class StateCreator extends JmolStateCreator {
       for (Text t : es.objects.values()) {
         sb.append(getTextState(t));
         if (t.hidden)
-          sb.append("  set echo ID ").append(Escape.eS(t.target)).append(
+          sb.append("  set echo ID ").append(PT.esc(t.target)).append(
               " hidden;\n");
       }
       s = sb.toString();
@@ -1208,9 +1208,9 @@ public class StateCreator extends JmolStateCreator {
         for (int i = viewer.getAtomCount(); --i >= 0;)
           if (h.atomFormats[i] != null)
             BSUtil.setMapBitSet(temp, i, i, "set hoverLabel "
-                + Escape.eS(h.atomFormats[i]));
+                + PT.esc(h.atomFormats[i]));
       s = "\n  hover "
-          + Escape.eS((h.labelFormat == null ? "" : h.labelFormat)) + ";\n"
+          + PT.esc((h.labelFormat == null ? "" : h.labelFormat)) + ";\n"
           + getCommands(temp, null, "select");
       clearTemp();
       break;
@@ -1222,12 +1222,12 @@ public class StateCreator extends JmolStateCreator {
         Text t = l.getLabel(i);
         String cmd = null;
         if (t != null) {
-          cmd = "label " + Escape.eS(t.textUnformatted);
+          cmd = "label " + PT.esc(t.textUnformatted);
           if (t.pymolOffset != null)
             cmd += ";set labelOffset " + Escape.eAF(t.pymolOffset);
         }
         if (cmd == null)
-          cmd = "label " + Escape.eS(l.formats[i]);
+          cmd = "label " + PT.esc(l.formats[i]);
         BSUtil.setMapBitSet(temp, i, i, cmd);
         if (l.bsColixSet != null && l.bsColixSet.get(i))
           BSUtil.setMapBitSet(temp2, i, i, Shape.getColorCommand("label",
@@ -1323,7 +1323,7 @@ public class StateCreator extends JmolStateCreator {
     boolean isImage = (t.image != null);
     //    if (isDefine) {
     String strOff = null;
-    String echoCmd = "set echo ID " + Escape.eS(t.target);
+    String echoCmd = "set echo ID " + PT.esc(t.target);
     switch (t.valign) {
     case JC.VALIGN_XY:
       if (t.movableXPercent == Integer.MAX_VALUE
@@ -1356,14 +1356,14 @@ public class StateCreator extends JmolStateCreator {
       s.append("; ").append(echoCmd).append(" IMAGE /*file*/");
     else
       s.append("; echo ");
-    s.append(Escape.eS(text)); // was textUnformatted, but that is not really the STATE
+    s.append(PT.esc(text)); // was textUnformatted, but that is not really the STATE
     s.append(";\n");
     if (isImage && t.imageScale != 1)
       s.append("  ").append(echoCmd).append(" scale ").appendF(t.imageScale)
           .append(";\n");
     if (t.script != null)
       s.append("  ").append(echoCmd).append(" script ").append(
-          Escape.eS(t.script)).append(";\n");
+          PT.esc(t.script)).append(";\n");
     if (t.modelIndex >= 0)
       s.append("  ").append(echoCmd).append(" model ").append(
           viewer.getModelNumberDotted(t.modelIndex)).append(";\n");
@@ -1422,10 +1422,10 @@ public class StateCreator extends JmolStateCreator {
     if (g.allowEmbeddedScripts)
       g.setB("allowEmbeddedScripts", true);
     appendCmd(str, "set appendNew " + g.appendNew);
-    appendCmd(str, "set appletProxy " + Escape.eS(g.appletProxy));
+    appendCmd(str, "set appletProxy " + PT.esc(g.appletProxy));
     appendCmd(str, "set applySymmetryToBonds " + g.applySymmetryToBonds);
     if (g.atomTypes.length() > 0)
-      appendCmd(str, "set atomTypes " + Escape.eS(g.atomTypes));
+      appendCmd(str, "set atomTypes " + PT.esc(g.atomTypes));
     appendCmd(str, "set autoBond " + g.autoBond);
     //    appendCmd(str, "set autoLoadOrientation " + autoLoadOrientation);
     if (g.axesOrientationRasmol)
@@ -1433,7 +1433,7 @@ public class StateCreator extends JmolStateCreator {
     appendCmd(str, "set bondRadiusMilliAngstroms " + g.bondRadiusMilliAngstroms);
     appendCmd(str, "set bondTolerance " + g.bondTolerance);
     appendCmd(str, "set defaultLattice " + Escape.eP(g.ptDefaultLattice));
-    appendCmd(str, "set defaultLoadFilter " + Escape.eS(g.defaultLoadFilter));
+    appendCmd(str, "set defaultLoadFilter " + PT.esc(g.defaultLoadFilter));
     appendCmd(str, "set defaultLoadScript \"\"");
     if (g.defaultLoadScript.length() > 0)
       g.setS("defaultLoadScript", g.defaultLoadScript);
@@ -1444,14 +1444,14 @@ public class StateCreator extends JmolStateCreator {
       appendCmd(str, viewer
           .getDefaultVdwNameOrData(Integer.MAX_VALUE, null, null));
     appendCmd(str, "set forceAutoBond " + g.forceAutoBond);
-    appendCmd(str, "#set defaultDirectory " + Escape.eS(g.defaultDirectory));
-    appendCmd(str, "#set loadFormat " + Escape.eS(g.loadFormat));
-    appendCmd(str, "#set loadLigandFormat " + Escape.eS(g.loadLigandFormat));
-    appendCmd(str, "#set smilesUrlFormat " + Escape.eS(g.smilesUrlFormat));
-    appendCmd(str, "#set nihResolverFormat " + Escape.eS(g.nihResolverFormat));
-    appendCmd(str, "#set pubChemFormat " + Escape.eS(g.pubChemFormat));
-    appendCmd(str, "#set edsUrlFormat " + Escape.eS(g.edsUrlFormat));
-    appendCmd(str, "#set edsUrlCutoff " + Escape.eS(g.edsUrlCutoff));
+    appendCmd(str, "#set defaultDirectory " + PT.esc(g.defaultDirectory));
+    appendCmd(str, "#set loadFormat " + PT.esc(g.loadFormat));
+    appendCmd(str, "#set loadLigandFormat " + PT.esc(g.loadLigandFormat));
+    appendCmd(str, "#set smilesUrlFormat " + PT.esc(g.smilesUrlFormat));
+    appendCmd(str, "#set nihResolverFormat " + PT.esc(g.nihResolverFormat));
+    appendCmd(str, "#set pubChemFormat " + PT.esc(g.pubChemFormat));
+    appendCmd(str, "#set edsUrlFormat " + PT.esc(g.edsUrlFormat));
+    appendCmd(str, "#set edsUrlCutoff " + PT.esc(g.edsUrlCutoff));
     //    if (autoLoadOrientation)
     //      appendCmd(str, "set autoLoadOrientation true");
     appendCmd(str, "set legacyAutoBonding " + g.legacyAutoBonding);
@@ -1498,7 +1498,7 @@ public class StateCreator extends JmolStateCreator {
               .indexOf(_prefix) == 0)) {
         Object value = g.htNonbooleanParameterValues.get(key);
         if (value instanceof String)
-          value = chop(Escape.eS((String) value));
+          value = chop(PT.esc((String) value));
         list[n++] = (key.indexOf("_") == 0 ? key + " = " : "set " + key + " ")
             + value;
       }
@@ -1508,7 +1508,7 @@ public class StateCreator extends JmolStateCreator {
         SV value = g.htUserVariables.get(key);
         String s = value.asString();
         list[n++] = key + " " + (key.startsWith("@") ? "" : "= ")
-            + (value.tok == T.string ? chop(Escape.eS(s)) : s);
+            + (value.tok == T.string ? chop(PT.esc(s)) : s);
       }
     }
     Arrays.sort(list, 0, n);
@@ -1921,13 +1921,13 @@ public class StateCreator extends JmolStateCreator {
         if (modelIndex == -2)
           return; // file was found, or no file was indicated, but not this model -- ignore
         script = (modelIndex == -1 && filename != null ? script = "load "
-            + Escape.eS(filename) : "");
-        script = PT.simpleReplace(script, SIMULATION_PROTOCOL, "");
+            + PT.esc(filename) : "");
+        script = PT.rep(script, SIMULATION_PROTOCOL, "");
         if (id != null)
-          script += ";model " + Escape.eS(id);
+          script += ";model " + PT.esc(id);
         if (atoms != null)
           script += ";select visible & (@"
-              + PT.simpleReplace(atoms, ",", " or @") + ")";
+              + PT.rep(atoms, ",", " or @") + ")";
         else if (select != null)
           script += ";select visible & (" + select + ")";
         if (script2 != null)

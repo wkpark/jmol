@@ -644,7 +644,7 @@ public class SV extends T implements JSONEncodable {
         String sep = "";
         for (int i = 0; i < keys.length; i++) {
           String key = keys[i];
-          sb.append(sep).append(Escape.eS(key)).appendC(':');
+          sb.append(sep).append(PT.esc(key)).appendC(':');
           sValueArray(sb, ht.get(key), map, level + 1, true);
           sep = ", ";
         }
@@ -996,7 +996,7 @@ public class SV extends T implements JSONEncodable {
   public String escape() {
     switch (tok) {
     case string:
-      return Escape.eS((String) value);
+      return PT.esc((String) value);
     case varray:
     case hash:
       SB sb = new SB();
@@ -1108,7 +1108,7 @@ public class SV extends T implements JSONEncodable {
       return sValue(args[0]);
     }
     SB sb = new SB();
-    String[] format = PT.split(PT.simpleReplace(sValue(args[0]), "%%","\1"), "%");
+    String[] format = PT.split(PT.rep(sValue(args[0]), "%%","\1"), "%");
     sb.append(format[0]);
     for (int i = 1; i < format.length; i++) {
       Object ret = sprintf(Txt.formatCheck("%" + format[i]), (i < args.length ? args[i] : null));

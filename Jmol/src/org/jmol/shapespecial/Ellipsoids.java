@@ -39,6 +39,7 @@ import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.Escape;
 import javajs.util.List;
+import javajs.util.PT;
 import javajs.util.SB;
 import javajs.util.P3;
 //import javajs.util.P4;
@@ -333,7 +334,7 @@ private boolean initEllipsoids(Object value) {
       }
       sb.append(" " + getColorCommandUnk("", ellipsoid.colix, translucentAllowed));
       if (ellipsoid.options != null)
-        sb.append(" options ").append(Escape.eS(ellipsoid.options));
+        sb.append(" options ").append(PT.esc(ellipsoid.options));
       if (!ellipsoid.isOn)
         sb.append(" off");
       sb.append(";\n");
@@ -350,7 +351,7 @@ private boolean initEllipsoids(Object value) {
         continue;
       bsDone.set(iType + 1);
       boolean isADP = (e.tensor.iType == Tensor.TYPE_ADP);
-      String cmd = (isADP ? null : "Ellipsoids set " + Escape.eS(e.tensor.type));
+      String cmd = (isADP ? null : "Ellipsoids set " + PT.esc(e.tensor.type));
       for (Ellipsoid e2 : atomEllipsoids.values()) {
         if (e2.tensor.iType != iType || isADP && !e2.isOn)
           continue;
@@ -358,7 +359,7 @@ private boolean initEllipsoids(Object value) {
         // 
         BSUtil.setMapBitSet(temp, i, i, (isADP ? "Ellipsoids " + e2.percent
             : cmd + " scale " + e2.scale 
-                  + (e2.options == null ? "" : " options " + Escape.eS(e2.options)) 
+                  + (e2.options == null ? "" : " options " + PT.esc(e2.options)) 
                   + (e2.isOn ? " ON" : " OFF")));
         if (e2.colix != C.INHERIT_ALL)
           BSUtil.setMapBitSet(temp2, i, i, getColorCommand(cmd, e2.pid,

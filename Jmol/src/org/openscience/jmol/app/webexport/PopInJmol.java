@@ -91,7 +91,7 @@ class PopInJmol extends WebPanel implements ChangeListener {
       s+="   jmolInfo"+i+".script=\"load "+javaname+".spt\";\n";
       s+="   $(\"#Jmol"+i+"\").html(Jmol.getAppletHtml(\"jmolApplet"+i+"\",jmolInfo"+i+"));\n";
     }
-    html = javajs.util.PT.simpleReplace(html,"@APPLETINITIALIZATION@",s);
+    html = javajs.util.PT.rep(html,"@APPLETINITIALIZATION@",s);
     return html;
   }
 
@@ -128,15 +128,15 @@ class PopInJmol extends WebPanel implements ChangeListener {
           + javaname + "'," + JmolSizeW + "," + JmolSizeH + ")");
     } else {
       String s = htmlAppletTemplate;
-      s = PT.simpleReplace(s, "@CLASS@", "" + divClass);
-      s = PT.simpleReplace(s, "@I@", "" + i);
-      s = PT.simpleReplace(s, "@WIDTH@", "" + JmolSizeW);
-      s = PT.simpleReplace(s, "@HEIGHT@", "" + JmolSizeH);
-      s = PT.simpleReplace(s, "@NAME@", GT.escapeHTML(name));
-      s = PT.simpleReplace(s, "@APPLETNAME@", GT.escapeHTML(javaname));
-      s = PT.simpleReplace(s, "@LEFTWIDGETS@", "");// no left widgets
+      s = PT.rep(s, "@CLASS@", "" + divClass);
+      s = PT.rep(s, "@I@", "" + i);
+      s = PT.rep(s, "@WIDTH@", "" + JmolSizeW);
+      s = PT.rep(s, "@HEIGHT@", "" + JmolSizeH);
+      s = PT.rep(s, "@NAME@", GT.escapeHTML(name));
+      s = PT.rep(s, "@APPLETNAME@", GT.escapeHTML(javaname));
+      s = PT.rep(s, "@LEFTWIDGETS@", "");// no left widgets
                                                            // for now
-      s = PT.simpleReplace(s, "@RIGHTWIDGETS@", widgetDefs);
+      s = PT.rep(s, "@RIGHTWIDGETS@", widgetDefs);
       appletDefs.append(s);
     }
     return html;

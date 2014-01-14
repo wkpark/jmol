@@ -41,6 +41,7 @@ import org.jmol.util.MeshSurface;
 import javajs.util.P3;
 import javajs.util.P3i;
 import javajs.util.P4;
+import javajs.util.PT;
 import javajs.util.V3;
 
 import org.jmol.util.Measure;
@@ -1329,7 +1330,7 @@ protected void resetObjects() {
     int modelCount = viewer.getModelCount();
     if (!dmesh.isFixed && iModel >= 0 && modelCount > 1)
       appendCmd(str, "frame " + viewer.getModelNumberDotted(iModel));
-    str.append("  draw ID ").append(Escape.eS(dmesh.thisID));
+    str.append("  draw ID ").append(PT.esc(dmesh.thisID));
     if (dmesh.isFixed)
       str.append(" fixed");
     if (iModel < 0)
@@ -1441,7 +1442,7 @@ protected void resetObjects() {
       String s = "";
       for (int i = 0; i < dmesh.title.length; i++)
         s += "|" + dmesh.title[i];
-      str.append(Escape.eS(s.substring(1)));
+      str.append(PT.esc(s.substring(1)));
     }
     str.append(";\n");
     appendCmd(str, dmesh.getState("draw"));
@@ -1550,7 +1551,7 @@ protected void resetObjects() {
         continue;
       s.append(getCommand2(mesh, mesh.modelIndex));
       if (!mesh.visible)
-        s.append(" " + myType + " ID " + Escape.eS(mesh.thisID) + " off;\n");
+        s.append(" " + myType + " ID " + PT.esc(mesh.thisID) + " off;\n");
     }
     return s.toString();
   }

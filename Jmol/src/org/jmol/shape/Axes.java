@@ -31,6 +31,7 @@ import org.jmol.java.BS;
 import org.jmol.script.T;
 import org.jmol.util.Escape;
 
+import javajs.util.PT;
 import javajs.util.SB;
 import javajs.util.P3;
 import javajs.util.V3;
@@ -193,7 +194,7 @@ public String getShapeState() {
       sb.append("  axes labels ");
       for (int i = 0; i < labels.length; i++)
         if (labels[i] != null)
-          sb.append(Escape.eS(labels[i])).append(" ");
+          sb.append(PT.esc(labels[i])).append(" ");
       sb.append(";\n");
     }
     return super.getShapeState() + sb;

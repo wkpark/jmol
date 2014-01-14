@@ -103,7 +103,7 @@ public class XmlUtil {
   public static String wrapCdata(Object data) {
     String s = "" + data;
     return (s.indexOf("&") < 0 && s.indexOf("<") < 0 ? (s.startsWith("\n") ? "" : "\n") + s 
-        : "<![CDATA[" + PT.simpleReplace(s, "]]>", "]]]]><![CDATA[>") + "]]>");
+        : "<![CDATA[" + PT.rep(s, "]]>", "]]]]><![CDATA[>") + "]]>");
   }
   
   /**
@@ -112,7 +112,7 @@ public class XmlUtil {
    */
   public static String unwrapCdata(String s) {
     return (s.startsWith("<![CDATA[") && s.endsWith("]]>") ?
-        PT.simpleReplace(s.substring(9, s.length()-3),"]]]]><![CDATA[>", "]]>") : s);
+        PT.rep(s.substring(9, s.length()-3),"]]]]><![CDATA[>", "]]>") : s);
   }
   
   /**

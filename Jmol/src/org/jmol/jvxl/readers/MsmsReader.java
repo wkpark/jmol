@@ -65,7 +65,7 @@ class MsmsReader extends PmeshReader {
   @Override
   protected boolean readPolygons() throws Exception {
     br.close();
-    fileName = PT.simpleReplace(fileName, ".vert", ".face");
+    fileName = PT.rep(fileName, ".vert", ".face");
     Logger.info("reading from file " + fileName);
     try {
       br = JmolBinary.getBufferedReader(sg.getAtomDataServer()

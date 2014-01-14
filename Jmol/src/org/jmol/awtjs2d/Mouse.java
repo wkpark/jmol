@@ -28,7 +28,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
 import org.jmol.script.T;
-import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
 import javajs.J2SRequireImport;
@@ -36,6 +35,7 @@ import javajs.api.EventManager;
 import javajs.api.GenericMouseInterface;
 import javajs.api.PlatformViewer;
 import javajs.awt.event.Event;
+import javajs.util.PT;
 import javajs.util.V3;
 import org.jmol.viewer.Viewer;
 
@@ -316,7 +316,7 @@ public class Mouse implements GenericMouseInterface {
     if (viewer.getBooleanProperty("showKeyStrokes"))
       viewer
           .evalStringQuietSync("!set echo _KEYSTROKES; set echo bottom left;echo "
-              + Escape.eS("\1" + keyBuffer), true, true);
+              + PT.esc("\1" + keyBuffer), true, true);
   }
 
   private void sendKeyBuffer() {
@@ -324,7 +324,7 @@ public class Mouse implements GenericMouseInterface {
     if (viewer.getBooleanProperty("showKeyStrokes"))
       viewer
           .evalStringQuietSync("!set echo _KEYSTROKES; set echo bottom left;echo "
-              + Escape.eS(keyBuffer), true, true);
+              + PT.esc(keyBuffer), true, true);
     clearKeyBuffer();
     viewer.evalStringQuietSync(kb, false, true);
   }

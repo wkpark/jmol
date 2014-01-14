@@ -657,7 +657,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
           }
         }
       }
-      html=PT.simpleReplace(html,"@WIDGETJSFILES@",jsStr);
+      html=PT.rep(html,"@WIDGETJSFILES@",jsStr);
       appletInfoDivs = "";
       StringBuilder appletDefs = new StringBuilder();
       if (!useAppletJS)
@@ -666,37 +666,37 @@ abstract class WebPanel extends JPanel implements ActionListener,
       for (int i = 0; i < listModel.getSize(); i++)
         html = getAppletDefs(i, html, appletDefs, listModel
             .getElementAt(i));
-      html = PT.simpleReplace(html, "@AUTHOR@", GT
+      html = PT.rep(html, "@AUTHOR@", GT
           .escapeHTML(pageAuthorName.getText()));
-      html = PT.simpleReplace(html, "@TITLE@", GT
+      html = PT.rep(html, "@TITLE@", GT
           .escapeHTML(webPageTitle.getText()));
-      html = PT.simpleReplace(html, "@REMOTEAPPLETPATH@",
+      html = PT.rep(html, "@REMOTEAPPLETPATH@",
           remoteAppletPath.getText());
       String localPath=localAppletPath.getText();
       if (localPath.contentEquals(".")){
         localPath= "jsmol";
       }
-      html = PT.simpleReplace(html, "@LOCALAPPLETPATH@",
+      html = PT.rep(html, "@LOCALAPPLETPATH@",
           localPath);
-      html = PT.simpleReplace(html, "@DATADIRNAME@", datadirName);
+      html = PT.rep(html, "@DATADIRNAME@", datadirName);
       if (appletInfoDivs.length() > 0)
         appletInfoDivs = "\n<div style='display:none'>\n" + appletInfoDivs
             + "\n</div>\n";
       String str = appletDefs.toString();
       if (useAppletJS)
         str = "<script type='text/javascript'>\n" + str + "\n</script>";
-      html = PT.simpleReplace(html, "@APPLETINFO@", appletInfoDivs);
-      html = PT.simpleReplace(html, "@APPLETDEFS@", str);
-      html = PT.simpleReplace(html, "@CREATIONDATA@", GT
+      html = PT.rep(html, "@APPLETINFO@", appletInfoDivs);
+      html = PT.rep(html, "@APPLETDEFS@", str);
+      html = PT.rep(html, "@CREATIONDATA@", GT
           .escapeHTML(WebExport.TimeStamp_WebLink()));
       html = javajs.util.PT
-          .simpleReplace(
+          .rep(
               html,
               "@AUTHORDATA@",
               GT
                   .escapeHTML(GT
                       ._("Based on template by A. Herr&#x00E1;ez as modified by J. Gutow")));
-      html = PT.simpleReplace(html, "@LOGDATA@", "<pre>\n"
+      html = PT.rep(html, "@LOGDATA@", "<pre>\n"
           + LogPanel.getText() + "\n</pre>\n");
       LogPanel.log("      ..." + GT.o(GT._("creating {0}"), fileName));
       viewer.writeTextFile(fileName, html);
@@ -715,7 +715,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
       String name = list.get(i);
       String newName = newList.get(i);
       if (!newName.equals(name))
-        s = PT.simpleReplace(s, "\"" + name + "\"", "\"" + newName
+        s = PT.rep(s, "\"" + name + "\"", "\"" + newName
             + "\"");
     }
     return s;

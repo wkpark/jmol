@@ -1351,7 +1351,7 @@ public class ScriptExt implements JmolScriptExtension {
         if (tokAt(i + 1) == T.function) {
           i++;
           String f = (String) getToken(++i).value;
-          sbCommand.append(" function ").append(Escape.eS(f));
+          sbCommand.append(" function ").append(PT.esc(f));
           if (!chk)
             addShapeProperty(propertyList, "func", (f.equals("a+b")
                 || f.equals("a-b") ? f : createFunction("__iso__", "a,b", f)));
@@ -1769,7 +1769,7 @@ public class ScriptExt implements JmolScriptExtension {
         surfaceObjectSeen = true;
         String lcaoType = parameterAsString(++i);
         addShapeProperty(propertyList, "lcaoType", lcaoType);
-        sbCommand.append(" lcaocartoon ").append(Escape.eS(lcaoType));
+        sbCommand.append(" lcaocartoon ").append(PT.esc(lcaoType));
         switch (getToken(++i).tok) {
         case T.bitset:
         case T.expressionBegin:
@@ -1890,7 +1890,7 @@ public class ScriptExt implements JmolScriptExtension {
         if (tokAt(i + 1) == T.string) {
           fname = stringParameter(++i);
           //if (surfaceObjectSeen)
-          sbCommand.append(" /*file*/" + Escape.eS(fname));
+          sbCommand.append(" /*file*/" + PT.esc(fname));
         } else if (tokAt(i + 1) == T.property) {
           mepOrMlp = propertyName;
           continue;
@@ -2120,7 +2120,7 @@ public class ScriptExt implements JmolScriptExtension {
           sbCommand.append(" =");
           name = parameterAsString(++i);
           //if (surfaceObjectSeen)
-          sbCommand.append(" ").append(Escape.eS(name));
+          sbCommand.append(" ").append(PT.esc(name));
           vxy.addLast(name);
           if (!chk)
             addShapeProperty(propertyList, "func", createFunction("__iso__",
@@ -2381,7 +2381,7 @@ public class ScriptExt implements JmolScriptExtension {
         isPhased = true;
         propertyValue = (tokAt(i + 1) == T.string ? stringParameter(++i)
             : "_orb");
-        sbCommand.append(" phase ").append(Escape.eS((String) propertyValue));
+        sbCommand.append(" phase ").append(PT.esc((String) propertyValue));
         break;
       case T.pointsperangstrom:
       case T.resolution:
@@ -2433,7 +2433,7 @@ public class ScriptExt implements JmolScriptExtension {
           Logger.debug("pmesh inline data:\n" + str);
         propertyValue = (chk ? null : str);
         addShapeProperty(propertyList, "fileName", "");
-        sbCommand.append(" INLINE ").append(Escape.eS(str));
+        sbCommand.append(" INLINE ").append(PT.esc(str));
         surfaceObjectSeen = true;
         break;
       case T.string:
@@ -2541,9 +2541,9 @@ public class ScriptExt implements JmolScriptExtension {
           if (fileIndex >= 0)
             sbCommand.append(" ").appendI(fileIndex);
         }
-        sbCommand.append(" /*file*/").append(Escape.eS(filename));
+        sbCommand.append(" /*file*/").append(PT.esc(filename));
         if (stype != null)
-          sbCommand.append(" ").append(Escape.eS(stype));
+          sbCommand.append(" ").append(PT.esc(stype));
         break;
       case T.connect:
         propertyName = "connections";
@@ -5456,7 +5456,7 @@ public class ScriptExt implements JmolScriptExtension {
       } else {
         String sg = parameterAsString(2);
         if (!chk)
-          info = viewer.getSpaceGroupInfo(PT.simpleReplace(sg, "''",
+          info = viewer.getSpaceGroupInfo(PT.rep(sg, "''",
               "\""));
       }
       if (info != null)
@@ -8247,10 +8247,10 @@ public class ScriptExt implements JmolScriptExtension {
     String sReplace = SV.sValue(args[1]);
     String s = (x.tok == T.varray ? null : SV.sValue(x));
     if (s != null)
-      return mp.addXStr(PT.simpleReplace(s, sFind, sReplace));
+      return mp.addXStr(PT.rep(s, sFind, sReplace));
     String[] list = SV.listValue(x);
     for (int i = list.length; --i >= 0;)
-      list[i] = PT.simpleReplace(list[i], sFind, sReplace);
+      list[i] = PT.rep(list[i], sFind, sReplace);
     return mp.addXAS(list);
   }
 
@@ -8286,7 +8286,7 @@ public class ScriptExt implements JmolScriptExtension {
     case T.join:
       if (s.length() > 0 && s.charAt(s.length() - 1) == '\n')
         s = s.substring(0, s.length() - 1);
-      return mp.addXStr(PT.simpleReplace(s, "\n", sArg));
+      return mp.addXStr(PT.rep(s, "\n", sArg));
     case T.trim:
       if (s != null)
         return mp.addXStr(PT.trim(s, sArg));      
@@ -9514,7 +9514,7 @@ public class ScriptExt implements JmolScriptExtension {
             .toLowerCase());
         int n = (tokAt(i) == T.nada ? 5 : intParameter(i++));
         s = "; rotate Y 10 10;delay 2.0; rotate Y -10 -10; delay 2.0;rotate Y -10 -10; delay 2.0;rotate Y 10 10;delay 2.0";
-        s = PT.simpleReplace(s, "10", "" + n);
+        s = PT.rep(s, "10", "" + n);
         break;
       case T.spin:
         looping = true;
@@ -9538,8 +9538,8 @@ public class ScriptExt implements JmolScriptExtension {
           viewer.setNavigationMode(false);
         if (axis == "" || "xyz".indexOf(axis) < 0)
           axis = "y";
-        s = PT.simpleReplace(s, "Y", axis);
-        s = "capture " + Escape.eS(fileName) + sfps + s + ";capture;";
+        s = PT.rep(s, "Y", axis);
+        s = "capture " + PT.esc(fileName) + sfps + s + ";capture;";
         eval.script(0, null, s);
         return;
       }

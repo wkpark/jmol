@@ -37,9 +37,9 @@ import javajs.api.EventManager;
 import javajs.api.GenericMouseInterface;
 import javajs.api.PlatformViewer;
 import javajs.awt.event.Event;
+import javajs.util.PT;
 
 import org.jmol.script.T;
-import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
 
@@ -216,7 +216,7 @@ class Mouse implements MouseWheelListener, MouseListener,
           if (ret == null)
             break;
           if (ret.startsWith("http://") && ret.indexOf("\n") < 0)
-            ret = "LoAd " + Escape.eS(ret);
+            ret = "LoAd " + PT.esc(ret);
           if (ret.startsWith("LoAd ")) {
             viewer.evalStringQuietSync(ret, false, true);
             break;
@@ -291,7 +291,7 @@ class Mouse implements MouseWheelListener, MouseListener,
     if (viewer.getBooleanProperty("showKeyStrokes"))
       viewer
           .evalStringQuietSync("!set echo _KEYSTROKES; set echo bottom left;echo "
-              + Escape.eS("\1" + keyBuffer), true, true);
+              + PT.esc("\1" + keyBuffer), true, true);
   }
 
   private void sendKeyBuffer() {
@@ -299,7 +299,7 @@ class Mouse implements MouseWheelListener, MouseListener,
     if (viewer.getBooleanProperty("showKeyStrokes"))
       viewer
           .evalStringQuietSync("!set echo _KEYSTROKES; set echo bottom left;echo "
-              + Escape.eS(keyBuffer), true, true);
+              + PT.esc(keyBuffer), true, true);
     clearKeyBuffer();
     viewer.evalStringQuietSync(kb, false, true);
   }

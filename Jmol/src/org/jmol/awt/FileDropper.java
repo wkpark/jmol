@@ -41,9 +41,10 @@ import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.util.List;
 
+import javajs.util.PT;
+
 import org.jmol.api.JmolStatusListener;
 import org.jmol.api.JmolViewer;
-import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
 /**
@@ -113,7 +114,7 @@ public class FileDropper implements DropTargetListener {
       fname = fname.replace('\\', '/').trim();
       fname = (fname.startsWith("/") ? "file://" : "file:///") + fname;
       sb.append("load ").append(i == 0 ? "" : "APPEND ").append(
-          Escape.eS(fname)).append(";\n");
+          PT.esc(fname)).append(";\n");
     }
     sb.append("frame *;reset;");
     viewer.script(sb.toString());

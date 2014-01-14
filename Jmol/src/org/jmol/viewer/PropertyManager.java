@@ -238,7 +238,7 @@ public class PropertyManager implements JmolPropertyManager {
   private Object getModelProperty(String propertyName, Object propertyValue) {
     propertyName = propertyName.replace(']', ' ').replace('[', ' ').replace(
         '.', ' ');
-    propertyName = PT.simpleReplace(propertyName, "  ", " ");
+    propertyName = PT.rep(propertyName, "  ", " ");
     String[] names = PT.split(PT.trim(propertyName, " "),
         " ");
     SV[] args = new SV[names.length];
@@ -1137,7 +1137,7 @@ public class PropertyManager implements JmolPropertyManager {
           int id = a.getChainID();
           s = (id == 0 ? " " : a.getChainIDStr());
           if (id > 255)
-            s = Escape.eS(s);
+            s = PT.esc(s);
           switch (tok) {
           case T.residue:
             s = "[" + a.getGroup3(false) + "]"
@@ -1187,13 +1187,13 @@ public class PropertyManager implements JmolPropertyManager {
       if (frames != null && !frames.get(i))
         continue;
       String s = "[\"" + ms.getModelNumberDotted(i) + "\"] = ";
-      sb.append("\n\nfile").append(s).append(Escape.eS(ms.getModelFileName(i)));
+      sb.append("\n\nfile").append(s).append(PT.esc(ms.getModelFileName(i)));
       String id = (String) ms.getModelAuxiliaryInfoValue(i, "modelID");
       if (id != null)
-        sb.append("\nid").append(s).append(Escape.eS(id));
-      sb.append("\ntitle").append(s).append(Escape.eS(ms.getModelTitle(i)));
-      sb.append("\nname").append(s).append(Escape.eS(ms.getModelName(i)));
-      sb.append("\ntype").append(s).append(Escape.eS(ms.getModelFileType(i)));
+        sb.append("\nid").append(s).append(PT.esc(id));
+      sb.append("\ntitle").append(s).append(PT.esc(ms.getModelTitle(i)));
+      sb.append("\nname").append(s).append(PT.esc(ms.getModelName(i)));
+      sb.append("\ntype").append(s).append(PT.esc(ms.getModelFileType(i)));
     }
     return sb.toString();
   }

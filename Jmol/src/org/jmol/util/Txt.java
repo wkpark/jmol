@@ -133,12 +133,12 @@ public class Txt {
           }
 
         }
-        return PT.simpleReplace(strFormat, "%%", "%");
+        return PT.rep(strFormat, "%%", "%");
       } catch (Exception e) {
         //
       }
     System.out.println("TextFormat.sprintf error " + list + " " + strFormat);
-    return PT.simpleReplace(strFormat, "%", "?");
+    return PT.rep(strFormat, "%", "?");
   }
 
   /**
@@ -247,9 +247,9 @@ public class Txt {
   public static String formatCheck(String strFormat) {
     if (strFormat == null || strFormat.indexOf('p') < 0 && strFormat.indexOf('q') < 0)
       return strFormat;
-    strFormat = PT.simpleReplace(strFormat, "%%", "\1");
-    strFormat = PT.simpleReplace(strFormat, "%p", "%6.2p");
-    strFormat = PT.simpleReplace(strFormat, "%q", "%6.2q");
+    strFormat = PT.rep(strFormat, "%%", "\1");
+    strFormat = PT.rep(strFormat, "%p", "%6.2p");
+    strFormat = PT.rep(strFormat, "%q", "%6.2q");
     String[] format = PT.split(strFormat, "%");
     SB sb = new SB();
     sb.append(format[0]);
@@ -402,7 +402,7 @@ public class Txt {
       String name = list.get(i);
       String newName = newList.get(i);
       if (!newName.equals(name))
-        s = PT.simpleReplace(s, "\"" + name + "\"", "\"" + newName
+        s = PT.rep(s, "\"" + name + "\"", "\"" + newName
             + "\"");
     }
     return s;
@@ -415,7 +415,7 @@ public class Txt {
       String name = list.get(i);
       String newName = newList.get(i);
       if (!newName.equals(name))
-        s = PT.simpleReplace(s, name, newName);
+        s = PT.rep(s, name, newName);
     }
     return s;
   }

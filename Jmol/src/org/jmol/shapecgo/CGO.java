@@ -29,10 +29,10 @@ import org.jmol.script.T;
 import org.jmol.shape.Mesh;
 import org.jmol.shape.MeshCollection;
 import org.jmol.shapespecial.Draw;
-import org.jmol.util.Escape;
 
 import javajs.util.AU;
 import javajs.util.List;
+import javajs.util.PT;
 import javajs.util.SB;
 public class CGO extends Draw {
   
@@ -149,7 +149,7 @@ public class CGO extends Draw {
       CGOMesh mesh = cmeshes[i];
       s.append(getCommand2(mesh, mesh.modelIndex));
       if (!mesh.visible)
-        s.append(" " + myType + " ID " + Escape.eS(mesh.thisID) + " off;\n");
+        s.append(" " + myType + " ID " + PT.esc(mesh.thisID) + " off;\n");
     }
     return s.toString();
   }
@@ -161,7 +161,7 @@ public class CGO extends Draw {
     int modelCount = viewer.getModelCount();
     if (iModel >= 0 && modelCount > 1)
       appendCmd(str, "frame " + viewer.getModelNumberDotted(iModel));
-    str.append("  CGO ID ").append(Escape.eS(mesh.thisID));
+    str.append("  CGO ID ").append(PT.esc(mesh.thisID));
     if (iModel < 0)
       iModel = 0;
     str.append(" [");

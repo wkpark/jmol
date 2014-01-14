@@ -588,7 +588,7 @@ public class PT {
    * @param strTo
    * @return replaced string
    */
-  public static String simpleReplace(String str, String strFrom, String strTo) {
+  public static String rep(String str, String strFrom, String strTo) {
     if (str == null || strFrom.length() == 0 || str.indexOf(strFrom) < 0)
       return str;
     boolean isOnce = (strTo.indexOf(strFrom) >= 0);
@@ -672,7 +672,7 @@ public class PT {
                                             String strTo) {
     for (int i = strFrom.length(); --i >= 0;) {
       String chFrom = strFrom.substring(i, i + 1);
-      str = simpleReplace(str, chFrom, strTo);
+      str = rep(str, chFrom, strTo);
     }
     return str;
   }
@@ -881,8 +881,8 @@ public class PT {
     {}
     if (s == null || s.indexOf("{\"") == 0) //don't doubly fix JSON strings when retrieving status
       return s;
-    s = simpleReplace(s, "\"", "\\\"");
-    s = simpleReplace(s, "\n", "\\n");
+    s = rep(s, "\"", "\\\"");
+    s = rep(s, "\n", "\\n");
     return "\"" + s + "\"";
   }
 
@@ -1019,13 +1019,48 @@ public class PT {
   }
 
   public static String escapeUrl(String url) {
-    url = simpleReplace(url, "\n", "");
-    url = simpleReplace(url, "%", "%25");
-    url = simpleReplace(url, "#", "%23");
-    url = simpleReplace(url, "[", "%5B");
-    url = simpleReplace(url, "]", "%5D");
-    url = simpleReplace(url, " ", "%20");
+    url = rep(url, "\n", "");
+    url = rep(url, "%", "%25");
+    url = rep(url, "#", "%23");
+    url = rep(url, "[", "%5B");
+    url = rep(url, "]", "%5D");
+    url = rep(url, " ", "%20");
     return url;
+  }
+
+  private final static String escapable = "\\\\\tt\rr\nn\"\""; 
+
+  public static String esc(String str) {
+    if (str == null || str.length() == 0)
+      return "\"\"";
+    boolean haveEscape = false;
+    int i = 0;
+    for (; i < escapable.length(); i += 2)
+      if (str.indexOf(escapable.charAt(i)) >= 0) {
+        haveEscape = true;
+        break;
+      }
+    if (haveEscape)
+      while (i < escapable.length()) {
+        int pt = -1;
+        char ch = escapable.charAt(i++);
+        char ch2 = escapable.charAt(i++);
+        SB sb = new SB();
+        int pt0 = 0;
+        while ((pt = str.indexOf(ch, pt + 1)) >= 0) {
+          sb.append(str.substring(pt0, pt)).appendC('\\').appendC(ch2);
+          pt0 = pt + 1;
+        }
+        sb.append(str.substring(pt0, str.length()));
+        str = sb.toString();
+      }
+    for (i = str.length(); --i >= 0;)
+      if (str.charAt(i) > 0x7F) {
+        String s = "0000" + Integer.toHexString(str.charAt(i));
+        str = str.substring(0, i) + "\\u" + s.substring(s.length() - 4)
+            + str.substring(i + 1);
+      }
+    return "\"" + str + "\"";
   }
 
 

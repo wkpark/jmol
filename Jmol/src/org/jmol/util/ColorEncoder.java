@@ -275,9 +275,9 @@ import javajs.util.P3;
         // also allow xxx=red,blue,green
         
         colorScheme = "[" + colorScheme.substring(pt + 1).trim() + "]";
-        colorScheme = PT.simpleReplace(colorScheme.replace('\n', ' '), "  ", " ");
-        colorScheme = PT.simpleReplace(colorScheme, ", ", ",").replace(' ',',');
-        colorScheme = PT.simpleReplace(colorScheme, ",", "][");
+        colorScheme = PT.rep(colorScheme.replace('\n', ' '), "  ", " ");
+        colorScheme = PT.rep(colorScheme, ", ", ",").replace(' ',',');
+        colorScheme = PT.rep(colorScheme, ",", "][");
       }
       pt = -1;
       while ((pt = colorScheme.indexOf("[", pt + 1)) >= 0)

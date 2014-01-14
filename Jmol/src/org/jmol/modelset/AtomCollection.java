@@ -2193,7 +2193,7 @@ abstract public class AtomCollection {
     case T.spec_atom:
       String atomSpec = ((String) specInfo).toUpperCase();
       if (atomSpec.indexOf("\\?") >= 0)
-        atomSpec = PT.simpleReplace(atomSpec, "\\?", "\1");
+        atomSpec = PT.rep(atomSpec, "\\?", "\1");
       // / here xx*yy is NOT changed to "xx??????????yy"
       for (i = atomCount; --i >= 0;)
         if (isAtomNameMatch(atoms[i], atomSpec, false))
@@ -2323,7 +2323,7 @@ abstract public class AtomCollection {
     BS bs = getSpecNameOrNull(identifier, false);
     
     if (identifier.indexOf("\\?") >= 0)
-      identifier = PT.simpleReplace(identifier, "\\?","\1");
+      identifier = PT.rep(identifier, "\\?","\1");
     if (bs != null || identifier.indexOf("?") > 0)
       return bs;
     // now check with * option ON
@@ -2392,7 +2392,7 @@ abstract public class AtomCollection {
     BS bs = null;
     name = name.toUpperCase();
     if (name.indexOf("\\?") >= 0)
-      name = PT.simpleReplace(name, "\\?","\1");
+      name = PT.rep(name, "\\?","\1");
     for (int i = atomCount; --i >= 0;) {
       String g3 = atoms[i].getGroup3(true);
       if (g3 != null && g3.length() > 0) {

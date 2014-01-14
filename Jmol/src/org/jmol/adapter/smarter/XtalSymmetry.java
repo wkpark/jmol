@@ -56,7 +56,7 @@ public class XtalSymmetry {
 
   private AtomSetCollection ac;
 
-  XtalSymmetry() {
+  public XtalSymmetry() {
     // for reflection
   }
 
@@ -838,7 +838,7 @@ public class XtalSymmetry {
     if (filter.indexOf("#<") >= 0) {
       len = Math.min(len,
           PT.parseInt(filter.substring(filter.indexOf("#<") + 2)) - 1);
-      filter = PT.simpleReplace(filter, "#<", "_<");
+      filter = PT.rep(filter, "#<", "_<");
     }
     for (int iAtom = firstSymmetryAtom; iAtom < atomMax; iAtom++)
       atoms[iAtom].bsSymmetry = BSUtil.newAndSetBit(0);

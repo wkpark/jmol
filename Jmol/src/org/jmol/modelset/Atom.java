@@ -35,11 +35,11 @@ import org.jmol.java.BS;
 import org.jmol.script.T;
 import org.jmol.util.C;
 import org.jmol.util.Elements;
-import org.jmol.util.Escape;
 import org.jmol.util.Point3fi;
 
 import javajs.util.CU;
 import javajs.util.List;
+import javajs.util.PT;
 import javajs.util.SB;
 import javajs.util.P3;
 import org.jmol.util.Tensor;
@@ -937,7 +937,7 @@ public class Atom extends Point3fi implements JmolNode {
         info.append(":");
         String s = getChainIDStr();
         if (chainID >= 256)
-          s = Escape.eS(s);
+          s = PT.esc(s);
         info.append(s);
       }
       if (!allInfo)

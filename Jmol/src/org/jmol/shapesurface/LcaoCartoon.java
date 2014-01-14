@@ -330,7 +330,7 @@ public class LcaoCartoon extends Isosurface {
     // both "pz" and "-pz" on the same atom
     // but we can have "-sp3a" and "sp3a"
     return (id != null ? id : (isLonePair || isRadical ? "lp_" : "lcao_") + (i + 1) + "_")
-        + (thisType == null ? "" : PT.simpleReplace(thisType, "-",
+        + (thisType == null ? "" : PT.rep(thisType, "-",
             (thisType.indexOf("-p") == 0 ? "" : "_")));
   }
 

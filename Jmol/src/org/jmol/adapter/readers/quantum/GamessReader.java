@@ -311,7 +311,7 @@ $SYSTEM OPTIONS
         if (calculationType.length() > 0)
           calculationType += " ";
         calculationType += igauss + "-"
-            + PT.simpleReplace(gbasis, "N", "");
+            + PT.rep(gbasis, "N", "");
         if ("T".equals(calcOptions.get("basis_options_DIFFSP"))) {
           // check if we have diffuse S on H's too => "++" instead of "+"
           if ("T".equals(calcOptions.get("basis_options_DIFFS")))
@@ -383,7 +383,7 @@ $SYSTEM OPTIONS
     while (readLine() != null && (line = line.trim()).length() > 0) {
       if (line.indexOf("=") < 0)
         continue;
-      String[] tokens = getTokensStr(PT.simpleReplace(line, "="," = ") + " ?");
+      String[] tokens = getTokensStr(PT.rep(line, "="," = ") + " ?");
       for (int i = 0; i < tokens.length; i++) {
         if (!tokens[i].equals("="))
           continue;

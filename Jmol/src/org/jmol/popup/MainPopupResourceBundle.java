@@ -208,7 +208,7 @@ public class MainPopupResourceBundle extends PopupResource {
               + "showSpacegroup showState SYMMETRYshowSymmetry UNITCELLshow - showIsosurface showMo - extractMOL" },
 
       {   "fileMenu",
-          "SIGNEDloadFileOrUrl SIGNEDloadPdb SIGNEDloadScript - "
+          "SIGNEDloadFile SIGNEDloadUrl SIGNEDloadPdb SIGNEDloadScript - "
               + "reload SIGNEDloadFileUnitCell - "
               + "writeFileTextVARIABLE writeState writeHistory SIGNEDwriteJmol SIGNEDwriteIsosurface " +
               		"- SIGNEDJAVAcaptureMenuSPECIAL " +
@@ -490,7 +490,8 @@ public class MainPopupResourceBundle extends PopupResource {
       
       { "reload", "load \"\"" },
       { "SIGNEDloadPdb", "load ?PdbId?" },      
-      { "SIGNEDloadFileOrUrl", "load ?" },      
+      { "SIGNEDloadFile", "load ?" },      
+      { "SIGNEDloadUrl", "load http://?" },      
       { "SIGNEDloadFileUnitCell", "load ? {1 1 1}" },      
       { "SIGNEDloadScript", "script ?.spt" },      
       
@@ -907,7 +908,8 @@ public class MainPopupResourceBundle extends PopupResource {
         "fileMenu", GT._("File"),
         "reload", GT._("Reload"),      
         "SIGNEDloadPdb", GT._("Open from PDB"),      
-        "SIGNEDloadFileOrUrl", GT._("Open file or URL"),      
+        "SIGNEDloadFile", GT._("Open local file"),      
+        "SIGNEDloadUrl", GT._("Open URL"),      
         "SIGNEDloadFileUnitCell", GT._("Load full unit cell"),      
         "SIGNEDloadScript", GT._("Open script"),      
 

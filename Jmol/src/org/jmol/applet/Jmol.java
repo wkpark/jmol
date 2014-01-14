@@ -673,7 +673,7 @@ public class Jmol extends GenericApplet implements WrappedApplet {
     try {
       System.out.println(message);
       applet
-          .showStatus(PT.simpleReplace(PT.split(message, "\n")[0], "'", "\\'"));
+          .showStatus(PT.rep(PT.split(message, "\n")[0], "'", "\\'"));
       doSendJsTextStatus(message);
     } catch (Exception e) {
       //ignore if page is closing

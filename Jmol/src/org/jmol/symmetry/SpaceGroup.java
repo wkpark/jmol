@@ -456,7 +456,7 @@ class SpaceGroup {
       // ! in character 0 indicates we are using the symop() function and want to be explicit
       if (xyzList.containsKey(xyz))
         return xyzList.get(xyz).intValue();
-      if (latticeOp < 0 && xyzList.containsKey(PT.simpleReplace(PT.simpleReplace(xyz, "+1/2", ""), "+1/2", "")))
+      if (latticeOp < 0 && xyzList.containsKey(PT.rep(PT.rep(xyz, "+1/2", ""), "+1/2", "")))
         latticeOp = operationCount;
       xyzList.put(xyz, Integer.valueOf(operationCount));
     }
@@ -784,9 +784,9 @@ class SpaceGroup {
         hmSymbolAlternative = (hmSymbol.substring(0, pt) + " 3"
             + hmSymbol.substring(pt + 3)).toLowerCase();
       }
-    hmSymbolAbbr = PT.simpleReplace(hmSymbol, " ", "");
-    hmSymbolAbbrShort = PT.simpleReplace(hmSymbol, " 1", "");
-    hmSymbolAbbrShort = PT.simpleReplace(hmSymbolAbbrShort, " ", "");
+    hmSymbolAbbr = PT.rep(hmSymbol, " ", "");
+    hmSymbolAbbrShort = PT.rep(hmSymbol, " 1", "");
+    hmSymbolAbbrShort = PT.rep(hmSymbolAbbrShort, " ", "");
 
     hallSymbol = terms[3];
     if (hallSymbol.length() > 1)

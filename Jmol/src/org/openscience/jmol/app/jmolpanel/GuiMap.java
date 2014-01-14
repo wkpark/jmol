@@ -289,7 +289,7 @@ public class GuiMap {
       setTranslations();
     language = GT.getLanguage();
     for (int i = 0; i < translations.length; i += 2)
-      str = PT.simpleReplace(str, translations[i], translations[i + 1]);
+      str = PT.rep(str, translations[i], translations[i + 1]);
     return str;
   }
 

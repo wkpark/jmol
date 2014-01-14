@@ -47,6 +47,8 @@ import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.P4;
+import javajs.util.PT;
+
 import org.jmol.util.Quaternion;
 import javajs.util.T3;
 import javajs.util.V3;
@@ -310,7 +312,7 @@ public class Mesh extends MeshSurface {
       //s.append("/** XML ** ").append(sxml).append(" ** XML **/\n");
     s.append(type);
     if (!type.equals("mo"))
-      s.append(" ID ").append(Escape.eS(thisID));
+      s.append(" ID ").append(PT.esc(thisID));
     if (lattice != null)
       s.append(" lattice ").append(Escape.eP(lattice));
     if (meshColix != 0)
@@ -321,7 +323,7 @@ public class Mesh extends MeshSurface {
     if (bsDisplay != null) {
       s.append(";\n  ").append(type);
       if (!type.equals("mo"))
-        s.append(" ID ").append(Escape.eS(thisID));
+        s.append(" ID ").append(PT.esc(thisID));
       s.append(" display " + Escape.eBS(bsDisplay));
     }
     return s.toString();

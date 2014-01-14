@@ -150,8 +150,8 @@ public class Parser {
   public static String fixDataString(String str) {
     str = str.replace(';', str.indexOf('\n') < 0 ? '\n' : ' ');
     str = PT.trim(str, "\n \t");
-    str = PT.simpleReplace(str, "\n ", "\n");
-    str = PT.simpleReplace(str, "\n\n", "\n");
+    str = PT.rep(str, "\n ", "\n");
+    str = PT.rep(str, "\n\n", "\n");
     return str;    
   }
   

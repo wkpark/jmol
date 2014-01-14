@@ -35,7 +35,6 @@ import java.util.Scanner;
 import javajs.util.PT;
 
 import org.jmol.i18n.GT;
-import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.api.JmolAppAPI;
 import org.jmol.api.JmolViewer;
@@ -450,7 +449,7 @@ public class JmolApp implements JmolAppAPI {
           info.put("headlessImage", data);
         }
         else
-          script2 += ";write image " + width + " " + height + " " + type + " " + quality + " " + Escape.eS(type_name);
+          script2 += ";write image " + width + " " + height + " " + type + " " + quality + " " + PT.esc(type_name);
       }
     }
     if (GraphicsEnvironment.isHeadless())
@@ -498,7 +497,7 @@ public class JmolApp implements JmolAppAPI {
       if (script1 == null)
         script1 = "";
       script1 = (modelFilename.endsWith(".spt") ? "script " : "load ") 
-          + Escape.eS(modelFilename) + ";" + script1;
+          + PT.esc(modelFilename) + ";" + script1;
     }
 
     // OK, by now it is time to execute the script

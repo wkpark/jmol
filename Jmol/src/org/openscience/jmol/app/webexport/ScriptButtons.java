@@ -69,10 +69,10 @@ class ScriptButtons extends WebPanel {
     int nbuttons = getInstanceList().getModel().getSize();
     if (!allSelectedWidgets().isEmpty())
       appletheightpercent = 85;
-    html = PT.simpleReplace(html, "@WIDTHPERCENT@", "" + size);
-    html = PT.simpleReplace(html, "@LEFTPERCENT@", "" + leftpercent);
-    html = PT.simpleReplace(html, "@NBUTTONS@", "" + nbuttons);
-    html = PT.simpleReplace(html, "@HEIGHT@", "" + appletheightpercent);
+    html = PT.rep(html, "@WIDTHPERCENT@", "" + size);
+    html = PT.rep(html, "@LEFTPERCENT@", "" + leftpercent);
+    html = PT.rep(html, "@NBUTTONS@", "" + nbuttons);
+    html = PT.rep(html, "@HEIGHT@", "" + appletheightpercent);
     return html;
   }
 
@@ -105,18 +105,18 @@ class ScriptButtons extends WebPanel {
       widgetDefs += "</tr></tbody></table>";
     }
     if (i == 0)
-      html = PT.simpleReplace(html, "@APPLETNAME0@", GT.escapeHTML(buttonname));
+      html = PT.rep(html, "@APPLETNAME0@", GT.escapeHTML(buttonname));
     if (useAppletJS) {
       String info = "info for " + name;
       appletDefs.append("\naddAppletButton(" + i + ",'" + buttonname + "',\""
           + name + "\",\"" + info + "\");");
     } else {
       String s = htmlAppletTemplate;
-      s = PT.simpleReplace(s, "@APPLETNAME0@", GT.escapeHTML(buttonname));
-      s = PT.simpleReplace(s, "@NAME@", GT.escapeHTML(name));
-      s = PT.simpleReplace(s, "@LABEL@", GT.escapeHTML(name));
-      s = PT.simpleReplace(s, "@I@", ""+i);
-      s = PT.simpleReplace(s, "@WIDGETSTR@", widgetDefs);
+      s = PT.rep(s, "@APPLETNAME0@", GT.escapeHTML(buttonname));
+      s = PT.rep(s, "@NAME@", GT.escapeHTML(name));
+      s = PT.rep(s, "@LABEL@", GT.escapeHTML(name));
+      s = PT.rep(s, "@I@", ""+i);
+      s = PT.rep(s, "@WIDGETSTR@", widgetDefs);
       appletDefs.append(s);
     }
     return html;

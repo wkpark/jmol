@@ -788,7 +788,7 @@ public class CrystalReader extends AtomSetCollectionReader {
   }
 
   private void readEnergy() {
-    line = PT.simpleReplace(line, "( ", "(");
+    line = PT.rep(line, "( ", "(");
     String[] tokens = getTokens();
     energy = Double.valueOf(Double.parseDouble(tokens[2]));
     setEnergy();
@@ -882,8 +882,8 @@ public class CrystalReader extends AtomSetCollectionReader {
     String Sfrag = "";
     while (readLine() != null && line.indexOf("(") >= 0)
       Sfrag += line;
-    Sfrag = PT.simpleReplace(Sfrag, "(", " ");
-    Sfrag = PT.simpleReplace(Sfrag, ")", " ");
+    Sfrag = PT.rep(Sfrag, "(", " ");
+    Sfrag = PT.rep(Sfrag, ")", " ");
     String[] tokens = getTokensStr(Sfrag);
     for (int i = 0, pos = 0; i < numAtomsFrag; i++, pos += 3)
       atomFrag[i] = getAtomIndexFromPrimitiveIndex(parseIntStr(tokens[pos]) - 1);
@@ -1055,7 +1055,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     String data = "";
     while (readLine() != null && (line.length() < 4 || Character.isDigit(line.charAt(3))))
       data += line;
-    data = PT.simpleReplace(data, "-", " -");
+    data = PT.rep(data, "-", " -");
     String[] tokens = getTokensStr(data);
     for (int i = 0, pt = nfields - 1; i < atomCount; i++, pt += nfields) {
       int iConv = getAtomIndexFromPrimitiveIndex(i);

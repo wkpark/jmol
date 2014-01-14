@@ -1434,9 +1434,9 @@ abstract class ScriptCompilationTokenParser {
       if (value != null)
         msg += ": " + value;
     } else {
-      msg = PT.simpleReplace(msg, "{0}", value);
+      msg = PT.rep(msg, "{0}", value);
       if (msg.indexOf("{1}") >= 0)
-        msg = PT.simpleReplace(msg, "{1}", more);
+        msg = PT.rep(msg, "{1}", more);
       else if (more != null)
         msg += ": " + more;
     }

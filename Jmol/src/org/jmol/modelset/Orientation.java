@@ -2,6 +2,7 @@ package org.jmol.modelset;
 
 import javajs.util.M3;
 import javajs.util.P3;
+import javajs.util.PT;
 
 import org.jmol.script.T;
 import org.jmol.util.Escape;
@@ -73,7 +74,7 @@ public class Orientation {
 
   public String getMoveToText(boolean asCommand) {
     return (asCommand ? "   " + moveToText + "\n  save orientation " 
-        + Escape.eS(saveName.substring(12)) + ";\n" : moveToText);
+        + PT.esc(saveName.substring(12)) + ";\n" : moveToText);
   }
   
   public boolean restore(float timeSeconds, boolean isAll) {

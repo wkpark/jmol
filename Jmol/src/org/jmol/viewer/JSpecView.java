@@ -63,7 +63,7 @@ public class JSpecView implements JmolJSpecView {
         String script = "";
         if (satoms != null)
           script += "visible & (atomno="
-              + PT.simpleReplace(satoms, ",", " or atomno=") + ")";
+              + PT.rep(satoms, ",", " or atomno=") + ")";
         else if (select != null)
           script += "visible & (" + select + ")";
         System.out.println("Jmol JSpecView.java script : " + script);

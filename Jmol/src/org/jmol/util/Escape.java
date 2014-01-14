@@ -87,7 +87,7 @@ public class Escape {
     if (x == null)
       return "null";
     if (x instanceof String)
-      return eS((String) x);
+      return PT.esc((String) x);
     if (x instanceof List<?>)
       return eV((List<SV>) x);
     if (x instanceof BS) 
@@ -107,9 +107,9 @@ public class Escape {
     if (PT.isAP(x))
       return eAP((P3[]) x);
     if (x instanceof M3) 
-      return PT.simpleReplace(((M3) x).toString(), "\t", ",\t");
+      return PT.rep(((M3) x).toString(), "\t", ",\t");
     if (x instanceof M4) 
-      return PT.simpleReplace(((M4) x).toString(), "\t", ",\t");
+      return PT.rep(((M4) x).toString(), "\t", ",\t");
     if (x instanceof A4) {
       A4 a = (A4) x;
       return "{" + a.x + " " + a.y + " " + a.z + " " + (float) (a.angle * 180d/Math.PI) + "}";
@@ -121,47 +121,9 @@ public class Escape {
     return x.toString();
   }
 
-  private final static String escapable = "\\\\\tt\rr\nn\"\""; 
-
-  public static String eS(String str) {
-    if (str == null || str.length() == 0)
-      return "\"\"";
-    boolean haveEscape = false;
-    int i = 0;
-    for (; i < escapable.length(); i += 2)
-      if (str.indexOf(escapable.charAt(i)) >= 0) {
-        haveEscape = true;
-        break;
-      }
-    if (haveEscape)
-      while (i < escapable.length()) {
-        int pt = -1;
-        char ch = escapable.charAt(i++);
-        char ch2 = escapable.charAt(i++);
-        SB sb = new SB();
-        int pt0 = 0;
-        while ((pt = str.indexOf(ch, pt + 1)) >= 0) {
-          sb.append(str.substring(pt0, pt)).appendC('\\').appendC(ch2);
-          pt0 = pt + 1;
-        }
-        sb.append(str.substring(pt0, str.length()));
-        str = sb.toString();
-      }
-    for (i = str.length(); --i >= 0;)
-      if (str.charAt(i) > 0x7F)
-        str = str.substring(0, i) + unicode(str.charAt(i))
-            + str.substring(i + 1);
-    return "\"" + str + "\"";
-  }
-
-  private static String unicode(char c) {
-    String s = "0000" + Integer.toHexString(c);
-    return "\\u" + s.substring(s.length() - 4);
-  }
-
   public static String eV(List<SV> list) {
     if (list == null)
-      return eS("");
+      return PT.esc("");
     SB s = new SB();
     s.append("[");
     for (int i = 0; i < list.size(); i++) {
@@ -179,7 +141,7 @@ public class Escape {
     String sep = "";
     for (Map.Entry<String, Object> entry : ht.entrySet()) {
       String key = entry.getKey();
-      sb.append(sep).append(eS(key)).appendC(':');
+      sb.append(sep).append(PT.esc(key)).appendC(':');
       Object val = entry.getValue();
       if (!(val instanceof SV))
         val = SV.getVariable(val);
@@ -251,13 +213,13 @@ public class Escape {
    */
   public static String eAS(String[] list, boolean nicely) {
     if (list == null)
-      return eS("");
+      return PT.esc("");
     SB s = new SB();
     s.append("[");
     for (int i = 0; i < list.length; i++) {
       if (i > 0)
         s.append(", ");
-      s.append(nicely ? escapeNice(list[i]) : eS(list[i]));
+      s.append(nicely ? escapeNice(list[i]) : PT.esc(list[i]));
     }
     s.append("]");
     return s.toString();
@@ -265,7 +227,7 @@ public class Escape {
 
   public static String eAI(int[] ilist) {
     if (ilist == null)
-      return eS("");
+      return PT.esc("");
     SB s = new SB();
     s.append("[");
     for (int i = 0; i < ilist.length; i++) {
@@ -279,7 +241,7 @@ public class Escape {
   public static String eAD(double[] dlist) {
     // from isosurface area or volume calc
     if (dlist == null)
-      return eS("");
+      return PT.esc("");
     SB s = new SB();
     s.append("[");
     for (int i = 0; i < dlist.length; i++) {
@@ -292,7 +254,7 @@ public class Escape {
 
   public static String eAF(float[] flist) {
     if (flist == null)
-      return eS("");
+      return PT.esc("");
     SB s = new SB();
     s.append("[");
     for (int i = 0; i < flist.length; i++) {
@@ -305,7 +267,7 @@ public class Escape {
 
   public static String eAP(T3[] plist) {
     if (plist == null)
-      return eS("");
+      return PT.esc("");
     SB s = new SB();
     s.append("[");
     for (int i = 0; i < plist.length; i++) {
@@ -320,7 +282,7 @@ public class Escape {
     if (s == null)
       return "null";
     float f = PT.parseFloatStrict(s);
-    return (Float.isNaN(f) ? eS(s) : s);
+    return (Float.isNaN(f) ? PT.esc(s) : s);
   }
 
   public static Object uABsM(String s) {
@@ -508,12 +470,12 @@ public class Escape {
     if (info == null)
       return "null";
     if (info instanceof String)
-      return packageReadable(name, null, eS((String) info));
+      return packageReadable(name, null, PT.esc((String) info));
     if (PT.isAS(info)) {
       sb.append("[");
       int imax = ((String[]) info).length;
       for (int i = 0; i < imax; i++) {
-        sb.append(sep).append(eS(((String[]) info)[i]));
+        sb.append(sep).append(PT.esc(((String[]) info)[i]));
         sep = ",";
       }
       sb.append("]");
@@ -715,7 +677,7 @@ public class Escape {
       String s = PT.getQuotedStringNext(data, next);
       if (s == null)
         return null;
-      v.addLast(PT.simpleReplace(s, "\\\"", "\""));      
+      v.addLast(PT.rep(s, "\\\"", "\""));      
       while (next[0] < data.length() && data.charAt(next[0]) != '"')
         next[0]++;
     }    

@@ -68,7 +68,7 @@ class FileLoadThread extends JmolThread {
         /**
          * @j2sNative
          * 
-         * return Jmol._loadFileAsynchronously(this, this.viewer.applet, this.fileName);
+         * return Jmol._loadFileAsynchronously(this, this.viewer.applet, this.fileName, null);
          * 
          */
         {
@@ -86,9 +86,10 @@ class FileLoadThread extends JmolThread {
    * 
    * @param fileName
    * @param data
+   * @param myData unused in Jmol
    * @throws InterruptedException
    */
-  void setData(String fileName, Object data) throws InterruptedException {
+  void setData(String fileName, Object data, Object myData) throws InterruptedException {
     if (fileName != null)
       sc.parentContext.htFileCache.put(key, cacheName = cacheName.substring(0, 
           cacheName.lastIndexOf("_") + 1) + fileName);

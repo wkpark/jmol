@@ -351,7 +351,7 @@ class SymmetryOperation extends M4 {
     xyz += ",";
     if (modDim > 0)
       for (int i = modDim + 3; --i >= 0;)
-        xyz = PT.simpleReplace(xyz, labelsXn[i], labelsXnSub[i]);
+        xyz = PT.rep(xyz, labelsXn[i], labelsXnSub[i]);
     int tpt0 = 0;
     int rowPt = 0;
     char ch;
@@ -1330,7 +1330,7 @@ class SymmetryOperation extends M4 {
       }
       s += xyzFraction((int) (va[i][0] * (is12ths ? 1 : 12)), false, true);
     }
-    return PT.simpleReplace(s.substring(1), ",+", ",");
+    return PT.rep(s.substring(1), ",+", ",");
   }
 
   @Override

@@ -35,8 +35,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import javajs.util.PT;
 
-import org.jmol.util.Escape;
+
 
 /**
  * This class is used to transfer text or an image into the clipboard and to get tet from the clipboard.
@@ -127,14 +128,14 @@ public class AwtClipboard implements Transferable {
           return null;
         if (length == 1) {
           result = "LoAd "
-              + Escape.eS(fileList.get(0).getAbsolutePath().replace('\\', '/'));
+              + PT.esc(fileList.get(0).getAbsolutePath().replace('\\', '/'));
           if (result.endsWith(".pse\""))
             result += " filter 'DORESIZE'";
         } else {
           result = "LoAd files ";
           for (int i = 0; i < length; i++)
             result += " "
-                + Escape.eS(fileList.get(i).getAbsolutePath()
+                + PT.esc(fileList.get(i).getAbsolutePath()
                     .replace('\\', '/'));
         }
       }

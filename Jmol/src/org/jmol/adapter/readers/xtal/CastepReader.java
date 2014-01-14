@@ -120,11 +120,11 @@ public class CastepReader extends AtomSetCollectionReader {
       if (chargeType != null && chargeType.length() > 4)
         chargeType = chargeType.substring(0, 4);
       filter = filter.replace('(', '{').replace(')', '}');
-      filter = PT.simpleReplace(filter, "  ", " ");
+      filter = PT.rep(filter, "  ", " ");
       isAllQ = checkFilterKey("Q=ALL");
       if (!isAllQ && filter.indexOf("{") >= 0)
         setDesiredQpt(filter.substring(filter.indexOf("{")));
-      filter = PT.simpleReplace(filter, "-PT", "");
+      filter = PT.rep(filter, "-PT", "");
     }
     continuing = readFileData();
   }

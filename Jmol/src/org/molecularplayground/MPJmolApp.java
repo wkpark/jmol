@@ -146,7 +146,7 @@ public class MPJmolApp implements JsonNioClient {
       Logger.info(script);
       if (script.indexOf("java.io") >= 0)
         script = "";
-      String s = PT.simpleReplace(script.toLowerCase(), " ", "");
+      String s = PT.rep(script.toLowerCase(), " ", "");
       if (s.indexOf("niocontentpath=") < 0) {
         String path = System.getProperty("user.dir").replace('\\', '/')
         + "/Content-Cache/%ID%/%ID%.json";

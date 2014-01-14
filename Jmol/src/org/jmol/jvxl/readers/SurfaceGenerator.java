@@ -347,7 +347,7 @@ public class SurfaceGenerator {
         params.script = (String) value;
         if (params.script != null && params.script.indexOf(";#") >= 0) {
           // crude hack for ScriptEvaluator messing up
-          params.script = PT.simpleReplace(params.script, ";#", "; #");
+          params.script = PT.rep(params.script, ";#", "; #");
         }
       }
       return false; // more to do

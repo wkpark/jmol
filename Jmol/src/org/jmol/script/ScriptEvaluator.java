@@ -590,9 +590,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     try {
       s = script.substring(ichBegin, ichEnd);
       if (s.indexOf("\\\n") >= 0)
-        s = PT.simpleReplace(s, "\\\n", "  ");
+        s = PT.rep(s, "\\\n", "  ");
       if (s.indexOf("\\\r") >= 0)
-        s = PT.simpleReplace(s, "\\\r", "  ");
+        s = PT.rep(s, "\\\r", "  ");
       // int i;
       // for (i = s.length(); --i >= 0 && !ScriptCompiler.eol(s.charAt(i), 0);
       // ){
@@ -701,7 +701,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       pushContext(null, "getAtomBitSet");
       String scr = "select (" + atomExpression + ")";
       scr = PT.replaceAllCharacters(scr, "\n\r", "),(");
-      scr = PT.simpleReplace(scr, "()", "(none)");
+      scr = PT.rep(scr, "()", "(none)");
       if (compileScript(null, scr, false)) {
         st = aatoken[0];
         bs = atomExpression(st, 1, 0, false, false, true, true);
@@ -1891,9 +1891,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       // we first check for paths into ZIP files and adjust accordingly
       int pt = Math.max(filename.lastIndexOf("|"), filename.lastIndexOf("/"));
       path = path.substring(0, pt + 1);
-      strScript = PT.simpleReplace(strScript, "$SCRIPT_PATH$/", path);
+      strScript = PT.rep(strScript, "$SCRIPT_PATH$/", path);
       // now replace the variable itself
-      strScript = PT.simpleReplace(strScript, "$SCRIPT_PATH$", path);
+      strScript = PT.rep(strScript, "$SCRIPT_PATH$", path);
     }
     return strScript;
   }
@@ -3095,13 +3095,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (value != null)
         msg += ": " + value;
     } else {
-      msg = PT.simpleReplace(msg, "{0}", value);
+      msg = PT.rep(msg, "{0}", value);
       if (msg.indexOf("{1}") >= 0)
-        msg = PT.simpleReplace(msg, "{1}", more);
+        msg = PT.rep(msg, "{1}", more);
       else if (more != null)
         msg += ": " + more;
       if (msg.indexOf("{2}") >= 0)
-        msg = PT.simpleReplace(msg, "{2}", more);
+        msg = PT.rep(msg, "{2}", more);
     }
     if (doTranslate)
       GT.setDoTranslate(true);
@@ -7756,7 +7756,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         isData = true;
         loadScript.append(" /*data*/ data");
         String key = stringParameter(++i).toLowerCase();
-        loadScript.append(" ").append(Escape.eS(key));
+        loadScript.append(" ").append(PT.esc(key));
         isAppend = key.startsWith("append");
         String strModel = (key.indexOf("@") >= 0 ? ""
             + getParameter(key.substring(key.indexOf("@") + 1), T.string)
@@ -7768,7 +7768,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         loadScript.appendC('\n');
         loadScript.append(strModel);
         if (key.indexOf("@") < 0) {
-          loadScript.append(" end ").append(Escape.eS(key));
+          loadScript.append(" end ").append(PT.esc(key));
           i += 2; // skip END "key"
         }
         break;
@@ -7911,7 +7911,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       }
       if (filenames != null)
         for (int j = 0; j < nFiles; j++)
-          loadScript.append(" /*file*/").append(Escape.eS(filenames[j]));
+          loadScript.append(" /*file*/").append(PT.esc(filenames[j]));
     } else if (getToken(i + 1).tok == T.manifest
         // model/vibration index or list of model indices
         || theTok == T.integer || theTok == T.varray || theTok == T.leftsquare
@@ -7965,7 +7965,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if ((tok = tokAt(i)) == T.manifest) {
         String manifest = stringParameter(++i);
         htParams.put("manifest", manifest);
-        sOptions += " MANIFEST " + Escape.eS(manifest);
+        sOptions += " MANIFEST " + PT.esc(manifest);
         tok = tokAt(++i);
       }
       // n >= 0: model number
@@ -8104,9 +8104,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         int iGroup = Integer.MIN_VALUE;
         if (tokAt(i) == T.spacegroup) {
           ++i;
-          spacegroup = PT.simpleReplace(parameterAsString(i++), "''",
+          spacegroup = PT.rep(parameterAsString(i++), "''",
               "\"");
-          sOptions += " spacegroup " + Escape.eS(spacegroup);
+          sOptions += " spacegroup " + PT.esc(spacegroup);
           if (spacegroup.equalsIgnoreCase("ignoreOperators")) {
             iGroup = -999;
           } else {
@@ -8279,7 +8279,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       htParams.put("filter", filter);
       if (filter.equalsIgnoreCase("2d")) // MOL file hack
         filter = "2D-noMin";
-      sOptions += " FILTER " + Escape.eS(filter);
+      sOptions += " FILTER " + PT.esc(filter);
     }
 
     // store inline data or variable data in htParams
@@ -8293,7 +8293,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         String s = getStringParameter(filename.substring(1), false);
         htParams.put("fileData", s);
         loadScript = new SB().append("{\n    var ").append(
-            filename.substring(1)).append(" = ").append(Escape.eS(s)).append(
+            filename.substring(1)).append(" = ").append(PT.esc(s)).append(
             ";\n    ").appendSB(loadScript);
       } else if (filename.startsWith("?") && viewer.isJS) {
         localName = null;
@@ -8326,13 +8326,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       // a single file or string -- complete the loadScript
       loadScript.append(" ");
       if (isVariable || isInline) {
-        loadScript.append(Escape.eS(filename));
+        loadScript.append(PT.esc(filename));
       } else if (!isData) {
         if (!filename.equals("string") && !filename.equals("string[]"))
           loadScript.append("/*file*/");
         if (localName != null)
           localName = viewer.getFilePath(localName, false);
-        loadScript.append((localName != null ? Escape.eS(localName)
+        loadScript.append((localName != null ? PT.esc(localName)
             : "$FILENAME$"));
       }
       if (sOptions.length() > 0)

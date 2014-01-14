@@ -14,7 +14,6 @@ import org.jmol.i18n.GT;
 import org.jmol.io.JmolBinary;
 import org.jmol.java.BS;
 import org.jmol.script.T;
-import org.jmol.util.Escape;
 
 import javajs.util.OC;
 import javajs.util.List;
@@ -147,7 +146,7 @@ abstract class OutputManager {
       Object stateData = null;
       params.put("date", viewer.apiPlatform.getDateFormat(false));
       if (type.startsWith("JP")) {
-        type = PT.simpleReplace(type, "E", "");
+        type = PT.rep(type, "E", "");
         if (type.equals("JPG64")) {
           params.put("outputChannelTemp", getOutputChannel(null, null));
           comment = "";
@@ -495,9 +494,9 @@ abstract class OutputManager {
   private String getOutputFileNameFromDialog(String fileName, int quality) {
     if (fileName == null || viewer.isKiosk)
       return null;
-    boolean useDialog = (fileName.indexOf("?") == 0);
+    boolean useDialog = fileName.startsWith("?");
     if (useDialog)
-      fileName = fileName.substring(1);
+    	fileName = fileName.substring(1);
     useDialog |= viewer.isApplet() && (fileName.indexOf("http:") < 0);
     fileName = FileManager.getLocalPathForWritingFile(viewer, fileName);
     if (useDialog)
@@ -714,7 +713,7 @@ abstract class OutputManager {
     try {
       boolean doClear = (data.equals("$CLEAR$"));
       if (data.indexOf("$NOW$") >= 0)
-        data = PT.simpleReplace(data, "$NOW$", viewer.apiPlatform
+        data = PT.rep(data, "$NOW$", viewer.apiPlatform
             .getDateFormat(false));
       if (viewer.logFileName == null) {
         Logger.info(data);
@@ -758,7 +757,7 @@ abstract class OutputManager {
      }
      boolean haveScripts = (!haveSceneScript && scripts != null && scripts.length > 0);
      if (haveScripts) {
-       script = wrapPathForAllFiles("script " + Escape.eS(scripts[0]), "");
+       script = wrapPathForAllFiles("script " + PT.esc(scripts[0]), "");
        for (int i = 0; i < scripts.length; i++)
          fileNames.addLast(scripts[i]);
      }

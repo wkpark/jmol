@@ -378,7 +378,7 @@ public class FileManager implements BytePoster {
             return errMsg[0];
           if (isPngjBinaryPost) {
             outputBytes = bytes;
-            name = PT.simpleReplace(name, "?_", "=_");
+            name = PT.rep(name, "?_", "=_");
           } else {
             name = new SB().append(name).append("=").appendSB(
                 Base64.getBase64(bytes)).toString();
@@ -929,8 +929,8 @@ public class FileManager implements BytePoster {
     if (name == null)
       return new String[] { null };
     boolean doSetPathForAllFiles = (pathForAllFiles.length() > 0);
-    if (name.startsWith("?")) {
-      if ((name = viewer.dialogAsk("Load", name.substring(1))) == null)
+    if (name.startsWith("?") || name.startsWith("http://?")) {
+      if ((name = viewer.dialogAsk("Load", name)) == null)
         return new String[] { isFullLoad ? "#CANCELED#" : null };
       doSetPathForAllFiles = false;
     }
@@ -1023,7 +1023,7 @@ public class FileManager implements BytePoster {
 
   private static String fixPath(String path) {
     path = path.replace('\\', '/');
-    path = PT.simpleReplace(path, "/./", "/");
+    path = PT.rep(path, "/./", "/");
     int pt = path.lastIndexOf("//") + 1;
     if (pt < 1)
       pt = path.indexOf(":/") + 1;
@@ -1037,7 +1037,7 @@ public class FileManager implements BytePoster {
     while ((pt = path.lastIndexOf("/../")) >= 0) {
       int pt0 = path.substring(0, pt).lastIndexOf("/");
       if (pt0 < 0)
-        return PT.simpleReplace(protocol + path, "/../", "/");
+        return PT.rep(protocol + path, "/../", "/");
       path = path.substring(0, pt0) + path.substring(pt + 3);
     }
     if (path.length() == 0)
@@ -1104,6 +1104,7 @@ public class FileManager implements BytePoster {
   }
 
   public static String getLocalPathForWritingFile(Viewer viewer, String file) {
+    file = PT.rep(file, "?", "");
     if (file.indexOf("file:/") == 0)
       return file.substring(6);
     if (file.indexOf("/") == 0 || file.indexOf(":") >= 0)
@@ -1124,13 +1125,13 @@ public class FileManager implements BytePoster {
       script = setScriptFileRefs(script, localPath, true);
     if (remotePath != null)
       script = setScriptFileRefs(script, remotePath, false);
-    script = PT.simpleReplace(script, "\1\"", "\"");
+    script = PT.rep(script, "\1\"", "\"");
     if (scriptPath != null) {
       while (scriptPath.endsWith("/"))
         scriptPath = scriptPath.substring(0, scriptPath.length() - 1);
       for (int ipt = 0; ipt < scriptFilePrefixes.length; ipt++) {
         String tag = scriptFilePrefixes[ipt];
-        script = PT.simpleReplace(script, tag + ".", tag + scriptPath);
+        script = PT.rep(script, tag + ".", tag + scriptPath);
       }
     }
     return script;
@@ -1191,13 +1192,13 @@ public class FileManager implements BytePoster {
   }
 
   public static String fixFileNameVariables(String format, String fname) {
-    String str = PT.simpleReplace(format, "%FILE", fname);
+    String str = PT.rep(format, "%FILE", fname);
     if (str.indexOf("%LC") < 0)
       return str;
     fname = fname.toLowerCase();
-    str = PT.simpleReplace(str, "%LCFILE", fname);
+    str = PT.rep(str, "%LCFILE", fname);
     if (fname.length() == 4)
-      str = PT.simpleReplace(str, "%LC13", fname.substring(1, 3));
+      str = PT.rep(str, "%LC13", fname.substring(1, 3));
     return str;
   }
 

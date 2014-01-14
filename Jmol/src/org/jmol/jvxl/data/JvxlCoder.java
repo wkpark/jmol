@@ -204,7 +204,7 @@ public class JvxlCoder {
     int r = (int) (jvxlData.nBytes > 0 ? ((float) jvxlData.nBytes) / len
         : ((float) (jvxlData.nPointsX
           * jvxlData.nPointsY * jvxlData.nPointsZ * 13)) / len);
-    return PT.simpleReplace(s, "\"not calculated\"", (r > 0 ? "\"" + r +":1\"": "\"?\""));
+    return PT.rep(s, "\"not calculated\"", (r > 0 ? "\"" + r +":1\"": "\"?\""));
   }
 
   private static void appendXmlEdgeData(SB sb, JvxlData jvxlData) {

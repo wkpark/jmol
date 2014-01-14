@@ -38,7 +38,6 @@ import org.jmol.api.JmolScriptManager;
 import org.jmol.io.JmolBinary;
 import org.jmol.java.BS;
 import org.jmol.thread.JmolThread;
-import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.StatusManager;
@@ -533,7 +532,7 @@ public class ScriptManager implements JmolScriptManager {
       fileName = "file://" + (fileName.startsWith("/") ? "" : "/") + fileName;
     try {
       if (fileName.endsWith(".pse")) {
-        cmd = (isCached ? "" : "zap;") + "load SYNC " + Escape.eS(fileName)
+        cmd = (isCached ? "" : "zap;") + "load SYNC " + PT.esc(fileName)
             + " filter 'DORESIZE'";
         return;
       }
@@ -548,9 +547,9 @@ public class ScriptManager implements JmolScriptManager {
               .getBufferedInputStream(fileName));
           if (type != null)
             cmd = "if (_filetype == 'Pdb') { isosurface sigma 1.0 within 2.0 {*} "
-                + Escape.eS(fileName)
+                + PT.esc(fileName)
                 + " mesh nofill }; else; { isosurface "
-                + Escape.eS(fileName) + "}";
+                + PT.esc(fileName) + "}";
           return;
         } else if (type.equals("Jmol")) {
           cmd = "script ";
@@ -558,8 +557,8 @@ public class ScriptManager implements JmolScriptManager {
           cmd = "isosurface sign red blue ";
         } else if (!type.equals("spt")) {
           cmd = viewer.global.defaultDropScript;
-          cmd = PT.simpleReplace(cmd, "%FILE", fileName);
-          cmd = PT.simpleReplace(cmd, "%ALLOWCARTOONS", ""
+          cmd = PT.rep(cmd, "%FILE", fileName);
+          cmd = PT.rep(cmd, "%ALLOWCARTOONS", ""
               + pdbCartoons);
           if (cmd.toLowerCase().startsWith("zap") && isCached)
             cmd = cmd.substring(3);
@@ -570,7 +569,7 @@ public class ScriptManager implements JmolScriptManager {
         viewer.showEditor(new String[] { fileName,
             viewer.getFileAsString(fileName) });
       else
-        cmd = (cmd == null ? "script " : cmd) + Escape.eS(fileName);
+        cmd = (cmd == null ? "script " : cmd) + PT.esc(fileName);
     } finally {
       if (cmd != null)
         viewer.evalString(cmd);

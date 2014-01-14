@@ -37,9 +37,9 @@ import java.util.Map;
 
 
 import org.jmol.java.BS;
-import org.jmol.util.Escape;
 import org.jmol.util.GData;
 import javajs.util.P3;
+import javajs.util.PT;
 import javajs.util.V3;
 import org.jmol.viewer.Viewer;
 
@@ -60,7 +60,7 @@ public class _X3dExporter extends _VrmlExporter {
         + "\n");
     output("<head>\n");
     output("<meta name='title' content="
-        + Escape.eS(viewer.getModelSetName()).replace('<', ' ').replace('>',
+        + PT.esc(viewer.getModelSetName()).replace('<', ' ').replace('>',
             ' ').replace('&', ' ') + "/>\n");
     output("<meta name='description' content='Jmol rendering'/>\n");
     output("<meta name='creator' content=' '/>\n");
@@ -426,7 +426,7 @@ public class _X3dExporter extends _VrmlExporter {
         + "<Transform translation='0.0 0.0 0.0'>"
         + "<Shape>");
       outputAppearance(colix, true);
-      output("<Text string=" + Escape.eS(text) + ">");
+      output("<Text string=" + PT.esc(text) + ">");
       output("<FontStyle ");
       String fontstyle = useTable.getDef("F" + useFontFace + useFontStyle);
       if (fontstyle.charAt(0) == '_') {

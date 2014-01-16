@@ -829,7 +829,7 @@ public class PT {
       /**
        * @j2sNative
        *            s = info.toString();
-       *            if (s.equals("[object Array]"))
+       *            if (s.startsWith("[object")&&s.endsWith("Array]"))
        *              s = null;
        */
       {

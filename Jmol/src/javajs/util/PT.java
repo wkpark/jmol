@@ -826,15 +826,7 @@ public class PT {
         sb.appendC(']');
         break;
       }
-      /**
-       * @j2sNative
-       *    s = info.toString();
-       *    if (s.startsWith("[object")&&s.endsWith("Array]"))
-       *      s = null;
-       */
-      {
-        s = nonArrayString(info);
-      }
+      s = nonArrayString(info);
       if (s == null) {
         sb.append("[");
         int n = AU.getLength(info);
@@ -852,9 +844,8 @@ public class PT {
   }
 
   /**
-   * Checks to see if an object is an array, and if it is,
-   * returns null; otherwise it returns the string equivalent
-   * of that object.
+   * Checks to see if an object is an array, and if it is, returns null;
+   * otherwise it returns the string equivalent of that object.
    * 
    * @param x
    * @return String or null
@@ -863,17 +854,17 @@ public class PT {
     /**
      * @j2sNative
      * 
-     * var s = x.toString();
-     * return (s == "[object Array]" ? null : s);
+     *            var s = info.toString(); return (s.startsWith("[object") &&
+     *            s.endsWith("Array]") ? null : s);
      * 
      */
     {
-    try {
-      Array.getLength(x);
-      return null;
-    } catch (Exception e) {
-      return x.toString();
-    }
+      try {
+        Array.getLength(x);
+        return null;
+      } catch (Exception e) {
+        return x.toString();
+      }
     }
   }
   

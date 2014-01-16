@@ -80,11 +80,13 @@ public class Escape {
   public static String eP4(P4 x) {
     return "{" + x.x + " " + x.y + " " + x.z + " " + x.w + "}";
   }
-  
+
   @SuppressWarnings("unchecked")
   public static String e(Object x) {
     if (x == null)
       return "null";
+    if (PT.isNonStringPrimitive(x))
+      return x.toString();
     if (x instanceof String)
       return PT.esc((String) x);
     if (x instanceof List<?>)
@@ -107,9 +109,8 @@ public class Escape {
       A4 a = (A4) x;
       return "{" + a.x + " " + a.y + " " + a.z + " " + (float) (a.angle * 180d/Math.PI) + "}";  
     } 
-    if (x instanceof Quaternion) {
+    if (x instanceof Quaternion)
       return ((Quaternion) x).toString();
-    }
     String s = PT.nonArrayString(x);
     return (s == null ? PT.toJSON(null, x) : s);
   }
@@ -469,7 +470,7 @@ public class Escape {
     String sep = "";
     if (info == null)
       return "null";
-    if (PT.isPrimitive(info))
+    if (PT.isNonStringPrimitive(info))
       return packageReadable(name, null, info.toString());
     if (info instanceof String)
       return packageReadable(name, null, PT.esc((String) info));

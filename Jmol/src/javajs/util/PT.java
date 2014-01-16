@@ -718,27 +718,35 @@ public class PT {
         : value);
   }
 
-  public static boolean isPrimitive(Object info) {
-    /**
-     * @j2sNative
-     * 
-     * switch(typeof info) {
-     * case "number":
-     * case "boolean":
-     *   return true;
-     * }
-     */
-    {}
-     
-    return info instanceof Integer || info instanceof Float 
-        || info instanceof Double ||info instanceof Boolean;
+  public static boolean isNonStringPrimitive(Object info) {
+    // note that we don't use Double, Float, or Integer here
+    // because in JavaScript those would be false for unwrapped primitives
+    // coming from equivalent of Array.get()
+    // Strings will need their own escaped processing
+    
+    return info instanceof Number || info instanceof Boolean;
   }
 
+  private static Object arrayGet(Object info, int i) {
+    /**
+     * 
+     * Note that o will be a primitive in JavaScript
+     * but a wrapped primitive in Java.
+     * 
+     * @j2sNative
+     * 
+     *            return info[i];
+     */
+    {
+      return Array.get(info, i);
+    }
+  }
+  
   @SuppressWarnings("unchecked")
   public static String toJSON(String infoType, Object info) {
     if (info == null)
       return packageJSON(infoType, null);
-    if (isPrimitive(info))
+    if (isNonStringPrimitive(info))
       return packageJSON(infoType, info.toString());
     String s = null;
     SB sb = null;
@@ -818,32 +826,22 @@ public class PT {
         sb.appendC(']');
         break;
       }
-      int n = -1;
       /**
        * @j2sNative
        *            s = info.toString();
-       *            s.equals("[object Array]") && ((n = s.length) || (s = null));
+       *            if (s.equals("[object Array]")
+       *              s = null;
        */
       {
         s = nonArrayString(info);
-        if (s == null)
-          n = Array.getLength(info);
       }
-      if (n >= 0) {
+      if (s == null) {
         sb.append("[");
-        Object o;
+        int n = AU.getLength(info);
         for (int i = 0; i < n; i++) {
           if (i > 0)
             sb.appendC(',');
-          /**
-           * @j2sNative
-           * 
-           *            o = info[i];
-           */
-          {
-            o = Array.get(info, i);
-          }
-          sb.append(toJSON(null, o));
+          sb.append(toJSON(null, arrayGet(info, i)));
         }
         sb.append("]");
         break;
@@ -853,6 +851,14 @@ public class PT {
     return packageJSON(infoType, (s == null ? sb.toString() : s));
   }
 
+  /**
+   * Checks to see if an object is an array, and if it is,
+   * returns null; otherwise it returns the string equivalent
+   * of that object.
+   * 
+   * @param x
+   * @return String or null
+   */
   public static String nonArrayString(Object x) {
     /**
      * @j2sNative
@@ -870,7 +876,7 @@ public class PT {
     }
     }
   }
-
+  
   public static String packageJSON(String infoType, String info) {
     return (infoType == null ? info : "\"" + infoType + "\": " + info);
   }

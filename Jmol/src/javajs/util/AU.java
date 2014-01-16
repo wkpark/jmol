@@ -176,7 +176,7 @@ final public class AU {
     }
   }
 
-  private static int getLength(Object array) {
+  public static int getLength(Object array) {
     /**
      * @j2sNative
      * 

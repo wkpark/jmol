@@ -719,6 +719,17 @@ public class PT {
   }
 
   public static boolean isPrimitive(Object info) {
+    /**
+     * @j2sNative
+     * 
+     * switch(typeof info) {
+     * case "number":
+     * case "boolean":
+     *   return true;
+     * }
+     */
+    {}
+     
     return info instanceof Integer || info instanceof Float 
         || info instanceof Double ||info instanceof Boolean;
   }

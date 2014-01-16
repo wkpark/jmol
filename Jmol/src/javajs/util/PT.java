@@ -730,7 +730,7 @@ public class PT {
   private static Object arrayGet(Object info, int i) {
     /**
      * 
-     * Note that o will be a primitive in JavaScript
+     * Note that info will be a primitive in JavaScript
      * but a wrapped primitive in Java.
      * 
      * @j2sNative
@@ -829,7 +829,7 @@ public class PT {
       /**
        * @j2sNative
        *            s = info.toString();
-       *            if (s.equals("[object Array]")
+       *            if (s.equals("[object Array]"))
        *              s = null;
        */
       {

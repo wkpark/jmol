@@ -471,7 +471,7 @@ public class PropertyManager implements JmolPropertyManager {
         returnType = "string";
       String type = "JPG";
       if (params.indexOf("type=") >= 0)
-        type = PT.getTokens(PT.replaceAllCharacter(params.substring(params.indexOf("type=") + 5), ";,", ' '))[0];
+        type = PT.getTokens(PT.replaceWithCharacter(params.substring(params.indexOf("type=") + 5), ";,", ' '))[0];
       String[] errMsg = new String[1];
       byte[] bytes = viewer.getImageAsBytes(type.toUpperCase(), width,  height, -1, errMsg);
       return (errMsg[0] != null ? errMsg[0] : returnType == null ? bytes : Base64

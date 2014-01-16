@@ -38,7 +38,6 @@ import javajs.util.P3;
 import javajs.util.P4;
 import javajs.util.T3;
 
-
 import org.jmol.java.BS;
 import org.jmol.script.SV;
 
@@ -90,6 +89,8 @@ public class Escape {
       return PT.esc((String) x);
     if (x instanceof List<?>)
       return eV((List<SV>) x);
+    if (x instanceof Map)
+      return escapeMap((Map<String, Object>) x);
     if (x instanceof BS) 
       return eBS((BS) x);
     if (x instanceof T3)
@@ -98,27 +99,19 @@ public class Escape {
       return eP4((P4) x);
     if (PT.isAS(x))
       return eAS((String[]) x, true);
-    if (PT.isAI(x))
-      return eAI((int[]) x);
-    if (PT.isAF(x))
-      return eAF((float[]) x);
-    if (PT.isAD(x))
-      return eAD((double[]) x);
-    if (PT.isAP(x))
-      return eAP((P3[]) x);
     if (x instanceof M3) 
       return PT.rep(((M3) x).toString(), "\t", ",\t");
     if (x instanceof M4) 
       return PT.rep(((M4) x).toString(), "\t", ",\t");
     if (x instanceof A4) {
       A4 a = (A4) x;
-      return "{" + a.x + " " + a.y + " " + a.z + " " + (float) (a.angle * 180d/Math.PI) + "}";
-    }    
-    if (x instanceof Map)
-      return escapeMap((Map<String, Object>) x);
-    if (PT.isAII(x) || PT.isAFF(x) || PT.isADD(x) || PT.isAFFF(x)) 
-      return PT.toJSON(null, x);
-    return x.toString();
+      return "{" + a.x + " " + a.y + " " + a.z + " " + (float) (a.angle * 180d/Math.PI) + "}";  
+    } 
+    if (x instanceof Quaternion) {
+      return ((Quaternion) x).toString();
+    }
+    String s = PT.nonArrayString(x);
+    return (s == null ? PT.toJSON(null, x) : s);
   }
 
   public static String eV(List<SV> list) {
@@ -464,13 +457,24 @@ public class Escape {
     return s.toString();
   }
 
+  /**
+   * Used only for getProperty("readable",...)
+   * 
+   * @param name
+   * @param info
+   * @return tabular listing, with array types
+   */
   public static String toReadable(String name, Object info) {
     SB sb =new SB();
     String sep = "";
     if (info == null)
       return "null";
+    if (PT.isPrimitive(info))
+      return packageReadable(name, null, info.toString());
     if (info instanceof String)
       return packageReadable(name, null, PT.esc((String) info));
+    if (info instanceof SV)
+      return packageReadable(name, null, ((SV) info).escape());
     if (PT.isAS(info)) {
       sb.append("[");
       int imax = ((String[]) info).length;
@@ -584,7 +588,7 @@ public class Escape {
       }
       return sb.toString();
     }
-    return packageReadable(name, null, info.toString());
+    return packageReadable(name, null, PT.toJSON(null, info));
   }
 
   private static String packageReadableSb(String infoName, String infoType,
@@ -687,7 +691,7 @@ public class Escape {
   public static boolean isAV(Object x) {
     /**
      * @j2sNative
-     *  return Clazz.instanceOf(x[0], org.jmol.scriSV);
+     *  return Clazz.instanceOf(x[0], org.jmol.script.SV);
      */
     {
     return x instanceof SV[];

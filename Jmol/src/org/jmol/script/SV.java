@@ -49,6 +49,7 @@ import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.P4;
 import javajs.util.PT;
+import javajs.util.T3;
 
 import org.jmol.util.Quaternion;
 import org.jmol.util.Txt;
@@ -139,8 +140,7 @@ public class SV extends T implements JSONEncodable {
         || x instanceof Float
         || x instanceof Integer
         || x instanceof String
-        || x instanceof P3    // stored as point3f
-        || x instanceof V3   // stored as point3f
+        || x instanceof T3    // stored as point3f
         || x instanceof P4    // stored as point4f
         || x instanceof Quaternion // stored as point4f
         || x instanceof Map<?, ?>  // stored as Map<String, ScriptVariable>
@@ -220,9 +220,13 @@ public class SV extends T implements JSONEncodable {
       return getVariableAII((int[][]) x);
     if (PT.isAFF(x))
       return getVariableAFF((float[][]) x);
+    if (PT.isASS(x))
+      return getVariableASS((String[][]) x);
+    if (PT.isADD(x))
+      return getVariableADD((double[][]) x);
     if (PT.isAFloat(x))
       return newV(listf, x);
-    return newS(Escape.toReadable(null, x));
+    return newS(x.toString());
   }
 
   private static boolean isArray(Object x) {
@@ -242,6 +246,8 @@ public class SV extends T implements JSONEncodable {
           || x instanceof P3[]
           || x instanceof int[][] 
           || x instanceof float[][] 
+          || x instanceof String[][] 
+          || x instanceof double[][] 
           || x instanceof Float[];
     }
   }
@@ -257,12 +263,8 @@ public class SV extends T implements JSONEncodable {
     }
     if (!(o instanceof SV)) {
       Map<String, SV> x2 = new Hashtable<String, SV>();
-      for (Map.Entry<String, Object> entry : ht.entrySet()) {
-        String key = entry.getKey();
-        o = entry.getValue();
-        x2.put(key, isVariableType(o) ? getVariable(o) : newV(string,
-            Escape.toReadable(null, o)));
-      }
+      for (Map.Entry<String, Object> entry : ht.entrySet())
+        x2.put(entry.getKey(), getVariable(entry.getValue()));
       x = x2;
     }
     return newV(hash, x);
@@ -310,6 +312,20 @@ public class SV extends T implements JSONEncodable {
     List<SV> objects = new  List<SV>();
     for (int i = 0; i < fx.length; i++)
       objects.addLast(getVariableAF(fx[i]));
+    return newV(varray, objects);
+  }
+
+  static SV getVariableADD(double[][] fx) {
+    List<SV> objects = new  List<SV>();
+    for (int i = 0; i < fx.length; i++)
+      objects.addLast(getVariableAD(fx[i]));
+    return newV(varray, objects);
+  }
+
+  static SV getVariableASS(String[][] fx) {
+    List<SV> objects = new  List<SV>();
+    for (int i = 0; i < fx.length; i++)
+      objects.addLast(getVariableAS(fx[i]));
     return newV(varray, objects);
   }
 

@@ -1195,8 +1195,9 @@ public class ScriptMathProcessor {
       case T.integer:
         if (x2.tok == T.integer && x2.intValue != 0)
           return addXInt(x1.intValue / x2.intValue);
-        if (!isDecimal(x2))
-          return addXInt(x1.intValue / x2.asInt());
+        int n = (isDecimal(x2) ? x2.asInt() : 0);
+        if (n != 0)
+          return addXInt(x1.intValue / n);
         break;
       case T.string:
         int i2;

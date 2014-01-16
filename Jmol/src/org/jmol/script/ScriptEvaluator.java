@@ -4406,7 +4406,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     switch (tokAt(i)) {
     case T.string:
       s = SV.sValue(st[i]);
-      s = PT.replaceAllCharacter(s, "{},[]\"'", ' ');
+      s = PT.replaceWithCharacter(s, "{},[]\"'", ' ');
       fparams = PT.parseFloatArray(s);
       n = fparams.length;
       break;

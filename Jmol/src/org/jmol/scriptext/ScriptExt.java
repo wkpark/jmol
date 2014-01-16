@@ -2428,7 +2428,7 @@ public class ScriptExt implements JmolScriptExtension {
           invArg();
         // inline PMESH data
         if (isPmesh)
-          str = PT.replaceAllCharacter(str, "{,}|", ' ');
+          str = PT.replaceWithCharacter(str, "{,}|", ' ');
         if (eval.logMessages)
           Logger.debug("pmesh inline data:\n" + str);
         propertyValue = (chk ? null : str);

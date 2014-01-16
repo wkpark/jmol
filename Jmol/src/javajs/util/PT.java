@@ -828,9 +828,9 @@ public class PT {
       }
       /**
        * @j2sNative
-       *            s = info.toString();
-       *            if (s.startsWith("[object")&&s.endsWith("Array]"))
-       *              s = null;
+       *    s = info.toString();
+       *    if (s.startsWith("[object")&&s.endsWith("Array]"))
+       *      s = null;
        */
       {
         s = nonArrayString(info);

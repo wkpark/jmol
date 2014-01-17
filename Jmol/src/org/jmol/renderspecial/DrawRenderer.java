@@ -195,7 +195,7 @@ public class DrawRenderer extends MeshRenderer {
       vTemp2.cross(vTemp2, vTemp);
       vTemp2.normalize();
       vTemp2.scale(dmesh.scale / 2);
-      mat.transform(vTemp2);
+      mat.rotate(vTemp2);
       //control points
       float degrees = theta / 5;
       while (Math.abs(degrees) > 5)
@@ -215,7 +215,7 @@ public class DrawRenderer extends MeshRenderer {
         if (i == 0)
           pt2.setT(pt1);
         viewer.transformPtScr(pt1, screens[i]);
-        mat.transform(vTemp2);
+        mat.rotate(vTemp2);
       }
       if (dmesh.isVector && !dmesh.noHead) {
         renderArrowHead(pt0, pt1, 0.3f, false, false, dmesh.isBarb);

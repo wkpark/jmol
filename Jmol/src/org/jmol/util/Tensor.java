@@ -182,7 +182,7 @@ public class Tensor {
       for (int i = 0; i < 3; i++)
         for (int j = 0; j < 3; j++)
           a[pt++] = (float) asymMatrix[i][j];
-      return M3.newA(a);
+      return M3.newA9(a);
     case 4: 
       if (symMatrix == null)
         return null;
@@ -191,7 +191,7 @@ public class Tensor {
       for (int i = 0; i < 3; i++)
         for (int j = 0; j < 3; j++)
           b[p2++] = (float) symMatrix[i][j];
-      return M3.newA(b);
+      return M3.newA9(b);
     case 5: // value
       return Float.valueOf(eigenValues[2]);
     case 6: // isotropy
@@ -409,7 +409,7 @@ public class Tensor {
     V3 cross = new V3();
     for (int i = 0; i < 3; i++) {
       n.setT(evec[i]);
-      m.transform(n);
+      m.rotate(n);
       cross.cross(n, evec[i]);
       //Logger.info("v[i], n, n x v[i]"+ evec[i] + " " + n + " "  + cross);
       n.setT(evec[i]);

@@ -18,6 +18,8 @@ package javajs.util;
 
 import java.io.Serializable;
 
+import javajs.api.JSONEncodable;
+
 /**
  * A generic 3 element tuple that is represented by single precision floating
  * point x,y and z coordinates.
@@ -30,7 +32,7 @@ import java.io.Serializable;
  * for unique constructor and method names
  * for the optimization of compiled JavaScript using Java2Script
  */
-public abstract class T3 implements Serializable {
+public abstract class T3 implements JSONEncodable, Serializable {
 
   public float x, y, z;
 
@@ -301,5 +303,10 @@ public abstract class T3 implements Serializable {
   @Override
   public String toString() {
     return "(" + x + ", " + y + ", " + z + ")";
+  }
+  
+  @Override
+  public String toJSON() {
+    return "[" + x + "," + y + "," + z + "]";
   }
 }

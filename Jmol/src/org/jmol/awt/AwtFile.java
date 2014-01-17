@@ -71,7 +71,7 @@ class AwtFile extends File implements GenericFileInterface {
       }
       return new BufferedInputStream(conn.getInputStream());
     } catch (IOException e) {
-      return e.getMessage();
+      return e.toString();
     }
   }
 

@@ -85,8 +85,8 @@ class HallRotation {
       dataInv[ipt] = -value; 
       ipt++;
     }
-    seitzMatrix.setA(data, 0);
-    seitzMatrixInv.setA(dataInv, 0);
+    seitzMatrix.setA(data);
+    seitzMatrixInv.setA(dataInv);
   }
   
   final static HallRotation lookup(String code) {

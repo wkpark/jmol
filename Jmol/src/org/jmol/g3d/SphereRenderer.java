@@ -519,7 +519,7 @@ public class SphereRenderer {
           z0 = zPixel;
           if (checkOctant) {
             ptTemp.set(xCurrent - x, yCurrent - y, zPixel - z);
-            mat.transform(ptTemp);
+            mat.rotate(ptTemp);
             int thisOctant = GData.getScreenOctant(ptTemp);
             if (thisOctant == selectedOctant) {
               iShade = getPlaneShade(xCurrent, yCurrent, zroot);              

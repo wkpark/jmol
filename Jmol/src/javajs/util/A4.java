@@ -18,6 +18,7 @@ package javajs.util;
 
 import java.io.Serializable;
 
+import javajs.api.JSONEncodable;
 import javajs.util.T3;
 
 
@@ -35,7 +36,7 @@ import javajs.util.T3;
  * for unique constructor and method names
  * for the optimization of compiled JavaScript using Java2Script
  */
-public class A4 implements Serializable {
+public class A4 implements JSONEncodable, Serializable {
 
   /*
    * I assumed that the length of the axis vector is not significant.
@@ -198,14 +199,16 @@ public class A4 implements Serializable {
   }
 
   /**
-   * Returns a string that contains the values of this AxisAngle4f. The form is
-   * (x,y,z,angle).
-   * 
-   * @return the String representation
+   * Returns a hash number based on the data values in this object. Two
+   * different AxisAngle4f objects with identical data values (ie, returns true
+   * for equals(AxisAngle4f) ) will return the same hash number. Two vectors
+   * with different data members may return the same hash value, although this
+   * is not likely.
    */
   @Override
-  public String toString() {
-    return "(" + x + ", " + y + ", " + z + ", " + angle + ")";
+  public int hashCode() {
+    return T3.floatToIntBits0(x) ^ T3.floatToIntBits0(y)
+        ^ T3.floatToIntBits0(z) ^ T3.floatToIntBits0(angle);
   }
 
   /**
@@ -226,15 +229,18 @@ public class A4 implements Serializable {
   }
 
   /**
-   * Returns a hash number based on the data values in this object. Two
-   * different AxisAngle4f objects with identical data values (ie, returns true
-   * for equals(AxisAngle4f) ) will return the same hash number. Two vectors
-   * with different data members may return the same hash value, although this
-   * is not likely.
+   * Returns a string that contains the values of this AxisAngle4f. The form is
+   * (x,y,z,angle).
+   * 
+   * @return the String representation
    */
   @Override
-  public int hashCode() {
-    return T3.floatToIntBits0(x) ^ T3.floatToIntBits0(y)
-        ^ T3.floatToIntBits0(z) ^ T3.floatToIntBits0(angle);
+  public String toString() {
+    return "(" + x + ", " + y + ", " + z + ", " + angle + ")";
+  }
+
+  @Override
+  public String toJSON() {
+    return "[" + x + "," + y + "," + z + "," + (float) (angle * 180.0 / Math.PI) + "]";
   }
 }

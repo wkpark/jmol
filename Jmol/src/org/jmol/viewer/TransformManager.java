@@ -112,7 +112,7 @@ public class TransformManager {
     M3 m = (M3) viewer
         .getModelSetAuxiliaryInfoValue("defaultOrientationMatrix");
     if (m != null)
-      matrixRotate.setM(m);
+      matrixRotate.setM3(m);
     //}
     setZoomEnabled(true);
     zoomToPercent(viewer.global.modelKitMode ? 50 : 100);
@@ -240,7 +240,7 @@ public class TransformManager {
     z = (z < 0 ? -1 : 1) * (float) Math.sqrt(Math.abs(z));
     if (factor == 0) {
       // mouse down sets the initial rotation and point on the sphere
-      arcBall0Rotation.setM(matrixRotate);
+      arcBall0Rotation.setM3(matrixRotate);
       arcBall0.set(x, -y, z);
       if (!Float.isNaN(z))
         arcBall0.normalize();
@@ -253,7 +253,7 @@ public class TransformManager {
     arcBallAxis.cross(arcBall0, arcBall1);
     axisangleT.setVA(arcBallAxis, factor
         * (float) Math.acos(arcBall0.dot(arcBall1)));
-    matrixRotate.setM(arcBall0Rotation);
+    matrixRotate.setM3(arcBall0Rotation);
     rotateAxisAngle2(axisangleT, null);
   }
 
@@ -478,7 +478,7 @@ public class TransformManager {
       internalRotationAngle = radians;
       vectorT.set(internalRotationAxis.x, internalRotationAxis.y,
           internalRotationAxis.z);
-      matrixRotate.transform2(vectorT, vectorT2);
+      matrixRotate.rotate2(vectorT, vectorT2);
       axisangleT.setVA(vectorT2, radians);
 
     // NOW apply that rotation  
@@ -514,7 +514,7 @@ public class TransformManager {
     vectorT.setT(internalRotationCenter);
     pointT2.sub2(fixedRotationCenter, vectorT);
     P3 pt = new P3();
-    matrixTemp4.transform2(pointT2, pt);
+    matrixTemp4.rotTrans2(pointT2, pt);
 
     // return this point to the fixed frame
 
@@ -684,13 +684,13 @@ public class TransformManager {
 
   public void setRotation(M3 matrixRotation) {
     if (!Float.isNaN(matrixRotation.m00))
-      matrixRotate.setM(matrixRotation);
+      matrixRotate.setM3(matrixRotation);
   }
 
   public void getRotation(M3 matrixRotation) {
     // hmm ... I suppose that there could be a race condiditon here
     // if matrixRotate is being modified while this is called
-    matrixRotation.setM(matrixRotate);
+    matrixRotation.setM3(matrixRotate);
   }
 
   /* ***************************************************************
@@ -1214,13 +1214,13 @@ public class TransformManager {
 
   M4 getUnscaledTransformMatrix() {
     //for povray only
-    M4 unscaled = M4.newM(null);
+    M4 unscaled = M4.newM4(null);
     vectorTemp.setT(fixedRotationCenter);
     matrixTemp.setZero();
     matrixTemp.setTranslation(vectorTemp);
     unscaled.sub(matrixTemp);
     matrixTemp.setM3(matrixRotate);
-    unscaled.mul2(matrixTemp, unscaled);
+    unscaled.mul42(matrixTemp, unscaled);
     return unscaled;
   }
 
@@ -1461,14 +1461,14 @@ public class TransformManager {
     // multiply by angular rotations
     // this is *not* the same as  matrixTransform.mul(matrixRotate);
     matrixTemp.setM3(stereoFrame ? matrixStereo : matrixRotate);
-    matrixTransform.mul2(matrixTemp, matrixTransform);
+    matrixTransform.mul42(matrixTemp, matrixTransform);
     // cale to screen coordinates
     matrixTemp.setIdentity();
     matrixTemp.m00 = matrixTemp.m11 = matrixTemp.m22 = scalePixelsPerAngstrom;
     // negate y (for screen) and z (for zbuf)
     matrixTemp.m11 = matrixTemp.m22 = -scalePixelsPerAngstrom;
 
-    matrixTransform.mul2(matrixTemp, matrixTransform);
+    matrixTransform.mul42(matrixTemp, matrixTransform);
     //z-translate to set rotation center at midplane (Nav) or front plane (V10)
     matrixTransform.m23 += modelCenterOffset;
     try {
@@ -1482,7 +1482,7 @@ public class TransformManager {
   }
 
   void rotatePoint(P3 pt, P3 ptRot) {
-    matrixRotate.transform2(pt, ptRot);
+    matrixRotate.rotate2(pt, ptRot);
     ptRot.y = -ptRot.y;
   }
 
@@ -1527,7 +1527,7 @@ public class TransformManager {
       point3iScreenTemp.x <<= 1;
       point3iScreenTemp.y <<= 1;
     }
-    matrixTransform.transform2(fixedRotationCenter, pointTsp);
+    matrixTransform.rotTrans2(fixedRotationCenter, pointTsp);
     point3iScreenTemp.z = (int) pointTsp.z;
     return point3iScreenTemp;
   }
@@ -1555,7 +1555,7 @@ public class TransformManager {
 
   void transformVector(V3 vectorAngstroms, V3 vectorTransformed) {
     //dots renderer, geodesic only
-    matrixTransform.rotate(vectorAngstroms, vectorTransformed);
+    matrixTransform.rotate2(vectorAngstroms, vectorTransformed);
   }
 
   final protected P3 untransformedPoint = new P3();
@@ -1588,16 +1588,16 @@ public class TransformManager {
     aaTest1.setVA(axis, (float) (degrees / degreesPerRadian));
     ptTest1.set(4.321f, 1.23456f, 3.14159f);
     getRotation(matrixTest);
-    matrixTest.transform2(ptTest1, ptTest2);
+    matrixTest.rotate2(ptTest1, ptTest2);
     matrixTest.setAA(aaTest1);
-    matrixTest.transform2(ptTest1, ptTest3);
+    matrixTest.rotate2(ptTest1, ptTest3);
     return (ptTest3.distance(ptTest2) < 0.1);
   }
 
   public void moveToPyMOL(JmolScriptEvaluator eval, float floatSecondsTotal,
                         float[] pymolView) {
     // PyMOL matrices are inverted (row-based)
-    M3 m3 = M3.newA(pymolView);
+    M3 m3 = M3.newA9(pymolView);
     m3.invert();
     float cameraX = pymolView[9];
     float cameraY = -pymolView[10];
@@ -1883,7 +1883,7 @@ public class TransformManager {
     if (m == null) {
       m = matrixRotate;
     } else {
-      m = M3.newM(m);
+      m = M3.newM3(m);
       m.invert();
       m.mul2(matrixRotate, m);
     }
@@ -2425,7 +2425,7 @@ public class TransformManager {
    */
   protected P3i getTempScreenPt(P3 ptXYZ, P3 ptRef) {
 
-    matrixTransform.transform2(ptXYZ, point3fScreenTemp);
+    matrixTransform.rotTrans2(ptXYZ, point3fScreenTemp);
 
     // fixedRotation point is at the origin initially
 
@@ -2532,7 +2532,7 @@ public class TransformManager {
       untransformedPoint.y -= perspectiveShiftXY.y;
       break;
     }
-    matrixTransformInv.transform2(untransformedPoint, coordPt);
+    matrixTransformInv.rotTrans2(untransformedPoint, coordPt);
   }
 
   boolean canNavigate() {

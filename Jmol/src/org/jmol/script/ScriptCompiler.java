@@ -1192,8 +1192,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       }
       if (isBondOrMatrix) {
         Object m = lookingAtMatrix();
-        if (m instanceof M3 || m instanceof M4) {
-          addTokenToPrefix(T.o((m instanceof M3 ? T.matrix3f : T.matrix4f), m));
+        if (m instanceof M3) {
+          addTokenToPrefix(T.o((m instanceof M4 ? T.matrix4f : T.matrix3f), m));
           return CONTINUE;
         }
       }

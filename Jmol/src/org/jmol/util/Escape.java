@@ -103,8 +103,6 @@ public class Escape {
       return eAS((String[]) x, true);
     if (x instanceof M3) 
       return PT.rep(((M3) x).toString(), "\t", ",\t");
-    if (x instanceof M4) 
-      return PT.rep(((M4) x).toString(), "\t", ",\t");
     if (x instanceof A4) {
       A4 a = (A4) x;
       return "{" + a.x + " " + a.y + " " + a.z + " " + (float) (a.angle * 180d/Math.PI) + "}";  
@@ -401,9 +399,9 @@ public class Escape {
     if (!Float.isNaN(PT.parseFloatNext(str, next)))
       return strMatrix; // overflow
     if (nPoints == 9)
-      return M3.newA(points);
+      return M3.newA9(points);
     if (nPoints == 16)
-      return M4.newA(points);
+      return M4.newA16(points);
     return strMatrix;
   }
 /*
@@ -698,6 +696,5 @@ public class Escape {
     return x instanceof SV[];
     }
   }
-
 
 }

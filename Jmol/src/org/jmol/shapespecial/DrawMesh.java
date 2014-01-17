@@ -99,7 +99,7 @@ public class DrawMesh extends Mesh {
       if (n > 0 && (i == iModel || i == 0)) {
         center.scale(1.0f / n);
         if (mat4 != null)
-          mat4.transform(center);
+          mat4.rotTrans(center);
         break;
       }
     }

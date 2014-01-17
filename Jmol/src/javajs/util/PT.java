@@ -783,44 +783,16 @@ public class PT {
         sb.append(" ]");
         break;
       }
-      if (info instanceof T3) {
-        addJsonTuple(sb, (T3) info);
-        break;
-      }
-      if (info instanceof A4) {
-        sb.append("[").appendF(((A4) info).x).append(",")
-            .appendF(((A4) info).y).append(",").appendF(((A4) info).z)
-            .append(",").appendF((float) (((A4) info).angle * 180d / Math.PI))
-            .append("]");
-        break;
-      }
-      if (info instanceof P4) {
-        sb.append("[").appendF(((P4) info).x).append(",")
-            .appendF(((P4) info).y).append(",").appendF(((P4) info).z)
-            .append(",").appendF(((P4) info).w).append("]");
-        break;
-      }
       if (info instanceof M3) {
-        float[] x = new float[3];
-        M3 m3 = (M3) info;
+        // M4 extends M3
+        int len = (info instanceof M4 ? 4 : 3);
+        float[] x = new float[len];
+        M3 m = (M3) info;
         sb.appendC('[');
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < len; i++) {
           if (i > 0)
             sb.appendC(',');
-          m3.getRow(i, x);
-          sb.append(toJSON(null, x));
-        }
-        sb.appendC(']');
-        break;
-      }
-      if (info instanceof M4) {
-        float[] x = new float[4];
-        M4 m4 = (M4) info;
-        sb.appendC('[');
-        for (int i = 0; i < 4; i++) {
-          if (i > 0)
-            sb.appendC(',');
-          m4.getRow(i, x);
+          m.getRow(i, x);
           sb.append(toJSON(null, x));
         }
         sb.appendC(']');
@@ -838,7 +810,7 @@ public class PT {
         sb.append("]");
         break;
       }
-      s = fixString(s);
+      info = info.toString();
     }
     return packageJSON(infoType, (s == null ? sb.toString() : s));
   }
@@ -885,13 +857,6 @@ public class PT {
     s = rep(s, "\"", "\\\"");
     s = rep(s, "\n", "\\n");
     return "\"" + s + "\"";
-  }
-
-  public static void addJsonTuple(SB sb, T3 pt) {
-    sb.append("[")
-    .appendF(pt.x).append(",")
-    .appendF(pt.y).append(",")
-    .appendF(pt.z).append("]");
   }
 
   public static boolean isAS(Object x) {

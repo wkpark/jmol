@@ -848,7 +848,7 @@ import java.util.Map;
       ptTemp.setT(a1);
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
         atoms[i].sub(ptTemp);
-        matTemp.transform(atoms[i]);
+        matTemp.rotate(atoms[i]);
         atoms[i].add(ptTemp);
         taintAtom(i, TAINT_COORD);
       }
@@ -859,9 +859,9 @@ import java.util.Map;
                         P3 center, boolean isInternal, boolean translationOnly) {
     if (!translationOnly) {
       if (mNew == null) {
-        matTemp.setM(matrixRotate);
+        matTemp.setM3(matrixRotate);
       } else {
-        matInv.setM(matrixRotate);
+        matInv.setM3(matrixRotate);
         matInv.invert();
         ptTemp.set(0, 0, 0);
         matTemp.mul2(mNew, matrixRotate);
@@ -882,10 +882,10 @@ import java.util.Map;
       }
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
         if (isInternal) {
-          mat4.transform(atoms[i]);
+          mat4.rotTrans(atoms[i]);
         } else {
           ptTemp.add(atoms[i]);
-          mat4.transform(atoms[i]);
+          mat4.rotTrans(atoms[i]);
           ptTemp.sub(atoms[i]);
         }
         taintAtom(i, TAINT_COORD);
@@ -903,7 +903,7 @@ import java.util.Map;
       if (!translationOnly) {
         mat4t.setIdentity();
         mat4t.setTranslation(translation);
-        mat4.mul2(mat4t, mat4);
+        mat4.mul42(mat4t, mat4);
       }
     }
     recalculatePositionDependentQuantities(bs, mat4);

@@ -261,7 +261,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   public boolean useThreads() {
-    return (!viewer.autoExit && viewer.haveDisplay && outputBuffer == null && allowJSThreads);
+    return (!chk && !viewer.isHeadless() && !viewer.autoExit && viewer.haveDisplay && outputBuffer == null && allowJSThreads);
   }
 
   private void startEval() {
@@ -2491,9 +2491,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         } else if (v instanceof P4) {
           fixed[j] = SV.newV(T.point4f, v);
         } else if (v instanceof M3) {
-          fixed[j] = SV.newV(T.matrix3f, v);
-        } else if (v instanceof M4) {
-          fixed[j] = SV.newV(T.matrix4f, v);
+          fixed[j] = SV.newV(v instanceof M4 ? T.matrix4f : T.matrix3f, v);
         } else if (v instanceof Map<?, ?>) {
           fixed[j] = SV.newV(T.hash, v);
         } else if (v instanceof List<?>) {
@@ -3609,7 +3607,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.clickable:
         // a bit different, because it requires knowing what got slabbed
         if (!chk && allowRefresh)
-          refresh();
+          refresh(false);
         rpn.addXBs(viewer.getClickableSet());
         break;
       case T.spec_atom:
@@ -5144,7 +5142,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       Logger.debug("script execution paused at command " + (pc + 1) + " level "
           + scriptLevel + ": " + thisCommand);
     }
-    refresh();
+    refresh(false);
     while (executionPaused) {
       viewer.popHoldRepaint("pause " + JC.REPAINT_IGNORE);
       // does not actually do a repaint
@@ -5199,7 +5197,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private void doDelay(int millis) throws ScriptException {
     if (!useThreads())
       return;
-    if (isJS && allowJSThreads)
+    if (isJS)
       throw new ScriptInterruption(this, "delay", millis);
     delayScript(millis);
   }
@@ -5251,7 +5249,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     List<T[]> vProcess = null;
     long lastTime = System.currentTimeMillis();
     for (; pc < aatoken.length && pc < pcEnd; pc++) {
-      if (!chk && isJS && useThreads() && !fromFunc) {
+      if (isJS && useThreads() && !fromFunc) {
         // every 1 s check for interruptions
         if (!executionPaused && System.currentTimeMillis() - lastTime > 1000) {
           pc--;
@@ -5518,7 +5516,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           undoRedoMove();
           break;
         case T.refresh:
-          refresh();
+          refresh(true);
           break;
         case T.reset:
           reset();
@@ -6282,7 +6280,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     int fps = (slen == 11 ? intParameter(10) : 30);
     if (chk)
       return;
-    refresh();
+    refresh(false);
     if (!useThreads())
       floatSecondsTotal = 0;
     viewer.move(this, dRot, dZoom, dTrans, dSlab, floatSecondsTotal, fps);
@@ -6313,7 +6311,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (!useThreads())
         floatSecondsTotal = 0;
       if (floatSecondsTotal > 0)
-        refresh();
+        refresh(false);
       viewer.moveTo(this, floatSecondsTotal, null, JC.axisZ, 0, null, 100, 0,
           0, 0, null, Float.NaN, Float.NaN, Float.NaN, Float.NaN, Float.NaN,
           Float.NaN);
@@ -6529,7 +6527,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (!isChange)
       floatSecondsTotal = 0;
     if (floatSecondsTotal > 0)
-      refresh();
+      refresh(false);
     if (!useThreads())
       floatSecondsTotal = 0;
     if (cameraDepth == 0) {
@@ -8545,11 +8543,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       viewer.prompt(msg, "OK", null, true);
   }
 
-  public void refresh() {
+  public void refresh(boolean doDelay) throws ScriptException {
     if (chk)
       return;
     viewer.setTainted(true);
     viewer.requestRepaintAndWait("refresh cmd");
+    if (isJS && doDelay)
+      doDelay(10); // need this to update JavaScript display
   }
 
   private void reset() throws ScriptException {
@@ -9591,7 +9591,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (doAll)
         viewer.cacheFileByName(null, false);
       viewer.zap(true, doAll, true);
-      refresh();
+      refresh(false);
       return;
     }
     BS bs = atomExpressionAt(1);
@@ -9783,9 +9783,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     default:
       error(ERROR_numberExpected);
     }
-    if (chk || viewer.isHeadless() || viewer.autoExit)
-      return;
-    refresh();
+    refresh(false);
     doDelay(Math.abs(millis));
   }
 

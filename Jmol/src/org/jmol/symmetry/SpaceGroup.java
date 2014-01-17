@@ -204,12 +204,12 @@ class SpaceGroup {
           atomIndex, count, true);
       P3 atom = atoms[atomIndex];
       P3 c = P3.newP(atom);
-      finalOperations[0].transform(c);
+      finalOperations[0].rotTrans(c);
       if (c.distance(atom) > 0.0001) // not cartesian, but this is OK here
         for (int i = 0; i < count; i++) {
           atom = atoms[atomIndex + i];
           c.setT(atom);
-          finalOperations[0].transform(c);
+          finalOperations[0].rotTrans(c);
           atom.setT(c);
         }
     }
@@ -506,16 +506,16 @@ class SpaceGroup {
     // and setIdentity() outside the loop. That caused a multiplication of
     // operations, not a resetting of them each time. 
     for (int i = 0; i < h.nRotations; i++) {
-      mat1.setM(h.rotationTerms[i].seitzMatrix12ths);
+      mat1.setM4(h.rotationTerms[i].seitzMatrix12ths);
       int nRot = h.rotationTerms[i].order;
       // this would iterate int nOps = operationCount;
       newOps[0].setIdentity();
       int nOps = operationCount;
       for (int j = 1; j <= nRot; j++) {
-        newOps[j].mul2(mat1, newOps[0]);
-        newOps[0].setM(newOps[j]);
+        newOps[j].mul42(mat1, newOps[0]);
+        newOps[0].setM4(newOps[j]);
         for (int k = 0; k < nOps; k++) {
-          operation.mul2(newOps[j], operations[k]);
+          operation.mul42(newOps[j], operations[k]);
           SymmetryOperation.normalizeTranslation(operation);
           String xyz = SymmetryOperation.getXYZFromMatrix(operation, true, true, true);
           addSymmetrySM(xyz, operation);
@@ -528,7 +528,7 @@ class SpaceGroup {
     int iop = addOperation(xyz, 0, false);
     if (iop >= 0) {
     SymmetryOperation symmetryOperation = operations[iop];
-    symmetryOperation.setM(operation);
+    symmetryOperation.setM4(operation);
     }
     return  iop;
   }
@@ -1428,7 +1428,7 @@ class SpaceGroup {
     List<P3> pts = new List<P3>();
     for (int i = n; --i >= 0;) {
       P3 pt1 = P3.newP(pt);
-      finalOperations[i].transform(pt1);
+      finalOperations[i].rotTrans(pt1);
       unitCell.unitize(pt1);
       for (int j = pts.size(); --j >= 0;) {
         P3 pt0 = pts.get(j);

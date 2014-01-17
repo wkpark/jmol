@@ -167,7 +167,7 @@ final class IsoShapeReader extends VolumeDataReader {
   public float getValueAtPoint(P3 pt, boolean getSource) {
     ptTemp.sub2(pt, center);
     if (isEccentric)
-      eccentricityMatrixInverse.transform(ptTemp);
+      eccentricityMatrixInverse.rotate(ptTemp);
     if (isAnisotropic) {
       ptTemp.x /= anisotropy[0];
       ptTemp.y /= anisotropy[1];
@@ -483,7 +483,7 @@ final class IsoShapeReader extends VolumeDataReader {
     case Parameters.SURFACE_LONEPAIR:
     case Parameters.SURFACE_RADICAL:
       ptPsi.set(0, 0, eccentricityScale / 2);
-      eccentricityMatrixInverse.transform(ptPsi);
+      eccentricityMatrixInverse.rotate(ptPsi);
       ptPsi.add(center);
       addVC(center, 0, 0);
       addVC(ptPsi, 0, 0);

@@ -18,6 +18,8 @@ package javajs.util;
 
 import java.io.Serializable;
 
+import javajs.api.JSONEncodable;
+
 
 
 /**
@@ -32,7 +34,7 @@ import java.io.Serializable;
  * for unique constructor and method names
  * for the optimization of compiled JavaScript using Java2Script
  */
-public abstract class T4 implements Serializable {
+public abstract class T4 implements Serializable, JSONEncodable {
 
   /**
    * The x coordinate.
@@ -129,6 +131,11 @@ public abstract class T4 implements Serializable {
   @Override
   public String toString() {
     return "(" + x + ", " + y + ", " + z + ", " + w + ")";
+  }
+
+  @Override
+  public String toJSON() {
+    return "[" + x + ", " + y + ", " + z + ", " + w + "]";
   }
 
 }

@@ -189,7 +189,7 @@ class SymmetryOperation extends M4 {
   }
 
   void newPoint(P3 atom1, P3 atom2, int x, int y, int z) {
-    transform2(atom1, atom2);
+    rotTrans2(atom1, atom2);
     atom2.add3(x,  y,  z);
   }
 
@@ -285,7 +285,7 @@ class SymmetryOperation extends M4 {
     if (linearRotTrans.length > 16) {
       setGamma(isReverse);
     } else {
-      setA(linearRotTrans, 0);
+      setA(linearRotTrans);
       if (isReverse)
         invertM(this);
     }
@@ -597,7 +597,7 @@ class SymmetryOperation extends M4 {
     for (int i = vectors.length; --i >=0;) {
       ptTemp.setT(vectors[i]);
       unitcell.toFractional(ptTemp, true);
-      mTemp.transform(ptTemp);
+      mTemp.rotate(ptTemp);
       unitcell.toCartesian(ptTemp, true);
       vRot[i] = V3.newV(ptTemp);
     }
@@ -644,7 +644,7 @@ class SymmetryOperation extends M4 {
       uc.toUnitCell(pt01, ptemp);
       uc.toUnitCell(pt02, ptemp);
       uc.toFractional(pt01, false);
-      transform(pt01);
+      rotTrans(pt01);
       uc.toCartesian(pt01, false);
       uc.toUnitCell(pt01, ptemp);
       if (pt01.distance(pt02) > 0.1f)
@@ -653,7 +653,7 @@ class SymmetryOperation extends M4 {
       pt02.setT(ptTarget);
       uc.toFractional(pt01, false);
       uc.toFractional(pt02, false);
-      transform(pt01);
+      rotTrans(pt01);
       vtrans.sub2(pt02, pt01);
       pt01.set(0, 0, 0);
       pt02.set(0, 0, 0);
@@ -672,10 +672,10 @@ class SymmetryOperation extends M4 {
     uc.toFractional(p1, false);
     uc.toFractional(p2, false);
     uc.toFractional(p3, false);
-    transform2(p0, p0);
-    transform2(p1, p1);
-    transform2(p2, p2);
-    transform2(p3, p3);
+    rotTrans2(p0, p0);
+    rotTrans2(p1, p1);
+    rotTrans2(p2, p2);
+    rotTrans2(p3, p3);
     p0.add(vtrans);
     p1.add(vtrans);
     p2.add(vtrans);
@@ -1247,7 +1247,7 @@ class SymmetryOperation extends M4 {
     if (ax1 != null)
       ax1.normalize();
     M4 m2 = null;
-    m2 = M4.newM(this);
+    m2 = M4.newM4(this);
     if (vtrans.length() != 0) {
       m2.m03 += vtrans.x;
       m2.m13 += vtrans.y;

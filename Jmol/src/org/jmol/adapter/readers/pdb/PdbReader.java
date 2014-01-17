@@ -589,7 +589,7 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
     boolean needLine = true;
     Map<String, Object> info = null;
     int nBiomt = 0;
-    M4 mIdent = M4.newM(null);
+    M4 mIdent = M4.newM4(null);
     while (true) {
       if (needLine)
         readLine();
@@ -657,7 +657,7 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
           }
           mat[15] = 1;
           M4 m4 = new M4();
-          m4.setA(mat, 0);
+          m4.setA(mat);
           if (m4.equals(mIdent))
             biomts.add(0, m4);
           else

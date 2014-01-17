@@ -254,7 +254,7 @@ public class MeasuresRenderer extends LabelsRenderer {
       aaT.angle = i * stepAngle;
       matrixT.setAA(aaT);
       pointT.setT(m.renderArc);
-      matrixT.transform(pointT);
+      matrixT.rotate(pointT);
       pointT.add(b);
       // NOTE! Point3i screen is just a pointer 
       //  to viewer.transformManager.point3iScreenTemp
@@ -268,7 +268,7 @@ public class MeasuresRenderer extends LabelsRenderer {
       pointT.setT(m.renderArc);
       pointT.scale(1.1f);
       // next line modifies Point3i point3iScreenTemp
-      matrixT.transform(pointT);
+      matrixT.rotate(pointT);
       pointT.add(b);
       viewer.transformPt(pointT);
       int zLabel = p3i.z - zOffset;

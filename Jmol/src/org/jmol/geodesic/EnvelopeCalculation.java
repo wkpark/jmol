@@ -266,7 +266,7 @@ public final class EnvelopeCalculation implements JmolEnvCalc {
       BS bsNew = new BS();
       for (int j = map.nextSetBit(0); j >= 0; j = map.nextSetBit(j + 1)) {
         pt.setT(Geodesic.getVertexVector(j));
-        m.transform(pt);
+        m.rotate(pt);
         bsNew.set(Normix.getNormixV(pt, bsTemp));
       }         
       dotsConvexMaps[i] = bsNew;

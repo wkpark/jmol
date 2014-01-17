@@ -358,14 +358,14 @@ public class Mesh extends MeshSurface {
         if (mat4 != null) {
           M3 m3 = new M3();
           mat4.getRotationScale(m3); 
-          m3.transform(normal);
+          m3.rotate(normal);
         }
     }
     for (int i = 0; i < vertexCount; i++) {
       if (vertexValues != null && Float.isNaN(val = vertexValues[i]))
         continue;
       if (mat4 != null)
-        mat4.transform(altVertices[i]);
+        mat4.rotTrans(altVertices[i]);
       P3 pt = (P3) altVertices[i];
       if (normal != null && val != 0)
         pt.scaleAdd2(val, normal, pt);
@@ -515,7 +515,7 @@ public class Mesh extends MeshSurface {
     M3 m3 = new M3();
     V3 v = new V3();
     if (mat4 == null)
-      mat4 = M4.newM(null);
+      mat4 = M4.newM4(null);
     mat4.getRotationScale(m3);
     mat4.get(v);
     if (q == null) {

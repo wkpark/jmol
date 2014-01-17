@@ -1201,9 +1201,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         a.setVA(z, rotRadians);
       M3 m = new M3();
       m.setAA(a);
-      m.transform(x);
-      m.transform(y);
-      m.transform(z);
+      m.rotate(x);
+      m.rotate(y);
+      m.rotate(z);
     }
     if (thisMesh == null && nLCAO == 0)
       nLCAO = meshCount;

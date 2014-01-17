@@ -195,7 +195,7 @@ public class SV extends T implements JSONEncodable {
     if (x instanceof Quaternion)
       return newV(point4f, ((Quaternion) x).toPoint4f());
     if (x instanceof M3)
-      return newV(matrix3f, x);
+      return newV(x instanceof M4 ? matrix4f : matrix3f, x);
     if (x instanceof M4)
       return newV(matrix4f, x);
     if (x instanceof Map)
@@ -576,11 +576,11 @@ public class SV extends T implements JSONEncodable {
       return Measure.distanceToPlane((P4) x.value, pt0);
     case matrix3f:
       P3 pt = new P3();
-      ((M3) x.value).transform(pt);
+      ((M3) x.value).rotate(pt);
       return pt.length();
     case matrix4f:
       P3 pt1 = new P3();
-      ((M4) x.value).transform(pt1);
+      ((M4) x.value).rotTrans(pt1);
       return pt1.length();
     default:
       return 0;
@@ -970,12 +970,12 @@ public class SV extends T implements JSONEncodable {
             if (tok == matrix3f)
               ((M3) value).setRowA(selector - 1, data);
             else
-              ((M4) value).setRow(selector - 1, data);
+              ((M4) value).setRowA(selector - 1, data);
           } else {
             if (tok == matrix3f)
               ((M3) value).setColumnA(-1 - selector, data);
             else
-              ((M4) value).setColumn(-1 - selector, data);
+              ((M4) value).setColumnA(-1 - selector, data);
           }
           return true;
         }

@@ -143,7 +143,7 @@ final public class EllipsoidsRenderer extends ShapeRenderer {
     mat.setRow(0, m4.m00, m4.m01, m4.m02);
     mat.setRow(1, m4.m10, m4.m11, m4.m12);
     mat.setRow(2, m4.m20, m4.m21, m4.m22);
-    matScreenToCartesian.invertM(mat);
+    matScreenToCartesian.invertM3(mat);
     setLogic();
     return true;
   }
@@ -283,10 +283,10 @@ final public class EllipsoidsRenderer extends ShapeRenderer {
       v1.scale(factoredLengths[i]);
       mat.setColumnV(i, v1);
     }
-    mat.invertM(mat);
+    mat.invertM3(mat);
     // make this screen coordinates to ellisoidal coordinates
     matScreenToEllipsoid.mul2(mat, matScreenToCartesian);
-    matEllipsoidToScreen.invertM(matScreenToEllipsoid);
+    matEllipsoidToScreen.invertM3(matScreenToEllipsoid);
     perspectiveFactor = viewer.scaleToPerspective(s0.z, 1.0f);
     matScreenToEllipsoid.mulf(1f/perspectiveFactor);
   }
@@ -330,7 +330,7 @@ final public class EllipsoidsRenderer extends ShapeRenderer {
       pt1.setT(unitAxisVectors[i]);
       //pt1.scale(f);
 
-      matEllipsoidToScreen.transform(pt1);
+      matEllipsoidToScreen.rotate(pt1);
       screens[i].set(Math.round(s0.x + pt1.x * perspectiveFactor), Math
           .round(s0.y + pt1.y * perspectiveFactor), Math.round(pt1.z + s0.z));
       screens[i + 32].set(Math.round(s0.x + pt1.x * perspectiveFactor * 1.05f),
@@ -527,7 +527,7 @@ final public class EllipsoidsRenderer extends ShapeRenderer {
       s1.add(selectedPoints[2] = screens[octants[iCutout * 3 + 2]]);
       s1.scaleAdd(-3, s0, s1);
       pt1.set(s1.x, s1.y, s1.z);
-      matScreenToEllipsoid.transform(pt1);
+      matScreenToEllipsoid.rotate(pt1);
       selectedOctant = GData.getScreenOctant(pt1);
     }
   }  

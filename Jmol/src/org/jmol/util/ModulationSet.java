@@ -246,7 +246,7 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
     t = gammaIinv.mul(t).add(tau);
     for (int i = mods.size(); --i >= 0;)
       mods.get(i).apply(this, t.getArray());
-    gammaE.transform(this);
+    gammaE.rotate(this);
     return this;
   }
   

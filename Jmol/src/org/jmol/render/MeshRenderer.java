@@ -127,7 +127,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
           for (int i = vertexCount; --i >= 0;) {
             vTemp.setT(vertices[i]);
             unitcell.toFractional(vTemp, true);
-            m.transform(vTemp);
+            m.rotTrans(vTemp);
             unitcell.toCartesian(vTemp, true);
             viewer.transformPtScr(vTemp, screens[i]);
             if (needNormals) {

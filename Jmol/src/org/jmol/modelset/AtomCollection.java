@@ -1626,9 +1626,9 @@ abstract public class AtomCollection {
           x.normalize();
           A4 a = A4.new4(z.x, z.y, z.z,
               (pt == 2 ? 1 : -1) * 2.09439507f); // PI*2/3
-          M3 m = M3.newM(null);
+          M3 m = M3.newM3(null);
           m.setAA(a);
-          m.transform(x);
+          m.rotate(x);
         }
         z.setT(x);
         x.cross(vTemp, z);

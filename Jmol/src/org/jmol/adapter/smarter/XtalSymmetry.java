@@ -143,7 +143,7 @@ public class XtalSymmetry {
       fmatSupercell = null;
       return;
     }
-    Logger.info("Using supercell \n" + M4.newA(fmatSupercell));
+    Logger.info("Using supercell \n" + M4.newA16(fmatSupercell));
   }
 
   private void setNotionalUnitCell(float[] info, M3 matUnitCellOrientation,
@@ -648,7 +648,7 @@ public class XtalSymmetry {
             }
 
             P3 c = P3.newP(atom);
-            op.transform(c);
+            op.rotTrans(c);
             symmetry.toCartesian(c, false);
             if (doPackUnitCell) {
               symmetry.toUnitCell(c, ptOffset);
@@ -864,7 +864,7 @@ public class XtalSymmetry {
           if (ac.bsAtoms != null)
             ac.bsAtoms.set(atom1.index);
           atom1.atomSite = atomSite;
-          mat.transform(atom1);
+          mat.rotTrans(atom1);
           atom1.bsSymmetry = BSUtil.newAndSetBit(i);
           if (addBonds) {
             // Clone bonds

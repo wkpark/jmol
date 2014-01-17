@@ -418,7 +418,7 @@ public class _ObjExporter extends __CartesianExporter {
       outputMtl(" map_Ka " + file.getName() + "\n");
     }
 
-    M4 matrix = M4.newM(null);
+    M4 matrix = M4.newM4(null);
     matrix.setTranslation(V3.newV(meshSurface.offset));
     BS bsValid = new BS();
     addMesh(name, data, matrix, null, colix, dim, bsValid);
@@ -814,7 +814,7 @@ public class _ObjExporter extends __CartesianExporter {
     MeshSurface data = MeshData.getTriangleData(pt1, pt2, pt3);
     addTexture(colix, null);
     String name = "Triangle" + triangleNum++;
-    M4 matrix = M4.newM(null);
+    M4 matrix = M4.newM4(null);
     addMesh(name, data, matrix, matrix, colix, null, null);
   }
 
@@ -980,7 +980,7 @@ public class _ObjExporter extends __CartesianExporter {
         continue;
       ptTemp.setT(pts[i]);
       if (m != null)
-        m.transform(ptTemp);
+        m.rotTrans(ptTemp);
       output(prefix + ptTemp.x + " " + ptTemp.y + " " + ptTemp.z + "\n");
     }
   }

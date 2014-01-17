@@ -222,7 +222,7 @@ abstract class VolumeDataReader extends SurfaceReader {
       volumetricVectors[2].set(0, 0, d);
       volumetricOrigin.z = min;
       if (isEccentric)
-        eccentricityMatrix.transform(volumetricOrigin);
+        eccentricityMatrix.rotate(volumetricOrigin);
       if (center != null && center.x != Float.MAX_VALUE)
         volumetricOrigin.add(center);
       
@@ -233,7 +233,7 @@ abstract class VolumeDataReader extends SurfaceReader {
       
     }
     if (isEccentric)
-      eccentricityMatrix.transform(volumetricVectors[index]);
+      eccentricityMatrix.rotate(volumetricVectors[index]);
     return voxelCounts[index];
   }
 

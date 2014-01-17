@@ -1252,7 +1252,7 @@ public class ScriptExt implements JmolScriptExtension {
         float[][] ff = floatArraySet(i + 2, intParameter(i + 1), 16);
         symops = new M4[ff.length];
         for (int j = symops.length; --j >= 0;)
-          symops[j] = M4.newA(ff[j]);
+          symops[j] = M4.newA16(ff[j]);
         i = eval.iToken;
         break;
       case T.symmetry:
@@ -4416,7 +4416,7 @@ public class ScriptExt implements JmolScriptExtension {
       if (timeSec < 0)
         invArg();
       if (!chk && timeSec > 0)
-        eval.refresh();
+        eval.refresh(false);
       switch (getToken(i).tok) {
       case T.point3f:
       case T.leftbrace:
@@ -4539,7 +4539,7 @@ public class ScriptExt implements JmolScriptExtension {
             return;
           setShapeProperty(JC.SHAPE_DRAW, "thisID", pathID);
           path = (P3[]) getShapeProperty(JC.SHAPE_DRAW, "vertices");
-          eval.refresh();
+          eval.refresh(false);
           if (path == null)
             invArg();
           int indexStart = (int) (isFloatParameter(i + 1) ? floatParameter(++i)
@@ -5054,7 +5054,7 @@ public class ScriptExt implements JmolScriptExtension {
               : bytes instanceof String ? ((String) bytes).length()
                   : ((byte[]) bytes).length);
         if (isImage) {
-          eval.refresh();
+          eval.refresh(false);
           if (width < 0)
             width = viewer.getScreenWidth();
           if (height < 0)
@@ -6975,7 +6975,7 @@ public class ScriptExt implements JmolScriptExtension {
         if (stddev < lowestStdDev) {
           mapB = maps[i];
           if (m4 != null)
-            m4.setM(m);
+            m4.setM4(m);
           if (center != null)
             center.setT(c);
           lowestStdDev = stddev;
@@ -8142,11 +8142,11 @@ public class ScriptExt implements JmolScriptExtension {
           norm = V3.new3(0, 0, 1);
           pt2 = P3.new3(0, 1, 0);
           Quaternion q = Quaternion.newVA(pt2, phi);
-          q.getMatrix().transform(norm);
+          q.getMatrix().rotate(norm);
           // rotate that vector around z
           pt2.set(0, 0, 1);
           q = Quaternion.newVA(pt2, theta);
-          q.getMatrix().transform(norm);
+          q.getMatrix().rotate(norm);
           pt2.setT(norm);
           pt2.scale(r);
           plane = new P4();
@@ -8524,8 +8524,8 @@ public class ScriptExt implements JmolScriptExtension {
         }
         if (isMatrix) {
           if (len == 3)
-            return mp.addXM3(M3.newA(m));
-          return mp.addXM4(M4.newA(m));
+            return mp.addXM3(M3.newA9(m));
+          return mp.addXM4(M4.newA16(m));
         }
       }
     }

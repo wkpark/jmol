@@ -1104,6 +1104,8 @@ public class FileManager implements BytePoster {
   }
 
   public static String getLocalPathForWritingFile(Viewer viewer, String file) {
+    if (file.startsWith("http://"))
+      return file;
     file = PT.rep(file, "?", "");
     if (file.indexOf("file:/") == 0)
       return file.substring(6);

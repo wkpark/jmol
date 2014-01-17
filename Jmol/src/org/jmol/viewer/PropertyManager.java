@@ -25,6 +25,7 @@ package org.jmol.viewer;
 
 import javajs.util.Base64;
 import javajs.util.List;
+import javajs.util.M4;
 import javajs.util.PT;
 import javajs.util.SB;
 
@@ -270,6 +271,18 @@ public class PropertyManager implements JmolPropertyManager {
           pt += v.size();
         if (pt >= 0 && pt < v.size())
           return extractProperty(v.get(pt), args, ptr);
+        return "";
+      }
+      if (property instanceof M4) {
+        M4 m = (M4) property;
+        float[][] f = new float[][] { new float[] { m.m00, m.m01, m.m02, m.m03 },
+            new float[] { m.m10, m.m11, m.m12, m.m13 },
+            new float[] { m.m20, m.m21, m.m22, m.m23 },
+            new float[] { m.m30, m.m31, m.m32, m.m33 }};
+        if (pt < 0)
+          pt += 4;
+        if (pt >= 0 && pt < 4)
+          return extractProperty(f, args, --ptr);
         return "";
       }
       if (property instanceof M3) {

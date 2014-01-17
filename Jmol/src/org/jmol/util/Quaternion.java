@@ -602,14 +602,14 @@ public class Quaternion {
     if (mat == null)
       setMatrix();
     P3 ptNew = P3.newP(pt);
-    mat.transform(ptNew);
+    mat.rotate(ptNew);
     return ptNew;
   }
 
   public T3 transformP2(T3 pt, T3 ptNew) {
     if (mat == null)
       setMatrix();
-    mat.transform2(pt, ptNew);
+    mat.rotate2(pt, ptNew);
     return ptNew;
   }
 
@@ -617,7 +617,7 @@ public class Quaternion {
     if (mat == null)
       setMatrix();
     V3 vNew = V3.newV(v);
-    mat.transform(vNew);
+    mat.rotate(vNew);
     return vNew;
   }
 

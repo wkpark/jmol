@@ -993,7 +993,7 @@ public abstract class AtomSetCollectionReader {
     v.normalize();
     matrixRotate.setColumnV(2, v);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo(
-        "defaultOrientationMatrix", M3.newM(matrixRotate));
+        "defaultOrientationMatrix", M3.newM3(matrixRotate));
     // first two matrix column vectors define quaternion X and XY plane
     Quaternion q = Quaternion.newM(matrixRotate);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo(

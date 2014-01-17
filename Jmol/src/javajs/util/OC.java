@@ -228,8 +228,12 @@ public class OC extends OutputStream {
      * 
      */
     {
-      if (!isLocalFile) // unsigned applet could do this
-        return postByteArray();
+      if (!isLocalFile) {
+        String ret = postByteArray(); // unsigned applet could do this
+        if (ret.startsWith("java.net"))
+          byteCount = -1;
+        return ret;
+      }
     }
     return null;
   }

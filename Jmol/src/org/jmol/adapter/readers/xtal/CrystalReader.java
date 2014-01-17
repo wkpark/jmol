@@ -366,7 +366,7 @@ public class CrystalReader extends AtomSetCollectionReader {
    *  
    */
   private void readTransformationMatrix() throws Exception {
-    primitiveToCryst = M3.newA(fillFloatArray(null, 0, new float[9]));
+    primitiveToCryst = M3.newA9(fillFloatArray(null, 0, new float[9]));
   }
 
   // SHIFT OF THE ORIGIN                  :    3/4    1/4      0

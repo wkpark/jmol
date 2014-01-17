@@ -184,10 +184,10 @@ public class Ellipsoid {
      */
 
     vTemp.set(x, y, z);
-    mToElliptical.transform(vTemp);
+    mToElliptical.rotate(vTemp);
     double f = 1 - vTemp.dot(vTemp); // J
     mTemp.transposeM(mToElliptical);
-    mTemp.transform(vTemp);
+    mTemp.rotate(vTemp);
     mTemp.mul(mToElliptical);
     coef[0] = mTemp.m00 / f; // A = aXX
     coef[1] = mTemp.m11 / f; // B = aYY

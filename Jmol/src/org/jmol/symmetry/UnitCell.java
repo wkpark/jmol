@@ -84,7 +84,7 @@ class UnitCell extends SimpleUnitCell {
       return;
     M4 m = new M4();
     m.setM3(mat);
-    matrixFractionalToCartesian.mul2(m, matrixFractionalToCartesian);
+    matrixFractionalToCartesian.mul42(m, matrixFractionalToCartesian);
     matrixCartesianToFractional.invertM(matrixFractionalToCartesian);
     calcUnitcellVertices();
   }
@@ -99,15 +99,15 @@ class UnitCell extends SimpleUnitCell {
       return;
     if (offset == null) {
       // used redefined unitcell 
-      matrixCartesianToFractional.transform(pt);
+      matrixCartesianToFractional.rotTrans(pt);
       unitize(pt);
-      matrixFractionalToCartesian.transform(pt);
+      matrixFractionalToCartesian.rotTrans(pt);
     } else {
       // use original unit cell
-      matrixCtoFAbsolute.transform(pt);
+      matrixCtoFAbsolute.rotTrans(pt);
       unitize(pt);
       pt.add(offset);      
-      matrixFtoCAbsolute.transform(pt);
+      matrixFtoCAbsolute.rotTrans(pt);
     }
   }
   
@@ -149,13 +149,13 @@ class UnitCell extends SimpleUnitCell {
     matrixFractionalToCartesian.m03 = 0;
     matrixFractionalToCartesian.m13 = 0;
     matrixFractionalToCartesian.m23 = 0;
-    matrixFractionalToCartesian.transform(cartesianOffset);
+    matrixFractionalToCartesian.rotTrans(cartesianOffset);
     matrixFractionalToCartesian.m03 = cartesianOffset.x;
     matrixFractionalToCartesian.m13 = cartesianOffset.y;
     matrixFractionalToCartesian.m23 = cartesianOffset.z;
     if (allFractionalRelative) {
-      matrixCtoFAbsolute.setM(matrixCartesianToFractional);
-      matrixFtoCAbsolute.setM(matrixFractionalToCartesian);
+      matrixCtoFAbsolute.setM4(matrixCartesianToFractional);
+      matrixFtoCAbsolute.setM4(matrixFractionalToCartesian);
     }
   }
 
@@ -169,13 +169,13 @@ class UnitCell extends SimpleUnitCell {
     matrixCartesianToFractional.m03 = 0;
     matrixCartesianToFractional.m13 = 0;
     matrixCartesianToFractional.m23 = 0;
-    matrixCartesianToFractional.transform(fractionalOffset);
+    matrixCartesianToFractional.rotTrans(fractionalOffset);
     matrixCartesianToFractional.m03 = -fractionalOffset.x;
     matrixCartesianToFractional.m13 = -fractionalOffset.y;
     matrixCartesianToFractional.m23 = -fractionalOffset.z;
     if (allFractionalRelative) {
-      matrixCtoFAbsolute.setM(matrixCartesianToFractional);
-      matrixFtoCAbsolute.setM(matrixFractionalToCartesian);
+      matrixCtoFAbsolute.setM4(matrixCartesianToFractional);
+      matrixFtoCAbsolute.setM4(matrixFractionalToCartesian);
     }
   }
 
@@ -390,7 +390,7 @@ class UnitCell extends SimpleUnitCell {
             cell0.y + cell1.y * pts[i].y,
             cell0.z + cell1.z * pts[i].z);
       }
-      matrixFractionalToCartesian.transform(pts[i]);
+      matrixFractionalToCartesian.rotTrans(pts[i]);
       if (withOffset)
         pts[i].add(cartesianOffset);
     }
@@ -411,12 +411,12 @@ class UnitCell extends SimpleUnitCell {
   private void calcUnitcellVertices() {
     if (matrixFractionalToCartesian == null)
       return;
-    matrixCtoFAbsolute = M4.newM(matrixCartesianToFractional);
-    matrixFtoCAbsolute = M4.newM(matrixFractionalToCartesian);
+    matrixCtoFAbsolute = M4.newM4(matrixCartesianToFractional);
+    matrixFtoCAbsolute = M4.newM4(matrixFractionalToCartesian);
     vertices = new P3[8];
     for (int i = 8; --i >= 0;) {
       vertices[i] = new P3(); 
-      matrixFractionalToCartesian.transform2(BoxInfo.unitCubePoints[i], vertices[i]);
+      matrixFractionalToCartesian.rotTrans2(BoxInfo.unitCubePoints[i], vertices[i]);
       //System.out.println("UNITCELL " + vertices[i] + " " + BoxInfo.unitCubePoints[i]);
     }
   }

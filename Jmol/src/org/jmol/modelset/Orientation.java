@@ -46,7 +46,7 @@ public class Orientation {
       if (rotationMatrix == null)
         this.rotationMatrix.setIdentity();
       else
-        this.rotationMatrix.setM(rotationMatrix);
+        this.rotationMatrix.setM3(rotationMatrix);
     } else {
       viewer.getRotation(this.rotationMatrix);
     }

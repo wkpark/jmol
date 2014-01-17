@@ -68,6 +68,7 @@ abstract class OutputManager {
     OC out = (OC) params.get("outputChannel");
     boolean closeStream = (out == null);
     int len = -1;
+    String ret = null;
     try {
       if (!viewer.checkPrivateKey(privateKey))
         return "ERROR: SECURITY";
@@ -91,12 +92,15 @@ abstract class OutputManager {
     } finally {
       if (out != null) {
         if (closeStream)
-          out.closeChannel();
+          ret = out.closeChannel();
         len = out.getByteCount();
       }
     }
+    int pt = fileName.indexOf("?POST?");
+    if (pt >= 0)
+    	fileName = fileName.substring(0,  pt);
     return (len < 0 ? "Creation of " + fileName + " failed: "
-        + viewer.getErrorMessageUn() : "OK " + type + " "
+        + (ret == null ? viewer.getErrorMessageUn() : ret) : "OK " + type + " "
         + (len > 0 ? len + " " : "") + fileName
         + (quality == Integer.MIN_VALUE ? "" : "; quality=" + quality));
   }
@@ -653,7 +657,8 @@ abstract class OutputManager {
             if (out != null)
               params.put("outputChannel", out);
           }
-          params.put("fileName", localName);
+          if (localName != null)
+            params.put("fileName", localName);
           if (sret == null)
             sret = writeToOutputChannel(params);
           viewer.statusManager.createImage(sret, type, null, null, quality);

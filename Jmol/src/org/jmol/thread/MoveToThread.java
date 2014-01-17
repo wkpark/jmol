@@ -95,7 +95,7 @@ public class MoveToThread extends JmolThread {
     setViewer(viewer, "MoveToThread");
     transformManager = (TransformManager) manager;
     center = (P3) options[0];
-    matrixEnd.setM((M3) options[1]);
+    matrixEnd.setM3((M3) options[1]);
     float[] f = (float[]) options[3];
     ptMoveToCenter = (center == null ? transformManager.fixedRotationCenter
         : center);
@@ -120,7 +120,7 @@ public class MoveToThread extends JmolThread {
     cameraX = newSlider(transformManager.camera.x, f[10]);
     cameraY = newSlider(transformManager.camera.y, f[11]);
     transformManager.getRotation(matrixStart);
-    matrixStartInv.invertM(matrixStart);
+    matrixStartInv.invertM3(matrixStart);
     matrixStep.mul2(matrixEnd, matrixStartInv);
     aaTotal.setM(matrixStep);
     fps = 30;
@@ -196,7 +196,7 @@ public class MoveToThread extends JmolThread {
   private void doStepTransform() {
     if (!Float.isNaN(matrixEnd.m00)) {
       transformManager.getRotation(matrixStart);
-      matrixStartInv.invertM(matrixStart);
+      matrixStartInv.invertM3(matrixStart);
       matrixStep.mul2(matrixEnd, matrixStartInv);
       aaTotal.setM(matrixStep);
       aaStep.setAA(aaTotal);

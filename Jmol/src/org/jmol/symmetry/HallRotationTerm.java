@@ -139,9 +139,9 @@ class HallRotationTerm {
     // set matrix, including translations and vector adjustment
 
     if (isImproper) {
-      seitzMatrix12ths.setM(rotation.seitzMatrixInv);
+      seitzMatrix12ths.setM4(rotation.seitzMatrixInv);
     } else {
-      seitzMatrix12ths.setM(rotation.seitzMatrix);
+      seitzMatrix12ths.setM4(rotation.seitzMatrix);
     }
     seitzMatrix12ths.m03 = translation.vectorShift12ths.x;
     seitzMatrix12ths.m13 = translation.vectorShift12ths.y;
@@ -159,8 +159,8 @@ class HallRotationTerm {
     }
 
     if (hallInfo.vectorCode.length() > 0) {
-      M4 m1 = M4.newM(null);
-      M4 m2 = M4.newM(null);
+      M4 m1 = M4.newM4(null);
+      M4 m2 = M4.newM4(null);
       P3i v = hallInfo.vector12ths;
       m1.m03 = v.x;
       m1.m13 = v.y;
@@ -168,7 +168,7 @@ class HallRotationTerm {
       m2.m03 = -v.x;
       m2.m13 = -v.y;
       m2.m23 = -v.z;
-      seitzMatrix12ths.mul2(m1, seitzMatrix12ths);
+      seitzMatrix12ths.mul42(m1, seitzMatrix12ths);
       seitzMatrix12ths.mulM4(m2);
     }
     if (Logger.debugging) {

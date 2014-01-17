@@ -336,7 +336,7 @@ _pdbx_struct_oper_list.vector[3]
           m[7] *= cr.symmetry.getUnitCellInfoType(SimpleUnitCell.INFO_B) / 12;
           m[11] *= cr.symmetry.getUnitCellInfoType(SimpleUnitCell.INFO_C) / 12;
         }
-        m4.setA(m, 0);
+        m4.setA(m);
         if (htBiomts == null)
           htBiomts = new Hashtable<String, M4>();
         htBiomts.put(id, m4);
@@ -747,7 +747,7 @@ _pdbx_struct_oper_list.vector[3]
   private void setBiomolecules(Map<String, Object> biomolecule) {
     if (!isBiomolecule || assemblyIdAtoms == null && chainAtomCounts == null)
       return;
-    M4 mident = M4.newM(null);
+    M4 mident = M4.newM4(null);
     String[] ops = PT.split((String) biomolecule.get("operators"), ",");
     String assemblies = (String) biomolecule.get("assemblies");
     List<M4> biomts = new List<M4>();
@@ -815,10 +815,10 @@ _pdbx_struct_oper_list.vector[3]
 
   private M4 getOpMatrix(String ops) {
     if (htBiomts == null)
-      return M4.newM(null);
+      return M4.newM4(null);
     int pt = ops.indexOf("|");
     if (pt >= 0) {
-      M4 m = M4.newM(htBiomts.get(ops.substring(0, pt)));
+      M4 m = M4.newM4(htBiomts.get(ops.substring(0, pt)));
       m.mulM4(htBiomts.get(ops.substring(pt+1)));
       return m;
     }

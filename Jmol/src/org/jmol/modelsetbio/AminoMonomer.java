@@ -342,7 +342,7 @@ public class AminoMonomer extends AlphaMonomer {
       vB.cross(vC, vB);
       M3 mat = new M3();
       mat.setAA(A4.newVA(vB, -beta));
-      mat.transform(vC);
+      mat.rotate(vC);
       vA.cross(vB, vC);
       break;
     case 'b': // backbone

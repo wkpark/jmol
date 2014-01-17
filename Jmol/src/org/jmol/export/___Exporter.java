@@ -410,7 +410,7 @@ public abstract class ___Exporter {
     if (matRotateScale != null) {
       ms.normals = new V3[ms.vertexCount];
       for (int i = 0; i < ms.vertexCount; i++) {
-        matRotateScale.transform(ms.vertices[i]);
+        matRotateScale.rotate(ms.vertices[i]);
         ms.normals[i] = V3.newV(ms.vertices[i]);
         ms.normals[i].normalize();
         ms.vertices[i].add(centerBase);
@@ -423,7 +423,7 @@ public abstract class ___Exporter {
     M3 m = new M3();
     M3 m1;
     if (pt2.x == pt1.x && pt2.y == pt1.y) {
-      m1 = M3.newM(null);
+      m1 = M3.newM3(null);
       if (pt1.z > pt2.z) // 180-degree rotation about X
         m1.m11 = m1.m22 = -1;
     } else {

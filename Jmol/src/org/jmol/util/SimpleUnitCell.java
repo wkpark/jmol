@@ -191,7 +191,7 @@ public class SimpleUnitCell {
         scaleMatrix[i] = parameters[6 + i] * f;
       }
       
-      matrixCartesianToFractional = M4.newA(scaleMatrix);
+      matrixCartesianToFractional = M4.newA16(scaleMatrix);
       matrixFractionalToCartesian = new M4();
       matrixFractionalToCartesian.invertM(matrixCartesianToFractional);
     } else if (parameters.length > 14 && !Float.isNaN(parameters[14])) {
@@ -249,14 +249,14 @@ public class SimpleUnitCell {
   public final void toCartesian(T3 pt, boolean isAbsolute) {
     if (matrixFractionalToCartesian != null)
       (isAbsolute ? matrixFtoCAbsolute : matrixFractionalToCartesian)
-          .transform(pt);
+          .rotTrans(pt);
   }
 
   public final void toFractional(T3 pt, boolean isAbsolute) {
     if (matrixCartesianToFractional == null)
       return;
     (isAbsolute ? matrixCtoFAbsolute : matrixCartesianToFractional)
-        .transform(pt);
+        .rotTrans(pt);
   }
 
   public boolean isPolymer() {

@@ -1061,8 +1061,8 @@ public class IsosurfaceMesh extends Mesh {
       return;
 
     if (mat4 == null)
-      mat4 = M4.newM(null);
-    mat4.mul2(m, mat4);
+      mat4 = M4.newM4(null);
+    mat4.mul42(m, mat4);
     recalcAltVertices = true;
   }
 

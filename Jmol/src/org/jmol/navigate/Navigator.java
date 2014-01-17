@@ -392,19 +392,19 @@ public final class Navigator extends JmolThread implements
     P3 pt0s = new P3();
     P3 pt1s = new P3();
     M3 m = tm.getMatrixRotate();
-    m.transform2(pt0, pt0s);
-    m.transform2(pt1, pt1s);
+    m.rotate2(pt0, pt0s);
+    m.rotate2(pt1, pt1s);
     V3 vPath = V3.newVsub(pt0s, pt1s);
     V3 v = V3.new3(0, 0, 1);
     float angle = vPath.angle(v);
     v.cross(vPath, v);
     if (angle != 0)
       tm.navigateAxis(v, (float) (angle * TransformManager.degreesPerRadian));
-    m.transform2(pt0, pt0s);
+    m.rotate2(pt0, pt0s);
     P3 pt2 = P3.newP(ptVectorWing);
     pt2.add(pt0);
     P3 pt2s = new P3();
-    m.transform2(pt2, pt2s);
+    m.rotate2(pt2, pt2s);
     vPath.sub2(pt2s, pt0s);
     vPath.z = 0; // just use projection
     v.set(-1, 0, 0); // puts alpha helix sidechain above
@@ -419,9 +419,9 @@ public final class Navigator extends JmolThread implements
     //      v.set(1, 0, 0);
     //      tm.navigateAxis(v, 20);
     //    }
-    m.transform2(pt0, pt0s);
-    m.transform2(pt1, pt1s);
-    m.transform2(ptVectorWing, pt2s);
+    m.rotate2(pt0, pt0s);
+    m.rotate2(pt1, pt1s);
+    m.rotate2(ptVectorWing, pt2s);
   }
 
   @Override
@@ -495,9 +495,9 @@ public final class Navigator extends JmolThread implements
       // navigation center will initially move
       // but we center it by moving the rotation center instead
       P3 pt1 = new P3();
-      tm.matrixTransform.transform2(tm.navigationCenter, pt1);
+      tm.matrixTransform.rotTrans2(tm.navigationCenter, pt1);
       float z = pt1.z;
-      tm.matrixTransform.transform2(tm.fixedRotationCenter, pt1);
+      tm.matrixTransform.rotTrans2(tm.fixedRotationCenter, pt1);
       tm.modelCenterOffset = tm.referencePlaneOffset + (pt1.z - z);
       tm.calcCameraFactors();
       tm.calcTransformMatrix();
@@ -509,7 +509,7 @@ public final class Navigator extends JmolThread implements
       tm.unTransformPoint(tm.navigationOffset, tm.navigationCenter);
       break;
     }
-    tm.matrixTransform.transform2(tm.navigationCenter, tm.navigationShiftXY);
+    tm.matrixTransform.rotTrans2(tm.navigationCenter, tm.navigationShiftXY);
     if (viewer.getBoolean(T.navigationperiodic)) {
       // TODO
       // but if periodic, then the navigationCenter may have to be moved back a
@@ -518,14 +518,14 @@ public final class Navigator extends JmolThread implements
       viewer.toUnitCell(tm.navigationCenter, null);
       // presuming here that pointT is still a molecular point??
       if (pt.distance(tm.navigationCenter) > 0.01) {
-        tm.matrixTransform.transform2(tm.navigationCenter, pt);
+        tm.matrixTransform.rotTrans2(tm.navigationCenter, pt);
         float dz = tm.navigationShiftXY.z - pt.z;
         // the new navigation center determines the navigationZOffset
         tm.modelCenterOffset += dz;
         tm.calcCameraFactors();
         tm.calcTransformMatrix();
         tm.matrixTransform
-            .transform2(tm.navigationCenter, tm.navigationShiftXY);
+            .rotTrans2(tm.navigationCenter, tm.navigationShiftXY);
       }
     }
     tm.transformPoint2(tm.fixedRotationCenter, tm.fixedTranslation);
@@ -591,7 +591,7 @@ public final class Navigator extends JmolThread implements
     pt.z = tm.referencePlaneOffset;
     // now untransform that point to give the center that would
     // deliver this fixedModel position
-    tm.matrixTransformInv.transform2(pt, tm.navigationCenter);
+    tm.matrixTransformInv.rotTrans2(pt, tm.navigationCenter);
     tm.mode = TransformManager.MODE_NAVIGATION;
   }
 

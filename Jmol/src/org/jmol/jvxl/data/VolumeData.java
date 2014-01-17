@@ -296,7 +296,7 @@ public class VolumeData implements VolumeDataInterface {
     for (int i = 0; i < 3; i++)
       volumetricMatrix.setColumnV(i, volumetricVectors[i]);
     try {
-      inverseMatrix.invertM(volumetricMatrix);
+      inverseMatrix.invertM3(volumetricMatrix);
     } catch (Exception e) {
       Logger.error("VolumeData error setting matrix -- bad unit vectors? ");
       return false;
@@ -306,7 +306,7 @@ public class VolumeData implements VolumeDataInterface {
 
   @Override
   public void transform(V3 v1, V3 v2) {
-    volumetricMatrix.transform2(v1, v2);
+    volumetricMatrix.rotate2(v1, v2);
   }
 
   @Override
@@ -376,7 +376,7 @@ public class VolumeData implements VolumeDataInterface {
   public void xyzToVoxelPt(float x, float y, float z, P3i pt3i) {
     ptXyzTemp.set(x, y, z);
     ptXyzTemp.sub(volumetricOrigin);
-    inverseMatrix.transform(ptXyzTemp);
+    inverseMatrix.rotate(ptXyzTemp);
     pt3i.set(Math.round(ptXyzTemp.x), Math.round(ptXyzTemp.y), Math
         .round(ptXyzTemp.z));
   }
@@ -392,7 +392,7 @@ public class VolumeData implements VolumeDataInterface {
       return (isSquared ? v * v : v);
     }
     ptXyzTemp.sub2(point, volumetricOrigin);
-    inverseMatrix.transform(ptXyzTemp);
+    inverseMatrix.rotate(ptXyzTemp);
     int iMax;
     int xLower = indexLower(ptXyzTemp.x, iMax = voxelCounts[0] - 1);
     int xUpper = indexUpper(ptXyzTemp.x, xLower, iMax);

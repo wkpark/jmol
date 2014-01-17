@@ -648,7 +648,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
       float theta = (isFlatMesh ? 0 : angle);
       for (int k = 0; k < nPer; k++, theta += angle) {
         if (useMat && k > 0)
-          mat.transform(wing);
+          mat.rotate(wing);
         switch (mode) {
         case MODE_FLAT:
           wingT.setT(wing1);

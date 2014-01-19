@@ -44,20 +44,20 @@ import org.jmol.util.Geodesic;
 
 public class GeoSurfaceRenderer extends DotsRenderer {
   
+  private boolean requireTranslucent;
+
   @Override
   protected boolean render() {
     GeoSurface gs = (GeoSurface) shape;
     iShowSolid = !(!viewer.checkMotionRendering(T.geosurface) && gs.ec.getDotsConvexMax() > 100);
-    if (!iShowSolid)
+    if (!iShowSolid && !g3d.setColix(C.BLACK))
       return false;
-    if (!g3d.setColix(C.BLACK))
-      return true;
     g3d.addRenderer(T.triangles);
     if (iShowSolid && faceMap == null)
       faceMap = new int[screenDotCount];
     //testRadiusAdjust = -1.2f;
     render1(gs);
-    return false;
+    return requireTranslucent;
   }
   
  @Override
@@ -66,6 +66,8 @@ protected void renderConvex(short colix, BS visibilityMap, int nPoints) {
     if (iShowSolid) {
       if (g3d.setColix(colix))       
         renderSurface(visibilityMap);
+      else
+        requireTranslucent = true;
       return;
     }
     renderDots(nPoints);

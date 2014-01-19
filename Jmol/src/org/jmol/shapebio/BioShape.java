@@ -96,12 +96,14 @@ public class BioShape extends AtomShape {
   int bfactorMin, bfactorMax;
   int range;
   float floatRange;
-  public final static int ALPHA_CARBON_VISIBILITY_FLAG 
-  = NucleicMonomer.CARTOON_VISIBILITY_FLAG | Atom.BACKBONE_VISIBILITY_FLAG
-  | JC.getShapeVisibilityFlag(JC.SHAPE_TRACE)
-  | JC.getShapeVisibilityFlag(JC.SHAPE_STRANDS)
-  | JC.getShapeVisibilityFlag(JC.SHAPE_MESHRIBBON)
-  | JC.getShapeVisibilityFlag(JC.SHAPE_RIBBONS);
+  public final static int CARTOON_VISIBILITY_FLAG = JC.getShapeVisibilityFlag(JC.SHAPE_CARTOON);  
+
+  private final static int ALPHA_CARBON_VISIBILITY_FLAG = CARTOON_VISIBILITY_FLAG 
+      | JC.getShapeVisibilityFlag(JC.SHAPE_TRACE)
+      | JC.getShapeVisibilityFlag(JC.SHAPE_STRANDS)
+      | JC.getShapeVisibilityFlag(JC.SHAPE_MESHRIBBON)
+      | JC.getShapeVisibilityFlag(JC.SHAPE_RIBBONS)
+      | JC.VIS_BACKBONE_FLAG; // no rockets?
 
   void calcBfactorRange() {
     bfactorMin = bfactorMax =
@@ -213,7 +215,7 @@ public class BioShape extends AtomShape {
         boolean isVisible = ((mads[i] = getMad(i, mad)) > 0);
         bsSizeSet.setBitTo(i, isVisible);
         monomers[i].setShapeVisibility(flag, isVisible);
-        shape.atoms[leadAtomIndex].setShapeVisibility(flag,isVisible);
+        shape.atoms[leadAtomIndex].setShapeVisibility(flag, isVisible);
         falsifyNearbyMesh(i);
       }
     }
@@ -383,7 +385,7 @@ public class BioShape extends AtomShape {
       int iAtom = leadAtomIndices[i];
       if (monomers[i].chain.model.modelSet.isAtomHidden(iAtom))
         continue;
-      shape.atoms[iAtom].setClickable(BioShape.ALPHA_CARBON_VISIBILITY_FLAG);
+      shape.atoms[iAtom].setClickable(ALPHA_CARBON_VISIBILITY_FLAG);
       if (isNucleicPolymer)
         ((NucleicMonomer) monomers[i]).setModelClickability();
     }

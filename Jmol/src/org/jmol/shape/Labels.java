@@ -366,7 +366,7 @@ public class Labels extends AtomShape {
             setBgcolix(i, defaultBgcolix);
           mads[i] = (short) (mode >= 0 ? 1 : -1);
         }
-        atom.setShapeVisibility(myVisibilityFlag, strings != null
+        setShapeVisibility(atom, strings != null
             && i < strings.length && strings[i] != null && mads[i] >= 0);
         //        } else if (strings != null && atomIndex < strings.length) {
         //        strings[atomIndex] = null;          
@@ -438,7 +438,7 @@ public class Labels extends AtomShape {
     String label = t.getText();
     Atom atom = atoms[i];
     addString(atom, i, label, label);
-    atom.setShapeVisibility(myVisibilityFlag, true);
+    setShapeVisibility(atom, true);
     if (t.colix >= 0)
       setLabelColix(i, t.colix, EnumPalette.UNKNOWN.id);
     setFont(i, t.font.fid);
@@ -479,7 +479,7 @@ public class Labels extends AtomShape {
   }
 
   private void addString(Atom atom, int i, String label, String strLabel) {
-    atom.setShapeVisibility(myVisibilityFlag, label != null);
+    setShapeVisibility(atom, label != null);
     if (strings == null || i >= strings.length)
       strings = AU.ensureLengthS(strings, i + 1);
     if (formats == null || i >= formats.length)
@@ -679,7 +679,7 @@ public class Labels extends AtomShape {
     int imin = -1;
     float zmin = Float.MAX_VALUE;
     for (Map.Entry<Integer, float[]> entry : labelBoxes.entrySet()) {
-      if (!atoms[entry.getKey().intValue()].isVisible(myVisibilityFlag))
+      if (!atoms[entry.getKey().intValue()].isVisible(myVisibilityFlag | JC.ATOM_INFRAME_NOTHIDDEN))
         continue;
       float[] boxXY = entry.getValue();
       float dx = x - boxXY[0];

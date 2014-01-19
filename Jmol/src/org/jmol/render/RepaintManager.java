@@ -241,7 +241,6 @@ public class RepaintManager implements JmolRepaintManager {
     boolean logTime = viewer.getBoolean(T.showtiming);
     viewer.finalizeTransformParameters();
     shapeManager.finalizeAtoms(null, null);
-    shapeManager.transformAtoms();
     JmolRendererInterface g3dExport = viewer.initializeExporter(params);
     isOK = (g3dExport != null);
     if (!isOK) {

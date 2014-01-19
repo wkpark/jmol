@@ -380,6 +380,11 @@ public class ShapeManager {
     shapes[JC.SHAPE_LABELS].setProperty("label:"+strLabel, Integer.valueOf(i), null);
   }
   
+  /**
+   * Sets shape visibility flags, including ATOM_VIS_INFRAME
+   * and ATOM_VIS_NOTHIDDEN.
+   * 
+   */
   void setModelVisibility() {
     if (shapes == null || shapes[JC.SHAPE_BALLS] == null)
       return;
@@ -393,11 +398,37 @@ public class ShapeManager {
 
     BS bs = viewer.getVisibleFramesBitSet();
     
-    //NOT balls (that is done later)
-    for (int i = 1; i < JC.SHAPE_MAX; i++)
+    // i=1 skips balls (0)
+
+    for (int i = 1; i < JC.SHAPE_MAX_ATOM_VIS_FLAG; i++)
       if (shapes[i] != null)
         shapes[i].setVisibilityFlags(bs);
-    // BALLS sets the JmolConstants.ATOM_IN_MODEL flag.
+    
+    // now et the JC.ATOM_IN_FRAME and JC.ATOM_NOTHIDDEN flags
+    // along with the bonds flag.
+    
+    boolean showHydrogens = viewer.getBoolean(T.showhydrogens);
+    BS bsDeleted = viewer.getDeletedAtoms();
+    Atom[] atoms = modelSet.atoms;
+    int flag0 = JC.ATOM_NOFLAGS & ~JC.VIS_BOND_FLAG;
+    for (int i = modelSet.atomCount; --i >= 0;) {
+      Atom atom = atoms[i];
+      atom.shapeVisibilityFlags &= flag0;
+      if (bsDeleted != null && bsDeleted.get(i) || !showHydrogens
+          && atom.getElementNumber() == 1)
+        continue;
+      int modelIndex = atom.getModelIndex();
+      if (bs.get(modelIndex)) {
+        int f = JC.ATOM_INFRAME;
+        if (!modelSet.isAtomHidden(i)) {
+          f |= JC.ATOM_NOTHIDDEN;
+        if (atom.madAtom != 0)
+          f |= JC.VIS_BOND_FLAG;
+        atom.setShapeVisibility(f, true);
+        }
+      }
+    }
+
     shapes[JC.SHAPE_BALLS].setVisibilityFlags(bs);
 
     //set clickability -- this enables measures and such
@@ -410,7 +441,7 @@ public class ShapeManager {
 
   private final int[] navigationCrossHairMinMax = new int[4];
 
-  public void finalizeAtoms(BS bsAtoms, P3 ptOffset) {
+  public int[] finalizeAtoms(BS bsAtoms, P3 ptOffset) {
     if (bsAtoms != null) {
       // translateSelected operation
       P3 ptCenter = viewer.getAtomSetCenter(bsAtoms);
@@ -422,17 +453,7 @@ public class ShapeManager {
       viewer.setAtomCoordsRelative(pt, bsAtoms);
       ptOffset.set(0, 0, 0);
     }
-    bsRenderableAtoms.clearAll();
-    Atom[] atoms = modelSet.atoms;
-    for (int i = modelSet.getAtomCount(); --i >= 0;) {
-      Atom atom = atoms[i];
-      if ((atom.getShapeVisibilityFlags() & JC.ATOM_IN_FRAME) == 0)
-        continue;
-      bsRenderableAtoms.set(i);
-    }
-  }
-
-  public int[] transformAtoms() {
+    modelSet.getRenderable(bsRenderableAtoms);
     Object[] vibrationVectors = modelSet.vibrations;
     Atom[] atoms = modelSet.atoms;
     boolean vibs = (vibrationVectors != null && viewer.isVibrationOn());

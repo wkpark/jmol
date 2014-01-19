@@ -1114,7 +1114,7 @@ abstract public class AtomCollection {
     bsFoundRectangle.and(bsEmpty);
     for (int i = atomCount; --i >= 0;) {
       Atom atom = atoms[i];
-      if (bsModels.get(atom.modelIndex) && atom.isVisible(0) 
+      if (bsModels.get(atom.modelIndex) && atom.checkVisible() 
           && rect.contains(atom.sX, atom.sY))
         bsFoundRectangle.set(i);
     }
@@ -2524,20 +2524,39 @@ abstract public class AtomCollection {
     return bsResult;
   }
 
-  public BS getVisibleSet() {
-    BS bs = new BS();
+  public BS bsVisible = new BS();
+  public BS bsClickable = new BS();
+  public boolean haveBSVisible, haveBSClickable;
+  
+  public void getRenderable(BS bsAtoms) {
+    bsAtoms.clearAll();
+    haveBSVisible = false;
+    haveBSClickable = false;
     for (int i = atomCount; --i >= 0;)
-      if (atoms[i].isVisible(0))
-        bs.set(i);
-    return bs;
+      if (atoms[i].isVisible(JC.ATOM_INFRAME))
+        bsAtoms.set(i);
+  }
+
+  public BS getVisibleSet() {
+    if (haveBSVisible)
+      return bsVisible;
+    bsVisible.clearAll();
+    for (int i = atomCount; --i >= 0;)
+      if (atoms[i].checkVisible())
+        bsVisible.set(i);
+    haveBSVisible = true;
+    return bsVisible;
   }
 
   public BS getClickableSet() {
-    BS bs = new BS();
+    if (haveBSClickable)
+      return bsClickable;
+    bsClickable.clearAll();
     for (int i = atomCount; --i >= 0;)
       if (atoms[i].isClickable())
-        bs.set(i);
-    return bs;
+        bsClickable.set(i);
+    haveBSClickable = true;
+    return bsClickable;
   }
 
   public BS bsModulated;

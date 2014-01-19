@@ -103,7 +103,7 @@ public class LabelsRenderer extends FontLineShapeRenderer {
     boolean isAntialiased = g3d.isAntialiased();
     for (int i = labelStrings.length; --i >= 0;) {
       atomPt = atom = atoms[i];
-      if (!atom.isVisible(myVisibilityFlag))
+      if (!isVisibleForMe(atom))
         continue;
       String label = labelStrings[i];
       if (label == null 

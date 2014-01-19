@@ -41,7 +41,7 @@ public class BackboneRenderer extends BioShapeRenderer {
       Atom atomB = modelSet.atoms[leadAtomIndices[i + 1]];
       if (atomA.getNBackbonesDisplayed() == 0
           || atomB.getNBackbonesDisplayed() == 0
-          || modelSet.isAtomHidden(atomB.getIndex()))
+          || modelSet.isAtomHidden(atomB.index))
         continue;
       if (!isDataFrame && atomA.distance(atomB) > 10)
         continue;

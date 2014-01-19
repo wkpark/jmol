@@ -72,7 +72,7 @@ public class VectorsRenderer extends ShapeRenderer {
     
     for (int i = modelSet.getAtomCount(); --i >= 0;) {
       Atom atom = atoms[i];
-      if (!atom.isVisible(myVisibilityFlag))
+      if (!isVisibleForMe(atom))
         continue;
       Vibration vibrationVector = viewer.getVibration(i);
       if (vibrationVector == null)

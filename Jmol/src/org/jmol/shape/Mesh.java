@@ -517,7 +517,7 @@ public class Mesh extends MeshSurface {
     if (mat4 == null)
       mat4 = M4.newM4(null);
     mat4.getRotationScale(m3);
-    mat4.get(v);
+    mat4.getTranslation(v);
     if (q == null) {
       if (isAbsolute)
         v.setT(offset);

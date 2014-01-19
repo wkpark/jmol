@@ -143,7 +143,7 @@ final public class EllipsoidsRenderer extends ShapeRenderer {
     mat.setRow(0, m4.m00, m4.m01, m4.m02);
     mat.setRow(1, m4.m10, m4.m11, m4.m12);
     mat.setRow(2, m4.m20, m4.m21, m4.m22);
-    matScreenToCartesian.invertM3(mat);
+    matScreenToCartesian.invertM(mat);
     setLogic();
     return true;
   }
@@ -211,7 +211,7 @@ final public class EllipsoidsRenderer extends ShapeRenderer {
         colix = ellipsoid.colix;
       } else {
         atom = modelSet.atoms[ellipsoid.tensor.atomIndex1];
-        if (atom.sZ <= 1 || !atom.isVisible(myVisibilityFlag))
+        if (atom.sZ <= 1 || !isVisibleForMe(atom))
           continue;
         colix = C.getColixInherited(ellipsoid.colix, atom.getColix());
       }
@@ -283,12 +283,12 @@ final public class EllipsoidsRenderer extends ShapeRenderer {
       v1.scale(factoredLengths[i]);
       mat.setColumnV(i, v1);
     }
-    mat.invertM3(mat);
+    mat.invertM(mat);
     // make this screen coordinates to ellisoidal coordinates
     matScreenToEllipsoid.mul2(mat, matScreenToCartesian);
-    matEllipsoidToScreen.invertM3(matScreenToEllipsoid);
+    matEllipsoidToScreen.invertM(matScreenToEllipsoid);
     perspectiveFactor = viewer.scaleToPerspective(s0.z, 1.0f);
-    matScreenToEllipsoid.mulf(1f/perspectiveFactor);
+    matScreenToEllipsoid.scale(1f/perspectiveFactor);
   }
   
   private final static V3[] unitAxisVectors = {

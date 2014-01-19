@@ -261,7 +261,7 @@ public class Sticks extends Shape {
         continue;
       Atom atom1 = bond.getAtom1();
       Atom atom2 = bond.getAtom2();
-      if (!atom1.isVisible(0) || !atom2.isVisible(0))
+      if (!atom1.checkVisible() || !atom2.checkVisible())
         continue;
       v.ave(atom1, atom2);
       int d2 = coordinateInRange(x, y, v, dmin2, ptXY);

@@ -794,7 +794,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         d[0] = P3.newP(m.jvxlData.boundingBox[0]);
         d[1] = P3.newP(m.jvxlData.boundingBox[1]);
         V3 v = new V3();
-        m.mat4.get(v);
+        m.mat4.getTranslation(v);
         d[0].add(v);
         d[1].add(v);
         data[2] = d;
@@ -817,7 +817,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         p.scale(0.5f);
         if (m.mat4 != null) {
           V3 v = new V3();
-          m.mat4.get(v);
+          m.mat4.getTranslation(v);
           p.add(v);
         }
         data[2] = p;

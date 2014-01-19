@@ -296,7 +296,7 @@ public class VolumeData implements VolumeDataInterface {
     for (int i = 0; i < 3; i++)
       volumetricMatrix.setColumnV(i, volumetricVectors[i]);
     try {
-      inverseMatrix.invertM3(volumetricMatrix);
+      inverseMatrix.invertM(volumetricMatrix);
     } catch (Exception e) {
       Logger.error("VolumeData error setting matrix -- bad unit vectors? ");
       return false;

@@ -44,7 +44,7 @@ public class Orientation {
       M3 rotationMatrix = (M3) viewer
           .getModelSetAuxiliaryInfoValue("defaultOrientationMatrix");
       if (rotationMatrix == null)
-        this.rotationMatrix.setIdentity();
+        this.rotationMatrix.setScale(1);
       else
         this.rotationMatrix.setM3(rotationMatrix);
     } else {

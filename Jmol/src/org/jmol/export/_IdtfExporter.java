@@ -282,7 +282,7 @@ public class _IdtfExporter extends __CartesianExporter {
 
     m.setIdentity();
     Quaternion q = viewer.getRotationQuaternion();
-    m.setM3(q.getMatrix());
+    m.setToM3(q.getMatrix());
     q.transformP2(referenceCenter, tempP1);
     m.m03 = -tempP1.x;
     m.m13 = -tempP1.y;
@@ -660,9 +660,9 @@ public class _IdtfExporter extends __CartesianExporter {
         addShader(key, colix);
       }
       if (ptX == null)
-        cylinderMatrix.setM3(getRotationMatrix(pt1, pt2, radius));
+        cylinderMatrix.setToM3(getRotationMatrix(pt1, pt2, radius));
       else
-        cylinderMatrix.setM3(getRotationMatrix(ptCenter, pt2, radius, ptX, ptY));
+        cylinderMatrix.setToM3(getRotationMatrix(ptCenter, pt2, radius, ptX, ptY));
       cylinderMatrix.m03 = pt1.x;
       cylinderMatrix.m13 = pt1.y;
       cylinderMatrix.m23 = pt1.z;
@@ -713,7 +713,7 @@ public class _IdtfExporter extends __CartesianExporter {
       addShader(key, colix);
     }
     checkPoint(ptCenter);
-    cylinderMatrix.setM3(getRotationMatrix(ptCenter, ptZ, 1, ptX, ptY));
+    cylinderMatrix.setToM3(getRotationMatrix(ptCenter, ptZ, 1, ptX, ptY));
     cylinderMatrix.m03 = ptZ.x;
     cylinderMatrix.m13 = ptZ.y;
     cylinderMatrix.m23 = ptZ.z;
@@ -737,7 +737,7 @@ public class _IdtfExporter extends __CartesianExporter {
       addShader(key, colix);
     }
     checkPoint(ptCenter);
-    cylinderMatrix.setM3(getRotationMatrix(ptCenter, ptPerp, radius));
+    cylinderMatrix.setToM3(getRotationMatrix(ptCenter, ptPerp, radius));
     cylinderMatrix.m03 = ptCenter.x;
     cylinderMatrix.m13 = ptCenter.y;
     cylinderMatrix.m23 = ptCenter.z;
@@ -941,7 +941,7 @@ public class _IdtfExporter extends __CartesianExporter {
       htNodes.put(key, v);
       addShader(key, colix);
     }
-    cylinderMatrix.setM3(getRotationMatrix(ptBase, ptTip, radius));
+    cylinderMatrix.setToM3(getRotationMatrix(ptBase, ptTip, radius));
     cylinderMatrix.m03 = ptBase.x;
     cylinderMatrix.m13 = ptBase.y;
     cylinderMatrix.m23 = ptBase.z;

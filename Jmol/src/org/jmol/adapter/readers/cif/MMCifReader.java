@@ -819,7 +819,7 @@ _pdbx_struct_oper_list.vector[3]
     int pt = ops.indexOf("|");
     if (pt >= 0) {
       M4 m = M4.newM4(htBiomts.get(ops.substring(0, pt)));
-      m.mulM4(htBiomts.get(ops.substring(pt+1)));
+      m.mul(htBiomts.get(ops.substring(pt+1)));
       return m;
     }
     return htBiomts.get(ops);

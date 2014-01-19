@@ -168,8 +168,8 @@ class HallRotationTerm {
       m2.m03 = -v.x;
       m2.m13 = -v.y;
       m2.m23 = -v.z;
-      seitzMatrix12ths.mul42(m1, seitzMatrix12ths);
-      seitzMatrix12ths.mulM4(m2);
+      seitzMatrix12ths.mul2(m1, seitzMatrix12ths);
+      seitzMatrix12ths.mul(m2);
     }
     if (Logger.debugging) {
       Logger.debug("code = " + code + "; primitive code =" + primitiveCode

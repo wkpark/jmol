@@ -23,8 +23,6 @@ import java.io.Serializable;
 /**
  * A single precision floating point 3 by 3 matrix.
  * 
- * @version specification 1.1, implementation $Revision: 1.9 $, $Date:
- *          2006/07/28 17:01:33 $
  * @author Kenji hiranabe
  * 
  *         additions by Bob Hanson hansonr@stolaf.edu 9/30/2012 for unique
@@ -33,52 +31,7 @@ import java.io.Serializable;
  *         
  *         
  */
-public class M3 implements Serializable {
-
-  /**
-   * The first element of the first row.
-   */
-  public float m00;
-
-  /**
-   * The second element of the first row.
-   */
-  public float m01;
-
-  /**
-   * third element of the first row.
-   */
-  public float m02;
-
-  /**
-   * The first element of the second row.
-   */
-  public float m10;
-
-  /**
-   * The second element of the second row.
-   */
-  public float m11;
-
-  /**
-   * The third element of the second row.
-   */
-  public float m12;
-
-  /**
-   * The first element of the third row.
-   */
-  public float m20;
-
-  /**
-   * The second element of the third row.
-   */
-  public float m21;
-
-  /**
-   * The third element of the third row.
-   */
-  public float m22;
+public class M3 extends M34 implements Serializable {
 
   /**
    * Constructs and initializes a Matrix3f to all zeros.
@@ -110,7 +63,7 @@ public class M3 implements Serializable {
   public static M3 newM3(M3 m1) {
     M3 m = new M3();
     if (m1 == null) {
-      m.setIdentity();
+      m.setScale(1);
       return m;
     }
     m.m00 = m1.m00;
@@ -128,23 +81,40 @@ public class M3 implements Serializable {
   }
 
   /**
-   * Returns a string that contains the values of this Matrix3f.
-   * 
-   * @return the String representation
+   * Sets this Matrix3f to a scalar * Identity.
+   * @param scale 
    */
-  @Override
-  public String toString() {
-    return "[\n  [" + m00 + "\t" + m01 + "\t" + m02 + "]" + "\n  [" + m10
-        + "\t" + m11 + "\t" + m12 + "]" + "\n  [" + m20 + "\t" + m21 + "\t"
-        + m22 + "] ]";
+  public void setScale(float scale) {
+    clear33();
+    m00 = m11 = m22 = scale;
   }
 
   /**
-   * Sets this Matrix3f to identity.
+   * Sets the value of this matrix to the double value of the Matrix3f argument.
+   * 
+   * @param m1
+   *        the matrix3f
    */
-  public void setIdentity() {
-    clear();
-    m00 = m11 = m22 = 1f;
+  public void setM3(M34 m1) {
+    setM33(m1);
+  }
+  /**
+   * Sets the values in this Matrix3f equal to the row-major array parameter
+   * (ie, the first four elements of the array will be copied into the first row
+   * of this matrix, etc.).
+   * 
+   * @param m
+   */
+  public void setA(float m[]) {
+    m00 = m[0];
+    m01 = m[1];
+    m02 = m[2];
+    m10 = m[3];
+    m11 = m[4];
+    m12 = m[5];
+    m20 = m[6];
+    m21 = m[7];
+    m22 = m[8];
   }
 
   /**
@@ -158,53 +128,7 @@ public class M3 implements Serializable {
    *        the new value
    */
   public void setElement(int row, int col, float v) {
-    switch (row) {
-    case 0:
-      switch (col) {
-      case 0:
-        m00 = v;
-        return;
-      case 1:
-        m01 = v;
-        return;
-      case 2: 
-        m02 = v;
-        return;
-      }
-      break;
-    case 1:
-      switch (col) {
-      case 0:
-        m10 = v;
-        return;
-      case 1:
-        m11 = v;
-        return;
-      case 2: 
-        m12 = v;
-        return;
-      }
-      break;
-    case 2: 
-      switch (col) {
-      case 0:
-        m20 = v;
-        return;
-      case 1:
-        m21 = v;
-        return;
-      case 2: 
-        m22 = v;
-        return;
-      }
-      break;
-    }
-    err();
-  }
-
-  protected void err() {
-    throw new ArrayIndexOutOfBoundsException(
-        "matrix column/row out of bounds");
+    set33(row, col, v);
   }
 
   /**
@@ -217,40 +141,7 @@ public class M3 implements Serializable {
    * @return the value at the indexed element
    */
   public float getElement(int row, int col) {
-    switch (row) {
-    case 0:
-      switch (col) {
-      case 0:
-        return m00;
-      case 1:
-        return m01;
-      case 2:
-        return m02;
-      }
-      break;
-    case 1:
-      switch (col) {
-      case 0:
-        return m10;
-      case 1:
-        return m11;
-      case 2:
-        return m12;
-      }
-      break;
-    case 2:
-      switch (col) {
-      case 0:
-        return m20;
-      case 1:
-        return m21;
-      case 2:
-        return m22;
-      }
-      break;
-    }
-    err();
-    return 0;
+    return get33(row, col);
   }
 
   /**
@@ -318,35 +209,6 @@ public class M3 implements Serializable {
   }
 
   /**
-   * Copies the matrix values in the specified row into the array parameter.
-   * 
-   * @param row
-   *        the matrix row
-   * @param v
-   *        The array into which the matrix row values will be copied
-   */
-  public void getRow(int row, float v[]) {
-    switch (row) {
-    case 0:
-      v[0] = m00;
-      v[1] = m01;
-      v[2] = m02;
-      return;
-    case 1:
-      v[0] = m10;
-      v[1] = m11;
-      v[2] = m12;
-      return;
-    case 2:
-      v[0] = m20;
-      v[1] = m21;
-      v[2] = m22;
-      return;
-    }
-    err();
-  }
-
-  /**
    * Sets the specified row of this matrix3d to the four values provided.
    * 
    * @param row
@@ -355,25 +217,19 @@ public class M3 implements Serializable {
    *        the replacement row
    */
   public void setRowA(int row, float v[]) {
-    switch (row) {
-    case 0:
-      m00 = v[0];
-      m01 = v[1];
-      m02 = v[2];
-      return;
-    case 1:
-      m10 = v[0];
-      m11 = v[1];
-      m12 = v[2];
-      return;
-    case 2:
-      m20 = v[0];
-      m21 = v[1];
-      m22 = v[2];
-      return;
-    default:
-      err();
-    }
+    setRow33(row, v);
+  }
+
+  /**
+   * Copies the matrix values in the specified row into the array parameter.
+   * 
+   * @param row
+   *        the matrix row
+   * @param v
+   *        The array into which the matrix row values will be copied
+   */
+  public void getRow(int row, float v[]) {
+    getRow33(row, v);
   }
 
   /**
@@ -389,19 +245,23 @@ public class M3 implements Serializable {
    *        the third row element
    */
   public void setColumn3(int column, float x, float y, float z) {
-    if (column == 0) {
+    switch (column) {
+    case 0:
       m00 = x;
       m10 = y;
       m20 = z;
-    } else if (column == 1) {
+      break;
+    case 1:
       m01 = x;
       m11 = y;
       m21 = z;
-    } else if (column == 2) {
+      break;
+    case 2:
       m02 = x;
       m12 = y;
       m22 = z;
-    } else {
+      break;
+    default:
       err();
     }
   }
@@ -414,20 +274,54 @@ public class M3 implements Serializable {
    * @param v
    *        the replacement column
    */
-  public void setColumnV(int column, V3 v) {
-    if (column == 0) {
+  public void setColumnV(int column, T3 v) {
+    switch (column) {
+    case 0:
       m00 = v.x;
       m10 = v.y;
       m20 = v.z;
-    } else if (column == 1) {
+      break;
+    case 1:
       m01 = v.x;
       m11 = v.y;
       m21 = v.z;
-    } else if (column == 2) {
+      break;
+    case 2:
       m02 = v.x;
       m12 = v.y;
       m22 = v.z;
-    } else {
+      break;
+    default:
+      err();
+    }
+  }
+
+  /**
+   * Copies the matrix values in the specified column into the vector parameter.
+   * 
+   * @param column
+   *        the matrix column
+   * @param v
+   *        The vector into which the matrix row values will be copied
+   */
+  public void getColumnV(int column, T3 v) {
+    switch (column) {
+    case 0:
+      v.x = m00;
+      v.y = m10;
+      v.z = m20;
+      break;
+    case 1:
+      v.x = m01;
+      v.y = m11;
+      v.z = m21;
+      break;
+    case 2:
+      v.x = m02;
+      v.y = m12;
+      v.z = m22;
+      break;
+    default:
       err();
     }
   }
@@ -441,47 +335,7 @@ public class M3 implements Serializable {
    *        the replacement column
    */
   public void setColumnA(int column, float v[]) {
-    if (column == 0) {
-      m00 = v[0];
-      m10 = v[1];
-      m20 = v[2];
-    } else if (column == 1) {
-      m01 = v[0];
-      m11 = v[1];
-      m21 = v[2];
-    } else if (column == 2) {
-      m02 = v[0];
-      m12 = v[1];
-      m22 = v[2];
-    } else {
-      err();
-    }
-  }
-
-  /**
-   * Copies the matrix values in the specified column into the vector parameter.
-   * 
-   * @param column
-   *        the matrix column
-   * @param v
-   *        The vector into which the matrix row values will be copied
-   */
-  public void getColumnV(int column, V3 v) {
-    if (column == 0) {
-      v.x = m00;
-      v.y = m10;
-      v.z = m20;
-    } else if (column == 1) {
-      v.x = m01;
-      v.y = m11;
-      v.z = m21;
-    } else if (column == 2) {
-      v.x = m02;
-      v.y = m12;
-      v.z = m22;
-    } else {
-      err();
-    }
+    setColumn33(column, v);
   }
 
   /**
@@ -493,21 +347,7 @@ public class M3 implements Serializable {
    *        The array into which the matrix row values will be copied
    */
   public void getColumn(int column, float v[]) {
-    if (column == 0) {
-      v[0] = m00;
-      v[1] = m10;
-      v[2] = m20;
-    } else if (column == 1) {
-      v[0] = m01;
-      v[1] = m11;
-      v[2] = m21;
-    } else if (column == 2) {
-      v[0] = m02;
-      v[1] = m12;
-      v[2] = m22;
-    } else {
-      err();
-    }
+    getColumn33(column, v);
   }
 
   /**
@@ -517,15 +357,7 @@ public class M3 implements Serializable {
    *        the other matrix
    */
   public void add(M3 m1) {
-    m00 += m1.m00;
-    m01 += m1.m01;
-    m02 += m1.m02;
-    m10 += m1.m10;
-    m11 += m1.m11;
-    m12 += m1.m12;
-    m20 += m1.m20;
-    m21 += m1.m21;
-    m22 += m1.m22;
+    add33(m1);
   }
 
   /**
@@ -536,33 +368,14 @@ public class M3 implements Serializable {
    *        the other matrix
    */
   public void sub(M3 m1) {
-    m00 -= m1.m00;
-    m01 -= m1.m01;
-    m02 -= m1.m02;
-    m10 -= m1.m10;
-    m11 -= m1.m11;
-    m12 -= m1.m12;
-    m20 -= m1.m20;
-    m21 -= m1.m21;
-    m22 -= m1.m22;
+    sub33(m1);
   }
 
   /**
    * Sets the value of this matrix to its transpose.
    */
   public void transpose() {
-    float tmp = m01;
-    m01 = m10;
-    m10 = tmp;
-
-    tmp = m02;
-    m02 = m20;
-    m20 = tmp;
-
-    tmp = m12;
-    m12 = m21;
-    m21 = tmp;
-
+    transpose33();
   }
 
   /**
@@ -573,88 +386,8 @@ public class M3 implements Serializable {
    */
   public void transposeM(M3 m1) {
     // alias-safe
-    setM3(m1);
-    transpose();
-  }
-
-  /**
-   * Sets the value of this matrix to the matrix conversion of the single
-   * precision axis and angle argument.
-   * 
-   * @param a1
-   *        the axis and angle to be converted
-   */
-  public void setAA(A4 a1) {
-    setFromAxisAngle(a1.x, a1.y, a1.z, a1.angle);
-  }
-
-  protected void setFromAxisAngle(double x, double y, double z, double angle) {
-    // Taken from Rick's which is taken from Wertz. pg. 412
-    // Bug Fixed and changed into right-handed by hiranabe
-    double n = Math.sqrt(x * x + y * y + z * z);
-    // zero-div may occur
-    n = 1 / n;
-    x *= n;
-    y *= n;
-    z *= n;
-    double c = Math.cos(angle);
-    double s = Math.sin(angle);
-    double omc = 1.0 - c;
-    m00 = (float) (c + x * x * omc);
-    m11 = (float) (c + y * y * omc);
-    m22 = (float) (c + z * z * omc);
-
-    double tmp1 = x * y * omc;
-    double tmp2 = z * s;
-    m01 = (float) (tmp1 - tmp2);
-    m10 = (float) (tmp1 + tmp2);
-
-    tmp1 = x * z * omc;
-    tmp2 = y * s;
-    m02 = (float) (tmp1 + tmp2);
-    m20 = (float) (tmp1 - tmp2);
-
-    tmp1 = y * z * omc;
-    tmp2 = x * s;
-    m12 = (float) (tmp1 - tmp2);
-    m21 = (float) (tmp1 + tmp2);
-  }
-
-  /**
-   * Sets the value of this matrix to the double value of the Matrix3f argument.
-   * 
-   * @param m1
-   *        the matrix3f
-   */
-  public void setM3(M3 m1) {
-    m00 = m1.m00;
-    m01 = m1.m01;
-    m02 = m1.m02;
-    m10 = m1.m10;
-    m11 = m1.m11;
-    m12 = m1.m12;
-    m20 = m1.m20;
-    m21 = m1.m21;
-    m22 = m1.m22;
-  }
-
-  /**
-   * Sets the values in this Matrix3f equal to the row-major array parameter
-   * (ie, the first four elements of the array will be copied into the first row
-   * of this matrix, etc.).
-   * 
-   * @param m
-   */
-  public void setA(float m[]) {
-    m00 = m[0];
-    m01 = m[1];
-    m02 = m[2];
-    m10 = m[3];
-    m11 = m[4];
-    m12 = m[5];
-    m20 = m[6];
-    m21 = m[7];
-    m22 = m[8];
+    setM33(m1);
+    transpose33();
   }
 
   /**
@@ -664,8 +397,8 @@ public class M3 implements Serializable {
    * @param m1
    *        the matrix to be inverted
    */
-  public void invertM3(M3 m1) {
-    setM3(m1);
+  public void invertM(M3 m1) {
+    setM33(m1);
     invert();
   }
 
@@ -681,7 +414,7 @@ public class M3 implements Serializable {
     set9(m11 * m22 - m12 * m21, m02 * m21 - m01 * m22, m01 * m12 - m02 * m11,
         m12 * m20 - m10 * m22, m00 * m22 - m02 * m20, m02 * m10 - m00 * m12,
         m10 * m21 - m11 * m20, m01 * m20 - m00 * m21, m00 * m11 - m01 * m10);
-    mulf((float) s);
+    scale((float) s);
   }
 
   /**
@@ -693,25 +426,6 @@ public class M3 implements Serializable {
     // less *,+,- calculation than expanded expression.
     return m00 * (m11 * m22 - m21 * m12) - m01 * (m10 * m22 - m20 * m12) + m02
         * (m10 * m21 - m20 * m11);
-  }
-
-  /**
-   * Sets the value of this matrix to a scale matrix with the passed scale
-   * amount.
-   * 
-   * @param scale
-   *        the scale factor for the matrix
-   */
-  public void setScale(float scale) {
-    m00 = scale;
-    m01 = 0.0f;
-    m02 = 0.0f;
-    m10 = 0.0f;
-    m11 = scale;
-    m12 = 0.0f;
-    m20 = 0.0f;
-    m21 = 0.0f;
-    m22 = scale;
   }
 
   /**
@@ -783,16 +497,8 @@ public class M3 implements Serializable {
    * @param scalar
    *        The scalar multiplier.
    */
-  public void mulf(float scalar) {
-    m00 *= scalar;
-    m01 *= scalar;
-    m02 *= scalar;
-    m10 *= scalar;
-    m11 *= scalar;
-    m12 *= scalar;
-    m20 *= scalar;
-    m21 *= scalar;
-    m22 *= scalar;
+  public void scale(float scalar) {
+    mul33(scalar);
   }
 
   /**
@@ -839,7 +545,7 @@ public class M3 implements Serializable {
    */
   @Override
   public boolean equals(Object o) {
-    if (o instanceof M4 || !(o instanceof M3))
+    if (!(o instanceof M3))
       return false;
     M3 m = (M3) o;
     return m00 == m.m00 && m01 == m.m01 && m02 == m.m02 && m10 == m.m10
@@ -869,31 +575,7 @@ public class M3 implements Serializable {
    * Sets this matrix to all zeros.
    */
   public void setZero() {
-    clear();
-  }
-
-  protected void clear() {
-    m00 = m01 = m02 = m10 = m11 = m12 = m20 = m21 = m22 = 0.0f;
-  }
-
-  public void rotate(T3 t) {
-    // alias-safe
-    rotate2(t, t);
-  }
-
-  /**
-   * Transform the vector vec using this Matrix3f and place the result into
-   * vecOut.
-   * 
-   * @param t
-   *        the single precision vector to be transformed
-   * @param result
-   *        the vector into which the transformed values are placed
-   */
-  public void rotate2(T3 t, T3 result) {
-    // alias-safe
-    result.set(m00 * t.x + m01 * t.y + m02 * t.z, m10 * t.x + m11 * t.y + m12
-        * t.z, m20 * t.x + m21 * t.y + m22 * t.z);
+    clear33();
   }
 
   /**
@@ -920,6 +602,29 @@ public class M3 implements Serializable {
     this.m20 = m20;
     this.m21 = m21;
     this.m22 = m22;
+  }
+
+  /**
+   * Returns a string that contains the values of this Matrix3f.
+   * 
+   * @return the String representation
+   */
+  @Override
+  public String toString() {
+    return "[\n  [" + m00 + "\t" + m01 + "\t" + m02 + "]" + "\n  [" + m10
+        + "\t" + m11 + "\t" + m12 + "]" + "\n  [" + m20 + "\t" + m21 + "\t"
+        + m22 + "] ]";
+  }
+
+  /**
+   * Sets the value of this matrix to the matrix conversion of the single
+   * precision axis and angle argument.
+   * 
+   * @param a
+   *        the axis and angle to be converted
+   */
+  public void setAA(A4 a) {
+    setAA33(a);
   }
 
 }

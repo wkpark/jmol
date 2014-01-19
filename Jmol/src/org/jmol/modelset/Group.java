@@ -71,14 +71,7 @@ public class Group {
   private final static int INSERTION_CODE_MASK = 0x7F; //7-bit character codes, please!
   private final static int SEQUENCE_NUMBER_SHIFT = 8;
   
-  public int shapeVisibilityFlags = 0;
-  
-  private float phi = Float.NaN;
-  private float psi = Float.NaN;
-  private float omega = Float.NaN;
-  private float straightness = Float.NaN;
-  private float mu = Float.NaN;
-  private float theta = Float.NaN;
+  public int shapeVisibilityFlags;
   
   public Group() {}
   
@@ -95,57 +88,6 @@ public class Group {
     this.firstAtomIndex = firstAtomIndex;
     this.lastAtomIndex = lastAtomIndex;
     return this;
-  }
-
-  protected boolean calcBioParameters() {
-    return false;
-  }
-
-  public boolean haveParameters() {
-    return true;
-  }
-  
-  public void setGroupParameter(int tok, float f) {
-    switch (tok) {
-    case T.phi:
-      phi = f;
-      break;
-    case T.psi:
-      psi = f;
-      break;
-    case T.omega:
-      omega = f;
-      break;
-    case T.eta:
-      mu = f;
-      break;
-    case T.theta:
-      theta = f;
-      break;
-    case T.straightness:
-      straightness = f;
-      break;
-    }
-  }
-
-  public float getGroupParameter(int tok) {
-    if (!haveParameters())
-      calcBioParameters();
-    switch (tok) {
-    case T.omega:
-      return omega;
-    case T.phi:
-      return phi;
-    case T.psi:
-      return psi;
-    case T.eta:
-      return mu;
-    case T.theta:
-      return theta;
-    case T.straightness:
-      return straightness;
-    }
-    return Float.NaN;
   }
 
   public void setModelSet(ModelSet modelSet) {
@@ -242,7 +184,7 @@ public class Group {
   private static Map<String, Short> htGroup = new Hashtable<String, Short>();
 
   private static String[] group3Names = new String[128];
-  private static short group3NameCount = 0;
+  private static short group3NameCount;
   
   static {
     // this is acceptable for J2S compilation SPECIFICALLY 
@@ -266,7 +208,7 @@ public class Group {
     if (group3 == null)
       return -1;
     short groupID = lookupGroupID(group3);
-    return (groupID != -1) ? groupID : addGroup3Name(group3);
+    return (groupID == -1 ? addGroup3Name(group3) : groupID);
   }
 
   public static short lookupGroupID(String group3) {
@@ -564,6 +506,16 @@ public class Group {
       int z = atom.sZ - atom.sD / 2 - 2;
       if (z < minZ[0])
         minZ[0] = Math.max(1, z);
+  }
+
+  /**
+   * Monomers only
+   * 
+   * @param tok  
+   * @return NaN 
+   */
+  public float getGroupParameter(int tok) {
+    return Float.NaN;
   }
 
 }

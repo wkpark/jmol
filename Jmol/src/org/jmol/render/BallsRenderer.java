@@ -44,7 +44,7 @@ public class BallsRenderer extends ShapeRenderer {
       for (int i = bsOK.nextSetBit(0); i >= 0; i = bsOK.nextSetBit(i + 1)) {
         Atom atom = atoms[i];
         if (atom.sD > 0
-            && (atom.getShapeVisibilityFlags() & myVisibilityFlag) != 0) {
+            && (atom.shapeVisibilityFlags & myVisibilityFlag) != 0) {
           if (g3d.setColix(colixes == null ? atom.getColix() : Shape.getColix(colixes, i, atom))) {
             g3d.drawAtom(atom);
           } else {

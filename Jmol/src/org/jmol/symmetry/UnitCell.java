@@ -83,8 +83,8 @@ class UnitCell extends SimpleUnitCell {
     if (mat == null)
       return;
     M4 m = new M4();
-    m.setM3(mat);
-    matrixFractionalToCartesian.mul42(m, matrixFractionalToCartesian);
+    m.setToM3(mat);
+    matrixFractionalToCartesian.mul2(m, matrixFractionalToCartesian);
     matrixCartesianToFractional.invertM(matrixFractionalToCartesian);
     calcUnitcellVertices();
   }

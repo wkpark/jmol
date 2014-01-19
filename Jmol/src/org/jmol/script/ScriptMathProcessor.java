@@ -1114,7 +1114,7 @@ public class ScriptMathProcessor {
         if (pt4 != null) {
           M4 m4b = M4.newM4((M4) x2.value);
           m4b.transpose();
-          m4b.transform4(pt4);
+          m4b.transform(pt4);
           if (x1.tok == T.varray)
             return addXVar(SV.getVariableAF(new float[] { pt4.x, pt4.y, pt4.z,
                 pt4.w }));
@@ -1157,7 +1157,7 @@ public class ScriptMathProcessor {
           return addXPt(pt);
         }
         if (pt4 != null) {
-          m4.transform4(pt4);
+          m4.transform(pt4);
           if (x2.tok == T.varray)
             return addXVar(SV.getVariableAF(new float[] { pt4.x, pt4.y, pt4.z,
                 pt4.w }));
@@ -1165,7 +1165,7 @@ public class ScriptMathProcessor {
         }
         if (x2.tok == T.matrix4f) {
           M4 m4b = M4.newM4((M4) x2.value);
-          m4b.mul42(m4, m4b);
+          m4b.mul2(m4, m4b);
           return addXM4(m4b);
         }
         return addXStr("NaN");
@@ -1359,7 +1359,7 @@ public class ScriptMathProcessor {
           return addXM3(m3);
         case 2:
           V3 v3 = new V3();
-          m4.get(v3);
+          m4.getTranslation(v3);
           return addXPt(P3.newP(v3));
         default:
           return false;
@@ -1506,6 +1506,8 @@ public class ScriptMathProcessor {
       case T.sum:
       case T.sum2:
         return addXObj(eval.getExtension().getMinMax(x2.getList(), op.intValue));
+      case T.pop:
+        return addXVar(x2.pushPop(null));
       case T.sort:
       case T.reverse:
         return addXVar(x2

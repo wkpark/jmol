@@ -50,7 +50,7 @@ public class HalosRenderer extends ShapeRenderer {
     g3d.addRenderer(T.circle);
     for (int i = modelSet.getAtomCount(); --i >= 0;) {
       Atom atom = atoms[i];
-      if ((atom.getShapeVisibilityFlags() & JC.ATOM_IN_FRAME) == 0)
+      if ((atom.shapeVisibilityFlags & JC.ATOM_INFRAME) == 0)
         continue;
       boolean isHidden = modelSet.isAtomHidden(i);
       mad = (halos.mads == null ? 0 : halos.mads[i]);
@@ -100,7 +100,7 @@ public class HalosRenderer extends ShapeRenderer {
     if (d < 0) { //unsized selection
       d = atom.sD;
       if (d == 0) {
-        float ellipsemax = (atom.isShapeVisible(JC.SHAPE_ELLIPSOIDS) ? atom.getADPMinMax(true) : 0);
+        float ellipsemax = (atom.isVisible(JC.SHAPE_ELLIPSOIDS) ? atom.getADPMinMax(true) : 0);
         if (ellipsemax > 0)
           d = viewer.scaleToScreen(z, (int) Math.floor(ellipsemax * 2000));
         if (d == 0) {

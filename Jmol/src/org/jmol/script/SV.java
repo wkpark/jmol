@@ -45,6 +45,7 @@ import javajs.util.SB;
 import org.jmol.util.Measure;
 
 import javajs.util.M3;
+import javajs.util.M34;
 import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.P4;
@@ -194,7 +195,7 @@ public class SV extends T implements JSONEncodable {
     // rotation angle (axisangle), and cos(theta/2) (quaternion).
     if (x instanceof Quaternion)
       return newV(point4f, ((Quaternion) x).toPoint4f());
-    if (x instanceof M3)
+    if (x instanceof M34)
       return newV(x instanceof M4 ? matrix4f : matrix3f, x);
     if (x instanceof M4)
       return newV(matrix4f, x);
@@ -1062,10 +1063,8 @@ public class SV extends T implements JSONEncodable {
         v = new BondSet((BS) v);
       return newV(bitset, v);
     }
-    if (v instanceof M3)
-      return (newV(matrix3f, v));
-    if (v instanceof M4)
-      return newV(matrix4f, v);
+    if (v instanceof M34)
+      return (newV(v instanceof M3 ? matrix3f : matrix4f, v));
     return o;
   }
 

@@ -4433,9 +4433,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       return;
     boolean antialias2 = antialiasDisplay && global.antialiasTranslucent;
     finalizeTransformParameters();
-    shapeManager.finalizeAtoms(transformManager.bsSelectedAtoms,
+    int[] minMax = shapeManager.finalizeAtoms(transformManager.bsSelectedAtoms,
         transformManager.ptOffset);
-    int[] minMax = shapeManager.transformAtoms();
     transformManager.bsSelectedAtoms = null;
     if (isWebGL) {
       repaintManager.renderExport(gdata, modelSet, jsParams);
@@ -4879,8 +4878,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       return;
     loadShape(JC.SHAPE_HOVER);
     if (isLabel
-        && modelSet.atoms[atomIndex].isShapeVisible(JC
-            .getShapeVisibilityFlag(JC.SHAPE_LABELS))) {
+        && modelSet.atoms[atomIndex].isVisible(JC.VIS_LABEL_FLAG)) {
       setShapeProperty(JC.SHAPE_HOVER, "specialLabel", GT
           ._("Drag to move label"));
     }

@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import javajs.util.List;
+import javajs.util.M34;
 import javajs.util.PT;
 import javajs.util.SB;
 import javajs.util.A4;
@@ -101,8 +102,8 @@ public class Escape {
       return eP4((P4) x);
     if (PT.isAS(x))
       return eAS((String[]) x, true);
-    if (x instanceof M3) 
-      return PT.rep(((M3) x).toString(), "\t", ",\t");
+    if (x instanceof M34) 
+      return PT.rep(x.toString(), "\t", ",\t");
     if (x instanceof A4) {
       A4 a = (A4) x;
       return "{" + a.x + " " + a.y + " " + a.z + " " + (float) (a.angle * 180d/Math.PI) + "}";  
@@ -571,7 +572,7 @@ public class Escape {
       }
       return packageReadableSb(name, "List[" + imax + "]", sb);
     }
-    if (info instanceof M3
+    if (info instanceof M34
         || info instanceof T3
         || info instanceof P4
         || info instanceof A4) {

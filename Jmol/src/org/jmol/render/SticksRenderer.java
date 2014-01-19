@@ -145,11 +145,10 @@ public class SticksRenderer extends FontLineShapeRenderer {
       }
     }
     if (!isPass2
-        && (!a.isInFrame() || !b.isInFrame()
+        && (!a.isVisible(JC.ATOM_INFRAME_NOTHIDDEN) 
+            || !b.isVisible(JC.ATOM_INFRAME_NOTHIDDEN)
             || !g3d.isInDisplayRange(a.sX, a.sY)
-            || !g3d.isInDisplayRange(b.sX, b.sY)
-            || modelSet.isAtomHidden(a.getIndex()) || modelSet
-            .isAtomHidden(b.getIndex())))
+            || !g3d.isInDisplayRange(b.sX, b.sY)))
       return false;
 
     if (slabbing) {
@@ -387,7 +386,7 @@ public class SticksRenderer extends FontLineShapeRenderer {
   }
 
   private int getAromaticDottedBondMask() {
-    Atom atomC = b.findAromaticNeighbor(a.getIndex());
+    Atom atomC = b.findAromaticNeighbor(a.index);
     if (atomC == null)
       return 1;
     int dxAC = atomC.sX - xA;

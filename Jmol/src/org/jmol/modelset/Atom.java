@@ -107,7 +107,6 @@ public class Atom extends Point3fi implements JmolNode {
   
   public int clickabilityFlags;
   public int shapeVisibilityFlags;
-  public static final int BACKBONE_VISIBILITY_FLAG = JC.getShapeVisibilityFlag(JC.SHAPE_BACKBONE);
 
   /**
    * @j2sIgnoreSuperConstructor
@@ -148,10 +147,6 @@ public class Atom extends Point3fi implements JmolNode {
     this.altloc = altLoc;
   }
   
-  public final void setShapeVisibilityFlags(int flag) {
-    shapeVisibilityFlags = flag;
-  }
-
   public final void setShapeVisibility(int flag, boolean isVisible) {
     if(isVisible) {
       shapeVisibilityFlags |= flag;        
@@ -663,16 +658,8 @@ public class Atom extends Point3fi implements JmolNode {
 //        : group.chain.model.modelSet.isZeroBased ? atomIndex : atomIndex);
    }
 
-   public boolean isInFrame() {
-     return ((shapeVisibilityFlags & JC.ATOM_IN_FRAME) != 0);
-   }
-
-   public int getShapeVisibilityFlags() {
-     return shapeVisibilityFlags;
-   }
-   
-   public boolean isShapeVisible(int shapeVisibilityFlag) {
-     return ((shapeVisibilityFlags & shapeVisibilityFlag) != 0);
+   public boolean isVisible(int flags) {
+     return ((shapeVisibilityFlags & flags) == flags);
    }
 
    public float getPartialCharge() {
@@ -1023,16 +1010,10 @@ public class Atom extends Point3fi implements JmolNode {
 
   public boolean isClickable() {
     // certainly if it is not visible, then it can't be clickable
-    if (!isVisible(0))
-      return false;
-    int flags = shapeVisibilityFlags | group.shapeVisibilityFlags;
-    return ((flags & clickabilityFlags) != 0);
+    return (checkVisible() && clickabilityFlags != 0 
+        && ((shapeVisibilityFlags | group.shapeVisibilityFlags) & clickabilityFlags) != 0);
   }
 
-  public int getClickabilityFlags() {
-    return clickabilityFlags;
-  }
-  
   public void setClickable(int flag) {
     if (flag == 0)
       clickabilityFlags = 0;
@@ -1040,32 +1021,35 @@ public class Atom extends Point3fi implements JmolNode {
       clickabilityFlags |= flag;
   }
   
-  /**
-   * determine if an atom or its PDB group is visible
-   * @param flags
-   * @return true if the atom is in the "select visible" set
-   */
-  public boolean isVisible(int flags) {
-    // Is the atom's model visible? Is the atom NOT hidden?
-    if (!isInFrame() || group.chain.model.modelSet.isAtomHidden(index))
-      return false;
-    // Is any shape associated with this atom visible?
-    if (flags != 0)
-      return (isShapeVisible(flags));  
-    flags = shapeVisibilityFlags;
-    // Is its PDB group visible in any way (cartoon, e.g.)?
-    //  An atom is considered visible if its PDB group is visible, even
-    //  if it does not show up itself as part of the structure
-    //  (this will be a difference in terms of *clickability*).
-    // except BACKBONE -- in which case we only see the lead atoms
-    if (group.shapeVisibilityFlags != Atom.BACKBONE_VISIBILITY_FLAG
-        || isLeadAtom())
-      flags |= group.shapeVisibilityFlags;
+  public boolean checkVisible() {
+    if (isVisible(JC.ATOM_VISSET))
+      return isVisible(JC.ATOM_VISIBLE);
+    boolean isVis = isVisible(JC.ATOM_INFRAME_NOTHIDDEN);
+    if (isVis) {
+      int flags = shapeVisibilityFlags;
+      // Is its PDB group visible in any way (cartoon, e.g.)?
+      //  An atom is considered visible if its PDB group is visible, even
+      //  if it does not show up itself as part of the structure
+      //  (this will be a difference in terms of *clickability*).
+      // except BACKBONE -- in which case we only see the lead atoms
+      if (group.shapeVisibilityFlags != 0
+          && (group.shapeVisibilityFlags != JC.VIS_BACKBONE_FLAG || isLeadAtom()))
+        flags |= group.shapeVisibilityFlags;
+      // We know that (flags & AIM), so now we must remove that flag
+      // and check to see if any others are remaining.
+      // Only then is the atom considered visible.
+      flags &= JC.ATOM_SHAPE_VIS_MASK;
+      // problem with display of bond-only when not clickable. 
+      // bit of a kludge here.
+      if (flags == JC.VIS_BOND_FLAG && clickabilityFlags == 0)
+        flags = 0;
+      isVis = (flags != 0);
+      if (isVis)
+        shapeVisibilityFlags |= JC.ATOM_VISIBLE;
+    }
+    shapeVisibilityFlags |= JC.ATOM_VISSET;
+    return isVis;
 
-    // We know that (flags & AIM), so now we must remove that flag
-    // and check to see if any others are remaining.
-    // Only then is the atom considered visible.
-    return ((flags & ~JC.ATOM_IN_FRAME) != 0);
   }
 
   @Override
@@ -1225,7 +1209,7 @@ public class Atom extends Point3fi implements JmolNode {
     case T.atomid:
       return atom.atomID;
     case T.atomindex:
-      return atom.getIndex();
+      return atom.index;
     case T.bondcount:
       return atom.getCovalentBondCount();
     case T.chainno:
@@ -1456,7 +1440,7 @@ public class Atom extends Point3fi implements JmolNode {
       return (ch == '\0' ? "" : "" + ch);
     case T.label:
     case T.format:
-      String s = atom.group.chain.model.modelSet.getAtomLabel(atom.getIndex());
+      String s = atom.group.chain.model.modelSet.getAtomLabel(atom.index);
       if (s == null)
         s = "";
       return s;

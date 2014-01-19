@@ -1399,17 +1399,20 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   public final static int SHAPE_MIN_SURFACE = 24; //////////
 
-    public final static int SHAPE_ISOSURFACE  = 24;
-    public final static int SHAPE_CONTACT     = 25;
-    public final static int SHAPE_LCAOCARTOON = 26;
-    public final static int SHAPE_MO          = 27;  //but no ID for MO
-    public final static int SHAPE_PMESH       = 28;
-    public final static int SHAPE_PLOT3D      = 29;
+  public final static int SHAPE_ISOSURFACE  = 24;
+  public final static int SHAPE_CONTACT     = 25;
+  public final static int SHAPE_LCAOCARTOON = 26;    
+  public final static int SHAPE_MO          = 27;  //but no ID for MO
+
+  public final static int SHAPE_MAX_ATOM_VIS_FLAG = 28; // no assoc with atoms after this point
+    
+  public final static int SHAPE_PMESH       = 28;
+  public final static int SHAPE_PLOT3D      = 29;
 
   public final static int SHAPE_MAX_SURFACE         = 29; //////////
   public final static int SHAPE_MAX_MESH_COLLECTION = 29; //////////
   
-    public final static int SHAPE_ECHO       = 30;
+  public final static int SHAPE_ECHO       = 30;
   
   public final static int SHAPE_MAX_HAS_ID = 31;
   
@@ -1426,6 +1429,28 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     return i >= JC.SHAPE_MIN_SECONDARY && i < JC.SHAPE_MAX_SECONDARY;
   }
   
+  // ATOM_IN_FRAME simply associates an atom with the current model
+  // but doesn't necessarily mean it is visible
+  // ATOM_VIS_SET and ATOM_VISIBLE are checked once only for each atom per rendering
+
+  public final static int ATOM_INFRAME     = 1;
+  public final static int ATOM_VISSET      = 2;
+  public final static int ATOM_VISIBLE     = 4;
+  public final static int ATOM_NOTHIDDEN   = 8;
+  public final static int ATOM_NOFLAGS     = ~15;
+  public final static int ATOM_INFRAME_NOTHIDDEN = ATOM_INFRAME | ATOM_NOTHIDDEN;
+  public final static int ATOM_SHAPE_VIS_MASK = ~ATOM_INFRAME_NOTHIDDEN;
+    
+  // note that this is only valid for shapes with IDs < 28. 
+
+  public final static int getShapeVisibilityFlag(int shapeID) {
+    return (shapeID < SHAPE_MAX_ATOM_VIS_FLAG ? 16 << shapeID : 0);
+  }
+
+  public static final int VIS_BOND_FLAG = 16 << SHAPE_STICKS;
+  public static final int VIS_LABEL_FLAG = 16 << SHAPE_LABELS;
+  public static final int VIS_BACKBONE_FLAG = 16 << JC.SHAPE_BACKBONE;
+
   // note that these next two arrays *MUST* be in the same sequence 
   // given in SHAPE_* and they must be capitalized exactly as in their class name 
 
@@ -1540,14 +1565,6 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
         : ".") + shapeClassBases[shapeID];
   }
 
-  
-  // this atom flag simply associates an atom with the current model
-  // but doesn't necessarily mean it is visible
-
-  public final static int ATOM_IN_FRAME    = 1;
-  public final static int ATOM_SLABBED     = 2;  // reserved for future use
-  
-  
   public final static String binaryExtensions = ";pse=PyMOL;";// PyMOL
 
   public static final String SCRIPT_COMPLETED = "Script completed";
@@ -1555,10 +1572,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static String IMAGE_TYPES = JPEG_EXTENSIONS + "gif;pdf;ppm;png;pngj;pngt;";
   public static final String IMAGE_OR_SCENE = IMAGE_TYPES + "scene;";
 
-  public final static int getShapeVisibilityFlag(int shapeID) {
-    return (4 << shapeID);
-  }
-
+  
   static {
     /**
      * @j2sNative

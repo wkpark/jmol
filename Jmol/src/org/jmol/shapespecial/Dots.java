@@ -117,7 +117,7 @@ public class Dots extends AtomShape {
       thisAtom = ((Integer) value).intValue();
       if (thisAtom >= atoms.length)
         return;
-      atoms[thisAtom].setShapeVisibility(myVisibilityFlag, true);
+      setShapeVisibility(atoms[thisAtom], true);
       ec.allocDotsConvexMaps(atomCount);
       return;
     }
@@ -126,12 +126,12 @@ public class Dots extends AtomShape {
         return;
       isActive = true;
       ec.setFromBits(thisAtom, (BS) value);
-      atoms[thisAtom].setShapeVisibility(myVisibilityFlag, true);
+      setShapeVisibility(atoms[thisAtom], true);
       if (mads == null) {
         ec.setMads(null);
         mads = new short[atomCount];
         for (int i = 0; i < atomCount; i++)          
-          if (atoms[i].isInFrame() && atoms[i].isShapeVisible(myVisibilityFlag)) 
+          if (atoms[i].isVisible(JC.ATOM_INFRAME | myVisibilityFlag)) 
             // was there a reason we were not checking for hidden?
             try {
               mads[i] = (short) (ec.getAppropriateRadius(i) * 1000);
@@ -286,7 +286,7 @@ public class Dots extends AtomShape {
   public void setModelClickability() {
     for (int i = atomCount; --i >= 0;) {
       Atom atom = atoms[i];
-      if ((atom.getShapeVisibilityFlags() & myVisibilityFlag) == 0
+      if ((atom.shapeVisibilityFlags & myVisibilityFlag) == 0
           || modelSet.isAtomHidden(i))
         continue;
       atom.setClickable(myVisibilityFlag);

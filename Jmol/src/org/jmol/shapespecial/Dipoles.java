@@ -471,10 +471,10 @@ public class Dipoles extends Shape {
       if (dipoles[i] != null
           && dipoles[i].atoms[0] != null
           && dipoles[i].atoms[1] != null
-          && (dipoles[i].atoms[0].getIndex() == atomIndex1
-              && dipoles[i].atoms[1].getIndex() == atomIndex2 || dipoles[i].atoms[1]
-              .getIndex() == atomIndex1
-              && dipoles[i].atoms[0].getIndex() == atomIndex2))
+          && (dipoles[i].atoms[0].index == atomIndex1
+              && dipoles[i].atoms[1].index == atomIndex2 || dipoles[i].atoms[1]
+              .index == atomIndex1
+              && dipoles[i].atoms[0].index == atomIndex2))
         return i;
     }
     return -1;
@@ -504,7 +504,7 @@ public class Dipoles extends Shape {
   }
 
   private Dipole findDipole(Atom atom1, Atom atom2, boolean doAllocate) {
-    int dipoleIndex = getDipoleIndex(atom1.getIndex(), atom2.getIndex());
+    int dipoleIndex = getDipoleIndex(atom1.index, atom2.index);
     if (dipoleIndex >= 0) {
       return dipoles[dipoleIndex];
     }
@@ -587,11 +587,11 @@ public class Dipoles extends Shape {
       info.put("origin", dipole.origin);
       if (dipole.atoms[0] != null) {
         atomInfo = new Hashtable<String, Object>();
-        viewer.getAtomIdentityInfo(dipole.atoms[0].getIndex(), atomInfo);
+        viewer.getAtomIdentityInfo(dipole.atoms[0].index, atomInfo);
         List<Map<String, Object>> atoms = new  List<Map<String,Object>>();
         atoms.addLast(atomInfo);
         atomInfo = new Hashtable<String, Object>();
-        viewer.getAtomIdentityInfo(dipole.atoms[1].getIndex(), atomInfo);
+        viewer.getAtomIdentityInfo(dipole.atoms[1].index, atomInfo);
         atoms.addLast(atomInfo);
         info.put("atoms", atoms);
         info.put("magnitude", Float.valueOf(dipole.vector.length()));

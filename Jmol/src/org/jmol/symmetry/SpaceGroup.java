@@ -512,10 +512,10 @@ class SpaceGroup {
       newOps[0].setIdentity();
       int nOps = operationCount;
       for (int j = 1; j <= nRot; j++) {
-        newOps[j].mul42(mat1, newOps[0]);
+        newOps[j].mul2(mat1, newOps[0]);
         newOps[0].setM4(newOps[j]);
         for (int k = 0; k < nOps; k++) {
-          operation.mul42(newOps[j], operations[k]);
+          operation.mul2(newOps[j], operations[k]);
           SymmetryOperation.normalizeTranslation(operation);
           String xyz = SymmetryOperation.getXYZFromMatrix(operation, true, true, true);
           addSymmetrySM(xyz, operation);

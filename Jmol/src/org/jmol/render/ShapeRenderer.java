@@ -25,6 +25,7 @@
 package org.jmol.render;
 
 import org.jmol.api.JmolRendererInterface;
+import org.jmol.modelset.Atom;
 import org.jmol.modelset.ModelSet;
 import org.jmol.shape.Shape;
 import org.jmol.util.GData;
@@ -75,6 +76,10 @@ public abstract class ShapeRenderer {
     exportType = GData.EXPORT_NOT;
     isExport = false;
     return needsTranslucent;
+  }
+
+  protected boolean isVisibleForMe(Atom a) {
+    return a.isVisible(myVisibilityFlag | JC.ATOM_INFRAME_NOTHIDDEN);
   }
 
  

@@ -19,15 +19,13 @@ package javajs.util;
 /**
  * A single precision floating point 4 by 4 matrix.
  * 
- * @version specification 1.1, implementation $Revision: 1.10 $, $Date:
- *          2006/08/01 16:08:49 $
  * @author Kenji hiranabe
  * 
  *         additions by Bob Hanson hansonr@stolaf.edu 9/30/2012 for unique
  *         constructor and method names for the optimization of compiled
  *         JavaScript using Java2Script
  */
-public class M4 extends M3 {
+public class M4 extends M34 {
 
   /**
    * The fourth element of the first row.
@@ -62,8 +60,13 @@ public class M4 extends M3 {
   /**
    * The fourth element of the fourth row.
    */
-  public float m33;
+  public float m33 = 0;
 
+  /**
+   * all zeros
+   */
+  public M4() {
+  }
   /**
    * Constructs and initializes a Matrix4f from the specified 16 element array.
    * this.m00 =v[0], this.m01=v[1], etc.
@@ -110,7 +113,7 @@ public class M4 extends M3 {
       m.setIdentity();
       return m;
     }
-    m.setM3(m1);
+    m.setToM3(m1);
     m.m03 = m1.m03;
     m.m13 = m1.m13;
     m.m23 = m1.m23;
@@ -131,23 +134,26 @@ public class M4 extends M3 {
    *        The translational components of the matrix
    * @return m
    */
-  public static M4 newMV(M3 m1, V3 t) {
+  public static M4 newMV(M3 m1, T3 t) {
     M4 m = new M4();
     m.setMV(m1, t);
     return m;
   }
 
   /**
-   * Initializes a Matrix4f from the rotation matrix and translation.
-   * 
-   * @param m1
-   *        The rotation matrix representing the rotational components
-   * @param t
-   *        The translational components of the matrix
+   * Sets this matrix to all zeros.
    */
-  public void setMV(M3 m1, V3 t) {
-    setM3(m1);
-    setTranslation(t);
+  public void setZero() {
+    clear33();
+    m03 = m13 = m23 = m30 = m31 = m32 = m33 = 0.0f;
+  }
+
+  /**
+   * Sets this Matrix4f to identity.
+   */
+  public void setIdentity() {
+    setZero();
+    m00 = m11 = m22 = m33 = 1.0f;
   }
 
   /**
@@ -157,7 +163,7 @@ public class M4 extends M3 {
    *        the matrix to be copied
    */
   public void setM4(M4 m1) {
-    setM3(m1);
+    setM33(m1);
     m03 = m1.m03;
     m13 = m1.m13;
     m23 = m1.m23;
@@ -168,22 +174,83 @@ public class M4 extends M3 {
   }
 
   /**
-   * Sets this matrix to all zeros.
+   * Initializes a Matrix4f from the rotation matrix and translation.
+   * 
+   * @param m1
+   *        The rotation matrix representing the rotational components
+   * @param t
+   *        The translational components of the matrix
    */
-  @Override
-  public void setZero() {
-    clear();
-    m03 = m13 = m23 = m30 = m31 = m32 = m33 = 0.0f;
+  public void setMV(M3 m1, T3 t) {
+    setM33(m1);
+    setTranslation(t);
+    m33 = 1;
   }
 
   /**
-   * Sets this Matrix4f to identity.
+   * Sets the rotational component (upper 3x3) of this matrix to the matrix
+   * values in the single precision Matrix3f argument; the other elements of
+   * this matrix are initialized as if this were an identity matrix (ie, affine
+   * matrix with no translational component).
+   * 
+   * @param m1
+   *        the 3x3 matrix
    */
-  @Override
-  public void setIdentity() {
-    clear();
+  public void setToM3(M34 m1) {
+    setM33(m1);
     m03 = m13 = m23 = m30 = m31 = m32 = 0.0f;
-    m00 = m11 = m22 = m33 = 1.0f;
+    m33 = 1.0f;
+  }
+
+  /**
+   * Sets the rotational component (upper 3x3) of this matrix 
+   * to a rotation given by an axis angle
+   * 
+   * @param a
+   *        the axis and angle to be converted
+   */
+  public void setToAA(A4 a) {
+    setIdentity();
+    setAA33(a);
+  }
+
+  /**
+   * Sets the values in this Matrix4f equal to the row-major array parameter
+   * (ie, the first four elements of the array will be copied into the first row
+   * of this matrix, etc.).
+   * 
+   * @param m
+   */
+  public void setA(float m[]) {
+    m00 = m[0];
+    m01 = m[1];
+    m02 = m[2];
+    m03 = m[3];
+    m10 = m[4];
+    m11 = m[5];
+    m12 = m[6];
+    m13 = m[7];
+    m20 = m[8];
+    m21 = m[9];
+    m22 = m[10];
+    m23 = m[11];
+    m30 = m[12];
+    m31 = m[13];
+    m32 = m[14];
+    m33 = m[15];
+  }
+
+  /**
+   * Modifies the translational components of this matrix to the values of the
+   * Vector3f argument; the other values of this matrix are not modified.
+   * 
+   * @param trans
+   *        the translational component
+   */
+  public void setTranslation(T3 trans) {
+    m03 = trans.x;
+    m13 = trans.y;
+    m23 = trans.z;
   }
 
   /**
@@ -196,10 +263,9 @@ public class M4 extends M3 {
    * @param v
    *        the new value
    */
-  @Override
   public void setElement(int row, int col, float v) {
     if (row < 3 && col < 3) {
-      super.setElement(row, col, v);
+      set33(row, col, v);
       return;
     }
     if (row > 3 || col > 3)
@@ -240,10 +306,13 @@ public class M4 extends M3 {
    *        the column number to be retrieved (zero indexed)
    * @return the value at the indexed element
    */
-  @Override
   public float getElement(int row, int col) {
     if (row < 3 && col < 3)
-      return super.getElement(row, col);
+      return get33(row, col);
+    if (row > 3 || col > 3) {
+      err();
+      return 0;
+    }
     switch (row) {
     case 0:
       return m03;
@@ -251,19 +320,18 @@ public class M4 extends M3 {
       return m13;
     case 2:
       return m23;
+    default:
+      switch (col) {
+      case 0:
+        return m30;
+      case 1:
+        return m31;
+      case 2:
+        return m32;
+      default:
+        return m33;
+      }
     }
-    switch (col) {
-    case 0:
-      return m30;
-    case 1:
-      return m31;
-    case 2:
-      return m32;
-    case 3:
-      return m33;
-    }
-    err();
-    return 0;
   }
 
   /**
@@ -272,7 +340,7 @@ public class M4 extends M3 {
    * @param trans
    *        the vector that will receive the translational component
    */
-  public void get(V3 trans) {
+  public void getTranslation(T3 trans) {
     trans.x = m03;
     trans.y = m13;
     trans.z = m23;
@@ -324,10 +392,9 @@ public class M4 extends M3 {
    * @param v
    *        the replacement row
    */
-  @Override
   public void setRowA(int row, float v[]) {
     if (row < 3)
-      super.setRowA(row, v);
+      setRow33(row, v);
     switch (row) {
     case 0:
       m03 = v[3];
@@ -356,10 +423,9 @@ public class M4 extends M3 {
    * @param v
    *        The array into which the matrix row values will be copied
    */
-  @Override
   public void getRow(int row, float v[]) {
     if (row < 3)
-      super.getRow(row, v);
+      getRow33(row, v);
     switch (row) {
     case 0:
       v[3] = m03;
@@ -428,10 +494,9 @@ public class M4 extends M3 {
    * @param v
    *        the replacement column
    */
-  @Override
   public void setColumnA(int column, float v[]) {
     if (column < 3)
-      setColumnA(column, v);
+      setColumn33(column, v);
     switch (column) {
     case 0:
       m30 = v[3];
@@ -461,10 +526,9 @@ public class M4 extends M3 {
    * @param v
    *        The array into which the matrix column values will be copied
    */
-  @Override
   public void getColumn(int column, float v[]) {
     if (column < 3)
-      super.getColumn(column, v);
+      getColumn33(column, v);
     switch (column) {
     case 0:
       v[3] = m30;
@@ -494,7 +558,7 @@ public class M4 extends M3 {
    *        the other matrix
    */
   public void sub(M4 m1) {
-    super.sub(m1);
+    sub33(m1);
     m03 -= m1.m03;
     m13 -= m1.m13;
     m23 -= m1.m23;
@@ -507,9 +571,8 @@ public class M4 extends M3 {
   /**
    * Sets the value of this matrix to its transpose.
    */
-  @Override
   public void transpose() {
-    super.transpose();
+    transpose33();
     float tmp = m03;
     m03 = m30;
     m30 = tmp;
@@ -538,7 +601,6 @@ public class M4 extends M3 {
   /**
    * Sets the value of this matrix to its inverse.
    */
-  @Override
   public void invert() {
     float s = determinant();
     if (s == 0.0)
@@ -573,204 +635,7 @@ public class M4 extends M3 {
         * (m02 * m11 - m01 * m12) + m31 * (m00 * m12 - m02 * m10) + m32
         * (m01 * m10 - m00 * m11), m00 * (m11 * m22 - m12 * m21) + m01
         * (m12 * m20 - m10 * m22) + m02 * (m10 * m21 - m11 * m20));
-    mul(s);
-  }
-
-  /**
-   * Computes the determinant of this matrix.
-   * 
-   * @return the determinant of the matrix
-   */
-  @Override
-  public float determinant() {
-    // less *,+,- calculation than expanded expression.
-    return (m00 * m11 - m01 * m10) * (m22 * m33 - m23 * m32)
-        - (m00 * m12 - m02 * m10) * (m21 * m33 - m23 * m31)
-        + (m00 * m13 - m03 * m10) * (m21 * m32 - m22 * m31)
-        + (m01 * m12 - m02 * m11) * (m20 * m33 - m23 * m30)
-        - (m01 * m13 - m03 * m11) * (m20 * m32 - m22 * m30)
-        + (m02 * m13 - m03 * m12) * (m20 * m31 - m21 * m30);
-
-  }
-
-  /**
-   * Sets the rotational component (upper 3x3) of this matrix to the matrix
-   * values in the single precision Matrix3f argument; the other elements of
-   * this matrix are initialized as if this were an identity matrix (ie, affine
-   * matrix with no translational component).
-   * 
-   * @param m1
-   *        the 3x3 matrix
-   */
-  @Override
-  public void setM3(M3 m1) {
-    super.setM3(m1);
-    m03 = m13 = m23 = m30 = m31 = m32 = 0.0f;
-    m33 = 1.0f;
-  }
-
-  /**
-   * Sets the values in this Matrix4f equal to the row-major array parameter
-   * (ie, the first four elements of the array will be copied into the first row
-   * of this matrix, etc.).
-   * 
-   * @param m
-   */
-  @Override
-  public void setA(float m[]) {
-    m00 = m[0];
-    m01 = m[1];
-    m02 = m[2];
-    m03 = m[3];
-    m10 = m[4];
-    m11 = m[5];
-    m12 = m[6];
-    m13 = m[7];
-    m20 = m[8];
-    m21 = m[9];
-    m22 = m[10];
-    m23 = m[11];
-    m30 = m[12];
-    m31 = m[13];
-    m32 = m[14];
-    m33 = m[15];
-  }
-
-  /**
-   * Modifies the translational components of this matrix to the values of the
-   * Vector3f argument; the other values of this matrix are not modified.
-   * 
-   * @param trans
-   *        the translational component
-   */
-  public void setTranslation(V3 trans) {
-    m03 = trans.x;
-    m13 = trans.y;
-    m23 = trans.z;
-  }
-
-  /**
-   * Multiplies each element of this matrix by a scalar.
-   * 
-   * @param scalar
-   *        The scalar multiplier.
-   */
-  private void mul(float scalar) {
-    m00 *= scalar;
-    m01 *= scalar;
-    m02 *= scalar;
-    m03 *= scalar;
-    m10 *= scalar;
-    m11 *= scalar;
-    m12 *= scalar;
-    m13 *= scalar;
-    m20 *= scalar;
-    m21 *= scalar;
-    m22 *= scalar;
-    m23 *= scalar;
-    m30 *= scalar;
-    m31 *= scalar;
-    m32 *= scalar;
-    m33 *= scalar;
-  }
-
-  /**
-   * Sets the value of this matrix to the result of multiplying itself with
-   * matrix m1.
-   * 
-   * @param m1
-   *        the other matrix
-   */
-  public void mulM4(M4 m1) {
-    mul42(this, m1);
-  }
-
-  /**
-   * Sets the value of this matrix to the result of multiplying the two argument
-   * matrices together.
-   * 
-   * @param m1
-   *        the first matrix
-   * @param m2
-   *        the second matrix
-   */
-  public void mul42(M4 m1, M4 m2) {
-    // alias-safe way.
-    set(m1.m00 * m2.m00 + m1.m01 * m2.m10 + m1.m02 * m2.m20 + m1.m03 * m2.m30,
-        m1.m00 * m2.m01 + m1.m01 * m2.m11 + m1.m02 * m2.m21 + m1.m03 * m2.m31,
-        m1.m00 * m2.m02 + m1.m01 * m2.m12 + m1.m02 * m2.m22 + m1.m03 * m2.m32,
-        m1.m00 * m2.m03 + m1.m01 * m2.m13 + m1.m02 * m2.m23 + m1.m03 * m2.m33,
-
-        m1.m10 * m2.m00 + m1.m11 * m2.m10 + m1.m12 * m2.m20 + m1.m13 * m2.m30,
-        m1.m10 * m2.m01 + m1.m11 * m2.m11 + m1.m12 * m2.m21 + m1.m13 * m2.m31,
-        m1.m10 * m2.m02 + m1.m11 * m2.m12 + m1.m12 * m2.m22 + m1.m13 * m2.m32,
-        m1.m10 * m2.m03 + m1.m11 * m2.m13 + m1.m12 * m2.m23 + m1.m13 * m2.m33,
-
-        m1.m20 * m2.m00 + m1.m21 * m2.m10 + m1.m22 * m2.m20 + m1.m23 * m2.m30,
-        m1.m20 * m2.m01 + m1.m21 * m2.m11 + m1.m22 * m2.m21 + m1.m23 * m2.m31,
-        m1.m20 * m2.m02 + m1.m21 * m2.m12 + m1.m22 * m2.m22 + m1.m23 * m2.m32,
-        m1.m20 * m2.m03 + m1.m21 * m2.m13 + m1.m22 * m2.m23 + m1.m23 * m2.m33,
-
-        m1.m30 * m2.m00 + m1.m31 * m2.m10 + m1.m32 * m2.m20 + m1.m33 * m2.m30,
-        m1.m30 * m2.m01 + m1.m31 * m2.m11 + m1.m32 * m2.m21 + m1.m33 * m2.m31,
-        m1.m30 * m2.m02 + m1.m31 * m2.m12 + m1.m32 * m2.m22 + m1.m33 * m2.m32,
-        m1.m30 * m2.m03 + m1.m31 * m2.m13 + m1.m32 * m2.m23 + m1.m33 * m2.m33);
-  }
-
-  /**
-   * Transform the vector vec using this Matrix4f and place the result back into
-   * vec.
-   * 
-   * @param vec
-   *        the single precision vector to be transformed
-   */
-  public void transform4(T4 vec) {
-    transform42(vec, vec);
-  }
-
-  /**
-   * Transforms the point parameter with this Matrix4f and places the result
-   * back into point. The fourth element of the point input parameter is assumed
-   * to be one.
-   * 
-   * @param point
-   *        the input point to be transformed.
-   */
-  public void rotTrans(T3 point) {
-    rotTrans2(point, point);
-  }
-
-  /**
-   * Transforms the point parameter with this Matrix4f and places the result
-   * into pointOut. The fourth element of the point input paramter is assumed to
-   * be one.
-   * 
-   * @param point
-   *        the input point to be transformed.
-   * @param pointOut
-   *        the transformed point
-   */
-  public void rotTrans2(T3 point, T3 pointOut) {
-      pointOut.set(m00 * point.x + m01 * point.y + m02 * point.z + m03, m10
-          * point.x + m11 * point.y + m12 * point.z + m13, m20 * point.x + m21
-          * point.y + m22 * point.z + m23);
-  }
-
-  /**
-   * Transform the vector vec using this Matrix4f and place the result into
-   * vecOut.
-   * 
-   * @param vec
-   *        the single precision vector to be transformed
-   * @param vecOut
-   *        the vector into which the transformed values are placed
-   */
-  private void transform42(T4 vec, T4 vecOut) {
-    // alias-safe
-    vecOut.set(m00 * vec.x + m01 * vec.y + m02 * vec.z + m03 * vec.w, m10
-        * vec.x + m11 * vec.y + m12 * vec.z + m13 * vec.w, m20 * vec.x + m21
-        * vec.y + m22 * vec.z + m23 * vec.w, m30 * vec.x + m31 * vec.y + m32
-        * vec.z + m33 * vec.w);
+    scale(s);
   }
 
   /**
@@ -814,6 +679,138 @@ public class M4 extends M3 {
     this.m32 = m32;
     this.m33 = m33;
   }
+  /**
+   * Computes the determinant of this matrix.
+   * 
+   * @return the determinant of the matrix
+   */
+  public float determinant() {
+    // less *,+,- calculation than expanded expression.
+    return (m00 * m11 - m01 * m10) * (m22 * m33 - m23 * m32)
+        - (m00 * m12 - m02 * m10) * (m21 * m33 - m23 * m31)
+        + (m00 * m13 - m03 * m10) * (m21 * m32 - m22 * m31)
+        + (m01 * m12 - m02 * m11) * (m20 * m33 - m23 * m30)
+        - (m01 * m13 - m03 * m11) * (m20 * m32 - m22 * m30)
+        + (m02 * m13 - m03 * m12) * (m20 * m31 - m21 * m30);
+
+  }
+
+  /**
+   * Multiplies each element of this matrix by a scalar.
+   * 
+   * @param scalar
+   *        The scalar multiplier.
+   */
+  private void scale(float scalar) {
+    mul33(scalar);
+    m03 *= scalar;
+    m13 *= scalar;
+    m23 *= scalar;
+    m30 *= scalar;
+    m31 *= scalar;
+    m32 *= scalar;
+    m33 *= scalar;
+  }
+
+  /**
+   * Sets the value of this matrix to the result of multiplying itself with
+   * matrix m1.
+   * 
+   * @param m1
+   *        the other matrix
+   */
+  public void mul(M4 m1) {
+    mul2(this, m1);
+  }
+
+  /**
+   * Sets the value of this matrix to the result of multiplying the two argument
+   * matrices together.
+   * 
+   * @param m1
+   *        the first matrix
+   * @param m2
+   *        the second matrix
+   */
+  public void mul2(M4 m1, M4 m2) {
+    // alias-safe way.
+    set(m1.m00 * m2.m00 + m1.m01 * m2.m10 + m1.m02 * m2.m20 + m1.m03 * m2.m30,
+        m1.m00 * m2.m01 + m1.m01 * m2.m11 + m1.m02 * m2.m21 + m1.m03 * m2.m31,
+        m1.m00 * m2.m02 + m1.m01 * m2.m12 + m1.m02 * m2.m22 + m1.m03 * m2.m32,
+        m1.m00 * m2.m03 + m1.m01 * m2.m13 + m1.m02 * m2.m23 + m1.m03 * m2.m33,
+
+        m1.m10 * m2.m00 + m1.m11 * m2.m10 + m1.m12 * m2.m20 + m1.m13 * m2.m30,
+        m1.m10 * m2.m01 + m1.m11 * m2.m11 + m1.m12 * m2.m21 + m1.m13 * m2.m31,
+        m1.m10 * m2.m02 + m1.m11 * m2.m12 + m1.m12 * m2.m22 + m1.m13 * m2.m32,
+        m1.m10 * m2.m03 + m1.m11 * m2.m13 + m1.m12 * m2.m23 + m1.m13 * m2.m33,
+
+        m1.m20 * m2.m00 + m1.m21 * m2.m10 + m1.m22 * m2.m20 + m1.m23 * m2.m30,
+        m1.m20 * m2.m01 + m1.m21 * m2.m11 + m1.m22 * m2.m21 + m1.m23 * m2.m31,
+        m1.m20 * m2.m02 + m1.m21 * m2.m12 + m1.m22 * m2.m22 + m1.m23 * m2.m32,
+        m1.m20 * m2.m03 + m1.m21 * m2.m13 + m1.m22 * m2.m23 + m1.m23 * m2.m33,
+
+        m1.m30 * m2.m00 + m1.m31 * m2.m10 + m1.m32 * m2.m20 + m1.m33 * m2.m30,
+        m1.m30 * m2.m01 + m1.m31 * m2.m11 + m1.m32 * m2.m21 + m1.m33 * m2.m31,
+        m1.m30 * m2.m02 + m1.m31 * m2.m12 + m1.m32 * m2.m22 + m1.m33 * m2.m32,
+        m1.m30 * m2.m03 + m1.m31 * m2.m13 + m1.m32 * m2.m23 + m1.m33 * m2.m33);
+  }
+
+  /**
+   * Transform the vector vec using this Matrix4f and place the result back into
+   * vec.
+   * 
+   * @param vec
+   *        the single precision vector to be transformed
+   */
+  public void transform(T4 vec) {
+    transform2(vec, vec);
+  }
+
+  /**
+   * Transform the vector vec using this Matrix4f and place the result into
+   * vecOut.
+   * 
+   * @param vec
+   *        the single precision vector to be transformed
+   * @param vecOut
+   *        the vector into which the transformed values are placed
+   */
+  public void transform2(T4 vec, T4 vecOut) {
+    // alias-safe
+    vecOut.set(m00 * vec.x + m01 * vec.y + m02 * vec.z + m03 * vec.w, m10
+        * vec.x + m11 * vec.y + m12 * vec.z + m13 * vec.w, m20 * vec.x + m21
+        * vec.y + m22 * vec.z + m23 * vec.w, m30 * vec.x + m31 * vec.y + m32
+        * vec.z + m33 * vec.w);
+  }
+
+  /**
+   * Transforms the point parameter with this Matrix4f and places the result
+   * back into point. The fourth element of the point input parameter is assumed
+   * to be one.
+   * 
+   * @param point
+   *        the input point to be transformed.
+   */
+  public void rotTrans(T3 point) {
+    rotTrans2(point, point);
+  }
+
+  /**
+   * Transforms the point parameter with this Matrix4f and places the result
+   * into pointOut. The fourth element of the point input paramter is assumed to
+   * be one.
+   * 
+   * @param point
+   *        the input point to be transformed.
+   * @param pointOut
+   *        the transformed point
+   */
+  public void rotTrans2(T3 point, T3 pointOut) {
+      pointOut.set(m00 * point.x + m01 * point.y + m02 * point.z + m03, m10
+          * point.x + m11 * point.y + m12 * point.z + m13, m20 * point.x + m21
+          * point.y + m22 * point.z + m23);
+  }
+
 
   /**
    * Returns true if the Object o is of type Matrix4f and all of the data

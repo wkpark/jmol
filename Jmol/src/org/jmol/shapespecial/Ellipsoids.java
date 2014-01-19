@@ -410,7 +410,7 @@ private boolean initEllipsoids(Object value) {
     for (Ellipsoid e: atomEllipsoids.values()) {
       int i = e.tensor.atomIndex1;
       Atom atom = modelSet.atoms[i];
-      if ((atom.getShapeVisibilityFlags() & myVisibilityFlag) == 0
+      if ((atom.shapeVisibilityFlags & myVisibilityFlag) == 0
           || modelSet.isAtomHidden(i))
         continue;
       atom.setClickable(myVisibilityFlag);

@@ -29,9 +29,7 @@ import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumPalette;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
-import org.jmol.script.T;
 import org.jmol.util.C;
-import org.jmol.viewer.JC;
 
 public class Balls extends AtomShape {
 
@@ -131,31 +129,10 @@ public class Balls extends AtomShape {
       Atom atom = atoms[i];
       atom.setClickable(0);
       if (bsDeleted != null && bsDeleted.get(i)
-          || (atom.getShapeVisibilityFlags() & myVisibilityFlag) == 0
+          || (atom.shapeVisibilityFlags & myVisibilityFlag) == 0
           || modelSet.isAtomHidden(i))
         continue;
       atom.setClickable(myVisibilityFlag);
-    }
-  }
-
-  @Override
-  public void setVisibilityFlags(BS bs) {
-    boolean showHydrogens = viewer.getBoolean(T.showhydrogens);
-    BS bsDeleted = viewer.getDeletedAtoms();
-    for (int i = atomCount; --i >= 0;) {
-      Atom atom = atoms[i];
-      int flag = atom.getShapeVisibilityFlags();
-      flag &= (~JC.ATOM_IN_FRAME & ~myVisibilityFlag);
-      atom.setShapeVisibilityFlags(flag);
-      if (bsDeleted != null && bsDeleted.get(i) || !showHydrogens
-          && atom.getElementNumber() == 1)
-        continue;
-      int modelIndex = atom.getModelIndex();
-      if (bs.get(modelIndex)) {
-        atom.setShapeVisibility(JC.ATOM_IN_FRAME, true);
-        if (atom.madAtom != 0 && !modelSet.isAtomHidden(i))
-          atom.setShapeVisibility(myVisibilityFlag, true);
-      }
     }
   }
 

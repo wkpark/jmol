@@ -1435,7 +1435,7 @@ protected void resetObjects() {
     }
     if (dmesh.mat4 != null) {
       V3 v = new V3();
-      dmesh.mat4.get(v);
+      dmesh.mat4.getTranslation(v);
       str.append(" offset ").append(Escape.eP(v));
     }
     if (dmesh.title != null) {

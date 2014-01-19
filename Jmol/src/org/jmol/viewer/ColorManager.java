@@ -217,7 +217,7 @@ class ColorManager {
     case StaticConstants.PALETTE_MOLECULE:
       modelSet = viewer.getModelSet();
       return propertyColorEncoder.getColorIndexFromPalette(modelSet
-          .getMoleculeIndex(atom.getIndex(), true), 0, modelSet
+          .getMoleculeIndex(atom.index, true), 0, modelSet
           .getMoleculeCountInModel(atom.getModelIndex()) - 1,
           ColorEncoder.ROYGB, false);
     case StaticConstants.PALETTE_ALTLOC:

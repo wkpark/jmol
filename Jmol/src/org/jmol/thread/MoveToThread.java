@@ -120,7 +120,7 @@ public class MoveToThread extends JmolThread {
     cameraX = newSlider(transformManager.camera.x, f[10]);
     cameraY = newSlider(transformManager.camera.y, f[11]);
     transformManager.getRotation(matrixStart);
-    matrixStartInv.invertM3(matrixStart);
+    matrixStartInv.invertM(matrixStart);
     matrixStep.mul2(matrixEnd, matrixStartInv);
     aaTotal.setM(matrixStep);
     fps = 30;
@@ -196,13 +196,13 @@ public class MoveToThread extends JmolThread {
   private void doStepTransform() {
     if (!Float.isNaN(matrixEnd.m00)) {
       transformManager.getRotation(matrixStart);
-      matrixStartInv.invertM3(matrixStart);
+      matrixStartInv.invertM(matrixStart);
       matrixStep.mul2(matrixEnd, matrixStartInv);
       aaTotal.setM(matrixStep);
       aaStep.setAA(aaTotal);
       aaStep.angle /= (totalSteps - iStep);
       if (aaStep.angle == 0)
-        matrixStep.setIdentity();
+        matrixStep.setScale(1);
       else
         matrixStep.setAA(aaStep);
       matrixStep.mul(matrixStart);

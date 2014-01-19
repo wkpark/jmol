@@ -107,7 +107,7 @@ public class TransformManager {
     rotationRadiusDefault = setRotationRadius(0, true);
     windowCentered = true;
     setRotationCenterAndRadiusXYZ(null, true);
-    matrixRotate.setIdentity(); // no rotations
+    matrixRotate.setScale(1); // no rotations
     //if (viewer.autoLoadOrientation()) {
     M3 m = (M3) viewer
         .getModelSetAuxiliaryInfoValue("defaultOrientationMatrix");
@@ -270,7 +270,7 @@ public class TransformManager {
   }
 
   void rotateFront() {
-    matrixRotate.setIdentity();
+    matrixRotate.setScale(1);
   }
 
   void rotateX(float angleRadians) {
@@ -507,7 +507,7 @@ public class TransformManager {
     axisangleT.setAA(internalRotationAxis);
     axisangleT.angle = -internalRotationAngle;
     //this is a fraction of the original for spinning
-    matrixTemp4.setAA(axisangleT);
+    matrixTemp4.setToAA(axisangleT);
 
     // apply this to the fixed center point in the internal frame
 
@@ -1219,8 +1219,8 @@ public class TransformManager {
     matrixTemp.setZero();
     matrixTemp.setTranslation(vectorTemp);
     unscaled.sub(matrixTemp);
-    matrixTemp.setM3(matrixRotate);
-    unscaled.mul42(matrixTemp, unscaled);
+    matrixTemp.setToM3(matrixRotate);
+    unscaled.mul2(matrixTemp, unscaled);
     return unscaled;
   }
 
@@ -1460,15 +1460,15 @@ public class TransformManager {
 
     // multiply by angular rotations
     // this is *not* the same as  matrixTransform.mul(matrixRotate);
-    matrixTemp.setM3(stereoFrame ? matrixStereo : matrixRotate);
-    matrixTransform.mul42(matrixTemp, matrixTransform);
+    matrixTemp.setToM3(stereoFrame ? matrixStereo : matrixRotate);
+    matrixTransform.mul2(matrixTemp, matrixTransform);
     // cale to screen coordinates
     matrixTemp.setIdentity();
     matrixTemp.m00 = matrixTemp.m11 = matrixTemp.m22 = scalePixelsPerAngstrom;
     // negate y (for screen) and z (for zbuf)
     matrixTemp.m11 = matrixTemp.m22 = -scalePixelsPerAngstrom;
 
-    matrixTransform.mul42(matrixTemp, matrixTransform);
+    matrixTransform.mul2(matrixTemp, matrixTransform);
     //z-translate to set rotation center at midplane (Nav) or front plane (V10)
     matrixTransform.m23 += modelCenterOffset;
     try {
@@ -1683,7 +1683,7 @@ public class TransformManager {
         matrixEnd.m00 = Float.NaN;
       } else if (degrees < 0.01f && degrees > -0.01f) {
         // getRotation(matrixEnd);
-        matrixEnd.setIdentity();
+        matrixEnd.setScale(1);
       } else {
         if (axis.x == 0 && axis.y == 0 && axis.z == 0) {
           // invalid ... no rotation

@@ -221,7 +221,7 @@ public final class BioModel extends Model{
     Viewer viewer = modelSet.viewer;
     bsCheck.and(viewer.getModelUndeletedAtomsBitSet(modelIndex));
     for (int i = bsCheck.nextSetBit(0); i >= 0; i = bsCheck.nextSetBit(i + 1))
-      if (atoms[i].isVisible(0)
+      if (atoms[i].checkVisible()
           && atoms[i].atomID == JC.ATOMID_ALPHA_CARBON
           && atoms[i].getGroupID() != JC.GROUPID_CYSTEINE)
         vCA.addLast((a1 = atoms[i]));

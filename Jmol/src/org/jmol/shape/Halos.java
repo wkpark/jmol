@@ -72,7 +72,7 @@ public class Halos extends AtomShape {
     for (int i = atomCount; --i >= 0;) {
       boolean isVisible = bsSelected != null && bsSelected.get(i)
           || (mads != null && mads[i] != 0);
-      atoms[i].setShapeVisibility(myVisibilityFlag, isVisible);
+      setShapeVisibility(atoms[i], isVisible);
     }
   }
 

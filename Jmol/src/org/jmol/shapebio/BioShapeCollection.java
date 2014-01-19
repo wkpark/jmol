@@ -77,12 +77,12 @@ public abstract class BioShapeCollection extends Shape {
   public int getSizeG(Group group) {
     Monomer m = (Monomer) group;
     int groupIndex = m.getGroupIndex();
-    int leadAtomIndex = m.getLeadAtom().getIndex();
+    int leadAtomIndex = m.getLeadAtom().index;
     for (int i = bioShapes.length; --i >= 0;) {
       BioShape bioShape = bioShapes[i];
       for (int j = 0; j < bioShape.monomerCount; j++) {
         if (bioShape.monomers[j].getGroupIndex() == groupIndex 
-          && bioShape.monomers[j].getLeadAtom().getIndex() == leadAtomIndex)
+          && bioShape.monomers[j].getLeadAtom().index == leadAtomIndex)
             return bioShape.mads[j];
       }
     }

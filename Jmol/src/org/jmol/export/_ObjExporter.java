@@ -534,7 +534,7 @@ public class _ObjExporter extends __CartesianExporter {
     M4 matrix = new M4();
     addTexture(colix, null);
     String name = "Circle" + circleNum++;
-    matrix.setM3(getRotationMatrix(ptCenter, ptPerp, radius));
+    matrix.setToM3(getRotationMatrix(ptCenter, ptPerp, radius));
     matrix.m03 = ptCenter.x;
     matrix.m13 = ptCenter.y;
     matrix.m23 = ptCenter.z;
@@ -556,7 +556,7 @@ public class _ObjExporter extends __CartesianExporter {
     M4 matrix = new M4();
     addTexture(colix, null);
     String name = "Cone" + coneNum++;
-    matrix.setM3(getRotationMatrix(ptBase, ptTip, radius));
+    matrix.setToM3(getRotationMatrix(ptBase, ptTip, radius));
     matrix.m03 = ptBase.x;
     matrix.m13 = ptBase.y;
     matrix.m23 = ptBase.z;
@@ -580,7 +580,7 @@ public class _ObjExporter extends __CartesianExporter {
     M4 matrix = new M4();
     addTexture(colix, null);
     String name = "Ellipse" + ellipseNum++;
-    matrix.setM3(getRotationMatrix(ptCenter, ptZ, 1, ptX, ptY));
+    matrix.setToM3(getRotationMatrix(ptCenter, ptZ, 1, ptX, ptY));
     matrix.m03 = ptZ.x;
     matrix.m13 = ptZ.y;
     matrix.m23 = ptZ.z;
@@ -786,9 +786,9 @@ public class _ObjExporter extends __CartesianExporter {
     int n = (ptX != null && endcaps == GData.ENDCAPS_NONE ? 2 : 1);
     for (int i = 0; i < n; i++) {
       if (ptX == null)
-        matrix.setM3(getRotationMatrix(pt1, pt2, radius));
+        matrix.setToM3(getRotationMatrix(pt1, pt2, radius));
       else
-        matrix.setM3(getRotationMatrix(ptCenter, pt2, radius, ptX, ptY));
+        matrix.setToM3(getRotationMatrix(ptCenter, pt2, radius, ptX, ptY));
       matrix.m03 = pt1.x;
       matrix.m13 = pt1.y;
       matrix.m23 = pt1.z;

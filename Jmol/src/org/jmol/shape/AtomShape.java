@@ -115,7 +115,7 @@ public abstract class AtomShape extends Shape {
     Atom atom = atoms[i];
     mads[i] = atom.calculateMad(viewer, rd);
     bsSizeSet.setBitTo(i, isVisible);
-    atom.setShapeVisibility(myVisibilityFlag, isVisible);
+    setShapeVisibility(atom, isVisible);
   }
 
   protected void setPropAS(String propertyName, Object value, BS bs) {
@@ -215,7 +215,7 @@ public abstract class AtomShape extends Shape {
       return;
     for (int i = atomCount; --i >= 0;) {
       Atom atom = atoms[i];
-      if ((atom.getShapeVisibilityFlags() & myVisibilityFlag) == 0
+      if ((atom.shapeVisibilityFlags & myVisibilityFlag) == 0
           || modelSet.isAtomHidden(i))
         continue;
       atom.setClickable(myVisibilityFlag);

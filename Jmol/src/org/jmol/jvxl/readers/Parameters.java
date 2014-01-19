@@ -397,7 +397,7 @@ public class Parameters {
     eccentricityMatrix = M3.newM3(null);
     eccentricityMatrix.setAA(A4.newVA(ecc, (float) Math.PI));
     eccentricityMatrixInverse = new M3();
-    eccentricityMatrixInverse.invertM3(eccentricityMatrix);
+    eccentricityMatrixInverse.invertM(eccentricityMatrix);
     isEccentric = isAnisotropic = true;
     eccentricityScale = c;
     eccentricityRatio = fab_c;

@@ -87,6 +87,9 @@ import java.util.Map;
  */
 public abstract class Shape {
 
+  abstract public String getShapeState();
+  abstract public void setProperty(String propertyName, Object value, BS bsSelected);
+
   //public Shape () {
   //  System.out.println("Shape " + this + " constructed");
   //}
@@ -123,9 +126,12 @@ public abstract class Shape {
 
   }
 
-
-  abstract public String getShapeState();
-
+  /**
+   * @param bs  
+   */
+  public void setVisibilityFlags(BS bs) {
+    // only some atom-based shapes implement this.
+  }
   /**
    * 
    * @param atomIndex
@@ -150,6 +156,10 @@ public abstract class Shape {
   }
   
   protected void initModelSet() {
+  }
+
+  protected void setShapeVisibility(Atom atom, boolean isVisible) {
+    atom.setShapeVisibility(myVisibilityFlag, isVisible);
   }
 
   public void initShape() {
@@ -198,14 +208,6 @@ public abstract class Shape {
     return false;
   }
 
-  /**
-   * may come from any source -- executed AFTER a shape's own setProperty method
-   * 
-   * @param propertyName
-   * @param value
-   * @param bsSelected
-   */
-  abstract public void setProperty(String propertyName, Object value, BS bsSelected);
 
   @SuppressWarnings("unchecked")
   protected void setPropS(String propertyName, Object value, BS bsSelected) {
@@ -342,13 +344,6 @@ public abstract class Shape {
 
   public List<Map<String, Object>> getShapeDetail() {
     return null;
-  }
-
-  /**
-   * 
-   * @param bs
-   */
-  public void setVisibilityFlags(BS bs) {
   }
 
   public static short getColix(short[] colixes, int i, Atom atom) {

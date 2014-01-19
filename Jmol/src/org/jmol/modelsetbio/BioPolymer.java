@@ -350,7 +350,7 @@ public abstract class BioPolymer {
       if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0)
         continue;
       Atom a = monomers[i].getLeadAtom();
-      if (!a.isVisible(0) || bsNot != null && bsNot.get(a.index))
+      if (!a.checkVisible() || bsNot != null && bsNot.get(a.index))
         continue;
       if (mads[i] > 0 || mads[i + 1] > 0)
         monomers[i].findNearestAtomIndex(xMouse, yMouse, closest, mads[i],
@@ -636,7 +636,7 @@ public abstract class BioPolymer {
           z -= 180; // center on 0
           if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z)) {
             if (bsAtoms != null)
-              bsAtoms.clear(a.getIndex());
+              bsAtoms.clear(a.index);
             continue;
           }
           float angledeg = (writeRamachandranStraightness ? p
@@ -811,7 +811,7 @@ public abstract class BioPolymer {
                 q = dq.rightDifference(dqprev); // q = dq.mul(dqprev.inv());
                 val1 = getQuaternionStraightness(id, dqprev, dq);
                 val2 = get3DStraightness(id, dqprev, dq);
-                aprev.getGroup().setGroupParameter(T.straightness,
+                ((Monomer) aprev.getGroup()).setGroupParameter(T.straightness,
                     useQuaternionStraightness ? val1 : val2);
               }
               dqprev = dq;

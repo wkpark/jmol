@@ -34,6 +34,8 @@ import org.jmol.modelset.Group;
 import org.jmol.modelset.Chain;
 import javajs.util.List;
 import javajs.util.P3;
+
+import org.jmol.shapebio.BioShape;
 import org.jmol.util.Quaternion;
 import javajs.util.V3;
 import org.jmol.viewer.JC;
@@ -324,12 +326,12 @@ public class NucleicMonomer extends PhosphorusMonomer {
       return;
     for (int i = 6; --i >= 0;) {
       atom = getAtomFromOffsetIndex(ring6OffsetIndexes[i]);
-      atom.setClickable(NucleicMonomer.CARTOON_VISIBILITY_FLAG);
+      atom.setClickable(BioShape.CARTOON_VISIBILITY_FLAG);
     }
     if (isPurine)
       for (int i = 4; --i >= 1;) {
         atom = getAtomFromOffsetIndex(ring5OffsetIndexes[i]);
-        atom.setClickable(NucleicMonomer.CARTOON_VISIBILITY_FLAG);
+        atom.setClickable(BioShape.CARTOON_VISIBILITY_FLAG);
       }
   }
  
@@ -343,7 +345,6 @@ public class NucleicMonomer extends PhosphorusMonomer {
   }
    
   P3 baseCenter;
-  public final static int CARTOON_VISIBILITY_FLAG = JC.getShapeVisibilityFlag(JC.SHAPE_CARTOON);  
 
   @Override
   P3 getQuaternionFrameCenter(char qType) {

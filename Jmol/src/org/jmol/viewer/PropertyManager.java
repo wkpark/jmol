@@ -273,6 +273,17 @@ public class PropertyManager implements JmolPropertyManager {
           return extractProperty(v.get(pt), args, ptr);
         return "";
       }
+      if (property instanceof M3) {
+        M3 m = (M3) property;
+        float[][] f = new float[][] { new float[] { m.m00, m.m01, m.m02 },
+            new float[] { m.m10, m.m11, m.m12 },
+            new float[] { m.m20, m.m21, m.m22 } };
+        if (pt < 0)
+          pt += 3;
+        if (pt >= 0 && pt < 3)
+          return extractProperty(f, args, --ptr);
+        return "";
+      }
       if (property instanceof M4) {
         M4 m = (M4) property;
         float[][] f = new float[][] { new float[] { m.m00, m.m01, m.m02, m.m03 },
@@ -285,18 +296,6 @@ public class PropertyManager implements JmolPropertyManager {
           return extractProperty(f, args, --ptr);
         return "";
       }
-      if (property instanceof M3) {
-        M3 m = (M3) property;
-        float[][] f = new float[][] { new float[] { m.m00, m.m01, m.m02 },
-            new float[] { m.m10, m.m11, m.m12 },
-            new float[] { m.m20, m.m21, m.m22 } };
-        if (pt < 0)
-          pt += 3;
-        if (pt >= 0 && pt < 3)
-          return extractProperty(f, args, --ptr);
-        return "";
-      }
-
       if (PT.isAI(property)) {
         int[] ilist = (int[]) property;
         if (pt < 0)
@@ -1238,7 +1237,7 @@ public class PropertyManager implements JmolPropertyManager {
     String shape = Atom.atomPropertyString(viewer, atom, T.shape);
     if (shape != null)
       info.put("shape", shape);
-    info.put("visible", Boolean.valueOf(atom.isVisible(0)));
+    info.put("visible", Boolean.valueOf(atom.checkVisible()));
     info.put("clickabilityFlags", Integer.valueOf(atom.clickabilityFlags));
     info.put("visibilityFlags", Integer.valueOf(atom.shapeVisibilityFlags));
     info.put("spacefill", Float.valueOf(atom.getRadius()));

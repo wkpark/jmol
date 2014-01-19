@@ -46,7 +46,7 @@ public class EchoRenderer extends LabelsRenderer {
         continue;
       }
       if (t.pointerPt instanceof Atom) {
-        if (!((Atom) t.pointerPt).isVisible(-1))
+        if (!((Atom) t.pointerPt).checkVisible())
           continue;
       }
       if (t.valign == JC.VALIGN_XYZ) {

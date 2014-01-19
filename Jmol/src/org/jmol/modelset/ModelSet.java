@@ -871,14 +871,14 @@ import java.util.Map;
         vTemp.setT(center);
         mat4.setIdentity();
         mat4.setTranslation(vTemp);
-        mat4t.setM3(matTemp);
-        mat4.mulM4(mat4t);
+        mat4t.setToM3(matTemp);
+        mat4.mul(mat4t);
         mat4t.setIdentity();
         vTemp.scale(-1);
         mat4t.setTranslation(vTemp);
-        mat4.mulM4(mat4t);
+        mat4.mul(mat4t);
       } else {
-        mat4.setM3(matTemp);
+        mat4.setToM3(matTemp);
       }
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
         if (isInternal) {
@@ -903,7 +903,7 @@ import java.util.Map;
       if (!translationOnly) {
         mat4t.setIdentity();
         mat4t.setTranslation(translation);
-        mat4.mul42(mat4t, mat4);
+        mat4.mul2(mat4t, mat4);
       }
     }
     recalculatePositionDependentQuantities(bs, mat4);

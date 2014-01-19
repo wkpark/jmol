@@ -6489,7 +6489,7 @@ public class ScriptExt implements JmolScriptExtension {
           invArg();
         if (doTranslate) {
           translation = new V3();
-          m4.get(translation);
+          m4.getTranslation(translation);
         }
         if (doRotate) {
           M3 m3 = new M3();

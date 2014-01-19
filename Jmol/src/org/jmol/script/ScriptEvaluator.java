@@ -70,6 +70,7 @@ import org.jmol.util.Parser;
 
 import javajs.util.A4;
 import javajs.util.CU;
+import javajs.util.M34;
 import javajs.util.OC;
 import javajs.util.M3;
 import javajs.util.M4;
@@ -2490,7 +2491,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           fixed[j] = SV.newV(T.point3f, v);
         } else if (v instanceof P4) {
           fixed[j] = SV.newV(T.point4f, v);
-        } else if (v instanceof M3) {
+        } else if (v instanceof M34) {
           fixed[j] = SV.newV(v instanceof M4 ? T.matrix4f : T.matrix3f, v);
         } else if (v instanceof Map<?, ?>) {
           fixed[j] = SV.newV(T.hash, v);
@@ -8907,7 +8908,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         m3 = new M3();
         if (m4 != null) {
           translation = new V3();
-          m4.get(translation);
+          m4.getTranslation(translation);
           m4.getRotationScale(m3);
         } else {
           m3 = (M3) theToken.value;

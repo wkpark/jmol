@@ -271,12 +271,10 @@ public abstract class Monomer extends Group {
                             short madBegin, short madEnd) {
   }
 
-  @Override
   protected boolean calcBioParameters() {
     return bioPolymer.calcParameters();
   }
 
-  @Override
   public boolean haveParameters() {
     return bioPolymer.haveParameters;
   }
@@ -494,6 +492,59 @@ public abstract class Monomer extends Group {
   @Override
   public boolean isConnectedPrevious() {
     return true; // but not nec. for carbohydrates... see 1k7c
+  }
+
+  private float phi = Float.NaN;
+  private float psi = Float.NaN;
+  private float omega = Float.NaN;
+  private float straightness = Float.NaN;
+  private float mu = Float.NaN;
+  private float theta = Float.NaN;
+  
+  void setGroupParameter(int tok, float f) {
+    switch (tok) {
+    case T.phi:
+      phi = f;
+      break;
+    case T.psi:
+      psi = f;
+      break;
+    case T.omega:
+      omega = f;
+      break;
+    case T.eta:
+      mu = f;
+      break;
+    case T.theta:
+      theta = f;
+      break;
+    case T.straightness:
+      straightness = f;
+      break;
+    }
+  }
+
+  @Override
+  public float getGroupParameter(int tok) {
+    if (!haveParameters())
+      calcBioParameters();
+    switch (tok) {
+    case T.monomer:
+      return 1;
+    case T.omega:
+      return omega;
+    case T.phi:
+      return phi;
+    case T.psi:
+      return psi;
+    case T.eta:
+      return mu;
+    case T.theta:
+      return theta;
+    case T.straightness:
+      return straightness;
+    }
+    return Float.NaN;
   }
 
 }

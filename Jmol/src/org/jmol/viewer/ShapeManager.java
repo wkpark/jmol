@@ -423,7 +423,7 @@ public class ShapeManager {
         if (!modelSet.isAtomHidden(i)) {
           f |= JC.ATOM_NOTHIDDEN;
         if (atom.madAtom != 0)
-          f |= JC.VIS_BOND_FLAG;
+          f |= JC.VIS_BALLS_FLAG;
         atom.setShapeVisibility(f, true);
         }
       }

@@ -1448,6 +1448,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   }
 
   public static final int VIS_BOND_FLAG = 16 << SHAPE_STICKS;
+  public static final int VIS_BALLS_FLAG = 16 << SHAPE_BALLS;
   public static final int VIS_LABEL_FLAG = 16 << SHAPE_LABELS;
   public static final int VIS_BACKBONE_FLAG = 16 << JC.SHAPE_BACKBONE;
 

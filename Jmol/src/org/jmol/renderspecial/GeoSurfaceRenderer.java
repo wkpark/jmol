@@ -52,11 +52,15 @@ public class GeoSurfaceRenderer extends DotsRenderer {
     iShowSolid = !(!viewer.checkMotionRendering(T.geosurface) && gs.ec.getDotsConvexMax() > 100);
     if (!iShowSolid && !g3d.setColix(C.BLACK))
       return false;
+    // need to hide inner parts if translucent
+    boolean tcover = g3d.getTranslucentCoverOnly();
+    if (iShowSolid)
+      g3d.setTranslucentCoverOnly(true);
     g3d.addRenderer(T.triangles);
     if (iShowSolid && faceMap == null)
       faceMap = new int[screenDotCount];
-    //testRadiusAdjust = -1.2f;
     render1(gs);
+    g3d.setTranslucentCoverOnly(tcover);
     return requireTranslucent;
   }
   

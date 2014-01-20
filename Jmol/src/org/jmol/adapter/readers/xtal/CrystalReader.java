@@ -422,7 +422,11 @@ public class CrystalReader extends AtomSetCollectionReader {
 
 
   private boolean readHeader() throws Exception {
-    discardLinesUntilContains("*                                CRYSTAL");
+    //This avoid line mismatching between different version of CRYSTAL
+    discardLinesUntilContains("*******************************************************************************");
+    readLines(2);
+    //discardLinesUntilContains("*                               CRYSTAL14");
+    //discardLinesUntilContains("*                                CRYSTAL");
     
     isVersion3 = (line.indexOf("CRYSTAL03") >= 0);
     discardLinesUntilContains("EEEEEEEEEE");

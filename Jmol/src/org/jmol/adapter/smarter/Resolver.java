@@ -539,12 +539,19 @@ public class Resolver {
   private static boolean checkCrystal(String[] lines) {
     String s = lines[1].trim();
     if (s.equals("SLAB") ||s.equals("MOLECULE")
-        || s.equals("CRYSTAL")
+        || s.equals("CRYSTAL") 
         || s.equals("POLYMER") || (s = lines[3]).equals("SLAB")
         || s.equals("MOLECULE") || s.equals("POLYMER"))
       return true;
     for (int i = 0; i < lines.length; i++) {
-      if (lines[i].trim().equals("OPTGEOM"))
+      if (lines[i].trim().equals("OPTGEOM") || lines[i].trim().equals("FREQCALC") ||
+          lines[i].contains("DOVESI") 
+          || lines[i].contains("TORINO") 
+          || lines[i].contains("http://www.crystal.unito.it")
+          //new lenghty scripts for CRYSTAL14  
+          || lines[i].contains("Pcrystal")
+          || lines[i].contains("MPPcrystal")
+          || lines[i].contains("crystal executable"))
         return true;
     }
     return false;
@@ -865,7 +872,8 @@ public class Resolver {
   { "Cif", "Crystallographic Information File"};
   
   private final static String[] crystalContainsRecords =
-  { "Crystal", "*                                CRYSTAL"};
+ { "Crystal",
+      "*                                CRYSTAL", "TORINO", "DOVESI" };
 
   private final static String[] espressoContainsRecords =
   { "Espresso", "Program PWSCF", "Program PHONON" }; 

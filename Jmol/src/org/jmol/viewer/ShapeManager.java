@@ -400,7 +400,7 @@ public class ShapeManager {
     
     // i=1 skips balls (0)
 
-    for (int i = 1; i < JC.SHAPE_MAX_ATOM_VIS_FLAG; i++)
+    for (int i = 1; i < JC.SHAPE_MAX; i++)
       if (shapes[i] != null)
         shapes[i].setVisibilityFlags(bs);
     

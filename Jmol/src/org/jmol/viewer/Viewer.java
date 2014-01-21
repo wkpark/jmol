@@ -8849,6 +8849,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     getStateCreator().syncScript(script, applet, port);
   }
 
+  @Override
   public int getModelIndexFromId(String id) {
     // from JSpecView peak pick and model "ID"
     return modelSet.getModelIndexFromId(id);

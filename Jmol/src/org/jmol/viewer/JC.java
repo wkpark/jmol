@@ -1404,7 +1404,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int SHAPE_LCAOCARTOON = 26;    
   public final static int SHAPE_MO          = 27;  //but no ID for MO
 
-  public final static int SHAPE_MAX_ATOM_VIS_FLAG = 28; // no assoc with atoms after this point
+  private final static int SHAPE_LAST_ATOM_VIS_FLAG = 27; 
+  // no setting of atom.shapeVisibilityFlags after this point
     
   public final static int SHAPE_PMESH       = 28;
   public final static int SHAPE_PLOT3D      = 29;
@@ -1441,10 +1442,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int ATOM_INFRAME_NOTHIDDEN = ATOM_INFRAME | ATOM_NOTHIDDEN;
   public final static int ATOM_SHAPE_VIS_MASK = ~ATOM_INFRAME_NOTHIDDEN;
     
-  // note that this is only valid for shapes with IDs < 28. 
-
   public final static int getShapeVisibilityFlag(int shapeID) {
-    return (shapeID < SHAPE_MAX_ATOM_VIS_FLAG ? 16 << shapeID : 0);
+    return 16 << Math.min(shapeID, SHAPE_LAST_ATOM_VIS_FLAG);
   }
 
   public static final int VIS_BOND_FLAG = 16 << SHAPE_STICKS;

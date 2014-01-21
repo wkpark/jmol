@@ -826,7 +826,7 @@ public class PT {
     /**
      * @j2sNative
      * 
-     *            var s = info.toString(); return (s.startsWith("[object") &&
+     *            var s = x.toString(); return (s.startsWith("[object") &&
      *            s.endsWith("Array]") ? null : s);
      * 
      */

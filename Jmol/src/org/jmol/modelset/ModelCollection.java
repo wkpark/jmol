@@ -3314,12 +3314,6 @@ abstract public class ModelCollection extends BondCollection {
         : 0);
   }
 
-  /**
-   * 
-   * @param id
-   * @return model index if found; -2 if file found but model not found -2 if no
-   *         file indicated and no model found -1 if no such file
-   */
   public int getModelIndexFromId(String id) {
     boolean haveFile = (id.indexOf("#") >= 0);
     boolean isBaseModel = id.toLowerCase().endsWith(".basemodel");

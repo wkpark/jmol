@@ -365,7 +365,7 @@ public class MSReader implements MSInterface {
           double[] ptHarmonic = getQCoefs(pt);
           if (ptHarmonic == null) {
             cr.appendLoadNote("Cannot match atom wave vector " + key + " "
-                + pt + " to a cell wave vector or its harmonic");
+                + Escape.eAD(pt) + " to a cell wave vector or its harmonic");
           } else {
             String k2 = key + "_coefs_";
             if (!htModulation.containsKey(k2 + atModel)) {
@@ -486,9 +486,9 @@ public class MSReader implements MSInterface {
         for (int k = kmin; k <= kmax; k++) {
           pt.setT(qs[0]);
           pt.scale(i);
-          if (qs[1] != null)
+          if (modDim > 1 && qs[1] != null)
             pt.scaleAdd2(j, qs[1], pt);
-          if (qs[2] != null)
+          if (modDim > 2 && qs[2] != null)
             pt.scaleAdd2(k, qs[2], pt);
           if (pt.distanceSquared(p3) < 0.0001f) {
             p = new double[modDim];

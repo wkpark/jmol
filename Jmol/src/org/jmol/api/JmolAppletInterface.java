@@ -41,7 +41,6 @@ public interface JmolAppletInterface extends JmolSyncInterface {
   public void destroy();
 
   public Object setStereoGraphics(boolean isStereo);
-  Object getProperty(String infoType);
   public void script(String script);
   public String scriptCheck(String script);
   public String scriptWait(String script);
@@ -49,6 +48,24 @@ public interface JmolAppletInterface extends JmolSyncInterface {
   public String scriptWait(String script, String statusParams);
   public String scriptNoWait(String script);
 
+  /**
+   * 
+   * @param id
+   *     some_id,
+   *     filename#id, or
+   *     ~fileNo.modelNo
+   *     
+   *     added ".basemodel" indicates to get the first model in a 
+   *     series from a JDX-MOL file.
+   *     
+   * @return model index if found; 
+   *       -2 if file found but model not found 
+   *       -2 if no file indicated and no model found 
+   *       -1 if no such file
+   */
+  public int getModelIndexFromId(String id);
+
+  public Object getProperty(String infoType);
   public String getPropertyAsString(String infoType);
   public String getPropertyAsString(String infoType, String paramInfo);
   public String getPropertyAsJSON(String infoType);

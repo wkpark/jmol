@@ -255,4 +255,10 @@ public class JmolApplet extends AppletWrapper implements
       ((GenericApplet) wrappedApplet).register(id, jsi);
   }
 
+  @Override
+  public int getModelIndexFromId(String id) {
+    return (wrappedApplet == null ? Integer.MIN_VALUE :  
+      ((GenericApplet) wrappedApplet).getModelIndexFromId(id));
+  }
+
 }

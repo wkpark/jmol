@@ -104,6 +104,10 @@ public abstract class Shape {
   public GData gdata;
   public int shapeID;
   public int myVisibilityFlag;
+  // AtomShape: Balls, Dots, GeoSurface, Ellipsoids, Halos, Labels, Polyhedra, Stars, Vectors
+  // Sticks, Dipoles, BioShape
+  // MeshCollection: Draw, CGO, Isosurface, LcaoCartoon, MolecularOrbital, Pmesh 
+
   protected float translucentLevel;
   public boolean translucentAllowed = true;
   public boolean isBioShape;
@@ -159,6 +163,7 @@ public abstract class Shape {
   }
 
   protected void setShapeVisibility(Atom atom, boolean isVisible) {
+    // only used for AtomShapes and BioShapes 
     atom.setShapeVisibility(myVisibilityFlag, isVisible);
   }
 

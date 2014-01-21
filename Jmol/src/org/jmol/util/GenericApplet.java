@@ -339,6 +339,11 @@ public abstract class GenericApplet implements JmolAppletInterface,
     return str;
   }
 
+  @Override
+  public int getModelIndexFromId(String id) {
+    return viewer.getModelIndexFromId(id);
+  }
+  
   /**
    * @j2sIgnore
    * @param infoType

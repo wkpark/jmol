@@ -613,6 +613,23 @@ abstract public class JmolViewer implements JSInterface {
   
   abstract public String clipImageOrPasteText(String text);
   abstract public void notifyStatusReady(boolean isReady);
- 
+
+  /**
+   * 
+   * @param id
+   *     some_id,
+   *     filename#id, or
+   *     ~fileNo.modelNo
+   *     
+   *     added ".basemodel" indicates to get the first model in a 
+   *     series from a JDX-MOL file.
+   *     
+   * @return model index if found; 
+   *       -2 if file found but model not found 
+   *       -2 if no file indicated and no model found 
+   *       -1 if no such file
+   */
+  abstract public int getModelIndexFromId(String id);
+
 }
 

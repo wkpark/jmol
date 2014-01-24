@@ -4362,6 +4362,23 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     }
   }
 
+  /**
+   * File has been loaded or model has been changed or atom picked.
+   * This is a call to Jmol.View for view sets (new in Jmol 14.1.8)
+   * 
+   * @param imodel 
+   * @param iatom 
+   * 
+   */
+  private void updateJSView(int imodel, int iatom) {
+    /**
+     * @j2sNative
+     * 
+     * this.applet && this.applet._viewSet != null && Jmol.updateView(this.applet, imodel, iatom);
+     * 
+     */
+    {}
+  }
   private boolean updateWindow(int width, int height) {
     //System.out.println("Viewer updateWindow " + width + " " + height);
     if (!refreshing || creatingImage)
@@ -5235,6 +5252,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         currentFrame, entryName);
     if (doHaveJDX())
       getJSV().setModel(modelIndex);
+    if (isJS)
+      updateJSView(modelIndex, -1);
   }
 
   // interaction with JSpecView
@@ -5416,8 +5435,13 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       setStatusFrameChanged(false, false);
     statusManager.setFileLoadStatus(fullPathName, fileName, modelName,
         strError, ptLoad.getCode(), doCallback, isAsync);
-    if (doCallback && doHaveJDX())
-      getJSV().setModel(getCurrentModelIndex());
+    if (doCallback) {      
+      if(doHaveJDX())
+        getJSV().setModel(getCurrentModelIndex());
+      if (isJS)
+        updateJSView(getCurrentModelIndex(), -2);
+    }
+    
   }
 
   public String getZapName() {
@@ -5541,6 +5565,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     if (syncMode != StatusManager.SYNC_DRIVER || !doHaveJDX())
       return;
     getJSV().atomPicked(atomIndex);
+    updateJSView(getAtomModelIndex(atomIndex), atomIndex);
   }
 
   /*

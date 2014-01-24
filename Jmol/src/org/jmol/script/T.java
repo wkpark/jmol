@@ -670,7 +670,7 @@ public class T {
 
 
   static int getMaxMathParams(int tokCommand) {
-    return  ((tokCommand >> 9) & 0x7);
+    return  ((tokCommand >> 9) & 0x3);
   }
 
   // 0 << 9 indicates that ScriptMathProcessor 
@@ -684,8 +684,8 @@ public class T {
   public final static int color            = 4 | 0 << 9 | mathfunc | intproperty | scriptCommand | deprecatedparam | settable;
   public final static int compare          = 5 | 0 << 9 | mathfunc | scriptCommand;
   public final static int connected        = 6 | 0 << 9 | mathfunc;
-  public final static int data             = 7 | 0 << 9 | mathfunc | scriptCommand;
-  public final static int format           = 8 | 0 << 9 | mathfunc | mathproperty | strproperty | settable;
+  public final static int data             = 8 | 0 << 9 | mathfunc | scriptCommand;
+  public final static int format           = 7 | 0 << 9 | mathfunc | mathproperty | strproperty | settable;
   public final static int function         = 9 | 0 << 9 | mathfunc | flowCommand;
   public final static int getproperty      = 10 | 0 << 9 | mathfunc | mathproperty | scriptCommand;
   public final static int label            = 11 /* must be odd */| 0 << 9 | mathfunc | mathproperty | strproperty | settable | implicitStringCommand | shapeCommand | defaultON | deprecatedparam; 

@@ -192,7 +192,9 @@ for (var i = 0; i < Jmol._coreFiles.length; i++)
   ]);
 
 	ClazzLoader.jarClasspath (base + "corejsvexport.z.js",	[
-          	"JSV.export.Exporter"
+          	"JSV.export.Exporter",
+        	  "JSV.api.ExportInterface",
+        	  "$.JSVExporter"
 	]);
 
 	ClazzLoader.jarClasspath (base + "corejsvdialog.z.js",	[

@@ -812,14 +812,13 @@ public class SV extends T implements JSONEncodable {
     String s = null;
 
     int i1 = tokenIn.intValue;
+    boolean isOne = (i2 == Integer.MIN_VALUE);
     if (i1 == Integer.MAX_VALUE) {
       // no selections have been made yet --
       // we just create a new token with the
       // same bitset and now indicate either
       // the selected value or "ALL" (max_value)
-      if (i2 == Integer.MIN_VALUE)
-        i2 = i1;
-      return newSV(tokenIn.tok, i2, tokenIn.value);
+      return newSV(tokenIn.tok, (isOne ? i1 : i2), tokenIn.value);
     }
     int len = 0;
     boolean isInputSelected = (tokenIn instanceof SV && ((SV) tokenIn).index != Integer.MAX_VALUE);
@@ -837,7 +836,7 @@ public class SV extends T implements JSONEncodable {
       }
       break;
     case varray:
-      len = ((SV)tokenIn).getList().size();
+      len = ((SV) tokenIn).getList().size();
       break;
     case string:
       s = (String) tokenIn.value;
@@ -859,10 +858,10 @@ public class SV extends T implements JSONEncodable {
         int row = (i1 - col) / 10;
         if (col > 0 && col <= len && row <= len) {
           if (tokenIn.tok == matrix3f)
-            return newV(decimal, Float.valueOf(
-                ((M3) tokenIn.value).getElement(row - 1, col - 1)));
-          return newV(decimal, Float.valueOf(
-              ((M4) tokenIn.value).getElement(row - 1, col - 1)));
+            return newV(decimal, Float.valueOf(((M3) tokenIn.value).getElement(
+                row - 1, col - 1)));
+          return newV(decimal,
+              Float.valueOf(((M4) tokenIn.value).getElement(row - 1, col - 1)));
         }
         return newV(string, "");
       }
@@ -880,7 +879,7 @@ public class SV extends T implements JSONEncodable {
         else
           ((M4) tokenIn.value).getRow(i1 - 1, data);
       }
-      if (i2 == Integer.MIN_VALUE)
+      if (isOne)
         return getVariableAF(data);
       if (i2 < 1 || i2 > len)
         return newV(string, "");
@@ -896,15 +895,15 @@ public class SV extends T implements JSONEncodable {
       i1 = len + i1;
     if (i1 < 1)
       i1 = 1;
-    if (i2 == 0)
-      i2 = len;
-    else if (i2 < 0)
-      i2 = len + i2;
 
-    if (i2 > len)
-      i2 = len;
-    else if (i2 < i1)
-      i2 = i1;
+    if (!isOne) {
+      if (i2 == 0)
+        i2 = len;
+      else if (i2 < 0)
+        i2 = len + i2;
+      if (i2 < i1)
+        i2 = i1;
+    }
 
     switch (tokenIn.tok) {
     case bitset:
@@ -914,25 +913,31 @@ public class SV extends T implements JSONEncodable {
           bs.clearAll();
         break;
       }
-      int n = 0;
-      for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1))
-        if (++n < i1 || n > i2)
-          bs.clear(j);
+      if (isOne) {
+        isOne = bs.get(i1);
+        bs.clearAll();
+        if (isOne)
+          bs.set(i1);
+      } else {
+        int n = 0;
+        for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1))
+          if (++n < i1 || n > i2)
+            bs.clear(j);
+      }
       break;
     case string:
-      if (i1 < 1 || i1 > len)
-        tokenOut.value = "";
-      else
-        tokenOut.value = s.substring(i1 - 1, i2);
+    	tokenOut.value = (i1 < 1 || i1 > len ? ""
+    			: isOne ? s.substring(i1 - 1, i1)
+    			: s.substring(i1 - 1, Math.min(i2, len)));
       break;
     case varray:
-      if (i1 < 1 || i1 > len || i2 > len)
+      if (i1 < 1 || i1 > len)
         return newV(string, "");
-      if (i2 == i1)
+      if (isOne)
         return ((SV) tokenIn).getList().get(i1 - 1);
-      List<SV> o2 = new  List<SV>();
+      List<SV> o2 = new List<SV>();
       List<SV> o1 = ((SV) tokenIn).getList();
-      n = i2 - i1 + 1;
+      int n = Math.min(i2, len) - i1 + 1;
       for (int i = 0; i < n; i++)
         o2.addLast(newT(o1.get(i + i1 - 1)));
       tokenOut.value = o2;

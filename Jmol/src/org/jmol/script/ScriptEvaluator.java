@@ -6170,26 +6170,34 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private void breakCmd(int pt) {
-    // pt is a backward reference
     if (pt < 0) {
+      // if pt is a backward reference
       // this is a break within a try{...} block
       getContextVariableAsVariable("_breakval").intValue = -pt;
       pcEnd = pc;
       return;
     }
-    pc = Math.abs(aatoken[pt][0].intValue);
+    // pt is to the FOR, WHILE, or SWITCH statement that is being exited
+    int ptEnd = Math.abs(aatoken[pt][0].intValue);
     int tok = aatoken[pt][0].tok;
     if (tok == T.casecmd || tok == T.defaultcmd) {
-      theToken = aatoken[pc--][0];
+      // breaking from SWITCH
+      theToken = aatoken[ptEnd--][0];
       int ptNext = Math.abs(theToken.intValue);
       if (theToken.tok != T.end)
         theToken.intValue = -ptNext;
     } else {
-      while (thisContext != null
-          && !ScriptCompiler.isBreakableContext(thisContext.token.tok))
+      // breaking from FOR or WHILE (or PROCESS?)
+      pc = -1;
+      while (pc != pt && thisContext != null) {
+        while (thisContext != null
+            && !ScriptCompiler.isBreakableContext(thisContext.token.tok))
+          popContext(true, false);
+        pc = thisContext.pc;
         popContext(true, false);
-      popContext(true, false);
+      }
     }
+    pc = ptEnd;
   }
 
   static int iProcess;

@@ -298,10 +298,7 @@ public class GaussianReader extends MOReader {
         (short)parseIntStr(tokens[STD_ORIENTATION_ATOMIC_NUMBER_OFFSET]);
       if (atom.elementNumber < 0)
         atom.elementNumber = 0; // dummy atoms have -1 -> 0
-      int offset = tokens.length-3;
-      setAtomCoordXYZ(atom, parseFloatStr(tokens[offset]), 
-          parseFloatStr(tokens[++offset]), 
-          parseFloatStr(tokens[++offset]));
+      setAtomCoordTokens(atom, tokens, tokens.length - 3);
     }
     atomSetCollection.setAtomSetModelProperty(SmarterJmolAdapter.PATH_KEY,
         "Calculation "+calculationNumber+

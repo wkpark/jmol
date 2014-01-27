@@ -102,17 +102,9 @@ public class XyzReader extends AtomSetCollectionReader {
         Logger.warn("line cannot be read for XYZ atom data: " + line);
         continue;
       }
-      Atom atom = atomSetCollection.addNewAtom();
+      Atom atom = addAtomXYZSymName(tokens, 1, null, null);
       setElementAndIsotope(atom, tokens[0]);
-      atom.x = parseFloatStr(tokens[1]);
-      atom.y = parseFloatStr(tokens[2]);
-      atom.z = parseFloatStr(tokens[3]);
-      if (Float.isNaN(atom.x) || Float.isNaN(atom.y) || Float.isNaN(atom.z)) {
-        Logger.warn("line cannot be read for XYZ atom data: " + line);
-        atom.set(0, 0, 0);
-      }
       int vpt = 4;
-      setAtomCoord(atom);
       switch (tokens.length) {
       case 4:
         continue;

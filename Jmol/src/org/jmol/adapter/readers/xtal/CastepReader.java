@@ -321,8 +321,7 @@ public class CastepReader extends AtomSetCollectionReader {
       atom.elementSymbol = tokens[1];
       atom.atomName = tokens[1] + tokens[2];
       atomSetCollection.addAtomWithMappedName(atom);
-      setAtomCoordXYZ(atom, parseFloatStr(tokens[3]), parseFloatStr(tokens[4]),
-          parseFloatStr(tokens[5]));
+      setAtomCoordTokens(atom, tokens, 3);
     }
 
   }
@@ -361,11 +360,7 @@ public class CastepReader extends AtomSetCollectionReader {
       discardLinesUntilContains("<-- R");
       while (line != null && line.contains("<-- R")) {
         tokens = getTokens();
-        Atom atom = atomSetCollection.addNewAtom();
-        atom.elementSymbol = tokens[0];
-        setAtomCoordXYZ(atom, parseFloatStr(tokens[2]) * ANGSTROMS_PER_BOHR,
-            parseFloatStr(tokens[3]) * ANGSTROMS_PER_BOHR, parseFloatStr(tokens[4])
-                * ANGSTROMS_PER_BOHR);
+        setAtomCoordScaled(null, tokens, 2, ANGSTROMS_PER_BOHR).elementSymbol = tokens[0];
         readLine();
       }
       applySymmetryAndSetTrajectory();
@@ -657,11 +652,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
     setFractionalCoordinates(true);
     while (readLine() != null && line.indexOf("END") < 0) {
       tokens = getTokens();
-      Atom atom = atomSetCollection.addNewAtom();
-      setAtomCoordXYZ(atom, parseFloatStr(tokens[1]), parseFloatStr(tokens[2]),
-          parseFloatStr(tokens[3]));
-      atom.elementSymbol = tokens[4];
-      atom.bfactor = parseFloatStr(tokens[5]); // mass, actually
+      addAtomXYZSymName(tokens, 1, tokens[4], null).bfactor = parseFloatStr(tokens[5]); // mass, actually
     }
     atomCount = atomSetCollection.atomCount;
     // we collect the atom points, because any supercell business

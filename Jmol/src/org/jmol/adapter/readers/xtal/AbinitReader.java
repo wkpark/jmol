@@ -1,30 +1,32 @@
 package org.jmol.adapter.readers.xtal;
 
 /**
- * http://cms.mpi.univie.ac.at/vasp/
+ * http://www.abinit.org/
+ * 
+ * allows filter="input"
  * 
  * @author Pieremanuele Canepa, MIT, 
  *         Department of Material Sciences and Engineering
+ * @author Bob Hanson, hansonr@stolaf.edu
  *         
  * 
  * @version 1.0
  */
-
-import javajs.util.PT;
 
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 
 public class AbinitReader extends AtomSetCollectionReader {
 
-  private float[] cellLattice;
-  private String atomList[];
+  private float[] znucl;
+  private boolean inputOnly;
 
   @Override
   protected void initializeReader() {
     setSpaceGroupName("P1");
     doApplySymmetry = true;
-    // inputOnly = checkFilter("INPUT");
+    setFractionalCoordinates(false);
+    inputOnly = checkFilterKey("INPUT");
   }
 
   @Override
@@ -42,8 +44,10 @@ public class AbinitReader extends AtomSetCollectionReader {
       readSpaceGroup();
     } else if (line.contains("Real(R)+Recip(G)")) {
       readIntiallattice();
-    } else if (line.contains("xred")) {
-      readIntitfinalCoord();
+      if (inputOnly)
+        continuing = false;
+    } else if (line.contains("xcart")) {
+      readAtoms();
     }
     return true;
   }
@@ -64,46 +68,19 @@ public class AbinitReader extends AtomSetCollectionReader {
       nType = parseIntStr(tokens[1]);
   }
 
-  private int typeArray[];
+  private float[] typeArray;
 
   private void readTypesequence() throws Exception {
-    typeArray = new int[nAtom];
-    int i = 0;
-    while (line != null && line.indexOf("wtk") < 0) {
-      String tmp = line;
-      if (line.contains("type"))
-        tmp = PT.rep(tmp, "type", "");
-      if (line.contains("typat"))
-        tmp = PT.rep(tmp, "typat", "");
-
-      String[] tokens = getTokensStr(tmp);
-      for (int j = 0; j < tokens.length; j++) {
-        typeArray[i] = parseIntStr(tokens[j]);
-        i++;
-      }
-      readLine();
-    }
+    fillFloatArray(line.substring(10),  0, typeArray = new float[nAtom]);
   }
 
   private void readAtomSpecies() throws Exception {
-    atomList = new String[nAtom];
-    readLine();
+    znucl = new float[nType];
     //- pspini: atom type   1  psp file is Al.psp
-    String[] pseudo = getTokensStr(line);
-    int pseudoType = parseIntStr(pseudo[4]);
     for (int i = 0; i < nType; i++) { //is this ntype or sequence type ?
-      int tokenIndex = 0;
       discardLinesUntilContains("zion");
-      String tmp = PT.rep(line, ".", " ");
-      String[] tokens = getTokensStr(tmp);
-      if (tokens[0] == "-")
-        tokenIndex = 1;
-      int atomicNo = parseIntStr(tokens[tokenIndex]);
-      if (pseudoType == atomicNo) {
-        for (int j = 0; j < typeArray.length; j++) {
-          atomList[j] = getElementSymbol(atomicNo);
-        }
-      }
+      String[] tokens = getTokens();
+      znucl[i] = parseFloatStr(tokens[tokens[0] == "-" ? 1 : 0]);
     }
   }
 
@@ -111,54 +88,70 @@ public class AbinitReader extends AtomSetCollectionReader {
   private void readSpaceGroup() throws Exception {
   }
 
-  private void readIntiallattice() throws Exception {
+  float[] cellLattice;
 
+  private void readIntiallattice() throws Exception {
     //    Real(R)+Recip(G) space primitive vectors, cartesian coordinates (Bohr,Bohr^-1):
     //    R(1)= 25.9374361  0.0000000  0.0000000  G(1)=  0.0385543  0.0222593  0.0000000
     //    R(2)=-12.9687180 22.4624785  0.0000000  G(2)=  0.0000000  0.0445187  0.0000000
     //    R(3)=  0.0000000  0.0000000 16.0314917  G(3)=  0.0000000  0.0000000  0.0623772
     //    Unit cell volume ucvol=  9.3402532E+03 bohr^3
 
+    float f = 0;
     cellLattice = new float[9];
-    String data = "";
-    int counter = 0;
-    while (readLine() != null && line.indexOf("Unit cell volume") < 0) {
-      data = line;
-      data = PT.rep(data, "=", "= ");
-      String[] tokens = getTokensStr(data);
-      cellLattice[counter++] = parseFloatStr(tokens[1]) * ANGSTROMS_PER_BOHR;
-      cellLattice[counter++] = parseFloatStr(tokens[2]) * ANGSTROMS_PER_BOHR;
-      cellLattice[counter++] = parseFloatStr(tokens[3]) * ANGSTROMS_PER_BOHR;
+    for (int i = 0; i < 9; i++) {
+      if (i % 3 == 0) {
+        line = readLine().substring(6);
+        f = parseFloatStr(line);
+      }
+      cellLattice[i] = f * ANGSTROMS_PER_BOHR;
+      f = parseFloat();      
     }
-    setSymmetry();
+    applySymmetry();
   }
 
-  private void setSymmetry() throws Exception {
-    applySymmetryAndSetTrajectory();
+  private boolean doSymmetry;
+  
+  private void applySymmetry() throws Exception {
+    if (cellLattice == null)
+      return;
     setSpaceGroupName("P1");
-    setFractionalCoordinates(false);
+    for (int i = 0; i < 3; i++)
+      addPrimitiveLatticeVector(i, cellLattice, i * 3);
+    if (!doSymmetry)
+      return;
+    Atom[] atoms = atomSetCollection.atoms;
+    int i0 = atomSetCollection.getAtomSetAtomIndex(atomSetCollection.currentAtomSetIndex);
+    for (int i = atomSetCollection.atomCount; --i >= i0;)
+      setAtomCoord(atoms[i]);
+    applySymmetryAndSetTrajectory();
+    doSymmetry = false;
   }
 
-  //xred     -7.0000000000E-02  0.0000000000E+00  0.0000000000E+00
-  //          7.0000000000E-02  0.0000000000E+00  0.0000000000E+00
-  private void readIntitfinalCoord() throws Exception {
-    // Read crystallographic coordinate of intial and 
-    // final structures.
-    String data = "";
-    int count = 0;
-    while (readLine() != null && line.contains("znucl")) {
+  //   xcart    0.0000000000E+00  0.0000000000E+00  0.0000000000E+00
+  //            2.5542500000E+00  2.5542500000E+00  2.5542500000E+00
+  //    xred...
+  //    ...
+  //    z...
+  
+  private void readAtoms() throws Exception {
+    // Read cartesian coordinates 
+    atomSetCollection.newAtomSet();
+    doSymmetry = true;
+    int i0 = atomSetCollection.atomCount;
+    line = line.substring(10);
+    while (line != null && !line.contains("x")) {
       Atom atom = atomSetCollection.addNewAtom();
-      atom.atomName = atomList[count++];
-      data = line;
-      if (data.contains("xred"))
-        PT.rep(data, "xred", "");
-      String[] tokens = getTokensStr(data);
-      float x = parseFloatStr(tokens[0]);
-      float y = parseFloatStr(tokens[1]);
-      float z = parseFloatStr(tokens[2]);
-      setAtomCoordXYZ(atom, x, y, z);
+      setAtomCoordScaled(atom, getTokensStr(line), 0, ANGSTROMS_PER_BOHR);
+      readLine();
     }
-
+    discardLinesUntilContains("z");
+    if (znucl == null)
+      fillFloatArray(line.substring(11), 0, znucl = new float[nType]);
+    Atom[] atoms = atomSetCollection.atoms;
+    for (int i = 0; i < nAtom; i++)
+      atoms[i + i0].elementNumber = (short) znucl[(int) typeArray[i] - 1];
+    applySymmetry();
   }
 
 }

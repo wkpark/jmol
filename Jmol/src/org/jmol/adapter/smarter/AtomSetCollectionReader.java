@@ -1009,6 +1009,29 @@ public abstract class AtomSetCollectionReader {
     setAtomCoord(atom);
   }
 
+  public Atom setAtomCoordScaled(Atom atom, String[] tokens, int i, float f) {
+    if (atom == null)
+      atom = atomSetCollection.addNewAtom();
+    setAtomCoordXYZ(atom, parseFloatStr(tokens[i]) * f,
+        parseFloatStr(tokens[i + 1]) * f, parseFloatStr(tokens[i + 2]) * f);
+    return atom;
+  }
+
+  protected void setAtomCoordTokens(Atom atom, String[] tokens, int i) {
+    setAtomCoordXYZ(atom, parseFloatStr(tokens[i]), parseFloatStr(tokens[i + 1]),
+          parseFloatStr(tokens[i + 2]));
+  }
+
+  public Atom addAtomXYZSymName(String[] tokens, int i, String sym, String name) {
+    Atom atom = atomSetCollection.addNewAtom();
+    if (sym != null)
+      atom.elementSymbol = sym;
+    if (name != null)
+      atom.atomName = name;
+    setAtomCoordTokens(atom, tokens, i);
+    return atom;
+  }
+
   public void setAtomCoord(Atom atom) {
     // fileScaling is used by the PLOT command to 
     // put data into PDB format, preserving name/residue information,

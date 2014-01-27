@@ -94,7 +94,6 @@ public class HyperChemReader extends AtomSetCollectionReader {
       throw new Exception ("bad atom number sequence ... expected:" +
         (atomIndex + 1) + " found:" + fileAtomNumber);
     }
-
     Atom atom = atomSetCollection.addNewAtom();
     parseToken(); // discard
     atom.elementSymbol = parseToken();

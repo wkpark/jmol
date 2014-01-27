@@ -32,7 +32,6 @@
 package org.jmol.adapter.readers.xtal;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
-import org.jmol.adapter.smarter.Atom;
 import org.jmol.util.Logger;
 
 /**
@@ -129,10 +128,7 @@ public class AimsReader extends AtomSetCollectionReader {
     }
     if (this.isFractional != isFractional)
       setFractionalCoordinates(this.isFractional = isFractional);
-    Atom atom = atomSetCollection.addNewAtom();
-    setAtomCoordXYZ(atom, parseFloatStr(tokens[1]), parseFloatStr(tokens[2]),
-        parseFloatStr(tokens[3]));        
-    atom.elementSymbol = tokens[4];
+    addAtomXYZSymName(tokens, 1, tokens[4], null); 
   }
 
   /*
@@ -152,10 +148,7 @@ public class AimsReader extends AtomSetCollectionReader {
     }
     if (this.isFractional)
       setFractionalCoordinates(this.isFractional = false);
-    Atom atom = atomSetCollection.addNewAtom();
-    setAtomCoordXYZ(atom, parseFloatStr(tokens[1]), parseFloatStr(tokens[2]),
-        parseFloatStr(tokens[3]));
-    atom.partialCharge = parseFloatStr(tokens[5]);
+    addAtomXYZSymName(tokens, 1, null, null).partialCharge = parseFloatStr(tokens[5]);
     // we generally do not do this: atom.formalCharge = Math.round(atom.partialCharge);
   }
 

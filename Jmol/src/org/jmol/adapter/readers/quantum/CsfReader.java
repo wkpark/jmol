@@ -293,11 +293,14 @@ public class CsfReader extends MopacSlaterReader {
         break;
       String tokens[] = getTokens();
       Atom atom = new Atom();
+      String field;
       for (int i = 0; i < fieldCount; i++) {
-        String field = tokens[i];
-        if (field == null)
+        int type = fieldTypes[i];
+        if (type == 0)
+          continue;
+        if ((field = tokens[i]) == null)
           Logger.warn("field == null in " + line);
-        switch (fieldTypes[i]) {
+        switch (type) {
         case ID:
           atom.atomSerial = PT.parseInt(field);
           break;
@@ -315,7 +318,8 @@ public class CsfReader extends MopacSlaterReader {
           atom.partialCharge = parseFloatStr(field);
           break;
         case xyz_coordinates:
-          setAtomCoordXYZ(atom, parseFloatStr(field), parseFloatStr(tokens[i + 1]), parseFloatStr(tokens[i + 2]));
+          setAtomCoordTokens(atom, tokens, i);
+          i += 2;
           break;
         }
       }

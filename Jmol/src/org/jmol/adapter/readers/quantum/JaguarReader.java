@@ -24,7 +24,6 @@
 
 package org.jmol.adapter.readers.quantum;
 
-import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
 
@@ -105,22 +104,11 @@ public class JaguarReader extends MOReader {
     while (readLine() != null && line.length() >= 60 && line.charAt(2) != ' ') {
       String[] tokens = getTokens();
       String atomName = tokens[0];
-      float x = parseFloatStr(tokens[1]);
-      float y = parseFloatStr(tokens[2]);
-      float z = parseFloatStr(tokens[3]);
-      if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z)
-          || atomName.length() < 2)
+      if (atomName.length() < 2)
         return;
-      String elementSymbol;
       char ch2 = atomName.charAt(1);
-      if (ch2 >= 'a' && ch2 <= 'z')
-        elementSymbol = atomName.substring(0, 2);
-      else
-        elementSymbol = atomName.substring(0, 1);
-      Atom atom = atomSetCollection.addNewAtom();
-      atom.elementSymbol = elementSymbol;
-      atom.atomName = atomName;
-      setAtomCoordXYZ(atom, x, y, z);
+      String elementSymbol = (ch2 >= 'a' && ch2 <= 'z' ? atomName.substring(0, 2) : atomName.substring(0, 1));
+      addAtomXYZSymName(tokens, 1, elementSymbol, atomName);
     }
   }
 

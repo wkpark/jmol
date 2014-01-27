@@ -248,8 +248,7 @@ public class GenNBOReader extends MOReader {
         continue;
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementNumber = (short) z;
-      setAtomCoordXYZ(atom, parseFloatStr(tokens[1]), parseFloatStr(tokens[2]),
-          parseFloatStr(tokens[3]));
+      setAtomCoordTokens(atom, tokens, 1);
     }
 
     // read basis functions

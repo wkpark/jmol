@@ -25,7 +25,6 @@
 package org.jmol.adapter.readers.simple;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
-import org.jmol.adapter.smarter.Atom;
 
 /**
  * Gaussian cube file format
@@ -91,11 +90,9 @@ public class CubeReader extends AtomSetCollectionReader {
   private void readAtoms() throws Exception {
     float f = (isAngstroms ? 1 : ANGSTROMS_PER_BOHR);
     for (int i = 0; i < atomCount; ++i) {
-      readLine();
-      Atom atom = atomSetCollection.addNewAtom();
-      atom.elementNumber = (short)parseIntStr(line); //allowing atomicAndIsotope for JVXL format
-      parseFloat();
-      setAtomCoordXYZ(atom, parseFloat() * f, parseFloat() * f, parseFloat() * f);
+      String[] tokens = getTokensStr(readLine());
+      //allowing atomicAndIsotope for JVXL format
+      setAtomCoordScaled(null, tokens, 2, f).elementNumber = (short)parseIntStr(tokens[0]);
     }
   }
 

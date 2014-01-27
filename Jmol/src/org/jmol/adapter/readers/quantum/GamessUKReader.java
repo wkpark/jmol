@@ -107,18 +107,10 @@ public class GamessUKReader extends GamessReader {
       if (line.charAt(14) == ' ')
         continue;
       String[] tokens = getTokens();
-      String atomName = tokens[1];
       int atomicNumber = (int) parseFloatStr(tokens[2]);
-      float x = parseFloatStr(tokens[3]);
-      float y = parseFloatStr(tokens[4]);
-      float z = parseFloatStr(tokens[5]);
-      if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
-        break;
-      Atom atom = atomSetCollection.addNewAtom();
-      atom.atomName = atomName;
-      setAtomCoordXYZ(atom, x * ANGSTROMS_PER_BOHR, y * ANGSTROMS_PER_BOHR, z * ANGSTROMS_PER_BOHR);
+      Atom atom = setAtomCoordScaled(null, tokens, 3, ANGSTROMS_PER_BOHR);
       atom.elementSymbol = AtomSetCollectionReader.getElementSymbol(atomicNumber);
-      atomNames.addLast(atomName);
+      atomNames.addLast(atom.atomName = tokens[1]);
     }
   }
 

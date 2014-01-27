@@ -49,10 +49,12 @@ public class Resolver {
                  "WebMO;",
     "pdb.", ";Pdb;Pqr;P2n;",
     "pymol.", ";PyMOL;",
-    "simple.", ";Alchemy;Ampac;Cube;FoldingXyz;GhemicalMM;HyperChem;Jme;Mopac;MopacArchive;ZMatrix;JSON;", 
+    "simple.", ";Alchemy;Ampac;Cube;FoldingXyz;GhemicalMM;HyperChem;Jme;JSON;Mopac;MopacArchive;Tinker;ZMatrix;", 
     "xtal.", ";Abinit;Aims;Castep;Crystal;Dmol;Espresso;Gulp;Jana;Magres;Shelx;Siesta;VaspOutcar;" +
              "VaspPoscar;Wien2k;Xcrysden;"
   };
+
+  // Tinker is only as explicit Tinker::fileName.xyz
   
   public final static String getReaderClassBase(String type) {
     String name = type + "Reader";
@@ -412,22 +414,22 @@ public class Resolver {
 
   private final static String getReaderFromType(String type) {
     type = type.toLowerCase();
-    String base = null;
-    if ((base = checkType(specialTags, type)) != null)
-      return base;
-    if ((base = checkType(fileStartsWithRecords, type)) != null)
-      return base;
-    if ((base = checkType(lineStartsWithRecords, type)) != null)
-      return base;
-    return checkType(headerContainsRecords, type);
-  }
-  
-  private final static String checkType(String[][] typeTags, String type) {
-    for (int i = 0; i < typeTags.length; ++i)
-      if (typeTags[i][0].toLowerCase().equals(type))
-        return typeTags[i][0];
+    String key = ";" + type + ";";
+    for (int i = readerSets.length; --i >= 0;) {
+      int pt = readerSets[i].toLowerCase().indexOf(key);
+      if (pt >= 0)
+        return readerSets[i].substring(pt + 1, readerSets[i].indexOf(";", pt + 2));
+    }
     return null;
   }
+//  
+//  private final static String checkType(String[][] typeTags, String type) {
+//    for (int i = 0; i < typeTags.length; ++i)
+//      if (typeTags[i][0].toLowerCase().equals(type))
+//        return typeTags[i][0];
+//    return null;
+//  }
+//
   
   ////////////////////////////////////////////////////////////////
   // file types that need special treatment

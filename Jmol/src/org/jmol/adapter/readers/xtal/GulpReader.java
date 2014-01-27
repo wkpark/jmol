@@ -385,12 +385,8 @@ public class GulpReader extends AtomSetCollectionReader {
       }
       line = line.replace('*', ' ');
       String[] tokens = getTokens();
-      if (!tokens[2].equals("c"))
-        continue;
-      Atom atom = atomSetCollection.addNewAtom();
-      atom.atomName = tokens[1];
-      setAtomCoordXYZ(atom, parseFloatStr(tokens[3]), parseFloatStr(tokens[4]),
-          parseFloatStr(tokens[5]));
+      if (tokens[2].equals("c"))
+        addAtomXYZSymName(tokens, 3, null, tokens[1]);
     }
     if (finalizeSymmetry)
       applySymmetryAndSetTrajectory();

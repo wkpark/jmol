@@ -132,8 +132,6 @@ public class MoldenReader extends MopacSlaterReader {
      */
     String coordUnit = getTokensStr(line.replace(']', ' '))[1];
     
-    int nPrevAtom = 0, nCurAtom = 0;
-   
     boolean isAU = (coordUnit.indexOf("ANGS") < 0); 
     if (isAU && coordUnit.indexOf("AU") < 0) {
       throw new Exception("invalid coordinate unit " + coordUnit + " in [Atoms]"); 
@@ -144,20 +142,9 @@ public class MoldenReader extends MopacSlaterReader {
       String [] tokens = getTokens();
       if (tokens.length < 6)
         continue;
-      Atom atom = atomSetCollection.addNewAtom();
+      Atom atom = setAtomCoordScaled(null, tokens, 3, f);
       atom.atomName = tokens[0];
-      // tokens[1] is the atom number.  Since sane programs shouldn't list
-      // these out of order, just throw an exception if one is encountered
-      // out of order (for now)
-      nCurAtom = parseIntStr(tokens[1]);
-      if (nPrevAtom > 0 && nCurAtom != nPrevAtom + 1 ) { 
-        throw new Exception("out of order atom in [Atoms]");
-      } 
-      nPrevAtom = nCurAtom;
       atom.elementNumber = (short) parseIntStr(tokens[2]);
-      setAtomCoordXYZ(atom, parseFloatStr(tokens[3]) * f, 
-          parseFloatStr(tokens[4]) * f, 
-          parseFloatStr(tokens[5]) * f);
     }    
   }
   
@@ -518,25 +505,15 @@ max-force
     if (atomSetCollection.atomCount == 0) {
       while (readLine() != null && line.indexOf('[') < 0) {    
         String [] tokens = getTokens();
-        if (tokens.length != 4)
-          continue;
-        Atom atom = atomSetCollection.addNewAtom();
-        atom.atomName = tokens[0];
-        setAtomCoordXYZ(atom, parseFloatStr(tokens[1]) * f, 
-            parseFloatStr(tokens[2]) * f, 
-            parseFloatStr(tokens[3]) * f);
+        if (tokens.length == 4)
+          setAtomCoordScaled(null, tokens, 1, f).atomName = tokens[0];
       }    
       modelAtomCount = atomSetCollection.getLastAtomSetAtomCount();
       return;
     }
     Atom[] atoms = atomSetCollection.atoms;
     int i0 = atomSetCollection.getLastAtomSetAtomIndex();
-    for (int i = 0; i < modelAtomCount; i++) {
-      String[] tokens = getTokensStr(readLine());
-      Atom atom = atoms[i + i0];
-      setAtomCoordXYZ(atom, parseFloatStr(tokens[1]) * f, 
-          parseFloatStr(tokens[2]) * f, 
-          parseFloatStr(tokens[3]) * f);
-    }
+    for (int i = 0; i < modelAtomCount; i++)
+      setAtomCoordScaled(atoms[i + i0], getTokensStr(readLine()), 1, f);
   }
 }

@@ -264,12 +264,8 @@ public class ShelxReader extends AtomSetCollectionReader {
 
   private void processCmdfAtoms() throws Exception {
     while (readLine() != null && line.length() > 10) {
-      Atom atom = atomSetCollection.addNewAtom();
       tokens = getTokens();
-      atom.elementSymbol = getSymbol(tokens[0]);
-      atom.atomName = tokens[1];
-      setAtomCoordXYZ(atom, parseFloatStr(tokens[2]), parseFloatStr(tokens[3]),
-          parseFloatStr(tokens[4]));
+      addAtomXYZSymName(tokens, 2, getSymbol(tokens[0]), tokens[1]);
     }
   }
 

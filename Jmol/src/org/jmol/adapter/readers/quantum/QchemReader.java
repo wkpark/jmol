@@ -142,12 +142,12 @@ public class QchemReader extends MOReader {
   }
 
 
-/* Q-chem 2.1 format:
-       Standard Nuclear Orientation (Angstroms)
-    I     Atom         X            Y            Z
- ----------------------------------------------------
-    1      H       0.000000     0.000000     4.756791
-*/
+  /* Q-chem 2.1 format:
+         Standard Nuclear Orientation (Angstroms)
+      I     Atom         X            Y            Z
+   ----------------------------------------------------
+      1      H       0.000000     0.000000     4.756791
+  */
 
   private void readAtoms() throws Exception {
     atomSetCollection.newAtomSet();
@@ -159,20 +159,11 @@ public class QchemReader extends MOReader {
       if (tokens.length < 5)
         continue;
       String symbol = tokens[1];
-      if (JmolAdapter.getElementNumber(symbol) < 1)
-        continue;
-      //q-chem specific offsets
-      float x = parseFloatStr(tokens[2]);
-      float y = parseFloatStr(tokens[3]);
-      float z = parseFloatStr(tokens[4]);
-      if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
-        continue;
-      Atom atom = atomSetCollection.addNewAtom();
-      atom.elementSymbol = symbol;
-      setAtomCoordXYZ(atom, x, y, z);
-      atomSetCollection.setAtomSetModelProperty(SmarterJmolAdapter.PATH_KEY,
-          "Calculation "+calculationNumber);
-   }
+      if (JmolAdapter.getElementNumber(symbol) > 0)
+        addAtomXYZSymName(tokens, 2, symbol, null);
+    }
+    atomSetCollection.setAtomSetModelProperty(SmarterJmolAdapter.PATH_KEY,
+        "Calculation " + calculationNumber);
   }
   
   /**

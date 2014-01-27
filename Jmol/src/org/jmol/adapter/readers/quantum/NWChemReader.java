@@ -304,11 +304,9 @@ public class NWChemReader extends MOReader {
       tokens = getTokens(); // get the tokens in the line
       if (tokens.length < 6)
         break; // if don't have enough of them: done
-      Atom atom = atomSetCollection.addNewAtom();
-      atom.atomName = fixTag(tokens[1]);
-      atomTypes.addLast(atom.atomName);
-      setAtomCoordXYZ(atom, parseFloatStr(tokens[3]), parseFloatStr(tokens[4]),
-          parseFloatStr(tokens[5]));
+      String name = fixTag(tokens[1]);
+      addAtomXYZSymName(tokens, 3, null, name);
+      atomTypes.addLast(name);
     }
     // only if was converged, use the last energy for the name and properties
     if (converged) {
@@ -354,11 +352,9 @@ public class NWChemReader extends MOReader {
       tokens = getTokens(); // get the tokens in the line
       if (tokens.length < 8)
         break; // make sure I have enough tokens
-      Atom atom = atomSetCollection.addNewAtom();
+      Atom atom = setAtomCoordScaled(null, tokens, 2, ANGSTROMS_PER_BOHR);
       atom.atomName = fixTag(tokens[1]);
-      setAtomCoordXYZ(atom, parseFloatStr(tokens[2]) * ANGSTROMS_PER_BOHR,
-          parseFloatStr(tokens[3]) * ANGSTROMS_PER_BOHR, parseFloatStr(tokens[4])
-              * ANGSTROMS_PER_BOHR);
+      
       // Keep gradients in a.u. (larger value that way)
       // need to multiply with -1 so the direction is in the direction the
       // atom needs to move to lower the energy
@@ -473,11 +469,7 @@ public class NWChemReader extends MOReader {
     String tokens[];
     while (readLine() != null && line.indexOf("---") < 0) {
       tokens = getTokens();
-      Atom atom = atomSetCollection.addNewAtom();
-      atom.atomName = fixTag(tokens[0]);
-      setAtomCoordXYZ(atom, parseFloatStr(tokens[2]) * ANGSTROMS_PER_BOHR,
-          parseFloatStr(tokens[3]) * ANGSTROMS_PER_BOHR, parseFloatStr(tokens[4])
-              * ANGSTROMS_PER_BOHR);
+      setAtomCoordScaled(null, tokens, 3, ANGSTROMS_PER_BOHR).atomName = fixTag(tokens[0]);
     }
 
     discardLinesUntilContains("(Projected Frequencies expressed in cm-1)");

@@ -26,7 +26,6 @@ package org.jmol.adapter.readers.quantum;
 
 
 import org.jmol.adapter.smarter.Bond;
-import org.jmol.adapter.smarter.Atom;
 
 import javajs.util.AU;
 import javajs.util.List;
@@ -132,15 +131,10 @@ public class WebMOReader extends MopacSlaterReader {
       String[] tokens = getTokens();
       if (tokens.length == 0)
         continue;
-      int atNo = parseIntStr(line);
-      Atom atom = atomSetCollection.addNewAtom();
-      if (atNo == Integer.MIN_VALUE)
-        atom.elementSymbol = tokens[0];
-      else
-        atom.elementSymbol = getElementSymbol(atNo);
-      setAtomCoordXYZ(atom, parseFloatStr(tokens[1]) * ANGSTROMS_PER_BOHR, 
-          parseFloatStr(tokens[2]) * ANGSTROMS_PER_BOHR,
-          parseFloatStr(tokens[3])* ANGSTROMS_PER_BOHR);
+      String sym = tokens[0];
+      int atNo = parseIntStr(sym);
+      setAtomCoordScaled(null, tokens, 1, ANGSTROMS_PER_BOHR).elementSymbol = (atNo == Integer.MIN_VALUE ? sym
+          : getElementSymbol(atNo));
     }
   }
 

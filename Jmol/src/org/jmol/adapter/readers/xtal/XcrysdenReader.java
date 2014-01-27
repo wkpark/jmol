@@ -1,7 +1,6 @@
 package org.jmol.adapter.readers.xtal;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
-import org.jmol.adapter.smarter.Atom;
 
 /**
  * 
@@ -84,14 +83,9 @@ public class XcrysdenReader extends AtomSetCollectionReader {
 
     setFractionalCoordinates(false);
     int counter = 0;
-    while (counter < nAtoms && readLine() != null) { 
-      Atom atom = atomSetCollection.addNewAtom();
+    while (counter < nAtoms && readLine() != null) {
       String[] tokens = getTokens();
-      atom.atomName = getElementSymbol(Integer.parseInt(tokens[0]));
-      float x = parseFloatStr(tokens[1]);
-      float y = parseFloatStr(tokens[2]);
-      float z = parseFloatStr(tokens[3]);
-      setAtomCoordXYZ(atom, x, y, z);
+      addAtomXYZSymName(tokens, 1, null, getElementSymbol(Integer.parseInt(tokens[0])));
       counter++;
     }
     atomSetCollection.setAtomSetName(animation ? "Structure " + (animationStep++) : "Initial coordinates");

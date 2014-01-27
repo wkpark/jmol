@@ -96,10 +96,7 @@ public class AmpacReader extends AtomSetCollectionReader {
       if (haveFreq) {
         atomPositions[atomCount] = P3.new3(parseFloatStr(tokens[2]), parseFloatStr(tokens[3]), parseFloatStr(tokens[4]));
       } else {
-        String symbol = tokens[1];
-        Atom atom = atomSetCollection.addNewAtom();
-        atom.elementSymbol = symbol;
-        setAtomCoordXYZ(atom, parseFloatStr(tokens[2]), parseFloatStr(tokens[3]), parseFloatStr(tokens[4]));
+        addAtomXYZSymName(tokens, 2, tokens[1], null);
       }
       atomCount++;
     }

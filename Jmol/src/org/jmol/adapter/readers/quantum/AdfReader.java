@@ -161,16 +161,13 @@ OR
       if (tokens.length < 5)
         break;
       String symbol = tokens[1];
-      if (JmolAdapter.getElementNumber(symbol) < 1) {
+      if (JmolAdapter.getElementNumber(symbol) < 1)
         nXX++;
-        continue;
-      }
-      Atom atom = atomSetCollection.addNewAtom();
-      atom.elementSymbol = symbol;
-      setAtomCoordXYZ(atom, parseFloatStr(tokens[pt0]), parseFloatStr(tokens[pt0 + 1]),
-          parseFloatStr(tokens[pt0 + 2]));
+      else
+        addAtomXYZSymName(tokens, pt0, symbol, null);
     }
   }
+
 
   /*
    Vibrations and Normal Modes  ***  (cartesian coordinates, NOT mass-weighted)  ***

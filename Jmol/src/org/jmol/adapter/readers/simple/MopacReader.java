@@ -138,8 +138,9 @@ void processAtomicCharges() throws Exception {
   }
     
   /**
-   * Reads the section in MOPAC files with cartesian coordinates.
-   * These sections look like:
+   * Reads the section in MOPAC files with cartesian coordinates. These sections
+   * look like:
+   * 
    * <pre>
    *           CARTESIAN COORDINATES
    * 
@@ -149,12 +150,14 @@ void processAtomicCharges() throws Exception {
    *      2         C        1.3952    0.0000    0.0000
    *      3         C        2.0927    1.2078    0.0000
    * </pre>
+   * 
    * In a MOPAC2002 file the columns are different:
+   * 
    * <pre>
    *          CARTESIAN COORDINATES
-   *
+   * 
    * NO.       ATOM           X             Y             Z
-   *
+   * 
    *  1         H        0.00000000    0.00000000    0.00000000
    *  2         O        0.95094500    0.00000000    0.00000000
    *  3         H        1.23995160    0.90598439    0.00000000
@@ -164,7 +167,6 @@ void processAtomicCharges() throws Exception {
    */
   void processCoordinates() throws Exception {
     readLines(3);
-    int expectedAtomNumber = 0;
     if (!chargesFound) {
       atomSetCollection.newAtomSet();
       baseAtomIndex = atomSetCollection.atomCount;
@@ -172,22 +174,19 @@ void processAtomicCharges() throws Exception {
       chargesFound = false;
     }
     Atom[] atoms = atomSetCollection.atoms;
+    int atomNumber;
     while (readLine() != null) {
-      int atomNumber = parseIntStr(line);
-      if (atomNumber == Integer.MIN_VALUE) // blank line
+      String[] tokens = getTokens();
+      if (tokens.length == 0
+          || (atomNumber = parseIntStr(tokens[0])) == Integer.MIN_VALUE)
         break;
-      ++expectedAtomNumber;
-      if (atomNumber != expectedAtomNumber)
-        throw new Exception("unexpected atom number in coordinates");
-      String elementSymbol = parseToken();
-
       Atom atom = atoms[baseAtomIndex + atomNumber - 1];
-      if (atom == null) {
-          atom = atomSetCollection.addNewAtom(); // if no charges were found first
-      }
+      if (atom == null)
+        atom = atomSetCollection.addNewAtom(); // if no charges were found first
       atom.atomSerial = atomNumber;
-      setAtomCoordXYZ(atom, parseFloat(), parseFloat(), parseFloat());
-      int atno = parseIntStr(elementSymbol); 
+      setAtomCoordTokens(atom, tokens, 2);
+      String elementSymbol = tokens[1];
+      int atno = parseIntStr(elementSymbol);
       if (atno != Integer.MIN_VALUE)
         elementSymbol = getElementSymbol(atno);
       atom.elementSymbol = elementSymbol;

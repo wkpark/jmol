@@ -151,14 +151,8 @@ public class GhemicalMMReader extends AtomSetCollectionReader {
   void processCoord() throws Exception {
     Atom[] atoms = atomSetCollection.atoms;
     int atomCount = atomSetCollection.atomCount;
-    for (int i = 0; i < atomCount; ++i) {
-      readLine();
-      int atomIndex = parseIntStr(line);
-      if (atomIndex != i)
-        throw new Exception("bad atom index in !Coord" + "expected: " + i
-            + " saw:" + atomIndex);
-      setAtomCoordXYZ(atoms[i], parseFloat() * 10, parseFloat() * 10, parseFloat() * 10);
-    }
+    for (int i = 0; i < atomCount; ++i)
+      setAtomCoordScaled(atoms[i], getTokensStr(readLine()), 1, 10);
   }
 
   void processCharges() throws Exception {

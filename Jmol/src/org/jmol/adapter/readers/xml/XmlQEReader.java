@@ -63,7 +63,7 @@ public class XmlQEReader extends XmlReader {
 
   @Override
   public void processStartElement(String localName) {
-    if (Logger.debugging) 
+    if (Logger.debugging)
       Logger.debug("xmlqe: start " + localName);
 
     if (!parent.continuing)
@@ -75,12 +75,10 @@ public class XmlQEReader extends XmlReader {
       keepChars = true;
       return;
     }
-        
+
     if (localName.startsWith("ATOM.")) {
-      float[] xyz = getTokensFloat(atts.get("TAU"), null, 3);
-      atom = atomSetCollection.addNewAtom();
-      atom.elementSymbol = atts.get("SPECIES").trim();
-      parent.setAtomCoordXYZ(atom, xyz[0] * ANGSTROMS_PER_BOHR, xyz[1] * ANGSTROMS_PER_BOHR, xyz[2] * ANGSTROMS_PER_BOHR);
+      parent.setAtomCoordScaled(null, getTokensStr(atts.get("TAU")), 0,
+          ANGSTROMS_PER_BOHR).elementSymbol = atts.get("SPECIES").trim();
     }
     if ("structure".equals(localName)) {
       if (!parent.doGetModel(++parent.modelNumber, null)) {
@@ -94,8 +92,7 @@ public class XmlQEReader extends XmlReader {
     }
     if (!parent.doProcessLines)
       return;
-    
-    
+
   }
 
   @Override

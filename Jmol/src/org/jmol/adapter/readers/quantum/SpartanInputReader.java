@@ -25,7 +25,6 @@
 package org.jmol.adapter.readers.quantum;
 
 import org.jmol.adapter.smarter.Bond;
-import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.JmolAdapter;
 
@@ -114,9 +113,7 @@ public abstract class SpartanInputReader extends BasisFunctionReader {
     while (readLine() != null
         && !line.startsWith("ENDCART")) {
       String[] tokens = getTokens();
-      Atom atom = atomSetCollection.addNewAtom();
-      atom.elementSymbol = getElementSymbol(parseIntStr(tokens[0]));
-      setAtomCoordXYZ(atom, parseFloatStr(tokens[1]), parseFloatStr(tokens[2]), parseFloatStr(tokens[3]));
+      addAtomXYZSymName(tokens, 1, getElementSymbol(parseIntStr(tokens[0])), null);
       modelAtomCount++;
     }
     atomCount = atomSetCollection.atomCount;

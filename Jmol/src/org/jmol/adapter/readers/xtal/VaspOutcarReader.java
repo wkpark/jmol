@@ -31,7 +31,6 @@ import javajs.util.DF;
 import javajs.util.List;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
-import org.jmol.adapter.smarter.Atom;
 
 /**
  * http://cms.mpi.univie.ac.at/vasp/
@@ -100,15 +99,10 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
 
 
   private List<String> elementNames = new List<String>();
-  private String elementList = "";
 
   private void readElementNames() throws Exception {
     //TITEL  = PAW_PBE Al 04Jan2001
-    String[] tokens = getTokensStr(line);
-    String sym = tokens[3];
-    String key = ";" + sym + ";";
-    elementList += key;
-    elementNames.addLast(sym);
+    elementNames.addLast(getTokens()[3]);
   }
 
   /*  
@@ -183,15 +177,8 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
   ///This is the initial geometry not the geometry during the geometry dump
   private void readInitialCoordinates() throws Exception {
     int counter = 0;
-    while (readLine() != null && line.length() > 10) {
-      Atom atom = atomSetCollection.addNewAtom();
-      String[] tokens = getTokens();
-      atom.atomName = atomNames[counter++];
-      float x = parseFloatStr(tokens[0]);
-      float y = parseFloatStr(tokens[1]);
-      float z = parseFloatStr(tokens[2]);
-      setAtomCoordXYZ(atom, x, y, z);
-    }
+    while (readLine() != null && line.length() > 10)
+      addAtomXYZSymName(getTokens(), 0, null, atomNames[counter++]);
     atomSetCollection.setAtomSetName("Initial Coordinates");
   }
 
@@ -211,16 +198,8 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
   private void readPOSITION() throws Exception {
     int counter = 0;
     readLines(1);
-    while (readLine() != null && line.indexOf("----------") < 0) {
-      Atom atom = atomSetCollection.addNewAtom();
-      String[] tokens = getTokens();
-      atom.atomName = atomNames[counter];
-      float x = parseFloatStr(tokens[0]);
-      float y = parseFloatStr(tokens[1]);
-      float z = parseFloatStr(tokens[2]);
-      setAtomCoordXYZ(atom, x, y, z);
-      counter++;
-    }
+    while (readLine() != null && line.indexOf("----------") < 0)
+      addAtomXYZSymName(getTokens(), 0, null, atomNames[counter++]);
   }
 
   /*  FREE ENERGIE OF THE ION-ELECTRON SYSTEM (eV)

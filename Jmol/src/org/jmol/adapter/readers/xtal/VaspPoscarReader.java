@@ -1,7 +1,6 @@
 package org.jmol.adapter.readers.xtal;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
-import org.jmol.adapter.smarter.Atom;
 import javajs.util.List;
 import javajs.util.SB;
 
@@ -76,15 +75,8 @@ public class VaspPoscarReader extends AtomSetCollectionReader {
       readLine();
     if (line.toLowerCase().contains("cartesian"))
       setFractionalCoordinates(false);
-    for (int i = 0; i < atomCount; i++) {
-      Atom atom = atomSetCollection.addNewAtom();
-      String[] tokens = getTokensStr(readLine());
-      atom.atomName = atomLabels.get(i);
-      float x = parseFloatStr(tokens[0]);
-      float y = parseFloatStr(tokens[1]);
-      float z = parseFloatStr(tokens[2]);
-      setAtomCoordXYZ(atom, x, y, z);
-    }
+    for (int i = 0; i < atomCount; i++)
+      addAtomXYZSymName(getTokensStr(readLine()), 0, null, atomLabels.get(i));
   }
 
 }

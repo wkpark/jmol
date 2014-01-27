@@ -9682,10 +9682,10 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     if (modelSet.atoms[atomIndex].modelIndex != modelSet.modelCount - 1)
       return;
     clearModelDependentObjects();
+    int atomCount = modelSet.getAtomCount();
     if (pt == null) {
       statusManager.modifySend(atomIndex, modelSet.atoms[atomIndex].modelIndex,
           1);
-      int atomCount = modelSet.getAtomCount();
       modelSet.assignAtom(atomIndex, type, true);
       if (!PT.isOneOf(type, ";Mi;Pl;X;"))
         modelSet.setAtomNamesAndNumbers(atomIndex, -atomCount, null);
@@ -9708,7 +9708,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     } catch (Exception e) {
       //
     }
-    modelSet.setAtomNamesAndNumbers(atomIndex, -1, null);
+    modelSet.setAtomNamesAndNumbers(atomIndex, -atomCount, null);
     statusManager.modifySend(atomIndex, modelIndex, -3);
   }
 

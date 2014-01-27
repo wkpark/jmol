@@ -128,6 +128,7 @@ public class AbinitReader extends AtomSetCollectionReader {
     doSymmetry = false;
   }
 
+
   //   xcart    0.0000000000E+00  0.0000000000E+00  0.0000000000E+00
   //            2.5542500000E+00  2.5542500000E+00  2.5542500000E+00
   //    xred...

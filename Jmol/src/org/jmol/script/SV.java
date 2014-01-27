@@ -891,12 +891,12 @@ public class SV extends T implements JSONEncodable {
     // "testing"[3][0] gives "sting"
     // "testing"[-1][0] gives "ng"
     // "testing"[0][-2] gives just "g" as well
+    // "testing"[-10] gives ""
     if (i1 <= 0)
       i1 = len + i1;
-    if (i1 < 1)
-      i1 = 1;
-
     if (!isOne) {
+      if (i1 < 1)
+        i1 = 1;
       if (i2 == 0)
         i2 = len;
       else if (i2 < 0)
@@ -914,7 +914,7 @@ public class SV extends T implements JSONEncodable {
         break;
       }
       if (isOne) {
-        isOne = bs.get(i1);
+        isOne = (--i1 >= 0 && bs.get(i1));
         bs.clearAll();
         if (isOne)
           bs.set(i1);
@@ -926,20 +926,20 @@ public class SV extends T implements JSONEncodable {
       }
       break;
     case string:
-    	tokenOut.value = (i1 < 1 || i1 > len ? ""
-    			: isOne ? s.substring(i1 - 1, i1)
-    			: s.substring(i1 - 1, Math.min(i2, len)));
+    	tokenOut.value = (--i1 < 0 || i1 >= len ? ""
+    			: isOne ? s.substring(i1, i1 + 1)
+    			: s.substring(i1, Math.min(i2, len)));
       break;
     case varray:
-      if (i1 < 1 || i1 > len)
+      if (--i1 < 0 || i1 >= len)
         return newV(string, "");
       if (isOne)
-        return ((SV) tokenIn).getList().get(i1 - 1);
+        return ((SV) tokenIn).getList().get(i1);
       List<SV> o2 = new List<SV>();
       List<SV> o1 = ((SV) tokenIn).getList();
-      int n = Math.min(i2, len) - i1 + 1;
+      int n = Math.min(i2, len) - i1;
       for (int i = 0; i < n; i++)
-        o2.addLast(newT(o1.get(i + i1 - 1)));
+        o2.addLast(newT(o1.get(i + i1)));
       tokenOut.value = o2;
       break;
     }

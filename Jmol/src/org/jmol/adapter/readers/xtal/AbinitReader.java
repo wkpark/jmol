@@ -71,7 +71,7 @@ public class AbinitReader extends AtomSetCollectionReader {
   private float[] typeArray;
 
   private void readTypesequence() throws Exception {
-    fillFloatArray(line.substring(10),  0, typeArray = new float[nAtom]);
+    fillFloatArray(line.substring(12),  0, typeArray = new float[nAtom]);
   }
 
   private void readAtomSpecies() throws Exception {
@@ -118,14 +118,12 @@ public class AbinitReader extends AtomSetCollectionReader {
     setSpaceGroupName("P1");
     for (int i = 0; i < 3; i++)
       addPrimitiveLatticeVector(i, cellLattice, i * 3);
-    if (!doSymmetry)
-      return;
     Atom[] atoms = atomSetCollection.atoms;
     int i0 = atomSetCollection.getAtomSetAtomIndex(atomSetCollection.currentAtomSetIndex);
-    for (int i = atomSetCollection.atomCount; --i >= i0;)
-      setAtomCoord(atoms[i]);
+    if (!iHaveFractionalCoordinates)
+      for (int i = atomSetCollection.atomCount; --i >= i0;)
+        setAtomCoord(atoms[i]);
     applySymmetryAndSetTrajectory();
-    doSymmetry = false;
   }
 
 
@@ -138,9 +136,10 @@ public class AbinitReader extends AtomSetCollectionReader {
   private void readAtoms() throws Exception {
     // Read cartesian coordinates 
     atomSetCollection.newAtomSet();
+    iHaveFractionalCoordinates = false;
     doSymmetry = true;
     int i0 = atomSetCollection.atomCount;
-    line = line.substring(10);
+    line = line.substring(12);
     while (line != null && !line.contains("x")) {
       Atom atom = atomSetCollection.addNewAtom();
       setAtomCoordScaled(atom, getTokensStr(line), 0, ANGSTROMS_PER_BOHR);
@@ -148,11 +147,11 @@ public class AbinitReader extends AtomSetCollectionReader {
     }
     discardLinesUntilContains("z");
     if (znucl == null)
-      fillFloatArray(line.substring(11), 0, znucl = new float[nType]);
+      fillFloatArray(line.substring(12), 0, znucl = new float[nType]);
     Atom[] atoms = atomSetCollection.atoms;
     for (int i = 0; i < nAtom; i++)
       atoms[i + i0].elementNumber = (short) znucl[(int) typeArray[i] - 1];
-    applySymmetry();
+    applySymmetry();    
   }
 
 }

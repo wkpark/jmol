@@ -186,7 +186,7 @@ public class JcampdxReader extends MolReader {
     while (true) {
       int model0 = atomSetCollection.currentAtomSetIndex;
       discardLinesUntilNonBlank();
-      if (line == null || !line.contains("<ModelData"))
+      if (!getRecord("<ModelData"))
         break;
       models = getModelAtomSetCollection();
       if (models != null) {
@@ -195,6 +195,16 @@ public class JcampdxReader extends MolReader {
       updateModelIDs(model0, isFirst);
       isFirst = false;
     }
+    return true;
+  }
+
+  private boolean getRecord(String key) throws Exception {
+    if (line == null || line.indexOf(key) < 0)
+      return false;
+    String s = line;
+    while (s.indexOf(">") < 0)
+      s += " " + readLine();
+    line = s;
     return true;
   }
 
@@ -234,6 +244,8 @@ public class JcampdxReader extends MolReader {
     }
     modelIdList += key;
     String baseModel = getAttribute(line, "baseModel");
+    while (line.indexOf(">") < 0 && line.indexOf("type") < 0)
+      readLine();
     String modelType = getAttribute(line, "type").toLowerCase();
     float vibScale = PT.parseFloat(getAttribute(line, "vibrationScale"));
     if (modelType.equals("xyzvib"))

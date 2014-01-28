@@ -3,8 +3,8 @@ package org.jmol.jsv;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.jmol.adapter.smarter.JmolJDXModelPeakLoader;
-import org.jmol.adapter.smarter.JmolJDXModelPeakReader;
+import org.jmol.adapter.smarter.JmolJDXMOLReader;
+import org.jmol.adapter.smarter.JmolJDXMOLParser;
 import org.jmol.java.BS;
 import org.jmol.util.Logger;
 
@@ -12,7 +12,7 @@ import javajs.util.List;
 import javajs.util.PT;
 import javajs.util.SB;
 
-public class JDXModelPeakReader implements JmolJDXModelPeakReader {
+public class JDXMOLParser implements JmolJDXMOLParser {
 
   private String line;
   private String lastModel = "";
@@ -23,18 +23,18 @@ public class JDXModelPeakReader implements JmolJDXModelPeakReader {
   private float vibScale;
   private String piUnitsX, piUnitsY;
 
-  private JmolJDXModelPeakLoader loader;
+  private JmolJDXMOLReader loader;
 
   private String modelIdList = "";
   private int[] peakIndex;
   private String peakFilePath;
 
-  public JDXModelPeakReader() {
+  public JDXMOLParser() {
     // for reflection
   }
 
   @Override
-  public JmolJDXModelPeakReader set(JmolJDXModelPeakLoader loader, String filePath,
+  public JmolJDXMOLParser set(JmolJDXMOLReader loader, String filePath,
                                     Map<String, Object> htParams) {
     this.loader = loader;
     peakFilePath = filePath;
@@ -94,7 +94,8 @@ public class JDXModelPeakReader implements JmolJDXModelPeakReader {
       line = loader.discardLinesUntilNonBlank();
       if (getRecord("<ModelData") == null)
         break;
-      loader.processModelData(thisModelID, getModelData(), modelType, baseModel, lastModel, vibScale, isFirst);
+      getModelData(isFirst);
+      // updateModel here regardless???
       isFirst = false;
     }
     return true;
@@ -191,14 +192,14 @@ public class JDXModelPeakReader implements JmolJDXModelPeakReader {
     }
   }
   
-  private String getModelData() throws Exception {
+  private void getModelData(boolean isFirst) throws Exception {
     lastModel = thisModelID;
     thisModelID = getAttribute(line, "id");
     // read model only once for a given ID
     String key = ";" + thisModelID + ";";
     if (modelIdList.indexOf(key) >= 0) {
       line = loader.discardLinesUntilContains("</ModelData>");
-      return null;
+      return;
     }
     modelIdList += key;
     baseModel = getAttribute(line, "baseModel");
@@ -213,7 +214,7 @@ public class JDXModelPeakReader implements JmolJDXModelPeakReader {
     SB sb = new SB();
     while (readLine() != null && !line.contains("</ModelData>"))
       sb.append(line).appendC('\n');
-    return sb.toString();
+    loader.processModelData(sb.toString(), thisModelID, modelType, baseModel, lastModel, vibScale, isFirst);
   }
 
   /**

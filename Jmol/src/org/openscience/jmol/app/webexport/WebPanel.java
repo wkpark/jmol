@@ -76,7 +76,6 @@ import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
 import org.jmol.io.JmolBinary;
 import org.jmol.java.BS;
-import org.jmol.util.BSUtil;
 import org.jmol.util.Logger;
 import org.openscience.jmol.app.jmolpanel.GuiMap;
 import org.openscience.jmol.app.jmolpanel.HelpDialog;
@@ -722,7 +721,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
   }
 
   public BS allSelectedWidgets() {
-    BS selectedWidgets = BSUtil.newBitSet(nWidgets);
+    BS selectedWidgets = BS.newN(nWidgets);
     DefaultListModel<JmolInstance> listModel = (DefaultListModel<JmolInstance>) instanceList.getModel();
     for (int i = 0; i < listModel.getSize(); i++) {
       JmolInstance thisInstance = listModel.getElementAt(i);

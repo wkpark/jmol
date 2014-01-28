@@ -837,4 +837,95 @@ public class BS implements Cloneable, JSONEncodable {
     return toString();
   }
 
+  public static String escape(BS bs, char chOpen, char chClose) {
+    if (bs == null)
+      return chOpen + "{}" + chClose;
+    SB s = new SB();
+    s.append(chOpen + "{");
+    int imax = bs.length();
+    int iLast = -1;
+    int iFirst = -2;
+    int i = -1;
+    while (++i <= imax) {
+      boolean isSet = bs.get(i);
+      if (i == imax || iLast >= 0 && !isSet) {
+        if (iLast >= 0 && iFirst != iLast)
+          s.append((iFirst == iLast - 1 ? " " : ":") + iLast);
+        if (i == imax)
+          break;
+        iLast = -1;
+      }
+      if (bs.get(i)) {
+        if (iLast < 0) {
+          s.append((iFirst == -2 ? "" : " ") + i);
+          iFirst = i;
+        }
+        iLast = i;
+      }
+    }
+    s.append("}").appendC(chClose);
+    return s.toString();
+  }
+
+  public static BS unescape(String str) {
+    char ch;
+    int len;
+    if (str == null || (len = (str = str.trim()).length()) < 4
+        || str.equalsIgnoreCase("({null})") 
+        || (ch = str.charAt(0)) != '(' && ch != '[' 
+        || str.charAt(len - 1) != (ch == '(' ? ')' : ']')
+        || str.charAt(1) != '{' || str.indexOf('}') != len - 2)
+      return null;
+    len -= 2;
+    for (int i = len; --i >= 2;)
+      if (!Character.isDigit(ch = str.charAt(i)) && ch != ' ' && ch != '\t'
+          && ch != ':')
+        return null;
+    int lastN = len;
+    while (Character.isDigit(str.charAt(--lastN))) {
+      // loop
+    }
+    if (++lastN == len)
+      lastN = 0;
+    else
+      try {
+        lastN = Integer.parseInt(str.substring(lastN, len));
+      } catch (NumberFormatException e) {
+        return null;
+      }
+    BS bs = BS.newN(lastN);
+    lastN = -1;
+    int iPrev = -1;
+    int iThis = -2;
+    for (int i = 2; i <= len; i++) {
+      switch (ch = str.charAt(i)) {
+      case '\t':
+      case ' ':
+      case '}':
+        if (iThis < 0)
+          break;
+        if (iThis < lastN)
+          return null;
+        lastN = iThis;
+        if (iPrev < 0)
+          iPrev = iThis;
+        bs.setBits(iPrev, iThis + 1);
+        iPrev = -1;
+        iThis = -2;
+        break;
+      case ':':
+        iPrev = lastN = iThis;
+        iThis = -2;
+        break;
+      default:
+        if (Character.isDigit(ch)) {
+          if (iThis < 0)
+            iThis = 0;
+          iThis = (iThis * 10) + (ch - 48);
+        }
+      }
+    }
+    return (iPrev >= 0 ? null : bs);
+  }
+
 }

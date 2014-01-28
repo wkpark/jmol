@@ -1061,7 +1061,7 @@ public class StateCreator extends JmolStateCreator {
     appendCmd(commands, Shape.getFontCommand("measures", font3d));
     int nHidden = 0;
     Map<String, BS> temp = new Hashtable<String, BS>();
-    BS bs = BSUtil.newBitSet(measurementCount);
+    BS bs = BS.newN(measurementCount);
     for (int i = 0; i < measurementCount; i++) {
       Measurement m = mList.get(i);
       if (m.isHidden) {

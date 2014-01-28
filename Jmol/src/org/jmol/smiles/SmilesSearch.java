@@ -70,7 +70,7 @@ public class SmilesSearch extends JmolMolecule {
   private BS bsSelected;
   void setSelected(BS bs) {
     if (bs == null) {
-      bs = BSUtil.newBitSet(jmolAtomCount);
+      bs = BS.newN(jmolAtomCount);
       bs.setBits(0, jmolAtomCount);
     }
     bsSelected = bs;
@@ -391,7 +391,7 @@ public class SmilesSearch extends JmolMolecule {
     if (vReturn == null && (asVector || getMaps))
       vReturn = new  List<Object>();
     if (bsSelected == null) {
-      bsSelected = BSUtil.newBitSet(jmolAtomCount);
+      bsSelected = BS.newN(jmolAtomCount);
       bsSelected.setBits(0, jmolAtomCount);
     }
     selectedAtomCount = bsSelected.cardinality();

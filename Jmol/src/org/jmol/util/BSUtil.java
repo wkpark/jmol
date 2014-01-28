@@ -33,7 +33,7 @@ final public class BSUtil {
   public final static BS emptySet = new BS();
 
   public static BS newAndSetBit(int i) {
-    BS bs = newBitSet(i + 1);
+    BS bs = BS.newN(i + 1);
     bs.set(i);
     return bs;
   }
@@ -56,13 +56,13 @@ final public class BSUtil {
   }
 
   public static BS newBitSet2(int i0, int i1) {
-    BS bs = newBitSet(i1);
+    BS bs = BS.newN(i1);
     bs.setBits(i0, i1);
     return bs;
   }
   
   public static BS setAll(int n) {
-    BS bs = newBitSet(n);
+    BS bs = BS.newN(n);
     bs.setBits(0, n);
     return bs;
   }
@@ -171,10 +171,6 @@ final public class BSUtil {
     return bs;
   }
 
-  public static BS newBitSet(int nFree) {
-    return BS.newN(nFree);
-  }
-  
   /**
    * offset the bitset in place by the specified number of bits
    * starting at a given position

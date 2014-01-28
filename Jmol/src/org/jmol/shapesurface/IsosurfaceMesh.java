@@ -35,7 +35,6 @@ import java.util.Map;
 
 import org.jmol.api.Interface;
 import org.jmol.api.SymmetryInterface;
-import org.jmol.util.BSUtil;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.C;
 import org.jmol.util.ColorEncoder;
@@ -284,7 +283,7 @@ public class IsosurfaceMesh extends Mesh {
   }
 
   private void get3dContour(List<Object> v, float value, short colix) {
-    BS bsContour = BSUtil.newBitSet(polygonCount);
+    BS bsContour = BS.newN(polygonCount);
     SB fData = new SB();
     int color = C.getArgb(colix);
     setContourVector(v, polygonCount, bsContour, value, colix, color, fData);

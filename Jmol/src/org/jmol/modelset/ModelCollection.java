@@ -1671,7 +1671,7 @@ abstract public class ModelCollection extends BondCollection {
     Bspf bspf = new Bspf(3);
     if (Logger.debugging)
       Logger.debug("sequential bspt order");
-    BS bsNew = BSUtil.newBitSet(modelCount);
+    BS bsNew = BS.newN(modelCount);
     for (int i = atomCount; --i >= 0;) {
       // important that we go backward here, because we are going to 
       // use System.arrayCopy to expand the array ONCE only
@@ -1870,7 +1870,7 @@ abstract public class ModelCollection extends BondCollection {
       return bs;
     case T.centroid:
       // select centroid=555  -- like cell=555 but for whole molecules
-      // if it is one full molecule, then return the EMPTY bitset      
+      // if it  is one full molecule, then return the EMPTY bitset      
       bs = BSUtil.newBitSet2(0, atomCount);
       info = (int[]) specInfo;
       int[] minmax = new int[] { info[0] / 1000 - 1, info[1] / 1000 - 1,
@@ -1903,7 +1903,7 @@ abstract public class ModelCollection extends BondCollection {
               caseSensitive);
       return bs;
     case T.specialposition:
-      bs = BSUtil.newBitSet(atomCount);
+      bs = BS.newN(atomCount);
       int modelIndex = -1;
       int nOps = 0;
       for (int i = atomCount; --i >= 0;) {
@@ -1932,8 +1932,8 @@ abstract public class ModelCollection extends BondCollection {
       }
       return bs;
     case T.symmetry:
-      return BSUtil.copy(bsSymmetry == null ? bsSymmetry = BSUtil
-          .newBitSet(atomCount) : bsSymmetry);
+      return BSUtil.copy(bsSymmetry == null ? bsSymmetry = BS.newN(atomCount)
+          : bsSymmetry);
     case T.unitcell:
       // select UNITCELL (a relative quantity)
       bs = new BS();

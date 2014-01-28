@@ -1380,7 +1380,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     case T.function:
       userFunction = (String) ((Object[]) opValue)[0];
       params = (List<SV>) ((Object[]) opValue)[1];
-      bsAtom = BSUtil.newBitSet(atomCount);
+      bsAtom = BS.newN(atomCount);
       tokenAtom = SV.newV(T.bitset, bsAtom);
       break;
     case T.straightness:
@@ -3545,7 +3545,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.string:
         String s = (String) value;
         if (s.indexOf("({") == 0) {
-          BS bs = Escape.uB(s);
+          BS bs = BS.unescape(s);
           if (bs != null) {
             rpn.addXBs(bs);
             break;
@@ -4010,7 +4010,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         return new BS();
       }
     }
-    bs = BSUtil.newBitSet(atomCount);
+    bs = BS.newN(atomCount);
     for (int i = 0; i < atomCount; ++i) {
       boolean match = false;
       Atom atom = atoms[i];
@@ -10840,7 +10840,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   BS bitSetForModelFileNumber(int m) {
     // where */1.0 or */1.1 or just 1.1 is processed
-    BS bs = BSUtil.newBitSet(viewer.getAtomCount());
+    BS bs = BS.newN(viewer.getAtomCount());
     if (chk)
       return bs;
     int modelCount = viewer.getModelCount();

@@ -265,7 +265,7 @@ public class NciCalculation extends QuantumCalculation implements
   private void getBsOK() {
     if (noValuesAtAll || nMolecules == 1)
       return;
-    bsOK = BSUtil.newBitSet(nX * nY * nZ);
+    bsOK = BS.newN(nX * nY * nZ);
     setXYZBohr(null);
     for (int ix = 0, index = 0; ix < countsXYZ[0]; ix++)
       for (int iy = 0; iy < countsXYZ[1]; iy++)

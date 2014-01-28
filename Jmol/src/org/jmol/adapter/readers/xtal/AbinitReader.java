@@ -110,8 +110,6 @@ public class AbinitReader extends AtomSetCollectionReader {
     applySymmetry();
   }
 
-  private boolean doSymmetry;
-  
   private void applySymmetry() throws Exception {
     if (cellLattice == null)
       return;
@@ -137,7 +135,6 @@ public class AbinitReader extends AtomSetCollectionReader {
     // Read cartesian coordinates 
     atomSetCollection.newAtomSet();
     iHaveFractionalCoordinates = false;
-    doSymmetry = true;
     int i0 = atomSetCollection.atomCount;
     line = line.substring(12);
     while (line != null && !line.contains("x")) {

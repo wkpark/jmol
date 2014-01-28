@@ -1031,7 +1031,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (script != null && (i = script.indexOf("MODEL({")) >= 0) {
       int j = script.indexOf("})", i);
       if (j > 0) {
-        BS bs = Escape.uB(script.substring(i + 3, j + 1));
+        BS bs = BS.unescape(script.substring(i + 3, j + 1));
         modelIndex = (bs == null ? -1 : bs.nextSetBit(0));
         iHaveModelIndex = (modelIndex >= 0);
       }
@@ -1045,7 +1045,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     int j = script.indexOf("})", i);
     if (j < 0)
       return false;
-    BS bs = Escape.uB(script.substring(i + 2, j + 2));
+    BS bs = BS.unescape(script.substring(i + 2, j + 2));
     if (bsCmd == null)
       sg.setParameter("select", bs);
     else
@@ -1055,7 +1055,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     j = script.indexOf("})", i);
     if (j < 0) 
       return false;
-      bs = Escape.uB(script.substring(i + 1, j + 1));
+      bs = BS.unescape(script.substring(i + 1, j + 1));
       if (bsCmd == null)
         sg.setParameter("ignore", bs);
       else
@@ -1063,7 +1063,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if ((i = script.indexOf("/({", j)) == j + 2) {
       if ((j = script.indexOf("})", i)) < 0)
         return false;
-      bs = Escape.uB(script.substring(i + 3, j + 1));
+      bs = BS.unescape(script.substring(i + 3, j + 1));
       if (bsCmd == null)
         viewer.setTrajectoryBs(bs);
       else

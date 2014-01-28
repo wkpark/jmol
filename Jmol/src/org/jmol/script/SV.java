@@ -1258,7 +1258,7 @@ public class SV extends T implements JSONEncodable {
   boolean unEscapeBitSetArray(BS bs) {
     switch(tok) {
     case string:
-      BS bs1 = Escape.uB((String) value);
+      BS bs1 = BS.unescape((String) value);
       if (bs1 == null)
         return false;
       bs.or(bs1);

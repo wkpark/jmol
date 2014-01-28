@@ -30,7 +30,6 @@ import org.jmol.java.BS;
 import org.jmol.script.T;
 import org.jmol.shape.Mesh;
 import org.jmol.shape.MeshCollection;
-import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.GData;
 
@@ -268,7 +267,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected void renderPoints() {
     if (mesh.isTriangleSet) {
       int[][] polygonIndexes = mesh.polygonIndexes;
-      BS bsPoints = BSUtil.newBitSet(mesh.vertexCount);
+      BS bsPoints = BS.newN(mesh.vertexCount);
       if (haveBsDisplay) {
         bsPoints.setBits(0, mesh.vertexCount);
         bsPoints.andNot(mesh.bsDisplay);

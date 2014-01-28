@@ -592,7 +592,7 @@ public class XtalSymmetry {
     );
     P3[] cartesians = new P3[cartesianCount];
     for (int i = 0; i < noSymmetryCount; i++)
-      ac.atoms[i + firstSymmetryAtom].bsSymmetry = BSUtil.newBitSet(operationCount
+      ac.atoms[i + firstSymmetryAtom].bsSymmetry = BS.newN(operationCount
           * (nCells + 1));
     int pt = 0;
     int[] unitCells = new int[nCells];

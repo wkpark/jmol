@@ -38,7 +38,6 @@ import org.jmol.adapter.smarter.Structure;
 import org.jmol.api.JmolAdapter;
 import org.jmol.constant.EnumStructure;
 import org.jmol.java.BS;
-import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.SimpleUnitCell;
 
@@ -284,7 +283,7 @@ _pdbx_struct_oper_list.vector[3]
       return crossBinary(decodeAssemblyOperators(ops.substring(0, pt + 1)),decodeAssemblyOperators(ops.substring(pt + 1)));
     if (ops.startsWith("(")) {
       if (ops.indexOf("-") >= 0)
-        ops = Escape.uB("({" + ops.substring(1, ops.length() - 1).replace('-', ':') + "})").toString();
+        ops = BS.unescape("({" + ops.substring(1, ops.length() - 1).replace('-', ':') + "})").toString();
       ops = PT.rep(ops, " ", "");
       ops = ops.substring(1, ops.length() - 1);
     }

@@ -594,7 +594,7 @@ public class StatusManager {
     }
   }
 
-  void syncSend(String script, String appletName, int port) {
+  public void syncSend(String script, String appletName, int port) {
     // no jmolscript option for syncSend
     if (port != 0 || notifyEnabled(EnumCallback.SYNC))
       jmolCallbackListener.notifyCallback(EnumCallback.SYNC,
@@ -607,7 +607,7 @@ public class StatusManager {
           new Object[] { null, Integer.valueOf(mode), Integer.valueOf(atomIndex), Integer.valueOf(modelIndex) });
   }
   
-  int getSyncMode() {
+  public int getSyncMode() {
     return (!isSynced ? SYNC_OFF : drivingSync ? SYNC_DRIVER : SYNC_SLAVE);
   }
   

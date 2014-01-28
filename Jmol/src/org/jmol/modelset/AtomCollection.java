@@ -834,7 +834,7 @@ abstract public class AtomCollection {
       return;
     case TAINT_MAX:
       fData = new float[atomCount];
-      bs = BSUtil.newBitSet(atomCount);
+      bs = BS.newN(atomCount);
       break;
     }
     int[] lines = Parser.markLines(dataString, ';');
@@ -1021,7 +1021,7 @@ abstract public class AtomCollection {
     if (tainted == null)
       tainted = new BS[TAINT_MAX];
     if (tainted[type] == null)
-      tainted[type] = BSUtil.newBitSet(atomCount);
+      tainted[type] = BS.newN(atomCount);
     tainted[type].set(atomIndex);
     if (type  == TAINT_COORD)
       validateBspfForModel(((ModelCollection) this).models[atoms[atomIndex].modelIndex].trajectoryBaseIndex, false);
@@ -1047,7 +1047,7 @@ abstract public class AtomCollection {
     if (tainted == null)
       tainted = new BS[TAINT_MAX];
     if (tainted[type] == null)
-      tainted[type] = BSUtil.newBitSet(atomCount);
+      tainted[type] = BS.newN(atomCount);
     BSUtil.copy2(bs, tainted[type]);
   }
 
@@ -2033,7 +2033,7 @@ abstract public class AtomCollection {
   }
 
   private BS findNotAttached(int nAttached, int[][] angles, int[] ptrs, int nPtrs) {
-    BS bs = BSUtil.newBitSet(nAttached);
+    BS bs = BS.newN(nAttached);
     bs.setBits(0, nAttached);
     for (int i = 0; i < nAttached; i++)
       for (int j = 0; j < nPtrs; j++) {
@@ -2398,7 +2398,7 @@ abstract public class AtomCollection {
       if (g3 != null && g3.length() > 0) {
         if (Txt.isMatch(g3, name, checkStar, true)) {
           if (bs == null)
-            bs = BSUtil.newBitSet(i + 1);
+            bs = BS.newN(i + 1);
           bs.set(i);
           while (--i >= 0 && atoms[i].getGroup3(true).equals(g3))
             bs.set(i);
@@ -2406,7 +2406,7 @@ abstract public class AtomCollection {
         }
       } else if (isAtomNameMatch(atoms[i], name, checkStar)) {
         if (bs == null)
-          bs = BSUtil.newBitSet(i + 1);
+          bs = BS.newN(i + 1);
         bs.set(i);
       }
     }
@@ -2459,7 +2459,7 @@ abstract public class AtomCollection {
     if (!caseSensitive)
       chainID = chainToUpper(chainID);
     BS bs = new BS();
-    BS bsDone = BSUtil.newBitSet(atomCount);
+    BS bsDone = BS.newN(atomCount);
     int id;
     for (int i = bsDone.nextClearBit(0); i < atomCount; i = bsDone.nextClearBit(i + 1)) {
       Chain chain = atoms[i].getChain();

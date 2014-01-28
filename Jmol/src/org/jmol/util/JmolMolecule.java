@@ -132,7 +132,7 @@ public class JmolMolecule {
                                        BS bsToTest, List<BS> biobranches,
                                        int atomIndexNot, boolean allowCyclic,
                                        boolean allowBioResidue) {
-    BS bs = BSUtil.newBitSet(atoms.length);
+    BS bs = BS.newN(atoms.length);
     if (atomIndex < 0)
       return bs;
     if (atomIndexNot >= 0)

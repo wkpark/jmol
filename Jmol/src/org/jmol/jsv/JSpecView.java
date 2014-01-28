@@ -1,4 +1,4 @@
-package org.jmol.viewer;
+package org.jmol.jsv;
 
 import java.util.Hashtable;
 
@@ -8,6 +8,9 @@ import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import javajs.util.List;
 import org.jmol.util.Logger;
+import org.jmol.viewer.StatusManager;
+import org.jmol.viewer.Viewer;
+
 import javajs.util.PT;
 
 public class JSpecView implements JmolJSpecView {

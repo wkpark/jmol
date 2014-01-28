@@ -1105,7 +1105,7 @@ public final class ModelLoader {
         autoBonding = true;
         if (merging || modelCount > 1) {
           if (bs == null)
-            bs = BSUtil.newBitSet(modelSet.atomCount);
+            bs = BS.newN(modelSet.atomCount);
           if (i == baseModelIndex || !isTrajectory)
             bs.or(models[i].bsAtoms);
         }
@@ -1268,7 +1268,7 @@ public final class ModelLoader {
   private void findElementsPresent() {
     modelSet.elementsPresent = new BS[modelSet.modelCount];
     for (int i = 0; i < modelSet.modelCount; i++)
-      modelSet.elementsPresent[i] = BSUtil.newBitSet(64);
+      modelSet.elementsPresent[i] = BS.newN(64);
     for (int i = modelSet.atomCount; --i >= 0;) {
       int n = modelSet.atoms[i].getAtomicAndIsotopeNumber();
       if (n >= Elements.elementNumberMax)
@@ -1311,7 +1311,7 @@ public final class ModelLoader {
   }
 
   private void set2dZ(int iatom1, int iatom2) {
-    BS atomlist = BSUtil.newBitSet(iatom2);
+    BS atomlist = BS.newN(iatom2);
     BS bsBranch = new BS();
     V3 v = new V3();
     V3 v0 = V3.new3(0, 1, 0);
@@ -1338,7 +1338,7 @@ public final class ModelLoader {
    */
   private BS getBranch2dZ(int atomIndex, int atomIndexNot, BS bs0, 
                               BS bsBranch, V3 v, V3 v0, V3 v1) {
-    BS bs = BSUtil.newBitSet(modelSet.atomCount);
+    BS bs = BS.newN(modelSet.atomCount);
     if (atomIndex < 0)
       return bs;
     BS bsToTest = new BS();
@@ -1489,7 +1489,7 @@ public final class ModelLoader {
         continue;
       }
       pt.setT(xyz);
-      BS bs = BSUtil.newBitSet(modelSet.atomCount);
+      BS bs = BS.newN(modelSet.atomCount);
       modelSet.getAtomsWithin(tolerance, pt, bs, -1);
       bs.and(bsSelected);
       if (loadAllData) {

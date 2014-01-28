@@ -687,6 +687,12 @@ all support for previous versions removed
       </fileset>
     </jar>
 
+    <jar destfile="build/JmolApplet0_JSV.jar" manifest="manifest/applet.txt">
+      <fileset dir="${applet.classes.dir}">
+        <include name="org/jmol/jsv/**" />
+      </fileset>
+    </jar>
+
     <jar destfile="build/JmolApplet0_Popup.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/popup/**" />
@@ -843,6 +849,7 @@ all support for previous versions removed
       	<!-- no export or multitouch here - this is the sandboxed applet -->
         <pathelement path="build/JmolApplet0_Console.jar" />
         <pathelement path="build/JmolApplet0_Image.jar" />
+      	<pathelement path="build/JmolApplet0_JSV.jar" />
         <pathelement path="build/JmolApplet0_Minimize.jar" />
         <pathelement path="build/JmolApplet0_Navigate.jar" />
         <pathelement path="build/JmolApplet0_Parallel.jar" />
@@ -943,6 +950,12 @@ all support for previous versions removed
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/dialog/**" />
         <include name="org/jmol/image/**" />
+      </fileset>
+    </jar>
+
+    <jar destfile="build/JmolAppletSigned0_JSV.jar" manifest="manifest/applet.txt">
+      <fileset dir="${applet.classes.dir}">
+        <include name="org/jmol/jsv/**" />
       </fileset>
     </jar>
 
@@ -1121,6 +1134,7 @@ all support for previous versions removed
       <indexjars>
         <pathelement path="build/JmolAppletSigned0_Console.jar" />
         <pathelement path="build/JmolAppletSigned0_Image.jar" />
+        <pathelement path="build/JmolAppletSigned0_JSV.jar" />
         <pathelement path="build/JmolAppletSigned0_Minimize.jar" />
         <pathelement path="build/JmolAppletSigned0_MultiTouch.jar" />
         <pathelement path="build/JmolAppletSigned0_Navigate.jar" />

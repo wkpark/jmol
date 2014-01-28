@@ -1417,7 +1417,7 @@ public class ScriptExt implements JmolScriptExtension {
           eval.checkLast(eval.iToken);
         i = eval.iToken;
         if (fullCommand.indexOf("# WITHIN=") >= 0)
-          bs = Escape.uB(PT.getQuotedAttribute(fullCommand, "# WITHIN"));
+          bs = BS.unescape(PT.getQuotedAttribute(fullCommand, "# WITHIN"));
         else if (!havePt)
           bs = (eval.expressionResult instanceof BS ? (BS) eval.expressionResult
               : null);
@@ -4332,7 +4332,7 @@ public class ScriptExt implements JmolScriptExtension {
         propertyField = 0;
       int atomCount = viewer.getAtomCount();
       int[] atomMap = null;
-      BS bsTemp = BSUtil.newBitSet(atomCount);
+      BS bsTemp = BS.newN(atomCount);
       if (atomNumberField > 0) {
         atomMap = new int[atomCount + 2];
         for (int j = 0; j <= atomCount; j++)

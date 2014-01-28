@@ -2526,7 +2526,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         || (ichT = script.indexOf("}", ichToken)) < 0
         || ichT + 1 == cchScript)
     return null;
-    BS bs = Escape.uB(script.substring(ichToken, ichT + 2));
+    BS bs = BS.unescape(script.substring(ichToken, ichT + 2));
     if (bs != null)
       cchToken = ichT + 2 - ichToken;
     return bs;

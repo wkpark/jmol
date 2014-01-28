@@ -24,8 +24,10 @@
 
 package org.jmol.adapter.readers.more;
 
+import java.util.Map;
+
+import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.java.BS;
-import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
@@ -46,7 +48,13 @@ import javajs.util.P3;
  * 
  */
 
-public class BinaryDcdReader extends BinaryReader {
+public class BinaryDcdReader extends AtomSetCollectionReader {
+
+  @Override
+  protected void setup(String fullPath, Map<String, Object> htParams, Object reader) {
+    isBinary = true;
+    setupASCR(fullPath, htParams, reader);
+  }
 
   @Override
   protected void initializeReader() {
@@ -104,7 +112,7 @@ ICNTRL(20)=VERNUM ! version number
   
 
   @Override
-  protected void readDocument() throws Exception {
+  protected void processBinaryDocument() throws Exception {
     byte[] bytes = new byte[40];
     
     // read DCD header
@@ -146,7 +154,7 @@ ICNTRL(20)=VERNUM ! version number
     if (nFixed != 0) {
       // read list of free atoms
       binaryDoc.readInt(); // HEADER
-      bsFree = BSUtil.newBitSet(nFree);
+      bsFree = BS.newN(nFree);
       for (int i = 0; i < nFree; i++)
         bsFree.set(binaryDoc.readInt() - 1);
       n = binaryDoc.readInt() / 4; // TRAILER

@@ -166,8 +166,8 @@ public final class EnvelopeCalculation implements JmolEnvCalc {
     this.atomCount = atomCount; //preliminary, for setFromBits()
     this.mads = mads;
     geodesicCount = Geodesic.getVertexCount(JC.ENV_CALC_MAX_LEVEL);    
-    geodesicMap = BSUtil.newBitSet(geodesicCount);
-    mapT = BSUtil.newBitSet(geodesicCount);
+    geodesicMap = BS.newN(geodesicCount);
+    mapT = BS.newN(geodesicCount);
     EMPTY_SET = BSUtil.emptySet;
     return this;
   }

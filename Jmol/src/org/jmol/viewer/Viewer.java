@@ -5268,7 +5268,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   private JmolJSpecView getJSV() {
     if (jsv == null) {
-      jsv = (JmolJSpecView) Interface.getOptionInterface("viewer.JSpecView");
+      jsv = (JmolJSpecView) Interface.getOptionInterface("jsv.JSpecView");
       jsv.setViewer(this);
     }
     return jsv;

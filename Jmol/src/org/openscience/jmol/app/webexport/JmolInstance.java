@@ -37,7 +37,6 @@ import javax.swing.filechooser.FileSystemView;
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
 import org.jmol.java.BS;
-import org.jmol.util.BSUtil;
 
 class JmolInstance {
   String name;
@@ -72,7 +71,7 @@ class JmolInstance {
     }
     bgColor = viewer.getBackgroundArgb();
     javaname = name.replaceAll("[^a-zA-Z_0-9-]", "_"); //escape filename characters
-    whichWidgets=BSUtil.newBitSet(nWidgets);
+    whichWidgets=BS.newN(nWidgets);
     FileSystemView Directories = FileSystemView.getFileSystemView();
     File homedir = Directories.getHomeDirectory();
     String homedirpath = homedir.getPath();

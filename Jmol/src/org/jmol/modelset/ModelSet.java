@@ -445,7 +445,7 @@ import java.util.Map;
   }
   
   private BS modelsOf(BS bsAtoms, BS bsAllAtoms) {
-    BS bsModels = BSUtil.newBitSet(modelCount);
+    BS bsModels = BS.newN(modelCount);
     boolean isAll = (bsAtoms == null);
     int i0 = (isAll ? atomCount - 1 : bsAtoms.nextSetBit(0));
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsAtoms.nextSetBit(i + 1))) {

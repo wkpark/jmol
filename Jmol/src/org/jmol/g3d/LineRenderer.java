@@ -46,7 +46,6 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.jmol.java.BS;
-import org.jmol.util.BSUtil;
 import org.jmol.util.GData;
 import org.jmol.util.Logger;
 import org.jmol.util.Shader;
@@ -78,7 +77,7 @@ final class LineRenderer {
     nBits = (lineTypeX ? g3d.getRenderWidth() : g3d.getRenderHeight());
     if (getCachedLine())
       return;
-    lineBits = BSUtil.newBitSet(nBits);
+    lineBits = BS.newN(nBits);
     dy = Math.abs(dy);
     dx = Math.abs(dx);
     if (dy > dx) {

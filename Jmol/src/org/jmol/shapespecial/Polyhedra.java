@@ -31,7 +31,6 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.script.T;
 import org.jmol.shape.AtomShape;
-import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.Logger;
 import org.jmol.util.Normix;
@@ -360,7 +359,7 @@ public class Polyhedra extends AtomShape {
     }
     dAverage = dAverage / ptCenter;
     float factor = distanceFactor;
-    BS bs = BSUtil.newBitSet(ptCenter);
+    BS bs = BS.newN(ptCenter);
     boolean isOK = (dAverage == 0);
 
     // here we are assuring that at least ONE face is drawn to 

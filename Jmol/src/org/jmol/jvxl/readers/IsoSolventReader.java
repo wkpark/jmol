@@ -425,7 +425,7 @@ class IsoSolventReader extends AtomDataReader {
     }
     meshData.getSurfaceSet();
     int nSets = meshData.nSets;
-    BS pocketSet = BSUtil.newBitSet(nSets);
+    BS pocketSet = BS.newN(nSets);
     BS ss;
     for (int i = 0; i < nSets; i++)
       if ((ss = meshData.surfaceSet[i]) != null)
@@ -519,7 +519,7 @@ class IsoSolventReader extends AtomDataReader {
     //1) identify which voxelData points are > 0 and within this volume
     //2) turn these voxel points into atoms with given radii
     //3) rerun the calculation to mark a solvent around these!
-    BS bs = BSUtil.newBitSet(nPointsX * nPointsY * nPointsZ);
+    BS bs = BS.newN(nPointsX * nPointsY * nPointsZ);
     int i = 0;
     int nDots = dots.length;
     int n = 0;

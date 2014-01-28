@@ -137,7 +137,7 @@ public abstract class AtomSetCollectionReader {
 
   public AtomSetCollection atomSetCollection;
   protected BufferedReader reader;
-  protected JmolDocument doc;
+  protected JmolDocument binaryDoc;
   protected String readerName;
   public Map<String, Object> htParams;
   public List<P3[]> trajectorySteps;
@@ -226,7 +226,7 @@ public abstract class AtomSetCollectionReader {
     if (reader instanceof BufferedReader)
       this.reader = (BufferedReader) reader;
     else if (reader instanceof JmolDocument)
-      doc = (JmolDocument) reader;
+      binaryDoc = (JmolDocument) reader;
   }
 
   Object readData() throws Exception {
@@ -234,15 +234,15 @@ public abstract class AtomSetCollectionReader {
     atomSetCollection = new AtomSetCollection(readerName, this, null, null);
     try {
       initializeReader();
-      if (doc == null) {
+      if (binaryDoc == null) {
         if (line == null && continuing)
           readLine();
         while (line != null && continuing)
           if (checkLine())
             readLine();
       } else {
-        doc.setOutputChannel(out);
-        processBinaryDocument(doc);
+        binaryDoc.setOutputChannel(out);
+        processBinaryDocument();
       }
       finalizeReader(); // upstairs
     } catch (Throwable e) {
@@ -253,8 +253,8 @@ public abstract class AtomSetCollectionReader {
     }
     if (reader != null)
       reader.close();
-    if (doc != null)
-      doc.close();
+    if (binaryDoc != null)
+      binaryDoc.close();
     return finish();
   }
 
@@ -288,10 +288,9 @@ public abstract class AtomSetCollectionReader {
   }
 
   /**
-   * @param doc  
    * @throws Exception 
    */
-  protected void processBinaryDocument(JmolDocument doc) throws Exception {
+  protected void processBinaryDocument() throws Exception {
     // Binary readers only
   }
 
@@ -1259,33 +1258,34 @@ public abstract class AtomSetCollectionReader {
     return line;
   }
 
-  protected String discardLinesUntilStartsWith(String startsWith)
+  public String discardLinesUntilStartsWith(String startsWith)
       throws Exception {
     while (readLine() != null && !line.startsWith(startsWith)) {
     }
     return line;
   }
 
-  protected String discardLinesUntilContains(String containsMatch)
+  public String discardLinesUntilContains(String containsMatch)
       throws Exception {
     while (readLine() != null && line.indexOf(containsMatch) < 0) {
     }
     return line;
   }
 
-  protected String discardLinesUntilContains2(String s1, String s2)
+  public String discardLinesUntilContains2(String s1, String s2)
       throws Exception {
     while (readLine() != null && line.indexOf(s1) < 0 && line.indexOf(s2) < 0) {
     }
     return line;
   }
 
-  protected void discardLinesUntilBlank() throws Exception {
+  public String discardLinesUntilBlank() throws Exception {
     while (readLine() != null && line.trim().length() != 0) {
     }
+    return line;
   }
 
-  protected String discardLinesUntilNonBlank() throws Exception {
+  public String discardLinesUntilNonBlank() throws Exception {
     while (readLine() != null && line.trim().length() == 0) {
     }
     return line;

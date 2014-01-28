@@ -34,7 +34,6 @@ import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.Bond;
 import org.jmol.adapter.smarter.Structure;
 import org.jmol.api.JmolAdapter;
-import org.jmol.api.JmolDocument;
 import org.jmol.api.PymolAtomReader;
 import org.jmol.constant.EnumStructure;
 import org.jmol.java.BS;
@@ -189,8 +188,8 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
   }
 
   @Override
-  public void processBinaryDocument(JmolDocument doc) throws Exception {
-    PickleReader reader = new PickleReader(doc, viewer);
+  public void processBinaryDocument() throws Exception {
+    PickleReader reader = new PickleReader(binaryDoc, viewer);
     Map<String, Object> map = reader.getMap(logging);
     reader = null;
     process(map);

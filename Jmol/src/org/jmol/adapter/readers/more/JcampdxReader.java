@@ -31,8 +31,8 @@ import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Bond;
 import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.adapter.smarter.Atom;
-import org.jmol.adapter.smarter.JmolJDXModelPeakLoader;
-import org.jmol.adapter.smarter.JmolJDXModelPeakReader;
+import org.jmol.adapter.smarter.JmolJDXMOLReader;
+import org.jmol.adapter.smarter.JmolJDXMOLParser;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.Interface;
 import org.jmol.io.JmolBinary;
@@ -77,10 +77,10 @@ import org.jmol.util.Logger;
  * <p>
  */
 
-public class JcampdxReader extends MolReader implements JmolJDXModelPeakLoader {
+public class JcampdxReader extends MolReader implements JmolJDXMOLReader {
 
   private int selectedModel;
-  private JmolJDXModelPeakReader mpr;
+  private JmolJDXMOLParser mpr;
 
   @Override
   public void initializeReader() throws Exception {
@@ -115,8 +115,8 @@ public class JcampdxReader extends MolReader implements JmolJDXModelPeakLoader {
     if (pt < 0)
       return true;
     if (mpr == null)
-      mpr = ((JmolJDXModelPeakReader) Interface
-          .getOptionInterface("jsv.JDXModelPeakReader")).set(this, filePath,
+      mpr = ((JmolJDXMOLParser) Interface
+          .getOptionInterface("jsv.JDXMOLParser")).set(this, filePath,
           htParams);
     mpr.setLine(line.substring(i + 1));
     switch (pt) {
@@ -139,46 +139,50 @@ public class JcampdxReader extends MolReader implements JmolJDXModelPeakLoader {
   }
 
   @Override
-  public void processModelData(String id, String data, String type,
+  public void processModelData(String data, String id, String type,
                                String base, String last, float vibScale,
                                boolean isFirst) throws Exception {
     int model0 = atomSetCollection.currentAtomSetIndex;
-    Object ret = SmarterJmolAdapter.staticGetAtomSetCollectionReader(filePath,
-        type, JmolBinary.getBR(data), htParams);
-    if (ret instanceof String) {
-      Logger.warn("" + ret);
-      return;
-    }
-    ret = SmarterJmolAdapter
-        .staticGetAtomSetCollection((AtomSetCollectionReader) ret);
-    if (ret instanceof String) {
-      Logger.warn("" + ret);
-      return;
-    }
-    AtomSetCollection models = (AtomSetCollection) ret;
-    String baseModel = base;
-    if (baseModel.length() == 0)
-      baseModel = last;
-    if (baseModel.length() != 0) {
-      int ibase = findModelById(baseModel);
-      if (ibase >= 0) {
-        atomSetCollection.setAtomSetAuxiliaryInfoForSet("jdxModelID",
-            baseModel, ibase);
-        for (int i = models.atomSetCount; --i >= 0;)
-          models.setAtomSetAuxiliaryInfoForSet("jdxBaseModel", baseModel, i);
-        if (models.bondCount == 0)
-          setBonding(models, ibase);
+    AtomSetCollection model = null;
+    while (true) {
+      Object ret = SmarterJmolAdapter.staticGetAtomSetCollectionReader(
+          filePath, type, JmolBinary.getBR(data), htParams);
+      if (ret instanceof String) {
+        Logger.warn("" + ret);
+        break;
       }
+      ret = SmarterJmolAdapter
+          .staticGetAtomSetCollection((AtomSetCollectionReader) ret);
+      if (ret instanceof String) {
+        Logger.warn("" + ret);
+        break;
+      }
+      model = (AtomSetCollection) ret;
+      String baseModel = base;
+      if (baseModel.length() == 0)
+        baseModel = last;
+      if (baseModel.length() != 0) {
+        int ibase = findModelById(baseModel);
+        if (ibase >= 0) {
+          atomSetCollection.setAtomSetAuxiliaryInfoForSet("jdxModelID",
+              baseModel, ibase);
+          for (int i = model.atomSetCount; --i >= 0;)
+            model.setAtomSetAuxiliaryInfoForSet("jdxBaseModel", baseModel, i);
+          if (model.bondCount == 0)
+            setBonding(model, ibase);
+        }
+      }
+      if (!Float.isNaN(vibScale)) {
+        Logger.info("jdx applying vibrationScale of " + vibScale + " to "
+            + model.atomCount + " atoms");
+        Atom[] atoms = model.atoms;
+        for (int i = model.atomCount; --i >= 0;)
+          atoms[i].scaleVector(vibScale);
+      }
+      Logger.info("jdx model=" + id + " type=" + model.fileTypeName);
+      atomSetCollection.appendAtomSetCollection(-1, model);
+      break;
     }
-    if (!Float.isNaN(vibScale)) {
-      Logger.info("jdx applying vibrationScale of " + vibScale + " to "
-          + models.atomCount + " atoms");
-      Atom[] atoms = models.atoms;
-      for (int i = models.atomCount; --i >= 0;)
-        atoms[i].scaleVector(vibScale);
-    }
-    Logger.info("jdx model=" + id + " type=" + models.fileTypeName);
-    atomSetCollection.appendAtomSetCollection(-1, models);
     updateModelIDs(id, model0, isFirst);
   }
 

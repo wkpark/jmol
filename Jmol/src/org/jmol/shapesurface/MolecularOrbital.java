@@ -461,7 +461,7 @@ public class MolecularOrbital extends Isosurface {
       for (int i = 0; i < moSlab.size(); i++)
         setPropI("slab", moSlab.get(i), null);
     if (moTranslucentLevel != null)
-      setPropI("translucenctLevel", moTranslucentLevel, null);
+      setPropI("translucentLevel", moTranslucentLevel, null);
     if (moTranslucency != null)
       setPropI("translucency", moTranslucency, null);
     setPropI("token", Integer.valueOf(moFill), null);

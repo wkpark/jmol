@@ -97,6 +97,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    * rendering engine, the ModelSet and Shape classes, and the Adapter file
    * reader classes form the core of the Jmol molecular visualization framework.
    * 
+   * An extension of this file is org.jmol.scriptext.ScriptExt .
+   * 
    * The ScriptEvaluator has just a few entry points, which you will find
    * immediately following this comment. They include:
    * 

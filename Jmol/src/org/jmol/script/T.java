@@ -1206,10 +1206,11 @@ public class T {
   public final static int mode           = misc  | 200;
   public final static int modify         = misc  | 201;
   public final static int modifyorcreate = misc  | 202;
-  public final static int modelbased     = misc  | 204;
-  public final static int molecular      = misc  | 205;
-  public final static int monomer        = misc  | 206;
-  public final static int morph          = misc  | 207;
+  public final static int modelbased     = misc  | 203;
+  public final static int molecular      = misc  | 204;
+  public final static int monomer        = misc  | 205;
+  public final static int morph          = misc  | 206;
+  public final static int mouse          = misc  | 207;
   public final static int movie          = misc  | 208;
   public final static int mrc            = misc  | 209;
   public final static int msms           = misc  | 210;
@@ -1924,6 +1925,7 @@ public class T {
       "monomer",         T.t(monomer),
       "morph",           T.t(morph),
       "movie",           T.t(movie),
+      "mouse",           T.t(mouse),
       "mul",             T.t(mul),
       "mul3",            T.t(mul3),
       "nci",             T.t(nci),

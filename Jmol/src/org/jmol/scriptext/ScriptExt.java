@@ -5614,17 +5614,19 @@ public class ScriptExt implements JmolScriptExtension {
     case T.solvent:
       value = "?";
       break;
+    case T.mouse:
+      String qualifiers = ((len = slen) == 2 ? null : parameterAsString(2));
+      if (!chk)
+        msg = viewer.getBindingInfo(qualifiers);
+      break;
+    case T.menu:
+      if (!chk)
+        value = viewer.getMenu("");
+      break;      
     case T.identifier:
       if (str.equalsIgnoreCase("fileHeader")) {
         if (!chk)
           msg = viewer.getPDBHeader();
-      } else if (str.equalsIgnoreCase("menu")) {
-        if (!chk)
-          value = viewer.getMenu("");
-      } else if (str.equalsIgnoreCase("mouse")) {
-        String qualifiers = ((len = slen) == 2 ? null : parameterAsString(2));
-        if (!chk)
-          msg = viewer.getBindingInfo(qualifiers);
       }
       break;
     }

@@ -46,7 +46,7 @@ org/jmol/jvxl/api/*.java
 org/jmol/jvxl/calc/*.java
 org/jmol/jvxl/data/*.java
 org/jmol/jvxl/readers/*.java
-org/jmol/jspecview/*.java
+org/jmol/jsv/*.java
 org/jmol/minimize/*.java
 org/jmol/minimize/forcefield/*.java
 org/jmol/modelkit/*.java

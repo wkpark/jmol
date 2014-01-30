@@ -337,11 +337,11 @@ abstract class OutputManager {
     String fext = fileName.substring(ptDot);
     SB sb = new SB();
     if (bsFrames == null) {
-      viewer.transformManager.vibrationOn = true;
+      viewer.tm.vibrationOn = true;
       sb = new SB();
       for (int i = 0; i < nVibes; i++) {
         for (int j = 0; j < 20; j++) {
-          viewer.transformManager.setVibrationT(j / 20f + 0.2501f);
+          viewer.tm.setVibrationT(j / 20f + 0.2501f);
           if (!writeFrame(++n, froot, fext, params, sb))
             return "ERROR WRITING FILE SET: \n" + info;
         }

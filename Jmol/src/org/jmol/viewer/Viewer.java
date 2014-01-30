@@ -261,7 +261,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   JmolRepaintManager repaintManager;
   public GlobalSettings global;
   public StatusManager statusManager;
-  TransformManager transformManager;
+  TransformManager tm;
 
   private final static String strJavaVendor = System.getProperty("java.vendor",
       "j2s");
@@ -517,7 +517,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     stateManager = new StateManager(this);
     colorManager = new ColorManager(this, gdata);
     statusManager = new StatusManager(this);
-    transformManager = new TransformManager(this, Integer.MAX_VALUE, 0);
+    tm = new TransformManager(this, Integer.MAX_VALUE, 0);
     selectionManager = new SelectionManager(this);
     if (haveDisplay) {
       actionManager = (multiTouch ? (ActionManager) Interface
@@ -733,7 +733,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     // initializeModel
     modelSet.calcBoundBoxDimensions(null, 1);
     axesAreTainted = true;
-    transformManager.homePosition(includingSpin);
+    tm.homePosition(includingSpin);
     if (modelSet.setCrystallographicDefaults())
       stateManager.setCrystallographicDefaults();
     else
@@ -922,16 +922,16 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   // ///////////////////////////////////////////////////////////////
 
   public M4 getMatrixtransform() {
-    return transformManager.getMatrixtransform();
+    return tm.getMatrixtransform();
   }
 
   public Quaternion getRotationQuaternion() {
-    return transformManager.getRotationQuaternion();
+    return tm.getRotationQuaternion();
   }
 
   public void setRotationRadius(float angstroms, boolean doAll) {
     if (doAll)
-      angstroms = transformManager.setRotationRadius(angstroms, false);
+      angstroms = tm.setRotationRadius(angstroms, false);
     // only set the rotationRadius if this is NOT a dataframe
     if (modelSet.setRotationRadius(animationManager.currentModelIndex,
         angstroms))
@@ -939,14 +939,14 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public P3 getRotationCenter() {
-    return transformManager.getRotationCenter();
+    return tm.getRotationCenter();
   }
 
   public void setCenterAt(String relativeTo, P3 pt) {
     // Eval centerAt boundbox|absolute|average {pt}
     if (isJmolDataFrame())
       return;
-    transformManager.setCenterAt(relativeTo, pt);
+    tm.setCenterAt(relativeTo, pt);
   }
 
   public void setCenterBitSet(BS bsCenter, boolean doScale) {
@@ -957,62 +957,62 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         : null);
     if (isJmolDataFrame())
       return;
-    transformManager.setNewRotationCenter(center, doScale);
+    tm.setNewRotationCenter(center, doScale);
   }
 
   public void setNewRotationCenter(P3 center) {
     // eval CENTER command
     if (isJmolDataFrame())
       return;
-    transformManager.setNewRotationCenter(center, true);
+    tm.setNewRotationCenter(center, true);
   }
 
   public P3 getNavigationCenter() {
-    return transformManager.getNavigationCenter();
+    return tm.getNavigationCenter();
   }
 
   public float getNavigationDepthPercent() {
-    return transformManager.getNavigationDepthPercent();
+    return tm.getNavigationDepthPercent();
   }
 
   void navigate(int keyWhere, int modifiers) {
     if (isJmolDataFrame())
       return;
-    transformManager.navigateKey(keyWhere, modifiers);
-    if (!transformManager.vibrationOn && keyWhere != 0)
+    tm.navigateKey(keyWhere, modifiers);
+    if (!tm.vibrationOn && keyWhere != 0)
       refresh(1, "Viewer:navigate()");
   }
 
   public P3 getNavigationOffset() {
-    return transformManager.getNavigationOffset();
+    return tm.getNavigationOffset();
   }
 
   public float getNavigationOffsetPercent(char XorY) {
-    return transformManager.getNavigationOffsetPercent(XorY);
+    return tm.getNavigationOffsetPercent(XorY);
   }
 
   public boolean isNavigating() {
-    return transformManager.isNavigating();
+    return tm.isNavigating();
   }
 
   public boolean isInPosition(V3 axis, float degrees) {
-    return transformManager.isInPosition(axis, degrees);
+    return tm.isInPosition(axis, degrees);
   }
 
   public void move(JmolScriptEvaluator eval, V3 dRot, float dZoom, V3 dTrans,
                    float dSlab, float floatSecondsTotal, int fps) {
     // from Eval
-    transformManager.move(eval, dRot, dZoom, dTrans, dSlab, floatSecondsTotal,
+    tm.move(eval, dRot, dZoom, dTrans, dSlab, floatSecondsTotal,
         fps);
     moveUpdate(floatSecondsTotal);
   }
 
   public void stopMotion() {
-    transformManager.stopMotion();
+    tm.stopMotion();
   }
 
   public void setRotationMatrix(M3 rotationMatrix) {
-    transformManager.setRotation(rotationMatrix);
+    tm.setRotation(rotationMatrix);
   }
 
   public void moveTo(JmolScriptEvaluator eval, float floatSecondsTotal,
@@ -1025,7 +1025,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     if (!haveDisplay)
       floatSecondsTotal = 0;
     setTainted(true);
-    transformManager.moveTo(eval, floatSecondsTotal, center, rotAxis, degrees,
+    tm.moveTo(eval, floatSecondsTotal, center, rotAxis, degrees,
         rotationMatrix, zoom, xTrans, yTrans, rotationRadius, navCenter, xNav,
         yNav, navDepth, cameraDepth, cameraX, cameraY);
   }
@@ -1038,31 +1038,31 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public String getMoveToText(float timespan) {
-    return transformManager.getMoveToText(timespan, false);
+    return tm.getMoveToText(timespan, false);
   }
 
   public void navigateList(JmolScriptEvaluator eval, List<Object[]> list) {
     if (isJmolDataFrame())
       return;
-    transformManager.navigateList(eval, list);
+    tm.navigateList(eval, list);
   }
 
   public void navigatePt(P3 center) {
     // isosurface setHeading
-    transformManager.setNavigatePt(center);
+    tm.setNavigatePt(center);
     setSync();
   }
 
   public void navigateAxis(V3 rotAxis, float degrees) {
     // isosurface setHeading
-    transformManager.navigateAxis(rotAxis, degrees);
+    tm.navigateAxis(rotAxis, degrees);
     setSync();
   }
 
   public void navTranslatePercent(float x, float y) {
     if (isJmolDataFrame())
       return;
-    transformManager.navTranslatePercentOrTo(0, x, y);
+    tm.navTranslatePercentOrTo(0, x, y);
     setSync();
   }
 
@@ -1082,14 +1082,14 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   void zoomBy(int pixels) {
     // MouseManager.mouseSinglePressDrag
     if (mouseEnabled)
-      transformManager.zoomBy(pixels);
+      tm.zoomBy(pixels);
     refresh(2, statusManager.syncingMouse ? "Mouse: zoomBy " + pixels : "");
   }
 
   void zoomByFactor(float factor, int x, int y) {
     // MouseManager.mouseWheel
     if (mouseEnabled)
-      transformManager.zoomByFactor(factor, x, y);
+      tm.zoomByFactor(factor, x, y);
     refresh(2, !statusManager.syncingMouse ? "" : "Mouse: zoomByFactor "
         + factor + (x == Integer.MAX_VALUE ? "" : " " + x + " " + y));
   }
@@ -1097,14 +1097,14 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   void rotateXYBy(float xDelta, float yDelta) {
     // mouseSinglePressDrag
     if (mouseEnabled)
-      transformManager.rotateXYBy(xDelta, yDelta, null);
+      tm.rotateXYBy(xDelta, yDelta, null);
     refresh(2, statusManager.syncingMouse ? "Mouse: rotateXYBy " + xDelta + " "
         + yDelta : "");
   }
 
   public void spinXYBy(int xDelta, int yDelta, float speed) {
     if (mouseEnabled)
-      transformManager.spinXYBy(xDelta, yDelta, speed);
+      tm.spinXYBy(xDelta, yDelta, speed);
     if (xDelta == 0 && yDelta == 0)
       return;
     refresh(2, statusManager.syncingMouse ? "Mouse: spinXYBy " + xDelta + " "
@@ -1114,7 +1114,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public void rotateZBy(int zDelta, int x, int y) {
     // mouseSinglePressDrag
     if (mouseEnabled)
-      transformManager.rotateZBy(zDelta, x, y);
+      tm.rotateZBy(zDelta, x, y);
     refresh(2, statusManager.syncingMouse ? "Mouse: rotateZBy " + zDelta
         + (x == Integer.MAX_VALUE ? "" : " " + x + " " + y) : "");
   }
@@ -1123,7 +1123,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     if (isJmolDataFrame())
       return;
     if (mouseEnabled) {
-      transformManager.rotateXYBy(deltaX, deltaY, setMovableBitSet(bsSelected,
+      tm.rotateXYBy(deltaX, deltaY, setMovableBitSet(bsSelected,
           false));
       refreshMeasures(true);
     }
@@ -1145,7 +1145,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public void translateXYBy(int xDelta, int yDelta) {
     // mouseDoublePressDrag, mouseSinglePressDrag
     if (mouseEnabled)
-      transformManager.translateXYBy(xDelta, yDelta);
+      tm.translateXYBy(xDelta, yDelta);
     refresh(2, statusManager.syncingMouse ? "Mouse: translateXYBy " + xDelta
         + " " + yDelta : "");
   }
@@ -1153,28 +1153,28 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   @Override
   public void rotateFront() {
     // deprecated
-    transformManager.rotateFront();
+    tm.rotateFront();
     refresh(1, "Viewer:rotateFront()");
   }
 
   @Override
   public void rotateX(float angleRadians) {
     // deprecated
-    transformManager.rotateX(angleRadians);
+    tm.rotateX(angleRadians);
     refresh(1, "Viewer:rotateX()");
   }
 
   @Override
   public void rotateY(float angleRadians) {
     // deprecated
-    transformManager.rotateY(angleRadians);
+    tm.rotateY(angleRadians);
     refresh(1, "Viewer:rotateY()");
   }
 
   @Override
   public void rotateZ(float angleRadians) {
     // deprecated
-    transformManager.rotateZ(angleRadians);
+    tm.rotateZ(angleRadians);
     refresh(1, "Viewer:rotateZ()");
   }
 
@@ -1191,35 +1191,35 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public void translate(char xyz, float x, char type, BS bsAtoms) {
-    int xy = (type == '\0' ? (int) x : type == '%' ? transformManager
-        .percentToPixels(xyz, x) : transformManager.angstromsToPixels(x
+    int xy = (type == '\0' ? (int) x : type == '%' ? tm
+        .percentToPixels(xyz, x) : tm.angstromsToPixels(x
         * (type == 'n' ? 10f : 1f)));
     if (bsAtoms != null) {
       if (xy == 0)
         return;
-      transformManager.setSelectedTranslation(bsAtoms, xyz, xy);
+      tm.setSelectedTranslation(bsAtoms, xyz, xy);
     } else {
       switch (xyz) {
       case 'X':
       case 'x':
         if (type == '\0')
-          transformManager.translateToPercent('x', x);
+          tm.translateToPercent('x', x);
         else
-          transformManager.translateXYBy(xy, 0);
+          tm.translateXYBy(xy, 0);
         break;
       case 'Y':
       case 'y':
         if (type == '\0')
-          transformManager.translateToPercent('y', x);
+          tm.translateToPercent('y', x);
         else
-          transformManager.translateXYBy(0, xy);
+          tm.translateXYBy(0, xy);
         break;
       case 'Z':
       case 'z':
         if (type == '\0')
-          transformManager.translateToPercent('z', x);
+          tm.translateToPercent('z', x);
         else
-          transformManager.translateZBy(xy);
+          tm.translateZBy(xy);
         break;
       }
     }
@@ -1227,27 +1227,27 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public float getTranslationXPercent() {
-    return transformManager.getTranslationXPercent();
+    return tm.getTranslationXPercent();
   }
 
   public float getTranslationYPercent() {
-    return transformManager.getTranslationYPercent();
+    return tm.getTranslationYPercent();
   }
 
   float getTranslationZPercent() {
-    return transformManager.getTranslationZPercent();
+    return tm.getTranslationZPercent();
   }
 
   public String getTranslationScript() {
-    return transformManager.getTranslationScript();
+    return tm.getTranslationScript();
   }
 
   public int getZShadeStart() {
-    return transformManager.getZShadeStart();
+    return tm.getZShadeStart();
   }
 
   public boolean isWindowCentered() {
-    return transformManager.isWindowCentered();
+    return tm.isWindowCentered();
   }
 
   @Override
@@ -1257,13 +1257,13 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public float getZoomSetting() {
-    return transformManager.getZoomSetting();
+    return tm.getZoomSetting();
   }
 
   @Override
   public float getZoomPercentFloat() {
     // note -- this value is only after rendering.
-    return transformManager.getZoomPercentFloat();
+    return tm.getZoomPercentFloat();
   }
 
   public float getMaxZoomPercent() {
@@ -1271,122 +1271,122 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public void slabReset() {
-    transformManager.slabReset();
+    tm.slabReset();
   }
 
   public boolean getZoomEnabled() {
-    return transformManager.zoomEnabled;
+    return tm.zoomEnabled;
   }
 
   public boolean getSlabEnabled() {
-    return transformManager.slabEnabled;
+    return tm.slabEnabled;
   }
 
   void slabByPixels(int pixels) {
     // MouseManager.mouseSinglePressDrag
-    transformManager.slabByPercentagePoints(pixels);
+    tm.slabByPercentagePoints(pixels);
     refresh(3, "slabByPixels");
   }
 
   void depthByPixels(int pixels) {
     // MouseManager.mouseDoublePressDrag
-    transformManager.depthByPercentagePoints(pixels);
+    tm.depthByPercentagePoints(pixels);
     refresh(3, "depthByPixels");
 
   }
 
   void slabDepthByPixels(int pixels) {
     // MouseManager.mouseSinglePressDrag
-    transformManager.slabDepthByPercentagePoints(pixels);
+    tm.slabDepthByPercentagePoints(pixels);
     refresh(3, "slabDepthByPixels");
   }
 
   public void slabInternal(P4 plane, boolean isDepth) {
-    transformManager.slabInternal(plane, isDepth);
+    tm.slabInternal(plane, isDepth);
   }
 
   public void slabToPercent(int percentSlab) {
     // Eval.slab
-    transformManager.slabToPercent(percentSlab);
+    tm.slabToPercent(percentSlab);
   }
 
   public void depthToPercent(int percentDepth) {
     // Eval.depth
-    transformManager.depthToPercent(percentDepth);
+    tm.depthToPercent(percentDepth);
   }
 
   public void setSlabDepthInternal(boolean isDepth) {
-    transformManager.setSlabDepthInternal(isDepth);
+    tm.setSlabDepthInternal(isDepth);
   }
 
   public int zValueFromPercent(int zPercent) {
-    return transformManager.zValueFromPercent(zPercent);
+    return tm.zValueFromPercent(zPercent);
   }
 
   @Override
   public M4 getUnscaledTransformMatrix() {
-    return transformManager.getUnscaledTransformMatrix();
+    return tm.getUnscaledTransformMatrix();
   }
 
   public void finalizeTransformParameters() {
     // FrameRenderer
     // InitializeModel
 
-    transformManager.finalizeTransformParameters();
-    gdata.setSlab(transformManager.slabValue);
-    gdata.setDepth(transformManager.depthValue);
-    gdata.setZShade(transformManager.zShadeEnabled,
-        transformManager.zSlabValue, transformManager.zDepthValue,
+    tm.finalizeTransformParameters();
+    gdata.setSlab(tm.slabValue);
+    gdata.setDepth(tm.depthValue);
+    gdata.setZShade(tm.zShadeEnabled,
+        tm.zSlabValue, tm.zDepthValue,
         global.zShadePower);
   }
 
   public void rotatePoint(P3 pt, P3 ptRot) {
-    transformManager.rotatePoint(pt, ptRot);
+    tm.rotatePoint(pt, ptRot);
   }
 
   public P3i transformPt(P3 pointAngstroms) {
-    return transformManager.transformPoint(pointAngstroms);
+    return tm.transformPoint(pointAngstroms);
   }
 
   public P3i transformPtVib(P3 pointAngstroms, Vibration vibrationVector) {
-    return transformManager.transformPointVib(pointAngstroms, vibrationVector);
+    return tm.transformPointVib(pointAngstroms, vibrationVector);
   }
 
   public void transformPtScr(P3 pointAngstroms, P3i pointScreen) {
-    transformManager.transformPointScr(pointAngstroms, pointScreen);
+    tm.transformPointScr(pointAngstroms, pointScreen);
   }
 
   public void transformPtNoClip(P3 pointAngstroms, P3 pt) {
-    transformManager.transformPointNoClip(pointAngstroms, pt);
+    tm.transformPointNoClip(pointAngstroms, pt);
   }
 
   public void transformPt3f(P3 pointAngstroms, P3 pointScreen) {
-    transformManager.transformPoint2(pointAngstroms, pointScreen);
+    tm.transformPoint2(pointAngstroms, pointScreen);
   }
 
   public void transformPoints(P3[] pointsAngstroms, P3i[] pointsScreens) {
     // nucleic acid base steps
-    transformManager.transformPoints(pointsAngstroms.length, pointsAngstroms,
+    tm.transformPoints(pointsAngstroms.length, pointsAngstroms,
         pointsScreens);
   }
 
   public void transformVector(V3 vectorAngstroms, V3 vectorTransformed) {
     // dots only
-    transformManager.transformVector(vectorAngstroms, vectorTransformed);
+    tm.transformVector(vectorAngstroms, vectorTransformed);
   }
 
   public void unTransformPoint(P3 pointScreen, P3 pointAngstroms) {
-    transformManager.unTransformPoint(pointScreen, pointAngstroms);
+    tm.unTransformPoint(pointScreen, pointAngstroms);
   }
 
   public float getScalePixelsPerAngstrom(boolean asAntialiased) {
-    return transformManager.scalePixelsPerAngstrom
+    return tm.scalePixelsPerAngstrom
         * (asAntialiased || !antialiasDisplay ? 1f : 0.5f);
   }
 
   public float scaleToScreen(int z, int milliAngstroms) {
     // all shapes
-    return transformManager.scaleToScreen(z, milliAngstroms);
+    return tm.scaleToScreen(z, milliAngstroms);
   }
 
   public float unscaleToScreen(float z, float screenDistance) {
@@ -1399,12 +1399,12 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     //                               triangles, Mesh points, drawLine, Sticks drawDashed
     //                               axes, cage
     // _TachyonExporter outputCone
-    return transformManager.unscaleToScreen(z, screenDistance);
+    return tm.unscaleToScreen(z, screenDistance);
   }
 
   public float scaleToPerspective(int z, float sizeAngstroms) {
     // DotsRenderer
-    return transformManager.scaleToPerspective(z, sizeAngstroms);
+    return tm.scaleToPerspective(z, sizeAngstroms);
   }
 
   public void setSpin(String key, int value) {
@@ -1414,29 +1414,29 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     int i = "x;y;z;fps;X;Y;Z;FPS".indexOf(key);
     switch (i) {
     case 0:
-      transformManager.setSpinXYZ(value, Float.NaN, Float.NaN);
+      tm.setSpinXYZ(value, Float.NaN, Float.NaN);
       break;
     case 2:
-      transformManager.setSpinXYZ(Float.NaN, value, Float.NaN);
+      tm.setSpinXYZ(Float.NaN, value, Float.NaN);
       break;
     case 4:
-      transformManager.setSpinXYZ(Float.NaN, Float.NaN, value);
+      tm.setSpinXYZ(Float.NaN, Float.NaN, value);
       break;
     case 6:
     default:
-      transformManager.setSpinFps(value);
+      tm.setSpinFps(value);
       break;
     case 10:
-      transformManager.setNavXYZ(value, Float.NaN, Float.NaN);
+      tm.setNavXYZ(value, Float.NaN, Float.NaN);
       break;
     case 12:
-      transformManager.setNavXYZ(Float.NaN, value, Float.NaN);
+      tm.setNavXYZ(Float.NaN, value, Float.NaN);
       break;
     case 14:
-      transformManager.setNavXYZ(Float.NaN, Float.NaN, value);
+      tm.setNavXYZ(Float.NaN, Float.NaN, value);
       break;
     case 16:
-      transformManager.setNavFps(value);
+      tm.setNavFps(value);
       break;
     }
     global.setI((i < 10 ? "spin" : "nav") + key, value);
@@ -1450,27 +1450,27 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     // Eval
     // startSpinningAxis
     if (spinOn)
-      transformManager.setSpinOn();
+      tm.setSpinOn();
     else
-      transformManager.setSpinOff();
+      tm.setSpinOff();
   }
 
   public boolean getSpinOn() {
-    return transformManager.getSpinOn();
+    return tm.getSpinOn();
   }
 
   public void setNavOn(boolean navOn) {
     // Eval
     // startSpinningAxis
-    transformManager.setNavOn(navOn);
+    tm.setNavOn(navOn);
   }
 
   public boolean getNavOn() {
-    return transformManager.getNavOn();
+    return tm.getNavOn();
   }
 
   public void setNavXYZ(float x, float y, float z) {
-    transformManager.setNavXYZ((int) x, (int) y, (int) z);
+    tm.setNavXYZ((int) x, (int) y, (int) z);
   }
 
   public String getOrientationText(int type, String name) {
@@ -1485,28 +1485,28 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     case T.name:
       return stateManager.getSavedOrientationText(name);
     default:
-      return transformManager.getOrientationText(type);
+      return tm.getOrientationText(type);
     }
   }
 
   Map<String, Object> getOrientationInfo() {
-    return transformManager.getOrientationInfo();
+    return tm.getOrientationInfo();
   }
 
   M3 getMatrixRotate() {
-    return transformManager.getMatrixRotate();
+    return tm.getMatrixRotate();
   }
 
   public void getAxisAngle(A4 axisAngle) {
-    transformManager.getAxisAngle(axisAngle);
+    tm.getAxisAngle(axisAngle);
   }
 
   public String getTransformText() {
-    return transformManager.getTransformText();
+    return tm.getTransformText();
   }
 
   public void getRotation(M3 matrixRotation) {
-    transformManager.getRotation(matrixRotation);
+    tm.getRotation(matrixRotation);
   }
 
   // ///////////////////////////////////////////////////////////////
@@ -1550,27 +1550,27 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public boolean isVibrationOn() {
-    return transformManager.vibrationOn;
+    return tm.vibrationOn;
   }
 
   @Override
   public void setVibrationScale(float scale) {
     // Eval
     // public legacy in JmolViewer
-    transformManager.setVibrationScale(scale);
+    tm.setVibrationScale(scale);
     global.vibrationScale = scale;
     // because this is public:
     global.setF("vibrationScale", scale);
   }
 
   public void setVibrationOff() {
-    transformManager.setVibrationPeriod(0);
+    tm.setVibrationPeriod(0);
   }
 
   @Override
   public void setVibrationPeriod(float period) {
     // Eval
-    transformManager.setVibrationPeriod(period);
+    tm.setVibrationPeriod(period);
     period = Math.abs(period);
     global.vibrationPeriod = period;
     // because this is public:
@@ -2956,7 +2956,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       fileManager.clear();
       clearRepaintManager(-1);
       animationManager.clear();
-      transformManager.clear();
+      tm.clear();
       selectionManager.clear();
       clearAllMeasurements();
       clearMinimization();
@@ -3027,7 +3027,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     movingSelected = false;
     noneSelected = false;
     hoverEnabled = true;
-    transformManager.setCenter();
+    tm.setCenter();
     animationManager.initializePointers(1);
     if (!modelSet.getModelSetAuxiliaryInfoBoolean("isPyMOL")) {
       clearAtomSets();
@@ -3990,7 +3990,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   void setFrameOffset(int modelIndex) {
-    transformManager.setFrameOffset(modelIndex);
+    tm.setFrameOffset(modelIndex);
   }
 
   BS bsFrameOffsets;
@@ -3998,7 +3998,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public void setFrameOffsets(BS bsAtoms) {
     bsFrameOffsets = bsAtoms;
-    transformManager.setFrameOffsets(frameOffsets = modelSet
+    tm.setFrameOffsets(frameOffsets = modelSet
         .getFrameOffsets(bsFrameOffsets));
   }
 
@@ -4142,7 +4142,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       return;
     if (isWebGL) {
       if (mode == 2 || mode == 7) {
-        transformManager.finalizeTransformParameters();
+        tm.finalizeTransformParameters();
         /**
          * @j2sNative
          * 
@@ -4263,7 +4263,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       height = (dimScreen.height == 0 ? dimScreen.height = 500
           : dimScreen.height);
     }
-    transformManager.setScreenParameters(width, height,
+    tm.setScreenParameters(width, height,
         isImageWrite || isReset ? global.zoomLarge : false, antialiasDisplay,
         false, false);
     gdata.setWindowParameters(width, height, antialiasDisplay);
@@ -4374,7 +4374,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     /**
      * @j2sNative
      * 
-     * this.applet && this.applet._viewSet != null && Jmol.updateView(this.applet, imodel, iatom);
+     * this.applet && this.applet._viewSet != null && this.applet._atomPickedCallback(imodel, iatom);
      * 
      */
     {}
@@ -4434,7 +4434,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   private void beginRendering(boolean isDouble, boolean isImageWrite) {
-    gdata.beginRendering(transformManager.getStereoRotationMatrix(isDouble),
+    gdata.beginRendering(tm.getStereoRotationMatrix(isDouble),
         global.translucent, isImageWrite, !checkMotionRendering(T.translucent));
   }
 
@@ -4450,9 +4450,9 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       return;
     boolean antialias2 = antialiasDisplay && global.antialiasTranslucent;
     finalizeTransformParameters();
-    int[] minMax = shapeManager.finalizeAtoms(transformManager.bsSelectedAtoms,
-        transformManager.ptOffset);
-    transformManager.bsSelectedAtoms = null;
+    int[] minMax = shapeManager.finalizeAtoms(tm.bsSelectedAtoms,
+        tm.ptOffset);
+    tm.bsSelectedAtoms = null;
     if (isWebGL) {
       repaintManager.renderExport(gdata, modelSet, jsParams);
       notifyViewerRepaintDone();
@@ -4460,9 +4460,9 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     }
     repaintManager.render(gdata, modelSet, true, minMax);
     if (gdata.setPass2(antialias2)) {
-      transformManager.setAntialias(antialias2);
+      tm.setAntialias(antialias2);
       repaintManager.render(gdata, modelSet, false, null);
-      transformManager.setAntialias(antialiasDisplay);
+      tm.setAntialias(antialiasDisplay);
     }
   }
 
@@ -4484,7 +4484,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       return null;
     boolean mergeImages = (graphic == null && isStereoDouble());
     Object imageBuffer;
-    if (transformManager.stereoMode.isBiColor()) {
+    if (tm.stereoMode.isBiColor()) {
       beginRendering(true, isImageWrite);
       render();
       gdata.endRendering();
@@ -4492,8 +4492,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       beginRendering(false, isImageWrite);
       render();
       gdata.endRendering();
-      gdata.applyAnaglygh(transformManager.stereoMode,
-          transformManager.stereoColors);
+      gdata.applyAnaglygh(tm.stereoMode,
+          tm.stereoColors);
       imageBuffer = gdata.getScreenImage(isImageWrite);
     } else {
       imageBuffer = getImage(isStereoDouble(), isImageWrite);
@@ -5184,7 +5184,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       prevFrame = Integer.MIN_VALUE;
     }
     int frameNo = animationManager.getCurrentModelIndex();
-    transformManager.setVibrationPeriod(Float.NaN);
+    tm.setVibrationPeriod(Float.NaN);
     int firstIndex = animationManager.firstFrameIndex;
     int lastIndex = animationManager.lastFrameIndex;
 
@@ -5562,10 +5562,10 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     global.setS("_pickinfo", info);
     statusManager.setStatusAtomPicked(atomIndex, info);
     int syncMode = statusManager.getSyncMode();
-    if (syncMode != StatusManager.SYNC_DRIVER || !doHaveJDX())
-      return;
-    getJSV().atomPicked(atomIndex);
-    updateJSView(getAtomModelIndex(atomIndex), atomIndex);
+    if (syncMode == StatusManager.SYNC_DRIVER && doHaveJDX())
+      getJSV().atomPicked(atomIndex);
+    if (isJS)
+      updateJSView(getAtomModelIndex(atomIndex), atomIndex);
   }
 
   /*
@@ -6051,7 +6051,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     case T.pointgrouplineartolerance:
       return global.pointGroupLinearTolerance;
     case T.rotationradius:
-      return transformManager.getRotationRadius();
+      return tm.getRotationRadius();
     case T.sheetsmoothing:
       return global.sheetSmoothing;
     case T.solventproberadius:
@@ -6346,7 +6346,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       global.multipleBondSpacing = value;
       break;
     case T.slabrange:
-      transformManager.setSlabRange(value);
+      tm.setSlabRange(value);
       break;
     case T.minimizationcriterion:
       global.minimizationCriterion = value;
@@ -6431,7 +6431,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       setAxesScale(value);
       break;
     case T.visualrange:
-      transformManager.setVisualRange(value);
+      tm.setVisualRange(value);
       refresh(1, "set visualRange");
       break;
     case T.navigationdepth:
@@ -6441,10 +6441,10 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       global.navigationSpeed = value;
       break;
     case T.navigationslab:
-      transformManager.setNavigationSlabOffsetPercent(value);
+      tm.setNavigationSlabOffsetPercent(value);
       break;
     case T.cameradepth:
-      transformManager.setCameraDepthPercent(value, false);
+      tm.setCameraDepthPercent(value, false);
       refresh(1, "set cameraDepth");
       // transformManager will set global value for us;
       return;
@@ -6463,7 +6463,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       global.dipoleScale = value;
       break;
     case T.stereodegrees:
-      transformManager.setStereoDegrees(value);
+      tm.setStereoDegrees(value);
       break;
     case T.vectorscale:
       // public -- no need to set
@@ -6484,7 +6484,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       setMinBondDistance(value);
       return;
     case T.scaleangstromsperinch:
-      transformManager.setScaleAngstromsPerInch(value);
+      tm.setScaleAngstromsPerInch(value);
       break;
     case T.solventproberadius:
       value = checkFloatRange(value, 0, 10);
@@ -6657,16 +6657,16 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       gdata.setAmbientPercent(value);
       break;
     case T.zdepth:
-      transformManager.zDepthToPercent(value);
+      tm.zDepthToPercent(value);
       break;
     case T.zslab:
-      transformManager.zSlabToPercent(value);
+      tm.zSlabToPercent(value);
       break;
     case T.depth:
-      transformManager.depthToPercent(value);
+      tm.depthToPercent(value);
       break;
     case T.slab:
-      transformManager.slabToPercent(value);
+      tm.slabToPercent(value);
       break;
     case T.zshadepower:
       global.zShadePower = Math.max(value, 1);
@@ -7031,7 +7031,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       global.navigationPeriodic = value;
       break;
     case T.zshade:
-      transformManager.setZShadeEnabled(value);
+      tm.setZShadeEnabled(value);
       return;
     case T.drawhover:
       if (haveDisplay)
@@ -7071,10 +7071,10 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       break;
     case T.slabenabled:
       // Eval.slab
-      transformManager.setSlabEnabled(value); // refresh?
+      tm.setSlabEnabled(value); // refresh?
       return;
     case T.zoomenabled:
-      transformManager.setZoomEnabled(value);
+      tm.setZoomEnabled(value);
       return;
     case T.highresolution:
       global.highResolutionFlag = value;
@@ -7084,11 +7084,11 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       break;
     case T.zoomlarge:
       global.zoomLarge = value;
-      transformManager.setZoomHeight(global.zoomHeight, value);
+      tm.setZoomHeight(global.zoomHeight, value);
       break;
     case T.zoomheight:
       global.zoomHeight = value;
-      transformManager.setZoomHeight(value, global.zoomLarge);
+      tm.setZoomHeight(value, global.zoomLarge);
       break;
     case T.languagetranslation:
       GT.setDoTranslate(value);
@@ -7121,7 +7121,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       global.showHiddenSelectionHalos = value;
       break;
     case T.windowcentered:
-      transformManager.setWindowCentered(value);
+      tm.setWindowCentered(value);
       break;
     case T.displaycellparameters:
       global.displayCellParameters = value;
@@ -7369,12 +7369,12 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public void setNavigationDepthPercent(float percent) {
-    transformManager.setNavigationDepthPercent(percent);
+    tm.setNavigationDepthPercent(percent);
     refresh(1, "set navigationDepth");
   }
 
   public boolean getShowNavigationPoint() {
-    if (!global.navigationMode || !transformManager.canNavigate())
+    if (!global.navigationMode || !tm.canNavigate())
       return false;
     return (isNavigating() && !global.hideNavigationPoint
         || global.showNavigationPointAlways || getInMotion(true));
@@ -7409,7 +7409,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     // setBooleanProperty
     // stateManager.setCrystallographicDefaults
     // app preferences dialog
-    transformManager.setPerspectiveDepth(perspectiveDepth);
+    tm.setPerspectiveDepth(perspectiveDepth);
   }
 
   @Override
@@ -7483,7 +7483,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   @Override
   public boolean getPerspectiveDepth() {
-    return transformManager.getPerspectiveDepth();
+    return tm.getPerspectiveDepth();
   }
 
   @Override
@@ -7531,25 +7531,25 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public void setNavigationMode(boolean TF) {
     global.navigationMode = TF;
-    transformManager.setNavigationMode(TF);
+    tm.setNavigationMode(TF);
   }
 
   private void setTransformManagerDefaults() {
-    transformManager.setCameraDepthPercent(global.defaultCameraDepth, true);
-    transformManager.setPerspectiveDepth(global.defaultPerspectiveDepth);
-    transformManager.setStereoDegrees(EnumStereoMode.DEFAULT_STEREO_DEGREES);
-    transformManager.setVisualRange(global.visualRange);
-    transformManager.setSpinOff();
-    transformManager.setVibrationPeriod(0);
-    transformManager.setFrameOffsets(frameOffsets);
+    tm.setCameraDepthPercent(global.defaultCameraDepth, true);
+    tm.setPerspectiveDepth(global.defaultPerspectiveDepth);
+    tm.setStereoDegrees(EnumStereoMode.DEFAULT_STEREO_DEGREES);
+    tm.setVisualRange(global.visualRange);
+    tm.setSpinOff();
+    tm.setVibrationPeriod(0);
+    tm.setFrameOffsets(frameOffsets);
   }
 
   public P3[] getCameraFactors() {
-    return transformManager.getCameraFactors();
+    return tm.getCameraFactors();
   }
 
   public float getCameraDepth() {
-    return transformManager.getCameraDepth();
+    return tm.getCameraDepth();
   }
 
   String getLoadState(Map<String, Object> htParams) {
@@ -7963,13 +7963,13 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     setFloatProperty("stereoDegrees", degrees);
     setBooleanProperty("greyscaleRendering", stereoMode.isBiColor());
     if (twoColors != null)
-      transformManager.setStereoMode2(twoColors);
+      tm.setStereoMode2(twoColors);
     else
-      transformManager.setStereoMode(stereoMode);
+      tm.setStereoMode(stereoMode);
   }
 
   boolean isStereoDouble() {
-    return transformManager.stereoMode == EnumStereoMode.DOUBLE;
+    return tm.stereoMode == EnumStereoMode.DOUBLE;
   }
 
   // //////////////////////////////////////////////////////////////
@@ -8190,7 +8190,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
                                          float endDegrees, boolean isSpin,
                                          BS bsSelected) {
     // Eval: rotate FIXED
-    boolean isOK = transformManager.rotateAxisAngleAtCenter(eval, rotCenter,
+    boolean isOK = tm.rotateAxisAngleAtCenter(eval, rotCenter,
         rotAxis, degreesPerSecond, endDegrees, isSpin, bsSelected);
     if (isOK)
       refresh(-1, "rotateAxisAngleAtCenter");
@@ -8204,7 +8204,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
                                            List<P3> finalPoints,
                                            float[] dihedralList) {
     // Eval: rotate INTERNAL
-    boolean isOK = transformManager.rotateAboutPointsInternal(eval, point1,
+    boolean isOK = tm.rotateAboutPointsInternal(eval, point1,
         point2, degreesPerSecond, endDegrees, false, isSpin, bsSelected, false,
         translation, finalPoints, dihedralList);
     if (isOK)
@@ -8220,7 +8220,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       setNavOn(false);
       return;
     }
-    transformManager.rotateAboutPointsInternal(null, pt1, pt2,
+    tm.rotateAboutPointsInternal(null, pt1, pt2,
         global.pickingSpinRate, Float.MAX_VALUE, isClockwise, true, null,
         false, null, null, null);
   }
@@ -8465,7 +8465,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       if (bsSelected.cardinality() != 0) {
         if (isTranslation) {
           P3 ptCenter = getAtomSetCenter(bsSelected);
-          transformManager.finalizeTransformParameters();
+          tm.finalizeTransformParameters();
           float f = (global.antialiasDisplay ? 2 : 1);
           P3i ptScreen = transformPt(ptCenter);
           P3 ptScreenNew;
@@ -8481,7 +8481,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
           ptNew.sub(ptCenter);
           setAtomCoordsRelative(ptNew, bsSelected);
         } else {
-          transformManager.rotateXYBy(deltaX, deltaY, bsSelected);
+          tm.rotateXYBy(deltaX, deltaY, bsSelected);
         }
       }
     }
@@ -8546,7 +8546,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       atom2 = b.getAtom2();
       undoMoveActionClear(atom1.index, AtomCollection.TAINT_COORD, true);
       P3 pt = P3.new3(x, y, (atom1.sZ + atom2.sZ) / 2);
-      transformManager.unTransformPoint(pt, pt);
+      tm.unTransformPoint(pt, pt);
       if (atom2.getCovalentBondCount() == 1
           || pt.distance(atom1) < pt.distance(atom2)
           && atom1.getCovalentBondCount() != 1) {
@@ -8853,7 +8853,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     case 2:
       statusManager.syncSend(TF ? SYNC_GRAPHICS_MESSAGE
           : SYNC_NO_GRAPHICS_MESSAGE, "*", 0);
-      if (Float.isNaN(transformManager.stereoDegrees))
+      if (Float.isNaN(tm.stereoDegrees))
         setFloatProperty("stereoDegrees", EnumStereoMode.DEFAULT_STEREO_DEGREES);
       if (TF) {
         setBooleanProperty("_syncMouse", false);
@@ -9284,7 +9284,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public int getFrontPlane() {
-    return transformManager.getFrontPlane();
+    return tm.getFrontPlane();
   }
 
   public List<Object> getPlaneIntersection(int type, P4 plane, float scale,
@@ -9450,7 +9450,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   void rotateArcBall(int x, int y, float factor) {
-    transformManager.rotateArcBall(x, y, factor);
+    tm.rotateArcBall(x, y, factor);
     refresh(2, statusManager.syncingMouse ? "Mouse: rotateArcBall " + x + " "
         + y + " " + factor : "");
   }
@@ -9898,7 +9898,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public void setZslabPoint(P3 pt) {
-    transformManager.setZslabPoint(pt);
+    tm.setZslabPoint(pt);
   }
 
   @Override
@@ -10285,12 +10285,12 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public boolean movePyMOL(JmolScriptEvaluator eval, float floatSecondsTotal,
                            float[] pymolView) {
-    transformManager.moveToPyMOL(eval, floatSecondsTotal, pymolView);
+    tm.moveToPyMOL(eval, floatSecondsTotal, pymolView);
     return true;
   }
 
   public P3 getCamera() {
-    return transformManager.camera;
+    return tm.camera;
   }
 
   public void setModelSet(ModelSet modelSet) {
@@ -10427,8 +10427,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
    * @return TRUE if allowed
    */
   public boolean checkMotionRendering(int tok) {
-    if (!getInMotion(true) && !transformManager.spinOn
-        && !transformManager.vibrationOn && !animationManager.animationOn)
+    if (!getInMotion(true) && !tm.spinOn
+        && !tm.vibrationOn && !animationManager.animationOn)
       return true;
     if (global.wireframeRotation)
       return false;
@@ -10505,7 +10505,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public Point3fi getVibrationPoint(Vibration vibration, Point3fi pt) {
-    return transformManager.getVibrationPoint(vibration, pt);
+    return tm.getVibrationPoint(vibration, pt);
   }
 
   public void setCurrentAtom(int iAtom) {

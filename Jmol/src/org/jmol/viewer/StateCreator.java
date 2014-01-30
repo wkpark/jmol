@@ -157,7 +157,7 @@ public class StateCreator extends JmolStateCreator {
       s.append(getAnimState(viewer.animationManager, sfunc));
     // orientation and slabbing
     if (isAll || type.equalsIgnoreCase("perspectiveState"))
-      s.append(getViewState(viewer.transformManager, sfunc));
+      s.append(getViewState(viewer.tm, sfunc));
     // display and selections
     if (isAll || type.equalsIgnoreCase("selectionState"))
       s.append(getSelectionState(viewer.selectionManager, sfunc));
@@ -835,7 +835,7 @@ public class StateCreator extends JmolStateCreator {
    */
   @Override
   String getSpinState(boolean isAll) {
-    TransformManager tm = viewer.transformManager;
+    TransformManager tm = viewer.tm;
     String s = "  set spinX " + (int) tm.spinX + "; set spinY "
         + (int) tm.spinY + "; set spinZ " + (int) tm.spinZ + "; set spinFps "
         + (int) tm.spinFps + ";";
@@ -1813,7 +1813,7 @@ public class StateCreator extends JmolStateCreator {
             "MOL"), true, null);
         sb.append("set refreshing false;").append(
             viewer.actionManager.getPickingState()).append(
-            viewer.transformManager.getMoveToText(0, false)).append(
+            viewer.tm.getMoveToText(0, false)).append(
             "set refreshing true;");
 
       }

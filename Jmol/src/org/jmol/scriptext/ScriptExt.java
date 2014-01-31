@@ -8042,7 +8042,7 @@ public class ScriptExt implements JmolScriptExtension {
       property = viewer.extractProperty(property, args, pt);
     if (isAtomProperty && property instanceof List)
       property = (((List<?>) property).size() > 0 ? ((List<?>) property).get(0) : "");
-    return mp.addXObj(isJSON ? PT.toJSON(null, property) : 
+    return mp.addXObj(isJSON ? "{" + PT.toJSON("value", property) + "}" : 
       SV.isVariableType(property) ? property : Escape
         .toReadable(propertyName, property));
   }

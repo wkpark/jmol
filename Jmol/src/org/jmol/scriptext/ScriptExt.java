@@ -6925,6 +6925,26 @@ public class ScriptExt implements JmolScriptExtension {
     }
   }
 
+  /**
+   * The major interface to org.jmol.smiles, this method allows for 
+   * a wide variety of correlation functionality.
+   * 
+   * @param bsA
+   * @param bsB
+   * @param smiles
+   * @param ptsA
+   * @param ptsB
+   * @param m4
+   * @param vReturn
+   * @param isSmarts
+   * @param asMap
+   * @param mapSet
+   * @param center
+   * @param firstMatchOnly
+   * @param bestMap
+   * @return standard deviation
+   * @throws ScriptException
+   */
   private float getSmilesCorrelation(BS bsA, BS bsB, String smiles,
                                      List<P3> ptsA, List<P3> ptsB, M4 m4,
                                      List<BS> vReturn, boolean isSmarts,
@@ -6965,7 +6985,7 @@ public class ScriptExt implements JmolScriptExtension {
           ptsB.clear();
           for (int j = 0; j < maps[i].length; j++)
             ptsB.addLast(atoms[maps[i][j]]);
-          float stddev = Measure.getTransformMatrix4(ptsA, ptsB, m, c);
+          float stddev = Measure.getTransformMatrix4(ptsA, ptsB, m, c, false);
           Logger.info("getSmilesCorrelation stddev=" + stddev);
           if (vReturn != null) {
             if (stddev < tolerance) {
@@ -7393,7 +7413,7 @@ public class ScriptExt implements JmolScriptExtension {
       ptsA = eval.getPointVector(args[0], 0);
       ptsB = eval.getPointVector(args[1], 0);
       if (ptsA != null && ptsB != null)
-        stddev = Measure.getTransformMatrix4(ptsA, ptsB, m, null);
+        stddev = Measure.getTransformMatrix4(ptsA, ptsB, m, null, false);
     }
     return (isStdDev || Float.isNaN(stddev) ? mp.addXFloat(stddev) : mp
         .addXM4(m));

@@ -454,14 +454,14 @@ final public class Measure {
     return pts;
   }
 
-  public static float getTransformMatrix4(List<P3> ptsA, List<P3> ptsB, M4 m, P3 centerA) {
+  public static float getTransformMatrix4(List<P3> ptsA, List<P3> ptsB, M4 m, P3 centerA, boolean doReport) {
     P3[] cptsA = getCenterAndPoints(ptsA);
     P3[] cptsB = getCenterAndPoints(ptsB);
     //System.out.println("draw d1 @{point" + cptsA[0] + "}");
     //System.out.println("draw d2 @{point" + cptsB[0] + "}");
     float[] retStddev = new float[2];
     Quaternion q = calculateQuaternionRotation(new P3[][] { cptsA,
-        cptsB }, retStddev, true); // was false
+        cptsB }, retStddev, doReport); // was false
     V3 v = V3.newVsub(cptsB[0], cptsA[0]);
     m.setMV(q.getMatrix(), v);
     if (centerA != null)
@@ -469,7 +469,6 @@ final public class Measure {
     return retStddev[1];
   }
   
-  @SuppressWarnings("static-access")
   public static Quaternion calculateQuaternionRotation(
                                                        P3[][] centerAndPoints,
                                                        float[] retStddev,
@@ -556,12 +555,12 @@ final public class Measure {
     N[3][3] = -Sxx - Syy + Szz;
 
     //this construction prevents JavaScript from requiring preloading of Eigen
+    @SuppressWarnings("static-access")
     Eigen eigen = ((Eigen) Interface.getOptionInterface("util.Eigen")).newM(N);
  
     float[] v = eigen.getEigenvectorsFloatTransposed()[3];
     q = Quaternion.newP4(P4.new4(v[1], v[2], v[3], v[0]));
     retStddev[1] = getRmsd(centerAndPoints, q);
-    //System.out.println("Measure" + q.getInfo());
     return q;
   }
 

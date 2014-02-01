@@ -8907,7 +8907,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           points[0] = new P3();
           nPoints = 1;
           float stddev = (chk ? 0 : Measure.getTransformMatrix4(ptsA, ptsB, m4,
-              points[0]));
+              points[0], false));
           // if the standard deviation is very small, we leave ptsB
           // because it will be used to set the absolute final positions
           if (stddev > 0.001)

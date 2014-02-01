@@ -240,7 +240,7 @@ public class PdbReader extends AtomSetCollectionReader {
       if (isAtom || isModel)
         getHeader = false;
       else
-        pdbHeader.append(line).appendC('\n');
+        readHeader(false);
     }
     if (isModel || isNewModel) {
       isMultiModel = isModel;
@@ -350,6 +350,16 @@ public class PdbReader extends AtomSetCollectionReader {
       return true;
     }
     return true;
+  }
+
+  private String readHeader(boolean getLine) throws Exception {
+    if (getLine) {
+      readLine();
+      if (!getHeader)
+        return line;
+    }
+    pdbHeader.append(line).appendC('\n');
+    return line;
   }
 
   @Override
@@ -592,7 +602,7 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
     M4 mIdent = M4.newM4(null);
     while (true) {
       if (needLine)
-        readLine();
+        readHeader(true);
       else
         needLine = true;
       if (line == null || !line.startsWith("REMARK 350"))
@@ -628,7 +638,7 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
           appendLoadNote("found biomolecule " + id + ": " + list);
           chainlist = ":" + list.replace(' ', ':');
           needLine = false;
-          while (readLine() != null && line.indexOf("BIOMT") < 0 && line.indexOf("350") == 7)
+          while (readHeader(true) != null && line.indexOf("BIOMT") < 0 && line.indexOf("350") == 7)
             chainlist += ":" + line.substring(11).trim().replace(' ', ':');
           if (checkFilterKey("BIOMOLECULE " + id + ";")) {
             setFilter(filter.replace(':', '_') + chainlist);
@@ -653,7 +663,7 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
             mat[i++] = parseFloatStr(tokens[6]);
             mat[i++] = parseFloatStr(tokens[7]);
             if (i == 4 || i == 8)
-              readLine();
+              readHeader(true);
           }
           mat[15] = 1;
           M4 m4 = new M4();
@@ -704,9 +714,9 @@ REMARK 290 REMARK: NULL
 
    */
   private void remark290() throws Exception {
-    while (readLine() != null && line.startsWith("REMARK 290")) {
+    while (readHeader(true) != null && line.startsWith("REMARK 290")) {
       if (line.indexOf("NNNMMM   OPERATOR") >= 0) {
-        while (readLine() != null) {
+        while (readHeader(true) != null) {
           String[] tokens = getTokens();
           if (tokens.length < 4)
             break;
@@ -1510,7 +1520,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
      List<Map<String, Object>> ranges = null;
     Map<String, Object> range = null;
     String remark = line.substring(0, 11);
-    while (readLine() != null && line.startsWith(remark)) {
+    while (readHeader(true) != null && line.startsWith(remark)) {
       try {
         String[] tokens = getTokensStr(line.substring(10).replace(':', ' '));
         if (tokens.length < 2)
@@ -1620,8 +1630,8 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
            * REMARK   3      T13:  -0.0070 T23:   0.0011                                     
            */
           char tensorType = tokens[0].charAt(0);
-          String s = (readLine().substring(10)
-              + readLine().substring(10) + readLine().substring(10)).replace(
+          String s = (readHeader(true).substring(10)
+              + readHeader(true).substring(10) + readHeader(true).substring(10)).replace(
                   tensorType, ' ').replace(':', ' ');
           //System.out.println("Tensor data = " + s);
           tokens = getTokensStr(s);
@@ -1641,7 +1651,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
           //System.out.println("Tensor t" + tensorType + " = " + Escape.escape(tensor));
           if (tensorType == 'S' && ++iGroup == nGroups) {
             Logger.info(nGroups + " TLS groups read");
-            readLine();
+            readHeader(true);
             break;
           }
         }

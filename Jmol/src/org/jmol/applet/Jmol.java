@@ -211,7 +211,7 @@ public class Jmol extends GenericApplet implements WrappedApplet {
 
   @Override
   protected void initOptions() {
-    String ms = getParameter("mayscript");
+    String ms = getJmolParameter("mayscript");
     mayScript = (ms != null) && (!ms.equalsIgnoreCase("false"));
     // using JApplet calls for older installations
     URL base = applet.getDocumentBase();
@@ -245,10 +245,6 @@ public class Jmol extends GenericApplet implements WrappedApplet {
     addValue(viewerOptions, "MaximumSize", "maximumSize", null);
     addValue(viewerOptions, "JmolAppletProxy", "appletProxy", null);
     addValue(viewerOptions, "documentLocation", null, null);
-    String menuFile = getParameter("menuFile");
-    if (menuFile != null)
-      viewer.getProperty("DATA_API", "setMenu",
-          viewer.getFileAsString(menuFile));
     try {
       UIManager
           .setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
@@ -365,7 +361,7 @@ public class Jmol extends GenericApplet implements WrappedApplet {
   }
   
   @Override
-  protected String getParameter(String paramName) {
+  protected String getJmolParameter(String paramName) {
     return applet.getParameter(paramName);
   }
 

@@ -83,9 +83,9 @@ public class Jmol extends GenericApplet {
   }
 
   @Override
-  protected String getParameter(String paramName) {
+  protected String getJmolParameter(String paramName) {
     Object o = htParams.get(paramName.toLowerCase());
-    return (o == null ? null : new String(o.toString()));
+    return (o == null ? null : "" + o);
   }
 
   @Override

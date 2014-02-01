@@ -71,7 +71,7 @@ public abstract class GenericApplet implements JmolAppletInterface,
   // initialization
   abstract protected void initOptions();
 
-  abstract protected String getParameter(String name);
+  abstract protected String getJmolParameter(String name);
 
   // callback implementations
   abstract protected String doEval(String strEval);
@@ -94,8 +94,8 @@ public abstract class GenericApplet implements JmolAppletInterface,
 
   protected void init(Object applet) {
     appletObject = applet;
-    htmlName = getParameter("name");
-    syncId = getParameter("syncId");
+    htmlName = getJmolParameter("name");
+    syncId = getJmolParameter("syncId");
     fullName = htmlName + "__" + syncId + "__";
     System.out.println("Jmol JavaScript applet " + fullName + " initializing");
     int iLevel = (getValue("logLevel", (getBooleanValue("debug", false) ? "5"
@@ -112,7 +112,7 @@ public abstract class GenericApplet implements JmolAppletInterface,
 
   private void initApplication() {
     viewerOptions.put("applet", Boolean.TRUE);
-    if (getParameter("statusListener") == null)
+    if (getJmolParameter("statusListener") == null)
       viewerOptions.put("statusListener", this);
     viewer = new Viewer(viewerOptions);
     viewer.pushHoldRepaint();
@@ -127,7 +127,12 @@ public abstract class GenericApplet implements JmolAppletInterface,
       setValue(item.name() + "Callback", null);
     loading = false;
 
-    language = getParameter("language");
+    String menuFile = getJmolParameter("menuFile");
+    if (menuFile != null)
+      viewer.getProperty("DATA_API", "setMenu",
+          viewer.getFileAsString(menuFile));
+
+    language = getJmolParameter("language");
     new GT(viewer, language);
     if (language != null)
       System.out.print("requested language=" + language + "; ");
@@ -200,7 +205,7 @@ public abstract class GenericApplet implements JmolAppletInterface,
   }
 
   protected String getValue(String propertyName, String defaultValue) {
-    String s = getParameter(propertyName);
+    String s = getJmolParameter(propertyName);
     System.out.println("Jmol getValue " + propertyName + " " + s);
     return (s == null ? defaultValue : s);
   }

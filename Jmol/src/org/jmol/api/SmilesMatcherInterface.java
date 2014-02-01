@@ -38,8 +38,8 @@ public interface SmilesMatcherInterface {
 
   public abstract String getSmiles(JmolNode[] atoms, int atomCount,
                                    BS bsSelected, boolean asBioSmiles,
-                                   boolean allowUnmatchedRings,
-                                   boolean addCrossLinks, String comment,
+                                   boolean bioAllowUnmatchedRings,
+                                   boolean bioAddCrossLinks, String bioComment,
                                    boolean explicitH);
 
   public abstract String getRelationship(String smiles1, String smiles2);

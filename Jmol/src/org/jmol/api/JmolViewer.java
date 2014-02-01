@@ -200,8 +200,12 @@ abstract public class JmolViewer implements JSInterface {
         || testFlag instanceof Integer && ((Integer) testFlag).intValue() != 0);
   }
 
-  // for POV-Ray -- returns the INI file
-  
+  /**
+   * for POV-Ray 
+   * @param params
+   * @return INI file
+   * 
+   */
   abstract public String generateOutputForExport(Map<String, Object> params); 
   
   abstract public void setJmolCallbackListener(JmolCallbackListener jmolCallbackListener);
@@ -223,16 +227,12 @@ abstract public class JmolViewer implements JSInterface {
   // for example: getData("selected","XYZ");
   abstract public String getData(String atomExpression, String type);
 
-
-  // change this to width, height
+  abstract public String getSmiles(BS atoms);
+  
   @Override
   abstract public void setScreenDimension(int width, int height);
   abstract public int getScreenWidth();
   abstract public int getScreenHeight();
-
-//  public Image getScreenImage() {
-//    return getScreenImage(null);
-//  }
 
   abstract public Object getScreenImageBuffer(Object g, boolean isImageWrite);
   abstract public void releaseScreenImage();
@@ -345,7 +345,13 @@ abstract public class JmolViewer implements JSInterface {
   abstract public Properties getModelProperties(int modelIndex);
   abstract public String getModelProperty(int modelIndex, String propertyName);
   abstract public Map<String, Object> getModelAuxiliaryInfo(int modelIndex);
-  // changed in Jmol 13.1.5 to remove ambiguity in JavaScript
+  
+  /**
+   *  changed in Jmol 13.1.5 to remove ambiguity in JavaScript 
+   * @param modelIndex
+   * @param keyName
+   * @return some Object or null
+   */
   abstract public Object getModelAuxiliaryInfoValue(int modelIndex, String keyName);
   abstract public boolean modelHasVibrationVectors(int modelIndex);
 
@@ -366,12 +372,12 @@ abstract public class JmolViewer implements JSInterface {
 
   abstract public void addSelectionListener(JmolSelectionListener listener);
   abstract public void removeSelectionListener(JmolSelectionListener listener);
-//BH 2/2006  abstract public BitSet getSelectionSet();
+  
+  abstract public BS getSelectionSet();
 
   abstract public void homePosition();
 
   abstract public Map<String, String> getHeteroList(int modelIndex);
-
 
   abstract public boolean getPerspectiveDepth();
   abstract public boolean getShowAxes(); 
@@ -412,10 +418,6 @@ abstract public class JmolViewer implements JSInterface {
 
   abstract public boolean getBooleanProperty(String propertyName);
 
-  // removed for Jmol 13.1.7
-  // public boolean getBooleanProperty(String key, boolean doICare) {
-  //  return getBooleanProperty(key); // don't ask for what doesn't exist; you should care!
-  // }
   abstract public Object getParameter(String name);
 
   abstract public String getSetHistory(int howFarBack);
@@ -430,11 +432,8 @@ abstract public class JmolViewer implements JSInterface {
   
   abstract public void syncScript(String script, String applet, int port);  
 
-  //but NOTE that if you use the following, you are
-  //bypassing the script history. If you want a script history, use
-  //viewer.script("set " + propertyName + " " + value);
-  
   abstract public void setColorBackground(String colorName);
+  
   abstract public void setShowAxes(boolean showAxes);
   abstract public void setShowBbcage(boolean showBbcage);
   abstract public void setJmolDefaults();
@@ -486,12 +485,7 @@ abstract public class JmolViewer implements JSInterface {
   //viewer.script("center (selected)");
   abstract public void setCenterSelected(); 
 
-  //not used in Jmol application:
-  
   abstract public void rotateFront();
-  // "To" was removed in the next, because they don't 
-  // rotate "TO" anything. They just rotate.
-  
   abstract public void rotateXDeg(int degrees);
   abstract public void rotateYDeg(int degrees);
   abstract public void rotateX(float radians);

@@ -9769,25 +9769,27 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return modelSet.getModelKitStateBitset(bs, bsDeleted);
   }
 
+  public String getSmiles(BS bs) {
+    return getSmilesOpt(bs, -1, -1, false, false, false, false, false);
+  }
+
   /**
    * returns the SMILES string for a sequence or atom set does not include
    * attached protons on groups
-   * 
-   * @param index1
-   * @param index2
-   * @param bsSelected
+   * @param bsSelected  selected atom set or null for current or specified range
+   * @param index1 when bsSeleced == null, first atomIndex or -1 for current 
+   * @param index2 when bsSeleced == null, end atomIndex or -1 for current
+   * @param explicitH include all H atoms, not just stereochemical ones
    * @param isBioSmiles
-   * @param allowUnmatchedRings
-   *        TODO
-   * @param addCrossLinks
-   *        TODO
-   * @param addComment
-   * @param explicitH TODO
+   * @param bioAllowUnmatchedRings
+   * @param bioAddCrossLinks
+   * @param bioAddComment
+   * 
    * @return SMILES string
    */
-  public String getSmiles(int index1, int index2, BS bsSelected,
-                          boolean isBioSmiles, boolean allowUnmatchedRings,
-                          boolean addCrossLinks, boolean addComment, boolean explicitH) {
+  public String getSmilesOpt(BS bsSelected, int index1, int index2,
+                          boolean explicitH, boolean isBioSmiles,
+                          boolean bioAllowUnmatchedRings, boolean bioAddCrossLinks, boolean bioAddComment) {
     Atom[] atoms = modelSet.atoms;
     if (bsSelected == null) {
       if (index1 < 0 || index2 < 0) {
@@ -9806,10 +9808,10 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         bsSelected.setBits(index1, index2 + 1);
       }
     }
-    String comment = (addComment ? getJmolVersion() + " "
+    String bioComment = (bioAddComment ? getJmolVersion() + " "
         + getModelName(getCurrentModelIndex()) : null);
     return getSmilesMatcher().getSmiles(atoms, getAtomCount(), bsSelected,
-        isBioSmiles, allowUnmatchedRings, addCrossLinks, comment, explicitH);
+        isBioSmiles, bioAllowUnmatchedRings, bioAddCrossLinks, bioComment, explicitH);
   }
 
   public void connect(float[][] connections) {

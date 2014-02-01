@@ -1748,7 +1748,7 @@ public class ActionManager implements EventManager {
     int a2 = measurementQueued.getAtomIndex(2);
     if (a1 < 0 || a2 < 0)
       return;
-    String sequence = viewer.getSmiles(a1, a2, null, true, false, false, false, false);
+    String sequence = viewer.getSmilesOpt(null, a1, a2, false, true, false, false, false);
     viewer.setStatusMeasuring("measureSequence", -2, sequence, 0);
   }
 

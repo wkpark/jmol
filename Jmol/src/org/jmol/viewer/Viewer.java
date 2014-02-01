@@ -208,9 +208,9 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public boolean queueOnHold = false;
 
   public String fullName = "";
-  public String appletDocumentBase = "";
-  public String appletCodeBase = "";
-  public String appletIdiomaBase;
+  public static String appletDocumentBase = "";
+  public static String appletCodeBase = "";
+  public static String appletIdiomaBase;
 
   public static String jsDocumentBase = "";
 

@@ -122,8 +122,8 @@ public class StateCreator extends JmolStateCreator {
       s.append(JC.STATE_VERSION_STAMP + Viewer.getJmolVersion() + ";\n");
     if (viewer.isApplet() && isAll) {
       appendCmd(s, "# fullName = " + PT.esc(viewer.fullName));
-      appendCmd(s, "# documentBase = " + PT.esc(viewer.appletDocumentBase));
-      appendCmd(s, "# codeBase = " + PT.esc(viewer.appletCodeBase));
+      appendCmd(s, "# documentBase = " + PT.esc(Viewer.appletDocumentBase));
+      appendCmd(s, "# codeBase = " + PT.esc(Viewer.appletCodeBase));
       s.append("\n");
     }
 

@@ -1823,6 +1823,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     selectionManager.invertSelection();
   }
 
+  @Override
   public BS getSelectionSet(boolean includeDeleted) {
     return selectionManager.getSelectionSet(includeDeleted);
   }

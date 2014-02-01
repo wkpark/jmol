@@ -690,7 +690,8 @@ public class SmilesSearch extends JmolMolecule {
 
     // bioSequences only return the "lead" atom 
     // If the search is SMILES, we add the missing hydrogens
-
+    
+    
     BS bs = new BS();
     int nMatch = 0;
     for (int j = 0; j < atomCount; j++) {
@@ -727,7 +728,7 @@ public class SmilesSearch extends JmolMolecule {
     bsReturn.or(bs);
 
     if (getMaps) {
-      // every map is important always
+      // every map is important always -- why??
       int[] map = new int[nMatch];
       for (int j = 0, nn = 0; j < atomCount; j++) {
         if (!firstAtomOnly && top.haveSelected && !patternAtoms[j].selected)

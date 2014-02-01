@@ -9782,11 +9782,12 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
    * @param addCrossLinks
    *        TODO
    * @param addComment
+   * @param explicitH TODO
    * @return SMILES string
    */
   public String getSmiles(int index1, int index2, BS bsSelected,
                           boolean isBioSmiles, boolean allowUnmatchedRings,
-                          boolean addCrossLinks, boolean addComment) {
+                          boolean addCrossLinks, boolean addComment, boolean explicitH) {
     Atom[] atoms = modelSet.atoms;
     if (bsSelected == null) {
       if (index1 < 0 || index2 < 0) {
@@ -9808,7 +9809,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     String comment = (addComment ? getJmolVersion() + " "
         + getModelName(getCurrentModelIndex()) : null);
     return getSmilesMatcher().getSmiles(atoms, getAtomCount(), bsSelected,
-        isBioSmiles, allowUnmatchedRings, addCrossLinks, comment);
+        isBioSmiles, allowUnmatchedRings, addCrossLinks, comment, explicitH);
   }
 
   public void connect(float[][] connections) {

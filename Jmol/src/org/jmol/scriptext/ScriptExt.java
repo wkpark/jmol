@@ -5185,7 +5185,7 @@ public class ScriptExt implements JmolScriptExtension {
       if (chk)
         return;
       msg = viewer.getSmiles(0, 0, viewer.getSelectionSet(false), false, true,
-          false, false);
+          false, false, false);
       switch (tok) {
       case T.drawing:
         if (msg.length() > 0) {
@@ -6299,7 +6299,7 @@ public class ScriptExt implements JmolScriptExtension {
         strSmiles = parameterAsString(++i);
         if (strSmiles.equalsIgnoreCase("SMILES")) {
           isSmiles = true;
-          strSmiles = viewer.getSmiles(0, 0, bsFrom, false, false, false, false);
+          strSmiles = viewer.getSmiles(0, 0, bsFrom, false, false, false, false, false);
         }
         break;
       case T.decimal:
@@ -6486,7 +6486,7 @@ public class ScriptExt implements JmolScriptExtension {
           viewer.setDihedrals(list, null, 1);
         }
         float stddev = getSmilesCorrelation(bsFrom, bsTo, strSmiles, null,
-            null, m4, null, !isSmiles, false, null, center);
+            null, m4, null, !isSmiles, false, null, center, false);
         if (Float.isNaN(stddev))
           invArg();
         if (doTranslate) {
@@ -6879,7 +6879,7 @@ public class ScriptExt implements JmolScriptExtension {
       throws ScriptException {
     int[][] mapSet = AU.newInt2(2);
     getSmilesCorrelation(bs1, bs2, smiles1, null, null, null, null, isSmarts,
-        false, mapSet, null);
+        false, mapSet, null, false);
     if (mapSet[0] == null)
       return null;
     int[][] bondMap1 = viewer.getDihedralMap(mapSet[0]);
@@ -6924,7 +6924,7 @@ public class ScriptExt implements JmolScriptExtension {
                                     List<P3> ptsA, List<P3> ptsB,
                                     M4 m4, List<BS> vReturn,
                                     boolean isSmarts, boolean asMap,
-                                    int[][] mapSet, P3 center)
+                                    int[][] mapSet, P3 center, boolean firstMatchOnly)
       throws ScriptException {
     float tolerance = (mapSet == null ? 0.1f : Float.MAX_VALUE);
     try {
@@ -6947,11 +6947,12 @@ public class ScriptExt implements JmolScriptExtension {
       for (int i = 0; i < mapA.length; i++)
         ptsA.addLast(atoms[mapA[i]]);
       maps = viewer.getSmilesMatcher().getCorrelationMaps(smiles, atoms,
-          atomCount, bsB, isSmarts, false);
+          atomCount, bsB, isSmarts, firstMatchOnly);
       if (maps == null)
         eval.evalError(viewer.getSmilesMatcher().getLastException(), null);
       if (maps.length == 0)
         return Float.NaN;
+      Logger.info(maps.length + " mappings found");
       if (asMap) {
         for (int i = 0; i < maps.length; i++)
           for (int j = 0; j < maps[i].length; j++)
@@ -7009,10 +7010,10 @@ public class ScriptExt implements JmolScriptExtension {
 
     // just retrieving the SMILES or bioSMILES string
 
-    if (pattern.length() == 0) {
+    if (pattern.length() == 0 || pattern.equals("H")) {
       boolean isBioSmiles = (!asOneBitset);
       Object ret = viewer.getSmiles(0, 0, bsSelected, isBioSmiles, false, true,
-          true);
+          true, pattern.equals("H"));
       if (ret == null)
         eval.evalError(viewer.getSmilesMatcher().getLastException(), null);
       return ret;
@@ -7045,7 +7046,7 @@ public class ScriptExt implements JmolScriptExtension {
 
       List<BS> vReturn = new List<BS>();
       float stddev = getSmilesCorrelation(bsMatch3D, bsSelected, pattern, null,
-          null, null, vReturn, isSmarts, false, null, null);
+          null, null, vReturn, isSmarts, false, null, null, false);
       if (Float.isNaN(stddev)) {
         if (asOneBitset)
           return new BS();
@@ -7237,13 +7238,16 @@ public class ScriptExt implements JmolScriptExtension {
     return mp.addXMap(viewer.cacheList());
   }
 
-  private boolean evaluateCompare(ScriptMathProcessor mp, SV[] args) throws ScriptException {
+  private boolean evaluateCompare(ScriptMathProcessor mp, SV[] args)
+      throws ScriptException {
     // compare([{bitset} or {positions}],[{bitset} or {positions}] [,"stddev"])
     // compare({bitset},{bitset}[,"SMARTS"|"SMILES"],smilesString [,"stddev"])
     // returns matrix4f for rotation/translation or stddev
     // compare({bitset},{bitset},"ISOMER")  12.1.5
     // compare({bitset},{bitset},smartsString, "BONDS") 13.1.17
     // compare({bitset},{bitset},"SMILES", "BONDS") 13.3.9
+    // compare({bitest},{bitset},"MAP","smilesString")
+    // compare({bitset},{bitset},"MAP")
 
     if (args.length < 2 || args.length > 5)
       return false;
@@ -7270,7 +7274,8 @@ public class ScriptExt implements JmolScriptExtension {
       smiles1 = SV.sValue(args[2]);
       isSmiles = smiles1.equalsIgnoreCase("SMILES");
       if (isSmiles)
-        smiles1 = viewer.getSmiles(0, 0, bs1, false, false, false, false);       
+        smiles1 = viewer
+            .getSmiles(0, 0, bs1, false, false, false, false, false);
       float[] data = getFlexFitList(bs1, bs2, smiles1, !isSmiles);
       return (data == null ? mp.addXStr("") : mp.addXAF(data));
     }
@@ -7278,8 +7283,8 @@ public class ScriptExt implements JmolScriptExtension {
       if (args.length != 3)
         return false;
       if (bs1 == null && bs2 == null)
-        return mp.addXStr(viewer.getSmilesMatcher().getRelationship(smiles1,
-            smiles2).toUpperCase());
+        return mp.addXStr(viewer.getSmilesMatcher()
+            .getRelationship(smiles1, smiles2).toUpperCase());
       String mf1 = (bs1 == null ? viewer.getSmilesMatcher()
           .getMolecularFormula(smiles1, false) : JmolMolecule
           .getMolecularFormula(viewer.getModelSet().atoms, bs1, false));
@@ -7334,7 +7339,7 @@ public class ScriptExt implements JmolScriptExtension {
       if (bs1 == null || bs2 == null)
         return mp.addXStr("IDENTICAL");
       stddev = getSmilesCorrelation(bs1, bs2, smiles1, null, null, null, null,
-          false, false, null, null);
+          false, false, null, null, false);
       return mp.addXStr(stddev < 0.2f ? "IDENTICAL"
           : "IDENTICAL or CONFORMATIONAL ISOMERS (RMSD=" + stddev + ")");
     } else if (isSmiles) {
@@ -7346,10 +7351,22 @@ public class ScriptExt implements JmolScriptExtension {
       boolean isSearch = (isMap || sOpt.equalsIgnoreCase("SMARTS"));
       if (isSmiles || isSearch)
         sOpt = (args.length > 3 ? SV.sValue(args[3]) : null);
-      if (sOpt == null)
-        return false;
+      boolean hMaps = (("H".equals(sOpt) || "allH".equals(sOpt)));
+      boolean allMaps = (("all".equals(sOpt) || "allH".equals(sOpt)));
+      if (sOpt == null || hMaps || allMaps) {
+        // with explicitH we set to find only the first match.
+        if (isMap || isSmiles) {
+          sOpt = "/noaromatic" + (allMaps ? "/" : " nostereo/")
+              + getSmilesMatches((hMaps ? "H" : ""), null, bs1, null,
+                  false, true);
+        } else {
+          return false;
+        }
+      } else {
+        allMaps = true;
+      }
       stddev = getSmilesCorrelation(bs1, bs2, sOpt, ptsA, ptsB, m, null,
-          !isSmiles, isMap, null, null);
+          !isSmiles, isMap, null, null, !allMaps);
       if (isMap) {
         int nAtoms = ptsA.size();
         if (nAtoms == 0)
@@ -7363,6 +7380,8 @@ public class ScriptExt implements JmolScriptExtension {
             a[j] = new int[] { ((Atom) ptsA.get(j)).index,
                 ((Atom) ptsB.get(pt)).index };
         }
+        if (!allMaps)
+            return (ret.size() > 0 ? mp.addXAII(ret.get(0)) : mp.addXStr(""));
         return mp.addXList(ret);
       }
     } else {
@@ -7877,6 +7896,7 @@ public class ScriptExt implements JmolScriptExtension {
     // "CCCC".find("SMILES", "MF")
     // {2.1}.find("CCCC",{1.1}) // find pattern "CCCC" in {2.1} with conformation given by {1.1}
     // {*}.find("ccCCN","BONDS")
+    // {*}.find("SMILES","H")
 
     SV x1 = mp.getX();
     String sFind = SV.sValue(args[0]);
@@ -7914,7 +7934,7 @@ public class ScriptExt implements JmolScriptExtension {
               viewer.getModelSet().atoms, (BS) x1.value, false));
         if (isSequence)
           return mp.addXStr(viewer.getSmiles(-1, -1, (BS) x1.value, true, isAll,
-              isAll, false));
+              isAll, false, false));
         if (isSmiles || isSearch)
           sFind = flags;
         BS bsMatch3D = bs2;
@@ -8261,7 +8281,7 @@ public class ScriptExt implements JmolScriptExtension {
     if (args.length > 1)
       return false;
     SV x = mp.getX();
-    if (x.tok == T.varray) {
+    if (x.tok == T.varray && tok != T.split && tok != T.trim) {
       mp.addXVar(x);
       return evaluateList(mp, tok, args);
     }

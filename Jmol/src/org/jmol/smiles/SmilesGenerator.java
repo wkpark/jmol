@@ -61,6 +61,8 @@ public class SmilesGenerator {
   private BS bsSelected;
   private BS bsAromatic;
   
+  private boolean explicitH;
+  
   private SB ringSets;
 
   // data
@@ -81,7 +83,7 @@ public class SmilesGenerator {
 
   // generation of SMILES strings
 
-  String getSmiles(JmolNode[] atoms, int atomCount, BS bsSelected)
+  String getSmiles(JmolNode[] atoms, int atomCount, BS bsSelected, boolean explicitH)
       throws InvalidSmilesException {
     int i = bsSelected.nextSetBit(0);
     if (i < 0)
@@ -89,6 +91,7 @@ public class SmilesGenerator {
     this.atoms = atoms;
     this.atomCount = atomCount;
     this.bsSelected = bsSelected = BSUtil.copy(bsSelected);
+    this.explicitH = explicitH;
     return getSmilesComponent(atoms[i], bsSelected, false);
   }
 
@@ -224,18 +227,19 @@ public class SmilesGenerator {
                                     boolean allowConnectionsToOutsideWorld)
       throws InvalidSmilesException {
 
-    if (atom.getElementNumber() == 1 && atom.getEdges().length > 0)
+    if (!explicitH && atom.getElementNumber() == 1 && atom.getEdges().length > 0)
       atom = atoms[atom.getBondedAtomIndex(0)]; // don't start with H
     bsSelected = JmolMolecule.getBranchBitSet(atoms, atom.getIndex(),
         BSUtil.copy(bs), null, -1, true, false);
     bs.andNot(bsSelected);
     bsIncludingH = BSUtil.copy(bsSelected);
-    for (int j = bsSelected.nextSetBit(0); j >= 0; j = bsSelected
-        .nextSetBit(j + 1)) {
-      JmolNode a = atoms[j];
-      if (a.getElementNumber() == 1 && a.getIsotopeNumber() == 0)
-        bsSelected.clear(j);
-    }
+    if (!explicitH)
+      for (int j = bsSelected.nextSetBit(0); j >= 0; j = bsSelected
+          .nextSetBit(j + 1)) {
+        JmolNode a = atoms[j];
+        if (a.getElementNumber() == 1 && a.getIsotopeNumber() == 0)
+          bsSelected.clear(j);
+      }
     if (bsSelected.cardinality() > 2) {
       SmilesSearch search = null;
       search = SmilesParser.getMolecule("A[=&@]A", true);
@@ -255,11 +259,13 @@ public class SmilesGenerator {
 
     for (int i = bsToDo.nextSetBit(0); i >= 0; i = bsToDo.nextSetBit(i + 1))
       if (atoms[i].getCovalentBondCount() > 4) {
-        getSmiles(sb, atoms[i], allowConnectionsToOutsideWorld, false);
+        getSmiles(sb, atoms[i], allowConnectionsToOutsideWorld, false,
+            explicitH);
         atom = null;
       }
     if (atom != null)
-      while ((atom = getSmiles(sb, atom, allowConnectionsToOutsideWorld, true)) != null) {
+      while ((atom = getSmiles(sb, atom, allowConnectionsToOutsideWorld, true,
+          explicitH)) != null) {
       }
     while (bsToDo.cardinality() > 0 || !htRings.isEmpty()) {
       Iterator<Object[]> e = htRings.values().iterator();
@@ -273,7 +279,8 @@ public class SmilesGenerator {
       sb.append(".");
       prevSp2Atoms = null;
       prevAtom = null;
-      while ((atom = getSmiles(sb, atom, allowConnectionsToOutsideWorld, true)) != null) {
+      while ((atom = getSmiles(sb, atom, allowConnectionsToOutsideWorld, true,
+          explicitH)) != null) {
       }
     }
     if (!htRings.isEmpty()) {
@@ -425,7 +432,8 @@ public class SmilesGenerator {
   }
 
   private JmolNode getSmiles(SB sb, JmolNode atom,
-                             boolean allowConnectionsToOutsideWorld, boolean allowBranches) {
+                             boolean allowConnectionsToOutsideWorld, 
+                             boolean allowBranches, boolean explicitH) {
     int atomIndex = atom.getIndex();
 
     if (!bsToDo.get(atomIndex))
@@ -465,7 +473,7 @@ public class SmilesGenerator {
           bondPrev = bonds[i];
           continue;
         }
-        boolean isH = (atom1.getElementNumber() == 1 && atom1
+        boolean isH = !explicitH && (atom1.getElementNumber() == 1 && atom1
             .getIsotopeNumber() == 0);
         if (!bsIncludingH.get(index1)) {
           if (!isH && allowConnectionsToOutsideWorld
@@ -516,7 +524,7 @@ public class SmilesGenerator {
       for (int i = 0; i < v.size(); i++) {
         JmolEdge bond = v.get(i);
         JmolNode a = bond.getOtherAtomNode(atom);
-        int n = a.getCovalentBondCount() - a.getCovalentHydrogenCount();
+        int n = a.getCovalentBondCount() - (explicitH ? 0 : a.getCovalentHydrogenCount());
         int order = bond.getCovalentOrder();
         if (order == 1 && n == 1 && i < v.size() - (bond0 == null ? 1 : 0)) {
           bsBranches.set(bond.index);
@@ -559,7 +567,7 @@ public class SmilesGenerator {
       prevAtom = atom;
       prevSp2Atoms = null;
       JmolEdge bond0t = bond0;
-      getSmiles(s2, a, allowConnectionsToOutsideWorld, allowBranches);
+      getSmiles(s2, a, allowConnectionsToOutsideWorld, allowBranches, explicitH);
       bond0 = bond0t;
       s2.append(")");
       if (sMore.indexOf(s2.toString()) >= 0)
@@ -833,7 +841,7 @@ public class SmilesGenerator {
   private String addStereoCheck(int atomIndex, JmolNode[] stereo, int i, String s) {
     int n = stereo[i].getAtomicAndIsotopeNumber();
     int nx = stereo[i].getCovalentBondCount();
-    int nh = (n == 6 ? stereo[i].getCovalentHydrogenCount() : 0);
+    int nh = (n == 6 && !explicitH ? stereo[i].getCovalentHydrogenCount() : 0);
     // only carbon or singly-connected atoms are checked
     // for C we use nh -- CH3, for example.
     // for other atoms, we use number of bonds.

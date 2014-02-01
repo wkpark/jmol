@@ -135,13 +135,13 @@ public class SmilesMatcher implements SmilesMatcherInterface {
 
   @Override
   public String getSmiles(JmolNode[] atoms, int atomCount, BS bsSelected,
-                          boolean asBioSmiles, boolean allowUnmatchedRings, boolean addCrossLinks, String comment) {    
+                          boolean asBioSmiles, boolean allowUnmatchedRings, boolean addCrossLinks, String comment, boolean explicitH) {    
     InvalidSmilesException.setLastError(null);
     try {
       if (asBioSmiles)
         return (new SmilesGenerator()).getBioSmiles(atoms, atomCount,
             bsSelected, allowUnmatchedRings, addCrossLinks, comment);
-      return (new SmilesGenerator()).getSmiles(atoms, atomCount, bsSelected);
+      return (new SmilesGenerator()).getSmiles(atoms, atomCount, bsSelected, explicitH);
     } catch (InvalidSmilesException e) {
       if (InvalidSmilesException.getLastError() == null)
         InvalidSmilesException.setLastError(e.toString());

@@ -493,7 +493,7 @@ public class ScriptManager implements JmolScriptManager {
       if (eval == null)
         eval = evalTemp = newScriptEvaluator();
     }
-    return eval.getAtomBitSet(atomExpression);
+    return viewer.excludeAtoms(eval.getAtomBitSet(atomExpression), false);
   }
 
   @Override

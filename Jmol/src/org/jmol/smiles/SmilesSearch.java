@@ -70,6 +70,9 @@ public class SmilesSearch extends JmolMolecule {
   private BS bsSelected;
   void setSelected(BS bs) {
     if (bs == null) {
+      // null because this is an atom set
+      // constructed by SmilesParser.getMolecule
+      //  "CCCCC".find("SMARTS","C")
       bs = BS.newN(jmolAtomCount);
       bs.setBits(0, jmolAtomCount);
     }

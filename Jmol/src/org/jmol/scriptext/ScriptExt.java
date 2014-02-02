@@ -1260,7 +1260,7 @@ public class ScriptExt implements JmolScriptExtension {
           modelIndex = Math.min(viewer.getCurrentModelIndex(), 0);
         boolean needIgnore = (bsIgnore == null);
         if (bsSelect == null)
-          bsSelect = BSUtil.copy(viewer.getSelectionSet(false));
+          bsSelect = BSUtil.copy(viewer.getSelectedAtoms());
         // and in symop=1
         bsSelect.and(viewer.getAtomBits(T.symop, Integer.valueOf(1)));
         if (!needIgnore)
@@ -2649,7 +2649,7 @@ public class ScriptExt implements JmolScriptExtension {
         propertyList.add(0, new Object[] { "newObject", null });
         boolean needSelect = (bsSelect == null);
         if (needSelect)
-          bsSelect = BSUtil.copy(viewer.getSelectionSet(false));
+          bsSelect = BSUtil.copy(viewer.getSelectedAtoms());
         if (modelIndex < 0)
           modelIndex = viewer.getCurrentModelIndex();
         bsSelect.and(viewer.getModelUndeletedAtomsBitSet(modelIndex));
@@ -3477,7 +3477,7 @@ public class ScriptExt implements JmolScriptExtension {
     boolean isSecondDerivative = false;
     boolean isRamachandranRelative = false;
     int propertyX = 0, propertyY = 0, propertyZ = 0;
-    BS bs = BSUtil.copy(viewer.getSelectionSet(false));
+    BS bs = BSUtil.copy(viewer.getSelectedAtoms());
     String preSelected = "; select " + Escape.eBS(bs) + ";\n ";
     String type = eval.optParameterAsString(pt).toLowerCase();
     P3 minXYZ = null;
@@ -4299,7 +4299,7 @@ public class ScriptExt implements JmolScriptExtension {
     String[] tokens = PT.getTokens(dataLabel);
     if (dataType.indexOf("property_") == 0
         && !(tokens.length == 2 && tokens[1].equals("set"))) {
-      BS bs = viewer.getSelectionSet(false);
+      BS bs = viewer.getSelectedAtoms();
       data[0] = dataType;
       int atomNumberField = (isOneValue ? 0 : ((Integer) viewer
           .getParameter("propertyAtomNumberField")).intValue());
@@ -4511,7 +4511,7 @@ public class ScriptExt implements JmolScriptExtension {
           bs = atomExpressionAt(++i);
           i = eval.iToken;
         } else {
-          bs = viewer.getSelectionSet(false);
+          bs = viewer.getSelectedAtoms();
         }
         if (chk)
           return;
@@ -5392,7 +5392,7 @@ public class ScriptExt implements JmolScriptExtension {
     case T.coord:
       if ((len = slen) == 2) {
         if (!chk)
-          msg = viewer.getCoordinateState(viewer.getSelectionSet(false));
+          msg = viewer.getCoordinateState(viewer.getSelectedAtoms());
         break;
       }
       String nameC = parameterAsString(2);
@@ -5764,7 +5764,7 @@ public class ScriptExt implements JmolScriptExtension {
           // calculate hbonds STRUCTURE -- only the DSSP structurally-defining H bonds
           asDSSP = (tokAt(++eval.iToken) == T.structure);
           if (asDSSP)
-            bs1 = viewer.getSelectionSet(false);
+            bs1 = viewer.getSelectedAtoms();
           else
             bs1 = atomExpressionAt(eval.iToken);
           if (!asDSSP && !(asDSSP = (tokAt(++eval.iToken) == T.structure)))
@@ -5860,7 +5860,7 @@ public class ScriptExt implements JmolScriptExtension {
           isFrom = true;
         }
         bs1 = (eval.iToken + 1 < slen ? atomExpressionAt(++eval.iToken) : viewer
-            .getSelectionSet(false));
+            .getSelectedAtoms());
         checkLength(++eval.iToken);
         if (!chk)
           viewer.calculateSurface(bs1, (isFrom ? Float.MAX_VALUE : -1));
@@ -5910,7 +5910,7 @@ public class ScriptExt implements JmolScriptExtension {
     int tokKey = 0;
     while (true) {
       if (tokAt(1) == T.selected) {
-        bsFrom = viewer.getSelectionSet(false);
+        bsFrom = viewer.getSelectedAtoms();
         bsTo = atomExpressionAt(2);
         property1 = property2 = "selected";
       } else {
@@ -6554,7 +6554,7 @@ public class ScriptExt implements JmolScriptExtension {
     BS bsAtoms;
     if (slen == 1) {
       bsAtoms = viewer.setConformation();
-      viewer.addStateScriptRet("select", null, viewer.getSelectionSet(false),
+      viewer.addStateScriptRet("select", null, viewer.getSelectedAtoms(),
           null, "configuration", true, false);
     } else {
       int n = intParameter(eval.checkLast(1));
@@ -6599,7 +6599,7 @@ public class ScriptExt implements JmolScriptExtension {
       Atom[] atoms = viewer.modelSet.atoms;
       int atomCount = viewer.getAtomCount();
       int[][] maps = viewer.getSmilesMatcher().getCorrelationMaps(smarts,
-          atoms, atomCount, viewer.getSelectionSet(false), true, false);
+          atoms, atomCount, viewer.getSelectedAtoms(), true, false);
       if (maps == null)
         return;
       setShapeProperty(JC.SHAPE_MEASURES, "maps", maps);

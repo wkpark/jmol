@@ -9,6 +9,7 @@ import javajs.J2SIgnoreImport;
 import javajs.util.PT;
 
 import org.jmol.util.Logger;
+import org.jmol.viewer.Viewer;
 
 @J2SIgnoreImport({java.util.ResourceBundle.class,java.util.Locale.class})
 class Resource {
@@ -28,7 +29,7 @@ class Resource {
     String poData = null;
     if (GT.viewer.isApplet()) {
       // no longer using individual applet language JAR files
-      String fname = GT.viewer.appletIdiomaBase + "/" + name + ".po";
+      String fname = Viewer.appletIdiomaBase + "/" + name + ".po";
       Logger.info("Loading language resource " + fname);
       poData = GT.viewer.getFileAsString(fname);
       return getResourceFromPO(poData);

@@ -218,7 +218,7 @@ public abstract class Shape {
   protected void setPropS(String propertyName, Object value, BS bsSelected) {
     if (propertyName == "setProperties") {
       if (bsSelected == null)
-        bsSelected = viewer.getSelectionSet(false);
+        bsSelected = viewer.getSelectedAtoms();
       List<Object[]> propertyList = (List<Object[]>) value;
       while (propertyList.size() > 0) {
         Object[] data = propertyList.remove(0);

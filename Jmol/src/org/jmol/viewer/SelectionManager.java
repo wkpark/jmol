@@ -45,7 +45,7 @@ public class SelectionManager {
   }
 
   final BS bsHidden = new BS();
-  final BS bsSelection = new BS();
+  private final BS bsSelection = new BS();
   final BS bsFixed = new BS();
 
   BS bsSubset; // set in Eval and only pointed to here
@@ -300,13 +300,16 @@ public class SelectionManager {
     return bsDeleted;
   }
 
-  BS getSelectionSet(boolean includeDeleted) {
-    if (includeDeleted || bsDeleted == null && bsSubset == null)
+  BS getSelectedAtoms() {
+    if (bsSubset == null)
       return bsSelection;
-    BS bs = new BS();
-    bs.or(bsSelection);
-    excludeAtoms(bs, false);
+    BS bs = BSUtil.copy(bsSelection);
+    bs.and(bsSubset);
     return bs;
+  }
+
+  BS getSelectedAtomsNoSubset() {
+    return BSUtil.copy(bsSelection);
   }
 
   BS getSelectionSubset() {

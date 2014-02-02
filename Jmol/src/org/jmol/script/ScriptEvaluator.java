@@ -3580,7 +3580,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         rpn.addXVar(SV.newT(instruction));
         break;
       case T.selected:
-        rpn.addXBs(BSUtil.copy(viewer.getSelectionSet(false)));
+        rpn.addXBs(BSUtil.copy(viewer.getSelectedAtoms()));
         break;
       //removed in 13.1.17. Undocumented; unneccessary (same as "all")
 
@@ -3896,11 +3896,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       return null; // because result is in expressionResult in that case
     BS bs = (expressionResult instanceof BS ? (BS) expressionResult : new BS());
     isBondSet = (expressionResult instanceof BondSet);
-    if (!isBondSet) {
-      viewer.excludeAtoms(bs, ignoreSubset);
-      if (bs.length() > viewer.getAtomCount())
-        bs.clearAll();
-    }
+    if (!isBondSet && viewer.excludeAtoms(bs, ignoreSubset).length() > viewer.getAtomCount())
+      bs.clearAll();
     if (tempStatement != null) {
       st = tempStatement;
       tempStatement = null;
@@ -6693,7 +6690,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
     final float[] distances = new float[2];
     BS[] atomSets = new BS[2];
-    atomSets[0] = atomSets[1] = viewer.getSelectionSet(false);
+    atomSets[0] = atomSets[1] = viewer.getSelectedAtoms();
     float radius = Float.NaN;
     colorArgb[0] = Integer.MIN_VALUE;
     int distanceCount = 0;
@@ -7374,7 +7371,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         Object data = null;
         BS bsSelected = (pal != EnumPalette.PROPERTY
             && pal != EnumPalette.VARIABLE || !viewer.global.rangeSelected ? null
-            : viewer.getSelectionSet(false));
+            : viewer.getSelectedAtoms());
         if (pal == EnumPalette.PROPERTY) {
           if (isColorIndex) {
             if (!chk) {
@@ -7679,7 +7676,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     default:
       strLabel = parameterAsString(index);
     }
-    sm.setLabel(strLabel, viewer.getSelectionSet(false));
+    sm.setLabel(strLabel, viewer.getSelectedAtoms());
   }
 
   private void hover() throws ScriptException {
@@ -8945,7 +8942,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
 
     if (isSelected && bsAtoms == null)
-      bsAtoms = viewer.getSelectionSet(false);
+      bsAtoms = viewer.getSelectedAtoms();
     if (bsCompare != null) {
       isSelected = true;
       if (bsAtoms == null)
@@ -8971,7 +8968,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       // do we set the rotation to be the center of the selected atoms or model
       if (nPoints == 0 && translation != null)
         points[0] = viewer.getAtomSetCenter(bsAtoms != null ? bsAtoms
-            : isSelected ? viewer.getSelectionSet(false) : viewer
+            : isSelected ? viewer.getSelectedAtoms() : viewer
                 .getAllAtoms());
       if (helicalPath && translation != null) {
         points[1] = P3.newP(points[0]);
@@ -9520,7 +9517,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     case T.nada:
       if (chk)
         return;
-      bs = viewer.getSelectionSet(false);
+      bs = viewer.getSelectedAtoms();
       pt = viewer.getAtomSetCenter(bs);
       viewer.invertAtomCoordPt(pt, bs);
       return;
@@ -9589,7 +9586,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (amount == 0 && type != '\0')
       return;
     iToken = i0 + (type == '\0' ? 2 : 3);
-    bs = (isSelected ? viewer.getSelectionSet(false)
+    bs = (isSelected ? viewer.getSelectedAtoms()
         : iToken + 1 < slen ? atomExpressionAt(++iToken) : null);
     checkLast(iToken);
     if (!chk)
@@ -12149,7 +12146,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (tv.tok == T.varray)
         vv = tv.asString();
       viewer.setData(key, new Object[] { key, "" + vv,
-          BSUtil.copy(viewer.getSelectionSet(false)), Integer.valueOf(0) },
+          BSUtil.copy(viewer.getSelectedAtoms()), Integer.valueOf(0) },
           viewer.getAtomCount(), 0, 0, Integer.MIN_VALUE, 0);
       return;
     }
@@ -12486,7 +12483,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         return;
       case T.coord:
         if (!chk)
-          viewer.saveCoordinates(saveName, viewer.getSelectionSet(false));
+          viewer.saveCoordinates(saveName, viewer.getSelectedAtoms());
         return;
       case T.selection:
         if (!chk)

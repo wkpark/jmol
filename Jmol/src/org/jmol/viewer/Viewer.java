@@ -402,7 +402,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   @Override
   public BS getSmartsMatch(String smarts, BS bsSelected) {
     if (bsSelected == null)
-      bsSelected = getSelectionSet(false);
+      bsSelected = getSelectedAtoms();
     return getSmilesMatcher().getSubstructureSet(smarts, modelSet.atoms,
         getAtomCount(), bsSelected, true, false);
   }
@@ -907,7 +907,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public void saveSelection(String saveName) {
     // from Eval
-    stateManager.saveSelection(saveName, getSelectionSet(false));
+    stateManager.saveSelection(saveName, getSelectedAtoms());
     stateManager.restoreSelection(saveName); // just to register the # of
     // selected atoms
   }
@@ -1134,7 +1134,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   private BS setMovableBitSet(BS bsSelected, boolean checkMolecule) {
     if (bsSelected == null)
-      bsSelected = getSelectionSet(false);
+      bsSelected = getSelectedAtoms();
     bsSelected = BSUtil.copy(bsSelected);
     BSUtil.andNot(bsSelected, getMotionFixedAtoms());
     if (checkMolecule && !global.allowMoveAtoms)
@@ -1481,7 +1481,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     case T.y:
     case T.z:
     case T.quaternion:
-      return modelSet.getBoundBoxOrientation(type, getSelectionSet(false));
+      return modelSet.getBoundBoxOrientation(type, getSelectedAtoms());
     case T.name:
       return stateManager.getSavedOrientationText(name);
     default:
@@ -1824,8 +1824,12 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   @Override
-  public BS getSelectionSet(boolean includeDeleted) {
-    return selectionManager.getSelectionSet(includeDeleted);
+  public BS getSelectedAtoms() {
+    return selectionManager.getSelectedAtoms();
+  }
+
+  public BS getSelectedAtomsNoSubset() {
+    return selectionManager.getSelectedAtomsNoSubset();
   }
 
   public void setSelectedAtom(int atomIndex, boolean TF) {
@@ -1842,7 +1846,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public void setFormalCharges(int formalCharge) {
-    modelSet.setFormalCharges(getSelectionSet(false), formalCharge);
+    modelSet.setFormalCharges(getSelectedAtoms(), formalCharge);
   }
 
   @Override
@@ -2828,7 +2832,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   //  public float getVolume(BitSet bs, String type) {
   //    // Eval.calculate(), math function volume({atomExpression},"type")
   //    if (bs == null)
-  //      bs = getSelectionSet(false);
+  //      bs = getSelectionSet();
   //    EnumVdw vType = EnumVdw.getVdwType(type);
   //    if (vType == null)
   //      vType = EnumVdw.AUTO;
@@ -2846,7 +2850,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public P3[] calculateSurface(BS bsSelected, float envelopeRadius) {
     if (bsSelected == null)
-      bsSelected = getSelectionSet(false);
+      bsSelected = getSelectedAtoms();
     if (envelopeRadius == Float.MAX_VALUE || envelopeRadius == -1)
       addStateScriptRet("calculate surfaceDistance "
           + (envelopeRadius == Float.MAX_VALUE ? "FROM" : "WITHIN"), null,
@@ -2866,7 +2870,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public String getDefaultStructure(BS bsAtoms, BS bsAllAtoms) {
     if (bsAtoms == null)
-      bsAtoms = getSelectionSet(false);
+      bsAtoms = getSelectedAtoms();
     return modelSet.getDefaultStructure(bsAtoms, bsAllAtoms);
   }
 
@@ -2874,7 +2878,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
                                     boolean setStructure) {
     // Eval
     if (bsAtoms == null)
-      bsAtoms = getSelectionSet(false);
+      bsAtoms = getSelectedAtoms();
     return modelSet.calculateStructures(bsAtoms, asDSSP,
         global.dsspCalcHydrogen, setStructure);
   }
@@ -3129,23 +3133,20 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public BS getModelUndeletedAtomsBitSet(int modelIndex) {
-    BS bs = modelSet.getModelAtomBitSetIncludingDeleted(modelIndex, true);
-    excludeAtoms(bs, false);
-    return bs;
-  }
+    return excludeAtoms(modelSet.getModelAtomBitSetIncludingDeleted(modelIndex, true), false);
+ }
 
   public BS getModelBitSet(BS atomList, boolean allTrajectories) {
     return modelSet.getModelBitSet(atomList, allTrajectories);
   }
 
   public BS getModelUndeletedAtomsBitSetBs(BS bsModels) {
-    BS bs = modelSet.getModelAtomBitSetIncludingDeletedBs(bsModels);
-    excludeAtoms(bs, false);
-    return bs;
+    return excludeAtoms(modelSet.getModelAtomBitSetIncludingDeletedBs(bsModels), false);
   }
 
-  public void excludeAtoms(BS bs, boolean ignoreSubset) {
+  public BS excludeAtoms(BS bs, boolean ignoreSubset) {
     selectionManager.excludeAtoms(bs, ignoreSubset);
+    return bs;
   }
 
   public ModelSet getModelSet() {
@@ -3484,7 +3485,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   @Override
   public void setCenterSelected() {
     // depricated
-    setCenterBitSet(getSelectionSet(false), true);
+    setCenterBitSet(getSelectedAtoms(), true);
   }
 
   void setApplySymmetryToBonds(boolean TF) {
@@ -3571,15 +3572,15 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public void calcSelectedGroupsCount() {
-    modelSet.calcSelectedGroupsCount(getSelectionSet(false));
+    modelSet.calcSelectedGroupsCount(getSelectedAtoms());
   }
 
   public void calcSelectedMonomersCount() {
-    modelSet.calcSelectedMonomersCount(getSelectionSet(false));
+    modelSet.calcSelectedMonomersCount(getSelectedAtoms());
   }
 
   public void calcSelectedMoleculesCount() {
-    modelSet.calcSelectedMoleculesCount(getSelectionSet(false));
+    modelSet.calcSelectedMoleculesCount(getSelectedAtoms());
   }
 
   String getFileHeader() {
@@ -3609,7 +3610,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public String getChimeInfo(int tok) {
-    return getPropertyManager().getChimeInfo(tok, getSelectionSet(false));
+    return getPropertyManager().getChimeInfo(tok, getSelectedAtoms());
   }
 
   JmolStateCreator sc;
@@ -3640,7 +3641,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public String getProteinStructureState() {
-    return modelSet.getProteinStructureState(getSelectionSet(false), false,
+    return modelSet.getProteinStructureState(getSelectedAtoms(), false,
         false, 3);
   }
 
@@ -3653,7 +3654,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     float[] data = getDataFloat(label);
     BS bs = (data == null ? null : (BS) (getDataManager().getData(label))[2]);
     if (bs != null && global.rangeSelected)
-      bs.and(getSelectionSet(false));
+      bs.and(getSelectedAtoms());
     setCurrentColorRangeData(data, bs);
   }
 
@@ -3706,7 +3707,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     // user has selected some atoms, now this sets that as a conformation
     // with the effect of rewriting the cartoons to match
 
-    return modelSet.setConformation(getSelectionSet(false));
+    return modelSet.setConformation(getSelectedAtoms());
   }
 
   // AKA "configuration"
@@ -3720,7 +3721,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public int autoHbond(BS bsFrom, BS bsTo, boolean onlyIfHaveCalculated) {
     if (bsFrom == null)
-      bsFrom = bsTo = getSelectionSet(false);
+      bsFrom = bsTo = getSelectedAtoms();
     // bsTo null --> use DSSP method further developed 
     // here to give the "defining" Hbond set only
     return modelSet.autoHbond(bsFrom, bsTo, onlyIfHaveCalculated);
@@ -4848,7 +4849,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
                                      boolean justCarbon,
                                      List<Atom> vConnections) {
     if (bsAtoms == null)
-      bsAtoms = getSelectionSet(false);
+      bsAtoms = getSelectedAtoms();
     int[] nTotal = new int[1];
     P3[][] pts = modelSet.calculateHydrogens(bsAtoms, nTotal, doAll,
         justCarbon, vConnections);
@@ -8293,7 +8294,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public String getPdbAtomData(BS bs, OC sb) {
-    return modelSet.getPdbAtomData(bs == null ? getSelectionSet(true) : bs, sb);
+    return modelSet.getPdbAtomData(bs == null ? getSelectedAtoms() : bs, sb);
   }
 
   public boolean isJmolDataFrameForModel(int modelIndex) {
@@ -8386,7 +8387,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public void setAtomCoordsRelative(T3 offset, BS bs) {
     // Eval
     if (bs == null)
-      bs = getSelectionSet(false);
+      bs = getSelectedAtoms();
     if (bs.cardinality() == 0)
       return;
     modelSet.setAtomCoordsRelative(offset, bs);
@@ -8409,7 +8410,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public void invertSelected(P3 pt, P4 plane, int iAtom, BS invAtoms) {
     // Eval
-    BS bs = getSelectionSet(false);
+    BS bs = getSelectedAtoms();
     if (bs.cardinality() == 0)
       return;
     modelSet.invertSelected(pt, plane, iAtom, invAtoms, bs);
@@ -8890,7 +8891,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public void setProteinType(EnumStructure type, BS bs) {
-    modelSet.setProteinType(bs == null ? getSelectionSet(false) : bs, type);
+    modelSet.setProteinType(bs == null ? getSelectedAtoms() : bs, type);
   }
 
   /*
@@ -9067,7 +9068,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public String calculatePointGroup() {
-    return modelSet.calculatePointGroup(getSelectionSet(false));
+    return modelSet.calculatePointGroup(getSelectedAtoms());
   }
 
   public Map<String, Object> getPointGroupInfo(Object atomExpression) {
@@ -9076,7 +9077,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public String getPointGroupAsString(boolean asDraw, String type, int index,
                                       float scale) {
-    return modelSet.getPointGroupAsString(getSelectionSet(false), asDraw, type,
+    return modelSet.getPointGroupAsString(getSelectedAtoms(), asDraw, type,
         index, scale);
   }
 
@@ -9295,8 +9296,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public int calculateStruts(BS bs1, BS bs2) {
-    return modelSet.calculateStruts(bs1 == null ? getSelectionSet(false) : bs1,
-        bs2 == null ? getSelectionSet(false) : bs2);
+    return modelSet.calculateStruts(bs1 == null ? getSelectedAtoms() : bs1,
+        bs2 == null ? getSelectedAtoms() : bs2);
   }
 
   /**
@@ -9474,7 +9475,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public String getPdbData(int modelIndex, String type, Object[] parameters) {
-    return modelSet.getPdbData(modelIndex, type, getSelectionSet(false),
+    return modelSet.getPdbData(modelIndex, type, getSelectedAtoms(),
         parameters, null);
   }
 
@@ -9524,7 +9525,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public void togglePickingLabel(BS bs) {
     // eval label toggle (atomset) and actionManager
     if (bs == null)
-      bs = getSelectionSet(false);
+      bs = getSelectedAtoms();
     loadShape(JC.SHAPE_LABELS);
     // setShapeSize(JmolConstants.SHAPE_LABELS, 0, Float.NaN, bs);
     shapeManager.setShapePropertyBs(JC.SHAPE_LABELS, "toggleLabel", null, bs);
@@ -9537,7 +9538,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public void setShapeSize(int shapeID, int mad, BS bsSelected) {
     // might be atoms or bonds
     if (bsSelected == null)
-      bsSelected = getSelectionSet(false);
+      bsSelected = getSelectedAtoms();
     shapeManager.setShapeSizeBs(shapeID, mad, null, bsSelected);
   }
 
@@ -9770,6 +9771,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return modelSet.getModelKitStateBitset(bs, bsDeleted);
   }
 
+  @Override
   public String getSmiles(BS bs) {
     return getSmilesOpt(bs, -1, -1, false, false, false, false, false);
   }
@@ -9794,7 +9796,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     Atom[] atoms = modelSet.atoms;
     if (bsSelected == null) {
       if (index1 < 0 || index2 < 0) {
-        bsSelected = getSelectionSet(true);
+        bsSelected = getSelectedAtoms();
       } else {
         if (isBioSmiles) {
           if (index1 > index2) {
@@ -10246,7 +10248,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     // used for set picking SELECT
 
     if (atomExpression instanceof BS)
-      return (BS) atomExpression;
+      return excludeAtoms((BS) atomExpression, false);
 
     getScriptManager();
     return getAtomBitSetEval(eval, atomExpression);
@@ -10392,7 +10394,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public int calculateFormalCharges(BS bs) {
     if (bs == null)
-      bs = getSelectionSet(false);
+      bs = getSelectedAtoms();
     return modelSet.fixFormalCharges(bs);
   }
 

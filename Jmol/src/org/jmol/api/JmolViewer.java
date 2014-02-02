@@ -373,7 +373,7 @@ abstract public class JmolViewer implements JSInterface {
   abstract public void addSelectionListener(JmolSelectionListener listener);
   abstract public void removeSelectionListener(JmolSelectionListener listener);
   
-  abstract public BS getSelectionSet(boolean includeDeleted);
+  abstract public BS getSelectedAtoms();
 
   abstract public void homePosition();
 

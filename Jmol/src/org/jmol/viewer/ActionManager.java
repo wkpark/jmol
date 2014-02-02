@@ -1276,7 +1276,7 @@ public class ActionManager implements EventManager {
         && haveSelection
         && (isBound(dragWheelAction, ACTION_dragSelected) || isBound(
             dragWheelAction, ACTION_rotateSelected))) {
-      int iatom = viewer.getSelectionSet(false).nextSetBit(0);
+      int iatom = viewer.getSelectedAtoms().nextSetBit(0);
       if (iatom < 0)
         return;
       if (dragGesture.getPointCount() == 1)

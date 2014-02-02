@@ -730,7 +730,7 @@ public class StateCreator extends JmolStateCreator {
     addBs(commands, "subset ", sm.bsSubset);
     addBs(commands, "delete ", sm.bsDeleted);
     addBs(commands, "fix ", sm.bsFixed);
-    temp.put("-", sm.bsSelection);
+    temp.put("-", viewer.getSelectedAtomsNoSubset());
     cmd = getCommands(temp, null, "select");
     if (cmd == null)
       appendCmd(commands, "select none");
@@ -848,7 +848,7 @@ public class StateCreator extends JmolStateCreator {
     if (!tm.spinOn)
       return s;
     String prefix = (tm.isSpinSelected ? "\n  select "
-        + Escape.eBS(viewer.getSelectionSet(false)) + ";\n  rotateSelected"
+        + Escape.eBS(viewer.getSelectedAtoms()) + ";\n  rotateSelected"
         : "\n ");
     if (tm.isSpinInternal) {
       P3 pt = P3.newP(tm.internalRotationCenter);

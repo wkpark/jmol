@@ -475,7 +475,7 @@ abstract class OutputManager {
     String msg = (type.equals("PDB") || type.equals("PQR") ? viewer
         .getPdbAtomData(null, out) : type.startsWith("PLOT") ? viewer.modelSet
         .getPdbData(modelIndex, type.substring(5), viewer
-            .getSelectionSet(false), parameters, out) : getCurrentFile ? out
+            .getSelectedAtoms(), parameters, out) : getCurrentFile ? out
         .append(viewer.getCurrentFileAsString()).toString() : (String) viewer
         .getFileAsBytes(pathName, out));
     out.closeChannel();

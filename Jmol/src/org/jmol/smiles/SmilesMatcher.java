@@ -265,6 +265,10 @@ public class SmilesMatcher implements SmilesMatcherInterface {
         false, firstMatchOnly, MODE_BITSET);
   }
 
+  /**
+   * called by ForceFieldMMFF.setAtomTypes
+   * 
+   */
   @Override
   public void getSubstructureSets(String[] smarts, JmolNode[] atoms, int atomCount,
                                   int flags, BS bsSelected, List<BS> ret, 

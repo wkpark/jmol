@@ -184,7 +184,7 @@ public class ShapeManager {
       return;
     if (bsSelected == null && 
         (shapeID != JC.SHAPE_STICKS || size != Integer.MAX_VALUE))
-      bsSelected = viewer.getSelectionSet(false);
+      bsSelected = viewer.getSelectedAtoms();
     if (rd != null && rd.value != 0 && rd.vdwType == EnumVdw.TEMP)
       modelSet.getBfactor100Lo();
     viewer.setShapeErrorState(shapeID, "set size");
@@ -212,7 +212,7 @@ public class ShapeManager {
     if (shapes == null || shapes[shapeID] == null)
       return;
     if (bsSelected == null)
-      bsSelected = viewer.getSelectionSet(false);
+      bsSelected = viewer.getSelectedAtoms();
     viewer.setShapeErrorState(shapeID, "set " + propertyName);
     shapes[shapeID].setProperty(propertyName.intern(), value, bsSelected);
     viewer.setShapeErrorState(-1, null);
@@ -285,7 +285,7 @@ public class ShapeManager {
 
   void deleteVdwDependentShapes(BS bs) {
     if (bs == null)
-      bs = viewer.getSelectionSet(false);
+      bs = viewer.getSelectedAtoms();
     if (shapes[JC.SHAPE_ISOSURFACE] != null)
       shapes[JC.SHAPE_ISOSURFACE].setProperty("deleteVdw", null, bs);
     if (shapes[JC.SHAPE_CONTACT] != null)
@@ -558,12 +558,12 @@ public class ShapeManager {
   }
 
   public void restrictSelected(boolean isBond, boolean doInvert) {
-    BS bsSelected = BSUtil.copy(viewer.getSelectionSet(true));
+    BS bsSelected = viewer.getSelectedAtomsNoSubset();
     if (doInvert) {
       viewer.invertSelection();
       BS bsSubset = viewer.getSelectionSubset();
       if (bsSubset != null) {
-        bsSelected = BSUtil.copy(viewer.getSelectionSet(true));
+        bsSelected = viewer.getSelectedAtomsNoSubset();
         bsSelected.and(bsSubset);
         viewer.select(bsSelected, false, 0, true);
         BSUtil.invertInPlace(bsSelected, viewer.getAtomCount());
@@ -584,7 +584,7 @@ public class ShapeManager {
     setShapePropertyBs(JC.SHAPE_STICKS, "type", Integer
         .valueOf(JmolEdge.BOND_COVALENT_MASK), null);
     // also need to turn off backbones, ribbons, strands, cartoons
-    BS bs = viewer.getSelectionSet(false);
+    BS bs = viewer.getSelectedAtoms();
     for (int iShape = JC.SHAPE_MAX_SIZE_ZERO_ON_RESTRICT; --iShape >= 0;)
       if (iShape != JC.SHAPE_MEASURES && getShape(iShape) != null)
         setShapeSizeBs(iShape, 0, null, bs);

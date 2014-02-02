@@ -364,7 +364,7 @@ abstract public class AtomCollection {
     //ColorManager
     if (!hasBfactorRange) {
       if (viewer.global.rangeSelected) {
-        calcBfactorRange(viewer.getSelectionSet(false));
+        calcBfactorRange(viewer.getSelectedAtoms());
       } else {
         calcBfactorRange(null);
       }

@@ -41,6 +41,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipFile;
@@ -598,7 +599,12 @@ abstract class WebPanel extends JPanel implements ActionListener,
         List<String> filesToCopy = new List<String>();
         String localPath = localAppletPath.getText();
         if (localPath.equals(".") || remoteAppletPath.getText().equals(".")) {
-          filesToCopy.addLast(localPath + "/jsmol.zip");
+          try{
+            String jmolJarDirPath=jmolJarPath().substring(0, jmolJarPath().lastIndexOf("/"));
+            filesToCopy.addLast(jmolJarDirPath+"/jsmol.zip");
+          }catch (java.io.UnsupportedEncodingException e){
+            LogPanel.log(GT._("There was an error in the text encoding so the path to jsmol.zip is unknown."));
+          }
         }
         JmolBinary.getFileReferences(script, filesToCopy);
         ArrayList<String> copiedFileNames = new  ArrayList<String>();
@@ -875,6 +881,30 @@ abstract class WebPanel extends JPanel implements ActionListener,
       }
     return(dataPath);
   }
+  
+  /*****
+   * @return the URL pointing to the Jmol.jar that is running
+   */
+  private URL jmolJarURL(){
+    return(this.getClass().getProtectionDomain().getCodeSource().
+        getLocation());
+  }
+/******
+* Returns a string version of the path to Jmol.jar (including the trailing Jmol.jar)
+* decoded using the system default text encoding (usually UTF-8).
+* @return system text encoding translated string version of the path to Jmol.jar
+* @throws java.io.UnsupportedEncodingException if the encoding can't be used to
+* decode the URL or the encoding is bad.
+*/
+  private String jmolJarPath() throws java.io.UnsupportedEncodingException{
+    String pathStr;
+    pathStr=null;
+    URL jarURL = jmolJarURL();
+    pathStr=URLDecoder.decode(jarURL.toString(), System.getProperty("file.encoding"));
+    pathStr = pathStr.substring(pathStr.indexOf(":")+1, pathStr.length());
+    return(pathStr);
+  }
+  
   void syncLists() {
     DefaultListModel<JmolInstance> model1 = (DefaultListModel<JmolInstance>) instanceList.getModel();
     for (int j = 0; j < webPanels.length; j++) {

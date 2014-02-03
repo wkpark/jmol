@@ -1419,7 +1419,7 @@ public class PropertyManager implements JmolPropertyManager {
     info.put("htmlName", viewer.htmlName);
     info.put("syncId", viewer.syncId);
     info.put("fullName", viewer.fullName);
-    info.put("codeBase", Viewer.appletCodeBase);
+    info.put("codeBase", "" + Viewer.appletCodeBase);
     if (viewer.isApplet()) {
       info.put("documentBase", Viewer.appletDocumentBase);
       info.put("registry", viewer.statusManager.getRegistryInfo());

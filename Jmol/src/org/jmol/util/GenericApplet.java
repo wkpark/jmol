@@ -120,15 +120,11 @@ public abstract class GenericApplet implements JmolAppletInterface,
     setStringProperty("defaults", emulate.equals("chime") ? "RasMol" : "Jmol");
     setStringProperty("backgroundColor",
         getValue("bgcolor", getValue("boxbgcolor", "black")));
-
     viewer.setBooleanProperty("frank", true);
     loading = true;
     for (EnumCallback item : EnumCallback.values())
       setValue(item.name() + "Callback", null);
     loading = false;
-    String menuFile = getJmolParameter("menuFile");
-    if (menuFile != null)
-      viewerOptions.put("menuFile", menuFile);
     language = getJmolParameter("language");
     new GT(viewer, language);
     if (language != null)
@@ -163,6 +159,10 @@ public abstract class GenericApplet implements JmolAppletInterface,
     if (!getBooleanValue("popupMenu", true))
       viewer.getProperty("DATA_API", "disablePopupMenu", null);
     //experimental; never documented loadNodeId(getValue("loadNodeId", null));
+
+    String menuFile = getJmolParameter("menuFile");
+    if (menuFile != null)
+      viewer.setMenu(menuFile, true);
 
     String script = getValue("script", "");
     //String test = null;

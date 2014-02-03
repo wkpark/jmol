@@ -601,10 +601,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         && checkOption2("useCommandThread", "-threaded");
     setStartupBooleans();
     setIntProperty("_nProcessors", nProcessors);
-    o = info.get("menuFile");
-    if (o != null)
-      setMenu(o.toString(), true);
-
     /*
      * Logger.info("jvm11orGreater=" + jvm11orGreater + "\njvm12orGreater=" +
      * jvm12orGreater + "\njvm14orGreater=" + jvm14orGreater);

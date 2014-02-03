@@ -624,6 +624,8 @@ abstract public class JmolViewer implements JSInterface {
    *       -1 if no such file
    */
   abstract public int getModelIndexFromId(String id);
-
+  
+  abstract public void setMenu(String menuFile, boolean isFile);
+  
 }
 

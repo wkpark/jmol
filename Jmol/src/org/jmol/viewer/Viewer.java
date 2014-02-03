@@ -5085,6 +5085,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return jmolpopup.jpiGetMenuAsObject();
   }
 
+  @Override
   public void setMenu(String fileOrText, boolean isFile) {
     if (isFile)
       Logger.info("Setting menu "

@@ -426,7 +426,7 @@ public class PropertyManager implements JmolPropertyManager {
     //myParam may now be a bitset
     switch (id) {
     case PROP_APPLET_INFO:
-      return viewer.getAppletInfo();
+      return getAppletInfo();
     case PROP_ANIMATION_INFO:
       return viewer.getAnimationInfo();
     case PROP_ATOM_LIST:
@@ -1413,5 +1413,25 @@ public class PropertyManager implements JmolPropertyManager {
     int id = atom.getChainID();
     info.append(id == 0 ? " " : atom.getChainIDStr());
   }
+
+  private Map<String, Object> getAppletInfo() {
+    Map<String, Object> info = new Hashtable<String, Object>();
+    info.put("htmlName", viewer.htmlName);
+    info.put("syncId", viewer.syncId);
+    info.put("fullName", viewer.fullName);
+    info.put("codeBase", Viewer.appletCodeBase);
+    if (viewer.isApplet()) {
+      info.put("documentBase", Viewer.appletDocumentBase);
+      info.put("registry", viewer.statusManager.getRegistryInfo());
+    }
+    info.put("version", JC.version);
+    info.put("date", JC.date);
+    info.put("javaVendor", Viewer.strJavaVendor);
+    info.put("javaVersion", Viewer.strJavaVersion
+        + (!viewer.isJS ? "" : viewer.isWebGL ? "(WebGL)" : "(HTML5)"));
+    info.put("operatingSystem", Viewer.strOSName);
+    return info;
+  }
+
 
 }

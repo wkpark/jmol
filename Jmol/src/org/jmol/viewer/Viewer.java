@@ -263,13 +263,13 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public StatusManager statusManager;
   TransformManager tm;
 
-  private final static String strJavaVendor = System.getProperty("java.vendor",
+  final static String strJavaVendor = System.getProperty("java.vendor",
       "j2s");
-  private final static String strOSName = System.getProperty("os.name", "j2s");
-  private final static String strJavaVersion = System.getProperty(
+  final static String strOSName = System.getProperty("os.name", "j2s");
+  final static String strJavaVersion = System.getProperty(
       "java.version", "0.0");
 
-  private String syncId = "";
+  String syncId = "";
   private String logFilePath = "";
 
   String getLogFilePath() {
@@ -754,25 +754,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
    * void flushCachedImages() { imageCache.clear();
    * GData.flushCachedColors(); }
    */
-
-  Map<String, Object> getAppletInfo() {
-    Map<String, Object> info = new Hashtable<String, Object>();
-    info.put("htmlName", htmlName);
-    info.put("syncId", syncId);
-    info.put("fullName", fullName);
-    if (isApplet) {
-      info.put("documentBase", appletDocumentBase);
-      info.put("codeBase", appletCodeBase);
-      info.put("registry", statusManager.getRegistryInfo());
-    }
-    info.put("version", JC.version);
-    info.put("date", JC.date);
-    info.put("javaVendor", strJavaVendor);
-    info.put("javaVersion", strJavaVersion
-        + (!isJS ? "" : isWebGL ? "(WebGL)" : "(HTML5)"));
-    info.put("operatingSystem", strOSName);
-    return info;
-  }
 
   // ///////////////////////////////////////////////////////////////
   // delegated to StateManager

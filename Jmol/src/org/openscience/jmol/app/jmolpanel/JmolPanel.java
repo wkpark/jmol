@@ -160,7 +160,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
   private static int numWindows = 0;
   private static KioskFrame kioskFrame;
   private static BannerFrame bannerFrame;
-  
+
   // Window names for the history file
   private final static String EDITOR_WINDOW_NAME = "ScriptEditor";
   private final static String SCRIPT_WINDOW_NAME = "ScriptWindow";
@@ -257,6 +257,8 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     viewerOptions.put("display", display);
     myStatusListener = new StatusListener(this, display);
     viewerOptions.put("statusListener", myStatusListener);
+    if (JmolResourceHandler.codePath != null)
+      viewerOptions.put("codePath", JmolResourceHandler.codePath);
     if (modelAdapter != null)
       viewerOptions.put("modelAdapter", modelAdapter);
     this.viewerOptions = viewerOptions;

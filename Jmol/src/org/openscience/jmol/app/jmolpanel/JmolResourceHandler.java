@@ -45,6 +45,8 @@ class JmolResourceHandler {
   private static JmolResourceHandler instance;
   private ResourceBundle stringsResourceBundle;
   private ResourceBundle generalResourceBundle;
+  
+  public static Object codePath;
 
   private JmolResourceHandler() {
     String language = "en";
@@ -104,6 +106,9 @@ class JmolResourceHandler {
       String imageName = "org/openscience/jmol/app/images/" + resourceName;
       URL imageUrl = this.getClass().getClassLoader().getResource(imageName);
       if (imageUrl != null) {
+        String s = imageUrl.toString();
+        codePath = s.substring(0, s.indexOf(imageName));
+
         return new ImageIcon(imageUrl);
       }
       /*

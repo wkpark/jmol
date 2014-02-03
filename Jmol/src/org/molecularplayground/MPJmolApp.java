@@ -141,7 +141,7 @@ public class MPJmolApp implements JsonNioClient {
       setBannerLabel("click below and type exitJmol[enter] to quit");
       String defaultScript = "set allowgestures;set allowKeyStrokes;set zoomLarge false;set frank off;set antialiasdisplay off;";
       
-      String script = "cd \"\"; " + jmolViewer.getFileAsString("MPJmolAppConfig.spt") + ";";
+      String script = "cd \"\"; " + jmolViewer.getFileAsString("MPJmolAppConfig.spt", false) + ";";
       Logger.info("startJsonNioKiosk on port " + port);
       Logger.info(script);
       if (script.indexOf("java.io") >= 0)

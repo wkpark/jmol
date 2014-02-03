@@ -31,7 +31,7 @@ class Resource {
       // no longer using individual applet language JAR files
       String fname = Viewer.appletIdiomaBase + "/" + name + ".po";
       Logger.info("Loading language resource " + fname);
-      poData = GT.viewer.getFileAsString(fname);
+      poData = GT.viewer.getFileAsString(fname, false);
       return getResourceFromPO(poData);
     }
     Class<?> bundleClass = null;

@@ -567,7 +567,7 @@ public class ScriptManager implements JmolScriptManager {
       }
       if (allowScript && viewer.scriptEditorVisible && cmd == null)
         viewer.showEditor(new String[] { fileName,
-            viewer.getFileAsString(fileName) });
+            viewer.getFileAsString(fileName, true) });
       else
         cmd = (cmd == null ? "script " : cmd) + PT.esc(fileName);
     } finally {

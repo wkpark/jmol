@@ -24,8 +24,6 @@
 package org.jmol.viewer;
 
 
-import java.util.Hashtable;
-
 import java.util.Map;
 
 
@@ -41,8 +39,6 @@ import org.jmol.shape.Shape;
 import org.jmol.util.BSUtil;
 import org.jmol.util.GData;
 import org.jmol.util.JmolEdge;
-import javajs.util.List;
-import javajs.util.SB;
 
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
@@ -330,24 +326,6 @@ public class ShapeManager {
     return (shapes == null ? null : shapes[i]);
   }
   
-  Map<String, Object> getShapeInfo() {
-    Map<String, Object> info = new Hashtable<String, Object>();
-    SB commands = new SB();
-    if (shapes != null)
-      for (int i = 0; i < JC.SHAPE_MAX; ++i) {
-        Shape shape = shapes[i];
-        if (shape != null) {
-          String shapeType = JC.shapeClassBases[i];
-          List<Map<String, Object>> shapeDetail = shape.getShapeDetail();
-          if (shapeDetail != null)
-            info.put(shapeType, shapeDetail);
-        }
-      }
-    if (commands.length() > 0)
-      info.put("shapeCommands", commands.toString());
-    return info;
-  }
-
   void mergeShapes(Shape[] newShapes) {
     if (newShapes == null)
       return;

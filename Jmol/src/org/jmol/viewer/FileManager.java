@@ -1050,7 +1050,7 @@ public class FileManager implements BytePoster {
     String[] names = classifyName(name, false);
     return (names == null || names.length == 1 ? "" : asShortName ? names[1]
         : addUrlPrefix ? names[2] 
-        : names[0] == null ? "" 
+        : names[0] == null ? ""
         : names[0].replace('\\', '/'));
   }
 

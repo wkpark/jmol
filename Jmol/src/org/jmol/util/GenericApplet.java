@@ -126,12 +126,9 @@ public abstract class GenericApplet implements JmolAppletInterface,
     for (EnumCallback item : EnumCallback.values())
       setValue(item.name() + "Callback", null);
     loading = false;
-
     String menuFile = getJmolParameter("menuFile");
     if (menuFile != null)
-      viewer.getProperty("DATA_API", "setMenu",
-          viewer.getFileAsString(menuFile));
-
+      viewerOptions.put("menuFile", menuFile);
     language = getJmolParameter("language");
     new GT(viewer, language);
     if (language != null)

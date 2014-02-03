@@ -1932,7 +1932,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           debugScript);
     String[] data = new String[2];
     data[0] = filename;
-    if (!viewer.getFileAsStringBin(data)) { // first opening
+    if (!viewer.getFileAsStringBin(data, true)) { // first opening
       setErrorMessage("io error reading " + data[0] + ": " + data[1]);
       return false;
     }
@@ -1943,7 +1943,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         filename += "|";
       } else {
         data[0] = filename += "|JmolManifest.txt";
-        if (!viewer.getFileAsStringBin(data)) { // second entry
+        if (!viewer.getFileAsStringBin(data, true)) { // second entry
           setErrorMessage("io error reading " + data[0] + ": " + data[1]);
           return false;
         }
@@ -1952,7 +1952,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (path != null && path.length() > 0) {
         data[0] = filename = filename.substring(0, filename.lastIndexOf("|"))
             + path;
-        if (!viewer.getFileAsStringBin(data)) { // third entry
+        if (!viewer.getFileAsStringBin(data, true)) { // third entry
           setErrorMessage("io error reading " + data[0] + ": " + data[1]);
           return false;
         }

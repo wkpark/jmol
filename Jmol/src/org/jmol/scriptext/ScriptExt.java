@@ -2795,7 +2795,7 @@ public class ScriptExt implements JmolScriptExtension {
     MepCalculationInterface m = (MepCalculationInterface) Interface
         .getOptionInterface("quantum.MlpCalculation");
     m.set(viewer);
-    String data = (fileName == null ? null : viewer.getFileAsString(fileName));
+    String data = (fileName == null ? null : viewer.getFileAsString(fileName, false));
     m.assignPotentials(viewer.modelSet.atoms, potentials, viewer.getSmartsMatch("a",
         bsSelected), viewer.getSmartsMatch("/noAromatic/[$(C=O),$(O=C),$(NC=O)]",
         bsSelected), bsIgnore, data);
@@ -5492,7 +5492,7 @@ public class ScriptExt implements JmolScriptExtension {
       len = 3;
       value = parameterAsString(2);
       if (!chk)
-        msg = viewer.getFileAsString(value);
+        msg = viewer.getFileAsString(value, true);
       break;
     case T.frame:
       if (tokAt(2) == T.all && (len = 3) > 0)

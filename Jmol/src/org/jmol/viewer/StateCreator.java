@@ -866,39 +866,6 @@ public class StateCreator extends JmolStateCreator {
 
   //// info 
 
-  @Override
-  Map<String, Object> getInfo(Object manager) {
-    if (manager instanceof AnimationManager)
-      return getAnimationInfo((AnimationManager) manager);
-    return null;
-  }
-
-  private Map<String, Object> getAnimationInfo(AnimationManager am) {
-    Map<String, Object> info = new Hashtable<String, Object>();
-    info.put("firstModelIndex", Integer.valueOf(am.firstFrameIndex));
-    info.put("lastModelIndex", Integer.valueOf(am.lastFrameIndex));
-    info.put("animationDirection", Integer.valueOf(am.animationDirection));
-    info.put("currentDirection", Integer.valueOf(am.currentDirection));
-    info.put("displayModelIndex", Integer.valueOf(am.currentModelIndex));
-    if (am.animationFrames != null) {
-      info.put("isMovie", Boolean.TRUE);
-      info.put("frames", Escape.eAI(am.animationFrames));
-      info.put("currentAnimationFrame", Integer
-          .valueOf(am.currentAnimationFrame));
-    }
-    info.put("displayModelNumber", viewer
-        .getModelNumberDotted(am.currentModelIndex));
-    info.put("displayModelName", (am.currentModelIndex >= 0 ? viewer
-        .getModelName(am.currentModelIndex) : ""));
-    info.put("animationFps", Integer.valueOf(am.animationFps));
-    info.put("animationReplayMode", am.animationReplayMode.name());
-    info.put("firstFrameDelay", Float.valueOf(am.firstFrameDelay));
-    info.put("lastFrameDelay", Float.valueOf(am.lastFrameDelay));
-    info.put("animationOn", Boolean.valueOf(am.animationOn));
-    info.put("animationPaused", Boolean.valueOf(am.animationPaused));
-    return info;
-  }
-
   //// utility methods
 
   @Override

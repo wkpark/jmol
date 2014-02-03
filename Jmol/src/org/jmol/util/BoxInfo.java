@@ -249,17 +249,6 @@ public class BoxInfo {
     return bbVertices;
   }
   
-  public Map<String, Object> getBoundBoxInfo() {
-    if (!isScaleSet)
-      setBbcage(1);
-    Map<String, Object> info = new Hashtable<String, Object>();
-    info.put("center", P3.newP(bbCenter));
-    info.put("vector", V3.newV(bbVector));
-    info.put("corner0", P3.newP(bbCorner0));
-    info.put("corner1", P3.newP(bbCorner1));
-    return info;
-  }
-
   public void setBoundBox(P3 pt1, P3 pt2, boolean byCorner, float scale) {
     if (pt1 != null) {
       if (scale == 0)

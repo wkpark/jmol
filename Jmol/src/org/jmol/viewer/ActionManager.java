@@ -26,11 +26,7 @@ package org.jmol.viewer;
 import javajs.api.GenericPlatform;
 import javajs.api.EventManager;
 import javajs.awt.event.Event;
-import javajs.util.List;
 import javajs.util.PT;
-
-import java.util.Hashtable;
-
 import java.util.Map;
 
 import org.jmol.i18n.GT;
@@ -56,8 +52,9 @@ public class ActionManager implements EventManager {
 
   protected Viewer viewer;
   protected boolean haveMultiTouchInput = false;
-  protected Binding binding;
   
+  public Binding binding;
+
   private Binding jmolBinding;
   private Binding pfaatBinding;
   private Binding dragBinding;
@@ -325,8 +322,8 @@ public class ActionManager implements EventManager {
   public final static int ACTION_wheelZoom = 46;
   public final static int ACTION_count = 47;
 
-  private final static String[] actionInfo = new String[ACTION_count];
-  private final static String[] actionNames = new String[ACTION_count];
+  final static String[] actionInfo = new String[ACTION_count];
+  final static String[] actionNames = new String[ACTION_count];
 
   static void newAction(int i, String name, String info) {
     actionInfo[i] = info;
@@ -474,6 +471,7 @@ public class ActionManager implements EventManager {
   }
 
   protected void setBinding(Binding newBinding) {
+    // overridden in ActionManagerMT
     binding = newBinding;
   }
 
@@ -685,27 +683,6 @@ public class ActionManager implements EventManager {
 
 
   
-  public Map<String, Object> getMouseInfo() {
-    Map<String, Object> info = new Hashtable<String, Object>();
-    List<Object> vb = new List<Object>();
-    for (Object obj : binding.getBindings().values()) {
-      if (obj instanceof Boolean)
-        continue;
-      if (PT.isAI(obj)) {
-        int[] binding = (int[]) obj;
-        obj = new String[] { Binding.getMouseActionName(binding[0], false),
-            getActionName(binding[1]) };
-      }
-      vb.addLast(obj);
-    }
-    info.put("bindings", vb);
-    info.put("bindingName", binding.name);
-    info.put("actionNames", actionNames);
-    info.put("actionInfo", actionInfo);
-    info.put("bindingInfo", PT.split(getBindingInfo(null), "\n"));
-    return info;
-  }
-
   private final static long MAX_DOUBLE_CLICK_MILLIS = 700;
   protected final static long MININUM_GESTURE_DELAY_MILLISECONDS = 10;
   private final static int SLIDE_ZOOM_X_PERCENT = 98;

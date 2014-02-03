@@ -111,7 +111,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
 
   @Override
   protected void setBinding(Binding newBinding) {
-    super.setBinding(newBinding);
+    binding = newBinding;
     binding.unbindMouseAction(Binding.RIGHT|Binding.DOWN);
     if (simulator != null && binding != null) {
       //binding.unbindJmolAction(ACTION_center);

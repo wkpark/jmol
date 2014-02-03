@@ -22,8 +22,6 @@ public abstract class JmolStateCreator {
 
   abstract String getSpinState(boolean b);
   
-  abstract Map<String, Object> getInfo(Object manager);
-
   abstract String getSpecularState();
   
   abstract String getLoadState(Map<String, Object> htParams);

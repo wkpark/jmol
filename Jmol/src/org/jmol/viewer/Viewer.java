@@ -603,7 +603,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     setIntProperty("_nProcessors", nProcessors);
     o = info.get("menuFile");
     if (o != null)
-      getProperty("DATA_API", "setMenu", getFileAsString((String) o));
+      setMenu(o.toString(), true);
 
     /*
      * Logger.info("jvm11orGreater=" + jvm11orGreater + "\njvm12orGreater=" +
@@ -2239,9 +2239,9 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         if (fname.length() == 0)
           return null;
         scriptEcho("fetching " + fname);
-        s = getFileAsString(fname);
+        s = getFileAsString(fname, false);
       } else {
-        s = getFileAsString(prefix);
+        s = getFileAsString(prefix, false);
         int pt = (terminator == null ? -1 : s.indexOf(terminator));
         if (pt >= 0)
           s = s.substring(0, pt);
@@ -2758,8 +2758,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   @Override
-  public String getFileAsString(String name) {
-    return getFileAsString4(name, -1, false, false, false);
+  public String getFileAsString(String name, boolean checkProtected) {
+    return getFileAsString4(name, -1, false, false, checkProtected);
   }
 
   public String getFileAsString4(String name, int nBytesMax,
@@ -2775,8 +2775,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return data[1];
   }
 
-  public boolean getFileAsStringBin(String[] data) {
-    return fileManager.getFileDataOrErrorAsString(data, -1, false, true, false);
+  public boolean getFileAsStringBin(String[] data, boolean allowBinary) {
+    return fileManager.getFileDataOrErrorAsString(data, -1, false, allowBinary, !allowBinary);
   }
 
   public String getFilePath(String name, boolean asShortName) {
@@ -3178,10 +3178,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return modelSet.getBboxVertices();
   }
 
-  Map<String, Object> getBoundBoxInfo() {
-    return modelSet.getBoundBoxInfo();
-  }
-
   public BS getBoundBoxModels() {
     return modelSet.getBoundBoxModels();
   }
@@ -3574,7 +3570,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public Map<String, Object> getCifData(int modelIndex) {
     String name = getModelFileName(modelIndex);
-    String data = getFileAsString(name);
+    String data = getFileAsString(name, false);
     if (data == null)
       return null;
     return CifDataReader
@@ -3583,11 +3579,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public String getPDBHeader() {
     return modelSet.getPDBHeader(animationManager.currentModelIndex);
-  }
-
-  public Map<String, Object> getAuxiliaryInfo(Object atomExpression) {
-    return modelSet.getAuxiliaryInfo(getModelBitSet(
-        getAtomBitSet(atomExpression), false));
   }
 
   public String getChimeInfo(int tok) {
@@ -3769,12 +3760,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return str;
   }
 
-  @SuppressWarnings("unchecked")
-  List<Map<String, Object>> getMeasurementInfo() {
-    return (List<Map<String, Object>>) getShapeProperty(JC.SHAPE_MEASURES,
-        "info");
-  }
-
   public String getMeasurementInfoAsString() {
     return (String) getShapeProperty(JC.SHAPE_MEASURES, "infostring");
   }
@@ -3849,10 +3834,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   int getAnimationDirection() {
     return animationManager.animationDirection;
-  }
-
-  Map<String, Object> getAnimationInfo() {
-    return getStateCreator().getInfo(animationManager);
   }
 
   @Override
@@ -5116,7 +5097,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     if (fileOrText.length() == 0)
       fileOrText = null;
     else if (isFile)
-      fileOrText = getFileAsString(fileOrText);
+      fileOrText = getFileAsString(fileOrText, false);
     getProperty("DATA_API", "setMenu", fileOrText);
     statusManager.setCallbackFunction("menu", fileOrText);
   }
@@ -8595,7 +8576,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public float[][] functionXY(String functionName, int nX, int nY) {
     String data = null;
     if (functionName.indexOf("file:") == 0)
-      data = getFileAsString(functionName.substring(5));
+      data = getFileAsString(functionName.substring(5), false);
     else if (functionName.indexOf("data2d_") != 0)
       return statusManager.functionXY(functionName, nX, nY);
     nX = Math.abs(nX);
@@ -8619,7 +8600,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public float[][][] functionXYZ(String functionName, int nX, int nY, int nZ) {
     String data = null;
     if (functionName.indexOf("file:") == 0)
-      data = getFileAsString(functionName.substring(5));
+      data = getFileAsString(functionName.substring(5), false);
     else if (functionName.indexOf("data3d_") != 0)
       return statusManager.functionXYZ(functionName, nX, nY, nZ);
     nX = Math.abs(nX);
@@ -8668,7 +8649,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       return null;
     }
     String url = global.nmrPredictFormat + molFile;
-    return getFileAsString(url);
+    return getFileAsString(url, false);
   }
 
   public void getHelp(String what) {
@@ -9262,10 +9243,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       actionManager.unbindAction(desc, name);
   }
 
-  public Object getMouseInfo() {
-    return (haveDisplay ? actionManager.getMouseInfo() : null);
-  }
-
   public int getFrontPlane() {
     return tm.getFrontPlane();
   }
@@ -9498,10 +9475,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public boolean displayLoadErrors = true;
-
-  public Map<String, Object> getShapeInfo() {
-    return shapeManager.getShapeInfo();
-  }
 
   public void togglePickingLabel(BS bs) {
     // eval label toggle (atomset) and actionManager
@@ -10236,15 +10209,11 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   List<Integer> getAtomBitSetVector(Object atomExpression) {
-    if (getScriptManager() == null)
-      return null;
-    return eval.getAtomBitSetVector(getAtomCount(), atomExpression);
+    return (getScriptManager() == null ? null : eval.getAtomBitSetVector(getAtomCount(), atomExpression));
   }
 
   public Map<String, SV> getContextVariables() {
-    if (getScriptManager() == null)
-      return null;
-    return eval.getContextVariables();
+    return (getScriptManager() == null ? null : eval.getContextVariables());
   }
 
   public ScriptContext getScriptContext(String why) {

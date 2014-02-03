@@ -322,10 +322,6 @@ abstract public class ModelCollection extends BondCollection {
     return boxInfo.getBoundBoxVertices();
   }
 
-  public Map<String, Object> getBoundBoxInfo() {
-    return boxInfo.getBoundBoxInfo();
-  }
-
   public BS getBoundBoxModels() {
     return bboxModels;
   }

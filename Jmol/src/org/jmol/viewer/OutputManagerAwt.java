@@ -97,7 +97,7 @@ final public class OutputManagerAwt extends OutputManager {
   @Override
   protected String createSceneSet(String sceneFile, String type, int width,
                                 int height) {
-    String script0 = viewer.getFileAsString(sceneFile);
+    String script0 = viewer.getFileAsString(sceneFile, false);
     if (script0 == null)
       return "no such file: " + sceneFile;
     sceneFile = PT.rep(sceneFile, ".spt", "");

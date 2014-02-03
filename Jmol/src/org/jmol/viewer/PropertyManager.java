@@ -28,6 +28,7 @@ import javajs.util.List;
 import javajs.util.M4;
 import javajs.util.PT;
 import javajs.util.SB;
+import javajs.util.V3;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -50,6 +51,7 @@ import org.jmol.modelset.Model;
 import org.jmol.modelset.ModelSet;
 import org.jmol.script.SV;
 import org.jmol.script.T;
+import org.jmol.shape.Shape;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.Elements;
@@ -62,6 +64,7 @@ import javajs.util.M3;
 import javajs.util.P3;
 import org.jmol.util.Quaternion;
 import org.jmol.util.Txt;
+import org.jmol.viewer.binding.Binding;
 
 /**
  * 
@@ -428,17 +431,17 @@ public class PropertyManager implements JmolPropertyManager {
     case PROP_APPLET_INFO:
       return getAppletInfo();
     case PROP_ANIMATION_INFO:
-      return viewer.getAnimationInfo();
+      return getAnimationInfo();
     case PROP_ATOM_LIST:
       return viewer.getAtomBitSetVector(myParam);
     case PROP_ATOM_INFO:
       return getAllAtomInfo(viewer.getAtomBitSet(myParam));
     case PROP_AUXILIARY_INFO:
-      return viewer.getAuxiliaryInfo(myParam);
+      return getAuxiliaryInfo(myParam);
     case PROP_BOND_INFO:
       return getAllBondInfo(myParam);
     case PROP_BOUNDBOX_INFO:
-      return viewer.getBoundBoxInfo();
+      return getBoundBoxInfo();
     case PROP_CENTER_INFO:
       return viewer.getRotationCenter();
     case PROP_CHAIN_INFO:
@@ -461,33 +464,12 @@ public class PropertyManager implements JmolPropertyManager {
       return viewer.getFileHeader();
     case PROP_FILECONTENTS:
     case PROP_FILECONTENTS_PATH:
-      if (iHaveParameter)
-        return viewer.getFileAsString(myParam.toString());
-      return viewer.getCurrentFileAsString();
+      return (iHaveParameter ? viewer.getFileAsString(myParam.toString(), true) : viewer.getCurrentFileAsString());
     case PROP_IMAGE:
       String params = myParam.toString().toLowerCase();
-      int height = -1,
-      width = -1;
-      int pt;
-      if ((pt = params.indexOf("height=")) >= 0)
-        height = PT.parseInt(params.substring(pt + 7));
-      if ((pt = params.indexOf("width=")) >= 0)
-        width = PT.parseInt(params.substring(pt + 6));
-      if (width < 0 && height < 0)
-        height = width = -1;
-      else if (width < 0)
-        width = height;
-      else
-        height = width;
       if (params.indexOf("g64") >= 0 || params.indexOf("base64") >= 0)
         returnType = "string";
-      String type = "JPG";
-      if (params.indexOf("type=") >= 0)
-        type = PT.getTokens(PT.replaceWithCharacter(params.substring(params.indexOf("type=") + 5), ";,", ' '))[0];
-      String[] errMsg = new String[1];
-      byte[] bytes = viewer.getImageAsBytes(type.toUpperCase(), width,  height, -1, errMsg);
-      return (errMsg[0] != null ? errMsg[0] : returnType == null ? bytes : Base64
-          .getBase64(bytes).toString());
+      return getImage(params, returnType);
     case PROP_ISOSURFACE_INFO:
       return viewer.getShapeProperty(JC.SHAPE_ISOSURFACE, "getInfo");
     case PROP_ISOSURFACE_DATA:
@@ -505,7 +487,7 @@ public class PropertyManager implements JmolPropertyManager {
     case PROP_LIGAND_INFO:
       return getLigandInfo(viewer.getAtomBitSet(myParam));
     case PROP_MEASUREMENT_INFO:
-      return viewer.getMeasurementInfo();
+      return getMeasurementInfo();
     case PROP_MENU:
       return viewer.getMenu(myParam.toString());
     case PROP_MESSAGE_QUEUE:
@@ -517,7 +499,7 @@ public class PropertyManager implements JmolPropertyManager {
     case PROP_MOLECULE_INFO:
       return getMoleculeInfo(viewer.getAtomBitSet(myParam));
     case PROP_MOUSE_INFO:
-      return viewer.getMouseInfo();
+      return getMouseInfo();
     case PROP_ORIENTATION_INFO:
       return viewer.getOrientationInfo();
     case PROP_POINTGROUP_INFO:
@@ -527,7 +509,7 @@ public class PropertyManager implements JmolPropertyManager {
     case PROP_SCRIPT_QUEUE_INFO:
       return viewer.getScriptQueueInfo();
     case PROP_SHAPE_INFO:
-      return viewer.getShapeInfo();
+      return getShapeInfo();
     case PROP_STATE_INFO:
       return viewer.getStateInfo3(myParam.toString(), 0, 0);
     case PROP_TRANSFORM_INFO:
@@ -552,6 +534,29 @@ public class PropertyManager implements JmolPropertyManager {
       if (data[i].length() > 0)
         info.append("\n getProperty ").append(data[i]);
     return info.toString();
+  }
+
+  private Object getImage(String params, String returnType) {
+    int height = -1,
+    width = -1;
+    int pt;
+    if ((pt = params.indexOf("height=")) >= 0)
+      height = PT.parseInt(params.substring(pt + 7));
+    if ((pt = params.indexOf("width=")) >= 0)
+      width = PT.parseInt(params.substring(pt + 6));
+    if (width < 0 && height < 0)
+      height = width = -1;
+    else if (width < 0)
+      width = height;
+    else
+      height = width;
+    String type = "JPG";
+    if (params.indexOf("type=") >= 0)
+      type = PT.getTokens(PT.replaceWithCharacter(params.substring(params.indexOf("type=") + 5), ";,", ' '))[0];
+    String[] errMsg = new String[1];
+    byte[] bytes = viewer.getImageAsBytes(type.toUpperCase(), width,  height, -1, errMsg);
+    return (errMsg[0] != null ? errMsg[0] : returnType == null ? bytes : Base64
+        .getBase64(bytes).toString());
   }
 
   private Object getVariables(String name) {
@@ -1381,7 +1386,7 @@ public class PropertyManager implements JmolPropertyManager {
     return infoChains;
   }
 
-  public Map<String, List<Map<String, Object>>> getAllPolymerInfo(BS bs) {
+  private Map<String, List<Map<String, Object>>> getAllPolymerInfo(BS bs) {
     Map<String, List<Map<String, Object>>> finalInfo = new Hashtable<String, List<Map<String, Object>>>();
     List<Map<String, Object>> modelVector = new  List<Map<String, Object>>();
     int modelCount = viewer.modelSet.modelCount;
@@ -1432,6 +1437,99 @@ public class PropertyManager implements JmolPropertyManager {
     info.put("operatingSystem", Viewer.strOSName);
     return info;
   }
+
+  private Map<String, Object> getAnimationInfo() {
+    AnimationManager am = viewer.animationManager;
+    Map<String, Object> info = new Hashtable<String, Object>();
+    info.put("firstModelIndex", Integer.valueOf(am.firstFrameIndex));
+    info.put("lastModelIndex", Integer.valueOf(am.lastFrameIndex));
+    info.put("animationDirection", Integer.valueOf(am.animationDirection));
+    info.put("currentDirection", Integer.valueOf(am.currentDirection));
+    info.put("displayModelIndex", Integer.valueOf(am.currentModelIndex));
+    if (am.animationFrames != null) {
+      info.put("isMovie", Boolean.TRUE);
+      info.put("frames", Escape.eAI(am.animationFrames));
+      info.put("currentAnimationFrame", Integer
+          .valueOf(am.currentAnimationFrame));
+    }
+    info.put("displayModelNumber", viewer
+        .getModelNumberDotted(am.currentModelIndex));
+    info.put("displayModelName", (am.currentModelIndex >= 0 ? viewer
+        .getModelName(am.currentModelIndex) : ""));
+    info.put("animationFps", Integer.valueOf(am.animationFps));
+    info.put("animationReplayMode", am.animationReplayMode.name());
+    info.put("firstFrameDelay", Float.valueOf(am.firstFrameDelay));
+    info.put("lastFrameDelay", Float.valueOf(am.lastFrameDelay));
+    info.put("animationOn", Boolean.valueOf(am.animationOn));
+    info.put("animationPaused", Boolean.valueOf(am.animationPaused));
+    return info;
+  }
+
+  private Map<String, Object> getBoundBoxInfo() {
+    P3[] pts = viewer.getBoxInfo(null, 1).getBoundBoxPoints(true);
+    Map<String, Object> info = new Hashtable<String, Object>();
+    info.put("center", P3.newP(pts[0]));
+    info.put("vector", V3.newV(pts[1]));
+    info.put("corner0", P3.newP(pts[2]));
+    info.put("corner1", P3.newP(pts[3]));
+    return info;
+  }
+
+  private Map<String, Object> getShapeInfo() {
+    Map<String, Object> info = new Hashtable<String, Object>();
+    SB commands = new SB();
+    Shape[] shapes = viewer.shapeManager.shapes;
+    if (shapes != null)
+      for (int i = 0; i < JC.SHAPE_MAX; ++i) {
+        Shape shape = shapes[i];
+        if (shape != null) {
+          String shapeType = JC.shapeClassBases[i];
+          List<Map<String, Object>> shapeDetail = shape.getShapeDetail();
+          if (shapeDetail != null)
+            info.put(shapeType, shapeDetail);
+        }
+      }
+    if (commands.length() > 0)
+      info.put("shapeCommands", commands.toString());
+    return info;
+  }
+
+  private Map<String, Object> getAuxiliaryInfo(Object atomExpression) {
+    return viewer.modelSet.getAuxiliaryInfo(viewer.getModelBitSet(
+        viewer.getAtomBitSet(atomExpression), false));
+  }
+
+  @SuppressWarnings("unchecked")
+  private List<Map<String, Object>> getMeasurementInfo() {
+    return (List<Map<String, Object>>) viewer.getShapeProperty(JC.SHAPE_MEASURES,
+        "info");
+  }
+
+
+  private Object getMouseInfo() {
+    if (!viewer.haveDisplay)
+      return null;
+    Map<String, Object> info = new Hashtable<String, Object>();
+    List<Object> list = new List<Object>();
+    ActionManager am = viewer.actionManager;
+    for (Object obj : am.binding.getBindings().values()) {
+      if (obj instanceof Boolean)
+        continue;
+      if (PT.isAI(obj)) {
+        int[] binding = (int[]) obj;
+        obj = new String[] { Binding.getMouseActionName(binding[0], false),
+            ActionManager.getActionName(binding[1]) };
+      }
+      list.addLast(obj);
+    }
+    info.put("bindings", list);
+    info.put("bindingName", am.binding.name);
+    info.put("actionNames", ActionManager.actionNames);
+    info.put("actionInfo", ActionManager.actionInfo);
+    info.put("bindingInfo", PT.split(am.getBindingInfo(null), "\n"));
+    return info;
+  }
+
 
 
 }

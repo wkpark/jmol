@@ -205,6 +205,48 @@ for (var i = 0; i < Jmol._coreFiles.length; i++)
           "$.ViewsDialog"
 	]);
 
+	ClazzLoader.jarClasspath (base + "coreswing.z.js",	[
+        "javajs.awt.BorderLayout",
+        "$.Component",
+        "$.Container",
+        "$.LayoutManager",
+        "javajs.swing.AbstractButton",
+        "$.AbstractTableModel",
+        "$.ButtonGroup",
+        "$.Cell",
+        "$.ColumnSelectionModel",
+        "$.Document",
+        "$.FlowLayout",
+        "$.Grid",
+        "$.GridBagConstraints",
+        "$.GridBagLayout",
+        "$.Insets",
+        "$.JButton",
+        "$.JCheckBox",
+        "$.JCheckBoxMenuItem",
+        "$.JComboBox",
+        "$.JComponent",
+        "$.JComponentImp",
+        "$.JContentPane",
+        "$.JDialog",
+        "$.JEditorPane",
+        "$.JLabel",
+        "$.JMenu",
+        "$.JMenuItem",
+        "$.JPanel",
+        "$.JPopupMenu",
+        "$.JRadioButtonMenuItem",
+        "$.JScrollPane",
+        "$.JSplitPane",
+        "$.JTable",
+        "$.JTextField",
+        "$.JTextPane",
+        "$.ListSelectionModel",
+        "$.SwingConstants",
+        "$.TableCellRenderer",
+        "$.TableColumn"
+	]);
+
 
 
 }) ();

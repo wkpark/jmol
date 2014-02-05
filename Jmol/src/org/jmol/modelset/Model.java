@@ -30,7 +30,7 @@ import java.util.Properties;
 
 import org.jmol.api.SymmetryInterface;
 import org.jmol.constant.EnumStructure;
-import javajs.util.BS;
+import org.jmol.java.BS;
 
 import org.jmol.util.BSUtil;
 

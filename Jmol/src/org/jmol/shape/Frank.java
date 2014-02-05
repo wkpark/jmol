@@ -27,7 +27,7 @@ package org.jmol.shape;
 import javajs.awt.Font;
 
 import org.jmol.i18n.GT;
-import javajs.util.BS;
+import org.jmol.java.BS;
 
 
 public class Frank extends FontShape {

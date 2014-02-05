@@ -29,7 +29,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 
 import org.jmol.io.JmolBinary;
-import javajs.util.BS;
+import org.jmol.java.BS;
 import org.jmol.minimize.MinAngle;
 import org.jmol.minimize.MinAtom;
 import org.jmol.minimize.MinBond;

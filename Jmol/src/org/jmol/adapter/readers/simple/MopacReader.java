@@ -28,7 +28,7 @@ import javajs.util.PT;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
-import javajs.util.BS;
+import org.jmol.java.BS;
 import org.jmol.util.Logger;
 
 /**

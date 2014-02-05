@@ -25,7 +25,7 @@ package org.jmol.jvxl.readers;
 
 
 import org.jmol.api.QuantumPlaneCalculationInterface;
-import javajs.util.BS;
+import org.jmol.java.BS;
 import org.jmol.jvxl.api.MeshDataServer;
 import org.jmol.jvxl.api.VertexDataServer;
 import org.jmol.jvxl.calc.MarchingCubes;

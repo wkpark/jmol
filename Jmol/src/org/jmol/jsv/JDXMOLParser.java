@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.jmol.adapter.smarter.JmolJDXMOLReader;
 import org.jmol.adapter.smarter.JmolJDXMOLParser;
-import javajs.util.BS;
+import org.jmol.java.BS;
 import org.jmol.util.Logger;
 
 import javajs.util.List;

@@ -1,6 +1,6 @@
 package org.jmol.modelset;
 
-import javajs.util.BS;
+import org.jmol.java.BS;
 import org.jmol.util.BSUtil;
 
 public class BondSet extends BS {

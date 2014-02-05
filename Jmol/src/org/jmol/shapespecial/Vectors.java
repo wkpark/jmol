@@ -25,7 +25,7 @@
 package org.jmol.shapespecial;
 
 
-import javajs.util.BS;
+import org.jmol.java.BS;
 import org.jmol.shape.AtomShape;
 
 public class Vectors extends AtomShape {

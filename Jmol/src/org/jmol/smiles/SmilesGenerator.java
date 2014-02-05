@@ -32,7 +32,7 @@ import javajs.util.List;
 import javajs.util.SB;
 import javajs.util.P3;
 
-import javajs.util.BS;
+import org.jmol.java.BS;
 
 
 import org.jmol.util.BSUtil;

@@ -39,7 +39,7 @@ import java.util.Map;
 
 
 import org.jmol.api.JmolAdapter;
-import javajs.util.BS;
+import org.jmol.java.BS;
 
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;

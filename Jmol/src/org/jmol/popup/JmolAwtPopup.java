@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2011-10-14 11:28:38 -0500 (Fri, 14 Oct 2011) $
- * $Revision: 16354 $
+ * $Date: 2010-05-11 15:47:18 -0500 (Tue, 11 May 2010) $
+ * $Revision: 13064 $
  *
  * Copyright (C) 2000-2005  The Jmol Development Team
  *
@@ -21,29 +21,24 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.jmol.awtjs2d;
+package org.jmol.popup;
+
+import java.awt.Component;
 
 import javajs.api.PlatformViewer;
+import javajs.api.SC;
+
+import javax.swing.JPopupMenu;
 
 import org.jmol.i18n.GT;
-import org.jmol.popup.MainPopupResourceBundle;
+import org.jmol.popup.JmolGenericPopup;
 import org.jmol.popup.PopupResource;
 import org.jmol.viewer.Viewer;
 
-public class JSmolPopup extends JSPopup {
-  
-  /*
-   * If adding a custom popup menu to an application, simply subclass 
-   * initialize() and specify a different resource bundle. 
-   * 
-   * If you are not using Java awt/Swing, then you need to also overload 
-   * Swingpopup.java and extend it as desired. Or completely omit this package 
-   * 
-   * Note that changes here should also be reflected in org.jmol.modelkit.ModelKitPopup.
-   * 
-   */
-  public JSmolPopup() {
-    // required by reflection
+public class JmolAwtPopup extends JmolGenericPopup {
+
+  public JmolAwtPopup() {
+    helper = new AwtSwingPopupHelper(this);
   }
 
   @Override
@@ -54,5 +49,32 @@ public class JSmolPopup extends JSPopup {
     initialize((Viewer) viewer, bundle, bundle.getMenuName());
     GT.setDoTranslate(doTranslate);
   }
+  
+  @Override
+  protected void menuShowPopup(SC popup, int x, int y) {
+    try {
+      ((JPopupMenu)((AwtSwingComponent)popup).jc).show((Component) viewer.getDisplay(), x, y);
+    } catch (Exception e) {
+      // ignore
+    }
+  }
+  
+  @Override
+  public String menuSetCheckBoxOption(SC item, String name, String what) {
+    // n/a
+    return null;
+  }
+  
+  @Override
+  protected Object getImageIcon(String fileName) {
+    // n/a
+    return null;
+  }
+
+  @Override
+  public void menuFocusCallback(String name, String actionCommand, boolean b) {
+    // n/a ?? 
+  }
+
 
 }

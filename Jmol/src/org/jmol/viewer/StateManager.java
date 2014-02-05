@@ -29,7 +29,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.jmol.api.JmolSceneGenerator;
-import javajs.util.BS;
+import org.jmol.java.BS;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.ModelSet;
 import org.jmol.modelset.Orientation;

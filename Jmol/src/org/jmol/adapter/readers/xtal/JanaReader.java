@@ -33,7 +33,7 @@ import org.jmol.adapter.smarter.MSInterface;
 import org.jmol.api.Interface;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.io.JmolBinary;
-import javajs.util.BS;
+import org.jmol.java.BS;
 
 import javajs.util.List;
 import javajs.util.Matrix;

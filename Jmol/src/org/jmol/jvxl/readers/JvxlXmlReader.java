@@ -36,7 +36,7 @@ import java.util.Hashtable;
 
 
 
-import javajs.util.BS;
+import org.jmol.java.BS;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.JvxlData;
 import org.jmol.jvxl.data.MeshData;

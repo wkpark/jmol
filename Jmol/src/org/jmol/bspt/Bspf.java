@@ -25,7 +25,7 @@ package org.jmol.bspt;
 
 
 
-import javajs.util.BS;
+import org.jmol.java.BS;
 import org.jmol.util.Logger;
 
 import javajs.util.AU;

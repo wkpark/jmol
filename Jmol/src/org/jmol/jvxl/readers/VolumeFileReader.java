@@ -29,7 +29,7 @@ import java.io.BufferedReader;
 import org.jmol.api.Interface;
 import org.jmol.api.QuantumPlaneCalculationInterface;
 import org.jmol.atomdata.AtomData;
-import javajs.util.BS;
+import org.jmol.java.BS;
 
 import org.jmol.util.Logger;
 

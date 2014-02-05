@@ -32,7 +32,7 @@ import org.jmol.util.BSUtil;
 
 import org.jmol.api.Interface;
 import org.jmol.constant.EnumAnimationMode;
-import javajs.util.BS;
+import org.jmol.java.BS;
 import org.jmol.modelset.ModelSet;
 
 public class AnimationManager {

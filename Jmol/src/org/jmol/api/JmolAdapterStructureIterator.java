@@ -25,7 +25,7 @@
 package org.jmol.api;
 
 import org.jmol.constant.EnumStructure;
-import javajs.util.BS;
+import org.jmol.java.BS;
 
 public abstract class JmolAdapterStructureIterator {
 	public abstract boolean hasNext();

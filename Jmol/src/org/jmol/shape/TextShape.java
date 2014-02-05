@@ -26,7 +26,7 @@ package org.jmol.shape;
 
 import javajs.awt.Font;
 
-import javajs.util.BS;
+import org.jmol.java.BS;
 import org.jmol.modelset.Text;
 
 public abstract class TextShape extends Object2dShape {

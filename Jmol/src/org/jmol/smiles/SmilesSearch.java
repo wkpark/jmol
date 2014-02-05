@@ -34,7 +34,7 @@ import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javajs.util.BS;
+import org.jmol.java.BS;
 
 import org.jmol.util.BSUtil;
 import org.jmol.util.JmolEdge;

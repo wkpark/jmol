@@ -45,7 +45,7 @@ import org.jmol.api.JmolBioResolver;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumVdw;
-import javajs.util.BS;
+import org.jmol.java.BS;
 
 
 import javajs.util.AU;

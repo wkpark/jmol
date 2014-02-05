@@ -33,7 +33,7 @@ import org.jmol.thread.TimeoutThread;
 import org.jmol.i18n.GT;
 import org.jmol.io.CifDataReader;
 import org.jmol.io.JmolBinary;
-import javajs.util.BS;
+import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;

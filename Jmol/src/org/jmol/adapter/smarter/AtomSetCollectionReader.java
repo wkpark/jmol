@@ -32,7 +32,7 @@ import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolDocument;
 import org.jmol.api.SymmetryInterface;
-import javajs.util.BS;
+import org.jmol.java.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;

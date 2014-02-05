@@ -26,7 +26,7 @@
 package org.jmol.thread;
 
 
-import javajs.util.BS;
+import org.jmol.java.BS;
 import org.jmol.script.T;
 import javajs.util.List;
 import org.jmol.util.Logger;

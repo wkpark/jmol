@@ -38,7 +38,7 @@ import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.constant.EnumHBondType;
 import org.jmol.constant.EnumVdw;
-import javajs.util.BS;
+import org.jmol.java.BS;
 import org.jmol.jvxl.data.MeshData;
 import org.jmol.jvxl.data.VolumeData;
 import org.jmol.jvxl.readers.Parameters;

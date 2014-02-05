@@ -25,7 +25,7 @@ package org.jmol.popup;
 
 import org.jmol.i18n.GT;
 import org.jmol.i18n.Language;
-import javajs.util.BS;
+import org.jmol.java.BS;
 import org.jmol.script.T;
 import org.jmol.util.Elements;
 import org.jmol.viewer.JC;

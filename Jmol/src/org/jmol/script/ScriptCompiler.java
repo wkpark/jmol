@@ -33,7 +33,7 @@ import org.jmol.viewer.Viewer;
 import org.jmol.api.Interface;
 import org.jmol.i18n.GT;
 import org.jmol.io.JmolBinary;
-import javajs.util.BS;
+import org.jmol.java.BS;
 import org.jmol.modelset.BondSet;
 import org.jmol.modelset.Group;
 

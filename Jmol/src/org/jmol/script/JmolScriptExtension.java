@@ -1,6 +1,6 @@
 package org.jmol.script;
 
-import javajs.util.BS;
+import org.jmol.java.BS;
 import org.jmol.viewer.ShapeManager;
 
 public interface JmolScriptExtension {

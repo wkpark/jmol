@@ -24,7 +24,7 @@
 package org.jmol.modelsetbio;
 
 import org.jmol.constant.EnumStructure;
-import javajs.util.BS;
+import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Group;

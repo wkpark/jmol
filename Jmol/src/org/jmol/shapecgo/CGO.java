@@ -24,7 +24,7 @@
 
 package org.jmol.shapecgo;
 
-import javajs.util.BS;
+import org.jmol.java.BS;
 import org.jmol.script.T;
 import org.jmol.shape.Mesh;
 import org.jmol.shape.MeshCollection;

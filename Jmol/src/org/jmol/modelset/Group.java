@@ -35,7 +35,7 @@ import org.jmol.util.Quaternion;
 import javajs.util.V3;
 import org.jmol.viewer.JC;
 import org.jmol.constant.EnumStructure;
-import javajs.util.BS;
+import org.jmol.java.BS;
 import org.jmol.script.T;
 
 import java.util.Hashtable;

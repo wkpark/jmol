@@ -42,7 +42,7 @@ import javajs.util.V3;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.TransformManager;
 import org.jmol.viewer.Viewer;
-import javajs.util.BS;
+import org.jmol.java.BS;
 import org.jmol.script.T;
 import org.jmol.api.Interface;
 import org.jmol.api.SymmetryInterface;

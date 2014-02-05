@@ -26,7 +26,7 @@ package org.jmol.dssx;
 import org.jmol.api.DSSPInterface;
 import org.jmol.constant.EnumStructure;
 import org.jmol.i18n.GT;
-import javajs.util.BS;
+import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.HBond;

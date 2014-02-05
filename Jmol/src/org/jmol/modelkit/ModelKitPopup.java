@@ -23,21 +23,24 @@
  */
 package org.jmol.modelkit;
 
+import java.awt.Component;
 import java.net.URL;
 
 import javajs.api.PlatformViewer;
+import javajs.api.SC;
 
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 
 import org.jmol.i18n.GT;
+import org.jmol.popup.JmolGenericPopup;
 import org.jmol.popup.PopupResource;
-import org.jmol.popup.SwingPopup;
 import org.jmol.util.Elements;
 import org.jmol.viewer.Viewer;
 
-public class ModelKitPopup extends SwingPopup {
+public class ModelKitPopup extends JmolGenericPopup {
 
   public ModelKitPopup() {
     // required by reflection
@@ -47,13 +50,23 @@ public class ModelKitPopup extends SwingPopup {
   public void jpiInitialize(PlatformViewer viewer, String menu) {
     updateMode = UPDATE_NEVER;
     boolean doTranslate = GT.setDoTranslate(true);
-    PopupResource bundle = new ModelKitPopupResourceBundle();
+    PopupResource bundle = new ModelKitPopupResourceBundle(null, null);
     initialize((Viewer) viewer, bundle, bundle.getMenuName());
     GT.setDoTranslate(doTranslate);
   }
 
+  
   @Override
-  public String menuSetCheckBoxOption(Object item, String name, String what) {
+  protected void menuShowPopup(SC popup, int x, int y) {
+    try {
+      ((JPopupMenu)popup).show((Component) viewer.getDisplay(), x, y);
+    } catch (Exception e) {
+      // ignore
+    }
+  }
+  
+  @Override
+  public String menuSetCheckBoxOption(SC item, String name, String what) {
     // atom type
     String element = JOptionPane.showInputDialog(GT._("Element?"), "");
     if (element == null || Elements.elementNumberFromSymbol(element, true) == 0)
@@ -64,21 +77,20 @@ public class ModelKitPopup extends SwingPopup {
   }
   
   @Override
-  public void checkMenuClick(Object source, String script) {
+  public void menuClickCallback(SC source, String script) {
     if (script.equals("clearQ")) {
-      for (Object o : htCheckbox.values()) {
-        JMenuItem item = (JMenuItem) o;
+      for (SC item : htCheckbox.values()) {
         if (item.getActionCommand().indexOf(":??") < 0)
           continue;        
         menuSetLabel(item, "??");
         item.setActionCommand("_??P!:");
         item.setSelected(false);
-        item.setArmed(false);
+        //item.setArmed(false);
       }
       viewer.evalStringQuiet("set picking assignAtom_C");
       return;
     }
-    checkMenuClickGP(source, script);  
+    super.menuClickCallback(source, script);  
   }
 
   @Override
@@ -87,5 +99,11 @@ public class ModelKitPopup extends SwingPopup {
     URL imageUrl = this.getClass().getClassLoader().getResource(imageName);
     return (imageUrl == null ? null : new ImageIcon(imageUrl));
   }
+
+  @Override
+  public void menuFocusCallback(String name, String actionCommand, boolean b) {
+    // n/a
+  }
+
 
 }

@@ -30,7 +30,7 @@ import java.util.Map.Entry;
 
 import org.jmol.api.JmolNMRInterface;
 import org.jmol.io.JmolBinary;
-import javajs.util.BS;
+import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.Model;

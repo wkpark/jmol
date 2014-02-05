@@ -1,6 +1,6 @@
 package org.jmol.modelset;
 
-import javajs.util.BS;
+import org.jmol.java.BS;
 import org.jmol.util.C;
 import org.jmol.util.GData;
 import javajs.util.P3;

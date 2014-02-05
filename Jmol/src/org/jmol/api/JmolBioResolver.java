@@ -3,7 +3,7 @@ package org.jmol.api;
 import java.util.Map;
 import java.util.Properties;
 
-import javajs.util.BS;
+import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Chain;
 import org.jmol.modelset.Group;

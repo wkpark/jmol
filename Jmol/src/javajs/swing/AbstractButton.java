@@ -92,8 +92,9 @@ public abstract class AbstractButton extends JComponent implements SC {
   }
 
   protected String getMenuHTML() {
-    String label = (this.text != null ? this.text 
-        : this.icon != null ? this.icon : null);
+    String label = (this.icon != null ? this.icon
+        : this.text != null ? this.text 
+         : null);
     String s = (label == null ? "" : "<li><a>" + label + "</a>"
       + "<ul id=\"" + this.id + "\" class=\"" + (this.enabled ? "" : "ui-state-disabled") + "\">");
     int n = getComponentCount();

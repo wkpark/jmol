@@ -37,7 +37,7 @@ import java.util.Properties;
 import org.jmol.api.DSSPInterface;
 import org.jmol.api.Interface;
 import org.jmol.constant.EnumStructure;
-import org.jmol.java.BS;
+import javajs.util.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;

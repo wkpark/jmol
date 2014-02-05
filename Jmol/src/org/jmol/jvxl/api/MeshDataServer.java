@@ -3,7 +3,7 @@ package org.jmol.jvxl.api;
 
 
 import org.jmol.api.JmolDocument;
-import org.jmol.java.BS;
+import javajs.util.BS;
 import org.jmol.jvxl.data.MeshData;
 import org.jmol.shapesurface.IsosurfaceMesh;
 

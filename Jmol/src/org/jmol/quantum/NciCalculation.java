@@ -25,7 +25,7 @@ package org.jmol.quantum;
 
 import org.jmol.api.QuantumPlaneCalculationInterface;
 import org.jmol.api.VolumeDataInterface;
-import org.jmol.java.BS;
+import javajs.util.BS;
 
 import org.jmol.util.BSUtil;
 import org.jmol.util.Eigen;

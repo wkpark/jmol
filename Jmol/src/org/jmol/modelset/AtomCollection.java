@@ -42,7 +42,7 @@ import org.jmol.bspt.Bspf;
 import org.jmol.constant.EnumPalette;
 import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumVdw;
-import org.jmol.java.BS;
+import javajs.util.BS;
 
 import org.jmol.util.BSUtil;
 import org.jmol.util.Elements;

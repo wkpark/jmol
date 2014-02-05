@@ -45,7 +45,7 @@ import org.jmol.constant.EnumStereoMode;
 import org.jmol.constant.EnumVdw;
 import org.jmol.i18n.GT;
 import org.jmol.io.JmolBinary;
-import org.jmol.java.BS;
+import javajs.util.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.BondSet;

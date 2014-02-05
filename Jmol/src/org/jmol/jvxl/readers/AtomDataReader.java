@@ -42,7 +42,7 @@ import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.constant.EnumVdw;
-import org.jmol.java.BS;
+import javajs.util.BS;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.MeshData;
 

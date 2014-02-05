@@ -30,7 +30,7 @@ import javajs.util.PT;
 
 import org.jmol.api.SmilesMatcherInterface;
 
-import org.jmol.java.BS;
+import javajs.util.BS;
 
 import org.jmol.util.BSUtil;
 import org.jmol.util.JmolNode;

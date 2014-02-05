@@ -31,6 +31,7 @@ import java.util.Map;
 import javajs.J2SRequireImport;
 
 import org.jmol.api.JmolViewer;
+import org.jmol.api.Translator;
 import org.jmol.util.Logger; 
 import org.jmol.viewer.Viewer;
 
@@ -43,7 +44,7 @@ import org.jmol.viewer.Viewer;
  */
 
 @J2SRequireImport({org.jmol.i18n.Resource.class, org.jmol.i18n.Language.class})
-public class GT {
+public class GT implements Translator {
 
   private static boolean ignoreApplicationBundle = false;
   private static GT getTextWrapper;
@@ -59,6 +60,13 @@ public class GT {
 
   public GT() {
    //  
+  }
+  
+  /** used in custom menu translation only **/
+  
+  @Override
+  public String translate(String s) {
+    return _(s);
   }
   
   public GT(JmolViewer viewer, String langCode) {
@@ -293,4 +301,5 @@ public class GT {
     }
     return s;
   }
+
 }

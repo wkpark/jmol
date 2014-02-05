@@ -2,7 +2,7 @@ package org.jmol.viewer;
 
 import java.util.Map;
 
-import org.jmol.java.BS;
+import javajs.util.BS;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.Measurement;
 import org.jmol.modelset.TickInfo;

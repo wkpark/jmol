@@ -30,7 +30,7 @@ import java.util.Map;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumPalette;
 import org.jmol.constant.EnumVdw;
-import org.jmol.java.BS;
+import javajs.util.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.ModelSet;

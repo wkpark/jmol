@@ -25,7 +25,7 @@
 package org.jmol.api;
 
 
-import org.jmol.java.BS;
+import javajs.util.BS;
 
 import javajs.util.List;
 import javajs.util.P3;

@@ -4,11 +4,11 @@ import javajs.awt.Component;
 import javajs.awt.Dimension;
 
 /**
- * JSController is an interface that javajs.swing classes will need.
+ * SwingController is an interface that javajs.swing classes will need.
  * It must be implemented as a JavaScript object PRIOR to 
  * any calls to create any components.
  * 
- * In JSmol it is Jmol.Dialog (see JsmolCore.js)
+ * In JSmol it is Jmol.Swing (see JsmolCore.js)
  * 
  * There should be one and only one SwingController on a page. 
  * It is called by its class name "SwingController" directly. 
@@ -26,13 +26,13 @@ public interface SwingController {
    * "Java" object directly, then send notification of the event to the manager.
    * For instance:
    * 
-   *   var component = Jmol.Dialog.htDialogs[element.id];
+   *   var component = Jmol.Swing.htDialogs[element.id];
    *   var info = component.toString();
    *   
    * if (info.indexOf("JCheck") >= 0)
    *     component.selected = element.checked;
    * var id = $("div.JDialog:has(#" + element.id + ")")[0].id
-   * var dialog = Jmol.Dialog.htDialogs[id];
+   * var dialog = Jmol.Swing.htDialogs[id];
    * dialog.manager.actionPerformed(component ? component.name :  dialog.registryKey + "/" + element.id);
    * 
    * @param element
@@ -126,7 +126,7 @@ public interface SwingController {
    * send a notification back to the manager via processWindowClosing(key)
    * 
    *   var id = $("div.JDialog:has(#" + element.id + ")")[0].id
-   *   var dialog = Jmol.Dialog.htDialogs[id];
+   *   var dialog = Jmol.Swing.htDialogs[id];
    *   dialog.manager.processWindowClosing(dialog.registryKey);
    * 
    * @param element

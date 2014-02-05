@@ -26,7 +26,7 @@ package org.jmol.adapter.smarter;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolAdapterAtomIterator;
-import org.jmol.java.BS;
+import javajs.util.BS;
 
 import javajs.util.List;
 import javajs.util.P3;

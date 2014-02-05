@@ -31,7 +31,7 @@ import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.constant.EnumPalette;
 import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumVdw;
-import org.jmol.java.BS;
+import javajs.util.BS;
 import org.jmol.script.T;
 import org.jmol.util.C;
 import org.jmol.util.Elements;

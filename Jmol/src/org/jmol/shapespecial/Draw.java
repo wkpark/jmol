@@ -48,7 +48,7 @@ import org.jmol.util.Measure;
 import org.jmol.util.Txt;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.JC;
-import org.jmol.java.BS;
+import javajs.util.BS;
 import org.jmol.script.T;
 import org.jmol.shape.Mesh;
 import org.jmol.shape.MeshCollection;

@@ -26,7 +26,7 @@ package org.jmol.quantum;
 import org.jmol.api.MOCalculationInterface;
 import org.jmol.api.VolumeDataInterface;
 import org.jmol.constant.EnumQuantumShell;
-import org.jmol.java.BS;
+import javajs.util.BS;
 
 import javajs.util.List;
 import org.jmol.util.Logger;

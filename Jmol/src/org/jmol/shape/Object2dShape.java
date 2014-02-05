@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 
-import org.jmol.java.BS;
+import javajs.util.BS;
 import org.jmol.modelset.Object2d;
 import org.jmol.modelset.Text;
 import org.jmol.util.Logger;

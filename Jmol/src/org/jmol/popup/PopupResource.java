@@ -24,10 +24,12 @@
 package org.jmol.popup;
 
 import java.io.BufferedReader;
+import java.io.StringReader;
 import java.util.Properties;
 
-import org.jmol.i18n.GT;
-import org.jmol.io.JmolBinary;
+import javajs.util.SB;
+
+import org.jmol.api.Translator;
 
 public abstract class PopupResource {
 
@@ -45,16 +47,7 @@ public abstract class PopupResource {
     buildStructure(menuStructure);
     localize(menuStructure != null, menuText);
   }
-  
-  /**
-   * 
-   * @param title
-   * @return menu string -- see MainPopupResourceBundle 
-   */
-  String getMenuAsText(String title) {
-    return null;
-  }
-    
+     
   abstract protected String[] getWordContents();
   
   abstract protected void buildStructure(String menuStructure);
@@ -68,10 +61,8 @@ public abstract class PopupResource {
     return (str == null ? key : str);
   }
 
-  protected void setStructure(String slist) {
-    if (slist == null)
-      return;
-    BufferedReader br = JmolBinary.getBR(slist);
+  protected void setStructure(String slist, Translator gt) {
+    BufferedReader br = new BufferedReader(new StringReader(slist));
     String line;
     int pt;
     try {
@@ -95,7 +86,7 @@ public abstract class PopupResource {
         if (value.length() > 0)
           structure.setProperty(name, value);
         if (label != null && label.length() > 0)
-          words.setProperty(name, GT._(label));
+          words.setProperty(name, (gt == null ? label : gt.translate(label)));
         /* note that in this case we are using a variable in 
          * the GT._() method. That's because all standard labels
          * have been preprocessed already, so any standard label
@@ -145,4 +136,45 @@ public abstract class PopupResource {
     }
   }
 
+  abstract public String getMenuAsText(String title);
+
+  protected String getStuctureAsText(String title, String[][] menuContents,
+                                     String[][] structureContents) {
+      return "# " + getMenuName() + ".mnu " + title + "\n\n" +
+          "# Part I -- Menu Structure\n" +
+          "# ------------------------\n\n" +
+          dumpStructure(menuContents) + "\n\n" +
+          "# Part II -- Key Definitions\n" +
+          "# --------------------------\n\n" +
+          dumpStructure(structureContents) + "\n\n" +
+          "# Part III -- Word Translations\n" +
+          "# -----------------------------\n\n" +
+          dumpWords();
+  }
+
+  private String dumpWords() {
+   String[] wordContents = getWordContents();
+   SB s = new SB();
+   for (int i = 0; i < wordContents.length; i++) {
+     String key = wordContents[i++];
+     if (structure.getProperty(key) == null)
+       s.append(key).append(" | ").append(wordContents[i]).appendC('\n');
+   }
+   return s.toString();
+  }
+
+  private String dumpStructure(String[][] items) {
+   String previous = "";
+   SB s = new SB();
+   for (int i = 0; i < items.length; i++) {
+     String key = items[i][0];
+     String label = words.getProperty(key);
+     if (label != null)
+       key += " | " + label;
+     s.append(key).append(" = ")
+      .append(items[i][1] == null ? previous : (previous = items[i][1]))
+      .appendC('\n');
+   }
+   return s.toString();
+  }
 }

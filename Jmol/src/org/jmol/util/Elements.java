@@ -30,7 +30,7 @@ import java.util.Map;
 import javajs.util.PT;
 
 import org.jmol.constant.EnumVdw;
-import org.jmol.java.BS;
+import javajs.util.BS;
 
 
 

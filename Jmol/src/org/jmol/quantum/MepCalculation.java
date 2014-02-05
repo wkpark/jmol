@@ -31,7 +31,7 @@ import java.util.Map;
 import org.jmol.api.MepCalculationInterface;
 import org.jmol.api.VolumeDataInterface;
 import org.jmol.io.JmolBinary;
-import org.jmol.java.BS;
+import javajs.util.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;

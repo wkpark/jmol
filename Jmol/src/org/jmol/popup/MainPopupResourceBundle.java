@@ -29,7 +29,6 @@ import java.util.Properties;
 import org.jmol.i18n.GT;
 
 import javajs.util.PT;
-import javajs.util.SB;
 
 
 public class MainPopupResourceBundle extends PopupResource {
@@ -49,7 +48,8 @@ public class MainPopupResourceBundle extends PopupResource {
   protected void buildStructure(String menuStructure) {
     addItems(menuContents);
     addItems(structureContents);
-    setStructure(menuStructure);
+    if (menuStructure != null)
+      setStructure(menuStructure, new GT());
   }
     
   private static String Box(String cmd) {
@@ -62,14 +62,21 @@ public class MainPopupResourceBundle extends PopupResource {
       {   "@AXESCOLOR", "gray salmon maroon olive slateblue gold orchid"},
       
       {   MENU_NAME,
-          "FRAMESbyModelComputedMenu configurationComputedMenu " +
+          "fileMenu FRAMESbyModelComputedMenu configurationComputedMenu " +
           "- selectMenuText viewMenu renderMenu colorMenu " +
           "- surfaceMenu FILEUNITMenu " +
           "- sceneComputedMenu zoomMenu spinMenu VIBRATIONMenu spectraMenu FRAMESanimateMenu " +
           "- measureMenu pickingMenu " +
-          "- showConsole JSConsole showMenu fileMenu computationMenu " +
+          "- showConsole JSConsole showMenu computationMenu " +
           "- languageComputedMenu aboutComputedMenu" },
 
+          {   "fileMenu", "loadMenu saveMenu exportMenu SIGNEDJAVAcaptureMenuSPECIAL " },
+          
+      {   "loadMenu", "SIGNEDloadFile SIGNEDloadUrl SIGNEDloadPdb SIGNEDloadScript - "
+          + "reload SIGNEDloadFileUnitCell" },       
+      {   "saveMenu", "writeFileTextVARIABLE writeState writeHistory SIGNEDwriteJmol SIGNEDwriteIsosurface "} ,      
+      {   "exportMenu", "SIGNEDwriteGif SIGNEDNOGLwriteJpg SIGNEDNOGLwritePng SIGNEDNOGLwritePngJmol SIGNEDJAVAwritePovray - "
+            + "SIGNEDJAVAwriteVrml SIGNEDJAVAwriteX3d" },
       {   "selectMenuText",
           "hideNotSelectedCB showSelectionsCB - selectAll selectNone invertSelection - elementsComputedMenu SYMMETRYSelectComputedMenu - "
               + "PDBproteinMenu PDBnucleicMenu PDBheteroMenu PDBcarboMenu PDBnoneOfTheAbove" },
@@ -207,13 +214,6 @@ public class MainPopupResourceBundle extends PopupResource {
               + "showOrient showMeasure - "
               + "showSpacegroup showState SYMMETRYshowSymmetry UNITCELLshow - showIsosurface showMo - extractMOL" },
 
-      {   "fileMenu",
-          "SIGNEDloadFile SIGNEDloadUrl SIGNEDloadPdb SIGNEDloadScript - "
-              + "reload SIGNEDloadFileUnitCell - "
-              + "writeFileTextVARIABLE writeState writeHistory SIGNEDwriteJmol SIGNEDwriteIsosurface " +
-              		"- SIGNEDJAVAcaptureMenuSPECIAL " +
-              		"- SIGNEDJAVAwriteGif SIGNEDNOGLwriteJpg SIGNEDNOGLwritePng SIGNEDNOGLwritePngJmol SIGNEDJAVAwritePovray - "
-              + "SIGNEDJAVAwriteVrml SIGNEDJAVAwriteX3d SIGNEDJAVAwriteIdtf SIGNEDJAVAwriteMaya" },
       {    "SIGNEDJAVAcaptureMenuSPECIAL", "SIGNEDJAVAcaptureRock SIGNEDJAVAcaptureSpin - SIGNEDJAVAcaptureBegin SIGNEDJAVAcaptureEnd SIGNEDJAVAcaptureOff SIGNEDJAVAcaptureOn SIGNEDJAVAcaptureFpsSPECIAL SIGNEDJAVAcaptureLoopingSPECIAL" },
 
       { "[set_spin_X]Menu", "s0 s5 s10 s20 s30 s40 s50" },
@@ -510,7 +510,7 @@ public class MainPopupResourceBundle extends PopupResource {
       { "writeHistory", "if (_applet && !_signedApplet) { console;show history } else { write history \"?FILEROOT?.his\"}" },     
       { "SIGNEDwriteJmol", "write \"?FILEROOT?.jmol\"" },      
       { "SIGNEDwriteIsosurface", "write isosurface \"?FILEROOT?.jvxl\"" },      
-      { "SIGNEDJAVAwriteGif", "write image \"?FILEROOT?.gif\"" },      
+      { "SIGNEDwriteGif", "write image \"?FILEROOT?.gif\"" },      
       { "SIGNEDNOGLwriteJpg", "write image \"?FILEROOT?.jpg\"" },      
       { "SIGNEDNOGLwritePng", "write image \"?FILEROOT?.png\"" },      
       { "SIGNEDNOGLwritePngJmol", "write PNGJ \"?FILEROOT?.png\"" },      
@@ -906,6 +906,9 @@ public class MainPopupResourceBundle extends PopupResource {
         "showState", GT._("Current state"),
         
         "fileMenu", GT._("File"),
+        "loadMenu", GT._("Load"),
+        "saveMenu", GT._("Save"),
+        "exportMenu", GT._("Export"),
         "reload", GT._("Reload"),      
         "SIGNEDloadPdb", GT._("Open from PDB"),      
         "SIGNEDloadFile", GT._("Open local file"),      
@@ -931,7 +934,7 @@ public class MainPopupResourceBundle extends PopupResource {
         "SIGNEDNOGLwritePngJmol", GT.o(GT._("Export {0} image"), "PNG+JMOL"),      
         "SIGNEDJAVAwriteGif", GT.o(GT._("Export {0} image"), "GIF"),    
         "SIGNEDJAVAwritePovray", GT.o(GT._("Export {0} image"), "POV-Ray"),      
-        "SIGNEDwriteJmol", GT._("Save all as JMOL file (zip)"),      
+        "SIGNEDwriteJmol", GT._("Save as PNG/JMOL (image+zip)"),      
         "SIGNEDwriteIsosurface", GT._("Save JVXL isosurface"),      
         "SIGNEDJAVAwriteVrml", GT.o(GT._("Export {0} 3D model"), "VRML"),      
         "SIGNEDJAVAwriteX3d", GT.o(GT._("Export {0} 3D model"), "X3D"),      
@@ -1010,45 +1013,8 @@ public class MainPopupResourceBundle extends PopupResource {
   }
   
   @Override
-  String getMenuAsText(String title) {
-    return "# Jmol.mnu " + title + "\n\n" +
-           "# Part I -- Menu Structure\n" +
-           "# ------------------------\n\n" +
-           dumpStructure(menuContents) + "\n\n" +
-           "# Part II -- Key Definitions\n" +
-           "# --------------------------\n\n" +
-           dumpStructure(structureContents) + "\n\n" +
-           "# Part III -- Word Translations\n" +
-           "# -----------------------------\n\n" +
-           dumpWords();
+  public String getMenuAsText(String title) {
+    return getStuctureAsText(title, menuContents, structureContents);
   }
-
-  private String dumpWords() {
-    String[] wordContents = getWordContents();
-    SB s = new SB();
-    for (int i = 0; i < wordContents.length; i++) {
-      String key = wordContents[i++];
-      if (structure.getProperty(key) == null)
-        s.append(key).append(" | ").append(wordContents[i]).appendC('\n');
-    }
-    return s.toString();
-  }
-  
-  private String dumpStructure(String[][] items) {
-    String previous = "";
-    SB s = new SB();
-    for (int i = 0; i < items.length; i++) {
-      String key = items[i][0];
-      String label = words.getProperty(key);
-      if (label != null)
-        key += " | " + label;
-      s.append(key).append(" = ")
-       .append(items[i][1] == null ? previous : (previous = items[i][1]))
-       .appendC('\n');
-    }
-    return s.toString();
-  }
- 
-
   
 }

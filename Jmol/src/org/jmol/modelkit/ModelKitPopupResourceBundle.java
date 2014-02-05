@@ -23,10 +23,17 @@
  */
 package org.jmol.modelkit;
 
+import java.util.Properties;
+
 import org.jmol.i18n.GT;
 import org.jmol.popup.PopupResource;
 
 public class ModelKitPopupResourceBundle extends PopupResource {
+
+  public ModelKitPopupResourceBundle(String menuStructure,
+      Properties menuText) {
+    super(menuStructure, menuText);
+  }
 
   private final static String MENU_NAME = "modelkitMenu";
 
@@ -35,15 +42,12 @@ public class ModelKitPopupResourceBundle extends PopupResource {
     return MENU_NAME; 
   }
 
-  public ModelKitPopupResourceBundle() {
-    super(null, null);
-  }
-
   @Override
   protected void buildStructure(String menuStructure) {
     addItems(menuContents);
     addItems(structureContents);
-    setStructure(menuStructure);
+    if (menuStructure != null)
+      setStructure(menuStructure, new GT());
   }
   
   private static String[][] menuContents = {
@@ -121,6 +125,11 @@ public class ModelKitPopupResourceBundle extends PopupResource {
     GT.setDoTranslate(wasTranslating);
 
     return words;
+  }
+
+  @Override
+  public String getMenuAsText(String title) {
+    return getStuctureAsText(title, menuContents, structureContents);
   }
 
 }

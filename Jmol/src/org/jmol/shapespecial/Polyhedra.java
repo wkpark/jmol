@@ -26,7 +26,7 @@ package org.jmol.shapespecial;
 
 import org.jmol.api.AtomIndexIterator;
 import org.jmol.constant.EnumPalette;
-import org.jmol.java.BS;
+import javajs.util.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.script.T;

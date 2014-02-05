@@ -35,7 +35,7 @@ import java.util.Properties;
 
 import org.jmol.api.Interface;
 import org.jmol.api.SymmetryInterface;
-import org.jmol.java.BS;
+import javajs.util.BS;
 
 import javajs.util.P3;
 

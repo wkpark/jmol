@@ -27,7 +27,7 @@ package org.jmol.minimize;
 import javajs.util.List;
 
 
-import org.jmol.java.BS;
+import javajs.util.BS;
 import org.jmol.minimize.forcefield.AtomType;
 import org.jmol.modelset.Atom;
 

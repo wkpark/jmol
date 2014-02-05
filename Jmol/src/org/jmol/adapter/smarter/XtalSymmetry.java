@@ -39,7 +39,7 @@ import javajs.util.V3;
 
 import org.jmol.api.Interface;
 import org.jmol.api.SymmetryInterface;
-import org.jmol.java.BS;
+import javajs.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;

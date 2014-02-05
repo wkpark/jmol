@@ -27,7 +27,7 @@ package org.jmol.shape;
 
 import org.jmol.api.SymmetryInterface;
 import org.jmol.constant.EnumAxesMode;
-import org.jmol.java.BS;
+import javajs.util.BS;
 import org.jmol.script.T;
 import org.jmol.util.Escape;
 

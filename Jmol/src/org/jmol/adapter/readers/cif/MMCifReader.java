@@ -37,7 +37,7 @@ import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.adapter.smarter.Structure;
 import org.jmol.api.JmolAdapter;
 import org.jmol.constant.EnumStructure;
-import org.jmol.java.BS;
+import javajs.util.BS;
 import org.jmol.util.Logger;
 import org.jmol.util.SimpleUnitCell;
 

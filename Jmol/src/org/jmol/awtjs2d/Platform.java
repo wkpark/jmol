@@ -101,7 +101,7 @@ public class Platform implements GenericPlatform {
   @Override
   public GenericMenuInterface getMenuPopup(String menuStructure,
                                          char type) {
-    String c = (type == 'j' ? "awtjs2d.JSmolPopup" : "awtjs2d.JSModelKitPopup");
+    String c = (type == 'j' ? "awtjs2d.JmolJSPopup" : "awtjs2d.JSModelKitPopup");
     GenericMenuInterface jmolpopup = (GenericMenuInterface) Interface
         .getOptionInterface(c);
     try {

@@ -27,7 +27,7 @@ import java.util.Map;
 
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.api.JmolRepaintManager;
-import org.jmol.java.BS;
+import javajs.util.BS;
 import org.jmol.modelset.ModelSet;
 import org.jmol.script.T;
 import org.jmol.shape.Shape;

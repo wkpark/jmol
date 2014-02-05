@@ -1,34 +1,34 @@
 package javajs.awt;
 
 import javajs.api.GenericColor;
-import javajs.api.SwingController;
 import javajs.util.CU;
 
 abstract public class Component {
 
   protected boolean visible;  
   protected boolean enabled;
-  protected String text;
+  protected String text;    
   protected String name;
   protected int width;
   protected int height;
   protected String id;
-  protected SwingController controller;
 
-  Object actionListener;
+  protected Object parent;
+
+  protected Object actionListener;
+  protected Object mouseListener;
 
   private GenericColor bgcolor;
 
   protected Component(String type) {
+    id = type + ("" + Math.random()).substring(3, 10);
     if (type == null)
       return;
     /**
      * @j2sNative
-     *            
      *            SwingController.register(this, type);
      */
     {
-      id = type + ("" + Math.random()).substring(3);
     }
 
   }
@@ -55,6 +55,14 @@ abstract public class Component {
     this.name = name;
   }
 
+  public String getName() {
+    return name;
+  }
+  
+  public Object getParent() {
+    return parent;
+  }
+  
   public void setPreferredSize(Dimension dimension) {
     this.width = dimension.width;
     this.height = dimension.height;   
@@ -70,10 +78,18 @@ abstract public class Component {
     actionListener = listener;
   }
 
+  public void addMouseListener(Object listener) {
+    mouseListener = listener;
+  }
+
   public String getText() {
     return text;
   }
 
+  public boolean isEnabled() {
+    return enabled;
+  }
+  
   public void setEnabled(boolean enabled) {
     this.enabled = enabled;
   }
@@ -130,6 +146,5 @@ abstract public class Component {
   public void repaint() {
     // for inheritance
   }
-
 
 }

@@ -34,7 +34,7 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.ModelSet;
 
-import org.jmol.java.BS;
+import javajs.util.BS;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import javajs.util.P3;

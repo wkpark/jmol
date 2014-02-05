@@ -33,7 +33,7 @@ import org.jmol.util.GData;
 import org.jmol.util.Logger;
 import org.jmol.constant.EnumPalette;
 import org.jmol.constant.StaticConstants;
-import org.jmol.java.BS;
+import javajs.util.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Model;

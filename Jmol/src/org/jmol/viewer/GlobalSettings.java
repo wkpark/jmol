@@ -12,7 +12,7 @@ import org.jmol.constant.EnumAxesMode;
 import org.jmol.constant.EnumCallback;
 import org.jmol.constant.EnumStereoMode;
 import org.jmol.constant.EnumStructure;
-import org.jmol.java.BS;
+import javajs.util.BS;
 import org.jmol.script.SV;
 import org.jmol.script.T;
 import org.jmol.util.BSUtil;

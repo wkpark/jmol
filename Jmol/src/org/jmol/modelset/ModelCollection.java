@@ -71,7 +71,7 @@ import org.jmol.util.Vibration;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.ShapeManager;
 import org.jmol.io.XmlUtil;
-import org.jmol.java.BS;
+import javajs.util.BS;
 import org.jmol.script.T;
 import org.jmol.viewer.Viewer;
 

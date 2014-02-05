@@ -26,55 +26,63 @@ package org.jmol.awtjs2d;
 //import java.net.URL;
 
 import javajs.api.PlatformViewer;
+import javajs.api.SC;
+import javajs.awt.Component;
+import javajs.swing.JPopupMenu;
 
 import org.jmol.i18n.GT;
 import org.jmol.modelkit.ModelKitPopupResourceBundle;
+import org.jmol.popup.JSSwingPopupHelper;
+import org.jmol.popup.JmolGenericPopup;
 import org.jmol.popup.PopupResource;
 //import org.jmol.util.Elements;
 import org.jmol.util.Elements;
 import org.jmol.viewer.Viewer;
 
-public class JSModelKitPopup extends JSPopup {
+public class JSModelKitPopup extends JmolGenericPopup {
 
   public JSModelKitPopup() {
-    // required by reflection
+    helper = new JSSwingPopupHelper(this);
   }
   
   @Override
   public void jpiInitialize(PlatformViewer viewer, String menu) {
     updateMode = UPDATE_NEVER;
     boolean doTranslate = GT.setDoTranslate(true);
-    PopupResource bundle = new ModelKitPopupResourceBundle();
+    PopupResource bundle = new ModelKitPopupResourceBundle(null, null);
     initialize((Viewer) viewer, bundle, bundle.getMenuName());
     GT.setDoTranslate(doTranslate);
   }
 
   @Override
-  public void checkMenuClick(Object source, String script) {
+  public void menuShowPopup(SC popup, int x, int y) {
+
+    try {
+      ((JPopupMenu) popup).show((Component) viewer.getApplet(), x, y);
+    } catch (Exception e) {
+      // ignore
+    }
+  }
+  
+  @Override
+  public void menuClickCallback(SC source, String script) {
     if (script.equals("clearQ")) {
-      for (Object o : htCheckbox.values()) {
-        /**
-         * @j2sNative
-         * 
-         * script = o.getActionCommand();
-         * if (script.indexOf(":??") < 0)
-         *  continue;   
-         * this.updateButton(o, "??", "_??P!:");
-         * o.setSelected(false);
-         * this.thisPopup.tainted = true;
-         */
-        {
-          System.out.println(o);
-        }
+      for (SC item : htCheckbox.values()) {
+        if (item.getActionCommand().indexOf(":??") < 0)
+          continue;        
+        menuSetLabel(item, "??");
+        item.setActionCommand("_??P!:");
+        item.setSelected(false);
+        helper.taint();
       }
       viewer.evalStringQuiet("set picking assignAtom_C");
       return;
     }
-    checkMenuClickGP(source, script);  
+    super.menuClickCallback(source, script);  
   }
 
   @Override
-  public String menuSetCheckBoxOption(Object item, String name, String what) {
+  public String menuSetCheckBoxOption(SC item, String name, String what) {
     String element = GT._("Element?");
     /**
      * @j2sNative
@@ -94,4 +102,9 @@ public class JSModelKitPopup extends JSPopup {
     return "org/jmol/modelkit/images/" + fileName;
   }
 
+  @Override
+  public void menuFocusCallback(String name, String actionCommand, boolean b) {
+    // TODO
+    
+  }
 }

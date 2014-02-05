@@ -3,7 +3,7 @@ package org.jmol.api;
 
 import java.util.Map;
 
-import org.jmol.java.BS;
+import javajs.util.BS;
 import org.jmol.script.SV;
 import javajs.util.P3;
 import org.jmol.viewer.Viewer;

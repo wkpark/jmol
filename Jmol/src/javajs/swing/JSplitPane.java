@@ -1,5 +1,6 @@
 package javajs.swing;
 
+import javajs.awt.Container;
 import javajs.util.SB;
 
 public class JSplitPane extends JComponent {
@@ -7,8 +8,8 @@ public class JSplitPane extends JComponent {
 	public static final int HORIZONTAL_SPLIT = 1;
 	boolean isH = true;
 	private int split = 1;
-	private JContainer right;
-	private JContainer left;
+	private Container right;
+	private Container left;
 
 	public JSplitPane(int split) {
 		super("JSpP");
@@ -17,12 +18,12 @@ public class JSplitPane extends JComponent {
 	}
 	
 	public void setRightComponent(JComponent r) {
-		right = new JContainer(null);
+		right = new JComponentImp(null);
 		right.add(r); 
 	}
 
 	public void setLeftComponent(JComponent l) {
-		left = new JContainer(null);
+		left = new JComponentImp(null);
 		left.add(l);
 	}
 
@@ -73,12 +74,12 @@ public class JSplitPane extends JComponent {
 			sb.append("<div id='" + id + "_left' style='width:50%;height:100%;position:absolute;top:0%;left:0%'>");
 		else
 			sb.append("<div id='" + id + "_top' style='width:100%;height:50%;position:absolute;top:0%;left:0%'>");
-		sb.append(left.list.get(0).toHTML());
+		sb.append(left.getComponents()[0].toHTML());
 		if (isH) 
 			sb.append("</div><div id='" + id + "_right' style='width:50%;height:100%;position:absolute;top:0%;left:50%'>");
 		else
 			sb.append("</div><div id='" + id + "_bottom' style='width:100%;height:50%;position:absolute;top:50%;left:0%'>");
-		sb.append(right.list.get(0).toHTML());
+		sb.append(right.getComponents()[0].toHTML());
 		sb.append("</div></div>\n");
 		return sb.toString();
 	}

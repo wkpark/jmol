@@ -2,7 +2,7 @@ package javajs.swing;
 
 import javajs.util.SB;
 
-public class JComboBox<T>  extends JComponent {
+public class JComboBox<T>  extends AbstractButton {
 
 	private String[] info;
 	private int selectedIndex;

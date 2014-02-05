@@ -1,28 +1,9 @@
 package javajs.swing;
 
-public class JCheckBox extends JComponent {
+public class JCheckBox extends AbstractButton {
 
 	public JCheckBox() {
 		super("chkJCB");
-	}
-
-	private boolean selected;
-
-	public void setSelected(boolean selected) {
-		this.selected = selected;
-		/**
-		 * @j2sNative
-		 * 
-		 * SwingController.setSelected(this);
-		 * 
-		 */
-		{
-			System.out.println(id + "  " + selected);
-		}
-	}
-
-	public boolean isSelected() {
-		return selected;
 	}
 
 	@Override

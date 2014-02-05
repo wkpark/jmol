@@ -4,7 +4,7 @@ import javajs.awt.Color;
 import javajs.util.SB;
 
 
-public class JDialog extends JContainer {
+public class JDialog extends JComponent {
 
   private static final int headerHeight = 25;
   private int defaultWidth = 600;

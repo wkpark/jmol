@@ -1,11 +1,17 @@
 package javajs.swing;
 
-import javajs.awt.Component;
+import javajs.awt.Container;
 
-abstract public class JComponent extends Component {
+public abstract class JComponent extends Container {
+
+  protected boolean autoScrolls;
 
   protected JComponent(String type) {
     super(type);
   }
-	
+  
+  public void setAutoscrolls(boolean b) {
+    autoScrolls = b;
+  }
+  
 }

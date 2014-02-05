@@ -756,7 +756,7 @@ public class PT {
         break;
       }
       if (info instanceof JSONEncodable) {
-        // includes org.jmol.java.BS, org.jmol.script.SV
+        // includes javajs.util.BS, org.jmol.script.SV
         s = ((JSONEncodable) info).toJSON();
         break;
       }

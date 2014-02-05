@@ -1,7 +1,7 @@
 package javajs.swing;
 
 import javajs.awt.Dimension;
-import org.jmol.java.BS;
+import javajs.util.BS;
 import javajs.util.SB;
 
 

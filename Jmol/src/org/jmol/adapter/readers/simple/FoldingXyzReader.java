@@ -73,9 +73,9 @@ public class FoldingXyzReader extends AtomSetCollectionReader {
       return true;
     boolean addAtoms = doGetModel(++modelNumber, null);
     int modelAtomCount = parseIntStr(token);
-    String[] tokens = getTokens();
     if (addAtoms) {
       atomSetCollection.newAtomSet();
+      String[] tokens = getTokens();
       atomSetCollection.setAtomSetName(tokens.length == 2 ? "Protein "
           + tokens[1] : line.substring(next[0]).trim());
     }

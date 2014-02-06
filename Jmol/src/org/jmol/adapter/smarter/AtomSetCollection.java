@@ -254,7 +254,7 @@ public class AtomSetCollection {
     }
   }
 
-  void setNoAutoBond() {
+  public void setNoAutoBond() {
     setAtomSetCollectionAuxiliaryInfo("noAutoBond", Boolean.TRUE);
   }
 

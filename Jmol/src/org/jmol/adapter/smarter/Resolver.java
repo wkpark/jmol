@@ -452,6 +452,7 @@ public class Resolver {
       if (nLines == 1 && lines[0].length() > 0
           && Character.isDigit(lines[0].charAt(0)))
         return specialTags[SPECIAL_JME][0]; //only one line, and that line starts with a number 
+      
       if (checkMopacGraphf(lines))
         return specialTags[SPECIAL_MOPACGRAPHF][0]; //must be prior to checkFoldingXyz and checkMol
       if (checkOdyssey(lines))

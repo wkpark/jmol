@@ -5,6 +5,11 @@ import java.util.Map;
 
 import javajs.api.GenericColor;
 
+/**
+ * ColorUtility 
+ * 
+ */
+
 public class CU {
 
   public static String toRGBHexString(GenericColor c) {

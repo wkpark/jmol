@@ -27,7 +27,8 @@ package org.jmol.adapter.readers.simple;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
 
-import java.util.StringTokenizer;
+import java.util.Hashtable;
+import java.util.Map;
 
 import javajs.util.AU;
 import javajs.util.PT;
@@ -40,122 +41,135 @@ import javajs.util.PT;
  * I have not found a precise description of the file format.
  * I used source code from fpd from Dick Howell to analyze the file format.
  * (see <a href="http://boston.quik.com/rph">http://boston.quik.com/rph</a>)
+ * -- Nico Vervelle
+ * 
+ * Extended by Bob Hanson 2/2014:
+ * 
+ *   - adds support for newer Tinker files (see data/folding)
+ *   - adds desired model options
+ *   - adds atom type if available
+ * 
  */
 
 public class FoldingXyzReader extends AtomSetCollectionReader {
 
-  // Enable / Disable features of the reader
-  private final static boolean useAutoBond = false;
+  @Override
+  protected void initializeReader() {
+    atomSetCollection.setNoAutoBond();
+  }
   
+  /**
+   * @return true if next line needs to be read.
+   * 
+   * Note that just a single token on line 1 is NOT possible. 
+   * If that were the case, the xyz reader would have captured this.
+   * 
+   */
   @Override
   protected boolean checkLine() throws Exception {
-      StringTokenizer tokens = new StringTokenizer(line, " \t");
-      if (tokens.hasMoreTokens()) {
-        atomSetCollection.newAtomSet();
-      	int modelAtomCount = PT.parseIntRadix(tokens.nextToken(), 10);
-      	if (tokens.hasMoreTokens())
-      	  atomSetCollection.setAtomSetName("Protein " + tokens.nextToken());
-      	readAtoms(modelAtomCount);
-      }
+    int[] next = new int[] { 0 };
+    String token = PT.parseTokenNext(line, next);
+    if (token == null)
       return true;
+    boolean addAtoms = doGetModel(++modelNumber, null);
+    int modelAtomCount = parseIntStr(token);
+    String[] tokens = getTokens();
+    if (addAtoms) {
+      atomSetCollection.newAtomSet();
+      atomSetCollection.setAtomSetName(tokens.length == 2 ? "Protein "
+          + tokens[1] : line.substring(next[0]));
+    }
+    boolean readLine = readAtoms(modelAtomCount + 1, addAtoms); // Some Tinker files are one off!
+    continuing = !addAtoms || !isLastModel(modelNumber);
+    return readLine;
   }
 	    
   /**
-   * @param modelAtomCount
+   * Lots of possibilities here:
+   * 
+   * atom count is real; atom count is one less than true atom count
+   * sixth column is atom type; sixth column is first bond
+   * 
+   * 
+   * @param atomCount
+   * @param addAtoms
+   * @return true if next line needs to be read
    * @throws Exception
    */
-  void readAtoms(int modelAtomCount) throws Exception {
-  	// Stores bond informations
-  	int[][] bonds = AU.newInt2(modelAtomCount + 1);
-  	for (int i = 0; i <= modelAtomCount; ++i) {
-  	  bonds[i] = null;
-  	}
-  	
-    for (int i = 0; i <= modelAtomCount; ++i) {
-      readLine();
-      if (line != null && line.length() == 0) {
-      	readLine();
+  boolean readAtoms(int atomCount, boolean addAtoms) throws Exception {
+    // Stores bond informations
+    Map<String, int[]> htBondCounts = new Hashtable<String, int[]>();
+    int[][] bonds = AU.newInt2(atomCount);
+    boolean haveAtomTypes = true;
+    boolean checking = true;
+    int i0 = atomSetCollection.atomCount;
+    String lastAtom = null;
+    boolean readNextLine = true;
+    for (int i = 0; i < atomCount; i++) {
+      discardLinesUntilNonBlank();
+      if (line == null)
+        break; // no problem.
+      String[] tokens = getTokensStr(line);
+      if (tokens[0].equals(lastAtom)) {
+        readNextLine = false;
+        break; // end; next structure;
       }
-      if (line != null && line.length() > 0) {
-        //Logger.debug("Line: " + line);
-        Atom atom = atomSetCollection.addNewAtom();
-        parseIntStr(line);
-        atom.atomName = parseToken();
-        if (atom.atomName != null) {
-          int carCount = 1;
-          if (atom.atomName.length() >= 2) {
-          	char c1 = atom.atomName.charAt(0);
-          	char c2 = atom.atomName.charAt(1);
-          	if (Character.isUpperCase(c1) && Character.isLowerCase(c2) &&
-          	    Atom.isValidElementSymbol2(c1, c2)) {
-          	  carCount = 2;
-          	}
-          	if ((c1 == 'C') && (c2 =='L')) {
-              carCount = 2;
-          	}
+      lastAtom = tokens[0];
+      if (!addAtoms)
+        continue;
+      addAtomXYZSymName(tokens, 2, getElement(tokens[1]), tokens[1]);
+      int n = tokens.length - 5;
+      bonds[i] = new int[n];
+      for (int j = 0; j < n; j++) {
+        String t = tokens[j + 5];
+        int i2 = parseIntStr(t) - 1;
+        bonds[i][j] = i2;
+        if (checking) {
+          // Tinker files may or may not include an atom type in column 6
+          if (n == 0 || i2 == i || i2 < 0 || i2 >= atomCount) {
+            haveAtomTypes = (n > 0);
+            checking = false;
+          } else {
+            int[] count = htBondCounts.get(t);
+            if (count == null)
+              htBondCounts.put(t, count = new int[1]);
+            if (++count[0] > 10) // even 10 is quite many bonds!
+              haveAtomTypes = !(checking = false);
           }
-          atom.elementSymbol = atom.atomName.substring(0, carCount);
         }
-        setAtomCoordXYZ(atom, parseFloat(), parseFloat(), parseFloat());
+      }
+    }
+    if (addAtoms)
+      makeBonds(i0, bonds, !checking && haveAtomTypes);
+    return readNextLine;
+  }
 
-        // Memorise bond informations
-        int bondCount = 0;
-        bonds[i] = new int[5];
-        int bondNum = Integer.MIN_VALUE;
-        while ((bondNum = parseInt()) > 0) {
-          if (bondCount == bonds[i].length) {
-          	bonds[i] = AU.arrayCopyI(bonds[i], bondCount + 1); 
-          }
-          bonds[i][bondCount++] = bondNum - 1;
-        }
-        if (bondCount < bonds[i].length) {
-          bonds[i] = AU.arrayCopyI(bonds[i], bondCount);
-        }
-      }
+  private void makeBonds(int i0, int[][] bonds, boolean haveAtomTypes) {
+    Atom[] atoms = atomSetCollection.atoms;
+    for (int i = bonds.length; --i >= 0;) {
+      int[] b = bonds[i];
+      if (b == null)
+        continue;
+      Atom a = atoms[i0 + i];
+      int b0 = 0;
+      if (haveAtomTypes)
+        a.atomName += "\0" + (b[b0++] + 1);
+      for (int j = b.length; --j >= b0;)
+        if (b[j] > i)
+          atomSetCollection.addNewBondWithOrder(i0 + i, i0 + b[j], 1);
     }
-    
-    // Bonds
-    if (!useAutoBond) {
-    
-      // Decide if first bond is relevant
-      int incorrectBonds = 0;
-      for (int origin = 0; origin < bonds.length; origin++) {
-      	if ((bonds[origin] != null) && (bonds[origin].length > 0)) {
-          boolean correct = false;
-          int destination = bonds[origin][0];
-          if ((destination >= 0) && (destination < bonds.length) && (bonds[destination] != null)) {
-            for (int j = 0; j < bonds[destination].length; j++) {
-              if (bonds[destination][j] == origin) {
-                correct = true;
-              }
-            }
-          }
-          if (!correct) {
-            incorrectBonds++;
-          }
-      	}
-      }
-      
-      // Create bond
-      int start = (incorrectBonds * 5) > bonds.length ? 1 : 0;
-      for (int origin = start; origin < bonds.length; origin++) {
-        if (bonds[origin] != null) {
-          for (int i = 0; i < bonds[origin].length; i++) {
-            boolean correct = false;
-            int destination = bonds[origin][i];
-            if ((destination >= 0) && (destination < bonds.length) && (bonds[destination] != null)) {
-              for (int j = start; j < bonds[destination].length; j++) {
-                if (bonds[destination][j] == origin) {
-          	      correct = true;
-                }
-              }
-            }
-            if (correct && (destination > origin)) {
-            	atomSetCollection.addNewBondWithOrder(origin, destination, 1);
-            }
-          }
-        }
-      }
+  }
+
+  private String getElement(String name) {
+    int n = name.length();
+    switch (n) {
+    case 1:
+      break;
+    default:
+      char c1 = name.charAt(0);
+      char c2 = name.charAt(1);
+      n = (Atom.isValidElementSymbol2(c1, c2) || c1 == 'C' && c2 == 'L' ? 2 : 1);
     }
+    return name.substring(0, n);
   }
 }

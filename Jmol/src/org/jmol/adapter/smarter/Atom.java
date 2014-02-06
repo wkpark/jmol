@@ -123,13 +123,6 @@ public class Atom extends P3 implements Cloneable {
     return elementSymbol;
   }
 
-  /**
-   * Bits which indicate whether or not an element symbol is valid.
-   *<p>
-   * If the high bit is set, then it is valid as a standalone char.
-   * otherwise, bits 0-25 say whether or not is valid when followed
-   * by the letters a-z.
-   */
   private final static int[] elementCharMasks = {
     //   Ac Ag Al Am Ar As At Au
     1 << ('c' - 'a') |
@@ -278,9 +271,8 @@ public class Atom extends P3 implements Cloneable {
   }
 
   public static boolean isValidElementSymbol2(char chFirst, char chSecond) {
-    if (chFirst < 'A' || chFirst > 'Z' || chSecond < 'a' || chSecond > 'z')
-      return false;
-    return ((elementCharMasks[chFirst - 'A'] >> (chSecond - 'a')) & 1) != 0;
+    return (chFirst >= 'A' && chFirst <= 'Z' && chSecond >= 'a'
+        && chSecond <= 'z' && ((elementCharMasks[chFirst - 'A'] >> (chSecond - 'a')) & 1) != 0);
   }
 
   public static boolean isValidElementSymbolNoCaseSecondChar2(char chFirst,

@@ -10473,7 +10473,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       return;
     case T.frame:
       if (isArrayParameter(2)) {
-        float[] f = floatParameterSet(2, 0, Integer.MAX_VALUE);
+        float[] f = expandFloatArray(floatParameterSet(2, 0, Integer.MAX_VALUE));
+
+        if (f == null)
+          invArg();
         checkLength(iToken + 1);
         if (chk)
           return;
@@ -10543,6 +10546,32 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       break;
     default:
       frameControl(1);
+    }
+  }
+
+  private static float[] expandFloatArray(float[] a) {
+    int n = a.length;
+    try {
+      for (int i = 0; i < a.length; i++)
+        if (a[i] < 0)
+          n += Math.abs(a[i - 1] + a[i]) - 1; // 100 - 102 or 11 - 3
+      if (n == a.length)
+        return a;
+      float[] b = new float[n];
+      for (int pt = 0, i = 0; i < a.length; i++) {
+        n = (int) a[i];
+        if (n >= 0) {
+          b[pt++] = n;
+        } else {
+          int dif = (int) (a[i - 1] + n);
+          int dir = (dif < 0 ? 1 : -1);
+          for (int j = (int) a[i - 1]; j != -a[i]; j += dir, pt++)
+            b[pt] = b[pt - 1] + dir;
+        }
+      }
+      return b;
+    } catch (Exception e) {
+      return null;
     }
   }
 

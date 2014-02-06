@@ -1257,7 +1257,11 @@ public class TestSmilesParser extends TestCase {
    * @param expected SMILES molecule
    */
   private static void checkMolecule(String smiles, SmilesSearch expected) {
-    assertTrue(new SmilesMatcher().areEqual(smiles, expected));
+    try {
+      assertTrue(new SmilesMatcher().areEqual(smiles, expected));
+    } catch (Exception e) {
+      assertTrue(false);
+    }
   }
   
   public SmilesBond createBond(SmilesAtom atom1, SmilesAtom atom2, int bondType, boolean isExplicitH) {

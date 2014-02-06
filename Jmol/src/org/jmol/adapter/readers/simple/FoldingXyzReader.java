@@ -58,6 +58,12 @@ public class FoldingXyzReader extends AtomSetCollectionReader {
     atomSetCollection.setNoAutoBond();
   }
   
+  @Override
+  protected void finalizeReader() throws Exception {
+    isTrajectory = false;
+    finalizeReaderASCR();
+  }
+  
   /**
    * @return true if next line needs to be read.
    * 
@@ -139,8 +145,10 @@ public class FoldingXyzReader extends AtomSetCollectionReader {
         }
       }
     }
-    if (addAtoms)
+    if (addAtoms) {
       makeBonds(i0, bonds, !checking && haveAtomTypes);
+      applySymmetryAndSetTrajectory();
+    }
     return readNextLine;
   }
 

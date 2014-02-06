@@ -372,7 +372,7 @@ class UnitCell extends SimpleUnitCell {
   }
   
   P3[] getCanonicalCopy(float scale, boolean withOffset) {
-    P3[] pts = new P3[8];
+    P3[] pts  = new P3[8];
     P3 cell0 = null;
     P3 cell1 = null;
     if (withOffset && unitCellMultiplier != null) {
@@ -383,16 +383,16 @@ class UnitCell extends SimpleUnitCell {
       cell1.sub(cell0);
     }
     for (int i = 0; i < 8; i++) {
-      pts[i] = P3.newP(BoxInfo.unitCubePoints[i]);
+      P3 pt = pts[i] = P3.newP(BoxInfo.unitCubePoints[i]);
       if (cell0 != null) {
         scale *= unitCellMultiplier.z;
-        pts[i].add3(cell0.x + cell1.x * pts[i].x, 
-            cell0.y + cell1.y * pts[i].y,
-            cell0.z + cell1.z * pts[i].z);
+        pts[i].add3(cell0.x + cell1.x * pt.x, 
+            cell0.y + cell1.y * pt.y,
+            cell0.z + cell1.z * pt.z);
       }
-      matrixFractionalToCartesian.rotTrans(pts[i]);
-      if (withOffset)
-        pts[i].add(cartesianOffset);
+      matrixFractionalToCartesian.rotTrans(pt);
+      if (!withOffset)
+        pt.sub(cartesianOffset);
     }
     return BoxInfo.getCanonicalCopy(pts, scale);
   }

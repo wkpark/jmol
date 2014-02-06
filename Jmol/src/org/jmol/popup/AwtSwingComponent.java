@@ -74,21 +74,22 @@ public class AwtSwingComponent implements SC {
 
   @Override
   public void add(SC item) {
-    if (item == null || item.getText() == null || item.getText().length() == 0) {
+    if (item == null || item.getIcon() == null
+        && (item.getText() == null || item.getText().length() == 0)) {
       if (jm == null)
         ((JPopupMenu) jc).addSeparator();
       else
         jm.addSeparator();
-      return;  
+      return;
     }
-    
+
     AwtSwingComponent c = (AwtSwingComponent) item;
     jc.add(c.jc);
-    
+
     // in Java, a menuItem gets one and only one parent.
     // This is never changed, even if the item is moved 
     // to another menu. So we set this exactly ONCE.
-    
+
     if (c.parent == null)
       c.parent = this;
   }
@@ -151,13 +152,16 @@ public class AwtSwingComponent implements SC {
   }
 
   @Override
+  public Object getIcon() {
+    return ab.getIcon();
+  }
+
+  @Override
   public void init(String text, Object icon, String actionCommand,
                    SC popupMenu) {
-    if (text != null)
-      ab.setText(text);
-    if (icon != null)
-      ab.setIcon((Icon) icon);
-    ab.setActionCommand(actionCommand);
+    setText(text);
+    setIcon(icon);
+    setActionCommand(actionCommand);
   }
 
   @Override
@@ -216,6 +220,11 @@ public class AwtSwingComponent implements SC {
   @Override
   public void setText(String text) {
     ab.setText(text);
+  }
+
+  @Override
+  public void setIcon(Object icon) {
+    ab.setIcon((Icon) icon);
   }
 
 }

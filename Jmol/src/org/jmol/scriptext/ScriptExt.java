@@ -2788,17 +2788,18 @@ public class ScriptExt implements JmolScriptExtension {
    * @param bsIgnore
    * @param fileName
    * @return calculated atom potentials
+   * @throws Exception 
    */
   private float[] getAtomicPotentials(BS bsSelected, BS bsIgnore,
-                                     String fileName) {
+                                     String fileName) throws Exception {
     float[] potentials = new float[viewer.getAtomCount()];
     MepCalculationInterface m = (MepCalculationInterface) Interface
         .getOptionInterface("quantum.MlpCalculation");
     m.set(viewer);
     String data = (fileName == null ? null : viewer.getFileAsString(fileName, false));
-    m.assignPotentials(viewer.modelSet.atoms, potentials, viewer.getSmartsMatch("a",
-        bsSelected), viewer.getSmartsMatch("/noAromatic/[$(C=O),$(O=C),$(NC=O)]",
-        bsSelected), bsIgnore, data);
+      m.assignPotentials(viewer.modelSet.atoms, potentials, viewer.getSmartsMatch("a",
+          bsSelected), viewer.getSmartsMatch("/noAromatic/[$(C=O),$(O=C),$(NC=O)]",
+          bsSelected), bsIgnore, data);
     return potentials;
   }
 
@@ -5184,7 +5185,11 @@ public class ScriptExt implements JmolScriptExtension {
       checkLength(tok == T.chemical ? 3 : 2);
       if (chk)
         return;
-      msg = viewer.getSmiles(null);
+      try {
+        msg = viewer.getSmiles(null);
+      } catch (Exception e) {
+        msg = e.getMessage();
+      }
       switch (tok) {
       case T.drawing:
         if (msg.length() > 0) {
@@ -5991,7 +5996,7 @@ public class ScriptExt implements JmolScriptExtension {
           eval.runScript(sb.toString());
         } catch (Exception e) {
           viewer.setSelectionSubset(bsSubset);
-          eval.errorStr(-1, "Error: " + e.toString());
+          eval.errorStr(-1, "Error: " + e.getMessage());
         } catch (Error er) {
           viewer.setSelectionSubset(bsSubset);
           eval.errorStr(-1, "Error: " + er.toString());
@@ -6483,7 +6488,11 @@ public class ScriptExt implements JmolScriptExtension {
         M4 m4 = new M4();
         center = new P3();
         if ("*".equals(strSmiles) && bsFrom != null)
-          strSmiles = viewer.getSmiles(bsFrom);
+          try {
+            strSmiles = viewer.getSmiles(bsFrom);
+          } catch (Exception e) {
+            eval.evalError(e.getMessage(), null);
+          }
         if (isFlexFit) {
           float[] list;
           if (bsFrom == null || bsTo == null || (list = getFlexFitList(bsFrom, bsTo, strSmiles, !isSmiles)) == null)
@@ -6598,8 +6607,13 @@ public class ScriptExt implements JmolScriptExtension {
         return;
       Atom[] atoms = viewer.modelSet.atoms;
       int atomCount = viewer.getAtomCount();
-      int[][] maps = viewer.getSmilesMatcher().getCorrelationMaps(smarts,
-          atoms, atomCount, viewer.getSelectedAtoms(), true, false);
+      int[][] maps = null;
+      try {
+        maps = viewer.getSmilesMatcher().getCorrelationMaps(smarts,
+            atoms, atomCount, viewer.getSelectedAtoms(), true, false);
+      } catch (Exception e) {
+        eval.evalError(e.getMessage(), null);
+      }
       if (maps == null)
         return;
       setShapeProperty(JC.SHAPE_MEASURES, "maps", maps);
@@ -7018,7 +7032,7 @@ public class ScriptExt implements JmolScriptExtension {
         for (int j = 0; j < maps[i].length; j++)
           ptsB.addLast(atoms[maps[i][j]]);
     } catch (Exception e) {
-      eval.evalError(e.toString(), null);
+      eval.evalError(e.getMessage(), null);
     }
     return 0;
   }
@@ -7037,11 +7051,12 @@ public class ScriptExt implements JmolScriptExtension {
 
     if (pattern.length() == 0 || pattern.equals("H")) {
       boolean isBioSmiles = (!asOneBitset);
-      Object ret = viewer.getSmilesOpt(bsSelected, 0, 0, pattern.equals("H"), isBioSmiles, false,
-          true, true);
-      if (ret == null)
-        eval.evalError(viewer.getSmilesMatcher().getLastException(), null);
-      return ret;
+      try {
+        return viewer.getSmilesOpt(bsSelected, 0, 0, pattern.equals("H"),
+            isBioSmiles, false, true, true);
+      } catch (Exception e) {
+        eval.evalError(e.getMessage(), null);
+      }
     }
 
     boolean asAtoms = true;
@@ -7051,19 +7066,19 @@ public class ScriptExt implements JmolScriptExtension {
       // getting a BitSet or BitSet[] from a set of atoms or a pattern.
 
       asAtoms = (smiles == null);
-      if (asAtoms)
-        b = viewer.getSmilesMatcher().getSubstructureSetArray(pattern,
-            viewer.modelSet.atoms, viewer.getAtomCount(), bsSelected, null,
-            isSmarts, false);
-      else
-        b = viewer.getSmilesMatcher().find(pattern, smiles, isSmarts, false);
+      try {
+        if (asAtoms)
+          b = viewer.getSmilesMatcher().getSubstructureSetArray(pattern,
+              viewer.modelSet.atoms, viewer.getAtomCount(), bsSelected, null,
+              isSmarts, false);
+        else
+          b = viewer.getSmilesMatcher().find(pattern, smiles, isSmarts, false);
 
-      if (b == null) {
-        eval.showStringPrint(viewer.getSmilesMatcher().getLastException(),
-            false);
-        if (!asAtoms && !isSmarts)
-          return Integer.valueOf(-1);
-        return "?";
+      } catch (Exception e) {
+        eval.evalError(e.getMessage(), null);
+        //if (!asAtoms && !isSmarts)
+          //return Integer.valueOf(-1);
+        return null;
       }
     } else {
 
@@ -7298,125 +7313,137 @@ public class ScriptExt implements JmolScriptExtension {
         return false;
       smiles1 = SV.sValue(args[2]);
       isSmiles = smiles1.equalsIgnoreCase("SMILES");
-      if (isSmiles)
-        smiles1 = viewer.getSmiles(bs1);
+      try {
+        if (isSmiles)
+          smiles1 = viewer.getSmiles(bs1);
+      } catch (Exception e) {
+        eval.evalError(e.getMessage(), null);
+      }
       float[] data = getFlexFitList(bs1, bs2, smiles1, !isSmiles);
       return (data == null ? mp.addXStr("") : mp.addXAF(data));
     }
-    if (isIsomer) {
-      if (args.length != 3)
-        return false;
-      if (bs1 == null && bs2 == null)
-        return mp.addXStr(viewer.getSmilesMatcher()
-            .getRelationship(smiles1, smiles2).toUpperCase());
-      String mf1 = (bs1 == null ? viewer.getSmilesMatcher()
-          .getMolecularFormula(smiles1, false) : JmolMolecule
-          .getMolecularFormula(viewer.getModelSet().atoms, bs1, false));
-      String mf2 = (bs2 == null ? viewer.getSmilesMatcher()
-          .getMolecularFormula(smiles2, false) : JmolMolecule
-          .getMolecularFormula(viewer.getModelSet().atoms, bs2, false));
-      if (!mf1.equals(mf2))
-        return mp.addXStr("NONE");
-      if (bs1 != null)
-        smiles1 = (String) getSmilesMatches("", null, bs1, null, false, true);
-      boolean check;
-      if (bs2 == null) {
-        // note: find smiles1 IN smiles2 here
-        check = (viewer.getSmilesMatcher().areEqual(smiles2, smiles1) > 0);
-      } else {
-        check = (((BS) getSmilesMatches(smiles1, null, bs2, null, false, true))
-            .nextSetBit(0) >= 0);
-      }
-      if (!check) {
-        // MF matched, but didn't match SMILES
-        String s = smiles1 + smiles2;
-        if (s.indexOf("/") >= 0 || s.indexOf("\\") >= 0 || s.indexOf("@") >= 0) {
-          if (smiles1.indexOf("@") >= 0
-              && (bs2 != null || smiles2.indexOf("@") >= 0)) {
-            // reverse chirality centers
-            smiles1 = viewer.getSmilesMatcher().reverseChirality(smiles1);
+    try {
+      if (isIsomer) {
+        if (args.length != 3)
+          return false;
+        if (bs1 == null && bs2 == null)
+          return mp.addXStr(viewer.getSmilesMatcher()
+              .getRelationship(smiles1, smiles2).toUpperCase());
+        String mf1 = (bs1 == null ? viewer.getSmilesMatcher()
+            .getMolecularFormula(smiles1, false) : JmolMolecule
+            .getMolecularFormula(viewer.getModelSet().atoms, bs1, false));
+        String mf2 = (bs2 == null ? viewer.getSmilesMatcher()
+            .getMolecularFormula(smiles2, false) : JmolMolecule
+            .getMolecularFormula(viewer.getModelSet().atoms, bs2, false));
+        if (!mf1.equals(mf2))
+          return mp.addXStr("NONE");
+        if (bs1 != null)
+          smiles1 = (String) getSmilesMatches("", null, bs1, null, false, true);
+        boolean check;
+        if (bs2 == null) {
+          // note: find smiles1 IN smiles2 here
+          check = (viewer.getSmilesMatcher().areEqual(smiles2, smiles1) > 0);
+        } else {
+          check = (((BS) getSmilesMatches(smiles1, null, bs2, null, false, true))
+              .nextSetBit(0) >= 0);
+        }
+        if (!check) {
+          // MF matched, but didn't match SMILES
+          String s = smiles1 + smiles2;
+          if (s.indexOf("/") >= 0 || s.indexOf("\\") >= 0
+              || s.indexOf("@") >= 0) {
+            if (smiles1.indexOf("@") >= 0
+                && (bs2 != null || smiles2.indexOf("@") >= 0)) {
+              // reverse chirality centers
+              smiles1 = viewer.getSmilesMatcher().reverseChirality(smiles1);
+              if (bs2 == null) {
+                check = (viewer.getSmilesMatcher().areEqual(smiles1, smiles2) > 0);
+              } else {
+                check = (((BS) getSmilesMatches(smiles1, null, bs2, null,
+                    false, true)).nextSetBit(0) >= 0);
+              }
+              if (check)
+                return mp.addXStr("ENANTIOMERS");
+            }
+            // remove all stereochemistry from SMILES string
             if (bs2 == null) {
-              check = (viewer.getSmilesMatcher().areEqual(smiles1, smiles2) > 0);
+              check = (viewer.getSmilesMatcher().areEqual(
+                  "/nostereo/" + smiles2, smiles1) > 0);
             } else {
-              check = (((BS) getSmilesMatches(smiles1, null, bs2, null, false,
-                  true)).nextSetBit(0) >= 0);
+              Object ret = getSmilesMatches("/nostereo/" + smiles1, null, bs2,
+                  null, false, true);
+              check = (((BS) ret).nextSetBit(0) >= 0);
             }
             if (check)
-              return mp.addXStr("ENANTIOMERS");
+              return mp.addXStr("DIASTERIOMERS");
           }
-          // remove all stereochemistry from SMILES string
-          if (bs2 == null) {
-            check = (viewer.getSmilesMatcher().areEqual("/nostereo/" + smiles2,
-                smiles1) > 0);
-          } else {
-            Object ret = getSmilesMatches("/nostereo/" + smiles1, null, bs2,
-                null, false, true);
-            check = (((BS) ret).nextSetBit(0) >= 0);
-          }
-          if (check)
-            return mp.addXStr("DIASTERIOMERS");
+          // MF matches, but not enantiomers or diasteriomers
+          return mp.addXStr("CONSTITUTIONAL ISOMERS");
         }
-        // MF matches, but not enantiomers or diasteriomers
-        return mp.addXStr("CONSTITUTIONAL ISOMERS");
-      }
-      //identical or conformational 
-      if (bs1 == null || bs2 == null)
-        return mp.addXStr("IDENTICAL");
-      stddev = getSmilesCorrelation(bs1, bs2, smiles1, null, null, null, null,
-          false, false, null, null, false, false);
-      return mp.addXStr(stddev < 0.2f ? "IDENTICAL"
-          : "IDENTICAL or CONFORMATIONAL ISOMERS (RMSD=" + stddev + ")");
-    } else if (isSmiles) {
-      ptsA = new List<P3>();
-      ptsB = new List<P3>();
-      sOpt = SV.sValue(args[2]);
-      boolean isMap = sOpt.equalsIgnoreCase("MAP");
-      isSmiles = (sOpt.equalsIgnoreCase("SMILES"));
-      boolean isSearch = (isMap || sOpt.equalsIgnoreCase("SMARTS"));
-      if (isSmiles || isSearch)
-        sOpt = (args.length > 3 ? SV.sValue(args[3]) : null);
-      boolean hMaps = (("H".equals(sOpt) || "allH".equals(sOpt) || "bestH".equals(sOpt)));
-      boolean allMaps = (("all".equals(sOpt) || "allH".equals(sOpt)));
-      boolean bestMap = (("best".equals(sOpt) || "bestH".equals(sOpt)));
-      if (sOpt == null || hMaps || allMaps || bestMap) {
-        // with explicitH we set to find only the first match.
-        if (isMap || isSmiles) {
-          sOpt = "/noaromatic" + (allMaps || bestMap ? "/" : " nostereo/")
-              + getSmilesMatches((hMaps ? "H" : ""), null, bs1, null,
-                  false, true);
+        //identical or conformational 
+        if (bs1 == null || bs2 == null)
+          return mp.addXStr("IDENTICAL");
+        stddev = getSmilesCorrelation(bs1, bs2, smiles1, null, null, null,
+            null, false, false, null, null, false, false);
+        return mp.addXStr(stddev < 0.2f ? "IDENTICAL"
+            : "IDENTICAL or CONFORMATIONAL ISOMERS (RMSD=" + stddev + ")");
+      } else if (isSmiles) {
+        ptsA = new List<P3>();
+        ptsB = new List<P3>();
+        sOpt = SV.sValue(args[2]);
+        boolean isMap = sOpt.equalsIgnoreCase("MAP");
+        isSmiles = (sOpt.equalsIgnoreCase("SMILES"));
+        boolean isSearch = (isMap || sOpt.equalsIgnoreCase("SMARTS"));
+        if (isSmiles || isSearch)
+          sOpt = (args.length > 3 ? SV.sValue(args[3]) : null);
+        boolean hMaps = (("H".equals(sOpt) || "allH".equals(sOpt) || "bestH"
+            .equals(sOpt)));
+        boolean allMaps = (("all".equals(sOpt) || "allH".equals(sOpt)));
+        boolean bestMap = (("best".equals(sOpt) || "bestH".equals(sOpt)));
+        if (sOpt == null || hMaps || allMaps || bestMap) {
+          // with explicitH we set to find only the first match.
+          if (isMap || isSmiles) {
+            sOpt = "/noaromatic"
+                + (allMaps || bestMap ? "/" : " nostereo/")
+                + getSmilesMatches((hMaps ? "H" : ""), null, bs1, null, false,
+                    true);
+          } else {
+            return false;
+          }
         } else {
-          return false;
+          allMaps = true;
+        }
+        stddev = getSmilesCorrelation(bs1, bs2, sOpt, ptsA, ptsB, m, null,
+            !isSmiles, isMap, null, null, !allMaps && !bestMap, bestMap);
+        if (isMap) {
+          int nAtoms = ptsA.size();
+          if (nAtoms == 0)
+            return mp.addXStr("");
+          int nMatch = ptsB.size() / nAtoms;
+          List<int[][]> ret = new List<int[][]>();
+          for (int i = 0, pt = 0; i < nMatch; i++) {
+            int[][] a = AU.newInt2(nAtoms);
+            ret.addLast(a);
+            for (int j = 0; j < nAtoms; j++, pt++)
+              a[j] = new int[] { ((Atom) ptsA.get(j)).index,
+                  ((Atom) ptsB.get(pt)).index };
+          }
+          if (!allMaps)
+            return (ret.size() > 0 ? mp.addXAII(ret.get(0)) : mp.addXStr(""));
+          return mp.addXList(ret);
         }
       } else {
-        allMaps = true;
+        ptsA = eval.getPointVector(args[0], 0);
+        ptsB = eval.getPointVector(args[1], 0);
+        if (ptsA != null && ptsB != null)
+          stddev = Measure.getTransformMatrix4(ptsA, ptsB, m, null, false);
       }
-      stddev = getSmilesCorrelation(bs1, bs2, sOpt, ptsA, ptsB, m, null,
-          !isSmiles, isMap, null, null, !allMaps && !bestMap, bestMap);
-      if (isMap) {
-        int nAtoms = ptsA.size();
-        if (nAtoms == 0)
-          return mp.addXStr("");
-        int nMatch = ptsB.size() / nAtoms;
-        List<int[][]> ret = new List<int[][]>();
-        for (int i = 0, pt = 0; i < nMatch; i++) {
-          int[][] a = AU.newInt2(nAtoms);
-          ret.addLast(a);
-          for (int j = 0; j < nAtoms; j++, pt++)
-            a[j] = new int[] { ((Atom) ptsA.get(j)).index,
-                ((Atom) ptsB.get(pt)).index };
-        }
-        if (!allMaps)
-            return (ret.size() > 0 ? mp.addXAII(ret.get(0)) : mp.addXStr(""));
-        return mp.addXList(ret);
-      }
-    } else {
-      ptsA = eval.getPointVector(args[0], 0);
-      ptsB = eval.getPointVector(args[1], 0);
-      if (ptsA != null && ptsB != null)
-        stddev = Measure.getTransformMatrix4(ptsA, ptsB, m, null, false);
+      return (isStdDev || Float.isNaN(stddev) ? mp.addXFloat(stddev) : mp
+          .addXM4(m));
+    } catch (Exception e) {
+      eval.evalError(e.getMessage() == null ? e.toString() : e.getMessage(), null);
+      return false;
     }
-    return (isStdDev || Float.isNaN(stddev) ? mp.addXFloat(stddev) : mp
-        .addXM4(m));
   }
 
   private boolean evaluateContact(ScriptMathProcessor mp, SV[] args) {
@@ -7910,7 +7937,8 @@ public class ScriptExt implements JmolScriptExtension {
     return (var == null ? false : mp.addXVar(var));
   }
 
-  private boolean evaluateFind(ScriptMathProcessor mp, SV[] args) throws ScriptException {
+  private boolean evaluateFind(ScriptMathProcessor mp, SV[] args)
+      throws ScriptException {
     if (args.length == 0)
       return false;
 
@@ -7931,53 +7959,55 @@ public class ScriptExt implements JmolScriptExtension {
     boolean isSmiles = sFind.equalsIgnoreCase("SMILES");
     boolean isSearch = sFind.equalsIgnoreCase("SMARTS");
     boolean isMF = sFind.equalsIgnoreCase("MF");
-    if (isSmiles || isSearch || x1.tok == T.bitset) {
-      int iPt = (isSmiles || isSearch ? 2 : 1);
-      BS bs2 = (iPt < args.length && args[iPt].tok == T.bitset ? (BS) args[iPt++].value
-          : null);
-      boolean asBonds = ("bonds".equalsIgnoreCase(SV
-          .sValue(args[args.length - 1])));
-      boolean isAll = (asBonds || args[args.length - 1].tok == T.on);
-      Object ret = null;
-      switch (x1.tok) {
-      case T.string:
-        String smiles = SV.sValue(x1);
-        if (bs2 != null)
-          return false;
-        if (flags.equalsIgnoreCase("mf")) {
-          ret = viewer.getSmilesMatcher().getMolecularFormula(smiles, isSearch);
-          if (ret == null)
-            eval.evalError(viewer.getSmilesMatcher().getLastException(), null);
-        } else {
-          ret = getSmilesMatches(flags, smiles, null, null, isSearch,
-              !isAll);
+    try {
+      if (isSmiles || isSearch || x1.tok == T.bitset) {
+        int iPt = (isSmiles || isSearch ? 2 : 1);
+        BS bs2 = (iPt < args.length && args[iPt].tok == T.bitset ? (BS) args[iPt++].value
+            : null);
+        boolean asBonds = ("bonds".equalsIgnoreCase(SV
+            .sValue(args[args.length - 1])));
+        boolean isAll = (asBonds || args[args.length - 1].tok == T.on);
+        Object ret = null;
+        switch (x1.tok) {
+        case T.string:
+          String smiles = SV.sValue(x1);
+          if (bs2 != null)
+            return false;
+          if (flags.equalsIgnoreCase("mf")) {
+            ret = viewer.getSmilesMatcher().getMolecularFormula(smiles,
+                isSearch);
+          } else {
+            ret = getSmilesMatches(flags, smiles, null, null, isSearch, !isAll);
+          }
+          break;
+        case T.bitset:
+          if (isMF)
+            return mp.addXStr(JmolMolecule.getMolecularFormula(
+                viewer.getModelSet().atoms, (BS) x1.value, false));
+          if (isSequence)
+            return mp.addXStr(viewer.getSmilesOpt((BS) x1.value, -1, -1, false,
+                true, isAll, isAll, false));
+          if (isSmiles || isSearch)
+            sFind = flags;
+          BS bsMatch3D = bs2;
+          if (asBonds) {
+            // this will return a single match
+            int[][] map = viewer.getSmilesMatcher().getCorrelationMaps(sFind,
+                viewer.modelSet.atoms, viewer.getAtomCount(), (BS) x1.value,
+                !isSmiles, true);
+            ret = (map.length > 0 ? viewer.getDihedralMap(map[0]) : new int[0]);
+          } else {
+            ret = getSmilesMatches(sFind, null, (BS) x1.value, bsMatch3D,
+                !isSmiles, !isAll);
+          }
+          break;
         }
-        break;
-      case T.bitset:
-        if (isMF)
-          return mp.addXStr(JmolMolecule.getMolecularFormula(
-              viewer.getModelSet().atoms, (BS) x1.value, false));
-        if (isSequence)
-          return mp.addXStr(viewer.getSmilesOpt((BS) x1.value, -1, -1, false, true,
-              isAll, isAll, false));
-        if (isSmiles || isSearch)
-          sFind = flags;
-        BS bsMatch3D = bs2;
-        if (asBonds) {
-          // this will return a single match
-          int[][] map = viewer.getSmilesMatcher().getCorrelationMaps(sFind,
-              viewer.modelSet.atoms, viewer.getAtomCount(), (BS) x1.value,
-              !isSmiles, true);
-          ret = (map.length > 0 ? viewer.getDihedralMap(map[0]) : new int[0]);
-        } else {
-          ret = getSmilesMatches(sFind, null, (BS) x1.value, bsMatch3D,
-              !isSmiles, !isAll);
-        }
-        break;
+        if (ret == null)
+          eval.error(ScriptEvaluator.ERROR_invalidArgument);
+        return mp.addXObj(ret);
       }
-      if (ret == null)
-        eval.error(ScriptEvaluator.ERROR_invalidArgument);
-      return mp.addXObj(ret);
+    } catch (Exception e) {
+      eval.evalError(e.getMessage(), null);
     }
     boolean isReverse = (flags.indexOf("v") >= 0);
     boolean isCaseInsensitive = (flags.indexOf("i") >= 0);
@@ -8015,8 +8045,9 @@ public class ScriptExt implements JmolScriptExtension {
       }
       if (!isList) {
         return (asMatch ? mp.addXStr(v.size() == 1 ? (String) v.get(0) : "")
-            : isReverse ? mp.addXBool(n == 1) : asMatch ? mp.addXStr(n == 0 ? ""
-                : matcher.group()) : mp.addXInt(n == 0 ? 0 : matcher.start() + 1));
+            : isReverse ? mp.addXBool(n == 1) : asMatch ? mp
+                .addXStr(n == 0 ? "" : matcher.group()) : mp.addXInt(n == 0 ? 0
+                : matcher.start() + 1));
       }
       if (n == 1)
         return mp.addXStr(asMatch ? (String) v.get(0) : list[ipt]);
@@ -9298,9 +9329,9 @@ public class ScriptExt implements JmolScriptExtension {
             : null);
         bs = viewer.getSmilesMatcher().getSubstructureSet(pattern,
             viewer.getModelSet().atoms, viewer.getAtomCount(), bsSelected,
-            tok != T.smiles && tok != T.substructure, false);
+            tok != T.smiles, false);
       } catch (Exception e) {
-        eval.evalError(e.toString(), null);
+        eval.evalError(e.getMessage(), null);
       }
     return mp.addXBs(bs);
   }

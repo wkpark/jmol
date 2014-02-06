@@ -181,8 +181,7 @@ public class SmilesGenerator {
         i = i2 - 1;
       }
     } catch (Exception e) {
-      System.out.println(e.toString());
-      return "";
+      throw new InvalidSmilesException("//* error: " + e.getMessage() + " *//");
     }
     if (!allowUnmatchedRings && !htRingsSequence.isEmpty()) {
       dumpRingKeys(sb, htRingsSequence);

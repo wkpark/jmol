@@ -400,7 +400,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   @Override
-  public BS getSmartsMatch(String smarts, BS bsSelected) {
+  public BS getSmartsMatch(String smarts, BS bsSelected) throws Exception {
     if (bsSelected == null)
       bsSelected = getSelectedAtoms();
     return getSmilesMatcher().getSubstructureSet(smarts, modelSet.atoms,
@@ -9725,7 +9725,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   @Override
-  public String getSmiles(BS bs) {
+  public String getSmiles(BS bs) throws Exception {
     return getSmilesOpt(bs, -1, -1, false, false, false, false, false);
   }
 
@@ -9742,10 +9742,11 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
    * @param bioAddComment
    * 
    * @return SMILES string
+   * @throws Exception 
    */
   public String getSmilesOpt(BS bsSelected, int index1, int index2,
                           boolean explicitH, boolean isBioSmiles,
-                          boolean bioAllowUnmatchedRings, boolean bioAddCrossLinks, boolean bioAddComment) {
+                          boolean bioAllowUnmatchedRings, boolean bioAddCrossLinks, boolean bioAddComment) throws Exception {
     Atom[] atoms = modelSet.atoms;
     if (bsSelected == null) {
       if (index1 < 0 || index2 < 0) {

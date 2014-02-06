@@ -6,11 +6,16 @@ import javajs.api.SC;
 
 public abstract class AbstractButton extends JComponent implements SC {
 
-  boolean selected;
-  String actionCommand;
+  Object actionListener;
   Object itemListener;
-  SC popupMenu;
   Object applet;
+  String htmlName;
+  boolean selected;
+  
+  private String actionCommand;
+  private SC popupMenu;
+
+  private String icon;
 
   protected AbstractButton(String type) {
     super(type);
@@ -35,6 +40,17 @@ public abstract class AbstractButton extends JComponent implements SC {
     return selected;
   }
   
+  /** 
+   * It will be the function of the JavaScript on the 
+   * page to do with selectionListener what is desired.
+   * @param listener 
+   * 
+   */
+  @Override
+  public void addActionListener(Object listener) {
+    actionListener = listener;
+  }
+
   @Override
   public String getActionCommand() {
     return actionCommand;
@@ -50,9 +66,12 @@ public abstract class AbstractButton extends JComponent implements SC {
     itemListener = listener;
   }
   
-  protected String icon;
-  public String htmlName;
-
+  @Override
+  public Object getIcon() {
+    return icon;
+  }
+  
+  @Override
   public void setIcon(Object icon) {
     this.icon = (String) icon;
   }
@@ -71,6 +90,11 @@ public abstract class AbstractButton extends JComponent implements SC {
      */
     {
     }
+  }
+ 
+  public SC getTopPopupMenu() {
+    // note that JMenu.getPopupMenu refers to ITSELF, not the main one)
+    return popupMenu;
   }
   
   @Override

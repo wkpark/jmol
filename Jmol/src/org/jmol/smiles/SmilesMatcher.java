@@ -35,25 +35,27 @@ import org.jmol.java.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.JmolNode;
 
-/** 
+/**
  * Originating author: Nicholas Vervelle
  * 
- * A class to handle a variety of SMILES/SMARTS-related functions, including:
- *  -- determining if two SMILES strings are equivalent
- *  -- determining the molecular formula of a SMILES or SMARTS string
- *  -- searching for specific runs of atoms in a 3D model
- *  -- searching for specific runs of atoms in a SMILES description
- *  -- generating valid (though not canonical) SMILES and bioSMILES strings
- *  -- getting atom-atom correlation maps to be used with biomolecular alignment methods
- *  
+ * A class to handle a variety of SMILES/SMARTS-related functions, including: --
+ * determining if two SMILES strings are equivalent -- determining the molecular
+ * formula of a SMILES or SMARTS string -- searching for specific runs of atoms
+ * in a 3D model -- searching for specific runs of atoms in a SMILES description
+ * -- generating valid (though not canonical) SMILES and bioSMILES strings --
+ * getting atom-atom correlation maps to be used with biomolecular alignment
+ * methods
+ * 
  * <p>
- * The original SMILES description can been found at the
- * <a href="http://www.daylight.com/smiles/">SMILES Home Page</a>.
+ * The original SMILES description can been found at the <a
+ * href="http://www.daylight.com/smiles/">SMILES Home Page</a>.
  * 
  * Specification for this implementation can be found in package.html.
  * 
  * <p>
- * <pre><code>
+ * 
+ * <pre>
+ * <code>
  * public methods:
  * 
  * int areEqual  -- checks a SMILES string against a reference (-1 for error; 0 for no finds; >0 for number of finds)
@@ -82,12 +84,13 @@ import org.jmol.util.JmolNode;
  *   e.g.
  *   
  *     print "CCCC".find("SMILES", "C[C]")
- *
+ * 
  *   select search("smartsString")
  *   
  *   All bioSMARTS strings begin with ~ (tilde).
  *   
- * </code></pre>
+ * </code>
+ * </pre>
  * 
  * @author Bob Hanson
  * 
@@ -104,53 +107,45 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   }
 
   @Override
-  public String getMolecularFormula(String pattern, boolean isSmarts) {
-    InvalidSmilesException.setLastError(null);
-    try {
-      // note: Jmol may undercount the number of hydrogen atoms
-      // for aromatic amines where the ring bonding to N is 
-      // not explicit. Each "n" will be assigned a bonding count
-      // of two unless explicitly indicated as -n-.
-      // Thus, we take the position that "n" is the 
-      // N of pyridine unless otherwise indicated.
-      //
-      // For example:
-      //   $ print "c1ncccc1C".find("SMILES","MF")
-      //   H 7 C 5 N 1   (correct)
-      //   $ print "c1nc-n-c1C".find("SMILES","MF")
-      //   H 6 C 4 N 2   (correct)
-      // but
-      //   $ print "c1ncnc1C".find("SMILES","MF")
-      //   H 5 C 4 N 2   (incorrect)
-      SmilesSearch search = SmilesParser.getMolecule(pattern, isSmarts);
-      search.createTopoMap(null);
-      search.nodes = search.jmolAtoms;
-      return search.getMolecularFormula(!isSmarts);
-    } catch (InvalidSmilesException e) {
-      if (InvalidSmilesException.getLastError() == null)
-        InvalidSmilesException.setLastError(e.toString());
-      return null;
-    }
+  public String getMolecularFormula(String pattern, boolean isSmarts)
+      throws Exception {
+    InvalidSmilesException.clear();
+    // note: Jmol may undercount the number of hydrogen atoms
+    // for aromatic amines where the ring bonding to N is 
+    // not explicit. Each "n" will be assigned a bonding count
+    // of two unless explicitly indicated as -n-.
+    // Thus, we take the position that "n" is the 
+    // N of pyridine unless otherwise indicated.
+    //
+    // For example:
+    //   $ print "c1ncccc1C".find("SMILES","MF")
+    //   H 7 C 5 N 1   (correct)
+    //   $ print "c1nc-n-c1C".find("SMILES","MF")
+    //   H 6 C 4 N 2   (correct)
+    // but
+    //   $ print "c1ncnc1C".find("SMILES","MF")
+    //   H 5 C 4 N 2   (incorrect)
+    SmilesSearch search = SmilesParser.getMolecule(pattern, isSmarts);
+    search.createTopoMap(null);
+    search.nodes = search.jmolAtoms;
+    return search.getMolecularFormula(!isSmarts);
   }
 
   @Override
   public String getSmiles(JmolNode[] atoms, int atomCount, BS bsSelected,
-                          boolean asBioSmiles, boolean bioAllowUnmatchedRings, boolean bioAddCrossLinks, String bioComment, boolean explicitH) {    
-    InvalidSmilesException.setLastError(null);
-    try {
-      if (asBioSmiles)
-        return (new SmilesGenerator()).getBioSmiles(atoms, atomCount,
-            bsSelected, bioAllowUnmatchedRings, bioAddCrossLinks, bioComment);
-      return (new SmilesGenerator()).getSmiles(atoms, atomCount, bsSelected, explicitH);
-    } catch (InvalidSmilesException e) {
-      if (InvalidSmilesException.getLastError() == null)
-        InvalidSmilesException.setLastError(e.toString());
-      return null;
-    }
+                          boolean asBioSmiles, boolean bioAllowUnmatchedRings,
+                          boolean bioAddCrossLinks, String bioComment,
+                          boolean explicitH) throws Exception {
+    InvalidSmilesException.clear();
+    if (asBioSmiles)
+      return (new SmilesGenerator()).getBioSmiles(atoms, atomCount, bsSelected,
+          bioAllowUnmatchedRings, bioAddCrossLinks, bioComment);
+    return (new SmilesGenerator()).getSmiles(atoms, atomCount, bsSelected,
+        explicitH);
   }
 
   @Override
-  public int areEqual(String smiles1, String smiles2) {
+  public int areEqual(String smiles1, String smiles2) throws Exception {
     BS[] result = find(smiles1, smiles2, false, false);
     return (result == null ? -1 : result.length);
   }
@@ -160,53 +155,51 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    * 
    * @param smiles
    * @param molecule
-   * @return        true only if the SMILES strings match and there are no errors
+   * @return true only if the SMILES strings match and there are no errors
+   * @throws Exception
    */
-  public boolean areEqual(String smiles, SmilesSearch molecule) {
+  public boolean areEqual(String smiles, SmilesSearch molecule)
+      throws Exception {
     BS[] ret = find(smiles, molecule, false, true, true);
     return (ret != null && ret.length == 1);
   }
 
   /**
    * 
-   * Searches for all matches of a pattern within a SMILES string.
-   * If SMILES (not isSmarts), requires that all atoms be part of the match.
+   * Searches for all matches of a pattern within a SMILES string. If SMILES
+   * (not isSmarts), requires that all atoms be part of the match.
    * 
    * 
    * @param pattern
-   *          SMILES or SMARTS pattern.
+   *        SMILES or SMARTS pattern.
    * @param smiles
-   * @param isSmarts TRUE for SMARTS strings, FALSE for SMILES strings
-   * @param firstMatchOnly 
+   * @param isSmarts
+   *        TRUE for SMARTS strings, FALSE for SMILES strings
+   * @param firstMatchOnly
    * @return number of occurances of pattern within smiles
+   * @throws Exception
    */
   @Override
   public BS[] find(String pattern, String smiles, boolean isSmarts,
-                       boolean firstMatchOnly) {
+                   boolean firstMatchOnly) throws Exception {
 
-    InvalidSmilesException.setLastError(null);
-    try {
-      SmilesSearch search = SmilesParser.getMolecule(smiles, false);
-      return find(pattern, search, isSmarts, !isSmarts, firstMatchOnly);
-    } catch (Exception e) {
-      if (InvalidSmilesException.getLastError() == null)
-        InvalidSmilesException.setLastError(e.toString());
-      System.out.println(e.toString());
-      return null;
-    }
+    InvalidSmilesException.clear();
+    SmilesSearch search = SmilesParser.getMolecule(smiles, false);
+    return find(pattern, search, isSmarts, !isSmarts, firstMatchOnly);
   }
 
   @Override
-  public String getRelationship(String smiles1, String smiles2) {
-    if (smiles1 == null || smiles2 == null
-        || smiles1.length() == 0 || smiles2.length() == 0)
+  public String getRelationship(String smiles1, String smiles2)
+      throws Exception {
+    if (smiles1 == null || smiles2 == null || smiles1.length() == 0
+        || smiles2.length() == 0)
       return "";
     String mf1 = getMolecularFormula(smiles1, false);
     String mf2 = getMolecularFormula(smiles2, false);
     if (!mf1.equals(mf2))
       return "none";
     boolean check;
-      // note: find smiles1 IN smiles2 here
+    // note: find smiles1 IN smiles2 here
     int n1 = countStereo(smiles1);
     int n2 = countStereo(smiles2);
     check = (n1 == n2 && areEqual(smiles2, smiles1) > 0);
@@ -217,12 +210,12 @@ public class SmilesMatcher implements SmilesMatcherInterface {
         if (n1 == n2 && n1 > 0) {
           // reverse chirality centers
           smiles1 = reverseChirality(smiles1);
-            check = (areEqual(smiles1, smiles2) > 0);
+          check = (areEqual(smiles1, smiles2) > 0);
           if (check)
             return "enantiomers";
         }
         // remove all stereochemistry from SMILES string
-          check = (areEqual("/nostereo/" + smiles2, smiles1) > 0);
+        check = (areEqual("/nostereo/" + smiles2, smiles1) > 0);
         if (check)
           return (n1 == n2 ? "diastereomers" : "ambiguous stereochemistry!");
       }
@@ -231,7 +224,6 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     }
     return "identical";
   }
-    
 
   @Override
   public String reverseChirality(String smiles) {
@@ -248,7 +240,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    * Returns a bitset matching the pattern within atoms.
    * 
    * @param pattern
-   *          SMILES or SMARTS pattern.
+   *        SMILES or SMARTS pattern.
    * @param atoms
    * @param atomCount
    * @param bsSelected
@@ -258,9 +250,9 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    */
 
   @Override
-  public BS getSubstructureSet(String pattern, JmolNode[] atoms,
-                                   int atomCount, BS bsSelected,
-                                   boolean isSmarts, boolean firstMatchOnly) {
+  public BS getSubstructureSet(String pattern, JmolNode[] atoms, int atomCount,
+                               BS bsSelected, boolean isSmarts,
+                               boolean firstMatchOnly) throws Exception {
     return (BS) match(pattern, atoms, atomCount, bsSelected, null, isSmarts,
         false, firstMatchOnly, MODE_BITSET);
   }
@@ -270,51 +262,43 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    * 
    */
   @Override
-  public void getSubstructureSets(String[] smarts, JmolNode[] atoms, int atomCount,
-                                  int flags, BS bsSelected, List<BS> ret, 
-                                  List<BS>[] vRings) {
-    InvalidSmilesException.setLastError(null);
+  public void getSubstructureSets(String[] smarts, JmolNode[] atoms,
+                                  int atomCount, int flags, BS bsSelected,
+                                  List<BS> ret, List<BS>[] vRings)
+      throws Exception {
+    InvalidSmilesException.clear();
     SmilesParser sp = new SmilesParser(true);
     SmilesSearch search = null;
-    try {
-      search = sp.parse("");
-      search.firstMatchOnly = false;
-      search.matchAllAtoms = false;
-      search.jmolAtoms = atoms;
-      search.jmolAtomCount = Math.abs(atomCount);
-      search.setSelected(bsSelected);
-      search.getRingData(true, flags, vRings);
-      search.asVector = false;
-      search.subSearches = new SmilesSearch[1];
-      search.getSelections();
-    } catch (InvalidSmilesException e) {
-      // I think this is impossible.
-    }
+    search = sp.parse("");
+    search.firstMatchOnly = false;
+    search.matchAllAtoms = false;
+    search.jmolAtoms = atoms;
+    search.jmolAtomCount = Math.abs(atomCount);
+    search.setSelected(bsSelected);
+    search.getRingData(true, flags, vRings);
+    search.asVector = false;
+    search.subSearches = new SmilesSearch[1];
+    search.getSelections();
     BS bsDone = new BS();
-    
+
     for (int i = 0; i < smarts.length; i++) {
-      if (smarts[i] == null || smarts[i].length() == 0 || smarts[i].startsWith("#")) {
+      if (smarts[i] == null || smarts[i].length() == 0
+          || smarts[i].startsWith("#")) {
         ret.addLast(null);
         continue;
       }
-      try {
-        search.clear();
-        SmilesSearch ss = sp.getSearch(search, SmilesParser.cleanPattern(smarts[i]), flags);
-        search.subSearches[0] = ss;
-        BS bs = BSUtil.copy((BS) search.search(false));//.subsearch(ss, false, false));
-        //System.out.println(i + " " + bs);
-        ret.addLast(bs);
-        bsDone.or(bs);
-        if (bsDone.cardinality() == atomCount)
-          return;
-        //if (ret[i] != null && ret[i].nextSetBit(0) >= 0)
-          //System.out.println(smarts[i] + "  "+ ret[i]);
-      } catch (Exception e) {
-        if (InvalidSmilesException.getLastError() == null)
-          InvalidSmilesException.setLastError(e.toString());
-        System.out.println(e.toString());
-        // ret[i] will be null in that case
-      }
+      search.clear();
+      SmilesSearch ss = sp.getSearch(search,
+          SmilesParser.cleanPattern(smarts[i]), flags);
+      search.subSearches[0] = ss;
+      BS bs = BSUtil.copy((BS) search.search(false));//.subsearch(ss, false, false));
+      //System.out.println(i + " " + bs);
+      ret.addLast(bs);
+      bsDone.or(bs);
+      if (bsDone.cardinality() == atomCount)
+        return;
+      //if (ret[i] != null && ret[i].nextSetBit(0) >= 0)
+      //System.out.println(smarts[i] + "  "+ ret[i]);
     }
   }
 
@@ -322,67 +306,68 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    * Returns a vector of bitsets indicating which atoms match the pattern.
    * 
    * @param pattern
-   *          SMILES or SMARTS pattern.
-   * @param atoms 
-   * @param atomCount 
-   * @param bsSelected 
-   * @param bsAromatic 
-   * @param isSmarts 
+   *        SMILES or SMARTS pattern.
+   * @param atoms
+   * @param atomCount
+   * @param bsSelected
+   * @param bsAromatic
+   * @param isSmarts
    * @param firstMatchOnly
    * @return BitSet Array indicating which atoms match the pattern.
+   * @throws Exception
    */
   @Override
   public BS[] getSubstructureSetArray(String pattern, JmolNode[] atoms,
-                                          int atomCount, BS bsSelected,
-                                          BS bsAromatic, boolean isSmarts,
-                                          boolean firstMatchOnly) {
+                                      int atomCount, BS bsSelected,
+                                      BS bsAromatic, boolean isSmarts,
+                                      boolean firstMatchOnly) throws Exception {
     return (BS[]) match(pattern, atoms, atomCount, bsSelected, bsAromatic,
         isSmarts, false, firstMatchOnly, MODE_ARRAY);
   }
 
   /**
-   * Rather than returning bitsets, this method returns the
-   * sets of matching atoms in array form so that a direct 
-   * atom-atom correlation can be made.
+   * Rather than returning bitsets, this method returns the sets of matching
+   * atoms in array form so that a direct atom-atom correlation can be made.
    * 
-   * @param pattern 
-   *          SMILES or SMARTS pattern.
-   * @param atoms 
-   * @param atomCount 
-   * @param bsSelected 
-   * @param isSmarts 
+   * @param pattern
+   *        SMILES or SMARTS pattern.
+   * @param atoms
+   * @param atomCount
+   * @param bsSelected
+   * @param isSmarts
    * @param firstMatchOnly
-   * @return      a set of atom correlations
+   * @return a set of atom correlations
    * 
    */
   @Override
   public int[][] getCorrelationMaps(String pattern, JmolNode[] atoms,
                                     int atomCount, BS bsSelected,
-                                    boolean isSmarts, boolean firstMatchOnly) {
-    return (int[][]) match(pattern, atoms, atomCount, bsSelected, null, isSmarts,
-        false, firstMatchOnly, MODE_MAP);
+                                    boolean isSmarts, boolean firstMatchOnly)
+      throws Exception {
+    return (int[][]) match(pattern, atoms, atomCount, bsSelected, null,
+        isSmarts, false, firstMatchOnly, MODE_MAP);
   }
 
-  
   /////////////// private methods ////////////////
-  
+
   private BS[] find(String pattern, SmilesSearch search, boolean isSmarts,
-                        boolean matchAllAtoms, boolean firstMatchOnly) {
+                    boolean matchAllAtoms, boolean firstMatchOnly)
+      throws Exception {
     // create a topological model set from smiles
     // do not worry about stereochemistry -- this
     // will be handled by SmilesSearch.setSmilesCoordinates
     BS bsAromatic = new BS();
     search.createTopoMap(bsAromatic);
-    return (BS[]) match(pattern, search.jmolAtoms,
-        -search.jmolAtoms.length, null, bsAromatic, isSmarts, matchAllAtoms,
-        firstMatchOnly, MODE_ARRAY);
+    return (BS[]) match(pattern, search.jmolAtoms, -search.jmolAtoms.length,
+        null, bsAromatic, isSmarts, matchAllAtoms, firstMatchOnly, MODE_ARRAY);
   }
 
   @SuppressWarnings({ "unchecked" })
   private Object match(String pattern, JmolNode[] atoms, int atomCount,
                        BS bsSelected, BS bsAromatic, boolean isSmarts,
-                       boolean matchAllAtoms, boolean firstMatchOnly, int mode) {
-    InvalidSmilesException.setLastError(null);
+                       boolean matchAllAtoms, boolean firstMatchOnly, int mode)
+      throws Exception {
+    InvalidSmilesException.clear();
     try {
       SmilesSearch search = SmilesParser.getMolecule(pattern, isSmarts);
       search.jmolAtoms = atoms;
@@ -410,14 +395,14 @@ public class SmilesMatcher implements SmilesMatcherInterface {
       }
     } catch (Exception e) {
       if (InvalidSmilesException.getLastError() == null)
-        InvalidSmilesException.setLastError(e.toString());
-      System.out.println(e.toString());
+        InvalidSmilesException.clear();
+      throw new InvalidSmilesException(InvalidSmilesException.getLastError());
     }
     return null;
   }
 
-  private int countStereo(String s) {
-    s = PT.rep(s, "@@","@");
+  private static int countStereo(String s) {
+    s = PT.rep(s, "@@", "@");
     int i = s.lastIndexOf('@') + 1;
     int n = 0;
     for (; --i >= 0;)
@@ -425,6 +410,5 @@ public class SmilesMatcher implements SmilesMatcherInterface {
         n++;
     return n;
   }
-
 
 }

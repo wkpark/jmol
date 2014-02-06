@@ -4,7 +4,7 @@ import javajs.util.PT;
 
 public class JMenuItem extends AbstractButton {
 
-  private int btnType;
+  int btnType;
 
   public JMenuItem(String text) {
     super("btn");
@@ -32,5 +32,5 @@ public class JMenuItem extends AbstractButton {
   protected String htmlLabel() {
     return (this.text != null ? "TeXt" : "");
   }
-  
+
 }

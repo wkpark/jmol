@@ -1725,8 +1725,12 @@ public class ActionManager implements EventManager {
     int a2 = measurementQueued.getAtomIndex(2);
     if (a1 < 0 || a2 < 0)
       return;
-    String sequence = viewer.getSmilesOpt(null, a1, a2, false, true, false, false, false);
-    viewer.setStatusMeasuring("measureSequence", -2, sequence, 0);
+    try {
+      String sequence = viewer.getSmilesOpt(null, a1, a2, false, true, false, false, false);
+      viewer.setStatusMeasuring("measureSequence", -2, sequence, 0);
+    } catch (Exception e) {
+      Logger.error(e.toString());
+    }
   }
 
   private void minimize(boolean dragDone) {

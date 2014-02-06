@@ -178,7 +178,7 @@ abstract public class JmolViewer implements JSInterface {
 
   abstract public void setInMotion(boolean isInMotion);
 
-  abstract public BS getSmartsMatch(String smarts, BS bsSelected);
+  abstract public BS getSmartsMatch(String smarts, BS bsSelected) throws Exception;
   
   /**
    * an added class for rendering stereo in two independent applets
@@ -227,7 +227,7 @@ abstract public class JmolViewer implements JSInterface {
   // for example: getData("selected","XYZ");
   abstract public String getData(String atomExpression, String type);
 
-  abstract public String getSmiles(BS atoms);
+  abstract public String getSmiles(BS atoms) throws Exception;
   
   @Override
   abstract public void setScreenDimension(int width, int height);

@@ -85,18 +85,15 @@ public class JmolSmilesApplet extends Applet {
    *               1: found at least 1, 0: not found, -1: error
    */
   public int find(String pattern, String smiles, boolean isSmarts, boolean isAll) {
-    System.out.println("find " + pattern + " in " + smiles + " isSmarts? "
-        + isSmarts + "; isAll? " + isAll);
     lastError = null;
     int ret = -1;
     try {
       SmilesMatcher sm = new SmilesMatcher();
       BS[] result = sm.find(pattern, smiles, isSmarts, !isAll);
-      if (result == null)
-        lastError = InvalidSmilesException.getLastError();
       ret = (result == null ? -1 : result.length);
     } catch (Exception e) {
       System.out.println(e.getMessage());
+      lastError = InvalidSmilesException.getLastError();
     } catch (Error er) {
       System.out.println(er.getMessage());
     }
@@ -108,10 +105,14 @@ public class JmolSmilesApplet extends Applet {
    * 
    * @param smiles1
    * @param smiles2
-   * @return  IDENTICAL, ENANTIOMERS, DIASTERIOMERS, CONSTITUTIONAL ISOMERS, NONE 
+   * @return  IDENTICAL, ENANTIOMERS, DIASTERIOMERS, CONSTITUTIONAL ISOMERS, NONE, or an error message 
    */
   public String getRelationship(String smiles1, String smiles2) {
-    return (new SmilesMatcher()).getRelationship(smiles1, smiles2);  
+    try {
+      return (new SmilesMatcher()).getRelationship(smiles1, smiles2);
+    } catch (Exception e) {
+      return e.toString();
+    }  
   }
 
 

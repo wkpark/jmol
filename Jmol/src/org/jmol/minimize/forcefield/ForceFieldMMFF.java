@@ -864,9 +864,13 @@ public class ForceFieldMMFF extends ForceField {
     // for each atom. So the FIRST occurrence of an atom in the list
     // identifies that atom's MMFF94 type.
 
-    smartsMatcher.getSubstructureSets(smarts, atoms, atoms.length,
-        JmolEdge.FLAG_AROMATIC_STRICT | JmolEdge.FLAG_AROMATIC_DOUBLE,
-        bsConnected, bitSets, vRings);
+    try {
+      smartsMatcher.getSubstructureSets(smarts, atoms, atoms.length,
+          JmolEdge.FLAG_AROMATIC_STRICT | JmolEdge.FLAG_AROMATIC_DOUBLE,
+          bsConnected, bitSets, vRings);
+    } catch (Exception e) {
+      Logger.error(e.toString());
+    }
     BS bsDone = new BS();
     for (int j = 0; j < bitSets.size(); j++) {
       BS bs = bitSets.get(j);

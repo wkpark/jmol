@@ -35,6 +35,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
 import org.jmol.i18n.GT;
+import org.jmol.popup.AwtSwingComponent;
+import org.jmol.popup.AwtSwingPopupHelper;
 import org.jmol.popup.JmolGenericPopup;
 import org.jmol.popup.PopupResource;
 import org.jmol.util.Elements;
@@ -43,7 +45,7 @@ import org.jmol.viewer.Viewer;
 public class ModelKitPopup extends JmolGenericPopup {
 
   public ModelKitPopup() {
-    // required by reflection
+    helper = new AwtSwingPopupHelper(this);
   }
   
   @Override
@@ -59,7 +61,7 @@ public class ModelKitPopup extends JmolGenericPopup {
   @Override
   protected void menuShowPopup(SC popup, int x, int y) {
     try {
-      ((JPopupMenu)popup).show((Component) viewer.getDisplay(), x, y);
+      ((JPopupMenu)((AwtSwingComponent)popup).jc).show((Component) viewer.getDisplay(), x, y);
     } catch (Exception e) {
       // ignore
     }

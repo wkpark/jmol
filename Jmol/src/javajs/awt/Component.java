@@ -15,7 +15,6 @@ abstract public class Component {
 
   protected Object parent;
 
-  protected Object actionListener;
   protected Object mouseListener;
 
   private GenericColor bgcolor;
@@ -66,16 +65,6 @@ abstract public class Component {
   public void setPreferredSize(Dimension dimension) {
     this.width = dimension.width;
     this.height = dimension.height;   
-  }
-
-  /** 
-   * It will be the function of the JavaScript on the 
-   * page to do with selectionListener what is desired.
-   * @param listener 
-   * 
-   */
-  public void addActionListener(Object listener) {
-    actionListener = listener;
   }
 
   public void addMouseListener(Object listener) {

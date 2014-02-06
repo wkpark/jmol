@@ -32,9 +32,13 @@ public interface SC {
 
   Object getPopupMenu();
 
+  Object getIcon();
+
   String getText();
 
   void init(String text, Object icon, String actionCommand, SC popupMenu);
+
+  void insert(SC subMenu, int index);
 
   boolean isEnabled();
 
@@ -50,12 +54,12 @@ public interface SC {
 
   void setEnabled(boolean enable);
 
+  void setIcon(Object icon);
+
   void setName(String string);
 
   void setSelected(boolean state);
 
   void setText(String entry);
-
-  void insert(SC subMenu, int index);
 
 }

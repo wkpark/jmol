@@ -77,7 +77,7 @@ public class FoldingXyzReader extends AtomSetCollectionReader {
     if (addAtoms) {
       atomSetCollection.newAtomSet();
       atomSetCollection.setAtomSetName(tokens.length == 2 ? "Protein "
-          + tokens[1] : line.substring(next[0]));
+          + tokens[1] : line.substring(next[0]).trim());
     }
     boolean readLine = readAtoms(modelAtomCount + 1, addAtoms); // Some Tinker files are one off!
     continuing = !addAtoms || !isLastModel(modelNumber);

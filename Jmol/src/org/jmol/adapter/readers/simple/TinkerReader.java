@@ -24,12 +24,12 @@
 
 package org.jmol.adapter.readers.simple;
 
-import javajs.util.List;
-
-import org.jmol.adapter.smarter.AtomSetCollectionReader;
-import org.jmol.adapter.smarter.Atom;
-
-import org.jmol.util.Logger;
+//import javajs.util.List;
+//
+//import org.jmol.adapter.smarter.AtomSetCollectionReader;
+//import org.jmol.adapter.smarter.Atom;
+//
+//import org.jmol.util.Logger;
 
 /**
  * simple Tinker format requires Tinker:: prefix:
@@ -40,63 +40,64 @@ import org.jmol.util.Logger;
  * 
  */
 
-public class TinkerReader extends AtomSetCollectionReader {
-
-  @Override
-  protected boolean checkLine() throws Exception {
-    int modelAtomCount = parseIntStr(line);
-    if (modelAtomCount == Integer.MIN_VALUE) {
-      continuing = false;
-      return false;
-    }
-    atomSetCollection.newAtomSet();
-    String name = line.substring(line.indexOf(" ") + 1);
-    atomSetCollection.setAtomSetName(name);
-    readAtomsAndBonds(modelAtomCount);
-    applySymmetryAndSetTrajectory();
-    continuing = false;
-    return false;
-  }
-
-  private void readAtomsAndBonds(int n) throws Exception {
-    List<String[]> lines = new List<String[]>();
-    String[] tokens;
-    String types = "";
-    // first create the atoms
-    for (int i = 0; i < n; ++i) {
-      readLine();
-      tokens = getTokens();
-      if (tokens.length < 5) {
-        Logger.warn("line cannot be read for atom data: " + line);
-        i--;
-        continue;
-      }
-      lines.addLast(tokens);
-      Atom atom = atomSetCollection.addNewAtom();
-      setElementAndIsotope(atom, tokens[1]);
-      atom.x = parseFloatStr(tokens[2]);
-      atom.y = parseFloatStr(tokens[3]);
-      atom.z = parseFloatStr(tokens[4]);
-      types += tokens[5] + "\n";
-    }
-    // add the atom types
-    atomSetCollection.setAtomSetAtomProperty("atomType", types, -1);
-    // now create the bonds
-    String temp = "";
-    for (int i = 0; i < n; i++) {
-      tokens = lines.get(i); 
-      String index1 = tokens[0];
-      int i1 = parseIntStr(index1) - 1;
-      for (int j = 6; j < tokens.length; j++) {
-        String index2 = tokens[j];
-        int i2 = parseIntStr(index2) - 1;
-        String key = ";" + (i1 < i2 ? index1 : index2) + ";" + (i1 < i2 ? index2 : index1) + ";";
-        if (temp.indexOf(key) >= 0)
-          continue;
-        temp += key;
-        atomSetCollection.addNewBondWithOrder(i1, i2, 1);
-      }
-    }
-  }
+public class TinkerReader extends FoldingXyzReader {
+  // these two are the same now.
+//
+//  @Override
+//  protected boolean checkLine() throws Exception {
+//    int modelAtomCount = parseIntStr(line);
+//    if (modelAtomCount == Integer.MIN_VALUE) {
+//      continuing = false;
+//      return false;
+//    }
+//    atomSetCollection.newAtomSet();
+//    String name = line.substring(line.indexOf(" ") + 1);
+//    atomSetCollection.setAtomSetName(name);
+//    readAtomsAndBonds(modelAtomCount);
+//    applySymmetryAndSetTrajectory();
+//    continuing = false;
+//    return false;
+//  }
+//
+//  private void readAtomsAndBonds(int n) throws Exception {
+//    List<String[]> lines = new List<String[]>();
+//    String[] tokens;
+//    String types = "";
+//    // first create the atoms
+//    for (int i = 0; i < n; ++i) {
+//      readLine();
+//      tokens = getTokens();
+//      if (tokens.length < 5) {
+//        Logger.warn("line cannot be read for atom data: " + line);
+//        i--;
+//        continue;
+//      }
+//      lines.addLast(tokens);
+//      Atom atom = atomSetCollection.addNewAtom();
+//      setElementAndIsotope(atom, tokens[1]);
+//      atom.x = parseFloatStr(tokens[2]);
+//      atom.y = parseFloatStr(tokens[3]);
+//      atom.z = parseFloatStr(tokens[4]);
+//      types += tokens[5] + "\n";
+//    }
+//    // add the atom types
+//    atomSetCollection.setAtomSetAtomProperty("atomType", types, -1);
+//    // now create the bonds
+//    String temp = "";
+//    for (int i = 0; i < n; i++) {
+//      tokens = lines.get(i); 
+//      String index1 = tokens[0];
+//      int i1 = parseIntStr(index1) - 1;
+//      for (int j = 6; j < tokens.length; j++) {
+//        String index2 = tokens[j];
+//        int i2 = parseIntStr(index2) - 1;
+//        String key = ";" + (i1 < i2 ? index1 : index2) + ";" + (i1 < i2 ? index2 : index1) + ";";
+//        if (temp.indexOf(key) >= 0)
+//          continue;
+//        temp += key;
+//        atomSetCollection.addNewBondWithOrder(i1, i2, 1);
+//      }
+//    }
+//  }
 
 }

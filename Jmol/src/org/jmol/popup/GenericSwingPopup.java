@@ -14,20 +14,9 @@ import javajs.util.SB;
 
 public abstract class GenericSwingPopup implements GenericMenuInterface {
 
-//  abstract protected SC menuCreatePopup(String name);
-//  abstract protected SC getMenu(String name);
-//  abstract protected SC getMenuItem(String name);
-//  abstract protected SC getCheckBox(String name);
-//  abstract protected SC getRadio(String name);
-//  abstract protected SC getSwingComponent(Object component);
   abstract protected Object getImageIcon(String fileName);
-//  abstract protected void menuAddButtonGroup(SC item);
-//  abstract protected void menuInsertSubMenu(SC menu, SC subMenu, int index);  
   abstract protected void menuShowPopup(SC popup, int x, int y);
-//  abstract protected void menuClearListeners(SC menu);
   abstract protected String menuSetCheckBoxOption(SC item, String name, String what);
-//  abstract protected int getItemType(SC m);
-//  abstract protected void helper.taint();
 
   abstract protected void appCheckItems(String item, SC newMenu);
   abstract protected void appCheckSpecialMenu(String item, SC subMenu, String word);

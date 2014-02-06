@@ -6,13 +6,11 @@ import javajs.api.SC;
 
 public abstract class AbstractButton extends JComponent implements SC {
 
-  Object actionListener;
   Object itemListener;
   Object applet;
   String htmlName;
   boolean selected;
   
-  private String actionCommand;
   private SC popupMenu;
 
   private String icon;
@@ -40,27 +38,6 @@ public abstract class AbstractButton extends JComponent implements SC {
     return selected;
   }
   
-  /** 
-   * It will be the function of the JavaScript on the 
-   * page to do with selectionListener what is desired.
-   * @param listener 
-   * 
-   */
-  @Override
-  public void addActionListener(Object listener) {
-    actionListener = listener;
-  }
-
-  @Override
-  public String getActionCommand() {
-    return actionCommand;
-  }
-  
-  @Override
-  public void setActionCommand(String actionCommand) {
-    this.actionCommand = actionCommand;
-  }
-
   @Override
   public void addItemListener(Object listener) {
     itemListener = listener;

@@ -53,13 +53,16 @@ import javajs.util.PT;
 
 public class FoldingXyzReader extends AtomSetCollectionReader {
 
+  private boolean haveBonds;
+
   @Override
   protected void initializeReader() {
-    atomSetCollection.setNoAutoBond();
   }
   
   @Override
   protected void finalizeReader() throws Exception {
+    if (haveBonds)
+      atomSetCollection.setNoAutoBond();
     isTrajectory = false;
     finalizeReaderASCR();
   }
@@ -116,23 +119,32 @@ public class FoldingXyzReader extends AtomSetCollectionReader {
       if (line == null)
         break; // no problem.
       String[] tokens = getTokensStr(line);
-      if (tokens[0].equals(lastAtom)) {
+      String sIndex = tokens[0];
+      if (sIndex.equals(lastAtom)) {
         readNextLine = false;
         break; // end; next structure;
       }
-      lastAtom = tokens[0];
+      lastAtom = sIndex;
       if (!addAtoms)
         continue;
-      addAtomXYZSymName(tokens, 2, getElement(tokens[1]), tokens[1]);
+      Atom atom = new Atom();
+      atom.atomName = tokens[1];
+      atom.elementSymbol = getElement(tokens[1]);
+      atom.atomSerial = parseIntStr(sIndex);
+      if (!filterAtom(atom, i))
+        continue;
+      setAtomCoordTokens(atom, tokens, 2);
+      atomSetCollection.addAtomWithMappedSerialNumber(atom);
       int n = tokens.length - 5;
-      bonds[i] = new int[n];
+      bonds[i] = new int[n + 1];
+      bonds[i][n] = atom.atomSerial;
       for (int j = 0; j < n; j++) {
         String t = tokens[j + 5];
-        int i2 = parseIntStr(t) - 1;
+        int i2 = parseIntStr(t);
         bonds[i][j] = i2;
         if (checking) {
           // Tinker files may or may not include an atom type in column 6
-          if (n == 0 || i2 == i || i2 < 0 || i2 >= atomCount) {
+          if (n == 0 || t.equals(sIndex) || i2 <= 0 || i2 > atomCount) {
             haveAtomTypes = (n > 0);
             checking = false;
           } else {
@@ -157,14 +169,14 @@ public class FoldingXyzReader extends AtomSetCollectionReader {
     for (int i = bonds.length; --i >= 0;) {
       int[] b = bonds[i];
       if (b == null)
-        continue;
-      Atom a = atoms[i0 + i];
+        continue; // discarded atom
+      Atom a1 = atoms[atomSetCollection.getAtomIndexFromSerial(b[b.length - 1])];
       int b0 = 0;
       if (haveAtomTypes)
-        a.atomName += "\0" + (b[b0++] + 1);
-      for (int j = b.length; --j >= b0;)
-        if (b[j] > i)
-          atomSetCollection.addNewBondWithOrder(i0 + i, i0 + b[j], 1);
+        a1.atomName += "\0" + (b[b0++]);
+      for (int j = b.length - 1; --j >= b0;)
+        if (b[j] > i && atomSetCollection.addNewBondWithOrder(a1.index, atomSetCollection.getAtomIndexFromSerial(b[j]), 1) != null)
+            haveBonds = true;
     }
   }
 

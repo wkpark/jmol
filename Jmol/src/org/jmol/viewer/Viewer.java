@@ -1341,10 +1341,10 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     tm.transformPoint2(pointAngstroms, pointScreen);
   }
 
-  public void transformPoints(P3[] pointsAngstroms, P3i[] pointsScreens) {
-    // nucleic acid base steps
-    tm.transformPoints(pointsAngstroms.length, pointsAngstroms,
-        pointsScreens);
+  public void transformPoints(int count, P3[] pointsAngstroms,
+                              P3i[] pointsScreens) {
+    // nucleic acid base steps only
+    tm.transformPoints(count, pointsAngstroms, pointsScreens);
   }
 
   public void transformVector(V3 vectorAngstroms, V3 vectorTransformed) {
@@ -5836,6 +5836,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       return global.cartoonFancy;
     case T.cartoonladders:
       return global.cartoonLadders;
+    case T.cartoonribose:
+      return global.cartoonRibose;
     case T.cartoonrockets:
       return global.cartoonRockets;
     case T.chaincasesensitive:
@@ -6700,6 +6702,12 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   private void setBooleanPropertyTok(String key, int tok, boolean value) {
     boolean doRepaint = true;
     switch (tok) {
+    case T.cartoonribose:
+      // 14.1.8
+      global.cartoonRibose = value;
+      if (value && getBoolean(T.cartoonbaseedges))
+        setBooleanPropertyTok("cartoonBaseEdges", T.cartoonbaseedges, false);
+      break;
     case T.ellipsoidarrows:
       // 13.1.17 TRUE for little points on ellipsoids showing sign of 
       // eigenvalues (in --> negative; out --> positive)
@@ -7107,6 +7115,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       break;
     case T.cartoonbaseedges:
       global.cartoonBaseEdges = value;
+      if (value && getBoolean(T.cartoonribose))
+        setBooleanPropertyTok("cartoonRibose", T.cartoonribose, false);
       break;
     case T.cartoonrockets:
       global.cartoonRockets = value;

@@ -962,12 +962,13 @@ public class T {
   public final static int cartoonrockets                 = booleanparam | 42;
   public final static int cartoonsfancy                  = booleanparam | 43;
   public final static int cartoonladders                 = booleanparam | 44;
-  public final static int celshading                     = booleanparam | 45;
-  public final static int chaincasesensitive             = booleanparam | 46;
-  public final static int colorrasmol                    = booleanparam | 47;
-  public final static int debugscript                    = booleanparam | 48;
-  public final static int defaultstructuredssp           = booleanparam | 49;
-  public final static int disablepopupmenu               = booleanparam | 50;
+  public final static int cartoonribose                  = booleanparam | 45;
+  public final static int celshading                     = booleanparam | 46;
+  public final static int chaincasesensitive             = booleanparam | 47;
+  public final static int colorrasmol                    = booleanparam | 48;
+  public final static int debugscript                    = booleanparam | 49;
+  public final static int defaultstructuredssp           = booleanparam | 50;
+  public final static int disablepopupmenu               = booleanparam | 51;
   public final static int displaycellparameters          = booleanparam | 52;
   public final static int dotsselectedonly               = booleanparam | 53;
   public final static int dotsurface                     = booleanparam | 54;
@@ -2388,6 +2389,7 @@ public class T {
       "cartoonsFancy",                            T.t(cartoonsfancy),
       "cartoonFancy",                             null,
       "cartoonLadders",                           T.t(cartoonladders),
+      "cartoonRibose",                            T.t(cartoonribose),
       "cartoonRockets",                           T.t(cartoonrockets),
       "chainCaseSensitive",                       T.t(chaincasesensitive),
       "colorRasmol",                              T.t(colorrasmol),

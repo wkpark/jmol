@@ -227,6 +227,7 @@ public class GlobalSettings {
       setB("cartoonBaseEdges", cartoonBaseEdges);
       setB("cartoonFancy", cartoonFancy);
       setB("cartoonLadders", cartoonLadders);
+      setB("cartoonLadders", cartoonRibose);
       setB("cartoonRockets", cartoonRockets);
       setB("chainCaseSensitive", chainCaseSensitive);
       setB("celShading", celShading);
@@ -547,6 +548,7 @@ public class GlobalSettings {
     boolean cartoonRockets = false;
     boolean cartoonFancy = false;
     boolean cartoonLadders = false;
+    boolean cartoonRibose = false;
     boolean chainCaseSensitive = false;
     int hermiteLevel = 0;
     boolean highResolutionFlag = false;

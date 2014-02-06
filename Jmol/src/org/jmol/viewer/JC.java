@@ -641,11 +641,14 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int ATOMID_PROTEIN_MASK =  0x7 << ATOMID_AMINO_NITROGEN;
 
   public final static byte ATOMID_O5_PRIME        = 6;
+  public final static byte ATOMID_C5_PRIME        = 7;
   public final static byte ATOMID_C4_PRIME        = 8;
   public final static byte ATOMID_C3_PRIME        = 9;
   public final static byte ATOMID_O3_PRIME        = 10;
+  public final static byte ATOMID_C2_PRIME        = 11;
   public final static byte ATOMID_C1_PRIME        = 12;
-  
+  public final static byte ATOMID_O4_PRIME        = 78;
+
   // this is entries 6 through through 12 ... 7 bits
   public final static int ATOMID_NUCLEIC_MASK = 0x7F << ATOMID_O5_PRIME;
 

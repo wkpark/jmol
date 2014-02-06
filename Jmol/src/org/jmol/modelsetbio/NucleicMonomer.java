@@ -60,20 +60,17 @@ public class NucleicMonomer extends PhosphorusMonomer {
   private final static byte N6 = 16;
   private final static byte N2 = 17;
   private final static byte H5T = 18;
-  private final static byte O5Pr = 19;
+  private final static byte O5P = 19;
   private final static byte H3T = 20;
-  private final static byte O3Pr = 21; 
-  private final static byte C3Pr = 22;
+  private final static byte O3P = 21; 
+  private final static byte C3P = 22;
   private final static byte O1P = 23; 
   private final static byte O2P = 24;
   private final static byte C1P = 25;
-  private final static byte C4P = 26;
-  //private final static byte S4 = 25;
-  //private final static byte O5T = 26;
-  //private final static byte OP1 = 27;
-  //private final static byte OP2 = 28;
-  //private final static byte HO3Pr = 29;
-  //private final static byte HO5Pr = 30;
+  private final static byte C2P = 26;
+  private final static byte C4P = 27;
+  private final static byte O4P = 28;
+  private final static byte C5P = 29;
    
   // negative values are optional
   final static byte[] interestingNucleicAtomIDs = {
@@ -112,7 +109,10 @@ public class NucleicMonomer extends PhosphorusMonomer {
     ~JC.ATOMID_O2P,  // 24 Phosphorus O2
 
     ~JC.ATOMID_C1_PRIME,  // 25 ribose C1'
-    ~JC.ATOMID_C4_PRIME,  // 26 ribose C4'
+    ~JC.ATOMID_C2_PRIME,  // 26 ribose C2'
+    ~JC.ATOMID_C4_PRIME,  // 27 ribose C4'
+    ~JC.ATOMID_O4_PRIME,  // 28 ribose O4'
+    ~JC.ATOMID_C5_PRIME,  // 29 ribose C5'
 
     // unused:
 
@@ -148,7 +148,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
     if (offsets == null)
       return null;
     
-    if (!checkOptional(offsets, O5Pr, firstAtomIndex, 
+    if (!checkOptional(offsets, O5P, firstAtomIndex, 
         specialAtomIndexes[JC.ATOMID_O5T_TERMINUS]))
       return null;
     checkOptional(offsets, H3T, firstAtomIndex, 
@@ -174,7 +174,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
     set3(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, offsets);
     if (!have(offsets, NP)) {
-      offsets[0] = offsets[O5Pr];
+      offsets[0] = offsets[O5P];
       int offset = offsets[0] & 0xFF;
       if (offset != 255)
         leadAtomIndex = firstAtomIndex + offset;
@@ -256,25 +256,31 @@ public class NucleicMonomer extends PhosphorusMonomer {
 
   @Override
   Atom getTerminatorAtom() {
-    return getAtomFromOffsetIndex(have(offsets, H3T) ? H3T : O3Pr);
+    return getAtomFromOffsetIndex(have(offsets, H3T) ? H3T : O3P);
   }
 
   private final static byte[] ring6OffsetIndexes = {C5, C6, N1, C2, N3, C4};
-
-  public void getBaseRing6Points(P3[] ring6Points) {
-    for (int i = 6; --i >= 0; )
-      ring6Points[i] = getAtomFromOffsetIndex(ring6OffsetIndexes[i]);
+  private final static byte[] ring5OffsetIndexes = {C5, N7, C8, N9, C4};
+  private final static byte[] riboseOffsetIndexes = {C1P, C2P, C3P, C4P, O4P, O3P, C5P, O5P, P};
+  public void getBaseRing6Points(P3[] pts) {
+    getPoints(ring6OffsetIndexes, pts);
   }
   
-  private final static byte[] ring5OffsetIndexes = {C5, N7, C8, N9, C4};
+  private void getPoints(byte[] a, P3[] pts) {
+    for (int i = a.length; --i >= 0;)
+      pts[i] = getAtomFromOffsetIndex(a[i]);
+  }
 
-  public boolean maybeGetBaseRing5Points(P3[] ring5Points) {
+  public boolean maybeGetBaseRing5Points(P3[] pts) {
     if (isPurine)
-      for (int i = 5; --i >= 0; )
-        ring5Points[i] = getAtomFromOffsetIndex(ring5OffsetIndexes[i]);
+      getPoints(ring5OffsetIndexes, pts);
     return isPurine;
   }
 
+  public void getRiboseRing5Points(P3[] pts) {
+    getPoints(riboseOffsetIndexes, pts);
+  }
+  
   private final static byte[] heavyAtomIndexes = {
     /*C1P Sarver: apparently not!,*/ 
     C5, C6, N1, C2, N3, C4, // all
@@ -296,7 +302,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
     if (myPhosphorusAtom == null)
       return false;
     return (((NucleicMonomer) possiblyPreviousMonomer).getAtomFromOffsetIndex(
-        O3Pr).isBonded(myPhosphorusAtom) || isCA2(possiblyPreviousMonomer));
+        O3P).isBonded(myPhosphorusAtom) || isCA2(possiblyPreviousMonomer));
   }
 
   ////////////////////////////////////////////////////////////////
@@ -306,8 +312,8 @@ public class NucleicMonomer extends PhosphorusMonomer {
                             short madBegin, short madEnd) {
     Atom competitor = closest[0];
     Atom lead = getLeadAtom();
-    Atom o5prime = getAtomFromOffsetIndex(O5Pr);
-    Atom c3prime = getAtomFromOffsetIndex(C3Pr);
+    Atom o5prime = getAtomFromOffsetIndex(O5P);
+    Atom c3prime = getAtomFromOffsetIndex(C3P);
     short mar = (short)(madBegin / 2);
     if (mar < 1900)
       mar = 1900;
@@ -537,4 +543,5 @@ public boolean isCrossLinked(Group g) {
       return false;
     }    
   }
+
 }

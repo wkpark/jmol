@@ -39,6 +39,7 @@ public class CartoonRenderer extends RocketsRenderer {
   private boolean renderAsRockets;
   private boolean renderEdges;
   private boolean ladderOnly;
+  private boolean renderRibose;
   
   @Override
   protected void renderBioShape(BioShape bioShape) {
@@ -86,6 +87,7 @@ public class CartoonRenderer extends RocketsRenderer {
   void renderNucleic() {
     renderEdges = viewer.getBoolean(T.cartoonbaseedges);
     ladderOnly = viewer.getBoolean(T.cartoonladders);
+    renderRibose = viewer.getBoolean(T.cartoonribose);
     boolean isTraceAlpha = viewer.getBoolean(T.tracealpha);
     for (int i = bsVisible.nextSetBit(0); i >= 0; i = bsVisible
         .nextSetBit(i + 1)) {
@@ -170,71 +172,94 @@ public class CartoonRenderer extends RocketsRenderer {
   
   //// nucleic acid base rendering
   
-  private final P3[] ring6Points = new P3[6];
-  private final P3i[] ring6Screens = new P3i[6];
-  private final P3[] ring5Points = new P3[5];
-  private final P3i[] ring5Screens = new P3i[5];
+  private final P3[] rPt = new P3[10];
+  private final P3i[] rScr = new P3i[10];
+  private final P3[] rPt5 = new P3[5];
+  private final P3i[] rScr5 = new P3i[5];
+  private P3 basePt;
+  private P3i baseScreen;
 
-  {
-    ring6Screens[5] = new P3i();
-    for (int i = 5; --i >= 0; ) {
-      ring5Screens[i] = new P3i();
-      ring6Screens[i] = new P3i();
+  private void renderNucleicBaseStep(NucleicMonomer nucleotide, short thisMad,
+                                     P3i backboneScreen, P3 backbonePt) {
+    if (rScr[0] == null)    {
+      for (int i = 10; --i >= 0; )
+        rScr[i] = new P3i();
+      for (int i = 5; --i >= 0; )
+          rScr5[i] = new P3i();
+      baseScreen = new P3i();
+      basePt = new P3();
+      rPt[9] = new P3(); // ribose center
     }
-  }
-
-  private void renderNucleicBaseStep(NucleicMonomer nucleotide,
-                             short thisMad, P3i backboneScreen, P3 ptConnect) {
     if (renderEdges) {
       renderLeontisWesthofEdges(nucleotide, thisMad);
       return;
     }
-    nucleotide.getBaseRing6Points(ring6Points);
-    viewer.transformPoints(ring6Points, ring6Screens);
-    renderRing6();
-    boolean hasRing5 = nucleotide.maybeGetBaseRing5Points(ring5Points);
+    nucleotide.getBaseRing6Points(rPt);
+    viewer.transformPoints(6, rPt, rScr);
+    if (!ladderOnly)
+      renderRing6();
     P3i stepScreen;
     P3 stepPt;
     int pt;
+
+    //private final static byte[] ring6OffsetIndexes = {C5, C6, N1, C2, N3, C4};
+    //private final static byte[] ring5OffsetIndexes = {C5, N7, C8, N9, C4};
+    //private final static byte[] riboseOffsetIndexes = {C1P, C2P, C3P, C4P, O4P, O3P, C5P, O5P};
+
+    boolean hasRing5 = nucleotide.maybeGetBaseRing5Points(rPt5);
     if (hasRing5) {
-      viewer.transformPoints(ring5Points, ring5Screens);
-      renderRing5();
       if (ladderOnly) {
-        stepScreen = ring6Screens[2];//was 1
-        stepPt = ring6Points[2];
+        stepScreen = rScr[2]; // N1
+        stepPt = rPt[2];
       } else {
-        stepScreen = ring5Screens[3];//was 2
-        stepPt = ring5Points[3];
+        viewer.transformPoints(5, rPt5, rScr5);
+        renderRing5();
+        stepScreen = rScr5[3]; // N9
+        stepPt = rPt5[3];
       }
     } else {
       pt = (ladderOnly ? 4 : 2);
-      stepScreen = ring6Screens[pt];//was 1
-      stepPt = ring6Points[pt];
+      stepScreen = rScr[pt]; // N3 or N1
+      stepPt = rPt[pt];
     }
     mad = (short) (thisMad > 1 ? thisMad / 2 : thisMad);
-    g3d.fillCylinderScreen3I(GData.ENDCAPS_SPHERICAL,
-                     (int) viewer.scaleToScreen(backboneScreen.z,
-                                          mad),
-                     backboneScreen, stepScreen, ptConnect, stepPt, mad / 2000f);
+    float r = mad / 2000f;
+    int w = (int) viewer.scaleToScreen(backboneScreen.z, mad);
+    if (ladderOnly || !renderRibose)
+      g3d.fillCylinderScreen3I(GData.ENDCAPS_SPHERICAL, w, backboneScreen,
+          stepScreen, backbonePt, stepPt, r);
     if (ladderOnly)
       return;
-    --ring6Screens[5].z;
-    for (int i = 5; --i >= 0; ) {
-      --ring6Screens[i].z;
-      if (hasRing5)
-        --ring5Screens[i].z;
+    drawEdges(rScr, rPt, 6);
+    if (hasRing5)
+      drawEdges(rScr5, rPt5, 5);
+    else
+      renderEdge(rScr, rPt, 0, 5);
+    if (renderRibose) {
+      baseScreen.setT(stepScreen);
+      basePt.setT(stepPt);
+      nucleotide.getRiboseRing5Points(rPt);
+      P3 c = rPt[9];
+      c.set(0,  0,  0);
+      for (int i = 0; i < 5; i++) 
+        c.add(rPt[i]);
+      c.scale(0.2f);
+      viewer.transformPoints(10, rPt, rScr);
+      renderRibose();
+      renderEdge(rScr, rPt, 2, 5); // C3' - O3'
+      renderEdge(rScr, rPt, 3, 6); // C4' - C5' 
+      renderEdge(rScr, rPt, 6, 7); // C5' - O5'
+      renderEdge(rScr, rPt, 7, 8); // O5' - P'
+      renderCyl(rScr[0], baseScreen, rPt[0], basePt); // C1' - N1 or N9
+      drawEdges(rScr, rPt, 5);
     }
-    for (int i = 6; --i > 0; )
-      g3d.fillCylinderScreen3I(GData.ENDCAPS_SPHERICAL, 3,
-                       ring6Screens[i], ring6Screens[i - 1], ring6Points[i], ring6Points[i - 1], 0.005f);
-    if (hasRing5) {
-      for (int i = 5; --i > 0; )
-        g3d.fillCylinderScreen3I(GData.ENDCAPS_SPHERICAL, 3,
-                         ring5Screens[i], ring5Screens[i - 1], ring5Points[i], ring5Points[i - 1], 0.005f);
-    } else {
-      g3d.fillCylinderScreen3I(GData.ENDCAPS_SPHERICAL, 3,
-                       ring6Screens[5], ring6Screens[0], ring6Points[5], ring6Points[0], 0.005f);
-    }
+  }
+
+  private void drawEdges(P3i[] scr, P3[] pt, int n) {
+    for (int i = n; --i >= 0; )
+      scr[i].z--;
+    for (int i = n; --i > 0; )
+      renderEdge(scr, pt, i, i - 1);
   }
 
   private void renderLeontisWesthofEdges(NucleicMonomer nucleotide,
@@ -245,15 +270,13 @@ public class CartoonRenderer extends RocketsRenderer {
     //                Chapter 1, p 6.
     // http://books.google.com/books?hl=en&lr=&id=se5JVEqO11AC&oi=fnd&pg=PR11&dq=Non-Protein+Coding+RNAs&ots=3uTkn7m3DA&sig=6LzQREmSdSoZ6yNrQ15zjYREFNE#v=onepage&q&f=false
 
-    if (!nucleotide.getEdgePoints(ring6Points))
+    if (!nucleotide.getEdgePoints(rPt))
       return;
-    viewer.transformPoints(ring6Points, ring6Screens);
-    renderTriangle();
+    viewer.transformPoints(6, rPt, rScr);
+    renderTriangle(rScr, rPt, 2, 3, 4, true);
     mad = (short) (thisMad > 1 ? thisMad / 2 : thisMad);
-    g3d.fillCylinderScreen3I(GData.ENDCAPS_SPHERICAL, 3, ring6Screens[0],
-        ring6Screens[1], ring6Points[0], ring6Points[1], 0.005f);
-    g3d.fillCylinderScreen3I(GData.ENDCAPS_SPHERICAL, 3, ring6Screens[1],
-        ring6Screens[2], ring6Points[1], ring6Points[2], 0.005f);
+    renderEdge(rScr, rPt, 0, 1);
+    renderEdge(rScr, rPt, 1, 2);
     boolean isTranslucent = C.isColixTranslucent(colix);
     float tl = C.getColixTranslucencyLevel(colix);
     short colixSugarEdge = C.getColixTranslucent3(C.RED, isTranslucent,
@@ -263,38 +286,55 @@ public class CartoonRenderer extends RocketsRenderer {
     short colixHoogsteenEdge = C.getColixTranslucent3(C.BLUE,
         isTranslucent, tl);
     g3d.setColix(colixSugarEdge);
-    g3d.fillCylinderScreen3I(GData.ENDCAPS_SPHERICAL, 3, ring6Screens[2],
-        ring6Screens[3], ring6Points[2], ring6Points[3], 0.005f);
+    renderEdge(rScr, rPt, 2, 3);
     g3d.setColix(colixWatsonCrickEdge);
-    g3d.fillCylinderScreen3I(GData.ENDCAPS_SPHERICAL, 3, ring6Screens[3],
-        ring6Screens[4], ring6Points[3], ring6Points[4], 0.005f);
+    renderEdge(rScr, rPt, 3, 4);
     g3d.setColix(colixHoogsteenEdge);
-    g3d.fillCylinderScreen3I(GData.ENDCAPS_SPHERICAL, 3, ring6Screens[4],
-        ring6Screens[5], ring6Points[4], ring6Points[5], 0.005f);
+    renderEdge(rScr, rPt, 4, 5);
   }
 
-  private void renderTriangle() {
-    g3d.setNoisySurfaceShade(ring6Screens[2], ring6Screens[3], ring6Screens[4]);
-    g3d.fillTriangle3i(ring6Screens[2], ring6Screens[3], ring6Screens[4], ring6Points[2], ring6Points[3], ring6Points[4]);
+  private void renderEdge(P3i[] scr, P3[] pt, int i, int j) {
+    renderCyl(scr[i], scr[j], pt[i], pt[j]);
+  }
+
+  private void renderCyl(P3i s1, P3i s2, P3 p1, P3 p2) {
+    g3d.fillCylinderScreen3I(GData.ENDCAPS_SPHERICAL, 3, s1, s2, p1, p2, 0.005f);
+  }
+
+  /**
+   * 
+   * @param scr 
+   * @param pt 
+   * @param i 
+   * @param j 
+   * @param k 
+   * @param doShade    if shade was not calculated previously;
+   */
+  private void renderTriangle(P3i[] scr, P3[] pt, int i, int j, int k, boolean doShade) {
+    if (doShade)
+      g3d.setNoisySurfaceShade(scr[i], scr[j], scr[k]);
+    g3d.fillTriangle3i(scr[i], scr[j], scr[k], pt[i], pt[j], pt[k]);
   }
 
   private void renderRing6() {
-    if (ladderOnly)
-      return;
-    g3d.setNoisySurfaceShade(ring6Screens[0], ring6Screens[2], ring6Screens[4]);
-    g3d.fillTriangle3i(ring6Screens[0], ring6Screens[2], ring6Screens[4], ring6Points[0], ring6Points[2], ring6Points[4]);
-    g3d.fillTriangle3i(ring6Screens[0], ring6Screens[1], ring6Screens[2], ring6Points[0], ring6Points[1], ring6Points[2]);
-    g3d.fillTriangle3i(ring6Screens[0], ring6Screens[4], ring6Screens[5], ring6Points[0], ring6Points[4], ring6Points[5]);
-    g3d.fillTriangle3i(ring6Screens[2], ring6Screens[3], ring6Screens[4], ring6Points[2], ring6Points[3], ring6Points[4]); 
+    renderTriangle(rScr, rPt, 0, 2, 4, true);
+    renderTriangle(rScr, rPt, 0, 1, 2, false);
+    renderTriangle(rScr, rPt, 0, 4, 5, false);
+    renderTriangle(rScr, rPt, 2, 3, 4, false);
   }
 
   private void renderRing5() {
-    if (ladderOnly)
-      return;
-    // shade was calculated previously by renderRing6();
-    g3d.fillTriangle3i(ring5Screens[0], ring5Screens[2], ring5Screens[3], ring5Points[0], ring5Points[2], ring5Points[3]);
-    g3d.fillTriangle3i(ring5Screens[0], ring5Screens[1], ring5Screens[2], ring5Points[0], ring5Points[1], ring5Points[2]);
-    g3d.fillTriangle3i(ring5Screens[0], ring5Screens[3], ring5Screens[4], ring5Points[0], ring5Points[3], ring5Points[4]);
+    renderTriangle(rScr5, rPt5, 0, 1, 2, false);
+    renderTriangle(rScr5, rPt5, 0, 2, 3, false);
+    renderTriangle(rScr5, rPt5, 0, 3, 4, false);
   }  
-  
+
+  private void renderRibose() {
+    renderTriangle(rScr, rPt, 0, 1, 9, true);
+    renderTriangle(rScr, rPt, 1, 2, 9, true);
+    renderTriangle(rScr, rPt, 2, 3, 9, true);
+    renderTriangle(rScr, rPt, 3, 4, 9, true);
+    renderTriangle(rScr, rPt, 4, 0, 9, true);
+  }  
+
 }

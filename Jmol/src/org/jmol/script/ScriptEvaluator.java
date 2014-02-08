@@ -6056,12 +6056,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             else
               ((BS) v.value).clear(j);
           } else {
-            v.setv(SV.getVariable(bsOrList instanceof BS ? BSUtil.copy((BS)bsOrList): bsOrList), false);
+            v.setv(SV.getVariable(bsOrList instanceof BS ? BSUtil.copy((BS)bsOrList): bsOrList));
             v.intValue = 1;
             t.setModified(false);
           }
           if (isOK)
-            t.setv(SV.selectItemVar(v), false);
+            t.setv(SV.selectItemVar(v));
         } else {
           if (isMinusMinus)
             j -= 2;
@@ -12100,7 +12100,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
 
     if (isArrayItem) {
-      SV tnew = SV.newS("").setv(tv, false);
+      SV tnew = SV.newS("").setv(tv);
       int nParam = v.size() / 2;
       for (int i = 0; i < nParam; i++) {
         boolean isLast = (i + 1 == nParam);
@@ -12188,7 +12188,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
 
     if (isUserVariable) {
-      t.setv(tv, false);
+      t.setv(tv);
       t.setModified(true);
       return;
     }

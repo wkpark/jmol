@@ -1268,7 +1268,7 @@ public class SV extends T implements JSONEncodable {
     List<SV> x = getList();
     if (o == null || x == null)
       return (x == null || x.size() == 0 ? newS("") : x.remove(x.size() - 1));
-      x.addLast(getVariable(selectItemVar(o).value));
+      x.addLast(getVariable(oValue(o)));
     return this;
   }
 

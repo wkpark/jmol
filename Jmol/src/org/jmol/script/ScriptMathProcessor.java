@@ -116,6 +116,11 @@ public class ScriptMathProcessor {
       }
       if (xPt == 0) {
         SV x = xStack[0];
+        if (chk) {
+          if (asBitSet)
+            return SV.newV(T.bitset,  new BS());
+          return x;
+        }
         if (x.tok == T.bitset || x.tok == T.varray
             || x.tok == T.string || x.tok == T.matrix3f
             || x.tok == T.matrix4f)

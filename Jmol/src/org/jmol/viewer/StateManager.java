@@ -153,7 +153,7 @@ public class StateManager {
 
   void setJmolDefaults() {
     setCommonDefaults();
-    viewer.setStringProperty("ColorScheme", "Jmol");
+    viewer.setStringProperty("defaultColorScheme", "Jmol");
     viewer.setBooleanProperty("axesOrientationRasmol", false);
     viewer.setBooleanProperty("zeroBasedXyzRasmol", false);
     viewer.setIntProperty("percentVdwAtom",

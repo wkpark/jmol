@@ -768,7 +768,7 @@ public class GlobalSettings {
       if (var == null) 
         return null;
       key = key.toLowerCase();
-      htUserVariables.put(key, var.setName(key).setGlobal());
+      htUserVariables.put(key, var.setName(key));
       return var;
     }
 

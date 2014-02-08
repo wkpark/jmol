@@ -69,9 +69,9 @@ public class SV extends T implements JSONEncodable {
   public int index = Integer.MAX_VALUE;    
 
   private final static int FLAG_CANINCREMENT = 1;
-  private final static int FLAG_LOCALVAR = 2;
+  private final static int FLAG_MODIFIED = 2;
 
-  private int flags = ~FLAG_CANINCREMENT & FLAG_LOCALVAR;
+  private int flags = ~FLAG_CANINCREMENT & FLAG_MODIFIED;
   private String myName;
 
   public static SV newV(int tok, Object value) {
@@ -403,11 +403,17 @@ public class SV extends T implements JSONEncodable {
     return this;
   }
 
-  public SV setGlobal() {
-    flags &= ~FLAG_LOCALVAR;
-    return this;
+  public boolean isModified() {
+    return tokAttr(flags, FLAG_MODIFIED);
   }
-
+  
+  public void setModified(boolean tf) {
+    if (tf)
+      flags |= FLAG_MODIFIED;
+    else
+      flags &= ~FLAG_MODIFIED;
+  }
+  
   boolean canIncrement() {
     return tokAttr(flags, FLAG_CANINCREMENT);
   }
@@ -914,21 +920,31 @@ public class SV extends T implements JSONEncodable {
         break;
       }
       if (isOne) {
-        isOne = (--i1 >= 0 && bs.get(i1));
-        bs.clearAll();
-        if (isOne)
-          bs.set(i1);
-      } else {
-        int n = 0;
-        for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1))
-          if (++n < i1 || n > i2)
-            bs.clear(j);
+        // i2 will be Integer.MIN_VALUE at this point
+        // take care of easy ones the easy way
+        if (i1 == len) {
+          // {xxx}[0]
+          i2 = bs.length() - 1;
+        } else if (i1 == 1) {
+          // {xxx}[1]
+          i2 = bs.nextSetBit(0);
+        } 
+        if (i2 >= -1) {
+          bs.clearAll();
+          if (i2 >= 0)
+            bs.set(i2);
+          break;          
+        }
+        i2 = i1;
       }
+      int n = 0;
+      for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1))
+        if (++n < i1 || n > i2)
+          bs.clear(j);
       break;
     case string:
-    	tokenOut.value = (--i1 < 0 || i1 >= len ? ""
-    			: isOne ? s.substring(i1, i1 + 1)
-    			: s.substring(i1, Math.min(i2, len)));
+      tokenOut.value = (--i1 < 0 || i1 >= len ? "" : isOne ? s.substring(i1,
+          i1 + 1) : s.substring(i1, Math.min(i2, len)));
       break;
     case varray:
       if (--i1 < 0 || i1 >= len)
@@ -937,8 +953,9 @@ public class SV extends T implements JSONEncodable {
         return ((SV) tokenIn).getList().get(i1);
       List<SV> o2 = new List<SV>();
       List<SV> o1 = ((SV) tokenIn).getList();
-      int n = Math.min(i2, len) - i1;
-      for (int i = 0; i < n; i++)
+      
+      int nn = Math.min(i2, len) - i1;
+      for (int i = 0; i < nn; i++)
         o2.addLast(newT(o1.get(i + i1)));
       tokenOut.value = o2;
       break;

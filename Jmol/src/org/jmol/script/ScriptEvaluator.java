@@ -1031,10 +1031,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         i = iToken;
         break;
       case T.leftbrace:
-        if (tokAt(i + 1) == T.string)
+        if (tokAt(i + 1) == T.string) {
+          if (tokAt(i + 2) == T.rightbrace) {
+            v = (chk ? new BS() : getAtomBitSet(stringParameter(i + 1)));
+            i += 2;
+            break;
+          }
           v = getHash(i);
-        else
+        } else {
           v = getPointOrPlane(i, false, true, true, false, 3, 4);
+        }
         i = iToken;
         break;
       case T.expressionBegin:
@@ -2450,7 +2456,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         } else if (v instanceof Float) {
           fixed[j] = T.tv(T.decimal, getFloatEncodedInt("" + v), v);
         } else if (v instanceof String) {
-          if (!forceString) {
+          if (!forceString && !isExpression) {
             if ((tok != T.set || j > 1 && st[1].tok != T.echo)
                 && T.tokAttr(tok, T.mathExpressionCommand)) {
               v = getParameter((String) v, T.variable);
@@ -3867,15 +3873,15 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           rpn.addXObj(val);
           break;
         }
+        // check for string-version of bitsets ({....})
         if (val instanceof String)
           val = getStringObjectAsVariable((String) val, null);
+        // or maybe a list of bitsets
         if (val instanceof List<?>) {
           BS bs = SV.unEscapeBitSetArray((List<SV>) val, true);
-          if (bs == null)
-            val = value;
-          else
-            val = bs;
+          val = (bs == null ? "" : val);
         }
+        // otherwise, this is a new atom expression
         if (val instanceof String)
           val = lookupIdentifierValue((String) value);
         rpn.addXObj(val);

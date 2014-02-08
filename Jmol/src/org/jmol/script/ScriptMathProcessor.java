@@ -449,7 +449,7 @@ public class ScriptMathProcessor {
         if (chk)
           return true;
         SV x = xStack[xPt];
-        xStack[xPt] = SV.newS("").setv(x, false);
+        xStack[xPt] = SV.newS("").setv(x);
         return x.increment(incrementX);
       }
       break;

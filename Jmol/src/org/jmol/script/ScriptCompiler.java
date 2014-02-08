@@ -1122,6 +1122,9 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       }
       break;
     }
+    // cd echo goto help hover javascript label message pause
+    // possibly script
+    implicitString &= (nTokens == 1);
     if (implicitString && !(tokCommand == T.script && iHaveQuotedString)
         && lookingAtImpliedString(true, true, true)) {
       String str = script.substring(ichToken, ichToken + cchToken);
@@ -2294,10 +2297,11 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
 
   /**
    * An "implied string" is a parameter that is not quoted but because of its
-   * position in a command is implied to be a string. First we must exclude
-   * the  @xxxx. Then we consume the entire math syntax @{......} or any set of
-   * characters not involving white space. echo, hover, label, message, pause
-   * are odd-valued; no initial parsing of variables for them.
+   * position in a command is implied to be a string. First we must exclude the
+   * 
+   * @xxxx. Then we consume the entire math syntax @{......} or any set of
+   *        characters not involving white space. echo, hover, message, and
+   *        pause are odd-valued; no initial parsing of variables for them.
    * 
    * @param allowSpace
    *        as in commands such as echo
@@ -2315,15 +2319,21 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     int ichT = ichToken;
     char ch = script.charAt(ichT);
     boolean isID = (lastToken.tok == T.id);
-    boolean parseVariables = (isID || !T.tokAttr(tokCommand,
+    boolean passVariableToString = (T.tokAttr(tokCommand,
         T.implicitStringCommand) && (tokCommand & 1) == 1);
     boolean isVariable = (ch == '@');
     boolean isMath = (isVariable && ichT + 3 < cchScript && script
         .charAt(ichT + 1) == '{');
-    if (isMath && parseVariables) {
-      ichT = Txt.ichMathTerminator(script, ichToken + 1, cchScript);
-      return (!isID && ichT != cchScript && (cchToken = ichT + 1 - ichToken) > 0);
-    }
+    if (isMath && (isID || !passVariableToString))
+      return false;
+    //    if (isMath && passVariableToString) {
+    //      // zip past math expression untested.
+    //      ichT = Txt.ichMathTerminator(script, ichToken + 1, cchScript);
+    //      return (!isID && ichT != cchScript && (cchToken = ichT + 1 - ichToken) > 0);
+    //    }
+    //    if (isMath && !passVariableToString)
+    //      return false;
+    // check implicit string for math expression here
     int ptSpace = -1;
     int ptLastChar = -1;
     // look ahead to \n, \r, terminal ;, or }
@@ -2334,10 +2344,10 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       case '(':
         if (!allowSptParen) {
           // script command
-          if (ichT >= 5 && ( 
-              script.substring(ichT - 4, ichT).equals(".spt")
-              || script.substring(ichT - 4, ichT).equals(".png")
-              || script.substring(ichT - 5, ichT).equals(".pngj"))) {
+          if (ichT >= 5
+              && (script.substring(ichT - 4, ichT).equals(".spt")
+                  || script.substring(ichT - 4, ichT).equals(".png") || script
+                  .substring(ichT - 5, ichT).equals(".pngj"))) {
             isOK = false;
             continue;
           }
@@ -2353,13 +2363,13 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         parenpt++;
         break;
       case '}':
-        // only consider this if it is extra
+        // fail if improperly nested
         parenpt--;
         if (parenpt < 0 && (braceCount > 0 || iBrace > 0)) {
           isOK = false;
           continue;
         }
-        break;
+        //$FALL-THROUGH$
       default:
         if (Character.isWhitespace(ch)) {
           if (ptSpace < 0)
@@ -2380,7 +2390,9 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       ichT = ptLastChar + 1;
     else if (ptSpace > 0)
       ichT = ptSpace;
-    if (isVariable && (!allowSpace || ptSpace < 0 && parenpt <= 0 && ichT - ichToken > 1)) {
+    if (isVariable
+        && (!allowSpace || ptSpace < 0 && parenpt <= 0
+            && ichT - ichToken > 1)) {
       // if we have @xxx then this is not an implied string
       return false;
     }

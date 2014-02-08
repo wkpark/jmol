@@ -1260,6 +1260,10 @@ public class SV extends T implements JSONEncodable {
 
   /**
    * 
+   * Script variables are pushed without any copying, as
+   * they are not mutable anyway. We do want to have actual
+   * references to points, lists, and associative arrays
+   * 
    * @param o
    *        null to pop
    * @return array
@@ -1268,7 +1272,7 @@ public class SV extends T implements JSONEncodable {
     List<SV> x = getList();
     if (o == null || x == null)
       return (x == null || x.size() == 0 ? newS("") : x.remove(x.size() - 1));
-      x.addLast(getVariable(oValue(o)));
+      x.addLast(o);
     return this;
   }
 

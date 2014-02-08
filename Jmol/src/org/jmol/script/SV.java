@@ -102,6 +102,40 @@ public class SV extends T implements JSONEncodable {
     return sv;
   }
 
+  /**
+   * 
+   * Creates a NEW version of the variable.
+   * Object values are not copied. (Just found no 
+   * use for that.)
+   * 
+   * 
+   * @param v
+   * @return  new ScriptVariable
+   */
+  SV setv(SV v) {
+    index = v.index;
+    intValue = v.intValue;
+    tok = v.tok;
+    value = v.value;
+// never necessary: 
+//    if (asCopy) {
+//      switch (tok) {
+//      case hash:
+//        value = new Hashtable<String, SV>(
+//            (Map<String, SV>) v.value);
+//        break;
+//      case varray:
+//        List<SV> o2 = new  List<SV>();
+//        List<SV> o1 = v.getList();
+//        for (int i = 0; i < o1.size(); i++)
+//          o2.addLast(o1.get(i));
+//        value = o2;
+//        break;
+//      }
+//    }
+    return this;
+  }
+
   @SuppressWarnings("unchecked")
   static int sizeOf(T x) {
     switch (x == null ? nada : x.tok) {
@@ -356,44 +390,6 @@ public class SV extends T implements JSONEncodable {
     for (int i = 0; i < ix.length; i++)
       objects.addLast(newI(ix[i]));
     return newV(varray, objects);
-  }
-
-  @SuppressWarnings("unchecked")
-  /**
-   * 
-   * @j2sOverride
-   * 
-   * creates a NEW version of the variable
-   * 
-   * 
-   * @param v
-   * @param asCopy  create a new set of object pointers
-   *                for an array; copies an associative array 
-   * @return  new ScriptVariable
-   */
-  SV setv(SV v, boolean asCopy) {
-    // note: bitset, point3f ,point4f will not be copied
-    //       because they are essentially immutable here
-    index = v.index;
-    intValue = v.intValue;
-    tok = v.tok;
-    value = v.value;
-    if (asCopy) {
-      switch (tok) {
-      case hash:
-        value = new Hashtable<String, SV>(
-            (Map<String, SV>) v.value);
-        break;
-      case varray:
-        List<SV> o2 = new  List<SV>();
-        List<SV> o1 = v.getList();
-        for (int i = 0; i < o1.size(); i++)
-          o2.addLast(o1.get(i));
-        value = o2;
-        break;
-      }
-    }
-    return this;
   }
 
   public SV setName(String name) {
@@ -1260,7 +1256,8 @@ public class SV extends T implements JSONEncodable {
 
   /**
    * 
-   * Script variables are pushed without any copying, as
+   * Script variables are pushed after cloning, because
+   * the name comes with them when we do otherwise
    * they are not mutable anyway. We do want to have actual
    * references to points, lists, and associative arrays
    * 
@@ -1272,7 +1269,7 @@ public class SV extends T implements JSONEncodable {
     List<SV> x = getList();
     if (o == null || x == null)
       return (x == null || x.size() == 0 ? newS("") : x.remove(x.size() - 1));
-      x.addLast(o);
+      x.addLast(newI(0).setv(o));
     return this;
   }
 

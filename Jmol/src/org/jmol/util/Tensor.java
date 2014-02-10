@@ -142,6 +142,26 @@ public class Tensor {
   + ";indices......" + ";string......." + ";type........."
   + ";id..........." + ";span........." + ";skew.........";
   
+  static private int getInfoIndex(String infoType) {
+    if (infoType.charAt(0) != ';')
+      infoType = ";" + infoType + ".";
+    return infoList.indexOf(infoType) / 14;
+  }
+
+  public static boolean isFloatInfo(String infoType) {
+    switch (getInfoIndex(infoType)) {
+    default:
+      return false;
+    case 5: // value
+    case 6: // isotropy
+    case 7: // anisotropy
+    case 8: // asymmetry
+    case 16: // span
+    case 17: // skew
+      return true;
+    }
+  }
+
   /**
    * returns an object of the specified type, including "eigenvalues",
    * "eigenvectors", "asymmetric", "symmetric", "trace", "indices", and "type"
@@ -150,9 +170,7 @@ public class Tensor {
    * @return Object or null
    */
   public Object getInfo(String infoType) {
-    if (infoType.charAt(0) != ';')
-      infoType = ";" + infoType + ".";
-    switch (infoList.indexOf(infoType) / 14) {
+    switch (getInfoIndex(infoType)) {
     default:
       // dump all key/value pairs
       Map<String, Object> info = new Hashtable<String, Object>();
@@ -238,7 +256,7 @@ public class Tensor {
   //               e2                 e1       e0
   //                               |
   //                              iso
-    
+
   /**
    * isotropy = average of eigenvalues
    * 
@@ -670,5 +688,6 @@ public class Tensor {
         + "\n" + eigenVectors[1] + "\t" + eigenValues[1] + "\t" + "\n"
         + eigenVectors[2] + "\t" + eigenValues[2] + "\t" + "\n"));
   }
+
 
 }

@@ -400,8 +400,7 @@ public class NMRCalculation implements JmolNMRInterface {
   }
 
   @Override
-  public List<Object> getTensorInfo(String tensorType, String infoType,
-                                        BS bs) {
+  public List<Object> getTensorInfo(String tensorType, String infoType, BS bs) {
     if ("".equals(tensorType))
       tensorType = null;
     infoType = (infoType == null ? ";all." : ";" + infoType + ".");
@@ -440,6 +439,7 @@ public class NMRCalculation implements JmolNMRInterface {
     }
     boolean isChi = tensorType != null && tensorType.startsWith("efg")
         && infoType.equals(";chi.");
+    boolean isFloat = (isChi || Tensor.isFloatInfo(infoType));
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       if (tensorType == null) {
         Object[] a = viewer.modelSet.getAtomTensorList(i);
@@ -448,9 +448,9 @@ public class NMRCalculation implements JmolNMRInterface {
             data.addLast(((Tensor) a[j]).getInfo(infoType));
       } else {
         Tensor t = viewer.modelSet.getAtomTensor(i, tensorType);
-        if (t != null)
-          data.addLast(isChi ? Float.valueOf(getQuadrupolarConstant(t)) : t
-              .getInfo(infoType));
+        data.addLast(t == null ? (isFloat ? Float.valueOf(0) : "")
+            : isChi ? Float.valueOf(getQuadrupolarConstant(t)) : t
+                .getInfo(infoType));
       }
     }
     return data;

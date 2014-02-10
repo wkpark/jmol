@@ -186,6 +186,17 @@ import java.io.Reader;
 @J2SIgnoreImport( { Runtime.class })
 public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer {
 
+  static {
+    /**
+     * @j2sNative
+     * 
+     * self.Jmol && Jmol.extend && Jmol.extend("viewer", org.jmol.viewer.Viewer.prototype);
+     * 
+     */
+    {}    
+  }
+  
+
   @Override
   protected void finalize() throws Throwable {
     if (Logger.debugging)

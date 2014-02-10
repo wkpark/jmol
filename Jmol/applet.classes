@@ -33,8 +33,6 @@ org/jmol/console/*.java
 org/jmol/dialog/*.java
 org/jmol/dssx/*.java
 org/jmol/export/*.java
-org/jmol/export/dialog/*.java
-org/jmol/export/history/*.java
 org/jmol/g3d/*.java
 org/jmol/geodesic/*.java
 org/jmol/i18n/*.java

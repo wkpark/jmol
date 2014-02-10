@@ -131,12 +131,12 @@ abstract class OutputManager {
     String fileName = (String) params.get("fileName");
     String[] scripts = (String[]) params.get("scripts");
     Object objImage = params.get("image");
+    int[] rgbbuf = (int[]) params.get("rgbbuf");
     OC out = (OC) params.get("outputChannel");
     boolean asBytes = (out == null && fileName == null);
     boolean closeChannel = (out == null && fileName != null);
     boolean releaseImage = (objImage == null);
-    Object image = (objImage == null ? viewer.getScreenImageBuffer(null, true)
-        : objImage);
+    Object image = (rgbbuf != null ? rgbbuf : objImage != null ? objImage : viewer.getScreenImageBuffer(null, true));
     boolean isOK = false;
     try {
       if (image == null)
@@ -167,7 +167,7 @@ abstract class OutputManager {
           OC outTemp = getOutputChannel(null, null);
           getWrappedState(fileName, scripts, image, outTemp);
           stateData = outTemp.toByteArray();
-        } else if (!asBytes) {
+        } else if (rgbbuf == null && !asBytes) {
           stateData = ((String) getWrappedState(null, scripts, image, null))
               .getBytes();
         }

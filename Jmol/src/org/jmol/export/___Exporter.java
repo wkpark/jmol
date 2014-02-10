@@ -25,20 +25,21 @@
 
 package org.jmol.export;
 
-
-import java.awt.Image;
-import java.text.SimpleDateFormat;
+import java.util.Hashtable;
+import java.util.Map;
 
 import javajs.awt.Font;
 import javajs.util.AU;
 import javajs.util.List;
 import javajs.util.SB;
-
-import java.util.Date;
-import java.util.Hashtable;
-
-import java.util.Map;
-
+import javajs.util.P3;
+import javajs.util.OC;
+import javajs.util.M3;
+import javajs.util.M4;
+import javajs.util.P3i;
+import javajs.util.PT;
+import javajs.util.T3;
+import javajs.util.V3;
 
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.java.BS;
@@ -48,15 +49,7 @@ import org.jmol.util.C;
 import org.jmol.util.GData;
 import org.jmol.util.Logger;
 import org.jmol.util.MeshSurface;
-import javajs.util.P3;
 import org.jmol.util.Quaternion;
-
-import javajs.util.OC;
-import javajs.util.M3;
-import javajs.util.M4;
-import javajs.util.P3i;
-import javajs.util.T3;
-import javajs.util.V3;
 import org.jmol.viewer.StateManager;
 import org.jmol.viewer.Viewer;
 
@@ -150,7 +143,8 @@ public abstract class ___Exporter {
   protected String fileName;
   protected String commandLineOptions;
   
-  boolean isCartesian;
+  public boolean isCartesian;
+  
   protected GData g3d;
 
   protected short backgroundColix;
@@ -192,6 +186,8 @@ public abstract class ___Exporter {
   final protected V3 tempV1 = new V3();
   final protected V3 tempV2 = new V3();
   final protected V3 tempV3 = new V3();
+  private boolean isWebGL;
+  protected String appletName;
   
   public ___Exporter() {
   }
@@ -208,6 +204,10 @@ public abstract class ___Exporter {
   protected boolean initOutput(Viewer viewer, double privateKey, GData g3d,
                              Map<String, Object> params) {
     this.viewer = viewer;
+    isWebGL = params.get("type").equals("JS");
+    if (isWebGL)
+      appletName = PT.split(viewer.getHtmlName(), "_")[0];
+
     this.g3d = g3d;
     this.privateKey = privateKey;
     backgroundColix = viewer.getObjectColix(StateManager.OBJ_BACKGROUND);
@@ -230,7 +230,8 @@ public abstract class ___Exporter {
     scalePixelsPerAngstrom = cameraFactors[3].z;
     out = (OC) params.get("outputChannel");
     commandLineOptions = (String) params.get("params");
-    fileName = out.getFileName();
+    if (out != null)
+      fileName = out.getFileName();
     outputHeader();
     return true;
   }
@@ -306,6 +307,8 @@ public abstract class ___Exporter {
   
   protected String finalizeOutput2() {
     outputFooter();
+    if (out == null)
+      return null;
     String ret = out.closeChannel();
     if (fileName == null)
       return ret;
@@ -316,8 +319,8 @@ public abstract class ___Exporter {
     return "OK " + out.getByteCount() + " " + jmolRenderer.getExportName() + " " + fileName ;
   }
 
-  protected static String getExportDate() {
-    return new SimpleDateFormat("yyyy-MM-dd', 'HH:mm").format(new Date());
+  protected String getExportDate() {
+    return viewer.apiPlatform.getDateFormat(false);
   }
 
   protected String rgbFractionalFromColix(short colix) {
@@ -485,14 +488,17 @@ public abstract class ___Exporter {
     boolean colorSolid = (colix != 0);
     short[] colixes = (colorSolid ? null : meshSurface.vertexColixes);
     short[] polygonColixes = (colorSolid ? meshSurface.polygonColixes : null);
-    Map<Short, Integer> htColixes = new Hashtable<Short, Integer>();
+
+    Map<Short, Integer> htColixes = null;
     List<Short> colorList = null;
-    if (polygonColixes != null)
-      colorList = getColorList(0, polygonColixes, nPolygons, bsPolygons,
-          htColixes);
-    else if (colixes != null)
-      colorList = getColorList(0, colixes, nVertices, null, htColixes);
-    
+    if (!isWebGL) {
+      htColixes = new Hashtable<Short, Integer>();
+      if (polygonColixes != null)
+        colorList = getColorList(0, polygonColixes, nPolygons, bsPolygons,
+            htColixes);
+      else if (colixes != null)
+        colorList = getColorList(0, colixes, nVertices, null, htColixes);
+    }
     outputSurface(vertices, normals, colixes, indices, polygonColixes,
         nVertices, nPolygons, nFaces, bsPolygons, faceVertexMax, colix,
         colorList, htColixes, meshSurface.offset);
@@ -542,7 +548,7 @@ public abstract class ___Exporter {
                                         P3 screenA, P3 screenB);
 
   abstract void fillCylinderScreen(short colix, byte endcaps, int screenDiameter, 
-                             P3 screenA, P3 screenB);
+                                   P3 screenA, P3 screenB, P3 ptA, P3 ptB, float radius);
 
   abstract void fillEllipsoid(P3 center, P3[] points, short colix, 
                               int x, int y, int z, int diameter,
@@ -560,14 +566,14 @@ public abstract class ___Exporter {
   abstract void fillSphere(short colix, int diameter, P3 pt);
   
   //cartoons, rockets, polyhedra:
-  protected abstract void fillTriangle(short colix, P3 ptA, P3 ptB, P3 ptC, boolean twoSided);
+  protected abstract void fillTriangle(short colix, P3 ptA, P3 ptB, P3 ptC, boolean twoSided, boolean isCartesian);
   
   
   private int nText;
   private int nImage;
   public short lineWidthMad;
 
-  void plotImage(int x, int y, int z, Image image, short bgcolix, int width,
+  void plotImage(int x, int y, int z, Object image, short bgcolix, int width,
                  int height) {
     if (z < 3)
       z = viewer.getFrontPlane();
@@ -577,6 +583,7 @@ public abstract class ___Exporter {
   }
 
   void plotText(int x, int y, int z, short colix, String text, Font font3d) {
+  	
     // trick here is that we use Jmol's standard g3d package to construct
     // the bitmap, but then output to jmolRenderer, which returns control
     // here via drawPixel.

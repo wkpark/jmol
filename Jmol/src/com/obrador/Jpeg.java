@@ -13,6 +13,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+// no longer used in Jmol. 
+
 public class Jpeg
 {
     /************** Main Method ****************/

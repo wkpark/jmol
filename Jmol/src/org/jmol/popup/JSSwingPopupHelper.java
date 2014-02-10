@@ -48,7 +48,7 @@ import javajs.swing.JMenuItem;
   //  (on exit)           checkMenuFocus(item.getName(), item.getActionCommand(), false);
   //  (on checkbox click) checkBoxStateChanged(e.getSource());   
 
-  private GenericMenuInterface popup;
+  GenericMenuInterface popup; // used by Jmol.Swing
   private ButtonGroup buttonGroup;
   private SC thisPopup;
 

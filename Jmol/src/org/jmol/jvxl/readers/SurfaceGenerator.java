@@ -120,6 +120,7 @@ import java.io.IOException;
 import java.util.Map;
 
 
+import org.jmol.api.Interface;
 import org.jmol.api.JmolDocument;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.AtomDataServer;
@@ -1036,29 +1037,19 @@ public class SurfaceGenerator {
   }
 
   private SurfaceReader newReader(String name) {
-    SurfaceReader sr = (SurfaceReader) getInterface(name);
+    SurfaceReader sr = (SurfaceReader) Interface.getInterface(name);
     if (sr != null)
       sr.init(this);
     return sr;
   }
 
   private SurfaceReader newReaderBr(String name, BufferedReader br) {
-    SurfaceFileReader sr = (SurfaceFileReader) getInterface(name);
+    SurfaceFileReader sr = (SurfaceFileReader) Interface.getInterface(name);
     if (sr != null)
       sr.init2(this, br);
     return sr;
   }
   
-  private static Object getInterface(String name) {
-    try {
-      Class<?> x = Class.forName("org.jmol.jvxl.readers." + name);
-      return (x == null ? null : x.newInstance());
-    } catch (Exception e) {
-      Logger.error("Interface.java Error creating instance for " + name + ": \n" + e.toString());
-      return null;
-    }
-  }
-
   private void getSurfaceSets() {
     if (meshDataServer == null) {
       meshData.getSurfaceSet();

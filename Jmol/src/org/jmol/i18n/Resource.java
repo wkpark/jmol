@@ -8,6 +8,7 @@ import java.util.ResourceBundle;
 import javajs.J2SIgnoreImport;
 import javajs.util.PT;
 
+import org.jmol.api.Interface;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
 
@@ -34,23 +35,9 @@ class Resource {
       poData = GT.viewer.getFileAsString(fname, false);
       return getResourceFromPO(poData);
     }
-    Class<?> bundleClass = null;
     className += name + ".Messages_" + name;
-    try {
-      bundleClass = Class.forName(className);
-    } catch (Throwable e) {
-      Logger.error("GT could not find the class " + className);
-    }
-    try {
-      if (bundleClass != null
-          && ResourceBundle.class.isAssignableFrom(bundleClass))
-        return new Resource(bundleClass.newInstance(), className);
-    } catch (IllegalAccessException e) {
-      Logger.warn("Illegal Access Exception: " + e.toString());
-    } catch (InstantiationException e) {
-      Logger.warn("Instantiation Exception: " + e.toString());
-    }
-    return null;
+    Object o = Interface.getInterface(className);
+    return (o == null ? null : new Resource(o, className));
   }
 
   String getString(String string) {

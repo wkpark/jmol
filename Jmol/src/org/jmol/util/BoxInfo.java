@@ -34,11 +34,6 @@ import javajs.util.P3i;
 import javajs.util.P4;
 import javajs.util.V3;
 import javajs.util.T3;
-import java.util.Hashtable;
-
-import java.util.Map;
-
-
 
 public class BoxInfo {
 

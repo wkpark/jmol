@@ -40,7 +40,7 @@ class UseTable extends Hashtable<String, String> {
   }
   
   /**
-   * Hashtable htDefs contains references to _n where n is a number. 
+   * This Hashtable contains references to _n where n is a number. 
    * we look up a key for anything and see if an object has been assigned.
    * If it is there, we just return the phrase "USE _n".
    * If it is not there, we return the DEF name that needs to be assigned.
@@ -56,6 +56,21 @@ class UseTable extends Hashtable<String, String> {
     String id = "_" + (iObj++);
     put(key, id);
     return id;
+  }
+  
+  /**
+   * Used by JSExporter for WebGL
+   * 
+   * @param key
+   * @param ret 
+   * @return found
+   */
+
+  boolean getDefRet(String key, String[] ret) {
+    if ((ret[0] = get(key)) != null)
+      return true;
+    put(key, ret[0] = "_" + key.charAt(0) + (iObj++));
+    return false;
   }
     
 }

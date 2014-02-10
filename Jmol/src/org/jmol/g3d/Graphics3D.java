@@ -1032,6 +1032,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     plotImage(x, y, z, objImage, null, bgcolix, width, height);
   }
 
+  @Override
   public void plotImage(int x, int y, int z, Object image, JmolRendererInterface jmolRenderer,
                         short bgcolix, int width, int height) {
     setColix(bgcolix);

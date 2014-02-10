@@ -25,6 +25,7 @@ package org.jmol.render;
 
 import java.util.Map;
 
+import org.jmol.api.Interface;
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.api.JmolRepaintManager;
 import org.jmol.java.BS;
@@ -182,15 +183,11 @@ public class RepaintManager implements JmolRepaintManager {
     if (renderers[shapeID] != null)
       return renderers[shapeID];
     String className = JC.getShapeClassName(shapeID, true) + "Renderer";
-    try {
-      Class<?> shapeClass = Class.forName(className);
-      ShapeRenderer renderer = (ShapeRenderer) shapeClass.newInstance();
-      renderer.setViewerG3dShapeID(viewer, shapeID);
-      return renderers[shapeID] = renderer;
-    } catch (Exception e) {
-      Logger.errorEx("Could not instantiate renderer:" + className, e);
+    ShapeRenderer renderer;
+    if ((renderer = (ShapeRenderer) Interface.getInterface(className)) == null)
       return null;
-    }
+    renderer.setViewerG3dShapeID(viewer, shapeID);
+    return renderers[shapeID] = renderer;
   }
 
   /////////// actual rendering ///////////
@@ -241,13 +238,13 @@ public class RepaintManager implements JmolRepaintManager {
     boolean logTime = viewer.getBoolean(T.showtiming);
     viewer.finalizeTransformParameters();
     shapeManager.finalizeAtoms(null, null);
-    JmolRendererInterface g3dExport = viewer.initializeExporter(params);
-    isOK = (g3dExport != null);
+    JmolRendererInterface exporter3D = viewer.initializeExporter(params);
+    isOK = (exporter3D != null);
     if (!isOK) {
       Logger.error("Cannot export " + params.get("type"));
       return null;
     }
-    g3dExport.renderBackground(g3dExport);
+    exporter3D.renderBackground(exporter3D);
     if (renderers == null)
       renderers = new ShapeRenderer[JC.SHAPE_MAX];
     String msg = null;
@@ -259,12 +256,12 @@ public class RepaintManager implements JmolRepaintManager {
           msg = "rendering " + JC.getShapeClassName(i, false);
           Logger.startTimer(msg);
         }
-        getRenderer(i).renderShape(g3dExport, modelSet, shape);
+        getRenderer(i).renderShape(exporter3D, modelSet, shape);
         if (logTime)
           Logger.checkTimer(msg, false);
     }
-    g3dExport.renderAllStrings(g3dExport);
-    return g3dExport.finalizeOutput();
+    exporter3D.renderAllStrings(exporter3D);
+    return exporter3D.finalizeOutput();
   }
 
 }

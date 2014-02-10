@@ -31,6 +31,7 @@ import java.util.StringTokenizer;
 import javajs.util.PT;
 
 
+import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolDocument;
 import org.jmol.io.LimitedLineReader;
@@ -137,57 +138,43 @@ public class Resolver {
     if (readerName.indexOf("Xml") == 0)
       readerName = "Xml";
     String className = null;
-    Class<?> atomSetCollectionReaderClass;
     String err = null;
-    try {
-      try {
-        className = getReaderClassBase(readerName);
-        atomSetCollectionReaderClass = Class.forName(className);
-        atomSetCollectionReader = (AtomSetCollectionReader) atomSetCollectionReaderClass
-            .newInstance();
-      } catch (Exception e) {
-        err = "File reader was not found:" + className;
-        Logger.error(err);
-        return err;
-      }
-      return atomSetCollectionReader;
-    } catch (Exception e) {
-      err = "uncaught error in file loading for " + className;
+    className = getReaderClassBase(readerName);
+    if ((atomSetCollectionReader = (AtomSetCollectionReader) Interface
+        .getInterface(className)) == null) {
+      err = "File reader was not found:" + className;
       Logger.error(err);
-      System.out.println(e.getMessage());
       return err;
     }
+    return atomSetCollectionReader;
   }
 
   /**
-   * a largely untested reader of the DOM - where in a browser there
-   * is model actually in XML format already present on the page.
-   * -- Egon Willighagen
+   * a largely untested reader of the DOM - where in a browser there is model
+   * actually in XML format already present on the page. -- Egon Willighagen
    * 
    * @param DOMNode
-   * @param htParams 
+   * @param htParams
    * @return an AtomSetCollection or a String error
    * @throws Exception
    */
-  static Object DOMResolve(Object DOMNode, Map<String, Object> htParams) throws Exception {
+  static Object DOMResolve(Object DOMNode, Map<String, Object> htParams)
+      throws Exception {
     String className = null;
-    Class<?> atomSetCollectionReaderClass;
-    AtomSetCollectionReader atomSetCollectionReader; 
-    String atomSetCollectionReaderName = getXmlType((String) htParams.get("nameSpaceInfo"));
+    AtomSetCollectionReader atomSetCollectionReader;
+    String atomSetCollectionReaderName = getXmlType((String) htParams
+        .get("nameSpaceInfo"));
     if (Logger.debugging) {
       Logger.debug("The Resolver thinks " + atomSetCollectionReaderName);
     }
     htParams.put("readerName", atomSetCollectionReaderName);
-    try {
-      className = classBase + "xml.XmlReader";
-      atomSetCollectionReaderClass = Class.forName(className);
-      atomSetCollectionReader = (AtomSetCollectionReader) atomSetCollectionReaderClass.newInstance();
+    className = classBase + "xml.XmlReader";
+    if ((atomSetCollectionReader = (AtomSetCollectionReader) Interface
+        .getInterface(className)) != null)
       return atomSetCollectionReader;
-    } catch (Exception e) {
-      String err = "File reader was not found:" + className;
-      Logger.errorEx(err, e);
-      return err;
-    }
+    String err = "File reader was not found:" + className;
+    Logger.error(err);
+    return err;
   }
 
   private static final String CML_NAMESPACE_URI = "http://www.xml-cml.org/schema";

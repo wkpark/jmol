@@ -111,7 +111,6 @@ public class FoldingXyzReader extends AtomSetCollectionReader {
     int[][] bonds = AU.newInt2(atomCount);
     boolean haveAtomTypes = true;
     boolean checking = true;
-    int i0 = atomSetCollection.atomCount;
     String lastAtom = null;
     boolean readNextLine = true;
     for (int i = 0; i < atomCount; i++) {
@@ -158,13 +157,13 @@ public class FoldingXyzReader extends AtomSetCollectionReader {
       }
     }
     if (addAtoms) {
-      makeBonds(i0, bonds, !checking && haveAtomTypes);
+      makeBonds(bonds, !checking && haveAtomTypes);
       applySymmetryAndSetTrajectory();
     }
     return readNextLine;
   }
 
-  private void makeBonds(int i0, int[][] bonds, boolean haveAtomTypes) {
+  private void makeBonds(int[][] bonds, boolean haveAtomTypes) {
     Atom[] atoms = atomSetCollection.atoms;
     for (int i = bonds.length; --i >= 0;) {
       int[] b = bonds[i];

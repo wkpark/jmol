@@ -215,7 +215,7 @@ abstract class __RayTracerExporter extends ___Exporter {
 
   @Override
   void fillCylinderScreen(short colix, byte endcaps, int screenDiameter, P3 screenA, 
-                                 P3 screenB) {
+                                 P3 screenB, P3 ptA, P3 ptB, float radius) {
           // vectors, polyhedra
     fillCylinderScreenMad(colix, endcaps, screenDiameter, screenA, screenB);
   }
@@ -226,7 +226,7 @@ abstract class __RayTracerExporter extends ___Exporter {
   }
   
   @Override
-  protected void fillTriangle(short colix, P3 ptA, P3 ptB, P3 ptC, boolean twoSided) {
+  protected void fillTriangle(short colix, P3 ptA, P3 ptB, P3 ptC, boolean twoSided, boolean isCartesian) {
     outputTriangle(ptA, ptB, ptC, colix);
   }
 

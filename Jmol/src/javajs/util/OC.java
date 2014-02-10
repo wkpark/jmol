@@ -69,6 +69,10 @@ public class OC extends OutputStream {
     return fileName;
   }
   
+  public String getName() {
+    return fileName == null ? null : fileName.substring(fileName.lastIndexOf("/") + 1);
+  }
+
   public int getByteCount() {
     return byteCount;
   }
@@ -265,4 +269,5 @@ public class OC extends OutputStream {
     byte[] bytes = (sb == null ? toByteArray() : sb.toString().getBytes());
     return bytePoster.postByteArray(fileName, bytes);
   }
+
 }

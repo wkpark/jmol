@@ -164,24 +164,20 @@ public final class ModelLoader {
     //isMultiFile = getModelSetAuxiliaryInfoBoolean("isMultiFile"); -- no longer necessary
     isPDB = modelSet.isPDB = modelSet.getModelSetAuxiliaryInfoBoolean("isPDB");
     if (isPDB) {
-      try {
-        Class<?> shapeClass = Class.forName("org.jmol.modelsetbio.Resolver");
-        jbr = (JmolBioResolver) shapeClass.newInstance();
-        jbr.initialize(this);
-      } catch (Exception e) {
-        Logger
-            .error("developer error: org.jmol.modelsetbio.Resolver could not be found");
-      }
+      jbr = (JmolBioResolver) Interface
+          .getOptionInterface("modelsetbio.Resolver");
+      jbr.initialize(this);
     }
     jmolData = (String) modelSet.getModelSetAuxiliaryInfoValue("jmolData");
     fileHeader = (String) modelSet.getModelSetAuxiliaryInfoValue("fileHeader");
     modelSet.trajectorySteps = (List<P3[]>) modelSet
         .getModelSetAuxiliaryInfoValue("trajectorySteps");
     isTrajectory = (modelSet.trajectorySteps != null);
-    isPyMOLsession  = modelSet.getModelSetAuxiliaryInfoBoolean("isPyMOL");
+    isPyMOLsession = modelSet.getModelSetAuxiliaryInfoBoolean("isPyMOL");
     doAddHydrogens = (jbr != null && !isTrajectory && !isPyMOLsession
-        && !modelSet.getModelSetAuxiliaryInfoBoolean("pdbNoHydrogens")
-        && (modelSet.getModelSetAuxiliaryInfoBoolean("pdbAddHydrogens") || viewer.getBooleanProperty("pdbAddHydrogens")));
+        && !modelSet.getModelSetAuxiliaryInfoBoolean("pdbNoHydrogens") && (modelSet
+        .getModelSetAuxiliaryInfoBoolean("pdbAddHydrogens") || viewer
+        .getBooleanProperty("pdbAddHydrogens")));
     if (info != null) {
       info.remove("pdbNoHydrogens");
       info.remove("pdbAddHydrogens");
@@ -212,14 +208,14 @@ public final class ModelLoader {
       modelSet.someModelsHaveFractionalCoordinates |= mergeModelSet
           .getModelSetAuxiliaryInfoBoolean("someModelsHaveFractionalCoordinates");
       modelSet.someModelsHaveAromaticBonds |= mergeModelSet.someModelsHaveAromaticBonds;
-      modelSet.modelSetAuxiliaryInfo.put("someModelsHaveSymmetry", Boolean
-          .valueOf(modelSet.someModelsHaveSymmetry));
-      modelSet.modelSetAuxiliaryInfo.put("someModelsHaveUnitcells", Boolean
-          .valueOf(someModelsHaveUnitcells));
+      modelSet.modelSetAuxiliaryInfo.put("someModelsHaveSymmetry",
+          Boolean.valueOf(modelSet.someModelsHaveSymmetry));
+      modelSet.modelSetAuxiliaryInfo.put("someModelsHaveUnitcells",
+          Boolean.valueOf(someModelsHaveUnitcells));
       modelSet.modelSetAuxiliaryInfo.put("someModelsHaveFractionalCoordinates",
           Boolean.valueOf(modelSet.someModelsHaveFractionalCoordinates));
-      modelSet.modelSetAuxiliaryInfo.put("someModelsHaveAromaticBonds", Boolean
-          .valueOf(modelSet.someModelsHaveAromaticBonds));
+      modelSet.modelSetAuxiliaryInfo.put("someModelsHaveAromaticBonds",
+          Boolean.valueOf(modelSet.someModelsHaveAromaticBonds));
     }
   }
 

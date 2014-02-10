@@ -27,6 +27,7 @@ package org.jmol.viewer;
 import java.util.Map;
 
 
+import org.jmol.api.Interface;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumPalette;
 import org.jmol.constant.EnumVdw;
@@ -41,7 +42,6 @@ import org.jmol.util.GData;
 import org.jmol.util.JmolEdge;
 
 import org.jmol.util.JmolMolecule;
-import org.jmol.util.Logger;
 
 import javajs.util.M4;
 import javajs.util.P3;
@@ -133,22 +133,17 @@ public class ShapeManager {
       return null;
     if (shapes[shapeID] != null)
       return shapes[shapeID];
-    if (shapeID == JC.SHAPE_HSTICKS
-        || shapeID == JC.SHAPE_SSSTICKS
+    if (shapeID == JC.SHAPE_HSTICKS || shapeID == JC.SHAPE_SSSTICKS
         || shapeID == JC.SHAPE_STRUTS)
       return null;
     String className = JC.getShapeClassName(shapeID, false);
-    try {
-      Class<?> shapeClass = Class.forName(className);
-      Shape shape = (Shape) shapeClass.newInstance();
-      viewer.setShapeErrorState(shapeID, "allocate");
-      shape.initializeShape(viewer, gdata, modelSet, shapeID);
-      viewer.setShapeErrorState(-1, null);
-      return shapes[shapeID] = shape;
-    } catch (Exception e) {
-      Logger.errorEx("Could not instantiate shape:" + className, e);
+    Shape shape;
+    if ((shape = (Shape) Interface.getInterface(className)) == null)
       return null;
-    }
+    viewer.setShapeErrorState(shapeID, "allocate");
+    shape.initializeShape(viewer, gdata, modelSet, shapeID);
+    viewer.setShapeErrorState(-1, null);
+    return shapes[shapeID] = shape;
   }
 
   public void refreshShapeTrajectories(int baseModel, BS bs, M4 mat) {

@@ -906,6 +906,36 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return tm.getRotationQuaternion();
   }
 
+  /**
+   * This method is only called by JmolGLmol applet._refresh();
+   * 
+   * @return enough data to update a WebGL view
+   * 
+   */
+  public Object getGLmolView() {
+    TransformManager tm = this.tm;
+    /**
+     * @j2sNative
+     * 
+    *             return {
+    *              center:tm.fixedRotationCenter,
+    *              quaternion:tm.getRotationQuaternion(),
+    *              xtrans:tm.xTranslationFraction,
+    *              ytrans:tm.yTranslationFraction,
+    *              scale:tm.scalePixelsPerAngstrom,
+    *              zoom:tm.zoomPercent,
+    *              cameraDistance:tm.cameraDistance,
+    *              pixelCount:tm.screenPixelCount,
+    *              perspective:tm.perspectiveDepth,
+    *              width:tm.width,
+    *              height:tm.height                          
+    *             };
+     */
+    {
+      return tm;
+    }
+    
+  }
   public void setRotationRadius(float angstroms, boolean doAll) {
     if (doAll)
       angstroms = tm.setRotationRadius(angstroms, false);
@@ -4103,21 +4133,16 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     if (isWebGL) {
       if (mode == 2 || mode == 7) {
         tm.finalizeTransformParameters();
+        
         /**
          * @j2sNative
          * 
-         *            if (!self.Jmol) return;
-         *            if(Jmol._refresh) Jmol._refresh(this.applet, mode, strWhy,
-         *            [this.transformManager.fixedRotationCenter,
-         *            this.transformManager.getRotationQuaternion(),
-         *            this.transformManager.xTranslationFraction,
-         *            this.transformManager.yTranslationFraction,
-         *            this.transformManager.scalePixelsPerAngstrom,
-         *            this.transformManager.zoomPercent ]);
+         *            if (!this.applet) return;
+         *            this.applet._refresh(); 
          */
         {
+          System.out.println(tm);
         }
-
       }
     } else {
       if (mode > 0 && mode != 7)
@@ -9833,13 +9858,11 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public JmolRendererInterface initializeExporter(Map<String, Object> params) {
     boolean isJS = params.get("type").equals("JS");
-    String cname;
     if (isJS) {
       if (jsExporter3D != null) {
         jsExporter3D.initializeOutput(this, privateKey, gdata, params);
         return jsExporter3D;
       }
-      cname = "org.jmol.exportjs.Export3D";
     } else {
       String fileName = (String) params.get("fileName");
       String[] fullPath = (String[]) params.get("fullPath");
@@ -9847,15 +9870,11 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       if (out == null)
         return null;
       params.put("outputChannel", out);
-      cname = "org.jmol.export.Export3D";
     }
-    JmolRendererInterface export3D = null;
-    try {
-      Class<?> export3Dclass = Class.forName(cname);
-      export3D = (JmolRendererInterface) export3Dclass.newInstance();
-    } catch (Exception e) {
+    JmolRendererInterface export3D = (JmolRendererInterface) Interface
+        .getOptionInterface("export.Export3D");
+    if (export3D == null)
       return null;
-    }
     Object exporter = export3D.initializeExporter(this, privateKey, gdata,
         params);
     if (isJS && exporter != null)

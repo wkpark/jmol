@@ -25,7 +25,6 @@
 
 package org.jmol.export;
 
-import java.awt.Image;
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -208,6 +207,24 @@ abstract public class __CartesianExporter extends ___Exporter {
 
   // these are called by Export3D:
 
+  ///////////////////////// called by Export3D ////////////////
+  
+  @Override
+  void plotText(int x, int y, int z, short colix, String text, Font font3d) {
+    // over-ridden in VRML and X3D
+    // trick here is that we use Jmol's standard g3d package to construct
+    // the bitmap, but then output to jmolRenderer, which returns control
+    // here via drawPixel.
+    g3d.plotText(x, y, z, g3d.getColorArgbOrGray(colix), 0, text,
+        font3d, jmolRenderer);
+  }
+
+  @Override
+  void plotImage(int x, int y, int z, Object image, short bgcolix, int width,
+                 int height) {
+    g3d.plotImage(x, y, z, image, jmolRenderer, bgcolix, width, height);
+  }
+
   @Override
   void drawAtom(Atom atom) {
     short colix = atom.getColix();
@@ -304,9 +321,14 @@ abstract public class __CartesianExporter extends ___Exporter {
 
   @Override
   void fillCylinderScreen(short colix, byte endcaps, int screenDiameter,
-                          P3 screenA, P3 screenB) {
+                          P3 screenA, P3 screenB, P3 ptA, P3 ptB, float radius) {
+    if (ptA != null) {
+      drawCylinder(ptA, ptB, colix, colix, endcaps, Math.round(radius * 2000f), -1);
+      return;
+    }    
     // vectors, polyhedra
-    int mad = (int) (viewer.unscaleToScreen((screenA.z + screenB.z) / 2,
+    // was (int) in older version
+    int mad = Math.round(viewer.unscaleToScreen((screenA.z + screenB.z) / 2,
         screenDiameter) * 1000);
     fillCylinderScreenMad(colix, endcaps, mad, screenA, screenB);
   }
@@ -326,29 +348,19 @@ abstract public class __CartesianExporter extends ___Exporter {
 
   @Override
   protected void fillTriangle(short colix, P3 ptA, P3 ptB,
-                              P3 ptC, boolean twoSided) {
-    viewer.unTransformPoint(ptA, tempP1);
-    viewer.unTransformPoint(ptB, tempP2);
-    viewer.unTransformPoint(ptC, tempP3);
+                              P3 ptC, boolean twoSided, boolean isCartesian) {
+    if (isCartesian) {
+      tempP1.setT(ptA);
+      tempP2.setT(ptB);
+      tempP3.setT(ptC);
+    } else {
+      viewer.unTransformPoint(ptA, tempP1);
+      viewer.unTransformPoint(ptB, tempP2);
+      viewer.unTransformPoint(ptC, tempP3);
+    }
     outputTriangle(tempP1, tempP2, tempP3, colix);
     if (twoSided)
       outputTriangle(tempP1, tempP3, tempP2, colix);
-  }
-
-  @Override
-  void plotImage(int x, int y, int z, Image image, short bgcolix, int width,
-                 int height) {
-    g3d.plotImage(x, y, z, image, jmolRenderer, bgcolix, width, height);
-  }
-
-  @Override
-  void plotText(int x, int y, int z, short colix, String text, Font font3d) {
-    // over-ridden in VRML and X3D
-    // trick here is that we use Jmol's standard g3d package to construct
-    // the bitmap, but then output to jmolRenderer, which returns control
-    // here via drawPixel.
-    g3d.plotText(x, y, z, g3d.getColorArgbOrGray(colix), 0, text,
-        font3d, jmolRenderer);
   }
 
   protected M4 sphereMatrix = new M4();
@@ -375,4 +387,6 @@ abstract public class __CartesianExporter extends ___Exporter {
     sphereMatrix.m23 = center.z;
     sphereMatrix.m33 = 1;
   }
+  
+
 }

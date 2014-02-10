@@ -1,29 +1,14 @@
 package org.jmol.export;
 
-import java.awt.Point;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 
-import org.jmol.java.BS;
-import org.jmol.modelset.Atom;
-import org.jmol.util.C;
-import org.jmol.util.Escape;
-import org.jmol.util.GData;
-
 import javajs.util.AU;
 import javajs.util.List;
-import javajs.util.SB;
-
-import org.jmol.util.Logger;
-import org.jmol.util.MeshSurface;
 import javajs.util.P3;
-import org.jmol.util.Quaternion;
-
+import javajs.util.SB;
 import javajs.util.A4;
 import javajs.util.CU;
 import javajs.util.OC;
@@ -31,6 +16,15 @@ import javajs.util.M4;
 import javajs.util.PT;
 import javajs.util.T3;
 import javajs.util.V3;
+
+import org.jmol.java.BS;
+import org.jmol.modelset.Atom;
+import org.jmol.util.C;
+import org.jmol.util.Escape;
+import org.jmol.util.GData;
+import org.jmol.util.Logger;
+import org.jmol.util.MeshSurface;
+import org.jmol.util.Quaternion;
 import org.jmol.viewer.Viewer;
 
 /**
@@ -55,6 +49,10 @@ import org.jmol.viewer.Viewer;
  * <li>outputSurface (only some possibilities tested)</li>
  * </ul>
  * 
+ * Adapted for JavaScript by Bob Hanson 2/2014
+ * using javajs.util.OC OutputChannel instead of File.
+ * This is way more flexible.
+ * 
  * @author ken@kenevans.net
  * 
  */
@@ -73,7 +71,7 @@ public class _ObjExporter extends __CartesianExporter {
   /** Path of the OBJ file without the extension. */
   String objFileRootName;
   /** File for the .mtl file. */
-  File mtlFile;
+  // this may be a web socket even. // OC mtlFile;
   /** Bytes written to the .mtl file. */
   private int nMtlBytes;
   /** HashSet for textures. */
@@ -379,7 +377,7 @@ public class _ObjExporter extends __CartesianExporter {
     // Create a Point with the image file dimensions
     // If it remains null, then it is a flag that a texture file and
     // texture coordinates are not used
-    Point dim = null;
+    int[] dim = null;
 
     // Make a texture file if colixes is defined
     if (isSolidColor) {
@@ -394,28 +392,29 @@ public class _ObjExporter extends __CartesianExporter {
       if (nFaces % width != 0) {
         height++;
       }
-      dim = new Point(width, height);
+      dim = new int[] { width, height };
       debugPrint("  width=" + width + " height=" + height + " size = "
           + (width * height));
-      File file = createTextureFile(name, data, dim);
-      if (file == null) {
+      OC file = createTextureFile(name, data, dim);
+      if (file == null || file.getByteCount() == 0) {
         System.out.println("Error creating texture file: " + name);
         textureFiles.addLast("Error creating texture file: " + name);
         return;
       }
-      String error = "";
-      if (!file.exists()) {
-        error = " [Does not exist]";
-      } else if (file.length() == 0) {
-        error = " [Empty]";
-      }
+//      String error = "";
+//      if (!file.exists()) {
+//        error = " [Does not exist]";
+//      } else if (file.length() == 0) {
+//        error = " [Empty]";
+//      }
       
-      textureFiles.addLast(file.length() + " (" + width + "x" + height + ") "
-          + file.getPath() + error);
+      textureFiles.addLast(file.getByteCount() + " (" + width + "x" + height + ") "
+          + name);
       // Add the texture file to the material
-      outputMtl(" map_Kd " + file.getName() + "\n");
+      String shortName = file.getName();
+      outputMtl(" map_Kd " + shortName + "\n");
       // TODO Check this is wise
-      outputMtl(" map_Ka " + file.getName() + "\n");
+      outputMtl(" map_Ka " + shortName + "\n");
     }
 
     M4 matrix = M4.newM4(null);
@@ -452,14 +451,13 @@ public class _ObjExporter extends __CartesianExporter {
     // Open stream and writer for the .mtl file
     try {
       String mtlFileName = objFileRootName + ".mtl";
-      mtlFile = new File(mtlFileName);
       mtlout = viewer.openExportChannel(privateKey, mtlFileName, true);
-    } catch (IOException ex) {
+    } catch (Exception ex) {
       debugPrint("End initializeOutput (" + ex.getMessage() + "):");
       return false;
     }
     outputMtl("# Created by Jmol " + Viewer.getJmolVersion() + "\n");
-    output("\nmtllib " + mtlFile.getName() + "\n");
+    output("\nmtllib " + mtlout.getName() + "\n");
 
     // Keep a list of texture files created
     textureFiles = new  List<String>();
@@ -486,7 +484,7 @@ public class _ObjExporter extends __CartesianExporter {
       return retVal + " and " + ret;
     }
 
-    retVal += ", " + nMtlBytes + " " + mtlFile.getPath();
+    retVal += ", " + nMtlBytes + " " + mtlout.getFileName();
     for (String string : textureFiles) {
       retVal += ", " + string;
     }
@@ -588,153 +586,6 @@ public class _ObjExporter extends __CartesianExporter {
     addMesh(name, data, matrix, matrix, colix, null, null);
     return true;
   }
-
-  /**
-   * Writes a texture file with the colors in the colixes array in a way that it
-   * can be mapped by the texture coordinates vt.
-   * 
-   * @param name
-   *          The name of the file without the path or ext. This will be added
-   *          to the root name of the OBJ file along with the image suffix. The
-   *          value should be the name given to the surface.
-   * @param data
-   * @param dim
-   *          A Point representing the width, height of the image.
-   * @return The File created or null on failure.
-   */
-  private File createTextureFile(String name, MeshSurface data, Point dim) {
-    // This needs to be kept correlated with what doUV in addMesh does
-    debugPrint("createTextureFile: " + name);
-    // Do nothing unless all the arrays exist and have the same size
-    //    if (debug) {
-    //      debugPrint("  ImageIO Avaliable Formats:");
-    //      String[] formats = ImageIO.getWriterFormatNames();
-    //      for (String format : formats) {
-    //        debugPrint("    " + format);
-    //      }
-    //    }
-
-    // Create the File before checking the input, deleting any existing file
-    // of the same name (silently) so we will not have an inconsistent set of
-    // files.  Create the file even if it will be empty so we can denote that
-    // in the console output.
-    // Check input 
-    short[] colixes = (data.polygonColixes == null ? data.vertexColixes : data.polygonColixes);
-    if (colixes == null || colixes.length == 0) {
-      debugPrint("createTextureFile: Array problem");
-      debugPrint("  colixes=" + colixes + " data=" + data);
-      if (colixes != null) {
-        debugPrint("  colixes.length=" + colixes.length);
-      }
-      return null;
-    }
-
-    // FIXME Fix it to draw a triangle rather than a point
-    // FIXME Find the number of unique colors
-    int nUsed = data.polygonIndexes.length;
-    if (nUsed <= 0) {
-      debugPrint("createTextureFile: nFaces = 0");
-      return null;
-    }
-    // Make a BufferedImage and set the pixels in it
-    int width = dim.x;
-    int height = dim.y;
-    // We write a 3x3 block of pixels for each color 
-    // point so as to avoid antialiasing by viewer
-    
-    String textureType = "png";
-
-    byte[][] bytes = (textureType.equals("tga") ? new byte[height * 3][width * 3 * 3] : null);
-    BufferedImage image = (bytes == null ? new BufferedImage(width * 3, height * 3,
-        BufferedImage.TYPE_INT_ARGB) : null);
-    // Write it bottom to top to match direction of UV coordinate v
-    int row = height - 1;
-    int col = 0;
-    P3 sum = new P3();
-    
-    for (int i = 0; i < data.polygonIndexes.length; i++) {
-      int rgb;
-      if (data.polygonColixes == null) {
-        int[] face = data.polygonIndexes[i];
-        // Get the vertex colors and average them
-        sum.set(0, 0, 0);
-        for (int iVertex : face)
-          sum.add(CU.colorPtFromInt2(g3d.getColorArgbOrGray(colixes[iVertex])));
-        sum.scale(1.0f / face.length);
-        rgb = CU.colorPtToFFRGB(sum);
-      } else {
-        rgb = g3d.getColorArgbOrGray(colixes[i]);
-      }
-      if (bytes == null) {
-      for (int j = 0; j < 3; j++)
-        for (int k = 0; k < 3; k++)
-          image.setRGB(col * 3 + j, row * 3 + k, rgb);
-      } else {
-        /*  TGA test -- not worth it 
-        byte r = (byte) ((rgb >> 16) & 0xFF);
-        byte g = (byte) ((rgb >> 8) & 0xFF);
-        byte b = (byte) (rgb & 0xFF);
-        for (int j = 0; j < 3; j++) {
-          int x = col * 9 + j * 3;
-          for (int k = 0; k < 3; k++) {
-             int y = height * 3 - 1 - (row * 3 + k);
-             bytes[y][x] = b;
-             bytes[y][x + 1] = g;
-             bytes[y][x + 2] = r;
-          }
-        }
-        */
-      }
-      if ((col = (col + 1) % width) == 0)
-        row--;
-    }
-
-    // Write the file
-    // TODO Fix this to set compression for JPEGs
-    try {
-      // in the applet, we allow the user to use a dialog, which can change the file name
-      Map<String, Object> params = new Hashtable<String, Object>();
-      String fname = fileName;
-      if (image != null) {
-        params.put("image", image);
-        params.put("fileName", objFileRootName + "_" + name + "." + textureType);
-        params.put("type", textureType);
-        params.put("width", Integer.valueOf(width));
-        params.put("height", Integer.valueOf(height));
-        fname = viewer.outputToFile(params);
-      }
-      debugPrint("End createTextureFile: " + fname);
-      return new File(fname);
-    } catch (Exception ex) {
-      debugPrint("End createTextureFile (" + ex.getMessage() + "):");
-      return null;
-    }
-  }
-
-//  private Object createImage(Map<String, Object> params) throws Exception {
-    /*  TGA test -- not worth it 
-    // write simple TGA file
-    // see http://www.organicbit.com/closecombat/formats/tga.html
-    // no point in this, and it is much larger than png
-    OutputStream os = new FileOutputStream(fileName);
-    width *= 3;
-    height *= 3;
-    byte[] header = new byte[18];
-    header[2] = 2; // rbg image
-    header[7] = 32;
-    header[12] = (byte) (width & 0xFF);
-    header[13] = (byte) ((width >> 8) & 0xFF);
-    header[14] = (byte) (height & 0xFF);
-    header[15] = (byte) ((height >> 8) & 0xFF);
-    header[16] = 24;
-    os.write(header);
-    byte[][] bytes = (byte[][]) image;
-    for (int i = 0; i < bytes.length; i++)
-      os.write(bytes[i]);
-    os.flush();
-    os.close();
-    */
-//  }
 
   /**
    * Local implementation of outputEllipsoid.
@@ -874,7 +725,7 @@ public class _ObjExporter extends __CartesianExporter {
    * @param bsValid TODO
    */
   private void addMesh(String name, MeshSurface data, M4 matrix, M4 matrix1,
-                       short colix, Point dim, BS bsValid) {
+                       short colix, int[] dim, BS bsValid) {
     // Use to only get surfaces in the output
     if (surfacesOnly) {
       if (name == null || !name.startsWith("Surface")) {
@@ -926,8 +777,8 @@ public class _ObjExporter extends __CartesianExporter {
     if (dim != null) {
       // This needs to be kept correlated with what createTextureFile does
       output("# Number of texture coordinates: " + nFaces + "\n");
-      int width = dim.x;
-      int height = dim.y;
+      int width = dim[0];
+      int height = dim[1];
       float u, v;
       for (int row = 0, iFace = 0; row < height; row++) {
         v = row + .5f;
@@ -1023,5 +874,155 @@ public class _ObjExporter extends __CartesianExporter {
     }
     output("\n");
   }
+  
+  /**
+   * Writes a texture file with the colors in the colixes array in a way that it
+   * can be mapped by the texture coordinates vt.
+   * 
+   * @param name
+   *        The name of the file without the path or ext. This will be added to
+   *        the root name of the OBJ file along with the image suffix. The value
+   *        should be the name given to the surface.
+   * @param data
+   * @param dim
+   *        A Point representing the width, height of the image.
+   * @return The File created or null on failure.
+   */
+  private OC createTextureFile(String name, MeshSurface data, int[] dim) {
+    // This needs to be kept correlated with what doUV in addMesh does
+    debugPrint("createTextureFile: " + name);
+    // Do nothing unless all the arrays exist and have the same size
+    //    if (debug) {
+    //      debugPrint("  ImageIO Avaliable Formats:");
+    //      String[] formats = ImageIO.getWriterFormatNames();
+    //      for (String format : formats) {
+    //        debugPrint("    " + format);
+    //      }
+    //    }
+
+    // Create the File before checking the input, deleting any existing file
+    // of the same name (silently) so we will not have an inconsistent set of
+    // files.  Create the file even if it will be empty so we can denote that
+    // in the console output.
+    // Check input 
+    short[] colixes = (data.polygonColixes == null ? data.vertexColixes
+        : data.polygonColixes);
+    if (colixes == null || colixes.length == 0) {
+      debugPrint("createTextureFile: Array problem");
+      debugPrint("  colixes=" + colixes + " data=" + data);
+      if (colixes != null) {
+        debugPrint("  colixes.length=" + colixes.length);
+      }
+      return null;
+    }
+
+    int nUsed = data.polygonIndexes.length;
+    if (nUsed <= 0) {
+      debugPrint("createTextureFile: nFaces = 0");
+      return null;
+    }
+    // Make a BufferedImage and set the pixels in it
+    int width = dim[0];
+    int height = dim[1];
+    // We write a 3x3 block of pixels for each color 
+    // point so as to avoid antialiasing by viewer
+
+    String textureType = "png";
+    // tga is not enabled
+    // Write it bottom to top to match direction of UV coordinate v
+    int row = height - 1;
+    int col = 0;
+    P3 sum = new P3();
+    int w = width * 3;
+    int h = height * 3;
+    byte[][] bytes = (textureType.equals("tga") ? new byte[h][w * 3] : null);
+    int[] rgbbuf = (bytes == null ? new int[h * w] : null);
+
+    for (int i = 0; i < data.polygonIndexes.length; i++) {
+      int rgb;
+      if (data.polygonColixes == null) {
+        int[] face = data.polygonIndexes[i];
+        // Get the vertex colors and average them
+        sum.set(0, 0, 0);
+        for (int iVertex : face)
+          sum.add(CU.colorPtFromInt2(g3d.getColorArgbOrGray(colixes[iVertex])));
+        sum.scale(1.0f / face.length);
+        rgb = CU.colorPtToFFRGB(sum);
+      } else {
+        rgb = g3d.getColorArgbOrGray(colixes[i]);
+      }
+      if (bytes == null) {
+        // just create an int32 rgb buffer. That's all any of the encoders need.
+        for (int j = 0; j < 3; j++)
+          for (int k = 0; k < 3; k++)
+            rgbbuf[(row * 3 + k) * w + col * 3 + j] = rgb;//image.setRGB(col * 3 + j, row * 3 + k, rgb);
+      } else {
+        /*  TGA test -- not worth it 
+        byte r = (byte) ((rgb >> 16) & 0xFF);
+        byte g = (byte) ((rgb >> 8) & 0xFF);
+        byte b = (byte) (rgb & 0xFF);
+        for (int j = 0; j < 3; j++) {
+          int x = col * 9 + j * 3;
+          for (int k = 0; k < 3; k++) {
+             int y = height * 3 - 1 - (row * 3 + k);
+             bytes[y][x] = b;
+             bytes[y][x + 1] = g;
+             bytes[y][x + 2] = r;
+          }
+        }
+        */
+      }
+      if ((col = (col + 1) % width) == 0)
+        row--;
+    }
+
+    // Write the file
+    try {
+      // in the applet, we must allow the user to use a dialog, which can change the file name
+      Map<String, Object> params = new Hashtable<String, Object>();
+      String fname = fileName;
+      if (rgbbuf != null) {
+        params.put("rgbbuf", rgbbuf);
+        params
+            .put("fileName", objFileRootName + "_" + name + "." + textureType);
+        params.put("type", textureType);
+        params.put("width", Integer.valueOf(w));
+        params.put("height", Integer.valueOf(h));
+        fname = fileName = viewer.outputToFile(params);
+      }
+      debugPrint("End createTextureFile: " + fname);
+      return (OC) params.get("outputChannel");
+    } catch (Exception ex) {
+      debugPrint("End createTextureFile (" + ex.getMessage() + "):");
+      return null;
+    }
+  }
+
+//  private Object createImage(Map<String, Object> params) throws Exception {
+    /*  TGA test -- not worth it 
+    // write simple TGA file
+    // see http://www.organicbit.com/closecombat/formats/tga.html
+    // no point in this, and it is much larger than png
+    OutputStream os = new FileOutputStream(fileName);
+    width *= 3;
+    height *= 3;
+    byte[] header = new byte[18];
+    header[2] = 2; // rbg image
+    header[7] = 32;
+    header[12] = (byte) (width & 0xFF);
+    header[13] = (byte) ((width >> 8) & 0xFF);
+    header[14] = (byte) (height & 0xFF);
+    header[15] = (byte) ((height >> 8) & 0xFF);
+    header[16] = 24;
+    os.write(header);
+    byte[][] bytes = (byte[][]) image;
+    for (int i = 0; i < bytes.length; i++)
+      os.write(bytes[i]);
+    os.flush();
+    os.close();
+    */
+//  }
+
+
 }
   

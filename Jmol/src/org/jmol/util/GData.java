@@ -1,8 +1,6 @@
 package org.jmol.util;
 
 
-import java.awt.Image;
-
 import javajs.api.GenericPlatform;
 import javajs.awt.Font;
 import javajs.util.AU;
@@ -614,7 +612,7 @@ public class GData implements JmolGraphicsInterface {
    * @param height
    *  
    */
-  public void plotImage(int x, int y, int z, Image image,
+  public void plotImage(int x, int y, int z, Object image,
                         JmolRendererInterface jmolRenderer, short bgcolix,
                         int width, int height) {
   }

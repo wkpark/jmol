@@ -56,6 +56,7 @@ import java.util.Map;
 
 import javajs.api.GenericPlatform;
 import javajs.util.OC;
+import javajs.util.PT;
 
 import org.jmol.api.JmolImageEncoder;
 
@@ -98,8 +99,8 @@ public abstract class ImageEncoder implements JmolImageEncoder {
     this.out = out;
     this.errRet = errRet;
     try {
-      width = apiPlatform.getImageWidth(objImage);
-      height = apiPlatform.getImageHeight(objImage);
+      width = (PT.isAI(objImage) ? ((Integer) params.get("width")).intValue() : apiPlatform.getImageWidth(objImage));
+      height = (PT.isAI(objImage) ? ((Integer) params.get("height")).intValue() : apiPlatform.getImageHeight(objImage));
       date = (String) params.get("date");
       Integer q = (Integer) params.get("quality");
       quality = (q == null ? -1 : q.intValue());
@@ -120,17 +121,30 @@ public abstract class ImageEncoder implements JmolImageEncoder {
 
   protected int[] pixels;
 
-  protected void encodeImage(GenericPlatform apiPlatform, Object objImage) throws Exception {
-    /**
-     * @j2sNative
-     *
-     * pixels = null;
-     * 
-     */
-    {
-      pixels = new int[width * height];
+  /**
+   * general image encoder, allows for BufferedImage, int[], or HTML5 2D canvas
+   * 
+   * @param apiPlatform
+   * @param objImage
+   * @throws Exception
+   */
+  protected void encodeImage(GenericPlatform apiPlatform, Object objImage)
+      throws Exception {
+    if (PT.isAI(objImage)) {
+      pixels = (int[]) objImage;
+    } else {
+      /**
+       * @j2sNative
+       * 
+       *            pixels = null;
+       * 
+       */
+      {
+        pixels = new int[width * height];
+      }
+      pixels = apiPlatform.grabPixels(objImage, width, height, pixels, 0,
+          height);
     }
-    pixels = apiPlatform.grabPixels(objImage, width, height, pixels, 0, height);
   }
 
   protected void putString(String str) {

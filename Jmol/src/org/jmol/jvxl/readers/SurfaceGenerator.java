@@ -120,7 +120,6 @@ import java.io.IOException;
 import java.util.Map;
 
 
-import org.jmol.api.Interface;
 import org.jmol.api.JmolDocument;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.AtomDataServer;

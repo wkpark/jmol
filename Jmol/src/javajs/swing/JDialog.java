@@ -1,10 +1,16 @@
 package javajs.swing;
 
 import javajs.awt.Color;
+import javajs.awt.Container;
 import javajs.util.SB;
 
 
-public class JDialog extends JComponent {
+/**
+ * There is really no need here for awt.Dialog.
+ * We would not use FileDialog in an HTML5 context anyway.
+ * 
+ */
+public class JDialog extends Container {
 
   private static final int headerHeight = 25;
   private int defaultWidth = 600;

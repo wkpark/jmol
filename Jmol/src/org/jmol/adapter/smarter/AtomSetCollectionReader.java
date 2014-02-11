@@ -771,9 +771,7 @@ public abstract class AtomSetCollectionReader {
   }
 
   protected SymmetryInterface getNewSymmetry() {
-    symmetry = (SymmetryInterface) Interface
-        .getOptionInterface("symmetry.Symmetry");
-    return symmetry;
+    return (symmetry = Interface.getSymmetry());
   }
 
   public void setFractionalCoordinates(boolean TF) {

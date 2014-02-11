@@ -154,6 +154,9 @@ public class Jmol extends GenericApplet implements WrappedApplet {
 
   private Applet applet;
 
+  public Jmol() {
+    //
+  }
   /*
    * see below public String getAppletInfo() { return appletInfo; }
    * 

@@ -37,7 +37,7 @@ public class XmlMagResReader extends XmlReader {
 
   private String[] myAttributes = new String[]{ /* XML tag attributes of interest here */};
   
-  XmlMagResReader() {
+  public XmlMagResReader() {
   }
   
   @Override

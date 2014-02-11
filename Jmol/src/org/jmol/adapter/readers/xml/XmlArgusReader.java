@@ -59,7 +59,7 @@ public class XmlArgusReader extends XmlReader {
   private float[] trans;
   private int ptTrans;
   
-  XmlArgusReader() {
+  public XmlArgusReader() {
   }
 
   @Override

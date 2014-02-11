@@ -25,6 +25,7 @@ package org.jmol.export;
 
 import java.util.Map;
 
+import org.jmol.api.Interface;
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.g3d.HermiteRenderer;
 import org.jmol.modelset.Atom;
@@ -66,13 +67,8 @@ public class Export3D implements JmolRendererInterface {
                                    GData gdata, Map<String, Object> params) {
     exportName = (String) params.get("type");
     isWebGL = exportName.equals("JS");
-    try {
-      String name = "org.jmol.export." + (isWebGL ? "" : "_") + exportName + "Exporter";
-      Class<?> exporterClass = Class.forName(name);
-      exporter = (___Exporter) exporterClass.newInstance();
-    } catch (Exception e) {
+    if ((exporter = (___Exporter) Interface.getOptionInterface("export." + (isWebGL ? "" : "_") + exportName + "Exporter")) == null)
       return null;
-    }
     g3d = gdata;
     exporter.setRenderer(this);
     g3d.setNewWindowParametersForExport();

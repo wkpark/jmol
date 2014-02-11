@@ -37,7 +37,7 @@ public class XmlMolproReader extends XmlCmlReader {
       "wavenumber", "units", // normalCoordinate
   };
   
-  XmlMolproReader() {  
+  public XmlMolproReader() {  
   }
   
   @Override

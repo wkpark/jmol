@@ -996,8 +996,7 @@ public final class ModelLoader {
         if (haveMergeCells && i < baseModelCount) {
           modelSet.unitCells[i] = mergeModelSet.unitCells[i];
         } else {
-          modelSet.unitCells[i] = (SymmetryInterface) Interface
-              .getOptionInterface("symmetry.Symmetry");
+          modelSet.unitCells[i] = Interface.getSymmetry();
           modelSet.unitCells[i].setSymmetryInfo(i, modelSet.getModelAuxiliaryInfo(i));
         }
       }

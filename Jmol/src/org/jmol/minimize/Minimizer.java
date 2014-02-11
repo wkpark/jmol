@@ -87,42 +87,39 @@ public class Minimizer implements MinimizerInterface {
   }
 
   @Override
-  public void setProperty(String propertyName, Object value) {
-    if (propertyName.equals("ff")) {
+  public MinimizerInterface setProperty(String propertyName, Object value) {
+    switch (("ff        " + "cancel    " + "clear     " + "constraint"
+        +    "fixed     " + "stop      " + "viewer    ").indexOf(propertyName)) {
+    case 0:
       // UFF or MMFF
       if (!ff.equals(value)) {
         setProperty("clear", null);
         ff = (String) value;
       }
-      return;
-    }
-    if (propertyName.equals("cancel")) {
+      break;
+    case 10:
       stopMinimization(false);
-      return;
-    }
-    if (propertyName.equals("clear")) {
+      break;
+    case 20:
       if (minAtoms != null) {
         stopMinimization(false);
         clear();
       }
-      return;
-    }
-    if (propertyName.equals("constraint")) {
+      break;
+    case 30:
       addConstraint((Object[]) value);
-      return;
-    }
-    if (propertyName.equals("fixed")) {
+      break;
+    case 40:
       bsFixedDefault = (BS) value;
-      return;
-    }
-    if (propertyName.equals("stop")) {
+      break;
+    case 50:
       stopMinimization(true);
-      return;
-    }
-    if (propertyName.equals("viewer")) {
+      break;
+    case 60:
       viewer = (Viewer) value;
-      return;
+      break;
     }
+    return this;
   }
 
   @Override
@@ -666,7 +663,6 @@ public class Minimizer implements MinimizerInterface {
   @Override
   public void calculatePartialCharges(Bond[] bonds, int bondCount,
                                       Atom[] atoms, BS bsAtoms) {
-    //TODO -- combine SMILES and MINIMIZER in same JAR file
     ForceFieldMMFF ff = new ForceFieldMMFF(this);
     ff.setArrays(atoms, bsAtoms, bonds, bondCount, true, true);
     viewer.setAtomProperty(bsAtoms, T.atomtype, 0, 0, null, null,

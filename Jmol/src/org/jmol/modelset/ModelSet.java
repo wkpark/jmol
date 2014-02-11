@@ -430,8 +430,7 @@ import java.util.Map;
     Object obj = viewer.getShapePropertyIndex(JC.SHAPE_VECTORS, "mad", iAtom);
     boolean haveVibration = (obj != null && ((Integer) obj).intValue() != 0 || viewer
         .isVibrationOn());
-    SymmetryInterface symmetry = (SymmetryInterface) Interface
-        .getOptionInterface("symmetry.Symmetry");
+    SymmetryInterface symmetry = Interface.getSymmetry();
     pointGroup = symmetry.setPointGroup(pointGroup, atoms, bs, haveVibration,
         viewer.getFloat(T.pointgroupdistancetolerance), viewer.getFloat(T.pointgrouplineartolerance));
     if (!doAll && !asInfo)

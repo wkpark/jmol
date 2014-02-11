@@ -37,7 +37,7 @@ import org.jmol.util.Logger;
 
 public class XmlQEReader extends XmlReader {
   
-  XmlQEReader() {
+  public XmlQEReader() {
   }
   
   private float a;

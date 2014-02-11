@@ -29,14 +29,6 @@ import org.jmol.util.Logger;
 
 public class Interface {
 
-  public static Object getOptionInterface(String name) {
-    return getInterface("org.jmol." + name);
-  }
-
-  public static Object getApplicationInterface(String name) {
-    return getInterface("org.openscience.jmol.app." + name);
-  }
-
   public static Object getInterface(String name) {
     try {
       Class<?> x = Class.forName(name);
@@ -45,6 +37,14 @@ public class Interface {
       Logger.error("Interface.java Error creating instance for " + name + ": \n" + e);
       return null;
     }
+  }
+
+  public static Object getOptionInterface(String name) {
+    return getInterface("org.jmol." + name);
+  }
+
+  public static SymmetryInterface getSymmetry() {
+    return (SymmetryInterface) getInterface("org.jmol.symmetry.Symmetry");
   }
 
 }

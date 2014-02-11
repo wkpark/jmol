@@ -168,7 +168,7 @@ public class JanaReader extends AtomSetCollectionReader {
 
   private void ndim() throws Exception {
     ms = (MSInterface) Interface
-        .getInterface("org.jmol.adapter.readers.cif.MSReader");
+        .getOptionInterface("adapter.readers.cif.MSReader");
     modDim = ms.initialize(this, "" + (parseIntStr(getTokens()[1]) - 3));
   }
 

@@ -265,7 +265,6 @@ public class StatusManager {
   Map<EnumCallback, String> jmolScriptCallbacks = new Hashtable<EnumCallback, String>();
 
   private String jmolScriptCallback(EnumCallback callback) {
-    //System.out.println("callback " + iCallback + " + " + JmolConstants.getCallbackName(iCallback));
     String s = jmolScriptCallbacks.get(callback);
     if (s != null)
       viewer.evalStringQuietSync(s, true, false);
@@ -381,31 +380,28 @@ public class StatusManager {
     }
   }
 
-  synchronized void setStatusFrameChanged(int frameNo, int fileNo, int modelNo,
-                                          int firstNo, int lastNo, int currentFrame, String entryName) {
-    //System.out.println("setStatusFrameChanged modelSet=" + viewer.getModelSet());
+  synchronized void setStatusFrameChanged(int fileNo, int modelNo, int firstNo,
+                                          int lastNo, int currentFrame,
+                                          String entryName) {
     if (viewer.getModelSet() == null)
       return;
     boolean animating = viewer.isAnimationOn();
-    setStatusChanged("frameChanged", frameNo, (frameNo >= 0 ? viewer
-        .getModelNumberDotted(frameNo) : ""), false);
+    int frameNo = (animating ? -2 - currentFrame : currentFrame);
+    setStatusChanged("frameChanged", frameNo,
+        (currentFrame >= 0 ? viewer.getModelNumberDotted(currentFrame) : ""), false);
     String sJmol = jmolScriptCallback(EnumCallback.ANIMFRAME);
-    if (animating)
-      frameNo = -2 - frameNo;
-    if (notifyEnabled(EnumCallback.ANIMFRAME)) {
+    if (notifyEnabled(EnumCallback.ANIMFRAME))
       jmolCallbackListener.notifyCallback(EnumCallback.ANIMFRAME,
-          new Object[] { sJmol,
-              new int[] { frameNo, fileNo, modelNo, firstNo, lastNo, currentFrame }, entryName });
-    }
-    
+          new Object[] {
+              sJmol,
+              new int[] { frameNo, fileNo, modelNo, firstNo, lastNo,
+                  currentFrame }, entryName });
     if (viewer.jmolpopup != null && !animating)
       viewer.jmolpopup.jpiUpdateComputedMenus();
-
   }
 
   synchronized void setScriptEcho(String strEcho,
                                   boolean isScriptQueued) {
-    //System.out.println("statusmanagere setScriptEcho " + strEcho);
     if (strEcho == null)
       return;
     setStatusChanged("scriptEcho", 0, strEcho, false);
@@ -451,7 +447,6 @@ public class StatusManager {
                                     int msWalltime,
                                     String strErrorMessageUntranslated) {
     // only allow trapping of script information of type 0
-    //System.out.println("setScriptStatus " + strStatus + " === " + statusMessage);
     if (msWalltime < -1) {
       int iscript = -2 - msWalltime;
       setStatusChanged("scriptStarted", iscript, statusMessage, false);
@@ -556,7 +551,6 @@ public class StatusManager {
     //  1 driving on as driver
     //  2 sync    turn on, but set as slave
     //  5 stereo
-    //System.out.println(viewer.getHtmlName() +" setting mode=" + syncMode);
     if (stereoSync && syncMode != SYNC_ENABLE) {
       syncSend(Viewer.SYNC_NO_GRAPHICS_MESSAGE, "*", 0);
       stereoSync = false;

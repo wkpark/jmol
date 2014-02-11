@@ -268,14 +268,14 @@ public class CifReader extends AtomSetCollectionReader implements
     lookingForPDB = false;
     if (pr == null)
       pr = (MMCifInterface) Interface
-          .getInterface("org.jmol.adapter.readers.cif.MMCifReader");
+          .getOptionInterface("adapter.readers.cif.MMCifReader");
     isCourseGrained = pr.initialize(this);
   }
 
   private void initializeMSCIF(String data) throws Exception {
     if (mr == null)
       ms = mr = (MSCifInterface) Interface
-          .getInterface("org.jmol.adapter.readers.cif.MSCifReader");
+          .getOptionInterface("adapter.readers.cif.MSCifReader");
     modulated = (mr.initialize(this, data) > 0);
   }
 

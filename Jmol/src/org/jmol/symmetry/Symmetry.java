@@ -54,7 +54,7 @@ public class Symmetry implements SymmetryInterface {
   
   // NOTE: THIS CLASS IS VERY IMPORTANT.
   // IN ORDER TO MODULARIZE IT, IT IS REFERENCED USING 
-  // xxxx = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
+  // xxxx = Interface.getSymmetry();
 
   /* Symmetry is a wrapper class that allows access to the package-local
    * classes PointGroup, SpaceGroup, SymmetryInfo, and UnitCell.
@@ -82,7 +82,7 @@ public class Symmetry implements SymmetryInterface {
   
   public Symmetry() {
     // instantiated ONLY using
-    // symmetry = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
+    // symmetry = Interface.getSymmetry();
     // DO NOT use symmetry = new Symmetry();
     // as that will invalidate the Jar file modularization    
   }
@@ -436,9 +436,8 @@ public class Symmetry implements SymmetryInterface {
 
   @Override
   public SymmetryInterface getUnitCell(T3[] points, boolean setRelative) {
-    Symmetry sym = new Symmetry();
-    sym.unitCell = UnitCell.newP(points, setRelative);
-    return sym;
+    unitCell = UnitCell.newP(points, setRelative);
+    return this;
   }
 
   @Override

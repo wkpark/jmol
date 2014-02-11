@@ -383,7 +383,7 @@ public class PdbReader extends AtomSetCollectionReader {
       }
     }
     if (vTlsModels != null) {
-      symmetry = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
+      symmetry = Interface.getSymmetry();
       int n = atomSetCollection.atomSetCount;
       if (n == vTlsModels.size()) {
         for (int i = n; --i >= 0;)

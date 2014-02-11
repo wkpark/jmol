@@ -53,7 +53,7 @@ public class XmlVaspReader extends XmlReader {
   private String gibbsEnergy = null;
   private String[] myAttributes = { "name" }; 
   
-  XmlVaspReader() {
+  public XmlVaspReader() {
   }
   
   @Override

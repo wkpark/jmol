@@ -307,8 +307,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   private JmolAdapter modelAdapter;
   private ACCESS access;
   private CommandHistory commandHistory = new CommandHistory();
-  private SymmetryInterface symmetry;
-  private SmilesMatcherInterface smilesMatcher;
 
   private ModelManager modelManager;
   private StateManager stateManager;
@@ -389,25 +387,10 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return modelAdapter;
   }
 
-  public SymmetryInterface getSymmetry() {
-    if (symmetry == null)
-      symmetry = (SymmetryInterface) Interface
-          .getOptionInterface("symmetry.Symmetry");
-    return symmetry;
-  }
-
   public Object getSymmetryInfo(BS bsAtoms, String xyz, int op, P3 pt, P3 pt2,
                                 String id, int type) {
     return getPropertyManager().getSymmetryInfo(bsAtoms, xyz, op, pt, pt2, id,
         type);
-  }
-
-  public SmilesMatcherInterface getSmilesMatcher() {
-    if (smilesMatcher == null) {
-      smilesMatcher = (SmilesMatcherInterface) Interface
-          .getOptionInterface("smiles.SmilesMatcher");
-    }
-    return smilesMatcher;
   }
 
   @Override
@@ -521,7 +504,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     apiPlatform.setViewer(this, display);
     o = info.get("graphicsAdapter");
     if (o == null && !isWebGL)
-      o = Interface.getInterface("org.jmol.g3d.Graphics3D");
+      o = Interface.getOptionInterface("g3d.Graphics3D");
     gdata = (o == null ? new GData() : (GData) o);
     gdata.initialize(apiPlatform);
 
@@ -831,7 +814,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   void saveModelOrientation() {
-    modelSet.saveModelOrientation(animationManager.currentModelIndex,
+    modelSet.saveModelOrientation(getCurrentModelIndex(),
         stateManager.getOrientation());
   }
 
@@ -947,12 +930,12 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     }
     
   }
+
   public void setRotationRadius(float angstroms, boolean doAll) {
     if (doAll)
       angstroms = tm.setRotationRadius(angstroms, false);
     // only set the rotationRadius if this is NOT a dataframe
-    if (modelSet.setRotationRadius(animationManager.currentModelIndex,
-        angstroms))
+    if (modelSet.setRotationRadius(getCurrentModelIndex(), angstroms))
       global.setF("rotationRadius", angstroms);
   }
 
@@ -2958,16 +2941,25 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     modelSet.setEchoStateActive(TF);
   }
 
+  private MinimizerInterface minimizer;
+  private SmilesMatcherInterface smilesMatcher;
+
+  public MinimizerInterface getMinimizer(boolean createNew) {
+    return (minimizer == null && createNew ? (minimizer = (MinimizerInterface) Interface
+        .getOptionInterface("minimize.Minimizer")).setProperty("viewer", this)
+        : minimizer);
+  }
+
+  public SmilesMatcherInterface getSmilesMatcher() {
+    return (smilesMatcher == null ? (smilesMatcher = (SmilesMatcherInterface) Interface
+        .getOptionInterface("smiles.SmilesMatcher")) : smilesMatcher);
+  }
+
   private void clearModelDependentObjects() {
     setFrameOffsets(null);
     stopMinimization();
     minimizer = null;
-    if (smilesMatcher != null) {
-      smilesMatcher = null;
-    }
-    if (symmetry != null) {
-      symmetry = null;
-    }
+    smilesMatcher = null;
   }
 
   public void zap(boolean notify, boolean resetUndo, boolean zapModelKit) {
@@ -3089,9 +3081,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public float getUnitCellInfo(int infoType) {
     SymmetryInterface symmetry = getCurrentUnitCell();
-    if (symmetry == null)
-      return Float.NaN;
-    return symmetry.getUnitCellInfoType(infoType);
+    return (symmetry == null ?Float.NaN : symmetry.getUnitCellInfoType(infoType));
   }
 
   public Map<String, Object> getSpaceGroupInfo(String spaceGroup) {
@@ -3181,7 +3171,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   @Override
   public P3 getBoundBoxCenter() {
-    return modelSet.getBoundBoxCenter(animationManager.currentModelIndex);
+    return modelSet.getBoundBoxCenter(getCurrentModelIndex());
   }
 
   P3 getAverageAtomPoint() {
@@ -3198,8 +3188,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public float calcRotationRadius(P3 center) {
-    return modelSet.calcRotationRadius(animationManager.currentModelIndex,
-        center);
+    return modelSet.calcRotationRadius(getCurrentModelIndex(), center);
   }
 
   public float calcRotationRadiusBs(BS bs) {
@@ -3243,7 +3232,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public String getSymmetryOperation(String spaceGroup, int symop, P3 pt1,
                                      P3 pt2, boolean labelOnly) {
-    return modelSet.getSymmetryInfoString(animationManager.currentModelIndex,
+    return modelSet.getSymmetryInfoString(getCurrentModelIndex(),
         spaceGroup, symop, pt1, pt2, null, labelOnly);
   }
 
@@ -3469,8 +3458,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public void setCurrentCagePts(P3[] points) {
-    modelSet.setModelCage(getCurrentModelIndex(), getSymmetry().getUnitCell(
-        points, true));
+    modelSet.setModelCage(getCurrentModelIndex(),
+        Interface.getSymmetry().getUnitCell(points, true));
   }
 
   public void setCurrentUnitCellOffset(P3 pt, int ijk) {
@@ -3598,11 +3587,11 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   String getFileHeader() {
-    return modelSet.getFileHeader(animationManager.currentModelIndex);
+    return modelSet.getFileHeader(getCurrentModelIndex());
   }
 
   Object getFileData() {
-    return modelSet.getFileData(animationManager.currentModelIndex);
+    return modelSet.getFileData(getCurrentModelIndex());
   }
 
   public Map<String, Object> getCifData(int modelIndex) {
@@ -3615,7 +3604,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public String getPDBHeader() {
-    return modelSet.getPDBHeader(animationManager.currentModelIndex);
+    return modelSet.getPDBHeader(getCurrentModelIndex());
   }
 
   public String getChimeInfo(int tok) {
@@ -3744,9 +3733,9 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public SymmetryInterface getCurrentUnitCell() {
     if (animationManager.currentAtomIndex >= 0)
       return modelSet.getUnitCellForAtom(animationManager.currentAtomIndex);
-    
-    if (animationManager.currentModelIndex >= 0)
-      return modelSet.getUnitCell(animationManager.currentModelIndex);
+    int m = getCurrentModelIndex();
+    if (m >= 0)
+      return modelSet.getUnitCell(m);
     BS models = getVisibleFramesBitSet();
     SymmetryInterface ucLast = null;
     for (int i = models.nextSetBit(0); i >= 0; i = models.nextSetBit(i + 1)) {
@@ -3964,7 +3953,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     if (modelIndex == Integer.MIN_VALUE) {
       // just forcing popup menu update
       prevFrame = Integer.MIN_VALUE;
-      setCurrentModelIndexClear(animationManager.currentModelIndex, true);
+      setCurrentModelIndexClear(getCurrentModelIndex(), true);
       return;
     }
     animationManager.setModel(modelIndex, true);
@@ -4020,7 +4009,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   @Override
   public int getDisplayModelIndex() {
     // abandoned
-    return animationManager.currentModelIndex;
+    return getCurrentModelIndex();
   }
 
   public boolean haveFileSet() {
@@ -4028,7 +4017,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public void setBackgroundModelIndex(int modelIndex) {
-    // initializeModel
     animationManager.setBackgroundModelIndex(modelIndex);
     global.setS("backgroundModel", modelSet.getModelNumberDotted(modelIndex));
   }
@@ -5182,17 +5170,16 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       // force reset (reading vibrations)
       prevFrame = Integer.MIN_VALUE;
     }
-    int frameNo = animationManager.getCurrentModelIndex();
     tm.setVibrationPeriod(Float.NaN);
     int firstIndex = animationManager.firstFrameIndex;
     int lastIndex = animationManager.lastFrameIndex;
 
     boolean isMovie = isMovie();
-    int modelIndex = animationManager.currentModelIndex;
+    int modelIndex = getCurrentModelIndex();
     if (firstIndex == lastIndex && !isMovie)
       modelIndex = firstIndex;
     int frameID = getModelFileNumber(modelIndex);
-    int currentFrame = animationManager.getCurrentModelIndex();
+    int currentFrame = animationManager.currentModelIndex;
     int fileNo = frameID;
     int modelNo = frameID % 1000000;
     int firstNo = (isMovie ? firstIndex : getModelFileNumber(firstIndex));
@@ -5200,7 +5187,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
     String strModelNo;
     if (isMovie) {
-      strModelNo = "" + (frameNo + 1);
+      strModelNo = "" + (currentFrame + 1);
     } else if (fileNo == 0) {
       strModelNo = getModelNumberDotted(firstIndex);
       if (firstIndex != lastIndex)
@@ -5236,16 +5223,18 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
     String entryName;
     if (isMovie) {
-      entryName = "" + (animationManager.getCurrentModelIndex() + 1);
+      entryName = "" + (currentFrame + 1);
     } else {
-      entryName = getModelName(frameNo);
-      String script = "" + getModelNumberDotted(frameNo);
+      entryName = getModelName(currentFrame);
+      String script = "" + getModelNumberDotted(currentFrame);
       if (!entryName.equals(script))
         entryName = script + ": " + entryName;
       if (entryName.length() > 50)
         entryName = entryName.substring(0, 45) + "...";
     }
-    statusManager.setStatusFrameChanged(frameNo, fileNo, modelNo,
+    // there was a point where I thought frameNo and currentFrame
+    // might be different. 
+    statusManager.setStatusFrameChanged(fileNo, modelNo,
         (animationManager.animationDirection < 0 ? -firstNo : firstNo),
         (animationManager.currentDirection < 0 ? -lastNo : lastNo),
         currentFrame, entryName);
@@ -8072,7 +8061,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
             appConsole = (isApplet ? (JmolAppConsoleInterface) Interface
                 .getOptionInterface("console.AppletConsole")
                 : (JmolAppConsoleInterface) Interface
-                    .getApplicationInterface("jmolpanel.console.AppConsole"));
+                    .getInterface("org.openscience.jmol.app.jmolpanel.console.AppConsole"));
             if (appConsole == null)
               try {
                 System.out.println("Viewer can't start appConsole");
@@ -8235,12 +8224,12 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public V3 getModelDipole() {
-    return modelSet.getModelDipole(animationManager.currentModelIndex);
+    return modelSet.getModelDipole(getCurrentModelIndex());
   }
 
   public V3 calculateMolecularDipole() {
     return modelSet
-        .calculateMolecularDipole(animationManager.currentModelIndex);
+        .calculateMolecularDipole(getCurrentModelIndex());
   }
 
   public void getAtomIdentityInfo(int atomIndex, Map<String, Object> info) {
@@ -8309,7 +8298,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public boolean isJmolDataFrame() {
-    return modelSet.isJmolDataFrameForModel(animationManager.currentModelIndex);
+    return modelSet.isJmolDataFrameForModel(getCurrentModelIndex());
   }
 
   public int getJmolDataFrameIndex(int modelIndex, String type) {
@@ -8330,7 +8319,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public String getFrameTitle() {
-    return modelSet.getFrameTitle(animationManager.currentModelIndex);
+    return modelSet.getFrameTitle(getCurrentModelIndex());
   }
 
   String getJmolFrameType(int modelIndex) {
@@ -9334,17 +9323,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public void setFocus() {
     if (haveDisplay && !apiPlatform.hasFocus(display))
       apiPlatform.requestFocusInWindow(display);
-  }
-
-  private MinimizerInterface minimizer;
-
-  public MinimizerInterface getMinimizer(boolean createNew) {
-    if (minimizer == null && createNew) {
-      minimizer = (MinimizerInterface) Interface
-          .getOptionInterface("minimize.Minimizer");
-      minimizer.setProperty("viewer", this);
-    }
-    return minimizer;
   }
 
   void stopMinimization() {

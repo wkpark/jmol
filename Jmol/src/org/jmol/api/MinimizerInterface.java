@@ -12,7 +12,7 @@ public interface MinimizerInterface {
   public abstract boolean minimize(int steps, double crit, BS bsSelected, 
                                    BS bsFixed, boolean haveFixed, 
                                    boolean isSilent, String ff) throws Exception;
-  public abstract void setProperty(String propertyName, Object propertyValue);
+  public abstract MinimizerInterface setProperty(String propertyName, Object propertyValue);
   public abstract Object getProperty(String propertyName, int param);
   public abstract void calculatePartialCharges(Bond[] bonds, int bondCount, Atom[] atoms, BS bsAtoms);
   public abstract boolean startMinimization();

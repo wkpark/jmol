@@ -70,7 +70,7 @@ import org.jmol.util.Logger;
 
 public class XmlCmlReader extends XmlReader {
 
-  XmlCmlReader() {
+  public XmlCmlReader() {
   }
 
   private String scalarDictRef;

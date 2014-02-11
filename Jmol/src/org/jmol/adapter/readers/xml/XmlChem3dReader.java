@@ -42,7 +42,7 @@ public class XmlChem3dReader extends XmlReader {
 
   private List<Map<String, Object>> orbitals = new  List<Map<String, Object>>();
 
-  XmlChem3dReader() {
+  public XmlChem3dReader() {
   }
 
   @Override

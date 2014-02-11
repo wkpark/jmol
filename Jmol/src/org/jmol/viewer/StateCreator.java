@@ -604,7 +604,7 @@ public class StateCreator extends JmolStateCreator {
       appendCmd(commands, "anim frames " + Escape.eAI(frames));
       int i = am.getCurrentFrameIndex();
       appendCmd(commands, "frame " + (i + 1));
-      showModel = (am.getCurrentModelIndex() != am.modelIndexForFrame(i));
+      showModel = (am.currentModelIndex != am.modelIndexForFrame(i));
     }
     if (showModel)
       appendCmd(commands, "model "

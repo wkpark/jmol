@@ -50,7 +50,7 @@ class WrappedAppletLoader extends Thread {
     TickerThread tickerThread = new TickerThread(applet);
     tickerThread.start();
     try {
-      WrappedApplet jmol = ((AppletWrapper) applet).wrappedApplet = (WrappedApplet) Interface.getInterface("org.jmol.applet.Jmol");
+      WrappedApplet jmol = ((AppletWrapper) applet).wrappedApplet = (WrappedApplet) Interface.getOptionInterface("applet.Jmol");
       jmol.setApplet(applet, isSigned);
     } catch (Exception e) {
       Logger.errorEx("Could not instantiate applet", e);

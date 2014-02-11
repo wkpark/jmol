@@ -2712,10 +2712,7 @@ abstract public class ModelCollection extends BondCollection {
   public Hashtable<String, BS> htPeaks;
 
   public SymmetryInterface getSymTemp(boolean forceNew) {
-    if (symTemp == null || forceNew)
-      symTemp = (SymmetryInterface) Interface
-          .getOptionInterface("symmetry.Symmetry");
-    return symTemp;
+    return (symTemp == null || forceNew ? (symTemp = Interface.getSymmetry()) : symTemp);
   }
 
   public void createModels(int n) {

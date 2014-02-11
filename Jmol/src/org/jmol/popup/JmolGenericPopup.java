@@ -366,7 +366,7 @@ import javajs.util.List;
         .length() : i);
     if (modelSetRoot.length() == 0)
       modelSetRoot = "Jmol";
-    modelIndex = viewer.getDisplayModelIndex();
+    modelIndex = viewer.getCurrentModelIndex();
     modelCount = viewer.getModelCount();
     atomCount = viewer.getAtomCountInModel(modelIndex);
     modelSetInfo = viewer.getModelSetAuxiliaryInfo();

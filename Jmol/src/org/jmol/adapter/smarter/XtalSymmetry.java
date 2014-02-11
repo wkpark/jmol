@@ -69,8 +69,7 @@ public class XtalSymmetry {
   private SymmetryInterface symmetry;
 
   SymmetryInterface getSymmetry() {
-    return (symmetry == null ? (symmetry = (SymmetryInterface) Interface
-        .getOptionInterface("symmetry.Symmetry")) : symmetry);
+    return (symmetry == null ? (symmetry = getSymmetry()) : symmetry);
   }
   
   SymmetryInterface setSymmetry(SymmetryInterface symmetry) {

@@ -45,7 +45,7 @@ public class XmlOdysseyReader extends XmlReader {
       "box" // boundary
   };
 
-  XmlOdysseyReader() {
+  public XmlOdysseyReader() {
   }
 
   @Override

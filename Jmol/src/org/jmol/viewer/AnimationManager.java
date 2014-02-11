@@ -95,7 +95,7 @@ public class AnimationManager {
   }
 
   public boolean currentFrameIs(int f) {
-    int i = getCurrentModelIndex();
+    int i = currentModelIndex;
     return (morphCount == 0 ? i == f : Math.abs(currentMorphModel - f) < 0.001f);
   }
 
@@ -153,7 +153,7 @@ public class AnimationManager {
     case MODEL_CURRENT:
       if (morphCount > 0)
         return "-" + (1 + currentMorphModel);
-      i = getCurrentModelIndex();
+      i = currentModelIndex;
       break;
     case FRAME_LAST:
       i = lastFrameIndex;

@@ -71,9 +71,9 @@ public class _IdtfExporter extends __CartesianExporter {
    * IDTFConverter.exe -input t.idtf -output t.u3d
    * 
    * At this point, you have a file that can be inserted into a PDF file
-   * using pdfLatex and the movie15 option. See the Jmol wiki for details.
+   * using pdfLatex and the media9 (was movie15) option. See the Jmol wiki for details.
    * 
-   * see also http://www.ctan.org/tex-archive/macros/latex/contrib/movie15/doc/movie15.pdf
+   * see also http://www.ctan.org/tex-archive/macros/latex/contrib/media9/doc/media9.pdf
    * 
    * 
    * 
@@ -323,7 +323,7 @@ public class _IdtfExporter extends __CartesianExporter {
         + "\n% File created: "  + fileName + " (" + out.getByteCount() + " bytes)\n\n" 
         + "\n\\documentclass[12pt,letter]{article}" 
         + "\n\\usepackage{hyperref}" 
-        + "\n\\usepackage[3D]{movie15}" 
+        + "\n\\usepackage[3D]{media9}" 
         + "\n\\usepackage{verbatim}"
         + "\n\\pagestyle{empty}" 
         + "\n\\begin{document}" 

@@ -70,7 +70,7 @@ public class OC extends OutputStream {
   }
   
   public String getName() {
-    return fileName == null ? null : fileName.substring(fileName.lastIndexOf("/") + 1);
+    return (fileName == null ? null : fileName.substring(fileName.lastIndexOf("/") + 1));
   }
 
   public int getByteCount() {

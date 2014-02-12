@@ -315,13 +315,12 @@ public class JmolBinary {
   }
 
   public static boolean isPngZipStream(InputStream is) {
-    if (isZipS(is))
-      return false;
-      byte[] abMagic = getMagic(is, 55); // PNGJ
-      return (abMagic[51] == 0x50 
-           && abMagic[52] == 0x4E
-           && abMagic[53] == 0x47 
-           && abMagic[54] == 0x4A);
+    return (!isZipS(is) && isPngZipB(getMagic(is, 55)));
+  }
+  
+
+  public static boolean isPngZipB(byte[] bytes) {
+    return (bytes[51] == 0x50 && bytes[52] == 0x4E && bytes[53] == 0x47 && bytes[54] == 0x4A);
   }
 
   public static String getZipRoot(String fileName) {
@@ -392,9 +391,9 @@ public class JmolBinary {
     return getJzu().newZipInputStream(in);
   }
 
-  public static Object getZipFileContents(BufferedInputStream bis,
+  public static Object getZipFileDirectory(BufferedInputStream bis,
                                           String[] subFileList, int listPtr, boolean asBufferedInputStream) {
-    return getJzu().getZipFileContents(bis, subFileList, listPtr, asBufferedInputStream);
+    return getJzu().getZipFileDirectory(bis, subFileList, listPtr, asBufferedInputStream);
   }
 
   public static String[] getZipDirectoryAndClose(BufferedInputStream t,

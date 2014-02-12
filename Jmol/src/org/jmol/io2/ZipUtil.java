@@ -162,11 +162,12 @@ public class ZipUtil implements JmolZipUtility {
    * @return directory listing or subfile contents
    */
   @Override
-  public Object getZipFileContents(BufferedInputStream bis, String[] list,
+  public Object getZipFileDirectory(BufferedInputStream bis, String[] list,
                                    int listPtr, boolean asBufferedInputStream) {
     SB ret;
     if (list == null || listPtr >= list.length)
       return getZipDirectoryAsStringAndClose(bis);
+    bis = JmolBinary.checkPngZipStream(bis);
     String fileName = list[listPtr];
     ZipInputStream zis = new ZipInputStream(bis);
     ZipEntry ze;
@@ -188,6 +189,7 @@ public class ZipUtil implements JmolZipUtility {
       boolean asBinaryString = (pt > 0);
       if (asBinaryString)
         fileName = fileName.substring(0, pt);
+      fileName = fileName.replace('\\', '/');
       while ((ze = zis.getNextEntry()) != null
           && !fileName.equals(ze.getName())) {
       }
@@ -197,8 +199,8 @@ public class ZipUtil implements JmolZipUtility {
       zis.close();
       if (bytes == null)
         return "";
-      if (JmolBinary.isZipB(bytes))
-        return getZipFileContents(JmolBinary.getBIS(bytes), list,
+      if (JmolBinary.isZipB(bytes) || JmolBinary.isPngZipB(bytes))
+        return getZipFileDirectory(JmolBinary.getBIS(bytes), list,
             ++listPtr, asBufferedInputStream);
       if (asBufferedInputStream)
         return JmolBinary.getBIS(bytes);
@@ -229,7 +231,7 @@ public class ZipUtil implements JmolZipUtility {
         if (!fileName.equals(ze.getName()))
           continue;
         byte[] bytes = JmolBinary.getStreamBytes(zis, ze.getSize());
-        return (JmolBinary.isZipB(bytes) && ++listPtr < list.length ? getZipFileContentsAsBytes(
+        return ((JmolBinary.isZipB(bytes) || JmolBinary.isPngZipB(bytes)) && ++listPtr < list.length ? getZipFileContentsAsBytes(
             JmolBinary.getBIS(bytes), list, listPtr) : bytes);
       }
     } catch (Exception e) {
@@ -455,7 +457,7 @@ public class ZipUtil implements JmolZipUtility {
         //        System.out.println("ziputil " + s.substring(0, 100));
         if (JmolBinary.isGzipB(bytes))
           bytes = JmolBinary.getStreamBytes(getUnGzippedInputStream(bytes), -1);
-        if (JmolBinary.isZipB(bytes)) {
+        if (JmolBinary.isZipB(bytes) || JmolBinary.isPngZipB(bytes)) {
           BufferedInputStream bis = JmolBinary.getBIS(bytes);
           String[] zipDir2 = JmolBinary.getZipDirectoryAndClose(bis, true);
           bis = JmolBinary.getBIS(bytes);

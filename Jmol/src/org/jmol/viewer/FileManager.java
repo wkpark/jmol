@@ -570,7 +570,7 @@ public class FileManager implements BytePoster {
     }
     String fullName = name;
     if (name.indexOf("|") >= 0) {
-      subFileList = PT.split(name, "|");
+      subFileList = PT.split(name.replace('\\', '/'), "|");
       if (bytes == null)
         Logger.info("FileManager opening 3 " + name);
       name = subFileList[0];
@@ -597,7 +597,7 @@ public class FileManager implements BytePoster {
       if (JmolBinary.isZipS(bis)) {
         if (allowZipStream)
           return JmolBinary.newZipInputStream(bis);
-        Object o = JmolBinary.getZipFileContents(bis, subFileList, 1, forceInputStream);
+        Object o = JmolBinary.getZipFileDirectory(bis, subFileList, 1, forceInputStream);
         return (o instanceof String ? JmolBinary.getBR((String) o) : o);
       }
       return (forceInputStream ? bis : JmolBinary.getBufferedReader(bis, null));

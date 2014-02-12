@@ -93,6 +93,7 @@ public class FileReader {
       } else if (t instanceof ZInputStream) {
         String name = fullPathNameIn;
         String[] subFileList = null;
+        name = name.replace('\\', '/');
         if (name.indexOf("|") >= 0 && !name.endsWith(".zip")) {
           subFileList = PT.split(name, "|");
           name = subFileList[0];

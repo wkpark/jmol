@@ -251,9 +251,10 @@ public class CifReader extends AtomSetCollectionReader implements
           for (int i = 0; i < symops.size(); i++)
             setSymmetryOperator(symops.get(i));
         }
-
         if (lastSpaceGroupName != null)
           setSpaceGroupName(lastSpaceGroupName);
+      } else if (key.equals(singleAtomID)) {
+        readSingleAtom();
       } else if (pr != null) {
         pr.processEntry();
       } else if (mr != null) {
@@ -261,6 +262,14 @@ public class CifReader extends AtomSetCollectionReader implements
       }
     }
     return true;
+  }
+
+  private void readSingleAtom() {
+    Atom atom = new Atom();
+    atom.set(0, 0, 0);
+    String s = atom.atomName = tokenizer.fullTrim(data);
+    atom.elementSymbol = s.length() == 1 ? s : s.substring(0, 1) + s.substring(1, 2).toLowerCase();
+    atomSetCollection.addAtom(atom);
   }
 
   private void initializeMMCIF() {
@@ -816,6 +825,8 @@ public class CifReader extends AtomSetCollectionReader implements
       "_atom_site_subsystem_code", "_atom_site_symmetry_multiplicity",
       "_atom_site_thermal_displace_type" };
 
+  final private static String singleAtomID = atomFields[CHEM_COMP_AC_ID]; 
+  
   /* to: hansonr@stolaf.edu
    * from: Zukang Feng zfeng@rcsb.rutgers.edu
    * re: Two mmCIF issues

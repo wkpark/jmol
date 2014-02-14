@@ -76,6 +76,7 @@ public class JmolApp implements JmolAppAPI {
   private String script1 = "";
   private String script2 = "";
   private boolean scanInput;
+  private String menuFile;
 
   
   //private JmolViewer viewer;
@@ -348,8 +349,8 @@ public class JmolApp implements JmolAppAPI {
 
     // menu file
     if (line.hasOption("m"))
-      info.put("menuFile", line.getOptionValue("m"));
-
+      menuFile = line.getOptionValue("m");
+    
     // run pre Jmol script
     if (line.hasOption("J"))
       script1 = line.getOptionValue("J");
@@ -491,6 +492,10 @@ public class JmolApp implements JmolAppAPI {
       t.printStackTrace();
     }
     
+    if (menuFile != null)
+      viewer.setMenu(menuFile, true);
+
+
     // Open a file if one is given as an argument -- note, this CAN be a
     // script file
     if (modelFilename != null) {

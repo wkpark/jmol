@@ -11206,14 +11206,19 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       }
       break;
     case T.defaultlattice:
+      // in very early versions of Jmol we might
+      // have accepted string "{1.0,2.0,3.0}" here,
+      // but that is at least before 11.8. 
+      // shouldn't be saving this in the state anyway.
+      
       if (slen > 2) {
         P3 pt;
         SV var = parameterExpressionToken(2);
         if (var.tok == T.point3f)
           pt = (P3) var.value;
         else {
+          pt = new P3();
           int ijk = var.asInt();
-          pt = P3.new3(1, 1, 1);
           if (ijk >= 100)
             SimpleUnitCell.ijkToPoint3f(ijk, pt, -1);
         }
@@ -11589,14 +11594,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         propertyName = "xypos";
         propertyValue = xypParameter(--pt);
         if (propertyValue == null)
-          pt--;
-        else
-          pt = iToken + 1;
+          invArg();
+        pt = iToken + 1;
         break;
       case T.integer:
         // x y without brackets
-        pt--;
-        int posx = intParameter(pt++);
+        int posx = intParameter(pt - 1);
         String namex = "xpos";
         if (tokAt(pt) == T.percent) {
           namex = "%xpos";

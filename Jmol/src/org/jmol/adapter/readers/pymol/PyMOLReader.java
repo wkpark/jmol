@@ -261,7 +261,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     appendLoadNote("PyMOL version: " + pymolVersion);
 
     // create settings and uniqueSettings lists
-    List<Object> settings = getMapList(map, "settings");
+    List<Object> settings = fixSettings(getMapList(map, "settings"));
     sceneOrder = getMapList(map, "scene_order");
     haveScenes = getFrameScenes(map);
     List<Object> file = listAt(settings, PyMOL.session_file);
@@ -430,6 +430,27 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo("dataOnly",
           Boolean.TRUE);
     pymolScene.offsetObjects();
+  }
+
+  /**
+   * Recent PyMOL files may not have all settings. 
+   * For now, we just add null values;
+   * @param settings
+   * @return settings
+   */
+  private List<Object> fixSettings(List<Object> settings) {
+    int n = settings.size();
+    for (int i = 0; i < n; i++) {
+      @SuppressWarnings("unchecked")
+      int i2 = intAt((List<Object>) settings.get(i), 0);
+      while (i < i2) {
+        Logger.info("PyMOL reader adding null settings #" + i);
+        settings.add(i++, new List<Object>());
+        n++;
+      }
+      
+    }
+    return settings;
   }
 
   /**

@@ -469,11 +469,6 @@ public class GlobalSettings {
     boolean legacyAutoBonding = false;
     boolean legacyHAddition = false;
 
-  void setDefaultLattice(P3 p) {
-    if (!Float.isNaN(p.x + p.y + p.z))
-      ptDefaultLattice.setT(p);
-  }
-
     //centering and perspective
 
     boolean allowRotateSelected = false;

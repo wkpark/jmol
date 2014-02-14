@@ -225,7 +225,6 @@ class PyMOLScene implements JmolSceneGenerator {
     this.baseModelIndex = baseModelIndex;
     this.doCache = doCache;
     this.surfaceInfoName = filePath + "##JmolSurfaceInfo##";
-
     setVersionSettings();
     settings.trimToSize();
     bgRgb = colorSetting(listAt(settings, PyMOL.bg_rgb));

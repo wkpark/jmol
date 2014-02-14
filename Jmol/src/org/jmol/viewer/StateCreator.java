@@ -642,10 +642,12 @@ public class StateCreator extends JmolStateCreator {
           // (=color [element], =frame ...; set unitcell) -- see Viewer.java
           key = key.substring(1);
         } else {
-          if (key.indexOf("default") == 0)
-            key = " set " + key;
-          else
-            key = "set " + key;
+          // one error here is that defaultLattice is being saved as the
+          // escaped string set defaultLattice "{...}", which actually is not read
+          // and was being improperly read as "{1 1 1}". 
+          // leaving it here as it is, now always setting  {0 0 0}
+          // otherwise we will break states
+          key = (key.indexOf("default") == 0 ? " " : "") + "set " + key;
           value = Escape.e(value);
         }
         list[n++] = key + " " + value;

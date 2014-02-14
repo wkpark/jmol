@@ -8236,10 +8236,11 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     modelSet.getAtomIdentityInfo(atomIndex, info);
   }
 
-  public void setDefaultLattice(P3 ptLattice) {
+  public void setDefaultLattice(P3 p) {
     // Eval -- handled separately
-    global.setDefaultLattice(ptLattice);
-    global.setS("defaultLattice", Escape.eP(ptLattice));
+      if (!Float.isNaN(p.x + p.y + p.z))
+        global.ptDefaultLattice.setT(p);
+    global.setS("defaultLattice", Escape.eP(p));
   }
 
   public P3 getDefaultLattice() {

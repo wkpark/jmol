@@ -56,7 +56,7 @@ import org.jmol.viewer.Viewer;
 
 public class ScriptMathProcessor {
   /**
-   * Reverse Polish Notation Engine for IF, SET, and %{...} -- Bob Hanson
+   * Reverse Polish Notation Engine for IF, SET, and @{...} -- Bob Hanson
    * 2/16/2007 Just a (not so simple?) RPN processor that can handle boolean,
    * int, float, String, Point3f, BitSet, Array, Hashtable, Matrix3f, Matrix4f
    * 
@@ -139,9 +139,16 @@ public class ScriptMathProcessor {
   }
 
   private void putX(SV x) {
-    //System.out.println("putX skipping : " + skipping + " " + x);
+    System.out.println("putX wasX=" + wasX + " x=" + x);
     if (skipping)
       return;
+    if (wasX) {
+      try {
+        addOp(T.tokenComma);
+      } catch (ScriptException e) {
+        System.out.println("Error adding comma");
+      }      
+    }
     if (++xPt == xStack.length)
       xStack = (SV[]) AU.doubleLength(xStack);
     if (logMessages) {
@@ -476,10 +483,14 @@ public class ScriptMathProcessor {
         isLeftOp = true;
         break;
       }
-      if (wasX == isLeftOp && tok0 != T.propselector) // for now, because
-        // we have .label
-        // and .label()
-        return false;
+      if (wasX == isLeftOp && tok0 != T.propselector) {
+        // for now, because we have .label and .label()
+        if (wasX && allowMathFunc) {
+          if (addOp(T.tokenComma))
+            return addOp(op);
+        }
+      return false;
+      }
       break;
     }
 

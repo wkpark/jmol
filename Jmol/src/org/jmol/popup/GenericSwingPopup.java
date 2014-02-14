@@ -97,27 +97,28 @@ public abstract class GenericSwingPopup implements GenericMenuInterface {
         item = st.nextToken();
         if (!checkKey(item))
           continue;
+        if ("-".equals(item)) {
+          menuAddSeparator(menu);
+          continue;
+        }
         String label = popupResourceBundle.getWord(item);
-        SC newMenu = null;
+        SC newItem = null;
         String script = "";
         boolean isCB = false;
         label = appFixLabel(label == null ? item : label);
         if (label.equals("null")) {
           // user has taken this menu item out
           continue;
-        } else if (item.indexOf("Menu") >= 0) {
+        }
+        if (item.indexOf("Menu") >= 0) {
           if (item.indexOf("more") < 0)
             helper.menuAddButtonGroup(null);
           SC subMenu = menuNewSubMenu(label, id + "." + item);
           menuAddSubMenu(menu, subMenu);
-          htMenus.put(item, subMenu);
           if (item.indexOf("Computed") < 0)
             addMenuItems(id, item, subMenu, popupResourceBundle);
           appCheckSpecialMenu(item, subMenu, label);
-          newMenu = subMenu;
-        } else if ("-".equals(item)) {
-          menuAddSeparator(menu);
-          continue;
+          newItem = subMenu;
         } else if (item.endsWith("Checkbox")
             || (isCB = (item.endsWith("CB") || item.endsWith("RD")))) {
           // could be "PRD" -- set picking checkbox
@@ -126,29 +127,28 @@ public abstract class GenericSwingPopup implements GenericMenuInterface {
           boolean isRadio = (isCB && item.endsWith("RD"));
           if (script == null || script.length() == 0 && !isRadio)
             script = "set " + basename + " T/F";
-          newMenu = menuCreateCheckboxItem(menu, label, basename + ":" + script,
+          newItem = menuCreateCheckboxItem(menu, label, basename + ":" + script,
               id + "." + item, false, isRadio);
-          rememberCheckbox(basename, newMenu);
+          rememberCheckbox(basename, newItem);
           if (isRadio)
-            helper.menuAddButtonGroup(newMenu);
+            helper.menuAddButtonGroup(newItem);
         } else {
           script = popupResourceBundle.getStructure(item);
           if (script == null)
             script = item;
           if (!isJS && item.startsWith("JS"))
             continue;
-          newMenu = menuCreateItem(menu, label, script, id + "." + item);
+          newItem = menuCreateItem(menu, label, script, id + "." + item);
         }
         // menus or menu items:
+        htMenus.put(item, newItem);
         if (item.indexOf("URL") >= 0)
-          AppletOnly.addLast(newMenu);
+          AppletOnly.addLast(newItem);
         if (!allowSignedFeatures && item.startsWith("SIGNED"))
-          menuEnable(newMenu, false);
-        if (item.indexOf("VARIABLE") >= 0)
-          htMenus.put(item, newMenu);
+          menuEnable(newItem, false);
         if (item.startsWith("SIGNED"))
-          SignedOnly.addLast(newMenu);
-        appCheckItems(item, newMenu);
+          SignedOnly.addLast(newItem);
+        appCheckItems(item, newItem);
       }
     }
 

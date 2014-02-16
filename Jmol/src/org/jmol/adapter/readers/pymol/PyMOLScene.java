@@ -205,6 +205,7 @@ class PyMOLScene implements JmolSceneGenerator {
   private int thisState;
   int currentAtomSetIndex;
   String surfaceInfoName;
+  boolean haveMultipleBonds;
 
   void setStateCount(int stateCount) {
     this.stateCount = stateCount;
@@ -658,6 +659,10 @@ class PyMOLScene implements JmolSceneGenerator {
    */
   private void finalizeObjects() {
     viewer.setStringProperty("defaults", "PyMOL");
+    if (haveMultipleBonds) {
+      viewer.setFloatProperty("multipleBondSpacing", 0.15f);
+      viewer.setFloatProperty("multipleBondRadiusFactor", 0.4f);
+    }
     for (int i = 0; i < jmolObjects.size(); i++) {
       try {
         JmolObject obj = jmolObjects.get(i);
@@ -1711,8 +1716,8 @@ class PyMOLScene implements JmolSceneGenerator {
         c =  PyMOL.getRGB(c);
       float valence = getUniqueFloatDef(id, PyMOL.valence, Float.NaN);
       float t = getUniqueFloatDef(id, PyMOL.stick_transparency, Float.NaN);
-      viewer.setBondParameters(thisState - 1, i, null, rad, valence, c, t);
-   }
+      viewer.modelSet.setBondParameters(thisState - 1, i, rad, valence, c, t);
+    }
   }
 
   public void addMesh(int tok, List<Object> obj, String objName, boolean isMep) {

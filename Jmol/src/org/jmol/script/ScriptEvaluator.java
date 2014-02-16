@@ -974,11 +974,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.semicolon: // for (i = 1; i < 3; i=i+1)
         break out;
       case T.decimal:
-        rpn.addXNum(SV.newV(T.decimal, theToken.value));
+        rpn.addXNum(theToken);
         break;
       case T.spec_seqcode:
       case T.integer:
-        rpn.addXNum(SV.newI(theToken.intValue));
+        rpn.addXNum(theToken);
         break;
       // these next are for the within() command
       case T.plane:
@@ -3676,16 +3676,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         break;
       case T.spec_seqcode:
         if (isInMath)
-          rpn.addXNum(SV.newI(instruction.intValue));
+          rpn.addXNum(instruction);
         else
           rpn.addXBs(getAtomBits(T.spec_seqcode,
               Integer.valueOf(getSeqCode(instruction))));
         break;
       case T.spec_seqcode_range:
         if (isInMath) {
-          rpn.addXNum(SV.newI(instruction.intValue));
+          rpn.addXNum(instruction);
           rpn.addOp(T.tokenMinus);
-          rpn.addXNum(SV.newI(code[++pc].intValue));
+          rpn.addXNum(code[++pc]);
           break;
         }
         int chainID = (pc + 3 < code.length && code[pc + 2].tok == T.opAND
@@ -3848,7 +3848,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         break;
       case T.decimal:
       case T.integer:
-        rpn.addXNum(SV.newT(instruction));
+        rpn.addXNum(instruction);
         break;
       case T.bitset:
         BS bs1 = BSUtil.copy((BS) value);

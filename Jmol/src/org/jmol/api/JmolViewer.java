@@ -215,10 +215,6 @@ abstract public class JmolViewer implements JSInterface {
   abstract public boolean checkHalt(String strCommand, boolean isInterrupt);
   abstract public void haltScriptExecution();
 
-  abstract public String getOperatingSystemName();
-  abstract public String getJavaVersion();
-  abstract public String getJavaVendor();
-
   abstract public boolean haveFrame();
 
   abstract public void pushHoldRepaint();

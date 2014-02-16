@@ -246,7 +246,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public boolean listCommands = false;
   boolean mustRender = false;
 
-  String htmlName = "";
+  public String htmlName = "";
 
   private String insertedCommand = "";
 
@@ -273,12 +273,12 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public GlobalSettings global;
   public StatusManager statusManager;
   TransformManager tm;
-
-  final static String strJavaVendor = System.getProperty("java.vendor",
+  
+  public final static String strJavaVendor = "Java: " + System.getProperty("java.vendor",
       "j2s");
-  final static String strOSName = System.getProperty("os.name", "j2s");
-  final static String strJavaVersion = System.getProperty(
-      "java.version", "0.0");
+  public final static String strOSName = System.getProperty("os.name", "");
+  public final static String strJavaVersion = "Java " + System.getProperty(
+      "java.version", "");
 
   String syncId = "";
   private String logFilePath = "";
@@ -432,6 +432,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
     if (info.containsKey("debug") || commandOptions.indexOf("-debug") >= 0)
       Logger.setLogLevel(Logger.LEVEL_DEBUG);
+    if (isApplet && info.containsKey("maximumSize"))
+      setMaximumSize(((Integer) info.get("maximumSize")).intValue());
 
     isJNLP = checkOption2("isJNLP", "-jnlp");
     if (isJNLP)
@@ -443,22 +445,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     int i = fullName.indexOf("__");
     htmlName = (i < 0 ? fullName : fullName.substring(0, i));
     syncId = (i < 0 ? "" : fullName.substring(i + 2, fullName.length() - 2));
-    if (isApplet) {
-      /**
-       * @j2sNative
-       * 
-       *            if(self.Jmol) { 
-       *            this.applet = Jmol._applets[this.htmlName.split("_object")[0]];
-       *            this.strJavaVersion = org.jmol.viewer.Viewer.strJavaVersion = Jmol._version;
-       *            }
-       * 
-       * 
-       */
-      {
-      }
-      if (info.containsKey("maximumSize"))
-        setMaximumSize(((Integer) info.get("maximumSize")).intValue());
-    }
     access = (checkOption2("access:READSPT", "-r") ? ACCESS.READSPT
         : checkOption2("access:NONE", "-R") ? ACCESS.NONE : ACCESS.ALL);
     isPreviewOnly = info.containsKey("previewOnly");
@@ -478,6 +464,20 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       platform = (String) o;
       isWebGL = (platform.indexOf(".awtjs.") >= 0);
       isJS = isWebGL || (platform.indexOf(".awtjs2d.") >= 0);
+      /**
+       * @j2sNative
+       * 
+       *            if(self.Jmol) { 
+       *            this.applet = Jmol._applets[this.htmlName.split("_object")[0]];
+       *            this.strJavaVersion = org.jmol.viewer.Viewer.strJavaVersion = Jmol._version;
+       *            this.strJavaVendor = org.jmol.viewer.Viewer.strJavaVendor = "Java2Script " + (this.isWebGL ? "(WebGL)" : "(HTML5)"); 
+       *            }
+       * 
+       * 
+       */
+      {
+      }
+
       o = Interface.getInterface(platform);
     }
     apiPlatform = (GenericPlatform) o;
@@ -7986,21 +7986,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   //
   // //////////////////////////////////////////////////////////////
 
-  @Override
-  public String getOperatingSystemName() {
-    return strOSName + (!isJS ? "" : isWebGL ? "(WebGL)" : "(HTML5)");
-  }
-
-  @Override
-  public String getJavaVendor() {
-    return strJavaVendor;
-  }
-
-  @Override
-  public String getJavaVersion() {
-    return strJavaVersion;
-  }
-
   public GData getGraphicsData() {
     return gdata;
   }
@@ -10298,12 +10283,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     } catch (Exception e) {
       return null;
     }
-  }
-
-  public void setBondParameters(int modelIndex, int i, BS bsBonds, float rad,
-                                float pymolValence, int argb, float trans) {
-    modelSet.setBondParametersBS(modelIndex, i, bsBonds, rad, pymolValence,
-        argb, trans);
   }
 
   public int[][] getDihedralMap(int[] atoms) {

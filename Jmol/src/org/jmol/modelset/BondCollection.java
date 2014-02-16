@@ -852,23 +852,12 @@ abstract public class BondCollection extends AtomCollection {
    * used in PyMOL reader to set unique bond settings and for valence
    * 
    * @param modelIndex
-   * @param iBond
-   * @param bsBonds
+   * @param i
    * @param rad
    * @param pymolValence  1 for "show multiple bonds
    * @param argb
    * @param trans
    */
-  public void setBondParametersBS(int modelIndex, int iBond, BS bsBonds,
-                                  float rad, float pymolValence, int argb,
-                                  float trans) {
-    if (bsBonds == null)
-      setBondParameters(modelIndex, iBond, rad, pymolValence, argb, trans);
-    else
-      for (int i = bsBonds.nextSetBit(0); i >= 0; i = bsBonds.nextSetBit(i + 1))
-        setBondParameters(modelIndex, i, rad, pymolValence, argb, trans);
-  }
-
   public void setBondParameters(int modelIndex, int i, float rad, float pymolValence,
                              int argb, float trans) {
     if (i < 0 || i >= bondCount)

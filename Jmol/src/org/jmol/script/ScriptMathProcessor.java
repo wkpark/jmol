@@ -246,26 +246,38 @@ public class ScriptMathProcessor {
     return wasX = true;
   }
 
-  public boolean addXNum(SV x) throws ScriptException {
-    // corrects for x -3 being x - 3
+  public boolean addXNum(T x) throws ScriptException {
+    // corrects for x-3 being x - 3
     // only when coming from expression() or parameterExpression()
-    if (wasX)
+    // and only when number is not flagged as forced negative
+    // as when x -3
+    SV v;
+    if (x instanceof SV) {
+      v = (SV) x;
+    } else {
       switch (x.tok) {
-      case T.integer:
-        if (x.intValue < 0) {
-          addOp(T.tokenMinus);
-          x = SV.newI(-x.intValue);
-        }
-        break;
       case T.decimal:
-        float f = ((Float) x.value).floatValue();
-        if (f < 0 || f == 0 && 1 / f == Float.NEGATIVE_INFINITY) {
-          addOp(T.tokenMinus);
-          x = SV.newV(T.decimal, Float.valueOf(-f));
+        if (wasX) {
+          float f = ((Float) x.value).floatValue();
+          if (f < 0 || f == 0 && 1 / f == Float.NEGATIVE_INFINITY) {
+            addOp(T.tokenMinus);
+            v = SV.newV(T.decimal, Float.valueOf(-f));
+            break;
+          }
         }
+        v = SV.newV(T.decimal, x.value);
+        break;
+      default:
+        int iv = x.intValue;
+        if (wasX && iv < 0) {
+          addOp(T.tokenMinus);
+          iv = -iv;
+        }
+        v = SV.newI(iv);
         break;
       }
-    putX(x);
+    }
+    putX(v);
     return wasX = true;
   }
 
@@ -1621,5 +1633,4 @@ public class ScriptMathProcessor {
       return null;
     return xStack[xPt--];
   }
-  
 }

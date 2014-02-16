@@ -951,7 +951,10 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
         order = 1;
       int ia = intAt(b, 0);
       int ib = intAt(b, 1);
-      Bond bond = new Bond(ia, ib, order | asSingle);
+      order = order | asSingle;
+      if (order > 1)
+        pymolScene.haveMultipleBonds = true;
+      Bond bond = new Bond(ia, ib, order);
       bond.uniqueID = (b.size() > 6 && intAt(b, 6) != 0 ? intAt(b, 5) : -1);
       bondList.addLast(bond);
     }

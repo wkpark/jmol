@@ -18,7 +18,7 @@ public abstract class GenericSwingPopup implements GenericMenuInterface {
   abstract protected void menuShowPopup(SC popup, int x, int y);
   abstract protected String menuSetCheckBoxOption(SC item, String name, String what);
 
-  abstract protected void appCheckItems(String item, SC newMenu);
+  abstract protected void appCheckItem(String item, SC newMenu);
   abstract protected void appCheckSpecialMenu(String item, SC subMenu, String word);
   abstract protected String appFixLabel(String label);
   abstract protected String appFixScript(String name, String script);
@@ -136,27 +136,22 @@ public abstract class GenericSwingPopup implements GenericMenuInterface {
           script = popupResourceBundle.getStructure(item);
           if (script == null)
             script = item;
-          if (!isJS && item.startsWith("JS"))
-            continue;
           newItem = menuCreateItem(menu, label, script, id + "." + item);
         }
         // menus or menu items:
         htMenus.put(item, newItem);
-        if (item.indexOf("URL") >= 0)
-          AppletOnly.addLast(newItem);
-        if (!allowSignedFeatures && item.startsWith("SIGNED"))
-          menuEnable(newItem, false);
-        if (item.startsWith("SIGNED"))
+        if (item.startsWith("SIGNED")) {
           SignedOnly.addLast(newItem);
-        appCheckItems(item, newItem);
+          if (!allowSignedFeatures)
+            menuEnable(newItem, false);
+        }
+        appCheckItem(item, newItem);
       }
     }
 
   protected void updateSignedAppletItems() {
     for (int i = SignedOnly.size(); --i >= 0;)
-      menuEnable(SignedOnly.get(i), isSigned || !isApplet);
-    for (int i = AppletOnly.size(); --i >= 0;)
-      menuEnable(AppletOnly.get(i), isApplet);
+      menuEnable(SignedOnly.get(i), allowSignedFeatures);
   }
 
   /**
@@ -172,7 +167,7 @@ public abstract class GenericSwingPopup implements GenericMenuInterface {
      * 
      */
     {
-      return true;
+      return (isApplet || !key.contains("APPLET"));
     }
   }
 
@@ -315,6 +310,13 @@ public abstract class GenericSwingPopup implements GenericMenuInterface {
     menuAddItem(menu, item);
     return item;
   }
+
+  protected SC setText(String item, String text) {
+    SC m = htMenus.get(item);
+    if (m != null)
+      m.setText(text);
+    return m;
+   }
 
   private void menuAddItem(SC menu, SC item) {
     menu.add(item);

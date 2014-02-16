@@ -109,11 +109,12 @@ public abstract class PopupResource {
   protected void addItems(String[][] itemPairs) {   
     String previous = "";
     for (int i = 0; i < itemPairs.length; i++) {
-      String str = itemPairs[i][1];
+      String[] pair = itemPairs[i];
+      String str = pair[1];
       if (str == null)
         str = previous;
       previous = str;
-      structure.setProperty(itemPairs[i][0], str);
+      structure.setProperty(pair[0], str);
     }
   }
   

@@ -136,6 +136,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   private boolean implicitString;
 
   private int tokInitialPlusPlus;
+  private int afterWhite;
   
   synchronized ScriptContext compile(String filename, String script, boolean isPredefining,
                   boolean isSilent, boolean debugScript, boolean isCheckOnly) {
@@ -415,7 +416,10 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     if (isLineContinuation(ichT, true))
       ichT += 1 + nCharNewLine(ichT + 1);
     cchToken = ichT - ichToken;
-    return cchToken > 0;
+    if (cchToken == 0)
+      return false;
+    afterWhite = ichT;
+    return true;
   }
 
   private boolean isLineContinuation(int ichT, boolean checkMathop) {
@@ -1142,14 +1146,14 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     }
     float value;
     if (!Float.isNaN(value = lookingAtExponential())) {
-      addTokenToPrefix(T.o(T.decimal, Float.valueOf(value)));
+      addNumber(T.decimal, Integer.MAX_VALUE, Float.valueOf(value));
       return CONTINUE;
     }
     if (lookingAtDecimal()) {
       value = PT.fVal(script.substring(ichToken, ichToken + cchToken));
       int intValue = (ScriptEvaluator.getFloatEncodedInt(script.substring(
           ichToken, ichToken + cchToken)));
-      addTokenToPrefix(T.tv(T.decimal, intValue, Float.valueOf(value)));
+      addNumber(T.decimal, intValue, Float.valueOf(value));
       return CONTINUE;
     }
     if (lookingAtSeqcode()) {
@@ -1185,7 +1189,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       }
       if (val == 0 && intString.equals("-0"))
         addTokenToPrefix(T.tokenMinus);
-      addTokenToPrefix(T.tv(T.integer, val, intString));
+      addNumber(T.integer, val, intString);
       return CONTINUE;
     }
     if (!isMathExpressionCommand && parenCount == 0
@@ -1216,6 +1220,12 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       }
     }
     return OK;
+  }
+
+  private void addNumber(int tok, int i, Object v) {
+    // if after white space, we FORCE the integer
+    addTokenToPrefix(afterWhite == ichToken ? SV.newSV(tok, i, v) 
+        : T.tv(tok, i, v));
   }
 
   private Object lookingAtMatrix() {

@@ -233,7 +233,7 @@ public class ShapeManager {
     if (modifiers != 0
         && viewer.getBondPicking()
         && (map = shapes[JC.SHAPE_STICKS].checkObjectClicked(x, y, modifiers,
-            bsVisible, drawPicking)) != null)
+            bsVisible, false)) != null)
       return map;
     for (int i = 0; i < clickableMax; i++)
       if ((shape = shapes[hoverable[i]]) != null

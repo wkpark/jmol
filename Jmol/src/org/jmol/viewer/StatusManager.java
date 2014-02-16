@@ -310,13 +310,19 @@ public class StatusManager {
           new Object[] { sJmol, bsMoved });
   }
 
-  synchronized void setStatusAtomPicked(int atomIndex, String strInfo) {
+  /**
+   * 
+   * @param atomIndex  -2 for draw, -3 for bond
+   * @param strInfo
+   * @param map 
+   */
+  synchronized void setStatusAtomPicked(int atomIndex, String strInfo, Map<String, Object> map) {
     String sJmol = jmolScriptCallback(EnumCallback.PICK);
     Logger.info("setStatusAtomPicked(" + atomIndex + "," + strInfo + ")");
     setStatusChanged("atomPicked", atomIndex, strInfo, false);
     if (notifyEnabled(EnumCallback.PICK))
       jmolCallbackListener.notifyCallback(EnumCallback.PICK,
-          new Object[] { sJmol, strInfo, Integer.valueOf(atomIndex) });
+          new Object[] { sJmol, strInfo, Integer.valueOf(atomIndex), map });
   }
 
   synchronized int setStatusClicked(int x, int y, int action, int clickCount, int mode) {

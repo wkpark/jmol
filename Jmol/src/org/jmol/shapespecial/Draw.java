@@ -1132,14 +1132,17 @@ protected void resetObjects() {
     BS bs = ((DrawMesh) pickedMesh).modelFlags;
     if (modelIndex < 0 && bs != null && BSUtil.cardinalityOf(bs) == 1)
       modelIndex = bs.nextSetBit(0);
+    Map<String, Object> map = null;
+    if (action != 0)
+      map = getPickedPoint(v, modelIndex);
     if (drawPicking && !isPickingMode) {
       if (action != 0) // not mouseMove
-        setStatusPicked(-2, v);
+        setStatusPicked(-2, v, map);
       return getPickedPoint(v, modelIndex);
     }
     if (action == 0
         || pickedMesh.polygonIndexes[pickedModel][0] == pickedMesh.polygonIndexes[pickedModel][1]) {
-      return (action == 0 ? getPickedPoint(v, modelIndex) : null);
+      return map;
     }
     boolean isClockwise = viewer.isBound(action,
         ActionManager.ACTION_spinDrawObjectCW);

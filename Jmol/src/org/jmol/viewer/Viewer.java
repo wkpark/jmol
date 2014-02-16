@@ -5516,21 +5516,32 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
    * has been picked by the user.
    * 
    * jmolSetCallback("pickCallback", "myPickCallback") function
-   * myPickCallback(strInfo, iAtom) {}
+   * myPickCallback(strInfo, iAtom, map) {}
    * 
    * iAtom == the index of the atom picked or -2 for a draw object or -3 for a
    * bond
    * 
    * strInfo depends upon the type of object picked:
    * 
-   * atom: a string determinied by the PICKLABEL parameter, which if "" delivers
+   * atom (iAtom>=0): a string determinied by the PICKLABEL parameter, which if "" delivers
    * the atom identity along with its coordinates
    * 
-   * bond: ["bond", bondIdentityString (quoted), x, y, z] where the coordinates
+   * bond (iAtom==-3): ["bond", bondIdentityString (quoted), x, y, z] where the coordinates
    * are of the midpoint of the bond
    * 
-   * draw: ["draw", drawID(quoted), pickedModel, pickedVertex, x, y, z,
-   * drawTitle(quoted)]
+   * draw (iAtom==-2): ["draw", ID(quoted), pickedModel, pickedVertex, x, y, z,
+   * title(quoted)]
+   * 
+   * isosurface (iAtom==-4): ["isosurface", ID(quoted), pickedModel, pickedVertex, x, y, z,
+   * title(quoted)]
+   * 
+   * map:
+   * 
+   * atom: null
+   * 
+   * bond: {pt, index, modelIndex, modelNumberDotted, type, strInfo}
+   * 
+   * Draw, isosurface: {pt, modelIndex, modelNumberDotted, id, vertex, type}
    * 
    * Viewer.setStatusAtomPicked Draw.checkObjectClicked (set picking DRAW)
    * Sticks.checkObjectClicked (set bondPicking TRUE; set picking IDENTIFY)
@@ -5538,17 +5549,18 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
    * actionManager.queueAtom (during measurements)
    */
 
-  public void setStatusAtomPicked(int atomIndex, String info) {
+  public void setStatusAtomPicked(int atomIndex, String info,
+                                  Map<String, Object> map) {
     if (info == null) {
       info = global.pickLabel;
-      if (info.length() == 0)
-        info = getAtomInfoXYZ(atomIndex, global.messageStyleChime);
-      else
-        info = modelSet.getAtomInfo(atomIndex, info);
+      info = (info.length() == 0 ? getAtomInfoXYZ(atomIndex,
+          global.messageStyleChime) : modelSet.getAtomInfo(atomIndex, info));
     }
     global.setPicked(atomIndex);
     global.setS("_pickinfo", info);
-    statusManager.setStatusAtomPicked(atomIndex, info);
+    statusManager.setStatusAtomPicked(atomIndex, info, map);
+    if (atomIndex < 0)
+      return;
     int syncMode = statusManager.getSyncMode();
     if (syncMode == StatusManager.SYNC_DRIVER && doHaveJDX())
       getJSV().atomPicked(atomIndex);

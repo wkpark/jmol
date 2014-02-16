@@ -580,12 +580,12 @@ public abstract class MeshCollection extends Shape {
     }
   }
  
-  protected void setStatusPicked(int flag, P3 v) {
+  protected void setStatusPicked(int flag, P3 v, Map<String, Object> map) {
     // for draw and isosurface
     viewer.setStatusAtomPicked(flag, "[\"" + myType + "\"," + PT.esc(pickedMesh.thisID) + "," +
         + pickedModel + "," + pickedVertex + "," + v.x + "," + v.y + "," + v.z + "," 
         + (pickedMesh.title == null ? "\"\"" 
-               : PT.esc(pickedMesh.title[0]))+"]");
+               : PT.esc(pickedMesh.title[0]))+"]", map);
   }
 
   protected Map<String, Object> getPickedPoint(P3 v, int modelIndex) {

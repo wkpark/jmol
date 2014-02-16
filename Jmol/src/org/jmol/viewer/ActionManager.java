@@ -1748,7 +1748,7 @@ public class ActionManager implements EventManager {
     int n = measurementQueued.addPoint(atomIndex, ptClicked, true);
     if (atomIndex >= 0)
       viewer.setStatusAtomPicked(atomIndex, "Atom #" + n + ":"
-          + viewer.getAtomInfo(atomIndex));
+          + viewer.getAtomInfo(atomIndex), null);
     return n;
   }
 
@@ -1889,12 +1889,12 @@ public class ActionManager implements EventManager {
       if (!drawMode && !labelMode && isBound(clickAction, ACTION_center))
         zoomTo(atomIndex);
       else if (isBound(clickAction, ACTION_pickAtom))
-        viewer.setStatusAtomPicked(atomIndex, null);
+        viewer.setStatusAtomPicked(atomIndex, null, null);
       return;
     case PICKING_LABEL:
       if (isBound(clickAction, ACTION_pickLabel)) {
         runScript("set labeltoggle {atomindex=" + atomIndex + "}");
-        viewer.setStatusAtomPicked(atomIndex, null);
+        viewer.setStatusAtomPicked(atomIndex, null, null);
       }
       return;
     case PICKING_INVERT_STEREO:
@@ -1934,14 +1934,14 @@ public class ActionManager implements EventManager {
         }
         viewer.undoMoveActionClear(atomIndex, AtomCollection.TAINT_COORD, true);
         viewer.invertSelected(null, null, atomIndex, bs);
-        viewer.setStatusAtomPicked(atomIndex, "inverted: " + Escape.eBS(bs));
+        viewer.setStatusAtomPicked(atomIndex, "inverted: " + Escape.eBS(bs), null);
       }
       return;
     case PICKING_DELETE_ATOM:
       if (isBound(clickAction, ACTION_deleteAtom)) {
         bs = BSUtil.newAndSetBit(atomIndex);
         viewer.deleteAtoms(bs, false);
-        viewer.setStatusAtomPicked(atomIndex, "deleted: " + Escape.eBS(bs));
+        viewer.setStatusAtomPicked(atomIndex, "deleted: " + Escape.eBS(bs), null);
       }
       return;
     }
@@ -1980,7 +1980,7 @@ public class ActionManager implements EventManager {
       break;
     }
     viewer.clearClickCount();
-    viewer.setStatusAtomPicked(atomIndex, null);
+    viewer.setStatusAtomPicked(atomIndex, null, null);
   }
 
   private void assignNew(int x, int y) {
@@ -2137,7 +2137,7 @@ public class ActionManager implements EventManager {
 
   private void zoomTo(int atomIndex) {
     runScript("zoomTo (atomindex=" + atomIndex + ")");
-    viewer.setStatusAtomPicked(atomIndex, null);
+    viewer.setStatusAtomPicked(atomIndex, null, null);
   }
 
   @Override

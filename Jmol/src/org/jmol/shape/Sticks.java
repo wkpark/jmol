@@ -230,7 +230,7 @@ public class Sticks extends Shape {
     map.put("model", viewer.getModelNumberDotted(modelIndex));
     map.put("type", "bond");
     map.put("info", info);
-    viewer.setStatusAtomPicked(-3, "[\"bond\",\"" + bond.getIdentity() + "\"," + pt.x + "," + pt.y + "," + pt.z + "]");
+    viewer.setStatusAtomPicked(-3, "[\"bond\",\"" + bond.getIdentity() + "\"," + pt.x + "," + pt.y + "," + pt.z + "]", map);
     return map;
   }
 

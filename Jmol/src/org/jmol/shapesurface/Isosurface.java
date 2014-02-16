@@ -1704,8 +1704,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     P3 ptRet = new P3();
     ptRet.setT((pickFront ? pickedMesh.vertices[pickedVertex] : ((IsosurfaceMesh)pickedMesh).centers[iFace]));
     pickedModel = (short) pickedMesh.modelIndex;
+    Map<String, Object> map = getPickedPoint(ptRet, pickedModel);
 //    if (pickFront) {
-      setStatusPicked(-4, ptRet);
+      setStatusPicked(-4, ptRet, map);
 //    } else {
 //      Vector3f vNorm = new Vector3f();
 //      ((IsosurfaceMesh)pickedMesh).getFacePlane(iFace, vNorm);
@@ -1713,7 +1714,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 //      vNorm.scale(-1);
 //     // setHeading(ptRet, vNorm, 2);
 //    }
-    return getPickedPoint(ptRet, pickedModel);
+    return map;
   }
 
   private boolean isPickable(IsosurfaceMesh m, BS bsVisible) {

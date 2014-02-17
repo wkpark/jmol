@@ -37,7 +37,6 @@ import javajs.util.OC;
 import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3i;
-import javajs.util.PT;
 import javajs.util.T3;
 import javajs.util.V3;
 
@@ -187,7 +186,6 @@ public abstract class ___Exporter {
   final protected V3 tempV2 = new V3();
   final protected V3 tempV3 = new V3();
   private boolean isWebGL;
-  protected String appletName;
   
   public ___Exporter() {
   }
@@ -205,9 +203,6 @@ public abstract class ___Exporter {
                              Map<String, Object> params) {
     this.viewer = viewer;
     isWebGL = params.get("type").equals("JS");
-    if (isWebGL)
-      appletName = PT.split(viewer.getHtmlName(), "_")[0];
-
     this.g3d = g3d;
     this.privateKey = privateKey;
     backgroundColix = viewer.getObjectColix(StateManager.OBJ_BACKGROUND);

@@ -589,7 +589,7 @@ public class StatusManager {
     }
     if (Logger.debugging) {
       Logger.debug(
-          viewer.getHtmlName() + " sync mode=" + syncMode +
+          viewer.appletName + " sync mode=" + syncMode +
           "; synced? " + isSynced + "; driving? " + drivingSync + "; disabled? " + syncDisabled);
     }
   }

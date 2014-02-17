@@ -7,6 +7,8 @@ public class JPopupMenu extends AbstractButton {
   // note that in Java Swing JPopupMenu extends 
   // JComponent, but here we extend AbstractButton
   // so that it shares the SwingComponent interface
+  
+  boolean tainted = true;
 
   public JPopupMenu(String name) {
     super("mnu");
@@ -33,6 +35,8 @@ public class JPopupMenu extends AbstractButton {
     /**
      * @j2sNative
      * 
+     * if (applet != null)
+     *   this.tainted = true;
      * SwingController.showMenu(this, x, y);
      * 
      */

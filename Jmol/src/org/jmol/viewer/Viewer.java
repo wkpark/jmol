@@ -247,6 +247,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   boolean mustRender = false;
 
   public String htmlName = "";
+  public String appletName = "";
+
 
   private String insertedCommand = "";
 
@@ -444,6 +446,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     allowScripting = !checkOption2("noscripting", "-noscripting");
     int i = fullName.indexOf("__");
     htmlName = (i < 0 ? fullName : fullName.substring(0, i));
+    appletName = PT.split(htmlName + "_", "_")[0];
     syncId = (i < 0 ? "" : fullName.substring(i + 2, fullName.length() - 2));
     access = (checkOption2("access:READSPT", "-r") ? ACCESS.READSPT
         : checkOption2("access:NONE", "-R") ? ACCESS.NONE : ACCESS.ALL);

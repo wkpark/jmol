@@ -40,6 +40,7 @@ public abstract class GenericSwingPopup implements GenericMenuInterface {
   protected boolean allowSignedFeatures;
   protected boolean isJS, isApplet, isSigned;
   protected int thisx, thisy;
+  protected boolean isTainted = true;
 
   protected String menuName;
   protected SC popupMenu;
@@ -48,7 +49,6 @@ public abstract class GenericSwingPopup implements GenericMenuInterface {
   protected Object buttonGroup;
   protected String currentMenuItemId;
   protected Map<String, SC> htMenus = new Hashtable<String, SC>();
-  private List<SC> AppletOnly = new List<SC>();
   private List<SC> SignedOnly = new List<SC>();
 
   protected void initSwing(String title, PopupResource bundle, boolean isJS,

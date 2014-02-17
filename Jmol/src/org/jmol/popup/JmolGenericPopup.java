@@ -165,6 +165,7 @@ import javajs.util.List;
   public void jpiUpdateComputedMenus() {
     if (updateMode == UPDATE_NEVER)
       return;
+    isTainted = true;
     updateMode = UPDATE_ALL;
     getViewerData();
     updateSelectMenu();
@@ -400,6 +401,7 @@ import javajs.util.List;
   protected void appUpdateForShow() {
     if (updateMode == UPDATE_NEVER)
       return;
+    isTainted = true;
     getViewerData();
     updateMode = UPDATE_SHOW;
     updateSelectMenu();
@@ -949,7 +951,7 @@ import javajs.util.List;
 
   private void updateAboutSubmenu() {
     if (isApplet)
-      setText("APPLETid", viewer.getHtmlName());
+      setText("APPLETid", viewer.appletName);
     
     /**
      * @j2sNative

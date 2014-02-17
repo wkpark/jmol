@@ -139,7 +139,7 @@ public class ScriptMathProcessor {
   }
 
   private void putX(SV x) {
-    System.out.println("putX wasX=" + wasX + " x=" + x);
+    //System.out.println("putX wasX=" + wasX + " x=" + x);
     if (skipping)
       return;
     if (wasX) {
@@ -719,6 +719,7 @@ public class ScriptMathProcessor {
       eval.error(ScriptEvaluator.ERROR_endOfStatementUnexpected);
     SV v = SV.selectItemVar(xStack[xPt]);
     xStack[xPt--] = null;
+    wasX = false;
     return v;
   }
 

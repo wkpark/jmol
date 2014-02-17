@@ -58,10 +58,11 @@ public class JSModelKitPopup extends JmolGenericPopup {
   public void menuShowPopup(SC popup, int x, int y) {
 
     try {
-      ((JPopupMenu) popup).show((Component) viewer.getApplet(), x, y);
+      ((JPopupMenu) popup).show(isTainted ? (Component) viewer.getApplet() : null, x, y);
     } catch (Exception e) {
       // ignore
     }
+    isTainted = false;
   }
   
   @Override

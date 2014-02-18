@@ -64,7 +64,7 @@ public class AwtSwingPopupHelper implements
   private ButtonGroup buttonGroup; 
 
   @Override
-  public SC menuCreatePopup(String title) {
+  public SC menuCreatePopup(String title, Object applet) {
     return AwtSwingComponent.getPopup(title, htSources);
   }
 
@@ -200,11 +200,5 @@ public class AwtSwingPopupHelper implements
   private SC getSource(EventObject e) {
     return getSwingComponent(e.getSource());
   }
-
-  @Override
-  public void taint() {
-    // JavaScript only
-  }
-
 
 }

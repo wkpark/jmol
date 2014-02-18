@@ -56,7 +56,7 @@ public class JPanel extends JComponent {
 		}
 		SB sb = new SB();
 		sb.append("\n<div id='" + id + "' class='JPanel' style='"
-				+ getCSSstyle(100) + "'>\n");
+				+ getCSSstyle(100, 100) + "'>\n");
 		sb.append("\n<span id='" + id + "_minimizer' style='width:" + minWidth
 				+ "px;height:" + minHeight + "px;'>");
 		sb.append(grid.toHTML(id));

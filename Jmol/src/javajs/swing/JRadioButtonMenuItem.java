@@ -8,8 +8,8 @@ public class JRadioButtonMenuItem extends JMenuItem {
 
   @Override
   public String htmlLabel() {
-    return   "<input id=\"ID-rb\" type=\"radio\" name=\"" + this.htmlName + "\" " 
-        + (this.selected ? "checked" : "") + " /><label for=\"ID-rb\">TeXt</label>";
+    return   "<input id=\"" + this.id + "-rb\" type=\"radio\" name=\"" + this.htmlName + "\" " 
+        + (this.selected ? "checked" : "") + " /><label for=\"" + this.id + "-rb\">TeXt</label>";
   }
 
 }

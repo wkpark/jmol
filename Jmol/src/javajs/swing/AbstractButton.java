@@ -19,7 +19,7 @@ public abstract class AbstractButton extends JComponent implements SC {
     super(type);
     enabled = true;
   }
-
+  
   @Override
   public void setSelected(boolean selected) {
     this.selected = selected;
@@ -97,7 +97,7 @@ public abstract class AbstractButton extends JComponent implements SC {
         : this.text != null ? this.text 
          : null);
     String s = (label == null ? "" : "<li><a>" + label + "</a>"
-      + "<ul id=\"" + this.id + "\" class=\"" + (this.enabled ? "" : "ui-state-disabled") + "\">");
+      + htmlMenuOpener("ul"));
     int n = getComponentCount();
     if (n > 0)
       for(int i = 0; i < n; i++)
@@ -106,5 +106,13 @@ public abstract class AbstractButton extends JComponent implements SC {
       s += "</ul></li>";
     return s;
   }
+
+  protected String htmlMenuOpener(String type) {
+    return "<" + type + " id=\"" + this.id + "\"" + (this.enabled ? "" : getHtmlDisabled()) + ">";
+  }
+
+  protected String getHtmlDisabled() {
+    return " disabled=\"disabled\"";
+  }  
 
 }

@@ -4,7 +4,7 @@ import javajs.api.SC;
 
 public interface PopupHelper {
 
-  SC menuCreatePopup(String title);
+  SC menuCreatePopup(String title, Object applet);
 
   SC getRadio(String name);
 
@@ -25,7 +25,5 @@ public interface PopupHelper {
   SC getSwingComponent(Object component);
 
   void menuClearListeners(SC c);
-
-  void taint();
-
+ 
 }

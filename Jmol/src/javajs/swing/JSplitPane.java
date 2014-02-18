@@ -69,7 +69,7 @@ public class JSplitPane extends JComponent {
 		if (height == 0)
 		  height = getSubcomponentHeight();
 		SB sb = new SB();
-		sb.append("<div id='" + id + "' class='JSplitPane' style='" + getCSSstyle(100) + "'>");
+		sb.append("<div id='" + id + "' class='JSplitPane' style='" + getCSSstyle(100, 100) + "'>");
 		if (isH) 
 			sb.append("<div id='" + id + "_left' style='width:50%;height:100%;position:absolute;top:0%;left:0%'>");
 		else

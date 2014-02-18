@@ -13,7 +13,7 @@ public class JTextField extends JComponent {
 	@Override
 	public String toHTML() {
 		SB sb = new SB();
-		sb.append("<input type=text id='" + id + "' class='JTextField' style='" + getCSSstyle(0) + "' value='"+ text + "' onkeyup	=SwingController.click(this,event)	>");
+		sb.append("<input type=text id='" + id + "' class='JTextField' style='" + getCSSstyle(0, 0) + "' value='"+ text + "' onkeyup	=SwingController.click(this,event)	>");
 		return sb.toString();
 	}
 

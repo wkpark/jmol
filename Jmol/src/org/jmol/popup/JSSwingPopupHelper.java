@@ -48,28 +48,20 @@ import javajs.swing.JMenuItem;
   //  (on exit)           checkMenuFocus(item.getName(), item.getActionCommand(), false);
   //  (on checkbox click) checkBoxStateChanged(e.getSource());   
 
-  GenericMenuInterface popup; // used by Jmol.Swing
+  /**
+   * used here and by SwingController to refer to the Java 
+   * class being handled by this helper.
+   */
+  GenericMenuInterface popup;
+  
   private ButtonGroup buttonGroup;
-  private SC thisPopup;
 
   public JSSwingPopupHelper(GenericMenuInterface popup) {
     this.popup = popup;
   }
 
   @Override
-  public SC menuCreatePopup(String name) {
-
-    Object applet = null;
-    /**
-     * @j2sNative
-     * 
-     *            Jmol.Swing.setDraggable(javajs.swing.JPopupMenu); 
-     *            applet = this.popup.viewer.getApplet();
-     *            this.thisPopup = this.popup.thisPopup;
-     */
-    {
-    }
-
+  public SC menuCreatePopup(String name, Object applet) {
     JPopupMenu j = new JPopupMenu(name);
     j.setInvoker(applet);
     return j;
@@ -102,7 +94,7 @@ import javajs.swing.JMenuItem;
       return;
     }
     if (buttonGroup == null)
-      buttonGroup = new ButtonGroup(thisPopup);
+      buttonGroup = new ButtonGroup();
     buttonGroup.add(item);
   }
 
@@ -122,18 +114,6 @@ import javajs.swing.JMenuItem;
   public void menuInsertSubMenu(SC menu, SC subMenu,
                                 int index) {
     // not applicable; Frank menu only
-  }
-
-  @Override
-  public void taint() {
-    /**
-     * @j2sNative
-     * 
-     *            if (this.thisPopup) this.thisPopup.tainted = true;
-     * 
-     */
-    {
-    }
   }
 
   @Override

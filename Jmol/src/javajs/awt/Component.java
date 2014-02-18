@@ -6,7 +6,7 @@ import javajs.util.CU;
 abstract public class Component {
 
   protected boolean visible;  
-  protected boolean enabled;
+  protected boolean enabled = true;
   protected String text;    
   protected String name;
   protected int width;
@@ -20,7 +20,7 @@ abstract public class Component {
   private GenericColor bgcolor;
 
   protected Component(String type) {
-    id = type + ("" + Math.random()).substring(3, 10);
+    id = newID(type);
     if (type == null)
       return;
     /**
@@ -32,6 +32,10 @@ abstract public class Component {
 
   }
   
+  public static String newID(String type) {
+    return type + ("" + Math.random()).substring(3, 10);
+  }
+
   abstract public String toHTML();
   
   public void setBackground(GenericColor color) {
@@ -81,6 +85,13 @@ abstract public class Component {
   
   public void setEnabled(boolean enabled) {
     this.enabled = enabled;
+    /**
+     * @j2sNative
+     * 
+     * SwingController.setEnabled(this);
+     * 
+     */
+    {}
   }
 
   public boolean isVisible() {
@@ -95,6 +106,7 @@ abstract public class Component {
      * SwingController.setVisible(this);
      * 
      */
+    {}
   }
 
   public int getHeight() {
@@ -124,11 +136,11 @@ abstract public class Component {
   protected int renderWidth;
   protected int renderHeight;
 
-  protected String getCSSstyle(int defaultPercent) {
+  protected String getCSSstyle(int defaultPercentW, int defaultPercentH) {
     int width = (renderWidth > 0 ? renderWidth : getSubcomponentWidth());
     int height = (renderHeight > 0 ? renderHeight : getSubcomponentHeight());
-    return (width > 0 ? "width:" + width +"px;" : defaultPercent > 0 ? "width:"+defaultPercent+"%;" : "")
-    + (height > 0 ?"height:" + height + "px;" : defaultPercent > 0 ? "height:"+defaultPercent+"%;" : "")
+    return (width > 0 ? "width:" + width +"px;" : defaultPercentW > 0 ? "width:"+defaultPercentW+"%;" : "")
+    + (height > 0 ?"height:" + height + "px;" : defaultPercentH > 0 ? "height:"+defaultPercentH+"%;" : "")
     + (bgcolor == null ? "" : "background-color:" + CU.toCSSString(bgcolor) + ";");
   }
   

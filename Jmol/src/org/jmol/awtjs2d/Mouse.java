@@ -92,10 +92,10 @@ public class Mouse implements GenericMouseInterface {
       dragged(time, x, y, modifiers);
       break;
     case Event.MOUSE_ENTER:
-      entered(time, x, y);
+      entry(time, x, y, false);
       break;
     case Event.MOUSE_EXIT:
-      exited(time, x, y);
+      entry(time, x, y, true);
       break;
     case Event.MOUSE_MOVE:
       moved(time, x, y, modifiers);
@@ -180,11 +180,11 @@ public class Mouse implements GenericMouseInterface {
   }
 
   public void mouseEntered(MouseEvent e) {
-    entered(e.getWhen(), e.getX(), e.getY());
+    entry(e.getWhen(), e.getX(), e.getY(), false);
   }
 
   public void mouseExited(MouseEvent e) {
-    exited(e.getWhen(), e.getX(), e.getY());
+    entry(e.getWhen(), e.getX(), e.getY(), true);
   }
 
   public void mousePressed(MouseEvent e) {
@@ -329,15 +329,11 @@ public class Mouse implements GenericMouseInterface {
     viewer.evalStringQuietSync(kb, false, true);
   }
 
-  private void entered(long time, int x, int y) {
+  private void entry(long time, int x, int y, boolean isExit) {
     wheeling = false;
-    manager.mouseEnterExit(time, x, y, false);
+    manager.mouseEnterExit(time, x, y, isExit);
   }
 
-  private void exited(long time, int x, int y) {
-    wheeling = false;
-    manager.mouseEnterExit(time, x, y, true);
-  }
   /**
    * 
    * @param time

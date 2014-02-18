@@ -51,14 +51,14 @@ public abstract class GenericSwingPopup implements GenericMenuInterface {
   protected Map<String, SC> htMenus = new Hashtable<String, SC>();
   private List<SC> SignedOnly = new List<SC>();
 
-  protected void initSwing(String title, PopupResource bundle, boolean isJS,
-                           boolean isApplet, boolean isSigned) {
+  protected void initSwing(String title, PopupResource bundle, Object applet,
+                           boolean isJS, boolean isSigned) {
       this.isJS = isJS;
-      this.isApplet = isApplet;
+      this.isApplet = (applet!= null);
       this.isSigned = isSigned;
       this.allowSignedFeatures = (!isApplet || isSigned);
       menuName = title;
-      popupMenu = helper.menuCreatePopup(title);
+      popupMenu = helper.menuCreatePopup(title, applet);
       thisPopup = popupMenu;
       htMenus.put(title, popupMenu);
       addMenuItems("", title, popupMenu, bundle);
@@ -180,7 +180,7 @@ public abstract class GenericSwingPopup implements GenericMenuInterface {
     Object icon = getEntryIcon(ret);
     entry = ret[0];
     b.init(entry, icon, script, thisPopup);
-    helper.taint();
+    isTainted = true;
   }
 
   protected Object getEntryIcon(String[] ret) {
@@ -199,7 +199,7 @@ public abstract class GenericSwingPopup implements GenericMenuInterface {
 
   protected void menuSetLabel(SC m, String entry) {
     m.setText(entry);
-    helper.taint();
+    isTainted = true;
   }
 
   private void menuSetCheckBoxValue(SC source) {
@@ -207,7 +207,7 @@ public abstract class GenericSwingPopup implements GenericMenuInterface {
     String what = source.getActionCommand();
     checkForCheckBoxScript(source, what, isSelected);
     appUpdateSpecialCheckBoxValue(source, what, isSelected);
-    helper.taint();
+    isTainted = true;
   }
 
   /////// run time event-driven methods
@@ -279,7 +279,7 @@ public abstract class GenericSwingPopup implements GenericMenuInterface {
 
   protected void menuAddSeparator(SC menu) {
     menu.add(helper.getMenuItem(null));
-    helper.taint();
+    isTainted = true;
   }
 
   protected SC menuNewSubMenu(String entry, String id) {
@@ -296,7 +296,7 @@ public abstract class GenericSwingPopup implements GenericMenuInterface {
     else
       for (int i = menu.getComponentCount(); --i >= indexFrom;)
         menu.remove(i);
-    helper.taint();
+    isTainted = true;
   }
 
   private SC newMenuItem(SC item, SC menu,
@@ -320,7 +320,7 @@ public abstract class GenericSwingPopup implements GenericMenuInterface {
 
   private void menuAddItem(SC menu, SC item) {
     menu.add(item);
-    helper.taint();
+    isTainted = true;
   }
 
   protected void menuAddSubMenu(SC menu, SC subMenu) {
@@ -328,7 +328,7 @@ public abstract class GenericSwingPopup implements GenericMenuInterface {
   }
 
   protected void menuEnable(SC component, boolean enable) {
-    if (component == null)
+    if (component == null || component.isEnabled() == enable)
       return;
     component.setEnabled(enable);
   }
@@ -339,7 +339,7 @@ public abstract class GenericSwingPopup implements GenericMenuInterface {
 
   protected void menuSetAutoscrolls(SC menu) {
     menu.setAutoscrolls(true);
-    helper.taint();
+    isTainted = true;
   }
 
   protected int menuGetListPosition(SC item) {
@@ -368,7 +368,7 @@ public abstract class GenericSwingPopup implements GenericMenuInterface {
       boolean b = appGetBooleanProperty(basename);
       if (item.isSelected() != b) {
         item.setSelected(b);
-        helper.taint();
+        isTainted = true;
       }
     }
   }

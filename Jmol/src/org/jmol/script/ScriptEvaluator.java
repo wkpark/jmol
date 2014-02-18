@@ -469,13 +469,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private boolean isCmdLine_C_Option;
   protected boolean isCmdLine_c_or_C_Option;
   public boolean historyDisabled;
-  public boolean logMessages;
+  public boolean debugHigh;
   private boolean debugScript;
 
   @Override
   public void setDebugging() {
     debugScript = viewer.getBoolean(T.debugscript);
-    logMessages = (debugScript && Logger.debugging);
+    debugHigh = (debugScript && Logger.debugging);
   }
 
   private boolean executionStopped;
@@ -552,7 +552,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   public String getNextStatement() {
     return (pc < aatoken.length ? getErrorLineMessage(functionName,
         scriptFileName, getLinenumber(null), pc,
-        statementAsString(viewer, aatoken[pc], -9999, logMessages)) : "");
+        statementAsString(viewer, aatoken[pc], -9999, debugHigh)) : "");
   }
 
   /**
@@ -617,19 +617,17 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private void logDebugScript(int ifLevel) {
-    if (logMessages) {
+    iToken = -9999;
+    if (debugHigh) {
       if (st.length > 0)
         Logger.debug(st[0].toString());
       for (int i = 1; i < slen; ++i)
         Logger.debug(st[i].toString());
-    }
-    iToken = -9999;
-    if (logMessages) {
       SB strbufLog = new SB();
       String s = (ifLevel > 0 ? "                          ".substring(0,
           ifLevel * 2) : "");
       strbufLog.append(s).append(
-          statementAsString(viewer, st, iToken, logMessages));
+          statementAsString(viewer, st, iToken, debugHigh));
       viewer.scriptStatus(strbufLog.toString());
     } else {
       String cmd = getCommand(pc, false, false);
@@ -1887,7 +1885,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     scriptFileName = filename;
     strScript = fixScriptPath(strScript, filename);
     restoreScriptContext(compiler.compile(filename, strScript, false, false,
-        debugCompiler, false), false, false, false);
+        debugCompiler && Logger.debugging, false), false, false, false);
     isStateScript = (script.indexOf(JC.STATE_VERSION_STAMP) >= 0);
     forceNoAddHydrogens = (isStateScript && script.indexOf("pdbAddHydrogens") < 0);
     String s = script;
@@ -2585,7 +2583,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         for (String key : token.contextVariables.keySet())
           ScriptCompiler.addContextVariable(contextVariables, key);
     }
-    if (debugScript || isCmdLine_c_or_C_Option)
+    if (debugHigh || isCmdLine_c_or_C_Option)
       Logger.info("-->>-------------".substring(0,
           Math.max(17, scriptLevel + 5))
           + scriptLevel
@@ -2600,7 +2598,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   @Override
   public ScriptContext getScriptContext(String why) {
     ScriptContext context = new ScriptContext();
-    if (debugScript)
+    if (debugHigh)
       Logger.info("creating context " + context.id + " for " + why);
     context.scriptLevel = scriptLevel;
     context.parentContext = thisContext;
@@ -2649,7 +2647,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     restoreScriptContext(thisContext, true, isFlowCommand, statementOnly);
     if (scTemp != null)
       restoreScriptContext(scTemp, true, false, true);
-    if (debugScript || isCmdLine_c_or_C_Option)
+    if (debugHigh || isCmdLine_c_or_C_Option)
       Logger.info("--<<-------------".substring(0,
           Math.max(17, scriptLevel + 5))
           + scriptLevel
@@ -2665,7 +2663,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     executing = !chk;
     if (context == null)
       return;
-    if (debugScript || isCmdLine_c_or_C_Option)
+    if (debugHigh || isCmdLine_c_or_C_Option)
       Logger.info("--<<-------------".substring(0,
           Math.max(17, scriptLevel + 5))
           + scriptLevel
@@ -5223,7 +5221,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       throws ScriptException {
     if (sm == null)
       sm = viewer.getShapeManager();
-    debugScript = logMessages = false;
+    debugScript = debugHigh = false;
     if (!chk)
       setDebugging();
     if (pcEnd == 0)
@@ -5271,7 +5269,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         break;
       if (lineNumbers[pc] > lineEnd)
         break;
-      if (logMessages) {
+      if (debugHigh) {
         long timeBegin = 0;
         timeBegin = System.currentTimeMillis();
         viewer.scriptStatus("Eval.dispatchCommands():" + timeBegin);
@@ -5333,7 +5331,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           logDebugScript(0);
         if (scriptLevel == 0 && viewer.global.logCommands)
           viewer.log(thisCommand);
-        if (logMessages && theToken != null)
+        if (debugHigh && theToken != null)
           Logger.debug(theToken.toString());
       }
       if (theToken == null)
@@ -8399,7 +8397,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
     if (scriptLevel == 0 && !isAppend && nFiles < 2)
       showString((String) viewer.getModelSetAuxiliaryInfoValue("modelLoadNote"));
-    if (logMessages)
+    if (debugHigh)
       scriptStatusOrBuffer("Successfully loaded:"
           + (filenames == null ? htParams.get("fullPathName") : modelName));
     Map<String, Object> info = viewer.getModelSetAuxiliaryInfo();
@@ -12973,7 +12971,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   public String getErrorLineMessage2() {
     return getErrorLineMessage(functionName, scriptFileName,
         getLinenumber(null), pc,
-        statementAsString(viewer, st, -9999, logMessages));
+        statementAsString(viewer, st, -9999, debugHigh));
   }
 
   @Override

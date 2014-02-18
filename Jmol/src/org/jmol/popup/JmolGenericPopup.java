@@ -119,7 +119,7 @@ import javajs.util.List;
 
   protected void initialize(Viewer viewer, PopupResource bundle, String title) {
     this.viewer = viewer;
-    initSwing(title, bundle, viewer.isJS, viewer.isApplet(),
+    initSwing(title, bundle, viewer.getApplet(), viewer.isJS,
         viewer.getBooleanProperty("_signedApplet"));
   }
 
@@ -324,7 +324,7 @@ import javajs.util.List;
     if (currentFrankId != null && currentFrankId == id && nFrankList > 0)
       return;
     if (frankPopup == null)
-      frankPopup = helper.menuCreatePopup("Frank");
+      frankPopup = helper.menuCreatePopup("Frank", viewer.getApplet());
     thisPopup = frankPopup;
     menuRemoveAll(frankPopup, 0);
     if (id == null)

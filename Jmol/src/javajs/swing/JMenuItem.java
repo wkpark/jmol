@@ -18,15 +18,18 @@ public class JMenuItem extends AbstractButton {
 
   @Override
   public String toHTML() {
-      String s = "<li id=\"~ID~\" class=\"" + (this.enabled ? "" : "ui-state-disabled") + "\">";
-      if (this.text != null)
-        s += "<a>";
-      s += htmlLabel();
-      s = PT.rep(s, "~ID~", this.id);    
-      if (this.text != null) 
-        s = PT.rep(s,"TeXt", this.text) + "</a>";
-      s += "</li>";
-      return s;
+    String s = htmlMenuOpener("li");
+    if (this.text != null)
+      s += "<a>";
+    s += htmlLabel();
+    if (this.text != null) 
+      s = PT.rep(s,"TeXt", this.text) + "</a>";
+    return s + "</li>";
+  }
+
+  @Override
+  protected String getHtmlDisabled() {
+    return " class=\"ui-state-disabled\"";  
   }
 
   protected String htmlLabel() {

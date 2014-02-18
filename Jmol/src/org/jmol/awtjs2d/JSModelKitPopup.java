@@ -74,7 +74,6 @@ public class JSModelKitPopup extends JmolGenericPopup {
         menuSetLabel(item, "??");
         item.setActionCommand("_??P!:");
         item.setSelected(false);
-        helper.taint();
       }
       viewer.evalStringQuiet("set picking assignAtom_C");
       return;

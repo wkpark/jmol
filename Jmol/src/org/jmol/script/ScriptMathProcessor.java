@@ -66,7 +66,7 @@ public class ScriptMathProcessor {
 
   private boolean chk;
   private boolean wasSyntaxCheck;
-  private boolean logMessages;
+  private boolean debugHigh;
   private ScriptEvaluator eval;
   private Viewer viewer;
 
@@ -91,13 +91,13 @@ public class ScriptMathProcessor {
       boolean asVector, boolean asBitSet) {
     this.eval = eval;
     this.viewer = eval.viewer;
-    this.logMessages = eval.logMessages;
+    this.debugHigh = eval.debugHigh;
     this.chk = wasSyntaxCheck = eval.chk;
     this.isArrayItem = isArrayItem;
     this.asVector = asVector || isArrayItem;
     this.asBitSet = asBitSet;
     wasX = isArrayItem;
-    if (logMessages)
+    if (debugHigh)
       Logger.debug("initialize RPN");
   }
 
@@ -151,7 +151,7 @@ public class ScriptMathProcessor {
     }
     if (++xPt == xStack.length)
       xStack = (SV[]) AU.doubleLength(xStack);
-    if (logMessages) {
+    if (debugHigh) {
       Logger.debug("\nputX: " + x);
     }
 
@@ -364,7 +364,7 @@ public class ScriptMathProcessor {
   
   boolean addOpAllowMath(T op, boolean allowMathFunc) throws ScriptException {
 
-    if (logMessages) {
+    if (debugHigh) {
 
       Logger.debug("addOp entry\naddOp: " + op ); //+ " oPt=" + oPt + " ifPt = "
          // + ifPt + " skipping=" + skipping + " wasX=" + wasX);
@@ -514,7 +514,7 @@ public class ScriptMathProcessor {
             && (op.tok == T.propselector || op.tok == T.leftsquare))
         && T.getPrecedence(tok0) >= T.getPrecedence(op.tok)) {
 
-      if (logMessages) {
+      if (debugHigh) {
         Logger.debug("\noperating, oPt=" + oPt + " isLeftOp=" + isLeftOp
             + " oStack[oPt]=" + T.nameOf(tok0) + "        prec="
             + T.getPrecedence(tok0) + " pending op=\""
@@ -759,7 +759,7 @@ public class ScriptMathProcessor {
     M3 m;
     String s;
 
-    if (logMessages) {
+    if (debugHigh) {
       dumpStacks("operate: " + op);
     }
 

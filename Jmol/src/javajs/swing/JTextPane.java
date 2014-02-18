@@ -29,7 +29,7 @@ public class JTextPane extends JComponent implements Document {
 	@Override
 	public String toHTML() {
 		SB sb = new SB();
-		sb.append("<textarea type=text id='" + id + "' class='JTextPane' style='" + getCSSstyle(98) + "'>"+ text + "</textarea>");
+		sb.append("<textarea type=text id='" + id + "' class='JTextPane' style='" + getCSSstyle(98, 98) + "'>"+ text + "</textarea>");
 		return sb.toString();
 	}
 

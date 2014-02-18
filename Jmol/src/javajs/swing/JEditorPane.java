@@ -19,7 +19,7 @@ public class JEditorPane extends JComponent {
 	@Override
 	public String toHTML() {
 		SB sb = new SB();
-		sb.append("<textarea type=text id='" + id + "' class='JEditorPane' style='" + getCSSstyle(98) + "'>"+ text + "</textarea>");
+		sb.append("<textarea type=text id='" + id + "' class='JEditorPane' style='" + getCSSstyle(98, 98) + "'>"+ text + "</textarea>");
 		return sb.toString();
 	}
 

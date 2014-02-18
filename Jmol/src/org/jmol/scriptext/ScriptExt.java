@@ -2429,7 +2429,7 @@ public class ScriptExt implements JmolScriptExtension {
         // inline PMESH data
         if (isPmesh)
           str = PT.replaceWithCharacter(str, "{,}|", ' ');
-        if (eval.logMessages)
+        if (eval.debugHigh)
           Logger.debug("pmesh inline data:\n" + str);
         propertyValue = (chk ? null : str);
         addShapeProperty(propertyList, "fileName", "");
@@ -5702,7 +5702,7 @@ public class ScriptExt implements JmolScriptExtension {
       } else {
         sb.append(ScriptEvaluator.getErrorLineMessage(context.functionName,
             context.scriptFileName, eval.getLinenumber(context), context.pc,
-            ScriptEvaluator.statementAsString(viewer, context.statement, -9999, eval.logMessages)));
+            ScriptEvaluator.statementAsString(viewer, context.statement, -9999, eval.debugHigh)));
       }
       context = context.parentContext;
     }

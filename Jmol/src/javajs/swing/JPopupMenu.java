@@ -10,6 +10,16 @@ public class JPopupMenu extends AbstractButton {
   
   boolean tainted = true;
 
+  static {
+    /**
+     * @j2sNative
+     * 
+     *            SwingController.setDraggable(javajs.swing.JPopupMenu); 
+     */
+    {
+    }
+  }
+  
   public JPopupMenu(String name) {
     super("mnu");
     this.name = name;

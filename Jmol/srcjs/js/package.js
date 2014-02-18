@@ -28,6 +28,7 @@ for (var i = 0; i < Jmol._coreFiles.length; i++)
 	"J.shape.Object2dShape",
 	"$.TextShape",
 	"$.Labels",
+	"$.Measures",
 	"$.Echo",
 	"$.Hover",
 	"J.render.TextRenderer",

@@ -301,7 +301,7 @@ abstract public class BondCollection extends AtomCollection {
    */
   public short getDefaultMadFromOrder(int order) {
     return (short) (Bond.isOrderH(order) ? 1
-        : (order & JmolEdge.BOND_STRUT) != 0 ? (int) Math.floor(viewer
+        : order == JmolEdge.BOND_STRUT  ? (int) Math.floor(viewer
             .getFloat(T.strutdefaultradius) * 2000) : defaultCovalentMad);
   }
 
@@ -847,39 +847,6 @@ abstract public class BondCollection extends AtomCollection {
       if (i < bondCount && bonds[i].mad != 0)
         bonds[i].setShapeVisibility(isDisplay);
   }
-
-  /**
-   * used in PyMOL reader to set unique bond settings and for valence
-   * 
-   * @param modelIndex
-   * @param i
-   * @param rad
-   * @param pymolValence  1 for "show multiple bonds
-   * @param argb
-   * @param trans
-   */
-  public void setBondParameters(int modelIndex, int i, float rad, float pymolValence,
-                             int argb, float trans) {
-    if (i < 0 || i >= bondCount)
-      return;
-    Bond b = bonds[i];
-    if (modelIndex >= 0 && b.atom1.modelIndex != modelIndex)
-      return; 
-    if (!Float.isNaN(rad))
-      b.mad = (short) (rad * 2000);
-    short colix = b.colix;
-    if (argb != Integer.MAX_VALUE)
-      colix = C.getColix(argb);
-    if (!Float.isNaN(trans))
-      b.colix = C.getColixTranslucent3(colix, trans != 0, trans);
-    else if (b.colix != colix)
-      b.colix = C.copyColixTranslucency(b.colix, colix);
-    if (pymolValence == 1)
-      b.order &= ~JmolEdge.BOND_AS_SINGLE;
-    else if (pymolValence == 0)
-      b.order |= JmolEdge.BOND_AS_SINGLE;
-  }
-
 
 }
 

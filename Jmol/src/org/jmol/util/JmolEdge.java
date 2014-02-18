@@ -42,6 +42,7 @@ public abstract class JmolEdge {
   //     ||| | Hydrogen bond 0x3800   F << 11
   //          |Stereo 0x400           1 << 10  
   //           |Aromatic 0x200        1 << 9
+  //          ||Pymol style           3 << 9  
   //            |Sulfur-Sulfur 0x100  1 << 8
   //              ||| Partial n       7 << 5
   //                 | |||| Partial m 0x1F
@@ -72,7 +73,8 @@ public abstract class JmolEdge {
   public final static int BOND_ORDER_ANY     = 0x0FFFF;
   public final static int BOND_ORDER_NULL    = 0x1FFFF;
   public static final int BOND_STRUT         = 0x08000;
-  public final static int BOND_AS_SINGLE     = 0x10000;
+  public final static int BOND_PYMOL_SINGLE     = 0x10000;
+  public static final int BOND_PYMOL_MULT   = 0x18000;
   public final static int BOND_NEW           = 0x20000;
   public final static int BOND_HBOND_SHIFT   = 11;
   public final static int BOND_HYDROGEN_MASK = 0xF << 11;

@@ -70,8 +70,8 @@ public abstract class JmolAdapter {
   public final static int ORDER_PARTIAL23       = JmolEdge.BOND_PARTIAL23;
   public final static int ORDER_PARTIAL32       = JmolEdge.BOND_PARTIAL32;
   public final static int ORDER_UNSPECIFIED     = JmolEdge.BOND_ORDER_UNSPECIFIED;
-  public final static int ORDER_AS_SINGLE       = JmolEdge.BOND_AS_SINGLE;
-  
+  public final static int ORDER_PYMOL_SINGLE    = JmolEdge.BOND_PYMOL_SINGLE;
+  public final static int ORDER_PYMOL_MULT      = JmolEdge.BOND_PYMOL_MULT;
   public final static EnumQuantumShell getShellEnumeration(int i) { return EnumQuantumShell.getItem(i); }
   public final static int[][] getNewDfCoefMap() { return EnumQuantumShell.getNewDfCoefMap(); }
   // We need the shell ids only because we are storing these in the (int) shell[1] spot

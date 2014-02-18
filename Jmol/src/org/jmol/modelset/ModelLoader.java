@@ -922,7 +922,7 @@ public final class ModelLoader {
         short colix = iterBond.getColix();
         if (colix >= 0)
           b.setColix(colix);
-        b.order |= (iOrder & JmolEdge.BOND_AS_SINGLE);
+        b.order |= (iOrder & JmolEdge.BOND_PYMOL_MULT);
       }
     }
     if (haveMultipleBonds && modelSet.someModelsHaveSymmetry

@@ -108,6 +108,10 @@ public class Bond extends JmolEdge {
     return (order & BOND_AROMATIC_MASK) != 0;
   }
 
+  boolean isPymolStyle() {
+    return (order & BOND_PYMOL_MULT) == BOND_PYMOL_MULT;
+  }
+
   /**
    * 
    * @param pid

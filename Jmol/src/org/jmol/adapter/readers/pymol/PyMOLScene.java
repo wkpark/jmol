@@ -6,11 +6,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.jmol.api.Interface;
+import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolSceneGenerator;
 import org.jmol.api.PymolAtomReader;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumVdw;
 import org.jmol.java.BS;
+import org.jmol.modelset.Bond;
 import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.Text;
 import org.jmol.script.T;
@@ -205,7 +207,6 @@ class PyMOLScene implements JmolSceneGenerator {
   private int thisState;
   int currentAtomSetIndex;
   String surfaceInfoName;
-  boolean haveMultipleBonds;
 
   void setStateCount(int stateCount) {
     this.stateCount = stateCount;
@@ -659,10 +660,6 @@ class PyMOLScene implements JmolSceneGenerator {
    */
   private void finalizeObjects() {
     viewer.setStringProperty("defaults", "PyMOL");
-    if (haveMultipleBonds) {
-      viewer.setFloatProperty("multipleBondSpacing", 0.15f);
-      viewer.setFloatProperty("multipleBondRadiusFactor", 0.4f);
-    }
     for (int i = 0; i < jmolObjects.size(); i++) {
       try {
         JmolObject obj = jmolObjects.get(i);
@@ -1702,7 +1699,9 @@ class PyMOLScene implements JmolSceneGenerator {
 
   private void finalizeUniqueBonds() {
     if (uniqueList == null)
-      return;    
+      return;
+    int bondCount = viewer.getBondCount();
+    Bond[] bonds = viewer.modelSet.bonds;
     for (int i = bsUniqueBonds.nextSetBit(0); i >= 0; i = bsUniqueBonds.nextSetBit(i + 1)) {
       float rad = Float.NaN;
       int id = uniqueList.get(Integer.valueOf(i)).intValue();
@@ -1716,9 +1715,43 @@ class PyMOLScene implements JmolSceneGenerator {
         c =  PyMOL.getRGB(c);
       float valence = getUniqueFloatDef(id, PyMOL.valence, Float.NaN);
       float t = getUniqueFloatDef(id, PyMOL.stick_transparency, Float.NaN);
-      viewer.modelSet.setBondParameters(thisState - 1, i, rad, valence, c, t);
+      if (i < 0 || i >= bondCount)
+        return;
+      Bond b = bonds[i];
+      setBondParameters(b, thisState - 1, rad, valence, c, t);
     }
   }
+
+  /**
+   * used in PyMOL reader to set unique bond settings and for valence
+   * 
+   * @param modelIndex
+   * @param b
+   * @param rad
+   * @param pymolValence  1 for "show multiple bonds"
+   * @param argb
+   * @param trans
+   */
+  public void setBondParameters(Bond b, int modelIndex, float rad, float pymolValence,
+                             int argb, float trans) {
+    if (modelIndex >= 0 && b.atom1.modelIndex != modelIndex)
+      return; 
+    if (!Float.isNaN(rad))
+      b.mad = (short) (rad * 2000);
+    short colix = b.colix;
+    if (argb != Integer.MAX_VALUE)
+      colix = C.getColix(argb);
+    if (!Float.isNaN(trans))
+      b.colix = C.getColixTranslucent3(colix, trans != 0, trans);
+    else if (b.colix != colix)
+      b.colix = C.copyColixTranslucency(b.colix, colix);
+    if (pymolValence == 1)
+      b.order |= JmolAdapter.ORDER_PYMOL_MULT;
+    else if (pymolValence == 0)
+      b.order |= JmolAdapter.ORDER_PYMOL_SINGLE;
+    // could also by NaN, meaning we don't adjust it.
+  }
+
 
   public void addMesh(int tok, List<Object> obj, String objName, boolean isMep) {
     JmolObject jo = addJmolObject(tok, null, obj);

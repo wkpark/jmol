@@ -85,16 +85,8 @@ public class SticksRenderer extends FontLineShapeRenderer {
     slabByAtom = viewer.getBoolean(T.slabbyatom);
     endcaps = GData.ENDCAPS_SPHERICAL;
     dashDots = (viewer.getBoolean(T.partialdots) ? sixdots : dashes);
-    multipleBondSpacing = viewer.getFloat(T.multiplebondspacing);
     isCartesianExport = (exportType == GData.EXPORT_CARTESIAN);
-    if (multipleBondSpacing == 0 && isCartesianExport)
-      multipleBondSpacing = 0.2f;
-    multipleBondRadiusFactor = viewer.getFloat(T.multiplebondradiusfactor);
-    modeMultipleBond = viewer.getModeMultipleBond();
-    showMultipleBonds = (multipleBondSpacing != 0
-        && modeMultipleBond != JC.MULTIBOND_NEVER
-        && viewer.getBoolean(T.showmultiplebonds));
-
+    getMultipleBondSettings(false);
     wireframeOnly = !viewer.checkMotionRendering(T.bonds);
     ssbondsBackbone = viewer.getBoolean(T.ssbondsbackbone);
     hbondsBackbone = viewer.getBoolean(T.hbondsbackbone);
@@ -118,6 +110,22 @@ public class SticksRenderer extends FontLineShapeRenderer {
         }
       }
     return needTranslucent;
+  }
+
+//  if (haveMultipleBonds) {
+//    viewer.setFloatProperty("multipleBondSpacing", 0.15f);
+//    viewer.setFloatProperty("multipleBondRadiusFactor", 0.4f);
+//  }
+
+  private void getMultipleBondSettings(boolean isPymol) {
+    multipleBondSpacing = (isPymol ? 0.15f :viewer.getFloat(T.multiplebondspacing));
+    multipleBondRadiusFactor = (isPymol ? 0.4f : viewer.getFloat(T.multiplebondradiusfactor));    
+    if (multipleBondSpacing == 0 && isCartesianExport)
+      multipleBondSpacing = 0.2f;
+    modeMultipleBond = viewer.getModeMultipleBond();
+    showMultipleBonds = (multipleBondSpacing != 0
+        && modeMultipleBond != JC.MULTIBOND_NEVER
+        && viewer.getBoolean(T.showmultiplebonds));
   }
 
   private boolean renderBond() {
@@ -196,7 +204,7 @@ public class SticksRenderer extends FontLineShapeRenderer {
       if ((bondOrder & JmolEdge.BOND_COVALENT_MASK) != 0) {
         if (!showMultipleBonds
             || (modeMultipleBond == JC.MULTIBOND_NOTSMALL && mad > JC.madMultipleBondSmallMaximum)
-            || (bondOrder & JmolEdge.BOND_AS_SINGLE) != 0
+            || (bondOrder & JmolEdge.BOND_PYMOL_MULT) == JmolEdge.BOND_PYMOL_SINGLE 
             ) {
           bondOrder = 1;
         }
@@ -232,6 +240,10 @@ public class SticksRenderer extends FontLineShapeRenderer {
           mask = -1;
       } else if (bondOrder == JmolEdge.BOND_STRUT) {
         bondOrder = 1;
+      } else if ((bondOrder & JmolEdge.BOND_PYMOL_MULT) == JmolEdge.BOND_PYMOL_MULT) {
+        getMultipleBondSettings(true);
+        bondOrder &= 3;
+        mask = -2;
       }
     }
 
@@ -261,6 +273,10 @@ public class SticksRenderer extends FontLineShapeRenderer {
     // draw the bond
 
     switch (mask) {
+    case -2:
+      drawBond(0);
+      getMultipleBondSettings(false);
+      break;
     case -1:
       drawDashed(xA, yA, zA, xB, yB, zB, hDashes);
       break;

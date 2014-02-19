@@ -40,8 +40,8 @@ import javajs.util.PT;
 import javajs.util.List;
 
 /**
- * A generic popup class that is then instantiated 
- * for a given platform and context as one of:
+ * A generic popup class that is then instantiated for a given platform and
+ * context as one of:
  * 
  * org.jmol.popup.JmolPopup (via org.jmol.popup.SwingPopup)
  * 
@@ -52,8 +52,7 @@ import javajs.util.List;
  * org.jmol.awtjs2d.JSModelKitPopup (via org.jmol.awtjs2d.JSPopup)
  * 
  */
- abstract public class JmolGenericPopup extends GenericSwingPopup {
-
+abstract public class JmolGenericPopup extends GenericSwingPopup {
 
   //list is saved in http://www.stolaf.edu/academics/chemapps/jmol/docs/misc
 
@@ -256,7 +255,7 @@ import javajs.util.List;
   protected boolean appGetBooleanProperty(String name) {
     return viewer.getBooleanProperty(name);
   }
-  
+
   @Override
   protected String appGetMenuAsString(String title) {
     return (new MainPopupResourceBundle(strMenuStructure, null))
@@ -284,12 +283,15 @@ import javajs.util.List;
   @Override
   protected void appRestorePopupMenu() {
     thisPopup = popupMenu;
-    if (nFrankList < 2)
-      return;
+    // JavaScript does not have to re-insert the menu
+    // because it never gets removed in the first place.
     // first entry is just the main item
+    if (viewer.isJS || nFrankList < 2)
+      return;
     for (int i = nFrankList; --i > 0;) {
       Object[] f = frankList[i];
-      helper.menuInsertSubMenu((SC) f[0], (SC) f[1], ((Integer) f[2]).intValue());
+      helper.menuInsertSubMenu((SC) f[0], (SC) f[1],
+          ((Integer) f[2]).intValue());
     }
     nFrankList = 1;
   }
@@ -298,7 +300,7 @@ import javajs.util.List;
   protected void appRunScript(String script) {
     viewer.evalStringQuiet(script);
   }
-  
+
   /**
    * (1) setOption --> set setOption true or set setOption false
    * 
@@ -325,25 +327,24 @@ import javajs.util.List;
       return;
     if (frankPopup == null)
       frankPopup = helper.menuCreatePopup("Frank", viewer.getApplet());
+    // thisPopup is needed by the JavaScript side of the operation
     thisPopup = frankPopup;
     menuRemoveAll(frankPopup, 0);
-    if (id == null)
-      return;
+    menuCreateItem(frankPopup, getMenuText("mainMenuText"), "MAIN", "");
     currentFrankId = id;
     nFrankList = 0;
     frankList[nFrankList++] = new Object[] { null, null, null };
-    menuCreateItem(frankPopup, getMenuText("mainMenuText"), "MAIN", "");
-    for (int i = id.indexOf(".", 2) + 1;;) {
-      int iNew = id.indexOf(".", i);
-      if (iNew < 0)
-        break;
-      String strMenu = id.substring(i, iNew);
-      SC menu = htMenus.get(strMenu);
-      frankList[nFrankList++] = new Object[] { menu.getParent(),
-          menu, Integer.valueOf(menuGetListPosition(menu)) };
-      menuAddSubMenu(frankPopup, menu);
-      i = iNew + 1;
-    }
+    if (id != null)
+      for (int i = id.indexOf(".", 2) + 1;;) {
+        int iNew = id.indexOf(".", i);
+        if (iNew < 0)
+          break;
+        SC menu = htMenus.get(id.substring(i, iNew));
+        frankList[nFrankList++] = new Object[] { menu.getParent(), menu,
+            Integer.valueOf(viewer.isJS ? 0 : menuGetListPosition(menu)) };
+        menuAddSubMenu(frankPopup, menu);
+        i = iNew + 1;
+      }
     thisPopup = popupMenu;
   }
 
@@ -361,8 +362,8 @@ import javajs.util.List;
         || "files".equals(modelSetFileName)
         || "string[]".equals(modelSetFileName))
       modelSetFileName = "";
-    modelSetRoot = modelSetFileName.substring(0, i < 0 ? modelSetFileName
-        .length() : i);
+    modelSetRoot = modelSetFileName.substring(0,
+        i < 0 ? modelSetFileName.length() : i);
     if (modelSetRoot.length() == 0)
       modelSetRoot = "Jmol";
     modelIndex = viewer.getCurrentModelIndex();
@@ -413,16 +414,17 @@ import javajs.util.List;
     for (int i = Special.size(); --i >= 0;)
       updateSpecialMenuItem(Special.get(i));
   }
-  
+
   private void updateFileMenu() {
     SC menu = htMenus.get("fileMenu");
     if (menu == null)
       return;
     String text = getMenuText("writeFileTextVARIABLE");
     menu = htMenus.get("writeFileTextVARIABLE");
-    boolean ignore = (modelSetFileName.equals("zapped") || modelSetFileName.equals(""));
+    boolean ignore = (modelSetFileName.equals("zapped") || modelSetFileName
+        .equals(""));
     if (ignore) {
-      menuSetLabel(menu, "");      
+      menuSetLabel(menu, "");
       menuEnable(menu, false);
     } else {
       menuSetLabel(menu, GT.o(GT._(text), modelSetFileName));
@@ -440,8 +442,7 @@ import javajs.util.List;
     if (menu == null)
       return;
     menuEnable(menu, atomCount != 0);
-    menuSetLabel(menu, gti("selectMenuText", viewer
-        .getSelectionCount()));
+    menuSetLabel(menu, gti("selectMenuText", viewer.getSelectionCount()));
   }
 
   private void updateElementsComputedMenu(BS elementsPresentBitSet) {
@@ -507,8 +508,9 @@ import javajs.util.List;
       String title = PT.getQuotedAttribute(peak, "title");
       String atoms = PT.getQuotedAttribute(peak, "atoms");
       if (atoms != null)
-        menuCreateItem(menu, title, "select visible & (@"
-            + PT.rep(atoms, ",", " or @") + ")", "Focus" + i);
+        menuCreateItem(menu, title,
+            "select visible & (@" + PT.rep(atoms, ",", " or @") + ")", "Focus"
+                + i);
     }
     menuEnable(menu, true);
     return true;
@@ -598,7 +600,7 @@ import javajs.util.List;
     for (int i = VibrationOnly.size(); --i >= 0;)
       menuEnable(VibrationOnly.get(i), isVibration);
     for (int i = SymmetryOnly.size(); --i >= 0;)
-      menuEnable(SymmetryOnly.get(i), isSymmetry && isUnitCell);    
+      menuEnable(SymmetryOnly.get(i), isSymmetry && isUnitCell);
     for (int i = ChargesOnly.size(); --i >= 0;)
       menuEnable(ChargesOnly.get(i), haveCharges);
     for (int i = TemperatureOnly.size(); --i >= 0;)
@@ -676,8 +678,7 @@ import javajs.util.List;
       name += "  (" + n + ")";
       nItems++;
     }
-    SC item = menuCreateItem(menu, name, script, menuGetId(menu) + "."
-        + name);
+    SC item = menuCreateItem(menu, name, script, menuGetId(menu) + "." + name);
     if (n == 0)
       menuEnable(item, false);
     return nItems;
@@ -732,9 +733,9 @@ import javajs.util.List;
     for (int i = 0; i < infolist.length; i++) {
       if (pt >= 0 && (pt++ % nmod) == 0) {
         String id = "drawsymop" + pt + "Menu";
-        subMenu = menuNewSubMenu((i + 1) + "..."
-            + Math.min(i + itemMax, infolist.length), menuGetId(menu) + "."
-            + id);
+        subMenu = menuNewSubMenu(
+            (i + 1) + "..." + Math.min(i + itemMax, infolist.length),
+            menuGetId(menu) + "." + id);
         menuAddSubMenu(menu, subMenu);
         htMenus.put(id, subMenu);
         pt = 1;
@@ -742,11 +743,10 @@ import javajs.util.List;
       String sym = (String) infolist[i][1]; // XYZoriginal
       if (sym.indexOf("x1") < 0)
         sym = (String) infolist[i][0]; // normalized XYZ
-      String entryName = (i + 1) + " " + infolist[i][2] + " (" + 
-      sym
-          + ")";
-      menuEnable(menuCreateItem(subMenu, entryName,
-          "draw SYMOP " + (i + 1), null), true);
+      String entryName = (i + 1) + " " + infolist[i][2] + " (" + sym + ")";
+      menuEnable(
+          menuCreateItem(subMenu, entryName, "draw SYMOP " + (i + 1), null),
+          true);
     }
     menuEnable(menu, true);
   }
@@ -770,15 +770,17 @@ import javajs.util.List;
     for (int i = 0; i < list.length; i++) {
       if (pt >= 0 && (pt++ % nmod) == 0) {
         String id = "symop" + pt + "Menu";
-        subMenu = menuNewSubMenu((i + 1) + "..."
-            + Math.min(i + itemMax, list.length), menuGetId(menu) + "." + id);
+        subMenu = menuNewSubMenu(
+            (i + 1) + "..." + Math.min(i + itemMax, list.length),
+            menuGetId(menu) + "." + id);
         menuAddSubMenu(menu, subMenu);
         htMenus.put(id, subMenu);
         pt = 1;
       }
       String entryName = "symop=" + (i + 1) + " # " + list[i];
-      menuEnable(menuCreateItem(subMenu, entryName, "SELECT symop="
-          + (i + 1), null), haveUnitCellRange);
+      menuEnable(
+          menuCreateItem(subMenu, entryName, "SELECT symop=" + (i + 1), null),
+          haveUnitCellRange);
     }
     menuEnable(menu, true);
   }
@@ -789,9 +791,8 @@ import javajs.util.List;
     if (menu == null)
       return;
     menuEnable(menu, (modelCount > 0));
-    menuSetLabel(menu, (modelIndex < 0 ? gti("allModelsText",
-        modelCount) : gto("modelMenuText", (modelIndex + 1) + "/"
-            + modelCount)));
+    menuSetLabel(menu, (modelIndex < 0 ? gti("allModelsText", modelCount)
+        : gto("modelMenuText", (modelIndex + 1) + "/" + modelCount)));
     menuRemoveAll(menu, 0);
     if (modelCount < 1)
       return;
@@ -805,8 +806,9 @@ import javajs.util.List;
     for (int i = 0; i < modelCount; i++) {
       if (pt >= 0 && (pt++ % nmod) == 0) {
         String id = "model" + pt + "Menu";
-        subMenu = menuNewSubMenu((i + 1) + "..."
-            + Math.min(i + itemMax, modelCount), menuGetId(menu) + "." + id);
+        subMenu = menuNewSubMenu(
+            (i + 1) + "..." + Math.min(i + itemMax, modelCount),
+            menuGetId(menu) + "." + id);
         menuAddSubMenu(menu, subMenu);
         htMenus.put(id, subMenu);
         pt = 1;
@@ -863,12 +865,9 @@ import javajs.util.List;
     }
   }
 
-  private final String[] noZapped = {
-      "surfaceMenu", "measureMenu", 
-      "pickingMenu", "computationMenu",
-      "saveMenu", "exportMenu", 
-      "SIGNEDJAVAcaptureMenuSPECIAL"
-  };
+  private final String[] noZapped = { "surfaceMenu", "measureMenu",
+      "pickingMenu", "computationMenu", "saveMenu", "exportMenu",
+      "SIGNEDJAVAcaptureMenuSPECIAL" };
 
   @SuppressWarnings("unchecked")
   private void updateModelSetComputedMenu() {
@@ -893,20 +892,19 @@ import javajs.util.List;
     }
     menuSetLabel(menu, modelSetName);
     menuEnable(menu, true);
-    
+
     // 100 here is totally arbitrary. You can do a minimization on any number of atoms
     menuEnable(htMenus.get("computationMenu"), atomCount <= 100);
     addMenuItem(menu, gti("atomsText", atomCount));
-    addMenuItem(menu, gti("bondsText", viewer
-        .getBondCountInModel(modelIndex)));
+    addMenuItem(menu, gti("bondsText", viewer.getBondCountInModel(modelIndex)));
     if (isPDB) {
       menuAddSeparator(menu);
-      addMenuItem(menu, gti("groupsText", viewer
-          .getGroupCountInModel(modelIndex)));
-      addMenuItem(menu, gti("chainsText", viewer
-          .getChainCountInModel(modelIndex)));
-      addMenuItem(menu, gti("polymersText", viewer
-          .getPolymerCountInModel(modelIndex)));
+      addMenuItem(menu,
+          gti("groupsText", viewer.getGroupCountInModel(modelIndex)));
+      addMenuItem(menu,
+          gti("chainsText", viewer.getChainCountInModel(modelIndex)));
+      addMenuItem(menu,
+          gti("polymersText", viewer.getPolymerCountInModel(modelIndex)));
       SC submenu = htMenus.get("BiomoleculesMenu");
       if (submenu == null) {
         submenu = menuNewSubMenu(GT._(getMenuText("biomoleculesMenuText")),
@@ -936,8 +934,8 @@ import javajs.util.List;
     }
     if (isApplet && !viewer.getBooleanProperty("hideNameInPopup")) {
       menuAddSeparator(menu);
-      menuCreateItem(menu, gto("viewMenuText", modelSetFileName),
-          "show url", null);
+      menuCreateItem(menu, gto("viewMenuText", modelSetFileName), "show url",
+          null);
     }
   }
 
@@ -952,7 +950,7 @@ import javajs.util.List;
   private void updateAboutSubmenu() {
     if (isApplet)
       setText("APPLETid", viewer.appletName);
-    
+
     /**
      * @j2sNative
      * 
@@ -999,13 +997,13 @@ import javajs.util.List;
   }
 
   private void updateSpecialMenuItem(SC m) {
-     m.setText(getSpecialLabel(m.getName(), m.getText()));
+    m.setText(getSpecialLabel(m.getName(), m.getText()));
   }
 
-
   /**
-   * menus or menu items with SPECIAL in their name are sent here for on-the-fly labeling
-   *  
+   * menus or menu items with SPECIAL in their name are sent here for on-the-fly
+   * labeling
+   * 
    * @param name
    * @param text
    * @return revised text
@@ -1021,11 +1019,11 @@ import javajs.util.List;
     else if (name.indexOf("captureFps") >= 0)
       info = "" + viewer.getInt(T.animationfps);
     else if (name.indexOf("captureMenu") >= 0)
-    	info = (viewer.captureParams == null ? GT._("not capturing") : viewer.getFilePath((String)viewer.captureParams.get("captureFileName"), true) 
-    	    + " " + viewer.captureParams.get("captureCount"));
+      info = (viewer.captureParams == null ? GT._("not capturing") : viewer
+          .getFilePath((String) viewer.captureParams.get("captureFileName"),
+              true)
+          + " " + viewer.captureParams.get("captureCount"));
     return (info == null ? text : text.substring(0, pt) + " (" + info + ")");
   }
 
 }
-  
-  

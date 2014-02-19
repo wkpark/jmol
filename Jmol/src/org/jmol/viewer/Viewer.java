@@ -3391,11 +3391,13 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public boolean frankClicked(int x, int y) {
+    // bottom right Jmol logo
     return !global.disablePopupMenu && getShowFrank()
         && shapeManager.checkFrankclicked(x, y);
   }
 
   public boolean frankClickedModelKit(int x, int y) {
+    // top left indicator
     return !global.disablePopupMenu && global.modelKitMode && x >= 0 && y >= 0
         && x < 40 && y < 80;
   }

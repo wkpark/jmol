@@ -26,6 +26,9 @@ package org.jmol.popup;
 
 import javajs.api.GenericMenuInterface;
 import javajs.api.SC;
+import javajs.awt.Component;
+import javajs.awt.event.ActionEvent;
+import javajs.awt.event.ItemEvent;
 import javajs.swing.ButtonGroup;
 import javajs.swing.JPopupMenu;
 import javajs.swing.JCheckBoxMenuItem;
@@ -100,20 +103,13 @@ import javajs.swing.JMenuItem;
 
   @Override
   public int getItemType(SC m) {
-    /**
-     * @j2sNative
-     * 
-     *            return (m.isMenu ? 4: m.isRadio ? 3 : m.isCheckBox ? 2 : m.text ? 1 : 0);
-     */
-    {
-      return 0;
-    }
+    return ((JMenuItem) m).btnType;
   }
 
   @Override
   public void menuInsertSubMenu(SC menu, SC subMenu,
                                 int index) {
-    // not applicable; Frank menu only
+    ((Component)subMenu).setParent(menu);
   }
 
   @Override
@@ -127,28 +123,12 @@ import javajs.swing.JMenuItem;
       ((JPopupMenu) menu).disposeMenu();
   }
 
-  public void itemStateChanged(Object e) {
-     /**
-      * @j2sNative
-      * 
-      * this.popup.menuCheckBoxCallback(e.getSource());
-      * 
-      */
-    {
-      System.out.println(e);
-    }
+  public void itemStateChanged(ItemEvent e) {
+    popup.menuCheckBoxCallback((SC)e.getSource());
   }
 
-  public void actionPerformed(Object e) {
-    /**
-     * @j2sNative
-     * 
-     * this.popup.menuClickCallback(e.getSource(), e.getActionCommand());
-     * 
-     */
-   {
-     System.out.println(e);
-   }
+  public void actionPerformed(ActionEvent e) {
+    popup.menuClickCallback((SC) e.getSource(), e.getActionCommand());
   }
 
   @Override

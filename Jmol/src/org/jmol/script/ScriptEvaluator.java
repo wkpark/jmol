@@ -7131,6 +7131,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.polymer:
       case T.property:
       case T.rasmol:
+      case T.pymol:
       case T.spacefill:
       case T.shapely:
       case T.straightness:
@@ -7207,13 +7208,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         // color element
         String str = parameterAsString(1);
         if (checkToken(2)) {
-          switch (getToken(2).tok) {
-          case T.rasmol:
-            argb = T.rasmol;
-            break;
+          argb = getToken(2).tok;
+          switch (argb) {
           case T.none:
-          case T.jmol:
             argb = T.jmol;
+            break;
+          case T.jmol:
+          case T.rasmol:
+          case T.pymol:
             break;
           default:
             argb = getArgbParam(2);
@@ -12125,6 +12127,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             t.toArray();
             --i;
             continue;
+          case T.string:
+            // check for a["t"] = xxx
+            if (vv.tok == T.string) {
+              t.value = PT.rep((String) t.value, (String) vv.value, tnew.asString());
+              continue;
+            }
+            break;
           }
           t.setSelectedValue(ipt, tnew);
           break;

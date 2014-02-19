@@ -154,6 +154,11 @@ public class AwtSwingPopupHelper implements
   }
 
   @Override
+  public void itemStateChanged(ItemEvent e) {
+    popup.menuCheckBoxCallback(getSource(e));
+  }
+
+  @Override
   public void actionPerformed(ActionEvent e) {
     popup.menuClickCallback(getSource(e), e.getActionCommand());
   }
@@ -184,11 +189,6 @@ public class AwtSwingPopupHelper implements
 
   @Override
   public void mouseClicked(MouseEvent e) {
-  }
-
-  @Override
-  public void itemStateChanged(ItemEvent e) {
-    popup.menuCheckBoxCallback(getSource(e));
   }
 
   /**

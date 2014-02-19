@@ -366,8 +366,8 @@ public class ScriptMathProcessor {
 
     if (debugHigh) {
 
-      Logger.debug("addOp entry\naddOp: " + op ); //+ " oPt=" + oPt + " ifPt = "
-         // + ifPt + " skipping=" + skipping + " wasX=" + wasX);
+      Logger.debug("addOp entry\naddOp: " + op); //+ " oPt=" + oPt + " ifPt = "
+      // + ifPt + " skipping=" + skipping + " wasX=" + wasX);
     }
 
     // are we skipping due to a ( ? : ) construct?
@@ -406,9 +406,8 @@ public class ScriptMathProcessor {
         skipping = false;
         // dumpStacks("(..True...? ... : ...skip...)<--here ");
         return true;
-      default:
-        return true;
       }
+      return true;
     }
 
     // Do we have the appropriate context for this operator?
@@ -430,26 +429,11 @@ public class ScriptMathProcessor {
     // math functions as arguments appear without a prefixing operator
     boolean isArgument = (oPt >= 1 && tok0 == T.leftparen);
 
+    
+    // check context, and for some cases, handle them here
     switch (op.tok) {
     case T.spacebeforesquare:
       haveSpaceBeforeSquare = true;
-      return true;
-    case T.comma:
-      if (!wasX)
-        return false;
-      break;
-    case T.min:
-    case T.max:
-    case T.average:
-    case T.sum:
-    case T.sum2:
-    case T.stddev:
-    case T.minmaxmask:
-      tok = (oPt < 0 ? T.nada : tok0);
-      if (!wasX
-          || !(tok == T.propselector || tok == T.bonds || tok == T.atoms))
-        return false;
-      oStack[oPt].intValue |= op.tok;
       return true;
     case T.leftsquare: // {....}[n][m]
       isLeftOp = true;
@@ -459,7 +443,20 @@ public class ScriptMathProcessor {
         haveSpaceBeforeSquare = false;
       }
       break;
+    case T.comma:
+      if (!wasX)
+        return false;
+      break;
     case T.rightsquare:
+      break;
+    case T.rightparen: // () without argument allowed only for math funcs
+      if (!wasX && oPt >= 1 && tok0 == T.leftparen
+          && !isOpFunc(oStack[oPt - 1]))
+        return false;
+      break;
+    case T.minus:
+      if (!wasX)
+        op = SV.newV(T.unaryMinus, "-");
       break;
     case T.minusMinus:
     case T.plusPlus:
@@ -472,17 +469,18 @@ public class ScriptMathProcessor {
         return x.increment(incrementX);
       }
       break;
-    case T.minus:
-      if (wasX)
-        break;
-      addXInt(0);
-      op = SV.newV(T.unaryMinus, "-");
-      break;
-    case T.rightparen: // () without argument allowed only for math funcs
-      if (!wasX && oPt >= 1 && tok0 == T.leftparen
-          && !isOpFunc(oStack[oPt - 1]))
+    case T.min:
+    case T.max:
+    case T.average:
+    case T.sum:
+    case T.sum2:
+    case T.stddev:
+    case T.minmaxmask: // ALL
+      tok = (oPt < 0 ? T.nada : tok0);
+      if (!wasX || !(tok == T.propselector || tok == T.bonds || tok == T.atoms))
         return false;
-      break;
+      oStack[oPt].intValue |= op.tok;
+      return true;
     case T.opNot:
     case T.leftparen:
       isLeftOp = true;
@@ -497,20 +495,21 @@ public class ScriptMathProcessor {
       }
       if (wasX == isLeftOp && tok0 != T.propselector) {
         // for now, because we have .label and .label()
-        if (wasX && allowMathFunc) {
-          if (addOp(T.tokenComma))
-            return addOp(op);
-        }
-      return false;
+        if (!wasX || !allowMathFunc)
+          return false;
+        if (addOp(T.tokenComma))
+          return addOp(op);
       }
       break;
     }
 
+    // what is left are standard operators 
+    
     // Q: Do we need to operate?
     // A: Well, we must have an operator...
-    while (oPt >= 0 
-        // ...and that operator is not :, 
-        //    because that's part of an array definition
+    while (oPt >= 0
+    // ...and that operator is not :, 
+    //    because that's part of an array definition
         && tok0 != T.colon
         // ...and we do not have x( or x[ or func(....
         //   because the function must come first
@@ -522,14 +521,13 @@ public class ScriptMathProcessor {
         && T.getPrecedence(tok0) >= T.getPrecedence(op.tok)
         // ...and this is not x - - y, because unary minus operates from
         //   right to left.
-        && (tok0 != T.unaryMinus || op.tok != T.unaryMinus) 
-      ) {
+        && (tok0 != T.unaryMinus || op.tok != T.unaryMinus)) {
 
       if (debugHigh) {
         Logger.debug("\noperating, oPt=" + oPt + " isLeftOp=" + isLeftOp
             + " oStack[oPt]=" + T.nameOf(tok0) + "        prec="
-            + T.getPrecedence(tok0) + " pending op=\""
-            + T.nameOf(op.tok) + "\" prec=" + T.getPrecedence(op.tok));
+            + T.getPrecedence(tok0) + " pending op=\"" + T.nameOf(op.tok)
+            + "\" prec=" + T.getPrecedence(op.tok));
         dumpStacks("operating");
       }
       // ) and ] must wait until matching ( or [ is found
@@ -548,6 +546,7 @@ public class ScriptMathProcessor {
         if (isArrayItem && squareCount == 1 && equalCount == 0) {
           // x[3] = .... ; add a special flag for this, 
           // waiting until the very end to apply it.
+          wasX = false;
           addXVar(SV.newT(T.tokenArraySelector));
           break;
         }
@@ -651,7 +650,8 @@ public class ScriptMathProcessor {
     case T.opOr:
       if (!wasSyntaxCheck && xPt < 0)
         return false;
-      if (!wasSyntaxCheck && xStack[xPt].tok != T.bitset && xStack[xPt].tok != T.varray) {
+      if (!wasSyntaxCheck && xStack[xPt].tok != T.bitset
+          && xStack[xPt].tok != T.varray) {
         // check to see if we need to evaluate the second operand or not
         // if not, then set this to syntax check in order to skip :)
         // Jmol 12.0.4, Jmol 12.1.2
@@ -678,8 +678,7 @@ public class ScriptMathProcessor {
     putOp(op);
 
     // dumpStacks("putOp complete");
-    if (op.tok == T.propselector
-        && (op.intValue & ~T.minmaxmask) == T.function
+    if (op.tok == T.propselector && (op.intValue & ~T.minmaxmask) == T.function
         && op.intValue != T.function) {
       return evaluateFunction(T.nada);
     }
@@ -774,6 +773,7 @@ public class ScriptMathProcessor {
     T op = oStack[oPt--];
     P3 pt;
     M3 m;
+    M4 m4;
     String s;
 
     if (debugHigh) {
@@ -794,14 +794,42 @@ public class ScriptMathProcessor {
 
     // unary:
 
-    if (op.tok == T.minusMinus || op.tok == T.plusPlus) {
+    switch (op.tok) {
+    case T.minusMinus:
+    case T.plusPlus:
       if (!chk && !x2.increment(incrementX))
         return false;
       wasX = true;
       putX(x2); // reverse getX()
       return true;
-    }
-    if (op.tok == T.opNot) {
+    case T.unaryMinus:
+      switch (x2.tok) {
+      case T.integer:
+        return addXInt(-x2.asInt());
+      case T.point3f:
+        pt = P3.newP((P3) x2.value);
+        pt.scale(-1f);
+        return addXPt(pt);
+      case T.point4f:
+        P4 pt4 = P4.newPt((P4) x2.value);
+        pt4.scale(-1f);
+        return addXPt4(pt4);
+      case T.matrix3f:
+        m = M3.newM3((M3) x2.value);
+        m.transpose();
+        return addXM3(m);
+      case T.matrix4f:
+        m4 = M4.newM4((M4) x2.value);
+        m4.transpose();
+        return addXM4(m4);
+      case T.bitset:
+        return addXBs(BSUtil.copyInvert(
+            SV.bsSelectVar(x2),
+            (x2.value instanceof BondSet ? viewer.getBondCount() : viewer
+                .getAtomCount())));
+      }
+      return addXFloat(-x2.asFloat());
+    case T.opNot:
       if (chk)
         return addXBool(true);
       switch (x2.tok) {
@@ -812,19 +840,19 @@ public class ScriptMathProcessor {
         m.invert();
         return addXM3(m);
       case T.matrix4f:
-        M4 m4 = M4.newM4((M4) x2.value);
+        m4 = M4.newM4((M4) x2.value);
         m4.invert();
         return addXM4(m4);
       case T.bitset:
-        return addXBs(BSUtil.copyInvert(SV.bsSelectVar(x2),
+        return addXBs(BSUtil.copyInvert(
+            SV.bsSelectVar(x2),
             (x2.value instanceof BondSet ? viewer.getBondCount() : viewer
                 .getAtomCount())));
       default:
         return addXBool(!x2.asBoolean());
       }
-    }
-    int iv = op.intValue & ~T.minmaxmask;
-    if (op.tok == T.propselector) {
+    case T.propselector:
+      int iv = op.intValue & ~T.minmaxmask;
       switch (iv) {
       case T.identifier:
         return getAllProperties(x2, (String) op.value);
@@ -848,8 +876,7 @@ public class ScriptMathProcessor {
         case T.matrix3f:
         case T.matrix4f:
           s = SV.sValue(x2);
-          s = PT.rep(s.substring(1, s.length() - 1), "],[",
-              "]\n[");
+          s = PT.rep(s.substring(1, s.length() - 1), "],[", "]\n[");
           break;
         case T.string:
           s = (String) x2.value;
@@ -868,11 +895,9 @@ public class ScriptMathProcessor {
           return addXPt(CU.colorPtFromString(s, pt));
         case T.integer:
         case T.decimal:
-          return addXPt(viewer.getColorPointForPropertyValue(SV
-              .fValue(x2)));
+          return addXPt(viewer.getColorPointForPropertyValue(SV.fValue(x2)));
         case T.point3f:
-          return addXStr(Escape.escapeColor(CU
-              .colorPtToFFRGB((P3) x2.value)));
+          return addXStr(Escape.escapeColor(CU.colorPtToFFRGB((P3) x2.value)));
         default:
           // handle bitset later
         }
@@ -883,8 +908,7 @@ public class ScriptMathProcessor {
       if (chk)
         return addXStr(SV.sValue(x2));
       if (x2.tok == T.string) {
-        Object v = SV
-            .unescapePointOrBitsetAsVariable(SV.sValue(x2));
+        Object v = SV.unescapePointOrBitsetAsVariable(SV.sValue(x2));
         if (!(v instanceof SV))
           return false;
         x2 = (SV) v;
@@ -901,14 +925,9 @@ public class ScriptMathProcessor {
         chk = false;
       return addXVar(SV.newT(x1));
     }
-    
+
     return binaryOp(op, x1, x2);
   }
-
-  //  public SV selectX(SV x2) {
-  //    return (x2.tok == T.varray || x2.tok == T.matrix3f || x2.tok == T.matrix4f ? SV
-  //        .selectItemVar(x2) : x2);
-  //  }
 
   @SuppressWarnings("unchecked")
   public boolean binaryOp(T op, SV x1, SV x2) throws ScriptException {
@@ -1086,33 +1105,6 @@ public class ScriptMathProcessor {
         return addXPt4(q1.add(-x2.asFloat()).toPoint4f());
       }
       return addXFloat(x1.asFloat() - x2.asFloat());
-    case T.unaryMinus:
-      switch (x2.tok) {
-      case T.integer:
-        return addXInt(-x2.asInt());
-      case T.point3f:
-        pt = P3.newP((P3) x2.value);
-        pt.scale(-1f);
-        return addXPt(pt);
-      case T.point4f:
-        pt4 = P4.newPt((P4) x2.value);
-        pt4.scale(-1f);
-        return addXPt4(pt4);
-      case T.matrix3f:
-        m = M3.newM3((M3) x2.value);
-        m.transpose();
-        return addXM3(m);
-      case T.matrix4f:
-        M4 m4 = M4.newM4((M4) x2.value);
-        m4.transpose();
-        return addXM4(m4);
-      case T.bitset:
-        return addXBs(BSUtil.copyInvert(
-            SV.bsSelectVar(x2),
-            (x2.value instanceof BondSet ? viewer.getBondCount() : viewer
-                .getAtomCount())));
-      }
-      return addXFloat(-x2.asFloat());
     case T.mul3:
       if (x1.tok == T.point3f && x2.tok == T.point3f) {
         pt = (P3) x1.value;
@@ -1651,4 +1643,5 @@ public class ScriptMathProcessor {
       return null;
     return xStack[xPt--];
   }
+  
 }

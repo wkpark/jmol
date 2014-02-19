@@ -291,7 +291,7 @@ public abstract class T3 implements JSONEncodable, Serializable {
     if (!(t1 instanceof T3))
       return false;
     T3 t2 = (T3) t1;
-    return (this.x == t2.x && this.y == t2.y && this.z == t2.z);
+    return (x == t2.x && y == t2.y && z == t2.z);
   }
 
   /**

@@ -142,7 +142,7 @@ public class StateCreator extends JmolStateCreator {
       s.append(getDefinedState(sfunc, true));
     // numerical values
     if (isAll || type.equalsIgnoreCase("variableState"))
-      s.append(getVariableState(global, sfunc)); // removed in 12.1.16; unnecessary in state // ARGH!!!
+      s.append(getParameterState(global, sfunc)); // removed in 12.1.16; unnecessary in state // ARGH!!!
     if (isAll || type.equalsIgnoreCase("dataState"))
       s.append(getDataState(sfunc));
     // connections, atoms, bonds, labels, echos, shapes
@@ -619,14 +619,21 @@ public class StateCreator extends JmolStateCreator {
     return commands.toString();
   }
 
-  private String getVariableState(GlobalSettings global, SB sfunc) {
+  /**
+   * note that these are not user variables, only global jmol parameters
+   * 
+   * @param global
+   * @param sfunc
+   * @return String
+   */
+  private String getParameterState(GlobalSettings global, SB sfunc) {
     String[] list = new String[global.htBooleanParameterFlags.size()
         + global.htNonbooleanParameterValues.size()];
     SB commands = new SB();
     boolean isState = (sfunc != null);
     if (isState) {
-      sfunc.append("  _setVariableState;\n");
-      commands.append("function _setVariableState() {\n\n");
+      sfunc.append("  _setParameterState;\n");
+      commands.append("function _seParameterState() {\n\n");
     }
     int n = 0;
     //booleans
@@ -1524,22 +1531,29 @@ public class StateCreator extends JmolStateCreator {
   }
 
   @Override
-  String getFunctionCalls(String selectedFunction) {
-    if (selectedFunction == null)
-      selectedFunction = "";
+  String getFunctionCalls(String f) {
+    if (f == null)
+      f = "";
     SB s = new SB();
-    int pt = selectedFunction.indexOf("*");
+    int pt = f.indexOf("*");
     boolean isGeneric = (pt >= 0);
-    boolean isStatic = (selectedFunction.indexOf("static_") == 0);
-    boolean namesOnly = (selectedFunction.equalsIgnoreCase("names") || selectedFunction
+    boolean isStatic = (f.indexOf("static_") == 0);
+    boolean namesOnly = (f.equalsIgnoreCase("names") || f
         .equalsIgnoreCase("static_names"));
     if (namesOnly)
-      selectedFunction = "";
+      f = "";
     if (isGeneric)
-      selectedFunction = selectedFunction.substring(0, pt);
-    selectedFunction = selectedFunction.toLowerCase();
-    Map<String, JmolScriptFunction> ht = (isStatic ? Viewer.staticFunctions
-        : viewer.localFunctions);
+      f = f.substring(0, pt);
+    f = f.toLowerCase();
+    if (isStatic || f.length() == 0)
+      addFunctions(s, Viewer.staticFunctions, f, isGeneric, namesOnly);
+    if (!isStatic || f.length() == 0)
+      addFunctions(s, viewer.localFunctions, f, isGeneric, namesOnly);
+    return s.toString();
+  }
+
+  private void addFunctions(SB s, Map<String, JmolScriptFunction> ht, String selectedFunction,
+                            boolean isGeneric, boolean namesOnly) {
     String[] names = new String[ht.size()];
     int n = 0;
     for (String name : ht.keySet())
@@ -1553,7 +1567,6 @@ public class StateCreator extends JmolStateCreator {
       s.append(namesOnly ? f.getSignature() : f.toString());
       s.appendC('\n');
     }
-    return s.toString();
   }
 
   private static boolean isTainted(BS[] tainted, int atomIndex, byte type) {

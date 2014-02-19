@@ -1408,14 +1408,15 @@ public class ActionManager implements EventManager {
     }
     if (Logger.debugging)
       Logger.debug(Binding.getMouseActionName(clickAction, false));
-    if (isBound(clickAction, ACTION_clickFrank) && viewer.frankClicked(x, y)) {
-      viewer.popupMenu(-x, y, 'j');
-      return;
-    }
-    if (isBound(clickAction, ACTION_clickFrank)
-        && viewer.frankClickedModelKit(x, y)) {
-      viewer.popupMenu(0, 0, 'm');
-      return;
+    if (isBound(clickAction, ACTION_clickFrank)) {
+      if (viewer.frankClicked(x, y)) {
+        viewer.popupMenu(-x, y, 'j');
+        return;
+      }
+      if (viewer.frankClickedModelKit(x, y)) {
+        viewer.popupMenu(0, 0, 'm');
+        return;
+      }
     }
     Point3fi nearestPoint = null;
     boolean isBond = false;

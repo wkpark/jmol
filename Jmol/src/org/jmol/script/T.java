@@ -31,6 +31,7 @@ import java.util.Map.Entry;
 
 import javajs.util.AU;
 import javajs.util.List;
+
 import org.jmol.util.Logger;
 
 /**
@@ -2567,6 +2568,30 @@ public class T {
     default:
       return false;
     }
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    // only used for arrays.
+    if (!(o instanceof T))
+      return false;
+    T t = (T) o;
+    if (tok == t.tok)
+      return (t.intValue == intValue && (tok == integer || t.value
+          .equals(value)));
+    switch (tok) {
+    case T.integer:
+      return (t.tok == T.decimal && ((Float) t.value).floatValue() == intValue);
+    case T.decimal:
+      return (t.tok == T.integer && ((Float) value).floatValue() == t.intValue);
+    default:
+      return false;
+    }
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
 
 }

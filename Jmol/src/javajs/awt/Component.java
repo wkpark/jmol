@@ -14,6 +14,10 @@ abstract public class Component {
   protected String id;
 
   protected Object parent;
+  
+  public void setParent(Object p) {
+    parent = p;
+  }
 
   protected Object mouseListener;
 

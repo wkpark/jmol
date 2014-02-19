@@ -80,7 +80,7 @@ abstract public class JmolThread extends Thread {
   @Override
   public synchronized void start() {
     if (isJS) {
-      Logger.info("starting " + name);
+      //Logger.info("starting " + name);
       run();
     } else {
       super.start();

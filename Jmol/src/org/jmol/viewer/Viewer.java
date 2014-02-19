@@ -9046,9 +9046,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     statusManager.modifySend(-1, modelIndex, -2, "OK");
   }
 
-  public void deleteModelAtoms(int firstAtomIndex, int nAtoms, BS bsDeleted) {
+  public void deleteModelAtoms(int modelIndex, int firstAtomIndex, int nAtoms, BS bsDeleted) {
     // called from ModelCollection.deleteModel
-    int modelIndex = getAtomModelIndex(firstAtomIndex);
     statusManager.modifySend(-1, modelIndex, 1, "delete atoms " + Escape.eBS(bsDeleted));
     selectionManager.deleteModelAtoms(bsDeleted);
     BSUtil.deleteBits(getFrameOffsets(), bsDeleted);

@@ -204,7 +204,7 @@ public class MainPopupResourceBundle extends PopupResource {
 
       {   "pickingMenu",
           "pickOff pickCenter pickIdent pickLabel pickAtom "
-              + "pickMolecule pickElement PDBpickChain PDBpickGroup SYMMETRYpickSite pickSpin" },
+              + "pickMolecule pickElement - pickSpin - modelKitMode - PDBpickChain PDBpickGroup SYMMETRYpickSite" },
 
       {   "computationMenu",
           "minimize modelkit"
@@ -586,6 +586,7 @@ public class MainPopupResourceBundle extends PopupResource {
         "pickAtom", GT._("Select atom"),
         "PDBpickChain", GT._("Select chain"),
         "pickElement", GT._("Select element"),
+        "modelKitMode", GT._("modelKitMode"),
         "PDBpickGroup", GT._("Select group"),
         "pickMolecule", GT._("Select molecule"),
         "SYMMETRYpickSite", GT._("Select site"),
@@ -921,6 +922,7 @@ public class MainPopupResourceBundle extends PopupResource {
       { "pickAtom", "set picking atom" },
       { "PDBpickChain", "set picking chain" },
       { "pickElement", "set picking element" },
+      { "modelKitMode", "set modelKitMode" },
       { "PDBpickGroup", "set picking group" },
       { "pickMolecule", "set picking molecule" },
       { "SYMMETRYpickSite", "set picking site" },

@@ -65,6 +65,9 @@ public class JSModelKitPopup extends JmolGenericPopup {
     isTainted = false;
   }
   
+  /**
+   * @j2sOverride
+   */
   @Override
   public void menuClickCallback(SC source, String script) {
     if (script.equals("clearQ")) {
@@ -78,7 +81,7 @@ public class JSModelKitPopup extends JmolGenericPopup {
       viewer.evalStringQuiet("set picking assignAtom_C");
       return;
     }
-    super.menuClickCallback(source, script);  
+    processClickCallback(source, script);
   }
 
   @Override

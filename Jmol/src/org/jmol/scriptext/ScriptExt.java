@@ -131,6 +131,9 @@ public class ScriptExt implements JmolScriptExtension {
     slen = eval.slen;
     this.st = st;
     switch (iTok) {
+    case T.assign:
+      assign();
+      break;
     case T.calculate:
       calculate();
       break;
@@ -211,7 +214,7 @@ public class ScriptExt implements JmolScriptExtension {
   private void invPO() throws ScriptException {
     error(ScriptEvaluator.ERROR_invalidParameterOrder);
   }
-  
+
   private Object getShapeProperty(int shapeType, String propertyName) {
     return eval.getShapeProperty(shapeType, propertyName);
   }
@@ -228,8 +231,7 @@ public class ScriptExt implements JmolScriptExtension {
     return eval.floatParameter(i);
   }
 
-  private P3 getPoint3f(int i, boolean allowFractional)
-  throws ScriptException {
+  private P3 getPoint3f(int i, boolean allowFractional) throws ScriptException {
     return eval.getPoint3f(i, allowFractional);
   }
 
@@ -256,13 +258,13 @@ public class ScriptExt implements JmolScriptExtension {
   }
 
   private String stringParameter(int index) throws ScriptException {
-    return  eval.stringParameter(index);  
+    return eval.stringParameter(index);
   }
-  
+
   private T getToken(int i) throws ScriptException {
     return eval.getToken(i);
   }
-  
+
   private int tokAt(int i) {
     return eval.tokAt(i);
   }
@@ -342,8 +344,8 @@ public class ScriptExt implements JmolScriptExtension {
       if (propertyName != null)
         setShapeProperty(JC.SHAPE_CGO, propertyName, propertyValue);
     }
-    eval.finalizeObject(JC.SHAPE_CGO, eval.colorArgb[0], translucentLevel, intScale,
-        data != null, data, iptDisplayProperty, null);
+    eval.finalizeObject(JC.SHAPE_CGO, eval.colorArgb[0], translucentLevel,
+        intScale, data != null, data, iptDisplayProperty, null);
     return true;
   }
 
@@ -447,8 +449,8 @@ public class ScriptExt implements JmolScriptExtension {
         float resolution = floatParameter(++i);
         if (resolution > 0) {
           sbCommand.append(" resolution ").appendF(resolution);
-          setShapeProperty(JC.SHAPE_CONTACT, "resolution", Float
-              .valueOf(resolution));
+          setShapeProperty(JC.SHAPE_CONTACT, "resolution",
+              Float.valueOf(resolution));
         }
         break;
       case T.within:
@@ -552,8 +554,7 @@ public class ScriptExt implements JmolScriptExtension {
       }
 
       if (intramolecular != null) {
-        params = (params == null ? new float[2] : AU.ensureLengthA(
-            params, 2));
+        params = (params == null ? new float[2] : AU.ensureLengthA(params, 2));
         params[1] = (intramolecular.booleanValue() ? 1 : 2);
       }
 
@@ -562,10 +563,13 @@ public class ScriptExt implements JmolScriptExtension {
 
       // now adjust for type -- HBOND or HYDROPHOBIC or MISC
       // these are just "standard shortcuts" they are not necessary at all
-      setShapeProperty(JC.SHAPE_CONTACT, "set", new Object[] {
-          Integer.valueOf(contactType), Integer.valueOf(displayType),
-          Boolean.valueOf(colorDensity), Boolean.valueOf(colorByType), bsA,
-          bsB, rd, Float.valueOf(saProbeRadius), params, sbCommand.toString() });
+      setShapeProperty(
+          JC.SHAPE_CONTACT,
+          "set",
+          new Object[] { Integer.valueOf(contactType),
+              Integer.valueOf(displayType), Boolean.valueOf(colorDensity),
+              Boolean.valueOf(colorByType), bsA, bsB, rd,
+              Float.valueOf(saProbeRadius), params, sbCommand.toString() });
       if (colorpt > 0)
         eval.setMeshDisplayProperty(JC.SHAPE_CONTACT, colorpt, 0);
     }
@@ -844,8 +848,8 @@ public class ScriptExt implements JmolScriptExtension {
         }
         int[][] polygons = AU.newInt2(nTriangles);
         for (int j = 0; j < nTriangles; j++) {
-          float[] f = (vpolygons == null ? eval.floatParameterSet(++eval.iToken, 3,
-              4) : SV.flistValue(vpolygons.get(j), 0));
+          float[] f = (vpolygons == null ? eval.floatParameterSet(
+              ++eval.iToken, 3, 4) : SV.flistValue(vpolygons.get(j), 0));
           if (f.length < 3 || f.length > 4)
             invArg();
           polygons[j] = new int[] { (int) f[0], (int) f[1], (int) f[2],
@@ -895,8 +899,8 @@ public class ScriptExt implements JmolScriptExtension {
         }
         eval.checkLast(eval.iToken);
         if (!chk)
-          eval.runScript((String) viewer.getSymmetryInfo(bsAtoms, xyz, iSym, center,
-              target, thisId, T.draw));
+          eval.runScript((String) viewer.getSymmetryInfo(bsAtoms, xyz, iSym,
+              center, target, thisId, T.draw));
         return false;
       case T.frame:
         isFrame = true;
@@ -940,8 +944,8 @@ public class ScriptExt implements JmolScriptExtension {
         if (tokIntersect != 0) {
           if (chk)
             break;
-          List<Object> vpc = viewer.getPlaneIntersection(tokIntersect,
-              plane, intScale / 100f, 0);
+          List<Object> vpc = viewer.getPlaneIntersection(tokIntersect, plane,
+              intScale / 100f, 0);
           intScale = 0;
           propertyName = "polygon";
           propertyValue = vpc;
@@ -1156,8 +1160,8 @@ public class ScriptExt implements JmolScriptExtension {
       if (propertyName != null)
         setShapeProperty(JC.SHAPE_DRAW, propertyName, propertyValue);
     }
-    eval.finalizeObject(JC.SHAPE_DRAW, eval.colorArgb[0], translucentLevel, intScale,
-        havePoints, connections, iptDisplayProperty, null);
+    eval.finalizeObject(JC.SHAPE_DRAW, eval.colorArgb[0], translucentLevel,
+        intScale, havePoints, connections, iptDisplayProperty, null);
     return true;
   }
 
@@ -1345,16 +1349,19 @@ public class ScriptExt implements JmolScriptExtension {
           bs.andNot(viewer.getAtomBits(T.molecule, bsSelect));
         }
         bs.andNot(bsSelect);
-        sbCommand.append(" intersection ").append(Escape.eBS(bsSelect)).append(
-            " ").append(Escape.eBS(bs));
+        sbCommand.append(" intersection ").append(Escape.eBS(bsSelect))
+            .append(" ").append(Escape.eBS(bs));
         i = eval.iToken;
         if (tokAt(i + 1) == T.function) {
           i++;
           String f = (String) getToken(++i).value;
           sbCommand.append(" function ").append(PT.esc(f));
           if (!chk)
-            addShapeProperty(propertyList, "func", (f.equals("a+b")
-                || f.equals("a-b") ? f : createFunction("__iso__", "a,b", f)));
+            addShapeProperty(
+                propertyList,
+                "func",
+                (f.equals("a+b") || f.equals("a-b") ? f : createFunction(
+                    "__iso__", "a,b", f)));
         } else {
           haveIntersection = true;
         }
@@ -1429,8 +1436,8 @@ public class ScriptExt implements JmolScriptExtension {
             ptc = viewer.getAtomSetCenter(bs);
 
           getWithinDistanceVector(propertyList, distance, ptc, bs, isDisplay);
-          sbCommand.append(" within ").appendF(distance).append(" ").append(
-              bs == null ? Escape.eP(ptc) : Escape.eBS(bs));
+          sbCommand.append(" within ").appendF(distance).append(" ")
+              .append(bs == null ? Escape.eP(ptc) : Escape.eBS(bs));
         }
         continue;
       case T.parameters:
@@ -1465,8 +1472,8 @@ public class ScriptExt implements JmolScriptExtension {
           if (smoothing == Boolean.TRUE) {
             if (smoothingPower == Integer.MAX_VALUE)
               smoothingPower = viewer.getIsosurfacePropertySmoothing(true);
-            addShapeProperty(propertyList, "propertySmoothingPower", Integer
-                .valueOf(smoothingPower));
+            addShapeProperty(propertyList, "propertySmoothingPower",
+                Integer.valueOf(smoothingPower));
             sbCommand.append(" isosurfacePropertySmoothingPower "
                 + smoothingPower);
           }
@@ -1500,8 +1507,8 @@ public class ScriptExt implements JmolScriptExtension {
           } else {
             data = new float[atomCount];
             if (!chk)
-              Parser.parseStringInfestedFloatArray(""
-                  + eval.getParameter(vname, T.string), null, data);
+              Parser.parseStringInfestedFloatArray(
+                  "" + eval.getParameter(vname, T.string), null, data);
           }
           if (!chk/* && (surfaceObjectSeen)*/)
             sbCommand.append(" \"\" ").append(Escape.eAF(data));
@@ -1521,8 +1528,8 @@ public class ScriptExt implements JmolScriptExtension {
           if (tokAt(i + 1) == T.within) {
             float d = floatParameter(i = i + 2);
             sbCommand.append(" within " + d);
-            addShapeProperty(propertyList, "propertyDistanceMax", Float
-                .valueOf(d));
+            addShapeProperty(propertyList, "propertyDistanceMax",
+                Float.valueOf(d));
           }
         }
         propertyValue = data;
@@ -1784,8 +1791,8 @@ public class ScriptExt implements JmolScriptExtension {
             error(ScriptEvaluator.ERROR_expressionExpected);
           sbCommand.append(" ({").appendI(atomIndex).append("})");
           modelIndex = viewer.getAtomModelIndex(atomIndex);
-          addShapeProperty(propertyList, "modelIndex", Integer
-              .valueOf(modelIndex));
+          addShapeProperty(propertyList, "modelIndex",
+              Integer.valueOf(modelIndex));
           V3[] axes = { new V3(), new V3(),
               V3.newV(viewer.getAtomPoint3f(atomIndex)), new V3() };
           if (!lcaoType.equalsIgnoreCase("s")
@@ -1852,8 +1859,8 @@ public class ScriptExt implements JmolScriptExtension {
           int monteCarloCount = intParameter(++i);
           int seed = (tokAt(i + 1) == T.integer ? intParameter(++i)
               : ((int) -System.currentTimeMillis()) % 10000);
-          addShapeProperty(propertyList, "monteCarloCount", Integer
-              .valueOf(monteCarloCount));
+          addShapeProperty(propertyList, "monteCarloCount",
+              Integer.valueOf(monteCarloCount));
           addShapeProperty(propertyList, "randomSeed", Integer.valueOf(seed));
           sbCommand.append(" points ").appendI(monteCarloCount).appendC(' ')
               .appendI(seed);
@@ -1884,8 +1891,8 @@ public class ScriptExt implements JmolScriptExtension {
         if (tokAt(i + 1) == T.integer) {
           calcType = intParameter(++i);
           sbCommand.append(" " + calcType);
-          addShapeProperty(propertyList, "mepCalcType", Integer
-              .valueOf(calcType));
+          addShapeProperty(propertyList, "mepCalcType",
+              Integer.valueOf(calcType));
         }
         if (tokAt(i + 1) == T.string) {
           fname = stringParameter(++i);
@@ -1961,8 +1968,8 @@ public class ScriptExt implements JmolScriptExtension {
         nlmZprs[2] = intParameter(++i);
         nlmZprs[3] = (isFloatParameter(i + 1) ? floatParameter(++i) : 6f);
         //if (surfaceObjectSeen)
-        sbCommand.append(" atomicOrbital ").appendI((int) nlmZprs[0]).append(
-            " ").appendI((int) nlmZprs[1]).append(" ")
+        sbCommand.append(" atomicOrbital ").appendI((int) nlmZprs[0])
+            .append(" ").appendI((int) nlmZprs[1]).append(" ")
             .appendI((int) nlmZprs[2]).append(" ").appendF(nlmZprs[3]);
         if (tokAt(i + 1) == T.point) {
           i += 2;
@@ -2006,12 +2013,12 @@ public class ScriptExt implements JmolScriptExtension {
             : 10f);
         if (envelopeRadius > 10f)
           eval.integerOutOfRange(0, 10);
-        sbCommand.append(" cavity ").appendF(cavityRadius).append(" ").appendF(
-            envelopeRadius);
-        addShapeProperty(propertyList, "envelopeRadius", Float
-            .valueOf(envelopeRadius));
-        addShapeProperty(propertyList, "cavityRadius", Float
-            .valueOf(cavityRadius));
+        sbCommand.append(" cavity ").appendF(cavityRadius).append(" ")
+            .appendF(envelopeRadius);
+        addShapeProperty(propertyList, "envelopeRadius",
+            Float.valueOf(envelopeRadius));
+        addShapeProperty(propertyList, "cavityRadius",
+            Float.valueOf(cavityRadius));
         propertyName = "cavity";
         break;
       case T.contour:
@@ -2123,8 +2130,8 @@ public class ScriptExt implements JmolScriptExtension {
           sbCommand.append(" ").append(PT.esc(name));
           vxy.addLast(name);
           if (!chk)
-            addShapeProperty(propertyList, "func", createFunction("__iso__",
-                "x,y,z", name));
+            addShapeProperty(propertyList, "func",
+                createFunction("__iso__", "x,y,z", name));
           //surfaceObjectSeen = true;
           break;
         }
@@ -2286,9 +2293,11 @@ public class ScriptExt implements JmolScriptExtension {
         isMapped = true;
         if ((isCavity || haveRadius || haveIntersection) && !surfaceObjectSeen) {
           surfaceObjectSeen = true;
-          addShapeProperty(propertyList, "bsSolvent", (haveRadius
-              || haveIntersection ? new BS() : eval
-              .lookupIdentifierValue("solvent")));
+          addShapeProperty(
+              propertyList,
+              "bsSolvent",
+              (haveRadius || haveIntersection ? new BS() : eval
+                  .lookupIdentifierValue("solvent")));
           addShapeProperty(propertyList, "sasurface", Float.valueOf(0));
         }
         if (sbCommand.length() == 0) {
@@ -2344,8 +2353,8 @@ public class ScriptExt implements JmolScriptExtension {
           sbCommand.append(" molecular");
           radius = (isFloatParameter(i + 1) ? floatParameter(++i) : 1.4f);
         } else {
-          addShapeProperty(propertyList, "bsSolvent", eval
-              .lookupIdentifierValue("solvent"));
+          addShapeProperty(propertyList, "bsSolvent",
+              eval.lookupIdentifierValue("solvent"));
           propertyName = (eval.theTok == T.sasurface ? "sasurface" : "solvent");
           sbCommand.append(" ").appendO(eval.theToken.value);
           radius = (isFloatParameter(i + 1) ? floatParameter(++i) : viewer
@@ -2490,8 +2499,8 @@ public class ScriptExt implements JmolScriptExtension {
         }
         int fileIndex = -1;
         if (propertyValue == null && tokAt(i + 1) == T.integer)
-          addShapeProperty(propertyList, "fileIndex", Integer
-              .valueOf(fileIndex = intParameter(++i)));
+          addShapeProperty(propertyList, "fileIndex",
+              Integer.valueOf(fileIndex = intParameter(++i)));
         String stype = (tokAt(i + 1) == T.string ? stringParameter(++i) : null);
         // done reading parameters
         surfaceObjectSeen = true;
@@ -2631,8 +2640,8 @@ public class ScriptExt implements JmolScriptExtension {
         surfaceObjectSeen = true;
       }
       if (thisSetNumber >= -1)
-        addShapeProperty(propertyList, "getSurfaceSets", Integer
-            .valueOf(thisSetNumber - 1));
+        addShapeProperty(propertyList, "getSurfaceSets",
+            Integer.valueOf(thisSetNumber - 1));
       if (discreteColixes != null) {
         addShapeProperty(propertyList, "colorDiscrete", discreteColixes);
       } else if ("sets".equals(colorScheme)) {
@@ -2661,8 +2670,8 @@ public class ScriptExt implements JmolScriptExtension {
           if (needSelect) {
             propertyList.add(0, new Object[] { "select", bsSelect });
             if (sbCommand.indexOf("; isosurface map") == 0) {
-              sbCommand = new SB().append("; isosurface map select ").append(
-                  Escape.eBS(bsSelect)).append(sbCommand.substring(16));
+              sbCommand = new SB().append("; isosurface map select ")
+                  .append(Escape.eBS(bsSelect)).append(sbCommand.substring(16));
             }
           }
         }
@@ -2710,17 +2719,17 @@ public class ScriptExt implements JmolScriptExtension {
       if (area instanceof Float)
         viewer.setFloatProperty("isosurfaceArea", ((Float) area).floatValue());
       else
-        viewer.setUserVariable("isosurfaceArea", SV
-            .getVariableAD((double[]) area));
+        viewer.setUserVariable("isosurfaceArea",
+            SV.getVariableAD((double[]) area));
     }
     if (doCalcVolume) {
       volume = (doCalcVolume ? getShapeProperty(iShape, "volume") : null);
       if (volume instanceof Float)
-        viewer.setFloatProperty("isosurfaceVolume", ((Float) volume)
-            .floatValue());
+        viewer.setFloatProperty("isosurfaceVolume",
+            ((Float) volume).floatValue());
       else
-        viewer.setUserVariable("isosurfaceVolume", SV
-            .getVariableAD((double[]) volume));
+        viewer.setUserVariable("isosurfaceVolume",
+            SV.getVariableAD((double[]) volume));
     }
     if (!isLcaoCartoon) {
       String s = null;
@@ -2728,7 +2737,9 @@ public class ScriptExt implements JmolScriptExtension {
         setShapeProperty(iShape, "finalize", sbCommand.toString());
       } else if (surfaceObjectSeen) {
         cmd = sbCommand.toString();
-        setShapeProperty(iShape, "finalize",
+        setShapeProperty(
+            iShape,
+            "finalize",
             (cmd.indexOf("; isosurface map") == 0 ? "" : " select "
                 + Escape.eBS(bsSelect) + " ")
                 + cmd);
@@ -2788,18 +2799,19 @@ public class ScriptExt implements JmolScriptExtension {
    * @param bsIgnore
    * @param fileName
    * @return calculated atom potentials
-   * @throws Exception 
+   * @throws Exception
    */
   private float[] getAtomicPotentials(BS bsSelected, BS bsIgnore,
-                                     String fileName) throws Exception {
+                                      String fileName) throws Exception {
     float[] potentials = new float[viewer.getAtomCount()];
     MepCalculationInterface m = (MepCalculationInterface) Interface
         .getOptionInterface("quantum.MlpCalculation");
     m.set(viewer);
-    String data = (fileName == null ? null : viewer.getFileAsString(fileName, false));
-      m.assignPotentials(viewer.modelSet.atoms, potentials, viewer.getSmartsMatch("a",
-          bsSelected), viewer.getSmartsMatch("/noAromatic/[$(C=O),$(O=C),$(NC=O)]",
-          bsSelected), bsIgnore, data);
+    String data = (fileName == null ? null : viewer.getFileAsString(fileName,
+        false));
+    m.assignPotentials(viewer.modelSet.atoms, potentials, viewer
+        .getSmartsMatch("a", bsSelected), viewer.getSmartsMatch(
+        "/noAromatic/[$(C=O),$(O=C),$(NC=O)]", bsSelected), bsIgnore, data);
     return potentials;
   }
 
@@ -2979,8 +2991,9 @@ public class ScriptExt implements JmolScriptExtension {
       float slabTranslucency = (isFloatParameter(++i + 1) ? floatParameter(++i)
           : 0.5f);
       if (eval.isColorParam(i + 1)) {
-        slabColix = Short.valueOf(C.getColixTranslucent3(C.getColix(eval
-            .getArgbParam(i + 1)), slabTranslucency != 0, slabTranslucency));
+        slabColix = Short.valueOf(C.getColixTranslucent3(
+            C.getColix(eval.getArgbParam(i + 1)), slabTranslucency != 0,
+            slabTranslucency));
         i = eval.iToken;
       } else {
         slabColix = Short.valueOf(C.getColixTranslucent3(C.INHERIT_COLOR,
@@ -3308,18 +3321,20 @@ public class ScriptExt implements JmolScriptExtension {
   }
 
   @SuppressWarnings("unchecked")
-  private void setMoData(List<Object[]> propertyList, int moNumber,
-                         float[] lc, int offset, boolean isNegOffset,
-                         int modelIndex, String title) throws ScriptException {
+  private void setMoData(List<Object[]> propertyList, int moNumber, float[] lc,
+                         int offset, boolean isNegOffset, int modelIndex,
+                         String title) throws ScriptException {
     ScriptEvaluator eval = this.eval;
     if (chk)
       return;
     if (modelIndex < 0) {
       modelIndex = viewer.getCurrentModelIndex();
       if (modelIndex < 0)
-        eval.errorStr(ScriptEvaluator.ERROR_multipleModelsDisplayedNotOK, "MO isosurfaces");
+        eval.errorStr(ScriptEvaluator.ERROR_multipleModelsDisplayedNotOK,
+            "MO isosurfaces");
     }
-    Map<String, Object> moData = (Map<String, Object>) viewer.getModelAuxiliaryInfoValue(modelIndex, "moData");
+    Map<String, Object> moData = (Map<String, Object>) viewer
+        .getModelAuxiliaryInfoValue(modelIndex, "moData");
     List<Map<String, Object>> mos = null;
     Map<String, Object> mo;
     Float f;
@@ -3330,8 +3345,7 @@ public class ScriptExt implements JmolScriptExtension {
       if (moData == null)
         error(ScriptEvaluator.ERROR_moModelError);
       int lastMoNumber = (moData.containsKey("lastMoNumber") ? ((Integer) moData
-          .get("lastMoNumber")).intValue()
-          : 0);
+          .get("lastMoNumber")).intValue() : 0);
       int lastMoCount = (moData.containsKey("lastMoCount") ? ((Integer) moData
           .get("lastMoCount")).intValue() : 1);
       if (moNumber == T.prev)
@@ -3513,8 +3527,7 @@ public class ScriptExt implements JmolScriptExtension {
         maxXYZ = getPoint3f(++eval.iToken, false);
         eval.iToken++;
       }
-      type = "property " + T.nameOf(propertyX) + " "
-          + T.nameOf(propertyY)
+      type = "property " + T.nameOf(propertyX) + " " + T.nameOf(propertyY)
           + (propertyZ == 0 ? "" : " " + T.nameOf(propertyZ));
       if (bs.nextSetBit(0) < 0)
         bs = viewer.getModelUndeletedAtomsBitSet(modelIndex);
@@ -3595,11 +3608,13 @@ public class ScriptExt implements JmolScriptExtension {
             (minXYZ == null ? Float.NaN : minXYZ.z),
             (maxXYZ == null ? Float.NaN : maxXYZ.z));
       if (minXYZ == null)
-        minXYZ = P3.new3(getPlotMinMax(dataX, false, propertyX), getPlotMinMax(
-            dataY, false, propertyY), getPlotMinMax(dataZ, false, propertyZ));
+        minXYZ = P3.new3(getPlotMinMax(dataX, false, propertyX),
+            getPlotMinMax(dataY, false, propertyY),
+            getPlotMinMax(dataZ, false, propertyZ));
       if (maxXYZ == null)
-        maxXYZ = P3.new3(getPlotMinMax(dataX, true, propertyX), getPlotMinMax(
-            dataY, true, propertyY), getPlotMinMax(dataZ, true, propertyZ));
+        maxXYZ = P3.new3(getPlotMinMax(dataX, true, propertyX),
+            getPlotMinMax(dataY, true, propertyY),
+            getPlotMinMax(dataZ, true, propertyZ));
       Logger.info("plot min/max: " + minXYZ + " " + maxXYZ);
       P3 center = new P3();
       center.ave(maxXYZ, minXYZ);
@@ -3641,9 +3656,10 @@ public class ScriptExt implements JmolScriptExtension {
     if (tokCmd == T.write)
       return viewer.writeFileData(filename, "PLOT_" + type, modelIndex,
           parameters);
-    
-    String data = (type.equals("data") ? "1 0 H 0 0 0 # Jmol PDB-encoded data" : viewer.getPdbData(modelIndex, type, parameters));
-    
+
+    String data = (type.equals("data") ? "1 0 H 0 0 0 # Jmol PDB-encoded data"
+        : viewer.getPdbData(modelIndex, type, parameters));
+
     if (tokCmd == T.show)
       return data;
 
@@ -3660,7 +3676,8 @@ public class ScriptExt implements JmolScriptExtension {
     String[] savedFileInfo = viewer.getFileInfo();
     boolean oldAppendNew = viewer.getBoolean(T.appendnew);
     viewer.setAppendNew(true);
-    boolean isOK = (data != null && viewer.openStringInlineParamsAppend(data, null, true) == null);
+    boolean isOK = (data != null && viewer.openStringInlineParamsAppend(data,
+        null, true) == null);
     viewer.setAppendNew(oldAppendNew);
     viewer.setFileInfo(savedFileInfo);
     if (!isOK)
@@ -3681,8 +3698,8 @@ public class ScriptExt implements JmolScriptExtension {
       radius = 10;
       break;
     case T.property:
-      viewer.setFrameTitle(modelCount - 1, type + " plot for model "
-          + viewer.getModelNumberDotted(modelIndex));
+      viewer.setFrameTitle(modelCount - 1,
+          type + " plot for model " + viewer.getModelNumberDotted(modelIndex));
       float f = 3;
       script = "frame 0.0; frame last; reset;" + "select visible; spacefill "
           + f + "; wireframe 0;" + "draw plotAxisX" + modelCount
@@ -3707,8 +3724,7 @@ public class ScriptExt implements JmolScriptExtension {
     case T.helix:
       viewer.setFrameTitle(modelCount - 1, type.replace('w', ' ') + qFrame
           + " for model " + viewer.getModelNumberDotted(modelIndex));
-      String color = (C
-          .getHexCode(viewer.getColixBackgroundContrast()));
+      String color = (C.getHexCode(viewer.getColixBackgroundContrast()));
       script = "frame 0.0; frame last; reset;"
           + "select visible; wireframe 0; spacefill 3.0; "
           + "isosurface quatSphere" + modelCount + " color " + color
@@ -3727,8 +3743,10 @@ public class ScriptExt implements JmolScriptExtension {
     ss.setModelIndex(viewer.getCurrentModelIndex());
     viewer.setRotationRadius(radius, true);
     sm.loadShape(JC.SHAPE_ECHO);
-    showString("frame " + viewer.getModelNumberDotted(modelCount - 1)
-        + (type.length() > 0 ? " created: " + type + (isQuaternion ? qFrame : "") : ""));
+    showString("frame "
+        + viewer.getModelNumberDotted(modelCount - 1)
+        + (type.length() > 0 ? " created: " + type
+            + (isQuaternion ? qFrame : "") : ""));
     return "";
   }
 
@@ -3789,11 +3807,11 @@ public class ScriptExt implements JmolScriptExtension {
       case T.delete:
       case T.on:
       case T.off:
-        if (i + 1 != slen || needsGenerating || nAtomSets > 1
-            || nAtomSets == 0 && "to".equals(setPropertyName))
+        if (i + 1 != slen || needsGenerating || nAtomSets > 1 || nAtomSets == 0
+            && "to".equals(setPropertyName))
           error(ScriptEvaluator.ERROR_incompatibleArguments);
-        propertyName = (eval.theTok == T.off ? "off" : eval.theTok == T.on ? "on"
-            : "delete");
+        propertyName = (eval.theTok == T.off ? "off"
+            : eval.theTok == T.on ? "on" : "delete");
         onOffDelete = true;
         break;
       case T.opEQ:
@@ -3838,13 +3856,13 @@ public class ScriptExt implements JmolScriptExtension {
         propertyName = setPropertyName;
         setPropertyName = "to";
         propertyValue = atomExpressionAt(i);
-        i =eval.iToken;
+        i = eval.iToken;
         break;
       case T.to:
         if (nAtomSets > 1)
           invPO();
-        if (tokAt(i + 1) == T.bitset 
-            || tokAt(i + 1) == T.expressionBegin && !needsGenerating) {
+        if (tokAt(i + 1) == T.bitset || tokAt(i + 1) == T.expressionBegin
+            && !needsGenerating) {
           propertyName = "toBitSet";
           propertyValue = atomExpressionAt(++i);
           i = eval.iToken;
@@ -3901,8 +3919,7 @@ public class ScriptExt implements JmolScriptExtension {
         }
         invArg();
       }
-      setShapeProperty(JC.SHAPE_POLYHEDRA, propertyName,
-          propertyValue);
+      setShapeProperty(JC.SHAPE_POLYHEDRA, propertyName, propertyValue);
       if (onOffDelete)
         return false;
     }
@@ -3911,8 +3928,8 @@ public class ScriptExt implements JmolScriptExtension {
     if (needsGenerating)
       setShapeProperty(JC.SHAPE_POLYHEDRA, "generate", null);
     if (eval.colorArgb[0] != Integer.MIN_VALUE)
-      setShapeProperty(JC.SHAPE_POLYHEDRA, "colorThis", Integer
-          .valueOf(eval.colorArgb[0]));
+      setShapeProperty(JC.SHAPE_POLYHEDRA, "colorThis",
+          Integer.valueOf(eval.colorArgb[0]));
     if (translucentLevel != Float.MAX_VALUE)
       eval.setShapeTranslucency(JC.SHAPE_POLYHEDRA, "", "translucentThis",
           translucentLevel, null);
@@ -3927,12 +3944,12 @@ public class ScriptExt implements JmolScriptExtension {
     boolean defOn = (tokAt(1) == T.only || tokAt(1) == T.on || slen == 1);
     int mad = eval.getMadParameter();
     if (defOn)
-      mad = Math.round (viewer.getFloat(T.strutdefaultradius) * 2000f);
-    setShapeProperty(JC.SHAPE_STICKS, "type", Integer
-        .valueOf(JmolEdge.BOND_STRUT));
+      mad = Math.round(viewer.getFloat(T.strutdefaultradius) * 2000f);
+    setShapeProperty(JC.SHAPE_STICKS, "type",
+        Integer.valueOf(JmolEdge.BOND_STRUT));
     eval.setShapeSizeBs(JC.SHAPE_STICKS, mad, null);
-    setShapeProperty(JC.SHAPE_STICKS, "type", Integer
-        .valueOf(JmolEdge.BOND_COVALENT_MASK));
+    setShapeProperty(JC.SHAPE_STICKS, "type",
+        Integer.valueOf(JmolEdge.BOND_COVALENT_MASK));
     return true;
   }
 
@@ -4143,17 +4160,18 @@ public class ScriptExt implements JmolScriptExtension {
   }
 
   private boolean listIsosurface(int iShape) throws ScriptException {
-    String s = (slen > 3 ? "0" : tokAt(2) == T.nada ? "" : " " + getToken(2).value);
+    String s = (slen > 3 ? "0" : tokAt(2) == T.nada ? "" : " "
+        + getToken(2).value);
     if (!chk)
-      showString((String) getShapeProperty(iShape, "list"
-          + s));
+      showString((String) getShapeProperty(iShape, "list" + s));
     return true;
   }
 
   @Override
   @SuppressWarnings("static-access")
   public Object getBitsetIdent(BS bs, String label, Object tokenValue,
-                        boolean useAtomMap, int index, boolean isExplicitlyAll) {
+                               boolean useAtomMap, int index,
+                               boolean isExplicitlyAll) {
     boolean isAtoms = !(tokenValue instanceof BondSet);
     if (isAtoms) {
       if (label == null)
@@ -4190,15 +4208,15 @@ public class ScriptExt implements JmolScriptExtension {
         if (asIdentity)
           str = modelSet.atoms[j].getInfo();
         else
-          str = labeler.formatLabelAtomArray(viewer, modelSet.atoms[j],
-              tokens, '\0', indices);
+          str = labeler.formatLabelAtomArray(viewer, modelSet.atoms[j], tokens,
+              '\0', indices);
       } else {
         Bond bond = modelSet.getBondAt(j);
         if (asIdentity)
           str = bond.getIdentity();
         else
-          str = labeler.formatLabelBond(viewer, bond, tokens, htValues,
-              indices);
+          str = labeler
+              .formatLabelBond(viewer, bond, tokens, htValues, indices);
       }
       str = Txt.formatStringI(str, "#", (n + 1));
       sout[n++] = str;
@@ -4230,7 +4248,8 @@ public class ScriptExt implements JmolScriptExtension {
         return;
       }
       if ((i = dataLabel.indexOf("@")) >= 0) {
-        dataString = "" + eval.getParameter(dataLabel.substring(i + 1), T.string);
+        dataString = ""
+            + eval.getParameter(dataLabel.substring(i + 1), T.string);
         dataLabel = dataLabel.substring(0, i).trim();
       } else if (dataString == null && (i = dataLabel.indexOf(" ")) >= 0) {
         dataString = dataLabel.substring(i + 1).trim();
@@ -4394,8 +4413,8 @@ public class ScriptExt implements JmolScriptExtension {
         if (chk)
           return;
         eval.setObjectMad(JC.SHAPE_AXES, "axes", 1);
-        setShapeProperty(JC.SHAPE_AXES, "position", P3.new3(50, 50,
-            Float.MAX_VALUE));
+        setShapeProperty(JC.SHAPE_AXES, "position",
+            P3.new3(50, 50, Float.MAX_VALUE));
         eval.setBooleanProperty("navigationMode", true);
         viewer.setNavOn(eval.theTok == T.on);
         return;
@@ -4508,7 +4527,7 @@ public class ScriptExt implements JmolScriptExtension {
         P3[][] pathGuide;
         List<P3[]> vp = new List<P3[]>();
         BS bs;
-        if (tokAt(i + 1) == T.bitset || tokAt(i + 1) ==  T.expressionBegin) {
+        if (tokAt(i + 1) == T.bitset || tokAt(i + 1) == T.expressionBegin) {
           bs = atomExpressionAt(++i);
           i = eval.iToken;
         } else {
@@ -4667,6 +4686,12 @@ public class ScriptExt implements JmolScriptExtension {
     default:
       type = SV.sValue(tokenAt(pt, args)).toUpperCase();
     }
+    if (isCommand && tokAt(slen - 2) == T.as) {
+      type = parameterAsString(slen - 1).toUpperCase();
+      pt0 = argCount;
+      argCount -= 2;
+      tok = T.nada;
+    }
     switch (tok) {
     case T.nada:
       break;
@@ -4794,41 +4819,42 @@ public class ScriptExt implements JmolScriptExtension {
     }
 
     if (msg == null) {
-      val = SV.sValue(tokenAt(pt, args));
-      if (val.equalsIgnoreCase("clipboard")) {
-        if (chk)
-          return "";
-        // if (isApplet)
-        // evalError(GT._("The {0} command is not available for the applet.",
-        // "WRITE CLIPBOARD"));
-      } else if (PT.isOneOf(val.toLowerCase(), JC.IMAGE_TYPES)) {
-        if (tokAtArray(pt + 1, args) == T.integer
-            && tokAtArray(pt + 2, args) == T.integer) {
-          width = SV.iValue(tokenAt(++pt, args));
-          height = SV.iValue(tokenAt(++pt, args));
+      if (pt0 < argCount) {
+        val = SV.sValue(tokenAt(pt, args));
+        if (val.equalsIgnoreCase("clipboard")) {
+          if (chk)
+            return "";
+          // if (isApplet)
+          // evalError(GT._("The {0} command is not available for the applet.",
+          // "WRITE CLIPBOARD"));
+        } else if (PT.isOneOf(val.toLowerCase(), JC.IMAGE_TYPES)) {
+          if (tokAtArray(pt + 1, args) == T.integer
+              && tokAtArray(pt + 2, args) == T.integer) {
+            width = SV.iValue(tokenAt(++pt, args));
+            height = SV.iValue(tokenAt(++pt, args));
+          }
+          if (tokAtArray(pt + 1, args) == T.integer)
+            quality = SV.iValue(tokenAt(++pt, args));
+        } else if (PT.isOneOf(val.toLowerCase(),
+            ";xyz;xyzrn;xyzvib;mol;sdf;v2000;v3000;json;pdb;pqr;cml;")) {
+          type = val.toUpperCase();
+          if (pt + 1 == argCount)
+            pt++;
         }
-        if (tokAtArray(pt + 1, args) == T.integer)
-          quality = SV.iValue(tokenAt(++pt, args));
-      } else if (PT.isOneOf(val.toLowerCase(),
-          ";xyz;xyzrn;xyzvib;mol;sdf;v2000;v3000;json;pdb;pqr;cml;")) {
-        type = val.toUpperCase();
-        if (pt + 1 == argCount)
+
+        // write [image|history|state] clipboard
+
+        // write [optional image|history|state] [JPG quality|JPEG quality|JPG64
+        // quality|PNG|PPM|SPT] "filename"
+        // write script "filename"
+        // write isosurface t.jvxl
+
+        if (type.equals("(image)")
+            && PT.isOneOf(val.toLowerCase(), JC.IMAGE_OR_SCENE)) {
+          type = val.toUpperCase();
           pt++;
+        }
       }
-
-      // write [image|history|state] clipboard
-
-      // write [optional image|history|state] [JPG quality|JPEG quality|JPG64
-      // quality|PNG|PPM|SPT] "filename"
-      // write script "filename"
-      // write isosurface t.jvxl
-
-      if (type.equals("(image)")
-          && PT.isOneOf(val.toLowerCase(), JC.IMAGE_OR_SCENE)) {
-        type = val.toUpperCase();
-        pt++;
-      }
-
       if (pt + 2 == argCount) {
         String s = SV.sValue(tokenAt(++pt, args));
         if (s.length() > 0 && s.charAt(0) != '.')
@@ -4913,13 +4939,12 @@ public class ScriptExt implements JmolScriptExtension {
               .isOneOf(
                   type,
                   ";SCENE;JMOL;ZIP;ZIPALL;SPT;HISTORY;MO;ISOSURFACE;MESH;PMESH;VAR;FILE;FUNCTION;CML;JSON;XYZ;XYZRN;XYZVIB;MENU;MOL;PDB;PGRP;PQR;QUAT;RAMA;SDF;V2000;V3000;INLINE;"))
-        eval
-            .errorStr2(
-                ScriptEvaluator.ERROR_writeWhat,
-                "COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|INLINE|ISOSURFACE|JMOL|MENU|MO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
-                    + "|RAMACHANDRAN|SPT|STATE|VAR x|ZIP|ZIPALL  CLIPBOARD",
-                "CML|GIF|JPG|JPG64|JMOL|JVXL|MESH|MOL|PDB|PMESH|PNG|PNGJ|PNGT|PPM|PQR|SDF|CD|JSON|V2000|V3000|SPT|XJVXL|XYZ|XYZRN|XYZVIB|ZIP"
-                    + driverList.toUpperCase().replace(';', '|'));
+        eval.errorStr2(
+            ScriptEvaluator.ERROR_writeWhat,
+            "COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|INLINE|ISOSURFACE|JMOL|MENU|MO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
+                + "|RAMACHANDRAN|SPT|STATE|VAR x|ZIP|ZIPALL  CLIPBOARD",
+            "CML|GIF|JPG|JPG64|JMOL|JVXL|MESH|MOL|PDB|PMESH|PNG|PNGJ|PNGT|PPM|PQR|SDF|CD|JSON|V2000|V3000|SPT|XJVXL|XYZ|XYZRN|XYZVIB|ZIP"
+                + driverList.toUpperCase().replace(';', '|'));
       if (chk)
         return "";
       Object bytes = null;
@@ -4991,14 +5016,15 @@ public class ScriptExt implements JmolScriptExtension {
           if ("?".equals(fileName))
             fileName = "?Jmol." + viewer.getParameter("_fileType");
         } else if ((data == "SDF" || data == "MOL" || data == "V2000"
-            || data == "V3000" || data == "CD"  || data == "JSON")
+            || data == "V3000" || data == "CD" || data == "JSON")
             && isCoord) {
           data = viewer.getModelExtract("selected", true, false, data);
           if (data.startsWith("ERROR:"))
             bytes = data;
         } else if (data == "XYZ" || data == "XYZRN" || data == "XYZVIB"
             || data == "MOL" || data == "SDF" || data == "V2000"
-            || data == "V3000" || data == "CML" || data == "CD" || data == "JSON") {
+            || data == "V3000" || data == "CML" || data == "CD"
+            || data == "JSON") {
           data = viewer.getData("selected", data);
           if (data.startsWith("ERROR:"))
             bytes = data;
@@ -5006,8 +5032,9 @@ public class ScriptExt implements JmolScriptExtension {
           data = viewer.getFunctionCalls(null);
           type = "TXT";
         } else if (data == "VAR") {
-          data = ((SV) eval.getParameter(SV.sValue(tokenAt(isCommand ? 2 : 1,
-              args)), T.variable)).asString();
+          data = ((SV) eval.getParameter(
+              SV.sValue(tokenAt(isCommand ? 2 : 1, args)), T.variable))
+              .asString();
           type = "TXT";
         } else if (data == "SPT") {
           if (isCoord) {
@@ -5281,7 +5308,8 @@ public class ScriptExt implements JmolScriptExtension {
         return;
       int modelIndex = viewer.getCurrentModelIndex();
       if (modelIndex < 0)
-        eval.errorStr(ScriptEvaluator.ERROR_multipleModelsDisplayedNotOK, "show " + eval.theToken.value);
+        eval.errorStr(ScriptEvaluator.ERROR_multipleModelsDisplayedNotOK,
+            "show " + eval.theToken.value);
       msg = plot(st);
       len = slen;
       break;
@@ -5298,8 +5326,8 @@ public class ScriptExt implements JmolScriptExtension {
       break;
     case T.variables:
       if (!chk)
-        msg = viewer.getAtomDefs(eval.definedAtomSets) + viewer.getVariableList()
-            + getContext(true);
+        msg = viewer.getAtomDefs(eval.definedAtomSets)
+            + viewer.getVariableList() + getContext(true);
       break;
     case T.trajectory:
       if (!chk)
@@ -5460,8 +5488,7 @@ public class ScriptExt implements JmolScriptExtension {
       } else {
         String sg = parameterAsString(2);
         if (!chk)
-          info = viewer.getSpaceGroupInfo(PT.rep(sg, "''",
-              "\""));
+          info = viewer.getSpaceGroupInfo(PT.rep(sg, "''", "\""));
       }
       if (info != null)
         msg = "" + info.get("spaceGroupInfo") + info.get("symmetryInfo");
@@ -5626,7 +5653,7 @@ public class ScriptExt implements JmolScriptExtension {
     case T.menu:
       if (!chk)
         value = viewer.getMenu("");
-      break;      
+      break;
     case T.identifier:
       if (str.equalsIgnoreCase("fileHeader")) {
         if (!chk)
@@ -5670,7 +5697,8 @@ public class ScriptExt implements JmolScriptExtension {
     sm.loadShape(JC.SHAPE_MO);
     int modelIndex = viewer.getCurrentModelIndex();
     if (modelIndex < 0)
-      eval.errorStr(ScriptEvaluator.ERROR_multipleModelsDisplayedNotOK, "MO isosurfaces");
+      eval.errorStr(ScriptEvaluator.ERROR_multipleModelsDisplayedNotOK,
+          "MO isosurfaces");
     Map<String, Object> moData = (Map<String, Object>) viewer
         .getModelAuxiliaryInfoValue(modelIndex, "moData");
     if (moData == null)
@@ -5702,7 +5730,8 @@ public class ScriptExt implements JmolScriptExtension {
       } else {
         sb.append(ScriptEvaluator.getErrorLineMessage(context.functionName,
             context.scriptFileName, eval.getLinenumber(context), context.pc,
-            ScriptEvaluator.statementAsString(viewer, context.statement, -9999, eval.debugHigh)));
+            ScriptEvaluator.statementAsString(viewer, context.statement, -9999,
+                eval.debugHigh)));
       }
       context = context.parentContext;
     }
@@ -5722,7 +5751,8 @@ public class ScriptExt implements JmolScriptExtension {
   private String getScriptID(ScriptContext context) {
     String fuName = (context == null ? eval.functionName : "function "
         + context.functionName);
-    String fiName = (context == null ? eval.scriptFileName : context.scriptFileName);
+    String fiName = (context == null ? eval.scriptFileName
+        : context.scriptFileName);
     return "\n# " + fuName + " (file " + fiName
         + (context == null ? "" : " context " + context.id) + ")\n";
   }
@@ -5738,6 +5768,105 @@ public class ScriptExt implements JmolScriptExtension {
 
   private static int tokAtArray(int i, T[] args) {
     return (i < args.length && args[i] != null ? args[i].tok : T.nada);
+  }
+
+  private void assign() throws ScriptException {
+    int atomsOrBonds = tokAt(1);
+    int index = atomExpressionAt(2).nextSetBit(0);
+    int index2 = -1;
+    String type = null;
+    if (index < 0)
+      return;
+    if (atomsOrBonds == T.connect) {
+      index2 = atomExpressionAt(++eval.iToken).nextSetBit(0);
+    } else {
+      type = parameterAsString(++eval.iToken);
+    }
+    P3 pt = (++eval.iToken < slen ? centerParameter(eval.iToken) : null);
+    if (chk)
+      return;
+    switch (atomsOrBonds) {
+    case T.atoms:
+      eval.clearDefinedVariableAtomSets();
+      assignAtom(index, pt, type);
+      break;
+    case T.bonds:
+      assignBond(index, (type + "p").charAt(0));
+      break;
+    case T.connect:
+      assignConnect(index, index2);
+    }
+  }
+
+  private void assignAtom(int atomIndex, P3 pt, String type) {
+    if (type.equals("X"))
+      viewer.setRotateBondIndex(-1);
+    ModelSet modelSet = viewer.modelSet;
+    if (modelSet.atoms[atomIndex].modelIndex != modelSet.modelCount - 1)
+      return;
+    viewer.clearModelDependentObjects();
+    int atomCount = modelSet.getAtomCount();
+    if (pt == null) {
+      viewer.statusManager.modifySend(atomIndex,
+          modelSet.atoms[atomIndex].modelIndex, 1, eval.fullCommand);
+      modelSet.assignAtom(atomIndex, type, true);
+      if (!PT.isOneOf(type, ";Mi;Pl;X;"))
+        modelSet.setAtomNamesAndNumbers(atomIndex, -atomCount, null);
+      viewer.statusManager.modifySend(atomIndex,
+          modelSet.atoms[atomIndex].modelIndex, -1, "OK");
+      viewer.refresh(3, "assignAtom");
+      return;
+    }
+    Atom atom = modelSet.atoms[atomIndex];
+    BS bs = BSUtil.newAndSetBit(atomIndex);
+    P3[] pts = new P3[] { pt };
+    List<Atom> vConnections = new List<Atom>();
+    vConnections.addLast(atom);
+    int modelIndex = atom.modelIndex;
+    viewer.statusManager.modifySend(atomIndex, modelIndex, 3, eval.fullCommand);
+    try {
+      bs = viewer.addHydrogensInline(bs, vConnections, pts);
+      atomIndex = bs.nextSetBit(0);
+      modelSet.assignAtom(atomIndex, type, false);
+    } catch (Exception e) {
+      //
+    }
+    modelSet.setAtomNamesAndNumbers(atomIndex, -atomCount, null);
+    viewer.statusManager.modifySend(atomIndex, modelIndex, -3, "OK");
+  }
+
+  private void assignBond(int bondIndex, char type) {
+    int modelIndex = -1;
+    try {
+      ModelSet modelSet = viewer.modelSet;
+      modelIndex = viewer.getAtomModelIndex(modelSet.bonds[bondIndex]
+          .getAtomIndex1());
+      viewer.statusManager.modifySend(bondIndex, modelIndex, 2,
+          eval.fullCommand);
+      BS bsAtoms = modelSet.setBondOrder(bondIndex, type);
+      if (bsAtoms == null || type == '0')
+        viewer.refresh(3, "setBondOrder");
+      else
+        viewer.addHydrogens(bsAtoms, false, true);
+      viewer.statusManager.modifySend(bondIndex, modelIndex, -2, "" + type);
+    } catch (Exception e) {
+      Logger.error("assignBond failed");
+      viewer.statusManager.modifySend(bondIndex, modelIndex, -2, "ERROR " + e);
+    }
+  }
+
+  private void assignConnect(int index, int index2) {
+    viewer.clearModelDependentObjects();
+    ModelSet modelSet = viewer.modelSet;
+    float[][] connections = AU.newFloat2(1);
+    connections[0] = new float[] { index, index2 };
+    int modelIndex = modelSet.atoms[index].modelIndex;
+    viewer.statusManager.modifySend(index, modelIndex, 2, eval.fullCommand);
+    modelSet.connect(connections);
+    modelSet.assignAtom(index, ".", true);
+    modelSet.assignAtom(index2, ".", true);
+    viewer.statusManager.modifySend(index, modelIndex, -2, "OK");
+    viewer.refresh(3, "assignConnect");
   }
 
   private void calculate() throws ScriptException {
@@ -5779,7 +5908,8 @@ public class ScriptExt implements JmolScriptExtension {
           return;
         n = viewer.autoHbond(bs1, bs2, false);
         if (n != Integer.MIN_VALUE)
-          eval.scriptStatusOrBuffer(GT.i(GT._("{0} hydrogen bonds"), Math.abs(n)));
+          eval.scriptStatusOrBuffer(GT.i(GT._("{0} hydrogen bonds"),
+              Math.abs(n)));
         return;
       case T.hydrogen:
         bs1 = (slen == 2 ? null : atomExpressionAt(2));
@@ -5801,9 +5931,9 @@ public class ScriptExt implements JmolScriptExtension {
         checkLength(2);
         if (!chk) {
           viewer.calculateStraightness();
-          viewer.addStateScript("set quaternionFrame '"
-              + viewer.getQuaternionFrame() + "'; calculate straightness",
-              false, true);
+          viewer.addStateScript(
+              "set quaternionFrame '" + viewer.getQuaternionFrame()
+                  + "'; calculate straightness", false, true);
         }
         return;
       case T.structure:
@@ -5830,13 +5960,14 @@ public class ScriptExt implements JmolScriptExtension {
         if (!chk) {
           n = viewer.calculateStruts(bs1, bs2);
           if (n > 0) {
-            setShapeProperty(JC.SHAPE_STICKS, "type", Integer
-                .valueOf(JmolEdge.BOND_STRUT));
-            eval.setShapePropertyBs(JC.SHAPE_STICKS, "color", Integer
-                .valueOf(0x0FFFFFF), null);
-            eval.setShapeTranslucency(JC.SHAPE_STICKS, "", "translucent", 0.5f, null);
-            setShapeProperty(JC.SHAPE_STICKS, "type", Integer
-                .valueOf(JmolEdge.BOND_COVALENT_MASK));
+            setShapeProperty(JC.SHAPE_STICKS, "type",
+                Integer.valueOf(JmolEdge.BOND_STRUT));
+            eval.setShapePropertyBs(JC.SHAPE_STICKS, "color",
+                Integer.valueOf(0x0FFFFFF), null);
+            eval.setShapeTranslucency(JC.SHAPE_STICKS, "", "translucent", 0.5f,
+                null);
+            setShapeProperty(JC.SHAPE_STICKS, "type",
+                Integer.valueOf(JmolEdge.BOND_COVALENT_MASK));
           }
           showString(GT.i(GT._("{0} struts mp.added"), n));
         }
@@ -5864,8 +5995,8 @@ public class ScriptExt implements JmolScriptExtension {
         default:
           isFrom = true;
         }
-        bs1 = (eval.iToken + 1 < slen ? atomExpressionAt(++eval.iToken) : viewer
-            .getSelectedAtoms());
+        bs1 = (eval.iToken + 1 < slen ? atomExpressionAt(++eval.iToken)
+            : viewer.getSelectedAtoms());
         checkLength(++eval.iToken);
         if (!chk)
           viewer.calculateSurface(bs1, (isFrom ? Float.MAX_VALUE : -1));
@@ -5947,10 +6078,10 @@ public class ScriptExt implements JmolScriptExtension {
           && T.tokAttrOr(tokKey, T.intproperty, T.floatproperty)) {
         float[] data1 = eval.getBitsetPropertyFloat(bsFrom, tokProp1
             | T.selectedfloat, Float.NaN, Float.NaN);
-        float[] data2 = eval.getBitsetPropertyFloat(bsFrom,
-            tokKey | T.selectedfloat, Float.NaN, Float.NaN);
-        float[] data3 = eval.getBitsetPropertyFloat(bsTo, tokKey | T.selectedfloat,
-            Float.NaN, Float.NaN);
+        float[] data2 = eval.getBitsetPropertyFloat(bsFrom, tokKey
+            | T.selectedfloat, Float.NaN, Float.NaN);
+        float[] data3 = eval.getBitsetPropertyFloat(bsTo, tokKey
+            | T.selectedfloat, Float.NaN, Float.NaN);
         boolean isProperty = (tokProp2 == T.property);
         float[] dataOut = new float[isProperty ? viewer.getAtomCount()
             : data3.length];
@@ -5973,8 +6104,8 @@ public class ScriptExt implements JmolScriptExtension {
           }
           if (isProperty)
             viewer.setData(property2, new Object[] { property2, dataOut, bsOut,
-                Integer.valueOf(0), Boolean.TRUE }, viewer.getAtomCount(), 0, 0,
-                Integer.MAX_VALUE, 0);
+                Integer.valueOf(0), Boolean.TRUE }, viewer.getAtomCount(), 0,
+                0, Integer.MAX_VALUE, 0);
           else
             viewer.setAtomProperty(bsOut, tokProp2, 0, 0, null, dataOut, null);
         }
@@ -6107,13 +6238,13 @@ public class ScriptExt implements JmolScriptExtension {
   }
 
   /**
-   * Allows for setting one or more specific t-values
-   * as well as full unit-cell shifts (multiples of q).
+   * Allows for setting one or more specific t-values as well as full unit-cell
+   * shifts (multiples of q).
    * 
    * @throws ScriptException
    */
   private void modulation() throws ScriptException {
-    
+
     // modulation on/off  (all atoms)
     // moduation {atom set} on/off
     // modulation int  q-offset
@@ -6121,7 +6252,7 @@ public class ScriptExt implements JmolScriptExtension {
     // modulation {t1 t2 t3} 
     // modulation {q1 q2 q3} TRUE 
     P3 qtOffset = null;
-//    int frameN = Integer.MAX_VALUE;
+    //    int frameN = Integer.MAX_VALUE;
     boolean mod = true;
     boolean isQ = false;
     BS bs = null;
@@ -6166,17 +6297,17 @@ public class ScriptExt implements JmolScriptExtension {
       if (!chk)
         viewer.setFloatProperty("modulationScale", scale);
       return;
-//    case T.fps:
-//      float f = floatParameter(2);
-//      if (!chk)
-//        viewer.setModulationFps(f);
-//      return;
-//    case T.play:
-//      int t0 = intParameter(2);
-//      frameN = intParameter(3);
-//      qtOffset = P3.new3(t0, t0, t0);
-//      isQ = true;
-//      break;
+      //    case T.fps:
+      //      float f = floatParameter(2);
+      //      if (!chk)
+      //        viewer.setModulationFps(f);
+      //      return;
+      //    case T.play:
+      //      int t0 = intParameter(2);
+      //      frameN = intParameter(3);
+      //      qtOffset = P3.new3(t0, t0, t0);
+      //      isQ = true;
+      //      break;
     default:
       invArg();
     }
@@ -6186,8 +6317,8 @@ public class ScriptExt implements JmolScriptExtension {
   }
 
   private BS setContactBitSets(BS bsA, BS bsB, boolean localOnly,
-                              float distance, RadiusData rd,
-                              boolean warnMultiModel) {
+                               float distance, RadiusData rd,
+                               boolean warnMultiModel) {
     boolean withinAllModels;
     BS bs;
     if (bsB == null) {
@@ -6210,14 +6341,14 @@ public class ScriptExt implements JmolScriptExtension {
     if (!bsA.equals(bsB)) {
       boolean setBfirst = (!localOnly || bsA.cardinality() < bsB.cardinality());
       if (setBfirst) {
-        bs = viewer.getAtomsWithinRadius(distance, bsA, withinAllModels, (Float
-            .isNaN(distance) ? rd : null));
+        bs = viewer.getAtomsWithinRadius(distance, bsA, withinAllModels,
+            (Float.isNaN(distance) ? rd : null));
         bsB.and(bs);
       }
       if (localOnly) {
         // we can just get the near atoms for A as well.
-        bs = viewer.getAtomsWithinRadius(distance, bsB, withinAllModels, (Float
-            .isNaN(distance) ? rd : null));
+        bs = viewer.getAtomsWithinRadius(distance, bsB, withinAllModels,
+            (Float.isNaN(distance) ? rd : null));
         bsA.and(bs);
         if (!setBfirst) {
           bs = viewer.getAtomsWithinRadius(distance, bsA, withinAllModels,
@@ -6350,11 +6481,9 @@ public class ScriptExt implements JmolScriptExtension {
         if (vAtomSets != null)
           invArg();
         isQuaternion = true;
-        data1 = getQuaternionArray(((SV) eval.theToken)
-            .getList(), T.list);
+        data1 = getQuaternionArray(((SV) eval.theToken).getList(), T.list);
         getToken(++i);
-        data2 = getQuaternionArray(((SV) eval.theToken)
-            .getList(), T.list);
+        data2 = getQuaternionArray(((SV) eval.theToken).getList(), T.list);
         if (vQuatSets == null)
           vQuatSets = new List<Object[]>();
         vQuatSets.addLast(new Object[] { data1, data2 });
@@ -6428,8 +6557,7 @@ public class ScriptExt implements JmolScriptExtension {
       Quaternion q = null;
       List<Quaternion> vQ = new List<Quaternion>();
       P3[][] centerAndPoints = null;
-      List<Object[]> vAtomSets2 = (isFrames ? new List<Object[]>()
-          : vAtomSets);
+      List<Object[]> vAtomSets2 = (isFrames ? new List<Object[]>() : vAtomSets);
       for (int i = 0; i < vAtomSets.size(); ++i) {
         BS[] bss = (BS[]) vAtomSets.get(i);
         if (isFrames)
@@ -6495,7 +6623,9 @@ public class ScriptExt implements JmolScriptExtension {
           }
         if (isFlexFit) {
           float[] list;
-          if (bsFrom == null || bsTo == null || (list = getFlexFitList(bsFrom, bsTo, strSmiles, !isSmiles)) == null)
+          if (bsFrom == null
+              || bsTo == null
+              || (list = getFlexFitList(bsFrom, bsTo, strSmiles, !isSmiles)) == null)
             return;
           viewer.setDihedrals(list, null, 1);
         }
@@ -6534,7 +6664,7 @@ public class ScriptExt implements JmolScriptExtension {
         endDegrees = q.getTheta();
         if (endDegrees == 0 && doTranslate) {
           if (translation.length() > 0.01f)
-            endDegrees= 1e10f;
+            endDegrees = 1e10f;
           else
             doRotate = doTranslate = doAnimate = false;
         }
@@ -6544,8 +6674,7 @@ public class ScriptExt implements JmolScriptExtension {
       List<P3> ptsB = null;
       if (doRotate && doTranslate && nSeconds != 0) {
         List<P3> ptsA = viewer.getAtomPointVector(bsFrom);
-        M4 m4 = ScriptMathProcessor.getMatrix4f(q.getMatrix(),
-            translation);
+        M4 m4 = ScriptMathProcessor.getMatrix4f(q.getMatrix(), translation);
         ptsB = Measure.transformPoints(ptsA, m4, center);
       }
       if (!eval.useThreads())
@@ -6563,8 +6692,8 @@ public class ScriptExt implements JmolScriptExtension {
     BS bsAtoms;
     if (slen == 1) {
       bsAtoms = viewer.setConformation();
-      viewer.addStateScriptRet("select", null, viewer.getSelectedAtoms(),
-          null, "configuration", true, false);
+      viewer.addStateScriptRet("select", null, viewer.getSelectedAtoms(), null,
+          "configuration", true, false);
     } else {
       int n = intParameter(eval.checkLast(1));
       if (chk)
@@ -6575,8 +6704,8 @@ public class ScriptExt implements JmolScriptExtension {
     }
     if (chk)
       return;
-    setShapeProperty(JC.SHAPE_STICKS, "type", Integer
-        .valueOf(JmolEdge.BOND_HYDROGEN_MASK));
+    setShapeProperty(JC.SHAPE_STICKS, "type",
+        Integer.valueOf(JmolEdge.BOND_HYDROGEN_MASK));
     eval.setShapeSizeBs(JC.SHAPE_STICKS, 0, bsAtoms);
     viewer.autoHbond(bsAtoms, bsAtoms, true);
     viewer.select(bsAtoms, false, 0, eval.tQuiet);
@@ -6609,8 +6738,8 @@ public class ScriptExt implements JmolScriptExtension {
       int atomCount = viewer.getAtomCount();
       int[][] maps = null;
       try {
-        maps = viewer.getSmilesMatcher().getCorrelationMaps(smarts,
-            atoms, atomCount, viewer.getSelectedAtoms(), true, false);
+        maps = viewer.getSmilesMatcher().getCorrelationMaps(smarts, atoms,
+            atomCount, viewer.getSelectedAtoms(), true, false);
       } catch (Exception e) {
         eval.evalError(e.getMessage(), null);
       }
@@ -6869,10 +6998,12 @@ public class ScriptExt implements JmolScriptExtension {
             viewer.getGraphicsData(), font, "", colix, (short) 0, 0, 0, null);
       if (text != null)
         text.pymolOffset = offset;
-      setShapeProperty(JC.SHAPE_MEASURES, "measure", newMeasurementData(id,
-          points).set(tokAction, null, rd, strFormat, null, tickInfo,
-          isAllConnected, isNotConnected, intramolecular, isAll, mad, colix,
-          text));
+      setShapeProperty(
+          JC.SHAPE_MEASURES,
+          "measure",
+          newMeasurementData(id, points).set(tokAction, null, rd, strFormat,
+              null, tickInfo, isAllConnected, isNotConnected, intramolecular,
+              isAll, mad, colix, text));
       return;
     }
     Object propertyValue = (id == null ? countPlusIndexes : id);
@@ -6894,8 +7025,8 @@ public class ScriptExt implements JmolScriptExtension {
     }
   }
 
-  private float[] getFlexFitList(BS bs1, BS bs2, String smiles1, boolean isSmarts)
-      throws ScriptException {
+  private float[] getFlexFitList(BS bs1, BS bs2, String smiles1,
+                                 boolean isSmarts) throws ScriptException {
     int[][] mapSet = AU.newInt2(2);
     getSmilesCorrelation(bs1, bs2, smiles1, null, null, null, null, isSmarts,
         false, mapSet, null, false, false);
@@ -6940,8 +7071,8 @@ public class ScriptExt implements JmolScriptExtension {
   }
 
   /**
-   * The major interface to org.jmol.smiles, this method allows for 
-   * a wide variety of correlation functionality.
+   * The major interface to org.jmol.smiles, this method allows for a wide
+   * variety of correlation functionality.
    * 
    * @param bsA
    * @param bsB
@@ -7077,7 +7208,7 @@ public class ScriptExt implements JmolScriptExtension {
       } catch (Exception e) {
         eval.evalError(e.getMessage(), null);
         //if (!asAtoms && !isSmarts)
-          //return Integer.valueOf(-1);
+        //return Integer.valueOf(-1);
         return null;
       }
     } else {
@@ -7117,9 +7248,10 @@ public class ScriptExt implements JmolScriptExtension {
   }
 
   // ScriptMathProcessor extensions
-  
+
   @Override
-  public boolean evaluate(ScriptMathProcessor mp, T op, SV[] args, int tok) throws ScriptException {
+  public boolean evaluate(ScriptMathProcessor mp, T op, SV[] args, int tok)
+      throws ScriptException {
     switch (tok) {
     case T.abs:
     case T.acos:
@@ -7212,8 +7344,8 @@ public class ScriptExt implements JmolScriptExtension {
       return evaluateSort(mp, args, tok);
     case T.symop:
       return evaluateSymop(mp, args, op.tok == T.propselector);
-//    case Token.volume:
-  //    return evaluateVolume(args);
+      //    case Token.volume:
+      //    return evaluateVolume(args);
     case T.tensor:
       return evaluateTensor(mp, args);
     case T.within:
@@ -7226,7 +7358,8 @@ public class ScriptExt implements JmolScriptExtension {
     return false;
   }
 
-  private boolean evaluateModulation(ScriptMathProcessor mp, SV[] args) throws ScriptException {
+  private boolean evaluateModulation(ScriptMathProcessor mp, SV[] args)
+      throws ScriptException {
     String type = "D";
     float t = Float.NaN;
     P3 t456 = null;
@@ -7251,12 +7384,13 @@ public class ScriptExt implements JmolScriptExtension {
         t = SV.fValue(args[pt]);
     }
     if (t456 == null && t < 1e6)
-      t456 = P3.new3(t,  t,  t);
+      t456 = P3.new3(t, t, t);
     BS bs = SV.getBitSet(mp.getX(), false);
     return mp.addXList(viewer.getModulationList(bs, type, t456));
   }
 
-  private boolean evaluateTensor(ScriptMathProcessor mp, SV[] args) throws ScriptException {
+  private boolean evaluateTensor(ScriptMathProcessor mp, SV[] args)
+      throws ScriptException {
     // {*}.tensor()
     // {*}.tensor("isc")            // only within this atom set
     // {atomindex=1}.tensor("isc")  // all to this atom
@@ -7264,11 +7398,13 @@ public class ScriptExt implements JmolScriptExtension {
     if (args.length > 2)
       return false;
     BS bs = SV.getBitSet(mp.getX(), false);
-    String tensorType = (args.length == 0 ? null : SV.sValue(args[0]).toLowerCase());
-    JmolNMRInterface calc = viewer.getNMRCalculation();      
+    String tensorType = (args.length == 0 ? null : SV.sValue(args[0])
+        .toLowerCase());
+    JmolNMRInterface calc = viewer.getNMRCalculation();
     if ("unique".equals(tensorType))
       return mp.addXBs(calc.getUniqueTensorSet(bs));
-    String infoType = (args.length < 2 ? null : SV.sValue(args[1]).toLowerCase());
+    String infoType = (args.length < 2 ? null : SV.sValue(args[1])
+        .toLowerCase());
     return mp.addXList(calc.getTensorInfo(tensorType, infoType, bs));
   }
 
@@ -7441,7 +7577,8 @@ public class ScriptExt implements JmolScriptExtension {
       return (isStdDev || Float.isNaN(stddev) ? mp.addXFloat(stddev) : mp
           .addXM4(m));
     } catch (Exception e) {
-      eval.evalError(e.getMessage() == null ? e.toString() : e.getMessage(), null);
+      eval.evalError(e.getMessage() == null ? e.toString() : e.getMessage(),
+          null);
       return false;
     }
   }
@@ -7467,23 +7604,22 @@ public class ScriptExt implements JmolScriptExtension {
     BS bsA = BSUtil.copy(SV.bsSelectVar(args[i++]));
     if (chk)
       return mp.addXBs(new BS());
-    BS bsB = (i < args.length ? BSUtil.copy(SV
-        .bsSelectVar(args[i])) : null);
-    RadiusData rd = new RadiusData(null,
-        (distance > 10 ? distance / 100 : distance),
-        (distance > 10 ? EnumType.FACTOR : EnumType.OFFSET), EnumVdw.AUTO);
+    BS bsB = (i < args.length ? BSUtil.copy(SV.bsSelectVar(args[i])) : null);
+    RadiusData rd = new RadiusData(null, (distance > 10 ? distance / 100
+        : distance), (distance > 10 ? EnumType.FACTOR : EnumType.OFFSET),
+        EnumVdw.AUTO);
     bsB = setContactBitSets(bsA, bsB, true, Float.NaN, rd, false);
     bsB.or(bsA);
     return mp.addXBs(bsB);
   }
 
-//  private boolean evaluateVolume(ScriptVariable[] args) throws ScriptException {
-//    ScriptVariable x1 = mp.getX();
-//    if (x1.tok != Token.bitset)
-//      return false;
-//    String type = (args.length == 0 ? null : ScriptVariable.sValue(args[0]));
-//    return mp.addX(viewer.getVolume((BitSet) x1.value, type));
-//  }
+  //  private boolean evaluateVolume(ScriptVariable[] args) throws ScriptException {
+  //    ScriptVariable x1 = mp.getX();
+  //    if (x1.tok != Token.bitset)
+  //      return false;
+  //    String type = (args.length == 0 ? null : ScriptVariable.sValue(args[0]));
+  //    return mp.addX(viewer.getVolume((BitSet) x1.value, type));
+  //  }
 
   private boolean evaluateSort(ScriptMathProcessor mp, SV[] args, int tok)
       throws ScriptException {
@@ -7510,11 +7646,10 @@ public class ScriptExt implements JmolScriptExtension {
       }
       return mp.addXInt(n);
     }
-    List<SV> counts = new  List<SV>();
+    List<SV> counts = new List<SV>();
     SV last = null;
     SV count = null;
-    List<SV> xList = SV.getVariable(x.value)
-        .sortOrReverse(0).getList();
+    List<SV> xList = SV.getVariable(x.value).sortOrReverse(0).getList();
     if (xList == null)
       return (match == null ? mp.addXStr("") : mp.addXInt(0));
     for (int i = 0, nLast = xList.size(); i <= nLast; i++) {
@@ -7525,13 +7660,13 @@ public class ScriptExt implements JmolScriptExtension {
         count.intValue++;
         continue;
       } else if (last != null) {
-        List<SV> y = new  List<SV>();
+        List<SV> y = new List<SV>();
         y.addLast(last);
         y.addLast(count);
         counts.addLast(SV.getVariableList(y));
       }
       count = SV.newI(1);
-      last = a; 
+      last = a;
     }
     if (match == null)
       return mp.addXVar(SV.getVariableList(counts));
@@ -7551,8 +7686,7 @@ public class ScriptExt implements JmolScriptExtension {
     if (x1 != null && x1.tok != T.bitset)
       return false;
     BS bs = (x1 != null ? (BS) x1.value : args.length > 2
-        && args[1].tok == T.bitset ? (BS) args[1].value : viewer
-        .getAllAtoms());
+        && args[1].tok == T.bitset ? (BS) args[1].value : viewer.getAllAtoms());
     String xyz;
     switch (args[0].tok) {
     case T.string:
@@ -7597,7 +7731,8 @@ public class ScriptExt implements JmolScriptExtension {
         .addXObj(viewer.getSymmetryInfo(bs, xyz, iOp, pt, null, desc, tok));
   }
 
-  private boolean evaluateBin(ScriptMathProcessor mp, SV[] args) throws ScriptException {
+  private boolean evaluateBin(ScriptMathProcessor mp, SV[] args)
+      throws ScriptException {
     if (args.length != 3)
       return false;
     SV x1 = mp.getX();
@@ -7613,7 +7748,7 @@ public class ScriptExt implements JmolScriptExtension {
     } else {
       List<SV> list = x1.getList();
       data = new float[list.size()];
-      for (int i = list.size(); --i >= 0; )
+      for (int i = list.size(); --i >= 0;)
         data[i] = SV.fValue(list.get(i));
     }
     int nbins = (int) Math.floor((f1 - f0) / df + 0.01f);
@@ -7631,7 +7766,8 @@ public class ScriptExt implements JmolScriptExtension {
     return mp.addXAI(array);
   }
 
-  private boolean evaluateHelix(ScriptMathProcessor mp, SV[] args) throws ScriptException {
+  private boolean evaluateHelix(ScriptMathProcessor mp, SV[] args)
+      throws ScriptException {
     if (args.length < 1 || args.length > 5)
       return false;
     // helix({resno=3})
@@ -7641,8 +7777,7 @@ public class ScriptExt implements JmolScriptExtension {
     // helix(pt1, pt2, dq, "draw","someID")
     // helix(pt1, pt2, dq)
     int pt = (args.length > 2 ? 3 : 1);
-    String type = (pt >= args.length ? "array" : SV
-        .sValue(args[pt]));
+    String type = (pt >= args.length ? "array" : SV.sValue(args[pt]));
     int tok = T.getTokFromName(type);
     if (args.length > 2) {
       // helix(pt1, pt2, dq ...)
@@ -7667,12 +7802,12 @@ public class ScriptExt implements JmolScriptExtension {
           return false;
         return mp.addXAS(data);
       default:
-        return mp.addXObj(Measure.computeHelicalAxis(type, T.draw, pta, ptb,
-            dq));
+        return mp.addXObj(Measure
+            .computeHelicalAxis(type, T.draw, pta, ptb, dq));
       }
     } else {
-      BS bs = (args[0].value instanceof BS ? (BS) args[0].value
-          : eval.compareInt(T.resno, T.opEQ, args[0].asInt()));
+      BS bs = (args[0].value instanceof BS ? (BS) args[0].value : eval
+          .compareInt(T.resno, T.opEQ, args[0].asInt()));
       switch (tok) {
       case T.point:
         return mp.addXObj(viewer.getHelixData(bs, T.point));
@@ -7778,7 +7913,8 @@ public class ScriptExt implements JmolScriptExtension {
     return mp.addXFloat(getDistance(mp, x1, x2, tok));
   }
 
-  private float getDistance(ScriptMathProcessor mp, SV x1, SV x2, int tok) throws ScriptException {
+  private float getDistance(ScriptMathProcessor mp, SV x1, SV x2, int tok)
+      throws ScriptException {
     P3 pt1 = mp.ptValue(x1, true);
     P4 plane1 = mp.planeValue(x1);
     P3 pt2 = mp.ptValue(x2, true);
@@ -7786,8 +7922,8 @@ public class ScriptExt implements JmolScriptExtension {
     if (tok == T.dot) {
       if (plane1 != null && plane2 != null)
         // q1.dot(q2) assume quaternions
-        return plane1.x * plane2.x + plane1.y * plane2.y + plane1.z
-            * plane2.z + plane1.w * plane2.w;
+        return plane1.x * plane2.x + plane1.y * plane2.y + plane1.z * plane2.z
+            + plane1.w * plane2.w;
       // plane.dot(point) =
       if (plane1 != null)
         pt1 = P3.new3(plane1.x, plane1.y, plane1.z);
@@ -7815,8 +7951,8 @@ public class ScriptExt implements JmolScriptExtension {
       // measure({a},{b}, min, max, format, units)
       // measure({a},{b},{c},{d}, min, max, format, units)
       // measure({a} {b} "minArray") -- returns array of minimum distance values
-      
-      List<Object> points = new  List<Object>();
+
+      List<Object> points = new List<Object>();
       float[] rangeMinMax = new float[] { Float.MAX_VALUE, Float.MAX_VALUE };
       String strFormat = null;
       String units = null;
@@ -7854,8 +7990,7 @@ public class ScriptExt implements JmolScriptExtension {
           String s = SV.sValue(args[i]);
           if (s.equalsIgnoreCase("vdw") || s.equalsIgnoreCase("vanderwaals"))
             vdw = (i + 1 < args.length && args[i + 1].tok == T.integer ? args[++i]
-                .asInt()
-                : 100) / 100f;
+                .asInt() : 100) / 100f;
           else if (s.equalsIgnoreCase("notConnected"))
             isNotConnected = true;
           else if (s.equalsIgnoreCase("connected"))
@@ -7865,7 +8000,8 @@ public class ScriptExt implements JmolScriptExtension {
           else if (s.equalsIgnoreCase("asArray"))
             asArray = (nBitSets >= 1);
           else if (PT.isOneOf(s.toLowerCase(),
-              ";nm;nanometers;pm;picometers;angstroms;ang;au;") || s.endsWith("hz"))
+              ";nm;nanometers;pm;picometers;angstroms;ang;au;")
+              || s.endsWith("hz"))
             units = s.toLowerCase();
           else
             strFormat = nPoints + ":" + s;
@@ -7883,8 +8019,9 @@ public class ScriptExt implements JmolScriptExtension {
         return mp.addXStr("");
       rd = (vdw == Float.MAX_VALUE ? new RadiusData(rangeMinMax, 0, null, null)
           : new RadiusData(null, vdw, EnumType.FACTOR, EnumVdw.AUTO));
-      return mp.addXObj((newMeasurementData(null, points)).set(0, null, rd, strFormat, units, null, isAllConnected,
-          isNotConnected, null, true, 0, (short) 0, null).getMeasurements(asArray, asMinArray));
+      return mp.addXObj((newMeasurementData(null, points)).set(0, null, rd,
+          strFormat, units, null, isAllConnected, isNotConnected, null, true,
+          0, (short) 0, null).getMeasurements(asArray, asMinArray));
     case T.angle:
       if ((nPoints = args.length) != 3 && nPoints != 4)
         return false;
@@ -7900,10 +8037,11 @@ public class ScriptExt implements JmolScriptExtension {
     case 2:
       return mp.addXFloat(pts[0].distance(pts[1]));
     case 3:
-      return mp.addXFloat(Measure.computeAngleABC(pts[0], pts[1], pts[2], true));
+      return mp
+          .addXFloat(Measure.computeAngleABC(pts[0], pts[1], pts[2], true));
     case 4:
-      return mp.addXFloat(Measure.computeTorsion(pts[0], pts[1], pts[2], pts[3],
-          true));
+      return mp.addXFloat(Measure.computeTorsion(pts[0], pts[1], pts[2],
+          pts[3], true));
     }
     return false;
   }
@@ -7914,8 +8052,8 @@ public class ScriptExt implements JmolScriptExtension {
         points);
   }
 
-  private boolean evaluateUserFunction(ScriptMathProcessor mp, String name, SV[] args,
-                                       int tok, boolean isSelector)
+  private boolean evaluateUserFunction(ScriptMathProcessor mp, String name,
+                                       SV[] args, int tok, boolean isSelector)
       throws ScriptException {
     SV x1 = null;
     if (isSelector) {
@@ -7924,14 +8062,14 @@ public class ScriptExt implements JmolScriptExtension {
         return false;
     }
     mp.wasX = false;
-    List<SV> params = new  List<SV>();
+    List<SV> params = new List<SV>();
     for (int i = 0; i < args.length; i++) {
       params.addLast(args[i]);
     }
     if (isSelector) {
-      return mp.addXObj(eval.getBitsetProperty(SV.bsSelectVar(x1), tok,
-          null, null, x1.value, new Object[] { name, params }, false, x1.index,
-          false));
+      return mp
+          .addXObj(eval.getBitsetProperty(SV.bsSelectVar(x1), tok, null, null,
+              x1.value, new Object[] { name, params }, false, x1.index, false));
     }
     SV var = eval.runFunctionRet(null, name, params, null, true, true, false);
     return (var == null ? false : mp.addXVar(var));
@@ -8064,12 +8202,15 @@ public class ScriptExt implements JmolScriptExtension {
   }
 
   private JmolPatternMatcher pm;
+
   private JmolPatternMatcher getPatternMatcher() {
-    return (pm == null ? pm = (JmolPatternMatcher) Interface.getOptionInterface("util.PatternMatcher") : pm);
+    return (pm == null ? pm = (JmolPatternMatcher) Interface
+        .getOptionInterface("util.PatternMatcher") : pm);
   }
 
-  private boolean evaluateGetProperty(ScriptMathProcessor mp, SV[] args, boolean isAtomProperty) 
-    throws ScriptException {
+  private boolean evaluateGetProperty(ScriptMathProcessor mp, SV[] args,
+                                      boolean isAtomProperty)
+      throws ScriptException {
     int pt = 0;
     String propertyName = (args.length > pt ? SV.sValue(args[pt++])
         .toLowerCase() : "");
@@ -8078,12 +8219,12 @@ public class ScriptExt implements JmolScriptExtension {
       isJSON = true;
       propertyName = SV.sValue(args[pt++]);
     }
-      
+
     if (propertyName.startsWith("$")) {
       // TODO
     }
     if (isAtomProperty && !propertyName.equalsIgnoreCase("bondInfo"))
-      propertyName = "atomInfo." + propertyName;      
+      propertyName = "atomInfo." + propertyName;
     Object propertyValue = "";
     if (propertyName.equalsIgnoreCase("fileContents") && args.length > 2) {
       String s = SV.sValue(args[1]);
@@ -8095,8 +8236,10 @@ public class ScriptExt implements JmolScriptExtension {
       switch (args[pt].tok) {
       case T.bitset:
         propertyValue = SV.bsSelectVar(args[pt++]);
-        if (propertyName.equalsIgnoreCase("bondInfo") &&  args.length > pt && args[pt].tok == T.bitset)
-          propertyValue = new BS[] { (BS) propertyValue , SV.bsSelectVar(args[pt]) };
+        if (propertyName.equalsIgnoreCase("bondInfo") && args.length > pt
+            && args[pt].tok == T.bitset)
+          propertyValue = new BS[] { (BS) propertyValue,
+              SV.bsSelectVar(args[pt]) };
         break;
       case T.string:
         if (viewer.checkPropertyParameter(propertyName))
@@ -8117,17 +8260,18 @@ public class ScriptExt implements JmolScriptExtension {
     if (pt < args.length)
       property = viewer.extractProperty(property, args, pt);
     if (isAtomProperty && property instanceof List)
-      property = (((List<?>) property).size() > 0 ? ((List<?>) property).get(0) : "");
-    return mp.addXObj(isJSON ? "{" + PT.toJSON("value", property) + "}" : 
-      SV.isVariableType(property) ? property : Escape
-        .toReadable(propertyName, property));
+      property = (((List<?>) property).size() > 0 ? ((List<?>) property).get(0)
+          : "");
+    return mp.addXObj(isJSON ? "{" + PT.toJSON("value", property) + "}" : SV
+        .isVariableType(property) ? property : Escape.toReadable(propertyName,
+        property));
   }
 
   private boolean evaluatePlane(ScriptMathProcessor mp, SV[] args, int tok)
       throws ScriptException {
-    if (tok == T.hkl && args.length != 3 
-        || tok == T.intersection && args.length != 2 && args.length != 3 
-        || args.length == 0 || args.length > 4)
+    if (tok == T.hkl && args.length != 3 || tok == T.intersection
+        && args.length != 2 && args.length != 3 || args.length == 0
+        || args.length > 4)
       return false;
     P3 pt1, pt2, pt3;
     P4 plane;
@@ -8143,13 +8287,14 @@ public class ScriptExt implements JmolScriptExtension {
           V3 vAB = new V3();
           V3 vAC = new V3();
           plane = new P4();
-          Measure.getPlaneThroughPoints(pts.get(0), pts.get(1), pts.get(2), vNorm , vAB, vAC, plane);
+          Measure.getPlaneThroughPoints(pts.get(0), pts.get(1), pts.get(2),
+              vNorm, vAB, vAC, plane);
           return mp.addXPt4(plane);
         }
       }
       Object pt = Escape.uP(SV.sValue(args[0]));
       if (pt instanceof P4)
-        return mp.addXPt4((P4)pt);
+        return mp.addXPt4((P4) pt);
       return mp.addXStr("" + pt);
     case 2:
       if (tok == T.intersection) {
@@ -8172,7 +8317,8 @@ public class ScriptExt implements JmolScriptExtension {
         pt2 = mp.ptValue(args[0], false);
         if (pt2 == null)
           return mp.addXStr("");
-        return mp.addXPt(Measure.getIntersection(pt2, null, plane, pt3, norm, vTemp));
+        return mp.addXPt(Measure.getIntersection(pt2, null, plane, pt3, norm,
+            vTemp));
       }
       //$FALL-THROUGH$
     case 3:
@@ -8180,9 +8326,8 @@ public class ScriptExt implements JmolScriptExtension {
       switch (tok) {
       case T.hkl:
         // hkl(i,j,k)
-        return mp.addXPt4(eval.getHklPlane(P3.new3(
-            SV.fValue(args[0]), SV.fValue(args[1]),
-            SV.fValue(args[2]))));
+        return mp.addXPt4(eval.getHklPlane(P3.new3(SV.fValue(args[0]),
+            SV.fValue(args[1]), SV.fValue(args[2]))));
       case T.intersection:
         pt1 = mp.ptValue(args[0], false);
         pt2 = mp.ptValue(args[1], false);
@@ -8195,7 +8340,8 @@ public class ScriptExt implements JmolScriptExtension {
           pt3 = new P3();
           norm = new V3();
           vTemp = new V3();
-          pt1 = Measure.getIntersection(pt1, vLine, (P4) args[2].value, pt3, norm, vTemp);
+          pt1 = Measure.getIntersection(pt1, vLine, (P4) args[2].value, pt3,
+              norm, vTemp);
           if (pt1 == null)
             return mp.addXStr("");
           return mp.addXPt(pt1);
@@ -8213,9 +8359,9 @@ public class ScriptExt implements JmolScriptExtension {
       case T.decimal:
         if (args.length == 3) {
           // plane(r theta phi)
-          float r = SV.fValue(args[0]); 
-          float theta = SV.fValue(args[1]);  // longitude, azimuthal, in xy plane
-          float phi = SV.fValue(args[2]);    // 90 - latitude, polar, from z
+          float r = SV.fValue(args[0]);
+          float theta = SV.fValue(args[1]); // longitude, azimuthal, in xy plane
+          float phi = SV.fValue(args[2]); // 90 - latitude, polar, from z
           // rotate {0 0 r} about y axis need to stay in the x-z plane
           norm = V3.new3(0, 0, 1);
           pt2 = P3.new3(0, 1, 0);
@@ -8229,7 +8375,7 @@ public class ScriptExt implements JmolScriptExtension {
           pt2.scale(r);
           plane = new P4();
           Measure.getPlaneThroughPoint(pt2, norm, plane);
-          return mp.addXPt4(plane);          
+          return mp.addXPt4(plane);
         }
         break;
       case T.bitset:
@@ -8239,9 +8385,8 @@ public class ScriptExt implements JmolScriptExtension {
         if (pt2 == null)
           return false;
         pt3 = (args.length > 2
-            && (args[2].tok == T.bitset || args[2].tok == T.point3f) ? mp.ptValue(
-            args[2], false)
-            : null);
+            && (args[2].tok == T.bitset || args[2].tok == T.point3f) ? mp
+            .ptValue(args[2], false) : null);
         norm = V3.newV(pt2);
         if (pt3 == null) {
           plane = new P4();
@@ -8265,7 +8410,8 @@ public class ScriptExt implements JmolScriptExtension {
         V3 vAB = new V3();
         V3 vAC = new V3();
         float nd = Measure.getDirectedNormalThroughPoints(pt1, pt2, pt3,
-            (args.length == 4 ? mp.ptValue(args[3], true) : null), norm, vAB, vAC);
+            (args.length == 4 ? mp.ptValue(args[3], true) : null), norm, vAB,
+            vAC);
         return mp.addXPt4(P4.new4(norm.x, norm.y, norm.z, nd));
       }
     }
@@ -8293,9 +8439,11 @@ public class ScriptExt implements JmolScriptExtension {
         return mp.addXPt((P3) pt);
       return mp.addXStr("" + pt);
     case 3:
-      return mp.addXPt(P3.new3(args[0].asFloat(), args[1].asFloat(), args[2].asFloat()));
+      return mp.addXPt(P3.new3(args[0].asFloat(), args[1].asFloat(),
+          args[2].asFloat()));
     case 4:
-      return mp.addXPt4(P4.new4(args[0].asFloat(), args[1].asFloat(), args[2].asFloat(), args[3].asFloat()));
+      return mp.addXPt4(P4.new4(args[0].asFloat(), args[1].asFloat(),
+          args[2].asFloat(), args[3].asFloat()));
     }
     return false;
   }
@@ -8309,15 +8457,19 @@ public class ScriptExt implements JmolScriptExtension {
     if (args.length != 1 && args.length != 2 && args.length != 3)
       return false;
     String label = SV.sValue(args[0]);
-    String[] buttonArray = (args.length > 1 && args[1].tok == T.varray ?
-        SV.listValue(args[1]) : null);
-    boolean asButtons = (buttonArray != null || args.length == 1 || args.length == 3 && args[2].asBoolean());
-    String input = (buttonArray != null ? null : args.length >= 2 ? SV.sValue(args[1]) : "OK");
+    String[] buttonArray = (args.length > 1 && args[1].tok == T.varray ? SV
+        .listValue(args[1]) : null);
+    boolean asButtons = (buttonArray != null || args.length == 1 || args.length == 3
+        && args[2].asBoolean());
+    String input = (buttonArray != null ? null : args.length >= 2 ? SV
+        .sValue(args[1]) : "OK");
     String s = "" + viewer.prompt(label, input, buttonArray, asButtons);
-    return (asButtons && buttonArray != null ? mp.addXInt(Integer.parseInt(s) + 1) : mp.addXStr(s));
+    return (asButtons && buttonArray != null ? mp
+        .addXInt(Integer.parseInt(s) + 1) : mp.addXStr(s));
   }
 
-  private boolean evaluateReplace(ScriptMathProcessor mp, SV[] args) throws ScriptException {
+  private boolean evaluateReplace(ScriptMathProcessor mp, SV[] args)
+      throws ScriptException {
     if (args.length != 2)
       return false;
     SV x = mp.getX();
@@ -8341,11 +8493,10 @@ public class ScriptExt implements JmolScriptExtension {
       mp.addXVar(x);
       return evaluateList(mp, tok, args);
     }
-    String s = (tok == T.split && x.tok == T.bitset
-        || tok == T.trim && x.tok == T.varray ? null : SV
-        .sValue(x));
-    String sArg = (args.length == 1 ? SV.sValue(args[0])
-        : tok == T.trim ? "" : "\n");
+    String s = (tok == T.split && x.tok == T.bitset || tok == T.trim
+        && x.tok == T.varray ? null : SV.sValue(x));
+    String sArg = (args.length == 1 ? SV.sValue(args[0]) : tok == T.trim ? ""
+        : "\n");
     switch (tok) {
     case T.split:
       if (x.tok == T.bitset) {
@@ -8367,7 +8518,7 @@ public class ScriptExt implements JmolScriptExtension {
       return mp.addXStr(PT.rep(s, "\n", sArg));
     case T.trim:
       if (s != null)
-        return mp.addXStr(PT.trim(s, sArg));      
+        return mp.addXStr(PT.trim(s, sArg));
       String[] list = SV.listValue(x);
       for (int i = list.length; --i >= 0;)
         list[i] = PT.trim(list[i], sArg);
@@ -8377,14 +8528,8 @@ public class ScriptExt implements JmolScriptExtension {
   }
 
   /**
-   * array.add(x)
-   * array.add(sep, x)
-   * array.sub(x)
-   * array.mul(x)
-   * array.mul3(x)
-   * array.div(x)
-   * array.push()
-   * array.pop()
+   * array.add(x) array.add(sep, x) array.sub(x) array.mul(x) array.mul3(x)
+   * array.div(x) array.push() array.pop()
    * 
    * @param mp
    * @param tok
@@ -8392,8 +8537,7 @@ public class ScriptExt implements JmolScriptExtension {
    * @return T/F
    * @throws ScriptException
    */
-  private boolean evaluateList(ScriptMathProcessor mp, 
-                               int tok, SV[] args)
+  private boolean evaluateList(ScriptMathProcessor mp, int tok, SV[] args)
       throws ScriptException {
     int len = args.length;
     SV x1 = mp.getX();
@@ -8579,8 +8723,8 @@ public class ScriptExt implements JmolScriptExtension {
 
   }
 
-  private boolean evaluateArray(ScriptMathProcessor mp, 
-                                SV[] args, boolean allowMatrix) {
+  private boolean evaluateArray(ScriptMathProcessor mp, SV[] args,
+                                boolean allowMatrix) {
     int len = args.length;
     if (allowMatrix && (len == 4 || len == 3)) {
       boolean isMatrix = true;
@@ -8687,7 +8831,8 @@ public class ScriptExt implements JmolScriptExtension {
       break;
     case 2:
       if (tok == T.quaternion) {
-        if (args[0].tok == T.varray && (args[1].tok == T.varray || args[1].tok == T.on))
+        if (args[0].tok == T.varray
+            && (args[1].tok == T.varray || args[1].tok == T.on))
           break;
         if (args[0].tok == T.bitset
             && (args[1].tok == T.integer || args[1].tok == T.bitset))
@@ -8751,7 +8896,7 @@ public class ScriptExt implements JmolScriptExtension {
           qs = Quaternion.div(data2, data1, nMax, isRelative);
           break;
         }
-        if (args[0].tok == T.varray  && args[1].tok == T.on) {
+        if (args[0].tok == T.varray && args[1].tok == T.on) {
           Quaternion[] data1 = getQuaternionArray(args[0].getList(), T.list);
           float[] stddev = new float[1];
           Quaternion.sphereMean(data1, stddev, 0.0001f);
@@ -8813,8 +8958,7 @@ public class ScriptExt implements JmolScriptExtension {
     if (args.length > 2)
       return false;
     float lower = (args.length < 2 ? 0 : SV.fValue(args[0]));
-    float range = (args.length == 0 ? 1 : SV
-        .fValue(args[args.length - 1]));
+    float range = (args.length == 0 ? 1 : SV.fValue(args[args.length - 1]));
     range -= lower;
     return mp.addXFloat((float) (Math.random() * range) + lower);
   }
@@ -8832,7 +8976,8 @@ public class ScriptExt implements JmolScriptExtension {
     return mp.addXPt(P3.newP(a));
   }
 
-  private boolean evaluateLoad(ScriptMathProcessor mp, SV[] args, int tok) throws ScriptException {
+  private boolean evaluateLoad(ScriptMathProcessor mp, SV[] args, int tok)
+      throws ScriptException {
     if (args.length > 2 || args.length < 1)
       return false;
     String file = SV.sValue(args[0]);
@@ -8853,7 +8998,8 @@ public class ScriptExt implements JmolScriptExtension {
         false, false, true) : viewer.getFilePath(file, false));
   }
 
-  private boolean evaluateWrite(ScriptMathProcessor mp, SV[] args) throws ScriptException {
+  private boolean evaluateWrite(ScriptMathProcessor mp, SV[] args)
+      throws ScriptException {
     if (args.length == 0)
       return false;
     return mp.addXStr(write(args));
@@ -8907,8 +9053,8 @@ public class ScriptExt implements JmolScriptExtension {
       int iField = args[1].asInt();
       int nBytes = args[2].asInt();
       int firstLine = args[3].asInt();
-      float[] f = Parser.parseFloatArrayFromMatchAndField(selected, null, 0,
-          0, null, iField, nBytes, null, firstLine);
+      float[] f = Parser.parseFloatArrayFromMatchAndField(selected, null, 0, 0,
+          null, iField, nBytes, null, firstLine);
       return mp.addXStr(Escape.escapeFloatA(f, false));
     }
 
@@ -8984,7 +9130,8 @@ public class ScriptExt implements JmolScriptExtension {
         asArray));
   }
 
-  private boolean evaluateWithin(ScriptMathProcessor mp, SV[] args) throws ScriptException {
+  private boolean evaluateWithin(ScriptMathProcessor mp, SV[] args)
+      throws ScriptException {
     if (args.length < 1 || args.length > 5)
       return false;
     int i = args.length;
@@ -9009,8 +9156,9 @@ public class ScriptExt implements JmolScriptExtension {
       if (i != 3 || !(args[1].value instanceof BS)
           || !(args[2].value instanceof BS))
         return false;
-      return mp.addXBs(viewer.getBranchBitSet(((BS) args[2].value)
-          .nextSetBit(0), ((BS) args[1].value).nextSetBit(0), true));
+      return mp.addXBs(viewer.getBranchBitSet(
+          ((BS) args[2].value).nextSetBit(0),
+          ((BS) args[1].value).nextSetBit(0), true));
     case T.smiles:
     case T.substructure: // same as "SMILES"
     case T.search:
@@ -9097,8 +9245,8 @@ public class ScriptExt implements JmolScriptExtension {
       case T.atomtype:
       case T.basepair:
       case T.sequence:
-        return mp.addXBs(viewer.getAtomBits(tok, SV
-            .sValue(args[args.length - 1])));
+        return mp.addXBs(viewer.getAtomBits(tok,
+            SV.sValue(args[args.length - 1])));
       }
       break;
     case 3:
@@ -9166,6 +9314,7 @@ public class ScriptExt implements JmolScriptExtension {
       return viewer.getAtomsNearPt(distance, (P3) data[2]);
     return new BS();
   }
+
   private boolean evaluateColor(ScriptMathProcessor mp, SV[] args) {
     // color("hsl", {r g b})         # r g b in 0 to 255 scale 
     // color("rwb")                  # "" for most recently used scheme for coloring by property
@@ -9173,26 +9322,23 @@ public class ScriptExt implements JmolScriptExtension {
     // color("rwb", min, max, value) # returns color
     // color("$isosurfaceId")        # info for a given isosurface
     // color("$isosurfaceId", value) # color for a given mapped isosurface value
-    
-    String colorScheme = (args.length > 0 ? SV.sValue(args[0])
-        : "");
+
+    String colorScheme = (args.length > 0 ? SV.sValue(args[0]) : "");
     if (colorScheme.equalsIgnoreCase("hsl") && args.length == 2) {
       P3 pt = P3.newP(SV.ptValue(args[1]));
       float[] hsl = new float[3];
       ColorEncoder.RGBtoHSL(pt.x, pt.y, pt.z, hsl);
-      pt.set(hsl[0]*360, hsl[1]*100, hsl[2]*100);
+      pt.set(hsl[0] * 360, hsl[1] * 100, hsl[2] * 100);
       return mp.addXPt(pt);
     }
     boolean isIsosurface = colorScheme.startsWith("$");
-    ColorEncoder ce = (isIsosurface ? null : viewer.getColorEncoder(colorScheme));
+    ColorEncoder ce = (isIsosurface ? null : viewer
+        .getColorEncoder(colorScheme));
     if (!isIsosurface && ce == null)
       return mp.addXStr("");
-    float lo = (args.length > 1 ? SV.fValue(args[1])
-        : Float.MAX_VALUE);
-    float hi = (args.length > 2 ? SV.fValue(args[2])
-        : Float.MAX_VALUE);
-    float value = (args.length > 3 ? SV.fValue(args[3])
-        : Float.MAX_VALUE);
+    float lo = (args.length > 1 ? SV.fValue(args[1]) : Float.MAX_VALUE);
+    float hi = (args.length > 2 ? SV.fValue(args[2]) : Float.MAX_VALUE);
+    float value = (args.length > 3 ? SV.fValue(args[3]) : Float.MAX_VALUE);
     boolean getValue = (value != Float.MAX_VALUE || lo != Float.MAX_VALUE
         && hi == Float.MAX_VALUE);
     boolean haveRange = (hi != Float.MAX_VALUE);
@@ -9205,8 +9351,9 @@ public class ScriptExt implements JmolScriptExtension {
     if (isIsosurface) {
       // isosurface color scheme      
       String id = colorScheme.substring(1);
-      Object[] data = new Object[] { id, null};
-      if (!viewer.getShapePropertyData(JC.SHAPE_ISOSURFACE, "colorEncoder", data))
+      Object[] data = new Object[] { id, null };
+      if (!viewer.getShapePropertyData(JC.SHAPE_ISOSURFACE, "colorEncoder",
+          data))
         return mp.addXStr("");
       ce = (ColorEncoder) data[1];
     } else {
@@ -9214,8 +9361,8 @@ public class ScriptExt implements JmolScriptExtension {
     }
     Map<String, Object> key = ce.getColorKey();
     if (getValue)
-      return mp.addXPt(CU.colorPtFromInt2(ce
-          .getArgb(hi == Float.MAX_VALUE ? lo : value)));
+      return mp.addXPt(CU.colorPtFromInt2(ce.getArgb(hi == Float.MAX_VALUE ? lo
+          : value)));
     return mp.addXVar(SV.getVariableMap(key));
   }
 
@@ -9303,18 +9450,18 @@ public class ScriptExt implements JmolScriptExtension {
       atoms2 = atoms1;
     if (atoms2 != null) {
       BS bsBonds = new BS();
-      viewer
-          .makeConnections(fmin, fmax, order,
-              T.identify, atoms1, atoms2, bsBonds,
-              isBonds, false, 0);
-      return mp.addXVar(SV.newV(T.bitset, new BondSet(bsBonds, viewer
-          .getAtomIndices(viewer.getAtomBits(T.bonds, bsBonds)))));
+      viewer.makeConnections(fmin, fmax, order, T.identify, atoms1, atoms2,
+          bsBonds, isBonds, false, 0);
+      return mp.addXVar(SV.newV(
+          T.bitset,
+          new BondSet(bsBonds, viewer.getAtomIndices(viewer.getAtomBits(
+              T.bonds, bsBonds)))));
     }
     return mp.addXBs(viewer.getAtomsConnected(min, max, order, atoms1));
   }
 
-  private boolean evaluateSubstructure(ScriptMathProcessor mp, SV[] args, int tok)
-      throws ScriptException {
+  private boolean evaluateSubstructure(ScriptMathProcessor mp, SV[] args,
+                                       int tok) throws ScriptException {
     // select substucture(....) legacy - was same as smiles(), now search()
     // select smiles(...)
     // select search(...)  now same as substructure
@@ -9325,8 +9472,7 @@ public class ScriptExt implements JmolScriptExtension {
     if (pattern.length() > 0)
       try {
         BS bsSelected = (args.length == 2 && args[1].tok == T.bitset ? SV
-            .bsSelectVar(args[1])
-            : null);
+            .bsSelectVar(args[1]) : null);
         bs = viewer.getSmilesMatcher().getSubstructureSet(pattern,
             viewer.getModelSet().atoms, viewer.getAtomCount(), bsSelected,
             tok != T.smiles, false);
@@ -9646,12 +9792,12 @@ public class ScriptExt implements JmolScriptExtension {
     params.put("type", "GIF");
     params.put("fileName", fileName);
     params.put("quality", Integer.valueOf(-1));
-    params.put("endTime", Long.valueOf(System.currentTimeMillis() + (long)(endTime * 1000)));
+    params.put("endTime",
+        Long.valueOf(System.currentTimeMillis() + (long) (endTime * 1000)));
     params.put("captureMode", Integer.valueOf(mode));
     params.put("captureLooping", looping ? Boolean.TRUE : Boolean.FALSE);
     String msg = viewer.processWriteOrCapture(params);
     Logger.info(msg);
   }
-
 
 }

@@ -49,5 +49,7 @@ public interface JmolScriptManager {
 
   void openFileAsync(String fileName, int flags);
 
+  String evalFile(String strFilename);
+
 }
 

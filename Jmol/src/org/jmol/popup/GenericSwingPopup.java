@@ -215,6 +215,10 @@ public abstract class GenericSwingPopup implements GenericMenuInterface {
   
   @Override
   public void menuClickCallback(SC source, String script) {
+    processClickCallback(source, script);
+  }
+
+  protected void processClickCallback(SC source, String script) {
     appRestorePopupMenu();
     if (script == null || script.length() == 0)
       return;
@@ -229,7 +233,7 @@ public abstract class GenericSwingPopup implements GenericMenuInterface {
     }
     appRunScript(script);
   }
-
+  
   @Override
   public void menuCheckBoxCallback(SC source) {
     appRestorePopupMenu();

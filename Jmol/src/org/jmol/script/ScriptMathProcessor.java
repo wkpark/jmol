@@ -506,13 +506,24 @@ public class ScriptMathProcessor {
       break;
     }
 
-    // do we need to operate?
-
-    while (oPt >= 0
+    // Q: Do we need to operate?
+    // A: Well, we must have an operator...
+    while (oPt >= 0 
+        // ...and that operator is not :, 
+        //    because that's part of an array definition
         && tok0 != T.colon
+        // ...and we do not have x( or x[ or func(....
+        //   because the function must come first
+        //   unless we have x.y.z( or x.y.z[
+        //   in which case we DO need to do that selector first
         && (!isLeftOp || tok0 == T.propselector
             && (op.tok == T.propselector || op.tok == T.leftsquare))
-        && T.getPrecedence(tok0) >= T.getPrecedence(op.tok)) {
+        // ...and previous operator has equal or higher precedence
+        && T.getPrecedence(tok0) >= T.getPrecedence(op.tok)
+        // ...and this is not x - - y, because unary minus operates from
+        //   right to left.
+        && (tok0 != T.unaryMinus || op.tok != T.unaryMinus) 
+      ) {
 
       if (debugHigh) {
         Logger.debug("\noperating, oPt=" + oPt + " isLeftOp=" + isLeftOp
@@ -529,14 +540,18 @@ public class ScriptMathProcessor {
         break;
       }
       if (op.tok == T.rightsquare && tok0 == T.array) {
+        // we are done; just leave the array on the stack
         break;
       }
       if (op.tok == T.rightsquare && tok0 == T.leftsquare) {
+        // this must be a selector
         if (isArrayItem && squareCount == 1 && equalCount == 0) {
+          // x[3] = .... ; add a special flag for this, 
+          // waiting until the very end to apply it.
           addXVar(SV.newT(T.tokenArraySelector));
           break;
         }
-        if (!doBitsetSelect())
+        if (!doSelection())
           return false;
         break;
       }
@@ -550,8 +565,10 @@ public class ScriptMathProcessor {
 
     // now add a marker on the xStack if necessary
 
-    if (newOp != null)
+    if (newOp != null) {
+      wasX = false;
       addXVar(SV.newV(T.opEQ, newOp));
+    }
 
     // fix up counts and operand flag
     // right ) and ] are not added to the stack
@@ -669,7 +686,7 @@ public class ScriptMathProcessor {
     return true;
   }
 
-  private boolean doBitsetSelect() {
+  private boolean doSelection() {
     if (xPt < 0 || xPt == 0 && !isArrayItem) {
       return false;
     }

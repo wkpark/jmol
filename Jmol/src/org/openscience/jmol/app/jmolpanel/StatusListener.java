@@ -115,7 +115,6 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
   }
 
   @Override
-  @SuppressWarnings("incomplete-switch")
   public void notifyCallback(EnumCallback type, Object[] data) {
     String strInfo = (data == null || data[1] == null ? null : data[1]
         .toString());
@@ -190,7 +189,11 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
     case HOVER:
     case MINIMIZATION:
     case RESIZE:
-      // applet only (but you could change this for your listener)
+    case EVAL:
+    case ATOMMOVED:
+    case CLICK:
+    case APPLETREADY:
+      // see above -- not implemented in Jmol.jar
       return;
     }
     // cases that fail to return are sent to the console for processing
@@ -213,7 +216,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
       switch (mode) {
       case -1: // assign atom
       case -2: // assign bond
-      case -3: // 
+      case -3: // connect atoms
       case -4: // delete atoms
       case -5: // delete models
         checkJSpecView(false);

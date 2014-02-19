@@ -306,6 +306,17 @@ public class ScriptManager implements JmolScriptManager {
     }
   }
 
+  @Override
+  public String evalFile(String strFilename) {
+    // app -s flag
+    int ptWait = strFilename.indexOf(" -noqueue"); // for TestScripts.java
+    if (ptWait >= 0) {
+      return (String) evalStringWaitStatusQueued("String", strFilename
+          .substring(0, ptWait), "", true, false, false);
+    }
+    return addScript(strFilename, true, false);
+  }
+
   private int scriptIndex;
   private boolean isScriptQueued = true;
 
@@ -353,7 +364,7 @@ public class ScriptManager implements JmolScriptManager {
       viewer.scriptStatus(strErrorMessage);
       viewer.setScriptStatus("Jmol script terminated", strErrorMessage, 1,
           strErrorMessageUntranslated);
-      viewer.setStateScriptVersion(null); // set by compiler
+      setStateScriptVersion(viewer, null); // set by compiler
     }
     if (strErrorMessage != null && viewer.autoExit)
       viewer.exitJmol();
@@ -603,6 +614,31 @@ public class ScriptManager implements JmolScriptManager {
     Object t = viewer.fileManager.getBufferedInputStreamOrErrorMessageFromName(
         fileName, fileName, false, false, null, false);
     return JmolBinary.getZipDirectoryAsStringAndClose((BufferedInputStream) t);
+  }
+
+  public static void setStateScriptVersion(Viewer viewer, String version) {
+    if (version != null) {
+      String[] tokens = PT.getTokens(version.replace('.', ' ').replace('_',
+          ' '));
+      try {
+        int main = PT.parseInt(tokens[0]); //11
+        int sub = PT.parseInt(tokens[1]); //9
+        int minor = PT.parseInt(tokens[2]); //24
+        if (minor == Integer.MIN_VALUE) // RCxxx
+          minor = 0;
+        if (main != Integer.MIN_VALUE && sub != Integer.MIN_VALUE) {
+          int ver = viewer.stateScriptVersionInt = main * 10000 + sub * 100 + minor;
+          // here's why:
+          viewer.global.legacyAutoBonding = (ver < 110924);
+          viewer.global.legacyHAddition = (ver < 130117);
+          return;
+        }
+      } catch (Exception e) {
+        // ignore
+      }
+    }
+    viewer.setBooleanProperty("legacyautobonding", false);
+    viewer.stateScriptVersionInt = Integer.MAX_VALUE;
   }
 
 }

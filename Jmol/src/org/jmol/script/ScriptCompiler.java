@@ -259,7 +259,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     if (isStateScript) {
       ptSemi = script.indexOf(";", ichToken);
       if (ptSemi >= ichToken)
-        viewer.setStateScriptVersion(script.substring(
+        ScriptManager.setStateScriptVersion(viewer, script.substring(
             ichToken + JC.STATE_VERSION_STAMP.length(), ptSemi).trim());
     }
     cchScript = script.length();

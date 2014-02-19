@@ -601,10 +601,10 @@ public class StatusManager {
           new Object[] { null, script, appletName, Integer.valueOf(port) });
   }
  
-  void modifySend(int atomIndex, int modelIndex, int mode) {
+  public void modifySend(int atomIndex, int modelIndex, int mode, String msg) {
     if (notifyEnabled(EnumCallback.STRUCTUREMODIFIED))
       jmolCallbackListener.notifyCallback(EnumCallback.STRUCTUREMODIFIED,
-          new Object[] { null, Integer.valueOf(mode), Integer.valueOf(atomIndex), Integer.valueOf(modelIndex) });
+          new Object[] { null, Integer.valueOf(mode), Integer.valueOf(atomIndex), Integer.valueOf(modelIndex), msg });
   }
   
   public int getSyncMode() {

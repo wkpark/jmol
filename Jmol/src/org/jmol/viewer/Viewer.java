@@ -125,7 +125,6 @@ import org.jmol.util.TempArray;
 import org.jmol.util.Txt;
 import org.jmol.viewer.binding.Binding;
 
-import javajs.util.AU;
 import javajs.util.List;
 import javajs.util.SB;
 
@@ -2958,7 +2957,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         .getOptionInterface("smiles.SmilesMatcher")) : smilesMatcher);
   }
 
-  private void clearModelDependentObjects() {
+  public void clearModelDependentObjects() {
     setFrameOffsets(null);
     stopMinimization();
     minimizer = null;
@@ -4520,15 +4519,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   @Override
   public String evalFile(String strFilename) {
-    // app -s flag
-    if (!allowScripting)
-      return null;
-    int ptWait = strFilename.indexOf(" -noqueue"); // for TestScripts.java
-    if (ptWait >= 0) {
-      return (String) evalStringWaitStatusQueued("String", strFilename
-          .substring(0, ptWait), "", true, false, false);
-    }
-    return getScriptManager().addScript(strFilename, true, false);
+    return (allowScripting && getScriptManager() != null ? scriptManager
+        .evalFile(strFilename) : null);
   }
 
   public String getInsertedCommand() {
@@ -5168,6 +5160,10 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   int prevFrame = Integer.MIN_VALUE;
 
+  /**
+   * @param isVib 
+   * @param doNotify  ignored; not implemented  
+   */
   void setStatusFrameChanged(boolean isVib, boolean doNotify) {
     if (isVib) {
       // force reset (reading vibrations)
@@ -7715,7 +7711,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public boolean getShowFrank() {
     if (isPreviewOnly || isApplet && creatingImage)
       return false;
-    return (!isJS && isSignedApplet && !isSignedAppletLocal || frankOn);
+    // Java remote signed applet only?
+    return (isSignedApplet && !isSignedAppletLocal && !isJS || frankOn);
   }
 
   @Override
@@ -8512,7 +8509,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   private int rotateBondIndex = -1;
 
-  void setRotateBondIndex(int index) {
+  public void setRotateBondIndex(int index) {
     boolean haveBond = (rotateBondIndex >= 0);
     if (!haveBond && index < 0)
       return;
@@ -8981,7 +8978,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     }
   }
 
-
   public String getDefaultVdwNameOrData(int mode, EnumVdw type, BS bs) {
     // called by getDataState and via Viewer: Eval.calculate,
     // Eval.show, StateManager.getLoadState, Viewer.setDefaultVdw
@@ -9011,17 +9007,17 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     clearModelDependentObjects();
     if (!fullModels) {
       statusManager.modifySend(atomIndex, modelSet.atoms[atomIndex].modelIndex,
-          4);
+          4, "deleting atom " + getAtomName(atomIndex));
       modelSet.deleteAtoms(bs);
       int n = selectionManager.deleteAtoms(bs);
       setTainted(true);
       statusManager.modifySend(atomIndex, modelSet.atoms[atomIndex].modelIndex,
-          -4);
+          -4, "OK");
       return n;
     }
     // fileManager.addLoadScript("zap " + Escape.escape(bs));
     int modelIndex = modelSet.atoms[atomIndex].modelIndex;
-    statusManager.modifySend(-1, modelIndex, 5);
+    statusManager.modifySend(-1, modelIndex, 5, "deleting model " + getModelNumberDotted(modelIndex));
     setCurrentModelIndexClear(0, false);
     animationManager.setAnimationOn(false);
     BS bsD0 = BSUtil.copy(getDeletedAtoms());
@@ -9039,20 +9035,26 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     refreshMeasures(true);
     if (bsD0 != null)
       bsDeleted.andNot(bsD0);
-    statusManager.modifySend(-1, modelIndex, -5);
+    statusManager.modifySend(-1, modelIndex, -5, "OK");
     return BSUtil.cardinalityOf(bsDeleted);
   }
 
   public void deleteBonds(BS bsDeleted) {
+    int modelIndex = modelSet.getBondModelIndex(bsDeleted.nextSetBit(0));
+    statusManager.modifySend(-1, modelIndex, 2, "delete bonds " + Escape.eBond(bsDeleted));
     modelSet.deleteBonds(bsDeleted, false);
+    statusManager.modifySend(-1, modelIndex, -2, "OK");
   }
 
   public void deleteModelAtoms(int firstAtomIndex, int nAtoms, BS bsDeleted) {
     // called from ModelCollection.deleteModel
+    int modelIndex = getAtomModelIndex(firstAtomIndex);
+    statusManager.modifySend(-1, modelIndex, 1, "delete atoms " + Escape.eBS(bsDeleted));
     selectionManager.deleteModelAtoms(bsDeleted);
     BSUtil.deleteBits(getFrameOffsets(), bsDeleted);
     setFrameOffsets(getFrameOffsets());
     getDataManager().deleteModelAtoms(firstAtomIndex, nAtoms, bsDeleted);
+    statusManager.modifySend(-1, modelIndex, -1, "OK");
   }
 
   public BS getDeletedAtoms() {
@@ -9644,67 +9646,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     getStateCreator().undoMoveActionClear(taintedAtom, type, clearRedo);
   }
 
-  public void assignBond(int bondIndex, char type) {
-    try {
-      BS bsAtoms = modelSet.setBondOrder(bondIndex, type);
-      if (bsAtoms == null || type == '0')
-        refresh(3, "setBondOrder");
-      else
-        addHydrogens(bsAtoms, false, true);
-    } catch (Exception e) {
-      Logger.error("assignBond failed");
-    }
-  }
-
-  public void assignAtom(int atomIndex, P3 pt, String type) {
-    if (type.equals("X"))
-      setRotateBondIndex(-1);
-    if (modelSet.atoms[atomIndex].modelIndex != modelSet.modelCount - 1)
-      return;
-    clearModelDependentObjects();
-    int atomCount = modelSet.getAtomCount();
-    if (pt == null) {
-      statusManager.modifySend(atomIndex, modelSet.atoms[atomIndex].modelIndex,
-          1);
-      modelSet.assignAtom(atomIndex, type, true);
-      if (!PT.isOneOf(type, ";Mi;Pl;X;"))
-        modelSet.setAtomNamesAndNumbers(atomIndex, -atomCount, null);
-      statusManager.modifySend(atomIndex, modelSet.atoms[atomIndex].modelIndex,
-          -1);
-      refresh(3, "assignAtom");
-      return;
-    }
-    Atom atom = modelSet.atoms[atomIndex];
-    BS bs = BSUtil.newAndSetBit(atomIndex);
-    P3[] pts = new P3[] { pt };
-    List<Atom> vConnections = new List<Atom>();
-    vConnections.addLast(atom);
-    int modelIndex = atom.modelIndex;
-    statusManager.modifySend(atomIndex, modelIndex, 3);
-    try {
-      bs = addHydrogensInline(bs, vConnections, pts);
-      atomIndex = bs.nextSetBit(0);
-      modelSet.assignAtom(atomIndex, type, false);
-    } catch (Exception e) {
-      //
-    }
-    modelSet.setAtomNamesAndNumbers(atomIndex, -atomCount, null);
-    statusManager.modifySend(atomIndex, modelIndex, -3);
-  }
-
-  public void assignConnect(int index, int index2) {
-    clearModelDependentObjects();
-    float[][] connections = AU.newFloat2(1);
-    connections[0] = new float[] { index, index2 };
-    int modelIndex = modelSet.atoms[index].modelIndex;
-    statusManager.modifySend(index, modelIndex, 2);
-    modelSet.connect(connections);
-    modelSet.assignAtom(index, ".", true);
-    modelSet.assignAtom(index2, ".", true);
-    statusManager.modifySend(index, modelIndex, -2);
-    refresh(3, "assignConnect");
-  }
-
   protected void moveAtomWithHydrogens(int atomIndex, int deltaX, int deltaY,
                                        int deltaZ, BS bsAtoms) {
     // called by actionManager
@@ -9817,32 +9758,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return modelSet.getModelAtomProperty(atom, text);
   }
 
-  private int stateScriptVersionInt;
-
-  public void setStateScriptVersion(String version) {
-    if (version != null) {
-      String[] tokens = PT.getTokens(version.replace('.', ' ').replace('_',
-          ' '));
-      try {
-        int main = PT.parseInt(tokens[0]); //11
-        int sub = PT.parseInt(tokens[1]); //9
-        int minor = PT.parseInt(tokens[2]); //24
-        if (minor == Integer.MIN_VALUE) // RCxxx
-          minor = 0;
-        if (main != Integer.MIN_VALUE && sub != Integer.MIN_VALUE) {
-          stateScriptVersionInt = main * 10000 + sub * 100 + minor;
-          // here's why:
-          global.legacyAutoBonding = (stateScriptVersionInt < 110924);
-          global.legacyHAddition = (stateScriptVersionInt < 130117);
-          return;
-        }
-      } catch (Exception e) {
-        // ignore
-      }
-    }
-    setBooleanProperty("legacyautobonding", false);
-    stateScriptVersionInt = Integer.MAX_VALUE;
-  }
+  public int stateScriptVersionInt;
 
   private JmolRendererInterface jsExporter3D;
 
@@ -10178,7 +10094,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return bsB;
   }
 
-  private BS addHydrogensInline(BS bsAtoms, List<Atom> vConnections,
+  public BS addHydrogensInline(BS bsAtoms, List<Atom> vConnections,
                                 P3[] pts) throws Exception {
     if (getScriptManager() == null)
       return null;

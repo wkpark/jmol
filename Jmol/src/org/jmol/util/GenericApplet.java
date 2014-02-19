@@ -570,7 +570,6 @@ public abstract class GenericApplet implements JmolAppletInterface,
     case ERROR:
     case EVAL:
     case LOADSTRUCT:
-    case STRUCTUREMODIFIED:
     case SCRIPT:
       return !isJNLP;
     case APPLETREADY: // Jmol 12.1.48
@@ -579,13 +578,13 @@ public abstract class GenericApplet implements JmolAppletInterface,
     case HOVER:
     case MINIMIZATION:
     case RESIZE:
+    case STRUCTUREMODIFIED:
       break;
     }
     return (callbacks.get(type) != null);
   }
 
   @Override
-  @SuppressWarnings("incomplete-switch")
   public void notifyCallback(EnumCallback type, Object[] data) {
     String callback = callbacks.get(type);
     boolean doCallback = (callback != null && (data == null || data[0] == null));
@@ -649,6 +648,8 @@ public abstract class GenericApplet implements JmolAppletInterface,
             Integer.valueOf(currentDirection) };
       }
       break;
+    case ATOMMOVED:
+      break;
     case ECHO:
       boolean isPrivate = (data.length == 2);
       boolean isScriptQueued = (isPrivate || ((Integer) data[2]).intValue() == 1);
@@ -711,8 +712,16 @@ public abstract class GenericApplet implements JmolAppletInterface,
       doShowStatus(strInfo);
       break;
     case STRUCTUREMODIFIED:
-      notifyStructureModified(((Integer) data[1]).intValue(),
-          ((Integer) data[2]).intValue());
+//      int mode = ((Integer) data[1]).intValue();
+//      int atomIndex = ((Integer) data[2]).intValue();
+//      int modelIndex = ((Integer) data[3]).intValue();
+//      switch (mode) {
+//      case 1/-1: // assign atom
+//      case 2/-2: // assign bond
+//      case 3/-3: // 
+//      case 4/-4: // delete atoms
+//      case 5/-5: // delete models
+//      }
       break;
     case SYNC:
       sendScript(strInfo, (String) data[2], true, doCallback);
@@ -739,10 +748,6 @@ public abstract class GenericApplet implements JmolAppletInterface,
         }
       haveNotifiedError = true;
     }
-  }
-
-  private void notifyStructureModified(int modelIndex, int mode) {
-    // TODO    
   }
 
   private String sendScript(String script, String appletName, boolean isSync,

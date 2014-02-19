@@ -466,8 +466,8 @@ public class GlobalSettings {
     int smallMoleculeMaxAtoms = 40000;
     boolean smartAromatic = true;
     boolean zeroBasedXyzRasmol = false;
-    boolean legacyAutoBonding = false;
-    boolean legacyHAddition = false;
+    public boolean legacyAutoBonding = false;
+    public boolean legacyHAddition = false;
 
     //centering and perspective
 

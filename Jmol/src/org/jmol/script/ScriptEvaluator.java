@@ -260,7 +260,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     this.listCommands = listCommands;
     startEval();
     this.isCmdLine_C_Option = tempOpen;
-    viewer.setStateScriptVersion(null); // set by compiler
+    ScriptManager.setStateScriptVersion(viewer, null); // set by compiler
   }
 
   public boolean useThreads() {
@@ -5383,9 +5383,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         case T.animation:
           animation();
           break;
-        case T.assign:
-          assign();
-          break;
         case T.background:
           background(1);
           break;
@@ -5615,6 +5612,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         case T.zoomTo:
           zoom(true);
           break;
+        case T.assign:
         case T.calculate:
         case T.capture:
         case T.compare:
@@ -10589,34 +10587,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       return b;
     } catch (Exception e) {
       return null;
-    }
-  }
-
-  private void assign() throws ScriptException {
-    int atomsOrBonds = tokAt(1);
-    int index = atomExpressionAt(2).nextSetBit(0);
-    int index2 = -1;
-    String type = null;
-    if (index < 0)
-      return;
-    if (atomsOrBonds == T.connect) {
-      index2 = atomExpressionAt(++iToken).nextSetBit(0);
-    } else {
-      type = parameterAsString(++iToken);
-    }
-    P3 pt = (++iToken < slen ? centerParameter(iToken) : null);
-    if (chk)
-      return;
-    switch (atomsOrBonds) {
-    case T.atoms:
-      clearDefinedVariableAtomSets();
-      viewer.assignAtom(index, pt, type);
-      break;
-    case T.bonds:
-      viewer.assignBond(index, (type + "p").charAt(0));
-      break;
-    case T.connect:
-      viewer.assignConnect(index, index2);
     }
   }
 

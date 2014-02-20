@@ -111,6 +111,7 @@ public class StateManager {
   protected Map<String, Object> saved = new Hashtable<String, Object>();
   
   private String lastOrientation = "";
+  private String lastContext = "";
   private String lastConnections = "";
   private String lastScene = "";
   private String lastSelected = "";
@@ -123,7 +124,7 @@ public class StateManager {
   }
   
   GlobalSettings getGlobalSettings(GlobalSettings gsOld, boolean clearUserVariables) {
-    saved.clear();
+    //saved.clear();
     return new GlobalSettings(viewer, gsOld, clearUserVariables);
   }
 
@@ -195,16 +196,19 @@ public class StateManager {
 
   private void deleteSavedType(String type) {
     Iterator<String> e = saved.keySet().iterator();
-    while (e.hasNext()) {
-      String name = e.next();
-      if (name.startsWith(type)) {
+    while (e.hasNext())
+      if (e.next().startsWith(type))
         e.remove();
-      }
-    }
   }
 
-  void deleteSaved(String name) {
-    saved.remove(name);
+  void deleteSaved(String namelike) {
+    Iterator<String> e = saved.keySet().iterator();
+    while (e.hasNext()) {
+      String name = e.next();
+      if (name.startsWith(namelike) || name.endsWith("_" + namelike)
+          && name.indexOf("_") == name.lastIndexOf("_" + namelike))
+        e.remove();
+    }
   }
   
   void saveSelection(String saveName, BS bsSelected) {
@@ -364,6 +368,18 @@ public class StateManager {
     return (Orientation) getNoCase(saved, name);
   }
 
+  void saveContext(String saveName, Object context) {
+    if (saveName.equalsIgnoreCase("DELETE")) {
+      deleteSavedType("Context_");
+      return;
+    }
+    saved.put((lastContext = "Context_" + saveName), context);
+  }
+
+  Object getContext(String saveName) {
+    return saved.get(saveName.length() == 0 ? lastContext : "Context_" + saveName);
+  }
+  
   void saveBonds(String saveName) {
     if (saveName.equalsIgnoreCase("DELETE")) {
       deleteSavedType("Bonds_");

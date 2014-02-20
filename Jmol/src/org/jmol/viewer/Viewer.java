@@ -841,6 +841,19 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     stateManager.saveBonds(saveName);
   }
 
+  public ScriptContext saveContext(String saveName) {
+    // from Eval
+    ScriptContext sc = getScriptContext("Context_" + saveName);
+    stateManager.saveContext(saveName, sc);
+    setUserVariable(saveName, SV.newV(T.context, sc));
+    return sc;
+  }
+
+  public ScriptContext getContext(String saveName) {
+    // from Eval
+    return (ScriptContext) stateManager.getContext(saveName);
+  }
+  
   public boolean restoreBonds(String saveName) {
     // from Eval
     clearModelDependentObjects();
@@ -852,8 +865,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     stateManager.saveState(saveName);
   }
 
-  public void deleteSavedState(String saveName) {
-    stateManager.deleteSaved("State_" + saveName);
+  public void deleteSaved(String name) {
+    stateManager.deleteSaved(name);
   }
 
   public String getSavedState(String saveName) {
@@ -3615,13 +3628,13 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return getPropertyManager().getChimeInfo(tok, getSelectedAtoms());
   }
 
-  JmolStateCreator sc;
+  JmolStateCreator jsc;
 
   public JmolStateCreator getStateCreator() {
-    if (sc == null)
-      (sc = (JmolStateCreator) Interface
+    if (jsc == null)
+      (jsc = (JmolStateCreator) Interface
           .getOptionInterface("viewer.StateCreator")).setViewer(this);
-    return sc;
+    return jsc;
   }
 
   public String getWrappedStateScript() {
@@ -9099,7 +9112,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       if (image != null)
         setShapeProperty(JC.SHAPE_ECHO, "image", image);
     }
-    if (sc != null) {
+    if (isJS && sc != null) {
+      // actually, not implemented
       // JavaScript single-threaded resuming of eval.
       sc.mustResumeEval = true;
       eval.resumeEval(sc);
@@ -9985,11 +9999,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       return null;
     jse.pushContextDown("getEvalContextAndHoldQueue");
     ScriptContext sc = jse.getThisContext();
-    ScriptContext sc0 = sc;
-    while (sc0 != null) {
-      sc0.mustResumeEval = true;
-      sc0 = sc0.parentContext;
-    }
+    sc.setMustResume();
     sc.isJSThread = true;
     queueOnHold = true;
     return sc;

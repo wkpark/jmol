@@ -5007,7 +5007,7 @@ public class ScriptExt implements JmolScriptExtension {
           if (msg != null) {
             if (!msg.startsWith("OK"))
               eval.evalError(msg, null);
-            eval.scriptStatusOrBuffer(data);
+            eval.report(data);
           }
           return "";
         } else if (data == "MENU") {
@@ -5124,7 +5124,7 @@ public class ScriptExt implements JmolScriptExtension {
          */
         {
         }
-        eval.scriptStatusOrBuffer((String) bytes);
+        eval.report((String) bytes);
         return (String) bytes;
       }
       if (type.equals("SCENE"))
@@ -5170,7 +5170,7 @@ public class ScriptExt implements JmolScriptExtension {
         {
         }
       }
-      eval.scriptStatusOrBuffer(msg
+      eval.report(msg
           + (isImage ? "; width=" + width + "; height=" + height : ""));
       return msg;
     }
@@ -5433,6 +5433,7 @@ public class ScriptExt implements JmolScriptExtension {
       if (!chk)
         msg = viewer.getSpecularState();
       break;
+    case T.saved:
     case T.save:
       if (!chk)
         msg = viewer.listSavedStates();
@@ -5741,9 +5742,9 @@ public class ScriptExt implements JmolScriptExtension {
     ScriptContext context = eval.thisContext;
     while (context != null) {
       if (withVariables) {
-        if (context.contextVariables != null) {
+        if (context.vars != null) {
           sb.append(getScriptID(context));
-          sb.append(StateManager.getVariableList(context.contextVariables, 80,
+          sb.append(StateManager.getVariableList(context.vars, 80,
               true, false));
         }
       } else {
@@ -5927,7 +5928,7 @@ public class ScriptExt implements JmolScriptExtension {
           return;
         n = viewer.autoHbond(bs1, bs2, false);
         if (n != Integer.MIN_VALUE)
-          eval.scriptStatusOrBuffer(GT.i(GT._("{0} hydrogen bonds"),
+          eval.report(GT.i(GT._("{0} hydrogen bonds"),
               Math.abs(n)));
         return;
       case T.hydrogen:
@@ -10163,7 +10164,7 @@ public class ScriptExt implements JmolScriptExtension {
     boolean report = eval.doReport(); 
     if (isDelete) {
       if (report)
-        eval.scriptStatusOrBuffer(GT.i(GT._("{0} connections deleted"), nModified));
+        eval.report(GT.i(GT._("{0} connections deleted"), nModified));
       return;
     }
     if (isColorOrRadius) {
@@ -10175,7 +10176,7 @@ public class ScriptExt implements JmolScriptExtension {
       viewer.selectBonds(null);
     }
     if (report)
-      eval.scriptStatusOrBuffer(GT.o(GT._("{0} new bonds; {1} modified"),
+      eval.report(GT.o(GT._("{0} new bonds; {1} modified"),
           new Object[] { Integer.valueOf(nNew), Integer.valueOf(nModified) }));
   }
 

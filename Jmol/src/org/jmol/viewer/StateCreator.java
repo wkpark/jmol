@@ -633,7 +633,7 @@ public class StateCreator extends JmolStateCreator {
     boolean isState = (sfunc != null);
     if (isState) {
       sfunc.append("  _setParameterState;\n");
-      commands.append("function _seParameterState() {\n\n");
+      commands.append("function _setParameterState() {\n\n");
     }
     int n = 0;
     //booleans

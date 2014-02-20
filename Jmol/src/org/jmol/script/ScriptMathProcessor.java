@@ -102,14 +102,13 @@ public class ScriptMathProcessor {
   }
 
   @SuppressWarnings("unchecked")
-  SV getResult(boolean allowUnderflow)
-      throws ScriptException {
+  SV getResult(boolean allowUnderflow) throws ScriptException {
     boolean isOK = true;
     while (isOK && oPt >= 0)
       isOK = operate();
     if (isOK) {
       if (asVector) {
-        List<SV> result = new  List<SV>();
+        List<SV> result = new List<SV>();
         for (int i = 0; i <= xPt; i++)
           result.addLast(SV.selectItemVar(xStack[i]));
         return SV.newV(T.vector, result);
@@ -118,16 +117,15 @@ public class ScriptMathProcessor {
         SV x = xStack[0];
         if (chk) {
           if (asBitSet)
-            return SV.newV(T.bitset,  new BS());
+            return SV.newV(T.bitset, new BS());
           return x;
         }
-        if (x.tok == T.bitset || x.tok == T.varray
-            || x.tok == T.string || x.tok == T.matrix3f
-            || x.tok == T.matrix4f)
+        if (x.tok == T.bitset || x.tok == T.varray || x.tok == T.string
+            || x.tok == T.matrix3f || x.tok == T.matrix4f)
           x = SV.selectItemVar(x);
-        if (asBitSet && x.tok == 
-          T.varray)
-          x = SV.newV(T.bitset, SV.unEscapeBitSetArray((List<SV>)x.value, false));
+        if (asBitSet && x.tok == T.varray)
+          x = SV.newV(T.bitset,
+              SV.unEscapeBitSetArray((List<SV>) x.value, false));
         return x;
       }
     }
@@ -698,7 +696,7 @@ public class ScriptMathProcessor {
       // prior to 12.2/3.18, x[1]["id"] was misread as x[1][0]
       var = (SV) SV.selectItemTok(var, Integer.MIN_VALUE);
     }
-    if (var.tok == T.hash) {
+    if (var.tok == T.hash || var.tok == T.context) {
       SV v = var.mapValue(SV.sValue(var1));
       xStack[xPt] = (v == null ? SV.newS("") : v);
       return true;

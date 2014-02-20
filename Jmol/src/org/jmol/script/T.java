@@ -206,8 +206,8 @@ public class T {
   // -- EVEN help, javascript, cd, gotocmd -- allow for single starting variable
   public final static int implicitStringCommand     = (1 << 14) | scriptCommand;
   
-  // this implicitExpression flag indicates that phrases surrounded 
-  // by ( ) should be considered the same as { }. 
+  // this mathExpression flag indicates that 
+  // the command evaluates a math expression. 
   // -- elseif, forcmd, ifcmd, print, returncmd, set, var, whilecmd
   public final static int mathExpressionCommand = (1 << 15) | scriptCommand;
   
@@ -268,6 +268,7 @@ public class T {
   public final static int set          = 3 | mathExpressionCommand | expression;
   public final static int var          = 4 | mathExpressionCommand;
   public final static int log          = 5 | mathExpressionCommand;
+  public final static int throwcmd     = 6 | mathExpressionCommand;
   //public final static int prompt     see mathfunc
   
   public final static int echo  = 1 /* must be odd */ | implicitStringCommand | shapeCommand | setparam;
@@ -345,7 +346,7 @@ public class T {
   public final static int refresh      = scriptCommand | 44 | noArgs;
   public final static int reset        = scriptCommand | 45;
   public final static int restore      = scriptCommand | 46;
-  public final static int resume = scriptCommand | 47 | noArgs;
+  public final static int resume       = scriptCommand | 47;
   public final static int rotate       = scriptCommand | 48 | defaultON;
   public final static int rotateSelected = scriptCommand | 49;
   public final static int save  = scriptCommand | 50;
@@ -359,7 +360,6 @@ public class T {
   public final static int stereo       = scriptCommand | 59 | defaultON;
 //public final static int structure    see intproperty
   public final static int sync         = scriptCommand | 60;
-  public final static int throwcmd     = scriptCommand | 61 | implicitStringCommand;
   public final static int timeout      = scriptCommand | 62 | setparam;
   public final static int translate    = scriptCommand | 64;
   public final static int translateSelected   = scriptCommand | 66;
@@ -1126,6 +1126,7 @@ public class T {
   public final static int colorscheme   = misc  | 64;
   public final static int command       = misc  | 66;
   public final static int commands      = misc  | 68;
+  public final static int context       = misc  | 69;
   public final static int constraint    = misc  | 70;
   public final static int contour       = misc  | 72;
   public final static int contourlines  = misc  | 74;
@@ -1279,7 +1280,8 @@ public class T {
   public final static int rotate45       = misc  | 306;
   public final static int rotation = misc  | 308;
   public final static int rubberband     = misc  | 310;
-  public final static int sasurface      = misc  | 312;
+  public final static int sasurface      = misc  | 311;
+  public final static int saved          = misc  | 312;
   public final static int scale          = misc  | 314;
   public final static int scene          = misc  | 315; // Jmol 12.3.32
   public final static int selection      = misc  | 316;
@@ -1834,6 +1836,7 @@ public class T {
       "clickable",       T.t(clickable),
       "clipboard",       T.t(clipboard),
       "connected",       T.t(connected),
+      "context",         T.t(context),
       "constraint",      T.t(constraint),
       "contourLines",    T.t(contourlines),
       "coord",           T.t(coord),
@@ -1990,6 +1993,7 @@ public class T {
       "rock",            T.t(rock),
       "rubberband",      T.t(rubberband),
       "saSurface",       T.t(sasurface),
+      "saved",           T.t(saved),
       "scale",           T.t(scale),
       "scene",           T.t(scene),
       "search",          T.t(search),

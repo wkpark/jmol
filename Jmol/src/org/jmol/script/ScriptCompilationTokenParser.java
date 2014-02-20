@@ -241,7 +241,7 @@ abstract class ScriptCompilationTokenParser {
         addTokenToPostfixToken(T.tokenExpressionEnd);
       }
       if (moreTokens()) {
-        if (tokCommand != T.select && !isEmbeddedExpression)
+        if (tokCommand != T.select && tokCommand != T.delete && !isEmbeddedExpression)
           return error(ERROR_endOfExpressionExpected);
         if (tokCommand == T.select) {
           // advanced select, with two expressions, the first

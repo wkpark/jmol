@@ -286,7 +286,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       viewer.handleError(er, false);
       setErrorMessage("" + er + " " + viewer.getShapeErrorState());
       errorMessageUntranslated = "" + er;
-      scriptStatusOrBuffer(errorMessage);
+      report(errorMessage);
       haveError = true;
     } catch (ScriptException e) {
       if (e instanceof ScriptInterruption) {
@@ -304,7 +304,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       }
       setErrorMessage(e.toString());
       errorMessageUntranslated = e.getErrorMessageUntranslated();
-      scriptStatusOrBuffer(errorMessage);
+      report(errorMessage);
       viewer
           .notifyError(
               (errorMessage != null
@@ -381,9 +381,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
     setErrorMessage(null);
     if (executionStopped || sc == null || !sc.mustResumeEval) {
-      viewer.setTainted(true);
-      viewer.popHoldRepaint("resumeEval");
-      viewer.queueOnHold = false;
+      resumeViewer("resumeEval");
       return;
     }
     if (!executionPaused)
@@ -393,6 +391,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       scriptLevel = sc.scriptLevel - 1;
     restoreScriptContext(sc, true, false, false);
     executeCommands(sc.isTryCatch);
+  }
+
+  private void resumeViewer(String why) {
+    viewer.setTainted(true);
+    viewer.popHoldRepaint(why);
+    viewer.queueOnHold = false;
   }
 
   @Override
@@ -2030,20 +2034,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (var.equals("expressionBegin"))
       return null;
     var = var.toLowerCase();
-    if (contextVariables != null && contextVariables.containsKey(var))
-      return contextVariables.get(var);
-    ScriptContext context = thisContext;
-    while (context != null) {
-      if (context.isFunction == true)
-        return null;
-      if (context.contextVariables != null
-          && context.contextVariables.containsKey(var))
-        return context.contextVariables.get(var);
-      context = context.parentContext;
-    }
-    return null;
+    return (contextVariables != null && contextVariables.containsKey(var) ? contextVariables
+        .get(var) : thisContext == null ? null : thisContext.getVariable(var));
   }
-
+  
   private Object getStringObjectAsVariable(String s, String key) {
     if (s == null || s.length() == 0)
       return s;
@@ -2612,14 +2606,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
     context.statement = st;
     context.statementLength = slen;
-    context.pc = pc;
+    context.pc = context.pc0 = pc;
     context.lineEnd = lineEnd;
     context.pcEnd = pcEnd;
     context.iToken = iToken;
     context.theToken = theToken;
     context.theTok = theTok;
     context.outputBuffer = outputBuffer;
-    context.contextVariables = contextVariables;
+    context.vars = contextVariables;
     context.isStateScript = isStateScript;
 
     context.errorMessage = errorMessage;
@@ -2686,7 +2680,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     lineNumbers = context.lineNumbers;
     lineIndices = context.lineIndices;
     aatoken = context.aatoken;
-    contextVariables = context.contextVariables;
+    contextVariables = context.vars;
     scriptExtensions = context.scriptExtensions;
 
     if (isPopContext) {
@@ -2722,6 +2716,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   public void setException(ScriptException sx, String msg, String untranslated) {
     // from ScriptException, while initializing
     sx.untranslated = (untranslated == null ? msg : untranslated);
+    boolean isThrown = "!".equals(untranslated);
     errorType = msg;
     iCommandError = pc;
     if (sx.message == null) {
@@ -2734,7 +2729,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       popContext(false, false);
     sx.message += s;
     sx.untranslated += s;
-    if (thisContext != null || chk || msg.indexOf(JC.NOTE_SCRIPT_FILE) >= 0)
+    if (isThrown)
+      resumeViewer("throw context");
+    if (isThrown || thisContext != null || chk || msg.indexOf(JC.NOTE_SCRIPT_FILE) >= 0)
       return;
     Logger.error("eval ERROR: " + toString());
     if (viewer.autoExit)
@@ -3428,7 +3425,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       viewer.showString(str, isPrint);
   }
 
-  public void scriptStatusOrBuffer(String s) {
+  public void report(String s) {
     if (chk)
       return;
     if (outputBuffer != null) {
@@ -5172,7 +5169,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           setErrorMessage("" + er);
         }
         if (error) {
-          scriptStatusOrBuffer(errorMessage);
+          report(errorMessage);
           setErrorMessage(null);
         }
         restoreScriptContext(scSave, true, false, false);
@@ -5243,7 +5240,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       // specifically for ProteinExplorer
       viewer.scriptStatus("script <exiting>");
     }
-    if (!isJS || !allowJSThreads || fromFunc)
+    if (!mustResumeEval && (!isJS || !allowJSThreads || fromFunc))
       return true;
     if (mustResumeEval || thisContext == null) {
       boolean done = (thisContext == null);
@@ -5351,7 +5348,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             break;
           if (outputBuffer == null)
             viewer.showMessage(s);
-          scriptStatusOrBuffer(s);
+          report(s);
           break;
         case T.push:
           pushContext((ContextToken) theToken, "PUSH");
@@ -5518,15 +5515,18 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         case T.reset:
           reset();
           break;
-        case T.restore:
-          restore();
-          break;
         case T.restrict:
           restrict();
           break;
         case T.resume:
-          if (!chk)
-            resumePausedExecution();
+          if (slen == 0) {
+            if (!chk)
+              resumePausedExecution();
+            break;            
+          }
+          //$FALL-THROUGH$
+        case T.restore:
+          restore();
           break;
         case T.returncmd:
           returnCmd(null);
@@ -5853,9 +5853,25 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private boolean flowControl(int tok, boolean isForCheck, List<T[]> vProcess)
       throws ScriptException {
     ContextToken ct;
+    int pt;
     switch (tok) {
     case T.throwcmd:
-      evalError(optParameterAsString(1), null);
+      if (chk)
+        return false;
+      pt = (tokAt(1) == T.context ? 2 : 1);
+      SV v = setVariable(pt, slen, "thrown_value", false);
+      String info = v.asString();
+      if (info.length() == 0)
+        info = optParameterAsString(2);
+      if (pt == 1) {
+        evalError(info, null);
+      } else {
+        info = optParameterAsString(2);
+        viewer.saveContext(info);
+        if (doReport())
+          report(GT.o(GT._("to resume, enter: &{0}"), info));
+        throw new ScriptInterruption(this, info, Integer.MIN_VALUE);
+      }
       return false;
     case T.gotocmd:
       gotoCmd(parameterAsString(checkLast(1)));
@@ -5868,7 +5884,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       // JavaScript will not get here
       return isForCheck;
     }
-    int pt = st[0].intValue;
+    pt = st[0].intValue;
     boolean isDone = (pt < 0 && !chk);
     boolean isOK = true;
     int ptNext = 0;
@@ -6040,7 +6056,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             else
               ((BS) v.value).clear(j);
           } else {
-            v.setv(SV.getVariable(bsOrList instanceof BS ? BSUtil.copy((BS)bsOrList): bsOrList));
+            v.setv(SV.getVariable(bsOrList instanceof BS ? BSUtil
+                .copy((BS) bsOrList) : bsOrList));
             v.intValue = 1;
             t.setModified(false);
           }
@@ -6049,7 +6066,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         } else {
           if (isMinusMinus)
             j -= 2;
-          setVariable(++j, slen - 1, key, 0);
+          setVariable(++j, slen - 1, key, false);
         }
       }
       if (tok != T.in)
@@ -7280,7 +7297,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (outputBuffer == null)
       viewer.showMessage(s);
     if (!s.startsWith("_"))
-      scriptStatusOrBuffer(s);
+      report(s);
   }
 
   private void log() throws ScriptException {
@@ -8021,7 +8038,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (scriptLevel == 0 && !isAppend && nFiles < 2)
       showString((String) viewer.getModelSetAuxiliaryInfoValue("modelLoadNote"));
     if (debugHigh)
-      scriptStatusOrBuffer("Successfully loaded:"
+      report("Successfully loaded:"
           + (filenames == null ? htParams.get("fullPathName") : modelName));
     Map<String, Object> info = viewer.getModelSetAuxiliaryInfo();
     if (info != null && info.containsKey("centroidMinMax")
@@ -9046,6 +9063,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private void delete() throws ScriptException {
     if (tokAt(1) == T.dollarsign) {
+      if (slen == 4 && optParameterAsString(2).equals("saved") && slen == 4) {
+        viewer.deleteSaved(optParameterAsString(3));
+        if (doReport())
+          report(GT.o(GT._("show saved: {0}"), viewer.listSavedStates()));
+        return;
+      }
       setObjectProperty();
       return;
     }
@@ -9057,7 +9080,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       bs = viewer.getAllAtoms();
     int nDeleted = viewer.deleteAtoms(bs, false);
     if (doReport())
-      scriptStatusOrBuffer(GT.i(GT._("{0} atoms deleted"), nDeleted));
+      report(GT.i(GT._("{0} atoms deleted"), nDeleted));
   }
 
   public boolean doReport() {
@@ -9250,7 +9273,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     int nDeleted = viewer.deleteAtoms(bs, true);
     boolean isQuiet = !doReport();
     if (!isQuiet)
-      scriptStatusOrBuffer(GT.i(GT._("{0} atoms deleted"), nDeleted));
+      report(GT.i(GT._("{0} atoms deleted"), nDeleted));
     viewer.select(null, false, 0, isQuiet);
   }
 
@@ -9901,7 +9924,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (chk)
         return;
       int n = viewer.autoHbond(null, null, false);
-      scriptStatusOrBuffer(GT.i(GT._("{0} hydrogen bonds"), Math.abs(n)));
+      report(GT.i(GT._("{0} hydrogen bonds"), Math.abs(n)));
       return;
     }
     if (slen == 2 && getToken(1).tok == T.delete) {
@@ -10969,7 +10992,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       key = T.nameOf(tok = newTok);
     } else if (!justShow && !isContextVariable) {
       // special cases must be checked
-      if (key.length() == 0 || key.charAt(0) == '_') // these cannot be set by user
+      if (key.length() == 0 || key.charAt(0) == '_' && tokAt(2) != T.leftsquare) // these cannot be set by user
         error(ERROR_cannotSet);
 
       // these next are not reported and do not allow calculation xxxx = a + b
@@ -11055,7 +11078,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       // a[...] =
       );
 
-      setVariable(pt, 0, key, setType);
+      setVariable(pt, 0, key, (setType == '['));
       if (!isJmolSet)
         return;
     }
@@ -11631,21 +11654,28 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   /**
    * 
    * @param pt
+   *        starting point in command token sequence
    * @param ptMax
+   *        ending point in command token sequenec, possibly -1 for "all"
    * @param key
-   * @param setType
+   *        the variable name to save the result in. This must be a standard
+   *        user variable, either local or global
+   * @param isArrayItem
+   *        indicates the context a[xxxx] = yyyyy and that the stack will
+   *        contain the variable name and array pointer when it returns
+   * @return a variable or null
    * @throws ScriptException
    */
   @SuppressWarnings("unchecked")
-  private void setVariable(int pt, int ptMax, String key, int setType)
+  private SV setVariable(int pt, int ptMax, String key, boolean isArrayItem)
       throws ScriptException {
     BS bs = null;
     String propertyName = "";
     int tokProperty = T.nada;
-    boolean isArrayItem = (setType == '[');
     boolean settingProperty = false;
     boolean isExpression = false;
-    boolean settingData = (key.startsWith("property_"));
+    boolean settingData = key.startsWith("property_");
+    boolean isThrown = key.equals("thrown_value");
     boolean isNull = key.equals("all");
     SV t = (settingData || isNull ? null : getContextVariableAsVariable(key));
     boolean isUserVariable = (t != null);
@@ -11673,27 +11703,27 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     List<SV> v = (List<SV>) parameterExpression(pt, ptMax, key, true, true, -1,
         isArrayItem, null, null);
     if (isNull)
-      return;
+      return null;
     int nv = v.size();
     if (nv == 0 || !isArrayItem && nv > 1 || isArrayItem
         && (nv < 3 || nv % 2 != 1))
       invArg();
     if (chk)
-      return;
+      return null;
     // x[3][4] = ??
     SV tv = v.get(isArrayItem ? v.size() - 1 : 0);
 
     // create user variable if needed for list now, so we can do the copying
 
     boolean needVariable = (!isUserVariable && !isExpression && !settingData && (isArrayItem
-        || settingProperty || !(tv.value instanceof String
+        || settingProperty || isThrown || !(tv.value instanceof String
         || tv.tok == T.integer || tv.value instanceof Integer
         || tv.value instanceof Float || tv.value instanceof Boolean)));
 
     if (needVariable) {
-      if (key.startsWith("_"))
+      if (key.startsWith("_")
+          || (t = viewer.getOrSetNewVariable(key, !isArrayItem)) == null)
         errorStr(ERROR_invalidArgument, key);
-      t = viewer.getOrSetNewVariable(key, true);
       isUserVariable = true;
     }
 
@@ -11708,15 +11738,17 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           t.tok = T.hash;
           t.value = new Hashtable<String, SV>();
         }
-        if (t.tok == T.hash) {
+        switch (t.tok) {
+        case T.context:
+        case T.hash:
           String hkey = vv.asString();
-          Map<String, SV> tmap = (Map<String, SV>) t.value;
           if (isLast) {
-            tmap.put(hkey, tnew);
+            t.mapPut(hkey, tnew);
             break;
           }
-          t = tmap.get(hkey);
-        } else {
+          t = t.mapValue(hkey);
+          break;
+        default:
           int ipt = vv.asInt();
           // in the case of for (x in y) where y is an array, we need to select the item before continuing
           if (t.tok == T.varray)
@@ -11755,7 +11787,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           case T.string:
             // check for a["t"] = xxx
             if (vv.tok == T.string) {
-              t.value = PT.rep((String) t.value, (String) vv.value, tnew.asString());
+              t.value = PT.rep((String) t.value, (String) vv.value,
+                  tnew.asString());
               continue;
             }
             break;
@@ -11764,7 +11797,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           break;
         }
       }
-      return;
+      return t;
     }
     if (settingProperty) {
       if (!isExpression) {
@@ -11786,16 +11819,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
                     Integer.valueOf(tv.tok == T.varray ? 1 : 0) }, viewer
                     .getAtomCount(), 0, 0,
                 tv.tok == T.varray ? Integer.MAX_VALUE : Integer.MIN_VALUE, 0);
-        return;
+        return null;
       }
       setBitsetProperty(bs, tokProperty, tv.asInt(), tv.asFloat(), tv);
-      return;
+      return null;
     }
 
     if (isUserVariable) {
       t.setv(tv);
       t.setModified(true);
-      return;
+      return t;
     }
 
     Object vv = SV.oValue(tv);
@@ -11807,7 +11840,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           new Object[] { key, "" + vv, BSUtil.copy(viewer.getSelectedAtoms()),
               Integer.valueOf(0) }, viewer.getAtomCount(), 0, 0,
           Integer.MIN_VALUE, 0);
-      return;
+      return null;
     }
 
     if (vv instanceof Boolean) {
@@ -11825,6 +11858,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     } else {
       Logger.error("ERROR -- return from propertyExpression was " + vv);
     }
+    return tv;
   }
 
   private void axes(int index) throws ScriptException {
@@ -12122,14 +12156,26 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (slen > 1) {
       String saveName = optParameterAsString(2);
       switch (tokAt(1)) {
+      case T.bonds:
+        if (!chk)
+          viewer.saveBonds(saveName);
+        return;
+      case T.context:
+        if (!chk)
+          viewer.saveContext(saveName);
+        return;
+      case T.coord:
+        if (!chk)
+          viewer.saveCoordinates(saveName, viewer.getSelectedAtoms());
+        return;
       case T.orientation:
       case T.rotation:
         if (!chk)
           viewer.saveOrientation(saveName, null);
         return;
-      case T.bonds:
+      case T.selection:
         if (!chk)
-          viewer.saveBonds(saveName);
+          viewer.saveSelection(saveName);
         return;
       case T.state:
         if (!chk)
@@ -12139,20 +12185,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if (!chk)
           viewer.saveStructure(saveName);
         return;
-      case T.coord:
-        if (!chk)
-          viewer.saveCoordinates(saveName, viewer.getSelectedAtoms());
-        return;
-      case T.selection:
-        if (!chk)
-          viewer.saveSelection(saveName);
-        return;
       }
     }
-    errorStr2(ERROR_what, "SAVE",
-        "bonds? coordinates? orientation? selection? state? structure?");
+    errorStr2(ERROR_what, "SAVE", saveList);
   }
 
+  private final static String saveList = 
+      "bonds? context? coordinates? orientation? rotation? selection? state? structure?";
+  
   private void restore() throws ScriptException {
     // restore orientation name time
     if (slen > 1) {
@@ -12192,6 +12232,19 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if (!chk)
           viewer.restoreBonds(saveName);
         return;
+      case T.context:
+        if (chk)
+          return;
+        ScriptContext sc = viewer.getContext(saveName);
+        if (sc != null) {
+          restoreScriptContext(sc, true, false, false);
+          if (thisContext != null) {
+            thisContext.setMustResume();
+            mustResumeEval = true;
+            tQuiet = true;
+          }
+        }
+        return;
       case T.coord:
         if (chk)
           return;
@@ -12223,8 +12276,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         return;
       }
     }
-    errorStr2(ERROR_what, "RESTORE",
-        "bonds? coords? orientation? rotation? scene? selection? state? structure?");
+    errorStr2(ERROR_what, "RESTORE", saveList);
   }
 
   public int[] colorArgb = new int[] { Integer.MIN_VALUE };

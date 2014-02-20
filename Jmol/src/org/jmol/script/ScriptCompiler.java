@@ -168,7 +168,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       sc.errorMessage = sc.errorMessageUntranslated;
     sc.lineIndices = lineIndices;
     sc.lineNumbers = lineNumbers;
-    sc.contextVariables = contextVariables;
+    sc.vars = contextVariables;
     return sc;
   }
 
@@ -1508,6 +1508,13 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       if (theTok != T.leftbrace)
         lastFlowCommand = null;
 
+      if (theTok == T.opAnd) {
+        //& introduces a resume context
+        setCommand(theToken = T.o(T.resume, "resume"));
+        addTokenToPrefix(theToken);
+        theToken = T.o(T.context, "context");
+        return OK;
+      }
       if (T.tokAttr(tokCommand, T.scriptCommand))
         break;
 

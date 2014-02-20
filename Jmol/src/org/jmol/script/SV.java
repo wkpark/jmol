@@ -615,6 +615,7 @@ public class SV extends T implements JSONEncodable {
         return (i < 1 || i > sv.size() ? "" : sValue(sv.get(i - 1)));
       //$FALL-THROUGH$
     case hash:
+    case context:
       sb = new SB();
       map = new Hashtable<Object, Boolean>();
       sValueArray(sb, (SV) x, map, 0, false);
@@ -641,44 +642,22 @@ public class SV extends T implements JSONEncodable {
     }
   }
 
-  @SuppressWarnings("unchecked")
   private static void sValueArray(SB sb, SV vx,
                                   Map<Object, Boolean> map, int level,
                                   boolean isEscaped) {
     switch (vx.tok) {
     case hash:
+    case context:
       if (map.containsKey(vx)) {
         sb.append(isEscaped ? "{}" : vx.myName == null ? "<circular reference>"
             : "<" + vx.myName + ">");
         break;
       }
       map.put(vx, Boolean.TRUE);
-      Map<String, SV> ht = (Map<String, SV>) vx.value;
-      Set<String> keyset = ht.keySet();
-      String[] keys = ht.keySet().toArray(new String[keyset.size()]);
-      Arrays.sort(keys);
-
-      if (isEscaped) {
-        sb.append("{ ");
-        String sep = "";
-        for (int i = 0; i < keys.length; i++) {
-          String key = keys[i];
-          sb.append(sep).append(PT.esc(key)).appendC(':');
-          sValueArray(sb, ht.get(key), map, level + 1, true);
-          sep = ", ";
-        }
-        sb.append(" }");
-        break;
-      }
-      for (int i = 0; i < keys.length; i++) {
-        sb.append(keys[i]).append("\t:");
-        SV v = ht.get(keys[i]);
-        SB sb2 = new SB();
-        sValueArray(sb2, v, map, level + 1, isEscaped);
-        String value = sb2.toString();
-        sb.append(value.indexOf("\n") >= 0 ? "\n" : "\t");
-        sb.append(value).append("\n");
-      }
+      Map<String, SV> ht =  (vx.tok == context ? 
+       ((ScriptContext) vx.value).getFullMap()
+       : vx.getMap());
+      addKeys(sb, map, ht, level, isEscaped);
       break;
     case varray:
       if (map.containsKey(vx)) {
@@ -706,6 +685,33 @@ public class SV extends T implements JSONEncodable {
         for (int j = 0; j < level - 1; j++)
           sb.append("\t");
       sb.append(isEscaped ? vx.escape() : sValue(vx));
+    }
+  }
+
+  private static void addKeys(SB sb, Map<Object, Boolean> map, Map<String, SV> ht, int level, boolean isEscaped) {
+    Set<String> keyset = ht.keySet();
+    String[] keys = ht.keySet().toArray(new String[keyset.size()]);
+    Arrays.sort(keys);
+    if (isEscaped) {
+      sb.append("{ ");
+      String sep = "";
+      for (int i = 0; i < keys.length; i++) {
+        String key = keys[i];
+        sb.append(sep).append(PT.esc(key)).appendC(':');
+        sValueArray(sb, ht.get(key), map, level + 1, true);
+        sep = ", ";
+      }
+      sb.append(" }");
+      return;
+    }
+    for (int i = 0; i < keys.length; i++) {
+      sb.append(keys[i]).append("\t:");
+      SV v = ht.get(keys[i]);
+      SB sb2 = new SB();
+      sValueArray(sb2, v, map, level + 1, isEscaped);
+      String value = sb2.toString();
+      sb.append(value.indexOf("\n") >= 0 ? "\n" : "\t");
+      sb.append(value).append("\n");
     }
   }
 
@@ -1378,7 +1384,13 @@ public class SV extends T implements JSONEncodable {
 
   @SuppressWarnings("unchecked")
   SV mapValue(String key) {
-    return (tok == hash ? ((Map<String, SV>) value).get(key) : null);
+    switch (tok) {
+    case hash:
+      return ((Map<String, SV>) value).get(key);
+    case context:
+      return ((ScriptContext) value).getVariable(key);
+    }
+    return null;
   }
 
   @SuppressWarnings("unchecked")
@@ -1405,9 +1417,26 @@ public class SV extends T implements JSONEncodable {
     case integer:
     case decimal:
       return sValue(this);
+    case context:
+      return PT.toJSON(null, ((ScriptContext) value).getFullMap());
     default:
      return PT.toJSON(null, value);
     }
+  }
+
+  public void mapPut(String key, SV v) {
+    getMap().put(key, v);
+  }
+
+  @SuppressWarnings("unchecked")
+  private Map<String, SV> getMap() {
+    switch (tok) {
+    case hash:
+      return (Map<String, SV>) value;
+    case context:
+      return ((ScriptContext) value).vars;
+    }
+    return null;
   }
 
 }

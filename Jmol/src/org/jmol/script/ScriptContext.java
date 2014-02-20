@@ -25,6 +25,7 @@
 
 package org.jmol.script;
 
+import java.util.Hashtable;
 import java.util.Map;
 
 import org.jmol.api.JmolParallelProcessor;
@@ -39,7 +40,7 @@ public class ScriptContext {
   public boolean allowJSThreads;
   boolean chk;
   public String contextPath = " >> ";
-  public Map<String, SV> contextVariables;
+  public Map<String, SV> vars;
   boolean displayLoadErrorsSave;
   public String errorMessage;
   String errorMessageUntranslated;
@@ -63,6 +64,7 @@ public class ScriptContext {
   JmolParallelProcessor parallelProcessor;
   public ScriptContext parentContext;
   public int pc;
+  public int pc0;
   public int pcEnd = Integer.MAX_VALUE;
   public String script;
   String scriptExtensions;
@@ -79,5 +81,44 @@ public class ScriptContext {
   ScriptContext() {
     id = ++contextCount;
   }
+
+  public void setMustResume() {
+    ScriptContext sc = this;
+    while (sc != null) {
+      sc.mustResumeEval = true;
+      sc.pc = sc.pc0;
+      sc = sc.parentContext;
+    }
+  }
+
+  public SV getVariable(String var) {
+    ScriptContext context = this;
+    while (context != null) {
+      if (context.isFunction == true)
+        return null;
+      if (context.vars != null
+          && context.vars.containsKey(var))
+        return context.vars.get(var);
+      context = context.parentContext;
+    }
+    return null;
+  }
+
+  public Map<String, SV> getFullMap() {
+    Map<String, SV> ht = new Hashtable<String, SV>();
+    ScriptContext context = this;
+    if (contextPath != null)
+      ht.put("_path", SV.newS(contextPath));
+    while (context != null && !context.isFunction) {
+      if (context.vars != null)
+        for (String key : context.vars.keySet())
+          if (!ht.containsKey(key))
+            ht.put(key, context.vars.get(key));
+      context = context.parentContext;
+    }
+    return ht;
+  }
+  
+  
 
 }

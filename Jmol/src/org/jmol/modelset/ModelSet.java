@@ -915,6 +915,7 @@ import java.util.Map;
     BS bsModels = getModelBitSet(bs, false);
     for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1))
       shapeManager.refreshShapeTrajectories(i, bs, mat);
+    averageAtomPoint = null;
     /* but we would need to somehow indicate this in the state
     if (ellipsoids != null)
       for (int i = bs.nextSetBit(0); i >= 0 && i < ellipsoids.length; i = bs.nextSetBit(i + 1))

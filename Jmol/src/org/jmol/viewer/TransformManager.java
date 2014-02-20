@@ -1156,12 +1156,12 @@ public class TransformManager {
     viewer.unTransformPoint(pt, pt);
     pt.sub(fixedRotationCenter);
     ptCamera.add(pt);
-    /*
+    
         System.out.println("TM no " + navigationOffset + " rpo "
             + referencePlaneOffset + " aa " + aperatureAngle + " sppa "
             + scalePixelsPerAngstrom + " vr " + visualRange + " sw/vr "
             + screenWidth / visualRange + " " + ptRef + " " + fixedRotationCenter);
-    */
+    
     return new P3[] {
         ptRef,
         ptCamera,
@@ -2206,17 +2206,6 @@ public class TransformManager {
       modelRadius = viewer.calcRotationRadius(fixedRotationCenter);
   }
 
-  private void setRotCenterRel(String relativeTo, P3 pt) {
-    P3 pt1 = P3.newP(pt);
-    if (relativeTo == "average")
-      pt1.add(viewer.getAverageAtomPoint());
-    else if (relativeTo == "boundbox")
-      pt1.add(viewer.getBoundBoxCenter());
-    else if (relativeTo != "absolute")
-      pt1.setT(rotationCenterDefault);
-    setRotationCenterAndRadiusXYZ(pt1, true);
-  }
-
   void setNewRotationCenter(P3 center, boolean doScale) {
     // once we have the center, we need to optionally move it to 
     // the proper XY position and possibly scale
@@ -2245,8 +2234,20 @@ public class TransformManager {
     setRotationCenterAndRadiusXYZ(fixedRotationCenter, true);
   }
 
-  void setCenterAt(String relativeTo, P3 pt) {
-    setRotCenterRel(relativeTo, pt);
+  void setCenterAt(int relativeTo, P3 pt) {
+    P3 pt1 = P3.newP(pt);
+    switch (relativeTo) {
+    case T.average:
+      pt1.add(viewer.getAverageAtomPoint());
+      break;
+    case T.boundbox:
+      pt1.add(viewer.getBoundBoxCenter());
+      break;
+    case T.absolute:
+      pt1.setT(rotationCenterDefault);
+      break;
+    }
+    setRotationCenterAndRadiusXYZ(pt1, true);
     resetFitToScreen(true);
   }
 

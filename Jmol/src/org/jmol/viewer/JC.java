@@ -394,8 +394,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     0xFF0000FF, // blue
   };
 
-  public final static int FORMAL_CHARGE_COLIX_RED = Elements.elementSymbols.length;
-  public final static int PARTIAL_CHARGE_COLIX_RED = Elements.elementSymbols.length + argbsFormalCharge.length;
+  public final static int FORMAL_CHARGE_COLIX_RED = Elements.elementSymbols.length + altArgbsCpk.length;
+  public final static int PARTIAL_CHARGE_COLIX_RED = FORMAL_CHARGE_COLIX_RED + argbsFormalCharge.length;  
   public final static int PARTIAL_CHARGE_RANGE_SIZE = argbsRwbScale.length;
 
   public final static int[] argbsRoygbScale = {

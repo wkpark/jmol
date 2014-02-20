@@ -928,6 +928,7 @@ abstract public class AtomCollection {
     }
   }
 
+  protected P3 averageAtomPoint;
 
   // Binary Space Partitioning Forest
   
@@ -936,6 +937,7 @@ abstract public class AtomCollection {
   void validateBspf(boolean isValid) {
     if (bspf != null)
       bspf.validate(isValid);
+    averageAtomPoint = null;
   }
 
   void validateBspfForModel(int modelIndex, boolean isValid) {

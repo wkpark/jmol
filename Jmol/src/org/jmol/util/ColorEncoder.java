@@ -172,6 +172,8 @@ import javajs.util.P3;
       int iScheme = createColorScheme(name, false, isOverloaded);
       if (isOverloaded)
         switch (iScheme) {
+        case Integer.MAX_VALUE:
+          return ROYGB;
         case FRIENDLY:
           paletteFriendly = getPaletteAC();
           break;
@@ -202,7 +204,7 @@ import javajs.util.P3;
           argbsShapely = JC.argbsShapely;
           break;
         }
-      return (iScheme == Integer.MAX_VALUE ? ROYGB : iScheme);
+      return iScheme;
     }
     schemes.put(name, scale);
     setThisScheme(name, scale);

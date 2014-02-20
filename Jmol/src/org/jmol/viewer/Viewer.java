@@ -945,7 +945,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return tm.getRotationCenter();
   }
 
-  public void setCenterAt(String relativeTo, P3 pt) {
+  public void setCenterAt(int relativeTo, P3 pt) {
     // Eval centerAt boundbox|absolute|average {pt}
     if (isJmolDataFrame())
       return;

@@ -38,6 +38,7 @@ import org.jmol.api.MinimizerInterface;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
+import org.jmol.constant.EnumStereoMode;
 import org.jmol.constant.EnumVdw;
 import org.jmol.i18n.GT;
 import org.jmol.java.BS;
@@ -134,19 +135,34 @@ public class ScriptExt implements JmolScriptExtension {
     case T.assign:
       assign();
       break;
+    case T.cache:
+      cache();
+      break;
     case T.calculate:
       calculate();
       break;
     case T.capture:
       capture();
       break;
+    case T.centerat:
+      centerAt();
+      break;
     case T.compare:
       compare();
+      break;
+    case T.console:
+      console();
+      break;
+    case T.connect:
+      connect(1);
       break;
     case T.configuration:
       configuration();
       break;
-    case T.mapProperty:
+    case T.hbond:
+      connect(0);
+      break;
+    case T.mapproperty:
       mapProperty();
       break;
     case T.minimize:
@@ -159,6 +175,9 @@ public class ScriptExt implements JmolScriptExtension {
     case T.quaternion:
     case T.ramachandran:
       plot(st);
+      break;
+    case T.stereo:
+      stereo();
       break;
     case T.navigate:
       navigate();
@@ -1433,7 +1452,7 @@ public class ScriptExt implements JmolScriptExtension {
             bs.and(viewer.getModelUndeletedAtomsBitSet(modelIndex));
           }
           if (ptc == null)
-            ptc = viewer.getAtomSetCenter(bs);
+            ptc = (bs == null ? new P3() : viewer.getAtomSetCenter(bs));
 
           getWithinDistanceVector(propertyList, distance, ptc, bs, isDisplay);
           sbCommand.append(" within ").appendF(distance).append(" ")
@@ -1815,7 +1834,7 @@ public class ScriptExt implements JmolScriptExtension {
         float[] linearCombination = null;
         switch (tokAt(++i)) {
         case T.nada:
-          error(ScriptEvaluator.ERROR_badArgumentCount);
+          eval.bad();
           break;
         case T.density:
           sbCommand.append("mo [1] squared ");
@@ -2287,7 +2306,7 @@ public class ScriptExt implements JmolScriptExtension {
         sbCommand.append(" lp ").append(Escape.eP4((P4) propertyValue));
         surfaceObjectSeen = true;
         break;
-      case T.mapProperty:
+      case T.mapproperty:
         if (isMapped || slen == i + 1)
           invArg();
         isMapped = true;
@@ -3850,7 +3869,7 @@ public class ScriptExt implements JmolScriptExtension {
         if (typeSeen)
           invPO();
         if (++nAtomSets > 2)
-          error(ScriptEvaluator.ERROR_badArgumentCount);
+          eval.bad();
         if ("to".equals(setPropertyName))
           needsGenerating = true;
         propertyName = setPropertyName;
@@ -4258,7 +4277,7 @@ public class ScriptExt implements JmolScriptExtension {
       }
       break;
     default:
-      error(ScriptEvaluator.ERROR_badArgumentCount);
+      eval.bad();
     }
     String dataType = dataLabel + " ";
     dataType = dataType.substring(0, dataType.indexOf(" ")).toLowerCase();
@@ -6887,7 +6906,7 @@ public class ScriptExt implements JmolScriptExtension {
           if (value != null)
             invArg();
           if ((countPlusIndexes[0] = ++nAtoms) > 4)
-            error(ScriptEvaluator.ERROR_badArgumentCount);
+            eval.bad();
           countPlusIndexes[nAtoms] = atomIndex;
         }
         break;
@@ -6956,7 +6975,7 @@ public class ScriptExt implements JmolScriptExtension {
           value = v;
         }
         if ((nAtoms = ++expressionCount) > 4)
-          error(ScriptEvaluator.ERROR_badArgumentCount);
+          eval.bad();
         i = eval.iToken;
         points.addLast(value);
         break;
@@ -6973,7 +6992,7 @@ public class ScriptExt implements JmolScriptExtension {
     }
     if (rd != null && (ptFloat >= 0 || nAtoms != 2) || nAtoms < 2 && id == null
         && (tickInfo == null || nAtoms == 1))
-      error(ScriptEvaluator.ERROR_badArgumentCount);
+      eval.bad();
     if (strFormat != null && strFormat.indexOf(nAtoms + ":") != 0)
       strFormat = nAtoms + ":" + strFormat;
     if (isRange) {
@@ -9799,5 +9818,390 @@ public class ScriptExt implements JmolScriptExtension {
     String msg = viewer.processWriteOrCapture(params);
     Logger.info(msg);
   }
+
+  private void console() throws ScriptException {
+    switch (getToken(1).tok) {
+    case T.off:
+      if (!chk)
+        viewer.showConsole(false);
+      break;
+    case T.on:
+      if (!chk)
+        viewer.showConsole(true);
+      break;
+    case T.clear:
+      if (!chk)
+        viewer.clearConsole();
+      break;
+    case T.write:
+      showString(stringParameter(2));
+      break;
+    default:
+      invArg();
+    }
+  }
+
+  private void centerAt() throws ScriptException {
+    int tok = getToken(1).tok;
+    switch (tok) {
+    case T.absolute:
+    case T.average:
+    case T.boundbox:
+      break;
+    default:
+      invArg();
+    }
+    P3 pt = P3.new3(0, 0, 0);
+    if (slen == 5) {
+      // centerAt xxx x y z
+      pt.x = floatParameter(2);
+      pt.y = floatParameter(3);
+      pt.z = floatParameter(4);
+    } else if (eval.isCenterParameter(2)) {
+      pt = centerParameter(2);
+      eval.checkLast(eval.iToken);
+    } else {
+      checkLength(2);
+    }
+    if (!chk)
+      viewer.setCenterAt(tok, pt);
+  }
+
+  private void stereo() throws ScriptException {
+    EnumStereoMode stereoMode = EnumStereoMode.DOUBLE;
+    // see www.usm.maine.edu/~rhodes/0Help/StereoViewing.html
+    // stereo on/off
+    // stereo color1 color2 6
+    // stereo redgreen 5
+
+    float degrees = EnumStereoMode.DEFAULT_STEREO_DEGREES;
+    boolean degreesSeen = false;
+    int[] colors = null;
+    int colorpt = 0;
+    for (int i = 1; i < slen; ++i) {
+      if (eval.isColorParam(i)) {
+        if (colorpt > 1)
+          eval.bad();
+        if (colorpt == 0)
+          colors = new int[2];
+        if (!degreesSeen)
+          degrees = 3;
+        colors[colorpt] = eval.getArgbParam(i);
+        if (colorpt++ == 0)
+          colors[1] = ~colors[0];
+        i = eval.iToken;
+        continue;
+      }
+      switch (getToken(i).tok) {
+      case T.on:
+        eval.checkLast(eval.iToken = 1);
+        eval.iToken = 1;
+        break;
+      case T.off:
+        eval.checkLast(eval.iToken = 1);
+        stereoMode = EnumStereoMode.NONE;
+        break;
+      case T.integer:
+      case T.decimal:
+        degrees = floatParameter(i);
+        degreesSeen = true;
+        break;
+      case T.identifier:
+        if (!degreesSeen)
+          degrees = 3;
+        stereoMode = EnumStereoMode.getStereoMode(parameterAsString(i));
+        if (stereoMode != null)
+          break;
+        //$FALL-THROUGH$
+      default:
+        invArg();
+      }
+    }
+    if (chk)
+      return;
+    viewer.setStereoMode(colors, stereoMode, degrees);
+  }
+
+  /**
+   * 
+   * @param index
+   *        0 indicates hbond command
+   * 
+   * @throws ScriptException
+   */
+  private void connect(int index) throws ScriptException {
+    final float[] distances = new float[2];
+    BS[] atomSets = new BS[2];
+    atomSets[0] = atomSets[1] = viewer.getSelectedAtoms();
+    float radius = Float.NaN;
+    eval.colorArgb[0] = Integer.MIN_VALUE;
+    int distanceCount = 0;
+    int bondOrder = JmolEdge.BOND_ORDER_NULL;
+    int bo;
+    int operation = T.modifyorcreate;
+    boolean isDelete = false;
+    boolean haveType = false;
+    boolean haveOperation = false;
+    float translucentLevel = Float.MAX_VALUE;
+    boolean isColorOrRadius = false;
+    int nAtomSets = 0;
+    int nDistances = 0;
+    BS bsBonds = new BS();
+    boolean isBonds = false;
+    int expression2 = 0;
+    int ptColor = 0;
+    float energy = 0;
+    boolean addGroup = false;
+    /*
+     * connect [<=2 distance parameters] [<=2 atom sets] [<=1 bond type] [<=1
+     * operation]
+     */
+
+    if (slen == 1) {
+      if (!chk)
+        viewer.rebondState(eval.isStateScript);
+      return;
+    }
+
+    for (int i = index; i < slen; ++i) {
+      switch (getToken(i).tok) {
+      case T.on:
+      case T.off:
+        checkLength(2);
+        if (!chk)
+          viewer.rebondState(eval.isStateScript);
+        return;
+      case T.integer:
+      case T.decimal:
+        if (nAtomSets > 0) {
+          if (haveType || isColorOrRadius)
+            eval.error(ScriptEvaluator.ERROR_invalidParameterOrder);
+          bo = JmolEdge.getBondOrderFromFloat(floatParameter(i));
+          if (bo == JmolEdge.BOND_ORDER_NULL)
+            invArg();
+          bondOrder = bo;
+          haveType = true;
+          break;
+        }
+        if (++nDistances > 2)
+          eval.bad();
+        float dist = floatParameter(i);
+        if (tokAt(i + 1) == T.percent) {
+          dist = -dist / 100f;
+          i++;
+        }
+        distances[distanceCount++] = dist;
+        break;
+      case T.bitset:
+      case T.expressionBegin:
+        if (nAtomSets > 2 || isBonds && nAtomSets > 0)
+          eval.bad();
+        if (haveType || isColorOrRadius)
+          invArg();
+        atomSets[nAtomSets++] = atomExpressionAt(i);
+        isBonds = eval.isBondSet;
+        if (nAtomSets == 2) {
+          int pt = eval.iToken;
+          for (int j = i; j < pt; j++)
+            if (tokAt(j) == T.identifier && parameterAsString(j).equals("_1")) {
+              expression2 = i;
+              break;
+            }
+          eval.iToken = pt;
+        }
+        i = eval.iToken;
+        break;
+      case T.group:
+        addGroup = true;
+        break;
+      case T.color:
+      case T.translucent:
+      case T.opaque:
+        isColorOrRadius = true;
+        translucentLevel = eval.getColorTrans(i, false);
+        i = eval.iToken;
+        break;
+      case T.pdb:
+        boolean isAuto = (tokAt(2) == T.auto);
+        checkLength(isAuto ? 3 : 2);
+        if (!chk)
+          viewer.setPdbConectBonding(isAuto, eval.isStateScript);
+        return;
+      case T.adjust:
+      case T.auto:
+      case T.create:
+      case T.modify:
+      case T.modifyorcreate:
+        // must be an operation and must be last argument
+        haveOperation = true;
+        if (++i != slen)
+          invArg();
+        operation = eval.theTok;
+        if (operation == T.auto
+            && !(bondOrder == JmolEdge.BOND_ORDER_NULL
+                || bondOrder == JmolEdge.BOND_H_REGULAR || bondOrder == JmolEdge.BOND_AROMATIC))
+          invArg();
+        break;
+      case T.struts:
+        if (!isColorOrRadius) {
+          eval.colorArgb[0] = 0xFFFFFF;
+          translucentLevel = 0.5f;
+          radius = viewer.getFloat(T.strutdefaultradius);
+          isColorOrRadius = true;
+        }
+        if (!haveOperation)
+          operation = T.modifyorcreate;
+        haveOperation = true;
+        //$FALL-THROUGH$
+      case T.identifier:
+        if (eval.isColorParam(i)) {
+          ptColor = -i;
+          break;
+        }
+        //$FALL-THROUGH$
+      case T.aromatic:
+      case T.hbond:
+        //if (i > 0) {
+        // not hbond command
+        // I know -- should have required the COLOR keyword
+        //}
+        String cmd = parameterAsString(i);
+        if ((bo = ScriptEvaluator.getBondOrderFromString(cmd)) == JmolEdge.BOND_ORDER_NULL) {
+          invArg();
+        }
+        // must be bond type
+        if (haveType)
+          eval.error(ScriptEvaluator.ERROR_incompatibleArguments);
+        haveType = true;
+        switch (bo) {
+        case JmolEdge.BOND_PARTIAL01:
+          switch (tokAt(i + 1)) {
+          case T.decimal:
+            bo = ScriptEvaluator.getPartialBondOrderFromFloatEncodedInt(st[++i].intValue);
+            break;
+          case T.integer:
+            bo = (short) intParameter(++i);
+            break;
+          }
+          break;
+        case JmolEdge.BOND_H_REGULAR:
+          if (tokAt(i + 1) == T.integer) {
+            bo = (short) (intParameter(++i) << JmolEdge.BOND_HBOND_SHIFT);
+            energy = floatParameter(++i);
+          }
+          break;
+        }
+        bondOrder = bo;
+        break;
+      case T.radius:
+        radius = floatParameter(++i);
+        isColorOrRadius = true;
+        break;
+      case T.none:
+      case T.delete:
+        if (++i != slen)
+          invArg();
+        operation = T.delete;
+        // if (isColorOrRadius) / for struts automatic color
+        // invArg();
+        isDelete = true;
+        isColorOrRadius = false;
+        break;
+      default:
+        ptColor = i;
+        break;
+      }
+      // now check for color -- -i means we've already checked
+      if (i > 0) {
+        if (ptColor == -i || ptColor == i && eval.isColorParam(i)) {
+          isColorOrRadius = true;
+          eval.colorArgb[0] = eval.getArgbParam(i);
+          i = eval.iToken;
+        } else if (ptColor == i) {
+          invArg();
+        }
+      }
+    }
+    if (chk)
+      return;
+    if (distanceCount < 2) {
+      if (distanceCount == 0)
+        distances[0] = JC.DEFAULT_MAX_CONNECT_DISTANCE;
+      distances[1] = distances[0];
+      distances[0] = JC.DEFAULT_MIN_CONNECT_DISTANCE;
+    }
+    if (isColorOrRadius) {
+      if (!haveType)
+        bondOrder = JmolEdge.BOND_ORDER_ANY;
+      if (!haveOperation)
+        operation = T.modify;
+    }
+    int nNew = 0;
+    int nModified = 0;
+    int[] result;
+    if (expression2 > 0) {
+      BS bs = new BS();
+      eval.definedAtomSets.put("_1", bs);
+      BS bs0 = atomSets[0];
+      for (int atom1 = bs0.nextSetBit(0); atom1 >= 0; atom1 = bs0
+          .nextSetBit(atom1 + 1)) {
+        bs.set(atom1);
+        result = viewer.makeConnections(distances[0], distances[1], bondOrder,
+            operation, bs, atomExpressionAt(expression2), bsBonds, isBonds,
+            false, 0);
+        nNew += Math.abs(result[0]);
+        nModified += result[1];
+        bs.clear(atom1);
+      }
+    } else {
+      result = viewer.makeConnections(distances[0], distances[1], bondOrder,
+          operation, atomSets[0], atomSets[1], bsBonds, isBonds, addGroup,
+          energy);
+      nNew += Math.abs(result[0]);
+      nModified += result[1];
+    }
+    boolean report = eval.doReport(); 
+    if (isDelete) {
+      if (report)
+        eval.scriptStatusOrBuffer(GT.i(GT._("{0} connections deleted"), nModified));
+      return;
+    }
+    if (isColorOrRadius) {
+      viewer.selectBonds(bsBonds);
+      if (!Float.isNaN(radius))
+        eval.setShapeSizeBs(JC.SHAPE_STICKS, Math.round(radius * 2000), null);
+      eval.finalizeObject(JC.SHAPE_STICKS, eval.colorArgb[0], translucentLevel, 0, false,
+          null, 0, bsBonds);
+      viewer.selectBonds(null);
+    }
+    if (report)
+      eval.scriptStatusOrBuffer(GT.o(GT._("{0} new bonds; {1} modified"),
+          new Object[] { Integer.valueOf(nNew), Integer.valueOf(nModified) }));
+  }
+
+  private void cache() throws ScriptException {
+    int tok = tokAt(1);
+    String fileName = null;
+    int n = 2;
+    switch (tok) {
+    case T.add:
+    case T.remove:
+      fileName = eval.optParameterAsString(n++);
+      //$FALL-THROUGH$
+    case T.clear:
+      checkLength(n);
+      if (!chk) {
+        if ("all".equals(fileName))
+          fileName = null;
+        int nBytes = viewer.cacheFileByName(fileName, tok == T.add);
+        showString(nBytes < 0 ? "cache cleared" : nBytes + " bytes "
+            + (tok == T.add ? " cached" : " removed"));
+      }
+      break;
+    default:
+      invArg();
+    }
+  }
+
 
 }

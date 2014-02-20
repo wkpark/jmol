@@ -294,7 +294,6 @@ abstract public class ModelCollection extends BondCollection {
 
   ////////////////////////////////////////////
 
-  private final P3 averageAtomPoint = new P3();
   private boolean isBbcageDefault;
   private BS bboxModels;
   private BS bboxAtoms;
@@ -302,10 +301,6 @@ abstract public class ModelCollection extends BondCollection {
   {
     boxInfo.addBoundBoxPoint(P3.new3(-10, -10, -10));
     boxInfo.addBoundBoxPoint(P3.new3(10, 10, 10));
-  }
-
-  public P3 getAverageAtomPoint() {
-    return averageAtomPoint;
   }
 
   public P3 getBoundBoxCenter(int modelIndex) {
@@ -363,6 +358,7 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public float calcRotationRadius(int modelIndex, P3 center) {
+    System.out.println("modelcoll center=" + center);
     if (isJmolDataFrameForModel(modelIndex)) {
       float r = models[modelIndex].defaultRotationRadius;
       return (r == 0 ? 10 : r);
@@ -387,13 +383,12 @@ abstract public class ModelCollection extends BondCollection {
   public void calcBoundBoxDimensions(BS bs, float scale) {
     if (bs != null && bs.nextSetBit(0) < 0)
       bs = null;
-    if (bs == null && isBbcageDefault || atomCount < 2)
+    if (bs == null && isBbcageDefault || atomCount == 0)
       return;
     bboxModels = getModelBitSet(bboxAtoms = BSUtil.copy(bs), false);
     if (calcAtomsMinMax(bs, boxInfo) == atomCount)
       isBbcageDefault = true;
     if (bs == null) { // from modelLoader or reset
-      averageAtomPoint.setT(getAtomSetCenter(null));
       if (unitCells != null)
         calcUnitCellMinMax();
     }
@@ -506,19 +501,25 @@ abstract public class ModelCollection extends BondCollection {
     return points;
   }
 
+
   public P3 getAtomSetCenter(BS bs) {
-    P3 ptCenter = P3.new3(0, 0, 0);
+    P3 ptCenter = new P3();
     int nPoints = 0;
-    if (bs != null)
-      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-        if (!isJmolDataFrameForAtom(atoms[i])) {
-          nPoints++;
-          ptCenter.add(atoms[i]);
-        }
+    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+      if (!isJmolDataFrameForAtom(atoms[i])) {
+        nPoints++;
+        ptCenter.add(atoms[i]);
       }
+    }
     if (nPoints > 0)
       ptCenter.scale(1.0f / nPoints);
     return ptCenter;
+  }
+
+  public P3 getAverageAtomPoint() {
+    if (averageAtomPoint == null)
+      (averageAtomPoint = new P3()).setT(getAtomSetCenter(viewer.getAllAtoms()));
+    return averageAtomPoint;
   }
 
   protected void setAPm(BS bs, int tok, int iValue, float fValue,
@@ -2941,6 +2942,7 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public void deleteAtoms(BS bs) {
+    averageAtomPoint = null;
     if (bs == null)
       return;
     BS bsBonds = new BS();

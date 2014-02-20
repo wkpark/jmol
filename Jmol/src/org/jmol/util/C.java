@@ -97,7 +97,7 @@ public final class C {
      distance to an object. So there are two stages of argb color determination
      from a colix. The special palette flag is only used transiently - just to
      indicate that the color selected isn't a known color. The actual palette-based
-     colix is saved here, and and the atom or shape's byte paletteID is set as well.
+     colix is saved here, and the atom or shape's byte paletteID is set as well.
      
      Shapes/ColorManager: responsible for assigning argb colors based on 
      color palettes. These argb colors are then used directly.

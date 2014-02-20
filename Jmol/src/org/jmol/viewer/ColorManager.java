@@ -152,12 +152,11 @@ class ColorManager {
         return g3d.getChangeableColix(id, argbsCpk[id]);
       int id0 = id;
       id = Elements.altElementIndexFromNumber(id);
-      if (id == 0) {
-        id = Elements.getElementNumber(id0);
-        return g3d.getChangeableColix(id, argbsCpk[id]);
-      }
-      return g3d.getChangeableColix(Elements.elementNumberMax + id,
-          altArgbsCpk[id]);
+      if (id > 0)
+        return g3d.getChangeableColix(Elements.elementNumberMax + id,
+            altArgbsCpk[id]);
+      id = Elements.getElementNumber(id0);
+      return g3d.getChangeableColix(id, argbsCpk[id]);
     case StaticConstants.PALETTE_PARTIAL_CHARGE:
       // This code assumes that the range of partial charges is [-1, 1].
       index = ColorEncoder.quantize(atom.getPartialCharge(), -1, 1,
@@ -181,12 +180,13 @@ class ColorManager {
       return propertyColorEncoder.getColorIndexFromPalette(
           atom.getBfactor100(), lo, hi, ColorEncoder.BWR, false);
     case StaticConstants.PALETTE_STRAIGHTNESS:
-      return propertyColorEncoder.getColorIndexFromPalette(atom
-          .getGroupParameter(T.straightness), -1, 1, ColorEncoder.BWR, false);
+      return propertyColorEncoder.getColorIndexFromPalette(
+          atom.getGroupParameter(T.straightness), -1, 1, ColorEncoder.BWR,
+          false);
     case StaticConstants.PALETTE_SURFACE:
       hi = viewer.getSurfaceDistanceMax();
-      return propertyColorEncoder.getColorIndexFromPalette(atom
-          .getSurfaceDistance100(), 0, hi, ColorEncoder.BWR, false);
+      return propertyColorEncoder.getColorIndexFromPalette(
+          atom.getSurfaceDistance100(), 0, hi, ColorEncoder.BWR, false);
     case StaticConstants.PALETTE_AMINO:
       return propertyColorEncoder.getColorIndexFromPalette(atom.getGroupID(),
           0, 0, ColorEncoder.AMINO, false);
@@ -200,41 +200,45 @@ class ColorManager {
       // however, do not call it here because it will get recalculated
       // for each atom
       // therefore, we call it in Eval.colorObject();
-      return propertyColorEncoder.getColorIndexFromPalette(atom
-          .getSelectedGroupIndexWithinChain(), 0, atom
-          .getSelectedGroupCountWithinChain() - 1, ColorEncoder.BGYOR, false);
+      return propertyColorEncoder.getColorIndexFromPalette(
+          atom.getSelectedGroupIndexWithinChain(), 0,
+          atom.getSelectedGroupCountWithinChain() - 1, ColorEncoder.BGYOR,
+          false);
     case StaticConstants.PALETTE_POLYMER:
       Model m = viewer.getModelSet().models[atom.modelIndex];
-      return propertyColorEncoder.getColorIndexFromPalette(atom
-          .getPolymerIndexInModel(), 0, m.getBioPolymerCount() - 1,
+      return propertyColorEncoder.getColorIndexFromPalette(
+          atom.getPolymerIndexInModel(), 0, m.getBioPolymerCount() - 1,
           ColorEncoder.BGYOR, false);
     case StaticConstants.PALETTE_MONOMER:
       // viewer.calcSelectedMonomersCount() must be called first ...
-      return propertyColorEncoder.getColorIndexFromPalette(atom
-          .getSelectedMonomerIndexWithinPolymer(), 0, atom
-          .getSelectedMonomerCountWithinPolymer() - 1, ColorEncoder.BGYOR,
+      return propertyColorEncoder.getColorIndexFromPalette(
+          atom.getSelectedMonomerIndexWithinPolymer(), 0,
+          atom.getSelectedMonomerCountWithinPolymer() - 1, ColorEncoder.BGYOR,
           false);
     case StaticConstants.PALETTE_MOLECULE:
       modelSet = viewer.getModelSet();
-      return propertyColorEncoder.getColorIndexFromPalette(modelSet
-          .getMoleculeIndex(atom.index, true), 0, modelSet
-          .getMoleculeCountInModel(atom.getModelIndex()) - 1,
+      return propertyColorEncoder.getColorIndexFromPalette(
+          modelSet.getMoleculeIndex(atom.index, true), 0,
+          modelSet.getMoleculeCountInModel(atom.getModelIndex()) - 1,
           ColorEncoder.ROYGB, false);
     case StaticConstants.PALETTE_ALTLOC:
       modelSet = viewer.getModelSet();
       //very inefficient!
       modelIndex = atom.getModelIndex();
       return propertyColorEncoder
-          .getColorIndexFromPalette(modelSet.getAltLocIndexInModel(modelIndex,
-              atom.getAlternateLocationID()), 0, modelSet
-              .getAltLocCountInModel(modelIndex), ColorEncoder.ROYGB, false);
+          .getColorIndexFromPalette(
+              modelSet.getAltLocIndexInModel(modelIndex,
+                  atom.getAlternateLocationID()), 0,
+              modelSet.getAltLocCountInModel(modelIndex), ColorEncoder.ROYGB,
+              false);
     case StaticConstants.PALETTE_INSERTION:
       modelSet = viewer.getModelSet();
       //very inefficient!
       modelIndex = atom.getModelIndex();
-      return propertyColorEncoder.getColorIndexFromPalette(modelSet
-          .getInsertionCodeIndexInModel(modelIndex, atom.getInsertionCode()),
-          0, modelSet.getInsertionCountInModel(modelIndex), ColorEncoder.ROYGB,
+      return propertyColorEncoder.getColorIndexFromPalette(
+          modelSet.getInsertionCodeIndexInModel(modelIndex,
+              atom.getInsertionCode()), 0,
+          modelSet.getInsertionCountInModel(modelIndex), ColorEncoder.ROYGB,
           false);
     case StaticConstants.PALETTE_JMOL:
       id = atom.getAtomicAndIsotopeNumber();
@@ -249,7 +253,8 @@ class ColorManager {
       break;
     case StaticConstants.PALETTE_CHAIN:
       int chain = atom.getChainID();
-      chain = ((chain < 0 ? 0 : chain >= 256 ? chain - 256 : chain) & 0x1F) % JC.argbsChainAtom.length;
+      chain = ((chain < 0 ? 0 : chain >= 256 ? chain - 256 : chain) & 0x1F)
+          % JC.argbsChainAtom.length;
       argb = (atom.isHetero() ? JC.argbsChainHetero : JC.argbsChainAtom)[chain];
       break;
     }

@@ -41,7 +41,6 @@ import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.constant.EnumAnimationMode;
 import org.jmol.constant.EnumPalette;
 import org.jmol.constant.EnumStructure;
-import org.jmol.constant.EnumStereoMode;
 import org.jmol.constant.EnumVdw;
 import org.jmol.i18n.GT;
 import org.jmol.io.JmolBinary;
@@ -1841,7 +1840,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private String contextPath = "";
   public String scriptFileName;
   public String functionName;
-  private boolean isStateScript;
+  public boolean isStateScript;
   public int scriptLevel;
 
   private int scriptReportingLevel = 0;
@@ -2799,6 +2798,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     error(ERROR_invalidArgument);
   }
 
+  public void bad() throws ScriptException {
+    error(ERROR_badArgumentCount);
+  }
+  
   public void error(int iError) throws ScriptException {
     errorOrWarn(iError, null, null, null, false);
   }
@@ -3438,7 +3441,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   ///////////////// expression processing ///////////////////
 
   private T[] tempStatement;
-  private boolean isBondSet;
+  public boolean isBondSet;
   public Object expressionResult;
 
   public BS atomExpressionAt(int index) throws ScriptException {
@@ -4209,7 +4212,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     // max
     if (slen > -length) {
       iToken = -length;
-      error(ERROR_badArgumentCount);
+      bad();
     }
     return slen;
   }
@@ -4226,14 +4229,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   public int checkLength23() throws ScriptException {
     iToken = slen;
     if (slen != 2 && slen != 3)
-      error(ERROR_badArgumentCount);
+      bad();
     return slen;
   }
 
   private int checkLength34() throws ScriptException {
     iToken = slen;
     if (slen != 3 && slen != 4)
-      error(ERROR_badArgumentCount);
+      bad();
     return slen;
   }
 
@@ -5392,26 +5395,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         case T.bondorder:
           bondorder();
           break;
-        case T.cache:
-          cache();
-          break;
         case T.cd:
           cd();
           break;
         case T.center:
           center(1);
           break;
-        case T.centerAt:
-          centerAt();
-          break;
         case T.color:
           color();
-          break;
-        case T.connect:
-          connect(1);
-          break;
-        case T.console:
-          console();
           break;
         case T.define:
           define();
@@ -5576,9 +5567,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           if (pause())
             stepPausedExecution();
           break;
-        case T.stereo:
-          stereo();
-          break;
         case T.structure:
           structure();
           break;
@@ -5612,25 +5600,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         case T.zoomTo:
           zoom(true);
           break;
-        case T.assign:
-        case T.calculate:
-        case T.capture:
-        case T.compare:
-        case T.configuration:
-        case T.mapProperty:
-        case T.minimize:
-        case T.modulation:
-        case T.plot:
-        case T.quaternion:
-        case T.ramachandran:
-        case T.data:
-        case T.navigate:
-        case T.show:
-        case T.write:
-          getExtension().dispatch(theToken.tok, false, st);
-          break;
         default:
-          error(ERROR_unrecognizedCommand);
+          checkExtension(theToken.tok);
         }
       setCursorWait(false);
       // at end because we could use continue to avoid it
@@ -5640,27 +5611,33 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
   }
 
-  private void cache() throws ScriptException {
-    int tok = tokAt(1);
-    String fileName = null;
-    int n = 2;
+  private void checkExtension(int tok) throws ScriptException {
     switch (tok) {
-    case T.add:
-    case T.remove:
-      fileName = optParameterAsString(n++);
-      //$FALL-THROUGH$
-    case T.clear:
-      checkLength(n);
-      if (!chk) {
-        if ("all".equals(fileName))
-          fileName = null;
-        int nBytes = viewer.cacheFileByName(fileName, tok == T.add);
-        showString(nBytes < 0 ? "cache cleared" : nBytes + " bytes "
-            + (tok == T.add ? " cached" : " removed"));
-      }
+    case T.assign:
+    case T.cache:
+    case T.calculate:
+    case T.capture:
+    case T.centerat:
+    case T.compare:
+    case T.configuration:
+    case T.connect:
+    case T.console:
+    case T.hbond: // hbond connect
+    case T.stereo:
+    case T.mapproperty:
+    case T.minimize:
+    case T.modulation:
+    case T.plot:
+    case T.quaternion:
+    case T.ramachandran:
+    case T.data:
+    case T.navigate:
+    case T.show:
+    case T.write:
+      getExtension().dispatch(theToken.tok, false, st);
       break;
     default:
-      invArg();
+      error(ERROR_unrecognizedCommand);
     }
   }
 
@@ -5856,6 +5833,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       getExtension().dispatch(iShape, false, st);
       return;
     }
+  }
+
+
+  @Override
+  public boolean evaluateParallel(ScriptContext context,
+                                  ShapeManager shapeManager) {
+    return getExtension().evaluateParallel(context, shapeManager);
   }
 
   private JmolScriptExtension scriptExt;
@@ -6588,371 +6572,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     setShapeProperty(JC.SHAPE_STICKS, "bondOrder", Integer.valueOf(order));
   }
 
-  private void console() throws ScriptException {
-    switch (getToken(1).tok) {
-    case T.off:
-      if (!chk)
-        viewer.showConsole(false);
-      break;
-    case T.on:
-      if (!chk)
-        viewer.showConsole(true);
-      break;
-    case T.clear:
-      if (!chk)
-        viewer.clearConsole();
-      break;
-    case T.write:
-      showString(stringParameter(2));
-      break;
-    default:
-      invArg();
-    }
-  }
-
-  private void centerAt() throws ScriptException {
-    String relativeTo = null;
-    switch (getToken(1).tok) {
-    case T.absolute:
-      relativeTo = "absolute";
-      break;
-    case T.average:
-      relativeTo = "average";
-      break;
-    case T.boundbox:
-      relativeTo = "boundbox";
-      break;
-    default:
-      invArg();
-    }
-    P3 pt = P3.new3(0, 0, 0);
-    if (slen == 5) {
-      // centerAt xxx x y z
-      pt.x = floatParameter(2);
-      pt.y = floatParameter(3);
-      pt.z = floatParameter(4);
-    } else if (isCenterParameter(2)) {
-      pt = centerParameter(2);
-      checkLast(iToken);
-    } else {
-      checkLength(2);
-    }
-    if (!chk)
-      viewer.setCenterAt(relativeTo, pt);
-  }
-
-  private void stereo() throws ScriptException {
-    EnumStereoMode stereoMode = EnumStereoMode.DOUBLE;
-    // see www.usm.maine.edu/~rhodes/0Help/StereoViewing.html
-    // stereo on/off
-    // stereo color1 color2 6
-    // stereo redgreen 5
-
-    float degrees = EnumStereoMode.DEFAULT_STEREO_DEGREES;
-    boolean degreesSeen = false;
-    int[] colors = null;
-    int colorpt = 0;
-    for (int i = 1; i < slen; ++i) {
-      if (isColorParam(i)) {
-        if (colorpt > 1)
-          error(ERROR_badArgumentCount);
-        if (colorpt == 0)
-          colors = new int[2];
-        if (!degreesSeen)
-          degrees = 3;
-        colors[colorpt] = getArgbParam(i);
-        if (colorpt++ == 0)
-          colors[1] = ~colors[0];
-        i = iToken;
-        continue;
-      }
-      switch (getToken(i).tok) {
-      case T.on:
-        checkLast(iToken = 1);
-        iToken = 1;
-        break;
-      case T.off:
-        checkLast(iToken = 1);
-        stereoMode = EnumStereoMode.NONE;
-        break;
-      case T.integer:
-      case T.decimal:
-        degrees = floatParameter(i);
-        degreesSeen = true;
-        break;
-      case T.identifier:
-        if (!degreesSeen)
-          degrees = 3;
-        stereoMode = EnumStereoMode.getStereoMode(parameterAsString(i));
-        if (stereoMode != null)
-          break;
-        //$FALL-THROUGH$
-      default:
-        invArg();
-      }
-    }
-    if (chk)
-      return;
-    viewer.setStereoMode(colors, stereoMode, degrees);
-  }
-
-  /**
-   * 
-   * @param index
-   *        0 is this is the hbond command
-   * 
-   * @throws ScriptException
-   */
-  private void connect(int index) throws ScriptException {
-
-    final float[] distances = new float[2];
-    BS[] atomSets = new BS[2];
-    atomSets[0] = atomSets[1] = viewer.getSelectedAtoms();
-    float radius = Float.NaN;
-    colorArgb[0] = Integer.MIN_VALUE;
-    int distanceCount = 0;
-    int bondOrder = JmolEdge.BOND_ORDER_NULL;
-    int bo;
-    int operation = T.modifyorcreate;
-    boolean isDelete = false;
-    boolean haveType = false;
-    boolean haveOperation = false;
-    float translucentLevel = Float.MAX_VALUE;
-    boolean isColorOrRadius = false;
-    int nAtomSets = 0;
-    int nDistances = 0;
-    BS bsBonds = new BS();
-    boolean isBonds = false;
-    int expression2 = 0;
-    int ptColor = 0;
-    float energy = 0;
-    boolean addGroup = false;
-    /*
-     * connect [<=2 distance parameters] [<=2 atom sets] [<=1 bond type] [<=1
-     * operation]
-     */
-
-    if (slen == 1) {
-      if (!chk)
-        viewer.rebondState(isStateScript);
-      return;
-    }
-
-    for (int i = index; i < slen; ++i) {
-      switch (getToken(i).tok) {
-      case T.on:
-      case T.off:
-        checkLength(2);
-        if (!chk)
-          viewer.rebondState(isStateScript);
-        return;
-      case T.integer:
-      case T.decimal:
-        if (nAtomSets > 0) {
-          if (haveType || isColorOrRadius)
-            error(ERROR_invalidParameterOrder);
-          bo = JmolEdge.getBondOrderFromFloat(floatParameter(i));
-          if (bo == JmolEdge.BOND_ORDER_NULL)
-            invArg();
-          bondOrder = bo;
-          haveType = true;
-          break;
-        }
-        if (++nDistances > 2)
-          error(ERROR_badArgumentCount);
-        float dist = floatParameter(i);
-        if (tokAt(i + 1) == T.percent) {
-          dist = -dist / 100f;
-          i++;
-        }
-        distances[distanceCount++] = dist;
-        break;
-      case T.bitset:
-      case T.expressionBegin:
-        if (nAtomSets > 2 || isBonds && nAtomSets > 0)
-          error(ERROR_badArgumentCount);
-        if (haveType || isColorOrRadius)
-          error(ERROR_invalidParameterOrder);
-        atomSets[nAtomSets++] = atomExpressionAt(i);
-        isBonds = isBondSet;
-        if (nAtomSets == 2) {
-          int pt = iToken;
-          for (int j = i; j < pt; j++)
-            if (tokAt(j) == T.identifier && parameterAsString(j).equals("_1")) {
-              expression2 = i;
-              break;
-            }
-          iToken = pt;
-        }
-        i = iToken;
-        break;
-      case T.group:
-        addGroup = true;
-        break;
-      case T.color:
-      case T.translucent:
-      case T.opaque:
-        isColorOrRadius = true;
-        translucentLevel = getColorTrans(i, false);
-        i = iToken;
-        break;
-      case T.pdb:
-        boolean isAuto = (tokAt(2) == T.auto);
-        checkLength(isAuto ? 3 : 2);
-        if (!chk)
-          viewer.setPdbConectBonding(isAuto, isStateScript);
-        return;
-      case T.adjust:
-      case T.auto:
-      case T.create:
-      case T.modify:
-      case T.modifyorcreate:
-        // must be an operation and must be last argument
-        haveOperation = true;
-        if (++i != slen)
-          error(ERROR_invalidParameterOrder);
-        operation = theTok;
-        if (theTok == T.auto
-            && !(bondOrder == JmolEdge.BOND_ORDER_NULL
-                || bondOrder == JmolEdge.BOND_H_REGULAR || bondOrder == JmolEdge.BOND_AROMATIC))
-          invArg();
-        break;
-      case T.struts:
-        if (!isColorOrRadius) {
-          colorArgb[0] = 0xFFFFFF;
-          translucentLevel = 0.5f;
-          radius = viewer.getFloat(T.strutdefaultradius);
-          isColorOrRadius = true;
-        }
-        if (!haveOperation)
-          operation = T.modifyorcreate;
-        haveOperation = true;
-        //$FALL-THROUGH$
-      case T.identifier:
-        if (isColorParam(i)) {
-          ptColor = -i;
-          break;
-        }
-        //$FALL-THROUGH$
-      case T.aromatic:
-      case T.hbond:
-        //if (i > 0) {
-        // not hbond command
-        // I know -- should have required the COLOR keyword
-        //}
-        String cmd = parameterAsString(i);
-        if ((bo = getBondOrderFromString(cmd)) == JmolEdge.BOND_ORDER_NULL) {
-          invArg();
-        }
-        // must be bond type
-        if (haveType)
-          error(ERROR_incompatibleArguments);
-        haveType = true;
-        switch (bo) {
-        case JmolEdge.BOND_PARTIAL01:
-          switch (tokAt(i + 1)) {
-          case T.decimal:
-            bo = getPartialBondOrderFromFloatEncodedInt(st[++i].intValue);
-            break;
-          case T.integer:
-            bo = (short) intParameter(++i);
-            break;
-          }
-          break;
-        case JmolEdge.BOND_H_REGULAR:
-          if (tokAt(i + 1) == T.integer) {
-            bo = (short) (intParameter(++i) << JmolEdge.BOND_HBOND_SHIFT);
-            energy = floatParameter(++i);
-          }
-          break;
-        }
-        bondOrder = bo;
-        break;
-      case T.radius:
-        radius = floatParameter(++i);
-        isColorOrRadius = true;
-        break;
-      case T.none:
-      case T.delete:
-        if (++i != slen)
-          error(ERROR_invalidParameterOrder);
-        operation = T.delete;
-        // if (isColorOrRadius) / for struts automatic color
-        // invArg();
-        isDelete = true;
-        isColorOrRadius = false;
-        break;
-      default:
-        ptColor = i;
-        break;
-      }
-      // now check for color -- -i means we've already checked
-      if (i > 0) {
-        if (ptColor == -i || ptColor == i && isColorParam(i)) {
-          isColorOrRadius = true;
-          colorArgb[0] = getArgbParam(i);
-          i = iToken;
-        } else if (ptColor == i) {
-          invArg();
-        }
-      }
-    }
-    if (chk)
-      return;
-    if (distanceCount < 2) {
-      if (distanceCount == 0)
-        distances[0] = JC.DEFAULT_MAX_CONNECT_DISTANCE;
-      distances[1] = distances[0];
-      distances[0] = JC.DEFAULT_MIN_CONNECT_DISTANCE;
-    }
-    if (isColorOrRadius) {
-      if (!haveType)
-        bondOrder = JmolEdge.BOND_ORDER_ANY;
-      if (!haveOperation)
-        operation = T.modify;
-    }
-    int nNew = 0;
-    int nModified = 0;
-    int[] result;
-    if (expression2 > 0) {
-      BS bs = new BS();
-      definedAtomSets.put("_1", bs);
-      BS bs0 = atomSets[0];
-      for (int atom1 = bs0.nextSetBit(0); atom1 >= 0; atom1 = bs0
-          .nextSetBit(atom1 + 1)) {
-        bs.set(atom1);
-        result = viewer.makeConnections(distances[0], distances[1], bondOrder,
-            operation, bs, atomExpressionAt(expression2), bsBonds, isBonds,
-            false, 0);
-        nNew += Math.abs(result[0]);
-        nModified += result[1];
-        bs.clear(atom1);
-      }
-    } else {
-      result = viewer.makeConnections(distances[0], distances[1], bondOrder,
-          operation, atomSets[0], atomSets[1], bsBonds, isBonds, addGroup,
-          energy);
-      nNew += Math.abs(result[0]);
-      nModified += result[1];
-    }
-    if (isDelete) {
-      if (!(tQuiet || scriptLevel > scriptReportingLevel))
-        scriptStatusOrBuffer(GT.i(GT._("{0} connections deleted"), nModified));
-      return;
-    }
-    if (isColorOrRadius) {
-      viewer.selectBonds(bsBonds);
-      if (!Float.isNaN(radius))
-        setShapeSizeBs(JC.SHAPE_STICKS, Math.round(radius * 2000), null);
-      finalizeObject(JC.SHAPE_STICKS, colorArgb[0], translucentLevel, 0, false,
-          null, 0, bsBonds);
-      viewer.selectBonds(null);
-    }
-    if (!(tQuiet || scriptLevel > scriptReportingLevel))
-      scriptStatusOrBuffer(GT.o(GT._("{0} new bonds; {1} modified"),
-          new Object[] { Integer.valueOf(nNew), Integer.valueOf(nModified) }));
-  }
-
   private float getTranslucentLevel(int i) throws ScriptException {
     float f = floatParameter(i);
     return (theTok == T.integer && f > 0 && f < 9 ? f + 1 : f);
@@ -7662,7 +7281,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private void log() throws ScriptException {
     if (slen == 1)
-      error(ERROR_badArgumentCount);
+      bad();
     if (chk)
       return;
     String s = parameterExpressionString(1, 0);
@@ -8550,7 +8169,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private void print() throws ScriptException {
     if (slen == 1)
-      error(ERROR_badArgumentCount);
+      bad();
     showStringPrint(parameterExpressionString(1, 0), true);
   }
 
@@ -9433,15 +9052,18 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (bs == null)
       bs = viewer.getAllAtoms();
     int nDeleted = viewer.deleteAtoms(bs, false);
-    if (!(tQuiet || scriptLevel > scriptReportingLevel))
+    if (doReport())
       scriptStatusOrBuffer(GT.i(GT._("{0} atoms deleted"), nDeleted));
+  }
+
+  public boolean doReport() {
+    return (!tQuiet && scriptLevel <= scriptReportingLevel);
   }
 
   private void select(int i) throws ScriptException {
     // NOTE this is called by restrict()
     if (slen == 1) {
-      viewer.select(null, false, 0, tQuiet
-          || scriptLevel > scriptReportingLevel);
+      viewer.select(null, false, 0, !doReport());
       return;
     }
     if (slen == 2 && tokAt(1) == T.only)
@@ -9506,8 +9128,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         bs1.and(bs);
         bs = bs1;
       }
-      viewer.select(bs, isGroup, addRemove, tQuiet
-          || scriptLevel > scriptReportingLevel);
+      viewer.select(bs, isGroup, addRemove, !doReport());
     }
   }
 
@@ -9623,7 +9244,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (chk)
       return;
     int nDeleted = viewer.deleteAtoms(bs, true);
-    boolean isQuiet = (tQuiet || scriptLevel > scriptReportingLevel);
+    boolean isQuiet = !doReport();
     if (!isQuiet)
       scriptStatusOrBuffer(GT.i(GT._("{0} atoms deleted"), nDeleted));
     viewer.select(null, false, 0, isQuiet);
@@ -9641,7 +9262,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.on:
       case T.off:
         if (slen > 2)
-          error(ERROR_badArgumentCount);
+          bad();
         if (!chk)
           setBooleanProperty("zoomEnabled", tok == T.on);
         return;
@@ -10282,7 +9903,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (slen == 2 && getToken(1).tok == T.delete) {
       if (chk)
         return;
-      connect(0);
+      checkExtension(T.hbond);
       return;
     }
     int mad = getMadParameter();
@@ -10512,7 +10133,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       float startDelay = 1,
       endDelay = 1;
       if (slen > 5)
-        error(ERROR_badArgumentCount);
+        bad();
       EnumAnimationMode animationMode = null;
       switch (T.getTokFromName(parameterAsString(2))) {
       case T.once:
@@ -10956,7 +10577,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         fontsize = JC.LABEL_DEFAULT_FONTSIZE;
         break;
       }
-      error(ERROR_badArgumentCount);
+      bad();
     }
     if (shapeType == JC.SHAPE_LABELS) {
       if (fontsize < 0
@@ -11016,7 +10637,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     String sval;
     int ival = Integer.MAX_VALUE;
 
-    boolean showing = (!chk && !tQuiet && scriptLevel <= scriptReportingLevel && !((String) st[0].value)
+    boolean showing = (!chk && doReport() && !((String) st[0].value)
         .equals("var"));
 
     // THESE FIRST ARE DEPRECATED AND HAVE THEIR OWN COMMAND
@@ -11180,7 +10801,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       // have accepted string "{1.0,2.0,3.0}" here,
       // but that is at least before 11.8. 
       // shouldn't be saving this in the state anyway.
-      
+
       if (slen > 2) {
         P3 pt;
         SV var = parameterExpressionToken(2);
@@ -12249,7 +11870,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             parameterAsString(++index), sOrigin });
         break;
       default:
-        error(ERROR_badArgumentCount);
+        bad();
       }
       return;
     }
@@ -12869,7 +12490,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    * @param bondOrderInteger
    * @return Bond order partial mask
    */
-  static int getPartialBondOrderFromFloatEncodedInt(int bondOrderInteger) {
+  public static int getPartialBondOrderFromFloatEncodedInt(int bondOrderInteger) {
     return (((bondOrderInteger / 1000000) % 6) << 5)
         + ((bondOrderInteger % 1000000) & 0x1F);
   }
@@ -12951,12 +12572,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return getErrorLineMessage(functionName, scriptFileName,
         getLinenumber(null), pc,
         statementAsString(viewer, st, -9999, debugHigh));
-  }
-
-  @Override
-  public boolean evaluateParallel(ScriptContext context,
-                                  ShapeManager shapeManager) {
-    return getExtension().evaluateParallel(context, shapeManager);
   }
 
 }

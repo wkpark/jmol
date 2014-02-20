@@ -305,7 +305,7 @@ public class T {
 //public final static int cache        see mathfunc
   public final static int capture      = scriptCommand | 7;
   public final static int cd           = scriptCommand | 8 /* must be even */| implicitStringCommand | expression; // must be even
-  public final static int centerAt     = scriptCommand | 9;
+  public final static int centerat     = scriptCommand | 9;
 //public final static int color        see intproperty
 //public final static int configuration see intproperty
   public final static int connect = scriptCommand | 10;
@@ -326,7 +326,7 @@ public class T {
   public final static int invertSelected = scriptCommand | 25;
 //public final static int load         see mathfunc
   public final static int loop         = scriptCommand | 26 | defaultON;
-  public final static int mapProperty  = scriptCommand | 28 | expression;
+  public final static int mapproperty  = scriptCommand | 28 | expression;
   public final static int minimize     = scriptCommand | 30;
 //public final static int model        see mathfunc
 //public final static int measure      see mathfunc
@@ -1582,7 +1582,7 @@ public class T {
       "cd",                T.t(cd),
       "center",            T.t(center),
       "centre",            null,
-      "centerat",          T.t(centerAt),
+      "centerat",          T.t(centerat),
       "cgo",               T.t(cgo),
       "color",             T.t(color),
       "colour",            null,
@@ -2135,7 +2135,7 @@ public class T {
       "lp",              T.t(lp),
       "lumo",            T.t(lumo),
       "manifest",        T.t(manifest),
-      "mapProperty",     T.t(mapProperty),
+      "mapProperty",     T.t(mapproperty),
       "map",             null,
       "maxSet",          T.t(maxset),
       "menu",            T.t(menu),

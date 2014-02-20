@@ -5821,23 +5821,23 @@ public class ScriptExt implements JmolScriptExtension {
   private void assignAtom(int atomIndex, P3 pt, String type) {
     if (type.equals("X"))
       viewer.setRotateBondIndex(-1);
-    ModelSet modelSet = viewer.modelSet;
-    if (modelSet.atoms[atomIndex].modelIndex != modelSet.modelCount - 1)
+    if (viewer.modelSet.atoms[atomIndex].modelIndex != viewer.modelSet.modelCount - 1)
       return;
     viewer.clearModelDependentObjects();
-    int atomCount = modelSet.getAtomCount();
+    int atomCount = viewer.modelSet.getAtomCount();
     if (pt == null) {
       viewer.statusManager.modifySend(atomIndex,
-          modelSet.atoms[atomIndex].modelIndex, 1, eval.fullCommand);
-      modelSet.assignAtom(atomIndex, type, true);
+          viewer.modelSet.atoms[atomIndex].modelIndex, 1, eval.fullCommand);
+      // After this next command, viewer.modelSet will be a different instance
+      viewer.modelSet.assignAtom(atomIndex, type, true);
       if (!PT.isOneOf(type, ";Mi;Pl;X;"))
-        modelSet.setAtomNamesAndNumbers(atomIndex, -atomCount, null);
+        viewer.modelSet.setAtomNamesAndNumbers(atomIndex, -atomCount, null);
       viewer.statusManager.modifySend(atomIndex,
-          modelSet.atoms[atomIndex].modelIndex, -1, "OK");
+          viewer.modelSet.atoms[atomIndex].modelIndex, -1, "OK");
       viewer.refresh(3, "assignAtom");
       return;
     }
-    Atom atom = modelSet.atoms[atomIndex];
+    Atom atom = viewer.modelSet.atoms[atomIndex];
     BS bs = BSUtil.newAndSetBit(atomIndex);
     P3[] pts = new P3[] { pt };
     List<Atom> vConnections = new List<Atom>();
@@ -5846,12 +5846,13 @@ public class ScriptExt implements JmolScriptExtension {
     viewer.statusManager.modifySend(atomIndex, modelIndex, 3, eval.fullCommand);
     try {
       bs = viewer.addHydrogensInline(bs, vConnections, pts);
+      // new ModelSet here
       atomIndex = bs.nextSetBit(0);
-      modelSet.assignAtom(atomIndex, type, false);
+      viewer.modelSet.assignAtom(atomIndex, type, false);
     } catch (Exception e) {
       //
     }
-    modelSet.setAtomNamesAndNumbers(atomIndex, -atomCount, null);
+    viewer.modelSet.setAtomNamesAndNumbers(atomIndex, -atomCount, null);
     viewer.statusManager.modifySend(atomIndex, modelIndex, -3, "OK");
   }
 

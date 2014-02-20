@@ -216,6 +216,8 @@ for (var i = 0; i < Jmol._coreFiles.length; i++)
         "$.Component",
         "$.Container",
         "$.LayoutManager",
+        "javajs.awt.event.ActionEvent",
+        "javajs.awt.event.ItemEvent",
         "javajs.swing.AbstractButton",
         "$.AbstractTableModel",
         "$.ButtonGroup",

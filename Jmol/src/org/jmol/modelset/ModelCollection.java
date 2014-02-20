@@ -358,7 +358,6 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public float calcRotationRadius(int modelIndex, P3 center) {
-    System.out.println("modelcoll center=" + center);
     if (isJmolDataFrameForModel(modelIndex)) {
       float r = models[modelIndex].defaultRotationRadius;
       return (r == 0 ? 10 : r);

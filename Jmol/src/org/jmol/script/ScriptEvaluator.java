@@ -5379,6 +5379,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         case T.casecmd:
         case T.defaultcmd:
         case T.whilecmd:
+        case T.throwcmd:
           isForCheck = flowControl(theToken.tok, isForCheck, vProcess);
           if (theTok == T.process)
             vProcess = null; // "end process"
@@ -5853,6 +5854,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       throws ScriptException {
     ContextToken ct;
     switch (tok) {
+    case T.throwcmd:
+      evalError(optParameterAsString(1), null);
+      return false;
     case T.gotocmd:
       gotoCmd(parameterAsString(checkLast(1)));
       return isForCheck;

@@ -359,6 +359,7 @@ public class T {
   public final static int stereo       = scriptCommand | 59 | defaultON;
 //public final static int structure    see intproperty
   public final static int sync         = scriptCommand | 60;
+  public final static int throwcmd     = scriptCommand | 61 | implicitStringCommand;
   public final static int timeout      = scriptCommand | 62 | setparam;
   public final static int translate    = scriptCommand | 64;
   public final static int translateSelected   = scriptCommand | 66;
@@ -2206,6 +2207,7 @@ public class T {
       "scale3D",                                  T.t(scale3d),
       "toggleLabel",                              T.t(togglelabel),
       "userColorScheme",                          T.t(usercolorscheme),
+      "throw",                                    T.t(throwcmd),
       "timeout",                                  T.t(timeout),
       "timeouts",                                 null,
       

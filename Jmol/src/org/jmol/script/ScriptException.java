@@ -32,10 +32,12 @@ public class ScriptException extends Exception {
   protected final JmolScriptEvaluator eval;
   String message;
   String untranslated;
+  boolean isError;
 
   ScriptException(JmolScriptEvaluator scriptEvaluator, String msg, String untranslated, boolean isError) {
     eval = scriptEvaluator;
     message = msg;
+    this.isError = isError;
     if (!isError) // ScriptInterruption
       return;
     eval.setException(this, msg, untranslated);

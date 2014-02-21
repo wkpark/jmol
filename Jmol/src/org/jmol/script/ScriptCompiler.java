@@ -1872,7 +1872,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     }
     if (token.tok == T.push) {
       vPush.remove(--pushCount);
-      addTokenToPrefix(setCommand(ContextToken.newContext(true)));
+      // close this context
+      addTokenToPrefix(setCommand(ContextToken.newContext(false)));
       isEndOfCommand = true;
       return CONTINUE;
     }

@@ -616,6 +616,8 @@ public class SV extends T implements JSONEncodable {
       //$FALL-THROUGH$
     case hash:
     case context:
+      if (x.value instanceof String)
+        return (String) x.value; // just the command
       sb = new SB();
       map = new Hashtable<Object, Boolean>();
       sValueArray(sb, (SV) x, map, 0, false);

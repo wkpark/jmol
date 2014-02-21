@@ -289,13 +289,18 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       report(errorMessage);
       haveError = true;
     } catch (ScriptException e) {
-      if (e instanceof ScriptInterruption) {
+      if (e instanceof ScriptInterruption && (!isTry || !e.isError)) {
+        
+        // ScriptInterruption will be called in Java or JavaScript
+        // by a THROW command, but in that case e.isError == true
+        
         // ScriptInterruption will be called in JavaScript to 
         // stop this thread and initiate a setTimeout sequence 
         // that is responsible for getting us back to the
         // current point using resumeEval again.
         // it's not a real exception, but it has that 
         // property so that it can be caught here.
+        
         return;
       }
       if (isTry) {
@@ -619,12 +624,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return s;
   }
 
-  private void logDebugScript(int ifLevel) {
+  private void logDebugScript(T[] st, int ifLevel) {
     iToken = -9999;
     if (debugHigh) {
       if (st.length > 0)
         Logger.debug(st[0].toString());
-      for (int i = 1; i < slen; ++i)
+      for (int i = 1; i < st.length; ++i)
         Logger.debug(st[i].toString());
       SB strbufLog = new SB();
       String s = (ifLevel > 0 ? "                          ".substring(0,
@@ -5267,6 +5272,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     boolean isForCheck = false; // indicates the stage of the for command loop
     List<T[]> vProcess = null;
     long lastTime = System.currentTimeMillis();
+    
+    if (debugScript && debugHigh && !chk) {
+      for (int i = pc; i < aatoken.length && i < pcEnd; i++) {
+      Logger.info("Command " + i);
+      if (debugScript)
+        logDebugScript(aatoken[i], 0);
+      }
+      Logger.info("-----");
+    }
+
     for (; pc < aatoken.length && pc < pcEnd; pc++) {
       if (isJS && useThreads() && !fromFunc) {
         // every 1 s check for interruptions
@@ -5339,7 +5354,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           continue;
       } else {
         if (debugScript)
-          logDebugScript(0);
+          logDebugScript(st, 0);
         if (scriptLevel == 0 && viewer.global.logCommands)
           viewer.log(thisCommand);
         if (debugHigh && theToken != null)
@@ -5870,19 +5885,18 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (chk)
         return false;
       pt = (tokAt(1) == T.context ? 2 : 1);
-      SV v = setVariable(pt, slen, "thrown_value", false);
+      SV v = (pt == 1 ? setVariable(1, slen, "thrown_value", false)
+          : viewer.setUserVariable("thrown_value", SV.newS(optParameterAsString(2))));
       String info = v.asString();
-      if (info.length() == 0)
-        info = optParameterAsString(2);
-      if (pt == 1) {
-        evalError(info, null);
-      } else {
-        info = optParameterAsString(2);
+      if (info.length() == 0 && (info = optParameterAsString(1)).length() == 0)
+        info = "context";
+      if (pt == 2) {
         viewer.saveContext(info);
         if (doReport())
           report(GT.o(GT._("to resume, enter: &{0}"), info));
         throw new ScriptInterruption(this, info, Integer.MIN_VALUE);
       }
+      evalError(info, null);
       return false;
     case T.gotocmd:
       gotoCmd(parameterAsString(checkLast(1)));
@@ -5906,6 +5920,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (!isDone && ct.name0 != null)
         contextVariables.put(ct.name0, ct.contextVariables.get(ct.name0));
       isOK = !isDone;
+      st[0].intValue = -Math.abs(pt);
       break;
     case T.switchcmd:
     case T.defaultcmd:
@@ -8204,7 +8219,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       bad();
     showStringPrint(parameterExpressionString(1, 0), true);
   }
-
+  
   private void prompt() throws ScriptException {
     String msg = null;
     if (slen == 1) {

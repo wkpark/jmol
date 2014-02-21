@@ -845,6 +845,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
       }
       switch (tok) {
+      case T.rightsquare:
+      case T.rightbrace:
+        if (!ignoreComma && nParen == 0 && nSquare == 0)
+          break out;
+        if (tok == T.rightbrace)
+          invArg();
+        break;
+      }
+
+      switch (tok) {
       case T.define:
         // @{@x} or @{@{x}} or @{@1} -- also userFunction(@1)
         if (tokAt(++i) == T.expressionBegin) {
@@ -1038,7 +1048,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             i += 2;
             break;
           }
-          v = getHash(i);
+          v = getAssocArray(i);
         } else {
           v = getPointOrPlane(i, false, true, true, false, 3, 4);
         }
@@ -1071,11 +1081,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.expressionEnd:
         i++;
         break out;
-      case T.rightbrace:
-        if (!ignoreComma && nParen == 0 && nSquare == 0)
-          break out;
-        invArg();
-        break;
       case T.comma: // ignore commas
         if (!ignoreComma && nParen == 0 && nSquare == 0) {
           break out;
@@ -1120,6 +1125,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         break;
       default:
+        if (theTok == T.leftsquare && tokAt(i + 2) == T.colon) {
+          v = getAssocArray(i);
+          i = iToken;
+          break;
+        }
         if (T.tokAttr(theTok, T.mathop) || T.tokAttr(theTok, T.mathfunc)
             && tokAt(iToken + 1) == T.leftparen) {
           if (!rpn.addOp(theToken)) {
@@ -1218,12 +1228,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   @SuppressWarnings("unchecked")
-  private Map<String, Object> getHash(int i) throws ScriptException {
+  private Map<String, Object> getAssocArray(int i) throws ScriptException {
     Map<String, Object> ht = new Hashtable<String, Object>();
+    int closer = (tokAt(i) == T.leftbrace ? T.rightbrace : T.rightsquare);
     for (i = i + 1; i < slen; i++) {
-      if (tokAt(i) == T.rightbrace)
+      if (tokAt(i) == closer)
         break;
-      String key = stringParameter(i++);
+      String key = optParameterAsString(i++);
       if (tokAt(i++) != T.colon)
         invArg();
       List<SV> v = (List<SV>) parameterExpression(i, 0, null, false, true, -1,
@@ -1234,7 +1245,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         break;
     }
     iToken = i;
-    if (tokAt(i) != T.rightbrace)
+    if (tokAt(i) != closer)
       invArg();
     return ht;
   }

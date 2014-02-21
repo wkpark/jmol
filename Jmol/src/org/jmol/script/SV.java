@@ -693,22 +693,23 @@ public class SV extends T implements JSONEncodable {
     String[] keys = ht.keySet().toArray(new String[keyset.size()]);
     Arrays.sort(keys);
     if (isEscaped) {
-      sb.append("{ ");
+      sb.append("[");
       String sep = "";
       for (int i = 0; i < keys.length; i++) {
         String key = keys[i];
         sb.append(sep).append(PT.esc(key)).appendC(':');
         sValueArray(sb, ht.get(key), map, level + 1, true);
-        sep = ", ";
+        sep = ",";
       }
-      sb.append(" }");
+      sb.append("]");
       return;
     }
     for (int i = 0; i < keys.length; i++) {
-      sb.append(keys[i]).append("\t:");
-      SV v = ht.get(keys[i]);
+      String key = keys[i];
+      sb.append(key).append("\t:");
       SB sb2 = new SB();
-      sValueArray(sb2, v, map, level + 1, isEscaped);
+      SV v = ht.get(key);
+      sValueArray(sb2, v, map, level + 1, v.tok == T.string);
       String value = sb2.toString();
       sb.append(value.indexOf("\n") >= 0 ? "\n" : "\t");
       sb.append(value).append("\n");

@@ -787,7 +787,7 @@ public class PT {
         // M4 extends M3
         int len = (info instanceof M4 ? 4 : 3);
         float[] x = new float[len];
-        M3 m = (M3) info;
+        M34 m = (M34) info;
         sb.appendC('[');
         for (int i = 0; i < len; i++) {
           if (i > 0)

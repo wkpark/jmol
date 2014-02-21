@@ -2162,61 +2162,73 @@ abstract public class ModelCollection extends BondCollection {
     Atom atomB = null;
     float dAB = 0;
     float dABcalc = 0;
+    float distanceSquared;
+    char altloc = '\0';
     short newOrder = (short) (order | JmolEdge.BOND_NEW);
-    for (int iA = bsA.nextSetBit(0); iA >= 0; iA = bsA.nextSetBit(iA + 1)) {
-      if (isBonds) {
-        bondAB = bonds[iA];
-        atomA = bondAB.atom1;
-        atomB = bondAB.atom2;
-      } else {
-        atomA = atoms[iA];
-        if (atomA.isDeleted())
-          continue;
-      }
-      char altloc = (isModulated(iA) ? '\0' : atomA.altloc);
-      for (int iB = (isBonds ? m : bsB.nextSetBit(0)); iB >= 0; iB = (isBonds ? iB - 1
-          : bsB.nextSetBit(iB + 1))) {
-        if (!isBonds) {
-          if (iB == iA)
-            continue;
-          atomB = atoms[iB];
-          if (atomA.modelIndex != atomB.modelIndex || atomB.isDeleted())
-            continue;
-          if (altloc != '\0' && altloc != atomB.altloc 
-              && atomB.altloc != '\0')
-            continue;
-          bondAB = atomA.getBond(atomB);
-        }
-        if (bondAB == null && (identifyOnly || modifyOnly) || bondAB != null
-            && createOnly)
-          continue;
-        float distanceSquared = atomA.distanceSquared(atomB);
-        if (minDistanceIsFractionRadius || maxDistanceIsFractionRadius) {
-          dAB = atomA.distance(atomB);
-          dABcalc = atomA.getBondingRadiusFloat()
-              + atomB.getBondingRadiusFloat();
-        }
-        if ((minDistanceIsFractionRadius ? dAB < dABcalc * minDistance
-            : distanceSquared < minDistanceSquared)
-            || (maxDistanceIsFractionRadius ? dAB > dABcalc * maxDistance
-                : distanceSquared > maxDistanceSquared))
-          continue;
-        if (bondAB != null) {
-          if (!identifyOnly && !matchAny) {
-            bondAB.setOrder(order);
-            bsAromatic.clear(bondAB.index);
-          }
-          if (!identifyOnly || matchAny || order == bondAB.order
-              || newOrder == bondAB.order || matchHbond && bondAB.isHydrogen()) {
-            bsBonds.set(bondAB.index);
-            nModified++;
-          }
+    boolean checkDistance = (!isBonds || minDistance != JC.DEFAULT_MIN_CONNECT_DISTANCE || maxDistance != JC.DEFAULT_MAX_CONNECT_DISTANCE); 
+    try {
+      for (int i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1)) {
+        if (isBonds) {
+          bondAB = bonds[i];
+          atomA = bondAB.atom1;
+          atomB = bondAB.atom2;
         } else {
-          bsBonds.set(bondAtoms(atomA, atomB, order, mad, bsBonds, energy,
-              addGroup, true).index);
-          nNew++;
+          atomA = atoms[i];
+          if (atomA.isDeleted())
+            continue;
+          altloc = (isModulated(i) ? '\0' : atomA.altloc);
+        }
+        for (int j = (isBonds ? m : bsB.nextSetBit(0)); j >= 0; j = bsB
+            .nextSetBit(j + 1)) {
+          if (isBonds) {
+            j = 2147483646; // Integer.MAX_VALUE - 1; one pass only
+          } else {
+            if (j == i)
+              continue;
+            atomB = atoms[j];
+            if (atomA.modelIndex != atomB.modelIndex || atomB.isDeleted())
+              continue;
+            if (altloc != '\0' && altloc != atomB.altloc
+                && atomB.altloc != '\0')
+              continue;
+            bondAB = atomA.getBond(atomB);
+          }
+          if (bondAB == null && (identifyOnly || modifyOnly) || bondAB != null
+              && createOnly)
+            continue;
+          if (checkDistance) {
+            if (minDistanceIsFractionRadius || maxDistanceIsFractionRadius) {
+              dAB = atomA.distance(atomB);
+              dABcalc = atomA.getBondingRadiusFloat()
+                  + atomB.getBondingRadiusFloat();
+            }
+            distanceSquared = atomA.distanceSquared(atomB);
+            if ((minDistanceIsFractionRadius ? dAB < dABcalc * minDistance
+                : distanceSquared < minDistanceSquared)
+                || (maxDistanceIsFractionRadius ? dAB > dABcalc * maxDistance
+                    : distanceSquared > maxDistanceSquared))
+              continue;
+          }
+          if (bondAB != null) {
+            if (!identifyOnly && !matchAny) {
+              bondAB.setOrder(order);
+              bsAromatic.clear(bondAB.index);
+            }
+            if (!identifyOnly || matchAny || order == bondAB.order
+                || newOrder == bondAB.order || matchHbond
+                && bondAB.isHydrogen()) {
+              bsBonds.set(bondAB.index);
+              nModified++;
+            }
+          } else {
+            bsBonds.set(bondAtoms(atomA, atomB, order, mad, bsBonds, energy,
+                addGroup, true).index);
+            nNew++;
+          }
         }
       }
+    } catch (Exception e) {
+      // well, we tried -- probably ran over
     }
     if (autoAromatize)
       assignAromaticBondsBs(true, bsBonds);

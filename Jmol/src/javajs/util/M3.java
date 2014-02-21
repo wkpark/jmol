@@ -228,6 +228,7 @@ public class M3 extends M34 implements Serializable {
    * @param v
    *        The array into which the matrix row values will be copied
    */
+  @Override
   public void getRow(int row, float v[]) {
     getRow33(row, v);
   }

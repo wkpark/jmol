@@ -36,6 +36,7 @@ import org.jmol.modelset.Orientation;
 import org.jmol.script.SV;
 
 import org.jmol.util.BSUtil;
+import org.jmol.util.Elements;
 
 import javajs.J2SIgnoreImport;
 import javajs.util.SB;
@@ -149,6 +150,7 @@ public class StateManager {
         JC.DEFAULT_BOND_TOLERANCE);
     viewer.setFloatProperty("minBondDistance",
         JC.DEFAULT_MIN_BOND_DISTANCE);
+    viewer.setIntProperty("bondingVersion", Elements.RAD_COV_IONIC_OB1_100_1);
     viewer.setBooleanProperty("translucent", true);
   }
 

@@ -95,7 +95,7 @@ abstract public class AtomCollection {
     occupancies = null;
     bfactor100s = null;
     partialCharges = null;
-    ionicRadii = null;
+    bondingRadii = null;
     atomTensors = null;
   }
 
@@ -107,7 +107,7 @@ abstract public class AtomCollection {
     vibrations = mergeModelSet.vibrations;
     occupancies = mergeModelSet.occupancies;
     bfactor100s = mergeModelSet.bfactor100s;
-    ionicRadii = mergeModelSet.ionicRadii;
+    bondingRadii = mergeModelSet.bondingRadii;
     partialCharges = mergeModelSet.partialCharges;
     atomTensors = mergeModelSet.atomTensors;
     atomTensorList = mergeModelSet.atomTensorList;
@@ -158,7 +158,7 @@ abstract public class AtomCollection {
   byte[] occupancies;
   short[] bfactor100s;
   float[] partialCharges;
-  float[] ionicRadii;
+  float[] bondingRadii;
   float[] hydrophobicities;
   
   public Object[][] atomTensorList; // specifically now for {*}.adpmin {*}.adpmax
@@ -180,8 +180,8 @@ abstract public class AtomCollection {
     return partialCharges;
   }
 
-  public float[] getIonicRadii() {
-    return ionicRadii;
+  public float[] getBondingRadii() {
+    return bondingRadii;
   }
   
   public short[] getBFactors() {
@@ -318,14 +318,13 @@ abstract public class AtomCollection {
   }
 
   protected void findMaxRadii() {
+    float r;
     for (int i = atomCount; --i >= 0;) {
       Atom atom = atoms[i];
-      float bondingRadius = atom.getBondingRadiusFloat();
-      if (bondingRadius > maxBondingRadius)
-        maxBondingRadius = bondingRadius;
-      float vdwRadius = atom.getVanderwaalsRadiusFloat(viewer, EnumVdw.AUTO);
-      if (vdwRadius > maxVanderwaalsRadius)
-        maxVanderwaalsRadius = vdwRadius;
+      if ((r = atom.getBondingRadius()) > maxBondingRadius)
+        maxBondingRadius = r;
+      if ((r = atom.getVanderwaalsRadiusFloat(viewer, EnumVdw.AUTO)) > maxVanderwaalsRadius)
+        maxVanderwaalsRadius = r;
     }
   }
 
@@ -622,7 +621,7 @@ abstract public class AtomCollection {
         atom.setFormalCharge(iValue);
         taintAtom(i, TAINT_FORMALCHARGE);
         break;
-      case T.hydrophobic:
+      case T.hydrophobicity:
         if (setHydrophobicity(i, fValue))
           taintAtom(i, TAINT_HYDROPHOBICITY);
         break;
@@ -640,9 +639,9 @@ abstract public class AtomCollection {
         if (setPartialCharge(i, fValue))
           taintAtom(i, TAINT_PARTIALCHARGE);
         break;
-      case T.ionic:
-        if (setIonicRadius(i, fValue))
-          taintAtom(i, TAINT_IONICRADIUS);
+      case T.bondingradius:
+        if (setBondingRadius(i, fValue))
+          taintAtom(i, TAINT_BONDINGRADIUS);
         break;
       case T.radius:
       case T.spacefill:
@@ -784,13 +783,13 @@ abstract public class AtomCollection {
     return true;
   }
 
-  protected boolean setIonicRadius(int atomIndex, float radius) {
+  protected boolean setBondingRadius(int atomIndex, float radius) {
     if (Float.isNaN(radius))
       return false;
-    if (ionicRadii == null) {
-      ionicRadii = new float[atoms.length];
+    if (bondingRadii == null) {
+      bondingRadii = new float[atoms.length];
     }
-    ionicRadii[atomIndex] = radius;
+    bondingRadii[atomIndex] = radius;
     return true;
   }
 
@@ -876,8 +875,8 @@ abstract public class AtomCollection {
         case TAINT_HYDROPHOBICITY:
           setHydrophobicity(atomIndex, x);
           break;
-        case TAINT_IONICRADIUS:
-          setIonicRadius(atomIndex, x);          
+        case TAINT_BONDINGRADIUS:
+          setBondingRadius(atomIndex, x);          
           break;
         case TAINT_PARTIALCHARGE:
           setPartialCharge(atomIndex, x);          
@@ -961,7 +960,7 @@ abstract public class AtomCollection {
   final public static byte TAINT_ELEMENT = 3;
   final public static byte TAINT_FORMALCHARGE = 4;
   final public static byte TAINT_HYDROPHOBICITY = 5;
-  final public static byte TAINT_IONICRADIUS = 6;
+  final public static byte TAINT_BONDINGRADIUS = 6;
   final public static byte TAINT_OCCUPANCY = 7;
   final public static byte TAINT_PARTIALCHARGE = 8;
   final public static byte TAINT_TEMPERATURE = 9;
@@ -1161,7 +1160,7 @@ abstract public class AtomCollection {
     case OFFSET:
       switch (rd.vdwType) {
       case IONIC:
-        r = atom.getBondingRadiusFloat();
+        r = atom.getBondingRadius();
         break;
       case ADPMAX:
         r = atom.getADPMinMax(true);

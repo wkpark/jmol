@@ -1405,7 +1405,7 @@ public class CifReader extends AtomSetCollectionReader implements
         int charge = (atoms[i].formalCharge == Integer.MIN_VALUE ? 0
             : atoms[i].formalCharge);
         if (elemnoWithIsotope > 0)
-          atomRadius[i] = JmolAdapter.getBondingRadiusFloat(elemnoWithIsotope,
+          atomRadius[i] = JmolAdapter.getBondingRadius(elemnoWithIsotope,
               charge);
       }
       bsConnected = new BS[atomCount];

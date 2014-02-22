@@ -206,6 +206,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   // these are all private now so we are certain they are not
   // being accesed by any other classes
 
+
   public boolean autoExit = false;
   public boolean haveDisplay = false;
   
@@ -625,6 +626,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     zap(false, true, false); // here to allow echos
     global.setS("language", GT.getLanguage());
     stateManager.setJmolDefaults();
+    // this code will be shared between Jmol 14.0 and 14.1
+    Elements.covalentVersion = (JC.versionInt < 1401011 ? Elements.RAD_COV_IONIC_OB1_100_1: Elements.RAD_COV_BODR_2014_02_22);
   }
 
   public void setDisplay(Object canvas) {
@@ -3554,10 +3557,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public BS getAtomsWithinRadius(float distance, BS bs,
                                  boolean withinAllModels, RadiusData rd) {
     return modelSet.getAtomsWithinRD(distance, bs, withinAllModels, rd);
-  }
-
-  public BS getAtomsConnected(float min, float max, int intType, BS bs) {
-    return modelSet.getAtomsConnected(min, max, intType, bs);
   }
 
   public BS getBranchBitSet(int atomIndex, int atomIndexNot, boolean allowCyclic) {
@@ -6542,6 +6541,11 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   private void setIntPropertyTok(String key, int tok, int value) {
     switch (tok) {
+    case T.bondingversion:
+      // 14.1.11
+      value = (value == 0 ? Elements.RAD_COV_IONIC_OB1_100_1 : Elements.RAD_COV_BODR_2014_02_22);
+      global.bondingVersion = Elements.bondingVersion = value;
+      break;
     case T.celshadingpower:
       // 13.3.9
       global.celShadingPower = value;
@@ -7774,7 +7778,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   @Override
   public void setJmolDefaults() {
-    setDefaults();
+    setDefaultsType("Jmol");
   }
 
   private void setDefaultsType(String type) {
@@ -7786,10 +7790,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       stateManager.setPyMOLDefaults();
       return;
     }
-    setDefaults();
-  }
-
-  private void setDefaults() {
+    stateManager.setJmolDefaults();
+    setIntProperty("bondingVersion", Elements.RAD_COV_IONIC_OB1_100_1);
     setShapeSizeRD(JC.SHAPE_BALLS, rd, getAllAtoms());
   }
 

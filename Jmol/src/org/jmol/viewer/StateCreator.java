@@ -432,7 +432,7 @@ public class StateCreator extends JmolStateCreator {
         .appendI(width == 0 ? viewer.getScreenWidth() : width).append(
             ";\n# height ").appendI(
             height == 0 ? viewer.getScreenHeight() : height).append(";\n");
-    appendCmd(str, "stateVersion = " + global.getParameter("_version"));
+    appendCmd(str, "stateVersion = " + JC.versionInt);
     appendCmd(str, "background " + Escape.escapeColor(global.objColors[0]));
     for (int i = 1; i < StateManager.OBJ_MAX; i++)
       if (global.objColors[i] != 0)
@@ -1430,6 +1430,7 @@ public class StateCreator extends JmolStateCreator {
     appendCmd(str, "#set edsUrlCutoff " + PT.esc(g.edsUrlCutoff));
     //    if (autoLoadOrientation)
     //      appendCmd(str, "set autoLoadOrientation true");
+    appendCmd(str, "set bondingVersion " + g.bondingVersion);
     appendCmd(str, "set legacyAutoBonding " + g.legacyAutoBonding);
     appendCmd(str, "set legacyHAddition " + g.legacyHAddition);
     appendCmd(str, "set minBondDistance " + g.minBondDistance);
@@ -1640,8 +1641,8 @@ public class StateCreator extends JmolStateCreator {
         case AtomCollection.TAINT_FORMALCHARGE:
           s.appendI(atoms[i].getFormalCharge());
           break;
-        case AtomCollection.TAINT_IONICRADIUS:
-          s.appendF(atoms[i].getBondingRadiusFloat());
+        case AtomCollection.TAINT_BONDINGRADIUS:
+          s.appendF(atoms[i].getBondingRadius());
           break;
         case AtomCollection.TAINT_OCCUPANCY:
           s.appendI(atoms[i].getOccupancy100());

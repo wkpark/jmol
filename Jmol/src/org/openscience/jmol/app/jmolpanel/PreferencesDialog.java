@@ -27,6 +27,7 @@ import org.jmol.api.JmolAbstractButton;
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
 import org.jmol.script.T;
+import org.jmol.util.Elements;
 import org.jmol.util.Logger;
 import org.jmol.viewer.JC;
 import org.openscience.jmol.app.jmolpanel.GuiMap;
@@ -86,6 +87,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   float bondTolerance;
   short marBond;
   int percentVdwAtom;
+  int bondingVersion;
   JButton bButton, pButton, tButton, eButton, vButton;
   private JRadioButton /*pYes, pNo, */abYes, abNo;
   private JSlider vdwPercentSlider;
@@ -119,6 +121,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     "marBond",                        "" + JC.DEFAULT_BOND_MILLIANGSTROM_RADIUS,
     "minBondDistance",                "" + JC.DEFAULT_MIN_BOND_DISTANCE,
     "bondTolerance",                  "" + JC.DEFAULT_BOND_TOLERANCE,
+    "bondingVersion",                "" + Elements.RAD_COV_IONIC_OB1_100_1,
   };
 
   final static String[] rasmolOverrides = {
@@ -648,6 +651,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     marBond = Short.parseShort(currentProperties.getProperty("marBond"));
     percentVdwAtom =
       Integer.parseInt(currentProperties.getProperty("percentVdwAtom"));
+    bondingVersion =
+        Integer.parseInt(currentProperties.getProperty("bondingVersion"));
+
 
     if (Boolean.getBoolean("jmolDefaults"))
       viewer.setStringProperty("defaults", "Jmol");
@@ -656,6 +662,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
     viewer.setIntProperty("percentVdwAtom", percentVdwAtom);
     viewer.setIntProperty("bondRadiusMilliAngstroms", marBond);
+    viewer.setIntProperty("bondingVersion", bondingVersion);
     viewer.setFloatProperty("minBondDistance", minBondDistance);
     viewer.setFloatProperty("BondTolerance", bondTolerance);
     viewer.setBooleanProperty("autoBond", autoBond);

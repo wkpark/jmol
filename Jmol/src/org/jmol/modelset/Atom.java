@@ -268,7 +268,7 @@ public class Atom extends Point3fi implements JmolNode {
         r = Math.abs(getHydrophobicity());
         break;
       case IONIC:
-        r = getBondingRadiusFloat();
+        r = getBondingRadius();
         break;
       case ADPMIN:
       case ADPMAX:
@@ -551,14 +551,10 @@ public class Atom extends Point3fi implements JmolNode {
     return type;
   }
 
-  private float getCovalentRadiusFloat() {
-    return Elements.getBondingRadiusFloat(atomicAndIsotopeNumber, 0);
-  }
-
-  public float getBondingRadiusFloat() {
-    float[] ionicRadii = group.chain.model.modelSet.ionicRadii;
-    float r = (ionicRadii == null ? 0 : ionicRadii[index]);
-    return (r == 0 ? Elements.getBondingRadiusFloat(atomicAndIsotopeNumber,
+  public float getBondingRadius() {
+    float[] rr = group.chain.model.modelSet.bondingRadii;
+    float r = (rr == null ? 0 : rr[index]);
+    return (r == 0 ? Elements.getBondingRadius(atomicAndIsotopeNumber,
         getFormalCharge()) : r);
   }
 
@@ -1285,23 +1281,6 @@ public class Atom extends Point3fi implements JmolNode {
    */
   public static float atomPropertyFloat(Viewer viewer, Atom atom, int tokWhat) {
     switch (tokWhat) {
-    case T.radius:
-      return atom.getRadius();
-    case T.selected:
-      return (viewer.isAtomSelected(atom.index) ? 1 : 0);
-    case T.surfacedistance:
-      atom.group.chain.model.modelSet.getSurfaceDistanceMax();
-      return atom.getSurfaceDistance100() / 100f;
-    case T.temperature: // 0 - 9999
-      return atom.getBfactor100() / 100f;
-    case T.hydrophobic:
-      return atom.getHydrophobicity();
-    case T.volume:
-      return atom.getVolume(viewer, EnumVdw.AUTO);
-
-      // these next have to be multiplied by 100 if being compared
-      // note that spacefill here is slightly different than radius -- no integer option
-
     case T.adpmax:
       return atom.getADPMinMax(true);
     case T.adpmin:
@@ -1315,8 +1294,29 @@ public class Atom extends Point3fi implements JmolNode {
     case T.atomz:
     case T.z:
       return atom.z;
-    case T.covalent:
-      return atom.getCovalentRadiusFloat();
+    case T.backbone:
+    case T.cartoon:
+    case T.dots:
+    case T.ellipsoid:
+    case T.geosurface:
+    case T.halo:
+    case T.meshRibbon:
+    case T.ribbon:
+    case T.rocket:
+    case T.star:
+    case T.strands:
+    case T.trace:
+      return viewer.getAtomShapeValue(tokWhat, atom.group, atom.index);
+    case T.bondingradius:
+      return atom.getBondingRadius();
+    case T.chemicalshift:
+      return viewer.getNMRCalculation().getChemicalShift(atom);
+    case T.covalentradius:
+      return Elements.getCovalentRadius(atom.atomicAndIsotopeNumber);
+    case T.eta:
+    case T.theta:
+    case T.straightness:
+      return atom.getGroupParameter(tokWhat);
     case T.fracx:
       return atom.getFractionalCoord('X', true);
     case T.fracy:
@@ -1329,14 +1329,10 @@ public class Atom extends Point3fi implements JmolNode {
       return atom.getFractionalCoord('Y', false);
     case T.fuz:
       return atom.getFractionalCoord('Z', false);
-    case T.screenx:
-      return atom.sX;
-    case T.screeny:
-      return atom.group.chain.model.modelSet.viewer.getScreenHeight() - atom.sY;
-    case T.screenz:
-      return atom.sZ;
-    case T.ionic:
-      return atom.getBondingRadiusFloat();
+    case T.hydrophobicity:
+      return atom.getHydrophobicity();
+    case T.magneticshielding:
+      return viewer.getNMRCalculation().getMagneticShielding(atom);
     case T.mass:
       return atom.getMass();
     case T.occupancy:
@@ -1364,25 +1360,22 @@ public class Atom extends Point3fi implements JmolNode {
         }
       }
       return atom.getGroupParameter(tokWhat);
-    case T.eta:
-    case T.theta:
-    case T.straightness:
-      return atom.getGroupParameter(tokWhat);
+    case T.radius:
     case T.spacefill:
       return atom.getRadius();
-    case T.backbone:
-    case T.cartoon:
-    case T.dots:
-    case T.ellipsoid:
-    case T.geosurface:
-    case T.halo:
-    case T.meshRibbon:
-    case T.ribbon:
-    case T.rocket:
-    case T.star:
-    case T.strands:
-    case T.trace:
-      return viewer.getAtomShapeValue(tokWhat, atom.group, atom.index);
+    case T.screenx:
+      return atom.sX;
+    case T.screeny:
+      return atom.group.chain.model.modelSet.viewer.getScreenHeight() - atom.sY;
+    case T.screenz:
+      return atom.sZ;
+    case T.selected:
+      return (viewer.isAtomSelected(atom.index) ? 1 : 0);
+    case T.surfacedistance:
+      atom.group.chain.model.modelSet.getSurfaceDistanceMax();
+      return atom.getSurfaceDistance100() / 100f;
+    case T.temperature: // 0 - 9999
+      return atom.getBfactor100() / 100f;
     case T.unitx:
       return atom.getFractionalUnitCoord('X');
     case T.unity:
@@ -1391,19 +1384,17 @@ public class Atom extends Point3fi implements JmolNode {
       return atom.getFractionalUnitCoord('Z');
     case T.vanderwaals:
       return atom.getVanderwaalsRadiusFloat(viewer, EnumVdw.AUTO);
+    case T.vectorscale:
+      V3 v = atom.getVibrationVector();
+      return (v == null ? 0 : v.length() * viewer.getFloat(T.vectorscale));
     case T.vibx:
       return atom.getVibrationCoord('X');
     case T.viby:
       return atom.getVibrationCoord('Y');
     case T.vibz:
       return atom.getVibrationCoord('Z');
-    case T.vectorscale:
-      V3 v = atom.getVibrationVector();
-      return (v == null ? 0 : v.length() * viewer.getFloat(T.vectorscale));
-    case T.magneticshielding:
-      return viewer.getNMRCalculation().getMagneticShielding(atom);
-    case T.chemicalshift:
-      return viewer.getNMRCalculation().getChemicalShift(atom);
+    case T.volume:
+      return atom.getVolume(viewer, EnumVdw.AUTO);
     }
     return atomPropertyInt(atom, tokWhat);
   }

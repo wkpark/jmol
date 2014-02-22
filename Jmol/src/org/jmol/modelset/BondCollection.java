@@ -305,19 +305,14 @@ abstract public class BondCollection extends AtomCollection {
             .getFloat(T.strutdefaultradius) * 2000) : defaultCovalentMad);
   }
 
-  protected int[] deleteConnections(float minDistance, float maxDistance,
-                                    int order, BS bsA, BS bsB,
-                                    boolean isBonds, boolean matchNull,
-                                    float minDistanceSquared,
-                                    float maxDistanceSquared) {
-    boolean minDistanceIsFractionRadius = (minDistance < 0);
-    boolean maxDistanceIsFractionRadius = (maxDistance < 0);
-    float dAB = 0;
-    float dABcalc = 0;
-    if (minDistanceIsFractionRadius)
-      minDistance = -minDistance;
-    if (maxDistanceIsFractionRadius)
-      maxDistance = -maxDistance;
+  protected int[] deleteConnections(float minD, float maxD, int order,
+                                    BS bsA, BS bsB, boolean isBonds,
+                                    boolean matchNull) {
+    boolean minDIsFraction = (minD < 0);
+    boolean maxDIsFraction = (maxD < 0);
+    boolean isFractional = (minDIsFraction || maxDIsFraction);
+    minD = fixD(minD, minDIsFraction);
+    maxD = fixD(maxD, maxDIsFraction);
     BS bsDelete = new BS();
     int nDeleted = 0;
     int newOrder = order |= JmolEdge.BOND_NEW;
@@ -331,38 +326,45 @@ abstract public class BondCollection extends AtomCollection {
       for (int i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1)) {
         Atom a = atoms[i];
         if (a.bonds != null)
-          for (int j = a.bonds.length; --j >= 0; )
+          for (int j = a.bonds.length; --j >= 0;)
             if (bsB.get(a.getBondedAtomIndex(j)))
               bsBonds.set(a.bonds[j].index);
       }
     }
-    for (int i = bsBonds.nextSetBit(0); i < bondCount && i >= 0; i = bsBonds.nextSetBit(i + 1)) {
+    for (int i = bsBonds.nextSetBit(0); i < bondCount && i >= 0; i = bsBonds
+        .nextSetBit(i + 1)) {
       Bond bond = bonds[i];
-      Atom atom1 = bond.atom1;
-      Atom atom2 = bond.atom2;
-        float distanceSquared = atom1.distanceSquared(atom2);
-        if (minDistanceIsFractionRadius || maxDistanceIsFractionRadius) {
-          dAB = atom1.distance(atom2);
-          dABcalc = atom1.getBondingRadiusFloat()
-              + atom2.getBondingRadiusFloat();
-        }
-        if ((minDistanceIsFractionRadius ? dAB < dABcalc * minDistance
-            : distanceSquared < minDistanceSquared)
-            || (maxDistanceIsFractionRadius ? dAB > dABcalc * maxDistance
-                : distanceSquared > maxDistanceSquared))
-          continue;
-        if (matchNull
-            || newOrder == (bond.order & ~JmolEdge.BOND_SULFUR_MASK | JmolEdge.BOND_NEW)
-            || (order & bond.order & JmolEdge.BOND_HYDROGEN_MASK) != 0) {
-          bsDelete.set(i);
-          nDeleted++;
-        }
+      if (!isInRange(bond.atom1, bond.atom2, minD, maxD, minDIsFraction, maxDIsFraction, isFractional))
+        continue;
+      if (matchNull
+          || newOrder == (bond.order & ~JmolEdge.BOND_SULFUR_MASK | JmolEdge.BOND_NEW)
+          || (order & bond.order & JmolEdge.BOND_HYDROGEN_MASK) != 0) {
+        bsDelete.set(i);
+        nDeleted++;
+      }
     }
     if (nDeleted > 0)
       dBm(bsDelete, false);
     return new int[] { 0, nDeleted };
   }
   
+  protected float fixD(float d, boolean isF) {
+    return (isF ? -d : d * d);
+  }
+
+  protected boolean isInRange(Atom atom1, Atom atom2, float minD, float maxD,
+                            boolean minFrac, boolean maxfrac,
+                            boolean isFractional) {
+    float d2 = atom1.distanceSquared(atom2);
+    if (isFractional) {
+      float dAB = (float) Math.sqrt(d2);
+      float dABcalc = atom1.getBondingRadius() + atom2.getBondingRadius();
+      return ((minFrac ? dAB >= dABcalc * minD : d2 >= minD)
+          && (maxfrac ? dAB <= dABcalc * maxD : d2 <= maxD));
+    } 
+    return (d2 >= minD && d2 <= maxD);
+  }
+
   /**
    * send request up to ModelCollection level.
    * Done this way to avoid JavaScript super call

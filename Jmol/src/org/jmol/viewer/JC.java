@@ -53,6 +53,7 @@ public final class JC {
   public final static String copyright = "(C) 2012 Jmol Development";
   public final static String version;
   public final static String date;
+  public final static int versionInt;
 
   static {
     String tmpVersion = null;
@@ -106,6 +107,44 @@ public final class JC {
     }
     version = (tmpVersion != null ? tmpVersion : "(Unknown version)");
     date = (tmpDate != null ? tmpDate : "(Unknown date)");
+    // 11.9.999 --> 1109999
+    int v = -1;
+    try {
+      String s = version;
+      // Major number
+      int i = s.indexOf(".");
+      if (i < 0) {
+        v = 100000 * Integer.parseInt(s);
+        s = null;
+      }
+      if (s != null) {
+        v = 100000 * Integer.parseInt(s.substring(0, i));
+
+        // Minor number
+        s = s.substring(i + 1);
+        i = s.indexOf(".");
+        if (i < 0) {
+          v += 1000 * Integer.parseInt(s);
+          s = null;
+        }
+        if (s != null) {
+          v += 1000 * Integer.parseInt(s.substring(0, i));
+
+          // Revision number
+          s = s.substring(i + 1);
+          i = s.indexOf("_");
+          if (i >= 0)
+            s = s.substring(0, i);
+          i = s.indexOf(" ");
+          if (i >= 0)
+            s = s.substring(0, i);
+          v += Integer.parseInt(s);
+        }
+      }
+    } catch (NumberFormatException e) {
+      // We simply keep the version currently found
+    }
+    versionInt = v;
   }
 
   public final static boolean officialRelease = false;
@@ -1329,7 +1368,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "pdb", "http://www.rcsb.org/pdb/files/%FILE.pdb.gz",
     "pubchem", "http://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/%FILE/SDF?record_type=3d"
   };
-  
+
   public final static String MODELKIT_ZAP_STRING = "5\n\nC 0 0 0\nH .63 .63 .63\nH -.63 -.63 .63\nH -.63 .63 -.63\nH .63 -.63 -.63";
   public final static String MODELKIT_ZAP_TITLE = "Jmol Model Kit";//do not ever change this -- it is in the state
   public final static String ADD_HYDROGEN_TITLE = "Viewer.AddHydrogens"; //do not ever change this -- it is in the state

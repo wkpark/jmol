@@ -98,4 +98,6 @@ public interface JmolScriptEvaluator {
 
   void stopScriptThreads();
 
+  boolean isStateScript();
+
 }

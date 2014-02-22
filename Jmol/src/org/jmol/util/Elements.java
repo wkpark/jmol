@@ -668,124 +668,195 @@ public class Elements {
     1700,2000,1600,2000, // Mt 109
   };
 
+  public final static int RAD_COV_IONIC_OB1_100_1 = 0; // default
+  public final static int RAD_COV_BODR_2014_02_22 = 1;
+  
+  public static int covalentVersion = RAD_COV_BODR_2014_02_22; // starting in Jmol 14.1.11
+
+  public static int bondingVersion = RAD_COV_IONIC_OB1_100_1; // static but not final -- adjusted by Viewer.setIntProperty
+  
   /**
-   * Default table of covalent Radii
-   * stored as a short mar ... Milli Angstrom Radius
-   * Values taken from OpenBabel.
-   * @see <a href="http://openbabel.sourceforge.net">openbabel.sourceforge.net</a>
+   * This method is used by:
+   * 
+   * (1) the CIF reader to create molecular systems when no bonding information is
+   * present
+   * 
+   * (2) Atom.getBondingRadiusFloat, used by AtomCollection.findMaxRadii and
+   * getWorkingRadius, BondCollection.deleteConnections,
+   * ModelCollection.autoBond and makeConnections
+   * 
+   * (3) the MMFF minimizer for unidentified atoms
+   * 
+   * In terms of bondingVersion, the critical ones are the first two. Changing
+   * the version will change the number of bonds created initially, and that would throw
+   * off any state script. So we have to do a reset after a state script to 
+   * return values to defaults.
+   * 
+   * @param atomicNumberAndIsotope
+   * @param charge
+   * @return a bonding radius, either ionic or covalent
    */
-  public final static short[] covalentMars = {
-    0,    //   0  Xx does not bond
-    230,  //   1  H
-    930,  //   2  He
-    680,  //   3  Li
-    350,  //   4  Be
-    830,  //   5  B
-    680,  //   6  C
-    680,  //   7  N
-    680,  //   8  O
-    640,  //   9  F
-    1120, //  10  Ne
-    970,  //  11  Na
-    1100, //  12  Mg
-    1350, //  13  Al
-    1200, //  14  Si
-    750,  //  15  P
-    1020, //  16  S
-    990,  //  17  Cl
-    1570, //  18  Ar
-    1330, //  19  K
-    990,  //  20  Ca
-    1440, //  21  Sc
-    1470, //  22  Ti
-    1330, //  23  V
-    1350, //  24  Cr
-    1350, //  25  Mn
-    1340, //  26  Fe
-    1330, //  27  Co
-    1500, //  28  Ni
-    1520, //  29  Cu
-    1450, //  30  Zn
-    1220, //  31  Ga
-    1170, //  32  Ge
-    1210, //  33  As
-    1220, //  34  Se
-    1210, //  35  Br
-    1910, //  36  Kr
-    1470, //  37  Rb
-    1120, //  38  Sr
-    1780, //  39  Y
-    1560, //  40  Zr
-    1480, //  41  Nb
-    1470, //  42  Mo
-    1350, //  43  Tc
-    1400, //  44  Ru
-    1450, //  45  Rh
-    1500, //  46  Pd
-    1590, //  47  Ag
-    1690, //  48  Cd
-    1630, //  49  In
-    1460, //  50  Sn
-    1460, //  51  Sb
-    1470, //  52  Te
-    1400, //  53  I
-    1980, //  54  Xe
-    1670, //  55  Cs
-    1340, //  56  Ba
-    1870, //  57  La
-    1830, //  58  Ce
-    1820, //  59  Pr
-    1810, //  60  Nd
-    1800, //  61  Pm
-    1800, //  62  Sm
-    1990, //  63  Eu
-    1790, //  64  Gd
-    1760, //  65  Tb
-    1750, //  66  Dy
-    1740, //  67  Ho
-    1730, //  68  Er
-    1720, //  69  Tm
-    1940, //  70  Yb
-    1720, //  71  Lu
-    1570, //  72  Hf
-    1430, //  73  Ta
-    1370, //  74  W
-    1350, //  75  Re
-    1370, //  76  Os
-    1320, //  77  Ir
-    1500, //  78  Pt
-    1500, //  79  Au
-    1700, //  80  Hg
-    1550, //  81  Tl
-    1540, //  82  Pb
-    1540, //  83  Bi
-    1680, //  84  Po
-    1700, //  85  At
-    2400, //  86  Rn
-    2000, //  87  Fr
-    1900, //  88  Ra
-    1880, //  89  Ac
-    1790, //  90  Th
-    1610, //  91  Pa
-    1580, //  92  U
-    1550, //  93  Np
-    1530, //  94  Pu
-    1510, //  95  Am
-    1500, //  96  Cm
-    1500, //  97  Bk
-    1500, //  98  Cf
-    1500, //  99  Es
-    1500, // 100  Fm
-    1500, // 101  Md
-    1500, // 102  No
-    1500, // 103  Lr
-    1600, // 104  Rf
-    1600, // 105  Db
-    1600, // 106  Sg
-    1600, // 107  Bh
-    1600, // 108  Hs
-    1600, // 109  Mt
-  };
+  public static float getBondingRadius(int atomicNumberAndIsotope,
+                                            int charge) {
+    int atomicNumber = atomicNumberAndIsotope & 127;
+    return (charge > 0 && bsCations.get(atomicNumber) ? getBondingRadFromTable(
+        atomicNumber, charge, cationLookupTable) : charge < 0
+        && bsAnions.get(atomicNumber) ? getBondingRadFromTable(atomicNumber,
+        charge, anionLookupTable) : defaultBondingMars[(atomicNumber << 1)
+        + bondingVersion] / 1000f);
+  }
+
+  /**
+   * Prior to Jmol 14.1.11, this was OpenBabel 1.100.1, but now it is BODR
+   *  
+   * @param atomicNumberAndIsotope
+   * @return BODR covalent data, generally.
+   */
+  public static float getCovalentRadius(int atomicNumberAndIsotope) {
+    return defaultBondingMars[((atomicNumberAndIsotope & 127) << 1)
+        + covalentVersion] / 1000f;
+
+  }
+  
+  /**
+   * Default table of bonding radii stored as a short mar ... milliangstrom
+   * radius
+   * 
+   * Column 1 (default): Values taken from OpenBabel.
+   * http://sourceforge.net/p/openbabel
+   * /code/485/tree/openbabel/trunk/data/element.txt (dated 10/20/2004)
+   * 
+   * These values are a mix of common ion (Ba2+, Na+) distances and covalent distances.
+   * They are the default for autobonding in Jmol.
+   * 
+   * Column 2: Blue Obelisk Data Repository (2/22/2014)
+   * https://github.com/wadejong/bodr/blob/c7917225cad829507bdd4c8c2fe7ebd3d795c021/bodr/elements/elements.xml 
+   * which is from: 
+   * 
+   * Pyykkö, P. and Atsumi, M. (2009), 
+   * Molecular Single-Bond Covalent Radii for Elements 1–118. 
+   * Chem. Eur. J., 15: 186–197. doi: 10.1002/chem.200800987
+   * 
+   * (See also http://en.wikipedia.org/wiki/Covalent_radius)
+   *  
+   * These are strictly covalent numbers.
+   * The user must use "set bondingVersion 1" to set these to be used for autobonding
+   * 
+   */
+  
+  public final static short[] defaultBondingMars = {
+    0,  0,      //   0  Xx does not bond
+    230,  320,  //1 H 39% larger
+    930,  460,  //2 He 51% smaller
+    680,  1330, //3 Li 95% larger
+    350,  1020, //4 Be 191% larger
+    830,  850,  //5 B 2% larger
+    680,  750,  //6 C 10% larger
+    680,  710,  //7 N 4% larger
+    680,  630,  //8 O 8% smaller
+    640,  640,  //9 F 0% larger
+    1120, 670,  //10 Ne 41% smaller
+    970,  1550, //11 Na 59% larger
+    1100, 1390, //12 Mg 26% larger
+    1350, 1260, //13 Al 7% smaller
+    1200, 1160, //14 Si 4% smaller
+    750,  1110, //15 P 48% larger
+    1020, 1030, //16 S 0% larger
+    990,  990,  //17 Cl 0% larger
+    1570, 960,  //18 Ar 39% smaller
+    1330, 1960, //19 K 47% larger
+    990,  1710, //20 Ca 72% larger
+    1440, 1480, //21 Sc 2% larger
+    1470, 1360, //22 Ti 8% smaller
+    1330, 1340, //23 V 0% larger
+    1350, 1220, //24 Cr 10% smaller
+    1350, 1190, //25 Mn 12% smaller
+    1340, 1160, //26 Fe 14% smaller
+    1330, 1110, //27 Co 17% smaller
+    1500, 1100, //28 Ni 27% smaller
+    1520, 1120, //29 Cu 27% smaller
+    1450, 1180, //30 Zn 19% smaller
+    1220, 1240, //31 Ga 1% larger
+    1170, 1210, //32 Ge 3% larger
+    1210, 1210, //33 As 0% larger
+    1220, 1160, //34 Se 5% smaller
+    1210, 1140, //35 Br 6% smaller
+    1910, 1170, //36 Kr 39% smaller
+    1470, 2100, //37 Rb 42% larger
+    1120, 1850, //38 Sr 65% larger
+    1780, 1630, //39 Y 9% smaller
+    1560, 1540, //40 Zr 2% smaller
+    1480, 1470, //41 Nb 1% smaller
+    1470, 1380, //42 Mo 7% smaller
+    1350, 1280, //43 Tc 6% smaller
+    1400, 1250, //44 Ru 11% smaller
+    1450, 1250, //45 Rh 14% smaller
+    1500, 1200, //46 Pd 20% smaller
+    1590, 1280, //47 Ag 20% smaller
+    1690, 1360, //48 Cd 20% smaller
+    1630, 1420, //49 In 13% smaller
+    1460, 1400, //50 Sn 5% smaller
+    1460, 1400, //51 Sb 5% smaller
+    1470, 1360, //52 Te 8% smaller
+    1400, 1330, //53 I 5% smaller
+    1980, 1310, //54 Xe 34% smaller
+    1670, 2320, //55 Cs 38% larger
+    1340, 1960, //56 Ba 46% larger
+    1870, 1800, //57 La 4% smaller
+    1830, 1630, //58 Ce 11% smaller
+    1820, 1760, //59 Pr 4% smaller
+    1810, 1740, //60 Nd 4% smaller
+    1800, 1730, //61 Pm 4% smaller
+    1800, 1720, //62 Sm 5% smaller
+    1990, 1680, //63 Eu 16% smaller
+    1790, 1690, //64 Gd 6% smaller
+    1760, 1680, //65 Tb 5% smaller
+    1750, 1670, //66 Dy 5% smaller
+    1740, 1660, //67 Ho 5% smaller
+    1730, 1650, //68 Er 5% smaller
+    1720, 1640, //69 Tm 5% smaller
+    1940, 1700, //70 Yb 13% smaller
+    1720, 1620, //71 Lu 6% smaller
+    1570, 1520, //72 Hf 4% smaller
+    1430, 1460, //73 Ta 2% larger
+    1370, 1370, //74 W 0% larger
+    1350, 1310, //75 Re 3% smaller
+    1370, 1290, //76 Os 6% smaller
+    1320, 1220, //77 Ir 8% smaller
+    1500, 1230, //78 Pt 18% smaller
+    1500, 1240, //79 Au 18% smaller
+    1700, 1330, //80 Hg 22% smaller
+    1550, 1440, //81 Tl 8% smaller
+    1540, 1440, //82 Pb 7% smaller
+    1540, 1510, //83 Bi 2% smaller
+    1680, 1450, //84 Po 14% smaller
+    1700, 1470, //85 At 14% smaller
+    2400, 1420, //86 Rn 41% smaller
+    2000, 2230, //87 Fr 11% larger
+    1900, 2010, //88 Ra 5% larger
+    1880, 1860, //89 Ac 2% smaller
+    1790, 1750, //90 Th 3% smaller
+    1610, 1690, //91 Pa 4% larger
+    1580, 1700, //92 U 7% larger
+    1550, 1710, //93 Np 10% larger
+    1530, 1720, //94 Pu 12% larger
+    1510, 1660, //95 Am 9% larger
+    1500, 1660, //96 Cm 10% larger
+    1500, 1680, //97 Bk 12% larger
+    1500, 1680, //98 Cf 12% larger
+    1500, 1650, //99 Es 9% larger
+    1500, 1670, //100 Fm 11% larger
+    1500, 1730, //101 Md 15% larger
+    1500, 1760, //102 No 17% larger
+    1500, 1610, //103 Lr 7% larger
+    1600, 1570, //104 Rf 2% smaller
+    1600, 1490, //105 Db 7% smaller
+    1600, 1430, //106 Sg 11% smaller
+    1600, 1410, //107 Bh 12% smaller
+    1600, 1340, //108 Hs 17% smaller
+    1600, 1290, //109 Mt 20% smaller
+  }
+;
 
   /****************************************************************
    * ionic radii are looked up using an array of shorts (16 bits each) 
@@ -1027,15 +1098,6 @@ public class Elements {
       bsCations.set(cationLookupTable[i]>>4);
   }
 
-  public static float getBondingRadiusFloat(int atomicNumberAndIsotope, int charge) {
-    int atomicNumber = atomicNumberAndIsotope & 127;
-    if (charge > 0 && bsCations.get(atomicNumber))
-      return getBondingRadFromTable(atomicNumber, charge, cationLookupTable);
-    if (charge < 0 && bsAnions.get(atomicNumber))
-      return getBondingRadFromTable(atomicNumber, charge, anionLookupTable);
-    return covalentMars[atomicNumber] / 1000f;
-  }
-
   public static float getBondingRadFromTable(int atomicNumber, int charge, short[] table) {
     // when found, return the corresponding value in ionicMars
     // if atom is not found, just return covalent radius
@@ -1114,14 +1176,14 @@ public class Elements {
     // if the length of these tables is all the same then the
     // java compiler should eliminate all of this code.
     if ((elementNames.length != elementNumberMax) ||
-        (vanderwaalsMars.length / 4 != elementNumberMax) ||
-        (covalentMars.length  != elementNumberMax)) {
+        (vanderwaalsMars.length >> 2 != elementNumberMax) ||
+        (defaultBondingMars.length >> 1  != elementNumberMax)) {
       Logger.error("ERROR!!! Element table length mismatch:" +
                          "\n elementSymbols.length=" + elementSymbols.length +
                          "\n elementNames.length=" + elementNames.length +
                          "\n vanderwaalsMars.length=" + vanderwaalsMars.length+
                          "\n covalentMars.length=" +
-                         covalentMars.length);
+                         defaultBondingMars.length);
     }
   }
 

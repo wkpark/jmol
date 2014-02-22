@@ -609,7 +609,7 @@ public class T {
   public final static int adpmax          = floatproperty | 1;
   public final static int adpmin          = floatproperty | 2;
   public final static int chemicalshift   = floatproperty | 3; // Jmol 13.1.19
-  public final static int covalent        = floatproperty | 4;
+  public final static int covalentradius        = floatproperty | 4;
   public final static int eta             = floatproperty | 5; // Jmol 12.0.RC23
   public final static int magneticshielding = floatproperty | 6;  // Jmol 13.1.19
   public final static int mass            = floatproperty | 7;
@@ -635,7 +635,7 @@ public class T {
   public final static int fux             = floatproperty | 7 | settable;
   public final static int fuy             = floatproperty | 8 | settable;
   public final static int fuz             = floatproperty | 9 | settable;
-  public final static int ionic           = floatproperty | 11 | settable;
+  public final static int bondingradius           = floatproperty | 11 | settable;
   public final static int partialcharge   = floatproperty | 12 | settable;
   public final static int temperature     = floatproperty | 15 | settable;
   public final static int vibx            = floatproperty | 18 | settable;
@@ -646,7 +646,7 @@ public class T {
   public final static int z               = floatproperty | 23 | settable;
   public final static int vanderwaals     = floatproperty | 24 | settable | setparam;
   public final static int property        = floatproperty | 25 | settable | setparam | mathproperty;
-  public final static int hydrophobic     = floatproperty | 26 | settable | predefinedset;
+  public final static int hydrophobicity     = floatproperty | 26 | settable | predefinedset;
   public final static int selected        = floatproperty | 27 | settable | predefinedset;
   
   public final static int backbone     = floatproperty | shapeCommand | 1 | predefinedset | defaultON | settable;
@@ -900,7 +900,8 @@ public class T {
   public final static int axesmode                       = intparam | 6;
   public final static int bondradiusmilliangstroms       = intparam | 8;
   public final static int celshadingpower                = intparam | 9;
-  public final static int delaymaximumms                 = intparam | 10;
+  public final static int bondingversion             = intparam | 10;
+  public final static int delaymaximumms                 = intparam | 12;
   public final static int diffusepercent                 = intparam | 14;
   public final static int dotdensity                     = intparam | 15;
   public final static int dotscale                       = intparam | 16;
@@ -1844,7 +1845,8 @@ public class T {
       "coords",          null,
       "cos",             T.t(cos),
       "cross",           T.t(cross),
-      "covalent",        T.t(covalent),
+      "covalentRadius",  T.t(covalentradius),
+      "covalent",        null,
       "direction",       T.t(direction),
       "displacement",    T.t(displacement),
       "displayed",       T.t(displayed),
@@ -1887,8 +1889,8 @@ public class T {
       "hidden",          T.t(hidden),
       "highlight",       T.t(highlight),
       "hkl",             T.t(hkl),
-      "hydrophobic",     T.t(hydrophobic),
-      "hydrophobicity",  null,
+      "hydrophobicity",  T.t(hydrophobicity),
+      "hydrophobic",     null,
       "hydro",           null,
       "id",              T.t(id),
       "identify",        T.t(identify),
@@ -1902,8 +1904,9 @@ public class T {
       "intra",           null,
       "intermolecular",  T.t(intermolecular),
       "inter",           null,
-      "ionic",           T.t(ionic),
+      "bondingRadius",   T.t(bondingradius),
       "ionicRadius",     null,
+      "ionic",           null,
       "isAromatic",      T.t(isaromatic),
       "Jmol",            T.t(jmol),
       "join",            T.t(join),
@@ -2325,6 +2328,7 @@ public class T {
       "animationFps",                             T.t(animationfps),
       "axesMode",                                 T.t(axesmode),
       "bondRadiusMilliAngstroms",                 T.t(bondradiusmilliangstroms),
+      "bondingVersion",                          T.t(bondingversion),
       "delayMaximumMs",                           T.t(delaymaximumms),
       "diffusePercent",                           T.t(diffusepercent),
       "diffuse",                                  null, 

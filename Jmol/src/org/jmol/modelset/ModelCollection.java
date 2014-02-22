@@ -2107,9 +2107,9 @@ abstract public class ModelCollection extends BondCollection {
     dBb(bsBonds, isFullModel);
   }
 
-  protected int[] makeConnections2(float minDistance, float maxDistance,
-                                   int order, int connectOperation, BS bsA,
-                                   BS bsB, BS bsBonds, boolean isBonds,
+  protected int[] makeConnections2(float minD, float maxD, int order,
+                                   int connectOperation, BS bsA, BS bsB,
+                                   BS bsBonds, boolean isBonds,
                                    boolean addGroup, float energy) {
     if (bsBonds == null)
       bsBonds = new BS();
@@ -2119,53 +2119,50 @@ abstract public class ModelCollection extends BondCollection {
       order = JmolEdge.BOND_COVALENT_SINGLE; //default for setting
     boolean matchHbond = Bond.isOrderH(order);
     boolean identifyOnly = false;
-    boolean modifyOnly = false;
+    boolean idOrModifyOnly = false;
     boolean createOnly = false;
     boolean autoAromatize = false;
-    float minDistanceSquared = minDistance * minDistance;
-    float maxDistanceSquared = maxDistance * maxDistance;
     switch (connectOperation) {
     case T.delete:
-      return deleteConnections(minDistance, maxDistance, order, bsA, bsB,
-          isBonds, matchNull, minDistanceSquared, maxDistanceSquared);
+      return deleteConnections(minD, maxD, order, bsA, bsB, isBonds, matchNull);
     case T.legacyautobonding:
     case T.auto:
       if (order != JmolEdge.BOND_AROMATIC)
         return autoBond(bsA, bsB, bsBonds, isBonds, matchHbond,
             connectOperation == T.legacyautobonding);
-      modifyOnly = true;
-      autoAromatize = true;
+      idOrModifyOnly = autoAromatize = true;
       break;
     case T.identify:
-      identifyOnly = true;
+      identifyOnly = idOrModifyOnly = true;
       break;
     case T.modify:
-      modifyOnly = true;
+      idOrModifyOnly = true;
       break;
     case T.create:
       createOnly = true;
       break;
     }
+    boolean anyOrNoId = (!identifyOnly || matchAny);
+    boolean notAnyAndNoId = (!identifyOnly && !matchAny);
+    
     defaultCovalentMad = viewer.getMadBond();
-    boolean minDistanceIsFractionRadius = (minDistance < 0);
-    boolean maxDistanceIsFractionRadius = (maxDistance < 0);
-    if (minDistanceIsFractionRadius)
-      minDistance = -minDistance;
-    if (maxDistanceIsFractionRadius)
-      maxDistance = -maxDistance;
+    boolean minDIsFrac = (minD < 0);
+    boolean maxDIsFrac = (maxD < 0);
+    boolean isFractional = (minDIsFrac || maxDIsFrac);
+    boolean checkDistance = (!isBonds
+        || minD != JC.DEFAULT_MIN_CONNECT_DISTANCE || maxD != JC.DEFAULT_MAX_CONNECT_DISTANCE);
+    if (checkDistance) {
+      minD = fixD(minD, minDIsFrac);
+      maxD = fixD(maxD, maxDIsFrac);
+    }
     short mad = getDefaultMadFromOrder(order);
     int nNew = 0;
     int nModified = 0;
     Bond bondAB = null;
-    int m = (isBonds ? 1 : atomCount);
     Atom atomA = null;
     Atom atomB = null;
-    float dAB = 0;
-    float dABcalc = 0;
-    float distanceSquared;
     char altloc = '\0';
     short newOrder = (short) (order | JmolEdge.BOND_NEW);
-    boolean checkDistance = (!isBonds || minDistance != JC.DEFAULT_MIN_CONNECT_DISTANCE || maxDistance != JC.DEFAULT_MAX_CONNECT_DISTANCE); 
     try {
       for (int i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1)) {
         if (isBonds) {
@@ -2178,7 +2175,7 @@ abstract public class ModelCollection extends BondCollection {
             continue;
           altloc = (isModulated(i) ? '\0' : atomA.altloc);
         }
-        for (int j = (isBonds ? m : bsB.nextSetBit(0)); j >= 0; j = bsB
+        for (int j = (isBonds ? 0 : bsB.nextSetBit(0)); j >= 0; j = bsB
             .nextSetBit(j + 1)) {
           if (isBonds) {
             j = 2147483646; // Integer.MAX_VALUE - 1; one pass only
@@ -2193,37 +2190,26 @@ abstract public class ModelCollection extends BondCollection {
               continue;
             bondAB = atomA.getBond(atomB);
           }
-          if (bondAB == null && (identifyOnly || modifyOnly) || bondAB != null
-              && createOnly)
+          if ((bondAB == null ? idOrModifyOnly : createOnly)
+              || checkDistance
+              && !isInRange(atomA, atomB, minD, maxD, minDIsFrac, maxDIsFrac,
+                  isFractional))
             continue;
-          if (checkDistance) {
-            if (minDistanceIsFractionRadius || maxDistanceIsFractionRadius) {
-              dAB = atomA.distance(atomB);
-              dABcalc = atomA.getBondingRadiusFloat()
-                  + atomB.getBondingRadiusFloat();
-            }
-            distanceSquared = atomA.distanceSquared(atomB);
-            if ((minDistanceIsFractionRadius ? dAB < dABcalc * minDistance
-                : distanceSquared < minDistanceSquared)
-                || (maxDistanceIsFractionRadius ? dAB > dABcalc * maxDistance
-                    : distanceSquared > maxDistanceSquared))
-              continue;
-          }
-          if (bondAB != null) {
-            if (!identifyOnly && !matchAny) {
+          if (bondAB == null) {
+            bsBonds.set(bondAtoms(atomA, atomB, order, mad, bsBonds, energy,
+                addGroup, true).index);
+            nNew++;
+          } else {
+            if (notAnyAndNoId) {
               bondAB.setOrder(order);
               bsAromatic.clear(bondAB.index);
             }
-            if (!identifyOnly || matchAny || order == bondAB.order
+            if (anyOrNoId || order == bondAB.order
                 || newOrder == bondAB.order || matchHbond
                 && bondAB.isHydrogen()) {
               bsBonds.set(bondAB.index);
               nModified++;
             }
-          } else {
-            bsBonds.set(bondAtoms(atomA, atomB, order, mad, bsBonds, energy,
-                addGroup, true).index);
-            nNew++;
           }
         }
       }
@@ -2249,7 +2235,6 @@ abstract public class ModelCollection extends BondCollection {
       return 0;
     if (mad == 0)
       mad = 1;
-    // null values for bitsets means "all"
     if (maxBondingRadius == PT.FLOAT_MIN_SAFE)
       findMaxRadii();
     float bondTolerance = viewer.getFloat(T.bondtolerance);
@@ -2258,14 +2243,6 @@ abstract public class ModelCollection extends BondCollection {
     int nNew = 0;
     if (showRebondTimes)// && Logger.debugging)
       Logger.startTimer("autobond");
-    /*
-     * miguel 2006 04 02 note that the way that these loops + iterators are
-     * constructed, everything assumes that all possible pairs of atoms are
-     * going to be looked at. for example, the hemisphere iterator will only
-     * look at atom indexes that are >= (or <= ?) the specified atom. if we are
-     * going to allow arbitrary sets bsA and bsB, then this will not work. so,
-     * for now I will do it the ugly way. maybe enhance/improve in the future.
-     */
     int lastModelIndex = -1;
     boolean isAll = (bsA == null);
     BS bsCheck;
@@ -2302,7 +2279,7 @@ abstract public class ModelCollection extends BondCollection {
         }
       }
       // Covalent bonds
-      float myBondingRadius = atom.getBondingRadiusFloat();
+      float myBondingRadius = atom.getBondingRadius();
       if (myBondingRadius == 0)
         continue;
       boolean isFirstExcluded = (bsExclude != null && bsExclude.get(i));
@@ -2321,7 +2298,7 @@ abstract public class ModelCollection extends BondCollection {
             || isFirstExcluded && bsExclude.get(atomIndexNear))
           continue;
         short order = getBondOrderFull(myBondingRadius,
-            atomNear.getBondingRadiusFloat(), iter.foundDistance2(),
+            atomNear.getBondingRadius(), iter.foundDistance2(),
             minBondDistance2, bondTolerance);
         if (order > 0
             && checkValencesAndBond(atom, atomNear, order, mad, bsBonds))
@@ -2383,7 +2360,7 @@ abstract public class ModelCollection extends BondCollection {
         }
       }
       // Covalent bonds
-      float myBondingRadius = atom.getBondingRadiusFloat();
+      float myBondingRadius = atom.getBondingRadius();
       if (myBondingRadius == 0)
         continue;
       float searchRadius = myBondingRadius + maxBondingRadius + bondTolerance;
@@ -2404,7 +2381,7 @@ abstract public class ModelCollection extends BondCollection {
         if (!(isAtomInSetA && isNearInSetB || isAtomInSetB && isNearInSetA))
           continue;
         short order = getBondOrderFull(myBondingRadius,
-            atomNear.getBondingRadiusFloat(), iter.foundDistance2(),
+            atomNear.getBondingRadius(), iter.foundDistance2(),
             minBondDistance2, bondTolerance);
         if (order > 0) {
           if (checkValencesAndBond(atom, atomNear, order, mad, bsBonds))
@@ -2690,7 +2667,8 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public BS getAtomsConnected(float min, float max, int intType, BS bs) {
-    BS bsResult = new BS();
+    boolean isBonds = bs instanceof BondSet;
+    BS bsResult = (isBonds ? new BondSet() : new BS());
     int[] nBonded = new int[atomCount];
     int i;
     boolean ishbond = (intType == JmolEdge.BOND_HYDROGEN_MASK);
@@ -2698,6 +2676,9 @@ abstract public class ModelCollection extends BondCollection {
     for (int ibond = 0; ibond < bondCount; ibond++) {
       Bond bond = bonds[ibond];
       if (isall || bond.is(intType) || ishbond && bond.isHydrogen()) {
+        if (isBonds) {
+          bsResult.set(ibond);
+        } else {
         if (bs.get(bond.atom1.index)) {
           nBonded[i = bond.atom2.index]++;
           bsResult.set(i);
@@ -2706,8 +2687,11 @@ abstract public class ModelCollection extends BondCollection {
           nBonded[i = bond.atom1.index]++;
           bsResult.set(i);
         }
+        }
       }
     }
+    if (isBonds)
+      return bsResult;
     boolean nonbonded = (min == 0);
     for (i = atomCount; --i >= 0;) {
       int n = nBonded[i];

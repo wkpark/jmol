@@ -107,7 +107,7 @@ public class LabelToken {
       /* 'f' */T.phi,
       /* 'G' */T.groupindex,
       /* 'g' */'g', //getSelectedGroupIndexWithinChain()
-      /* 'I' */T.ionic,
+      /* 'I' */T.bondingradius,
       /* 'i' */T.atomno,
       /* 'L' */T.polymerlength,
       /* 'l' */T.elemno,
@@ -146,14 +146,14 @@ public class LabelToken {
       T.rocket, T.star, T.strands, T.trace,
 
       T.adpmax, T.adpmin, T.atomid, T.bondcount, T.color,
-      T.groupid, T.covalent, T.file, T.format, T.label,
+      T.groupid, T.covalentradius, T.file, T.format, T.label,
       T.mass, T.modelindex, T.eta, T.omega, T.polymer, T.property,
       T.radius, T.selected, T.shape, T.sequence,
       T.spacefill, T.structure, T.substructure, T.strucno,
       T.strucid, T.symbol, T.theta, T.unitx, T.unity,
       T.unitz, T.valence, T.vectorscale, T.vibx, T.viby, T.vibz,
       T.volume, T.unitxyz, T.fracxyz, T.xyz, T.fuxyz,
-      T.fux, T.fuy, T.fuz, T.hydrophobic, T.screenx, 
+      T.fux, T.fuy, T.fuz, T.hydrophobicity, T.screenx, 
       T.screeny, T.screenz, T.screenxyz, // added in 12.3.30
       T.magneticshielding, T.chemicalshift, T.chainno
   };

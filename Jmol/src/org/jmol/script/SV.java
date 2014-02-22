@@ -261,6 +261,8 @@ public class SV extends T implements JSONEncodable {
       return getVariableADD((double[][]) x);
     if (PT.isAFloat(x))
       return newV(listf, x);
+    if (x instanceof ScriptContext)
+      return newV(context, x);
     return newS(x.toString());
   }
 

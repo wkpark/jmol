@@ -38,6 +38,7 @@ import org.jmol.api.JmolScriptManager;
 import org.jmol.io.JmolBinary;
 import org.jmol.java.BS;
 import org.jmol.thread.JmolThread;
+import org.jmol.util.Elements;
 import org.jmol.util.Logger;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.StatusManager;
@@ -364,6 +365,7 @@ public class ScriptManager implements JmolScriptManager {
       viewer.scriptStatus(strErrorMessage);
       viewer.setScriptStatus("Jmol script terminated", strErrorMessage, 1,
           strErrorMessageUntranslated);
+      if (eval.isStateScript())
       setStateScriptVersion(viewer, null); // set by compiler
     }
     if (strErrorMessage != null && viewer.autoExit)
@@ -616,10 +618,13 @@ public class ScriptManager implements JmolScriptManager {
     return JmolBinary.getZipDirectoryAsStringAndClose((BufferedInputStream) t);
   }
 
+  private static int prevCovalentVersion = 1;
+
   public static void setStateScriptVersion(Viewer viewer, String version) {
     if (version != null) {
-      String[] tokens = PT.getTokens(version.replace('.', ' ').replace('_',
-          ' '));
+      prevCovalentVersion = Elements.bondingVersion;
+      String[] tokens = PT.getTokens(version.replace('.', ' ')
+          .replace('_', ' '));
       try {
         int main = PT.parseInt(tokens[0]); //11
         int sub = PT.parseInt(tokens[1]); //9
@@ -627,18 +632,22 @@ public class ScriptManager implements JmolScriptManager {
         if (minor == Integer.MIN_VALUE) // RCxxx
           minor = 0;
         if (main != Integer.MIN_VALUE && sub != Integer.MIN_VALUE) {
-          int ver = viewer.stateScriptVersionInt = main * 10000 + sub * 100 + minor;
-          // here's why:
+          int ver = viewer.stateScriptVersionInt = main * 10000 + sub * 100
+              + minor;
           viewer.global.legacyAutoBonding = (ver < 110924);
           viewer.global.legacyHAddition = (ver < 130117);
+          viewer.setIntProperty("bondingVersion", ver < 140111 ? 0 : 1);
           return;
         }
       } catch (Exception e) {
         // ignore
       }
     }
+    viewer.setIntProperty("bondingVersion", prevCovalentVersion);
     viewer.setBooleanProperty("legacyautobonding", false);
+    viewer.global.legacyHAddition = false;
     viewer.stateScriptVersionInt = Integer.MAX_VALUE;
   }
+  
 
 }

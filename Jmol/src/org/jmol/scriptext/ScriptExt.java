@@ -1709,7 +1709,7 @@ public class ScriptExt implements JmolScriptExtension {
         if (tokAt(i + 1) != T.string)
           invPO();
         continue;
-      case T.ionic:
+      case T.bondingradius:
       case T.vanderwaals:
         //if (surfaceObjectSeen)
         sbCommand.append(" ").appendO(eval.theToken.value);
@@ -9389,19 +9389,23 @@ public class ScriptExt implements JmolScriptExtension {
 
   private boolean evaluateConnected(ScriptMathProcessor mp, SV[] args) {
     /*
-     * Two options here:
+     * Several options here:
      * 
      * connected(1, 3, "single", {carbon})
      * 
-     * connected(1, 3, "partial 3.1", {carbon})
-     * 
      * means "atoms connected to carbon by from 1 to 3 single bonds"
+     * and returns an atom set.
      * 
      * connected(1.0, 1.5, "single", {carbon}, {oxygen})
      * 
      * means "single bonds from 1.0 to 1.5 Angstroms between carbon and oxygen"
+     * and returns a bond bitset.
      * 
-     * the first returns an atom bitset; the second returns a bond bitset.
+     * connected({*}.bonds, "DOUBLE")
+     * 
+     * means just that and returns a bond set
+     * 
+     * 
      */
 
     if (args.length > 5)
@@ -9478,7 +9482,7 @@ public class ScriptExt implements JmolScriptExtension {
           new BondSet(bsBonds, viewer.getAtomIndices(viewer.getAtomBits(
               T.bonds, bsBonds)))));
     }
-    return mp.addXBs(viewer.getAtomsConnected(min, max, order, atoms1));
+    return mp.addXBs(viewer.modelSet.getAtomsConnected(min, max, order, atoms1));
   }
 
   private boolean evaluateSubstructure(ScriptMathProcessor mp, SV[] args,

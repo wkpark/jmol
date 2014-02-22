@@ -16,6 +16,7 @@ import org.jmol.java.BS;
 import org.jmol.script.SV;
 import org.jmol.script.T;
 import org.jmol.util.BSUtil;
+import org.jmol.util.Elements;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Txt;
@@ -83,6 +84,7 @@ public class GlobalSettings {
         allowKeyStrokes = g.allowKeyStrokes;
         legacyAutoBonding = g.legacyAutoBonding;
         legacyHAddition = g.legacyHAddition;
+        bondingVersion = g.bondingVersion;
         platformSpeed = g.platformSpeed;
         useScriptQueue = g.useScriptQueue;
         useArcBall = g.useArcBall;
@@ -173,7 +175,7 @@ public class GlobalSettings {
       // It's just an issue of speed of access. Generally, these should only be
       // accessed by the user. 
 
-      setI("_version", getJmolVersionInt());
+      setI("_version", JC.versionInt);
 
       setB("axesWindow", true);
       setB("axesMolecular", false);
@@ -232,6 +234,7 @@ public class GlobalSettings {
       setB("chainCaseSensitive", chainCaseSensitive);
       setB("celShading", celShading);
       setI("celShadingPower", celShadingPower);
+      setI("bondingVersion", bondingVersion);
       setS("dataSeparator", dataSeparator);
       setB("debugScript", debugScript);
       setS("defaultAngleLabel", defaultAngleLabel);
@@ -889,6 +892,8 @@ public class GlobalSettings {
     
     boolean haveSetStructureList;
     private String[] userDatabases;
+
+    public int bondingVersion = Elements.RAD_COV_IONIC_OB1_100_1;
     
     public void setStructureList(float[] list, EnumStructure type) {
       haveSetStructureList = true;
@@ -965,7 +970,7 @@ public class GlobalSettings {
           + ";antialiasdisplay;antialiasimages;antialiastranslucent;appendnew;axescolor"
           + ";axesposition;axesmolecular;axesorientationrasmol;axesunitcell;axeswindow;axis1color;axis2color"
           + ";axis3color;backgroundcolor;backgroundmodel;bondsymmetryatoms;boundboxcolor;cameradepth"
-          + ";debug;debugscript;defaultlatttice;defaults;defaultdropscript;diffusepercent;"
+          + ";bondingversion;debug;debugscript;defaultlatttice;defaults;defaultdropscript;diffusepercent;"
           + ";exportdrivers;exportscale"
           + ";_filecaching;_filecache;fontcaching;fontscaling;forcefield;language"
           + ";legacyautobonding;legacyhaddition"
@@ -989,45 +994,6 @@ public class GlobalSettings {
           + ";spinx;spiny;spinz;spinfps;navx;navy;navz;navfps;" + EnumCallback.getNameList()
           + ";undo;bondpicking;modelkitmode;allowgestures;allowkeystrokes;allowmultitouch;allowmodelkit"
           + ";").toLowerCase();
-
-    private static int getJmolVersionInt() {
-      // 11.9.999 --> 1109999
-      String s = JC.version;
-      int version = -1;
-
-      try {
-        // Major number
-        int i = s.indexOf(".");
-        if (i < 0) {
-          version = 100000 * Integer.parseInt(s);
-          return version;
-        }
-        version = 100000 * Integer.parseInt(s.substring(0, i));
-
-        // Minor number
-        s = s.substring(i + 1);
-        i = s.indexOf(".");
-        if (i < 0) {
-          version += 1000 * Integer.parseInt(s);
-          return version;
-        }
-        version += 1000 * Integer.parseInt(s.substring(0, i));
-
-        // Revision number
-        s = s.substring(i + 1);
-        i = s.indexOf("_");
-        if (i >= 0)
-          s = s.substring(0, i);
-        i = s.indexOf(" ");
-        if (i >= 0)
-          s = s.substring(0, i);
-        version += Integer.parseInt(s);
-      } catch (NumberFormatException e) {
-        // We simply keep the version currently found
-      }
-
-      return version;
-    }
 
     Object getAllVariables() {
       Map<String, Object> map = new Hashtable<String, Object>();

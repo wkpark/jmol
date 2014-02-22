@@ -259,7 +259,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     this.listCommands = listCommands;
     startEval();
     this.isCmdLine_C_Option = tempOpen;
-    ScriptManager.setStateScriptVersion(viewer, null); // set by compiler
+    if(isStateScript)
+      ScriptManager.setStateScriptVersion(viewer, null); // set by compiler
   }
 
   public boolean useThreads() {
@@ -1032,6 +1033,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.matrix4f:
       case T.bitset:
       case T.hash:
+      case T.context:
         rpn.addXVar(SV.newT(theToken));
         break;
       case T.dollarsign:
@@ -1905,7 +1907,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     strScript = fixScriptPath(strScript, filename);
     restoreScriptContext(compiler.compile(filename, strScript, false, false,
         debugCompiler && Logger.debugging, false), false, false, false);
-    isStateScript = (script.indexOf(JC.STATE_VERSION_STAMP) >= 0);
+    isStateScript = compiler.isStateScript;
     forceNoAddHydrogens = (isStateScript && script.indexOf("pdbAddHydrogens") < 0);
     String s = script;
     pc = setScriptExtensions();
@@ -6786,7 +6788,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.fixedtemp:
       case T.formalcharge:
       case T.group:
-      case T.hydrophobic:
+      case T.hydrophobicity:
       case T.insertion:
       case T.jmol:
       case T.molecule:
@@ -8943,6 +8945,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (timeMsg)
         Logger.startTimer("script");
       dispatchCommands(false, false);
+      if (isStateScript)
+        ScriptManager.setStateScriptVersion(viewer,  null);
       if (timeMsg)
         showString(Logger.getTimerMsg("script", 0));
       isCmdLine_C_Option = saveLoadCheck;
@@ -9819,8 +9823,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     switch (tok) {
     case T.adpmax:
     case T.adpmin:
-    case T.ionic:
-    case T.hydrophobic:
+    case T.bondingradius:
+    case T.hydrophobicity:
     case T.temperature:
     case T.vanderwaals:
       value = 1;
@@ -12654,6 +12658,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return getErrorLineMessage(functionName, scriptFileName,
         getLinenumber(null), pc,
         statementAsString(viewer, st, -9999, debugHigh));
+  }
+
+  @Override
+  public boolean isStateScript() {
+    return isStateScript;
   }
 
 }

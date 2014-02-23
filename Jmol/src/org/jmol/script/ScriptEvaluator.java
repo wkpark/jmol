@@ -1089,12 +1089,18 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         i++;
         break out;
       case T.comma: // ignore commas
-        if (!ignoreComma && nParen == 0 && nSquare == 0) {
+        if (!ignoreComma && nParen == 0 && nSquare == 0)
           break out;
-        }
         if (!rpn.addOp(theToken))
           invArg();
         break;
+      case T.perper:
+        if (tokAt(i + 1) == T.nada)
+          invArg();
+        rpn.addOp(T.o(T.leftsquare, "["));
+        rpn.addXStr(optParameterAsString(++i));
+        rpn.addOp(T.o(T.rightsquare, "]"));
+        continue;
       case T.per:
         SV token = getBitsetPropertySelector(i + 1, false);
         if (token == null)
@@ -2517,6 +2523,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           fixed[j] = SV.newV(v instanceof M4 ? T.matrix4f : T.matrix3f, v);
         } else if (v instanceof Map<?, ?>) {
           fixed[j] = SV.newV(T.hash, v);
+        } else if (v instanceof ScriptContext) {
+          fixed[j] = SV.newV(T.hash, ((ScriptContext)v).getFullMap());
         } else if (v instanceof List<?>) {
           List<SV> sv = (List<SV>) v;
           BS bs = null;

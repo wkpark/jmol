@@ -163,6 +163,8 @@ public class SV extends T implements JSONEncodable {
           : sizeOf(selectItemTok(x, Integer.MIN_VALUE));
     case hash:
       return ((Map<String, SV>) x.value).size();
+    case context:
+      return ((ScriptContext) x.value).getFullMap().size();
     default:
       return 0;
     }
@@ -512,6 +514,7 @@ public class SV extends T implements JSONEncodable {
     switch (x == null ? nada : x.tok) {
     case on:
     case hash:
+    case context:
       return true;
     case off:
       return false;
@@ -1045,6 +1048,7 @@ public class SV extends T implements JSONEncodable {
       return PT.esc((String) value);
     case varray:
     case hash:
+    case context:
       SB sb = new SB();
       Map<Object,Boolean>map = new Hashtable<Object,Boolean>();
       sValueArray(sb, this, map, 0, true);
@@ -1197,6 +1201,7 @@ public class SV extends T implements JSONEncodable {
       case bitset:
       case hash:
       case varray:
+      case context:
         return x1.equals(x2);
       case point3f:
         return (((P3) x1.value).distance((P3) x2.value) < 0.000001);
@@ -1393,7 +1398,8 @@ public class SV extends T implements JSONEncodable {
     case hash:
       return ((Map<String, SV>) value).get(key);
     case context:
-      return ((ScriptContext) value).getVariable(key);
+      ScriptContext sc = ((ScriptContext) value);
+      return (key.equals("_path") ? newS(sc.contextPath) : sc.getVariable(key));
     }
     return null;
   }

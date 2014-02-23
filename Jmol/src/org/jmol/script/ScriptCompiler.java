@@ -137,6 +137,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
 
   private int tokInitialPlusPlus;
   private int afterWhite;
+  private boolean isDotDot;
   
   synchronized ScriptContext compile(String filename, String script, boolean isPredefining,
                   boolean isSilent, boolean debugScript, boolean isCheckOnly) {
@@ -990,7 +991,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         if (T.tokAttr(tokCommand, T.setparam) && ch == '='
             || (isNewSet || isSetBrace) && isOperation) {
           setCommand(isAndEquals ? T.tokenSet
-              : ch == '[' && !isSetBrace ? T.tokenSetArray : T.tokenSetProperty);
+              : ch == '[' && !isSetBrace || ch == '.' && ch2 == '.' ? T.tokenSetArray : T.tokenSetProperty);
           ltoken.add(0, tokenCommand);
           cchToken = 1;
           switch (ch) {
@@ -999,7 +1000,13 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
             bracketCount++;
             return CONTINUE;
           case '.':
-            addTokenToPrefix(T.o(T.per, "."));
+            if (ch2 == '.') {
+              addTokenToPrefix(T.o(T.leftsquare, "["));
+              cchToken= 2;
+              isDotDot = true;
+              return CONTINUE;
+            }
+            addTokenToPrefix(T.o(T.per, "."));            
             return CONTINUE;
           case '-':
           case '+':
@@ -1246,6 +1253,12 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
 
     T token;
 
+    if (isDotDot) {
+      addTokenToPrefix(T.o(T.string, ident));
+      addTokenToPrefix(T.o(T.rightsquare, "]"));
+      isDotDot = false;
+      return CONTINUE;
+    }
     if (tokLastMath != 0)
       tokLastMath = theTok;
     if (flowContext != null && flowContext.token.tok == T.switchcmd
@@ -1358,6 +1371,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     case T.per:
       if (tokCommand == T.set && parenCount == 0 && bracketCount == 0
           && ichToken < setEqualPt) {
+        // a[3].
         ltoken.add(1, T.tokenExpressionBegin);
         addTokenToPrefix(T.tokenExpressionEnd);
         ltoken.set(0, T.tokenSetProperty);
@@ -1425,6 +1439,11 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       bracketCount--;
       if (bracketCount < 0)
         return ERROR(ERROR_tokenUnexpected, "]");
+      break;
+    case T.perper:
+      isDotDot = true;
+      addTokenToPrefix(T.o(T.leftsquare, "["));
+      return CONTINUE;
     }
     return OK;
   }
@@ -2640,7 +2659,10 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     case ')':
     case ']':
     case '}':
+      break;
     case '.':
+      if (charAt(ichT) == '.')
+        ++ichT;
       break;
     case '@':
     case '{':

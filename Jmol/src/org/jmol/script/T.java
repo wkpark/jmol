@@ -91,14 +91,15 @@ public class T {
   public final static int matrix4f   = 12;  
   // listf "list-float" is specifically for xxx.all.bin, 
   // but it could be developed further
-  public final static int listf             = 13;     
-  final private static int keyword   = 14;
+  public final static int listf      = 13;     
+  public final static int context    = 14;     
+  final private static int keyword   = 15;
   
 
   public final static String[] astrType = {
     "nada", "identifier", "integer", "decimal", "string",
     "seqcode", "hash", "array", "point", "point4", "bitset",
-    "matrix3f",  "matrix4f", "listf", "keyword"
+    "matrix3f",  "matrix4f", "listf", "context", "keyword"
   };
 
   public static boolean tokAttr(int a, int b) {
@@ -403,9 +404,10 @@ public class T {
   public final static int expressionEnd       = expression | 2;
   public final static int all          = expression | 3;
   public final static int branch       = expression | 4;
-  public final static int coord               = expression | 6;
-  public final static int dollarsign          = expression | 7;
-  public final static int per                 = expression | 8;
+  public final static int coord               = expression | 5;
+  public final static int dollarsign          = expression | 6;
+  public final static int per                 = expression | 7;
+  public final static int perper              = expression | 8;
   public final static int isaromatic   = expression | 9;
   public final static int leftbrace           = expression | 10;
   public final static int none                = expression | 11;
@@ -1127,7 +1129,6 @@ public class T {
   public final static int colorscheme   = misc  | 64;
   public final static int command       = misc  | 66;
   public final static int commands      = misc  | 68;
-  public final static int context       = misc  | 69;
   public final static int constraint    = misc  | 70;
   public final static int contour       = misc  | 72;
   public final static int contourlines  = misc  | 74;
@@ -1547,6 +1548,7 @@ public class T {
       "<>",           null,
       "within",       T.t(within),
       ".",            T.t(per),
+      "..",           T.t(perper),
       "[",            T.t(leftsquare),
       "]",            T.t(rightsquare),
       "{",            T.t(leftbrace),

@@ -863,9 +863,10 @@ public class ScriptMathProcessor {
       case T.type:
         return addXStr(typeOf(x2));
       case T.keys:
-        if (x2.tok != T.hash)
+        if (x2.tok != T.hash && x2.tok != T.context)
           return addXStr("");
-        Set<String> keyset = ((Map<String, SV>) x2.value).keySet();
+        Set<String> keyset = ((Map<String, SV>) (x2.tok == T.hash ? x2.value
+            : ((ScriptContext) x2.value).getFullMap())).keySet();
         String[] keys = keyset.toArray(new String[keyset.size()]);
         Arrays.sort(keys);
         return addXAS(keys);
@@ -1476,6 +1477,7 @@ public class ScriptMathProcessor {
     case T.hash:
     case T.matrix3f:
     case T.matrix4f:
+    case T.context:
       return T.astrType[tok];
     }
     return "?";

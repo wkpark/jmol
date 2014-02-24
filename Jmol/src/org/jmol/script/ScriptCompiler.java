@@ -138,7 +138,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   private int tokInitialPlusPlus;
   private int afterWhite;
   private boolean isDotDot;
-  private String identFullCase;
+  private String ident;
+  private String identLC;
   
   synchronized ScriptContext compile(String filename, String script, boolean isPredefining,
                   boolean isSilent, boolean debugScript, boolean isCheckOnly) {
@@ -372,15 +373,14 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           return false;
         }
       }
-      if (lookingAtLookupToken(ichToken)) {        
-        String ident = getPrefixToken();
-        switch (parseKnownToken(ident)) {
+      if (lookingAtLookupToken(ichToken)) {
+        switch (parseKnownToken()) {
         case CONTINUE:
           continue;
         case ERROR:
           return false;
         }
-        switch (parseCommandParameter(ident)) {
+        switch (parseCommandParameter()) {
         case CONTINUE:
           continue;
         case ERROR:
@@ -876,17 +876,15 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     ltoken.add(0, setCommand(token));
   }
 
-  private String getPrefixToken() {
-    String ident = script.substring(ichToken, ichToken + cchToken);
-    String identLC = ident.toLowerCase();
-    identFullCase = ident;
-    boolean isUserVar = isContextVariable(identLC);
+  private void getPrefixToken() {
+    ident = script.substring(ichToken, ichToken + cchToken);
+    identLC = ident.toLowerCase();
+    boolean isUserVar = (isContextVariable(identLC));
     if (nTokens == 0)
       isUserToken = isUserVar;
-    if (nTokens == 1
-        && (tokCommand == T.function || tokCommand == T.parallel || tokCommand == T.var)
-        || nTokens != 0 && isUserVar || isUserFunction(identLC)
-        && (thisFunction == null || !thisFunction.name.equals(identLC))) {
+    if (nTokens == 1 && (tokCommand == T.function || tokCommand == T.parallel || tokCommand == T.var)
+        || nTokens != 0 && isUserVar && lastToken.tok != T.per 
+        || isUserFunction(identLC) && (thisFunction == null || !thisFunction.name.equals(identLC))) {
       // we need to allow:
 
       // var color = "xxx"
@@ -911,19 +909,18 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         theToken = T.tv(theToken.tok, theToken.intValue, ident);
     } else {
       theToken = T.getTokenFromName(identLC);
-      if (theToken != null && (lastToken.tok == T.per || lastToken.tok == T.leftsquare))
-        theToken = T.o(theToken.tok, identFullCase);
+      if (theToken != null
+          && (lastToken.tok == T.per || lastToken.tok == T.leftsquare))
+        theToken = T.o(theToken.tok, ident);
     }
+
     if (theToken == null) {
       if (identLC.indexOf("property_") == 0)
         theToken = T.o(T.property, identLC);
-      else if (lastToken.tok == T.per || lastToken.tok == T.leftsquare)
-        theToken = T.o(T.identifier, identFullCase);
       else
         theToken = T.o(T.identifier, ident);
     }
     theTok = theToken.tok;
-    return ident;
   }
 
   /**
@@ -1253,14 +1250,16 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     return m;
   }
 
-  private int parseKnownToken(String ident) {
+  private int parseKnownToken() {
+
+    getPrefixToken();
 
     // specific token-based issues depend upon where we are in the command
 
     T token;
 
     if (isDotDot) {
-      addTokenToPrefix(T.o(T.string, identFullCase));
+      addTokenToPrefix(T.o(T.string, ident));
       addTokenToPrefix(T.o(T.rightsquare, "]"));
       isDotDot = false;
       return CONTINUE;
@@ -1483,7 +1482,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     return true;
   }
 
-  private int parseCommandParameter(String ident) {
+  private int parseCommandParameter() {
     // PART II:
     //
     // checking tokens based on the current command
@@ -1572,7 +1571,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           break;
         default:
           if (!T.tokAttr(theTok, T.misc) && !T.tokAttr(theTok, T.setparam)
-              && !isContextVariable(ident)) {
+              && !isContextVariable(identLC)) {
             commandExpected();
             return ERROR;
           }

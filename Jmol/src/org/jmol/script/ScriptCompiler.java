@@ -883,11 +883,12 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     boolean isUserVar = isContextVariable(identLC);
     if (nTokens == 0)
       isUserToken = isUserVar;
-    if (nTokens == 1 && (tokCommand == T.function  || tokCommand == T.parallel || tokCommand == T.var)
-        || nTokens != 0 && isUserVar
-        || isUserFunction(identLC)  && (thisFunction == null || !thisFunction.name.equals(identLC))) {
+    if (nTokens == 1
+        && (tokCommand == T.function || tokCommand == T.parallel || tokCommand == T.var)
+        || nTokens != 0 && isUserVar || isUserFunction(identLC)
+        && (thisFunction == null || !thisFunction.name.equals(identLC))) {
       // we need to allow:
-      
+
       // var color = "xxx"
       // color @color
       // print color
@@ -896,7 +897,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       // color = ...
       // color += ...
       // color[ ...
-      
+
       ident = identLC;
       theToken = null;
     } else if (ident.length() == 1 || lastToken.tok == T.colon) {
@@ -909,15 +910,18 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           && (theToken = T.getTokenFromName(identLC)) != null)
         theToken = T.tv(theToken.tok, theToken.intValue, ident);
     } else {
-      ident = identLC;
-      theToken = T.getTokenFromName(ident);
+      theToken = T.getTokenFromName(identLC);
+      if (theToken != null && (lastToken.tok == T.per || lastToken.tok == T.leftsquare))
+        theToken = T.o(theToken.tok, identFullCase);
     }
     if (theToken == null) {
-      if (ident.indexOf("property_") == 0)
-        theToken = T.o(T.property, ident);
+      if (identLC.indexOf("property_") == 0)
+        theToken = T.o(T.property, identLC);
+      else if (lastToken.tok == T.per || lastToken.tok == T.leftsquare)
+        theToken = T.o(T.identifier, identFullCase);
       else
         theToken = T.o(T.identifier, ident);
-    }    
+    }
     theTok = theToken.tok;
     return ident;
   }

@@ -64,6 +64,11 @@ public class ScriptMathProcessor {
    * 
    */
 
+  // required by ScriptExt
+  public boolean wasX;
+  public boolean asBitSet;
+  public int oPt = -1; // used in asynchronous load to mark which file is being loaded
+
   private boolean chk;
   private boolean wasSyntaxCheck;
   private boolean debugHigh;
@@ -74,18 +79,19 @@ public class ScriptMathProcessor {
   private SV[] xStack = new SV[8];
   private char[] ifStack = new char[8];
   private int ifPt = -1;
-  public int oPt = -1;
   private int xPt = -1;
   private int parenCount;
   private int squareCount;
   private int braceCount;
-  public boolean wasX;
-  private int incrementX;
   private boolean isArrayItem;
   private boolean asVector;
-  public boolean asBitSet;
+  
+  private boolean haveSpaceBeforeSquare;
+  private int equalCount;
+
   private int ptid = 0;
   private int ptx = Integer.MAX_VALUE;
+  private int pto = Integer.MAX_VALUE;
 
   ScriptMathProcessor(ScriptEvaluator eval, boolean isArrayItem,
       boolean asVector, boolean asBitSet) {
@@ -137,7 +143,6 @@ public class ScriptMathProcessor {
   }
 
   private void putX(SV x) {
-    //System.out.println("putX wasX=" + wasX + " x=" + x);
     if (skipping)
       return;
     if (wasX) {
@@ -149,19 +154,21 @@ public class ScriptMathProcessor {
     }
     if (++xPt == xStack.length)
       xStack = (SV[]) AU.doubleLength(xStack);
-    if (debugHigh) {
-      Logger.debug("\nputX: " + x);
-    }
-
     xStack[xPt] = x;
     ptx = ++ptid;
+    if (debugHigh) {
+      Logger.debug("\nputx= " + x + " ptx=" + ptid);
+    }
   }
 
   private void putOp(T op) {
     if (++oPt >= oStack.length)
       oStack = (T[]) AU.doubleLength(oStack);
     oStack[oPt] = op;
-    ptid++;
+    pto = ++ptid;
+    if (debugHigh) {
+      Logger.debug("\nputop=" + op + " pto=" + ptid);
+    }
   }
 
   private void putIf(char c) {
@@ -356,16 +363,10 @@ public class ScriptMathProcessor {
     return addOpAllowMath(op, true);
   }
 
-  private boolean haveSpaceBeforeSquare;
-  private int equalCount;
-  private static final String qMods = " w:0 x:1 y:2 z:3 normal:4 eulerzxz:5 eulerzyz:6 vector:-1 theta:-2 axisx:-3 axisy:-4 axisz:-5 axisangle:-6 matrix:-9";
-  
   boolean addOpAllowMath(T op, boolean allowMathFunc) throws ScriptException {
 
     if (debugHigh) {
-
-      Logger.debug("addOp entry\naddOp: " + op); //+ " oPt=" + oPt + " ifPt = "
-      // + ifPt + " skipping=" + skipping + " wasX=" + wasX);
+      dumpStacks("adding " + op + " wasx=" + wasX);
     }
 
     // are we skipping due to a ( ? : ) construct?
@@ -427,7 +428,6 @@ public class ScriptMathProcessor {
     // math functions as arguments appear without a prefixing operator
     boolean isArgument = (oPt >= 1 && tok0 == T.leftparen);
 
-    
     // check context, and for some cases, handle them here
     switch (op.tok) {
     case T.spacebeforesquare:
@@ -446,6 +446,8 @@ public class ScriptMathProcessor {
         return false;
       break;
     case T.rightsquare:
+    case T.minusMinus:
+    case T.plusPlus:
       break;
     case T.rightparen: // () without argument allowed only for math funcs
       if (!wasX && oPt >= 1 && tok0 == T.leftparen
@@ -455,17 +457,6 @@ public class ScriptMathProcessor {
     case T.minus:
       if (!wasX)
         op = SV.newV(T.unaryMinus, "-");
-      break;
-    case T.minusMinus:
-    case T.plusPlus:
-      incrementX = (op.tok == T.plusPlus ? 1 : -1);
-      if (ptid == ptx) {
-        if (chk)
-          return true;
-        SV x = xStack[xPt];
-        xStack[xPt] = SV.newS("").setv(x);
-        return x.increment(incrementX);
-      }
       break;
     case T.min:
     case T.max:
@@ -502,13 +493,17 @@ public class ScriptMathProcessor {
     }
 
     // what is left are standard operators 
-    
+
     // Q: Do we need to operate?
     // A: Well, we must have an operator...
     while (oPt >= 0
     // ...and that operator is not :, 
     //    because that's part of an array definition
         && tok0 != T.colon
+        // ... and we don't have ++ or -- coming our way
+        //     and we have no X ready
+        && (op.tok != T.minusMinus && op.tok != T.plusPlus || wasX)
+
         // ...and we do not have x( or x[ or func(....
         //   because the function must come first
         //   unless we have x.y.z( or x.y.z[
@@ -521,18 +516,12 @@ public class ScriptMathProcessor {
         //   right to left.
         && (tok0 != T.unaryMinus || op.tok != T.unaryMinus)) {
 
-      if (debugHigh) {
-        Logger.debug("\noperating, oPt=" + oPt + " isLeftOp=" + isLeftOp
-            + " oStack[oPt]=" + T.nameOf(tok0) + "        prec="
-            + T.getPrecedence(tok0) + " pending op=\"" + T.nameOf(op.tok)
-            + "\" prec=" + T.getPrecedence(op.tok));
-        dumpStacks("operating");
-      }
       // ) and ] must wait until matching ( or [ is found
       if (op.tok == T.rightparen && tok0 == T.leftparen) {
         // (x[2]) finalizes the selection
         if (xPt >= 0)
           xStack[xPt] = SV.selectItemVar(xStack[xPt]);
+        wasX = true;
         break;
       }
       if (op.tok == T.rightsquare && tok0 == T.array) {
@@ -550,9 +539,9 @@ public class ScriptMathProcessor {
         }
         if (!doSelection())
           return false;
+        wasX = true;
         break;
       }
-
       // if not, it's time to operate
 
       if (!operate())
@@ -662,6 +651,9 @@ public class ScriptMathProcessor {
       }
       wasX = false;
       break;
+    case T.plusPlus:
+    case T.minusMinus:
+      break;
     case T.opEQ:
       if (squareCount == 0)
         equalCount++;
@@ -675,11 +667,16 @@ public class ScriptMathProcessor {
 
     putOp(op);
 
-    // dumpStacks("putOp complete");
-    if (op.tok == T.propselector && (op.intValue & ~T.minmaxmask) == T.function
-        && op.intValue != T.function) {
-      return evaluateFunction(T.nada);
+    // immediate operation check:
+    switch (op.tok) {
+    case T.propselector:
+      return (((op.intValue & ~T.minmaxmask) == T.function
+          && op.intValue != T.function)? evaluateFunction(T.nada) : true);
+    case T.plusPlus:
+    case T.minusMinus:
+      return (wasX ? operate() : true);
     }
+
     return true;
   }
 
@@ -773,6 +770,7 @@ public class ScriptMathProcessor {
     M3 m;
     M4 m4;
     String s;
+    SV x1;
 
     if (debugHigh) {
       dumpStacks("operate: " + op);
@@ -795,10 +793,19 @@ public class ScriptMathProcessor {
     switch (op.tok) {
     case T.minusMinus:
     case T.plusPlus:
-      if (!chk && !x2.increment(incrementX))
-        return false;
+      x1 = x2;
+      if (!chk) {
+        //System.out.println("ptx="+ ptx + " " + pto);
+        if (ptx < pto) {
+          // x++ must make a copy first
+          x1 = SV.newS("").setv(x2);
+        }
+        if (!x2.increment(op.tok == T.plusPlus ? 1 : -1))
+          return false;
+      }
+      wasX = false;
+      putX(x1); // reverse getX()
       wasX = true;
-      putX(x2); // reverse getX()
       return true;
     case T.unaryMinus:
       switch (x2.tok) {
@@ -851,15 +858,26 @@ public class ScriptMathProcessor {
       }
     case T.propselector:
       int iv = op.intValue & ~T.minmaxmask;
+      if (viewer.allowArrayDotNotation)
+        switch (x2.tok) {
+        case T.hash:
+        case T.context:
+          switch (iv) {
+          case T.type:
+          case T.keys:
+          case T.size:
+            break;
+          //$FALL-THROUGH$
+          default:
+            SV ret = x2.mapValue((String) op.value);
+            return addXObj(ret == null ? SV.newS("") : ret);
+          }
+          break;
+        }
       switch (iv) {
       case T.identifier:
-        return getAllProperties(x2, (String) op.value);
-      case T.length:
-      case T.count:
-      case T.size:
-        if (iv == T.length && x2.value instanceof BondSet)
-          break;
-        return addXInt(SV.sizeOf(x2));
+        // special flag to get all properties.
+        return (x2.tok == T.bitset && getAllProperties(x2, (String) op.value));
       case T.type:
         return addXStr(typeOf(x2));
       case T.keys:
@@ -870,6 +888,12 @@ public class ScriptMathProcessor {
         String[] keys = keyset.toArray(new String[keyset.size()]);
         Arrays.sort(keys);
         return addXAS(keys);
+      case T.length:
+      case T.count:
+      case T.size:
+        if (iv == T.length && x2.value instanceof BondSet)
+          break;
+        return addXInt(SV.sizeOf(x2));
       case T.lines:
         switch (x2.tok) {
         case T.matrix3f:
@@ -918,7 +942,7 @@ public class ScriptMathProcessor {
     }
 
     // binary:
-    SV x1 = getX();
+    x1 = getX();
     if (chk) {
       if (op == T.tokenAndFALSE || op == T.tokenOrTRUE)
         chk = false;
@@ -928,6 +952,8 @@ public class ScriptMathProcessor {
     return binaryOp(op, x1, x2);
   }
 
+  private static final String qMods = " w:0 x:1 y:2 z:3 normal:4 eulerzxz:5 eulerzyz:6 vector:-1 theta:-2 axisx:-3 axisy:-4 axisz:-5 axisangle:-6 matrix:-9";
+  
   @SuppressWarnings("unchecked")
   public boolean binaryOp(T op, SV x1, SV x2) throws ScriptException {
     P3 pt;
@@ -1485,8 +1511,6 @@ public class ScriptMathProcessor {
 
   private boolean getAllProperties(SV x2, String abbr)
       throws ScriptException {
-    if (x2.tok != T.bitset)
-      return false;
     if (chk)
       return addXStr("");
     BS bs = SV.bsSelectVar(x2);

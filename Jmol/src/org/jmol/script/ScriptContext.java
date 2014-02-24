@@ -112,8 +112,11 @@ public class ScriptContext {
     while (context != null && !context.isFunction) {
       if (context.vars != null)
         for (String key : context.vars.keySet())
-          if (!ht.containsKey(key))
-            ht.put(key, context.vars.get(key));
+          if (!ht.containsKey(key)) {
+            SV val = context.vars.get(key);
+            if (val.tok != T.integer || val.intValue != Integer.MAX_VALUE)
+              ht.put(key, val);
+          }
       context = context.parentContext;
     }
     return ht;

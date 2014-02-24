@@ -627,7 +627,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       }
       if (wasImpliedScript())
         return CONTINUE;
-      if (isNewSet && nTokens > 2 && tokAt(2) == T.per
+      if (isNewSet && nTokens > 72 && tokAt(2) == T.per
           && (tokAt(3) == T.sort || tokAt(3) == T.reverse || tokAt(3) == T.push || tokAt(3) == T.pop)) {
         // check for x.sort or x.reverse or a.push(xxx)
         // x.sort / x.reverse ==> x = x.sort / x = x.reverse
@@ -638,6 +638,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         if (!isNewSet)
           checkNewSetCommand();
         tokenizePlusPlus(tokInitialPlusPlus, true);
+        ichCurrentCommand -= 2;
       }
       iCommand = lltoken.size();
       if (thisFunction != null && thisFunction.cmdpt0 < 0) {
@@ -777,7 +778,11 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           || s.endsWith(".REVERSE") || s.endsWith(".POP")
           || s.indexOf(".SORT(") >= 0
           || s.indexOf(".REVERSE(") >= 0 || s.indexOf(".POP(") >= 0
-          || s.indexOf(".PUSH(") >= 0) {
+          || s.indexOf(".PUSH(") >= 0
+          || s.endsWith("++")
+          || s.endsWith("--")
+          || s.endsWith("=")
+          || tokInitialPlusPlus != T.nada) {
         ichToken = ichCurrentCommand;
         nTokens = 0;
         ltoken.clear();
@@ -1459,7 +1464,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     //   ++ipt;   or ipt++
     if (isPlusPlusX) {
       setCommand(T.tokenSet);
-      ltoken.add(0, tokenCommand);
+      if (nTokens == 1)
+        ltoken.add(0, tokenCommand);
     }
     nTokens = ltoken.size();
     addTokenToPrefix(T.tokenEquals);

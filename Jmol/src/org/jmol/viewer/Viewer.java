@@ -315,6 +315,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   private JmolScriptManager scriptManager;
   public JmolScriptEvaluator eval;
   private TempArray tempArray;
+  
+  public boolean allowArrayDotNotation;
 
   private static String version_date;
 
@@ -628,6 +630,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     stateManager.setJmolDefaults();
     // this code will be shared between Jmol 14.0 and 14.1
     Elements.covalentVersion = (JC.versionInt < 1401011 ? Elements.RAD_COV_IONIC_OB1_100_1: Elements.RAD_COV_BODR_2014_02_22);
+    allowArrayDotNotation = (JC.versionInt >= 1401011);
   }
 
   public void setDisplay(Object canvas) {

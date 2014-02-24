@@ -836,7 +836,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       int tok = getToken(i).tok;
       if (isImplicitAtomProperty && tokAt(i + 1) != T.per) {
         SV token = (localVars != null && localVars.containsKey(theToken.value) ? null
-            : getBitsetPropertySelector(i, false));
+            : getBitsetPropertySelector(i, false, false));
         if (token != null) {
           rpn.addXVar(localVars.get(localVar));
           if (!rpn.addOpAllowMath(token, (tokAt(i + 1) == T.leftparen)))
@@ -860,6 +860,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         break;
       }
 
+      int ptEq = (isArrayItem && !isOneExpressionOnly ? 0 : 1);
       switch (tok) {
       case T.define:
         // @{@x} or @{@{x}} or @{@1} -- also userFunction(@1)
@@ -1095,14 +1096,25 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           invArg();
         break;
       case T.perper:
-        if (tokAt(i + 1) == T.nada)
-          invArg();
-        rpn.addOp(T.o(T.leftsquare, "["));
-        rpn.addXStr(optParameterAsString(++i));
-        rpn.addOp(T.o(T.rightsquare, "]"));
-        continue;
       case T.per:
-        SV token = getBitsetPropertySelector(i + 1, false);
+        if (ptEq == 0 && nParen == 0 && tokAt(i + 1) != T.nada) {
+          if (tokAt(i + 1) == T.nada)
+            invArg();
+          switch (tokAt(i + 1)) {
+          case T.size:
+          case T.keys:
+          case T.type:
+            if (tok == T.per)
+              break;
+            //$FALL-THROUGH$
+          default:
+            rpn.addOp(T.o(T.leftsquare, "["));
+            rpn.addXStr(optParameterAsString(++i));
+            rpn.addOp(T.o(T.rightsquare, "]"));
+            continue;
+          }
+        }
+        SV token = getBitsetPropertySelector(i + 1, false, false);
         if (token == null)
           invArg();
         // check for added min/max modifier
@@ -1153,6 +1165,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             invArg();
           }
           switch (theTok) {
+          case T.opEQ:
+            if (nParen == 0)
+              ptEq = i;
+            break;
           case T.leftparen:
             nParen++;
             break;
@@ -1271,7 +1287,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return resx;
   }
 
-  private SV getBitsetPropertySelector(int i, boolean mustBeSettable)
+  private SV getBitsetPropertySelector(int i, boolean mustBeSettable,
+                                       boolean isExpression)
       throws ScriptException {
     int tok = getToken(i).tok;
     switch (tok) {
@@ -1293,13 +1310,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         tok = T.function;
         break;
       }
-      if (!name.endsWith("?"))
+      if (isExpression && !name.endsWith("?"))
         return null;
-      tok = T.identifier;
+      if (isExpression)
+        tok = T.identifier;
     }
-    if (mustBeSettable && !T.tokAttr(tok, T.settable))
+    if (mustBeSettable && isExpression && !T.tokAttr(tok, T.settable))
       return null;
-    return SV.newSV(T.propselector, tok, parameterAsString(i).toLowerCase());
+    return SV.newSV(T.propselector, tok, parameterAsString(i));
   }
 
   public float[] getBitsetPropertyFloat(BS bs, int tok, float min, float max)
@@ -5482,7 +5500,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         case T.parallel: // not actually found 
         case T.function:
         case T.identifier:
-          function(); // when a function is a command
+          func(); // when a function is a command
           break;
         case T.getproperty:
           getProperty();
@@ -8973,7 +8991,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     isCmdLine_c_or_C_Option = wasScriptCheck;
   }
 
-  private void function() throws ScriptException {
+  private void func() throws ScriptException {
     if (chk && !isCmdLine_c_or_C_Option)
       return;
     String name = (String) getToken(0).value;
@@ -11723,15 +11741,26 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       isExpression = true;
     }
     if (tokAt(pt) == T.per) {
-      settingProperty = true;
-      SV token = getBitsetPropertySelector(++pt, true);
+      SV token = getBitsetPropertySelector(++pt, true, isExpression);
       if (token == null)
         invArg();
-      if (tokAt(++pt) != T.opEQ)
-        invArg();
-      pt++;
-      tokProperty = token.intValue;
-      propertyName = (String) token.value;
+      switch (tokAt(pt + 1)) {
+      case T.per:
+      case T.perper:
+      case T.leftsquare:
+        //xxx.y.z...
+        isArrayItem = true;
+        pt--;
+        break;
+      case T.opEQ:
+        pt += 2;
+        settingProperty = true;
+        tokProperty = token.intValue;
+        propertyName = (String) token.value;
+        break;
+      default:
+         invArg();
+      }
     }
     if (isExpression && !settingProperty)
       invArg();
@@ -11846,9 +11875,19 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
     if (settingProperty) {
       if (!isExpression) {
-        bs = SV.getBitSet(t, true);
-        if (bs == null)
-          invArg();
+        switch (t.tok) {
+        case T.hash:
+        case T.context:
+          if (viewer.allowArrayDotNotation) {
+            t.mapPut(propertyName, tv);
+            return null;
+          }
+          //$FALL-THROUGH$
+        default:
+          bs = SV.getBitSet(t, true);
+          if (bs == null)
+            invArg();
+        }        
       }
       if (propertyName.startsWith("property_")) {
         viewer

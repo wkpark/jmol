@@ -973,73 +973,81 @@ public class SV extends T implements JSONEncodable {
     return tokenOut;
   }
 
-  boolean setSelectedValue(int selector, SV var) {
-    if (selector == Integer.MAX_VALUE)
-      return false;
+  void setSelectedValue(int pt1, int pt2, SV var) {
+    if (pt1 == Integer.MAX_VALUE)
+      return;
     int len;
     switch (tok) {
     case matrix3f:
     case matrix4f:
       len = (tok == matrix3f ? 3 : 4);
-      if (selector > 10) {
-        int col = selector % 10;
-        int row = (selector - col) / 10;
+      if (pt1 > 10) {
+        int col = pt1;
+        int row = pt2;
         if (col > 0 && col <= len && row <= len) {
           if (tok == matrix3f)
             ((M3) value).setElement(row - 1, col - 1, fValue(var));
           else
             ((M4) value).setElement(row - 1, col - 1, fValue(var));
-          return true;
+          return;
         }
       }
-      if (selector != 0 && Math.abs(selector) <= len
+      if (pt1 != 0 && Math.abs(pt1) <= len
           && var.tok == varray) {
         List<SV> sv = var.getList();
         if (sv.size() == len) {
           float[] data = new float[len];
           for (int i = 0; i < len; i++)
             data[i] = fValue(sv.get(i));
-          if (selector > 0) {
+          if (pt1 > 0) {
             if (tok == matrix3f)
-              ((M3) value).setRowA(selector - 1, data);
+              ((M3) value).setRowA(pt1 - 1, data);
             else
-              ((M4) value).setRowA(selector - 1, data);
+              ((M4) value).setRowA(pt1 - 1, data);
           } else {
             if (tok == matrix3f)
-              ((M3) value).setColumnA(-1 - selector, data);
+              ((M3) value).setColumnA(-1 - pt1, data);
             else
-              ((M4) value).setColumnA(-1 - selector, data);
+              ((M4) value).setColumnA(-1 - pt1, data);
           }
-          return true;
+          break;
         }
       }
-      return false;
+      break;
     case string:
       String str = (String) value;
       int pt = str.length();
-      if (selector <= 0)
-        selector = pt + selector;
-      if (--selector < 0)
-        selector = 0;
-      while (selector >= str.length())
+      if (pt1 <= 0)
+        pt1 = pt + pt1;
+      if (--pt1 < 0)
+        pt1 = 0;
+      while (pt1 >= str.length())
         str += " ";
-      value = str.substring(0, selector) + sValue(var)
-          + str.substring(selector + 1);
-      return true;
+      if (pt2 == Integer.MAX_VALUE){
+        pt2 = pt1;
+      } else {
+        if (pt2 <= 0)
+          pt2 = pt + pt2;
+        while (pt2 >= str.length())
+          str += " ";
+      }
+      if (pt2 >= pt1)
+        value = str.substring(0, pt1) + sValue(var)
+          + str.substring(++pt2);
+      break;
     case varray:
       len = getList().size();
-      if (selector <= 0)
-        selector = len + selector;
-      if (--selector < 0)
-        selector = 0;
-      if (len <= selector) {
-        for (int i = len; i <= selector; i++)
+      if (pt1 <= 0)
+        pt1 = len + pt1;
+      if (--pt1 < 0)
+        pt1 = 0;
+      if (len <= pt1) {
+        for (int i = len; i <= pt1; i++)
           getList().addLast(newV(string, ""));
       }
-      getList().set(selector, var);
-      return true;
+      getList().set(pt1, var);
+      break;
     }
-    return false;
   }
 
   public String escape() {

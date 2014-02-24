@@ -138,6 +138,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   private int tokInitialPlusPlus;
   private int afterWhite;
   private boolean isDotDot;
+  private String identFullCase;
   
   synchronized ScriptContext compile(String filename, String script, boolean isPredefining,
                   boolean isSilent, boolean debugScript, boolean isCheckOnly) {
@@ -878,6 +879,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   private String getPrefixToken() {
     String ident = script.substring(ichToken, ichToken + cchToken);
     String identLC = ident.toLowerCase();
+    identFullCase = ident;
     boolean isUserVar = isContextVariable(identLC);
     if (nTokens == 0)
       isUserToken = isUserVar;
@@ -1254,7 +1256,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     T token;
 
     if (isDotDot) {
-      addTokenToPrefix(T.o(T.string, ident));
+      addTokenToPrefix(T.o(T.string, identFullCase));
       addTokenToPrefix(T.o(T.rightsquare, "]"));
       isDotDot = false;
       return CONTINUE;
@@ -1370,11 +1372,13 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       break;
     case T.per:
       if (tokCommand == T.set && parenCount == 0 && bracketCount == 0
-          && ichToken < setEqualPt) {
-        // a[3].
+          && ichToken < setEqualPt && ltoken.size() > 1 && ltoken.get(1).tok == T.leftbrace) {
+        // {a}[3].xxx = ...
+        // {a}[3][4].xxx = ...
+        // initial brace has been lost, however?
+        ltoken.set(0, T.tokenSetProperty);
         ltoken.add(1, T.tokenExpressionBegin);
         addTokenToPrefix(T.tokenExpressionEnd);
-        ltoken.set(0, T.tokenSetProperty);
         setEqualPt = 0;
       }
       break;
@@ -2204,7 +2208,10 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           nParen++;
           break;
         case ']':
-          nParen--;
+          if (charAt(ichT + 1) == '[')
+            ichT++;
+          else
+            nParen--;
         break;
         }
       }

@@ -80,7 +80,7 @@ public class T {
   public final static int decimal    =  3;
   public final static int string     =  4;
   
-  public final static int seqcode    =  5;
+  public final static int seqcode    =  5; // only for debugging
   public final static int hash       =  6;  // associative array; Hashtable
   public final static int varray     =  7;  // List<ScriptVariable>
   public final static int point3f    =  8;
@@ -99,7 +99,7 @@ public class T {
   public final static String[] astrType = {
     "nada", "identifier", "integer", "decimal", "string",
     "seqcode", "hash", "array", "point", "point4", "bitset",
-    "matrix3f",  "matrix4f", "listf", "context", "keyword"
+    "matrix3f",  "matrix4f", "array", "hash", "keyword"
   };
 
   public static boolean tokAttr(int a, int b) {

@@ -11814,7 +11814,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
               if (ipt2 >= 1 && ipt2 <= dim
                   && (tnew.tok == T.integer || tnew.tok == T.decimal)) {
                 i++;
-                ipt = ipt * 10 + ipt2;
+                t.setSelectedValue(ipt, ipt2, tnew);
                 break;
               }
             }
@@ -11829,9 +11829,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
                   tnew.asString());
               continue;
             }
-            break;
+            if (nParam == 2) {
+              int ipt2 = v.get(2).asInt();
+              t.setSelectedValue(ipt, ipt2, tnew);
+              i++;
+              continue;
+            }
+             break;
           }
-          t.setSelectedValue(ipt, tnew);
+          t.setSelectedValue(ipt, Integer.MAX_VALUE, tnew);
+          nParam = 0;
           break;
         }
       }

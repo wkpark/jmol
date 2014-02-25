@@ -33,11 +33,11 @@ public abstract class MinObject {
     int c = i & 0x7F;
     i >>= 7;
     int d = i & 0x7F;
-    return type + ": " 
+    return (type < 0 ? type + ": " : "") 
         + (a < 10 ? "  " : " ") + a 
         + (b < 10 ? "  " : " ") + b 
         + (c < 10 ? "  " : " ") + c 
-        + (d < 10 ? "  " : " ") + d;
+        + (d > 120 ? "" : (d < 10 ? "  " : " ") + d);
   }
 
 }

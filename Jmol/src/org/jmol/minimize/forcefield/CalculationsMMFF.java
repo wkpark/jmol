@@ -306,13 +306,16 @@ class CalculationsMMFF extends Calculations {
       double theta0 = datakat0[1];
       double r0ij = dataij[1];
       double r0jk = datajk[1];
-      calc.addLast(new Object[] { angle.data, new double[] { data[0], theta0, r0ij } });
+      calc.addLast(new Object[] { angle.data, new double[] { data[0], theta0, r0ij }, angle.sbKey });
       calc.addLast(new Object[] { new int[] {angle.data[2], angle.data[1], angle.data[0]}, 
-          new double[] { data[1], theta0, r0jk } });
+          new double[] { data[1], theta0, r0jk }, angle.sbKey  });
     }
 
     @Override
     double compute(Object[] dataIn) {
+
+      key = (Integer) dataIn[2];
+
       getPointers(dataIn);
       double k = 2.51210 * dData[0];
       double t0 = dData[1];
@@ -589,7 +592,7 @@ class CalculationsMMFF extends Calculations {
     case CALC_ANGLE:
     case CALC_STRETCH_BEND:
       return Txt.sprintf(
-          "%15s  %-5s %-5s %-5s  %8.3f  %8.3f     %8.3f   %8.3f", 
+          "%11s  %-5s %-5s %-5s  %8.3f  %8.3f     %8.3f   %8.3f", 
           "ssssFI", new Object[] { MinObject.decodeKey(c.key), minAtoms[c.ia].sType, minAtoms[c.ib].sType, 
               minAtoms[c.ic].sType,
           new float[] { (float)(c.theta * RAD_TO_DEG), (float) c.dData[1] /*THETA0*/, 

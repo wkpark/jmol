@@ -37,7 +37,7 @@ import org.jmol.modelset.ModelSet;
 
 public class AnimationManager {
 
-  private JmolThread animationThread;
+  public JmolThread animationThread;
   public Viewer viewer;
   
   AnimationManager(Viewer viewer) {

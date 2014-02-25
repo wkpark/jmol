@@ -68,7 +68,7 @@ public class TimeoutThread extends JmolThread {
         mode = MAIN;
         break;
       case MAIN:
-        if (checkInterrupted() || script == null || script.length() == 0)
+        if (checkInterrupted(null) || script == null || script.length() == 0)
           return;
         // 26-millisecond check allows
         if (!runSleep(26, CHECK1))

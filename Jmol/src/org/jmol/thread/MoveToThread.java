@@ -167,7 +167,9 @@ public class MoveToThread extends JmolThread {
         }
         if (doRender)
           viewer.requestRepaintAndWait("movetoThread");
-        if (transformManager.motion == null || !isJS && eval != null
+        if (transformManager.movetoThread == null 
+            || !transformManager.movetoThread.name.equals(name)
+            ||!isJS && eval != null
             && !viewer.isScriptExecuting()) {
           stopped = true;
           break;
@@ -184,8 +186,8 @@ public class MoveToThread extends JmolThread {
         if (totalSteps > 0)
           viewer.setInMotion(false);
         viewer.moveUpdate(floatSecondsTotal);
-        if (transformManager.motion != null && !stopped) {
-          transformManager.motion = null;
+        if (transformManager.movetoThread != null && !stopped) {
+          transformManager.movetoThread = null;
           viewer.finalizeTransformParameters();
         }
         resumeEval();

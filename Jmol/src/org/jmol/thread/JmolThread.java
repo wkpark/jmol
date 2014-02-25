@@ -21,6 +21,7 @@ abstract public class JmolThread extends Thread {
   protected Viewer viewer;
   protected JmolScriptEvaluator eval;
   protected ScriptContext sc;
+  protected boolean haveReference;
 
   protected boolean hoverEnabled;
 
@@ -157,11 +158,13 @@ abstract public class JmolThread extends Thread {
       super.interrupt();
   }
   
-  protected boolean checkInterrupted() {
+  protected boolean checkInterrupted(JmolThread ref) {
+    if (haveReference && (ref == null || !ref.name.equals(name)))
+      return true;
     /**
      * @j2sNative
      * 
-     * return this.stopped;
+     *            return this.stopped;
      */
     {
       return super.isInterrupted();

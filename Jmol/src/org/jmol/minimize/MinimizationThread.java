@@ -49,6 +49,7 @@ public class MinimizationThread extends JmolThread {
       switch (mode) {
       case INIT:
         lastRepaintTime = startTime;
+        haveReference = true;
         //should save the atom coordinates
         if (!this.minimizer.startMinimization())
           return;
@@ -56,7 +57,7 @@ public class MinimizationThread extends JmolThread {
         mode = MAIN;
         break;
       case MAIN:
-        if (!minimizer.minimizationOn() || checkInterrupted()) {
+        if (!minimizer.minimizationOn() || checkInterrupted(minimizer.getThread())) {
           mode = FINISH;
           break;
         }

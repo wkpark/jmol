@@ -39,6 +39,7 @@ import org.jmol.minimize.forcefield.ForceFieldUFF;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
+import org.jmol.thread.JmolThread;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
@@ -512,6 +513,10 @@ public class Minimizer implements MinimizerInterface {
   }
 
   private MinimizationThread minimizationThread;
+  
+  public JmolThread getThread() {
+    return minimizationThread;
+  }
 
   private void setMinimizationOn(boolean minimizationOn) {
     //TODO -- shouldn't we allow run() here?

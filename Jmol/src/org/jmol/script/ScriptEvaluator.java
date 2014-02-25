@@ -11083,9 +11083,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       String lckey = key.toLowerCase();
       if (lckey.indexOf("label") == 0
           && PT
-              .isOneOf(key.substring(5).toLowerCase(),
+              .isOneOf(lckey.substring(5),
                   ";front;group;atom;offset;offsetexact;pointer;alignment;toggle;scalereference;")) {
-        if (setLabel(key.substring(5)))
+        if (setLabel(lckey.substring(5)))
           return;
       }
       if (isJmolSet && lckey.indexOf("shift_") == 0) {

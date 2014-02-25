@@ -4,6 +4,7 @@ package org.jmol.api;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
+import org.jmol.thread.JmolThread;
 
 
 
@@ -19,4 +20,5 @@ public interface MinimizerInterface {
   public abstract boolean stepMinimization();
   public abstract void endMinimization();
   public abstract boolean minimizationOn();
+  public abstract JmolThread getThread();
 }

@@ -9993,9 +9993,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     if (eval != null)
       eval.stopScriptThreads();
     stopMinimization();
-    setVibrationOff();
-    setSpinOn(false);
-    setNavOn(false);
+    tm.clearThreads();
     setAnimationOn(false);
   }
 

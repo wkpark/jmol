@@ -78,12 +78,13 @@ public class AnimationThread extends JmolThread {
           Logger.debug("animation thread " + intThread + " running");
         viewer.requestRepaintAndWait("animationThread");
         viewer.startHoverWatcher(false);
+        haveReference = true;
         isFirst = true;
         mode = MAIN;
         break;
       case MAIN:
         //System.out.println("anim thred " + animationManager.getCurrentFrame() +" "+ framePointer);
-        if (checkInterrupted() || !animationManager.animationOn) {
+        if (!animationManager.animationOn || checkInterrupted(animationManager.animationThread)) {
           mode = FINISH;
           break;
         }
@@ -117,7 +118,7 @@ public class AnimationThread extends JmolThread {
         mode = CHECK3;
         break;
       case CHECK3:
-        while (animationManager.animationOn && !checkInterrupted()
+        while (animationManager.animationOn && !checkInterrupted(animationManager.animationThread)
             && !viewer.getRefreshing()) {
           if (!runSleep(10, CHECK3))
             return;

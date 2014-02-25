@@ -107,11 +107,12 @@ public class SpinThread extends JmolThread {
       case INIT:
         myFps = (isNav ? transformManager.navFps : transformManager.spinFps);
         viewer.global.setB(isNav ? "_navigating" : "_spinning", true);
+        haveReference = true;
         viewer.startHoverWatcher(false);
         mode = MAIN;
         break;
       case MAIN:
-        if (isReset || checkInterrupted()) {
+        if (isReset || checkInterrupted(transformManager.spinThread)) {
           mode = FINISH;
           break;
         }
@@ -167,7 +168,7 @@ public class SpinThread extends JmolThread {
         mode = CHECK1;
         break;
       case CHECK1: // cycling
-        while (!checkInterrupted() && !viewer.getRefreshing())
+        while (!checkInterrupted(transformManager.spinThread) && !viewer.getRefreshing())
           if (!runSleep(10, CHECK1))
             return;
         if (bsAtoms == null)

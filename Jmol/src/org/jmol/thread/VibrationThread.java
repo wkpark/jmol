@@ -49,6 +49,7 @@ public class VibrationThread extends JmolThread {
       case INIT:
         lastRepaintTime = startTime = System.currentTimeMillis();
         viewer.startHoverWatcher(false);
+        haveReference = true;
         mode = MAIN;
         break;
       case MAIN:
@@ -68,7 +69,7 @@ public class VibrationThread extends JmolThread {
               / transformManager.vibrationPeriodMs;
           transformManager.setVibrationT(t);
           viewer.refresh(3, "VibrationThread:run()");
-          mode = (checkInterrupted() ? FINISH : MAIN);
+          mode = (checkInterrupted(transformManager.vibrationThread) ? FINISH : MAIN);
         }
         break;
       case FINISH:

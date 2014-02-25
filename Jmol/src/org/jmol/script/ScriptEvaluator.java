@@ -9021,7 +9021,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private void func() throws ScriptException {
     if (chk && !isCmdLine_c_or_C_Option)
       return;
-    String name = (String) getToken(0).value;
+    String name = ((String) getToken(0).value).toLowerCase();
     if (!viewer.isFunction(name))
       error(ERROR_commandExpected);
     List<SV> params = (slen == 1 || slen == 3 && tokAt(1) == T.leftparen

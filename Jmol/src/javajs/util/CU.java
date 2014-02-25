@@ -539,8 +539,8 @@ public class CU {
     float h = hsl.x / 60;
     float s = hsl.y / 100;
     float l = hsl.z / 100;
-
-    float p = 2 * l - (l < 0.5 ? l * (1 + s) :  (l + s) - s * l);    
+    
+    float p = l - (l < 0.5 ? l : 1 - l) * s;    
     float q = 2 * (l - p); 
         
     float r = toRGB(p, q, h + 2);

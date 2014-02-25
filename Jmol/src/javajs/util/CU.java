@@ -480,67 +480,78 @@ public class CU {
                 (1140 * (rgb & 0xFF)) + 5000) / 10000) & 0xFFFFFF;
     return rgb(grey, grey, grey);
   }
+  
+  
+  /**
+   * Convert RGB values to HSL (hue/saturation/luminance)
+   * 
+   * @param rgb
+   *        range 255 255 255
+   * @param doRound
+   *        set to false when just using this for 
+   *        for RGB -- HSL -- HSL' -- RGB' conversion
+   * 
+   * @return the HSL as P3 range 360 100 100
+   * @author hansonr
+   */
 
-  public static P3 rgbToHSL(P3 pt) {
-    //http://tips4java.wordpress.com/2009/07/05/hsl-color/
+  public static P3 rgbToHSL(P3 rgb, boolean doRound) {
+    // adapted from http://tips4java.wordpress.com/2009/07/05/hsl-color/
+    // see http://en.wikipedia.org/wiki/HSL_color_space
 
-    float r = Math.min(pt.x / 255, 1);
-    float g = Math.min(pt.y / 255, 1);
-    float b = Math.min(pt.z / 255, 1);
+    float r = rgb.x / 255;
+    float g = rgb.y / 255;
+    float b = rgb.z / 255;
     float min = Math.min(r, Math.min(g, b));
     float max = Math.max(r, Math.max(g, b));
 
-    //  Luminance is just p/2
-    
-    float p = (max + min);    
+    //  Luminance is just p * 50
+
+    float p = (max + min);
     float q = (max - min);
 
     //  Calculate the Hue
 
-    float h = (q == 0 ? 0
-        : max == r ? (60 * (g - b) / q + 360) % 360
-            : max == g ? 60 * (b - r) / q + 120
-                : 60 * (r - g) / q + 240);
+    float h = (60 * ((q == 0 ? 0 : max == r ? ((g - b) / q + 6)
+        : max == g ? (b - r) / q + 2 : (r - g) / q + 4))) % 360;
 
     //  Calculate the Saturation
 
     float s = q / (q == 0 ? 1 : p <= 1 ? p : 2 - p);
 
-    return P3.new3(Math.round(h), Math.round(s * 100), Math.round(p * 50));
+    return (doRound ? P3.new3(Math.round(h), Math.round(s * 100),
+        Math.round(p * 50)) : P3.new3(h, s * 100, p * 50));
   }
 
   /**
-   * Convert HSL values to a RGB Color. source:
-   * http://tips4java.wordpress.com/2009/07/05/hsl-color/
+   * Convert HSL (hue/saturation/luninance) values to RGB
+   *
    * @param hsl in the range 360, 100, 100
-   * @return the RGB as P3
+   * @return the RGB as P3 range 0 to 255
+   * @author hansonr
    */
   public static P3 hslToRGB(P3 hsl) {
+    // adapted from http://tips4java.wordpress.com/2009/07/05/hsl-color/
+    // see http://en.wikipedia.org/wiki/HSL_color_space
     
-    float h = hsl.x / 360;
+    // highly condensed
+    
+    float h = hsl.x / 60;
     float s = hsl.y / 100;
     float l = hsl.z / 100;
 
-    float q = (l < 0.5 ? l * (1 + s) :  (l + s) - s * l);
-    float p = 2 * l - q;
-    float r = Math.max(0, hueToRGB(p, q, h + 1/3f));
-    float g = Math.max(0, hueToRGB(p, q, h));
-    float b = Math.max(0, hueToRGB(p, q, h - 1/3f));
-
-    r = Math.min(r, 1.0f);
-    g = Math.min(g, 1.0f);
-    b = Math.min(b, 1.0f);
-
+    float p = 2 * l - (l < 0.5 ? l * (1 + s) :  (l + s) - s * l);    
+    float q = 2 * (l - p); 
+        
+    float r = toRGB(p, q, h + 2);
+    float g = toRGB(p, q, h);
+    float b = toRGB(p, q, h - 2);
     return P3.new3(Math.round(r * 255), Math.round(g * 255), Math.round(b * 255));
   }
 
-  private static float hueToRGB(float p, float q, float h) {
-    h += (h < 0 ? 1 : h > 1 ? -1 : 0);
-    return (6 * h < 1 ? p + (q - p) * 6 * h : 2 * h < 1 ? q : 3 * h < 2 ? p
-        + (q - p) * 6 * (2/3f - h) : p);
+  private static float toRGB(float p, float q, float h) {
+    return ((h = (h + (h < 0 ? 6 : h > 6 ? -6 : 0))) < 1 ? p + q * h
+        : h < 3 ? p + q : h < 4 ? p + q * (4 - h) : p);
   }
 
-
 }
-
-

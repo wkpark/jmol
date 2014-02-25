@@ -437,48 +437,41 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int PARTIAL_CHARGE_COLIX_RED = FORMAL_CHARGE_COLIX_RED + argbsFormalCharge.length;  
   public final static int PARTIAL_CHARGE_RANGE_SIZE = argbsRwbScale.length;
 
+  
+//  $ print  color("red","blue", 33,true)
+//  [xff0000][xff2000][xff4000]
+  //[xff6000][xff8000][xff9f00]
+  
+  //[xffbf00][xffdf00] -------  
+  //[xffff00] ------- [xdfff00]
+  
+  //[xbfff00][x9fff00][x7fff00]
+  //[x60ff00][x40ff00][x20ff00]
+  //[x00ff00][x00ff20][x00ff40]
+  //[x00ff60][x00ff7f][x00ff9f]
+  //[x00ffbf][x00ffdf][x00ffff]
+  //[x00dfff][x00bfff][x009fff]
+  //[x0080ff][x0060ff][x0040ff]
+  //[x0020ff][x0000ff]
+
   public final static int[] argbsRoygbScale = {
-    // must be multiple of THREE for high/low
-    0xFFFF0000,
-    0xFFFF2000,
-    0xFFFF4000,
-    0xFFFF6000,
-    0xFFFF8000,
-    0xFFFFA000,
-    0xFFFFC000,
-    0xFFFFE000,
+    // 35 in all //why this comment?: must be multiple of THREE for high/low
+    0xFFFF0000,    0xFFFF2000,    0xFFFF4000,
+    0xFFFF6000,    0xFFFF8000,    0xFFFFA000,
+    
+    // yellow gets compressed, so give it an extra boost
 
-    0xFFFFF000, // yellow gets compressed, so give it an extra boost
-
-    0xFFFFFF00,
-    0xFFF0F000, // yellow gets compressed, so give it a little boost
-    0xFFE0FF00,
-    0xFFC0FF00,
-    0xFFA0FF00,
-    0xFF80FF00,
-    0xFF60FF00,
-    0xFF40FF00,
-    0xFF20FF00,
-
-    0xFF00FF00,
-    0xFF00FF20,
-    0xFF00FF40,
-    0xFF00FF60,
-    0xFF00FF80,
-    0xFF00FFA0,
-    0xFF00FFC0,
-    0xFF00FFE0,
-
-    0xFF00FFFF,
-    0xFF00E0FF,
-    0xFF00C0FF,
-    0xFF00A0FF,
-    0xFF0080FF,
-    0xFF0060FF,
-    0xFF0040FF,
-    0xFF0020FF,
-
-    0xFF0000FF,
+    0xFFFFC000,    0xFFFFE000,    0xFFFFF000,
+    0xFFFFFF00,    0xFFF0F000,    0xFFE0FF00,
+    
+    0xFFC0FF00,    0xFFA0FF00,    0xFF80FF00,
+    0xFF60FF00,    0xFF40FF00,    0xFF20FF00,
+    0xFF00FF00,    0xFF00FF20,    0xFF00FF40,
+    0xFF00FF60,    0xFF00FF80,    0xFF00FFA0,
+    0xFF00FFC0,    0xFF00FFE0,    0xFF00FFFF,
+    0xFF00E0FF,    0xFF00C0FF,    0xFF00A0FF,    
+    0xFF0080FF,    0xFF0060FF,    0xFF0040FF,
+    0xFF0020FF,    0xFF0000FF,
   };
 
   // positive and negative default colors used for

@@ -7119,7 +7119,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
                   : T.groupid) | T.allfloat, Float.NaN, Float.NaN);
             }
           } else {
-            if (!isColorIndex && !isIsosurface)
+            //if (!isIsosurface)
               index++;
             if (name.equals("property")
                 && T.tokAttr((tok = getToken(index).tok), T.atomproperty)

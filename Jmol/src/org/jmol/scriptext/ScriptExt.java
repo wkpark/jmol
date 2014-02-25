@@ -7777,14 +7777,14 @@ public class ScriptExt implements JmolScriptExtension {
       for (int i = list.size(); --i >= 0;)
         data[i] = SV.fValue(list.get(i));
     }
-    int nbins = (int) Math.floor((f1 - f0) / df + 0.01f);
+    int nbins = Math.max((int) Math.floor((f1 - f0) / df + 0.01f), 1);
     int[] array = new int[nbins];
     int nPoints = data.length;
     for (int i = 0; i < nPoints; i++) {
       float v = data[i];
       int bin = (int) Math.floor((v - f0) / df);
       if (bin < 0)
-        bin = 0;
+        bin = 0;      
       else if (bin >= nbins)
         bin = nbins - 1;
       array[bin]++;
@@ -9356,7 +9356,7 @@ public class ScriptExt implements JmolScriptExtension {
     if (args.length == 2 && colorScheme.equalsIgnoreCase("TOHSL"))
       return mp.addXPt(CU.rgbToHSL(P3.newP(args[1].tok == T.point3f ? SV
           .ptValue(args[1])
-          : CU.colorPtFromString(args[1].asString(), new P3()))));
+          : CU.colorPtFromString(args[1].asString(), new P3())), true));
     if (args.length == 2 && colorScheme.equalsIgnoreCase("TORGB"))
       return mp.addXPt(CU.hslToRGB(P3.newP(args[1].tok == T.point3f ? SV
           .ptValue(args[1])
@@ -9368,15 +9368,15 @@ public class ScriptExt implements JmolScriptExtension {
           .colorPtFromString(args[1].asString(), new P3()));
       boolean usingHSL = (args[3].tok == T.on);
       if (usingHSL) {
-        pt1 = CU.rgbToHSL(pt1);
-        pt2 = CU.rgbToHSL(pt2);
+        pt1 = CU.rgbToHSL(pt1, false);
+        pt2 = CU.rgbToHSL(pt2, false);
       }
 
       SB sb = new SB();
       V3 vd = V3.newVsub(pt2, pt1);
       int n = args[2].asInt();
       if (n < 2)
-        n = 30;
+        n = 20;
       vd.scale(1f / (n - 1));
       for (int i = 0; i < n; i++) {
         sb.append(Escape.escapeColor(CU.colorPtToFFRGB(usingHSL ? 

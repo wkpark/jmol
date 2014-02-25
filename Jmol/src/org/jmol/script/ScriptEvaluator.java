@@ -838,7 +838,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         SV token = (localVars != null && localVars.containsKey(theToken.value) ? null
             : getBitsetPropertySelector(i, false, false));
         if (token != null) {
-          rpn.addXVar(localVars.get(localVar));
+          rpn.addX(localVars.get(localVar));
           if (!rpn.addOpAllowMath(token, (tokAt(i + 1) == T.leftparen)))
             invArg();
           if ((token.intValue == T.function || token.intValue == T.parallel)
@@ -991,11 +991,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         break;
       case T.semicolon: // for (i = 1; i < 3; i=i+1)
         break out;
-      case T.decimal:
-        rpn.addXNum(theToken);
-        break;
-      case T.spec_seqcode:
       case T.integer:
+      case T.decimal:
+      case T.spec_seqcode:
         rpn.addXNum(theToken);
         break;
       // these next are for the within() command
@@ -1005,9 +1003,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             invArg();
           break;
         }
-        rpn.addXVar(SV.newT(theToken));
-        break;
-      // for within:
+        // for within:
+        //$FALL-THROUGH$
       case T.atomname:
       case T.atomtype:
       case T.branch:
@@ -1035,14 +1032,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.bitset:
       case T.hash:
       case T.context:
-        rpn.addXVar(SV.newT(theToken));
+        rpn.addX(SV.newT(theToken));
         break;
       case T.dollarsign:
         ignoreError = true;
         P3 ptc;
         try {
           ptc = centerParameter(i);
-          rpn.addXVar(SV.newV(T.point3f, ptc));
+          rpn.addX(SV.newV(T.point3f, ptc));
         } catch (Exception e) {
           rpn.addXStr("");
         }
@@ -1114,11 +1111,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             continue;
           }
         }
-        SV token = getBitsetPropertySelector(i + 1, false, false);
-        if (token == null)
+        SV var = getBitsetPropertySelector(i + 1, false, false);
+        if (var == null)
           invArg();
         // check for added min/max modifier
-        boolean isUserFunction = (token.intValue == T.function);
+        boolean isUserFunction = (var.intValue == T.function);
         boolean allowMathFunc = true;
         int tok2 = tokAt(iToken + 2);
         if (tokAt(iToken + 1) == T.per) {
@@ -1134,17 +1131,17 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           case T.sum:
           case T.sum2:
           case T.average:
-            allowMathFunc = (isUserFunction || token.intValue == T.distance
+            allowMathFunc = (isUserFunction || var.intValue == T.distance
                 || tok2 == T.minmaxmask || tok2 == T.selectedfloat);
-            token.intValue |= tok2;
+            var.intValue |= tok2;
             getToken(iToken + 2);
           }
         }
         allowMathFunc &= (tokAt(iToken + 1) == T.leftparen || isUserFunction);
-        if (!rpn.addOpAllowMath(token, allowMathFunc))
+        if (!rpn.addOpAllowMath(var, allowMathFunc))
           invArg();
         i = iToken;
-        if (token.intValue == T.function && tokAt(i + 1) != T.leftparen) {
+        if (var.intValue == T.function && tokAt(i + 1) != T.leftparen) {
           rpn.addOp(T.tokenLeftParen);
           rpn.addOp(T.tokenRightParen);
         }
@@ -1207,7 +1204,18 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
                 rpn.addOp(T.tokenRightParen);
               }
             } else {
-              rpn.addXVar(viewer.getOrSetNewVariable(name, false));
+              var = viewer.getOrSetNewVariable(name, false);
+              switch (var.tok) {
+              case T.integer:
+              case T.decimal:
+                // looking for ++ or --, in which case we don't copy
+                if (noCopy(i, -1) || noCopy(i, 1))
+                  break;
+                rpn.addXCopy(var);
+                continue;
+              default:
+              }
+              rpn.addX(var);
             }
           }
         }
@@ -1253,6 +1261,25 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     case T.point3f:
     default:
       return result.value;
+    }
+  }
+
+  private boolean noCopy(int i, int dir) {
+    // when there is a ++ or -- before or after
+    // an integer or decimal variable by name we must 
+    // NOT COPY the variable otherwise it will not be 
+    // updated. But generally
+    // we need to copy variables
+    switch (tokAt(i + dir)) {
+      case T.plusPlus:
+      case T.minusMinus:
+        // relative to x:
+        //     ++x ++y       x++
+        // dir  -1  +1        +1
+        // ival -1  -1        >0
+        return ((st[i+dir].intValue == -1) == (dir == -1));
+      default:
+        return false;
     }
   }
 
@@ -2062,14 +2089,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       return Integer.valueOf(modelIndex < 0 ? 0 : viewer
           .getModelFileNumber(modelIndex));
     }
+    return SV.nValue((SV) getVariableOrParameter(var, false));
+  }
+
+  public Object getVariableOrParameter(String var, boolean isEscaped) {
     SV v = getContextVariableAsVariable(var);
-    if (v == null) {
-      Object val = viewer.getParameter(var);
-      if (!(val instanceof String))
-        return val;
-      v = SV.newS((String) val);
-    }
-    return SV.nValue(v);
+    if (v == null)
+      v = SV.getVariable(viewer.getParameter(var));
+    return (isEscaped ? v.escape() : v);
   }
 
   public SV getContextVariableAsVariable(String var) {
@@ -3581,17 +3608,17 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         rpn.addXBs(getAtomBitSet(value));
         break;
       case T.hkl:
-        rpn.addXVar(SV.newT(instruction));
-        rpn.addXVar(SV.newV(T.point4f, hklParameter(pc + 2)));
+        rpn.addX(SV.newT(instruction));
+        rpn.addX(SV.newV(T.point4f, hklParameter(pc + 2)));
         pc = iToken;
         break;
       case T.plane:
-        rpn.addXVar(SV.newT(instruction));
-        rpn.addXVar(SV.newV(T.point4f, planeParameter(pc + 2)));
+        rpn.addX(SV.newT(instruction));
+        rpn.addX(SV.newV(T.point4f, planeParameter(pc + 2)));
         pc = iToken;
         break;
       case T.coord:
-        rpn.addXVar(SV.newT(instruction));
+        rpn.addX(SV.newT(instruction));
         rpn.addXPt(getPoint3f(pc + 2, true));
         pc = iToken;
         break;
@@ -3604,10 +3631,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             break;
           }
         }
-        rpn.addXVar(SV.newT(instruction));
+        rpn.addX(SV.newT(instruction));
         // note that the compiler has changed all within() types to strings.
         if (s.equals("hkl")) {
-          rpn.addXVar(SV.newV(T.point4f, hklParameter(pc + 2)));
+          rpn.addX(SV.newV(T.point4f, hklParameter(pc + 2)));
           pc = iToken;
         }
         break;
@@ -3628,7 +3655,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         break;
       case T.on:
       case T.off:
-        rpn.addXVar(SV.newT(instruction));
+        rpn.addX(SV.newT(instruction));
         break;
       case T.selected:
         rpn.addXBs(BSUtil.copy(viewer.getSelectedAtoms()));

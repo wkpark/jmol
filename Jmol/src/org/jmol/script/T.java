@@ -1188,7 +1188,8 @@ public class T {
   public final static int internal       = misc  | 164;
   public final static int intramolecular = misc  | 165;
   public final static int intermolecular = misc  | 166;
-  public final static int jmol    = misc  | 168;
+  public final static int jmol           = misc  | 167;
+  public final static int json           = misc  | 168;
   public final static int last    = misc  | 169;
   public final static int lattice        = misc  | 170;
   public final static int lighting       = misc  | 171;
@@ -1911,6 +1912,7 @@ public class T {
       "ionic",           null,
       "isAromatic",      T.t(isaromatic),
       "Jmol",            T.t(jmol),
+      "JSON",            T.t(json),
       "join",            T.t(join),
       "keys",            T.t(keys),
       "last",            T.t(last),

@@ -1359,6 +1359,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       break;
     case T.minusMinus:
     case T.plusPlus:
+      if (afterWhite == ichToken || afterMath == ichToken)
+        theToken = T.tv(theToken.tok, -1, theToken.value);
       if (!isNewSet && nTokens == 1)
         checkNewSetCommand();
       if (isNewSet && parenCount == 0 && bracketCount == 0
@@ -2232,6 +2234,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   }
 
   private char chFirst = '\0';
+  private int afterMath;
   
   /**
    * look for a quoted string, possibly allowing single quotes. 
@@ -2641,6 +2644,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     if (ichT == cchScript)
       return false;
     int ichT0 = ichT;
+    afterMath = (tokLastMath != 0 ? ichT : 0);
     tokLastMath = 0;
     char ch;
     switch (ch = script.charAt(ichT++)) {

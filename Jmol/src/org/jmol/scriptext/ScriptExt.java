@@ -5680,6 +5680,16 @@ public class ScriptExt implements JmolScriptExtension {
           msg = viewer.getPDBHeader();
       }
       break;
+    case T.json:
+    case T.var:
+      str = parameterAsString(len++);
+      SV v = (SV) eval.getVariableOrParameter(str, false);
+      if (tok == T.json) {
+        msg = v.toJSON();
+      } else {
+        msg = v.escape();
+      }
+      break;
     }
     checkLength(len);
     if (chk)
@@ -5692,7 +5702,7 @@ public class ScriptExt implements JmolScriptExtension {
       if (str.indexOf(" ") >= 0)
         showString(str);
       else
-        showString(str + " = " + getParameterEscaped(str));
+        showString(str + " = " + eval.getVariableOrParameter(str, true));
     }
   }
 
@@ -5730,11 +5740,6 @@ public class ScriptExt implements JmolScriptExtension {
     }
     setShapeProperty(JC.SHAPE_MO, "moData", moData);
     return (String) getShapePropertyIndex(JC.SHAPE_MO, "showMO", ptMO);
-  }
-
-  private String getParameterEscaped(String var) {
-    SV v = eval.getContextVariableAsVariable(var);
-    return (v == null ? "" + viewer.getParameterEscaped(var) : v.escape());
   }
 
   private String getContext(boolean withVariables) {
@@ -7648,7 +7653,7 @@ public class ScriptExt implements JmolScriptExtension {
       return false;
     if (tok == T.sort) {
       int n = (args.length == 0 ? 0 : args[0].asInt());
-      return mp.addXVar(mp.getX().sortOrReverse(n));
+      return mp.addX(mp.getX().sortOrReverse(n));
     }
     SV x = mp.getX();
     SV match = (args.length == 0 ? null : args[0]);
@@ -7690,10 +7695,10 @@ public class ScriptExt implements JmolScriptExtension {
       last = a;
     }
     if (match == null)
-      return mp.addXVar(SV.getVariableList(counts));
+      return mp.addX(SV.getVariableList(counts));
     if (counts.isEmpty())
       return mp.addXInt(0);
-    return mp.addXVar(counts.get(0).getList().get(1));
+    return mp.addX(counts.get(0).getList().get(1));
 
   }
 
@@ -7759,7 +7764,7 @@ public class ScriptExt implements JmolScriptExtension {
     SV x1 = mp.getX();
     boolean isListf = (x1.tok == T.listf);
     if (!isListf && x1.tok != T.varray)
-      return mp.addXVar(x1);
+      return mp.addX(x1);
     float f0 = SV.fValue(args[0]);
     float f1 = SV.fValue(args[1]);
     float df = SV.fValue(args[2]);
@@ -8093,7 +8098,7 @@ public class ScriptExt implements JmolScriptExtension {
               x1.value, new Object[] { name, params }, false, x1.index, false));
     }
     SV var = eval.runFunctionRet(null, name, params, null, true, true, false);
-    return (var == null ? false : mp.addXVar(var));
+    return (var == null ? false : mp.addX(var));
   }
 
   private boolean evaluateFind(ScriptMathProcessor mp, SV[] args)
@@ -8511,7 +8516,7 @@ public class ScriptExt implements JmolScriptExtension {
       return false;
     SV x = mp.getX();
     if (x.tok == T.varray && tok != T.split && tok != T.trim) {
-      mp.addXVar(x);
+      mp.addX(x);
       return evaluateList(mp, tok, args);
     }
     String s = (tok == T.split && x.tok == T.bitset || tok == T.trim
@@ -8565,9 +8570,9 @@ public class ScriptExt implements JmolScriptExtension {
     SV x2;
     switch (tok) {
     case T.push:
-      return (len == 1 && mp.addXVar(x1.pushPop(args[0])));
+      return (len == 1 && mp.addX(x1.pushPop(args[0])));
     case T.pop:
-      return (len == 0 && mp.addXVar(x1.pushPop(null)));
+      return (len == 0 && mp.addX(x1.pushPop(null)));
     case T.add:
       if (len != 1 && len != 2)
         return false;
@@ -9384,7 +9389,7 @@ public class ScriptExt implements JmolScriptExtension {
     if (getValue)
       return mp.addXPt(CU.colorPtFromInt2(ce.getArgb(hi == Float.MAX_VALUE ? lo
           : value)));
-    return mp.addXVar(SV.getVariableMap(key));
+    return mp.addX(SV.getVariableMap(key));
   }
 
   private boolean evaluateConnected(ScriptMathProcessor mp, SV[] args) {
@@ -9477,7 +9482,7 @@ public class ScriptExt implements JmolScriptExtension {
       BS bsBonds = new BS();
       viewer.makeConnections(fmin, fmax, order, T.identify, atoms1, atoms2,
           bsBonds, isBonds, false, 0);
-      return mp.addXVar(SV.newV(
+      return mp.addX(SV.newV(
           T.bitset,
           new BondSet(bsBonds, viewer.getAtomIndices(viewer.getAtomBits(
               T.bonds, bsBonds)))));

@@ -429,13 +429,7 @@ public class SV extends T implements JSONEncodable {
       value = Float.valueOf(((Float) value).floatValue() + n);
       break;
     default:
-      value = nValue(this);
-      if (value instanceof Integer) {
-        tok = integer;
-        intValue = ((Integer) value).intValue();
-      } else {
-        tok = decimal;
-      }
+      return false;
     }
     return true;
   }
@@ -600,7 +594,6 @@ public class SV extends T implements JSONEncodable {
       return "";
     int i;
     SB sb;
-    Map<Object, Boolean> map;
     switch (x.tok) {
     case on:
       return "true";
@@ -624,8 +617,7 @@ public class SV extends T implements JSONEncodable {
       if (x.value instanceof String)
         return (String) x.value; // just the command
       sb = new SB();
-      map = new Hashtable<Object, Boolean>();
-      sValueArray(sb, (SV) x, map, 0, false, false);
+      sValueArray(sb, (SV) x, "", "", false);
       return sb.toString();
     case string:
       String s = (String) x.value;
@@ -649,80 +641,86 @@ public class SV extends T implements JSONEncodable {
     }
   }
 
-  private static void sValueArray(SB sb, SV vx,
-                                  Map<Object, Boolean> map, int level,
-                                  boolean isEscaped, boolean wasArray) {
+  private static void sValueArray(SB sb, SV vx, String path, String tabs,
+                                  boolean isEscaped) {
     switch (vx.tok) {
     case hash:
     case context:
-      if (map.containsKey(vx)) {
+    case varray:
+      String thiskey = ";" + vx.hashCode() + ";";
+      if (path.indexOf(thiskey) >= 0) {
         sb.append(isEscaped ? "{}" : vx.myName == null ? "<circular reference>"
             : "<" + vx.myName + ">");
         break;
       }
-      map.put(vx, Boolean.TRUE);
-      Map<String, SV> ht =  (vx.tok == context ? 
-       ((ScriptContext) vx.value).getFullMap()
-       : vx.getMap());
-      addKeys(sb, map, ht, level, isEscaped, wasArray);
-      break;
-    case varray:
-      if (map.containsKey(vx)) {
-        sb.append(isEscaped ? "[]" : vx.myName == null ? "<circular reference>"
-            : "<" + vx.myName + ">");
-        break;
+      path += thiskey;
+      if (vx.tok == varray) {
+        sb.append(isEscaped ? "[ " : tabs + "\t[\n");
+        List<SV> sx = vx.getList();
+        for (int i = 0; i < sx.size(); i++) {
+          if (isEscaped && i > 0)
+            sb.append(",");
+          SV sv = sx.get(i);
+          sValueArray(sb, sv, path, tabs + "\t", isEscaped);
+          if (!isEscaped)
+            sb.append("\n");
+        }
+        sb.append(isEscaped ? " ]" : tabs + "\t]");
+      } else {
+        Map<String, SV> ht = (vx.tok == context ? ((ScriptContext) vx.value)
+            .getFullMap() : vx.getMap());
+        addKeys(sb, path, ht, tabs, isEscaped);
       }
-      map.put(vx, Boolean.TRUE);
-      if (isEscaped)
-        sb.append("[ ");
-      List<SV> sx = vx.getList();
-      for (int i = 0; i < sx.size(); i++) {
-        if (isEscaped && i > 0)
-          sb.append(",");
-        SV sv = sx.get(i);
-        sValueArray(sb, sv, map, level + 1, isEscaped, true);
-        if (!isEscaped)
-          sb.append("\n");
-      }
-      if (isEscaped)
-        sb.append(" ]");
       break;
     default:
-      if (!isEscaped && wasArray)
-        for (int j = 1; j < level; j++)
-          sb.append("\t");
+      if (!isEscaped)
+        sb.append(tabs);
       sb.append(isEscaped ? vx.escape() : sValue(vx));
     }
   }
   
-  private static void addKeys(SB sb, Map<Object, Boolean> map, Map<String, SV> ht, int level, boolean isEscaped, boolean wasArray) {
+  private static void addKeys(SB sb, String path, Map<String, SV> ht, String tabs, boolean isEscaped) {
     Set<String> keyset = ht.keySet();
     String[] keys = ht.keySet().toArray(new String[keyset.size()]);
     Arrays.sort(keys);
     if (isEscaped) {
-      sb.append("[ ");
+      sb.append("{ ");
       String sep = "";
       for (int i = 0; i < keys.length; i++) {
         String key = keys[i];
         sb.append(sep).append(PT.esc(key)).appendC(':');
-        sValueArray(sb, ht.get(key), map, level + 1, true, false);
+        sValueArray(sb, ht.get(key), path, tabs+"\t", true);
         sep = ",";
       }
-      sb.append(" ]");
+      sb.append(" }");
       return;
     }
+    sb.append(tabs).append("{\n");
     for (int i = 0; i < keys.length; i++) {
-      for (int j = 0; j < level; j++)
-         sb.append("\t");
+      sb.append(tabs);
       String key = keys[i];
       sb.append(key).append("\t:");
       SB sb2 = new SB();
       SV v = ht.get(key);
-      sValueArray(sb2, v, map, level + 1, v.tok == T.string, false);
+      isEscaped = false;
+      switch (v.tok) {
+      case T.string:
+      case T.decimal:
+      case T.integer:
+      case T.point3f:
+      case T.point4f:
+      case T.bitset:
+        isEscaped = true;
+      }
+      sValueArray(sb2, v, path, (v.tok == hash ? tabs + "\t" : tabs), isEscaped);
       String value = sb2.toString();
-      sb.append(value.indexOf("\n") >= 0 ? "\n" : "\t");
+      if (isEscaped)
+        sb.append("\t");
+      else 
+        sb.append("\n");
       sb.append(value).append("\n");
     }
+    sb.append(tabs).append("}");
   }
 
   public static P3 ptValue(SV x) {
@@ -751,15 +749,12 @@ public class SV extends T implements JSONEncodable {
   }
 
   private static float toFloat(String s) {
-    if (s.equalsIgnoreCase("true"))
-      return 1;
-    if (s.equalsIgnoreCase("false") || s.length() == 0)
-      return 0;
-    return PT.parseFloatStrict(s);
+    return (s.equalsIgnoreCase("true") ? 1 
+        : s.length() == 0 || s.equalsIgnoreCase("false") ? 0 
+        : PT.parseFloatStrict(s));
   }
 
-  public static SV concatList(SV x1, SV x2,
-                                          boolean asNew) {
+  public static SV concatList(SV x1, SV x2, boolean asNew) {
     List<SV> v1 = x1.getList();
     List<SV> v2 = x2.getList();
     if (!asNew) {
@@ -1056,12 +1051,14 @@ public class SV extends T implements JSONEncodable {
     switch (tok) {
     case string:
       return PT.esc((String) value);
+    case matrix3f:
+    case matrix4f:
+      return PT.toJSON(null, value);
     case varray:
     case hash:
     case context:
       SB sb = new SB();
-      Map<Object,Boolean>map = new Hashtable<Object,Boolean>();
-      sValueArray(sb, this, map, 0, true, false);
+      sValueArray(sb, this, "", "", true);
       return sb.toString();
     default:
       return sValue(this);
@@ -1232,13 +1229,13 @@ public class SV extends T implements JSONEncodable {
     @Override
     public int compare(SV x, SV y) {
       if (x.tok != y.tok) {
-        if (x.tok == T.decimal || x.tok == T.integer
-            || y.tok == T.decimal || y.tok == T.integer) {
+        if (x.tok == decimal || x.tok == integer
+            || y.tok == decimal || y.tok == integer) {
           float fx = fValue(x);
           float fy = fValue(y);
           return (fx < fy ? -1 : fx > fy ? 1 : 0);
         }
-        if (x.tok == T.string || y.tok == T.string)
+        if (x.tok == string || y.tok == string)
           return sValue(x).compareTo(sValue(y));
       }
       switch (x.tok) {
@@ -1421,9 +1418,9 @@ public class SV extends T implements JSONEncodable {
 
   public static boolean isScalar(SV x) {
     switch (x.tok) {
-    case T.varray:
+    case varray:
       return false;
-    case T.string:
+    case string:
       return (((String) x.value).indexOf("\n") < 0);
     default:
       return true;

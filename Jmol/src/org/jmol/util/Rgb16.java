@@ -28,9 +28,9 @@ import javajs.util.SB;
 
 
 public final class Rgb16 {
-  public int rScaled;
-  public int gScaled;
-  public int bScaled;
+  public int r;
+  public int g;
+  public int b;
     
   public Rgb16() {
   }
@@ -41,48 +41,48 @@ public final class Rgb16 {
     return c;
   }
 
-  public void setInt(int argb) {
-    rScaled = ((argb >> 8) & 0xFF00) | 0x80;
-    gScaled = ((argb     ) & 0xFF00) | 0x80;
-    bScaled = ((argb << 8) & 0xFF00) | 0x80;
+  public void setInt(int a) {
+    r = ((a >> 8) & 0xFF00) | 0x80;
+    g = ((a     ) & 0xFF00) | 0x80;
+    b = ((a << 8) & 0xFF00) | 0x80;
   }
 
-  public void setRgb(Rgb16 other) {
-    rScaled = other.rScaled;
-    gScaled = other.gScaled;
-    bScaled = other.bScaled;
+  public void setRgb(Rgb16 a) {
+    r = a.r;
+    g = a.g;
+    b = a.b;
   }
 
-  public void diffDiv(Rgb16 rgb16A, Rgb16 rgb16B, int divisor) {
-    rScaled = (rgb16A.rScaled - rgb16B.rScaled) / divisor;
-    gScaled = (rgb16A.gScaled - rgb16B.gScaled) / divisor;
-    bScaled = (rgb16A.bScaled - rgb16B.bScaled) / divisor;
+  public void diffDiv(Rgb16 a, Rgb16 b, int divisor) {
+    r = (a.r - b.r) / divisor;
+    g = (a.g - b.g) / divisor;
+    this.b = (a.b - b.b) / divisor;
   }
-  public void setAndIncrement(Rgb16 base, Rgb16 other) {
-    rScaled = base.rScaled;
-    base.rScaled += other.rScaled;
-    gScaled = base.gScaled;
-    base.gScaled += other.gScaled;
-    bScaled = base.bScaled;
-    base.bScaled += other.bScaled;
+  public void setAndIncrement(Rgb16 base, Rgb16 inc) {
+    r = base.r;
+    base.r += inc.r;
+    g = base.g;
+    base.g += inc.g;
+    b = base.b;
+    base.b += inc.b;
   }
 
   public int getArgb() {
     return (                 0xFF000000 |
-           ((rScaled << 8) & 0x00FF0000)|
-           (gScaled        & 0x0000FF00)|
-           (bScaled >> 8));
+           ((r << 8) & 0x00FF0000)|
+           (g        & 0x0000FF00)|
+           (b >> 8));
   }
 
   @Override
   public String toString() {
     return new SB()
-    .append("Rgb16(").appendI(rScaled).appendC(',')
-    .appendI(gScaled).appendC(',')
-    .appendI(bScaled).append(" -> ")
-    .appendI((rScaled >> 8) & 0xFF).appendC(',')
-    .appendI((gScaled >> 8) & 0xFF).appendC(',')
-    .appendI((bScaled >> 8) & 0xFF).appendC(')').toString();
+    .append("Rgb16(").appendI(r).appendC(',')
+    .appendI(g).appendC(',')
+    .appendI(b).append(" -> ")
+    .appendI((r >> 8) & 0xFF).appendC(',')
+    .appendI((g >> 8) & 0xFF).appendC(',')
+    .appendI((b >> 8) & 0xFF).appendC(')').toString();
   }
 }
 

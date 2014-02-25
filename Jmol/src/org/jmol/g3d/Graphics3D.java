@@ -1589,12 +1589,12 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
         zScaled += zIncrementScaled;
       }
     } else {
-      int rScaled = rgb16Left.rScaled << 8;
-      int rIncrement = ((rgb16Right.rScaled - rgb16Left.rScaled) << 8) / count;
-      int gScaled = rgb16Left.gScaled;
-      int gIncrement = (rgb16Right.gScaled - gScaled) / count;
-      int bScaled = rgb16Left.bScaled;
-      int bIncrement = (rgb16Right.bScaled - bScaled) / count;
+      int rScaled = rgb16Left.r << 8;
+      int rIncrement = ((rgb16Right.r - rgb16Left.r) << 8) / count;
+      int gScaled = rgb16Left.g;
+      int gIncrement = (rgb16Right.g - gScaled) / count;
+      int bScaled = rgb16Left.b;
+      int bIncrement = (rgb16Right.b - bScaled) / count;
       while (--count >= 0) {
         if (addAllPixels || (flipflop = !flipflop)) {
           int z = zScaled >> 10;
@@ -1751,12 +1751,12 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
         zScaled += zIncrementScaled;
       }
     } else {
-      int rScaled = rgb16Left.rScaled << 8;
-      int rIncrement = GData.roundInt(((rgb16Right.rScaled - rgb16Left.rScaled) << 8) / count);
-      int gScaled = rgb16Left.gScaled;
-      int gIncrement = GData.roundInt((rgb16Right.gScaled - gScaled) / count);
-      int bScaled = rgb16Left.bScaled;
-      int bIncrement = GData.roundInt((rgb16Right.bScaled - bScaled) / count);
+      int rScaled = rgb16Left.r << 8;
+      int rIncrement = GData.roundInt(((rgb16Right.r - rgb16Left.r) << 8) / count);
+      int gScaled = rgb16Left.g;
+      int gIncrement = GData.roundInt((rgb16Right.g - gScaled) / count);
+      int bScaled = rgb16Left.b;
+      int bIncrement = GData.roundInt((rgb16Right.b - bScaled) / count);
       while (--count >= 0) {
         if (addAllPixels || (flipflop = !flipflop)) {
           int z = zScaled >> 10;

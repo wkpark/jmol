@@ -481,7 +481,66 @@ public class CU {
     return rgb(grey, grey, grey);
   }
 
-  
+  public static P3 rgbToHSL(P3 pt) {
+    //http://tips4java.wordpress.com/2009/07/05/hsl-color/
+
+    float r = Math.min(pt.x / 255, 1);
+    float g = Math.min(pt.y / 255, 1);
+    float b = Math.min(pt.z / 255, 1);
+    float min = Math.min(r, Math.min(g, b));
+    float max = Math.max(r, Math.max(g, b));
+
+    //  Luminance is just p/2
+    
+    float p = (max + min);    
+    float q = (max - min);
+
+    //  Calculate the Hue
+
+    float h = (q == 0 ? 0
+        : max == r ? (60 * (g - b) / q + 360) % 360
+            : max == g ? 60 * (b - r) / q + 120
+                : 60 * (r - g) / q + 240);
+
+    //  Calculate the Saturation
+
+    float s = q / (q == 0 ? 1 : p <= 1 ? p : 2 - p);
+
+    return P3.new3(Math.round(h), Math.round(s * 100), Math.round(p * 50));
+  }
+
+  /**
+   * Convert HSL values to a RGB Color. source:
+   * http://tips4java.wordpress.com/2009/07/05/hsl-color/
+   * @param hsl in the range 360, 100, 100
+   * @return the RGB as P3
+   */
+  public static P3 hslToRGB(P3 hsl) {
+    
+    float h = hsl.x / 360;
+    float s = hsl.y / 100;
+    float l = hsl.z / 100;
+
+    float q = (l < 0.5 ? l * (1 + s) :  (l + s) - s * l);
+    float p = 2 * l - q;
+    float r = Math.max(0, hueToRGB(p, q, h + 1/3f));
+    float g = Math.max(0, hueToRGB(p, q, h));
+    float b = Math.max(0, hueToRGB(p, q, h - 1/3f));
+
+    r = Math.min(r, 1.0f);
+    g = Math.min(g, 1.0f);
+    b = Math.min(b, 1.0f);
+
+    return P3.new3(Math.round(r * 255), Math.round(g * 255), Math.round(b * 255));
+  }
+
+  private static float hueToRGB(float p, float q, float h) {
+    h += (h < 0 ? 1 : h > 1 ? -1 : 0);
+    return (6 * h < 1 ? p + (q - p) * 6 * h : 2 * h < 1 ? q : 3 * h < 2 ? p
+        + (q - p) * 6 * (2/3f - h) : p);
+  }
+
+
 }
 
 

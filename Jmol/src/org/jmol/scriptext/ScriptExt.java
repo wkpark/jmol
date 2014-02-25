@@ -9342,42 +9342,50 @@ public class ScriptExt implements JmolScriptExtension {
   }
 
   private boolean evaluateColor(ScriptMathProcessor mp, SV[] args) {
-    // color("hsl", {r g b})         # r g b in 0 to 255 scale 
+    // color("toHSL", {r g b})         # r g b in 0 to 255 scale 
+    // color("toRGB", {h s l})         # h s l in 360, 100, 100 scale 
     // color("rwb")                  # "" for most recently used scheme for coloring by property
     // color("rwb", min, max)        # min/max default to most recent property mapping 
     // color("rwb", min, max, value) # returns color
     // color("$isosurfaceId")        # info for a given isosurface
     // color("$isosurfaceId", value) # color for a given mapped isosurface value
-    // color(ptColor1, ptColor2, n true)
+    // color(ptColor1, ptColor2, n, asHSL)
 
     String colorScheme = (args.length > 0 ? SV.sValue(args[0]) : "");
     boolean isIsosurface = colorScheme.startsWith("$");
-    if (args.length == 2 && colorScheme.equalsIgnoreCase("hsl")) {
-      P3 pt = P3.newP(SV.ptValue(args[1]));
-      float[] hsl = new float[3];
-      ColorEncoder.RGBtoHSL(pt.x, pt.y, pt.z, hsl);
-      pt.set(hsl[0] * 360, hsl[1] * 100, hsl[2] * 100);
-      return mp.addXPt(pt);
-    }
-    if (args.length == 4 && args[3].tok == T.on) {
-      P3 pt1 = P3.newP(args[0].tok == T.point3f ? SV.ptValue(args[0]) : 
-        CU.colorPtFromString(args[0].asString(), new P3()));
-      P3 pt2 = P3.newP(args[1].tok == T.point3f ? SV.ptValue(args[1]) : 
-        CU.colorPtFromString(args[1].asString(), new P3()));
+    if (args.length == 2 && colorScheme.equalsIgnoreCase("TOHSL"))
+      return mp.addXPt(CU.rgbToHSL(P3.newP(args[1].tok == T.point3f ? SV
+          .ptValue(args[1])
+          : CU.colorPtFromString(args[1].asString(), new P3()))));
+    if (args.length == 2 && colorScheme.equalsIgnoreCase("TORGB"))
+      return mp.addXPt(CU.hslToRGB(P3.newP(args[1].tok == T.point3f ? SV
+          .ptValue(args[1])
+          : CU.colorPtFromString(args[1].asString(), new P3()))));
+    if (args.length == 4 && (args[3].tok == T.on || args[3].tok == T.off)) {
+      P3 pt1 = P3.newP(args[0].tok == T.point3f ? SV.ptValue(args[0]) : CU
+          .colorPtFromString(args[0].asString(), new P3()));
+      P3 pt2 = P3.newP(args[1].tok == T.point3f ? SV.ptValue(args[1]) : CU
+          .colorPtFromString(args[1].asString(), new P3()));
+      boolean usingHSL = (args[3].tok == T.on);
+      if (usingHSL) {
+        pt1 = CU.rgbToHSL(pt1);
+        pt2 = CU.rgbToHSL(pt2);
+      }
+
       SB sb = new SB();
       V3 vd = V3.newVsub(pt2, pt1);
       int n = args[2].asInt();
-      if (n < 2) 
+      if (n < 2)
         n = 30;
-      vd.scale(1.001f/(n - 1));
+      vd.scale(1f / (n - 1));
       for (int i = 0; i < n; i++) {
-        sb.append(Escape.escapeColor(CU.colorPtToFFRGB(pt1)));
+        sb.append(Escape.escapeColor(CU.colorPtToFFRGB(usingHSL ? 
+            CU.hslToRGB(pt1) : pt1)));
         pt1.add(vd);
       }
       return mp.addXStr(sb.toString());
     }
-    
-    
+
     ColorEncoder ce = (isIsosurface ? null : viewer
         .getColorEncoder(colorScheme));
     if (!isIsosurface && ce == null)

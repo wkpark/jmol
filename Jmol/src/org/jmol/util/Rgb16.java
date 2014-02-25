@@ -58,23 +58,6 @@ public final class Rgb16 {
     gScaled = (rgb16A.gScaled - rgb16B.gScaled) / divisor;
     bScaled = (rgb16A.bScaled - rgb16B.bScaled) / divisor;
   }
-
-  /*
-  void add(Rgb16 other) {
-    rScaled += other.rScaled;
-    gScaled += other.gScaled;
-    bScaled += other.bScaled;
-  }
-  */
-  
-  /*
-  void add(Rgb16 base, Rgb16 other) {
-    rScaled = base.rScaled + other.rScaled;
-    gScaled = base.gScaled + other.gScaled;
-    bScaled = base.bScaled + other.bScaled;
-  }
-  */
-  
   public void setAndIncrement(Rgb16 base, Rgb16 other) {
     rScaled = base.rScaled;
     base.rScaled += other.rScaled;

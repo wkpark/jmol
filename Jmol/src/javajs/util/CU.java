@@ -466,7 +466,7 @@ public class CU {
   }
 
   /**
-   * Return a greyscale rgb value 0-FF using NTSC color luminance algorithm
+   * Return a greyscale rgb value 0-FF using NTSC color lightness algorithm
    *<p>
    * the alpha component is set to 0xFF. If you want a value in the
    * range 0-255 then & the result with 0xFF;
@@ -483,7 +483,7 @@ public class CU {
   
   
   /**
-   * Convert RGB values to HSL (hue/saturation/luminance)
+   * Convert RGB values to HSL (hue/saturation/lightness)
    * 
    * @param rgb
    *        range 255 255 255
@@ -505,22 +505,20 @@ public class CU {
     float min = Math.min(r, Math.min(g, b));
     float max = Math.max(r, Math.max(g, b));
 
-    //  Luminance is just p * 50
+    //  lightness is just p * 50
 
     float p = (max + min);
     float q = (max - min);
 
-    //  Calculate the Hue
-
     float h = (60 * ((q == 0 ? 0 : max == r ? ((g - b) / q + 6)
         : max == g ? (b - r) / q + 2 : (r - g) / q + 4))) % 360;
 
-    //  Calculate the Saturation
-
     float s = q / (q == 0 ? 1 : p <= 1 ? p : 2 - p);
 
-    return (doRound ? P3.new3(Math.round(h), Math.round(s * 100),
-        Math.round(p * 50)) : P3.new3(h, s * 100, p * 50));
+    // we round to tenths for HSL so that we can  return enough
+    // precision to get back 1-255 in RGB
+    return (doRound ? P3.new3(Math.round(h*10)/10f, Math.round(s * 1000)/10f,
+        Math.round(p * 500)/10f) : P3.new3(h, s * 100, p * 50));
   }
 
   /**

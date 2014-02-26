@@ -9343,6 +9343,7 @@ public class ScriptExt implements JmolScriptExtension {
 
   private boolean evaluateColor(ScriptMathProcessor mp, SV[] args) {
     // color("toHSL", {r g b})         # r g b in 0 to 255 scale 
+    // color("toRGB", "colorName or hex code") # r g b in 0 to 255 scale 
     // color("toRGB", {h s l})         # h s l in 360, 100, 100 scale 
     // color("rwb")                  # "" for most recently used scheme for coloring by property
     // color("rwb", min, max)        # min/max default to most recent property mapping 
@@ -9357,10 +9358,11 @@ public class ScriptExt implements JmolScriptExtension {
       return mp.addXPt(CU.rgbToHSL(P3.newP(args[1].tok == T.point3f ? SV
           .ptValue(args[1])
           : CU.colorPtFromString(args[1].asString(), new P3())), true));
-    if (args.length == 2 && colorScheme.equalsIgnoreCase("TORGB"))
-      return mp.addXPt(CU.hslToRGB(P3.newP(args[1].tok == T.point3f ? SV
-          .ptValue(args[1])
-          : CU.colorPtFromString(args[1].asString(), new P3()))));
+    if (args.length == 2 && colorScheme.equalsIgnoreCase("TORGB")) {
+      P3 pt = P3.newP(args[1].tok == T.point3f ? SV.ptValue(args[1]) : CU
+          .colorPtFromString(args[1].asString(), new P3()));
+      return mp.addXPt(args[1].tok == T.point3f ? CU.hslToRGB(pt) : pt);
+    }
     if (args.length == 4 && (args[3].tok == T.on || args[3].tok == T.off)) {
       P3 pt1 = P3.newP(args[0].tok == T.point3f ? SV.ptValue(args[0]) : CU
           .colorPtFromString(args[0].asString(), new P3()));
@@ -9379,8 +9381,8 @@ public class ScriptExt implements JmolScriptExtension {
         n = 20;
       vd.scale(1f / (n - 1));
       for (int i = 0; i < n; i++) {
-        sb.append(Escape.escapeColor(CU.colorPtToFFRGB(usingHSL ? 
-            CU.hslToRGB(pt1) : pt1)));
+        sb.append(Escape.escapeColor(CU.colorPtToFFRGB(usingHSL ? CU
+            .hslToRGB(pt1) : pt1)));
         pt1.add(vd);
       }
       return mp.addXStr(sb.toString());

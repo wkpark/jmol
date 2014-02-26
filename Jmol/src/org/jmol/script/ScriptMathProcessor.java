@@ -92,10 +92,14 @@ public class ScriptMathProcessor {
   private int ptid = 0;
   private int ptx = Integer.MAX_VALUE;
   private int pto = Integer.MAX_VALUE;
+  private boolean isAssignment;
+  private boolean doSelections = true;
+  private boolean assignLeft;
 
-  ScriptMathProcessor(ScriptEvaluator eval, boolean isArrayItem,
+  ScriptMathProcessor(ScriptEvaluator eval, boolean isAssignment, boolean isArrayItem,
       boolean asVector, boolean asBitSet) {
     this.eval = eval;
+    this.isAssignment = assignLeft = isAssignment;      
     this.viewer = eval.viewer;
     this.debugHigh = eval.debugHigh;
     this.chk = wasSyntaxCheck = eval.chk;
@@ -107,16 +111,27 @@ public class ScriptMathProcessor {
       Logger.debug("initialize RPN");
   }
 
+  public boolean endAssignment() {
+    assignLeft = false;
+    return (doSelections = false);
+  }
+  
   @SuppressWarnings("unchecked")
   SV getResult(boolean allowUnderflow) throws ScriptException {
     boolean isOK = true;
-    while (isOK && oPt >= 0)
+    while (isOK && oPt >= 0 && oStack[oPt] != null)
       isOK = operate();
     if (isOK) {
       if (asVector) {
         List<SV> result = new List<SV>();
         for (int i = 0; i <= xPt; i++)
-          result.addLast(SV.selectItemVar(xStack[i]));
+          result.addLast(isAssignment ? xStack[i] : SV.selectItemVar(xStack[i]));
+        if (lastAssignedString != null) {
+          result.remove(0);
+          result.add(0, lastAssignedString);
+          lastAssignedString.intValue = xStack[0].intValue;
+        }
+        
         return SV.newV(T.vector, result);
       }
       if (xPt == 0) {
@@ -341,6 +356,7 @@ public class ScriptMathProcessor {
   }
 
   private boolean skipping;
+  private SV lastAssignedString;
 
   /**
    * addOp The primary driver of the Reverse Polish Notation evaluation engine.
@@ -383,7 +399,7 @@ public class ScriptMathProcessor {
     }
 
     // are we skipping due to a ( ? : ) construct?
-    int tok0 = (oPt >= 0 ? oStack[oPt].tok : T.nada);
+    int tok0 = (oPt >= 0 && oStack[oPt] != null ? oStack[oPt].tok : T.nada);
     skipping = (ifPt >= 0 && (ifStack[ifPt] == 'F' || ifStack[ifPt] == 'X'));
     if (skipping)
       return checkSkip(op, tok0);
@@ -598,8 +614,8 @@ public class ScriptMathProcessor {
       break;
     case T.rightsquare:
       wasX = true;
-      if (squareCount-- <= 0 || oPt < 0)
-        return false;
+      if (squareCount-- <= 0 || oPt < 0 || !doSelections)
+        return !doSelections;
       if (oStack[oPt].tok == T.array)
         return evaluateFunction(T.leftsquare);
       oPt--;
@@ -638,8 +654,11 @@ public class ScriptMathProcessor {
     case T.minusMinus:
       break;
     case T.opEQ:
-      if (squareCount == 0)
+      if (squareCount == 0) {
+        doSelections = true;
+        assignLeft = false;
         equalCount++;
+      }
       wasX = false;
       break;
     default:
@@ -653,6 +672,9 @@ public class ScriptMathProcessor {
     // immediate operation check:
     switch (op.tok) {
     case T.propselector:
+      if (!doSelections) {
+        
+      }
       return (((op.intValue & ~T.minmaxmask) == T.function
           && op.intValue != T.function)? evaluateFunction(T.nada) : true);
     case T.plusPlus:
@@ -706,20 +728,29 @@ public class ScriptMathProcessor {
     }
     SV var1 = xStack[xPt--];
     SV var = xStack[xPt];
-    if (var.tok == T.varray && var1.tok == T.string 
-        && var.intValue != Integer.MAX_VALUE) {
-      // allow for x[1]["test"][1]["here"]
-      // common in getproperty business
-      // prior to 12.2/3.18, x[1]["id"] was misread as x[1][0]
-      var = (SV) SV.selectItemTok(var, Integer.MIN_VALUE);
-    }
-    if (var.tok == T.hash || var.tok == T.context) {
-      SV v = var.mapValue(SV.sValue(var1));
-      xStack[xPt] = (v == null ? SV.newS("") : v);
-      return true;
-    }
-    int i = var1.asInt();
+    if (var.tok == T.varray && var.intValue != Integer.MAX_VALUE)
+
+      if (var1.tok == T.string || assignLeft && squareCount == 1) {
+        // immediate drill-down
+        // allow for x[1]["test"][1]["here"]
+        // common in getproperty business
+        // also x[1][2][3] = ....
+        // prior to 12.2/3.18, x[1]["id"] was misread as x[1][0]
+        xStack[xPt] = var = (SV) SV.selectItemTok(var, Integer.MIN_VALUE);
+      }
+    if (assignLeft && var.tok != T.string)
+      lastAssignedString = null;
     switch (var.tok) {
+    case T.hash:
+    case T.context:
+      if (doSelections) {
+        SV v = var.mapValue(SV.sValue(var1));
+        xStack[xPt] = (v == null ? SV.newS("") : v);
+      } else {
+        xPt++;
+        putOp(null); // final operations terminator
+      }
+      return true;
     default:
       var = SV.newS(SV.sValue(var));
       //$FALL-THROUGH$
@@ -728,7 +759,17 @@ public class ScriptMathProcessor {
     case T.string:
     case T.matrix3f:
     case T.matrix4f:
-      xStack[xPt] = (SV) SV.selectItemTok(var, i);
+      if (doSelections || var.tok == T.varray
+          && var.intValue == Integer.MAX_VALUE) {
+        xStack[xPt] = (SV) SV.selectItemTok(var, var1.asInt());
+        if (assignLeft && var.tok == T.string && squareCount == 1)
+          lastAssignedString = var;
+      } else {
+        xPt++;
+      }
+      if (!doSelections)
+        putOp(null); // final operations terminator
+
       break;
     }
     return true;
@@ -741,7 +782,7 @@ public class ScriptMathProcessor {
     Logger.debug("\n");
     for (int i = 0; i <= oPt; i++)
       Logger.debug("o[" + i + "]: " + oStack[i] + " prec="
-          + T.getPrecedence(oStack[i].tok));
+          + (oStack[i] == null ? "--" : "" + T.getPrecedence(oStack[i].tok)));
     Logger.debug(" ifStack = " + (new String(ifStack)).substring(0, ifPt + 1));
   }
 
@@ -796,11 +837,11 @@ public class ScriptMathProcessor {
       dumpStacks("operate: " + op);
     }
 
-    // check for a[3][2] 
-    if (isArrayItem && squareCount == 0 && equalCount == 1 && oPt < 0
-        && (op.tok == T.opEQ)) {
+    // check for a[3][2]
+    if (op.tok == T.opEQ
+        && (isArrayItem && squareCount == 0 && equalCount == 1 && oPt < 0 || oPt >= 0
+            && oStack[oPt] == null))
       return true;
-    }
 
     SV x2 = getX();
     if (x2 == T.tokenArraySelector)
@@ -1691,5 +1732,5 @@ public class ScriptMathProcessor {
       return null;
     return xStack[xPt--];
   }
-  
+
 }

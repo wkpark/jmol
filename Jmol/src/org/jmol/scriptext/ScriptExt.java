@@ -5683,7 +5683,7 @@ public class ScriptExt implements JmolScriptExtension {
     case T.json:
     case T.var:
       str = parameterAsString(len++);
-      SV v = (SV) eval.getVariableOrParameter(str, false);
+      SV v = (SV) eval.getParameter(str, T.variable);
       if (tok == T.json) {
         msg = v.toJSON();
       } else {
@@ -5702,7 +5702,7 @@ public class ScriptExt implements JmolScriptExtension {
       if (str.indexOf(" ") >= 0)
         showString(str);
       else
-        showString(str + " = " + eval.getVariableOrParameter(str, true));
+        showString(str + " = " + ((SV) eval.getParameter(str, T.variable)).escape());
     }
   }
 

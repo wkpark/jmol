@@ -294,6 +294,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     iBrace = 0;
     braceCount = 0;
     parenCount = 0;
+    isDotDot= false;
     ptSemi = -10;
     cchToken = 0;
     lnLength = 8;
@@ -365,7 +366,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
             || errorStr(ERROR_missingEnd, T.nameOf(flowContext.token.tok)));
       }
       
-      if (nTokens > 0) {
+      if (nTokens > 0 && !isDotDot) {
         switch (checkSpecialParameterSyntax()) {
         case CONTINUE:
           continue;
@@ -627,7 +628,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       }
       if (wasImpliedScript())
         return CONTINUE;
-      if (isNewSet && nTokens > 72 && tokAt(2) == T.per
+      if (isNewSet && nTokens > 2 && tokAt(2) == T.per
           && (tokAt(3) == T.sort || tokAt(3) == T.reverse || tokAt(3) == T.push || tokAt(3) == T.pop)) {
         // check for x.sort or x.reverse or a.push(xxx)
         // x.sort / x.reverse ==> x = x.sort / x = x.reverse
@@ -1859,7 +1860,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     bracketCount = 0;
     setEqualPt = Integer.MAX_VALUE;
     ptNewSetModifier = (isNewSet ? (ident.equals("(") ? 2 : 1) : Integer.MAX_VALUE);
-    return ((isSetBrace || theToken.tok == T.plusPlus || theToken.tok == T.minusMinus)? theToken : T.o(T.identifier, ident));
+    // unfortunately we have to look here for defaultLattice, because it must not turn into a string.
+    return ((isSetBrace || theToken.tok == T.defaultlattice || theToken.tok == T.plusPlus || theToken.tok == T.minusMinus)? theToken : T.o(T.identifier, ident));
   }
 
   private void checkUnquotedFileName() {
@@ -2567,7 +2569,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       return Integer.MAX_VALUE;
     cchToken = ichT - ichToken;
     try {
-      int val = Integer.parseInt(script.substring(ichToken, ichT));
+      int val = Integer.parseInt(ident = script.substring(ichToken, ichT));
       return val;
     } catch (NumberFormatException e) {
       // ignore
@@ -2707,7 +2709,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       tokLastMath = 1;
       break;
     default:
-      if (!Character.isLetter(ch))
+      if (!Character.isLetter(ch) && !isDotDot)
         return false;
     //$FALL-THROUGH$
     case '~':

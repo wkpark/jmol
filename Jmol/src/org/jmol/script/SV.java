@@ -978,9 +978,9 @@ public class SV extends T implements JSONEncodable {
     case matrix3f:
     case matrix4f:
       len = (tok == matrix3f ? 3 : 4);
-      if (pt1 > 10) {
-        int col = pt1;
-        int row = pt2;
+      if (pt2 != Integer.MAX_VALUE) {
+        int col = pt2;
+        int row = pt1;
         if (col > 0 && col <= len && row <= len) {
           if (tok == matrix3f)
             ((M3) value).setElement(row - 1, col - 1, fValue(var));
@@ -1023,7 +1023,7 @@ public class SV extends T implements JSONEncodable {
       if (pt2 == Integer.MAX_VALUE){
         pt2 = pt1;
       } else {
-        if (pt2 <= 0)
+        if (--pt2 < 0)
           pt2 = pt + pt2;
         while (pt2 >= str.length())
           str += " ";
@@ -1031,6 +1031,7 @@ public class SV extends T implements JSONEncodable {
       if (pt2 >= pt1)
         value = str.substring(0, pt1) + sValue(var)
           + str.substring(++pt2);
+      intValue = index = Integer.MAX_VALUE;
       break;
     case varray:
       len = getList().size();
@@ -1178,11 +1179,6 @@ public class SV extends T implements JSONEncodable {
     return sb.toString();
   }
   
-  @Override
-  public String toString() {
-    return toString2() + "[" + myName + " index =" + index + " intValue=" + intValue + "]";
-  }
-
   @SuppressWarnings("unchecked")
   public static BS getBitSet(SV x, boolean allowNull) {
     switch (x.tok) {
@@ -1456,5 +1452,11 @@ public class SV extends T implements JSONEncodable {
     }
     return null;
   }
+
+  @Override
+  public String toString() {
+    return toString2() + "[" + myName + " index =" + index + " intValue=" + intValue + "]";
+  }
+
 
 }

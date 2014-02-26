@@ -747,20 +747,24 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private List<SV> parameterExpressionList(int pt, int ptAtom,
                                            boolean isArrayItem)
       throws ScriptException {
+    
+    // isArrayItem will be true for centerParameter with $id[n]
+    // in which case pt will be negative 
+    
     return (List<SV>) parameterExpression(pt, -1, null, true, true, ptAtom,
-        isArrayItem, null, null);
+        isArrayItem, null, null, false);
   }
 
   private String parameterExpressionString(int pt, int ptMax)
       throws ScriptException {
     return (String) parameterExpression(pt, ptMax, "", true, false, -1, false,
-        null, null);
+        null, null, false);
   }
 
   private boolean parameterExpressionBoolean(int pt, int ptMax)
       throws ScriptException {
     return ((Boolean) parameterExpression(pt, ptMax, null, true, false, -1,
-        false, null, null)).booleanValue();
+        false, null, null, false)).booleanValue();
   }
 
   private SV parameterExpressionToken(int pt) throws ScriptException {
@@ -775,14 +779,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    * also uses the RPN class.]
    * 
    * @param pt
-   *        token index in statement start of expression
+   *        token index in statement start of expression or negative for one
+   *        expression only.
    * @param ptMax
    *        token index in statement end of expression
    * @param key
    *        variable name for debugging reference only -- null indicates return
    *        Boolean -- "" indicates return String
    * @param ignoreComma
-   * 
    * @param asVector
    *        a flag passed on to RPN;
    * @param ptAtom
@@ -794,6 +798,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    *        variables
    * @param localVar
    *        x or y in above for(), select() examples
+   * @param isAssignment TODO
    * @return either a vector or a value, caller's choice.
    * @throws ScriptException
    *         errors are thrown directly to the Eval error system.
@@ -801,7 +806,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private Object parameterExpression(int pt, int ptMax, String key,
                                      boolean ignoreComma, boolean asVector,
                                      int ptAtom, boolean isArrayItem,
-                                     Map<String, SV> localVars, String localVar)
+                                     Map<String, SV> localVars, String localVar, boolean isAssignment)
       throws ScriptException {
 
     /*
@@ -821,20 +826,21 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     boolean isOneExpressionOnly = (pt < 0);
     boolean returnBoolean = (!asVector && key == null);
     boolean returnString = (!asVector && key != null && key.length() == 0);
-    int nSquare = 0;
     if (isOneExpressionOnly)
       pt = -pt;
+    int nSquare = 0;
     int nParen = 0;
-    ScriptMathProcessor rpn = new ScriptMathProcessor(this, isArrayItem,
-        asVector, false);
-    if (pt == 0 && ptMax == 0) // set command with v[...] = ....
-      pt = 2;
+    boolean topLevel = true;
+    ScriptMathProcessor rpn = new ScriptMathProcessor(this, isAssignment, isArrayItem, asVector,
+        false);
     if (ptMax < pt)
       ptMax = slen;
+    int ptEq = (isAssignment ? 0 : 1);
     out: for (int i = pt; i < ptMax; i++) {
       v = null;
       int tok = getToken(i).tok;
       if (isImplicitAtomProperty && tokAt(i + 1) != T.per) {
+        // local variable definition
         SV token = (localVars != null && localVars.containsKey(theToken.value) ? null
             : getBitsetPropertySelector(i, false, false));
         if (token != null) {
@@ -853,14 +859,15 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       switch (tok) {
       case T.rightsquare:
       case T.rightbrace:
-        if (!ignoreComma && nParen == 0 && nSquare == 0)
+        if (!ignoreComma && topLevel)
+          // end of an associative array
           break out;
         if (tok == T.rightbrace)
           invArg();
-        break;
+        if (isAssignment && nSquare == 1 && tokAt(i + 1) == T.opEQ)
+          isAssignment = rpn.endAssignment();
       }
 
-      int ptEq = (isArrayItem && !isOneExpressionOnly ? 0 : 1);
       switch (tok) {
       case T.define:
         // @{@x} or @{@{x}} or @{@1} -- also userFunction(@1)
@@ -881,7 +888,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if (localVars == null)
           localVars = new Hashtable<String, SV>();
         res = parameterExpression(++i, -1, null, ignoreComma, false, -1, false,
-            localVars, localVar);
+            localVars, localVar, isAssignment);
         boolean TF = ((Boolean) res).booleanValue();
         int iT = iToken;
         if (getToken(iT++).tok != T.semicolon)
@@ -891,12 +898,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if (tokAt(iF++) != T.semicolon)
           invArg();
         parameterExpression(-iF, -1, null, ignoreComma, false, 1, false,
-            localVars, localVar);
+            localVars, localVar, isAssignment);
         int iEnd = iToken;
         if (tokAt(iEnd) != T.rightparen)
           invArg();
         v = parameterExpression(TF ? iT : iF, TF ? iF : iEnd, "XXX",
-            ignoreComma, false, 1, false, localVars, localVar);
+            ignoreComma, false, 1, false, localVars, localVar, isAssignment);
         i = iEnd;
         break;
       case T.forcmd:
@@ -970,7 +977,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             t.index = j;
             res = parameterExpression(i, pt2, (isFor ? "XXX" : null),
                 ignoreComma, isFor, j, false, localVars, isFunctionOfX ? null
-                    : dummy);
+                    : dummy, isAssignment);
             if (isFor) {
               if (res == null || ((List<?>) res).size() == 0)
                 invArg();
@@ -1087,17 +1094,19 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         i++;
         break out;
       case T.comma: // ignore commas
-        if (!ignoreComma && nParen == 0 && nSquare == 0)
+        if (!ignoreComma && topLevel)
           break out;
         if (!rpn.addOp(theToken))
           invArg();
         break;
       case T.perper:
       case T.per:
-        if (ptEq == 0 && nParen == 0 && tokAt(i + 1) != T.nada) {
-          if (tokAt(i + 1) == T.nada)
-            invArg();
+        if (isAssignment && topLevel && tokAt(i + 2) == T.opEQ)
+          isAssignment = rpn.endAssignment();
+        if (ptEq == 0 && topLevel) {
           switch (tokAt(i + 1)) {
+          case T.nada:
+            break; //?? or invArg??
           case T.size:
           case T.keys:
           case T.type:
@@ -1163,29 +1172,38 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           }
           switch (theTok) {
           case T.opEQ:
-            if (nParen == 0)
+            if (topLevel)
               ptEq = i;
             break;
           case T.leftparen:
             nParen++;
+            topLevel = false;
             break;
           case T.rightparen:
-            if (--nParen <= 0 && nSquare == 0 && isOneExpressionOnly) {
-              iToken++;
-              break out;
+            if (--nParen <= 0 && nSquare == 0) {
+              if (isOneExpressionOnly) {
+                iToken++;
+                break out;
+              }
+              topLevel = true;
             }
             break;
           case T.leftsquare:
             nSquare++;
+            topLevel = false;
             break;
           case T.rightsquare:
-            if (--nSquare == 0 && nParen == 0 && isOneExpressionOnly) {
-              iToken++;
-              break out;
+            if (--nSquare == 0 && nParen == 0) {
+              if (isOneExpressionOnly) {
+                iToken++;
+                break out;
+              }
+              topLevel = true;
             }
             break;
           }
         } else {
+          // must be a variable name
           // first check to see if the variable has been defined already
           String name = parameterAsString(i).toLowerCase();
           boolean haveParens = (tokAt(i + 1) == T.leftparen);
@@ -1293,8 +1311,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       String key = optParameterAsString(i++);
       if (tokAt(i++) != T.colon)
         invArg();
+      // look to end of array or next comma
       List<SV> v = (List<SV>) parameterExpression(i, 0, null, false, true, -1,
-          false, null, null);
+          false, null, null, false);
       ht.put(key, v.get(0));
       i = iToken;
       if (tokAt(i) != T.comma)
@@ -2089,14 +2108,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       return Integer.valueOf(modelIndex < 0 ? 0 : viewer
           .getModelFileNumber(modelIndex));
     }
-    return SV.nValue((SV) getVariableOrParameter(var, false));
-  }
-
-  public Object getVariableOrParameter(String var, boolean isEscaped) {
-    SV v = getContextVariableAsVariable(var);
-    if (v == null)
-      v = SV.getVariable(viewer.getParameter(var));
-    return (isEscaped ? v.escape() : v);
+    return SV.nValue((SV) getParameter(var, T.variable));
   }
 
   public SV getContextVariableAsVariable(String var) {
@@ -3546,7 +3558,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       tempStatement = st;
       st = code;
     }
-    ScriptMathProcessor rpn = new ScriptMathProcessor(this, false, false,
+    ScriptMathProcessor rpn = new ScriptMathProcessor(this, false, false, false,
         mustBeBitSet);
     Object val;
     int comparisonValue = Integer.MAX_VALUE;
@@ -11134,34 +11146,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
 
     if (!justShow) {
-      int tok2 = (tokAt(1) == T.expressionBegin ? 0 : tokAt(2));
-      int setType = st[0].intValue;
-      // recasted by compiler:
-      // var c.xxx =
-      // c.xxx =
-      // {...}[n].xxx =
-      // not supported:
-      // a[...][...].xxx =
-      // var a[...][...].xxx =
-
-      int pt = (tok2 == T.opEQ ? 3
-      // set x = ...
-          : setType == '=' && !key.equals("return") && tok2 != T.opEQ ? 0
-          // {c}.xxx =
-          // {...}.xxx =
-          // {{...}[n]}.xxx =
-              : 2
-      // var a[...].xxx =
-      // a[...].xxx =
-      // var c = ...
-      // var c = [
-      // c = [
-      // c = ...
-      // set x ...
-      // a[...] =
-      );
-
-      setVariable(pt, 0, key, (setType == '['));
+      setVariable(1, 0, key, true);
       if (!isJmolSet)
         return;
     }
@@ -11743,200 +11728,152 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    * @param key
    *        the variable name to save the result in. This must be a standard
    *        user variable, either local or global
-   * @param isArrayItem
-   *        indicates the context a[xxxx] = yyyyy and that the stack will
-   *        contain the variable name and array pointer when it returns
+   * @param isSet
+   *        from Set ... or Var .... or just xxx ....
+   * 
    * @return a variable or null
    * @throws ScriptException
    */
   @SuppressWarnings("unchecked")
-  private SV setVariable(int pt, int ptMax, String key, boolean isArrayItem)
+  private SV setVariable(int pt, int ptMax, String key, boolean isSet)
       throws ScriptException {
     BS bs = null;
     String propertyName = "";
-    int tokProperty = T.nada;
-    boolean settingProperty = false;
-    boolean isExpression = false;
     boolean settingData = key.startsWith("property_");
     boolean isThrown = key.equals("thrown_value");
-    boolean isNull = key.equals("all");
-    SV t = (settingData || isNull ? null : getContextVariableAsVariable(key));
-    boolean isUserVariable = (t != null);
-    if (pt > 0 && tokAt(pt - 1) == T.expressionBegin) {
-      bs = atomExpressionAt(pt - 1);
-      pt = iToken + 1;
-      isExpression = true;
-    }
-    if (tokAt(pt) == T.per) {
-      SV token = getBitsetPropertySelector(++pt, true, isExpression);
-      if (token == null)
-        invArg();
-      switch (tokAt(pt + 1)) {
+    boolean isExpression = (tokAt(1) == T.expressionBegin);
+    // boolean isNull = key.equals("all");
+
+    SV t = (settingData ? null : getContextVariableAsVariable(key));
+
+    // determine whether this is some sort of special assignment
+    // of a known variable
+    if (isSet && !isExpression) {
+      // pt will be 1 unless...
+      switch (tokAt(2)) {
+      case T.spacebeforesquare:
+      case T.leftsquare:
+        if (st[0].intValue == '=')
+          pt = 2;
+        break;
       case T.per:
       case T.perper:
-      case T.leftsquare:
-        //xxx.y.z...
-        isArrayItem = true;
-        pt--;
         break;
       case T.opEQ:
-        pt += 2;
-        settingProperty = true;
-        tokProperty = token.intValue;
-        propertyName = (String) token.value;
+        // var a = ...
+        pt = 3;
         break;
       default:
-         invArg();
+        // a = ...
+        // set a ...
+        pt = 2;
+        break;
       }
+      if (pt == 1)
+        key = null;
     }
-    if (isExpression && !settingProperty)
-      invArg();
-
-    // get value
-
     List<SV> v = (List<SV>) parameterExpression(pt, ptMax, key, true, true, -1,
-        isArrayItem, null, null);
-    if (isNull)
-      return null;
+        false, null, null, isSet && pt == 1);
+
     int nv = v.size();
-    if (nv == 0 || !isArrayItem && nv > 1 || isArrayItem
-        && (nv < 3 || nv % 2 != 1))
+    if (nv == 0)
       invArg();
     if (chk)
       return null;
-    // x[3][4] = ??
-    SV tv = v.get(isArrayItem ? v.size() - 1 : 0);
+    SV tv = SV.newS("").setv(v.get(nv - 1));
+    if (nv > 1) {
+      SV sel = (nv > 2 ? v.get(1) : null);
+      t = v.get(0);
+      // -- hash, key, value
+      // -- array, index, value
+      // -- string, index, value
+      // -- matrix, index/index, value
+      // -- bitset, property, value
+
+      boolean selectOne = false;
+      switch (t.tok) {
+      case T.hash:
+      case T.context:
+        t.mapPut(sel.asString(), tv);
+        break;
+      case T.varray:
+        t = SV.selectItemVar(t);
+        if (sel == null) {
+          t.setv(tv);
+          break;
+        }
+        selectOne = true;
+        break;
+      case T.string:
+        if (sel.tok != T.integer) {
+          // stringVar["t"] = .....
+          t.value = PT.rep(t.asString(), sel.asString(), tv.asString());
+          t.intValue = Integer.MAX_VALUE;
+          break;
+        }
+        //$FALL-THROUGH$
+      case T.matrix3f:
+      case T.matrix4f:
+        if (t.intValue == Integer.MAX_VALUE)
+          selectOne = true;
+        else
+          t.setSelectedValue(t.intValue, sel.asInt(), tv);
+        break;
+      case T.point3f:
+        P3 p = (P3) t.value;
+        float f = tv.asFloat();
+        switch (T.getTokFromName(sel.asString())) {
+        case T.x:
+          p.x = f;
+          break;
+        case T.y:
+          p.y = f;
+          break;
+        case T.z:
+          p.z = f;
+          break;
+        }
+        break;
+      case T.bitset:
+        propertyName = sel.asString();
+        bs = SV.getBitSet(t, true);
+        int nAtoms = viewer.getAtomCount();
+        int nbs = bs.cardinality();
+        if (propertyName.startsWith("property_")) {
+          Object obj = (tv.tok == T.varray ? SV.flistValue(tv, tv.getList()
+              .size() == nbs ? nbs : nAtoms) : tv.asString());
+          viewer.setData(
+              propertyName,
+              new Object[] { propertyName, obj, BSUtil.copy(bs),
+                  Integer.valueOf(tv.tok == T.varray ? 1 : 0) }, nAtoms, 0, 0,
+              tv.tok == T.varray ? Integer.MAX_VALUE : Integer.MIN_VALUE, 0);
+          break;
+        }
+        setBitsetProperty(bs, T.getTokFromName(propertyName), tv.asInt(),
+            tv.asFloat(), tv);
+      }
+      if (selectOne)
+        t.setSelectedValue(sel.intValue, Integer.MAX_VALUE, tv);
+      return null;
+    }
+
+    // -- simple assignment; single value only
 
     // create user variable if needed for list now, so we can do the copying
+    // no variable needed if it's a String, integer, float, or boolean.
 
-    boolean needVariable = (!isUserVariable && !isExpression && !settingData && (isArrayItem
-        || settingProperty || isThrown || !(tv.value instanceof String
-        || tv.tok == T.integer || tv.value instanceof Integer
+    boolean needVariable = (!settingData && t == null && (isThrown || !(tv.value instanceof String
+        || tv.tok == T.integer
+        || tv.value instanceof Integer
         || tv.value instanceof Float || tv.value instanceof Boolean)));
 
     if (needVariable) {
       if (key.startsWith("_")
-          || (t = viewer.getOrSetNewVariable(key, !isArrayItem)) == null)
+          || (t = viewer.getOrSetNewVariable(key, true)) == null)
         errorStr(ERROR_invalidArgument, key);
-      isUserVariable = true;
     }
 
-    if (isArrayItem) {
-      SV tnew = SV.newS("").setv(tv);
-      int nParam = v.size() / 2;
-      for (int i = 0; i < nParam; i++) {
-        boolean isLast = (i + 1 == nParam);
-        SV vv = v.get(i * 2);
-        // stack is selector [ selector [ selector [ ... VALUE 
-        if (t.tok == T.bitset) {
-          t.tok = T.hash;
-          t.value = new Hashtable<String, SV>();
-        }
-        switch (t.tok) {
-        case T.context:
-        case T.hash:
-          String hkey = vv.asString();
-          if (isLast) {
-            t.mapPut(hkey, tnew);
-            break;
-          }
-          t = t.mapValue(hkey);
-          break;
-        default:
-          int ipt = vv.asInt();
-          // in the case of for (x in y) where y is an array, we need to select the item before continuing
-          if (t.tok == T.varray)
-            t = SV.selectItemVar(t);
-          switch (t.tok) {
-          case T.varray:
-            List<SV> list = t.getList();
-            if (ipt > list.size() || isLast)
-              break;
-            if (ipt <= 0)
-              ipt = list.size() + ipt;
-            if (--ipt < 0)
-              ipt = 0;
-            t = list.get(ipt);
-            continue;
-          case T.matrix3f:
-          case T.matrix4f:
-            // check for row/column replacement
-            int dim = (t.tok == T.matrix3f ? 3 : 4);
-            if (nParam == 1 && Math.abs(ipt) >= 1 && Math.abs(ipt) <= dim
-                && tnew.tok == T.varray && tnew.getList().size() == dim)
-              break;
-            if (nParam == 2) {
-              int ipt2 = v.get(2).asInt();
-              if (ipt2 >= 1 && ipt2 <= dim
-                  && (tnew.tok == T.integer || tnew.tok == T.decimal)) {
-                i++;
-                t.setSelectedValue(ipt, ipt2, tnew);
-                break;
-              }
-            }
-            // change to an array and continue;
-            t.toArray();
-            --i;
-            continue;
-          case T.string:
-            // check for a["t"] = xxx
-            if (vv.tok == T.string) {
-              t.value = PT.rep((String) t.value, (String) vv.value,
-                  tnew.asString());
-              continue;
-            }
-            if (nParam == 2) {
-              int ipt2 = v.get(2).asInt();
-              t.setSelectedValue(ipt, ipt2, tnew);
-              i++;
-              continue;
-            }
-             break;
-          }
-          t.setSelectedValue(ipt, Integer.MAX_VALUE, tnew);
-          nParam = 0;
-          break;
-        }
-      }
-      return t;
-    }
-    if (settingProperty) {
-      if (!isExpression) {
-        switch (t.tok) {
-        case T.hash:
-        case T.context:
-          if (viewer.allowArrayDotNotation) {
-            t.mapPut(propertyName, tv);
-            return null;
-          }
-          //$FALL-THROUGH$
-        default:
-          bs = SV.getBitSet(t, true);
-          if (bs == null)
-            invArg();
-        }        
-      }
-      if (propertyName.startsWith("property_")) {
-        viewer
-            .setData(
-                propertyName,
-                new Object[] {
-                    propertyName,
-                    (tv.tok == T.varray ? SV.flistValue(
-                        tv,
-                        ((List<?>) tv.value).size() == bs.cardinality() ? bs
-                            .cardinality() : viewer.getAtomCount()) : tv
-                        .asString()), BSUtil.copy(bs),
-                    Integer.valueOf(tv.tok == T.varray ? 1 : 0) }, viewer
-                    .getAtomCount(), 0, 0,
-                tv.tok == T.varray ? Integer.MAX_VALUE : Integer.MIN_VALUE, 0);
-        return null;
-      }
-      setBitsetProperty(bs, tokProperty, tv.asInt(), tv.asFloat(), tv);
-      return null;
-    }
-
-    if (isUserVariable) {
+    if (t != null) {
       t.setv(tv);
       t.setModified(true);
       return t;
@@ -11944,9 +11881,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
     Object vv = SV.oValue(tv);
 
-    if (key.startsWith("property_")) {
+    if (settingData) {
       if (tv.tok == T.varray)
         vv = tv.asString();
+      // very inefficient!
       viewer.setData(key,
           new Object[] { key, "" + vv, BSUtil.copy(viewer.getSelectedAtoms()),
               Integer.valueOf(0) }, viewer.getAtomCount(), 0, 0,
@@ -11962,10 +11900,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       setFloatProperty(key, ((Float) vv).floatValue());
     } else if (vv instanceof String) {
       setStringProperty(key, (String) vv);
-    } else if (vv instanceof BondSet) {
-      setStringProperty(key, Escape.eBond((BS) vv));
-    } else if (vv instanceof BS || vv instanceof P3 || vv instanceof P4) {
-      setStringProperty(key, Escape.e(vv));
     } else {
       Logger.error("ERROR -- return from propertyExpression was " + vv);
     }

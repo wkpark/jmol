@@ -388,7 +388,7 @@ public class StatusManager {
 
   synchronized void setStatusFrameChanged(int fileNo, int modelNo, int firstNo,
                                           int lastNo, int currentFrame,
-                                          String entryName) {
+                                          float currentMorphModel, String entryName) {
     if (viewer.getModelSet() == null)
       return;
     boolean animating = viewer.isAnimationOn();
@@ -401,7 +401,7 @@ public class StatusManager {
           new Object[] {
               sJmol,
               new int[] { frameNo, fileNo, modelNo, firstNo, lastNo,
-                  currentFrame }, entryName });
+                  currentFrame }, entryName, Float.valueOf(currentMorphModel) });
     if (viewer.jmolpopup != null && !animating)
       viewer.jmolpopup.jpiUpdateComputedMenus();
   }

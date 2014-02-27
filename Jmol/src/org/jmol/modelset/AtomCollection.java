@@ -2072,20 +2072,23 @@ abstract public class AtomCollection {
     BS bs = new BS()  ;
     BS bsInfo;
     BS bsTemp;
-    int iSpec;
+    int iSpec = (specInfo instanceof Integer ? ((Integer) specInfo).intValue() : 0);
     
     // this first set does not assume sequential order in the file
 
     int i = 0;
     switch (tokType) {
+    case T.resno:
+      for (i = atomCount; --i >= 0;)
+        if (atoms[i].getResno() == iSpec)
+          bs.set(i);
+      break;
     case T.symop:
-      iSpec = ((Integer) specInfo).intValue();
       for (i = atomCount; --i >= 0;)
         if (atoms[i].getSymOp() == iSpec)
           bs.set(i);
       break;
     case T.atomno:
-      iSpec = ((Integer) specInfo).intValue();
       for (i = atomCount; --i >= 0;)
         if (atoms[i].getAtomNumber() == iSpec)
           bs.set(i);
@@ -2109,15 +2112,14 @@ abstract public class AtomCollection {
       }
       break;
     case T.spec_resid:
-      iSpec = ((Integer) specInfo).intValue();
       for (i = atomCount; --i >= 0;)
         if (atoms[i].getGroupID() == iSpec)
           bs.set(i);
       break;
     case T.spec_chain:
-      return BSUtil.copy(getChainBits(((Integer) specInfo).intValue()));
+      return BSUtil.copy(getChainBits(iSpec));
     case T.spec_seqcode:
-      return BSUtil.copy(getSeqcodeBits(((Integer) specInfo).intValue(), true));
+      return BSUtil.copy(getSeqcodeBits(iSpec, true));
     case T.hetero:
       for (i = atomCount; --i >= 0;)
         if (atoms[i].isHetero())

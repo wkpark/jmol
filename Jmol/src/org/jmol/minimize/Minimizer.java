@@ -514,6 +514,7 @@ public class Minimizer implements MinimizerInterface {
 
   private MinimizationThread minimizationThread;
   
+  @Override
   public JmolThread getThread() {
     return minimizationThread;
   }

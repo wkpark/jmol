@@ -15,7 +15,7 @@ public interface JmolScriptExtension {
                                boolean useAtomMap, int index,
                                boolean isExplicitlyAll);
 
-  public boolean evaluateParallel(ScriptContext context,
+  public boolean evalParallel(ScriptContext context,
                                   ShapeManager shapeManager);
 
   public String write(T[] args) throws ScriptException;

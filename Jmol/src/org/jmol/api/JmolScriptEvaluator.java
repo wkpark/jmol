@@ -75,7 +75,7 @@ public interface JmolScriptEvaluator {
 
   Map<String, SV> getContextVariables();
 
-  boolean evaluateParallel(ScriptContext context, ShapeManager shapeManager);
+  boolean evalParallel(ScriptContext context, ShapeManager shapeManager);
 
   void runScript(String script) throws ScriptException;
 

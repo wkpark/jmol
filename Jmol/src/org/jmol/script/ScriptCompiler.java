@@ -49,7 +49,7 @@ import java.util.Map;
 
 
 
-public class ScriptCompiler extends ScriptCompilationTokenParser {
+public class ScriptCompiler extends ScriptTokenParser {
 
   /*
    * The Compiler class is really two parts -- 
@@ -1167,7 +1167,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     }
     if (lookingAtDecimal()) {
       value = PT.fVal(script.substring(ichToken, ichToken + cchToken));
-      int intValue = (ScriptEvaluator.getFloatEncodedInt(script.substring(
+      int intValue = (ScriptParam.getFloatEncodedInt(script.substring(
           ichToken, ichToken + cchToken)));
       addNumber(T.decimal, intValue, Float.valueOf(value));
       return CONTINUE;
@@ -2774,7 +2774,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         : errorLine)
         + " <<<<";
     errorMessage = GT._("script compiler ERROR: ") + errorMessage
-         + ScriptEvaluator.getErrorLineMessage(null, filename, lineCurrent, iCommand, lineInfo);
+         + ScriptError.getErrorLineMessage(null, filename, lineCurrent, iCommand, lineInfo);
     if (!isSilent) {
       ichToken = Math.max(ichEnd, ichToken);
       while (!lookingAtEndOfLine() && !lookingAtTerminator())

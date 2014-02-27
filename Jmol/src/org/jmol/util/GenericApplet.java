@@ -645,7 +645,9 @@ public abstract class GenericApplet implements JmolAppletInterface,
             Integer.valueOf(Math.abs(lastNo)),
             Integer.valueOf(isAnimationRunning ? 1 : 0),
             Integer.valueOf(animationDirection),
-            Integer.valueOf(currentDirection) };
+            Integer.valueOf(currentDirection),
+            data[2]/*entryName*/, data[3]/*morphModel*/
+            };
       }
       break;
     case ATOMMOVED:

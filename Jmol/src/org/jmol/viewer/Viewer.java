@@ -2902,6 +2902,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     if (bsAtoms == null)
       bsAtoms = getSelectedAtoms();
     return modelSet.calculateStructures(bsAtoms, asDSSP,
+        !isAnimationOn(),
         global.dsspCalcHydrogen, setStructure);
   }
 
@@ -5176,6 +5177,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
    */
 
   int prevFrame = Integer.MIN_VALUE;
+  private float prevMorphModel;
 
   /**
    * @param isVib 
@@ -5220,9 +5222,10 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       global.setI("_currentFileNumber", fileNo);
       global.setI("_currentModelNumberInFile", modelNo);
     }
+    float currentMorphModel = animationManager.currentMorphModel;
     global.setI("_currentFrame", currentFrame);
     global.setI("_morphCount", animationManager.morphCount);
-    global.setF("_currentMorphFrame", animationManager.currentMorphModel);
+    global.setF("_currentMorphFrame", currentMorphModel);
     global.setI("_frameID", frameID);
     global.setS("_modelNumber", strModelNo);
     global.setS("_modelName", (modelIndex < 0 ? "" : getModelName(modelIndex)));
@@ -5233,9 +5236,10 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     global.setS("_modelType", (modelIndex < 0 ? "" : modelSet
         .getModelFileType(modelIndex)));
 
-    if (currentFrame == prevFrame)
+    if (currentFrame == prevFrame && currentMorphModel == prevMorphModel)
       return;
     prevFrame = currentFrame;
+    prevMorphModel = currentMorphModel;
 
     String entryName;
     if (isMovie) {
@@ -5253,7 +5257,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     statusManager.setStatusFrameChanged(fileNo, modelNo,
         (animationManager.animationDirection < 0 ? -firstNo : firstNo),
         (animationManager.currentDirection < 0 ? -lastNo : lastNo),
-        currentFrame, entryName);
+        currentFrame, currentMorphModel, entryName);
     if (doHaveJDX())
       getJSV().setModel(modelIndex);
     if (isJS)
@@ -10122,7 +10126,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public boolean evalParallel(ScriptContext context, ShapeManager shapeManager) {
     displayLoadErrors = false;
     boolean isOK = getScriptManager() != null
-        && eval.evaluateParallel(context,
+        && eval.evalParallel(context,
             (shapeManager == null ? this.shapeManager : shapeManager));
     displayLoadErrors = true;
     return isOK;

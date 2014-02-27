@@ -38,7 +38,7 @@ import org.jmol.viewer.Viewer;
 import org.jmol.i18n.GT;
 
 
-abstract class ScriptCompilationTokenParser {
+abstract class ScriptTokenParser {
   
   /*
    * An abstract class taking care of the second phase of 
@@ -845,7 +845,7 @@ abstract class ScriptCompilationTokenParser {
           break;
         Object o = getToken().value;
         String strOrder = (o instanceof String ? (String) o : " ");
-        int intType = ScriptEvaluator.getBondOrderFromString(strOrder);
+        int intType = ScriptParam.getBondOrderFromString(strOrder);
         if (intType == JmolEdge.BOND_ORDER_NULL) {
           returnToken();
         } else {

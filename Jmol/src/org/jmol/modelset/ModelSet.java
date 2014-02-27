@@ -369,19 +369,20 @@ import java.util.Map;
   ///////// atom and shape selecting /////////
 
   public String calculateStructures(BS bsAtoms, boolean asDSSP,
+                                    boolean doReport,
                                     boolean dsspIgnoreHydrogen,
                                     boolean setStructure) {
     BS bsAllAtoms = new BS();
     BS bsModelsExcluded = BSUtil.copyInvert(modelsOf(bsAtoms, bsAllAtoms),
         modelCount);
     if (!setStructure)
-      return calculateStructuresAllExcept(bsModelsExcluded, asDSSP, true,
+      return calculateStructuresAllExcept(bsModelsExcluded, asDSSP, doReport,
           dsspIgnoreHydrogen, false, false);
     for (int i = 0; i < modelCount; i++)
       if (!bsModelsExcluded.get(i))
         models[i].clearBioPolymers();
     calculatePolymers(null, 0, 0, bsModelsExcluded);
-    String ret = calculateStructuresAllExcept(bsModelsExcluded, asDSSP, true,
+    String ret = calculateStructuresAllExcept(bsModelsExcluded, asDSSP, doReport,
         dsspIgnoreHydrogen, true, false);
     viewer.resetBioshapes(bsAllAtoms);
     setStructureIndexes();

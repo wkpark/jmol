@@ -434,7 +434,6 @@ public class ScriptMathProcessor {
     case T.minusMinus:
     case T.plusPlus:
       // check for [a ++b]
-      System.out.println("isarray=" + (T.array == tok0) + " wasX=" + wasX);
       if (wasX && op.intValue == -1 && addOp(T.tokenComma))
           return addOp(op);
       break;

@@ -11,7 +11,6 @@ import javajs.util.PT;
 import javajs.util.SB;
 import javajs.util.T3;
 
-import org.jmol.api.JmolScriptFunction;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
@@ -25,14 +24,14 @@ import org.jmol.util.Measure;
 import org.jmol.util.Txt;
 
 /**
- * The ScriptProcessor class holds the main functions for 
- * processing mathematical and atom selection expressions
+ * The ScriptExpr class holds the main functions for 
+ * processing mathematical and atom selection expressions.
  * 
  * The two methods, parameterExpression and atomExpression
- * are the key methods for that.
+ * are the key starting points for this processing.
  * 
  */
-abstract class ScriptProcessor extends ScriptParam {
+abstract class ScriptExpr extends ScriptParam {
 
   // upwardly-directed calls
   
@@ -40,9 +39,7 @@ abstract class ScriptProcessor extends ScriptParam {
   abstract JmolScriptExtension getExtension();
   abstract public BS lookupIdentifierValue(String identifier) throws ScriptException;
   abstract public void refresh(boolean doDelay) throws ScriptException;
-  abstract public SV runFunctionRet(JmolScriptFunction function, String name,
-                                    List<SV> params, SV tokenAtom, boolean getReturn,
-                                    boolean setContextPath, boolean allowThreads)
+  abstract public SV getFunctionRet(String name, List<SV> params, SV tokenAtom)
                throws ScriptException;
   abstract protected void setBitsetProperty(BS bs, int tok, int iValue, float fValue,
                                             T tokenValue) throws ScriptException;
@@ -1605,8 +1602,7 @@ abstract class ScriptProcessor extends ScriptParam {
           switch (tok) {
           case T.function:
             bsAtom.set(i);
-            fv = SV.fValue(runFunctionRet(null, userFunction, params,
-                tokenAtom, true, true, false));
+            fv = SV.fValue(getFunctionRet(userFunction, params, tokenAtom));
             bsAtom.clear(i);
             break;
           case T.property:

@@ -57,7 +57,7 @@ import org.jmol.script.SV;
 import org.jmol.script.ScriptCompiler;
 import org.jmol.script.ScriptContext;
 import org.jmol.script.ScriptError;
-import org.jmol.script.ScriptEvaluator;
+import org.jmol.script.ScriptEval;
 import org.jmol.script.ScriptException;
 import org.jmol.script.ScriptInterruption;
 import org.jmol.script.ScriptMathProcessor;
@@ -104,7 +104,7 @@ import org.jmol.viewer.Viewer.ACCESS;
 
 public class ScriptExt implements JmolScriptExtension {
   private Viewer viewer;
-  private ScriptEvaluator eval;
+  private ScriptEval eval;
   private ShapeManager sm;
   private boolean chk;
   private String fullCommand;
@@ -120,7 +120,7 @@ public class ScriptExt implements JmolScriptExtension {
 
   @Override
   public JmolScriptExtension init(Object se) {
-    eval = (ScriptEvaluator) se;
+    eval = (ScriptEval) se;
     viewer = eval.viewer;
     sm = eval.sm;
     return this;
@@ -291,7 +291,7 @@ public class ScriptExt implements JmolScriptExtension {
   }
 
   private boolean cgo() throws ScriptException {
-    ScriptEvaluator eval = this.eval;
+    ScriptEval eval = this.eval;
     sm.loadShape(JC.SHAPE_CGO);
     if (tokAt(1) == T.list && listIsosurface(JC.SHAPE_CGO))
       return false;
@@ -371,7 +371,7 @@ public class ScriptExt implements JmolScriptExtension {
   }
 
   private boolean contact() throws ScriptException {
-    ScriptEvaluator eval = this.eval;
+    ScriptEval eval = this.eval;
     sm.loadShape(JC.SHAPE_CONTACT);
     if (tokAt(1) == T.list && listIsosurface(JC.SHAPE_CONTACT))
       return false;
@@ -621,7 +621,7 @@ public class ScriptExt implements JmolScriptExtension {
   }
 
   private boolean dipole() throws ScriptException {
-    ScriptEvaluator eval = this.eval;
+    ScriptEval eval = this.eval;
     // dipole intWidth floatMagnitude OFFSET floatOffset {atom1} {atom2}
     String propertyName = null;
     Object propertyValue = null;
@@ -733,7 +733,7 @@ public class ScriptExt implements JmolScriptExtension {
   }
 
   private boolean draw() throws ScriptException {
-    ScriptEvaluator eval = this.eval;
+    ScriptEval eval = this.eval;
     sm.loadShape(JC.SHAPE_DRAW);
     switch (tokAt(1)) {
     case T.list:
@@ -1188,7 +1188,7 @@ public class ScriptExt implements JmolScriptExtension {
 
   private boolean isosurface(int iShape) throws ScriptException {
     // also called by lcaoCartoon
-    ScriptEvaluator eval = this.eval;
+    ScriptEval eval = this.eval;
     sm.loadShape(iShape);
     if (tokAt(1) == T.list && listIsosurface(iShape))
       return false;
@@ -2837,7 +2837,7 @@ public class ScriptExt implements JmolScriptExtension {
   }
 
   private boolean lcaoCartoon() throws ScriptException {
-    ScriptEvaluator eval = this.eval;
+    ScriptEval eval = this.eval;
     sm.loadShape(JC.SHAPE_LCAOCARTOON);
     if (tokAt(1) == T.list && listIsosurface(JC.SHAPE_LCAOCARTOON))
       return false;
@@ -2997,7 +2997,7 @@ public class ScriptExt implements JmolScriptExtension {
       // standard range -100 to 0
       return TempArray.getSlabWithinRange(i, 0);
     }
-    ScriptEvaluator eval = this.eval;
+    ScriptEval eval = this.eval;
     Object data = null;
     int tok0 = tokAt(i);
     boolean isSlab = (tok0 == T.slab);
@@ -3158,7 +3158,7 @@ public class ScriptExt implements JmolScriptExtension {
   }
 
   private boolean mo(boolean isInitOnly) throws ScriptException {
-    ScriptEvaluator eval = this.eval;
+    ScriptEval eval = this.eval;
     int offset = Integer.MAX_VALUE;
     boolean isNegOffset = false;
     BS bsModels = viewer.getVisibleFramesBitSet();
@@ -3345,7 +3345,7 @@ public class ScriptExt implements JmolScriptExtension {
   private void setMoData(List<Object[]> propertyList, int moNumber, float[] lc,
                          int offset, boolean isNegOffset, int modelIndex,
                          String title) throws ScriptException {
-    ScriptEvaluator eval = this.eval;
+    ScriptEval eval = this.eval;
     if (chk)
       return;
     if (modelIndex < 0) {
@@ -3797,7 +3797,7 @@ public class ScriptExt implements JmolScriptExtension {
   }
 
   private boolean polyhedra() throws ScriptException {
-    ScriptEvaluator eval = this.eval;
+    ScriptEval eval = this.eval;
     /*
      * needsGenerating:
      * 
@@ -3961,7 +3961,7 @@ public class ScriptExt implements JmolScriptExtension {
   }
 
   private boolean struts() throws ScriptException {
-    ScriptEvaluator eval = this.eval;
+    ScriptEval eval = this.eval;
     boolean defOn = (tokAt(1) == T.only || tokAt(1) == T.on || slen == 1);
     int mad = eval.getMadParameter();
     if (defOn)
@@ -3978,7 +3978,7 @@ public class ScriptExt implements JmolScriptExtension {
 
     // handle isosurface/mo/pmesh delete and id delete here
 
-    ScriptEvaluator eval = this.eval;
+    ScriptEval eval = this.eval;
     setShapeProperty(iShape, "init", fullCommand);
     eval.iToken = 0;
     int tok1 = tokAt(1);
@@ -4038,7 +4038,7 @@ public class ScriptExt implements JmolScriptExtension {
 
   private String setColorOptions(SB sb, int index, int iShape, int nAllowed)
       throws ScriptException {
-    ScriptEvaluator eval = this.eval;
+    ScriptEval eval = this.eval;
     getToken(index);
     String translucency = "opaque";
     if (eval.theTok == T.translucent) {
@@ -4093,7 +4093,7 @@ public class ScriptExt implements JmolScriptExtension {
    * @return [ ScriptFunction, Params ]
    */
   private Object[] createFunction(String fname, String xyz, String ret) {
-    ScriptEvaluator e = (new ScriptEvaluator());
+    ScriptEval e = (new ScriptEval());
     e.setViewer(viewer);
     try {
       e.compileScript(null, "function " + fname + "(" + xyz + ") { return "
@@ -4149,7 +4149,7 @@ public class ScriptExt implements JmolScriptExtension {
 
   private float[][][] floatArraySetXYZ(int i, int nX, int nY, int nZ)
       throws ScriptException {
-    ScriptEvaluator eval = this.eval;
+    ScriptEval eval = this.eval;
     int tok = tokAt(i++);
     if (tok == T.spacebeforesquare)
       tok = tokAt(i++);
@@ -4250,7 +4250,7 @@ public class ScriptExt implements JmolScriptExtension {
   private Object[] data;
 
   public void data() throws ScriptException {
-    ScriptEvaluator eval = this.eval;
+    ScriptEval eval = this.eval;
     String dataString = null;
     String dataLabel = null;
     boolean isOneValue = false;
@@ -4419,7 +4419,7 @@ public class ScriptExt implements JmolScriptExtension {
      * path {x y z theta} {x y z theta}{x y z theta}{x y z theta}... navigation
      * nSec trace (atom selection)
      */
-    ScriptEvaluator eval = this.eval;
+    ScriptEval eval = this.eval;
     if (slen == 1) {
       eval.setBooleanProperty("navigationMode", true);
       return;
@@ -4626,7 +4626,7 @@ public class ScriptExt implements JmolScriptExtension {
   @Override
   public boolean evalParallel(ScriptContext context,
                                   ShapeManager shapeManager) {
-    ScriptEvaluator e = new ScriptEvaluator();
+    ScriptEval e = new ScriptEval();
     e.setViewer(viewer);
     e.historyDisabled = true;
     e.compiler = new ScriptCompiler(viewer);
@@ -5757,7 +5757,7 @@ public class ScriptExt implements JmolScriptExtension {
       } else {
         sb.append(ScriptError.getErrorLineMessage(context.functionName,
             context.scriptFileName, eval.getLinenumber(context), context.pc,
-            ScriptEvaluator.statementAsString(viewer, context.statement, -9999,
+            ScriptEval.statementAsString(viewer, context.statement, -9999,
                 eval.debugHigh)));
       }
       context = context.parentContext;
@@ -6741,7 +6741,7 @@ public class ScriptExt implements JmolScriptExtension {
 
   @SuppressWarnings("static-access")
   private void measure() throws ScriptException {
-    ScriptEvaluator eval = this.eval;
+    ScriptEval eval = this.eval;
     String id = null;
     int pt = 1;
     short colix = 0;
@@ -8099,7 +8099,7 @@ public class ScriptExt implements JmolScriptExtension {
           .addXObj(eval.getBitsetProperty(SV.bsSelectVar(x1), tok, null, null,
               x1.value, new Object[] { name, params }, false, x1.index, false));
     }
-    SV var = eval.runFunctionRet(null, name, params, null, true, true, false);
+    SV var = eval.getFunctionRet(name, params, null);
     return (var == null ? false : mp.addX(var));
   }
 

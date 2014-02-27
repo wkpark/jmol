@@ -72,7 +72,7 @@ public class ScriptMathProcessor {
   private boolean chk;
   private boolean wasSyntaxCheck;
   private boolean debugHigh;
-  private ScriptProcessor eval;
+  private ScriptExpr eval;
   private Viewer viewer;
 
   private T[] oStack = new T[8];
@@ -96,7 +96,7 @@ public class ScriptMathProcessor {
   private boolean doSelections = true;
   private boolean assignLeft;
 
-  ScriptMathProcessor(ScriptProcessor eval, boolean isAssignment, boolean isArrayItem,
+  ScriptMathProcessor(ScriptExpr eval, boolean isAssignment, boolean isArrayItem,
       boolean asVector, boolean asBitSet) {
     this.eval = eval;
     this.isAssignment = assignLeft = isAssignment;      
@@ -1728,7 +1728,7 @@ public class ScriptMathProcessor {
   }
 
   private JmolScriptExtension getExtension() {
-    return ((ScriptEvaluator) eval).getExtension();
+    return ((ScriptEval) eval).getExtension();
   }
 
   public SV evalOp(T token) throws ScriptException {

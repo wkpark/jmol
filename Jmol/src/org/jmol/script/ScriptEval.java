@@ -85,16 +85,16 @@ import org.jmol.viewer.ShapeManager;
 import org.jmol.viewer.StateManager;
 import org.jmol.viewer.Viewer;
 
-public class ScriptEvaluator extends ScriptProcessor implements JmolScriptEvaluator {
+public class ScriptEval extends ScriptExpr implements JmolScriptEvaluator {
 
   
   /*
    * To make this a bit more manageable, I separated ScriptEvaluator into four parts:
    * 
    * 
-   * ScriptEvaluator           -- entry point and script command code
+   * ScriptEval                -- entry point and script command code
    * 
-   *   exends ScriptProcessor  -- expression parsing
+   *   extends ScriptExpr      -- expression parsing
    * 
    *     extends ScriptParam   -- parameter parsing
    * 
@@ -320,7 +320,7 @@ public class ScriptEvaluator extends ScriptProcessor implements JmolScriptEvalua
   private boolean forceNoAddHydrogens;
   
 
-  public ScriptEvaluator() {
+  public ScriptEval() {
     // by reflection as well as directly
     currentThread = Thread.currentThread();
     //evalID++;
@@ -581,7 +581,7 @@ public class ScriptEvaluator extends ScriptProcessor implements JmolScriptEvalua
     if (sb == null)
       sb = new SB();
     sb.append(getErrorLineMessage(sc.functionName, sc.scriptFileName,
-        sc.lineNumbers[sc.pc], sc.pc, ScriptEvaluator.statementAsString(viewer,
+        sc.lineNumbers[sc.pc], sc.pc, ScriptEval.statementAsString(viewer,
             sc.statement, (isTop ? sc.iToken : 9999), false)));
     if (sc.parentContext != null)
       getContextTrace(viewer, sc.parentContext, sb, false);
@@ -763,7 +763,7 @@ public class ScriptEvaluator extends ScriptProcessor implements JmolScriptEvalua
   public Object evaluateExpression(Object expr, boolean asVariable) {
     // Text.formatText for MESSAGE and ECHO
     // prior to 12.[2/3].32 was not thread-safe for compilation.
-    ScriptEvaluator e = (ScriptEvaluator) (new ScriptEvaluator())
+    ScriptEval e = (ScriptEval) (new ScriptEval())
         .setViewer(viewer);
     try {
       // disallow end-of-script message and JavaScript script queuing
@@ -964,7 +964,12 @@ public class ScriptEvaluator extends ScriptProcessor implements JmolScriptEvalua
   }
 
   @Override
-  public SV runFunctionRet(JmolScriptFunction function, String name,
+  public SV getFunctionRet(String name, List<SV> params, SV tokenAtom)
+      throws ScriptException {
+    return runFunctionRet(null, name, params, tokenAtom, true, true, false);
+  }
+  
+  private SV runFunctionRet(JmolScriptFunction function, String name,
                            List<SV> params, SV tokenAtom, boolean getReturn,
                            boolean setContextPath, boolean allowThreads)
       throws ScriptException {
@@ -1659,7 +1664,7 @@ public class ScriptEvaluator extends ScriptProcessor implements JmolScriptEvalua
       sx.message = "";
       return;
     }
-    String s = ScriptEvaluator.getContextTrace(viewer,
+    String s = ScriptEval.getContextTrace(viewer,
         getScriptContext("setException"), null, true).toString();
     while (thisContext != null && !thisContext.isTryCatch)
       popContext(false, false);

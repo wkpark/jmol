@@ -86,7 +86,7 @@ public class ScriptManager implements JmolScriptManager {
  
   private JmolScriptEvaluator newScriptEvaluator() {
     return ((JmolScriptEvaluator) Interface
-        .getOptionInterface("script.ScriptEvaluator")).setViewer(viewer);
+        .getOptionInterface("script.ScriptEval")).setViewer(viewer);
   }
 
   @Override

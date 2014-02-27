@@ -21,7 +21,7 @@ import org.jmol.viewer.Viewer;
 
 /**
  * The ScriptParam class holds methods used to parse parameters 
- * in Jmol scripts.
+ * in Jmol scripts. 
  *  
  */
 abstract public class ScriptParam extends ScriptError {

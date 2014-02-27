@@ -888,7 +888,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if (localVars == null)
           localVars = new Hashtable<String, SV>();
         res = parameterExpression(++i, -1, null, ignoreComma, false, -1, false,
-            localVars, localVar, isAssignment);
+            localVars, localVar, false);
         boolean TF = ((Boolean) res).booleanValue();
         int iT = iToken;
         if (getToken(iT++).tok != T.semicolon)
@@ -898,13 +898,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if (tokAt(iF++) != T.semicolon)
           invArg();
         parameterExpression(-iF, -1, null, ignoreComma, false, 1, false,
-            localVars, localVar, isAssignment);
+            localVars, localVar, false);
         int iEnd = iToken;
         if (tokAt(iEnd) != T.rightparen)
           invArg();
         v = parameterExpression(TF ? iT : iF, TF ? iF : iEnd, "XXX",
-            ignoreComma, false, 1, false, localVars, localVar, isAssignment);
-        i = iEnd;
+            ignoreComma, false, 1, false, localVars, localVar, false);
+        i = iToken = iEnd;
         break;
       case T.forcmd:
       case T.select:
@@ -977,7 +977,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             t.index = j;
             res = parameterExpression(i, pt2, (isFor ? "XXX" : null),
                 ignoreComma, isFor, j, false, localVars, isFunctionOfX ? null
-                    : dummy, isAssignment);
+                    : dummy, false);
             if (isFor) {
               if (res == null || ((List<?>) res).size() == 0)
                 invArg();

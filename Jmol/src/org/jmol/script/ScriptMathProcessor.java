@@ -545,7 +545,7 @@ public class ScriptMathProcessor {
 
       if (!operate())
         return false;
-      tok0 = (oPt >= 0 ? oStack[oPt].tok : 0);
+      tok0 = (oPt >= 0 && oStack[oPt] != null ? oStack[oPt].tok : 0);
     }
 
     // now add a marker on the xStack if necessary

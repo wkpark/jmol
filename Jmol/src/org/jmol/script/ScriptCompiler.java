@@ -1350,7 +1350,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     case T.switchcmd:
     case T.whilecmd:
     case T.catchcmd:
-      if (nTokens > 1 && tokCommand != T.set) {
+      if (nTokens > 1 && tokCommand != T.set && nSemiSkip == 0) {
         isEndOfCommand = true;
         if (flowContext != null)
           flowContext.forceEndIf = true;

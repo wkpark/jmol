@@ -7022,13 +7022,11 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       // 11.1.21
       DF.setUseNumberLocalization(global.useNumberLocalization = value);
       break;
+    case T.showfrank:
     case T.frank:
       key = "showFrank";
       setFrankOn(value);
-      break;
-    case T.showfrank:
       // 11.1.20
-      setFrankOn(value);
       break;
     case T.solvent:
       key = "solventProbe";

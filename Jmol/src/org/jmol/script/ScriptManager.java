@@ -28,6 +28,7 @@ import java.io.BufferedReader;
 
 import javajs.api.ZInputStream;
 import javajs.util.List;
+import javajs.util.P3;
 import javajs.util.PT;
 import javajs.util.SB;
 
@@ -37,6 +38,7 @@ import org.jmol.api.JmolScriptEvaluator;
 import org.jmol.api.JmolScriptManager;
 import org.jmol.io.JmolBinary;
 import org.jmol.java.BS;
+import org.jmol.modelset.Atom;
 import org.jmol.thread.JmolThread;
 import org.jmol.util.Elements;
 import org.jmol.util.Logger;
@@ -649,5 +651,41 @@ public class ScriptManager implements JmolScriptManager {
     viewer.stateScriptVersionInt = Integer.MAX_VALUE;
   }
   
+  @Override
+  public BS addHydrogensInline(BS bsAtoms, List<Atom> vConnections, P3[] pts)
+      throws Exception {
+    int modelIndex = viewer.getAtomModelIndex(bsAtoms.nextSetBit(0));
+    if (modelIndex != viewer.modelSet.modelCount - 1)
+      return new BS();
+
+    // must be added to the LAST data set only
+
+    BS bsA = viewer.getModelUndeletedAtomsBitSet(modelIndex);
+    viewer.setAppendNew(false);
+    // BitSet bsB = getAtomBits(Token.hydrogen, null);
+    // bsA.andNot(bsB);
+    int atomIndex = viewer.modelSet.getAtomCount();
+    int atomno = viewer.modelSet.getAtomCountInModel(modelIndex);
+    SB sbConnect = new SB();
+    for (int i = 0; i < vConnections.size(); i++) {
+      Atom a = vConnections.get(i);
+      sbConnect.append(";  connect 0 100 ")
+          .append("({" + (atomIndex++) + "}) ")
+          .append("({" + a.index + "}) group;");
+    }
+    SB sb = new SB();
+    sb.appendI(pts.length).append("\n").append(JC.ADD_HYDROGEN_TITLE)
+        .append("#noautobond").append("\n");
+    for (int i = 0; i < pts.length; i++)
+      sb.append("H ").appendF(pts[i].x).append(" ").appendF(pts[i].y)
+          .append(" ").appendF(pts[i].z).append(" - - - - ").appendI(++atomno)
+          .appendC('\n');
+    viewer.openStringInlineParamsAppend(sb.toString(), null, true);
+    eval.runScriptBuffer(sbConnect.toString(), null);
+    BS bsB = viewer.getModelUndeletedAtomsBitSet(modelIndex);
+    bsB.andNot(bsA);
+    return bsB;
+  }
+
 
 }

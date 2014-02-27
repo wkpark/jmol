@@ -11,6 +11,7 @@ import javajs.util.SB;
 import javajs.util.V3;
 
 import org.jmol.java.BS;
+import org.jmol.modelset.TickInfo;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
@@ -1056,6 +1057,94 @@ abstract public class ScriptParam extends ScriptError {
       error(ERROR_badRGBColor);
     return n;
   }
+
+  /**
+   * 
+   * @param index
+   * @param allowUnitCell
+   *        IGNORED
+   * @param allowScale
+   * @param allowFirst
+   * @return TickInfo
+   * @throws ScriptException
+   */
+  public TickInfo tickParamAsStr(int index, boolean allowUnitCell,
+                             boolean allowScale, boolean allowFirst)
+      throws ScriptException {
+    iToken = index - 1;
+    if (tokAt(index) != T.ticks)
+      return null;
+    TickInfo tickInfo;
+    String str = " ";
+    switch (tokAt(index + 1)) {
+    case T.x:
+    case T.y:
+    case T.z:
+      str = paramAsStr(++index).toLowerCase();
+      break;
+    case T.identifier:
+      invArg();
+    }
+    if (tokAt(++index) == T.none) {
+      tickInfo = new TickInfo(null);
+      tickInfo.type = str;
+      iToken = index;
+      return tickInfo;
+    }
+    tickInfo = new TickInfo((P3) getPointOrPlane(index, false, true, false,
+        false, 3, 3));
+    if (coordinatesAreFractional || tokAt(iToken + 1) == T.unitcell) {
+      tickInfo.scale = P3.new3(Float.NaN, Float.NaN, Float.NaN);
+      allowScale = false;
+    }
+    if (tokAt(iToken + 1) == T.unitcell)
+      iToken++;
+    tickInfo.type = str;
+    if (tokAt(iToken + 1) == T.format)
+      tickInfo.tickLabelFormats = stringParameterSet(iToken + 2);
+    if (!allowScale)
+      return tickInfo;
+    if (tokAt(iToken + 1) == T.scale) {
+      if (isFloatParameter(iToken + 2)) {
+        float f = floatParameter(iToken + 2);
+        tickInfo.scale = P3.new3(f, f, f);
+      } else {
+        tickInfo.scale = getPoint3f(iToken + 2, true);
+      }
+    }
+    if (allowFirst)
+      if (tokAt(iToken + 1) == T.first)
+        tickInfo.first = floatParameter(iToken + 2);
+    // POINT {x,y,z} reference point not implemented
+    //if (tokAt(iToken + 1) == Token.point)
+    // tickInfo.reference = centerParameter(iToken + 2);
+    return tickInfo;
+  }
+
+  ////////////////////  setting global parameters ////////////////////////
+
+  public void setBooleanProperty(String key, boolean value) {
+    if (!chk)
+      viewer.setBooleanProperty(key, value);
+  }
+
+  protected boolean setIntProperty(String key, int value) {
+    if (!chk)
+      viewer.setIntProperty(key, value);
+    return true;
+  }
+
+  protected boolean setFloatProperty(String key, float value) {
+    if (!chk)
+      viewer.setFloatProperty(key, value);
+    return true;
+  }
+
+  protected void setStringProperty(String key, String value) {
+    if (!chk)
+      viewer.setStringProperty(key, value);
+  }
+
 
 
 }

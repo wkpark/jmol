@@ -6993,7 +6993,7 @@ public class ScriptExt implements JmolScriptExtension {
         strFormat = stringParameter(i);
         break;
       case T.ticks:
-        tickInfo = eval.paramAsStr(i, false, true, true);
+        tickInfo = eval.tickParamAsStr(i, false, true, true);
         i = eval.iToken;
         tokAction = T.define;
         break;

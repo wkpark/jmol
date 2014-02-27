@@ -20,6 +20,7 @@ import org.jmol.modelset.ModelCollection;
 import org.jmol.modelset.ModelSet;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
+import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Txt;
 
@@ -1906,6 +1907,193 @@ abstract class ScriptExpr extends ScriptParam {
   static protected int getSeqCode(T instruction) {
     return (instruction.intValue == Integer.MAX_VALUE ? ((Integer) instruction.value)
         .intValue() : Group.getSeqcodeFor(instruction.intValue, ' '));
+  }
+
+  /**
+   * 
+   * @param pt
+   *        starting point in command token sequence
+   * @param ptMax
+   *        ending point in command token sequenec, possibly -1 for "all"
+   * @param key
+   *        the variable name to save the result in. This must be a standard
+   *        user variable, either local or global
+   * @param isSet
+   *        from Set ... or Var .... or just xxx ....
+   * 
+   * @return a variable or null
+   * @throws ScriptException
+   */
+  @SuppressWarnings("unchecked")
+  protected SV setVariable(int pt, int ptMax, String key, boolean isSet)
+      throws ScriptException {
+    BS bs = null;
+    String propertyName = "";
+    boolean settingData = key.startsWith("property_");
+    boolean isThrown = key.equals("thrown_value");
+    boolean isExpression = (tokAt(1) == T.expressionBegin);
+    // boolean isNull = key.equals("all");
+
+    SV t = (settingData ? null : getContextVariableAsVariable(key));
+
+    // determine whether this is some sort of special assignment
+    // of a known variable
+    if (isSet && !isExpression) {
+      // pt will be 1 unless...
+      switch (tokAt(2)) {
+      case T.spacebeforesquare:
+      case T.leftsquare:
+        if (st[0].intValue == '=')
+          pt = 2;
+        break;
+      case T.per:
+      case T.perper:
+        break;
+      case T.opEQ:
+        // var a = ...
+        pt = 3;
+        break;
+      default:
+        // a = ...
+        // set a ...
+        pt = 2;
+        break;
+      }
+      if (pt == 1)
+        key = null;
+    }
+    List<SV> v = (List<SV>) parameterExpression(pt, ptMax, key, true, true, -1,
+        false, null, null, isSet && pt == 1);
+
+    int nv = v.size();
+    if (nv == 0)
+      invArg();
+    if (chk)
+      return null;
+    SV tv = SV.newS("").setv(v.get(nv - 1));
+    if (nv > 1) {
+      SV sel = (nv > 2 ? v.get(1) : null);
+      t = v.get(0);
+      // -- hash, key, value
+      // -- array, index, value
+      // -- string, index, value
+      // -- matrix, index/index, value
+      // -- bitset, property, value
+
+      boolean selectOne = false;
+      switch (t.tok) {
+      case T.hash:
+      case T.context:
+        t.mapPut(sel.asString(), tv);
+        break;
+      case T.varray:
+        t = SV.selectItemVar(t);
+        if (sel == null) {
+          t.setv(tv);
+          break;
+        }
+        selectOne = true;
+        break;
+      case T.string:
+        if (sel.tok != T.integer) {
+          // stringVar["t"] = .....
+          t.value = PT.rep(t.asString(), sel.asString(), tv.asString());
+          t.intValue = Integer.MAX_VALUE;
+          break;
+        }
+        //$FALL-THROUGH$
+      case T.matrix3f:
+      case T.matrix4f:
+        if (t.intValue == Integer.MAX_VALUE)
+          selectOne = true;
+        else
+          t.setSelectedValue(t.intValue, sel.asInt(), tv);
+        break;
+      case T.point3f:
+        P3 p = (P3) t.value;
+        float f = tv.asFloat();
+        switch (T.getTokFromName(sel.asString())) {
+        case T.x:
+          p.x = f;
+          break;
+        case T.y:
+          p.y = f;
+          break;
+        case T.z:
+          p.z = f;
+          break;
+        }
+        break;
+      case T.bitset:
+        propertyName = sel.asString();
+        bs = SV.getBitSet(t, true);
+        int nAtoms = viewer.getAtomCount();
+        int nbs = bs.cardinality();
+        if (propertyName.startsWith("property_")) {
+          Object obj = (tv.tok == T.varray ? SV.flistValue(tv, tv.getList()
+              .size() == nbs ? nbs : nAtoms) : tv.asString());
+          viewer.setData(
+              propertyName,
+              new Object[] { propertyName, obj, BSUtil.copy(bs),
+                  Integer.valueOf(tv.tok == T.varray ? 1 : 0) }, nAtoms, 0, 0,
+              tv.tok == T.varray ? Integer.MAX_VALUE : Integer.MIN_VALUE, 0);
+          break;
+        }
+        setBitsetProperty(bs, T.getTokFromName(propertyName), tv.asInt(),
+            tv.asFloat(), tv);
+      }
+      if (selectOne)
+        t.setSelectedValue(sel.intValue, Integer.MAX_VALUE, tv);
+      return null;
+    }
+
+    // -- simple assignment; single value only
+
+    // create user variable if needed for list now, so we can do the copying
+    // no variable needed if it's a String, integer, float, or boolean.
+
+    boolean needVariable = (!settingData && t == null && (isThrown || !(tv.value instanceof String
+        || tv.tok == T.integer
+        || tv.value instanceof Integer
+        || tv.value instanceof Float || tv.value instanceof Boolean)));
+
+    if (needVariable) {
+      if (key.startsWith("_")
+          || (t = viewer.getOrSetNewVariable(key, true)) == null)
+        errorStr(ERROR_invalidArgument, key);
+    }
+
+    if (t != null) {
+      t.setv(tv);
+      t.setModified(true);
+      return t;
+    }
+
+    Object vv = SV.oValue(tv);
+
+    if (settingData) {
+      if (tv.tok == T.varray)
+        vv = tv.asString();
+      // very inefficient!
+      viewer.setData(key,
+          new Object[] { key, "" + vv, BSUtil.copy(viewer.getSelectedAtoms()),
+              Integer.valueOf(0) }, viewer.getAtomCount(), 0, 0,
+          Integer.MIN_VALUE, 0);
+      return null;
+    }
+
+    if (vv instanceof Boolean) {
+      setBooleanProperty(key, ((Boolean) vv).booleanValue());
+    } else if (vv instanceof Integer) {
+      setIntProperty(key, ((Integer) vv).intValue());
+    } else if (vv instanceof Float) {
+      setFloatProperty(key, ((Float) vv).floatValue());
+    } else if (vv instanceof String) {
+      setStringProperty(key, (String) vv);
+    } else {
+      Logger.error("ERROR -- return from propertyExpression was " + vv);
+    }
+    return tv;
   }
 
 }

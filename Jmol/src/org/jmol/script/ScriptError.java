@@ -10,6 +10,9 @@ import org.jmol.i18n.GT;
  */
 public abstract class ScriptError {
 
+  abstract protected void showString(String msg);
+  
+
   protected boolean ignoreError;
 
   protected void invArg() throws ScriptException {
@@ -51,9 +54,17 @@ public abstract class ScriptError {
     errorOrWarn(iError, value, more, null, true);
   }
 
-  abstract 
-  void errorOrWarn(int iError, String value, String more, String more2,
-                   boolean warningOnly) throws ScriptException;
+  private void errorOrWarn(int iError, String value, String more, String more2,
+                   boolean warningOnly) throws ScriptException {
+    String strError = ignoreError ? null : errorString(iError, value, more,
+        more2, true);
+    String strUntranslated = (!ignoreError && GT.getDoTranslate() ? errorString(
+        iError, value, more, more2, false) : null);
+    if (!warningOnly)
+      evalError(strError, strUntranslated);
+    showString(strError);
+  }
+
 
   abstract public void evalError(String message, String strUntranslated)
       throws ScriptException;

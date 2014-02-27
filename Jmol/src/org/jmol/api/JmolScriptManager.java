@@ -3,8 +3,11 @@ package org.jmol.api;
 
 
 import org.jmol.java.BS;
+import org.jmol.modelset.Atom;
 
 import javajs.util.List;
+import javajs.util.P3;
+
 import org.jmol.viewer.Viewer;
 
 public interface JmolScriptManager {
@@ -51,5 +54,6 @@ public interface JmolScriptManager {
 
   String evalFile(String strFilename);
 
+  BS addHydrogensInline(BS bsAtoms, List<Atom> vConnections, P3[] pts) throws Exception;
 }
 

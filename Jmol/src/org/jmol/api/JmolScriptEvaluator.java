@@ -4,14 +4,13 @@ package org.jmol.api;
 import java.util.Map;
 
 import org.jmol.java.BS;
-import org.jmol.modelset.Atom;
 import org.jmol.script.ScriptException;
 
 import org.jmol.script.ScriptContext;
 import org.jmol.script.SV;
 import javajs.util.List;
 import javajs.util.SB;
-import javajs.util.P3;
+
 import org.jmol.viewer.ShapeManager;
 import org.jmol.viewer.Viewer;
 
@@ -84,8 +83,6 @@ public interface JmolScriptEvaluator {
   float evalFunctionFloat(Object func, Object params, float[] values);
 
   void setException(ScriptException sx, String msg, String untranslated);
-
-  BS addHydrogensInline(BS bsAtoms, List<Atom> vConnections, P3[] pts) throws Exception;
 
   void evaluateCompiledScript(boolean isSyntaxCheck,
                               boolean isSyntaxAndFileCheck,

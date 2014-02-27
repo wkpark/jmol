@@ -10114,7 +10114,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
                                 P3[] pts) throws Exception {
     if (getScriptManager() == null)
       return null;
-    return eval.addHydrogensInline(bsAtoms, vConnections, pts);
+    return scriptManager.addHydrogensInline(bsAtoms, vConnections, pts);
   }
 
   @Override

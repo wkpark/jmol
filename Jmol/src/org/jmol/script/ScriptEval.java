@@ -7303,8 +7303,7 @@ public class ScriptEval extends ScriptExpr implements JmolScriptEvaluator {
 
     switch (tok) {
     case T.structure:
-      EnumStructure type = EnumStructure
-          .getProteinStructureType(paramAsStr(2));
+      EnumStructure type = EnumStructure.getProteinStructureType(paramAsStr(2));
       if (type == EnumStructure.NOT)
         invArg();
       float[] data = floatParameterSet(3, 0, Integer.MAX_VALUE);
@@ -7448,7 +7447,7 @@ public class ScriptEval extends ScriptExpr implements JmolScriptEvaluator {
     switch (tok) {
     case T.backgroundmodel:
       if (slen > 2) {
-        String modelDotted = stringSetting(2);
+        String modelDotted = stringSetting(2, false);
         int modelNumber;
         boolean useModelNumber = false;
         if (modelDotted.indexOf(".") < 0) {
@@ -7470,7 +7469,7 @@ public class ScriptEval extends ScriptExpr implements JmolScriptEvaluator {
         return;
       viewer.setAtomProperty(viewer.getAllAtoms(), T.vanderwaals, -1,
           Float.NaN, null, null, null);
-      if (slen > 2 && "probe".equalsIgnoreCase(stringSetting(2))) {
+      if (slen > 2 && "probe".equalsIgnoreCase(stringSetting(2, false))) {
         runScript(Elements.VdwPROBE);
         return;
       }
@@ -7479,7 +7478,9 @@ public class ScriptEval extends ScriptExpr implements JmolScriptEvaluator {
     case T.defaultvdw:
       // allows unquoted string for known vdw type
       if (slen > 2) {
-        if (EnumVdw.getVdwType(sval = stringSetting(2)) == null)
+        sval = paramAsStr(2);
+        if (slen == 3 && EnumVdw.getVdwType(sval) == null 
+            && EnumVdw.getVdwType(sval = stringSetting(2, false)) == null)
           invArg();
         setStringProperty(key, sval);
       }
@@ -7511,7 +7512,7 @@ public class ScriptEval extends ScriptExpr implements JmolScriptEvaluator {
         if ((theTok = tokAt(2)) == T.jmol || theTok == T.rasmol) {
           sval = paramAsStr(checkLast(2));
         } else {
-          sval = stringSetting(2);
+          sval = stringSetting(2, false);
         }
         setStringProperty(key, sval);
       }
@@ -7536,12 +7537,12 @@ public class ScriptEval extends ScriptExpr implements JmolScriptEvaluator {
       // language can be used without quotes in a SET context
       // set language en
       if (slen > 2)
-        setStringProperty(key, stringSetting(2));
+        setStringProperty(key, stringSetting(2, isJmolSet));
       break;
     case T.measurementunits:
     case T.energyunits:
       if (slen > 2)
-        setUnits(stringSetting(2), tok);
+        setUnits(stringSetting(2, isJmolSet), tok);
       break;
     case T.picking:
       if (!chk)
@@ -7985,7 +7986,7 @@ public class ScriptEval extends ScriptExpr implements JmolScriptEvaluator {
     }
     // set picking @{"xxx"} or some large length, ignored
     if (slen > 4 || tokAt(2) == T.string) {
-      setStringProperty("picking", stringSetting(2));
+      setStringProperty("picking", stringSetting(2, false));
       return;
     }
     int i = 2;
@@ -8054,7 +8055,7 @@ public class ScriptEval extends ScriptExpr implements JmolScriptEvaluator {
 
   private void cmdSetPickingStyle() throws ScriptException {
     if (slen > 4 || tokAt(2) == T.string) {
-      setStringProperty("pickingStyle", stringSetting(2));
+      setStringProperty("pickingStyle", stringSetting(2, false));
       return;
     }
     int i = 2;
@@ -8969,9 +8970,19 @@ public class ScriptEval extends ScriptExpr implements JmolScriptEvaluator {
       return (pt >= slen ? Float.NaN : SV.fValue(parameterExpressionToken(pt)));
   }
 
-  private String stringSetting(int pt)
+  /**
+   * Accept an unquoted string if there is just one parameter
+   * regardless of its type. In other words, these commands cannot 
+   * accept a variable name by itself.
+   *  
+   * @param pt
+   * @param isJmolSet
+   * @return string parameter
+   * @throws ScriptException
+   */
+  private String stringSetting(int pt, boolean isJmolSet)
       throws ScriptException {
-    return (pt + 1 == slen && tokAt(pt) == T.string ? (String) st[pt].value
+    return (isJmolSet && slen == pt + 1 ? paramAsStr(pt)
         : parameterExpressionToken(pt).asString());
   }
 

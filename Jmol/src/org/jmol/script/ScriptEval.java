@@ -1490,7 +1490,7 @@ public class ScriptEval extends ScriptExpr {
 
     if (isPopContext) {
       contextPath = context.contextPath;
-      int pt = contextPath.indexOf(" >> ");
+      int pt = (contextPath == null ? -1 : contextPath.indexOf(" >> "));
       if (pt >= 0)
         contextPath = contextPath.substring(0, pt);      
       scriptFileName = context.scriptFileName;

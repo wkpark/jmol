@@ -681,7 +681,7 @@ public class StatusManager {
   String dialogAsk(String type, String fileName) {
     boolean isImage = type.equals("Save Image");
     JmolDialogInterface sd = (JmolDialogInterface) Interface
-    .getOptionInterface("dialog.Dialog");
+    .getOption("dialog.Dialog");
     if (sd == null)
       return null;
     sd.setupUI(false);

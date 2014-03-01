@@ -31,6 +31,7 @@ import java.util.Map;
 import javajs.awt.Font;
 import javajs.util.AU;
 import javajs.util.List;
+import javajs.util.Quat;
 import javajs.util.SB;
 import javajs.util.P3;
 import javajs.util.OC;
@@ -48,7 +49,6 @@ import org.jmol.util.C;
 import org.jmol.util.GData;
 import org.jmol.util.Logger;
 import org.jmol.util.MeshSurface;
-import org.jmol.util.Quaternion;
 import org.jmol.viewer.StateManager;
 import org.jmol.viewer.Viewer;
 
@@ -429,7 +429,7 @@ public abstract class ___Exporter {
       tempV2.set(0, 0, 1);
       tempV2.cross(tempV2, tempV1);
       tempV1.cross(tempV1, tempV2);
-      Quaternion q = Quaternion.getQuaternionFrameV(tempV2, tempV1, null, false);
+      Quat q = Quat.getQuaternionFrameV(tempV2, tempV1, null, false);
       m1 = q.getMatrix();
     }
     m.m00 = radius;
@@ -444,7 +444,7 @@ public abstract class ___Exporter {
     m.m00 = ptX.distance(pt1) * radius;
     m.m11 = ptY.distance(pt1) * radius;
     m.m22 = ptZ.distance(pt1) * 2;
-    Quaternion q = Quaternion.getQuaternionFrame(pt1, ptX, ptY);
+    Quat q = Quat.getQuaternionFrame(pt1, ptX, ptY);
     M3 m1 = q.getMatrix();
     m1.mul(m);
     return m1;

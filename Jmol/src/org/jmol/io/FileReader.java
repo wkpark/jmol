@@ -114,7 +114,7 @@ public class FileReader {
     }
     if (t instanceof BufferedInputStream) {
       JmolDocument bd = (JmolDocument) Interface
-          .getOptionInterface("io2.BinaryDocument");
+          .getOption("io2.BinaryDocument");
       bd.setStream((BufferedInputStream) t, true);
       reader = bd;
     }

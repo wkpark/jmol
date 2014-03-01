@@ -915,7 +915,7 @@ public class XtalSymmetry {
       ptTemp = new P3();
       mTemp = new M3();
     }
-    return a.addTensor(((Tensor) Interface.getOptionInterface("util.Tensor"))
+    return a.addTensor(((Tensor) Interface.getUtil("Tensor"))
         .setFromEigenVectors(
             symmetry.rotateAxes(iSym, t.eigenVectors, ptTemp, mTemp),
             t.eigenValues, t.isIsotropic ? "iso" : t.type, t.id), null, reset);

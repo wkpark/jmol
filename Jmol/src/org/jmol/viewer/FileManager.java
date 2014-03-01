@@ -297,7 +297,7 @@ public class FileManager implements BytePoster {
                                                   Map<String, Object> htParams,
                                                   boolean isAppend) {
     JmolFilesReaderInterface fr = (JmolFilesReaderInterface) Interface
-        .getOptionInterface("io2.FilesReader");
+        .getOption("io2.FilesReader");
     fr.set(this, viewer, fullPathNames, namesAsGiven, fileTypes, readers, htParams,
         isAppend);
     return fr;
@@ -309,13 +309,13 @@ public class FileManager implements BytePoster {
         : data instanceof List<?> ? "List" : null);
     if (reader == null)
       return null;
-    DataReader dr = (DataReader) Interface.getOptionInterface("io2." + reader + "DataReader");
+    DataReader dr = (DataReader) Interface.getOption("io2." + reader + "DataReader");
     return dr.setData(data);
   }
 
   Object createAtomSetCollectionFromDOM(Object DOMNode,
                                         Map<String, Object> htParams) {
-    JmolDomReaderInterface aDOMReader = (JmolDomReaderInterface) Interface.getOptionInterface("io2.DOMReadaer");
+    JmolDomReaderInterface aDOMReader = (JmolDomReaderInterface) Interface.getOption("io2.DOMReadaer");
     aDOMReader.set(this, viewer, DOMNode, htParams);
     aDOMReader.run();
     return aDOMReader.getAtomSetCollection();
@@ -586,7 +586,7 @@ public class FileManager implements BytePoster {
       BufferedInputStream bis = JmolBinary.getUnzippedInputStream((BufferedInputStream) t);
       if (JmolBinary.isCompoundDocumentS(bis)) {
         JmolDocument doc = (JmolDocument) Interface
-            .getOptionInterface("io2.CompoundDocument");
+            .getOption("io2.CompoundDocument");
         doc.setStream(bis, true);
         return JmolBinary.getBR(doc.getAllDataFiles(
             "Molecule", "Input").toString());
@@ -671,7 +671,7 @@ public class FileManager implements BytePoster {
       bis = (BufferedInputStream) t;
       if (JmolBinary.isCompoundDocumentS(bis)) {
         JmolDocument doc = (JmolDocument) Interface
-            .getOptionInterface("io2.CompoundDocument");
+            .getOption("io2.CompoundDocument");
         doc.setStream(bis, true);
         doc.getAllDataMapped(name.replace('\\', '/'), "Molecule", fileData);
       } else if (JmolBinary.isZipS(bis)) {
@@ -680,7 +680,7 @@ public class FileManager implements BytePoster {
       } else if (asBinaryString) {
         // used for Spartan binary file reading
         JmolDocument bd = (JmolDocument) Interface
-            .getOptionInterface("io2.BinaryDocument");
+            .getOption("io2.BinaryDocument");
         bd.setStream(bis, false);
         sb = new SB();
         //note -- these headers must match those in ZipUtil.getAllData and CompoundDocument.getAllData

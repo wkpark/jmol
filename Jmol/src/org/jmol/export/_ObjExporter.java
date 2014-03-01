@@ -8,6 +8,7 @@ import java.util.Set;
 import javajs.util.AU;
 import javajs.util.List;
 import javajs.util.P3;
+import javajs.util.Quat;
 import javajs.util.SB;
 import javajs.util.A4;
 import javajs.util.CU;
@@ -24,7 +25,6 @@ import org.jmol.util.Escape;
 import org.jmol.util.GData;
 import org.jmol.util.Logger;
 import org.jmol.util.MeshSurface;
-import org.jmol.util.Quaternion;
 import org.jmol.viewer.Viewer;
 
 /**
@@ -237,7 +237,7 @@ public class _ObjExporter extends __CartesianExporter {
       return;
     }
 
-    A4 a = Quaternion.getQuaternionFrame(center, points[1], points[3])
+    A4 a = Quat.getQuaternionFrame(center, points[1], points[3])
         .toAxisAngle4f();
     float sx = points[1].distance(center);
     float sy = points[3].distance(center);

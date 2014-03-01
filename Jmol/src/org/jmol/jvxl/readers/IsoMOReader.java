@@ -92,7 +92,7 @@ class IsoMOReader extends AtomDataReader {
       for (int i = params.title.length; --i >= 0;)
         fixTitleLine2(i, mo);
     } else {
-      q = (MOCalculationInterface) Interface.getOptionInterface(className);
+      q = (MOCalculationInterface) Interface.getOption(className);
       if (isNci) {
         qpc = (QuantumPlaneCalculationInterface) q;
       } else if (linearCombination == null) {

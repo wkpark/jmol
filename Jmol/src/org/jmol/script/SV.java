@@ -50,9 +50,9 @@ import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.P4;
 import javajs.util.PT;
+import javajs.util.Quat;
 import javajs.util.T3;
 
-import org.jmol.util.Quaternion;
 import org.jmol.util.Txt;
 import javajs.util.V3;
 
@@ -179,7 +179,7 @@ public class SV extends T implements JSONEncodable {
         || x instanceof String
         || x instanceof T3    // stored as point3f
         || x instanceof P4    // stored as point4f
-        || x instanceof Quaternion // stored as point4f
+        || x instanceof Quat // stored as point4f
         || x instanceof Map<?, ?>  // stored as Map<String, ScriptVariable>
     // in JavaScript, all these will be "Array" which is fine;
         || isArray(x)); // stored as list
@@ -229,8 +229,8 @@ public class SV extends T implements JSONEncodable {
     // first three coordinates to determine the relavent axis
     // the fourth then gives us offset to {0,0,0} (plane), 
     // rotation angle (axisangle), and cos(theta/2) (quaternion).
-    if (x instanceof Quaternion)
-      return newV(point4f, ((Quaternion) x).toPoint4f());
+    if (x instanceof Quat)
+      return newV(point4f, ((Quat) x).toPoint4f());
     if (x instanceof M34)
       return newV(x instanceof M4 ? matrix4f : matrix3f, x);
     if (x instanceof M4)

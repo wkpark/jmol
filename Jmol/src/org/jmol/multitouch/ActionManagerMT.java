@@ -74,7 +74,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     if (isTablet)
       return;
     String className = (isSparsh ? "multitouch.sparshui.JmolSparshClientAdapter" : "multitouch.jni.JmolJniClientAdapter");
-    adapter = (JmolMultiTouchAdapter) Interface.getOptionInterface(className);
+    adapter = (JmolMultiTouchAdapter) Interface.getOption(className);
     Logger.info("ActionManagerMT SparshUI groupID=" + groupID);
     Logger.info("ActionManagerMT adapter = " + adapter);
     if (isSparsh) {

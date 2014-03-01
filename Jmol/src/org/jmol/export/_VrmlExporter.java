@@ -36,10 +36,10 @@ import java.util.Map;
 import org.jmol.java.BS;
 import org.jmol.util.GData;
 import javajs.util.P3;
-import org.jmol.util.Quaternion;
 
 import javajs.util.A4;
 import javajs.util.PT;
+import javajs.util.Quat;
 import javajs.util.T3;
 import javajs.util.V3;
 import org.jmol.viewer.Viewer;
@@ -280,7 +280,7 @@ public class _VrmlExporter extends __CartesianExporter {
 
     tempQ1.setT(ptX);
     tempQ2.setT(ptY);
-    A4 a = Quaternion.getQuaternionFrame(ptCenter, tempQ1, tempQ2)
+    A4 a = Quat.getQuaternionFrame(ptCenter, tempQ1, tempQ2)
         .toAxisAngle4f();
     if (!Float.isNaN(a.x)) {
       output(" rotation");

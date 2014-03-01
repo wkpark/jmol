@@ -126,7 +126,7 @@ public final class BioModel extends Model{
   
   private String calculateDssp(List<Bond> vHBonds, boolean doReport,
                                boolean dsspIgnoreHydrogen, boolean setStructure) {
-    return ((DSSPInterface) Interface.getOptionInterface("dssx.DSSP"))
+    return ((DSSPInterface) Interface.getOption("dssx.DSSP"))
         .calculateDssp(bioPolymers, bioPolymerCount, vHBonds, doReport,
             dsspIgnoreHydrogen, setStructure);
   }

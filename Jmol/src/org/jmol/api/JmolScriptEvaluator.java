@@ -82,8 +82,6 @@ public interface JmolScriptEvaluator {
 
   float evalFunctionFloat(Object func, Object params, float[] values);
 
-  void setException(ScriptException sx, String msg, String untranslated);
-
   void evaluateCompiledScript(boolean isSyntaxCheck,
                               boolean isSyntaxAndFileCheck,
                               boolean historyDisabled, boolean listCommands,
@@ -91,7 +89,7 @@ public interface JmolScriptEvaluator {
 
   Map<String, Object> getDefinedAtomSets();
 
-  String setObjectPropSafe(String id, int tokCommand, int iTok);
+  String setObjectPropSafe(String id, int tokCommand);
 
   void stopScriptThreads();
 

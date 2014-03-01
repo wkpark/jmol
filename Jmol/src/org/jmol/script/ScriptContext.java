@@ -91,11 +91,17 @@ public class ScriptContext {
     }
   }
 
+  /**
+   * Context variables go up the stack until a 
+   * function is found. That is considered to be
+   * the highest level. 
+   * 
+   * @param var
+   * @return  context variables
+   */
   public SV getVariable(String var) {
     ScriptContext context = this;
-    while (context != null) {
-      if (context.isFunction == true)
-        return null;
+    while (context != null && !context.isFunction) {
       if (context.vars != null
           && context.vars.containsKey(var))
         return context.vars.get(var);

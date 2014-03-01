@@ -341,7 +341,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     float[] plane;
     if (iPlaneRaw == 0) {
       qpc = (QuantumPlaneCalculationInterface) Interface
-          .getOptionInterface("quantum.NciCalculation");
+          .getOption("quantum.NciCalculation");
       AtomData atomData = new AtomData();
       atomData.modelIndex = -1; // -1 here means fill ALL atoms; any other
       // means "this model only"

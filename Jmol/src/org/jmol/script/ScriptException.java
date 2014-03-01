@@ -25,17 +25,15 @@
 
 package org.jmol.script;
 
-import org.jmol.api.JmolScriptEvaluator;
-
 public class ScriptException extends Exception {
 
-  protected final JmolScriptEvaluator eval;
+  private final ScriptEval eval;
   String message;
   String untranslated;
   boolean isError;
 
-  ScriptException(JmolScriptEvaluator scriptEvaluator, String msg, String untranslated, boolean isError) {
-    eval = scriptEvaluator;
+  ScriptException(ScriptError se, String msg, String untranslated, boolean isError) {
+    eval = (ScriptEval) se;
     message = msg;
     this.isError = isError;
     if (!isError) // ScriptInterruption

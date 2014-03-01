@@ -39,8 +39,20 @@ public class Interface {
     }
   }
 
-  public static Object getOptionInterface(String name) {
-    return getInterface("org.jmol." + name);
+  /**
+   * Note! Do not use this method with "viewer." or "util." because
+   * when the JavaScript is built, "org.jmol.util" and "org.jmol.viewer"
+   * are condensed to "JW" and "JV"  (javajs.util is JU)
+   * 
+   * @param className
+   * @return class instance
+   */
+  public static Object getOption(String className) {
+    return getInterface("org.jmol." + className);
+  }
+
+  public static Object getUtil(String name) {
+    return getInterface("org.jmol.util." + name);
   }
 
   public static SymmetryInterface getSymmetry() {

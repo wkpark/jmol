@@ -35,7 +35,7 @@ import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.P4;
-import org.jmol.util.Quaternion;
+import javajs.util.Quat;
 import javajs.util.T3;
 import javajs.util.V3;
 
@@ -821,7 +821,7 @@ import java.util.Map;
         return;
       pt = Measure.getCenterAndPoints(vNot)[0];
       V3 v = V3.newVsub(thisAtom, pt);
-      Quaternion q = Quaternion.newVA(v, 180);
+      Quat q = Quat.newVA(v, 180);
       moveAtoms(null, q.getMatrix(), null, bsAtoms, thisAtom, true, false);
     }
   }

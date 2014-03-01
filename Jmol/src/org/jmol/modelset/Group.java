@@ -29,9 +29,10 @@ import org.jmol.util.BSUtil;
 
 import javajs.util.AU;
 import javajs.util.List;
+import javajs.util.Quat;
+
 import org.jmol.util.Logger;
 import javajs.util.P3;
-import org.jmol.util.Quaternion;
 import javajs.util.V3;
 import org.jmol.viewer.JC;
 import org.jmol.constant.EnumStructure;
@@ -376,15 +377,15 @@ public class Group {
    * @param qType
    * @return quaternion
    */
-  public Quaternion getQuaternion(char qType) {
+  public Quat getQuaternion(char qType) {
     return null;
   }
   
-  public Quaternion getQuaternionFrame(Atom[] atoms) {
+  public Quat getQuaternionFrame(Atom[] atoms) {
     if (lastAtomIndex - firstAtomIndex < 3)
       return null;
     int pt = firstAtomIndex;
-    return Quaternion.getQuaternionFrame(atoms[pt], atoms[++pt], atoms[++pt]);
+    return Quat.getQuaternionFrame(atoms[pt], atoms[++pt], atoms[++pt]);
   }
 
   /**

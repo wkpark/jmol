@@ -21,14 +21,11 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.jmol.util;
+package javajs.util;
 
-import javajs.util.A4;
-import javajs.util.M3;
-import javajs.util.P3;
-import javajs.util.P4;
-import javajs.util.V3;
-import javajs.util.T3;
+import org.jmol.util.Escape;
+import org.jmol.util.Logger;
+import org.jmol.util.Txt;
 
 
 /*
@@ -47,50 +44,50 @@ import javajs.util.T3;
  * 
  */
 
-public class Quaternion {
+public class Quat {
   public float q0, q1, q2, q3;
   private M3 mat;
 
   private final static P4 qZero = new P4();
   private static final double RAD_PER_DEG = Math.PI / 180;
   
-  public Quaternion() {
+  public Quat() {
     q0 = 1;
   }
 
-  public static Quaternion newQ(Quaternion q) {
-    Quaternion q1 = new Quaternion();
+  public static Quat newQ(Quat q) {
+    Quat q1 = new Quat();
     q1.set(q);
     return q1;
   }
 
-  public static Quaternion newVA(T3 pt, float theta) {
-    Quaternion q = new Quaternion();
+  public static Quat newVA(T3 pt, float theta) {
+    Quat q = new Quat();
     q.setTA(pt, theta);
     return q;
   }
 
-  public static Quaternion newM(M3 mat) {
-    Quaternion q = new Quaternion();
+  public static Quat newM(M3 mat) {
+    Quat q = new Quat();
     q.setM(mat);
     return q;
   }
 
-  public static Quaternion newAA(A4 a) {
-    Quaternion q = new Quaternion();
+  public static Quat newAA(A4 a) {
+    Quat q = new Quat();
     q.setAA(a);
     return q;
   }
 
-  public static Quaternion newP4(P4 pt) {
-    Quaternion q = new Quaternion();
+  public static Quat newP4(P4 pt) {
+    Quat q = new Quat();
     q.setP4(pt);
     return q;
   }
 
   // create a new object with the given components
-  public static Quaternion new4(float q0, float q1, float q2, float q3) {
-    Quaternion q = new Quaternion();
+  public static Quat new4(float q0, float q1, float q2, float q3) {
+    Quat q = new Quat();
     if (q0 < -1) {
       q.q0 = -1;
       return q;
@@ -106,7 +103,7 @@ public class Quaternion {
     return q;
   }
 
-  public void set(Quaternion q) {
+  public void set(Quat q) {
     q0 = q.q0;
     q1 = q.q1;
     q2 = q.q2;
@@ -306,7 +303,7 @@ public class Quaternion {
    * that is, one that gives a positive dot product
    * 
    */
-  public void setRef(Quaternion qref) {
+  public void setRef(Quat qref) {
     if (qref == null) {
       mul(getFixFactor());
       return;
@@ -328,7 +325,7 @@ public class Quaternion {
    * @param xy
    * @return quaternion for frame
    */
-  public static final Quaternion getQuaternionFrame(P3 center, T3 x,
+  public static final Quat getQuaternionFrame(P3 center, T3 x,
                                                     T3 xy) {
     V3 vA = V3.newV(x);
     V3 vB = V3.newV(xy);
@@ -339,7 +336,7 @@ public class Quaternion {
     return getQuaternionFrameV(vA, vB, null, false);
   }
   
-  public static final Quaternion getQuaternionFrameV(V3 vA, V3 vB,
+  public static final Quat getQuaternionFrameV(V3 vA, V3 vB,
                                                     V3 vC, boolean yBased) {
     if (vC == null) {
       vC = new V3();
@@ -378,7 +375,7 @@ public class Quaternion {
      
      */
 
-    Quaternion q = newM(mat);
+    Quat q = newM(mat);
 
      /*
      System.out.println("Quaternion mat from q \n" + q.getMatrix());
@@ -413,18 +410,18 @@ public class Quaternion {
     mat.m22 = q0 * q0 - q1 * q1 - q2 * q2 + q3 * q3;
   }
 
-  public Quaternion add(float x) {
+  public Quat add(float x) {
     // scalar theta addition (degrees) 
    return newVA(getNormal(), getTheta() + x);
   }
 
-  public Quaternion mul(float x) {
+  public Quat mul(float x) {
     // scalar theta multiplication
     return (x == 1 ? new4(q0, q1, q2, q3) : 
       newVA(getNormal(), getTheta() * x));
   }
 
-  public Quaternion mulQ(Quaternion p) {
+  public Quat mulQ(Quat p) {
     return new4(
         q0 * p.q0 - q1 * p.q1 - q2 * p.q2 - q3 * p.q3, 
         q0 * p.q1 + q1 * p.q0 + q2 * p.q3 - q3 * p.q2, 
@@ -432,25 +429,25 @@ public class Quaternion {
         q0 * p.q3 + q3 * p.q0 + q1 * p.q2 - q2 * p.q1);
   }
 
-  public Quaternion div(Quaternion p) {
+  public Quat div(Quat p) {
     // unit quaternions assumed -- otherwise would scale by 1/p.dot(p)
     return mulQ(p.inv());
   }
 
-  public Quaternion divLeft(Quaternion p) {
+  public Quat divLeft(Quat p) {
     // unit quaternions assumed -- otherwise would scale by 1/p.dot(p)
     return this.inv().mulQ(p);
   }
 
-  public float dot(Quaternion q) {
+  public float dot(Quat q) {
     return this.q0 * q.q0 + this.q1 * q.q1 + this.q2 * q.q2 + this.q3 * q.q3;
   }
 
-  public Quaternion inv() {
+  public Quat inv() {
     return new4(q0, -q1, -q2, -q3);
   }
 
-  public Quaternion negate() {
+  public Quat negate() {
     return new4(-q0, -q1, -q2, -q3);
   }
 
@@ -502,7 +499,7 @@ public class Quaternion {
     return v;
   }
 
-  private static V3 getRawNormal(Quaternion q) {
+  private static V3 getRawNormal(Quat q) {
     V3 v = V3.new3(q.q1, q.q2, q.q3);
     if (v.length() == 0)
       return V3.new3(0, 0, 1);
@@ -621,15 +618,15 @@ public class Quaternion {
     return vNew;
   }
 
-  public Quaternion leftDifference(Quaternion q2) {
+  public Quat leftDifference(Quat q2) {
     //dq = q.leftDifference(qnext);//q.inv().mul(qnext);
-    Quaternion q2adjusted = (this.dot(q2) < 0 ? q2.negate() : q2);
+    Quat q2adjusted = (this.dot(q2) < 0 ? q2.negate() : q2);
     return inv().mulQ(q2adjusted);
   }
 
-  public Quaternion rightDifference(Quaternion q2) {
+  public Quat rightDifference(Quat q2) {
     //dq = qnext.rightDifference(q);//qnext.mul(q.inv());
-    Quaternion q2adjusted = (this.dot(q2) < 0 ? q2.negate() : q2);
+    Quat q2adjusted = (this.dot(q2) < 0 ? q2.negate() : q2);
     return mulQ(q2adjusted.inv());
   }
 
@@ -675,13 +672,13 @@ public class Quaternion {
    * 
    * @return       pairwise array of data1 / data2 or data1 \ data2
    */
-  public static Quaternion[] div(Quaternion[] data1, Quaternion[] data2, int nMax, boolean isRelative) {
+  public static Quat[] div(Quat[] data1, Quat[] data2, int nMax, boolean isRelative) {
     int n;
     if (data1 == null || data2 == null || (n = Math.min(data1.length, data2.length)) == 0)
       return null;
     if (nMax > 0 && n > nMax)
       n = nMax;
-    Quaternion[] dqs = new Quaternion[n];
+    Quat[] dqs = new Quat[n];
     for (int i = 0; i < n; i++) {
       if (data1[i] == null || data2[i] == null)
         return null;
@@ -690,12 +687,12 @@ public class Quaternion {
     return dqs;
   }
   
-  public static Quaternion sphereMean(Quaternion[] data, float[] retStddev, float criterion) {
+  public static Quat sphereMean(Quat[] data, float[] retStddev, float criterion) {
     // Samuel R. Buss, Jay P. Fillmore: 
     // Spherical averages and applications to spherical splines and interpolation. 
     // ACM Trans. Graph. 20(2): 95-126 (2001)
       if (data == null || data.length == 0)
-        return new Quaternion();
+        return new Quat();
       if (retStddev == null)
         retStddev = new float[1];
       if (data.length == 1) {
@@ -704,7 +701,7 @@ public class Quaternion {
       }
       float diff = Float.MAX_VALUE;
       float lastStddev = Float.MAX_VALUE;
-      Quaternion qMean = simpleAverage(data);
+      Quat qMean = simpleAverage(data);
       int maxIter = 100; // typically goes about 5 iterations
       int iter = 0;
       while (diff > criterion && lastStddev != 0 && iter < maxIter) {
@@ -726,7 +723,7 @@ public class Quaternion {
    * @param ndata
    * @return approximate average
    */
-  private static Quaternion simpleAverage(Quaternion[] ndata) {
+  private static Quat simpleAverage(Quat[] ndata) {
     V3 mean = V3.new3(0, 0, 1);
     // using the directed normal ensures that the mean is 
     // continually added to and never subtracted from 
@@ -750,7 +747,7 @@ public class Quaternion {
     return newP4(P4.new4(mean.x, mean.y, mean.z, f));
   }
 
-  private static Quaternion newMean(Quaternion[] data, Quaternion mean) {
+  private static Quat newMean(Quat[] data, Quat mean) {
     /* quaternion derivatives nicely take care of producing the necessary 
      * metric. Since dq gives us the normal with the smallest POSITIVE angle, 
      * we just scale by that -- using degrees.
@@ -780,7 +777,7 @@ public class Quaternion {
      */
     V3 sum = new V3();
     V3 v;
-    Quaternion q, dq;
+    Quat q, dq;
     //System.out.println("newMean mean " + mean);
     for (int i = data.length; --i >= 0;) {
       q = data[i];
@@ -790,7 +787,7 @@ public class Quaternion {
       sum.add(v);
     }
     sum.scale(1f/data.length);
-    Quaternion dqMean = newVA(sum, sum.length());
+    Quat dqMean = newVA(sum, sum.length());
     //System.out.println("newMean dqMean " + dqMean + " " + dqMean.getNormal() + " " + dqMean.getTheta());
     return dqMean.mulQ(mean);
   }
@@ -800,7 +797,7 @@ public class Quaternion {
    * @param mean
    * @return     standard deviation in units of degrees
    */
-  private static float stdDev(Quaternion[] data, Quaternion mean) {
+  private static float stdDev(Quat[] data, Quat mean) {
     // the quaternion dot product gives q0 for dq (i.e. q / mean)
     // that is, cos(theta/2) for theta between them
     double sum2 = 0;
@@ -830,6 +827,5 @@ public class Quaternion {
     rG = Math.atan2( 2 * (q1 * q3 - q0 * q2), 2 * (q2 * q3 + q0 * q1));
     return new float[]  {(float) (rA / RAD_PER_DEG), (float) (rB / RAD_PER_DEG), (float) (rG / RAD_PER_DEG)};
   }
-  
 
 }

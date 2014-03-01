@@ -36,8 +36,8 @@ import javajs.util.DF;
 import javajs.util.M3;
 import javajs.util.P3;
 import javajs.util.PT;
+import javajs.util.Quat;
 
-import org.jmol.util.Quaternion;
 import org.jmol.util.Tensor;
 import org.jmol.util.Txt;
 import javajs.util.V3;
@@ -350,7 +350,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       mp.getColumnV(0, a);
       mp.getColumnV(1, b);
     }
-    matUnitCellOrientation = Quaternion.getQuaternionFrame(new P3(), a, b)
+    matUnitCellOrientation = Quat.getQuaternionFrame(new P3(), a, b)
     .getMatrix();
     Logger.info("oriented unit cell is in model "
         + atomSetCollection.atomSetCount);

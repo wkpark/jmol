@@ -39,7 +39,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import javajs.util.P3;
 import javajs.util.P4;
-import org.jmol.util.Quaternion;
+import javajs.util.Quat;
 import javajs.util.V3;
 
 public class ZMatrixReader extends AtomSetCollectionReader {
@@ -422,14 +422,14 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
     if (theta2 == Float.MAX_VALUE) {
       // just the first angle being set
       v2.set(0, 0, 1);
-      (Quaternion.newVA(v2, theta1)).transformP2(v1, v2);
+      (Quat.newVA(v2, theta1)).transformP2(v1, v2);
     } else if (d >= 0) {
       // theta2 is a dihedral angle
       // just do two quaternion rotations
       v2.sub2(vAtoms.get(ic), pt0);
       v2.cross(v1, v2);
-      (Quaternion.newVA(v2, theta1)).transformP2(v1, v2);
-      (Quaternion.newVA(v1, -theta2)).transformP2(v2, v2);
+      (Quat.newVA(v2, theta1)).transformP2(v1, v2);
+      (Quat.newVA(v1, -theta2)).transformP2(v2, v2);
     } else {
       // d < 0
       // theta1 and theta2 are simple angles atom-ia-ib and atom-ia-ic 

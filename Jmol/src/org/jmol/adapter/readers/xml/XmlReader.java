@@ -197,7 +197,7 @@ public class XmlReader extends AtomSetCollectionReader {
       }
     } else {
       JmolXmlHandler saxHandler = (JmolXmlHandler) Interface
-          .getOptionInterface("adapter.readers.xml.XmlHandler");
+          .getOption("adapter.readers.xml.XmlHandler");
       saxHandler.parseXML(this, saxReader, reader);
     }
   }

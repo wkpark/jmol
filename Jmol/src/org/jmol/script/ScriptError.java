@@ -1,21 +1,42 @@
 package org.jmol.script;
 
+import javajs.api.GenericPlatform;
 import javajs.util.PT;
 
+import org.jmol.api.JmolScriptEvaluator;
 import org.jmol.i18n.GT;
+import org.jmol.viewer.Viewer;
 
 /**
  * Error handling for ScriptEvaluator, ScriptProcess, and ScriptParams
  * 
  */
-public abstract class ScriptError {
+public abstract class ScriptError implements JmolScriptEvaluator {
 
   abstract protected void showString(String msg);
   
+  public Viewer viewer;
+  public boolean chk;
 
   protected boolean ignoreError;
+  protected boolean error;
+  protected String errorMessage;
+  protected String errorMessageUntranslated;
+  protected String errorType;
+  protected int iCommandError;
 
-  protected void invArg() throws ScriptException {
+  @Override
+  public String getErrorMessage() {
+    return errorMessage;
+  }
+
+  @Override
+  public String getErrorMessageUntranslated() {
+    return errorMessageUntranslated == null ? errorMessage
+        : errorMessageUntranslated;
+  }
+
+  public void invArg() throws ScriptException {
     error(ERROR_invalidArgument);
   }
 
@@ -24,11 +45,11 @@ public abstract class ScriptError {
   }
   
   public void integerOutOfRange(int min, int max) throws ScriptException {
-    errorStr2(ERROR_integerOutOfRange, "" + min, "" + max);
+    errorOrWarn(ERROR_integerOutOfRange, "" + min, "" + max, null, true);
   }
 
   protected void numberOutOfRange(float min, float max) throws ScriptException {
-    errorStr2(ERROR_numberOutOfRange, "" + min, "" + max);
+    errorOrWarn(ERROR_numberOutOfRange, "" + min, "" + max, null, true);
   }
 
   public void error(int iError) throws ScriptException {
@@ -65,10 +86,29 @@ public abstract class ScriptError {
     showString(strError);
   }
 
+  public void evalError(String message, String strUntranslated)
+      throws ScriptException {
+    
+    // called by ScriptError, ScriptParam, ScriptExt
+    
+    if (ignoreError)
+      throw new NullPointerException();
+    if (!chk) {
+      // String s = viewer.getSetHistory(1);
+      // viewer.addCommand(s + CommandHistory.ERROR_FLAG);
+      setCursorWait(false);
+      viewer.setBooleanProperty("refreshing", true);
+      viewer.setStringProperty("_errormessage", strUntranslated);
+    }
+    throw new ScriptException(this, message, strUntranslated, true);
+  }
 
-  abstract public void evalError(String message, String strUntranslated)
-      throws ScriptException;
-  
+  public void setCursorWait(boolean TF) {
+    if (!chk)
+      viewer.setCursor(TF ? GenericPlatform.CURSOR_WAIT
+          : GenericPlatform.CURSOR_DEFAULT);
+  }
+
   final static int ERROR_axisExpected = 0;
   final static int ERROR_backgroundModelError = 1;
   public final static int ERROR_badArgumentCount = 2;
@@ -353,6 +393,22 @@ public abstract class ScriptError {
           + ":";
     err += "\n         " + lineInfo;
     return err;
+  }
+
+  protected void setErrorMessage(String err) {
+    errorMessageUntranslated = null;
+    if (err == null) {
+      error = false;
+      errorType = null;
+      errorMessage = null;
+      iCommandError = -1;
+      return;
+    }
+    error = true;
+    if (errorMessage == null) // there could be a compiler error from a script
+      // command
+      errorMessage = GT._("script ERROR: ");
+    errorMessage += err;
   }
 
 

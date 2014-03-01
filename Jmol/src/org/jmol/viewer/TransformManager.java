@@ -43,11 +43,11 @@ import javajs.util.A4;
 import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3i;
+import javajs.util.Quat;
 import javajs.util.T3;
 import javajs.util.V3;
 import org.jmol.util.Vibration;
 
-import org.jmol.util.Quaternion;
 
 import java.util.Hashtable;
 
@@ -657,7 +657,7 @@ public class TransformManager {
     A4 aa = new A4();
     getAxisAngle(aa);
     info.put("axisAngle", aa);
-    info.put("quaternion", Quaternion.newAA(aa).toPoint4f());
+    info.put("quaternion", Quat.newAA(aa).toPoint4f());
     info.put("rotationMatrix", matrixRotate);
     info.put("rotateZYZ", getRotateZyzText(false));
     info.put("rotateXYZ", getRotateXyzText());
@@ -1576,7 +1576,7 @@ public class TransformManager {
             float dSlab, float floatSecondsTotal, int fps) {
 
     movetoThread = (JmolThread) Interface
-        .getOptionInterface("thread.MoveThread");
+        .getOption("thread.MoveThread");
     movetoThread.setManager(this, viewer, new Object[] { dRot, dTrans,
         new float[] { dZoom, dSlab, floatSecondsTotal, fps } });
     if (floatSecondsTotal > 0)
@@ -1729,7 +1729,7 @@ public class TransformManager {
     try {
       if (movetoThread == null)
         movetoThread = (JmolThread) Interface
-            .getOptionInterface("thread.MoveToThread");
+            .getOption("thread.MoveToThread");
       int nSteps = movetoThread.setManager(this, viewer, new Object[] {
           center,
           matrixEnd,
@@ -1756,8 +1756,8 @@ public class TransformManager {
     //setSpinOff();// trouble here with Viewer.checkHalt
   }
 
-  Quaternion getRotationQuaternion() {
-    return Quaternion.newM(matrixRotate);
+  Quat getRotationQuaternion() {
+    return Quat.newM(matrixRotate);
     /*
     axisangleT.set(matrixRotate);
     float degrees = (float) (axisangleT.angle * degreesPerRadian);
@@ -2009,7 +2009,7 @@ public class TransformManager {
     if (spinOn) {
       if (spinThread == null) {
         spinThread = (JmolThread) Interface
-        .getOptionInterface("thread.SpinThread");
+        .getOption("thread.SpinThread");
         spinThread.setManager(this, viewer, new Object[] {
             Float.valueOf(endDegrees), endPositions, dihedralList,
             bsAtoms, isGesture ? Boolean.TRUE : null } );
@@ -2044,7 +2044,7 @@ public class TransformManager {
         navFps = 10;
       if (spinThread == null) {
         spinThread = (JmolThread) Interface
-            .getOptionInterface("thread.SpinThread");
+            .getOption("thread.SpinThread");
         spinThread.setManager(this, viewer, null);
         spinThread.start();
       }
@@ -2118,7 +2118,7 @@ public class TransformManager {
     }
     if (vibrationThread == null) {
       vibrationThread = (JmolThread) Interface
-          .getOptionInterface("thread.VibrationThread");
+          .getOption("thread.VibrationThread");
       vibrationThread.setManager(this, viewer, null);
       vibrationThread.start();
     }
@@ -2654,7 +2654,7 @@ public class TransformManager {
     if (nav != null)
       return true;
     nav = (JmolNavigatorInterface) Interface
-        .getOptionInterface("navigate.Navigator");
+        .getOption("navigate.Navigator");
     if (nav == null)
       return false;
     nav.set(this, viewer);

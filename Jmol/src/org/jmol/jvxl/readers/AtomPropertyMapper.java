@@ -80,7 +80,7 @@ class AtomPropertyMapper extends AtomDataReader {
       doSmoothProperty = true;
       if (params.mep_calcType >= 0)
         calcType = params.mep_calcType;
-      mepCalc = (MepCalculationInterface) Interface.getOptionInterface("quantum."
+      mepCalc = (MepCalculationInterface) Interface.getOption("quantum."
           + mepType + "Calculation");
     }
     if (!doSmoothProperty && maxDistance == Integer.MAX_VALUE)

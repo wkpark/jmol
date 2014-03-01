@@ -46,7 +46,7 @@ public class Platform implements GenericPlatform {
   
   @Override
   public GenericMenuInterface getMenuPopup(String menuStructure, char type) {
-    GenericMenuInterface jmolpopup = (GenericMenuInterface) Interface.getOptionInterface(
+    GenericMenuInterface jmolpopup = (GenericMenuInterface) Interface.getOption(
         type == 'j' ? "popup.JmolAwtPopup" : "modelkit.ModelKitPopup");
     if (jmolpopup != null)
       jmolpopup.jpiInitialize(viewer, menuStructure);

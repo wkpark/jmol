@@ -41,7 +41,7 @@ import javajs.util.M4;
 import javajs.util.Matrix;
 import javajs.util.P3;
 import javajs.util.P4;
-import org.jmol.util.Quaternion;
+import javajs.util.Quat;
 import javajs.util.T3;
 import javajs.util.V3;
 import org.jmol.modelset.ModelSet;
@@ -717,8 +717,8 @@ class SymmetryOperation extends M4 {
 
     Object[] info;
     info = (Object[]) Measure.computeHelicalAxis(null, T.array, pt00, p0,
-        Quaternion.getQuaternionFrame(p0, p1, p2).div(
-            Quaternion.getQuaternionFrame(pt00, pt01, pt02)));
+        Quat.getQuaternionFrame(p0, p1, p2).div(
+            Quat.getQuaternionFrame(pt00, pt01, pt02)));
     P3 pa1 = (P3) info[0];
     V3 ax1 = (V3) info[1];
     int ang1 = (int) Math.abs(PT.approx(((P3) info[3]).x, 1));

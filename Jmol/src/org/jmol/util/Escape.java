@@ -31,6 +31,7 @@ import java.util.Map;
 import javajs.util.List;
 import javajs.util.M34;
 import javajs.util.PT;
+import javajs.util.Quat;
 import javajs.util.SB;
 import javajs.util.A4;
 import javajs.util.M3;
@@ -108,8 +109,8 @@ public class Escape {
       A4 a = (A4) x;
       return "{" + a.x + " " + a.y + " " + a.z + " " + (float) (a.angle * 180d/Math.PI) + "}";  
     } 
-    if (x instanceof Quaternion)
-      return ((Quaternion) x).toString();
+    if (x instanceof Quat)
+      return ((Quat) x).toString();
     String s = PT.nonArrayString(x);
     return (s == null ? PT.toJSON(null, x) : s);
   }

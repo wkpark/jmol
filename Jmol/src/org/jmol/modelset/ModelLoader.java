@@ -31,7 +31,6 @@ import javajs.util.P3;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
-import org.jmol.util.Quaternion;
 import javajs.util.V3;
 import org.jmol.viewer.JC;
 import org.jmol.script.T;
@@ -51,6 +50,7 @@ import org.jmol.java.BS;
 import javajs.util.AU;
 import javajs.util.List;
 import javajs.util.PT;
+import javajs.util.Quat;
 import javajs.util.SB;
 
 import java.util.Arrays;
@@ -165,7 +165,7 @@ public final class ModelLoader {
     isPDB = modelSet.isPDB = modelSet.getModelSetAuxiliaryInfoBoolean("isPDB");
     if (isPDB) {
       jbr = (JmolBioResolver) Interface
-          .getOptionInterface("modelsetbio.Resolver");
+          .getOption("modelsetbio.Resolver");
       jbr.initialize(this);
     }
     jmolData = (String) modelSet.getModelSetAuxiliaryInfoValue("jmolData");
@@ -317,7 +317,7 @@ public final class ModelLoader {
             + " in this collection. Use getProperty \"modelInfo\" or"
             + " getProperty \"auxiliaryInfo\" to inspect them.");
       }
-      Quaternion q = (Quaternion) modelSet.getModelSetAuxiliaryInfoValue("defaultOrientationQuaternion");
+      Quat q = (Quat) modelSet.getModelSetAuxiliaryInfoValue("defaultOrientationQuaternion");
       if (q != null) {
         Logger.info("defaultOrientationQuaternion = " + q);
         Logger

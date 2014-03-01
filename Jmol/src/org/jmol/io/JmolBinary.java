@@ -376,7 +376,7 @@ public class JmolBinary {
   static JmolZipUtility jzu;
   
   private static JmolZipUtility getJzu() {
-    return (jzu == null ? jzu = (JmolZipUtility) Interface.getOptionInterface("io2.ZipUtil") : jzu);
+    return (jzu == null ? jzu = (JmolZipUtility) Interface.getOption("io2.ZipUtil") : jzu);
   }
 
   public static String getZipDirectoryAsStringAndClose(BufferedInputStream t) {

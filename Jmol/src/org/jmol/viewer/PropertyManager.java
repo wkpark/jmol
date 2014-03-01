@@ -27,6 +27,7 @@ import javajs.util.Base64;
 import javajs.util.List;
 import javajs.util.M4;
 import javajs.util.PT;
+import javajs.util.Quat;
 import javajs.util.SB;
 import javajs.util.V3;
 
@@ -62,7 +63,6 @@ import org.jmol.util.Logger;
 
 import javajs.util.M3;
 import javajs.util.P3;
-import org.jmol.util.Quaternion;
 import org.jmol.util.Txt;
 import org.jmol.viewer.binding.Binding;
 
@@ -846,7 +846,7 @@ public class PropertyManager implements JmolPropertyManager {
     if (!asXYZVIB && bsAtoms.cardinality() == 0)
       return "";
     boolean isOK = true;
-    Quaternion q = (doTransform ? viewer.getRotationQuaternion() : null);
+    Quat q = (doTransform ? viewer.getRotationQuaternion() : null);
     if (asSDF) {
       String header = mol.toString();
       mol = new SB();
@@ -911,7 +911,7 @@ public class PropertyManager implements JmolPropertyManager {
   }
 
   private boolean addMolFile(SB mol, BS bsAtoms, BS bsBonds,
-                             boolean asV3000, boolean asJSON, Quaternion q) {
+                             boolean asV3000, boolean asJSON, Quat q) {
     int nAtoms = bsAtoms.cardinality();
     int nBonds = bsBonds.cardinality();
     if (!asV3000 && !asJSON && (nAtoms > 999 || nBonds > 999))
@@ -1007,7 +1007,7 @@ public class PropertyManager implements JmolPropertyManager {
   M  END
    */
 
-  private void getAtomRecordMOL(ModelSet ms, SB mol, int n, Atom a, Quaternion q,
+  private void getAtomRecordMOL(ModelSet ms, SB mol, int n, Atom a, Quat q,
                                 P3 pTemp, P3 ptTemp, boolean asV3000,
                                 boolean asJSON) {
     //   -0.9920    3.2030    9.1570 Cl  0  0  0  0  0

@@ -53,6 +53,7 @@ import javajs.util.M3;
 import javajs.util.P3;
 import javajs.util.P4;
 import javajs.util.PT;
+import javajs.util.Quat;
 
 import org.jmol.util.Parser;
 import org.jmol.util.Tensor;
@@ -65,7 +66,6 @@ import javajs.util.V3;
 import org.jmol.util.Vibration;
 
 import org.jmol.util.Measure;
-import org.jmol.util.Quaternion;
 import org.jmol.util.Txt;
 import org.jmol.viewer.JC;
 import org.jmol.script.T;
@@ -216,7 +216,7 @@ abstract public class AtomCollection {
 
   public LabelToken getLabeler() {
     // prevents JavaScript from requiring LabelToken upon core load
-    return (labeler == null ? labeler = (LabelToken) Interface.getOptionInterface("modelset.LabelToken") : labeler);
+    return (labeler == null ? labeler = (LabelToken) Interface.getOption("modelset.LabelToken") : labeler);
   }
 
   public String getAtomInfoXYZ(int i, boolean useChimeFormat) {
@@ -264,7 +264,7 @@ abstract public class AtomCollection {
     return atoms[i].getChainIDStr();
   }
 
-  public Quaternion getQuaternion(int i, char qtype) {
+  public Quat getQuaternion(int i, char qtype) {
     return (i < 0 ? null : atoms[i].group.getQuaternion(qtype));
   } 
 
@@ -415,7 +415,7 @@ abstract public class AtomCollection {
     if (envelopeRadius < 0)
       envelopeRadius = JC.ENC_CALC_MAX_DIST;
     
-    JmolEnvCalc ec = ((JmolEnvCalc) Interface.getOptionInterface("geodesic.EnvelopeCalculation"))
+    JmolEnvCalc ec = ((JmolEnvCalc) Interface.getOption("geodesic.EnvelopeCalculation"))
     .set(viewer, atomCount, null);
     ec.calculate(new RadiusData(null, envelopeRadius, EnumType.ABSOLUTE, null), 
         Float.MAX_VALUE, 

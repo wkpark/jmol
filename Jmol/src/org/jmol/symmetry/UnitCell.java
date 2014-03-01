@@ -300,7 +300,7 @@ class UnitCell extends SimpleUnitCell {
      * and the betaij should be entered as Type 0.
      */
 
-    Tensor t = ((Tensor) Interface.getOptionInterface("util.Tensor"));
+    Tensor t = ((Tensor) Interface.getUtil("Tensor"));
     if (parBorU[0] == 0) { // this is iso
       float f = parBorU[7];
       float[] eigenValues = new float[] {f, f, f};

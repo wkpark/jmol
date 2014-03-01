@@ -261,7 +261,7 @@ abstract class OutputManager {
       throws IOException {
     type = type.substring(0, 1) + type.substring(1).toLowerCase();
     JmolImageEncoder ie = (JmolImageEncoder) Interface
-        .getOptionInterface("image." + type + "Encoder");
+        .getOption("image." + type + "Encoder");
     if (ie == null) {
       errRet[0] = "Image encoder type " + type + " not available";
       return false;

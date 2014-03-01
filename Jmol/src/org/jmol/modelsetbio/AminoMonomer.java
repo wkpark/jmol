@@ -34,7 +34,8 @@ import org.jmol.util.Logger;
 import javajs.util.A4;
 import javajs.util.M3;
 import javajs.util.P3;
-import org.jmol.util.Quaternion;
+import javajs.util.Quat;
+
 import org.jmol.util.Txt;
 import javajs.util.V3;
 import org.jmol.viewer.JC;
@@ -276,7 +277,7 @@ public class AminoMonomer extends AlphaMonomer {
   private P3 ptTemp;
 
   @Override
-  public Quaternion getQuaternion(char qType) {
+  public Quat getQuaternion(char qType) {
     /*
      * also NucleicMonomer
      *  
@@ -377,7 +378,7 @@ public class AminoMonomer extends AlphaMonomer {
     default:
       return null;
     }
-    return Quaternion.getQuaternionFrameV(vA, vB, vC, false);
+    return Quat.getQuaternionFrameV(vA, vB, vC, false);
   }
   
   @Override

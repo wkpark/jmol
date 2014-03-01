@@ -25,6 +25,7 @@
 package org.jmol.symmetry;
 
 import javajs.util.List;
+import javajs.util.Quat;
 import javajs.util.SB;
 
 import java.util.Hashtable;
@@ -38,7 +39,6 @@ import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import javajs.util.P3;
-import org.jmol.util.Quaternion;
 import org.jmol.util.Txt;
 import javajs.util.V3;
 
@@ -398,7 +398,7 @@ class PointGroup {
     }
   }
 
-  private boolean checkOperation(Quaternion q, P3 center, int iOrder) {
+  private boolean checkOperation(Quat q, P3 center, int iOrder) {
     P3 pt = new P3();
     int nFound = 0;
     boolean isInversion = (iOrder < firstProper);
@@ -681,7 +681,7 @@ class PointGroup {
     v.normalize();
     if (haveAxis(iOrder, v))
       return false;
-    Quaternion q = Quaternion.newVA(v, (iOrder < firstProper ? 180 : 0) + 360 / (iOrder % firstProper));
+    Quat q = Quat.newVA(v, (iOrder < firstProper ? 180 : 0) + 360 / (iOrder % firstProper));
     if (!checkOperation(q, center, iOrder))
       return false;
     addAxis(iOrder, v);
@@ -793,7 +793,7 @@ class PointGroup {
 
   private int getPlane(V3 v3) {
     if (!haveAxis(0, v3)
-        && checkOperation(Quaternion.newVA(v3, 180), center,
+        && checkOperation(Quat.newVA(v3, 180), center,
             -1))
       axes[0][nAxes[0]++] = new Operation(v3);
     return nAxes[0];
@@ -855,7 +855,7 @@ class PointGroup {
       index = ++nOps;
       type = (i < firstProper ? OPERATION_IMPROPER_AXIS : OPERATION_PROPER_AXIS);
       order = i % firstProper;
-      normalOrAxis = Quaternion.newVA(v, 180).getNormal();
+      normalOrAxis = Quat.newVA(v, 180).getNormal();
       if (Logger.debugging)
         Logger.debug("new operation -- " + (order == i ? "S" : "C") + order + " "
             + normalOrAxis);
@@ -866,7 +866,7 @@ class PointGroup {
         return;
       index = ++nOps;
       type = OPERATION_PLANE;
-      normalOrAxis = Quaternion.newVA(v, 180).getNormal();
+      normalOrAxis = Quat.newVA(v, 180).getNormal();
       if (Logger.debugging)
         Logger.debug("new operation -- plane " + normalOrAxis);
     }

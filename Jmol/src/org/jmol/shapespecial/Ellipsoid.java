@@ -130,13 +130,13 @@ public class Ellipsoid {
 
   protected void setEquation(double[] coef) {
     isValid = false;
-    tensor = ((Tensor) Interface.getOptionInterface("util.Tensor")).setFromThermalEquation(coef, null);
+    tensor = ((Tensor) Interface.getUtil("Tensor")).setFromThermalEquation(coef, null);
     validate(true);
   }
 
   protected void setAxes(V3[] axes) {
     isValid = false;
-    tensor = ((Tensor) Interface.getOptionInterface("util.Tensor")).setFromAxes(axes);
+    tensor = ((Tensor) Interface.getUtil("Tensor")).setFromAxes(axes);
     validate((tensor != null));
   }
 

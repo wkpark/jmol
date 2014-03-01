@@ -59,7 +59,7 @@ abstract class SurfaceFileReader extends SurfaceReader {
   }
 
   JmolDocument newBinaryDocument() {
-    return (JmolDocument) Interface.getOptionInterface("io2.BinaryDocument");
+    return (JmolDocument) Interface.getOption("io2.BinaryDocument");
   }
   
   @Override

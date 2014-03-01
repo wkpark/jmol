@@ -28,7 +28,7 @@ import org.jmol.constant.EnumStructure;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Chain;
 import javajs.util.P3;
-import org.jmol.util.Quaternion;
+import javajs.util.Quat;
 import javajs.util.V3;
 import org.jmol.viewer.JC;
 
@@ -120,11 +120,11 @@ public class PhosphorusMonomer extends Monomer {
   }
 
   @Override
-  public Quaternion getQuaternion(char qType) {
+  public Quat getQuaternion(char qType) {
     return getQuaternionP();
   }
   
-  protected Quaternion getQuaternionP() {
+  protected Quat getQuaternionP() {
     //vA = ptP(i+1) - ptP
     //vB = ptP(i-1) - ptP
     int i = monomerIndex;
@@ -140,7 +140,7 @@ public class PhosphorusMonomer extends Monomer {
     V3 vB = new V3();
     vA.sub2(ptA, ptP);
     vB.sub2(ptB, ptP);
-    return Quaternion.getQuaternionFrameV(vA, vB, null, false);
+    return Quat.getQuaternionFrameV(vA, vB, null, false);
   }
 
   @Override

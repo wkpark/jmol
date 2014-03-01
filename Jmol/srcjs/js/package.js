@@ -52,22 +52,28 @@ for (var i = 0; i < Jmol._coreFiles.length; i++)
     "$.ScriptQueueThread", 
     "$.ScriptDelayThread", 
     "$.ScriptManager",
-    "$.FileLoadThread"
+    "$.FileLoadThread",
+    "$.JmolCmdExtension", 
+    "$.JmolMathExtension",
+    "$.JmolSmilesExtension"
 	]);
 	
-	ClazzLoader.jarClasspath (base + "corescript2.z.js",	[  
-	"J.script.JmolScriptExtension", 
-	"J.scriptext.ScriptExt"
+	ClazzLoader.jarClasspath (base + "corescriptcmd.z.js",	[  
+	"J.scriptext.CmdExt"
+	]);
+	                                                 	
+	ClazzLoader.jarClasspath (base + "corescriptmath.z.js",	[  
+	"J.scriptext.MathExt"
 	]);
 	                                                 	
 	ClazzLoader.jarClasspath (base + "corestate.z.js",	[  
     "J.api.JmolStateCreator", 
-    "J.viewer.StateCreator" 
+    "JW.StateCreator" 
 	]);
 	
 	ClazzLoader.jarClasspath (base + "coreprop.z.js",	[  
     "J.api.JmolPropertyManager", 
-    "J.viewer.PropertyManager" 
+    "JW.PropertyManager" 
 	]);  
   
 	ClazzLoader.jarClasspath (base + "coreconsole.z.js",	[
@@ -181,6 +187,7 @@ for (var i = 0; i < Jmol._coreFiles.length; i++)
 
 	ClazzLoader.jarClasspath (base + "coresmiles.z.js",	[
     "J.api.SmilesMatcherInterface",
+    "J.scriptext.SmilesExt",
     "J.smiles.VTemp",
     "$.SmilesMatcher",
     "$.InvalidSmilesException",

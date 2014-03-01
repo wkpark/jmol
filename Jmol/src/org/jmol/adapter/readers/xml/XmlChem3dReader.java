@@ -149,7 +149,7 @@ public class XmlChem3dReader extends XmlReader {
             voxelData[x][y][z] *= sum;
           }
       VolumeDataInterface vd = (VolumeDataInterface) Interface
-          .getOptionInterface("jvxl.data.VolumeData");
+          .getOption("jvxl.data.VolumeData");
       vd.setVoxelCounts(nPointsX, nPointsY, nPointsZ);
       vd.setVolumetricVector(0, xStep, 0, 0);
       vd.setVolumetricVector(1, 0, yStep, 0);

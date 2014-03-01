@@ -103,7 +103,7 @@ public class Platform implements GenericPlatform {
                                          char type) {
     String c = (type == 'j' ? "awtjs2d.JmolJSPopup" : "awtjs2d.JSModelKitPopup");
     GenericMenuInterface jmolpopup = (GenericMenuInterface) Interface
-        .getOptionInterface(c);
+        .getOption(c);
     try {
       if (jmolpopup != null)
         jmolpopup.jpiInitialize(viewer, menuStructure);

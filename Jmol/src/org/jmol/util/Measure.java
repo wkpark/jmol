@@ -29,6 +29,7 @@ import javajs.util.List;
 import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.P4;
+import javajs.util.Quat;
 import javajs.util.V3;
 import javajs.util.T3;
 import javajs.util.PT;
@@ -99,7 +100,7 @@ final public class Measure {
   }
 
   public static Object computeHelicalAxis(String id, int tokType, P3 a, P3 b,
-                                    Quaternion dq) {
+                                    Quat dq) {
     /*
                 b
            |   /|
@@ -460,7 +461,7 @@ final public class Measure {
     //System.out.println("draw d1 @{point" + cptsA[0] + "}");
     //System.out.println("draw d2 @{point" + cptsB[0] + "}");
     float[] retStddev = new float[2];
-    Quaternion q = calculateQuaternionRotation(new P3[][] { cptsA,
+    Quat q = calculateQuaternionRotation(new P3[][] { cptsA,
         cptsB }, retStddev, doReport); // was false
     V3 v = V3.newVsub(cptsB[0], cptsA[0]);
     m.setMV(q.getMatrix(), v);
@@ -469,13 +470,13 @@ final public class Measure {
     return retStddev[1];
   }
   
-  public static Quaternion calculateQuaternionRotation(
+  public static Quat calculateQuaternionRotation(
                                                        P3[][] centerAndPoints,
                                                        float[] retStddev,
                                                        boolean doReport) {
 
     retStddev[1] = Float.NaN;
-    Quaternion q = new Quaternion();
+    Quat q = new Quat();
     if (centerAndPoints[0].length == 1
         || centerAndPoints[0].length != centerAndPoints[1].length)
       return q;
@@ -556,15 +557,15 @@ final public class Measure {
 
     //this construction prevents JavaScript from requiring preloading of Eigen
     @SuppressWarnings("static-access")
-    Eigen eigen = ((Eigen) Interface.getOptionInterface("util.Eigen")).newM(N);
+    Eigen eigen = ((Eigen) Interface.getUtil("Eigen")).newM(N);
  
     float[] v = eigen.getEigenvectorsFloatTransposed()[3];
-    q = Quaternion.newP4(P4.new4(v[1], v[2], v[3], v[0]));
+    q = Quat.newP4(P4.new4(v[1], v[2], v[3], v[0]));
     retStddev[1] = getRmsd(centerAndPoints, q);
     return q;
   }
 
-  public static float getRmsd(P3[][] centerAndPoints, Quaternion q) {
+  public static float getRmsd(P3[][] centerAndPoints, Quat q) {
     double sum2 = 0;
     P3[] ptsA = centerAndPoints[0];
     P3[] ptsB = centerAndPoints[1];

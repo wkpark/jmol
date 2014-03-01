@@ -12,7 +12,7 @@ import org.jmol.viewer.Viewer;
 
 public interface JmolScriptManager {
 
-  void setViewer(Viewer viewer);
+  JmolScriptEvaluator setViewer(Viewer viewer);
   
   void startCommandWatcher(boolean isStart);
 
@@ -45,8 +45,6 @@ public interface JmolScriptManager {
   BS getAtomBitSetEval(JmolScriptEvaluator eval, Object atomExpression);
 
   Object scriptCheckRet(String strScript, boolean returnContext);
-
-  JmolScriptEvaluator getEval();
 
   boolean isQueueProcessing();
 

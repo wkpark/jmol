@@ -38,7 +38,8 @@ import org.jmol.util.Logger;
 import javajs.util.OC;
 import javajs.util.P3;
 import javajs.util.PT;
-import org.jmol.util.Quaternion;
+import javajs.util.Quat;
+
 import org.jmol.util.Txt;
 import javajs.util.V3;
 import org.jmol.viewer.Viewer;
@@ -606,12 +607,12 @@ public abstract class BioPolymer {
                               LabelToken[] tokens, OC pdbATOM,
                               SB pdbCONECT, BS bsWritten) {
     String prefix = (derivType > 0 ? "dq" + (derivType == 2 ? "2" : "") : "q");
-    Quaternion q;
+    Quat q;
     Atom aprev = null;
-    Quaternion qprev = null;
-    Quaternion dq = null;
-    Quaternion dqprev = null;
-    Quaternion qref = null;
+    Quat qprev = null;
+    Quat dq = null;
+    Quat dqprev = null;
+    Quat qref = null;
     Atom atomLast = null;
     float x = 0, y = 0, z = 0, w = 0;
     String strExtra = "";
@@ -698,7 +699,7 @@ public abstract class BioPolymer {
             if (writeRamachandranStraightness)
               continue;
           } else {
-            q = Quaternion.newVA(P3.new3(1, 0, 0), angledeg);
+            q = Quat.newVA(P3.new3(1, 0, 0), angledeg);
             strExtra = q.getInfo();
             if (writeRamachandranStraightness) {
               z = angledeg;
@@ -713,7 +714,7 @@ public abstract class BioPolymer {
           q = monomer.getQuaternion(qtype);
           if (q != null) {
             q.setRef(qref);
-            qref = Quaternion.newQ(q);
+            qref = Quat.newQ(q);
           }
           if (derivType == 2)
             monomer.setGroupParameter(T.straightness, Float.NaN);
@@ -722,7 +723,7 @@ public abstract class BioPolymer {
             qref = null;
           } else if (derivType > 0) {
             Atom anext = a;
-            Quaternion qnext = q;
+            Quat qnext = q;
             if (qprev == null) {
               q = null;
               dqprev = null;
@@ -937,8 +938,8 @@ public abstract class BioPolymer {
    * @return calculated straightness
    * 
    */
-  private static float get3DStraightness(String id, Quaternion dq,
-                                         Quaternion dqnext) {
+  private static float get3DStraightness(String id, Quat dq,
+                                         Quat dqnext) {
     // 
     // Normal-only simple dot-product straightness = dq1.normal.DOT.dq2.normal
     //
@@ -953,8 +954,8 @@ public abstract class BioPolymer {
    * @param dqnext
    * @return straightness
    */
-  private static float getQuaternionStraightness(String id, Quaternion dq,
-                                                 Quaternion dqnext) {
+  private static float getQuaternionStraightness(String id, Quat dq,
+                                                 Quat dqnext) {
     // 
     // Dan Kohler's quaternion straightness = 1 - acos(|dq1.dq2|)/(PI/2)
     //

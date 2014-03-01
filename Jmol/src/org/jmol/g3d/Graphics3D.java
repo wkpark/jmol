@@ -272,7 +272,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   }
   
   private G3DRenderer getRenderer(String type) {
-    return ((G3DRenderer) Interface.getOptionInterface("g3d." + type + "Renderer")).set(this);
+    return ((G3DRenderer) Interface.getOption("g3d." + type + "Renderer")).set(this);
   }
 
   @Override

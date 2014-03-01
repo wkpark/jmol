@@ -48,8 +48,8 @@ import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.P4;
 import javajs.util.PT;
+import javajs.util.Quat;
 
-import org.jmol.util.Quaternion;
 import javajs.util.T3;
 import javajs.util.V3;
 import org.jmol.api.SymmetryInterface;
@@ -507,7 +507,7 @@ public class Mesh extends MeshSurface {
     return null;
   }
 
-  public void rotateTranslate(Quaternion q, T3 offset, boolean isAbsolute) {
+  public void rotateTranslate(Quat q, T3 offset, boolean isAbsolute) {
     if (q == null && offset == null) {
       mat4 = null;
       return;

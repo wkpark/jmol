@@ -358,6 +358,6 @@ abstract public class Binding {
   }
   
   public static Binding newBinding(String name) {
-    return (Binding) Interface.getOptionInterface("viewer.binding." + name + "Binding");
+    return (Binding) Interface.getInterface("org.jmol.viewer.binding." + name + "Binding");
   }
 }

@@ -7,6 +7,7 @@ import javajs.util.List;
 import javajs.util.P3;
 import javajs.util.P4;
 import javajs.util.PT;
+import javajs.util.Quat;
 import javajs.util.SB;
 import javajs.util.V3;
 
@@ -16,8 +17,6 @@ import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
-import org.jmol.util.Quaternion;
-import org.jmol.viewer.Viewer;
 
 
 /**
@@ -42,10 +41,6 @@ abstract public class ScriptParam extends ScriptError {
       boolean isArrayItem) throws ScriptException;
   abstract protected void restrictSelected(boolean isBond, boolean doInvert);
   
-  public Viewer viewer;
-  
-  public boolean chk;
-
   public Map<String, SV> contextVariables;
   public ScriptContext thisContext;
 
@@ -734,19 +729,19 @@ abstract public class ScriptParam extends ScriptError {
     return false;
   }
 
-  public Quaternion getQuaternionParameter(int i) throws ScriptException {
+  public Quat getQuaternionParameter(int i) throws ScriptException {
     switch (tokAt(i)) {
     case T.varray:
       List<SV> sv = ((SV) getToken(i)).getList();
       P4 p4 = null;
       if (sv.size() == 0 || (p4 = SV.pt4Value(sv.get(0))) == null)
         invArg();
-      return Quaternion.newP4(p4);
+      return Quat.newP4(p4);
     case T.best:
-      return (chk ? null : Quaternion.newP4((P4) Escape.uP(viewer
+      return (chk ? null : Quat.newP4((P4) Escape.uP(viewer
           .getOrientationText(T.best, null))));
     default:
-      return Quaternion.newP4(getPoint4f(i));
+      return Quat.newP4(getPoint4f(i));
     }
   }
 
@@ -776,7 +771,10 @@ abstract public class ScriptParam extends ScriptError {
       throws ScriptException {
     if (slen != length) {
       iToken = errorPt > 0 ? errorPt : slen;
-      error(errorPt > 0 ? ERROR_invalidArgument : ERROR_badArgumentCount);
+      if (errorPt > 0)
+        invArg();
+      else
+        bad();
     }
     return slen;
   }
@@ -832,7 +830,8 @@ abstract public class ScriptParam extends ScriptError {
       mad = radiusRasMol * 4 * 2;
       break;
     case T.decimal:
-      mad = (int) Math.floor(floatParameterRange(1, -3, 3) * 1000 * 2);
+      float f = floatParameterRange(1, -3, 3);
+      mad = (Float.isNaN(f) ? Integer.MAX_VALUE : (int) Math.floor(f * 1000 * 2));
       if (mad < 0) {
         restrictSelected(false, false);
         mad = -mad;
@@ -846,16 +845,20 @@ abstract public class ScriptParam extends ScriptError {
 
   public int intParameterRange(int i, int min, int max) throws ScriptException {
     int val = intParameter(i);
-    if (val < min || val > max)
+    if (val < min || val > max) {
       integerOutOfRange(min, max);
+      return Integer.MAX_VALUE;
+    }
     return val;
   }
 
   protected float floatParameterRange(int i, float min, float max)
       throws ScriptException {
     float val = floatParameter(i);
-    if (val < min || val > max)
+    if (val < min || val > max) {
       numberOutOfRange(min, max);
+      return Float.NaN;
+    }
     return val;
   }
 

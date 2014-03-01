@@ -48,8 +48,8 @@ import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.P4;
 import javajs.util.PT;
+import javajs.util.Quat;
 
-import org.jmol.util.Quaternion;
 import javajs.util.T3;
 import javajs.util.V3;
 import org.jmol.viewer.Viewer;
@@ -95,9 +95,10 @@ public class ScriptMathProcessor {
   private boolean isAssignment;
   private boolean doSelections = true;
   private boolean assignLeft;
+  private boolean allowUnderflow;
 
   ScriptMathProcessor(ScriptExpr eval, boolean isAssignment, boolean isArrayItem,
-      boolean asVector, boolean asBitSet) {
+      boolean asVector, boolean asBitSet, boolean allowUnderflow) {
     this.eval = eval;
     this.isAssignment = assignLeft = isAssignment;      
     this.viewer = eval.viewer;
@@ -106,6 +107,7 @@ public class ScriptMathProcessor {
     this.isArrayItem = isArrayItem;
     this.asVector = asVector || isArrayItem;
     this.asBitSet = asBitSet;
+    this.allowUnderflow = allowUnderflow; // atom expressions only
     wasX = isArrayItem;
     if (debugHigh)
       Logger.debug("initialize RPN");
@@ -117,12 +119,15 @@ public class ScriptMathProcessor {
   }
   
   @SuppressWarnings("unchecked")
-  SV getResult(boolean allowUnderflow) throws ScriptException {
+  SV getResult() throws ScriptException {
     boolean isOK = true;
     while (isOK && oPt >= 0 && oStack[oPt] != null)
       isOK = operate();
     if (isOK) {
       if (asVector) {
+        // check for y = x x  or  y = x + ;
+        if (isAssignment && (xPt > 0 && oPt < 0 || oPt >= 0 && oStack[oPt] != null))
+          eval.invArg();
         List<SV> result = new List<SV>();
         for (int i = 0; i <= xPt; i++)
           result.addLast(isAssignment ? xStack[i] : SV.selectItemVar(xStack[i]));
@@ -130,8 +135,7 @@ public class ScriptMathProcessor {
           result.remove(0);
           result.add(0, lastAssignedString);
           lastAssignedString.intValue = xStack[0].intValue;
-        }
-        
+        }    
         return SV.newV(T.vector, result);
       }
       if (xPt == 0) {
@@ -150,10 +154,8 @@ public class ScriptMathProcessor {
         return x;
       }
     }
-    if (!allowUnderflow && (xPt >= 0 || oPt >= 0)) {
-      // iToken--;
-      eval.error(ScriptError.ERROR_invalidArgument);
-    }
+    if (!allowUnderflow && (xPt >= 0 || oPt >= 0))
+      eval.invArg();
     return null;
   }
 
@@ -817,7 +819,7 @@ public class ScriptMathProcessor {
     // we cannot know what variables are real
     // if this is a property selector, as in x.func(), then we
     // just exit; otherwise we add a new TRUE to xStack
-    return (!chk ? getExtension().evaluate(this, op, args, tok)
+    return (!chk ? getMathExt().evaluate(this, op, args, tok)
         : op.tok == T.propselector ? true : addXBool(true));
   }
   
@@ -903,7 +905,7 @@ public class ScriptMathProcessor {
         return addXBool(true);
       switch (x2.tok) {
       case T.point4f: // quaternion
-        return addXPt4((Quaternion.newP4((P4) x2.value)).inv().toPoint4f());
+        return addXPt4((Quat.newP4((P4) x2.value)).inv().toPoint4f());
       case T.matrix3f:
         m = M3.newM3((M3) x2.value);
         m.invert();
@@ -1133,12 +1135,12 @@ public class ScriptMathProcessor {
           return addXM4(getMatrix4f((M3) x1.value, (P3) x2.value));
         }
       case T.point4f:
-        Quaternion q1 = Quaternion.newP4((P4) x1.value);
+        Quat q1 = Quat.newP4((P4) x1.value);
         switch (x2.tok) {
         default:
           return addXPt4(q1.add(x2.asFloat()).toPoint4f());
         case T.point4f:
-          return addXPt4(q1.mulQ(Quaternion.newP4((P4) x2.value)).toPoint4f());
+          return addXPt4(q1.mulQ(Quat.newP4((P4) x2.value)).toPoint4f());
         }
       case T.varray:
         return addX(SV.concatList(x1, x2, true));
@@ -1186,9 +1188,9 @@ public class ScriptMathProcessor {
         f = x2.asFloat();
         return addXPt(P3.new3(pt.x - f, pt.y - f, pt.z - f));
       case T.point4f:
-        Quaternion q1 = Quaternion.newP4((P4) x1.value);
+        Quat q1 = Quat.newP4((P4) x1.value);
         if (x2.tok == T.point4f) {
-          Quaternion q2 = Quaternion.newP4((P4) x2.value);
+          Quat q2 = Quat.newP4((P4) x2.value);
           return addXPt4(q2.mulQ(q1.inv()).toPoint4f());
         }
         return addXPt4(q1.add(-x2.asFloat()).toPoint4f());
@@ -1232,7 +1234,7 @@ public class ScriptMathProcessor {
         }
         if (pt4 != null)
           // q * m --> q
-          return addXPt4((Quaternion.newP4(pt4).mulQ(Quaternion
+          return addXPt4((Quat.newP4(pt4).mulQ(Quat
               .newM((M3) x2.value))).toPoint4f());
           break;
       case T.matrix4f:
@@ -1265,8 +1267,8 @@ public class ScriptMathProcessor {
           return addXM3(m);
         case T.point4f:
           // m * q
-          return addXM3(Quaternion.newM(m3)
-              .mulQ(Quaternion.newP4((P4) x2.value)).getMatrix());
+          return addXM3(Quat.newM(m3)
+              .mulQ(Quat.newP4((P4) x2.value)).getMatrix());
         }
         f = x2.asFloat();
         A4 aa = new A4();
@@ -1310,9 +1312,9 @@ public class ScriptMathProcessor {
           // quaternion multiplication
           // note that Point4f is {x,y,z,w} so we use that for
           // quaternion notation as well here.
-          return addXPt4(Quaternion.newP4((P4) x1.value)
-              .mulQ(Quaternion.newP4((P4) x2.value)).toPoint4f());
-        return addXPt4(Quaternion.newP4((P4) x1.value).mul(x2.asFloat())
+          return addXPt4(Quat.newP4((P4) x1.value)
+              .mulQ(Quat.newP4((P4) x2.value)).toPoint4f());
+        return addXPt4(Quat.newP4((P4) x1.value).mul(x2.asFloat())
             .toPoint4f());
       }
       return addXFloat(x1.asFloat() * x2.asFloat());
@@ -1336,10 +1338,10 @@ public class ScriptMathProcessor {
         return addXPt((f2 = x2.asFloat()) == 0 ? P3.new3(Float.NaN, Float.NaN,
             Float.NaN) : P3.new3(pt.x / f2, pt.y / f2, pt.z / f2));
       case T.point4f:
-        return addXPt4(x2.tok == T.point4f ? Quaternion.newP4((P4) x1.value)
-            .div(Quaternion.newP4((P4) x2.value)).toPoint4f() : (f2 = x2
+        return addXPt4(x2.tok == T.point4f ? Quat.newP4((P4) x1.value)
+            .div(Quat.newP4((P4) x2.value)).toPoint4f() : (f2 = x2
             .asFloat()) == 0 ? P4.new4(Float.NaN, Float.NaN, Float.NaN,
-            Float.NaN) : Quaternion.newP4((P4) x1.value).mul(1 / f2)
+            Float.NaN) : Quat.newP4((P4) x1.value).mul(1 / f2)
             .toPoint4f());
       }
       return addXFloat(x1.asFloat() / x2.asFloat());
@@ -1349,9 +1351,9 @@ public class ScriptMathProcessor {
         if (f == 0)
           return addXPt4(P4.new4(Float.NaN, Float.NaN, Float.NaN, Float.NaN));
         if (x2.tok == T.point4f)
-          return addXPt4(Quaternion.newP4((P4) x1.value)
-              .divLeft(Quaternion.newP4((P4) x2.value)).toPoint4f());
-        return addXPt4(Quaternion.newP4((P4) x1.value).mul(1 / f).toPoint4f());
+          return addXPt4(Quat.newP4((P4) x1.value)
+              .divLeft(Quat.newP4((P4) x2.value)).toPoint4f());
+        return addXPt4(Quat.newP4((P4) x1.value).mul(1 / f).toPoint4f());
       }
       return addXInt(f == 0 ? 0 : (int) Math.floor(x1.asFloat() / x2.asFloat()));
     case T.timestimes:
@@ -1415,10 +1417,10 @@ public class ScriptMathProcessor {
       case T.point4f:
         pt4 = (P4) x1.value;
         if (x2.tok == T.point3f)
-          return addXPt((Quaternion.newP4(pt4)).transformPt((P3) x2.value));
+          return addXPt((Quat.newP4(pt4)).transformPt((P3) x2.value));
         if (x2.tok == T.point4f) {
           P4 v4 = P4.newPt((P4) x2.value);
-          (Quaternion.newP4(pt4)).getThetaDirected(v4);
+          (Quat.newP4(pt4)).getThetaDirected(v4);
           return addXPt4(v4);
         }
         if (n == 0 && x2.tok == T.string) {
@@ -1450,7 +1452,7 @@ public class ScriptMathProcessor {
         case 3:
           return addXFloat(pt4.z);
         }
-        Quaternion q = Quaternion.newP4(pt4);
+        Quat q = Quat.newP4(pt4);
         switch (n) {
         case 4:
           return addXPt(P3.newP(q.getNormal()));
@@ -1632,7 +1634,7 @@ public class ScriptMathProcessor {
       case T.stddev:
       case T.sum:
       case T.sum2:
-        return addXObj(getExtension().getMinMax(x2.getList(), op.intValue));
+        return addXObj(getMathExt().getMinMax(x2.getList(), op.intValue));
       case T.pop:
         return addX(x2.pushPop(null));
       case T.sort:
@@ -1727,8 +1729,8 @@ public class ScriptMathProcessor {
     return false;
   }
 
-  private JmolScriptExtension getExtension() {
-    return ((ScriptEval) eval).getExtension();
+  private JmolMathExtension getMathExt() {
+    return ((ScriptEval) eval).getMathExt();
   }
 
   public SV evalOp(T token) throws ScriptException {
@@ -1737,4 +1739,5 @@ public class ScriptMathProcessor {
     return xStack[xPt--];
   }
 
+  
 }

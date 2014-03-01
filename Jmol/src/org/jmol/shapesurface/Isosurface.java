@@ -131,8 +131,8 @@ import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.P3i;
 import javajs.util.P4;
+import javajs.util.Quat;
 
-import org.jmol.util.Quaternion;
 import org.jmol.util.Txt;
 import javajs.util.V3;
 import org.jmol.viewer.ActionManager;
@@ -447,7 +447,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if ("rotate" == propertyName) {
       P4 pt4 = (P4) value;
       if (thisMesh != null) {
-        thisMesh.rotateTranslate(Quaternion.newP4(pt4), null, true);
+        thisMesh.rotateTranslate(Quat.newP4(pt4), null, true);
         thisMesh.altVertices = null;
       }
       return;

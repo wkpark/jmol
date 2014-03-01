@@ -41,6 +41,7 @@ import org.jmol.modelset.BondSet;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.Measurement;
+import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.MeasurementPending;
 import org.jmol.modelset.ModelSet;
 import org.jmol.modelset.Orientation;
@@ -115,12 +116,12 @@ import javajs.util.OC;
 import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3i;
+import javajs.util.Quat;
 import javajs.util.T3;
 import javajs.util.V3;
 import org.jmol.util.Vibration;
 
 import org.jmol.util.Measure;
-import org.jmol.util.Quaternion;
 import org.jmol.util.TempArray;
 import org.jmol.util.Txt;
 import org.jmol.viewer.binding.Binding;
@@ -509,7 +510,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     apiPlatform.setViewer(this, display);
     o = info.get("graphicsAdapter");
     if (o == null && !isWebGL)
-      o = Interface.getOptionInterface("g3d.Graphics3D");
+      o = Interface.getOption("g3d.Graphics3D");
     gdata = (o == null ? new GData() : (GData) o);
     gdata.initialize(apiPlatform);
 
@@ -520,7 +521,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     selectionManager = new SelectionManager(this);
     if (haveDisplay) {
       actionManager = (multiTouch ? (ActionManager) Interface
-          .getOptionInterface("multitouch.ActionManagerMT")
+          .getOption("multitouch.ActionManagerMT")
           : new ActionManager());
       actionManager.setViewer(this, commandOptions + "-multitouch-"
           + info.get("multiTouch"));
@@ -534,7 +535,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     animationManager = new AnimationManager(this);
     o = info.get("repaintManager");
     if (o == null)
-      o = (Interface.getOptionInterface("render.RepaintManager"));
+      o = (Interface.getOption("render.RepaintManager"));
     if (o != null && !o.equals(""))
       (repaintManager = (JmolRepaintManager) o).set(this, shapeManager);
     initialize(true);
@@ -639,17 +640,25 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     apiPlatform.setViewer(this, canvas);
   }
 
+  public MeasurementData newMeasurementData(String id, List<Object> points) {
+    return ((MeasurementData) Interface
+        .getOption("modelset.MeasurementData")).init(id, this, points);
+  }
+  
   private JmolDataManager getDataManager() {
     return (dataManager == null ? (dataManager = ((JmolDataManager) Interface
-        .getOptionInterface("viewer.DataManager")).set(this)) : dataManager);
+        .getInterface("org.jmol.viewer.DataManager")).set(this)) : dataManager);
   }
   
   private JmolScriptManager getScriptManager() {
     if (allowScripting && scriptManager == null) {
       scriptManager = (JmolScriptManager) Interface
-          .getOptionInterface("script.ScriptManager");
-      scriptManager.setViewer(this);
-      eval = scriptManager.getEval();
+          .getOption("script.ScriptManager");
+      if (scriptManager == null) {
+        allowScripting = false;
+        return null;
+      }
+      eval = scriptManager.setViewer(this);
       if (useCommandThread)
         scriptManager.startCommandWatcher(true);
     }
@@ -917,7 +926,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return tm.getMatrixtransform();
   }
 
-  public Quaternion getRotationQuaternion() {
+  public Quat getRotationQuaternion() {
     return tm.getRotationQuaternion();
   }
 
@@ -2968,13 +2977,13 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public MinimizerInterface getMinimizer(boolean createNew) {
     return (minimizer == null && createNew ? (minimizer = (MinimizerInterface) Interface
-        .getOptionInterface("minimize.Minimizer")).setProperty("viewer", this)
+        .getOption("minimize.Minimizer")).setProperty("viewer", this)
         : minimizer);
   }
 
   public SmilesMatcherInterface getSmilesMatcher() {
     return (smilesMatcher == null ? (smilesMatcher = (SmilesMatcherInterface) Interface
-        .getOptionInterface("smiles.SmilesMatcher")) : smilesMatcher);
+        .getOption("smiles.SmilesMatcher")) : smilesMatcher);
   }
 
   public void clearModelDependentObjects() {
@@ -3636,7 +3645,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public JmolStateCreator getStateCreator() {
     if (jsc == null)
       (jsc = (JmolStateCreator) Interface
-          .getOptionInterface("viewer.StateCreator")).setViewer(this);
+          .getInterface("org.jmol.viewer.StateCreator")).setViewer(this);
     return jsc;
   }
 
@@ -5276,7 +5285,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   private JmolJSpecView getJSV() {
     if (jsv == null) {
-      jsv = (JmolJSpecView) Interface.getOptionInterface("jsv.JSpecView");
+      jsv = (JmolJSpecView) Interface.getOption("jsv.JSpecView");
       jsv.setViewer(this);
     }
     return jsv;
@@ -7914,12 +7923,12 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return modelSet.getAtomNumber(i);
   }
 
-  public Quaternion[] getAtomGroupQuaternions(BS bsAtoms, int nMax) {
+  public Quat[] getAtomGroupQuaternions(BS bsAtoms, int nMax) {
     return modelSet
         .getAtomGroupQuaternions(bsAtoms, nMax, getQuaternionFrame());
   }
 
-  public Quaternion getAtomQuaternion(int i) {
+  public Quat getAtomQuaternion(int i) {
     return modelSet.getQuaternion(i, getQuaternionFrame());
   }
 
@@ -8068,7 +8077,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
           && ((Boolean) paramInfo).booleanValue()) {
         if (isJS) {
           appConsole = (JmolAppConsoleInterface) Interface
-              .getOptionInterface("consolejs.AppletConsole");
+              .getOption("consolejs.AppletConsole");
         }
         /**
          * @j2sNative
@@ -8078,7 +8087,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         {
           for (int i = 0; i < 4 && appConsole == null; i++) {
             appConsole = (isApplet ? (JmolAppConsoleInterface) Interface
-                .getOptionInterface("console.AppletConsole")
+                .getOption("console.AppletConsole")
                 : (JmolAppConsoleInterface) Interface
                     .getInterface("org.openscience.jmol.app.jmolpanel.console.AppConsole"));
             if (appConsole == null)
@@ -8141,7 +8150,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   private JmolPropertyManager getPropertyManager() {
     if (pm == null)
       (pm = (JmolPropertyManager) Interface
-          .getOptionInterface("viewer.PropertyManager")).setViewer(this);
+          .getInterface("org.jmol.viewer.PropertyManager")).setViewer(this);
     return pm;
   }
 
@@ -8855,9 +8864,9 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   private OutputManager getOutputManager() {
     if (outputManager != null)
       return outputManager;
-    return (outputManager = (OutputManager) Interface.getOptionInterface(isJS
-        && !isWebGL ? "viewer.OutputManagerJS"
-        : "viewer.OutputManagerAwt")).setViewer(this, privateKey);
+    return (outputManager = (OutputManager) Interface
+        .getInterface("org.jmol.viewer.OutputManager"
+            + (isJS && !isWebGL ? "JS" : "Awt"))).setViewer(this, privateKey);
   }
 
   private void setSyncTarget(int mode, boolean TF) {
@@ -9510,7 +9519,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       return executor; // note -- a Java 1.5 function
     try {
       executor = ((JmolParallelProcessor) Interface
-          .getOptionInterface("parallel.ScriptParallelProcessor"))
+          .getOption("parallel.ScriptParallelProcessor"))
           .getExecutor();
     } catch (Exception e) {
       executor = null;
@@ -9800,7 +9809,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       params.put("outputChannel", out);
     }
     JmolRendererInterface export3D = (JmolRendererInterface) Interface
-        .getOptionInterface("export.Export3D");
+        .getOption("export.Export3D");
     if (export3D == null)
       return null;
     Object exporter = export3D.initializeExporter(this, privateKey, gdata,
@@ -10209,7 +10218,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     getScriptManager();
     if (id == null)
       id = "*";
-    return (eval == null ? null : eval.setObjectPropSafe(id, tokCommand, -1));
+    return (eval == null ? null : eval.setObjectPropSafe(id, tokCommand));
   }
 
   public String[] getSceneList() {
@@ -10276,7 +10285,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public JmolNMRInterface getNMRCalculation() {
     return (nmrCalculation == null ? (nmrCalculation = (JmolNMRInterface) Interface
-        .getOptionInterface("quantum.NMRCalculation")).setViewer(this)
+        .getOption("quantum.NMRCalculation")).setViewer(this)
         : nmrCalculation);
   }
 
@@ -10393,7 +10402,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public MeasurementPending getMP() {
     return ((MeasurementPending) Interface
-        .getOptionInterface("modelset.MeasurementPending")).set(modelSet);
+        .getOption("modelset.MeasurementPending")).set(modelSet);
   }
 
   @Override

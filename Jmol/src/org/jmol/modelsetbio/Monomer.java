@@ -32,10 +32,11 @@ import org.jmol.modelset.Chain;
 import org.jmol.modelset.Group;
 
 import javajs.util.List;
+import javajs.util.Quat;
+
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import javajs.util.P3;
-import org.jmol.util.Quaternion;
 import org.jmol.viewer.JC;
 import org.jmol.script.T;
 
@@ -413,8 +414,8 @@ public abstract class Monomer extends Group {
   protected Object getHelixData2(int tokType, char qType, int mStep) {
     int iPrev = monomerIndex - mStep;
     Monomer prev = (mStep < 1 || monomerIndex <= 0 ? null : bioPolymer.monomers[iPrev]);
-    Quaternion q2 = getQuaternion(qType);
-    Quaternion q1 = (mStep < 1 ? Quaternion.getQuaternionFrameV(JC.axisX, JC.axisY, JC.axisZ, false) 
+    Quat q2 = getQuaternion(qType);
+    Quat q1 = (mStep < 1 ? Quat.getQuaternionFrameV(JC.axisX, JC.axisY, JC.axisZ, false) 
         : prev == null ? null : prev.getQuaternion(qType));
     if (q1 == null || q2 == null)
       return getHelixData(tokType, qType, mStep);

@@ -703,7 +703,7 @@ public class AtomSetCollection {
 
   public XtalSymmetry getXSymmetry() {
     if (xtalSymmetry == null)
-      xtalSymmetry = ((XtalSymmetry) Interface.getOptionInterface("adapter.smarter.XtalSymmetry")).set(this);
+      xtalSymmetry = ((XtalSymmetry) Interface.getOption("adapter.smarter.XtalSymmetry")).set(this);
     return xtalSymmetry;
   }
 

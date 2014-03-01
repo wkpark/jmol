@@ -49,12 +49,7 @@ import org.jmol.viewer.Viewer;
 public class ScriptManager implements JmolScriptManager {
 
   private Viewer viewer;
-  private JmolScriptEvaluator eval;
-  
-  @Override
-  public JmolScriptEvaluator getEval() {
-    return eval;
-  }
+  private ScriptEval eval;
   
   private JmolScriptEvaluator evalTemp;
 
@@ -80,15 +75,16 @@ public class ScriptManager implements JmolScriptManager {
   }
   
   @Override
-  public void setViewer(Viewer viewer) {
+  public JmolScriptEvaluator setViewer(Viewer viewer) {
     this.viewer = viewer;
     eval = newScriptEvaluator();
     eval.setCompiler();
+    return eval;
   }
  
-  private JmolScriptEvaluator newScriptEvaluator() {
-    return ((JmolScriptEvaluator) Interface
-        .getOptionInterface("script.ScriptEval")).setViewer(viewer);
+  private ScriptEval newScriptEvaluator() {
+    return ((ScriptEval) Interface
+        .getOption("script.ScriptEval")).setViewer(viewer);
   }
 
   @Override
@@ -228,7 +224,7 @@ public class ScriptManager implements JmolScriptManager {
       if (commandWatcherThread != null)
         return;
       commandWatcherThread = (JmolThread) Interface
-      .getOptionInterface("script.CommandWatcherThread");
+      .getOption("script.CommandWatcherThread");
       commandWatcherThread.setManager(this, viewer, null);
       commandWatcherThread.start();
     } else {

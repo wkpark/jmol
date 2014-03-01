@@ -29,6 +29,7 @@ import javajs.util.AU;
 import javajs.util.OC;
 import javajs.util.List;
 import javajs.util.PT;
+import javajs.util.Quat;
 import javajs.util.SB;
 
 import java.util.Date;
@@ -64,7 +65,6 @@ import org.jmol.util.Tensor;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
-import org.jmol.util.Quaternion;
 import org.jmol.util.Txt;
 import javajs.util.V3;
 import org.jmol.util.Vibration;
@@ -1065,16 +1065,16 @@ abstract public class ModelCollection extends BondCollection {
     setHaveStraightness(true);
   }
 
-  public Quaternion[] getAtomGroupQuaternions(BS bsAtoms, int nMax, char qtype) {
+  public Quat[] getAtomGroupQuaternions(BS bsAtoms, int nMax, char qtype) {
     // run through list, getting quaternions. For simple groups, 
     // go ahead and take first three atoms
     // for PDB files, do not include NON-protein groups.
     int n = 0;
-    List<Quaternion> v = new List<Quaternion>();
+    List<Quat> v = new List<Quat>();
     for (int i = bsAtoms.nextSetBit(0); i >= 0 && n < nMax; i = bsAtoms
         .nextSetBit(i + 1)) {
       Group g = atoms[i].group;
-      Quaternion q = g.getQuaternion(qtype);
+      Quat q = g.getQuaternion(qtype);
       if (q == null) {
         if (g.seqcode == Integer.MIN_VALUE)
           q = g.getQuaternionFrame(atoms); // non-PDB just use first three atoms
@@ -1085,7 +1085,7 @@ abstract public class ModelCollection extends BondCollection {
       v.addLast(q);
       i = g.lastAtomIndex;
     }
-    return v.toArray(new Quaternion[v.size()]);
+    return v.toArray(new Quat[v.size()]);
   }
 
   /**
@@ -2976,7 +2976,7 @@ abstract public class ModelCollection extends BondCollection {
     if (nAtoms == 0)
       return "";
     // creating an instance prevents pre-loading by JavaScript
-    XmlUtil xmlUtil = (XmlUtil) Interface.getOptionInterface("io.XmlUtil");
+    XmlUtil xmlUtil = (XmlUtil) Interface.getOption("io.XmlUtil");
     xmlUtil.openTag(sb, "molecule");
     xmlUtil.openTag(sb, "atomArray");
     BS bsAtoms = new BS();
@@ -3421,7 +3421,7 @@ abstract public class ModelCollection extends BondCollection {
     return pt;
   }
 
-  private Quaternion[] vOrientations;
+  private Quat[] vOrientations;
 
   public String getBoundBoxOrientation(int type, BS bsAtoms) {
     int j0 = bsAtoms.nextSetBit(0);
@@ -3437,18 +3437,18 @@ abstract public class ModelCollection extends BondCollection {
           for (int k = 0; k <= 14; k++, n++)
             if ((av[n] = V3.new3(i / 7f, j / 7f, k / 14f)).length() > 1)
               --n;
-      vOrientations = new Quaternion[n];
+      vOrientations = new Quat[n];
       for (int i = n; --i >= 0;) {
         float cos = (float) Math.sqrt(1 - av[i].lengthSquared());
         if (Float.isNaN(cos))
           cos = 0;
         p4.set(av[i].x, av[i].y, av[i].z, cos);
-        vOrientations[i] = Quaternion.newP4(p4);
+        vOrientations[i] = Quat.newP4(p4);
       }
     }
     P3 pt = new P3();
     float vMin = Float.MAX_VALUE;
-    Quaternion q, qBest = null;
+    Quat q, qBest = null;
     BoxInfo bBest = null;
     float v;
     for (int i = 0; i < n; i++) {
@@ -3483,13 +3483,13 @@ abstract public class ModelCollection extends BondCollection {
     if (type != T.volume && type != T.best)
       return qBest.toString();
     // we want dz < dy < dx
-    q = Quaternion.newQ(qBest);
+    q = Quat.newQ(qBest);
     float dx = bBest.bbCorner1.x - bBest.bbCorner0.x;
     float dy = bBest.bbCorner1.y - bBest.bbCorner0.y;
     float dz = bBest.bbCorner1.z - bBest.bbCorner0.z;
     if (dx < dy) {
       pt.set(0, 0, 1);
-      q = Quaternion.newVA(pt, 90).mulQ(q);
+      q = Quat.newVA(pt, 90).mulQ(q);
       float f = dx;
       dx = dy;
       dy = f;
@@ -3498,14 +3498,14 @@ abstract public class ModelCollection extends BondCollection {
       if (dz > dx) {
         // is dy < dx < dz
         pt.set(0, 1, 0);
-        q = Quaternion.newVA(pt, 90).mulQ(q);
+        q = Quat.newVA(pt, 90).mulQ(q);
         float f = dx;
         dx = dz;
         dz = f;
       }
       // is dy < dz < dx
       pt.set(1, 0, 0);
-      q = Quaternion.newVA(pt, 90).mulQ(q);
+      q = Quat.newVA(pt, 90).mulQ(q);
       float f = dy;
       dy = dz;
       dz = f;
@@ -3518,8 +3518,7 @@ abstract public class ModelCollection extends BondCollection {
 
   public List<Object> intersectPlane(P4 plane, List<Object> v, int i) {
     return (triangulator == null ? (triangulator = (Triangulator) Interface
-        .getOptionInterface("util.TriangleData")) : triangulator)
-        .intersectPlane(plane, v, i);
+        .getUtil("TriangleData")) : triangulator).intersectPlane(plane, v, i);
   }
 
   public SymmetryInterface getUnitCellForAtom(int index) {

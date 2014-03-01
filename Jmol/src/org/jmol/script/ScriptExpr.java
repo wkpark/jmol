@@ -5,12 +5,15 @@ import java.util.Map;
 
 import javajs.util.CU;
 import javajs.util.List;
+import javajs.util.M34;
+import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.P4;
 import javajs.util.PT;
 import javajs.util.SB;
 import javajs.util.T3;
 
+import org.jmol.api.Interface;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
@@ -19,6 +22,7 @@ import org.jmol.modelset.Group;
 import org.jmol.modelset.ModelCollection;
 import org.jmol.modelset.ModelSet;
 import org.jmol.util.BSUtil;
+import org.jmol.util.Elements;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
@@ -36,18 +40,20 @@ abstract class ScriptExpr extends ScriptParam {
 
   // upwardly-directed calls
   
-  abstract public BS getAtomBitSet(Object atomExpression);
-  abstract JmolScriptExtension getExtension();
+  abstract public void clearDefinedVariableAtomSets();
   abstract public BS lookupIdentifierValue(String identifier) throws ScriptException;
   abstract public void refresh(boolean doDelay) throws ScriptException;
-  abstract public SV getFunctionRet(String name, List<SV> params, SV tokenAtom)
+  abstract public SV getUserFunctionResult(String name, List<SV> params, SV tokenAtom)
                throws ScriptException;
-  abstract protected void setBitsetProperty(BS bs, int tok, int iValue, float fValue,
-                                            T tokenValue) throws ScriptException;
-
-
+  abstract protected void setAtomProp(String prop, Object value, BS bs);  
   
   public boolean debugHigh;
+
+  private JmolCmdExtension cmdExt;
+  public JmolCmdExtension getCmdExt() {
+    return (cmdExt == null ? (cmdExt = (JmolCmdExtension) Interface
+        .getOption("scriptext.CmdExt")).init(this) : cmdExt);
+  }
 
   @Override
   @SuppressWarnings("unchecked")
@@ -139,7 +145,7 @@ abstract class ScriptExpr extends ScriptParam {
     int nParen = 0;
     boolean topLevel = true;
     ScriptMathProcessor rpn = new ScriptMathProcessor(this, isAssignment, isArrayItem, asVector,
-        false);
+        false, false);
     if (ptMax < pt)
       ptMax = slen;
     int ptEq = (isAssignment ? 0 : 1);
@@ -552,7 +558,7 @@ abstract class ScriptExpr extends ScriptParam {
           rpn.addXObj(v);
       }
     }
-    SV result = rpn.getResult(false);
+    SV result = rpn.getResult();
     if (result == null) {
       if (!chk)
         rpn.dumpStacks("null result");
@@ -630,7 +636,7 @@ abstract class ScriptExpr extends ScriptParam {
       st = code;
     }
     ScriptMathProcessor rpn = new ScriptMathProcessor(this, false, false,
-        false, mustBeBitSet);
+        false, mustBeBitSet, allowUnderflow);
     Object val;
     int comparisonValue = Integer.MAX_VALUE;
     boolean refreshed = false;
@@ -1047,7 +1053,7 @@ abstract class ScriptExpr extends ScriptParam {
         break;
       }
     }
-    expressionResult = rpn.getResult(allowUnderflow);
+    expressionResult = rpn.getResult();
     if (expressionResult == null) {
       if (allowUnderflow)
         return null;
@@ -1535,7 +1541,7 @@ abstract class ScriptExpr extends ScriptParam {
       switch (minmaxtype) {
       case 0:
       case T.all:
-        return getExtension().getBitsetIdent(bs, null, tokenValue, useAtomMap,
+        return getCmdExt().getBitsetIdent(bs, null, tokenValue, useAtomMap,
             index, isExplicitlyAll);
       }
       return "";
@@ -1603,7 +1609,7 @@ abstract class ScriptExpr extends ScriptParam {
           switch (tok) {
           case T.function:
             bsAtom.set(i);
-            fv = SV.fValue(getFunctionRet(userFunction, params, tokenAtom));
+            fv = SV.fValue(getUserFunctionResult(userFunction, params, tokenAtom));
             bsAtom.clear(i);
             break;
           case T.property:
@@ -2010,7 +2016,7 @@ abstract class ScriptExpr extends ScriptParam {
           t.setSelectedValue(t.intValue, sel.asInt(), tv);
         break;
       case T.point3f:
-        P3 p = (P3) t.value;
+        P3 p = (P3) (t.value = P3.newP((P3) t.value));
         float f = tv.asFloat();
         switch (T.getTokFromName(sel.asString())) {
         case T.x:
@@ -2096,4 +2102,305 @@ abstract class ScriptExpr extends ScriptParam {
     return tv;
   }
 
+  private void setBitsetProperty(BS bs, int tok, int iValue, float fValue,
+                                 T tokenValue) throws ScriptException {
+    if (chk || BSUtil.cardinalityOf(bs) == 0)
+      return;
+    String[] list = null;
+    String sValue = null;
+    float[] fvalues = null;
+    P3 pt;
+    List<SV> sv = null;
+    int nValues = 0;
+    boolean isStrProperty = T.tokAttr(tok, T.strproperty);
+    if (tokenValue.tok == T.varray) {
+      sv = ((SV) tokenValue).getList();
+      if ((nValues = sv.size()) == 0)
+        return;
+    }
+    switch (tok) {
+    case T.xyz:
+    case T.fracxyz:
+    case T.fuxyz:
+    case T.vibxyz:
+      switch (tokenValue.tok) {
+      case T.point3f:
+        viewer.setAtomCoords(bs, tok, tokenValue.value);
+        break;
+      case T.varray:
+        theToken = tokenValue;
+        viewer.setAtomCoords(bs, tok, getPointArray(-1, nValues));
+        break;
+      }
+      return;
+    case T.color:
+      Object value = null;
+      String prop = "color";
+      switch (tokenValue.tok) {
+      case T.varray:
+        int[] values = new int[nValues];
+        for (int i = nValues; --i >= 0;) {
+          SV svi = sv.get(i);
+          pt = SV.ptValue(svi);
+          if (pt != null) {
+            values[i] = CU.colorPtToFFRGB(pt);
+          } else if (svi.tok == T.integer) {
+            values[i] = svi.intValue;
+          } else {
+            values[i] = CU.getArgbFromString(svi.asString());
+            if (values[i] == 0)
+              values[i] = svi.asInt();
+          }
+          if (values[i] == 0)
+            errorStr2(ERROR_unrecognizedParameter, "ARRAY", svi.asString());
+        }
+        value = values;
+        prop = "colorValues";
+        break;
+      case T.point3f:
+        value = Integer.valueOf(CU.colorPtToFFRGB((P3) tokenValue.value));
+        break;
+      case T.string:
+        value = tokenValue.value;
+        break;
+      default:
+        value = Integer.valueOf(SV.iValue(tokenValue));
+        break;
+      }
+      setAtomProp(prop, value, bs);
+      return;
+    case T.label:
+    case T.format:
+      if (tokenValue.tok != T.varray)
+        sValue = SV.sValue(tokenValue);
+      break;
+    case T.element:
+    case T.elemno:
+      clearDefinedVariableAtomSets();
+      isStrProperty = false;
+      break;
+    }
+    switch (tokenValue.tok) {
+    case T.varray:
+      if (isStrProperty)
+        list = SV.listValue(tokenValue);
+      else
+        fvalues = SV.flistValue(tokenValue, nValues);
+      break;
+    case T.string:
+      if (sValue == null)
+        list = PT.getTokens(SV.sValue(tokenValue));
+      break;
+    }
+    if (list != null) {
+      nValues = list.length;
+      if (!isStrProperty) {
+        fvalues = new float[nValues];
+        for (int i = nValues; --i >= 0;)
+          fvalues[i] = (tok == T.element ? Elements.elementNumberFromSymbol(
+              list[i], false) : PT.parseFloat(list[i]));
+      }
+      if (tokenValue.tok != T.varray && nValues == 1) {
+        if (isStrProperty)
+          sValue = list[0];
+        else
+          fValue = fvalues[0];
+        iValue = (int) fValue;
+        list = null;
+        fvalues = null;
+      }
+    }
+    viewer.setAtomProperty(bs, tok, iValue, fValue, sValue, fvalues, list);
+  }
+
+
+  /**
+   * provides support for @x and @{....} in statements. The compiler passes on
+   * these, because they must be integrated with the statement dynamically.
+   * 
+   * @param st0  aaToken[i]
+   * @return a fixed token set -- with possible overrun of unused null tokens
+   * 
+   * @throws ScriptException
+   */
+  @SuppressWarnings("unchecked")
+  protected boolean setStatement(T[] st0) throws ScriptException {
+    st = st0;
+    slen = st.length;
+    if (slen == 0)
+      return true;
+    T[] fixed;
+    int i;
+    int tok;
+    for (i = 1; i < slen; i++) {
+      if (st[i] == null) {
+        slen = i;
+        return true;
+      }
+      if (st[i].tok == T.define)
+        break;
+    }
+    if (i == slen)// || isScriptCheck)
+      return i == slen;
+    switch (st[0].tok) {
+    case T.parallel:
+    case T.function:
+    case T.identifier:
+      if (tokAt(1) == T.leftparen)
+        return true;
+    }
+    fixed = new T[slen];
+    fixed[0] = st[0];
+    boolean isExpression = false;
+    int j = 1;
+    for (i = 1; i < slen; i++) {
+      if (st[i] == null)
+        continue;
+      switch (tok = getToken(i).tok) {
+      default:
+        fixed[j] = st[i];
+        break;
+      case T.expressionBegin:
+      case T.expressionEnd:
+        // @ in expression will be taken as SELECT
+        isExpression = (tok == T.expressionBegin);
+        fixed[j] = st[i];
+        break;
+      case T.define:
+        if (++i == slen)
+          invArg();
+        Object v;
+        // compiler can indicate that a definition MUST
+        // be interpreted as a String
+        boolean forceString = (theToken.intValue == T.string);
+        // Object var_set;
+        String s;
+        String var = paramAsStr(i);
+        boolean isClauseDefine = (tokAt(i) == T.expressionBegin);
+        boolean isSetAt = (j == 1 && st[0] == T.tokenSetCmd);
+        if (isClauseDefine) {
+          SV vt = parameterExpressionToken(++i);
+          i = iToken;
+          v = (vt.tok == T.varray ? vt : SV.oValue(vt));
+        } else {
+          if (tokAt(i) == T.integer) {
+            v = viewer.getAtomBits(T.atomno, Integer.valueOf(st[i].intValue));
+          } else {
+            v = getParameter(var, 0);
+          }
+          if (!isExpression && !isSetAt)
+            isClauseDefine = true;
+        }
+        tok = tokAt(0);
+        forceString |= (T.tokAttr(tok, T.implicitStringCommand) || tok == T.script); // for the file names
+        if (v instanceof SV) {
+          // select @{...}
+          fixed[j] = (T) v;
+          if (isExpression && fixed[j].tok == T.varray) {
+            BS bs = SV.getBitSet((SV) v, true);
+            // I can't remember why we have to be checking list variables
+            // for atom names. 
+            fixed[j] = SV.newV(T.bitset,
+                bs == null ? getAtomBitSet(SV.sValue(fixed[j])) : bs);
+          }
+        } else if (v instanceof Boolean) {
+          fixed[j] = (((Boolean) v).booleanValue() ? T.tokenOn : T.tokenOff);
+        } else if (v instanceof Integer) {
+          // if (isExpression && !isClauseDefine
+          // && (var_set = getParameter(var + "_set", false)) != null)
+          // fixed[j] = new Token(Token.define, "" + var_set);
+          // else
+          fixed[j] = T.tv(T.integer, ((Integer) v).intValue(), v);
+
+        } else if (v instanceof Float) {
+          fixed[j] = T.tv(T.decimal, getFloatEncodedInt("" + v), v);
+        } else if (v instanceof String) {
+          if (!forceString && !isExpression) {
+            if ((tok != T.set || j > 1 && st[1].tok != T.echo)
+                && T.tokAttr(tok, T.mathExpressionCommand)) {
+              v = getParameter((String) v, T.variable);
+            }
+            if (v instanceof String) {
+              v = getStringObjectAsVariable((String) v, null);
+            }
+          }
+          if (v instanceof SV) {
+            // was a bitset 
+            fixed[j] = (T) v;
+          } else {
+            s = (String) v;
+            if (isExpression && !forceString) {
+              // select @x  where x is "arg", for example
+              fixed[j] = T.o(T.bitset, getAtomBitSet(s));
+            } else {
+
+              // bit of a hack here....
+              // identifiers cannot have periods; file names can, though
+              // TODO: this is still a hack
+              // what we really need to know is what the compiler
+              // expects here -- a string or an identifier, because
+              // they will be processed differently.
+              // a filename with only letters and numbers will be
+              // read incorrectly here as an identifier.
+
+              // note that command keywords cannot be implemented as variables
+              // because they are not Token.identifiers in the first place.
+              // but the identifier tok is important here because just below
+              // there is a check for SET parameter name assignments.
+              // even those may not work...
+
+              tok = (isSetAt ? T.getTokFromName(s) : isClauseDefine
+                  || forceString || s.length() == 0 || s.indexOf(".") >= 0
+                  || s.indexOf(" ") >= 0 || s.indexOf("=") >= 0
+                  || s.indexOf(";") >= 0 || s.indexOf("[") >= 0
+                  || s.indexOf("{") >= 0 ? T.string : T.identifier);
+              fixed[j] = T.o(tok, v);
+            }
+          }
+        } else if (v instanceof BS) {
+          fixed[j] = SV.newV(T.bitset, v);
+        } else if (v instanceof P3) {
+          fixed[j] = SV.newV(T.point3f, v);
+        } else if (v instanceof P4) {
+          fixed[j] = SV.newV(T.point4f, v);
+        } else if (v instanceof M34) {
+          fixed[j] = SV.newV(v instanceof M4 ? T.matrix4f : T.matrix3f, v);
+        } else if (v instanceof Map<?, ?>) {
+          fixed[j] = SV.newV(T.hash, v);
+        } else if (v instanceof ScriptContext) {
+          fixed[j] = SV.newV(T.hash, ((ScriptContext)v).getFullMap());
+        } else if (v instanceof List<?>) {
+          List<SV> sv = (List<SV>) v;
+          BS bs = null;
+          for (int k = 0; k < sv.size(); k++) {
+            SV svk = sv.get(k);
+            if (svk.tok != T.bitset) {
+              bs = null;
+              break;
+            }
+            if (bs == null)
+              bs = new BS();
+            bs.or((BS) svk.value);
+          }
+          fixed[j] = (bs == null ? SV.getVariable(v) : T.o(T.bitset, bs));
+        } else {
+          P3 center = getObjectCenter(var, Integer.MIN_VALUE, Integer.MIN_VALUE);
+          if (center == null)
+            invArg();
+          fixed[j] = T.o(T.point3f, center);
+        }
+        if (isSetAt && !T.tokAttr(fixed[j].tok, T.setparam))
+          invArg();
+        break;
+      }
+
+      j++;
+    }
+    st = fixed;
+    for (i = j; i < st.length; i++)
+      st[i] = null;
+    slen = j;
+
+    return true;
+  }
 }

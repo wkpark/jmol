@@ -302,7 +302,7 @@ public abstract class T3 implements JSONEncodable, Serializable {
    */
   @Override
   public String toString() {
-    return "(" + x + ", " + y + ", " + z + ")";
+    return "{" + x + ", " + y + ", " + z + "}";
   }
   
   @Override

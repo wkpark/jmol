@@ -45,9 +45,9 @@ import org.jmol.util.GData;
 import org.jmol.util.Geodesic;
 import org.jmol.util.MeshSurface;
 import javajs.util.P3;
-import org.jmol.util.Quaternion;
 import javajs.util.A4;
 import javajs.util.M4;
+import javajs.util.Quat;
 import javajs.util.T3;
 import javajs.util.V3;
 import org.jmol.viewer.Viewer;
@@ -281,7 +281,7 @@ public class _IdtfExporter extends __CartesianExporter {
     */
 
     m.setIdentity();
-    Quaternion q = viewer.getRotationQuaternion();
+    Quat q = viewer.getRotationQuaternion();
     m.setToM3(q.getMatrix());
     q.transformP2(referenceCenter, tempP1);
     m.m03 = -tempP1.x;
@@ -558,7 +558,7 @@ public class _IdtfExporter extends __CartesianExporter {
     // Just send three points to Quaternion to define a plane and return
     // the AxisAngle required to rotate to that position. That's all there is to it.
     
-    A4 a = Quaternion.getQuaternionFrame(center, points[1], points[3]).toAxisAngle4f();
+    A4 a = Quat.getQuaternionFrame(center, points[1], points[3]).toAxisAngle4f();
     float sx = points[1].distance(center);
     float sy = points[3].distance(center);
     float sz = points[5].distance(center);

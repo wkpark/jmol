@@ -1,4 +1,4 @@
-/* $Author$
+  /* $Author$
  * $Date$
  * $Revision$
  *
@@ -628,12 +628,14 @@ public class ScriptCompiler extends ScriptTokenParser {
       }
       if (wasImpliedScript())
         return CONTINUE;
-      if (isNewSet && nTokens > 2 && tokAt(2) == T.per
+      if (isNewSet
+          && nTokens > 2
+          && tokAt(2) == T.per
           && (tokAt(3) == T.sort || tokAt(3) == T.reverse || tokAt(3) == T.push || tokAt(3) == T.pop)) {
         // check for x.sort or x.reverse or a.push(xxx)
         // x.sort / x.reverse ==> x = x.sort / x = x.reverse
         ltoken.set(0, T.tokenSet);
-        ltoken.add(1, tokAt(3) ==  T.pop ? T.tokenAll : ltoken.get(1));
+        ltoken.add(1, tokAt(3) == T.pop ? T.tokenAll : ltoken.get(1));
       } else if (tokInitialPlusPlus != T.nada) {
         // check for ++x or --x
         if (!isNewSet)
@@ -659,8 +661,7 @@ public class ScriptCompiler extends ScriptTokenParser {
         } else {
           parenCount = setBraceCount = 0;
           setCommand(lastFlowCommand);
-          if (lastFlowCommand.tok != T.process
-              && (tokAt(0) == T.leftbrace))
+          if (lastFlowCommand.tok != T.process && (tokAt(0) == T.leftbrace))
             ltoken.remove(0);
           lastFlowCommand = null;
         }
@@ -674,6 +675,20 @@ public class ScriptCompiler extends ScriptTokenParser {
       if (needRightParen) {
         addTokenToPrefix(T.tokenRightParen);
         needRightParen = false;
+      }
+
+      if (tokAt(1) == T.id && T.tokAttr(tokCommand, T.shapeCommand)) {
+        // ensure isosurface ID xxxx that xxxx is a string
+        switch (tokAt(2)) {
+        case T.nada:
+        case T.string:
+        case T.define:
+          break;
+        default:
+          T t = ltoken.remove(2);
+          ltoken.add(2, T.o(T.string,
+              t.tok == T.integer ? "" + t.intValue : t.value.toString()));
+        }
       }
 
       if (ltoken.size() > 0) {
@@ -964,11 +979,6 @@ public class ScriptCompiler extends ScriptTokenParser {
           isEndOfCommand = true;
         }
       }
-      return CONTINUE;
-    }
-    if (lastToken.tok == T.id && lookingAtImpliedString(false, false, false)) {
-      addTokenToPrefix(T.o(T.string,
-          script.substring(ichToken, ichToken + cchToken)));
       return CONTINUE;
     }
     char ch;
@@ -1848,7 +1858,7 @@ public class ScriptCompiler extends ScriptTokenParser {
   }
 
   private static ScriptFunction newScriptParallelProcessor(String name, int tok) {
-    ScriptFunction jpp = (ScriptFunction) Interface.getOptionInterface("parallel.ScriptParallelProcessor");
+    ScriptFunction jpp = (ScriptFunction) Interface.getOption("parallel.ScriptParallelProcessor");
     jpp.set(name, tok);
     return jpp;
   }

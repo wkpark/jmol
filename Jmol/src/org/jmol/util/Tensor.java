@@ -32,6 +32,7 @@ import java.util.Map;
 import javajs.util.M3;
 import javajs.util.P3;
 import javajs.util.PT;
+import javajs.util.Quat;
 import javajs.util.V3;
 
 import org.jmol.java.BS;
@@ -223,11 +224,11 @@ public class Tensor {
  
       
     case 9: // eulerzyz
-      return ((Quaternion) getInfo("quaternion")).getEulerZYZ();
+      return ((Quat) getInfo("quaternion")).getEulerZYZ();
     case 10: // eulerzxz
-      return ((Quaternion) getInfo("quaternion")).getEulerZXZ();
+      return ((Quat) getInfo("quaternion")).getEulerZXZ();
     case 11: // quaternion
-      return Quaternion.getQuaternionFrame(null, eigenVectors[0],
+      return Quat.getQuaternionFrame(null, eigenVectors[0],
           eigenVectors[1]);
       
       

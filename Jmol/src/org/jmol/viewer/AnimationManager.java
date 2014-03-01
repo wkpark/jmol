@@ -320,7 +320,7 @@ public class AnimationManager {
     animationPaused = false;
     if (animationThread == null) {
       intAnimThread++;
-      animationThread = (JmolThread) Interface.getOptionInterface("thread.AnimationThread");
+      animationThread = (JmolThread) Interface.getOption("thread.AnimationThread");
       animationThread.setManager(this, viewer, new int[] {firstFrameIndex, lastFrameIndex, intAnimThread} );
       animationThread.start();
     }

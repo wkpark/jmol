@@ -494,7 +494,7 @@ public class ZipUtil implements JmolZipUtility {
           String sData;
           if (JmolBinary.isCompoundDocumentB(bytes)) {
             JmolDocument jd = (JmolDocument) Interface
-                .getOptionInterface("util.CompoundDocument");
+                .getUtil("CompoundDocument");
             jd.setStream(JmolBinary.getBIS(bytes), true);
             sData = jd.getAllDataFiles("Molecule", "Input").toString();
           } else {

@@ -34,9 +34,9 @@ import org.jmol.modelset.Group;
 import org.jmol.modelset.Chain;
 import javajs.util.List;
 import javajs.util.P3;
+import javajs.util.Quat;
 
 import org.jmol.shapebio.BioShape;
-import org.jmol.util.Quaternion;
 import javajs.util.V3;
 import org.jmol.viewer.JC;
 
@@ -382,7 +382,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
   }
 
   @Override
-  public Quaternion getQuaternion(char qType) {
+  public Quat getQuaternion(char qType) {
     // quaternionFrame 'c' from  
     // Sarver M, Zirbel CL, Stombaugh J, Mokdad A, Leontis NB. 
     // FR3D: finding local and composite recurrent structural motifs in RNA 3D structures. 
@@ -475,7 +475,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
     V3 vB = V3.newVsub(ptB, ptNorP);
     if (reverseY)
       vB.scale(-1);
-    return Quaternion.getQuaternionFrameV(vA, vB, null, yBased);
+    return Quat.getQuaternionFrameV(vA, vB, null, yBased);
   }
  
  @Override

@@ -28,7 +28,7 @@ import org.jmol.constant.EnumStructure;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Chain;
 import javajs.util.P3;
-import org.jmol.util.Quaternion;
+import javajs.util.Quat;
 import javajs.util.V3;
 import org.jmol.viewer.JC;
 
@@ -209,11 +209,11 @@ public class AlphaMonomer extends Monomer {
   }
   
   @Override
-  public Quaternion getQuaternion(char qType) {
+  public Quat getQuaternion(char qType) {
     return getQuaternionAlpha(qType);
   }
 
-  protected Quaternion getQuaternionAlpha(char qType) {
+  protected Quat getQuaternionAlpha(char qType) {
     /*
      * also NucleicMonomer, AminoMonomer
      * 
@@ -247,7 +247,7 @@ public class AlphaMonomer extends Monomer {
       vB.sub2(ptCaPrev, ptCa);
       break;
     }
-    return Quaternion.getQuaternionFrameV(vA, vB, vC, false);
+    return Quat.getQuaternionFrameV(vA, vB, vC, false);
   }
   
 

@@ -39,10 +39,10 @@ import org.jmol.util.Parser;
 
 import javajs.util.M3;
 import javajs.util.P3;
-import org.jmol.util.Quaternion;
 
 import javajs.util.OC;
 import javajs.util.PT;
+import javajs.util.Quat;
 import javajs.util.V3;
 import javajs.util.List;
 import javajs.util.SB;
@@ -992,7 +992,7 @@ public abstract class AtomSetCollectionReader {
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo(
         "defaultOrientationMatrix", M3.newM3(matrixRotate));
     // first two matrix column vectors define quaternion X and XY plane
-    Quaternion q = Quaternion.newM(matrixRotate);
+    Quat q = Quat.newM(matrixRotate);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo(
         "defaultOrientationQuaternion", q);
     Logger.info("defaultOrientationMatrix = " + matrixRotate);

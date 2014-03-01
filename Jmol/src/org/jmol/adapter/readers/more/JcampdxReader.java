@@ -116,7 +116,7 @@ public class JcampdxReader extends MolReader implements JmolJDXMOLReader {
       return true;
     if (mpr == null)
       mpr = ((JmolJDXMOLParser) Interface
-          .getOptionInterface("jsv.JDXMOLParser")).set(this, filePath,
+          .getOption("jsv.JDXMOLParser")).set(this, filePath,
           htParams);
     mpr.setLine(line.substring(i + 1));
     switch (pt) {

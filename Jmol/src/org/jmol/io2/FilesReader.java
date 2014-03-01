@@ -109,7 +109,7 @@ public class FilesReader implements JmolFilesReaderInterface {
     }
     if (t instanceof BufferedInputStream) {
       JmolDocument jd = (JmolDocument) Interface
-          .getOptionInterface("io2.BinaryDocument");
+          .getOption("io2.BinaryDocument");
       jd.setStream((BufferedInputStream) t, true);
       return jd;
     }

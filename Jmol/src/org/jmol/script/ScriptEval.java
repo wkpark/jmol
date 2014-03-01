@@ -96,7 +96,10 @@ public class ScriptEval extends ScriptExpr {
    * 
    *       extends ScriptError -- error handling 
    * 
-   *   calls ScriptExt         -- optional, less-used methods
+   *   scriptext.CmdExt        -- optionally loaded, less-used commands
+   *   scriptext.MathExt       -- optionally loaded, less-used functions
+   *   scriptext.SmilesExt     -- optionally loaded methods for cmds and math
+   *   
    * 
    * 
    * This main class is subdivided into the following sections:

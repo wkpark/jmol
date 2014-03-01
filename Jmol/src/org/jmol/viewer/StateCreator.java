@@ -518,22 +518,24 @@ public class StateCreator extends JmolStateCreator {
             ms.tainted[AtomCollection.TAINT_ELEMENT].andNot(bs);
         }
         m.loadScript = new SB();
-        getInlineData(commands, viewer.getModelExtract(bs, false, true,
-            "MOL"), i > 0, null);
+        getInlineData(commands, viewer.getModelExtract(bs, false, true, "MOL"),
+            i > 0, null);
       } else {
         commands.appendSB(m.loadScript);
       }
     }
     String s = commands.toString();
     // add a zap command before the first load command.
-    int i = s.indexOf("load /*data*/");
-    int j = s.indexOf("load /*file*/");
-    if (j >= 0 && j < i)
-      i = j;
-    if ((j = s.indexOf("load \"@")) >= 0 && j < i)
-      i = j;
-    if (i >= 0)
-      s = s.substring(0, i) + "zap;" + s.substring(i);
+    if (s.indexOf("data \"append ") < 0) {
+      int i = s.indexOf("load /*data*/");
+      int j = s.indexOf("load /*file*/");
+      if (j >= 0 && j < i)
+        i = j;
+      if ((j = s.indexOf("load \"@")) >= 0 && j < i)
+        i = j;
+      if (i >= 0)
+        s = s.substring(0, i) + "zap;" + s.substring(i);
+    }
     cmds.append(s);
   }
 

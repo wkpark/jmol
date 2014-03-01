@@ -1460,8 +1460,8 @@ public class ScriptEval extends ScriptExpr {
     if (context == null)
       return;
     if (debugHigh || isCmdLine_c_or_C_Option)
-      Logger.info("-r---------".substring(0,
-          Math.max(17, scriptLevel + 5))
+      Logger.info("-----r---------".substring(0,
+          Math.min(15, scriptLevel + 5))
           + scriptLevel
           + " "
           + scriptFileName

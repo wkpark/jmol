@@ -1707,8 +1707,7 @@ public class MathExt implements JmolMathExtension {
     P4 p4 = null;
     switch (nArgs) {
     case 0:
-      return mp.addXPt4(Quat.newQ(viewer.getRotationQuaternion())
-          .toPoint4f());
+      return mp.addXPt4(Quat.newQ(viewer.getRotationQuaternion()).toPoint4f());
     case 1:
     default:
       if (tok == T.quaternion && args[0].tok == T.varray) {
@@ -1748,10 +1747,10 @@ public class MathExt implements JmolMathExtension {
           return mp.addXFloat(stddev[0]);
         }
         if (args[0].tok == T.bitset && args[1].tok == T.bitset) {
-          Quat[] data1 = viewer.getAtomGroupQuaternions(
-              (BS) args[0].value, Integer.MAX_VALUE);
-          Quat[] data2 = viewer.getAtomGroupQuaternions(
-              (BS) args[1].value, Integer.MAX_VALUE);
+          Quat[] data1 = viewer.getAtomGroupQuaternions((BS) args[0].value,
+              Integer.MAX_VALUE);
+          Quat[] data2 = viewer.getAtomGroupQuaternions((BS) args[1].value,
+              Integer.MAX_VALUE);
           qs = Quat.div(data2, data1, nMax, isRelative);
           break;
         }
@@ -1767,7 +1766,7 @@ public class MathExt implements JmolMathExtension {
       if (args[0].tok == T.point4f) {
         P3 pt = (args[2].tok == T.point3f ? (P3) args[2].value : viewer
             .getAtomSetCenter((BS) args[2].value));
-        return mp.addXStr((Quat.newP4((P4) args[0].value)).draw("q",
+        return mp.addXStr(Escape.drawQuat(Quat.newP4((P4) args[0].value), "q",
             SV.sValue(args[1]), pt, 1f));
       }
       P3[] pts = new P3[3];

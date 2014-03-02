@@ -23,11 +23,6 @@
  */
 package javajs.util;
 
-import org.jmol.util.Escape;
-import org.jmol.util.Logger;
-import org.jmol.util.Txt;
-
-
 /*
  * Standard UNIT quaternion math -- for rotation.
  * 
@@ -472,10 +467,10 @@ public class Quat {
   }
   
   public V3 getVector(int i) {
-    return getVectorS(i, 1f);
+    return getVectorScaled(i, 1f);
   }
 
-  private V3 getVectorS(int i, float scale) {
+  public V3 getVectorScaled(int i, float scale) {
     if (i == -1) {
       scale *= getFixFactor();
       return V3.new3(q1 * scale, q2 * scale, q3 * scale);
@@ -630,26 +625,6 @@ public class Quat {
     return mulQ(q2adjusted.inv());
   }
 
-  public String getInfo() {
-    A4 axis = toAxisAngle4f();
-    return Txt.sprintf("%10.6f%10.6f%10.6f%10.6f  %6.2f  %10.5f %10.5f %10.5f",
-        "F", new Object[] { new float[] { q0, q1, q2, q3, 
-            (float) (axis.angle * 180 / Math.PI), axis.x, axis.y, axis.z } });
-  }
-
-  public String draw(String prefix, String id, P3 ptCenter, 
-                     float scale) {
-    String strV = " VECTOR " + Escape.eP(ptCenter) + " ";
-    if (scale == 0)
-      scale = 1f;
-    return "draw " + prefix + "x" + id + strV
-        + Escape.eP(getVectorS(0, scale)) + " color red\n"
-        + "draw " + prefix + "y" + id + strV
-        + Escape.eP(getVectorS(1, scale)) + " color green\n"
-        + "draw " + prefix + "z" + id + strV
-        + Escape.eP(getVectorS(2, scale)) + " color blue\n";
-  }
-
   /**
    * 
    *  Java axisAngle / plane / Point4f format
@@ -709,7 +684,7 @@ public class Quat {
         retStddev[0] = stdDev(data, qMean);
         diff = Math.abs(retStddev[0] - lastStddev);
         lastStddev = retStddev[0];
-        Logger.info(++iter + " sphereMean " + qMean + " stddev=" + lastStddev + " diff=" + diff);
+        //Logger.info(++iter + " sphereMean " + qMean + " stddev=" + lastStddev + " diff=" + diff);
       }
       return qMean;
   }

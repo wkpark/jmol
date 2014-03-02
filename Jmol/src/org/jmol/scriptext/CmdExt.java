@@ -2186,7 +2186,7 @@ public class CmdExt implements JmolCmdExtension {
           if (isFrame) {
             eval.checkLast(eval.iToken);
             if (!chk)
-              eval.runScript((Quat.newP4((P4) propertyValue)).draw(
+              eval.runScript(Escape.drawQuat(Quat.newP4((P4) propertyValue),
                   (thisId == null ? "frame" : thisId), " " + swidth,
                   (center == null ? new P3() : center), intScale / 100f));
             return false;
@@ -2431,8 +2431,8 @@ public class CmdExt implements JmolCmdExtension {
       if (propertyName != null)
         setShapeProperty(JC.SHAPE_DRAW, propertyName, propertyValue);
     }
-    finalizeObject(JC.SHAPE_DRAW, colorArgb[0], translucentLevel,
-        intScale, havePoints, connections, iptDisplayProperty, null);
+    finalizeObject(JC.SHAPE_DRAW, colorArgb[0], translucentLevel, intScale,
+        havePoints, connections, iptDisplayProperty, null);
     return true;
   }
 

@@ -83,6 +83,19 @@ public class Escape {
     return "{" + x.x + " " + x.y + " " + x.z + " " + x.w + "}";
   }
 
+  public static String drawQuat(Quat q, String prefix, String id, P3 ptCenter, 
+                         float scale) {
+    String strV = " VECTOR " + eP(ptCenter) + " ";
+    if (scale == 0)
+      scale = 1f;
+    return "draw " + prefix + "x" + id + strV
+        + eP(q.getVectorScaled(0, scale)) + " color red\n"
+        + "draw " + prefix + "y" + id + strV
+        + eP(q.getVectorScaled(1, scale)) + " color green\n"
+        + "draw " + prefix + "z" + id + strV
+        + eP(q.getVectorScaled(2, scale)) + " color blue\n";
+  }
+
   @SuppressWarnings("unchecked")
   public static String e(Object x) {
     if (x == null)

@@ -35,6 +35,7 @@ import org.jmol.util.Escape;
 
 import org.jmol.util.Logger;
 
+import javajs.util.A4;
 import javajs.util.OC;
 import javajs.util.P3;
 import javajs.util.PT;
@@ -700,7 +701,7 @@ public abstract class BioPolymer {
               continue;
           } else {
             q = Quat.newVA(P3.new3(1, 0, 0), angledeg);
-            strExtra = q.getInfo();
+            strExtra = getQInfo(q);
             if (writeRamachandranStraightness) {
               z = angledeg;
               w = straightness;
@@ -858,7 +859,7 @@ public abstract class BioPolymer {
               continue;
             int deg = (int) Math.floor(Math.acos(w) * 360 / Math.PI);
             if (derivType == 0) {
-              pdbATOM.append(q.draw(prefix, id, ptCenter, 1f));
+              pdbATOM.append(Escape.drawQuat(q, prefix, id, ptCenter, 1f));
               if (qtype == 'n' && isAmino) {
                 P3 ptH = ((AminoMonomer) monomer)
                     .getNitrogenHydrogenPoint();
@@ -882,7 +883,7 @@ public abstract class BioPolymer {
                 .append(qColor[derivType]).append("\n");
             continue;
           }
-          strExtra = q.getInfo()
+          strExtra = getQInfo(q)
               + Txt.sprintf("  %10.5p %10.5p %10.5p",
                   "p", new Object[] { ptCenter });
           if (qtype == 'n' && isAmino) {
@@ -916,6 +917,26 @@ public abstract class BioPolymer {
         atomLast = a;
       }
     }
+  }
+
+  public String drawQuat(Quat q, String prefix, String id, P3 ptCenter, 
+                     float scale) {
+    String strV = " VECTOR " + Escape.eP(ptCenter) + " ";
+    if (scale == 0)
+      scale = 1f;
+    return "draw " + prefix + "x" + id + strV
+        + Escape.eP(q.getVectorScaled(0, scale)) + " color red\n"
+        + "draw " + prefix + "y" + id + strV
+        + Escape.eP(q.getVectorScaled(1, scale)) + " color green\n"
+        + "draw " + prefix + "z" + id + strV
+        + Escape.eP(q.getVectorScaled(2, scale)) + " color blue\n";
+  }
+
+  private static String getQInfo(Quat q) {
+    A4 axis = q.toAxisAngle4f();
+    return Txt.sprintf("%10.6f%10.6f%10.6f%10.6f  %6.2f  %10.5f %10.5f %10.5f",
+        "F", new Object[] { new float[] { q.q0, q.q1, q.q2, q.q3, 
+            (float) (axis.angle * 180 / Math.PI), axis.x, axis.y, axis.z } });
   }
 
   /**

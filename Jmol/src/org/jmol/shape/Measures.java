@@ -188,7 +188,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
         int type = Measurement.nmrType(viewer.getDistanceUnits(md.strFormat));
         switch (type) {
           case Measurement.NMR_JC:
-          case Measurement.NMR_DC:
+          //case Measurement.NMR_DC:
           md.htMin = viewer.getNMRCalculation().getMinDistances(md);
         }
       }

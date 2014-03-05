@@ -113,6 +113,7 @@ public class JDXMOLParser implements JmolJDXMOLParser {
    */
   @Override
   public String readACDMolFile() throws Exception {
+  	// Jmol only; JSpecView uses a tokenizer
     //##$MOLFILE=  $$ Empty String
     //  ACD/Labs03231213092D
     //  $$ Empty String
@@ -121,11 +122,9 @@ public class JDXMOLParser implements JmolJDXMOLParser {
     //$$$$
     SB sb = new SB();
     sb.append(line.substring(line.indexOf("=") + 1)).appendC('\n');
-    while (readLine() != null && !line.contains("$$$$")) {
-      line = PT.rep(line, "  $$ Empty String", "");
+    while (readLine() != null && !line.contains("$$$$"))
       sb.append(line).appendC('\n');
-    }
-    return sb.toString();
+    return PT.rep(sb.toString(), "  $$ Empty String", "");
   }
 
   @Override

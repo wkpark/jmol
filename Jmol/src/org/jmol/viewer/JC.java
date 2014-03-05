@@ -1697,5 +1697,21 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int ALIGN_CENTER = 2;
   public final static int ALIGN_RIGHT = 3;
   
+
+  public static final int JSV_NOT = -1;
+  public static final int JSV_SEND = 0;
+  public static final int JSV_SETPEAKS = 7;
+  public static final int JSV_SELECT = 14;
+
+  public static int getJSVSyncSignal(String script) {
+    return (script.length() < 7 ? -1 : ("" +
+    		"JSPECVI" +
+    		"PEAKS: " +
+    		"SELECT:")
+        .indexOf(script.substring(0, 7).toUpperCase()));
+  }
   
+  
+  
+
 }

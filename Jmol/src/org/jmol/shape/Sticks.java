@@ -28,7 +28,7 @@ package org.jmol.shape;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.Escape;
-import org.jmol.util.JmolEdge;
+import org.jmol.util.Edge;
 import javajs.util.P3;
 import javajs.util.P3i;
 
@@ -53,7 +53,7 @@ public class Sticks extends Shape {
   @Override
   public void initShape() {
     super.initShape();
-    myMask = JmolEdge.BOND_COVALENT_MASK;
+    myMask = Edge.BOND_COVALENT_MASK;
     reportAll = false;
   }
 
@@ -113,7 +113,7 @@ public class Sticks extends Shape {
         bsOrderSet = new BS();
       int order = ((Integer) value).shortValue();
       BondIterator iter = (selectedBonds != null ? modelSet.getBondIterator(selectedBonds)
-          : modelSet.getBondIteratorForType(JmolEdge.BOND_ORDER_ANY, bs));
+          : modelSet.getBondIteratorForType(Edge.BOND_ORDER_ANY, bs));
       while (iter.hasNext()) {
         bsOrderSet.set(iter.nextIndex());
         iter.next().setOrder(order);
@@ -137,7 +137,7 @@ public class Sticks extends Shape {
               bond.setColix(getColixB(colix, pal.id, bond));
               bond.setPaletteID(pal.id);
           } else {
-            bond.setColix(C.getColix(JmolEdge.getArgbHbondType(bond.order)));
+            bond.setColix(C.getColix(Edge.getArgbHbondType(bond.order)));
           }
         }
         return;

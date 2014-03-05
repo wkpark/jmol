@@ -27,7 +27,7 @@ package org.jmol.modelset;
 
 
 import org.jmol.java.BS;
-import org.jmol.util.JmolEdge;
+import org.jmol.util.Edge;
 
 class BondIteratorSelected implements BondIterator {
 
@@ -50,17 +50,17 @@ class BondIteratorSelected implements BondIterator {
  
   @Override
   public boolean hasNext() {
-    if (bondType == JmolEdge.BOND_ORDER_NULL) {
+    if (bondType == Edge.BOND_ORDER_NULL) {
       iBond = bsSelected.nextSetBit(iBond);
       return (iBond >= 0 && iBond < bondCount);
     }
     for (; iBond < bondCount; ++iBond) {
       Bond bond = bonds[iBond];
-      if (bondType != JmolEdge.BOND_ORDER_ANY
+      if (bondType != Edge.BOND_ORDER_ANY
           && (bond.order & bondType) == 0) {
         continue;
-      } else if (bondType == JmolEdge.BOND_ORDER_ANY
-          && bond.order != JmolEdge.BOND_STRUT)
+      } else if (bondType == Edge.BOND_ORDER_ANY
+          && bond.order != Edge.BOND_STRUT)
         continue;
       boolean isSelected1 = bsSelected.get(bond.atom1.index);
       boolean isSelected2 = bsSelected.get(bond.atom2.index);

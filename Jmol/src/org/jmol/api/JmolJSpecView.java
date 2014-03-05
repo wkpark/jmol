@@ -12,4 +12,6 @@ public interface JmolJSpecView {
 
   int getBaseModelIndex(int modelIndex);
 
+  String processSync(String script, int mode);
+
 }

@@ -32,7 +32,7 @@ import org.jmol.api.JmolFilesReaderInterface;
 import org.jmol.constant.EnumQuantumShell;
 import org.jmol.modelset.Group;
 import org.jmol.util.Elements;
-import org.jmol.util.JmolEdge;
+import org.jmol.util.Edge;
 import org.jmol.viewer.JC;
 
 /****************************************************************
@@ -56,22 +56,22 @@ import org.jmol.viewer.JC;
  ****************************************************************/
 public abstract class JmolAdapter {
 
-  public final static int ORDER_COVALENT_SINGLE = JmolEdge.BOND_COVALENT_SINGLE;
-  public final static int ORDER_COVALENT_DOUBLE = JmolEdge.BOND_COVALENT_DOUBLE;
-  public final static int ORDER_COVALENT_TRIPLE = JmolEdge.BOND_COVALENT_TRIPLE;
-  public final static int ORDER_AROMATIC        = JmolEdge.BOND_AROMATIC;
-  public final static int ORDER_AROMATIC_SINGLE = JmolEdge.BOND_AROMATIC_SINGLE;
-  public final static int ORDER_AROMATIC_DOUBLE = JmolEdge.BOND_AROMATIC_DOUBLE;
-  public final static int ORDER_HBOND           = JmolEdge.BOND_H_REGULAR;
-  public final static int ORDER_STEREO_NEAR     = JmolEdge.BOND_STEREO_NEAR; 
-  public final static int ORDER_STEREO_FAR      = JmolEdge.BOND_STEREO_FAR; 
-  public final static int ORDER_PARTIAL01       = JmolEdge.BOND_PARTIAL01;
-  public final static int ORDER_PARTIAL12       = JmolEdge.BOND_PARTIAL12;
-  public final static int ORDER_PARTIAL23       = JmolEdge.BOND_PARTIAL23;
-  public final static int ORDER_PARTIAL32       = JmolEdge.BOND_PARTIAL32;
-  public final static int ORDER_UNSPECIFIED     = JmolEdge.BOND_ORDER_UNSPECIFIED;
-  public final static int ORDER_PYMOL_SINGLE    = JmolEdge.BOND_PYMOL_SINGLE;
-  public final static int ORDER_PYMOL_MULT      = JmolEdge.BOND_PYMOL_MULT;
+  public final static int ORDER_COVALENT_SINGLE = Edge.BOND_COVALENT_SINGLE;
+  public final static int ORDER_COVALENT_DOUBLE = Edge.BOND_COVALENT_DOUBLE;
+  public final static int ORDER_COVALENT_TRIPLE = Edge.BOND_COVALENT_TRIPLE;
+  public final static int ORDER_AROMATIC        = Edge.BOND_AROMATIC;
+  public final static int ORDER_AROMATIC_SINGLE = Edge.BOND_AROMATIC_SINGLE;
+  public final static int ORDER_AROMATIC_DOUBLE = Edge.BOND_AROMATIC_DOUBLE;
+  public final static int ORDER_HBOND           = Edge.BOND_H_REGULAR;
+  public final static int ORDER_STEREO_NEAR     = Edge.BOND_STEREO_NEAR; 
+  public final static int ORDER_STEREO_FAR      = Edge.BOND_STEREO_FAR; 
+  public final static int ORDER_PARTIAL01       = Edge.BOND_PARTIAL01;
+  public final static int ORDER_PARTIAL12       = Edge.BOND_PARTIAL12;
+  public final static int ORDER_PARTIAL23       = Edge.BOND_PARTIAL23;
+  public final static int ORDER_PARTIAL32       = Edge.BOND_PARTIAL32;
+  public final static int ORDER_UNSPECIFIED     = Edge.BOND_ORDER_UNSPECIFIED;
+  public final static int ORDER_PYMOL_SINGLE    = Edge.BOND_PYMOL_SINGLE;
+  public final static int ORDER_PYMOL_MULT      = Edge.BOND_PYMOL_MULT;
   public final static EnumQuantumShell getShellEnumeration(int i) { return EnumQuantumShell.getItem(i); }
   public final static int[][] getNewDfCoefMap() { return EnumQuantumShell.getNewDfCoefMap(); }
   // We need the shell ids only because we are storing these in the (int) shell[1] spot

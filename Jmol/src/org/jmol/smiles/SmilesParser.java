@@ -33,7 +33,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.jmol.util.Elements;
-import org.jmol.util.JmolEdge;
+import org.jmol.util.Edge;
 import org.jmol.util.Txt;
 import org.jmol.util.Logger;
 
@@ -160,15 +160,15 @@ public class SmilesParser {
       pattern = pattern.substring(strFlags.length());
       flags = 0;
       if (strFlags.indexOf("NOAROMATIC") >= 0)
-        flags |= JmolEdge.FLAG_NO_AROMATIC;
+        flags |= Edge.FLAG_NO_AROMATIC;
       if (strFlags.indexOf("AROMATICSTRICT") >= 0)
-        flags |= JmolEdge.FLAG_AROMATIC_STRICT;
+        flags |= Edge.FLAG_AROMATIC_STRICT;
       if (strFlags.indexOf("AROMATICDEFINED") >= 0)
-        flags |= JmolEdge.FLAG_AROMATIC_DEFINED;
+        flags |= Edge.FLAG_AROMATIC_DEFINED;
       if (strFlags.indexOf("AROMATICDOUBLE") >= 0)
-        flags |= JmolEdge.FLAG_AROMATIC_DOUBLE;
+        flags |= Edge.FLAG_AROMATIC_DOUBLE;
       if (strFlags.indexOf("NOSTEREO") >= 0)
-        flags |= JmolEdge.FLAG_IGNORE_STEREOCHEMISTRY;
+        flags |= Edge.FLAG_IGNORE_STEREOCHEMISTRY;
     }
     if (pattern.indexOf("$") >= 0)
       pattern = parseVariables(pattern);

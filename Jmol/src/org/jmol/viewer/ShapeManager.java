@@ -39,7 +39,7 @@ import org.jmol.script.T;
 import org.jmol.shape.Shape;
 import org.jmol.util.BSUtil;
 import org.jmol.util.GData;
-import org.jmol.util.JmolEdge;
+import org.jmol.util.Edge;
 
 import org.jmol.util.JmolMolecule;
 
@@ -552,10 +552,10 @@ public class ShapeManager {
     // wireframe will not operate on STRUTS even though they are
     // a form of bond order (see BondIteratoSelected)
     setShapePropertyBs(JC.SHAPE_STICKS, "type", Integer
-        .valueOf(JmolEdge.BOND_STRUT), null);
+        .valueOf(Edge.BOND_STRUT), null);
     setShapeSizeBs(JC.SHAPE_STICKS, 0, null, null);
     setShapePropertyBs(JC.SHAPE_STICKS, "type", Integer
-        .valueOf(JmolEdge.BOND_COVALENT_MASK), null);
+        .valueOf(Edge.BOND_COVALENT_MASK), null);
     // also need to turn off backbones, ribbons, strands, cartoons
     BS bs = viewer.getSelectedAtoms();
     for (int iShape = JC.SHAPE_MAX_SIZE_ZERO_ON_RESTRICT; --iShape >= 0;)

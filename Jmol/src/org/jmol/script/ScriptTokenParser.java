@@ -28,7 +28,7 @@ import javajs.util.PT;
 
 import java.util.Map;
 
-import org.jmol.util.JmolEdge;
+import org.jmol.util.Edge;
 import org.jmol.util.Logger;
 import org.jmol.util.SimpleUnitCell;
 
@@ -846,7 +846,7 @@ abstract class ScriptTokenParser {
         Object o = getToken().value;
         String strOrder = (o instanceof String ? (String) o : " ");
         int intType = ScriptParam.getBondOrderFromString(strOrder);
-        if (intType == JmolEdge.BOND_ORDER_NULL) {
+        if (intType == Edge.BOND_ORDER_NULL) {
           returnToken();
         } else {
           addTokenToPostfix(T.string, strOrder);

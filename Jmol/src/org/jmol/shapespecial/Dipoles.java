@@ -28,7 +28,7 @@ import org.jmol.shape.Shape;
 import org.jmol.util.BSUtil;
 
 import org.jmol.util.C;
-import org.jmol.util.JmolEdge;
+import org.jmol.util.Edge;
 import org.jmol.util.Logger;
 import javajs.util.P3;
 import org.jmol.util.Txt;
@@ -197,7 +197,7 @@ public class Dipoles extends Shape {
     if ("color" == propertyName) {
       colix = C.getColixO(value);
       if (isBond) {
-        setColixDipole(colix, JmolEdge.BOND_COVALENT_MASK, bs);
+        setColixDipole(colix, Edge.BOND_COVALENT_MASK, bs);
       } else if (value != null) {
         setProperty(T.color, false, 0, 0);
       }

@@ -37,7 +37,7 @@ import org.jmol.modelsetbio.BioPolymer;
 import org.jmol.modelsetbio.Monomer;
 import org.jmol.util.C;
 import org.jmol.util.Escape;
-import org.jmol.util.JmolEdge;
+import org.jmol.util.Edge;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
 
@@ -487,8 +487,8 @@ public class DSSP implements DSSPInterface {
       Bridge bridge = new Bridge(atom1, atom2, htLadders);
       bridges.addLast(bridge);
       if (vHBonds != null) {
-        int type = (isAntiparallel ? JmolEdge.BOND_H_MINUS_3
-            : JmolEdge.BOND_H_PLUS_2);
+        int type = (isAntiparallel ? Edge.BOND_H_MINUS_3
+            : Edge.BOND_H_PLUS_2);
         addHbond(ap1.monomers[a + offsets[ipt]], ap2.monomers[b
             + offsets[++ipt]], b1[2], type, htTemp);
         addHbond(ap2.monomers[b + offsets[++ipt]], ap1.monomers[a
@@ -740,11 +740,11 @@ public class DSSP implements DSSPInterface {
     BS bsTurn = new BS();
 
     String line4 = findHelixes2(iPolymer, 4, min, EnumStructure.HELIXALPHA,
-        JmolEdge.BOND_H_PLUS_4, bsTurn);
+        Edge.BOND_H_PLUS_4, bsTurn);
     String line3 = findHelixes2(iPolymer, 3, min, EnumStructure.HELIX310,
-        JmolEdge.BOND_H_PLUS_3, bsTurn);
+        Edge.BOND_H_PLUS_3, bsTurn);
     String line5 = findHelixes2(iPolymer, 5, min, EnumStructure.HELIXPI,
-        JmolEdge.BOND_H_PLUS_5, bsTurn);
+        Edge.BOND_H_PLUS_5, bsTurn);
 
     // G, H, and I have been set; now set what is left over as turn
 

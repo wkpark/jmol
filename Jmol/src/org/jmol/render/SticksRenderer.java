@@ -33,7 +33,7 @@ import org.jmol.modelset.Bond;
 import org.jmol.script.T;
 import org.jmol.util.C;
 import org.jmol.util.GData;
-import org.jmol.util.JmolEdge;
+import org.jmol.util.Edge;
 import javajs.util.P3;
 import javajs.util.V3;
 import org.jmol.viewer.JC;
@@ -134,9 +134,9 @@ public class SticksRenderer extends FontLineShapeRenderer {
     a = atomA0 = bond.getAtom1();
     b = atomB0 = bond.getAtom2();
 
-    int order = bond.order & ~JmolEdge.BOND_NEW;
+    int order = bond.order & ~Edge.BOND_NEW;
     if (bondsBackbone) {
-      if (ssbondsBackbone && (order & JmolEdge.BOND_SULFUR_MASK) != 0) {
+      if (ssbondsBackbone && (order & Edge.BOND_SULFUR_MASK) != 0) {
         // for ssbonds, always render the sidechain,
         // then render the backbone version
         /*
@@ -197,14 +197,14 @@ public class SticksRenderer extends FontLineShapeRenderer {
 
     // set the rendered bond order
 
-    bondOrder = order & ~JmolEdge.BOND_NEW;
-    if ((bondOrder & JmolEdge.BOND_PARTIAL_MASK) == 0) {
-      if ((bondOrder & JmolEdge.BOND_SULFUR_MASK) != 0)
-        bondOrder &= ~JmolEdge.BOND_SULFUR_MASK;
-      if ((bondOrder & JmolEdge.BOND_COVALENT_MASK) != 0) {
+    bondOrder = order & ~Edge.BOND_NEW;
+    if ((bondOrder & Edge.BOND_PARTIAL_MASK) == 0) {
+      if ((bondOrder & Edge.BOND_SULFUR_MASK) != 0)
+        bondOrder &= ~Edge.BOND_SULFUR_MASK;
+      if ((bondOrder & Edge.BOND_COVALENT_MASK) != 0) {
         if (!showMultipleBonds
             || (modeMultipleBond == JC.MULTIBOND_NOTSMALL && mad > JC.madMultipleBondSmallMaximum)
-            || (bondOrder & JmolEdge.BOND_PYMOL_MULT) == JmolEdge.BOND_PYMOL_SINGLE 
+            || (bondOrder & Edge.BOND_PYMOL_MULT) == Edge.BOND_PYMOL_SINGLE 
             ) {
           bondOrder = 1;
         }
@@ -220,27 +220,27 @@ public class SticksRenderer extends FontLineShapeRenderer {
     case 3:
     case 4:
       break;
-    case JmolEdge.BOND_ORDER_UNSPECIFIED:
-    case JmolEdge.BOND_AROMATIC_SINGLE:
+    case Edge.BOND_ORDER_UNSPECIFIED:
+    case Edge.BOND_AROMATIC_SINGLE:
       bondOrder = 1;
-      mask = (order == JmolEdge.BOND_AROMATIC_SINGLE ? 0 : 1);
+      mask = (order == Edge.BOND_AROMATIC_SINGLE ? 0 : 1);
       break;
-    case JmolEdge.BOND_AROMATIC:
-    case JmolEdge.BOND_AROMATIC_DOUBLE:
+    case Edge.BOND_AROMATIC:
+    case Edge.BOND_AROMATIC_DOUBLE:
       bondOrder = 2;
-      mask = (order == JmolEdge.BOND_AROMATIC ? getAromaticDottedBondMask() : 0);
+      mask = (order == Edge.BOND_AROMATIC ? getAromaticDottedBondMask() : 0);
       break;
     default:
-      if ((bondOrder & JmolEdge.BOND_PARTIAL_MASK) != 0) {
-        bondOrder = JmolEdge.getPartialBondOrder(order);
-        mask = JmolEdge.getPartialBondDotted(order);
+      if ((bondOrder & Edge.BOND_PARTIAL_MASK) != 0) {
+        bondOrder = Edge.getPartialBondOrder(order);
+        mask = Edge.getPartialBondDotted(order);
       } else if (Bond.isOrderH(bondOrder)) {
         bondOrder = 1;
         if (!hbondsSolid)
           mask = -1;
-      } else if (bondOrder == JmolEdge.BOND_STRUT) {
+      } else if (bondOrder == Edge.BOND_STRUT) {
         bondOrder = 1;
-      } else if ((bondOrder & JmolEdge.BOND_PYMOL_MULT) == JmolEdge.BOND_PYMOL_MULT) {
+      } else if ((bondOrder & Edge.BOND_PYMOL_MULT) == Edge.BOND_PYMOL_MULT) {
         getMultipleBondSettings(true);
         bondOrder &= 3;
         mask = -2;

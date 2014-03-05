@@ -7,7 +7,11 @@ import org.jmol.api.JmolJSpecView;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import javajs.util.List;
+
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.viewer.FileManager;
+import org.jmol.viewer.JC;
 import org.jmol.viewer.StatusManager;
 import org.jmol.viewer.Viewer;
 
@@ -99,7 +103,7 @@ public class JSpecView implements JmolJSpecView {
     String peak = (String) viewer.getModelAuxiliaryInfoValue(modelIndex, "jdxModelSelect");
     // problem is that SECOND load in jmol will not load new model in JSpecView
     if (peak != null)
-      sendJSpecView(peak);
+      sendJSpecView(peak + " src=\"Jmol\"");
   }
 
   @Override
@@ -114,5 +118,57 @@ public class JSpecView implements JmolJSpecView {
     return modelIndex;
   }
 
-
+  @Override
+  public String processSync(String script, int jsvMode) {
+    switch (jsvMode) {
+    default:
+      return null;
+    case JC.JSV_SEND:
+      viewer.statusManager.syncSend(
+          viewer.fullName + "JSpecView"  + script.substring(9), ">", 0);
+      return null;
+    case JC.JSV_SETPEAKS:
+      // JSpecView sending us the peak information it has
+      String[] list = Escape.unescapeStringArray(script.substring(7));
+      List<String> peaks = new List<String>();
+      for (int i = 0; i < list.length; i++)
+        peaks.addLast(list[i]);
+      viewer.getModelSet().setModelAuxiliaryInfo(viewer.getCurrentModelIndex(),
+          "jdxAtomSelect_1HNMR", peaks);
+      return null;
+    case JC.JSV_SELECT:
+      // from JSpecView peak pick or possibly model change
+      String filename = PT.getQuotedAttribute(script, "file");
+      //if (filename.startsWith(FileManager.SIMULATION_PROTOCOL + "MOL="))
+      //filename = null; // from our sending; don't reload
+      String modelID = PT.getQuotedAttribute(script, "model");
+      String baseModel = PT.getQuotedAttribute(script, "baseModel");
+      String atoms = PT.getQuotedAttribute(script, "atoms");
+      String select = PT.getQuotedAttribute(script, "select");
+      String script2 = PT.getQuotedAttribute(script, "script");
+      boolean isNIH = (modelID != null && modelID.startsWith("$"));
+      if (isNIH)
+        filename = (String) viewer.setLoadFormat(modelID, '$', false);
+      String id = (modelID == null ? null : (filename == null ? "" : filename
+          + "#")
+          + modelID);
+      if ("".equals(baseModel))
+        id += ".baseModel";
+      int modelIndex = (id == null ? -3 : viewer.getModelIndexFromId(id));
+      if (modelIndex == -2)
+        return null; // file was found, or no file was indicated, but not this model -- ignore
+      script = (modelIndex == -1 && filename != null ? script = "load "
+          + PT.esc(filename) : "");
+      script = PT.rep(script, FileManager.SIMULATION_PROTOCOL, "");
+      if (id != null)
+        script += ";model " + PT.esc(id);
+      if (atoms != null)
+        script += ";select visible & (@" + PT.rep(atoms, ",", " or @") + ")";
+      else if (select != null)
+        script += ";select visible & (" + select + ")";
+      if (script2 != null)
+        script += ";" + script2;
+      return script;
+    }
+  }
 }

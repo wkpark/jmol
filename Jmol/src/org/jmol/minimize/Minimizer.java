@@ -42,7 +42,7 @@ import org.jmol.modelset.Bond;
 import org.jmol.thread.JmolThread;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
-import org.jmol.util.JmolEdge;
+import org.jmol.util.Edge;
 import org.jmol.util.Logger;
 
 import org.jmol.script.T;
@@ -367,7 +367,7 @@ public class Minimizer implements MinimizerInterface {
       case 2:
       case 3:
         break;
-      case JmolEdge.BOND_AROMATIC:
+      case Edge.BOND_AROMATIC:
         bondOrder = 5;
         break;
       default:

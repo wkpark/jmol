@@ -68,7 +68,7 @@ import org.jmol.util.C;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
 import org.jmol.util.GData;
-import org.jmol.util.JmolEdge;
+import org.jmol.util.Edge;
 import org.jmol.util.Logger;
 import javajs.util.P3;
 import javajs.util.V3;
@@ -110,8 +110,6 @@ public class StateCreator extends JmolStateCreator {
 
   /////////////////// creating the state script ////////////////////
   
-  static String SIMULATION_PROTOCOL = "http://SIMULATION/";
-
   @Override
   String getStateScript(String type, int width, int height) {
     //System.out.println("viewer getStateInfo " + type);
@@ -267,16 +265,16 @@ public class StateCreator extends JmolStateCreator {
       for (int i = 0; i < ms.bondCount; i++)
         if (!models[bonds[i].atom1.modelIndex].isModelKit)
           if (bonds[i].isHydrogen()
-              || (bonds[i].order & JmolEdge.BOND_NEW) != 0) {
+              || (bonds[i].order & Edge.BOND_NEW) != 0) {
             Bond bond = bonds[i];
             int index = bond.atom1.index;
             if (bond.atom1.getGroup().isAdded(index))
               index = -1 - index;
             sb.appendI(index).appendC('\t').appendI(bond.atom2.index).appendC(
-                '\t').appendI(bond.order & ~JmolEdge.BOND_NEW).appendC('\t')
+                '\t').appendI(bond.order & ~Edge.BOND_NEW).appendC('\t')
                 .appendF(bond.mad / 1000f).appendC('\t').appendF(
                     bond.getEnergy()).appendC('\t').append(
-                    JmolEdge.getBondOrderNameFromOrder(bond.order)).append(
+                    Edge.getBondOrderNameFromOrder(bond.order)).append(
                     ";\n");
           }
       if (sb.length() > 0)
@@ -1101,9 +1099,9 @@ public class StateCreator extends JmolStateCreator {
       for (int i = i0; i >= 0; i = (reportAll ? i - 1 : bsOrderSet
           .nextSetBit(i + 1))) {
         Bond bond = bonds[i];
-        if (reportAll || (bond.order & JmolEdge.BOND_NEW) == 0)
+        if (reportAll || (bond.order & Edge.BOND_NEW) == 0)
           BSUtil.setMapBitSet(temp, i, i, "bondOrder "
-              + JmolEdge.getBondOrderNameFromOrder(bond.order));
+              + Edge.getBondOrderNameFromOrder(bond.order));
       }
     }
     if (shape.bsColixSet != null)
@@ -1819,9 +1817,8 @@ public class StateCreator extends JmolStateCreator {
   private final static int MAX_ACTION_UNDO = 100;
   
 
-/////////////////////// SYNC directives ////////////////////////////////////////
+  /////////////////////// SYNC directives ////////////////////////////////////////
 
-  
   @Override
   void syncScript(String script, String applet, int port) {
     StatusManager sm = viewer.statusManager;
@@ -1874,54 +1871,18 @@ public class StateCreator extends JmolStateCreator {
     if (disableSend)
       sm.setSyncDriver(StatusManager.SYNC_DISABLE);
     if (script.indexOf("Mouse: ") != 0) {
-      if (script.startsWith("Peaks: [")) {
-        // JSpecView simulation
-        String[] list = Escape.unescapeStringArray(script.substring(7));
-        List<String> peaks = new List<String>();
-        for (int i = 0; i < list.length; i++)
-          peaks.addLast(list[i]);
-        viewer.getModelSet().setModelAuxiliaryInfo(
-            viewer.getCurrentModelIndex(), "jdxAtomSelect_1HNMR", peaks);
-        return;
-      }
-      if (script.startsWith("Select: ")) {
-        // from JSpecView peak pick
-        String filename = PT.getQuotedAttribute(script, "file");
-        if (filename.startsWith(SIMULATION_PROTOCOL + "MOL="))
-          filename = null; // from our sending; don't reload
-        String modelID = PT.getQuotedAttribute(script, "model");
-        String baseModel = PT.getQuotedAttribute(script, "baseModel");
-        String atoms = PT.getQuotedAttribute(script, "atoms");
-        String select = PT.getQuotedAttribute(script, "select");
-        String script2 = PT.getQuotedAttribute(script, "script");
-        boolean isNIH = (modelID != null && modelID.startsWith("$"));
-        if (isNIH)
-          filename = (String) viewer.setLoadFormat(modelID, '$', false);
-        String id = (modelID == null ? null : (filename == null ? "" : filename
-            + "#")
-            + modelID);
-        if ("".equals(baseModel))
-          id += ".baseModel";
-        int modelIndex = (id == null ? -3 : viewer.getModelIndexFromId(id));
-        if (modelIndex == -2)
-          return; // file was found, or no file was indicated, but not this model -- ignore
-        script = (modelIndex == -1 && filename != null ? script = "load "
-            + PT.esc(filename) : "");
-        script = PT.rep(script, SIMULATION_PROTOCOL, "");
-        if (id != null)
-          script += ";model " + PT.esc(id);
-        if (atoms != null)
-          script += ";select visible & (@"
-              + PT.rep(atoms, ",", " or @") + ")";
-        else if (select != null)
-          script += ";select visible & (" + select + ")";
-        if (script2 != null)
-          script += ";" + script2;
-      } else if (script.toUpperCase().startsWith("JSPECVIEW")) {
-        if (!disableSend)
-          sm.syncSend(viewer.fullName + "JSpecView" + script.substring(9), ">",
-              0);
-        return;
+      int jsvMode = JC.getJSVSyncSignal(script);
+      switch (jsvMode) {
+      case JC.JSV_NOT:
+        break;
+      case JC.JSV_SEND:
+        if (disableSend)
+          return;
+        //$FALL-THROUGH$
+      case JC.JSV_SETPEAKS:
+      case JC.JSV_SELECT:
+        if ((script = viewer.getJSV().processSync(script, jsvMode)) == null)
+          return;
       }
       //System.out.println("Jmol executing script for JSpecView: " + script);
       viewer.evalStringQuietSync(script, true, false);

@@ -54,7 +54,7 @@ import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
 import org.jmol.util.Elements;
 import org.jmol.util.GData;
-import org.jmol.util.JmolEdge;
+import org.jmol.util.Edge;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.SimpleUnitCell;
@@ -2869,14 +2869,14 @@ public class ScriptEval extends ScriptExpr {
     switch (getToken(1).tok) {
     case T.integer:
     case T.decimal:
-      if ((order = JmolEdge.getBondOrderFromFloat(floatParameter(1))) == JmolEdge.BOND_ORDER_NULL)
+      if ((order = Edge.getBondOrderFromFloat(floatParameter(1))) == Edge.BOND_ORDER_NULL)
         invArg();
       break;
     default:
-      if ((order = getBondOrderFromString(paramAsStr(1))) == JmolEdge.BOND_ORDER_NULL)
+      if ((order = getBondOrderFromString(paramAsStr(1))) == Edge.BOND_ORDER_NULL)
         invArg();
       // generic partial can be indicated by "partial n.m"
-      if (order == JmolEdge.BOND_PARTIAL01 && tokAt(2) == T.decimal) {
+      if (order == Edge.BOND_PARTIAL01 && tokAt(2) == T.decimal) {
         order = getPartialBondOrderFromFloatEncodedInt(st[2].intValue);
       }
     }
@@ -3821,10 +3821,10 @@ public class ScriptEval extends ScriptExpr {
     if (mad == Integer.MAX_VALUE)
       return;
     setShapeProperty(JC.SHAPE_STICKS, "type",
-        Integer.valueOf(JmolEdge.BOND_HYDROGEN_MASK));
+        Integer.valueOf(Edge.BOND_HYDROGEN_MASK));
     setShapeSizeBs(JC.SHAPE_STICKS, mad, null);
     setShapeProperty(JC.SHAPE_STICKS, "type",
-        Integer.valueOf(JmolEdge.BOND_COVALENT_MASK));
+        Integer.valueOf(Edge.BOND_COVALENT_MASK));
   }
 
   private void cmdHelp() throws ScriptException {
@@ -7148,10 +7148,10 @@ public class ScriptEval extends ScriptExpr {
     if (mad == Integer.MAX_VALUE)
       return;
     setShapeProperty(JC.SHAPE_STICKS, "type",
-        Integer.valueOf(JmolEdge.BOND_SULFUR_MASK));
+        Integer.valueOf(Edge.BOND_SULFUR_MASK));
     setShapeSizeBs(JC.SHAPE_STICKS, mad, null);
     setShapeProperty(JC.SHAPE_STICKS, "type",
-        Integer.valueOf(JmolEdge.BOND_COVALENT_MASK));
+        Integer.valueOf(Edge.BOND_COVALENT_MASK));
   }
 
   private void cmdStructure() throws ScriptException {
@@ -7552,7 +7552,7 @@ public class ScriptEval extends ScriptExpr {
     if (chk || mad == Integer.MAX_VALUE)
       return;
     setShapeProperty(JC.SHAPE_STICKS, "type",
-        Integer.valueOf(JmolEdge.BOND_COVALENT_MASK));
+        Integer.valueOf(Edge.BOND_COVALENT_MASK));
     setShapeSizeBs(JC.SHAPE_STICKS,
         mad == Integer.MIN_VALUE ? 2 * JC.DEFAULT_BOND_MILLIANGSTROM_RADIUS
             : mad, null);
@@ -7891,16 +7891,16 @@ public class ScriptEval extends ScriptExpr {
       return;
     switch (shapeType) {
     case JC.SHAPE_STRUTS:
-      typeMask = JmolEdge.BOND_STRUT;
+      typeMask = Edge.BOND_STRUT;
       break;
     case JC.SHAPE_HSTICKS:
-      typeMask = JmolEdge.BOND_HYDROGEN_MASK;
+      typeMask = Edge.BOND_HYDROGEN_MASK;
       break;
     case JC.SHAPE_SSSTICKS:
-      typeMask = JmolEdge.BOND_SULFUR_MASK;
+      typeMask = Edge.BOND_SULFUR_MASK;
       break;
     case JC.SHAPE_STICKS:
-      typeMask = JmolEdge.BOND_COVALENT_MASK;
+      typeMask = Edge.BOND_COVALENT_MASK;
       break;
     default:
       typeMask = 0;
@@ -7956,7 +7956,7 @@ public class ScriptEval extends ScriptExpr {
           bs);
     if (typeMask != 0)
       setShapeProperty(JC.SHAPE_STICKS, "type",
-          Integer.valueOf(JmolEdge.BOND_COVALENT_MASK));
+          Integer.valueOf(Edge.BOND_COVALENT_MASK));
     if (doClearBondSet)
       viewer.selectBonds(null);
     if (shapeType == JC.SHAPE_BALLS)

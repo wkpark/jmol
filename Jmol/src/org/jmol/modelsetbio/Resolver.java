@@ -41,7 +41,7 @@ import org.jmol.modelset.Model;
 import org.jmol.modelset.ModelLoader;
 import org.jmol.modelset.ModelSet;
 import org.jmol.util.BSUtil;
-import org.jmol.util.JmolEdge;
+import org.jmol.util.Edge;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 
@@ -599,8 +599,8 @@ public final class Resolver implements JmolBioResolver {
     atoms[iAtom].setAtomSymmetry(atoms[iTo].getAtomSymmetry());
     modelLoader.undeleteAtom(iAtom);
 
-    modelSet.bondAtoms(atoms[iTo], atoms[iAtom], JmolEdge.BOND_COVALENT_SINGLE, 
-        modelSet.getDefaultMadFromOrder(JmolEdge.BOND_COVALENT_SINGLE), null, 0, true, false);
+    modelSet.bondAtoms(atoms[iTo], atoms[iAtom], Edge.BOND_COVALENT_SINGLE, 
+        modelSet.getDefaultMadFromOrder(Edge.BOND_COVALENT_SINGLE), null, 0, true, false);
   }
 
   @Override

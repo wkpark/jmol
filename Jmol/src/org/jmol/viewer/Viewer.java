@@ -2742,8 +2742,12 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       return (String) atomSetCollection;
     setErrorMessage(null, null);
     try {
-      modelManager.createAtomDataSet(atomSetCollection, tokType);
+      String script = modelManager.createAtomDataSet(atomSetCollection, tokType);
       switch (tokType) {
+      case T.xyz:
+        if (script != null)
+          runScript(script);
+        break;
       case T.vibration:
         setStatusFrameChanged(true, true);
         break;
@@ -5283,7 +5287,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return (haveJDX || (haveJDX = getBooleanProperty("_JSpecView".toLowerCase())));
   }
 
-  private JmolJSpecView getJSV() {
+  JmolJSpecView getJSV() {
     if (jsv == null) {
       jsv = (JmolJSpecView) Interface.getOption("jsv.JSpecView");
       jsv.setViewer(this);

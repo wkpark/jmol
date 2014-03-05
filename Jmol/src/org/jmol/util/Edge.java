@@ -26,7 +26,7 @@ package org.jmol.util;
 
 import org.jmol.modelset.Bond;
 
-public abstract class JmolEdge {
+public abstract class Edge {
 
   
   /**
@@ -116,7 +116,7 @@ public abstract class JmolEdge {
 
   abstract public int getCovalentOrder();
 
-  abstract public JmolNode getOtherAtomNode(JmolNode atom);
+  abstract public Node getOtherAtomNode(Node atom);
 
   abstract public boolean isCovalent();
 

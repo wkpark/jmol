@@ -519,4 +519,14 @@ public class Group {
     return Float.NaN;
   }
 
+  /**
+   * @param name 
+   * @param offset  
+   * @return index of atom based on offset
+   */
+  public int getAtomIndex(String name, int offset) {
+    return -1;
+  }
+
+
 }

@@ -26,7 +26,7 @@
 package org.jmol.modelset;
 
 import org.jmol.util.BSUtil;
-import org.jmol.util.JmolEdge;
+import org.jmol.util.Edge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Measure;
 
@@ -476,7 +476,7 @@ import java.util.Map;
                                int connectOperation, BS bsA, BS bsB,
                                BS bsBonds, boolean isBonds, boolean addGroup, float energy) {
     if (connectOperation == T.auto
-        && order != JmolEdge.BOND_H_REGULAR) {
+        && order != Edge.BOND_H_REGULAR) {
       String stateScript = "connect ";
       if (minDistance != JC.DEFAULT_MIN_CONNECT_DISTANCE)
         stateScript += minDistance + " ";
@@ -528,7 +528,7 @@ import java.util.Map;
             bsExclude.set(targetIndex);
         }
         checkValencesAndBond(atoms[sourceIndex], atoms[targetIndex], order,
-            (order == JmolEdge.BOND_H_REGULAR ? 1 : mad), null);
+            (order == Edge.BOND_H_REGULAR ? 1 : mad), null);
       }
     }
   }
@@ -746,7 +746,7 @@ import java.util.Map;
       
       atom2.setMadAtom(viewer, rd);
       bs.set(atom2.index);
-      bondAtoms(atom1, atom2, JmolEdge.BOND_COVALENT_SINGLE, mad, null, 0, false, false);
+      bondAtoms(atom1, atom2, Edge.BOND_COVALENT_SINGLE, mad, null, 0, false, false);
     }
     // must reset the shapes to give them new atom counts and arrays
     shapeManager.loadDefaultShapes(this);

@@ -31,8 +31,8 @@ import javajs.util.P3;
 import org.jmol.java.BS;
 
 import org.jmol.util.Elements;
-import org.jmol.util.JmolEdge;
-import org.jmol.util.JmolNode;
+import org.jmol.util.Edge;
+import org.jmol.util.BNode;
 import org.jmol.util.Logger;
 
 //import org.jmol.util.Logger;
@@ -40,7 +40,7 @@ import org.jmol.util.Logger;
 /**
  * This class represents an atom in a <code>SmilesMolecule</code>.
  */
-public class SmilesAtom extends P3 implements JmolNode {
+public class SmilesAtom extends P3 implements BNode {
 
   final static int STEREOCHEMISTRY_DEFAULT = 0;
   final static int STEREOCHEMISTRY_ALLENE = 2;
@@ -582,7 +582,7 @@ public class SmilesAtom extends P3 implements JmolNode {
   }
 
   @Override
-  public JmolEdge[] getEdges() {
+  public Edge[] getEdges() {
     return (parent != null ? parent.getEdges() : bonds);
   }
 
@@ -707,7 +707,7 @@ public class SmilesAtom extends P3 implements JmolNode {
   }
 
   @Override
-  public boolean isCrossLinked(JmolNode node) {
+  public boolean isCrossLinked(BNode node) {
     SmilesBond bond = getBondTo((SmilesAtom) node);
     return bond.isHydrogen();
   }

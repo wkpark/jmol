@@ -25,6 +25,7 @@
 package org.jmol.adapter.readers.more;
 
 import javajs.util.List;
+import javajs.util.PT;
 
 import org.jmol.adapter.readers.molxyz.MolReader;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
@@ -81,6 +82,12 @@ public class JcampdxReader extends MolReader implements JmolJDXMOLReader {
 
   private int selectedModel;
   private JmolJDXMOLParser mpr;
+  private String acdMolFile;
+  private int nPeaks;
+  private List<float[]> acdAssignments; // JSV only 
+  private String title;
+  private String nucleus = "";
+  private String type;
 
   @Override
   public void initializeReader() throws Exception {
@@ -110,22 +117,54 @@ public class JcampdxReader extends MolReader implements JmolJDXMOLReader {
     int i = line.indexOf("=");
     if (i < 0 || !line.startsWith("##"))
       return true;
-    String label = line.substring(0, i).trim();
-    int pt = "##$MODELS ##$PEAKS  ##$SIGNALS".indexOf(label);
+    String label = PT.replaceAllCharacters(line.substring(0, i).trim(), " ","").toUpperCase();
+    if (label.length() > 12)
+      label = label.substring(0, 12);
+    int pt = ("##$MODELS   " +
+    		     "##$PEAKS    " +
+    		     "##$SIGNALS  " +
+    		     "##$MOLFILE  " +
+    		     "##NPOINTS   " +
+    		     "##TITLE     " +
+    		     "##PEAKASSIGN" +
+    		     "##.OBSERVENU" +
+    		     "##DATATYPE  ").indexOf(label);    
     if (pt < 0)
       return true;
     if (mpr == null)
       mpr = ((JmolJDXMOLParser) Interface
           .getOption("jsv.JDXMOLParser")).set(this, filePath,
           htParams);
-    mpr.setLine(line.substring(i + 1));
+    String value = line.substring(i + 1).trim();
+    mpr.setLine(value);
     switch (pt) {
     case 0:
       mpr.readModels();
       break;
-    case 10:
-    case 20:
+    case 12:
+    case 24:
       mpr.readPeaks(pt == 20, -1);
+      break;
+    case 36:
+      acdMolFile = mpr.readACDMolFile();
+      processModelData(acdMolFile, title + " (assigned)", "MOL", "mol", "", 0.01f, Float.NaN, true);
+      break;
+    case 48:
+      nPeaks = PT.parseInt(value);
+      break;
+    case 60:
+      title = PT.split(value, "$$")[0].trim(); 
+      break;
+    case 72:
+      acdAssignments = mpr.readACDAssignments(nPeaks);
+      break;
+    case 84:
+      nucleus = value.substring(1);
+      break;
+    case 96:
+      type = value;
+      if ((pt = type.indexOf(" ")) >= 0)
+        type = type.substring(0, pt);
       break;
     }
     return true;
@@ -140,8 +179,8 @@ public class JcampdxReader extends MolReader implements JmolJDXMOLReader {
 
   @Override
   public void processModelData(String data, String id, String type,
-                               String base, String last, float vibScale,
-                               boolean isFirst) throws Exception {
+                               String base, String last, float modelScale,
+                               float vibScale, boolean isFirst) throws Exception {
     int model0 = atomSetCollection.currentAtomSetIndex;
     AtomSetCollection model = null;
     while (true) {
@@ -173,11 +212,18 @@ public class JcampdxReader extends MolReader implements JmolJDXMOLReader {
         }
       }
       if (!Float.isNaN(vibScale)) {
-        Logger.info("jdx applying vibrationScale of " + vibScale + " to "
+        Logger.info("JcampdxReader applying vibration scaling of " + vibScale + " to "
             + model.atomCount + " atoms");
         Atom[] atoms = model.atoms;
         for (int i = model.atomCount; --i >= 0;)
           atoms[i].scaleVector(vibScale);
+      }
+      if (!Float.isNaN(modelScale)) {
+        Logger.info("JcampdxReader applying model scaling of " + modelScale + " to "
+            + model.atomCount + " atoms");
+        Atom[] atoms = model.atoms;
+        for (int i = model.atomCount; --i >= 0;)
+          atoms[i].scale(modelScale);
       }
       Logger.info("jdx model=" + id + " type=" + model.fileTypeName);
       atomSetCollection.appendAtomSetCollection(-1, model);
@@ -253,6 +299,14 @@ public class JcampdxReader extends MolReader implements JmolJDXMOLReader {
    * delete unreferenced n.m models
    */
   private void processPeakData() {
+    if (acdAssignments != null) {
+      try {
+        mpr.setACDAssignments(title, nucleus + type, 0, acdAssignments);
+      } catch (Exception e) {
+        // ignore
+      }
+    }
+
     int n = peakData.size();
     if (n == 0)
       return;
@@ -328,19 +382,19 @@ public class JcampdxReader extends MolReader implements JmolJDXMOLReader {
    * @param type
    */
   private void addType(int imodel, String type) {
-    String types = addType(
+    String types = addTypeStr(
         (String) atomSetCollection.getAtomSetAuxiliaryInfoValue(imodel,
             "spectrumTypes"), type);
     if (types == null)
       return;
     atomSetCollection.setAtomSetAuxiliaryInfoForSet("spectrumTypes", types,
         imodel);
-    String s = addType(allTypes, type);
+    String s = addTypeStr(allTypes, type);
     if (s != null)
       allTypes = s;
   }
 
-  private String addType(String types, String type) {
+  private String addTypeStr(String types, String type) {
     if (types != null && types.contains(type))
       return null;
     if (types == null)

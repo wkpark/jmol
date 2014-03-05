@@ -33,7 +33,8 @@ import org.jmol.api.SmilesMatcherInterface;
 import org.jmol.java.BS;
 
 import org.jmol.util.BSUtil;
-import org.jmol.util.JmolNode;
+import org.jmol.util.Node;
+import org.jmol.util.BNode;
 
 /**
  * Originating author: Nicholas Vervelle
@@ -132,13 +133,13 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   }
 
   @Override
-  public String getSmiles(JmolNode[] atoms, int atomCount, BS bsSelected,
+  public String getSmiles(Node[] atoms, int atomCount, BS bsSelected,
                           boolean asBioSmiles, boolean bioAllowUnmatchedRings,
                           boolean bioAddCrossLinks, String bioComment,
                           boolean explicitH) throws Exception {
     InvalidSmilesException.clear();
     if (asBioSmiles)
-      return (new SmilesGenerator()).getBioSmiles(atoms, atomCount, bsSelected,
+      return (new SmilesGenerator()).getBioSmiles((BNode[]) atoms, atomCount, bsSelected,
           bioAllowUnmatchedRings, bioAddCrossLinks, bioComment);
     return (new SmilesGenerator()).getSmiles(atoms, atomCount, bsSelected,
         explicitH);
@@ -250,7 +251,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    */
 
   @Override
-  public BS getSubstructureSet(String pattern, JmolNode[] atoms, int atomCount,
+  public BS getSubstructureSet(String pattern, Node[] atoms, int atomCount,
                                BS bsSelected, boolean isSmarts,
                                boolean firstMatchOnly) throws Exception {
     return (BS) match(pattern, atoms, atomCount, bsSelected, null, isSmarts,
@@ -262,7 +263,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    * 
    */
   @Override
-  public void getSubstructureSets(String[] smarts, JmolNode[] atoms,
+  public void getSubstructureSets(String[] smarts, Node[] atoms,
                                   int atomCount, int flags, BS bsSelected,
                                   List<BS> ret, List<BS>[] vRings)
       throws Exception {
@@ -317,7 +318,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    * @throws Exception
    */
   @Override
-  public BS[] getSubstructureSetArray(String pattern, JmolNode[] atoms,
+  public BS[] getSubstructureSetArray(String pattern, Node[] atoms,
                                       int atomCount, BS bsSelected,
                                       BS bsAromatic, boolean isSmarts,
                                       boolean firstMatchOnly) throws Exception {
@@ -340,7 +341,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    * 
    */
   @Override
-  public int[][] getCorrelationMaps(String pattern, JmolNode[] atoms,
+  public int[][] getCorrelationMaps(String pattern, Node[] atoms,
                                     int atomCount, BS bsSelected,
                                     boolean isSmarts, boolean firstMatchOnly)
       throws Exception {
@@ -363,7 +364,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   }
 
   @SuppressWarnings({ "unchecked" })
-  private Object match(String pattern, JmolNode[] atoms, int atomCount,
+  private Object match(String pattern, Node[] atoms, int atomCount,
                        BS bsSelected, BS bsAromatic, boolean isSmarts,
                        boolean matchAllAtoms, boolean firstMatchOnly, int mode)
       throws Exception {

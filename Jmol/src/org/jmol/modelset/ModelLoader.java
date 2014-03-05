@@ -28,7 +28,7 @@ package org.jmol.modelset;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Elements;
 import javajs.util.P3;
-import org.jmol.util.JmolEdge;
+import org.jmol.util.Edge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 import javajs.util.V3;
@@ -913,8 +913,8 @@ public final class ModelLoader {
       Bond b = bondAtoms(iterBond.getAtomUniqueID1(), iterBond
           .getAtomUniqueID2(), order);
       if (b != null) {
-        if (order > 1 && order != JmolEdge.BOND_STEREO_NEAR
-            && order != JmolEdge.BOND_STEREO_FAR)
+        if (order > 1 && order != Edge.BOND_STEREO_NEAR
+            && order != Edge.BOND_STEREO_FAR)
           haveMultipleBonds = true;
         float radius = iterBond.getRadius();
         if (radius > 0)
@@ -922,7 +922,7 @@ public final class ModelLoader {
         short colix = iterBond.getColix();
         if (colix >= 0)
           b.setColix(colix);
-        b.order |= (iOrder & JmolEdge.BOND_PYMOL_MULT);
+        b.order |= (iOrder & Edge.BOND_PYMOL_MULT);
       }
     }
     if (haveMultipleBonds && modelSet.someModelsHaveSymmetry
@@ -949,8 +949,8 @@ public final class ModelLoader {
     // Atom.bondMutually(...) will return null
     if (atom1.isBonded(atom2))
       return null;
-    boolean isNear = (order == JmolEdge.BOND_STEREO_NEAR);
-    boolean isFar = (order == JmolEdge.BOND_STEREO_FAR);
+    boolean isNear = (order == Edge.BOND_STEREO_NEAR);
+    boolean isFar = (order == Edge.BOND_STEREO_FAR);
     Bond bond;
     if (isNear || isFar) {
       bond = modelSet.bondMutually(atom1, atom2, (is2D ? order : 1), modelSet.getDefaultMadFromOrder(1), 0);
@@ -1286,7 +1286,7 @@ public final class ModelLoader {
       bsToTest.setBits(baseAtomIndex, modelSet.atomCount);
       for (int i = vStereo.size(); --i >= 0;) {
         Bond b = vStereo.get(i);
-        float dz2 = (b.order == JmolEdge.BOND_STEREO_NEAR ? 3 : -3);
+        float dz2 = (b.order == Edge.BOND_STEREO_NEAR ? 3 : -3);
         b.order = 1;
         if (b.atom2.z != b.atom1.z && (dz2 < 0) == (b.atom2.z < b.atom1.z))
           dz2 /= 3;
@@ -1446,10 +1446,10 @@ public final class ModelLoader {
   }
 
   
-  public static void createAtomDataSet(Viewer viewer, ModelSet modelSet, int tokType, Object atomSetCollection,
+  public static String createAtomDataSet(Viewer viewer, ModelSet modelSet, int tokType, Object atomSetCollection,
                                 BS bsSelected) {
     if (atomSetCollection == null)
-      return;
+      return null;
     // must be one of JmolConstants.LOAD_ATOM_DATA_TYPES
     JmolAdapter adapter = viewer.getModelAdapter();
     P3 pt = new P3();
@@ -1532,8 +1532,11 @@ public final class ModelLoader {
     case T.xyz:
       Logger.info(n + " atom positions read");
       modelSet.recalculateLeadMidpointsAndWingVectors(-1);
+      if (n == modelSet.atomCount)
+        return "boundbox {*};reset";
       break;
-    }    
+    }
+    return null;
   }
 
 }

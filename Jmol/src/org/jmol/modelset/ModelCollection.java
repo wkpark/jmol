@@ -62,7 +62,7 @@ import javajs.util.P4;
 
 import org.jmol.util.Point3fi;
 import org.jmol.util.Tensor;
-import org.jmol.util.JmolEdge;
+import org.jmol.util.Edge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 import org.jmol.util.Txt;
@@ -1779,7 +1779,7 @@ abstract public class ModelCollection extends BondCollection {
 
   protected int calculateStrutsMC(BS bs1, BS bs2) {
     // select only ONE model
-    makeConnections2(0, Float.MAX_VALUE, JmolEdge.BOND_STRUT, T.delete, bs1,
+    makeConnections2(0, Float.MAX_VALUE, Edge.BOND_STRUT, T.delete, bs1,
         bs2, null, false, false, 0);
     int iAtom = bs1.nextSetBit(0);
     if (iAtom < 0)
@@ -2113,10 +2113,10 @@ abstract public class ModelCollection extends BondCollection {
                                    boolean addGroup, float energy) {
     if (bsBonds == null)
       bsBonds = new BS();
-    boolean matchAny = (order == JmolEdge.BOND_ORDER_ANY);
-    boolean matchNull = (order == JmolEdge.BOND_ORDER_NULL);
+    boolean matchAny = (order == Edge.BOND_ORDER_ANY);
+    boolean matchNull = (order == Edge.BOND_ORDER_NULL);
     if (matchNull)
-      order = JmolEdge.BOND_COVALENT_SINGLE; //default for setting
+      order = Edge.BOND_COVALENT_SINGLE; //default for setting
     boolean matchHbond = Bond.isOrderH(order);
     boolean identifyOnly = false;
     boolean idOrModifyOnly = false;
@@ -2127,7 +2127,7 @@ abstract public class ModelCollection extends BondCollection {
       return deleteConnections(minD, maxD, order, bsA, bsB, isBonds, matchNull);
     case T.legacyautobonding:
     case T.auto:
-      if (order != JmolEdge.BOND_AROMATIC)
+      if (order != Edge.BOND_AROMATIC)
         return autoBond(bsA, bsB, bsBonds, isBonds, matchHbond,
             connectOperation == T.legacyautobonding);
       idOrModifyOnly = autoAromatize = true;
@@ -2162,7 +2162,7 @@ abstract public class ModelCollection extends BondCollection {
     Atom atomA = null;
     Atom atomB = null;
     char altloc = '\0';
-    short newOrder = (short) (order | JmolEdge.BOND_NEW);
+    short newOrder = (short) (order | Edge.BOND_NEW);
     try {
       for (int i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1)) {
         if (isBonds) {
@@ -2549,11 +2549,11 @@ abstract public class ModelCollection extends BondCollection {
            * E = Q/rAH - Q/rAD + Q/rCD - Q/rCH
            */
 
-          bo = JmolEdge.BOND_H_CALC;
+          bo = Edge.BOND_H_CALC;
           energy = HBond.getEnergy((float) Math.sqrt(d2), C.distance(atom),
               C.distance(D), atomNear.distance(D)) / 1000f;
         } else {
-          bo = JmolEdge.BOND_H_REGULAR;
+          bo = Edge.BOND_H_REGULAR;
         }
         bsHBonds.set(addHBond(atom, atomNear, bo, energy));
         nNew++;
@@ -2671,8 +2671,8 @@ abstract public class ModelCollection extends BondCollection {
     BS bsResult = (isBonds ? new BondSet() : new BS());
     int[] nBonded = new int[atomCount];
     int i;
-    boolean ishbond = (intType == JmolEdge.BOND_HYDROGEN_MASK);
-    boolean isall = (intType == JmolEdge.BOND_ORDER_ANY);
+    boolean ishbond = (intType == Edge.BOND_HYDROGEN_MASK);
+    boolean isall = (intType == Edge.BOND_ORDER_ANY);
     for (int ibond = 0; ibond < bondCount; ibond++) {
       Bond bond = bonds[ibond];
       if (isall || bond.is(intType) || ishbond && bond.isHydrogen()) {
@@ -3001,7 +3001,7 @@ abstract public class ModelCollection extends BondCollection {
         Atom a2 = bond.atom2;
         if (!bsAtoms.get(a1.index) || !bsAtoms.get(a2.index))
           continue;
-        String order = JmolEdge.getCmlBondOrder(bond.order);
+        String order = Edge.getCmlBondOrder(bond.order);
         if (order == null)
           continue;
         xmlUtil.appendTag(sb, "bond/", new String[] { "atomRefs2",
@@ -3157,27 +3157,6 @@ abstract public class ModelCollection extends BondCollection {
     return i >= 0 && atoms[i].modelIndex == modelCount - 1;
   }
 
-  public int getGroupAtom(Atom atom, int offset, String name) {
-    Group g = atom.group;
-    int monomerIndex = g.getMonomerIndex();
-    if (monomerIndex < 0)
-      return -1;
-    Group[] groups = g.getGroups();
-    int ipt = monomerIndex + offset;
-    if (ipt >= 0 && ipt < groups.length) {
-      Group m = groups[ipt];
-      if (offset == 1 && !m.isConnectedPrevious())
-        return -1;
-      if ("0".equals(name))
-        return m.leadAtomIndex;
-      // this is OK -- only used for finding special atom by name
-      for (int i = m.firstAtomIndex; i <= m.lastAtomIndex; i++)
-        if (name == null || name.equalsIgnoreCase(atoms[i].getAtomName()))
-          return i;
-    }
-    return -1;
-  }
-
   public boolean haveModelKit() {
     for (int i = 0; i < modelCount; i++)
       if (models[i].isModelKit)
@@ -3269,12 +3248,12 @@ abstract public class ModelCollection extends BondCollection {
       int index2 = (int) f[1];
       if (index2 < 0 || index1 >= atomCount || index2 >= atomCount)
         continue;
-      int order = (f.length > 2 ? (int) f[2] : JmolEdge.BOND_COVALENT_SINGLE);
+      int order = (f.length > 2 ? (int) f[2] : Edge.BOND_COVALENT_SINGLE);
       if (order < 0)
         order &= 0xFFFF; // 12.0.1 was saving struts as negative numbers
       short mad = (f.length > 3 ? (short) (1000f * connections[i][3])
           : getDefaultMadFromOrder(order));
-      if (order == 0 || mad == 0 && order != JmolEdge.BOND_STRUT
+      if (order == 0 || mad == 0 && order != Edge.BOND_STRUT
           && !Bond.isOrderH(order)) {
         Bond b = atoms[index1].getBond(atoms[index2]);
         if (b != null)

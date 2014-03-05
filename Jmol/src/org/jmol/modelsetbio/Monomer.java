@@ -101,6 +101,25 @@ public abstract class Monomer extends Group {
   }
 
   @Override
+  public int getAtomIndex(String name, int offset) {
+    Group[] groups = getGroups();
+    int ipt = monomerIndex + offset;
+    if (ipt >= 0 && ipt < groups.length) {
+      Group m = groups[ipt];
+      if (offset == 1 && !m.isConnectedPrevious())
+        return -1;
+      if ("0".equals(name))
+        return m.leadAtomIndex;
+      Atom[] atoms = chain.model.modelSet.atoms;
+      // this is OK -- only used for finding special atom by name
+      for (int i = m.firstAtomIndex; i <= m.lastAtomIndex; i++)
+        if (name == null || name.equalsIgnoreCase(atoms[i].getAtomName()))
+          return i;
+    }
+    return -1;
+  }
+
+  @Override
   public int getBioPolymerIndexInModel() {
     return (bioPolymer == null ? -1 : bioPolymer.bioPolymerIndexInModel);
   }

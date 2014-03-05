@@ -43,8 +43,8 @@ import javajs.util.PT;
 import javajs.util.SB;
 import javajs.util.P3;
 import org.jmol.util.Tensor;
-import org.jmol.util.JmolEdge;
-import org.jmol.util.JmolNode;
+import org.jmol.util.Edge;
+import org.jmol.util.BNode;
 import javajs.util.T3;
 import javajs.util.V3;
 import org.jmol.viewer.JC;
@@ -53,7 +53,7 @@ import org.jmol.viewer.Viewer;
 
 
 
-public class Atom extends Point3fi implements JmolNode {
+public class Atom extends Point3fi implements BNode {
 
   private final static byte VIBRATION_VECTOR_FLAG = 1;
   private final static byte IS_HETERO_FLAG = 2;
@@ -320,7 +320,7 @@ public class Atom extends Point3fi implements JmolNode {
     int n = 0;
     Bond b;
     for (int i = bonds.length; --i >= 0; )
-      if (((b = bonds[i]).order & JmolEdge.BOND_COVALENT_MASK) != 0
+      if (((b = bonds[i]).order & Edge.BOND_COVALENT_MASK) != 0
           && !b.getOtherAtom(this).isDeleted())
         ++n;
     return n;
@@ -332,7 +332,7 @@ public class Atom extends Point3fi implements JmolNode {
       return 0;
     int n = 0;
     for (int i = bonds.length; --i >= 0; ) {
-      if ((bonds[i].order & JmolEdge.BOND_COVALENT_MASK) == 0)
+      if ((bonds[i].order & Edge.BOND_COVALENT_MASK) == 0)
         continue;
       Atom a = bonds[i].getOtherAtom(this);
       if (a.valence >= 0 && a.getElementNumber() == 1)
@@ -342,7 +342,7 @@ public class Atom extends Point3fi implements JmolNode {
   }
 
   @Override
-  public JmolEdge[] getEdges() {
+  public Edge[] getEdges() {
     return bonds;
   }
   
@@ -1483,11 +1483,11 @@ public class Atom extends Point3fi implements JmolNode {
   
   @Override
   public int getOffsetResidueAtom(String name, int offset) {
-    return group.chain.model.modelSet.getGroupAtom(this, offset, name);
+    return group.getAtomIndex(name, offset);
   }
   
   @Override
-  public boolean isCrossLinked(JmolNode node) {
+  public boolean isCrossLinked(BNode node) {
     return group.isCrossLinked(((Atom) node).getGroup());
   }
 

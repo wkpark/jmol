@@ -32,28 +32,10 @@ import javajs.util.List;
 
 
 
-public interface JmolNode {
-  
-  // abstracts out the essential pieces for SMILES processing
-  
-  public void set(float x, float y, float z);
-  public int getAtomSite();
-  public int getBondedAtomIndex(int j);
-  public int getCovalentHydrogenCount();
-  public JmolEdge[] getEdges();
-  public int getElementNumber();
-  public int getFormalCharge();
-  public int getIndex();
-  public int getIsotopeNumber();
-  public int getModelIndex();
-  public int getValence();
-  public int getCovalentBondCount();
-  public int getImplicitHydrogenCount();
-  public int getAtomicAndIsotopeNumber();
+public interface BNode extends Node {
   
   // BIOSMILES/BIOSMARTS
   
-  public String getAtomName();
   public String getBioStructureTypeName();
   public String getGroup1(char c0);
   public String getGroup3(boolean allowNull);
@@ -64,7 +46,7 @@ public interface JmolNode {
   public boolean getCrossLinkLeadAtomIndexes(List<Integer> vReturn);
   public void getGroupBits(BS bs);
   public boolean isLeadAtom();
-  public boolean isCrossLinked(JmolNode node);
+  public boolean isCrossLinked(BNode node);
   public boolean isProtein();
   public boolean isNucleic();
   public boolean isDna();
@@ -72,6 +54,4 @@ public interface JmolNode {
   public boolean isPurine();
   public boolean isPyrimidine();
   public boolean isDeleted();
-  public String getAtomType();
-  public BS findAtomsLike(String substring);
 }

@@ -14,7 +14,7 @@ import javajs.util.V3;
 import org.jmol.java.BS;
 import org.jmol.modelset.TickInfo;
 import org.jmol.util.Escape;
-import org.jmol.util.JmolEdge;
+import org.jmol.util.Edge;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 
@@ -930,9 +930,9 @@ abstract public class ScriptParam extends ScriptError {
   }
 
   public static int getBondOrderFromString(String s) {
-    return (s.indexOf(' ') < 0 ? JmolEdge.getBondOrderFromString(s)
+    return (s.indexOf(' ') < 0 ? Edge.getBondOrderFromString(s)
         : s.toLowerCase().indexOf("partial ") == 0 ? getPartialBondOrderFromString(s
-            .substring(8).trim()) : JmolEdge.BOND_ORDER_NULL);
+            .substring(8).trim()) : Edge.BOND_ORDER_NULL);
   }
 
   private static int getPartialBondOrderFromString(String s) {

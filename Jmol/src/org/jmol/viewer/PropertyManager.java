@@ -57,7 +57,7 @@ import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
-import org.jmol.util.JmolEdge;
+import org.jmol.util.Edge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 
@@ -1070,20 +1070,20 @@ public class PropertyManager implements JmolPropertyManager {
     int order = b.getValence();
     if (order > 3)
       order = 1;
-    switch (b.order & ~JmolEdge.BOND_NEW) {
-    case JmolEdge.BOND_AROMATIC:
+    switch (b.order & ~Edge.BOND_NEW) {
+    case Edge.BOND_AROMATIC:
       order = (asJSON ? -3 : 4);
       break;
-    case JmolEdge.BOND_PARTIAL12:
+    case Edge.BOND_PARTIAL12:
       order = (asJSON ? -3 : 5);
       break;
-    case JmolEdge.BOND_AROMATIC_SINGLE:
+    case Edge.BOND_AROMATIC_SINGLE:
       order = (asJSON ? 1: 6);
       break;
-    case JmolEdge.BOND_AROMATIC_DOUBLE:
+    case Edge.BOND_AROMATIC_DOUBLE:
       order = (asJSON ? 2: 7);
       break;
-    case JmolEdge.BOND_PARTIAL01:
+    case Edge.BOND_PARTIAL01:
       order = (asJSON ? -1: 8);
       break;
     }
@@ -1330,9 +1330,9 @@ public class PropertyManager implements JmolPropertyManager {
     viewer.getAtomIdentityInfo(atom2.index, infoB);
     info.put("atom1", infoA);
     info.put("atom2", infoB);
-    info.put("order", Float.valueOf(PT.fVal(JmolEdge
+    info.put("order", Float.valueOf(PT.fVal(Edge
         .getBondOrderNumberFromOrder(bond.order))));
-    info.put("type", JmolEdge.getBondOrderNameFromOrder(bond.order));
+    info.put("type", Edge.getBondOrderNameFromOrder(bond.order));
     info.put("radius", Float.valueOf((float) (bond.mad / 2000.)));
     info.put("length_Ang", Float.valueOf(atom1.distance(atom2)));
     info.put("visible", Boolean.valueOf(bond.shapeVisibilityFlags != 0));

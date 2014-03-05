@@ -58,7 +58,7 @@ import javajs.util.Quat;
 import org.jmol.util.Parser;
 import org.jmol.util.Tensor;
 import org.jmol.util.Escape;
-import org.jmol.util.JmolEdge;
+import org.jmol.util.Edge;
 import org.jmol.util.Logger;
 import org.jmol.util.Rectangle;
 import javajs.util.T3;
@@ -1370,10 +1370,10 @@ abstract public class AtomCollection {
       Bond[] b2 = bonds[i].getOtherAtom(atom).bonds;
       for (int j = 0; j < b2.length; j++)
         switch (b2[j].order) {
-        case JmolEdge.BOND_AROMATIC:
-        case JmolEdge.BOND_AROMATIC_DOUBLE:
-        case JmolEdge.BOND_COVALENT_DOUBLE:
-        case JmolEdge.BOND_COVALENT_TRIPLE:
+        case Edge.BOND_AROMATIC:
+        case Edge.BOND_AROMATIC_DOUBLE:
+        case Edge.BOND_COVALENT_DOUBLE:
+        case Edge.BOND_COVALENT_TRIPLE:
           return true;
         }
     }

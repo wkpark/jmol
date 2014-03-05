@@ -26,11 +26,11 @@
 package org.jmol.modelset;
 
 import org.jmol.util.C;
-import org.jmol.util.JmolEdge;
-import org.jmol.util.JmolNode;
+import org.jmol.util.Edge;
+import org.jmol.util.Node;
 import org.jmol.viewer.JC;
 
-public class Bond extends JmolEdge {
+public class Bond extends Edge {
 
   public Atom atom1;
   public Atom atom2;
@@ -179,15 +179,15 @@ public class Bond extends JmolEdge {
 
   @Override
   public int getCovalentOrder() {
-    return JmolEdge.getCovalentBondOrder(order);
+    return Edge.getCovalentBondOrder(order);
   }
 
   String getOrderName() {
-    return JmolEdge.getBondOrderNameFromOrder(order);
+    return Edge.getBondOrderNameFromOrder(order);
   }
 
   String getOrderNumberAsString() {
-    return JmolEdge.getBondOrderNumberFromOrder(order);
+    return Edge.getBondOrderNumberFromOrder(order);
   }
 
   short getColix1() {
@@ -213,7 +213,7 @@ public class Bond extends JmolEdge {
   }
 
   @Override
-  public JmolNode getOtherAtomNode(JmolNode thisAtom) {
+  public Node getOtherAtomNode(Node thisAtom) {
     return (atom1 == thisAtom ? atom2 : atom2 == thisAtom ? atom1 : null);
   }
   

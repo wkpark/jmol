@@ -155,50 +155,6 @@ public class Parser {
     return str;    
   }
   
-  public static float[][] parseFloatArray2d(String str) {
-    str = fixDataString(str);
-    int[] lines = markLines(str, '\n');
-    int nLines = lines.length;
-    float[][] data = AU.newFloat2(nLines);
-    for (int iLine = 0, pt = 0; iLine < nLines; pt = lines[iLine++]) {
-      String[] tokens = PT.getTokens(str.substring(pt, lines[iLine]));
-      PT.parseFloatArrayData(tokens, data[iLine] = new float[tokens.length]);
-    }
-    return data;
-  }
-
-  public static float[][][] parseFloatArray3d(String str) {
-    str = fixDataString(str);
-    int[] lines = markLines(str, '\n');
-    int nLines = lines.length;
-    String[] tokens = PT.getTokens(str.substring(0, lines[0]));
-    if (tokens.length != 3)
-      return new float[0][0][0];
-    int nX = PT.parseInt(tokens[0]);
-    int nY = PT.parseInt(tokens[1]);
-    int nZ = PT.parseInt(tokens[2]);
-    if (nX < 1 || nY < 1 || nZ < 1)
-      return new float[1][1][1];
-    float[][][] data = AU.newFloat3(nX, nY);
-    int iX = 0;
-    int iY = 0;
-    for (int iLine = 1, pt = lines[0]; iLine < nLines && iX < nX; pt = lines[iLine++]) {
-      tokens = PT.getTokens(str.substring(pt, lines[iLine]));
-      if (tokens.length < nZ)
-        continue;
-      PT.parseFloatArrayData(tokens, data[iX][iY] = new float[tokens.length]);
-      if (++iY == nY) {
-        iX++;
-        iY = 0;
-      } 
-    }
-    if (iX != nX) {
-      System.out.println("Error reading 3D data -- nX = " + nX + ", but only " + iX + " blocks read");      
-      return new float[1][1][1];
-    }
-    return data;
-  }
-
   public static int[] markLines(String data, char eol) {
     int nLines = 0;
     for (int i = data.length(); --i >=0;)

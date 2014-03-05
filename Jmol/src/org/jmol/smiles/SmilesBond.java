@@ -24,13 +24,13 @@
 
 package org.jmol.smiles;
 
-import org.jmol.util.JmolEdge;
-import org.jmol.util.JmolNode;
+import org.jmol.util.Edge;
+import org.jmol.util.Node;
 
 /**
  * Bond in a SmilesMolecule
  */
-public class SmilesBond extends JmolEdge {
+public class SmilesBond extends Edge {
 
   // Bond orders
   public final static int TYPE_UNKNOWN = -1;
@@ -67,7 +67,7 @@ public class SmilesBond extends JmolEdge {
   private SmilesAtom atom2;
 
   boolean isNot;
-  JmolEdge matchingBond;
+  Edge matchingBond;
 
   public SmilesBond[] primitives;
   public int nPrimitives;
@@ -234,7 +234,7 @@ public class SmilesBond extends JmolEdge {
   }
 
   @Override
-  public JmolNode getOtherAtomNode(JmolNode atom) {
+  public Node getOtherAtomNode(Node atom) {
     return (atom == atom1 ? atom2 : atom == atom2 ? atom1 : null);
   }
 

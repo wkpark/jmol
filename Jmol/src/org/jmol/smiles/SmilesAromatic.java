@@ -32,8 +32,8 @@ import javajs.util.P3;
 import javajs.util.V3;
 
 import org.jmol.java.BS;
-import org.jmol.util.JmolEdge;
-import org.jmol.util.JmolNode;
+import org.jmol.util.Edge;
+import org.jmol.util.Node;
 
 public class SmilesAromatic {
   /** 
@@ -54,7 +54,7 @@ public class SmilesAromatic {
    *        true if standard deviation of vNorm.dot.vMean is less than cutoff
    */
 
-  public final static boolean isFlatSp2Ring(JmolNode[] atoms,
+  public final static boolean isFlatSp2Ring(Node[] atoms,
                                             BS bsSelected, BS bs,
                                             float cutoff) {
     /*
@@ -115,8 +115,8 @@ public class SmilesAromatic {
      */
 
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-      JmolNode ringAtom = atoms[i];
-      JmolEdge[] bonds = ringAtom.getEdges();
+      Node ringAtom = atoms[i];
+      Edge[] bonds = ringAtom.getEdges();
       if (bonds.length < 3)
         continue;
       if (bonds.length > 3)
@@ -137,8 +137,8 @@ public class SmilesAromatic {
     int nNorms = 0;
     float maxDev = (1 - cutoff * 5);
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-      JmolNode ringAtom = atoms[i];
-      JmolEdge[] bonds = ringAtom.getEdges();
+      Node ringAtom = atoms[i];
+      Edge[] bonds = ringAtom.getEdges();
       // if more than three connections, ring cannot be fully conjugated
       // identify substituent and two ring atoms
       int iSub = -1;
@@ -201,8 +201,8 @@ public class SmilesAromatic {
     return (sum < cutoff);
   }
 
-  static float getNormalThroughPoints(JmolNode pointA, JmolNode pointB,
-                                      JmolNode pointC, V3 vNorm,
+  static float getNormalThroughPoints(Node pointA, Node pointB,
+                                      Node pointC, V3 vNorm,
                                       V3 vAB, V3 vAC) {
     vAB.sub2((P3) pointB, (P3) pointA);
     vAC.sub2((P3) pointC, (P3) pointA);
@@ -220,15 +220,15 @@ public class SmilesAromatic {
    * @param bsAtoms
    * @return bsAromatic
    */
-  static BS checkAromaticDefined(JmolNode[] jmolAtoms, BS bsAtoms) {
+  static BS checkAromaticDefined(Node[] jmolAtoms, BS bsAtoms) {
     BS bsDefined = new BS();
     for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
-      JmolEdge[] bonds = jmolAtoms[i].getEdges();
+      Edge[] bonds = jmolAtoms[i].getEdges();
       for (int j = 0; j < bonds.length; j++) {
         switch (bonds[j].order) {
-        case JmolEdge.BOND_AROMATIC:
-        case JmolEdge.BOND_AROMATIC_DOUBLE:
-        case JmolEdge.BOND_AROMATIC_SINGLE:
+        case Edge.BOND_AROMATIC:
+        case Edge.BOND_AROMATIC_DOUBLE:
+        case Edge.BOND_AROMATIC_SINGLE:
           bsDefined.set(bonds[j].getAtomIndex1());
           bsDefined.set(bonds[j].getAtomIndex2());
         }
@@ -237,7 +237,7 @@ public class SmilesAromatic {
     return bsDefined;
   }
   
-  static void checkAromaticStrict(JmolNode[] jmolAtoms,
+  static void checkAromaticStrict(Node[] jmolAtoms,
                                          BS bsAromatic, List<Object> v5,
                                          List<Object> v6) {
     BS bsStrict = new BS();
@@ -274,7 +274,7 @@ public class SmilesAromatic {
    * @param bsRing  this ring's atoms
    * @param is5
    */
-  private static void checkAromaticStrict2(JmolNode[] jmolAtoms,
+  private static void checkAromaticStrict2(Node[] jmolAtoms,
                                           BS bsStrict, List<Object> v5,
                                           List<Object> v6, BS bsRing,
                                           boolean is5) {
@@ -288,9 +288,9 @@ public class SmilesAromatic {
       break;
     default:
       for (int i = bsRing.nextSetBit(0); i >= 0; i = bsRing.nextSetBit(i + 1)) {
-        JmolEdge[] bonds = jmolAtoms[i].getEdges();
+        Edge[] bonds = jmolAtoms[i].getEdges();
         for (int j = 0; j < bonds.length; j++)
-          if (bonds[j].order == JmolEdge.BOND_COVALENT_DOUBLE) {
+          if (bonds[j].order == Edge.BOND_COVALENT_DOUBLE) {
             int i2 = bonds[j].getOtherAtomNode(jmolAtoms[i]).getIndex();
             if (!bsRing.get(i2)) {
               boolean piShared = false;
@@ -331,25 +331,25 @@ public class SmilesAromatic {
    * @param is5
    * @return  number of pairs
    */
-  private static int countInternalPairs(JmolNode[] jmolAtoms, BS bsRing,
+  private static int countInternalPairs(Node[] jmolAtoms, BS bsRing,
                                         boolean is5) {
     int nDouble = 0;
     int nAromatic = 0;
     int nLonePairs = 0;
     for (int i = bsRing.nextSetBit(0); i >= 0; i = bsRing.nextSetBit(i + 1)) {
-      JmolNode atom = jmolAtoms[i];
-      JmolEdge[] bonds = atom.getEdges();
+      Node atom = jmolAtoms[i];
+      Edge[] bonds = atom.getEdges();
       boolean haveDouble = false;
       for (int k = 0; k < bonds.length; k++) {
         int j = bonds[k].getOtherAtomNode(atom).getIndex();
         if (bsRing.get(j)) {
           switch (bonds[k].order) {
-          case JmolEdge.BOND_AROMATIC_DOUBLE:
-          case JmolEdge.BOND_AROMATIC_SINGLE:
-          case JmolEdge.BOND_AROMATIC:
+          case Edge.BOND_AROMATIC_DOUBLE:
+          case Edge.BOND_AROMATIC_SINGLE:
+          case Edge.BOND_AROMATIC:
             nAromatic++;
             break;
-          case JmolEdge.BOND_COVALENT_DOUBLE:
+          case Edge.BOND_COVALENT_DOUBLE:
             nDouble++;
             haveDouble = true;
           }

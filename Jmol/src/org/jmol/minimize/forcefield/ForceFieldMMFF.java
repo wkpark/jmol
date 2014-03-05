@@ -48,7 +48,7 @@ import org.jmol.modelset.Bond;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
-import org.jmol.util.JmolEdge;
+import org.jmol.util.Edge;
 import org.jmol.util.Logger;
 
 /**
@@ -866,7 +866,7 @@ public class ForceFieldMMFF extends ForceField {
 
     try {
       smartsMatcher.getSubstructureSets(smarts, atoms, atoms.length,
-          JmolEdge.FLAG_AROMATIC_STRICT | JmolEdge.FLAG_AROMATIC_DOUBLE,
+          Edge.FLAG_AROMATIC_STRICT | Edge.FLAG_AROMATIC_DOUBLE,
           bsConnected, bitSets, vRings);
     } catch (Exception e) {
       Logger.error(e.toString());

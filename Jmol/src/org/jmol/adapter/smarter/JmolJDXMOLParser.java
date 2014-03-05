@@ -2,6 +2,8 @@ package org.jmol.adapter.smarter;
 
 import java.util.Map;
 
+import javajs.util.List;
+
 
 public interface JmolJDXMOLParser {
 
@@ -19,5 +21,12 @@ public interface JmolJDXMOLParser {
       throws Exception;
 
   public abstract void setLine(String s);
+
+  public abstract String readACDMolFile() throws Exception;
+
+  List<float[]> readACDAssignments(int nPoints) throws Exception;
+
+  int setACDAssignments(String model, String type, int peakCount,
+                        List<float[]> acdlist) throws Exception;
 
 }

@@ -59,6 +59,8 @@ import org.jmol.viewer.Viewer.ACCESS;
 
 public class FileManager implements BytePoster {
 
+  public static String SIMULATION_PROTOCOL = "http://SIMULATION/";
+
   private Viewer viewer;
 
   FileManager(Viewer viewer) {
@@ -1236,9 +1238,18 @@ public class FileManager implements BytePoster {
     int pt = key.indexOf("|");
     if (pt >= 0)
       key = key.substring(0, pt);
+    Object data = null;
+    /**
+     * @j2sNative
+     * 
+     * (data = Jmol.Cache.get(key)) || (data = this.cache.get(key));
+     * 
+     */
+    {
     if (Logger.debugging)
       Logger.debug("cacheGet " + key + " " + cache.containsKey(key));
-    Object data = cache.get(key);
+       data = cache.get(key);
+    }    
     return (bytesOnly && (data instanceof String) ? null : data);
   }
 

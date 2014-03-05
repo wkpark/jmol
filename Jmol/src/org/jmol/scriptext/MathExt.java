@@ -49,7 +49,7 @@ import org.jmol.script.T;
 import org.jmol.util.BSUtil;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
-import org.jmol.util.JmolEdge;
+import org.jmol.util.Edge;
 import org.jmol.util.Parser;
 import org.jmol.util.Point3fi;
 
@@ -553,7 +553,7 @@ public class MathExt implements JmolMathExtension {
     float min = Integer.MIN_VALUE, max = Integer.MAX_VALUE;
     float fmin = 0, fmax = Float.MAX_VALUE;
 
-    int order = JmolEdge.BOND_ORDER_ANY;
+    int order = Edge.BOND_ORDER_ANY;
     BS atoms1 = null;
     BS atoms2 = null;
     boolean haveDecimal = false;
@@ -575,10 +575,10 @@ public class MathExt implements JmolMathExtension {
       case T.string:
         String type = SV.sValue(var);
         if (type.equalsIgnoreCase("hbond"))
-          order = JmolEdge.BOND_HYDROGEN_MASK;
+          order = Edge.BOND_HYDROGEN_MASK;
         else
           order = ScriptParam.getBondOrderFromString(type);
-        if (order == JmolEdge.BOND_ORDER_NULL)
+        if (order == Edge.BOND_ORDER_NULL)
           return false;
         break;
       case T.decimal:

@@ -50,7 +50,7 @@ import org.jmol.modelset.ModelSet;
 import org.jmol.script.T;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
-import org.jmol.util.JmolEdge;
+import org.jmol.util.Edge;
 import javajs.util.P3;
 import org.jmol.util.Txt;
 
@@ -235,7 +235,7 @@ public final class BioModel extends Model{
         .calculateStruts(modelSet, bs1, bs2, vCA, thresh, delta, strutsMultiple);
     for (int i = 0; i < struts.size(); i++) {
       Atom[] o = struts.get(i);
-      modelSet.bondAtoms(o[0], o[1], JmolEdge.BOND_STRUT, mad, null, 0, false, true);
+      modelSet.bondAtoms(o[0], o[1], Edge.BOND_STRUT, mad, null, 0, false, true);
     }
     return struts.size(); 
   }
@@ -390,7 +390,7 @@ public final class BioModel extends Model{
       Atom atom1 = bond.getAtom1();
       Model m = models[atom1.modelIndex];
       if (!m.isBioModel || m.trajectoryBaseIndex != modelIndex
-          || (bond.order & JmolEdge.BOND_H_CALC_MASK) == 0)
+          || (bond.order & Edge.BOND_H_CALC_MASK) == 0)
         continue;
       if (bsAtoms != null && !bsAtoms.get(atom1.index)) {
         hasRasmolHBonds = true;

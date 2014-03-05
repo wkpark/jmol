@@ -64,7 +64,7 @@ import org.jmol.util.C;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
-import org.jmol.util.JmolEdge;
+import org.jmol.util.Edge;
 import org.jmol.util.Parser;
 import org.jmol.util.Point3fi;
 
@@ -409,13 +409,13 @@ public class CmdExt implements JmolCmdExtension {
           n = viewer.calculateStruts(bs1, bs2);
           if (n > 0) {
             setShapeProperty(JC.SHAPE_STICKS, "type",
-                Integer.valueOf(JmolEdge.BOND_STRUT));
+                Integer.valueOf(Edge.BOND_STRUT));
             e.setShapePropertyBs(JC.SHAPE_STICKS, "color",
                 Integer.valueOf(0x0FFFFFF), null);
             e.setShapeTranslucency(JC.SHAPE_STICKS, "", "translucent", 0.5f,
                 null);
             setShapeProperty(JC.SHAPE_STICKS, "type",
-                Integer.valueOf(JmolEdge.BOND_COVALENT_MASK));
+                Integer.valueOf(Edge.BOND_COVALENT_MASK));
           }
           showString(GT.i(GT._("{0} struts mp.added"), n));
         }
@@ -1002,7 +1002,7 @@ public class CmdExt implements JmolCmdExtension {
     if (chk)
       return;
     setShapeProperty(JC.SHAPE_STICKS, "type",
-        Integer.valueOf(JmolEdge.BOND_HYDROGEN_MASK));
+        Integer.valueOf(Edge.BOND_HYDROGEN_MASK));
     e.setShapeSizeBs(JC.SHAPE_STICKS, 0, bsAtoms);
     viewer.autoHbond(bsAtoms, bsAtoms, true);
     viewer.select(bsAtoms, false, 0, e.tQuiet);
@@ -1339,7 +1339,7 @@ public class CmdExt implements JmolCmdExtension {
     float radius = Float.NaN;
     int[] colorArgb = new int[] { Integer.MIN_VALUE };
     int distanceCount = 0;
-    int bondOrder = JmolEdge.BOND_ORDER_NULL;
+    int bondOrder = Edge.BOND_ORDER_NULL;
     int bo;
     int operation = T.modifyorcreate;
     boolean isDelete = false;
@@ -1379,8 +1379,8 @@ public class CmdExt implements JmolCmdExtension {
         if (nAtomSets > 0) {
           if (haveType || isColorOrRadius)
             eval.error(ScriptError.ERROR_invalidParameterOrder);
-          bo = JmolEdge.getBondOrderFromFloat(floatParameter(i));
-          if (bo == JmolEdge.BOND_ORDER_NULL)
+          bo = Edge.getBondOrderFromFloat(floatParameter(i));
+          if (bo == Edge.BOND_ORDER_NULL)
             invArg();
           bondOrder = bo;
           haveType = true;
@@ -1441,8 +1441,8 @@ public class CmdExt implements JmolCmdExtension {
           invArg();
         operation = eval.theTok;
         if (operation == T.auto
-            && !(bondOrder == JmolEdge.BOND_ORDER_NULL
-                || bondOrder == JmolEdge.BOND_H_REGULAR || bondOrder == JmolEdge.BOND_AROMATIC))
+            && !(bondOrder == Edge.BOND_ORDER_NULL
+                || bondOrder == Edge.BOND_H_REGULAR || bondOrder == Edge.BOND_AROMATIC))
           invArg();
         break;
       case T.struts:
@@ -1469,7 +1469,7 @@ public class CmdExt implements JmolCmdExtension {
         // I know -- should have required the COLOR keyword
         //}
         String cmd = paramAsStr(i);
-        if ((bo = ScriptParam.getBondOrderFromString(cmd)) == JmolEdge.BOND_ORDER_NULL) {
+        if ((bo = ScriptParam.getBondOrderFromString(cmd)) == Edge.BOND_ORDER_NULL) {
           invArg();
         }
         // must be bond type
@@ -1477,7 +1477,7 @@ public class CmdExt implements JmolCmdExtension {
           eval.error(ScriptError.ERROR_incompatibleArguments);
         haveType = true;
         switch (bo) {
-        case JmolEdge.BOND_PARTIAL01:
+        case Edge.BOND_PARTIAL01:
           switch (tokAt(i + 1)) {
           case T.decimal:
             bo = ScriptParam.getPartialBondOrderFromFloatEncodedInt(st[++i].intValue);
@@ -1487,9 +1487,9 @@ public class CmdExt implements JmolCmdExtension {
             break;
           }
           break;
-        case JmolEdge.BOND_H_REGULAR:
+        case Edge.BOND_H_REGULAR:
           if (tokAt(i + 1) == T.integer) {
-            bo = (short) (intParameter(++i) << JmolEdge.BOND_HBOND_SHIFT);
+            bo = (short) (intParameter(++i) << Edge.BOND_HBOND_SHIFT);
             energy = floatParameter(++i);
           }
           break;
@@ -1535,7 +1535,7 @@ public class CmdExt implements JmolCmdExtension {
     }
     if (isColorOrRadius) {
       if (!haveType)
-        bondOrder = JmolEdge.BOND_ORDER_ANY;
+        bondOrder = Edge.BOND_ORDER_ANY;
       if (!haveOperation)
         operation = T.modify;
     }
@@ -2478,7 +2478,7 @@ public class CmdExt implements JmolCmdExtension {
       return;
     boolean isDefault = (dataLabel.toLowerCase().indexOf("(default)") >= 0);
     if (dataType.equals("connect_atoms")) {
-      viewer.connect(Parser.parseFloatArray2d(dataString));
+      viewer.connect((float[][]) parseDataArray(dataString, false));
       return;
     }
     if (dataType.indexOf("ligand_") == 0) {
@@ -2511,7 +2511,7 @@ public class CmdExt implements JmolCmdExtension {
     if (dataType.indexOf("data2d_") == 0) {
       // data2d_someName
       d[0] = dataLabel;
-      d[1] = Parser.parseFloatArray2d(dataString);
+      d[1] = parseDataArray(dataString, false);
       d[3] = Integer.valueOf(2);
       viewer.setData(dataLabel, d, 0, 0, 0, 0, 0);
       return;
@@ -2519,7 +2519,7 @@ public class CmdExt implements JmolCmdExtension {
     if (dataType.indexOf("data3d_") == 0) {
       // data3d_someName
       d[0] = dataLabel;
-      d[1] = Parser.parseFloatArray3d(dataString);
+      d[1] = parseDataArray(dataString, true);
       d[3] = Integer.valueOf(3);
       viewer.setData(dataLabel, d, 0, 0, 0, 0, 0);
       return;
@@ -6800,10 +6800,10 @@ public class CmdExt implements JmolCmdExtension {
     if (defOn)
       mad = Math.round(viewer.getFloat(T.strutdefaultradius) * 2000f);
     setShapeProperty(JC.SHAPE_STICKS, "type",
-        Integer.valueOf(JmolEdge.BOND_STRUT));
+        Integer.valueOf(Edge.BOND_STRUT));
     eval.setShapeSizeBs(JC.SHAPE_STICKS, mad, null);
     setShapeProperty(JC.SHAPE_STICKS, "type",
-        Integer.valueOf(JmolEdge.BOND_COVALENT_MASK));
+        Integer.valueOf(Edge.BOND_COVALENT_MASK));
     return true;
   }
 
@@ -7682,6 +7682,48 @@ public class CmdExt implements JmolCmdExtension {
       String name = e.setShapeNameParameter(i).toLowerCase();
       setShapeProperty(iShape, "thisID", name);
       return name;
+  }
+
+  private Object parseDataArray(String str, boolean is3D) {
+    str = Parser.fixDataString(str);
+    int[] lines = Parser.markLines(str, '\n');
+    int nLines = lines.length;
+    if (!is3D) {
+      float[][] data = AU.newFloat2(nLines);
+      for (int iLine = 0, pt = 0; iLine < nLines; pt = lines[iLine++]) {
+        String[] tokens = PT.getTokens(str.substring(pt, lines[iLine]));
+        PT.parseFloatArrayData(tokens, data[iLine] = new float[tokens.length]);
+      }
+      return data;
+    }
+
+    String[] tokens = PT.getTokens(str.substring(0, lines[0]));
+    if (tokens.length != 3)
+      return new float[0][0][0];
+    int nX = PT.parseInt(tokens[0]);
+    int nY = PT.parseInt(tokens[1]);
+    int nZ = PT.parseInt(tokens[2]);
+    if (nX < 1 || nY < 1 || nZ < 1)
+      return new float[1][1][1];
+    float[][][] data = AU.newFloat3(nX, nY);
+    int iX = 0;
+    int iY = 0;
+    for (int iLine = 1, pt = lines[0]; iLine < nLines && iX < nX; pt = lines[iLine++]) {
+      tokens = PT.getTokens(str.substring(pt, lines[iLine]));
+      if (tokens.length < nZ)
+        continue;
+      PT.parseFloatArrayData(tokens, data[iX][iY] = new float[tokens.length]);
+      if (++iY == nY) {
+        iX++;
+        iY = 0;
+      }
+    }
+    if (iX != nX) {
+      System.out.println("Error reading 3D data -- nX = " + nX + ", but only "
+          + iX + " blocks read");
+      return new float[1][1][1];
+    }
+    return data;
   }
 
 

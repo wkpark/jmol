@@ -642,7 +642,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public MeasurementData newMeasurementData(String id, List<Object> points) {
     return ((MeasurementData) Interface
-        .getOption("modelset.MeasurementData")).init(id, this, points);
+        .getInterface("org.jmol.modelset.MeasurementData")).init(id, this, points);
   }
   
   private JmolDataManager getDataManager() {
@@ -10402,11 +10402,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public boolean allowCapture() {
     return !isApplet || isSignedApplet;
-  }
-
-  public MeasurementPending getMP() {
-    return ((MeasurementPending) Interface
-        .getOption("modelset.MeasurementPending")).set(modelSet);
   }
 
   @Override

@@ -3296,8 +3296,13 @@ abstract public class ModelCollection extends BondCollection {
       if (mnum == null && mid == null && (mid = getModelTitle(i)) == null)
         continue;
       if (haveFile) {
-        fname = getModelFileName(i) + "#";
-        mid = fname + mid;
+        fname = getModelFileName(i);
+        if (fname.endsWith("#molfile")) {
+          mid = fname;
+        } else {
+          fname += "#";
+          mid = fname + mid;
+        }
       }
       if (id.equalsIgnoreCase(mid) || id.equalsIgnoreCase(mnum))
         return (isBaseModel ? viewer.getJDXBaseModelIndex(i) : i);

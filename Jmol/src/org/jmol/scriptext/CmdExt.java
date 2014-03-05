@@ -1293,7 +1293,7 @@ public class CmdExt implements JmolCmdExtension {
         tokAction = T.define;
       Text text = null;
       if (font != null)
-        text = ((Text) Interface.getOption("modelset.Text")).newLabel(
+        text = ((Text) Interface.getInterface("org.jmol.modelset.Text")).newLabel(
             viewer.getGraphicsData(), font, "", colix, (short) 0, 0, 0, null);
       if (text != null)
         text.pymolOffset = offset;

@@ -23,7 +23,7 @@ for (var i = 0; i < Jmol._coreFiles.length; i++)
 // several more classe are in each of these files -- see build_03_tojs.xml
 
 	ClazzLoader.jarClasspath (base + "coretext.z.js",	[    
-	"J.modelset.Object2d",
+	"JM.Object2d",
 	"$.Text",
 	"J.shape.Object2dShape",
 	"$.TextShape",
@@ -140,7 +140,7 @@ for (var i = 0; i < Jmol._coreFiles.length; i++)
 		"J.adapter.readers.pdb.PdbReader",
 		"J.adapter.smarter.Structure",
 		"J.api.JmolBioResolver",
-		"J.modelsetbio.Resolver",
+		"JMB.Resolver",
 		"$.BioModel"
  ]);
 

@@ -165,7 +165,7 @@ public final class ModelLoader {
     isPDB = modelSet.isPDB = modelSet.getModelSetAuxiliaryInfoBoolean("isPDB");
     if (isPDB) {
       jbr = (JmolBioResolver) Interface
-          .getOption("modelsetbio.Resolver");
+          .getInterface("org.jmol.modelsetbio.Resolver");
       jbr.initialize(this);
     }
     jmolData = (String) modelSet.getModelSetAuxiliaryInfoValue("jmolData");

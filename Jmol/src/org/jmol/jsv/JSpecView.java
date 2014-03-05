@@ -125,7 +125,7 @@ public class JSpecView implements JmolJSpecView {
       return null;
     case JC.JSV_SEND:
       viewer.statusManager.syncSend(
-          viewer.fullName + "JSpecView"  + script.substring(9), ">", 0);
+          viewer.fullName + "JSpecView" + script.substring(9), ">", 0);
       return null;
     case JC.JSV_SETPEAKS:
       // JSpecView sending us the peak information it has
@@ -139,16 +139,15 @@ public class JSpecView implements JmolJSpecView {
     case JC.JSV_SELECT:
       // from JSpecView peak pick or possibly model change
       String filename = PT.getQuotedAttribute(script, "file");
+      boolean isSimulation = filename.startsWith(FileManager.SIMULATION_PROTOCOL);
       //if (filename.startsWith(FileManager.SIMULATION_PROTOCOL + "MOL="))
       //filename = null; // from our sending; don't reload
-      String modelID = PT.getQuotedAttribute(script, "model");
+      String modelID = (isSimulation ? "molfile" : PT.getQuotedAttribute(script, "model"));
+      filename = PT.rep(filename, "#molfile", "");
       String baseModel = PT.getQuotedAttribute(script, "baseModel");
       String atoms = PT.getQuotedAttribute(script, "atoms");
       String select = PT.getQuotedAttribute(script, "select");
       String script2 = PT.getQuotedAttribute(script, "script");
-      boolean isNIH = (modelID != null && modelID.startsWith("$"));
-      if (isNIH)
-        filename = (String) viewer.setLoadFormat(modelID, '$', false);
       String id = (modelID == null ? null : (filename == null ? "" : filename
           + "#")
           + modelID);
@@ -157,9 +156,11 @@ public class JSpecView implements JmolJSpecView {
       int modelIndex = (id == null ? -3 : viewer.getModelIndexFromId(id));
       if (modelIndex == -2)
         return null; // file was found, or no file was indicated, but not this model -- ignore
+      if (isSimulation)
+        filename += "#molfile";
       script = (modelIndex == -1 && filename != null ? script = "load "
           + PT.esc(filename) : "");
-      script = PT.rep(script, FileManager.SIMULATION_PROTOCOL, "");
+      //script = PT.rep(script, FileManager.SIMULATION_PROTOCOL, "");
       if (id != null)
         script += ";model " + PT.esc(id);
       if (atoms != null)

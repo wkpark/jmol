@@ -143,7 +143,7 @@ public class JcampdxReader extends MolReader implements JmolJDXMOLReader {
       break;
     case 12:
     case 24:
-      mpr.readPeaks(pt == 20, -1);
+      mpr.readPeaks(pt == 24, -1);
       break;
     case 36:
       acdMolFile = mpr.readACDMolFile();

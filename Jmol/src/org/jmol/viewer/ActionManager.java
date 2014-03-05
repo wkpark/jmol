@@ -29,6 +29,7 @@ import javajs.awt.event.Event;
 import javajs.util.PT;
 import java.util.Map;
 
+import org.jmol.api.Interface;
 import org.jmol.i18n.GT;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
@@ -1687,9 +1688,13 @@ public class ActionManager implements EventManager {
     viewer.setPicked(-1);
     viewer.setPicked(iAtom);
     viewer.setCursor(GenericPlatform.CURSOR_CROSSHAIR);
-    viewer.setPendingMeasurement(measurementPending = 
-        viewer.getMP());
+    viewer.setPendingMeasurement(measurementPending = getMP());
     measurementQueued = measurementPending;
+  }
+
+  private MeasurementPending getMP() {
+    return ((MeasurementPending) Interface
+        .getInterface("org.jmol.modelset.MeasurementPending")).set(viewer.modelSet);
   }
 
   private int addToMeasurement(int atomIndex, Point3fi nearestPoint,
@@ -1709,7 +1714,7 @@ public class ActionManager implements EventManager {
     // doesn't reset the measurement that is being picked using
     // double-click, just the one using set picking measure.
     exitMeasurementMode(null);
-    measurementQueued = viewer.getMP();
+    measurementQueued = getMP();
   }
 
   private void exitMeasurementMode(String refreshWhy) {

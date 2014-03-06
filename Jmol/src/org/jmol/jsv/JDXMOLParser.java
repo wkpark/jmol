@@ -179,8 +179,7 @@ public class JDXMOLParser implements JmolJDXMOLParser {
 			Map<String, Object[]> htSets = new Hashtable<String, Object[]>();
 			List<Object[]> list = new List<Object[]>();
 			Map<String, String> zzcMap = null;
-			int ptx = 0;
-			int pta = 3;
+			int ptx, pta;
 			int nAtoms = 0;
 			if (isMS) {
 				zzcMap = new Hashtable<String, String>();
@@ -192,6 +191,12 @@ public class JDXMOLParser implements JmolJDXMOLParser {
 				}
 				ptx = 4;
 				pta = 0;
+			} else if (mytype.indexOf("NMR") >= 0) {
+				ptx = 0;
+				pta = 3;
+			} else {
+				ptx = 0;
+				pta = 2; // IR  Raman? UV?  - don't know
 			}
 			int nPeaks = acdlist.size();
 			for (int i = 0; i < nPeaks; i++) {
@@ -200,7 +205,10 @@ public class JDXMOLParser implements JmolJDXMOLParser {
 				String a = data[pta];
 				if (isMS)
 					a = fixACDAtomList(a, zzcMap, nAtoms);
-				String title = (isMS ? "m/z=" + Math.round(x) + ": " + data[2] + " (" + data[1] + ")" : null);
+				else
+					a = a.replace(';', ',');
+				String title = (isMS ? "m/z=" + Math.round(x) + ": " + data[2] + " (" + data[1] + ")" : 
+					pta == 2 ? "" + (Math.round(x * 10) / 10f) : null);
 				getStringInfo(file, title, mytype, model, a, htSets, "" + x, list,
 						" atoms=\"%ATOMS%\" xMin=\"" + (x - dx) + "\" xMax=\"" + (x + dx)
 								+ "\">");

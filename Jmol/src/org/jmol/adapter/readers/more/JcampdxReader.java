@@ -84,7 +84,7 @@ public class JcampdxReader extends MolReader implements JmolJDXMOLReader {
   private JmolJDXMOLParser mpr;
   private String acdMolFile;
   private int nPeaks;
-  private List<float[]> acdAssignments; // JSV only 
+  private List<String[]> acdAssignments; // JSV only 
   private String title;
   private String nucleus = "";
   private String type;
@@ -301,7 +301,7 @@ public class JcampdxReader extends MolReader implements JmolJDXMOLReader {
   private void processPeakData() {
     if (acdAssignments != null) {
       try {
-        mpr.setACDAssignments(title, nucleus + type, 0, acdAssignments);
+        mpr.setACDAssignments(title, nucleus + type, 0, acdAssignments, acdMolFile);
       } catch (Exception e) {
         // ignore
       }

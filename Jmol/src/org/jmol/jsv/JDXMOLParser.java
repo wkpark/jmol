@@ -128,54 +128,121 @@ public class JDXMOLParser implements JmolJDXMOLParser {
   }
 
   @Override
-  public List<float[]> readACDAssignments(int nPoints) throws Exception {
+  public List<String[]> readACDAssignments(int nPoints) throws Exception {
+    // NMR:
     // ##PEAK ASSIGNMENTS=(XYMA)
     // (25.13376,1.00, ,<1>)
     // (25.13376,1.00, ,<3>)
     // (63.97395,0.35, ,<2>)
-    List<float[]> list = new List<float[]>();
+    // ##$UVIR_ASSIGNMENT=ACDTABLE(X,Y,A,VT)
+    // (1645.2935,33.1941,'1,3',undefined)
+    // (3022.9614,65.476,'1,13',undefined)
+    // (2854.6709,56.5426,'4,12',undefined)
+    // ##$MS_FRAGMENTS=ACDTABLE(Fragment,Formula,Label,mzCalc,mzExp,TICCalc,TICExp,RICalc,AQI,RDBE)
+    // ('7-8,11;11a;11b;8a;8b;8c',C3H5,M - C7H9O,41.0386,41,0.046,4.5954,0.2754,1,4.0)
+    // ('1,7-8,11;11a;11b;1a;8a;8b;8c',C4H6,M - C6H8O,54.0464,54,0.1582,15.1322,0.9372,0.9568,4.0)
+    // ('1-6,10;2a;2b;3a;6a;6b',C6H5O,M - C4H9,93.0335,93,0.0872,8.7166,0.5041,1,4.0)
+    
+    
+    List<String[]> list = new List<String[]>();
     readLine(); // flushes "XYMA"
+    if (nPoints < 0)
+    	nPoints = Integer.MAX_VALUE;
     for (int i = 0; i < nPoints; i++) {
-      line = PT.replaceAllCharacters(readLine(), "()<>", " ");
+      line = PT.replaceAllCharacters(readLine(), "()<>", " ").trim();
+      if (line.length() == 0 || line.indexOf("#") >= 0 || line.indexOf("$") >= 0)
+      	break;
+      int pt = line.indexOf("'");
+      if (pt >= 0) {
+        int pt2 = line.indexOf("'", pt + 1);
+        line = line.substring(0, pt) + PT.rep(line.substring(pt+1, pt2), "," , ";") + line.substring(pt2 + 1);
+      }     
       Logger.info("Peak Assignment: " + line);
       String[] tokens = PT.split(line, ",");
-      if (tokens.length == 4)
-        list.addLast(new float[] { PT.parseFloat(tokens[0]),
-            PT.parseFloat(tokens[1]), PT.parseInt(tokens[tokens.length - 1]) });
+      list.addLast(tokens);
     }
     return list;
   }
 
-  @Override
-  public int setACDAssignments(String model, String mytype, int peakCount,
-                               List<float[]> acdlist) throws Exception {
-    try {
-      if (peakCount >= 0)
-        peakIndex = new int[] { peakCount };
-      String file = " file=" + PT.esc(peakFilePath.replace('\\', '/'));
-      model = " model=" + PT.esc(model + " (assigned)");
-      piUnitsX = "";
-      piUnitsY = "";
-      float peakWidth = (mytype.indexOf("CNMR") >= 0 ? 2f : 0.05f);
-      Map<String, Object[]> htSets = new Hashtable<String, Object[]>();
-      List<Object[]> list = new List<Object[]>();
-      int nPeaks = acdlist.size();
-      for (int i = 0; i < nPeaks; i++) {
-        float[] data = acdlist.get(i);
-        float x = data[0];
-        int iatom = (int) data[2];
-        float xMin = x - peakWidth;
-        float xMax = x + peakWidth;
-        line = " atoms=\"%ATOMS%\" xMin=\"" + xMin + "\" xMax=\"" + xMax + ">";
-        getStringInfo(file, null, mytype, model, "" + iatom, iatom, htSets, "" + x, list);
-      }
-      return setPeakData(list, 0);
-    } catch (Exception e) {
-      return 0;
-    }
+	@Override
+	public int setACDAssignments(String model, String mytype, int peakCount,
+			List<String[]> acdlist, String molFile) throws Exception {
+		try {
+			if (peakCount >= 0)
+				peakIndex = new int[] { peakCount };
+			boolean isMS = (mytype.indexOf("MASS") == 0);
+			String file = " file=" + PT.esc(peakFilePath.replace('\\', '/'));
+			model = " model=" + PT.esc(model + " (assigned)");
+			piUnitsX = "";
+			piUnitsY = "";
+			float dx = getACDPeakWidth(mytype) / 2;
+			Map<String, Object[]> htSets = new Hashtable<String, Object[]>();
+			List<Object[]> list = new List<Object[]>();
+			Map<String, String> zzcMap = null;
+			int ptx = 0;
+			int pta = 3;
+			int nAtoms = 0;
+			if (isMS) {
+				zzcMap = new Hashtable<String, String>();
+				String[] tokens = PT.split(molFile, "M  ZZC");
+				for (int i = tokens.length; --i >= 1;) {
+					String[] ab = PT.getTokens(tokens[i]);
+					nAtoms = Math.max(nAtoms, PT.parseInt(ab[0]));
+					zzcMap.put(ab[1], ab[0]);
+				}
+				ptx = 4;
+				pta = 0;
+			}
+			int nPeaks = acdlist.size();
+			for (int i = 0; i < nPeaks; i++) {
+				String[] data = acdlist.get(i);
+				float x = PT.parseFloat(data[ptx]);
+				String a = data[pta];
+				if (isMS)
+					a = fixACDAtomList(a, zzcMap, nAtoms);
+				String title = (isMS ? "m/z=" + Math.round(x) + ": " + data[2] + " (" + data[1] + ")" : null);
+				getStringInfo(file, title, mytype, model, a, htSets, "" + x, list,
+						" atoms=\"%ATOMS%\" xMin=\"" + (x - dx) + "\" xMax=\"" + (x + dx)
+								+ "\">");
+			}
+			return setPeakData(list, 0);
+		} catch (Exception e) {
+			return 0;
+		}
+	}
+
+	private String fixACDAtomList(String atoms, Map<String, String> zzcMap, int nAtoms) {
+	  atoms = atoms.trim();
+	  String[] tokens = PT.getTokens(atoms.replace(';', ' '));
+    BS bs = new BS();
+    boolean isM = false;
+	  for (int i = 0; i < tokens.length; i++) {
+	    String a = tokens[i];
+	    isM = (a.indexOf("M") >= 0);
+	    if (isM)
+	    	a = "1-" + nAtoms;
+	    int pt = a.indexOf('-');
+	    if (pt >= 0) {
+	      int i1 = PT.parseInt(a.substring(0, pt));
+	      int i2 = PT.parseInt(a.substring(pt + 1)) + 1;
+	      for (int k = i1; k < i2; k++)
+	        bs.set(isM ? k : PT.parseInt(zzcMap.get("" + k)));
+	    } else {
+	      bs.set(PT.parseInt(zzcMap.get(a)));
+	    }
+	  }
+    String s = bs.toJSON();
+    return s.substring(1, s.length() - 1);
   }
 
-	@Override
+  private float getACDPeakWidth(String type) {
+	  return (type.indexOf("HNMR") >= 0 ? 0.05f
+	  		: type.indexOf("CNMR") >= 0 ? 1f 
+	      : type.indexOf("MASS") >= 0 ? 1f
+	      : 10); // IR, Raman, UV/VIS
+  }
+
+  @Override
 	public int readPeaks(boolean isSignals, int peakCount) throws Exception {
 		try {
 			if (peakCount >= 0)
@@ -206,10 +273,9 @@ public class JDXMOLParser implements JmolJDXMOLParser {
 							.getQuotedAttribute(line, "xMin")) * 100))
 							+ "_"
 							+ ((int) (PT.parseFloat(PT.getQuotedAttribute(line, "xMax")) * 100));
-					line = line.substring(tag2.length()).trim();
 					getStringInfo(file, title, mytype,
 							(PT.getQuotedAttribute(line, "model") == null ? model : ""),
-							atoms, -1, htSets, key, list);
+							atoms, htSets, key, list, line.substring(tag2.length()).trim());
 				}
 			}
 			return setPeakData(list, offset);
@@ -243,22 +309,19 @@ public class JDXMOLParser implements JmolJDXMOLParser {
 }
 
 	private void getStringInfo(String file, String title, String mytype,
-			String model, String atoms, int iatom, Map<String, Object[]> htSets,
-			String key, List<Object[]> list) {
+			String model, String atoms, Map<String, Object[]> htSets,
+			String key, List<Object[]> list, String more) {
 		if ("HNMR".equals(mytype))
 			mytype = "1HNMR";
 		else if ("CNMR".equals(mytype))
 			mytype = "13CNMR";
 		String type = (mytype == null ? "" : " type=" + PT.esc(mytype));
-		if (title == null) {
+		if (title == null)
 			title = ("1HNMR".equals(mytype) ? "atom%S%: %ATOMS%; integration: %NATOMS%"
 					: "");
-			title = " title=" + PT.esc(title);
-		} else {
-			title = "";
-		}
+		title = " title=" + PT.esc(title);
 		String stringInfo = "<PeakData " + file + " index=\"%INDEX%\"" + title
-				+ type + model + " " + line;
+				+ type + model + " " + more;
 		if (atoms != null)
 			stringInfo = PT.rep(stringInfo, "atoms=\"" + atoms + "\"",
 					"atoms=\"%ATOMS%\"");
@@ -271,10 +334,7 @@ public class JDXMOLParser implements JmolJDXMOLParser {
 		if (atoms != null) {
 			BS bs = (BS) o[1];
 			atoms = atoms.replace(',', ' ');
-			if (iatom < 0)
-				bs.or(BS.unescape("({" + atoms + "})"));
-			else
-				bs.set(iatom);
+      bs.or(BS.unescape("({" + atoms + "})"));
 		}
 	}
 

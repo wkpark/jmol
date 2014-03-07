@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-11-05 19:09+0100\n"
-"PO-Revision-Date: 2014-03-07 20:13+0100\n"
+"PO-Revision-Date: 2014-03-07 20:23+0100\n"
 "Last-Translator: Angel Herráez <aherraez@users.sourceforge.net>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -1002,11 +1002,11 @@ msgstr "Pares AU"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:639
 msgid "Hetero"
-msgstr "Grupos \"hetero\""
+msgstr "Grupos “hetero”"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:640
 msgid "All PDB \"HETATM\""
-msgstr "Todos los \"HETATM\" de PDB"
+msgstr "Todos los “HETATM” de PDB"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:641
 msgid "All Solvent"
@@ -1247,11 +1247,11 @@ msgstr "Gafas rojo+verde"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:737
 msgid "Cross-eyed viewing"
-msgstr "Visión bizca (\"crossed-eyed\")"
+msgstr "Visión bizca (“crossed-eyed”)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:738
 msgid "Wall-eyed viewing"
-msgstr "Visión paralela (\"wall-eyed\")"
+msgstr "Visión paralela (“wall-eyed”)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:740
 #: org/jmol/popup/MainPopupResourceBundle.java:807
@@ -1352,7 +1352,7 @@ msgstr "por monómero"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:771
 msgid "Shapely"
-msgstr "por esquema \"shapely\""
+msgstr "por esquema “shapely”"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:773
 msgid "Inherit"
@@ -2197,7 +2197,7 @@ msgstr "no se reconoce el parámetro SHOW; utilice {0}"
 #: org/jmol/script/ScriptEvaluator.java:3049
 #, java-format
 msgid "write what? {0} or {1} \"filename\""
-msgstr "¿qué escribir? {0} o {1} \"nombre de archivo\""
+msgstr "¿qué escribir? {0} o {1} “nombre de archivo”"
 
 #: org/jmol/script/ScriptEvaluator.java:5684
 #, java-format

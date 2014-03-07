@@ -121,8 +121,8 @@ public class Resolver {
         }
       }
       if (readerName.charAt(0) == '\n')
-        errMsg = "unrecognized file format for file " + fullName + "\n"
-            + readerName;
+        errMsg = "unrecognized file format for file\n" + fullName + "\n"
+            + split(readerName, 50);
       else if (readerName.equals("spt"))
         errMsg = JmolAdapter.NOTE_SCRIPT_FILE + fullName + "\n";
       else if (!fullName.equals("ligand"))
@@ -147,6 +147,14 @@ public class Resolver {
       return err;
     }
     return atomSetCollectionReader;
+  }
+
+  private static String split(String a, int n) {
+    String s = "";
+    int l = a.length();
+    for (int i = 0, j = 0; i < l; i = j)
+      s += a.substring(i, (j = Math.min(i + n, l))) + "\n";
+    return s;
   }
 
   /**

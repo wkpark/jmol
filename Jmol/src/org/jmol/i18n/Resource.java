@@ -122,8 +122,11 @@ class Resource {
   }
 
   static String fix(String line) {
-    return PT.rep(line.substring(line.indexOf("\"") + 1, line
-        .lastIndexOf("\"")), "\\n", "\n");
+    if (line.indexOf("\\\"") >= 0)
+      line = PT.rep(line, "\\\"", "\"");
+    return PT.rep(
+        line.substring(line.indexOf("\"") + 1, line.lastIndexOf("\"")), "\\n",
+        "\n");
   }
 
 }

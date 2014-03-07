@@ -26,7 +26,7 @@
   <property name="all.Jmol.languages"
             value="ar,ast,az,bs,ca,cs,da,de,el,en_AU,en_GB,es,et,eu,fi,fo,fr,gl,hr,hu,hy,id,it,ja,ko,ms,nl,oc,pl,pt,pt_BR,ru,sl,sr,sv,ta,te,tr,ug,uk,uz,zh_CN,zh_TW" />
   <property name="all.JmolApplet.languages"
-            value="" /> <!-- ar,bs,ca,cs,da,de,el,en_GB,es,et,eu,fi,fr,fy,hu,hy,id,it,ja,jv,ko,ms,nb,nl,oc,pl,pt,pt_BR,ru,sl,sv,ta,te,tr,ug,uk,zh_CN,zh_TW" /> -->
+            value="ar,bs,ca,cs,da,de,el,en_GB,es,et,eu,fi,fr,fy,hu,hy,id,it,ja,jv,ko,ms,nb,nl,oc,pl,pt,pt_BR,ru,sl,sv,ta,te,tr,ug,uk,zh_CN,zh_TW" />
 
   <!-- NOTE:
   

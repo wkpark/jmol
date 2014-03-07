@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-11-05 19:09+0100\n"
-"PO-Revision-Date: 2014-02-28 00:13+0100\n"
+"PO-Revision-Date: 2014-03-07 20:13+0100\n"
 "Last-Translator: Angel Herráez <aherraez@users.sourceforge.net>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -1726,11 +1726,11 @@ msgstr "Reactivar la captura"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:921
 msgid "Set capture replay rate"
-msgstr "Definir velocidad de repetición de la captura"
+msgstr "Velocidad de animación"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:922
 msgid "Toggle capture looping"
-msgstr "(Des)activar bucle en captura"
+msgstr "(Des)activar repetición"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:924
 #, java-format

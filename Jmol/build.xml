@@ -511,6 +511,7 @@ all support for previous versions removed
       </fileset>
       <fileset dir="${appjars.dir}" includes="**/*"/>
       <fileset dir="src/org/jmol/translation/Jmol" includes="Messages*.class"/>
+      <fileset dir="src/org/jmol/translation/JmolApplet" includes="Messages*.class"/>
     </jar>
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-dir" value="build" />
@@ -542,9 +543,9 @@ all support for previous versions removed
         <exclude name="**/openscience/jmol/app/jmolpanel/**" />
         <exclude name="**/openscience/jmol/app/webexport/**" />
       </fileset>
-      <!-- fileset dir="${appjars.dir}" includes="**/cli/** **/vecmath/** **/naga/**" / -->
       <fileset dir="${appjars.dir}" includes="**/cli/** **/naga/**" />
       <fileset dir="src/org/jmol/translation/Jmol" includes="Messages*.class"/>
+      <fileset dir="src/org/jmol/translation/JmolApplet" includes="Messages*.class"/>
     </jar>
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-dir" value="build" />
@@ -1289,6 +1290,7 @@ all support for previous versions removed
 
     <copy todir="build/dist/jmol-${version}/src" >
       <fileset dir="src" />
+      <fileset dir="srcjsv" />
     </copy>
 
     <copy todir="build/dist/jmol-${version}/ca-cert" >

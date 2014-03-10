@@ -912,7 +912,7 @@ public class CmdExt implements JmolCmdExtension {
 
         M4 m4 = new M4();
         center = new P3();
-        if ("*".equals(strSmiles) && bsFrom != null)
+        if (("*".equals(strSmiles) || "".equals(strSmiles)) && bsFrom != null)
           try {
             strSmiles = viewer.getSmiles(bsFrom);
           } catch (Exception ex) {
@@ -928,8 +928,10 @@ public class CmdExt implements JmolCmdExtension {
         }
         float stddev = e.getSmilesExt().getSmilesCorrelation(bsFrom, bsTo, strSmiles, null,
             null, m4, null, !isSmiles, false, null, center, false, false);
-        if (Float.isNaN(stddev))
-          invArg();
+        if (Float.isNaN(stddev)) {
+          showString("structures do not match");
+          return;
+        }  
         if (doTranslate) {
           translation = new V3();
           m4.getTranslation(translation);
@@ -6274,23 +6276,8 @@ public class CmdExt implements JmolCmdExtension {
         break;
       case T.chemical:
         len = 3;
-        String info = null;
         if (msg.length() > 0) {
-          char type = '/';
-          switch (getToken(2).tok) {
-          case T.inchi:
-            type = 'I';
-            break;
-          case T.inchikey:
-            type = 'K';
-            break;
-          case T.name:
-            type = 'N';
-            break;
-          default:
-            info = paramAsStr(2);
-          }
-          msg = viewer.getChemicalInfo(msg, type, info);
+          msg = viewer.getChemicalInfo(msg, getToken(2));
           if (msg.indexOf("FileNotFound") >= 0)
             msg = "?";
         } else {

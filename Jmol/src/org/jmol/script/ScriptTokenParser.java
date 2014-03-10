@@ -211,9 +211,9 @@ abstract class ScriptTokenParser {
               if (!isMathExpressionCommand && lastToken.tok != T.define 
                   || (lastToken.tok == T.per || tokAt(itokenInfix + 1) == T.leftparen)
                         && !isUserFunction(name)) {
-                // Checking here for known token mascarading as identifier due to VAR definition.
+                // Checking here for known token masquerading as identifier due to VAR definition.
                 // We reset it to its original mapping if it's a known token and:
-                //    a) this isn't a math expression command, and not preceeded by @, or
+                //    a) this isn't a math expression command, and not preceded by @, or
                 //    b) it is preceded by "." or followed by "(" 
                 //             and it isn't the name of a user function
 

@@ -35,22 +35,32 @@ import org.jmol.api.JmolAdapter;
  * Somewhat flexible - for 3DNA compatibility. See
  * 
  *   http://rutchem.rutgers.edu/~xiangjun/3DNA/jmol/3dna_bp.alc)
- *   
+ * 
  * Bob Hanson 12/2008
+ * 
+ * 
+ * also serves as MD3 reader
  * 
  */
 
 public class AlchemyReader extends AtomSetCollectionReader {
 
+  protected boolean isM3D;
+  
   private int atomCount;
   private int bondCount;
 
   @Override
   public void initializeReader() throws Exception {
     atomSetCollection.newAtomSet();
-    String[] tokens = getTokensStr(readLine());
+    readLine();
+    if (line.indexOf("ATOMS") < 0) {
+      isM3D = true;
+      readLine();
+    }
+    String[] tokens = getTokens();
     atomCount = parseIntStr(tokens[0]);
-    bondCount = parseIntStr(tokens[2]);
+    bondCount = parseIntStr(tokens[isM3D ? 1 : 2]);
     readAtoms();
     readBonds();
     continuing = false;
@@ -112,25 +122,30 @@ public class AlchemyReader extends AtomSetCollectionReader {
    12    12     8
 
    */
+  
   private void readAtoms() throws Exception {
+    int pt = (isM3D ? 3 : 2);
     for (int i = atomCount; --i >= 0;) {
       String[] tokens = getTokensStr(readLine());
       Atom atom = new Atom();
       atom.atomSerial = parseIntStr(tokens[0]);
-      String name = atom.atomName = tokens[1];
-      atom.elementSymbol = name.substring(0, 1);
-      char c1 = name.charAt(0);
-      char c2 = ' ';
-      // any name > 2 characters -- just read first character
-      // any name = 2 characters -- check for known atom or "Du"
-      int nChar = (name.length() == 2
-          && (Atom.isValidElementSymbol2(c1, 
-              c2 = Character.toLowerCase(name.charAt(1)))
-              || name.equals("Du"))
-           ? 2 : 1);
-      atom.elementSymbol = (nChar == 1 ? "" + c1 : "" + c1 + c2);
-      setAtomCoordTokens(atom, tokens, 2);
-      atom.partialCharge = (tokens.length >= 6 ? parseFloatStr(tokens[5]) : 0);
+      String name = tokens[1];
+      if (!isM3D) {
+        atom.atomName = name;
+        atom.elementSymbol = name.substring(0, 1);
+        char c1 = name.charAt(0);
+        char c2 = ' ';
+        // any name > 2 characters -- just read first character
+        // any name = 2 characters -- check for known atom or "Du"
+        int nChar = (name.length() == 2
+            && (Atom.isValidElementSymbol2(c1,
+                c2 = Character.toLowerCase(name.charAt(1))) || name
+                .equals("Du")) ? 2 : 1);
+        name = (nChar == 1 ? "" + c1 : "" + c1 + c2);
+      }
+      atom.elementSymbol = name;
+      setAtomCoordTokens(atom, tokens, pt);
+      atom.partialCharge = (tokens.length >= 6 ? parseFloatStr(tokens[pt + 3]) : 0);
       atomSetCollection.addAtomWithMappedSerialNumber(atom);
     }
   }

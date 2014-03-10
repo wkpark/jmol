@@ -744,9 +744,12 @@ public class Resolver {
 
   private final static String[] jsonStartRecords = 
   { "JSON", "{\"mol\":" };
+  
+  private final static String[] m3dStartRecords = 
+  { "Alchemy", "STRUCTURE  1.00     1" }; // M3D reader is very similar to Alchemy
 
   private final static String[][] fileStartsWithRecords =
-  { sptContainsRecords, cubeFileStartRecords, mol2Records, webmoFileStartRecords, 
+  { sptContainsRecords, m3dStartRecords, cubeFileStartRecords, mol2Records, webmoFileStartRecords, 
     moldenFileStartRecords, dcdFileStartRecords, tlsDataOnlyFileStartRecords,
     zMatrixFileStartRecords, magresFileStartRecords, pymolStartRecords, janaStartRecords, jsonStartRecords };
 

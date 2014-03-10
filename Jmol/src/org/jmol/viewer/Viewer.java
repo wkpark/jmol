@@ -4779,13 +4779,14 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         if (fl.startsWith("smiles:")) {
           format += "?POST?smiles=" + f.substring(7);
           f = "smiles";
-        } else if (fl.startsWith("cid:")) {
-          f = "cid/" + f.substring(4);
+        } else if (f.startsWith("cid:") 
+            || f.startsWith("inchikey:")
+            || f.startsWith("cas:")
+            ) {
+          f = f.replace(':', '/');
         } else {
           if (fl.startsWith("name:"))
             f = f.substring(5);
-          if (fl.startsWith("cas:"))
-            f = f.substring(4);
           f = "name/" + PT.escapeUrl(f);
         }
       }
@@ -4803,6 +4804,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     case '2':
     case 'I':
     case 'K':
+    case 'S':
+    case 'T':
     case '/':
       f = PT.escapeUrl(f);
       switch (type) {
@@ -4817,6 +4820,12 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         break;
       case 'K':
         format = global.nihResolverFormat + "/inchikey";
+        break;
+      case 'S':
+        format = global.nihResolverFormat + "/stdinchikey";
+        break;
+      case 'T':
+        format = global.nihResolverFormat + "/stdinchi";
         break;
       case '/':
         format = global.nihResolverFormat + "/";
@@ -8734,7 +8743,28 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     showUrl((String) setLoadFormat("_" + smiles, '2', false));
   }
 
-  public String getChemicalInfo(String smiles, char type, String info) {
+  public String getChemicalInfo(String smiles, T t) {
+    String info = null;
+    char type = '/';
+    switch ((t == null ? T.name : t.tok)) {
+    case T.inchi:
+      type = 'I';
+      break;
+    case T.inchikey:
+      type = 'K';
+      break;
+    case T.stdinchi:
+      type = 'T';
+      break;
+    case T.stdinchikey:
+      type = 'S';
+      break;
+    case T.name:
+      type = 'N';
+      break;
+    default:
+      info = SV.sValue(t);
+    }
     String s = (String) setLoadFormat("_" + smiles, type, false);
     if (type == '/')
       s += PT.rep(info, " ", "%20");

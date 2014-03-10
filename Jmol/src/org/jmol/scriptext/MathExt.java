@@ -895,6 +895,7 @@ public class MathExt implements JmolMathExtension {
     // {2.1}.find("CCCC",{1.1}) // find pattern "CCCC" in {2.1} with conformation given by {1.1}
     // {*}.find("ccCCN","BONDS")
     // {*}.find("SMILES","H")
+    // {*}.find("chemical",type)
 
     SV x1 = mp.getX();
     String sFind = SV.sValue(args[0]);
@@ -903,8 +904,18 @@ public class MathExt implements JmolMathExtension {
     boolean isSequence = sFind.equalsIgnoreCase("SEQUENCE");
     boolean isSmiles = sFind.equalsIgnoreCase("SMILES");
     boolean isSearch = sFind.equalsIgnoreCase("SMARTS");
+    boolean isChemical = sFind.equalsIgnoreCase("CHEMICAL");
     boolean isMF = sFind.equalsIgnoreCase("MF");
     try {
+      if (isChemical) {
+        String data = (x1.tok == T.bitset ? viewer.getSmiles(SV.getBitSet(x1, false)) : SV.sValue(x1));
+        data = data.length() == 0 ? "" : viewer.getChemicalInfo(data, args.length > 1 ? T.getTokenFromName(flags.toLowerCase()) : null);
+        if (data.endsWith("\n"))
+          data = data.substring(0, data.length() - 1);
+        if (data.startsWith("InChI"))
+          data = PT.rep(PT.rep(data, "InChI=", ""), "InChIKey=", "");
+        return mp.addXStr(data);
+      }
       if (isSmiles || isSearch || x1.tok == T.bitset) {
         int iPt = (isSmiles || isSearch ? 2 : 1);
         BS bs2 = (iPt < args.length && args[iPt].tok == T.bitset ? (BS) args[iPt++].value

@@ -1297,6 +1297,8 @@ public class T {
   public final static int sphere  = misc  | 330;
   public final static int squared        = misc  | 332;
   public final static int state          = misc  | 334;
+  public final static int stdinchi       = misc  | 335;
+  public final static int stdinchikey    = misc  | 336;
   public final static int stop           = misc  | 338;
   public final static int supercell      = misc  | 339;//
   public final static int ticks          = misc  | 340; 
@@ -2196,6 +2198,8 @@ public class T {
       "silent",          T.t(silent),
       "sphere",          T.t(sphere),
       "squared",         T.t(squared),
+      "stdInChI",        T.t(stdinchi),
+      "stdInChIKey",     T.t(stdinchikey),
       "stop",            T.t(stop),
       "title",           T.t(title),
       "titleFormat",     T.t(titleformat),

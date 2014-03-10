@@ -166,7 +166,7 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
     String s = splitCmd[1];
     if (notThis.length() == 0)
       return null;
-    T token = T.getTokenFromName(s.trim());
+    T token = T.getTokenFromName(s.trim().toLowerCase());
     int cmdtok = (token == null ? 0 : token.tok);
     boolean isSelect = T.tokAttr(cmdtok, T.atomExpressionCommand);
     splitCmd = GenericConsole.splitCommandLine(strCommand);

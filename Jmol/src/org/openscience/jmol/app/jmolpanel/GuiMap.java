@@ -360,49 +360,75 @@ public class GuiMap {
   private static String[] translations;
 
   /**
-   * allows for web page material to be internationalized, inserting language-specific code,
-   * as for WebExport, or by inserting boiler-plate information, as for About_xx.html
+   * allows for web page material to be internationalized, inserting
+   * language-specific code, as for WebExport, or by inserting boiler-plate
+   * information, as for About_xx.html
    * 
    */
   private static void setTranslations() {
     // for all templates and JmolPopIn.js
     translations = new String[] {
-        "GT_JmolPopIn.js_TOGETA3DMODEL", GT.escapeHTML(GT.o(GT._("To get a 3-D model you can manipulate, click {0}here{1}. Download time may be significant the first time the applet is loaded."), new String[] {"<a href=\"HREF\">", "</a>"})),
-        
-        "GT_pop_in_template.html_INSERTTITLE", GT.escapeHTML(GT._("Insert the page TITLE here.")), 
-        "GT_pop_in_template.html_INSERTINTRO", GT.escapeHTML(GT._("Insert the page INTRODUCTION here.")),
-        
-        "GT_pop_in_template2.html_INSERTCAPTION", GT.escapeHTML(GT.o(GT._("CLICK IMAGE TO ACTIVATE 3D <br/> Insert a caption for {0} here."),"@NAME@")),
-        "GT_pop_in_template2.html_INSERTADDITIONAL", GT.escapeHTML(GT.o(GT._("Insert additional explanatory text here. Long text will wrap around Jmol model {0}."),"@NAME@")),
-        
-        "GT_script_button_template.html_INSERT", GT.escapeHTML(GT._("Insert your TITLE and INTRODUCTION here.")),
-        "GT_script_button_template.html_LOADING",GT.escapeHTML(GT._("Once the molecule file is fully loaded the image at right will become live.  At that time the \"activate 3-D\" icon")),
-        "GT_script_button_template.html_DISAPPEAR",GT.escapeHTML(GT._("will disappear.")),
-        "GT_script_button_template.html_VIEWAGAIN",GT.escapeHTML(GT._("You may look at any of these intermediate views again by clicking on the appropriate button.")),
-        "GT_script_button_template.html_JAVACAPABLE",GT.escapeHTML(GT._("If your browser/OS combination is Java capable you will get snappier performance if you")),
-        "GT_script_button_template.html_USEJAVA",GT.escapeHTML(GT._("use Java.")),
-        "GT_script_button_template2.html_BUTTONINFO", GT.escapeHTML(GT.o(GT._("The button {0} will appear below.  Insert information for {0} here and below."), "@NAME@")),
-        "GT_script_button_template2.html_MORE", GT.escapeHTML(GT.o(GT._("Insert more information for {0} here."), "@NAME@")),
-        
-        "About.html#weblinks", 
-    "<p><b>Jmol " + JC.version + " (" + JC.date + ")</b></p>"
-  + "<ul>"
-  + "<li><a href=\"http://sourceforge.net/projects/jmol\">SourceForge</a> (sourceforge.net/projects/jmol)</li>"
-  + "<li><a href=\"http://jmol.sourceforge.net\">Jmol Wiki</a> (jmol.sourceforge.net)</li>"
-  + "</ul>",
-        "About.html#libraries", 
-    "<ul>"
-  + "<li><a href=\"http://www.sourceforge.net/projects/jspecview\">JSpecView</a> (www.sourceforge.net/projects/jspecview, Robert Lancashire, robert.lancashire@uwimona.edu.jm)</li>"
-  + "<li><a href=\"http://www.megginson.com/SAX/\">Simple API for XML</a> (www.megginson.com/SAX, David Megginson, david@megginson.com)</li>"
-  + "<li><a href=\"http://www.javalobby.org/jfa/projects/icons\">JFA Icon collection</a> (www.javalobby.org/jfa/projects/icons, Copyright &copy; 1998, Dean S. Jones, dean@gallant.com)</li>"
-  + "<li><a href=\"http://www.acme.com/\">Acme image encoders</a> (www.acme.com, Copyright &copy; 1996,1998, Jef Poskanzer, jef@acme.com)</li>"
-  + "<li><a href=\"http://www.obrador.com/essentialjpeg/\">JPEG Encoder</a> (www.obrador.com/essentialjpeg, Copyright &copy; 1998, James R. Weeks, BioElectroMech, james@obrador.com)</li>"
-  + "<li><a href=\"http://www.junit.org/\">JUnit</a> (www.junit.org, Erich Gamma, Kent Beck)</li>"
-  + "<li><a href=\"http://jas.freehep.org/\">Java Analysis Studio</a> (jas.freehep.org)</li>"
-  + "<li><a href=\"http://www.esm.co.jp/divisions/open-sys/java/vecmath/\">Unofficial Java3D vecmath package</a> (www.esm.co.jp/divisions/open-sys/java/vecmath, Copyright &copy; 1997,1998,1999, Kenji Hiranabe</li>"
-  + "<li><a href=\"http://www.icon-king.com/projects/nuvola\">Nuvola icon library</a> (www.icon-king.com/projects/nuvola, David Vignoni)</li>"
-  + "</ul>"
-    };
+        "GT_JmolPopIn.js_TOGETA3DMODEL",
+        GT.escapeHTML(GT.o(
+            GT._("To get a 3-D model you can manipulate, click {0}here{1}. Download time may be significant the first time the applet is loaded."),
+            new String[] { "<a href=\"HREF\">", "</a>" })),
+
+        "GT_pop_in_template.html_INSERTTITLE",
+        GT.escapeHTML(GT._("Insert the page TITLE here.")),
+        "GT_pop_in_template.html_INSERTINTRO",
+        GT.escapeHTML(GT._("Insert the page INTRODUCTION here.")),
+
+        "GT_pop_in_template2.html_INSERTCAPTION",
+        GT.escapeHTML(GT.o(
+            GT._("CLICK IMAGE TO ACTIVATE 3D <br/> Insert a caption for {0} here."),
+            "@NAME@")),
+        "GT_pop_in_template2.html_INSERTADDITIONAL",
+        GT.escapeHTML(GT.o(
+            GT._("Insert additional explanatory text here. Long text will wrap around Jmol model {0}."),
+            "@NAME@")),
+
+        "GT_script_button_template.html_INSERT",
+        GT.escapeHTML(GT._("Insert your TITLE and INTRODUCTION here.")),
+        "GT_script_button_template.html_LOADING",
+        GT.escapeHTML(GT.o(
+            GT._("Once the molecule file is fully loaded, the image at right will become live.  At that time the \"activate 3-D\" icon {0} will disappear."),
+            new String[] { "<img id=\"make_live_icon\" src=\"\" height=\"15px\" />" })),
+        "GT_script_button_template.html_VIEWAGAIN",
+        GT.escapeHTML(GT
+            ._("You may look at any of these intermediate views again by clicking on the appropriate button.")),
+        "GT_script_button_template.html_JAVACAPABLE",
+        GT.escapeHTML(GT
+            ._("If your browser/OS combination is Java capable, you will get snappier performance if you <a href=\"?use=JAVA\">use Java</a>")),
+        "GT_script_button_template2.html_BUTTONINFO",
+        GT.escapeHTML(GT.o(
+            GT._("The button {0} will appear below.  Insert information for {0} here and below."),
+            "@NAME@")),
+        "GT_script_button_template2.html_MORE",
+        GT.escapeHTML(GT.o(GT._("Insert more information for {0} here."),
+            "@NAME@")),
+
+        "About.html#weblinks",
+        "<p><b>Jmol "
+            + JC.version
+            + " ("
+            + JC.date
+            + ")</b></p>"
+            + "<ul>"
+            + "<li><a href=\"http://sourceforge.net/projects/jmol\">SourceForge</a> (sourceforge.net/projects/jmol)</li>"
+            + "<li><a href=\"http://jmol.sourceforge.net\">Jmol Wiki</a> (jmol.sourceforge.net)</li>"
+            + "</ul>",
+        "About.html#libraries",
+        "<ul>"
+            + "<li><a href=\"http://www.sourceforge.net/projects/jspecview\">JSpecView</a> (www.sourceforge.net/projects/jspecview, Robert Lancashire, robert.lancashire@uwimona.edu.jm)</li>"
+            + "<li><a href=\"http://www.megginson.com/SAX/\">Simple API for XML</a> (www.megginson.com/SAX, David Megginson, david@megginson.com)</li>"
+            + "<li><a href=\"http://www.javalobby.org/jfa/projects/icons\">JFA Icon collection</a> (www.javalobby.org/jfa/projects/icons, Copyright &copy; 1998, Dean S. Jones, dean@gallant.com)</li>"
+            + "<li><a href=\"http://www.acme.com/\">Acme image encoders</a> (www.acme.com, Copyright &copy; 1996,1998, Jef Poskanzer, jef@acme.com)</li>"
+            + "<li><a href=\"http://www.obrador.com/essentialjpeg/\">JPEG Encoder</a> (www.obrador.com/essentialjpeg, Copyright &copy; 1998, James R. Weeks, BioElectroMech, james@obrador.com)</li>"
+            + "<li><a href=\"http://www.junit.org/\">JUnit</a> (www.junit.org, Erich Gamma, Kent Beck)</li>"
+            + "<li><a href=\"http://jas.freehep.org/\">Java Analysis Studio</a> (jas.freehep.org)</li>"
+            + "<li><a href=\"http://www.esm.co.jp/divisions/open-sys/java/vecmath/\">Unofficial Java3D vecmath package</a> (www.esm.co.jp/divisions/open-sys/java/vecmath, Copyright &copy; 1997,1998,1999, Kenji Hiranabe</li>"
+            + "<li><a href=\"http://www.icon-king.com/projects/nuvola\">Nuvola icon library</a> (www.icon-king.com/projects/nuvola, David Vignoni)</li>"
+            + "</ul>" };
   }
   
 }

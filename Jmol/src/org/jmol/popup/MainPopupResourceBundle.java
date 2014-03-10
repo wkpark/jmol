@@ -60,7 +60,7 @@ public class MainPopupResourceBundle extends PopupResource {
   private static String[][] menuContents = {
     
       {   "@COLOR", "black white red orange yellow green cyan blue indigo violet"},      
-      {   "@AXESCOLOR", "gray salmon maroon onolive slateblue gold orchid"},
+      {   "@AXESCOLOR", "gray salmon maroon olive slateblue gold orchid"},
       
       {   MENU_NAME,
           "fileMenu modelSetMenu FRAMESbyModelComputedMenu configurationComputedMenu " +

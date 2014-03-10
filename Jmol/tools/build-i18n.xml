@@ -46,7 +46,7 @@
   <!-- Properties that can be useful to change the build -->
   <property name="do.create.pot" value="false" />
   <property name="do.create.po" value="false" />
-
+ 
   <!-- Filesets for the rest of the build -->
   <fileset id="Jmol.java.files" dir="${basedir}/${src.dir}">
     <include name="**/*.java"/>

@@ -417,7 +417,7 @@ public class CmdExt implements JmolCmdExtension {
             setShapeProperty(JC.SHAPE_STICKS, "type",
                 Integer.valueOf(Edge.BOND_COVALENT_MASK));
           }
-          showString(GT.i(GT._("{0} struts mp.added"), n));
+          showString(GT.i(GT._("{0} struts added"), n));
         }
         return;
       case T.surface:

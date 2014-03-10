@@ -1071,7 +1071,7 @@ public class ScriptCompiler extends ScriptTokenParser {
           case T.model:
           case T.smiles:
           case T.trajectory:
-          case T.sync:
+          case T.async:
             addTokenToPrefix(token);
             break;
           default:

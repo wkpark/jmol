@@ -1100,6 +1100,7 @@ public class T {
   public final static int aromatic      = misc  | 20 | predefinedset;
   public final static int arrow         = misc  | 22;
   public final static int as            = misc  | 24; // for LOAD and ISOSURFACE only
+  public final static int async         = misc  | 25;
   public final static int atomicorbital = misc  | 26;
   public final static int auto   = misc  | 28;
   public final static int axis   = misc  | 30;

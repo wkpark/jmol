@@ -467,9 +467,8 @@ public class MSReader implements MSInterface {
     // test n * q
     for (int i = 0; i < modDim; i++)
       if (qs[i] != null) {
-        float fn = pt.dot(qs[i]) / qs[i].dot(qs[i]);
-        int ifn = Math.round(fn);
-        if (Math.abs(fn - ifn) < 0.001f) {
+        int ifn = approxInt(pt.dot(qs[i]) / qs[i].dot(qs[i]));
+        if (ifn != 0) {
           p = new double[modDim];
           p[i] = ifn;
           return p;
@@ -506,7 +505,40 @@ public class MSReader implements MSInterface {
             return p;
           }
         }
+    
+    // test dropped rational component
+    // eg: 
+    //     q = 0 0.33333 0.166666 
+    // and f = 0 0.33333 0.666666 
+
+    pt = toP3(p);
+    for (int i = 0; i < modDim; i++)
+      if (qs[i] != null) {
+        p3 = qs[i];
+        int ifn = 0;
+        if (pt.x != 0)
+          ifn = approxInt(pt.x / p3.x);
+        if (pt.y != 0)
+          ifn = Math.max(approxInt(pt.y / p3.y), ifn);
+        if (ifn == 0 && pt.z != 0)
+          ifn = Math.max(approxInt(pt.z / p3.z), ifn);
+        if (ifn == 0)
+          continue;
+        if (p3.x != 0 && approxInt(10 + p3.x * ifn - pt.x) == 0
+            || p3.y != 0 && approxInt(10 + p3.y * ifn - pt.y) == 0
+            || p3.z != 0 && approxInt(10 + p3.z * ifn - pt.z) == 0)
+          continue;
+          
+        p = new double[modDim];
+        p[i] = ifn;
+        return p;
+      }    
     return null;
+  }
+
+  private int approxInt(float fn) {
+    int ifn = Math.round(fn);
+    return (Math.abs(fn - ifn) < 0.001f ? ifn : 0);
   }
 
   private P3 toP3(double[] x) {

@@ -3958,6 +3958,7 @@ public class ScriptEval extends ScriptExpr {
     boolean isInline = false;
     boolean isSmiles = false;
     boolean isData = false;
+    boolean isAsync = false;
     BS bsModels;
     int i = (tokAt(0) == T.data ? 0 : 1);
     boolean appendNew = viewer.getBoolean(T.appendnew);
@@ -4093,7 +4094,8 @@ public class ScriptEval extends ScriptExpr {
         isSmiles = true;
         i++;
         break;
-      case T.sync:
+      case T.async:
+        isAsync = true;
         htParams.put("async", Boolean.TRUE);
         i++;
         break;
@@ -4561,7 +4563,7 @@ public class ScriptEval extends ScriptExpr {
         loadScript = new SB().append("{\n    var ")
             .append(filename.substring(1)).append(" = ").append(PT.esc(s))
             .append(";\n    ").appendSB(loadScript);
-      } else if (filename.startsWith("?") && viewer.isJS) {
+      } else if (viewer.isJS && (isAsync || filename.startsWith("?"))) {
         localName = null;
         filename = loadFileAsync("LOAD" + (isAppend ? "_APPEND_" : "_"),
             filename, i, !isAppend);
@@ -5915,7 +5917,7 @@ public class ScriptEval extends ScriptExpr {
     int pc = 0;
     int lineEnd = 0;
     int pcEnd = 0;
-    int i = 2;
+    int i = 1;
     String localPath = null;
     String remotePath = null;
     String scriptPath = null;
@@ -5927,15 +5929,21 @@ public class ScriptEval extends ScriptExpr {
         viewer.jsEval(paramAsStr(1));
       return;
     }
+    boolean isAsync = false;
     if (filename == null && theScript == null) {
-      tok = tokAt(1);
+      tok = tokAt(i);
       if (tok != T.string)
         error(ERROR_filenameExpected);
-      filename = paramAsStr(1);
+      filename = paramAsStr(i);
+      
+      if (filename.equalsIgnoreCase("async")) {
+        isAsync = true;
+        filename = paramAsStr(++i);
+      }
       if (filename.equalsIgnoreCase("applet")) {
         // script APPLET x "....."
-        String appID = paramAsStr(2);
-        theScript = parameterExpressionString(3, 0); // had _script variable??
+        String appID = paramAsStr(++i);
+        theScript = parameterExpressionString(++i, 0); // had _script variable??
         checkLast(iToken);
         if (chk)
           return;
@@ -5950,26 +5958,26 @@ public class ScriptEval extends ScriptExpr {
         tok = tokAt(slen - 1);
         doStep = (tok == T.step);
         if (filename.equalsIgnoreCase("inline")) {
-          theScript = parameterExpressionString(2, (doStep ? slen - 1 : 0));
-          i = iToken + 1;
+          theScript = parameterExpressionString(++i, (doStep ? slen - 1 : 0));
+          i = iToken;
         }
         while (filename.equalsIgnoreCase("localPath")
             || filename.equalsIgnoreCase("remotePath")
             || filename.equalsIgnoreCase("scriptPath")) {
           if (filename.equalsIgnoreCase("localPath"))
-            localPath = paramAsStr(i++);
+            localPath = paramAsStr(++i);
           else if (filename.equalsIgnoreCase("scriptPath"))
-            scriptPath = paramAsStr(i++);
+            scriptPath = paramAsStr(++i);
           else
-            remotePath = paramAsStr(i++);
-          filename = paramAsStr(i++);
+            remotePath = paramAsStr(++i);
+          filename = paramAsStr(++i);
         }
-        if (filename.startsWith("?") && viewer.isJS) {
+        if (viewer.isJS && (isAsync || filename.startsWith("?"))) {
           filename = loadFileAsync("SCRIPT_", filename, i, true);
           // on first pass a ScriptInterruption will be thrown; 
           // on the second pass we will have the file name, which will be cache://local_n__m
         }
-        if ((tok = tokAt(i)) == T.check) {
+        if ((tok = tokAt(++i)) == T.check) {
           isCheck = true;
           tok = tokAt(++i);
         }

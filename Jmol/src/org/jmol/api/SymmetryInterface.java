@@ -170,7 +170,7 @@ public interface SymmetryInterface {
 
   public void unitize(P3 ptFrac);
 
-  public void addLatticeVectors(List<float[]> lattvecs);
+  public boolean addLatticeVectors(List<float[]> lattvecs);
 
   public int getLatticeOp();
 

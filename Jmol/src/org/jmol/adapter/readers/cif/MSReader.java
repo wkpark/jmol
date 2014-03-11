@@ -831,4 +831,38 @@ public class MSReader implements MSInterface {
     return htSubsystems.get(code).getSymmetry();
   }
 
+  @Override
+  public boolean addLatticeVector(List<float[]> lattvecs, String data) throws Exception {
+    float[] a = null;
+    char c = data.charAt(0);
+    switch(c) {
+    case 'P':
+    case 'X':
+      break;
+    case 'A':
+    case 'B':
+    case 'C':
+    case 'I':
+      a = new float[] {0.5f, 0.5f, 0.5f};
+      if (c != 'I')
+        a[c - 'A'] = 0;
+      break; 
+    case 'F':
+      addLatticeVector(lattvecs, "A");
+      addLatticeVector(lattvecs, "B");
+      addLatticeVector(lattvecs, "C");
+      break;
+    case '0': // X explicit
+      if (data.indexOf(".") >= 0)
+        a = AtomSetCollectionReader.getTokensFloat(data, null, modDim + 3);
+      break;
+    default:
+      return false;
+    }
+    if (a != null)
+      lattvecs.addLast(a);
+    return true;
+  }
+
+
 }

@@ -456,7 +456,7 @@ class SpaceGroup {
       // ! in character 0 indicates we are using the symop() function and want to be explicit
       if (xyzList.containsKey(xyz))
         return xyzList.get(xyz).intValue();
-      if (latticeOp < 0 && xyzList.containsKey(PT.rep(PT.rep(xyz, "+1/2", ""), "+1/2", "")))
+      if (latticeOp < 0 && xyzList.containsKey(PT.rep(xyz, "+1/2", "")))
         latticeOp = operationCount;
       xyzList.put(xyz, Integer.valueOf(operationCount));
     }
@@ -1404,12 +1404,14 @@ class SpaceGroup {
     } : spaceGroupDefinitions);
   }
 
-  public void addLatticeVectors(List<float[]> lattvecs) {
+  public boolean addLatticeVectors(List<float[]> lattvecs) {
+    if (latticeOp >= 0)
+      return false;
     int nOps = latticeOp = operationCount;
     for (int j = 0; j < lattvecs.size(); j++) {
       float[] data = lattvecs.get(j);
       if (data.length > modDim + 3)
-        return;
+        return false;
       for (int i = 0; i < nOps; i++) {
         SymmetryOperation newOp = new SymmetryOperation(null, null, 0, 0,
             doNormalize);
@@ -1421,6 +1423,7 @@ class SpaceGroup {
         addOp(newOp, newOp.xyz, true);
       }
     }
+    return true;
   }
 
   public int getSiteMultiplicity(P3 pt, UnitCell unitCell) {

@@ -721,8 +721,8 @@ public class Symmetry implements SymmetryInterface {
   }
 
   @Override
-  public void addLatticeVectors(List<float[]> lattvecs) {
-    spaceGroup.addLatticeVectors(lattvecs);
+  public boolean addLatticeVectors(List<float[]> lattvecs) {
+    return spaceGroup.addLatticeVectors(lattvecs);
   }
 
   @Override

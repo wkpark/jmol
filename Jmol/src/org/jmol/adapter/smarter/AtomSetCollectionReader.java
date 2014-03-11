@@ -1430,7 +1430,7 @@ public abstract class AtomSetCollectionReader {
     Parser.parseStringInfestedFloatArray(s, null, data);
   }
 
-  protected static float[] getTokensFloat(String s, float[] f, int n) {
+  public static float[] getTokensFloat(String s, float[] f, int n) {
     if (f == null)
       f = new float[n];
     PT.parseFloatArrayDataN(getTokensStr(s), f, n);

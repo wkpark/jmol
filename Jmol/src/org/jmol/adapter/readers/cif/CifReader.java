@@ -103,6 +103,7 @@ public class CifReader extends AtomSetCollectionReader implements
   private boolean modulated;
   private boolean lookingForPDB = true;
   private boolean isCourseGrained;
+  private String latticeType = null;
 
   @Override
   public void initializeReader() throws Exception {
@@ -285,6 +286,7 @@ public class CifReader extends AtomSetCollectionReader implements
     if (mr == null)
       ms = mr = (MSCifInterface) Interface
           .getOption("adapter.readers.cif.MSCifReader");
+    addLatticeVectors();
     modulated = (mr.initialize(this, data) > 0);
   }
 
@@ -428,13 +430,30 @@ public class CifReader extends AtomSetCollectionReader implements
    * @throws Exception
    */
   private void processSymmetrySpaceGroupName() throws Exception {
-    if (key.indexOf("_ssg_name") >= 0)
+    if (key.indexOf("_ssg_name") >= 0) {
       modulated = true;
-    else if (modulated)
+      latticeType = data.substring(0, 1);
+    } 
+    else if (modulated) {
       return;
+    }
     data = tokenizer.toUnicode(data);
     setSpaceGroupName(lastSpaceGroupName = (key.indexOf("h-m") > 0 ? "HM:"
         : modulated ? "SSG:" : "Hall:") + data);
+  }
+
+  private void addLatticeVectors() {
+    if (latticeType != null && "ABCFI".indexOf(latticeType) >= 0) {
+      lattvecs = new List<float[]>(); 
+      try {
+        ms.addLatticeVector(lattvecs, latticeType);
+      } catch (Exception e) {
+        // n/a
+      }
+      if (lattvecs != null && lattvecs.size() > 0 && atomSetCollection.getSymmetry().addLatticeVectors(lattvecs)) 
+        appendLoadNote("Note! Symmetry operators added for lattice centering " + latticeType);
+      latticeType = null;
+    }
   }
 
   /**
@@ -676,6 +695,7 @@ public class CifReader extends AtomSetCollectionReader implements
 
   private String disorderAssembly = ".";
   private String lastDisorderAssembly;
+  private List<float[]> lattvecs;
 
   final private static byte ATOM_TYPE_SYMBOL = 0;
   final private static byte ATOM_TYPE_OXIDATION_NUMBER = 1;
@@ -1232,6 +1252,8 @@ public class CifReader extends AtomSetCollectionReader implements
         }
       }
     }
+    if (ms != null)
+      addLatticeVectors();
   }
 
   public int getBondOrder(String field) {

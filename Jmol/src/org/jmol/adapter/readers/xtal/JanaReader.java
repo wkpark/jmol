@@ -110,7 +110,10 @@ public class JanaReader extends AtomSetCollectionReader {
         ndim();
         break;
       case LATT:
-        lattvec(line.substring(8));
+        if (lattvecs == null)
+          lattvecs = new List<float[]>();
+        if (!ms.addLatticeVector(lattvecs, line.substring(8)))
+          appendLoadNote(line + " not supported");
         break;
       case SPG:
         setSpaceGroupName(getTokens()[1]);
@@ -147,7 +150,7 @@ public class JanaReader extends AtomSetCollectionReader {
   @Override
   public void finalizeReader() throws Exception {
     readM40Data();
-    if (lattvecs != null)
+    if (lattvecs != null && lattvecs.size() > 0)
       atomSetCollection.getSymmetry().addLatticeVectors(lattvecs);
     if (ms != null) {
       ms.setModulation(false);
@@ -179,39 +182,6 @@ public class JanaReader extends AtomSetCollectionReader {
     pt[qicount] = 1;
     ms.addModulation(null, "W_" + (++qicount), new double[] {parseFloat(), parseFloat(), parseFloat()}, -1);
     ms.addModulation(null, "F_" + qicount + "_coefs_", pt, -1);
-  }
-   private void lattvec(String data) throws Exception {
-    float[] a;
-    char c = data.charAt(0);
-    switch(c) {
-    case 'P':
-    case 'X':
-      return;
-    case 'A':
-    case 'B':
-    case 'C':
-    case 'I':
-      a = new float[] {0.5f, 0.5f, 0.5f};
-      if (c != 'I')
-        a[c - 'A'] = 0;
-      break; 
-    case 'F':
-      lattvec("A");
-      lattvec("B");
-      lattvec("C");
-      return;
-    case '0': // X explicit
-      if (data.indexOf(".") < 0)
-        return; // lattvec 0 0 0 unnecessary
-      a = getTokensFloat(data, null, modDim + 3);
-      break;
-    default:
-      appendLoadNote(line + " not supported");
-      return;
-    }
-    if (lattvecs == null)
-      lattvecs = new List<float[]>();
-    lattvecs.addLast(a);
   }
 
   private void symmetry() throws Exception {

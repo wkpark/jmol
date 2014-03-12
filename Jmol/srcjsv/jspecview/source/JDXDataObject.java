@@ -7,7 +7,7 @@ import javajs.util.PT;
 
 import jspecview.common.Coordinate;
 import jspecview.common.Integral;
-import jspecview.common.JDXSpectrum;
+import jspecview.common.Spectrum;
 import jspecview.common.Measurement;
 import jspecview.common.Annotation.AType;
 import jspecview.exception.JSVException;
@@ -177,7 +177,7 @@ public abstract class JDXDataObject extends JDXHeader {
   // For NMR Spectra:
   public String observedNucl = "";
   public double observedFreq = ERROR;
-  protected JDXSpectrum parent;
+  protected Spectrum parent;
 
 	public void setObservedNucleus(String value) {
 		observedNucl = value;

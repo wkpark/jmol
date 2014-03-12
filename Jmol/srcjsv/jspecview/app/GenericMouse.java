@@ -33,7 +33,8 @@ public class GenericMouse implements GenericMouseInterface {
 	@Override
 	public boolean processEvent(int id, int x, int y, int modifiers, long time) {
 		if (pd == null) {
-			if (!disposed && id == Event.MOUSE_DOWN)
+			// blank screen
+			if (!disposed && id == Event.MOUSE_DOWN && (modifiers & Event.MOUSE_RIGHT) != 0)
 				jsvp.showMenu(x, y);
 			return true;
 		}

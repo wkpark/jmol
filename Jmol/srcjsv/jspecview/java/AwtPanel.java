@@ -75,7 +75,7 @@ import org.jmol.util.Logger;
 
 import jspecview.api.JSVPanel;
 import jspecview.api.JSVPdfWriter;
-import jspecview.common.JDXSpectrum;
+import jspecview.common.Spectrum;
 import jspecview.common.JSViewer;
 import jspecview.common.PanelData;
 import jspecview.common.ColorParameters;
@@ -136,7 +136,7 @@ public class AwtPanel extends JPanel implements JSVPanel, Printable {
    *        the spectrum
    * @return this
    */
-  public static AwtPanel getPanelOne(JSViewer viewer, JDXSpectrum spectrum) {
+  public static AwtPanel getPanelOne(JSViewer viewer, Spectrum spectrum) {
     // standard applet not overlaid and not showing range
     // standard application split spectra
     // removal of integration, taConvert
@@ -160,7 +160,7 @@ public class AwtPanel extends JPanel implements JSVPanel, Printable {
    *        the end index
    * @return this
    */
-  public static AwtPanel getPanelMany(JSViewer viewer, List<JDXSpectrum> spectra, int startIndex, int endIndex) {
+  public static AwtPanel getPanelMany(JSViewer viewer, List<Spectrum> spectra, int startIndex, int endIndex) {
   	AwtPanel p = new AwtPanel(viewer, true);
     p.pd.initMany(spectra, startIndex, endIndex);
     return p;

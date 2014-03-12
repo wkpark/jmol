@@ -40,7 +40,7 @@ import org.jmol.util.Logger;
 import jspecview.api.JSVZipReader;
 import jspecview.api.SourceReader;
 import jspecview.common.Coordinate;
-import jspecview.common.JDXSpectrum;
+import jspecview.common.Spectrum;
 import jspecview.common.JSVFileManager;
 import jspecview.common.JSViewer;
 import jspecview.common.PeakInfo;
@@ -217,7 +217,7 @@ public class JDXReader implements JmolJDXMOLReader {
     	isOK = true;
       if (label != null && !isZipFile)
         errorLog.append("Warning - file is a concatenation without LINK record -- does not conform to IUPAC standards!\n");
-      JDXSpectrum spectrum = new JDXSpectrum();
+      Spectrum spectrum = new Spectrum();
       List<String[]> dataLDRTable = new List<String[]>();
       while (!done && (label = t.getLabel()) != null && (value = getValue(label)) != null) {
         if (isTabularData) {
@@ -240,7 +240,7 @@ public class JDXReader implements JmolJDXMOLReader {
           continue;
         }
         if (spectrum == null)
-          spectrum = new JDXSpectrum();
+          spectrum = new Spectrum();
         if (readDataLabel(spectrum, label, value, errorLog, obscure))
           continue;
         addHeader(dataLDRTable, t.rawLabel, value);
@@ -274,12 +274,12 @@ public class JDXReader implements JmolJDXMOLReader {
 
 	private BufferedReader reader;
 
-	private JDXSpectrum modelSpectrum;
+	private Spectrum modelSpectrum;
 
 	private List<String[]> acdAssignments;
 	private String acdMolFile;
 
-	private boolean addSpectrum(JDXSpectrum spectrum, boolean forceSub) {
+	private boolean addSpectrum(Spectrum spectrum, boolean forceSub) {
 		if (!loadImaginary && spectrum.isImaginary()) {
 			Logger
 					.info("FileReader skipping imaginary spectrum -- use LOADIMAGINARY TRUE to load this spectrum.");
@@ -352,7 +352,7 @@ public class JDXReader implements JmolJDXMOLReader {
 		source.type = JDXSource.TYPE_BLOCK;
 		source.isCompoundSource = true;
 		List<String[]> dataLDRTable;
-		JDXSpectrum spectrum = new JDXSpectrum();
+		Spectrum spectrum = new Spectrum();
 		dataLDRTable = new List<String[]>();
 		readDataLabel(spectrum, label, value, errorLog, obscure);
 		try {
@@ -383,7 +383,7 @@ public class JDXReader implements JmolJDXMOLReader {
 				if (done)
 					break;
 				if (spectrum == null) {
-					spectrum = new JDXSpectrum();
+					spectrum = new Spectrum();
 					dataLDRTable = new List<String[]>();
 					if (label == "")
 						continue;
@@ -398,7 +398,7 @@ public class JDXReader implements JmolJDXMOLReader {
 					if (spectrum.getXYCoords().length > 0
 							&& !addSpectrum(spectrum, forceSub))
 						return source;
-					spectrum = new JDXSpectrum();
+					spectrum = new Spectrum();
 					dataLDRTable = new List<String[]>();
 					continue;
 				}
@@ -497,7 +497,7 @@ public class JDXReader implements JmolJDXMOLReader {
     ##PAGE= X=5.2, Y=7.23 $$ Spectrum of known containing 5.2 % X and 7.23% Y
      */
 
-    JDXSpectrum spectrum = null;
+    Spectrum spectrum = null;
     boolean isFirst = true;
     while (!done) {
       if ((label = t.getLabel()).equals("##ENDNTUPLES")) {
@@ -512,7 +512,7 @@ public class JDXReader implements JmolJDXMOLReader {
 
       // Create and add Spectra
       if (spectrum == null) {
-        spectrum = new JDXSpectrum();
+        spectrum = new Spectrum();
         spectrum0.copyTo(spectrum);
         spectrum.setTitle(spectrum0.getTitle());
         if (!spectrum.is1D()) {
@@ -942,7 +942,7 @@ public class JDXReader implements JmolJDXMOLReader {
 
 	////// JCAMP-DX/MOL reading //////
 	
-	private boolean checkCustomTags(JDXSpectrum spectrum, String label,
+	private boolean checkCustomTags(Spectrum spectrum, String label,
 			String value) throws JSVException {
 		if (label.length() > 10)
 			label = label.substring(0, 10);

@@ -2,7 +2,7 @@ package jspecview.api;
 
 import javajs.util.List;
 
-import jspecview.common.JDXSpectrum;
+import jspecview.common.Spectrum;
 import jspecview.common.PanelNode;
 import jspecview.common.ScriptToken;
 import jspecview.source.JDXSource;
@@ -36,11 +36,11 @@ public interface ScriptInterface {
 
 	public void siExecTest(String value);
 
-	public JSVPanel siGetNewJSVPanel(JDXSpectrum spec);
+	public JSVPanel siGetNewJSVPanel(Spectrum spec);
 
-	public JSVPanel siGetNewJSVPanel2(List<JDXSpectrum> specs);
+	public JSVPanel siGetNewJSVPanel2(List<Spectrum> specs);
 
-	public void siOpenDataOrFile(Object data, String name, List<JDXSpectrum> specs,
+	public void siOpenDataOrFile(Object data, String name, List<Spectrum> specs,
 			String url, int firstSpec, int lastSpec, boolean doCheck, String script, String id);
 
 	public void siProcessCommand(String script);

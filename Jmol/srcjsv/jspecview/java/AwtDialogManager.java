@@ -32,7 +32,7 @@ import javax.swing.event.ListSelectionListener;
 
 import jspecview.api.JSVPanel;
 import jspecview.api.PlatformDialog;
-import jspecview.common.JDXSpectrum;
+import jspecview.common.Spectrum;
 import jspecview.dialog.JSVDialog;
 import jspecview.dialog.DialogManager;
 
@@ -112,7 +112,7 @@ public class AwtDialogManager extends DialogManager implements
 	}
 
 	@Override
-	public void showProperties(Object frame, JDXSpectrum spectrum) {
+	public void showProperties(Object frame, Spectrum spectrum) {
 		Object[][] rowData = spectrum.getHeaderRowDataAsArray();
 		String[] columnNames = { "Label", "Description" };
 		JTable table = new JTable(rowData, columnNames);

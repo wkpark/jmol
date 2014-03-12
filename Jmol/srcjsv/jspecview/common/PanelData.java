@@ -253,11 +253,11 @@ public class PanelData implements EventManager {
 
 	// //// initialization - from AwtPanel
 
-	public List<JDXSpectrum> spectra;
+	public List<Spectrum> spectra;
 	public boolean taintedAll = true;
 
-	public void initOne(JDXSpectrum spectrum) {
-		spectra = new List<JDXSpectrum>();
+	public void initOne(Spectrum spectrum) {
+		spectra = new List<Spectrum>();
 		spectra.addLast(spectrum);
 		initMany(spectra, 0, 0);
 	}
@@ -276,7 +276,7 @@ public class PanelData implements EventManager {
 		}
 	}
 
-	public void initMany(List<JDXSpectrum> spectra, int startIndex,
+	public void initMany(List<Spectrum> spectra, int startIndex,
 			int endIndex) {
 		this.startIndex = startIndex;
 		this.endIndex = endIndex;
@@ -385,7 +385,7 @@ public class PanelData implements EventManager {
 	 */
 	public void clearAllView() {
 		for (int i = graphSets.size(); --i >= 0;)
-			graphSets.get(i).clearViews();
+			graphSets.get(i).resetViewCompletely();//.clearViews();
 	}
 
 	/*----------------------- JSVPanel PAINTING METHODS ---------------------*/
@@ -558,14 +558,14 @@ public class PanelData implements EventManager {
 				graphSets.get(i).setSelected(-1);
 				continue;
 			}
-			List<JDXSpectrum> specs = graphSets.get(i).spectra;
+			List<Spectrum> specs = graphSets.get(i).spectra;
 			for (int j = 0; j < specs.size(); j++, pt++)
 				if (iSpec < 0 || iSpec == pt)
 					graphSets.get(i).setSelected(j);
 		}
 	}
 
-	public void addToList(int iSpec, List<JDXSpectrum> list) {
+	public void addToList(int iSpec, List<Spectrum> list) {
 		for (int i = 0; i < spectra.size(); i++)
 			if (iSpec < 0 || i == iSpec)
 				list.addLast(spectra.get(i));
@@ -602,7 +602,7 @@ public class PanelData implements EventManager {
 		jumpToSpectrumIndex(splitPoint, isNewSet || gs.nSplit > 1 && isNewSplitPoint);
 	}
 	
-	public void jumpToSpectrum(JDXSpectrum spec) {
+	public void jumpToSpectrum(Spectrum spec) {
 		int index = currentGraphSet.getSpectrumIndex(spec);
 		jumpToSpectrumIndex(index, true);
 	}
@@ -613,7 +613,7 @@ public class PanelData implements EventManager {
 		currentSplitPoint = index;
 		if (doSetSpec)
 			setSpectrum(currentSplitPoint, currentGraphSet.nSplit > 1);
-		JDXSpectrum spec = getSpectrum();
+		Spectrum spec = getSpectrum();
 		notifySubSpectrumChange(spec.getSubIndex(), spec);
 		
 	}
@@ -659,13 +659,13 @@ public class PanelData implements EventManager {
 		// repaint();
 	}
 
-	public JDXSpectrum getSpectrum() {
+	public Spectrum getSpectrum() {
 		return currentGraphSet.getSpectrum();
 	}
 
-	public void setSpecForIRMode(JDXSpectrum spec) {
+	public void setSpecForIRMode(Spectrum spec) {
 		taintedAll = true;
-		JDXSpectrum spec0 = currentGraphSet.getSpectrum();
+		Spectrum spec0 = currentGraphSet.getSpectrum();
 		currentGraphSet.setSpectrumJDX(spec);
 		for (int i = 0; i < spectra.size(); i++)
 			if (spectra.get(i) == spec0)
@@ -680,7 +680,7 @@ public class PanelData implements EventManager {
 		return currentGraphSet.getCurrentSpectrumIndex();
 	}
 
-	public JDXSpectrum getSpectrumAt(int index) {
+	public Spectrum getSpectrumAt(int index) {
 		if (currentGraphSet == null)
 			return null;
 		return currentGraphSet.getSpectrumAt(index);
@@ -702,7 +702,7 @@ public class PanelData implements EventManager {
 	 * @param b
 	 * @param g
 	 */
-	public void addHighlight(GraphSet gs, double x1, double x2, JDXSpectrum spec,
+	public void addHighlight(GraphSet gs, double x1, double x2, Spectrum spec,
 			int r, int g, int b, int a) {
 		(gs == null ? currentGraphSet : gs).addHighlight(x1, x2, spec, g2d
 				.getColor4(r, g, b, a));
@@ -814,12 +814,12 @@ public class PanelData implements EventManager {
 
 	}
 
-	public void findX(JDXSpectrum spec, double d) {
+	public void findX(Spectrum spec, double d) {
 		currentGraphSet.setXPointer(spec, d);
 		// repaint();
 	}
 
-	public void setXPointers(JDXSpectrum spec, double x1, JDXSpectrum spec2,
+	public void setXPointers(Spectrum spec, double x1, Spectrum spec2,
 			double x2) {
 		currentGraphSet.setXPointer(spec, x1);
 		currentGraphSet.setXPointer2(spec2, x2);
@@ -872,7 +872,7 @@ public class PanelData implements EventManager {
 	 * @param spec
 	 *          null indicates no subspectra
 	 */
-	public void notifySubSpectrumChange(int isub, JDXSpectrum spec) {
+	public void notifySubSpectrumChange(int isub, Spectrum spec) {
 		System.out.println("notify " + isub + " " + spec);
 		notifyListeners(new SubSpecChangeEvent(isub, (spec == null ? null : spec
 				.getTitleLabel())));
@@ -1109,11 +1109,11 @@ public class PanelData implements EventManager {
 		if (linking)
 			return;
 		linking = true;
-		JDXSpectrum spec = graphSet.getSpectrumAt(0);
+		Spectrum spec = graphSet.getSpectrumAt(0);
 		for (int i = graphSets.size(); --i >= 0;) {
 			GraphSet gs = graphSets.get(i);
 			if (gs != graphSet
-					&& JDXSpectrum.areXScalesCompatible(spec, graphSets.get(i)
+					&& Spectrum.areXScalesCompatible(spec, graphSets.get(i)
 							.getSpectrumAt(0), false, true))
 				gs.doZoom(initX, 0, finalX, 0, is1d, false, checkRange, false, addZoom);
 		}
@@ -1124,11 +1124,11 @@ public class PanelData implements EventManager {
 		if (linking)
 			return;
 		linking = true;
-		JDXSpectrum spec = graphSet.getSpectrum();
+		Spectrum spec = graphSet.getSpectrum();
 		for (int i = graphSets.size(); --i >= 0;) {
 			GraphSet gs = graphSets.get(i);
 			if (gs != graphSet
-					&& JDXSpectrum.areXScalesCompatible(spec, graphSets.get(i)
+					&& Spectrum.areXScalesCompatible(spec, graphSets.get(i)
 							.getSpectrum(), false, true))
 				gs.clearViews();
 		}
@@ -1139,11 +1139,11 @@ public class PanelData implements EventManager {
 		if (linking)
 			return;
 		linking = true;
-		JDXSpectrum spec = graphSet.getSpectrum();
+		Spectrum spec = graphSet.getSpectrum();
 		for (int i = graphSets.size(); --i >= 0;) {
 			GraphSet gs = graphSets.get(i);
 			if (gs != graphSet
-					&& JDXSpectrum.areXScalesCompatible(spec, graphSets.get(i)
+					&& Spectrum.areXScalesCompatible(spec, graphSets.get(i)
 							.getSpectrum(), false, true)) {
 				if (gs.imageView == null)
 					if (isX2) {
@@ -1167,7 +1167,7 @@ public class PanelData implements EventManager {
 		}
 	}
 
-	public void dialogsToFront(JDXSpectrum spec) {
+	public void dialogsToFront(Spectrum spec) {
 		currentGraphSet.dialogsToFront(spec);
 	}
 
@@ -1287,7 +1287,7 @@ public class PanelData implements EventManager {
 
 		for (int index = 0; index < numSpectra; index++) {
 			Object[] cols = new Object[3];
-			JDXSpectrum spectrum = getSpectrumAt(index);
+			Spectrum spectrum = getSpectrumAt(index);
 			title = spectrum.getTitle();
 			if (useFileName)
 				title = JSVFileManager.getTagName(spectrum.getFilePath()) + " - " + title;
@@ -1364,7 +1364,7 @@ public class PanelData implements EventManager {
 			jsvp.showMessage("To enable " + type + " first select a spectrum by clicking on it.", "" + type);
 			return null;
 		}
-		JDXSpectrum spec = getSpectrum();
+		Spectrum spec = getSpectrum();
 		JSVDialog dialog = viewer.getDialog(type, spec);
 		if (ad == null && type == AType.Measurements)
 			ad = new MeasurementData(AType.Measurements, spec);

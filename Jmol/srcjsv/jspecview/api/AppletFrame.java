@@ -6,7 +6,7 @@ import javajs.util.List;
 
 
 import jspecview.app.JSVApp;
-import jspecview.common.JDXSpectrum;
+import jspecview.common.Spectrum;
 import jspecview.common.JSViewer;
 
 public interface AppletFrame {
@@ -23,7 +23,7 @@ public interface AppletFrame {
 
 	URL getDocumentBase();
 
-	JSVPanel getJSVPanel(JSViewer viewer, List<JDXSpectrum> specs,
+	JSVPanel getJSVPanel(JSViewer viewer, List<Spectrum> specs,
 			int initialStartIndex, int initialEndIndex);
 
 	String getParameter(String name);

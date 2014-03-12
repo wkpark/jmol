@@ -2,7 +2,7 @@ package jspecview.export;
 
 import javajs.util.List;
 import jspecview.api.JSVPanel;
-import jspecview.common.JDXSpectrum;
+import jspecview.common.Spectrum;
 import jspecview.common.JSViewer;
 
 
@@ -32,7 +32,7 @@ public interface ExportInterface {
 	 * @throws Exception
 	 */
 	String exportTheSpectrum(String type, String path,
-			JDXSpectrum spec, int startIndex, int endIndex) throws Exception;
+			Spectrum spec, int startIndex, int endIndex) throws Exception;
 
 	String printPDF(JSViewer viewer, String pdfFileName);
 

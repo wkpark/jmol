@@ -61,7 +61,7 @@ public class PanelNode {
 		return jsvp.getPanelData();
 	}
 	
-  public JDXSpectrum getSpectrum() {
+  public Spectrum getSpectrum() {
     return pd().getSpectrum();
   }
 

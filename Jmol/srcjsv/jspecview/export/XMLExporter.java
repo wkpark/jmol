@@ -26,7 +26,7 @@ import javajs.util.OC;
 import javajs.util.List;
 
 import jspecview.common.Coordinate;
-import jspecview.common.JDXSpectrum;
+import jspecview.common.Spectrum;
 import jspecview.common.JSViewer;
 
 /**
@@ -83,7 +83,7 @@ abstract class XMLExporter extends FormExporter {
 
   protected List<Coordinate> newXYCoords = new List<Coordinate>();
 
-  protected boolean setup(JSViewer viewer, JDXSpectrum spec, OC out, int startIndex,
+  protected boolean setup(JSViewer viewer, Spectrum spec, OC out, int startIndex,
                              int endIndex) {
     this.startIndex = startIndex;
     this.endIndex = endIndex;
@@ -91,7 +91,7 @@ abstract class XMLExporter extends FormExporter {
     return setParameters(spec);
   }
 
-  protected boolean setParameters(JDXSpectrum spec) {
+  protected boolean setParameters(Spectrum spec) {
 
     continuous = spec.isContinuous();
 

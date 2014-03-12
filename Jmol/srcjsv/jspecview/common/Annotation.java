@@ -46,11 +46,11 @@ public class Annotation extends Coordinate {
   boolean is2D;
   int offsetX;
   int offsetY;
-  JDXSpectrum spec;
+  Spectrum spec;
   
   public enum AType { Integration, PeakList, Measurements, OverlayLegend, Views, NONE }
   
-  protected Annotation setA(double x, double y, JDXSpectrum spec, String text, boolean isPixels, boolean is2D, int offsetX, int offsetY) {
+  protected Annotation setA(double x, double y, Spectrum spec, String text, boolean isPixels, boolean is2D, int offsetX, int offsetY) {
   	set(x, y);
     this.spec = spec;
     this.text = text;
@@ -61,7 +61,7 @@ public class Annotation extends Coordinate {
     return this;
   }
 
-	Annotation setSpec(JDXSpectrum spec) {
+	Annotation setSpec(Spectrum spec) {
 		this.spec = spec;
 		return this;
 	}
@@ -86,7 +86,7 @@ public class Annotation extends Coordinate {
 
 
 	public static Annotation getColoredAnnotation(JSVGraphics g2d,
-			JDXSpectrum spec, List<String> args, Annotation lastAnnotation) {
+			Spectrum spec, List<String> args, Annotation lastAnnotation) {
 		String arg;
 		int xPt = 0;
 		int yPt = 1;

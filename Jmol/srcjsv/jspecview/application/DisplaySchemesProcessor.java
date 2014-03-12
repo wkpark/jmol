@@ -19,7 +19,7 @@
 
 package jspecview.application;
 
-import jspecview.source.JSVXmlReader;
+import jspecview.source.XMLParser;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -55,7 +55,7 @@ public class DisplaySchemesProcessor {
   /** The list of displaySchemes that is loaded from file */
   private TreeMap<String, ColorParameters> displaySchemes;
 
-  private JSVXmlReader reader;
+  private XMLParser parser;
 
   /**
    * Initialises the <code>DisplaySchemesProcessor</code>
@@ -148,20 +148,20 @@ public class DisplaySchemesProcessor {
    */
   public boolean load(BufferedReader br) throws Exception {
 
-    reader = new JSVXmlReader(br);
+    parser = new XMLParser(br);
     String defaultDS = "Default";
     ColorParameters ds = null;
     String attr;
     try {
-      while (reader.hasNext()) {
-        if (reader.nextEvent() != JSVXmlReader.START_ELEMENT)
+      while (parser.hasNext()) {
+        if (parser.nextEvent() != XMLParser.START_ELEMENT)
           continue;
-        String theTag = reader.getTagName();
+        String theTag = parser.getTagName();
         if (theTag.equals("displayschemes")) {
-          defaultDS = reader.getAttrValue("default");
+          defaultDS = parser.getAttrValue("default");
         }
         if (theTag.equals("displayscheme")) {
-          String name = reader.getAttrValue("name");
+          String name = parser.getAttrValue("name");
           ds = (ColorParameters) new AwtParameters().setName(name);
           if (name.equals(defaultDS))
             ds.isDefault = true;
@@ -170,7 +170,7 @@ public class DisplaySchemesProcessor {
         if (ds == null)
           continue;
         if (theTag.equals("font")) {
-          attr = reader.getAttrValue("face");
+          attr = parser.getAttrValue("face");
           if (attr.length() > 0)
             ds.displayFontName = attr;
         } else {
@@ -237,7 +237,7 @@ public class DisplaySchemesProcessor {
    * @return Returns a <code>Color</code> from the attribute
    */
   private GenericColor getColor(ColorParameters p){
-    String value = reader.getAttrValueLC("hex");
+    String value = parser.getAttrValueLC("hex");
     return (value.length() == 0 || value.equals("default") ? null
         : p.getColorFromString(value));
   }

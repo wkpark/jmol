@@ -68,7 +68,7 @@ public class IntegralData extends MeasurementData {
 	 * @param integralRange
 	 * @param spec 
 	 */
-	public IntegralData(double integralMinY, double integralOffset, double integralRange, JDXSpectrum spec) {
+	public IntegralData(double integralMinY, double integralOffset, double integralRange, Spectrum spec) {
 		super(AType.Integration, spec);
     percentMinY = integralMinY; // not used.
 		percentOffset = integralOffset;
@@ -76,7 +76,7 @@ public class IntegralData extends MeasurementData {
     calculateIntegral();
 	}
 
-	public IntegralData(JDXSpectrum spec, Parameters p) {
+	public IntegralData(Spectrum spec, Parameters p) {
 		super(AType.Integration, spec);
 		if (p == null) {
 			autoIntegrate();
@@ -266,7 +266,7 @@ public class IntegralData extends MeasurementData {
 	 * @return JmolList<IntegrationRatio> object representing integration ratios
 	 */
 	public static List<Annotation> getIntegrationRatiosFromString(
-			JDXSpectrum spec, String value) {
+			Spectrum spec, String value) {
 		List<Annotation> ratios = new List<Annotation>();
 		// split input into x-value/integral-value pairs
 		StringTokenizer allParamTokens = new StringTokenizer(value, ",");

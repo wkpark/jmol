@@ -14,7 +14,7 @@ import jspecview.api.JSVExporter;
 import jspecview.api.JSVFileHelper;
 import jspecview.api.JSVPanel;
 import jspecview.common.ExportType;
-import jspecview.common.JDXSpectrum;
+import jspecview.common.Spectrum;
 import jspecview.common.JSVFileManager;
 import jspecview.common.JSViewer;
 import jspecview.common.PanelData;
@@ -112,7 +112,7 @@ public class Exporter implements ExportInterface {
    */
   private String exportSpectrumOrImage(JSViewer viewer, ExportType eType,
                                               int index, OC out) {
-    JDXSpectrum spec;
+    Spectrum spec;
     PanelData pd = viewer.pd();    
     if (index < 0 && (index = pd.getCurrentSpectrumIndex()) < 0)
       return "Error exporting spectrum: No spectrum selected";
@@ -132,7 +132,7 @@ public class Exporter implements ExportInterface {
   
 	@Override
 	public String exportTheSpectrum(JSViewer viewer, ExportType mode,
-			OC out, JDXSpectrum spec, int startIndex, int endIndex,
+			OC out, Spectrum spec, int startIndex, int endIndex,
 			PanelData pd) throws Exception {
 		JSVPanel jsvp = viewer.selectedPanel;
 		String type = mode.name();

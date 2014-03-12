@@ -31,7 +31,7 @@ import javajs.util.PT;
 import jspecview.api.JSVExporter;
 import jspecview.common.Coordinate;
 import jspecview.common.ExportType;
-import jspecview.common.JDXSpectrum;
+import jspecview.common.Spectrum;
 import jspecview.common.JSViewer;
 import jspecview.common.PanelData;
 import jspecview.source.JDXReader;
@@ -52,7 +52,7 @@ public class JDXExporter implements JSVExporter {
 	public static final String newLine = System.getProperty("line.separator");
 	private OC out;
 	private ExportType type;
-	private JDXSpectrum spectrum;
+	private Spectrum spectrum;
 	private JSViewer viewer;
 
 	public JDXExporter() {
@@ -75,7 +75,7 @@ public class JDXExporter implements JSVExporter {
    * @throws IOException
    */
   @Override
-	public String exportTheSpectrum(JSViewer viewer, ExportType type, OC out, JDXSpectrum spectrum, int startIndex, int endIndex, PanelData pd) throws IOException{
+	public String exportTheSpectrum(JSViewer viewer, ExportType type, OC out, Spectrum spectrum, int startIndex, int endIndex, PanelData pd) throws IOException{
   	this.out = out;
   	this.type = type;
   	this.spectrum = spectrum;

@@ -12,7 +12,7 @@ import jspecview.api.PlatformDialog;
 import jspecview.common.Annotation;
 import jspecview.common.Coordinate;
 import jspecview.common.IntegralData;
-import jspecview.common.JDXSpectrum;
+import jspecview.common.Spectrum;
 import jspecview.common.JSViewer;
 import jspecview.common.MeasurementData;
 import jspecview.common.PanelData;
@@ -29,7 +29,7 @@ abstract public class JSVDialog extends Annotation implements AnnotationData {
 	protected AType type;
 	protected String title;
 	protected JSViewer viewer;
-	protected JDXSpectrum spec;
+	protected Spectrum spec;
 	protected DialogManager manager;
 	protected PlatformDialog dialog;
 	protected JSVPanel jsvp;
@@ -67,7 +67,7 @@ abstract public class JSVDialog extends Annotation implements AnnotationData {
 	 * @param spec
 	 * @return this
 	 */
-	public JSVDialog setParams(String title, JSViewer viewer, JDXSpectrum spec) {
+	public JSVDialog setParams(String title, JSViewer viewer, Spectrum spec) {
 		this.title = title;
 		this.viewer = viewer;
 		this.spec = spec;
@@ -204,7 +204,7 @@ abstract public class JSVDialog extends Annotation implements AnnotationData {
 	}
 
 	@Override
-	public JDXSpectrum getSpectrum() {
+	public Spectrum getSpectrum() {
 		return spec;
 	}
 

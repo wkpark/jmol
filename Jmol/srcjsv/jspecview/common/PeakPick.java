@@ -4,7 +4,7 @@ package jspecview.common;
 
 class PeakPick extends Measurement {
 
-	PeakPick setValue(double x, double y, JDXSpectrum spec, String text,
+	PeakPick setValue(double x, double y, Spectrum spec, String text,
 			double value) {
 		if (text == null) {
 			set(x, y);

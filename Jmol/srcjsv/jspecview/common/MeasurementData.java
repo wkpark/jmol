@@ -41,7 +41,7 @@ public class MeasurementData extends List<Measurement> implements
 	private static final long serialVersionUID = 1L;
 
 	private AType type;
-	protected JDXSpectrum spec;
+	protected Spectrum spec;
 	protected String units;
 	protected int precision;
 	protected Parameters myParams;
@@ -52,7 +52,7 @@ public class MeasurementData extends List<Measurement> implements
 	private final static String[] HEADER = new String[] { "", "start", "end",
 			"value" };
 
-	MeasurementData(AType type, JDXSpectrum spec) {
+	MeasurementData(AType type, Spectrum spec) {
 		this.type = type;
 		this.spec = spec;
 		myParams = new Parameters().setName("MeasurementData");
@@ -135,7 +135,7 @@ public class MeasurementData extends List<Measurement> implements
 	}
 
 	@Override
-	public JDXSpectrum getSpectrum() {
+	public Spectrum getSpectrum() {
 		return spec;
 	}
 

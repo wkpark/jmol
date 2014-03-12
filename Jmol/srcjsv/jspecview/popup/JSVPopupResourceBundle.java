@@ -48,6 +48,7 @@ public class JSVPopupResourceBundle extends PopupResource {
     
       {  "appMenu", "_SIGNED_FileMenu Spectra... ShowMenu OptionsMenu ZoomMenu - " +
       		"Integration Peaks Measurements - Script... Properties" },
+      		
       { "appletMenu",
           "_SIGNED_FileMenu Spectra... - OptionsMenu ZoomMenu" +
           " - Integration Peaks Measurements" +
@@ -61,19 +62,16 @@ public class JSVPopupResourceBundle extends PopupResource {
 
       {   "Export_AsMenu", "JPG PNG SVG PDF" },
               
-      {   "ShowMenu",
-      "Show_Header Show_Source Show_Overlay_Key" }, //Window?
+      {   "ShowMenu", "Show_Header Show_Source Show_Overlay_Key" }, //Window?
 
       {   "OptionsMenu",
           "Toggle_Grid Toggle_X_Axis Toggle_Y_Axis Toggle_Coordinates Toggle_Trans/Abs Reverse_Plot Predicted_Solution_Colour" }, //Window?
 
-      {   "ZoomMenu", "Next_Zoom Previous_Zoom Reset_Zoom Clear_Zooms Set_Zoom..." },
+      {   "ZoomMenu", "Next_Zoom Previous_Zoom Reset_Zoom - Set_X_Scale... Reset_X_Scale" },
 
       {   "AboutMenu", "VERSION" }
-};
-  
-  
-  
+  };
+
   private static String[][] structureContents = {
   	{"Open_File...","load ?"},
   	{"Open_URL...","load http://?"},
@@ -90,12 +88,12 @@ public class JSVPopupResourceBundle extends PopupResource {
   	{"Show_Overlay_Key...","showKey"},
   	{"Next_Zoom","zoom next;showMenu"},
   	{"Previous_Zoom","zoom prev;showMenu"},
-  	{"Clear_Zooms","zoom clear"},
-  	{"Reset_Zoom","zoom out"},
+  	{"Reset_Zoom","zoom clear"},
+  	{"Reset_X_Scale","zoom out"},
+  	{"Set_X_Scale...","zoom"},
   	{"Spectra...","view"},
   	{"Overlay_Offset...","stackOffsetY"},
   	{"Script...","script INLINE"},
-  	{"Set_Zoom...","zoom"},
   	{"Properties","showProperties"},
   	{"Toggle_X_Axis","XSCALEON toggle;showMenu"},
   	{"Toggle_Y_Axis","YSCALEON toggle;showMenu"},

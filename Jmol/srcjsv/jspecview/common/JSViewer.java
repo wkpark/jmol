@@ -38,7 +38,7 @@ import jspecview.api.JSVTreeNode;
 import jspecview.api.ScriptInterface;
 import jspecview.api.VisibleInterface;
 import jspecview.common.Annotation.AType;
-import jspecview.common.JDXSpectrum.IRMode;
+import jspecview.common.Spectrum.IRMode;
 import jspecview.common.PanelData.LinkMode;
 import jspecview.dialog.JSVDialog;
 import jspecview.dialog.DialogManager;
@@ -167,7 +167,7 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 	private String defaultLoadScript;
 
 	public float nmrMaxY = Float.NaN;
-	
+
 	public void setPopupMenu(boolean allowMenu, boolean zoomEnabled) {
 		popupAllowMenu = allowMenu;
 		popupZoomEnabled = zoomEnabled;		
@@ -528,12 +528,27 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 	private boolean execZoom(String value) {
 		double x1 = 0, x2 = 0, y1 = 0, y2 = 0;
 		List<String> tokens;
+		value = PT.rep(value, " - ", " ").replace(',',' ');
 		tokens = ScriptToken.getTokens(value);
 		switch (tokens.size()) {
 		default:
 			return false;
+		case 0:
+			ScaleData v = pd().getCurrentGraphSet().getCurrentView();
+			value = Math.round(v.minXOnScale * 100) / 100f + "," + Math.round(v.maxXOnScale * 100) / 100f;
+			value = selectedPanel.getInput("Enter zoom range x1 x2", "Zoom", value);
+			return (value == null || execZoom(value));
 		case 1:
-			zoomTo(tokens.get(0));
+			value = tokens.get(0);
+			if (value.equalsIgnoreCase("next")) {
+				pd().nextView();
+			} else if (value.toLowerCase().startsWith("prev")) {
+				pd().previousView();
+			} else if (value.equalsIgnoreCase("out")) {
+				pd().resetView();
+			} else if (value.equalsIgnoreCase("clear")) {
+				pd().clearAllView();
+			}
 			return true;
 		case 2:
 			x1 = Double.parseDouble(tokens.get(0));
@@ -547,33 +562,6 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 		}
 		pd().setZoom(x1, y1, x2, y2);
 		return true;
-	}
-
-	// private String recentZoom = "";
-	// doesn't work
-
-	private void zoomTo(String value) {
-		PanelData pd = pd();
-		// if (value.equals("")) {
-		// value = selectedPanel.getInput("Enter zoom range y1 y2", "Zoom",
-		// recentZoom);
-		// if (value == null)
-		// return;
-		// recentZoom = value;
-		// runScriptNow("zoom " + value);
-		// return;
-		// }
-		if (value.equalsIgnoreCase("next")) {
-			pd.nextView();
-		} else if (value.toLowerCase().startsWith("prev")) {
-			pd.previousView();
-
-		} else if (value.equalsIgnoreCase("out")) {
-			pd.resetView();
-
-		} else if (value.equalsIgnoreCase("clear")) {
-			pd.clearAllView();
-		}
 	}
 
 	private void scaleSelectedBy(List<PanelNode> nodes, String value) {
@@ -603,7 +591,7 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 		List<PanelNode> nodes = panelNodes;
 		for (int i = nodes.size(); --i >= 0;)
 			nodes.get(i).pd().selectFromEntireSet(Integer.MIN_VALUE);
-		List<JDXSpectrum> speclist = new List<JDXSpectrum>();
+		List<Spectrum> speclist = new List<Spectrum>();
 		fillSpecList(value, speclist, false);
 		// not sure where this is going...
 	}
@@ -613,7 +601,7 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 			checkOverlay();
 			return;
 		}
-		List<JDXSpectrum> speclist = new List<JDXSpectrum>();
+		List<Spectrum> speclist = new List<Spectrum>();
 		String strlist = fillSpecList(value, speclist, true);
 		if (speclist.size() > 0)
 			si.siOpenDataOrFile(null, strlist, speclist, strlist, -1, -1, false, null, null);
@@ -625,8 +613,8 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 	private void execIRMode(String value) {
 		IRMode mode = IRMode.getMode(value); // T, A, or TOGGLE
 		PanelData pd = pd();
-		JDXSpectrum spec = pd.getSpectrum();
-		JDXSpectrum spec2 = JDXSpectrum.taConvert(spec, mode);
+		Spectrum spec = pd.getSpectrum();
+		Spectrum spec2 = Spectrum.taConvert(spec, mode);
 		if (spec2 == spec)
 			return;
 		pd.setSpecForIRMode(spec2);
@@ -674,12 +662,12 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 		double y1 = Double.parseDouble(tokens.get(pt++));
 		double y2 = Double.parseDouble(tokens.get(pt));
 		if (isAll) {
-			JDXSpectrum spec = pd().getSpectrum();
+			Spectrum spec = pd().getSpectrum();
 			for (int i = panelNodes.size(); --i >= 0;) {
 				PanelNode node = panelNodes.get(i);
 				if (node.source != currentSource)
 					continue;
-				if (JDXSpectrum.areXScalesCompatible(spec, node.getSpectrum(), false,
+				if (Spectrum.areXScalesCompatible(spec, node.getSpectrum(), false,
 						false))
 					node.pd().setZoom(0, y1, 0, y2);
 			}
@@ -907,7 +895,7 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 
 	public void sendPanelChange() {
 		PanelData pd = pd();
-		JDXSpectrum spec = pd.getSpectrum();
+		Spectrum spec = pd.getSpectrum();
 		PeakInfo pi = spec.getSelectedPeak();
 		if (pi == null)
 			pi = spec.getModelPeakInfoForAutoSelectOnLoad();
@@ -986,7 +974,7 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 	 * @param isView
 	 * @return comma-separated list, for the title
 	 */
-	private String fillSpecList(String value, List<JDXSpectrum> speclist,
+	private String fillSpecList(String value, List<Spectrum> speclist,
 			boolean isView) {
 
 		String prefix = "1.";
@@ -1100,9 +1088,9 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 	}
 
 	private void addSpecToList(PanelData pd, double userYFactor, int isubspec,
-			List<JDXSpectrum> list, boolean isView) {
+			List<Spectrum> list, boolean isView) {
 		if (isView) {
-			JDXSpectrum spec = pd.getSpectrumAt(0);
+			Spectrum spec = pd.getSpectrumAt(0);
 			spec.setUserYFactor(Double.isNaN(userYFactor) ? 1 : userYFactor);
 			pd.addToList(isubspec - 1, list);
 		} else {
@@ -1111,13 +1099,13 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 	}
 
 	public String getSolutionColor() {
-		JDXSpectrum spectrum = pd().getSpectrum();
+		Spectrum spectrum = pd().getSpectrum();
 		return (spectrum.canShowSolutionColor() ? ((VisibleInterface) JSViewer
 				.getInterface("jspecview.common.Visible")).getColour(spectrum
 				.getXYCoords(), spectrum.getYUnits()) : noColor);
 	}
 
-	public int openDataOrFile(Object data, String name, List<JDXSpectrum> specs,
+	public int openDataOrFile(Object data, String name, List<Spectrum> specs,
 			String strUrl, int firstSpec, int lastSpec, boolean isAppend, String id) {
 		if ("NONE".equals(name)) {
 			close("View*");
@@ -1217,13 +1205,13 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 			currentSource.setID(id);
 		si.siSetLoaded(fileName, newPath);
 
-		JDXSpectrum spec = currentSource.getJDXSpectrum(0);
+		Spectrum spec = currentSource.getJDXSpectrum(0);
 		if (spec == null) {
 			return FILE_OPEN_NO_DATA;
 		}
 
 		specs = currentSource.getSpectra();
-		JDXSpectrum.process(specs, irMode);
+		Spectrum.process(specs, irMode);
 
 		boolean autoOverlay = interfaceOverlaid
 				|| spec.isAutoOverlayFromJmolClick();
@@ -1361,7 +1349,7 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 
 	public void combineSpectra(String name) {
 		JDXSource source = currentSource;
-		List<JDXSpectrum> specs = source.getSpectra();
+		List<Spectrum> specs = source.getSpectra();
 		JSVPanel jsvp = si.siGetNewJSVPanel2(specs);
 		jsvp.setTitle(source.getTitle());
 		if (jsvp.getTitle().equals("")) {
@@ -1464,11 +1452,11 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 
 	public void splitSpectra() {
 		JDXSource source = currentSource;
-		List<JDXSpectrum> specs = source.getSpectra();
+		List<Spectrum> specs = source.getSpectra();
 		JSVPanel[] panels = new JSVPanel[specs.size()];
 		JSVPanel jsvp = null;
 		for (int i = 0; i < specs.size(); i++) {
-			JDXSpectrum spec = specs.get(i);
+			Spectrum spec = specs.get(i);
 			jsvp = si.siGetNewJSVPanel(spec);
 			si.siSetPropertiesFromPreferences(jsvp, true);
 			panels[i] = jsvp;
@@ -1716,7 +1704,7 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 		return dialogManager.set(this);
 	}
 
-	public JSVDialog getDialog(AType type, JDXSpectrum spec) {
+	public JSVDialog getDialog(AType type, Spectrum spec) {
 		String root = "jspecview.dialog.";
 		switch (type) {
 		case Integration:
@@ -1815,7 +1803,7 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 		int nMax = pd.getNumberOfSpectraInCurrentSet();
 		if (n < -1 || n >= nMax)
 			return "Maximum spectrum index (0-based) is " + (nMax - 1) + ".";
-		JDXSpectrum spec = (n < 0 ? pd.getSpectrum() : pd.getSpectrumAt(n));
+		Spectrum spec = (n < 0 ? pd.getSpectrum() : pd.getSpectrumAt(n));
 		try {
 			return ((ExportInterface) JSViewer
 					.getInterface("jspecview.export.Exporter")).exportTheSpectrum(this,

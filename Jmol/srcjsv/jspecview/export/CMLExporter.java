@@ -25,7 +25,7 @@ import javajs.util.OC;
 
 
 import jspecview.common.ExportType;
-import jspecview.common.JDXSpectrum;
+import jspecview.common.Spectrum;
 import jspecview.common.JSViewer;
 import jspecview.common.PanelData;
 
@@ -50,7 +50,7 @@ public class CMLExporter extends XMLExporter {
    * @throws IOException
    */
   @Override
-	public String exportTheSpectrum(JSViewer viewer, ExportType mode, OC out, JDXSpectrum spec,
+	public String exportTheSpectrum(JSViewer viewer, ExportType mode, OC out, Spectrum spec,
                    int startIndex, int endIndex, PanelData pd) throws IOException {
 
     if (!setup(viewer, spec, out, startIndex, endIndex))

@@ -190,11 +190,11 @@ public class JSVFileManager {
 			InputStream in = bis;
 			if (isZipFile(bis))
 				return ((JSVZipInterface) JSViewer
-						.getInterface("jspecview.util.JSVZipUtil"))
+						.getInterface("jspecview.common.JSVZipUtil"))
 						.newJSVZipFileSequentialReader(in, subFileList, startCode);
 			if (isGzip(bis))
 				in = ((JSVZipInterface) JSViewer
-						.getInterface("jspecview.util.JSVZipUtil")).newGZIPInputStream(in);
+						.getInterface("jspecview.common.JSVZipUtil")).newGZIPInputStream(in);
 			return new BufferedReader(new InputStreamReader(in, "UTF-8"));
 		} catch (Exception e) {
 			throw new JSVException("Cannot read file " + name + " " + e);

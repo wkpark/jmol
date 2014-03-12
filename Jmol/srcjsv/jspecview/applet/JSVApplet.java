@@ -71,7 +71,7 @@ import jspecview.api.JSVAppletInterface;
 import jspecview.api.JSVFileDropper;
 import jspecview.api.JSVPanel;
 import jspecview.app.JSVApp;
-import jspecview.common.JDXSpectrum;
+import jspecview.common.Spectrum;
 import jspecview.common.JSVersion;
 import jspecview.common.JSViewer;
 import jspecview.java.AwtPanel;
@@ -504,7 +504,7 @@ public class JSVApplet extends JApplet implements JSVAppletInterface,
 	}
 
 	@Override
-	public JSVPanel getJSVPanel(JSViewer viewer, List<JDXSpectrum> specs,
+	public JSVPanel getJSVPanel(JSViewer viewer, List<Spectrum> specs,
 			int initialStartIndex, int initialEndIndex) {
 		return (specs == null ? AwtPanel.getEmptyPanel(viewer)
 				: AwtPanel.getPanelMany(viewer, specs, initialStartIndex,

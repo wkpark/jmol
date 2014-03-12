@@ -20,7 +20,7 @@
 package jspecview.source;
 
 import javajs.util.List;
-import jspecview.common.JDXSpectrum;
+import jspecview.common.Spectrum;
 
 
 
@@ -44,7 +44,7 @@ public class JDXSource extends JDXHeader {
   public int type = TYPE_SIMPLE;
   public boolean isCompoundSource = false;
   
-  private List<JDXSpectrum> jdxSpectra;
+  private List<Spectrum> jdxSpectra;
   private String errors = "";
   private String filePath;
 
@@ -62,7 +62,7 @@ public class JDXSource extends JDXHeader {
     this.type = type;
     setFilePath(filePath);
     headerTable = new List<String[]>();
-    jdxSpectra = new List<JDXSpectrum>();
+    jdxSpectra = new List<Spectrum>();
     isCompoundSource = (type != TYPE_SIMPLE);
   }
 
@@ -73,7 +73,7 @@ public class JDXSource extends JDXHeader {
    *        the spectrum index
    * @return the Spectrum at a given index in the list
    */
-  public JDXSpectrum getJDXSpectrum(int index) {
+  public Spectrum getJDXSpectrum(int index) {
     return (jdxSpectra.size() <= index ? null : jdxSpectra.get(index));
   }
 
@@ -85,7 +85,7 @@ public class JDXSource extends JDXHeader {
    *        the spectrum to be added
    * @param forceSub 
    */
-  public void addJDXSpectrum(String filePath, JDXSpectrum spectrum, boolean forceSub) {
+  public void addJDXSpectrum(String filePath, Spectrum spectrum, boolean forceSub) {
     if (filePath == null)
       filePath = this.filePath;
     spectrum.setFilePath(filePath);
@@ -108,7 +108,7 @@ public class JDXSource extends JDXHeader {
    * 
    * @return the Vector of Spectra
    */
-  public List<JDXSpectrum> getSpectra() {
+  public List<Spectrum> getSpectra() {
     return jdxSpectra;
   }
 
@@ -117,8 +117,8 @@ public class JDXSource extends JDXHeader {
    * 
    * @return array of JDXpectrum
    */
-  public JDXSpectrum[] getSpectraAsArray() {
-    return (JDXSpectrum[]) (jdxSpectra == null ? null : jdxSpectra.toArray());
+  public Spectrum[] getSpectraAsArray() {
+    return (Spectrum[]) (jdxSpectra == null ? null : jdxSpectra.toArray());
   }
 
   /**
@@ -148,7 +148,7 @@ public class JDXSource extends JDXHeader {
     return filePath;
   }
 
-  public static JDXSource createView(List<JDXSpectrum> specs) {
+  public static JDXSource createView(List<Spectrum> specs) {
     JDXSource source = new JDXSource(TYPE_VIEW, "view");
     source.isView = true;
     for (int i = 0; i < specs.size(); i++)

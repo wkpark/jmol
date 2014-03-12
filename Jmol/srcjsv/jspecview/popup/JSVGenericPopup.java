@@ -31,7 +31,7 @@ import javajs.util.PT;
 
 import jspecview.api.JSVPanel;
 import jspecview.api.JSVPopupMenu;
-import jspecview.common.JDXSpectrum;
+import jspecview.common.Spectrum;
 import jspecview.common.JSVersion;
 import jspecview.common.PanelNode;
 import jspecview.common.JSViewer;
@@ -293,7 +293,7 @@ abstract public class JSVGenericPopup extends GenericSwingPopup implements
 
 	private void setEnables(JSVPanel jsvp) {
 		pd = (jsvp == null ? null : jsvp.getPanelData());
-		JDXSpectrum spec0 = (pd == null ? null : pd.getSpectrum());
+		Spectrum spec0 = (pd == null ? null : pd.getSpectrum());
 		boolean isOverlaid = pd != null && pd.isShowAllStacked();
 		boolean isSingle = pd != null && pd.haveSelectedSpectrum();
 

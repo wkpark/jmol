@@ -3,7 +3,7 @@ package jspecview.api;
 import javajs.util.OC;
 
 import jspecview.common.ExportType;
-import jspecview.common.JDXSpectrum;
+import jspecview.common.Spectrum;
 import jspecview.common.JSViewer;
 import jspecview.common.PanelData;
 
@@ -22,6 +22,6 @@ public interface JSVExporter {
 	 * @throws Exception
 	 */
 	String exportTheSpectrum(JSViewer viewer, ExportType type,
-			OC out, JDXSpectrum spec, int startIndex, int endIndex, PanelData pd) throws Exception;
+			OC out, Spectrum spec, int startIndex, int endIndex, PanelData pd) throws Exception;
 
 }

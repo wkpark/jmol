@@ -21,7 +21,7 @@ public class PeakData extends MeasurementData {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public PeakData(AType type, JDXSpectrum spec) {
+	public PeakData(AType type, Spectrum spec) {
 		super(type, spec);
 	}
 

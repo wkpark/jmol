@@ -76,7 +76,7 @@ public class ImageView implements XYScaleConverter {
     setView();
   }
   
-	public void setXY0(JDXSpectrum spec, int xPixel, int yPixel) {
+	public void setXY0(Spectrum spec, int xPixel, int yPixel) {
     xPixel0 = xPixel;
     yPixel0 = yPixel;
     xPixel1 = xPixel0 + xPixels - 1;
@@ -207,8 +207,8 @@ public class ImageView implements XYScaleConverter {
    * @param forceNew 
    * @return image buffer
    */
-  public synchronized int[] get2dBuffer(JDXSpectrum spec, boolean forceNew) {
-    List<JDXSpectrum> subSpectra = spec.getSubSpectra();
+  public synchronized int[] get2dBuffer(Spectrum spec, boolean forceNew) {
+    List<Spectrum> subSpectra = spec.getSubSpectra();
     if (subSpectra == null || !subSpectra.get(0).isContinuous())
       return null;
     Coordinate[] xyCoords = spec.getXYCoords();
@@ -242,7 +242,7 @@ public class ImageView implements XYScaleConverter {
   private static final double DEFAULT_MIN_GRAY = 0.05;
 	private static final double DEFAULT_MAX_GRAY = 0.30;
 	
-	public int[] adjustView (JDXSpectrum spec, ViewData view) {
+	public int[] adjustView (Spectrum spec, ViewData view) {
   	//double minGray = 0.05;
   	//double maxGray = 0.20;
   	int i = 0;
@@ -259,9 +259,9 @@ public class ImageView implements XYScaleConverter {
 		return buf2d;
 	}
 
-	public void setMinMaxY(JDXSpectrum spec) {
-    List<JDXSpectrum> subSpectra = spec.getSubSpectra();
-    JDXSpectrum spec0 = subSpectra.get(0); 
+	public void setMinMaxY(Spectrum spec) {
+    List<Spectrum> subSpectra = spec.getSubSpectra();
+    Spectrum spec0 = subSpectra.get(0); 
     maxY = spec0.getY2D();
     minY = subSpectra.get(subSpectra.size() - 1).getY2D();
     if (spec0.y2DUnits.equalsIgnoreCase("Hz")) {

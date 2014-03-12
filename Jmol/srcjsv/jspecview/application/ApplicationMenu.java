@@ -59,7 +59,7 @@ import javax.swing.event.MenuListener;
 
 
 import jspecview.api.JSVPanel;
-import jspecview.common.JDXSpectrum;
+import jspecview.common.Spectrum;
 import jspecview.common.JSVFileManager;
 import jspecview.common.PanelNode;
 import jspecview.common.JSViewer;
@@ -554,7 +554,7 @@ public class ApplicationMenu extends JMenuBar {
     } else {
       setSourceEnabled(true);
       PanelData pd = node.pd();
-      JDXSpectrum spec = pd.getSpectrum();
+      Spectrum spec = pd.getSpectrum();
       setCheckBoxes(pd);
       overlayKeyMenuItem.setEnabled(pd.getNumberOfGraphSets() > 1);
       setCloseMenuItem(JSVFileManager.getTagName(node.source.getFilePath()));

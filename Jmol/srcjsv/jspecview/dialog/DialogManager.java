@@ -7,7 +7,7 @@ import javajs.util.PT;
 
 import jspecview.api.JSVPanel;
 import jspecview.api.PlatformDialog;
-import jspecview.common.JDXSpectrum;
+import jspecview.common.Spectrum;
 import jspecview.common.JSVFileManager;
 import jspecview.common.JSViewer;
 import jspecview.source.JDXSource;
@@ -59,7 +59,7 @@ abstract public class DialogManager {
 
 	abstract public void showMessageDialog(Object parentComponent, String msg, String title, int msgType);
 
-  abstract public void showProperties(Object frame, JDXSpectrum spectrum);
+  abstract public void showProperties(Object frame, Spectrum spectrum);
   
   abstract public void showMessage(Object frame, String text, String title);
 

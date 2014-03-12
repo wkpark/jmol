@@ -36,7 +36,7 @@ public class Measurement extends Annotation {
 	private Coordinate pt2 = new Coordinate();
 	protected double value;
 
-	public Measurement setM1(double x, double y, JDXSpectrum spec) {
+	public Measurement setM1(double x, double y, Spectrum spec) {
 		setA(x, y, spec, "", false, false, 0, 6);
 		setPt2(getXVal(), getYVal());
 		return this;
@@ -49,7 +49,7 @@ public class Measurement extends Annotation {
   	return m;
 	}
 
-	public Measurement setPt2(JDXSpectrum spec, boolean doSetPt2) {
+	public Measurement setPt2(Spectrum spec, boolean doSetPt2) {
 		this.spec = spec;
 		 if (doSetPt2)
 				setPt2(getXVal(), getYVal());
@@ -63,7 +63,7 @@ public class Measurement extends Annotation {
 		text = spec.setMeasurementText(this);
   }
   
-	public JDXSpectrum getSpectrum() {
+	public Spectrum getSpectrum() {
 		return spec;
 	}
   

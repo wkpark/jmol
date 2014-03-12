@@ -91,7 +91,7 @@ import jspecview.api.JSVTreeNode;
 import jspecview.api.PanelListener;
 import jspecview.api.JSVFileDropper;
 import jspecview.app.JSVAppPro;
-import jspecview.common.JDXSpectrum;
+import jspecview.common.Spectrum;
 import jspecview.common.JSVFileManager;
 import jspecview.common.PanelNode;
 import jspecview.common.JSViewer;
@@ -881,7 +881,7 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 
 	@Override
 	public void siOpenDataOrFile(Object data, String name,
-			List<JDXSpectrum> specs, String url, int firstSpec, int lastSpec,
+			List<Spectrum> specs, String url, int firstSpec, int lastSpec,
 			boolean isAppend, String script, String id) {
 		switch (viewer.openDataOrFile(data, name, specs, url, firstSpec, lastSpec,
 				isAppend, id)) {
@@ -1079,12 +1079,12 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 	}
 
 	@Override
-	public JSVPanel siGetNewJSVPanel2(List<JDXSpectrum> specs) {
+	public JSVPanel siGetNewJSVPanel2(List<Spectrum> specs) {
 		return AwtPanel.getPanelMany(viewer, specs, 0, 0);
 	}
 
 	@Override
-	public JSVPanel siGetNewJSVPanel(JDXSpectrum spec) {
+	public JSVPanel siGetNewJSVPanel(Spectrum spec) {
 		return (spec == null ? null : AwtPanel.getPanelOne(viewer, spec));
 	}
 

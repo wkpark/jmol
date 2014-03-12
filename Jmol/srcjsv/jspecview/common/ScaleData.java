@@ -433,7 +433,7 @@ public class ScaleData {
    * @param endIndices    to fill
    * @return true if OK
    */
-	static boolean setDataPointIndices(List<JDXSpectrum> graphsTemp,
+	static boolean setDataPointIndices(List<Spectrum> graphsTemp,
 			double initX, double finalX, int minPoints, int[] startIndices,
 			int[] endIndices) {
 		int nSpectraOK = 0;

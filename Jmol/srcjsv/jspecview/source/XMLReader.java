@@ -31,7 +31,7 @@ import org.jmol.util.Logger;
 
 import jspecview.api.SourceReader;
 import jspecview.common.Coordinate;
-import jspecview.common.JDXSpectrum;
+import jspecview.common.Spectrum;
 
 /**
  * Representation of a XML Source.
@@ -49,7 +49,7 @@ abstract class XMLReader implements SourceReader {
   protected JDXSource source;
   protected String filePath = "";
   
-  protected JSVXmlReader reader;
+  protected XMLParser parser;
 
   protected String tagName = "START", attrList = "",
       title = "", owner = "UNKNOWN", origin = "UNKNOWN";
@@ -89,11 +89,11 @@ abstract class XMLReader implements SourceReader {
 	}
 
   protected void getSimpleXmlReader(BufferedReader br) {
-    reader = new JSVXmlReader(br);
+    parser = new XMLParser(br);
   }
 
   protected void checkStart() throws Exception {
-    if (reader.peek() == JSVXmlReader.START_ELEMENT)
+    if (parser.peek() == XMLParser.START_ELEMENT)
       return;
     String errMsg = "Error: XML <xxx> not found at beginning of file; not an XML document?";
     errorLog.append(errMsg);
@@ -105,7 +105,7 @@ abstract class XMLReader implements SourceReader {
     // now populate all the JSpecView spectrum variables.....
 
     List<String[]> LDRTable = new List<String[]>();
-    JDXSpectrum spectrum = new JDXSpectrum();
+    Spectrum spectrum = new Spectrum();
 
     spectrum.setTitle(title);
     spectrum.setJcampdx("5.01");
@@ -184,7 +184,7 @@ abstract class XMLReader implements SourceReader {
     // for ease of processing later, return a source rather than a spectrum
     //    return XMLSource.getXMLInstance(spectrum);
     //factory = null;
-    reader = null;
+    parser = null;
     if (errorLog.length() > 0) {
       errorLog.append("these errors were found in " + type + " \n");
       errorLog.append(JDXReader.ERROR_SEPARATOR);
@@ -233,11 +233,11 @@ abstract class XMLReader implements SourceReader {
   final static int CML_PEAKLIST2 = 12;
 
   protected void processXML(int i0, int i1) throws Exception {
-    while (reader.hasNext()) {
-      if (reader.nextEvent() != JSVXmlReader.START_ELEMENT)
+    while (parser.hasNext()) {
+      if (parser.nextEvent() != XMLParser.START_ELEMENT)
         continue;
-      String theTag = reader.getTagName();
-      boolean requiresEndTag = reader.requiresEndTag();
+      String theTag = parser.getTagName();
+      boolean requiresEndTag = parser.requiresEndTag();
       if (Logger.debugging)
         Logger.info(tagName);
       for (int i = i0; i <= i1; i++)
@@ -256,27 +256,27 @@ abstract class XMLReader implements SourceReader {
   protected void process(int tagId, boolean requiresEndTag) {
     String thisTagName = tagNames[tagId];
     try {
-      tagName = reader.getTagName();
-      attrList = reader.getAttributeList();
+      tagName = parser.getTagName();
+      attrList = parser.getAttributeList();
       if (!processTag(tagId) || !requiresEndTag)
         return;
-      while (reader.hasNext()) {
-        switch (reader.nextEvent()) {
+      while (parser.hasNext()) {
+        switch (parser.nextEvent()) {
         default:
           continue;
-        case JSVXmlReader.END_ELEMENT:
-          if (reader.getEndTag().equals(thisTagName)) {
+        case XMLParser.END_ELEMENT:
+          if (parser.getEndTag().equals(thisTagName)) {
             processEndTag(tagId);
             return;
           }
           continue;
-        case JSVXmlReader.START_ELEMENT:
+        case XMLParser.START_ELEMENT:
           break;
         }
-        tagName = reader.getTagName();
+        tagName = parser.getTagName();
         if (tagName.startsWith("!--"))
           continue;
-        attrList = reader.getAttributeList();
+        attrList = parser.getAttributeList();
         if (!processTag(tagId))
           return;
       }

@@ -48,7 +48,7 @@ public class AnIMLReader extends XMLReader {
       
       getSimpleXmlReader(br);
 
-      reader.nextEvent();
+      parser.nextEvent();
 
       processXML(AML_0, AML_1);
 
@@ -129,9 +129,9 @@ public class AnIMLReader extends XMLReader {
 
   private void processAuditTrail() throws Exception {
     if (tagName.equals("user")) {
-      reader.qualifiedValue();
+      parser.qualifiedValue();
     } else if (tagName.equals("timestamp")) {
-      reader.qualifiedValue();
+      parser.qualifiedValue();
     }
   }
 
@@ -139,15 +139,15 @@ public class AnIMLReader extends XMLReader {
     if (tagName.equals("sample"))
       samplenum++;
     else if (tagName.equals("parameter")) {
-      attrList = reader.getAttrValueLC("name");
+      attrList = parser.getAttrValueLC("name");
       if (attrList.equals("name")) {
-        reader.qualifiedValue();
+        parser.qualifiedValue();
       } else if (attrList.equals("owner")) {
-        reader.qualifiedValue();
+        parser.qualifiedValue();
       } else if (attrList.equals("molecular formula")) {
-        molForm = reader.qualifiedValue();
+        molForm = parser.qualifiedValue();
       } else if (attrList.equals("cas registry number")) {
-        casRN = reader.qualifiedValue();
+        casRN = parser.qualifiedValue();
       }
     }
   }
@@ -161,22 +161,22 @@ public class AnIMLReader extends XMLReader {
       inResult = true;
       
     } else if (tagName.equals("sampleref")) {
-      if (reader.getAttrValueLC("role").contains("samplemeasurement"))
-        sampleID = reader.getAttrValue("sampleID");
+      if (parser.getAttrValueLC("role").contains("samplemeasurement"))
+        sampleID = parser.getAttrValue("sampleID");
     } else if (tagName.equals("author")) {
       process(AML_AUTHOR, true);
     } else if (tagName.equals("timestamp")) {
-      LongDate = reader.thisValue();
+      LongDate = parser.thisValue();
     } else if (tagName.equals("technique")) {
-      techname = reader.getAttrValue("name").toUpperCase() + " SPECTRUM";
+      techname = parser.getAttrValue("name").toUpperCase() + " SPECTRUM";
     } else if (tagName.equals("vectorset") || tagName.equals("seriesset") && inResult) {
-      npoints = Integer.parseInt(reader.getAttrValue("length"));
+      npoints = Integer.parseInt(parser.getAttrValue("length"));
       System.out.println("AnIML No. of points= " + npoints);
       xaxisData = new double[npoints];
       yaxisData = new double[npoints];
     } else if (tagName.equals("vector") || tagName.equals("series") && inResult) {
-      String axisLabel = reader.getAttrValue("name");
-      String dependency = reader.getAttrValueLC("dependency");
+      String axisLabel = parser.getAttrValue("name");
+      String dependency = parser.getAttrValueLC("dependency");
       if (dependency.equals("independent")) {
         xUnits = axisLabel;
         getXValues();
@@ -185,42 +185,42 @@ public class AnIMLReader extends XMLReader {
         getYValues();
       }
     } else if (tagName.equals("parameter")) {
-      if ((attrList = reader.getAttrValueLC("name")).equals("identifier")) {
-        title = reader.qualifiedValue();
+      if ((attrList = parser.getAttrValueLC("name")).equals("identifier")) {
+        title = parser.qualifiedValue();
       } else if (attrList.equals("nucleus")) {
-        obNucleus = reader.qualifiedValue();
+        obNucleus = parser.qualifiedValue();
       } else if (attrList.equals("observefrequency")) {
-        StrObFreq = reader.qualifiedValue();
+        StrObFreq = parser.qualifiedValue();
         obFreq = Double.parseDouble(StrObFreq);
       } else if (attrList.equals("referencepoint")) {
-        refPoint = Double.parseDouble(reader.qualifiedValue());
+        refPoint = Double.parseDouble(parser.qualifiedValue());
       } else if (attrList.equals("sample path length")) {
-        pathlength = reader.qualifiedValue();
+        pathlength = parser.qualifiedValue();
       } else if (attrList.equals("scanmode")) {
-        reader.thisValue(); // ignore?
+        parser.thisValue(); // ignore?
       } else if (attrList.equals("manufacturer")) {
-        vendor = reader.thisValue();
+        vendor = parser.thisValue();
       } else if (attrList.equals("model name")) {
-        modelType = reader.thisValue();
+        modelType = parser.thisValue();
       } else if (attrList.equals("resolution")) {
-        resolution = reader.qualifiedValue();
+        resolution = parser.qualifiedValue();
       }
     }
   }
 
   private void getXValues() throws Exception {
-    reader.nextTag();
-    if (reader.getTagName().equals("autoincrementedvalueset")) {
-      reader.nextTag();
-      if (reader.getTagName().equals("startvalue"))
-        firstX = Double.parseDouble(reader.qualifiedValue());
+    parser.nextTag();
+    if (parser.getTagName().equals("autoincrementedvalueset")) {
+      parser.nextTag();
+      if (parser.getTagName().equals("startvalue"))
+        firstX = Double.parseDouble(parser.qualifiedValue());
       nextStartTag();
-      if (reader.getTagName().equals("increment"))
-        deltaX = Double.parseDouble(reader.qualifiedValue());
+      if (parser.getTagName().equals("increment"))
+        deltaX = Double.parseDouble(parser.qualifiedValue());
     }
     if (!inResult) {
       nextStartTag();
-      xUnits = reader.getAttrValue("label");
+      xUnits = parser.getAttrValue("label");
     }
     increasing = (deltaX > 0 ? true : false);
     continuous = true;
@@ -230,25 +230,25 @@ public class AnIMLReader extends XMLReader {
   }
 
   private void nextStartTag() throws Exception {
-    reader.nextStartTag();
-    while (reader.getTagType() == JSVXmlReader.COMMENT) {
-      reader.nextStartTag();
+    parser.nextStartTag();
+    while (parser.getTagType() == XMLParser.COMMENT) {
+      parser.nextStartTag();
     }
   }
 
   private void getYValues() throws Exception {
   	BC bc = new BC();
-    String vectorType = reader.getAttrValueLC("type");
+    String vectorType = parser.getAttrValueLC("type");
     if (vectorType.length() == 0)
-      vectorType = reader.getAttrValueLC("vectorType");
-    reader.nextTag();
-    tagName = reader.getTagName();
+      vectorType = parser.getAttrValueLC("vectorType");
+    parser.nextTag();
+    tagName = parser.getTagName();
     if (tagName.equals("individualvalueset")) {
       for (int ii = 0; ii < npoints; ii++)
-        yaxisData[ii] = Double.parseDouble(reader.qualifiedValue());
+        yaxisData[ii] = Double.parseDouble(parser.qualifiedValue());
       System.out.println(npoints + " individual Y values now read");
     } else if (tagName.equals("encodedvalueset")) {
-      attrList = reader.getCharacters();
+      attrList = parser.getCharacters();
       byte[] dataArray = Base64.decodeBase64(attrList);
       if (dataArray.length != 0) {       
         if (vectorType.equals("float64")) {
@@ -260,17 +260,17 @@ public class AnIMLReader extends XMLReader {
         }
       }
     }
-    reader.nextStartTag();
-    tagName = reader.getTagName();
-    yUnits = reader.getAttrValue("label");
+    parser.nextStartTag();
+    tagName = parser.getTagName();
+    yUnits = parser.getAttrValue("label");
     firstY = yaxisData[0];
   }
 
   private void processAuthor() throws Exception {
     if (tagName.equals("name"))
-      owner = reader.thisValue();
+      owner = parser.thisValue();
     else if (tagName.contains("location"))
-      origin = reader.thisValue();
+      origin = parser.thisValue();
   }
 
 }

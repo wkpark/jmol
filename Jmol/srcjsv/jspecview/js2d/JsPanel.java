@@ -50,7 +50,7 @@ import org.jmol.util.Logger;
 
 import jspecview.api.JSVPanel;
 import jspecview.api.JSVPdfWriter;
-import jspecview.common.JDXSpectrum;
+import jspecview.common.Spectrum;
 import jspecview.common.JSViewer;
 import jspecview.common.PanelData;
 import jspecview.common.ColorParameters;
@@ -119,7 +119,7 @@ public class JsPanel implements JSVPanel {
    *        the end index
    * @return this
    */
-  public static JsPanel getPanelMany(JSViewer viewer, List<JDXSpectrum> spectra, int startIndex, int endIndex) {
+  public static JsPanel getPanelMany(JSViewer viewer, List<Spectrum> spectra, int startIndex, int endIndex) {
   	JsPanel p = new JsPanel(viewer, true);
     p.pd.initMany(spectra, startIndex, endIndex);
     return p;

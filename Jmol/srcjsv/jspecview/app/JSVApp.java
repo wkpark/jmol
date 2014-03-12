@@ -52,7 +52,7 @@ import jspecview.api.JSVAppInterface;
 import jspecview.api.JSVPanel;
 import jspecview.api.PanelListener;
 
-import jspecview.common.JDXSpectrum;
+import jspecview.common.Spectrum;
 import jspecview.common.JSVFileManager;
 import jspecview.common.PanelData;
 import jspecview.common.PanelNode;
@@ -672,7 +672,7 @@ public class JSVApp implements PanelListener, JSVAppInterface {
 	 */
 	@Override
 	public void siOpenDataOrFile(Object data, String name,
-			List<JDXSpectrum> specs, String url, int firstSpec, int lastSpec,
+			List<Spectrum> specs, String url, int firstSpec, int lastSpec,
 			boolean isAppend, String script, String id) {
 		switch (viewer.openDataOrFile(data, name, specs, url, firstSpec, lastSpec,
 				isAppend, id)) {
@@ -786,7 +786,7 @@ public class JSVApp implements PanelListener, JSVAppInterface {
 	}
 
 	@Override
-	public JSVPanel siGetNewJSVPanel2(List<JDXSpectrum> specs) {
+	public JSVPanel siGetNewJSVPanel2(List<Spectrum> specs) {
 		if (specs == null) {
 			initialEndIndex = initialStartIndex = -1;
 			return appletFrame.getJSVPanel(viewer, null, -1, -1);
@@ -800,12 +800,12 @@ public class JSVApp implements PanelListener, JSVAppInterface {
 	}
 
 	@Override
-	public JSVPanel siGetNewJSVPanel(JDXSpectrum spec) {
+	public JSVPanel siGetNewJSVPanel(Spectrum spec) {
 		if (spec == null) {
 			initialEndIndex = initialStartIndex = -1;
 			return null;
 		}
-		List<JDXSpectrum> specs = new List<JDXSpectrum>();
+		List<Spectrum> specs = new List<Spectrum>();
 		specs.addLast(spec);
 		JSVPanel jsvp = appletFrame.getJSVPanel(viewer, specs, initialStartIndex,
 				initialEndIndex);

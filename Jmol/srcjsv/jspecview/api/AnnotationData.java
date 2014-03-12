@@ -1,6 +1,6 @@
 package jspecview.api;
 
-import jspecview.common.JDXSpectrum;
+import jspecview.common.Spectrum;
 import jspecview.common.MeasurementData;
 import jspecview.common.Parameters;
 import jspecview.common.Annotation.AType;
@@ -13,7 +13,7 @@ public interface AnnotationData {
 	MeasurementData getData();
 	String getGraphSetKey();
 	Parameters getParameters();
-	JDXSpectrum getSpectrum();
+	Spectrum getSpectrum();
 	boolean getState();
 
 	boolean isVisible();

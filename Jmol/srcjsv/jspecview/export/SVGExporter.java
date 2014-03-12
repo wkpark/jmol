@@ -36,7 +36,7 @@ import org.jmol.util.Logger;
 import jspecview.common.ColorParameters;
 import jspecview.common.Coordinate;
 import jspecview.common.ExportType;
-import jspecview.common.JDXSpectrum;
+import jspecview.common.Spectrum;
 import jspecview.common.JSViewer;
 import jspecview.common.PanelData;
 import jspecview.common.ScaleData;
@@ -84,7 +84,7 @@ public class SVGExporter extends FormExporter {
 	 */
 	@Override
 	public String exportTheSpectrum(JSViewer viewer, ExportType mode,
-			OC out, JDXSpectrum spec, int startIndex, int endIndex,
+			OC out, Spectrum spec, int startIndex, int endIndex,
 			PanelData pd) throws IOException {
 		initForm(viewer, out);
 		GenericColor plotAreaColor, backgroundColor, plotColor, gridColor, titleColor, scaleColor, unitsColor;

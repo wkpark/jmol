@@ -11,7 +11,7 @@ import javajs.util.PT;
 
 import jspecview.api.JSVPanel;
 import jspecview.api.PlatformDialog;
-import jspecview.common.JDXSpectrum;
+import jspecview.common.Spectrum;
 import jspecview.dialog.JSVDialog;
 import jspecview.dialog.DialogManager;
 
@@ -87,7 +87,7 @@ public class JsDialogManager extends DialogManager {
 	 * 
 	 */
 	@Override
-	public void showProperties(Object frame, JDXSpectrum spectrum) {
+	public void showProperties(Object frame, Spectrum spectrum) {
 		JDialog dialog = new JDialog();// no manager needed here
 		dialog.setTitle("Header Information");
 		Object[][] rowData = spectrum.getHeaderRowDataAsArray();

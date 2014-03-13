@@ -1208,7 +1208,7 @@ public class TransformManager {
       return;
     cameraDepthSetting = screenMultiples;
     viewer.global.setF("cameraDepth", cameraDepthSetting);
-    if (mode == MODE_NAVIGATION)
+    if (viewer.getTestFlag(2))//mode == MODE_NAVIGATION)
       cameraDepth = Float.NaN;
   }
 

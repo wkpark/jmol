@@ -91,6 +91,10 @@ public class GlobalSettings {
         databases = g.databases;
         showTiming = g.showTiming;
         wireframeRotation = g.wireframeRotation;
+        testFlag1 = g.testFlag1;
+        testFlag2 = g.testFlag2;
+        testFlag3 = g.testFlag3;
+        testFlag4 = g.testFlag4;
       }
       if (databases == null) {
         databases = new Hashtable<String, String>();

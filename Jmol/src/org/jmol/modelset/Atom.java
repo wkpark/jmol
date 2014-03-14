@@ -267,7 +267,7 @@ public class Atom extends Point3fi implements BNode {
       case HYDRO:
         r = Math.abs(getHydrophobicity());
         break;
-      case IONIC:
+      case BONDING:
         r = getBondingRadius();
         break;
       case ADPMIN:

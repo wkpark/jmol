@@ -46,7 +46,7 @@ public enum EnumVdw {
   ADPMAX(-1, null, "adpmax"), 
   ADPMIN(-1, null, "adpmin"), 
   HYDRO(-1, null, "hydrophobic"),
-  IONIC(-1, null, "ionic"),
+  BONDING(-1, null, "bondingradius"),
   TEMP(-1, null, "temperature"),
 
   NOJMOL(-1, null,null), //surface will be adding H atoms ??

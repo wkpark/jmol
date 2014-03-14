@@ -9002,7 +9002,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
           type = defaultVdw;
         break;
       }
-    return (Elements.getVanderwaalsMar(atomicAndIsotopeNumber, type));
+        return (Elements.getVanderwaalsMar(atomicAndIsotopeNumber, type));
   }
 
   void setVdwStr(String name) {

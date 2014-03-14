@@ -1159,7 +1159,7 @@ abstract public class AtomCollection {
     case FACTOR:
     case OFFSET:
       switch (rd.vdwType) {
-      case IONIC:
+      case BONDING:
         r = atom.getBondingRadius();
         break;
       case ADPMAX:

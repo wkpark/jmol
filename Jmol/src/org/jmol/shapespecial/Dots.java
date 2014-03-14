@@ -221,7 +221,7 @@ public class Dots extends AtomShape {
     case TEMP:
       maxRadius = setRadius;
       break;
-    case IONIC:
+    case BONDING:
       maxRadius = modelSet.getMaxVanderwaalsRadius() * 2; // TODO?
       break;
     default:

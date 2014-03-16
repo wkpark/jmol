@@ -68,8 +68,8 @@ public final class Bspf {
   
   public Bspf(int dimMax) {
     this.dimMax = dimMax;
-    bspts = new Bspt[0];
-    bsptsValid = new boolean[0];
+    bspts = new Bspt[1];
+    bsptsValid = new boolean[1];
     cubeIterators = new CubeIterator[0];
   }
 

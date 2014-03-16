@@ -33,6 +33,9 @@ import javajs.util.SB;
 import org.jmol.constant.EnumPalette;
 
 /**
+ * 
+ * Note: Color table is now in javajs/util/CU.java
+ * 
  *<p>
  * Implements a color index model using a colix as a
  * <strong>COLor IndeX</strong>.

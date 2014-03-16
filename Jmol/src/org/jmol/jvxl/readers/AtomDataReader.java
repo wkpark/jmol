@@ -436,6 +436,7 @@ abstract class AtomDataReader extends VolumeDataReader {
   }
 
   protected float margin;
+  protected float vl0, vl1, vl2;
 
   protected void setGridLimitsForAtom(P3 ptA, float rA, P3i pt0, P3i pt1) {
     rA += margin; // to span corner-to-corner possibility

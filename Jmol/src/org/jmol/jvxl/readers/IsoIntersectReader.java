@@ -62,6 +62,9 @@ class IsoIntersectReader extends AtomDataReader {
     volumeData.setUnitVectors();
     thisPlaneB = new float[volumeData.getYzCount()];
     voxelSource = new int[volumeData.nPoints];
+    vl0 = volumeData.volumetricVectorLengths[0];
+    vl1 = volumeData.volumetricVectorLengths[1];
+    vl2 = volumeData.volumetricVectorLengths[2];
     getAtomMinMax(myBsA, bsAtomMinMax[0] = new BS[nPointsX]);
     getAtomMinMax(myBsB, bsAtomMinMax[1] = new BS[nPointsX]);
     return true;

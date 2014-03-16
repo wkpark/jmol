@@ -177,8 +177,11 @@ class IsoSolventReader extends AtomDataReader {
   protected boolean readVolumeParameters(boolean isMapData) {
     setup(isMapData);
     initializeVolumetricData();
+    volumeData.setUnitVectors();
+    vl0 = volumeData.volumetricVectorLengths[0];
+    vl1 = volumeData.volumetricVectorLengths[1];
+    vl2 = volumeData.volumetricVectorLengths[2];
     if (isProgressive) {
-      volumeData.setUnitVectors();
       volumeData.getYzCount();
       bsAtomMinMax = new BS[nPointsX];
       getAtomMinMax(null, bsAtomMinMax);
@@ -589,16 +592,17 @@ class IsoSolventReader extends AtomDataReader {
       vEdges = new  List<Edge>();
       bsLocale = new BS[myAtomCount];
       htEdges = new Hashtable<String, Edge>();
+      long t = System.currentTimeMillis();
       getEdges();
+      System.out.println("e " + (System.currentTimeMillis() - t));
       Logger.info(vEdges.size() + " edges");
 
-      //System.out.println("e " + (System.currentTimeMillis() - t));
       // 2) -- as in MSMS BUT get two faces for each atom triple
       // 3) -- check for interference of solvent position with other atoms
       vFaces = new  List<Face>();
       getFaces();
       
-      //System.out.println("f " + (System.currentTimeMillis() - t));
+      System.out.println("f " + (System.currentTimeMillis() - t));
 
       Logger.info(vFaces.size() + " faces");
       bsLocale = null;
@@ -611,11 +615,11 @@ class IsoSolventReader extends AtomDataReader {
 
       newVoxelDataCube();
       
-      //System.out.println("nv " + (System.currentTimeMillis() - t));
+      System.out.println("nv " + (System.currentTimeMillis() - t));
 
       resetVoxelData(Float.MAX_VALUE);
 
-      //System.out.println("nv2 " + (System.currentTimeMillis() - t));
+      System.out.println("nv2 " + (System.currentTimeMillis() - t));
 
       //                     /
       //  (inside) .... (-) 0  (+) .... (outside)
@@ -628,7 +632,7 @@ class IsoSolventReader extends AtomDataReader {
       //       regions -- they have to be, or else this isn't a valid face.
       markFaceVoxels(true);
       
-      //System.out.println("mfv " + (System.currentTimeMillis() - t));
+      System.out.println("mfv " + (System.currentTimeMillis() - t));
 
 
       // 2) -- Second pass is to mark -T and +T voxels that fall within 
@@ -643,14 +647,14 @@ class IsoSolventReader extends AtomDataReader {
       
       validSpheres.or(noFaceSpheres);
 
-      //System.out.println("mtv " + (System.currentTimeMillis() - t));
+      System.out.println("mtv " + (System.currentTimeMillis() - t));
 
       vEdges = null;
 
       // 3) -- Third pass is to mark "-F" voxels (just below the surface)
       markFaceVoxels(false);
       
-      //System.out.println("mfv2 " + (System.currentTimeMillis() - t));
+      System.out.println("mfv2 " + (System.currentTimeMillis() - t));
 
       vFaces = null;
     } else {
@@ -717,9 +721,12 @@ class IsoSolventReader extends AtomDataReader {
       d = rs2[ia] + rs2[ib] - d2;
       ecosAf = d / rs[ib];
       ecosBf = d / rs[ia];
+      v = V3.newVsub(atomXyz[ib], atomXyz[ia]);
+      v.normalize();
     }
 
     private List<Face> aFaces;
+    public V3 v;
 
     void addFace(Face f) {
       //System.out.println(" adding face for "+ia+" " + ib + " f=" + f);
@@ -756,26 +763,13 @@ class IsoSolventReader extends AtomDataReader {
 
   private class Face {
     int ia, ib, ic;
-    boolean isValid;
     P3 pS; // solvent position
-    Edge[] edges = new Edge[3];
 
-    Face(int ia, int ib, int ic, Edge edgeAB, P3 pS) {
+    Face(int ia, int ib, int ic, P3 pS) {
       this.ia = ia;
       this.ib = ib;
       this.ic = ic;
       this.pS = P3.newP(pS);
-      edges[0] = edgeAB;
-    }
-
-    void setEdges() {
-      if (edges[1] == null) {
-        edges[1] = findEdge(ib, ic);
-        edges[2] = findEdge(ic, ia);
-      }
-      Face f = (isValid ? this : null);
-      for (int k = 0; k < 3; k++)
-        edges[k].addFace(f);
     }
 
 //    protected void dump() {
@@ -817,15 +811,15 @@ class IsoSolventReader extends AtomDataReader {
       bs.and(bsLocale[ib]);
       //System.out.println(ia + " " + bsLocale[ia] + " " + ib + " " + bsLocale[ib] + " " + bs);
       for (int ic = bs.nextSetBit(ib + 1); ic >= 0; ic = bs.nextSetBit(ic + 1)) {
-        if (getSolventPoints(ia, ib, ic)) {
+        if (getSolventPoints(edge, ia, ib, ic)) {
           //System.out.println("checking face " + ia + " " + ib + " " + ic );
           Face f;
           boolean isOK = false;
-          if (validateFace(f = new Face(ia, ib, ic, edge, ptS1))) {
+          if ((f = validateFace(ia, ib, ic, edge, ptS1)) != null) {
             vFaces.addLast(f);
             isOK = true;
           }
-          if (validateFace(f = new Face(ia, ib, ic, edge, ptS2))) {
+          if ((f = validateFace(ia, ib, ic, edge, ptS2)) != null) {
             vFaces.addLast(f);
             isOK = true;
           }
@@ -842,7 +836,7 @@ class IsoSolventReader extends AtomDataReader {
       //vEdges.get(i).setType();
   }
 
-  private boolean getSolventPoints(int ia, int ib, int ic) {
+  private boolean getSolventPoints(Edge edge, int ia, int ib, int ic) {
     /*
      * 
      * A----------p-----B
@@ -866,7 +860,14 @@ class IsoSolventReader extends AtomDataReader {
      * 
      */
 
-    double dPS = getPointP(ia, ib);
+    float rAS = rs[ia];
+    V3 v = edge.v;
+    double cosAngleBAS = (edge.d2 + rs2[ia] - rs2[ib]) / (2 * edge.d * rAS);
+    double angleBAS = Math.acos(cosAngleBAS);
+    p.scaleAdd2((float) (cosAngleBAS * rAS), v, atomXyz[ia]);
+    Measure.getPlaneThroughPoint(p, v, plane);
+    double dPS = Math.sin(angleBAS) * rAS;
+
     P3 ptC = atomXyz[ic];
     float rCS = rs[ic];
     float dCT = Measure.distanceToPlane(plane, ptC);
@@ -874,11 +875,11 @@ class IsoSolventReader extends AtomDataReader {
       // need a fudge factor here to avoid extremely 
       // flat situations (1bna isosurface solvent 1.4)
       return false; // out of range
-    double dST = Math.sqrt(rCS * rCS - dCT * dCT);
-    ptTemp.scaleAdd2(-dCT, vTemp, ptC);
+    ptTemp.scaleAdd2(-dCT, v, ptC);
     double dpT = p.distance(ptTemp);
-    float dsp2 = (float) (dPS * dPS);
-    double cosTheta = (dsp2 + dpT * dpT - dST * dST) / (2 * dPS * dpT);
+    double dsp2 = dPS * dPS;
+    double dST2 = rs2[ic] - dCT * dCT;
+    double cosTheta = (dsp2 + dpT * dpT - dST2) / (2 * dPS * dpT);
     if (Math.abs(cosTheta) >= 0.99) 
       return false; // very close to all points A, B, P, S, T, and C all in same plane
     V3 vXS = vTemp2;
@@ -886,7 +887,7 @@ class IsoSolventReader extends AtomDataReader {
     vXS.normalize();
     dPX = (float) (dPS * cosTheta);
     ptTemp.scaleAdd2(dPX, vXS, p);
-    vXS.cross(vTemp, vXS);
+    vXS.cross(v, vXS);
     vXS.normalize();
     vXS.scale((float) (Math.sqrt(1 - cosTheta * cosTheta) * dPS));
     ptS1.add2(ptTemp, vXS);
@@ -894,7 +895,7 @@ class IsoSolventReader extends AtomDataReader {
     return true;
   }
 
-  private boolean validateFace(Face f) {
+  private Face validateFace(int ia, int ib, int ic, Edge edge, P3 ptS) {
     /*
      * We must check each solvent position to see if there
      * are any atoms present that would overlap with it. 
@@ -906,30 +907,32 @@ class IsoSolventReader extends AtomDataReader {
      * 
      * 
      */
-    atomDataServer.setIteratorForPoint(iter, modelIndex, f.pS, maxRS);
-    f.isValid = true;
+    atomDataServer.setIteratorForPoint(iter, modelIndex, ptS, maxRS);
+    boolean isValid = true;
     while (iter.hasNext()) {
-      int ia = iter.next();
-      int iatom = myIndex[ia];
-      if (iatom == f.ia || iatom == f.ib || iatom == f.ic)
+      int iia = iter.next();
+      int iatom = myIndex[iia];
+      if (iatom == ia || iatom == ib || iatom == ic)
         continue;
-      float d = atomData.atomXyz[ia].distance(f.pS);
-      if (d < atomData.atomRadius[ia] + solventRadius) {
-        //System.out.println("face " + f.ia + " " + f.ib + " " + f.ic + " is invalid due to " + ia);
-        f.isValid = false;
+      float d = atomData.atomXyz[iia].distance(ptS);
+      if (d < atomData.atomRadius[iia] + solventRadius) {
+        isValid = false;
         break;
       }
     }
-    f.setEdges();
-    if (!f.isValid)
-      return false;
+    Edge bc = findEdge(ib, ic);
+    Edge ca = findEdge(ia, ic);
+    Face f = (isValid ? new Face(ia, ib, ic, ptS) : null);
+    edge.addFace(f);
+    bc.addFace(f);
+    ca.addFace(f);    
+    if (!isValid)
+      return null;
+    validSpheres.set(ia);
+    validSpheres.set(ib);
+    validSpheres.set(ic);
     //f.dump();
-    for (int k = 0; k < 3; k++) {
-      validSpheres.set(f.edges[k].ia);
-      validSpheres.set(f.edges[k].ib);
-    }
-    f.edges = null;
-    return true;
+    return f;
   }
 
   private void markFaceVoxels(boolean firstPass) {
@@ -961,8 +964,6 @@ class IsoSolventReader extends AtomDataReader {
 
     for (int fi = vFaces.size(); --fi >= 0;) {
       Face f = vFaces.get(fi);
-      if (!f.isValid)
-        continue;
       P3 ptA = atomXyz[f.ia];
       P3 ptB = atomXyz[f.ib];
       P3 ptC = atomXyz[f.ic];
@@ -1084,8 +1085,6 @@ class IsoSolventReader extends AtomDataReader {
     T3 v0 = volumetricVectors[0];
     T3 v1 = volumetricVectors[1];
     T3 v2 = volumetricVectors[2];
-    int nt = 0;
-    int n1 = 0;
     for (int ei = vEdges.size(); --ei >= 0;) {
       Edge edge = vEdges.get(ei);
       if (!edge.isValid())
@@ -1094,11 +1093,12 @@ class IsoSolventReader extends AtomDataReader {
       int ib = edge.ib;
       P3 ptA = atomXyz[ia];
       P3 ptB = atomXyz[ib];
-      float rAS = rs[ia];
-      float rBS = rs[ib];
-      float dAB = edge.d;
+      rAS = rs[ia];
+      rBS = rs[ib];
       rAS2 = rs2[ia];//rAS * rAS;
       rBS2 = rs2[ib];//rBS * rBS;
+      dAB = edge.d;
+      dAB2 = edge.d2;
       cosAf = edge.ecosAf;
       cosBf = edge.ecosBf;
       setGridLimitsForAtom(edge, edge.maxr, pt0, pt1);
@@ -1108,11 +1108,9 @@ class IsoSolventReader extends AtomDataReader {
         for (int j = pt0.y; j < pt1.y; j++, ptV.add2(v1, ptZ0)) {
           ptZ0.setT(ptV);
           for (int k = pt0.z; k < pt1.z; k++, ptV.add(v2)) {
-            nt++;
-            float dVS = checkSpecialVoxel(ptA, rAS, ptB, rBS, dAB, ptV);
+            float dVS = checkSpecialVoxel(ptA, ptB, ptV);
             if (Float.isNaN(dVS))
               continue;
-            n1++;
             float value = solventRadius - dVS;
             if (value < voxelData[i][j][k]) {
               int ipt = volumeData.getPointIndex(i, j, k);
@@ -1124,7 +1122,6 @@ class IsoSolventReader extends AtomDataReader {
         }
       }
     }
-    System.out.println("nt=" + nt  + " n1=" + n1);
   }
 
   @Override
@@ -1180,8 +1177,7 @@ class IsoSolventReader extends AtomDataReader {
 //    }
 //  }
 //
-  private float checkSpecialVoxel(P3 ptA, float rAS, P3 ptB,
-                                  float rBS, float dAB, P3 ptV) {
+  private float checkSpecialVoxel(P3 ptA, P3 ptB, P3 ptV) {
     /*
      * Checking here for voxels that are in the situation:
      * 
@@ -1240,6 +1236,7 @@ class IsoSolventReader extends AtomDataReader {
      * 
      */
     float dAV = ptA.distance(ptV);
+    float dAV2 = ptA.distanceSquared(ptV);
     float dVS;
     float f = rAS / dAV;
     if (f > 1) {
@@ -1249,10 +1246,10 @@ class IsoSolventReader extends AtomDataReader {
           + (ptV.z - ptA.z) * f);
       // If the distance of this point to B is less than the distance
       // of S to B, then we need to check this point
-      if (ptB.distance(p) >= rBS)
+      if (ptB.distanceSquared(p) >= rBS2)
         return Float.NaN;
       // we are somewhere in the arc SAB, within the solvent sphere of A
-      dVS = solventDistance(rAS, rBS, dAB, dAV, ptB.distance(ptV));
+      dVS = solventDistance(rAS, rAS2, rBS2, dAV, dAV2, ptB.distanceSquared(ptV));
       return (voxelIsInTrough(dVS, dAV, rAS2, cosAf) ? dVS : Float.NaN);
     }
     float dBV = ptB.distance(ptV);
@@ -1260,17 +1257,18 @@ class IsoSolventReader extends AtomDataReader {
       // calculate point on solvent sphere B projected through ptV
       p.set(ptB.x + (ptV.x - ptB.x) * f, ptB.y + (ptV.y - ptB.y) * f, ptB.z
           + (ptV.z - ptB.z) * f);
-      if (ptA.distance(p) >= rAS)
+      if (ptA.distanceSquared(p) >= rAS2)
         return Float.NaN;
       // we are somewhere in the triangle ASB, within the solvent sphere of B
-      dVS = solventDistance(rBS, rAS, dAB, dBV, dAV);
+      dVS = solventDistance(rBS, rBS2, rAS2, dBV, dBV * dBV, dAV2);
       return (voxelIsInTrough(dVS, dBV, rBS2, cosBf) ? dVS : Float.NaN);
     }
     // not within solvent sphere of A or B
     return Float.NaN;
   }
 
-  private float rAS2, rBS2, cosAf, cosBf;
+  private float rAS, rBS, rAS2, rBS2, cosAf, cosBf, dAB, dAB2;
+  
   private static boolean voxelIsInTrough(float dXC, float dAX, float rAC2, float cosACBf) {
     /*
      *         C
@@ -1283,37 +1281,17 @@ class IsoSolventReader extends AtomDataReader {
      * 
      */
     //only calculate what we need -- a factor proportional to cos
-    //float cosACBf = (rAC2 + rBC * rBC - dAB * dAB) / rBC; //  /2 /rAS);
-    float cosACXf = (rAC2 + dXC * dXC - dAX * dAX) / dXC; //  /2 /rAS);
+    //float cosACBf = (rAC2 + rBC * rBC - dAB * dAB) / rBC; //  /2 /rAC);
+    float cosACXf = (rAC2 + dXC * dXC - dAX * dAX) / dXC; //  /2 /rAC);
     return (cosACBf < cosACXf);
   }
-  private float solventDistance(float rAS, float rBS, float dAB, float dAV,
-                                float dBV) {
-    double dAV2 = dAV * dAV;
-    double rAS2 = rAS * rAS;
-    double dAB2 = dAB * dAB;
-    double angleVAB = Math.acos((dAV2 + dAB2 - dBV * dBV) / (2 * dAV * dAB));
-    double angleBAS = Math.acos((dAB2 + rAS2 - rBS * rBS) / (2 * dAB * rAS));
+  private float solventDistance(float rAS, float rAS2, float rBS2, float dAV,
+                                float dAV2, float dBV2) {
+    double angleVAB = Math.acos((dAV2 + dAB2 - dBV2) / (2 * dAV * dAB));
+    double angleBAS = Math.acos((dAB2 + rAS2 - rBS2) / (2 * dAB * rAS));
     float dVS = (float) Math.sqrt(rAS2 + dAV2 - 2 * rAS * dAV
         * Math.cos(angleBAS - angleVAB));
     return dVS;
-  }
-
-  protected double getPointP(int ia, int ib) {
-    P3 ptA = atomXyz[ia];
-    P3 ptB = atomXyz[ib];
-    float rAS = rs[ia];
-    float rBS = rs[ib];
-    vTemp.sub2(ptB, ptA);
-    float dAB = vTemp.length();
-    vTemp.normalize();
-    double rAS2 = rAS * rAS;
-    double dAB2 = dAB * dAB;
-    double cosAngleBAS = (dAB2 + rAS2 - rBS * rBS) / (2 * dAB * rAS);
-    double angleBAS = Math.acos(cosAngleBAS);
-    p.scaleAdd2((float) (cosAngleBAS * rAS), vTemp, ptA);
-    Measure.getPlaneThroughPoint(p, vTemp, plane);
-    return Math.sin(angleBAS) * rAS;
   }
 
   ///////////////// debugging ////////////////

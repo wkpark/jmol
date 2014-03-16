@@ -296,7 +296,13 @@ class IsoSolventReader extends AtomDataReader {
   isosurface1 created with cutoff=0.0; number of isosurfaces = 1
   isosurfaceArea = [75.11873783245028]
   isosurfaceVolume = [41.727027252180655]
+
+   * revision 3/16/2014:
+   
+    isosurfaceArea = [75.13146821881998]
+    isosurfaceVolume = [41.74598178064965]
   
+
    * MSMS:
   
   msms -if ttest.xyzrn -of ttest -density 5
@@ -594,7 +600,7 @@ class IsoSolventReader extends AtomDataReader {
       htEdges = new Hashtable<String, Edge>();
       long t = System.currentTimeMillis();
       getEdges();
-      System.out.println("e " + (System.currentTimeMillis() - t));
+      //System.out.println("e " + (System.currentTimeMillis() - t));
       Logger.info(vEdges.size() + " edges");
 
       // 2) -- as in MSMS BUT get two faces for each atom triple
@@ -602,7 +608,7 @@ class IsoSolventReader extends AtomDataReader {
       vFaces = new  List<Face>();
       getFaces();
       
-      System.out.println("f " + (System.currentTimeMillis() - t));
+      //System.out.println("f " + (System.currentTimeMillis() - t));
 
       Logger.info(vFaces.size() + " faces");
       bsLocale = null;
@@ -615,11 +621,11 @@ class IsoSolventReader extends AtomDataReader {
 
       newVoxelDataCube();
       
-      System.out.println("nv " + (System.currentTimeMillis() - t));
+      //System.out.println("nv " + (System.currentTimeMillis() - t));
 
       resetVoxelData(Float.MAX_VALUE);
 
-      System.out.println("nv2 " + (System.currentTimeMillis() - t));
+      //System.out.println("nv2 " + (System.currentTimeMillis() - t));
 
       //                     /
       //  (inside) .... (-) 0  (+) .... (outside)
@@ -632,7 +638,7 @@ class IsoSolventReader extends AtomDataReader {
       //       regions -- they have to be, or else this isn't a valid face.
       markFaceVoxels(true);
       
-      System.out.println("mfv " + (System.currentTimeMillis() - t));
+      //System.out.println("mfv " + (System.currentTimeMillis() - t));
 
 
       // 2) -- Second pass is to mark -T and +T voxels that fall within 
@@ -647,14 +653,14 @@ class IsoSolventReader extends AtomDataReader {
       
       validSpheres.or(noFaceSpheres);
 
-      System.out.println("mtv " + (System.currentTimeMillis() - t));
+      //System.out.println("mtv " + (System.currentTimeMillis() - t));
 
       vEdges = null;
 
       // 3) -- Third pass is to mark "-F" voxels (just below the surface)
       markFaceVoxels(false);
       
-      System.out.println("mfv2 " + (System.currentTimeMillis() - t));
+      //System.out.println("mfv2 " + (System.currentTimeMillis() - t));
 
       vFaces = null;
     } else {

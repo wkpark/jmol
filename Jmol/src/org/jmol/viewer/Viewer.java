@@ -6362,7 +6362,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     case T.modulationscale:
       // 14.0.1
       modelSet.setModulation(null, false, null, false);
-      global.modulationScale = Math.max(1, value);
+      global.modulationScale = value = Math.max(0.1f, value);
       modelSet.setModulation(null, true, null, false);
       break;
     case T.particleradius:

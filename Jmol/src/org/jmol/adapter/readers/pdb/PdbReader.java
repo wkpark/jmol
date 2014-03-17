@@ -861,9 +861,7 @@ REMARK 290 REMARK: NULL
 
 
   private void atom() {
-      boolean isHetero = line.startsWith("HETATM");
-      if (isHetero)
-        System.out.println("pdbtest");
+    boolean isHetero = line.startsWith("HETATM");
     Atom atom = processAtom(new Atom(),
         line.substring(12, 16).trim(), 
         line.charAt(16),

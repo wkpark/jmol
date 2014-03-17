@@ -34,10 +34,9 @@ import org.jmol.viewer.Viewer;
 
 class TextRenderer {
   
-  static void render(Text text, Viewer viewer,
-                            JmolRendererInterface g3d,
-                            float scalePixelsPerMicron, float imageFontScaling,
-                            boolean isExact, float[] boxXY, float[] temp) {
+  static void render(Text text, Viewer viewer, JmolRendererInterface g3d,
+                     float scalePixelsPerMicron, float imageFontScaling,
+                     boolean isExact, float[] boxXY, float[] temp) {
     if (text == null || text.image == null && text.lines == null)
       return;
     boolean showText = g3d.setColix(text.colix);
@@ -49,11 +48,10 @@ class TextRenderer {
         scalePixelsPerMicron, imageFontScaling, isExact, boxXY);
     // draw the box if necessary; colix has been set
     if (text.image == null && text.bgcolix != 0) {
-      if (showText)
-        g3d.setColix(text.bgcolix);
-      showBox(g3d, text.colix, (int) text.boxX, (int) text.boxY + text.boxYoff2*2, text.z + 2,
-          text.zSlab, (int) text.boxWidth, (int) text.boxHeight,
-          text.fontScale, text.isLabelOrHover);
+      if (g3d.setColix(text.bgcolix))
+        showBox(g3d, text.colix, (int) text.boxX, (int) text.boxY
+            + text.boxYoff2 * 2, text.z + 2, text.zSlab, (int) text.boxWidth,
+            (int) text.boxHeight, text.fontScale, text.isLabelOrHover);
       if (!showText)
         return;
     }

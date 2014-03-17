@@ -69,8 +69,8 @@ public class EchoRenderer extends LabelsRenderer {
       }
       TextRenderer.render(t, viewer, g3d, scalePixelsPerMicron, imageFontScaling,
           false, null, xy);
-      if (C.isColixTranslucent(t.bgcolix) || C.isColixTranslucent(t.colix))
-        haveTranslucent = true;
+     if (C.isColixTranslucent(t.bgcolix) || C.isColixTranslucent(t.colix))
+       haveTranslucent = true;
     }
     if (!isExport) {
       String frameTitle = viewer.getFrameTitle();

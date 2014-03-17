@@ -350,7 +350,7 @@ ActionListener, ChangeListener, Runnable {
     periodSlider = new JSlider(0,
         (int)(PERIOD_MAX/PERIOD_PRECISION),
         (int)(PERIOD_VALUE/PERIOD_PRECISION));
-    script("vibration " + PERIOD_VALUE);
+    script("vibration " + PERIOD_VALUE + ";vibration off;");
     periodSlider.addChangeListener(this);
     periodPanel.add(periodSlider);
     row2.add(periodPanel);

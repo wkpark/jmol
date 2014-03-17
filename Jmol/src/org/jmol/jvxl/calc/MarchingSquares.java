@@ -221,7 +221,7 @@ public class MarchingSquares {
             contourVertexes[iPt].setValue(value);
           } else {
 //            System.out.println("#MarchingSquares nonlinear problem for contour " + (i + 1) + " at " + ptTemp + " " + valueA + " " + valueB 
-  //              + "\ndraw ID \"pt" + ptTemp + "\" scale 5.0 @{point" + ptTemp + "}" );
+  //              + "\ndraw ID \"pt" + ptTemp + "\" scale 5.0 " + ptTemp );
           }
         }
       }

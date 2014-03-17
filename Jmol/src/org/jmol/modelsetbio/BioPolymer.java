@@ -316,7 +316,7 @@ public abstract class BioPolymer {
           vectorD.scale(-1);
         }
         previousVectorD = wingVectors[i] = V3.newV(vectorD);
-        //System.out.println("draw v" + i + " vector @{point" + midpoint + "}  @{point" + vectorD + "}"); 
+        //System.out.println("draw v" + i + " vector " + midpoint + " " + vectorD); 
       }
     }
     leadPoints[monomerCount] = leadMidpoints[monomerCount] = getTerminatorPoint();

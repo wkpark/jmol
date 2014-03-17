@@ -1447,10 +1447,10 @@ public class SmilesSearch extends JmolMolecule {
       v.vNorm2.sub2((P3) atom0, (P3) atom1);
       return (isNot == ((v.vNorm1.dot(v.vNorm2) < 0 ? 2 : 1) == order));
     //case SmilesAtom.STEREOCHEMISTRY_DOUBLE_BOND:
-      //System.out.println("draw p1 @{point" + Point3f.new3((Point3f)atom1)+"} color red");
-      //System.out.println("draw p2 @{point" + Point3f.new3((Point3f)atom2)+"} color yellow");
-      //System.out.println("draw p3 @{point" + Point3f.new3((Point3f)atom3)+"} color green");
-      //System.out.println("draw p4 @{point" + Point3f.new3((Point3f)atom4)+"} color blue");
+      //System.out.println("draw p1 " + Point3f.new3((Point3f)atom1)+" color red");
+      //System.out.println("draw p2 " + Point3f.new3((Point3f)atom2)+" color yellow");
+      //System.out.println("draw p3 " + Point3f.new3((Point3f)atom3)+" color green");
+      //System.out.println("draw p4 " + Point3f.new3((Point3f)atom4)+" color blue");
 
       //getPlaneNormals(atom1, atom2, atom3, atom4, v);
       //System.out.println(order + " "+ atom1.getAtomName() + "-" + atom2.getAtomName() + "-"  + atom3.getAtomName() + "-" + atom4.getAtomName());
@@ -1750,11 +1750,11 @@ public class SmilesSearch extends JmolMolecule {
   private static int getHandedness(Node a, Node b, Node c, Node pt, VTemp v) {
     float d = SmilesAromatic.getNormalThroughPoints(a, b, c, v.vTemp, v.vA, v.vB);
     //int atat = (distanceToPlane(v.vTemp, d, (Point3f) pt) > 0 ? 1 : 2);
-    //System.out.println("draw p1 @{point" + Point3f.new3((Point3f)a) +"} color red");
-    //System.out.println("draw p2 @{point" + Point3f.new3((Point3f)b)+"} color green");
-    //System.out.println("draw p3 @{point" + Point3f.new3((Point3f)c)+"} color blue");
-    //System.out.println("draw p @{point" + Point3f.new3((Point3f)a) +"} @{point" + Point3f.new3((Point3f)b)+"} @{point" + Point3f.new3((Point3f)c)+"}");
-    //System.out.println("draw v vector @{point" + Point3f.new3((Point3f)pt) + "} @{point" + v.vTemp+"} \""+ (atat==2 ? "@@" : "@")+"\" color " + (atat == 2 ? "white" : "yellow"));
+    //System.out.println("draw p1 " + Point3f.new3((Point3f)a) +" color red");
+    //System.out.println("draw p2 " + Point3f.new3((Point3f)b)+" color green");
+    //System.out.println("draw p3 " + Point3f.new3((Point3f)c)+" color blue");
+    //System.out.println("draw p " + Point3f.new3((Point3f)a) +" " + Point3f.new3((Point3f)b)+" " + Point3f.new3((Point3f)c));
+    //System.out.println("draw v vector " + Point3f.new3((Point3f)pt) + " " + v.vTemp+" \""+ (atat==2 ? "@@" : "@")+"\" color " + (atat == 2 ? "white" : "yellow"));
     return (distanceToPlane(v.vTemp, d, (P3) pt) > 0 ? 1 : 2);
   }
 

@@ -458,8 +458,8 @@ final public class Measure {
   public static float getTransformMatrix4(List<P3> ptsA, List<P3> ptsB, M4 m, P3 centerA, boolean doReport) {
     P3[] cptsA = getCenterAndPoints(ptsA);
     P3[] cptsB = getCenterAndPoints(ptsB);
-    //System.out.println("draw d1 @{point" + cptsA[0] + "}");
-    //System.out.println("draw d2 @{point" + cptsB[0] + "}");
+    //System.out.println("draw d1 " + cptsA[0]);
+    //System.out.println("draw d2 " + cptsB[0]);
     float[] retStddev = new float[2];
     Quat q = calculateQuaternionRotation(new P3[][] { cptsA,
         cptsB }, retStddev, doReport); // was false

@@ -616,10 +616,10 @@ public class Contact extends Isosurface {
     pt1.scaleAdd2(-0.5f, vZ, pt1);
     volumeData.setVolumetricOrigin(pt1.x, pt1.y, pt1.z);
     /*
-    System.out.println("draw pt1 @{point"+pt1+"} color red");
-    System.out.println("draw vx vector @{point"+pt1+"} @{point"+vX+"} color red");
-    System.out.println("draw vy vector @{point"+pt1+"} @{point"+vY+"} color green");
-    System.out.println("draw vz vector @{point"+pt1+"} @{point"+vZ+"} color blue");
+    System.out.println("draw pt1 "+pt1+" color red");
+    System.out.println("draw vx vector "+pt1+" "+vX+" color red");
+    System.out.println("draw vy vector "+pt1+" "+vY+" color green");
+    System.out.println("draw vz vector "+pt1+" "+vZ+" color blue");
     */
 
     vX.scale(1f/(nX-1));

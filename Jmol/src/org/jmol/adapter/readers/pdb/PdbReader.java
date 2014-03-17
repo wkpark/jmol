@@ -188,6 +188,7 @@ public class PdbReader extends AtomSetCollectionReader {
  @SuppressWarnings("unchecked")
 @Override
  protected void initializeReader() throws Exception {
+   allowPDBFilter = true;
    pdbHeader = (getHeader ? new SB() : null);
    applySymmetry = !checkFilterKey("NOSYMMETRY");
    getTlsGroups = checkFilterKey("TLS");
@@ -861,6 +862,8 @@ REMARK 290 REMARK: NULL
 
   private void atom() {
       boolean isHetero = line.startsWith("HETATM");
+      if (isHetero)
+        System.out.println("pdbtest");
     Atom atom = processAtom(new Atom(),
         line.substring(12, 16).trim(), 
         line.charAt(16),

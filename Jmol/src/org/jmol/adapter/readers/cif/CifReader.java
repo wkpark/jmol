@@ -107,10 +107,7 @@ public class CifReader extends AtomSetCollectionReader implements
 
   @Override
   public void initializeReader() throws Exception {
-    initializeReaderCif();
-  }
-
-  protected void initializeReaderCif() throws Exception {
+    allowPDBFilter = true;
     appendedData = (String) htParams.get("appendedData");
     String conf = getFilter("CONF ");
     if (conf != null)

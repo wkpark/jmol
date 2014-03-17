@@ -800,6 +800,7 @@ public abstract class AtomSetCollectionReader {
   protected boolean doCentralize;
   protected boolean addVibrations;
   protected boolean useAltNames;
+  protected boolean allowPDBFilter;
   public boolean doReadMolecularOrbitals;
   protected boolean reverseModels;
   private String nameRequired;
@@ -845,20 +846,28 @@ public abstract class AtomSetCollectionReader {
     doReadMolecularOrbitals = !checkFilterKey("NOMO");
     useAltNames = checkFilterKey("ALTNAME");
     reverseModels = checkFilterKey("REVERSEMODELS");
+    if (checkFilterKey("HETATM")) {
+      filterHetero = true;
+      filter = PT.rep(filter, "HETATM", "HETATM-Y");
+    }
+    if (checkFilterKey("ATOM")) {
+      filterHetero = true;
+      filter = PT.rep(filter, "ATOM", "HETATM-N");
+    }
     if (checkFilterKey("NAME=")) {
       nameRequired = filter.substring(filter.indexOf("NAME=") + 5);
       if (nameRequired.startsWith("'"))
-        nameRequired = PT.split(nameRequired, "'")[1]; 
+        nameRequired = PT.split(nameRequired, "'")[1];
       else if (nameRequired.startsWith("\""))
-        nameRequired = PT.split(nameRequired, "\"")[1]; 
-      filter0 = filter = PT.rep(filter, nameRequired,"");
-      filter0 = filter = PT.rep(filter, "NAME=","");
+        nameRequired = PT.split(nameRequired, "\"")[1];
+      filter0 = filter = PT.rep(filter, nameRequired, "");
+      filter0 = filter = PT.rep(filter, "NAME=", "");
     }
     if (filter == null)
       return;
     filterAtomName = checkFilterKey("*.") || checkFilterKey("!.");
     filterElement = checkFilterKey("_");
-    filterHetero = checkFilterKey("HETATM"); // PDB
+
     filterGroup3 = checkFilterKey("[");
     filterChain = checkFilterKey(":");
     filterAltLoc = checkFilterKey("%");
@@ -869,8 +878,9 @@ public abstract class AtomSetCollectionReader {
       filterAtomType = checkFilterKey("=");
     if (filterN == Integer.MIN_VALUE)
       filterEveryNth = false;
-    haveAtomFilter = filterAtomName || filterAtomType || filterElement || filterGroup3 || filterChain
-        || filterAltLoc || filterHetero || filterEveryNth || checkFilterKey("/=");
+    haveAtomFilter = filterAtomName || filterAtomType || filterElement
+        || filterGroup3 || filterChain || filterAltLoc || filterHetero
+        || filterEveryNth || checkFilterKey("/=");
     if (bsFilter == null) {
       // bsFilter is usually null, but from MDTOP it gets set to indicate
       // which atoms were selected by the filter. This then
@@ -938,8 +948,8 @@ public abstract class AtomSetCollectionReader {
             + viewer.getChainIDStr(atom.chainID)))
         && (!filterAltLoc || atom.altLoc == '\0' || !filterReject(
             f, "%", "" + atom.altLoc))
-        && (!filterHetero || !filterReject(f, "HETATM",
-            atom.isHetero ? "HETATM" : "ATOM"));
+        && (!filterHetero || !allowPDBFilter || !filterReject(f, "HETATM",
+            atom.isHetero ? "-Y" : "-N"));
   }
 
   public boolean rejectAtomName(String name) {
@@ -952,8 +962,10 @@ public abstract class AtomSetCollectionReader {
   }
 
   protected boolean filterReject(String f, String code, String atomCode) {
-    return (f.indexOf(code) >= 0 && (f.indexOf("!" + code) >= 0 ? f
-        .indexOf(code + atomCode) >= 0 : f.indexOf(code + atomCode) < 0));
+    return (f.indexOf(code) >= 0 
+        && (f.indexOf("!" + code) >= 0) == 
+               (f.indexOf(code + atomCode) >= 0)
+            );
   }
 
   protected void set2D() {

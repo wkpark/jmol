@@ -111,7 +111,7 @@ abstract class ScriptExpr extends ScriptParam {
    *        variables
    * @param localVar
    *        x or y in above for(), select() examples
-   * @param isAssignment TODO
+   * @param isSpecialAssignment TODO
    * @return either a vector or a value, caller's choice.
    * @throws ScriptException
    *         errors are thrown directly to the Eval error system.
@@ -119,7 +119,7 @@ abstract class ScriptExpr extends ScriptParam {
   protected Object parameterExpression(int pt, int ptMax, String key,
                                      boolean ignoreComma, boolean asVector,
                                      int ptAtom, boolean isArrayItem,
-                                     Map<String, SV> localVars, String localVar, boolean isAssignment)
+                                     Map<String, SV> localVars, String localVar, boolean isSpecialAssignment)
       throws ScriptException {
 
     /*
@@ -144,11 +144,11 @@ abstract class ScriptExpr extends ScriptParam {
     int nSquare = 0;
     int nParen = 0;
     boolean topLevel = true;
-    ScriptMathProcessor rpn = new ScriptMathProcessor(this, isAssignment, isArrayItem, asVector,
-        false, false);
+    ScriptMathProcessor rpn = new ScriptMathProcessor(this, isSpecialAssignment, isArrayItem, asVector,
+        false, false, key);
     if (ptMax < pt)
       ptMax = slen;
-    int ptEq = (isAssignment ? 0 : 1);
+    int ptEq = (isSpecialAssignment ? 0 : 1);
     out: for (int i = pt; i < ptMax; i++) {
       v = null;
       int tok = getToken(i).tok;
@@ -177,8 +177,8 @@ abstract class ScriptExpr extends ScriptParam {
           break out;
         if (tok == T.rightbrace)
           invArg();
-        if (isAssignment && nSquare == 1 && tokAt(i + 1) == T.opEQ)
-          isAssignment = rpn.endAssignment();
+        if (isSpecialAssignment && nSquare == 1 && tokAt(i + 1) == T.opEQ)
+          isSpecialAssignment = rpn.endAssignment();
       }
 
       switch (tok) {
@@ -414,8 +414,8 @@ abstract class ScriptExpr extends ScriptParam {
         break;
       case T.perper:
       case T.per:
-        if (isAssignment && topLevel && tokAt(i + 2) == T.opEQ)
-          isAssignment = rpn.endAssignment();
+        if (isSpecialAssignment && topLevel && tokAt(i + 2) == T.opEQ)
+          isSpecialAssignment = rpn.endAssignment();
         if (ptEq == 0 && topLevel) {
           switch (tokAt(i + 1)) {
           case T.nada:
@@ -636,7 +636,7 @@ abstract class ScriptExpr extends ScriptParam {
       st = code;
     }
     ScriptMathProcessor rpn = new ScriptMathProcessor(this, false, false,
-        false, mustBeBitSet, allowUnderflow);
+        false, mustBeBitSet, allowUnderflow, null);
     Object val;
     int comparisonValue = Integer.MAX_VALUE;
     boolean refreshed = false;
@@ -1942,8 +1942,9 @@ abstract class ScriptExpr extends ScriptParam {
 
     SV t = (settingData ? null : getContextVariableAsVariable(key));
 
-    // determine whether this is some sort of special assignment
-    // of a known variable
+    // determine whether this is some sort of 
+    // special assignment of a known variable
+    
     if (isSet && !isExpression) {
       // pt will be 1 unless...
       switch (tokAt(2)) {

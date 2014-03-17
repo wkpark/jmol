@@ -617,7 +617,7 @@ public class SV extends T implements JSONEncodable {
       if (x.value instanceof String)
         return (String) x.value; // just the command
       sb = new SB();
-      sValueArray(sb, (SV) x, "", "", false);
+      sValueArray(sb, (SV) x, "", "", false, true);
       return sb.toString();
     case string:
       String s = (String) x.value;
@@ -642,7 +642,7 @@ public class SV extends T implements JSONEncodable {
   }
 
   private static void sValueArray(SB sb, SV vx, String path, String tabs,
-                                  boolean isEscaped) {
+                                  boolean isEscaped, boolean isRaw) {
     switch (vx.tok) {
     case hash:
     case context:
@@ -655,17 +655,19 @@ public class SV extends T implements JSONEncodable {
       }
       path += thiskey;
       if (vx.tok == varray) {
-        sb.append(isEscaped ? "[ " : tabs + "\t[\n");
+        if (!isRaw)
+          sb.append(isEscaped ? "[ " : tabs + "[\n");
         List<SV> sx = vx.getList();
         for (int i = 0; i < sx.size(); i++) {
           if (isEscaped && i > 0)
             sb.append(",");
           SV sv = sx.get(i);
-          sValueArray(sb, sv, path, tabs + "\t", isEscaped);
+          sValueArray(sb, sv, path, tabs + "\t", isEscaped, tabs.length() == 0 && !isEscaped && isRawType(sv.tok));
           if (!isEscaped)
             sb.append("\n");
         }
-        sb.append(isEscaped ? " ]" : tabs + "\t]");
+        if (!isRaw)
+          sb.append(isEscaped ? " ]" : tabs + "]");
       } else {
         Map<String, SV> ht = (vx.tok == context ? ((ScriptContext) vx.value)
             .getFullMap() : vx.getMap());
@@ -673,7 +675,7 @@ public class SV extends T implements JSONEncodable {
       }
       break;
     default:
-      if (!isEscaped)
+      if (!isRaw && !isEscaped)
         sb.append(tabs);
       sb.append(isEscaped ? vx.escape() : sValue(vx));
     }
@@ -689,30 +691,22 @@ public class SV extends T implements JSONEncodable {
       for (int i = 0; i < keys.length; i++) {
         String key = keys[i];
         sb.append(sep).append(PT.esc(key)).appendC(':');
-        sValueArray(sb, ht.get(key), path, tabs+"\t", true);
+        sValueArray(sb, ht.get(key), path, tabs+"\t", true, false);
         sep = ",";
       }
       sb.append(" }");
       return;
     }
     sb.append(tabs).append("{\n");
+    tabs += "\t";
     for (int i = 0; i < keys.length; i++) {
       sb.append(tabs);
       String key = keys[i];
       sb.append(key).append("\t:");
       SB sb2 = new SB();
       SV v = ht.get(key);
-      isEscaped = false;
-      switch (v.tok) {
-      case T.string:
-      case T.decimal:
-      case T.integer:
-      case T.point3f:
-      case T.point4f:
-      case T.bitset:
-        isEscaped = true;
-      }
-      sValueArray(sb2, v, path, (v.tok == hash ? tabs + "\t" : tabs), isEscaped);
+      isEscaped = isRawType(v.tok);
+      sValueArray(sb2, v, path, tabs, isEscaped, false);
       String value = sb2.toString();
       if (isEscaped)
         sb.append("\t");
@@ -720,7 +714,22 @@ public class SV extends T implements JSONEncodable {
         sb.append("\n");
       sb.append(value).append("\n");
     }
-    sb.append(tabs).append("}");
+    sb.append(tabs.substring(1)).append("}");
+  }
+
+  private static boolean isRawType(int tok) {
+    switch (tok) {
+    case T.string:
+    case T.decimal:
+    case T.integer:
+    case T.point3f:
+    case T.point4f:
+    case T.bitset:
+    case T.on:
+    case T.off:
+      return true;
+    }
+    return false;
   }
 
   public static P3 ptValue(SV x) {
@@ -1059,7 +1068,7 @@ public class SV extends T implements JSONEncodable {
     case hash:
     case context:
       SB sb = new SB();
-      sValueArray(sb, this, "", "", true);
+      sValueArray(sb, this, "", "", true, false);
       return sb.toString();
     default:
       return sValue(this);

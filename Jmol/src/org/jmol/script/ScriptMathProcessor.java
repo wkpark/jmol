@@ -92,15 +92,17 @@ public class ScriptMathProcessor {
   private int ptid = 0;
   private int ptx = Integer.MAX_VALUE;
   private int pto = Integer.MAX_VALUE;
-  private boolean isAssignment;
+  private boolean isSpecialAssignment;
   private boolean doSelections = true;
   private boolean assignLeft;
   private boolean allowUnderflow;
+  private boolean isAssignment;
 
-  ScriptMathProcessor(ScriptExpr eval, boolean isAssignment, boolean isArrayItem,
-      boolean asVector, boolean asBitSet, boolean allowUnderflow) {
+  ScriptMathProcessor(ScriptExpr eval, boolean isSpecialAssignment, boolean isArrayItem,
+      boolean asVector, boolean asBitSet, boolean allowUnderflow, String key) {
     this.eval = eval;
-    this.isAssignment = assignLeft = isAssignment;      
+    this.isSpecialAssignment = assignLeft = isSpecialAssignment;
+    this.isAssignment = (isSpecialAssignment || key != null);
     this.viewer = eval.viewer;
     this.debugHigh = eval.debugHigh;
     this.chk = wasSyntaxCheck = eval.chk;
@@ -126,11 +128,11 @@ public class ScriptMathProcessor {
     if (isOK) {
       if (asVector) {
         // check for y = x x  or  y = x + ;
-        if (isAssignment && (xPt > 0 && oPt < 0 || oPt >= 0 && oStack[oPt] != null))
+        if (isAssignment && (xPt > 0 && oPt < 0 || oPt >= 0 && (xPt > 1 || oStack[oPt] != null)))
           eval.invArg();
         List<SV> result = new List<SV>();
         for (int i = 0; i <= xPt; i++)
-          result.addLast(isAssignment ? xStack[i] : SV.selectItemVar(xStack[i]));
+          result.addLast(isSpecialAssignment ? xStack[i] : SV.selectItemVar(xStack[i]));
         if (lastAssignedString != null) {
           result.remove(0);
           result.add(0, lastAssignedString);

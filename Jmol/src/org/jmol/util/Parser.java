@@ -25,7 +25,6 @@
 
 package org.jmol.util;
 
-import javajs.util.AU;
 import javajs.util.PT;
 
 import org.jmol.java.BS;

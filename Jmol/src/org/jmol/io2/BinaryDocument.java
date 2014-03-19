@@ -154,7 +154,7 @@ public class BinaryDocument extends BC implements JmolDocument {
     short n = (isBigEndian ? ioReadShort()
         : (short) ((ioReadByte() & 0xff) 
                  | (ioReadByte() & 0xff) << 8));
-    /*
+    /**
      * @j2sNative
      *
      * return (n > 0x7FFF ? n - 0x10000 : n);

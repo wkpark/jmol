@@ -324,7 +324,7 @@ public class DataInputStream extends FilterInputStream implements DataInput {
     if ((ch1 | ch2) < 0)
       throw new EOFException();
     short n = (short) ((ch1 << 8) + (ch2 << 0));
-    /*
+    /**
      * @j2sNative
      *
      * return (n > 0x7FFF ? n - 0x10000 : n);
@@ -403,7 +403,7 @@ public class DataInputStream extends FilterInputStream implements DataInput {
     if ((ch1 | ch2 | ch3 | ch4) < 0)
       throw new EOFException();
     int n = ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
-    /*
+    /**
      * @j2sNative
      * 
      * return (n > 0x7FFFFFFF ? n - 0x100000000 : n);  

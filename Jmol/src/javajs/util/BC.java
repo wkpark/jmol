@@ -15,7 +15,7 @@ public class BC {
         | (bytes[j + 1] & 0xff) << 16 | (bytes[j] & 0xff) << 24
         : (bytes[j++] & 0xff) | (bytes[j++] & 0xff) << 8
             | (bytes[j++] & 0xff) << 16 | (bytes[j++] & 0xff) << 24);
-    /*
+    /**
      * @j2sNative
      * 
      * return (n > 0x7FFFFFFF ? n - 0x100000000 : n);

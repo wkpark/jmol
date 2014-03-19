@@ -409,7 +409,7 @@ public class DataInputStream extends FilterInputStream implements DataInput {
      * return (n > 0x7FFFFFFF ? n - 0x100000000 : n);  
      */
     {
-    return n
+      return n;
     }
   }
 

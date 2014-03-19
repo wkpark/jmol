@@ -402,7 +402,15 @@ public class DataInputStream extends FilterInputStream implements DataInput {
     int ch4 = in.readByteAsInt();
     if ((ch1 | ch2 | ch3 | ch4) < 0)
       throw new EOFException();
-    return ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
+    int n = ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
+    /*
+     * @j2sNative
+     * 
+     * return (n > 0x7FFFFFFF ? n - 0x100000000 : n);  
+     */
+    {
+    return n
+    }
   }
 
   private byte readBuffer[] = new byte[8];

@@ -4028,8 +4028,16 @@ public class CmdExt implements JmolCmdExtension {
           String strCutoff = (!firstPass || !Float.isNaN(cutoff) ? null
               : info[1]);
           if (strCutoff != null && !chk) {
-            cutoff = SV.fValue(SV.getVariable(viewer
-                .evaluateExpression(strCutoff)));
+            cutoff = Float.NaN;
+            try {
+            String sfdat = viewer.getFileAsString(strCutoff, false);
+            Logger.info(sfdat);
+            sfdat = PT.split(sfdat,  "MAP_SIGMA_DENS")[1];
+            cutoff = PT.parseFloat(sfdat);
+            Logger.info("using cutoff = " + cutoff);
+            } catch (Exception e) {
+              Logger.error("MAP_SIGMA_DENS -- could  not read " + info[1]);
+            }
             if (cutoff > 0) {
               if (!Float.isNaN(sigma)) {
                 cutoff *= sigma;

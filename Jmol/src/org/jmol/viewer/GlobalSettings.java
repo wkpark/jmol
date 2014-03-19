@@ -462,7 +462,7 @@ public class GlobalSettings {
     String loadFormat, loadLigandFormat, nmrUrlFormat, nmrPredictFormat, smilesUrlFormat, nihResolverFormat, pubChemFormat;
 
     String edsUrlFormat = "http://eds.bmc.uu.se/eds/dfs/%LC13/%LCFILE/%LCFILE.omap";
-    String edsUrlCutoff = "load('http://eds.bmc.uu.se/eds/dfs/%LC13/%LCFILE/%LCFILE.sfdat').lines.find('MAP_SIGMA').split(' ')[2]";
+    String edsUrlCutoff = "http://eds.bmc.uu.se/eds/dfs/%LC13/%LCFILE/%LCFILE.sfdat";
     String edsUrlOptions = "within 2.0 {*}";
     float minBondDistance = JC.DEFAULT_MIN_BOND_DISTANCE;
     int minPixelSelRadius = 6;

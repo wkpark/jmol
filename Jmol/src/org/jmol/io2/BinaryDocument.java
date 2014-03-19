@@ -48,6 +48,10 @@ import javajs.util.SB;
  * Note that YOU are responsible for determining whether a file
  * is bigEndian or littleEndian; the default is bigEndian.
  * 
+ * JavaScript note: readShort() malfunctioned because (short) (xx << 8) 
+ * isn't the same as (int) (xx << 8); same problem in java.io.DataStream
+ * 
+ * 
  */
 
 public class BinaryDocument extends BC implements JmolDocument {
@@ -147,9 +151,17 @@ public class BinaryDocument extends BC implements JmolDocument {
   @Override
   public short readShort() throws Exception {
     nBytes += 2;
-    return (isBigEndian ? ioReadShort()
+    short n = (isBigEndian ? ioReadShort()
         : (short) ((ioReadByte() & 0xff) 
                  | (ioReadByte() & 0xff) << 8));
+    /*
+     * @j2sNative
+     *
+     * return (n > 0x7FFF ? n - 0x10000 : n);
+     */
+    {
+      return n;
+    }
   }
 
   private short ioReadShort() throws Exception {

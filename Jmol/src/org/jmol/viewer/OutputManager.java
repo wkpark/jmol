@@ -9,13 +9,13 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.jmol.api.Interface;
-import org.jmol.api.JmolImageEncoder;
 import org.jmol.i18n.GT;
 import org.jmol.io.Binary;
 import org.jmol.io.JmolBinary;
 import org.jmol.java.BS;
 import org.jmol.script.T;
 
+import javajs.img.GenericImageEncoder;
 import javajs.util.OC;
 import javajs.util.List;
 import javajs.util.PT;
@@ -254,11 +254,9 @@ abstract class OutputManager {
    * @param params
    * @param errRet
    * @return byte array if needed
-   * @throws IOException
    */
   private boolean createTheImage(Object objImage, String type, OC out,
-                                 Map<String, Object> params, String[] errRet)
-      throws IOException {
+                                 Map<String, Object> params, String[] errRet) {
     type = type.substring(0, 1) + type.substring(1).toLowerCase();
     if (type.equals("Zipdata")) {
       @SuppressWarnings("unchecked")
@@ -273,25 +271,74 @@ abstract class OutputManager {
         type = "Png";
         params.put("applicationPrefix", "Jmol Type");
         params.put("applicationData", oz.toByteArray());
-      } else if (v.size() == 1){
+      } else if (v.size() == 1) {
         byte[] b = (byte[]) v.remove(0);
         out.write(b, 0, b.length);
         return true;
-      } else{
+      } else {
         errRet[0] = writeZipFile(out, v, "OK JMOL");
         return true;
       }
     }
-    JmolImageEncoder ie = (JmolImageEncoder) Interface.getOption("image."
-        + type + "Encoder");
+    GenericImageEncoder ie = (GenericImageEncoder) Interface
+        .getInterface("javajs.img." + type + "Encoder");
     if (ie == null) {
       errRet[0] = "Image encoder type " + type + " not available";
       return false;
     }
-    return ie.createImage(viewer.apiPlatform, type, objImage, out, params,
-        errRet);
+    try {
+      int w = objImage == null ? -1 : PT.isAI(objImage) ? ((Integer) params
+          .get("width")).intValue() : viewer.apiPlatform
+          .getImageWidth(objImage);
+      int h = objImage == null ? -1 : PT.isAI(objImage) ? ((Integer) params
+          .get("height")).intValue() : viewer.apiPlatform
+          .getImageHeight(objImage);
+      params.put("imageWidth", Integer.valueOf(w));
+      params.put("imageHeight", Integer.valueOf(h));
+      params.put("imagePixels", encodeImage(w, h, objImage));
+      ie.createImage(type, out, params);
+    } catch (Exception e) {
+      errRet[0] = e.toString();
+      out.cancel();
+    } finally {
+      out.closeChannel();
+    }
+    return (errRet[0] == null);
   }
   
+  /**
+   * general image encoder, allows for BufferedImage, int[], or HTML5 2D canvas
+   * 
+   * @param width 
+   * @param height 
+   * @param objImage
+   * @return linear int[] array of ARGB values
+   * @throws Exception
+   */
+  private int[] encodeImage(int width, int height, Object objImage)
+      throws Exception {
+    if (width < 0)
+      return null;
+    int[] pixels;
+    if (PT.isAI(objImage)) {
+      pixels = (int[]) objImage;
+    } else {
+      /**
+       * @j2sNative
+       * 
+       *            pixels = null;
+       * 
+       */
+      {
+        pixels = new int[width * height];
+      }
+      pixels = viewer.apiPlatform.grabPixels(objImage, width, height, pixels, 0,
+          height);
+    }
+    return pixels;
+  }
+
+
   /////////////////////// general output including logging //////////////////////
 
   String outputToFile(Map<String, Object> params) {

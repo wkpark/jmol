@@ -30,7 +30,7 @@
  *   
 */
 
-package org.jmol.image;
+package javajs.img;
 
 import java.io.IOException;
 import java.util.Map;
@@ -41,23 +41,24 @@ import javajs.img.ImageEncoder;
 import javajs.util.AU;
 import javajs.util.OC;
 
+/**
+ * JpegEncoder - The JPEG main program which performs a jpeg compression of an
+ * image.
+ * 
+ *  A system to allow the full Jmol state -- regardless of length -- 
+ *  to be encoded in a set of APP1 (FFE1) tags.
+ *  But we have to be careful about line ends for backward compatibility. 
+ *  This solution is not 100% effective, because some data lines may in principle be 
+ *  Very large and may not contain new lines for more than 65500 characters, 
+ *  But that would be very unusual. Perhaps a huge data set loaded from a 
+ *  string. Introduced in Jmol 12.1.36. Bob Hanson
+ *  
+ * See org.com.obrador.license.txt
+ * 
+ */
+
 public class JpgEncoder extends ImageEncoder {
 
-  /**
-   * JpegEncoder - The JPEG main program which performs a jpeg compression of an
-   * image.
-   * 
-   *  A system to allow the full Jmol state -- regardless of length -- 
-   *  to be encoded in a set of APP1 (FFE1) tags.
-   *  But we have to be careful about line ends for backward compatibility. 
-   *  This solution is not 100% effective, because some data lines may in principle be 
-   *  Very large and may not contain new lines for more than 65500 characters, 
-   *  But that would be very unusual. Perhaps a huge data set loaded from a 
-   *  string. Introduced in Jmol 12.1.36. Bob Hanson
-   *  
-   * See org.com.obrador.license.txt
-   * 
-   */
   // this string will GENERALLY appear at the end of lines and be escaped 
   private static final int CONTINUE_MAX = 65500; // some room to spare here. 
   private static final int CONTINUE_MAX_BUFFER = CONTINUE_MAX + 10; // never break up last 10 bytes

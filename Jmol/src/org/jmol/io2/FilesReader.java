@@ -109,7 +109,7 @@ public class FilesReader implements JmolFilesReaderInterface {
     }
     if (t instanceof BufferedInputStream) {
       GenericBinaryDocument jd = (GenericBinaryDocument) Interface
-          .getOption("io2.BinaryDocument");
+          .getInterface("javajs.util.BinaryDocument");
       jd.setStream((BufferedInputStream) t, true);
       return jd;
     }

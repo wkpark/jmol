@@ -2977,7 +2977,7 @@ abstract public class ModelCollection extends BondCollection {
     if (nAtoms == 0)
       return "";
     // creating an instance prevents pre-loading by JavaScript
-    Interface.getOption("io.XmlUtil");
+    Interface.getInterface("javajs.util.XmlUtil");
     XmlUtil.openTag(sb, "molecule");
     XmlUtil.openTag(sb, "atomArray");
     BS bsAtoms = new BS();

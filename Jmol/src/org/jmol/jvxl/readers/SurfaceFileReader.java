@@ -59,7 +59,7 @@ abstract class SurfaceFileReader extends SurfaceReader {
   }
 
   GenericBinaryDocument newBinaryDocument() {
-    return (GenericBinaryDocument) Interface.getOption("io2.BinaryDocument");
+    return (GenericBinaryDocument) Interface.getInterface("javajs.util.BinaryDocument");
   }
   
   @Override

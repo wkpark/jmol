@@ -216,6 +216,7 @@ abstract public class AtomCollection {
 
   public LabelToken getLabeler() {
     // prevents JavaScript from requiring LabelToken upon core load
+    // will be abbreviated to JM., so don't use getOption here.
     return (labeler == null ? labeler = (LabelToken) Interface.getInterface("org.jmol.modelset.LabelToken") : labeler);
   }
 

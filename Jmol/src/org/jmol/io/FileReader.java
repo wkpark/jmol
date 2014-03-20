@@ -114,7 +114,7 @@ public class FileReader {
     }
     if (t instanceof BufferedInputStream) {
       GenericBinaryDocument bd = (GenericBinaryDocument) Interface
-          .getOption("io2.BinaryDocument");
+          .getInterface("javajs.util.BinaryDocument");
       bd.setStream((BufferedInputStream) t, true);
       reader = bd;
     }

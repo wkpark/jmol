@@ -601,7 +601,7 @@ public class FileManager implements BytePoster {
       BufferedInputStream bis = Binary.getUnzippedInputStream((BufferedInputStream) t);
       if (Binary.isCompoundDocumentS(bis)) {
         GenericBinaryDocument doc = (GenericBinaryDocument) Interface
-            .getOption("io2.CompoundDocument");
+            .getInterface("javajs.util.CompoundDocument");
         doc.setStream(bis, true);
         return Binary.getBR(doc.getAllDataFiles(
             "Molecule", "Input").toString());
@@ -686,7 +686,7 @@ public class FileManager implements BytePoster {
       bis = (BufferedInputStream) t;
       if (Binary.isCompoundDocumentS(bis)) {
         GenericBinaryDocument doc = (GenericBinaryDocument) Interface
-            .getOption("io2.CompoundDocument");
+            .getInterface("javajs.util.CompoundDocument");
         doc.setStream(bis, true);
         doc.getAllDataMapped(name.replace('\\', '/'), "Molecule", fileData);
       } else if (Binary.isZipS(bis)) {
@@ -695,7 +695,7 @@ public class FileManager implements BytePoster {
       } else if (asBinaryString) {
         // used for Spartan binary file reading
         GenericBinaryDocument bd = (GenericBinaryDocument) Interface
-            .getOption("io2.BinaryDocument");
+            .getInterface("javajs.util.BinaryDocument");
         bd.setStream(bis, false);
         sb = new SB();
         //note -- these headers must match those in ZipUtil.getAllData and CompoundDocument.getAllData

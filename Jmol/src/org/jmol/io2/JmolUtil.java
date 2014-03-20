@@ -59,7 +59,8 @@ public class JmolUtil implements JmolZipUtilities {
   }
 
   @Override
-  public Object getAtomSetCollectionOrBufferedReaderFromZip(GenericZipTools zpt, JmolAdapter adapter,
+  public Object getAtomSetCollectionOrBufferedReaderFromZip(GenericZipTools zpt,
+                                                            JmolAdapter adapter,
                                                             InputStream is,
                                                             String fileName,
                                                             String[] zipDirectory,
@@ -166,10 +167,12 @@ public class JmolUtil implements JmolZipUtilities {
         //        String s = new String(bytes);
         //        System.out.println("ziputil " + s.substring(0, 100));
         if (Binary.isGzipB(bytes))
-          bytes = Binary.getStreamBytes(ZipTools.getUnGzippedInputStream(bytes), -1);
+          bytes = Binary.getStreamBytes(
+              ZipTools.getUnGzippedInputStream(bytes), -1);
         if (Binary.isZipB(bytes) || Binary.isPngZipB(bytes)) {
           BufferedInputStream bis = Binary.getBIS(bytes);
-          String[] zipDir2 = Binary.getZipDirectoryAndClose(bis, "JmolManifest");
+          String[] zipDir2 = Binary
+              .getZipDirectoryAndClose(bis, "JmolManifest");
           bis = Binary.getBIS(bytes);
           Object atomSetCollections = getAtomSetCollectionOrBufferedReaderFromZip(
               zpt, adapter, bis, fileName + "|" + thisEntry, zipDir2, htParams,
@@ -204,7 +207,7 @@ public class JmolUtil implements JmolZipUtilities {
           String sData;
           if (Binary.isCompoundDocumentB(bytes)) {
             GenericBinaryDocument jd = (GenericBinaryDocument) Interface
-                .getUtil("CompoundDocument");
+                .getInterface("javajs.util.CompoundDocument");
             jd.setStream(Binary.getBIS(bytes), true);
             sData = jd.getAllDataFiles("Molecule", "Input").toString();
           } else {

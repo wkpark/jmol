@@ -43,30 +43,21 @@ class CMLReader extends XMLReader {
   @Override
 	protected JDXSource getXML(BufferedReader br) {
     try {
-
       source = new JDXSource(JDXSource.TYPE_SIMPLE, filePath);
-      
       getSimpleXmlReader(br);
       processXML(CML_0, CML_1);
-
       if (!checkPointCount())
         return null;
-
       populateVariables();
-
     } catch (Exception pe) {
-      //System.out.println(getBufferData());
       System.err.println("Error: " + pe);
     }
-
     processErrors("CML");
-
     try {
       br.close();
     } catch (IOException e1) {
       //
     }
-
     return source;
   }
 
@@ -113,8 +104,7 @@ class CMLReader extends XMLReader {
       processPeakList();
       return true;
     default:
-      System.out.println("CMLSource not processing tag " + tagNames[tagId]
-          + "!");
+      System.out.println("CMLSource not processing tag " + tagNames[tagId]);
       // should not be here
       return false;
     }
@@ -224,8 +214,7 @@ class CMLReader extends XMLReader {
       parser.nextTag();
       tagName = parser.getTagName();
       attrList = parser.getAttributeList();
-      if (tagName.equals("array")) {
-        
+      if (tagName.equals("array")) {      
         xUnits = checkUnits(parser.getAttrValue("units"));
         npoints = Integer.parseInt(parser.getAttrValue("size"));
         xaxisData = new double[npoints];
@@ -253,7 +242,6 @@ class CMLReader extends XMLReader {
             posDelim = attrList.indexOf(Ydelim);
             tempX = attrList.substring(0, posDelim);
             xaxisData[jj] = Double.parseDouble(tempX) * xFactor;
-            //                   System.out.println(jj+" a "+xaxisData[jj] );
             attrList = attrList.substring(posDelim + 1, attrList.length())
                 .trim();
             posDelim = attrList.indexOf(Ydelim);
@@ -261,7 +249,6 @@ class CMLReader extends XMLReader {
               jj++;
               tempX = attrList.substring(0, posDelim);
               xaxisData[jj] = Double.parseDouble(tempX) * xFactor;
-              //                       System.out.println(jj+" b "+xaxisData[jj] );
               attrList = attrList.substring(posDelim + 1, attrList.length())
                   .trim();
               posDelim = attrList.indexOf(Ydelim);
@@ -269,7 +256,6 @@ class CMLReader extends XMLReader {
             if (jj < npoints - 1) {
               jj++;
               xaxisData[jj] = Double.parseDouble(attrList) * xFactor;
-              //                     System.out.println(jj+" c "+xaxisData[jj] );
             }
           } while (jj < npoints - 1);
           firstX = xaxisData[0];
@@ -277,7 +263,6 @@ class CMLReader extends XMLReader {
           continuous = true;
         } // end of individual X values
       } // end of X array
-      //          System.out.println("finished with X");
     } else if (tagName.equals("yaxis")) {
       if (attrList.contains("multipliertodata"))
         yFactor = Double.parseDouble(parser.getAttrValue("multiplierToData"));
@@ -345,9 +330,7 @@ class CMLReader extends XMLReader {
 
     if (specfound)
       return;
-
     peakData = new Vector<double[]>();
-
     process(CML_PEAKLIST2, true);
 
     // now that we have X,Y pairs set JCAMP-DX equivalencies
@@ -369,11 +352,9 @@ class CMLReader extends XMLReader {
     firstY = yaxisData[0];
     increasing = (lastX > firstX);
     continuous = false;
-
   }
 
   void processPeakList() {
-
     if (tagName.equals("peak")) {
       if (attrList.contains("xvalue")) {
 

@@ -20,7 +20,7 @@
 package jspecview.exception;
 
 /**
- * JSpecViewException is the base class from which all exceptions in JSpecView
+ * JSVException is the base class from which all exceptions in JSpecView
  * is inherited.
  * @author Debbie-Ann Facey
  * @author Khari A. Bryan

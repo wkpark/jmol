@@ -339,6 +339,8 @@ public class GraphSet implements XYScaleConverter {
 	}
 
 	private void setPositionForFrame(int iSplit) {
+		if (iSplit < 0)
+			iSplit = 0;
 		int marginalHeight = height - 50;
 		xPixel00 = (int) (width * fX0);
 		xPixel11 = (int) (xPixel00 + width * fracX - 1);
@@ -380,8 +382,8 @@ public class GraphSet implements XYScaleConverter {
 	}
 
 	int getSplitPoint(int yPixel) {
-		return Math.min(((yPixel - yPixel000) / (yPixel11 - yPixel00)),
-				nSplit - 1);
+		return Math.max(0, Math.min(((yPixel - yPixel000) / (yPixel11 - yPixel00)),
+				nSplit - 1));
 	}
 
 	private boolean isSplitWidget(int xPixel, int yPixel) {
@@ -883,14 +885,11 @@ public class GraphSet implements XYScaleConverter {
 				if (showAllStacked) {
 					showAllStacked = false;
 					setSpectrumClicked(getFixedSelectedSpectrumIndex());
-				} else {
-					showAllStacked = allowStacking;
-					setSpectrumSelected(-1);
-					stackSelected = false;
-					// if (showAllStacked && iSpectrumSelected >= 0)
-					// stackSelected = true;
+					return true;
 				}
-				return true;
+				showAllStacked = allowStacking;
+				setSpectrumSelected(-1);
+				stackSelected = false;
 			}
 		}
 		return false;
@@ -1384,14 +1383,15 @@ public class GraphSet implements XYScaleConverter {
 
 	private void drawAll(Object gMain, Object gFront, Object gRear, int iSplit,
 			boolean needNewPins, boolean doAll) {
-    g2d = pd.g2d; // may change when printing and testing JsPdfCreator
+		g2d = pd.g2d; // may change when printing and testing JsPdfCreator
 		this.gMain = gMain;
 		int subIndex = getSpectrumAt(0).getSubIndex();
 		is2DSpectrum = (!getSpectrumAt(0).is1D()
 				&& (isLinked || pd.getBoolean(ScriptToken.DISPLAY2D)) && (imageView != null || get2DImage()));
 		if (imageView != null && doAll) {
 			if (pd.isPrinting && g2d != pd.g2d0)
-				g2d.newGrayScaleImage(gMain, image2D, imageView.imageWidth, imageView.imageHeight, imageView.getBuffer());
+				g2d.newGrayScaleImage(gMain, image2D, imageView.imageWidth,
+						imageView.imageHeight, imageView.getBuffer());
 			if (is2DSpectrum)
 				setPositionForFrame(iSplit);
 			draw2DImage();
@@ -1416,20 +1416,22 @@ public class GraphSet implements XYScaleConverter {
 		}
 		int iSpecForFrame = (nSpectra == 1 ? 0 : !showAllStacked ? iSpectrumMovedTo
 				: iSpectrumSelected);
-		Object g2 = (gRear == gMain? gFront : gRear);
+		Object g2 = (gRear == gMain ? gFront : gRear);
 		if (doAll) {
-			boolean addCurrentBox = (
-					!isLinked  // not if this is linked 
-					&& isSplittable 
-					&& (nSplit == 1 || pd.currentSplitPoint == iSplit));
-			boolean drawUpDownArrows = 
-					(zoomEnabled  // must have zoom enabled
-				  && !isDrawNoSpectra() // must be drawing spectrum
-					&& pd.isCurrentGraphSet(this) // must be current 
+			boolean addCurrentBox = (!isLinked // not if this is linked
+					&& isSplittable && (nSplit == 1 || pd.currentSplitPoint == iSplit));
+			boolean drawUpDownArrows = (zoomEnabled // must have zoom enabled
+					&& !isDrawNoSpectra() // must be drawing spectrum
+					&& pd.isCurrentGraphSet(this) // must be current
 					&& spectra.get(0).isScalable() // must be scalable
-					&& (addCurrentBox || nSpectra == 1) // must have a box or be just one spectrum
-					&& (nSplit == 1 || pd.currentSplitPoint == iSpectrumMovedTo) // must have one panel or be the spectrum moved to
-					);
+					&& (addCurrentBox || nSpectra == 1) // must have a box or be just one
+																							// spectrum
+			&& (nSplit == 1 || pd.currentSplitPoint == iSpectrumMovedTo) // must have
+																																		// one panel
+																																		// or be the
+																																		// spectrum
+																																		// moved to
+			);
 			boolean addSplitBox = isSplittable;
 			drawFrame(gMain, iSpecForFrame, addCurrentBox, addSplitBox,
 					drawUpDownArrows);
@@ -1463,8 +1465,8 @@ public class GraphSet implements XYScaleConverter {
 				boolean doDraw1DY = (doDrawWidgets && haveSelectedSpectrum && i == iSpectrumForScale);
 				if (doDrawWidgets) {
 					resetPinsFromView();
-					drawWidgets(gFront, g2, subIndex, needNewPins, doDraw1DObjects, doDraw1DY,
-							false);
+					drawWidgets(gFront, g2, subIndex, needNewPins, doDraw1DObjects,
+							doDraw1DY, false);
 				}
 				if (haveSingleYScale && i == iSpectrumForScale && doAll) {
 					drawGrid(gMain);
@@ -1472,18 +1474,19 @@ public class GraphSet implements XYScaleConverter {
 						drawSpectrumSource(gMain, i);
 				}
 				if (doDrawWidgets)
-					drawWidgets(gFront, g2, subIndex, false, doDraw1DObjects, doDraw1DY, true);
-				if (haveSingleYScale && !isDrawNoSpectra() && i == iSpectrumForScale
-						&& (nSpectra == 1 || iSpectrumSelected >= 0))
+					drawWidgets(gFront, g2, subIndex, false, doDraw1DObjects, doDraw1DY,
+							true);
+				if (!isDrawNoSpectra()
+						&& (nSpectra == 1 || iSpectrumSelected >= 0)
+						&& (haveSingleYScale && i == iSpectrumForScale 
+						|| showAllStacked
+								&& stackSelected && i == iSpectrumSelected))
 					drawHighlightsAndPeakTabs(gFront, g2, i);
-
 				if (doAll) {
 					if (n == 1 && iSpectrumSelected < 0 || iSpectrumSelected == i
 							&& pd.isCurrentGraphSet(this)) {
 						if (pd.titleOn && !pd.titleDrawn) {
-							pd
-									.drawTitle(gMain, height, width, pd
-											.getDrawTitle(pd.isPrinting));
+							pd.drawTitle(gMain, height, width, pd.getDrawTitle(pd.isPrinting));
 							pd.titleDrawn = true;
 						}
 					}
@@ -1498,7 +1501,7 @@ public class GraphSet implements XYScaleConverter {
 				if (doAll) {
 					drawSpectrum(gMain, i, offset, isGrey, ig, isContinuous);
 				}
-				//drawSpectrum(gFront, i, offset, isGrey, ig, isContinuous);
+				// drawSpectrum(gFront, i, offset, isGrey, ig, isContinuous);
 				drawMeasurements(gFront, i);
 				if (pendingMeasurement != null && pendingMeasurement.spec == spec)
 					drawMeasurement(gFront, pendingMeasurement);
@@ -1547,9 +1550,11 @@ public class GraphSet implements XYScaleConverter {
 				if (subIndex >= 0)
 					draw2DUnits(gMain);
 			}
-			drawWidgets(gFront, g2, subIndex, needNewPins, doDraw1DObjects, true, false);
+			drawWidgets(gFront, g2, subIndex, needNewPins, doDraw1DObjects, true,
+					false);
 			// no 2D grid?
-			drawWidgets(gFront, g2, subIndex, needNewPins, doDraw1DObjects, true, true);
+			drawWidgets(gFront, g2, subIndex, needNewPins, doDraw1DObjects, true,
+					true);
 		}
 		if (annotations != null)
 			drawAnnotations(gFront, annotations, null);
@@ -2896,9 +2901,9 @@ public class GraphSet implements XYScaleConverter {
 		for (int i = 0; i < nSpectra; i++) {
 			if (!isOnSpectrum(xPixel, yPixel, i))
 				continue;
-			boolean isNew = (i != iSpectrumSelected);
+			//boolean isNew = (i != iSpectrumSelected);
 			setSpectrumClicked(iPreviousSpectrumClicked = i);
-			return isNew;
+			return false;
 		}
 		// but not on a spectrum
 		if (isDialogOpen())

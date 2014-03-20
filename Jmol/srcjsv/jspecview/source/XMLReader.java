@@ -192,7 +192,6 @@ abstract class XMLReader implements SourceReader {
     source.setErrorLog(errorLog.toString());
   }
 
-
   final static String[] tagNames = {
     // aml:
     "audittrail",

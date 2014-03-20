@@ -43,38 +43,25 @@ public class AnIMLReader extends XMLReader {
   @Override
 	protected JDXSource getXML(BufferedReader br) {
     try {
-
       source = new JDXSource(JDXSource.TYPE_SIMPLE, filePath);
-      
       getSimpleXmlReader(br);
-
       parser.nextEvent();
-
       processXML(AML_0, AML_1);
-
       if (!checkPointCount())
         return null;
-
       xFactor = 1;
       yFactor = 1;
       populateVariables();
-
-    }
-
-    catch (Exception pe) {
-
+    } catch (Exception pe) {
       System.err.println("That file may be empty...");
       errorLog.append("That file may be empty... \n");
     }
-
     processErrors("anIML");
-
     try {
       br.close();
     } catch (IOException e1) {
       //
     }
-
     return source;
   }
 
@@ -110,8 +97,7 @@ public class AnIMLReader extends XMLReader {
       inResult = true;
       return true;
     default:
-      System.out.println("AnIMLSource not processing tag " + tagNames[tagId]
-          + "!");
+      System.out.println("AnIMLReader not processing tag " + tagNames[tagId]);
       // should not be here
       return false;
     }
@@ -155,11 +141,8 @@ public class AnIMLReader extends XMLReader {
   private boolean inResult;
   
   private void processExperimentStepSet() throws Exception {
-    System.out.println("AnIML experiment " + tagName);
-    
     if (tagName.equals("result")) {
-      inResult = true;
-      
+      inResult = true; 
     } else if (tagName.equals("sampleref")) {
       if (parser.getAttrValueLC("role").contains("samplemeasurement"))
         sampleID = parser.getAttrValue("sampleID");
@@ -171,7 +154,7 @@ public class AnIMLReader extends XMLReader {
       techname = parser.getAttrValue("name").toUpperCase() + " SPECTRUM";
     } else if (tagName.equals("vectorset") || tagName.equals("seriesset") && inResult) {
       npoints = Integer.parseInt(parser.getAttrValue("length"));
-      System.out.println("AnIML No. of points= " + npoints);
+      //System.out.println("AnIML No. of points= " + npoints);
       xaxisData = new double[npoints];
       yaxisData = new double[npoints];
     } else if (tagName.equals("vector") || tagName.equals("series") && inResult) {
@@ -246,7 +229,7 @@ public class AnIMLReader extends XMLReader {
     if (tagName.equals("individualvalueset")) {
       for (int ii = 0; ii < npoints; ii++)
         yaxisData[ii] = Double.parseDouble(parser.qualifiedValue());
-      System.out.println(npoints + " individual Y values now read");
+      //System.out.println(npoints + " individual Y values now read");
     } else if (tagName.equals("encodedvalueset")) {
       attrList = parser.getCharacters();
       byte[] dataArray = Base64.decodeBase64(attrList);

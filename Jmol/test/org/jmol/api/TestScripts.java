@@ -204,7 +204,7 @@ class TestScriptsImpl extends TestCase {
     if (checkOnly)
       viewerOptions.put("check", Boolean.TRUE);
     Jmol jmol = Jmol.getJmol(frame, 500, 500, viewerOptions);
-    JmolViewer viewer = jmol.viewer;
+    JmolViewer viewer = jmol.vwr;
     long beginFull = Profiling.getTime();
     for (int i = 0; i < nbExecutions; i++) {
       viewer.scriptWaitStatus("set defaultDirectory \"" + file.getParent().replace('\\', '/') + "\"", "");

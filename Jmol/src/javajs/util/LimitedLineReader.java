@@ -1,4 +1,4 @@
-package org.jmol.io;
+package javajs.util;
 
 import java.io.BufferedReader;
 

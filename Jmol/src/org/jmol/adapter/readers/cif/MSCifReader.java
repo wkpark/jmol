@@ -227,7 +227,8 @@ public class MSCifReader extends MSReader implements MSCifInterface {
       double c = Double.NaN;
       double w = Double.NaN;
       String fid = null;
-      for (int i = 0; i < cr.tokenizer.fieldCount; ++i) {
+      int n = cr.tokenizer.getFieldCount();
+      for (int i = 0; i < n; ++i) {
         switch (tok = fieldProperty(cr, i)) {
         case FD_ID:
         case FO_ID:
@@ -435,9 +436,10 @@ public class MSCifReader extends MSReader implements MSCifInterface {
     double[][] a = m.getArray();
     String key;
     int p;
-    for (; i < cr.tokenizer.fieldCount; ++i) {
+    int n = cr.tokenizer.getFieldCount();
+    for (; i < n; ++i) {
       if ((p = fieldProperty(cr, i)) < 0 
-          || !(key = cr.fields[p]).contains("_w_"))
+          || !(key = cr.tokenizer.getField(p)).contains("_w_"))
         continue;
       String[] tokens = PT.split(key, "_");
       int r = cr.parseIntStr(tokens[tokens.length - 2]) - 1;
@@ -448,7 +450,7 @@ public class MSCifReader extends MSReader implements MSCifInterface {
   }
 
   private int fieldProperty(CifReader cr, int i) {
-    return ((field = cr.tokenizer.loopData[i]).length() > 0 
+    return ((field = cr.tokenizer.getLoopData(i)).length() > 0 
         && field.charAt(0) != '\0' ? 
             cr.propertyOf[i] : NONE);
   }

@@ -1,18 +1,16 @@
-package org.jmol.io;
+package javajs.util;
 
 import java.io.BufferedReader;
-import javajs.util.List;
-import javajs.util.SB;
 
 import java.util.Hashtable;
 
 import java.util.Map;
 
-import org.jmol.api.JmolLineReader;
-import org.jmol.util.Logger;
+import javajs.api.GenericCifDataReader;
 
 
-public class CifDataReader {
+
+public class CifDataReader implements GenericCifDataReader {
   /**
    *
    * A special tokenizer class for dealing with quoted strings in CIF files.
@@ -70,41 +68,39 @@ public class CifDataReader {
    * Specifications," J. Chem. Info. Comp. Sci., 34, 505-508.
    *</p>
    */
-  private JmolLineReader reader;
+  private GenericLineReader reader;
   private BufferedReader br;
 
   private String line;  
-  public String str;
-  public int ich;
-  public int cch;
-  public boolean wasUnQuoted;
-  public String strPeeked;
-  public int ichPeeked;
-  public int fieldCount;
-  public String[] loopData;
-  public SB fileHeader = new SB();
+  private String str;
+  private int ich;
+  private int cch;
+  private boolean wasUnQuoted;
+  private String strPeeked;
+  private int ichPeeked;
+  private int fieldCount;
+  private String[] loopData;
+  private SB fileHeader = new SB();
   private boolean isHeader = true;
   
   ////////////////////////////////////////////////////////////////
   // special tokenizer class
   ////////////////////////////////////////////////////////////////
 
-  
-  public CifDataReader(JmolLineReader reader) {
+  public CifDataReader() {
+    // for reflection
+  }
+    
+  @Override
+  public CifDataReader set(GenericLineReader reader, BufferedReader br) {
     this.reader = reader;
-  }
-
-  public CifDataReader(BufferedReader br) {
     this.br = br;
+    return this;
   }
 
+  @Override
   public String getFileHeader() {
     return fileHeader.toString();
-  }
-  
-  public static Map<String, Object> readCifData(BufferedReader br) {
-    CifDataReader cdr = new CifDataReader(br);
-    return cdr.getAllCifData();
   }
   
   
@@ -113,7 +109,8 @@ public class CifDataReader {
    * 
    * @return Hashtable of models Vector of Hashtable data
    */
-  private Map<String, Object> getAllCifData() {
+  @Override
+  public Map<String, Object> getAllCifData() {
     line = "";
     String key;
     allData = new Hashtable<String, Object>();
@@ -131,11 +128,11 @@ public class CifDataReader {
           continue;
         }
         if (key.indexOf("_") != 0) {
-          Logger.warn("CIF ERROR ? should be an underscore: " + key);
+          System.out.println("CIF ERROR ? should be an underscore: " + key);
         } else {
           String value = getNextToken();
           if (value == null) {
-            Logger.warn("CIF ERROR ? end of file; data missing: " + key);
+            System.out.println("CIF ERROR ? end of file; data missing: " + key);
           } else {
             data.put(key, value);
           }
@@ -153,6 +150,7 @@ public class CifDataReader {
     return allData;
   }
 
+  @Override
   public String readLine() {
     try {
       line = (reader != null ? reader.readNextLine() : br.readLine());
@@ -177,6 +175,7 @@ public class CifDataReader {
    * @return false if EOF
    * @throws Exception
    */
+  @Override
   public boolean getData() throws Exception {
     // line is already present, and we leave with the next line to parse
     for (int i = 0; i < fieldCount; ++i)
@@ -190,6 +189,7 @@ public class CifDataReader {
    * @return the next token of any kind, or null
    * @throws Exception
    */
+  @Override
   public String getNextToken() throws Exception {
     while (!hasMoreTokens())
       if (setStringNextLine() == null)
@@ -358,6 +358,7 @@ public class CifDataReader {
    * @return next data token or null
    * @throws Exception
    */
+  @Override
   public String getNextDataToken() throws Exception { 
     String str = peekToken();
     if (str == null)
@@ -378,6 +379,7 @@ public class CifDataReader {
    * @return next token or null if EOF
    * @throws Exception
    */
+  @Override
   public String peekToken() throws Exception {
     while (!hasMoreTokens())
       if (setStringNextLine() == null)
@@ -393,6 +395,7 @@ public class CifDataReader {
    * 
    * @return the token last acquired; may be null
    */
+  @Override
   public String getTokenPeeked() {
     ich = ichPeeked;
     return strPeeked;
@@ -404,6 +407,7 @@ public class CifDataReader {
    * @param str
    * @return str without any leading/trailing white space, and no '\n'
    */
+  @Override
   public String fullTrim(String str) {
     int pt0 = 0;
     int pt1 = str.length();
@@ -454,6 +458,7 @@ public class CifDataReader {
    * @param data
    * @return cleaned string
    */
+  @Override
   public String toUnicode(String data) {
     int pt;
     try {
@@ -468,5 +473,69 @@ public class CifDataReader {
     }
 
     return data;
-  }  
+  }
+
+  @Override
+  public String getLoopData(int i) {
+    return loopData[i];
+  }
+
+  private static Map<String, Integer> htFields = new Hashtable<String, Integer>();
+   
+  String[] fields;
+
+   @Override
+  public int parseLoopParameters(String[] fields, int[] fieldOf, int[] propertyOf) throws Exception {
+     int propertyCount = 0;
+     if (fields == null) {
+       // for reading full list of keys, as for matrices
+       this.fields = new String[100];
+     } else {
+       if (!htFields.containsKey(fields[0]))
+         for (int i = fields.length; --i >= 0;)
+           htFields.put(fields[i], Integer.valueOf(i));
+       for (int i = fields.length; --i >= 0;)
+         fieldOf[i] = NONE;
+       propertyCount = fields.length;
+     }
+     fieldCount = 0;
+     while (true) {
+       String str = peekToken();
+       if (str == null) {
+         fieldCount = 0;
+         break;
+       }
+       if (str.charAt(0) != '_')
+         break;
+       int pt = fieldCount++;
+       str = fixKey(getTokenPeeked());
+       if (fields == null) {
+         this.fields[propertyOf[pt] = pt] = str;
+         fieldOf[pt] = pt;
+         continue;
+       }
+       Integer iField = htFields.get(str);
+       int i = (iField == null ? NONE : iField.intValue());
+       if ((propertyOf[pt] = i) != NONE)
+         fieldOf[i] = pt;
+     }
+     if (fieldCount > 0)
+       loopData = new String[fieldCount];
+     return propertyCount;
+  }
+
+   private String fixKey(String key) {
+     return PT.rep(key, ".", "_").toLowerCase();
+   }
+
+  @Override
+  public int getFieldCount() {
+    return fieldCount;
+  }
+
+  @Override
+  public String getField(int i) {
+    return fields[i];
+  }
+  
 }

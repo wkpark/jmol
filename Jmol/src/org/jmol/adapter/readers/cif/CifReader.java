@@ -28,12 +28,12 @@ import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
-import org.jmol.api.JmolLineReader;
 import org.jmol.api.SymmetryInterface;
-import org.jmol.io.CifDataReader;
 import org.jmol.java.BS;
 
 import org.jmol.script.T;
+
+import javajs.api.GenericCifDataReader;
 import javajs.util.List;
 import java.util.Hashtable;
 import java.util.Map;
@@ -41,6 +41,8 @@ import java.util.Map;
 import org.jmol.util.Logger;
 
 import javajs.util.Binary;
+import javajs.util.CifDataReader;
+import javajs.util.GenericLineReader;
 import javajs.util.P3;
 import javajs.util.PT;
 import javajs.util.V3;
@@ -67,12 +69,12 @@ import javajs.util.V3;
  * 
  */
 public class CifReader extends AtomSetCollectionReader implements
-    JmolLineReader {
+    GenericLineReader {
 
   private MSCifInterface mr;
   private MMCifInterface pr;
 
-  CifDataReader tokenizer = new CifDataReader(this);
+  GenericCifDataReader tokenizer = new CifDataReader().set(this, null);
 
   private boolean isMolecular;
   private boolean filterAssembly;
@@ -150,7 +152,7 @@ public class CifReader extends AtomSetCollectionReader implements
       if (!readAllData())
         break;
     if (appendedData != null) {
-      tokenizer = new CifDataReader(Binary.getBR(appendedData));
+      tokenizer = Binary.getCifReader().set(null, Binary.getBR(appendedData));
       while ((key = tokenizer.peekToken()) != null)
         if (!readAllData())
           break;
@@ -601,18 +603,15 @@ public class CifReader extends AtomSetCollectionReader implements
   }
 
   private int fieldProperty(int i) {
-    return ((field = tokenizer.loopData[i]).length() > 0
+    return ((field = tokenizer.getLoopData(i)).length() > 0
         && (firstChar = field.charAt(0)) != '\0' ? propertyOf[i] : NONE);
   }
 
-  String field;
-  private char firstChar = '\0';
   int[] propertyOf = new int[100]; // should be enough
   int[] fieldOf = new int[100];
-  String[] fields;
+  String field;
+  private char firstChar = '\0';
   private int propertyCount;
-
-  private static Map<String, Integer> htFields = new Hashtable<String, Integer>();
 
   /**
    * sets up arrays and variables for tokenizer.getData()
@@ -621,42 +620,9 @@ public class CifReader extends AtomSetCollectionReader implements
    * @throws Exception
    */
   void parseLoopParameters(String[] fields) throws Exception {
-    if (fields == null) {
-      // for reading full list of keys, as for matrices
-      this.fields = new String[100];
-    } else {
-      if (!htFields.containsKey(fields[0]))
-        for (int i = fields.length; --i >= 0;)
-          htFields.put(fields[i], Integer.valueOf(i));
-      for (int i = fields.length; --i >= 0;)
-        fieldOf[i] = NONE;
-      propertyCount = fields.length;
-    }
-    tokenizer.fieldCount = 0;
-    while (true) {
-      String str = tokenizer.peekToken();
-      if (str == null) {
-        tokenizer.fieldCount = 0;
-        break;
-      }
-      if (str.charAt(0) != '_')
-        break;
-      int pt = tokenizer.fieldCount++;
-      str = fixKey(tokenizer.getTokenPeeked());
-      if (fields == null) {
-        this.fields[propertyOf[pt] = pt] = str;
-        fieldOf[pt] = pt;
-        continue;
-      }
-      Integer iField = htFields.get(str);
-      int i = (iField == null ? NONE : iField.intValue());
-      if ((propertyOf[pt] = i) != NONE)
-        fieldOf[i] = pt;
-    }
-    if (tokenizer.fieldCount > 0)
-      tokenizer.loopData = new String[tokenizer.fieldCount];
+    propertyCount = tokenizer.parseLoopParameters(fields, fieldOf, propertyOf);
   }
-
+ 
   /**
    * 
    * used for turning off fractional or nonfractional coord.
@@ -718,7 +684,8 @@ public class CifReader extends AtomSetCollectionReader implements
     while (tokenizer.getData()) {
       String atomTypeSymbol = null;
       float oxidationNumber = Float.NaN;
-      for (int i = 0; i < tokenizer.fieldCount; ++i) {
+      int n = tokenizer.getFieldCount();
+      for (int i = 0; i < n; ++i) {
         switch (fieldProperty(i)) {
         case NONE:
           break;
@@ -899,7 +866,8 @@ public class CifReader extends AtomSetCollectionReader implements
       assemblyId = null;
       if (isPDBX) {
         if (modelField == -1) {
-          for (int i = 0; i < tokenizer.fieldCount; ++i)
+          int n = tokenizer.getFieldCount();
+          for (int i = 0; i < n; ++i)
             if (fieldProperty(i) == MODEL_NO) {
               modelField = i;
               isPDB = true;
@@ -928,7 +896,8 @@ public class CifReader extends AtomSetCollectionReader implements
             continue;
         }
       }
-      for (int i = 0; i < tokenizer.fieldCount; ++i) {
+      int n = tokenizer.getFieldCount();
+      for (int i = 0; i < n; ++i) {
         int tok = fieldProperty(i);
         switch (tok) {
         case NONE:
@@ -1053,7 +1022,7 @@ public class CifReader extends AtomSetCollectionReader implements
           if (field.equalsIgnoreCase("Uiso")) {
             int j = fieldOf[U_ISO_OR_EQUIV];
             if (j != NONE)
-              setU(atom, 7, parseFloatStr(tokenizer.loopData[j]));
+              setU(atom, 7, parseFloatStr(tokenizer.getLoopData(j)));
           }
           break;
         case ANISO_LABEL:
@@ -1180,7 +1149,8 @@ public class CifReader extends AtomSetCollectionReader implements
     float[] m = new float[16];
     m[15] = 1;
     while (tokenizer.getData()) {
-      for (int i = 0; i < tokenizer.fieldCount; ++i) {
+      int n = tokenizer.getFieldCount();
+      for (int i = 0; i < n; ++i) {
         switch (fieldProperty(i)) {
         case CITATION_ID:
           break;
@@ -1227,7 +1197,8 @@ public class CifReader extends AtomSetCollectionReader implements
     int n = 0;
     while (tokenizer.getData()) {
       boolean ssgop = false;
-      for (int i = 0; i < tokenizer.fieldCount; ++i) {
+      int nn = tokenizer.getFieldCount();
+      for (int i = 0; i < nn; ++i) {
         switch (fieldProperty(i)) {
         case SYM_SSG_XYZ:
           // check for non-standard record x~1~,x~2~,x~3~,x~4~  kIsfCqpM.cif
@@ -1310,7 +1281,8 @@ public class CifReader extends AtomSetCollectionReader implements
       float distance = 0;
       float dx = 0;
       //String siteSym2 = null;
-      for (int i = 0; i < tokenizer.fieldCount; ++i) {
+      int nn = tokenizer.getFieldCount();
+      for (int i = 0; i < nn; ++i) {
         switch (fieldProperty(i)) {
         case NONE:
           break;

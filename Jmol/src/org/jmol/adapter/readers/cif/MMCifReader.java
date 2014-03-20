@@ -225,7 +225,8 @@ _pdbx_struct_oper_list.vector[3]
       assem = new String[3];
       int count = 0;
       int p;
-      for (int i = 0; i < cr.tokenizer.fieldCount; ++i) {
+      int n = cr.tokenizer.getFieldCount();
+      for (int i = 0; i < n; ++i) {
         switch (p = fieldProperty(i)) {
         case ASSEM_ID:
         case ASSEM_OPERS:
@@ -310,7 +311,8 @@ _pdbx_struct_oper_list.vector[3]
       int count = 0;
       String id = null;
       String xyz = null;
-      for (int i = 0; i < cr.tokenizer.fieldCount; ++i) {
+      int n = cr.tokenizer.getFieldCount();
+      for (int i = 0; i < n; ++i) {
         int p = fieldProperty(i);
         switch (p) {
         case NONE :
@@ -396,7 +398,8 @@ _pdbx_struct_oper_list.vector[3]
     while (cr.tokenizer.getData()) {
       String groupName = null;
       String hetName = null;
-      for (int i = 0; i < cr.tokenizer.fieldCount; ++i) {
+      int n = cr.tokenizer.getFieldCount();
+      for (int i = 0; i < n; ++i) {
         switch (fieldProperty(i)) {
         case NONE:
           break;
@@ -427,7 +430,8 @@ _pdbx_struct_oper_list.vector[3]
     while (cr.tokenizer.getData()) {
       String groupName = null;
       String hetName = null;
-      for (int i = 0; i < cr.tokenizer.fieldCount; ++i) {
+      int n = cr.tokenizer.getFieldCount();
+      for (int i = 0; i < n; ++i) {
         switch (fieldProperty(i)) {
         case NONE:
         case NONPOLY_ENTITY_ID:
@@ -508,7 +512,8 @@ _pdbx_struct_oper_list.vector[3]
       }
     while (cr.tokenizer.getData()) {
       Structure structure = new Structure(-1, EnumStructure.HELIX, EnumStructure.HELIX, null, 0, 0);
-      for (int i = 0; i < cr.tokenizer.fieldCount; ++i) {
+      int n = cr.tokenizer.getFieldCount();
+      for (int i = 0; i < n; ++i) {
         switch (fieldProperty(i)) {
         case NONE:
           break;
@@ -587,7 +592,8 @@ _pdbx_struct_oper_list.vector[3]
       }
     while (cr.tokenizer.getData()) {
       Structure structure = new Structure(-1, EnumStructure.SHEET, EnumStructure.SHEET, null, 0, 0);
-      for (int i = 0; i < cr.tokenizer.fieldCount; ++i) {
+      int n = cr.tokenizer.getFieldCount();
+      for (int i = 0; i < n; ++i) {
         switch (fieldProperty(i)) {
         case BEG_ASYM_ID:
           structure.startChainID = cr.vwr.getChainID(field);
@@ -687,7 +693,8 @@ _pdbx_struct_oper_list.vector[3]
     Map<String, Object> htSite = null;
     htSites = new Hashtable<String, Map<String, Object>>();
     while (cr.tokenizer.getData()) {
-      for (int i = 0; i < cr.tokenizer.fieldCount; ++i) {
+      int n = cr.tokenizer.getFieldCount();
+      for (int i = 0; i < n; ++i) {
         switch (fieldProperty(i)) {
         case SITE_ID:
           if (group != "") {
@@ -738,7 +745,7 @@ _pdbx_struct_oper_list.vector[3]
   }
 
   private int fieldProperty(int i) {
-    return ((field = cr.tokenizer.loopData[i]).length() > 0 
+    return ((field = cr.tokenizer.getLoopData(i)).length() > 0 
         && (firstChar = field.charAt(0)) != '\0' ? 
             cr.propertyOf[i] : NONE);
   }
@@ -854,7 +861,8 @@ _pdbx_struct_oper_list.vector[3]
       int atomIndex2 = -1;
       order = 0;
       isAromatic = false;
-      for (int i = 0; i < cr.tokenizer.fieldCount; ++i) {
+      int n = cr.tokenizer.getFieldCount();
+      for (int i = 0; i < n; ++i) {
         switch (fieldProperty(i)) {
         case CHEM_COMP_BOND_ATOM_ID_1:
           atomIndex1 = cr.atomSetCollection.getAtomIndexFromName(field);

@@ -36,6 +36,7 @@ import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 
 import javajs.util.Binary;
+import javajs.util.LimitedLineReader;
 import javajs.util.List;
 import javajs.util.PT;
 

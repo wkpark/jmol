@@ -29,12 +29,12 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import javajs.api.GenericBinaryDocument;
+import javajs.util.LimitedLineReader;
 import javajs.util.PT;
 
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
-import org.jmol.io.LimitedLineReader;
 import org.jmol.util.Logger;
 
 

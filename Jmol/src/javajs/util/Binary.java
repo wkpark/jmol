@@ -34,6 +34,7 @@ import java.io.UnsupportedEncodingException;
 
 import java.util.Map;
 
+import javajs.api.GenericCifDataReader;
 import javajs.api.Interface;
 import javajs.api.GenericZipTools;
 import javajs.api.ZInputStream;
@@ -431,6 +432,14 @@ public class Binary {
       }
     }
     return getBIS(data);
+  }
+
+  public static GenericCifDataReader getCifReader() {
+    return (GenericCifDataReader) javajs.api.Interface.getInterface("javajs.util.CifDataReader");
+  }
+
+  public static Map<String, Object> readCifData(BufferedReader br) {
+    return new CifDataReader().set(null, br).getAllCifData();
   }
 
 }

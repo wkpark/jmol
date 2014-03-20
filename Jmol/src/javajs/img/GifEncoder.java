@@ -62,15 +62,12 @@
 
 package javajs.img;
 
-import org.jmol.script.T;
 import javajs.util.List;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Map;
 import java.io.IOException;
-
-import org.jmol.util.Logger;
 
 /**
  * 
@@ -179,7 +176,7 @@ public class GifEncoder extends ImageEncoder {
   @Override
   protected void setParams(Map<String, Object> params) {
     this.params = params;
-    interlaced = Boolean.TRUE == params.get("interlaced");
+    interlaced = (Boolean.TRUE == params.get("interlaced"));
     if (interlaced || !params.containsKey("captureMode"))
       return;
     try {
@@ -187,33 +184,31 @@ public class GifEncoder extends ImageEncoder {
     } catch (Exception e) {
       // ignore
     }
-    switch (((Integer) params.get("captureMode")).intValue()) {
-    case T.movie:
-      params.put("captureMode", Integer.valueOf(T.add));
+    int imode = "maec".indexOf(((String) params.get("captureMode")).substring(0, 1));
+    if (logging)
+      System.out.println("GIF capture mode " + imode);
+    switch (imode) {
+    case 0: //"movie"
+      params.put("captureMode", "add");
       addImage = false;
       addTrailer = false;
       break;
-    case T.add:
+    case 1: // add 
       addHeader = false;
       addTrailer = false;
       int fps = Math.abs(((Integer) params.get("captureFps")).intValue());
       delayTime100ths =  (fps == 0 ? 0 : 100 / fps);
       looping = (Boolean.FALSE != params.get("captureLooping"));
       break;
-    case T.end:
+    case 2: // end
       addHeader = false;
       addImage = false;
       break;
-    case T.cancel:
+    case 3: // cancel
       addHeader = false;
       addImage = false;
-      /**
-       * @j2sNative
-       * 
-       * this.out.cancel();
-       *  
-       */
-      {}
+      out.cancel();
+      break;
     }
   }
 
@@ -243,7 +238,8 @@ public class GifEncoder extends ImageEncoder {
   protected void close() {
     if (addTrailer) {
       writeTrailer();
-      super.close();
+    } else {
+      doClose = false;
     }
     params.put("captureByteCount", Integer.valueOf(byteCount));
   }
@@ -315,8 +311,8 @@ public class GifEncoder extends ImageEncoder {
     }
     ciHash = null;
    
-    if (Logger.debugging)
-      Logger.debug("# total image colors = " + nColors);
+    if (logging)
+      System.out.println("# total image colors = " + nColors);
     // sort by frequency
     colorVector.sort();
     return colorVector;
@@ -356,8 +352,8 @@ public class GifEncoder extends ImageEncoder {
     ColorItem item = colorVector.get(nMax);
     ht.put(Integer.valueOf(item.rgb),
         item.acc = new AdaptiveColorCollection(item.rgb, index++));
-    if (Logger.debugging)
-      Logger.debug("# GIF colors = " + ht.size());
+    if (logging)
+      System.out.println("# GIF colors = " + ht.size());
     return ht;
   }
 

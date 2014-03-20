@@ -557,7 +557,7 @@ public class CmdExt implements JmolCmdExtension {
     params.put("quality", Integer.valueOf(-1));
     params.put("endTime",
         Long.valueOf(System.currentTimeMillis() + (long) (endTime * 1000)));
-    params.put("captureMode", Integer.valueOf(mode));
+    params.put("captureMode", T.nameOf(mode).toLowerCase());
     params.put("captureLooping", looping ? Boolean.TRUE : Boolean.FALSE);
     String msg = viewer.processWriteOrCapture(params);
     Logger.info(msg);

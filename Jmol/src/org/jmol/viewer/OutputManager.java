@@ -13,9 +13,8 @@ import org.jmol.i18n.GT;
 import org.jmol.io.Binary;
 import org.jmol.io.JmolBinary;
 import org.jmol.java.BS;
-import org.jmol.script.T;
 
-import javajs.img.GenericImageEncoder;
+import javajs.api.GenericImageEncoder;
 import javajs.util.OC;
 import javajs.util.List;
 import javajs.util.PT;
@@ -137,7 +136,8 @@ abstract class OutputManager {
     boolean asBytes = (out == null && fileName == null);
     boolean closeChannel = (out == null && fileName != null);
     boolean releaseImage = (objImage == null);
-    Object image = (type.equals("ZIPDATA") ? "" : rgbbuf != null ? rgbbuf : objImage != null ? objImage : viewer.getScreenImageBuffer(null, true));
+    Object image = (type.equals("ZIPDATA") ? "" : rgbbuf != null ? rgbbuf
+        : objImage != null ? objImage : viewer.getScreenImageBuffer(null, true));
     boolean isOK = false;
     try {
       if (image == null)
@@ -159,6 +159,7 @@ abstract class OutputManager {
           comment = (!asBytes ? (String) getWrappedState(null, null, image,
               null) : "");
         }
+        params.put("jpgAppTag", JmolBinary.JPEG_CONTINUE_STRING);
       } else if (type.equals("PDF")) {
         comment = "";
       } else if (type.startsWith("PNG")) {
@@ -173,12 +174,12 @@ abstract class OutputManager {
               .getBytes();
         }
         if (stateData != null) {
-          params.put("applicationData", stateData);
-          params.put("applicationPrefix", "Jmol Type");
+          params.put("pngAppData", stateData);
+          params.put("pngAppPrefix", "Jmol Type");
         }
         if (type.equals("PNGT"))
-          params.put("transparentColor", Integer.valueOf(viewer
-              .getBackgroundArgb()));
+          params.put("transparentColor",
+              Integer.valueOf(viewer.getBackgroundArgb()));
         type = "PNG";
       }
       if (comment != null)
@@ -189,6 +190,9 @@ abstract class OutputManager {
       if (closeChannel)
         out.closeChannel();
       if (isOK) {
+        if (params.containsKey("captureMsg"))
+          viewer.prompt((String) params.get("captureMsg"), "OK", null, true);
+
         if (asBytes)
           bytes = out.toByteArray();
         else if (params.containsKey("captureByteCount"))
@@ -264,13 +268,13 @@ abstract class OutputManager {
       if (v.size() >= 2 && v.get(0).equals("_IMAGE_")) {
         objImage = null;
         v.remove(0);
-        params.put("imageData", v.remove(0));
+        params.put("pngImgData", v.remove(0));
         OC oz = getOutputChannel(null, null);
         errRet[0] = writeZipFile(oz, v, "OK JMOL");
         params.put("type", "PNGJ");
         type = "Png";
-        params.put("applicationPrefix", "Jmol Type");
-        params.put("applicationData", oz.toByteArray());
+        params.put("pngAppPrefix", "Jmol Type");
+        params.put("pngAppData", oz.toByteArray());
       } else if (v.size() == 1) {
         byte[] b = (byte[]) v.remove(0);
         out.write(b, 0, b.length);
@@ -286,6 +290,7 @@ abstract class OutputManager {
       errRet[0] = "Image encoder type " + type + " not available";
       return false;
     }
+    boolean doClose = true;
     try {
       int w = objImage == null ? -1 : PT.isAI(objImage) ? ((Integer) params
           .get("width")).intValue() : viewer.apiPlatform
@@ -295,13 +300,19 @@ abstract class OutputManager {
           .getImageHeight(objImage);
       params.put("imageWidth", Integer.valueOf(w));
       params.put("imageHeight", Integer.valueOf(h));
-      params.put("imagePixels", encodeImage(w, h, objImage));
-      ie.createImage(type, out, params);
+      int[] pixels = encodeImage(w, h, objImage);
+      if (pixels != null)
+        params.put("imagePixels", pixels);
+      params.put("logging", Boolean.valueOf(Logger.debugging));
+      // GIF capture may not close output channel
+      doClose = ie.createImage(type, out, params);
     } catch (Exception e) {
       errRet[0] = e.toString();
       out.cancel();
+      doClose = true;
     } finally {
-      out.closeChannel();
+      if (doClose)
+        out.closeChannel();
     }
     return (errRet[0] == null);
   }
@@ -593,7 +604,8 @@ abstract class OutputManager {
    * @param doCheck
    * @return null (canceled) or a message starting with OK or an error message
    */
-  protected String handleOutputToFile(Map<String, Object> params, boolean doCheck) {
+  protected String handleOutputToFile(Map<String, Object> params,
+                                      boolean doCheck) {
 
     // org.jmol.image.AviCreator does create AVI animations from JPEGs
     //but these aren't read by standard readers, so that's pretty much useless.
@@ -607,13 +619,13 @@ abstract class OutputManager {
     int width = getInt(params, "width", 0);
     int height = getInt(params, "height", 0);
     int quality = getInt(params, "quality", Integer.MIN_VALUE);
-    int captureMode = getInt(params, "captureMode", Integer.MIN_VALUE);
-    if (captureMode != Integer.MIN_VALUE && !viewer.allowCapture())
+    String captureMode = (String) params.get("captureMode");
+    if (captureMode != null && !viewer.allowCapture())
       return "ERROR: Cannot capture on this platform.";
     boolean mustRender = (quality != Integer.MIN_VALUE);
     // localName will be fileName only if we are able to write to disk.
     String localName = null;
-    if (captureMode != Integer.MIN_VALUE) {
+    if (captureMode != null) {
       doCheck = false; // will be checked later
       mustRender = false;
       type = "GIF";
@@ -656,14 +668,16 @@ abstract class OutputManager {
         if (sret == null) {
           // allow Jmol to do it            
           String msg = null;
-          if (captureMode != Integer.MIN_VALUE) {
+          if (captureMode != null) {
             OC out = null;
             Map<String, Object> cparams = viewer.captureParams;
-            switch (captureMode) {
-            case T.movie:
+            int imode = "ad on of en ca mo ".indexOf(captureMode
+                .substring(0, 2));
+            //           0  3  6  9  12 15
+            switch (imode) {
+            case 15:
               if (cparams != null)
-                ((OC) cparams.get("outputChannel"))
-                    .closeChannel();
+                ((OC) cparams.get("outputChannel")).closeChannel();
               out = getOutputChannel(localName, null);
               if (out == null) {
                 sret = msg = "ERROR: capture canceled";
@@ -674,7 +688,7 @@ abstract class OutputManager {
                 viewer.captureParams = params;
                 params.put("captureFileName", localName);
                 params.put("captureCount", Integer.valueOf(1));
-                params.put("captureMode", Integer.valueOf(T.movie));
+                params.put("captureMode", "movie");
               }
               break;
             default:
@@ -682,11 +696,11 @@ abstract class OutputManager {
                 sret = msg = "ERROR: capture not active";
               } else {
                 params = cparams;
-                switch (captureMode) {
+                switch (imode) {
                 default:
                   sret = msg = "ERROR: CAPTURE MODE=" + captureMode + "?";
                   break;
-                case T.add:
+                case 0: //add:
                   if (Boolean.FALSE == params.get("captureEnabled")) {
                     sret = msg = "capturing OFF; use CAPTURE ON/END/CANCEL to continue";
                   } else {
@@ -695,29 +709,31 @@ abstract class OutputManager {
                     msg = type + "_STREAM_ADD " + count;
                   }
                   break;
-                case T.on:
-                case T.off:
+                case 3: //on:
+                case 6: //off:
                   params = cparams;
-                  params.put("captureEnabled",
-                      (captureMode == T.on ? Boolean.TRUE : Boolean.FALSE));
+                  params
+                      .put("captureEnabled",
+                          (captureMode.equals("on") ? Boolean.TRUE
+                              : Boolean.FALSE));
                   sret = type + "_STREAM_"
-                      + (captureMode == T.on ? "ON" : "OFF");
-                  params.put("captureMode", Integer.valueOf(T.add));
+                      + (captureMode.equals("on") ? "ON" : "OFF");
+                  params.put("captureMode", "add");
                   break;
-                case T.end:
-                case T.cancel:
+                case 9:// end:
+                case 12:// cancel:
                   params = cparams;
-                  params.put("captureMode", Integer.valueOf(captureMode));
+                  params.put("captureMode", captureMode);
                   fileName = (String) params.get("captureFileName");
                   msg = type + "_STREAM_"
-                      + (captureMode == T.end ? "CLOSE " : "CANCEL ")
+                      + (captureMode.equals("end") ? "CLOSE " : "CANCEL ")
                       + params.get("captureFileName");
                   viewer.captureParams = null;
-                  viewer.prompt(GT._("Capture")
-                      + ": "
-                      + (captureMode == T.cancel ? GT._("canceled") : GT.o(GT._(
-                          "{0} saved"), fileName)), "OK", null,
-                      true);
+                  params.put("captureMsg",
+                      GT._("Capture")
+                          + ": "
+                          + (captureMode.equals("cancel") ? GT._("canceled")
+                              : GT.o(GT._("{0} saved"), fileName)));
                 }
                 break;
               }

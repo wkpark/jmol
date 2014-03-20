@@ -16,7 +16,7 @@
  * JpegEncoder and its associated classes are Copyright (c) 1998, James R. Weeks and BioElectroMech
  * see(Jmol/src/com/obrador/license.txt)
  * 
- * Jmol.src.org.jmol.util.JpegEncoder.java was adapted by Bob Hanson
+ * javajs.img.JpegEncoder.java was adapted by Bob Hanson
  * for Jmol in the following ways:
  * 
  * 1) minor coding efficiencies were made in some for() loops.

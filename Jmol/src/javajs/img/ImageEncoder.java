@@ -54,6 +54,7 @@ package javajs.img;
 
 import java.util.Map;
 
+import javajs.api.GenericImageEncoder;
 import javajs.util.OC;
 
 
@@ -77,6 +78,8 @@ public abstract class ImageEncoder implements GenericImageEncoder {
   protected int height = -1;
   protected int quality = -1;
   protected String date;
+  protected boolean logging;
+  protected boolean doClose = true;
 
   /**
    * @param type
@@ -84,9 +87,10 @@ public abstract class ImageEncoder implements GenericImageEncoder {
    * @param params
    */
   @Override
-  public void createImage(String type, OC out, Map<String, Object> params)
+  public boolean createImage(String type, OC out, Map<String, Object> params)
       throws Exception {
     this.out = out;
+    logging = (Boolean.TRUE == params.get("logging"));
     width = ((Integer) params.get("imageWidth")).intValue();
     height = ((Integer) params.get("imageHeight")).intValue();
     pixels = (int[]) params.get("imagePixels");
@@ -95,7 +99,8 @@ public abstract class ImageEncoder implements GenericImageEncoder {
     quality = (q == null ? -1 : q.intValue());
     setParams(params);
     generate();
-    close();
+    close(); // GIF will override this and not close
+    return doClose;
   }
 
   abstract protected void setParams(Map<String, Object> params);

@@ -16,7 +16,8 @@
  * JpegEncoder and its associated classes are Copyright (c) 1998, James R. Weeks and BioElectroMech
  * see(Jmol/src/com/obrador/license.txt)
  * 
- * Jmol.src.org.jmol.util.JpegEncoder.java was adapted by Bob Hanson
+ * javjs.img.JpegEncoder.java was adapted by Bob Hanson
+ * 
  * for Jmol in the following ways:
  * 
  * 1) minor coding efficiencies were made in some for() loops.
@@ -34,8 +35,6 @@ package javajs.img;
 
 import java.io.IOException;
 import java.util.Map;
-
-import org.jmol.io.JmolBinary;
 
 import javajs.img.ImageEncoder;
 import javajs.util.AU;
@@ -67,6 +66,7 @@ public class JpgEncoder extends ImageEncoder {
   private Huffman huf;
   private DCT dct;
   protected int defaultQuality = 100;
+  private String applicationTag;
 
   public JpgEncoder() {
 
@@ -78,6 +78,7 @@ public class JpgEncoder extends ImageEncoder {
       quality = defaultQuality;
     jpegObj = new JpegObj();
     jpegObj.comment = (String) params.get("comment");
+    applicationTag = (String) params.get("jpgAppTag");
   }
 
   @Override
@@ -289,7 +290,7 @@ public class JpgEncoder extends ImageEncoder {
   private void writeString(String s, byte id) {
     int len = s.length();
     int i0 = 0;
-    String suffix = JmolBinary.JPEG_CONTINUE_STRING;
+    String suffix = applicationTag;
     while (i0 < len) {
       int nBytes = len - i0;
       if (nBytes > CONTINUE_MAX_BUFFER) {

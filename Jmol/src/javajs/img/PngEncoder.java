@@ -99,9 +99,9 @@ public class PngEncoder extends CRCEncoder {
   private String type;
   private Integer transparentColor;
 
-  private byte[] applicationData;
-  private String applicationPrefix;
-  private String version;
+  private byte[] appData;
+  private String appPrefix;
+  private String comment;
   private byte[] bytes;
 
   
@@ -119,11 +119,11 @@ public class PngEncoder extends CRCEncoder {
     filter = FILTER_NONE;
     compressionLevel = quality;
     transparentColor = (Integer) params.get("transparentColor");
-    bytes = (byte[]) params.get("imageData");
+    comment = (String) params.get("comment");
     type = (params.get("type") + "0000").substring(0, 4);
-    version = (String) params.get("comment");
-    applicationData = (byte[]) params.get("applicationData");
-    applicationPrefix = (String) params.get("applicationPrefix");
+    bytes = (byte[]) params.get("pngImgData");
+    appData = (byte[]) params.get("pngAppData");
+    appPrefix = (String) params.get("pngAppPrefix");
   }
 
   
@@ -140,11 +140,11 @@ public class PngEncoder extends CRCEncoder {
       dataLen = bytes.length;
     }
     int len = dataLen;
-    if (applicationData != null) {
-      setJmolTypeText(applicationPrefix, bytes, len, applicationData.length,
+    if (appData != null) {
+      setJmolTypeText(appPrefix, bytes, len, appData.length,
           type);
       out.write(bytes, 0, len);
-      len = (bytes = applicationData).length;
+      len = (bytes = appData).length;
     }
     out.write(bytes, 0, len);
   }
@@ -164,9 +164,9 @@ public class PngEncoder extends CRCEncoder {
     writeBytes(pngIdBytes);
     //hdrPos = bytePos;
     writeHeader();
-    writeText(getApplicationText(applicationPrefix, type, 0, 0));
+    writeText(getApplicationText(appPrefix, type, 0, 0));
 
-    writeText("Software\0Jmol " + version);
+    writeText("Software\0Jmol " + comment);
     writeText("Creation Time\0" + date);
 
     if (!encodeAlpha && transparentColor != null)

@@ -1,4 +1,4 @@
-package org.jmol.api;
+package org.jmol.util;
 
 import javajs.util.List;
 import javajs.util.P4;

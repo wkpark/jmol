@@ -3,7 +3,6 @@ package org.jmol.util;
 import javajs.util.AU;
 import javajs.util.List;
 
-import org.jmol.api.Triangulator;
 import org.jmol.java.BS;
 
 import javajs.util.P3;

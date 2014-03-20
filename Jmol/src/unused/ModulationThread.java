@@ -45,14 +45,14 @@ public class ModulationThread {//extends JmolThread {
 //  }
 //
 //  @Override
-//  public int setManager(Object manager, Viewer viewer, Object params) {
+//  public int setManager(Object manager, Viewer vwr, Object params) {
 //    int[] options = (int[]) params;
 //    int t = options[0];
 //    modT = P3.new3(t, t, t);
 //    modT2 = options[1];
 //    animationManager = (AnimationManager) manager;
-//    setViewer(viewer, "ModulationThread");
-//    viewer.startHoverWatcher(false);      
+//    setViewer(vwr, "ModulationThread");
+//    vwr.startHoverWatcher(false);      
 //    return 0;
 //  }
 //  
@@ -79,8 +79,8 @@ public class ModulationThread {//extends JmolThread {
 //      case INIT:
 //        if (Logger.debugging)
 //          Logger.debug("modulation thread running");
-//        viewer.requestRepaintAndWait("modulationThread");
-//        viewer.startHoverWatcher(false);
+//        vwr.requestRepaintAndWait("modulationThread");
+//        vwr.startHoverWatcher(false);
 //        mode = MAIN;
 //        break;
 //      case MAIN:
@@ -93,7 +93,7 @@ public class ModulationThread {//extends JmolThread {
 //        break;
 //      case CHECK1:
 //        modT.x++;
-//        viewer.setModulation(true, modT, true, Integer.MAX_VALUE, true);
+//        vwr.setModulation(true, modT, true, Integer.MAX_VALUE, true);
 //        mode = CHECK2;
 //        break;
 //      case CHECK2:
@@ -102,11 +102,11 @@ public class ModulationThread {//extends JmolThread {
 //        break;
 //      case CHECK3:
 //        while (animationManager.modulationPlay && !checkInterrupted()
-//            && !viewer.getRefreshing()) {
+//            && !vwr.getRefreshing()) {
 //          if (!runSleep(10, CHECK3))
 //            return;
 //        }
-//        viewer.refresh(1, "modulationThread");
+//        vwr.refresh(1, "modulationThread");
 //        sleepTime = (int) (targetTime - (System.currentTimeMillis() - startTime));
 //        if (!runSleep(sleepTime, MAIN))
 //          return;

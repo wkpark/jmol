@@ -54,7 +54,7 @@ public abstract class Exporter {
 //  // The following fields and methods are required for instantiation or provide
 //  // generally useful functionality:
 //
-//  protected Viewer viewer;
+//  protected Viewer vwr;
 //  protected double privateKey;
 //  protected JmolRendererInterface jmolRenderer;
 //  protected SB output;
@@ -114,25 +114,25 @@ public abstract class Exporter {
 //    this.jmolRenderer = jmolRenderer;
 //  }
 //  
-//  boolean initializeOutput(Viewer viewer, double privateKey, GData g3d, Map<String, Object> params) {
+//  boolean initializeOutput(Viewer vwr, double privateKey, GData g3d, Map<String, Object> params) {
 //
 //       
 //    isWebGL = params.get("type").equals("JS");
 //    
 //    
-//    this.viewer = viewer;
-//    appletName = PT.split(viewer.getHtmlName(), "_")[0];
+//    this.vwr = vwr;
+//    appletName = PT.split(vwr.getHtmlName(), "_")[0];
 //    this.g3d = g3d;
 //    this.privateKey = privateKey;
-//    backgroundColix = viewer.getObjectColix(StateManager.OBJ_BACKGROUND);
-//    center.setT(viewer.getRotationCenter());
+//    backgroundColix = vwr.getObjectColix(StateManager.OBJ_BACKGROUND);
+//    center.setT(vwr.getRotationCenter());
 //    if ((screenWidth <= 0) || (screenHeight <= 0)) {
-//      screenWidth = viewer.getScreenWidth();
-//      screenHeight = viewer.getScreenHeight();
+//      screenWidth = vwr.getScreenWidth();
+//      screenHeight = vwr.getScreenHeight();
 //    }
 //    slabZ = g3d.getSlab();
 //    depthZ = g3d.getDepth();
-//    P3[] cameraFactors = viewer.getCameraFactors();
+//    P3[] cameraFactors = vwr.getCameraFactors();
 //    referenceCenter = cameraFactors[0];
 //    cameraPosition = cameraFactors[1];
 //    fixedRotationCenter = cameraFactors[2];
@@ -147,9 +147,9 @@ public abstract class Exporter {
 ////        commandLineOptions = fileName.substring(pt + 3);
 ////        fileName = fileName.substring(0, pt);
 ////      }
-////      //viewer.writeTextFile(fileName + ".spt", viewer.getSavedState("_Export"));
+////      //vwr.writeTextFile(fileName + ".spt", vwr.getSavedState("_Export"));
 ////      try {
-////        out = viewer.openExportChannel(privateKey, fileName, true);
+////        out = vwr.openExportChannel(privateKey, fileName, true);
 ////      } catch (IOException e) {
 ////        return false;
 ////      }

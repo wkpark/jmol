@@ -61,7 +61,7 @@ public class JSExporter {// extends CartesianExporter {
 //    /**
 //     * @j2sNative
 //     * 
-//     * this.applet = this.viewer.applet
+//     * this.applet = this.vwr.applet
 //     * 
 //     */
 //    {}
@@ -242,7 +242,7 @@ public class JSExporter {// extends CartesianExporter {
 //  void plotText(int x, int y, int z, short colix, String text, Font font3d) {
 //    // TODO -- not sure how to handle z exactly. 
 //    // These are screen coordinates. You have to use
-//    // viewer.unTransformPoint(pointScreen, pointAngstroms) 
+//    // vwr.unTransformPoint(pointScreen, pointAngstroms) 
 //    // to return that to actual coordinates.
 //  }
 //

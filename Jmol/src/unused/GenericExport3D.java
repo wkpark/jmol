@@ -65,7 +65,7 @@ abstract public class GenericExport3D {//implements
 //  }
 //
 //  @Override
-//  public Object initializeExporter(Viewer viewer, double privateKey,
+//  public Object initializeExporter(Viewer vwr, double privateKey,
 //                                   GData gdata, Map<String, Object> params) {    
 //    exportName = (String) params.get("type");
 //    isWebGL = exportName.equals("JS");
@@ -83,14 +83,14 @@ abstract public class GenericExport3D {//implements
 //    width = g3d.getRenderWidth();
 //    height = g3d.getRenderHeight();
 //    this.privateKey = privateKey;
-//    return (initializeOutput(viewer, privateKey, g3d, params) ? exporter
+//    return (initializeOutput(vwr, privateKey, g3d, params) ? exporter
 //        : null);
 //  }
 //
 //  @Override
-//  public boolean initializeOutput(Viewer viewer, double privateKey,
+//  public boolean initializeOutput(Viewer vwr, double privateKey,
 //                                  GData gdata, Map<String, Object> params) {
-//    return exporter.initializeOutput(viewer, privateKey, g3d, params);
+//    return exporter.initializeOutput(vwr, privateKey, g3d, params);
 //  }
 //
 //

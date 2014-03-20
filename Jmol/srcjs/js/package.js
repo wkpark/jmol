@@ -92,9 +92,9 @@ for (var i = 0; i < Jmol._coreFiles.length; i++)
 	ClazzLoader.jarClasspath (base + "corebinary.z.js",	[
     "java.io.DataInputStream",
     "$.PushbackInputStream",
+    "javajs.api.GenericBinaryDocument",
     "JU.BC",
-    "J.api.JmolDocument",
-    "J.io2.BinaryDocument"
+    "$.BinaryDocument"
 	]);
 
 	ClazzLoader.jarClasspath (base + "corepymol.z.js",	[
@@ -130,11 +130,10 @@ for (var i = 0; i < Jmol._coreFiles.length; i++)
 	]);
 
 	ClazzLoader.jarClasspath (base + "corezip.z.js",	[
+		"javajs.api.GenericZipInputStream",
 		"J.io2.JmolUtil",
-		"J.io2.ZipUtil",
-		"J.io2.ZipTools",
-		"$.ZInputStream",
-		"$.JmolZipInputStream"
+		"JU.ZipTools",
+		"$.ZInputStream"
 	]);
 
 	ClazzLoader.jarClasspath (base + "corebio.z.js",	[

@@ -15,7 +15,7 @@ public interface GenericPlatform extends FontManager {
   public final static int CURSOR_HAND = 12;
   public final static int CURSOR_MOVE = 13;
 
-  void setViewer(PlatformViewer viewer, Object display);
+  void setViewer(PlatformViewer vwr, Object display);
   
   /////// Display
 

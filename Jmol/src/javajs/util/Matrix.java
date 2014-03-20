@@ -220,7 +220,7 @@ public class Matrix implements Cloneable {
    */
 
   public Matrix inverse() {
-    return new LUDecomp().solve(identity(m, m));
+    return new LUDecomp(m, n).solve(identity(m, m), n);
   }
 
   /**
@@ -252,6 +252,31 @@ public class Matrix implements Cloneable {
     for (int i = Math.min(m, n); --i >= 0;)
       xa[i][i] = 1;
     return x;
+  }
+
+  /**
+   * similarly to M3/M4 standard rotation/translation matrix
+   * we set a rotationTranslation matrix to be:
+   * 
+   * [   nxn rot    nx1 trans
+   * 
+   *     1xn  0     1x1 1      ]
+   * 
+   * 
+   * @return rotation matrix
+   */
+  public Matrix getRotation() {
+    return getSubmatrix(0, 0, m - 1, n - 1);
+  }
+
+  public Matrix getTranslation() {
+    return getSubmatrix(0, n - 1, m - 1, 1);
+  }
+
+  public static Matrix newT(P3 r, boolean asColumn) {
+    return (asColumn ? new Matrix(new double[][] { new double[] { r.x },
+        new double[] { r.y }, new double[] { r.z } }, 3, 1) : new Matrix(
+        new double[][] { new double[] { r.x, r.y, r.z } }, 1, 3));
   }
 
   @Override
@@ -311,11 +336,13 @@ public class Matrix implements Cloneable {
 
     /**
      * LU Decomposition Structure to access L, U and piv.
+     * @param m 
+     * @param n 
      * 
      */
 
-    LUDecomp() {
-
+    protected LUDecomp(int m, int n) {
+      
       // Use a "left-looking", dot-product, Crout/Doolittle algorithm.
 
       LU = getArrayCopy();
@@ -385,12 +412,11 @@ public class Matrix implements Cloneable {
      * 
      * @param b
      *        A Matrix with as many rows as A and any number of columns.
+     * @param n 
      * @return X so that L*U*X = B(piv,:) or null for wrong size or singular matrix
      */
 
-    Matrix solve(Matrix b) {
-      if (b.m != m)
-        return null;
+    protected Matrix solve(Matrix b, int n) {
       for (int j = 0; j < n; j++)
         if (LU[j][j] == 0)
           return null; // matrix is singular
@@ -416,31 +442,6 @@ public class Matrix implements Cloneable {
       }
       return x;
     }
-  }
-
-  /**
-   * similarly to M3/M4 standard rotation/translation matrix
-   * we set a rotationTranslation matrix to be:
-   * 
-   * [   nxn rot    nx1 trans
-   * 
-   *     1xn  0     1x1 1      ]
-   * 
-   * 
-   * @return rotation matrix
-   */
-  public Matrix getRotation() {
-    return getSubmatrix(0, 0, m - 1, n - 1);
-  }
-
-  public Matrix getTranslation() {
-    return getSubmatrix(0, n - 1, m - 1, 1);
-  }
-
-  public static Matrix newT(P3 r, boolean asColumn) {
-    return (asColumn ? new Matrix(new double[][] { new double[] { r.x },
-        new double[] { r.y }, new double[] { r.z } }, 3, 1) : new Matrix(
-        new double[][] { new double[] { r.x, r.y, r.z } }, 1, 3));
   }
 
 }

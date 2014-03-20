@@ -32,7 +32,7 @@ public abstract class JmolMultiTouchClientAdapter implements JmolMultiTouchAdapt
 
   protected JmolMultiTouchClient actionManager;
   protected boolean isServer;
-  private Viewer viewer;
+  private Viewer vwr;
   private int[] screen = new int[2];  
   
   @Override
@@ -40,17 +40,17 @@ public abstract class JmolMultiTouchClientAdapter implements JmolMultiTouchAdapt
     return isServer;
   }
   
-  // methods Jmol needs -- from viewer.ActionManagerMT
+  // methods Jmol needs -- from vwr.ActionManagerMT
 
   @Override
   public abstract void dispose();
 
   @Override
-  public boolean setMultiTouchClient(Viewer viewer, JmolMultiTouchClient client,
+  public boolean setMultiTouchClient(Viewer vwr, JmolMultiTouchClient client,
                               boolean isSimulation) {
-    this.viewer = viewer;
+    this.vwr = vwr;
     actionManager = client; // ActionManagerMT
-    viewer.apiPlatform.getFullScreenDimensions(viewer.getDisplay(), screen);
+    vwr.apiPlatform.getFullScreenDimensions(vwr.getDisplay(), screen);
     if (Logger.debugging)
       Logger.debug("screen resolution: " + screen[0] + " x " + screen[1]);
     return true;
@@ -66,6 +66,6 @@ public abstract class JmolMultiTouchClientAdapter implements JmolMultiTouchAdapt
   protected void fixXY(float x, float y, boolean isAbsolute) {
     ptTemp.set(x * screen[0], y * screen[1], Float.NaN);
     if (isAbsolute)
-      viewer.apiPlatform.convertPointFromScreen(viewer.getDisplay(), ptTemp);
+      vwr.apiPlatform.convertPointFromScreen(vwr.getDisplay(), ptTemp);
   }
 } 

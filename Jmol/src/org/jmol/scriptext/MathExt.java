@@ -77,7 +77,7 @@ import org.jmol.viewer.Viewer;
 
 public class MathExt implements JmolMathExtension {
   
-  private Viewer viewer;
+  private Viewer vwr;
   private ScriptEval e;
 
   public MathExt() {
@@ -87,7 +87,7 @@ public class MathExt implements JmolMathExtension {
   @Override
   public JmolMathExtension init(Object se) {
     e = (ScriptEval) se;
-    viewer = e.viewer;
+    vwr = e.vwr;
     return this;
   }
 
@@ -276,7 +276,7 @@ public class MathExt implements JmolMathExtension {
   private boolean evaluateCache(ScriptMathProcessor mp, SV[] args) {
     if (args.length > 0)
       return false;
-    return mp.addXMap(viewer.cacheList());
+    return mp.addXMap(vwr.cacheList());
   }
 
   private boolean evaluateColor(ScriptMathProcessor mp, SV[] args) {
@@ -326,7 +326,7 @@ public class MathExt implements JmolMathExtension {
       return mp.addXStr(sb.toString());
     }
 
-    ColorEncoder ce = (isIsosurface ? null : viewer
+    ColorEncoder ce = (isIsosurface ? null : vwr
         .getColorEncoder(colorScheme));
     if (!isIsosurface && ce == null)
       return mp.addXStr("");
@@ -338,7 +338,7 @@ public class MathExt implements JmolMathExtension {
     boolean haveRange = (hi != Float.MAX_VALUE);
     if (!haveRange && colorScheme.length() == 0) {
       value = lo;
-      float[] range = viewer.getCurrentColorRange();
+      float[] range = vwr.getCurrentColorRange();
       lo = range[0];
       hi = range[1];
     }
@@ -346,7 +346,7 @@ public class MathExt implements JmolMathExtension {
       // isosurface color scheme      
       String id = colorScheme.substring(1);
       Object[] data = new Object[] { id, null };
-      if (!viewer.getShapePropertyData(JC.SHAPE_ISOSURFACE, "colorEncoder",
+      if (!vwr.getShapePropertyData(JC.SHAPE_ISOSURFACE, "colorEncoder",
           data))
         return mp.addXStr("");
       ce = (ColorEncoder) data[1];
@@ -397,7 +397,7 @@ public class MathExt implements JmolMathExtension {
       isSmiles = smiles1.equalsIgnoreCase("SMILES");
       try {
         if (isSmiles)
-          smiles1 = viewer.getSmiles(bs1);
+          smiles1 = vwr.getSmiles(bs1);
       } catch (Exception ex) {
         e.evalError(ex.getMessage(), null);
       }
@@ -409,14 +409,14 @@ public class MathExt implements JmolMathExtension {
         if (args.length != 3)
           return false;
         if (bs1 == null && bs2 == null)
-          return mp.addXStr(viewer.getSmilesMatcher()
+          return mp.addXStr(vwr.getSmilesMatcher()
               .getRelationship(smiles1, smiles2).toUpperCase());
-        String mf1 = (bs1 == null ? viewer.getSmilesMatcher()
+        String mf1 = (bs1 == null ? vwr.getSmilesMatcher()
             .getMolecularFormula(smiles1, false) : JmolMolecule
-            .getMolecularFormula(viewer.getModelSet().atoms, bs1, false));
-        String mf2 = (bs2 == null ? viewer.getSmilesMatcher()
+            .getMolecularFormula(vwr.getModelSet().atoms, bs1, false));
+        String mf2 = (bs2 == null ? vwr.getSmilesMatcher()
             .getMolecularFormula(smiles2, false) : JmolMolecule
-            .getMolecularFormula(viewer.getModelSet().atoms, bs2, false));
+            .getMolecularFormula(vwr.getModelSet().atoms, bs2, false));
         if (!mf1.equals(mf2))
           return mp.addXStr("NONE");
         if (bs1 != null)
@@ -424,7 +424,7 @@ public class MathExt implements JmolMathExtension {
         boolean check;
         if (bs2 == null) {
           // note: find smiles1 IN smiles2 here
-          check = (viewer.getSmilesMatcher().areEqual(smiles2, smiles1) > 0);
+          check = (vwr.getSmilesMatcher().areEqual(smiles2, smiles1) > 0);
         } else {
           check = (((BS) e.getSmilesExt().getSmilesMatches(smiles1, null, bs2, null, false, true))
               .nextSetBit(0) >= 0);
@@ -437,9 +437,9 @@ public class MathExt implements JmolMathExtension {
             if (smiles1.indexOf("@") >= 0
                 && (bs2 != null || smiles2.indexOf("@") >= 0)) {
               // reverse chirality centers
-              smiles1 = viewer.getSmilesMatcher().reverseChirality(smiles1);
+              smiles1 = vwr.getSmilesMatcher().reverseChirality(smiles1);
               if (bs2 == null) {
-                check = (viewer.getSmilesMatcher().areEqual(smiles1, smiles2) > 0);
+                check = (vwr.getSmilesMatcher().areEqual(smiles1, smiles2) > 0);
               } else {
                 check = (((BS) e.getSmilesExt().getSmilesMatches(smiles1, null, bs2, null,
                     false, true)).nextSetBit(0) >= 0);
@@ -449,7 +449,7 @@ public class MathExt implements JmolMathExtension {
             }
             // remove all stereochemistry from SMILES string
             if (bs2 == null) {
-              check = (viewer.getSmilesMatcher().areEqual(
+              check = (vwr.getSmilesMatcher().areEqual(
                   "/nostereo/" + smiles2, smiles1) > 0);
             } else {
               Object ret = e.getSmilesExt().getSmilesMatches("/nostereo/" + smiles1, null, bs2,
@@ -612,19 +612,19 @@ public class MathExt implements JmolMathExtension {
       fmin = JC.DEFAULT_MIN_CONNECT_DISTANCE;
     }
     if (atoms1 == null)
-      atoms1 = viewer.getAllAtoms();
+      atoms1 = vwr.getAllAtoms();
     if (haveDecimal && atoms2 == null)
       atoms2 = atoms1;
     if (atoms2 != null) {
       BS bsBonds = new BS();
-      viewer.makeConnections(fmin, fmax, order, T.identify, atoms1, atoms2,
+      vwr.makeConnections(fmin, fmax, order, T.identify, atoms1, atoms2,
           bsBonds, isBonds, false, 0);
       return mp.addX(SV.newV(
           T.bitset,
-          new BondSet(bsBonds, viewer.getAtomIndices(viewer.getAtomBits(
+          new BondSet(bsBonds, vwr.getAtomIndices(vwr.getAtomBits(
               T.bonds, bsBonds)))));
     }
-    return mp.addXBs(viewer.modelSet.getAtomsConnected(min, max, order, atoms1));
+    return mp.addXBs(vwr.ms.getAtomsConnected(min, max, order, atoms1));
   }
 
   private boolean evaluateContact(ScriptMathProcessor mp, SV[] args) {
@@ -697,7 +697,7 @@ public class MathExt implements JmolMathExtension {
 
     if (selected.indexOf("data2d_") == 0) {
       // tab, newline separated data
-      float[][] f1 = viewer.getDataFloat2D(selected);
+      float[][] f1 = vwr.getDataFloat2D(selected);
       if (f1 == null)
         return mp.addXStr("");
       if (args.length == 2 && args[1].tok == T.integer) {
@@ -714,10 +714,10 @@ public class MathExt implements JmolMathExtension {
     // parallel mp.addition of float property data sets
 
     if (selected.indexOf("property_") == 0) {
-      float[] f1 = viewer.getDataFloat(selected);
+      float[] f1 = vwr.getDataFloat(selected);
       if (f1 == null)
         return mp.addXStr("");
-      float[] f2 = (type.indexOf("property_") == 0 ? viewer.getDataFloat(type)
+      float[] f2 = (type.indexOf("property_") == 0 ? vwr.getDataFloat(type)
           : null);
       if (f2 != null) {
         f1 = AU.arrayCopyF(f1, -1);
@@ -730,11 +730,11 @@ public class MathExt implements JmolMathExtension {
     // some other data type -- just return it
 
     if (args.length == 1) {
-      Object[] data = viewer.getData(selected);
+      Object[] data = vwr.getData(selected);
       return mp.addXStr(data == null ? "" : "" + data[1]);
     }
     // {selected atoms} XYZ, MOL, PDB file format
-    return mp.addXStr(viewer.getData(selected, type));
+    return mp.addXStr(vwr.getData(selected, type));
   }
 
   private boolean evaluateDot(ScriptMathProcessor mp, SV[] args, int tok,
@@ -769,7 +769,7 @@ public class MathExt implements JmolMathExtension {
           bs2 = (x2.tok == T.bitset ? SV.bsSelectVar(x2) : null);
           //$FALL-THROUGH$
         case T.point3f:
-          Atom[] atoms = viewer.modelSet.atoms;
+          Atom[] atoms = vwr.ms.atoms;
           if (returnAtom) {
             float dMinMax = Float.NaN;
             int iMinMax = Integer.MAX_VALUE;
@@ -860,22 +860,22 @@ public class MathExt implements JmolMathExtension {
       }
     } else {
       BS bs = (args[0].value instanceof BS ? (BS) args[0].value : 
-        viewer.getAtomBits(T.resno, new Integer(args[0].asInt())));
+        vwr.getAtomBits(T.resno, new Integer(args[0].asInt())));
       switch (tok) {
       case T.point:
-        return mp.addXObj(viewer.getHelixData(bs, T.point));
+        return mp.addXObj(vwr.getHelixData(bs, T.point));
       case T.axis:
-        return mp.addXObj(viewer.getHelixData(bs, T.axis));
+        return mp.addXObj(vwr.getHelixData(bs, T.axis));
       case T.radius:
-        return mp.addXObj(viewer.getHelixData(bs, T.radius));
+        return mp.addXObj(vwr.getHelixData(bs, T.radius));
       case T.angle:
-        return mp.addXFloat(((Float) viewer.getHelixData(bs, T.angle))
+        return mp.addXFloat(((Float) vwr.getHelixData(bs, T.angle))
             .floatValue());
       case T.draw:
       case T.measure:
-        return mp.addXObj(viewer.getHelixData(bs, tok));
+        return mp.addXObj(vwr.getHelixData(bs, tok));
       case T.array:
-        String[] data = (String[]) viewer.getHelixData(bs, T.list);
+        String[] data = (String[]) vwr.getHelixData(bs, T.list);
         if (data == null)
           return false;
         return mp.addXAS(data);
@@ -910,8 +910,8 @@ public class MathExt implements JmolMathExtension {
     boolean isMF = sFind.equalsIgnoreCase("MF");
     try {
       if (isChemical) {
-        String data = (x1.tok == T.bitset ? viewer.getSmiles(SV.getBitSet(x1, false)) : SV.sValue(x1));
-        data = data.length() == 0 ? "" : viewer.getChemicalInfo(data, args.length > 1 ? T.getTokenFromName(flags.toLowerCase()) : null);
+        String data = (x1.tok == T.bitset ? vwr.getSmiles(SV.getBitSet(x1, false)) : SV.sValue(x1));
+        data = data.length() == 0 ? "" : vwr.getChemicalInfo(data, args.length > 1 ? T.getTokenFromName(flags.toLowerCase()) : null);
         if (data.endsWith("\n"))
           data = data.substring(0, data.length() - 1);
         if (data.startsWith("InChI"))
@@ -932,7 +932,7 @@ public class MathExt implements JmolMathExtension {
           if (bs2 != null)
             return false;
           if (flags.equalsIgnoreCase("mf")) {
-            ret = viewer.getSmilesMatcher().getMolecularFormula(smiles,
+            ret = vwr.getSmilesMatcher().getMolecularFormula(smiles,
                 isSearch);
           } else {
             ret = e.getSmilesExt().getSmilesMatches(flags, smiles, null, null, isSearch, !isAll);
@@ -941,19 +941,19 @@ public class MathExt implements JmolMathExtension {
         case T.bitset:
           if (isMF)
             return mp.addXStr(JmolMolecule.getMolecularFormula(
-                viewer.getModelSet().atoms, (BS) x1.value, false));
+                vwr.getModelSet().atoms, (BS) x1.value, false));
           if (isSequence)
-            return mp.addXStr(viewer.getSmilesOpt((BS) x1.value, -1, -1, false,
+            return mp.addXStr(vwr.getSmilesOpt((BS) x1.value, -1, -1, false,
                 true, isAll, isAll, false));
           if (isSmiles || isSearch)
             sFind = flags;
           BS bsMatch3D = bs2;
           if (asBonds) {
             // this will return a single match
-            int[][] map = viewer.getSmilesMatcher().getCorrelationMaps(sFind,
-                viewer.modelSet.atoms, viewer.getAtomCount(), (BS) x1.value,
+            int[][] map = vwr.getSmilesMatcher().getCorrelationMaps(sFind,
+                vwr.ms.atoms, vwr.getAtomCount(), (BS) x1.value,
                 !isSmiles, true);
-            ret = (map.length > 0 ? viewer.getDihedralMap(map[0]) : new int[0]);
+            ret = (map.length > 0 ? vwr.getDihedralMap(map[0]) : new int[0]);
           } else {
             ret = e.getSmilesExt().getSmilesMatches(sFind, null, (BS) x1.value, bsMatch3D,
                 !isSmiles, !isAll);
@@ -1055,7 +1055,7 @@ public class MathExt implements JmolMathExtension {
               SV.bsSelectVar(args[pt]) };
         break;
       case T.string:
-        if (viewer.checkPropertyParameter(propertyName))
+        if (vwr.checkPropertyParameter(propertyName))
           propertyValue = args[pt++].value;
         break;
       }
@@ -1069,9 +1069,9 @@ public class MathExt implements JmolMathExtension {
         return mp.addXStr("");
       propertyValue = BSUtil.newAndSetBit(iAtom);
     }
-    Object property = viewer.getProperty(null, propertyName, propertyValue);
+    Object property = vwr.getProperty(null, propertyName, propertyValue);
     if (pt < args.length)
-      property = viewer.extractProperty(property, args, pt);
+      property = vwr.extractProperty(property, args, pt);
     if (isAtomProperty && property instanceof List)
       property = (((List<?>) property).size() > 0 ? ((List<?>) property).get(0)
           : "");
@@ -1260,8 +1260,8 @@ public class MathExt implements JmolMathExtension {
     int nBytesMax = (args.length == 2 ? args[1].asInt() : -1);
     boolean asBytes = (args.length == 2 && args[1].tok == T.on);
     if (asBytes)
-      return mp.addXMap(viewer.getFileAsMap(file));
-    if (viewer.isJS && file.startsWith("?")) {
+      return mp.addXMap(vwr.getFileAsMap(file));
+    if (vwr.isJS && file.startsWith("?")) {
       if (isFile)
         return mp.addXStr("");
       file = e.loadFileAsync("load()_", file, mp.oPt, true);
@@ -1272,7 +1272,7 @@ public class MathExt implements JmolMathExtension {
       // The evaluation will be repeated up to this point, so for example,
       // x = (i++) + load("?") would increment i twice.
     }
-    return mp.addXStr(isFile ? viewer.getFilePath(file, false) : viewer.getFileAsString4(file, nBytesMax,
+    return mp.addXStr(isFile ? vwr.getFilePath(file, false) : vwr.getFileAsString4(file, nBytesMax,
         false, false, true));
   }
 
@@ -1309,7 +1309,7 @@ public class MathExt implements JmolMathExtension {
   //    if (x1.tok != Token.bitset)
   //      return false;
   //    String type = (args.length == 0 ? null : ScriptVariable.sValue(args[0]));
-  //    return mp.addX(viewer.getVolume((BitSet) x1.value, type));
+  //    return mp.addX(vwr.getVolume((BitSet) x1.value, type));
   //  }
 
   private boolean evaluateMeasure(ScriptMathProcessor mp, SV[] args, int tok)
@@ -1392,7 +1392,7 @@ public class MathExt implements JmolMathExtension {
         return mp.addXStr("");
       rd = (vdw == Float.MAX_VALUE ? new RadiusData(rangeMinMax, 0, null, null)
           : new RadiusData(null, vdw, EnumType.FACTOR, EnumVdw.AUTO));
-      return mp.addXObj((viewer.newMeasurementData(null, points)).set(0, null, rd,
+      return mp.addXObj((vwr.newMeasurementData(null, points)).set(0, null, rd,
           strFormat, units, null, isAllConnected, isNotConnected, null, true,
           0, (short) 0, null).getMeasurements(asArray, asMinArray));
     case T.angle:
@@ -1447,7 +1447,7 @@ public class MathExt implements JmolMathExtension {
     if (t456 == null && t < 1e6)
       t456 = P3.new3(t, t, t);
     BS bs = SV.getBitSet(mp.getX(), false);
-    return mp.addXList(viewer.getModulationList(bs, type, t456));
+    return mp.addXList(vwr.getModulationList(bs, type, t456));
   }
 
   private boolean evaluatePlane(ScriptMathProcessor mp, SV[] args, int tok)
@@ -1465,7 +1465,7 @@ public class MathExt implements JmolMathExtension {
       if (args[0].tok == T.bitset) {
         BS bs = SV.getBitSet(args[0], false);
         if (bs.cardinality() == 3) {
-          List<P3> pts = viewer.getAtomPointVector(bs);
+          List<P3> pts = vwr.getAtomPointVector(bs);
           V3 vNorm = new V3();
           V3 vAB = new V3();
           V3 vAC = new V3();
@@ -1646,7 +1646,7 @@ public class MathExt implements JmolMathExtension {
         && args[2].asBoolean());
     String input = (buttonArray != null ? null : args.length >= 2 ? SV
         .sValue(args[1]) : "OK");
-    String s = "" + viewer.prompt(label, input, buttonArray, asButtons);
+    String s = "" + vwr.prompt(label, input, buttonArray, asButtons);
     return (asButtons && buttonArray != null ? mp
         .addXInt(Integer.parseInt(s) + 1) : mp.addXStr(s));
   }
@@ -1728,7 +1728,7 @@ public class MathExt implements JmolMathExtension {
     P4 p4 = null;
     switch (nArgs) {
     case 0:
-      return mp.addXPt4(Quat.newQ(viewer.getRotationQuaternion()).toPoint4f());
+      return mp.addXPt4(Quat.newQ(vwr.getRotationQuaternion()).toPoint4f());
     case 1:
     default:
       if (tok == T.quaternion && args[0].tok == T.varray) {
@@ -1737,14 +1737,14 @@ public class MathExt implements JmolMathExtension {
         q = (mean instanceof Quat ? (Quat) mean : null);
         break;
       } else if (tok == T.quaternion && args[0].tok == T.bitset) {
-        qs = viewer.getAtomGroupQuaternions((BS) args[0].value, nMax);
+        qs = vwr.getAtomGroupQuaternions((BS) args[0].value, nMax);
       } else if (args[0].tok == T.matrix3f) {
         q = Quat.newM((M3) args[0].value);
       } else if (args[0].tok == T.point4f) {
         p4 = (P4) args[0].value;
       } else {
         String s = SV.sValue(args[0]);
-        Object v = Escape.uP(s.equalsIgnoreCase("best") ? viewer
+        Object v = Escape.uP(s.equalsIgnoreCase("best") ? vwr
             .getOrientationText(T.best, null) : s);
         if (!(v instanceof P4))
           return false;
@@ -1768,9 +1768,9 @@ public class MathExt implements JmolMathExtension {
           return mp.addXFloat(stddev[0]);
         }
         if (args[0].tok == T.bitset && args[1].tok == T.bitset) {
-          Quat[] data1 = viewer.getAtomGroupQuaternions((BS) args[0].value,
+          Quat[] data1 = vwr.getAtomGroupQuaternions((BS) args[0].value,
               Integer.MAX_VALUE);
-          Quat[] data2 = viewer.getAtomGroupQuaternions((BS) args[1].value,
+          Quat[] data2 = vwr.getAtomGroupQuaternions((BS) args[1].value,
               Integer.MAX_VALUE);
           qs = Quat.div(data2, data1, nMax, isRelative);
           break;
@@ -1785,14 +1785,14 @@ public class MathExt implements JmolMathExtension {
       break;
     case 3:
       if (args[0].tok == T.point4f) {
-        P3 pt = (args[2].tok == T.point3f ? (P3) args[2].value : viewer
+        P3 pt = (args[2].tok == T.point3f ? (P3) args[2].value : vwr
             .getAtomSetCenter((BS) args[2].value));
         return mp.addXStr(Escape.drawQuat(Quat.newP4((P4) args[0].value), "q",
             SV.sValue(args[1]), pt, 1f));
       }
       P3[] pts = new P3[3];
       for (int i = 0; i < 3; i++)
-        pts[i] = (args[i].tok == T.point3f ? (P3) args[i].value : viewer
+        pts[i] = (args[i].tok == T.point3f ? (P3) args[i].value : vwr
             .getAtomSetCenter((BS) args[i].value));
       q = Quat.getQuaternionFrame(pts[0], pts[1], pts[2]);
       break;
@@ -1899,12 +1899,12 @@ public class MathExt implements JmolMathExtension {
       String appID = (args.length == 2 ? SV.sValue(args[1]) : ".");
       // options include * > . or an appletID with or without "jmolApplet"
       if (!appID.equals("."))
-        sb.append(viewer.jsEval(appID + "\1" + s));
+        sb.append(vwr.jsEval(appID + "\1" + s));
       if (appID.equals(".") || appID.equals("*"))
         e.runScriptBuffer(s, sb);
       break;
     case T.javascript:
-      sb.append(viewer.jsEval(s));
+      sb.append(vwr.jsEval(s));
       break;
     }
     s = sb.toString();
@@ -1986,11 +1986,11 @@ public class MathExt implements JmolMathExtension {
       if (x.tok == T.bitset) {
         BS bsSelected = SV.bsSelectVar(x);
         sArg = "\n";
-        int modelCount = viewer.getModelCount();
+        int modelCount = vwr.getModelCount();
         s = "";
         for (int i = 0; i < modelCount; i++) {
           s += (i == 0 ? "" : "\n");
-          BS bs = viewer.getModelUndeletedAtomsBitSet(i);
+          BS bs = vwr.getModelUndeletedAtomsBitSet(i);
           bs.and(bsSelected);
           s += Escape.eBS(bs);
         }
@@ -2024,8 +2024,8 @@ public class MathExt implements JmolMathExtension {
       try {
         BS bsSelected = (args.length == 2 && args[1].tok == T.bitset ? SV
             .bsSelectVar(args[1]) : null);
-        bs = viewer.getSmilesMatcher().getSubstructureSet(pattern,
-            viewer.getModelSet().atoms, viewer.getAtomCount(), bsSelected,
+        bs = vwr.getSmilesMatcher().getSubstructureSet(pattern,
+            vwr.getModelSet().atoms, vwr.getAtomCount(), bsSelected,
             tok != T.smiles, false);
       } catch (Exception ex) {
         e.evalError(ex.getMessage(), null);
@@ -2043,7 +2043,7 @@ public class MathExt implements JmolMathExtension {
     if (x1 != null && x1.tok != T.bitset)
       return false;
     BS bs = (x1 != null ? (BS) x1.value : args.length > 2
-        && args[1].tok == T.bitset ? (BS) args[1].value : viewer.getAllAtoms());
+        && args[1].tok == T.bitset ? (BS) args[1].value : vwr.getAllAtoms());
     String xyz;
     switch (args[0].tok) {
     case T.string:
@@ -2058,7 +2058,7 @@ public class MathExt implements JmolMathExtension {
     int iOp = (xyz == null ? args[0].asInt() : 0);
     P3 pt = (args.length > 1 ? mp.ptValue(args[1], true) : null);
     if (args.length == 2 && !Float.isNaN(pt.x))
-      return mp.addXObj(viewer.getSymmetryInfo(bs, xyz, iOp, pt, null, null,
+      return mp.addXObj(vwr.getSymmetryInfo(bs, xyz, iOp, pt, null, null,
           T.point));
     String desc = (args.length == 1 ? "" : SV.sValue(args[args.length - 1]))
         .toLowerCase();
@@ -2085,7 +2085,7 @@ public class MathExt implements JmolMathExtension {
       tok = T.center;
     }
     return mp
-        .addXObj(viewer.getSymmetryInfo(bs, xyz, iOp, pt, null, desc, tok));
+        .addXObj(vwr.getSymmetryInfo(bs, xyz, iOp, pt, null, desc, tok));
   }
 
   private boolean evaluateTensor(ScriptMathProcessor mp, SV[] args)
@@ -2099,7 +2099,7 @@ public class MathExt implements JmolMathExtension {
     BS bs = SV.getBitSet(mp.getX(), false);
     String tensorType = (args.length == 0 ? null : SV.sValue(args[0])
         .toLowerCase());
-    JmolNMRInterface calc = viewer.getNMRCalculation();
+    JmolNMRInterface calc = vwr.getNMRCalculation();
     if ("unique".equals(tensorType))
       return mp.addXBs(calc.getUniqueTensorSet(bs));
     String infoType = (args.length < 2 ? null : SV.sValue(args[1])
@@ -2156,7 +2156,7 @@ public class MathExt implements JmolMathExtension {
       if (i != 3 || !(args[1].value instanceof BS)
           || !(args[2].value instanceof BS))
         return false;
-      return mp.addXBs(viewer.getBranchBitSet(
+      return mp.addXBs(vwr.getBranchBitSet(
           ((BS) args[2].value).nextSetBit(0),
           ((BS) args[1].value).nextSetBit(0), true));
     case T.smiles:
@@ -2228,11 +2228,11 @@ public class MathExt implements JmolMathExtension {
       case T.helix:
       case T.sheet:
       case T.boundbox:
-        return mp.addXBs(viewer.getAtomBits(tok, null));
+        return mp.addXBs(vwr.getAtomBits(tok, null));
       case T.basepair:
-        return mp.addXBs(viewer.getAtomBits(tok, ""));
+        return mp.addXBs(vwr.getAtomBits(tok, ""));
       case T.spec_seqcode:
-        return mp.addXBs(viewer.getAtomBits(T.sequence, withinStr));
+        return mp.addXBs(vwr.getAtomBits(T.sequence, withinStr));
       }
       return false;
     case 2:
@@ -2245,7 +2245,7 @@ public class MathExt implements JmolMathExtension {
       case T.atomtype:
       case T.basepair:
       case T.sequence:
-        return mp.addXBs(viewer.getAtomBits(tok,
+        return mp.addXBs(vwr.getAtomBits(tok,
             SV.sValue(args[args.length - 1])));
       }
       break;
@@ -2283,22 +2283,22 @@ public class MathExt implements JmolMathExtension {
     if (i > 0 && plane == null && pt == null && !(args[i].value instanceof BS))
       return false;
     if (plane != null)
-      return mp.addXBs(viewer.getAtomsNearPlane(distance, plane));
+      return mp.addXBs(vwr.getAtomsNearPlane(distance, plane));
     if (pt != null)
-      return mp.addXBs(viewer.getAtomsNearPt(distance, pt));
+      return mp.addXBs(vwr.getAtomsNearPt(distance, pt));
     bs = (args[i].tok == T.bitset ? SV.bsSelectVar(args[i]) : null);
     if (tok == T.sequence)
-      return mp.addXBs(viewer.getSequenceBits(withinStr, bs));
+      return mp.addXBs(vwr.getSequenceBits(withinStr, bs));
     if (bs == null)
       bs = new BS();
     if (!isDistance)
-      return mp.addXBs(viewer.getAtomBits(tok, bs));
+      return mp.addXBs(vwr.getAtomBits(tok, bs));
     if (isWithinGroup)
-      return mp.addXBs(viewer.getGroupsWithin((int) distance, bs));
+      return mp.addXBs(vwr.getGroupsWithin((int) distance, bs));
     if (isVdw)
       rd = new RadiusData(null, (distance > 10 ? distance / 100 : distance),
           (distance > 10 ? EnumType.FACTOR : EnumType.OFFSET), EnumVdw.AUTO);
-    return mp.addXBs(viewer.getAtomsWithinRadius(distance, bs,
+    return mp.addXBs(vwr.getAtomsWithinRadius(distance, bs,
         isWithinModelSet, rd));
   }
 
@@ -2307,7 +2307,7 @@ public class MathExt implements JmolMathExtension {
     if (args.length == 0)
       return false;
     if (args.length == 1 && args[0].tok == T.string && args[0].asString().equalsIgnoreCase("PNGJ"))
-      return mp.addXMap(viewer.getFileAsMap(null));
+      return mp.addXMap(vwr.getFileAsMap(null));
     return mp.addXStr(e.getCmdExt().write(args));
   }
 
@@ -2316,11 +2316,11 @@ public class MathExt implements JmolMathExtension {
   private BS getAtomsNearSurface(float distance, String surfaceId) {
     Object[] data = new Object[] { surfaceId, null, null };
     if (e.getShapePropertyData(JC.SHAPE_ISOSURFACE, "getVertices", data))
-      return viewer.getAtomsNearPts(distance, (P3[]) data[1], (BS) data[2]);
+      return vwr.getAtomsNearPts(distance, (P3[]) data[1], (BS) data[2]);
     data[1] = Integer.valueOf(0);
     data[2] = Integer.valueOf(-1);
     if (e.getShapePropertyData(JC.SHAPE_DRAW, "getCenter", data))
-      return viewer.getAtomsNearPt(distance, (P3) data[2]);
+      return vwr.getAtomsNearPt(distance, (P3) data[2]);
     return new BS();
   }
 
@@ -2568,15 +2568,15 @@ public class MathExt implements JmolMathExtension {
     BS bs;
     if (bsB == null) {
       // default is within just one model when {B} is missing
-      bsB = BSUtil.setAll(viewer.getAtomCount());
-      BSUtil.andNot(bsB, viewer.getDeletedAtoms());
+      bsB = BSUtil.setAll(vwr.getAtomCount());
+      BSUtil.andNot(bsB, vwr.getDeletedAtoms());
       bsB.andNot(bsA);
       withinAllModels = false;
     } else {
       // two atom sets specified; within ALL MODELS here
       bs = BSUtil.copy(bsA);
       bs.or(bsB);
-      int nModels = viewer.getModelBitSet(bs, false).cardinality();
+      int nModels = vwr.getModelBitSet(bs, false).cardinality();
       withinAllModels = (nModels > 1);
       if (warnMultiModel && nModels > 1 && !e.tQuiet)
         e.showString(GT
@@ -2586,17 +2586,17 @@ public class MathExt implements JmolMathExtension {
     if (!bsA.equals(bsB)) {
       boolean setBfirst = (!localOnly || bsA.cardinality() < bsB.cardinality());
       if (setBfirst) {
-        bs = viewer.getAtomsWithinRadius(distance, bsA, withinAllModels,
+        bs = vwr.getAtomsWithinRadius(distance, bsA, withinAllModels,
             (Float.isNaN(distance) ? rd : null));
         bsB.and(bs);
       }
       if (localOnly) {
         // we can just get the near atoms for A as well.
-        bs = viewer.getAtomsWithinRadius(distance, bsB, withinAllModels,
+        bs = vwr.getAtomsWithinRadius(distance, bsB, withinAllModels,
             (Float.isNaN(distance) ? rd : null));
         bsA.and(bs);
         if (!setBfirst) {
-          bs = viewer.getAtomsWithinRadius(distance, bsA, withinAllModels,
+          bs = vwr.getAtomsWithinRadius(distance, bsA, withinAllModels,
               (Float.isNaN(distance) ? rd : null));
           bsB.and(bs);
         }

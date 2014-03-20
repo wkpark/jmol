@@ -53,24 +53,24 @@ public class ShapeManager {
   private GData gdata;
   private ModelSet modelSet;
   Shape[] shapes;
-  public Viewer viewer;
+  public Viewer vwr;
 
   /**
    * @j2sIgnore
    * 
-   * @param viewer
+   * @param vwr
    * @param modelSet
    */
-  public ShapeManager(Viewer viewer, ModelSet modelSet) {
+  public ShapeManager(Viewer vwr, ModelSet modelSet) {
     // from ParallelProcessor
-    this(viewer);
+    this(vwr);
     resetShapes();
     loadDefaultShapes(modelSet);
   }
 
-  ShapeManager(Viewer viewer) {
-    this.viewer = viewer;
-    gdata = viewer.getGraphicsData();
+  ShapeManager(Viewer vwr) {
+    this.vwr = vwr;
+    gdata = vwr.getGraphicsData();
   }
 
   // public methods 
@@ -89,18 +89,18 @@ public class ShapeManager {
   public Object getShapePropertyIndex(int shapeID, String propertyName, int index) {
     if (shapes == null || shapes[shapeID] == null)
       return null;
-    viewer.setShapeErrorState(shapeID, "get " + propertyName);
+    vwr.setShapeErrorState(shapeID, "get " + propertyName);
     Object result = shapes[shapeID].getProperty(propertyName, index);
-    viewer.setShapeErrorState(-1, null);
+    vwr.setShapeErrorState(-1, null);
     return result;
   }
 
   public boolean getShapePropertyData(int shapeID, String propertyName, Object[] data) {
     if (shapes == null || shapes[shapeID] == null)
       return false;
-    viewer.setShapeErrorState(shapeID, "get " + propertyName);
+    vwr.setShapeErrorState(shapeID, "get " + propertyName);
     boolean result = shapes[shapeID].getPropertyData(propertyName, data);
-    viewer.setShapeErrorState(-1, null);
+    vwr.setShapeErrorState(-1, null);
     return result;
   }
 
@@ -140,15 +140,15 @@ public class ShapeManager {
     Shape shape;
     if ((shape = (Shape) Interface.getInterface(className)) == null)
       return null;
-    viewer.setShapeErrorState(shapeID, "allocate");
-    shape.initializeShape(viewer, gdata, modelSet, shapeID);
-    viewer.setShapeErrorState(-1, null);
+    vwr.setShapeErrorState(shapeID, "allocate");
+    shape.initializeShape(vwr, gdata, modelSet, shapeID);
+    vwr.setShapeErrorState(-1, null);
     return shapes[shapeID] = shape;
   }
 
   public void refreshShapeTrajectories(int baseModel, BS bs, M4 mat) {
     Integer Imodel = Integer.valueOf(baseModel);
-    BS bsModelAtoms = viewer.getModelUndeletedAtomsBitSet(baseModel);
+    BS bsModelAtoms = vwr.getModelUndeletedAtomsBitSet(baseModel);
     for (int i = 0; i < JC.SHAPE_MAX; i++)
       if (shapes[i] != null)
         setShapePropertyBs(i, "refreshTrajectories", new Object[] { Imodel, bs, mat }, bsModelAtoms);    
@@ -160,7 +160,7 @@ public class ShapeManager {
   }
   
   public void resetShapes() {
-    if (!viewer.noGraphicsAllowed())
+    if (!vwr.noGraphicsAllowed())
       shapes = new Shape[JC.SHAPE_MAX];
   }
   
@@ -175,16 +175,16 @@ public class ShapeManager {
       return;
     if (bsSelected == null && 
         (shapeID != JC.SHAPE_STICKS || size != Integer.MAX_VALUE))
-      bsSelected = viewer.getSelectedAtoms();
+      bsSelected = vwr.getSelectedAtoms();
     if (rd != null && rd.value != 0 && rd.vdwType == EnumVdw.TEMP)
       modelSet.getBfactor100Lo();
-    viewer.setShapeErrorState(shapeID, "set size");
+    vwr.setShapeErrorState(shapeID, "set size");
     if (rd == null ? size != 0 : rd.value != 0)
       loadShape(shapeID);
     if (shapes[shapeID] != null) {
       shapes[shapeID].setShapeSizeRD(size, rd, bsSelected);
     }
-    viewer.setShapeErrorState(-1, null);
+    vwr.setShapeErrorState(-1, null);
   }
 
   public void setLabel(Object strLabel, BS bsSelection) {
@@ -203,10 +203,10 @@ public class ShapeManager {
     if (shapes == null || shapes[shapeID] == null)
       return;
     if (bsSelected == null)
-      bsSelected = viewer.getSelectedAtoms();
-    viewer.setShapeErrorState(shapeID, "set " + propertyName);
+      bsSelected = vwr.getSelectedAtoms();
+    vwr.setShapeErrorState(shapeID, "set " + propertyName);
     shapes[shapeID].setProperty(propertyName.intern(), value, bsSelected);
-    viewer.setShapeErrorState(-1, null);
+    vwr.setShapeErrorState(-1, null);
   }
 
   // methods local to Viewer and other managers
@@ -231,7 +231,7 @@ public class ShapeManager {
     Shape shape;
     Map<String, Object> map = null;
     if (modifiers != 0
-        && viewer.getBondPicking()
+        && vwr.getBondPicking()
         && (map = shapes[JC.SHAPE_STICKS].checkObjectClicked(x, y, modifiers,
             bsVisible, false)) != null)
       return map;
@@ -276,7 +276,7 @@ public class ShapeManager {
 
   void deleteVdwDependentShapes(BS bs) {
     if (bs == null)
-      bs = viewer.getSelectedAtoms();
+      bs = vwr.getSelectedAtoms();
     if (shapes[JC.SHAPE_ISOSURFACE] != null)
       shapes[JC.SHAPE_ISOSURFACE].setProperty("deleteVdw", null, bs);
     if (shapes[JC.SHAPE_CONTACT] != null)
@@ -369,7 +369,7 @@ public class ShapeManager {
     // in general f() does MORE than just check translucency. 
     // so isTranslucent = isTranslucent || f() would NOT work.
 
-    BS bs = viewer.getVisibleFramesBitSet();
+    BS bs = vwr.getVisibleFramesBitSet();
     
     // i=1 skips balls (0)
 
@@ -380,8 +380,8 @@ public class ShapeManager {
     // now et the JC.ATOM_IN_FRAME and JC.ATOM_NOTHIDDEN flags
     // along with the bonds flag.
     
-    boolean showHydrogens = viewer.getBoolean(T.showhydrogens);
-    BS bsDeleted = viewer.getDeletedAtoms();
+    boolean showHydrogens = vwr.getBoolean(T.showhydrogens);
+    BS bsDeleted = vwr.getDeletedAtoms();
     Atom[] atoms = modelSet.atoms;
     int flag0 = JC.ATOM_NOFLAGS & ~JC.VIS_BOND_FLAG;
     for (int i = modelSet.atomCount; --i >= 0;) {
@@ -417,38 +417,38 @@ public class ShapeManager {
   public int[] finalizeAtoms(BS bsAtoms, P3 ptOffset) {
     if (bsAtoms != null) {
       // translateSelected operation
-      P3 ptCenter = viewer.getAtomSetCenter(bsAtoms);
+      P3 ptCenter = vwr.getAtomSetCenter(bsAtoms);
       P3 pt = new P3();
-      viewer.transformPt3f(ptCenter, pt);
+      vwr.transformPt3f(ptCenter, pt);
       pt.add(ptOffset);
-      viewer.unTransformPoint(pt, pt);
+      vwr.unTransformPoint(pt, pt);
       pt.sub(ptCenter);
-      viewer.setAtomCoordsRelative(pt, bsAtoms);
+      vwr.setAtomCoordsRelative(pt, bsAtoms);
       ptOffset.set(0, 0, 0);
     }
     modelSet.getRenderable(bsRenderableAtoms);
     Object[] vibrationVectors = modelSet.vibrations;
     Atom[] atoms = modelSet.atoms;
-    boolean vibs = (vibrationVectors != null && viewer.isVibrationOn());
+    boolean vibs = (vibrationVectors != null && vwr.isVibrationOn());
     for (int i = bsRenderableAtoms.nextSetBit(0); i >= 0; i = bsRenderableAtoms.nextSetBit(i + 1)) {
       // note that this vibration business is not compatible with
       // PDB objects such as cartoons and traces, which 
       // use Cartesian coordinates, not screen coordinates
       Atom atom = atoms[i];
-      P3i screen = (vibs && atom.hasVibration() ? viewer
+      P3i screen = (vibs && atom.hasVibration() ? vwr
           .transformPtVib(atom, (Vibration) vibrationVectors[i])
-          : viewer.transformPt(atom));
+          : vwr.transformPt(atom));
       atom.sX = screen.x;
       atom.sY = screen.y;
       atom.sZ = screen.z;
       int d = Math.abs(atom.madAtom);
       if (d == Atom.MAD_GLOBAL)
-        d = (int) (viewer.getFloat(T.atoms) * 2000);
-      atom.sD = (short) viewer.scaleToScreen(screen.z, d);
+        d = (int) (vwr.getFloat(T.atoms) * 2000);
+      atom.sD = (short) vwr.scaleToScreen(screen.z, d);
     }
-    if (viewer.getSlabEnabled()) {
-      boolean slabByMolecule = viewer.getBoolean(T.slabbymolecule);
-      boolean slabByAtom = viewer.getBoolean(T.slabbyatom);
+    if (vwr.getSlabEnabled()) {
+      boolean slabByMolecule = vwr.getBoolean(T.slabbymolecule);
+      boolean slabByAtom = vwr.getBoolean(T.slabbyatom);
       int minZ = gdata.getSlab();
       int maxZ = gdata.getDepth();
       if (slabByMolecule) {
@@ -489,7 +489,7 @@ public class ShapeManager {
         }
       }
     }
-    if (modelSet.getAtomCount() == 0 || !viewer.getShowNavigationPoint())
+    if (modelSet.getAtomCount() == 0 || !vwr.getShowNavigationPoint())
       return null;
     // set min/max for navigation crosshair rendering
     int minX = Integer.MAX_VALUE;
@@ -516,7 +516,7 @@ public class ShapeManager {
   }
 
   public void setModelSet(ModelSet modelSet) {
-    this.modelSet = viewer.modelSet = modelSet;
+    this.modelSet = vwr.ms = modelSet;
   }
 
   /**
@@ -531,23 +531,23 @@ public class ShapeManager {
   }
 
   public void restrictSelected(boolean isBond, boolean doInvert) {
-    BS bsSelected = viewer.getSelectedAtomsNoSubset();
+    BS bsSelected = vwr.getSelectedAtomsNoSubset();
     if (doInvert) {
-      viewer.invertSelection();
-      BS bsSubset = viewer.getSelectionSubset();
+      vwr.invertSelection();
+      BS bsSubset = vwr.getSelectionSubset();
       if (bsSubset != null) {
-        bsSelected = viewer.getSelectedAtomsNoSubset();
+        bsSelected = vwr.getSelectedAtomsNoSubset();
         bsSelected.and(bsSubset);
-        viewer.select(bsSelected, false, 0, true);
-        BSUtil.invertInPlace(bsSelected, viewer.getAtomCount());
+        vwr.select(bsSelected, false, 0, true);
+        BSUtil.invertInPlace(bsSelected, vwr.getAtomCount());
         bsSelected.and(bsSubset);
       }
     }
-    BSUtil.andNot(bsSelected, viewer.getDeletedAtoms());
-    boolean bondmode = viewer.getBoolean(T.bondmodeor);
+    BSUtil.andNot(bsSelected, vwr.getDeletedAtoms());
+    boolean bondmode = vwr.getBoolean(T.bondmodeor);
 
     if (!isBond)
-      viewer.setBooleanProperty("bondModeOr", true);
+      vwr.setBooleanProperty("bondModeOr", true);
     setShapeSizeBs(JC.SHAPE_STICKS, 0, null, null);
     // wireframe will not operate on STRUTS even though they are
     // a form of bond order (see BondIteratoSelected)
@@ -557,7 +557,7 @@ public class ShapeManager {
     setShapePropertyBs(JC.SHAPE_STICKS, "type", Integer
         .valueOf(Edge.BOND_COVALENT_MASK), null);
     // also need to turn off backbones, ribbons, strands, cartoons
-    BS bs = viewer.getSelectedAtoms();
+    BS bs = vwr.getSelectedAtoms();
     for (int iShape = JC.SHAPE_MAX_SIZE_ZERO_ON_RESTRICT; --iShape >= 0;)
       if (iShape != JC.SHAPE_MEASURES && getShape(iShape) != null)
         setShapeSizeBs(iShape, 0, null, bs);
@@ -565,8 +565,8 @@ public class ShapeManager {
       setShapePropertyBs(JC.SHAPE_POLYHEDRA, "delete", bs, null);
     setLabel(null, bs);
     if (!isBond)
-      viewer.setBooleanProperty("bondModeOr", bondmode);
-    viewer.select(bsSelected, false, 0, true);
+      vwr.setBooleanProperty("bondModeOr", bondmode);
+    vwr.select(bsSelected, false, 0, true);
   }
 
 }

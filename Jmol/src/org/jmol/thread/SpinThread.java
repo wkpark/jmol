@@ -59,9 +59,9 @@ public class SpinThread extends JmolThread {
   
   @SuppressWarnings("unchecked")
   @Override
-  public int setManager(Object manager, Viewer viewer, Object params) {
+  public int setManager(Object manager, Viewer vwr, Object params) {
     transformManager = (TransformManager) manager;
-    setViewer(viewer, "SpinThread");
+    setViewer(vwr, "SpinThread");
     Object[] options = (Object[]) params;
 
     //f//loat endDegrees, List<P3> endPositions, float[] dihedralList, BS bsAtoms, boolean isNav,
@@ -70,7 +70,7 @@ public class SpinThread extends JmolThread {
     //Float.valueOf(endDegrees), endPositions, dihedralList,
     //bsAtoms, Boolean.valueOf(isGesture)} );
 
-    //        spinThread = new SpinThread(this, viewer, NULL 
+    //        spinThread = new SpinThread(this, vwr, NULL 
     //            === 0, null, null, null, true, false);
 
     if (options == null) {
@@ -80,7 +80,7 @@ public class SpinThread extends JmolThread {
       endPositions = (List<P3>) options[1];
       dihedralList = (float[]) options[2];
       if (dihedralList != null)
-        bsBranches = viewer.getBsBranches(dihedralList);
+        bsBranches = vwr.getBsBranches(dihedralList);
       bsAtoms = (BS) options[3];
       isGesture = (options[4] != null);
     }
@@ -106,9 +106,9 @@ public class SpinThread extends JmolThread {
       switch (mode) {
       case INIT:
         myFps = (isNav ? transformManager.navFps : transformManager.spinFps);
-        viewer.global.setB(isNav ? "_navigating" : "_spinning", true);
+        vwr.g.setB(isNav ? "_navigating" : "_spinning", true);
         haveReference = true;
-        viewer.startHoverWatcher(false);
+        vwr.startHoverWatcher(false);
         mode = MAIN;
         break;
       case MAIN:
@@ -131,7 +131,7 @@ public class SpinThread extends JmolThread {
           mode = FINISH;
           break;
         }
-        //navigatingSurface = viewer.getNavigateSurface();
+        //navigatingSurface = vwr.getNavigateSurface();
         boolean refreshNeeded = (endDegrees >= 1e10f ? true : isNav ? //navigatingSurface ||
         transformManager.navX != 0 || transformManager.navY != 0
             || transformManager.navZ != 0
@@ -154,7 +154,7 @@ public class SpinThread extends JmolThread {
           startTime -= sleepTime;
           sleepTime = 0;
         }
-        boolean isInMotion = (bsAtoms == null && viewer.getInMotion(false));
+        boolean isInMotion = (bsAtoms == null && vwr.getInMotion(false));
         if (isInMotion) {
           if (isGesture) {
             mode = FINISH;
@@ -168,13 +168,13 @@ public class SpinThread extends JmolThread {
         mode = CHECK1;
         break;
       case CHECK1: // cycling
-        while (!checkInterrupted(transformManager.spinThread) && !viewer.getRefreshing())
+        while (!checkInterrupted(transformManager.spinThread) && !vwr.getRefreshing())
           if (!runSleep(10, CHECK1))
             return;
         if (bsAtoms == null)
-          viewer.refresh(1, "SpinThread:run()");
+          vwr.refresh(1, "SpinThread:run()");
         else
-          viewer.requestRepaintAndWait("spin thread");
+          vwr.requestRepaintAndWait("spin thread");
         //System.out.println(angle * degreesPerRadian + " " + count + " " + nDegrees + " " + endDegrees);
         if (endDegrees >= 1e10f ? nDegrees/endDegrees > 0.99 : !isNav && endDegrees >= 0 ? nDegrees >= endDegrees - 0.001
             : -nDegrees <= endDegrees + 0.001) {
@@ -187,17 +187,17 @@ public class SpinThread extends JmolThread {
         break;
       case FINISH:
         if (dihedralList != null) {
-          viewer.setDihedrals(dihedralList, bsBranches, 0F);
+          vwr.setDihedrals(dihedralList, bsBranches, 0F);
         } else if (bsAtoms != null && endPositions != null) {
           // when the standard deviations of the end points was
           // exact, we know that we want EXACTLY those final positions
-          viewer.setAtomCoords(bsAtoms, T.xyz, endPositions);
+          vwr.setAtomCoords(bsAtoms, T.xyz, endPositions);
           bsAtoms = null;
           endPositions = null;
         }
         if (!isReset) {
           transformManager.setSpinOff();
-          viewer.startHoverWatcher(true);
+          vwr.startHoverWatcher(true);
         }
         stopped = !isDone;
         resumeEval();
@@ -209,7 +209,7 @@ public class SpinThread extends JmolThread {
   private void doTransform() {
     if (dihedralList != null) {
       float f = 1f / myFps / endDegrees;
-      viewer.setDihedrals(dihedralList, bsBranches, f);
+      vwr.setDihedrals(dihedralList, bsBranches, f);
       nDegrees += 1f / myFps;
     } else if (isNav) {
       transformManager.setNavigationOffsetRelative();//navigatingSurface);

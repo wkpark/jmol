@@ -29,9 +29,13 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.InputStream;
 
+import javajs.api.GenericZipTools;
+import javajs.api.GenericBinaryDocument;
+import javajs.util.Binary;
 import javajs.util.List;
 import javajs.util.PT;
 import javajs.util.SB;
+import javajs.util.ZipTools;
 
 import java.util.Hashtable;
 
@@ -43,10 +47,7 @@ import java.util.zip.ZipInputStream;
 import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
-import org.jmol.api.JmolDocument;
-import org.jmol.io.Binary;
 import org.jmol.io.JmolBinary;
-import org.jmol.io.JmolZipTools;
 import org.jmol.io.JmolZipUtilities;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
@@ -58,7 +59,7 @@ public class JmolUtil implements JmolZipUtilities {
   }
 
   @Override
-  public Object getAtomSetCollectionOrBufferedReaderFromZip(JmolZipTools zpt, JmolAdapter adapter,
+  public Object getAtomSetCollectionOrBufferedReaderFromZip(GenericZipTools zpt, JmolAdapter adapter,
                                                             InputStream is,
                                                             String fileName,
                                                             String[] zipDirectory,
@@ -158,7 +159,7 @@ public class JmolUtil implements JmolZipUtilities {
           continue;
         if (subFileName != null)
           htParams.put("subFileName", subFileName);
-        if (Binary.isJmolManifest(thisEntry) || haveManifest
+        if (thisEntry.startsWith("JmolManifest") || haveManifest
             && exceptFiles == manifest.indexOf("|" + thisEntry + "|") >= 0)
           continue;
         byte[] bytes = Binary.getStreamBytes(zis, ze.getSize());
@@ -168,7 +169,7 @@ public class JmolUtil implements JmolZipUtilities {
           bytes = Binary.getStreamBytes(ZipTools.getUnGzippedInputStream(bytes), -1);
         if (Binary.isZipB(bytes) || Binary.isPngZipB(bytes)) {
           BufferedInputStream bis = Binary.getBIS(bytes);
-          String[] zipDir2 = Binary.getZipDirectoryAndClose(bis, true);
+          String[] zipDir2 = Binary.getZipDirectoryAndClose(bis, "JmolManifest");
           bis = Binary.getBIS(bytes);
           Object atomSetCollections = getAtomSetCollectionOrBufferedReaderFromZip(
               zpt, adapter, bis, fileName + "|" + thisEntry, zipDir2, htParams,
@@ -202,7 +203,7 @@ public class JmolUtil implements JmolZipUtilities {
         } else {
           String sData;
           if (Binary.isCompoundDocumentB(bytes)) {
-            JmolDocument jd = (JmolDocument) Interface
+            GenericBinaryDocument jd = (GenericBinaryDocument) Interface
                 .getUtil("CompoundDocument");
             jd.setStream(Binary.getBIS(bytes), true);
             sData = jd.getAllDataFiles("Molecule", "Input").toString();
@@ -293,7 +294,7 @@ public class JmolUtil implements JmolZipUtilities {
    * @param zipDirectory
    * @return String data for processing
    */
-  private static SB checkSpecialData(JmolZipTools zpt, InputStream is, String[] zipDirectory) {
+  private static SB checkSpecialData(GenericZipTools zpt, InputStream is, String[] zipDirectory) {
     boolean isSpartan = false;
     // 0 entry is not used here
     for (int i = 1; i < zipDirectory.length; i++) {
@@ -349,7 +350,7 @@ public class JmolUtil implements JmolZipUtilities {
    * @return array detailing action for this set of files
    */
   @Override
-  public String[] spartanFileList(JmolZipTools zpt, String name, String type) {
+  public String[] spartanFileList(GenericZipTools zpt, String name, String type) {
     // make list of required files
     String[] dirNums = getSpartanDirs(type);
     if (dirNums.length == 0 && name.endsWith(".spardir.zip")

@@ -10,7 +10,7 @@ public interface JmolAppConsoleInterface {
 
   public JmolScriptEditorInterface getScriptEditor();
 
-  public void start(JmolViewer viewer);
+  public void start(JmolViewer vwr);
 
   public void zap();
 

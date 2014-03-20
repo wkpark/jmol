@@ -55,10 +55,10 @@ public class Test extends JPanel implements ActionListener {
   JTextField appletPath;
   ArrayListTransferHandler arrayListHandler;
   JFileChooser fc;
-  Viewer viewer;
+  Viewer vwr;
 
-  Test(Viewer viewer) {
-    this.viewer = viewer;
+  Test(Viewer vwr) {
+    this.vwr = vwr;
   }
 
   // Need the panel maker and the action listener.
@@ -118,7 +118,7 @@ public class Test extends JPanel implements ActionListener {
 
     if (e.getSource() == StateButton) { // Handle getting the State of Jmol...
       String Str = null;
-      Str = viewer.getStateInfo();
+      Str = vwr.getStateInfo();
       if (Str == null) {
         LogPanel
             .log("Something didn't work when selecting the State Button in Test module");
@@ -127,7 +127,7 @@ public class Test extends JPanel implements ActionListener {
     }
     if (e.getSource() == FileButton) { // Handle getting the file name...
       String Str = null;
-      Str = viewer.getFileName();
+      Str = vwr.getFileName();
       if (Str == null) {
         LogPanel
             .log("Something didn't work when selecting the file button in Test module");
@@ -137,7 +137,7 @@ public class Test extends JPanel implements ActionListener {
     }
     if (e.getSource() == PathButton) {// Handle getting the path to the file...
       String Str = null;
-      Str = viewer.getFullPathName(false);
+      Str = vwr.getFullPathName(false);
       if (Str == null) {
         LogPanel
             .log("Something didn't work when selecting the Path button in Test module");
@@ -147,7 +147,7 @@ public class Test extends JPanel implements ActionListener {
     }
     if (e.getSource() == movetoTime) {// Handle getting the path to the file...
       String statestr = null;
-      statestr = viewer.getStateInfo();
+      statestr = vwr.getStateInfo();
       if (statestr == null) {
         LogPanel
             .log("Something didn't work when reading the state while trying to add a moveto time.");

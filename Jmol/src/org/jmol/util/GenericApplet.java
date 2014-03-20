@@ -56,7 +56,7 @@ public abstract class GenericApplet implements JmolAppletInterface,
   protected JmolViewer viewer;
   protected Map<EnumCallback, String> callbacks = new Hashtable<EnumCallback, String>();
 
-  protected Map<String, Object> viewerOptions;
+  protected Map<String, Object> vwrOptions;
 
   protected boolean haveNotifiedError;
 
@@ -111,10 +111,10 @@ public abstract class GenericApplet implements JmolAppletInterface,
   }
 
   private void initApplication() {
-    viewerOptions.put("applet", Boolean.TRUE);
+    vwrOptions.put("applet", Boolean.TRUE);
     if (getJmolParameter("statusListener") == null)
-      viewerOptions.put("statusListener", this);
-    viewer = new Viewer(viewerOptions);
+      vwrOptions.put("statusListener", this);
+    viewer = new Viewer(vwrOptions);
     viewer.pushHoldRepaint();
     String emulate = getValueLowerCase("emulate", "jmol");
     setStringProperty("defaults", emulate.equals("chime") ? "RasMol" : "Jmol");
@@ -928,5 +928,4 @@ public abstract class GenericApplet implements JmolAppletInterface,
       //System.out.println("findApplet found2 " + appletName);
     }
   }
- 
 }

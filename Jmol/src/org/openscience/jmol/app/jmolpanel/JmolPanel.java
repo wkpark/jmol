@@ -109,7 +109,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
   static HistoryFile historyFile;
 
-  public JmolViewer viewer;
+  public JmolViewer vwr;
 
   JmolAdapter modelAdapter;
   JmolApp jmolApp;
@@ -155,7 +155,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
   private PasteClipboardAction pasteClipboardAction = new PasteClipboardAction();
   private ViewMeasurementTableAction viewMeasurementTableAction = new ViewMeasurementTableAction();
 
-  Map<String, Object> viewerOptions;
+  Map<String, Object> vwrOptions;
 
   private static int numWindows = 0;
   private static KioskFrame kioskFrame;
@@ -203,7 +203,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
   public JmolPanel(JmolApp jmolApp, Splash splash, JFrame frame,
       JmolPanel parent, int startupWidth, int startupHeight,
-      Map<String, Object> viewerOptions, Point loc) {
+      Map<String, Object> vwrOptions, Point loc) {
     super(true);
     this.jmolApp = jmolApp;
     this.frame = frame;
@@ -252,31 +252,31 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
      * 
      */
     display = new DisplayPanel(this);
-    if (viewerOptions == null)
-      viewerOptions = new Hashtable<String, Object>(); 
-    viewerOptions.put("display", display);
+    if (vwrOptions == null)
+      vwrOptions = new Hashtable<String, Object>(); 
+    vwrOptions.put("display", display);
     myStatusListener = new StatusListener(this, display);
-    viewerOptions.put("statusListener", myStatusListener);
+    vwrOptions.put("statusListener", myStatusListener);
     if (JmolResourceHandler.codePath != null)
-      viewerOptions.put("codePath", JmolResourceHandler.codePath);
+      vwrOptions.put("codePath", JmolResourceHandler.codePath);
     if (modelAdapter != null)
-      viewerOptions.put("modelAdapter", modelAdapter);
-    this.viewerOptions = viewerOptions;
-    viewer = new Viewer(viewerOptions);
-    display.setViewer(viewer);
-    myStatusListener.setViewer(viewer);
+      vwrOptions.put("modelAdapter", modelAdapter);
+    this.vwrOptions = vwrOptions;
+    vwr = new Viewer(vwrOptions);
+    display.setViewer(vwr);
+    myStatusListener.setViewer(vwr);
 
     if (!jmolApp.haveDisplay)
       return;
     getDialogs();
     say(GT._("Initializing Script Window..."));
-    viewer.getProperty("DATA_API", "getAppConsole", Boolean.TRUE);
+    vwr.getProperty("DATA_API", "getAppConsole", Boolean.TRUE);
 
     // Setup Plugin system
     // say(GT._("Loading plugins..."));
     // pluginManager = new CDKPluginManager(
     // System.getProperty("user.home") + System.getProperty("file.separator")
-    // + ".jmol", new JmolEditBus(viewer)
+    // + ".jmol", new JmolEditBus(vwr)
     // );
     // pluginManager.loadPlugin("org.openscience.cdkplugin.dirbrowser.DirBrowserPlugin");
     // pluginManager.loadPlugin("org.openscience.cdkplugin.dirbrowser.DadmlBrowserPlugin");
@@ -356,37 +356,37 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
     //historyFile.repositionWindow("Jmol", getFrame(), 300, 300);
 
-    AppConsole console = (AppConsole) viewer.getProperty("DATA_API",
+    AppConsole console = (AppConsole) vwr.getProperty("DATA_API",
         "getAppConsole", null);
     if (console != null && console.jcd != null) {
       historyFile.repositionWindow(SCRIPT_WINDOW_NAME, console.jcd, 200, 100,
           !jmolApp.isKiosk);
     }
     // this just causes problems
-    //c = (Component) viewer.getProperty("DATA_API","getScriptEditor", null);
+    //c = (Component) vwr.getProperty("DATA_API","getScriptEditor", null);
     //if (c != null)
     //historyFile.repositionWindow(EDITOR_WINDOW_NAME, c, 150, 50);
 
     say(GT._("Setting up Drag-and-Drop..."));
-    new FileDropper(myStatusListener, viewer);
+    new FileDropper(myStatusListener, vwr);
     // it's important to set this up first, even though it consumes some memory
     // otherwise, loading a new model in a script that sets the vibration or vector parameters
     // can appear to skip those -- they aren't skipped, but creating the atomSetChooser
     // will run scripts as it loads.
-    atomSetChooser = new AtomSetChooser(viewer, frame);
+    atomSetChooser = new AtomSetChooser(vwr, frame);
     pcs.addPropertyChangeListener(chemFileProperty, atomSetChooser);
     say(GT._("Launching main frame..."));
   }
 
   private void getDialogs() {
     say(GT._("Initializing Preferences..."));
-    preferencesDialog = new PreferencesDialog(this, frame, guimap, viewer);
+    preferencesDialog = new PreferencesDialog(this, frame, guimap, vwr);
     say(GT._("Initializing Recent Files..."));
     recentFiles = new RecentFilesDialog(frame);
     if (jmolApp.haveDisplay) {
       if (display.measurementTable != null)
         display.measurementTable.dispose();
-      display.measurementTable = new MeasurementTable(viewer, frame);
+      display.measurementTable = new MeasurementTable(vwr, frame);
     }
   }
 
@@ -407,7 +407,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       jmolFrame = new JFrame();
     }
 
-    // now pass these to viewer
+    // now pass these to vwr
 
     Jmol jmol = null;
 
@@ -419,7 +419,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       jmol = getJmol(jmolApp, jmolFrame);
 
       // scripts are read and files are loaded now
-      jmolApp.startViewer(jmol.viewer, jmol.splash, false);
+      jmolApp.startViewer(jmol.vwr, jmol.splash, false);
 
     } catch (Throwable t) {
       Logger.error("uncaught exception: " + t);
@@ -432,12 +432,12 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     if (jmolApp.isKiosk) {
       kioskFrame.setPanel(jmol);
       bannerFrame.setLabel("click below and type exitJmol[enter] to quit");
-      jmol.viewer.script("set allowKeyStrokes;set zoomLarge false;");
+      jmol.vwr.script("set allowKeyStrokes;set zoomLarge false;");
     }
     if (jmolApp.port > 0) {
       try {
         jmol.service = getJsonNioServer();
-        jmol.service.startService(jmolApp.port, jmol, jmol.viewer, "-1", 1);
+        jmol.service.startService(jmolApp.port, jmol, jmol.vwr, "-1", 1);
 //        JsonNioService service2 = new JsonNioService();
 //        service2.startService(jmolApp.port, jmol, null, "-2");
 //        service2.sendMessage(null, "test", null);
@@ -589,7 +589,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
   }
 
   protected boolean doClose(boolean saveSize) {
-    if (numWindows == 1 && viewer.getAtomCount() > 0 && JOptionPane.showConfirmDialog(frame, GT._("Exit Jmol?"),
+    if (numWindows == 1 && vwr.getAtomCount() > 0 && JOptionPane.showConfirmDialog(frame, GT._("Exit Jmol?"),
         "Exit", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) != JOptionPane.YES_OPTION)
       return false;
     dispose(frame, saveSize);
@@ -617,7 +617,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       System.exit(0);
     } else {
       numWindows--;
-      viewer.setModeMouse(JC.MOUSE_NONE);
+      vwr.setModeMouse(JC.MOUSE_NONE);
       try {
         f.dispose();
       } catch (Exception e) {
@@ -636,11 +636,11 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       historyFile.addWindowInfo("Jmol", frame, jmolApp.border);
     }
     //historyFile.addWindowInfo(CONSOLE_WINDOW_NAME, consoleframe);
-    AppConsole console = (AppConsole) viewer.getProperty("DATA_API",
+    AppConsole console = (AppConsole) vwr.getProperty("DATA_API",
         "getAppConsole", null);
     if (console != null && console.jcd != null)
       historyFile.addWindowInfo(SCRIPT_WINDOW_NAME, console.jcd, null);
-    Component c = (Component) viewer.getProperty("DATA_API", "getScriptEditor",
+    Component c = (Component) vwr.getProperty("DATA_API", "getScriptEditor",
         null);
     if (c != null)
       historyFile.addWindowInfo(EDITOR_WINDOW_NAME, c, null);
@@ -648,17 +648,17 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       historyFile.clear();
   }
 
-//  protected void setupNewFrame(JmolViewer viewer) {
-//    String state = viewer.getStateInfo();
+//  protected void setupNewFrame(JmolViewer vwr) {
+//    String state = vwr.getStateInfo();
 //    JFrame newFrame = new JFrame();
 //    JFrame f = this.frame;
 //    Jmol j = new Jmol(jmolApp, null, newFrame, (Jmol) this, startupWidth, startupHeight,
 //        "", (state == null ? null : f.getLocationOnScreen()));
 //    newFrame.setVisible(true);
-//    j.viewer.menuStructure = viewer.menuStructure;
+//    j.vwr.menuStructure = vwr.menuStructure;
 //    if (state != null) {
 //      dispose(f);
-//      j.viewer.evalStringQuiet(state);
+//      j.vwr.evalStringQuiet(state);
 //    }
 //  }
 
@@ -974,12 +974,12 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
   }
 
   void setMenuState() {
-    guimap.setSelected("perspectiveCheck", viewer.getPerspectiveDepth());
-    guimap.setSelected("hydrogensCheck", viewer.getBoolean(T.showhydrogens));
-    guimap.setSelected("measurementsCheck", viewer.getBoolean(T.showmeasurements));
-    guimap.setSelected("axesCheck", viewer.getShowAxes());
-    guimap.setSelected("boundboxCheck", viewer.getShowBbcage());
-    guimap.setEnabled("openJSpecViewScript", !viewer.getBoolean(T.pdb));
+    guimap.setSelected("perspectiveCheck", vwr.getPerspectiveDepth());
+    guimap.setSelected("hydrogensCheck", vwr.getBoolean(T.showhydrogens));
+    guimap.setSelected("measurementsCheck", vwr.getBoolean(T.showmeasurements));
+    guimap.setSelected("axesCheck", vwr.getShowAxes());
+    guimap.setSelected("boundboxCheck", vwr.getShowBbcage());
+    guimap.setEnabled("openJSpecViewScript", !vwr.getBoolean(T.pdb));
   }
 
   private static class ActionChangedListener implements PropertyChangeListener {
@@ -1029,7 +1029,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     @Override
     public void actionPerformed(ActionEvent e) {
       if (!doClose(true)) {
-        viewer.script("zap");
+        vwr.script("zap");
       }
     }
   }
@@ -1056,7 +1056,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
     @Override
     public void actionPerformed(ActionEvent e) {
-      AboutDialog ad = new AboutDialog(frame, viewer);
+      AboutDialog ad = new AboutDialog(frame, vwr);
       ad.setVisible(true);
     }
 
@@ -1083,7 +1083,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     @Override
     public void actionPerformed(ActionEvent e) {
       if (gaussianDialog == null)
-        gaussianDialog = new GaussianDialog(frame, viewer);
+        gaussianDialog = new GaussianDialog(frame, vwr);
       gaussianDialog.setVisible(true);
     }
   }
@@ -1103,7 +1103,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
   void doNew() {
     JFrame newFrame = new JFrame();
-    new Jmol(jmolApp, null, newFrame, (Jmol) JmolPanel.this, startupWidth, startupHeight, viewerOptions, null);
+    new Jmol(jmolApp, null, newFrame, (Jmol) JmolPanel.this, startupWidth, startupHeight, vwrOptions, null);
     newFrame.setVisible(true);
   }
   
@@ -1127,7 +1127,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
     @Override
     public void actionPerformed(ActionEvent e) {
-      viewer.loadInlineAppend(viewer.getClipboardText(), false);
+      vwr.loadInlineAppend(vwr.getClipboardText(), false);
     }
   }
 
@@ -1142,7 +1142,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
     @Override
     public void actionPerformed(ActionEvent e) {
-      viewer.clipImageOrPasteText(null);
+      vwr.clipImageOrPasteText(null);
     }
   }
 
@@ -1154,7 +1154,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
     @Override
     public void actionPerformed(ActionEvent e) {
-      viewer.clipImageOrPasteText((String) viewer.getProperty(
+      vwr.clipImageOrPasteText((String) vwr.getProperty(
           "string", "stateInfo", null));
     }
   }
@@ -1222,7 +1222,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
           if (!url.startsWith("="))
             url = "http://" + url;
         }
-        viewer.openFileAsync(url);
+        vwr.openFileAsync(url);
       }
     }
   }
@@ -1264,7 +1264,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       if (script == null)
         revalidate();
       else
-        viewer.script(script);
+        vwr.script(script);
     }
   }
   
@@ -1294,7 +1294,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     public void actionPerformed(ActionEvent e) {
 
       Dialog sd = new Dialog();
-      String fileName = sd.getImageFileNameFromDialog((Viewer) viewer, null, imageType,
+      String fileName = sd.getImageFileNameFromDialog((Viewer) vwr, null, imageType,
           imageChoices, imageExtensions, qualityJPG, qualityPNG);
       if (fileName == null)
         return;
@@ -1315,7 +1315,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       params.put("fileName", fileName);
       params.put("type", sType);
       params.put("quality", Integer.valueOf(sd.getQuality(sType)));
-      String msg = viewer.outputToFile(params);
+      String msg = vwr.outputToFile(params);
       Logger.info(msg);
     }
 
@@ -1335,9 +1335,9 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       if (selection == null || selection.length() == 0)
         return;
       if (selection.endsWith(" (*)"))
-        viewer.openFileAsyncSpecial(selection.substring(0, selection.length() - 4), 1);
+        vwr.openFileAsyncSpecial(selection.substring(0, selection.length() - 4), 1);
       else
-        viewer.openFileAsyncSpecial(selection, 0);
+        vwr.openFileAsyncSpecial(selection, 0);
     }
   }
 
@@ -1349,7 +1349,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
     @Override
     public void actionPerformed(ActionEvent e) {
-      AppConsole console = (AppConsole) viewer.getProperty("DATA_API","getAppConsole", null);
+      AppConsole console = (AppConsole) vwr.getProperty("DATA_API","getAppConsole", null);
       if (console != null)
         console.setVisible(true);
     }
@@ -1363,7 +1363,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
     @Override
     public void actionPerformed(ActionEvent e) {
-      Component c = (Component) viewer.getProperty("DATA_API","getScriptEditor", null);
+      Component c = (Component) vwr.getProperty("DATA_API","getScriptEditor", null);
       if (c != null)
         c.setVisible(true);
     }
@@ -1388,7 +1388,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
     @Override
     public void actionPerformed(ActionEvent e) {
-      new PovrayDialog(frame, viewer);
+      new PovrayDialog(frame, vwr);
     }
 
   }
@@ -1401,14 +1401,14 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
     @Override
     public void actionPerformed(ActionEvent e) {
-      String fileName = (new Dialog()).getSaveFileNameFromDialog((Viewer) viewer,
+      String fileName = (new Dialog()).getSaveFileNameFromDialog((Viewer) vwr,
           null, "SPT");
       if (fileName != null) {
         Map<String, Object> params = new Hashtable<String, Object>();
         params.put("fileName", fileName);
         params.put("type", "SPT");
-        params.put("text", viewer.getStateInfo());
-        String msg = viewer.outputToFile(params);
+        params.put("text", vwr.getStateInfo());
+        String msg = vwr.outputToFile(params);
         Logger.info(msg);
       }
     }
@@ -1439,7 +1439,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
   WebExport webExport;
   void createWebExport() {
-    webExport = WebExport.createAndShowGUI(viewer, historyFile, WEB_MAKER_WINDOW_NAME);
+    webExport = WebExport.createAndShowGUI(vwr, historyFile, WEB_MAKER_WINDOW_NAME);
   }
 
 
@@ -1477,7 +1477,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     if(surfaceTool!=null){
       surfaceTool.toFront();
     }else{
-    surfaceTool = new SurfaceTool(viewer, historyFile, SURFACETOOL_WINDOW_NAME, true);
+    surfaceTool = new SurfaceTool(vwr, historyFile, SURFACETOOL_WINDOW_NAME, true);
     }
   }
   
@@ -1512,17 +1512,17 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
   }
 
   void openFile() {
-    String fileName = (new Dialog()).getOpenFileNameFromDialog(viewerOptions,
-        (Viewer) viewer, null, jmolApp, FILE_OPEN_WINDOW_NAME, true);
+    String fileName = (new Dialog()).getOpenFileNameFromDialog(vwrOptions,
+        (Viewer) vwr, null, jmolApp, FILE_OPEN_WINDOW_NAME, true);
     if (fileName == null)
       return;
     boolean pdbCartoons = !fileName.startsWith("#NOC#;");
     if (!pdbCartoons)
       fileName = fileName.substring(6);
     if (fileName.startsWith("load append"))
-      viewer.scriptWait(fileName);
+      vwr.scriptWait(fileName);
     else
-      viewer.openFileAsyncSpecial(fileName, pdbCartoons ? 1 : 0);
+      vwr.openFileAsyncSpecial(fileName, pdbCartoons ? 1 : 0);
   }
 
   static final String chemFileProperty = "chemFile";
@@ -1533,7 +1533,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       frame.setTitle(title);
     }
     if (atomSetChooser == null) {
-      atomSetChooser = new AtomSetChooser(viewer, frame);
+      atomSetChooser = new AtomSetChooser(vwr, frame);
       pcs.addPropertyChangeListener(chemFileProperty, atomSetChooser);
     }
     pcs.firePropertyChange(chemFileProperty, null, null);
@@ -1549,8 +1549,8 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       String script = e.getActionCommand();
       if (script.indexOf("#showMeasurementTable") >= 0)
         display.measurementTable.activate();
-      //      viewer.script("set picking measure distance;set pickingstyle measure");
-      viewer.evalStringQuiet(script);
+      //      vwr.script("set picking measure distance;set pickingstyle measure");
+      vwr.evalStringQuiet(script);
     }
   }
 
@@ -1565,8 +1565,8 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
   }
   
   javajs.awt.Dimension resizeInnerPanel(String data) {
-    int width = viewer.getScreenWidth();
-    int height = viewer.getScreenHeight();
+    int width = vwr.getScreenWidth();
+    int height = vwr.getScreenHeight();
     String info = width + " " + height;
     javajs.awt.Dimension d = new javajs.awt.Dimension(0,0);
     if (data == null) {
@@ -1628,9 +1628,9 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
   @Override
   public void nioClosed(JsonNioServer jns) {
     if (bannerFrame != null) {
-      viewer.scriptWait("delay 2");
+      vwr.scriptWait("delay 2");
       bannerFrame.dispose();
-      viewer.setModeMouse(JC.MOUSE_NONE);
+      vwr.setModeMouse(JC.MOUSE_NONE);
       // would not nec. have to close this....
       System.exit(0);
     }
@@ -1655,13 +1655,13 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
         } else if (serverService == null) {
           serverService = getJsonNioServer();
           if (serverService != null)
-            serverService.startService(port, this, viewer, "-1", 1);
+            serverService.startService(port, this, vwr, "-1", 1);
         }
         if (serverService != null && serverService.getPort() == -port && strInfo != null) {
           if (service == null) {
             service = getJsonNioServer();
             if (service != null)
-              service.startService(-port, this, viewer, null, 1);
+              service.startService(-port, this, vwr, null, 1);
           }
           if (service != null)
             service.send(-port, strInfo);
@@ -1680,7 +1680,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       if (service == null) {
         service = getJsonNioServer();
         if (service != null)
-          service.startService(port, this, viewer, null, 1);
+          service.startService(port, this, vwr, null, 1);
       }
       if (service != null)
         service.send(port, strInfo);
@@ -1706,13 +1706,13 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
     @Override
     public void mousePressed(MouseEvent e) {
-      viewer.evalStringQuiet(script);
-      viewer.evalStringQuiet("timeout '__animBtn' -100 \"" + script + "\"");
+      vwr.evalStringQuiet(script);
+      vwr.evalStringQuiet("timeout '__animBtn' -100 \"" + script + "\"");
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-      viewer.evalStringQuiet("timeout '__animBtn' OFF");
+      vwr.evalStringQuiet("timeout '__animBtn' OFF");
     }
 
     @Override
@@ -1730,7 +1730,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
   }
 
   public void syncScript(String script) {
-    viewer.syncScript(script, "~", 0);
+    vwr.syncScript(script, "~", 0);
   }
 
 }

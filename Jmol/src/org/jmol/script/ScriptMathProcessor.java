@@ -73,7 +73,7 @@ public class ScriptMathProcessor {
   private boolean wasSyntaxCheck;
   private boolean debugHigh;
   private ScriptExpr eval;
-  private Viewer viewer;
+  private Viewer vwr;
 
   private T[] oStack = new T[8];
   private SV[] xStack = new SV[8];
@@ -103,7 +103,7 @@ public class ScriptMathProcessor {
     this.eval = eval;
     this.isSpecialAssignment = assignLeft = isSpecialAssignment;
     this.isAssignment = (isSpecialAssignment || key != null);
-    this.viewer = eval.viewer;
+    this.vwr = eval.vwr;
     this.debugHigh = eval.debugHigh;
     this.chk = wasSyntaxCheck = eval.chk;
     this.isArrayItem = isArrayItem;
@@ -898,7 +898,7 @@ public class ScriptMathProcessor {
       case T.bitset:
         return addXBs(BSUtil.copyInvert(
             SV.bsSelectVar(x2),
-            (x2.value instanceof BondSet ? viewer.getBondCount() : viewer
+            (x2.value instanceof BondSet ? vwr.getBondCount() : vwr
                 .getAtomCount())));
       }
       return addXFloat(-x2.asFloat());
@@ -919,14 +919,14 @@ public class ScriptMathProcessor {
       case T.bitset:
         return addXBs(BSUtil.copyInvert(
             SV.bsSelectVar(x2),
-            (x2.value instanceof BondSet ? viewer.getBondCount() : viewer
+            (x2.value instanceof BondSet ? vwr.getBondCount() : vwr
                 .getAtomCount())));
       default:
         return addXBool(!x2.asBoolean());
       }
     case T.propselector:
       int iv = op.intValue & ~T.minmaxmask;
-      if (viewer.allowArrayDotNotation)
+      if (vwr.allowArrayDotNotation)
         switch (x2.tok) {
         case T.hash:
         case T.context:
@@ -986,7 +986,7 @@ public class ScriptMathProcessor {
           return addXPt(CU.colorPtFromString(s, pt));
         case T.integer:
         case T.decimal:
-          return addXPt(viewer.getColorPointForPropertyValue(SV.fValue(x2)));
+          return addXPt(vwr.getColorPointForPropertyValue(SV.fValue(x2)));
         case T.point3f:
           return addXStr(Escape.escapeColor(CU.colorPtToFFRGB((P3) x2.value)));
         default:
@@ -1414,7 +1414,7 @@ public class ScriptMathProcessor {
         return addXAS(list);
       case T.point3f:
         pt = P3.newP((P3) x1.value);
-        viewer.toUnitCell(pt, P3.new3(n, n, n));
+        vwr.toUnitCell(pt, P3.new3(n, n, n));
         return addXPt(pt);
       case T.point4f:
         pt4 = (P4) x1.value;
@@ -1618,7 +1618,7 @@ public class ScriptMathProcessor {
       return false;
     if (chk)
       return addXStr("");
-    BoxInfo b = viewer.getBoxInfo(SV.bsSelectVar(x2), 1);
+    BoxInfo b = vwr.getBoxInfo(SV.bsSelectVar(x2), 1);
     P3[] pts = b.getBoundBoxPoints(true);
     List<P3> list = new  List<P3>();
     for (int i = 0; i < 4; i++)
@@ -1669,14 +1669,14 @@ public class ScriptMathProcessor {
       case T.xyz:
         P3 pt = P3.newP((P3) x2.value);
         // assumes a fractional coordinate
-        viewer.toCartesian(pt, true);
+        vwr.toCartesian(pt, true);
         return addXPt(pt);
       case T.fracx:
       case T.fracy:
       case T.fracz:
       case T.fracxyz:
         P3 ptf = P3.newP((P3) x2.value);
-        viewer.toFractional(ptf, true);
+        vwr.toFractional(ptf, true);
         return (op.intValue == T.fracxyz ? addXPt(ptf)
             : addXFloat(op.intValue == T.fracx ? ptf.x
                 : op.intValue == T.fracy ? ptf.y : ptf.z));
@@ -1685,7 +1685,7 @@ public class ScriptMathProcessor {
       case T.fuz:
       case T.fuxyz:
         P3 ptfu = P3.newP((P3) x2.value);
-        viewer.toFractional(ptfu, false);
+        vwr.toFractional(ptfu, false);
         return (op.intValue == T.fracxyz ? addXPt(ptfu)
             : addXFloat(op.intValue == T.fux ? ptfu.x
                 : op.intValue == T.fuy ? ptfu.y : ptfu.z));
@@ -1694,8 +1694,8 @@ public class ScriptMathProcessor {
       case T.unitz:
       case T.unitxyz:
         P3 ptu = P3.newP((P3) x2.value);
-        viewer.toUnitCell(ptu, null);
-        viewer.toFractional(ptu, false);
+        vwr.toUnitCell(ptu, null);
+        vwr.toFractional(ptu, false);
         return (op.intValue == T.unitxyz ? addXPt(ptu)
             : addXFloat(op.intValue == T.unitx ? ptu.x
                 : op.intValue == T.unity ? ptu.y : ptu.z));
@@ -1727,7 +1727,7 @@ public class ScriptMathProcessor {
       if (op.intValue != T.bonds)
         return addXObj(val);
       return addX(SV.newV(T.bitset, new BondSet(
-          (BS) val, viewer.getAtomIndices(bs))));
+          (BS) val, vwr.getAtomIndices(bs))));
     }
     return false;
   }

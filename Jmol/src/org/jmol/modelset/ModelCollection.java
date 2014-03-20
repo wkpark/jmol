@@ -25,12 +25,14 @@
 
 package org.jmol.modelset;
 
+import javajs.J2SIgnoreImport;
 import javajs.util.AU;
 import javajs.util.OC;
 import javajs.util.List;
 import javajs.util.PT;
 import javajs.util.Quat;
 import javajs.util.SB;
+import javajs.util.XmlUtil;
 
 import java.util.Date;
 import java.util.Enumeration;
@@ -70,11 +72,11 @@ import javajs.util.V3;
 import org.jmol.util.Vibration;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.ShapeManager;
-import org.jmol.io.XmlUtil;
 import org.jmol.java.BS;
 import org.jmol.script.T;
 import org.jmol.viewer.Viewer;
 
+@J2SIgnoreImport({javajs.util.XmlUtil.class})
 abstract public class ModelCollection extends BondCollection {
 
   /**
@@ -235,7 +237,7 @@ abstract public class ModelCollection extends BondCollection {
     if (!isPDB)
       return;
 
-    boolean checkConnections = !viewer.getBoolean(T.pdbsequential);
+    boolean checkConnections = !vwr.getBoolean(T.pdbsequential);
     for (int i = 0; i < modelCount; i++)
       if ((modelsExcluded == null || !modelsExcluded.get(i))
           && models[i].isBioModel) {
@@ -517,7 +519,7 @@ abstract public class ModelCollection extends BondCollection {
 
   public P3 getAverageAtomPoint() {
     if (averageAtomPoint == null)
-      (averageAtomPoint = new P3()).setT(getAtomSetCenter(viewer.getAllAtoms()));
+      (averageAtomPoint = new P3()).setT(getAtomSetCenter(vwr.getAllAtoms()));
     return averageAtomPoint;
   }
 
@@ -527,7 +529,7 @@ abstract public class ModelCollection extends BondCollection {
     switch (tok) {
     case T.valence:
     case T.formalcharge:
-      if (viewer.getBoolean(T.smartaromatic))
+      if (vwr.getBoolean(T.smartaromatic))
         assignAromaticBonds();
       break;
     }
@@ -548,7 +550,7 @@ abstract public class ModelCollection extends BondCollection {
                                     BS bsAtoms2, String script2,
                                     boolean addFrameNumber,
                                     boolean postDefinitions) {
-    int iModel = viewer.getCurrentModelIndex();
+    int iModel = vwr.getCurrentModelIndex();
     if (addFrameNumber) {
       if (thisStateModel != iModel)
         script1 = "frame "
@@ -654,7 +656,7 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public Map<EnumStructure, float[]> getStructureList() {
-    return viewer.getStructureList();
+    return vwr.getStructureList();
   }
 
   public void setStructureList(Map<EnumStructure, float[]> structureList) {
@@ -677,7 +679,7 @@ abstract public class ModelCollection extends BondCollection {
         int nAltLocs = getAltLocCountInModel(i);
         if (conformationIndex > 0 && conformationIndex >= nAltLocs)
           continue;
-        BS bsConformation = viewer.getModelUndeletedAtomsBitSet(i);
+        BS bsConformation = vwr.getModelUndeletedAtomsBitSet(i);
         if (conformationIndex >= 0) {
           if (!models[i].getPdbConformation(bsConformation, conformationIndex))
             for (int c = nAltLocs; --c >= 0;)
@@ -851,7 +853,7 @@ abstract public class ModelCollection extends BondCollection {
     }
     if ((mode & AtomData.MODE_GET_ATTACHED_HYDROGENS) != 0) {
       int[] nH = new int[1];
-      atomData.hAtomRadius = viewer.getVanderwaalsMar(1) / 1000f;
+      atomData.hAtomRadius = vwr.getVanderwaalsMar(1) / 1000f;
       atomData.hAtoms = calculateHydrogens(atomData.bsSelected, nH, false,
           true, null);
       atomData.hydrogenAtomCount = nH[0];
@@ -1055,13 +1057,13 @@ abstract public class ModelCollection extends BondCollection {
   public void calculateStraightness() {
     if (getHaveStraightness())
       return;
-    char ctype = 'S';//(viewer.getTestFlag3() ? 's' : 'S');
-    char qtype = viewer.getQuaternionFrame();
-    int mStep = viewer.getInt(T.helixstep);
+    char ctype = 'S';//(vwr.getTestFlag3() ? 's' : 'S');
+    char qtype = vwr.getQuaternionFrame();
+    int mStep = vwr.getInt(T.helixstep);
     // testflag3 ON  --> preliminary: Hanson's original normal-based straightness
     // testflag3 OFF --> final: Kohler's new quaternion-based straightness
     for (int i = modelCount; --i >= 0;)
-      models[i].calculateStraightness(viewer, ctype, qtype, mStep);
+      models[i].calculateStraightness(vwr, ctype, qtype, mStep);
     setHaveStraightness(true);
   }
 
@@ -1101,7 +1103,7 @@ abstract public class ModelCollection extends BondCollection {
     if (atomCount == 0 || bs.nextSetBit(0) < 0)
       return "";
     if (out == null)
-      out = viewer.getOutputChannel(null, null);
+      out = vwr.getOutputChannel(null, null);
     int iModel = atoms[bs.nextSetBit(0)].modelIndex;
     int iModelLast = -1;
     boolean isPQR = "PQR".equals(out.getType());
@@ -1139,28 +1141,28 @@ abstract public class ModelCollection extends BondCollection {
       boolean isBiomodel = models[a.modelIndex].isBioModel;
       boolean isHetero = a.isHetero();
       if (!isBiomodel)
-        tokens = (leftJustify ? LabelToken.compile(viewer,
+        tokens = (leftJustify ? LabelToken.compile(vwr,
             "HETATM%5.-5i %-4.4a%1AUNK %1c   1%1E   %8.3x%8.3y%8.3z" + occTemp,
             '\0', null) : LabelToken
-            .compile(viewer,
+            .compile(vwr,
                 "HETATM%5.-5i  %-3.3a%1AUNK %1c   1%1E   %8.3x%8.3y%8.3z"
                     + occTemp, '\0', null)
 
         );
       else if (isHetero)
-        tokens = (leftJustify ? LabelToken.compile(viewer,
+        tokens = (leftJustify ? LabelToken.compile(vwr,
             "HETATM%5.-5i %-4.4a%1A%3.-3n %1c%4.-4R%1E   %8.3x%8.3y%8.3z"
-                + occTemp, '\0', null) : LabelToken.compile(viewer,
+                + occTemp, '\0', null) : LabelToken.compile(vwr,
             "HETATM%5.-5i  %-3.3a%1A%3.-3n %1c%4.-4R%1E   %8.3x%8.3y%8.3z"
                 + occTemp, '\0', null));
       else
-        tokens = (leftJustify ? LabelToken.compile(viewer,
+        tokens = (leftJustify ? LabelToken.compile(vwr,
             "ATOM  %5.-5i %-4.4a%1A%3.-3n %1c%4.-4R%1E   %8.3x%8.3y%8.3z"
-                + occTemp, '\0', null) : LabelToken.compile(viewer,
+                + occTemp, '\0', null) : LabelToken.compile(vwr,
             "ATOM  %5.-5i  %-3.3a%1A%3.-3n %1c%4.-4R%1E   %8.3x%8.3y%8.3z"
                 + occTemp, '\0', null));
       String XX = a.getElementSymbolIso(false).toUpperCase();
-      out.append(LabelToken.formatLabelAtomArray(viewer, a, tokens, '\0', null))
+      out.append(LabelToken.formatLabelAtomArray(vwr, a, tokens, '\0', null))
           .append(XX.length() == 1 ? " " + XX : XX.substring(0, 2))
           .append("  \n");
       if (!showModels && (!isBiomodel || isHetero || isMultipleBondPDB)) {
@@ -1217,20 +1219,20 @@ abstract public class ModelCollection extends BondCollection {
       return null;
     Model model = models[modelIndex];
     if (out == null)
-      out = viewer.getOutputChannel(null, null);
+      out = vwr.getOutputChannel(null, null);
     SB pdbCONECT = new SB();
     boolean isDraw = (type.indexOf("draw") >= 0);
     BS bsAtoms = null;
     BS bsWritten = new BS();
     char ctype = '\0';
-    LabelToken[] tokens = getLabeler().compile(viewer,
+    LabelToken[] tokens = getLabeler().compile(vwr,
         "ATOM  %-6i%4a%1A%3n %1c%4R%1E   ", '\0', null);
     if (parameters == null) {
       ctype = (type.length() > 11 && type.indexOf("quaternion ") >= 0 ? type
           .charAt(11) : 'R');
-      model.getPdbData(viewer, type, ctype, isDraw, bsSelected, out, tokens,
+      model.getPdbData(vwr, type, ctype, isDraw, bsSelected, out, tokens,
           pdbCONECT, bsWritten);
-      bsAtoms = viewer.getModelUndeletedAtomsBitSet(modelIndex);
+      bsAtoms = vwr.getModelUndeletedAtomsBitSet(modelIndex);
     } else {
       // plot property x y z....
       bsAtoms = (BS) parameters[0];
@@ -1259,7 +1261,7 @@ abstract public class ModelCollection extends BondCollection {
         if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
           continue;
         Atom a = atoms[i];
-        out.append(LabelToken.formatLabelAtomArray(viewer, a, tokens, '\0',
+        out.append(LabelToken.formatLabelAtomArray(vwr, a, tokens, '\0',
             null));
         if (isPDB)
           bsWritten.set(i);
@@ -1614,7 +1616,7 @@ abstract public class ModelCollection extends BondCollection {
   public void setCentroid(BS bs, int[] minmax) {
     BS bsDelete = getNotInCentroid(bs, minmax);
     if (bsDelete != null && bsDelete.nextSetBit(0) >= 0)
-      viewer.deleteAtoms(bsDelete, false);
+      vwr.deleteAtoms(bsDelete, false);
   }
 
   private BS getNotInCentroid(BS bs, int[] minmax) {
@@ -1636,7 +1638,7 @@ abstract public class ModelCollection extends BondCollection {
     List<BS> biobranches = null;
     for (int i = 0; i < modelCount; i++) {
       // TODO: Trajectories?
-      bsModelAtoms[i] = viewer.getModelUndeletedAtomsBitSet(i);
+      bsModelAtoms[i] = vwr.getModelUndeletedAtomsBitSet(i);
       m = models[i];
       m.moleculeCount = 0;
       biobranches = m.getBioBranches(biobranches);
@@ -1695,7 +1697,7 @@ abstract public class ModelCollection extends BondCollection {
     if (bspf.isInitializedIndex(modelIndex))
       return;
     bspf.initialize(modelIndex, atoms,
-        viewer.getModelUndeletedAtomsBitSet(modelIndex));
+        vwr.getModelUndeletedAtomsBitSet(modelIndex));
   }
 
   public void setIteratorForPoint(AtomIndexIterator iterator, int modelIndex,
@@ -1750,7 +1752,7 @@ abstract public class ModelCollection extends BondCollection {
       iter = new AtomIteratorWithinModel();
     }
     iter.initialize(bspf, bsSelected, isGreaterOnly, modelZeroBased,
-        hemisphereOnly, viewer.isParallel());
+        hemisphereOnly, vwr.isParallel());
     return iter;
   }
 
@@ -1819,7 +1821,7 @@ abstract public class ModelCollection extends BondCollection {
   /**
    * Note that this method returns all atoms, included deleted ones. If you
    * don't want deleted atoms, then use
-   * viewer.getModelAtomBitSetUndeleted(modelIndex, TRUE)
+   * vwr.getModelAtomBitSetUndeleted(modelIndex, TRUE)
    * 
    * @param modelIndex
    * @param asCopy
@@ -1859,7 +1861,7 @@ abstract public class ModelCollection extends BondCollection {
       bs = new BS();
       info = (int[]) specInfo;
       ptTemp1.set(info[0] / 1000f, info[1] / 1000f, info[2] / 1000f);
-      boolean isAbsolute = !viewer.getBoolean(T.fractionalrelative);
+      boolean isAbsolute = !vwr.getBoolean(T.fractionalrelative);
       for (int i = atomCount; --i >= 0;)
         if (isInLatticeCell(i, ptTemp1, ptTemp2, isAbsolute))
           bs.set(i);
@@ -1890,7 +1892,7 @@ abstract public class ModelCollection extends BondCollection {
       int seqcodeB = info[1];
       int chainID = info[2];
       bs = new BS();
-      boolean caseSensitive = viewer.getBoolean(T.chaincasesensitive);
+      boolean caseSensitive = vwr.getBoolean(T.chaincasesensitive);
       if (chainID >= 0 && chainID < 256 && !caseSensitive)
         chainID = chainToUpper(chainID);
       for (int i = modelCount; --i >= 0;)
@@ -1933,7 +1935,7 @@ abstract public class ModelCollection extends BondCollection {
     case T.unitcell:
       // select UNITCELL (a relative quantity)
       bs = new BS();
-      SymmetryInterface unitcell = viewer.getCurrentUnitCell();
+      SymmetryInterface unitcell = vwr.getCurrentUnitCell();
       if (unitcell == null)
         return bs;
       ptTemp1.set(1, 1, 1);
@@ -1969,7 +1971,7 @@ abstract public class ModelCollection extends BondCollection {
                              RadiusData rd) {
     BS bsResult = new BS();
     BS bsCheck = getIterativeModels(false);
-    bs = BSUtil.andNot(bs, viewer.getDeletedAtoms());
+    bs = BSUtil.andNot(bs, vwr.getDeletedAtoms());
     AtomIndexIterator iter = getSelectedAtomIterator(null, false, false, false,
         false);
     if (withinAllModels) {
@@ -2054,7 +2056,7 @@ abstract public class ModelCollection extends BondCollection {
     BS bsB = null;
     List<Bond> vHBonds = new List<Bond>();
     if (specInfo.length() == 0) {
-      bsA = bsB = viewer.getAllAtoms();
+      bsA = bsB = vwr.getAllAtoms();
       calcRasmolHydrogenBonds(bsA, bsB, vHBonds, true, 1, false, null);
     } else {
       for (int i = 0; i < specInfo.length();) {
@@ -2078,7 +2080,7 @@ abstract public class ModelCollection extends BondCollection {
 
   public BS getSequenceBits(String specInfo, BS bs) {
     if (bs == null)
-      bs = viewer.getAllAtoms();
+      bs = vwr.getAllAtoms();
     BS bsResult = new BS();
     if (specInfo.length() > 0)
       for (int i = 0; i < modelCount; ++i)
@@ -2145,7 +2147,7 @@ abstract public class ModelCollection extends BondCollection {
     boolean anyOrNoId = (!identifyOnly || matchAny);
     boolean notAnyAndNoId = (!identifyOnly && !matchAny);
     
-    defaultCovalentMad = viewer.getMadBond();
+    defaultCovalentMad = vwr.getMadBond();
     boolean minDIsFrac = (minD < 0);
     boolean maxDIsFrac = (maxD < 0);
     boolean isFractional = (minDIsFrac || maxDIsFrac);
@@ -2237,8 +2239,8 @@ abstract public class ModelCollection extends BondCollection {
       mad = 1;
     if (maxBondingRadius == PT.FLOAT_MIN_SAFE)
       findMaxRadii();
-    float bondTolerance = viewer.getFloat(T.bondtolerance);
-    float minBondDistance = viewer.getFloat(T.minbonddistance);
+    float bondTolerance = vwr.getFloat(T.bondtolerance);
+    float minBondDistance = vwr.getFloat(T.minbonddistance);
     float minBondDistance2 = minBondDistance * minBondDistance;
     int nNew = 0;
     if (showRebondTimes)// && Logger.debugging)
@@ -2320,8 +2322,8 @@ abstract public class ModelCollection extends BondCollection {
     // null values for bitsets means "all"
     if (maxBondingRadius == PT.FLOAT_MIN_SAFE)
       findMaxRadii();
-    float bondTolerance = viewer.getFloat(T.bondtolerance);
-    float minBondDistance = viewer.getFloat(T.minbonddistance);
+    float bondTolerance = vwr.getFloat(T.bondtolerance);
+    float minBondDistance = vwr.getFloat(T.minbonddistance);
     float minBondDistance2 = minBondDistance * minBondDistance;
     int nNew = 0;
     initializeBspf();
@@ -2406,7 +2408,7 @@ abstract public class ModelCollection extends BondCollection {
     }
     return new int[] {
         matchHbond ? autoHbond(bsA, bsB, false) : autoBondBs4(bsA, bsB, null,
-            bsBonds, viewer.getMadBond(), legacyAutoBond), 0 };
+            bsBonds, vwr.getMadBond(), legacyAutoBond), 0 };
   }
 
   private static float hbondMin = 2.5f;
@@ -2439,7 +2441,7 @@ abstract public class ModelCollection extends BondCollection {
         break;
       }
     BS bsHBonds = new BS();
-    boolean useRasMol = viewer.getBoolean(T.hbondsrasmol);
+    boolean useRasMol = vwr.getBoolean(T.hbondsrasmol);
     if (bsB == null || useRasMol && !haveHAtoms) {
       Logger.info((bsB == null ? "DSSP " : "RasMol")
           + " pseudo-hbond calculation");
@@ -2466,8 +2468,8 @@ abstract public class ModelCollection extends BondCollection {
         }
       }
     }
-    float maxXYDistance = viewer.getFloat(T.hbondsdistancemaximum);
-    float minAttachedAngle = (float) (viewer.getFloat(T.hbondsangleminimum)
+    float maxXYDistance = vwr.getFloat(T.hbondsdistancemaximum);
+    float minAttachedAngle = (float) (vwr.getFloat(T.hbondsangleminimum)
         * Math.PI / 180);
     float hbondMax2 = maxXYDistance * maxXYDistance;
     float hbondMin2 = hbondMin * hbondMin;
@@ -2644,14 +2646,14 @@ abstract public class ModelCollection extends BondCollection {
       sb.append("\n<model index=\"").appendI(i).append("\" n=\"")
           .append(getModelNumberDotted(i)).append("\" id=")
           .append(PT.esc("" + getModelAuxiliaryInfoValue(i, "modelID")));
-      int ib = viewer.getJDXBaseModelIndex(i);
+      int ib = vwr.getJDXBaseModelIndex(i);
       if (ib != i)
         sb.append(" baseModelId=").append(
             PT.esc((String) getModelAuxiliaryInfoValue(ib, "jdxModelID")));
       sb.append(" name=").append(PT.esc(getModelName(i))).append(" title=")
           .append(PT.esc(getModelTitle(i)))
           .append(" hasVibrationVectors=\"")
-          .appendB(viewer.modelHasVibrationVectors(i)).append("\" />");
+          .appendB(vwr.modelHasVibrationVectors(i)).append("\" />");
     }
     sb.append("\n</models>");
     return sb.toString();
@@ -2804,7 +2806,7 @@ abstract public class ModelCollection extends BondCollection {
 
     // set to recreate bounding box
     deleteModelAtoms(firstAtomIndex, nAtoms, bsAtoms);
-    viewer.deleteModelAtoms(modelIndex, firstAtomIndex, nAtoms, bsAtoms);
+    vwr.deleteModelAtoms(modelIndex, firstAtomIndex, nAtoms, bsAtoms);
   }
 
   @SuppressWarnings("unchecked")
@@ -2814,7 +2816,7 @@ abstract public class ModelCollection extends BondCollection {
       if (modelIndex >= 0 && m != modelIndex) {
         continue;
       }
-      Map<String, Object> moData = (Map<String, Object>) viewer
+      Map<String, Object> moData = (Map<String, Object>) vwr
           .getModelAuxiliaryInfoValue(m, "moData");
       if (moData == null) {
         continue;
@@ -2877,7 +2879,7 @@ abstract public class ModelCollection extends BondCollection {
     boolean isDelete = false;
     if (atomicNumber > 0) {
       setElement(atom, atomicNumber);
-      viewer.setShapeSizeRD(JC.SHAPE_BALLS, viewer.getDefaultRadiusData(),
+      vwr.setShapeSizeRD(JC.SHAPE_BALLS, vwr.getDefaultRadiusData(),
           BSUtil.newAndSetBit(atomIndex));
       setAtomName(atomIndex, type + atom.getAtomNumber());
       if (!models[atom.modelIndex].isModelKit)
@@ -2922,18 +2924,18 @@ abstract public class ModelCollection extends BondCollection {
       bs = getAtomsWithinRD(1.0f, bsA, false, null);
       bs.andNot(bsA);
       if (bs.nextSetBit(0) >= 0)
-        viewer.deleteAtoms(bs, false);
+        vwr.deleteAtoms(bs, false);
 
       // 5) attach nearby non-hydrogen atoms (rings)
 
-      bs = viewer.getModelUndeletedAtomsBitSet(atom.modelIndex);
+      bs = vwr.getModelUndeletedAtomsBitSet(atom.modelIndex);
       bs.andNot(getAtomBitsMDa(T.hydrogen, null));
       makeConnections2(0.1f, 1.8f, 1, T.create, bsA, bs, null, false, false, 0);
 
       // 6) add hydrogen atoms
 
     }
-    viewer.addHydrogens(bsA, false, true);
+    vwr.addHydrogens(bsA, false, true);
   }
 
   public void deleteAtoms(BS bs) {
@@ -2969,16 +2971,15 @@ abstract public class ModelCollection extends BondCollection {
    * <bond atomRefs2="a3 a6" order="S"/> <bond atomRefs2="a3 a7" order="S"/>
    * </bondArray> </molecule>
    */
-  @SuppressWarnings("static-access")
   public String getModelCml(BS bs, int atomsMax, boolean addBonds) {
     SB sb = new SB();
     int nAtoms = BSUtil.cardinalityOf(bs);
     if (nAtoms == 0)
       return "";
     // creating an instance prevents pre-loading by JavaScript
-    XmlUtil xmlUtil = (XmlUtil) Interface.getOption("io.XmlUtil");
-    xmlUtil.openTag(sb, "molecule");
-    xmlUtil.openTag(sb, "atomArray");
+    Interface.getOption("io.XmlUtil");
+    XmlUtil.openTag(sb, "molecule");
+    XmlUtil.openTag(sb, "atomArray");
     BS bsAtoms = new BS();
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       if (--atomsMax < 0)
@@ -2987,14 +2988,14 @@ abstract public class ModelCollection extends BondCollection {
       String name = atom.getAtomName();
       PT.rep(name, "\"", "''");
       bsAtoms.set(atom.index);
-      xmlUtil.appendTag(sb, "atom/", new String[] { "id",
+      XmlUtil.appendTag(sb, "atom/", new String[] { "id",
           "a" + (atom.index + 1), "title", atom.getAtomName(), "elementType",
           atom.getElementSymbol(), "x3", "" + atom.x, "y3", "" + atom.y, "z3",
           "" + atom.z });
     }
-    xmlUtil.closeTag(sb, "atomArray");
+    XmlUtil.closeTag(sb, "atomArray");
     if (addBonds) {
-      xmlUtil.openTag(sb, "bondArray");
+      XmlUtil.openTag(sb, "bondArray");
       for (int i = 0; i < bondCount; i++) {
         Bond bond = bonds[i];
         Atom a1 = bond.atom1;
@@ -3004,13 +3005,13 @@ abstract public class ModelCollection extends BondCollection {
         String order = Edge.getCmlBondOrder(bond.order);
         if (order == null)
           continue;
-        xmlUtil.appendTag(sb, "bond/", new String[] { "atomRefs2",
+        XmlUtil.appendTag(sb, "bond/", new String[] { "atomRefs2",
             "a" + (bond.atom1.index + 1) + " a" + (bond.atom2.index + 1),
             "order", order, });
       }
-      xmlUtil.closeTag(sb, "bondArray");
+      XmlUtil.closeTag(sb, "bondArray");
     }
-    xmlUtil.closeTag(sb, "molecule");
+    XmlUtil.closeTag(sb, "molecule");
     return sb.toString();
   }
 
@@ -3104,7 +3105,7 @@ abstract public class ModelCollection extends BondCollection {
     if (tensors != null)
       setAtomTensors(atomCount, tensors);
     atom.group = group;
-    atom.colixAtom = viewer.getColixAtomPalette(atom, EnumPalette.CPK.id);
+    atom.colixAtom = vwr.getColixAtomPalette(atom, EnumPalette.CPK.id);
     if (atomName != null) {
       int i;
       if ((i = atomName.indexOf('\0')) >= 0) {
@@ -3192,7 +3193,7 @@ abstract public class ModelCollection extends BondCollection {
     if (atomNames == null)
       atomNames = new String[atomCount];
     // now, we'll assign 1-based atom numbers within each model
-    boolean isZeroBased = isXYZ && viewer.getBoolean(T.zerobasedxyzrasmol);
+    boolean isZeroBased = isXYZ && vwr.getBoolean(T.zerobasedxyzrasmol);
     int lastModelIndex = Integer.MAX_VALUE;
     int atomNo = 1;
     for (int i = iFirst; i < atomCount; ++i) {
@@ -3305,7 +3306,7 @@ abstract public class ModelCollection extends BondCollection {
         }
       }
       if (id.equalsIgnoreCase(mid) || id.equalsIgnoreCase(mnum))
-        return (isBaseModel ? viewer.getJDXBaseModelIndex(i) : i);
+        return (isBaseModel ? vwr.getJDXBaseModelIndex(i) : i);
       if (fname != null && id.startsWith(fname))
         errCode = -2;
     }
@@ -3380,7 +3381,7 @@ abstract public class ModelCollection extends BondCollection {
     if (bs == null)
       bs = getModelAtomBitSetIncludingDeleted(-1, false);
     //System.out.println("setModulation " + isOn + " " + t);
-    float scale = viewer.getFloat(T.modulation);
+    float scale = vwr.getFloat(T.modulation);
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       Vibration v = getVibration(i, false);
       if (!(v instanceof JmolModulationSet))
@@ -3400,7 +3401,7 @@ abstract public class ModelCollection extends BondCollection {
     if (pt == null)
       pt = new Point3fi();
     pt.setT(atoms[i]);
-    pt = viewer.getVibrationPoint(v, pt);
+    pt = vwr.getVibrationPoint(v, pt);
     pt.sD = -1;
     return pt;
   }

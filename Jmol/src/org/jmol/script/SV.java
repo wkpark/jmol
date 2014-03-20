@@ -35,7 +35,6 @@ import java.util.Set;
 
 import org.jmol.java.BS;
 import org.jmol.modelset.BondSet;
-import org.jmol.util.BArray;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
 
@@ -45,6 +44,7 @@ import javajs.util.SB;
 
 import org.jmol.util.Measure;
 
+import javajs.util.BArray;
 import javajs.util.M3;
 import javajs.util.M34;
 import javajs.util.M4;

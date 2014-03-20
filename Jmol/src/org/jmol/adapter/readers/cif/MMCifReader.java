@@ -520,7 +520,7 @@ _pdbx_struct_oper_list.vector[3]
           break;
         case BEG_ASYM_ID:
           structure.startChainStr = field;
-          structure.startChainID = cr.viewer.getChainID(field);
+          structure.startChainID = cr.vwr.getChainID(field);
           break;
         case BEG_SEQ_ID:
           structure.startSequenceNumber = cr.parseIntStr(field);
@@ -530,7 +530,7 @@ _pdbx_struct_oper_list.vector[3]
           break;
         case END_ASYM_ID:
           structure.endChainStr = field;
-          structure.endChainID = cr.viewer.getChainID(field);
+          structure.endChainID = cr.vwr.getChainID(field);
           break;
         case END_SEQ_ID:
           structure.endSequenceNumber = cr.parseIntStr(field);
@@ -590,7 +590,7 @@ _pdbx_struct_oper_list.vector[3]
       for (int i = 0; i < cr.tokenizer.fieldCount; ++i) {
         switch (fieldProperty(i)) {
         case BEG_ASYM_ID:
-          structure.startChainID = cr.viewer.getChainID(field);
+          structure.startChainID = cr.vwr.getChainID(field);
           break;
         case BEG_SEQ_ID:
           structure.startSequenceNumber = cr.parseIntStr(field);
@@ -599,7 +599,7 @@ _pdbx_struct_oper_list.vector[3]
           structure.startInsertionCode = firstChar;
           break;
         case END_ASYM_ID:
-          structure.endChainID = cr.viewer.getChainID(field);
+          structure.endChainID = cr.vwr.getChainID(field);
           break;
         case END_SEQ_ID:
           structure.endSequenceNumber = cr.parseIntStr(field);
@@ -807,7 +807,7 @@ _pdbx_struct_oper_list.vector[3]
     a.setT(asum);
     a.scale(1f/c);
     a.elementSymbol = "Pt";
-    a.chainID = cr.viewer.getChainID(id);
+    a.chainID = cr.vwr.getChainID(id);
     a.radius = 16;
     cr.atomSetCollection.addAtom(a);
   }

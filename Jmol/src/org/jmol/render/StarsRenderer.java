@@ -42,7 +42,7 @@ public class StarsRenderer extends ShapeRenderer {
     if (stars.mads == null)
       return false;
     boolean needTranslucent = false;
-    mar = (int) (viewer.getFloat(T.starscale) * 1000);
+    mar = (int) (vwr.getFloat(T.starscale) * 1000);
     if (mar == 0 && (g3d.isAntialiased() || isExport))
       mar = 50;
     Atom[] atoms = modelSet.atoms;
@@ -63,13 +63,13 @@ public class StarsRenderer extends ShapeRenderer {
     int x = atom.sX;
     int y = atom.sY;
     int z = atom.sZ;
-    int d = (int) viewer.scaleToScreen(z, mad);
+    int d = (int) vwr.scaleToScreen(z, mad);
     d -= (d & 1) ^ 1; // round down to odd value
     int r = d / 2;
     if (r < 1)
       r = 1;
     if (mar > 0) {
-      width = (int) viewer.scaleToScreen(z, mar);
+      width = (int) vwr.scaleToScreen(z, mar);
       if (width == 0)
         width = 1;
       if (width == 1 && g3d.isAntialiased())

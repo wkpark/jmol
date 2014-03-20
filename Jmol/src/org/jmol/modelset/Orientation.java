@@ -30,45 +30,45 @@ public class Orientation {
 
   private float[] pymolView;
 
-  private Viewer viewer;
+  private Viewer vwr;
   
-  public Orientation(Viewer viewer, boolean asDefault, float[] pymolView) {
-    this.viewer = viewer;
+  public Orientation(Viewer vwr, boolean asDefault, float[] pymolView) {
+    this.vwr = vwr;
     if (pymolView != null) {
       this.pymolView = pymolView;
       moveToText = "moveTo -1.0 PyMOL " + Escape.eAF(pymolView);
       return;
     } 
-    viewer.finalizeTransformParameters();
+    vwr.finalizeTransformParameters();
     if (asDefault) {
-      M3 rotationMatrix = (M3) viewer
+      M3 rotationMatrix = (M3) vwr
           .getModelSetAuxiliaryInfoValue("defaultOrientationMatrix");
       if (rotationMatrix == null)
         this.rotationMatrix.setScale(1);
       else
         this.rotationMatrix.setM3(rotationMatrix);
     } else {
-      viewer.getRotation(this.rotationMatrix);
+      vwr.getRotation(this.rotationMatrix);
     }
-    xTrans = viewer.getTranslationXPercent();
-    yTrans = viewer.getTranslationYPercent();
-    zoom = viewer.getZoomSetting();
-    center.setT(viewer.getRotationCenter());
-    windowCenteredFlag = viewer.isWindowCentered();
-    rotationRadius = viewer.getFloat(T.rotationradius);
-    navigationMode = viewer.getBoolean(T.navigationmode);
-    //navigateSurface = viewer.getNavigateSurface();
-    moveToText = viewer.getMoveToText(-1);
+    xTrans = vwr.getTranslationXPercent();
+    yTrans = vwr.getTranslationYPercent();
+    zoom = vwr.getZoomSetting();
+    center.setT(vwr.getRotationCenter());
+    windowCenteredFlag = vwr.isWindowCentered();
+    rotationRadius = vwr.getFloat(T.rotationradius);
+    navigationMode = vwr.getBoolean(T.navigationmode);
+    //navigateSurface = vwr.getNavigateSurface();
+    moveToText = vwr.getMoveToText(-1);
     if (navigationMode) {
-      xNav = viewer.getNavigationOffsetPercent('X');
-      yNav = viewer.getNavigationOffsetPercent('Y');
-      navDepth = viewer.getNavigationDepthPercent();
-      navCenter = P3.newP(viewer.getNavigationCenter());
+      xNav = vwr.getNavigationOffsetPercent('X');
+      yNav = vwr.getNavigationOffsetPercent('Y');
+      navDepth = vwr.getNavigationDepthPercent();
+      navCenter = P3.newP(vwr.getNavigationCenter());
     }
-    if (viewer.getCamera().z != 0) { // PyMOL mode
-      cameraDepth = viewer.getCameraDepth();
-      cameraX = viewer.getCamera().x;
-      cameraY = viewer.getCamera().y;
+    if (vwr.getCamera().z != 0) { // PyMOL mode
+      cameraDepth = vwr.getCameraDepth();
+      cameraX = vwr.getCamera().x;
+      cameraY = vwr.getCamera().y;
     }
   }
 
@@ -79,16 +79,16 @@ public class Orientation {
   
   public boolean restore(float timeSeconds, boolean isAll) {
     if (isAll) {
-      viewer.setBooleanProperty("windowCentered", windowCenteredFlag);
-      viewer.setBooleanProperty("navigationMode", navigationMode);
-      //viewer.setBooleanProperty("navigateSurface", navigateSurface);
+      vwr.setBooleanProperty("windowCentered", windowCenteredFlag);
+      vwr.setBooleanProperty("navigationMode", navigationMode);
+      //vwr.setBooleanProperty("navigateSurface", navigateSurface);
       if (pymolView == null)
-        viewer.moveTo(viewer.eval, timeSeconds, center, null, Float.NaN, rotationMatrix, zoom, xTrans,
+        vwr.moveTo(vwr.eval, timeSeconds, center, null, Float.NaN, rotationMatrix, zoom, xTrans,
             yTrans, rotationRadius, navCenter, xNav, yNav, navDepth, cameraDepth, cameraX, cameraY);
       else
-        viewer.movePyMOL(viewer.eval, timeSeconds, pymolView);
+        vwr.movePyMOL(vwr.eval, timeSeconds, pymolView);
     } else {
-      viewer.setRotationMatrix(rotationMatrix);
+      vwr.setRotationMatrix(rotationMatrix);
     }
     return true;
   }

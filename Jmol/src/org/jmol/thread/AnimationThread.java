@@ -42,14 +42,14 @@ public class AnimationThread extends JmolThread {
   public AnimationThread() {}
   
   @Override
-  public int setManager(Object manager, Viewer viewer, Object params) {
+  public int setManager(Object manager, Viewer vwr, Object params) {
     int[] options = (int[]) params;
     framePointer1 = options[0];
     framePointer2 = options[1];
     intThread = options[2];
     animationManager = (AnimationManager) manager;
-    setViewer(viewer, "AnimationThread");
-    viewer.startHoverWatcher(false);
+    setViewer(vwr, "AnimationThread");
+    vwr.startHoverWatcher(false);
     return 0;
   }
 
@@ -76,8 +76,8 @@ public class AnimationThread extends JmolThread {
       case INIT:
         if (Logger.debugging)
           Logger.debug("animation thread " + intThread + " running");
-        viewer.requestRepaintAndWait("animationThread");
-        viewer.startHoverWatcher(false);
+        vwr.requestRepaintAndWait("animationThread");
+        vwr.startHoverWatcher(false);
         haveReference = true;
         isFirst = true;
         mode = MAIN;
@@ -113,18 +113,18 @@ public class AnimationThread extends JmolThread {
           break;
         }
         isFirst = false;
-        targetTime += (int) ((1000f / animationManager.animationFps) + viewer
+        targetTime += (int) ((1000f / animationManager.animationFps) + vwr
             .getFrameDelayMs(animationManager.getCurrentModelIndex()));
         mode = CHECK3;
         break;
       case CHECK3:
         while (animationManager.animationOn && !checkInterrupted(animationManager.animationThread)
-            && !viewer.getRefreshing()) {
+            && !vwr.getRefreshing()) {
           if (!runSleep(10, CHECK3))
             return;
         }
-        if (!viewer.getSpinOn())
-          viewer.refresh(1, "animationThread");
+        if (!vwr.getSpinOn())
+          vwr.refresh(1, "animationThread");
         sleepTime = (int) (targetTime - (System.currentTimeMillis() - startTime));
         if (!runSleep(sleepTime, MAIN))
           return;

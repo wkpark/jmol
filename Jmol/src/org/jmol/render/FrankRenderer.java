@@ -36,16 +36,16 @@ public class FrankRenderer extends ShapeRenderer {
   @Override
   protected boolean render() {
     Frank frank = (Frank) shape;
-    boolean allowKeys = viewer.getBooleanProperty("allowKeyStrokes");
-    boolean modelKitMode = viewer.getBoolean(T.modelkitmode);
+    boolean allowKeys = vwr.getBooleanProperty("allowKeyStrokes");
+    boolean modelKitMode = vwr.getBoolean(T.modelkitmode);
     colix = (modelKitMode ? C.MAGENTA 
-        : viewer.isSignedApplet() ? (allowKeys || viewer.isJS && !viewer.isWebGL ? C.ORANGE : C.RED) : allowKeys ? C.BLUE : C.GRAY);
-    if (isExport || !viewer.getShowFrank())
+        : vwr.isSignedApplet() ? (allowKeys || vwr.isJS && !vwr.isWebGL ? C.ORANGE : C.RED) : allowKeys ? C.BLUE : C.GRAY);
+    if (isExport || !vwr.getShowFrank())
       return false;
     if (!g3d.setColix(C.getColixTranslucent3(colix,
             g3d.haveTranslucentObjects(), 0.5f)))
       return true;
-    float imageFontScaling = viewer.getImageFontScaling();
+    float imageFontScaling = vwr.getImageFontScaling();
     frank.getFont(imageFontScaling);
     int dx = (int) (frank.frankWidth + Frank.frankMargin * imageFontScaling);
     int dy = frank.frankDescent;

@@ -76,12 +76,12 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
     switch (exportType) {
     case GData.EXPORT_CARTESIAN:
       diameter = (isMad ? madOrPixels 
-          : (int) Math.floor(viewer.unscaleToScreen(z, madOrPixels * 2) * 1000));
+          : (int) Math.floor(vwr.unscaleToScreen(z, madOrPixels * 2) * 1000));
       break;
     default:
       if (isMad) {
         // mad
-        diameter = (int) viewer.scaleToScreen(z, madOrPixels); 
+        diameter = (int) vwr.scaleToScreen(z, madOrPixels); 
       } else {
         // pixels, and that's what we want
         if (g3d.isAntialiased())
@@ -148,11 +148,11 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
     float d0 = vectorT.length();
     if (tickInfo.scale != null) {
       if (Float.isNaN(tickInfo.scale.x)) { // unitcell
-        float a = viewer.getUnitCellInfo(SimpleUnitCell.INFO_A);
+        float a = vwr.getUnitCellInfo(SimpleUnitCell.INFO_A);
         if (!Float.isNaN(a))
           vectorT.set(vectorT.x / a, vectorT.y
-              / viewer.getUnitCellInfo(SimpleUnitCell.INFO_B), vectorT.z
-              / viewer.getUnitCellInfo(SimpleUnitCell.INFO_C));
+              / vwr.getUnitCellInfo(SimpleUnitCell.INFO_B), vectorT.z
+              / vwr.getUnitCellInfo(SimpleUnitCell.INFO_C));
       } else {
         vectorT.set(vectorT.x * tickInfo.scale.x, vectorT.y * tickInfo.scale.y,
             vectorT.z * tickInfo.scale.z);
@@ -178,14 +178,14 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
     vectorT2.scale(length / vectorT2.length());
     P3 ptRef = tickInfo.reference; // not implemented
     if (ptRef == null) {
-      pointT3.setT(viewer.getBoundBoxCenter());
-      if (viewer.getAxesMode() == EnumAxesMode.BOUNDBOX) {
+      pointT3.setT(vwr.getBoundBoxCenter());
+      if (vwr.getAxesMode() == EnumAxesMode.BOUNDBOX) {
         pointT3.add3(1, 1, 1);
       }
     } else {
       pointT3.setT(ptRef);
     }
-    viewer.transformPtScr(pointT3, pt2i);
+    vwr.transformPtScr(pointT3, pt2i);
     //too annoying! float tx = vectorT2.x * ((ptA.screenX + ptB.screenX) / 2 - pt2.x);
     //float ty = vectorT2.y * ((ptA.screenY + ptB.screenY) / 2 - pt2.y);
     //if (tx + ty < -0.1)
@@ -203,7 +203,7 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
     while (p < d) {
       if (p >= tickInfo.first) {
         pointT2.setT(pointT);
-        viewer.transformPt3f(pointT2, pointT2);
+        vwr.transformPt3f(pointT2, pointT2);
         drawLine((int) Math.floor(pointT2.x), (int) Math.floor(pointT2.y), (int) z,
             (x = (int) Math.floor(pointT2.x + vectorT2.x)),
             (y = (int) Math.floor(pointT2.y + vectorT2.y)), (int) z, diameter);

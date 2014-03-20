@@ -89,7 +89,7 @@ public class Dipoles extends Shape {
     }
 
     if ("calculate" == propertyName) {
-      calculatedDipole = viewer.calculateMolecularDipole();
+      calculatedDipole = vwr.calculateMolecularDipole();
       Logger.info("calculated molecular dipole = " + calculatedDipole + " "
           + (calculatedDipole == null ? "" : "" + calculatedDipole.length()));
       return;
@@ -111,12 +111,12 @@ public class Dipoles extends Shape {
       if (thisID.equals("molecular")) {
         V3 v = calculatedDipole;
         if (v == null) {
-          v = viewer.getModelDipole();
+          v = vwr.getModelDipole();
           Logger.info("file molecular dipole = " + v + " "
               + (v != null ? "" + v.length() : ""));
         }
         if (v == null)
-          calculatedDipole = v = viewer.calculateMolecularDipole();
+          calculatedDipole = v = vwr.calculateMolecularDipole();
         if (v == null) {
           Logger
               .warn("No molecular dipole found for this model; setting to {0 0 0}");
@@ -220,7 +220,7 @@ public class Dipoles extends Shape {
 
     if ("startSet" == propertyName) {
       BS atomset = (BS) value;
-      startCoord = viewer.getAtomSetCenter(atomset);
+      startCoord = vwr.getAtomSetCenter(atomset);
       tempDipole.set(startCoord, P3.new3(0, 0, 0), dipoleValue);
       if (BSUtil.cardinalityOf(atomset) == 1)
         atomIndex1 = atomset.nextSetBit(0);
@@ -251,7 +251,7 @@ public class Dipoles extends Shape {
             tempDipole.dipoleValue = dipoleValue;
         }
       } else {
-        tempDipole.set(startCoord, viewer.getAtomSetCenter(atomset),
+        tempDipole.set(startCoord, vwr.getAtomSetCenter(atomset),
             dipoleValue);
       }
       //NOTTTTTT!!!! currentDipole = tempDipole;
@@ -434,7 +434,7 @@ public class Dipoles extends Shape {
         tempDipole.offsetAngstroms, tempDipole.offsetPercent,
         tempDipole.offsetSide, tempDipole.origin, tempDipole.vector);
     currentDipole.isUserValue = isUserValue;
-    currentDipole.modelIndex = viewer.getCurrentModelIndex();
+    currentDipole.modelIndex = vwr.getCurrentModelIndex();
   }
 
   final private static float E_ANG_PER_DEBYE = 0.208194f;
@@ -532,7 +532,7 @@ public class Dipoles extends Shape {
     dipoles = (Dipole[]) AU.ensureLength(dipoles, dipoleCount + 1);
     if (thisID == null || thisID.length() == 0)
       thisID = "dipole" + (dipoleCount + 1);
-    Dipole d = dipoles[dipoleCount++] = new Dipole(viewer
+    Dipole d = dipoles[dipoleCount++] = new Dipole(vwr
         .getCurrentModelIndex(), thisID, dipoleInfo, colix, DEFAULT_MAD, true);
     return d;
   }
@@ -587,11 +587,11 @@ public class Dipoles extends Shape {
       info.put("origin", dipole.origin);
       if (dipole.atoms[0] != null) {
         atomInfo = new Hashtable<String, Object>();
-        viewer.getAtomIdentityInfo(dipole.atoms[0].index, atomInfo);
+        vwr.getAtomIdentityInfo(dipole.atoms[0].index, atomInfo);
         List<Map<String, Object>> atoms = new  List<Map<String,Object>>();
         atoms.addLast(atomInfo);
         atomInfo = new Hashtable<String, Object>();
-        viewer.getAtomIdentityInfo(dipole.atoms[1].index, atomInfo);
+        vwr.getAtomIdentityInfo(dipole.atoms[1].index, atomInfo);
         atoms.addLast(atomInfo);
         info.put("atoms", atoms);
         info.put("magnitude", Float.valueOf(dipole.vector.length()));
@@ -605,7 +605,7 @@ public class Dipoles extends Shape {
     if (currentDipole == null)
       return;
     currentDipole.visible = true;
-    currentDipole.modelIndex = viewer.getCurrentModelIndex();
+    currentDipole.modelIndex = vwr.getCurrentModelIndex();
   }
 
   @Override
@@ -634,13 +634,13 @@ public class Dipoles extends Shape {
       return "";
     SB s = new SB();
     int thisModel = -1;
-    int modelCount = viewer.getModelCount();
+    int modelCount = vwr.getModelCount();
     for (int i = 0; i < dipoleCount; i++) {
       Dipole dipole = dipoles[i];
       if (dipole.isValid) {
         if (modelCount > 1 && dipole.modelIndex != thisModel)
           appendCmd(s, "frame "
-              + viewer.getModelNumberDotted(thisModel = dipole.modelIndex));
+              + vwr.getModelNumberDotted(thisModel = dipole.modelIndex));
         s.append(dipole.getShapeState());
         appendCmd(s, getColorCommandUnk("dipole", dipole.colix, translucentAllowed));
       }

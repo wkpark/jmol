@@ -28,8 +28,9 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolAdapterAtomIterator;
 import org.jmol.api.JmolAdapterBondIterator;
 import org.jmol.api.JmolAdapterStructureIterator;
-import org.jmol.api.JmolDocument;
 import org.jmol.api.JmolFilesReaderInterface;
+
+import javajs.api.GenericBinaryDocument;
 import javajs.util.List;
 import org.jmol.util.Logger;
 import javajs.util.P3;
@@ -195,14 +196,14 @@ public class SmarterJmolAdapter extends JmolAdapter {
     AtomSetCollection[] atomsets = (getReadersOnly ? null
         : new AtomSetCollection[size]);
     AtomSetCollectionReader r = null;
-    Viewer viewer = (Viewer) htParams.get("viewer"); // don't pass this on to user
+    Viewer vwr = (Viewer) htParams.get("vwr"); // don't pass this on to user
 
     for (int i = 0; i < size; i++) {
       try {
         if (r != null)
-          htParams.put("viewer", viewer);
+          htParams.put("vwr", vwr);
         Object reader = filesReader.getBufferedReaderOrBinaryDocument(i, false);
-        if (!(reader instanceof BufferedReader || reader instanceof JmolDocument))
+        if (!(reader instanceof BufferedReader || reader instanceof GenericBinaryDocument))
           return reader;
         Object ret = Resolver.getAtomCollectionReader(names[i],
             (types == null ? null : types[i]), reader, htParams, i);
@@ -228,7 +229,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
         }
       } catch (Throwable e) {
         Logger.error("" + e);
-        if (!viewer.isJS)
+        if (!vwr.isJS)
           e.printStackTrace();
         return "" + e;
       }
@@ -410,7 +411,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
     if (bufferedReader instanceof BufferedReader)
       ((BufferedReader) bufferedReader).close();
       else
-        ((JmolDocument) bufferedReader).close();
+        ((GenericBinaryDocument) bufferedReader).close();
   }
 
 }

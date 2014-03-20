@@ -48,33 +48,25 @@ class CalculationsMMFF extends Calculations {
   public static final int DA_D = 'D';
   public static final int DA_DA = DA_D + 'A';
 
-  private Map<Integer, Object> ffParams;
-
-  DistanceCalc bondCalc;
-  AngleCalc angleCalc;
-  TorsionCalc torsionCalc;
-  OOPCalc oopCalc;
-  VDWCalc vdwCalc;
-  ESCalc esCalc;
-  SBCalc sbCalc;
+  Calculation bondCalc, angleCalc, torsionCalc, oopCalc, vdwCalc, esCalc, sbCalc;
   //PositionCalc posCalc;
   
   ForceFieldMMFF mmff;
   
-  CalculationsMMFF(ForceField ff, Map<Integer, Object> ffParams, 
+  CalculationsMMFF(ForceField ff, Map<Object, Object> ffParams, 
       MinAtom[] minAtoms, MinBond[] minBonds, 
       MinAngle[] minAngles, MinTorsion[] minTorsions, MinPosition[] minPositions,
       List<Object[]> constraints) {
     super(ff, minAtoms, minBonds, minAngles, minTorsions, minPositions, constraints);
     mmff = (ForceFieldMMFF) ff;
     this.ffParams = ffParams;
-    bondCalc = new DistanceCalc();
-    angleCalc = new AngleCalc();
-    sbCalc = new SBCalc();
-    torsionCalc = new TorsionCalc();
-    oopCalc = new OOPCalc();
-    vdwCalc = new VDWCalc();
-    esCalc = new ESCalc();
+    bondCalc = new MMFFDistanceCalc().set(this);
+    angleCalc = new MMFFAngleCalc().set(this);
+    sbCalc = new MMFFSBCalc().set(this);
+    torsionCalc = new MMFFTorsionCalc().set(this);
+    oopCalc = new MMFFOOPCalc().set(this);
+    vdwCalc = new MMFFVDWCalc().set(this);
+    esCalc = new MMFFESCalc().set(this);
     //posCalc = new PositionCalc();
   }
   
@@ -88,29 +80,29 @@ class CalculationsMMFF extends Calculations {
 
     List<Object[]> calc;
 
-    DistanceCalc distanceCalc = new DistanceCalc();
+    MMFFDistanceCalc distanceCalc = (MMFFDistanceCalc) new MMFFDistanceCalc().set(this);
     calc = calculations[CALC_DISTANCE] = new  List<Object[]>();
     for (int i = 0; i < bondCount; i++)
       distanceCalc.setData(calc, minBonds[i]);
 
     calc = calculations[CALC_ANGLE] = new  List<Object[]>();
-    AngleCalc angleCalc = new AngleCalc();
+    MMFFAngleCalc angleCalc = (MMFFAngleCalc) new MMFFAngleCalc().set(this);
     for (int i = 0; i < angleCount; i++)
       angleCalc.setData(calc, minAngles[i]);
 
     calc = calculations[CALC_STRETCH_BEND] = new  List<Object[]>();
-    SBCalc sbCalc = new SBCalc();
+    MMFFSBCalc sbCalc = (MMFFSBCalc) new MMFFSBCalc().set(this);
     for (int i = 0; i < angleCount; i++)
       sbCalc.setData(calc, minAngles[i]);
 
     calc = calculations[CALC_TORSION] = new  List<Object[]>();
-    TorsionCalc torsionCalc = new TorsionCalc();
+    MMFFTorsionCalc torsionCalc = (MMFFTorsionCalc) new MMFFTorsionCalc().set(this);
     for (int i = 0; i < torsionCount; i++)
       torsionCalc.setData(calc, minTorsions[i]);
 
     calc = calculations[CALC_OOP] = new  List<Object[]>();
     // set up the special atom arrays
-    OOPCalc oopCalc = new OOPCalc();
+    MMFFOOPCalc oopCalc = (MMFFOOPCalc) new MMFFOOPCalc().set(this);
     for (int i = 0; i < atomCount; i++)
       if (isInvertible(minAtoms[i]))
         oopCalc.setData(calc, i);
@@ -123,12 +115,13 @@ class CalculationsMMFF extends Calculations {
 //      //  posCalc.setData(calc, minPositions[i].data, minPositions[i].ddata);
 //    }
 
-    pairSearch(calculations[CALC_VDW] = new  List<Object[]>(), new VDWCalc(),
-        calculations[CALC_ES] = new  List<Object[]>(), new ESCalc());
+    pairSearch(calculations[CALC_VDW] = new  List<Object[]>(), new MMFFVDWCalc().set(this),
+        calculations[CALC_ES] = new  List<Object[]>(), new MMFFESCalc().set(this));
 
     return true;
   }
 
+  @Override
   protected boolean isLinear(int i) {
     return MinAtom.isLinear(minAtoms[i]);
   }
@@ -196,209 +189,11 @@ class CalculationsMMFF extends Calculations {
     return 0.0;
   }
 
+  @Override
   Object getParameterObj(MinObject a) {
     return (a.key == null || a.ddata != null ? a.ddata : ffParams.get(a.key));
   }
 
-  Object getParameter(Integer key) {
-    return ffParams.get(key);
-  }
-  class DistanceCalc extends Calculation {
-
-    final static double FSTRETCH = FPAR / 2;
-    final static double CS = -2.0;
-    final static double CS2 = ((7.0/12.0)*(CS * CS));
-    
-    double r0, kb;
-    double delta2;
-
-    void setData(List<Object[]> calc, MinBond bond) {
-      ia = bond.data[0];
-      ib = bond.data[1];
-      Object data = getParameterObj(bond);
-      if (data == null)
-        return;
-      calc.addLast(new Object[] { new int[] { ia, ib },  data });
-    }
-
-    @Override
-    double compute(Object[] dataIn) {
-      
-      getPointers(dataIn);
-      kb = dData[0];
-      r0 = dData[1];
-      setPairVariables(this);
-      
-      delta = rab - r0; 
-      delta2 = delta * delta;
-      energy = FSTRETCH * kb * delta2 * (1 + CS * delta + CS2  * (delta2));
-
-      if (gradients) {
-        dE = FSTRETCH * kb * delta * (2 + 3 * CS * delta + 4 * CS2 * delta2);
-        addForces(this, 2);
-      }
-      
-      if (logging)
-        appendLogData(getDebugLine(CALC_DISTANCE, this));
-      
-      return energy;
-    }
-  }
-
-  
-  class AngleCalc extends Calculation {
-
-    void setData(List<Object[]> calc, MinAngle angle) {
-      Object data = getParameterObj(angle);
-      if (data == null)
-        return;
-      calc.addLast(new Object[] { angle.data, data, angle.key });      
-    }
-
-    final static double CB = -0.4 * DEG_TO_RAD;
-    
-    @Override
-    double compute(Object[] dataIn) {
-      
-      key = (Integer) dataIn[2];
-
-      getPointers(dataIn);
-      double ka = dData[0];
-      double t0 = dData[1];
-      setAngleVariables(this);
-
-      double dt = (theta * RAD_TO_DEG - t0);
-
-      // could have problems here for very distorted structures.
-
-      if (t0 == 180) {
-        energy = FPAR * ka * (1 + Math.cos(theta));
-        if (gradients)
-          dE = -FPAR * ka * Math.sin(theta);
-      } else {
-        energy = 0.021922 * ka * Math.pow(dt, 2) * (1 + CB * dt); // 0.043844/2
-        if (gradients)
-          dE = 0.021922 * ka * dt * (2 + 3 * CB * dt);
-      }
-      if (gradients)
-        addForces(this, 3);
-      
-      if (logging)
-        appendLogData(getDebugLine(CALC_ANGLE, this));
-      
-      return energy;
-    }
-
-  }
-
-  class SBCalc extends Calculation {
-    
-    void setData(List<Object[]> calc, MinAngle angle) {
-      // not applicable for linear types
-      if (isLinear(angle.data[1]))
-        return;
-      double[] data = (double[]) getParameter(angle.sbKey);
-      double[] datakat0 = (double[]) getParameterObj(angle);
-      double[] dataij = (double[]) getParameterObj(minBonds[angle.data[ForceField.ABI_IJ]]);
-      double[] datajk = (double[]) getParameterObj(minBonds[angle.data[ForceField.ABI_JK]]);
-      if (data == null || datakat0 == null || dataij == null || datajk == null)
-        return;
-      double theta0 = datakat0[1];
-      double r0ij = dataij[1];
-      double r0jk = datajk[1];
-      calc.addLast(new Object[] { angle.data, new double[] { data[0], theta0, r0ij }, angle.sbKey });
-      calc.addLast(new Object[] { new int[] {angle.data[2], angle.data[1], angle.data[0]}, 
-          new double[] { data[1], theta0, r0jk }, angle.sbKey  });
-    }
-
-    @Override
-    double compute(Object[] dataIn) {
-
-      key = (Integer) dataIn[2];
-
-      getPointers(dataIn);
-      double k = 2.51210 * dData[0];
-      double t0 = dData[1];
-      double r0_ab = dData[2];
-
-      setPairVariables(this);
-      setAngleVariables(this);
-      double dr_ab = rab - r0_ab;
-      delta = theta * RAD_TO_DEG - t0;
-      // equation 5
-      energy = k * dr_ab * delta;
-
-      if (logging)
-        appendLogData(getDebugLine(CALC_STRETCH_BEND, this));
-      
-      if (gradients) {
-        dE = k * dr_ab;
-        addForces(this, 3);
-        setPairVariables(this);
-        dE = k * delta;
-        addForces(this, 2);        
-      }
-      
-      return energy;
-    }
-  }
-
-  class TorsionCalc extends Calculation {
-
-    void setData(List<Object[]> calc, MinTorsion t) {
-      if (isLinear(t.data[1]) || isLinear(t.data[2]))
-        return;
-      Object data = getParameterObj(t);
-      if (data == null)
-        return;
-      calc.addLast(new Object[] { t.data, data, t.key });
-    }
-    
-    @Override
-    double compute(Object[] dataIn) {
-      
-      key = (Integer) dataIn[2];
-
-      getPointers(dataIn);
-      double v1 = dData[0];
-      double v2 = dData[1];
-      double v3 = dData[2];
-      
-      setTorsionVariables(this);
-
-      // use one single cosine calculation 
-      
-      double cosTheta = Math.cos(theta);
-      double cosTheta2 = cosTheta * cosTheta;
-      
-      energy = 0.5 * (v1 * (1 + cosTheta)
-          + v2 * (2 - 2 * cosTheta2)
-          + v3 * (1 + cosTheta * (4 * cosTheta2 - 3)));
-
-/*          
-        energy = 0.5 * (v1 * (1.0 + Math.cos(theta)) 
-            + v2 * (1 - Math.cos(2 * theta)) 
-            + v3 * (1 + Math.cos(3 * theta)));
-*/
-      if (gradients) {
-        double sinTheta = Math.sin(theta);        
-        dE = 0.5 * (-v1 * sinTheta 
-            + 4 * v2 * sinTheta * cosTheta 
-            + 3 * v3 * sinTheta * (1 - 4 * cosTheta2));
-/*
-        dE = 0.5 * (-v1 * sinTheta 
-        + 2 * v2 * Math.sin(2 * theta) 
-        - 3 * v3 * Math.sin(3 * theta));
-*/        
-        addForces(this, 4);
-      }
-      
-      if (logging)
-        appendLogData(getDebugLine(CALC_TORSION, this));
-      
-      return energy;
-    }
-  }
   
 //  class PositionCalc extends Calculation {
 //
@@ -415,156 +210,7 @@ class CalculationsMMFF extends Calculations {
 //    
 //  }
   
-  class OOPCalc extends Calculation {
-
-    final static double FOOPD = 0.043844 * RAD_TO_DEG;
-    final static double FOOP = FOOPD / 2 * RAD_TO_DEG;
-
-    int[] list = new int[4];
-    
-    void setData(List<Object[]> calc, int i) {
-      if (minAtoms[i].nBonds != 3)
-        return;// should not be possible...
-      int[] indices = minAtoms[i].getBondedAtomIndexes();
-      // our calculation is for first, not last, relative to plane of others, 
-      list[0] = indices[2];
-      list[1] = i;
-      list[2] = indices[1];
-      list[3] = indices[0];
-      double koop = mmff.getOutOfPlaneParameter(list);
-      if (koop == 0)
-        return;
-      double[] dk = new double[] { koop };
-      calc.addLast(new Object[] { new int[] { indices[0], i, indices[1], indices[2] },  dk });
-      calc.addLast(new Object[] { new int[] { indices[1], i, indices[2], indices[0] },  dk });
-      calc.addLast(new Object[] { new int[] { indices[2], i, indices[0], indices[1] },  dk });
-    }
-
-    @Override
-    double compute(Object[] dataIn) {
-      
-      getPointers(dataIn);
-      setOopVariables(this, false);
-      double koop = dData[0];
-      
-      energy = FOOP * koop * theta * theta; // theta in radians
-      
-      if (gradients) {
-        dE = FOOPD * koop * theta;
-        addForces(this, 4);
-      }
-
-      if (logging)
-        appendLogData(getDebugLine(CALC_OOP, this));
-
-      return energy;
-    }
-  }
   
-  class VDWCalc extends PairCalc {
-    
-    @Override
-    void setData(List<Object[]> calc, int ia, int ib) {
-      a = minAtoms[ia];
-      b = minAtoms[ib];
-      double[] dataA = (double[]) getParameter(a.vdwKey);
-      double[] dataB = (double[]) getParameter(b.vdwKey);
-      if (dataA == null || dataB == null)
-        return;
-      
-      double alpha_a = dataA[0]; 
-      double N_a = dataA[1]; 
-      double A_a = dataA[2]; 
-      double G_a = dataA[3]; 
-      int DA_a = (int) dataA[4];
-      
-      double alpha_b = dataB[0]; 
-      double N_b = dataB[1]; 
-      double A_b = dataB[2]; 
-      double G_b = dataB[3]; 
-      int DA_b = (int) dataB[4]; 
-      
-      double rs_aa = A_a * Math.pow(alpha_a, 0.25);
-      double rs_bb = A_b * Math.pow(alpha_b, 0.25);
-      double gamma = (rs_aa - rs_bb) / (rs_aa + rs_bb);
-      double rs = 0.5 * (rs_aa + rs_bb);
-      if (DA_a != DA_D && DA_b != DA_D)
-        rs *= (1.0 + 0.2 * (1.0 - Math.exp(-12.0 * gamma * gamma)));
-      double eps = ((181.16 * G_a * G_b * alpha_a * alpha_b) 
-          / (Math.sqrt(alpha_a / N_a) + Math.sqrt(alpha_b / N_b))) * Math.pow(rs, -6.0);
-
-      if(DA_a + DA_b == DA_DA) {
-        rs *= 0.8;
-        eps *= 0.5;
-      }
-      calc.addLast(new Object[] { new int[] {ia, ib}, new double[] { rs, eps } });
-    }
-
-    @Override
-    double compute(Object[] dataIn) {
-      getPointers(dataIn);
-      setPairVariables(this);
-      double rs = dData[0];
-      double eps = dData[1];
-      double r_rs = rab / rs;
-      double f1 = 1.07 / (r_rs + 0.07);
-      double f2 = 1.12 / (Math.pow(r_rs, 7) + 0.12);
-      
-      energy = eps * Math.pow(f1, 7)  * (f2 - 2);
-      
-      if (gradients) {
-        // dE = eps ( 7(f1^6)df1(f2-2) + (f1^7)df2 )
-        // dE = eps f1^6 ( 7df1(f2-2) + f1(df2) )
-        // df1/dr = -1.07 / (r_rs + 0.07)^2 * 1/rs 
-        //        = -f1^2 / 1.07 * 1/rs
-        // df2/dr = -1.12 / (r_rs^7 + 0.12)^2 * 7(r_rs)^6 * 1/rs 
-        //        = -f2^2 / 1.12 * 7(r_rs)^6 * 1/rs
-        // dE = -7 eps f1^7 / rs ( (f2-2)(f1 /1.07) + f2^2 / 1.12 * r_rs^6
-        dE = -7 * eps * Math.pow(f1, 7) /rs 
-            * (f1 / 1.07 * (f2 - 2) + f2 * f2 * Math.pow(r_rs, 6));
-        addForces(this, 2);
-      }
-
-      if (logging && Math.abs(energy) > 0.1)
-        appendLogData(getDebugLine(CALC_VDW, this));
-
-      return energy;
-    } 
-  }
-  
-  class ESCalc extends PairCalc {
-
-    private static final double BUFF = 0.05;
-
-    @Override
-    void setData(List<Object[]> calc, int ia, int ib) {
-      if (minAtoms[ia].partialCharge == 0 || minAtoms[ib].partialCharge == 0)
-        return;
-      calc.addLast(new Object[] { new int[] { ia, ib }, new double[] {
-           minAtoms[ia].partialCharge, minAtoms[ib].partialCharge, 
-           (minAtoms[ia].bs14.get(ib) ? 249.0537 : 332.0716) }
-      });
-    }
-
-    @Override
-    double compute(Object[] dataIn) {
-      getPointers(dataIn);
-      double f = dData[0] * dData[1] * dData[2];
-      setPairVariables(this);
-      double d = rab + BUFF;
-      energy = f / d; // DIEL = 1 here
-      
-      if (gradients) {
-        dE = -energy / d;
-        addForces(this, 2);
-      }
-
-      if (logging && Math.abs(energy) > 20)
-        appendLogData(getDebugLine(CALC_ES, this));
-
-      return energy;
-    }
-  }
   
   ///////// REPORTING /////////////
   

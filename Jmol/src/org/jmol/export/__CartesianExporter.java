@@ -82,14 +82,14 @@ abstract public class __CartesianExporter extends ___Exporter {
 
     P3 ptCamera = new P3();
     P3 pt = P3.new3(screenWidth / 2, screenHeight / 2, 0);
-    viewer.unTransformPoint(pt, ptCamera);
+    vwr.unTransformPoint(pt, ptCamera);
     ptCamera.sub(center);
     // this is NOT QUITE correct when the model has been shifted with CTRL-ALT
     // because in that case the center of distortion is not the screen center,
     // and these simpler perspective models don't allow for that.
     tempP3.set(screenWidth / 2, screenHeight / 2, cameraDistance
         * scalePixelsPerAngstrom);
-    viewer.unTransformPoint(tempP3, tempP3);
+    vwr.unTransformPoint(tempP3, tempP3);
     tempP3.sub(center);
     ptCamera.add(tempP3);
 
@@ -106,8 +106,8 @@ abstract public class __CartesianExporter extends ___Exporter {
       tempP1.setT(ptA);
       tempP2.setT(ptB);
     } else {
-      viewer.unTransformPoint(ptA, tempP1);
-      viewer.unTransformPoint(ptB, tempP2);
+      vwr.unTransformPoint(ptA, tempP1);
+      vwr.unTransformPoint(ptB, tempP2);
     }
   }
 
@@ -235,10 +235,10 @@ abstract public class __CartesianExporter extends ___Exporter {
   void drawCircle(int x, int y, int z, int diameter, short colix, boolean doFill) {
     // draw circle
     tempP3.set(x, y, z);
-    viewer.unTransformPoint(tempP3, tempP1);
-    float radius = viewer.unscaleToScreen(z, diameter) / 2;
+    vwr.unTransformPoint(tempP3, tempP1);
+    float radius = vwr.unscaleToScreen(z, diameter) / 2;
     tempP3.set(x, y, z + 1);
-    viewer.unTransformPoint(tempP3, tempP3);
+    vwr.unTransformPoint(tempP3, tempP3);
     outputCircle(tempP1, tempP3, radius, colix, doFill);
   }
 
@@ -261,7 +261,7 @@ abstract public class __CartesianExporter extends ___Exporter {
   void drawPixel(short colix, int x, int y, int z, int scale) {
     //measures, meshRibbon, dots
     tempP3.set(x, y, z);
-    viewer.unTransformPoint(tempP3, tempP1);
+    vwr.unTransformPoint(tempP3, tempP1);
     outputSphere(tempP1, 0.02f * scale, colix, true);
   }
 
@@ -269,16 +269,16 @@ abstract public class __CartesianExporter extends ___Exporter {
   void drawTextPixel(int argb, int x, int y, int z) {
     // text only
     tempP3.set(x, y, z);
-    viewer.unTransformPoint(tempP3, tempP1);
+    vwr.unTransformPoint(tempP3, tempP1);
     outputTextPixel(tempP1, argb);
   }
 
   @Override
   void fillConeScreen(short colix, byte endcap, int screenDiameter,
                       P3 screenBase, P3 screenTip, boolean isBarb) {
-    viewer.unTransformPoint(screenBase, tempP1);
-    viewer.unTransformPoint(screenTip, tempP2);
-    float radius = viewer.unscaleToScreen(screenBase.z, screenDiameter) / 2;
+    vwr.unTransformPoint(screenBase, tempP1);
+    vwr.unTransformPoint(screenTip, tempP2);
+    float radius = vwr.unscaleToScreen(screenBase.z, screenDiameter) / 2;
     if (radius < 0.05f)
       radius = 0.05f;
     outputCone(tempP1, tempP2, radius, colix);
@@ -328,7 +328,7 @@ abstract public class __CartesianExporter extends ___Exporter {
     }    
     // vectors, polyhedra
     // was (int) in older version
-    int mad = Math.round(viewer.unscaleToScreen((screenA.z + screenB.z) / 2,
+    int mad = Math.round(vwr.unscaleToScreen((screenA.z + screenB.z) / 2,
         screenDiameter) * 1000);
     fillCylinderScreenMad(colix, endcaps, mad, screenA, screenB);
   }
@@ -342,8 +342,8 @@ abstract public class __CartesianExporter extends ___Exporter {
 
   @Override
   void fillSphere(short colix, int diameter, P3 pt) {
-    viewer.unTransformPoint(pt, tempP1);
-    outputSphere(tempP1, viewer.unscaleToScreen(pt.z, diameter) / 2, colix, true);
+    vwr.unTransformPoint(pt, tempP1);
+    outputSphere(tempP1, vwr.unscaleToScreen(pt.z, diameter) / 2, colix, true);
   }
 
   @Override
@@ -354,9 +354,9 @@ abstract public class __CartesianExporter extends ___Exporter {
       tempP2.setT(ptB);
       tempP3.setT(ptC);
     } else {
-      viewer.unTransformPoint(ptA, tempP1);
-      viewer.unTransformPoint(ptB, tempP2);
-      viewer.unTransformPoint(ptC, tempP3);
+      vwr.unTransformPoint(ptA, tempP1);
+      vwr.unTransformPoint(ptB, tempP2);
+      vwr.unTransformPoint(ptC, tempP3);
     }
     outputTriangle(tempP1, tempP2, tempP3, colix);
     if (twoSided)

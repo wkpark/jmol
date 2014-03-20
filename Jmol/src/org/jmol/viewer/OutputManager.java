@@ -10,11 +10,11 @@ import java.util.Map;
 
 import org.jmol.api.Interface;
 import org.jmol.i18n.GT;
-import org.jmol.io.Binary;
 import org.jmol.io.JmolBinary;
 import org.jmol.java.BS;
 
 import javajs.api.GenericImageEncoder;
+import javajs.util.Binary;
 import javajs.util.OC;
 import javajs.util.List;
 import javajs.util.PT;
@@ -41,11 +41,11 @@ abstract class OutputManager {
   abstract protected String createSceneSet(String sceneFile, String type, int width,
                                            int height);
            
-  protected Viewer viewer;
+  protected Viewer vwr;
   protected double privateKey;
 
-  OutputManager setViewer(Viewer viewer, double privateKey) {
-    this.viewer = viewer;
+  OutputManager setViewer(Viewer vwr, double privateKey) {
+    this.vwr = vwr;
     this.privateKey = privateKey;
     return this;
   }
@@ -70,7 +70,7 @@ abstract class OutputManager {
     int len = -1;
     String ret = null;
     try {
-      if (!viewer.checkPrivateKey(privateKey))
+      if (!vwr.checkPrivateKey(privateKey))
         return "ERROR: SECURITY";
       if (bytes != null) {
         if (out == null)
@@ -100,7 +100,7 @@ abstract class OutputManager {
     if (pt >= 0)
     	fileName = fileName.substring(0,  pt);
     return (len < 0 ? "Creation of " + fileName + " failed: "
-        + (ret == null ? viewer.getErrorMessageUn() : ret) : "OK " + type + " "
+        + (ret == null ? vwr.getErrorMessageUn() : ret) : "OK " + type + " "
         + (len > 0 ? len + " " : "") + fileName
         + (quality == Integer.MIN_VALUE ? "" : "; quality=" + quality));
   }
@@ -137,11 +137,11 @@ abstract class OutputManager {
     boolean closeChannel = (out == null && fileName != null);
     boolean releaseImage = (objImage == null);
     Object image = (type.equals("ZIPDATA") ? "" : rgbbuf != null ? rgbbuf
-        : objImage != null ? objImage : viewer.getScreenImageBuffer(null, true));
+        : objImage != null ? objImage : vwr.getScreenImageBuffer(null, true));
     boolean isOK = false;
     try {
       if (image == null)
-        return errMsg = viewer.getErrorMessage();
+        return errMsg = vwr.getErrorMessage();
       if (out == null)
         out = openOutputChannel(privateKey, fileName, false, false);
       if (out == null)
@@ -149,7 +149,7 @@ abstract class OutputManager {
       fileName = out.getFileName();
       String comment = null;
       Object stateData = null;
-      params.put("date", viewer.apiPlatform.getDateFormat(false));
+      params.put("date", vwr.apiPlatform.getDateFormat(false));
       if (type.startsWith("JP")) {
         type = PT.rep(type, "E", "");
         if (type.equals("JPG64")) {
@@ -179,7 +179,7 @@ abstract class OutputManager {
         }
         if (type.equals("PNGT"))
           params.put("transparentColor",
-              Integer.valueOf(viewer.getBackgroundArgb()));
+              Integer.valueOf(vwr.getBackgroundArgb()));
         type = "PNG";
       }
       if (comment != null)
@@ -191,7 +191,7 @@ abstract class OutputManager {
         out.closeChannel();
       if (isOK) {
         if (params.containsKey("captureMsg"))
-          viewer.prompt((String) params.get("captureMsg"), "OK", null, true);
+          vwr.prompt((String) params.get("captureMsg"), "OK", null, true);
 
         if (asBytes)
           bytes = out.toByteArray();
@@ -203,7 +203,7 @@ abstract class OutputManager {
       }
     } finally {
       if (releaseImage)
-        viewer.releaseScreenImage();
+        vwr.releaseScreenImage();
       params.put("byteCount", Integer.valueOf(bytes != null ? bytes.length
           : isOK ? out.getByteCount() : -1));
       if (objImage != null) {
@@ -226,15 +226,15 @@ abstract class OutputManager {
 
   Object getWrappedState(String fileName, String[] scripts, Object objImage,
                          OC out) {
-    int width = viewer.apiPlatform.getImageWidth(objImage);
-    int height = viewer.apiPlatform.getImageHeight(objImage);
-    if (width > 0 && !viewer.global.imageState && out == null
-        || !viewer.global.preserveState)
+    int width = vwr.apiPlatform.getImageWidth(objImage);
+    int height = vwr.apiPlatform.getImageHeight(objImage);
+    if (width > 0 && !vwr.g.imageState && out == null
+        || !vwr.g.preserveState)
       return "";
-    String s = viewer.getStateInfo3(null, width, height);
+    String s = vwr.getStateInfo3(null, width, height);
     if (out != null) {
       if (fileName != null)
-        viewer.fileManager.clearPngjCache(fileName);
+        vwr.fileManager.clearPngjCache(fileName);
       // when writing a file, we need to make sure
       // the pngj cache for that file is cleared
       return createZipSet(s, scripts, true, out);
@@ -293,10 +293,10 @@ abstract class OutputManager {
     boolean doClose = true;
     try {
       int w = objImage == null ? -1 : PT.isAI(objImage) ? ((Integer) params
-          .get("width")).intValue() : viewer.apiPlatform
+          .get("width")).intValue() : vwr.apiPlatform
           .getImageWidth(objImage);
       int h = objImage == null ? -1 : PT.isAI(objImage) ? ((Integer) params
-          .get("height")).intValue() : viewer.apiPlatform
+          .get("height")).intValue() : vwr.apiPlatform
           .getImageHeight(objImage);
       params.put("imageWidth", Integer.valueOf(w));
       params.put("imageHeight", Integer.valueOf(h));
@@ -343,7 +343,7 @@ abstract class OutputManager {
       {
         pixels = new int[width * height];
       }
-      pixels = viewer.apiPlatform.grabPixels(objImage, width, height, pixels, 0,
+      pixels = vwr.apiPlatform.grabPixels(objImage, width, height, pixels, 0,
           height);
     }
     return pixels;
@@ -357,7 +357,7 @@ abstract class OutputManager {
   }
 
   OC getOutputChannel(String fileName, String[] fullPath) {
-    if (!viewer.haveAccess(ACCESS.ALL))
+    if (!vwr.haveAccess(ACCESS.ALL))
       return null;
     if (fileName != null) {
       fileName = getOutputFileNameFromDialog(fileName, Integer.MIN_VALUE);
@@ -388,7 +388,7 @@ abstract class OutputManager {
   String processWriteOrCapture(Map<String, Object> params) {
     String fileName = (String) params.get("fileName");
     if (fileName == null)
-      return viewer.clipImageOrPasteText((String) params.get("text"));
+      return vwr.clipImageOrPasteText((String) params.get("text"));
     BS bsFrames = (BS) params.get("bsFrames");
     int nVibes = getInt(params, "nVibes", 0);
     return (bsFrames != null || nVibes != 0 ? processMultiFrameOutput(fileName,
@@ -417,20 +417,20 @@ abstract class OutputManager {
     String fext = fileName.substring(ptDot);
     SB sb = new SB();
     if (bsFrames == null) {
-      viewer.tm.vibrationOn = true;
+      vwr.tm.vibrationOn = true;
       sb = new SB();
       for (int i = 0; i < nVibes; i++) {
         for (int j = 0; j < 20; j++) {
-          viewer.tm.setVibrationT(j / 20f + 0.2501f);
+          vwr.tm.setVibrationT(j / 20f + 0.2501f);
           if (!writeFrame(++n, froot, fext, params, sb))
             return "ERROR WRITING FILE SET: \n" + info;
         }
       }
-      viewer.setVibrationOff();
+      vwr.setVibrationOff();
     } else {
       for (int i = bsFrames.nextSetBit(0); i >= 0; i = bsFrames
           .nextSetBit(i + 1)) {
-        viewer.setCurrentModelIndex(i);
+        vwr.setCurrentModelIndex(i);
         if (!writeFrame(++n, froot, fext, params, sb))
           return "ERROR WRITING FILE SET: \n" + info;
       }
@@ -460,14 +460,14 @@ abstract class OutputManager {
       if (fileName == null)
         return null;
     }
-    viewer.mustRender = true;
-    int saveWidth = viewer.dimScreen.width;
-    int saveHeight = viewer.dimScreen.height;
-    viewer.resizeImage(width, height, true, true, false);
-    viewer.setModelVisibility();
-    String data = viewer.repaintManager.renderExport(viewer.gdata,
-        viewer.modelSet, params);
-    viewer.resizeImage(saveWidth, saveHeight, true, true, true);
+    vwr.mustRender = true;
+    int saveWidth = vwr.dimScreen.width;
+    int saveHeight = vwr.dimScreen.height;
+    vwr.resizeImage(width, height, true, true, false);
+    vwr.setModelVisibility();
+    String data = vwr.repaintManager.renderExport(vwr.gdata,
+        vwr.ms, params);
+    vwr.resizeImage(saveWidth, saveHeight, true, true, true);
     return data;
   }
 
@@ -488,12 +488,12 @@ abstract class OutputManager {
 
   byte[] getImageAsBytes(String type, int width, int height, int quality,
                          String[] errMsg) {
-    int saveWidth = viewer.dimScreen.width;
-    int saveHeight = viewer.dimScreen.height;
-    viewer.mustRender = true;
-    viewer.resizeImage(width, height, true, false, false);
-    viewer.setModelVisibility();
-    viewer.creatingImage = true;
+    int saveWidth = vwr.dimScreen.width;
+    int saveHeight = vwr.dimScreen.height;
+    vwr.mustRender = true;
+    vwr.resizeImage(width, height, true, false, false);
+    vwr.setModelVisibility();
+    vwr.creatingImage = true;
     byte[] bytes = null;
     try {
       Map<String, Object> params = new Hashtable<String, Object>();
@@ -507,14 +507,14 @@ abstract class OutputManager {
         bytes = (byte[]) bytesOrError;
     } catch (Exception e) {
       errMsg[0] = e.toString();
-      viewer.setErrorMessage("Error creating image: " + e, null);
+      vwr.setErrorMessage("Error creating image: " + e, null);
     } catch (Error er) {
-      viewer.handleError(er, false);
-      viewer.setErrorMessage("Error creating image: " + er, null);
-      errMsg[0] = viewer.getErrorMessage();
+      vwr.handleError(er, false);
+      vwr.setErrorMessage("Error creating image: " + er, null);
+      errMsg[0] = vwr.getErrorMessage();
     }
-    viewer.creatingImage = false;
-    viewer.resizeImage(saveWidth, saveHeight, true, false, true);
+    vwr.creatingImage = false;
+    vwr.resizeImage(saveWidth, saveHeight, true, false, true);
     return bytes;
   }
 
@@ -538,12 +538,12 @@ abstract class OutputManager {
     if (out == null)
       return "";
     fileName = fullPath[0];
-    String pathName = (type.equals("FILE") ? viewer.getFullPathName(false) : null);
+    String pathName = (type.equals("FILE") ? vwr.getFullPathName(false) : null);
     boolean getCurrentFile = (pathName != null && (pathName.equals("string")
         || pathName.indexOf("[]") >= 0 || pathName.equals("JSNode")));
     boolean asBytes = (pathName != null && !getCurrentFile);
     if (asBytes) {
-      pathName = viewer.getModelSetPathName();
+      pathName = vwr.getModelSetPathName();
       if (pathName == null)
         return null; // zapped
     }
@@ -552,11 +552,11 @@ abstract class OutputManager {
     // output stream all along. For JavaScript, this will be a ByteArrayOutputStream
     // which will then be posted to a server for a return that allows saving.
     out.setType(type);
-    String msg = (type.equals("PDB") || type.equals("PQR") ? viewer
-        .getPdbAtomData(null, out) : type.startsWith("PLOT") ? viewer.modelSet
-        .getPdbData(modelIndex, type.substring(5), viewer
+    String msg = (type.equals("PDB") || type.equals("PQR") ? vwr
+        .getPdbAtomData(null, out) : type.startsWith("PLOT") ? vwr.ms
+        .getPdbData(modelIndex, type.substring(5), vwr
             .getSelectedAtoms(), parameters, out) : getCurrentFile ? out
-        .append(viewer.getCurrentFileAsString()).toString() : (String) viewer
+        .append(vwr.getCurrentFileAsString()).toString() : (String) vwr
         .getFileAsBytes(pathName, out));
     out.closeChannel();
     if (msg != null)
@@ -570,21 +570,21 @@ abstract class OutputManager {
     fileName = setFullPath(params, froot
         + fileName.substring(fileName.length() - 4) + fext);
     String msg = handleOutputToFile(params, false);
-    viewer.scriptEcho(msg);
+    vwr.scriptEcho(msg);
     sb.append(msg).append("\n");
     return msg.startsWith("OK");
   }
 
   private String getOutputFileNameFromDialog(String fileName, int quality) {
-    if (fileName == null || viewer.isKiosk)
+    if (fileName == null || vwr.isKiosk)
       return null;
     boolean useDialog = fileName.startsWith("?");
     if (useDialog)
     	fileName = fileName.substring(1);
-    useDialog |= viewer.isApplet() && (fileName.indexOf("http:") < 0);
-    fileName = FileManager.getLocalPathForWritingFile(viewer, fileName);
+    useDialog |= vwr.isApplet() && (fileName.indexOf("http:") < 0);
+    fileName = FileManager.getLocalPathForWritingFile(vwr, fileName);
     if (useDialog)
-      fileName = viewer.dialogAsk(quality == Integer.MIN_VALUE ? "Save"
+      fileName = vwr.dialogAsk(quality == Integer.MIN_VALUE ? "Save"
           : "Save Image", fileName);
     return fileName;
   }
@@ -620,7 +620,7 @@ abstract class OutputManager {
     int height = getInt(params, "height", 0);
     int quality = getInt(params, "quality", Integer.MIN_VALUE);
     String captureMode = (String) params.get("captureMode");
-    if (captureMode != null && !viewer.allowCapture())
+    if (captureMode != null && !vwr.allowCapture())
       return "ERROR: Cannot capture on this platform.";
     boolean mustRender = (quality != Integer.MIN_VALUE);
     // localName will be fileName only if we are able to write to disk.
@@ -639,13 +639,13 @@ abstract class OutputManager {
     // JSmol/HTML5 WILL produce a localName now
     if (FileManager.isLocal(fileName))
       localName = fileName;
-    int saveWidth = viewer.dimScreen.width;
-    int saveHeight = viewer.dimScreen.height;
-    viewer.creatingImage = true;
+    int saveWidth = vwr.dimScreen.width;
+    int saveHeight = vwr.dimScreen.height;
+    vwr.creatingImage = true;
     if (mustRender) {
-      viewer.mustRender = true;
-      viewer.resizeImage(width, height, true, false, false);
-      viewer.setModelVisibility();
+      vwr.mustRender = true;
+      vwr.resizeImage(width, height, true, false, false);
+      vwr.setModelVisibility();
     }
     try {
       if (type.equals("JMOL"))
@@ -663,14 +663,14 @@ abstract class OutputManager {
         // both Jmol application and applet return null
         byte[] bytes = (byte[]) params.get("bytes");
         // String return here
-        sret = viewer.statusManager.createImage(fileName, type, text, bytes,
+        sret = vwr.statusManager.createImage(fileName, type, text, bytes,
             quality);
         if (sret == null) {
           // allow Jmol to do it            
           String msg = null;
           if (captureMode != null) {
             OC out = null;
-            Map<String, Object> cparams = viewer.captureParams;
+            Map<String, Object> cparams = vwr.captureParams;
             int imode = "ad on of en ca mo ".indexOf(captureMode
                 .substring(0, 2));
             //           0  3  6  9  12 15
@@ -681,11 +681,11 @@ abstract class OutputManager {
               out = getOutputChannel(localName, null);
               if (out == null) {
                 sret = msg = "ERROR: capture canceled";
-                viewer.captureParams = null;
+                vwr.captureParams = null;
               } else {
                 localName = out.getFileName();
                 msg = type + "_STREAM_OPEN " + localName;
-                viewer.captureParams = params;
+                vwr.captureParams = params;
                 params.put("captureFileName", localName);
                 params.put("captureCount", Integer.valueOf(1));
                 params.put("captureMode", "movie");
@@ -728,7 +728,7 @@ abstract class OutputManager {
                   msg = type + "_STREAM_"
                       + (captureMode.equals("end") ? "CLOSE " : "CANCEL ")
                       + params.get("captureFileName");
-                  viewer.captureParams = null;
+                  vwr.captureParams = null;
                   params.put("captureMsg",
                       GT._("Capture")
                           + ": "
@@ -746,27 +746,27 @@ abstract class OutputManager {
             params.put("fileName", localName);
           if (sret == null)
             sret = writeToOutputChannel(params);
-          viewer.statusManager.createImage(sret, type, null, null, quality);
+          vwr.statusManager.createImage(sret, type, null, null, quality);
           if (msg != null)
-            viewer.showString(msg + " (" + params.get("captureByteCount")
+            vwr.showString(msg + " (" + params.get("captureByteCount")
                 + " bytes)", false);
         }
       }
     } catch (Throwable er) {
       //er.printStackTrace();
-      Logger.error(viewer.setErrorMessage(sret = "ERROR creating image??: "
+      Logger.error(vwr.setErrorMessage(sret = "ERROR creating image??: "
           + er, null));
     } finally {
-      viewer.creatingImage = false;
+      vwr.creatingImage = false;
       if (quality != Integer.MIN_VALUE)
-        viewer.resizeImage(saveWidth, saveHeight, true, false, true);
+        vwr.resizeImage(saveWidth, saveHeight, true, false, true);
     }
     return sret;
   }
 
   String setLogFile(String value) {
     String path = null;
-    String logFilePath = viewer.getLogFilePath();
+    String logFilePath = vwr.getLogFilePath();
     /**
      * @j2sNative
      * 
@@ -789,12 +789,12 @@ abstract class OutputManager {
       value = null;
     else
       Logger.info(GT.o(GT._("Setting log file to {0}"), path));
-    if (value == null || !viewer.haveAccess(ACCESS.ALL)) {
+    if (value == null || !vwr.haveAccess(ACCESS.ALL)) {
       Logger.info(GT._("Cannot set log file path."));
       value = null;
     } else {
-      viewer.logFileName = path;
-      viewer.global.setS("_logFile", viewer.isApplet() ? value : path);
+      vwr.logFileName = path;
+      vwr.g.setS("_logFile", vwr.isApplet() ? value : path);
     }
     return value;
   }
@@ -803,15 +803,15 @@ abstract class OutputManager {
     try {
       boolean doClear = (data.equals("$CLEAR$"));
       if (data.indexOf("$NOW$") >= 0)
-        data = PT.rep(data, "$NOW$", viewer.apiPlatform
+        data = PT.rep(data, "$NOW$", vwr.apiPlatform
             .getDateFormat(false));
-      if (viewer.logFileName == null) {
+      if (vwr.logFileName == null) {
         Logger.info(data);
         return;
       }
       @SuppressWarnings("resource")
-      OC out = (viewer.haveAccess(ACCESS.ALL) ? openOutputChannel(privateKey,
-          viewer.logFileName, true, !doClear) : null);
+      OC out = (vwr.haveAccess(ACCESS.ALL) ? openOutputChannel(privateKey,
+          vwr.logFileName, true, !doClear) : null);
       if (!doClear) {
         int ptEnd = data.indexOf('\0');
         if (ptEnd >= 0)
@@ -833,7 +833,7 @@ abstract class OutputManager {
   private String createZipSet(String script, String[] scripts,
                               boolean includeRemoteFiles, OC out) {
     List<Object> v = new List<Object>();
-    FileManager fm = viewer.fileManager;
+    FileManager fm = vwr.fileManager;
     List<String> fileNames = new List<String>();
     Hashtable<Object, String> crcMap = new Hashtable<Object, String>();
     boolean haveSceneScript = (scripts != null && scripts.length == 3 && scripts[1]
@@ -854,7 +854,7 @@ abstract class OutputManager {
     List<String> newFileNames = new List<String>();
     for (int iFile = 0; iFile < nFiles; iFile++) {
       String name = fileNames.get(iFile);
-      boolean isLocal = !viewer.isJS && FileManager.isLocal(name);
+      boolean isLocal = !vwr.isJS && FileManager.isLocal(name);
       String newName = name;
       // also check that somehow we don't have a local file with the same name as
       // a fixed remote file name (because someone extracted the files and then used them)
@@ -914,7 +914,7 @@ abstract class OutputManager {
     v.addLast(null);
     v.addLast(new byte[0]);
     if (out.getFileName() != null) {
-      byte[] bytes = viewer.getImageAsBytes("PNG", 0, 0, -1, null);
+      byte[] bytes = vwr.getImageAsBytes("PNG", 0, 0, -1, null);
       if (bytes != null) {
         v.addLast("preview.png");
         v.addLast(null);
@@ -988,7 +988,7 @@ abstract class OutputManager {
       {
         bos = new BufferedOutputStream(out);
       }
-      FileManager fm = viewer.fileManager;
+      FileManager fm = vwr.fileManager;
       OutputStream zos = (OutputStream) Binary.getZipOutputStream(bos);
       for (int i = 0; i < fileNamesAndByteArrays.size(); i += 3) {
         String fname = (String) fileNamesAndByteArrays.get(i);
@@ -1020,7 +1020,7 @@ abstract class OutputManager {
         int nOut = 0;
         if (bytes == null) {
           // get data from disk
-          BufferedInputStream in = viewer.getBufferedInputStream(fname);
+          BufferedInputStream in = vwr.getBufferedInputStream(fname);
           int len;
           while ((len = in.read(buf, 0, 1024)) > 0) {
             zos.write(buf, 0, len);

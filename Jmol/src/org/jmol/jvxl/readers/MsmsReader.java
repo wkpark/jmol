@@ -25,9 +25,9 @@ package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
 
+import javajs.util.Binary;
 import javajs.util.PT;
 
-import org.jmol.io.Binary;
 import org.jmol.util.Logger;
 
 /*

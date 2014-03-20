@@ -37,9 +37,9 @@ public class MinimizationThread extends JmolThread {
   public MinimizationThread() {}
   
   @Override
-  public int setManager(Object manager, Viewer viewer, Object options) {
+  public int setManager(Object manager, Viewer vwr, Object options) {
     minimizer = (Minimizer) manager;
-    setViewer(viewer, "MinimizationThread");
+    setViewer(vwr, "MinimizationThread");
     return 0;
   }
   
@@ -53,7 +53,7 @@ public class MinimizationThread extends JmolThread {
         //should save the atom coordinates
         if (!this.minimizer.startMinimization())
           return;
-        viewer.startHoverWatcher(false);
+        vwr.startHoverWatcher(false);
         mode = MAIN;
         break;
       case MAIN:
@@ -74,7 +74,7 @@ public class MinimizationThread extends JmolThread {
         break;
       case FINISH:
         this.minimizer.endMinimization();
-        viewer.startHoverWatcher(true);
+        vwr.startHoverWatcher(true);
         return;
       }
   }

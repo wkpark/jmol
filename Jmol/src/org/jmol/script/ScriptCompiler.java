@@ -67,8 +67,8 @@ public class ScriptCompiler extends ScriptTokenParser {
    * 
    */
   
-  public ScriptCompiler(Viewer viewer) {
-    this.viewer = viewer;
+  public ScriptCompiler(Viewer vwr) {
+    this.vwr = vwr;
   }
   
   private String filename;
@@ -262,7 +262,7 @@ public class ScriptCompiler extends ScriptTokenParser {
     if (isStateScript) {
       ptSemi = script.indexOf(";", ichToken);
       if (ptSemi >= ichToken)
-        ScriptManager.setStateScriptVersion(viewer, script.substring(
+        ScriptManager.setStateScriptVersion(vwr, script.substring(
             ichToken + JC.STATE_VERSION_STAMP.length(), ptSemi).trim());
     }
     cchScript = script.length();
@@ -2790,7 +2790,7 @@ public class ScriptCompiler extends ScriptTokenParser {
       while (!lookingAtEndOfLine() && !lookingAtTerminator())
         ichToken++;
       errorLine = script.substring(ichCurrentCommand, ichToken);      
-      viewer.addCommand(errorLine + CommandHistory.ERROR_FLAG);
+      vwr.addCommand(errorLine + CommandHistory.ERROR_FLAG);
       Logger.error(errorMessage);
     }
     return false;

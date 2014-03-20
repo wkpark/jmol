@@ -77,7 +77,7 @@ public final class ModelLoader {
   //  System.out.println("ModelLoader " + this + " finalized");
   //}
   
-  private Viewer viewer;
+  private Viewer vwr;
   public ModelSet modelSet;
   private ModelSet mergeModelSet;
 
@@ -89,25 +89,25 @@ public final class ModelLoader {
   private int[][] group3Counts;
   private final int[] specialAtomIndexes = new int[JC.ATOMID_MAX];
   
-  public ModelLoader(Viewer viewer, String modelSetName,
+  public ModelLoader(Viewer vwr, String modelSetName,
       SB loadScript, Object atomSetCollection, ModelSet mergeModelSet,
       BS bsNew) {
-    this.viewer = viewer;
-    modelSet = new ModelSet(viewer, modelSetName);
-    JmolAdapter adapter = viewer.getModelAdapter();
+    this.vwr = vwr;
+    modelSet = new ModelSet(vwr, modelSetName);
+    JmolAdapter adapter = vwr.getModelAdapter();
     this.mergeModelSet = mergeModelSet;
     merging = (this.mergeModelSet != null && this.mergeModelSet.atomCount > 0);
     if (merging) {
       modelSet.canSkipLoad = false;
     } else {
-      viewer.resetShapes(false);
+      vwr.resetShapes(false);
     }
-    modelSet.preserveState = viewer.getPreserveState();
-    modelSet.showRebondTimes = viewer.getBoolean(T.showtiming);
+    modelSet.preserveState = vwr.getPreserveState();
+    modelSet.showRebondTimes = vwr.getBoolean(T.showtiming);
     if (bsNew == null) {
       initializeInfo(modelSetName, null);
       createModelSet(null, null, null);
-      viewer.setStringProperty("_fileType", "");
+      vwr.setStringProperty("_fileType", "");
       return;
     }    
     if (!modelSet.preserveState)
@@ -154,7 +154,7 @@ public final class ModelLoader {
 
   @SuppressWarnings("unchecked")
   private void initializeInfo(String name, Map<String, Object> info) {
-    modelSet.g3d = viewer.getGraphicsData();
+    modelSet.g3d = vwr.getGraphicsData();
     //long timeBegin = System.currentTimeMillis();
     modelSet.modelSetTypeName = name;
     modelSet.isXYZ = (name == "xyz");
@@ -176,7 +176,7 @@ public final class ModelLoader {
     isPyMOLsession = modelSet.getModelSetAuxiliaryInfoBoolean("isPyMOL");
     doAddHydrogens = (jbr != null && !isTrajectory && !isPyMOLsession
         && !modelSet.getModelSetAuxiliaryInfoBoolean("pdbNoHydrogens") && (modelSet
-        .getModelSetAuxiliaryInfoBoolean("pdbAddHydrogens") || viewer
+        .getModelSetAuxiliaryInfoBoolean("pdbAddHydrogens") || vwr
         .getBooleanProperty("pdbAddHydrogens")));
     if (info != null) {
       info.remove("pdbNoHydrogens");
@@ -271,7 +271,7 @@ public final class ModelLoader {
         .getAtomSetCount(atomSetCollection));
     // cannot append a trajectory into a previous model
     appendNew = (!merging || adapter == null || adapterModelCount > 1
-        || isTrajectory || viewer.getBoolean(T.appendnew));
+        || isTrajectory || vwr.getBoolean(T.appendnew));
     htAtomMap.clear();
     chainOf = new Chain[defaultGroupCount];
     group3Of = new String[defaultGroupCount];
@@ -356,20 +356,20 @@ public final class ModelLoader {
     }
 
     
-    setDefaultRendering(viewer.getInt(T.smallmoleculemaxatoms));
+    setDefaultRendering(vwr.getInt(T.smallmoleculemaxatoms));
 
-    RadiusData rd = viewer.getDefaultRadiusData();
+    RadiusData rd = vwr.getDefaultRadiusData();
     int atomCount = modelSet.atomCount;
     Atom[] atoms = modelSet.atoms;
     for (int i = baseAtomIndex; i < atomCount; i++)
-      atoms[i].setMadAtom(viewer, rd);
+      atoms[i].setMadAtom(vwr, rd);
     Model[] models = modelSet.models;
     for (int i = models[baseModelIndex].firstAtomIndex; i < atomCount; i++)
       models[atoms[i].modelIndex].bsAtoms.set(i);
 
     freeze();
     finalizeShapes();
-    viewer.setModelSet(modelSet);
+    vwr.setModelSet(modelSet);
     setAtomProperties();
     if (adapter != null)
       adapter.finish(atomSetCollection);    
@@ -417,7 +417,7 @@ public final class ModelLoader {
           value = jbr.fixPropertyValue(bs, value);
         key = "property_" + key.toLowerCase();
         Logger.info("creating " + key + " for model " + modelSet.getModelName(i));
-        viewer.setData(key, new Object[] { key, value, bs, Integer.valueOf(0), Boolean.FALSE }, modelSet.atomCount, 0,
+        vwr.setData(key, new Object[] { key, value, bs, Integer.valueOf(0), Boolean.FALSE }, modelSet.atomCount, 0,
             0, Integer.MAX_VALUE, 0);
       }
     }
@@ -433,7 +433,7 @@ public final class ModelLoader {
         baseModelIndex = baseModelCount;
         modelSet.modelCount = baseModelCount + adapterModelCount;
       } else {
-        baseModelIndex = viewer.getCurrentModelIndex();
+        baseModelIndex = vwr.getCurrentModelIndex();
         if (baseModelIndex < 0)
           baseModelIndex = baseModelCount - 1;
         modelSet.modelCount = baseModelCount;
@@ -508,7 +508,7 @@ public final class ModelLoader {
       if (modelAuxiliaryInfo.containsKey("modelID"))
         modelAuxiliaryInfo.put("modelID0", modelAuxiliaryInfo.get("modelID"));
       Properties modelProperties = (Properties) modelAuxiliaryInfo.get("modelProperties");
-      viewer.setStringProperty("_fileType", (String) modelAuxiliaryInfo
+      vwr.setStringProperty("_fileType", (String) modelAuxiliaryInfo
           .get("fileType"));
       if (modelName == null)
         modelName = (jmolData != null && jmolData.indexOf(";") > 2 ? jmolData.substring(jmolData
@@ -529,7 +529,7 @@ public final class ModelLoader {
         modelSet.someModelsHaveSymmetry = true;
     }
     Model m = modelSet.models[baseModelIndex];
-    viewer.setSmilesString((String) modelSet.modelSetAuxiliaryInfo.get("smilesString"));
+    vwr.setSmilesString((String) modelSet.modelSetAuxiliaryInfo.get("smilesString"));
     String loadState = (String) modelSet.modelSetAuxiliaryInfo.remove("loadState");
     SB loadScript = (SB)modelSet.modelSetAuxiliaryInfo.remove("loadScript");
     if (loadScript.indexOf("Viewer.AddHydrogens") < 0 || !m.isModelKit) {
@@ -739,7 +739,7 @@ public final class ModelLoader {
     int iLast = -1;
     boolean isPdbThisModel = false;
     boolean addH = false;
-    boolean isLegacyHAddition = false;//viewer.getBoolean(T.legacyhaddition);
+    boolean isLegacyHAddition = false;//vwr.getBoolean(T.legacyhaddition);
     JmolAdapterAtomIterator iterAtom = adapter.getAtomIterator(atomSetCollection);
     int nRead = 0;
     Model[] models = modelSet.models;
@@ -904,7 +904,7 @@ public final class ModelLoader {
         .getBondIterator(atomSetCollection);
     if (iterBond == null)
       return;
-    short mad = viewer.getMadBond();
+    short mad = vwr.getMadBond();
     modelSet.defaultCovalentMad = (jmolData == null ? mad : 0);
     boolean haveMultipleBonds = false;
     while (iterBond.hasNext()) {
@@ -926,7 +926,7 @@ public final class ModelLoader {
       }
     }
     if (haveMultipleBonds && modelSet.someModelsHaveSymmetry
-        && !viewer.getBoolean(T.applysymmetrytobonds))
+        && !vwr.getBoolean(T.applysymmetrytobonds))
       Logger
           .info("ModelSet: use \"set appletSymmetryToBonds TRUE \" to apply the file-based multiple bonds to symmetry-generated atoms.");
     modelSet.defaultCovalentMad = mad;
@@ -1059,9 +1059,9 @@ public final class ModelLoader {
 
     // 2. for each model in the collection,
     int modelAtomCount = 0;
-    boolean symmetryAlreadyAppliedToBonds = viewer.getBoolean(T.applysymmetrytobonds);
-    boolean doAutoBond = viewer.getBoolean(T.autobond);
-    boolean forceAutoBond = viewer.getBoolean(T.forceautobond);
+    boolean symmetryAlreadyAppliedToBonds = vwr.getBoolean(T.applysymmetrytobonds);
+    boolean doAutoBond = vwr.getBoolean(T.autobond);
+    boolean forceAutoBond = vwr.getBoolean(T.forceautobond);
     BS bs = null;
     boolean autoBonding = false;
     int modelCount = modelSet.modelCount;
@@ -1109,7 +1109,7 @@ public final class ModelLoader {
       if (modulationOn)
         modelSet.setModulation(null, true, null, false);
       modelSet.autoBondBs4(bs, bs, bsExclude, null,
-          modelSet.defaultCovalentMad, viewer.getBoolean(T.legacyautobonding));
+          modelSet.defaultCovalentMad, vwr.getBoolean(T.legacyautobonding));
       Logger
           .info("ModelSet: autobonding; use  autobond=false  to not generate bonds automatically");
     } else {
@@ -1252,7 +1252,7 @@ public final class ModelLoader {
       modelSet.freezeModels();
       return;
     }
-    boolean asDSSP = viewer.getBoolean(T.defaultstructuredssp);
+    boolean asDSSP = vwr.getBoolean(T.defaultstructuredssp);
     String ret = modelSet.calculateStructuresAllExcept(structuresDefinedInFile, 
           asDSSP, 
           false, true, true, asDSSP); // now DSSP
@@ -1376,13 +1376,13 @@ public final class ModelLoader {
   ///////////////  shapes  ///////////////
   
   private void finalizeShapes() {
-    modelSet.shapeManager = viewer.getShapeManager();
+    modelSet.shapeManager = vwr.getShapeManager();
     modelSet.shapeManager.setModelSet(modelSet);
-    modelSet.setBsHidden(viewer.getHiddenSet());
+    modelSet.setBsHidden(vwr.getHiddenSet());
     if (!merging)
       modelSet.shapeManager.resetShapes();
     modelSet.shapeManager.loadDefaultShapes(modelSet);
-    if (modelSet.someModelsHaveAromaticBonds && viewer.getBoolean(T.smartaromatic))      
+    if (modelSet.someModelsHaveAromaticBonds && vwr.getBoolean(T.smartaromatic))      
       modelSet.assignAromaticBondsBs(false, null);
     if (merging && baseModelCount == 1)
         modelSet.shapeManager.setShapePropertyBs(JC.SHAPE_MEASURES, "clearModelIndex", null, null);
@@ -1437,7 +1437,7 @@ public final class ModelLoader {
       // adjust atom arrays
       modelSet.adjustAtomArrays(mapNewToOld, baseAtomIndex, n);
     } else {
-      modelSet.viewer.deleteAtoms(bsDeletedAtoms, false);
+      modelSet.vwr.deleteAtoms(bsDeletedAtoms, false);
     }
 
     modelSet.calcBoundBoxDimensions(null, 1);
@@ -1446,15 +1446,15 @@ public final class ModelLoader {
   }
 
   
-  public static String createAtomDataSet(Viewer viewer, ModelSet modelSet, int tokType, Object atomSetCollection,
+  public static String createAtomDataSet(Viewer vwr, ModelSet modelSet, int tokType, Object atomSetCollection,
                                 BS bsSelected) {
     if (atomSetCollection == null)
       return null;
     // must be one of JmolConstants.LOAD_ATOM_DATA_TYPES
-    JmolAdapter adapter = viewer.getModelAdapter();
+    JmolAdapter adapter = vwr.getModelAdapter();
     P3 pt = new P3();
     Atom[] atoms = modelSet.atoms;
-    float tolerance = viewer.getFloat(T.loadatomdatatolerance);
+    float tolerance = vwr.getFloat(T.loadatomdatatolerance);
     if (modelSet.unitCells != null)
       for (int i = bsSelected.nextSetBit(0); i >= 0; i = bsSelected
           .nextSetBit(i + 1))
@@ -1464,7 +1464,7 @@ public final class ModelLoader {
         }
     int i = -1;
     int n = 0;
-    boolean loadAllData = (BSUtil.cardinalityOf(bsSelected) == viewer
+    boolean loadAllData = (BSUtil.cardinalityOf(bsSelected) == vwr
         .getAtomCount());
     for (JmolAdapterAtomIterator iterAtom = adapter
         .getAtomIterator(atomSetCollection); iterAtom.hasNext();) {
@@ -1527,7 +1527,7 @@ public final class ModelLoader {
     case T.vibxyz:
       String vibName = adapter.getAtomSetName(atomSetCollection, 0);
       Logger.info("_vibrationName = " + vibName);
-      viewer.setStringProperty("_vibrationName", vibName);
+      vwr.setStringProperty("_vibrationName", vibName);
       break;
     case T.xyz:
       Logger.info(n + " atom positions read");

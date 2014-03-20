@@ -28,7 +28,7 @@ package org.jmol.script;
 public class ScriptInterruption extends ScriptException {
   //boolean willResume;
   public ScriptInterruption(ScriptEval eval, String why, int millis) {
-    super(eval, why, "!", millis == Integer.MIN_VALUE || eval.viewer.autoExit);
+    super(eval, why, "!", millis == Integer.MIN_VALUE || eval.vwr.autoExit);
     //willResume = (millis != Integer.MAX_VALUE && millis != Integer.MIN_VALUE);
     // the delay execution is here just to ensure that even a delay of 0 
     // still forces the interruption.

@@ -28,12 +28,12 @@ import java.io.BufferedReader;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import javajs.api.GenericBinaryDocument;
 import javajs.util.PT;
 
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
-import org.jmol.api.JmolDocument;
 import org.jmol.io.LimitedLineReader;
 import org.jmol.util.Logger;
 
@@ -206,7 +206,7 @@ public class Resolver {
    */
   private static String determineAtomSetCollectionReader(Object readerOrDocument, boolean returnLines)
       throws Exception {
-    if (readerOrDocument instanceof JmolDocument) {
+    if (readerOrDocument instanceof GenericBinaryDocument) {
       // only binary type to date;      
       return "PyMOL";
     }

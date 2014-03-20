@@ -16,7 +16,7 @@ import javajs.util.SB;
 
 public abstract class JmolStateCreator {
 
-  abstract void setViewer(Viewer viewer);
+  abstract void setViewer(Viewer vwr);
 
   abstract String getStateScript(String type, int width, int height);
 
@@ -24,8 +24,6 @@ public abstract class JmolStateCreator {
   
   abstract String getSpecularState();
   
-  abstract String getLoadState(Map<String, Object> htParams);
-
   abstract String getModelState(SB sfunc, boolean isAll,
                                boolean withProteinStructure);
 

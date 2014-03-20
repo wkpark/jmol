@@ -10,7 +10,7 @@ import org.jmol.viewer.Viewer;
 
 public interface JmolPropertyManager {
 
-  void setViewer(Viewer viewer);
+  void setViewer(Viewer vwr);
 
   Object getProperty(String returnType, String infoType, Object paramInfo);
 

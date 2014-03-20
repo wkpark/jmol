@@ -56,7 +56,7 @@ public class GT implements Translator {
   private boolean doTranslate = true;
   private String language;
   private static boolean allowDebug = false;
-  static Viewer viewer;
+  static Viewer vwr;
 
   public GT() {
    //  
@@ -69,8 +69,8 @@ public class GT implements Translator {
     return _(s);
   }
   
-  public GT(JmolViewer viewer, String langCode) {
-    GT.viewer = (Viewer) viewer;
+  public GT(JmolViewer vwr, String langCode) {
+    GT.vwr = (Viewer) vwr;
     /**
      * @j2sIgnore
      * 

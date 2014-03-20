@@ -189,7 +189,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
 
   @Override
   public void processBinaryDocument() throws Exception {
-    PickleReader reader = new PickleReader(binaryDoc, viewer);
+    PickleReader reader = new PickleReader(binaryDoc, vwr);
     Map<String, Object> map = reader.getMap(logging);
     reader = null;
     process(map);
@@ -217,7 +217,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     pymolScene.setReaderObjects();
     
     if (haveMeasurements) {
-      appendLoadNote(viewer.getMeasurementInfoAsString());
+      appendLoadNote(vwr.getMeasurementInfoAsString());
       setLoadNote();
     }
     
@@ -225,12 +225,12 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       String[] scenes = new String[sceneOrder.size()];
       for (int i = scenes.length; --i >= 0;)
         scenes[i] = (String) sceneOrder.get(i);
-      Map<String, Object> info = viewer.getModelSetAuxiliaryInfo();
+      Map<String, Object> info = vwr.getModelSetAuxiliaryInfo();
       info.put("scenes", scenes);
     }
     
-    viewer.setTrajectoryBs(BSUtil.newBitSet2(baseModelIndex,
-        viewer.modelSet.modelCount));
+    vwr.setTrajectoryBs(BSUtil.newBitSet2(baseModelIndex,
+        vwr.ms.modelCount));
     if (!isStateScript)
       pymolScene.setFrameObject(0, null);
 
@@ -238,14 +238,14 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
 
     if (bsBytesExcluded != null) {
       int nExcluded = bsBytesExcluded.cardinality();
-      byte[] bytes0 = (byte[]) viewer.getFileAsBytes(filePath, null);
+      byte[] bytes0 = (byte[]) vwr.getFileAsBytes(filePath, null);
       byte[] bytes = new byte[bytes0.length - nExcluded];
       for (int i = bsBytesExcluded.nextClearBit(0), n = bytes0.length, pt = 0; i < n; i = bsBytesExcluded
           .nextClearBit(i + 1))
         bytes[pt++] = bytes0[i];
       bytes0 = null;
       String fileName = filePath;
-      viewer.cachePut(fileName, bytes);
+      vwr.cachePut(fileName, bytes);
     }
   }
 
@@ -269,12 +269,12 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       Logger.info("PyMOL session file: " + file.get(2));
     //atomSetCollection.setAtomSetCollectionAuxiliaryInfo("settings", settings);
     setUniqueSettings(getMapList(map, "unique_settings"));
-    pymolScene = new PyMOLScene(this, viewer, settings, uniqueSettings, 
+    pymolScene = new PyMOLScene(this, vwr, settings, uniqueSettings, 
         pymolVersion, haveScenes, baseAtomIndex, baseModelIndex, doCache, filePath);
 
     // just log and display some information here
 
-    logging = (viewer.getLogFileName().length() > 0);
+    logging = (vwr.getLogFileName().length() > 0);
     List<Object> names = getMapList(map, "names");
     for (Map.Entry<String, Object> e : map.entrySet()) {
       String name = e.getKey();
@@ -288,23 +288,23 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     }
     if (logging) {
       if (logging)
-        viewer.log("$CLEAR$");
+        vwr.log("$CLEAR$");
       //String s = map.toString();//.replace('=', '\n');
       for (Map.Entry<String, Object> e : map.entrySet()) {
         String name = e.getKey();
         if (!"names".equals(name)) {
-          viewer.log("\n===" + name + "===");
-          viewer.log(PT.rep(e.getValue().toString(), "[",
+          vwr.log("\n===" + name + "===");
+          vwr.log(PT.rep(e.getValue().toString(), "[",
               "\n["));
         }
       }
-      viewer.log("\n===names===");
+      vwr.log("\n===names===");
       for (int i = 1; i < names.size(); i++) {
-        viewer.log("");
+        vwr.log("");
         List<Object> list = (List<Object>) names.get(i);
-        viewer.log(" =" + list.get(0).toString() + "=");
+        vwr.log(" =" + list.get(0).toString() + "=");
         try {
-          viewer.log(PT.rep(list.toString(), "[", "\n["));
+          vwr.log(PT.rep(list.toString(), "[", "\n["));
         } catch (Throwable e) {
           //
         }
@@ -345,7 +345,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
         atomSetCollection.setAtomSetCollectionAuxiliaryInfo(
             "perferredWidthHeight", new int[] { width, height });
         //Dimension d = 
-        viewer.resizeInnerPanel(width, height);
+        vwr.resizeInnerPanel(width, height);
       } else {
         note = "PyMOL dimensions?";
       }
@@ -422,7 +422,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     pymolScene.finalizeVisibility();
     if (!isStateScript) {
       // same idea as for a Jmol state -- session reinitializes
-      viewer.initialize(true);
+      vwr.initialize(true);
       addJmolScript(pymolScene.getViewScript(getMapList(map, "view"))
           .toString());
     }
@@ -1045,7 +1045,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     if (sym.equals("A"))
       sym = "C";
     boolean isHetero = (intAt(a, 19) != 0);
-    int ichain = viewer.getChainID(chainID);
+    int ichain = vwr.getChainID(chainID);
     Atom atom = processAtom(new Atom(), name, altLoc.charAt(0), group3, ichain, seqNo, insCode.charAt(0), isHetero, sym);
     if (!filterPDBAtom(atom, fileAtomIndex++))
       return null;
@@ -1230,7 +1230,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
    * 
    */
   private void processMeshes() {
-    viewer.cachePut(pymolScene.surfaceInfoName, volumeData);
+    vwr.cachePut(pymolScene.surfaceInfoName, volumeData);
     for (int i = mapObjects.size(); --i >= 0;) {
       List<Object> obj = mapObjects.get(i);
       String objName = obj.get(obj.size() - 1).toString();
@@ -1270,7 +1270,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
    * 
    */
   private void processDefinitions() {
-    String s = viewer.getAtomDefs(pymolScene.setAtomDefs());
+    String s = vwr.getAtomDefs(pymolScene.setAtomDefs());
     if (s.length() > 2)
       s = s.substring(0, s.length() - 2);
     appendLoadNote(s);

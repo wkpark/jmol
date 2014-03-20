@@ -41,11 +41,11 @@ public class ScriptQueueThread extends JmolThread {
   private boolean startedByCommandThread = false;
   private int pt;
 
-  public ScriptQueueThread(JmolScriptManager scriptManager, Viewer viewer, boolean startedByCommandThread, int pt) {
+  public ScriptQueueThread(JmolScriptManager scriptManager, Viewer vwr, boolean startedByCommandThread, int pt) {
     super();
-    setViewer(viewer, "QueueThread" + pt);
+    setViewer(vwr, "QueueThread" + pt);
     this.scriptManager = scriptManager;
-    this.viewer = viewer;
+    this.vwr = vwr;
     this.startedByCommandThread = startedByCommandThread;
     this.pt = pt;
   }
@@ -97,7 +97,7 @@ public class ScriptQueueThread extends JmolThread {
     //System.out.println("removing: " + scriptItem + " " + script);
     queue.remove(0);
     //System.out.println("removed: " + scriptItem);
-    viewer.evalStringWaitStatusQueued(returnType, script, statusList, isScriptFile, isQuiet, true);
+    vwr.evalStringWaitStatusQueued(returnType, script, statusList, isScriptFile, isQuiet, true);
     if (queue.size() == 0) {// might have been cleared with an exit
       //Logger.info("SCRIPT QUEUE READY", 0);
       return false;

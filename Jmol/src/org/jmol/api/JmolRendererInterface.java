@@ -23,11 +23,11 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
 
   public abstract String getExportName();
 
-  public abstract Object initializeExporter(Viewer viewer,
+  public abstract Object initializeExporter(Viewer vwr,
                                              double privateKey, GData gdata,
                                              Map<String, Object> params);
 
-  public abstract boolean initializeOutput(Viewer viewer,
+  public abstract boolean initializeOutput(Viewer vwr,
                                         double privateKey, GData gdata,
                                         Map<String, Object> params);
 

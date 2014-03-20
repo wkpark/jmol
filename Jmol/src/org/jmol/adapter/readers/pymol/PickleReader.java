@@ -1,5 +1,6 @@
 package org.jmol.adapter.readers.pymol;
 
+import javajs.api.GenericBinaryDocument;
 import javajs.util.List;
 import javajs.util.SB;
 
@@ -9,7 +10,6 @@ import java.util.Hashtable;
 
 import java.util.Map;
 
-import org.jmol.api.JmolDocument;
 import org.jmol.viewer.Viewer;
 
 /**
@@ -31,8 +31,8 @@ import org.jmol.viewer.Viewer;
  */
 class PickleReader {
 
-  private Viewer viewer;
-  private JmolDocument binaryDoc;
+  private Viewer vwr;
+  private GenericBinaryDocument binaryDoc;
   private List<Object> stack = new List<Object>();
   private List<Integer> marks = new List<Integer>();
   private List<Object> build = new List<Object>();
@@ -95,13 +95,13 @@ class PickleReader {
 //  private final static byte STRING = 83; /* S */
 //  private final static byte UNICODE = 86; /* V */
 
-  PickleReader(JmolDocument doc, Viewer viewer) {
+  PickleReader(GenericBinaryDocument doc, Viewer vwr) {
     binaryDoc = doc;
-    this.viewer = viewer;
+    this.vwr = vwr;
   }
 
   private void log(String s) {
-    viewer.log(s + "\0");
+    vwr.log(s + "\0");
   }
   
   @SuppressWarnings("unchecked")

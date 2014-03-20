@@ -9,7 +9,7 @@ import org.jmol.viewer.Viewer;
 
 public interface JmolDataManager {
 
-  JmolDataManager set(Viewer viewer);
+  JmolDataManager set(Viewer vwr);
 
   boolean getDataState(JmolStateCreator stateCreator, SB commands);
 

@@ -456,11 +456,11 @@ public class IsosurfaceMesh extends Mesh {
 
   /**
    * 
-   * @param viewer
+   * @param vwr
    * @return a Hashtable containing "values" and "colors"
    * 
    */
-  Map<String, Object> getContourList(Viewer viewer) {
+  Map<String, Object> getContourList(Viewer vwr) {
     Map<String, Object> ht = new Hashtable<String, Object>();
     ht.put("values",
         (jvxlData.contourValuesUsed == null ? jvxlData.contourValues
@@ -500,17 +500,17 @@ public class IsosurfaceMesh extends Mesh {
     }
   }
 
-  void setVertexColixesForAtoms(Viewer viewer, short[] colixes, int[] atomMap,
+  void setVertexColixesForAtoms(Viewer vwr, short[] colixes, int[] atomMap,
                                 BS bs) {
     jvxlData.vertexDataOnly = true;
     jvxlData.vertexColors = new int[vertexCount];
     jvxlData.nVertexColors = vertexCount;
-    Atom[] atoms = viewer.modelSet.atoms;
+    Atom[] atoms = vwr.ms.atoms;
     for (int i = mergeVertexCount0; i < vertexCount; i++) {
       int iAtom = vertexSource[i];
       if (iAtom < 0 || !bs.get(iAtom))
         continue;
-      jvxlData.vertexColors[i] = viewer.getColorArgbOrGray(vertexColixes[i] = C
+      jvxlData.vertexColors[i] = vwr.getColorArgbOrGray(vertexColixes[i] = C
           .copyColixTranslucency(colix, atoms[iAtom].getColix()));
 
       short colix = (colixes == null ? C.INHERIT_ALL : colixes[atomMap[iAtom]]);
@@ -714,12 +714,12 @@ public class IsosurfaceMesh extends Mesh {
 
   /**
    * remaps colors based on a new color scheme or translucency level
-   * @param viewer 
+   * @param vwr 
    * 
    * @param ce
    * @param translucentLevel
    */
-  void remapColors(Viewer viewer, ColorEncoder ce, float translucentLevel) {
+  void remapColors(Viewer vwr, ColorEncoder ce, float translucentLevel) {
     if (ce == null)
       ce = colorEncoder;
     if (ce == null)
@@ -746,11 +746,11 @@ public class IsosurfaceMesh extends Mesh {
       jvxlData.vertexDataOnly = true;
       jvxlData.vertexColors = new int[vertexCount];
       jvxlData.nVertexColors = vertexCount;
-      Atom[] atoms = viewer.getModelSet().atoms;
+      Atom[] atoms = vwr.getModelSet().atoms;
       for (int i = mergeVertexCount0; i < vertexCount; i++) {
         int pt = vertexSource[i];
         if (pt >= 0 && pt < atoms.length)
-          jvxlData.vertexColors[i] = viewer.getColorArgbOrGray(vertexColixes[i] = C.copyColixTranslucency(colix,
+          jvxlData.vertexColors[i] = vwr.getColorArgbOrGray(vertexColixes[i] = C.copyColixTranslucency(colix,
             atoms[pt].getColix()));
       }
       return;
@@ -808,11 +808,11 @@ public class IsosurfaceMesh extends Mesh {
     isColorSolid = false;
   }
 
-  public void reinitializeLightingAndColor(Viewer viewer) {
+  public void reinitializeLightingAndColor(Viewer vwr) {
     initialize(lighting, null, null);
     if (colorEncoder != null || jvxlData.isBicolorMap) {
       vertexColixes = null;
-      remapColors(viewer, null, Float.NaN);
+      remapColors(vwr, null, Float.NaN);
     }
   }
 

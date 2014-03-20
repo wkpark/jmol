@@ -182,7 +182,7 @@ public abstract class BioShapeCollection extends Shape {
 
   @Override
   public String getShapeState() {
-    return viewer.getAtomShapeSetState(this, bioShapes);
+    return vwr.getAtomShapeSetState(this, bioShapes);
   }
 
   void initialize() {

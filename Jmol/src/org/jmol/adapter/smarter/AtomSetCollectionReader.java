@@ -30,13 +30,13 @@ import java.util.Map;
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
-import org.jmol.api.JmolDocument;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.java.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
+import javajs.api.GenericBinaryDocument;
 import javajs.util.M3;
 import javajs.util.P3;
 
@@ -137,7 +137,7 @@ public abstract class AtomSetCollectionReader {
 
   public AtomSetCollection atomSetCollection;
   protected BufferedReader reader;
-  protected JmolDocument binaryDoc;
+  protected GenericBinaryDocument binaryDoc;
   protected String readerName;
   public Map<String, Object> htParams;
   public List<P3[]> trajectorySteps;
@@ -156,7 +156,7 @@ public abstract class AtomSetCollectionReader {
   public boolean iHaveSymmetryOperators;
   public boolean continuing = true;
   
-  public Viewer viewer; // used by GenNBOReader and by CifReader
+  public Viewer vwr; // used by GenNBOReader and by CifReader
 
   public boolean doApplySymmetry;
   protected boolean ignoreFileSymmetryOperators;
@@ -225,8 +225,8 @@ public abstract class AtomSetCollectionReader {
     fileName = filePath.substring(i + 1);
     if (reader instanceof BufferedReader)
       this.reader = (BufferedReader) reader;
-    else if (reader instanceof JmolDocument)
-      binaryDoc = (JmolDocument) reader;
+    else if (reader instanceof GenericBinaryDocument)
+      binaryDoc = (GenericBinaryDocument) reader;
   }
 
   Object readData() throws Exception {
@@ -247,7 +247,7 @@ public abstract class AtomSetCollectionReader {
       finalizeReader(); // upstairs
     } catch (Throwable e) {
       Logger.info("Reader error: " + e);
-      if (!viewer.isJS)
+      if (!vwr.isJS)
         e.printStackTrace();
       setError(e);
     }
@@ -439,7 +439,7 @@ public abstract class AtomSetCollectionReader {
     else
       atomSetCollection.errorMessage = "Error reading file at line " + ptLine
           + ":\n" + line + "\n" + s;
-    if (!viewer.isJS)
+    if (!vwr.isJS)
       e.printStackTrace();
   }
 
@@ -451,7 +451,7 @@ public abstract class AtomSetCollectionReader {
     else
       ptSupercell = (P3) o;
     initializeSymmetry();
-    viewer = (Viewer) htParams.remove("viewer"); // don't pass this on to user
+    vwr = (Viewer) htParams.remove("vwr"); // don't pass this on to user
     if (htParams.containsKey("stateScriptVersionInt"))
       stateScriptVersionInt = ((Integer) htParams.get("stateScriptVersionInt"))
           .intValue();
@@ -669,7 +669,7 @@ public abstract class AtomSetCollectionReader {
       return -1;
     int isym = atomSetCollection.getXSymmetry().addSpaceGroupOperation(this, xyz);
     if (isym < 0)
-      Logger.warn("Skipping symmetry operation " + xyz);
+      Logger.warn("Skippings symmetry operation " + xyz);
     iHaveSymmetryOperators = true;
     return isym;
   }
@@ -750,16 +750,26 @@ public abstract class AtomSetCollectionReader {
     for (int i = 0; i < n; i++)
       if (Float.isNaN(notionalUnitCell[i]))
         return false;
-    getNewSymmetry().setUnitCell(notionalUnitCell);
-    if (doApplySymmetry)
+    if (doApplySymmetry) {
+      getSymmetry();
       doConvertToFractional = !fileCoordinatesAreFractional;
+    }
     //if (but not only if) applying symmetry do we force conversion
-    checkUnitCellOffset();
+//    checkUnitCellOffset();
     return true;
   }
 
+  protected SymmetryInterface getSymmetry() {
+    if (!iHaveUnitCell)
+      return null;
+    if (symmetry == null) {
+      getNewSymmetry().setUnitCell(notionalUnitCell);
+      checkUnitCellOffset();
+    }
+    return symmetry;
+  }
   private void checkUnitCellOffset() {
-    if (symmetry == null || fileOffsetFractional == null)
+    if (fileOffsetFractional == null)
       return;
     fileOffset.setT(fileOffsetFractional);
     if (unitCellOffsetFractional != fileCoordinatesAreFractional) {
@@ -945,7 +955,7 @@ public abstract class AtomSetCollectionReader {
         && (!filterElement || atom.elementSymbol == null || !filterReject(f, "_",
             atom.elementSymbol.toUpperCase() + ";"))
         && (!filterChain || atom.chainID == 0 || !filterReject(f, ":", ""
-            + viewer.getChainIDStr(atom.chainID)))
+            + vwr.getChainIDStr(atom.chainID)))
         && (!filterAltLoc || atom.altLoc == '\0' || !filterReject(
             f, "%", "" + atom.altLoc))
         && (!filterHetero || !allowPDBFilter || !filterReject(f, "HETATM",
@@ -1050,8 +1060,7 @@ public abstract class AtomSetCollectionReader {
       atom.y = atom.y * fileScaling.y + fileOffset.y;
       atom.z = atom.z * fileScaling.z + fileOffset.z;
     }
-    if (doConvertToFractional && !fileCoordinatesAreFractional
-        && symmetry != null) {
+    if (doConvertToFractional && !fileCoordinatesAreFractional && getSymmetry() != null) {
       if (!symmetry.haveUnitCell())
         symmetry.setUnitCell(notionalUnitCell);
       symmetry.toFractional(atom, false);
@@ -1076,10 +1085,11 @@ public abstract class AtomSetCollectionReader {
         continue;
       addSiteScript("@site_" + name + " " + groups);
       //addJmolScript("@" + seqNum + " " + groups);
-      addSiteScript("site_" + name + " = \"" + groups + "\".split(\",\")");
-      sites += (sites == "" ? "" : ",") + "site_" + name;
+      addSiteScript("site_" + name + " = [\"" + PT.rep(groups, ",", "\",\"") + "\"]");
+      sites += ",\"site_" + name + "\"";
     }
-    addSiteScript("site_list = \"" + sites + "\".split(\",\")");
+    if (sites.length() > 0)
+      addSiteScript("site_list = [" + sites.substring(1) + "]");
   }
 
   public void applySymmetryAndSetTrajectory() throws Exception {
@@ -1091,7 +1101,7 @@ public abstract class AtomSetCollectionReader {
     if (forcePacked)
       initializeSymmetryOptions();
     SymmetryInterface sym = (iHaveUnitCell && doCheckUnitCell ? atomSetCollection
-        .getXSymmetry().applySymmetryFromReader(this, symmetry) : null);
+        .getXSymmetry().applySymmetryFromReader(this, getSymmetry()) : null);
     if (isTrajectory)
       atomSetCollection.setTrajectory();
     initializeSymmetry();
@@ -1620,7 +1630,7 @@ public abstract class AtomSetCollectionReader {
   }
 
   public void setChainID(Atom atom, char ch) {
-    atom.chainID = viewer.getChainID("" + ch);    
+    atom.chainID = vwr.getChainID("" + ch);    
   }
 
   public void setU(Atom atom, int i, float val) {

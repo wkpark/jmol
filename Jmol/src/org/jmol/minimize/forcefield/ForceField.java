@@ -492,7 +492,7 @@ abstract public class ForceField {
   }
 
   protected BufferedReader getBufferedReader(String resourceName) throws IOException {
-    return JmolBinary.getBufferedReaderForResource(minimizer.viewer, this,
+    return JmolBinary.getBufferedReaderForResource(minimizer.vwr, this,
         "org/jmol/minimize/forcefield/", "data/" + resourceName);
   }
 

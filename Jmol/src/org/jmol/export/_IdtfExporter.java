@@ -143,7 +143,7 @@ public class _IdtfExporter extends __CartesianExporter {
    * Nowhere can I find any documentation that actually demonstrates how do 
    * use this resource.
    * 
-   * It's interesting, as well, that the two viewers -- 3D PDF and DeepView --
+   * It's interesting, as well, that the two vwrs -- 3D PDF and DeepView --
    * do not give the same result with some of my tests. I can only conclude that
    * view model is ill defined. 
    * 
@@ -167,7 +167,7 @@ public class _IdtfExporter extends __CartesianExporter {
      The default view resource has the following properties: pass count one, root node is the default
      node, and fog disabled.
 
-   * Right, OK. But obviously in a real viewer there IS a default for all of these.
+   * Right, OK. But obviously in a real vwr there IS a default for all of these.
    * I have instead implemented a default view using animation. This is a total hack. 
    * The true default view in both 3D-PDF and DeepView appears to be the rotation associated
    * with quaternion (0.6414883, -0.5258319, 0.3542887, 0.43182528)  
@@ -281,7 +281,7 @@ public class _IdtfExporter extends __CartesianExporter {
     */
 
     m.setIdentity();
-    Quat q = viewer.getRotationQuaternion();
+    Quat q = vwr.getRotationQuaternion();
     m.setToM3(q.getMatrix());
     q.transformP2(referenceCenter, tempP1);
     m.m03 = -tempP1.x;
@@ -343,7 +343,7 @@ public class _IdtfExporter extends __CartesianExporter {
         + "\n            3Dc2c=0.0 0.0 1.0,"
         + "\n            3Daac=" + aperatureAngle + ","
         + "\n            3Droll=0.0,"
-        + "\n            3Dbg=" + rgbFractionalFromColix(backgroundColix) + ", % to set the background color for 3D viewer; white = 1 1 1; so, you need to do the proportion: '255:1=[RGB]:x'"
+        + "\n            3Dbg=" + rgbFractionalFromColix(backgroundColix) + ", % to set the background color for 3D vwr; white = 1 1 1; so, you need to do the proportion: '255:1=[RGB]:x'"
         + "\n            transparent=false,"
         + "\n            3Dlights=Headlamp,"
         + "\n            3Drender=Solid,"
@@ -354,7 +354,7 @@ public class _IdtfExporter extends __CartesianExporter {
         + "\n\\end{center}"
         + "\n\\end{document}"
         +"\n\\begin{comment}"
-        + viewer.getWrappedStateScript()
+        + vwr.getWrappedStateScript()
         +"\n\\end{comment}";
 }
 
@@ -389,7 +389,7 @@ public class _IdtfExporter extends __CartesianExporter {
 //      + "\n\\end{center}" 
 //      + "\n\\end{document}"
 //      +"\n\\begin{comment}"
-//      + viewer.getWrappedStateScript()
+//      + vwr.getWrappedStateScript()
 //      +"\n\\end{comment}";
   
 

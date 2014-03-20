@@ -72,40 +72,40 @@ public class AppConsole extends JmolConsole implements EnterListener {
     // required for Class.forName  
     // should be used only in the context:
     // appConsole = ((JmolApplicationConsoleInterface) Interface
-    //       .getApplicationInterface("jmolpanel.AppConsole")).getAppConsole(viewer, display);
-    // appConsole.start(viewer);
+    //       .getApplicationInterface("jmolpanel.AppConsole")).getAppConsole(vwr, display);
+    // appConsole.start(vwr);
   }
 
   @Override
-  public void start(JmolViewer viewer) {
-    setup(viewer, null, null);
+  public void start(JmolViewer vwr) {
+    setup(vwr, null, null);
   }
   
   /**
    * general entry point
    * 
-   * @param viewer
+   * @param vwr
    * @param externalContainer   a JFrame or JPanel or JDialog
    * @param enabledButtons
    */
-  public AppConsole(JmolViewer viewer,
+  public AppConsole(JmolViewer vwr,
       Container externalContainer, String enabledButtons) {
-    setup(viewer, externalContainer, enabledButtons);
+    setup(vwr, externalContainer, enabledButtons);
   }
 
-  private void setup(JmolViewer viewer, Container externalContainer,
+  private void setup(JmolViewer vwr, Container externalContainer,
                      String enabledButtons) {
-    setViewer(viewer);
-    Window w = Platform.getWindow((Container) viewer.getDisplay());
-    viewerFrame = (w instanceof JFrame ? (JFrame) w : null);
+    setViewer(vwr);
+    Window w = Platform.getWindow((Container) vwr.getDisplay());
+    vwrFrame = (w instanceof JFrame ? (JFrame) w : null);
     if (externalContainer == null) {
-      jcd = new JDialog(viewerFrame, null, false);
+      jcd = new JDialog(vwrFrame, null, false);
       jcd.setSize(645, 400);
-      jcd.setLocationRelativeTo(viewerFrame);
+      jcd.setLocationRelativeTo(vwrFrame);
       this.externalContainer = jcd;
     } else {
       this.externalContainer = externalContainer;
-      viewer.setConsole(this);
+      vwr.setConsole(this);
     }
     addWindowListener();
     layoutWindow(enabledButtons);
@@ -364,7 +364,7 @@ public class AppConsole extends JmolConsole implements EnterListener {
   private boolean undoSetEnabled() {
     if (undoButton == null)
       return false;
-    boolean undoAllowed = (viewer.getBooleanProperty("undo") && viewer
+    boolean undoAllowed = (vwr.getBooleanProperty("undo") && vwr
         .getBooleanProperty("preserveState"));
     undoButton
         .setEnabled(undoAllowed && undoPointer > 0 && undoStack[undoPointer - 1] != null);
@@ -392,7 +392,7 @@ public class AppConsole extends JmolConsole implements EnterListener {
     if (state != null) {
       state += CommandHistory.NOHISTORYATALL_FLAG;
       setError(false);
-      viewer.evalStringQuiet(state);
+      vwr.evalStringQuiet(state);
       undoPointer = ptr;
     }
     undoSetEnabled();
@@ -404,15 +404,15 @@ public class AppConsole extends JmolConsole implements EnterListener {
   private void undoSave(boolean incrementPtr) {
     if (undoButton == null)
       return;
-    if (!viewer.getBooleanProperty("undo")
-        || !viewer.getBooleanProperty("preserveState"))
+    if (!vwr.getBooleanProperty("undo")
+        || !vwr.getBooleanProperty("preserveState"))
       return;
     //delete redo items, since they will no longer be valid
     for (int i = undoPointer + 1; i <= MAXUNDO; i++)
       undoStack[i] = null;
     Logger.startTimer("(console");
     try {
-      undoStack[undoPointer] = (String) viewer.getProperty("readable",
+      undoStack[undoPointer] = (String) vwr.getProperty("readable",
         "stateInfo", null);
     //shift stack if full
     if (incrementPtr && undoPointer == MAXUNDO) {
@@ -425,7 +425,7 @@ public class AppConsole extends JmolConsole implements EnterListener {
       dontsave = true;
     }
     if (dontsave || Logger.checkTimer("(console", false) > 2000) {
-      viewer.setBooleanProperty("undo", false);
+      vwr.setBooleanProperty("undo", false);
       undoClear();
       Logger.info("command processing slow; undo disabled");
     } else {
@@ -454,7 +454,7 @@ public class AppConsole extends JmolConsole implements EnterListener {
       return;
     }
     if (strCommand.charAt(0) != '!'
-        && viewer.getBooleanProperty("executionPaused"))
+        && vwr.getBooleanProperty("executionPaused"))
       strCommand = "!" + strCommand;
     if (strCommand.charAt(0) != '!' && !isError) {
       undoSave(true);
@@ -466,7 +466,7 @@ public class AppConsole extends JmolConsole implements EnterListener {
     doWait = (strCommand.indexOf("WAITTEST ") == 0);
     if (doWait) { //for testing, mainly
       // demonstrates using the statusManager system; probably hangs application.
-      Object o = viewer
+      Object o = vwr
           .scriptWaitStatus(strCommand.substring(5),
               "+fileLoaded,+scriptStarted,+scriptStatus,+scriptEcho,+scriptTerminated");
       if (o instanceof List) {
@@ -488,20 +488,20 @@ public class AppConsole extends JmolConsole implements EnterListener {
       }
       console.appendNewline();
     } else {
-      boolean isScriptExecuting = viewer.isScriptExecuting();
+      boolean isScriptExecuting = vwr.isScriptExecuting();
       strErrorMessage = "";
       String str = strCommand;
       boolean isInterrupt = (str.charAt(0) == '!');
       if (isInterrupt)
         str = str.substring(1);
-      if (viewer.checkHalt(str, isInterrupt))
+      if (vwr.checkHalt(str, isInterrupt))
         strErrorMessage = (isScriptExecuting ? "script execution halted with "
             + strCommand : "no script was executing");
       //the problem is that scriptCheck is synchronized, so these might get backed up. 
       if (strErrorMessage.length() > 0) {
         console.outputError(strErrorMessage);
       } else {
-        viewer.script(strCommand
+        vwr.script(strCommand
             + (strCommand.indexOf("\1##") >= 0 ? ""
                 : JC.SCRIPT_EDITOR_IGNORE));
       }
@@ -540,7 +540,7 @@ public class AppConsole extends JmolConsole implements EnterListener {
       return;
     }
     if (source == haltButton) {
-      viewer.haltScriptExecution();
+      vwr.haltScriptExecution();
       return;
     }
     if (source == varButton) {
@@ -563,7 +563,7 @@ public class AppConsole extends JmolConsole implements EnterListener {
       URL url = this.getClass().getClassLoader().getResource(
           "org/openscience/jmol/Data/guide/ch04.html");
       if (url == null)
-        viewer.script("help");
+        vwr.script("help");
       else
         (new HelpDialog(null, url)).setVisible(true);
     }
@@ -652,7 +652,7 @@ public class AppConsole extends JmolConsole implements EnterListener {
         case KeyEvent.VK_C:
           if (ke.isControlDown() && ke.isAltDown()) {
             ke.consume();
-            viewer.script("!quit");
+            vwr.script("!quit");
             return;
           }
           break;
@@ -720,7 +720,7 @@ public class AppConsole extends JmolConsole implements EnterListener {
      *          - history up or down
      */
     void recallCommand(boolean up) {
-      String cmd = viewer.getSetHistory(up ? -1 : 1);
+      String cmd = vwr.getSetHistory(up ? -1 : 1);
       if (cmd == null) {
         return;
       }
@@ -740,12 +740,12 @@ public class AppConsole extends JmolConsole implements EnterListener {
     synchronized void checkCommand() {
       String strCommand = consoleDoc.getCommandString();
       if (strCommand.length() == 0 || strCommand.charAt(0) == '!'
-          || viewer.isScriptExecuting()
-          || viewer.getBooleanProperty("executionPaused"))
+          || vwr.isScriptExecuting()
+          || vwr.getBooleanProperty("executionPaused"))
         return;
       checking = true;
       consoleDoc
-          .colorCommand(viewer.scriptCheck(strCommand) instanceof String ? consoleDoc.attError
+          .colorCommand(vwr.scriptCheck(strCommand) instanceof String ? consoleDoc.attError
               : consoleDoc.attUserInput);
       checking = false;
     }

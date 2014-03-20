@@ -49,27 +49,27 @@ class JmolInstance {
   String pictFile;
   BS whichWidgets;//true bits are selected widgets
   boolean pictIsScratchFile;
-  JmolViewer viewer;
+  JmolViewer vwr;
 
-  public static JmolInstance getInstance(JmolViewer viewer, String name,
+  public static JmolInstance getInstance(JmolViewer vwr, String name,
                                          int width, int height, int widgets) {
-    JmolInstance ji = new JmolInstance(viewer, name, width, height, widgets);
+    JmolInstance ji = new JmolInstance(vwr, name, width, height, widgets);
     return (ji.script == null ? null : ji);
   }
 
-  private JmolInstance(JmolViewer viewer, String name,
+  private JmolInstance(JmolViewer vwr, String name,
       int width, int height, int nWidgets) {
-    this.viewer = viewer;
+    this.vwr = vwr;
     this.name = name;
     this.width = width;
     this.height = height;
-    script = viewer.getStateInfo();
-    spinOn = viewer.getBooleanProperty("_spinning");
+    script = vwr.getStateInfo();
+    spinOn = vwr.getBooleanProperty("_spinning");
     if (script == null) {
       LogPanel.log("Error trying to get Jmol State when saving view/instance.");
       return;
     }
-    bgColor = viewer.getBackgroundArgb();
+    bgColor = vwr.getBackgroundArgb();
     javaname = name.replaceAll("[^a-zA-Z_0-9-]", "_"); //escape filename characters
     whichWidgets=BS.newN(nWidgets);
     FileSystemView Directories = FileSystemView.getFileSystemView();
@@ -91,7 +91,7 @@ class JmolInstance {
     params.put("quality", Integer.valueOf(2));
     params.put("width", Integer.valueOf(width));
     params.put("height", Integer.valueOf(height));
-    viewer.outputToFile(params);
+    vwr.outputToFile(params);
     pictIsScratchFile = true;
   }
 

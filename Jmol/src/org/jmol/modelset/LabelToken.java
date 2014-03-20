@@ -186,13 +186,13 @@ public class LabelToken {
    * Compiles a set of tokens for each primitive element of a 
    * label. This is the efficient way to create a set of labels. 
    * 
-   * @param viewer
+   * @param vwr
    * @param strFormat
    * @param chAtom
    * @param htValues
    * @return   array of tokens
    */
-  public static LabelToken[] compile(Viewer viewer, String strFormat,
+  public static LabelToken[] compile(Viewer vwr, String strFormat,
                                      char chAtom, Map<String, Object> htValues) {
     if (strFormat == null || strFormat.length() == 0)
       return null;
@@ -210,8 +210,8 @@ public class LabelToken {
       if (ich != ichPercent)
         tokens[i++] = new LabelToken().set(strFormat.substring(ich, ichPercent), -1);
       LabelToken lt = tokens[i++] = new LabelToken().set(null, ichPercent);
-      viewer.autoCalculate(lt.tok);
-      ich = setToken(viewer, strFormat, lt, cch, chAtom, htValues);
+      vwr.autoCalculate(lt.tok);
+      ich = setToken(vwr, strFormat, lt, cch, chAtom, htValues);
     }
     if (ich < cch)
       tokens[i++] = new LabelToken().set(strFormat.substring(ich), -1);
@@ -220,24 +220,24 @@ public class LabelToken {
 
   //////////// label formatting for atoms, bonds, and measurements ///////////
 
-  public static String formatLabel(Viewer viewer, Atom atom, String strFormat) {
+  public static String formatLabel(Viewer vwr, Atom atom, String strFormat) {
     if (strFormat == null || strFormat.length() == 0)
       return null;
-    LabelToken[] tokens = compile(viewer, strFormat, '\0', null);
-    return formatLabelAtomArray(viewer, atom, tokens, '\0', null);    
+    LabelToken[] tokens = compile(vwr, strFormat, '\0', null);
+    return formatLabelAtomArray(vwr, atom, tokens, '\0', null);    
   }
 
   /**
    * returns a formatted string based on the precompiled label tokens
    * 
-   * @param viewer
+   * @param vwr
    * @param atom
    * @param tokens
    * @param chAtom
    * @param indices
    * @return   formatted string
    */
-  public static String formatLabelAtomArray(Viewer viewer, Atom atom,
+  public static String formatLabelAtomArray(Viewer vwr, Atom atom,
                                    LabelToken[] tokens, char chAtom,
                                    int[] indices) {
     if (atom == null)
@@ -257,7 +257,7 @@ public class LabelToken {
               strLabel.appendC(t.ch1);
           }
         } else {
-          appendAtomTokenValue(viewer, atom, t, strLabel, indices);
+          appendAtomTokenValue(vwr, atom, t, strLabel, indices);
         }
       }
     return (strLabel == null ? null : strLabel.toString().intern());
@@ -273,7 +273,7 @@ public class LabelToken {
     return htValues;
   }
 
-  public static String formatLabelBond(Viewer viewer, Bond bond,
+  public static String formatLabelBond(Viewer vwr, Bond bond,
                                    LabelToken[] tokens,
                                    Map<String, Object> values, int[] indices) {
     values.put("#", "" + (bond.index + 1));
@@ -282,18 +282,18 @@ public class LabelToken {
     values.put("LENGTH", Float.valueOf(bond.atom1.distance(bond.atom2)));
     values.put("ENERGY", Float.valueOf(bond.getEnergy()));
     setValues(tokens, values);
-    formatLabelAtomArray(viewer, bond.atom1, tokens, '1', indices);
-    formatLabelAtomArray(viewer, bond.atom2, tokens, '2', indices);
+    formatLabelAtomArray(vwr, bond.atom1, tokens, '1', indices);
+    formatLabelAtomArray(vwr, bond.atom2, tokens, '2', indices);
     return getLabel(tokens);
   }
 
-  public static String formatLabelMeasure(Viewer viewer, Measurement m,
+  public static String formatLabelMeasure(Viewer vwr, Measurement m,
                                    String label, float value, String units) {
     Map<String, Object> htValues = new Hashtable<String, Object>();
     htValues.put("#", "" + (m.index + 1));
     htValues.put("VALUE", Float.valueOf(value));
     htValues.put("UNITS", units);
-    LabelToken[] tokens = compile(viewer, label, '\1', htValues);
+    LabelToken[] tokens = compile(vwr, label, '\1', htValues);
     if (tokens == null)
       return "";
     setValues(tokens, htValues);
@@ -301,7 +301,7 @@ public class LabelToken {
     int[] indices = m.countPlusIndices;
     for (int i = indices[0]; i >= 1; --i)
       if (indices[i] >= 0)
-        formatLabelAtomArray(viewer, atoms[indices[i]], tokens, (char) ('0' + i), null);
+        formatLabelAtomArray(vwr, atoms[indices[i]], tokens, (char) ('0' + i), null);
     label = getLabel(tokens);
     return (label == null ? "" : label);
   }
@@ -336,7 +336,7 @@ public class LabelToken {
   /**
    * sets a label token based on a label string
    * 
-   * @param viewer
+   * @param vwr
    * @param strFormat
    * @param lt
    * @param cch
@@ -344,7 +344,7 @@ public class LabelToken {
    * @param htValues
    * @return         new position
    */
-  private static int setToken(Viewer viewer, String strFormat, LabelToken lt,
+  private static int setToken(Viewer vwr, String strFormat, LabelToken lt,
                               int cch, int chAtom, Map<String, Object> htValues) {
     int ich = lt.pt + 1;
     if (ich >= cch)
@@ -396,7 +396,7 @@ public class LabelToken {
         if (propertyName.startsWith("property_")) {
           lt.text = propertyName;
           lt.tok = T.data;
-          lt.data = viewer.getDataFloat(lt.text);
+          lt.data = vwr.getDataFloat(lt.text);
         } else {
           T token = T.getTokenFromName(propertyName);
           if (token != null && isLabelPropertyTok(token.tok))
@@ -415,10 +415,10 @@ public class LabelToken {
           break;
         }
         lt.text = strFormat.substring(ich, ichCloseBracket);
-        lt.data = viewer.getDataFloat(lt.text);
+        lt.data = vwr.getDataFloat(lt.text);
         // TODO untested j2s issue fix
         if (lt.data == null) {
-          lt.data = viewer.getData(lt.text);
+          lt.data = vwr.getData(lt.text);
           if (lt.data instanceof Object[]) {// either that or it is null
             lt.data = ((Object[]) lt.data)[1];
             if (lt.data instanceof String)
@@ -454,7 +454,7 @@ public class LabelToken {
     return ich;
   }
 
-  private static void appendAtomTokenValue(Viewer viewer, Atom atom,
+  private static void appendAtomTokenValue(Viewer vwr, Atom atom,
                                            LabelToken t, SB strLabel,
                                            int[] indices) {
     String strT = null;
@@ -504,7 +504,7 @@ public class LabelToken {
         floatT = atom.getOccupancy100() / 100f;
         break;
       case T.radius:
-        floatT = Atom.atomPropertyFloat(viewer, atom, t.tok);
+        floatT = Atom.atomPropertyFloat(vwr, atom, t.tok);
         break;
       case 'r':
         strT = atom.getSeqcodeString();
@@ -523,12 +523,12 @@ public class LabelToken {
         break;
       case T.string:
         // label %{altName}
-        strT = viewer.getModelAtomProperty(atom, t.text.substring(2, t.text
+        strT = vwr.getModelAtomProperty(atom, t.text.substring(2, t.text
             .length() - 1));
         break;
       case T.structure:
       case T.substructure:
-        strT = Atom.atomPropertyString(viewer, atom, t.tok);
+        strT = Atom.atomPropertyString(vwr, atom, t.tok);
         break;
       case 'W':
         strT = atom.getIdentityXYZ(false);
@@ -545,10 +545,10 @@ public class LabelToken {
             strT = "" + Atom.atomPropertyInt(atom, t.tok);
           break;
         case T.floatproperty:
-          floatT = Atom.atomPropertyFloat(viewer, atom, t.tok);
+          floatT = Atom.atomPropertyFloat(vwr, atom, t.tok);
           break;
         case T.strproperty:
-          strT = Atom.atomPropertyString(viewer, atom, t.tok);
+          strT = Atom.atomPropertyString(vwr, atom, t.tok);
           break;
         case T.atomproperty:
           ptT = Atom.atomPropertyTuple(atom, t.tok);

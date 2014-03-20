@@ -34,7 +34,7 @@ import org.jmol.viewer.Viewer;
 
 class TextRenderer {
   
-  static void render(Text text, Viewer viewer, JmolRendererInterface g3d,
+  static void render(Text text, Viewer vwr, JmolRendererInterface g3d,
                      float scalePixelsPerMicron, float imageFontScaling,
                      boolean isExact, float[] boxXY, float[] temp) {
     if (text == null || text.image == null && text.lines == null)
@@ -44,7 +44,7 @@ class TextRenderer {
         && (text.image == null && (text.bgcolix == 0 || !g3d
             .setColix(text.bgcolix))))
       return;
-    text.setPosition(viewer, g3d.getRenderWidth(), g3d.getRenderHeight(),
+    text.setPosition(vwr, g3d.getRenderWidth(), g3d.getRenderHeight(),
         scalePixelsPerMicron, imageFontScaling, isExact, boxXY);
     // draw the box if necessary; colix has been set
     if (text.image == null && text.bgcolix != 0) {

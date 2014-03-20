@@ -196,77 +196,6 @@ public class MarchingSquares {
       this.contourIndex = contourIndex;
     }
 
-    private int intercept(int i, float value) {
-      int iA = pts[i];
-      int iB = pts[(i + 1) % 3];
-      if (iA == Integer.MAX_VALUE || iB == Integer.MAX_VALUE)
-        return -1;
-      String key = (iA < iB ? iA + "_" + iB : iB + "_" + iA);
-      if (htPts.containsKey(key))
-        return htPts.get(key).intValue();
-      float valueA = contourVertexes[iA].value;
-      float valueB = contourVertexes[iB].value;
-      //System.out.println(iA + " " + iB + " " + valueA + " " + value + " " + valueB);
-      int iPt = -1;
-      if (valueA != valueB) {
-        float f = (value - valueA) / (valueB - valueA);
-        if (f >= 0 && f <= 1) {
-          pointA.setT(contourVertexes[iA]);
-          pointB.setT(contourVertexes[iB]);
-          value = calcContourPoint(value, valueA, valueB, ptTemp);
-          if (!Float.isNaN(value)) {
-            iPt = addContourVertex(ptTemp, value);
-            if (iPt < 0)
-              return -1;
-            contourVertexes[iPt].setValue(value);
-          } else {
-//            System.out.println("#MarchingSquares nonlinear problem for contour " + (i + 1) + " at " + ptTemp + " " + valueA + " " + valueB 
-  //              + "\ndraw ID \"pt" + ptTemp + "\" scale 5.0 " + ptTemp );
-          }
-        }
-      }
-      htPts.put(key, Integer.valueOf(iPt));
-      return iPt;
-    }
-
-    protected void checkContour(int i, float value) {
-     //System.out.println(" ms  i=" + i + " " + contourVertexes[pts[0]].value + " " + contourVertexes[pts[1]].value + " " + contourVertexes[pts[2]].value + " " + value);
-     //System.out.println(pts[0] + " " + pts[1] + " " + pts[2]);
-     //System.out.println(contourVertexes[pts[0]] + "\n" + contourVertexes[pts[1]] + "\n" + contourVertexes[pts[2]]);
-      int ipt0 = intercept(0, value);
-      int ipt1 = intercept(1, value);
-      int ipt2 = intercept(2, value);
-      int mode = 0;
-      if (ipt0 >= 0) {
-        mode += 1;
-      }
-      if (ipt1 >= 0) {
-        mode += 2;
-      }
-      if (ipt2 >= 0) {
-        mode += 4;
-      }
-      switch (mode) {
-      case 3:
-        addTriangle(pts[0], ipt0, ipt1, 2 | (check & 1), i);
-        addTriangle(ipt0, pts[1], ipt1, 4 | (check & 3), i);
-        addTriangle(pts[0], ipt1, pts[2], (check & 6), i);
-        break;
-      case 5:
-        addTriangle(pts[0], ipt0, ipt2, 2 | (check & 5), i);
-        addTriangle(ipt0, pts[1], ipt2, 4 | (check & 1), i);
-        addTriangle(ipt2, pts[1], pts[2], (check & 6), i);
-        break;
-      case 6:
-        addTriangle(pts[0], pts[1], ipt2, (check & 5), i);
-        addTriangle(ipt2, pts[1], ipt1, 4 | (check & 2), i);
-        addTriangle(ipt2, ipt1, pts[2], 1 | (check & 6), i);
-        break;
-      default:
-        return;
-      }
-      isValid = false;
-    }
 /*
     void setValidity() {
       isValid &= (!Float.isNaN(contourVertexes[pts[0]].value)
@@ -276,6 +205,8 @@ public class MarchingSquares {
 */    
   }
 
+  
+  
   public int generateContourData(boolean haveData, float zeroOffset) {
     Logger.info("generateContours: " + nContourSegments + " segments");
     getVertexValues(haveData);
@@ -334,7 +265,7 @@ public class MarchingSquares {
       htPts.clear();
       for (int ii = triangleCount; --ii >= 0;)
         if (triangles[ii].isValid)
-          triangles[ii].checkContour(i, cutoff);
+          checkContour(triangles[ii], i, cutoff);
       if (thisContour > 0) {
         if (i + 1 == thisContour)
           minCutoff = cutoff;
@@ -370,6 +301,79 @@ public class MarchingSquares {
     */
     
     return true;
+  }
+
+  private int intercept(Triangle t, int i, float value) {
+    int iA = t.pts[i];
+    int iB = t.pts[(i + 1) % 3];
+    if (iA == Integer.MAX_VALUE || iB == Integer.MAX_VALUE)
+      return -1;
+    String key = (iA < iB ? iA + "_" + iB : iB + "_" + iA);
+    if (htPts.containsKey(key))
+      return htPts.get(key).intValue();
+    float valueA = contourVertexes[iA].value;
+    float valueB = contourVertexes[iB].value;
+    //System.out.println(iA + " " + iB + " " + valueA + " " + value + " " + valueB);
+    int iPt = -1;
+    if (valueA != valueB) {
+      float f = (value - valueA) / (valueB - valueA);
+      if (f >= 0 && f <= 1) {
+        pointA.setT(contourVertexes[iA]);
+        pointB.setT(contourVertexes[iB]);
+        value = calcContourPoint(value, valueA, valueB, ptTemp);
+        if (!Float.isNaN(value)) {
+          iPt = addContourVertex(ptTemp, value);
+          if (iPt < 0)
+            return -1;
+          contourVertexes[iPt].setValue(value);
+        } else {
+//          System.out.println("#MarchingSquares nonlinear problem for contour " + (i + 1) + " at " + ptTemp + " " + valueA + " " + valueB 
+//              + "\ndraw ID \"pt" + ptTemp + "\" scale 5.0 " + ptTemp );
+        }
+      }
+    }
+    htPts.put(key, Integer.valueOf(iPt));
+    return iPt;
+  }
+
+  private void checkContour(Triangle t, int i, float value) {
+   //System.out.println(" ms  i=" + i + " " + contourVertexes[pts[0]].value + " " + contourVertexes[pts[1]].value + " " + contourVertexes[pts[2]].value + " " + value);
+   //System.out.println(pts[0] + " " + pts[1] + " " + pts[2]);
+   //System.out.println(contourVertexes[pts[0]] + "\n" + contourVertexes[pts[1]] + "\n" + contourVertexes[pts[2]]);
+    int ipt0 = intercept(t, 0, value);
+    int ipt1 = intercept(t, 1, value);
+    int ipt2 = intercept(t, 2, value);
+    int[] pts = t.pts;
+    int mode = 0;
+    if (ipt0 >= 0) {
+      mode += 1;
+    }
+    if (ipt1 >= 0) {
+      mode += 2;
+    }
+    if (ipt2 >= 0) {
+      mode += 4;
+    }
+    switch (mode) {
+    case 3:
+      addTriangle(pts[0], ipt0, ipt1, 2 | (t.check & 1), i);
+      addTriangle(ipt0, pts[1], ipt1, 4 | (t.check & 3), i);
+      addTriangle(pts[0], ipt1, pts[2], (t.check & 6), i);
+      break;
+    case 5:
+      addTriangle(pts[0], ipt0, ipt2, 2 | (t.check & 5), i);
+      addTriangle(ipt0, pts[1], ipt2, 4 | (t.check & 1), i);
+      addTriangle(ipt2, pts[1], pts[2], (t.check & 6), i);
+      break;
+    case 6:
+      addTriangle(pts[0], pts[1], ipt2, (t.check & 5), i);
+      addTriangle(ipt2, pts[1], ipt1, 4 | (t.check & 2), i);
+      addTriangle(ipt2, ipt1, pts[2], 1 | (t.check & 6), i);
+      break;
+    default:
+      return;
+    }
+    t.isValid = false;
   }
 
   public float[] getMinMax() {

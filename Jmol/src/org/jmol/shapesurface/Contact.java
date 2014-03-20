@@ -67,7 +67,7 @@ public class Contact extends Isosurface {
   public void setProperty(String propertyName, Object value, BS bs) {
 
     if ("set" == propertyName) {
-      setContacts((Object[]) value, !viewer.getTestFlag(4));
+      setContacts((Object[]) value, !vwr.getTestFlag(4));
       return;
     }
     if ("init" == propertyName) {
@@ -119,8 +119,8 @@ public class Contact extends Isosurface {
     }
 
     BS bs;
-    atomCount = viewer.getAtomCount();
-    atoms = viewer.getModelSet().atoms;
+    atomCount = vwr.getAtomCount();
+    atoms = vwr.getModelSet().atoms;
 
     int intramolecularMode = (int) (parameters == null || parameters.length < 2 ? 0
         : parameters[1]);
@@ -218,7 +218,7 @@ public class Contact extends Isosurface {
     }
     thisMesh.setMerged(false);
     thisMesh.jvxlData.vertexDataOnly = true;
-    thisMesh.reinitializeLightingAndColor(viewer);
+    thisMesh.reinitializeLightingAndColor(vwr);
     if (contactType != T.nci) {
       thisMesh.bsVdw = new BS();
       thisMesh.bsVdw.or(bsA);
@@ -249,23 +249,23 @@ public class Contact extends Isosurface {
     }
     ColorEncoder ce = null;
     if (colorByType) {
-      ce = viewer.getColorEncoder("rwb");
+      ce = vwr.getColorEncoder("rwb");
       ce.setRange(-0.5f, 0.5f, false);
     } else if (defaultColor != null) {
       setPropI("color", Integer.valueOf(CU
           .getArgbFromString(defaultColor)), null);
     } else if (displayType == T.nci) {
-      ce = viewer.getColorEncoder("bgr");
+      ce = vwr.getColorEncoder("bgr");
       ce.setRange(-0.03f, 0.03f, false);
     } else {
-      ce = viewer.getColorEncoder("rgb");
+      ce = vwr.getColorEncoder("rgb");
       if (colorDensity)
         ce.setRange(-0.3f, 0.3f, false);
       else
         ce.setRange(-0.5f, 1f, false);
     }
     if (ce != null)
-      thisMesh.remapColors(viewer, ce, translucentLevel);
+      thisMesh.remapColors(vwr, ce, translucentLevel);
   }
 
   /**
@@ -369,23 +369,23 @@ public class Contact extends Isosurface {
     boolean isMultiModel = (atoms[bs.nextSetBit(0)].modelIndex != atoms[bs
         .length() - 1].modelIndex);
     boolean isSelf = bsA.equals(bsB);
-    viewer.fillAtomData(ad, AtomData.MODE_FILL_RADII
+    vwr.fillAtomData(ad, AtomData.MODE_FILL_RADII
         | (isMultiModel ? AtomData.MODE_FILL_MULTIMODEL : 0)
         | AtomData.MODE_FILL_MOLECULES);
     float maxRadius = 0;
     for (int ib = bsB.nextSetBit(0); ib >= 0; ib = bsB.nextSetBit(ib + 1))
       if (ad.atomRadius[ib] > maxRadius)
         maxRadius = ad.atomRadius[ib];
-    AtomIndexIterator iter = viewer.getSelectedAtomIterator(bsB, isSelf, false,
+    AtomIndexIterator iter = vwr.getSelectedAtomIterator(bsB, isSelf, false,
         isMultiModel);
     for (int ia = bsA.nextSetBit(0); ia >= 0; ia = bsA.nextSetBit(ia + 1)) {
       Atom atomA = atoms[ia];
-      float vdwA = atomA.getVanderwaalsRadiusFloat(viewer, EnumVdw.AUTO);
+      float vdwA = atomA.getVanderwaalsRadiusFloat(vwr, EnumVdw.AUTO);
       if (isMultiModel)
-        viewer.setIteratorForPoint(iter, -1, ad.atomXyz[ia], ad.atomRadius[ia]
+        vwr.setIteratorForPoint(iter, -1, ad.atomXyz[ia], ad.atomRadius[ia]
             + maxRadius);
       else
-        viewer.setIteratorForAtom(iter, ia, ad.atomRadius[ia] + maxRadius);
+        vwr.setIteratorForAtom(iter, ia, ad.atomRadius[ia] + maxRadius);
       while (iter.hasNext()) {
         int ib = iter.next();
         if (isMultiModel && !bsB.get(ib))
@@ -402,7 +402,7 @@ public class Contact extends Isosurface {
           if (isSameMolecule != (intramolecularMode == 1))
             continue;
         }
-        float vdwB = atomB.getVanderwaalsRadiusFloat(viewer, EnumVdw.AUTO);
+        float vdwB = atomB.getVanderwaalsRadiusFloat(vwr, EnumVdw.AUTO);
         float ra = ad.atomRadius[ia];
         float rb = ad.atomRadius[ib];
         float d = atomA.distance(atomB);

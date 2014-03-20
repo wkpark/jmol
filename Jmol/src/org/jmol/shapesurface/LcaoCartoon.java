@@ -224,7 +224,7 @@ public class LcaoCartoon extends Isosurface {
     }
     // older method
 
-    int atomCount = viewer.getAtomCount();
+    int atomCount = vwr.getAtomCount();
     for (int i = atomCount; --i >= 0;)
       if (lcaoID != null || thisSet.get(i))
         setLcaoOn(i, TF);
@@ -243,7 +243,7 @@ public class LcaoCartoon extends Isosurface {
       return;
     }
     // older method does not use * but still deletes multiple lobes
-    int atomCount = viewer.getAtomCount();
+    int atomCount = vwr.getAtomCount();
     for (int i = atomCount; --i >= 0;)
       if (lcaoID != null || thisSet.get(i))
         deleteLcaoCartoon(i);
@@ -279,7 +279,7 @@ public class LcaoCartoon extends Isosurface {
     if (lcaoScale != null)
       setPropI("scale", lcaoScale, null);
     if (isCpk) {
-      setPropI("colorRGB", Integer.valueOf(viewer.getAtomArgb(iAtom)), null);
+      setPropI("colorRGB", Integer.valueOf(vwr.getAtomArgb(iAtom)), null);
     } else if (lcaoColorNeg != null) {
       setPropI("colorRGB", lcaoColorNeg, null);
       setPropI("colorRGB", lcaoColorPos, null);
@@ -310,11 +310,11 @@ public class LcaoCartoon extends Isosurface {
     }
     if (isMolecular || isCpk
         || thisType.equalsIgnoreCase("s")
-        || viewer.getHybridizationAndAxes(iAtom, axes[0], axes[1], thisType) != null) {
+        || vwr.getHybridizationAndAxes(iAtom, axes[0], axes[1], thisType) != null) {
       setPropI((isRadical ? "radical" : isLonePair ? "lonePair" : "lcaoCartoon"), axes, null);
     }
     if (isCpk) {
-      short colix = viewer.getModelSet().getAtomColix(iAtom);
+      short colix = vwr.getModelSet().getAtomColix(iAtom);
       if (C.isColixTranslucent(colix)) {
         setPropI("translucentLevel", Float.valueOf(C.getColixTranslucencyLevel(colix)), null);
         setPropI("translucency", "translucent", null);

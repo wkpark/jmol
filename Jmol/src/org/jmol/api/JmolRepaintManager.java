@@ -9,7 +9,7 @@ import org.jmol.viewer.Viewer;
 
 public interface JmolRepaintManager {
 
-  void set(Viewer viewer, ShapeManager shapeManager);
+  void set(Viewer vwr, ShapeManager shapeManager);
 
   boolean isRepaintPending();
 

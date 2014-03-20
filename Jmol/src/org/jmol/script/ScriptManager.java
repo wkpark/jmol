@@ -27,6 +27,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 
 import javajs.api.ZInputStream;
+import javajs.util.Binary;
 import javajs.util.List;
 import javajs.util.P3;
 import javajs.util.PT;
@@ -36,7 +37,6 @@ import javajs.util.SB;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolScriptEvaluator;
 import org.jmol.api.JmolScriptManager;
-import org.jmol.io.Binary;
 import org.jmol.io.JmolBinary;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
@@ -49,7 +49,7 @@ import org.jmol.viewer.Viewer;
 
 public class ScriptManager implements JmolScriptManager {
 
-  private Viewer viewer;
+  private Viewer vwr;
   private ScriptEval eval;
   
   private JmolScriptEvaluator evalTemp;
@@ -76,8 +76,8 @@ public class ScriptManager implements JmolScriptManager {
   }
   
   @Override
-  public JmolScriptEvaluator setViewer(Viewer viewer) {
-    this.viewer = viewer;
+  public JmolScriptEvaluator setViewer(Viewer vwr) {
+    this.vwr = vwr;
     eval = newScriptEvaluator();
     eval.setCompiler();
     return eval;
@@ -85,7 +85,7 @@ public class ScriptManager implements JmolScriptManager {
  
   private ScriptEval newScriptEvaluator() {
     return ((ScriptEval) Interface
-        .getOption("script.ScriptEval")).setViewer(viewer);
+        .getOption("script.ScriptEval")).setViewer(vwr);
   }
 
   @Override
@@ -113,9 +113,9 @@ public class ScriptManager implements JmolScriptManager {
      */
     {}
         
-    if (!viewer.global.useScriptQueue) {
+    if (!vwr.g.useScriptQueue) {
       clearQueue();
-      viewer.haltScriptExecution();
+      vwr.haltScriptExecution();
     }
     if (commandWatcherThread == null && useCommandWatcherThread)
       startCommandWatcher(true);
@@ -160,7 +160,7 @@ public class ScriptManager implements JmolScriptManager {
     // if we are here and it is single-threaded, and there is
     // a script running, then that's a problem.
     
-    if (viewer.isSingleThreaded)
+    if (vwr.isSingleThreaded)
       return;
     int n = 0;
     while (isQueueProcessing()) {
@@ -198,14 +198,14 @@ public class ScriptManager implements JmolScriptManager {
     if (scriptQueueRunning[pt])
       return;
     scriptQueueRunning[pt] = true;
-    queueThreads[pt] = new ScriptQueueThread(this, viewer,
+    queueThreads[pt] = new ScriptQueueThread(this, vwr,
         startedByCommandWatcher, pt);
     queueThreads[pt].start();
   }
 
   @Override
   public List<Object> getScriptItem(boolean watching, boolean isByCommandWatcher) {
-    if (viewer.isSingleThreaded && viewer.queueOnHold)
+    if (vwr.isSingleThreaded && vwr.queueOnHold)
       return null;
     List<Object> scriptItem = scriptQueue.get(0);
     int flag = (((Integer) scriptItem.get(5)).intValue());
@@ -226,7 +226,7 @@ public class ScriptManager implements JmolScriptManager {
         return;
       commandWatcherThread = (JmolThread) Interface
       .getOption("script.CommandWatcherThread");
-      commandWatcherThread.setManager(this, viewer, null);
+      commandWatcherThread.setManager(this, vwr, null);
       commandWatcherThread.start();
     } else {
       if (commandWatcherThread == null)
@@ -291,8 +291,8 @@ public class ScriptManager implements JmolScriptManager {
     queueThreads[pt].interrupt();
     scriptQueueRunning[pt] = false;
     queueThreads[pt] = null;
-    viewer.setSyncDriver(StatusManager.SYNC_ENABLE);
-    viewer.queueOnHold = false;
+    vwr.setSyncDriver(StatusManager.SYNC_ENABLE);
+    vwr.queueOnHold = false;
   }
 
   public void runScriptNow() {
@@ -338,38 +338,38 @@ public class ScriptManager implements JmolScriptManager {
     // "+scriptStarted,+scriptStatus,+scriptEcho,+scriptTerminated"
     // set up first with applet.jmolGetProperty("jmolStatus",statusList)
     // flush list
-    String oldStatusList = viewer.statusManager.getStatusList();
-    viewer.getStatusChanged(statusList);
-    if (viewer.isSyntaxCheck)
+    String oldStatusList = vwr.statusManager.getStatusList();
+    vwr.getStatusChanged(statusList);
+    if (vwr.isSyntaxCheck)
       Logger.info("--checking script:\n" + eval.getScript() + "\n----\n");
     boolean historyDisabled = (strScript.indexOf(")") == 0);
     if (historyDisabled)
       strScript = strScript.substring(1);
     historyDisabled = historyDisabled || !isQueued; // no history for scriptWait
     // 11.5.45
-    viewer.setErrorMessage(null, null);
+    vwr.setErrorMessage(null, null);
     boolean isOK = (isScriptFile ? eval.compileScriptFile(strScript, isQuiet)
         : eval.compileScriptString(strScript, isQuiet));
     String strErrorMessage = eval.getErrorMessage();
     String strErrorMessageUntranslated = eval.getErrorMessageUntranslated();
-    viewer.setErrorMessage(strErrorMessage, strErrorMessageUntranslated);
-    viewer.refresh(7,"script complete");
+    vwr.setErrorMessage(strErrorMessage, strErrorMessageUntranslated);
+    vwr.refresh(7,"script complete");
     if (isOK) {
       isScriptQueued = isQueued;
       if (!isQuiet)
-        viewer.setScriptStatus(null, strScript, -2 - (++scriptIndex), null);
-      eval.evaluateCompiledScript(viewer.isSyntaxCheck, viewer.isSyntaxAndFileCheck,
-          historyDisabled, viewer.listCommands, outputBuffer, isQueued || !viewer.isSingleThreaded);
+        vwr.setScriptStatus(null, strScript, -2 - (++scriptIndex), null);
+      eval.evaluateCompiledScript(vwr.isSyntaxCheck, vwr.isSyntaxAndFileCheck,
+          historyDisabled, vwr.listCommands, outputBuffer, isQueued || !vwr.isSingleThreaded);
     } else {
-      viewer.scriptStatus(strErrorMessage);
-      viewer.setScriptStatus("Jmol script terminated", strErrorMessage, 1,
+      vwr.scriptStatus(strErrorMessage);
+      vwr.setScriptStatus("Jmol script terminated", strErrorMessage, 1,
           strErrorMessageUntranslated);
       if (eval.isStateScript())
-      setStateScriptVersion(viewer, null); // set by compiler
+      setStateScriptVersion(vwr, null); // set by compiler
     }
-    if (strErrorMessage != null && viewer.autoExit)
-      viewer.exitJmol();
-    if (viewer.isSyntaxCheck) {
+    if (strErrorMessage != null && vwr.autoExit)
+      vwr.exitJmol();
+    if (vwr.isSyntaxCheck) {
       if (strErrorMessage == null)
         Logger.info("--script check ok");
       else
@@ -383,8 +383,8 @@ public class ScriptManager implements JmolScriptManager {
       return (strErrorMessageUntranslated == null ? outputBuffer.toString()
           : strErrorMessageUntranslated);
     // get Vector of Vectors of Vectors info ("object") or, for the applet, JSON ("json")
-    Object info = viewer.getProperty(returnType, "jmolStatus", statusList);
-    viewer.getStatusChanged(oldStatusList);
+    Object info = vwr.getProperty(returnType, "jmolStatus", statusList);
+    vwr.getStatusChanged(oldStatusList);
     return info;
   }
   
@@ -403,7 +403,7 @@ public class ScriptManager implements JmolScriptManager {
 
   private boolean checkResume(String str) {
     if (str.equalsIgnoreCase("resume")) {
-      viewer.setScriptStatus("", "execution resumed", 0, null);
+      vwr.setScriptStatus("", "execution resumed", 0, null);
       eval.resumePausedExecution();
       return true;
     }
@@ -416,7 +416,7 @@ public class ScriptManager implements JmolScriptManager {
       return true;
     }
     if (str.equalsIgnoreCase("?")) {
-      viewer.scriptStatus(eval.getNextStatement());
+      vwr.scriptStatus(eval.getNextStatement());
       return true;
     }
     return false;
@@ -432,9 +432,9 @@ public class ScriptManager implements JmolScriptManager {
     // we append #NOSYNC; here so that the receiving applet does not attempt
     // to pass it back to us or any other applet.
     //System.out.println("OK, I'm in evalStringQUiet");
-    if (allowSyncScript && viewer.statusManager.syncingScripts
+    if (allowSyncScript && vwr.statusManager.syncingScripts
         && strScript.indexOf("#NOSYNC;") < 0)
-      viewer.syncScript(strScript + " #NOSYNC;", null, 0);
+      vwr.syncScript(strScript + " #NOSYNC;", null, 0);
     if (eval.isPaused() && strScript.charAt(0) != '!')
       strScript = '!' + PT.trim(strScript, "\n\r\t ");
     boolean isInsert = (strScript.length() > 0 && strScript.charAt(0) == '!');
@@ -443,57 +443,57 @@ public class ScriptManager implements JmolScriptManager {
     String msg = checkScriptExecution(strScript, isInsert);
     if (msg != null)
       return msg;
-    if (viewer.isScriptExecuting() && (isInsert || eval.isPaused())) {
-      viewer.setInsertedCommand(strScript);
+    if (vwr.isScriptExecuting() && (isInsert || eval.isPaused())) {
+      vwr.setInsertedCommand(strScript);
       if (strScript.indexOf("moveto ") == 0)
         flushQueue("moveto ");
       return "!" + strScript;
     }
-    viewer.setInsertedCommand("");
+    vwr.setInsertedCommand("");
     if (isQuiet)
       strScript += JC.SCRIPT_EDITOR_IGNORE;
     return addScript(strScript, false, isQuiet
-        && !viewer.getBoolean(T.messagestylechime));
+        && !vwr.getBoolean(T.messagestylechime));
   }
 
   @Override
   public boolean checkHalt(String str, boolean isInsert) {
     if (str.equalsIgnoreCase("pause")) {
-      viewer.pauseScriptExecution();
-      if (viewer.scriptEditorVisible)
-        viewer.setScriptStatus("", "paused -- type RESUME to continue", 0, null);
+      vwr.pauseScriptExecution();
+      if (vwr.scriptEditorVisible)
+        vwr.setScriptStatus("", "paused -- type RESUME to continue", 0, null);
       return true;
     }
     if (str.equalsIgnoreCase("menu")) {
-      viewer.getProperty("DATA_API", "getPopupMenu", "\0");
+      vwr.getProperty("DATA_API", "getPopupMenu", "\0");
       return true;
     }
     str = str.toLowerCase();
     boolean exitScript = false;
     String haltType = null;
     if (str.startsWith("exit")) {
-      viewer.haltScriptExecution();
-      viewer.clearScriptQueue();
-      viewer.clearTimeouts();
+      vwr.haltScriptExecution();
+      vwr.clearScriptQueue();
+      vwr.clearTimeouts();
       exitScript = str.equals(haltType = "exit");
     } else if (str.startsWith("quit")) {
-      viewer.haltScriptExecution();
+      vwr.haltScriptExecution();
       exitScript = str.equals(haltType = "quit");
     }
     if (haltType == null)
       return false;
     // !quit or !exit
     if (isInsert) {
-      viewer.clearThreads();
-      viewer.queueOnHold = false;
+      vwr.clearThreads();
+      vwr.queueOnHold = false;
     }
-    if (isInsert || viewer.global.waitForMoveTo) {
-      viewer.stopMotion();
+    if (isInsert || vwr.g.waitForMoveTo) {
+      vwr.stopMotion();
     }
-    Logger.info(viewer.isSyntaxCheck ? haltType
+    Logger.info(vwr.isSyntaxCheck ? haltType
         + " -- stops script checking" : (isInsert ? "!" : "") + haltType
         + " received");
-    viewer.isSyntaxCheck = false;
+    vwr.isSyntaxCheck = false;
     return exitScript;
   }
 
@@ -505,7 +505,7 @@ public class ScriptManager implements JmolScriptManager {
       if (eval == null)
         eval = evalTemp = newScriptEvaluator();
     }
-    return viewer.excludeAtoms(eval.getAtomBitSet(atomExpression), false);
+    return vwr.excludeAtoms(eval.getAtomBitSet(atomExpression), false);
   }
 
   @Override
@@ -540,7 +540,7 @@ public class ScriptManager implements JmolScriptManager {
       fileName = fileName.substring(1);
     fileName = fileName.replace('\\', '/');
     boolean isCached = fileName.startsWith("cache://");
-    if (viewer.isApplet() && fileName.indexOf("://") < 0)
+    if (vwr.isApplet() && fileName.indexOf("://") < 0)
       fileName = "file://" + (fileName.startsWith("/") ? "" : "/") + fileName;
     try {
       if (fileName.endsWith(".pse")) {
@@ -555,7 +555,7 @@ public class ScriptManager implements JmolScriptManager {
       if (!fileName.toLowerCase().endsWith(".spt")) {
         String type = getFileTypeName(fileName);
         if (type == null) {
-          type = JmolBinary.determineSurfaceTypeIs(viewer
+          type = JmolBinary.determineSurfaceTypeIs(vwr
               .getBufferedInputStream(fileName));
           if (type != null)
             cmd = "if (_filetype == 'Pdb') { isosurface sigma 1.0 within 2.0 {*} "
@@ -568,7 +568,7 @@ public class ScriptManager implements JmolScriptManager {
         } else if (type.equals("Cube")) {
           cmd = "isosurface sign red blue ";
         } else if (!type.equals("spt")) {
-          cmd = viewer.global.defaultDropScript;
+          cmd = vwr.g.defaultDropScript;
           cmd = PT.rep(cmd, "%FILE", fileName);
           cmd = PT.rep(cmd, "%ALLOWCARTOONS", ""
               + pdbCartoons);
@@ -577,14 +577,14 @@ public class ScriptManager implements JmolScriptManager {
           return;
         }
       }
-      if (allowScript && viewer.scriptEditorVisible && cmd == null)
-        viewer.showEditor(new String[] { fileName,
-            viewer.getFileAsString(fileName, true) });
+      if (allowScript && vwr.scriptEditorVisible && cmd == null)
+        vwr.showEditor(new String[] { fileName,
+            vwr.getFileAsString(fileName, true) });
       else
         cmd = (cmd == null ? "script " : cmd) + PT.esc(fileName);
     } finally {
       if (cmd != null)
-        viewer.evalString(cmd);
+        vwr.evalString(cmd);
     }
   }
 
@@ -594,15 +594,15 @@ public class ScriptManager implements JmolScriptManager {
       return fileName.substring(0, pt);
     if (fileName.startsWith("="))
       return "pdb";
-    Object br = viewer.fileManager.getUnzippedReaderOrStreamFromName(fileName, null,
+    Object br = vwr.fileManager.getUnzippedReaderOrStreamFromName(fileName, null,
         true, false, true, true, null);
     if (br instanceof BufferedReader)
-      return viewer.getModelAdapter().getFileTypeName(br);
+      return vwr.getModelAdapter().getFileTypeName(br);
     if (br instanceof ZInputStream) {
       String zipDirectory = getZipDirectoryAsString(fileName);
       if (zipDirectory.indexOf("JmolManifest") >= 0)
         return "Jmol";
-      return viewer.getModelAdapter().getFileTypeName(
+      return vwr.getModelAdapter().getFileTypeName(
           Binary.getBR(zipDirectory));
     }
     if (PT.isAS(br)) {
@@ -612,14 +612,14 @@ public class ScriptManager implements JmolScriptManager {
   }
 
   private String getZipDirectoryAsString(String fileName) {
-    Object t = viewer.fileManager.getBufferedInputStreamOrErrorMessageFromName(
+    Object t = vwr.fileManager.getBufferedInputStreamOrErrorMessageFromName(
         fileName, fileName, false, false, null, false, true);
     return Binary.getZipDirectoryAsStringAndClose((BufferedInputStream) t);
   }
 
   private static int prevCovalentVersion = 1;
 
-  public static void setStateScriptVersion(Viewer viewer, String version) {
+  public static void setStateScriptVersion(Viewer vwr, String version) {
     if (version != null) {
       prevCovalentVersion = Elements.bondingVersion;
       String[] tokens = PT.getTokens(version.replace('.', ' ')
@@ -631,38 +631,38 @@ public class ScriptManager implements JmolScriptManager {
         if (minor == Integer.MIN_VALUE) // RCxxx
           minor = 0;
         if (main != Integer.MIN_VALUE && sub != Integer.MIN_VALUE) {
-          int ver = viewer.stateScriptVersionInt = main * 10000 + sub * 100
+          int ver = vwr.stateScriptVersionInt = main * 10000 + sub * 100
               + minor;
-          viewer.global.legacyAutoBonding = (ver < 110924);
-          viewer.global.legacyHAddition = (ver < 130117);
-          viewer.setIntProperty("bondingVersion", ver < 140111 ? 0 : 1);
+          vwr.g.legacyAutoBonding = (ver < 110924);
+          vwr.g.legacyHAddition = (ver < 130117);
+          vwr.setIntProperty("bondingVersion", ver < 140111 ? 0 : 1);
           return;
         }
       } catch (Exception e) {
         // ignore
       }
     }
-    viewer.setIntProperty("bondingVersion", prevCovalentVersion);
-    viewer.setBooleanProperty("legacyautobonding", false);
-    viewer.global.legacyHAddition = false;
-    viewer.stateScriptVersionInt = Integer.MAX_VALUE;
+    vwr.setIntProperty("bondingVersion", prevCovalentVersion);
+    vwr.setBooleanProperty("legacyautobonding", false);
+    vwr.g.legacyHAddition = false;
+    vwr.stateScriptVersionInt = Integer.MAX_VALUE;
   }
   
   @Override
   public BS addHydrogensInline(BS bsAtoms, List<Atom> vConnections, P3[] pts)
       throws Exception {
-    int modelIndex = viewer.getAtomModelIndex(bsAtoms.nextSetBit(0));
-    if (modelIndex != viewer.modelSet.modelCount - 1)
+    int modelIndex = vwr.getAtomModelIndex(bsAtoms.nextSetBit(0));
+    if (modelIndex != vwr.ms.modelCount - 1)
       return new BS();
 
     // must be added to the LAST data set only
 
-    BS bsA = viewer.getModelUndeletedAtomsBitSet(modelIndex);
-    viewer.setAppendNew(false);
+    BS bsA = vwr.getModelUndeletedAtomsBitSet(modelIndex);
+    vwr.setAppendNew(false);
     // BitSet bsB = getAtomBits(Token.hydrogen, null);
     // bsA.andNot(bsB);
-    int atomIndex = viewer.modelSet.getAtomCount();
-    int atomno = viewer.modelSet.getAtomCountInModel(modelIndex);
+    int atomIndex = vwr.ms.getAtomCount();
+    int atomno = vwr.ms.getAtomCountInModel(modelIndex);
     SB sbConnect = new SB();
     for (int i = 0; i < vConnections.size(); i++) {
       Atom a = vConnections.get(i);
@@ -677,9 +677,9 @@ public class ScriptManager implements JmolScriptManager {
       sb.append("H ").appendF(pts[i].x).append(" ").appendF(pts[i].y)
           .append(" ").appendF(pts[i].z).append(" - - - - ").appendI(++atomno)
           .appendC('\n');
-    viewer.openStringInlineParamsAppend(sb.toString(), null, true);
+    vwr.openStringInlineParamsAppend(sb.toString(), null, true);
     eval.runScriptBuffer(sbConnect.toString(), null);
-    BS bsB = viewer.getModelUndeletedAtomsBitSet(modelIndex);
+    BS bsB = vwr.getModelUndeletedAtomsBitSet(modelIndex);
     bsB.andNot(bsA);
     return bsB;
   }

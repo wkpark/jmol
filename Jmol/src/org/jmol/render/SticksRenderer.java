@@ -81,17 +81,17 @@ public class SticksRenderer extends FontLineShapeRenderer {
     isPass2 = g3d.isPass2();
     if (!isPass2)
       bsForPass2.clearAll();
-    slabbing = viewer.getSlabEnabled();
-    slabByAtom = viewer.getBoolean(T.slabbyatom);
+    slabbing = vwr.getSlabEnabled();
+    slabByAtom = vwr.getBoolean(T.slabbyatom);
     endcaps = GData.ENDCAPS_SPHERICAL;
-    dashDots = (viewer.getBoolean(T.partialdots) ? sixdots : dashes);
+    dashDots = (vwr.getBoolean(T.partialdots) ? sixdots : dashes);
     isCartesianExport = (exportType == GData.EXPORT_CARTESIAN);
     getMultipleBondSettings(false);
-    wireframeOnly = !viewer.checkMotionRendering(T.bonds);
-    ssbondsBackbone = viewer.getBoolean(T.ssbondsbackbone);
-    hbondsBackbone = viewer.getBoolean(T.hbondsbackbone);
+    wireframeOnly = !vwr.checkMotionRendering(T.bonds);
+    ssbondsBackbone = vwr.getBoolean(T.ssbondsbackbone);
+    hbondsBackbone = vwr.getBoolean(T.hbondsbackbone);
     bondsBackbone = hbondsBackbone | ssbondsBackbone;
-    hbondsSolid = viewer.getBoolean(T.hbondssolid);
+    hbondsSolid = vwr.getBoolean(T.hbondssolid);
     isAntialiased = g3d.isAntialiased();
     boolean needTranslucent = false;
     if (!isExport && isPass2)
@@ -113,19 +113,19 @@ public class SticksRenderer extends FontLineShapeRenderer {
   }
 
 //  if (haveMultipleBonds) {
-//    viewer.setFloatProperty("multipleBondSpacing", 0.15f);
-//    viewer.setFloatProperty("multipleBondRadiusFactor", 0.4f);
+//    vwr.setFloatProperty("multipleBondSpacing", 0.15f);
+//    vwr.setFloatProperty("multipleBondRadiusFactor", 0.4f);
 //  }
 
   private void getMultipleBondSettings(boolean isPymol) {
-    multipleBondSpacing = (isPymol ? 0.15f :viewer.getFloat(T.multiplebondspacing));
-    multipleBondRadiusFactor = (isPymol ? 0.4f : viewer.getFloat(T.multiplebondradiusfactor));    
+    multipleBondSpacing = (isPymol ? 0.15f :vwr.getFloat(T.multiplebondspacing));
+    multipleBondRadiusFactor = (isPymol ? 0.4f : vwr.getFloat(T.multiplebondradiusfactor));    
     if (multipleBondSpacing == 0 && isCartesianExport)
       multipleBondSpacing = 0.2f;
-    modeMultipleBond = viewer.getModeMultipleBond();
+    modeMultipleBond = vwr.getModeMultipleBond();
     showMultipleBonds = (multipleBondSpacing != 0
         && modeMultipleBond != JC.MULTIBOND_NEVER
-        && viewer.getBoolean(T.showmultiplebonds));
+        && vwr.getBoolean(T.showmultiplebonds));
   }
 
   private boolean renderBond() {
@@ -174,9 +174,9 @@ public class SticksRenderer extends FontLineShapeRenderer {
     colixB = atomB0.getColix();
     if (((colix = bond.colix) & C.OPAQUE_MASK) == C.USE_PALETTE) {
       colix = (short) (colix & ~C.OPAQUE_MASK);
-      colixA = C.getColixInherited((short) (colix | viewer
+      colixA = C.getColixInherited((short) (colix | vwr
           .getColixAtomPalette(atomA0, EnumPalette.CPK.id)), colixA);
-      colixB = C.getColixInherited((short) (colix | viewer
+      colixB = C.getColixInherited((short) (colix | vwr
           .getColixAtomPalette(atomB0, EnumPalette.CPK.id)), colixB);
     } else {
       colixA = C.getColixInherited(colix, colixA);
@@ -259,7 +259,7 @@ public class SticksRenderer extends FontLineShapeRenderer {
       mad *= multipleBondRadiusFactor;
     dx = xB - xA;
     dy = yB - yA;
-    width = (int) viewer.scaleToScreen((zA + zB) / 2, mad);
+    width = (int) vwr.scaleToScreen((zA + zB) / 2, mad);
     if (wireframeOnly && width > 0)
       width = 1;
     if (!isCartesianExport) {
@@ -297,7 +297,7 @@ public class SticksRenderer extends FontLineShapeRenderer {
     if (isEndOn && asLineOnly)
       return;
     boolean doFixedSpacing = (bondOrder > 1 && multipleBondSpacing > 0);
-    boolean isPiBonded = doFixedSpacing && (viewer.getHybridizationAndAxes(a.index, z, x, "pz") != null || viewer
+    boolean isPiBonded = doFixedSpacing && (vwr.getHybridizationAndAxes(a.index, z, x, "pz") != null || vwr
             .getHybridizationAndAxes(b.index, z, x, "pz") != null) && !Float.isNaN(x.x);
     if (isEndOn && !doFixedSpacing) {
       // end-on view
@@ -341,8 +341,8 @@ public class SticksRenderer extends FontLineShapeRenderer {
           // bypass screen rendering and just use the atoms themselves
           g3d.drawBond(p1, p2, colixA, colixB, endcaps, mad, -2);
         } else {
-          viewer.transformPtScr(p1, s1);
-          viewer.transformPtScr(p2, s2);
+          vwr.transformPtScr(p1, s1);
+          vwr.transformPtScr(p2, s2);
           if (isDashed)
             drawDashed(s1.x, s1.y, s1.z, s2.x, s2.y, s2.z, dashDots);
           else

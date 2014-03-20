@@ -4,7 +4,7 @@ import org.jmol.viewer.Viewer;
 
 public interface JmolJSpecView {
 
-  void setViewer(Viewer viewer);
+  void setViewer(Viewer vwr);
   
   void atomPicked(int atomIndex);
 

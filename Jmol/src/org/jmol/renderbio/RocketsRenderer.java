@@ -51,7 +51,7 @@ public class RocketsRenderer extends StrandsRenderer {
       renderStrands();
       return;
     }
-    boolean val = !viewer.getBoolean(T.rocketbarrels);
+    boolean val = !vwr.getBoolean(T.rocketbarrels);
     if (renderArrowHeads != val) {
       bioShape.falsifyMesh();
       renderArrowHeads = val;
@@ -60,7 +60,7 @@ public class RocketsRenderer extends StrandsRenderer {
     calcScreenControlPoints(cordMidPoints);
     controlPoints = cordMidPoints;
     renderRockets();
-    viewer.freeTempPoints(cordMidPoints);
+    vwr.freeTempPoints(cordMidPoints);
   }
 
   protected P3[] cordMidPoints;
@@ -71,7 +71,7 @@ public class RocketsRenderer extends StrandsRenderer {
 
   protected void calcRopeMidPoints(boolean isNewStyle) {
     int midPointCount = monomerCount + 1;
-    cordMidPoints = viewer.allocTempPoints(midPointCount);
+    cordMidPoints = vwr.allocTempPoints(midPointCount);
     ProteinStructure proteinstructurePrev = null;
     P3 point;
     for (int i = 0; i < monomerCount; ++i) {
@@ -172,17 +172,17 @@ public class RocketsRenderer extends StrandsRenderer {
   private void renderPendingRocketSegment(int i, P3 pointStart,
                                           P3 pointBeforeEnd, P3 pointEnd,
                                           boolean tEnd) {
-    viewer.transformPt3f(pointStart, screenA);
-    viewer.transformPt3f(pointEnd, screenB);
+    vwr.transformPt3f(pointStart, screenA);
+    vwr.transformPt3f(pointEnd, screenB);
     int zMid = (int) Math.floor((screenA.z + screenB.z) / 2f);
-    int diameter = (int) viewer.scaleToScreen(zMid, mad);
+    int diameter = (int) vwr.scaleToScreen(zMid, mad);
     if (g3d.setColix(colix)) {
       g3d.fillCylinderBits(GData.ENDCAPS_FLAT, diameter, screenA, screenB);
       if (tEnd && renderArrowHeads) {
         vtemp.sub2(pointEnd, pointStart);
         vtemp.normalize();
         screenA.scaleAdd2(4.0f, vtemp, pointEnd);
-        viewer.transformPt3f(screenA, screenC);
+        vwr.transformPt3f(screenA, screenC);
         renderCone(i, pointEnd, screenA, screenB, screenC);
       }
       if (startIndexPending == endIndexPending)
@@ -208,7 +208,7 @@ public class RocketsRenderer extends StrandsRenderer {
   protected void renderCone(int i, P3 pointBegin, P3 pointEnd,
                             P3 screenPtBegin, P3 screenPtEnd) {
     int coneDiameter = (mad << 1) - (mad >> 1);
-    coneDiameter = (int) viewer.scaleToScreen(
+    coneDiameter = (int) vwr.scaleToScreen(
         (int) Math.floor(screenPtBegin.z), coneDiameter);
     g3d.fillConeSceen3f(GData.ENDCAPS_FLAT, coneDiameter, screenPtBegin,
         screenPtEnd);
@@ -233,12 +233,12 @@ public class RocketsRenderer extends StrandsRenderer {
           corner.add(vW);
         if ((i & 2) != 0)
           corner.add(vH);
-        viewer.transformPt3f(corner, screenCorners[i]);
+        vwr.transformPt3f(corner, screenCorners[i]);
       }
       corners[4].setT(ptTip);
-      viewer.transformPt3f(ptTip, screenCorners[4]);
+      vwr.transformPt3f(ptTip, screenCorners[4]);
       corners[5].add2(ptTip, vH);
-      viewer.transformPt3f(corners[5], screenCorners[5]);
+      vwr.transformPt3f(corners[5], screenCorners[5]);
 
       g3d.fillTriangle3f(screenCorners[0], screenCorners[1], screenCorners[4],
           true);
@@ -289,7 +289,7 @@ public class RocketsRenderer extends StrandsRenderer {
         corner.add(scaledHeightVector);
       if ((i & 4) != 0)
         corner.add(lengthVector);
-      viewer.transformPt3f(corner, screenCorners[i]);
+      vwr.transformPt3f(corner, screenCorners[i]);
     }
   }
 

@@ -79,7 +79,7 @@ abstract public class ScriptParam extends ScriptError {
   public Object getParameter(String key, int tokType) {
     Object v = getContextVariableAsVariable(key);
     if (v == null)
-      v = viewer.getParameter(key);
+      v = vwr.getParameter(key);
     switch (tokType) {
     case T.variable:
       return SV.getVariable(v);
@@ -99,7 +99,7 @@ abstract public class ScriptParam extends ScriptError {
     SV v = getContextVariableAsVariable(var);
     if (v != null)
       return v.asString();
-    String val = "" + viewer.getParameter(var);
+    String val = "" + vwr.getParameter(var);
     return (val.length() == 0 && orReturnName ? var : val);
   }
 
@@ -129,7 +129,7 @@ abstract public class ScriptParam extends ScriptError {
     case T.string:
       String s = stringParameter(i);
       if (s.startsWith("[\"")) {
-        Object o = viewer.evaluateExpression(s);
+        Object o = vwr.evaluateExpression(s);
         if (o instanceof String)
           return PT.split((String) o, "\n");
       }
@@ -181,9 +181,9 @@ abstract public class ScriptParam extends ScriptError {
     case T.expressionBegin:
       BS bs = atomExpression(st, i, 0, true, false, false, true);
       if (bs != null && bs.cardinality() == 1)
-        return viewer.getAtomPoint3f(bs.nextSetBit(0));
+        return vwr.getAtomPoint3f(bs.nextSetBit(0));
       if (bs != null)
-        return viewer.getAtomSetCenter(bs);
+        return vwr.getAtomSetCenter(bs);
       if (expressionResult instanceof P3)
         return (P3) expressionResult;
       invArg();
@@ -324,7 +324,7 @@ abstract public class ScriptParam extends ScriptError {
   }
 
   public P4 hklParameter(int i) throws ScriptException {
-    if (!chk && viewer.getCurrentUnitCell() == null)
+    if (!chk && vwr.getCurrentUnitCell() == null)
       error(ERROR_noUnitCell);
     P3 pt = (P3) getPointOrPlane(i, false, true, false, true, 3, 3);
     P4 p = getHklPlane(pt);
@@ -361,9 +361,9 @@ abstract public class ScriptParam extends ScriptError {
       pt3.set(pt1.x, 0, 1);
     }
     // base this one on the currently defined unit cell
-    viewer.toCartesian(pt1, false);
-    viewer.toCartesian(pt2, false);
-    viewer.toCartesian(pt3, false);
+    vwr.toCartesian(pt1, false);
+    vwr.toCartesian(pt2, false);
+    vwr.toCartesian(pt3, false);
     V3 plane = new V3();
     float w = Measure.getNormalThroughPoints(pt1, pt2, pt3, plane, vAB, vAC);
     P4 pt4 = new P4();
@@ -456,7 +456,7 @@ abstract public class ScriptParam extends ScriptError {
       if (coordinatesAreFractional && doConvert) {
         fractionalPoint = P3.newP(pt);
         if (!chk)
-          viewer.toCartesian(pt, !viewer.getBoolean(T.fractionalrelative));
+          vwr.toCartesian(pt, !vwr.getBoolean(T.fractionalrelative));
       }
       return pt;
     }
@@ -738,7 +738,7 @@ abstract public class ScriptParam extends ScriptError {
         invArg();
       return Quat.newP4(p4);
     case T.best:
-      return (chk ? null : Quat.newP4((P4) Escape.uP(viewer
+      return (chk ? null : Quat.newP4((P4) Escape.uP(vwr
           .getOrientationText(T.best, null))));
     default:
       return Quat.newP4(getPoint4f(i));
@@ -810,7 +810,7 @@ abstract public class ScriptParam extends ScriptError {
     default:
       invArg();
     }
-    return viewer.getModelNumberIndex(iFrame, useModelNumber, true);
+    return vwr.getModelNumberIndex(iFrame, useModelNumber, true);
   }
 
   public int getMadParameter() throws ScriptException {
@@ -865,7 +865,7 @@ abstract public class ScriptParam extends ScriptError {
   public List<P3> getPointVector(T t, int i) throws ScriptException {
     switch (t.tok) {
     case T.bitset:
-      return viewer.getAtomPointVector((BS) t.value);
+      return vwr.getAtomPointVector((BS) t.value);
     case T.varray:
       List<P3> data = new List<P3>();
       P3 pt;
@@ -878,7 +878,7 @@ abstract public class ScriptParam extends ScriptError {
       return data;
     }
     if (i > 0)
-      return viewer.getAtomPointVector(atomExpressionAt(i));
+      return vwr.getAtomPointVector(atomExpressionAt(i));
     return null;
   }
 
@@ -1128,24 +1128,24 @@ abstract public class ScriptParam extends ScriptError {
 
   public void setBooleanProperty(String key, boolean value) {
     if (!chk)
-      viewer.setBooleanProperty(key, value);
+      vwr.setBooleanProperty(key, value);
   }
 
   protected boolean setIntProperty(String key, int value) {
     if (!chk)
-      viewer.setIntProperty(key, value);
+      vwr.setIntProperty(key, value);
     return true;
   }
 
   protected boolean setFloatProperty(String key, float value) {
     if (!chk)
-      viewer.setFloatProperty(key, value);
+      vwr.setFloatProperty(key, value);
     return true;
   }
 
   protected void setStringProperty(String key, String value) {
     if (!chk)
-      viewer.setStringProperty(key, value);
+      vwr.setStringProperty(key, value);
   }
 
 

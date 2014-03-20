@@ -30,7 +30,6 @@ import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolLineReader;
 import org.jmol.api.SymmetryInterface;
-import org.jmol.io.Binary;
 import org.jmol.io.CifDataReader;
 import org.jmol.java.BS;
 
@@ -41,6 +40,7 @@ import java.util.Map;
 
 import org.jmol.util.Logger;
 
+import javajs.util.Binary;
 import javajs.util.P3;
 import javajs.util.PT;
 import javajs.util.V3;
@@ -343,7 +343,7 @@ public class CifReader extends AtomSetCollectionReader implements
     // no atom-centered rotation axes, and no mirror or glide planes.
     if (isPDB)
       atomSetCollection.setCheckSpecial(false);
-    boolean doCheck = doCheckUnitCell && !isPDB;
+    boolean doCheckBonding = doCheckUnitCell && !isPDB;
     SymmetryInterface sym = applySymTrajASCR();
     if (mr != null) {
       mr.setModulation(true);
@@ -355,7 +355,7 @@ public class CifReader extends AtomSetCollectionReader implements
         htAudit = new Hashtable<String, Object>();
       htAudit.put(auditBlockCode, sym);
     }
-    if (doCheck && (bondTypes.size() > 0 || isMolecular))
+    if (doCheckBonding && (bondTypes.size() > 0 || isMolecular))
       setBondingAndMolecules();
     atomSetCollection.setAtomSetAuxiliaryInfo("fileHasUnitCell", Boolean.TRUE);
     atomSetCollection.xtalSymmetry = null;
@@ -1012,7 +1012,7 @@ public class CifReader extends AtomSetCollectionReader implements
           assemblyId = field;
           break;
         case AUTH_ASYM_ID:
-          atom.chainID = viewer.getChainID(field);
+          atom.chainID = vwr.getChainID(field);
           break;
         case SEQ_ID:
           atom.sequenceNumber = parseIntStr(field);
@@ -1565,7 +1565,7 @@ public class CifReader extends AtomSetCollectionReader implements
     // not overlaying another atom -- if that happens
     // go ahead and move it, but mark it as excluded.
 
-    float bondTolerance = viewer.getFloat(T.bondtolerance);
+    float bondTolerance = vwr.getFloat(T.bondtolerance);
     BS bsBranch = new BS();
     P3 cart1 = new P3();
     P3 cart2 = new P3();

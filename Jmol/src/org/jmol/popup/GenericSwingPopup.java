@@ -163,7 +163,7 @@ public abstract class GenericSwingPopup implements GenericMenuInterface {
      * @j2sNative
      * 
      *            return (key.indexOf("JAVA") < 0 && !(key.indexOf("NOGL") &&
-     *            this.viewer.isWebGL));
+     *            this.vwr.isWebGL));
      * 
      */
     {

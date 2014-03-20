@@ -38,7 +38,7 @@ public abstract class ShapeRenderer {
   //  System.out.println("ShapeRenderer " + shapeID + " " + this + " finalized");
   //}
   
-  protected Viewer viewer;
+  protected Viewer vwr;
   protected JmolRendererInterface g3d;
   protected ModelSet modelSet;
   protected Shape shape;
@@ -59,8 +59,8 @@ public abstract class ShapeRenderer {
 
   abstract protected boolean render();
 
-  public final void setViewerG3dShapeID(Viewer viewer, int shapeID) {
-    this.viewer = viewer;
+  public final void setViewerG3dShapeID(Viewer vwr, int shapeID) {
+    this.vwr = vwr;
     this.shapeID = shapeID;
     myVisibilityFlag = JC.getShapeVisibilityFlag(shapeID);
     initRenderer();

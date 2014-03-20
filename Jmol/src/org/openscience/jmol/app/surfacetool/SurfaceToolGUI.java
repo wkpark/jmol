@@ -112,8 +112,8 @@ class SurfaceToolGUI extends JPanel implements WindowConstants, WindowListener,
    * Builds and opens a GUI to control slicing. Called automatically when a new
    * SurfaceTool is created with useGUI = true.
    * 
-   * @param viewer
-   *        (JmolViewer) the viewer that called for this surfaceTool.
+   * @param vwr
+   *        (JmolViewer) the vwr that called for this surfaceTool.
    * @param hfile
    *        (HistoryFile) the history file used by this instance of Jmol
    * @param winName
@@ -122,7 +122,7 @@ class SurfaceToolGUI extends JPanel implements WindowConstants, WindowListener,
    * @param slicer
    *        (SurfaceTool) the surfaceTool that activated this GUI
    */
-  SurfaceToolGUI(JmolViewer viewer, HistoryFile hfile, String winName,
+  SurfaceToolGUI(JmolViewer vwr, HistoryFile hfile, String winName,
       SurfaceTool slicer) {
     super(new BorderLayout());
     this.historyFile = hfile;

@@ -39,7 +39,6 @@ import javajs.util.PT;
 import javajs.util.Quat;
 
 import org.jmol.util.Tensor;
-import org.jmol.util.Txt;
 import javajs.util.V3;
 
 import javajs.util.List;
@@ -1066,7 +1065,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       if (iConv >= 0)
         s[iConv] = tokens[pt];
     }
-    data = Txt.join(s, '\n', 0);
+    data = PT.join(s, '\n', 0);
     atomSetCollection.setAtomSetAtomProperty(name, data, -1);
     return true;
   }

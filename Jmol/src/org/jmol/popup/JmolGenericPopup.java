@@ -65,7 +65,7 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
   //  Sygstem.out.println("JmolPopup " + this + " finalize");
   //}
 
-  protected Viewer viewer;
+  protected Viewer vwr;
   protected int updateMode;
   protected Properties menuText = new Properties();
 
@@ -116,10 +116,10 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
   private List<String> cnmrPeaks;
   private List<String> hnmrPeaks;
 
-  protected void initialize(Viewer viewer, PopupResource bundle, String title) {
-    this.viewer = viewer;
-    initSwing(title, bundle, viewer.getApplet(), viewer.isJS,
-        viewer.getBooleanProperty("_signedApplet"));
+  protected void initialize(Viewer vwr, PopupResource bundle, String title) {
+    this.vwr = vwr;
+    initSwing(title, bundle, vwr.getApplet(), vwr.isJS,
+        vwr.getBooleanProperty("_signedApplet"));
   }
 
   ////// JmolPopupInterface methods //////
@@ -142,7 +142,7 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
   public void jpiShow(int x, int y) {
     // main entry point from Viewer
     // called via JmolPopupInterface
-    if (!viewer.haveDisplay)
+    if (!vwr.haveDisplay)
       return;
     show(x, y, false);
     if (x < 0) {
@@ -169,8 +169,8 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
     getViewerData();
     updateSelectMenu();
     updateFileMenu();
-    updateElementsComputedMenu(viewer.getElementsPresentBitSet(modelIndex));
-    updateHeteroComputedMenu(viewer.getHeteroList(modelIndex));
+    updateElementsComputedMenu(vwr.getElementsPresentBitSet(modelIndex));
+    updateHeteroComputedMenu(vwr.getHeteroList(modelIndex));
     updateSurfMoComputedMenu((Map<String, Object>) modelInfo.get("moData"));
     updateFileTypeDependentMenus();
     updatePDBComputedMenus();
@@ -253,7 +253,7 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
 
   @Override
   protected boolean appGetBooleanProperty(String name) {
-    return viewer.getBooleanProperty(name);
+    return vwr.getBooleanProperty(name);
   }
 
   @Override
@@ -286,7 +286,7 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
     // JavaScript does not have to re-insert the menu
     // because it never gets removed in the first place.
     // first entry is just the main item
-    if (viewer.isJS || nFrankList < 2)
+    if (vwr.isJS || nFrankList < 2)
       return;
     for (int i = nFrankList; --i > 0;) {
       Object[] f = frankList[i];
@@ -298,7 +298,7 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
 
   @Override
   protected void appRunScript(String script) {
-    viewer.evalStringQuiet(script);
+    vwr.evalStringQuiet(script);
   }
 
   /**
@@ -326,7 +326,7 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
     if (currentFrankId != null && currentFrankId == id && nFrankList > 0)
       return;
     if (frankPopup == null)
-      frankPopup = helper.menuCreatePopup("Frank", viewer.getApplet());
+      frankPopup = helper.menuCreatePopup("Frank", vwr.getApplet());
     // thisPopup is needed by the JavaScript side of the operation
     thisPopup = frankPopup;
     menuRemoveAll(frankPopup, 0);
@@ -341,7 +341,7 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
           break;
         SC menu = htMenus.get(id.substring(i, iNew));
         frankList[nFrankList++] = new Object[] { menu.getParent(), menu,
-            Integer.valueOf(viewer.isJS ? 0 : menuGetListPosition(menu)) };
+            Integer.valueOf(vwr.isJS ? 0 : menuGetListPosition(menu)) };
         menuAddSubMenu(frankPopup, menu);
         i = iNew + 1;
       }
@@ -354,8 +354,8 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
 
   @SuppressWarnings("unchecked")
   private void getViewerData() {
-    modelSetName = viewer.getModelSetName();
-    modelSetFileName = viewer.getModelSetFileName();
+    modelSetName = vwr.getModelSetName();
+    modelSetFileName = vwr.getModelSetFileName();
     int i = modelSetFileName.lastIndexOf(".");
     isZapped = ("zapped".equals(modelSetName));
     if (isZapped || "string".equals(modelSetFileName)
@@ -366,11 +366,11 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
         i < 0 ? modelSetFileName.length() : i);
     if (modelSetRoot.length() == 0)
       modelSetRoot = "Jmol";
-    modelIndex = viewer.getCurrentModelIndex();
-    modelCount = viewer.getModelCount();
-    atomCount = viewer.getAtomCountInModel(modelIndex);
-    modelSetInfo = viewer.getModelSetAuxiliaryInfo();
-    modelInfo = viewer.getModelAuxiliaryInfo(modelIndex);
+    modelIndex = vwr.getCurrentModelIndex();
+    modelCount = vwr.getModelCount();
+    atomCount = vwr.getAtomCountInModel(modelIndex);
+    modelSetInfo = vwr.getModelSetAuxiliaryInfo();
+    modelInfo = vwr.getModelAuxiliaryInfo(modelIndex);
     if (modelInfo == null)
       modelInfo = new Hashtable<String, Object>();
     isPDB = checkBoolean(modelSetInfo, "isPDB");
@@ -380,11 +380,11 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
     fileHasUnitCell = (isPDB && isUnitCell || checkBoolean(modelInfo,
         "fileHasUnitCell"));
     isLastFrame = (modelIndex == modelCount - 1);
-    altlocs = viewer.getAltLocListInModel(modelIndex);
+    altlocs = vwr.getAltLocListInModel(modelIndex);
     isMultiConfiguration = (altlocs.length() > 0);
-    isVibration = (viewer.modelHasVibrationVectors(modelIndex));
-    haveCharges = (viewer.havePartialCharges());
-    haveBFactors = (viewer.getBooleanProperty("haveBFactors"));
+    isVibration = (vwr.modelHasVibrationVectors(modelIndex));
+    haveCharges = (vwr.havePartialCharges());
+    haveBFactors = (vwr.getBooleanProperty("haveBFactors"));
     cnmrPeaks = (List<String>) modelInfo.get("jdxAtomSelect_13CNMR");
     hnmrPeaks = (List<String>) modelInfo.get("jdxAtomSelect_1HNMR");
   }
@@ -442,7 +442,7 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
     if (menu == null)
       return;
     menuEnable(menu, atomCount != 0);
-    menuSetLabel(menu, gti("selectMenuText", viewer.getSelectionCount()));
+    menuSetLabel(menu, gti("selectMenuText", vwr.getSelectionCount()));
   }
 
   private void updateElementsComputedMenu(BS elementsPresentBitSet) {
@@ -614,7 +614,7 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
       return;
     menuRemoveAll(menu, 0);
     menuEnable(menu, false);
-    String[] scenes = viewer.getSceneList();
+    String[] scenes = vwr.getSceneList();
     if (scenes == null)
       return;
     for (int i = 0; i < scenes.length; i++)
@@ -718,7 +718,7 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
     menuEnable(menu, false);
     if (!isSymmetry || modelIndex < 0)
       return;
-    Map<String, Object> info = (Map<String, Object>) viewer.getProperty(
+    Map<String, Object> info = (Map<String, Object>) vwr.getProperty(
         "DATA_API", "spaceGroupInfo", null);
     if (info == null)
       return;
@@ -813,9 +813,9 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
         htMenus.put(id, subMenu);
         pt = 1;
       }
-      String script = "" + viewer.getModelNumberDotted(i);
-      String entryName = viewer.getModelName(i);
-      String spectrumTypes = (String) viewer.getModelAuxiliaryInfoValue(i,
+      String script = "" + vwr.getModelNumberDotted(i);
+      String entryName = vwr.getModelName(i);
+      String spectrumTypes = (String) vwr.getModelAuxiliaryInfoValue(i,
           "spectrumTypes");
       if (spectrumTypes != null && entryName.startsWith(spectrumTypes))
         spectrumTypes = null;
@@ -885,7 +885,7 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
       modelSetName = gti("modelSetCollectionText", modelCount);
       if (modelSetName.length() > titleWidthMax)
         modelSetName = modelSetName.substring(0, titleWidthMax) + "...";
-    } else if (viewer.getBooleanProperty("hideNameInPopup")) {
+    } else if (vwr.getBooleanProperty("hideNameInPopup")) {
       modelSetName = getMenuText("hiddenModelSetText");
     } else if (modelSetName.length() > titleWidthMax) {
       modelSetName = modelSetName.substring(0, titleWidthMax) + "...";
@@ -896,15 +896,15 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
     // 100 here is totally arbitrary. You can do a minimization on any number of atoms
     menuEnable(htMenus.get("computationMenu"), atomCount <= 100);
     addMenuItem(menu, gti("atomsText", atomCount));
-    addMenuItem(menu, gti("bondsText", viewer.getBondCountInModel(modelIndex)));
+    addMenuItem(menu, gti("bondsText", vwr.getBondCountInModel(modelIndex)));
     if (isPDB) {
       menuAddSeparator(menu);
       addMenuItem(menu,
-          gti("groupsText", viewer.getGroupCountInModel(modelIndex)));
+          gti("groupsText", vwr.getGroupCountInModel(modelIndex)));
       addMenuItem(menu,
-          gti("chainsText", viewer.getChainCountInModel(modelIndex)));
+          gti("chainsText", vwr.getChainCountInModel(modelIndex)));
       addMenuItem(menu,
-          gti("polymersText", viewer.getPolymerCountInModel(modelIndex)));
+          gti("polymersText", vwr.getPolymerCountInModel(modelIndex)));
       SC submenu = htMenus.get("BiomoleculesMenu");
       if (submenu == null) {
         submenu = menuNewSubMenu(GT._(getMenuText("biomoleculesMenuText")),
@@ -915,7 +915,7 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
       menuEnable(submenu, false);
       List<Map<String, Object>> biomolecules;
       if (modelIndex >= 0
-          && (biomolecules = (List<Map<String, Object>>) viewer
+          && (biomolecules = (List<Map<String, Object>>) vwr
               .getModelAuxiliaryInfoValue(modelIndex, "biomolecules")) != null) {
         menuEnable(submenu, true);
         int nBiomolecules = biomolecules.size();
@@ -932,7 +932,7 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
         }
       }
     }
-    if (isApplet && !viewer.getBooleanProperty("hideNameInPopup")) {
+    if (isApplet && !vwr.getBooleanProperty("hideNameInPopup")) {
       menuAddSeparator(menu);
       menuCreateItem(menu, gto("viewMenuText", modelSetFileName), "show url",
           null);
@@ -949,7 +949,7 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
 
   private void updateAboutSubmenu() {
     if (isApplet)
-      setText("APPLETid", viewer.appletName);
+      setText("APPLETid", vwr.appletName);
 
     /**
      * @j2sNative
@@ -1014,15 +1014,15 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
       pt = text.length();
     String info = null;
     if (name.indexOf("captureLooping") >= 0)
-      info = (viewer.getAnimationReplayMode().name().equals("ONCE") ? "ONCE"
+      info = (vwr.getAnimationReplayMode().name().equals("ONCE") ? "ONCE"
           : "LOOP");
     else if (name.indexOf("captureFps") >= 0)
-      info = "" + viewer.getInt(T.animationfps);
+      info = "" + vwr.getInt(T.animationfps);
     else if (name.indexOf("captureMenu") >= 0)
-      info = (viewer.captureParams == null ? GT._("not capturing") : viewer
-          .getFilePath((String) viewer.captureParams.get("captureFileName"),
+      info = (vwr.captureParams == null ? GT._("not capturing") : vwr
+          .getFilePath((String) vwr.captureParams.get("captureFileName"),
               true)
-          + " " + viewer.captureParams.get("captureCount"));
+          + " " + vwr.captureParams.get("captureCount"));
     return (info == null ? text : text.substring(0, pt) + " (" + info + ")");
   }
 

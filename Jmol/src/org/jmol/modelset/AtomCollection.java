@@ -81,7 +81,7 @@ abstract public class AtomCollection {
 
   protected void releaseModelSetAC() {
     atoms = null;
-    viewer = null;
+    vwr = null;
     g3d = null;
     bspf = null;
     surfaceDistance100s = null;
@@ -124,7 +124,7 @@ abstract public class AtomCollection {
     return haveStraightness;
   }
   
-  public Viewer viewer;
+  public Viewer vwr;
   protected GData g3d;
 
   public Atom[] atoms;
@@ -211,7 +211,7 @@ abstract public class AtomCollection {
     if (format == null)
       return atoms[i].getInfo();
     
-    return getLabeler().formatLabel(viewer, atoms[i], format);
+    return getLabeler().formatLabel(vwr, atoms[i], format);
   }
 
   public LabelToken getLabeler() {
@@ -253,7 +253,7 @@ abstract public class AtomCollection {
   }
 
   public float getAtomVdwRadius(int i, EnumVdw type) {
-    return atoms[i].getVanderwaalsRadiusFloat(viewer, type);
+    return atoms[i].getVanderwaalsRadiusFloat(vwr, type);
   }
 
   public short getAtomColix(int i) {
@@ -272,7 +272,7 @@ abstract public class AtomCollection {
     int iAtom = bs.nextSetBit(0);
     return (iAtom < 0 ? "null"
         : atoms[iAtom].group.getHelixData(tokType, 
-        viewer.getQuaternionFrame(), viewer.getInt(T.helixstep)));
+        vwr.getQuaternionFrame(), vwr.getInt(T.helixstep)));
   }
   
   public int getAtomIndexFromAtomNumber(int atomNumber, BS bsVisibleFrames) {
@@ -323,7 +323,7 @@ abstract public class AtomCollection {
       Atom atom = atoms[i];
       if ((r = atom.getBondingRadius()) > maxBondingRadius)
         maxBondingRadius = r;
-      if ((r = atom.getVanderwaalsRadiusFloat(viewer, EnumVdw.AUTO)) > maxVanderwaalsRadius)
+      if ((r = atom.getVanderwaalsRadiusFloat(vwr, EnumVdw.AUTO)) > maxVanderwaalsRadius)
         maxVanderwaalsRadius = r;
     }
   }
@@ -362,8 +362,8 @@ abstract public class AtomCollection {
   public int getBfactor100Lo() {
     //ColorManager
     if (!hasBfactorRange) {
-      if (viewer.global.rangeSelected) {
-        calcBfactorRange(viewer.getSelectedAtoms());
+      if (vwr.g.rangeSelected) {
+        calcBfactorRange(vwr.getSelectedAtoms());
       } else {
         calcBfactorRange(null);
       }
@@ -391,7 +391,7 @@ abstract public class AtomCollection {
     float volume = 0;
     if (bs != null)
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
-        volume += atoms[i].getVolume(viewer, vType);
+        volume += atoms[i].getVolume(vwr, vType);
     return volume;
   }
   
@@ -416,7 +416,7 @@ abstract public class AtomCollection {
       envelopeRadius = JC.ENC_CALC_MAX_DIST;
     
     JmolEnvCalc ec = ((JmolEnvCalc) Interface.getOption("geodesic.EnvelopeCalculation"))
-    .set(viewer, atomCount, null);
+    .set(vwr, atomCount, null);
     ec.calculate(new RadiusData(null, envelopeRadius, EnumType.ABSOLUTE, null), 
         Float.MAX_VALUE, 
         bsSelected, BSUtil.copyInvert(bsSelected, atomCount), 
@@ -627,7 +627,7 @@ abstract public class AtomCollection {
         break;
       case T.label:
       case T.format:
-        viewer.setAtomLabel(sValue, i);
+        vwr.setAtomLabel(sValue, i);
         break;
       case T.occupancy:
         if (iValue < 2)
@@ -652,7 +652,7 @@ abstract public class AtomCollection {
         atom.madAtom = ((short) (fValue * 2000));
         break;
       case T.selected:
-        viewer.setSelectedAtom(atom.index, (fValue != 0));
+        vwr.setSelectedAtom(atom.index, (fValue != 0));
         break;
       case T.temperature:
         if (setBFactor(i, fValue))
@@ -674,14 +674,14 @@ abstract public class AtomCollection {
       }
     }
     if (tok == T.selected)
-      viewer.setSelectedAtom(-1, false);
+      vwr.setSelectedAtom(-1, false);
   }
 
   protected void setElement(Atom atom, int atomicNumber) {
     taintAtom(atom.index, TAINT_ELEMENT);
     atom.setAtomicAndIsotopeNumber(atomicNumber);
     atom.setPaletteID(EnumPalette.CPK.id);
-    atom.setColixAtom(viewer.getColixAtomPalette(atom,
+    atom.setColixAtom(vwr.getColixAtomPalette(atom,
         EnumPalette.CPK.id));
   }
 
@@ -867,7 +867,7 @@ abstract public class AtomCollection {
         case TAINT_ELEMENT:
           atom.setAtomicAndIsotopeNumber((int)x);
           atom.setPaletteID(EnumPalette.CPK.id);
-          atom.setColixAtom(viewer.getColixAtomPalette(atom, EnumPalette.CPK.id));
+          atom.setColixAtom(vwr.getColixAtomPalette(atom, EnumPalette.CPK.id));
           break;
         case TAINT_FORMALCHARGE:
           atom.setFormalCharge((int)x);          
@@ -894,7 +894,7 @@ abstract public class AtomCollection {
         taintAtom(atomIndex, (byte) type);
       }
       if (type == TAINT_MAX && n > 0)
-        viewer.setData(name, new Object[] {name, fData, bs, Integer.valueOf(1)}, 0, 0, 0, 0, 0);
+        vwr.setData(name, new Object[] {name, fData, bs, Integer.valueOf(1)}, 0, 0, 0, 0, 0);
         
     } catch (Exception e) {
       Logger.error("AtomCollection.loadData error: " + e);
@@ -1169,7 +1169,7 @@ abstract public class AtomCollection {
         r = atom.getADPMinMax(false);
         break;
       default:
-        r = atom.getVanderwaalsRadiusFloat(viewer,
+        r = atom.getVanderwaalsRadiusFloat(vwr,
             atomData.radiusData.vdwType);
       }
       if (rd.factorType == EnumType.FACTOR)
@@ -1197,7 +1197,7 @@ abstract public class AtomCollection {
     V3 z = new V3();
     V3 x = new V3();
     P3[][] hAtoms = new P3[atomCount][];
-    BS bsDeleted = viewer.getDeletedAtoms();
+    BS bsDeleted = vwr.getDeletedAtoms();
     P3 pt;
     int nH = 0;
     
@@ -2078,6 +2078,9 @@ abstract public class AtomCollection {
 
     int i = 0;
     switch (tokType) {
+    case T.solvent:
+      // fast search for water
+      return getWaterAtoms(bs);
     case T.resno:
       for (i = atomCount; --i >= 0;)
         if (atoms[i].getResno() == iSpec)
@@ -2299,7 +2302,41 @@ abstract public class AtomCollection {
     return bs;
   }
   
-   /**
+  private BS getWaterAtoms(BS bs) {
+    
+    // this is faster by a factor of 2  Jmol 14.1.12  -BH
+    
+    //"@water _g>=" + GROUPID_WATER + " & _g<" + GROUPID_SOLVENT_MIN
+    //+ ", oxygen & connected(2) & connected(2, hydrogen),  
+    //(hydrogen) & connected(oxygen & connected(2) & connected(2, hydrogen))",
+    
+    int[] hs = new int[2];
+    for (int i = atomCount; --i >= 0;) {
+      if (atoms[i].getElementNumber() != 8)
+        continue;
+      Atom a = atoms[i];
+      Atom b;
+      int g = a.getGroupID();
+      if (g >= JC.GROUPID_WATER && g < JC.GROUPID_SOLVENT_MIN) {
+        bs.set(i);
+      } else if (a.getCovalentBondCount() == 2) {
+        Bond[] bonds = a.getBonds();
+        int n = 0;
+        for (int j = bonds.length; --j >= 0 && n < 3;)
+          if (bonds[j].isCovalent()
+              && (b=bonds[j].getOtherAtom(a)).getElementNumber() == 1)
+            hs[n++ % 2] = b.index;
+        if (n == 2) {
+          bs.set(hs[1]);
+          bs.set(hs[0]);
+          bs.set(i);
+        }
+      }
+    }
+    return bs;
+  }
+
+  /**
    * overhauled by RMH Nov 1, 2006.
    * 
    * @param identifier
@@ -2458,7 +2495,7 @@ abstract public class AtomCollection {
   }
   
   protected BS getChainBits(int chainID) {
-    boolean caseSensitive = chainID < 256 && viewer.getBoolean(T.chaincasesensitive);
+    boolean caseSensitive = chainID < 256 && vwr.getBoolean(T.chaincasesensitive);
     if (!caseSensitive)
       chainID = chainToUpper(chainID);
     BS bs = new BS();

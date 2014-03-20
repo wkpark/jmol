@@ -34,11 +34,8 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.jmol.api.Interface;
-import org.jmol.api.JmolDocument;
 import org.jmol.api.JmolDomReaderInterface;
 import org.jmol.api.JmolFilesReaderInterface;
-import org.jmol.io.Binary;
-import org.jmol.io.DataReader;
 import org.jmol.io.FileReader;
 import org.jmol.io.JmolBinary;
 import org.jmol.script.T;
@@ -46,8 +43,11 @@ import org.jmol.script.T;
 import javajs.api.GenericPlatform;
 import javajs.api.BytePoster;
 import javajs.api.GenericFileInterface;
+import javajs.api.GenericBinaryDocument;
 import javajs.util.AU;
 import javajs.util.Base64;
+import javajs.util.Binary;
+import javajs.util.DataReader;
 import javajs.util.OC;
 import javajs.util.List;
 import javajs.util.PT;
@@ -62,19 +62,19 @@ public class FileManager implements BytePoster {
 
   public static String SIMULATION_PROTOCOL = "http://SIMULATION/";
 
-  private Viewer viewer;
+  private Viewer vwr;
 
   private JmolBinary jmb;
 
-  FileManager(Viewer viewer) {
-    this.viewer = viewer;
+  FileManager(Viewer vwr) {
+    this.vwr = vwr;
     jmb = new JmolBinary(this);
     clear();
   }
 
   void clear() {
     // from zap
-    setFileInfo(new String[] { viewer.getZapName() });
+    setFileInfo(new String[] { vwr.getZapName() });
     jmb.spardirCache = null;
    
   }
@@ -88,8 +88,8 @@ public class FileManager implements BytePoster {
   }
 
   private void setLoadState(Map<String, Object> htParams) {
-    if (viewer.getPreserveState()) {
-      htParams.put("loadState", viewer.getLoadState(htParams));
+    if (vwr.getPreserveState()) {
+      htParams.put("loadState", vwr.getLoadState(htParams));
     }
   }
 
@@ -186,7 +186,7 @@ public class FileManager implements BytePoster {
     if (htParams.get("atomDataOnly") == null) {
       setLoadState(htParams);
     }
-    name = viewer.resolveDatabaseFormat(name);
+    name = vwr.resolveDatabaseFormat(name);
     int pt = name.indexOf("::");
     String nameAsGiven = (pt >= 0 ? name.substring(pt + 2) : name);
     String fileType = (pt >= 0 ? name.substring(0, pt) : null);
@@ -199,9 +199,9 @@ public class FileManager implements BytePoster {
     String fileName = names[1];
     htParams.put("fullPathName", (fileType == null ? "" : fileType + "::")
         + fullPathName.replace('\\', '/'));
-    if (viewer.getBoolean(T.messagestylechime) && viewer.getBoolean(T.debugscript))
-      viewer.scriptStatus("Requesting " + fullPathName);
-    FileReader fileReader = new FileReader(this, viewer, fileName, fullPathName, nameAsGiven,
+    if (vwr.getBoolean(T.messagestylechime) && vwr.getBoolean(T.debugscript))
+      vwr.scriptStatus("Requesting " + fullPathName);
+    FileReader fileReader = new FileReader(this, vwr, fileName, fullPathName, nameAsGiven,
         fileType, null, htParams, isAppend);
     fileReader.run();
     return fileReader.getAtomSetCollection();
@@ -241,13 +241,13 @@ public class FileManager implements BytePoster {
     setLoadState(htParams);
     boolean isAddH = (strModel.indexOf(JC.ADD_HYDROGEN_TITLE) >= 0);
     String[] fnames = (isAddH ? getFileInfo() : null);
-    FileReader fileReader = new FileReader(this, viewer, "string", "string", "string", null,
+    FileReader fileReader = new FileReader(this, vwr, "string", "string", "string", null,
         Binary.getBR(strModel), htParams, isAppend);
     fileReader.run();
     if (fnames != null)
       setFileInfo(fnames);
     if (!isAppend && !(fileReader.getAtomSetCollection() instanceof String)) {
-      viewer.zap(false, true, false);
+      vwr.zap(false, true, false);
       setFileInfo(new String[] { strModel == JC.MODELKIT_ZAP_STRING ? JC.MODELKIT_ZAP_TITLE
           : "string"});
     }
@@ -259,7 +259,7 @@ public class FileManager implements BytePoster {
                                            Map<String, Object> htParams,
                                            boolean isAppend) {
     if (!htParams.containsKey("isData")) {
-      String oldSep = "\"" + viewer.getDataSeparator() + "\"";
+      String oldSep = "\"" + vwr.getDataSeparator() + "\"";
       String tag = "\"" + (isAppend ? "append" : "model") + " inline\"";
       SB sb = new SB();
       sb.append("set dataSeparator \"~~~next file~~~\";\ndata ").append(tag);
@@ -304,6 +304,16 @@ public class FileManager implements BytePoster {
     return filesReader.getAtomSetCollection();
   }
 
+  static DataReader newDataReader(Object data) {
+    String reader = (data instanceof String ? "String"
+        : PT.isAS(data) ? "Array" 
+        : data instanceof List<?> ? "List" : null);
+    if (reader == null)
+      return null;
+    DataReader dr = (DataReader) Interface.getInterface("javajs.util." + reader + "DataReader");
+    return dr.setData(data);
+  }
+
   private JmolFilesReaderInterface newFilesReader(String[] fullPathNames,
                                                   String[] namesAsGiven,
                                                   String[] fileTypes,
@@ -312,25 +322,15 @@ public class FileManager implements BytePoster {
                                                   boolean isAppend) {
     JmolFilesReaderInterface fr = (JmolFilesReaderInterface) Interface
         .getOption("io2.FilesReader");
-    fr.set(this, viewer, fullPathNames, namesAsGiven, fileTypes, readers, htParams,
+    fr.set(this, vwr, fullPathNames, namesAsGiven, fileTypes, readers, htParams,
         isAppend);
     return fr;
-  }
-
-  private DataReader newDataReader(Object data) {
-    String reader = (data instanceof String ? "String"
-        : PT.isAS(data) ? "Array" 
-        : data instanceof List<?> ? "List" : null);
-    if (reader == null)
-      return null;
-    DataReader dr = (DataReader) Interface.getOption("io2." + reader + "DataReader");
-    return dr.setData(data);
   }
 
   Object createAtomSetCollectionFromDOM(Object DOMNode,
                                         Map<String, Object> htParams) {
     JmolDomReaderInterface aDOMReader = (JmolDomReaderInterface) Interface.getOption("io2.DOMReadaer");
-    aDOMReader.set(this, viewer, DOMNode, htParams);
+    aDOMReader.set(this, vwr, DOMNode, htParams);
     aDOMReader.run();
     return aDOMReader.getAtomSetCollection();
   }
@@ -347,7 +347,7 @@ public class FileManager implements BytePoster {
   Object createAtomSetCollectionFromReader(String fullPathName, String name,
                                            Object reader,
                                            Map<String, Object> htParams) {
-    FileReader fileReader = new FileReader(this, viewer, name, fullPathName, name, null,
+    FileReader fileReader = new FileReader(this, vwr, name, fullPathName, name, null,
         reader, htParams, false);
     fileReader.run();
     return fileReader.getAtomSetCollection();
@@ -386,7 +386,7 @@ public class FileManager implements BytePoster {
         boolean isPngjPost = (isPngjBinaryPost || name.indexOf("?POST?_PNGJ_") >= 0);
         if (name.indexOf("?POST?_PNG_") > 0 || isPngjPost) {
           String[] errMsg = new String[1];
-          byte[] bytes = viewer.getImageAsBytes(isPngjPost ? "PNGJ" : "PNG", 0, 0, -1, errMsg);
+          byte[] bytes = vwr.getImageAsBytes(isPngjPost ? "PNGJ" : "PNG", 0, 0, -1, errMsg);
           if (errMsg[0] != null)
             return errMsg[0];
           if (isPngjBinaryPost) {
@@ -406,7 +406,7 @@ public class FileManager implements BytePoster {
         }
         boolean isApplet = (appletDocumentBaseURL != null);
         if (allowCached && name.indexOf(".png") >= 0 && jmb.pngjCache == null
-            && viewer.cachePngFiles())
+            && vwr.cachePngFiles())
           jmb.clearAndCachePngjFile(null);
         if (isApplet || isURL) {
           if (isApplet && isURL && appletProxy != null)
@@ -418,7 +418,7 @@ public class FileManager implements BytePoster {
           name = url.toString();
           if (showMsg && name.toLowerCase().indexOf("password") < 0)
             Logger.info("FileManager opening 1 " + name);
-          ret = viewer.apiPlatform.getBufferedURLInputStream(url, outputBytes, post);
+          ret = vwr.apiPlatform.getBufferedURLInputStream(url, outputBytes, post);
           byte[] bytes = null;
           if (ret instanceof SB) {
             SB sb = (SB) ret;
@@ -433,7 +433,7 @@ public class FileManager implements BytePoster {
         } else if (!allowCached || (cacheBytes = (byte[]) cacheGet(name, true)) == null) {
           if (showMsg)
             Logger.info("FileManager opening 2 " + name);
-          ret = viewer.apiPlatform.getBufferedFileInputStream(name);
+          ret = vwr.apiPlatform.getBufferedFileInputStream(name);
         }
         if (ret instanceof String)
           return ret;
@@ -467,7 +467,7 @@ public class FileManager implements BytePoster {
     String[] dir = null;
     dir = getZipDirectory(fileName, false);
     if (dir.length == 0) {
-      String state = viewer.getFileAsString4(fileName, -1, false, true, false);
+      String state = vwr.getFileAsString4(fileName, -1, false, true, false);
       return (state.indexOf(JC.EMBEDDED_SCRIPT_TAG) < 0 ? ""
           : JmolBinary.getEmbeddedScript(state));
     }
@@ -600,7 +600,7 @@ public class FileManager implements BytePoster {
         return t;
       BufferedInputStream bis = Binary.getUnzippedInputStream((BufferedInputStream) t);
       if (Binary.isCompoundDocumentS(bis)) {
-        JmolDocument doc = (JmolDocument) Interface
+        GenericBinaryDocument doc = (GenericBinaryDocument) Interface
             .getOption("io2.CompoundDocument");
         doc.setStream(bis, true);
         return Binary.getBR(doc.getAllDataFiles(
@@ -685,7 +685,7 @@ public class FileManager implements BytePoster {
       }
       bis = (BufferedInputStream) t;
       if (Binary.isCompoundDocumentS(bis)) {
-        JmolDocument doc = (JmolDocument) Interface
+        GenericBinaryDocument doc = (GenericBinaryDocument) Interface
             .getOption("io2.CompoundDocument");
         doc.setStream(bis, true);
         doc.getAllDataMapped(name.replace('\\', '/'), "Molecule", fileData);
@@ -694,7 +694,7 @@ public class FileManager implements BytePoster {
             fileData);
       } else if (asBinaryString) {
         // used for Spartan binary file reading
-        JmolDocument bd = (JmolDocument) Interface
+        GenericBinaryDocument bd = (GenericBinaryDocument) Interface
             .getOption("io2.BinaryDocument");
         bd.setStream(bis, false);
         sb = new SB();
@@ -749,7 +749,7 @@ public class FileManager implements BytePoster {
   public String[] getZipDirectory(String fileName, boolean addManifest) {
     Object t = getBufferedInputStreamOrErrorMessageFromName(fileName, fileName,
         false, false, null, false, true);
-    return Binary.getZipDirectoryAndClose((BufferedInputStream) t, addManifest);
+    return Binary.getZipDirectoryAndClose((BufferedInputStream) t, addManifest ? "JmolManifest" : null);
   }
 
   public Object getFileAsBytes(String name, OC out,
@@ -791,7 +791,7 @@ public class FileManager implements BytePoster {
     Object t;
     if (name == null) {
       String[] errMsg = new String[1];
-      byte[] bytes = viewer.getImageAsBytes("PNGJ", -1, -1, -1, errMsg);
+      byte[] bytes = vwr.getImageAsBytes("PNGJ", -1, -1, -1, errMsg);
       if (errMsg[0] != null) {
         bdata.put("_ERROR_", errMsg[0]);
         return bdata;
@@ -882,7 +882,7 @@ public class FileManager implements BytePoster {
         fullPathName = "cannot read file name: " + name;
         break;
       }
-      GenericPlatform apiPlatform = viewer.apiPlatform;
+      GenericPlatform apiPlatform = vwr.apiPlatform;
       fullPathName = names[0].replace('\\', '/');
       if (fullPathName.indexOf("|") > 0) {
         Object ret = getFileAsBytes(fullPathName, null, true);
@@ -890,8 +890,8 @@ public class FileManager implements BytePoster {
           fullPathName = "" + ret;
           break;
         }
-        image = (viewer.isJS ? ret : apiPlatform.createImage(ret));
-      } else if (viewer.isJS) {
+        image = (vwr.isJS ? ret : apiPlatform.createImage(ret));
+      } else if (vwr.isJS) {
       } else if (urlTypeIndex(fullPathName) >= 0) {
         try {
           image = apiPlatform.createImage(new URL((URL) null, fullPathName,
@@ -941,7 +941,7 @@ public class FileManager implements BytePoster {
         break;
       }
     }
-    viewer.loadImageData(image, fullPathName, echoName, null);
+    vwr.loadImageData(image, fullPathName, echoName, null);
   }
 
   public final static int URL_LOCAL = 3;
@@ -982,7 +982,7 @@ public class FileManager implements BytePoster {
       return new String[] { null };
     boolean doSetPathForAllFiles = (pathForAllFiles.length() > 0);
     if (name.startsWith("?") || name.startsWith("http://?")) {
-      if ((name = viewer.dialogAsk("Load", name)) == null)
+      if ((name = vwr.dialogAsk("Load", name)) == null)
         return new String[] { isFullLoad ? "#CANCELED#" : null };
       doSetPathForAllFiles = false;
     }
@@ -995,14 +995,14 @@ public class FileManager implements BytePoster {
       names[1] = stripPath(names[0]);
       return names;
     }
-    name = viewer.resolveDatabaseFormat(name);
+    name = vwr.resolveDatabaseFormat(name);
     if (name.indexOf(":") < 0 && name.indexOf("/") != 0)
-      name = addDirectory(viewer.getDefaultDirectory(), name);
+      name = addDirectory(vwr.getDefaultDirectory(), name);
     if (appletDocumentBaseURL == null) {
       // This code is for the app or signed local applet 
       // -- no local file reading for headless
-      if (urlTypeIndex(name) >= 0 || viewer.haveAccess(ACCESS.NONE)
-          || viewer.haveAccess(ACCESS.READSPT) && !name.endsWith(".spt")
+      if (urlTypeIndex(name) >= 0 || vwr.haveAccess(ACCESS.NONE)
+          || vwr.haveAccess(ACCESS.READSPT) && !name.endsWith(".spt")
           && !name.endsWith("/")) {
         try {
           url = new URL((URL) null, name, null);
@@ -1010,7 +1010,7 @@ public class FileManager implements BytePoster {
           return new String[] { isFullLoad ? e.toString() : null };
         }
       } else {
-        file = viewer.apiPlatform.newFile(name);
+        file = vwr.apiPlatform.newFile(name);
         String s = file.getFullPath();
         // local unsigned applet may have access control issue here and get a null return
         String fname = file.getName();
@@ -1022,7 +1022,7 @@ public class FileManager implements BytePoster {
       try {
         if (name.indexOf(":\\") == 1 || name.indexOf(":/") == 1)
           name = "file:/" + name;
-        //        else if (name.indexOf("/") == 0 && viewer.isSignedApplet())
+        //        else if (name.indexOf("/") == 0 && vwr.isSignedApplet())
         //        name = "file:" + name;
         url = new URL(appletDocumentBaseURL, name, null);
       } catch (MalformedURLException e) {
@@ -1045,7 +1045,7 @@ public class FileManager implements BytePoster {
       int pt = path.length() - names[1].length() - 1;
       if (pt > 0) {
         path = path.substring(0, pt);
-        setLocalPath(viewer, path, true);
+        setLocalPath(vwr, path, true);
       }
     }
     return names;
@@ -1106,17 +1106,17 @@ public class FileManager implements BytePoster {
         : names[0].replace('\\', '/'));
   }
 
-  public static GenericFileInterface getLocalDirectory(Viewer viewer, boolean forDialog) {
-    String localDir = (String) viewer
+  public static GenericFileInterface getLocalDirectory(Viewer vwr, boolean forDialog) {
+    String localDir = (String) vwr
         .getParameter(forDialog ? "currentLocalPath" : "defaultDirectoryLocal");
     if (forDialog && localDir.length() == 0)
-      localDir = (String) viewer.getParameter("defaultDirectoryLocal");
+      localDir = (String) vwr.getParameter("defaultDirectoryLocal");
     if (localDir.length() == 0)
-      return (viewer.isApplet() ? null : viewer.apiPlatform.newFile(System
+      return (vwr.isApplet() ? null : vwr.apiPlatform.newFile(System
           .getProperty("user.dir", ".")));
-    if (viewer.isApplet() && localDir.indexOf("file:/") == 0)
+    if (vwr.isApplet() && localDir.indexOf("file:/") == 0)
       localDir = localDir.substring(6);
-    GenericFileInterface f = viewer.apiPlatform.newFile(localDir);
+    GenericFileInterface f = vwr.apiPlatform.newFile(localDir);
     try {
       return f.isDirectory() ? f : f.getParentAsFile();
     } catch (Exception e) {
@@ -1142,20 +1142,20 @@ public class FileManager implements BytePoster {
    * Neither of these is saved in the state, but 
    * 
    * 
-   * @param viewer
+   * @param vwr
    * @param path
    * @param forDialog
    */
-  public static void setLocalPath(Viewer viewer, String path,
+  public static void setLocalPath(Viewer vwr, String path,
                                   boolean forDialog) {
     while (path.endsWith("/") || path.endsWith("\\"))
       path = path.substring(0, path.length() - 1);
-    viewer.setStringProperty("currentLocalPath", path);
+    vwr.setStringProperty("currentLocalPath", path);
     if (!forDialog)
-      viewer.setStringProperty("defaultDirectoryLocal", path);
+      vwr.setStringProperty("defaultDirectoryLocal", path);
   }
 
-  public static String getLocalPathForWritingFile(Viewer viewer, String file) {
+  public static String getLocalPathForWritingFile(Viewer vwr, String file) {
     if (file.startsWith("http://"))
       return file;
     file = PT.rep(file, "?", "");
@@ -1165,7 +1165,7 @@ public class FileManager implements BytePoster {
       return file;
     GenericFileInterface dir = null;
     try {
-      dir = getLocalDirectory(viewer, false);
+      dir = getLocalDirectory(vwr, false);
     } catch (Exception e) {
       // access control for unsigned applet
     }
@@ -1309,7 +1309,7 @@ public class FileManager implements BytePoster {
     }
     Object data;
     if (isAdd) {
-      fileName = viewer.resolveDatabaseFormat(fileName);
+      fileName = vwr.resolveDatabaseFormat(fileName);
       data = getFileAsBytes(fileName, null, true);
       if (data instanceof String)
         return 0;

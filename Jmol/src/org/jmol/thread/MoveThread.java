@@ -53,9 +53,9 @@ public class MoveThread extends JmolThread {
   public MoveThread() {}
   
   @Override
-  public int setManager(Object manager, Viewer viewer, Object params) {
+  public int setManager(Object manager, Viewer vwr, Object params) {
     Object[] options = (Object[]) params;
-    setViewer(viewer, "MoveThread");
+    setViewer(vwr, "MoveThread");
     transformManager = (TransformManager) manager;
     dRot = (V3) options[0];
     dTrans = (V3) options[1];
@@ -90,7 +90,7 @@ public class MoveThread extends JmolThread {
       switch (mode) {
       case INIT:
         if (floatSecondsTotal > 0)
-          viewer.setInMotion(true);
+          vwr.setInMotion(true);
         mode = MAIN;
         break;
       case MAIN:
@@ -117,8 +117,8 @@ public class MoveThread extends JmolThread {
         int timeSpent = (int) (System.currentTimeMillis() - startTime);
         int timeAllowed = iStep * timePerStep;
         if (timeSpent < timeAllowed) {
-          viewer.requestRepaintAndWait("moveThread");
-          if (!isJS && !viewer.isScriptExecuting()) {
+          vwr.requestRepaintAndWait("moveThread");
+          if (!isJS && !vwr.isScriptExecuting()) {
             mode = FINISH;
             break;
           }
@@ -130,7 +130,7 @@ public class MoveThread extends JmolThread {
         break;
       case FINISH:
         if (floatSecondsTotal > 0)
-          viewer.setInMotion(false);
+          vwr.setInMotion(false);
         resumeEval();
         return;
       }

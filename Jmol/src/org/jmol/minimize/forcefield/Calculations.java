@@ -24,13 +24,13 @@
 
 package org.jmol.minimize.forcefield;
 
-
-
+import java.util.Map;
 
 import org.jmol.java.BS;
 import org.jmol.minimize.MinAngle;
 import org.jmol.minimize.MinAtom;
 import org.jmol.minimize.MinBond;
+import org.jmol.minimize.MinObject;
 import org.jmol.minimize.MinPosition;
 import org.jmol.minimize.MinTorsion;
 import org.jmol.minimize.Util;
@@ -59,8 +59,18 @@ abstract class Calculations {
 //  final static int CALC_POSITION = 7; 
   final static int CALC_MAX = 7;
 
+  FFParam parA, parB, parC;
+  
   ForceField ff;
   List<Object[]>[] calculations = AU.createArrayOfArrayList(CALC_MAX);
+
+  Map<Object, Object> ffParams;
+
+  abstract Object getParameterObj(MinObject o);
+
+  Object getParameter(Object o) {
+    return ffParams.get(o);
+  }
 
   int atomCount;
   int bondCount;
@@ -138,20 +148,14 @@ abstract class Calculations {
     isPreliminary = TF;
   }
 
-  abstract class PairCalc extends Calculation {
-    
-    abstract void setData(List<Object[]> calc, int ia, int ib);
-
-  }
-  
-  protected void pairSearch(List<Object[]> calc1, PairCalc pc1, 
-                            List<Object[]> calc2, PairCalc pc2) {
+  protected void pairSearch(List<Object[]> calc1, Calculation pc1, 
+                            List<Object[]> calc2, Calculation pc2) {
     for (int i = 0; i < atomCount - 1; i++) {
       BS bsVdw = minAtoms[i].bsVdw;
       for (int j = bsVdw.nextSetBit(0); j >= 0; j = bsVdw.nextSetBit(j + 1)) {
-        pc1.setData(calc1, i, j);
+        pc1.setData(calc1, i, j, 0);
         if (pc2 != null)
-          pc2.setData(calc2, i, j);
+          pc2.setData(calc2, i, j, 0);
       }
     }
   }
@@ -633,6 +637,14 @@ abstract class Calculations {
     case 1:
       addForce(da, c.ia, c.dE);
     }
+  }
+
+  /**
+   * @param i  
+   * @return T/F
+   */
+   boolean isLinear(int i) {
+    return false;
   }
 
 }

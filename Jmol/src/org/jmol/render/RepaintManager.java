@@ -41,7 +41,7 @@ import org.jmol.viewer.Viewer;
 
 public class RepaintManager implements JmolRepaintManager {
 
-  private Viewer viewer;
+  private Viewer vwr;
   private ShapeManager shapeManager;
   private ShapeRenderer[] renderers;
 
@@ -52,8 +52,8 @@ public class RepaintManager implements JmolRepaintManager {
   private final BS bsTranslucent = BS.newN(JC.SHAPE_MAX);
   
   @Override
-  public void set(Viewer viewer, ShapeManager shapeManager) {
-    this.viewer = viewer;
+  public void set(Viewer vwr, ShapeManager shapeManager) {
+    this.vwr = vwr;
     this.shapeManager = shapeManager;
   }
 
@@ -90,7 +90,7 @@ public class RepaintManager implements JmolRepaintManager {
      * @j2sNative
      * 
      *  if (typeof Jmol != "undefined" && Jmol._repaint) 
-     *    Jmol._repaint(this.viewer.applet, false);
+     *    Jmol._repaint(this.vwr.applet, false);
      *  this.repaintDone();
      */
     {
@@ -98,7 +98,7 @@ public class RepaintManager implements JmolRepaintManager {
       try {
         repaintNow(why);
         //System.out.println("repaintManager requestRepaintAndWait I am waiting for a repaint: thread=" + Thread.currentThread().getName());
-        wait(viewer.global.repaintWaitMs); // more than a second probably means we are locked up here
+        wait(vwr.g.repaintWaitMs); // more than a second probably means we are locked up here
         if (repaintPending) {
           Logger.error("repaintManager requestRepaintAndWait timeout");
           repaintDone();
@@ -126,7 +126,7 @@ public class RepaintManager implements JmolRepaintManager {
   private void repaintNow(String why) {
     // from RepaintManager to the System
     // -- "Send me an asynchronous update() event!"
-    if (!viewer.haveDisplay)
+    if (!vwr.haveDisplay)
       return;    
     /**
      * Jmol._repaint(applet,asNewThread)
@@ -140,12 +140,12 @@ public class RepaintManager implements JmolRepaintManager {
      * @j2sNative
      * 
      * if (typeof Jmol != "undefined" && Jmol._repaint)
-     *   Jmol._repaint(this.viewer.applet,true);
+     *   Jmol._repaint(this.vwr.applet,true);
      * 
      */
     {
       //System.out.println("RepaintMan repaintNow " + why);
-      viewer.apiPlatform.repaint(viewer.getDisplay());
+      vwr.apiPlatform.repaint(vwr.getDisplay());
     }
      
   }
@@ -186,7 +186,7 @@ public class RepaintManager implements JmolRepaintManager {
     ShapeRenderer renderer;
     if ((renderer = (ShapeRenderer) Interface.getInterface(className)) == null)
       return null;
-    renderer.setViewerG3dShapeID(viewer, shapeID);
+    renderer.setViewerG3dShapeID(vwr, shapeID);
     return renderers[shapeID] = renderer;
   }
 
@@ -194,17 +194,17 @@ public class RepaintManager implements JmolRepaintManager {
   
   @Override
   public void render(GData gdata, ModelSet modelSet, boolean isFirstPass, int[] minMax) {
-    boolean logTime = viewer.getBoolean(T.showtiming);
+    boolean logTime = vwr.getBoolean(T.showtiming);
     try {
       JmolRendererInterface g3d = (JmolRendererInterface) gdata;
       g3d.renderBackground(null);
       if (isFirstPass)  {
         bsTranslucent.clearAll();
         if (minMax != null)
-          g3d.renderCrossHairs(minMax, viewer.getScreenWidth(), viewer.getScreenHeight(), 
-              viewer.getNavigationOffset(), viewer.getNavigationDepthPercent());
-        Rectangle band = viewer.getRubberBandSelection();
-          if (band != null && g3d.setColix(viewer.getColixRubberband()))
+          g3d.renderCrossHairs(minMax, vwr.getScreenWidth(), vwr.getScreenHeight(), 
+              vwr.getNavigationOffset(), vwr.getNavigationDepthPercent());
+        Rectangle band = vwr.getRubberBandSelection();
+          if (band != null && g3d.setColix(vwr.getColixRubberband()))
             g3d.drawRect(band.x, band.y, 0, 0, band.width, band.height);
       }
       if (renderers == null)
@@ -226,7 +226,7 @@ public class RepaintManager implements JmolRepaintManager {
       }
       g3d.renderAllStrings(null);
     } catch (Exception e) {
-      if (!viewer.isJS)
+      if (!vwr.isJS)
         e.printStackTrace();
       Logger.error("rendering error? " + e);
     }
@@ -235,10 +235,10 @@ public class RepaintManager implements JmolRepaintManager {
   @Override
   public String renderExport(GData gdata, ModelSet modelSet, Map<String, Object> params) {
     boolean isOK;
-    boolean logTime = viewer.getBoolean(T.showtiming);
-    viewer.finalizeTransformParameters();
+    boolean logTime = vwr.getBoolean(T.showtiming);
+    vwr.finalizeTransformParameters();
     shapeManager.finalizeAtoms(null, null);
-    JmolRendererInterface exporter3D = viewer.initializeExporter(params);
+    JmolRendererInterface exporter3D = vwr.initializeExporter(params);
     isOK = (exporter3D != null);
     if (!isOK) {
       Logger.error("Cannot export " + params.get("type"));

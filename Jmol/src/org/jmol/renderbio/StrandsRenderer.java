@@ -50,7 +50,7 @@ public class StrandsRenderer extends BioShapeRenderer {
   protected boolean setStrandCount() {
     if (wingVectors == null)
       return false;
-    strandCount = (shape instanceof Strands ? viewer.getStrandCount(((Strands) shape).shapeID) : 10);
+    strandCount = (shape instanceof Strands ? vwr.getStrandCount(((Strands) shape).shapeID) : 10);
     strandSeparation = (strandCount <= 1) ? 0 : 1f / (strandCount - 1);
     baseStrandOffset = ((strandCount & 1) == 0 ? strandSeparation / 2
         : strandSeparation);
@@ -63,15 +63,15 @@ public class StrandsRenderer extends BioShapeRenderer {
       float f = (i * strandSeparation) + baseStrandOffset;
       screens = calcScreens(f);
       renderStrand(screens);
-      viewer.freeTempScreens(screens);
+      vwr.freeTempScreens(screens);
       screens = calcScreens(-f);
       renderStrand(screens);
-      viewer.freeTempScreens(screens);
+      vwr.freeTempScreens(screens);
     }
     if (strandCount % 2 == 1) {
       screens = calcScreens(0f);
       renderStrand(screens);
-      viewer.freeTempScreens(screens);
+      vwr.freeTempScreens(screens);
     }
   }
 

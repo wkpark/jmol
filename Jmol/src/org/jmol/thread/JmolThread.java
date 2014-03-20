@@ -18,7 +18,7 @@ abstract public class JmolThread extends Thread {
   protected static final int CHECK2 = 2;
   protected static final int CHECK3 = 3;
   
-  protected Viewer viewer;
+  protected Viewer vwr;
   protected JmolScriptEvaluator eval;
   protected ScriptContext sc;
   protected boolean haveReference;
@@ -39,17 +39,17 @@ abstract public class JmolThread extends Thread {
 
   /**
    * @param manager  
-   * @param viewer 
+   * @param vwr 
    * @param params 
    * @return TODO
    */
-  public int setManager(Object manager, Viewer viewer, Object params){return 0;}
+  public int setManager(Object manager, Viewer vwr, Object params){return 0;}
  
-  public void setViewer(Viewer viewer, String name) {
+  public void setViewer(Viewer vwr, String name) {
     setName(name);
     this.name = name + "_" + (++threadIndex);
-    this.viewer = viewer;
-    isJS = viewer.isSingleThreaded;
+    this.vwr = vwr;
+    isJS = vwr.isSingleThreaded;
   }
   
   abstract protected void run1(int mode) throws InterruptedException;
@@ -64,7 +64,7 @@ abstract public class JmolThread extends Thread {
    */
   public void setEval(JmolScriptEvaluator eval) {
     this.eval = eval;
-    sc = viewer.getEvalContextAndHoldQueue(eval);
+    sc = vwr.getEvalContextAndHoldQueue(eval);
     if (sc != null)
       useTimeout = eval.getAllowJSThreads();
   }
@@ -103,9 +103,9 @@ abstract public class JmolThread extends Thread {
   
   protected void oops(Exception e) {
     Logger.debug(name + " exception " + e);
-    if (!viewer.isJS)
+    if (!vwr.isJS)
       e.printStackTrace();
-    viewer.queueOnHold = false;
+    vwr.queueOnHold = false;
   }
 
   double junk;
@@ -153,7 +153,7 @@ abstract public class JmolThread extends Thread {
   @Override
   public void interrupt() {
     stopped = true;
-    viewer.startHoverWatcher(true);
+    vwr.startHoverWatcher(true);
     if (!isJS)
       super.interrupt();
   }

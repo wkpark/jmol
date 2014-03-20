@@ -36,12 +36,12 @@ import org.jmol.modelset.ModelSet;
 
 public class SelectionManager {
 
-  private Viewer viewer;
+  private Viewer vwr;
 
   private JmolSelectionListener[] listeners = new JmolSelectionListener[0];
 
-  SelectionManager(Viewer viewer) {
-    this.viewer = viewer;
+  SelectionManager(Viewer vwr) {
+    this.vwr = vwr;
   }
 
   final BS bsHidden = new BS();
@@ -94,7 +94,7 @@ public class SelectionManager {
     BSUtil.andNot(bsHidden, bsDeleted);
     modelSet.setBsHidden(bsHidden);
     if (!isQuiet)
-      viewer.reportSelection(GT.i(GT._("{0} atoms hidden"), bsHidden.cardinality()));
+      vwr.reportSelection(GT.i(GT._("{0} atoms hidden"), bsHidden.cardinality()));
   }
 
   void hide(ModelSet modelSet, BS bs, int addRemove, boolean isQuiet) {
@@ -102,7 +102,7 @@ public class SelectionManager {
     if (modelSet != null)
       modelSet.setBsHidden(bsHidden);
     if (!isQuiet)
-      viewer.reportSelection(GT.i(GT._("{0} atoms hidden"), bsHidden.cardinality()));
+      vwr.reportSelection(GT.i(GT._("{0} atoms hidden"), bsHidden.cardinality()));
   }
 
   void setSelectionSet(BS set, int addRemove) {
@@ -148,28 +148,28 @@ public class SelectionManager {
   void select(BS bs, int addRemove, boolean isQuiet) {
     if (bs == null) {
       selectAll(true);
-      if (!viewer.getBoolean(T.hydrogen))
-        excludeSelectionSet(viewer.getAtomBits(T.hydrogen, null));
-      if (!viewer.getBoolean(T.hetero))
-        excludeSelectionSet(viewer.getAtomBits(T.hetero, null));
+      if (!vwr.getBoolean(T.hydrogen))
+        excludeSelectionSet(vwr.getAtomBits(T.hydrogen, null));
+      if (!vwr.getBoolean(T.hetero))
+        excludeSelectionSet(vwr.getAtomBits(T.hetero, null));
       selectionChanged(false);
     } else {
       setSelectionSet(bs, addRemove);
     }
-    boolean reportChime = viewer.getBoolean(T.messagestylechime);
+    boolean reportChime = vwr.getBoolean(T.messagestylechime);
     if (!reportChime && isQuiet)
       return;
     int n = getSelectionCount();
     if (reportChime)
-      viewer.reportSelection((n == 0 ? "No atoms" : n == 1 ? "1 atom" : n
+      vwr.reportSelection((n == 0 ? "No atoms" : n == 1 ? "1 atom" : n
           + " atoms")
           + " selected!");
     else if (!isQuiet)
-      viewer.reportSelection(GT.i(GT._("{0} atoms selected"), n));
+      vwr.reportSelection(GT.i(GT._("{0} atoms selected"), n));
   }
 
   void selectAll(boolean isQuiet) {
-    int count = viewer.getAtomCount();
+    int count = vwr.getAtomCount();
     empty = (count == 0) ? TRUE : FALSE;
     for (int i = count; --i >= 0;)
       bsSelection.set(i);
@@ -221,7 +221,7 @@ public class SelectionManager {
   }
 
   void invertSelection() {
-    BSUtil.invertInPlace(bsSelection, viewer.getAtomCount());
+    BSUtil.invertInPlace(bsSelection, vwr.getAtomCount());
     empty = (bsSelection.length() > 0 ? FALSE : TRUE);
     selectionChanged(false);
   }
@@ -275,7 +275,7 @@ public class SelectionManager {
 
   private void selectionChanged(boolean isQuiet) {
     if (hideNotSelected)
-      hide(viewer.getModelSet(), BSUtil.copyInvert(bsSelection, viewer.getAtomCount()), 0, isQuiet);
+      hide(vwr.getModelSet(), BSUtil.copyInvert(bsSelection, vwr.getAtomCount()), 0, isQuiet);
     if (isQuiet || listeners.length == 0)
       return;
     for (int i = listeners.length; --i >= 0;)

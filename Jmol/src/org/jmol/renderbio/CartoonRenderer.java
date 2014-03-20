@@ -59,12 +59,12 @@ public class CartoonRenderer extends RocketsRenderer {
       renderNucleic();
       return;
     }
-    boolean val = viewer.getBoolean(T.cartoonrockets);
+    boolean val = vwr.getBoolean(T.cartoonrockets);
     if (renderAsRockets != val) {
       bioShape.falsifyMesh();
       renderAsRockets = val;
     }
-    val = !viewer.getBoolean(T.rocketbarrels);
+    val = !vwr.getBoolean(T.rocketbarrels);
     if (renderArrowHeads != val) {
       bioShape.falsifyMesh();
       renderArrowHeads = val;
@@ -77,18 +77,18 @@ public class CartoonRenderer extends RocketsRenderer {
       controlPoints = cordMidPoints;
     }
     renderRockets();
-    viewer.freeTempPoints(cordMidPoints);
-    viewer.freeTempScreens(ribbonTopScreens);
-    viewer.freeTempScreens(ribbonBottomScreens);
+    vwr.freeTempPoints(cordMidPoints);
+    vwr.freeTempScreens(ribbonTopScreens);
+    vwr.freeTempScreens(ribbonBottomScreens);
   }
 
   P3i ptConnectScr = new P3i();
   P3 ptConnect = new P3();
   void renderNucleic() {
-    renderEdges = viewer.getBoolean(T.cartoonbaseedges);
-    ladderOnly = viewer.getBoolean(T.cartoonladders);
-    renderRibose = viewer.getBoolean(T.cartoonribose);
-    boolean isTraceAlpha = viewer.getBoolean(T.tracealpha);
+    renderEdges = vwr.getBoolean(T.cartoonbaseedges);
+    ladderOnly = vwr.getBoolean(T.cartoonladders);
+    renderRibose = vwr.getBoolean(T.cartoonribose);
+    boolean isTraceAlpha = vwr.getBoolean(T.tracealpha);
     for (int i = bsVisible.nextSetBit(0); i >= 0; i = bsVisible
         .nextSetBit(i + 1)) {
       if (isTraceAlpha) {
@@ -195,7 +195,7 @@ public class CartoonRenderer extends RocketsRenderer {
       return;
     }
     nucleotide.getBaseRing6Points(rPt);
-    viewer.transformPoints(6, rPt, rScr);
+    vwr.transformPoints(6, rPt, rScr);
     if (!ladderOnly)
       renderRing6();
     P3i stepScreen;
@@ -212,7 +212,7 @@ public class CartoonRenderer extends RocketsRenderer {
         stepScreen = rScr[2]; // N1
         stepPt = rPt[2];
       } else {
-        viewer.transformPoints(5, rPt5, rScr5);
+        vwr.transformPoints(5, rPt5, rScr5);
         renderRing5();
         stepScreen = rScr5[3]; // N9
         stepPt = rPt5[3];
@@ -224,7 +224,7 @@ public class CartoonRenderer extends RocketsRenderer {
     }
     mad = (short) (thisMad > 1 ? thisMad / 2 : thisMad);
     float r = mad / 2000f;
-    int w = (int) viewer.scaleToScreen(backboneScreen.z, mad);
+    int w = (int) vwr.scaleToScreen(backboneScreen.z, mad);
     if (ladderOnly || !renderRibose)
       g3d.fillCylinderScreen3I(GData.ENDCAPS_SPHERICAL, w, backboneScreen,
           stepScreen, backbonePt, stepPt, r);
@@ -244,7 +244,7 @@ public class CartoonRenderer extends RocketsRenderer {
       for (int i = 0; i < 5; i++) 
         c.add(rPt[i]);
       c.scale(0.2f);
-      viewer.transformPoints(10, rPt, rScr);
+      vwr.transformPoints(10, rPt, rScr);
       renderRibose();
       renderEdge(rScr, rPt, 2, 5); // C3' - O3'
       renderEdge(rScr, rPt, 3, 6); // C4' - C5' 
@@ -272,7 +272,7 @@ public class CartoonRenderer extends RocketsRenderer {
 
     if (!nucleotide.getEdgePoints(rPt))
       return;
-    viewer.transformPoints(6, rPt, rScr);
+    vwr.transformPoints(6, rPt, rScr);
     renderTriangle(rScr, rPt, 2, 3, 4, true);
     mad = (short) (thisMad > 1 ? thisMad / 2 : thisMad);
     renderEdge(rScr, rPt, 0, 1);

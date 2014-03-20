@@ -32,11 +32,11 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.util.Map;
 
+import javajs.api.GenericBinaryDocument;
 import javajs.api.ZInputStream;
 import javajs.util.PT;
 
 import org.jmol.api.Interface;
-import org.jmol.api.JmolDocument;
 import org.jmol.util.Logger;
 import org.jmol.viewer.FileManager;
 import org.jmol.viewer.Viewer;
@@ -46,7 +46,7 @@ public class FileReader {
    * 
    */
   private final FileManager fm;
-  private final Viewer viewer;
+  private final Viewer vwr;
   private String fileNameIn;
   private String fullPathNameIn;
   private String nameAsGivenIn;
@@ -57,11 +57,11 @@ public class FileReader {
   private boolean isAppend;
   private byte[] bytes;
 
-  public FileReader(FileManager fileManager, Viewer viewer, String fileName, String fullPathName, String nameAsGiven,
+  public FileReader(FileManager fileManager, Viewer vwr, String fileName, String fullPathName, String nameAsGiven,
       String type, Object reader, Map<String, Object> htParams,
       boolean isAppend) {
     fm = fileManager;
-    this.viewer = viewer;
+    this.vwr = vwr;
     fileNameIn = fileName;
     fullPathNameIn = fullPathName;
     nameAsGivenIn = nameAsGiven;
@@ -73,8 +73,8 @@ public class FileReader {
   }
 
   public void run() {
-    if (!isAppend && viewer.displayLoadErrors)
-      viewer.zap(false, true, false);
+    if (!isAppend && vwr.displayLoadErrors)
+      vwr.zap(false, true, false);
     String errorMessage = null;
     Object t = null;
     if (reader == null) {
@@ -103,7 +103,7 @@ public class FileReader {
         InputStream zis = (InputStream) t;
         String[] zipDirectory = fm.getZipDirectory(name, true);
         atomSetCollection = t = JmolBinary
-            .getAtomSetCollectionOrBufferedReaderFromZip(viewer
+            .getAtomSetCollectionOrBufferedReaderFromZip(vwr
                 .getModelAdapter(), zis, name, zipDirectory, htParams, false);
         try {
           zis.close();
@@ -113,22 +113,22 @@ public class FileReader {
       }
     }
     if (t instanceof BufferedInputStream) {
-      JmolDocument bd = (JmolDocument) Interface
+      GenericBinaryDocument bd = (GenericBinaryDocument) Interface
           .getOption("io2.BinaryDocument");
       bd.setStream((BufferedInputStream) t, true);
       reader = bd;
     }
     if (reader != null) {
-      atomSetCollection = viewer.getModelAdapter().getAtomSetCollectionReader(
+      atomSetCollection = vwr.getModelAdapter().getAtomSetCollectionReader(
           fullPathNameIn, fileTypeIn, reader, htParams);
       if (!(atomSetCollection instanceof String))
-        atomSetCollection = viewer.getModelAdapter().getAtomSetCollection(
+        atomSetCollection = vwr.getModelAdapter().getAtomSetCollection(
             atomSetCollection);
       try {
         if (reader instanceof BufferedReader)
           ((BufferedReader) reader).close();
-        else if (reader instanceof JmolDocument)
-          ((JmolDocument) reader).close();
+        else if (reader instanceof GenericBinaryDocument)
+          ((GenericBinaryDocument) reader).close();
       } catch (IOException e) {
         // ignore
       }
@@ -137,8 +137,8 @@ public class FileReader {
     if (atomSetCollection instanceof String)
       return;
 
-    if (!isAppend && !viewer.displayLoadErrors)
-      viewer.zap(false, true, false);
+    if (!isAppend && !vwr.displayLoadErrors)
+      vwr.zap(false, true, false);
 
     fm.setFileInfo(new String[] { fullPathNameIn, nameAsGivenIn, fileNameIn });
   }

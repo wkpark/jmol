@@ -49,7 +49,7 @@ final public class OutputManagerAwt extends OutputManager {
 
   @Override
   protected String getLogPath(String fileName) {
-    return (viewer.isApplet() ? fileName
+    return (vwr.isApplet() ? fileName
         : (new File(fileName).getAbsolutePath()));
   }
 
@@ -58,7 +58,7 @@ final public class OutputManagerAwt extends OutputManager {
     String msg;
     try {
       if (text == null) {
-        Image image = (Image) viewer.getScreenImageBuffer(null, true);
+        Image image = (Image) vwr.getScreenImageBuffer(null, true);
         AwtClipboard.setClipboard(image);
         msg = "OK image to clipboard: "
             + (image.getWidth(null) * image.getHeight(null));
@@ -67,10 +67,10 @@ final public class OutputManagerAwt extends OutputManager {
         msg = "OK text to clipboard: " + text.length();
       }
     } catch (Error er) {
-      msg = viewer.getErrorMessage();
+      msg = vwr.getErrorMessage();
     } finally {
       if (text == null)
-        viewer.releaseScreenImage();
+        vwr.releaseScreenImage();
     }
     return msg;
   }
@@ -88,16 +88,16 @@ final public class OutputManagerAwt extends OutputManager {
     boolean isLocal = FileManager.isLocal(fileName);
     if (asAppend && isLocal && fileName.indexOf("JmolLog_") < 0)
       asAppend = false;
-    return (fileName != null && !viewer.haveAccess(ACCESS.ALL)
-        || !viewer.checkPrivateKey(privateKey) ? null
-        : (new OC()).setParams(viewer.fileManager, fileName, asWriter,
+    return (fileName != null && !vwr.haveAccess(ACCESS.ALL)
+        || !vwr.checkPrivateKey(privateKey) ? null
+        : (new OC()).setParams(vwr.fileManager, fileName, asWriter,
             (isLocal ? new FileOutputStream(fileName, asAppend) : null)));
   }
 
   @Override
   protected String createSceneSet(String sceneFile, String type, int width,
                                 int height) {
-    String script0 = viewer.getFileAsString(sceneFile, false);
+    String script0 = vwr.getFileAsString(sceneFile, false);
     if (script0 == null)
       return "no such file: " + sceneFile;
     sceneFile = PT.rep(sceneFile, ".spt", "");
@@ -110,19 +110,19 @@ final public class OutputManagerAwt extends OutputManager {
     if (Logger.debugging)
       Logger.debug(script);
     script0 = PT.rep(script0, "pause scene", "delay "
-        + viewer.animationManager.lastFrameDelay + " # scene");
+        + vwr.animationManager.lastFrameDelay + " # scene");
     String[] str = new String[] { script0, script, null };
-    viewer.saveState("_scene0");
+    vwr.saveState("_scene0");
     int nFiles = 0;
     if (scenes[0] != "")
-      viewer.zap(true, true, false);
+      vwr.zap(true, true, false);
     int iSceneLast = -1;
     for (int i = 0; i < scenes.length - 1; i++) {
       try {
         int iScene = list.get(i).intValue();
         if (iScene > iSceneLast)
-          viewer.showString("Creating Scene " + iScene, false);
-        viewer.eval.runScript(scenes[i]);
+          vwr.showString("Creating Scene " + iScene, false);
+        vwr.eval.runScript(scenes[i]);
         if (iScene <= iSceneLast)
           continue;
         iSceneLast = iScene;
@@ -142,14 +142,14 @@ final public class OutputManagerAwt extends OutputManager {
         params.put("width", Integer.valueOf(Math.min(width, 200)));
         params.put("height", Integer.valueOf(Math.min(height, 200)));
         msg += "\n" + handleOutputToFile(params, false);
-        viewer.showString(msg, false);
+        vwr.showString(msg, false);
         nFiles += 2;
       } catch (Exception e) {
         return "script error " + e.toString();
       }
     }
     try {
-      viewer.eval.runScript(viewer.getSavedState("_scene0"));
+      vwr.eval.runScript(vwr.getSavedState("_scene0"));
     } catch (Exception e) {
       // ignore
     }

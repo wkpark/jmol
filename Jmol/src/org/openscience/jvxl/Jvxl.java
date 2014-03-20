@@ -222,7 +222,7 @@ public class Jvxl {
     }
 
     // Process more command line arguments
-    // these are also passed to viewer
+    // these are also passed to vwr
 
     bicolor = (line.hasOption("b"));
     reverseColor = (line.hasOption("r"));

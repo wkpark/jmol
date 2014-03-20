@@ -113,7 +113,7 @@ public abstract class AtomShape extends Shape {
 
   protected void setSizeRD2(int i, RadiusData rd, boolean isVisible) {
     Atom atom = atoms[i];
-    mads[i] = atom.calculateMad(viewer, rd);
+    mads[i] = atom.calculateMad(vwr, rd);
     bsSizeSet.setBitTo(i, isVisible);
     setShapeVisibility(atom, isVisible);
   }
@@ -225,7 +225,7 @@ public abstract class AtomShape extends Shape {
   @Override
   public String getShapeState() {
     // stars and vectors will do this
-    return (isActive ? viewer.getAtomShapeState(this) : "");
+    return (isActive ? vwr.getAtomShapeState(this) : "");
   }
 
   /**

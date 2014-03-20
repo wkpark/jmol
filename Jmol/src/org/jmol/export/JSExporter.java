@@ -157,7 +157,7 @@ public class JSExporter extends __CartesianExporter {
   
   @Override
   protected void outputHeader() {
-    applet = this.viewer.getApplet();
+    applet = this.vwr.getApplet();
     useTable = new UseTable("JS");
     htSpheresRendered.clear();
     htObjects.clear();
@@ -286,7 +286,7 @@ public class JSExporter extends __CartesianExporter {
   void plotText(int x, int y, int z, short colix, String text, Font font3d) {
     // TODO -- not sure how to handle z exactly. 
     // These are screen coordinates. You have to use
-    // viewer.unTransformPoint(pointScreen, pointAngstroms) 
+    // vwr.unTransformPoint(pointScreen, pointAngstroms) 
     // to return that to actual coordinates.
   }
 

@@ -39,13 +39,13 @@ public class HalosRenderer extends ShapeRenderer {
   @Override
   protected boolean render() {
     Halos halos = (Halos) shape;
-    boolean selectDisplayTrue = viewer.getSelectionHaloEnabled(true);
-    boolean showHiddenSelections = (selectDisplayTrue && viewer.getBoolean(T.showhiddenselectionhalos));
+    boolean selectDisplayTrue = vwr.getSelectionHaloEnabled(true);
+    boolean showHiddenSelections = (selectDisplayTrue && vwr.getBoolean(T.showhiddenselectionhalos));
     if (halos.mads == null && halos.bsHighlight == null && !selectDisplayTrue)
       return false;
     isAntialiased = g3d.isAntialiased();
     Atom[] atoms = modelSet.atoms;
-    BS bsSelected = (selectDisplayTrue ? viewer.getSelectedAtoms() : null);
+    BS bsSelected = (selectDisplayTrue ? vwr.getSelectedAtoms() : null);
     boolean needTranslucent = false;
     g3d.addRenderer(T.circle);
     for (int i = modelSet.getAtomCount(); --i >= 0;) {
@@ -102,13 +102,13 @@ public class HalosRenderer extends ShapeRenderer {
       if (d == 0) {
         float ellipsemax = (atom.isVisible(JC.SHAPE_ELLIPSOIDS) ? atom.getADPMinMax(true) : 0);
         if (ellipsemax > 0)
-          d = viewer.scaleToScreen(z, (int) Math.floor(ellipsemax * 2000));
+          d = vwr.scaleToScreen(z, (int) Math.floor(ellipsemax * 2000));
         if (d == 0) {
-          d = (int) viewer.scaleToScreen(z, mad == -2 ? 250 : 500);
+          d = (int) vwr.scaleToScreen(z, mad == -2 ? 250 : 500);
         }
       }
     } else {
-      d = viewer.scaleToScreen(z, mad);
+      d = vwr.scaleToScreen(z, mad);
     }
 //    System.out.println(atom + "scaleToScreen(" + z + "," + mad +")=" + d);
     if (isAntialiased)

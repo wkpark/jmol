@@ -67,14 +67,14 @@ public class NMRCalculation implements JmolNMRInterface {
   private static final double J_FACTOR = h_bar_planck / (2 * Math.PI) * 1E33;
   private static final double Q_FACTOR = e_charge * (9.71736e-7) / h_planck;
 
-  private Viewer viewer;
+  private Viewer vwr;
 
   public NMRCalculation() {
   }
 
   @Override
-  public JmolNMRInterface setViewer(Viewer viewer) {
-    this.viewer = viewer;
+  public JmolNMRInterface setViewer(Viewer vwr) {
+    this.vwr = vwr;
     getData();
     return this;
   }
@@ -83,7 +83,7 @@ public class NMRCalculation implements JmolNMRInterface {
   public float getQuadrupolarConstant(Tensor efg) {
     if (efg == null)
       return 0;
-    Atom a = viewer.modelSet.atoms[efg.atomIndex1];
+    Atom a = vwr.ms.atoms[efg.atomIndex1];
     return (float) (getIsotopeData(a, QUADRUPOLE_MOMENT) * efg.eigenValues[2] * Q_FACTOR);
   }
 
@@ -102,12 +102,12 @@ public class NMRCalculation implements JmolNMRInterface {
   private List<Tensor> getInteractionTensorList(String type, BS bsA) {
     if (type != null)
       type = type.toLowerCase();
-    BS bsModels = viewer.getModelBitSet(bsA, false);
+    BS bsModels = vwr.getModelBitSet(bsA, false);
     BS bs1 = getAtomSiteBS(bsA);
     int iAtom = (bs1.cardinality() == 1 ? bs1.nextSetBit(0) : -1);
     List<Tensor> list = new List<Tensor>();
     for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1)) {
-      List<Tensor> tensors = (List<Tensor>) viewer
+      List<Tensor> tensors = (List<Tensor>) vwr
           .getModelAuxiliaryInfoValue(i, "interactionTensors");
       if (tensors == null)
         continue;
@@ -131,8 +131,8 @@ public class NMRCalculation implements JmolNMRInterface {
     if (bsA == null)
       return null;
     BS bs = new BS();
-    Atom[] atoms = viewer.modelSet.atoms;
-    Model[] models = viewer.modelSet.models;
+    Atom[] atoms = vwr.ms.atoms;
+    Model[] models = vwr.ms.models;
     
     for (int i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1)) {
       if (!bsA.get(i))
@@ -150,12 +150,12 @@ public class NMRCalculation implements JmolNMRInterface {
   @Override
   public BS getUniqueTensorSet(BS bsAtoms) {
     BS bs = new BS();
-    Atom[] atoms = viewer.modelSet.atoms;
-    for (int i = viewer.getModelCount(); --i >= 0;) {
-      BS bsModelAtoms = viewer.getModelUndeletedAtomsBitSet(i);
+    Atom[] atoms = vwr.ms.atoms;
+    for (int i = vwr.getModelCount(); --i >= 0;) {
+      BS bsModelAtoms = vwr.getModelUndeletedAtomsBitSet(i);
       bsModelAtoms.and(bsAtoms);
       // exclude any models without symmetry
-      if (viewer.getModelUnitCell(i) == null)
+      if (vwr.getModelUnitCell(i) == null)
         continue;
       // exclude any symmetry-
       for (int j = bsModelAtoms.nextSetBit(0); j >= 0; j = bsModelAtoms
@@ -214,8 +214,8 @@ public class NMRCalculation implements JmolNMRInterface {
         return Float.NaN;
       isc = list.get(0);
     } else {
-      a1 = viewer.modelSet.atoms[isc.atomIndex1];
-      a2 = viewer.modelSet.atoms[isc.atomIndex2];
+      a1 = vwr.ms.atoms[isc.atomIndex1];
+      a2 = vwr.ms.atoms[isc.atomIndex2];
     }
     return (float) (getIsotopeData(a1, MAGNETOGYRIC_RATIO)
         * getIsotopeData(a2, MAGNETOGYRIC_RATIO) * (isIso ? isc.isotropy() : isc.anisotropy()) * J_FACTOR);
@@ -223,7 +223,7 @@ public class NMRCalculation implements JmolNMRInterface {
 
   @SuppressWarnings("unchecked")
   private String getISCtype(Atom a1, String type) {
-    List<Tensor> tensors = (List<Tensor>) viewer.getModelAuxiliaryInfoValue(a1.modelIndex, "interactionTensors");
+    List<Tensor> tensors = (List<Tensor>) vwr.getModelAuxiliaryInfoValue(a1.modelIndex, "interactionTensors");
     if (tensors == null)
       return null;
     type = (type == null ? "" : type.toLowerCase());
@@ -296,7 +296,7 @@ public class NMRCalculation implements JmolNMRInterface {
     BufferedReader br = null;
     try {
       boolean debugging = Logger.debugging;
-      br = JmolBinary.getBufferedReaderForResource(viewer, this, "org/jmol/quantum/",
+      br = JmolBinary.getBufferedReaderForResource(vwr, this, "org/jmol/quantum/",
           resource);
       // #extracted by Simone Sturniolo from ROBIN K. HARRIS, EDWIN D. BECKER, SONIA M. CABRAL DE MENEZES, ROBIN GOODFELLOW, AND PIERRE GRANGER, Pure Appl. Chem., Vol. 73, No. 11, pp. 1795–1818, 2001. NMR NOMENCLATURE. NUCLEAR SPIN PROPERTIES AND CONVENTIONS FOR CHEMICAL SHIFTS (IUPAC Recommendations 2001)
       // #element atomNo  isotopeDef  isotope1  G1  Q1  isotope2  G2  Q2  isotope3  G3  Q3
@@ -373,7 +373,7 @@ public class NMRCalculation implements JmolNMRInterface {
 
   @Override
   public float getMagneticShielding(Atom atom) {
-    Tensor t = viewer.modelSet.getAtomTensor(atom.index, "ms");
+    Tensor t = vwr.ms.getAtomTensor(atom.index, "ms");
     return (t == null ? Float.NaN : t.isotropy());
   }
 
@@ -408,7 +408,7 @@ public class NMRCalculation implements JmolNMRInterface {
     List<Object> list1;
     if (";dc.".equals(infoType)) {
       // tensorType is irrelevant for dipolar coupling constant
-      Atom[] atoms = viewer.modelSet.atoms;
+      Atom[] atoms = vwr.ms.atoms;
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
         for (int j = bs.nextSetBit(i + 1); j >= 0; j = bs.nextSetBit(j + 1)) {
           list1 = new List<Object>();
@@ -442,12 +442,12 @@ public class NMRCalculation implements JmolNMRInterface {
     boolean isFloat = (isChi || Tensor.isFloatInfo(infoType));
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       if (tensorType == null) {
-        Object[] a = viewer.modelSet.getAtomTensorList(i);
+        Object[] a = vwr.ms.getAtomTensorList(i);
         if (a != null)
           for (int j = 0; j < a.length; j++)
             data.addLast(((Tensor) a[j]).getInfo(infoType));
       } else {
-        Tensor t = viewer.modelSet.getAtomTensor(i, tensorType);
+        Tensor t = vwr.ms.getAtomTensor(i, tensorType);
         data.addLast(t == null ? (isFloat ? Float.valueOf(0) : "")
             : isChi ? Float.valueOf(getQuadrupolarConstant(t)) : t
                 .getInfo(infoType));
@@ -467,7 +467,7 @@ public class NMRCalculation implements JmolNMRInterface {
     if (n1 < 2 && n2 < 2)
       return null;
     Map<String, Integer> htMin = new Hashtable<String, Integer>();
-    Atom[] atoms = viewer.modelSet.atoms;
+    Atom[] atoms = vwr.ms.atoms;
     for (int i = bsPoints1.nextSetBit(0); i >= 0; i = bsPoints1
         .nextSetBit(i + 1)) {
       Atom a1 = atoms[i];

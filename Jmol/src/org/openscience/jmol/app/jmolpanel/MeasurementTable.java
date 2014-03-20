@@ -48,7 +48,7 @@ import java.awt.event.ActionListener;
 
 public class MeasurementTable extends JDialog {
 
-  JmolViewer viewer;
+  JmolViewer vwr;
   private JTable measurementTable;
   private MeasurementTableModel measurementTableModel;
   int selectedMeasurementRow = -1;
@@ -59,12 +59,12 @@ public class MeasurementTable extends JDialog {
    * Constructor
    *
    * @param parentFrame the parent frame
-   * @param viewer the JmolViewer in which the animation will take place (?)
+   * @param vwr the JmolViewer in which the animation will take place (?)
    */
-  public MeasurementTable(JmolViewer viewer, JFrame parentFrame) {
+  public MeasurementTable(JmolViewer vwr, JFrame parentFrame) {
 
     super(parentFrame, GT._("Measurements"), false);
-    this.viewer = viewer;
+    this.vwr = vwr;
 
     JPanel container = new JPanel();
     container.setLayout(new BorderLayout());
@@ -126,7 +126,7 @@ public class MeasurementTable extends JDialog {
     deleteButton.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-          viewer.script("measures delete " + (selectedMeasurementRow + 1) + JC.SCRIPT_EDITOR_IGNORE);
+          vwr.script("measures delete " + (selectedMeasurementRow + 1) + JC.SCRIPT_EDITOR_IGNORE);
           updateMeasurementTableData();
         }
       });
@@ -136,7 +136,7 @@ public class MeasurementTable extends JDialog {
     deleteAllButton.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-          viewer.script("measures delete" + JC.SCRIPT_EDITOR_IGNORE);
+          vwr.script("measures delete" + JC.SCRIPT_EDITOR_IGNORE);
           updateMeasurementTableData();
         }
       });
@@ -186,7 +186,7 @@ public class MeasurementTable extends JDialog {
   }
 
   void updateMeasurementTableData() {
-    deleteAllButton.setEnabled(viewer.getMeasurementCount() > 0);
+    deleteAllButton.setEnabled(vwr.getMeasurementCount() > 0);
     measurementTableModel.fireTableDataChanged();
   }
 
@@ -211,7 +211,7 @@ public class MeasurementTable extends JDialog {
       return measurementHeaders[col];
     } 
     @Override
-    public int getRowCount() { return viewer.getMeasurementCount(); }
+    public int getRowCount() { return vwr.getMeasurementCount(); }
     @Override
     public int getColumnCount() { return 5; }
 
@@ -224,13 +224,13 @@ public class MeasurementTable extends JDialog {
       //System.out.println("meata " + row + " " + col);
       if (col == 0) {
         deleteAllButton.setEnabled(true);
-        return viewer.getMeasurementStringValue(row);
+        return vwr.getMeasurementStringValue(row);
       }
-      int[] countPlusIndices = viewer.getMeasurementCountPlusIndices(row);
+      int[] countPlusIndices = vwr.getMeasurementCountPlusIndices(row);
       if (countPlusIndices == null || col > countPlusIndices[0])
         return null;
       int atomIndex = countPlusIndices[col];
-      return (viewer.getAtomInfo(atomIndex >= 0 ? atomIndex : -row * 10 - col));
+      return (vwr.getAtomInfo(atomIndex >= 0 ? atomIndex : -row * 10 - col));
     }
 
     @Override

@@ -27,11 +27,11 @@ package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
 
-import org.jmol.io.XmlUtil;
 import org.jmol.util.Escape;
 
 import javajs.util.SB;
 import javajs.util.P3;
+import javajs.util.XmlUtil;
 
 
 public class XmlReader {

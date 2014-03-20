@@ -344,20 +344,20 @@ public class Labels extends AtomShape {
           strings = AU.ensureLengthS(strings, i + 1);
           if (atom.getGroup3(false).equals("UNK")) {
             if (strLabelUNK == null) {
-              strLabelUNK = viewer.getStandardLabelFormat(1);
-              tokensUNK = LabelToken.compile(viewer, strLabelUNK, '\0', null);
+              strLabelUNK = vwr.getStandardLabelFormat(1);
+              tokensUNK = LabelToken.compile(vwr, strLabelUNK, '\0', null);
             }
             strLabel = strLabelUNK;
             tokens = tokensUNK;
           } else {
             if (strLabelPDB == null) {
-              strLabelPDB = viewer.getStandardLabelFormat(2);
-              tokensPDB = LabelToken.compile(viewer, strLabelPDB, '\0', null);
+              strLabelPDB = vwr.getStandardLabelFormat(2);
+              tokensPDB = LabelToken.compile(vwr, strLabelPDB, '\0', null);
             }
             strLabel = strLabelPDB;
             tokens = tokensPDB;
           }
-          strings[i] = LabelToken.formatLabelAtomArray(viewer, atom, tokens,
+          strings[i] = LabelToken.formatLabelAtomArray(vwr, atom, tokens,
               '\0', null);
           formats[i] = strLabel;
           bsSizeSet.set(i);
@@ -427,8 +427,8 @@ public class Labels extends AtomShape {
     isActive = true;
     if (bsSizeSet == null)
       bsSizeSet = new BS();
-    isScaled = viewer.getBoolean(T.fontscaling);
-    scalePixelsPerMicron = (isScaled ? viewer
+    isScaled = vwr.getBoolean(T.fontscaling);
+    scalePixelsPerMicron = (isScaled ? vwr
         .getScalePixelsPerAngstrom(false) * 10000f : 0);
   }
   
@@ -449,9 +449,9 @@ public class Labels extends AtomShape {
     Atom atom = atoms[i];
     LabelToken[] tokens = temp[0];
     if (tokens == null)
-      tokens = temp[0] = LabelToken.compile(viewer, strLabel, '\0', null);
+      tokens = temp[0] = LabelToken.compile(vwr, strLabel, '\0', null);
     String label = (tokens == null ? null : LabelToken.formatLabelAtomArray(
-        viewer, atom, tokens, '\0', null));
+        vwr, atom, tokens, '\0', null));
     addString(atom, i, label, strLabel);
     text = getLabel(i);
     if (isScaled) {
@@ -633,7 +633,7 @@ public class Labels extends AtomShape {
   public String getShapeState() {
     if (!isActive || bsSizeSet == null)
       return "";
-    return viewer.getShapeState(this);
+    return vwr.getShapeState(this);
   }
 
   private int pickedAtom = -1;
@@ -645,7 +645,7 @@ public class Labels extends AtomShape {
   public synchronized boolean checkObjectDragged(int prevX, int prevY, int x,
                                                  int y, int dragAction,
                                                  BS bsVisible) {
-    if (viewer.getPickingMode() != ActionManager.PICKING_LABEL || labelBoxes == null)
+    if (vwr.getPickingMode() != ActionManager.PICKING_LABEL || labelBoxes == null)
       return false;
     // mouse down ?
     if (prevX == Integer.MIN_VALUE) {

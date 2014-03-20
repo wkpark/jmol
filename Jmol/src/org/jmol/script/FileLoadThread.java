@@ -39,13 +39,13 @@ class FileLoadThread extends JmolThread {
    * JavaScript only
    * 
    * @param eval
-   * @param viewer
+   * @param vwr
    * @param fileName
    * @param key 
    * @param cacheName 
    */
-  public FileLoadThread(JmolScriptEvaluator eval, Viewer viewer, String fileName, String key, String cacheName) {
-    setViewer(viewer, "FileLoadThread");
+  public FileLoadThread(JmolScriptEvaluator eval, Viewer vwr, String fileName, String key, String cacheName) {
+    setViewer(vwr, "FileLoadThread");
     this.fileName = fileName;
     this.key = key;
     this.cacheName = cacheName;
@@ -68,7 +68,7 @@ class FileLoadThread extends JmolThread {
         /**
          * @j2sNative
          * 
-         * return Jmol._loadFileAsynchronously(this, this.viewer.applet, this.fileName, null);
+         * return Jmol._loadFileAsynchronously(this, this.vwr.applet, this.fileName, null);
          * 
          */
         {
@@ -81,7 +81,7 @@ class FileLoadThread extends JmolThread {
   }
 
   /**
-   * Called by Jmol._loadFileAsyncDone(this.viewer.applet). Allows for callback
+   * Called by Jmol._loadFileAsyncDone(this.vwr.applet). Allows for callback
    * to set the file name.
    * 
    * @param fileName
@@ -93,7 +93,7 @@ class FileLoadThread extends JmolThread {
     if (fileName != null)
       sc.parentContext.htFileCache.put(key, cacheName = cacheName.substring(0, 
           cacheName.lastIndexOf("_") + 1) + fileName);
-    viewer.cachePut(cacheName, data);
+    vwr.cachePut(cacheName, data);
     run1(FINISH);
   }   
 }

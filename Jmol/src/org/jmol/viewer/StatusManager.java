@@ -72,7 +72,7 @@ scriptStatus
 scriptTerminated
 
 userAction
-viewerRefreshed
+vwrRefreshed
 
    
  * Bob Hanson hansonr@stolaf.edu  2/2006
@@ -81,13 +81,13 @@ viewerRefreshed
 
 public class StatusManager {
 
-  protected Viewer viewer;
+  protected Viewer vwr;
   private JmolStatusListener jmolStatusListener;
   private JmolCallbackListener jmolCallbackListener;
   private String statusList = "";
 
-  StatusManager(Viewer viewer) {
-    this.viewer = viewer;
+  StatusManager(Viewer vwr) {
+    this.vwr = vwr;
   }
 
   private boolean allowStatusReporting; // set in StateManager.global
@@ -267,7 +267,7 @@ public class StatusManager {
   private String jmolScriptCallback(EnumCallback callback) {
     String s = jmolScriptCallbacks.get(callback);
     if (s != null)
-      viewer.evalStringQuietSync(s, true, false);
+      vwr.evalStringQuietSync(s, true, false);
     return s;
   }
   
@@ -362,26 +362,26 @@ public class StatusManager {
                                       int ptLoad, boolean doCallback,
                                       Boolean isAsync) {
     if (fullPathName == null && "resetUndo".equals(fileName)) {
-      JmolAppConsoleInterface appConsole = (JmolAppConsoleInterface) viewer
+      JmolAppConsoleInterface appConsole = (JmolAppConsoleInterface) vwr
           .getProperty("DATA_API", "getAppConsole", null);
       if (appConsole != null)
         appConsole.zap();
-      fileName = viewer.getZapName();
+      fileName = vwr.getZapName();
     }
     setStatusChanged("fileLoaded", ptLoad, fullPathName, false);
     if (errorMsg != null)
       setStatusChanged("fileLoadError", ptLoad, errorMsg, false);
     String sJmol = jmolScriptCallback(EnumCallback.LOADSTRUCT);
     if (doCallback && notifyEnabled(EnumCallback.LOADSTRUCT)) {
-      String name = (String) viewer.getParameter("_smilesString");
+      String name = (String) vwr.getParameter("_smilesString");
       if (name.length() != 0)
         fileName = name;
       jmolCallbackListener
           .notifyCallback(EnumCallback.LOADSTRUCT,
               new Object[] { sJmol, fullPathName, fileName, modelName,
                   errorMsg, Integer.valueOf(ptLoad),
-                  viewer.getParameter("_modelNumber"),
-                  viewer.getModelNumberDotted(viewer.getModelCount() - 1),
+                  vwr.getParameter("_modelNumber"),
+                  vwr.getModelNumberDotted(vwr.getModelCount() - 1),
                   isAsync });
     }
   }
@@ -389,12 +389,12 @@ public class StatusManager {
   synchronized void setStatusFrameChanged(int fileNo, int modelNo, int firstNo,
                                           int lastNo, int currentFrame,
                                           float currentMorphModel, String entryName) {
-    if (viewer.getModelSet() == null)
+    if (vwr.getModelSet() == null)
       return;
-    boolean animating = viewer.isAnimationOn();
+    boolean animating = vwr.isAnimationOn();
     int frameNo = (animating ? -2 - currentFrame : currentFrame);
     setStatusChanged("frameChanged", frameNo,
-        (currentFrame >= 0 ? viewer.getModelNumberDotted(currentFrame) : ""), false);
+        (currentFrame >= 0 ? vwr.getModelNumberDotted(currentFrame) : ""), false);
     String sJmol = jmolScriptCallback(EnumCallback.ANIMFRAME);
     if (notifyEnabled(EnumCallback.ANIMFRAME))
       jmolCallbackListener.notifyCallback(EnumCallback.ANIMFRAME,
@@ -402,8 +402,8 @@ public class StatusManager {
               sJmol,
               new int[] { frameNo, fileNo, modelNo, firstNo, lastNo,
                   currentFrame }, entryName, Float.valueOf(currentMorphModel) });
-    if (viewer.jmolpopup != null && !animating)
-      viewer.jmolpopup.jpiUpdateComputedMenus();
+    if (vwr.jmolpopup != null && !animating)
+      vwr.jmolpopup.jpiUpdateComputedMenus();
   }
 
   synchronized void setScriptEcho(String strEcho,
@@ -437,7 +437,7 @@ public class StatusManager {
     String sJmol = jmolScriptCallback(EnumCallback.ERROR);
     if (notifyEnabled(EnumCallback.ERROR))
       jmolCallbackListener.notifyCallback(EnumCallback.ERROR,
-          new Object[] { sJmol, errType, errMsg, viewer.getShapeErrorState(),
+          new Object[] { sJmol, errType, errMsg, vwr.getShapeErrorState(),
               errMsgUntranslated });
   }
   
@@ -475,8 +475,8 @@ public class StatusManager {
     }
 
     Object[] data;
-    if (isScriptCompletion && viewer.getBoolean(T.messagestylechime)
-        && viewer.getBoolean(T.debugscript)) {
+    if (isScriptCompletion && vwr.getBoolean(T.messagestylechime)
+        && vwr.getBoolean(T.debugscript)) {
       data = new Object[] { null, "script <exiting>", statusMessage,
           Integer.valueOf(-1), strErrorMessageUntranslated };
       if (notifyEnabled(EnumCallback.SCRIPT))
@@ -501,24 +501,24 @@ public class StatusManager {
     // "script started"/"pending"/"script terminated"/"script completed"
     // do not get sent to console
     
-    if (viewer.scriptEditor != null) {
+    if (vwr.scriptEditor != null) {
       if (msWalltime > 0) {
         // termination -- button legacy
-        viewer.scriptEditor.notifyScriptTermination();
+        vwr.scriptEditor.notifyScriptTermination();
       } else if (msWalltime < 0) {
         if (msWalltime == -2)
-          viewer.scriptEditor.notifyScriptStart();
-      } else if (viewer.scriptEditor.isVisible()
+          vwr.scriptEditor.notifyScriptStart();
+      } else if (vwr.scriptEditor.isVisible()
           && ((String) data[2]).length() > 0) {
-        viewer.scriptEditor.notifyContext(viewer.getScriptContext("SE notify"), data);
+        vwr.scriptEditor.notifyContext(vwr.getScriptContext("SE notify"), data);
       }
     }
 
-    if (viewer.appConsole != null) {
+    if (vwr.appConsole != null) {
       if (msWalltime == 0) {
         String strInfo = (data[1] == null ? null : data[1]
             .toString());
-        viewer.appConsole.sendConsoleMessage(strInfo);
+        vwr.appConsole.sendConsoleMessage(strInfo);
       }
     }
   }
@@ -535,7 +535,7 @@ public class StatusManager {
       if (mouseCommand != null)
         syncSend(mouseCommand, "*", 0);
     } else if (!syncingScripts)
-      syncSend("!" + viewer.getMoveToText(minSyncRepeatMs / 1000f), "*", 0);
+      syncSend("!" + vwr.getMoveToText(minSyncRepeatMs / 1000f), "*", 0);
   }
 
   boolean drivingSync = false;
@@ -589,7 +589,7 @@ public class StatusManager {
     }
     if (Logger.debugging) {
       Logger.debug(
-          viewer.appletName + " sync mode=" + syncMode +
+          vwr.appletName + " sync mode=" + syncMode +
           "; synced? " + isSynced + "; driving? " + drivingSync + "; disabled? " + syncDisabled);
     }
   }
@@ -617,8 +617,8 @@ public class StatusManager {
   }
 
   synchronized void clearConsole() {
-    if (viewer.appConsole != null) {
-      viewer.appConsole.sendConsoleMessage(null);
+    if (vwr.appConsole != null) {
+      vwr.appConsole.sendConsoleMessage(null);
     }
     if (jmolStatusListener != null)
       jmolCallbackListener.notifyCallback(EnumCallback.MESSAGE, null);
@@ -687,7 +687,7 @@ public class StatusManager {
     sd.setupUI(false);
     if (isImage) 
       sd.setImageInfo(qualityJPG, qualityPNG, imageType);
-    String outputFileName = sd.getFileNameFromDialog(viewer, type, fileName);    
+    String outputFileName = sd.getFileNameFromDialog(vwr, type, fileName);    
     if (isImage && outputFileName != null) {
       qualityJPG = sd.getQuality("JPG");
       qualityPNG = sd.getQuality("PNG");

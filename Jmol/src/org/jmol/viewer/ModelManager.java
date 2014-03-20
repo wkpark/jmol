@@ -33,23 +33,23 @@ import javajs.util.SB;
 
 class ModelManager {
 
-  private final Viewer viewer;
+  private final Viewer vwr;
   ModelSet modelSet;
 
   private String modelSetPathName;
   private String fileName;
 
-  ModelManager(Viewer viewer) {
-    this.viewer = viewer;
+  ModelManager(Viewer vwr) {
+    this.vwr = vwr;
   }
 
   void zap() {
     modelSetPathName = fileName = null;
-    new ModelLoader(viewer, viewer.getZapName(), null, null, null, null);
+    new ModelLoader(vwr, vwr.getZapName(), null, null, null, null);
   }
   
   String getModelSetFileName() {
-    return (fileName != null ? fileName : viewer.getZapName());
+    return (fileName != null ? fileName : vwr.getZapName());
   }
 
   String getModelSetPathName() {
@@ -74,7 +74,7 @@ class ModelManager {
     }
     if (atomSetCollection != null) {
       if (modelSetName == null) {
-        modelSetName = viewer.getModelAdapter().getAtomSetCollectionName(
+        modelSetName = vwr.getModelAdapter().getAtomSetCollectionName(
             atomSetCollection);
         if (modelSetName != null) {
           modelSetName = modelSetName.trim();
@@ -84,7 +84,7 @@ class ModelManager {
         if (modelSetName == null)
           modelSetName = reduceFilename(fileName);
       }
-      new ModelLoader(viewer, modelSetName, loadScript,
+      new ModelLoader(vwr, modelSetName, loadScript,
           atomSetCollection, (isAppend ? modelSet : null), bsNew);
     }
     if (modelSet.getAtomCount() == 0 && !modelSet.getModelSetAuxiliaryInfoBoolean("isPyMOL"))
@@ -103,8 +103,8 @@ class ModelManager {
   }
 
   String createAtomDataSet(Object atomSetCollection, int tokType) {
-    return ModelLoader.createAtomDataSet(viewer, modelSet, tokType, atomSetCollection,
-    viewer.getSelectedAtoms());
+    return ModelLoader.createAtomDataSet(vwr, modelSet, tokType, atomSetCollection,
+    vwr.getSelectedAtoms());
   }
 
 }

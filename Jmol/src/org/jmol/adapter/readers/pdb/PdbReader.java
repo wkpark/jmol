@@ -159,6 +159,7 @@ public class PdbReader extends AtomSetCollectionReader {
   private int atomTypePt0;
   private int atomTypeLen;
   private boolean isCourseGrained;
+  private boolean isbiomol;
 
   final private static String lineOptions = 
    "ATOM    " + //0
@@ -194,7 +195,7 @@ public class PdbReader extends AtomSetCollectionReader {
    getTlsGroups = checkFilterKey("TLS");
    if (checkFilterKey("ASSEMBLY")) // CIF syntax
      filter = PT.rep(filter, "ASSEMBLY", "BIOMOLECULE");
-   boolean isbiomol = checkFilterKey("BIOMOLECULE");
+   isbiomol = checkFilterKey("BIOMOLECULE");
    boolean byChain = isbiomol && checkFilterKey("BYCHAIN");
    boolean bySymop = isbiomol && checkFilterKey("BYSYMOP");
    isCourseGrained = byChain || bySymop;
@@ -403,7 +404,7 @@ public class PdbReader extends AtomSetCollectionReader {
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo("tlsErrors", sbTlsErrors.toString());
       appendLoadNote(sbTlsErrors.toString());
     }
-    
+    doCheckUnitCell &= (iHaveUnitCell && (doApplySymmetry || isbiomol));
     finalizeReaderASCR();
     if (vCompnds != null)
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo("compoundSource", vCompnds);
@@ -721,7 +722,8 @@ REMARK 290 REMARK: NULL
           String[] tokens = getTokens();
           if (tokens.length < 4)
             break;
-          setSymmetryOperator(tokens[3]);
+          if (doApplySymmetry || isbiomol)
+            setSymmetryOperator(tokens[3]);
         }
       }
     }
@@ -926,7 +928,7 @@ REMARK 290 REMARK: NULL
         String msg = " atom [" + atom.group3 + "]"
                            + atom.sequenceNumber 
                            + (atom.insertionCode == '\0' ? "" : "^" + atom.insertionCode)
-                           + (atom.chainID == 0 ? "" : ":" + viewer.getChainIDStr(atom.chainID))
+                           + (atom.chainID == 0 ? "" : ":" + vwr.getChainIDStr(atom.chainID))
                            + "." + atom.atomName
                            + "%" + atom.altLoc + "\n";
         if (conformationIndex >= 0 && atom.altLoc != lastAltLoc) {

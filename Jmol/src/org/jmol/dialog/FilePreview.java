@@ -53,28 +53,28 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
   JFileChooser chooser;
   private static boolean pdbCartoonChecked = true;
   private FPPanel display;
-  Viewer viewer;
+  Viewer vwr;
 
   /**
    * Constructor
    * 
-   * @param viewer
+   * @param vwr
    * @param fileChooser
    *        File chooser
    * @param allowAppend
-   * @param viewerOptions
+   * @param vwrOptions
    */
-  public FilePreview(Viewer viewer, JFileChooser fileChooser, 
-      boolean allowAppend, Map<String, Object> viewerOptions) {
+  public FilePreview(Viewer vwr, JFileChooser fileChooser, 
+      boolean allowAppend, Map<String, Object> vwrOptions) {
     super();
-    this.viewer = viewer;
+    this.vwr = vwr;
     chooser = fileChooser;
 
     // Create a box to do the layout
     Box box = Box.createVerticalBox();
 
     // Add a checkbox to activate / deactivate preview
-    final Viewer v = viewer;
+    final Viewer v = vwr;
     active = new JCheckBox(GT._("Preview"), false);
     active.addActionListener(new ActionListener() {
       @Override
@@ -89,7 +89,7 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
     box.add(active);
 
     // Add a preview area
-    display = new FPPanel(viewerOptions);
+    display = new FPPanel(vwrOptions);
     display.setPreferredSize(new Dimension(80, 80));
     display.setMinimumSize(new Dimension(50, 50));
     box.add(display);
@@ -139,26 +139,26 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
     if (active.isSelected()) {
       String prop = evt.getPropertyName();
       if (JFileChooser.SELECTED_FILE_CHANGED_PROPERTY.equals(prop)) {
-        updatePreview(viewer, (File) evt.getNewValue());
+        updatePreview(vwr, (File) evt.getNewValue());
       }
     }
   }
 
   /**
    * Update preview
-   * @param viewer 
+   * @param vwr 
    * 
    * @param file
    *        File selected
    */
-  void updatePreview(Viewer viewer, File file) {
+  void updatePreview(Viewer vwr, File file) {
     String script;
     if (file == null) {
       script = "zap";
     } else {
       String fileName = file.getAbsolutePath();
       //System.out.println("updatePreview "+ fileName + " " + chooser.getSelectedFile());
-      String url = viewer.getLocalUrl(fileName);
+      String url = vwr.getLocalUrl(fileName);
       //System.out.println("updatePreview + " + fileName + " " + url);
       if (url != null)
         fileName = url;
@@ -178,18 +178,18 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
   }
 
   private static class FPPanel extends JPanel {
-    JmolViewer viewer;
+    JmolViewer vwr;
 
     FPPanel(Map<String, Object> info) {
       info.put("previewOnly", Boolean.TRUE);
       Object display = info.get("display");
       info.put("display", this);
-      viewer = new Viewer(info);
+      vwr = new Viewer(info);
       info.put("display", display);
     }
 
     public JmolViewer getViewer() {
-      return viewer;
+      return vwr;
     }
 
     final Dimension currentSize = new Dimension();
@@ -197,10 +197,10 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
     @Override
     public void paint(Graphics g) {
       getSize(currentSize);
-      viewer.setScreenDimension(currentSize.width, currentSize.height);
+      vwr.setScreenDimension(currentSize.width, currentSize.height);
       Rectangle rectClip = new Rectangle();
       g.getClipBounds(rectClip);
-      viewer.renderScreenImage(g, currentSize.width, currentSize.height);
+      vwr.renderScreenImage(g, currentSize.width, currentSize.height);
     }
   }
 

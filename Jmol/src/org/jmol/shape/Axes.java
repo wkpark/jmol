@@ -109,14 +109,14 @@ public class Axes extends FontLineShape {
     super.initShape();
     myType = "axes";
     font3d = gdata.getFont3D(JC.AXES_DEFAULT_FONTSIZE);
-    EnumAxesMode axesMode = viewer.getAxesMode();
+    EnumAxesMode axesMode = vwr.getAxesMode();
     if (fixedOrigin == null)
       originPoint.set(0, 0, 0);
     else
       originPoint.setT(fixedOrigin);
     if (axesMode == EnumAxesMode.UNITCELL
         && modelSet.unitCells != null) {
-      SymmetryInterface unitcell = viewer.getCurrentUnitCell();
+      SymmetryInterface unitcell = vwr.getCurrentUnitCell();
       if (unitcell != null) {
         P3[] vertices = unitcell.getUnitCellVertices();
         P3 offset = unitcell.getCartesianOffset();
@@ -125,7 +125,7 @@ public class Axes extends FontLineShape {
         } else {
           offset = fixedOrigin;
         }
-        scale = viewer.getFloat(T.axesscale) / 2f;
+        scale = vwr.getFloat(T.axesscale) / 2f;
         // We must divide by 2 because that is the default for ALL axis types.
         // Not great, but it will have to do.
         axisPoints[0].scaleAdd2(scale, vertices[4], offset);
@@ -135,9 +135,9 @@ public class Axes extends FontLineShape {
       }
     } else if (axesMode == EnumAxesMode.BOUNDBOX) {
       if (fixedOrigin == null)
-        originPoint.setT(viewer.getBoundBoxCenter());
+        originPoint.setT(vwr.getBoundBoxCenter());
     }
-    setScale(viewer.getFloat(T.axesscale) / 2f);
+    setScale(vwr.getFloat(T.axesscale) / 2f);
   }
   
   @Override
@@ -155,7 +155,7 @@ public class Axes extends FontLineShape {
   
   void setScale(float scale) {
     this.scale = scale;
-    corner.setT(viewer.getBoundBoxCornerVector());
+    corner.setT(vwr.getBoundBoxCornerVector());
     for (int i = 6; --i >= 0;) {
       P3 axisPoint = axisPoints[i];
       axisPoint.setT(JC.unitAxisVectors[i]);
@@ -181,7 +181,7 @@ public class Axes extends FontLineShape {
  @Override
 public String getShapeState() {
     SB sb = new SB();
-    sb.append("  axes scale ").appendF(viewer.getFloat(T.axesscale)).append(";\n"); 
+    sb.append("  axes scale ").appendF(vwr.getFloat(T.axesscale)).append(";\n"); 
     if (fixedOrigin != null)
       sb.append("  axes center ")
           .append(Escape.eP(fixedOrigin)).append(";\n");

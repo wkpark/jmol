@@ -49,7 +49,7 @@ import javax.swing.JMenuItem;
 
 public abstract class JmolConsole extends GenericConsole implements ActionListener, WindowListener {
 
-  protected JFrame viewerFrame;
+  protected JFrame vwrFrame;
   protected Container externalContainer;
 
   @Override
@@ -99,9 +99,9 @@ public abstract class JmolConsole extends GenericConsole implements ActionListen
   
   @Override
   public JmolScriptEditorInterface getScriptEditor() {
-    // is called by viewer during application startup, despite what Eclipse says.
+    // is called by vwr during application startup, despite what Eclipse says.
     return (scriptEditor == null ? 
-        (scriptEditor = new ScriptEditor(viewer, viewerFrame, this)) : scriptEditor);
+        (scriptEditor = new ScriptEditor(vwr, vwrFrame, this)) : scriptEditor);
   }
   
   //public void finalize() {
@@ -110,7 +110,7 @@ public abstract class JmolConsole extends GenericConsole implements ActionListen
   
   @Override
   protected String nextFileName(String stub, int nTab) {
-    String sname = FileManager.getLocalPathForWritingFile(viewer, stub);
+    String sname = FileManager.getLocalPathForWritingFile(vwr, stub);
     if (sname == null)
       return null;
     String root = sname.substring(0, sname.lastIndexOf("/") + 1);

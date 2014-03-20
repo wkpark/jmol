@@ -52,12 +52,12 @@ class Display {
   /**
    * legacy apps will use this
    * 
-   * @param viewer
+   * @param vwr
    * @param g
    * @param size
    */
-  static void renderScreenImage(PlatformViewer viewer, Object g, Object size) {
-    ((Viewer)viewer).renderScreenImage(g, ((Dimension)size).width, ((Dimension)size).height);
+  static void renderScreenImage(PlatformViewer vwr, Object g, Object size) {
+    ((Viewer)vwr).renderScreenImage(g, ((Dimension)size).width, ((Dimension)size).height);
   }
 
   static void setTransparentCursor(Object display) {

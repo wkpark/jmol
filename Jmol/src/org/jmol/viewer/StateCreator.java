@@ -100,11 +100,11 @@ public class StateCreator extends JmolStateCreator {
 
   }
 
-  private Viewer viewer;
+  private Viewer vwr;
 
   @Override
-  void setViewer(Viewer viewer) {
-    this.viewer = viewer;
+  void setViewer(Viewer vwr) {
+    this.vwr = vwr;
   }
 
 
@@ -112,20 +112,20 @@ public class StateCreator extends JmolStateCreator {
   
   @Override
   String getStateScript(String type, int width, int height) {
-    //System.out.println("viewer getStateInfo " + type);
+    //System.out.println("vwr getStateInfo " + type);
     boolean isAll = (type == null || type.equalsIgnoreCase("all"));
     SB s = new SB();
     SB sfunc = (isAll ? new SB().append("function _setState() {\n") : null);
     if (isAll)
       s.append(JC.STATE_VERSION_STAMP + Viewer.getJmolVersion() + ";\n");
-    if (viewer.isApplet() && isAll) {
-      appendCmd(s, "# fullName = " + PT.esc(viewer.fullName));
-      appendCmd(s, "# documentBase = " + PT.esc(Viewer.appletDocumentBase));
-      appendCmd(s, "# codeBase = " + PT.esc(Viewer.appletCodeBase));
+    if (vwr.isApplet() && isAll) {
+      app(s, "# fullName = " + PT.esc(vwr.fullName));
+      app(s, "# documentBase = " + PT.esc(Viewer.appletDocumentBase));
+      app(s, "# codeBase = " + PT.esc(Viewer.appletCodeBase));
       s.append("\n");
     }
 
-    GlobalSettings global = viewer.global;
+    GlobalSettings global = vwr.g;
     // window state
     if (isAll || type.equalsIgnoreCase("windowState"))
       s.append(getWindowState(sfunc, width, height));
@@ -145,28 +145,28 @@ public class StateCreator extends JmolStateCreator {
       s.append(getDataState(sfunc));
     // connections, atoms, bonds, labels, echos, shapes
     if (isAll || type.equalsIgnoreCase("modelState"))
-      s.append(getModelState(sfunc, true, viewer
+      s.append(getModelState(sfunc, true, vwr
           .getBooleanProperty("saveProteinStructureState")));
     // color scheme
     if (isAll || type.equalsIgnoreCase("colorState"))
-      s.append(getColorState(viewer.colorManager, sfunc));
+      s.append(getColorState(vwr.colorManager, sfunc));
     // frame information
     if (isAll || type.equalsIgnoreCase("frameState"))
-      s.append(getAnimState(viewer.animationManager, sfunc));
+      s.append(getAnimState(vwr.animationManager, sfunc));
     // orientation and slabbing
     if (isAll || type.equalsIgnoreCase("perspectiveState"))
-      s.append(getViewState(viewer.tm, sfunc));
+      s.append(getViewState(vwr.tm, sfunc));
     // display and selections
     if (isAll || type.equalsIgnoreCase("selectionState"))
-      s.append(getSelectionState(viewer.selectionManager, sfunc));
+      s.append(getSelectionState(vwr.selectionManager, sfunc));
     if (sfunc != null) {
-      appendCmd(sfunc, "set refreshing true");
-      appendCmd(sfunc, "set antialiasDisplay " + global.antialiasDisplay);
-      appendCmd(sfunc, "set antialiasTranslucent "
+      app(sfunc, "set refreshing true");
+      app(sfunc, "set antialiasDisplay " + global.antialiasDisplay);
+      app(sfunc, "set antialiasTranslucent "
           + global.antialiasTranslucent);
-      appendCmd(sfunc, "set antialiasImages " + global.antialiasImages);
-      if (viewer.getSpinOn())
-        appendCmd(sfunc, "spin on");
+      app(sfunc, "set antialiasImages " + global.antialiasImages);
+      if (vwr.getSpinOn())
+        app(sfunc, "spin on");
       sfunc.append("}\n\n_setState;\n");
     }
     if (isAll)
@@ -182,18 +182,18 @@ public class StateCreator extends JmolStateCreator {
       haveData = true;
       commands.append(atomProps);
     }
-    if (viewer.userVdws != null) {
-      String info = viewer.getDefaultVdwNameOrData(0, EnumVdw.USER,
-          viewer.bsUserVdws);
+    if (vwr.userVdws != null) {
+      String info = vwr.getDefaultVdwNameOrData(0, EnumVdw.USER,
+          vwr.bsUserVdws);
       if (info.length() > 0) {
         haveData = true;
         commands.append(info);
       }
     }    
-    if (viewer.nmrCalculation != null)
-      haveData |= viewer.nmrCalculation.getState(commands);
-    if (viewer.dataManager != null)
-      haveData |= viewer.dataManager.getDataState(this, commands);
+    if (vwr.nmrCalculation != null)
+      haveData |= vwr.nmrCalculation.getState(commands);
+    if (vwr.dataManager != null)
+      haveData |= vwr.dataManager.getDataState(this, commands);
     if (!haveData)
       return "";
     
@@ -207,7 +207,7 @@ public class StateCreator extends JmolStateCreator {
   }
 
   private String getDefinedState(SB sfunc, boolean isAll) {
-    ModelSet ms = viewer.modelSet;
+    ModelSet ms = vwr.ms;
     int len = ms.stateScripts.size();
     if (len == 0)
       return "";
@@ -246,7 +246,7 @@ public class StateCreator extends JmolStateCreator {
 
     // connections
 
-    ModelSet ms = viewer.modelSet;
+    ModelSet ms = vwr.ms;
     Bond[] bonds = ms.bonds;
     Model[] models = ms.models;
     int modelCount = ms.modelCount;
@@ -299,7 +299,7 @@ public class StateCreator extends JmolStateCreator {
 
     // shape construction
 
-    viewer.setModelVisibility();
+    vwr.setModelVisibility();
 
     // unnecessary. Removed in 11.5.35 -- oops!
 
@@ -360,22 +360,22 @@ public class StateCreator extends JmolStateCreator {
             loadUC = true;
           }
           commands.append(";\n");
-          haveModulation |= (viewer.modelGetLastVibrationIndex(i, T.modulation) >= 0);
+          haveModulation |= (vwr.modelGetLastVibrationIndex(i, T.modulation) >= 0);
         }
         if (loadUC)
-          viewer.loadShape(JC.SHAPE_UCCAGE); // just in case
+          vwr.loadShape(JC.SHAPE_UCCAGE); // just in case
         getShapeState(commands, isAll, JC.SHAPE_UCCAGE);
-        //        if (viewer.getObjectMad(StateManager.OBJ_UNITCELL) == 0)
+        //        if (vwr.getObjectMad(StateManager.OBJ_UNITCELL) == 0)
         //        commands.append("  unitcell OFF;\n");
         if (haveModulation) {
           //commands.append("  modulation fps "
-          //  + viewer.animationManager.modulationFps + ";\n");
+          //  + vwr.animationManager.modulationFps + ";\n");
           Map<String, BS> temp = new Hashtable<String, BS>();
           int ivib;
           for (int i = modelCount; --i >= 0;) {
-            if ((ivib = viewer.modelGetLastVibrationIndex(i, T.modulation)) >= 0)
+            if ((ivib = vwr.modelGetLastVibrationIndex(i, T.modulation)) >= 0)
               for (int j = models[i].firstAtomIndex; j <= ivib; j++) {
-                JmolModulationSet mset = (JmolModulationSet) viewer.getVibration(j);
+                JmolModulationSet mset = (JmolModulationSet) vwr.getVibration(j);
                 if (mset != null)
                   BSUtil.setMapBitSet(temp, j, j, mset.getState());
               }
@@ -384,9 +384,9 @@ public class StateCreator extends JmolStateCreator {
           commands.append(s);
         }
       }
-      commands.append("  set fontScaling " + viewer.getBoolean(T.fontscaling)
+      commands.append("  set fontScaling " + vwr.getBoolean(T.fontscaling)
           + ";\n");
-      if (viewer.getBoolean(T.modelkitmode))
+      if (vwr.getBoolean(T.modelkitmode))
         commands.append("  set modelKitMode true;\n");
     }
     if (sfunc != null)
@@ -395,7 +395,7 @@ public class StateCreator extends JmolStateCreator {
   }
 
   private void getShapeState(SB commands, boolean isAll, int iShape) {
-    Shape[] shapes = viewer.shapeManager.shapes;
+    Shape[] shapes = vwr.shapeManager.shapes;
     if (shapes == null)
       return;
     String cmd;
@@ -416,7 +416,7 @@ public class StateCreator extends JmolStateCreator {
   }
 
   private String getWindowState(SB sfunc, int width, int height) {
-    GlobalSettings global = viewer.global;
+    GlobalSettings global = vwr.g;
     SB str = new SB();
     if (sfunc != null) {
       sfunc
@@ -427,20 +427,20 @@ public class StateCreator extends JmolStateCreator {
       str.append("# preferredWidthHeight ").appendI(width).append(" ").appendI(
           height).append(";\n");
     str.append("# width ")
-        .appendI(width == 0 ? viewer.getScreenWidth() : width).append(
+        .appendI(width == 0 ? vwr.getScreenWidth() : width).append(
             ";\n# height ").appendI(
-            height == 0 ? viewer.getScreenHeight() : height).append(";\n");
-    appendCmd(str, "stateVersion = " + JC.versionInt);
-    appendCmd(str, "background " + Escape.escapeColor(global.objColors[0]));
+            height == 0 ? vwr.getScreenHeight() : height).append(";\n");
+    app(str, "stateVersion = " + JC.versionInt);
+    app(str, "background " + Escape.escapeColor(global.objColors[0]));
     for (int i = 1; i < StateManager.OBJ_MAX; i++)
       if (global.objColors[i] != 0)
-        appendCmd(str, StateManager.getObjectNameFromId(i) + "Color = \""
+        app(str, StateManager.getObjectNameFromId(i) + "Color = \""
             + Escape.escapeColor(global.objColors[i]) + '"');
     if (global.backgroundImageFileName != null)
-      appendCmd(str, "background IMAGE /*file*/"
+      app(str, "background IMAGE /*file*/"
           + PT.esc(global.backgroundImageFileName));
     str.append(getSpecularState());
-    appendCmd(str, "statusReporting  = " + global.statusReporting);
+    app(str, "statusReporting  = " + global.statusReporting);
     if (sfunc != null)
       str.append("}\n\n");
     return str.toString();
@@ -449,21 +449,21 @@ public class StateCreator extends JmolStateCreator {
   @Override
   String getSpecularState() {
     SB str = new SB();
-    GData g = viewer.gdata;
-    appendCmd(str, "set ambientPercent " + g.getAmbientPercent());
-    appendCmd(str, "set diffusePercent " + g.getDiffusePercent());
-    appendCmd(str, "set specular " + g.getSpecular());
-    appendCmd(str, "set specularPercent " + g.getSpecularPercent());
-    appendCmd(str, "set specularPower " + g.getSpecularPower());
-    appendCmd(str, "set celShading " + g.getCel());
-    appendCmd(str, "set celShadingPower " + g.getCelPower());
+    GData g = vwr.gdata;
+    app(str, "set ambientPercent " + g.getAmbientPercent());
+    app(str, "set diffusePercent " + g.getDiffusePercent());
+    app(str, "set specular " + g.getSpecular());
+    app(str, "set specularPercent " + g.getSpecularPercent());
+    app(str, "set specularPower " + g.getSpecularPower());
+    app(str, "set celShading " + g.getCel());
+    app(str, "set celShadingPower " + g.getCelPower());
     int se = g.getSpecularExponent();
     int pe = g.getPhongExponent();
     if (Math.pow(2, se) == pe)
-      appendCmd(str, "set specularExponent " + se);
+      app(str, "set specularExponent " + se);
     else
-      appendCmd(str, "set phongExponent " + pe);
-    appendCmd(str, "set zShadePower " + viewer.global.zShadePower);
+      app(str, "set phongExponent " + pe);
+    app(str, "set zShadePower " + vwr.g.zShadePower);
     return str.toString();
   }
 
@@ -474,7 +474,7 @@ public class StateCreator extends JmolStateCreator {
       commands.append("function _setFileState() {\n\n");
     }
     if (commands.indexOf("append") < 0
-        && viewer.getModelSetFileName().equals("zapped"))
+        && vwr.getModelSetFileName().equals("zapped"))
       commands.append("  zap;\n");
     appendLoadStates(commands);
     if (sfunc != null)
@@ -483,21 +483,21 @@ public class StateCreator extends JmolStateCreator {
   }
 
   private void appendLoadStates(SB cmds) {
-    Map<String, Boolean> ligandModelSet = viewer.ligandModelSet;
+    Map<String, Boolean> ligandModelSet = vwr.ligandModelSet;
     if (ligandModelSet != null) {
       for (String key : ligandModelSet.keySet()) {
-        String data = (String) viewer.ligandModels.get(key + "_data");
+        String data = (String) vwr.ligandModels.get(key + "_data");
         if (data != null)
           cmds.append("  ").append(
               Escape.encapsulateData("ligand_" + key, data.trim() + "\n", 0));
-        data = (String) viewer.ligandModels.get(key + "_file");
+        data = (String) vwr.ligandModels.get(key + "_file");
         if (data != null)
           cmds.append("  ").append(
               Escape.encapsulateData("file_" + key, data.trim() + "\n", 0));
       }
     }
     SB commands = new SB();
-    ModelSet ms = viewer.modelSet;
+    ModelSet ms = vwr.ms;
     Model[] models = ms.models;
     int modelCount = ms.modelCount;
     for (int i = 0; i < modelCount; i++) {
@@ -516,7 +516,7 @@ public class StateCreator extends JmolStateCreator {
             ms.tainted[AtomCollection.TAINT_ELEMENT].andNot(bs);
         }
         m.loadScript = new SB();
-        getInlineData(commands, viewer.getModelExtract(bs, false, true, "MOL"),
+        getInlineData(commands, vwr.getModelExtract(bs, false, true, "MOL"),
             i > 0, null);
       } else {
         commands.appendSB(m.loadScript);
@@ -570,7 +570,7 @@ public class StateCreator extends JmolStateCreator {
   }
 
   private String getAnimState(AnimationManager am, SB sfunc) {
-    int modelCount = viewer.getModelCount();
+    int modelCount = vwr.getModelCount();
     if (modelCount < 2)
       return "";
     SB commands = new SB();
@@ -580,40 +580,40 @@ public class StateCreator extends JmolStateCreator {
     }
     commands.append("# frame state;\n");
     commands.append("# modelCount ").appendI(modelCount).append(";\n# first ")
-        .append(viewer.getModelNumberDotted(0)).append(";\n# last ").append(
-            viewer.getModelNumberDotted(modelCount - 1)).append(";\n");
+        .append(vwr.getModelNumberDotted(0)).append(";\n# last ").append(
+            vwr.getModelNumberDotted(modelCount - 1)).append(";\n");
     if (am.backgroundModelIndex >= 0)
-      appendCmd(commands, "set backgroundModel "
-          + viewer.getModelNumberDotted(am.backgroundModelIndex));
-    BS bs = viewer.getFrameOffsets();
+      app(commands, "set backgroundModel "
+          + vwr.getModelNumberDotted(am.backgroundModelIndex));
+    BS bs = vwr.getFrameOffsets();
     if (bs != null)
-      appendCmd(commands, "frame align " + Escape.eBS(bs));
-    appendCmd(commands, "frame RANGE "
+      app(commands, "frame align " + Escape.eBS(bs));
+    app(commands, "frame RANGE "
         + am.getModelSpecial(AnimationManager.FRAME_FIRST) + " "
         + am.getModelSpecial(AnimationManager.FRAME_LAST));
-    appendCmd(commands, "animation DIRECTION "
+    app(commands, "animation DIRECTION "
         + (am.animationDirection == 1 ? "+1" : "-1"));
-    appendCmd(commands, "animation FPS " + am.animationFps);
-    appendCmd(commands, "animation MODE " + am.animationReplayMode.name() + " "
+    app(commands, "animation FPS " + am.animationFps);
+    app(commands, "animation MODE " + am.animationReplayMode.name() + " "
         + am.firstFrameDelay + " " + am.lastFrameDelay);
     if (am.morphCount > 0)
-      appendCmd(commands, "animation MORPH " + am.morphCount);
+      app(commands, "animation MORPH " + am.morphCount);
     int[] frames = am.getAnimationFrames();
     boolean showModel = true;
     if (frames != null) {
-      appendCmd(commands, "anim frames " + Escape.eAI(frames));
+      app(commands, "anim frames " + Escape.eAI(frames));
       int i = am.getCurrentFrameIndex();
-      appendCmd(commands, "frame " + (i + 1));
+      app(commands, "frame " + (i + 1));
       showModel = (am.currentModelIndex != am.modelIndexForFrame(i));
     }
     if (showModel)
-      appendCmd(commands, "model "
+      app(commands, "model "
           + am.getModelSpecial(AnimationManager.MODEL_CURRENT));
-    appendCmd(commands, "animation "
+    app(commands, "animation "
         + (!am.animationOn ? "OFF" : am.currentDirection == 1 ? "PLAY"
             : "PLAYREV"));
     if (am.animationOn && am.animationPaused)
-      appendCmd(commands, "animation PAUSE");
+      app(commands, "animation PAUSE");
     if (sfunc != null)
       commands.append("}\n\n");
     return commands.toString();
@@ -673,7 +673,7 @@ public class StateCreator extends JmolStateCreator {
     Arrays.sort(list, 0, n);
     for (int i = 0; i < n; i++)
       if (list[i] != null)
-        appendCmd(commands, list[i]);
+        app(commands, list[i]);
 
     String s = StateManager.getVariableList(global.htUserVariables, 0, false,
         true);
@@ -684,9 +684,9 @@ public class StateCreator extends JmolStateCreator {
 
     // label defaults
 
-    if (viewer.shapeManager.getShape(JC.SHAPE_LABELS) != null)
+    if (vwr.shapeManager.getShape(JC.SHAPE_LABELS) != null)
       commands
-          .append(getDefaultLabelState((Labels) viewer.shapeManager.shapes[JC.SHAPE_LABELS]));
+          .append(getDefaultLabelState((Labels) vwr.shapeManager.shapes[JC.SHAPE_LABELS]));
 
     // structure defaults
 
@@ -706,22 +706,22 @@ public class StateCreator extends JmolStateCreator {
 
   private String getDefaultLabelState(Labels l) {
     SB s = new SB().append("\n# label defaults;\n");
-    appendCmd(s, "select none");
-    appendCmd(s, Shape.getColorCommand("label", l.defaultPaletteID,
+    app(s, "select none");
+    app(s, Shape.getColorCommand("label", l.defaultPaletteID,
         l.defaultColix, l.translucentAllowed));
-    appendCmd(s, "background label " + Shape.encodeColor(l.defaultBgcolix));
-    appendCmd(s, "set labelOffset " + JC.getXOffset(l.defaultOffset)
+    app(s, "background label " + Shape.encodeColor(l.defaultBgcolix));
+    app(s, "set labelOffset " + JC.getXOffset(l.defaultOffset)
         + " " + (-JC.getYOffset(l.defaultOffset)));
     String align = JC.getAlignmentName(l.defaultAlignment);
-    appendCmd(s, "set labelAlignment " + (align.length() < 5 ? "left" : align));
+    app(s, "set labelAlignment " + (align.length() < 5 ? "left" : align));
     String pointer = JC.getPointer(l.defaultPointer);
-    appendCmd(s, "set labelPointer "
+    app(s, "set labelPointer "
         + (pointer.length() == 0 ? "off" : pointer));
     if ((l.defaultZPos & JC.LABEL_FRONT_FLAG) != 0)
-      appendCmd(s, "set labelFront");
+      app(s, "set labelFront");
     else if ((l.defaultZPos & JC.LABEL_GROUP_FLAG) != 0)
-      appendCmd(s, "set labelGroup");
-    appendCmd(s, Shape.getFontCommand("label", Font
+      app(s, "set labelGroup");
+    app(s, Shape.getFontCommand("label", Font
         .getFont3D(l.defaultFontId)));
     return s.toString();
   }
@@ -732,24 +732,24 @@ public class StateCreator extends JmolStateCreator {
       sfunc.append("  _setSelectionState;\n");
       commands.append("function _setSelectionState() {\n");
     }
-    appendCmd(commands, getTrajectoryState());
+    app(commands, getTrajectoryState());
     Map<String, BS> temp = new Hashtable<String, BS>();
     String cmd = null;
     addBs(commands, "hide ", sm.bsHidden);
     addBs(commands, "subset ", sm.bsSubset);
     addBs(commands, "delete ", sm.bsDeleted);
     addBs(commands, "fix ", sm.bsFixed);
-    temp.put("-", viewer.getSelectedAtomsNoSubset());
+    temp.put("-", vwr.getSelectedAtomsNoSubset());
     cmd = getCommands(temp, null, "select");
     if (cmd == null)
-      appendCmd(commands, "select none");
+      app(commands, "select none");
     else
       commands.append(cmd);
-    appendCmd(commands, "set hideNotSelected " + sm.hideNotSelected);
-    commands.append((String) viewer.getShapeProperty(JC.SHAPE_STICKS,
+    app(commands, "set hideNotSelected " + sm.hideNotSelected);
+    commands.append((String) vwr.getShapeProperty(JC.SHAPE_STICKS,
         "selectionState"));
-    if (viewer.getSelectionHaloEnabled(false))
-      appendCmd(commands, "SelectionHalos ON");
+    if (vwr.getSelectionHaloEnabled(false))
+      app(commands, "SelectionHalos ON");
     if (sfunc != null)
       commands.append("}\n\n");
     return commands.toString();
@@ -758,7 +758,7 @@ public class StateCreator extends JmolStateCreator {
   @Override
   String getTrajectoryState() {
     String s = "";
-    ModelSet m = viewer.modelSet;
+    ModelSet m = vwr.ms;
     if (m.trajectorySteps == null)
       return "";
     for (int i = m.modelCount; --i >= 0;) {
@@ -781,30 +781,30 @@ public class StateCreator extends JmolStateCreator {
       sfunc.append("  _setPerspectiveState;\n");
       commands.append("function _setPerspectiveState() {\n");
     }
-    appendCmd(commands, "set perspectiveModel " + tm.perspectiveModel);
-    appendCmd(commands, "set scaleAngstromsPerInch "
+    app(commands, "set perspectiveModel " + tm.perspectiveModel);
+    app(commands, "set scaleAngstromsPerInch "
         + tm.scale3DAngstromsPerInch);
-    appendCmd(commands, "set perspectiveDepth " + tm.perspectiveDepth);
-    appendCmd(commands, "set visualRange " + tm.visualRange);
+    app(commands, "set perspectiveDepth " + tm.perspectiveDepth);
+    app(commands, "set visualRange " + tm.visualRange);
     if (!tm.isWindowCentered())
-      appendCmd(commands, "set windowCentered false");
-    appendCmd(commands, "set cameraDepth " + tm.cameraDepth);
+      app(commands, "set windowCentered false");
+    app(commands, "set cameraDepth " + tm.cameraDepth);
     boolean navigating = (tm.mode == TransformManager.MODE_NAVIGATION);
     if (navigating)
-      appendCmd(commands, "set navigationMode true");
-    appendCmd(commands, viewer.getBoundBoxCommand(false));
-    appendCmd(commands, "center " + Escape.eP(tm.fixedRotationCenter));
-    commands.append(viewer.getOrientationText(T.name, null));
+      app(commands, "set navigationMode true");
+    app(commands, vwr.getBoundBoxCommand(false));
+    app(commands, "center " + Escape.eP(tm.fixedRotationCenter));
+    commands.append(vwr.getOrientationText(T.name, null));
 
-    appendCmd(commands, moveToText);
+    app(commands, moveToText);
     if (tm.stereoMode != EnumStereoMode.NONE)
-      appendCmd(commands, "stereo "
+      app(commands, "stereo "
           + (tm.stereoColors == null ? tm.stereoMode.getName() : Escape
               .escapeColor(tm.stereoColors[0])
               + " " + Escape.escapeColor(tm.stereoColors[1])) + " "
           + tm.stereoDegrees);
     if (!navigating && !tm.zoomEnabled)
-      appendCmd(commands, "zoom off");
+      app(commands, "zoom off");
     commands.append("  slab ").appendI(tm.slabPercentSetting).append(";depth ")
         .appendI(tm.depthPercentSetting).append(
             tm.slabEnabled && !navigating ? ";slab on" : "").append(";\n");
@@ -825,8 +825,8 @@ public class StateCreator extends JmolStateCreator {
       commands.append("  depth plane ").append(Escape.eP4(tm.depthPlane))
           .append(";\n");
     commands.append(getSpinState(true)).append("\n");
-    if (viewer.modelSetHasVibrationVectors() && tm.vibrationOn)
-      appendCmd(commands, "set vibrationPeriod " + tm.vibrationPeriod
+    if (vwr.modelSetHasVibrationVectors() && tm.vibrationOn)
+      app(commands, "set vibrationPeriod " + tm.vibrationPeriod
           + ";vibration on");
     if (navigating) {
       commands.append(tm.getNavigationState());
@@ -844,7 +844,7 @@ public class StateCreator extends JmolStateCreator {
    */
   @Override
   String getSpinState(boolean isAll) {
-    TransformManager tm = viewer.tm;
+    TransformManager tm = vwr.tm;
     String s = "  set spinX " + (int) tm.spinX + "; set spinY "
         + (int) tm.spinY + "; set spinZ " + (int) tm.spinZ + "; set spinFps "
         + (int) tm.spinFps + ";";
@@ -857,7 +857,7 @@ public class StateCreator extends JmolStateCreator {
     if (!tm.spinOn)
       return s;
     String prefix = (tm.isSpinSelected ? "\n  select "
-        + Escape.eBS(viewer.getSelectedAtoms()) + ";\n  rotateSelected"
+        + Escape.eBS(vwr.getSelectedAtoms()) + ";\n  rotateSelected"
         : "\n ");
     if (tm.isSpinInternal) {
       P3 pt = P3.newP(tm.internalRotationCenter);
@@ -887,7 +887,7 @@ public class StateCreator extends JmolStateCreator {
     return s.toString();
   }
 
-  private static String getCommands2(Map<String, BS> ht, SB s, String setPrev,
+  private String getCommands2(Map<String, BS> ht, SB s, String setPrev,
                                      String selectCmd) {
     if (ht == null)
       return "";
@@ -898,24 +898,24 @@ public class StateCreator extends JmolStateCreator {
         continue;
       set = selectCmd + " " + set;
       if (!set.equals(setPrev))
-        appendCmd(s, set);
+        app(s, set);
       setPrev = set;
       if (key.indexOf("-") != 0) // - for key means none required
-        appendCmd(s, key);
+        app(s, key);
     }
     return setPrev;
   }
 
-  private static void appendCmd(SB s, String cmd) {
+  private void app(SB s, String cmd) {
     if (cmd.length() == 0)
       return;
     s.append("  ").append(cmd).append(";\n");
   }
 
-  private static void addBs(SB sb, String key, BS bs) {
+  private void addBs(SB sb, String key, BS bs) {
     if (bs == null || bs.length() == 0)
       return;
-    appendCmd(sb, key + Escape.eBS(bs));
+    app(sb, key + Escape.eBS(bs));
   }
 
   @Override
@@ -924,9 +924,9 @@ public class StateCreator extends JmolStateCreator {
         .equalsIgnoreCase("axes") ? "axis" : myType);
     if (objId < 0)
       return "";
-    int mad = viewer.getObjectMad(objId);
+    int mad = vwr.getObjectMad(objId);
     SB s = new SB().append("\n");
-    appendCmd(s, myType
+    app(s, myType
         + (mad == 0 ? " off" : mad == 1 ? " on" : mad == -1 ? " dotted"
             : mad < 20 ? " " + mad : " " + (mad / 2000f)));
     if (s.length() < 3)
@@ -1007,7 +1007,7 @@ public class StateCreator extends JmolStateCreator {
                                     int measurementCount, Font font3d,
                                     TickInfo ti) {
     SB commands = new SB();
-    appendCmd(commands, "measures delete");
+    app(commands, "measures delete");
     for (int i = 0; i < measurementCount; i++) {
       Measurement m = mList.get(i);
       int count = m.count;
@@ -1030,11 +1030,11 @@ public class StateCreator extends JmolStateCreator {
       for (int j = 1; j <= count; j++)
         sb.append(" ").append(m.getLabel(j, true, true));
       sb.append("; # " + shape.getInfoAsString(i));
-      appendCmd(commands, sb.toString());
+      app(commands, sb.toString());
     }
-    appendCmd(commands, "select *; set measures "
-        + viewer.getMeasureDistanceUnits());
-    appendCmd(commands, Shape.getFontCommand("measures", font3d));
+    app(commands, "select *; set measures "
+        + vwr.getMeasureDistanceUnits());
+    app(commands, Shape.getFontCommand("measures", font3d));
     int nHidden = 0;
     Map<String, BS> temp = new Hashtable<String, BS>();
     BS bs = BS.newN(measurementCount);
@@ -1053,7 +1053,7 @@ public class StateCreator extends JmolStateCreator {
     }
     if (nHidden > 0)
       if (nHidden == measurementCount)
-        appendCmd(commands, "measures off; # lines and numbers off");
+        app(commands, "measures off; # lines and numbers off");
       else
         for (int i = 0; i < measurementCount; i++)
           if (bs.get(i))
@@ -1068,7 +1068,7 @@ public class StateCreator extends JmolStateCreator {
     String s = getCommands(temp, null, "select measures");
     if (s != null && s.length() != 0) {
       commands.append(s);
-      appendCmd(commands, "select measures ({null})");
+      app(commands, "select measures ({null})");
     }
 
     return commands.toString();
@@ -1081,7 +1081,7 @@ public class StateCreator extends JmolStateCreator {
   @Override
   String getBondState(Shape shape, BS bsOrderSet, boolean reportAll) {
     clearTemp();
-    ModelSet modelSet = viewer.modelSet;
+    ModelSet modelSet = vwr.ms;
     boolean haveTainted = false;
     Bond[] bonds = modelSet.bonds;
     int bondCount = modelSet.bondCount;
@@ -1135,7 +1135,7 @@ public class StateCreator extends JmolStateCreator {
       if (bs.monomerCount > 0) {
         if (!bs.isActive || bs.bsSizeSet == null && bs.bsColixSet == null)
           continue;
-        viewer.getShapeSetState(bs, shape, bs.monomerCount, bs.getMonomers(),
+        vwr.getShapeSetState(bs, shape, bs.monomerCount, bs.getMonomers(),
             bs.bsSizeDefault, temp, temp2);
       }
     }
@@ -1181,7 +1181,7 @@ public class StateCreator extends JmolStateCreator {
       clearTemp();
       Hover h = (Hover) shape;
       if (h.atomFormats != null)
-        for (int i = viewer.getAtomCount(); --i >= 0;)
+        for (int i = vwr.getAtomCount(); --i >= 0;)
           if (h.atomFormats[i] != null)
             BSUtil.setMapBitSet(temp, i, i, "set hoverLabel "
                 + PT.esc(h.atomFormats[i]));
@@ -1256,8 +1256,8 @@ public class StateCreator extends JmolStateCreator {
       break;
     case JC.SHAPE_BALLS:
       clearTemp();
-      int atomCount = viewer.getAtomCount();
-      Atom[] atoms = viewer.modelSet.atoms;
+      int atomCount = vwr.getAtomCount();
+      Atom[] atoms = vwr.ms.atoms;
       Balls balls = (Balls) shape;
       short[] colixes = balls.colixes;
       byte[] pids = balls.paletteIDs;
@@ -1342,7 +1342,7 @@ public class StateCreator extends JmolStateCreator {
           PT.esc(t.script)).append(";\n");
     if (t.modelIndex >= 0)
       s.append("  ").append(echoCmd).append(" model ").append(
-          viewer.getModelNumberDotted(t.modelIndex)).append(";\n");
+          vwr.getModelNumberDotted(t.modelIndex)).append(";\n");
     if (t.pointerPt != null) {
       s.append("  ").append(echoCmd).append(" point ").append(
           t.pointerPt instanceof Atom ? "({" + ((Atom) t.pointerPt).index
@@ -1376,86 +1376,9 @@ public class StateCreator extends JmolStateCreator {
     return s.toString();
   }
 
-  /**
-   * these settings are determined when the file is loaded and are kept even
-   * though they might later change. So we list them here and ALSO let them be
-   * defined in the settings. 10.9.98 missed this.
-   * 
-   * @param htParams
-   * 
-   * @return script command
-   */
-  @Override
-  String getLoadState(Map<String, Object> htParams) {
-    GlobalSettings g = viewer.global;
-
-    // some commands register flags so that they will be 
-    // restored in a saved state definition, but will not execute
-    // now so that there is no chance any embedded scripts or
-    // default load scripts will run and slow things down.
-    SB str = new SB();
-    appendCmd(str, "set allowEmbeddedScripts false");
-    if (g.allowEmbeddedScripts)
-      g.setB("allowEmbeddedScripts", true);
-    appendCmd(str, "set appendNew " + g.appendNew);
-    appendCmd(str, "set appletProxy " + PT.esc(g.appletProxy));
-    appendCmd(str, "set applySymmetryToBonds " + g.applySymmetryToBonds);
-    if (g.atomTypes.length() > 0)
-      appendCmd(str, "set atomTypes " + PT.esc(g.atomTypes));
-    appendCmd(str, "set autoBond " + g.autoBond);
-    //    appendCmd(str, "set autoLoadOrientation " + autoLoadOrientation);
-    if (g.axesOrientationRasmol)
-      appendCmd(str, "set axesOrientationRasmol true");
-    appendCmd(str, "set bondRadiusMilliAngstroms " + g.bondRadiusMilliAngstroms);
-    appendCmd(str, "set bondTolerance " + g.bondTolerance);
-    appendCmd(str, "set defaultLattice " + Escape.eP(g.ptDefaultLattice));
-    appendCmd(str, "set defaultLoadFilter " + PT.esc(g.defaultLoadFilter));
-    appendCmd(str, "set defaultLoadScript \"\"");
-    if (g.defaultLoadScript.length() > 0)
-      g.setS("defaultLoadScript", g.defaultLoadScript);
-    appendCmd(str, "set defaultStructureDssp " + g.defaultStructureDSSP);
-    String sMode = viewer.getDefaultVdwNameOrData(Integer.MIN_VALUE, null, null);
-    appendCmd(str, "set defaultVDW " + sMode);
-    if (sMode.equals("User"))
-      appendCmd(str, viewer
-          .getDefaultVdwNameOrData(Integer.MAX_VALUE, null, null));
-    appendCmd(str, "set forceAutoBond " + g.forceAutoBond);
-    appendCmd(str, "#set defaultDirectory " + PT.esc(g.defaultDirectory));
-    appendCmd(str, "#set loadFormat " + PT.esc(g.loadFormat));
-    appendCmd(str, "#set loadLigandFormat " + PT.esc(g.loadLigandFormat));
-    appendCmd(str, "#set smilesUrlFormat " + PT.esc(g.smilesUrlFormat));
-    appendCmd(str, "#set nihResolverFormat " + PT.esc(g.nihResolverFormat));
-    appendCmd(str, "#set pubChemFormat " + PT.esc(g.pubChemFormat));
-    appendCmd(str, "#set edsUrlFormat " + PT.esc(g.edsUrlFormat));
-    appendCmd(str, "#set edsUrlCutoff " + PT.esc(g.edsUrlCutoff));
-    //    if (autoLoadOrientation)
-    //      appendCmd(str, "set autoLoadOrientation true");
-    appendCmd(str, "set bondingVersion " + g.bondingVersion);
-    appendCmd(str, "set legacyAutoBonding " + g.legacyAutoBonding);
-    appendCmd(str, "set legacyHAddition " + g.legacyHAddition);
-    appendCmd(str, "set minBondDistance " + g.minBondDistance);
-    // these next two might be part of a 2D->3D operation
-    appendCmd(str, "set minimizationCriterion  " + g.minimizationCriterion);
-    appendCmd(str, "set minimizationSteps  " + g.minimizationSteps);
-    appendCmd(
-        str,
-        "set pdbAddHydrogens "
-            + (htParams != null
-                && htParams.get("pdbNoHydrogens") != Boolean.TRUE ? g.pdbAddHydrogens
-                : false));
-    appendCmd(str, "set pdbGetHeader " + g.pdbGetHeader);
-    appendCmd(str, "set pdbSequential " + g.pdbSequential);
-    appendCmd(str, "set percentVdwAtom " + g.percentVdwAtom);
-    appendCmd(str, "set smallMoleculeMaxAtoms " + g.smallMoleculeMaxAtoms);
-    appendCmd(str, "set smartAromatic " + g.smartAromatic);
-    if (g.zeroBasedXyzRasmol)
-      appendCmd(str, "set zeroBasedXyzRasmol true");
-    return str.toString();
-  }
-
   @Override
   String getAllSettings(String prefix) {
-    GlobalSettings g = viewer.global;
+    GlobalSettings g = vwr.g;
     SB commands = new SB();
     String[] list = new String[g.htBooleanParameterFlags.size()
         + g.htNonbooleanParameterValues.size() + g.htUserVariables.size()];
@@ -1483,7 +1406,7 @@ public class StateCreator extends JmolStateCreator {
     for (String key : g.htUserVariables.keySet()) {
       if (prefix == null || key.indexOf(prefix) == 0) {
         SV value = g.htUserVariables.get(key);
-        String s = value.asString();
+        String s = value.escape();
         list[n++] = key + " " + (key.startsWith("@") ? "" : "= ")
             + (value.tok == T.string ? chop(PT.esc(s)) : s);
       }
@@ -1491,7 +1414,7 @@ public class StateCreator extends JmolStateCreator {
     Arrays.sort(list, 0, n);
     for (int i = 0; i < n; i++)
       if (list[i] != null)
-        appendCmd(commands, list[i]);
+        app(commands, list[i]);
     commands.append("\n");
     return commands.toString();
   }
@@ -1549,7 +1472,7 @@ public class StateCreator extends JmolStateCreator {
     if (isStatic || f.length() == 0)
       addFunctions(s, Viewer.staticFunctions, f, isGeneric, namesOnly);
     if (!isStatic || f.length() == 0)
-      addFunctions(s, viewer.localFunctions, f, isGeneric, namesOnly);
+      addFunctions(s, vwr.localFunctions, f, isGeneric, namesOnly);
     return s.toString();
   }
 
@@ -1577,13 +1500,13 @@ public class StateCreator extends JmolStateCreator {
 
   @Override
   String getAtomicPropertyState(byte taintWhat, BS bsSelected) {
-    if (!viewer.global.preserveState)
+    if (!vwr.g.preserveState)
       return "";
     BS bs;
     SB commands = new SB();
     for (byte type = 0; type < AtomCollection.TAINT_MAX; type++)
       if (taintWhat < 0 || type == taintWhat)
-        if ((bs = (bsSelected != null ? bsSelected : viewer
+        if ((bs = (bsSelected != null ? bsSelected : vwr
             .getTaintedAtoms(type))) != null)
           getAtomicPropertyStateBuffer(commands, type, bs, null, null);
     return commands.toString();
@@ -1592,7 +1515,7 @@ public class StateCreator extends JmolStateCreator {
   @Override
   void getAtomicPropertyStateBuffer(SB commands, byte type, BS bs,
                                            String label, float[] fData) {
-    if (!viewer.global.preserveState)
+    if (!vwr.g.preserveState)
       return;
     // see setAtomData()
     SB s = new SB();
@@ -1601,8 +1524,8 @@ public class StateCreator extends JmolStateCreator {
         + " set";
     int n = 0;
     boolean isDefault = (type == AtomCollection.TAINT_COORD);
-    Atom[] atoms = viewer.modelSet.atoms;
-    BS[] tainted = viewer.modelSet.tainted;
+    Atom[] atoms = vwr.ms.atoms;
+    BS[] tainted = vwr.ms.tainted;
     if (bs != null)
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
         s.appendI(i + 1).append(" ").append(atoms[i].getElementSymbol())
@@ -1657,7 +1580,7 @@ public class StateCreator extends JmolStateCreator {
           s.appendI(atoms[i].getValence());
           break;
         case AtomCollection.TAINT_VANDERWAALS:
-          s.appendF(atoms[i].getVanderwaalsRadiusFloat(viewer, EnumVdw.AUTO));
+          s.appendF(atoms[i].getVanderwaalsRadiusFloat(vwr, EnumVdw.AUTO));
           break;
         }
         s.append(" ;\n");
@@ -1697,10 +1620,10 @@ public class StateCreator extends JmolStateCreator {
     case T.redomove:
       switch (n) {
       case -2:
-        viewer.undoClear();
+        vwr.undoClear();
         break;
       case -1:
-        (action == T.undomove ? viewer.actionStates : viewer.actionStatesRedo)
+        (action == T.undomove ? vwr.actionStates : vwr.actionStatesRedo)
             .clear();
         break;
       case 0:
@@ -1708,8 +1631,8 @@ public class StateCreator extends JmolStateCreator {
         //$FALL-THROUGH$
       default:
         if (n > MAX_ACTION_UNDO)
-          n = (action == T.undomove ? viewer.actionStates
-              : viewer.actionStatesRedo).size();
+          n = (action == T.undomove ? vwr.actionStates
+              : vwr.actionStatesRedo).size();
         for (int i = 0; i < n; i++)
           undoMoveActionClear(0, action, true);
       }
@@ -1720,10 +1643,10 @@ public class StateCreator extends JmolStateCreator {
   @Override
   void undoMoveActionClear(int taintedAtom, int type, boolean clearRedo) {
     // called by actionManager
-    if (!viewer.global.preserveState)
+    if (!vwr.g.preserveState)
       return;
-    int modelIndex = (taintedAtom >= 0 ? viewer.modelSet.atoms[taintedAtom].modelIndex
-        : viewer.modelSet.modelCount - 1);
+    int modelIndex = (taintedAtom >= 0 ? vwr.ms.atoms[taintedAtom].modelIndex
+        : vwr.ms.modelCount - 1);
     //System.out.print("undoAction " + type + " " + taintedAtom + " modelkit?"
     //    + modelSet.models[modelIndex].isModelkit());
     //System.out.println(" " + type + " size=" + actionStates.size() + " "
@@ -1734,20 +1657,20 @@ public class StateCreator extends JmolStateCreator {
       // from MouseManager
       // CTRL-Z: type = 1 UNDO
       // CTRL-Y: type = -1 REDO
-      viewer.stopMinimization();
+      vwr.stopMinimization();
       String s = "";
       List<String> list1;
       List<String> list2;
       switch (type) {
       default:
       case T.undomove:
-        list1 = viewer.actionStates;
-        list2 = viewer.actionStatesRedo;
+        list1 = vwr.actionStates;
+        list2 = vwr.actionStatesRedo;
         break;
       case T.redomove:
-        list1 = viewer.actionStatesRedo;
-        list2 = viewer.actionStates;
-        if (viewer.actionStatesRedo.size() == 1)
+        list1 = vwr.actionStatesRedo;
+        list2 = vwr.actionStates;
+        if (vwr.actionStatesRedo.size() == 1)
           return;
         break;
       }
@@ -1755,7 +1678,7 @@ public class StateCreator extends JmolStateCreator {
         return;
       undoWorking = true;
       list2.add(0, list1.remove(0));
-      s = viewer.actionStatesRedo.get(0);
+      s = vwr.actionStatesRedo.get(0);
       if (type == T.undomove && list2.size() == 1) {
         // must save current state, coord, etc.
         // but this destroys actionStatesRedo
@@ -1766,15 +1689,15 @@ public class StateCreator extends JmolStateCreator {
       }
       //System.out.println("redo type = " + type + " size=" + actionStates.size()
       //    + " " + +actionStatesRedo.size());
-      if (viewer.modelSet.models[modelIndex].isModelkit()
+      if (vwr.ms.models[modelIndex].isModelkit()
           || s.indexOf("zap ") < 0) {
         if (Logger.debugging)
-          viewer.log(s);
-        viewer.evalStringQuiet(s);
+          vwr.log(s);
+        vwr.evalStringQuiet(s);
       } else {
         // if it's not modelkit mode and we are trying to do a zap, then ignore
         // and clear all action states.
-        viewer.actionStates.clear();
+        vwr.actionStates.clear();
       }
       break;
     default:
@@ -1785,29 +1708,29 @@ public class StateCreator extends JmolStateCreator {
       SB sb = new SB();
       sb.append("#" + type + " " + taintedAtom + " " + (new Date()) + "\n");
       if (taintedAtom >= 0) {
-        bs = viewer.getModelUndeletedAtomsBitSet(modelIndex);
-        viewer.modelSet.taintAtoms(bs, (byte) type);
+        bs = vwr.getModelUndeletedAtomsBitSet(modelIndex);
+        vwr.ms.taintAtoms(bs, (byte) type);
         sb.append(getAtomicPropertyState((byte) -1, null));
       } else {
-        bs = viewer.getModelUndeletedAtomsBitSet(modelIndex);
+        bs = vwr.getModelUndeletedAtomsBitSet(modelIndex);
         sb.append("zap ");
         sb.append(Escape.eBS(bs)).append(";");
-        getInlineData(sb, viewer.getModelExtract(bs, false, true,
+        getInlineData(sb, vwr.getModelExtract(bs, false, true,
             "MOL"), true, null);
         sb.append("set refreshing false;").append(
-            viewer.actionManager.getPickingState()).append(
-            viewer.tm.getMoveToText(0, false)).append(
+            vwr.actionManager.getPickingState()).append(
+            vwr.tm.getMoveToText(0, false)).append(
             "set refreshing true;");
 
       }
       if (clearRedo) {
-        viewer.actionStates.add(0, sb.toString());
-        viewer.actionStatesRedo.clear();
+        vwr.actionStates.add(0, sb.toString());
+        vwr.actionStatesRedo.clear();
       } else {
-        viewer.actionStatesRedo.add(1, sb.toString());
+        vwr.actionStatesRedo.add(1, sb.toString());
       }
-      if (viewer.actionStates.size() == MAX_ACTION_UNDO) {
-        viewer.actionStates.remove(MAX_ACTION_UNDO - 1);
+      if (vwr.actionStates.size() == MAX_ACTION_UNDO) {
+        vwr.actionStates.remove(MAX_ACTION_UNDO - 1);
       }
     }
     undoWorking = !clearRedo;
@@ -1821,12 +1744,12 @@ public class StateCreator extends JmolStateCreator {
 
   @Override
   void syncScript(String script, String applet, int port) {
-    StatusManager sm = viewer.statusManager;
+    StatusManager sm = vwr.statusManager;
     if (Viewer.SYNC_GRAPHICS_MESSAGE.equalsIgnoreCase(script)) {
       sm.setSyncDriver(StatusManager.SYNC_STEREO);
       sm.syncSend(script, applet, 0);
-      viewer.setBooleanProperty("_syncMouse", false);
-      viewer.setBooleanProperty("_syncScript", false);
+      vwr.setBooleanProperty("_syncMouse", false);
+      vwr.setBooleanProperty("_syncScript", false);
       return;
     }
     // * : all applets
@@ -1863,7 +1786,7 @@ public class StateCreator extends JmolStateCreator {
     if (syncMode != StatusManager.SYNC_DRIVER)
       disableSend = false;
     if (Logger.debugging)
-      Logger.debug(viewer.htmlName + " syncing with script: " + script);
+      Logger.debug(vwr.htmlName + " syncing with script: " + script);
     // driver is being positioned by another driver -- don't pass on the change
     // driver is being positioned by a mouse movement
     // format is from above refresh(2, xxx) calls
@@ -1881,16 +1804,16 @@ public class StateCreator extends JmolStateCreator {
         //$FALL-THROUGH$
       case JC.JSV_SETPEAKS:
       case JC.JSV_SELECT:
-        if ((script = viewer.getJSV().processSync(script, jsvMode)) == null)
+        if ((script = vwr.getJSV().processSync(script, jsvMode)) == null)
           return;
       }
       //System.out.println("Jmol executing script for JSpecView: " + script);
-      viewer.evalStringQuietSync(script, true, false);
+      vwr.evalStringQuietSync(script, true, false);
       return;
     }
     mouseScript(script);
     if (disableSend)
-      viewer.setSyncDriver(StatusManager.SYNC_ENABLE);
+      vwr.setSyncDriver(StatusManager.SYNC_ENABLE);
   }
 
   @Override
@@ -1911,11 +1834,11 @@ public class StateCreator extends JmolStateCreator {
       case 0: //zoombyfactor
         switch (tokens.length) {
         case 3:
-          viewer.zoomByFactor(PT.parseFloat(tokens[2]),
+          vwr.zoomByFactor(PT.parseFloat(tokens[2]),
               Integer.MAX_VALUE, Integer.MAX_VALUE);
           return;
         case 5:
-          viewer.zoomByFactor(PT.parseFloat(tokens[2]), javajs.util.PT
+          vwr.zoomByFactor(PT.parseFloat(tokens[2]), javajs.util.PT
               .parseInt(tokens[3]), PT.parseInt(tokens[4]));
           return;
         }
@@ -1923,46 +1846,46 @@ public class StateCreator extends JmolStateCreator {
       case 15: //zoomby
         switch (tokens.length) {
         case 3:
-          viewer.zoomBy(PT.parseInt(tokens[2]));
+          vwr.zoomBy(PT.parseInt(tokens[2]));
           return;
         }
         break;
       case 30: // rotatezby
         switch (tokens.length) {
         case 3:
-          viewer.rotateZBy(PT.parseInt(tokens[2]), Integer.MAX_VALUE,
+          vwr.rotateZBy(PT.parseInt(tokens[2]), Integer.MAX_VALUE,
               Integer.MAX_VALUE);
           return;
         case 5:
-          viewer.rotateZBy(PT.parseInt(tokens[2]), javajs.util.PT
+          vwr.rotateZBy(PT.parseInt(tokens[2]), javajs.util.PT
               .parseInt(tokens[3]), PT.parseInt(tokens[4]));
         }
         break;
       case 45: // rotatexyby
-        viewer.rotateXYBy(PT.parseFloat(tokens[2]), PT
+        vwr.rotateXYBy(PT.parseFloat(tokens[2]), PT
             .parseFloat(tokens[3]));
         return;
       case 60: // translatexyby
-        viewer.translateXYBy(PT.parseInt(tokens[2]), javajs.util.PT
+        vwr.translateXYBy(PT.parseInt(tokens[2]), javajs.util.PT
             .parseInt(tokens[3]));
         return;
       case 75: // rotatemolecule
-        viewer.rotateSelected(PT.parseFloat(tokens[2]), PT
+        vwr.rotateSelected(PT.parseFloat(tokens[2]), PT
             .parseFloat(tokens[3]), null);
         return;
       case 90:// spinxyby
-        viewer.spinXYBy(PT.parseInt(tokens[2]), PT.parseInt(tokens[3]),
+        vwr.spinXYBy(PT.parseInt(tokens[2]), PT.parseInt(tokens[3]),
             PT.parseFloat(tokens[4]));
         return;
       case 105: // rotatearcball
-        viewer.rotateArcBall(PT.parseInt(tokens[2]), javajs.util.PT
+        vwr.rotateArcBall(PT.parseInt(tokens[2]), javajs.util.PT
             .parseInt(tokens[3]), PT.parseFloat(tokens[4]));
         return;
       }
     } catch (Exception e) {
       //
     }
-    viewer.showString("error reading SYNC command: " + script, false);
+    vwr.showString("error reading SYNC command: " + script, false);
   }
 
 }

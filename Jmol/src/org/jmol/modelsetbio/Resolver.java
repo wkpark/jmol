@@ -49,7 +49,6 @@ import javajs.util.PT;
 import javajs.util.SB;
 import javajs.util.P3;
 import javajs.util.P4;
-import org.jmol.util.Txt;
 import javajs.util.V3;
 import org.jmol.viewer.JC;
 import org.jmol.api.JmolAdapter;
@@ -225,7 +224,7 @@ public final class Resolver implements JmolBioResolver {
     if (nH < 0) {
       if (atomCount - iFirst == 1) // CA or P-only, or simple metals, also HOH, DOD
         return;
-      model = modelSet.viewer.getLigandModel(group3, "ligand_", "_data", null);
+      model = modelSet.vwr.getLigandModel(group3, "ligand_", "_data", null);
       if (model == null)
         return;
       nH = adapter.getHydrogenAtomCount(model);
@@ -249,7 +248,7 @@ public final class Resolver implements JmolBioResolver {
       return;
     String[][] bondInfo;
     if (model == null) {
-      bondInfo = modelSet.viewer.getPdbBondInfo(group3);
+      bondInfo = modelSet.vwr.getPdbBondInfo(group3);
     } else {
       bondInfo = getLigandBondInfo(adapter, model, group3);
     }
@@ -356,7 +355,7 @@ public final class Resolver implements JmolBioResolver {
   
   @Override
   public void finalizeHydrogens() {
-    modelSet.viewer.getLigandModel(null, null, null, null);
+    modelSet.vwr.getLigandModel(null, null, null, null);
     finalizePdbMultipleBonds();
     addHydrogens();
   }
@@ -615,7 +614,7 @@ public final class Resolver implements JmolBioResolver {
         lastData = aData[pt++];
       newData[iAtom] = lastData;
     }
-    return Txt.join(newData, '\n', 0);
+    return PT.join(newData, '\n', 0);
   }
 
   static BioPolymer allocateBioPolymer(Group[] groups, int firstGroupIndex,

@@ -39,8 +39,8 @@ public class BbcageRenderer extends CageRenderer {
     Bbcage bbox = (Bbcage) shape;
     // no translucent bounding box
     if (bbox.isVisible && (isExport || g3d.checkTranslucent(false))
-        && !viewer.isJmolDataFrame()) {
-      colix = viewer.getObjectColix(StateManager.OBJ_BOUNDBOX);
+        && !vwr.isJmolDataFrame()) {
+      colix = vwr.getObjectColix(StateManager.OBJ_BOUNDBOX);
       renderCage(bbox.mad, modelSet.getBboxVertices(), null, 0, 0xFF, 0xFF, 1);
     }
     return false;

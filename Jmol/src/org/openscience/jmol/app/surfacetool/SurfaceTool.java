@@ -54,7 +54,7 @@ public class SurfaceTool {
 
   private SurfaceToolGUI gui;
   boolean useGUI;
-  protected JmolViewer viewer;
+  protected JmolViewer vwr;
   private final P3 negCorner = new P3();
   private final P3 posCorner = new P3();
   private final P3 center = new P3();
@@ -72,9 +72,9 @@ public class SurfaceTool {
   private String[] angleUnitsList = { GT._("Degrees"), GT._("Radians"),
       GT._("Gradians"), GT._("Circle Fraction"), GT._("Units of Pi") };
 
-  public SurfaceTool(JmolViewer viewer, HistoryFile hfile, String winName,
+  public SurfaceTool(JmolViewer vwr, HistoryFile hfile, String winName,
       boolean useGUI) {
-    this.viewer = viewer;
+    this.vwr = vwr;
     this.useGUI = useGUI;
     //initialization must occur before a new gui
     //initialize to match the boundbox
@@ -82,7 +82,7 @@ public class SurfaceTool {
     chooseBestBoundBox();
     setSurfaceToolParam();
     initSlice();
-    gui = (useGUI ? new SurfaceToolGUI(viewer, hfile, winName, this) : null);
+    gui = (useGUI ? new SurfaceToolGUI(vwr, hfile, winName, this) : null);
   }
 
   public void toFront() {
@@ -102,12 +102,12 @@ public class SurfaceTool {
     //added to the script so do with call to script
 
     BoxInfo box = new BoxInfo();
-    viewer.calcAtomsMinMax(null, box);
+    vwr.calcAtomsMinMax(null, box);
     center.setT(box.getBoundBoxCenter());
     boxVec.setT(box.getBoundBoxCornerVector());
     posCorner.add2(center, boxVec);
     negCorner.sub2(center, boxVec);
-    Shape[] shapes = (Shape[]) viewer.getProperty("DATA_API", "shapeManager",
+    Shape[] shapes = (Shape[]) vwr.getProperty("DATA_API", "shapeManager",
         "getShapes");
     //now iterate through all the shapes and get their XYZmin and XYZmax.  Expand
     //Boundbox used by SurfaceTool to encompass these.
@@ -163,7 +163,7 @@ public class SurfaceTool {
   }
 
   private void updateSurfaceInfo() {
-    Shape[] shapes = (Shape[]) viewer.getProperty("DATA_API", "shapeManager",
+    Shape[] shapes = (Shape[]) vwr.getProperty("DATA_API", "shapeManager",
         "getShapes");
     setSyncStarting();
     updateMeshInfo(shapes, JC.SHAPE_ISOSURFACE);
@@ -291,7 +291,7 @@ public class SurfaceTool {
     SB cmd = new SB();
     drawSlicePlane(cmd, T.left, onOrOff);
     drawSlicePlane(cmd, T.right, onOrOff);
-    viewer.evalStringQuiet(cmd.toString());
+    vwr.evalStringQuiet(cmd.toString());
   }
 
   /**
@@ -441,7 +441,7 @@ public class SurfaceTool {
     cmd.append(slabCapStr).append(ghostStr)
         .append(Escape.e(slice.rightPlane));
     cmd.append(";");
-    viewer.evalStringQuiet(cmd.toString());
+    vwr.evalStringQuiet(cmd.toString());
     return;
   }
 

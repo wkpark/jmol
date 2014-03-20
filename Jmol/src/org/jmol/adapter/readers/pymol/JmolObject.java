@@ -143,13 +143,13 @@ class JmolObject {
     switch (id) {
     case T.hidden:
       // bsHidden
-      sm.viewer.displayAtoms(bsAtoms, false, false, T.add, true);
+      sm.vwr.displayAtoms(bsAtoms, false, false, T.add, true);
       return;
     case T.restrict:
       // start of generating shapes; argb is modelIndex
-      BS bs = sm.viewer.getModelUndeletedAtomsBitSet(argb);
-      BSUtil.invertInPlace(bs, sm.viewer.getAtomCount());
-      sm.viewer.select(bs, false, 0, true);
+      BS bs = sm.vwr.getModelUndeletedAtomsBitSet(argb);
+      BSUtil.invertInPlace(bs, sm.vwr.getAtomCount());
+      sm.vwr.select(bs, false, 0, true);
       sm.restrictSelected(false, true);
       return;
     case T.display:
@@ -157,32 +157,32 @@ class JmolObject {
       // from PyMOLScene after restore scene
       if (bsAtoms == null) {
         if (info == null) {
-          sm.viewer.displayAtoms(null, true, false, 0, true);
+          sm.vwr.displayAtoms(null, true, false, 0, true);
         }
-        sm.viewer.setObjectProp((String) info, id);
+        sm.vwr.setObjectProp((String) info, id);
       } else {
-        sm.viewer.displayAtoms(bsAtoms, id == T.display, false, T.add, true);
+        sm.vwr.displayAtoms(bsAtoms, id == T.display, false, T.add, true);
       }
       return;
     case T.define:
       // executed even for states
-      sm.viewer.defineAtomSets((Map<String, Object>) info);
+      sm.vwr.defineAtomSets((Map<String, Object>) info);
       return;
     case T.movie:
-      sm.viewer.setMovie((Map<String, Object>) info);
+      sm.vwr.setMovie((Map<String, Object>) info);
       return;
     case T.frame:
       int frame = ((Integer) info).intValue();
       if (frame >= 0) {
-        sm.viewer.setCurrentModelIndex(frame);
+        sm.vwr.setCurrentModelIndex(frame);
       } else {
-        sm.viewer.setAnimationRange(-1, -1);
-        sm.viewer.setCurrentModelIndex(-1);
+        sm.vwr.setAnimationRange(-1, -1);
+        sm.vwr.setCurrentModelIndex(-1);
       }
       return;
     case T.scene:
-      sm.viewer.saveScene(jmolName, (Map<String, Object>) info);
-      sm.viewer.saveOrientation(jmolName,
+      sm.vwr.saveScene(jmolName, (Map<String, Object>) info);
+      sm.vwr.saveOrientation(jmolName,
           (float[]) ((Map<String, Object>) info).get("pymolView"));
       return;
     case JC.SHAPE_LABELS:
@@ -215,7 +215,7 @@ class JmolObject {
       break;
     case JC.SHAPE_DOTS:
       sm.loadShape(id);
-      sm.setShapePropertyBs(id, "ignore", BSUtil.copyInvert(bsAtoms, sm.viewer
+      sm.setShapePropertyBs(id, "ignore", BSUtil.copyInvert(bsAtoms, sm.vwr
           .getAtomCount()), null);
       break;
     default:
@@ -226,7 +226,7 @@ class JmolObject {
 
     switch (id) {
     case JC.SHAPE_CGO:
-      sm.viewer.setCGO((List<Object>) info);
+      sm.vwr.setCGO((List<Object>) info);
       break;
     case JC.SHAPE_DOTS:
     case JC.SHAPE_BALLS:
@@ -256,13 +256,13 @@ class JmolObject {
       sID = (bsAtoms == null ? (String) info : jmolName);
       // when getting a scene, ignore creation of this surface
       if (sm.getShapeIdFromObjectName(sID) >= 0) {
-        sm.viewer.setObjectProp(sID, T.display);
+        sm.vwr.setObjectProp(sID, T.display);
         return;
       }
       sb = new SB();
       sb.append("isosurface ID ").append(PT.esc(sID));
       if (modelIndex < 0)
-        modelIndex = sm.viewer.getCurrentModelIndex();
+        modelIndex = sm.vwr.getCurrentModelIndex();
       if (bsAtoms == null) {
         // point display of map 
         sb.append(" model ")
@@ -286,7 +286,7 @@ class JmolObject {
         }
         boolean haveMep = PT.isOneOf(sID, mepList);
         String model = m.models[modelIndex].getModelNumberDotted();
-        //        BS bsIgnore = sm.viewer.getAtomsWithinRadius(0.1f, bsAtoms, true, 
+        //        BS bsIgnore = sm.vwr.getAtomsWithinRadius(0.1f, bsAtoms, true, 
         //            new RadiusData(null, 0.1f, EnumType.ABSOLUTE, null));
         //        bsIgnore.andNot(bsAtoms);
         //        String ignore = " ignore " + Escape.eBS(bsIgnore);
@@ -328,7 +328,7 @@ class JmolObject {
         sb.append(";isosurface cache");
       break;
     case T.mesh:
-      modelIndex = sm.viewer.getCurrentModelIndex();
+      modelIndex = sm.vwr.getCurrentModelIndex();
       List<Object> mesh = (List<Object>) info;
       sID = mesh.get(mesh.size() - 2).toString();
       sb = new SB();
@@ -363,7 +363,7 @@ class JmolObject {
     }
     if (sb != null) {
       //System.out.println("jmolobject " + sb);
-      sm.viewer.runScript(sb.toString());
+      sm.vwr.runScript(sb.toString());
       return;
     }
     // cartoon, trace, etc.

@@ -63,22 +63,22 @@ public class FileDropper implements DropTargetListener {
 
   static public final String FD_PROPERTY_INLINE = "inline";
 
-  JmolViewer viewer;
+  JmolViewer vwr;
   PropertyChangeListener pcl;
   JmolStatusListener statusListener;
 
-  public FileDropper(JmolStatusListener statusListener, JmolViewer viewer) {
+  public FileDropper(JmolStatusListener statusListener, JmolViewer vwr) {
     this.statusListener = statusListener;
     fd_oldFileName = "";
     fd_propSupport = new PropertyChangeSupport(this);
-    this.viewer = viewer;
+    this.vwr = vwr;
     addPropertyChangeListener((pcl = new PropertyChangeListener() {
       @Override
       public void propertyChange(PropertyChangeEvent evt) {
         doDrop(evt);
       }
     }));
-    Component display = (Component) viewer.getDisplay();
+    Component display = (Component) vwr.getDisplay();
     display.setDropTarget(new DropTarget(display, this));
     display.setEnabled(true);
     System.out.println("File dropper enabled for " + display);
@@ -86,7 +86,7 @@ public class FileDropper implements DropTargetListener {
 
   public void dispose() {
     removePropertyChangeListener(pcl);
-    viewer = null;
+    vwr = null;
     System.out.println("File dropper disposed.");
   }
 
@@ -96,14 +96,14 @@ public class FileDropper implements DropTargetListener {
       fname = (fname.startsWith("/") ? "file://" : "file:///") + fname;
     if (statusListener != null) {
       try {
-        String data = viewer.getEmbeddedFileState(fname);
+        String data = vwr.getEmbeddedFileState(fname);
         if (data.indexOf("preferredWidthHeight") >= 0)
           statusListener.resizeInnerPanel(data);
       } catch (Throwable e) {
         // ignore
       }
     }
-    viewer.openFileAsyncSpecial(fname, 1);
+    vwr.openFileAsyncSpecial(fname, 1);
   }
 
   private void loadFiles(List<File> fileList) {
@@ -117,13 +117,13 @@ public class FileDropper implements DropTargetListener {
           PT.esc(fname)).append(";\n");
     }
     sb.append("frame *;reset;");
-    viewer.script(sb.toString());
+    vwr.script(sb.toString());
   }
 
   protected void doDrop(PropertyChangeEvent evt) {
     // new event, because we open the file directly. Not sure this has been tested
     if (evt.getPropertyName() == FD_PROPERTY_INLINE) {
-      viewer.openStringInline((String) evt.getNewValue());
+      vwr.openStringInline((String) evt.getNewValue());
     }
   }
 

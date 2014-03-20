@@ -52,7 +52,7 @@ class ColorManager {
    */
 
   ColorEncoder propertyColorEncoder = new ColorEncoder(null);
-  private Viewer viewer;
+  private Viewer vwr;
   private GData g3d;
 
   // for atoms -- color CPK:
@@ -64,8 +64,8 @@ class ColorManager {
 
   private float[] colorData;
 
-  ColorManager(Viewer viewer, GData gdata) {
-    this.viewer = viewer;
+  ColorManager(Viewer vwr, GData gdata) {
+    this.vwr = vwr;
     g3d = gdata;
     argbsCpk = EnumPalette.argbsCpk;
     altArgbsCpk = AU.arrayCopyRangeI(JC.altArgbsCpk, 0, -1);
@@ -170,7 +170,7 @@ class ColorManager {
     case StaticConstants.PALETTE_TEMP:
     case StaticConstants.PALETTE_FIXEDTEMP:
       if (pid == StaticConstants.PALETTE_TEMP) {
-        modelSet = viewer.getModelSet();
+        modelSet = vwr.getModelSet();
         lo = modelSet.getBfactor100Lo();
         hi = modelSet.getBfactor100Hi();
       } else {
@@ -184,7 +184,7 @@ class ColorManager {
           atom.getGroupParameter(T.straightness), -1, 1, ColorEncoder.BWR,
           false);
     case StaticConstants.PALETTE_SURFACE:
-      hi = viewer.getSurfaceDistanceMax();
+      hi = vwr.getSurfaceDistanceMax();
       return propertyColorEncoder.getColorIndexFromPalette(
           atom.getSurfaceDistance100(), 0, hi, ColorEncoder.BWR, false);
     case StaticConstants.PALETTE_AMINO:
@@ -194,7 +194,7 @@ class ColorManager {
       return propertyColorEncoder.getColorIndexFromPalette(atom.getGroupID(),
           0, 0, ColorEncoder.SHAPELY, false);
     case StaticConstants.PALETTE_GROUP:
-      // viewer.calcSelectedGroupsCount() must be called first ...
+      // vwr.calcSelectedGroupsCount() must be called first ...
       // before we call getSelectedGroupCountWithinChain()
       // or getSelectedGropuIndexWithinChain
       // however, do not call it here because it will get recalculated
@@ -205,24 +205,24 @@ class ColorManager {
           atom.getSelectedGroupCountWithinChain() - 1, ColorEncoder.BGYOR,
           false);
     case StaticConstants.PALETTE_POLYMER:
-      Model m = viewer.getModelSet().models[atom.modelIndex];
+      Model m = vwr.getModelSet().models[atom.modelIndex];
       return propertyColorEncoder.getColorIndexFromPalette(
           atom.getPolymerIndexInModel(), 0, m.getBioPolymerCount() - 1,
           ColorEncoder.BGYOR, false);
     case StaticConstants.PALETTE_MONOMER:
-      // viewer.calcSelectedMonomersCount() must be called first ...
+      // vwr.calcSelectedMonomersCount() must be called first ...
       return propertyColorEncoder.getColorIndexFromPalette(
           atom.getSelectedMonomerIndexWithinPolymer(), 0,
           atom.getSelectedMonomerCountWithinPolymer() - 1, ColorEncoder.BGYOR,
           false);
     case StaticConstants.PALETTE_MOLECULE:
-      modelSet = viewer.getModelSet();
+      modelSet = vwr.getModelSet();
       return propertyColorEncoder.getColorIndexFromPalette(
           modelSet.getMoleculeIndex(atom.index, true), 0,
           modelSet.getMoleculeCountInModel(atom.getModelIndex()) - 1,
           ColorEncoder.ROYGB, false);
     case StaticConstants.PALETTE_ALTLOC:
-      modelSet = viewer.getModelSet();
+      modelSet = vwr.getModelSet();
       //very inefficient!
       modelIndex = atom.getModelIndex();
       return propertyColorEncoder
@@ -232,7 +232,7 @@ class ColorManager {
               modelSet.getAltLocCountInModel(modelIndex), ColorEncoder.ROYGB,
               false);
     case StaticConstants.PALETTE_INSERTION:
-      modelSet = viewer.getModelSet();
+      modelSet = vwr.getModelSet();
       //very inefficient!
       modelIndex = atom.getModelIndex();
       return propertyColorEncoder.getColorIndexFromPalette(

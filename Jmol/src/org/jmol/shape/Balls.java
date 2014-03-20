@@ -42,7 +42,7 @@ public class Balls extends AtomShape {
     for (int i = bsSelected.nextSetBit(0); i >= 0 && i < bsLength; i = bsSelected
         .nextSetBit(i + 1)) {
       Atom atom = atoms[i];
-      atom.setMadAtom(viewer, rd);
+      atom.setMadAtom(vwr, rd);
       bsSizeSet.set(i);
     }
   }
@@ -124,7 +124,7 @@ public class Balls extends AtomShape {
 
   @Override
   public void setModelClickability() {
-    BS bsDeleted = viewer.getDeletedAtoms();
+    BS bsDeleted = vwr.getDeletedAtoms();
     for (int i = atomCount; --i >= 0;) {
       Atom atom = atoms[i];
       atom.setClickable(0);
@@ -138,15 +138,15 @@ public class Balls extends AtomShape {
 
   @Override
   public String getShapeState() {
-    return viewer.getShapeState(this);
+    return vwr.getShapeState(this);
   }
 
   /*
   boolean checkObjectHovered(int x, int y) {
     //just for debugging
-    if (!viewer.getNavigationMode())
+    if (!vwr.getNavigationMode())
       return false;
-    viewer.hoverOn(x, y, x + " " + y);
+    vwr.hoverOn(x, y, x + " " + y);
     return true;
   }
   */

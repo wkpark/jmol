@@ -7,12 +7,12 @@ import org.jmol.script.ScriptContext;
 
 public class InputScannerThread extends Thread {
  
-  private JmolViewer viewer;
+  private JmolViewer vwr;
   private Scanner scanner;
   private boolean isSilent;
 
-  InputScannerThread(JmolViewer viewer, boolean isSilent) {
-    this.viewer = viewer;
+  InputScannerThread(JmolViewer vwr, boolean isSilent) {
+    this.vwr = vwr;
     this.isSilent = isSilent;
     start();
   }
@@ -37,7 +37,7 @@ public class InputScannerThread extends Thread {
           s = s.substring(0, s.length() - 1);
           if (s.toLowerCase().equals("exitjmol"))
             System.exit(0);
-          if (viewer.checkHalt(s, false)) {
+          if (vwr.checkHalt(s, false)) {
             buffer = new StringBuilder();
             s = "";
           }
@@ -68,7 +68,7 @@ public class InputScannerThread extends Thread {
     String s = buffer.toString();
     if (s.length() == 1)
       return false;
-    Object ret = viewer.scriptCheck(s);
+    Object ret = vwr.scriptCheck(s);
     if (ret instanceof String) {
       s = (String) ret;
       if (s.indexOf("missing END") >= 0)
@@ -85,9 +85,9 @@ public class InputScannerThread extends Thread {
     buffer = new StringBuilder();
     s += "\1##noendcheck";
     if (isSilent)
-      viewer.evalStringQuiet(s);
+      vwr.evalStringQuiet(s);
     else
-      viewer.evalString(s);
+      vwr.evalString(s);
     return true;
   }
 }

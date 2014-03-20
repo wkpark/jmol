@@ -60,16 +60,16 @@ public class AxesRenderer extends FontLineShapeRenderer {
   @Override
   protected boolean render() {
     Axes axes = (Axes) shape;
-    int mad = viewer.getObjectMad(StateManager.OBJ_AXIS1);
+    int mad = vwr.getObjectMad(StateManager.OBJ_AXIS1);
     // no translucent axes
     if (mad == 0 || !g3d.checkTranslucent(false))
       return false;
     boolean isXY = (axes.axisXY.z != 0);
-    if (!isXY && viewer.isNavigating() && viewer.getBoolean(T.navigationperiodic))
+    if (!isXY && vwr.isNavigating() && vwr.getBoolean(T.navigationperiodic))
       return false;
-    EnumAxesMode axesMode = viewer.getAxesMode();
-    imageFontScaling = viewer.getImageFontScaling();
-    if (viewer.areAxesTainted()) {
+    EnumAxesMode axesMode = vwr.getAxesMode();
+    imageFontScaling = vwr.getImageFontScaling();
+    if (vwr.areAxesTainted()) {
       Font f = axes.font3d;
       axes.initShape();
       if (f != null)
@@ -77,15 +77,15 @@ public class AxesRenderer extends FontLineShapeRenderer {
     }
     font3d = g3d.getFont3DScaled(axes.font3d, imageFontScaling);
 
-    int modelIndex = viewer.getCurrentModelIndex();
+    int modelIndex = vwr.getCurrentModelIndex();
     // includes check here for background model present
     boolean isUnitCell = (axesMode == EnumAxesMode.UNITCELL);
-    if (viewer.isJmolDataFrameForModel(modelIndex)
-        && !viewer.getModelSet().getJmolFrameType(modelIndex).equals(
+    if (vwr.isJmolDataFrameForModel(modelIndex)
+        && !vwr.getModelSet().getJmolFrameType(modelIndex).equals(
             "plot data"))
       return false;
     if (isUnitCell && modelIndex < 0) {
-      if (viewer.getCurrentUnitCell() == null)
+      if (vwr.getCurrentUnitCell() == null)
         return false;
     }
     int nPoints = 6;
@@ -98,14 +98,14 @@ public class AxesRenderer extends FontLineShapeRenderer {
       labelPtr = 9;
     } else if (axesMode == EnumAxesMode.BOUNDBOX) {
       nPoints = 6;
-      labelPtr = (viewer.getBoolean(T.axesorientationrasmol) ? 15 : 9);
+      labelPtr = (vwr.getBoolean(T.axesorientationrasmol) ? 15 : 9);
     }
     if (axes.labels != null) {
       if (nPoints != 3)
         nPoints = (axes.labels.length < 6 ? 3 : 6);
       labelPtr = -1;
     }
-    boolean isDataFrame = viewer.isJmolDataFrame();
+    boolean isDataFrame = vwr.isJmolDataFrame();
 
     int slab = g3d.getSlab();
     int diameter = mad;
@@ -124,14 +124,14 @@ public class AxesRenderer extends FontLineShapeRenderer {
           diameter += diameter;
       }
       g3d.setSlab(0);
-      pt0i.setT(viewer.transformPt(axes.axisXY));
+      pt0i.setT(vwr.transformPt(axes.axisXY));
       originScreen.set(pt0i.x, pt0i.y, pt0i.z);
-      float zoomDimension = viewer.getScreenDim();
+      float zoomDimension = vwr.getScreenDim();
       float scaleFactor = zoomDimension / 10f * axes.scale;
       if (g3d.isAntialiased())
         scaleFactor *= 2;
       for (int i = 0; i < 3; i++) {
-        viewer.rotatePoint(axes.getAxisPoint(i, false), screens[i]);
+        vwr.rotatePoint(axes.getAxisPoint(i, false), screens[i]);
         screens[i].z *= -1;
         screens[i].scaleAdd2(scaleFactor, screens[i], originScreen);
       }
@@ -144,16 +144,16 @@ public class AxesRenderer extends FontLineShapeRenderer {
         }
         atomA.setT(axes.getOriginPoint(isDataFrame));
       }
-      viewer.transformPtNoClip(axes.getOriginPoint(isDataFrame), originScreen);
+      vwr.transformPtNoClip(axes.getOriginPoint(isDataFrame), originScreen);
       diameter = getDiameter((int) originScreen.z, mad);
       for (int i = nPoints; --i >= 0;)
-        viewer.transformPtNoClip(axes.getAxisPoint(i, isDataFrame), screens[i]);
+        vwr.transformPtNoClip(axes.getAxisPoint(i, isDataFrame), screens[i]);
     }
     float xCenter = originScreen.x;
     float yCenter = originScreen.y;
-    colixes[0] = viewer.getObjectColix(StateManager.OBJ_AXIS1);
-    colixes[1] = viewer.getObjectColix(StateManager.OBJ_AXIS2);
-    colixes[2] = viewer.getObjectColix(StateManager.OBJ_AXIS3);
+    colixes[0] = vwr.getObjectColix(StateManager.OBJ_AXIS1);
+    colixes[1] = vwr.getObjectColix(StateManager.OBJ_AXIS2);
+    colixes[2] = vwr.getObjectColix(StateManager.OBJ_AXIS3);
     for (int i = nPoints; --i >= 0;) {
       colix = colixes[i % 3];
       g3d.setColix(colix);
@@ -179,7 +179,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
       String label0 = (axes.labels == null || axes.labels.length == 3 || axes.labels[3] == null ? "0"
           : axes.labels[3]);
       if (label0 != null && label0.length() != 0) {
-        colix = viewer.getColixBackgroundContrast();
+        colix = vwr.getColixBackgroundContrast();
         g3d.setColix(colix);
         renderLabel(label0, originScreen.x, originScreen.y, originScreen.z,
             xCenter, yCenter);

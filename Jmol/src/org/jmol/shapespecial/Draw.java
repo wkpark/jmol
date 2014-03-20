@@ -180,7 +180,7 @@ public void initShape() {
     if ("lineData" == propertyName) {
       lineData = new  List<P3[]>();
       if (indicatedModelIndex < 0)
-        indicatedModelIndex = viewer.getCurrentModelIndex();
+        indicatedModelIndex = vwr.getCurrentModelIndex();
       float[] fdata = (float[]) value;
       int n = fdata.length / 6;
       for (int i = 0, pt = 0; i < n; i++)
@@ -194,7 +194,7 @@ public void initShape() {
     if ("modelIndex" == propertyName) {
       //from saved state -- used to set modelVertices
       indicatedModelIndex = ((Integer) value).intValue();
-      if (indicatedModelIndex < 0 || indicatedModelIndex >= viewer.getModelCount())
+      if (indicatedModelIndex < 0 || indicatedModelIndex >= vwr.getModelCount())
         return;
       vData.addLast(new Object[] { Integer.valueOf(PT_MODEL_INDEX),
           (modelInfo = new int[] { indicatedModelIndex, 0 }) });
@@ -365,7 +365,7 @@ public void initShape() {
       vData.addLast(new Object[] { Integer.valueOf(PT_BITSET), bsAtoms });
       //nbitsets++;
       if (isCircle && diameter == 0 && width == 0)
-        width = viewer.calcRotationRadiusBs(bsAtoms) * 2.0f;
+        width = vwr.calcRotationRadiusBs(bsAtoms) * 2.0f;
       return;
     }
 
@@ -548,13 +548,13 @@ protected void resetObjects() {
     if (polygon == null && (lineData != null ? lineData.size() == 0 : (vData.size() == 0) == (connections == null))
         || !isArrow && connections != null)
       return false;  // connections only for arrows at this point
-    int modelCount = viewer.getModelCount();
+    int modelCount = vwr.getModelCount();
     if (polygon != null || lineData != null || indicatedModelIndex < 0
         && (isFixed || isArrow || isCurve || isCircle || isCylinder || modelCount == 1)) {
       // make just ONE copy 
       // arrows and curves simply can't be handled as
       // multiple frames yet
-      thisMesh.modelIndex = (lineData == null ? viewer.getCurrentModelIndex() : indicatedModelIndex);
+      thisMesh.modelIndex = (lineData == null ? vwr.getCurrentModelIndex() : indicatedModelIndex);
       thisMesh.isFixed = (isFixed || lineData == null && thisMesh.modelIndex < 0 && modelCount > 1);
       if (isFixed && modelCount > 1)
         thisMesh.modelIndex = -1;
@@ -604,7 +604,7 @@ protected void resetObjects() {
         thisMesh.modelFlags.set(indicatedModelIndex);
         indicatedModelIndex = -1;
       } else {
-        BS bsModels = viewer.getVisibleFramesBitSet();
+        BS bsModels = vwr.getVisibleFramesBitSet();
         for (int iModel = 0; iModel < modelCount; iModel++) {
           if (bsModels.get(iModel) && setPoints(iModel, -1)) {
             setPoints(iModel, nPoints);
@@ -655,7 +655,7 @@ protected void resetObjects() {
     } else if (plane != null && intersectID != null) {
       List<P3[]> vData = new  List<P3[]>();
       Object[] data = new Object[] { intersectID, plane, vData, null };
-      viewer.getShapePropertyData(JC.SHAPE_ISOSURFACE, "intersectPlane",
+      vwr.getShapePropertyData(JC.SHAPE_ISOSURFACE, "intersectPlane",
           data);
       if (vData.size() == 0)
         return;
@@ -704,13 +704,13 @@ protected void resetObjects() {
     if (makePoints) {
       ptList = new P3[Math.max(5,n)];
       if (bsAllModels == null)
-        bsAllModels = viewer.getVisibleFramesBitSet();
+        bsAllModels = vwr.getVisibleFramesBitSet();
     }
     nPoints = 0;
     int nData = vData.size();
     int modelIndex = 0;
     BS bs;
-    BS bsModel = (iModel < 0 ? null : viewer.getModelUndeletedAtomsBitSet(iModel));
+    BS bsModel = (iModel < 0 ? null : vwr.getModelUndeletedAtomsBitSet(iModel));
     for (int i = 0; i < nData; i++) {
       Object[] info = vData.get(i);
       switch (((Integer) info[0]).intValue()) {
@@ -746,7 +746,7 @@ protected void resetObjects() {
         if (bsModel != null)
           bs.and(bsModel);
         if (bs.length() > 0)
-          addPoint(viewer.getAtomSetCenter(bs), (makePoints ? iModel : -1));
+          addPoint(vwr.getAtomSetCenter(bs), (makePoints ? iModel : -1));
         break;
       case PT_IDENTIFIER:
         int[] idInfo = (int[]) info[1];
@@ -796,7 +796,7 @@ protected void resetObjects() {
               if (bsModel != null)
                 bs.and(bsModel);
               if (bs.length() > 0)
-                addPoint(viewer.getAtomSetCenter(bs), j);
+                addPoint(vwr.getAtomSetCenter(bs), j);
             }
           }
         break;
@@ -1120,8 +1120,8 @@ protected void resetObjects() {
   public Map<String, Object> checkObjectClicked(int x, int y, int action,
                                                 BS bsVisible,
                                                 boolean drawPicking) {
-    boolean isPickingMode = (viewer.getPickingMode() == ActionManager.PICKING_DRAW);
-    boolean isSpinMode = (viewer.getPickingMode() == ActionManager.PICKING_SPIN);
+    boolean isPickingMode = (vwr.getPickingMode() == ActionManager.PICKING_DRAW);
+    boolean isSpinMode = (vwr.getPickingMode() == ActionManager.PICKING_SPIN);
     if (!isPickingMode && !drawPicking && !isSpinMode
         || C.isColixTranslucent(colix))
       return null;
@@ -1144,15 +1144,15 @@ protected void resetObjects() {
         || pickedMesh.polygonIndexes[pickedModel][0] == pickedMesh.polygonIndexes[pickedModel][1]) {
       return map;
     }
-    boolean isClockwise = viewer.isBound(action,
+    boolean isClockwise = vwr.isBound(action,
         ActionManager.ACTION_spinDrawObjectCW);
     if (pickedVertex == 0) {
-      viewer.startSpinningAxis(
+      vwr.startSpinningAxis(
           pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][1]],
           pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][0]],
           isClockwise);
     } else {
-      viewer.startSpinningAxis(
+      vwr.startSpinningAxis(
           pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][0]],
           pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][1]],
           isClockwise);
@@ -1162,7 +1162,7 @@ protected void resetObjects() {
 
   @Override
   public boolean checkObjectHovered(int x, int y, BS bsVisible) {
-    if (!viewer.getDrawHover())
+    if (!vwr.getDrawHover())
       return false;
     if (C.isColixTranslucent(colix))
       return false;
@@ -1177,7 +1177,7 @@ protected void resetObjects() {
         : pickedMesh.title[0]);
     if (s.length() > 1 && s.charAt(0) == '>')
       s = s.substring(1);
-    viewer.hoverOnPt(x, y, s, pickedMesh.thisID, pickedPt);
+    vwr.hoverOnPt(x, y, s, pickedMesh.thisID, pickedPt);
     return true;
   }
 
@@ -1186,11 +1186,11 @@ protected void resetObjects() {
                                                  int y, int dragAction,
                                                  BS bsVisible) {
     //TODO -- can dispense with this first check:
-    if (viewer.getPickingMode() != ActionManager.PICKING_DRAW)
+    if (vwr.getPickingMode() != ActionManager.PICKING_DRAW)
       return false;
-    boolean moveAll = viewer.isBound(dragAction,
+    boolean moveAll = vwr.isBound(dragAction,
         ActionManager.ACTION_dragDrawObject);
-    boolean movePoint = viewer.isBound(dragAction,
+    boolean movePoint = vwr.isBound(dragAction,
         ActionManager.ACTION_dragDrawPoint);
     if (!moveAll && !movePoint)
       return false;
@@ -1225,10 +1225,10 @@ protected void resetObjects() {
     P3 coord = P3.newP(mesh.altVertices == null ? mesh.vertices[ptVertex] : (P3) mesh.altVertices[ptVertex]);
     P3 newcoord = new P3();
     V3 move = new V3();
-    viewer.transformPt3f(coord, pt);
+    vwr.transformPt3f(coord, pt);
     pt.x = x;
     pt.y = y;
-    viewer.unTransformPoint(pt, newcoord);
+    vwr.unTransformPoint(pt, newcoord);
     move.sub2(newcoord, coord);
     if (mesh.isTriangleSet)
       iVertex = ptVertex; // operate on entire set of vertices, not just the
@@ -1272,7 +1272,7 @@ protected void resetObjects() {
       DrawMesh m = dmeshes[i];
       if (m.visibilityFlags != 0) {
         int mCount = (m.isTriangleSet ? m.polygonCount
-            : m.modelFlags == null ? 1 : viewer.getModelCount());
+            : m.modelFlags == null ? 1 : vwr.getModelCount());
         for (int iModel = mCount; --iModel >= 0;) {
           if (m.modelFlags != null
               && !m.modelFlags.get(iModel)
@@ -1330,9 +1330,9 @@ protected void resetObjects() {
         && dmesh.drawVertexCount == 0 && dmesh.drawVertexCounts == null)
       return "";
     SB str = new SB();
-    int modelCount = viewer.getModelCount();
+    int modelCount = vwr.getModelCount();
     if (!dmesh.isFixed && iModel >= 0 && modelCount > 1)
-      appendCmd(str, "frame " + viewer.getModelNumberDotted(iModel));
+      appendCmd(str, "frame " + vwr.getModelNumberDotted(iModel));
     str.append("  draw ID ").append(PT.esc(dmesh.thisID));
     if (dmesh.isFixed)
       str.append(" fixed");
@@ -1501,7 +1501,7 @@ protected void resetObjects() {
       info.put("scale", Float.valueOf(mesh.scale));
       if (mesh.drawType == EnumDrawType.MULTIPLE) {
         List<Map<String, Object>> m = new  List<Map<String,Object>>();
-        int modelCount = viewer.getModelCount();
+        int modelCount = vwr.getModelCount();
         for (int k = 0; k < modelCount; k++) {
           if (mesh.ptCenters[k] == null)
             continue;

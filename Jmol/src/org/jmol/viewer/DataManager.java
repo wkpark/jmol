@@ -52,15 +52,15 @@ public class DataManager implements JmolDataManager {
 
   private Map<String, Object[]> dataValues = new Hashtable<String, Object[]>();
   
-  private Viewer viewer;
+  private Viewer vwr;
   
   public DataManager() {
     // for reflection
   }
   
   @Override
-  public JmolDataManager set(Viewer viewer) {
-    this.viewer = viewer;
+  public JmolDataManager set(Viewer vwr) {
+    this.vwr = vwr;
     return this;
   }
 
@@ -105,17 +105,17 @@ public class DataManager implements JmolDataManager {
     if (type.equals("element_vdw")) {
       String stringData = ((String) data[DATA_VALUE]).trim();
       if (stringData.length() == 0) {
-        viewer.userVdwMars = null;
-        viewer.userVdws = null;
-        viewer.bsUserVdws = null;
+        vwr.userVdwMars = null;
+        vwr.userVdws = null;
+        vwr.bsUserVdws = null;
         return;
       }
-      if (viewer.bsUserVdws == null)
-        viewer.setUserVdw(viewer.defaultVdw);
-      Parser.parseFloatArrayFromMatchAndField(stringData, viewer.bsUserVdws, 1, 0,
-          (int[]) data[DATA_SELECTION_MAP], 2, 0, viewer.userVdws, 1);
-      for (int i = viewer.userVdws.length; --i >= 0;)
-        viewer.userVdwMars[i] = (int) Math.floor(viewer.userVdws[i] * 1000);
+      if (vwr.bsUserVdws == null)
+        vwr.setUserVdw(vwr.defaultVdw);
+      Parser.parseFloatArrayFromMatchAndField(stringData, vwr.bsUserVdws, 1, 0,
+          (int[]) data[DATA_SELECTION_MAP], 2, 0, vwr.userVdws, 1);
+      for (int i = vwr.userVdws.length; --i >= 0;)
+        vwr.userVdwMars[i] = (int) Math.floor(vwr.userVdws[i] * 1000);
       return;
     }
     if (data[DATA_SELECTION_MAP] != null && arrayCount > 0) {
@@ -188,7 +188,7 @@ public class DataManager implements JmolDataManager {
         for (int n = 0, i = bs.nextSetBit(0); n < nValues; i = bs
             .nextSetBit(i + 1))
           fValues[n++] = f[i];
-        viewer.setAtomProperty(bs, tok, 0, 0, null, fValues, null);
+        vwr.setAtomProperty(bs, tok, 0, 0, null, fValues, null);
         return;
       }
     }
@@ -299,7 +299,7 @@ public class DataManager implements JmolDataManager {
     for (int i = i0; i < i1 && i >= 0; i = (isAll ? i + 1 : bs
         .nextSetBit(i + 1)))
       sb.appendI(i).appendC('\t').appendF(
-          type == EnumVdw.USER ? viewer.userVdws[i] : Elements
+          type == EnumVdw.USER ? vwr.userVdws[i] : Elements
               .getVanderwaalsMar(i, type) / 1000f).appendC('\t').append(
           Elements.elementSymbolFromNumber(i)).appendC('\n');
     return (bs == null ? sb.toString() : "\n  DATA \"element_vdw\"\n"

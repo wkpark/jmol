@@ -135,7 +135,7 @@ public abstract class ___Exporter {
   // The following fields and methods are required for instantiation or provide
   // generally useful functionality:
 
-  protected Viewer viewer;
+  protected Viewer vwr;
   protected double privateKey;
   protected JmolRendererInterface jmolRenderer;
   protected OC out;
@@ -194,29 +194,29 @@ public abstract class ___Exporter {
     this.jmolRenderer = jmolRenderer;
   }
   
-  boolean initializeOutput(Viewer viewer, double privateKey, GData g3d,
+  boolean initializeOutput(Viewer vwr, double privateKey, GData g3d,
                            Map<String, Object> params) {
-    return initOutput(viewer, privateKey, g3d, params);
+    return initOutput(vwr, privateKey, g3d, params);
   }
 
-  protected boolean initOutput(Viewer viewer, double privateKey, GData g3d,
+  protected boolean initOutput(Viewer vwr, double privateKey, GData g3d,
                              Map<String, Object> params) {
-    this.viewer = viewer;
+    this.vwr = vwr;
     isWebGL = params.get("type").equals("JS");
     this.g3d = g3d;
     this.privateKey = privateKey;
-    backgroundColix = viewer.getObjectColix(StateManager.OBJ_BACKGROUND);
-    center.setT(viewer.getRotationCenter());
-    exportScale = viewer.getFloat(T.exportscale);
+    backgroundColix = vwr.getObjectColix(StateManager.OBJ_BACKGROUND);
+    center.setT(vwr.getRotationCenter());
+    exportScale = vwr.getFloat(T.exportscale);
 
     if ((screenWidth <= 0) || (screenHeight <= 0)) {
-      screenWidth = viewer.getScreenWidth();
-      screenHeight = viewer.getScreenHeight();
+      screenWidth = vwr.getScreenWidth();
+      screenHeight = vwr.getScreenHeight();
     }
     slabZ = g3d.getSlab();
     depthZ = g3d.getDepth();
     lightSource = g3d.getLightSource();
-    P3[] cameraFactors = viewer.getCameraFactors();
+    P3[] cameraFactors = vwr.getCameraFactors();
     referenceCenter = cameraFactors[0];
     cameraPosition = cameraFactors[1];
     fixedRotationCenter = cameraFactors[2];
@@ -275,19 +275,19 @@ public abstract class ___Exporter {
       return "";
     SB sb = new SB();
     sb.append(commentChar).append("Jmol perspective:");
-    sb.append("\n").append(commentChar).append("screen width height dim: " + screenWidth + " " + screenHeight + " " + viewer.getScreenDim());
-    sb.append("\n").append(commentChar).append("perspectiveDepth: " + viewer.getPerspectiveDepth());
+    sb.append("\n").append(commentChar).append("screen width height dim: " + screenWidth + " " + screenHeight + " " + vwr.getScreenDim());
+    sb.append("\n").append(commentChar).append("perspectiveDepth: " + vwr.getPerspectiveDepth());
     sb.append("\n").append(commentChar).append("cameraDistance(angstroms): " + cameraDistance);
     sb.append("\n").append(commentChar).append("aperatureAngle(degrees): " + aperatureAngle);
     sb.append("\n").append(commentChar).append("scalePixelsPerAngstrom: " + scalePixelsPerAngstrom);
     sb.append("\n").append(commentChar).append("light source: " + lightSource);
-    sb.append("\n").append(commentChar).append("lighting: " + viewer.getSpecularState().replace('\n', ' '));
+    sb.append("\n").append(commentChar).append("lighting: " + vwr.getSpecularState().replace('\n', ' '));
     sb.append("\n").append(commentChar).append("center: " + center);
-    sb.append("\n").append(commentChar).append("rotationRadius: " + viewer.getFloat(T.rotationradius));
-    sb.append("\n").append(commentChar).append("boundboxCenter: " + viewer.getBoundBoxCenter());
-    sb.append("\n").append(commentChar).append("translationOffset: " + viewer.getTranslationScript());
-    sb.append("\n").append(commentChar).append("zoom: " + viewer.getZoomPercentFloat());
-    sb.append("\n").append(commentChar).append("moveto command: " + viewer.getOrientationText(T.moveto, null));
+    sb.append("\n").append(commentChar).append("rotationRadius: " + vwr.getFloat(T.rotationradius));
+    sb.append("\n").append(commentChar).append("boundboxCenter: " + vwr.getBoundBoxCenter());
+    sb.append("\n").append(commentChar).append("translationOffset: " + vwr.getTranslationScript());
+    sb.append("\n").append(commentChar).append("zoom: " + vwr.getZoomPercentFloat());
+    sb.append("\n").append(commentChar).append("moveto command: " + vwr.getOrientationText(T.moveto, null));
     sb.append("\n");
     return sb.toString();
   }
@@ -315,7 +315,7 @@ public abstract class ___Exporter {
   }
 
   protected String getExportDate() {
-    return viewer.apiPlatform.getDateFormat(false);
+    return vwr.apiPlatform.getDateFormat(false);
   }
 
   protected String rgbFractionalFromColix(short colix) {
@@ -571,7 +571,7 @@ public abstract class ___Exporter {
   void plotImage(int x, int y, int z, Object image, short bgcolix, int width,
                  int height) {
     if (z < 3)
-      z = viewer.getFrontPlane();
+      z = vwr.getFrontPlane();
     outputComment("start image " + (++nImage));
     g3d.plotImage(x, y, z, image, jmolRenderer, bgcolix, width, height);
     outputComment("end image " + nImage);
@@ -583,7 +583,7 @@ public abstract class ___Exporter {
     // the bitmap, but then output to jmolRenderer, which returns control
     // here via drawPixel.
     if (z < 3)
-      z = viewer.getFrontPlane();
+      z = vwr.getFrontPlane();
     outputComment("start text " + (++nText) + ": " + text);
     g3d.plotText(x, y, z, g3d.getColorArgbOrGray(colix), 0, text, font3d, jmolRenderer);
     outputComment("end text " + nText + ": " + text);

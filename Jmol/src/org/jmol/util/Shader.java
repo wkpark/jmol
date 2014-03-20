@@ -58,7 +58,7 @@ public class Shader {
   public static byte shadeIndexNormal = 52;
   public static byte shadeIndexNoisyLimit = 56;
 
-  // the viewer vector is always {0 0 1}
+  // the vwr vector is always {0 0 1}
 
   // the light source vector normalized
   private float xLight, yLight, zLight;

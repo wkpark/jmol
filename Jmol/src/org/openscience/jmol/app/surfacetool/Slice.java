@@ -83,7 +83,7 @@ class Slice {
    *        (boolean) if true angles and positions are relative to the origin of
    *        the molecular coordinate system. If false angles and position are
    *        relative to the center of the boundbox, which is usually more
-   *        intuitive for the viewer as this is typically close to the center of
+   *        intuitive for the vwr as this is typically close to the center of
    *        the viewed object.
    */
   void setSlice(float angleXY, float anglefromZ, float position,

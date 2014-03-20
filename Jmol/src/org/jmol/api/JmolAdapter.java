@@ -210,9 +210,9 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
                                                Map<String, Object> htParams) {
     if (htParams == null)
       htParams = new Hashtable<String, Object>();
-    // viewer is now needed for CIF and GenNBO file reading
-    if (!htParams.containsKey("viewer"))
-      htParams.put("viewer", JmolViewer.allocateViewer(null, this));
+    // vwr is now needed for CIF and GenNBO file reading
+    if (!htParams.containsKey("vwr"))
+      htParams.put("vwr", JmolViewer.allocateViewer(null, this));
     Object a = getAtomSetCollectionReader(name, type, bufferedReader, htParams);
     if (a instanceof String)
       return a;

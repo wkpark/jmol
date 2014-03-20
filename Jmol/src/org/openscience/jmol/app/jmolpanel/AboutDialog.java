@@ -47,7 +47,7 @@ class AboutDialog extends JDialog implements HyperlinkListener {
   protected JEditorPane html;
   protected URL aboutURL;
   
-  private JmolViewer viewer;
+  private JmolViewer vwr;
   
   private JScrollPane scroller;
   
@@ -65,10 +65,10 @@ class AboutDialog extends JDialog implements HyperlinkListener {
 */
   
   
-  AboutDialog(JFrame fr, JmolViewer viewer) {
+  AboutDialog(JFrame fr, JmolViewer vwr) {
 
     super(fr, GT._("About Jmol"), true);
-    this.viewer = viewer;
+    this.vwr = vwr;
     try {
       aboutURL = this.getClass().getClassLoader().getResource(
           JmolResourceHandler.getStringX("About.aboutURL"));
@@ -183,10 +183,10 @@ class AboutDialog extends JDialog implements HyperlinkListener {
    *        the URL to follow
    */
   protected void linkActivated(URL url) {
-    viewer.showUrl(url.toString());
+    vwr.showUrl(url.toString());
 /*
     if (!url.getProtocol().equals("file")) {
-      viewer.showUrl(url.toString());
+      vwr.showUrl(url.toString());
       return;
     }
     addToHistory(thisURL);

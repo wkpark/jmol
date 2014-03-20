@@ -68,7 +68,7 @@ public class _PovrayExporter extends __RayTracerExporter {
     output("// This script was generated on " + getExportDate() + "\n");
     output("// ******************************************************\n");
     try {
-    output(viewer.getWrappedStateScript());
+    output(vwr.getWrappedStateScript());
     } catch (Exception e) {
       // tough luck
     }

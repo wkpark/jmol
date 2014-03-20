@@ -73,11 +73,11 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
   private JmolPanel jmol;
   private DisplayPanel display;
 
-  private JmolViewer viewer;
+  private JmolViewer vwr;
   private MainFrame jSpecViewFrame;
   private boolean jSpecViewForceNew;
-  void setViewer(JmolViewer viewer) {
-    this.viewer = viewer;
+  void setViewer(JmolViewer vwr) {
+    this.vwr = vwr;
   }
   
   StatusListener(JmolPanel jmol, DisplayPanel display) {
@@ -199,7 +199,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
     // cases that fail to return are sent to the console for processing
     if (jmol.service != null)
       jmol.service.scriptCallback(strInfo);
-    JmolCallbackListener appConsole = (JmolCallbackListener) viewer
+    JmolCallbackListener appConsole = (JmolCallbackListener) vwr
         .getProperty("DATA_API", "getAppConsole", null);
     if (appConsole != null)
       appConsole.notifyCallback(type, data);
@@ -246,7 +246,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
         WebExport.dispose();
         jmol.createWebExport();
       }
-      AppConsole appConsole = (AppConsole) viewer.getProperty("DATA_API",
+      AppConsole appConsole = (AppConsole) vwr.getProperty("DATA_API",
           "getAppConsole", null);
       if (appConsole != null)
         appConsole.sendConsoleEcho(null);
@@ -319,7 +319,7 @@ System.out.println("StatusListener notifyFileLoaded: " + fileName);
   }
 
   private void sendConsoleMessage(String strStatus) {
-    JmolAppConsoleInterface appConsole = (JmolAppConsoleInterface) viewer
+    JmolAppConsoleInterface appConsole = (JmolAppConsoleInterface) vwr
         .getProperty("DATA_API", "getAppConsole", null);
     if (appConsole != null)
       appConsole.sendConsoleMessage(strStatus);
@@ -336,7 +336,7 @@ System.out.println("StatusListener notifyFileLoaded: " + fileName);
       browse.invoke(deskTop, arguments);
     } catch (Exception e) {
       Logger.error(e.getMessage());
-      JmolAppConsoleInterface appConsole = (JmolAppConsoleInterface) viewer
+      JmolAppConsoleInterface appConsole = (JmolAppConsoleInterface) vwr
           .getProperty("DATA_API", "getAppConsole", null);
       if (appConsole != null) {
         appConsole
@@ -419,21 +419,21 @@ System.out.println("StatusListener notifyFileLoaded: " + fileName);
     if (peaks.startsWith(":"))
       peaks = peaks.substring(1);
     if (jSpecViewFrame == null) {
-      jSpecViewFrame = new MainFrame((Component) viewer.getDisplay(), this);
+      jSpecViewFrame = new MainFrame((Component) vwr.getDisplay(), this);
       jSpecViewFrame.setSize(800, 500);
       jSpecViewFrame.setLocation(jmol.frame.getLocation().x + 10, jmol.frame
           .getLocation().y + 100);
       jSpecViewFrame.register("Jmol", this);
-      viewer.setBooleanProperty("_jspecview", true);
+      vwr.setBooleanProperty("_jspecview", true);
       if (peaks.length() == 0) {
         doLoadCheck = true;
       }
     }
     if (doLoadCheck || jSpecViewForceNew) {
-      String type = "" + viewer.getParameter("_modelType");
+      String type = "" + vwr.getParameter("_modelType");
       if (type.equalsIgnoreCase("jcampdx")) {
         jSpecViewForceNew = false;
-        String file = "" + viewer.getParameter("_modelFile");
+        String file = "" + vwr.getParameter("_modelFile");
         if (file.indexOf("/") < 0)
           return;
         peaks = "hidden true; load CHECK " + PT.esc(file) + ";hidden false";
@@ -441,8 +441,8 @@ System.out.println("StatusListener notifyFileLoaded: " + fileName);
         return;
       } else {
         jSpecViewForceNew = false;
-        String model = "" + viewer.getParameter("_modelNumber");
-        String data = viewer.extractMolData(null);
+        String model = "" + vwr.getParameter("_modelNumber");
+        String data = vwr.extractMolData(null);
         if (data == null)
           return;
         peaks = "hidden true; load CHECK MOL "
@@ -455,7 +455,7 @@ System.out.println("StatusListener notifyFileLoaded: " + fileName);
     if (!jSpecViewFrame.isVisible()) {
     //    && !peaks.toLowerCase().startsWith("hidden")) {
       jSpecViewFrame.awaken(true);
-      display.setViewer(viewer);
+      display.setViewer(vwr);
     }
     if (peaks.length() == 0)
       peaks = "HIDDEN false";

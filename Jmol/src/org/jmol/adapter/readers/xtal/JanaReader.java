@@ -32,9 +32,9 @@ import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.MSInterface;
 import org.jmol.api.Interface;
 import org.jmol.api.SymmetryInterface;
-import org.jmol.io.Binary;
 import org.jmol.java.BS;
 
+import javajs.util.Binary;
 import javajs.util.List;
 import javajs.util.Matrix;
 import javajs.util.PT;
@@ -237,7 +237,7 @@ public class JanaReader extends AtomSetCollectionReader {
     String id = name.substring(0, ipt);
     ipt = id.lastIndexOf("/");
     id = id.substring(ipt + 1);
-    BufferedReader r = Binary.getBR((String) viewer.getLigandModel(id,
+    BufferedReader r = Binary.getBR((String) vwr.getLigandModel(id,
         name, "_file", "----"));
     if (readM40Floats(r).startsWith("command"))
       readM40WaveVectors(r);

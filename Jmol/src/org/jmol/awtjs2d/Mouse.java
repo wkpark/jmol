@@ -49,19 +49,19 @@ import org.jmol.viewer.Viewer;
 @J2SRequireImport({javajs.awt.event.Event.class})
 public class Mouse implements GenericMouseInterface {
 
-  private Viewer viewer;
+  private Viewer vwr;
   private EventManager manager;
   //private double privateKey;
 
   /**
    * @param privateKey -- not used in JavaScript  
-   * @param viewer 
+   * @param vwr 
    * @param display 
    */
-  public Mouse(double privateKey, PlatformViewer viewer, Object display) {
+  public Mouse(double privateKey, PlatformViewer vwr, Object display) {
     //this.privateKey = privateKey; could be used for clipboard access
-    this.viewer = (Viewer) viewer;
-    this.manager = this.viewer.getActionManager();
+    this.vwr = (Viewer) vwr;
+    this.manager = this.vwr.getActionManager();
   }
 
   @Override
@@ -164,7 +164,7 @@ public class Mouse implements GenericMouseInterface {
       // just use finger 1, last move
       int deltaX = (int) (x1last - t1[t1.length - 2][0]); 
       int deltaY = (int) (y1last - t1[t1.length - 2][1]); 
-      viewer.translateXYBy(deltaX, deltaY);
+      vwr.translateXYBy(deltaX, deltaY);
     } else if (cos12 < -0.8) {
       // two classic zoom motions -- zoom
       v1 = V3.new3(x2first - x1first, y2first - y1first, 0);
@@ -219,7 +219,7 @@ public class Mouse implements GenericMouseInterface {
 
   public void keyTyped(KeyEvent ke) {
     ke.consume();
-    if (!viewer.menuEnabled())
+    if (!vwr.menuEnabled())
       return;
     char ch = ke.getKeyChar();
     int modifiers = ke.getModifiers();
@@ -231,20 +231,20 @@ public class Mouse implements GenericMouseInterface {
       switch (ch) {
       case (char) 11:
       case 'k': // keystrokes on/off
-        boolean isON = !viewer.getBooleanProperty("allowKeyStrokes");
+        boolean isON = !vwr.getBooleanProperty("allowKeyStrokes");
         switch (modifiers) {
         case Event.CTRL_MASK:
-          viewer.setBooleanProperty("allowKeyStrokes", isON);
-          viewer.setBooleanProperty("showKeyStrokes", true);
+          vwr.setBooleanProperty("allowKeyStrokes", isON);
+          vwr.setBooleanProperty("showKeyStrokes", true);
           break;
         case Event.CTRL_ALT:
         case Event.SHIFT_MASK:
-          viewer.setBooleanProperty("allowKeyStrokes", isON);
-          viewer.setBooleanProperty("showKeyStrokes", false);
+          vwr.setBooleanProperty("allowKeyStrokes", isON);
+          vwr.setBooleanProperty("showKeyStrokes", false);
           break;
         }
         clearKeyBuffer();
-        viewer.refresh(3, "showkey");
+        vwr.refresh(3, "showkey");
         break;
       case 22:
       case 'v': // paste
@@ -257,10 +257,10 @@ public class Mouse implements GenericMouseInterface {
       case 'z': // undo
         switch (modifiers) {
         case Event.CTRL_MASK:
-          viewer.undoMoveAction(T.undomove, 1);
+          vwr.undoMoveAction(T.undomove, 1);
           break;
         case Event.CTRL_SHIFT:
-          viewer.undoMoveAction(T.redomove, 1);
+          vwr.undoMoveAction(T.redomove, 1);
           break;
         }
         break;
@@ -268,20 +268,20 @@ public class Mouse implements GenericMouseInterface {
       case 'y': // redo
         switch (modifiers) {
         case Event.CTRL_MASK:
-          viewer.undoMoveAction(T.redomove, 1);
+          vwr.undoMoveAction(T.redomove, 1);
           break;
         }
         break;        
       }
       return;
     }
-    if (!viewer.getBooleanProperty("allowKeyStrokes"))
+    if (!vwr.getBooleanProperty("allowKeyStrokes"))
       return;
     addKeyBuffer(ke.getModifiers() == Event.SHIFT_MASK ? Character.toUpperCase(ch) : ch);
   }
 
   public void keyPressed(KeyEvent ke) {
-    if (viewer.isApplet())
+    if (vwr.isApplet())
       ke.consume();
     manager.keyPressed(ke.getKeyCode(), ke.getModifiers());
   }
@@ -297,8 +297,8 @@ public class Mouse implements GenericMouseInterface {
     if (keyBuffer.length() == 0)
       return;
     keyBuffer = "";
-    if (viewer.getBooleanProperty("showKeyStrokes"))
-      viewer
+    if (vwr.getBooleanProperty("showKeyStrokes"))
+      vwr
           .evalStringQuietSync("!set echo _KEYSTROKES; set echo bottom left;echo \"\"", true, true);
   }
 
@@ -313,20 +313,20 @@ public class Mouse implements GenericMouseInterface {
     } else {
       keyBuffer += ch;
     }
-    if (viewer.getBooleanProperty("showKeyStrokes"))
-      viewer
+    if (vwr.getBooleanProperty("showKeyStrokes"))
+      vwr
           .evalStringQuietSync("!set echo _KEYSTROKES; set echo bottom left;echo "
               + PT.esc("\1" + keyBuffer), true, true);
   }
 
   private void sendKeyBuffer() {
     String kb = keyBuffer;
-    if (viewer.getBooleanProperty("showKeyStrokes"))
-      viewer
+    if (vwr.getBooleanProperty("showKeyStrokes"))
+      vwr
           .evalStringQuietSync("!set echo _KEYSTROKES; set echo bottom left;echo "
               + PT.esc(keyBuffer), true, true);
     clearKeyBuffer();
-    viewer.evalStringQuietSync(kb, false, true);
+    vwr.evalStringQuietSync(kb, false, true);
   }
 
   private void entry(long time, int x, int y, boolean isExit) {

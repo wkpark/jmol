@@ -42,7 +42,7 @@ public class JmolData {
    */
 
   public JmolApp jmolApp;
-  public JmolViewer viewer;
+  public JmolViewer vwr;
   
   public static JmolData getJmol(int width, int height, String commandOptions) {
     JmolApp jmolApp = new JmolApp();
@@ -77,9 +77,9 @@ public class JmolData {
   
   private JmolData(JmolApp jmolApp) {
     this.jmolApp = jmolApp;
-    viewer = new Viewer(jmolApp.info);
-    viewer.setScreenDimension(jmolApp.startupWidth, jmolApp.startupHeight);
-    jmolApp.startViewer(viewer, null, true);
+    vwr = new Viewer(jmolApp.info);
+    vwr.setScreenDimension(jmolApp.startupWidth, jmolApp.startupHeight);
+    jmolApp.startViewer(vwr, null, true);
   }
   
 }  

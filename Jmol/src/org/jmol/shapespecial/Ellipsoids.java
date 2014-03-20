@@ -71,7 +71,7 @@ public class Ellipsoids extends Shape {
     boolean isAll = (bsSelected == null);
     if (!isAll && selectedAtoms != null)
       bsSelected = selectedAtoms;
-    List<Object> tensors = viewer.modelSet.getAllAtomTensors(typeSelected);
+    List<Object> tensors = vwr.ms.getAllAtomTensors(typeSelected);
     if (tensors == null)
       return;
     Atom[] atoms = modelSet.atoms;
@@ -116,7 +116,7 @@ public class Ellipsoids extends Shape {
     if (propertyName == "thisID") {
       if (initEllipsoids(value) && ellipsoidSelected == null) {
         String id = (String) value;
-        ellipsoidSelected = Ellipsoid.getEmptyEllipsoid(id, viewer
+        ellipsoidSelected = Ellipsoid.getEmptyEllipsoid(id, vwr
             .getCurrentModelIndex());
         simpleEllipsoids.put(id, ellipsoidSelected);
       }
@@ -366,7 +366,7 @@ private boolean initEllipsoids(Object value) {
               e2.colix, translucentAllowed));
       }
     }
-    sb.append(viewer.getCommands(temp, temp2, "select"));
+    sb.append(vwr.getCommands(temp, temp2, "select"));
   }
 
   @Override
@@ -377,7 +377,7 @@ private boolean initEllipsoids(Object value) {
      */
     if (!isActive())
       return;
-    Atom[] atoms = viewer.modelSet.atoms;
+    Atom[] atoms = vwr.ms.atoms;
     setVis(simpleEllipsoids, bs, atoms);
     if (atomEllipsoids != null)
       for (int i = atoms.length; --i >= 0;)

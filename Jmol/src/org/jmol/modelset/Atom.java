@@ -243,11 +243,11 @@ public class Atom extends Point3fi implements BNode {
    *  a rudimentary form of enumerations/user-defined primitive types)
    */
 
-  public void setMadAtom(Viewer viewer, RadiusData rd) {
-    madAtom = calculateMad(viewer, rd);
+  public void setMadAtom(Viewer vwr, RadiusData rd) {
+    madAtom = calculateMad(vwr, rd);
   }
   
-  public short calculateMad(Viewer viewer, RadiusData rd) {
+  public short calculateMad(Viewer vwr, RadiusData rd) {
     if (rd == null)
       return 0;
     float f = rd.value;
@@ -261,7 +261,7 @@ public class Atom extends Point3fi implements BNode {
       float r = 0;
       switch (rd.vdwType) {
       case TEMP:
-        float tmax = viewer.getBfactor100Hi();
+        float tmax = vwr.getBfactor100Hi();
         r = (tmax > 0 ? getBfactor100() / tmax : 0);
         break;
       case HYDRO:
@@ -275,7 +275,7 @@ public class Atom extends Point3fi implements BNode {
         r = getADPMinMax(rd.vdwType == EnumVdw.ADPMAX);
         break;
       default:
-        r = getVanderwaalsRadiusFloat(viewer, rd.vdwType);
+        r = getVanderwaalsRadiusFloat(vwr, rd.vdwType);
       }
       if (rd.factorType == EnumType.FACTOR)
         f *= r;
@@ -519,14 +519,14 @@ public class Atom extends Point3fi implements BNode {
     return (dimension == 0 ? x : (dimension == 1 ? y : z));
   }
 
-  public float getVanderwaalsRadiusFloat(Viewer viewer, EnumVdw type) {
+  public float getVanderwaalsRadiusFloat(Viewer vwr, EnumVdw type) {
     // called by atomPropertyFloat as VDW_AUTO,
     // AtomCollection.fillAtomData with VDW_AUTO or VDW_NOJMOL
     // AtomCollection.findMaxRadii with VDW_AUTO
     // AtomCollection.getAtomPropertyState with VDW_AUTO
     // AtomCollection.getVdwRadius with passed on type
     return (Float.isNaN(userDefinedVanDerWaalRadius) 
-        ? viewer.getVanderwaalsMarType(atomicAndIsotopeNumber, getVdwType(type)) / 1000f
+        ? vwr.getVanderwaalsMarType(atomicAndIsotopeNumber, getVdwType(type)) / 1000f
         : userDefinedVanDerWaalRadius);
   }
 
@@ -558,10 +558,10 @@ public class Atom extends Point3fi implements BNode {
         getFormalCharge()) : r);
   }
 
-  float getVolume(Viewer viewer, EnumVdw vType) {
+  float getVolume(Viewer vwr, EnumVdw vType) {
     float r1 = (vType == null ? userDefinedVanDerWaalRadius : Float.NaN);
     if (Float.isNaN(r1))
-      r1 = viewer.getVanderwaalsMarType(getElementNumber(), getVdwType(vType)) / 1000f;
+      r1 = vwr.getVanderwaalsMarType(getElementNumber(), getVdwType(vType)) / 1000f;
     double volume = 0;
     if (bonds != null)
       for (int j = 0; j < bonds.length; j++) {
@@ -570,7 +570,7 @@ public class Atom extends Point3fi implements BNode {
         Atom atom2 = bonds[j].getOtherAtom(this);
         float r2 = (vType == null ? atom2.userDefinedVanDerWaalRadius : Float.NaN);
         if (Float.isNaN(r2))
-          r2 = viewer.getVanderwaalsMarType(atom2.getElementNumber(), atom2
+          r2 = vwr.getVanderwaalsMarType(atom2.getElementNumber(), atom2
               .getVdwType(vType)) / 1000f;
         float d = distance(atom2);
         if (d > r1 + r2)
@@ -1211,7 +1211,7 @@ public class Atom extends Point3fi implements BNode {
     case T.chainno:
       return atom.group.chain.index + 1;
     case T.color:
-      return atom.group.chain.model.modelSet.viewer.getColorArgbOrGray(atom.getColix());
+      return atom.group.chain.model.modelSet.vwr.getColorArgbOrGray(atom.getColix());
     case T.element:
     case T.elemno:
       return atom.getElementNumber();
@@ -1271,7 +1271,7 @@ public class Atom extends Point3fi implements BNode {
    * called by isosurface and int comparator via atomProperty() and also by
    * getBitsetProperty()
    * 
-   * @param viewer
+   * @param vwr
    * 
    * @param atom
    * @param tokWhat
@@ -1279,7 +1279,7 @@ public class Atom extends Point3fi implements BNode {
    *         found
    * 
    */
-  public static float atomPropertyFloat(Viewer viewer, Atom atom, int tokWhat) {
+  public static float atomPropertyFloat(Viewer vwr, Atom atom, int tokWhat) {
     switch (tokWhat) {
     case T.adpmax:
       return atom.getADPMinMax(true);
@@ -1306,11 +1306,11 @@ public class Atom extends Point3fi implements BNode {
     case T.star:
     case T.strands:
     case T.trace:
-      return viewer.getAtomShapeValue(tokWhat, atom.group, atom.index);
+      return vwr.getAtomShapeValue(tokWhat, atom.group, atom.index);
     case T.bondingradius:
       return atom.getBondingRadius();
     case T.chemicalshift:
-      return viewer.getNMRCalculation().getChemicalShift(atom);
+      return vwr.getNMRCalculation().getChemicalShift(atom);
     case T.covalentradius:
       return Elements.getCovalentRadius(atom.atomicAndIsotopeNumber);
     case T.eta:
@@ -1332,7 +1332,7 @@ public class Atom extends Point3fi implements BNode {
     case T.hydrophobicity:
       return atom.getHydrophobicity();
     case T.magneticshielding:
-      return viewer.getNMRCalculation().getMagneticShielding(atom);
+      return vwr.getNMRCalculation().getMagneticShielding(atom);
     case T.mass:
       return atom.getMass();
     case T.occupancy:
@@ -1366,11 +1366,11 @@ public class Atom extends Point3fi implements BNode {
     case T.screenx:
       return atom.sX;
     case T.screeny:
-      return atom.group.chain.model.modelSet.viewer.getScreenHeight() - atom.sY;
+      return atom.group.chain.model.modelSet.vwr.getScreenHeight() - atom.sY;
     case T.screenz:
       return atom.sZ;
     case T.selected:
-      return (viewer.isAtomSelected(atom.index) ? 1 : 0);
+      return (vwr.isAtomSelected(atom.index) ? 1 : 0);
     case T.surfacedistance:
       atom.group.chain.model.modelSet.getSurfaceDistanceMax();
       return atom.getSurfaceDistance100() / 100f;
@@ -1383,10 +1383,10 @@ public class Atom extends Point3fi implements BNode {
     case T.unitz:
       return atom.getFractionalUnitCoord('Z');
     case T.vanderwaals:
-      return atom.getVanderwaalsRadiusFloat(viewer, EnumVdw.AUTO);
+      return atom.getVanderwaalsRadiusFloat(vwr, EnumVdw.AUTO);
     case T.vectorscale:
       V3 v = atom.getVibrationVector();
-      return (v == null ? 0 : v.length() * viewer.getFloat(T.vectorscale));
+      return (v == null ? 0 : v.length() * vwr.getFloat(T.vectorscale));
     case T.vibx:
       return atom.getVibrationCoord('X');
     case T.viby:
@@ -1394,7 +1394,7 @@ public class Atom extends Point3fi implements BNode {
     case T.vibz:
       return atom.getVibrationCoord('Z');
     case T.volume:
-      return atom.getVolume(viewer, EnumVdw.AUTO);
+      return atom.getVolume(vwr, EnumVdw.AUTO);
     }
     return atomPropertyInt(atom, tokWhat);
   }
@@ -1404,7 +1404,7 @@ public class Atom extends Point3fi implements BNode {
     return (mass > 0 ? mass : Elements.getAtomicMass(getElementNumber()));
   }
 
-  public static String atomPropertyString(Viewer viewer, Atom atom, int tokWhat) {
+  public static String atomPropertyString(Viewer vwr, Atom atom, int tokWhat) {
     char ch;
     switch (tokWhat) {
     case T.altloc:
@@ -1442,7 +1442,7 @@ public class Atom extends Point3fi implements BNode {
     case T.strucid:
       return atom.getStructureId();
     case T.shape:
-      return viewer.getHybridizationAndAxes(atom.index, null, null, "d");
+      return vwr.getHybridizationAndAxes(atom.index, null, null, "d");
     case T.symbol:
       return atom.getElementSymbolIso(false);
     case T.symmetry:
@@ -1461,7 +1461,7 @@ public class Atom extends Point3fi implements BNode {
       return (atom.group.chain.model.isJmolDataFrame ? atom.getFractionalCoordPt(false) 
           : atom.getFractionalUnitCoordPt(false));
     case T.screenxyz:
-      return P3.new3(atom.sX, atom.group.chain.model.modelSet.viewer.getScreenHeight() - atom.sY, atom.sZ);
+      return P3.new3(atom.sX, atom.group.chain.model.modelSet.vwr.getScreenHeight() - atom.sY, atom.sZ);
     case T.vibxyz:
       V3 v = atom.getVibrationVector();
       if (v == null)
@@ -1471,7 +1471,7 @@ public class Atom extends Point3fi implements BNode {
       return atom;
     case T.color:
       return CU.colorPtFromInt2(
-          atom.group.chain.model.modelSet.viewer.getColorArgbOrGray(atom.getColix())
+          atom.group.chain.model.modelSet.vwr.getColorArgbOrGray(atom.getColix())
           );
     }
     return null;
@@ -1521,7 +1521,7 @@ public class Atom extends Point3fi implements BNode {
   @Override
   public BS findAtomsLike(String atomExpression) {
     // for SMARTS searching
-    return group.chain.model.modelSet.viewer.getAtomBitSet(atomExpression);
+    return group.chain.model.modelSet.vwr.getAtomBitSet(atomExpression);
   }
 
 }

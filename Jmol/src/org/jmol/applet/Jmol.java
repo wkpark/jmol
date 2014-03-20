@@ -225,29 +225,29 @@ public class Jmol extends GenericApplet implements WrappedApplet {
         : base.toString());
     if (codeBase != null && !codeBase.endsWith("/"))
       codeBase += "/";
-    viewerOptions = new Hashtable<String, Object>();
+    vwrOptions = new Hashtable<String, Object>();
     isSigned |= isJNLP || getBooleanValue("signed", false);
     if (isSigned)
-      addValue(viewerOptions, null, "signedApplet", Boolean.TRUE);
+      addValue(vwrOptions, null, "signedApplet", Boolean.TRUE);
     if (getBooleanValue("useCommandThread", isSigned))
-      addValue(viewerOptions, null, "useCommandThread", Boolean.TRUE);
+      addValue(vwrOptions, null, "useCommandThread", Boolean.TRUE);
     String options = "";
     if (isSigned && getBooleanValue("multiTouchSparshUI-simulated", false))
       options += "-multitouch-sparshui-simulated";
     else if (isSigned && getBooleanValue("multiTouchSparshUI", false)) // true for testing JmolAppletSignedMT.jar
       options += "-multitouch-sparshui";
-    addValue(viewerOptions, null, "options", options);
-    addValue(viewerOptions, null, "display", applet);
-    addValue(viewerOptions, null, "fullName", fullName);
-    addValue(viewerOptions, null, "documentBase", documentBase);
-    addValue(viewerOptions, null, "codePath", codeBase);
+    addValue(vwrOptions, null, "options", options);
+    addValue(vwrOptions, null, "display", applet);
+    addValue(vwrOptions, null, "fullName", fullName);
+    addValue(vwrOptions, null, "documentBase", documentBase);
+    addValue(vwrOptions, null, "codePath", codeBase);
     if (getBooleanValue("noScripting", false))
-      addValue(viewerOptions, null, "noScripting", Boolean.TRUE);
+      addValue(vwrOptions, null, "noScripting", Boolean.TRUE);
     if (isJNLP)
-      addValue(viewerOptions, null, "isJNLP", Boolean.TRUE);
-    addValue(viewerOptions, "MaximumSize", "maximumSize", null);
-    addValue(viewerOptions, "JmolAppletProxy", "appletProxy", null);
-    addValue(viewerOptions, "documentLocation", null, null);
+      addValue(vwrOptions, null, "isJNLP", Boolean.TRUE);
+    addValue(vwrOptions, "MaximumSize", "maximumSize", null);
+    addValue(vwrOptions, "JmolAppletProxy", "appletProxy", null);
+    addValue(vwrOptions, "documentLocation", null, null);
     try {
       UIManager
           .setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
@@ -305,7 +305,7 @@ public class Jmol extends GenericApplet implements WrappedApplet {
     if (value != null)
       info.put(putKey == null ? key : putKey, value);
     boolean haveCallback = false;
-    // these are set by viewer.setStringProperty() from setValue
+    // these are set by vwr.setStringProperty() from setValue
     for (EnumCallback item : EnumCallback.values()) {
       if (callbacks.get(item) != null) {
         haveCallback = true;

@@ -28,11 +28,11 @@ class Resource {
 
   static Resource getResource(String className, String name) {
     String poData = null;
-    if (GT.viewer.isApplet()) {
+    if (GT.vwr.isApplet()) {
       // no longer using individual applet language JAR files
       String fname = Viewer.appletIdiomaBase + "/" + name + ".po";
       Logger.info("Loading language resource " + fname);
-      poData = GT.viewer.getFileAsString(fname, false);
+      poData = GT.vwr.getFileAsString(fname, false);
       return getResourceFromPO(poData);
     }
     className += name + ".Messages_" + name;

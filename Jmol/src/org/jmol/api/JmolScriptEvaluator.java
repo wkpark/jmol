@@ -16,7 +16,7 @@ import org.jmol.viewer.Viewer;
 
 public interface JmolScriptEvaluator {
 
-  JmolScriptEvaluator setViewer(Viewer viewer);
+  JmolScriptEvaluator setViewer(Viewer vwr);
 
   ScriptContext getThisContext();
 

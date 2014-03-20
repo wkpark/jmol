@@ -39,9 +39,9 @@ public class CommandWatcherThread extends JmolThread {
   
   
   @Override
-  public int setManager(Object manager, Viewer viewer, Object params) {
+  public int setManager(Object manager, Viewer vwr, Object params) {
     scriptManager = (ScriptManager) manager;
-    setViewer(viewer, "CommmandWatcherThread"); 
+    setViewer(vwr, "CommmandWatcherThread"); 
     return 0;
   }
 

@@ -120,11 +120,9 @@ import java.io.IOException;
 import java.util.Map;
 
 
-import org.jmol.api.JmolDocument;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.AtomDataServer;
 import org.jmol.atomdata.RadiusData;
-import org.jmol.io.Binary;
 import org.jmol.io.JmolBinary;
 import org.jmol.java.BS;
 import org.jmol.jvxl.data.JvxlCoder;
@@ -135,11 +133,13 @@ import org.jmol.jvxl.api.MeshDataServer;
 import org.jmol.jvxl.calc.MarchingSquares;
 import org.jmol.util.ColorEncoder;
 
+import javajs.api.GenericBinaryDocument;
 import javajs.util.AU;
 import javajs.util.List;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 
+import javajs.util.Binary;
 import javajs.util.OC;
 import javajs.util.PT;
 import javajs.util.P3;
@@ -1448,7 +1448,7 @@ public class SurfaceGenerator {
       atomDataServer.log(msg);
   }
 
-  void setOutputChannel(JmolDocument binaryDoc, OC out) {
+  void setOutputChannel(GenericBinaryDocument binaryDoc, OC out) {
     if (meshDataServer == null)
       return;
      meshDataServer.setOutputChannel(binaryDoc, out);    

@@ -54,7 +54,7 @@ abstract class __RayTracerExporter extends ___Exporter {
   @Override
   protected void outputVertex(P3 pt, P3 offset) {
     setTempVertex(pt, offset, tempP1);
-    viewer.transformPt3f(tempP1, tempP1);
+    vwr.transformPt3f(tempP1, tempP1);
     output(tempP1);
   }
 
@@ -86,15 +86,15 @@ abstract class __RayTracerExporter extends ___Exporter {
       return tempP3;
     }
     tempP1.add2(pt, normal);
-    viewer.transformPt3f(pt, tempP2);
-    viewer.transformPt3f(tempP1, tempP3);
+    vwr.transformPt3f(pt, tempP2);
+    vwr.transformPt3f(tempP1, tempP3);
     tempP3.sub(tempP2);
     tempP3.scale(factor);
     return tempP3;
   }
 
   protected void initVars() {
-    isSlabEnabled = viewer.getSlabEnabled();
+    isSlabEnabled = vwr.getSlabEnabled();
     minScreenDimension = Math.min(screenWidth, screenHeight);
   }
 
@@ -154,11 +154,11 @@ abstract class __RayTracerExporter extends ___Exporter {
     if (endcaps != GData.ENDCAPS_SPHERICAL)
       return;
     
-    float radius = viewer.scaleToScreen((int) screenA.z, madBond) / 2f;
+    float radius = vwr.scaleToScreen((int) screenA.z, madBond) / 2f;
     if (radius <= 1)
       return;
     outputSphere(screenA.x, screenA.y, screenA.z, radius, colix1);
-    radius = viewer.scaleToScreen((int) screenB.z, madBond) / 2f;
+    radius = vwr.scaleToScreen((int) screenB.z, madBond) / 2f;
     if (radius <= 1)
       return;
     outputSphere(screenB.x, screenB.y, screenB.z, radius, colix2);
@@ -176,7 +176,7 @@ abstract class __RayTracerExporter extends ___Exporter {
   protected void fillConicalCylinder(P3 screenA, P3 screenB,
                                     int madBond, short colix, 
                                     byte endcaps) {
-    float radius1 = viewer.scaleToScreen((int) screenA.z, madBond) / 2f;
+    float radius1 = vwr.scaleToScreen((int) screenA.z, madBond) / 2f;
     if (radius1 == 0)
       return;
     if (radius1 < 1)
@@ -185,7 +185,7 @@ abstract class __RayTracerExporter extends ___Exporter {
       outputSphere(screenA.x, screenA.y, screenA.z, radius1, colix);
       return;
     }
-    float radius2 = viewer.scaleToScreen((int) screenB.z, madBond) / 2f;
+    float radius2 = vwr.scaleToScreen((int) screenB.z, madBond) / 2f;
     if (radius2 == 0)
       return;
     if (radius2 < 1)

@@ -76,18 +76,18 @@ public class MeasuresRenderer extends LabelsRenderer {
     if (atomPt == null)
       atomPt = new Point3fi();
     Measures measures = (Measures) shape;
-    doJustify = viewer.getBoolean(T.justifymeasurements);
+    doJustify = vwr.getBoolean(T.justifymeasurements);
     modulating = modelSet.bsModulated != null; 
     // note that this COULD be screen pixels if <= 20. 
-    imageFontScaling = viewer.getImageFontScaling();
+    imageFontScaling = vwr.getImageFontScaling();
     mad0 = measures.mad;
     font3d = g3d.getFont3DScaled(measures.font3d, imageFontScaling);
     m = measures.measurementPending;
     if (!isExport && m != null && (count = m.count)!= 0)
       renderPendingMeasurement();
-    if (!viewer.getBoolean(T.showmeasurements))
+    if (!vwr.getBoolean(T.showmeasurements))
       return false;
-    boolean showMeasurementLabels = viewer.getBoolean(T.measurementlabels);
+    boolean showMeasurementLabels = vwr.getBoolean(T.measurementlabels);
     measures.setVisibilityInfo();
     for (int i = measures.measurementCount; --i >= 0;) {
       m = measures.measurements.get(i);
@@ -98,10 +98,10 @@ public class MeasuresRenderer extends LabelsRenderer {
       if (colix == 0)
         colix = measures.colix;
       if (colix == 0)
-        colix = viewer.getColixBackgroundContrast();
+        colix = vwr.getColixBackgroundContrast();
       labelColix = m.labelColix;
       if (labelColix == 0)
-        labelColix = viewer.getColixBackgroundContrast();
+        labelColix = vwr.getColixBackgroundContrast();
       else if (labelColix == -1)
         labelColix = colix;
       g3d.setColix(colix);
@@ -117,7 +117,7 @@ public class MeasuresRenderer extends LabelsRenderer {
       int i = m.getAtomIndex(j + 1);
       Point3fi pt = (i >= 0 && modulating ? getModAtom(i) : m.getAtom(j + 1));
       if (pt.sD < 0) {
-        viewer.transformPtScr(pt, pt0i);
+        vwr.transformPtScr(pt, pt0i);
         pt.sX = pt0i.x;
         pt.sY = pt0i.y;
         pt.sZ = pt0i.z;
@@ -257,8 +257,8 @@ public class MeasuresRenderer extends LabelsRenderer {
       matrixT.rotate(pointT);
       pointT.add(b);
       // NOTE! Point3i screen is just a pointer 
-      //  to viewer.transformManager.point3iScreenTemp
-      P3i p3i = viewer.transformPt(pointT);
+      //  to vwr.transformManager.point3iScreenTemp
+      P3i p3i = vwr.transformPt(pointT);
       int zArc = p3i.z - zOffset;
       if (zArc < 0)
         zArc = 0;
@@ -270,7 +270,7 @@ public class MeasuresRenderer extends LabelsRenderer {
       // next line modifies Point3i point3iScreenTemp
       matrixT.rotate(pointT);
       pointT.add(b);
-      viewer.transformPt(pointT);
+      vwr.transformPt(pointT);
       int zLabel = p3i.z - zOffset;
       if (m.text == null) {
         g3d.setColix(labelColix);
@@ -315,7 +315,7 @@ public class MeasuresRenderer extends LabelsRenderer {
   private void renderPendingMeasurement() {
     getPoints();
     boolean renderLabel = (m.traceX == Integer.MIN_VALUE);
-    g3d.setColix(labelColix = (renderLabel ? viewer.getColixRubberband()
+    g3d.setColix(labelColix = (renderLabel ? vwr.getColixRubberband()
         : count == 2 ? C.MAGENTA : C.GOLD));
     if (((MeasurementPending) m).haveTarget) {
       renderMeasurement(renderLabel);
@@ -325,8 +325,8 @@ public class MeasuresRenderer extends LabelsRenderer {
     if (count > 1)
       renderMeasurement(false);
     int lastZ = atomLast.sZ - atomLast.sD - 10;
-    int x = viewer.getCursorX();
-    int y = viewer.getCursorY();
+    int x = vwr.getCursorX();
+    int y = vwr.getCursorY();
     if (g3d.isAntialiased()) {
       x <<= 1;
       y <<= 1;
@@ -340,7 +340,7 @@ public class MeasuresRenderer extends LabelsRenderer {
                          int mad) {
     // small numbers refer to pixels already? 
     int diameter = (int) (mad >= 20 && exportType != GData.EXPORT_CARTESIAN ?
-      viewer.scaleToScreen((z1 + z2) / 2, mad) : mad);
+      vwr.scaleToScreen((z1 + z2) / 2, mad) : mad);
     if (dotsOrDashes && (dashDots == null || dashDots == ndots))
       width = diameter;
     return drawLine2(x1, y1, z1, x2, y2, z2, diameter);

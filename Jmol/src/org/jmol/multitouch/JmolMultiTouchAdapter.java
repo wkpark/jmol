@@ -33,7 +33,7 @@ public interface JmolMultiTouchAdapter {
    * 
    */
   public void dispose();
-  public boolean setMultiTouchClient(Viewer viewer, JmolMultiTouchClient client, boolean isSimulation);
+  public boolean setMultiTouchClient(Viewer vwr, JmolMultiTouchClient client, boolean isSimulation);
   public void mouseMoved(int x, int y);
   public boolean isServer();
 }

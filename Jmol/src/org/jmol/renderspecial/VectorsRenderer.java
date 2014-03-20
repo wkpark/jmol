@@ -67,14 +67,14 @@ public class VectorsRenderer extends ShapeRenderer {
     Atom[] atoms = vectors.atoms;
     short[] colixes = vectors.colixes;
     boolean needTranslucent = false;
-    vectorScale = viewer.getFloat(T.vectorscale);
-    vectorSymmetry = viewer.getBoolean(T.vectorsymmetry);
+    vectorScale = vwr.getFloat(T.vectorscale);
+    vectorSymmetry = vwr.getBoolean(T.vectorsymmetry);
     
     for (int i = modelSet.getAtomCount(); --i >= 0;) {
       Atom atom = atoms[i];
       if (!isVisibleForMe(atom))
         continue;
-      Vibration vibrationVector = viewer.getVibration(i);
+      Vibration vibrationVector = vwr.getVibration(i);
       if (vibrationVector == null)
         continue;
       if (!transform(mads[i], atom, vibrationVector))
@@ -109,9 +109,9 @@ public class VectorsRenderer extends ShapeRenderer {
     headOffsetVector.scale(headScale / len);
     pointVectorEnd.scaleAdd2(vectorScale, vibrationVector, atom);
     pointArrowHead.add2(pointVectorEnd, headOffsetVector);
-    screenArrowHead.setT(viewer.transformPtVib(pointArrowHead, vibrationVector));
-    screenVectorEnd.setT(viewer.transformPtVib(pointVectorEnd, vibrationVector));
-    diameter = (int) (mad < 1 ? 1 : mad <= 20 ? mad : viewer.scaleToScreen(screenVectorEnd.z, mad));
+    screenArrowHead.setT(vwr.transformPtVib(pointArrowHead, vibrationVector));
+    screenVectorEnd.setT(vwr.transformPtVib(pointVectorEnd, vibrationVector));
+    diameter = (int) (mad < 1 ? 1 : mad <= 20 ? mad : vwr.scaleToScreen(screenVectorEnd.z, mad));
     headWidthPixels = diameter << 1;
     if (headWidthPixels < diameter + 2)
       headWidthPixels = diameter + 2;

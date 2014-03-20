@@ -43,9 +43,9 @@ import org.jmol.i18n.GT;
 
 class PopInJmol extends WebPanel implements ChangeListener {
 
-  PopInJmol(JmolViewer viewer, JFileChooser fc, WebPanel[] webPanels,
+  PopInJmol(JmolViewer vwr, JFileChooser fc, WebPanel[] webPanels,
       int panelIndex) {
-    super(viewer, fc, webPanels, panelIndex);
+    super(vwr, fc, webPanels, panelIndex);
     panelName = "pop_in";
     listLabel = GT._("These names will be used as filenames for the applets");
     // description = "Create a web page with images that convert to live Jmol
@@ -166,7 +166,7 @@ class PopInJmol extends WebPanel implements ChangeListener {
       params.put("quality", Integer.valueOf(2));
       params.put("width", Integer.valueOf(width));
       params.put("height", Integer.valueOf(height));
-      viewer.outputToFile(params);
+      vwr.outputToFile(params);
       return;
     }
 

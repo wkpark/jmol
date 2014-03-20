@@ -70,7 +70,7 @@ public class Dots extends AtomShape {
   public void initShape() {
     super.initShape();
     translucentAllowed = false; //except for geosurface
-    ec = new EnvelopeCalculation().set(viewer, atomCount, mads);
+    ec = new EnvelopeCalculation().set(vwr, atomCount, mads);
   }
 
   @Override
@@ -178,7 +178,7 @@ public class Dots extends AtomShape {
     bsIgnore = null;
     isActive = false;
     if (ec == null)
-      ec = new EnvelopeCalculation().set(viewer, atomCount, mads);
+      ec = new EnvelopeCalculation().set(vwr, atomCount, mads);
   }
 
   @Override
@@ -210,7 +210,7 @@ public class Dots extends AtomShape {
       setRadius = rd.value;
       //$FALL-THROUGH$
     default:
-      rd.valueExtended = viewer.getCurrentSolventProbeRadius();
+      rd.valueExtended = vwr.getCurrentSolventProbeRadius();
     }
 
     float maxRadius;
@@ -275,8 +275,8 @@ public class Dots extends AtomShape {
       colixes = new short[atomCount];
       paletteIDs = new byte[atomCount];
     }
-    ec.calculate(rd, maxRadius, bsOn, bsIgnore, !viewer.getBoolean(T.dotsurface),
-        viewer.getBoolean(T.dotsselectedonly), isSurface, true);
+    ec.calculate(rd, maxRadius, bsOn, bsIgnore, !vwr.getBoolean(T.dotsurface),
+        vwr.getBoolean(T.dotsselectedonly), isSurface, true);
 
     rdLast = rd;
 
@@ -300,7 +300,7 @@ public class Dots extends AtomShape {
       return "";
     SB s = new SB();
     Map<String, BS> temp = new Hashtable<String, BS>();
-    int atomCount = viewer.getAtomCount();
+    int atomCount = vwr.getAtomCount();
     String type = (isSurface ? "geoSurface " : "dots ");
     for (int i = 0; i < atomCount; i++) {
       if (!bsOn.get(i) || dotsConvexMaps[i] == null)
@@ -314,7 +314,7 @@ public class Dots extends AtomShape {
             + Escape.eBS(bs));
       }
     }
-    return s.append(viewer.getCommands(temp, null, "select")).toString();
+    return s.append(vwr.getCommands(temp, null, "select")).toString();
   }
 
 }

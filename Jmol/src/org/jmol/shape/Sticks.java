@@ -200,7 +200,7 @@ public class Sticks extends Shape {
 
   @Override
   public String getShapeState() {
-    return viewer.getBondState(this, bsOrderSet, reportAll);
+    return vwr.getBondState(this, bsOrderSet, reportAll);
   }
   
   @Override
@@ -209,7 +209,7 @@ public class Sticks extends Shape {
     Bond bond = findPickedBond(x, y, bsVisible, pt);
     if (bond == null)
       return false;
-    viewer.highlightBond(bond.index, true);
+    vwr.highlightBond(bond.index, true);
     return true;
   }
   
@@ -227,10 +227,10 @@ public class Sticks extends Shape {
     map.put("pt", pt);
     map.put("index", Integer.valueOf(bond.index));
     map.put("modelIndex", Integer.valueOf(modelIndex));
-    map.put("model", viewer.getModelNumberDotted(modelIndex));
+    map.put("model", vwr.getModelNumberDotted(modelIndex));
     map.put("type", "bond");
     map.put("info", info);
-    viewer.setStatusAtomPicked(-3, "[\"bond\",\"" + bond.getIdentity() + "\"," + pt.x + "," + pt.y + "," + pt.z + "]", map);
+    vwr.setStatusAtomPicked(-3, "[\"bond\",\"" + bond.getIdentity() + "\"," + pt.x + "," + pt.y + "," + pt.z + "]", map);
     return map;
   }
 

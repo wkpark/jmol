@@ -53,7 +53,6 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import javajs.util.P3;
 import org.jmol.util.Tensor;
-import org.jmol.util.Txt;
 import javajs.util.V3;
 
 
@@ -623,7 +622,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
         spins[index] = tokens[tokens.length - 1];
     }
     if (haveSpin) {
-      String data = Txt.join(spins, '\n', 0);
+      String data = PT.join(spins, '\n', 0);
       atomSetCollection.setAtomSetAtomProperty("spin", data, -1);
     }
 

@@ -37,7 +37,6 @@ import org.jmol.shapebio.BioShape;
 import org.jmol.shapebio.BioShapeCollection;
 import org.jmol.util.C;
 import org.jmol.util.GData;
-import org.jmol.util.Hermite;
 import org.jmol.util.Logger;
 import org.jmol.util.Normix;
 
@@ -110,24 +109,24 @@ abstract class BioShapeRenderer extends MeshRenderer {
     invalidateMesh = false;
     needTranslucent = false;
     g3d.addRenderer(T.hermitelevel);
-    boolean TF = (!isExport && !viewer.checkMotionRendering(T.cartoon));
+    boolean TF = (!isExport && !vwr.checkMotionRendering(T.cartoon));
     
     if (TF != wireframeOnly)
       invalidateMesh = true;
     wireframeOnly = TF;
     
-    TF = (isExport || !wireframeOnly && viewer.getBoolean(T.highresolution));
+    TF = (isExport || !wireframeOnly && vwr.getBoolean(T.highresolution));
     if (TF != isHighRes)
       invalidateMesh = true;
     isHighRes = TF;
 
-    TF = !wireframeOnly && viewer.getBoolean(T.cartoonsfancy);
+    TF = !wireframeOnly && vwr.getBoolean(T.cartoonsfancy);
     if (cartoonsFancy != TF) {
       invalidateMesh = true;
       cartoonsFancy = TF;
     }
-    int val1 = viewer.getHermiteLevel();
-    val1 = (val1 <= 0 ? -val1 : viewer.getInMotion(true) ? 0 : val1);
+    int val1 = vwr.getHermiteLevel();
+    val1 = (val1 <= 0 ? -val1 : vwr.getInMotion(true) ? 0 : val1);
     if (cartoonsFancy && !wireframeOnly)
       val1 = Math.max(val1, 3); // at least HermiteLevel 3 for "cartoonFancy"
     //else if (val1 == 0 && exportType == GData.EXPORT_CARTESIAN)
@@ -136,7 +135,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
       invalidateMesh = true;
     hermiteLevel = Math.min(val1, 8);
 
-    int val = viewer.getInt(T.ribbonaspectratio);
+    int val = vwr.getInt(T.ribbonaspectratio);
     val = Math.min(Math.max(0, val), 20);
     if (cartoonsFancy && val >= 16)
       val = 4; // at most 4 for elliptical cartoonFancy
@@ -147,13 +146,13 @@ abstract class BioShapeRenderer extends MeshRenderer {
       invalidateMesh = true;
     aspectRatio = val;
 
-    TF = viewer.getBoolean(T.tracealpha);
+    TF = vwr.getBoolean(T.tracealpha);
     if (TF != isTraceAlpha)
       invalidateMesh = true;
     isTraceAlpha = TF;
 
     invalidateSheets = false;
-    float fval = viewer.getFloat(T.sheetsmoothing);
+    float fval = vwr.getFloat(T.sheetsmoothing);
     if (fval != sheetSmoothing && isTraceAlpha) {
       sheetSmoothing = fval;
       invalidateMesh = true;
@@ -186,13 +185,13 @@ abstract class BioShapeRenderer extends MeshRenderer {
 
   private void freeTempArrays() {
     if (haveControlPointScreens)
-      viewer.freeTempScreens(controlPointScreens);
-    viewer.freeTempEnum(structureTypes);
+      vwr.freeTempScreens(controlPointScreens);
+    vwr.freeTempEnum(structureTypes);
   }
 
   private boolean initializePolymer(BioShape bioShape) {
-    BS bsDeleted = viewer.getDeletedAtoms();
-    if (viewer.isJmolDataFrameForModel(bioShape.modelIndex)) {
+    BS bsDeleted = vwr.getDeletedAtoms();
+    if (vwr.isJmolDataFrameForModel(bioShape.modelIndex)) {
       controlPoints = bioShape.bioPolymer.getControlPoints(true, 0, false);
     } else {
       controlPoints = bioShape.bioPolymer.getControlPoints(isTraceAlpha,
@@ -220,7 +219,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     }
     if (!haveVisible)
       return false;
-    ribbonBorder = viewer.getBoolean(T.ribbonborder);
+    ribbonBorder = vwr.getBoolean(T.ribbonborder);
 
     // note that we are not treating a PhosphorusPolymer
     // as nucleic because we are not calculating the wing
@@ -242,7 +241,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
   }
 
   private void setStructureTypes() {
-    structureTypes = viewer.allocTempEnum(monomerCount + 1);
+    structureTypes = vwr.allocTempEnum(monomerCount + 1);
     for (int i = monomerCount; --i >= 0;) {
       structureTypes[i] = monomers[i].getProteinStructureType();
       if (structureTypes[i] == EnumStructure.TURN)
@@ -261,9 +260,9 @@ abstract class BioShapeRenderer extends MeshRenderer {
 
   protected void calcScreenControlPoints(P3[] points) {
     int count = monomerCount + 1;
-    controlPointScreens = viewer.allocTempScreens(count);
+    controlPointScreens = vwr.allocTempScreens(count);
     for (int i = count; --i >= 0;) {
-      viewer.transformPtScr(points[i], controlPointScreens[i]);
+      vwr.transformPtScr(points[i], controlPointScreens[i]);
     }
     haveControlPointScreens = true;
   }
@@ -277,10 +276,10 @@ abstract class BioShapeRenderer extends MeshRenderer {
    */
   protected P3i[] calcScreens(float offsetFraction) {
     int count = controlPoints.length;
-    P3i[] screens = viewer.allocTempScreens(count);
+    P3i[] screens = vwr.allocTempScreens(count);
     if (offsetFraction == 0) {
       for (int i = count; --i >= 0;)
-        viewer.transformPtScr(controlPoints[i], screens[i]);
+        vwr.transformPtScr(controlPoints[i], screens[i]);
     } else {
       float offset_1000 = offsetFraction / 1000f;
       for (int i = count; --i >= 0;)
@@ -296,7 +295,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
   private void calc1Screen(P3 center, V3 vector, short mad,
                            float offset_1000, P3i screen) {
     pointT.scaleAdd2(mad * offset_1000, vector, center);
-    viewer.transformPtScr(pointT, screen);
+    vwr.transformPtScr(pointT, screen);
   }
 
   protected short getLeadColix(int i) {
@@ -350,10 +349,10 @@ abstract class BioShapeRenderer extends MeshRenderer {
       if (!thisTypeOnly || structureTypes[i] == structureTypes[iNext])
         madEnd = (short) (((mads[iNext] == 0 ? madMid : mads[iNext]) + madMid) >> 1);
     }
-    diameterBeg = (int) viewer.scaleToScreen(controlPointScreens[i].z, madBeg);
-    diameterMid = (int) viewer.scaleToScreen(monomers[i].getLeadAtom().sZ,
+    diameterBeg = (int) vwr.scaleToScreen(controlPointScreens[i].z, madBeg);
+    diameterMid = (int) vwr.scaleToScreen(monomers[i].getLeadAtom().sZ,
         madMid);
-    diameterEnd = (int) viewer.scaleToScreen(controlPointScreens[iNext].z, madEnd);
+    diameterEnd = (int) vwr.scaleToScreen(controlPointScreens[iNext].z, madEnd);
     doCap0 = (i == iPrev || thisTypeOnly
         && structureTypes[i] != structureTypes[iPrev]);
     doCap1 = (iNext == iNext2 || thisTypeOnly
@@ -569,7 +568,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     if (controlHermites == null || controlHermites.length < nHermites + 1) {
       controlHermites = new P3[nHermites + 1];
     }
-    Hermite.getHermiteList(isNucleic ? 4 : 7, controlPoints[iPrev],
+    GData.getHermiteList(isNucleic ? 4 : 7, controlPoints[iPrev],
         controlPoints[i], controlPoints[iNext], controlPoints[iNext2],
         controlPoints[iNext3], controlHermites, 0, nHermites, true);
     // wing hermites determine the orientation of the cartoon
@@ -580,7 +579,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     wing.setT(wingVectors[iPrev]);
     if (madEnd == 0)
       wing.scale(2.0f); //adds a flair to an arrow
-    Hermite.getHermiteList(isNucleic ? 4 : 7, wing, wingVectors[i],
+    GData.getHermiteList(isNucleic ? 4 : 7, wing, wingVectors[i],
         wingVectors[iNext], wingVectors[iNext2], wingVectors[iNext3],
         wingHermites, 0, nHermites, false);
     //    }
@@ -598,7 +597,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
       pt1.set(radius2, radius3, 0);
       ptNext.set(radius3, radius3, 0);
       // two for the price of one!
-      Hermite.getHermiteList(4, ptPrev, pt, pt1, ptNext, ptNext,
+      GData.getHermiteList(4, ptPrev, pt, pt1, ptNext, ptNext,
           radiusHermites, 0, (nHermites + 1) >> 1, true);
     }
 
@@ -764,7 +763,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
 
   /*
   private void dumpPoint(Point3f pt, short color) {
-    Point3i pt1 = viewer.transformPoint(pt);
+    Point3i pt1 = vwr.transformPoint(pt);
     g3d.fillSphereCentered(color, 20, pt1);
   }
 
@@ -773,8 +772,8 @@ abstract class BioShapeRenderer extends MeshRenderer {
     Point3i pt1 = new Point3i();
     Point3i pt2 = new Point3i();
     p1.add(pt, v);
-    pt1.set(viewer.transformPoint(pt));
-    pt2.set(viewer.transformPoint(p1));
+    pt1.set(vwr.transformPoint(pt));
+    pt2.set(vwr.transformPoint(p1));
     System.out.print("draw pt" + ("" + Math.random()).substring(3, 10) + " {"
         + pt.x + " " + pt.y + " " + pt.z + "} {" + p1.x + " " + p1.y + " "
         + p1.z + "}" + ";" + " ");

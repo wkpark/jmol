@@ -70,7 +70,7 @@ class PyMOLScene implements JmolSceneGenerator {
 //  ring_radius
 //  ring_width
 
-  private Viewer viewer;
+  private Viewer vwr;
   private int pymolVersion;
 
   // filled by PyMOLReader; used to generate the scene
@@ -212,12 +212,12 @@ class PyMOLScene implements JmolSceneGenerator {
   }
 
   @SuppressWarnings("unchecked")
-  PyMOLScene(PymolAtomReader reader, Viewer viewer, List<Object> settings,
+  PyMOLScene(PymolAtomReader reader, Viewer vwr, List<Object> settings,
       Map<Integer, List<Object>> uniqueSettings, int pymolVersion, 
       boolean haveScenes, int baseAtomIndex, int baseModelIndex, 
       boolean doCache, String filePath) {
     this.reader = reader;
-    this.viewer = viewer;
+    this.vwr = vwr;
     this.settings = settings;
     this.uniqueSettings = uniqueSettings;
     this.pymolVersion = pymolVersion;
@@ -453,7 +453,7 @@ class PyMOLScene implements JmolSceneGenerator {
       finalizeObjects();
     } catch (Exception e) {
       System.out.println("PyMOLScene exception " + e);
-      if (!viewer.isJS)
+      if (!vwr.isJS)
         e.printStackTrace();
     }
   }
@@ -564,7 +564,7 @@ class PyMOLScene implements JmolSceneGenerator {
       case PyMOL.OBJECT_GROUP:
         continue;
       case PyMOL.OBJECT_MOLECULE:
-        bs = viewer.getDefinedAtomSet(info);
+        bs = vwr.getDefinedAtomSet(info);
         if (bs.nextSetBit(0) < 0)
           continue;
         break;
@@ -658,14 +658,14 @@ class PyMOLScene implements JmolSceneGenerator {
    * Finally, we turn each JmolObject into its Jmol equivalent.
    */
   private void finalizeObjects() {
-    viewer.setStringProperty("defaults", "PyMOL");
+    vwr.setStringProperty("defaults", "PyMOL");
     for (int i = 0; i < jmolObjects.size(); i++) {
       try {
         JmolObject obj = jmolObjects.get(i);
-        obj.finalizeObject(this, viewer.modelSet, mepList, doCache);
+        obj.finalizeObject(this, vwr.ms, mepList, doCache);
       } catch (Exception e) {
         System.out.println(e);
-        if (!viewer.isJS)
+        if (!vwr.isJS)
           e.printStackTrace();
       }
     }
@@ -1050,7 +1050,7 @@ class PyMOLScene implements JmolSceneGenerator {
         offset = floatsAt(listAt(offsets, index), 0, new float[7], 7);
         if (offset == null)
           offset = setLabelPosition(labelPosition, new float[7]);
-        md = mdList[index] = viewer.newMeasurementData(objectNameID + "_"
+        md = mdList[index] = vwr.newMeasurementData(objectNameID + "_"
             + (index + 1), points);
         md.note = objectName;
       } else {
@@ -1119,7 +1119,7 @@ class PyMOLScene implements JmolSceneGenerator {
     }
     if (frameObj == null)
       return;
-    frameObj.finalizeObject(this, viewer.getModelSet(), null, false);
+    frameObj.finalizeObject(this, vwr.getModelSet(), null, false);
     frameObj = null;
   }
 
@@ -1224,9 +1224,9 @@ class PyMOLScene implements JmolSceneGenerator {
       style = "BoldItalic";
       break;
     }
-    Font font = viewer.getFont3D(face, style, fontSize == 0 ? 12 : fontSize
+    Font font = vwr.getFont3D(face, style, fontSize == 0 ? 12 : fontSize
         * factor);
-    Text t = Text.newLabel(viewer.getGraphicsData(), font, label, getColix(
+    Text t = Text.newLabel(vwr.getGraphicsData(), font, label, getColix(
         colorIndex, 0), (short) 0, 0, 0, labelOffset);
     return t;
   }
@@ -1699,8 +1699,8 @@ class PyMOLScene implements JmolSceneGenerator {
   private void finalizeUniqueBonds() {
     if (uniqueList == null)
       return;
-    int bondCount = viewer.getBondCount();
-    Bond[] bonds = viewer.modelSet.bonds;
+    int bondCount = vwr.getBondCount();
+    Bond[] bonds = vwr.ms.bonds;
     for (int i = bsUniqueBonds.nextSetBit(0); i >= 0; i = bsUniqueBonds.nextSetBit(i + 1)) {
       float rad = Float.NaN;
       int id = uniqueList.get(Integer.valueOf(i)).intValue();

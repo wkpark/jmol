@@ -49,11 +49,11 @@ public class ModelKitPopup extends JmolGenericPopup {
   }
   
   @Override
-  public void jpiInitialize(PlatformViewer viewer, String menu) {
+  public void jpiInitialize(PlatformViewer vwr, String menu) {
     updateMode = UPDATE_NEVER;
     boolean doTranslate = GT.setDoTranslate(true);
     PopupResource bundle = new ModelKitPopupResourceBundle(null, null);
-    initialize((Viewer) viewer, bundle, bundle.getMenuName());
+    initialize((Viewer) vwr, bundle, bundle.getMenuName());
     GT.setDoTranslate(doTranslate);
   }
 
@@ -61,7 +61,7 @@ public class ModelKitPopup extends JmolGenericPopup {
   @Override
   protected void menuShowPopup(SC popup, int x, int y) {
     try {
-      ((JPopupMenu)((AwtSwingComponent)popup).jc).show((Component) viewer.getDisplay(), x, y);
+      ((JPopupMenu)((AwtSwingComponent)popup).jc).show((Component) vwr.getDisplay(), x, y);
     } catch (Exception e) {
       // ignore
     }
@@ -89,7 +89,7 @@ public class ModelKitPopup extends JmolGenericPopup {
         item.setSelected(false);
         //item.setArmed(false);
       }
-      viewer.evalStringQuiet("set picking assignAtom_C");
+      vwr.evalStringQuiet("set picking assignAtom_C");
       return;
     }
     super.menuClickCallback(source, script);  

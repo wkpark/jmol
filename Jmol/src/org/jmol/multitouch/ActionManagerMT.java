@@ -56,8 +56,8 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
    * @see org.jmol.viewer.ActionManagerInterface#setViewer(org.jmol.viewer.Viewer, java.lang.String)
    */
   @Override
-  public void setViewer(Viewer viewer, String commandOptions) {
-    super.setViewer(viewer, commandOptions);
+  public void setViewer(Viewer vwr, String commandOptions) {
+    super.setViewer(vwr, commandOptions);
     mouseWheelFactor = 1.02f;
     boolean isSparsh = (commandOptions.indexOf("-multitouch-sparshui") >= 0);
     boolean isSimulated = (commandOptions.indexOf("-multitouch-sparshui-simulated") >= 0);
@@ -80,7 +80,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     if (isSparsh) {
       startSparshUIService(isSimulated);
     } else if (isJNI) {
-      adapter.setMultiTouchClient(viewer, this, false);
+      adapter.setMultiTouchClient(vwr, this, false);
     }
     setBinding(binding);
     xyRange = 10; // allow for more slop in double-clicks and press/releases
@@ -97,14 +97,14 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     if (isSimulated)
       Logger.error("ActionManagerMT -- for now just using touch simulation.\nPress CTRL-LEFT and then draw two traces on the window.");    
 
-    isMultiTouchClient = adapter.setMultiTouchClient(viewer, this, isSimulated);
+    isMultiTouchClient = adapter.setMultiTouchClient(vwr, this, isSimulated);
     isMultiTouchServer = adapter.isServer();
     if (isSimulated) {
       simulator = (JmolTouchSimulatorInterface) Interface
       .getInterface("com.sparshui.inputdevice.JmolTouchSimulator");
       if (simulator != null) {
         Logger.info("ActionManagerMT simulating SparshUI");
-        simulator.startSimulator(viewer.getDisplay());
+        simulator.startSimulator(vwr.getDisplay());
       }
     }
   }
@@ -202,7 +202,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   @Override
   public List<GestureType> getAllowedGestures(int groupID) {
     //System.out.println("ActionManagerMT getAllowedGestures " + groupID);
-    if (groupID != this.groupID || !viewer.getBoolean(T.allowmultitouch))
+    if (groupID != this.groupID || !vwr.getBoolean(T.allowmultitouch))
       return null;
     List<GestureType> list = new  List<GestureType>();
     //list.add(Integer.valueOf(DRAG_GESTURE));
@@ -222,8 +222,8 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   public int getGroupID(int x, int y) {
     int gid = 0;
     try {
-      if (viewer.hasFocus() && x >= 0 && y >= 0 && x < viewer.getScreenWidth()
-          && y < viewer.getScreenHeight())
+      if (vwr.hasFocus() && x >= 0 && y >= 0 && x < vwr.getScreenWidth()
+          && y < vwr.getScreenHeight())
         gid = groupID;
       if (resetNeeded) {
         gid |= 0x10000000;
@@ -249,7 +249,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
       if (iData == 2) {
         // This is a 2-finger drag
         setMotion(GenericPlatform.CURSOR_MOVE, true);
-        viewer.translateXYBy((int) pt.x, (int) pt.y);
+        vwr.translateXYBy((int) pt.x, (int) pt.y);
         logEvent("Drag", pt);
       }
       break;
@@ -257,15 +257,15 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
       if (simulator == null)
         haveMultiTouchInput = false;
       Logger.error("SparshUI reports no driver present");
-      viewer.log("SparshUI reports no driver present -- setting haveMultiTouchInput FALSE");
+      vwr.log("SparshUI reports no driver present -- setting haveMultiTouchInput FALSE");
       break;
     case ROTATE_EVENT:
       setMotion(GenericPlatform.CURSOR_MOVE, true);
-      viewer.rotateZBy((int) pt.z, Integer.MAX_VALUE, Integer.MAX_VALUE);
+      vwr.rotateZBy((int) pt.z, Integer.MAX_VALUE, Integer.MAX_VALUE);
       logEvent("Rotate", pt);
       break;
     case SERVICE_LOST:
-      viewer.log("Jmol SparshUI client reports service lost -- " + (doneHere ? "not " : "") + " restarting");
+      vwr.log("Jmol SparshUI client reports service lost -- " + (doneHere ? "not " : "") + " restarting");
       if (!doneHere)
         startSparshUIService(simulator != null);  
       break;
@@ -305,12 +305,12 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   }
 
   private void logEvent(String type, P3 pt) {
-    if (!viewer.global.logGestures)
+    if (!vwr.g.logGestures)
       return;
     long time = System.currentTimeMillis(); 
     // at most every 10 seconds
     if (time - lastLogTime > 10000) {
-      viewer.log("$NOW$ multitouch " + type + " pt= " + pt);
+      vwr.log("$NOW$ multitouch " + type + " pt= " + pt);
       lastLogTime = time;
     }
   }
@@ -338,7 +338,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
         int maction = Binding.getMouseAction(1, modifiers, mode);
         if (binding.isBound(maction, ACTION_multiTouchSimulation)) {
           setCurrent(0, x, y, modifiers);
-          viewer.setFocus();
+          vwr.setFocus();
           if (simulationPhase++ == 0)
             simulator.startRecording();
           simulator.mousePressed(time, x, y);
@@ -350,7 +350,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     case Event.RELEASED:
       if (simulator != null && simulationPhase > 0) {
         setCurrent(time, x, y, modifiers);
-        viewer.spinXYBy(0, 0, 0);
+        vwr.spinXYBy(0, 0, 0);
         simulator.mouseReleased(time, x, y);
         if (simulationPhase >= 2) {
           // two strokes only
@@ -376,7 +376,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
 
   @Override
   protected float getDegrees(int delta, int i) {
-    int dim = (i == 0 ? viewer.getScreenWidth() : viewer.getScreenHeight());
+    int dim = (i == 0 ? vwr.getScreenWidth() : vwr.getScreenHeight());
     return ((float) delta) / dim * 180 * mouseDragFactor;
   }
 

@@ -76,7 +76,7 @@ public class MoveToThread extends JmolThread {
   private float fStep;
 
   @Override
-  public int setManager(Object manager, Viewer viewer, Object params) {
+  public int setManager(Object manager, Viewer vwr, Object params) {
     Object[] options = (Object[]) params;
     //  { center, matrixEnd, navCenter },
     //  { 
@@ -92,7 +92,7 @@ public class MoveToThread extends JmolThread {
     //  9 cameraDepth,
     //  10 cameraX,
     //  11 cameraY });
-    setViewer(viewer, "MoveToThread");
+    setViewer(vwr, "MoveToThread");
     transformManager = (TransformManager) manager;
     center = (P3) options[0];
     matrixEnd.setM3((M3) options[1]);
@@ -105,7 +105,7 @@ public class MoveToThread extends JmolThread {
     yTrans = newSlider(transformManager.getTranslationYPercent(), f[3]);
     rotationRadius = newSlider(transformManager.modelRadius, (center == null
         || Float.isNaN(f[4]) ? transformManager.modelRadius
-        : f[4] <= 0 ? viewer.calcRotationRadius(center) : f[4]));
+        : f[4] <= 0 ? vwr.calcRotationRadius(center) : f[4]));
     pixelScale = newSlider(transformManager.scaleDefaultPixelsPerAngstrom, f[5]);
     if (f[6] != 0) {
       navCenter = (P3) options[2];
@@ -147,7 +147,7 @@ public class MoveToThread extends JmolThread {
       switch (mode) {
       case INIT:
         if (totalSteps > 0)
-          viewer.setInMotion(true);
+          vwr.setInMotion(true);
         mode = MAIN;
         break;
       case MAIN:
@@ -166,11 +166,11 @@ public class MoveToThread extends JmolThread {
           doRender = true;
         }
         if (doRender)
-          viewer.requestRepaintAndWait("movetoThread");
+          vwr.requestRepaintAndWait("movetoThread");
         if (transformManager.movetoThread == null 
             || !transformManager.movetoThread.name.equals(name)
             ||!isJS && eval != null
-            && !viewer.isScriptExecuting()) {
+            && !vwr.isScriptExecuting()) {
           stopped = true;
           break;
         }
@@ -184,11 +184,11 @@ public class MoveToThread extends JmolThread {
         if (totalSteps <= 0 || doEndMove && !stopped)
           doFinalTransform();
         if (totalSteps > 0)
-          viewer.setInMotion(false);
-        viewer.moveUpdate(floatSecondsTotal);
+          vwr.setInMotion(false);
+        vwr.moveUpdate(floatSecondsTotal);
         if (transformManager.movetoThread != null && !stopped) {
           transformManager.movetoThread = null;
-          viewer.finalizeTransformParameters();
+          vwr.finalizeTransformParameters();
         }
         resumeEval();
         return;

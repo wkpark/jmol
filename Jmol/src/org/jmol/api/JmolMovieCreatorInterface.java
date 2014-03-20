@@ -9,7 +9,7 @@ public interface JmolMovieCreatorInterface {
   
   /**
    * create a movie from a set of image files 
-   * @param viewer 
+   * @param vwr 
    * @param files 
    * @param width 
    * @param height 
@@ -18,6 +18,6 @@ public interface JmolMovieCreatorInterface {
    * @return null if no error, errorMsg if an error occurs
    * 
    */
-  abstract public String createMovie(Viewer viewer, String[] files, int width,
+  abstract public String createMovie(Viewer vwr, String[] files, int width,
                                      int height, int fps, String fileName);
 }

@@ -46,10 +46,10 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
   protected GenericTextArea input;
   protected GenericTextArea output;
 
-  public Viewer viewer;
+  public Viewer vwr;
   
-  protected void setViewer(JmolViewer viewer) {
-    this.viewer = (Viewer) viewer;
+  protected void setViewer(JmolViewer vwr) {
+    this.vwr = (Viewer) vwr;
   }
 
   protected Map<String, String> labels;
@@ -185,7 +185,7 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
         if (inBrace || splitCmd[2].startsWith("$") 
             || T.isIDcmd(cmdtok) || isSelect) {
           map = new Hashtable<String, Object>();
-          viewer.getObjectMap(map, inBrace || isSelect ? '{' : splitCmd[2].startsWith("$") ? '$' : '0');
+          vwr.getObjectMap(map, inBrace || isSelect ? '{' : splitCmd[2].startsWith("$") ? '$' : '0');
         }
       }
       cmd = T.completeCommand(map, s.equalsIgnoreCase("set "), asCommand, asCommand ? splitCmd[1]
@@ -200,14 +200,14 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
     if (source == runButton) {
       execute(null);
     } else if (source == editButton) {
-      viewer.getProperty("DATA_API","scriptEditor", null);
+      vwr.getProperty("DATA_API","scriptEditor", null);
     } else if (source == historyButton) {
-      clearContent(viewer.getSetHistory(Integer.MAX_VALUE));
+      clearContent(vwr.getSetHistory(Integer.MAX_VALUE));
     } else if (source == stateButton) {
-      clearContent(viewer.getStateInfo());
+      clearContent(vwr.getStateInfo());
       // problem here is that in some browsers, you cannot clip from
       // the editor.
-      //viewer.getProperty("DATA_API","scriptEditor", new String[] { "current state" , viewer.getStateInfo() });
+      //vwr.getProperty("DATA_API","scriptEditor", new String[] { "current state" , vwr.getStateInfo() });
     } else     
       if (source == clearInButton) {
         input.setText("");
@@ -218,7 +218,7 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
         return;
       }
       if (source == loadButton) {
-        viewer.loadInlineAppend(input.getText(), false);
+        vwr.loadInlineAppend(input.getText(), false);
         return;
       }
       if (isMenuItem(source)) {
@@ -231,16 +231,16 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
     String cmd = (strCommand == null ? input.getText() : strCommand);
     if (strCommand == null)
       input.setText(null);
-    String strErrorMessage = viewer.script(cmd + JC.SCRIPT_EDITOR_IGNORE);
+    String strErrorMessage = vwr.script(cmd + JC.SCRIPT_EDITOR_IGNORE);
     if (strErrorMessage != null && !strErrorMessage.equals("pending"))
       outputMsg(strErrorMessage);
   }
 
   protected void destroyConsole() {
-    // if the viewer is an applet, when we close the console
+    // if the vwr is an applet, when we close the console
     // we 
-    if (viewer.isApplet())
-      viewer.getProperty("DATA_API", "getAppConsole", Boolean.FALSE);
+    if (vwr.isApplet())
+      vwr.getProperty("DATA_API", "getAppConsole", Boolean.FALSE);
   }
 
   public static void setAbstractButtonLabels(Map<String, Object> menuMap,
@@ -399,7 +399,7 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
   // key listener actions
   
   protected void recallCommand(boolean up) {
-    String cmd = viewer.getSetHistory(up ? -1 : 1);
+    String cmd = vwr.getSetHistory(up ? -1 : 1);
     if (cmd == null)
       return;
     input.setText(cmd);

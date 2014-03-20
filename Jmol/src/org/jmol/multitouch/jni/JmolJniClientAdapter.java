@@ -46,7 +46,7 @@ public class JmolJniClientAdapter extends JmolMultiTouchClientAdapter {
 
   /*
   @Override
-  public boolean setMultiTouchClient(Viewer viewer, JmolMultiTouchClient client,
+  public boolean setMultiTouchClient(Viewer vwr, JmolMultiTouchClient client,
                                   boolean isSimulation) {
     try {
       // in principle, we could set up our own device driver here

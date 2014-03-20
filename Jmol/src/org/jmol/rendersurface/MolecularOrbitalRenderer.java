@@ -32,17 +32,17 @@ public class MolecularOrbitalRenderer extends IsosurfaceRenderer {
 
   @Override
   protected boolean render() {
-    imageFontScaling = viewer.getImageFontScaling();
+    imageFontScaling = vwr.getImageFontScaling();
     renderIso();
     return needTranslucent;
   }
 
   @Override
   protected void renderInfo() {
-    if (viewer.getCurrentModelIndex() < 0
+    if (vwr.getCurrentModelIndex() < 0
         
         || mesh.title == null 
-        || !g3d.setColix(viewer.getColixBackgroundContrast()))
+        || !g3d.setColix(vwr.getColixBackgroundContrast()))
       return;
 //    if (nf == null)
 //      nf = NumberFormat.getInstance();

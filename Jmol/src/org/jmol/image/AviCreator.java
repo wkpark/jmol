@@ -108,10 +108,10 @@ public class AviCreator implements JmolMovieCreatorInterface {
 
  
   @Override
-  public String createMovie(Viewer viewer, String[] files, int width,
+  public String createMovie(Viewer vwr, String[] files, int width,
                             int height, int fps, String fileName) {
     /*
-    this.viewer = viewer;
+    this.vwr = vwr;
     int frames = files.length;
     JpgData[] jpgData = new JpgData[frames];
     int nBytesJpg = setJpgData(files, jpgData);
@@ -259,7 +259,7 @@ public class AviCreator implements JmolMovieCreatorInterface {
         d.offset = offset;
         offset += d.paddedLength;
         putInt(d.paddedLength);
-        Object ret = viewer.getFileAsBytes(d.file.getAbsolutePath());
+        Object ret = vwr.getFileAsBytes(d.file.getAbsolutePath());
         if (ret instanceof String) {
           errorMsg = (String) ret;
           return false;

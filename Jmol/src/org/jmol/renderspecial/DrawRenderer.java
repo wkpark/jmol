@@ -35,7 +35,6 @@ import org.jmol.shapespecial.DrawMesh;
 import org.jmol.shapespecial.Draw.EnumDrawType;
 import org.jmol.util.C;
 import org.jmol.util.GData;
-import org.jmol.util.Hermite;
 import javajs.util.List;
 import org.jmol.util.Measure;
 
@@ -67,7 +66,7 @@ public class DrawRenderer extends MeshRenderer {
      * 
      */
     needTranslucent = false;
-    imageFontScaling = viewer.getImageFontScaling();
+    imageFontScaling = vwr.getImageFontScaling();
     Draw draw = (Draw) shape;
     for (int i = draw.meshCount; --i >= 0;)
       if (renderMesh(dmesh = (DrawMesh) draw.meshes[i]))
@@ -95,7 +94,7 @@ public class DrawRenderer extends MeshRenderer {
       mesh.vertexCount = 4;
       int[] c = mesh.connections;
       for (int i = 0; i < 4; i++) {
-        mesh.vertices[i] = (c[i] < 0 ? mesh.vertices[i - 1] : viewer
+        mesh.vertices[i] = (c[i] < 0 ? mesh.vertices[i - 1] : vwr
             .getAtomPoint3f(c[i]));
       }
       mesh.recalcAltVertices = true;
@@ -114,7 +113,7 @@ public class DrawRenderer extends MeshRenderer {
       drawLineData(mesh.lineData);
       return;
     }
-    boolean isDrawPickMode = (viewer.getPickingMode() == ActionManager.PICKING_DRAW);
+    boolean isDrawPickMode = (vwr.getPickingMode() == ActionManager.PICKING_DRAW);
     int nPoints = vertexCount;
     boolean isCurved = ((drawType == EnumDrawType.CURVE
         || drawType == EnumDrawType.ARROW || drawType == EnumDrawType.ARC) && vertexCount >= 2);
@@ -125,8 +124,8 @@ public class DrawRenderer extends MeshRenderer {
       for (int i = 0; i < n; i++)
         pt1f.add(vertices[i]);
       pt1f.scale(1f / n);
-      viewer.transformPtScr(pt1f, pt1i);
-      diameter = (int) viewer.scaleToScreen(pt1i.z, (int) Math.floor(width * 1000));
+      vwr.transformPtScr(pt1f, pt1i);
+      diameter = (int) vwr.scaleToScreen(pt1i.z, (int) Math.floor(width * 1000));
       if (diameter == 0)
         diameter = 1;
     }
@@ -157,13 +156,13 @@ public class DrawRenderer extends MeshRenderer {
       render2b(false);
       break;
     case CIRCLE:
-      viewer.transformPtScr(vertices[0], pt1i);
+      vwr.transformPtScr(vertices[0], pt1i);
       if (diameter == 0 && width == 0)
         width = 1.0f;
       if (dmesh.scale > 0)
         width *= dmesh.scale;
       if (width > 0)
-        diameter = (int) viewer.scaleToScreen(pt1i.z, (int) Math.floor(width * 1000));
+        diameter = (int) vwr.scaleToScreen(pt1i.z, (int) Math.floor(width * 1000));
       if (diameter > 0 && (mesh.drawTriangles || mesh.fillTriangles)) {
         g3d.addRenderer(T.circle);
         g3d.drawFilledCircle(colix, mesh.fillTriangles ? colix : 0, diameter,
@@ -206,7 +205,7 @@ public class DrawRenderer extends MeshRenderer {
         nPoints = Math.round (theta / degrees) + 1;
       }
       mat.setAA(A4.newVA(vTemp, (float) (degrees * Math.PI / 180)));
-      screens = viewer.allocTempScreens(nPoints);
+      screens = vwr.allocTempScreens(nPoints);
       int iBase = nPoints - (dmesh.scale < 2 ? 3 : 3);
       for (int i = 0; i < nPoints; i++) {
         if (i == iBase)
@@ -214,12 +213,12 @@ public class DrawRenderer extends MeshRenderer {
         pt1.scaleAdd2(1, vTemp2, pt1f);
         if (i == 0)
           pt2.setT(pt1);
-        viewer.transformPtScr(pt1, screens[i]);
+        vwr.transformPtScr(pt1, screens[i]);
         mat.rotate(vTemp2);
       }
       if (dmesh.isVector && !dmesh.noHead) {
         renderArrowHead(pt0, pt1, 0.3f, false, false, dmesh.isBarb);
-        viewer.transformPtScr(pt1f, screens[nPoints - 1]);
+        vwr.transformPtScr(pt1f, screens[nPoints - 1]);
       }
       pt1f.setT(pt2);
       break;
@@ -232,7 +231,7 @@ public class DrawRenderer extends MeshRenderer {
       if (controlHermites == null || controlHermites.length < nHermites + 1) {
         controlHermites = new P3[nHermites + 1];
       }
-      Hermite.getHermiteList(tension, vertices[vertexCount - 3],
+      GData.getHermiteList(tension, vertices[vertexCount - 3],
           vertices[vertexCount - 2], vertices[vertexCount - 1],
           vertices[vertexCount - 1], vertices[vertexCount - 1],
           controlHermites, 0, nHermites, true);
@@ -291,7 +290,7 @@ public class DrawRenderer extends MeshRenderer {
     vertices[2] = P3.newP(pt2);
 
     for (int i = 0; i < 4; i++)
-      viewer.transformPtScr(vertices[i], screens[i]);
+      vwr.transformPtScr(vertices[i], screens[i]);
 
     float f = 4 * getArrowScale(); // bendiness
     float endoffset = 0.2f;
@@ -309,7 +308,7 @@ public class DrawRenderer extends MeshRenderer {
     }
     pt2.set(dy, -dx, 0);
     pt1.add(pt2);
-    viewer.unTransformPoint(pt1, vertices[1]);
+    vwr.unTransformPoint(pt1, vertices[1]);
     pt2.scale(offsetside);
     vTemp.sub2(vertices[1], vertices[0]);
     vTemp.scale(endoffset); 
@@ -318,12 +317,12 @@ public class DrawRenderer extends MeshRenderer {
     vTemp.scale(endoffset); 
     vertices[2].add(vTemp);
     for (int i = 0; i < 3; i++) {
-      viewer.transformPtScr(vertices[i], screens[i]);
+      vwr.transformPtScr(vertices[i], screens[i]);
       if (offsetside != 0) {
         screens[i].x += Math.round(pt2.x);
         screens[i].y += Math.round(pt2.y);
         pt1.set(screens[i].x, screens[i].y, screens[i].z);
-        viewer.unTransformPoint(pt1 , vertices[i]);
+        vwr.unTransformPoint(pt1 , vertices[i]);
       }
     }
   }
@@ -333,8 +332,8 @@ public class DrawRenderer extends MeshRenderer {
       diameter = 3;
     for (int i = lineData.size(); --i >= 0;) {
       P3[] pts = lineData.get(i);
-      viewer.transformPtScr(pts[0], pt1i);
-      viewer.transformPtScr(pts[1], pt2i);
+      vwr.transformPtScr(pts[0], pt1i);
+      vwr.transformPtScr(pts[1], pt2i);
       drawLine(-1, -2, true, pts[0], pts[1], pt1i, pt2i);
     }
   }
@@ -346,9 +345,9 @@ public class DrawRenderer extends MeshRenderer {
     arrowPt[ptXY] = pt0;
     // set up (0,0,0) to ptXYZ in real and screen coordinates
     pt0.set(screens[ptXY].x, screens[ptXY].y, screens[ptXY].z);
-    viewer.rotatePoint(vertices[ptXYZ], pt1);
+    vwr.rotatePoint(vertices[ptXYZ], pt1);
     pt1.z *= -1;
-    float zoomDimension = viewer.getScreenDim();
+    float zoomDimension = vwr.getScreenDim();
     float scaleFactor = zoomDimension / 20f;
     pt1.scaleAdd2(dmesh.scale * scaleFactor, pt1, pt0);
     if (diameter == 0)
@@ -392,9 +391,9 @@ public class DrawRenderer extends MeshRenderer {
       pt1i.set(Math.round(pt1f.x),Math.round(pt1f.y),Math.round(pt1f.z));
       pt2i.set(Math.round(pt2f.x), Math.round(pt2f.y), Math.round(pt2f.z));
     } else {
-      viewer.transformPtScr(pt2f, pt2i);
-      viewer.transformPtScr(pt1f, pt1i);
-      viewer.transformPtScr(pt0f, pt0i);
+      vwr.transformPtScr(pt2f, pt2i);
+      vwr.transformPtScr(pt1f, pt1i);
+      vwr.transformPtScr(pt0f, pt0i);
     }
     if (pt2i.z == 1 || pt1i.z == 1) //slabbed
       return;
@@ -418,7 +417,7 @@ public class DrawRenderer extends MeshRenderer {
   private float getArrowScale() {
     float fScale = (dmesh.isScaleSet ? dmesh.scale : 0);
     if (fScale == 0)
-      fScale = viewer.getFloat(T.defaultdrawarrowscale) * (dmesh.connections == null ? 1f : 0.5f);
+      fScale = vwr.getFloat(T.defaultdrawarrowscale) * (dmesh.connections == null ? 1f : 0.5f);
     if (fScale <= 0)
       fScale = 0.5f;
     return fScale;
@@ -456,13 +455,13 @@ public class DrawRenderer extends MeshRenderer {
   }
 
   private void renderInfo() {
-    if (mesh.title == null || viewer.getDrawHover()
-        || !g3d.setColix(viewer.getColixBackgroundContrast()))
+    if (mesh.title == null || vwr.getDrawHover()
+        || !g3d.setColix(vwr.getColixBackgroundContrast()))
       return;
     for (int i = dmesh.polygonCount; --i >= 0;)
       if (isPolygonDisplayable(i)) {
         //just the first line of the title -- nothing fancy here.
-        float size = viewer.getFloat(T.drawfontsize);
+        float size = vwr.getFloat(T.drawfontsize);
         if (size <= 0)
           size = 14;
         byte fid = g3d.getFontFid(size * imageFontScaling);
@@ -477,7 +476,7 @@ public class DrawRenderer extends MeshRenderer {
         }
         if (drawType != EnumDrawType.ARC)
           pt1f.setT(vertices[dmesh.polygonIndexes[i][pt]]);
-        viewer.transformPtScr(pt1f, pt1i);
+        vwr.transformPtScr(pt1f, pt1i);
         int offset = Math.round(5 * imageFontScaling);
         g3d.drawString(s, null, pt1i.x + offset, pt1i.y - offset, pt1i.z,
             pt1i.z, (short) 0);

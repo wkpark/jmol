@@ -30,13 +30,13 @@ import java.util.Map;
 
 import org.jmol.api.MepCalculationInterface;
 import org.jmol.api.VolumeDataInterface;
-import org.jmol.io.Binary;
 import org.jmol.io.JmolBinary;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
 
+import javajs.util.Binary;
 import javajs.util.P3;
 import javajs.util.PT;
 
@@ -90,7 +90,7 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
   private float[] potentials;
   private P3[] atomCoordAngstroms;
   private BS bsSelected;
-  private Viewer viewer;
+  private Viewer vwr;
   
   public MepCalculation() {
     rangeBohrOrAngstroms = 8; // Angstroms
@@ -99,8 +99,8 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
   }
   
   @Override
-  public void set(Viewer viewer) {
-    this.viewer = viewer;
+  public void set(Viewer vwr) {
+    this.vwr = vwr;
   }
 
   @Override
@@ -218,7 +218,7 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
     BufferedReader br = null;
     htAtomicPotentials = new Hashtable<String, Object>();
     try {
-      br = (data == null ? JmolBinary.getBufferedReaderForResource(viewer,
+      br = (data == null ? JmolBinary.getBufferedReaderForResource(vwr,
           this, "org/jmol/quantum/", resourceName) : Binary
           .getBR(data));
       String line;

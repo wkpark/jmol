@@ -19,10 +19,10 @@ import javajs.util.PT;
 
 public class JSpecView implements JmolJSpecView {
 
-  private Viewer viewer;
+  private Viewer vwr;
   @Override
-  public void setViewer(Viewer viewer) {
-    this.viewer = viewer;
+  public void setViewer(Viewer vwr) {
+    this.vwr = vwr;
   }
   
   @Override
@@ -36,7 +36,7 @@ public class JSpecView implements JmolJSpecView {
   
   @SuppressWarnings("unchecked")
   private String getPeakAtomRecord(int atomIndex) {
-    Atom[] atoms = viewer.modelSet.atoms;
+    Atom[] atoms = vwr.ms.atoms;
     int iModel = atoms[atomIndex].modelIndex;
     String type = null;
     switch (atoms[atomIndex].getElementNumber()) {
@@ -49,14 +49,14 @@ public class JSpecView implements JmolJSpecView {
     default:
       return null;
     }
-    List<String> peaks = (List<String>) viewer.getModelAuxiliaryInfoValue(iModel,
+    List<String> peaks = (List<String>) vwr.getModelAuxiliaryInfoValue(iModel,
         "jdxAtomSelect_" + type);
     if (peaks == null)
       return null;
-    //viewer.modelSet.htPeaks = null;
-    //if (viewer.modelSet.htPeaks == null)
-    viewer.modelSet.htPeaks = new Hashtable<String, BS>();
-    Hashtable<String, BS> htPeaks = viewer.modelSet.htPeaks;
+    //vwr.modelSet.htPeaks = null;
+    //if (vwr.modelSet.htPeaks == null)
+    vwr.ms.htPeaks = new Hashtable<String, BS>();
+    Hashtable<String, BS> htPeaks = vwr.ms.htPeaks;
     for (int i = 0; i < peaks.size(); i++) {
       String peak = peaks.get(i);
       System.out.println("Jmol JSpecView.java peak="  + peak);
@@ -74,7 +74,7 @@ public class JSpecView implements JmolJSpecView {
         else if (select != null)
           script += "visible & (" + select + ")";
         System.out.println("Jmol JSpecView.java script : " + script);
-        bsPeak.or(viewer.getAtomBitSet(script));
+        bsPeak.or(vwr.getAtomBitSet(script));
       }
       System.out.println("Jmol JSpecView bsPeak now : " + bsPeak + " " + atomIndex);
       if (bsPeak.get(atomIndex))
@@ -87,20 +87,20 @@ public class JSpecView implements JmolJSpecView {
   private void sendJSpecView(String peak) {
     String msg = PT.getQuotedAttribute(peak, "title");
     if (msg != null)
-      viewer.scriptEcho(Logger.debugging ? peak : msg);
-    peak = viewer.fullName + "JSpecView: " + peak;
+      vwr.scriptEcho(Logger.debugging ? peak : msg);
+    peak = vwr.fullName + "JSpecView: " + peak;
     Logger.info("Jmol.JSpecView.sendJSpecView Jmol>JSV " + peak);
-    viewer.statusManager.syncSend(peak, ">", 0);
+    vwr.statusManager.syncSend(peak, ">", 0);
   }
 
   @Override
   public void setModel(int modelIndex) {
-    int syncMode = ("sync on".equals(viewer.modelSet
+    int syncMode = ("sync on".equals(vwr.ms
         .getModelSetAuxiliaryInfoValue("jmolscript")) ? StatusManager.SYNC_DRIVER
-        : viewer.statusManager.getSyncMode());
+        : vwr.statusManager.getSyncMode());
     if (syncMode != StatusManager.SYNC_DRIVER)
       return;
-    String peak = (String) viewer.getModelAuxiliaryInfoValue(modelIndex, "jdxModelSelect");
+    String peak = (String) vwr.getModelAuxiliaryInfoValue(modelIndex, "jdxModelSelect");
     // problem is that SECOND load in jmol will not load new model in JSpecView
     if (peak != null)
       sendJSpecView(peak + " src=\"Jmol\"");
@@ -108,12 +108,12 @@ public class JSpecView implements JmolJSpecView {
 
   @Override
   public int getBaseModelIndex(int modelIndex) {
-    String baseModel = (String) viewer.getModelAuxiliaryInfoValue(modelIndex,
+    String baseModel = (String) vwr.getModelAuxiliaryInfoValue(modelIndex,
         "jdxBaseModel");
     if (baseModel != null)
-      for (int i = viewer.getModelCount(); --i >= 0;)
+      for (int i = vwr.getModelCount(); --i >= 0;)
         if (baseModel
-            .equals(viewer.getModelAuxiliaryInfoValue(i, "jdxModelID")))
+            .equals(vwr.getModelAuxiliaryInfoValue(i, "jdxModelID")))
           return i;
     return modelIndex;
   }
@@ -124,8 +124,8 @@ public class JSpecView implements JmolJSpecView {
     default:
       return null;
     case JC.JSV_SEND:
-      viewer.statusManager.syncSend(
-          viewer.fullName + "JSpecView" + script.substring(9), ">", 0);
+      vwr.statusManager.syncSend(
+          vwr.fullName + "JSpecView" + script.substring(9), ">", 0);
       return null;
     case JC.JSV_SETPEAKS:
       // JSpecView sending us the peak information it has
@@ -133,7 +133,7 @@ public class JSpecView implements JmolJSpecView {
       List<String> peaks = new List<String>();
       for (int i = 0; i < list.length; i++)
         peaks.addLast(list[i]);
-      viewer.getModelSet().setModelAuxiliaryInfo(viewer.getCurrentModelIndex(),
+      vwr.getModelSet().setModelAuxiliaryInfo(vwr.getCurrentModelIndex(),
           "jdxAtomSelect_1HNMR", peaks);
       return null;
     case JC.JSV_SELECT:
@@ -153,7 +153,7 @@ public class JSpecView implements JmolJSpecView {
           + modelID);
       if ("".equals(baseModel))
         id += ".baseModel";
-      int modelIndex = (id == null ? -3 : viewer.getModelIndexFromId(id));
+      int modelIndex = (id == null ? -3 : vwr.getModelIndexFromId(id));
       if (modelIndex == -2)
         return null; // file was found, or no file was indicated, but not this model -- ignore
       if (isSimulation)

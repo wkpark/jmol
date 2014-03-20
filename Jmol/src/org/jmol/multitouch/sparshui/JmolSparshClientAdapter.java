@@ -75,7 +75,7 @@ public class JmolSparshClientAdapter extends JmolMultiTouchClientAdapter impleme
   public JmolSparshClientAdapter() {
   }
 
-  // methods Jmol needs -- from viewer.ActionManagerMT
+  // methods Jmol needs -- from vwr.ActionManagerMT
 
   boolean doneHere;
   
@@ -103,9 +103,9 @@ public class JmolSparshClientAdapter extends JmolMultiTouchClientAdapter impleme
   
   private JmolGestureServerInterface gestureServer;
   @Override
-  public boolean setMultiTouchClient(Viewer viewer, JmolMultiTouchClient client,
+  public boolean setMultiTouchClient(Viewer vwr, JmolMultiTouchClient client,
                               boolean isSimulation) {
-    super.setMultiTouchClient(viewer, client, isSimulation);
+    super.setMultiTouchClient(vwr, client, isSimulation);
     String err;
     gestureServer = (JmolGestureServerInterface) Interface
         .getInterface("com.sparshui.server.GestureServer");

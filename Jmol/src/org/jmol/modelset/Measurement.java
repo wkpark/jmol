@@ -72,7 +72,7 @@ public class Measurement {
   public String strFormat;
   public Text text;
 
-  private Viewer viewer;
+  private Viewer vwr;
   private String strMeasurement;
   private String type;
 
@@ -91,7 +91,7 @@ public class Measurement {
     //value Float.isNaN ==> pending
     this.modelSet = modelSet;
     this.index = index;
-    this.viewer = modelSet.viewer;
+    this.vwr = modelSet.vwr;
     this.colix = colix;
     this.strFormat = strFormat;
     if (m != null) {
@@ -118,12 +118,12 @@ public class Measurement {
 
   public Measurement setPoints(ModelSet modelSet, int[] indices, Point3fi[] points,
       TickInfo tickInfo) {
-    // temporary holding structure only; -- no viewer
+    // temporary holding structure only; -- no vwr
     this.modelSet = modelSet;
     countPlusIndices = indices;
     count = indices[0];
     this.pts = (points == null ? new Point3fi[4] : points);
-    viewer = modelSet.viewer;
+    vwr = modelSet.vwr;
     this.tickInfo = tickInfo;
     return this;
   }
@@ -153,8 +153,8 @@ public class Measurement {
     return strMeasurement;
   }
 
-  public String getStringUsing(Viewer viewer, String strFormat, String units) {
-    this.viewer = viewer;
+  public String getStringUsing(Viewer vwr, String strFormat, String units) {
+    this.vwr = vwr;
     value = getMeasurement(null);
     formatMeasurementAs(strFormat, units, true);
     if (strFormat == null)
@@ -219,8 +219,8 @@ public class Measurement {
   public void reformatDistanceIfSelected() {
     if (count != 2)
       return;
-    if (viewer.isSelected(countPlusIndices[1])
-        && viewer.isSelected(countPlusIndices[2]))
+    if (vwr.isSelected(countPlusIndices[1])
+        && vwr.isSelected(countPlusIndices[2]))
       formatMeasurement(null);
   }
 
@@ -232,7 +232,7 @@ public class Measurement {
       int pt = strFormat.indexOf("//");
       units = (pt >= 0 ? strFormat.substring(pt + 2) : null);
       if (units == null) {
-        units = viewer.getMeasureDistanceUnits();
+        units = vwr.getMeasureDistanceUnits();
         strFormat += "//" + units;
       }
     }
@@ -275,10 +275,10 @@ public class Measurement {
           type = (isPercent ? "percent" : isDC ? "dipoleCouplingConstant"
               : "J-CouplingConstant");
           dist = (isPercent ? dist
-              / (a1.getVanderwaalsRadiusFloat(viewer, EnumVdw.AUTO)
-              + a2.getVanderwaalsRadiusFloat(viewer, EnumVdw.AUTO))
-              : isDC ? viewer.getNMRCalculation().getDipolarConstantHz(a1, a2)
-                  : viewer.getNMRCalculation().getIsoOrAnisoHz(true, a1, a2, units,
+              / (a1.getVanderwaalsRadiusFloat(vwr, EnumVdw.AUTO)
+              + a2.getVanderwaalsRadiusFloat(vwr, EnumVdw.AUTO))
+              : isDC ? vwr.getNMRCalculation().getDipolarConstantHz(a1, a2)
+                  : vwr.getNMRCalculation().getIsoOrAnisoHz(true, a1, a2, units,
                       null));
           isValid = !Float.isNaN(dist);
           if (isPercent)
@@ -324,7 +324,7 @@ public class Measurement {
     }
     if (label == null) {
       strFormat = null;
-      label = viewer.getDefaultMeasurementLabel(countPlusIndices[0]);
+      label = vwr.getDefaultMeasurementLabel(countPlusIndices[0]);
     }
     if (label.indexOf(s) == 0)
       label = label.substring(2);
@@ -334,7 +334,7 @@ public class Measurement {
   }
 
   private String formatString(float value, String units, String label) {
-    return LabelToken.formatLabelMeasure(viewer, this, label, value, units);
+    return LabelToken.formatLabelMeasure(vwr, this, label, value, units);
   }
 
   public boolean sameAsPoints(int[] indices, Point3fi[] points) {
@@ -417,7 +417,7 @@ public class Measurement {
     //  draw symop({3}), which the compiler will interpret as symop()
     return (atomIndex < 0 ? (withModelIndex ? "modelIndex "
         + getAtom(i).modelIndex + " " : "")
-        + Escape.eP(getAtom(i)) : asBitSet ? "(({" + atomIndex + "}))" : viewer
+        + Escape.eP(getAtom(i)) : asBitSet ? "(({" + atomIndex + "}))" : vwr
         .getAtomInfo(atomIndex));
   }
 
@@ -476,8 +476,8 @@ public class Measurement {
     if (radiusData.factorType == EnumType.FACTOR) {
       Atom atom1 = (Atom) getAtom(1);
       Atom atom2 = (Atom) getAtom(2);
-      float d = (atom1.getVanderwaalsRadiusFloat(viewer, radiusData.vdwType) + atom2
-          .getVanderwaalsRadiusFloat(viewer, radiusData.vdwType))
+      float d = (atom1.getVanderwaalsRadiusFloat(vwr, radiusData.vdwType) + atom2
+          .getVanderwaalsRadiusFloat(vwr, radiusData.vdwType))
           * radiusData.value;
       return (value <= d);
     }

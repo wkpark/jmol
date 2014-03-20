@@ -108,7 +108,7 @@ public class StateManager {
     return objectNameList.substring(objId * 11, objId * 11 + 11).trim();
   }
 
-  protected final Viewer viewer;
+  protected final Viewer vwr;
   protected Map<String, Object> saved = new Hashtable<String, Object>();
   
   private String lastOrientation = "";
@@ -120,66 +120,66 @@ public class StateManager {
   private String lastShape = "";
   private String lastCoordinates = "";
 
-  StateManager(Viewer viewer) {
-    this.viewer = viewer;
+  StateManager(Viewer vwr) {
+    this.vwr = vwr;
   }
   
   GlobalSettings getGlobalSettings(GlobalSettings gsOld, boolean clearUserVariables) {
     //saved.clear();
-    return new GlobalSettings(viewer, gsOld, clearUserVariables);
+    return new GlobalSettings(vwr, gsOld, clearUserVariables);
   }
 
   void clear(GlobalSettings global) {
-    viewer.setShowAxes(false);
-    viewer.setShowBbcage(false);
-    viewer.setShowUnitCell(false);
+    vwr.setShowAxes(false);
+    vwr.setShowBbcage(false);
+    vwr.setShowUnitCell(false);
     global.clear();
   }
 
   void setCrystallographicDefaults() {
     //axes on and mode unitCell; unitCell on; perspective depth off;
-    viewer.setAxesModeUnitCell(true);
-    viewer.setShowAxes(true);
-    viewer.setShowUnitCell(true);
-    viewer.setBooleanProperty("perspectiveDepth", false);
+    vwr.setAxesModeUnitCell(true);
+    vwr.setShowAxes(true);
+    vwr.setShowUnitCell(true);
+    vwr.setBooleanProperty("perspectiveDepth", false);
   }
 
   private void setCommonDefaults() {
-    viewer.setBooleanProperty("perspectiveDepth", true);
-    viewer.setFloatProperty("bondTolerance",
+    vwr.setBooleanProperty("perspectiveDepth", true);
+    vwr.setFloatProperty("bondTolerance",
         JC.DEFAULT_BOND_TOLERANCE);
-    viewer.setFloatProperty("minBondDistance",
+    vwr.setFloatProperty("minBondDistance",
         JC.DEFAULT_MIN_BOND_DISTANCE);
-    viewer.setIntProperty("bondingVersion", Elements.RAD_COV_IONIC_OB1_100_1);
-    viewer.setBooleanProperty("translucent", true);
+    vwr.setIntProperty("bondingVersion", Elements.RAD_COV_IONIC_OB1_100_1);
+    vwr.setBooleanProperty("translucent", true);
   }
 
   void setJmolDefaults() {
     setCommonDefaults();
-    viewer.setStringProperty("defaultColorScheme", "Jmol");
-    viewer.setBooleanProperty("axesOrientationRasmol", false);
-    viewer.setBooleanProperty("zeroBasedXyzRasmol", false);
-    viewer.setIntProperty("percentVdwAtom",
+    vwr.setStringProperty("defaultColorScheme", "Jmol");
+    vwr.setBooleanProperty("axesOrientationRasmol", false);
+    vwr.setBooleanProperty("zeroBasedXyzRasmol", false);
+    vwr.setIntProperty("percentVdwAtom",
         JC.DEFAULT_PERCENT_VDW_ATOM);
-    viewer.setIntProperty("bondRadiusMilliAngstroms",
+    vwr.setIntProperty("bondRadiusMilliAngstroms",
         JC.DEFAULT_BOND_MILLIANGSTROM_RADIUS);
-    viewer.setVdwStr("auto");
+    vwr.setVdwStr("auto");
   }
 
   void setRasMolDefaults() {
     setCommonDefaults();
-    viewer.setStringProperty("defaultColorScheme", "RasMol");
-    viewer.setBooleanProperty("axesOrientationRasmol", true);
-    viewer.setBooleanProperty("zeroBasedXyzRasmol", true);
-    viewer.setIntProperty("percentVdwAtom", 0);
-    viewer.setIntProperty("bondRadiusMilliAngstroms", 1);
-    viewer.setVdwStr("Rasmol");
+    vwr.setStringProperty("defaultColorScheme", "RasMol");
+    vwr.setBooleanProperty("axesOrientationRasmol", true);
+    vwr.setBooleanProperty("zeroBasedXyzRasmol", true);
+    vwr.setIntProperty("percentVdwAtom", 0);
+    vwr.setIntProperty("bondRadiusMilliAngstroms", 1);
+    vwr.setVdwStr("Rasmol");
   }
 
   void setPyMOLDefaults() {
     setCommonDefaults();
-    viewer.setStringProperty("measurementUnits", "ANGSTROMS");
-    viewer.setBooleanProperty("zoomHeight", true);
+    vwr.setStringProperty("measurementUnits", "ANGSTROMS");
+    vwr.setBooleanProperty("zoomHeight", true);
   }
 
   private static Object getNoCase(Map<String, Object> saved, String name) {
@@ -227,10 +227,10 @@ public class StateManager {
         : lastSelected);
     BS bsSelected = (BS) getNoCase(saved, name);
     if (bsSelected == null) {
-      viewer.select(new BS(), false, 0, false);
+      vwr.select(new BS(), false, 0, false);
       return false;
     }
-    viewer.select(bsSelected, false, 0, false);
+    vwr.select(bsSelected, false, 0, false);
     return true;
   }
 
@@ -240,7 +240,7 @@ public class StateManager {
       return;
     }
     saveName = lastState = "State_" + saveName;
-    saved.put(saveName, viewer.getStateInfo());
+    saved.put(saveName, vwr.getStateInfo());
   }
 
   String getSavedState(String saveName) {
@@ -257,7 +257,7 @@ public class StateManager {
    String script = (String) getNoCase(saved, name);
    if (script == null)
    return false;
-   viewer.script(script + CommandHistory.NOHISTORYATALL_FLAG);
+   vwr.script(script + CommandHistory.NOHISTORYATALL_FLAG);
    return true;
    }
    */
@@ -267,7 +267,7 @@ public class StateManager {
       return;
     }
     saveName = lastShape = "Shape_" + saveName;
-    saved.put(saveName, viewer.getStructureState());
+    saved.put(saveName, vwr.getStructureState());
   }
 
   String getSavedStructure(String saveName) {
@@ -282,7 +282,7 @@ public class StateManager {
       return;
     }
     saveName = lastCoordinates = "Coordinates_" + saveName;
-    saved.put(saveName, viewer.getCoordinateState(bsSelected));
+    saved.put(saveName, vwr.getCoordinateState(bsSelected));
   }
 
   String getSavedCoordinates(String saveName) {
@@ -293,7 +293,7 @@ public class StateManager {
   }
 
   Orientation getOrientation() {
-    return new Orientation(viewer, false, null);
+    return new Orientation(vwr, false, null);
   }
 
   String getSavedOrientationText(String saveName) {
@@ -345,7 +345,7 @@ public class StateManager {
       if (gen != null)
         gen.generateScene(scene);
       float[] pv = (float[]) scene.get("pymolView");
-      return (pv != null && viewer.movePyMOL(viewer.eval, timeSeconds, pv));
+      return (pv != null && vwr.movePyMOL(vwr.eval, timeSeconds, pv));
     }
   }
 
@@ -354,7 +354,7 @@ public class StateManager {
       deleteSavedType("Orientation_");
       return;
     }
-    Orientation o = new Orientation(viewer, saveName.equalsIgnoreCase("default"), pymolView);
+    Orientation o = new Orientation(vwr, saveName.equalsIgnoreCase("default"), pymolView);
     o.saveName = lastOrientation = "Orientation_" + saveName;
     saved.put(o.saveName, o);
   }
@@ -406,7 +406,7 @@ public class StateManager {
     protected Connection[] connections;
 
     protected Connections() {
-      ModelSet modelSet = viewer.getModelSet();
+      ModelSet modelSet = vwr.getModelSet();
       if (modelSet == null)
         return;
       bondCount = modelSet.bondCount;
@@ -420,7 +420,7 @@ public class StateManager {
     }
 
     protected boolean restore() {
-      ModelSet modelSet = viewer.getModelSet();
+      ModelSet modelSet = vwr.getModelSet();
       if (modelSet == null)
         return false;
       modelSet.deleteAllBonds();
@@ -436,7 +436,7 @@ public class StateManager {
       }
       for (int i = bondCount; --i >= 0;)
         modelSet.getBondAt(i).setIndex(i);
-      viewer.setShapeProperty(JC.SHAPE_STICKS, "reportAll", null);
+      vwr.setShapeProperty(JC.SHAPE_STICKS, "reportAll", null);
       return true;
     }
   }

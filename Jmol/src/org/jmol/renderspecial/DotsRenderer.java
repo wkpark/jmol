@@ -69,16 +69,16 @@ public class DotsRenderer extends ShapeRenderer {
     //dots.timeBeginExecution = System.currentTimeMillis();
     if (!iShowSolid && !g3d.setColix(C.BLACK)) // no translucent for dots
       return;
-    int sppa = (int) viewer.getScalePixelsPerAngstrom(true);
+    int sppa = (int) vwr.getScalePixelsPerAngstrom(true);
     screenLevel = (iShowSolid || sppa > 20 ? 3 : sppa > 10 ? 2 : sppa > 5 ? 1
         : 0);
     if (!iShowSolid)
-      screenLevel += viewer.getInt(T.dotdensity) - 3;
+      screenLevel += vwr.getInt(T.dotdensity) - 3;
     screenLevel = Math.max(Math.min(screenLevel, Dots.MAX_LEVEL), 0);
     screenDotCount = Geodesic.getVertexCount(screenLevel);
-    dotScale = viewer.getInt(T.dotscale);
+    dotScale = vwr.getInt(T.dotscale);
     for (int i = screenDotCount; --i >= 0;)
-      viewer.transformVector(Geodesic.getVertexVector(i),
+      vwr.transformVector(Geodesic.getVertexVector(i),
           verticesTransformed[i]);
     BS[] maps = dots.ec.getDotsConvexMaps();
     for (int i = dots.ec.getDotsConvexMax(); --i >= 0;) {
@@ -116,7 +116,7 @@ public class DotsRenderer extends ShapeRenderer {
   private int calcScreenPoints(BS visibilityMap, float radius, int x, int y, int z) {
     int nPoints = 0;
     int i = 0;
-    float scaledRadius = viewer.scaleToPerspective(z, radius);
+    float scaledRadius = vwr.scaleToPerspective(z, radius);
     int iDot = Math.min(visibilityMap.size(), screenDotCount); 
     while (--iDot >= 0) {
       if (!visibilityMap.get(iDot))

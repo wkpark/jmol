@@ -385,16 +385,6 @@ public class Txt {
     return true;
   }
 
-  public static String join(String[] s, char c, int i0) {
-    if (s.length < i0)
-      return null;
-    SB sb = new SB();
-    sb.append(s[i0++]);
-    for (int i = i0; i < s.length; i++)
-      sb.appendC(c).append(s[i]);
-    return sb.toString();
-  }
-
   public static String replaceQuotedStrings(String s, List<String> list,
                                             List<String> newList) {
     int n = list.size();

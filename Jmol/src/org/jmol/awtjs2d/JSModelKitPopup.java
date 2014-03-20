@@ -46,11 +46,11 @@ public class JSModelKitPopup extends JmolGenericPopup {
   }
   
   @Override
-  public void jpiInitialize(PlatformViewer viewer, String menu) {
+  public void jpiInitialize(PlatformViewer vwr, String menu) {
     updateMode = UPDATE_NEVER;
     boolean doTranslate = GT.setDoTranslate(true);
     PopupResource bundle = new ModelKitPopupResourceBundle(null, null);
-    initialize((Viewer) viewer, bundle, bundle.getMenuName());
+    initialize((Viewer) vwr, bundle, bundle.getMenuName());
     GT.setDoTranslate(doTranslate);
   }
 
@@ -58,7 +58,7 @@ public class JSModelKitPopup extends JmolGenericPopup {
   public void menuShowPopup(SC popup, int x, int y) {
 
     try {
-      ((JPopupMenu) popup).show(isTainted ? (Component) viewer.getApplet() : null, x, y);
+      ((JPopupMenu) popup).show(isTainted ? (Component) vwr.getApplet() : null, x, y);
     } catch (Exception e) {
       // ignore
     }
@@ -78,7 +78,7 @@ public class JSModelKitPopup extends JmolGenericPopup {
         item.setActionCommand("_??P!:");
         item.setSelected(false);
       }
-      viewer.evalStringQuiet("set picking assignAtom_C");
+      vwr.evalStringQuiet("set picking assignAtom_C");
       return;
     }
     processClickCallback(source, script);

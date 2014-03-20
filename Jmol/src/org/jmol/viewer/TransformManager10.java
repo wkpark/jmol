@@ -28,8 +28,8 @@ class TransformManager10 {// extends TransformManager {
 // no longer supported in Jmol 13.2 
   
 //
-//  TransformManager10(Viewer viewer, int width, int height) {
-//    super(viewer, width, height);
+//  TransformManager10(Viewer vwr, int width, int height) {
+//    super(vwr, width, height);
 //    perspectiveModel = 10;
 //  }
 //

@@ -68,18 +68,18 @@ abstract public class JmolViewer implements JSInterface {
   //abstract public boolean showModelSetDownload(); deprecated -- was just "true"
   
   /**
-   * This is the older main access point for creating an application or applet viewer.
+   * This is the older main access point for creating an application or applet vwr.
    * 
    * You can also use That is necessary when
    * compiled into JavaScript using Java2Script
    * 
    * In Jmol 11.6 it was manditory that one of the next commands is either
    * 
-   * viewer.evalString("ZAP");
+   * vwr.evalString("ZAP");
    * 
    * or at least:
    * 
-   * viewer.setAppletContext("",null,null,"")
+   * vwr.setAppletContext("",null,null,"")
    * 
    * One or the other of these was necessary to establish the first modelset,
    * which might be required by one or more later evaluated commands or file
@@ -164,7 +164,7 @@ abstract public class JmolViewer implements JSInterface {
    * 
    * create your console with, perhaps:
    * 
-   * new org.openscience.jmol.app.jmolPanel.AppConsole(viewer, displayFrame, 
+   * new org.openscience.jmol.app.jmolPanel.AppConsole(vwr, displayFrame, 
    *                               externalJPanel, buttonsEnabled);
    * 
    * (see examples/basic/org/jmol/Integration.java
@@ -194,8 +194,8 @@ abstract public class JmolViewer implements JSInterface {
     return Viewer.getJmolVersion();
   }
 
-  static public boolean checkOption(JmolViewer viewer, String option) {
-    Object testFlag = viewer.getParameter(option);
+  static public boolean checkOption(JmolViewer vwr, String option) {
+    Object testFlag = vwr.getParameter(option);
     return (testFlag instanceof Boolean && ((Boolean) testFlag).booleanValue()
         || testFlag instanceof Integer && ((Integer) testFlag).intValue() != 0);
   }
@@ -440,7 +440,7 @@ abstract public class JmolViewer implements JSInterface {
   abstract public void setFloatProperty(String propertyName, float value);
   abstract public void setStringProperty(String propertyName, String value);
 
-  abstract public void setModeMouse(int modeMouse); //only MOUSEMODE_NONE, prior to nulling viewer
+  abstract public void setModeMouse(int modeMouse); //only MOUSEMODE_NONE, prior to nulling vwr
 
   abstract public void setShowHydrogens(boolean showHydrogens);
   abstract public void setShowMeasurements(boolean showMeasurements);
@@ -454,31 +454,31 @@ abstract public class JmolViewer implements JSInterface {
   
   //for each of these the script equivalent is shown  
   abstract public void setAnimationFps(int framesPerSecond);
-  //viewer.script("animation fps x.x")
+  //vwr.script("animation fps x.x")
   abstract public void setFrankOn(boolean frankOn);
-  //viewer.script("frank on")
+  //vwr.script("frank on")
   abstract public void setDebugScript(boolean debugScript);
-  //viewer.script("set logLevel 5/4")
-  //viewer.script("set debugScript on/off")
+  //vwr.script("set logLevel 5/4")
+  //vwr.script("set debugScript on/off")
   abstract public void deleteMeasurement(int i);
-  //viewer.script("measures delete " + (i + 1));
+  //vwr.script("measures delete " + (i + 1));
   abstract public void clearMeasurements();
-  //viewer.script("measures delete");
+  //vwr.script("measures delete");
   abstract public void setVectorScale(float vectorScaleValue);
-  //viewer.script("vector scale " + vectorScaleValue);
+  //vwr.script("vector scale " + vectorScaleValue);
   abstract public void setVibrationScale(float vibrationScaleValue);
-  //viewer.script("vibration scale " + vibrationScaleValue);
+  //vwr.script("vibration scale " + vibrationScaleValue);
   abstract public void setVibrationPeriod(float vibrationPeriod);
-  //viewer.script("vibration " + vibrationPeriod);
+  //vwr.script("vibration " + vibrationPeriod);
   abstract public void selectAll();
-  //viewer.script("select all");
+  //vwr.script("select all");
   abstract public void clearSelection();
-  //viewer.script("select none");
-  //viewer.script("select ({2 3:6})");
+  //vwr.script("select none");
+  //vwr.script("select ({2 3:6})");
   abstract public void setSelectionSet(BS newSelection);
-  //viewer.script("selectionHalos ON"); //or OFF
+  //vwr.script("selectionHalos ON"); //or OFF
   abstract public void setSelectionHalos(boolean haloEnabled);
-  //viewer.script("center (selected)");
+  //vwr.script("center (selected)");
   abstract public void setCenterSelected(); 
 
   abstract public void rotateFront();

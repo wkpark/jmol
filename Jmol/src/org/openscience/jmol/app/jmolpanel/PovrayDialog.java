@@ -65,7 +65,7 @@ import java.util.Map;
  */
 public class PovrayDialog extends JDialog {
 
-  private transient JmolViewer viewer;
+  private transient JmolViewer vwr;
   
   protected JButton    povrayPathButton;
   //protected JTextField commandLineField;
@@ -109,19 +109,19 @@ public class PovrayDialog extends JDialog {
    * Creates a dialog for getting info related to output frames in
    *  povray format.
    * @param f The frame assosiated with the dialog
-   * @param viewer The interacting display we are reproducing (source of view angle info etc)
+   * @param vwr The interacting display we are reproducing (source of view angle info etc)
    */
-  public PovrayDialog(JFrame f, JmolViewer viewer) {
+  public PovrayDialog(JFrame f, JmolViewer vwr) {
 
     super(f, GT._("Render in POV-Ray"), true);
-    this.viewer = viewer;
+    this.vwr = vwr;
 
     //
     String text = null;
     
     //Take the height and width settings from the JFrame
-    int screenWidth = viewer.getScreenWidth();
-    int screenHeight = viewer.getScreenHeight();
+    int screenWidth = vwr.getScreenWidth();
+    int screenHeight = vwr.getScreenHeight();
     setImageDimensions(screenWidth, screenHeight);
 
     // Event management
@@ -580,10 +580,10 @@ public class PovrayDialog extends JDialog {
     params.put("width", Integer.valueOf(width));
     params.put("height", Integer.valueOf(height));
     params.put("params", getINI());
-    String data = viewer.generateOutputForExport(params);
+    String data = vwr.generateOutputForExport(params);
     if (data == null)
       return;
-    viewer.writeTextFile(filename + ".ini", data);
+    vwr.writeTextFile(filename + ".ini", data);
 
     // Run Povray if needed
     boolean callPovray = runPovCheck.isSelected();
@@ -898,9 +898,9 @@ public class PovrayDialog extends JDialog {
     // Animation options
     if ((allFramesCheck != null) && (allFramesCheck.isSelected())) {
       commandLine += " +KFI1";
-      commandLine += " +KFF" + viewer.getModelCount();
+      commandLine += " +KFF" + vwr.getModelCount();
       commandLine += " +KI1";
-      commandLine += " +KF" + viewer.getModelCount();
+      commandLine += " +KF" + vwr.getModelCount();
     }
 
     // Mosaic preview options
@@ -948,9 +948,9 @@ public class PovrayDialog extends JDialog {
     // Animation options
     if ((allFramesCheck != null) && (allFramesCheck.isSelected())) {
       data.append("Initial_Frame=1\n");
-      data.append("Final_Frame=" + viewer.getModelCount() + "\n");
+      data.append("Final_Frame=" + vwr.getModelCount() + "\n");
       data.append("Initial_Clock=1\n");
-      data.append("Final_Clock=" + viewer.getModelCount() + "\n");
+      data.append("Final_Clock=" + vwr.getModelCount() + "\n");
     }
     
     // Output alpha options

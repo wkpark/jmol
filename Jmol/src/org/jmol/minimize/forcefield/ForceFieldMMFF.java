@@ -206,7 +206,7 @@ public class ForceFieldMMFF extends ForceField {
   
 
   private static List<AtomType> atomTypes;
-  private static Map<Integer, Object> ffParams;
+  private static Map<Object, Object> ffParams;
 
   private int[] rawAtomTypes;
   private int[] rawBondTypes;
@@ -262,7 +262,7 @@ public class ForceFieldMMFF extends ForceField {
     // these are original atom-index-based, not minAtom-index based. 
 
     vRings = AU.createArrayOfArrayList(4);
-    rawAtomTypes = setAtomTypes(atoms, bsAtoms, m.viewer.getSmilesMatcher(),
+    rawAtomTypes = setAtomTypes(atoms, bsAtoms, m.vwr.getSmilesMatcher(),
         vRings, allowUnknowns);
     if (rawAtomTypes == null)
       return false;
@@ -278,7 +278,7 @@ public class ForceFieldMMFF extends ForceField {
     if (ffParams != null)
       return;
     getAtomTypes();
-    Hashtable<Integer, Object> data = new Hashtable<Integer, Object>();
+    Hashtable<Object, Object> data = new Hashtable<Object, Object>();
     String resourceName = "mmff94.par.txt";
     if (Logger.debugging)
       Logger.debug("reading data from " + resourceName);
@@ -310,7 +310,7 @@ public class ForceFieldMMFF extends ForceField {
 
   private String line;
   
-  private void readParams(BufferedReader br, int dataType, Map<Integer, Object> data) throws Exception {
+  private void readParams(BufferedReader br, int dataType, Map<Object, Object> data) throws Exception {
     // parameters are keyed by a 32-bit Integer 
     // that is composed of four 7-bit atom types and one 4-bit parameter type
     // in some cases, the last 7-bit atom type (a4) is used for additional parameter typing

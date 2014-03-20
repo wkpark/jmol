@@ -132,16 +132,16 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   };
 
   JmolPanel jmol;
-  JmolViewer viewer;
+  JmolViewer vwr;
   GuiMap guimap;
 
   public PreferencesDialog(JmolPanel jmol, JFrame f, GuiMap guimap,
-                           JmolViewer viewer) {
+                           JmolViewer vwr) {
 
     super(f, false);
     this.jmol = jmol;
     this.guimap = guimap;
-    this.viewer = viewer;
+    this.vwr = vwr;
 
     initializeProperties();
 
@@ -212,10 +212,10 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     showPanel.setLayout(new GridLayout(1, 3));
     showPanel.setBorder(new TitledBorder(GT._("Show All")));
     cH = guimap.newJCheckBox("Prefs.showHydrogens",
-                             viewer.getBoolean(T.showhydrogens));
+                             vwr.getBoolean(T.showhydrogens));
     cH.addItemListener(checkBoxListener);
     cM = guimap.newJCheckBox("Prefs.showMeasurements",
-                             viewer.getBoolean(T.showmeasurements));
+                             vwr.getBoolean(T.showmeasurements));
     cM.addItemListener(checkBoxListener);
     showPanel.add(cH);
     showPanel.add(cM);
@@ -232,17 +232,17 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
     cbPerspectiveDepth =
       guimap.newJCheckBox("Prefs.perspectiveDepth",
-                          viewer.getPerspectiveDepth());
+                          vwr.getPerspectiveDepth());
     cbPerspectiveDepth.addItemListener(checkBoxListener);
     fooPanel.add(cbPerspectiveDepth);
 
     cbShowAxes =
-      guimap.newJCheckBox("Prefs.showAxes", viewer.getShowAxes());
+      guimap.newJCheckBox("Prefs.showAxes", vwr.getShowAxes());
     cbShowAxes.addItemListener(checkBoxListener);
     fooPanel.add(cbShowAxes);
 
     cbShowBoundingBox =
-      guimap.newJCheckBox("Prefs.showBoundingBox", viewer.getShowBbcage());
+      guimap.newJCheckBox("Prefs.showBoundingBox", vwr.getShowBbcage());
     cbShowBoundingBox.addItemListener(checkBoxListener);
     fooPanel.add(cbShowBoundingBox);
 
@@ -258,7 +258,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
     cbAxesOrientationRasmol =
         guimap.newJCheckBox("Prefs.axesOrientationRasmol",
-                            viewer.getBoolean(T.axesorientationrasmol));
+                            vwr.getBoolean(T.axesorientationrasmol));
     cbAxesOrientationRasmol.addItemListener(checkBoxListener);
     axesPanel.add(cbAxesOrientationRasmol);
 
@@ -314,7 +314,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
                                 SwingConstants.CENTER);
     sfPanel.add(sfLabel, BorderLayout.NORTH);
     vdwPercentSlider =
-      new JSlider(SwingConstants.HORIZONTAL, 0, 100, viewer.getInt(T.percentvdwatom));
+      new JSlider(SwingConstants.HORIZONTAL, 0, 100, vwr.getInt(T.percentvdwatom));
     vdwPercentSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     vdwPercentSlider.setPaintTicks(true);
     vdwPercentSlider.setMajorTickSpacing(20);
@@ -374,22 +374,22 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     autobondPanel.add(abYes);
     autobondPanel.add(abNo);
     autobondPanel.add(Box.createVerticalGlue());
-    abYes.setSelected(viewer.getBoolean(T.autobond));
+    abYes.setSelected(vwr.getBoolean(T.autobond));
     abYes.addActionListener(new ActionListener() {
 
       @Override
       public void actionPerformed(ActionEvent e) {
-        viewer.setBooleanProperty("autoBond", true);        
+        vwr.setBooleanProperty("autoBond", true);        
         currentProperties.put("autoBond", "" + "true");
       }
     });
 
-    abNo.setSelected(!viewer.getBoolean(T.autobond));
+    abNo.setSelected(!vwr.getBoolean(T.autobond));
     abNo.addActionListener(new ActionListener() {
 
       @Override
       public void actionPerformed(ActionEvent e) {
-        viewer.setBooleanProperty("autoBond", false);
+        vwr.setBooleanProperty("autoBond", false);
         currentProperties.put("autoBond", "" + "false");          
       }
     });
@@ -404,7 +404,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     JLabel bwLabel = new JLabel(GT._("(Angstroms)"), SwingConstants.CENTER);
     bwPanel.add(bwLabel, BorderLayout.NORTH);
 
-    bwSlider = new JSlider(0, 250,viewer.getMadBond()/2);
+    bwSlider = new JSlider(0, 250,vwr.getMadBond()/2);
     bwSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     bwSlider.setPaintTicks(true);
     bwSlider.setMajorTickSpacing(50);
@@ -441,7 +441,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     btPanel.add(btLabel, BorderLayout.NORTH);
 
     btSlider = new JSlider(SwingConstants.HORIZONTAL, 0, 100,
-        (int) (100 * viewer.getFloat(T.bondtolerance)));
+        (int) (100 * vwr.getFloat(T.bondtolerance)));
     btSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     btSlider.setPaintTicks(true);
     btSlider.setMajorTickSpacing(20);
@@ -483,7 +483,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     bdPanel.add(bdLabel, BorderLayout.NORTH);
 
     bdSlider = new JSlider(SwingConstants.HORIZONTAL, 0, 100,
-        (int) (100 * viewer.getFloat(T.minbonddistance)));
+        (int) (100 * vwr.getFloat(T.minbonddistance)));
     bdSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     bdSlider.setPaintTicks(true);
     bdSlider.setMajorTickSpacing(20);
@@ -543,33 +543,33 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
   private void updateComponents() {
     // Display panel
-    cH.setSelected(viewer.getBoolean(T.showhydrogens));
-    cM.setSelected(viewer.getBoolean(T.showmeasurements));
+    cH.setSelected(vwr.getBoolean(T.showhydrogens));
+    cM.setSelected(vwr.getBoolean(T.showmeasurements));
 
-    cbPerspectiveDepth.setSelected(viewer.getPerspectiveDepth());
-    cbShowAxes.setSelected(viewer.getShowAxes());
-    cbShowBoundingBox.setSelected(viewer.getShowBbcage());
+    cbPerspectiveDepth.setSelected(vwr.getPerspectiveDepth());
+    cbShowAxes.setSelected(vwr.getShowAxes());
+    cbShowBoundingBox.setSelected(vwr.getShowBbcage());
 
-    cbAxesOrientationRasmol.setSelected(viewer.getBoolean(T.axesorientationrasmol));
+    cbAxesOrientationRasmol.setSelected(vwr.getBoolean(T.axesorientationrasmol));
     
     cbOpenFilePreview.setSelected(openFilePreview);
     cbClearHistory.setSelected(clearHistory);
 
     // Atom panel controls: 
-    vdwPercentSlider.setValue(viewer.getInt(T.percentvdwatom));
+    vdwPercentSlider.setValue(vwr.getInt(T.percentvdwatom));
 
     // Bond panel controls:
-    abYes.setSelected(viewer.getBoolean(T.autobond));
-    bwSlider.setValue(viewer.getMadBond()/2);
-    bdSlider.setValue((int) (100 * viewer.getFloat(T.minbonddistance)));
-    btSlider.setValue((int) (100 * viewer.getFloat(T.bondtolerance)));
+    abYes.setSelected(vwr.getBoolean(T.autobond));
+    bwSlider.setValue(vwr.getMadBond()/2);
+    bdSlider.setValue((int) (100 * vwr.getFloat(T.minbonddistance)));
+    btSlider.setValue((int) (100 * vwr.getFloat(T.bondtolerance)));
 
   }
 
   private void apply() {
     rebond();
     save();
-    viewer.refresh(3, "PreferencesDialog:apply()");
+    vwr.refresh(3, "PreferencesDialog:apply()");
   }
 
   private void save() {
@@ -606,29 +606,29 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         currentProperties.put(overrides[i], overrides[i+1]);
     }
     initVariables();
-    viewer.refresh(3, "PreferencesDialog:resetDefaults()");
+    vwr.refresh(3, "PreferencesDialog:resetDefaults()");
     updateComponents();
   }
 
   void rebond() {
     percentVdwAtom = vdwPercentSlider.getValue();
-    viewer.setIntProperty("PercentVdwAtom", percentVdwAtom);
+    vwr.setIntProperty("PercentVdwAtom", percentVdwAtom);
     currentProperties.put("percentVdwAtom", "" + percentVdwAtom);
 
     bondTolerance = btSlider.getValue() / 100f;
-    viewer.setFloatProperty("bondTolerance", bondTolerance);
+    vwr.setFloatProperty("bondTolerance", bondTolerance);
     currentProperties.put("bondTolerance", "" + bondTolerance);
     
     minBondDistance = bdSlider.getValue() / 100f;
-    viewer.setFloatProperty("minBondDistance", minBondDistance);
+    vwr.setFloatProperty("minBondDistance", minBondDistance);
     currentProperties.put("minBondDistance", "" + minBondDistance);
     
     marBond = (short)bwSlider.getValue();
-    viewer.setIntProperty("bondRadiusMilliAngstroms", marBond);
+    vwr.setIntProperty("bondRadiusMilliAngstroms", marBond);
     currentProperties.put("marBond", "" + marBond);
     
-    viewer.rebond();
-    viewer.refresh(3, "PreferencesDialog:rebond()");
+    vwr.rebond();
+    vwr.refresh(3, "PreferencesDialog:rebond()");
   }
   
   void initVariables() {
@@ -656,22 +656,22 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
 
     if (Boolean.getBoolean("jmolDefaults"))
-      viewer.setStringProperty("defaults", "Jmol");
+      vwr.setStringProperty("defaults", "Jmol");
     else
-      viewer.setStringProperty("defaults", "RasMol");
+      vwr.setStringProperty("defaults", "RasMol");
 
-    viewer.setIntProperty("percentVdwAtom", percentVdwAtom);
-    viewer.setIntProperty("bondRadiusMilliAngstroms", marBond);
-    viewer.setIntProperty("bondingVersion", bondingVersion);
-    viewer.setFloatProperty("minBondDistance", minBondDistance);
-    viewer.setFloatProperty("BondTolerance", bondTolerance);
-    viewer.setBooleanProperty("autoBond", autoBond);
-    viewer.setBooleanProperty("showHydrogens", showHydrogens);
-    viewer.setBooleanProperty("showMeasurements", showMeasurements);
-    viewer.setBooleanProperty("perspectiveDepth", perspectiveDepth);
-    viewer.setBooleanProperty("showAxes", showAxes);
-    viewer.setBooleanProperty("showBoundBox", showBoundingBox);
-    viewer.setBooleanProperty("axesOrientationRasmol", axesOrientationRasmol);
+    vwr.setIntProperty("percentVdwAtom", percentVdwAtom);
+    vwr.setIntProperty("bondRadiusMilliAngstroms", marBond);
+    vwr.setIntProperty("bondingVersion", bondingVersion);
+    vwr.setFloatProperty("minBondDistance", minBondDistance);
+    vwr.setFloatProperty("BondTolerance", bondTolerance);
+    vwr.setBooleanProperty("autoBond", autoBond);
+    vwr.setBooleanProperty("showHydrogens", showHydrogens);
+    vwr.setBooleanProperty("showMeasurements", showMeasurements);
+    vwr.setBooleanProperty("perspectiveDepth", perspectiveDepth);
+    vwr.setBooleanProperty("showAxes", showAxes);
+    vwr.setBooleanProperty("showBoundBox", showBoundingBox);
+    vwr.setBooleanProperty("axesOrientationRasmol", axesOrientationRasmol);
   }
 
   class PrefsAction extends AbstractAction {
@@ -712,29 +712,29 @@ public class PreferencesDialog extends JDialog implements ActionListener {
       String strSelected = isSelected ? "true" : "false";
       if (key.equals("Prefs.showHydrogens")) {
         showHydrogens = isSelected;
-        viewer.setBooleanProperty("showHydrogens", showHydrogens);
+        vwr.setBooleanProperty("showHydrogens", showHydrogens);
         currentProperties.put("showHydrogens", strSelected);
       } else if (key.equals("Prefs.showMeasurements")) {
         showMeasurements = isSelected;
-        viewer.setBooleanProperty("showMeasurements", showMeasurements);
+        vwr.setBooleanProperty("showMeasurements", showMeasurements);
         currentProperties.put("showMeasurements", strSelected);
       } else if (key.equals("Prefs.perspectiveDepth")) {
         perspectiveDepth = isSelected;
-        viewer.setBooleanProperty("perspectiveDepth", perspectiveDepth);
+        vwr.setBooleanProperty("perspectiveDepth", perspectiveDepth);
         currentProperties.put("perspectiveDepth", strSelected);
       } else if (key.equals("Prefs.showAxes")) {
         showAxes = isSelected;
-        viewer.setBooleanProperty("showAxes", isSelected);
-        viewer.refresh(3, "pref.showAxes");
+        vwr.setBooleanProperty("showAxes", isSelected);
+        vwr.refresh(3, "pref.showAxes");
         currentProperties.put("showAxes", strSelected);
       } else if (key.equals("Prefs.showBoundingBox")) {
         showBoundingBox = isSelected;
-        viewer.setBooleanProperty("showBoundBox", isSelected);
-        viewer.refresh(3, "pref.showBoundingBox");
+        vwr.setBooleanProperty("showBoundBox", isSelected);
+        vwr.refresh(3, "pref.showBoundingBox");
         currentProperties.put("showBoundingBox", strSelected);
       } else if (key.equals("Prefs.axesOrientationRasmol")) {
         axesOrientationRasmol = isSelected;
-        viewer.setBooleanProperty("axesOrientationRasmol", isSelected);
+        vwr.setBooleanProperty("axesOrientationRasmol", isSelected);
         currentProperties.put("axesOrientationRasmol", strSelected);
       } else if (key.equals("Prefs.openFilePreview")) {
       	openFilePreview = isSelected;

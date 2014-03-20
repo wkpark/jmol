@@ -60,7 +60,7 @@ public class _X3dExporter extends _VrmlExporter {
         + "\n");
     output("<head>\n");
     output("<meta name='title' content="
-        + PT.esc(viewer.getModelSetName()).replace('<', ' ').replace('>',
+        + PT.esc(vwr.getModelSetName()).replace('<', ' ').replace('>',
             ' ').replace('&', ' ') + "/>\n");
     output("<meta name='description' content='Jmol rendering'/>\n");
     output("<meta name='creator' content=' '/>\n");
@@ -72,7 +72,7 @@ public class _X3dExporter extends _VrmlExporter {
     output("<Scene>\n");
 
     output("<NavigationInfo type='EXAMINE'/>\n");
-    // puts the viewer into model-rotation mode
+    // puts the vwr into model-rotation mode
     output("<Background skyColor='" + rgbFractionalFromColix(backgroundColix)
         + "'/>\n");
     // next is an approximation only
@@ -407,14 +407,14 @@ public class _X3dExporter extends _VrmlExporter {
   @Override
   void plotText(int x, int y, int z, short colix, String text, Font font3d) {
     if (z < 3)
-      z = viewer.getFrontPlane();
+      z = vwr.getFrontPlane();
     String useFontStyle = font3d.fontStyle.toUpperCase();
     String preFontFace = font3d.fontFace.toUpperCase();
     String useFontFace = (preFontFace.equals("MONOSPACED") ? "TYPEWRITER"
         : preFontFace.equals("SERIF") ? "SERIF" : "SANS");
     output("<Transform translation='");
     tempP3.set(x, y, z);
-    viewer.unTransformPoint(tempP3, tempP1);
+    vwr.unTransformPoint(tempP3, tempP1);
     output(tempP1);
     output("'>");
     // These x y z are 3D coordinates of echo or the atom the label is attached

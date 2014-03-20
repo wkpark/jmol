@@ -54,17 +54,17 @@ public class UccageRenderer extends CageRenderer {
   
   @Override
   protected boolean render() {
-    imageFontScaling = viewer.getImageFontScaling();
+    imageFontScaling = vwr.getImageFontScaling();
     font3d = g3d.getFont3DScaled(((Uccage) shape).font3d, imageFontScaling);
-    int mad = viewer.getObjectMad(StateManager.OBJ_UNITCELL);
-    if (mad == 0 || viewer.isJmolDataFrame() || viewer.isNavigating()
-        && viewer.getBoolean(T.navigationperiodic))
+    int mad = vwr.getObjectMad(StateManager.OBJ_UNITCELL);
+    if (mad == 0 || vwr.isJmolDataFrame() || vwr.isNavigating()
+        && vwr.getBoolean(T.navigationperiodic))
       return false;
-    colix = viewer.getObjectColix(StateManager.OBJ_UNITCELL);
+    colix = vwr.getObjectColix(StateManager.OBJ_UNITCELL);
     boolean needTranslucent = C.isColixTranslucent(colix);
     if (!isExport && needTranslucent != g3d.isPass2())
       return needTranslucent;
-    //doLocalize = viewer.getUseNumberLocalization();
+    //doLocalize = vwr.getUseNumberLocalization();
     render1(mad);
     return false;
   }
@@ -77,7 +77,7 @@ public class UccageRenderer extends CageRenderer {
   
   private void render1(int mad) {
     g3d.setColix(colix);
-    SymmetryInterface unitcell = viewer.getCurrentUnitCell();
+    SymmetryInterface unitcell = vwr.getCurrentUnitCell();
     if (unitcell == null)
       return;
     isPolymer = unitcell.isPolymer();
@@ -100,9 +100,9 @@ public class UccageRenderer extends CageRenderer {
       cell0.scale (-1/fset.z);
       cell1.scale (-1/fset.z);
     }
-    P3[] axisPoints = viewer.getAxisPoints();
-    boolean drawAllLines = (viewer.getObjectMad(StateManager.OBJ_AXIS1) == 0
-        || viewer.getFloat(T.axesscale) < 2 || axisPoints == null);
+    P3[] axisPoints = vwr.getAxisPoints();
+    boolean drawAllLines = (vwr.getObjectMad(StateManager.OBJ_AXIS1) == 0
+        || vwr.getFloat(T.axesscale) < 2 || axisPoints == null);
     P3[] aPoints = axisPoints;
     for (int x = (int) cell0.x; x < cell1.x; x++) {
       for (int y = (int) cell0.y; y < cell1.y; y++) {
@@ -129,7 +129,7 @@ public class UccageRenderer extends CageRenderer {
       }
     }
 
-    if (viewer.getBoolean(T.displaycellparameters) && !viewer.isPreviewOnly()
+    if (vwr.getBoolean(T.displaycellparameters) && !vwr.isPreviewOnly()
         && !unitcell.isPeriodic())
       renderInfo(unitcell);
   }
@@ -140,7 +140,7 @@ public class UccageRenderer extends CageRenderer {
 
   private void renderInfo(SymmetryInterface symmetry) {
     if (isExport
-        || !g3d.setColix(viewer.getColixBackgroundContrast()))
+        || !g3d.setColix(vwr.getColixBackgroundContrast()))
       return;
     fid = g3d.getFontFidFS("Monospaced", 14 * imageFontScaling);
 

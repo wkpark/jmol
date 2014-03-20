@@ -29,15 +29,15 @@ import javajs.util.P3;
  */
 public class Platform implements GenericPlatform {
   Object canvas;
-  PlatformViewer viewer;
+  PlatformViewer vwr;
   Object context;
   
 	@Override
-  public void setViewer(PlatformViewer viewer, Object canvas) {
+  public void setViewer(PlatformViewer vwr, Object canvas) {
 	  /**
 	   * @j2sNative
 	   * 
-     *     this.viewer = viewer;
+     *     this.vwr = vwr;
      *     this.canvas = canvas;
      *     if (canvas != null) {
 	   *       this.context = canvas.getContext("2d");
@@ -82,7 +82,7 @@ public class Platform implements GenericPlatform {
 
   @Override
   public GenericMouseInterface getMouseManager(double privateKey, Object display) {
-    return new Mouse(privateKey, viewer, display);
+    return new Mouse(privateKey, vwr, display);
   }
 
   // /// Display
@@ -106,7 +106,7 @@ public class Platform implements GenericPlatform {
         .getOption(c);
     try {
       if (jmolpopup != null)
-        jmolpopup.jpiInitialize(viewer, menuStructure);
+        jmolpopup.jpiInitialize(vwr, menuStructure);
     } catch (Exception e) {
       c = "Exception creating " + c + ":" + e;
       System.out.println(c);
@@ -134,7 +134,7 @@ public class Platform implements GenericPlatform {
 	 */
 	@Override
   public void renderScreenImage(Object context, Object size) {
-		Display.renderScreenImage(viewer, context, size);
+		Display.renderScreenImage(vwr, context, size);
 	}
 
   @Override
@@ -265,7 +265,7 @@ public class Platform implements GenericPlatform {
      * @j2sNative
      * 
      *  if (typeof Jmol != "undefined" && Jmol._getHiddenCanvas)
-     *    return Jmol._getHiddenCanvas(this.viewer.applet, "stereoImage", w, h); 
+     *    return Jmol._getHiddenCanvas(this.vwr.applet, "stereoImage", w, h); 
      */
     {}
     return null;
@@ -277,7 +277,7 @@ public class Platform implements GenericPlatform {
      * @j2sNative
      * 
      *  if (typeof Jmol != "undefined" && Jmol._getHiddenCanvas)
-     *    return Jmol._getHiddenCanvas(this.viewer.applet, "textImage", w, h); 
+     *    return Jmol._getHiddenCanvas(this.vwr.applet, "textImage", w, h); 
      */
     {}
     return null;
@@ -298,11 +298,11 @@ public class Platform implements GenericPlatform {
 	   * @j2sNative
 	   * 
      * if (typeof Jmol == "undefined" || !Jmol._getHiddenCanvas) return false;
-	   * var viewer = this.viewer;
-	   * var sc = viewer.getEvalContextAndHoldQueue(viewer.eval);
+	   * var vwr = this.vwr;
+	   * var sc = vwr.getEvalContextAndHoldQueue(vwr.eval);
 	   * var echoName = echoNameAndPath[0];
 	   * return Jmol._loadImage(this, echoNameAndPath, zipBytes, 
-	   *   function(canvas, pathOrError) { viewer.loadImageData(canvas, pathOrError, echoName, sc) }
+	   *   function(canvas, pathOrError) { vwr.loadImageData(canvas, pathOrError, echoName, sc) }
 	   * );
 	   * 
 	   */	  

@@ -42,11 +42,11 @@ public class HoverWatcherThread extends JmolThread {
    * @param actionManager 
    * @param current 
    * @param moved 
-   * @param viewer
+   * @param vwr
    */
-  public HoverWatcherThread(ActionManager actionManager, MouseState current, MouseState moved, Viewer viewer) {
+  public HoverWatcherThread(ActionManager actionManager, MouseState current, MouseState moved, Viewer vwr) {
     super();
-    setViewer(viewer, "HoverWatcher");
+    setViewer(vwr, "HoverWatcher");
     this.actionManager = actionManager;
     this.current = current;
     this.moved = moved;
@@ -63,7 +63,7 @@ public class HoverWatcherThread extends JmolThread {
         mode = MAIN;
         break;
       case MAIN:
-        hoverDelay = viewer.getHoverDelay();
+        hoverDelay = vwr.getHoverDelay();
         if (stopped || hoverDelay <= 0 || !runSleep(hoverDelay, CHECK1))
           return;
         mode = CHECK1;

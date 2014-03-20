@@ -72,7 +72,7 @@ public final class JC {
       try {
         // Reading version from resource   inside jar
         is = JC.class.getClassLoader().getResourceAsStream(
-            "org/jmol/viewer/Jmol.properties");
+            "org/jmol/vwr/Jmol.properties");
         bis = new BufferedInputStream(is);
         Properties props = new Properties();
         props.load(bis);
@@ -766,8 +766,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int GROUPID_TRYPTOPHAN       = 19;
   public final static int GROUPID_AMINO_MAX        = 24;
   public final static int GROUPID_NUCLEIC_MAX      = 42;  
-  private final static int GROUPID_WATER           = 42;
-  private final static int GROUPID_SOLVENT_MIN     = 45; // urea only
+  public final static int GROUPID_WATER           = 42;
+  public final static int GROUPID_SOLVENT_MIN     = 45; // urea only
   private final static int GROUPID_ION_MIN         = 46;
   private final static int GROUPID_ION_MAX         = 48;
   
@@ -1269,8 +1269,10 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     //
     // solvent
     //
-    "@water _g>=" + GROUPID_WATER + " & _g<" + GROUPID_SOLVENT_MIN
-        + ", oxygen & connected(2) & connected(2, hydrogen), (hydrogen) & connected(oxygen & connected(2) & connected(2, hydrogen))",
+    // @water is specially defined, avoiding the CONNECTED() function
+    //"@water _g>=" + GROUPID_WATER + " & _g<" + GROUPID_SOLVENT_MIN
+    //+ ", oxygen & connected(2) & connected(2, hydrogen), (hydrogen) & connected(oxygen & connected(2) & connected(2, hydrogen))",
+
     "@solvent water, (_g>=" + GROUPID_SOLVENT_MIN + " & _g<" + GROUPID_ION_MAX + ")", // water, other solvent or ions
     "@ligand _g=0|!(_g<"+ GROUPID_ION_MIN + ",protein,nucleic,water)", // includes UNL
 

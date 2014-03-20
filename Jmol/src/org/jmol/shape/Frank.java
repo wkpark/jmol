@@ -62,8 +62,8 @@ public class Frank extends FontShape {
   
   @Override
   public boolean wasClicked(int x, int y) {
-    int width = viewer.getScreenWidth();
-    int height = viewer.getScreenHeight();
+    int width = vwr.getScreenWidth();
+    int height = vwr.getScreenHeight();
     return (width > 0 && height > 0 
         && x > width - frankWidth - frankMargin
         && y > height - frankAscent - frankMargin);
@@ -71,21 +71,21 @@ public class Frank extends FontShape {
 
   @Override
   public boolean checkObjectHovered(int x, int y, BS bsVisible) {
-    if (!viewer.getShowFrank() || !wasClicked(x, y) || !viewer.menuEnabled())
+    if (!vwr.getShowFrank() || !wasClicked(x, y) || !vwr.menuEnabled())
       return false;
-    if (gdata.isDisplayAntialiased() && !viewer.isSingleThreaded) {
+    if (gdata.isDisplayAntialiased() && !vwr.isSingleThreaded) {
       //because hover rendering is done in FIRST pass only
       x <<= 1;
       y <<= 1;
     }      
-    viewer.hoverOnPt(x, y, GT._("Click for menu..."), null, null);
+    vwr.hoverOnPt(x, y, GT._("Click for menu..."), null, null);
     return true;
   }
   
   void calcMetrics() {
-    if (viewer.isJS)
+    if (vwr.isJS)
       frankString = "JSmol";
-    else if (viewer.isSignedApplet())
+    else if (vwr.isSignedApplet())
       frankString = "Jmol_S";
     if (font3d == currentMetricsFont3d) 
       return;
@@ -102,7 +102,7 @@ public class Frank extends FontShape {
   
   @Override
   public String getShapeState() {
-    return viewer.getFontState(myType, font3d);
+    return vwr.getFontState(myType, font3d);
   }
   
 }

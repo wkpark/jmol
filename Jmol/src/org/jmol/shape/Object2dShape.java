@@ -200,12 +200,12 @@ public abstract class Object2dShape extends Shape {
   public Map<String, Object> checkObjectClicked(int x, int y, int modifiers, BS bsVisible, boolean drawPicking) {
     if (isHover || modifiers == 0)
       return null;
-    boolean isAntialiased = viewer.isAntialiased();
+    boolean isAntialiased = vwr.isAntialiased();
     for (Object2d obj: objects.values()) {
       if (obj.checkObjectClicked(isAntialiased, x, y, bsVisible)) {
         String s = obj.getScript();
         if (s != null) {
-          viewer.evalStringQuiet(s);
+          vwr.evalStringQuiet(s);
         }
         Map<String, Object> map = new Hashtable<String, Object>();
         map.put("pt", (obj.xyz == null ? new P3() : obj.xyz));
@@ -213,7 +213,7 @@ public abstract class Object2dShape extends Shape {
         if (modelIndex < 0)
           modelIndex = 0;
         map.put("modelIndex", Integer.valueOf(modelIndex));
-        map.put("model", viewer.getModelNumberDotted(modelIndex));
+        map.put("model", vwr.getModelNumberDotted(modelIndex));
         map.put("id", obj.target);
         map.put("type", "echo");
         return map;
@@ -227,19 +227,19 @@ public abstract class Object2dShape extends Shape {
     if (isHover)
       return false;
     boolean haveScripts = false;
-    boolean isAntialiased = viewer.isAntialiased();
+    boolean isAntialiased = vwr.isAntialiased();
     for (Object2d obj: objects.values()) {
       String s = obj.getScript();
       if (s != null) {
         haveScripts = true;
         if (obj.checkObjectClicked(isAntialiased, x, y, bsVisible)) {
-          viewer.setCursor(GenericPlatform.CURSOR_HAND);
+          vwr.setCursor(GenericPlatform.CURSOR_HAND);
           return true;
         }
       }
     }
     if (haveScripts)
-      viewer.setCursor(GenericPlatform.CURSOR_DEFAULT);
+      vwr.setCursor(GenericPlatform.CURSOR_DEFAULT);
     return false;
   }
 

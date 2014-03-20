@@ -64,7 +64,7 @@ public class Text extends Object2d {
 
   private int[] widths;
 
-  private Viewer viewer;
+  private Viewer vwr;
 
   Text() {
   }
@@ -79,13 +79,13 @@ public class Text extends Object2d {
     return t;
   }
 
-  public static Text newEcho(Viewer viewer, GData gdata, Font font, String target,
+  public static Text newEcho(Viewer vwr, GData gdata, Font font, String target,
                       short colix, int valign, int align,
                       float scalePixelsPerMicron) {
     // for echo
     Text t = new Text();
     t.set(gdata, font, colix, align, false, scalePixelsPerMicron, null);
-    t.viewer = viewer;
+    t.vwr = vwr;
     t.target = target;
     if (target.equals("error"))
       valign = JC.VALIGN_TOP;
@@ -128,7 +128,7 @@ public class Text extends Object2d {
       return;
     this.text = text;
     textUnformatted = text;
-    doFormatText = (viewer != null && text != null && (text.indexOf("%{") >= 0 || text
+    doFormatText = (vwr != null && text != null && (text.indexOf("%{") >= 0 || text
         .indexOf("@{") >= 0));
     if (!doFormatText)
       recalc();
@@ -183,8 +183,8 @@ public class Text extends Object2d {
   protected void recalc() {
     if (image != null) {
       textWidth = textHeight = 0;
-      boxWidth = viewer.apiPlatform.getImageWidth(image) * fontScale * imageScale;
-      boxHeight = viewer.apiPlatform.getImageHeight(image) * fontScale * imageScale;
+      boxWidth = vwr.apiPlatform.getImageWidth(image) * fontScale * imageScale;
+      boxHeight = vwr.apiPlatform.getImageHeight(image) * fontScale * imageScale;
       ascent = 0;
       return;
     }
@@ -207,13 +207,13 @@ public class Text extends Object2d {
   }
 
   public void formatText() {
-    text = (viewer == null ? textUnformatted : viewer
+    text = (vwr == null ? textUnformatted : vwr
         .formatText(textUnformatted));
     recalc();
   }
 
 
-  public void setPosition(Viewer viewer, int width, int height,
+  public void setPosition(Viewer vwr, int width, int height,
                           float scalePixelsPerMicron, float imageFontScaling,
                           boolean isExact, float[] boxXY) {
     if (boxXY == null)
@@ -235,11 +235,11 @@ public class Text extends Object2d {
       boxXY[0] = movableX;
       boxXY[1] = movableY;
       if (pymolOffset != null) {
-        float pixelsPerAngstrom = viewer.scaleToScreen(z, 1000);
+        float pixelsPerAngstrom = vwr.scaleToScreen(z, 1000);
         float pz = pymolOffset[3];
         float dz = (pz < 0 ? -1 : 1) * Math.max(0, Math.abs(pz) - 1) * pixelsPerAngstrom;
         z -= (int) dz;
-        pixelsPerAngstrom = viewer.scaleToScreen(z, 1000);
+        pixelsPerAngstrom = vwr.scaleToScreen(z, 1000);
         
         /* for whatever reason, Java returns an 
          * ascent that is considerably higher than a capital X

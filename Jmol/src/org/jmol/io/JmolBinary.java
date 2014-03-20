@@ -35,6 +35,7 @@ import java.util.Map;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 
+import javajs.util.Binary;
 import javajs.util.List;
 import javajs.util.PT;
 
@@ -308,7 +309,7 @@ public class JmolBinary {
     return null;
   }
 
-  public static BufferedReader getBufferedReaderForResource(Viewer viewer, 
+  public static BufferedReader getBufferedReaderForResource(Viewer vwr, 
                                                             Object resourceClass,
                                               String classPath,
                                               String resourceName)
@@ -317,7 +318,7 @@ public class JmolBinary {
      /**
       * @j2sNative
       * 
-      *            resourceName = viewer.viewerOptions.get("codePath") +
+      *            resourceName = vwr.vwrOptions.get("codePath") +
       *            classPath + resourceName;
       * 
       */
@@ -333,7 +334,7 @@ public class JmolBinary {
              (InputStream) url.getContent()), null);
      }
      // JavaScript only; here and not in JavaDoc to preserve Eclipse search reference
-     return (BufferedReader) viewer.getBufferedReaderOrErrorMessageFromName(
+     return (BufferedReader) vwr.getBufferedReaderOrErrorMessageFromName(
          resourceName, new String[] { null, null }, false);
    }
 

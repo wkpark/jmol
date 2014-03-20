@@ -75,8 +75,8 @@ public class Echo extends TextShape {
       return;
     }
     if ("xyz" == propertyName) {
-      if (currentObject != null && viewer.getBoolean(T.fontscaling))
-        currentObject.setScalePixelsPerMicron(viewer
+      if (currentObject != null && vwr.getBoolean(T.fontscaling))
+        currentObject.setScalePixelsPerMicron(vwr
             .getScalePixelsPerAngstrom(false) * 10000f);
       // continue on to Object2d setting
     }
@@ -147,7 +147,7 @@ public class Echo extends TextShape {
           } else if ("bottom" == target) {
             valign = JC.VALIGN_BOTTOM;
           }
-          text = Text.newEcho(viewer, gdata, gdata.getFont3DFS(FONTFACE,
+          text = Text.newEcho(vwr, gdata, gdata.getFont3DFS(FONTFACE,
               FONTSIZE), target, COLOR, valign, halign, 0);
           text.setAdjustForWindow(true);
           objects.put(target, text);
@@ -192,6 +192,6 @@ public class Echo extends TextShape {
 
   @Override
   public String getShapeState() {
-    return viewer.getShapeState(this);
+    return vwr.getShapeState(this);
   }
 }

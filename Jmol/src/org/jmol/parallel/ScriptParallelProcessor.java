@@ -50,17 +50,17 @@ public class ScriptParallelProcessor extends ScriptFunction implements JmolParal
     return Executors.newCachedThreadPool();
   }
   
-  Viewer viewer;
+  Viewer vwr;
   public volatile int counter = 0;
   public volatile Error error = null;
   Object lock = new Object() ;
   
   @Override
-  public void runAllProcesses(Viewer viewer) {
+  public void runAllProcesses(Viewer vwr) {
     if (processes.size() == 0)
       return;
-    this.viewer = viewer;
-    boolean inParallel = !viewer.isParallel() && viewer.setParallel(true);
+    this.vwr = vwr;
+    boolean inParallel = !vwr.isParallel() && vwr.setParallel(true);
     List<ShapeManager> vShapeManagers = new  List<ShapeManager>();
     error = null;
     counter = 0;
@@ -72,7 +72,7 @@ public class ScriptParallelProcessor extends ScriptFunction implements JmolParal
     for (int i = processes.size(); --i >= 0;) {
       ShapeManager shapeManager = null;
       if (inParallel) {
-        shapeManager = new ShapeManager(viewer, viewer.getModelSet());
+        shapeManager = new ShapeManager(vwr, vwr.getModelSet());
         vShapeManagers.addLast(shapeManager);
       }
       runProcess(processes.remove(0), shapeManager);
@@ -89,13 +89,13 @@ public class ScriptParallelProcessor extends ScriptFunction implements JmolParal
       }
     }
     mergeResults(vShapeManagers);
-    viewer.setParallel(false);
+    vwr.setParallel(false);
   }
 
   void mergeResults(List<ShapeManager> vShapeManagers) {
     try {
       for (int i = 0; i < vShapeManagers.size(); i++)
-        viewer.mergeShapes(vShapeManagers.get(i).getShapes());
+        vwr.mergeShapes(vShapeManagers.get(i).getShapes());
     } catch (Error e) {
       throw e;
     } finally {
@@ -120,7 +120,7 @@ public class ScriptParallelProcessor extends ScriptFunction implements JmolParal
 
   private void runProcess(final ScriptProcess process, ShapeManager shapeManager) {
     ScriptProcessRunnable r = new ScriptProcessRunnable(this, process, lock, shapeManager);
-    Executor exec = (shapeManager == null ? null : (Executor) viewer.getExecutor());
+    Executor exec = (shapeManager == null ? null : (Executor) vwr.getExecutor());
     if (exec != null) {
       exec.execute(r);
     } else {
@@ -129,7 +129,7 @@ public class ScriptParallelProcessor extends ScriptFunction implements JmolParal
   }
 
   void eval(ScriptContext context, ShapeManager shapeManager) {
-    viewer.evalParallel(context, shapeManager);
+    vwr.evalParallel(context, shapeManager);
   }
 
 }

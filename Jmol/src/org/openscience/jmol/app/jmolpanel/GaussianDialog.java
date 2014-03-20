@@ -67,7 +67,7 @@ public class GaussianDialog extends JDialog implements ActionListener,
    * modified and integrated into Jmol by Bob Hanson, hansonr@stolaf.edu, 10/12/2008
    */
   
-  JmolViewer viewer;
+  JmolViewer vwr;
 
   private JPanel container;
   private JTextField checkField, optsField, fileField, selectField;
@@ -179,10 +179,10 @@ public class GaussianDialog extends JDialog implements ActionListener,
     "LSDA BLYP BP86 BPW91 OLYP OP86 OPW91 PBEPBE VSXC HCTH93 NCTH147 HCTH407 TPSSTPSS B3LYP B3PW91";
 
   
-  public GaussianDialog(JFrame f, JmolViewer viewer) {
+  public GaussianDialog(JFrame f, JmolViewer vwr) {
 
     super(f, false);
-    this.viewer = viewer;
+    this.vwr = vwr;
 
     setTitle(GT._("Export Gaussian Input File"));
 
@@ -489,7 +489,7 @@ public class GaussianDialog extends JDialog implements ActionListener,
       p = "";
     }
   
-    String data = viewer.getData(select,"USER:%-2e %10.5x %10.5y %10.5z");
+    String data = vwr.getData(select,"USER:%-2e %10.5x %10.5y %10.5z");
   
     editArea.setText(c + m + p + route + "\n\n" + 
       "Title: Created by Jmol version " + Viewer.getJmolVersion() + "\n\n" + charge + " " + mult +

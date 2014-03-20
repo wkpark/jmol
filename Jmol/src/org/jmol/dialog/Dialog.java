@@ -83,8 +83,8 @@ public class Dialog extends JPanel implements JmolDialogInterface {
   private FilePreview openPreview;
 
   @Override
-  public String getOpenFileNameFromDialog(Map<String, Object> viewerOptions,
-                                          Viewer viewer,
+  public String getOpenFileNameFromDialog(Map<String, Object> vwrOptions,
+                                          Viewer vwr,
                                           String fileName, JmolAppAPI jmolApp,
                                           String windowName,
                                           boolean allowAppend) {
@@ -97,9 +97,9 @@ public class Dialog extends JPanel implements JmolDialogInterface {
       UIManager.put("FileChooser.fileNameLabelText", temp);
     }
     if (openPreview == null
-        && (viewer.isApplet() || Boolean.valueOf(
+        && (vwr.isApplet() || Boolean.valueOf(
             System.getProperty("openFilePreview", "true")).booleanValue())) {
-      openPreview = new FilePreview(viewer, openChooser, allowAppend, viewerOptions);
+      openPreview = new FilePreview(vwr, openChooser, allowAppend, vwrOptions);
     }
 
     if (jmolApp != null) {
@@ -126,7 +126,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     }
     //System.out.println("fileName for dialog: " + fileName);
     if (fileName == null || fileName.indexOf(":") < 0 && fileName.indexOf("/") != 0) {
-      File dir = (File) FileManager.getLocalDirectory(viewer, true);
+      File dir = (File) FileManager.getLocalDirectory(vwr, true);
       //System.out.println("directory for dialog: " + dir.getAbsolutePath());
       openChooser.setCurrentDirectory(dir);
     }
@@ -141,11 +141,11 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     if (jmolApp != null)
       jmolApp.addHistoryWindowInfo(windowName, openChooser.getDialog(), null);
 
-    String url = viewer.getLocalUrl(file.getAbsolutePath());
+    String url = vwr.getLocalUrl(file.getAbsolutePath());
     if (url != null) {
       fileName = url;
     } else {
-      FileManager.setLocalPath(viewer, file.getParent(), true);
+      FileManager.setLocalPath(vwr, file.getParent(), true);
       fileName = file.getAbsolutePath();
     }
     boolean doAppend = (allowAppend && openPreview != null && openPreview.isAppendSelected());
@@ -158,18 +158,18 @@ public class Dialog extends JPanel implements JmolDialogInterface {
 
   String closePreview() {
     if (openPreview != null)
-      openPreview.updatePreview(viewer, null);
+      openPreview.updatePreview(vwr, null);
     return null;
   }
   
   @Override
-  public String getSaveFileNameFromDialog(Viewer viewer, String fileName,
+  public String getSaveFileNameFromDialog(Viewer vwr, String fileName,
                                           String type) {
     if (saveChooser == null) {
       saveChooser = new JFileChooser();
       getXPlatformLook(saveChooser);
     }
-    saveChooser.setCurrentDirectory((File) FileManager.getLocalDirectory(viewer, true));
+    saveChooser.setCurrentDirectory((File) FileManager.getLocalDirectory(vwr, true));
     File file = null;
     saveChooser.resetChoosableFileFilters();
     if (fileName != null) {
@@ -178,7 +178,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
       if (pt >= 0 && sType.length() > 0)
         saveChooser.addChoosableFileFilter(new TypeFilter(sType));
       if (fileName.equals("*"))
-        fileName = viewer.getModelSetFileName();
+        fileName = vwr.getModelSetFileName();
       if (fileName.indexOf(".") == 0)
         fileName = "Jmol" + fileName;
       file = new File(fileName);
@@ -188,13 +188,13 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     saveChooser.setSelectedFile(file);
     if ((file = showSaveDialog(this, saveChooser, file)) == null)
       return null;
-    FileManager.setLocalPath(viewer, file.getParent(), true);
+    FileManager.setLocalPath(vwr, file.getParent(), true);
     return file.getAbsolutePath();
   }
 
   
   @Override
-  public String getImageFileNameFromDialog(Viewer viewer, String fileName,
+  public String getImageFileNameFromDialog(Viewer vwr, String fileName,
                                            String type, String[] imageChoices,
                                            String[] imageExtensions,
                                            int qualityJPG0, int qualityPNG0) {
@@ -213,11 +213,11 @@ public class Dialog extends JPanel implements JmolDialogInterface {
       imageChooser = new JFileChooser();
       getXPlatformLook(imageChooser);
     }
-    imageChooser.setCurrentDirectory((File) FileManager.getLocalDirectory(viewer, true));
+    imageChooser.setCurrentDirectory((File) FileManager.getLocalDirectory(vwr, true));
     imageChooser.resetChoosableFileFilters();
     File file = null;
     if (fileName == null) {
-      fileName = viewer.getModelSetFileName();
+      fileName = vwr.getModelSetFileName();
       if (fileName.indexOf("?") >= 0)
         fileName = fileName.substring(0, fileName.indexOf("?"));
       String pathName = imageChooser.getCurrentDirectory().getPath();
@@ -249,7 +249,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     qualityPNG = qSliderPNG.getValue();
     if (cb.getSelectedIndex() >= 0)
       defaultChoice = cb.getSelectedIndex();
-    FileManager.setLocalPath(viewer, file.getParent(), true);
+    FileManager.setLocalPath(vwr, file.getParent(), true);
     return file.getAbsolutePath();
   }
 
@@ -528,7 +528,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
   protected String outputFileName;
   protected String dialogType;
   protected String inputFileName;
-  protected Viewer viewer;
+  protected Viewer vwr;
   protected int qualityJ = -1;
   protected int qualityP = -1;
   protected String imageType;
@@ -542,7 +542,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
   
   @Override
   public String getFileNameFromDialog(Viewer v, String dType, String iFileName) {
-    this.viewer = v;
+    this.vwr = v;
     this.dialogType = dType;
     this.inputFileName = iFileName;
     outputFileName = null;
@@ -552,16 +552,16 @@ public class Dialog extends JPanel implements JmolDialogInterface {
         public void run() {
           if (dialogType.equals("Load")) {
             outputFileName = getOpenFileNameFromDialog(
-                viewer.getViewerOptions(), viewer, inputFileName, null, null, false);
+                vwr.getViewerOptions(), vwr, inputFileName, null, null, false);
             return; 
           }
           if (dialogType.equals("Save")) {
-            outputFileName = getSaveFileNameFromDialog(viewer,
+            outputFileName = getSaveFileNameFromDialog(vwr,
                 inputFileName, null);
             return;
           }
           if (dialogType.startsWith("Save Image")) {
-            outputFileName = getImageFileNameFromDialog(viewer,
+            outputFileName = getImageFileNameFromDialog(vwr,
                 inputFileName, imageType, imageChoices, imageExtensions,
                 qualityJ, qualityP);
             return;

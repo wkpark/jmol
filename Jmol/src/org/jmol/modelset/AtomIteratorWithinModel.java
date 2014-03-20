@@ -87,7 +87,7 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
   private float vdw1;
   private boolean isVdw;
   private Atom[] atoms;
-  private Viewer viewer;
+  private Viewer vwr;
   
   
  
@@ -108,9 +108,9 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
     if (isVdw) {
       radiusData = rd;
       atoms = modelSet.atoms;
-      viewer = modelSet.viewer;
+      vwr = modelSet.vwr;
       distance = (rd.factorType == EnumType.OFFSET ? 5f + rd.value : 5f * rd.value);
-      vdw1 = atoms[atomIndex].getVanderwaalsRadiusFloat(viewer, rd.vdwType);
+      vdw1 = atoms[atomIndex].getVanderwaalsRadiusFloat(vwr, rd.vdwType);
     }
     checkGreater = (isGreaterOnly && atomIndex != Integer.MAX_VALUE);
     setCenter(center, distance);
@@ -184,7 +184,7 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
       if ((iAtom = next()) >= 0) {
         float d;
         if (isVdw) {
-          d = atoms[iAtom].getVanderwaalsRadiusFloat(viewer, radiusData.vdwType) + vdw1;
+          d = atoms[iAtom].getVanderwaalsRadiusFloat(vwr, radiusData.vdwType) + vdw1;
           switch (radiusData.factorType) {
           case OFFSET:
             d += radiusData.value * 2;

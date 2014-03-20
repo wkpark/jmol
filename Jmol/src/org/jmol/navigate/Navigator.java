@@ -32,7 +32,7 @@ import org.jmol.api.JmolScriptEvaluator;
 import org.jmol.script.T;
 import org.jmol.thread.JmolThread;
 import org.jmol.util.Escape;
-import org.jmol.util.Hermite;
+import org.jmol.util.GData;
 
 import javajs.awt.event.Event;
 import javajs.util.List;
@@ -60,9 +60,9 @@ public final class Navigator extends JmolThread implements
   }
 
   @Override
-  public void set(TransformManager tm, Viewer viewer) {
+  public void set(TransformManager tm, Viewer vwr) {
     this.tm = tm;
-    setViewer(viewer, "navigator");
+    setViewer(vwr, "navigator");
   }
 
   private TransformManager tm;
@@ -120,7 +120,7 @@ public final class Navigator extends JmolThread implements
       P3 pt = (P3) o[2];
       if (seconds == 0) {
         tm.setNavigatePt(pt);
-        viewer.moveUpdate(0);
+        vwr.moveUpdate(0);
         return;
       }
       navigateTo(seconds, null, Float.NaN, pt, Float.NaN, Float.NaN, Float.NaN);
@@ -144,7 +144,7 @@ public final class Navigator extends JmolThread implements
       float degrees = ((Float) o[3]).floatValue();
       if (seconds == 0) {
         navigateAxis(rotAxis, degrees);
-        viewer.moveUpdate(0);
+        vwr.moveUpdate(0);
         return;
       }
       navigateTo(seconds, rotAxis, degrees, null, Float.NaN, Float.NaN,
@@ -161,7 +161,7 @@ public final class Navigator extends JmolThread implements
       }
       if (seconds == 0) {
         navTranslatePercentOrTo(-1, ptTemp.x, ptTemp.y);
-        viewer.moveUpdate(0);
+        vwr.moveUpdate(0);
         return;
       }
       navigateTo(seconds, null, Float.NaN, null, Float.NaN, ptTemp.x, ptTemp.y);
@@ -192,12 +192,12 @@ public final class Navigator extends JmolThread implements
                          P3 center, float depthPercent, float xTrans,
                          float yTrans) {
     /*
-     * Orientation o = viewer.getOrientation(); if (!Float.isNaN(degrees) &&
+     * Orientation o = vwr.getOrientation(); if (!Float.isNaN(degrees) &&
      * degrees != 0) navigate(0, axis, degrees); if (center != null) {
      * navigate(0, center); } if (!Float.isNaN(xTrans) || !Float.isNaN(yTrans))
      * navTranslatePercent(-1, xTrans, yTrans); if (!Float.isNaN(depthPercent))
      * setNavigationDepthPercent(depthPercent); Orientation o1 =
-     * viewer.getOrientation(); o.restore(0, true);
+     * vwr.getOrientation(); o.restore(0, true);
      * o1.restore(floatSecondsTotal, true);
      */
 
@@ -226,7 +226,7 @@ public final class Navigator extends JmolThread implements
   @Override
   protected void run1(int mode) throws InterruptedException {
     P3 ptTemp = new P3();
-    while (isJS || viewer.isScriptExecuting())
+    while (isJS || vwr.isScriptExecuting())
       switch (mode) {
       case INIT:
         if (isStep) {
@@ -246,7 +246,7 @@ public final class Navigator extends JmolThread implements
           break;
         }
         doNavStep(iStep++);
-        viewer.requestRepaintAndWait("navigatorThread");
+        vwr.requestRepaintAndWait("navigatorThread");
         int sleepTime = (int) (targetTime - System.currentTimeMillis());
         if (!runSleep(sleepTime, MAIN))
           return;
@@ -266,8 +266,8 @@ public final class Navigator extends JmolThread implements
           if (!Float.isNaN(depthPercent))
             setNavigationDepthPercent(depthPercent);
         }
-        viewer.setInMotion(false);
-        viewer.moveUpdate(floatSecondsTotal);
+        vwr.setInMotion(false);
+        vwr.moveUpdate(floatSecondsTotal);
         if (!stopped && ++iList < navigationList.size()) {
           mode = CHECK2;
           break;
@@ -313,12 +313,12 @@ public final class Navigator extends JmolThread implements
 
   private void setupNavTo() {
     isNavTo = true;
-    if (!viewer.haveDisplay)
+    if (!vwr.haveDisplay)
       floatSecondsTotal = 0;
     int fps = 30;
     totalSteps = (int) (floatSecondsTotal * fps) - 1;
     if (floatSecondsTotal > 0)
-      viewer.setInMotion(true);
+      vwr.setInMotion(true);
     if (degrees == 0)
       degrees = Float.NaN;
     if (totalSteps > 0) {
@@ -342,7 +342,7 @@ public final class Navigator extends JmolThread implements
     isNavTo = false;
     if (seconds <= 0) // PER station
       seconds = 2;
-    if (!viewer.haveDisplay)
+    if (!vwr.haveDisplay)
       seconds = 0;
     isPathGuide = (pathGuide != null);
     int nSegments = Math.min(
@@ -364,18 +364,18 @@ public final class Navigator extends JmolThread implements
       int iNext2 = Math.min(i + 2, nSegments) + indexStart;
       int iNext3 = Math.min(i + 3, nSegments) + indexStart;
       if (isPathGuide) {
-        Hermite.getHermiteList(7, pathGuide[iPrev][0], pathGuide[pt][0],
+        GData.getHermiteList(7, pathGuide[iPrev][0], pathGuide[pt][0],
             pathGuide[iNext][0], pathGuide[iNext2][0], pathGuide[iNext3][0],
             points, i * nPer, nPer + 1, true);
-        Hermite.getHermiteList(7, pathGuide[iPrev][1], pathGuide[pt][1],
+        GData.getHermiteList(7, pathGuide[iPrev][1], pathGuide[pt][1],
             pathGuide[iNext][1], pathGuide[iNext2][1], pathGuide[iNext3][1],
             pointGuides, i * nPer, nPer + 1, true);
       } else {
-        Hermite.getHermiteList(7, path[iPrev], path[pt], path[iNext],
+        GData.getHermiteList(7, path[iPrev], path[pt], path[iNext],
             path[iNext2], path[iNext3], points, i * nPer, nPer + 1, true);
       }
     }
-    viewer.setInMotion(true);
+    vwr.setInMotion(true);
     frameTimeMillis = (int) (1000 / tm.navFps);
     totalSteps = nSteps;
   }
@@ -414,7 +414,7 @@ public final class Navigator extends JmolThread implements
     v.set(0, 0, 1);
     if (angle != 0)
       tm.navigateAxis(v, (float) (angle * TransformManager.degreesPerRadian));
-    //    if (viewer.getNavigateSurface()) {
+    //    if (vwr.getNavigateSurface()) {
     //      // set downward viewpoint 20 degrees to horizon
     //      v.set(1, 0, 0);
     //      tm.navigateAxis(v, 20);
@@ -447,7 +447,7 @@ public final class Navigator extends JmolThread implements
     /*    float range = visualRange / factor;
         System.out.println(navZ);
         
-        if (viewer.getNavigationPeriodic())
+        if (vwr.getNavigationPeriodic())
           range = Math.min(range, 0.8f * modelRadius);      
         visualRange = range;  
     */
@@ -510,12 +510,12 @@ public final class Navigator extends JmolThread implements
       break;
     }
     tm.matrixTransform.rotTrans2(tm.navigationCenter, tm.navigationShiftXY);
-    if (viewer.getBoolean(T.navigationperiodic)) {
+    if (vwr.getBoolean(T.navigationperiodic)) {
       // TODO
       // but if periodic, then the navigationCenter may have to be moved back a
       // notch
       P3 pt = P3.newP(tm.navigationCenter);
-      viewer.toUnitCell(tm.navigationCenter, null);
+      vwr.toUnitCell(tm.navigationCenter, null);
       // presuming here that pointT is still a molecular point??
       if (pt.distance(tm.navigationCenter) > 0.01) {
         tm.matrixTransform.rotTrans2(tm.navigationCenter, pt);
@@ -633,12 +633,12 @@ public final class Navigator extends JmolThread implements
     nHits++;
     if (nHits % 10 == 0)
       multiplier *= (multiplier == 4 ? 1 : 2);
-    //boolean navigateSurface = viewer.getNavigateSurface();
+    //boolean navigateSurface = vwr.getNavigateSurface();
     boolean isShiftKey = ((modifiers & Event.SHIFT_MASK) > 0);
     boolean isAltKey = ((modifiers & Event.ALT_MASK) > 0);
     boolean isCtrlKey = ((modifiers & Event.CTRL_MASK) > 0);
-    float speed = viewer.getFloat(T.navigationspeed) * (isCtrlKey ? 10 : 1);
-    // race condition viewer.cancelRendering();
+    float speed = vwr.getFloat(T.navigationspeed) * (isCtrlKey ? 10 : 1);
+    // race condition vwr.cancelRendering();
     switch (keyCode) {
     case Event.VK_PERIOD:
       tm.navX = tm.navY = tm.navZ = 0;
@@ -678,7 +678,7 @@ public final class Navigator extends JmolThread implements
         break;
       }
       tm.modelCenterOffset -= speed
-          * (viewer.getBoolean(T.navigationperiodic) ? 1 : multiplier);
+          * (vwr.getBoolean(T.navigationperiodic) ? 1 : multiplier);
       tm.navMode = TransformManager.NAV_MODE_NEWZ;
       break;
     case Event.VK_DOWN:
@@ -710,7 +710,7 @@ public final class Navigator extends JmolThread implements
         break;
       }
       tm.modelCenterOffset += speed
-          * (viewer.getBoolean(T.navigationperiodic) ? 1 : multiplier);
+          * (vwr.getBoolean(T.navigationperiodic) ? 1 : multiplier);
       tm.navMode = TransformManager.NAV_MODE_NEWZ;
       break;
     case Event.VK_LEFT:
@@ -757,17 +757,17 @@ public final class Navigator extends JmolThread implements
       return;
     }
     if (key != null)
-      viewer.global.setF(key, value);
+      vwr.g.setF(key, value);
     tm.navigating = true;
     tm.finalizeTransformParameters();
   }
 
   //  private void navigateSurface(int dz) {
-  //    if (viewer.isRepaintPending())
+  //    if (vwr.isRepaintPending())
   //      return;
-  //    viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "navigate",
+  //    vwr.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "navigate",
   //        Integer.valueOf(dz == Integer.MAX_VALUE ? 2 * multiplier : dz));
-  //    viewer.requestRepaintAndWait();
+  //    vwr.requestRepaintAndWait();
   //  }
 
   @Override
@@ -775,7 +775,7 @@ public final class Navigator extends JmolThread implements
     // navigation depth 0 # place user at rear plane of the model
     // navigation depth 100 # place user at front plane of the model
 
-    viewer.global.setF("navigationDepth", percent);
+    vwr.g.setF("navigationDepth", percent);
     tm.calcCameraFactors(); // current
     tm.modelCenterOffset = tm.referencePlaneOffset - (1 - percent / 50)
         * tm.modelRadiusPixels;

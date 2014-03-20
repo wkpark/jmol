@@ -306,7 +306,7 @@ public class Model {
   /////// BioModel only ///////
 
   /**
-   * @param viewer
+   * @param vwr
    * @param type
    * @param ctype
    * @param isDraw
@@ -316,7 +316,7 @@ public class Model {
    * @param pdbCONECT
    * @param tokens
    */
-  public void getPdbData(Viewer viewer, String type, char ctype,
+  public void getPdbData(Viewer vwr, String type, char ctype,
                          boolean isDraw, BS bsSelected, OC out,
                          LabelToken[] tokens, SB pdbCONECT, BS bsWritten) {
   }
@@ -474,12 +474,12 @@ public class Model {
   }
 
   /**
-   * @param viewer
+   * @param vwr
    * @param ctype
    * @param qtype
    * @param mStep
    */
-  public void calculateStraightness(Viewer viewer, char ctype, char qtype,
+  public void calculateStraightness(Viewer vwr, char ctype, char qtype,
                                     int mStep) {
   }
 

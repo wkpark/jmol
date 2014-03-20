@@ -34,7 +34,7 @@ public interface JmolStatusListener extends JmolCallbackListener {
  * Viewer.StatusManager to the two main classes, applet or app.
  * so that they can handle them slightly differently. This might be
  * a callback for the applet, for example, but not for the app.
- * ALL viewer-type processing, including status queue writing
+ * ALL vwr-type processing, including status queue writing
  * has been done PRIOR to these functions being called.   Bob Hanson
  * 
  */

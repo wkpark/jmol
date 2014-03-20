@@ -26,11 +26,11 @@ package org.jmol.jvxl.readers;
 import java.io.BufferedReader;
 import java.io.IOException;
 
+import javajs.api.GenericBinaryDocument;
 import javajs.util.OC;
 import javajs.util.PT;
 
 import org.jmol.api.Interface;
-import org.jmol.api.JmolDocument;
 
 /**
  * PolygonFileReader or VolumeFileReader
@@ -38,7 +38,7 @@ import org.jmol.api.JmolDocument;
 abstract class SurfaceFileReader extends SurfaceReader {
 
   protected BufferedReader br;
-  protected JmolDocument binarydoc;
+  protected GenericBinaryDocument binarydoc;
   protected OC out;
 
   SurfaceFileReader() {
@@ -58,8 +58,8 @@ abstract class SurfaceFileReader extends SurfaceReader {
     this.br = br;
   }
 
-  JmolDocument newBinaryDocument() {
-    return (JmolDocument) Interface.getOption("io2.BinaryDocument");
+  GenericBinaryDocument newBinaryDocument() {
+    return (GenericBinaryDocument) Interface.getOption("io2.BinaryDocument");
   }
   
   @Override

@@ -26,12 +26,12 @@ package org.jmol.adapter.readers.quantum;
 
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.JmolAdapter;
-import org.jmol.io.Binary;
 import org.jmol.util.Logger;
 
 import java.io.BufferedReader;
 
 import javajs.util.AU;
+import javajs.util.Binary;
 import javajs.util.List;
 import javajs.util.SB;
 
@@ -155,7 +155,7 @@ public class GenNBOReader extends MOReader {
     if (pt < 0)
       pt = fileName.length();
     fileName = fileName.substring(0, pt) + ext;
-    String data = viewer.getFileAsString(fileName, false);
+    String data = vwr.getFileAsString(fileName, false);
     if (data.length() == 0 || data.indexOf("java.io.FileNotFound") >= 0)
       throw new Exception(" supplemental file " + fileName + " was not found");
     return data;

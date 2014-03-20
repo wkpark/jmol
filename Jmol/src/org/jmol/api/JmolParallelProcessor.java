@@ -7,7 +7,7 @@ public interface JmolParallelProcessor {
 
   Object getExecutor();
 
-  void runAllProcesses(Viewer viewer);
+  void runAllProcesses(Viewer vwr);
 
   void addProcess(String name, ScriptContext context);
 

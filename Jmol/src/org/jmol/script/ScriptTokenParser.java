@@ -51,7 +51,7 @@ abstract class ScriptTokenParser {
    * 
    */
 
-  protected Viewer viewer;
+  protected Viewer vwr;
 
   protected String script;
   protected boolean isStateScript;
@@ -260,7 +260,7 @@ abstract class ScriptTokenParser {
 
   protected Map<String, Boolean> htUserFunctions;
   protected boolean isUserFunction(String name) {
-    return (!isStateScript && (viewer.isFunction(name) || htUserFunctions.containsKey(name)));
+    return (!isStateScript && (vwr.isFunction(name) || htUserFunctions.containsKey(name)));
   }
 
   private boolean isExpressionNext() {
@@ -1217,13 +1217,13 @@ abstract class ScriptTokenParser {
       int val = theToken.intValue;
       if (val < 0 || val > 9999)
         return error(ERROR_invalidChainSpecification);
-      chain = viewer.getChainID("" + val);
+      chain = vwr.getChainID("" + val);
       break;
     default:
       String strChain = "" + getToken().value;
       if (strChain.equals("?"))
         return true;
-      chain = viewer.getChainID(strChain);
+      chain = vwr.getChainID(strChain);
       break;
     }
     return generateResidueSpecCode(T.tv(T.spec_chain, chain,

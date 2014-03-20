@@ -15,7 +15,7 @@ public abstract class ScriptError implements JmolScriptEvaluator {
 
   abstract protected void showString(String msg);
   
-  public Viewer viewer;
+  public Viewer vwr;
   public boolean chk;
 
   protected boolean ignoreError;
@@ -94,18 +94,18 @@ public abstract class ScriptError implements JmolScriptEvaluator {
     if (ignoreError)
       throw new NullPointerException();
     if (!chk) {
-      // String s = viewer.getSetHistory(1);
-      // viewer.addCommand(s + CommandHistory.ERROR_FLAG);
+      // String s = vwr.getSetHistory(1);
+      // vwr.addCommand(s + CommandHistory.ERROR_FLAG);
       setCursorWait(false);
-      viewer.setBooleanProperty("refreshing", true);
-      viewer.setStringProperty("_errormessage", strUntranslated);
+      vwr.setBooleanProperty("refreshing", true);
+      vwr.setStringProperty("_errormessage", strUntranslated);
     }
     throw new ScriptException(this, message, strUntranslated, true);
   }
 
   public void setCursorWait(boolean TF) {
     if (!chk)
-      viewer.setCursor(TF ? GenericPlatform.CURSOR_WAIT
+      vwr.setCursor(TF ? GenericPlatform.CURSOR_WAIT
           : GenericPlatform.CURSOR_DEFAULT);
   }
 

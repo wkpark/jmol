@@ -79,7 +79,7 @@ public class JmolApp implements JmolAppAPI {
   private String menuFile;
 
   
-  //private JmolViewer viewer;
+  //private JmolViewer vwr;
   //private JmolAdapter modelAdapter;
 
   public JmolApp() {
@@ -270,7 +270,7 @@ public class JmolApp implements JmolAppAPI {
     }
 
     // Process more command line arguments
-    // these are also passed to viewer
+    // these are also passed to vwr
 
     // debug mode
     if (line.hasOption("d")) {
@@ -485,7 +485,7 @@ public class JmolApp implements JmolAppAPI {
     
   }
 
-  public void startViewer(JmolViewer viewer, SplashInterface splash, boolean isJmolData) { 
+  public void startViewer(JmolViewer vwr, SplashInterface splash, boolean isJmolData) { 
     try {
     } catch (Throwable t) {
       System.out.println("uncaught exception: " + t);
@@ -493,7 +493,7 @@ public class JmolApp implements JmolAppAPI {
     }
     
     if (menuFile != null)
-      viewer.setMenu(menuFile, true);
+      vwr.setMenu(menuFile, true);
 
 
     // Open a file if one is given as an argument -- note, this CAN be a
@@ -513,7 +513,7 @@ public class JmolApp implements JmolAppAPI {
         Logger.info("Executing script: " + script1);
       if (splash != null)
         splash.showStatus(GT._("Executing script 1..."));
-      runScript(script1, isJmolData, viewer);
+      runScript(script1, isJmolData, vwr);
     }
 
     // next the file
@@ -534,9 +534,9 @@ public class JmolApp implements JmolAppAPI {
             && !linein.equals("!quit"))
           script.append(linein).append("\n");
         scan.close();
-        runScript(script.toString(), isJmolData, viewer);
+        runScript(script.toString(), isJmolData, vwr);
       } else {
-        viewer.evalFile(scriptFilename);
+        vwr.evalFile(scriptFilename);
       }
     }
     // then command script
@@ -545,20 +545,20 @@ public class JmolApp implements JmolAppAPI {
         Logger.info("Executing script: " + script2);
       if (splash != null)
         splash.showStatus(GT._("Executing script 2..."));
-      runScript(script2, isJmolData, viewer);
+      runScript(script2, isJmolData, vwr);
     }
     
     // scanner input
     if (scanInput) {
-      new InputScannerThread(viewer, isSilent);
+      new InputScannerThread(vwr, isSilent);
     }
   }
 
-  private void runScript(String script, boolean outputResults, JmolViewer viewer) {
+  private void runScript(String script, boolean outputResults, JmolViewer vwr) {
     if (outputResults)
-      System.out.print(viewer.scriptWaitStatus(script, null));
+      System.out.print(vwr.scriptWaitStatus(script, null));
     else
-      viewer.script(script);
+      vwr.script(script);
   }
   
   @Override

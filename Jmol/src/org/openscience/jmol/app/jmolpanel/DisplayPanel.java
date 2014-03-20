@@ -53,7 +53,7 @@ public class DisplayPanel extends JPanel
   implements JmolFrame, ComponentListener, Printable {
   
   StatusBar status;
-  JmolViewer viewer;
+  JmolViewer vwr;
     
   private String displaySpeed;
 
@@ -88,8 +88,8 @@ public class DisplayPanel extends JPanel
     setDoubleBuffered(false);
   }
 
-  void setViewer(JmolViewer viewer) {
-    this.viewer = viewer;
+  void setViewer(JmolViewer vwr) {
+    this.vwr = vwr;
     updateSize(false);
   }
 
@@ -117,14 +117,14 @@ public class DisplayPanel extends JPanel
   void setRotateMode() {
     if (buttonRotate != null && !isRotateMode()) {
       buttonRotate.setSelected(true);
-      viewer.setSelectionHalos(false);
+      vwr.setSelectionHalos(false);
     }
   }
     
   void setModelkitMode() {
     if (buttonModelkit != null)
       buttonModelkit.setSelected(true);
-    viewer.setSelectionHalos(false);
+    vwr.setSelectionHalos(false);
   }
 
   @Override
@@ -152,16 +152,16 @@ public class DisplayPanel extends JPanel
   private void updateSize(boolean doAll) {
     if (haveDisplay) {
       getSize(dimSize);
-      viewer.setScreenDimension(dimSize.width, dimSize.height);
+      vwr.setScreenDimension(dimSize.width, dimSize.height);
     } else {
-      viewer.setScreenDimension(startupDimension.width, startupDimension.height);
+      vwr.setScreenDimension(startupDimension.width, startupDimension.height);
     }
     if (!doAll)
       return;
     setRotateMode();
     if (haveDisplay)
       status.setStatus(2, dimSize.width + " x " + dimSize.height);
-    viewer.refresh(3, "updateSize");
+    vwr.refresh(3, "updateSize");
   }
 
   @Override
@@ -172,7 +172,7 @@ public class DisplayPanel extends JPanel
       return;
     //System.out.println("DisplayPanel:paint");System.out.flush();
 
-    viewer.renderScreenImage(g, dimSize.width, dimSize.height);
+    vwr.renderScreenImage(g, dimSize.width, dimSize.height);
     if (border == null)
       border = new Point();
     if (!haveBorder)
@@ -195,9 +195,9 @@ public class DisplayPanel extends JPanel
     if (pageIndex > 0)
       return Printable.NO_SUCH_PAGE;
     rectClip.x = rectClip.y = 0;
-    int screenWidth = rectClip.width = viewer.getScreenWidth();
-    int screenHeight = rectClip.height = viewer.getScreenHeight();
-    Object image = viewer.getScreenImageBuffer(null, true);
+    int screenWidth = rectClip.width = vwr.getScreenWidth();
+    int screenHeight = rectClip.height = vwr.getScreenHeight();
+    Object image = vwr.getScreenImageBuffer(null, true);
     int pageX = (int)pf.getImageableX();
     int pageY = (int)pf.getImageableY();
     int pageWidth = (int)pf.getImageableWidth();
@@ -216,7 +216,7 @@ public class DisplayPanel extends JPanel
     } else {
       g2.drawImage((Image) image, pageX, pageY, null);
     }
-    viewer.releaseScreenImage();
+    vwr.releaseScreenImage();
     return Printable.PAGE_EXISTS;
   }
 
@@ -257,7 +257,7 @@ public class DisplayPanel extends JPanel
 
     @Override
     public void actionPerformed(ActionEvent e) {
-      viewer.setSelectionHalos(false);
+      vwr.setSelectionHalos(false);
       if (statusText != null) {
         status.setStatus(1, statusText);
       } else {
@@ -280,10 +280,10 @@ public class DisplayPanel extends JPanel
 
     @Override
     public void actionPerformed(ActionEvent e) {
-      if (viewer.getShowBbcage() || viewer.getBooleanProperty("showUnitCell")) {
-        viewer.evalStringQuiet(action);
+      if (vwr.getShowBbcage() || vwr.getBooleanProperty("showUnitCell")) {
+        vwr.evalStringQuiet(action);
       } else {
-        viewer.evalStringQuiet("boundbox on;" + action + ";delay 1;boundbox off");
+        vwr.evalStringQuiet("boundbox on;" + action + ";delay 1;boundbox off");
       }
     }
   }
@@ -297,7 +297,7 @@ public class DisplayPanel extends JPanel
 
     @Override
     public void actionPerformed(ActionEvent e) {
-      viewer.evalStringQuiet("center (selected)");
+      vwr.evalStringQuiet("center (selected)");
       setRotateMode();
     }
   }
@@ -311,7 +311,7 @@ public class DisplayPanel extends JPanel
 
     @Override
     public void actionPerformed(ActionEvent e) {
-      viewer.homePosition();
+      vwr.homePosition();
       setRotateMode();
     }
   }
@@ -331,7 +331,7 @@ public class DisplayPanel extends JPanel
     @Override
     public void actionPerformed(ActionEvent e) {
       JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      viewer.evalStringQuiet(action + " " + cbmi.isSelected());
+      vwr.evalStringQuiet(action + " " + cbmi.isSelected());
     }
   }
 
@@ -372,7 +372,7 @@ public class DisplayPanel extends JPanel
 
   private void startPaintClock() {
     timeBegin = System.currentTimeMillis();
-    int motionEventNumber = viewer.getMotionEventNumber();
+    int motionEventNumber = vwr.getMotionEventNumber();
     if (lastMotionEventNumber != motionEventNumber) {
       lastMotionEventNumber = motionEventNumber;
       resetTimes();
@@ -403,7 +403,7 @@ public class DisplayPanel extends JPanel
     if (displaySpeed.equalsIgnoreCase("fps")) {
         status.setStatus(3, fmt(1000/timeLast) + "FPS : " + fmt(1000/timeAverage) + "FPS");
     } else {
-      status.setStatus(3, viewer.getParameter("_memory")+" Mb; " + fmt(timeLast) + "/" + timeAverage + " ms");
+      status.setStatus(3, vwr.getParameter("_memory")+" Mb; " + fmt(timeLast) + "/" + timeAverage + " ms");
     }
   }
 

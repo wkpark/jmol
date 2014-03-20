@@ -28,10 +28,10 @@ package org.jmol.jvxl.data;
 import javajs.util.List;
 import javajs.util.PT;
 import javajs.util.SB;
+import javajs.util.XmlUtil;
 
 import java.util.Map;
 
-import org.jmol.io.XmlUtil;
 import org.jmol.java.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;

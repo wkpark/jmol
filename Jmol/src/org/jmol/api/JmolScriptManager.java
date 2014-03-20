@@ -12,7 +12,7 @@ import org.jmol.viewer.Viewer;
 
 public interface JmolScriptManager {
 
-  JmolScriptEvaluator setViewer(Viewer viewer);
+  JmolScriptEvaluator setViewer(Viewer vwr);
   
   void startCommandWatcher(boolean isStart);
 

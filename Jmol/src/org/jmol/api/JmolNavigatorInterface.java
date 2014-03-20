@@ -10,7 +10,7 @@ import org.jmol.viewer.Viewer;
 
 public interface JmolNavigatorInterface extends Runnable {
 
-  void set(TransformManager transformManager, Viewer viewer);
+  void set(TransformManager transformManager, Viewer vwr);
 
   void navigateTo(float floatSecondsTotal, V3 axis, float degrees,
                   P3 center, float depthPercent, float xTrans, float yTrans);

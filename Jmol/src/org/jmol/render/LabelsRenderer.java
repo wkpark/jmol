@@ -79,7 +79,7 @@ public class LabelsRenderer extends FontLineShapeRenderer {
   @Override
   protected boolean render() {
     fidPrevious = 0;
-    zCutoff = viewer.getZShadeStart();
+    zCutoff = vwr.getZShadeStart();
 
     Labels labels = (Labels) shape;
 
@@ -92,12 +92,12 @@ public class LabelsRenderer extends FontLineShapeRenderer {
     if (labelStrings == null)
       return false;
     Atom[] atoms = modelSet.atoms;
-    short backgroundColixContrast = viewer.getColixBackgroundContrast();
-    int backgroundColor = viewer.getBackgroundArgb();
-    sppm = viewer.getScalePixelsPerAngstrom(true);
-    scalePixelsPerMicron = (viewer.getBoolean(T.fontscaling) ? sppm * 10000f
+    short backgroundColixContrast = vwr.getColixBackgroundContrast();
+    int backgroundColor = vwr.getBackgroundArgb();
+    sppm = vwr.getScalePixelsPerAngstrom(true);
+    scalePixelsPerMicron = (vwr.getBoolean(T.fontscaling) ? sppm * 10000f
         : 0);
-    imageFontScaling = viewer.getImageFontScaling();
+    imageFontScaling = vwr.getImageFontScaling();
     int iGroup = -1;
     minZ[0] = Integer.MAX_VALUE;
     boolean isAntialiased = g3d.isAntialiased();
@@ -144,7 +144,7 @@ public class LabelsRenderer extends FontLineShapeRenderer {
         zBox = 1;
 
       Text text = labels.getLabel(i);
-      boxXY = (!isExport || viewer.creatingImage ? labels.getBox(i)
+      boxXY = (!isExport || vwr.creatingImage ? labels.getBox(i)
           : new float[5]);
       if (boxXY == null)
         labels.putBox(i, boxXY = new float[5]);
@@ -178,7 +178,7 @@ public class LabelsRenderer extends FontLineShapeRenderer {
         else
           pTemp.set(0, 0, 0);
         pTemp.add3(text.pymolOffset[4], text.pymolOffset[5], text.pymolOffset[6]);
-        viewer.transformPtScr(pTemp, screen);
+        vwr.transformPtScr(pTemp, screen);
         text.setXYZs(screen.x, screen.y, screen.z, zSlab);
         text.setScalePixelsPerMicron(sppm);
       }
@@ -224,7 +224,7 @@ public class LabelsRenderer extends FontLineShapeRenderer {
           text.setAlignment(textAlign);
       }
       text.setPointer(pointer);
-      TextRenderer.render(text, viewer, g3d, scalePixelsPerMicron,
+      TextRenderer.render(text, vwr, g3d, scalePixelsPerMicron,
           imageFontScaling, isExact, boxXY, xy);
     }
     return (newText ? text : null);

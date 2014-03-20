@@ -128,14 +128,14 @@ abstract class WebPanel extends JPanel implements ActionListener,
   protected Widgets theWidgets;
   protected int nWidgets;
   private Checkbox[] widgetCheckboxes;
-  protected JmolViewer viewer;
+  protected JmolViewer vwr;
   private int panelIndex;
   private WebPanel[] webPanels;
   private int errCount;
 
-  protected WebPanel(JmolViewer viewer, JFileChooser fc, WebPanel[] webPanels,
+  protected WebPanel(JmolViewer vwr, JFileChooser fc, WebPanel[] webPanels,
       int panelIndex) {
-    this.viewer = viewer;
+    this.vwr = vwr;
     this.fc = fc;
     this.webPanels = webPanels;
     this.panelIndex = panelIndex;
@@ -419,7 +419,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
         height = ((SpinnerNumberModel) (appletSizeSpinnerH.getModel()))
             .getNumber().intValue();
       }
-      JmolInstance instance = JmolInstance.getInstance(viewer, name, width,
+      JmolInstance instance = JmolInstance.getInstance(vwr, name, width,
           height, nWidgets);
       if (instance == null) {
         LogPanel.log(GT
@@ -468,7 +468,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
       if (list.length != 1)
         return;
       JmolInstance instance = listModel.get(list[0]);
-      viewer.evalStringQuiet(")" + instance.script); // leading paren disabled
+      vwr.evalStringQuiet(")" + instance.script); // leading paren disabled
                                                       // history
       return;
     }
@@ -530,7 +530,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
       appletSizeSpinnerW.getModel().setValue(Integer.valueOf(width));
     if (appletSizeSpinnerH != null)
       appletSizeSpinnerH.getModel().setValue(Integer.valueOf(height));
-    viewer.evalStringQuiet(")" + instance.script); //leading paren disabled history
+    vwr.evalStringQuiet(")" + instance.script); //leading paren disabled history
     //Set the widget selections to match this instance
     for (int i = 0; i < nWidgets; i++)
       widgetCheckboxes[i].setState(instance.whichWidgets.get(i));
@@ -548,7 +548,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
                                                                           // true
                                                                           // if
                                                                           // successful.
-    useAppletJS = JmolViewer.checkOption(viewer, "webMakerCreateJS");
+    useAppletJS = JmolViewer.checkOption(vwr, "webMakerCreateJS");
     // JOptionPane.showMessageDialog(null, "Creating directory for data...");
     String datadirPath = file.getPath().replace('\\','/');
     String datadirName = file.getName();
@@ -580,7 +580,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
       LogPanel.log(GT.o(GT._("Using directory {0}"), datadirPath));
       LogPanel.log("  " + GT.o(GT._("adding {0}"), "JmolPopIn.js"));
       try{
-      viewer.writeTextFile(datadirPath + "/JmolPopIn.js", 
+      vwr.writeTextFile(datadirPath + "/JmolPopIn.js", 
           GuiMap.getResourceString(this, "JmolPopIn.js"));
       }catch (IOException IOe){
         throw IOe;
@@ -615,7 +615,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
         }
         script = replaceQuotedStrings(script, filesToCopy, copiedFileNames);
         LogPanel.log("      ..." + GT.o(GT._("adding {0}"), javaname + ".spt"));
-        viewer.writeTextFile(datadirPath + "/" + javaname + ".spt", script);
+        vwr.writeTextFile(datadirPath + "/" + javaname + ".spt", script);
       }
       String html = GuiMap.getResourceString(this, panelName + "_template");
       html = fixHtml(html);
@@ -629,7 +629,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
             jsStr += "\n<script src=\"" + scriptFileName
                 + "\" type=\"text/javascript\"></script>";
             LogPanel.log("  " + GT.o(GT._("adding {0}"), scriptFileName));
-            viewer.writeTextFile(datadirPath + "/" + scriptFileName + "",
+            vwr.writeTextFile(datadirPath + "/" + scriptFileName + "",
                 GuiMap.getResourceString(this, scriptFileName));
           }
           String [] supportFileNames=theWidgets.widgetList[i].getSupportFileNames();
@@ -704,7 +704,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
       html = PT.rep(html, "@LOGDATA@", "<pre>\n"
           + LogPanel.getText() + "\n</pre>\n");
       LogPanel.log("      ..." + GT.o(GT._("creating {0}"), fileName));
-      viewer.writeTextFile(fileName, html);
+      vwr.writeTextFile(fileName, html);
     } else {
       IOException IOe = new IOException(GT._("Error creating directory: ")
           + datadirPath);
@@ -753,7 +753,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
     if (gzoutFile.exists())
       return gzname;
     try {
-      Object ret = viewer.getFileAsBytes(fullPathName, null);
+      Object ret = vwr.getFileAsBytes(fullPathName, null);
       if (ret instanceof String){
         LogPanel
             .log(GT.o(GT

@@ -35,9 +35,9 @@ public class VibrationThread extends JmolThread {
   public VibrationThread() {}
   
   @Override
-  public int setManager(Object manager, Viewer viewer, Object options) {
+  public int setManager(Object manager, Viewer vwr, Object options) {
     transformManager = (TransformManager) manager;
-    setViewer(viewer, "VibrationThread");
+    setViewer(vwr, "VibrationThread");
     return 0;
   }
   
@@ -48,7 +48,7 @@ public class VibrationThread extends JmolThread {
       switch (mode) {
       case INIT:
         lastRepaintTime = startTime = System.currentTimeMillis();
-        viewer.startHoverWatcher(false);
+        vwr.startHoverWatcher(false);
         haveReference = true;
         mode = MAIN;
         break;
@@ -68,12 +68,12 @@ public class VibrationThread extends JmolThread {
           float t = (float) (elapsed % transformManager.vibrationPeriodMs)
               / transformManager.vibrationPeriodMs;
           transformManager.setVibrationT(t);
-          viewer.refresh(3, "VibrationThread:run()");
+          vwr.refresh(3, "VibrationThread:run()");
           mode = (checkInterrupted(transformManager.vibrationThread) ? FINISH : MAIN);
         }
         break;
       case FINISH:
-        viewer.startHoverWatcher(true);
+        vwr.startHoverWatcher(true);
         return;
       }
   }

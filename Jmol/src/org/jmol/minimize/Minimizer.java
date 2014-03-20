@@ -50,7 +50,7 @@ import org.jmol.viewer.Viewer;
 
 public class Minimizer implements MinimizerInterface {
 
-  public Viewer viewer;
+  public Viewer vwr;
   public Atom[] atoms;
   public Bond[] bonds;
   public int rawBondCount;
@@ -90,7 +90,7 @@ public class Minimizer implements MinimizerInterface {
   @Override
   public MinimizerInterface setProperty(String propertyName, Object value) {
     switch (("ff        " + "cancel    " + "clear     " + "constraint"
-        +    "fixed     " + "stop      " + "viewer    ").indexOf(propertyName)) {
+        +    "fixed     " + "stop      " + "vwr    ").indexOf(propertyName)) {
     case 0:
       // UFF or MMFF
       if (!ff.equals(value)) {
@@ -117,7 +117,7 @@ public class Minimizer implements MinimizerInterface {
       stopMinimization(true);
       break;
     case 60:
-      viewer = (Viewer) value;
+      vwr = (Viewer) value;
       break;
     }
     return this;
@@ -190,11 +190,11 @@ public class Minimizer implements MinimizerInterface {
   public boolean minimize(int steps, double crit, BS bsSelected,
                           BS bsFixed, boolean haveFixed, boolean forceSilent, 
                           String ff) {
-    isSilent = (forceSilent || viewer.getBooleanProperty("minimizationSilent"));
+    isSilent = (forceSilent || vwr.getBooleanProperty("minimizationSilent"));
     Object val;
     setEnergyUnits();
     if (steps == Integer.MAX_VALUE) {
-      val = viewer.getParameter("minimizationSteps");
+      val = vwr.getParameter("minimizationSteps");
       if (val != null && val instanceof Integer)
         steps = ((Integer) val).intValue();
     }
@@ -206,7 +206,7 @@ public class Minimizer implements MinimizerInterface {
     if (!haveFixed && bsFixedDefault != null)
       bsFixed.and(bsFixedDefault);
     if (crit <= 0) {
-      val = viewer.getParameter("minimizationCriterion");
+      val = vwr.getParameter("minimizationCriterion");
       if (val != null && val instanceof Float)
         crit = ((Float) val).floatValue();
     }
@@ -226,7 +226,7 @@ public class Minimizer implements MinimizerInterface {
       Logger.error(GT._("No atoms selected -- nothing to do!"));
       return false;
     }
-    atoms = viewer.getModelSet().atoms;
+    atoms = vwr.getModelSet().atoms;
     bsAtoms = BSUtil.copy(bsSelected);
     for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1))
       if (atoms[i].getElementNumber() == 0)
@@ -249,7 +249,7 @@ public class Minimizer implements MinimizerInterface {
     if (steps > 0) {
       bsTaint = BSUtil.copy(bsAtoms);
       BSUtil.andNot(bsTaint, bsFixed);
-      viewer.setTaintedAtoms(bsTaint, AtomCollection.TAINT_COORD);
+      vwr.setTaintedAtoms(bsTaint, AtomCollection.TAINT_COORD);
     }
     if (bsFixed != null)
       this.bsFixed = bsFixed;
@@ -277,7 +277,7 @@ public class Minimizer implements MinimizerInterface {
 
     if (steps <= 0)
       getEnergyOnly();
-    else if (isSilent || !viewer.useMinimizationThread())
+    else if (isSilent || !vwr.useMinimizationThread())
       minimizeWithoutThread();
     else
       setMinimizationOn(true);
@@ -285,7 +285,7 @@ public class Minimizer implements MinimizerInterface {
   }
 
   private void setEnergyUnits() {
-    String s = viewer.getEnergyUnits();
+    String s = vwr.getEnergyUnits();
     units = (s.equalsIgnoreCase("kcal") ? "kcal" : "kJ");
   }
 
@@ -310,8 +310,8 @@ public class Minimizer implements MinimizerInterface {
 
     Logger.info(GT.i(GT._("{0} atoms will be minimized."), atomCount));
     Logger.info("minimize: getting bonds...");
-    bonds = viewer.modelSet.bonds;
-    rawBondCount = viewer.modelSet.bondCount;
+    bonds = vwr.ms.bonds;
+    rawBondCount = vwr.ms.bondCount;
     getBonds();
     Logger.info("minimize: getting angles...");
     getAngles();
@@ -496,7 +496,7 @@ public class Minimizer implements MinimizerInterface {
         ff = "UFF";
       }
       this.ff = ff;
-      viewer.setStringProperty("_minimizationForceField", ff);
+      vwr.setStringProperty("_minimizationForceField", ff);
     }
     //Logger.info("minimize: forcefield = " + pFF);
     return pFF;
@@ -532,40 +532,40 @@ public class Minimizer implements MinimizerInterface {
     }
     if (minimizationThread == null) {
       minimizationThread = new MinimizationThread();
-      minimizationThread.setManager(this, viewer, null);
+      minimizationThread.setManager(this, vwr, null);
       minimizationThread.start();
     }
   }
 
   private void getEnergyOnly() {
-    if (pFF == null || viewer == null)
+    if (pFF == null || vwr == null)
       return;
     pFF.steepestDescentInitialize(steps, crit);      
-    viewer.setFloatProperty("_minimizationEnergyDiff", 0);
+    vwr.setFloatProperty("_minimizationEnergyDiff", 0);
     reportEnergy();
-    viewer.setStringProperty("_minimizationStatus", "calculate");
-    viewer.notifyMinimizationStatus();
+    vwr.setStringProperty("_minimizationStatus", "calculate");
+    vwr.notifyMinimizationStatus();
   }
   
   private void reportEnergy() {
-    viewer.setFloatProperty("_minimizationEnergy", pFF.toUserUnits(pFF.getEnergy()));
+    vwr.setFloatProperty("_minimizationEnergy", pFF.toUserUnits(pFF.getEnergy()));
   }
 
   @Override
   public boolean startMinimization() {
    try {
       Logger.info("minimizer: startMinimization");
-      viewer.setIntProperty("_minimizationStep", 0);
-      viewer.setStringProperty("_minimizationStatus", "starting");
-      viewer.setFloatProperty("_minimizationEnergy", 0);
-      viewer.setFloatProperty("_minimizationEnergyDiff", 0);
-      viewer.notifyMinimizationStatus();
-      viewer.saveCoordinates("minimize", bsTaint);
+      vwr.setIntProperty("_minimizationStep", 0);
+      vwr.setStringProperty("_minimizationStatus", "starting");
+      vwr.setFloatProperty("_minimizationEnergy", 0);
+      vwr.setFloatProperty("_minimizationEnergyDiff", 0);
+      vwr.notifyMinimizationStatus();
+      vwr.saveCoordinates("minimize", bsTaint);
       pFF.steepestDescentInitialize(steps, crit);
       reportEnergy();
       saveCoordinates();
     } catch (Exception e) {
-      Logger.error("minimization error viewer=" + viewer + " pFF = " + pFF);
+      Logger.error("minimization error vwr=" + vwr + " pFF = " + pFF);
       return false;
     }
     minimizationOn = true;
@@ -576,17 +576,17 @@ public class Minimizer implements MinimizerInterface {
   public boolean stepMinimization() {
     if (!minimizationOn)
       return false;
-    boolean doRefresh = (!isSilent && viewer.getBooleanProperty("minimizationRefresh"));
-    viewer.setStringProperty("_minimizationStatus", "running");
+    boolean doRefresh = (!isSilent && vwr.getBooleanProperty("minimizationRefresh"));
+    vwr.setStringProperty("_minimizationStatus", "running");
     boolean going = pFF.steepestDescentTakeNSteps(1);
     int currentStep = pFF.getCurrentStep();
-    viewer.setIntProperty("_minimizationStep", currentStep);
+    vwr.setIntProperty("_minimizationStep", currentStep);
     reportEnergy();
-    viewer.setFloatProperty("_minimizationEnergyDiff", pFF.toUserUnits(pFF.getEnergyDiff()));
-    viewer.notifyMinimizationStatus();
+    vwr.setFloatProperty("_minimizationEnergyDiff", pFF.toUserUnits(pFF.getEnergyDiff()));
+    vwr.notifyMinimizationStatus();
     if (doRefresh) {
       updateAtomXYZ();
-      viewer.refresh(3, "minimization step " + currentStep);
+      vwr.refresh(3, "minimization step " + currentStep);
     }
     return going;
   }
@@ -598,11 +598,11 @@ public class Minimizer implements MinimizerInterface {
     boolean failed = pFF.detectExplosion();
     if (failed)
       restoreCoordinates();
-    viewer.setIntProperty("_minimizationStep", pFF.getCurrentStep());
+    vwr.setIntProperty("_minimizationStep", pFF.getCurrentStep());
     reportEnergy();
-    viewer.setStringProperty("_minimizationStatus", (failed ? "failed" : "done"));
-    viewer.notifyMinimizationStatus();
-    viewer.refresh(3, "Minimizer:done" + (failed ? " EXPLODED" : "OK"));
+    vwr.setStringProperty("_minimizationStatus", (failed ? "failed" : "done"));
+    vwr.notifyMinimizationStatus();
+    vwr.refresh(3, "Minimizer:done" + (failed ? " EXPLODED" : "OK"));
     Logger.info("minimizer: endMinimization");
 }
 
@@ -645,7 +645,7 @@ public class Minimizer implements MinimizerInterface {
       atom.y = (float) minAtom.coord[1];
       atom.z = (float) minAtom.coord[2];
     }
-    viewer.refreshMeasures(false);
+    vwr.refreshMeasures(false);
   }
 
   private void minimizeWithoutThread() {
@@ -661,9 +661,9 @@ public class Minimizer implements MinimizerInterface {
     if (isSilent)
       Logger.info(msg);
     else if (isEcho)
-      viewer.showString(msg, false);
+      vwr.showString(msg, false);
     else
-      viewer.scriptEcho(msg);    
+      vwr.scriptEcho(msg);    
   }
 
   @Override
@@ -671,9 +671,9 @@ public class Minimizer implements MinimizerInterface {
                                       Atom[] atoms, BS bsAtoms) {
     ForceFieldMMFF ff = new ForceFieldMMFF(this);
     ff.setArrays(atoms, bsAtoms, bonds, bondCount, true, true);
-    viewer.setAtomProperty(bsAtoms, T.atomtype, 0, 0, null, null,
+    vwr.setAtomProperty(bsAtoms, T.atomtype, 0, 0, null, null,
         ff.getAtomTypeDescriptions());
-    viewer.setAtomProperty(bsAtoms, T.partialcharge, 0, 0, null,
+    vwr.setAtomProperty(bsAtoms, T.partialcharge, 0, 0, null,
         ff.getPartialCharges(), null);
   }
 

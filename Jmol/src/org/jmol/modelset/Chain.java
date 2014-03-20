@@ -128,6 +128,6 @@ public final class Chain {
   }
 
   public String getIDStr() {
-    return (chainID == 0 ? "" : chainID < 256 ? "" + (char) chainID : (String) model.modelSet.viewer.chainMap.get(Integer.valueOf(chainID)));
+    return (chainID == 0 ? "" : chainID < 256 ? "" + (char) chainID : (String) model.modelSet.vwr.chainMap.get(Integer.valueOf(chainID)));
   }
 }

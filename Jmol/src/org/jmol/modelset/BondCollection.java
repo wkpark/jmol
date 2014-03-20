@@ -71,7 +71,7 @@ abstract public class BondCollection extends AtomCollection {
   public BondIterator getBondIteratorForType(int bondType, BS bsAtoms) {
     //Dipoles, Sticks
     return new BondIteratorSelected(bonds, bondCount, bondType, bsAtoms, 
-        viewer.getBoolean(T.bondmodeor));
+        vwr.getBoolean(T.bondmodeor));
   }
 
   public BondIterator getBondIterator(BS bsBonds) {
@@ -282,7 +282,7 @@ abstract public class BondCollection extends AtomCollection {
   }
 
   protected void deleteAllBonds2() {
-    viewer.setShapeProperty(JC.SHAPE_STICKS, "reset", null);
+    vwr.setShapeProperty(JC.SHAPE_STICKS, "reset", null);
     for (int i = bondCount; --i >= 0;) {
       bonds[i].deleteAtomReferences();
       bonds[i] = null;
@@ -301,7 +301,7 @@ abstract public class BondCollection extends AtomCollection {
    */
   public short getDefaultMadFromOrder(int order) {
     return (short) (Bond.isOrderH(order) ? 1
-        : order == Edge.BOND_STRUT  ? (int) Math.floor(viewer
+        : order == Edge.BOND_STRUT  ? (int) Math.floor(vwr
             .getFloat(T.strutdefaultradius) * 2000) : defaultCovalentMad);
   }
 
@@ -401,7 +401,7 @@ abstract public class BondCollection extends AtomCollection {
     for (int i = bondCount; --i >= iDst;)
       bonds[i] = null;
     bondCount = iDst;
-    BS[] sets = (BS[]) viewer.getShapeProperty(
+    BS[] sets = (BS[]) vwr.getShapeProperty(
         JC.SHAPE_STICKS, "sets");
     if (sets != null)
       for (int i = 0; i < sets.length; i++)
@@ -837,7 +837,7 @@ abstract public class BondCollection extends AtomCollection {
     if (deleteAtom)
       bs.set(atom.index);
     if (bs.nextSetBit(0) >= 0)
-      viewer.deleteAtoms(bs, false);
+      vwr.deleteAtoms(bs, false);
   }
   
   public boolean haveHiddenBonds;

@@ -68,7 +68,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
 
     for (int i = isosurface.meshCount; --i >= 0;) {
       mesh = imesh = (IsosurfaceMesh) isosurface.meshes[i];
-      if (imesh.connections != null && !viewer.getModelSet().atoms[imesh.connections[0]].checkVisible())
+      if (imesh.connections != null && !vwr.getModelSet().atoms[imesh.connections[0]].checkVisible())
         continue;
       hasColorRange = false;
       if (renderMeshSlab()) {
@@ -86,18 +86,18 @@ public class IsosurfaceRenderer extends MeshRenderer {
 
   private void setGlobals() {
     needTranslucent = false;
-    iShowNormals = viewer.getTestFlag(4);
-    showNumbers = viewer.getTestFlag(3);
+    iShowNormals = vwr.getTestFlag(4);
+    showNumbers = vwr.getTestFlag(3);
     isosurface = (Isosurface) shape;
     // exporters will do two passes here if there is translucency
     // first pass is #2 (translucent), then #1 (opaque).
     exportPass = (isExport ? 2 : 0); 
-    isNavigationMode = viewer.getBoolean(T.navigationmode);
-    showKey = (viewer.getBoolean(T.isosurfacekey) ? Boolean.TRUE : null);
+    isNavigationMode = vwr.getBoolean(T.navigationmode);
+    showKey = (vwr.getBoolean(T.isosurfacekey) ? Boolean.TRUE : null);
     isosurface.keyXy = null;
     meshScale = -1;
     globalSlabValue = g3d.getSlab();
-    mySlabValue = (isNavigationMode ? (int) viewer.getNavigationOffset().z : Integer.MAX_VALUE);
+    mySlabValue = (isNavigationMode ? (int) vwr.getNavigationOffset().z : Integer.MAX_VALUE);
   }
 
   protected void renderInfo() {
@@ -131,7 +131,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     if (n < 2)
       return;
     int factor = (g3d.isAntialiased() ? 2 : 1);
-    int height = viewer.getScreenHeight() * factor;
+    int height = vwr.getScreenHeight() * factor;
     int dy = height / 2 / (n - 1);
     int y = height / 4 * 3 - dy;
     int x = 10 * factor;
@@ -170,7 +170,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
         float z1 = Float.MIN_VALUE;
         for (int i = points.length; --i >= 0;) {
           pt2f.setT(points[i]);
-          viewer.transformPt3f(pt2f, pt2f);
+          vwr.transformPt3f(pt2f, pt2f);
           if (pt2f.z < z0)
             z0 = pt2f.z;
           if (pt2f.z > z1)
@@ -181,7 +181,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       }
     }
     boolean tcover = g3d.getTranslucentCoverOnly();
-    g3d.setTranslucentCoverOnly(frontOnly || !viewer.getBoolean(T.translucent));
+    g3d.setTranslucentCoverOnly(frontOnly || !vwr.getBoolean(T.translucent));
     thePlane = imesh.jvxlData.jvxlPlane;
     vertexValues = mesh.vertexValues;
     boolean isOK;
@@ -220,20 +220,20 @@ public class IsosurfaceRenderer extends MeshRenderer {
   
   private void renderLonePair(boolean isRadical) {
     pt2f.setT(vertices[1]);
-    viewer.transformPt3f(pt2f, pt2f);
-    int r = (int) viewer.scaleToScreen((int)pt2f.z, 100);
+    vwr.transformPt3f(pt2f, pt2f);
+    int r = (int) vwr.scaleToScreen((int)pt2f.z, 100);
     if (r < 1)
       r = 1;
     if (!isRadical) {
       V3 v1 = new V3();
       V3 v2 = new V3();
       pt1f.setT(vertices[0]);
-      viewer.transformPt3f(pt1f, pt1f);
+      vwr.transformPt3f(pt1f, pt1f);
       v1.sub2(pt2f, pt1f);
       v2.set(v1.x, v1.y, v1.z + 1);
       v2.cross(v2,v1);
       v2.normalize();
-      float f = viewer.scaleToScreen((int)pt1f.z, 100);
+      float f = vwr.scaleToScreen((int)pt1f.z, 100);
       v2.scale(f);
       pt1f.add2(pt2f, v2);
       pt2f.sub(v2);
@@ -268,8 +268,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
       for (int j = JvxlCoder.CONTOUR_POINTS; j < n; j++) {
         P3 pt1 = (P3) v.get(j);
         P3 pt2 = (P3) v.get(++j);
-        viewer.transformPtScr(pt1, pt1i);
-        viewer.transformPtScr(pt2, pt2i);
+        vwr.transformPtScr(pt1, pt1i);
+        vwr.transformPtScr(pt2, pt2i);
         if (Float.isNaN(pt1.x) || Float.isNaN(pt2.x))
           break;
         pt1i.z -= 2;
@@ -291,16 +291,16 @@ public class IsosurfaceRenderer extends MeshRenderer {
       int incr = imesh.vertexIncrement;
       int diam;
       if (mesh.diameter <= 0) {
-        diam = viewer.getInt(T.dotscale);
+        diam = vwr.getInt(T.dotscale);
         frontOnly = false;
       } else {
-        diam = viewer.getScreenDim() / (volumeRender ? 50 : 100);        
+        diam = vwr.getScreenDim() / (volumeRender ? 50 : 100);        
       }
       int ptSize = Math.round(Float.isNaN(mesh.volumeRenderPointSize) ? 150 : mesh.volumeRenderPointSize * 1000);
       if (diam < 1)
         diam = 1;
-      int cX = (showNumbers ? viewer.getScreenWidth() / 2 : 0);
-      int cY = (showNumbers ? viewer.getScreenHeight() / 2 : 0);
+      int cX = (showNumbers ? vwr.getScreenWidth() / 2 : 0);
+      int cY = (showNumbers ? vwr.getScreenHeight() / 2 : 0);
       if (showNumbers)
         g3d.setFontFid(g3d.getFontFidFS("Monospaced", 24));
       for (int i = (!imesh.hasGridPoints || imesh.firstRealVertex < 0 ? 0
@@ -323,7 +323,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
               screens[i].z - 30, (short) 0);
         }
         if (volumeRender) {
-          diam = (int) viewer.scaleToScreen(screens[i].z, ptSize);
+          diam = (int) vwr.scaleToScreen(screens[i].z, ptSize);
           if (diam < 1)
             diam = 1;
           g3d.volumeRender4(diam, screens[i].x, screens[i].y, screens[i].z);
@@ -401,12 +401,12 @@ public class IsosurfaceRenderer extends MeshRenderer {
     hasColorRange = !colorSolid && !isBicolorMap;
     int diam;
     if (mesh.diameter <= 0) {
-      diam = (meshScale < 0 ? meshScale = viewer.getInt(T.meshscale)
+      diam = (meshScale < 0 ? meshScale = vwr.getInt(T.meshscale)
           : meshScale);
       if (g3d.isAntialiased())
         diam *= 2;
     } else {
-      diam = viewer.getScreenDim() / 100;
+      diam = vwr.getScreenDim() / 100;
     }
     if (diam < 1)
       diam = 1;
@@ -524,7 +524,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       // index
       if (n >= 0) {
         ptTemp.scaleAdd2(3, vertexVectors[n], ptTemp);
-        viewer.transformPtScr(ptTemp, ptTempi);
+        vwr.transformPtScr(ptTemp, ptTempi);
         g3d.drawLineAB(screens[i], ptTempi);
         //g3d.drawStringNoSlab("" + n, null, ptTempi.x, ptTempi.y, ptTempi.z);
       }

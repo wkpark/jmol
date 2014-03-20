@@ -34,12 +34,12 @@ public class EchoRenderer extends LabelsRenderer {
 
   @Override
   protected boolean render() {
-    if (viewer.isPreviewOnly())
+    if (vwr.isPreviewOnly())
       return false;
     Echo echo = (Echo) shape;
-    float scalePixelsPerMicron = (viewer.getBoolean(T.fontscaling) ? viewer
+    float scalePixelsPerMicron = (vwr.getBoolean(T.fontscaling) ? vwr
         .getScalePixelsPerAngstrom(true) * 10000 : 0);
-    imageFontScaling = viewer.getImageFontScaling();
+    imageFontScaling = vwr.getImageFontScaling();
     boolean haveTranslucent = false;
     for (Text t: echo.objects.values()) {
       if (!t.visible || t.hidden) {
@@ -50,34 +50,34 @@ public class EchoRenderer extends LabelsRenderer {
           continue;
       }
       if (t.valign == JC.VALIGN_XYZ) {
-        viewer.transformPtScr(t.xyz, pt0i);
+        vwr.transformPtScr(t.xyz, pt0i);
         t.setXYZs(pt0i.x, pt0i.y, pt0i.z, pt0i.z);
       } else if (t.movableZPercent != Integer.MAX_VALUE) {
-        int z = viewer.zValueFromPercent(t.movableZPercent);
+        int z = vwr.zValueFromPercent(t.movableZPercent);
         t.setZs(z, z);
       }
       if (t.pointerPt == null) {
         t.pointer = JC.POINTER_NONE;
       } else {
         t.pointer = JC.POINTER_ON;
-        viewer.transformPtScr(t.pointerPt, pt0i);
+        vwr.transformPtScr(t.pointerPt, pt0i);
         t.atomX = pt0i.x;
         t.atomY = pt0i.y;
         t.atomZ = pt0i.z;
         if (t.zSlab == Integer.MIN_VALUE)
           t.zSlab = 1;
       }
-      TextRenderer.render(t, viewer, g3d, scalePixelsPerMicron, imageFontScaling,
+      TextRenderer.render(t, vwr, g3d, scalePixelsPerMicron, imageFontScaling,
           false, null, xy);
      if (C.isColixTranslucent(t.bgcolix) || C.isColixTranslucent(t.colix))
        haveTranslucent = true;
     }
     if (!isExport) {
-      String frameTitle = viewer.getFrameTitle();
+      String frameTitle = vwr.getFrameTitle();
       if (frameTitle != null && frameTitle.length() > 0) {
-        if (g3d.setColix(viewer.getColixBackgroundContrast())) {
+        if (g3d.setColix(vwr.getColixBackgroundContrast())) {
           if (frameTitle.indexOf("%{") >= 0 || frameTitle.indexOf("@{") >= 0)
-            frameTitle = viewer.formatText(frameTitle);
+            frameTitle = vwr.formatText(frameTitle);
           renderFrameTitle(frameTitle);
         }
       }
@@ -88,7 +88,7 @@ public class EchoRenderer extends LabelsRenderer {
   private void renderFrameTitle(String frameTitle) {
     byte fid = g3d.getFontFidFS("Serif", 14 * imageFontScaling);
     g3d.setFontFid(fid);
-    int y = (int) Math.floor(viewer.getScreenHeight() * (g3d.isAntialiased() ? 2 : 1) - 10 * imageFontScaling);
+    int y = (int) Math.floor(vwr.getScreenHeight() * (g3d.isAntialiased() ? 2 : 1) - 10 * imageFontScaling);
     int x = (int) Math.floor(5 * imageFontScaling);
     g3d.drawStringNoSlab(frameTitle, null, x, y, 0, (short) 0);
   }

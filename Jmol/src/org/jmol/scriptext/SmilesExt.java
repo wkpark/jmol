@@ -53,7 +53,7 @@ public class SmilesExt implements JmolSmilesExtension {
   @Override
   public JmolSmilesExtension init(Object se) {
     e = (ScriptEval) se;
-    sm = e.viewer.getSmilesMatcher();
+    sm = e.vwr.getSmilesMatcher();
     return this;
   }
 
@@ -95,8 +95,8 @@ public class SmilesExt implements JmolSmilesExtension {
       M4 m = new M4();
       P3 c = new P3();
 
-      Atom[] atoms = e.viewer.modelSet.atoms;
-      int atomCount = e.viewer.getAtomCount();
+      Atom[] atoms = e.vwr.ms.atoms;
+      int atomCount = e.vwr.getAtomCount();
       int[][] maps = sm.getCorrelationMaps(smiles,
           atoms, atomCount, bsA, isSmarts, true);
       if (maps == null)
@@ -168,7 +168,7 @@ public class SmilesExt implements JmolSmilesExtension {
     if (pattern.length() == 0 || pattern.equals("H")) {
       boolean isBioSmiles = (!asOneBitset);
       try {
-        return e.viewer.getSmilesOpt(bsSelected, 0, 0, pattern.equals("H"),
+        return e.vwr.getSmilesOpt(bsSelected, 0, 0, pattern.equals("H"),
             isBioSmiles, false, true, true);
       } catch (Exception ex) {
         e.evalError(ex.getMessage(), null);
@@ -185,7 +185,7 @@ public class SmilesExt implements JmolSmilesExtension {
       try {
         if (asAtoms)
           b = sm.getSubstructureSetArray(pattern,
-              e.viewer.modelSet.atoms, e.viewer.getAtomCount(), bsSelected, null,
+              e.vwr.ms.atoms, e.vwr.getAtomCount(), bsSelected, null,
               isSmarts, false);
         else
           b = sm.find(pattern, smiles, isSmarts, false);
@@ -240,13 +240,13 @@ public class SmilesExt implements JmolSmilesExtension {
         false, mapSet, null, false, false);
     if (mapSet[0] == null)
       return null;
-    int[][] bondMap1 = e.viewer.getDihedralMap(mapSet[0]);
-    int[][] bondMap2 = (bondMap1 == null ? null : e.viewer
+    int[][] bondMap1 = e.vwr.getDihedralMap(mapSet[0]);
+    int[][] bondMap2 = (bondMap1 == null ? null : e.vwr
         .getDihedralMap(mapSet[1]));
     if (bondMap2 == null || bondMap2.length != bondMap1.length)
       return null;
     float[][] angles = new float[bondMap1.length][3];
-    Atom[] atoms = e.viewer.modelSet.atoms;
+    Atom[] atoms = e.vwr.ms.atoms;
     getTorsions(atoms, bondMap2, angles, 0);
     getTorsions(atoms, bondMap1, angles, 1);
     float[] data = new float[bondMap1.length * 6];

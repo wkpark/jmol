@@ -28,11 +28,12 @@ import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.Resolver;
 import org.jmol.api.Interface;
-import org.jmol.io.Binary;
 
 import java.io.BufferedInputStream;
 import java.util.Hashtable;
 import java.util.Map;
+
+import javajs.util.Binary;
 
 import org.jmol.util.Logger;
 
@@ -133,7 +134,7 @@ public class XmlReader extends AtomSetCollectionReader {
       } catch (Exception e) {
         if (Logger.debugging)
           Logger.debug("Could not instantiate JAXP/SAX XML reader: "
-            + ((parent == null ? this : parent).viewer.isJS? e : e.getMessage()));
+            + ((parent == null ? this : parent).vwr.isJS? e : e.getMessage()));
       }
       if (saxReader == null)
         return "No XML reader found";
@@ -153,7 +154,7 @@ public class XmlReader extends AtomSetCollectionReader {
     try {
       thisReader.processXml(this, saxReader);
     } catch (Exception e) {
-      return "Error reading XML: " + (parent.viewer.isJS ? e : e.getMessage());
+      return "Error reading XML: " + (parent.vwr.isJS ? e : e.getMessage());
     }
     return null;
   }
@@ -196,9 +197,9 @@ public class XmlReader extends AtomSetCollectionReader {
        * @j2sNative
        * 
        *            this.domObj[0] =
-       *            parent.viewer.applet._createDomNode("xmlReader",o);
+       *            parent.vwr.applet._createDomNode("xmlReader",o);
        *            this.walkDOMTree();
-       *            parent.viewer.applet._createDomNode("xmlReader",null);
+       *            parent.vwr.applet._createDomNode("xmlReader",null);
        * 
        */
       {
@@ -218,7 +219,7 @@ public class XmlReader extends AtomSetCollectionReader {
       else
         parent.applySymmetryAndSetTrajectory();
     } catch (Exception e) {
-      System.out.println((parent == null ? this : parent).viewer.isJS? e : e.getMessage());
+      System.out.println((parent == null ? this : parent).vwr.isJS? e : e.getMessage());
       Logger.error("applySymmetry failed: " + e);
     }
   }
@@ -365,12 +366,12 @@ public class XmlReader extends AtomSetCollectionReader {
   }
 
   private Object jsObjectCall(Object[] jsObject, String method, Object[] args) {
-    return parent.viewer.getJsObjectInfo(jsObject, method,
+    return parent.vwr.getJsObjectInfo(jsObject, method,
         args == null ? nullObj : args);
   }
 
   private Object jsObjectGetMember(Object[] jsObject, String name) {
-    return parent.viewer.getJsObjectInfo(jsObject, name, null);
+    return parent.vwr.getJsObjectInfo(jsObject, name, null);
   }
 
 }

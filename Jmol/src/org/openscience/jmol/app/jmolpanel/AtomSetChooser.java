@@ -87,7 +87,7 @@ ActionListener, ChangeListener, Runnable {
   private JTextArea propertiesTextArea;
   private JTree tree;
   private DefaultTreeModel treeModel;
-  private JmolViewer viewer;
+  private JmolViewer vwr;
   private JCheckBox repeatCheckBox;
   private JSlider selectSlider;
   private JLabel infoLabel;
@@ -183,10 +183,10 @@ ActionListener, ChangeListener, Runnable {
 
  
   
-  public AtomSetChooser(JmolViewer viewer, JFrame frame) {
+  public AtomSetChooser(JmolViewer vwr, JFrame frame) {
  //   super(frame,"AtomSetChooser", false);
     super(GT._("AtomSetChooser"));
-    this.viewer = viewer;
+    this.vwr = vwr;
     
     // initialize the treeModel
     treeModel = new DefaultTreeModel(new DefaultMutableTreeNode(GT._("No AtomSets")));
@@ -282,7 +282,7 @@ ActionListener, ChangeListener, Runnable {
     // fps slider
     JPanel fpsPanel = new JPanel();
     row.add(fpsPanel);
-    int fps = viewer.getInt(T.animationfps);
+    int fps = vwr.getInt(T.animationfps);
     if (fps > FPS_MAX)
       fps = FPS_MAX;
     fpsPanel.setLayout(new BorderLayout());
@@ -453,10 +453,10 @@ ActionListener, ChangeListener, Runnable {
     try {
       currentIndex = index;
       int atomSetIndex = indexes[index];
-      script("frame " + viewer.getModelNumberDotted(atomSetIndex));
-      infoLabel.setText(viewer.getModelName(atomSetIndex));
-      showProperties(viewer.getModelProperties(atomSetIndex));
-      showAuxiliaryInfo(viewer.getModelAuxiliaryInfo(atomSetIndex));
+      script("frame " + vwr.getModelNumberDotted(atomSetIndex));
+      infoLabel.setText(vwr.getModelName(atomSetIndex));
+      showProperties(vwr.getModelProperties(atomSetIndex));
+      showAuxiliaryInfo(vwr.getModelAuxiliaryInfo(atomSetIndex));
     } catch (Exception e) {
       // if this fails, ignore it.
     }
@@ -556,15 +556,15 @@ ActionListener, ChangeListener, Runnable {
         for (int idx = 0; idx < nidx; idx++ ) {
           int modelIndex = indexes[idx];
           SB str = new SB();
-          str.append(viewer.getModelName(modelIndex)).append("\n");
+          str.append(vwr.getModelName(modelIndex)).append("\n");
           int natoms=0;
-          int atomCount = viewer.getAtomCount();
+          int atomCount = vwr.getAtomCount();
           for (int i = 0; i < atomCount;  i++) {
-            if (viewer.getAtomModelIndex(i)==modelIndex) {
+            if (vwr.getAtomModelIndex(i)==modelIndex) {
               natoms++;
-              P3 p = viewer.getAtomPoint3f(i);
+              P3 p = vwr.getAtomPoint3f(i);
               // should really be getElementSymbol(i) in stead
-              str.append(viewer.getAtomName(i)).append("\t");
+              str.append(vwr.getAtomName(i)).append("\t");
               str.appendF(p.x).append("\t").appendF(p.y).append("\t").appendF(p.z).append("\n");
               // not sure how to get the vibration vector and charge here...
             }
@@ -580,7 +580,7 @@ ActionListener, ChangeListener, Runnable {
   }
   
   /**
-   * Have the viewer show a particular frame with frequencies
+   * Have the vwr show a particular frame with frequencies
    * if it can be found.
    * @param index Starting index where to start looking for frequencies
    * @param increment Increment value for how to go through the list
@@ -591,7 +591,7 @@ ActionListener, ChangeListener, Runnable {
     
     // search till get to either end of found a frequency
     while (index >= 0 && index < maxIndex 
-        && !(foundFrequency=(viewer.modelHasVibrationVectors(indexes[index])))) {
+        && !(foundFrequency=(vwr.modelHasVibrationVectors(indexes[index])))) {
       index+=increment;
     }
     
@@ -632,7 +632,7 @@ ActionListener, ChangeListener, Runnable {
   }
   
   private void script(String cmd) {
-    viewer.evalStringQuiet(cmd + JC.REPAINT_IGNORE);    
+    vwr.evalStringQuiet(cmd + JC.REPAINT_IGNORE);    
   }
 
   /**
@@ -683,12 +683,12 @@ ActionListener, ChangeListener, Runnable {
   private void createTreeModel() {
     String key=null;
     String separator=null;
-    String name = viewer.getModelSetName();
+    String name = vwr.getModelSetName();
     DefaultMutableTreeNode root =
       new DefaultMutableTreeNode(name == null ? "zapped" : name);
     
     // first determine whether we have a PATH_KEY in the modelSetProperties
-    Properties modelSetProperties = (name == null ? null : viewer.getModelSetProperties());
+    Properties modelSetProperties = (name == null ? null : vwr.getModelSetProperties());
     if (modelSetProperties != null) {
       key = modelSetProperties.getProperty("PATH_KEY");
       separator = modelSetProperties.getProperty("PATH_SEPARATOR");
@@ -696,16 +696,16 @@ ActionListener, ChangeListener, Runnable {
     if (key == null || separator == null) {
       // make a flat hierarchy if no key or separator are known
       if (name != null)
-        for (int atomSetIndex = 0, count = viewer.getModelCount();
+        for (int atomSetIndex = 0, count = vwr.getModelCount();
             atomSetIndex < count; ++atomSetIndex) {
           root.add(new AtomSet(atomSetIndex,
-          viewer.getModelName(atomSetIndex)));
+          vwr.getModelName(atomSetIndex)));
         }
     } else {
-      for (int atomSetIndex = 0, count = viewer.getModelCount();
+      for (int atomSetIndex = 0, count = vwr.getModelCount();
       atomSetIndex < count; ++atomSetIndex) {
         DefaultMutableTreeNode current = root;
-        String path = viewer.getModelProperty(atomSetIndex,key);
+        String path = vwr.getModelProperty(atomSetIndex,key);
         // if the path is not null we need to find out where to add a leaf
         if (path != null) {
           DefaultMutableTreeNode child = null;
@@ -731,7 +731,7 @@ ActionListener, ChangeListener, Runnable {
         }
         // current is the folder where the AtomSet is to be added
         current.add(new AtomSet(atomSetIndex,
-            viewer.getModelName(atomSetIndex)));
+            vwr.getModelName(atomSetIndex)));
       }
     }
     treeModel.setRoot(root);
@@ -812,9 +812,9 @@ ActionListener, ChangeListener, Runnable {
         showAtomSetIndex(currentIndex, true); // update the view
         try {
           // sleep for the amount of time required for the fps setting
-          // NB the viewer's fps setting is never 0, so I could
+          // NB the vwr's fps setting is never 0, so I could
           // set it directly, but just in case this behavior changes later...
-          int fps = viewer.getInt(T.animationfps);
+          int fps = vwr.getInt(T.animationfps);
           Thread.sleep((int) (1000.0/(fps==0?1:fps)));
         } catch (InterruptedException e) {
           Logger.errorEx(null, e);

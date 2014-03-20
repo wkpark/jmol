@@ -121,7 +121,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
       if (measurementPending == null)
         return;
       if (measurementPending.count > 1)
-        viewer.setStatusMeasuring("measurePending", measurementPending
+        vwr.setStatusMeasuring("measurePending", measurementPending
             .count, measurementPending.toVector(false).toString(),
             measurementPending.value);
       return;
@@ -154,7 +154,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
     }
 
     // most of the following need defineAll, which needs measureAllModels
-    measureAllModels = viewer.getBoolean(T.measureallmodels);
+    measureAllModels = vwr.getBoolean(T.measureallmodels);
 
     if ("delete" == propertyName) {
       deleteO(value);
@@ -185,11 +185,11 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
         return;
       }
       if (md.isAll && md.points.size() == 2 && md.points.get(0) instanceof BS) {
-        int type = Measurement.nmrType(viewer.getDistanceUnits(md.strFormat));
+        int type = Measurement.nmrType(vwr.getDistanceUnits(md.strFormat));
         switch (type) {
           case Measurement.NMR_JC:
           //case Measurement.NMR_DC:
-          md.htMin = viewer.getNMRCalculation().getMinDistances(md);
+          md.htMin = vwr.getNMRCalculation().getMinDistances(md);
         }
       }
       tickInfo = md.tickInfo;
@@ -368,7 +368,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
       return;
     measurementCount = 0;
     measurements.clear();
-    viewer.setStatusMeasuring("measureDeleted", -1, "all", 0);
+    vwr.setStatusMeasuring("measureDeleted", -1, "all", 0);
   }
 
   private void setColor(short colix) {
@@ -473,11 +473,11 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
     int nPoints = m.count;
     for (int i = 1; i <= nPoints; i++) {
       int atomIndex = m.getAtomIndex(i);
-      points.addLast(atomIndex >= 0 ? (Object) viewer.getAtomBits(T.atomno,
+      points.addLast(atomIndex >= 0 ? (Object) vwr.getAtomBits(T.atomno,
           Integer.valueOf(atoms[atomIndex].getAtomNumber())) : (Object) m
           .getAtom(i));
     }
-    define((new MeasurementData().init(null, viewer, points)).set(tokAction, htMin, radiusData, strFormat, null, tickInfo,
+    define((new MeasurementData().init(null, vwr, points)).set(tokAction, htMin, radiusData, strFormat, null, tickInfo,
         mustBeConnected, mustNotBeConnected, intramolecular, true, 0, (short) 0, null),
         (isDelete ? T.delete : T.define));
   }
@@ -536,7 +536,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
     if (!measureNew.isValid)
       return;
     measurements.addLast(measureNew);
-    viewer.setStatusMeasuring("measureCompleted", measurementCount++,
+    vwr.setStatusMeasuring("measureCompleted", measurementCount++,
         measureNew.toVector(false).toString(), measureNew.value);
   }
 
@@ -546,7 +546,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
     String msg = measurements.get(i).toVector(true).toString();
     measurements.remove(i);
     measurementCount--;
-    viewer.setStatusMeasuring("measureDeleted", i, msg, 0);
+    vwr.setStatusMeasuring("measureDeleted", i, msg, 0);
   }
 
   private void doAction(MeasurementData md, String s, int tok) {
@@ -565,7 +565,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
           String msg = measurements.get(i).toVector(true).toString();
           measurements.remove(i);
           measurementCount--;
-          viewer.setStatusMeasuring("measureDeleted", i, msg, 0);
+          vwr.setStatusMeasuring("measureDeleted", i, msg, 0);
           break;
         case T.show:
           m.isHidden = false;
@@ -644,7 +644,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
   }
   
   public void setVisibilityInfo() {
-    BS bsModels = viewer.getVisibleFramesBitSet();
+    BS bsModels = vwr.getVisibleFramesBitSet();
     out:
     for (int i = measurementCount; --i >= 0; ) {
       Measurement m = measurements.get(i);
@@ -668,7 +668,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
   
   @Override
   public String getShapeState() {
-    return viewer.getMeasurementState(this, measurements, 
+    return vwr.getMeasurementState(this, measurements, 
         measurementCount, font3d, defaultTickInfo);
   }
   

@@ -218,8 +218,8 @@ public final class BioModel extends Model{
       bsCheck.or(bs2);
     }
     Atom[] atoms = modelSet.atoms;
-    Viewer viewer = modelSet.viewer;
-    bsCheck.and(viewer.getModelUndeletedAtomsBitSet(modelIndex));
+    Viewer vwr = modelSet.vwr;
+    bsCheck.and(vwr.getModelUndeletedAtomsBitSet(modelIndex));
     for (int i = bsCheck.nextSetBit(0); i >= 0; i = bsCheck.nextSetBit(i + 1))
       if (atoms[i].checkVisible()
           && atoms[i].atomID == JC.ATOMID_ALPHA_CARBON
@@ -227,10 +227,10 @@ public final class BioModel extends Model{
         vCA.addLast((a1 = atoms[i]));
     if (vCA.size() == 0)
       return 0;    
-    float thresh = viewer.getFloat(T.strutlengthmaximum);
-    short mad = (short) (viewer.getFloat(T.strutdefaultradius) * 2000);
-    int delta = viewer.getInt(T.strutspacing);
-    boolean strutsMultiple = viewer.getBoolean(T.strutsmultiple);
+    float thresh = vwr.getFloat(T.strutlengthmaximum);
+    short mad = (short) (vwr.getFloat(T.strutdefaultradius) * 2000);
+    int delta = vwr.getInt(T.strutspacing);
+    boolean strutsMultiple = vwr.getBoolean(T.strutsmultiple);
     List<Atom[]> struts = getBioPolymer(a1.getPolymerIndexInModel())
         .calculateStruts(modelSet, bs1, bs2, vCA, thresh, delta, strutsMultiple);
     for (int i = 0; i < struts.size(); i++) {
@@ -248,10 +248,10 @@ public final class BioModel extends Model{
   }
 
   @Override
-  public void calculateStraightness(Viewer viewer, char ctype, char qtype,
+  public void calculateStraightness(Viewer vwr, char ctype, char qtype,
                                     int mStep) {
     for (int p = 0; p < bioPolymerCount; p++)
-      bioPolymers[p].getPdbData(viewer, ctype, qtype, mStep, 2, null, 
+      bioPolymers[p].getPdbData(vwr, ctype, qtype, mStep, 2, null, 
           null, false, false, false, null, null, null, new BS());
   }
   
@@ -706,7 +706,7 @@ public final class BioModel extends Model{
     String info = (String) auxiliaryInfo.get("fileHeader");
     if (info != null)
       return info;
-    info = modelSet.viewer.getCurrentFileAsString();
+    info = modelSet.vwr.getCurrentFileAsString();
     int ichMin = info.length();
     for (int i = pdbRecords.length; --i >= 0;) {
       int ichFound;
@@ -729,15 +729,15 @@ public final class BioModel extends Model{
   }
 
   @Override
-  public void getPdbData(Viewer viewer, String type, char ctype,
+  public void getPdbData(Viewer vwr, String type, char ctype,
                          boolean isDraw, BS bsSelected,
                          OC out, LabelToken[] tokens, SB pdbCONECT, BS bsWritten) {
     boolean bothEnds = false;
     char qtype = (ctype != 'R' ? 'r' : type.length() > 13
         && type.indexOf("ramachandran ") >= 0 ? type.charAt(13) : 'R');
     if (qtype == 'r')
-      qtype = viewer.getQuaternionFrame();
-    int mStep = viewer.getInt(T.helixstep);
+      qtype = vwr.getQuaternionFrame();
+    int mStep = vwr.getInt(T.helixstep);
     int derivType = (type.indexOf("diff") < 0 ? 0 : type.indexOf("2") < 0 ? 1
         : 2);
     if (!isDraw) {
@@ -759,7 +759,7 @@ public final class BioModel extends Model{
     }
     
     for (int p = 0; p < bioPolymerCount; p++)
-      bioPolymers[p].getPdbData(viewer, ctype, qtype, mStep, derivType,
+      bioPolymers[p].getPdbData(vwr, ctype, qtype, mStep, derivType,
           bsAtoms, bsSelected, bothEnds, isDraw, p == 0, tokens, out, 
           pdbCONECT, bsWritten);
   }

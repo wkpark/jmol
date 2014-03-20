@@ -43,7 +43,7 @@ public class DipolesRenderer extends ShapeRenderer {
   @Override
   protected boolean render() {
     Dipoles dipoles = (Dipoles) shape;
-    dipoleVectorScale = viewer.getFloat(T.dipolescale);
+    dipoleVectorScale = vwr.getFloat(T.dipolescale);
     boolean needTranslucent = false;
     for (int i = dipoles.dipoleCount; --i >= 0;) {
       Dipole dipole = dipoles.dipoles[i];
@@ -124,11 +124,11 @@ public class DipolesRenderer extends ShapeRenderer {
     for (int i = 0; i < 6; i++)
       points[i].add(offset);
     for (int i = 0; i < 6; i++)
-      viewer.transformPtScr(points[i], screens[i]);
-    viewer.transformPt3f(points[cross], cross0);
-    viewer.transformPt3f(points[crossEnd], cross1);
+      vwr.transformPtScr(points[i], screens[i]);
+    vwr.transformPt3f(points[cross], cross0);
+    vwr.transformPt3f(points[crossEnd], cross1);
     mad = dipole.mad;
-    float d = viewer.scaleToScreen(screens[center].z, mad);
+    float d = vwr.scaleToScreen(screens[center].z, mad);
     diameter = (int) d;
     headWidthPixels = (int) Math.floor(d * arrowHeadWidthFactor);
     if (headWidthPixels < diameter + 5)

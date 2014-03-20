@@ -47,18 +47,18 @@ public class JmolJSPopup extends JmolGenericPopup {
   }
 
   @Override
-  public void jpiInitialize(PlatformViewer viewer, String menu) {
+  public void jpiInitialize(PlatformViewer vwr, String menu) {
     boolean doTranslate = GT.setDoTranslate(true);
     PopupResource bundle = new MainPopupResourceBundle(strMenuStructure = menu,
         menuText);
-    initialize((Viewer) viewer, bundle, bundle.getMenuName());
+    initialize((Viewer) vwr, bundle, bundle.getMenuName());
     GT.setDoTranslate(doTranslate);
   }
 
   @Override
   public void menuShowPopup(SC popup, int x, int y) {
     try {
-      ((JPopupMenu) popup).show(isTainted ? (Component) viewer.getApplet() : null, x, y);
+      ((JPopupMenu) popup).show(isTainted ? (Component) vwr.getApplet() : null, x, y);
     } catch (Exception e) {
       // ignore
     }

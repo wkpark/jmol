@@ -315,7 +315,7 @@ public class Polyhedra extends AtomShape {
   private Polyhedron constructRadiusPolyhedron(int atomIndex, AtomIndexIterator iter) {
     Atom atom = atoms[atomIndex];
     int otherAtomCount = 0;
-    viewer.setIteratorForAtom(iter, atomIndex, radius);
+    vwr.setIteratorForAtom(iter, atomIndex, radius);
     while (iter.hasNext()) {
       Atom other = atoms[iter.next()];
       if (bsVertices != null && !bsVertices.get(other.index)
@@ -587,7 +587,7 @@ public class Polyhedra extends AtomShape {
       appendCmd(s, "polyhedra frontedges");
     else if (drawEdges == EDGES_ALL)
       appendCmd(s, "polyhedra edges");
-    s.append(viewer.getAtomShapeState(this));
+    s.append(vwr.getAtomShapeState(this));
     return s.toString();
   }
 }

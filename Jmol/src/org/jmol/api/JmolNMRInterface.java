@@ -14,7 +14,7 @@ import org.jmol.viewer.Viewer;
 
 public interface JmolNMRInterface {
 
-  public JmolNMRInterface setViewer(Viewer viewer);
+  public JmolNMRInterface setViewer(Viewer vwr);
 
   /**
    * Quadrupolar constant, directly proportional to Vzz and dependent on the

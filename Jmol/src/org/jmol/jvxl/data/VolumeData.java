@@ -116,7 +116,6 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.jmol.api.VolumeDataInterface;
-import org.jmol.io.XmlUtil;
 import org.jmol.jvxl.readers.SurfaceReader;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
@@ -127,6 +126,7 @@ import javajs.util.P3;
 import javajs.util.P3i;
 import javajs.util.P4;
 import javajs.util.V3;
+import javajs.util.XmlUtil;
 
 public class VolumeData implements VolumeDataInterface {
 

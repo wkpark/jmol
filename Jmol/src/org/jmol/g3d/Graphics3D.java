@@ -1914,7 +1914,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   }
 
   @Override
-  public JmolRendererInterface initializeExporter(Viewer viewer, double privateKey, GData g3d,
+  public JmolRendererInterface initializeExporter(Viewer vwr, double privateKey, GData g3d,
                                     Map<String, Object> params) {
     return null;
   }
@@ -2035,7 +2035,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   }
 
   @Override
-  public boolean initializeOutput(Viewer viewer,
+  public boolean initializeOutput(Viewer vwr,
                                   double privateKey, GData gdata, Map<String, Object> params) {
     // N/A
     return false;

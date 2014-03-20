@@ -83,8 +83,8 @@ import java.util.Map;
 
   ////////////////////////////////////////////////////////////////
 
-  public ModelSet(Viewer viewer, String name) {
-    this.viewer = viewer;
+  public ModelSet(Viewer vwr, String name) {
+    this.vwr = vwr;
     modelSetName = name;
   }
 
@@ -175,10 +175,10 @@ import java.util.Map;
     setAtomPositions(baseModelIndex, modelIndex, trajectorySteps.get(modelIndex),
         null, 0,
         (vibrationSteps == null ? null : vibrationSteps.get(modelIndex)), true);    
-    int m = viewer.getCurrentModelIndex();
+    int m = vwr.getCurrentModelIndex();
     if (m >= 0 && m != modelIndex 
         && models[m].fileIndex == models[modelIndex].fileIndex)
-      viewer.setCurrentModelIndexClear(modelIndex, false);
+      vwr.setCurrentModelIndexClear(modelIndex, false);
   }  
 
   public void morphTrajectories(int m1, int m2, float f) {
@@ -197,9 +197,9 @@ import java.util.Map;
     setAtomPositions(baseModelIndex, m1, trajectorySteps.get(m1),
         trajectorySteps.get(m2), f, (vibrationSteps == null ? null
             : vibrationSteps.get(m1)), true);
-    int m = viewer.getCurrentModelIndex();
+    int m = vwr.getCurrentModelIndex();
     if (m >= 0 && m != m1 && models[m].fileIndex == models[m1].fileIndex)
-      viewer.setCurrentModelIndexClear(m1, false);
+      vwr.setCurrentModelIndexClear(m1, false);
   }  
 
   /**
@@ -322,18 +322,18 @@ import java.util.Map;
   public BS getAtomBits(int tokType, Object specInfo) {
     switch (tokType) {
     default:
-      return BSUtil.andNot(getAtomBitsMaybeDeleted(tokType, specInfo), viewer
+      return BSUtil.andNot(getAtomBitsMaybeDeleted(tokType, specInfo), vwr
           .getDeletedAtoms());
     case T.spec_model:
       int modelNumber = ((Integer) specInfo).intValue();
       int modelIndex = getModelNumberIndex(modelNumber, true, true);
       return (modelIndex < 0 && modelNumber > 0 ? new BS()
-          : viewer.getModelUndeletedAtomsBitSet(modelIndex));
+          : vwr.getModelUndeletedAtomsBitSet(modelIndex));
     }
   }
 
   public String getAtomLabel(int i) {
-    return (String) viewer.getShapePropertyIndex(JC.SHAPE_LABELS, "label", i);
+    return (String) vwr.getShapePropertyIndex(JC.SHAPE_LABELS, "label", i);
   }
   
   protected final Atom[] closest = new Atom[1];
@@ -384,7 +384,7 @@ import java.util.Map;
     calculatePolymers(null, 0, 0, bsModelsExcluded);
     String ret = calculateStructuresAllExcept(bsModelsExcluded, asDSSP, doReport,
         dsspIgnoreHydrogen, true, false);
-    viewer.resetBioshapes(bsAllAtoms);
+    vwr.resetBioshapes(bsAllAtoms);
     setStructureIndexes();
     return ret;
   }
@@ -412,28 +412,28 @@ import java.util.Map;
                                                   boolean asDraw,
                                                   boolean asInfo, String type,
                                                   int index, float scale) {
-    int modelIndex = viewer.getCurrentModelIndex();
+    int modelIndex = vwr.getCurrentModelIndex();
     int iAtom = (bsAtoms == null ? -1 : bsAtoms.nextSetBit(0));
     if (modelIndex < 0 && iAtom >= 0)
       modelIndex = atoms[iAtom].getModelIndex();
     if (modelIndex < 0) {
-      modelIndex = viewer.getVisibleFramesBitSet().nextSetBit(0);
+      modelIndex = vwr.getVisibleFramesBitSet().nextSetBit(0);
       bsAtoms = null;
     }
-    BS bs = viewer.getModelUndeletedAtomsBitSet(modelIndex);
+    BS bs = vwr.getModelUndeletedAtomsBitSet(modelIndex);
     if (bsAtoms != null)
       bs.and(bsAtoms);
     iAtom = bs.nextSetBit(0);
     if (iAtom < 0) {
-      bs = viewer.getModelUndeletedAtomsBitSet(modelIndex);
+      bs = vwr.getModelUndeletedAtomsBitSet(modelIndex);
       iAtom = bs.nextSetBit(0);
     }
-    Object obj = viewer.getShapePropertyIndex(JC.SHAPE_VECTORS, "mad", iAtom);
-    boolean haveVibration = (obj != null && ((Integer) obj).intValue() != 0 || viewer
+    Object obj = vwr.getShapePropertyIndex(JC.SHAPE_VECTORS, "mad", iAtom);
+    boolean haveVibration = (obj != null && ((Integer) obj).intValue() != 0 || vwr
         .isVibrationOn());
     SymmetryInterface symmetry = Interface.getSymmetry();
     pointGroup = symmetry.setPointGroup(pointGroup, atoms, bs, haveVibration,
-        viewer.getFloat(T.pointgroupdistancetolerance), viewer.getFloat(T.pointgrouplineartolerance));
+        vwr.getFloat(T.pointgroupdistancetolerance), vwr.getFloat(T.pointgrouplineartolerance));
     if (!doAll && !asInfo)
       return pointGroup.getPointGroupName();
     Object ret = pointGroup.getPointGroupInfo(modelIndex, asDraw, asInfo, type,
@@ -493,7 +493,7 @@ import java.util.Map;
   @SuppressWarnings("unchecked")
   public void setPdbConectBonding(int baseAtomIndex, int baseModelIndex,
                                   BS bsExclude) {
-    short mad = viewer.getMadBond();
+    short mad = vwr.getMadBond();
     for (int i = baseModelIndex; i < modelCount; i++) {
       List<int[]> vConnect = (List<int[]>) getModelAuxiliaryInfoValue(i, "PDB_CONECT_bonds");
       if (vConnect == null)
@@ -589,7 +589,7 @@ import java.util.Map;
     BS bsDeleted;
     if (nModelsDeleted == modelCount) {
       bsDeleted = getModelAtomBitSetIncludingDeleted(-1, true);
-      viewer.zap(true, false, false);
+      vwr.zap(true, false, false);
       return bsDeleted;
     }
 
@@ -641,7 +641,7 @@ import java.util.Map;
         oldModels[j].fixIndices(mpt, nAtoms, bs);
 
       // adjust all shapes
-      viewer.deleteShapeAtoms(new Object[] { newModels, atoms,
+      vwr.deleteShapeAtoms(new Object[] { newModels, atoms,
           new int[] { mpt, firstAtomIndex, nAtoms } }, bs);
       modelCount--;
     }
@@ -700,7 +700,7 @@ import java.util.Map;
       return fileData;
     if (!getModelAuxiliaryInfoBoolean(modelIndex, "isCIF"))
       return getPDBHeader(modelIndex);
-    fileData = viewer.getCifData(modelIndex);
+    fileData = vwr.getCifData(modelIndex);
     setModelAuxiliaryInfo(modelIndex, "fileData", fileData);
     return fileData;
   }
@@ -716,7 +716,7 @@ import java.util.Map;
    */
   @Override
   public int calculateStruts(BS bs1, BS bs2) {
-    viewer.setModelVisibility();
+    vwr.setModelVisibility();
     return calculateStrutsMC(bs1, bs2);
   }
 
@@ -735,7 +735,7 @@ import java.util.Map;
       return bs; // can't add atoms to a trajectory or a system with multiple groups!
     }
     growAtomArrays(atomCount + pts.length);
-    RadiusData rd = viewer.getDefaultRadiusData();
+    RadiusData rd = vwr.getDefaultRadiusData();
     short mad = getDefaultMadFromOrder(1);
     for (int i = 0, n = models[modelIndex].atomCount + 1; i < vConnections.size(); i++, n++) {
       Atom atom1 = vConnections.get(i);
@@ -744,7 +744,7 @@ import java.util.Map;
       Atom atom2 = addAtom(modelIndex, atom1.group, 1, "H"
           + n, n, n, pts[i], Float.NaN, null, 0, 0, 100, Float.NaN, null, false, (byte) 0, null);
       
-      atom2.setMadAtom(viewer, rd);
+      atom2.setMadAtom(vwr, rd);
       bs.set(atom2.index);
       bondAtoms(atom1, atom2, Edge.BOND_COVALENT_SINGLE, mad, null, 0, false, false);
     }
@@ -808,7 +808,7 @@ import java.util.Map;
         return;
       BS bsAtoms = new BS();
       List<P3> vNot = new  List<P3>();
-      BS bsModel = viewer.getModelUndeletedAtomsBitSet(thisAtom.modelIndex);
+      BS bsModel = vwr.getModelUndeletedAtomsBitSet(thisAtom.modelIndex);
       for (int i = 0; i < bonds.length; i++) {
         Atom a = bonds[i].getOtherAtom(thisAtom);
         if (invAtoms.get(a.index)) {
@@ -942,7 +942,7 @@ import java.util.Map;
       if (map.containsKey(s))
         continue;
       map.put(s, Boolean.TRUE);
-      BS bs = viewer.getBranchBitSet(i1, i0, true);
+      BS bs = vwr.getBranchBitSet(i1, i0, true);
       Bond[] bonds = atoms[i0].bonds;
       Atom a0 = atoms[i0];
       for (int j = 0; j < bonds.length; j++) {
@@ -969,7 +969,7 @@ import java.util.Map;
     M4[] ops = new M4[n];
     SymmetryInterface unitcell = models[modelIndex].biosymmetry;
     if (unitcell == null)
-      unitcell = viewer.getModelUnitCell(modelIndex);
+      unitcell = vwr.getModelUnitCell(modelIndex);
     for (int i = n; --i >= 0;)
       ops[i] = unitcell.getSpaceGroupOperation(i);
     return ops;

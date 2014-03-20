@@ -18,6 +18,6 @@ public interface MepCalculationInterface {
 
   public abstract float valueFor(float x, float d2, int distanceMode);
 
-  public abstract void set(Viewer viewer);
+  public abstract void set(Viewer vwr);
 
 }

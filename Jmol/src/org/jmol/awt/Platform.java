@@ -25,11 +25,11 @@ import javajs.util.P3;
 
 public class Platform implements GenericPlatform {
 
-  PlatformViewer viewer;
+  PlatformViewer vwr;
   
   @Override
-  public void setViewer(PlatformViewer viewer, Object display) {
-    this.viewer = viewer;
+  public void setViewer(PlatformViewer vwr, Object display) {
+    this.vwr = vwr;
   }
   
   ///// Display 
@@ -49,7 +49,7 @@ public class Platform implements GenericPlatform {
     GenericMenuInterface jmolpopup = (GenericMenuInterface) Interface.getOption(
         type == 'j' ? "popup.JmolAwtPopup" : "modelkit.ModelKitPopup");
     if (jmolpopup != null)
-      jmolpopup.jpiInitialize(viewer, menuStructure);
+      jmolpopup.jpiInitialize(vwr, menuStructure);
     return jmolpopup;
   }
 
@@ -72,7 +72,7 @@ public class Platform implements GenericPlatform {
    */
   @Override
   public void renderScreenImage(Object g, Object size) {
-    Display.renderScreenImage(viewer, g, size);
+    Display.renderScreenImage(vwr, g, size);
   }
 
   @Override
@@ -99,7 +99,7 @@ public class Platform implements GenericPlatform {
 
   @Override
   public GenericMouseInterface getMouseManager(double privateKey, Object display) {
-    return new Mouse(privateKey, viewer, display);
+    return new Mouse(privateKey, vwr, display);
   }
 
   ////// Image 
@@ -186,7 +186,7 @@ public class Platform implements GenericPlatform {
 
   @Override
   public boolean waitForDisplay(Object ignored, Object image) throws InterruptedException {
-    Image.waitForDisplay(viewer, image);
+    Image.waitForDisplay(vwr, image);
     return true;
   }
 

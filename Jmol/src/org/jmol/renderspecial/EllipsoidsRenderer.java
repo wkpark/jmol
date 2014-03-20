@@ -130,16 +130,16 @@ final public class EllipsoidsRenderer extends ShapeRenderer {
   }
 
   private boolean setGlobals() {
-    bGlobals[OPT_ARCS] = viewer.getBooleanProperty("ellipsoidArcs");
-    bGlobals[OPT_ARROWS] = viewer.getBooleanProperty("ellipsoidArrows");
-    bGlobals[OPT_AXES] = viewer.getBooleanProperty("ellipsoidAxes");
-    bGlobals[OPT_BALL] = viewer.getBooleanProperty("ellipsoidBall");
-    bGlobals[OPT_DOTS] = viewer.getBooleanProperty("ellipsoidDots");
-    bGlobals[OPT_FILL] = viewer.getBooleanProperty("ellipsoidFill");
-    bGlobals[OPT_WIREFRAME] = !isExport && !viewer.checkMotionRendering(T.ellipsoid);
-    diameter0 = Math.round (((Float) viewer.getParameter("ellipsoidAxisDiameter"))
+    bGlobals[OPT_ARCS] = vwr.getBooleanProperty("ellipsoidArcs");
+    bGlobals[OPT_ARROWS] = vwr.getBooleanProperty("ellipsoidArrows");
+    bGlobals[OPT_AXES] = vwr.getBooleanProperty("ellipsoidAxes");
+    bGlobals[OPT_BALL] = vwr.getBooleanProperty("ellipsoidBall");
+    bGlobals[OPT_DOTS] = vwr.getBooleanProperty("ellipsoidDots");
+    bGlobals[OPT_FILL] = vwr.getBooleanProperty("ellipsoidFill");
+    bGlobals[OPT_WIREFRAME] = !isExport && !vwr.checkMotionRendering(T.ellipsoid);
+    diameter0 = Math.round (((Float) vwr.getParameter("ellipsoidAxisDiameter"))
         .floatValue() * 1000);    
-    M4 m4 = viewer.getMatrixtransform();
+    M4 m4 = vwr.getMatrixtransform();
     mat.setRow(0, m4.m00, m4.m01, m4.m02);
     mat.setRow(1, m4.m10, m4.m11, m4.m12);
     mat.setRow(2, m4.m20, m4.m21, m4.m22);
@@ -164,7 +164,7 @@ final public class EllipsoidsRenderer extends ShapeRenderer {
   }
   
   private void setLogic() {
-    //perspectiveOn = viewer.getPerspectiveDepth();
+    //perspectiveOn = vwr.getPerspectiveDepth();
     /* general logic:
      * 
      * 
@@ -190,11 +190,11 @@ final public class EllipsoidsRenderer extends ShapeRenderer {
     if (bOptions[OPT_DOTS]) {
       bOptions[OPT_ARCS] = false;
       bOptions[OPT_FILL] = false;
-      dotScale = viewer.getInt(T.dotscale);
+      dotScale = vwr.getInt(T.dotscale);
     }
 
     if (bOptions[OPT_DOTS]) {
-      dotCount = ((Integer) viewer.getParameter("ellipsoidDotCount"))
+      dotCount = ((Integer) vwr.getParameter("ellipsoidDotCount"))
           .intValue();
       if (coords == null || coords.length != dotCount * 3)
         coords = new int[dotCount * 3];
@@ -219,7 +219,7 @@ final public class EllipsoidsRenderer extends ShapeRenderer {
         needTranslucent = true;
         continue;
       }
-      viewer.transformPtScr(ellipsoid.center, s0);
+      vwr.transformPtScr(ellipsoid.center, s0);
       renderOne(ellipsoid);
     }
     return needTranslucent;
@@ -244,7 +244,7 @@ final public class EllipsoidsRenderer extends ShapeRenderer {
       return;
     eigenSignMask = e.tensor.eigenSignMask;
     setOptions(e.options);
-    diameter = (int) viewer.scaleToScreen(s0.z, bOptions[OPT_WIREFRAME] ? 1 : diameter0);
+    diameter = (int) vwr.scaleToScreen(s0.z, bOptions[OPT_WIREFRAME] ? 1 : diameter0);
     if (e.tensor.isIsotropic) {
       renderBall();
       return;
@@ -252,7 +252,7 @@ final public class EllipsoidsRenderer extends ShapeRenderer {
     if (bOptions[OPT_BALL]) {
       renderBall();
       if (bOptions[OPT_ARCS] || bOptions[OPT_AXES]) {
-        g3d.setColix(viewer.getColixBackgroundContrast());
+        g3d.setColix(vwr.getColixBackgroundContrast());
         //setAxes(atom, 1.0f);
         if (bOptions[OPT_AXES])
           renderAxes();
@@ -287,7 +287,7 @@ final public class EllipsoidsRenderer extends ShapeRenderer {
     // make this screen coordinates to ellisoidal coordinates
     matScreenToEllipsoid.mul2(mat, matScreenToCartesian);
     matEllipsoidToScreen.invertM(matScreenToEllipsoid);
-    perspectiveFactor = viewer.scaleToPerspective(s0.z, 1.0f);
+    perspectiveFactor = vwr.scaleToPerspective(s0.z, 1.0f);
     matScreenToEllipsoid.scale(1f/perspectiveFactor);
   }
   
@@ -337,7 +337,7 @@ final public class EllipsoidsRenderer extends ShapeRenderer {
           Math.round(s0.y + pt1.y * perspectiveFactor * 1.05f), Math
               .round(pt1.z * 1.05f + s0.z));
     }
-    dx = 2 + (int) viewer.scaleToScreen(s0.z, Math
+    dx = 2 + (int) vwr.scaleToScreen(s0.z, Math
         .round((Float.isNaN(factoredLengths[maxPt]) ? 1.0f
             : factoredLengths[maxPt]) * 1000));
   }
@@ -444,7 +444,7 @@ final public class EllipsoidsRenderer extends ShapeRenderer {
       pt1.scaleAdd2(fx * factoredLengths[0], axes[0], center);
       pt1.scaleAdd2(fy * factoredLengths[1], axes[1], pt1);
       pt1.scaleAdd2(fz * factoredLengths[2], axes[2], pt1);
-      viewer.transformPtScr(pt1, s1);
+      vwr.transformPtScr(pt1, s1);
       coords[i++] = s1.x;
       coords[i++] = s1.y;
       coords[i++] = s1.z;
@@ -482,7 +482,7 @@ final public class EllipsoidsRenderer extends ShapeRenderer {
     for (int i = 0, pt = 0; i < 18; i++, pt += 2) {
       pt2.scaleAdd2(cossin[pt] * d1, v1, center);
       pt2.scaleAdd2(cossin[pt + 1] * d2, v2, pt2);
-      viewer.transformPtScr(pt2, s2);
+      vwr.transformPtScr(pt2, s2);
       if (fillArc)
         g3d.fillTriangle3CN(s0, colix, normix, s1, colix, normix, s2, colix,
             normix);

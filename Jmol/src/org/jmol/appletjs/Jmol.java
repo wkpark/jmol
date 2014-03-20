@@ -47,14 +47,14 @@ public class Jmol extends GenericApplet {
 
   private Map<String, Object> htParams = new Hashtable<String, Object>();
 
-  public Jmol(Map<String, Object> viewerOptions) {
-    if (viewerOptions == null)
-      viewerOptions = new Hashtable<String, Object>();
-    this.viewerOptions = viewerOptions;
-    for (Map.Entry<String, Object> entry : viewerOptions.entrySet())
+  public Jmol(Map<String, Object> vwrOptions) {
+    if (vwrOptions == null)
+      vwrOptions = new Hashtable<String, Object>();
+    this.vwrOptions = vwrOptions;
+    for (Map.Entry<String, Object> entry : vwrOptions.entrySet())
       htParams.put(entry.getKey().toLowerCase(), entry.getValue());
-    documentBase = "" + viewerOptions.get("documentBase");
-    codeBase = "" + viewerOptions.get("codePath");
+    documentBase = "" + vwrOptions.get("documentBase");
+    codeBase = "" + vwrOptions.get("codePath");
     isJS = true;
     init(this);
   }
@@ -65,7 +65,7 @@ public class Jmol extends GenericApplet {
      * @j2sNative
      * 
      * if (isStereo)
-     *   return viewer.apiPlatform.context;
+     *   return vwr.apiPlatform.context;
      * 
      */
     {
@@ -75,8 +75,8 @@ public class Jmol extends GenericApplet {
 
   @Override
   protected void initOptions() {
-    viewerOptions.remove("debug");
-    viewerOptions.put("fullName", fullName);
+    vwrOptions.remove("debug");
+    vwrOptions.put("fullName", fullName);
     haveDocumentAccess = "true".equalsIgnoreCase(""
         + getValue("allowjavascript", "true"));
     mayScript = true;

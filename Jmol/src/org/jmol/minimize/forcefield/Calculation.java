@@ -24,6 +24,8 @@
 
 package org.jmol.minimize.forcefield;
 
+import javajs.util.List;
+
 import org.jmol.minimize.MinAtom;
 
 abstract class Calculation {
@@ -41,12 +43,29 @@ abstract class Calculation {
   double delta, rab, theta;
   double energy;
 
+  Calculations calcs;
+  
+  Calculation set(Calculations calcs) {
+    this.calcs = calcs;
+    return this;
+  }
+
+  /**
+   * @param calc  
+   * @param ia 
+   * @param ib 
+   * @param d 
+   */
+  void setData(List<Object[]> calc, int ia, int ib, double d) {
+    // varies
+  }
+
   abstract double compute(Object[] dataIn);
   
   double getEnergy() {
     return energy;
   }
-
+  
   void getPointers(Object[] dataIn) {
     dData = (double[])dataIn[1];
     iData = (int[])dataIn[0];

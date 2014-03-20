@@ -99,7 +99,7 @@ public abstract class Shape {
   //}
   
   public static final float RADIUS_MAX = 4;
-  public Viewer viewer; //public for now for Backbone
+  public Viewer vwr; //public for now for Backbone
   public ModelSet modelSet;
   public GData gdata;
   public int shapeID;
@@ -115,12 +115,12 @@ public abstract class Shape {
   public BS bsColixSet;
   
   public Viewer getViewer() {
-    return viewer;
+    return vwr;
   }
   
-  final public void initializeShape(Viewer viewer, GData g3d, ModelSet modelSet,
+  final public void initializeShape(Viewer vwr, GData g3d, ModelSet modelSet,
                                int shapeID) {
-    this.viewer = viewer;
+    this.vwr = vwr;
     this.gdata = g3d;
     this.shapeID = shapeID;
     this.myVisibilityFlag = JC.getShapeVisibilityFlag(shapeID);
@@ -218,7 +218,7 @@ public abstract class Shape {
   protected void setPropS(String propertyName, Object value, BS bsSelected) {
     if (propertyName == "setProperties") {
       if (bsSelected == null)
-        bsSelected = viewer.getSelectedAtoms();
+        bsSelected = vwr.getSelectedAtoms();
       List<Object[]> propertyList = (List<Object[]>) value;
       while (propertyList.size() > 0) {
         Object[] data = propertyList.remove(0);
@@ -328,7 +328,7 @@ public abstract class Shape {
   }
 
   protected int coordinateInRange(int x, int y, P3 vertex, int dmin2, P3i ptXY) {
-    viewer.transformPtScr(vertex, ptXY);
+    vwr.transformPtScr(vertex, ptXY);
     int d2 = (x - ptXY.x) * (x - ptXY.x) + (y - ptXY.y) * (y - ptXY.y);
     return (d2 < dmin2 ? d2 : -1);
   }
@@ -338,12 +338,12 @@ public abstract class Shape {
   }
 
   protected short getColixA(short colix, byte paletteID, Atom atom) {
-    return (colix == C.USE_PALETTE ? viewer.getColixAtomPalette(atom,
+    return (colix == C.USE_PALETTE ? vwr.getColixAtomPalette(atom,
         paletteID) : colix);
   }
 
   protected short getColixB(short colix, int pid, Bond bond) {
-    return (colix == C.USE_PALETTE ? viewer.getColixBondPalette(bond,
+    return (colix == C.USE_PALETTE ? vwr.getColixBondPalette(bond,
         pid) : colix);
   }
 

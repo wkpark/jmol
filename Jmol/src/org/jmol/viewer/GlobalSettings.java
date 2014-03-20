@@ -7,6 +7,8 @@ import java.util.Map;
 import javajs.util.DF;
 import javajs.util.List;
 import javajs.util.P3;
+import javajs.util.PT;
+import javajs.util.SB;
 
 import org.jmol.constant.EnumAxesMode;
 import org.jmol.constant.EnumCallback;
@@ -23,7 +25,7 @@ import org.jmol.util.Txt;
 
 public class GlobalSettings {
 
-  private final Viewer viewer;
+  private final Viewer vwr;
   
     Map<String, Object> htNonbooleanParameterValues;
     Map<String, Boolean> htBooleanParameterFlags;
@@ -34,7 +36,7 @@ public class GlobalSettings {
     /*
      *  Mostly these are just saved and restored directly from Viewer.
      *  They are collected here for reference and to ensure that no 
-     *  methods are written that bypass viewer's get/set methods.
+     *  methods are written that bypass vwr's get/set methods.
      *  
      *  Because these are not Frame variables, they (mostly) should persist past
      *  a new file loading. There is some question in my mind whether all
@@ -42,8 +44,8 @@ public class GlobalSettings {
      *  
      */
 
-    GlobalSettings(Viewer viewer, GlobalSettings gsOld, boolean clearUserVariables) {
-      this.viewer = viewer;
+    GlobalSettings(Viewer vwr, GlobalSettings gsOld, boolean clearUserVariables) {
+      this.vwr = vwr;
       registerAllValues(gsOld, clearUserVariables);
     }
 
@@ -63,7 +65,7 @@ public class GlobalSettings {
       setB("hidenotselected", false); // to synchronize with selectionManager
       setB("measurementlabels", measurementLabels = true);
       setB("drawHover", drawHover = false);
-      viewer.saveScene("DELETE",null);
+      vwr.saveScene("DELETE",null);
     }
 
     void registerAllValues(GlobalSettings g, boolean clearUserVariables) {
@@ -131,8 +133,8 @@ public class GlobalSettings {
       setF("gestureSwipeFactor", ActionManager.DEFAULT_GESTURE_SWIPE_FACTOR);
       setB("hideNotSelected", false); //maintained by the selectionManager
       setS("hoverLabel", ""); // maintained by the Hover shape
-      setB("isKiosk", viewer.isKiosk()); // maintained by Viewer
-      setS("logFile", viewer.getLogFileName()); // maintained by Viewer
+      setB("isKiosk", vwr.isKiosk()); // maintained by Viewer
+      setS("logFile", vwr.getLogFileName()); // maintained by Viewer
       setI("logLevel", Logger.getLogLevel());
       setF("mouseWheelFactor", ActionManager.DEFAULT_MOUSE_WHEEL_FACTOR);
       setF("mouseDragFactor", ActionManager.DEFAULT_MOUSE_DRAG_FACTOR);
@@ -164,9 +166,9 @@ public class GlobalSettings {
       setI("spinFps", TransformManager.DEFAULT_SPIN_FPS);
       setI("stereoDegrees", EnumStereoMode.DEFAULT_STEREO_DEGREES);
       setI("stateversion", 0); // only set by a saved state being recalled
-      setB("syncScript", viewer.getStatusManager().syncingScripts);
-      setB("syncMouse", viewer.getStatusManager().syncingMouse);
-      setB("syncStereo", viewer.getStatusManager().stereoSync);
+      setB("syncScript", vwr.getStatusManager().syncingScripts);
+      setB("syncMouse", vwr.getStatusManager().syncingMouse);
+      setB("syncStereo", vwr.getStatusManager().stereoSync);
       setB("windowCentered", true); // maintained by TransformManager
       setB("zoomEnabled", true); // maintained by TransformManager
       setI("zDepth", 0); // maintained by TransformManager
@@ -174,7 +176,7 @@ public class GlobalSettings {
       setI("zSlab", 50); // maintained by TransformManager
 
       // These next values have no other place than the global Hashtables.
-      // This just means that a call to viewer.getXxxxProperty() is necessary.
+      // This just means that a call to vwr.getXxxxProperty() is necessary.
       // Otherwise, it's the same as if they had a global variable. 
       // It's just an issue of speed of access. Generally, these should only be
       // accessed by the user. 
@@ -1005,6 +1007,87 @@ public class GlobalSettings {
       map.putAll(htNonbooleanParameterValues);
       map.putAll(htUserVariables);
       return map;
+    }
+
+    /**
+     * these settings are determined when the file is loaded and are kept even
+     * though they might later change. So we list them here and ALSO let them be
+     * defined in the settings. 10.9.98 missed this.
+     * 
+     * @param htParams
+     * 
+     * @return script command
+     */
+    String getLoadState(Map<String, Object> htParams) {
+
+      // some commands register flags so that they will be 
+      // restored in a saved state definition, but will not execute
+      // now so that there is no chance any embedded scripts or
+      // default load scripts will run and slow things down.
+      SB str = new SB();
+      app(str, "set allowEmbeddedScripts false");
+      if (allowEmbeddedScripts)
+        setB("allowEmbeddedScripts", true);
+      app(str, "set appendNew " + appendNew);
+      app(str, "set appletProxy " + PT.esc(appletProxy));
+      app(str, "set applySymmetryToBonds " + applySymmetryToBonds);
+      if (atomTypes.length() > 0)
+        app(str, "set atomTypes " + PT.esc(atomTypes));
+      app(str, "set autoBond " + autoBond);
+      //    appendCmd(str, "set autoLoadOrientation " + autoLoadOrientation);
+      if (axesOrientationRasmol)
+        app(str, "set axesOrientationRasmol true");
+      app(str, "set bondRadiusMilliAngstroms " + bondRadiusMilliAngstroms);
+      app(str, "set bondTolerance " + bondTolerance);
+      app(str, "set defaultLattice " + Escape.eP(ptDefaultLattice));
+      app(str, "set defaultLoadFilter " + PT.esc(defaultLoadFilter));
+      app(str, "set defaultLoadScript \"\"");
+      if (defaultLoadScript.length() > 0)
+        setS("defaultLoadScript", defaultLoadScript);
+      app(str, "set defaultStructureDssp " + defaultStructureDSSP);
+      String sMode = vwr.getDefaultVdwNameOrData(Integer.MIN_VALUE, null, null);
+      app(str, "set defaultVDW " + sMode);
+      if (sMode.equals("User"))
+        app(str, vwr
+            .getDefaultVdwNameOrData(Integer.MAX_VALUE, null, null));
+      app(str, "set forceAutoBond " + forceAutoBond);
+      app(str, "#set defaultDirectory " + PT.esc(defaultDirectory));
+      app(str, "#set loadFormat " + PT.esc(loadFormat));
+      app(str, "#set loadLigandFormat " + PT.esc(loadLigandFormat));
+      app(str, "#set smilesUrlFormat " + PT.esc(smilesUrlFormat));
+      app(str, "#set nihResolverFormat " + PT.esc(nihResolverFormat));
+      app(str, "#set pubChemFormat " + PT.esc(pubChemFormat));
+      app(str, "#set edsUrlFormat " + PT.esc(edsUrlFormat));
+      app(str, "#set edsUrlCutoff " + PT.esc(edsUrlCutoff));
+      //    if (autoLoadOrientation)
+      //      appendCmd(str, "set autoLoadOrientation true");
+      app(str, "set bondingVersion " + bondingVersion);
+      app(str, "set legacyAutoBonding " + legacyAutoBonding);
+      app(str, "set legacyHAddition " + legacyHAddition);
+      app(str, "set minBondDistance " + minBondDistance);
+      // these next two might be part of a 2D->3D operation
+      app(str, "set minimizationCriterion  " + minimizationCriterion);
+      app(str, "set minimizationSteps  " + minimizationSteps);
+      app(
+          str,
+          "set pdbAddHydrogens "
+              + (htParams != null
+                  && htParams.get("pdbNoHydrogens") != Boolean.TRUE ? pdbAddHydrogens
+                  : false));
+      app(str, "set pdbGetHeader " + pdbGetHeader);
+      app(str, "set pdbSequential " + pdbSequential);
+      app(str, "set percentVdwAtom " + percentVdwAtom);
+      app(str, "set smallMoleculeMaxAtoms " + smallMoleculeMaxAtoms);
+      app(str, "set smartAromatic " + smartAromatic);
+      if (zeroBasedXyzRasmol)
+        app(str, "set zeroBasedXyzRasmol true");
+      return str.toString();
+    }
+
+    private void app(SB s, String cmd) {
+      if (cmd.length() == 0)
+        return;
+      s.append("  ").append(cmd).append(";\n");
     }
 
 

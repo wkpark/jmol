@@ -49,7 +49,7 @@ public class CGORenderer extends DrawRenderer {
   @Override
   protected boolean render() {
     needTranslucent = false;
-    imageFontScaling = viewer.getImageFontScaling();
+    imageFontScaling = vwr.getImageFontScaling();
     CGO cgo = (CGO) shape;
     for (int i = cgo.meshCount; --i >= 0;)
       renderMesh(cgoMesh = (CGOMesh) cgo.meshes[i]);
@@ -259,7 +259,7 @@ public class CGORenderer extends DrawRenderer {
 
   private void getPoint(int i, P3 pt, P3i pti) {
     cgoMesh.getPoint(i, pt);
-    viewer.transformPtScr(pt, pti);
+    vwr.transformPtScr(pt, pti);
   }
 
 

@@ -53,7 +53,7 @@ abstract class CageRenderer extends FontLineShapeRenderer {
     //clearBox();
     g3d.setColix(colix);
     FontLineShape fls = (FontLineShape) shape;
-    imageFontScaling = viewer.getImageFontScaling();
+    imageFontScaling = vwr.getImageFontScaling();
     font3d = g3d.getFont3DScaled(fls.font3d, imageFontScaling);
 
     float zSum = 0;
@@ -63,7 +63,7 @@ abstract class CageRenderer extends FontLineShapeRenderer {
         pt.sub(vertices[0]);
         pt.scaleAdd2(scale, pt, vertices[0]);
       }
-      viewer.transformPtNoClip(pt, screens[i]);
+      vwr.transformPtNoClip(pt, screens[i]);
       zSum += screens[i].z;
     }
     
@@ -76,7 +76,7 @@ abstract class CageRenderer extends FontLineShapeRenderer {
       int edge0 = BoxInfo.edges[i];
       int edge1 = BoxInfo.edges[i + 1];
       if (axisPoints != null && edge0 == 0)
-        viewer.transformPtNoClip(axisPoints[axisPt--], screens[0]);
+        vwr.transformPtNoClip(axisPoints[axisPt--], screens[0]);
       if ((allowedEdges0 & (1 << edge0)) == 0 
         || (allowedEdges1 & (1 << edge1)) == 0)
         continue;

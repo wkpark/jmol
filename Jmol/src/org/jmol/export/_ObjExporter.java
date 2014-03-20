@@ -429,10 +429,10 @@ public class _ObjExporter extends __CartesianExporter {
    * @see org.jmol.export.___Exporter#initializeOutput(org.jmol.viewer.Viewer, org.jmol.g3d.Graphics3D, java.lang.Object)
    */
   @Override
-  boolean initializeOutput(Viewer viewer, double privateKey, GData g3d, Map<String, Object> params) {
+  boolean initializeOutput(Viewer vwr, double privateKey, GData g3d, Map<String, Object> params) {
     debugPrint("initializeOutput: + output");
     // Call the super method
-    boolean retVal = initOutput(viewer, privateKey, g3d, params);
+    boolean retVal = initOutput(vwr, privateKey, g3d, params);
     if (!retVal) {
       debugPrint("End initializeOutput (error in super):");
       return false;
@@ -451,7 +451,7 @@ public class _ObjExporter extends __CartesianExporter {
     // Open stream and writer for the .mtl file
     try {
       String mtlFileName = objFileRootName + ".mtl";
-      mtlout = viewer.openExportChannel(privateKey, mtlFileName, true);
+      mtlout = vwr.openExportChannel(privateKey, mtlFileName, true);
     } catch (Exception ex) {
       debugPrint("End initializeOutput (" + ex.getMessage() + "):");
       return false;
@@ -925,7 +925,7 @@ public class _ObjExporter extends __CartesianExporter {
     int width = dim[0];
     int height = dim[1];
     // We write a 3x3 block of pixels for each color 
-    // point so as to avoid antialiasing by viewer
+    // point so as to avoid antialiasing by vwr
 
     String textureType = "png";
     // tga is not enabled
@@ -988,7 +988,7 @@ public class _ObjExporter extends __CartesianExporter {
         params.put("type", textureType);
         params.put("width", Integer.valueOf(w));
         params.put("height", Integer.valueOf(h));
-        fname = fileName = viewer.outputToFile(params);
+        fname = fileName = vwr.outputToFile(params);
       }
       debugPrint("End createTextureFile: " + fname);
       return (OC) params.get("outputChannel");

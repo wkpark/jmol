@@ -158,9 +158,9 @@ public class CGO extends Draw {
   protected String getCommand2(Mesh mesh, int iModel) {
     CGOMesh cmesh = (CGOMesh) mesh;
     SB str = new SB();
-    int modelCount = viewer.getModelCount();
+    int modelCount = vwr.getModelCount();
     if (iModel >= 0 && modelCount > 1)
-      appendCmd(str, "frame " + viewer.getModelNumberDotted(iModel));
+      appendCmd(str, "frame " + vwr.getModelNumberDotted(iModel));
     str.append("  CGO ID ").append(PT.esc(mesh.thisID));
     if (iModel < 0)
       iModel = 0;

@@ -38,9 +38,9 @@ import org.jmol.i18n.GT;
 
 class ScriptButtons extends WebPanel {
 
-  ScriptButtons(JmolViewer viewer, JFileChooser fc, WebPanel[] webPanels,
+  ScriptButtons(JmolViewer vwr, JFileChooser fc, WebPanel[] webPanels,
       int panelIndex) {
-    super(viewer, fc, webPanels, panelIndex);
+    super(vwr, fc, webPanels, panelIndex);
     panelName = "script_button";
     listLabel = GT._("These names will be used for button labels");
     //description = "Create a web page containing a text and button pane that scrolls next to a resizable Jmol applet";

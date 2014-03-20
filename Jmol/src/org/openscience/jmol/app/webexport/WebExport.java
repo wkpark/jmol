@@ -70,7 +70,7 @@ public class WebExport extends JPanel implements WindowListener {
   private static JFrame webFrame;
   private static String windowName;
 
-  private WebExport(JmolViewer viewer, HistoryFile hFile) {
+  private WebExport(JmolViewer vwr, HistoryFile hFile) {
     super(new BorderLayout());
 
     historyFile = hFile;
@@ -119,8 +119,8 @@ public class WebExport extends JPanel implements WindowListener {
 
       mainTabs.add(GT._("Introduction"), introPanel);
 
-      webPanels[0] = new PopInJmol(viewer, fc, webPanels, 0);
-      webPanels[1] = new ScriptButtons(viewer, fc, webPanels, 1);
+      webPanels[0] = new PopInJmol(vwr, fc, webPanels, 0);
+      webPanels[1] = new ScriptButtons(vwr, fc, webPanels, 1);
 
       int w = Integer.parseInt(historyFile.getProperty("webMakerInfoWidth",
           "300"));
@@ -131,13 +131,13 @@ public class WebExport extends JPanel implements WindowListener {
       mainTabs.addTab(GT._("ScriptButton Jmol"), webPanels[1].getPanel(w, h));
 
       // Uncomment to activate the test panel
-      //    Test TestCreator = new Test((Viewer)viewer);
+      //    Test TestCreator = new Test((Viewer)vwr);
       //    JComponent Test = TestCreator.Panel();
       //    Maintabs.addTab("Tests",Test);
     }
 
     showMoleculesAndOrbitals = (runStatus == STAND_ALONE || JmolViewer
-        .checkOption(viewer, "webMakerAllTabs"));
+        .checkOption(vwr, "webMakerAllTabs"));
     if (showMoleculesAndOrbitals) {
       //mainTabs.addTab("Orbitals", (new Orbitals()).getPanel());
       //mainTabs.addTab("Molecules", (new Molecules()).getPanel());
@@ -177,10 +177,10 @@ public class WebExport extends JPanel implements WindowListener {
     webFrame = null;
   }
   
-  public static WebExport createAndShowGUI(JmolViewer viewer,
+  public static WebExport createAndShowGUI(JmolViewer vwr,
                                            HistoryFile historyFile, String wName) {
 
-    if (viewer == null)
+    if (vwr == null)
       runStatus = STAND_ALONE;
 
     //Create and set up the window.
@@ -192,7 +192,7 @@ public class WebExport extends JPanel implements WindowListener {
     webFrame = new JFrame(GT._("Jmol Web Page Maker"));
     //Set title bar icon
     String imageName = "org/openscience/jmol/app/images/icon.png";
-    URL imageUrl = viewer.getClass().getClassLoader().getResource(imageName);
+    URL imageUrl = vwr.getClass().getClassLoader().getResource(imageName);
     ImageIcon jmolIcon = new ImageIcon(imageUrl);
     webFrame.setIconImage(jmolIcon.getImage());
     windowName = wName;
@@ -207,7 +207,7 @@ public class WebExport extends JPanel implements WindowListener {
     }
 
     //Create and set up the content pane.
-    webExport = new WebExport(viewer, historyFile);
+    webExport = new WebExport(vwr, historyFile);
     webExport.setOpaque(true); //content panes must be opaque
     webFrame.setContentPane(webExport);
     webFrame.addWindowListener(webExport);

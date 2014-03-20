@@ -185,7 +185,7 @@ public abstract class MeshCollection extends Shape {
         int n = currentMesh.symops.length;
         currentMesh.symopColixes = new short[n];
         for (int i = n; --i >= 0;)
-        currentMesh.symopColixes[i] = C.getColix(viewer.getArgbMinMax(i + 1, 1, n));        
+        currentMesh.symopColixes[i] = C.getColix(vwr.getArgbMinMax(i + 1, 1, n));        
       }
       return;
     }
@@ -451,7 +451,7 @@ public abstract class MeshCollection extends Shape {
         if (id != null && !id.equalsIgnoreCase(m.thisID))
           continue;
         sb.appendI((++k)).append(" id:" + m.thisID).append(
-            "; model:" + viewer.getModelNumberDotted(m.modelIndex)).append(
+            "; model:" + vwr.getModelNumberDotted(m.modelIndex)).append(
             "; vertices:" + m.vertexCount).append(
             "; polygons:" + m.polygonCount)
             .append("; visible:" + m.visible);
@@ -568,7 +568,7 @@ public abstract class MeshCollection extends Shape {
      * set all fixed objects visible; others based on model being displayed
      * 
      */
-    BS bsDeleted = viewer.getDeletedAtoms();
+    BS bsDeleted = vwr.getDeletedAtoms();
     for (int i = meshCount; --i >= 0;) {
       Mesh mesh = meshes[i];
       mesh.visibilityFlags = (mesh.visible
@@ -582,7 +582,7 @@ public abstract class MeshCollection extends Shape {
  
   protected void setStatusPicked(int flag, P3 v, Map<String, Object> map) {
     // for draw and isosurface
-    viewer.setStatusAtomPicked(flag, "[\"" + myType + "\"," + PT.esc(pickedMesh.thisID) + "," +
+    vwr.setStatusAtomPicked(flag, "[\"" + myType + "\"," + PT.esc(pickedMesh.thisID) + "," +
         + pickedModel + "," + pickedVertex + "," + v.x + "," + v.y + "," + v.z + "," 
         + (pickedMesh.title == null ? "\"\"" 
                : PT.esc(pickedMesh.title[0]))+"]", map);
@@ -593,7 +593,7 @@ public abstract class MeshCollection extends Shape {
     if (v != null) {
       map.put("pt", v);
       map.put("modelIndex", Integer.valueOf(modelIndex));
-      map.put("model", viewer.getModelNumberDotted(modelIndex));
+      map.put("model", vwr.getModelNumberDotted(modelIndex));
       map.put("id", pickedMesh.thisID);
       map.put("vertex", Integer.valueOf(pickedVertex + 1));
       map.put("type", myType);

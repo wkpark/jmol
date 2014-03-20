@@ -143,10 +143,10 @@ public final class EnvelopeCalculation implements JmolEnvCalc {
   private BS geodesicMap;
   private BS mapT;
 
-  //Viewer viewer;
+  //Viewer vwr;
   private short[] mads;
   private AtomData atomData = new AtomData();
-  private AtomDataServer viewer;
+  private AtomDataServer vwr;
   private int atomCount;
   private static BS EMPTY_SET;
   
@@ -155,14 +155,14 @@ public final class EnvelopeCalculation implements JmolEnvCalc {
   
   /**
    * 
-   * @param viewer
+   * @param vwr
    * @param atomCount
    * @param mads
    * @return this
    */
   @Override
-  public EnvelopeCalculation set(AtomDataServer viewer, int atomCount, short[] mads) {
-    this.viewer = viewer;
+  public EnvelopeCalculation set(AtomDataServer vwr, int atomCount, short[] mads) {
+    this.vwr = vwr;
     this.atomCount = atomCount; //preliminary, for setFromBits()
     this.mads = mads;
     geodesicCount = Geodesic.getVertexCount(JC.ENV_CALC_MAX_LEVEL);    
@@ -315,7 +315,7 @@ public final class EnvelopeCalculation implements JmolEnvCalc {
     atomData.modelIndex = (multiModel ? -1 : 0);
     modelZeroBased = !multiModel;
 
-    viewer.fillAtomData(atomData, AtomData.MODE_FILL_COORDS
+    vwr.fillAtomData(atomData, AtomData.MODE_FILL_COORDS
         | (mads == null ? AtomData.MODE_FILL_RADII : 0));
     atomCount = atomData.atomCount;
     if (mads != null)
@@ -331,7 +331,7 @@ public final class EnvelopeCalculation implements JmolEnvCalc {
     bsSurface = new BS();
     // now, calculate surface for selected atoms
     boolean isAll = (bsSelected == null);
-    AtomIndexIterator iter = viewer.getSelectedAtomIterator(bsMySelected,
+    AtomIndexIterator iter = vwr.getSelectedAtomIterator(bsMySelected,
         false, modelZeroBased, false);
     //true ==> only atom index > this atom accepted
     int i0 = (isAll ? atomCount - 1 : bsSelected.nextSetBit(0));
@@ -564,7 +564,7 @@ public final class EnvelopeCalculation implements JmolEnvCalc {
     neighborCount = 0;
     if (disregardNeighbors)
       return null;
-    viewer.setIteratorForAtom(iter, indexI, radiusI + diameterP + maxRadius);    
+    vwr.setIteratorForAtom(iter, indexI, radiusI + diameterP + maxRadius);    
     while (iter.hasNext()) {
       int indexN = iter.next();
       float neighborRadius = atomData.atomRadius[indexN];

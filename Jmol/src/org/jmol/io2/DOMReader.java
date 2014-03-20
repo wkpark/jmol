@@ -32,31 +32,31 @@ import org.jmol.viewer.Viewer;
 
 public class DOMReader {
   private FileManager fm;
-  private Viewer viewer;
+  private Viewer vwr;
   private Object[] aDOMNode = new Object[1];
   private Object atomSetCollection;
   private Map<String, Object> htParams;
 
   public DOMReader() {}
   
-  void set(FileManager fileManager, Viewer viewer, Object DOMNode, Map<String, Object> htParams) {
+  void set(FileManager fileManager, Viewer vwr, Object DOMNode, Map<String, Object> htParams) {
     fm = fileManager;
-    this.viewer = viewer;
+    this.vwr = vwr;
     aDOMNode[0] = DOMNode;
     this.htParams = htParams;
   }
 
   void run() {
-    Object info = viewer.apiPlatform.getJsObjectInfo(aDOMNode, null, null);
+    Object info = vwr.apiPlatform.getJsObjectInfo(aDOMNode, null, null);
     // note that this will not work in JSmol because we don't implement the nameSpaceInfo stuff there
     // and we cannot pass [HTMLUnknownObject]
     if (info != null)
       htParams.put("nameSpaceInfo", info);
-    atomSetCollection = viewer.getModelAdapter().getAtomSetCollectionFromDOM(
+    atomSetCollection = vwr.getModelAdapter().getAtomSetCollectionFromDOM(
         aDOMNode, htParams);
     if (atomSetCollection instanceof String)
       return;
-    viewer.zap(false, true, false);
+    vwr.zap(false, true, false);
     fm.setFileInfo(new String[] { "JSNode" });
   }
 }

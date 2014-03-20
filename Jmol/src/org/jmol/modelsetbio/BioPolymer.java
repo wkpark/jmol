@@ -278,7 +278,7 @@ public abstract class BioPolymer {
       reversed = BS.newN(monomerCount);
     else
       reversed.clearAll();
-    twistedSheets = model.modelSet.viewer.getBoolean(T.twistedsheets);
+    twistedSheets = model.modelSet.vwr.getBoolean(T.twistedsheets);
     V3 vectorA = new V3();
     V3 vectorB = new V3();
     V3 vectorC = new V3();
@@ -472,7 +472,7 @@ public abstract class BioPolymer {
 
   final private static String[] qColor = { "yellow", "orange", "purple" };
 
-  final public static void getPdbData(Viewer viewer, BioPolymer p, char ctype,
+  final public static void getPdbData(Viewer vwr, BioPolymer p, char ctype,
                                       char qtype, int mStep, int derivType,
                                       BS bsAtoms, BS bsSelected,
                                       boolean bothEnds, boolean isDraw,
@@ -562,7 +562,7 @@ public abstract class BioPolymer {
     bothEnds = false;//&= !isDraw && !isRamachandran;
     for (int j = 0; j < (bothEnds ? 2 : 1); j++, factor *= -1)
       for (int i = 0; i < (mStep < 1 ? 1 : mStep); i++)
-        getData(viewer, i, mStep, p, ctype, qtype, derivType, bsAtoms,
+        getData(vwr, i, mStep, p, ctype, qtype, derivType, bsAtoms,
             bsSelected, isDraw, isRamachandran, calcRamachandranStraightness,
             useQuaternionStraightness, writeRamachandranStraightness,
             quaternionStraightness, factor, isAmino, isRelativeAlias, tokens,
@@ -571,7 +571,7 @@ public abstract class BioPolymer {
 
   /**
    * 
-   * @param viewer
+   * @param vwr
    * @param m0
    * @param mStep
    * @param p
@@ -596,7 +596,7 @@ public abstract class BioPolymer {
    * @param bsWritten
    */
   @SuppressWarnings("static-access")
-  private static void getData(Viewer viewer, int m0, int mStep, BioPolymer p,
+  private static void getData(Viewer vwr, int m0, int mStep, BioPolymer p,
                               char ctype, char qtype, int derivType,
                               BS bsAtoms, BS bsSelected,
                               boolean isDraw, boolean isRamachandran,
@@ -898,7 +898,7 @@ public abstract class BioPolymer {
         if (pdbATOM == null)// || bsSelected != null && !bsSelected.get(a.getIndex()))
           continue;
         bsWritten.set(((Monomer) a.getGroup()).leadAtomIndex);
-        pdbATOM.append(viewer.modelSet.getLabeler().formatLabelAtomArray(viewer, a, tokens, '\0',
+        pdbATOM.append(vwr.ms.getLabeler().formatLabelAtomArray(vwr, a, tokens, '\0',
             null));
         pdbATOM.append(Txt
             .sprintf("%8.2f%8.2f%8.2f      %6.3f          %2s    %s\n",
@@ -1039,7 +1039,7 @@ public abstract class BioPolymer {
 
   /**
    * 
-   * @param viewer
+   * @param vwr
    * @param ctype
    * @param qtype
    * @param mStep
@@ -1054,7 +1054,7 @@ public abstract class BioPolymer {
    * @param pdbCONECT
    * @param bsWritten
    */
-  public void getPdbData(Viewer viewer, char ctype, char qtype, int mStep,
+  public void getPdbData(Viewer vwr, char ctype, char qtype, int mStep,
                          int derivType, BS bsAtoms, BS bsSelected,
                          boolean bothEnds, boolean isDraw, boolean addHeader,
                          LabelToken[] tokens, OC pdbATOM,

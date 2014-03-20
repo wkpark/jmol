@@ -24,6 +24,7 @@
 
 package org.jmol.adapter.readers.more;
 
+import javajs.util.Binary;
 import javajs.util.List;
 import javajs.util.PT;
 
@@ -36,7 +37,6 @@ import org.jmol.adapter.smarter.JmolJDXMOLReader;
 import org.jmol.adapter.smarter.JmolJDXMOLParser;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.Interface;
-import org.jmol.io.Binary;
 import org.jmol.java.BS;
 import org.jmol.util.Logger;
 
@@ -95,7 +95,7 @@ public class JcampdxReader extends MolReader implements JmolJDXMOLReader {
 
     // tells Jmol to start talking with JSpecView
 
-    viewer.setBooleanProperty("_JSpecView".toLowerCase(), true);
+    vwr.setBooleanProperty("_JSpecView".toLowerCase(), true);
     // necessary to not use "jspecview" here, as buildtojs.xml will change that to "JSV"
     if (isTrajectory) {
       Logger.warn("TRAJECTORY keyword ignored");

@@ -54,7 +54,7 @@ public abstract class FontLineShape extends FontShape {
 
   @Override
   public String getShapeState() {
-    String s = viewer.getFontState(myType, font3d);
-    return (tickInfos == null ? s : viewer.getFontLineShapeState(s, myType, tickInfos));
+    String s = vwr.getFontState(myType, font3d);
+    return (tickInfos == null ? s : vwr.getFontLineShapeState(s, myType, tickInfos));
   }
 }

@@ -55,19 +55,19 @@ import org.jmol.viewer.Viewer;
 class Mouse implements MouseWheelListener, MouseListener,
     MouseMotionListener, KeyListener, GenericMouseInterface {
 
-  private Viewer viewer;
+  private Viewer vwr;
   private EventManager manager;
 
   //double privateKey;
   /**
    * @param privateKey  
-   * @param viewer 
+   * @param vwr 
    * @param odisplay 
    */
-  Mouse(double privateKey, PlatformViewer viewer, Object odisplay) {
+  Mouse(double privateKey, PlatformViewer vwr, Object odisplay) {
     //this.privateKey = privateKey;
-    this.viewer = (Viewer) viewer;
-    manager = this.viewer.getActionManager();
+    this.vwr = (Viewer) vwr;
+    manager = this.vwr.getActionManager();
     Component display = (Component) odisplay;
     display.addKeyListener(this);
     display.addMouseListener(this);
@@ -82,7 +82,7 @@ class Mouse implements MouseWheelListener, MouseListener,
 
   @Override
   public void dispose() {
-    Component display = (Component) viewer.getDisplay();
+    Component display = (Component) vwr.getDisplay();
     display.removeMouseListener(this);
     display.removeMouseMotionListener(this);
     display.removeMouseWheelListener(this);
@@ -181,7 +181,7 @@ class Mouse implements MouseWheelListener, MouseListener,
   @Override
   public void keyTyped(KeyEvent ke) {
     ke.consume();
-    if (!viewer.menuEnabled())
+    if (!vwr.menuEnabled())
       return;
     char ch = ke.getKeyChar();
     int modifiers = ke.getModifiers();
@@ -193,35 +193,35 @@ class Mouse implements MouseWheelListener, MouseListener,
       switch (ch) {
       case (char) 11:
       case 'k': // keystrokes on/off
-        boolean isON = !viewer.getBooleanProperty("allowKeyStrokes");
+        boolean isON = !vwr.getBooleanProperty("allowKeyStrokes");
         switch (modifiers) {
         case Event.CTRL_MASK:
-          viewer.setBooleanProperty("allowKeyStrokes", isON);
-          viewer.setBooleanProperty("showKeyStrokes", true);
+          vwr.setBooleanProperty("allowKeyStrokes", isON);
+          vwr.setBooleanProperty("showKeyStrokes", true);
           break;
         case Event.CTRL_ALT:
         case Event.ALT_MASK:
-          viewer.setBooleanProperty("allowKeyStrokes", isON);
-          viewer.setBooleanProperty("showKeyStrokes", false);
+          vwr.setBooleanProperty("allowKeyStrokes", isON);
+          vwr.setBooleanProperty("showKeyStrokes", false);
           break;
         }
         clearKeyBuffer();
-        viewer.refresh(3, "showkey");
+        vwr.refresh(3, "showkey");
         break;
       case 22:
       case 'v': // paste
         switch (modifiers) {
         case Event.CTRL_MASK:
-          String ret = viewer.getClipboardText();
+          String ret = vwr.getClipboardText();
           if (ret == null)
             break;
           if (ret.startsWith("http://") && ret.indexOf("\n") < 0)
             ret = "LoAd " + PT.esc(ret);
           if (ret.startsWith("LoAd ")) {
-            viewer.evalStringQuietSync(ret, false, true);
+            vwr.evalStringQuietSync(ret, false, true);
             break;
           }
-          ret = viewer.loadInlineAppend(ret, false);
+          ret = vwr.loadInlineAppend(ret, false);
           if (ret != null)
             Logger.error(ret);
         }
@@ -230,10 +230,10 @@ class Mouse implements MouseWheelListener, MouseListener,
       case 'z': // undo
         switch (modifiers) {
         case Event.CTRL_MASK:
-          viewer.undoMoveAction(T.undomove, 1);
+          vwr.undoMoveAction(T.undomove, 1);
           break;
         case Event.CTRL_SHIFT:
-          viewer.undoMoveAction(T.redomove, 1);
+          vwr.undoMoveAction(T.redomove, 1);
           break;
         }
         break;
@@ -241,21 +241,21 @@ class Mouse implements MouseWheelListener, MouseListener,
       case 'y': // redo
         switch (modifiers) {
         case Event.CTRL_MASK:
-          viewer.undoMoveAction(T.redomove, 1);
+          vwr.undoMoveAction(T.redomove, 1);
           break;
         }
         break;        
       }
       return;
     }
-    if (!viewer.getBooleanProperty("allowKeyStrokes"))
+    if (!vwr.getBooleanProperty("allowKeyStrokes"))
       return;
     addKeyBuffer(ke.getModifiers() == Event.SHIFT_MASK ? Character.toUpperCase(ch) : ch);
   }
 
   @Override
   public void keyPressed(KeyEvent ke) {
-    if (viewer.isApplet())
+    if (vwr.isApplet())
       ke.consume();
     manager.keyPressed(ke.getKeyCode(), ke.getModifiers());
   }
@@ -272,8 +272,8 @@ class Mouse implements MouseWheelListener, MouseListener,
     if (keyBuffer.length() == 0)
       return;
     keyBuffer = "";
-    if (viewer.getBooleanProperty("showKeyStrokes"))
-      viewer
+    if (vwr.getBooleanProperty("showKeyStrokes"))
+      vwr
           .evalStringQuietSync("!set echo _KEYSTROKES; set echo bottom left;echo \"\"", true, true);
   }
 
@@ -288,20 +288,20 @@ class Mouse implements MouseWheelListener, MouseListener,
     } else {
       keyBuffer += ch;
     }
-    if (viewer.getBooleanProperty("showKeyStrokes"))
-      viewer
+    if (vwr.getBooleanProperty("showKeyStrokes"))
+      vwr
           .evalStringQuietSync("!set echo _KEYSTROKES; set echo bottom left;echo "
               + PT.esc("\1" + keyBuffer), true, true);
   }
 
   private void sendKeyBuffer() {
     String kb = keyBuffer;
-    if (viewer.getBooleanProperty("showKeyStrokes"))
-      viewer
+    if (vwr.getBooleanProperty("showKeyStrokes"))
+      vwr
           .evalStringQuietSync("!set echo _KEYSTROKES; set echo bottom left;echo "
               + PT.esc(keyBuffer), true, true);
     clearKeyBuffer();
-    viewer.evalStringQuietSync(kb, false, true);
+    vwr.evalStringQuietSync(kb, false, true);
   }
 
   private void mouseEntered(long time, int x, int y) {

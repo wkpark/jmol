@@ -35,7 +35,7 @@ public class HoverRenderer extends ShapeRenderer {
   @Override
   protected boolean render() {
     // hover rendering always involves translucent pass
-    if (viewer.isNavigating())
+    if (vwr.isNavigating())
       return false;
     Hover hover = (Hover) shape;
     boolean antialias = g3d.isAntialiased();
@@ -45,8 +45,8 @@ public class HoverRenderer extends ShapeRenderer {
       String label = (hover.specialLabel != null ? hover.specialLabel 
           : hover.atomFormats != null
           && hover.atomFormats[hover.atomIndex] != null ? 
-              viewer.modelSet.getLabeler().formatLabel(viewer, atom, hover.atomFormats[hover.atomIndex])
-          : hover.labelFormat != null ? viewer.modelSet.getLabeler().formatLabel(viewer, atom, fixLabel(atom, hover.labelFormat))
+              vwr.ms.getLabeler().formatLabel(vwr, atom, hover.atomFormats[hover.atomIndex])
+          : hover.labelFormat != null ? vwr.ms.getLabeler().formatLabel(vwr, atom, fixLabel(atom, hover.labelFormat))
               : null);
       if (label == null)
         return false;
@@ -58,14 +58,14 @@ public class HoverRenderer extends ShapeRenderer {
     } else {
       return true;
     }
-    TextRenderer.render(text, viewer, g3d, 0, antialias ? 2 : 1, false, null, tempXY );
+    TextRenderer.render(text, vwr, g3d, 0, antialias ? 2 : 1, false, null, tempXY );
     return true;
   }
   
   String fixLabel(Atom atom, String label) {
     if (label == null)
       return null;
-    return (viewer.isJmolDataFrameForModel(atom.getModelIndex()) 
+    return (vwr.isJmolDataFrameForModel(atom.getModelIndex()) 
         && label.equals("%U") ?"%W" : label);
   }
 }

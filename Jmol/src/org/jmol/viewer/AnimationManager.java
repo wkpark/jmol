@@ -38,10 +38,10 @@ import org.jmol.modelset.ModelSet;
 public class AnimationManager {
 
   public JmolThread animationThread;
-  public Viewer viewer;
+  public Viewer vwr;
   
-  AnimationManager(Viewer viewer) {
-    this.viewer = viewer;
+  AnimationManager(Viewer vwr) {
+    this.vwr = vwr;
   }
 
   // used by AnimationThread, Viewer, or StateCreator:
@@ -55,12 +55,12 @@ public class AnimationManager {
     if (animationOn == this.animationOn)
       return;
     
-    if (!animationOn || !viewer.haveModelSet() || viewer.isHeadless()) {
+    if (!animationOn || !vwr.haveModelSet() || vwr.isHeadless()) {
       stopThread(false);
       return;
     }
-    if (!viewer.getSpinOn())
-      viewer.refresh(3, "Anim:setAnimationOn");
+    if (!vwr.getSpinOn())
+      vwr.refresh(3, "Anim:setAnimationOn");
     setAnimationRange(-1, -1);
     resumeAnimation();
   }
@@ -73,11 +73,11 @@ public class AnimationManager {
       stopped = true;
     }
     animationPaused = isPaused;
-    if (stopped && !viewer.getSpinOn())
-      viewer.refresh(3, "Viewer:setAnimationOff");
+    if (stopped && !vwr.getSpinOn())
+      vwr.refresh(3, "Viewer:setAnimationOff");
     animation(false);
     //stopModulationThread();
-    viewer.setStatusFrameChanged(false, true);
+    vwr.setStatusFrameChanged(false, true);
     
   }
 
@@ -159,7 +159,7 @@ public class AnimationManager {
       i = lastFrameIndex;
       break;
     }
-    return viewer.getModelNumberDotted(i);
+    return vwr.getModelNumberDotted(i);
   }
 
   void setDisplay(BS bs) {
@@ -189,14 +189,14 @@ public class AnimationManager {
     currentMorphModel = m + f;
     if (m1 == m || m1 < 0 || m < 0)
       return;
-    viewer.modelSet.morphTrajectories(m, m1, f);
+    vwr.ms.morphTrajectories(m, m1, f);
   }  
 
   void setModel(int modelIndex, boolean clearBackgroundModel) {
     if (modelIndex < 0)
       stopThread(false);
     int formerModelIndex = currentModelIndex;
-    ModelSet modelSet = viewer.getModelSet();
+    ModelSet modelSet = vwr.getModelSet();
     int modelCount = (modelSet == null ? 0 : modelSet.modelCount);
     if (modelCount == 1)
       currentModelIndex = modelIndex = 0;
@@ -206,31 +206,31 @@ public class AnimationManager {
     boolean isSameSource = false;
     if (currentModelIndex != modelIndex) {
       if (modelCount > 0) {
-        boolean toDataModel = viewer.isJmolDataFrameForModel(modelIndex);
-        boolean fromDataModel = viewer.isJmolDataFrameForModel(currentModelIndex);
+        boolean toDataModel = vwr.isJmolDataFrameForModel(modelIndex);
+        boolean fromDataModel = vwr.isJmolDataFrameForModel(currentModelIndex);
         if (fromDataModel)
-          viewer.setJmolDataFrame(null, -1, currentModelIndex);
+          vwr.setJmolDataFrame(null, -1, currentModelIndex);
         if (currentModelIndex != -1)
-          viewer.saveModelOrientation();
+          vwr.saveModelOrientation();
         if (fromDataModel || toDataModel) {
-          ids = viewer.getJmolFrameType(modelIndex) 
+          ids = vwr.getJmolFrameType(modelIndex) 
           + " "  + modelIndex + " <-- " 
           + " " + currentModelIndex + " " 
-          + viewer.getJmolFrameType(currentModelIndex);
+          + vwr.getJmolFrameType(currentModelIndex);
           
-          isSameSource = (viewer.getJmolDataSourceFrame(modelIndex) == viewer
+          isSameSource = (vwr.getJmolDataSourceFrame(modelIndex) == vwr
               .getJmolDataSourceFrame(currentModelIndex));
         }
       }
       currentModelIndex = modelIndex;
       if (ids != null) {
         if (modelIndex >= 0)
-          viewer.restoreModelOrientation(modelIndex);
+          vwr.restoreModelOrientation(modelIndex);
         if (isSameSource && (ids.indexOf("quaternion") >= 0 
             || ids.indexOf("plot") < 0
             && ids.indexOf("ramachandran") < 0
             && ids.indexOf(" property ") < 0)) {
-          viewer.restoreModelRotation(formerModelIndex);
+          vwr.restoreModelRotation(formerModelIndex);
         }
       }
     }
@@ -238,13 +238,13 @@ public class AnimationManager {
   }
 
   void setBackgroundModelIndex(int modelIndex) {
-    ModelSet modelSet = viewer.getModelSet();
+    ModelSet modelSet = vwr.getModelSet();
     if (modelSet == null || modelIndex < 0 || modelIndex >= modelSet.modelCount)
       modelIndex = -1;
     backgroundModelIndex = modelIndex;
     if (modelIndex >= 0)
-      viewer.setTrajectory(modelIndex);
-    viewer.setTainted(true);
+      vwr.setTrajectory(modelIndex);
+    vwr.setTainted(true);
     setFrameRangeVisible(); 
   }
   
@@ -252,7 +252,7 @@ public class AnimationManager {
     firstFrameIndex = 0;
     lastFrameIndex = (frameStep == 0 ? 0 : getFrameCount()) - 1;
     this.frameStep = frameStep;
-    viewer.setFrameVariables();
+    vwr.setFrameVariables();
   }
 
   void setAnimationDirection(int animationDirection) {
@@ -263,7 +263,7 @@ public class AnimationManager {
 
   void setAnimationFps(int animationFps) {
     this.animationFps = animationFps;
-    viewer.setFrameVariables();
+    vwr.setFrameVariables();
   }
 
   // 0 = once
@@ -278,7 +278,7 @@ public class AnimationManager {
     this.lastFrameDelay = lastFrameDelay > 0 ? lastFrameDelay : 0;
     lastFrameDelayMs = (int)(this.lastFrameDelay * 1000);
     this.animationReplayMode = animationReplayMode;
-    viewer.setFrameVariables();
+    vwr.setFrameVariables();
   }
 
   void setAnimationRange(int framePointer, int framePointer2) {
@@ -321,7 +321,7 @@ public class AnimationManager {
     if (animationThread == null) {
       intAnimThread++;
       animationThread = (JmolThread) Interface.getOption("thread.AnimationThread");
-      animationThread.setManager(this, viewer, new int[] {firstFrameIndex, lastFrameIndex, intAnimThread} );
+      animationThread.setManager(this, vwr, new int[] {firstFrameIndex, lastFrameIndex, intAnimThread} );
       animationThread.start();
     }
   }
@@ -333,7 +333,7 @@ public class AnimationManager {
   void rewindAnimation() {
     setFrame(animationDirection > 0 ? firstFrameIndex : lastFrameIndex);
     currentDirection = 1;
-    viewer.setFrameVariables();
+    vwr.setFrameVariables();
   }
   
   boolean setAnimationPrevious() {
@@ -351,7 +351,7 @@ public class AnimationManager {
     float nsec = 1f * (i1 - i0) / animationFps + firstFrameDelay
         + lastFrameDelay;
     for (int i = i0; i <= i1; i++)
-      nsec += viewer.getFrameDelayMs(modelIndexForFrame(i)) / 1000f;
+      nsec += vwr.getFrameDelayMs(modelIndexForFrame(i)) / 1000f;
     return nsec;
   }
 
@@ -380,7 +380,7 @@ public class AnimationManager {
       //movie = null;
       animationFrames = null;
     }
-    viewer.setBooleanProperty("_ismovie", isMovie);
+    vwr.setBooleanProperty("_ismovie", isMovie);
     bsDisplay = null;
     currentMorphModel = morphCount = 0;
   }
@@ -398,7 +398,7 @@ public class AnimationManager {
   }
 
   int getFrameCount() {
-    return (isMovie ? animationFrames.length : viewer.getModelCount());
+    return (isMovie ? animationFrames.length : vwr.getModelCount());
   }
 
   void setFrame(int i) {
@@ -423,15 +423,15 @@ public class AnimationManager {
   private int intAnimThread;
   public int currentAtomIndex = -1;
   private void setViewer(boolean clearBackgroundModel) {
-    viewer.setTrajectory(currentModelIndex);
-    viewer.setFrameOffset(currentModelIndex);
+    vwr.setTrajectory(currentModelIndex);
+    vwr.setFrameOffset(currentModelIndex);
     if (currentModelIndex == -1 && clearBackgroundModel)
       setBackgroundModelIndex(-1);  
-    viewer.setTainted(true);
+    vwr.setTainted(true);
     setFrameRangeVisible();
-    viewer.setStatusFrameChanged(false, true);
-    if (viewer.modelSet != null && !viewer.global.selectAllModels)
-        viewer.setSelectionSubset(viewer.getModelUndeletedAtomsBitSet(currentModelIndex));
+    vwr.setStatusFrameChanged(false, true);
+    if (vwr.ms != null && !vwr.g.selectAllModels)
+        vwr.setSelectionSubset(vwr.getModelUndeletedAtomsBitSet(currentModelIndex));
   }
 
   private void setFrameRangeVisible() {
@@ -448,14 +448,14 @@ public class AnimationManager {
     int frameDisplayed = 0;
     for (int iframe = firstFrameIndex; iframe != lastFrameIndex; iframe += frameStep) {
       int i = modelIndexForFrame(iframe);
-      if (!viewer.isJmolDataFrameForModel(i)) {
+      if (!vwr.isJmolDataFrameForModel(i)) {
         bsVisibleModels.set(i);
         nDisplayed++;
         frameDisplayed = iframe;
       }
     }
     int i = modelIndexForFrame(lastFrameIndex);
-    if (firstFrameIndex == lastFrameIndex || !viewer.isJmolDataFrameForModel(i)
+    if (firstFrameIndex == lastFrameIndex || !vwr.isJmolDataFrameForModel(i)
         || nDisplayed == 0) {
       bsVisibleModels.set(i);
       if (nDisplayed == 0)
@@ -468,7 +468,7 @@ public class AnimationManager {
 
   private void animation(boolean TF) {
     animationOn = TF; 
-    viewer.setBooleanProperty("_animating", TF);
+    vwr.setBooleanProperty("_animating", TF);
   }
   
   private boolean setAnimationRelative(int direction) {
@@ -534,14 +534,14 @@ public class AnimationManager {
 //}
 
 //public void setModulationPlay(int modT1, int modT2) {
-//if (modT1 == Integer.MAX_VALUE || !viewer.haveModelSet() || viewer.isHeadless()) {
+//if (modT1 == Integer.MAX_VALUE || !vwr.haveModelSet() || vwr.isHeadless()) {
 //  stopThread(false);
 //  return;
 //}
 //if (modulationThread == null) {
 //  modulationPlay = true;
 //  modulationThread = (JmolThread) Interface.getOptionInterface("thread.ModulationThread");
-//  modulationThread.setManager(this, viewer, new int[] {modT1, modT2} );
+//  modulationThread.setManager(this, vwr, new int[] {modT1, modT2} );
 //  modulationThread.start();
 //}
 //}

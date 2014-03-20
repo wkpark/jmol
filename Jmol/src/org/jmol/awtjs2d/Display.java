@@ -60,17 +60,17 @@ class Display {
   /**
    * legacy apps will use this
    * 
-   * @param viewer
+   * @param vwr
    * @param g
    * @param size
    */
-  static void renderScreenImage(PlatformViewer viewer, Object g, Object size) {
+  static void renderScreenImage(PlatformViewer vwr, Object g, Object size) {
     /**
      * @j2sNative
      * 
      */
     {
-      System.out.println("" + viewer + g + size);
+      System.out.println("" + vwr + g + size);
     }
   }
 

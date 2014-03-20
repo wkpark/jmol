@@ -5,12 +5,12 @@ import java.io.BufferedReader;
 import java.util.Map;
 import java.util.zip.ZipInputStream;
 
+import javajs.api.GenericBinaryDocument;
+import javajs.util.DataReader;
 import javajs.util.PT;
 
 import org.jmol.api.Interface;
-import org.jmol.api.JmolDocument;
 import org.jmol.api.JmolFilesReaderInterface;
-import org.jmol.io.DataReader;
 import org.jmol.io.JmolBinary;
 import org.jmol.util.Logger;
 import org.jmol.viewer.FileManager;
@@ -25,7 +25,7 @@ public class FilesReader implements JmolFilesReaderInterface {
    * 
    */
   private FileManager fm;
-  private Viewer viewer;
+  private Viewer vwr;
   private String[] fullPathNamesIn;
   private String[] namesAsGivenIn;
   private String[] fileTypesIn;
@@ -38,11 +38,11 @@ public class FilesReader implements JmolFilesReaderInterface {
   }
 
   @Override
-  public void set(FileManager fileManager, Viewer viewer, String[] name,
+  public void set(FileManager fileManager, Viewer vwr, String[] name,
                   String[] nameAsGiven, String[] types, DataReader[] readers,
                   Map<String, Object> htParams, boolean isAppend) {
     fm = fileManager;
-    this.viewer = viewer;
+    this.vwr = vwr;
     fullPathNamesIn = name;
     namesAsGivenIn = nameAsGiven;
     fileTypesIn = types;
@@ -54,23 +54,23 @@ public class FilesReader implements JmolFilesReaderInterface {
   @Override
   public void run() {
 
-    if (!isAppend && viewer.displayLoadErrors)
-      viewer.zap(false, true, false);
+    if (!isAppend && vwr.displayLoadErrors)
+      vwr.zap(false, true, false);
 
-    boolean getReadersOnly = !viewer.displayLoadErrors;
-    atomSetCollection = viewer.getModelAdapter().getAtomSetCollectionReaders(
+    boolean getReadersOnly = !vwr.displayLoadErrors;
+    atomSetCollection = vwr.getModelAdapter().getAtomSetCollectionReaders(
         this, fullPathNamesIn, fileTypesIn, htParams, getReadersOnly);
     dataReaders = null;
     if (getReadersOnly && !(atomSetCollection instanceof String)) {
-      atomSetCollection = viewer.getModelAdapter().getAtomSetCollectionFromSet(
+      atomSetCollection = vwr.getModelAdapter().getAtomSetCollectionFromSet(
           atomSetCollection, null, htParams);
     }
     if (atomSetCollection instanceof String) {
       Logger.error("file ERROR: " + atomSetCollection);
       return;
     }
-    if (!isAppend && !viewer.displayLoadErrors)
-      viewer.zap(false, true, false);
+    if (!isAppend && !vwr.displayLoadErrors)
+      vwr.zap(false, true, false);
 
     fm.setFileInfo(new String[] { dataReaders == null ? "file[]" : "String[]" });
   }
@@ -104,16 +104,16 @@ public class FilesReader implements JmolFilesReaderInterface {
       String[] zipDirectory = fm.getZipDirectory(name, true);
       t = fm.getBufferedInputStreamOrErrorMessageFromName(name,
           fullPathNamesIn[i], false, false, null, false, true);
-      t = JmolBinary.getAtomSetCollectionOrBufferedReaderFromZip(viewer.getModelAdapter(),
+      t = JmolBinary.getAtomSetCollectionOrBufferedReaderFromZip(vwr.getModelAdapter(),
           (BufferedInputStream) t, name, zipDirectory, htParams, true);
     }
     if (t instanceof BufferedInputStream) {
-      JmolDocument jd = (JmolDocument) Interface
+      GenericBinaryDocument jd = (GenericBinaryDocument) Interface
           .getOption("io2.BinaryDocument");
       jd.setStream((BufferedInputStream) t, true);
       return jd;
     }
-    return (t instanceof BufferedReader || t instanceof JmolDocument ? t :
+    return (t instanceof BufferedReader || t instanceof GenericBinaryDocument ? t :
       t == null ? "error opening:" + namesAsGivenIn[i] : (String) t);
   }
 

@@ -42,7 +42,7 @@ import org.jmol.util.Logger;
 public class ForceFieldUFF extends ForceField {
 
   private static List<String[]> atomTypes;
-  private static Map<Object, FFParam> ffParams;
+  private static Map<Object, Object> ffParams;
   private BS bsAromatic;
   
   public ForceFieldUFF(Minimizer minimizer) {
@@ -166,13 +166,13 @@ public class ForceFieldUFF extends ForceField {
       break;
     } 
     search[PT_ELEMENT].intValue = elemNo;
-    Object v = minimizer.viewer.evaluateExpression(search);
+    Object v = minimizer.vwr.evaluateExpression(search);
     if (!(v instanceof BS))
       return null;
     BS bs = (BS) v;
     if (isAromatic && bs.cardinality() > 0) {
       if (bsAromatic == null)
-        bsAromatic = (BS) minimizer.viewer.evaluateExpression(tokenTypes[TOKEN_AROMATIC]);
+        bsAromatic = (BS) minimizer.vwr.evaluateExpression(tokenTypes[TOKEN_AROMATIC]);
       bs.and(bsAromatic);
     }
     if (Logger.debugging && bs.cardinality() > 0)
@@ -180,10 +180,10 @@ public class ForceFieldUFF extends ForceField {
     return bs;
   }
   
-  private Map<Object, FFParam> getFFParameters() {
+  private Map<Object, Object> getFFParameters() {
     FFParam ffParam;
 
-    Map<Object, FFParam> temp = new Hashtable<Object, FFParam>();
+    Map<Object, Object> temp = new Hashtable<Object, Object>();
 
     // open UFF.txt
     String resourceName = "UFF.txt";

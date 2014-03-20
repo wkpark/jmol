@@ -73,8 +73,8 @@ public class MeasurementData implements JmolMeasurementClient {
   public MeasurementData() {
     // by reflection
   }
-  public MeasurementData init(String id, Viewer viewer, List<Object> points) {
-    this.viewer = viewer;
+  public MeasurementData init(String id, Viewer vwr, List<Object> points) {
+    this.vwr = vwr;
     this.points = points;
     thisID = id;
     return this;
@@ -94,12 +94,12 @@ public class MeasurementData implements JmolMeasurementClient {
                  boolean mustBeConnected, boolean mustNotBeConnected,
                  Boolean intramolecular, boolean isAll, 
                  int mad, short colix, Text text) {
-    this.modelSet = viewer.getModelSet();
+    this.modelSet = vwr.getModelSet();
     this.tokAction = tokAction;
     if (points.size() >= 2 && points.get(0) instanceof BS && points.get(1) instanceof BS) {
       justOneModel = BSUtil.haveCommon(
-          viewer.getModelBitSet((BS) points.get(0), false),
-          viewer.getModelBitSet((BS) points.get(1), false)); 
+          vwr.getModelBitSet((BS) points.get(0), false),
+          vwr.getModelBitSet((BS) points.get(1), false)); 
     }
     //this.rangeMinMax = rangeMinMax;
     this.htMin = htMin;
@@ -139,7 +139,7 @@ public class MeasurementData implements JmolMeasurementClient {
     }
     
     if (measurementStrings != null)
-      measurementStrings.addLast(m.getStringUsing(viewer, strFormat, units));
+      measurementStrings.addLast(m.getStringUsing(vwr, strFormat, units));
     else
       measurements.addLast(Float.valueOf(m.getMeasurement(null)));   
   }
@@ -172,7 +172,7 @@ public class MeasurementData implements JmolMeasurementClient {
     return measurementStrings;
   }
   
-  private Viewer viewer;
+  private Viewer vwr;
   private int iFirstAtom;
   private boolean justOneModel = true;
   public Map<String, Integer> htMin;

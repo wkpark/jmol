@@ -311,7 +311,7 @@ public class MolecularOrbital extends Isosurface {
   }
 
   private String getId(int modelIndex) {
-    return "mo_model" + viewer.getModelNumberDotted(modelIndex);
+    return "mo_model" + vwr.getModelNumberDotted(modelIndex);
   }
 
   @SuppressWarnings("unchecked")
@@ -321,7 +321,7 @@ public class MolecularOrbital extends Isosurface {
       String s = (String) getPropI("list");
       if (s.length() > 1)
         s += "cutoff = " + getPropI("cutoff") + "\n";
-      return viewer.getMoInfo(-1) + "\n" + s;
+      return vwr.getMoInfo(-1) + "\n" + s;
     }
     if (propertyName == "moNumber")
       return Integer.valueOf(moNumber);
@@ -352,7 +352,7 @@ public class MolecularOrbital extends Isosurface {
             setPropI("init", params, null);
             setOrbital(i, null);
           }
-          jvxlData.moleculeXml = viewer.getModelCml(viewer.getModelUndeletedAtomsBitSet(thisMesh.modelIndex), 100, true);
+          jvxlData.moleculeXml = vwr.getModelCml(vwr.getModelUndeletedAtomsBitSet(thisMesh.modelIndex), 100, true);
           if (!haveHeader) {
             str.append(JvxlCoder.jvxlGetFile(jvxlData, null, null,
                 "HEADERONLY", true, nTotal, null, null));
@@ -447,7 +447,7 @@ public class MolecularOrbital extends Isosurface {
     setPropI("squareData", moSquareData, null);
     setPropI("squareLinear", moSquareLinear, null);
     setPropI("title", moTitleFormat, null);
-    setPropI("fileName", viewer.getFileName(), null);
+    setPropI("fileName", vwr.getFileName(), null);
     setPropI("molecularOrbital", linearCombination == null ? Integer
         .valueOf(moNumber) : linearCombination, null);
     if (moPlane != null && moColorNeg != null)
@@ -478,7 +478,7 @@ public class MolecularOrbital extends Isosurface {
     if (htModels == null)
       return "";
     SB s = new SB();
-    int modelCount = viewer.getModelCount();
+    int modelCount = vwr.getModelCount();
     for (int i = 0; i < modelCount; i++)
       s.append(getMoState(i));
     //System.out.println("molecular orbital state " + s.length());
@@ -490,9 +490,9 @@ public class MolecularOrbital extends Isosurface {
     if (!getSettings(strID))
       return "";
     SB s = new SB();
-    int modelCount = viewer.getModelCount();
+    int modelCount = vwr.getModelCount();
     if (modelCount > 1)
-      appendCmd(s, "frame " + viewer.getModelNumberDotted(modelIndex));
+      appendCmd(s, "frame " + vwr.getModelNumberDotted(modelIndex));
     if (moCutoff != null)
       appendCmd(s, "mo cutoff " + (sg.getIsPositiveOnly() ? "+" : "")
           + moCutoff);

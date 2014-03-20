@@ -3,6 +3,7 @@ package org.jmol.script;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javajs.util.BArray;
 import javajs.util.CU;
 import javajs.util.List;
 import javajs.util.M34;
@@ -21,7 +22,6 @@ import org.jmol.modelset.BondSet;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.ModelCollection;
 import org.jmol.modelset.ModelSet;
-import org.jmol.util.BArray;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
@@ -189,7 +189,7 @@ abstract class ScriptExpr extends ScriptParam {
           v = parameterExpressionToken(++i);
           i = iToken;
         } else if (tokAt(i) == T.integer) {
-          v = viewer.getAtomBits(T.atomno, Integer.valueOf(st[i].intValue));
+          v = vwr.getAtomBits(T.atomno, Integer.valueOf(st[i].intValue));
           break;
         } else {
           v = getParameter(SV.sValue(st[i]), T.variable);
@@ -392,7 +392,7 @@ abstract class ScriptExpr extends ScriptParam {
         //$FALL-THROUGH$
       case T.all:
         if (tok == T.all)
-          v = viewer.getAllAtoms();
+          v = vwr.getAllAtoms();
         else
           v = atomExpression(st, i, 0, true, true, true, true);
         i = iToken;
@@ -528,7 +528,7 @@ abstract class ScriptExpr extends ScriptParam {
             v = getContextVariableAsVariable(name);
           }
           if (v == null) {
-            if (T.tokAttr(theTok, T.identifier) && viewer.isFunction(name)) {
+            if (T.tokAttr(theTok, T.identifier) && vwr.isFunction(name)) {
               if (!rpn.addOp(SV.newV(T.function, theToken.value)))
                 invArg();
               if (!haveParens) {
@@ -536,7 +536,7 @@ abstract class ScriptExpr extends ScriptParam {
                 rpn.addOp(T.tokenRightParen);
               }
             } else {
-              var = viewer.getOrSetNewVariable(name, false);
+              var = vwr.getOrSetNewVariable(name, false);
               switch (var.tok) {
               case T.integer:
               case T.decimal:
@@ -645,14 +645,14 @@ abstract class ScriptExpr extends ScriptParam {
     boolean ignoreSubset = (pcStart < 0);
     boolean isInMath = false;
     int nExpress = 0;
-    int atomCount = viewer.getAtomCount();
+    int atomCount = vwr.getAtomCount();
     if (ignoreSubset)
       pcStart = -pcStart;
     ignoreSubset |= chk;
     if (pcStop == 0 && code.length > pcStart)
       pcStop = pcStart + 1;
     // if (logMessages)
-    // viewer.scriptStatus("start to evaluate expression");
+    // vwr.scriptStatus("start to evaluate expression");
     expression_loop: for (int pc = pcStart; pc < pcStop; ++pc) {
       iToken = pc;
       T instruction = code[pc];
@@ -660,7 +660,7 @@ abstract class ScriptExpr extends ScriptParam {
         break;
       Object value = instruction.value;
       // if (logMessages)
-      // viewer.scriptStatus("instruction=" + instruction);
+      // vwr.scriptStatus("instruction=" + instruction);
       switch (instruction.tok) {
       case T.expressionBegin:
         pcStart = pc;
@@ -738,7 +738,7 @@ abstract class ScriptExpr extends ScriptParam {
         rpn.addOp(instruction);
         break;
       case T.all:
-        rpn.addXBs(viewer.getAllAtoms());
+        rpn.addXBs(vwr.getAllAtoms());
         break;
       case T.none:
         rpn.addXBs(new BS());
@@ -748,41 +748,41 @@ abstract class ScriptExpr extends ScriptParam {
         rpn.addX(SV.newT(instruction));
         break;
       case T.selected:
-        rpn.addXBs(BSUtil.copy(viewer.getSelectedAtoms()));
+        rpn.addXBs(BSUtil.copy(vwr.getSelectedAtoms()));
         break;
       //removed in 13.1.17. Undocumented; unneccessary (same as "all")
 
       //case T.subset:
-      //BS bsSubset = viewer.getSelectionSubset();
-      //rpn.addXBs(bsSubset == null ? viewer.getModelUndeletedAtomsBitSet(-1)
+      //BS bsSubset = vwr.getSelectionSubset();
+      //rpn.addXBs(bsSubset == null ? vwr.getModelUndeletedAtomsBitSet(-1)
       //    : BSUtil.copy(bsSubset));
       //break;
       case T.hidden:
-        rpn.addXBs(BSUtil.copy(viewer.getHiddenSet()));
+        rpn.addXBs(BSUtil.copy(vwr.getHiddenSet()));
         break;
       case T.fixed:
-        rpn.addXBs(BSUtil.copy(viewer.getMotionFixedAtoms()));
+        rpn.addXBs(BSUtil.copy(vwr.getMotionFixedAtoms()));
         break;
       case T.displayed:
-        rpn.addXBs(BSUtil.copyInvert(viewer.getHiddenSet(), atomCount));
+        rpn.addXBs(BSUtil.copyInvert(vwr.getHiddenSet(), atomCount));
         break;
       case T.basemodel:
-        rpn.addXBs(viewer.getBaseModelBitSet());
+        rpn.addXBs(vwr.getBaseModelBitSet());
         break;
       case T.visible:
         if (!chk && !refreshed)
-          viewer.setModelVisibility();
+          vwr.setModelVisibility();
         refreshed = true;
-        rpn.addXBs(viewer.getVisibleSet());
+        rpn.addXBs(vwr.getVisibleSet());
         break;
       case T.clickable:
         // a bit different, because it requires knowing what got slabbed
         if (!chk && allowRefresh)
           refresh(false);
-        rpn.addXBs(viewer.getClickableSet());
+        rpn.addXBs(vwr.getClickableSet());
         break;
       case T.spec_atom:
-        if (viewer.allowSpecAtom()) {
+        if (vwr.allowSpecAtom()) {
           int atomID = instruction.intValue;
           if (atomID > 0)
             rpn.addXBs(compareInt(T.atomid, T.opEQ, atomID));
@@ -819,7 +819,7 @@ abstract class ScriptExpr extends ScriptParam {
         if (iModel == Integer.MAX_VALUE && value instanceof Integer) {
           // from select */n
           iModel = ((Integer) value).intValue();
-          if (!viewer.haveFileSet()) {
+          if (!vwr.haveFileSet()) {
             rpn.addXBs(getAtomBits(T.spec_model, Integer.valueOf(iModel)));
             break;
           }
@@ -863,7 +863,7 @@ abstract class ScriptExpr extends ScriptParam {
                 (int) Math.floor(pt.y * 1000), (int) Math.floor(pt.z * 1000) }));
         break;
       case T.thismodel:
-        rpn.addXBs(viewer.getModelUndeletedAtomsBitSet(viewer
+        rpn.addXBs(vwr.getModelUndeletedAtomsBitSet(vwr
             .getCurrentModelIndex()));
         break;
       case T.hydrogen:
@@ -941,8 +941,8 @@ abstract class ScriptExpr extends ScriptParam {
           } else {
             if (T.tokAttr(tokValue, T.identifier)) {
               if ("_modelNumber".equalsIgnoreCase((String) val)) {
-                int modelIndex = viewer.getCurrentModelIndex();
-                val = Integer.valueOf(modelIndex < 0 ? 0 : viewer
+                int modelIndex = vwr.getCurrentModelIndex();
+                val = Integer.valueOf(modelIndex < 0 ? 0 : vwr
                     .getModelFileNumber(modelIndex));
               } else {
                 val = SV.nValue((SV) getParameter((String) val, T.variable));
@@ -1005,7 +1005,7 @@ abstract class ScriptExpr extends ScriptParam {
           else if (!Float.isNaN(comparisonFloat))
             comparisonFloat = -comparisonFloat;
         }
-        float[] data = (tokWhat == T.property ? viewer.getDataFloat(property)
+        float[] data = (tokWhat == T.property ? vwr.getDataFloat(property)
             : null);
         rpn.addXBs(isIntProperty ? compareInt(tokWhat, tokOperator,
             comparisonValue) : isStringProperty ? compareString(tokWhat,
@@ -1073,7 +1073,7 @@ abstract class ScriptExpr extends ScriptParam {
     BS bs = (expressionResult instanceof BS ? (BS) expressionResult : new BS());
     isBondSet = (expressionResult instanceof BondSet);
     if (!isBondSet
-        && viewer.excludeAtoms(bs, ignoreSubset).length() > viewer
+        && vwr.excludeAtoms(bs, ignoreSubset).length() > vwr
             .getAtomCount())
       bs.clearAll();
     if (tempStatement != null) {
@@ -1143,17 +1143,17 @@ abstract class ScriptExpr extends ScriptParam {
   protected BS compareFloatData(int tokWhat, float[] data, int tokOperator,
                               float comparisonFloat) {
     BS bs = new BS();
-    int atomCount = viewer.getAtomCount();
-    ModelSet modelSet = viewer.modelSet;
+    int atomCount = vwr.getAtomCount();
+    ModelSet modelSet = vwr.ms;
     Atom[] atoms = modelSet.atoms;
     float propertyFloat = 0;
-    viewer.autoCalculate(tokWhat);
+    vwr.autoCalculate(tokWhat);
     for (int i = atomCount; --i >= 0;) {
       boolean match = false;
       Atom atom = atoms[i];
       switch (tokWhat) {
       default:
-        propertyFloat = Atom.atomPropertyFloat(viewer, atom, tokWhat);
+        propertyFloat = Atom.atomPropertyFloat(vwr, atom, tokWhat);
         break;
       case T.property:
         if (data == null || data.length <= i)
@@ -1188,15 +1188,15 @@ abstract class ScriptExpr extends ScriptParam {
   protected BS compareString(int tokWhat, int tokOperator, String comparisonString)
       throws ScriptException {
     BS bs = new BS();
-    Atom[] atoms = viewer.modelSet.atoms;
-    int atomCount = viewer.getAtomCount();
-    boolean isCaseSensitive = (tokWhat == T.chain && viewer
+    Atom[] atoms = vwr.ms.atoms;
+    int atomCount = vwr.getAtomCount();
+    boolean isCaseSensitive = (tokWhat == T.chain && vwr
         .getBoolean(T.chaincasesensitive));
     if (!isCaseSensitive)
       comparisonString = comparisonString.toLowerCase();
     for (int i = atomCount; --i >= 0;) {
       String propertyString = Atom
-          .atomPropertyString(viewer, atoms[i], tokWhat);
+          .atomPropertyString(vwr, atoms[i], tokWhat);
       if (!isCaseSensitive)
         propertyString = propertyString.toLowerCase();
       if (compareStringValues(tokOperator, propertyString, comparisonString))
@@ -1223,8 +1223,8 @@ abstract class ScriptExpr extends ScriptParam {
     BS propertyBitSet = null;
     int bitsetComparator = tokOperator;
     int bitsetBaseValue = ival;
-    int atomCount = viewer.getAtomCount();
-    ModelSet modelSet = viewer.modelSet;
+    int atomCount = vwr.getAtomCount();
+    ModelSet modelSet = vwr.ms;
     Atom[] atoms = modelSet.atoms;
     int imax = -1;
     int imin = 0;
@@ -1277,7 +1277,7 @@ abstract class ScriptExpr extends ScriptParam {
         break;
       case T.configuration:
         // these are all-inclusive; no need to do a by-atom comparison
-        return BSUtil.copy(viewer.getConformation(-1, ival - 1,
+        return BSUtil.copy(vwr.getConformation(-1, ival - 1,
             false));
       case T.symop:
         propertyBitSet = atom.getAtomSymmetry();
@@ -1418,7 +1418,7 @@ abstract class ScriptExpr extends ScriptParam {
       if (tok != T.opIf && !T.tokAttr(tok, T.identifier))
         return null;
       String name = paramAsStr(i);
-      if (!mustBeSettable && viewer.isFunction(name)) {
+      if (!mustBeSettable && vwr.isFunction(name)) {
         tok = T.function;
         break;
       }
@@ -1464,7 +1464,7 @@ abstract class ScriptExpr extends ScriptParam {
 
     int minmaxtype = tok & T.minmaxmask;
     boolean selectedFloat = (minmaxtype == T.selectedfloat);
-    int atomCount = viewer.getAtomCount();
+    int atomCount = vwr.getAtomCount();
     float[] fout = (minmaxtype == T.allfloat ? new float[atomCount] : null);
     boolean isExplicitlyAll = (minmaxtype == T.minmaxmask || selectedFloat);
     tok &= ~T.minmaxmask;
@@ -1516,8 +1516,8 @@ abstract class ScriptExpr extends ScriptParam {
     case T.bonds:
       if (chk)
         return bs;
-      bsNew = (tok == T.atoms ? (isAtoms ? bs : viewer.getAtomBits(T.bonds, bs))
-          : (isAtoms ? (BS) new BondSet(viewer.getBondsForSelectedAtoms(bs))
+      bsNew = (tok == T.atoms ? (isAtoms ? bs : vwr.getAtomBits(T.bonds, bs))
+          : (isAtoms ? (BS) new BondSet(vwr.getBondsForSelectedAtoms(bs))
               : bs));
       int i;
       switch (minmaxtype) {
@@ -1554,7 +1554,7 @@ abstract class ScriptExpr extends ScriptParam {
       break;
     case T.straightness:
     case T.surfacedistance:
-      viewer.autoCalculate(tok);
+      vwr.autoCalculate(tok);
       break;
     case T.distance:
       if (ptRef == null && planeRef == null)
@@ -1564,7 +1564,7 @@ abstract class ScriptExpr extends ScriptParam {
       ptT = new P3();
       break;
     case T.property:
-      data = viewer.getDataFloat((String) opValue);
+      data = vwr.getDataFloat((String) opValue);
       break;
     }
 
@@ -1583,7 +1583,7 @@ abstract class ScriptExpr extends ScriptParam {
       fvMinMax = -Float.MAX_VALUE;
       break;
     }
-    ModelSet modelSet = viewer.modelSet;
+    ModelSet modelSet = vwr.ms;
     int mode = (isPt ? 3 : isString ? 2 : isInt ? 1 : 0);
     if (isAtoms) {
       boolean haveBitSet = (bs != null);
@@ -1623,7 +1623,7 @@ abstract class ScriptExpr extends ScriptParam {
               fv = atom.distance(ptRef);
             break;
           default:
-            fv = Atom.atomPropertyFloat(viewer, atom, tok);
+            fv = Atom.atomPropertyFloat(vwr, atom, tok);
           }
           if (fv == Float.MAX_VALUE || Float.isNaN(fv) && minmaxtype != T.all) {
             n--; // don't count this one
@@ -1688,7 +1688,7 @@ abstract class ScriptExpr extends ScriptParam {
           }
           break;
         case 2: // isString
-          String s = Atom.atomPropertyString(viewer, atom, tok);
+          String s = Atom.atomPropertyString(vwr, atom, tok);
           switch (minmaxtype) {
           case T.allfloat:
             fout[i] = PT.parseFloat(s);
@@ -1721,7 +1721,7 @@ abstract class ScriptExpr extends ScriptParam {
     } else { // bonds
       boolean isAll = (bs == null);
       int i0 = (isAll ? 0 : bs.nextSetBit(0));
-      int i1 = viewer.getBondCount();
+      int i1 = vwr.getBondCount();
       for (int i = i0; i >= 0 && i < i1; i = (isAll ? i + 1 : bs
           .nextSetBit(i + 1))) {
         n++;
@@ -1763,7 +1763,7 @@ abstract class ScriptExpr extends ScriptParam {
           }
           break;
         case T.color:
-          CU.toRGBpt(viewer.getColorArgbOrGray(bond.colix), ptT);
+          CU.toRGBpt(vwr.getColorArgbOrGray(bond.colix), ptT);
           switch (minmaxtype) {
           case T.all:
             vout.addLast(P3.newP(ptT));
@@ -1868,32 +1868,32 @@ abstract class ScriptExpr extends ScriptParam {
 
   private BS bitSetForModelFileNumber(int m) {
     // where */1.0 or */1.1 or just 1.1 is processed
-    BS bs = BS.newN(viewer.getAtomCount());
+    BS bs = BS.newN(vwr.getAtomCount());
     if (chk)
       return bs;
-    int modelCount = viewer.getModelCount();
-    boolean haveFileSet = viewer.haveFileSet();
+    int modelCount = vwr.getModelCount();
+    boolean haveFileSet = vwr.haveFileSet();
     if (m < 1000000 && haveFileSet)
       m *= 1000000;
     int pt = m % 1000000;
     if (pt == 0) {
-      int model1 = viewer.getModelNumberIndex(m + 1, false, false);
+      int model1 = vwr.getModelNumberIndex(m + 1, false, false);
       if (model1 < 0)
         return bs;
-      int model2 = (m == 0 ? modelCount : viewer.getModelNumberIndex(
+      int model2 = (m == 0 ? modelCount : vwr.getModelNumberIndex(
           m + 1000001, false, false));
       if (model1 < 0)
         model1 = 0;
       if (model2 < 0)
         model2 = modelCount;
-      if (viewer.isTrajectory(model1))
+      if (vwr.isTrajectory(model1))
         model2 = model1 + 1;
       for (int j = model1; j < model2; j++)
-        bs.or(viewer.getModelUndeletedAtomsBitSet(j));
+        bs.or(vwr.getModelUndeletedAtomsBitSet(j));
     } else {
-      int modelIndex = viewer.getModelNumberIndex(m, false, true);
+      int modelIndex = vwr.getModelNumberIndex(m, false, true);
       if (modelIndex >= 0)
-        bs.or(viewer.getModelUndeletedAtomsBitSet(modelIndex));
+        bs.or(vwr.getModelUndeletedAtomsBitSet(modelIndex));
     }
     return bs;
   }
@@ -1903,12 +1903,12 @@ abstract class ScriptExpr extends ScriptParam {
       return s;
     Object v = SV.unescapePointOrBitsetAsVariable(s);
     if (v instanceof String && key != null)
-      v = viewer.setUserVariable(key, SV.newS((String) v));
+      v = vwr.setUserVariable(key, SV.newS((String) v));
     return v;
   }
 
   protected BS getAtomBits(int tokType, Object specInfo) {
-    return (chk ? new BS() : viewer.getAtomBits(tokType, specInfo));
+    return (chk ? new BS() : vwr.getAtomBits(tokType, specInfo));
   }
 
   static protected int getSeqCode(T instruction) {
@@ -2039,12 +2039,12 @@ abstract class ScriptExpr extends ScriptParam {
       case T.bitset:
         propertyName = sel.asString();
         bs = SV.getBitSet(t, true);
-        int nAtoms = viewer.getAtomCount();
+        int nAtoms = vwr.getAtomCount();
         int nbs = bs.cardinality();
         if (propertyName.startsWith("property_")) {
           Object obj = (tv.tok == T.varray ? SV.flistValue(tv, tv.getList()
               .size() == nbs ? nbs : nAtoms) : tv.asString());
-          viewer.setData(
+          vwr.setData(
               propertyName,
               new Object[] { propertyName, obj, BSUtil.copy(bs),
                   Integer.valueOf(tv.tok == T.varray ? 1 : 0) }, nAtoms, 0, 0,
@@ -2071,7 +2071,7 @@ abstract class ScriptExpr extends ScriptParam {
 
     if (needVariable && key != null) {
       if (key.startsWith("_")
-          || (t = viewer.getOrSetNewVariable(key, true)) == null)
+          || (t = vwr.getOrSetNewVariable(key, true)) == null)
         errorStr(ERROR_invalidArgument, key);
     }
 
@@ -2087,9 +2087,9 @@ abstract class ScriptExpr extends ScriptParam {
       if (tv.tok == T.varray)
         vv = tv.asString();
       // very inefficient!
-      viewer.setData(key,
-          new Object[] { key, "" + vv, BSUtil.copy(viewer.getSelectedAtoms()),
-              Integer.valueOf(0) }, viewer.getAtomCount(), 0, 0,
+      vwr.setData(key,
+          new Object[] { key, "" + vv, BSUtil.copy(vwr.getSelectedAtoms()),
+              Integer.valueOf(0) }, vwr.getAtomCount(), 0, 0,
           Integer.MIN_VALUE, 0);
       return null;
     }
@@ -2131,11 +2131,11 @@ abstract class ScriptExpr extends ScriptParam {
     case T.vibxyz:
       switch (tokenValue.tok) {
       case T.point3f:
-        viewer.setAtomCoords(bs, tok, tokenValue.value);
+        vwr.setAtomCoords(bs, tok, tokenValue.value);
         break;
       case T.varray:
         theToken = tokenValue;
-        viewer.setAtomCoords(bs, tok, getPointArray(-1, nValues));
+        vwr.setAtomCoords(bs, tok, getPointArray(-1, nValues));
         break;
       }
       return;
@@ -2216,7 +2216,7 @@ abstract class ScriptExpr extends ScriptParam {
         fvalues = null;
       }
     }
-    viewer.setAtomProperty(bs, tok, iValue, fValue, sValue, fvalues, list);
+    vwr.setAtomProperty(bs, tok, iValue, fValue, sValue, fvalues, list);
   }
 
 
@@ -2290,7 +2290,7 @@ abstract class ScriptExpr extends ScriptParam {
           v = (vt.tok == T.varray ? vt : SV.oValue(vt));
         } else {
           if (tokAt(i) == T.integer) {
-            v = viewer.getAtomBits(T.atomno, Integer.valueOf(st[i].intValue));
+            v = vwr.getAtomBits(T.atomno, Integer.valueOf(st[i].intValue));
           } else {
             v = getParameter(var, 0);
           }

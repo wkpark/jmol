@@ -128,7 +128,7 @@ public class ScriptMathProcessor {
     if (isOK) {
       if (asVector) {
         // check for y = x x  or  y = x + ;
-        if (isAssignment && (xPt > 0 && oPt < 0 || oPt >= 0 && (xPt > 1 || oStack[oPt] != null)))
+        if (isAssignment && (xPt > 0 && oPt < 0 || oPt >= 0 && (oStack[oPt] != null)))
           eval.invArg();
         List<SV> result = new List<SV>();
         for (int i = 0; i <= xPt; i++)
@@ -1570,6 +1570,7 @@ public class ScriptMathProcessor {
     case T.string:
     case T.varray:
     case T.hash:
+    case T.barray:
     case T.matrix3f:
     case T.matrix4f:
     case T.context:

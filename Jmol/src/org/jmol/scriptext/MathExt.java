@@ -61,6 +61,7 @@ import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 
+import javajs.util.Base64;
 import javajs.util.CU;
 import javajs.util.M3;
 import javajs.util.M4;
@@ -147,7 +148,7 @@ public class MathExt implements JmolMathExtension {
       return evaluateMeasure(mp, args, op.tok);
     case T.file:
     case T.load:
-      return evaluateLoad(mp, args, tok);
+      return evaluateLoad(mp, args, tok == T.file);
     case T.find:
       return evaluateFind(mp, args);
     case T.format:
@@ -223,14 +224,15 @@ public class MathExt implements JmolMathExtension {
             m[pt++] = x;
           }
         }
-        if (isMatrix) {
-          if (len == 3)
-            return mp.addXM3(M3.newA9(m));
-          return mp.addXM4(M4.newA16(m));
-        }
+        if (isMatrix)
+          return (len == 3 ? mp.addXM3(M3.newA9(m)) : mp.addXM4(M4.newA16(m)));
       }
     }
     SV[] a = new SV[args.length];
+    if (!allowMatrix && args.length == 1 && args[0].tok == T.string
+        && args[0].asString().startsWith(";base64,"))
+      return mp.addXObj(SV.newV(T.barray,
+          Base64.decodeBase64(args[0].asString())));
     for (int i = a.length; --i >= 0;)
       a[i] = SV.newT(args[i]);
     return mp.addXAV(a);
@@ -1086,6 +1088,8 @@ public class MathExt implements JmolMathExtension {
     // (value).format("...")
     // format("....",a,b,c...)
     // format("....",[a1, a2, a3, a3....])
+    // format("base64", x)
+    // format("JSON", x)
     SV x1 = (args.length < 2 ? mp.getX() : null);
     String format = (args.length == 0 ? "%U" : SV.sValue(args[0]));
     boolean asArray = T.tokAttr(intValue, T.minmaxmask);
@@ -1244,15 +1248,21 @@ public class MathExt implements JmolMathExtension {
     return mp.addXAV(olist);
   }
 
-  private boolean evaluateLoad(ScriptMathProcessor mp, SV[] args, int tok)
+  private boolean evaluateLoad(ScriptMathProcessor mp, SV[] args, boolean isFile)
       throws ScriptException {
+    // load()
+    // file("myfile.xyz")
+    
     if (args.length > 2 || args.length < 1)
       return false;
     String file = SV.sValue(args[0]);
     file = file.replace('\\', '/');
     int nBytesMax = (args.length == 2 ? args[1].asInt() : -1);
+    boolean asBytes = (args.length == 2 && args[1].tok == T.on);
+    if (asBytes)
+      return mp.addXMap(viewer.getFileAsMap(file));
     if (viewer.isJS && file.startsWith("?")) {
-      if (tok == T.file)
+      if (isFile)
         return mp.addXStr("");
       file = e.loadFileAsync("load()_", file, mp.oPt, true);
       // A ScriptInterrupt will be thrown, and an asynchronous
@@ -1262,8 +1272,8 @@ public class MathExt implements JmolMathExtension {
       // The evaluation will be repeated up to this point, so for example,
       // x = (i++) + load("?") would increment i twice.
     }
-    return mp.addXStr(tok == T.load ? viewer.getFileAsString4(file, nBytesMax,
-        false, false, true) : viewer.getFilePath(file, false));
+    return mp.addXStr(isFile ? viewer.getFilePath(file, false) : viewer.getFileAsString4(file, nBytesMax,
+        false, false, true));
   }
 
   private boolean evaluateMath(ScriptMathProcessor mp, SV[] args, int tok) {
@@ -2296,6 +2306,8 @@ public class MathExt implements JmolMathExtension {
       throws ScriptException {
     if (args.length == 0)
       return false;
+    if (args.length == 1 && args[0].tok == T.string && args[0].asString().equalsIgnoreCase("PNGJ"))
+      return mp.addXMap(viewer.getFileAsMap(null));
     return mp.addXStr(e.getCmdExt().write(args));
   }
 

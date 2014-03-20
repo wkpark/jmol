@@ -27,7 +27,7 @@ package org.jmol.io2;
 
 import java.io.BufferedInputStream;
 
-import org.jmol.io.JmolBinary;
+import org.jmol.io.Binary;
 
 import javajs.util.SB;
 
@@ -44,7 +44,7 @@ public class ZipData {
   
   public int addBytes(byte[] byteBuf, int nSectorBytes, int nBytesRemaining) {
     if (pt == 0) {
-      if (!JmolBinary.isGzipB(byteBuf)) {
+      if (!Binary.isGzipB(byteBuf)) {
         isEnabled = false;
         return -1;
       }
@@ -62,8 +62,8 @@ public class ZipData {
 
   static String getGzippedBytesAsString(byte[] bytes) {
     try {
-      BufferedInputStream bis = ZipUtil.getUnGzippedInputStream(bytes);
-      String s = ZipUtil.getStreamAsString(bis);
+      BufferedInputStream bis = ZipTools.getUnGzippedInputStream(bytes);
+      String s = ZipTools.getStreamAsString(bis);
       bis.close();
       return s;
     } catch (Exception e) {

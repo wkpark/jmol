@@ -28,7 +28,9 @@ import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.Resolver;
 import org.jmol.api.Interface;
+import org.jmol.io.Binary;
 
+import java.io.BufferedInputStream;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -177,19 +179,26 @@ public class XmlReader extends AtomSetCollectionReader {
       attribs = new Object[1];
       attArgs = new Object[1];
       domObj = new Object[1];
-      
+      Object o = "";
+      byte[] data = null;
       /**
        * 
-       * @j2sNative 
+       * @j2sNative
        * 
-       * var s = this.reader.lock.lock;
-       * if (Clazz.instanceOf (s, java.io.BufferedInputStream)) {
-       *   s = new java.io.BufferedInputStream(new java.io.ByteArrayInputStream(s.$in.buf));
-       *   s = J.io.JmolBinary.StreamToString (s);
-       * }
-       * this.domObj[0] = parent.viewer.applet._createDomNode("xmlReader",s);
-       * this.walkDOMTree();
-       * parent.viewer.applet._createDomNode("xmlReader",null);
+       *            o = this.reader.lock.lock; if (o.$in) data = o.$in.buf;
+       */
+      {
+      }
+      if (o instanceof BufferedInputStream)
+        o = Binary.StreamToString(Binary.getBIS(data));
+      /**
+       * 
+       * @j2sNative
+       * 
+       *            this.domObj[0] =
+       *            parent.viewer.applet._createDomNode("xmlReader",o);
+       *            this.walkDOMTree();
+       *            parent.viewer.applet._createDomNode("xmlReader",null);
        * 
        */
       {

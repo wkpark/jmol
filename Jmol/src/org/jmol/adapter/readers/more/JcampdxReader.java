@@ -36,7 +36,7 @@ import org.jmol.adapter.smarter.JmolJDXMOLReader;
 import org.jmol.adapter.smarter.JmolJDXMOLParser;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.Interface;
-import org.jmol.io.JmolBinary;
+import org.jmol.io.Binary;
 import org.jmol.java.BS;
 import org.jmol.util.Logger;
 
@@ -185,7 +185,7 @@ public class JcampdxReader extends MolReader implements JmolJDXMOLReader {
     AtomSetCollection model = null;
     while (true) {
       Object ret = SmarterJmolAdapter.staticGetAtomSetCollectionReader(
-          filePath, type, JmolBinary.getBR(data), htParams);
+          filePath, type, Binary.getBR(data), htParams);
       if (ret instanceof String) {
         Logger.warn("" + ret);
         break;

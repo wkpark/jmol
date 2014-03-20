@@ -31,8 +31,8 @@ import org.jmol.shape.Measures;
 import org.jmol.shape.Shape;
 import org.jmol.thread.TimeoutThread;
 import org.jmol.i18n.GT;
+import org.jmol.io.Binary;
 import org.jmol.io.CifDataReader;
-import org.jmol.io.JmolBinary;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
@@ -2310,7 +2310,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         Map<String, Object> htParams = new Hashtable<String, Object>();
         htParams.put("modelOnly", Boolean.TRUE);
         model = getModelAdapter().getAtomSetCollectionReader("ligand", null,
-            JmolBinary.getBR(data), htParams);
+            Binary.getBR(data), htParams);
         isError = (model instanceof String);
         if (!isError) {
           model = getModelAdapter().getAtomSetCollection(model);
@@ -2586,7 +2586,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
                                              boolean isAppend) {
     // loadInline, openStringInline
 
-    BufferedReader br = JmolBinary.getBR(strModel);
+    BufferedReader br = Binary.getBR(strModel);
     String type = getModelAdapter().getFileTypeName(br);
     if (type == null)
       return "unknown file type";
@@ -2808,7 +2808,9 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
    *         null
    */
   public String[] getFullPathNameOrError(String filename) {
-    return fileManager.getFullPathNameOrError(filename);
+    String[] data = new String[2];
+    fileManager.getFullPathNameOrError(filename, false, data);
+    return data;
   }
 
   @Override
@@ -2816,6 +2818,10 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return getFileAsString4(name, -1, false, false, checkProtected);
   }
 
+  public Map<String, Object> getFileAsMap(String name) {
+    return fileManager.getFileAsMap(name);
+  }
+  
   public String getFileAsString4(String name, int nBytesMax,
                                  boolean doSpecialLoad, boolean allowBinary, 
                                  boolean checkProtected) {
@@ -3633,7 +3639,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     if (data == null)
       return null;
     return CifDataReader
-        .readCifData(JmolBinary.getBR(data));
+        .readCifData(Binary.getBR(data));
   }
 
   public String getPDBHeader() {
@@ -8877,14 +8883,15 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return getOutputManager().processWriteOrCapture(params);
   }
 
-  public String createZip(String fileName, String type,
-                          String[] scripts) {
+  public String createZip(String fileName, String type, Object data) {
     Map<String, Object> params = new Hashtable<String, Object>();
     params.put("fileName", fileName); // could be null here!
     params.put("type", type);
     params.put("text", getStateInfo());
-    if (scripts != null)
-      params.put("scripts", scripts);
+    if (data instanceof String[])
+      params.put("scripts", data);
+    else if (data instanceof List)
+      params.put("imageData", data);
     return getOutputManager().outputToFile(params);
   }
 

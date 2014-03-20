@@ -99,8 +99,8 @@ public abstract class ImageEncoder implements JmolImageEncoder {
     this.out = out;
     this.errRet = errRet;
     try {
-      width = (PT.isAI(objImage) ? ((Integer) params.get("width")).intValue() : apiPlatform.getImageWidth(objImage));
-      height = (PT.isAI(objImage) ? ((Integer) params.get("height")).intValue() : apiPlatform.getImageHeight(objImage));
+      width = (objImage == null ? -1 : PT.isAI(objImage) ? ((Integer) params.get("width")).intValue() : apiPlatform.getImageWidth(objImage));
+      height = (objImage == null ? -1 : PT.isAI(objImage) ? ((Integer) params.get("height")).intValue() : apiPlatform.getImageHeight(objImage));
       date = (String) params.get("date");
       Integer q = (Integer) params.get("quality");
       quality = (q == null ? -1 : q.intValue());
@@ -130,6 +130,8 @@ public abstract class ImageEncoder implements JmolImageEncoder {
    */
   protected void encodeImage(GenericPlatform apiPlatform, Object objImage)
       throws Exception {
+    if (width < 0)
+      return;
     if (PT.isAI(objImage)) {
       pixels = (int[]) objImage;
     } else {

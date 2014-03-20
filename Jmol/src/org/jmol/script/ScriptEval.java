@@ -1541,6 +1541,7 @@ public class ScriptEval extends ScriptExpr {
       viewer.exitJmol();
   }
 
+  @SuppressWarnings("unchecked")
   public static String statementAsString(Viewer viewer, T[] statement,
                                          int iTok, boolean doLogMessages) {
     if (statement.length == 0)
@@ -1628,8 +1629,13 @@ public class ScriptEval extends ScriptExpr {
       case T.bitset:
         sb.append(SV.sValue(token)); // list
         continue;
-      case T.varray:
       case T.hash:
+         if (Boolean.TRUE == ((Map<String, Object>)token.value).get("$_BINARY_$")) {
+           sb.append("<BINARY DATA>");
+           continue;
+         }          
+        //$FALL-THROUGH$
+      case T.varray:
         sb.append(((SV) token).escape()); // list
         continue;
       case T.seqcode:

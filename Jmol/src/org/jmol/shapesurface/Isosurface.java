@@ -99,7 +99,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.jmol.api.JmolDocument;
-import org.jmol.io.JmolBinary;
+import org.jmol.io.Binary;
 import org.jmol.java.BS;
 import org.jmol.jvxl.api.MeshDataServer;
 import org.jmol.jvxl.data.JvxlCoder;
@@ -562,7 +562,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         }
         if (!(value instanceof BufferedReader))
           try {
-            value = JmolBinary.getBufferedReader((BufferedInputStream) value,
+            value = Binary.getBufferedReader((BufferedInputStream) value,
                 "ISO-8859-1");
           } catch (IOException e) {
             // ignore

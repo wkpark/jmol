@@ -37,6 +37,7 @@ import org.jmol.api.Interface;
 import org.jmol.api.JmolDocument;
 import org.jmol.api.JmolDomReaderInterface;
 import org.jmol.api.JmolFilesReaderInterface;
+import org.jmol.io.Binary;
 import org.jmol.io.DataReader;
 import org.jmol.io.FileReader;
 import org.jmol.io.JmolBinary;
@@ -63,16 +64,27 @@ public class FileManager implements BytePoster {
 
   private Viewer viewer;
 
+  private JmolBinary jmb;
+
   FileManager(Viewer viewer) {
     this.viewer = viewer;
+    jmb = new JmolBinary(this);
     clear();
   }
 
   void clear() {
     // from zap
     setFileInfo(new String[] { viewer.getZapName() });
-    spardirCache = null;
+    jmb.spardirCache = null;
    
+  }
+
+  public Map<String, byte[]> getSpardirCache() {
+    return jmb.spardirCache;
+  }
+
+  public void clearPngjCache(String fileName) {
+    jmb.clearPngjCache(fileName == null ? null : getCanonicalName(Binary.getZipRoot(fileName)));
   }
 
   private void setLoadState(Map<String, Object> htParams) {
@@ -180,7 +192,7 @@ public class FileManager implements BytePoster {
     String fileType = (pt >= 0 ? name.substring(0, pt) : null);
     Logger.info("\nFileManager.getAtomSetCollectionFromFile(" + nameAsGiven
         + ")" + (name.equals(nameAsGiven) ? "" : " //" + name));
-    String[] names = classifyName(nameAsGiven, true);
+    String[] names = getClassifiedName(nameAsGiven, true);
     if (names.length == 1)
       return names[0];
     String fullPathName = names[0];
@@ -207,7 +219,7 @@ public class FileManager implements BytePoster {
       String nameAsGiven = (pt >= 0 ? fileNames[i].substring(pt + 2)
           : fileNames[i]);
       String fileType = (pt >= 0 ? fileNames[i].substring(0, pt) : null);
-      String[] names = classifyName(nameAsGiven, true);
+      String[] names = getClassifiedName(nameAsGiven, true);
       if (names.length == 1)
         return names[0];
       fullPathNames[i] = names[0];
@@ -230,7 +242,7 @@ public class FileManager implements BytePoster {
     boolean isAddH = (strModel.indexOf(JC.ADD_HYDROGEN_TITLE) >= 0);
     String[] fnames = (isAddH ? getFileInfo() : null);
     FileReader fileReader = new FileReader(this, viewer, "string", "string", "string", null,
-        JmolBinary.getBR(strModel), htParams, isAppend);
+        Binary.getBR(strModel), htParams, isAppend);
     fileReader.run();
     if (fnames != null)
       setFileInfo(fnames);
@@ -358,11 +370,10 @@ public class FileManager implements BytePoster {
                                                              boolean showMsg,
                                                              boolean checkOnly,
                                                              byte[] outputBytes,
-                                                             boolean allowReader) {
+                                                             boolean allowReader, boolean allowCached) {
     byte[] cacheBytes = null;
-    if (outputBytes == null) {
-      cacheBytes = (fullName == null || pngjCache == null ? null : JmolBinary
-          .getCachedPngjBytes(this, fullName));
+    if (allowCached && outputBytes == null) {
+      cacheBytes = (fullName == null || jmb.pngjCache == null ? null : getCachedPngjBytes(fullName));
       if (cacheBytes == null)
         cacheBytes = (byte[]) cacheGet(name, true);
     }
@@ -394,9 +405,9 @@ public class FileManager implements BytePoster {
           name = name.substring(0, iurl);
         }
         boolean isApplet = (appletDocumentBaseURL != null);
-        if (name.indexOf(".png") >= 0 && pngjCache == null
+        if (allowCached && name.indexOf(".png") >= 0 && jmb.pngjCache == null
             && viewer.cachePngFiles())
-          JmolBinary.cachePngjFile(this, null);
+          jmb.clearAndCachePngjFile(null);
         if (isApplet || isURL) {
           if (isApplet && isURL && appletProxy != null)
             name = appletProxy + "?url=" + urlEncode(name);
@@ -411,15 +422,15 @@ public class FileManager implements BytePoster {
           byte[] bytes = null;
           if (ret instanceof SB) {
             SB sb = (SB) ret;
-            if (allowReader && !JmolBinary.isBase64(sb))
-              return JmolBinary.getBR(sb.toString());
-            bytes = JmolBinary.getBytesFromSB(sb);
+            if (allowReader && !Binary.isBase64(sb))
+              return Binary.getBR(sb.toString());
+            bytes = Binary.getBytesFromSB(sb);
           } else if (PT.isAB(ret)) {
             bytes = (byte[]) ret;
           }
           if (bytes != null)
-            ret = JmolBinary.getBIS(bytes);
-        } else if ((cacheBytes = (byte[]) cacheGet(name, true)) == null) {
+            ret = Binary.getBIS(bytes);
+        } else if (!allowCached || (cacheBytes = (byte[]) cacheGet(name, true)) == null) {
           if (showMsg)
             Logger.info("FileManager opening 2 " + name);
           ret = viewer.apiPlatform.getBufferedFileInputStream(name);
@@ -427,7 +438,7 @@ public class FileManager implements BytePoster {
         if (ret instanceof String)
           return ret;
       }
-      bis = (cacheBytes == null ? (BufferedInputStream) ret : JmolBinary.getBIS(cacheBytes));
+      bis = (cacheBytes == null ? (BufferedInputStream) ret : Binary.getBIS(cacheBytes));
       if (checkOnly) {
         bis.close();
         bis = null;
@@ -473,18 +484,22 @@ public class FileManager implements BytePoster {
    * just check for a file as being readable. Do not go into a zip file
    * 
    * @param filename
+   * @param getStream 
+   * @param ret 
    * @return String[2] where [0] is fullpathname and [1] is error message or null
    */
-  String[] getFullPathNameOrError(String filename) {
-    String[] names = classifyName(filename, true);
+  Object getFullPathNameOrError(String filename, boolean getStream, String[] ret) {
+    String[] names = getClassifiedName(filename, true);
     if (names == null || names[0] == null || names.length < 2)
       return new String[] { null, "cannot read file name: " + filename };
     String name = names[0];
     String fullPath = names[0].replace('\\', '/');
-    name = JmolBinary.getZipRoot(name);
-    Object errMsg = getBufferedInputStreamOrErrorMessageFromName(name, fullPath, false, true, null, false);
-    return new String[] { fullPath,
-        (errMsg instanceof String ? (String) errMsg : null) };
+    name = Binary.getZipRoot(name);
+    Object errMsg = getBufferedInputStreamOrErrorMessageFromName(name, fullPath, false, !getStream, null, false, !getStream);
+    ret[0] = fullPath;
+    if (errMsg instanceof String)
+      ret[1] = (String) errMsg;
+    return errMsg;
   }
 
   Object getBufferedReaderOrErrorMessageFromName(String name,
@@ -500,10 +515,10 @@ public class FileManager implements BytePoster {
       if (isBytes) {
         bytes = (byte[]) data;
       } else {
-        return JmolBinary.getBR((String) data);
+        return Binary.getBR((String) data);
       }
     }
-    String[] names = classifyName(name, true);
+    String[] names = getClassifiedName(name, true);
     if (names == null)
       return "cannot read file name: " + name;
     if (fullPathNameReturn != null)
@@ -553,10 +568,8 @@ public class FileManager implements BytePoster {
           sb.append(s);
         }
         s = sb.toString();
-        if (spardirCache == null)
-          spardirCache = new Hashtable<String, byte[]>();
-        spardirCache.put(name00.replace('\\', '/'), s.getBytes());
-        return JmolBinary.getBR(s);
+        jmb.spardirPut(name00.replace('\\', '/'), s.getBytes());
+        return Binary.getBR(s);
       }
       // continuing...
       // here, for example, for an SPT file load that is not just a type check
@@ -565,8 +578,8 @@ public class FileManager implements BytePoster {
       // script or load command should be used)
     }
 
-    if (bytes == null && pngjCache != null) {
-      bytes = JmolBinary.getCachedPngjBytes(this, name);
+    if (bytes == null && jmb.pngjCache != null) {
+      bytes = getCachedPngjBytes(name);
       if (bytes != null && htParams != null)
         htParams.put("sourcePNGJ", Boolean.TRUE);
     }
@@ -578,31 +591,31 @@ public class FileManager implements BytePoster {
       name = subFileList[0];
     }
     Object t = (bytes == null ? getBufferedInputStreamOrErrorMessageFromName(
-        name, fullName, true, false, null, !forceInputStream)
-        : JmolBinary.getBIS(bytes));
+        name, fullName, true, false, null, !forceInputStream, true)
+        : Binary.getBIS(bytes));
     try {
       if (t instanceof String)
         return t;
       if (t instanceof BufferedReader)
         return t;
-      BufferedInputStream bis = JmolBinary.getUnzippedInputStream((BufferedInputStream) t);
-      if (JmolBinary.isCompoundDocumentS(bis)) {
+      BufferedInputStream bis = Binary.getUnzippedInputStream((BufferedInputStream) t);
+      if (Binary.isCompoundDocumentS(bis)) {
         JmolDocument doc = (JmolDocument) Interface
             .getOption("io2.CompoundDocument");
         doc.setStream(bis, true);
-        return JmolBinary.getBR(doc.getAllDataFiles(
+        return Binary.getBR(doc.getAllDataFiles(
             "Molecule", "Input").toString());
       }
       if (JmolBinary.isPickleS(bis))
         return bis;
-      bis = JmolBinary.checkPngZipStream(bis);
-      if (JmolBinary.isZipS(bis)) {
+      bis = Binary.getPngZipStream(bis);
+      if (Binary.isZipS(bis)) {
         if (allowZipStream)
-          return JmolBinary.newZipInputStream(bis);
-        Object o = JmolBinary.getZipFileDirectory(bis, subFileList, 1, forceInputStream);
-        return (o instanceof String ? JmolBinary.getBR((String) o) : o);
+          return Binary.newZipInputStream(bis);
+        Object o = Binary.getZipFileDirectory(bis, subFileList, 1, forceInputStream);
+        return (o instanceof String ? Binary.getBR((String) o) : o);
       }
-      return (forceInputStream ? bis : JmolBinary.getBufferedReader(bis, null));
+      return (forceInputStream ? bis : Binary.getBufferedReader(bis, null));
     } catch (Exception ioe) {
       return ioe.toString();
     }
@@ -665,19 +678,19 @@ public class FileManager implements BytePoster {
     BufferedInputStream bis = null;
     try {
       Object t = getBufferedInputStreamOrErrorMessageFromName(name, fullName,
-          false, false, null, false);
+          false, false, null, false, true);
       if (t instanceof String) {
         fileData.put(name0, (String) t + "\n");
         return name0;
       }
       bis = (BufferedInputStream) t;
-      if (JmolBinary.isCompoundDocumentS(bis)) {
+      if (Binary.isCompoundDocumentS(bis)) {
         JmolDocument doc = (JmolDocument) Interface
             .getOption("io2.CompoundDocument");
         doc.setStream(bis, true);
         doc.getAllDataMapped(name.replace('\\', '/'), "Molecule", fileData);
-      } else if (JmolBinary.isZipS(bis)) {
-        JmolBinary.getAllZipData(bis, subFileList, name.replace('\\', '/'), "Molecule",
+      } else if (Binary.isZipS(bis)) {
+        Binary.getAllZipData(bis, subFileList, name.replace('\\', '/'), "Molecule",
             fileData);
       } else if (asBinaryString) {
         // used for Spartan binary file reading
@@ -698,8 +711,8 @@ public class FileManager implements BytePoster {
           sb.append("\nEND Directory Entry " + name0 + "\n");
         fileData.put(name0, sb.toString());
       } else {
-        BufferedReader br = JmolBinary.getBufferedReader(
-            JmolBinary.isGzipS(bis) ? new BufferedInputStream(JmolBinary.newGZIPInputStream(bis)) : bis, null);
+        BufferedReader br = Binary.getBufferedReader(
+            Binary.isGzipS(bis) ? new BufferedInputStream(Binary.newGZIPInputStream(bis)) : bis, null);
         String line;
         sb = new SB();
         if (header != null)
@@ -735,8 +748,8 @@ public class FileManager implements BytePoster {
    */
   public String[] getZipDirectory(String fileName, boolean addManifest) {
     Object t = getBufferedInputStreamOrErrorMessageFromName(fileName, fileName,
-        false, false, null, false);
-    return JmolBinary.getZipDirectoryAndClose((BufferedInputStream) t, addManifest);
+        false, false, null, false, true);
+    return Binary.getZipDirectoryAndClose((BufferedInputStream) t, addManifest);
   }
 
   public Object getFileAsBytes(String name, OC out,
@@ -753,20 +766,57 @@ public class FileManager implements BytePoster {
       allowZip = true;
     }
     Object t = getBufferedInputStreamOrErrorMessageFromName(name, fullName,
-        false, false, null, false);
+        false, false, null, false, true);
     if (t instanceof String)
       return "Error:" + t;
     try {
       BufferedInputStream bis = (BufferedInputStream) t;
-      Object bytes = (out != null || !allowZip || subFileList == null
-          || subFileList.length <= 1 || !JmolBinary.isZipS(bis)
-          && !JmolBinary.isPngZipStream(bis) ? JmolBinary.getStreamAsBytes(bis,
-          out) : JmolBinary.getZipFileContentsAsBytes(bis, subFileList, 1));
+      Object bytes = (out != null 
+          || !allowZip 
+          || subFileList == null
+          || subFileList.length <= 1 
+          || !Binary.isZipS(bis) && !Binary.isPngZipStream(bis) 
+              ? Binary.getStreamAsBytes(bis,out) 
+          : Binary.getZipFileContentsAsBytes(bis, subFileList, 1));
       bis.close();
       return bytes;
     } catch (Exception ioe) {
       return ioe.toString();
     }
+  }
+
+
+  public Map<String, Object> getFileAsMap(String name) {
+    Map<String, Object> bdata = new Hashtable<String, Object>();
+    Object t;
+    if (name == null) {
+      String[] errMsg = new String[1];
+      byte[] bytes = viewer.getImageAsBytes("PNGJ", -1, -1, -1, errMsg);
+      if (errMsg[0] != null) {
+        bdata.put("_ERROR_", errMsg[0]);
+        return bdata;
+      }
+      t = Binary.getBIS(bytes);
+    } else {
+      String[] data = new String[2];
+      t = getFullPathNameOrError(name, true, data);
+      if (t instanceof String) {
+        bdata.put("_ERROR_", t);
+        return bdata;
+      }
+      if (!checkSecurity(data[0])) {
+        bdata.put("_ERROR_", "java.io. Security exception: cannot read file "
+            + data[0]);
+        return bdata;
+      }
+    }
+    try {
+      Binary.readFileAsMap((BufferedInputStream) t, bdata);
+    } catch (Exception e) {
+      bdata.clear();
+      bdata.put("_ERROR_", "" + e);
+    }
+    return bdata;
   }
 
   /**
@@ -799,7 +849,7 @@ public class FileManager implements BytePoster {
     	return false;
     }
     try {
-    return JmolBinary.readAll((BufferedReader) t, nBytesMax, allowBinary, data, 1);
+    return Binary.readAllAsString((BufferedReader) t, nBytesMax, allowBinary, data, 1);
     } catch (Exception e) {
       return false;
     }
@@ -827,7 +877,7 @@ public class FileManager implements BytePoster {
     while (true) {
       if (name == null)
         break;
-      String[] names = classifyName(name, true);
+      String[] names = getClassifiedName(name, true);
       if (names == null) {
         fullPathName = "cannot read file name: " + name;
         break;
@@ -927,7 +977,7 @@ public class FileManager implements BytePoster {
    *        false only when just checking path
    * @return [0] full path name, [1] file name without path, [2] full URL
    */
-  private String[] classifyName(String name, boolean isFullLoad) {
+  private String[] getClassifiedName(String name, boolean isFullLoad) {
     if (name == null)
       return new String[] { null };
     boolean doSetPathForAllFiles = (pathForAllFiles.length() > 0);
@@ -1016,7 +1066,7 @@ public class FileManager implements BytePoster {
   }
 
   String getDefaultDirectory(String name) {
-    String[] names = classifyName(name, true);
+    String[] names = getClassifiedName(name, true);
     if (names == null)
       return "";
     name = fixPath(names[0]);
@@ -1049,7 +1099,7 @@ public class FileManager implements BytePoster {
 
   public String getFilePath(String name, boolean addUrlPrefix,
                             boolean asShortName) {
-    String[] names = classifyName(name, false);
+    String[] names = getClassifiedName(name, false);
     return (names == null || names.length == 1 ? "" : asShortName ? names[1]
         : addUrlPrefix ? names[2] 
         : names[0] == null ? ""
@@ -1206,17 +1256,6 @@ public class FileManager implements BytePoster {
     return str;
   }
 
-  public Map<String, byte[]> pngjCache;
-  public Map<String, byte[]> spardirCache;
-  
-  public void clearPngjCache(String fileName) {
-    if (fileName != null && (pngjCache == null || !pngjCache.containsKey(getCanonicalName(JmolBinary.getZipRoot(fileName)))))
-        return;
-      pngjCache = null;
-      Logger.info("PNGJ cache cleared");
-  }
-
-
   private Map<String, Object> cache = new Hashtable<String, Object>();
 
   void cachePut(String key, Object data) {
@@ -1224,13 +1263,17 @@ public class FileManager implements BytePoster {
     if (Logger.debugging)
       Logger.debug("cachePut " + key);
     if (data == null || "".equals(data)) { // J2S error -- cannot implement Int32Array.equals 
-      cache.remove(key); 
+      cache.remove(key);
       return;
     }
-      cache.put(key, data);
-      JmolBinary.getCachedPngjBytes(this, key);
+    cache.put(key, data);
+    getCachedPngjBytes(key);
   }
   
+  private byte[] getCachedPngjBytes(String key) {
+    return jmb.getCachedPngjBytes(key);
+  }
+
   public Object cacheGet(String key, boolean bytesOnly) {
     key = key.replace('\\', '/');
     // in the case of JavaScript local file reader, 
@@ -1290,18 +1333,18 @@ public class FileManager implements BytePoster {
   }
 
   public String getCanonicalName(String pathName) {
-    String[] names = classifyName(pathName, true);
+    String[] names = getClassifiedName(pathName, true);
     return (names == null ? pathName : names[2]);
   }
 
   @Override
   public String postByteArray(String fileName, byte[] bytes) {
     Object ret = getBufferedInputStreamOrErrorMessageFromName(fileName, null, false,
-            false, bytes, false);
+            false, bytes, false, true);
     if (ret instanceof String)
       return (String) ret;
     try {
-      ret = JmolBinary.getStreamAsBytes((BufferedInputStream) ret, null);
+      ret = Binary.getStreamAsBytes((BufferedInputStream) ret, null);
     } catch (IOException e) {
       try {
         ((BufferedInputStream) ret).close();
@@ -1309,7 +1352,8 @@ public class FileManager implements BytePoster {
         // ignore
       }
     }
-    return (ret == null ? "" : JmolBinary.fixUTF((byte[]) ret));
+    return (ret == null ? "" : Binary.fixUTF((byte[]) ret));
   }
+
 
 }

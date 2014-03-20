@@ -21,6 +21,7 @@ import org.jmol.modelset.BondSet;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.ModelCollection;
 import org.jmol.modelset.ModelSet;
+import org.jmol.util.BArray;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
@@ -1991,9 +1992,13 @@ abstract class ScriptExpr extends ScriptParam {
       switch (t.tok) {
       case T.hash:
       case T.context:
+        if (nv > 3)
+          invArg();
         t.mapPut(sel.asString(), tv);
         break;
       case T.varray:
+        if (nv > 2)
+          invArg();
         t = SV.selectItemVar(t);
         if (sel == null) {
           t.setv(tv);
@@ -2064,7 +2069,7 @@ abstract class ScriptExpr extends ScriptParam {
         || tv.value instanceof Integer
         || tv.value instanceof Float || tv.value instanceof Boolean)));
 
-    if (needVariable) {
+    if (needVariable && key != null) {
       if (key.startsWith("_")
           || (t = viewer.getOrSetNewVariable(key, true)) == null)
         errorStr(ERROR_invalidArgument, key);
@@ -2358,6 +2363,8 @@ abstract class ScriptExpr extends ScriptParam {
               fixed[j] = T.o(tok, v);
             }
           }
+        } else if (v instanceof BArray) {
+          fixed[j] = SV.newV(T.barray, v);
         } else if (v instanceof BS) {
           fixed[j] = SV.newV(T.bitset, v);
         } else if (v instanceof P3) {

@@ -839,6 +839,19 @@ public class PT {
       }
     }
   }
+
+  public static String byteArrayToJSON(byte[] data) {
+    SB sb = new SB();
+    sb.append("[");
+    int n = data.length;
+    for (int i = 0; i < n; i++) {
+      if (i > 0)
+        sb.appendC(',');
+      sb.appendI(data[i] & 0xFF);
+    }
+    sb.append("]");
+    return sb.toString();
+  }
   
   public static String packageJSON(String infoType, String info) {
     return (infoType == null ? info : "\"" + infoType + "\": " + info);

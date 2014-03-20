@@ -35,6 +35,7 @@ import java.util.Set;
 
 import org.jmol.java.BS;
 import org.jmol.modelset.BondSet;
+import org.jmol.util.BArray;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
 
@@ -63,7 +64,7 @@ import javajs.util.V3;
  */
 public class SV extends T implements JSONEncodable {
 
-  final private static SV vT = newSV(on, 1, "true");
+  public final static SV vT = newSV(on, 1, "true");
   final private static SV vF = newSV(off, 0, "false");
 
   public int index = Integer.MAX_VALUE;    
@@ -156,6 +157,8 @@ public class SV extends T implements JSONEncodable {
       return -32;
     case matrix4f:
       return -64;
+    case barray:
+      return -256;
     case string:
       return ((String) x.value).length();
     case varray:
@@ -239,6 +242,8 @@ public class SV extends T implements JSONEncodable {
       return getVariableMap((Map<String, ?>)x);
     if (x instanceof List)
       return getVariableList((List<?>) x);
+    if (x instanceof BArray)
+      return newV(barray, x);
     if (Escape.isAV(x))
       return getVariableAV((SV[]) x);
     if (PT.isAI(x))
@@ -519,6 +524,7 @@ public class SV extends T implements JSONEncodable {
     case varray:
       return fValue(x) != 0;
     case bitset:
+    case barray:
       return iValue(x) != 0;
     case point3f:
     case point4f:
@@ -548,6 +554,8 @@ public class SV extends T implements JSONEncodable {
       return (int) fValue(x);
     case bitset:
       return BSUtil.cardinalityOf(bsSelectToken(x));
+    case barray:
+      return ((BArray) x.value).data.length;
     default:
       return 0;
     }
@@ -571,6 +579,7 @@ public class SV extends T implements JSONEncodable {
     case string:
       return toFloat(sValue(x));
     case bitset:
+    case barray:
       return iValue(x);
     case point3f:
       return ((P3) x.value).length();
@@ -725,6 +734,7 @@ public class SV extends T implements JSONEncodable {
     case T.point3f:
     case T.point4f:
     case T.bitset:
+    case T.barray:
     case T.on:
     case T.off:
       return true;
@@ -1160,23 +1170,33 @@ public class SV extends T implements JSONEncodable {
   }
 
   /**
-   * sprintf       accepts arguments from the format() function
-   *               First argument is a format string.
+   * sprintf accepts arguments from the format() function First argument is a
+   * format string.
+   * 
    * @param args
-   * @return       formatted string
+   * @return formatted string
    */
   public static String sprintfArray(SV[] args) {
-    switch(args.length){
+    switch (args.length) {
     case 0:
       return "";
     case 1:
       return sValue(args[0]);
+    case 2:
+      if (args[0].value.toString().equalsIgnoreCase("base64"))
+        return ";base64,"
+            + javajs.util.Base64.getBase64(
+                args[1].tok == barray ? ((BArray) args[1].value).data : args[1]
+                    .asString().getBytes()).toString();
+      if (args[0].value.toString().equalsIgnoreCase("json"))
+        return args[1].toJSON();
     }
     SB sb = new SB();
-    String[] format = PT.split(PT.rep(sValue(args[0]), "%%","\1"), "%");
+    String[] format = PT.split(PT.rep(sValue(args[0]), "%%", "\1"), "%");
     sb.append(format[0]);
     for (int i = 1; i < format.length; i++) {
-      Object ret = sprintf(Txt.formatCheck("%" + format[i]), (i < args.length ? args[i] : null));
+      Object ret = sprintf(Txt.formatCheck("%" + format[i]),
+          (i < args.length ? args[i] : null));
       if (PT.isAS(ret)) {
         String[] list = (String[]) ret;
         for (int j = 0; j < list.length; j++)
@@ -1211,6 +1231,7 @@ public class SV extends T implements JSONEncodable {
       switch (x1.tok) {
       case string:
       case bitset:
+      case barray:
       case hash:
       case varray:
       case context:
@@ -1440,6 +1461,8 @@ public class SV extends T implements JSONEncodable {
     case integer:
     case decimal:
       return sValue(this);
+    case barray:
+      return PT.byteArrayToJSON(((BArray) value).data);
     case context:
       return PT.toJSON(null, ((ScriptContext) value).getFullMap());
     default:

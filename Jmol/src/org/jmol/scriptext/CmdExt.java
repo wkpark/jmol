@@ -26,6 +26,7 @@ package org.jmol.scriptext;
 
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.jmol.api.Interface;
 import org.jmol.api.MepCalculationInterface;
@@ -58,6 +59,7 @@ import org.jmol.script.ScriptMathProcessor;
 import org.jmol.script.ScriptParam;
 import org.jmol.script.T;
 import org.jmol.shape.MeshCollection;
+import org.jmol.util.BArray;
 import org.jmol.util.BSUtil;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.C;
@@ -76,6 +78,7 @@ import javajs.util.SB;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 
+import javajs.util.Base64;
 import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3;
@@ -5715,6 +5718,7 @@ public class CmdExt implements JmolCmdExtension {
     String remotePath = null;
     String val = null;
     String msg = null;
+    SV tVar = null;
     String[] fullPath = new String[1];
     boolean isCoord = false;
     boolean isExport = false;
@@ -5749,6 +5753,11 @@ public class CmdExt implements JmolCmdExtension {
     }
     switch (tok) {
     case T.nada:
+      break;
+    case T.barray:
+    case T.hash:
+      type = "VAR";
+      tVar = (SV) tokenAt(pt++, args);
       break;
     case T.quaternion:
     case T.ramachandran:
@@ -6089,10 +6098,49 @@ public class CmdExt implements JmolCmdExtension {
           data = viewer.getFunctionCalls(null);
           type = "TXT";
         } else if (data == "VAR") {
-          data = ((SV) e.getParameter(
-              SV.sValue(tokenAt(isCommand ? 2 : 1, args)), T.variable))
-              .asString();
-          type = "TXT";
+          if (tVar == null) {
+            tVar = (SV) e.getParameter(
+                SV.sValue(tokenAt(isCommand ? 2 : 1, args)), T.variable);
+          }
+          List<Object> v = null;
+          if (tVar.tok == T.barray) {
+            v = new List<Object>();
+            v.addLast(((BArray)tVar.value).data);
+          } else if (tVar.tok == T.hash) {
+            @SuppressWarnings("unchecked")
+            Map<String, SV> m = (Map<String, SV>) tVar.value;
+            if (m.containsKey("$_BINARY_$")) {
+              v = new List<Object>();
+              if (fileName != null)
+                for (Entry<String, SV> e : m.entrySet()) {
+                  String key = e.getKey();
+                  SV o = e.getValue();
+                  bytes = (o.tok == T.barray ? ((BArray) o.value).data : null);
+                  if (bytes == null) {
+                    String s = o.asString();
+                    bytes = (s.startsWith(";base64,") ? Base64.decodeBase64(s)
+                        : s.getBytes());
+                  }
+                  if (key.equals("_IMAGE_")) {
+                    v.add(0, key);
+                    v.add(1, bytes);
+                  } else if (!key.equals("$_BINARY_$")) {
+                    v.addLast(key);
+                    v.addLast(null);
+                    v.addLast(bytes);
+                  }
+                }
+            }
+          } else {
+            data = tVar.asString();
+            type = "TXT";
+          }
+          if (v != null) {
+            if (fileName != null
+                && (bytes = data = viewer.createZip(fileName, "ZIPDATA", v)) == null)
+              e.evalError("#CANCELED#", null);
+          }
+
         } else if (data == "SPT") {
           if (isCoord) {
             BS tainted = viewer.getTaintedAtoms(AtomCollection.TAINT_COORD);
@@ -6208,8 +6256,7 @@ public class CmdExt implements JmolCmdExtension {
         {
         }
       }
-      e.report(msg
-          + (isImage ? "; width=" + width + "; height=" + height : ""));
+      e.report(msg + (isImage ? "; width=" + width + "; height=" + height : ""));
       return msg;
     }
     return "";

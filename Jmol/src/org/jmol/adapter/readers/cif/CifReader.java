@@ -30,8 +30,8 @@ import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolLineReader;
 import org.jmol.api.SymmetryInterface;
+import org.jmol.io.Binary;
 import org.jmol.io.CifDataReader;
-import org.jmol.io.JmolBinary;
 import org.jmol.java.BS;
 
 import org.jmol.script.T;
@@ -150,7 +150,7 @@ public class CifReader extends AtomSetCollectionReader implements
       if (!readAllData())
         break;
     if (appendedData != null) {
-      tokenizer = new CifDataReader(JmolBinary.getBR(appendedData));
+      tokenizer = new CifDataReader(Binary.getBR(appendedData));
       while ((key = tokenizer.peekToken()) != null)
         if (!readAllData())
           break;

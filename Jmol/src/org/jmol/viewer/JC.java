@@ -1600,7 +1600,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
         : ".") + shapeClassBases[shapeID];
   }
 
-  public final static String binaryExtensions = ";pse=PyMOL;";// PyMOL
+//  public final static String binaryExtensions = ";pse=PyMOL;";// PyMOL
 
   public static final String SCRIPT_COMPLETED = "Script completed";
   public static final String JPEG_EXTENSIONS = ";jpg;jpeg;jpg64;jpeg64;";

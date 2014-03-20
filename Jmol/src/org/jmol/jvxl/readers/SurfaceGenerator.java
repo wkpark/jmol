@@ -124,6 +124,7 @@ import org.jmol.api.JmolDocument;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.AtomDataServer;
 import org.jmol.atomdata.RadiusData;
+import org.jmol.io.Binary;
 import org.jmol.io.JmolBinary;
 import org.jmol.java.BS;
 import org.jmol.jvxl.data.JvxlCoder;
@@ -1270,7 +1271,7 @@ public class SurfaceGenerator {
       data = (String) value;
       // this will be OK, because any string will be a simple string, 
       // not a binary file.
-      value = JmolBinary.getBR((String) value);
+      value = Binary.getBR((String) value);
     }
     BufferedReader br = (BufferedReader) value;
     if (fileType == null)
@@ -1292,7 +1293,7 @@ public class SurfaceGenerator {
         return null;
       }
       try {
-        br = JmolBinary.getBufferedReader((BufferedInputStream) value, null);
+        br = Binary.getBufferedReader((BufferedInputStream) value, null);
       } catch (Exception e) {
         // TODO
       }

@@ -41,6 +41,8 @@ import java.io.IOException;
  *  
  * -- more efficient calculation of needs for pngBytes 
  * 
+ * -- option to use pre-created PNGJ image data (3/19/14; Jmol 14.1.12)
+ * 
  * -- PNGJ format:
  * 
  * // IHDR chunk 
@@ -86,6 +88,8 @@ public class PngEncoder extends CRCEncoder {
   public static final int FILTER_SUB = 1;
   public static final int FILTER_UP = 2;
   public static final int FILTER_LAST = 2;
+  
+  private static final int PT_FIRST_TAG = 37;
 
   private boolean encodeAlpha;
   private int filter = FILTER_NONE;
@@ -97,6 +101,7 @@ public class PngEncoder extends CRCEncoder {
   private byte[] applicationData;
   private String applicationPrefix;
   private String version;
+  private byte[] bytes;
 
   
   public PngEncoder() {
@@ -113,7 +118,7 @@ public class PngEncoder extends CRCEncoder {
     filter = FILTER_NONE;
     compressionLevel = quality;
     transparentColor = (Integer) params.get("transparentColor");
-    
+    bytes = (byte[]) params.get("imageData");
     type = (params.get("type") + "0000").substring(0, 4);
     version = (String) params.get("comment");
     applicationData = (byte[]) params.get("applicationData");
@@ -124,15 +129,18 @@ public class PngEncoder extends CRCEncoder {
 
   @Override
   protected void generate() throws IOException {
-    int[] ptJmol = new int[1];
-    if (!pngEncode(ptJmol)) {
-      out.cancel();
-      return;
+    if (bytes == null) {
+      if (!pngEncode()) {
+        out.cancel();
+        return;
+      }
+      bytes = getBytes();
+    } else {
+      dataLen = bytes.length;
     }
-    byte[] bytes = getBytes();
     int len = dataLen;
     if (applicationData != null) {
-      setJmolTypeText(applicationPrefix, ptJmol[0], bytes, len, applicationData.length,
+      setJmolTypeText(applicationPrefix, bytes, len, applicationData.length,
           type);
       out.write(bytes, 0, len);
       len = (bytes = applicationData).length;
@@ -145,18 +153,16 @@ public class PngEncoder extends CRCEncoder {
    * Creates an array of bytes that is the PNG equivalent of the current image,
    * specifying whether to encode alpha or not.
    * 
-   * @param ptAppTag
    * @return        true if successful
    * 
    */
-  private boolean pngEncode(int[] ptAppTag) {
+  private boolean pngEncode() {
 
     byte[] pngIdBytes = { -119, 80, 78, 71, 13, 10, 26, 10 };
 
     writeBytes(pngIdBytes);
     //hdrPos = bytePos;
     writeHeader();
-    ptAppTag[0] = bytePos + 4;
     writeText(getApplicationText(applicationPrefix, type, 0, 0));
 
     writeText("Software\0Jmol " + version);
@@ -179,17 +185,22 @@ public class PngEncoder extends CRCEncoder {
    * created by Jmol have incorrect checksums.
    * 
    * @param prefix 
-   * @param ptJmolByteText 
    * 
    * @param b
    * @param nPNG
    * @param nState
    * @param type
    */
-  private static void setJmolTypeText(String prefix, int ptJmolByteText, byte[] b, int nPNG, int nState, String type) {
+  private static void setJmolTypeText(String prefix, byte[] b, int nPNG, int nState, String type) {
     String s = "iTXt" + getApplicationText(prefix, type, nPNG, nState);
     CRCEncoder encoder = new PngEncoder();
-    encoder.setData(b, ptJmolByteText);
+    byte[] test = s.substring(0, 4 + prefix.length()).getBytes();
+    for (int i = test.length; -- i >= 0;) 
+      if (b[i + PT_FIRST_TAG] != test[i]) {
+        System.out.println("i mage is not of the right form; appending data, but not adding iTXt tag.");
+        return;
+      }
+    encoder.setData(b, PT_FIRST_TAG);
     encoder.writeString(s);
     encoder.writeCRC();
   }

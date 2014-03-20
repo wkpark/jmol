@@ -27,12 +27,8 @@ package org.jmol.io2;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 
-import javajs.J2SIgnoreImport;
-import javajs.api.ZInputStream;
 import javajs.util.List;
 import javajs.util.PT;
 import javajs.util.SB;
@@ -41,315 +37,28 @@ import java.util.Hashtable;
 
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
-import java.util.zip.CRC32;
 
 import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolDocument;
-import org.jmol.api.JmolZipUtility;
+import org.jmol.io.Binary;
 import org.jmol.io.JmolBinary;
+import org.jmol.io.JmolZipTools;
+import org.jmol.io.JmolZipUtilities;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.Txt;
-import org.jmol.viewer.FileManager;
 
-@J2SIgnoreImport({ java.io.BufferedOutputStream.class,
-    java.util.zip.ZipOutputStream.class })
-public class ZipUtil implements JmolZipUtility {
+public class JmolUtil implements JmolZipUtilities {
 
-  public ZipUtil() {
+  public JmolUtil() {
     // for reflection
   }
 
   @Override
-  public ZInputStream newZipInputStream(InputStream is) {
-    return newZIS(is);
-  }
-
-  @SuppressWarnings("resource")
-  private static ZInputStream newZIS(InputStream is) {
-    return (is instanceof ZInputStream ? (ZInputStream) is
-        : is instanceof BufferedInputStream ? new JmolZipInputStream(is)
-            : new JmolZipInputStream(new BufferedInputStream(is)));
-  }
-
-  /**
-   * reads a ZIP file and saves all data in a Hashtable so that the files may be
-   * organized later in a different order. Also adds a #Directory_Listing entry.
-   * 
-   * Files are bracketed by BEGIN Directory Entry and END Directory Entry lines,
-   * similar to CompoundDocument.getAllData.
-   * 
-   * @param is
-   * @param subfileList
-   * @param name0
-   *        prefix for entry listing
-   * @param binaryFileList
-   *        |-separated list of files that should be saved as xx xx xx hex byte
-   *        strings. The directory listing is appended with ":asBinaryString"
-   * @param fileData
-   */
-  @Override
-  public void getAllZipData(InputStream is, String[] subfileList, String name0,
-                            String binaryFileList, Map<String, String> fileData) {
-    getAllZipDataStatic(is, subfileList, name0, binaryFileList, fileData);
-  }
-
-  private static void getAllZipDataStatic(InputStream is, String[] subfileList,
-                                          String name0, String binaryFileList,
-                                          Map<String, String> fileData) {
-    ZipInputStream zis = (ZipInputStream) newZIS(is);
-    ZipEntry ze;
-    SB listing = new SB();
-    binaryFileList = "|" + binaryFileList + "|";
-    String prefix = Txt.join(subfileList, '/', 1);
-    String prefixd = null;
-    if (prefix != null) {
-      prefixd = prefix.substring(0, prefix.indexOf("/") + 1);
-      if (prefixd.length() == 0)
-        prefixd = null;
-    }
-    try {
-      while ((ze = zis.getNextEntry()) != null) {
-        String name = ze.getName();
-        if (prefix != null && prefixd != null
-            && !(name.equals(prefix) || name.startsWith(prefixd)))
-          continue;
-        //System.out.println("ziputil: " + name);
-        listing.append(name).appendC('\n');
-        String sname = "|" + name.substring(name.lastIndexOf("/") + 1) + "|";
-        boolean asBinaryString = (binaryFileList.indexOf(sname) >= 0);
-        byte[] bytes = JmolBinary.getStreamBytes(zis, ze.getSize());
-        String str;
-        if (asBinaryString) {
-          str = getBinaryStringForBytes(bytes);
-          name += ":asBinaryString";
-        } else {
-          str = JmolBinary.fixUTF(bytes);
-        }
-        str = "BEGIN Directory Entry " + name + "\n" + str
-            + "\nEND Directory Entry " + name + "\n";
-        fileData.put(name0 + "|" + name, str);
-      }
-    } catch (Exception e) {
-    }
-    fileData.put("#Directory_Listing", listing.toString());
-  }
-
-  private static String getBinaryStringForBytes(byte[] bytes) {
-    SB ret = new SB();
-    for (int i = 0; i < bytes.length; i++)
-      ret.append(Integer.toHexString(bytes[i] & 0xFF)).appendC(' ');
-    return ret.toString();
-  }
-
-  /**
-   * iteratively drills into zip files of zip files to extract file content or
-   * zip file directory. Also works with JAR files.
-   * 
-   * Does not return "__MACOS" paths
-   * 
-   * @param bis
-   * @param list
-   * @param listPtr
-   * @param asBufferedInputStream
-   *        for Pmesh
-   * @return directory listing or subfile contents
-   */
-  @Override
-  public Object getZipFileDirectory(BufferedInputStream bis, String[] list,
-                                   int listPtr, boolean asBufferedInputStream) {
-    SB ret;
-    if (list == null || listPtr >= list.length)
-      return getZipDirectoryAsStringAndClose(bis);
-    bis = JmolBinary.checkPngZipStream(bis);
-    String fileName = list[listPtr];
-    ZipInputStream zis = new ZipInputStream(bis);
-    ZipEntry ze;
-    //System.out.println("fname=" + fileName);
-    try {
-      boolean isAll = (fileName.equals("."));
-      if (isAll || fileName.lastIndexOf("/") == fileName.length() - 1) {
-        ret = new SB();
-        while ((ze = zis.getNextEntry()) != null) {
-          String name = ze.getName();
-          if (isAll || name.startsWith(fileName))
-            ret.append(name).appendC('\n');
-        }
-        String str = ret.toString();
-        return (asBufferedInputStream ? JmolBinary.getBIS(str
-            .getBytes()) : str);
-      }
-      int pt = fileName.indexOf(":asBinaryString");
-      boolean asBinaryString = (pt > 0);
-      if (asBinaryString)
-        fileName = fileName.substring(0, pt);
-      fileName = fileName.replace('\\', '/');
-      while ((ze = zis.getNextEntry()) != null
-          && !fileName.equals(ze.getName())) {
-      }
-      byte[] bytes = (ze == null ? null : JmolBinary.getStreamBytes(zis,
-          ze.getSize()));
-      ze = null;
-      zis.close();
-      if (bytes == null)
-        return "";
-      if (JmolBinary.isZipB(bytes) || JmolBinary.isPngZipB(bytes))
-        return getZipFileDirectory(JmolBinary.getBIS(bytes), list,
-            ++listPtr, asBufferedInputStream);
-      if (asBufferedInputStream)
-        return JmolBinary.getBIS(bytes);
-      if (asBinaryString) {
-        ret = new SB();
-        for (int i = 0; i < bytes.length; i++)
-          ret.append(Integer.toHexString(bytes[i] & 0xFF)).appendC(' ');
-        return ret.toString();
-      }
-      return JmolBinary.fixUTF(bytes);
-    } catch (Exception e) {
-      return "";
-    }
-  }
-
-  @Override
-  public byte[] getZipFileContentsAsBytes(BufferedInputStream bis,
-                                          String[] list, int listPtr) {
-    byte[] ret = new byte[0];
-    String fileName = list[listPtr];
-    if (fileName.lastIndexOf("/") == fileName.length() - 1)
-      return ret;
-    try {
-      bis = JmolBinary.checkPngZipStream(bis);
-      ZipInputStream zis = new ZipInputStream(bis);
-      ZipEntry ze;
-      while ((ze = zis.getNextEntry()) != null) {
-        if (!fileName.equals(ze.getName()))
-          continue;
-        byte[] bytes = JmolBinary.getStreamBytes(zis, ze.getSize());
-        return ((JmolBinary.isZipB(bytes) || JmolBinary.isPngZipB(bytes)) && ++listPtr < list.length ? getZipFileContentsAsBytes(
-            JmolBinary.getBIS(bytes), list, listPtr) : bytes);
-      }
-    } catch (Exception e) {
-    }
-    return ret;
-  }
-
-  @Override
-  public String getZipDirectoryAsStringAndClose(BufferedInputStream bis) {
-    SB sb = new SB();
-    String[] s = new String[0];
-    try {
-      s = getZipDirectoryOrErrorAndClose(bis, false);
-      bis.close();
-    } catch (Exception e) {
-      Logger.error(e.toString());
-    }
-    for (int i = 0; i < s.length; i++)
-      sb.append(s[i]).appendC('\n');
-    return sb.toString();
-  }
-
-  @Override
-  public String[] getZipDirectoryAndClose(BufferedInputStream bis,
-                                          boolean addManifest) {
-    String[] s = new String[0];
-    try {
-      s = getZipDirectoryOrErrorAndClose(bis, addManifest);
-      bis.close();
-    } catch (Exception e) {
-      Logger.error(e.toString());
-    }
-    return s;
-  }
-
-  private String[] getZipDirectoryOrErrorAndClose(BufferedInputStream bis,
-                                                  boolean addManifest)
-      throws IOException {
-    bis = JmolBinary.checkPngZipStream(bis);
-    List<String> v = new List<String>();
-    ZipInputStream zis = new ZipInputStream(bis);
-    ZipEntry ze;
-    String manifest = null;
-    while ((ze = zis.getNextEntry()) != null) {
-      String fileName = ze.getName();
-      if (addManifest && isJmolManifest(fileName))
-        manifest = getStreamAsString(zis);
-      else if (!fileName.startsWith("__MACOS")) // resource fork not nec.
-        v.addLast(fileName);
-    }
-    zis.close();
-    if (addManifest)
-      v.add(0, manifest == null ? "" : manifest + "\n############\n");
-    return v.toArray(new String[v.size()]);
-  }
-
-  static String getStreamAsString(InputStream is) throws IOException {
-    return JmolBinary.fixUTF(JmolBinary.getStreamBytes(is, -1));
-  }
-
-  private static boolean isJmolManifest(String thisEntry) {
-    return thisEntry.startsWith("JmolManifest");
-  }
-
-  /**
-   * caches an entire pngj file's contents into a Map
-   * 
-   * @param bis
-   * @param fileName
-   * @param cache
-   * @return file listing, separated by \n
-   */
-  @Override
-  public String cacheZipContents(BufferedInputStream bis, String fileName,
-                                 Map<String, byte[]> cache) {
-    ZipInputStream zis = (ZipInputStream) newZipInputStream(bis);
-    ZipEntry ze;
-    SB listing = new SB();
-    long n = 0;
-    try {
-      while ((ze = zis.getNextEntry()) != null) {
-        String name = ze.getName();
-        listing.append(name).appendC('\n');
-        long nBytes = ze.getSize();
-        byte[] bytes = JmolBinary.getStreamBytes(zis, nBytes);
-        n += bytes.length;
-        cache.put(fileName + "|" + name, bytes);
-      }
-      zis.close();
-    } catch (Exception e) {
-      try {
-        zis.close();
-      } catch (IOException e1) {
-      }
-      return null;
-    }
-    if (n == 0)
-      return null;
-    Logger.info("ZipUtil cached " + n + " bytes from " + fileName);
-    return listing.toString();
-  }
-
-  static BufferedInputStream getUnGzippedInputStream(byte[] bytes) {
-    try {
-      return JmolBinary
-          .getUnzippedInputStream(JmolBinary.getBIS(bytes));
-    } catch (Exception e) {
-      return null;
-    }
-  }
-
-  @Override
-  public InputStream newGZIPInputStream(InputStream is) throws IOException {
-    return new BufferedInputStream(new GZIPInputStream(is, 512));
-  }
-
-  @Override
-  public Object getAtomSetCollectionOrBufferedReaderFromZip(JmolAdapter adapter,
+  public Object getAtomSetCollectionOrBufferedReaderFromZip(JmolZipTools zpt, JmolAdapter adapter,
                                                             InputStream is,
                                                             String fileName,
                                                             String[] zipDirectory,
@@ -408,13 +117,13 @@ public class ZipUtil implements JmolZipUtility {
     // this code is a hack that should be replaced with the sort of code
     // running in FileManager now.
 
-    Object ret = checkSpecialData(is, zipDirectory);
+    Object ret = checkSpecialData(zpt, is, zipDirectory);
     if (ret instanceof String)
       return ret;
     SB data = (SB) ret;
     try {
       if (data != null) {
-        BufferedReader reader = JmolBinary.getBR(data.toString());
+        BufferedReader reader = Binary.getBR(data.toString());
         if (asBufferedReader)
           return reader;
         ret = adapter
@@ -435,8 +144,8 @@ public class ZipUtil implements JmolZipUtility {
         return "unknown reader error";
       }
       if (is instanceof BufferedInputStream)
-        is = JmolBinary.checkPngZipStream((BufferedInputStream) is);
-      ZipInputStream zis = (ZipInputStream) JmolBinary.newZipInputStream(is);
+        is = Binary.getPngZipStream((BufferedInputStream) is);
+      ZipInputStream zis = (ZipInputStream) Binary.newZipInputStream(is);
       ZipEntry ze;
       if (haveManifest)
         manifest = '|' + manifest.replace('\r', '|').replace('\n', '|') + '|';
@@ -449,20 +158,20 @@ public class ZipUtil implements JmolZipUtility {
           continue;
         if (subFileName != null)
           htParams.put("subFileName", subFileName);
-        if (isJmolManifest(thisEntry) || haveManifest
+        if (Binary.isJmolManifest(thisEntry) || haveManifest
             && exceptFiles == manifest.indexOf("|" + thisEntry + "|") >= 0)
           continue;
-        byte[] bytes = JmolBinary.getStreamBytes(zis, ze.getSize());
+        byte[] bytes = Binary.getStreamBytes(zis, ze.getSize());
         //        String s = new String(bytes);
         //        System.out.println("ziputil " + s.substring(0, 100));
-        if (JmolBinary.isGzipB(bytes))
-          bytes = JmolBinary.getStreamBytes(getUnGzippedInputStream(bytes), -1);
-        if (JmolBinary.isZipB(bytes) || JmolBinary.isPngZipB(bytes)) {
-          BufferedInputStream bis = JmolBinary.getBIS(bytes);
-          String[] zipDir2 = JmolBinary.getZipDirectoryAndClose(bis, true);
-          bis = JmolBinary.getBIS(bytes);
+        if (Binary.isGzipB(bytes))
+          bytes = Binary.getStreamBytes(ZipTools.getUnGzippedInputStream(bytes), -1);
+        if (Binary.isZipB(bytes) || Binary.isPngZipB(bytes)) {
+          BufferedInputStream bis = Binary.getBIS(bytes);
+          String[] zipDir2 = Binary.getZipDirectoryAndClose(bis, true);
+          bis = Binary.getBIS(bytes);
           Object atomSetCollections = getAtomSetCollectionOrBufferedReaderFromZip(
-              adapter, bis, fileName + "|" + thisEntry, zipDir2, htParams,
+              zpt, adapter, bis, fileName + "|" + thisEntry, zipDir2, htParams,
               ++subFilePtr, asBufferedReader);
           if (atomSetCollections instanceof String) {
             if (ignoreErrors)
@@ -486,22 +195,22 @@ public class ZipUtil implements JmolZipUtility {
             return "unknown zip reader error";
           }
         } else if (JmolBinary.isPickleB(bytes)) {
-          BufferedInputStream bis = JmolBinary.getBIS(bytes);
+          BufferedInputStream bis = Binary.getBIS(bytes);
           if (doCombine)
             zis.close();
           return bis;
         } else {
           String sData;
-          if (JmolBinary.isCompoundDocumentB(bytes)) {
+          if (Binary.isCompoundDocumentB(bytes)) {
             JmolDocument jd = (JmolDocument) Interface
                 .getUtil("CompoundDocument");
-            jd.setStream(JmolBinary.getBIS(bytes), true);
+            jd.setStream(Binary.getBIS(bytes), true);
             sData = jd.getAllDataFiles("Molecule", "Input").toString();
           } else {
             // could be a PNGJ file with an internal pdb.gz entry, for instance
-            sData = JmolBinary.fixUTF(bytes);
+            sData = Binary.fixUTF(bytes);
           }
-          BufferedReader reader = JmolBinary.getBR(sData);
+          BufferedReader reader = Binary.getBR(sData);
           if (asBufferedReader) {
             if (doCombine)
               zis.close();
@@ -578,12 +287,13 @@ public class ZipUtil implements JmolZipUtility {
   /**
    * called by SmarterJmolAdapter to see if we have a Spartan directory and, if
    * so, open it and get all the data into the correct order.
+   * @param zpt 
    * 
    * @param is
    * @param zipDirectory
    * @return String data for processing
    */
-  private static SB checkSpecialData(InputStream is, String[] zipDirectory) {
+  private static SB checkSpecialData(JmolZipTools zpt, InputStream is, String[] zipDirectory) {
     boolean isSpartan = false;
     // 0 entry is not used here
     for (int i = 1; i < zipDirectory.length; i++) {
@@ -599,7 +309,7 @@ public class ZipUtil implements JmolZipUtility {
     data.append("Zip File Directory: ").append("\n")
         .append(Escape.eAS(zipDirectory, true)).append("\n");
     Map<String, String> fileData = new Hashtable<String, String>();
-    getAllZipDataStatic(is, new String[] {}, "", "Molecule", fileData);
+    zpt.getAllZipData(is, new String[] {}, "", "Molecule", fileData);
     String prefix = "|";
     String outputData = fileData.get(prefix + "output");
     if (outputData == null)
@@ -639,7 +349,7 @@ public class ZipUtil implements JmolZipUtility {
    * @return array detailing action for this set of files
    */
   @Override
-  public String[] spartanFileList(String name, String type) {
+  public String[] spartanFileList(JmolZipTools zpt, String name, String type) {
     // make list of required files
     String[] dirNums = getSpartanDirs(type);
     if (dirNums.length == 0 && name.endsWith(".spardir.zip")
@@ -763,67 +473,58 @@ public class ZipUtil implements JmolZipUtility {
   }
 
   @Override
-  public byte[] getCachedPngjBytes(FileManager fm, String pathName) {
-    if (pathName.indexOf(".png") < 0)
-      return null;
-    Logger.info("FileManager checking PNGJ cache for " + pathName);
+  public byte[] getCachedPngjBytes(JmolBinary jmb, String pathName) {
+    Logger.info("JmolUtil checking PNGJ cache for " + pathName);
     String shortName = shortSceneFilename(pathName);
-    if (fm.pngjCache == null
-        && !cachePngjFile(fm, new String[] { pathName, null }))
+    if (jmb.pngjCache == null
+        && !jmb.clearAndCachePngjFile(new String[] { pathName, null }))
       return null;
-    Map<String, byte[]> pngjCache = fm.pngjCache;
     boolean isMin = (pathName.indexOf(".min.") >= 0);
     if (!isMin) {
-      String cName = fm.getCanonicalName(JmolBinary.getZipRoot(pathName));
-      if (!pngjCache.containsKey(cName)
-          && !cachePngjFile(fm, new String[] { pathName, null }))
+      String cName = jmb.fm.getCanonicalName(Binary.getZipRoot(pathName));
+      if (!jmb.pngjCache.containsKey(cName)
+          && !jmb.clearAndCachePngjFile(new String[] { pathName, null }))
         return null;
       if (pathName.indexOf("|") < 0)
         shortName = cName;
     }
-    if (pngjCache.containsKey(shortName)) {
+    if (jmb.pngjCache.containsKey(shortName)) {
       Logger.info("FileManager using memory cache " + shortName);
-      return pngjCache.get(shortName);
+      return (byte[]) jmb.pngjCache.get(shortName);
     }
     //    for (String key : pngjCache.keySet())
     //    System.out.println(" key=" + key);
     //System.out.println("FileManager memory cache size=" + pngjCache.size()
     //  + " did not find " + pathName + " as " + shortName);
-    if (!isMin || !cachePngjFile(fm, new String[] { pathName, null }))
+    if (!isMin || !jmb.clearAndCachePngjFile(new String[] { pathName, null }))
       return null;
     Logger.info("FileManager using memory cache " + shortName);
-    return pngjCache.get(shortName);
+    return (byte[]) jmb.pngjCache.get(shortName);
   }
 
   @Override
-  public boolean cachePngjFile(FileManager fm, String[] data) {
-    Map<String, byte[]> pngjCache = fm.pngjCache = new Hashtable<String, byte[]>();
-    if (data == null)
-      return false;
-    data[1] = null;
-    if (data[0] == null)
-      return false;
-    data[0] = JmolBinary.getZipRoot(data[0]);
+  public boolean cachePngjFile(JmolBinary jmb, String[] data) {
+    data[0] = Binary.getZipRoot(data[0]);
     String shortName = shortSceneFilename(data[0]);
     try {
-      data[1] = cacheZipContents(
-          JmolBinary.checkPngZipStream((BufferedInputStream) fm
+      data[1] = ZipTools.cacheZipContents( 
+          Binary.getPngZipStream((BufferedInputStream) jmb.fm
               .getBufferedInputStreamOrErrorMessageFromName(data[0], null,
-                  false, false, null, false)), shortName, fm.pngjCache);
+                  false, false, null, false, true)), shortName, jmb.pngjCache, false);
     } catch (Exception e) {
       return false;
     }
     if (data[1] == null)
       return false;
     byte[] bytes = data[1].getBytes();
-    pngjCache.put(fm.getCanonicalName(data[0]), bytes); // marker in case the .all. file is changed
+    jmb.pngjCache.put(jmb.fm.getCanonicalName(data[0]), bytes); // marker in case the .all. file is changed
     if (shortName.indexOf("_scene_") >= 0) {
-      pngjCache.put(shortSceneFilename(data[0]), bytes); // good for all .min. files of this scene set
-      bytes = pngjCache.remove(shortName + "|state.spt");
+      jmb.pngjCache.put(shortSceneFilename(data[0]), bytes); // good for all .min. files of this scene set
+      bytes = (byte[]) jmb.pngjCache.remove(shortName + "|state.spt");
       if (bytes != null)
-        pngjCache.put(shortSceneFilename(data[0] + "|state.spt"), bytes);
+        jmb.pngjCache.put(shortSceneFilename(data[0] + "|state.spt"), bytes);
     }
-    for (String key : pngjCache.keySet())
+    for (String key : jmb.pngjCache.keySet())
       System.out.println(key);
     return true;
   }
@@ -844,34 +545,4 @@ public class ZipUtil implements JmolZipUtility {
         + (pt2 > 0 ? pathName.substring(pt2) : "");
   }
 
-  @Override
-  public void addZipEntry(Object zos, String fileName) throws IOException {
-    ((ZipOutputStream) zos).putNextEntry(new ZipEntry(fileName));
-  }
-
-  @Override
-  public void closeZipEntry(Object zos) throws IOException {
-    ((ZipOutputStream) zos).closeEntry();
-  }
-
-  @Override
-  public Object getZipOutputStream(Object bos) {
-    /**
-     * @j2sNative
-     * 
-     *            return J.api.Interface.getInterface(
-     *            "java.util.zip.ZipOutputStream").setZOS(bos);
-     * 
-     */
-    {
-      return new ZipOutputStream((OutputStream) bos);
-    }
-  }
-
-  @Override
-  public int getCrcValue(byte[] bytes) {
-    CRC32 crc = new CRC32();
-    crc.update(bytes, 0, bytes.length);
-    return (int) crc.getValue();
-  }
 }

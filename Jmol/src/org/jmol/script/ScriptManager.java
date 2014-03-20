@@ -36,6 +36,7 @@ import javajs.util.SB;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolScriptEvaluator;
 import org.jmol.api.JmolScriptManager;
+import org.jmol.io.Binary;
 import org.jmol.io.JmolBinary;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
@@ -602,7 +603,7 @@ public class ScriptManager implements JmolScriptManager {
       if (zipDirectory.indexOf("JmolManifest") >= 0)
         return "Jmol";
       return viewer.getModelAdapter().getFileTypeName(
-          JmolBinary.getBR(zipDirectory));
+          Binary.getBR(zipDirectory));
     }
     if (PT.isAS(br)) {
       return ((String[]) br)[0];
@@ -612,8 +613,8 @@ public class ScriptManager implements JmolScriptManager {
 
   private String getZipDirectoryAsString(String fileName) {
     Object t = viewer.fileManager.getBufferedInputStreamOrErrorMessageFromName(
-        fileName, fileName, false, false, null, false);
-    return JmolBinary.getZipDirectoryAsStringAndClose((BufferedInputStream) t);
+        fileName, fileName, false, false, null, false, true);
+    return Binary.getZipDirectoryAsStringAndClose((BufferedInputStream) t);
   }
 
   private static int prevCovalentVersion = 1;

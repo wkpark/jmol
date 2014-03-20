@@ -30,6 +30,7 @@ import java.util.Map;
 
 import org.jmol.api.MepCalculationInterface;
 import org.jmol.api.VolumeDataInterface;
+import org.jmol.io.Binary;
 import org.jmol.io.JmolBinary;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
@@ -218,7 +219,7 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
     htAtomicPotentials = new Hashtable<String, Object>();
     try {
       br = (data == null ? JmolBinary.getBufferedReaderForResource(viewer,
-          this, "org/jmol/quantum/", resourceName) : JmolBinary
+          this, "org/jmol/quantum/", resourceName) : Binary
           .getBR(data));
       String line;
       while ((line = br.readLine()) != null) {

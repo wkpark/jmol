@@ -27,7 +27,7 @@ import java.io.BufferedReader;
 
 import javajs.util.PT;
 
-import org.jmol.io.JmolBinary;
+import org.jmol.io.Binary;
 import org.jmol.util.Logger;
 
 /*
@@ -68,7 +68,7 @@ class MsmsReader extends PmeshReader {
     fileName = PT.rep(fileName, ".vert", ".face");
     Logger.info("reading from file " + fileName);
     try {
-      br = JmolBinary.getBufferedReader(sg.getAtomDataServer()
+      br = Binary.getBufferedReader(sg.getAtomDataServer()
           .getBufferedInputStream(fileName), null);
     } catch (Exception e) {
       Logger.info("Note: file " + fileName + " was not found");

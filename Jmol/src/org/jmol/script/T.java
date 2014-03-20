@@ -92,14 +92,15 @@ public class T {
   // listf "list-float" is specifically for xxx.all.bin, 
   // but it could be developed further
   public final static int listf      = 13;     
-  public final static int context    = 14;     
-  final private static int keyword   = 15;
+  public final static int context    = 14;
+  public final static int barray     = 15; // byte array
+  final private static int keyword   = 16;
   
 
   public final static String[] astrType = {
     "nada", "identifier", "integer", "decimal", "string",
     "seqcode", "hash", "array", "point", "point4", "bitset",
-    "matrix3f",  "matrix4f", "array", "hash", "keyword"
+    "matrix3f",  "matrix4f", "array", "hash", "bytearray", "keyword"
   };
 
   public static boolean tokAttr(int a, int b) {

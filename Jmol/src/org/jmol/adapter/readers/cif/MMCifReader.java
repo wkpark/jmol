@@ -210,22 +210,22 @@ _pdbx_struct_oper_list.vector[3]
     if (assem == null)
       assem = new String[3];
     if (cr.key.indexOf("assembly_id") >= 0)
-      assem[ASSEM_ID] = cr.tokenizer.fullTrim(cr.data);
+      assem[ASSEM_ID] = cr.parser.fullTrim(cr.data);
     else if (cr.key.indexOf("oper_expression") >= 0)
-      assem[ASSEM_OPERS] = cr.tokenizer.fullTrim(cr.data);
+      assem[ASSEM_OPERS] = cr.parser.fullTrim(cr.data);
     else if (cr.key.indexOf("asym_id_list") >= 0)
-      assem[ASSEM_LIST] = cr.tokenizer.fullTrim(cr.data);
+      assem[ASSEM_LIST] = cr.parser.fullTrim(cr.data);
     if (assem[0] != null && assem[1] != null && assem[2] != null)
       addAssembly();
   }
 
   private boolean processAssemblyGenBlock() throws Exception {
     parseLoopParameters(assemblyFields);
-    while (cr.tokenizer.getData()) {
+    while (cr.parser.getData()) {
       assem = new String[3];
       int count = 0;
       int p;
-      int n = cr.tokenizer.getFieldCount();
+      int n = cr.parser.getFieldCount();
       for (int i = 0; i < n; ++i) {
         switch (p = fieldProperty(i)) {
         case ASSEM_ID:
@@ -307,11 +307,11 @@ _pdbx_struct_oper_list.vector[3]
     parseLoopParameters(operFields);
     float[] m = new float[16];
     m[15] = 1;
-    while (cr.tokenizer.getData()) {
+    while (cr.parser.getData()) {
       int count = 0;
       String id = null;
       String xyz = null;
-      int n = cr.tokenizer.getFieldCount();
+      int n = cr.parser.getFieldCount();
       for (int i = 0; i < n; ++i) {
         int p = fieldProperty(i);
         switch (p) {
@@ -395,10 +395,10 @@ _pdbx_struct_oper_list.vector[3]
    */
   private boolean processChemCompLoopBlock() throws Exception {
     parseLoopParameters(chemCompFields);
-    while (cr.tokenizer.getData()) {
+    while (cr.parser.getData()) {
       String groupName = null;
       String hetName = null;
-      int n = cr.tokenizer.getFieldCount();
+      int n = cr.parser.getFieldCount();
       for (int i = 0; i < n; ++i) {
         switch (fieldProperty(i)) {
         case NONE:
@@ -427,10 +427,10 @@ _pdbx_struct_oper_list.vector[3]
    */
   private boolean processNonpolyLoopBlock() throws Exception {
     parseLoopParameters(nonpolyFields);
-    while (cr.tokenizer.getData()) {
+    while (cr.parser.getData()) {
       String groupName = null;
       String hetName = null;
-      int n = cr.tokenizer.getFieldCount();
+      int n = cr.parser.getFieldCount();
       for (int i = 0; i < n; ++i) {
         switch (fieldProperty(i)) {
         case NONE:
@@ -510,9 +510,9 @@ _pdbx_struct_oper_list.vector[3]
         Logger.warn("?que? missing property: " + structConfFields[i]);
         return false;
       }
-    while (cr.tokenizer.getData()) {
+    while (cr.parser.getData()) {
       Structure structure = new Structure(-1, EnumStructure.HELIX, EnumStructure.HELIX, null, 0, 0);
-      int n = cr.tokenizer.getFieldCount();
+      int n = cr.parser.getFieldCount();
       for (int i = 0; i < n; ++i) {
         switch (fieldProperty(i)) {
         case NONE:
@@ -590,9 +590,9 @@ _pdbx_struct_oper_list.vector[3]
         Logger.warn("?que? missing property:" + structSheetRangeFields[i]);
         return false;
       }
-    while (cr.tokenizer.getData()) {
+    while (cr.parser.getData()) {
       Structure structure = new Structure(-1, EnumStructure.SHEET, EnumStructure.SHEET, null, 0, 0);
-      int n = cr.tokenizer.getFieldCount();
+      int n = cr.parser.getFieldCount();
       for (int i = 0; i < n; ++i) {
         switch (fieldProperty(i)) {
         case BEG_ASYM_ID:
@@ -692,8 +692,8 @@ _pdbx_struct_oper_list.vector[3]
     String group = "";
     Map<String, Object> htSite = null;
     htSites = new Hashtable<String, Map<String, Object>>();
-    while (cr.tokenizer.getData()) {
-      int n = cr.tokenizer.getFieldCount();
+    while (cr.parser.getData()) {
+      int n = cr.parser.getFieldCount();
       for (int i = 0; i < n; ++i) {
         switch (fieldProperty(i)) {
         case SITE_ID:
@@ -745,7 +745,7 @@ _pdbx_struct_oper_list.vector[3]
   }
 
   private int fieldProperty(int i) {
-    return ((field = cr.tokenizer.getLoopData(i)).length() > 0 
+    return ((field = cr.parser.getLoopData(i)).length() > 0 
         && (firstChar = field.charAt(0)) != '\0' ? 
             cr.propertyOf[i] : NONE);
   }
@@ -856,12 +856,12 @@ _pdbx_struct_oper_list.vector[3]
       }
     int order = 0;
     boolean isAromatic = false;
-    while (cr.tokenizer.getData()) {
+    while (cr.parser.getData()) {
       int atomIndex1 = -1;
       int atomIndex2 = -1;
       order = 0;
       isAromatic = false;
-      int n = cr.tokenizer.getFieldCount();
+      int n = cr.parser.getFieldCount();
       for (int i = 0; i < n; ++i) {
         switch (fieldProperty(i)) {
         case CHEM_COMP_BOND_ATOM_ID_1:

@@ -31,7 +31,7 @@ import java.io.InputStream;
 
 import javajs.api.GenericZipTools;
 import javajs.api.GenericBinaryDocument;
-import javajs.util.Binary;
+import javajs.util.Rdr;
 import javajs.util.List;
 import javajs.util.PT;
 import javajs.util.SB;
@@ -125,7 +125,7 @@ public class JmolUtil implements JmolZipUtilities {
     SB data = (SB) ret;
     try {
       if (data != null) {
-        BufferedReader reader = Binary.getBR(data.toString());
+        BufferedReader reader = Rdr.getBR(data.toString());
         if (asBufferedReader)
           return reader;
         ret = adapter
@@ -146,8 +146,8 @@ public class JmolUtil implements JmolZipUtilities {
         return "unknown reader error";
       }
       if (is instanceof BufferedInputStream)
-        is = Binary.getPngZipStream((BufferedInputStream) is);
-      ZipInputStream zis = (ZipInputStream) Binary.newZipInputStream(is);
+        is = Rdr.getPngZipStream((BufferedInputStream) is, true);
+      ZipInputStream zis = (ZipInputStream) Rdr.newZipInputStream(is);
       ZipEntry ze;
       if (haveManifest)
         manifest = '|' + manifest.replace('\r', '|').replace('\n', '|') + '|';
@@ -163,17 +163,17 @@ public class JmolUtil implements JmolZipUtilities {
         if (thisEntry.startsWith("JmolManifest") || haveManifest
             && exceptFiles == manifest.indexOf("|" + thisEntry + "|") >= 0)
           continue;
-        byte[] bytes = Binary.getStreamBytes(zis, ze.getSize());
+        byte[] bytes = Rdr.getLimitedStreamBytes(zis, ze.getSize());
         //        String s = new String(bytes);
         //        System.out.println("ziputil " + s.substring(0, 100));
-        if (Binary.isGzipB(bytes))
-          bytes = Binary.getStreamBytes(
+        if (Rdr.isGzipB(bytes))
+          bytes = Rdr.getLimitedStreamBytes(
               ZipTools.getUnGzippedInputStream(bytes), -1);
-        if (Binary.isZipB(bytes) || Binary.isPngZipB(bytes)) {
-          BufferedInputStream bis = Binary.getBIS(bytes);
-          String[] zipDir2 = Binary
+        if (Rdr.isZipB(bytes) || Rdr.isPngZipB(bytes)) {
+          BufferedInputStream bis = Rdr.getBIS(bytes);
+          String[] zipDir2 = Rdr
               .getZipDirectoryAndClose(bis, "JmolManifest");
-          bis = Binary.getBIS(bytes);
+          bis = Rdr.getBIS(bytes);
           Object atomSetCollections = getAtomSetCollectionOrBufferedReaderFromZip(
               zpt, adapter, bis, fileName + "|" + thisEntry, zipDir2, htParams,
               ++subFilePtr, asBufferedReader);
@@ -198,23 +198,23 @@ public class JmolUtil implements JmolZipUtilities {
             zis.close();
             return "unknown zip reader error";
           }
-        } else if (JmolBinary.isPickleB(bytes)) {
-          BufferedInputStream bis = Binary.getBIS(bytes);
+        } else if (Rdr.isPickleB(bytes)) {
+          BufferedInputStream bis = Rdr.getBIS(bytes);
           if (doCombine)
             zis.close();
           return bis;
         } else {
           String sData;
-          if (Binary.isCompoundDocumentB(bytes)) {
+          if (Rdr.isCompoundDocumentB(bytes)) {
             GenericBinaryDocument jd = (GenericBinaryDocument) Interface
                 .getInterface("javajs.util.CompoundDocument");
-            jd.setStream(Binary.getBIS(bytes), true);
+            jd.setStream(Rdr.getBIS(bytes), true);
             sData = jd.getAllDataFiles("Molecule", "Input").toString();
           } else {
             // could be a PNGJ file with an internal pdb.gz entry, for instance
-            sData = Binary.fixUTF(bytes);
+            sData = Rdr.fixUTF(bytes);
           }
-          BufferedReader reader = Binary.getBR(sData);
+          BufferedReader reader = Rdr.getBR(sData);
           if (asBufferedReader) {
             if (doCombine)
               zis.close();
@@ -485,7 +485,7 @@ public class JmolUtil implements JmolZipUtilities {
       return null;
     boolean isMin = (pathName.indexOf(".min.") >= 0);
     if (!isMin) {
-      String cName = jmb.fm.getCanonicalName(Binary.getZipRoot(pathName));
+      String cName = jmb.fm.getCanonicalName(Rdr.getZipRoot(pathName));
       if (!jmb.pngjCache.containsKey(cName)
           && !jmb.clearAndCachePngjFile(new String[] { pathName, null }))
         return null;
@@ -508,13 +508,13 @@ public class JmolUtil implements JmolZipUtilities {
 
   @Override
   public boolean cachePngjFile(JmolBinary jmb, String[] data) {
-    data[0] = Binary.getZipRoot(data[0]);
+    data[0] = Rdr.getZipRoot(data[0]);
     String shortName = shortSceneFilename(data[0]);
     try {
       data[1] = ZipTools.cacheZipContents( 
-          Binary.getPngZipStream((BufferedInputStream) jmb.fm
+          Rdr.getPngZipStream((BufferedInputStream) jmb.fm
               .getBufferedInputStreamOrErrorMessageFromName(data[0], null,
-                  false, false, null, false, true)), shortName, jmb.pngjCache, false);
+                  false, false, null, false, true), true), shortName, jmb.pngjCache, false);
     } catch (Exception e) {
       return false;
     }

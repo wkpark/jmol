@@ -33,15 +33,15 @@ import org.jmol.java.BS;
 
 import org.jmol.script.T;
 
-import javajs.api.GenericCifDataReader;
+import javajs.api.GenericCifDataParser;
 import javajs.util.List;
 import java.util.Hashtable;
 import java.util.Map;
 
 import org.jmol.util.Logger;
 
-import javajs.util.Binary;
-import javajs.util.CifDataReader;
+import javajs.util.Rdr;
+import javajs.util.CifDataParser;
 import javajs.util.GenericLineReader;
 import javajs.util.P3;
 import javajs.util.PT;
@@ -74,7 +74,7 @@ public class CifReader extends AtomSetCollectionReader implements
   private MSCifInterface mr;
   private MMCifInterface pr;
 
-  GenericCifDataReader tokenizer = new CifDataReader().set(this, null);
+  GenericCifDataParser parser = new CifDataParser().set(this, null);
 
   private boolean isMolecular;
   private boolean filterAssembly;
@@ -148,12 +148,12 @@ public class CifReader extends AtomSetCollectionReader implements
      * report if it finds data where a key is supposed to be.
      */
     line = "";
-    while ((key = tokenizer.peekToken()) != null)
+    while ((key = parser.peekToken()) != null)
       if (!readAllData())
         break;
     if (appendedData != null) {
-      tokenizer = Binary.getCifReader().set(null, Binary.getBR(appendedData));
-      while ((key = tokenizer.peekToken()) != null)
+      parser = Rdr.getCifReader().set(null, Rdr.getBR(appendedData));
+      while ((key = parser.peekToken()) != null)
         if (!readAllData())
           break;
     }
@@ -190,8 +190,8 @@ public class CifReader extends AtomSetCollectionReader implements
 
     if (key.startsWith("loop_")) {
       if (skipping) {
-        tokenizer.getTokenPeeked();
-        skipLoop();
+        parser.getTokenPeeked();
+        parser.skipLoop();
       } else {
         processLoopBlock();
       }
@@ -210,7 +210,7 @@ public class CifReader extends AtomSetCollectionReader implements
      */
     if (key.indexOf("_") != 0) {
       Logger.warn("CIF ERROR ? should be an underscore: " + key);
-      tokenizer.getTokenPeeked();
+      parser.getTokenPeeked();
     } else if (!getData()) {
       return true;
     }
@@ -227,7 +227,7 @@ public class CifReader extends AtomSetCollectionReader implements
       } else if (key.equals("_cell_modulation_dimension")) {
         initializeMSCIF(data);
       } else if (key.equals("_citation_title")) {
-        appendLoadNote("TITLE: " + tokenizer.fullTrim(data));
+        appendLoadNote("TITLE: " + parser.fullTrim(data));
       } else if (key.startsWith("_cell_")) {
         processCellParameter();
       } else if (key.startsWith("_symmetry_space_group_name_h-m")
@@ -237,7 +237,7 @@ public class CifReader extends AtomSetCollectionReader implements
       } else if (key.startsWith("_atom_sites_fract_tran")) {
         processUnitCellTransformMatrix();
       } else if (key.equals("_audit_block_code")) {
-        auditBlockCode = tokenizer.fullTrim(data).toUpperCase();
+        auditBlockCode = parser.fullTrim(data).toUpperCase();
         appendLoadNote(auditBlockCode);
         if (htAudit != null && auditBlockCode.contains("_MOD_")) {
           String key = PT.rep(auditBlockCode, "_MOD_",
@@ -267,7 +267,7 @@ public class CifReader extends AtomSetCollectionReader implements
   private void readSingleAtom() {
     Atom atom = new Atom();
     atom.set(0, 0, 0);
-    String s = atom.atomName = tokenizer.fullTrim(data);
+    String s = atom.atomName = parser.fullTrim(data);
     atom.elementSymbol = s.length() == 1 ? s : s.substring(0, 1) + s.substring(1, 2).toLowerCase();
     atomSetCollection.addAtom(atom);
   }
@@ -298,7 +298,7 @@ public class CifReader extends AtomSetCollectionReader implements
       setIsPDB();
     skipping = !doGetModel(modelNumber = modelNo, null);
     if (skipping) {
-      tokenizer.getTokenPeeked();
+      parser.getTokenPeeked();
       return;
     }
     chemicalName = "";
@@ -324,7 +324,7 @@ public class CifReader extends AtomSetCollectionReader implements
     if (n > 1)
       atomSetCollection.setCollectionName("<collection of " + n + " models>");
     finalizeReaderASCR();
-    String header = tokenizer.getFileHeader();
+    String header = parser.getFileHeader();
     if (header.length() > 0)
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo("fileHeader", header);
     if (haveAromatic)
@@ -376,7 +376,7 @@ public class CifReader extends AtomSetCollectionReader implements
    */
   private void processDataParameter() {
     bondTypes.clear();
-    tokenizer.getTokenPeeked();
+    parser.getTokenPeeked();
     thisDataSetName = (key.length() < 6 ? "" : key.substring(5));
     lookingForPDB = (thisDataSetName.length() > 0 && !thisDataSetName
         .equals("global"));
@@ -408,14 +408,14 @@ public class CifReader extends AtomSetCollectionReader implements
    */
   private String processChemicalInfo(String type) throws Exception {
     if (type.equals("name")) {
-      chemicalName = data = tokenizer.fullTrim(data);
+      chemicalName = data = parser.fullTrim(data);
       if (!data.equals("?"))
         atomSetCollection.setAtomSetCollectionAuxiliaryInfo("modelLoadNote",
             data);
     } else if (type.equals("structuralFormula")) {
-      thisStructuralFormula = data = tokenizer.fullTrim(data);
+      thisStructuralFormula = data = parser.fullTrim(data);
     } else if (type.equals("formula")) {
-      thisFormula = data = tokenizer.fullTrim(data);
+      thisFormula = data = parser.fullTrim(data);
     }
     if (Logger.debugging) {
       Logger.debug(type + " = " + data);
@@ -436,7 +436,7 @@ public class CifReader extends AtomSetCollectionReader implements
     else if (modulated) {
       return;
     }
-    data = tokenizer.toUnicode(data);
+    data = parser.toUnicode(data);
     setSpaceGroupName(lastSpaceGroupName = (key.indexOf("h-m") > 0 ? "HM:"
         : modulated ? "SSG:" : "Hall:") + data);
   }
@@ -527,8 +527,8 @@ public class CifReader extends AtomSetCollectionReader implements
    * @throws Exception
    */
   private boolean getData() throws Exception {
-    key = tokenizer.getTokenPeeked();
-    data = tokenizer.getNextToken();
+    key = parser.getTokenPeeked();
+    data = parser.getNextToken();
     //if (Logger.debugging && data != null && data.charAt(0) != '\0')
     //Logger.debug(key  + " " + data);
     if (data == null) {
@@ -544,8 +544,8 @@ public class CifReader extends AtomSetCollectionReader implements
    * @throws Exception
    */
   private void processLoopBlock() throws Exception {
-    tokenizer.getTokenPeeked(); //loop_
-    key = tokenizer.peekToken();
+    parser.getTokenPeeked(); //loop_
+    key = parser.peekToken();
     if (key == null)
       return;
     boolean isLigand = false;
@@ -558,7 +558,7 @@ public class CifReader extends AtomSetCollectionReader implements
       case 0:
         break;
       case -1:
-        skipLoop();
+        parser.skipLoop();
         //$FALL-THROUGH$
       case 1:
         return;
@@ -579,7 +579,7 @@ public class CifReader extends AtomSetCollectionReader implements
         || key.startsWith("_symmetry_ssg_equiv")) {
       if (ignoreFileSymmetryOperators) {
         Logger.warn("ignoring file-based symmetry operators");
-        skipLoop();
+        parser.skipLoop();
       } else {
         processSymmetryOperationsLoopBlock();
       }
@@ -599,11 +599,11 @@ public class CifReader extends AtomSetCollectionReader implements
     }
     if (pr != null && pr.processLoopBlock())
       return;
-    skipLoop();
+    parser.skipLoop();
   }
 
   private int fieldProperty(int i) {
-    return ((field = tokenizer.getLoopData(i)).length() > 0
+    return ((field = parser.getLoopData(i)).length() > 0
         && (firstChar = field.charAt(0)) != '\0' ? propertyOf[i] : NONE);
   }
 
@@ -620,7 +620,7 @@ public class CifReader extends AtomSetCollectionReader implements
    * @throws Exception
    */
   void parseLoopParameters(String[] fields) throws Exception {
-    propertyCount = tokenizer.parseLoopParameters(fields, fieldOf, propertyOf);
+    propertyCount = parser.parseLoopParameters(fields, fieldOf, propertyOf);
   }
  
   /**
@@ -633,20 +633,6 @@ public class CifReader extends AtomSetCollectionReader implements
     int i = fieldOf[fieldIndex];
     if (i != NONE)
       propertyOf[i] = NONE;
-  }
-
-  /**
-   * 
-   * skips all associated loop data
-   * 
-   * @throws Exception
-   */
-  void skipLoop() throws Exception {
-    String str;
-    while ((str = tokenizer.peekToken()) != null && str.charAt(0) == '_')
-      str = tokenizer.getTokenPeeked();
-    while (tokenizer.getNextDataToken() != null) {
-    }
   }
 
   ////////////////////////////////////////////////////////////////
@@ -677,14 +663,14 @@ public class CifReader extends AtomSetCollectionReader implements
     parseLoopParameters(atomTypeFields);
     for (int i = propertyCount; --i >= 0;)
       if (fieldOf[i] == NONE) {
-        skipLoop();
+        parser.skipLoop();
         return;
       }
 
-    while (tokenizer.getData()) {
+    while (parser.getData()) {
       String atomTypeSymbol = null;
       float oxidationNumber = Float.NaN;
-      int n = tokenizer.getFieldCount();
+      int n = parser.getFieldCount();
       for (int i = 0; i < n; ++i) {
         switch (fieldProperty(i)) {
         case NONE:
@@ -855,18 +841,18 @@ public class CifReader extends AtomSetCollectionReader implements
       isAnisoData = true;
     } else {
       // it is a different kind of _atom_site loop block
-      skipLoop();
+      parser.skipLoop();
       return false;
     }
     int iAtom = -1;
     int modelField = -1;
     int siteMult = 0;
-    while (tokenizer.getData()) {
+    while (parser.getData()) {
       Atom atom = new Atom();
       assemblyId = null;
       if (isPDBX) {
         if (modelField == -1) {
-          int n = tokenizer.getFieldCount();
+          int n = parser.getFieldCount();
           for (int i = 0; i < n; ++i)
             if (fieldProperty(i) == MODEL_NO) {
               modelField = i;
@@ -881,7 +867,7 @@ public class CifReader extends AtomSetCollectionReader implements
           int modelNO = parseIntStr(field);
           if (modelNO != currentModelNO) {
             if (iHaveDesiredModel) {
-              skipLoop();
+              parser.skipLoop();
               // but only this atom loop
               skipping = false;
               continuing = true;
@@ -896,7 +882,7 @@ public class CifReader extends AtomSetCollectionReader implements
             continue;
         }
       }
-      int n = tokenizer.getFieldCount();
+      int n = parser.getFieldCount();
       for (int i = 0; i < n; ++i) {
         int tok = fieldProperty(i);
         switch (tok) {
@@ -1022,7 +1008,7 @@ public class CifReader extends AtomSetCollectionReader implements
           if (field.equalsIgnoreCase("Uiso")) {
             int j = fieldOf[U_ISO_OR_EQUIV];
             if (j != NONE)
-              setU(atom, 7, parseFloatStr(tokenizer.getLoopData(j)));
+              setU(atom, 7, parseFloatStr(parser.getLoopData(j)));
           }
           break;
         case ANISO_LABEL:
@@ -1148,14 +1134,14 @@ public class CifReader extends AtomSetCollectionReader implements
     parseLoopParameters(citationFields);
     float[] m = new float[16];
     m[15] = 1;
-    while (tokenizer.getData()) {
-      int n = tokenizer.getFieldCount();
+    while (parser.getData()) {
+      int n = parser.getFieldCount();
       for (int i = 0; i < n; ++i) {
         switch (fieldProperty(i)) {
         case CITATION_ID:
           break;
         case CITATION_TITLE:
-          appendLoadNote("TITLE: " + tokenizer.toUnicode(field));
+          appendLoadNote("TITLE: " + parser.toUnicode(field));
           break;
         }
       }
@@ -1191,13 +1177,13 @@ public class CifReader extends AtomSetCollectionReader implements
     if (nRefs != 1) {
       Logger
           .warn("?que? _symmetry_equiv or _space_group_symop property not found");
-      skipLoop();
+      parser.skipLoop();
       return;
     }
     int n = 0;
-    while (tokenizer.getData()) {
+    while (parser.getData()) {
       boolean ssgop = false;
-      int nn = tokenizer.getFieldCount();
+      int nn = parser.getFieldCount();
       for (int i = 0; i < nn; ++i) {
         switch (fieldProperty(i)) {
         case SYM_SSG_XYZ:
@@ -1267,7 +1253,7 @@ public class CifReader extends AtomSetCollectionReader implements
     for (int i = propertyCount; --i >= 0;)
       if (propertyOf[i] != CCDC_GEOM_BOND_TYPE && fieldOf[i] == NONE) {
         Logger.warn("?que? missing property: " + geomBondFields[i]);
-        skipLoop();
+        parser.skipLoop();
         return;
       }
 
@@ -1275,13 +1261,13 @@ public class CifReader extends AtomSetCollectionReader implements
     String name2 = null;
     Integer order = Integer.valueOf(1);
     int bondCount = 0;
-    while (tokenizer.getData()) {
+    while (parser.getData()) {
       int atomIndex1 = -1;
       int atomIndex2 = -1;
       float distance = 0;
       float dx = 0;
       //String siteSym2 = null;
-      int nn = tokenizer.getFieldCount();
+      int nn = parser.getFieldCount();
       for (int i = 0; i < nn; ++i) {
         switch (fieldProperty(i)) {
         case NONE:

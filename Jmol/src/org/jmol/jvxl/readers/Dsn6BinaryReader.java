@@ -29,7 +29,7 @@ import java.io.BufferedReader;
 
 import org.jmol.util.Logger;
 
-import javajs.util.Binary;
+import javajs.util.Rdr;
 import javajs.util.SB;
 
 
@@ -59,7 +59,7 @@ class Dsn6BinaryReader extends MapFileReader {
     if (data == null)
       binarydoc.setStream(sg.getAtomDataServer().getBufferedInputStream(fileName), true);
     else 
-      binarydoc.setStreamData(new DataInputStream(Binary.getBIS(data.getBytes())), true);
+      binarydoc.setStreamData(new DataInputStream(Rdr.getBIS(data.getBytes())), true);
     // data are HIGH on the inside and LOW on the outside
     if (params.thePlane == null)
       params.insideOut = !params.insideOut;

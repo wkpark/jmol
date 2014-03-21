@@ -108,7 +108,7 @@ import javajs.util.P3;
 import javajs.util.P4;
 import org.jmol.util.Rectangle;
 import javajs.util.A4;
-import javajs.util.Binary;
+import javajs.util.Rdr;
 import javajs.util.CU;
 import javajs.util.DF;
 import javajs.util.OC;
@@ -2305,7 +2305,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         Map<String, Object> htParams = new Hashtable<String, Object>();
         htParams.put("modelOnly", Boolean.TRUE);
         model = getModelAdapter().getAtomSetCollectionReader("ligand", null,
-            Binary.getBR(data), htParams);
+            Rdr.getBR(data), htParams);
         isError = (model instanceof String);
         if (!isError) {
           model = getModelAdapter().getAtomSetCollection(model);
@@ -2581,7 +2581,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
                                              boolean isAppend) {
     // loadInline, openStringInline
 
-    BufferedReader br = Binary.getBR(strModel);
+    BufferedReader br = Rdr.getBR(strModel);
     String type = getModelAdapter().getFileTypeName(br);
     if (type == null)
       return "unknown file type";
@@ -3631,7 +3631,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public Map<String, Object> getCifData(int modelIndex) {
     String name = getModelFileName(modelIndex);
     String data = getFileAsString(name, false);
-    return (data == null ? null : Binary.readCifData(Binary.getBR(data)));
+    return (data == null ? null : Rdr.readCifData(Rdr.getBR(data)));
   }
 
   public String getPDBHeader() {

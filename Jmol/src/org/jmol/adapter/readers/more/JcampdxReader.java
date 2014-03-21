@@ -24,7 +24,7 @@
 
 package org.jmol.adapter.readers.more;
 
-import javajs.util.Binary;
+import javajs.util.Rdr;
 import javajs.util.List;
 import javajs.util.PT;
 
@@ -185,7 +185,7 @@ public class JcampdxReader extends MolReader implements JmolJDXMOLReader {
     AtomSetCollection model = null;
     while (true) {
       Object ret = SmarterJmolAdapter.staticGetAtomSetCollectionReader(
-          filePath, type, Binary.getBR(data), htParams);
+          filePath, type, Rdr.getBR(data), htParams);
       if (ret instanceof String) {
         Logger.warn("" + ret);
         break;

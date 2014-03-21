@@ -218,7 +218,7 @@ public class MSCifReader extends MSReader implements MSCifInterface {
       cr.atomSetCollection.newAtomSet();
     cr.parseLoopParameters(modulationFields);
     int tok;
-    while (cr.tokenizer.getData()) {
+    while (cr.parser.getData()) {
       boolean ignore = false;
       String id = null;
       String atomLabel = null;
@@ -227,7 +227,7 @@ public class MSCifReader extends MSReader implements MSCifInterface {
       double c = Double.NaN;
       double w = Double.NaN;
       String fid = null;
-      int n = cr.tokenizer.getFieldCount();
+      int n = cr.parser.getFieldCount();
       for (int i = 0; i < n; ++i) {
         switch (tok = fieldProperty(cr, i)) {
         case FD_ID:
@@ -424,7 +424,7 @@ public class MSCifReader extends MSReader implements MSCifInterface {
   private void processSubsystemLoopBlock() throws Exception {
     CifReader cr = (CifReader) this.cr;
     cr.parseLoopParameters(null);
-    while (cr.tokenizer.getData()) {
+    while (cr.parser.getData()) {
       fieldProperty(cr, 0);
       String id = field;
       addSubsystem(id, getSubSystemMatrix(cr, 1));
@@ -436,10 +436,10 @@ public class MSCifReader extends MSReader implements MSCifInterface {
     double[][] a = m.getArray();
     String key;
     int p;
-    int n = cr.tokenizer.getFieldCount();
+    int n = cr.parser.getFieldCount();
     for (; i < n; ++i) {
       if ((p = fieldProperty(cr, i)) < 0 
-          || !(key = cr.tokenizer.getField(p)).contains("_w_"))
+          || !(key = cr.parser.getField(p)).contains("_w_"))
         continue;
       String[] tokens = PT.split(key, "_");
       int r = cr.parseIntStr(tokens[tokens.length - 2]) - 1;
@@ -450,7 +450,7 @@ public class MSCifReader extends MSReader implements MSCifInterface {
   }
 
   private int fieldProperty(CifReader cr, int i) {
-    return ((field = cr.tokenizer.getLoopData(i)).length() > 0 
+    return ((field = cr.parser.getLoopData(i)).length() > 0 
         && field.charAt(0) != '\0' ? 
             cr.propertyOf[i] : NONE);
   }

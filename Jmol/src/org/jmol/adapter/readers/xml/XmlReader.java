@@ -33,7 +33,7 @@ import java.io.BufferedInputStream;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javajs.util.Binary;
+import javajs.util.Rdr;
 
 import org.jmol.util.Logger;
 
@@ -191,7 +191,7 @@ public class XmlReader extends AtomSetCollectionReader {
       {
       }
       if (o instanceof BufferedInputStream)
-        o = Binary.StreamToString(Binary.getBIS(data));
+        o = Rdr.StreamToUTF8String(Rdr.getBIS(data));
       /**
        * 
        * @j2sNative

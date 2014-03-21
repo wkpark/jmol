@@ -27,7 +27,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 
 import javajs.api.ZInputStream;
-import javajs.util.Binary;
+import javajs.util.Rdr;
 import javajs.util.List;
 import javajs.util.P3;
 import javajs.util.PT;
@@ -603,7 +603,7 @@ public class ScriptManager implements JmolScriptManager {
       if (zipDirectory.indexOf("JmolManifest") >= 0)
         return "Jmol";
       return vwr.getModelAdapter().getFileTypeName(
-          Binary.getBR(zipDirectory));
+          Rdr.getBR(zipDirectory));
     }
     if (PT.isAS(br)) {
       return ((String[]) br)[0];
@@ -614,7 +614,7 @@ public class ScriptManager implements JmolScriptManager {
   private String getZipDirectoryAsString(String fileName) {
     Object t = vwr.fileManager.getBufferedInputStreamOrErrorMessageFromName(
         fileName, fileName, false, false, null, false, true);
-    return Binary.getZipDirectoryAsStringAndClose((BufferedInputStream) t);
+    return Rdr.getZipDirectoryAsStringAndClose((BufferedInputStream) t);
   }
 
   private static int prevCovalentVersion = 1;

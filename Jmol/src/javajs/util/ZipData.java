@@ -42,7 +42,7 @@ public class ZipData {
   
   public int addBytes(byte[] byteBuf, int nSectorBytes, int nBytesRemaining) {
     if (pt == 0) {
-      if (!Binary.isGzipB(byteBuf)) {
+      if (!Rdr.isGzipB(byteBuf)) {
         isEnabled = false;
         return -1;
       }

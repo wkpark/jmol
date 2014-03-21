@@ -14,7 +14,7 @@ import org.jmol.io.JmolBinary;
 import org.jmol.java.BS;
 
 import javajs.api.GenericImageEncoder;
-import javajs.util.Binary;
+import javajs.util.Rdr;
 import javajs.util.OC;
 import javajs.util.List;
 import javajs.util.PT;
@@ -928,7 +928,7 @@ abstract class OutputManager {
                                  Hashtable<Object, String> crcMap,
                                  boolean isSparDir, String newName, int ptSlash,
                                  List<Object> v) {
-     Integer crcValue = Integer.valueOf(Binary.getCrcValue(ret));
+     Integer crcValue = Integer.valueOf(Rdr.getCrcValue(ret));
      // only add to the data list v when the data in the file is new
      if (crcMap.containsKey(crcValue)) {
        // let newName point to the already added data
@@ -989,7 +989,7 @@ abstract class OutputManager {
         bos = new BufferedOutputStream(out);
       }
       FileManager fm = vwr.fileManager;
-      OutputStream zos = (OutputStream) Binary.getZipOutputStream(bos);
+      OutputStream zos = (OutputStream) Rdr.getZipOutputStream(bos);
       for (int i = 0; i < fileNamesAndByteArrays.size(); i += 3) {
         String fname = (String) fileNamesAndByteArrays.get(i);
         byte[] bytes = null;
@@ -1016,7 +1016,7 @@ abstract class OutputManager {
           continue;
         }
         fileList += key;
-        Binary.addZipEntry(zos, fnameShort);
+        Rdr.addZipEntry(zos, fnameShort);
         int nOut = 0;
         if (bytes == null) {
           // get data from disk
@@ -1033,7 +1033,7 @@ abstract class OutputManager {
           nOut += bytes.length;
         }
         nBytesOut += nOut;
-        Binary.closeZipEntry(zos);
+        Rdr.closeZipEntry(zos);
         Logger.info("...added " + fname + " (" + nOut + " bytes)");
       }
       zos.flush();

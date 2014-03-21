@@ -3,10 +3,10 @@ package javajs.api;
 import java.io.BufferedReader;
 import java.util.Map;
 
-import javajs.util.CifDataReader;
+import javajs.util.CifDataParser;
 import javajs.util.GenericLineReader;
 
-public interface GenericCifDataReader {
+public interface GenericCifDataParser {
 
   static final int NONE = -1;
 
@@ -16,7 +16,13 @@ public interface GenericCifDataReader {
 
   boolean getData() throws Exception;
 
+  String getField(int i);
+
+  int getFieldCount();
+
   String getFileHeader();
+
+  String getLoopData(int i);
 
   String getNextDataToken() throws Exception;
 
@@ -24,20 +30,16 @@ public interface GenericCifDataReader {
 
   String getTokenPeeked();
 
+  int parseLoopParameters(String[] fields, int[] fieldOf, int[] propertyOf) throws Exception;
+
   String peekToken() throws Exception;
 
   String readLine();
 
-  CifDataReader set(GenericLineReader reader, BufferedReader br);
+  CifDataParser set(GenericLineReader reader, BufferedReader br);
 
   String toUnicode(String data);
 
-  String getLoopData(int i);
-
-  int parseLoopParameters(String[] fields, int[] fieldOf, int[] propertyOf) throws Exception;
-
-  int getFieldCount();
-
-  String getField(int i);
+  void skipLoop() throws Exception;
 
 }

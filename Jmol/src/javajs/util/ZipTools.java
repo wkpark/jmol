@@ -107,13 +107,13 @@ public class ZipTools implements GenericZipTools {
         listing.append(name).appendC('\n');
         String sname = "|" + name.substring(name.lastIndexOf("/") + 1) + "|";
         boolean asBinaryString = (binaryFileList.indexOf(sname) >= 0);
-        byte[] bytes = Binary.getStreamBytes(zis, ze.getSize());
+        byte[] bytes = Rdr.getLimitedStreamBytes(zis, ze.getSize());
         String str;
         if (asBinaryString) {
           str = getBinaryStringForBytes(bytes);
           name += ":asBinaryString";
         } else {
-          str = Binary.fixUTF(bytes);
+          str = Rdr.fixUTF(bytes);
         }
         str = "BEGIN Directory Entry " + name + "\n" + str
             + "\nEND Directory Entry " + name + "\n";
@@ -150,7 +150,7 @@ public class ZipTools implements GenericZipTools {
      SB ret;
      if (list == null || listPtr >= list.length)
        return getZipDirectoryAsStringAndClose(bis);
-     bis = Binary.getPngZipStream(bis);
+     bis = Rdr.getPngZipStream(bis, true);
      String fileName = list[listPtr];
      ZipInputStream zis = new ZipInputStream(bis);
      ZipEntry ze;
@@ -165,7 +165,7 @@ public class ZipTools implements GenericZipTools {
              ret.append(name).appendC('\n');
          }
          String str = ret.toString();
-         return (asBufferedInputStream ? Binary.getBIS(str
+         return (asBufferedInputStream ? Rdr.getBIS(str
              .getBytes()) : str);
        }
        int pt = fileName.indexOf(":asBinaryString");
@@ -176,24 +176,24 @@ public class ZipTools implements GenericZipTools {
        while ((ze = zis.getNextEntry()) != null
            && !fileName.equals(ze.getName())) {
        }
-       byte[] bytes = (ze == null ? null : Binary.getStreamBytes(zis,
+       byte[] bytes = (ze == null ? null : Rdr.getLimitedStreamBytes(zis,
            ze.getSize()));
        ze = null;
        zis.close();
        if (bytes == null)
          return "";
-       if (Binary.isZipB(bytes) || Binary.isPngZipB(bytes))
-         return getZipFileDirectory(Binary.getBIS(bytes), list,
+       if (Rdr.isZipB(bytes) || Rdr.isPngZipB(bytes))
+         return getZipFileDirectory(Rdr.getBIS(bytes), list,
              ++listPtr, asBufferedInputStream);
        if (asBufferedInputStream)
-         return Binary.getBIS(bytes);
+         return Rdr.getBIS(bytes);
        if (asBinaryString) {
          ret = new SB();
          for (int i = 0; i < bytes.length; i++)
            ret.append(Integer.toHexString(bytes[i] & 0xFF)).appendC(' ');
          return ret.toString();
        }
-       return Binary.fixUTF(bytes);
+       return Rdr.fixUTF(bytes);
      } catch (Exception e) {
        return "";
      }
@@ -207,15 +207,15 @@ public class ZipTools implements GenericZipTools {
     if (fileName.lastIndexOf("/") == fileName.length() - 1)
       return ret;
     try {
-      bis = Binary.getPngZipStream(bis);
+      bis = Rdr.getPngZipStream(bis, true);
       ZipInputStream zis = new ZipInputStream(bis);
       ZipEntry ze;
       while ((ze = zis.getNextEntry()) != null) {
         if (!fileName.equals(ze.getName()))
           continue;
-        byte[] bytes = Binary.getStreamBytes(zis, ze.getSize());
-        return ((Binary.isZipB(bytes) || Binary.isPngZipB(bytes)) && ++listPtr < list.length ? getZipFileContentsAsBytes(
-            Binary.getBIS(bytes), list, listPtr) : bytes);
+        byte[] bytes = Rdr.getLimitedStreamBytes(zis, ze.getSize());
+        return ((Rdr.isZipB(bytes) || Rdr.isPngZipB(bytes)) && ++listPtr < list.length ? getZipFileContentsAsBytes(
+            Rdr.getBIS(bytes), list, listPtr) : bytes);
       }
     } catch (Exception e) {
     }
@@ -253,7 +253,7 @@ public class ZipTools implements GenericZipTools {
   private String[] getZipDirectoryOrErrorAndClose(BufferedInputStream bis,
                                                   String manifestID)
       throws IOException {
-    bis = Binary.getPngZipStream(bis);
+    bis = Rdr.getPngZipStream(bis, true);
     List<String> v = new List<String>();
     ZipInputStream zis = new ZipInputStream(bis);
     ZipEntry ze;
@@ -272,7 +272,7 @@ public class ZipTools implements GenericZipTools {
   }
 
   public static String getStreamAsString(InputStream is) throws IOException {
-    return Binary.fixUTF(Binary.getStreamBytes(is, -1));
+    return Rdr.fixUTF(Rdr.getLimitedStreamBytes(is, -1));
   }
 
   public static String cacheZipContents(BufferedInputStream bis,
@@ -288,7 +288,7 @@ public class ZipTools implements GenericZipTools {
         if (fileName != null)
           listing.append(name).appendC('\n');
         long nBytes = ze.getSize();
-        byte[] bytes = Binary.getStreamBytes(zis, nBytes);
+        byte[] bytes = Rdr.getLimitedStreamBytes(zis, nBytes);
         n += bytes.length;
         Object o = (asByteArray ? new BArray(bytes) : bytes);        
         cache.put((fileName == null ? "" : fileName + "|") + name, o);
@@ -315,8 +315,8 @@ public class ZipTools implements GenericZipTools {
 
   public static BufferedInputStream getUnGzippedInputStream(byte[] bytes) {
     try {
-      return Binary
-          .getUnzippedInputStream(Binary.getBIS(bytes));
+      return Rdr
+          .getUnzippedInputStream(Rdr.getBIS(bytes));
     } catch (Exception e) {
       return null;
     }
@@ -356,18 +356,13 @@ public class ZipTools implements GenericZipTools {
   @Override
   public void readFileAsMap(BufferedInputStream bis, Map<String, Object> bdata) {
     try {
-      if (Binary.isPngZipStream(bis)) {
-        int[] pt_count = new int[2];
-        Binary.getPngZipPointAndCount(bis, pt_count);
-        bdata.put(
-            "_IMAGE_",
-            new BArray(Binary.deActivatePngZipB(Binary.getStreamBytes(bis,
-                pt_count[0]))));
+      if (Rdr.isPngZipStream(bis)) {
+        bdata.put("_IMAGE_", new BArray(getPngImageBytes(bis)));
         cacheZipContents(bis, null, bdata, true);
-      } else if (Binary.isZipS(bis)) {
+      } else if (Rdr.isZipS(bis)) {
         cacheZipContents(bis, null, bdata, true);
       } else {
-        bdata.put("_DATA_", new BArray(Binary.getStreamBytes(bis, -1)));
+        bdata.put("_DATA_", new BArray(Rdr.getLimitedStreamBytes(bis, -1)));
       }
       bdata.put("$_BINARY_$", Boolean.TRUE);
     } catch (IOException e) {
@@ -375,6 +370,37 @@ public class ZipTools implements GenericZipTools {
       bdata.put("_ERROR_", e.getMessage());
     }
   }
+
+  private static byte[] getPngImageBytes(BufferedInputStream bis) {
+    try {
+      if (Rdr.isPngZipStream(bis)) {
+        int pt_count[] = new int[2];
+        Rdr.getPngZipPointAndCount(bis, pt_count);
+        if (pt_count[1] != 0)
+          return deActivatePngZipB(Rdr.getLimitedStreamBytes(bis, pt_count[0]));
+      }
+      return Rdr.getLimitedStreamBytes(bis, -1);
+    } catch (IOException e) {
+      return null;
+    }
+  }
+
+  /**
+   * Once a PNGJ image has been extracted, we want to red-line its
+   * iTXt "Jmol Type PNGJ" tag, since it is no longer associated with
+   * ZIP data.
+   *  
+   * @param bytes
+   * @return disfigured bytes
+   * 
+   */
+  private static byte[] deActivatePngZipB(byte[] bytes) {
+    // \0PNGJ starting at byte 50 changed to \0 NGJ
+    if (Rdr.isPngZipB(bytes))
+      bytes[51] = 32;
+    return bytes;
+  }
+
 
 
 }

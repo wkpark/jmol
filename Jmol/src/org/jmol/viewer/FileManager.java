@@ -46,7 +46,7 @@ import javajs.api.GenericFileInterface;
 import javajs.api.GenericBinaryDocument;
 import javajs.util.AU;
 import javajs.util.Base64;
-import javajs.util.Binary;
+import javajs.util.Rdr;
 import javajs.util.DataReader;
 import javajs.util.OC;
 import javajs.util.List;
@@ -84,7 +84,7 @@ public class FileManager implements BytePoster {
   }
 
   public void clearPngjCache(String fileName) {
-    jmb.clearPngjCache(fileName == null ? null : getCanonicalName(Binary.getZipRoot(fileName)));
+    jmb.clearPngjCache(fileName == null ? null : getCanonicalName(Rdr.getZipRoot(fileName)));
   }
 
   private void setLoadState(Map<String, Object> htParams) {
@@ -242,7 +242,7 @@ public class FileManager implements BytePoster {
     boolean isAddH = (strModel.indexOf(JC.ADD_HYDROGEN_TITLE) >= 0);
     String[] fnames = (isAddH ? getFileInfo() : null);
     FileReader fileReader = new FileReader(this, vwr, "string", "string", "string", null,
-        Binary.getBR(strModel), htParams, isAppend);
+        Rdr.getBR(strModel), htParams, isAppend);
     fileReader.run();
     if (fnames != null)
       setFileInfo(fnames);
@@ -422,14 +422,14 @@ public class FileManager implements BytePoster {
           byte[] bytes = null;
           if (ret instanceof SB) {
             SB sb = (SB) ret;
-            if (allowReader && !Binary.isBase64(sb))
-              return Binary.getBR(sb.toString());
-            bytes = Binary.getBytesFromSB(sb);
+            if (allowReader && !Rdr.isBase64(sb))
+              return Rdr.getBR(sb.toString());
+            bytes = Rdr.getBytesFromSB(sb);
           } else if (PT.isAB(ret)) {
             bytes = (byte[]) ret;
           }
           if (bytes != null)
-            ret = Binary.getBIS(bytes);
+            ret = Rdr.getBIS(bytes);
         } else if (!allowCached || (cacheBytes = (byte[]) cacheGet(name, true)) == null) {
           if (showMsg)
             Logger.info("FileManager opening 2 " + name);
@@ -438,7 +438,7 @@ public class FileManager implements BytePoster {
         if (ret instanceof String)
           return ret;
       }
-      bis = (cacheBytes == null ? (BufferedInputStream) ret : Binary.getBIS(cacheBytes));
+      bis = (cacheBytes == null ? (BufferedInputStream) ret : Rdr.getBIS(cacheBytes));
       if (checkOnly) {
         bis.close();
         bis = null;
@@ -494,7 +494,7 @@ public class FileManager implements BytePoster {
       return new String[] { null, "cannot read file name: " + filename };
     String name = names[0];
     String fullPath = names[0].replace('\\', '/');
-    name = Binary.getZipRoot(name);
+    name = Rdr.getZipRoot(name);
     Object errMsg = getBufferedInputStreamOrErrorMessageFromName(name, fullPath, false, !getStream, null, false, !getStream);
     ret[0] = fullPath;
     if (errMsg instanceof String)
@@ -515,7 +515,7 @@ public class FileManager implements BytePoster {
       if (isBytes) {
         bytes = (byte[]) data;
       } else {
-        return Binary.getBR((String) data);
+        return Rdr.getBR((String) data);
       }
     }
     String[] names = getClassifiedName(name, true);
@@ -569,7 +569,7 @@ public class FileManager implements BytePoster {
         }
         s = sb.toString();
         jmb.spardirPut(name00.replace('\\', '/'), s.getBytes());
-        return Binary.getBR(s);
+        return Rdr.getBR(s);
       }
       // continuing...
       // here, for example, for an SPT file load that is not just a type check
@@ -592,30 +592,30 @@ public class FileManager implements BytePoster {
     }
     Object t = (bytes == null ? getBufferedInputStreamOrErrorMessageFromName(
         name, fullName, true, false, null, !forceInputStream, true)
-        : Binary.getBIS(bytes));
+        : Rdr.getBIS(bytes));
     try {
       if (t instanceof String)
         return t;
       if (t instanceof BufferedReader)
         return t;
-      BufferedInputStream bis = Binary.getUnzippedInputStream((BufferedInputStream) t);
-      if (Binary.isCompoundDocumentS(bis)) {
+      BufferedInputStream bis = Rdr.getUnzippedInputStream((BufferedInputStream) t);
+      if (Rdr.isCompoundDocumentS(bis)) {
         GenericBinaryDocument doc = (GenericBinaryDocument) Interface
             .getInterface("javajs.util.CompoundDocument");
         doc.setStream(bis, true);
-        return Binary.getBR(doc.getAllDataFiles(
+        return Rdr.getBR(doc.getAllDataFiles(
             "Molecule", "Input").toString());
       }
-      if (JmolBinary.isPickleS(bis))
+      if (Rdr.isPickleS(bis))
         return bis;
-      bis = Binary.getPngZipStream(bis);
-      if (Binary.isZipS(bis)) {
+      bis = Rdr.getPngZipStream(bis, true);
+      if (Rdr.isZipS(bis)) {
         if (allowZipStream)
-          return Binary.newZipInputStream(bis);
-        Object o = Binary.getZipFileDirectory(bis, subFileList, 1, forceInputStream);
-        return (o instanceof String ? Binary.getBR((String) o) : o);
+          return Rdr.newZipInputStream(bis);
+        Object o = Rdr.getZipFileDirectory(bis, subFileList, 1, forceInputStream);
+        return (o instanceof String ? Rdr.getBR((String) o) : o);
       }
-      return (forceInputStream ? bis : Binary.getBufferedReader(bis, null));
+      return (forceInputStream ? bis : Rdr.getBufferedReader(bis, null));
     } catch (Exception ioe) {
       return ioe.toString();
     }
@@ -684,13 +684,13 @@ public class FileManager implements BytePoster {
         return name0;
       }
       bis = (BufferedInputStream) t;
-      if (Binary.isCompoundDocumentS(bis)) {
+      if (Rdr.isCompoundDocumentS(bis)) {
         GenericBinaryDocument doc = (GenericBinaryDocument) Interface
             .getInterface("javajs.util.CompoundDocument");
         doc.setStream(bis, true);
         doc.getAllDataMapped(name.replace('\\', '/'), "Molecule", fileData);
-      } else if (Binary.isZipS(bis)) {
-        Binary.getAllZipData(bis, subFileList, name.replace('\\', '/'), "Molecule",
+      } else if (Rdr.isZipS(bis)) {
+        Rdr.getAllZipData(bis, subFileList, name.replace('\\', '/'), "Molecule",
             fileData);
       } else if (asBinaryString) {
         // used for Spartan binary file reading
@@ -711,8 +711,8 @@ public class FileManager implements BytePoster {
           sb.append("\nEND Directory Entry " + name0 + "\n");
         fileData.put(name0, sb.toString());
       } else {
-        BufferedReader br = Binary.getBufferedReader(
-            Binary.isGzipS(bis) ? new BufferedInputStream(Binary.newGZIPInputStream(bis)) : bis, null);
+        BufferedReader br = Rdr.getBufferedReader(
+            Rdr.isGzipS(bis) ? new BufferedInputStream(Rdr.newGZIPInputStream(bis)) : bis, null);
         String line;
         sb = new SB();
         if (header != null)
@@ -749,7 +749,7 @@ public class FileManager implements BytePoster {
   public String[] getZipDirectory(String fileName, boolean addManifest) {
     Object t = getBufferedInputStreamOrErrorMessageFromName(fileName, fileName,
         false, false, null, false, true);
-    return Binary.getZipDirectoryAndClose((BufferedInputStream) t, addManifest ? "JmolManifest" : null);
+    return Rdr.getZipDirectoryAndClose((BufferedInputStream) t, addManifest ? "JmolManifest" : null);
   }
 
   public Object getFileAsBytes(String name, OC out,
@@ -775,9 +775,9 @@ public class FileManager implements BytePoster {
           || !allowZip 
           || subFileList == null
           || subFileList.length <= 1 
-          || !Binary.isZipS(bis) && !Binary.isPngZipStream(bis) 
-              ? Binary.getStreamAsBytes(bis,out) 
-          : Binary.getZipFileContentsAsBytes(bis, subFileList, 1));
+          || !Rdr.isZipS(bis) && !Rdr.isPngZipStream(bis) 
+              ? Rdr.getStreamAsBytes(bis,out) 
+          : Rdr.getZipFileContentsAsBytes(bis, subFileList, 1));
       bis.close();
       return bytes;
     } catch (Exception ioe) {
@@ -796,7 +796,7 @@ public class FileManager implements BytePoster {
         bdata.put("_ERROR_", errMsg[0]);
         return bdata;
       }
-      t = Binary.getBIS(bytes);
+      t = Rdr.getBIS(bytes);
     } else {
       String[] data = new String[2];
       t = getFullPathNameOrError(name, true, data);
@@ -811,7 +811,7 @@ public class FileManager implements BytePoster {
       }
     }
     try {
-      Binary.readFileAsMap((BufferedInputStream) t, bdata);
+      Rdr.readFileAsMap((BufferedInputStream) t, bdata);
     } catch (Exception e) {
       bdata.clear();
       bdata.put("_ERROR_", "" + e);
@@ -824,16 +824,18 @@ public class FileManager implements BytePoster {
    * @param data
    *        [0] initially path name, but returned as full path name; [1]file
    *        contents (directory listing for a ZIP/JAR file) or error string
-   * @param nBytesMax or -1
+   * @param nBytesMax
+   *        or -1
    * @param doSpecialLoad
-   * @param allowBinary 
-   * @param checkProtected TODO
+   * @param allowBinary
+   * @param checkProtected
+   *        TODO
    * @return true if successful; false on error
    */
 
   boolean getFileDataOrErrorAsString(String[] data, int nBytesMax,
-                                     boolean doSpecialLoad, boolean allowBinary, 
-                                     boolean checkProtected) {
+                                     boolean doSpecialLoad,
+                                     boolean allowBinary, boolean checkProtected) {
     data[1] = "";
     String name = data[0];
     if (name == null)
@@ -846,10 +848,11 @@ public class FileManager implements BytePoster {
     }
     if (checkProtected && !checkSecurity(data[0])) {
       data[1] = "java.io. Security exception: cannot read file " + data[0];
-    	return false;
+      return false;
     }
     try {
-    return Binary.readAllAsString((BufferedReader) t, nBytesMax, allowBinary, data, 1);
+      return Rdr.readAllAsString((BufferedReader) t, nBytesMax, allowBinary,
+          data, 1);
     } catch (Exception e) {
       return false;
     }
@@ -1344,7 +1347,7 @@ public class FileManager implements BytePoster {
     if (ret instanceof String)
       return (String) ret;
     try {
-      ret = Binary.getStreamAsBytes((BufferedInputStream) ret, null);
+      ret = Rdr.getStreamAsBytes((BufferedInputStream) ret, null);
     } catch (IOException e) {
       try {
         ((BufferedInputStream) ret).close();
@@ -1352,7 +1355,7 @@ public class FileManager implements BytePoster {
         // ignore
       }
     }
-    return (ret == null ? "" : Binary.fixUTF((byte[]) ret));
+    return (ret == null ? "" : Rdr.fixUTF((byte[]) ret));
   }
 
 

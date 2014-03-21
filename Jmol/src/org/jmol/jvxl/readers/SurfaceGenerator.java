@@ -139,7 +139,7 @@ import javajs.util.List;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 
-import javajs.util.Binary;
+import javajs.util.Rdr;
 import javajs.util.OC;
 import javajs.util.PT;
 import javajs.util.P3;
@@ -1271,7 +1271,7 @@ public class SurfaceGenerator {
       data = (String) value;
       // this will be OK, because any string will be a simple string, 
       // not a binary file.
-      value = Binary.getBR((String) value);
+      value = Rdr.getBR((String) value);
     }
     BufferedReader br = (BufferedReader) value;
     if (fileType == null)
@@ -1293,7 +1293,7 @@ public class SurfaceGenerator {
         return null;
       }
       try {
-        br = Binary.getBufferedReader((BufferedInputStream) value, null);
+        br = Rdr.getBufferedReader((BufferedInputStream) value, null);
       } catch (Exception e) {
         // TODO
       }

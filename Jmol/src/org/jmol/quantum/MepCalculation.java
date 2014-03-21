@@ -36,7 +36,7 @@ import org.jmol.modelset.Atom;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
 
-import javajs.util.Binary;
+import javajs.util.Rdr;
 import javajs.util.P3;
 import javajs.util.PT;
 
@@ -219,7 +219,7 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
     htAtomicPotentials = new Hashtable<String, Object>();
     try {
       br = (data == null ? JmolBinary.getBufferedReaderForResource(vwr,
-          this, "org/jmol/quantum/", resourceName) : Binary
+          this, "org/jmol/quantum/", resourceName) : Rdr
           .getBR(data));
       String line;
       while ((line = br.readLine()) != null) {

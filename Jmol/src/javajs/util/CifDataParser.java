@@ -6,11 +6,11 @@ import java.util.Hashtable;
 
 import java.util.Map;
 
-import javajs.api.GenericCifDataReader;
+import javajs.api.GenericCifDataParser;
 
 
 
-public class CifDataReader implements GenericCifDataReader {
+public class CifDataParser implements GenericCifDataParser {
   /**
    *
    * A special tokenizer class for dealing with quoted strings in CIF files.
@@ -83,21 +83,62 @@ public class CifDataReader implements GenericCifDataReader {
   private SB fileHeader = new SB();
   private boolean isHeader = true;
   
+  /**
+   * A global, static map that contains field information. The assumption is that
+   * if we read a set of fields for, say, atom_site, once in a lifetime, then
+   * that should be good forever. Those are static lists. Or should be....
+   */
+  private static Map<String, Integer> htFields = new Hashtable<String, Integer>();
+  
   ////////////////////////////////////////////////////////////////
   // special tokenizer class
   ////////////////////////////////////////////////////////////////
 
-  public CifDataReader() {
+  public CifDataParser() {
     // for reflection
   }
     
+  private String[] fields;
+
   @Override
-  public CifDataReader set(GenericLineReader reader, BufferedReader br) {
+  public String getLoopData(int i) {
+    return loopData[i];
+  }
+
+  @Override
+  public int getFieldCount() {
+    return fieldCount;
+  }
+
+  @Override
+  public String getField(int i) {
+    return fields[i];
+  }
+
+  /**
+   * A Chemical Information File data parser.
+   * 
+   * Should be called immediately upon construction.
+   *  
+   * Two options; one of reader or br should be null, or reader will be
+   * ignored. Just simpler this way...
+   * 
+   * @param reader  Anything that can deliver a line of text or null
+   * @param br      A standard BufferedReader.
+   *  
+   */
+  @Override
+  public CifDataParser set(GenericLineReader reader, BufferedReader br) {
     this.reader = reader;
     this.br = br;
     return this;
   }
 
+  /**
+   * 
+   * @return commented-out section at the start of a CIF file.
+   * 
+   */
   @Override
   public String getFileHeader() {
     return fileHeader.toString();
@@ -105,7 +146,9 @@ public class CifDataReader implements GenericCifDataReader {
   
   
   /**
-   * reads all Cif Data for a reader defined in the constructor
+   * Parses all CIF data for a reader defined in the constructor
+   * into a standard Map structure and close the BufferedReader if
+   * it exists. 
    * 
    * @return Hashtable of models Vector of Hashtable data
    */
@@ -113,7 +156,8 @@ public class CifDataReader implements GenericCifDataReader {
   public Map<String, Object> getAllCifData() {
     line = "";
     String key;
-    allData = new Hashtable<String, Object>();
+    Map<String, Object> data = null;
+    Map<String, Object> allData = new Hashtable<String, Object>();
     List<Map<String, Object>> models = new  List<Map<String,Object>>();
     allData.put("models", models);
     try {
@@ -124,7 +168,7 @@ public class CifDataReader implements GenericCifDataReader {
           continue;
         }
         if (key.startsWith("loop_")) {
-          getCifLoopData();
+          getCifLoopData(data);
           continue;
         }
         if (key.indexOf("_") != 0) {
@@ -150,10 +194,36 @@ public class CifDataReader implements GenericCifDataReader {
     return allData;
   }
 
+  /**
+   * create our own list of keywords and for each one create a list
+   * of data associated with that keyword. For example, a list of all 
+   * x coordinates, then a list of all y coordinates, etc.
+   * 
+   * @param data
+   * @throws Exception
+   */
+  @SuppressWarnings("unchecked")
+  private void getCifLoopData(Map<String, Object> data) throws Exception {
+    String str;
+    List<String> keyWords = new  List<String>();
+    while ((str = peekToken()) != null && str.charAt(0) == '_') {
+      str  = getTokenPeeked();
+      keyWords.addLast(str);
+      data.put(str, new  List<String>());
+    }
+    fieldCount = keyWords.size();
+    if (fieldCount == 0)
+      return;
+    loopData = new String[fieldCount];
+    while (getData())
+      for (int i = 0; i < fieldCount; i++)
+        ((List<String>)data.get(keyWords.get(i))).addLast(loopData[i]);
+  }
+
   @Override
   public String readLine() {
     try {
-      line = (reader != null ? reader.readNextLine() : br.readLine());
+      line = (reader == null ? br.readLine() : reader.readNextLine());
       if (line == null)
         return null;
       if (isHeader) {
@@ -169,8 +239,8 @@ public class CifDataReader implements GenericCifDataReader {
   }
   
   /**
-   * general reader for loop data
-   * fills loopData with fieldCount fields
+   * The work horse; a general reader for loop data.
+   * Fills loopData with fieldCount fields.
    * 
    * @return false if EOF
    * @throws Exception
@@ -186,6 +256,21 @@ public class CifDataReader implements GenericCifDataReader {
 
   /**
    * 
+   * Skips all associated loop data. (Skips to next control word.)
+   * 
+   * @throws Exception
+   */
+  @Override
+  public void skipLoop() throws Exception {
+    String str;
+    while ((str = peekToken()) != null && str.charAt(0) == '_')
+      str = getTokenPeeked();
+    while (getNextDataToken() != null) {
+    }
+  }
+
+  /**
+   * 
    * @return the next token of any kind, or null
    * @throws Exception
    */
@@ -197,6 +282,169 @@ public class CifDataReader implements GenericCifDataReader {
     return nextToken();
   }
 
+  /**
+   * 
+   * first checks to see if the next token is an unquoted
+   * control code, and if so, returns null 
+   * 
+   * @return next data token or null
+   * @throws Exception
+   */
+  @Override
+  public String getNextDataToken() throws Exception { 
+    String str = peekToken();
+    if (str == null)
+      return null;
+    if (wasUnQuoted)
+      if (str.charAt(0) == '_' || str.startsWith("loop_")
+          || str.startsWith("data_")
+          || str.startsWith("stop_")
+          || str.startsWith("global_"))
+        return null;
+    return getTokenPeeked();
+  }
+  
+  /**
+   * Just look at the next token. Saves it for retrieval 
+   * using getTokenPeeked()
+   * 
+   * @return next token or null if EOF
+   * @throws Exception
+   */
+  @Override
+  public String peekToken() throws Exception {
+    while (!hasMoreTokens())
+      if (setStringNextLine() == null)
+        return null;
+    int ich = this.ich;
+    strPeeked = nextToken();
+    ichPeeked= this.ich;
+    this.ich = ich;
+    return strPeeked;
+  }
+  
+  /**
+   * 
+   * @return the token last acquired; may be null
+   */
+  @Override
+  public String getTokenPeeked() {
+    ich = ichPeeked;
+    return strPeeked;
+  }
+  
+  /**
+   * Used especially for data that might be multi-line data that
+   * might have unwanted white space at start or end.
+   * 
+   * @param str
+   * @return str without any leading/trailing white space, and no '\n'
+   */
+  @Override
+  public String fullTrim(String str) {
+    int pt0 = -1;
+    int pt1 = str.length();
+    while (++pt0 < pt1 && Character.isWhitespace(str.charAt(pt0))) {
+    }
+    while (--pt1 > pt0 && Character.isWhitespace(str.charAt(pt1))) {      
+    }
+    return str.substring(pt0, pt1 + 1);
+  }
+
+  private final static String grABC =
+      "ABX\u0394E\u03A6\u0393H"   // ABCDEFGH
+      + "I_K\u039BMNO\u03A0"      // I_KLMNOP
+      + "\u0398P\u03A3TY_\u03A9\u039E\u03A5Z"; // QRSTU_WXYZ
+  private final static String grabc =
+      "\u03B1\u03B2\u03C7\u03A4\u03A5\u03C6\u03B3\u03B7" // abcdefgh
+      + "\u03B9_\u03BA\u03BB\u03BC\u03BD\u03BF\u03C0"    // i_klmnop
+      + "\u03B8\u03C1\u03C3\u03C4\u03C5_\u03C9\u03BE\u03C5\u03B6"; // qrstu_wxyz
+
+  /**
+   * Only translating the basic Greek set here, not all the other stuff. See
+   * http://www.iucr.org/resources/cif/spec/version1.1/semantics#markup
+   * 
+   * @param data
+   * @return cleaned string
+   */
+  @Override
+  public String toUnicode(String data) {
+    int pt;
+    try {
+      while ((pt = data.indexOf('\\')) >= 0) {
+        int c = data.charAt(pt + 1);
+        String ch = (c >= 65 && c <= 90 ? grABC.substring(c - 65, c - 64)
+            : c >= 97 && c <= 122 ? grabc.substring(c - 97, c - 96) : "_");
+        data = data.substring(0, pt) + ch + data.substring(pt + 2);
+      }
+    } catch (Exception e) {
+      // ignore
+    }
+
+    return data;
+  }
+
+  /**
+   * Passing an array of field names, this method fills two arrays. 
+   * The first, fieldOf, identifies 
+   * It does this by first creating a map of names to their indices in fields[].
+   * 
+   * Alternatively, if fields is null, then a private array is filled, in order, 
+   * with key data. This is used in cases such as matrices for which there are simply
+   * too many possibilities to list, and the key name itself contains the x-y 
+   * information that we need.
+   * 
+   */
+   @Override
+  public int parseLoopParameters(String[] fields, int[] fieldOf, int[] propertyOf) throws Exception {
+     int propertyCount = 0;
+     if (fields == null) {
+       // for reading full list of keys, as for matrices
+       this.fields = new String[100];
+     } else {
+       if (!htFields.containsKey(fields[0]))
+         for (int i = fields.length; --i >= 0;)
+           htFields.put(fields[i], Integer.valueOf(i));
+       for (int i = fields.length; --i >= 0;)
+         fieldOf[i] = NONE;
+       propertyCount = fields.length;
+     }
+     fieldCount = 0;
+     while (true) {
+       String str = peekToken();
+       if (str == null) {
+         // we are PREMATURELY done; reset
+         fieldCount = 0;
+         break;
+       }
+       // end of the loop is a new token starting with underscore
+       if (str.charAt(0) != '_')
+         break;
+       
+       int pt = fieldCount++;
+       str = fixKey(getTokenPeeked());
+       if (fields == null) {
+         // just make a linear model, saving the list
+         this.fields[propertyOf[pt] = fieldOf[pt] = pt] = str;
+         continue;
+       }
+       Integer iField = htFields.get(str);
+       int i = (iField == null ? NONE : iField.intValue());
+       if ((propertyOf[pt] = i) != NONE)
+         fieldOf[i] = pt;
+     }
+     if (fieldCount > 0)
+       loopData = new String[fieldCount];
+     return propertyCount;
+  }
+
+   private String fixKey(String key) {
+     return PT.rep(key, ".", "_").toLowerCase();
+   }
+
+  //////////////////// private methods ////////////////////
+  
+  
   /**
    * sets a string to be parsed from the beginning
    * 
@@ -350,192 +598,5 @@ public class CifDataReader implements GenericCifDataReader {
     return str.substring(ichStart + 1, ich - 2);
   }
 
-  /**
-   * 
-   * first checks to see if the next token is an unquoted
-   * control code, and if so, returns null 
-   * 
-   * @return next data token or null
-   * @throws Exception
-   */
-  @Override
-  public String getNextDataToken() throws Exception { 
-    String str = peekToken();
-    if (str == null)
-      return null;
-    if (wasUnQuoted)
-      if (str.charAt(0) == '_' || str.startsWith("loop_")
-          || str.startsWith("data_")
-          || str.startsWith("stop_")
-          || str.startsWith("global_"))
-        return null;
-    return getTokenPeeked();
-  }
-  
-  /**
-   * just look at the next token. Saves it for retrieval 
-   * using getTokenPeeked()
-   * 
-   * @return next token or null if EOF
-   * @throws Exception
-   */
-  @Override
-  public String peekToken() throws Exception {
-    while (!hasMoreTokens())
-      if (setStringNextLine() == null)
-        return null;
-    int ich = this.ich;
-    strPeeked = nextToken();
-    ichPeeked= this.ich;
-    this.ich = ich;
-    return strPeeked;
-  }
-  
-  /**
-   * 
-   * @return the token last acquired; may be null
-   */
-  @Override
-  public String getTokenPeeked() {
-    ich = ichPeeked;
-    return strPeeked;
-  }
-  
-  /**
-   * specially for names that might be multiline
-   * 
-   * @param str
-   * @return str without any leading/trailing white space, and no '\n'
-   */
-  @Override
-  public String fullTrim(String str) {
-    int pt0 = 0;
-    int pt1 = str.length();
-    for (;pt0 < pt1; pt0++)
-      if ("\n\t ".indexOf(str.charAt(pt0)) < 0)
-        break;
-    for (;pt0 < pt1; pt1--)
-      if ("\n\t ".indexOf(str.charAt(pt1 - 1)) < 0)
-        break;
-    return str.substring(pt0, pt1);
-  }
-
-  Map<String, Object> data;
-  Map<String, Object> allData;
-  @SuppressWarnings("unchecked")
-  private void getCifLoopData() throws Exception {
-    String str;
-    List<String> keyWords = new  List<String>();
-    while ((str = peekToken()) != null && str.charAt(0) == '_') {
-      str  = getTokenPeeked();
-      keyWords.addLast(str);
-      data.put(str, new  List<String>());
-    }
-    fieldCount = keyWords.size();
-    if (fieldCount == 0)
-      return;
-    loopData = new String[fieldCount];
-    while (getData()) {
-      for (int i = 0; i < fieldCount; i++) {
-        ((List<String>)data.get(keyWords.get(i))).addLast(loopData[i]);
-      }
-    }
-  }
-
-  private final static String grABC =
-  		"ABX\u0394E\u03A6\u0393H"   // ABCDEFGH
-  		+ "I_K\u039BMNO\u03A0"      // I_KLMNOP
-  		+ "\u0398P\u03A3TY_\u03A9\u039E\u03A5Z"; // QRSTU_WXYZ
-  private final static String grabc =
-      "\u03B1\u03B2\u03C7\u03A4\u03A5\u03C6\u03B3\u03B7" // abcdefgh
-      + "\u03B9_\u03BA\u03BB\u03BC\u03BD\u03BF\u03C0"    // i_klmnop
-      + "\u03B8\u03C1\u03C3\u03C4\u03C5_\u03C9\u03BE\u03C5\u03B6"; // qrstu_wxyz
-
-  /**
-   * Only translating the basic Greek set here, not all the other stuff. See
-   * http://www.iucr.org/resources/cif/spec/version1.1/semantics#markup
-   * 
-   * @param data
-   * @return cleaned string
-   */
-  @Override
-  public String toUnicode(String data) {
-    int pt;
-    try {
-      while ((pt = data.indexOf('\\')) >= 0) {
-        int c = data.charAt(pt + 1);
-        String ch = (c >= 65 && c <= 90 ? grABC.substring(c - 65, c - 64)
-            : c >= 97 && c <= 122 ? grabc.substring(c - 97, c - 96) : "_");
-        data = data.substring(0, pt) + ch + data.substring(pt + 2);
-      }
-    } catch (Exception e) {
-      // ignore
-    }
-
-    return data;
-  }
-
-  @Override
-  public String getLoopData(int i) {
-    return loopData[i];
-  }
-
-  private static Map<String, Integer> htFields = new Hashtable<String, Integer>();
-   
-  String[] fields;
-
-   @Override
-  public int parseLoopParameters(String[] fields, int[] fieldOf, int[] propertyOf) throws Exception {
-     int propertyCount = 0;
-     if (fields == null) {
-       // for reading full list of keys, as for matrices
-       this.fields = new String[100];
-     } else {
-       if (!htFields.containsKey(fields[0]))
-         for (int i = fields.length; --i >= 0;)
-           htFields.put(fields[i], Integer.valueOf(i));
-       for (int i = fields.length; --i >= 0;)
-         fieldOf[i] = NONE;
-       propertyCount = fields.length;
-     }
-     fieldCount = 0;
-     while (true) {
-       String str = peekToken();
-       if (str == null) {
-         fieldCount = 0;
-         break;
-       }
-       if (str.charAt(0) != '_')
-         break;
-       int pt = fieldCount++;
-       str = fixKey(getTokenPeeked());
-       if (fields == null) {
-         this.fields[propertyOf[pt] = pt] = str;
-         fieldOf[pt] = pt;
-         continue;
-       }
-       Integer iField = htFields.get(str);
-       int i = (iField == null ? NONE : iField.intValue());
-       if ((propertyOf[pt] = i) != NONE)
-         fieldOf[i] = pt;
-     }
-     if (fieldCount > 0)
-       loopData = new String[fieldCount];
-     return propertyCount;
-  }
-
-   private String fixKey(String key) {
-     return PT.rep(key, ".", "_").toLowerCase();
-   }
-
-  @Override
-  public int getFieldCount() {
-    return fieldCount;
-  }
-
-  @Override
-  public String getField(int i) {
-    return fields[i];
-  }
   
 }

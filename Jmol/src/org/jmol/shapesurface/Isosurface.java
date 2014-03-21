@@ -123,7 +123,7 @@ import org.jmol.util.MeshSurface;
 import javajs.util.PT;
 
 import javajs.util.A4;
-import javajs.util.Binary;
+import javajs.util.Rdr;
 import javajs.util.CU;
 import javajs.util.OC;
 import javajs.util.M3;
@@ -562,7 +562,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         }
         if (!(value instanceof BufferedReader))
           try {
-            value = Binary.getBufferedReader((BufferedInputStream) value,
+            value = Rdr.getBufferedReader((BufferedInputStream) value,
                 "ISO-8859-1");
           } catch (IOException e) {
             // ignore

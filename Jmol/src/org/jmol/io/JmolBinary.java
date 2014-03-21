@@ -35,7 +35,7 @@ import java.util.Map;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 
-import javajs.util.Binary;
+import javajs.util.Rdr;
 import javajs.util.LimitedLineReader;
 import javajs.util.List;
 import javajs.util.PT;
@@ -66,7 +66,7 @@ public class JmolBinary {
   public static String determineSurfaceTypeIs(InputStream is) {
     BufferedReader br;
     try {
-      br = Binary.getBufferedReader(new BufferedInputStream(is), "ISO-8859-1");
+      br = Rdr.getBufferedReader(new BufferedInputStream(is), "ISO-8859-1");
     } catch (IOException e) {
       return null;
     }
@@ -190,15 +190,6 @@ public class JmolBinary {
     return (nSurfaces < 0 ? "Jvxl" : "Cube"); //Final test looks at surface definition line
   }
 
-  public static boolean isPickleS(InputStream is) {
-    return isPickleB(Binary.getMagic(is, 2));
-  }
-
-  public static boolean isPickleB(byte[] bytes) {    
-    return (bytes != null && bytes.length >= 2 
-        && bytes[0] == (byte) 0x7D && bytes[1] == (byte) 0x71);
-}
-
   public static String getEmbeddedScript(String script) {
     if (script == null)
       return script;
@@ -270,11 +261,11 @@ public class JmolBinary {
    */
   public static Object getAtomSetCollectionOrBufferedReaderFromZip(JmolAdapter adapter, InputStream is, String fileName, String[] zipDirectory,
                              Map<String, Object> htParams, boolean asBufferedReader) {
-    return getJzu().getAtomSetCollectionOrBufferedReaderFromZip(Binary.getJzt(), adapter, is, fileName, zipDirectory, htParams, 1, asBufferedReader);
+    return getJzu().getAtomSetCollectionOrBufferedReaderFromZip(Rdr.getJzt(), adapter, is, fileName, zipDirectory, htParams, 1, asBufferedReader);
   }
 
   public static String[] spartanFileList(String name, String zipDirectory) {
-    return getJzu().spartanFileList(Binary.getJzt(), name, zipDirectory);
+    return getJzu().spartanFileList(Rdr.getJzt(), name, zipDirectory);
   }
   
   public static void getFileReferences(String script, List<String> fileList) {
@@ -331,7 +322,7 @@ public class JmolBinary {
          throw new IOException();
        }
        if (ret) // avoids dead code message
-         return Binary.getBufferedReader(new BufferedInputStream(
+         return Rdr.getBufferedReader(new BufferedInputStream(
              (InputStream) url.getContent()), null);
      }
      // JavaScript only; here and not in JavaDoc to preserve Eclipse search reference

@@ -96,7 +96,10 @@ return java.util.Hashtable.EMPTY_ENUMERATION;
 });
 $_V(c$,"entrySet",
 function(){
-return new java.util.Collections.SynchronizedSet((($_D("java.util.Hashtable$2")?0:java.util.Hashtable.$Hashtable$2$()),$_N(java.util.Hashtable$2,this,null)),this);
+var b
+var a = new java.util.Collections.SynchronizedSet((($_D("java.util.Hashtable$2")?0:java.util.Hashtable.$Hashtable$2$()),b=$_N(java.util.Hashtable$2,this,null)),this);
+b && (b.b$H = b.b$["java.util.Hashtable"]);
+return a;
 });
 $_V(c$,"equals",
 function(object){
@@ -163,7 +166,10 @@ return java.util.Hashtable.EMPTY_ENUMERATION;
 });
 $_V(c$,"keySet",
 function(){
-return new java.util.Collections.SynchronizedSet((($_D("java.util.Hashtable$3")?0:java.util.Hashtable.$Hashtable$3$()),$_N(java.util.Hashtable$3,this,null)),this);
+var b
+var a = new java.util.Collections.SynchronizedSet((($_D("java.util.Hashtable$3")?0:java.util.Hashtable.$Hashtable$3$()),(b=$_N(java.util.Hashtable$3,this,null))),this);
+b && (b.b$H = b.b$["java.util.Hashtable"]);
+return a;
 });
 $_V(c$,"put",
 function(key,value){
@@ -289,7 +295,10 @@ return buffer.toString();
 });
 $_V(c$,"values",
 function(){
-return new java.util.Collections.SynchronizedCollection((($_D("java.util.Hashtable$4")?0:java.util.Hashtable.$Hashtable$4$()),$_N(java.util.Hashtable$4,this,null)),this);
+var b
+var a = new java.util.Collections.SynchronizedCollection((($_D("java.util.Hashtable$4")?0:java.util.Hashtable.$Hashtable$4$()),(b=$_N(java.util.Hashtable$4,this,null))),this);
+b && (b.b$H = b.b$["java.util.Hashtable"]);
+return a;
 });
 c$.$Hashtable$HashIterator$=function(){
 $_H();
@@ -381,14 +390,15 @@ $_Z(this,arguments);
 $_K(c$,
 function(a){
 this.key=a;
-this.start=this.b$H.lastSlot+1;
 this.b$H = this.b$["java.util.Hashtable"];
+this.start=this.b$H.lastSlot+1;
 },"~B");
 $_V(c$,"hasMoreElements",
 function(){
 if(this.entry!=null){
 return true;
-}while(--this.start>=this.b$H.firstSlot){
+}
+while(--this.start>=this.b$H.firstSlot){
 if(this.b$H.elementData[this.start]!=null){
 this.entry=this.b$H.elementData[this.start];
 return true;
@@ -541,6 +551,7 @@ function(a,b){
 	// _k for @j2sOverride
 this.key = a;
 this.value = b;
+
 //$_R(this,java.util.Hashtable.Entry,[a,b]);
 this.hashcode=a.hashCode();
 });

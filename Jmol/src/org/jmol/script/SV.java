@@ -173,20 +173,61 @@ public class SV extends T implements JSONEncodable {
     }
   }
 
+  /**
+   * Must be updated if getVariable is updated!
+   * 
+   * @param x
+   * @return if we recognize this as a variable
+   * 
+   */
   public static boolean isVariableType(Object x) {
     return (x instanceof SV
-        || x instanceof BS
         || x instanceof Boolean
-        || x instanceof Float
         || x instanceof Integer
+        || x instanceof Float
         || x instanceof String
         || x instanceof T3    // stored as point3f
+        || x instanceof BS
         || x instanceof P4    // stored as point4f
         || x instanceof Quat // stored as point4f
+        || x instanceof M34
         || x instanceof Map<?, ?>  // stored as Map<String, ScriptVariable>
+        || x instanceof List<?>
+        || x instanceof BArray
+        || x instanceof ScriptContext
     // in JavaScript, all these will be "Array" which is fine;
         || isArray(x)); // stored as list
   }
+
+  /**
+   * Must be updated if getVariable is updated!
+   * 
+   * @param x
+   * @return if we recognize this as an primitive array type
+   * 
+   */
+  private static boolean isArray(Object x) {
+    /**
+     * @j2sNative
+     * 
+     *            return Clazz.instanceOf(x, Array);
+     */
+    {
+       return x instanceof SV[] 
+           || x instanceof int[] 
+           || x instanceof byte[] 
+           || x instanceof float[]
+           || x instanceof double[] 
+           || x instanceof String[]
+           || x instanceof P3[]
+           || x instanceof int[][] 
+           || x instanceof float[][] 
+           || x instanceof String[][] 
+           || x instanceof double[][] 
+           || x instanceof Float[];
+    }
+  }
+
 
   /**
    * @param x
@@ -236,14 +277,15 @@ public class SV extends T implements JSONEncodable {
       return newV(point4f, ((Quat) x).toPoint4f());
     if (x instanceof M34)
       return newV(x instanceof M4 ? matrix4f : matrix3f, x);
-    if (x instanceof M4)
-      return newV(matrix4f, x);
     if (x instanceof Map)
       return getVariableMap((Map<String, ?>)x);
     if (x instanceof List)
       return getVariableList((List<?>) x);
     if (x instanceof BArray)
       return newV(barray, x);
+    if (x instanceof ScriptContext)
+      return newV(context, x);
+    // rest are specific array types supported
     if (Escape.isAV(x))
       return getVariableAV((SV[]) x);
     if (PT.isAI(x))
@@ -268,32 +310,7 @@ public class SV extends T implements JSONEncodable {
       return getVariableADD((double[][]) x);
     if (PT.isAFloat(x))
       return newV(listf, x);
-    if (x instanceof ScriptContext)
-      return newV(context, x);
     return newS(x.toString());
-  }
-
-  private static boolean isArray(Object x) {
-    /**
-     * @j2sNative
-     * 
-     *            return Clazz.instanceOf(x, Array);
-     */
-    {
-       return x instanceof List<?>
-          || x instanceof SV[] 
-          || x instanceof byte[] 
-          || x instanceof int[] 
-          || x instanceof float[]
-          || x instanceof double[] 
-          || x instanceof String[]
-          || x instanceof P3[]
-          || x instanceof int[][] 
-          || x instanceof float[][] 
-          || x instanceof String[][] 
-          || x instanceof double[][] 
-          || x instanceof Float[];
-    }
   }
 
   @SuppressWarnings("unchecked")

@@ -573,7 +573,6 @@ all support for previous versions removed
         <include name="org/jmol/g3d/**" />
         <include name="org/jmol/jvxl/**" />
         <include name="org/jmol/io/**" />
-        <include name="org/jmol/io2/**" />
         <include name="org/jmol/util/**" />
         <include name="org/jmol/viewer/JmolConstants.class" />
       </fileset>
@@ -733,7 +732,6 @@ all support for previous versions removed
     <jar destfile="build/JmolApplet0_ReadersMore.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/adapter/readers/more/**" />
-        <include name="org/jmol/io2/**" />
       </fileset>
     </jar>
 
@@ -1012,7 +1010,6 @@ all support for previous versions removed
     <jar destfile="build/JmolAppletSigned0_ReadersMore.jar" manifest="manifest/appletSigned.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/adapter/readers/more/**" />
-        <include name="org/jmol/io2/**" />
       </fileset>
     </jar>
 

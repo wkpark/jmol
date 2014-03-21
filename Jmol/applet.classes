@@ -38,7 +38,6 @@ org/jmol/geodesic/*.java
 org/jmol/i18n/*.java
 org/jmol/image/*.java
 org/jmol/io/*.java
-org/jmol/io2/*.java
 org/jmol/java/*.java
 org/jmol/jvxl/api/*.java
 org/jmol/jvxl/calc/*.java

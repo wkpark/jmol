@@ -4365,9 +4365,9 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       /**
        * @j2sNative
        *
-       * if (this.stm.jmolStatusListener.isStereoSlave) return;
+       * if (this.sm.jmolStatusListener.isStereoSlave) return;
        * g = this.apiPlatform.context;
-       * gright = this.stm.jmolStatusListener.gright;
+       * gright = this.sm.jmolStatusListener.gright;
        *
        * 
        */

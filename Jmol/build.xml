@@ -789,11 +789,6 @@ all support for previous versions removed
       </fileset>
     </jar>
 
-  	<jar destfile="build/JmolApplet0_Parallel.jar" manifest="manifest/applet.txt">
-      <fileset dir="${applet.classes.dir}">
-        <include name="org/jmol/parallel/**" />
-      </fileset>
-    </jar>
 <!--
     <jar destfile="build/JmolApplet0_Spectrum.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
@@ -848,7 +843,6 @@ all support for previous versions removed
       	<pathelement path="build/JmolApplet0_JSV.jar" />
         <pathelement path="build/JmolApplet0_Minimize.jar" />
         <pathelement path="build/JmolApplet0_Navigate.jar" />
-        <pathelement path="build/JmolApplet0_Parallel.jar" />
         <pathelement path="build/JmolApplet0_Popup.jar" />
         <pathelement path="build/JmolApplet0_ReadersCif.jar" />
         <pathelement path="build/JmolApplet0_ReadersPdb.jar" />
@@ -974,12 +968,6 @@ all support for previous versions removed
   	<jar destfile="build/JmolAppletSigned0_Navigate.jar" manifest="manifest/appletSigned.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/navigate/**" />
-      </fileset>
-    </jar>
-
-    <jar destfile="build/JmolAppletSigned0_Parallel.jar" manifest="manifest/appletSigned.txt">
-      <fileset dir="${applet.classes.dir}">
-        <include name="org/jmol/parallel/**" />
       </fileset>
     </jar>
 
@@ -1133,7 +1121,6 @@ all support for previous versions removed
         <pathelement path="build/JmolAppletSigned0_Minimize.jar" />
         <pathelement path="build/JmolAppletSigned0_MultiTouch.jar" />
         <pathelement path="build/JmolAppletSigned0_Navigate.jar" />
-        <pathelement path="build/JmolAppletSigned0_Parallel.jar" />
         <pathelement path="build/JmolAppletSigned0_Popup.jar" />
         <pathelement path="build/JmolAppletSigned0_ReadersCif.jar" />
         <pathelement path="build/JmolAppletSigned0_ReadersPdb.jar" />

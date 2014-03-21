@@ -52,7 +52,6 @@ org/jmol/modelsetbio/*.java
 org/jmol/multitouch/*.java
 org/jmol/multitouch/sparshui/*.java
 org/jmol/navigate/*.java
-org/jmol/parallel/*.java
 org/jmol/popup/*.java
 org/jmol/quantum/*.java
 org/jmol/render/*.java

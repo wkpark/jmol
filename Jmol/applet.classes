@@ -68,7 +68,6 @@ org/jmol/shapecgo/*.java
 org/jmol/shapespecial/*.java
 org/jmol/shapesurface/*.java
 org/jmol/smiles/*.java
-org/jmol/spectrum/*.java
 org/jmol/symmetry/*.java
 org/jmol/thread/*.java
 org/jmol/util/*.java

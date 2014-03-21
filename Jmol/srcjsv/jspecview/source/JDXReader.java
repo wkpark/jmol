@@ -992,7 +992,7 @@ public class JDXReader implements JmolJDXMOLReader {
 	}
 
 	@Override
-	public String readLine() throws Exception {
+	public String rd() throws Exception {
 	return reader.readLine();
 	}
 
@@ -1025,7 +1025,7 @@ public class JDXReader implements JmolJDXMOLReader {
 	public String discardLinesUntilContains(String containsMatch)
       throws Exception {
   	String line;
-    while ((line = readLine()) != null && line.indexOf(containsMatch) < 0) {
+    while ((line = rd()) != null && line.indexOf(containsMatch) < 0) {
     }
     return line;
   }
@@ -1034,7 +1034,7 @@ public class JDXReader implements JmolJDXMOLReader {
   public String discardLinesUntilContains2(String s1, String s2)
       throws Exception {
   	String line;
-    while ((line = readLine()) != null && line.indexOf(s1) < 0 && line.indexOf(s2) < 0) {
+    while ((line = rd()) != null && line.indexOf(s1) < 0 && line.indexOf(s2) < 0) {
     }
     return line;
   }
@@ -1042,7 +1042,7 @@ public class JDXReader implements JmolJDXMOLReader {
 	@Override
 	public String discardLinesUntilNonBlank() throws Exception {
 		String line;
-		while ((line = readLine()) != null && line.trim().length() == 0) {
+		while ((line = rd()) != null && line.trim().length() == 0) {
 		}
 		return line;
 	}

@@ -1,3 +1,5 @@
+// modified by Bob Hanson 3/21/2014 6:44:21 AM  to reduce this.b$[....] phrases to simply this.b$H
+
 $_L(["java.util.Dictionary","$.Enumeration","$.Iterator","$.Map","$.MapEntry","$.NoSuchElementException"],"java.util.Hashtable",["java.lang.IllegalArgumentException","$.IllegalStateException","$.NullPointerException","$.StringBuilder","java.util.AbstractCollection","$.AbstractSet","$.Arrays","$.Collections","$.ConcurrentModificationException","java.util.MapEntry.Type"],function(){
 c$=$_C(function(){
 this.elementCount=0;
@@ -9,6 +11,7 @@ this.lastSlot=-1;
 this.modCount=0;
 if(!$_D("java.util.Hashtable.HashIterator")){
 java.util.Hashtable.$Hashtable$HashIterator$();
+
 }
 if(!$_D("java.util.Hashtable.HashEnumerator")){
 java.util.Hashtable.$Hashtable$HashEnumerator$();
@@ -303,15 +306,16 @@ $_Z(this,arguments);
 $_K(c$,
 function(a){
 this.type=a;
-this.position=this.b$["java.util.Hashtable"].lastSlot;
-this.expectedModCount=this.b$["java.util.Hashtable"].modCount;
+this.b$H = this.b$["java.util.Hashtable"];
+this.position=this.b$H.lastSlot;
+this.expectedModCount=this.b$H.modCount;
 },"java.util.MapEntry.Type");
 $_V(c$,"hasNext",
 function(){
 if(this.lastEntry!=null&&this.lastEntry.next!=null){
 return true;
-}while(this.position>=this.b$["java.util.Hashtable"].firstSlot){
-if(this.b$["java.util.Hashtable"].elementData[this.position]==null){
+}while(this.position>=this.b$H.firstSlot){
+if(this.b$H.elementData[this.position]==null){
 this.position--;
 }else{
 return true;
@@ -320,11 +324,11 @@ return false;
 });
 $_V(c$,"next",
 function(){
-if(this.expectedModCount==this.b$["java.util.Hashtable"].modCount){
+if(this.expectedModCount==this.b$H.modCount){
 if(this.lastEntry!=null){
 this.lastEntry=this.lastEntry.next;
 }if(this.lastEntry==null){
-while(this.position>=this.b$["java.util.Hashtable"].firstSlot&&(this.lastEntry=this.b$["java.util.Hashtable"].elementData[this.position])==null){
+while(this.position>=this.b$H.firstSlot&&(this.lastEntry=this.b$H.elementData[this.position])==null){
 this.position--;
 }
 if(this.lastEntry!=null){
@@ -338,14 +342,14 @@ return this.type.get(this.lastEntry);
 });
 $_V(c$,"remove",
 function(){
-if(this.expectedModCount==this.b$["java.util.Hashtable"].modCount){
+if(this.expectedModCount==this.b$H.modCount){
 if(this.canRemove){
 this.canRemove=false;
 {
 var a=false;
-var b=this.b$["java.util.Hashtable"].elementData[this.lastPosition];
+var b=this.b$H.elementData[this.lastPosition];
 if(b===this.lastEntry){
-this.b$["java.util.Hashtable"].elementData[this.lastPosition]=b.next;
+this.b$H.elementData[this.lastPosition]=b.next;
 a=true;
 }else{
 while(b!=null&&b.next!==this.lastEntry){
@@ -355,8 +359,8 @@ if(b!=null){
 b.next=this.lastEntry.next;
 a=true;
 }}if(a){
-this.b$["java.util.Hashtable"].modCount++;
-this.b$["java.util.Hashtable"].elementCount--;
+this.b$H.modCount++;
+this.b$H.elementCount--;
 this.expectedModCount++;
 return;
 }}}else{
@@ -377,15 +381,16 @@ $_Z(this,arguments);
 $_K(c$,
 function(a){
 this.key=a;
-this.start=this.b$["java.util.Hashtable"].lastSlot+1;
+this.start=this.b$H.lastSlot+1;
+this.b$H = this.b$["java.util.Hashtable"];
 },"~B");
 $_V(c$,"hasMoreElements",
 function(){
 if(this.entry!=null){
 return true;
-}while(--this.start>=this.b$["java.util.Hashtable"].firstSlot){
-if(this.b$["java.util.Hashtable"].elementData[this.start]!=null){
-this.entry=this.b$["java.util.Hashtable"].elementData[this.start];
+}while(--this.start>=this.b$H.firstSlot){
+if(this.b$H.elementData[this.start]!=null){
+this.entry=this.b$H.elementData[this.start];
 return true;
 }}
 return false;
@@ -401,26 +406,27 @@ return a;
 c$=$_P();
 };
 c$.$Hashtable$2$=function(){
+// private class EntrySet extends AbstractSet<Map.Entry<K,V>>  
 $_H();
 c$=$_W(java.util,"Hashtable$2",java.util.AbstractSet);
 $_V(c$,"size",
 function(){
-return this.b$["java.util.Hashtable"].elementCount;
+return this.b$H.elementCount;
 });
 $_V(c$,"clear",
 function(){
-this.b$["java.util.Hashtable"].clear();
+this.b$H.clear();
 });
 $_V(c$,"remove",
 function(object){
 if(this.contains(object)){
-this.b$["java.util.Hashtable"].remove((object).getKey());
+this.b$H.remove((object).getKey());
 return true;
 }return false;
 },"~O");
 $_M(c$,"contains",
 function(object){
-var entry=this.b$["java.util.Hashtable"].getEntry((object).getKey());
+var entry=this.b$H.getEntry((object).getKey());
 return object.equals(entry);
 },"~O");
 $_M(c$,"iterator",
@@ -430,6 +436,7 @@ return $_N(java.util.Hashtable.HashIterator,this,null,(($_D("java.util.Hashtable
 c$=$_P();
 };
 c$.$Hashtable$2$1$=function(){
+// EntrySet.HashIterator
 $_H();
 c$=$_W(java.util,"Hashtable$2$1",null,java.util.MapEntry.Type);
 $_V(c$,"get",
@@ -439,24 +446,25 @@ return entry;
 c$=$_P();
 };
 c$.$Hashtable$3$=function(){
+// private class KeySet extends AbstractSet<K>
 $_H();
 c$=$_W(java.util,"Hashtable$3",java.util.AbstractSet);
 $_V(c$,"contains",
 function(object){
-return this.b$["java.util.Hashtable"].containsKey(object);
+return this.b$H.containsKey(object);
 },"~O");
 $_V(c$,"size",
 function(){
-return this.b$["java.util.Hashtable"].elementCount;
+return this.b$H.elementCount;
 });
 $_V(c$,"clear",
 function(){
-this.b$["java.util.Hashtable"].clear();
+this.b$H.clear();
 });
 $_V(c$,"remove",
 function(key){
-if(this.b$["java.util.Hashtable"].containsKey(key)){
-this.b$["java.util.Hashtable"].remove(key);
+if(this.b$H.containsKey(key)){
+this.b$H.remove(key);
 return true;
 }return false;
 },"~O");
@@ -467,6 +475,7 @@ return $_N(java.util.Hashtable.HashIterator,this,null,(($_D("java.util.Hashtable
 c$=$_P();
 };
 c$.$Hashtable$3$1$=function(){
+// KeySet.HashIterator
 $_H();
 c$=$_W(java.util,"Hashtable$3$1",null,java.util.MapEntry.Type);
 $_V(c$,"get",
@@ -476,19 +485,20 @@ return entry.key;
 c$=$_P();
 };
 c$.$Hashtable$4$=function(){
+// private class ValueCollection extends AbstractCollection<V> 
 $_H();
 c$=$_W(java.util,"Hashtable$4",java.util.AbstractCollection);
 $_V(c$,"contains",
 function(object){
-return this.b$["java.util.Hashtable"].contains(object);
+return this.b$H.contains(object);
 },"~O");
 $_V(c$,"size",
 function(){
-return this.b$["java.util.Hashtable"].elementCount;
+return this.b$H.elementCount;
 });
 $_V(c$,"clear",
 function(){
-this.b$["java.util.Hashtable"].clear();
+this.b$H.clear();
 });
 $_V(c$,"iterator",
 function(){
@@ -497,6 +507,7 @@ return $_N(java.util.Hashtable.HashIterator,this,null,(($_D("java.util.Hashtable
 c$=$_P();
 };
 c$.$Hashtable$4$1$=function(){
+// ValueCollection.HashIterator
 $_H();
 c$=$_W(java.util,"Hashtable$4$1",null,java.util.MapEntry.Type);
 $_V(c$,"get",
@@ -506,6 +517,7 @@ return entry.value;
 c$=$_P();
 };
 c$.$Hashtable$1$=function(){
+// private class Enumerator<T> implements Enumeration<T>, Iterator<T>
 $_H();
 c$=$_W(java.util,"Hashtable$1",null,java.util.Enumeration);
 $_V(c$,"hasMoreElements",

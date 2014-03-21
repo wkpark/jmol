@@ -131,7 +131,7 @@ for (var i = 0; i < Jmol._coreFiles.length; i++)
 
 	ClazzLoader.jarClasspath (base + "corezip.z.js",	[
 		"javajs.api.GenericZipInputStream",
-		"J.io2.JmolUtil",
+		"J.io.JmolUtil",
 		"JU.ZipTools",
 		"$.ZInputStream"
 	]);

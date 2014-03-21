@@ -50,9 +50,9 @@ import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.bspt.Bspf;
 import org.jmol.bspt.CubeIterator;
-import org.jmol.constant.EnumPalette;
-import org.jmol.constant.EnumStructure;
-import org.jmol.constant.EnumVdw;
+import org.jmol.c.EnumPalette;
+import org.jmol.c.EnumStructure;
+import org.jmol.c.EnumVdw;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
 

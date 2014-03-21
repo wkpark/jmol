@@ -2,7 +2,7 @@ package org.jmol.api;
 
 import javajs.util.SB;
 
-import org.jmol.constant.EnumVdw;
+import org.jmol.c.EnumVdw;
 import org.jmol.java.BS;
 import org.jmol.viewer.JmolStateCreator;
 import org.jmol.viewer.Viewer;

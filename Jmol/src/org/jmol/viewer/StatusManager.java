@@ -40,7 +40,7 @@ import org.jmol.api.JmolAppConsoleInterface;
 import org.jmol.api.JmolCallbackListener;
 import org.jmol.api.JmolDialogInterface;
 import org.jmol.api.JmolStatusListener;
-import org.jmol.constant.EnumCallback;
+import org.jmol.c.EnumCallback;
 import org.jmol.java.BS;
 
 /**

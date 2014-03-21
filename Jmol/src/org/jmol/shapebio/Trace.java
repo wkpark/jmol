@@ -25,7 +25,7 @@
 package org.jmol.shapebio;
 
 import org.jmol.atomdata.RadiusData;
-import org.jmol.constant.EnumVdw;
+import org.jmol.c.EnumVdw;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.script.T;

@@ -23,11 +23,22 @@
  *  02110-1301, USA.
  */
 
-package org.jmol.constant;
+package org.jmol.c;
 
-/**
- * Enum for animation mode.
- */
-public enum EnumAnimationMode {
-  ONCE, LOOP, PALINDROME;  
+public enum EnumFileStatus {
+  
+  DELETED(5), 
+  CREATED(3), 
+  CREATING_MODELSET(2), 
+  ZAPPED(0), 
+  NOT_LOADED(-1);
+
+  private int code;
+  public int getCode() {
+    return code;
+  }
+  
+  private EnumFileStatus(int code) {
+    this.code = code;
+  }
 }

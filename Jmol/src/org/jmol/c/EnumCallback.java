@@ -23,22 +23,48 @@
  *  02110-1301, USA.
  */
 
-package org.jmol.constant;
+package org.jmol.c;
 
-public enum EnumFileStatus {
-  
-  DELETED(5), 
-  CREATED(3), 
-  CREATING_MODELSET(2), 
-  ZAPPED(0), 
-  NOT_LOADED(-1);
+import javajs.util.SB;
 
-  private int code;
-  public int getCode() {
-    return code;
+public enum EnumCallback {
+
+  ANIMFRAME,
+  APPLETREADY,
+  ATOMMOVED,
+  CLICK,
+  ECHO,
+  ERROR,
+  EVAL,
+  HOVER,
+  LOADSTRUCT,
+  MEASURE,
+  MESSAGE,
+  MINIMIZATION,
+  PICK,
+  RESIZE,
+  SCRIPT,
+  SYNC, STRUCTUREMODIFIED;
+
+  public static EnumCallback getCallback(String name) {
+    
+    name = name.toUpperCase();
+    name = name.substring(0, Math.max(name.indexOf("CALLBACK"), 0));
+    for (EnumCallback item : values())
+      if (item.name().equalsIgnoreCase(name))
+        return item;
+    return null;
   }
-  
-  private EnumFileStatus(int code) {
-    this.code = code;
+
+  private static String nameList;
+
+  public static synchronized String getNameList() {
+    if (nameList == null) {
+      SB names = new SB();
+      for (EnumCallback item : values())
+        names.append(item.name().toLowerCase()).append("Callback;");
+      nameList = names.toString();
+    }
+    return nameList;
   }
 }

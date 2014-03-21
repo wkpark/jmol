@@ -35,7 +35,7 @@ import org.jmol.adapter.smarter.Bond;
 import org.jmol.adapter.smarter.Structure;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.PymolAtomReader;
-import org.jmol.constant.EnumStructure;
+import org.jmol.c.EnumStructure;
 import org.jmol.java.BS;
 import org.jmol.script.T;
 import org.jmol.util.BoxInfo;

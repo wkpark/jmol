@@ -10,10 +10,10 @@ import javajs.util.P3;
 import javajs.util.PT;
 import javajs.util.SB;
 
-import org.jmol.constant.EnumAxesMode;
-import org.jmol.constant.EnumCallback;
-import org.jmol.constant.EnumStereoMode;
-import org.jmol.constant.EnumStructure;
+import org.jmol.c.EnumAxesMode;
+import org.jmol.c.EnumCallback;
+import org.jmol.c.EnumStereoMode;
+import org.jmol.c.EnumStructure;
 import org.jmol.java.BS;
 import org.jmol.script.SV;
 import org.jmol.script.T;

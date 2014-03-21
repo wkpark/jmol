@@ -24,7 +24,7 @@
 package org.jmol.dssx;
 
 import org.jmol.api.DSSPInterface;
-import org.jmol.constant.EnumStructure;
+import org.jmol.c.EnumStructure;
 import org.jmol.i18n.GT;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;

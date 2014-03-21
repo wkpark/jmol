@@ -31,7 +31,7 @@ import org.jmol.util.BSUtil;
 //import javajs.util.List;
 
 import org.jmol.api.Interface;
-import org.jmol.constant.EnumAnimationMode;
+import org.jmol.c.EnumAnimationMode;
 import org.jmol.java.BS;
 import org.jmol.modelset.ModelSet;
 

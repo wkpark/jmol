@@ -16,7 +16,7 @@ import org.jmol.api.JmolCallbackListener;
 import org.jmol.api.JmolStatusListener;
 import org.jmol.api.JmolSyncInterface;
 import org.jmol.api.JmolViewer;
-import org.jmol.constant.EnumCallback;
+import org.jmol.c.EnumCallback;
 import org.jmol.i18n.GT;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;

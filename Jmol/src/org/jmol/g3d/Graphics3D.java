@@ -31,7 +31,7 @@ import java.util.Map;
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolRendererInterface;
-import org.jmol.constant.EnumStereoMode;
+import org.jmol.c.EnumStereoMode;
 import org.jmol.modelset.Atom;
 import org.jmol.script.T;
 import org.jmol.util.C;

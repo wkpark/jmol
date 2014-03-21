@@ -23,7 +23,7 @@
  */
 package org.jmol.modelsetbio;
 
-import org.jmol.constant.EnumStructure;
+import org.jmol.c.EnumStructure;
 
 class Turn extends ProteinStructure {
 

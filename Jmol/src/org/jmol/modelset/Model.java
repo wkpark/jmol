@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.jmol.api.SymmetryInterface;
-import org.jmol.constant.EnumStructure;
+import org.jmol.c.EnumStructure;
 import org.jmol.java.BS;
 
 import org.jmol.util.BSUtil;

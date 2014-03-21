@@ -35,7 +35,7 @@ import org.jmol.api.JmolAppConsoleInterface;
 import org.jmol.api.JmolCallbackListener;
 import org.jmol.api.JmolScriptEditorInterface;
 import org.jmol.api.JmolViewer;
-import org.jmol.constant.EnumCallback;
+import org.jmol.c.EnumCallback;
 import org.jmol.i18n.GT;
 import org.jmol.script.T;
 import org.jmol.viewer.JC;

@@ -29,7 +29,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.jmol.constant.EnumPalette;
+import org.jmol.c.EnumPalette;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 //import org.jmol.script.T;

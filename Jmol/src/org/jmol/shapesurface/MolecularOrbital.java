@@ -39,7 +39,7 @@ import org.jmol.util.Escape;
 import javajs.util.P4;
 import org.jmol.script.T;
 import org.jmol.shape.Shape;
-import org.jmol.constant.EnumQuantumShell;
+import org.jmol.c.EnumQuantumShell;
 import org.jmol.java.BS;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.readers.Parameters;

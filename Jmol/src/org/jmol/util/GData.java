@@ -13,7 +13,7 @@ import javajs.util.V3;
 
 import org.jmol.api.JmolGraphicsInterface;
 import org.jmol.api.JmolRendererInterface;
-import org.jmol.constant.EnumStereoMode;
+import org.jmol.c.EnumStereoMode;
 
 public class GData implements JmolGraphicsInterface {
 

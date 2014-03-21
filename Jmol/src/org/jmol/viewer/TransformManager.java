@@ -26,7 +26,7 @@ package org.jmol.viewer;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolNavigatorInterface;
 import org.jmol.api.JmolScriptEvaluator;
-import org.jmol.constant.EnumStereoMode;
+import org.jmol.c.EnumStereoMode;
 import org.jmol.java.BS;
 import org.jmol.script.T;
 import org.jmol.thread.JmolThread;

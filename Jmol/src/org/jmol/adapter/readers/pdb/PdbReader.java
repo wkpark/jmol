@@ -31,7 +31,7 @@ import org.jmol.adapter.smarter.Structure;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.SymmetryInterface;
-import org.jmol.constant.EnumStructure;
+import org.jmol.c.EnumStructure;
 import org.jmol.util.Escape;
 import javajs.util.List;
 import javajs.util.PT;

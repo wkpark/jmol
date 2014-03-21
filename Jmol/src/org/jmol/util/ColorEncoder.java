@@ -34,7 +34,7 @@ import java.util.Map;
 
 
 import org.jmol.viewer.JC;
-import org.jmol.constant.EnumPalette;
+import org.jmol.c.EnumPalette;
 
 import javajs.util.P3;
 

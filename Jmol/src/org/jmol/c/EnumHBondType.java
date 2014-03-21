@@ -23,7 +23,7 @@
  *  02110-1301, USA.
  */
 
-package org.jmol.constant;
+package org.jmol.c;
 
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;

@@ -23,39 +23,11 @@
  *  02110-1301, USA.
  */
 
-package org.jmol.constant;
+package org.jmol.c;
 
-public enum EnumStereoMode {
-  NONE("OFF", false),
-  DOUBLE("", false),
-  REDCYAN("REDCYAN", true),
-  REDBLUE("REDBLUE", true),
-  REDGREEN("REDGREEN", true),
-  CUSTOM("", true)
-  ;
-
-  private String name;
-  private boolean isBiColor;
-  
-  private EnumStereoMode(String name, boolean isBiColor) {
-    this.name = name;
-    this.isBiColor = isBiColor;
-  }
-
-  public String getName() {
-    return name;
-  }
-  
-  public boolean isBiColor() {
-    return isBiColor;
-  }
-  public final static int DEFAULT_STEREO_DEGREES = -5;
-
-
-  public static EnumStereoMode getStereoMode(String id) {
-    for (EnumStereoMode item : values())
-      if (item.name.equalsIgnoreCase(id))
-        return item;
-    return null;
-  }
+/**
+ * Enum for animation mode.
+ */
+public enum EnumAnimationMode {
+  ONCE, LOOP, PALINDROME;  
 }

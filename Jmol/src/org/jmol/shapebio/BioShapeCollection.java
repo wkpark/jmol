@@ -26,7 +26,7 @@
 package org.jmol.shapebio;
 
 import org.jmol.atomdata.RadiusData;
-import org.jmol.constant.EnumPalette;
+import org.jmol.c.EnumPalette;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Group;

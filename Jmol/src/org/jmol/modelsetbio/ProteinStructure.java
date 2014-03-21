@@ -30,7 +30,7 @@ import javajs.util.AU;
 import javajs.util.P3;
 import javajs.util.V3;
 
-import org.jmol.constant.EnumStructure;
+import org.jmol.c.EnumStructure;
 import org.jmol.util.Logger;
 
 public abstract class ProteinStructure {

@@ -9,7 +9,7 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolSceneGenerator;
 import org.jmol.api.PymolAtomReader;
 import org.jmol.atomdata.RadiusData;
-import org.jmol.constant.EnumVdw;
+import org.jmol.c.EnumVdw;
 import org.jmol.java.BS;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.MeasurementData;

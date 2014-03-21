@@ -24,7 +24,7 @@
 package org.jmol.render;
 
 
-import org.jmol.constant.EnumAxesMode;
+import org.jmol.c.EnumAxesMode;
 import org.jmol.modelset.TickInfo;
 import org.jmol.util.GData;
 import org.jmol.util.Point3fi;

@@ -38,7 +38,7 @@ import javajs.util.P3i;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 import org.jmol.atomdata.RadiusData;
-import org.jmol.constant.EnumPalette;
+import org.jmol.c.EnumPalette;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;

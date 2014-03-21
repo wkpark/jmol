@@ -24,7 +24,7 @@
 
 package org.jmol.appletjs;
 
-import org.jmol.constant.EnumCallback;
+import org.jmol.c.EnumCallback;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.GenericApplet;

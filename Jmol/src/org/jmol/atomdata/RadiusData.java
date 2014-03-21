@@ -114,7 +114,7 @@
 package org.jmol.atomdata;
 
 
-import org.jmol.constant.EnumVdw;
+import org.jmol.c.EnumVdw;
 
 import javajs.util.SB;
 

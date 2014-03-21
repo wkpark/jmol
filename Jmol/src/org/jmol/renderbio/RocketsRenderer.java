@@ -24,7 +24,7 @@
 
 package org.jmol.renderbio;
 
-import org.jmol.constant.EnumStructure;
+import org.jmol.c.EnumStructure;
 import org.jmol.modelsetbio.AlphaPolymer;
 import org.jmol.modelsetbio.Helix;
 import org.jmol.modelsetbio.Monomer;

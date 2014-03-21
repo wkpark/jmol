@@ -30,7 +30,7 @@ import javajs.util.CU;
 import javajs.util.PT;
 import javajs.util.SB;
 
-import org.jmol.constant.EnumPalette;
+import org.jmol.c.EnumPalette;
 
 /**
  * 

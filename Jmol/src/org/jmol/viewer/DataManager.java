@@ -27,7 +27,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.jmol.api.JmolDataManager;
-import org.jmol.constant.EnumVdw;
+import org.jmol.c.EnumVdw;
 import org.jmol.java.BS;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.script.T;

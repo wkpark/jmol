@@ -74,12 +74,12 @@ import org.jmol.atomdata.AtomDataServer;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
 
-import org.jmol.constant.EnumAnimationMode;
-import org.jmol.constant.EnumAxesMode;
-import org.jmol.constant.EnumFileStatus;
-import org.jmol.constant.EnumStructure;
-import org.jmol.constant.EnumStereoMode;
-import org.jmol.constant.EnumVdw;
+import org.jmol.c.EnumAnimationMode;
+import org.jmol.c.EnumAxesMode;
+import org.jmol.c.EnumFileStatus;
+import org.jmol.c.EnumStereoMode;
+import org.jmol.c.EnumStructure;
+import org.jmol.c.EnumVdw;
 
 import javajs.J2SIgnoreImport;
 import org.jmol.util.BSUtil;

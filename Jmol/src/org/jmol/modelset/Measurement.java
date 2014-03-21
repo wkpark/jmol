@@ -35,7 +35,7 @@ import javajs.util.PT;
 import org.jmol.util.Measure;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
-import org.jmol.constant.EnumVdw;
+import org.jmol.c.EnumVdw;
 import org.jmol.modelset.TickInfo;
 
 import org.jmol.viewer.JC;

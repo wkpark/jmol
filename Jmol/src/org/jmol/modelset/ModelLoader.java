@@ -43,7 +43,7 @@ import org.jmol.api.JmolAdapterBondIterator;
 import org.jmol.api.JmolBioResolver;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
-import org.jmol.constant.EnumVdw;
+import org.jmol.c.EnumVdw;
 import org.jmol.java.BS;
 
 

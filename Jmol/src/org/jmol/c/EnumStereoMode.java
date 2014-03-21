@@ -23,48 +23,39 @@
  *  02110-1301, USA.
  */
 
-package org.jmol.constant;
+package org.jmol.c;
 
-import javajs.util.SB;
+public enum EnumStereoMode {
+  NONE("OFF", false),
+  DOUBLE("", false),
+  REDCYAN("REDCYAN", true),
+  REDBLUE("REDBLUE", true),
+  REDGREEN("REDGREEN", true),
+  CUSTOM("", true)
+  ;
 
-public enum EnumCallback {
-
-  ANIMFRAME,
-  APPLETREADY,
-  ATOMMOVED,
-  CLICK,
-  ECHO,
-  ERROR,
-  EVAL,
-  HOVER,
-  LOADSTRUCT,
-  MEASURE,
-  MESSAGE,
-  MINIMIZATION,
-  PICK,
-  RESIZE,
-  SCRIPT,
-  SYNC, STRUCTUREMODIFIED;
-
-  public static EnumCallback getCallback(String name) {
-    
-    name = name.toUpperCase();
-    name = name.substring(0, Math.max(name.indexOf("CALLBACK"), 0));
-    for (EnumCallback item : values())
-      if (item.name().equalsIgnoreCase(name))
-        return item;
-    return null;
+  private String name;
+  private boolean isBiColor;
+  
+  private EnumStereoMode(String name, boolean isBiColor) {
+    this.name = name;
+    this.isBiColor = isBiColor;
   }
 
-  private static String nameList;
+  public String getName() {
+    return name;
+  }
+  
+  public boolean isBiColor() {
+    return isBiColor;
+  }
+  public final static int DEFAULT_STEREO_DEGREES = -5;
 
-  public static synchronized String getNameList() {
-    if (nameList == null) {
-      SB names = new SB();
-      for (EnumCallback item : values())
-        names.append(item.name().toLowerCase()).append("Callback;");
-      nameList = names.toString();
-    }
-    return nameList;
+
+  public static EnumStereoMode getStereoMode(String id) {
+    for (EnumStereoMode item : values())
+      if (item.name.equalsIgnoreCase(id))
+        return item;
+    return null;
   }
 }

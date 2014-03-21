@@ -29,7 +29,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.jmol.api.JmolFilesReaderInterface;
-import org.jmol.constant.EnumQuantumShell;
+import org.jmol.c.EnumQuantumShell;
 import org.jmol.modelset.Group;
 import org.jmol.util.Elements;
 import org.jmol.util.Edge;

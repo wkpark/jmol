@@ -24,7 +24,7 @@
 
 package org.jmol.api;
 
-import org.jmol.constant.EnumStructure;
+import org.jmol.c.EnumStructure;
 import org.jmol.java.BS;
 
 public abstract class JmolAdapterStructureIterator {

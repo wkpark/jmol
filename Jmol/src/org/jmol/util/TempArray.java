@@ -24,7 +24,7 @@
 package org.jmol.util;
 
 
-import org.jmol.constant.EnumStructure;
+import org.jmol.c.EnumStructure;
 import org.jmol.script.T;
 
 import javajs.util.P3;

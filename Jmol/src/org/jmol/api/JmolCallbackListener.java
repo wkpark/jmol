@@ -24,7 +24,7 @@
 
 package org.jmol.api;
 
-import org.jmol.constant.EnumCallback;
+import org.jmol.c.EnumCallback;
 
 public interface JmolCallbackListener {
 /*

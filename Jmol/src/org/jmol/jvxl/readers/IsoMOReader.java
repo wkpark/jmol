@@ -39,7 +39,7 @@ import javajs.util.V3;
 import org.jmol.api.Interface;
 import org.jmol.api.MOCalculationInterface;
 import org.jmol.api.QuantumPlaneCalculationInterface;
-import org.jmol.constant.EnumQuantumShell;
+import org.jmol.c.EnumQuantumShell;
 import org.jmol.jvxl.data.VolumeData;
 
 class IsoMOReader extends AtomDataReader {

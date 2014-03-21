@@ -24,7 +24,7 @@
 
 package org.jmol.adapter.smarter;
 
-import org.jmol.constant.EnumStructure;
+import org.jmol.c.EnumStructure;
 
 public class Structure {
   public EnumStructure structureType;

@@ -25,7 +25,7 @@
 package org.jmol.applet;
 
 import org.jmol.awt.FileDropper;
-import org.jmol.constant.EnumCallback;
+import org.jmol.c.EnumCallback;
 import org.jmol.util.GenericApplet;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;

@@ -35,7 +35,7 @@ import org.jmol.util.Logger;
 import javajs.util.P3;
 import javajs.util.V3;
 import org.jmol.viewer.JC;
-import org.jmol.constant.EnumStructure;
+import org.jmol.c.EnumStructure;
 import org.jmol.java.BS;
 import org.jmol.script.T;
 

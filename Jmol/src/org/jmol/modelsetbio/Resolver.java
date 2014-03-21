@@ -55,7 +55,7 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolAdapterAtomIterator;
 import org.jmol.api.JmolAdapterStructureIterator;
 import org.jmol.api.JmolBioResolver;
-import org.jmol.constant.EnumStructure;
+import org.jmol.c.EnumStructure;
 
 /**
  * a class used by ModelLoader only to handle all loading

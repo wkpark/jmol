@@ -34,7 +34,7 @@ import org.jmol.api.JmolNMRInterface;
 import org.jmol.api.JmolPatternMatcher;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
-import org.jmol.constant.EnumVdw;
+import org.jmol.c.EnumVdw;
 import org.jmol.i18n.GT;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;

@@ -23,7 +23,8 @@
  *  02110-1301, USA.
  */
 
-package org.jmol.constant;
+package org.jmol.c;
+
 
 
 

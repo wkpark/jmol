@@ -1858,7 +1858,7 @@ public class ScriptCompiler extends ScriptTokenParser {
   }
 
   private static ScriptFunction newScriptParallelProcessor(String name, int tok) {
-    ScriptFunction jpp = (ScriptFunction) Interface.getOption("parallel.ScriptParallelProcessor");
+    ScriptFunction jpp = (ScriptFunction) Interface.getOption("script.ScriptParallelProcessor");
     jpp.set(name, tok);
     return jpp;
   }

@@ -569,7 +569,7 @@ all support for previous versions removed
         <include name="org/openscience/jvxl/*" />
         <include name="org/jmol/api/**" />
         <include name="org/jmol/atomdata/**" />
-        <include name="org/jmol/constant/**" />
+        <include name="org/jmol/c/**" />
         <include name="org/jmol/g3d/**" />
         <include name="org/jmol/jvxl/**" />
         <include name="org/jmol/io/**" />
@@ -819,7 +819,7 @@ all support for previous versions removed
         <include name="org/jmol/atomdata/**" />
         <include name="org/jmol/awt/**" />   
         <include name="org/jmol/bspt/**" />
-        <include name="org/jmol/constant/**" />
+        <include name="org/jmol/c/**" />
         <include name="org/jmol/g3d/**" />
         <include name="org/jmol/geodesic/**" />
         <include name="org/jmol/i18n/**" />
@@ -1100,7 +1100,7 @@ all support for previous versions removed
 		<include name="org/jmol/atomdata/**" />
         <include name="org/jmol/awt/**" />		
 		<include name="org/jmol/bspt/**" />
-        <include name="org/jmol/constant/**" />
+        <include name="org/jmol/c/**" />
 		<include name="org/jmol/g3d/**" />
 		<include name="org/jmol/geodesic/**" />
 		<include name="org/jmol/i18n/**" />
@@ -1173,7 +1173,7 @@ all support for previous versions removed
         <include name="javajs/util/SB.class" />
         <include name="javajs/util/ParserJS.class" />
         <include name="org/jmol/api/SmilesMatcherInterface.class" />
-        <include name="org/jmol/constant/**" />
+        <include name="org/jmol/c/**" />
         <include name="org/jmol/java/BS.class" />
         <include name="org/jmol/smiles/**" />
         <include name="org/jmol/util/BSUtil.class" />

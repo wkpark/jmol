@@ -231,7 +231,7 @@ class TestSmarterJmolAdapterImpl extends TestCase {
     assertNotNull("Nothing read for " + file.getPath(), result);
     assertFalse("Error returned for " + file.getPath() + ": " + result, result instanceof String);
     assertTrue("Not an AtomSetCollection for " + file.getPath(), result instanceof AtomSetCollection);
-    int nAtoms = ((AtomSetCollection) result).atomCount;
+    int nAtoms = ((AtomSetCollection) result).ac;
     continuing &= (nAtoms > 0);    
     assertTrue("No atoms loaded for " + file.getPath(), nAtoms > 0);
   }

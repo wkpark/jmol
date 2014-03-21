@@ -176,11 +176,11 @@ ICNTRL(20)=VERNUM ! version number
   }
 
   private void readCoordinates() throws Exception {
-    int atomCount = (bsFilter == null ? templateAtomCount : ((Integer) htParams
+    int ac = (bsFilter == null ? templateAtomCount : ((Integer) htParams
         .get("filteredAtomCount")).intValue());
     for (int i = 0; i < nModels; i++)
       if (doGetModel(++modelNumber, null)) {
-        P3[] trajectoryStep = new P3[atomCount];
+        P3[] trajectoryStep = new P3[ac];
         if (!getTrajectoryStep(trajectoryStep))
           return;
         trajectorySteps.addLast(trajectoryStep);
@@ -196,7 +196,7 @@ ICNTRL(20)=VERNUM ! version number
   private boolean getTrajectoryStep(P3[] trajectoryStep)
       throws Exception {
     try {
-    int atomCount = trajectoryStep.length;
+    int ac = trajectoryStep.length;
     int n = -1;
     float[] x = readFloatArray();
     float[] y = readFloatArray();
@@ -216,7 +216,7 @@ ICNTRL(20)=VERNUM ! version number
         pt.set(xAll[i], yAll[i], zAll[i]);
       }
       if (bsFilter == null || bsFilter.get(i)) {
-        if (++n == atomCount)
+        if (++n == ac)
           return true;
         trajectoryStep[n] = pt;
       }

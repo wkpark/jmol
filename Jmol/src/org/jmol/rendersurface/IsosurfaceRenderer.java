@@ -68,7 +68,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
 
     for (int i = isosurface.meshCount; --i >= 0;) {
       mesh = imesh = (IsosurfaceMesh) isosurface.meshes[i];
-      if (imesh.connections != null && !vwr.getModelSet().atoms[imesh.connections[0]].checkVisible())
+      if (imesh.connections != null && !vwr.getModelSet().at[imesh.connections[0]].checkVisible())
         continue;
       hasColorRange = false;
       if (renderMeshSlab()) {
@@ -183,7 +183,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     boolean tcover = g3d.getTranslucentCoverOnly();
     g3d.setTranslucentCoverOnly(frontOnly || !vwr.getBoolean(T.translucent));
     thePlane = imesh.jvxlData.jvxlPlane;
-    vertexValues = mesh.vertexValues;
+    vertexValues = mesh.vvs;
     boolean isOK;
     if (thisSlabValue != Integer.MAX_VALUE && imesh.jvxlData.isSlabbable) {
       g3d.setSlab(thisSlabValue);
@@ -287,7 +287,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     try {
       if (volumeRender)
         g3d.volumeRender(true);
-      boolean slabPoints = ((volumeRender || mesh.polygonCount == 0) && selectedPolyOnly);
+      boolean slabPoints = ((volumeRender || mesh.pc == 0) && selectedPolyOnly);
       int incr = imesh.vertexIncrement;
       int diam;
       if (mesh.diameter <= 0) {
@@ -308,7 +308,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
         if (vertexValues != null && Float.isNaN(vertexValues[i]) || frontOnly
             && transformedVectors[normixes[i]].z < 0 || imesh.jvxlData.thisSet >= 0
             && mesh.vertexSets[i] != imesh.jvxlData.thisSet || !mesh.isColorSolid
-            && mesh.vertexColixes != null && !setColix(mesh.vertexColixes[i])
+            && mesh.vcs != null && !setColix(mesh.vcs[i])
             || haveBsDisplay && !mesh.bsDisplay.get(i)
             || slabPoints && !bsPolygons.get(i))
           continue;
@@ -317,7 +317,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
             && Math.abs(screens[i].x - cX) < 150
             && Math.abs(screens[i].y - cY) < 150) {
           String s = i
-              + (mesh.isColorSolid ? "" : " " + mesh.vertexValues[i]);
+              + (mesh.isColorSolid ? "" : " " + mesh.vvs[i]);
           g3d.setColix(C.BLACK);
           g3d.drawStringNoSlab(s, null, screens[i].x, screens[i].y,
               screens[i].z - 30, (short) 0);
@@ -359,11 +359,11 @@ public class IsosurfaceRenderer extends MeshRenderer {
   protected void renderTriangles(boolean fill, boolean iShowTriangles,
                                  boolean isExport) {
     g3d.addRenderer(T.triangles);
-    int[][] polygonIndexes = mesh.polygonIndexes;
+    int[][] polygonIndexes = mesh.pis;
     colix = (isGhostPass ? mesh.slabColix
         : !fill && mesh.meshColix != 0 ? mesh.meshColix : mesh.colix);
     short[] vertexColixes = (!fill && mesh.meshColix != 0 ? null
-        : mesh.vertexColixes);
+        : mesh.vcs);
     if (isTranslucentInherit)
       colix = C.copyColixTranslucency(mesh.slabColix, mesh.colix);
     g3d.setColix(colix);
@@ -392,7 +392,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
               screens[polygonIndexes[mesh.polygonCount / 2][1]], screens[polygonIndexes[mesh.polygonCount - 1][2]]);
         }
     */
-    boolean colorArrayed = (colorSolid && mesh.polygonColixes != null);
+    boolean colorArrayed = (colorSolid && mesh.pcs != null);
     if (colorArrayed && !fill && mesh.fillTriangles)
       colorArrayed = false;
     short[] contourColixes = imesh.jvxlData.contourColixes;
@@ -410,7 +410,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     }
     if (diam < 1)
       diam = 1;
-    for (int i = mesh.polygonCount; --i >= 0;) {
+    for (int i = mesh.pc; --i >= 0;) {
       int[] polygon = polygonIndexes[i];
       if (polygon == null || selectedPolyOnly && !bsPolygons.get(i))
         continue;
@@ -432,8 +432,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
         continue;
       short colixA, colixB, colixC;
       if (colorSolid) {
-        if (colorArrayed && i < mesh.polygonColixes.length) {
-          short c = mesh.polygonColixes[i];
+        if (colorArrayed && i < mesh.pcs.length) {
+          short c = mesh.pcs[i];
           if (c == 0)
             continue;
           colix = c;

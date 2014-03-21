@@ -39,13 +39,13 @@ public abstract class SpartanInputReader extends BasisFunctionReader {
 
   protected String modelName;
   protected int modelAtomCount;
-  protected int atomCount;
+  protected int ac;
   protected String bondData = "";
 
   protected void readInputRecords() throws Exception {
-    int atomCount0 = atomCount;
+    int ac0 = ac;
       readInputHeader();
-      while (readLine() != null) {
+      while (rd() != null) {
         String[] tokens = getTokens();
         //charge and spin
         if (tokens.length == 2 && parseIntStr(tokens[0]) != Integer.MIN_VALUE && parseIntStr(tokens[1]) >= 0)
@@ -60,34 +60,34 @@ public abstract class SpartanInputReader extends BasisFunctionReader {
       if (modelAtomCount > 1) {
         discardLinesUntilContains("HESSIAN");
         if (line != null)
-          readBonds(atomCount0);
+          readBonds(ac0);
         if (line != null && line.indexOf("BEGINCONSTRAINTS") >= 0)
           readConstraints();
       }
       while (line != null && line.indexOf("END ") < 0 && line.indexOf("MOLSTATE") < 0)
-        readLine();
+        rd();
       if (line != null && line.indexOf("MOLSTATE") >= 0)
         readTransform();
-      if (atomSetCollection.atomCount > 0)
-        atomSetCollection.setAtomSetName(modelName);
+      if (asc.ac > 0)
+        asc.setAtomSetName(modelName);
   }
 
   String constraints = "";
   private void readConstraints() throws Exception {
     constraints = "";
-    while (readLine() != null && line.indexOf("END") < 0)
+    while (rd() != null && line.indexOf("END") < 0)
       constraints += (constraints == "" ? "" : "\n") + line;
-    readLine();
+    rd();
     if (constraints.length() == 0)
       return;
-    atomSetCollection.setAtomSetAuxiliaryInfo("constraints", constraints);
-    atomSetCollection.setAtomSetModelProperty(SmarterJmolAdapter.PATH_KEY, "EnergyProfile");
-    atomSetCollection.setAtomSetModelProperty("Constraint", constraints);
+    asc.setAtomSetAuxiliaryInfo("constraints", constraints);
+    asc.setAtomSetModelProperty(SmarterJmolAdapter.PATH_KEY, "EnergyProfile");
+    asc.setAtomSetModelProperty("Constraint", constraints);
   }
 
   private void readTransform() throws Exception {
-    readLine();
-    String[] tokens = getTokensStr(readLine() + " " + readLine());
+    rd();
+    String[] tokens = getTokensStr(rd() + " " + rd());
     //BEGINMOLSTATE
     //MODEL=3~HYDROGEN=1~LABELS=0
     //0.70925283  0.69996750 -0.08369886  0.00000000 -0.70480913  0.70649898 -0.06405880  0.00000000
@@ -101,38 +101,38 @@ public abstract class SpartanInputReader extends BasisFunctionReader {
   }
   
   private void readInputHeader() throws Exception {
-    while (readLine() != null
+    while (rd() != null
         && !line.startsWith(" ")) {}
-    readLine();
+    rd();
     modelName = line + ";";
     modelName = modelName.substring(0, modelName.indexOf(";")).trim();
   }
   
   private void readInputAtoms() throws Exception {
     modelAtomCount = 0;
-    while (readLine() != null
+    while (rd() != null
         && !line.startsWith("ENDCART")) {
       String[] tokens = getTokens();
       addAtomXYZSymName(tokens, 1, getElementSymbol(parseIntStr(tokens[0])), null);
       modelAtomCount++;
     }
-    atomCount = atomSetCollection.atomCount;
+    ac = asc.ac;
     if (Logger.debugging)
-      Logger.debug(atomCount + " atoms read");
+      Logger.debug(ac + " atoms read");
   }
 
   private void readAtomNames() throws Exception {
-    int atom0 = atomCount - modelAtomCount;
-    // note that atomSetCollection.isTrajectory() gets set onlyAFTER an input is
+    int atom0 = ac - modelAtomCount;
+    // note that asc.isTrajectory() gets set onlyAFTER an input is
     // read.
     for (int i = 0; i < modelAtomCount; i++) {
-      line = readLine().trim();
+      line = rd().trim();
       String name = line.substring(1, line.length() - 1);
-      atomSetCollection.atoms[atom0 + i].atomName = name;
+      asc.atoms[atom0 + i].atomName = name;
     }
   }
   
-  private void readBonds(int atomCount0) throws Exception {
+  private void readBonds(int ac0) throws Exception {
     int nAtoms = modelAtomCount;
     /*
      <one number per atom>
@@ -144,23 +144,23 @@ public abstract class SpartanInputReader extends BasisFunctionReader {
      1    7    1
      */
     bondData = ""; //used for frequency business
-    while (readLine() != null && !line.startsWith("ENDHESS")) {
+    while (rd() != null && !line.startsWith("ENDHESS")) {
       String[] tokens = getTokens();
       bondData += line + " ";
       if (nAtoms == 0) {
-        int sourceIndex = parseIntStr(tokens[0]) - 1 + atomCount0;
-        int targetIndex = parseIntStr(tokens[1]) - 1 + atomCount0;
+        int sourceIndex = parseIntStr(tokens[0]) - 1 + ac0;
+        int targetIndex = parseIntStr(tokens[1]) - 1 + ac0;
         int bondOrder = parseIntStr(tokens[2]);
         if (bondOrder > 0) {
-          atomSetCollection.addBond(new Bond(sourceIndex, targetIndex,
+          asc.addBond(new Bond(sourceIndex, targetIndex,
               bondOrder < 4 ? bondOrder : bondOrder == 5 ? JmolAdapter.ORDER_AROMATIC : 1));
         }
       } else {
         nAtoms -= tokens.length;
       }
     }
-    readLine();
+    rd();
     if (Logger.debugging)
-      Logger.debug(atomSetCollection.bondCount + " bonds read");
+      Logger.debug(asc.bondCount + " bonds read");
   }
 }

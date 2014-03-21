@@ -209,9 +209,9 @@ abstract class BioShapeRenderer extends MeshRenderer {
       bioShape.falsifyMesh();
     for (int i = monomerCount; --i >= 0;) {
       if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0
-          || modelSet.isAtomHidden(leadAtomIndices[i]) || bsDeleted != null && bsDeleted.get(leadAtomIndices[i]))
+          || ms.isAtomHidden(leadAtomIndices[i]) || bsDeleted != null && bsDeleted.get(leadAtomIndices[i]))
         continue;
-      Atom lead = modelSet.atoms[leadAtomIndices[i]];
+      Atom lead = ms.at[leadAtomIndices[i]];
       if (!g3d.isInDisplayRange(lead.sX, lead.sY))
         continue;
       bsVisible.set(i);
@@ -694,7 +694,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
       // the mesh preventing light leaking around the sharp edges
       if (doCap0) {
         for (int l = 0; l < nPer; l++)
-          mesh.addV(mesh.vertices[l]);
+          mesh.addV(mesh.vs[l]);
         nPoints += nPer;
         for (int k = hermiteLevel * 2; --k >= 0;)
           mesh.addQuad(nPoints - nPer + k + 2, nPoints - nPer + k + 1, nPoints
@@ -702,7 +702,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
       }
       if (doCap1) {
         for (int l = 0; l < nPer; l++)
-          mesh.addV(mesh.vertices[nPointsPreCap - nPer + l]);
+          mesh.addV(mesh.vs[nPointsPreCap - nPer + l]);
         nPoints += nPer;
         for (int k = hermiteLevel * 2; --k >= 0;)
           mesh.addQuad(nPoints - k - 1, nPoints - nPer + (nPer - k) % nPer,

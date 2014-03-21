@@ -82,19 +82,19 @@ public class Backbone extends BioShapeCollection {
         if (isAtom1 && isAtom2 
             || useThisBsSelected && isAtom1 
             || bondSelectionModeOr && (isAtom1 || isAtom2)) {
-          bioShape.monomers[i].setShapeVisibility(myVisibilityFlag, isVisible);
-          Atom atomA = modelSet.atoms[index1];
+          bioShape.monomers[i].setShapeVisibility(vf, isVisible);
+          Atom atomA = ms.at[index1];
           if (rd != null) {
             if (Float.isNaN(rd.values[index1]) || Float.isNaN(rd.values[index2]))
               continue;
             mad = (short) ((rd.values[index1] + rd.values[index2]) * 1000); // average
             isVisible = (mad != 0);
           }
-          Atom atomB = modelSet.atoms[index2];
+          Atom atomB = ms.at[index2];
           boolean wasVisible = (bioShape.mads[i] != 0); 
           if (wasVisible != isVisible) {
-            atomA.addDisplayedBackbone(myVisibilityFlag, isVisible);
-            atomB.addDisplayedBackbone(myVisibilityFlag, isVisible);
+            atomA.addDisplayedBackbone(vf, isVisible);
+            atomB.addDisplayedBackbone(vf, isVisible);
           }
           bioShape.mads[i] = mad;
           bioShape.bsSizeSet.setBitTo(i, isVisible);
@@ -114,9 +114,9 @@ public class Backbone extends BioShapeCollection {
       BioShape bioShape = bioShapes[iShape];
       int[] atomIndices = bioShape.bioPolymer.getLeadAtomIndices();
       for (int i = bioShape.monomerCount; --i >= 0; ) {
-        Atom atom = modelSet.atoms[atomIndices[i]];
-        if (atom.getNBackbonesDisplayed() > 0 && !modelSet.isAtomHidden(i))
-          atom.setClickable(myVisibilityFlag);
+        Atom atom = ms.at[atomIndices[i]];
+        if (atom.getNBackbonesDisplayed() > 0 && !ms.isAtomHidden(i))
+          atom.setClickable(vf);
       }
     }
   }  

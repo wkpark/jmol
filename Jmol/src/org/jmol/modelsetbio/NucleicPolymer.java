@@ -107,8 +107,8 @@ public class NucleicPolymer extends BioPolymer {
       if (!myNucleotide.isPurine())
         continue;
       Atom myN3 = myNucleotide.getN3();
-      boolean isInA = bsA.get(myN3.index);
-      if (!isInA && !bsB.get(myN3.index))
+      boolean isInA = bsA.get(myN3.i);
+      if (!isInA && !bsB.get(myN3.i))
         continue;
       Atom myN1 = myNucleotide.getN1();
       Atom myN9 = myNucleotide.getN0();
@@ -123,7 +123,7 @@ public class NucleicPolymer extends BioPolymer {
         if (!otherNucleotide.isPyrimidine())
           continue;
         Atom otherN3 = otherNucleotide.getN3();
-        if (isInA ? !bsB.get(otherN3.index) : !bsA.get(otherN3.index))
+        if (isInA ? !bsB.get(otherN3.i) : !bsA.get(otherN3.i))
           continue;
         Atom otherN1 = otherNucleotide.getN0();
         float dist2 = myN1.distanceSquared(otherN3);

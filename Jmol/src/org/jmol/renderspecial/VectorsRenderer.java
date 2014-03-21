@@ -70,7 +70,7 @@ public class VectorsRenderer extends ShapeRenderer {
     vectorScale = vwr.getFloat(T.vectorscale);
     vectorSymmetry = vwr.getBoolean(T.vectorsymmetry);
     
-    for (int i = modelSet.getAtomCount(); --i >= 0;) {
+    for (int i = ms.getAtomCount(); --i >= 0;) {
       Atom atom = atoms[i];
       if (!isVisibleForMe(atom))
         continue;

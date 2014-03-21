@@ -90,7 +90,7 @@ import java.util.Map;
 
   @Override
   protected void releaseModelSet() {
-    models = null;
+    am = null;
     closest[0] = null;
     super.releaseModelSet();
   }
@@ -125,14 +125,14 @@ import java.util.Map;
   public int getModelNumberIndex(int modelNumber, boolean useModelNumber,
                                  boolean doSetTrajectory) {
     if (useModelNumber) {
-      for (int i = 0; i < modelCount; i++)
+      for (int i = 0; i < mc; i++)
         if (modelNumbers[i] == modelNumber 
             || modelNumber < 1000000 && modelNumbers[i] == 1000000 + modelNumber)
           return i;
       return -1;
     }
     //new decimal format:   frame 1.2 1.3 1.4
-    for (int i = 0; i < modelCount; i++)
+    for (int i = 0; i < mc; i++)
       if (modelFileNumbers[i] == modelNumber) {
         if (doSetTrajectory && isTrajectory(i))
           setTrajectory(i);
@@ -145,18 +145,18 @@ import java.util.Map;
     if (trajectorySteps == null)
       return null;
     BS bsModels = new BS();
-    for (int i = modelCount; --i >= 0;) {
-      int t = models[i].getSelectedTrajectory(); 
+    for (int i = mc; --i >= 0;) {
+      int t = am[i].getSelectedTrajectory(); 
       if (t >= 0) {
         bsModels.set(t);
-        i = models[i].trajectoryBaseIndex; //skip other trajectories
+        i = am[i].trajectoryBaseIndex; //skip other trajectories
       }
     }
     return bsModels;
   }
 
   public void setTrajectoryBs(BS bsModels) {
-    for (int i = 0; i < modelCount; i++)
+    for (int i = 0; i < mc; i++)
       if (bsModels.get(i))
         setTrajectory(i);
   }
@@ -168,16 +168,16 @@ import java.util.Map;
     // Or has specified a trajectory in a select, display, or hide command.
 
     // Assign the coordinates and the model index for this set of atoms
-    if (atoms[models[modelIndex].firstAtomIndex].modelIndex == modelIndex)
+    if (at[am[modelIndex].firstAtomIndex].mi == modelIndex)
       return;
-    int baseModelIndex = models[modelIndex].trajectoryBaseIndex;
-    models[baseModelIndex].setSelectedTrajectory(modelIndex);
+    int baseModelIndex = am[modelIndex].trajectoryBaseIndex;
+    am[baseModelIndex].setSelectedTrajectory(modelIndex);
     setAtomPositions(baseModelIndex, modelIndex, trajectorySteps.get(modelIndex),
         null, 0,
         (vibrationSteps == null ? null : vibrationSteps.get(modelIndex)), true);    
     int m = vwr.getCurrentModelIndex();
     if (m >= 0 && m != modelIndex 
-        && models[m].fileIndex == models[modelIndex].fileIndex)
+        && am[m].fileIndex == am[modelIndex].fileIndex)
       vwr.setCurrentModelIndexClear(modelIndex, false);
   }  
 
@@ -192,13 +192,13 @@ import java.util.Map;
       setTrajectory(m2);
       return;
     }
-    int baseModelIndex = models[m1].trajectoryBaseIndex;
-    models[baseModelIndex].setSelectedTrajectory(m1);
+    int baseModelIndex = am[m1].trajectoryBaseIndex;
+    am[baseModelIndex].setSelectedTrajectory(m1);
     setAtomPositions(baseModelIndex, m1, trajectorySteps.get(m1),
         trajectorySteps.get(m2), f, (vibrationSteps == null ? null
             : vibrationSteps.get(m1)), true);
     int m = vwr.getCurrentModelIndex();
-    if (m >= 0 && m != m1 && models[m].fileIndex == models[m1].fileIndex)
+    if (m >= 0 && m != m1 && am[m].fileIndex == am[m1].fileIndex)
       vwr.setCurrentModelIndexClear(m1, false);
   }  
 
@@ -221,17 +221,17 @@ import java.util.Map;
                                 boolean isFractional) {
     BS bs = new BS();
     V3 vib = new V3();
-    int iFirst = models[baseModelIndex].firstAtomIndex;
+    int iFirst = am[baseModelIndex].firstAtomIndex;
     int iMax = iFirst + getAtomCountInModel(baseModelIndex);
     if (f == 0) {
       for (int pt = 0, i = iFirst; i < iMax && pt < t1.length; i++, pt++) {
-        atoms[i].modelIndex = (short) modelIndex;
+        at[i].mi = (short) modelIndex;
         if (t1[pt] == null)
           continue;
         if (isFractional)
-          atoms[i].setFractionalCoordTo(t1[pt], true);
+          at[i].setFractionalCoordTo(t1[pt], true);
         else
-          atoms[i].setT(t1[pt]);
+          at[i].setT(t1[pt]);
         if (vibrationSteps != null) {
           if (vibs != null && vibs[pt] != null)
             vib = vibs[pt];
@@ -243,15 +243,15 @@ import java.util.Map;
       P3 p = new P3();
       int n = Math.min(t1.length, t2.length);
       for (int pt = 0, i = iFirst; i < iMax && pt < n; i++, pt++) {
-        atoms[i].modelIndex = (short) modelIndex;
+        at[i].mi = (short) modelIndex;
         if (t1[pt] == null || t2[pt] == null)
           continue;
         p.sub2(t2[pt], t1[pt]);
         p.scaleAdd2(f, p, t1[pt]);
         if (isFractional)
-          atoms[i].setFractionalCoordTo(p, true);
+          at[i].setFractionalCoordTo(p, true);
         else
-          atoms[i].setT(p);
+          at[i].setT(p);
         bs.set(i);
       } 
     }
@@ -267,11 +267,11 @@ import java.util.Map;
     recalculateLeadMidpointsAndWingVectors(baseModelIndex);
     // Recalculate all measures that involve trajectories
 
-    shapeManager.refreshShapeTrajectories(baseModelIndex, bs, null);
+    sm.refreshShapeTrajectories(baseModelIndex, bs, null);
 
-    if (models[baseModelIndex].hasRasmolHBonds) {
-      models[baseModelIndex].clearRasmolHydrogenBonds(null);
-      models[baseModelIndex].getRasmolHydrogenBonds(bs, bs, null, false,
+    if (am[baseModelIndex].hasRasmolHBonds) {
+      am[baseModelIndex].clearRasmolHydrogenBonds(null);
+      am[baseModelIndex].getRasmolHydrogenBonds(bs, bs, null, false,
           Integer.MAX_VALUE, false, null);
     }
   }
@@ -279,33 +279,33 @@ import java.util.Map;
   public P3[] getFrameOffsets(BS bsAtoms) {
     if (bsAtoms == null)
       return null;
-    P3[] offsets = new P3[modelCount];
-    for (int i = 0; i < modelCount; i++)
+    P3[] offsets = new P3[mc];
+    for (int i = 0; i < mc; i++)
       offsets[i] = new P3();
     int lastModel = 0;
     int n = 0;
     P3 offset = offsets[0];
-    boolean asTrajectory = (trajectorySteps != null && trajectorySteps.size() == modelCount);
-    int m1 = (asTrajectory ? modelCount : 1);
+    boolean asTrajectory = (trajectorySteps != null && trajectorySteps.size() == mc);
+    int m1 = (asTrajectory ? mc : 1);
     for (int m = 0; m < m1; m++) {
       if (asTrajectory)
         setTrajectory(m);
-      for (int i = 0; i <= atomCount; i++) {
-        if (i == atomCount || atoms[i].modelIndex != lastModel) {
+      for (int i = 0; i <= ac; i++) {
+        if (i == ac || at[i].mi != lastModel) {
           if (n > 0) {
             offset.scale(-1.0f / n);
             if (lastModel != 0)
               offset.sub(offsets[0]);
             n = 0;
           }
-          if (i == atomCount)
+          if (i == ac)
             break;
-          lastModel = atoms[i].modelIndex;
+          lastModel = at[i].mi;
           offset = offsets[lastModel];
         }
         if (!bsAtoms.get(i))
           continue;
-        offset.add(atoms[i]);
+        offset.add(at[i]);
         n++;
       }
     }
@@ -339,7 +339,7 @@ import java.util.Map;
   protected final Atom[] closest = new Atom[1];
 
   public int findNearestAtomIndex(int x, int y, BS bsNot, int min) {
-    if (atomCount == 0)
+    if (ac == 0)
       return -1;
     closest[0] = null;
     if (g3d.isAntialiased()) {
@@ -347,8 +347,8 @@ import java.util.Map;
       y <<= 1;
     }
     findNearest2(x, y, closest, bsNot, min);
-    shapeManager.findNearestShapeAtomIndex(x, y, closest, bsNot);
-    int closestIndex = (closest[0] == null ? -1 : closest[0].index);
+    sm.findNearestShapeAtomIndex(x, y, closest, bsNot);
+    int closestIndex = (closest[0] == null ? -1 : closest[0].i);
     closest[0] = null;
     return closestIndex;
   }
@@ -374,13 +374,13 @@ import java.util.Map;
                                     boolean setStructure) {
     BS bsAllAtoms = new BS();
     BS bsModelsExcluded = BSUtil.copyInvert(modelsOf(bsAtoms, bsAllAtoms),
-        modelCount);
+        mc);
     if (!setStructure)
       return calculateStructuresAllExcept(bsModelsExcluded, asDSSP, doReport,
           dsspIgnoreHydrogen, false, false);
-    for (int i = 0; i < modelCount; i++)
+    for (int i = 0; i < mc; i++)
       if (!bsModelsExcluded.get(i))
-        models[i].clearBioPolymers();
+        am[i].clearBioPolymers();
     calculatePolymers(null, 0, 0, bsModelsExcluded);
     String ret = calculateStructuresAllExcept(bsModelsExcluded, asDSSP, doReport,
         dsspIgnoreHydrogen, true, false);
@@ -415,7 +415,7 @@ import java.util.Map;
     int modelIndex = vwr.getCurrentModelIndex();
     int iAtom = (bsAtoms == null ? -1 : bsAtoms.nextSetBit(0));
     if (modelIndex < 0 && iAtom >= 0)
-      modelIndex = atoms[iAtom].getModelIndex();
+      modelIndex = at[iAtom].getModelIndex();
     if (modelIndex < 0) {
       modelIndex = vwr.getVisibleFramesBitSet().nextSetBit(0);
       bsAtoms = null;
@@ -432,7 +432,7 @@ import java.util.Map;
     boolean haveVibration = (obj != null && ((Integer) obj).intValue() != 0 || vwr
         .isVibrationOn());
     SymmetryInterface symmetry = Interface.getSymmetry();
-    pointGroup = symmetry.setPointGroup(pointGroup, atoms, bs, haveVibration,
+    pointGroup = symmetry.setPointGroup(pointGroup, at, bs, haveVibration,
         vwr.getFloat(T.pointgroupdistancetolerance), vwr.getFloat(T.pointgrouplineartolerance));
     if (!doAll && !asInfo)
       return pointGroup.getPointGroupName();
@@ -440,16 +440,16 @@ import java.util.Map;
         index, scale);
     if (asInfo)
       return ret;
-    return (modelCount > 1 ? "frame " + getModelNumberDotted(modelIndex) + "; "
+    return (mc > 1 ? "frame " + getModelNumberDotted(modelIndex) + "; "
         : "") + ret;
   }
   
   private BS modelsOf(BS bsAtoms, BS bsAllAtoms) {
-    BS bsModels = BS.newN(modelCount);
+    BS bsModels = BS.newN(mc);
     boolean isAll = (bsAtoms == null);
-    int i0 = (isAll ? atomCount - 1 : bsAtoms.nextSetBit(0));
+    int i0 = (isAll ? ac - 1 : bsAtoms.nextSetBit(0));
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsAtoms.nextSetBit(i + 1))) {
-      int modelIndex = models[atoms[i].modelIndex].trajectoryBaseIndex;
+      int modelIndex = am[at[i].mi].trajectoryBaseIndex;
       if (isJmolDataFrameForModel(modelIndex))
         continue;
       bsModels.set(modelIndex);
@@ -462,8 +462,8 @@ import java.util.Map;
     BS bsModels = modelsOf(bsAtoms, bsAllAtoms);
     SB ret = new SB();
     for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1)) 
-      if (models[i].isBioModel && models[i].defaultStructure != null)
-        ret.append(models[i].defaultStructure);
+      if (am[i].isBioModel && am[i].defaultStructure != null)
+        ret.append(am[i].defaultStructure);
     return ret.toString();
   }
 
@@ -494,7 +494,7 @@ import java.util.Map;
   public void setPdbConectBonding(int baseAtomIndex, int baseModelIndex,
                                   BS bsExclude) {
     short mad = vwr.getMadBond();
-    for (int i = baseModelIndex; i < modelCount; i++) {
+    for (int i = baseModelIndex; i < mc; i++) {
       List<int[]> vConnect = (List<int[]>) getModelAuxiliaryInfoValue(i, "PDB_CONECT_bonds");
       if (vConnect == null)
         continue;
@@ -522,12 +522,12 @@ import java.util.Map;
         if (sourceIndex < 0 || targetIndex < 0)
           continue;
         if (bsExclude != null) {
-          if (atoms[sourceIndex].isHetero())
+          if (at[sourceIndex].isHetero())
             bsExclude.set(sourceIndex);
-          if (atoms[targetIndex].isHetero())
+          if (at[targetIndex].isHetero())
             bsExclude.set(targetIndex);
         }
-        checkValencesAndBond(atoms[sourceIndex], atoms[targetIndex], order,
+        checkValencesAndBond(at[sourceIndex], at[targetIndex], order,
             (order == Edge.BOND_H_REGULAR ? 1 : mad), null);
       }
     }
@@ -551,22 +551,22 @@ import java.util.Map;
 
   private void includeAllRelatedFrames(BS bsModels) {
     int j;
-    for (int i = 0; i < modelCount; i++) {
+    for (int i = 0; i < mc; i++) {
       if (bsModels.get(i)) {
        // if (isJmolDataFrame(i) && !bsModels.get(j = models[i].dataSourceFrame)) {
          // bsModels.set(j);
         //  includeAllRelatedFrames(bsModels);
           //return;
        // }
-        if (isTrajectory(i) && !bsModels.get(j = models[i].trajectoryBaseIndex)) {
+        if (isTrajectory(i) && !bsModels.get(j = am[i].trajectoryBaseIndex)) {
           bsModels.set(j);
           includeAllRelatedFrames(bsModels);
           return;
         }
         continue;
       }
-      if (isTrajectory(i) && bsModels.get(models[i].trajectoryBaseIndex)
-          || isJmolDataFrameForModel(i) && bsModels.get(models[i].dataSourceFrame))
+      if (isTrajectory(i) && bsModels.get(am[i].trajectoryBaseIndex)
+          || isJmolDataFrameForModel(i) && bsModels.get(am[i].dataSourceFrame))
         bsModels.set(i);
     }
   }
@@ -587,7 +587,7 @@ import java.util.Map;
       clearDataFrameReference(i);
 
     BS bsDeleted;
-    if (nModelsDeleted == modelCount) {
+    if (nModelsDeleted == mc) {
       bsDeleted = getModelAtomBitSetIncludingDeleted(-1, true);
       vwr.zap(true, false, false);
       return bsDeleted;
@@ -598,20 +598,20 @@ import java.util.Map;
     validateBspf(false);
 
     // create a new models array,
-    // and pre-calculate Model.bsAtoms and Model.atomCount
-    Model[] newModels = new Model[modelCount - nModelsDeleted];
-    Model[] oldModels = models;
+    // and pre-calculate Model.bsAtoms and Model.ac
+    Model[] newModels = new Model[mc - nModelsDeleted];
+    Model[] oldModels = am;
     bsDeleted = new BS();
-    for (int i = 0, mpt = 0; i < modelCount; i++)
+    for (int i = 0, mpt = 0; i < mc; i++)
       if (bsModels.get(i)) { // get a good count now
         getAtomCountInModel(i);
         bsDeleted.or(getModelAtomBitSetIncludingDeleted(i, false));
       } else {
-        models[i].modelIndex = mpt;
-        newModels[mpt++] = models[i];
+        am[i].modelIndex = mpt;
+        newModels[mpt++] = am[i];
       }
-    models = newModels;
-    int oldModelCount = modelCount;
+    am = newModels;
+    int oldModelCount = mc;
     // delete bonds
     BS bsBonds = getBondsForSelectedAtoms(bsDeleted, true);
     deleteBonds(bsBonds, true);
@@ -623,7 +623,7 @@ import java.util.Map;
         mpt++;
         continue;
       }
-      int nAtoms = oldModels[i].atomCount;
+      int nAtoms = oldModels[i].ac;
       if (nAtoms == 0)
         continue;
       BS bs = oldModels[i].bsAtoms;
@@ -641,9 +641,9 @@ import java.util.Map;
         oldModels[j].fixIndices(mpt, nAtoms, bs);
 
       // adjust all shapes
-      vwr.deleteShapeAtoms(new Object[] { newModels, atoms,
+      vwr.deleteShapeAtoms(new Object[] { newModels, at,
           new int[] { mpt, firstAtomIndex, nAtoms } }, bs);
-      modelCount--;
+      mc--;
     }
 
     // set final values
@@ -665,7 +665,7 @@ import java.util.Map;
         fValue = Shape.RADIUS_MAX;
       if (values != null) {
         // convert to atom indices
-        float[] newValues = new float[atomCount];
+        float[] newValues = new float[ac];
         for (int i = bs.nextSetBit(0), ii = 0; i >= 0; i = bs.nextSetBit(i + 1))
           newValues[i] = values[ii++];
         values = newValues;
@@ -684,7 +684,7 @@ import java.util.Map;
       } else {
         rd = new RadiusData(values, 0, null, null);
       }
-      shapeManager
+      sm
           .setShapeSizeBs(JC.shapeTokenIndex(tok), mar, rd, bs);
       return;
     }
@@ -729,15 +729,15 @@ import java.util.Map;
    * @return            BitSet of new atoms
    */
   public BS addHydrogens(List<Atom> vConnections, P3[] pts) {
-    int modelIndex = modelCount - 1;
+    int modelIndex = mc - 1;
     BS bs = new BS();
-    if (isTrajectory(modelIndex) || models[modelIndex].getGroupCount() > 1) {
+    if (isTrajectory(modelIndex) || am[modelIndex].getGroupCount() > 1) {
       return bs; // can't add atoms to a trajectory or a system with multiple groups!
     }
-    growAtomArrays(atomCount + pts.length);
+    growAtomArrays(ac + pts.length);
     RadiusData rd = vwr.getDefaultRadiusData();
     short mad = getDefaultMadFromOrder(1);
-    for (int i = 0, n = models[modelIndex].atomCount + 1; i < vConnections.size(); i++, n++) {
+    for (int i = 0, n = am[modelIndex].ac + 1; i < vConnections.size(); i++, n++) {
       Atom atom1 = vConnections.get(i);
       // hmm. atom1.group will not be expanded, though...
       // something like within(group,...) will not select these atoms!
@@ -745,11 +745,11 @@ import java.util.Map;
           + n, n, n, pts[i], Float.NaN, null, 0, 0, 100, Float.NaN, null, false, (byte) 0, null);
       
       atom2.setMadAtom(vwr, rd);
-      bs.set(atom2.index);
+      bs.set(atom2.i);
       bondAtoms(atom1, atom2, Edge.BOND_COVALENT_SINGLE, mad, null, 0, false, false);
     }
     // must reset the shapes to give them new atom counts and arrays
-    shapeManager.loadDefaultShapes(this);
+    sm.loadDefaultShapes(this);
     return bs;
   }
 
@@ -778,9 +778,9 @@ import java.util.Map;
                              BS invAtoms, BS bs) {
     if (pt != null) {
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-        float x = (pt.x - atoms[i].x) * 2;
-        float y = (pt.y - atoms[i].y) * 2;
-        float z = (pt.z - atoms[i].z) * 2;
+        float x = (pt.x - at[i].x) * 2;
+        float y = (pt.y - at[i].y) * 2;
+        float z = (pt.z - at[i].z) * 2;
         setAtomCoordRelative(i, x, y, z);
       }
       return;
@@ -792,7 +792,7 @@ import java.util.Map;
       float d = (float) Math.sqrt(plane.x * plane.x + plane.y * plane.y
           + plane.z * plane.z);
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-        float twoD = -Measure.distanceToPlaneD(plane, d, atoms[i]) * 2;
+        float twoD = -Measure.distanceToPlaneD(plane, d, at[i]) * 2;
         float x = norm.x * twoD;
         float y = norm.y * twoD;
         float z = norm.z * twoD;
@@ -801,18 +801,18 @@ import java.util.Map;
       return;
     }
     if (iAtom >= 0) {
-      Atom thisAtom = atoms[iAtom];
+      Atom thisAtom = at[iAtom];
       // stereochemical inversion at iAtom
       Bond[] bonds = thisAtom.bonds;
       if (bonds == null)
         return;
       BS bsAtoms = new BS();
       List<P3> vNot = new  List<P3>();
-      BS bsModel = vwr.getModelUndeletedAtomsBitSet(thisAtom.modelIndex);
+      BS bsModel = vwr.getModelUndeletedAtomsBitSet(thisAtom.mi);
       for (int i = 0; i < bonds.length; i++) {
         Atom a = bonds[i].getOtherAtom(thisAtom);
-        if (invAtoms.get(a.index)) {
-            bsAtoms.or(JmolMolecule.getBranchBitSet(atoms, a.index, bsModel, null, iAtom, true, true));
+        if (invAtoms.get(a.i)) {
+            bsAtoms.or(JmolMolecule.getBranchBitSet(at, a.i, bsModel, null, iAtom, true, true));
         } else {
           vNot.addLast(a);
         }
@@ -840,16 +840,16 @@ import java.util.Map;
       BS bs = bsBranches[j];
       if (bs == null || bs.isEmpty())
         continue;
-      Atom a1 = atoms[(int) dihedralList[pt + 1]];
-      V3 v = V3.newVsub(atoms[(int) dihedralList[pt + 2]], a1);
+      Atom a1 = at[(int) dihedralList[pt + 1]];
+      V3 v = V3.newVsub(at[(int) dihedralList[pt + 2]], a1);
       float angle = (dihedralList[pt + 5] - dihedralList[pt + 4]) * f;
       A4 aa = A4.newVA(v, (float)(-angle / TransformManager.degreesPerRadian));
       matTemp.setAA(aa);
       ptTemp.setT(a1);
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-        atoms[i].sub(ptTemp);
-        matTemp.rotate(atoms[i]);
-        atoms[i].add(ptTemp);
+        at[i].sub(ptTemp);
+        matTemp.rotate(at[i]);
+        at[i].add(ptTemp);
         taintAtom(i, TAINT_COORD);
       }
     }    
@@ -882,11 +882,11 @@ import java.util.Map;
       }
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
         if (isInternal) {
-          mat4.rotTrans(atoms[i]);
+          mat4.rotTrans(at[i]);
         } else {
-          ptTemp.add(atoms[i]);
-          mat4.rotTrans(atoms[i]);
-          ptTemp.sub(atoms[i]);
+          ptTemp.add(at[i]);
+          mat4.rotTrans(at[i]);
+          ptTemp.sub(at[i]);
         }
         taintAtom(i, TAINT_COORD);
       }
@@ -899,7 +899,7 @@ import java.util.Map;
     }
     if (translation != null) {
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
-        atoms[i].add(translation);
+        at[i].add(translation);
       if (!translationOnly) {
         mat4t.setIdentity();
         mat4t.setTranslation(translation);
@@ -915,7 +915,7 @@ import java.util.Map;
     recalculateLeadMidpointsAndWingVectors(-1);
     BS bsModels = getModelBitSet(bs, false);
     for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1))
-      shapeManager.refreshShapeTrajectories(i, bs, mat);
+      sm.refreshShapeTrajectories(i, bs, mat);
     averageAtomPoint = null;
     /* but we would need to somehow indicate this in the state
     if (ellipsoids != null)
@@ -943,13 +943,13 @@ import java.util.Map;
         continue;
       map.put(s, Boolean.TRUE);
       BS bs = vwr.getBranchBitSet(i1, i0, true);
-      Bond[] bonds = atoms[i0].bonds;
-      Atom a0 = atoms[i0];
+      Bond[] bonds = at[i0].bonds;
+      Atom a0 = at[i0];
       for (int j = 0; j < bonds.length; j++) {
         Bond b = bonds[j];
         if (!b.isCovalent())
           continue;
-        int i2 = b.getOtherAtom(a0).index;
+        int i2 = b.getOtherAtom(a0).i;
         if (i2 == i1)
           continue;
         if (bs.get(i2)) {
@@ -967,7 +967,7 @@ import java.util.Map;
     if (n == 0)
       return null;
     M4[] ops = new M4[n];
-    SymmetryInterface unitcell = models[modelIndex].biosymmetry;
+    SymmetryInterface unitcell = am[modelIndex].biosymmetry;
     if (unitcell == null)
       unitcell = vwr.getModelUnitCell(modelIndex);
     for (int i = n; --i >= 0;)

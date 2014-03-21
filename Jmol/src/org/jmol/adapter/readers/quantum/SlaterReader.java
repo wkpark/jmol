@@ -111,7 +111,7 @@ abstract class SlaterReader extends BasisFunctionReader {
       sortOrbitalCoefficients(pointers);
     }
     moData.put("slaters", slaterArray);
-    atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
+    asc.setAtomSetAuxiliaryInfo("moData", moData);
   }
 
   class SlaterSorter implements Comparator<SlaterData> {

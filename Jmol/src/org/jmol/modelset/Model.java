@@ -78,7 +78,7 @@ public class Model {
    *  
    */
 
-  public ModelSet modelSet;
+  public ModelSet ms;
 
   /**
    * BE CAREFUL: FAILURE TO NULL REFERENCES TO modelSet WILL PREVENT
@@ -87,7 +87,7 @@ public class Model {
    * @return associated ModelSet
    */
   public ModelSet getModelSet() {
-    return modelSet;
+    return ms;
   }
 
   public int modelIndex; // our 0-based reference
@@ -114,7 +114,7 @@ public class Model {
 
   // set in ModelLoader phase:
   public int firstAtomIndex;
-  public int atomCount = 0; // includes deleted atoms
+  public int ac = 0; // includes deleted atoms
   protected final BS bsAtoms = new BS();
   final BS bsAtomsDeleted = new BS();
 
@@ -144,10 +144,10 @@ public class Model {
   public int getBondCount() {
     if (bondCount >= 0)
       return bondCount;
-    Bond[] bonds = modelSet.bonds;
+    Bond[] bonds = ms.bo;
     bondCount = 0;
-    for (int i = modelSet.bondCount; --i >= 0;)
-      if (bonds[i].atom1.modelIndex == modelIndex)
+    for (int i = ms.bondCount; --i >= 0;)
+      if (bonds[i].atom1.mi == modelIndex)
         bondCount++;
     return bondCount;
   }
@@ -175,7 +175,7 @@ public class Model {
 
   public Model(ModelSet modelSet, int modelIndex, int trajectoryBaseIndex,
       String jmolData, Properties properties, Map<String, Object> auxiliaryInfo) {
-    this.modelSet = modelSet;
+    this.ms = modelSet;
     dataSourceFrame = this.modelIndex = modelIndex;
     isTrajectory = (trajectoryBaseIndex >= 0);
     this.trajectoryBaseIndex = (isTrajectory ? trajectoryBaseIndex : modelIndex);
@@ -215,11 +215,11 @@ public class Model {
   public SymmetryInterface simpleCage;
 
   public String getModelNumberDotted() {
-    return modelSet.getModelNumberDotted(modelIndex);
+    return ms.getModelNumberDotted(modelIndex);
   }
 
   public String getModelTitle() {
-    return modelSet.getModelTitle(modelIndex);
+    return ms.getModelTitle(modelIndex);
   }
 
   public boolean isStructureTainted() {
@@ -456,11 +456,11 @@ public class Model {
   }
 
   protected void getChimeInfoM(SB sb, int nHetero) {
-    sb.append("\nNumber of Atoms ..... " + (modelSet.atomCount - nHetero));
+    sb.append("\nNumber of Atoms ..... " + (ms.ac - nHetero));
     if (nHetero > 0)
       sb.append(" (" + nHetero + ")");
-    sb.append("\nNumber of Bonds ..... " + modelSet.bondCount);
-    sb.append("\nNumber of Models ...... " + modelSet.modelCount);
+    sb.append("\nNumber of Bonds ..... " + ms.bondCount);
+    sb.append("\nNumber of Models ...... " + ms.mc);
   }
 
   /**

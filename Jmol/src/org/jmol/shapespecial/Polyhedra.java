@@ -221,7 +221,7 @@ public class Polyhedra extends AtomShape {
 
   private void setLighting(boolean isFullyLit, BS bs) {
     for (int i = polyhedronCount; --i >= 0;)
-      if (bs.get(polyhedrons[i].centralAtom.index)) {
+      if (bs.get(polyhedrons[i].centralAtom.i)) {
         short[] normixes = polyhedrons[i].normixes;
         polyhedrons[i].isFullyLit = isFullyLit;
         for (int j = normixes.length; --j >= 0;) {
@@ -234,7 +234,7 @@ public class Polyhedra extends AtomShape {
   private BS andBitSet(BS bs) {
     BS bsCenters = new BS();
     for (int i = polyhedronCount; --i >= 0;)
-      bsCenters.set(polyhedrons[i].centralAtom.index);
+      bsCenters.set(polyhedrons[i].centralAtom.i);
     bsCenters.and(bs);
     return bsCenters;
   }
@@ -244,7 +244,7 @@ public class Polyhedra extends AtomShape {
     byte pid = PAL.pidOf(null);
     for (int i = 0; i < polyhedronCount; ++i) {
       Polyhedron p = polyhedrons[i];
-      int iAtom = p.centralAtom.index;
+      int iAtom = p.centralAtom.i;
       if (centers.get(iAtom))
         setColixAndPalette(C.INHERIT_ALL, pid, iAtom);
       else
@@ -258,14 +258,14 @@ public class Polyhedra extends AtomShape {
   private void setVisible(boolean visible) {
     for (int i = polyhedronCount; --i >= 0;) {
       Polyhedron p = polyhedrons[i];
-      if (p != null && centers.get(p.centralAtom.index))
+      if (p != null && centers.get(p.centralAtom.i))
         p.visible = visible;
     }
   }
 
   private void buildPolyhedra() {
     boolean useBondAlgorithm = radius == 0 || bondedOnly;
-    AtomIndexIterator iter = modelSet.getSelectedAtomIterator(null, false, false, false, false);
+    AtomIndexIterator iter = ms.getSelectedAtomIterator(null, false, false, false, false);
     for (int i = centers.nextSetBit(0); i >= 0; i = centers.nextSetBit(i + 1)) {
       Polyhedron p = (haveBitSetVertices ? constructBitSetPolyhedron(i)
           : useBondAlgorithm ? constructBondsPolyhedron(i)
@@ -291,7 +291,7 @@ public class Polyhedra extends AtomShape {
       Bond bond = bonds[i];
       Atom otherAtom = bond.getAtom1() == atom ? bond.getAtom2() : bond
           .getAtom1();
-      if (bsVertices != null && !bsVertices.get(otherAtom.index))
+      if (bsVertices != null && !bsVertices.get(otherAtom.i))
         continue;
       if (radius > 0f && bond.getAtom1().distance(bond.getAtom2()) > radius)
         continue;
@@ -318,7 +318,7 @@ public class Polyhedra extends AtomShape {
     vwr.setIteratorForAtom(iter, atomIndex, radius);
     while (iter.hasNext()) {
       Atom other = atoms[iter.next()];
-      if (bsVertices != null && !bsVertices.get(other.index)
+      if (bsVertices != null && !bsVertices.get(other.i)
           || atom.distance(other) > radius)
         continue;
       if (other.getAlternateLocationID() != atom.getAlternateLocationID()
@@ -436,13 +436,13 @@ public class Polyhedra extends AtomShape {
         if (points[i].distance(points[j]) > distMax)
           continue;
         for (int k = j + 1; k < ptCenter; k++) {
-          System.out.println("checking poly " + i + " " + j + " " + k);
-          System.out.println("checking poly " + points[i] + " " + points[j] + " " + points[k]);
+          //System.out.println("checking poly " + i + " " + j + " " + k);
+          //System.out.println("checking poly " + points[i] + " " + points[j] + " " + points[k]);
           
           if (points[i].distance(points[k]) > distMax
               || points[j].distance(points[k]) > distMax)
             continue;
-          System.out.println("checking poly " + i + " " + j + " " + k + " ok ");
+          //System.out.println("checking poly " + i + " " + j + " " + k + " ok ");
 
           if (planeCount >= FACE_COUNT_MAX) {
             Logger.error("Polyhedron error: maximum face(" + FACE_COUNT_MAX
@@ -571,7 +571,7 @@ public class Polyhedra extends AtomShape {
     for (int i = polyhedronCount; --i >= 0;) {
       Polyhedron p = polyhedrons[i];
       p.visibilityFlags = (p.visible && bs.get(p.modelIndex)
-          && !modelSet.isAtomHidden(p.centralAtom.index) ? myVisibilityFlag
+          && !ms.isAtomHidden(p.centralAtom.i) ? vf
           : 0);
     }
   }

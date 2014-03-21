@@ -115,7 +115,7 @@ public class Axes extends FontLineShape {
     else
       originPoint.setT(fixedOrigin);
     if (axesMode == AXES.UNITCELL
-        && modelSet.unitCells != null) {
+        && ms.unitCells != null) {
       SymmetryInterface unitcell = vwr.getCurrentUnitCell();
       if (unitcell != null) {
         P3[] vertices = unitcell.getUnitCellVertices();

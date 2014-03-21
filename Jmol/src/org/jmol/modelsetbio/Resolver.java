@@ -74,7 +74,7 @@ public final class Resolver implements JmolBioResolver {
                         int trajectoryBaseIndex, String jmolData,
                         Properties modelProperties,
                         Map<String, Object> modelAuxiliaryInfo) {
-    return new BioModel(modelSet, modelIndex, trajectoryBaseIndex,
+    return new BioModel(ms, modelIndex, trajectoryBaseIndex,
         jmolData, modelProperties, modelAuxiliaryInfo);
   }
 
@@ -168,8 +168,8 @@ public final class Resolver implements JmolBioResolver {
    * 6) undelete those atoms  
    * 
    */
-  private ModelLoader modelLoader;
-  private ModelSet modelSet;
+  private ModelLoader ml;
+  private ModelSet ms;
   private BS bsAddedHydrogens;
   private BS bsAtomsForHs;
   private Map<String, String>htBondMap;
@@ -192,13 +192,13 @@ public final class Resolver implements JmolBioResolver {
 
   @Override
   public void initialize(ModelLoader modelLoader) {
-    this.modelLoader = modelLoader;
-    this.modelSet = modelLoader.modelSet;
+    this.ml = modelLoader;
+    this.ms = modelLoader.ms;
   }
   
   @Override
   public void initializeHydrogenAddition() {
-    baseBondIndex = modelLoader.modelSet.bondCount;
+    baseBondIndex = ml.ms.bondCount;
     bsAddedHydrogens = new BS();
     bsAtomsForHs = new BS();
     htBondMap = new Hashtable<String, String>();
@@ -212,19 +212,19 @@ public final class Resolver implements JmolBioResolver {
   
   @Override
   public void addImplicitHydrogenAtoms(JmolAdapter adapter, int iGroup, int nH) {
-    String group3 = modelLoader.getGroup3(iGroup);
+    String group3 = ml.getGroup3(iGroup);
     int nH1;
     if (haveHsAlready || group3 == null
         || (nH1 = JC.getStandardPdbHydrogenCount(Group.lookupGroupID(group3))) == 0)
       return;
     nH = (nH1 < 0 ? -1 : nH1 + nH);
     Object model = null;
-    int iFirst = modelLoader.getFirstAtomIndex(iGroup);
-    int atomCount = modelSet.getAtomCount();
+    int iFirst = ml.getFirstAtomIndex(iGroup);
+    int ac = ms.getAtomCount();
     if (nH < 0) {
-      if (atomCount - iFirst == 1) // CA or P-only, or simple metals, also HOH, DOD
+      if (ac - iFirst == 1) // CA or P-only, or simple metals, also HOH, DOD
         return;
-      model = modelSet.vwr.getLigandModel(group3, "ligand_", "_data", null);
+      model = ms.vwr.getLigandModel(group3, "ligand_", "_data", null);
       if (model == null)
         return;
       nH = adapter.getHydrogenAtomCount(model);
@@ -232,13 +232,13 @@ public final class Resolver implements JmolBioResolver {
         return;
     }
     getBondInfo(adapter, group3, model);
-    modelSet.models[modelSet.atoms[iFirst].modelIndex].isPdbWithMultipleBonds = true;
-    bsAtomsForHs.setBits(iFirst, atomCount);
-    bsAddedHydrogens.setBits(atomCount, atomCount + nH);
-    boolean isHetero = modelSet.atoms[iFirst].isHetero();
+    ms.am[ms.at[iFirst].mi].isPdbWithMultipleBonds = true;
+    bsAtomsForHs.setBits(iFirst, ac);
+    bsAddedHydrogens.setBits(ac, ac + nH);
+    boolean isHetero = ms.at[iFirst].isHetero();
     P3 xyz = P3.new3(Float.NaN, Float.NaN, Float.NaN);
     for (int i = 0; i < nH; i++)
-      modelSet.addAtom(modelSet.atoms[iFirst].modelIndex, modelSet.atoms[iFirst].getGroup(), 1, 
+      ms.addAtom(ms.at[iFirst].mi, ms.at[iFirst].getGroup(), 1, 
           "H", 0, 0, xyz, Float.NaN, null, 0, 0, 1, 0,
           null, isHetero, (byte) 0, null).deleteBonds(null);
   }
@@ -248,7 +248,7 @@ public final class Resolver implements JmolBioResolver {
       return;
     String[][] bondInfo;
     if (model == null) {
-      bondInfo = modelSet.vwr.getPdbBondInfo(group3);
+      bondInfo = ms.vwr.getPdbBondInfo(group3);
     } else {
       bondInfo = getLigandBondInfo(adapter, model, group3);
     }
@@ -355,7 +355,7 @@ public final class Resolver implements JmolBioResolver {
   
   @Override
   public void finalizeHydrogens() {
-    modelSet.vwr.getLigandModel(null, null, null, null);
+    ms.vwr.getLigandModel(null, null, null, null);
     finalizePdbMultipleBonds();
     addHydrogens();
   }
@@ -365,14 +365,14 @@ public final class Resolver implements JmolBioResolver {
       return;
     finalizePdbCharges();
     int[] nTotal = new int[1];
-    P3[][] pts = modelSet.calculateHydrogens(bsAtomsForHs, nTotal, true, false,
+    P3[][] pts = ms.calculateHydrogens(bsAtomsForHs, nTotal, true, false,
         null);
     Group groupLast = null;
     int ipt = 0;
     for (int i = 0; i < pts.length; i++) {
       if (pts[i] == null)
         continue;
-      Atom atom = modelSet.atoms[i];
+      Atom atom = ms.at[i];
       Group g = atom.getGroup();
       if (g != groupLast) {
         groupLast = g;
@@ -459,7 +459,7 @@ public final class Resolver implements JmolBioResolver {
       }
     }
     deleteUnneededAtoms();
-    modelSet.fixFormalCharges(BSUtil.newBitSet2(modelLoader.baseAtomIndex, modelLoader.modelSet.atomCount));
+    ms.fixFormalCharges(BSUtil.newBitSet2(ml.baseAtomIndex, ml.ms.ac));
   }
 
   /**
@@ -475,7 +475,7 @@ public final class Resolver implements JmolBioResolver {
     BS bsBondsDeleted = new BS();
     for (int i = bsAtomsForHs.nextSetBit(0); i >= 0; i = bsAtomsForHs
         .nextSetBit(i + 1)) {
-      Atom atom = modelSet.atoms[i];
+      Atom atom = ms.at[i];
       // specifically look for neutral HETATM O with a bond count of 2: 
       if (!atom.isHetero() || atom.getElementNumber() != 8 || atom.getFormalCharge() != 0
           || atom.getCovalentBondCount() != 2)
@@ -499,7 +499,7 @@ public final class Resolver implements JmolBioResolver {
         if (bonds1[j].order == 2) {
           Atom atomO = bonds1[j].getOtherAtom(atom1);
           if (atomO.getElementNumber() == 8) {
-            bsAddedHydrogens.set(atomH.index);
+            bsAddedHydrogens.set(atomH.i);
             atomH.deleteBonds(bsBondsDeleted);
             break;
           }
@@ -507,12 +507,12 @@ public final class Resolver implements JmolBioResolver {
 
       }
     }
-    modelSet.deleteBonds(bsBondsDeleted, true);
-    modelLoader.deleteAtoms(bsAddedHydrogens);
+    ms.deleteBonds(bsBondsDeleted, true);
+    ml.deleteAtoms(bsAddedHydrogens);
   }
 
   private void finalizePdbCharges() {
-    Atom[] atoms = modelSet.atoms;
+    Atom[] atoms = ms.at;
     // fix terminal N groups as +1
     for (int i = bsAtomsForHs.nextSetBit(0); i >= 0; i = bsAtomsForHs.nextSetBit(i + 1)) {
       Atom a = atoms[i];
@@ -525,8 +525,8 @@ public final class Resolver implements JmolBioResolver {
   
   private void finalizePdbMultipleBonds() {
     Map<String, Boolean> htKeysUsed = new Hashtable<String, Boolean>();
-    int bondCount = modelSet.bondCount;
-    Bond[] bonds = modelSet.bonds;
+    int bondCount = ms.bondCount;
+    Bond[] bonds = ms.bo;
     for (int i = baseBondIndex; i < bondCount; i++) {
       Atom a1 = bonds[i].getAtom1();
       Atom a2 = bonds[i].getAtom2();
@@ -588,24 +588,24 @@ public final class Resolver implements JmolBioResolver {
   private void setHydrogen(int iTo, int iAtom, String name, P3 pt) {
     if (!bsAddedHydrogens.get(iAtom))
       return;
-    Atom[] atoms = modelSet.atoms;
-    if (lastSetH == Integer.MIN_VALUE || atoms[iAtom].modelIndex != atoms[lastSetH].modelIndex) 
-      maxSerial = ((int[]) modelSet.getModelAuxiliaryInfoValue(atoms[lastSetH = iAtom].modelIndex, "PDB_CONECT_firstAtom_count_max"))[2];
+    Atom[] atoms = ms.at;
+    if (lastSetH == Integer.MIN_VALUE || atoms[iAtom].mi != atoms[lastSetH].mi) 
+      maxSerial = ((int[]) ms.getModelAuxiliaryInfoValue(atoms[lastSetH = iAtom].mi, "PDB_CONECT_firstAtom_count_max"))[2];
     bsAddedHydrogens.clear(iAtom);
-    modelSet.setAtomName(iAtom, name);
+    ms.setAtomName(iAtom, name);
     atoms[iAtom].setT(pt);
-    modelSet.setAtomNumber(iAtom, ++maxSerial);
+    ms.setAtomNumber(iAtom, ++maxSerial);
     atoms[iAtom].setAtomSymmetry(atoms[iTo].getAtomSymmetry());
-    modelLoader.undeleteAtom(iAtom);
+    ml.undeleteAtom(iAtom);
 
-    modelSet.bondAtoms(atoms[iTo], atoms[iAtom], Edge.BOND_COVALENT_SINGLE, 
-        modelSet.getDefaultMadFromOrder(Edge.BOND_COVALENT_SINGLE), null, 0, true, false);
+    ms.bondAtoms(atoms[iTo], atoms[iAtom], Edge.BOND_COVALENT_SINGLE, 
+        ms.getDefaultMadFromOrder(Edge.BOND_COVALENT_SINGLE), null, 0, true, false);
   }
 
   @Override
   public String fixPropertyValue(BS bsAtoms, String data) {
     String[] aData = PT.split(data, "\n");
-    Atom[] atoms = modelSet.atoms;
+    Atom[] atoms = ms.at;
     String[] newData = new String[bsAtoms.cardinality()];
     String lastData = "";
     for (int pt = 0, iAtom = 0, i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms
@@ -674,7 +674,7 @@ public final class Resolver implements JmolBioResolver {
     BS bs = iterStructure.getStructuredModels();
     if (bs != null)
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
-        modelLoader.structuresDefinedInFile.set(modelLoader.baseModelIndex + i);
+        ml.structuresDefinedInFile.set(ml.baseModelIndex + i);
     while (iterStructure.hasNext())
       if (iterStructure.getStructureType() != STR.TURN)
         setStructure(iterStructure);
@@ -720,14 +720,14 @@ public final class Resolver implements JmolBioResolver {
     int startSeqCode = Group.getSeqcodeFor(startSequenceNumber,
         startInsertionCode);
     int endSeqCode = Group.getSeqcodeFor(endSequenceNumber, endInsertionCode);
-    Model[] models = modelSet.models;
-    if (modelLoader.isTrajectory) { //from PDB file
+    Model[] models = ms.am;
+    if (ml.isTrajectory) { //from PDB file
       modelRange[1] = modelRange[0];
     } else {
-      modelRange[0] += modelLoader.baseModelIndex;
-      modelRange[1] += modelLoader.baseModelIndex;
+      modelRange[0] += ml.baseModelIndex;
+      modelRange[1] += ml.baseModelIndex;
     }
-    modelLoader.structuresDefinedInFile.setBits(modelRange[0],
+    ml.structuresDefinedInFile.setBits(modelRange[0],
         modelRange[1] + 1);
     for (int i = modelRange[0]; i <= modelRange[1]; i++) {
       int i0 = models[i].firstAtomIndex;

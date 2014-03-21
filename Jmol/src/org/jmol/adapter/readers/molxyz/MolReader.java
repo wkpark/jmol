@@ -92,7 +92,7 @@ public class MolReader extends AtomSetCollectionReader {
     boolean isMDL = (line.startsWith("$MDL"));
     if (isMDL) {
       discardLinesUntilStartsWith("$HDR");
-      readLine();
+      rd();
       if (line == null) {
         Logger.warn("$HDR not found in MDL RG file");
         continuing = false;
@@ -102,7 +102,7 @@ public class MolReader extends AtomSetCollectionReader {
     if (doGetModel(++modelNumber, null)) {
       processMolSdHeader();
       processCtab(isMDL);
-      iatom0 = atomSetCollection.atomCount;
+      iatom0 = asc.ac;
       isV3000 = false;
       if (isLastModel(modelNumber)) {
         continuing = false;
@@ -117,12 +117,12 @@ public class MolReader extends AtomSetCollectionReader {
   private void readUserData(int atom0) throws Exception {
     if (isV3000)
       return;
-    while (readLine() != null && line.indexOf("$$$$") != 0) {
+    while (rd() != null && line.indexOf("$$$$") != 0) {
       if (line.toUpperCase().contains("_PARTIAL_CHARGES")) {
         try {
-          Atom[] atoms = atomSetCollection.atoms;
-          for (int i = parseIntStr(readLine()); --i >= 0;) {
-            String[] tokens = getTokensStr(readLine());
+          Atom[] atoms = asc.atoms;
+          for (int i = parseIntStr(rd()); --i >= 0;) {
+            String[] tokens = getTokensStr(rd());
             int atomIndex = parseIntStr(tokens[0]) + atom0 - 1;
             float partialCharge = parseFloatStr(tokens[1]);
             if (!Float.isNaN(partialCharge))
@@ -178,23 +178,23 @@ public class MolReader extends AtomSetCollectionReader {
     String header = "";
     String thisDataSetName = line;
     header += line + "\n";
-    atomSetCollection.setCollectionName(line);
-    readLine();
+    asc.setCollectionName(line);
+    rd();
     if (line == null)
       return;
     header += line + "\n";
     dimension = (line.length() < 22 ? "3D" : line.substring(20,22));
     if (!allow2D && dimension.equals("2D"))
       throw new Exception("File is 2D, not 3D");
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("dimension", dimension);
+    asc.setAtomSetCollectionAuxiliaryInfo("dimension", dimension);
     //line 3: comment
-    readLine();
+    rd();
     if (line == null)
       return;
     header += line + "\n";
     Logger.info(header);
     checkCurrentLineForScript();
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("fileHeader", header);
+    asc.setAtomSetCollectionAuxiliaryInfo("fileHeader", header);
     newAtomSet(thisDataSetName);
   }
 
@@ -202,7 +202,7 @@ public class MolReader extends AtomSetCollectionReader {
     String[] tokens = null;
     if (isMDL)
       discardLinesUntilStartsWith("$CTAB");
-    isV3000 = (readLine() != null && line.indexOf("V3000") >= 0);
+    isV3000 = (rd() != null && line.indexOf("V3000") >= 0);
     if (isV3000) {
       is2D = (dimension.equals("2D"));
       discardLinesUntilContains("COUNTS");
@@ -210,10 +210,10 @@ public class MolReader extends AtomSetCollectionReader {
     }
     if (line == null)
       return;
-    int atomCount = (isV3000 ? parseIntStr(tokens[3]) : parseIntRange(line, 0, 3));
+    int ac = (isV3000 ? parseIntStr(tokens[3]) : parseIntRange(line, 0, 3));
     int bondCount = (isV3000 ? parseIntStr(tokens[4]) : parseIntRange(line, 3, 6));
-    int atom0 = atomSetCollection.atomCount;
-    readAtoms(atomCount);
+    int atom0 = asc.ac;
+    readAtoms(ac);
     readBonds(bondCount);
     readUserData(atom0);
     if (isV3000)
@@ -226,11 +226,11 @@ public class MolReader extends AtomSetCollectionReader {
   // 01234567890123456789012345678901234567890123456789012345678901234567890
   // xxxxx.xxxxyyyyy.yyyyzzzzz.zzzz aaaddcccssshhhbbbvvvHHHrrriiimmmnnneee
   
-  private void readAtoms(int atomCount) throws Exception {
+  private void readAtoms(int ac) throws Exception {
     if (isV3000)
       discardLinesUntilContains("BEGIN ATOM");
-    for (int i = 0; i < atomCount; ++i) {
-      readLine();
+    for (int i = 0; i < ac; ++i) {
+      rd();
       int len = line.length();
       String elementSymbol;
       float x, y, z;
@@ -313,11 +313,11 @@ public class MolReader extends AtomSetCollectionReader {
       atom.formalCharge = charge;
       setAtomCoordXYZ(atom, x, y, z);
       if (iAtom == Integer.MIN_VALUE) {
-        atomSetCollection.addAtom(atom); 
+        asc.addAtom(atom); 
       } else {
         haveAtomSerials = true;
         atom.atomSerial = iAtom;
-        atomSetCollection.addAtomWithMappedSerialNumber(atom);
+        asc.addAtomWithMappedSerialNumber(atom);
       }
     }
     if (isV3000)
@@ -327,7 +327,7 @@ public class MolReader extends AtomSetCollectionReader {
   private void checkLineContinuation() throws Exception {
     while (line.endsWith("-")) {
       String s = line;
-      readLine();
+      rd();
       line = s + line;
     }
   }
@@ -336,7 +336,7 @@ public class MolReader extends AtomSetCollectionReader {
     if (isV3000)
       discardLinesUntilContains("BEGIN BOND");
     for (int i = 0; i < bondCount; ++i) {
-      readLine();
+      rd();
       int iAtom1, iAtom2, order;
       int stereo = 0;
       if (isV3000) {
@@ -358,7 +358,7 @@ public class MolReader extends AtomSetCollectionReader {
             order = fixOrder(order, 0);
             for (int k = 1; k <= n; k++) {
               iAtom2 = parseIntStr(tokens[k]);
-              atomSetCollection.addNewBondWithMappedSerialNumbers(iAtom1, iAtom2, order);
+              asc.addNewBondWithMappedSerialNumbers(iAtom1, iAtom2, order);
             }
             break;
           }
@@ -372,9 +372,9 @@ public class MolReader extends AtomSetCollectionReader {
       }
       order = fixOrder(order, stereo);
       if (haveAtomSerials)
-        atomSetCollection.addNewBondWithMappedSerialNumbers(iAtom1, iAtom2, order);
+        asc.addNewBondWithMappedSerialNumbers(iAtom1, iAtom2, order);
       else
-        atomSetCollection.addNewBondWithOrder(iatom0 + iAtom1 - 1, iatom0 + iAtom2 - 1, order);        
+        asc.addNewBondWithOrder(iatom0 + iAtom1 - 1, iatom0 + iAtom2 - 1, order);        
     }
     if (isV3000)
       discardLinesUntilContains("END BOND");

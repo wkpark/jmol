@@ -79,7 +79,7 @@ public class XmlArgusReader extends XmlReader {
       }
 
     if ("molecule".equals(localName)) {
-      atomSetCollection.newAtomSet();
+      asc.newAtomSet();
       return;
     }
     if ("atom".equals(localName)) {
@@ -139,7 +139,7 @@ public class XmlArgusReader extends XmlReader {
     if ("atom".equals(localName)) {
       if (atom.elementSymbol != null && !Float.isNaN(atom.z)) {
         parent.setAtomCoord(atom);
-        atomSetCollection.addAtomWithMappedName(atom);
+        asc.addAtomWithMappedName(atom);
       }
       atom = null;
       elementContext = UNSET;
@@ -147,7 +147,7 @@ public class XmlArgusReader extends XmlReader {
     }
     if ("bond".equals(localName)) {
       if (atomName2 != null)
-        atomSetCollection.addNewBondFromNames(atomName1, atomName2, bondOrder);
+        asc.addNewBondFromNames(atomName1, atomName2, bondOrder);
       elementContext = UNSET;
       return;
     }
@@ -165,7 +165,7 @@ public class XmlArgusReader extends XmlReader {
 
     if (elementContext == MOLECULE) {
       if ("name".equals(localName)) {
-        atomSetCollection.setAtomSetName(chars);
+        asc.setAtomSetName(chars);
         setKeepChars(false);
       }
       return;

@@ -77,12 +77,12 @@ public class MeasuresRenderer extends LabelsRenderer {
       atomPt = new Point3fi();
     Measures measures = (Measures) shape;
     doJustify = vwr.getBoolean(T.justifymeasurements);
-    modulating = modelSet.bsModulated != null; 
+    modulating = ms.bsModulated != null; 
     // note that this COULD be screen pixels if <= 20. 
     imageFontScaling = vwr.getImageFontScaling();
     mad0 = measures.mad;
     font3d = g3d.getFont3DScaled(measures.font3d, imageFontScaling);
-    m = measures.measurementPending;
+    m = measures.mPending;
     if (!isExport && m != null && (count = m.count)!= 0)
       renderPendingMeasurement();
     if (!vwr.getBoolean(T.showmeasurements))
@@ -133,7 +133,7 @@ public class MeasuresRenderer extends LabelsRenderer {
     Point3fi pt = mpts.get(ii);
     if (pt != null)
       ii = null;
-    pt = modelSet.getDynamicAtom(i, pt);    
+    pt = ms.getDynamicAtom(i, pt);    
     if (ii != null)
       mpts.put(ii,  pt);
     return pt;

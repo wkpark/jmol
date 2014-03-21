@@ -62,7 +62,7 @@ public class FoldingXyzReader extends AtomSetCollectionReader {
   @Override
   protected void finalizeReader() throws Exception {
     if (haveBonds)
-      atomSetCollection.setNoAutoBond();
+      asc.setNoAutoBond();
     isTrajectory = false;
     finalizeReaderASCR();
   }
@@ -83,9 +83,9 @@ public class FoldingXyzReader extends AtomSetCollectionReader {
     boolean addAtoms = doGetModel(++modelNumber, null);
     int modelAtomCount = parseIntStr(token);
     if (addAtoms) {
-      atomSetCollection.newAtomSet();
+      asc.newAtomSet();
       String[] tokens = getTokens();
-      atomSetCollection.setAtomSetName(tokens.length == 2 ? "Protein "
+      asc.setAtomSetName(tokens.length == 2 ? "Protein "
           + tokens[1] : line.substring(next[0]).trim());
     }
     boolean readLine = readAtoms(modelAtomCount + 1, addAtoms); // Some Tinker files are one off!
@@ -100,20 +100,20 @@ public class FoldingXyzReader extends AtomSetCollectionReader {
    * sixth column is atom type; sixth column is first bond
    * 
    * 
-   * @param atomCount
+   * @param ac
    * @param addAtoms
    * @return true if next line needs to be read
    * @throws Exception
    */
-  boolean readAtoms(int atomCount, boolean addAtoms) throws Exception {
+  boolean readAtoms(int ac, boolean addAtoms) throws Exception {
     // Stores bond informations
     Map<String, int[]> htBondCounts = new Hashtable<String, int[]>();
-    int[][] bonds = AU.newInt2(atomCount);
+    int[][] bonds = AU.newInt2(ac);
     boolean haveAtomTypes = true;
     boolean checking = true;
     String lastAtom = null;
     boolean readNextLine = true;
-    for (int i = 0; i < atomCount; i++) {
+    for (int i = 0; i < ac; i++) {
       discardLinesUntilNonBlank();
       if (line == null)
         break; // no problem.
@@ -133,7 +133,7 @@ public class FoldingXyzReader extends AtomSetCollectionReader {
       if (!filterAtom(atom, i))
         continue;
       setAtomCoordTokens(atom, tokens, 2);
-      atomSetCollection.addAtomWithMappedSerialNumber(atom);
+      asc.addAtomWithMappedSerialNumber(atom);
       int n = tokens.length - 5;
       bonds[i] = new int[n + 1];
       bonds[i][n] = atom.atomSerial;
@@ -143,7 +143,7 @@ public class FoldingXyzReader extends AtomSetCollectionReader {
         bonds[i][j] = i2;
         if (checking) {
           // Tinker files may or may not include an atom type in column 6
-          if (n == 0 || t.equals(sIndex) || i2 <= 0 || i2 > atomCount) {
+          if (n == 0 || t.equals(sIndex) || i2 <= 0 || i2 > ac) {
             haveAtomTypes = (n > 0);
             checking = false;
           } else {
@@ -164,17 +164,17 @@ public class FoldingXyzReader extends AtomSetCollectionReader {
   }
 
   private void makeBonds(int[][] bonds, boolean haveAtomTypes) {
-    Atom[] atoms = atomSetCollection.atoms;
+    Atom[] atoms = asc.atoms;
     for (int i = bonds.length; --i >= 0;) {
       int[] b = bonds[i];
       if (b == null)
         continue; // discarded atom
-      Atom a1 = atoms[atomSetCollection.getAtomIndexFromSerial(b[b.length - 1])];
+      Atom a1 = atoms[asc.getAtomIndexFromSerial(b[b.length - 1])];
       int b0 = 0;
       if (haveAtomTypes)
         a1.atomName += "\0" + (b[b0++]);
       for (int j = b.length - 1; --j >= b0;)
-        if (b[j] > i && atomSetCollection.addNewBondWithOrder(a1.index, atomSetCollection.getAtomIndexFromSerial(b[j]), 1) != null)
+        if (b[j] > i && asc.addNewBondWithOrder(a1.index, asc.getAtomIndexFromSerial(b[j]), 1) != null)
             haveBonds = true;
     }
   }

@@ -100,7 +100,7 @@ public class MoveToThread extends JmolThread {
     ptMoveToCenter = (center == null ? transformManager.fixedRotationCenter
         : center);
     floatSecondsTotal = f[0];
-    zoom = newSlider(transformManager.zoomPercent, f[1]);
+    zoom = newSlider(transformManager.zmPct, f[1]);
     xTrans = newSlider(transformManager.getTranslationXPercent(), f[2]);
     yTrans = newSlider(transformManager.getTranslationYPercent(), f[3]);
     rotationRadius = newSlider(transformManager.modelRadius, (center == null

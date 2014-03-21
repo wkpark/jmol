@@ -224,8 +224,8 @@ public class LcaoCartoon extends Isosurface {
     }
     // older method
 
-    int atomCount = vwr.getAtomCount();
-    for (int i = atomCount; --i >= 0;)
+    int ac = vwr.getAtomCount();
+    for (int i = ac; --i >= 0;)
       if (lcaoID != null || thisSet.get(i))
         setLcaoOn(i, TF);
   }
@@ -243,8 +243,8 @@ public class LcaoCartoon extends Isosurface {
       return;
     }
     // older method does not use * but still deletes multiple lobes
-    int atomCount = vwr.getAtomCount();
-    for (int i = atomCount; --i >= 0;)
+    int ac = vwr.getAtomCount();
+    for (int i = ac; --i >= 0;)
       if (lcaoID != null || thisSet.get(i))
         deleteLcaoCartoon(i);
   }
@@ -291,7 +291,7 @@ public class LcaoCartoon extends Isosurface {
     setPropI("lcaoType", thisType, null);
     setPropI("atomIndex", Integer.valueOf(iAtom), null);
     V3[] axes = { new V3(), new V3(),
-        V3.newV(modelSet.atoms[iAtom]), new V3() };
+        V3.newV(ms.at[iAtom]), new V3() };
     if (rotationAxis != null)
       axes[3].setT(rotationAxis);
     if (isMolecular) {

@@ -69,7 +69,7 @@ public class Resolver {
   }
   
   /**
-   * From SmarterJmolAdapter.getFileTypeName(Object atomSetCollectionOrReader)
+   * From SmarterJmolAdapter.getFileTypeName(Object ascOrReader)
    * just return the file type with no exception issues
    * 
    * @param br
@@ -99,7 +99,7 @@ public class Resolver {
                                         Object bufferedReader,
                                         Map<String, Object> htParams, int ptFile)
       throws Exception {
-    AtomSetCollectionReader atomSetCollectionReader = null;
+    AtomSetCollectionReader rdr = null;
     String readerName;
     fullName = fullName.replace('\\', '/');
     String errMsg = null;
@@ -140,13 +140,13 @@ public class Resolver {
     String className = null;
     String err = null;
     className = getReaderClassBase(readerName);
-    if ((atomSetCollectionReader = (AtomSetCollectionReader) Interface
+    if ((rdr = (AtomSetCollectionReader) Interface
         .getInterface(className)) == null) {
       err = "File reader was not found:" + className;
       Logger.error(err);
       return err;
     }
-    return atomSetCollectionReader;
+    return rdr;
   }
 
   private static String split(String a, int n) {
@@ -169,17 +169,17 @@ public class Resolver {
   static Object DOMResolve(Object DOMNode, Map<String, Object> htParams)
       throws Exception {
     String className = null;
-    AtomSetCollectionReader atomSetCollectionReader;
-    String atomSetCollectionReaderName = getXmlType((String) htParams
+    AtomSetCollectionReader rdr;
+    String rdrName = getXmlType((String) htParams
         .get("nameSpaceInfo"));
     if (Logger.debugging) {
-      Logger.debug("The Resolver thinks " + atomSetCollectionReaderName);
+      Logger.debug("The Resolver thinks " + rdrName);
     }
-    htParams.put("readerName", atomSetCollectionReaderName);
+    htParams.put("readerName", rdrName);
     className = classBase + "xml.XmlReader";
-    if ((atomSetCollectionReader = (AtomSetCollectionReader) Interface
+    if ((rdr = (AtomSetCollectionReader) Interface
         .getInterface(className)) != null)
-      return atomSetCollectionReader;
+      return rdr;
     String err = "File reader was not found:" + className;
     Logger.error(err);
     return err;

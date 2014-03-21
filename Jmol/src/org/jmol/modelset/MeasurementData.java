@@ -66,7 +66,7 @@ public class MeasurementData implements JmolMeasurementClient {
   private Atom[] atoms;
   private String units;
   private float[] minArray;
-  private ModelSet modelSet;
+  private ModelSet ms;
   
   
   
@@ -81,7 +81,7 @@ public class MeasurementData implements JmolMeasurementClient {
   }
   
   public MeasurementData setModelSet(ModelSet m) {
-    modelSet = m;
+    ms = m;
     return this;
   }
   
@@ -94,7 +94,7 @@ public class MeasurementData implements JmolMeasurementClient {
                  boolean mustBeConnected, boolean mustNotBeConnected,
                  Boolean intramolecular, boolean isAll, 
                  int mad, short colix, Text text) {
-    this.modelSet = vwr.getModelSet();
+    this.ms = vwr.getModelSet();
     this.tokAction = tokAction;
     if (points.size() >= 2 && points.get(0) instanceof BS && points.get(1) instanceof BS) {
       justOneModel = BSUtil.haveCommon(
@@ -159,16 +159,16 @@ public class MeasurementData implements JmolMeasurementClient {
       minArray = new float[((BS) points.get(0)).cardinality()];
       for (int i = 0; i < minArray.length; i++)
         minArray[i] = -0f;
-      define(null, modelSet);
+      define(null, ms);
       return minArray;      
     }
     if (asArray) {
       measurements = new List<Float>();
-      define(null, modelSet);
+      define(null, ms);
       return measurements;
     }
     measurementStrings = new  List<String>();
-    define(null, modelSet);
+    define(null, ms);
     return measurementStrings;
   }
   
@@ -185,7 +185,7 @@ public class MeasurementData implements JmolMeasurementClient {
    */
   public void define(JmolMeasurementClient client, ModelSet modelSet) {
     this.client = (client == null ? this : client);
-    atoms = modelSet.atoms;
+    atoms = modelSet.at;
     /*
      * sets up measures based on an array of atom selection expressions -RMH 3/06
      * 

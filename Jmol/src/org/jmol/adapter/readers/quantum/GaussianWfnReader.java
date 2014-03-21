@@ -31,7 +31,7 @@ import org.jmol.adapter.smarter.AtomSetCollectionReader;
  *
  **/
 public class GaussianWfnReader extends AtomSetCollectionReader {
-//  int atomCount = 0;
+//  int ac = 0;
 //  int shellCount = 0;
 //  int gaussianCount = 0;
 //  Hashtable moData = new Hashtable();
@@ -90,17 +90,17 @@ EXPONENTS  0.2068882D+04 0.3106496D+03 0.7068303D+02 0.1986108D+02 0.6299305D+01
     String[] tokens = getTokens();
     nMo = parseInt(tokens[1]);
     nPrimitive = parseInt(tokens[4]);
-    atomCount = parseInt(tokens[6]);
+    ac = parseInt(tokens[6]);
   }
 
   //   B    1    (CENTRE  1)   0.00000000  2.98988716  0.00000000  CHARGE =  5.0
 
   private void readAtoms() throws Exception {
-    atomSetCollection.newAtomSet();
+    asc.newAtomSet();
     String tokens[];
-    for (int i = 0; i < atomCount; i++) {
+    for (int i = 0; i < ac; i++) {
       tokens = getTokens(readLine()); 
-      Atom atom = atomSetCollection.addNewAtom();
+      Atom atom = asc.addNewAtom();
       atom.elementSymbol = tokens[0];
       setAtomCoord(atom, parseFloat(tokens[4]), parseFloat(tokens[5]), parseFloat(tokens[6]));
     }

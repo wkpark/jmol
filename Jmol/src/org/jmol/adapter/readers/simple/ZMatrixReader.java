@@ -188,7 +188,7 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
 
    */
 
-  protected int atomCount;
+  protected int ac;
   protected List<Atom> vAtoms = new List<Atom>();
   private Map<String, Integer> atomMap = new Hashtable<String, Integer>();
   private String[] tokens;
@@ -261,8 +261,8 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
     if (++i == 0)
       throw new Exception("Bad Z-matrix atom name");
     if (i == element.length()) {
-      // no number -- append atomCount
-      atom.atomName = element + (atomCount + 1);
+      // no number -- append ac
+      atom.atomName = element + (ac + 1);
     } else {
       // has a number -- pull out element
       atom.atomName = element;
@@ -294,7 +294,7 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
     case 7:
       // angle + dihedral or angle + angle
       int ib, ic;
-      if (tokens.length < 7 && atomCount != 2
+      if (tokens.length < 7 && ac != 2
           || (ib = getAtomIndex(3)) < 0
           || (ic = (tokens.length < 7 ? -2 : getAtomIndex(5))) == -1
         ) {
@@ -321,7 +321,7 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
     case 3:
       // angle
       f = getValue(2);
-      if (atomCount != 1 
+      if (ac != 1 
           || (ia = getAtomIndex(1)) != 0) {
         atom = null;
       } else {
@@ -329,7 +329,7 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
       }
       break;
     case 1:
-      if (atomCount != 0)
+      if (ac != 0)
         atom = null;
       else
         atom.set(0, 0, 0);
@@ -340,17 +340,17 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
     if (atom == null)
       throw new Exception("bad Z-Matrix line");
     vAtoms.addLast(atom);
-    atomMap.put(atom.atomName, Integer.valueOf(atomCount));
-    atomCount++;
+    atomMap.put(atom.atomName, Integer.valueOf(ac));
+    ac++;
     if (element.startsWith("X") && JmolAdapter.getElementNumber(element) < 1) {
-      Logger.info("#dummy atom ignored: atom " + atomCount + " - "
+      Logger.info("#dummy atom ignored: atom " + ac + " - "
           + atom.atomName);
     } else {
-      atomSetCollection.addAtom(atom);
+      asc.addAtom(atom);
       setAtomCoord(atom);
       Logger.info(atom.atomName + " " + atom.x + " " + atom.y + " " + atom.z);
       if (isJmolZformat && bondOrder > 0)
-        atomSetCollection.addBond(new Bond(atom.index,
+        asc.addBond(new Bond(atom.index,
             vAtoms.get(ia).index, bondOrder));
     }
   }

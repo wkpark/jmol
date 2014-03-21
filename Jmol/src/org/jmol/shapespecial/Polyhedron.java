@@ -48,8 +48,8 @@ public class Polyhedron {
   String getState() {
     BS bs = new BS();
     for (int i = 0; i < ptCenter; i++)
-      bs.set(((Atom) vertices[i]).index);
-    return "  polyhedra ({" + centralAtom.index + "}) to "
+      bs.set(((Atom) vertices[i]).i);
+    return "  polyhedra ({" + centralAtom.i + "}) to "
     + Escape.eBS(bs) + (collapsed ? " collapsed" : "") 
     +  " distanceFactor " + distanceFactor
     +  " faceCenterOffset " + faceCenterOffset 

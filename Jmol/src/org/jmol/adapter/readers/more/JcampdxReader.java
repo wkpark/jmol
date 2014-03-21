@@ -181,7 +181,7 @@ public class JcampdxReader extends MolReader implements JmolJDXMOLReader {
   public void processModelData(String data, String id, String type,
                                String base, String last, float modelScale,
                                float vibScale, boolean isFirst) throws Exception {
-    int model0 = atomSetCollection.currentAtomSetIndex;
+    int model0 = asc.currentAtomSetIndex;
     AtomSetCollection model = null;
     while (true) {
       Object ret = SmarterJmolAdapter.staticGetAtomSetCollectionReader(
@@ -203,7 +203,7 @@ public class JcampdxReader extends MolReader implements JmolJDXMOLReader {
       if (baseModel.length() != 0) {
         int ibase = findModelById(baseModel);
         if (ibase >= 0) {
-          atomSetCollection.setAtomSetAuxiliaryInfoForSet("jdxModelID",
+          asc.setAtomSetAuxiliaryInfoForSet("jdxModelID",
               baseModel, ibase);
           for (int i = model.atomSetCount; --i >= 0;)
             model.setAtomSetAuxiliaryInfoForSet("jdxBaseModel", baseModel, i);
@@ -213,20 +213,20 @@ public class JcampdxReader extends MolReader implements JmolJDXMOLReader {
       }
       if (!Float.isNaN(vibScale)) {
         Logger.info("JcampdxReader applying vibration scaling of " + vibScale + " to "
-            + model.atomCount + " atoms");
+            + model.ac + " atoms");
         Atom[] atoms = model.atoms;
-        for (int i = model.atomCount; --i >= 0;)
+        for (int i = model.ac; --i >= 0;)
           atoms[i].scaleVector(vibScale);
       }
       if (!Float.isNaN(modelScale)) {
         Logger.info("JcampdxReader applying model scaling of " + modelScale + " to "
-            + model.atomCount + " atoms");
+            + model.ac + " atoms");
         Atom[] atoms = model.atoms;
-        for (int i = model.atomCount; --i >= 0;)
+        for (int i = model.ac; --i >= 0;)
           atoms[i].scale(modelScale);
       }
       Logger.info("jdx model=" + id + " type=" + model.fileTypeName);
-      atomSetCollection.appendAtomSetCollection(-1, model);
+      asc.appendAtomSetCollection(-1, model);
       break;
     }
     updateModelIDs(id, model0, isFirst);
@@ -240,19 +240,19 @@ public class JcampdxReader extends MolReader implements JmolJDXMOLReader {
    * @param ibase
    */
   private void setBonding(AtomSetCollection a, int ibase) {
-    int n0 = atomSetCollection.getAtomSetAtomCount(ibase);
-    int n = a.atomCount;
+    int n0 = asc.getAtomSetAtomCount(ibase);
+    int n = a.ac;
     if (n % n0 != 0) {
       Logger.warn("atom count in secondary model (" + n
           + ") is not a multiple of " + n0 + " -- bonding ignored");
       return;
     }
-    Bond[] bonds = atomSetCollection.bonds;
+    Bond[] bonds = asc.bonds;
     int b0 = 0;
     for (int i = 0; i < ibase; i++)
-      b0 += atomSetCollection.getAtomSetBondCount(i);
-    int b1 = b0 + atomSetCollection.getAtomSetBondCount(ibase);
-    int ii0 = atomSetCollection.getAtomSetAtomIndex(ibase);
+      b0 += asc.getAtomSetBondCount(i);
+    int b1 = b0 + asc.getAtomSetBondCount(ibase);
+    int ii0 = asc.getAtomSetAtomIndex(ibase);
     int nModels = a.atomSetCount;
     for (int j = 0; j < nModels; j++) {
       int i0 = a.getAtomSetAtomIndex(j) - ii0;
@@ -277,13 +277,13 @@ public class JcampdxReader extends MolReader implements JmolJDXMOLReader {
    * @param isFirst
    */
   private void updateModelIDs(String id, int model0, boolean isFirst) {
-    int n = atomSetCollection.atomSetCount;
+    int n = asc.atomSetCount;
     if (isFirst && n == model0 + 2) {
-      atomSetCollection.setAtomSetAuxiliaryInfo("modelID", id);
+      asc.setAtomSetAuxiliaryInfo("modelID", id);
       return;
     }
     for (int pt = 0, i = model0; ++i < n;)
-      atomSetCollection.setAtomSetAuxiliaryInfoForSet("modelID", id + "."
+      asc.setAtomSetAuxiliaryInfoForSet("modelID", id + "."
           + (++pt), i);
   }
 
@@ -336,12 +336,12 @@ public class JcampdxReader extends MolReader implements JmolJDXMOLReader {
       }
       Logger.info(s + line);
     }
-    n = atomSetCollection.atomSetCount;
+    n = asc.atomSetCount;
     for (int i = n; --i >= 0;) {
-      String id = (String) atomSetCollection.getAtomSetAuxiliaryInfoValue(i,
+      String id = (String) asc.getAtomSetAuxiliaryInfoValue(i,
           "modelID");
       if (havePeaks && !bsModels.get(i) && id.indexOf(".") >= 0) {
-        atomSetCollection.removeAtomSet(i);
+        asc.removeAtomSet(i);
         n--;
       }
     }
@@ -351,21 +351,21 @@ public class JcampdxReader extends MolReader implements JmolJDXMOLReader {
     } else {
       if (selectedModel == 0)
         selectedModel = n - 1;
-      for (int i = atomSetCollection.atomSetCount; --i >= 0;)
+      for (int i = asc.atomSetCount; --i >= 0;)
         if (i + 1 != selectedModel)
-          atomSetCollection.removeAtomSet(i);
+          asc.removeAtomSet(i);
       if (n > 0)
-        appendLoadNote((String) atomSetCollection.getAtomSetAuxiliaryInfoValue(
+        appendLoadNote((String) asc.getAtomSetAuxiliaryInfoValue(
             0, "name"));
     }
-    for (int i = atomSetCollection.atomSetCount; --i >= 0;)
-      atomSetCollection.setAtomSetNumber(i, i + 1);
-    atomSetCollection.centralize();
+    for (int i = asc.atomSetCount; --i >= 0;)
+      asc.setAtomSetNumber(i, i + 1);
+    asc.centralize();
   }
 
   private int findModelById(String modelID) {
-    for (int i = atomSetCollection.atomSetCount; --i >= 0;) {
-      String id = (String) atomSetCollection.getAtomSetAuxiliaryInfoValue(i,
+    for (int i = asc.atomSetCount; --i >= 0;) {
+      String id = (String) asc.getAtomSetAuxiliaryInfoValue(i,
           "modelID");
       if (modelID.equals(id))
         return i;
@@ -383,11 +383,11 @@ public class JcampdxReader extends MolReader implements JmolJDXMOLReader {
    */
   private void addType(int imodel, String type) {
     String types = addTypeStr(
-        (String) atomSetCollection.getAtomSetAuxiliaryInfoValue(imodel,
+        (String) asc.getAtomSetAuxiliaryInfoValue(imodel,
             "spectrumTypes"), type);
     if (types == null)
       return;
-    atomSetCollection.setAtomSetAuxiliaryInfoForSet("spectrumTypes", types,
+    asc.setAtomSetAuxiliaryInfoForSet("spectrumTypes", types,
         imodel);
     String s = addTypeStr(allTypes, type);
     if (s != null)
@@ -406,20 +406,20 @@ public class JcampdxReader extends MolReader implements JmolJDXMOLReader {
 
   @SuppressWarnings("unchecked")
   private void processPeakSelectAtom(int i, String key, String data) {
-    List<String> peaks = (List<String>) atomSetCollection
+    List<String> peaks = (List<String>) asc
         .getAtomSetAuxiliaryInfoValue(i, key);
     if (peaks == null)
-      atomSetCollection.setAtomSetAuxiliaryInfoForSet(key,
+      asc.setAtomSetAuxiliaryInfoForSet(key,
           peaks = new List<String>(), i);
     peaks.addLast(data);
   }
 
   private boolean processPeakSelectModel(int i, String title) {
-    if (atomSetCollection.getAtomSetAuxiliaryInfoValue(i, "jdxModelSelect") != null)
+    if (asc.getAtomSetAuxiliaryInfoValue(i, "jdxModelSelect") != null)
       return false;
     // assign name and jdxModelSelect ONLY if first found.
-    atomSetCollection.setAtomSetAuxiliaryInfoForSet("name", title, i);
-    atomSetCollection.setAtomSetAuxiliaryInfoForSet("jdxModelSelect", line, i);
+    asc.setAtomSetAuxiliaryInfoForSet("name", title, i);
+    asc.setAtomSetAuxiliaryInfoForSet("jdxModelSelect", line, i);
     return true;
   }
 

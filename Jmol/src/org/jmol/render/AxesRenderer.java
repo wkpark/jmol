@@ -90,7 +90,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
     }
     int nPoints = 6;
     int labelPtr = 0;
-    if (isUnitCell && modelSet.unitCells != null) {
+    if (isUnitCell && ms.unitCells != null) {
       nPoints = 3;
       labelPtr = 6;
     } else if (isXY) {

@@ -61,7 +61,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
 
   public int measurementCount = 0;
   public final List<Measurement> measurements = new  List<Measurement>();
-  public MeasurementPending measurementPending;
+  public MeasurementPending mPending;
   
   public short colix; // default to none in order to contrast with background
   
@@ -75,9 +75,9 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
     for (int i = measurements.size(); --i >= 0; ) {
       Measurement m = measurements.get(i);
       if (m != null)
-        m.modelSet = modelSet;
+        m.ms = ms;
     }
-    atoms = modelSet.atoms;
+    atoms = ms.at;
   }
   
   @Override
@@ -117,13 +117,13 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
     }
 
     if ("pending" == propertyName) {
-      this.measurementPending = (MeasurementPending) value;
-      if (measurementPending == null)
+      this.mPending = (MeasurementPending) value;
+      if (mPending == null)
         return;
-      if (measurementPending.count > 1)
-        vwr.setStatusMeasuring("measurePending", measurementPending
-            .count, measurementPending.toVector(false).toString(),
-            measurementPending.value);
+      if (mPending.count > 1)
+        vwr.setStatusMeasuring("measurePending", mPending
+            .count, mPending.toVector(false).toString(),
+            mPending.value);
       return;
     }
 
@@ -268,9 +268,9 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
             indices[j] -= nAtomsDeleted;
           } else if (iAtom < 0) {
             Point3fi pt = mt.getAtom(j);
-            if (pt.modelIndex > modelIndex) {
-              pt.modelIndex--;
-            } else if (pt.modelIndex == modelIndex) {
+            if (pt.mi > modelIndex) {
+              pt.mi--;
+            } else if (pt.mi == modelIndex) {
               deleteI(i);
               break;
             }
@@ -289,7 +289,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
       if (value instanceof String) {
         doAction(null, (String) value, T.hide);
       } else {
-        showHideM(new Measurement().setPoints(modelSet, (int[]) value, null,
+        showHideM(new Measurement().setPoints(ms, (int[]) value, null,
             null), true);
       }
       return;
@@ -299,7 +299,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
       if (value instanceof String) {
         doAction(null, (String) value, T.show);
       } else {
-        showHideM(new Measurement().setPoints(modelSet, (int[]) value, null,
+        showHideM(new Measurement().setPoints(ms, (int[]) value, null,
             null), false);
       }
       return;
@@ -309,7 +309,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
       if (value instanceof String) {
         doAction(null, (String) value, T.opToggle);
       } else {
-        toggle(new Measurement().setPoints(modelSet, (int[]) value, null, null));
+        toggle(new Measurement().setPoints(ms, (int[]) value, null, null));
       }
       return;
     }
@@ -340,13 +340,13 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
         indices[i + 1] = -2 - i;
       }
     }
-    return new Measurement().setPoints(modelSet, indices, points, tickInfo == null ? defaultTickInfo : tickInfo);
+    return new Measurement().setPoints(ms, indices, points, tickInfo == null ? defaultTickInfo : tickInfo);
   }
 
   @Override
   public Object getProperty(String property, int index) {
     if ("pending".equals(property))
-      return measurementPending;
+      return mPending;
     if ("count".equals(property))
       return Integer.valueOf(measurementCount);
     if ("countPlusIndices".equals(property))
@@ -424,7 +424,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
     htMin = null;
     //toggling one that is hidden should be interpreted as DEFINE
     bsSelected = new BS();
-    defineAll(Integer.MIN_VALUE, new Measurement().setPoints(modelSet, indices, null, defaultTickInfo), false, true, true);
+    defineAll(Integer.MIN_VALUE, new Measurement().setPoints(ms, indices, null, defaultTickInfo), false, true, true);
     setIndices();
     reformatDistances();
   }
@@ -445,7 +445,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
     } else if (value instanceof String) {
       doAction(null, (String) value, T.delete);
     } else if (PT.isAI(value)) {
-      defineAll(Integer.MIN_VALUE, new Measurement().setPoints(modelSet, (int[])value, null, null), true, false, false);
+      defineAll(Integer.MIN_VALUE, new Measurement().setPoints(ms, (int[])value, null, null), true, false, false);
     }
   }
 
@@ -495,7 +495,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
   
   private void define(MeasurementData md, int tokAction) {
     this.tokAction = tokAction;
-    md.define(this, modelSet);
+    md.define(this, ms);
   }
 
   @Override
@@ -531,7 +531,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
         bsSelected.set(i);
       return;
     }
-    Measurement measureNew = new Measurement().setM(modelSet, m, value, (m.colix == 0 ? colix : m.colix),
+    Measurement measureNew = new Measurement().setM(ms, m, value, (m.colix == 0 ? colix : m.colix),
         strFormat, measurementCount);
     if (!measureNew.isValid)
       return;
@@ -654,10 +654,10 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
       for (int iAtom = m.count; iAtom > 0; iAtom--) {
         int atomIndex = m.getAtomIndex(iAtom);
         if (atomIndex >= 0) {
-          if (!modelSet.atoms[atomIndex].isClickable())
+          if (!ms.at[atomIndex].isClickable())
             continue out;
         } else {
-          int modelIndex = m.getAtom(iAtom).modelIndex;
+          int modelIndex = m.getAtom(iAtom).mi;
           if (modelIndex >= 0 && !bsModels.get(modelIndex))
             continue out;
         }

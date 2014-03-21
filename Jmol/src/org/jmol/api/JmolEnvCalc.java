@@ -8,7 +8,7 @@ import javajs.util.P3;
 
 public interface JmolEnvCalc {
 
-  JmolEnvCalc set(AtomDataServer vwr, int atomCount, short[] mads);
+  JmolEnvCalc set(AtomDataServer vwr, int ac, short[] mads);
 
   P3[] getPoints();
 

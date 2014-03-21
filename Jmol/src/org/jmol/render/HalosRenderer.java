@@ -44,15 +44,15 @@ public class HalosRenderer extends ShapeRenderer {
     if (halos.mads == null && halos.bsHighlight == null && !selectDisplayTrue)
       return false;
     isAntialiased = g3d.isAntialiased();
-    Atom[] atoms = modelSet.atoms;
+    Atom[] atoms = ms.at;
     BS bsSelected = (selectDisplayTrue ? vwr.getSelectedAtoms() : null);
     boolean needTranslucent = false;
     g3d.addRenderer(T.circle);
-    for (int i = modelSet.getAtomCount(); --i >= 0;) {
+    for (int i = ms.getAtomCount(); --i >= 0;) {
       Atom atom = atoms[i];
       if ((atom.shapeVisibilityFlags & JC.ATOM_INFRAME) == 0)
         continue;
-      boolean isHidden = modelSet.isAtomHidden(i);
+      boolean isHidden = ms.isAtomHidden(i);
       mad = (halos.mads == null ? 0 : halos.mads[i]);
       colix = (halos.colixes == null || i >= halos.colixes.length ? C.INHERIT_ALL
           : halos.colixes[i]);

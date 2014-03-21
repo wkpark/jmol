@@ -149,13 +149,13 @@ OR
      * 
      */
     boolean isGeometry = (line.indexOf("G E O M E T R Y") >= 0);
-    atomSetCollection.newAtomSet();
-    atomSetCollection.setAtomSetName("" + energy); // start with an empty name
+    asc.newAtomSet();
+    asc.setAtomSetName("" + energy); // start with an empty name
     discardLinesUntilContains("----");
     int pt0 = (isGeometry ? 2 : 5);
     nXX = 0;
     String[] tokens;
-    while (readLine() != null && !line.startsWith(" -----")) {
+    while (rd() != null && !line.startsWith(" -----")) {
       tokens = getTokens();
       if (tokens.length < 5)
         break;
@@ -193,28 +193,28 @@ OR
    * @exception Exception  if an I/O error occurs
    */
   private void readFrequencies() throws Exception {
-    readLine();
-    while (readLine() != null) {
-      while (readLine() != null && line.indexOf(".") < 0
+    rd();
+    while (rd() != null) {
+      while (rd() != null && line.indexOf(".") < 0
           && line.indexOf("====") < 0) {
       }
       if (line == null || line.indexOf(".") < 0)
         return;
       String[] frequencies = getTokens();
-      readLine(); // -------- -------- --------
-      int iAtom0 = atomSetCollection.atomCount;
-      int atomCount = atomSetCollection.getLastAtomSetAtomCount();
+      rd(); // -------- -------- --------
+      int iAtom0 = asc.ac;
+      int ac = asc.getLastAtomSetAtomCount();
       int frequencyCount = frequencies.length;
       boolean[] ignore = new boolean[frequencyCount];
       for (int i = 0; i < frequencyCount; ++i) {
         ignore[i] = !doGetVibration(++vibrationNumber);
         if (ignore[i])
           continue;
-        atomSetCollection.cloneLastAtomSet();
-        atomSetCollection.setAtomSetFrequency(null, null, frequencies[i], null);
+        asc.cloneLastAtomSet();
+        asc.setAtomSetFrequency(null, null, frequencies[i], null);
       }
       readLines(nXX);
-      fillFrequencyData(iAtom0, atomCount, atomCount, ignore, true, 0, 0, null, 0);
+      fillFrequencyData(iAtom0, ac, ac, ignore, true, 0, 0, null, 0);
     }
   }
   
@@ -229,10 +229,10 @@ OR
      */
     vSymmetries = new  List<SymmetryData>();
     htSymmetries = new Hashtable<String, SymmetryData>();
-    readLine();
+    rd();
     int index = 0;
     String syms = "";
-    while (readLine() != null && line.length() > 1)
+    while (rd() != null && line.length() > 1)
       syms += line;
     String[] tokens = getTokensStr(syms);
     for (int i = 0; i < tokens.length; i++) {
@@ -279,10 +279,10 @@ OR
      36    48    34    46    42    54    39    51    37    40
      49    52
      */
-      sd.nSFO = parseIntStr(readLine().substring(15)); 
-      sd.nBF = parseIntStr(readLine().substring(75));
+      sd.nSFO = parseIntStr(rd().substring(15)); 
+      sd.nBF = parseIntStr(rd().substring(75));
       String funcList = "";
-      while (readLine() != null && line.length() > 1)
+      while (rd() != null && line.length() > 1)
         funcList += line;
       String[] tokens = getTokensStr(funcList);
       if (tokens.length != sd.nBF)
@@ -321,19 +321,19 @@ OR
     
     discardLinesUntilContains("(power of)");
     readLines(2);
-    while (readLine() != null && line.length() > 3 && line.charAt(3) == ' ') {
+    while (rd() != null && line.length() > 3 && line.charAt(3) == ' ') {
       String data = line;
-      while (readLine().indexOf("---") < 0)
+      while (rd().indexOf("---") < 0)
         data += line;
       String[] tokens = getTokensStr(data);
       int nAtoms = tokens.length - 1;
       int[] atomList = new int[nAtoms];
       for (int i = 1; i <= nAtoms; i++)
         atomList[i - 1] = parseIntStr(tokens[i]) - 1;
-      readLine();
+      rd();
       while (line.length() >= 10) {
         data = line;
-        while (readLine().length() > 35 && line.substring(0, 35).trim().length() == 0)
+        while (rd().length() > 35 && line.substring(0, 35).trim().length() == 0)
           data += line;
         tokens = getTokensStr(data);
         boolean isCore = tokens[0].equals("Core");
@@ -371,9 +371,9 @@ OR
     int nBF = slaterArray.length;
     sd.coefs = new float[sd.nSFO][nBF];
     while (n < sd.nBF) {
-      readLine();
-      int nLine = getTokensStr(readLine()).length;
-      readLine();
+      rd();
+      int nLine = getTokensStr(rd()).length;
+      rd();
       sd.mos = AU.createArrayOfHashtable(sd.nSFO);
       String[][] data = new String[sd.nSFO][];
       fillDataBlock(data, 0);
@@ -436,8 +436,8 @@ OR
     readLines(4);
     int pt = (nSym == 1 ? 0 : 1);
     if (nSym == 1)
-      sym = readLine().trim();
-    while (readLine() != null && line.length() > 10) {
+      sym = rd().trim();
+    while (rd() != null && line.length() > 10) {
       line = line.replace('(', ' ').replace(')', ' ');
       String[] tokens = getTokens();
       int len = tokens.length;
@@ -449,7 +449,7 @@ OR
       float energy = parseFloatStr(tokens[len - 2 + pt]); // eV
       addMo(sym, moPt, occ, energy);
     }
-    int iAtom0 = atomSetCollection.getLastAtomSetAtomIndex();
+    int iAtom0 = asc.getLastAtomSetAtomIndex();
     for (int i = 0; i < nBF; i++)
       slaterArray[i].iAtom += iAtom0;
     setSlaters(true, true);

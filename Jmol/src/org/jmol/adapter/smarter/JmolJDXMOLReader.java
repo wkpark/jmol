@@ -14,7 +14,7 @@ public interface JmolJDXMOLReader {
                         String last, float modelScale, float vibScale, boolean isFirst)
       throws Exception;
 
-  String readLine() throws Exception;
+  String rd() throws Exception;
 
   void setSpectrumPeaks(int nH, String piUnitsX, String piUnitsY);
 

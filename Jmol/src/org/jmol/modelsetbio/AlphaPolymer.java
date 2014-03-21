@@ -213,7 +213,7 @@ public class AlphaPolymer extends BioPolymer {
     
     Atom a1 = vCA.get(0);
     Atom a2;
-    int nBiopolymers = modelSet.getBioPolymerCountInModel(a1.modelIndex);
+    int nBiopolymers = modelSet.getBioPolymerCountInModel(a1.mi);
     int[][] biopolymerStartsEnds = new int[nBiopolymers][nEndMin * 2];
     for (int i = 0; i < n; i++) {
       a1 = vCA.get(i);
@@ -345,7 +345,7 @@ public class AlphaPolymer extends BioPolymer {
                         BS bsNearbyResidues, int delta) {
     Atom a1 = vCA.get(i);
     Atom a2 = vCA.get(j);
-    if (!bs1.get(a1.index) || !bs2.get(a2.index))
+    if (!bs1.get(a1.i) || !bs2.get(a2.i))
       return;
     vStruts.addLast(new Atom[] { a1, a2 });
     bsStruts.set(i);

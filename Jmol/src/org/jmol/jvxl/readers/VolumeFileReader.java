@@ -43,7 +43,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
 
   protected boolean endOfData;
   protected boolean negativeAtomCount;
-  protected int atomCount;
+  protected int ac;
   protected int nSurfaces;
   protected boolean isAngstroms;
   protected boolean canDownsample;
@@ -130,7 +130,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   private int readVolumetricHeader() {
     try {
       readParameters();
-      if (atomCount == Integer.MIN_VALUE)
+      if (ac == Integer.MIN_VALUE)
         return 0;
       if (!vertexDataOnly)
         Logger.info("voxel grid origin:" + volumetricOrigin);
@@ -534,18 +534,18 @@ abstract class VolumeFileReader extends SurfaceFileReader {
                                          SB bs) {
     if (atomLine.indexOf("ANGSTROMS") >= 0)
       isAngstroms = true;
-    int atomCount = (strAtomCount == null ? Integer.MAX_VALUE : javajs.util.PT
+    int ac = (strAtomCount == null ? Integer.MAX_VALUE : javajs.util.PT
         .parseInt(strAtomCount));
-    switch (atomCount) {
+    switch (ac) {
     case Integer.MIN_VALUE:
-      atomCount = 0;
+      ac = 0;
       atomLine = " " + atomLine.substring(atomLine.indexOf(" ") + 1);
       break;
     case Integer.MAX_VALUE:
-      atomCount = Integer.MIN_VALUE;
+      ac = Integer.MIN_VALUE;
       break;
     default:
-      String s = "" + atomCount;
+      String s = "" + ac;
       atomLine = atomLine.substring(atomLine.indexOf(s) + s.length());
     }
     if (isAngstroms) {
@@ -555,8 +555,8 @@ abstract class VolumeFileReader extends SurfaceFileReader {
       if (atomLine.indexOf("BOHR") < 0)
         atomLine += " BOHR";
     }
-    atomLine = (atomCount == Integer.MIN_VALUE ? ""
-        : (isXLowToHigh ? "+" : "-") + Math.abs(atomCount))
+    atomLine = (ac == Integer.MIN_VALUE ? ""
+        : (isXLowToHigh ? "+" : "-") + Math.abs(ac))
         + atomLine + "\n";
     bs.append(atomLine);
     return isAngstroms;

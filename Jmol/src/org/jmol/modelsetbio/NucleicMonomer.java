@@ -437,9 +437,9 @@ public class NucleicMonomer extends PhosphorusMonomer {
       Group g = ptNorP.getGroup();
       for (int i = 0; i < bonds.length; i++) {
         Atom atom = bonds[i].getOtherAtom(ptNorP);
-        if (p1 != null && atom.index == p1.index)
+        if (p1 != null && atom.i == p1.i)
           continue;
-        if (p2 != null && atom.index == p2.index)
+        if (p2 != null && atom.i == p2.i)
           continue;
         if (atom.getGroup() == g)
           ptB = atom;

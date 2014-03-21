@@ -45,7 +45,7 @@ import org.jmol.adapter.smarter.AtomSetCollectionReader;
 public class VaspOutcarReader extends AtomSetCollectionReader {
 
   private String[] atomNames;
-  private int atomCount = 0;
+  private int ac = 0;
   private boolean inputOnly;
   private boolean mDsimulation = false; //this is for MD simulations
   private boolean isVersion5 = false;
@@ -121,11 +121,11 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
     int[] numofElement = new int[100];
     //    readLine();
     String[] tokens = getTokensStr(line.substring(line.indexOf("=") + 1));
-    atomCount = 0;
+    ac = 0;
     for (int i = 0; i < tokens.length; i++)
-      atomCount += (numofElement[i] = parseIntStr(tokens[i].trim()));
+      ac += (numofElement[i] = parseIntStr(tokens[i].trim()));
     //this is to reconstruct the atomMappedarray containing the atom
-    atomNames = new String[atomCount];
+    atomNames = new String[ac];
     int nElements = elementNames.size();
     for (int pt = 0, i = 0; i < nElements; i++)
       for (int j = 0; j < numofElement[i]; j++)
@@ -140,9 +140,9 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
   private float[] unitCellData = new float[18];
 
   private void readUnitCellVectors() throws Exception {
-    if (atomSetCollection.atomCount > 0) {
+    if (asc.ac > 0) {
       setSymmetry();
-      atomSetCollection.newAtomSet();
+      asc.newAtomSet();
       setAtomSetInfo();
     }
     fillFloatArray(null, 0, unitCellData);
@@ -177,9 +177,9 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
   ///This is the initial geometry not the geometry during the geometry dump
   private void readInitialCoordinates() throws Exception {
     int counter = 0;
-    while (readLine() != null && line.length() > 10)
+    while (rd() != null && line.length() > 10)
       addAtomXYZSymName(getTokens(), 0, null, atomNames[counter++]);
-    atomSetCollection.setAtomSetName("Initial Coordinates");
+    asc.setAtomSetName("Initial Coordinates");
   }
 
   /*  
@@ -198,7 +198,7 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
   private void readPOSITION() throws Exception {
     int counter = 0;
     readLines(1);
-    while (readLine() != null && line.indexOf("----------") < 0)
+    while (rd() != null && line.indexOf("----------") < 0)
       addAtomXYZSymName(getTokens(), 0, null, atomNames[counter++]);
   }
 
@@ -212,11 +212,11 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
   private Double gibbsEnergy, gibbsEntropy;
 
   private void readEnergy() throws Exception {
-    readLine();
-    String[] tokens = getTokensStr(readLine());
+    rd();
+    String[] tokens = getTokensStr(rd());
     gibbsEnergy = Double.valueOf(Double.parseDouble(tokens[4]));
-    readLine();
-    tokens = getTokensStr(readLine());
+    rd();
+    tokens = getTokensStr(rd());
     /* please double-check:
 
     entropy T*S    EENTRO =        -0.01255935
@@ -246,14 +246,14 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
   private void setAtomSetInfo() {
     if (gibbsEnergy == null)
       return;
-    atomSetCollection.setAtomSetEnergy("" + gibbsEnergy,
+    asc.setAtomSetEnergy("" + gibbsEnergy,
         gibbsEnergy.floatValue());
-    atomSetCollection.setAtomSetAuxiliaryInfo("Energy", gibbsEnergy);
-    atomSetCollection.setAtomSetAuxiliaryInfo("Entropy", gibbsEntropy);
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Energy", gibbsEnergy);
-    atomSetCollection
+    asc.setAtomSetAuxiliaryInfo("Energy", gibbsEnergy);
+    asc.setAtomSetAuxiliaryInfo("Entropy", gibbsEntropy);
+    asc.setAtomSetCollectionAuxiliaryInfo("Energy", gibbsEnergy);
+    asc
         .setAtomSetCollectionAuxiliaryInfo("Entropy", gibbsEntropy);
-    atomSetCollection.setAtomSetName("G = " + gibbsEnergy + " eV, T*S = "
+    asc.setAtomSetName("G = " + gibbsEnergy + " eV, T*S = "
         + gibbsEntropy + " eV");
   }
 
@@ -262,31 +262,31 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
 
   private void readMdyn() throws Exception {
     String[] tokens = getTokens();
-    readLine();
-    tokens = getTokensStr(readLine());
+    rd();
+    tokens = getTokensStr(rd());
     electronEne = Double.valueOf(Double.parseDouble(tokens[4]));
-    tokens = getTokensStr(readLine());
+    tokens = getTokensStr(rd());
     kinEne = Double.valueOf(Double.parseDouble(tokens[4]));
     temp = parseFloatStr(tokens[6]);
     readLines(3);
-    tokens = getTokensStr(readLine());
+    tokens = getTokensStr(rd());
     totEne = Double.valueOf(Double.parseDouble(tokens[4]));
     setAtomSetInfoMd();
   }
 
   private void setAtomSetInfoMd() {
-    atomSetCollection.setAtomSetName("Temp. = " + DF.formatDecimal((temp), 2)
+    asc.setAtomSetName("Temp. = " + DF.formatDecimal((temp), 2)
         + " K, Energy = " + totEne + " eV");
-    atomSetCollection.setAtomSetAuxiliaryInfo("Energy", totEne);
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Energy", totEne);
-    atomSetCollection.setAtomSetAuxiliaryInfo("EleEnergy", kinEne);
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("EleEnergy",
+    asc.setAtomSetAuxiliaryInfo("Energy", totEne);
+    asc.setAtomSetCollectionAuxiliaryInfo("Energy", totEne);
+    asc.setAtomSetAuxiliaryInfo("EleEnergy", kinEne);
+    asc.setAtomSetCollectionAuxiliaryInfo("EleEnergy",
         electronEne);
-    atomSetCollection.setAtomSetAuxiliaryInfo("Kinetic", electronEne);
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Kinetic", kinEne);
-    atomSetCollection.setAtomSetAuxiliaryInfo("Temperature",
+    asc.setAtomSetAuxiliaryInfo("Kinetic", electronEne);
+    asc.setAtomSetCollectionAuxiliaryInfo("Kinetic", kinEne);
+    asc.setAtomSetAuxiliaryInfo("Temperature",
         DF.formatDecimal((temp), 2));
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Temperature",
+    asc.setAtomSetCollectionAuxiliaryInfo("Temperature",
         DF.formatDecimal((temp), 2));
   }
 
@@ -324,8 +324,8 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
    */
   private void readFrequency() throws Exception {
 
-    int pt = atomSetCollection.currentAtomSetIndex;
-    atomSetCollection.baseSymmetryAtomCount = atomCount;
+    int pt = asc.currentAtomSetIndex;
+    asc.baseSymmetryAtomCount = ac;
 
     if (isVersion5) {
       readLines(3);
@@ -335,21 +335,21 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
     }
 
     boolean[] ignore = new boolean[1];
-    while (readLine() != null
+    while (rd() != null
         && (line.contains("f  = ") || line.contains("f/i= "))) {
       applySymmetryAndSetTrajectory();
-      int iAtom0 = atomSetCollection.atomCount;
-      cloneLastAtomSet(atomCount, null);
+      int iAtom0 = asc.ac;
+      cloneLastAtomSet(ac, null);
       if (!ignore[0]) {
-        atomSetCollection.currentAtomSetIndex = ++pt;
-        atomSetCollection.setAtomSetFrequency(null, null,
+        asc.currentAtomSetIndex = ++pt;
+        asc.setAtomSetFrequency(null, null,
             line.substring(line.indexOf("2PiTHz") + 6, line.indexOf("c") - 1)
                 .trim(), null);
       }
-      readLine();
-      fillFrequencyData(iAtom0, atomCount, atomCount, ignore, true, 35, 12,
+      rd();
+      fillFrequencyData(iAtom0, ac, ac, ignore, true, 35, 12,
           null, 0);
-      readLine();
+      rd();
     }
   }
 }

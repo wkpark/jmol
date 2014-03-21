@@ -23,13 +23,29 @@ public class MeshSurface {
   public V3[] spanningVectors;
   
   public String meshType;
-  public int vertexCount;
-  public P3[] vertices;
-  public float[] vertexValues;
+  
+  /**
+   * vertex count
+   */
+  public int vc;
+  /**
+   * vertices
+   */
+  public P3[] vs;
+  /**
+   * vertex values
+   */
+  public float[] vvs;
   public int[] vertexSource;
   
-  public int polygonCount;
-  public int[][] polygonIndexes;
+  /**
+   * polygon count
+   */
+  public int pc;
+  /**
+   * polygon indexes
+   */
+  public int[][] pis;
   public float[] polygonTranslucencies;
   
   public boolean isTriangleSet; // just a set of flat polygons
@@ -41,8 +57,14 @@ public class MeshSurface {
   public P3 offset;
   public T3[] altVertices;
 
-  public short[] polygonColixes;
-  public short[] vertexColixes;
+  /**
+   * polygon color index "colix" array
+   */
+  public short[] pcs;
+  /**
+   * vertex color index "colix" array
+   */
+  public short[] vcs;
   public T3[] normals; // for export only or for cartoons
   public V3[] normalsTemp; // for cartoons
   public int normalCount; // for export only
@@ -61,12 +83,12 @@ public class MeshSurface {
   public static MeshSurface newMesh(boolean isAlt, T3[] vertices, int vertexCount, int[][] polygonIndexes,
       T3[] normals, int nNormals) {
     MeshSurface ms = new MeshSurface();
-    ms.polygonIndexes = polygonIndexes;
+    ms.pis = polygonIndexes;
     if (isAlt)
       ms.altVertices = vertices;
     else
-      ms.vertices = (P3[]) vertices;
-    ms.vertexCount = (vertexCount == 0 ? vertices.length : vertexCount);
+      ms.vs = (P3[]) vertices;
+    ms.vc = (vertexCount == 0 ? vertices.length : vertexCount);
     ms.normals = normals;
     ms.normalCount = (nNormals == 0  && normals != null ? normals.length : nNormals);
     return ms;
@@ -76,11 +98,11 @@ public class MeshSurface {
       int[][] polygonIndexes, int polygonCount, int checkCount) {
     // from DRAW only
     MeshSurface ms = new MeshSurface();
-    ms.vertices = vertices;
-    ms.vertexValues = vertexValues;
-    ms.vertexCount = vertexCount;
-    ms.polygonIndexes = polygonIndexes;
-    ms.polygonCount = polygonCount;
+    ms.vs = vertices;
+    ms.vvs = vertexValues;
+    ms.vc = vertexCount;
+    ms.pis = polygonIndexes;
+    ms.pc = polygonCount;
     ms.checkCount = checkCount; // will be 1
     return ms;
   }
@@ -89,14 +111,14 @@ public class MeshSurface {
    * @return The vertices.
    */
   public T3[] getVertices() {
-    return (altVertices == null ? vertices : altVertices);
+    return (altVertices == null ? vs : altVertices);
   }
   
   /**
    * @return  faces, if defined (in exporter), otherwise polygonIndexes
    */
   public int[][] getFaces() {
-    return polygonIndexes;
+    return pis;
   }
 
   public void setColix(short colix) {
@@ -108,12 +130,12 @@ public class MeshSurface {
   }
 
   public int addV(P3 vertex) { //used by mps and surfaceGenerator
-    if (vertexCount == 0)
-      vertices = new P3[SEED_COUNT];
-    else if (vertexCount == vertices.length)
-      vertices = (P3[]) AU.doubleLength(vertices);
-    vertices[vertexCount] = P3.newP(vertex);
-    return vertexCount++;
+    if (vc == 0)
+      vs = new P3[SEED_COUNT];
+    else if (vc == vs.length)
+      vs = (P3[]) AU.doubleLength(vs);
+    vs[vc] = P3.newP(vertex);
+    return vc++;
   }
 
   public void addTriangle(int vertexA, int vertexB, int vertexC) {
@@ -126,32 +148,32 @@ public class MeshSurface {
   }
 
   public void setPolygonCount(int polygonCount) {    
-    this.polygonCount = polygonCount;
+    this.pc = polygonCount;
     if (polygonCount < 0)
       return;
-    if (polygonIndexes == null || polygonCount > polygonIndexes.length)
-      polygonIndexes = AU.newInt2(polygonCount);
+    if (pis == null || polygonCount > pis.length)
+      pis = AU.newInt2(polygonCount);
   }
 
   public int addVCVal(P3 vertex, float value) {
-    if (vertexCount == 0)
-      vertexValues = new float[SEED_COUNT];
-    else if (vertexCount >= vertexValues.length)
-      vertexValues = AU.doubleLengthF(vertexValues);
-    vertexValues[vertexCount] = value;
+    if (vc == 0)
+      vvs = new float[SEED_COUNT];
+    else if (vc >= vvs.length)
+      vvs = AU.doubleLengthF(vvs);
+    vvs[vc] = value;
     return addV(vertex);
   } 
 
   public int addTriangleCheck(int vertexA, int vertexB, int vertexC, int check,
                               int check2, int color) {
-    return (vertices == null
-        || vertexValues != null
-        && (Float.isNaN(vertexValues[vertexA])
-            || Float.isNaN(vertexValues[vertexB]) 
-            || Float.isNaN(vertexValues[vertexC])) 
-        || Float.isNaN(vertices[vertexA].x)
-        || Float.isNaN(vertices[vertexB].x) 
-        || Float.isNaN(vertices[vertexC].x) 
+    return (vs == null
+        || vvs != null
+        && (Float.isNaN(vvs[vertexA])
+            || Float.isNaN(vvs[vertexB]) 
+            || Float.isNaN(vvs[vertexC])) 
+        || Float.isNaN(vs[vertexA].x)
+        || Float.isNaN(vs[vertexB].x) 
+        || Float.isNaN(vs[vertexC].x) 
         ? -1 
       : addPolygonV3(vertexA, vertexB, vertexC, check, check2, color, null));
   }
@@ -168,40 +190,40 @@ public class MeshSurface {
     
   protected int addPolygonC(int[] polygon, int color, BS bs) {
     if (color != 0) {
-      if (polygonColixes == null || polygonCount == 0)
+      if (pcs == null || pc == 0)
         lastColor = 0;
       short colix = (color == lastColor ? lastColix : (lastColix = C
           .getColix(lastColor = color)));      
-      setPolygonColix(polygonCount, colix);
+      setPolygonColix(pc, colix);
     }
     return addPolygon(polygon, bs);
   }
 
   private int addPolygon(int[] polygon, BS bs) {
-    int n = polygonCount;
-    if (polygonCount == 0)
-      polygonIndexes = AU.newInt2(SEED_COUNT);
-    else if (polygonCount == polygonIndexes.length)
-      polygonIndexes = (int[][]) AU.doubleLength(polygonIndexes);
+    int n = pc;
+    if (pc == 0)
+      pis = AU.newInt2(SEED_COUNT);
+    else if (pc == pis.length)
+      pis = (int[][]) AU.doubleLength(pis);
     if (bs != null)
-      bs.set(polygonCount);
-    polygonIndexes[polygonCount++] = polygon;
+      bs.set(pc);
+    pis[pc++] = polygon;
     return n;
   }
 
   private void setPolygonColix(int index, short colix) {
-    if (polygonColixes == null) {
-      polygonColixes = new short[SEED_COUNT];
-    } else if (index >= polygonColixes.length) {
-      polygonColixes = AU.doubleLengthShort(polygonColixes);
+    if (pcs == null) {
+      pcs = new short[SEED_COUNT];
+    } else if (index >= pcs.length) {
+      pcs = AU.doubleLengthShort(pcs);
     }
-    polygonColixes[index] = colix;
+    pcs[index] = colix;
   }
   
   public void invalidatePolygons() {
-    for (int i = polygonCount; --i >= mergePolygonCount0;)
+    for (int i = pc; --i >= mergePolygonCount0;)
       if ((bsSlabDisplay == null || bsSlabDisplay.get(i)) && !setABC(i))
-        polygonIndexes[i] = null;
+        pis[i] = null;
   }
 
   protected int iA, iB, iC;
@@ -210,15 +232,15 @@ public class MeshSurface {
     if (bsSlabDisplay != null && !bsSlabDisplay.get(i)
         && (bsSlabGhost == null || !bsSlabGhost.get(i)))
       return false;
-    int[] vertexIndexes = polygonIndexes[i];
+    int[] vertexIndexes = pis[i];
     if (vertexIndexes == null || vertexIndexes.length < 3)
       return false;
     iA = vertexIndexes[0];
     iB = vertexIndexes[1];
     iC = vertexIndexes[2];
-    return vertexValues == null || !(Float.isNaN(vertexValues[iA])
-            || Float.isNaN(vertexValues[iB]) 
-            || Float.isNaN(vertexValues[iC]));
+    return vvs == null || !(Float.isNaN(vvs[iA])
+            || Float.isNaN(vvs[iB]) 
+            || Float.isNaN(vvs[iC]));
   }
 
   public int polygonCount0;
@@ -269,13 +291,13 @@ public class MeshSurface {
   public void resetTransPolygons() {
     boolean isTranslucent = C.isColixTranslucent(colix);
     float translucentLevel = C.getColixTranslucencyFractional(colix);
-    for (int i = 0; i < polygonCount; i++)
+    for (int i = 0; i < pc; i++)
       if (bsTransPolygons.get(i)) {
         if (!setABC(i))
           continue;
-        vertexColixes[iA] = C.getColixTranslucent3(vertexColixes[iA], isTranslucent, translucentLevel); 
-        vertexColixes[iB] = C.getColixTranslucent3(vertexColixes[iB], isTranslucent, translucentLevel); 
-        vertexColixes[iC] = C.getColixTranslucent3(vertexColixes[iC], isTranslucent, translucentLevel); 
+        vcs[iA] = C.getColixTranslucent3(vcs[iA], isTranslucent, translucentLevel); 
+        vcs[iB] = C.getColixTranslucent3(vcs[iB], isTranslucent, translucentLevel); 
+        vcs[iC] = C.getColixTranslucent3(vcs[iC], isTranslucent, translucentLevel); 
       }
     bsTransPolygons = null;
     polygonTranslucencies = null;
@@ -326,12 +348,12 @@ public class MeshSurface {
     int slabType = ((Integer) slabObject[0]).intValue();
     if (slabType == T.none || slabType == T.brillouin) {
       if (bsSlabDisplay != null && (polygonCount0 != 0 || vertexCount0 != 0)) {
-        polygonCount = polygonCount0;
-        vertexCount = vertexCount0;
+        pc = polygonCount0;
+        vc = vertexCount0;
         polygonCount0 = vertexCount0 = 0;
-        normixCount = (isTriangleSet ? polygonCount : vertexCount);
-        bsSlabDisplay.setBits(0, (polygonCount == 0 ? vertexCount
-            : polygonCount));
+        normixCount = (isTriangleSet ? pc : vc);
+        bsSlabDisplay.setBits(0, (pc == 0 ? vc
+            : pc));
         slabOptions = new SB().append(meshType + " slab none");
         bsSlabGhost = null;
         slabMeshType = T.none;
@@ -347,18 +369,18 @@ public class MeshSurface {
     Object[] colorData = (Object[]) slabObject[3];
     boolean isGhost = (colorData != null);
     if (bsSlabDisplay == null || polygonCount0 == 0 && vertexCount0 == 0) {
-      polygonCount0 = polygonCount;
-      vertexCount0 = vertexCount;
-      bsSlabDisplay = BSUtil.setAll(polygonCount == 0 ? vertexCount
-          : polygonCount);
+      polygonCount0 = pc;
+      vertexCount0 = vc;
+      bsSlabDisplay = BSUtil.setAll(pc == 0 ? vc
+          : pc);
       bsSlabGhost = null;
-      if (polygonCount == 0 && vertexCount == 0)
+      if (pc == 0 && vc == 0)
         return false;
     } else if (isMerged) {
-      if (polygonCount == 0)
-        bsSlabDisplay.setBits(mergeVertexCount0, vertexCount);
+      if (pc == 0)
+        bsSlabDisplay.setBits(mergeVertexCount0, vc);
       else
-        bsSlabDisplay.setBits(mergePolygonCount0, polygonCount);
+        bsSlabDisplay.setBits(mergePolygonCount0, pc);
     }
 
     if (isGhost) {
@@ -429,7 +451,7 @@ public class MeshSurface {
       case T.range:
         // isosurface slab within range x.x y.y
         // if y.y < x.x then this effectively means "NOT within range y.y x.x"
-        if (vertexValues == null)
+        if (vvs == null)
           return false;
         float distanceMax = ((Float) o[1]).floatValue();
         sb.append("within range ").appendF(distance).append(" ").appendF(
@@ -485,14 +507,14 @@ public class MeshSurface {
     }
     
     if (vertexSource != null) {
-      if (vertexCount >= vertexSource.length)
+      if (vc >= vertexSource.length)
         vertexSource = AU.doubleLengthI(vertexSource);
-      vertexSource[vertexCount] = source;
+      vertexSource[vc] = source;
     }
     if (vertexSets != null) {
-      if (vertexCount >= vertexSets.length)
+      if (vc >= vertexSets.length)
         vertexSets = AU.doubleLengthI(vertexSets);
-      vertexSets[vertexCount] = set;
+      vertexSets[vc] = set;
     }
     int i = addVCVal(vertex, value);
     //int i = addVertexCopy(vertex, value, -4, true);
@@ -532,12 +554,12 @@ public class MeshSurface {
     P3[] pts = null;
     if (fData == null) { 
       if (tokType == T.decimal && bsSource != null) {
-        fData = new float[vertexCount];
-        for (int i = 0; i < vertexCount; i++)
+        fData = new float[vc];
+        for (int i = 0; i < vc; i++)
           if ((fData[i] = vertexSource[i]) == -1)
             System.out.println("meshsurface hmm");
       } else {
-        fData = vertexValues;
+        fData = vvs;
       }
     }
     Map<String, Integer> mapEdge = new Hashtable<String, Integer>();
@@ -570,25 +592,25 @@ public class MeshSurface {
     float d1, d2, d3, valA, valB, valC;
     int sourceA = 0, sourceB = 0, sourceC = 0, setA = 0;
     List<int[]> iPts = (andCap ? new  List<int[]>() : null);
-    if (polygonCount == 0) {
-      for (int i = mergeVertexCount0; i < vertexCount; i++) {
+    if (pc == 0) {
+      for (int i = mergeVertexCount0; i < vc; i++) {
         if (Float.isNaN(fData[i])
-            || checkSlab(tokType, vertices[i], fData[i], distance, plane,
+            || checkSlab(tokType, vs[i], fData[i], distance, plane,
                 ptCenters, bsSource) > 0)
           bsSlabDisplay.clear(i);
       }
       return;
     }
-    int iLast = polygonCount;
+    int iLast = pc;
     for (int i = mergePolygonCount0; i < iLast; i++) {
       if (!setABC(i))
         continue;
       BS bsSlab = (bsSlabGhost != null && bsSlabGhost.get(i) ? bsSlabGhost : bsSlabDisplay);
-      int check1 = polygonIndexes[i][3];
-      int check2 = (checkCount == 2 ? polygonIndexes[i][4] : 0);
-      P3 vA = vertices[iA];
-      P3 vB = vertices[iB];
-      P3 vC = vertices[iC];
+      int check1 = pis[i][3];
+      int check2 = (checkCount == 2 ? pis[i][4] : 0);
+      P3 vA = vs[iA];
+      P3 vB = vs[iB];
+      P3 vC = vs[iC];
       valA = fData[iA];
       valB = fData[iB];
       valC = fData[iC];
@@ -837,8 +859,8 @@ public class MeshSurface {
       P3 center = new P3();
       for (int i = iPts.size(); --i >= 0;) {
         int[] ipts = iPts.get(i);
-        center.add(vertices[ipts[0]]);
-        center.add(vertices[ipts[1]]);
+        center.add(vs[ipts[0]]);
+        center.add(vs[ipts[1]]);
       }
       center.scale(0.5f / iPts.size());
       int v0 = addIntersectionVertex(center, 0, -1, setA, mapEdge, -1, -1);
@@ -853,37 +875,37 @@ public class MeshSurface {
       return;
     BS bsv = new BS();
     BS bsp = new BS();
-    for (int i = 0; i < polygonCount; i++) {
-      if (polygonIndexes[i] == null)
+    for (int i = 0; i < pc; i++) {
+      if (pis[i] == null)
         continue;
       bsp.set(i);
       for (int j = 0; j < 3; j++)
-        bsv.set(polygonIndexes[i][j]);
+        bsv.set(pis[i][j]);
     }
     int n = 0;
     int nPoly = bsp.cardinality();
-    if (nPoly != polygonCount) {
-      int[] map = new int[vertexCount];
-      for (int i = 0; i < vertexCount; i++)
+    if (nPoly != pc) {
+      int[] map = new int[vc];
+      for (int i = 0; i < vc; i++)
         if (bsv.get(i))
           map[i] = n++;
       P3[] vTemp = new P3[n];
       n = 0;
-      for (int i = 0; i < vertexCount; i++)
+      for (int i = 0; i < vc; i++)
         if (bsv.get(i))
-          vTemp[n++] = vertices[i];
+          vTemp[n++] = vs[i];
       int[][] pTemp = AU.newInt2(nPoly);
       nPoly = 0;
-      for (int i = 0; i < polygonCount; i++)
-        if (polygonIndexes[i] != null) {
+      for (int i = 0; i < pc; i++)
+        if (pis[i] != null) {
           for (int j = 0; j < 3; j++)
-            polygonIndexes[i][j] = map[polygonIndexes[i][j]];
-          pTemp[nPoly++] = polygonIndexes[i];
+            pis[i][j] = map[pis[i][j]];
+          pTemp[nPoly++] = pis[i];
         }
-      vertices = vTemp;
-      vertexCount = n;
-      polygonIndexes = pTemp;
-      polygonCount = nPoly;
+      vs = vTemp;
+      vc = n;
+      pis = pTemp;
+      pc = nPoly;
     }
   }
 

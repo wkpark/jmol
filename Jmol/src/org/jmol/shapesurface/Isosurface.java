@@ -335,7 +335,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         // thisMesh.vertexColixes = null;
         thisMesh.jvxlData.baseColor = color;
         thisMesh.isColorSolid = true;
-        thisMesh.polygonColixes = null;
+        thisMesh.pcs = null;
         thisMesh.colorEncoder = null;
         thisMesh.vertexColorMap = null;
       } else if (!Txt.isWild(previousMeshID)) {
@@ -343,7 +343,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
           // isomeshes[i].vertexColixes = null;
           isomeshes[i].jvxlData.baseColor = color;
           isomeshes[i].isColorSolid = true;
-          isomeshes[i].polygonColixes = null;
+          isomeshes[i].pcs = null;
           isomeshes[i].colorEncoder = null;
           isomeshes[i].vertexColorMap = null;
         }
@@ -525,7 +525,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     if ("cap" == propertyName) {
       // for lcaocartoons?
-      if (thisMesh != null && thisMesh.polygonCount != 0) {
+      if (thisMesh != null && thisMesh.pc != 0) {
         thisMesh.slabPolygons((Object[]) value, true);
         thisMesh.initialize(thisMesh.lighting, null, null);
         return;
@@ -535,7 +535,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       if (sg != null)
         sg.getParams().isMapped = true;
       setProperty("squareData", Boolean.FALSE, null);
-      if (thisMesh == null || thisMesh.vertexCount == 0)
+      if (thisMesh == null || thisMesh.vc == 0)
         return;
     }
 
@@ -720,14 +720,14 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   private void ensureMeshSource() {
     boolean haveColors = (thisMesh.vertexSource != null);
     if (haveColors)
-      for (int i = thisMesh.vertexCount; --i >= 0;)
+      for (int i = thisMesh.vc; --i >= 0;)
         if (thisMesh.vertexSource[i] < 0) {
           haveColors = false;
           break;
         }
     if (!haveColors) {
       int[] source = thisMesh.vertexSource;
-      short[] vertexColixes = thisMesh.vertexColixes;
+      short[] vertexColixes = thisMesh.vcs;
       short colix = (thisMesh.isColorSolid ? thisMesh.colix : 0);
       setProperty("init", null, null);
       setProperty("map", Boolean.FALSE, null);
@@ -738,11 +738,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         setProperty("color", Integer.valueOf(C.getArgb(colix)), null);
       }                      
       if (source != null) {
-        for (int i = thisMesh.vertexCount; --i >= 0;)
+        for (int i = thisMesh.vc; --i >= 0;)
           if (source[i] < 0)
             source[i] = thisMesh.vertexSource[i];
         thisMesh.vertexSource = source;
-        thisMesh.vertexColixes = vertexColixes;
+        thisMesh.vcs = vertexColixes;
       }
     }
   }
@@ -786,7 +786,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (property == "getBoundingBox") {
       String id = (String) data[0];
       IsosurfaceMesh m = (IsosurfaceMesh) getMesh(id);
-      if (m == null || m.vertices == null)
+      if (m == null || m.vs == null)
         return false;
       data[2] = m.jvxlData.boundingBox;
       if (m.mat4 != null) {
@@ -810,7 +810,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       if (index == Integer.MIN_VALUE) {
         String id = (String) data[0];
         IsosurfaceMesh m = (IsosurfaceMesh) getMesh(id);
-        if (m == null || m.vertices == null)
+        if (m == null || m.vs == null)
           return false;
         P3 p = P3.newP(m.jvxlData.boundingBox[0]);
         p.add(m.jvxlData.boundingBox[1]);
@@ -872,7 +872,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       if (property == "jvxlMeshXml" || jvxlData.vertexDataOnly || thisMesh.bsSlabDisplay != null && thisMesh.bsSlabGhost == null) {
         meshData = new MeshData();
         fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
-        meshData.polygonColorData = getPolygonColorData(meshData.polygonCount, meshData.polygonColixes, meshData.bsSlabDisplay);
+        meshData.polygonColorData = getPolygonColorData(meshData.pc, meshData.pcs, meshData.bsSlabDisplay);
       } else if (thisMesh.bsSlabGhost != null) {
         jvxlData.slabInfo = thisMesh.slabOptions.toString();
       }
@@ -913,7 +913,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     meshData.vertexSets = thisMesh.vertexSets;
     if (!isArea && thisMesh.jvxlData.colorDensity) {
       float f = thisMesh.jvxlData.voxelVolume;
-      f *= (thisMesh.bsSlabDisplay == null ? thisMesh.vertexCount : thisMesh.bsSlabDisplay.cardinality());
+      f *= (thisMesh.bsSlabDisplay == null ? thisMesh.vc : thisMesh.bsSlabDisplay.cardinality());
       return  thisMesh.calculatedVolume = Float.valueOf(f); 
     }
     Object ret = meshData.calculateVolumeOrArea(thisMesh.jvxlData.thisSet, isArea, false);
@@ -1002,7 +1002,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       if (imesh.colorCommand != null && imesh.colorType == 0 && !imesh.colorCommand.equals("#inherit;")) {
         appendCmd(sb, imesh.colorCommand);
       }
-      boolean colorArrayed = (imesh.isColorSolid && imesh.polygonColixes != null);
+      boolean colorArrayed = (imesh.isColorSolid && imesh.pcs != null);
       if (imesh.isColorSolid && imesh.colorType == 0 && !colorArrayed) {
         appendCmd(sb, getColorCommandUnk(myType, imesh.colix, translucentAllowed));
       } else if (imesh.jvxlData.isBicolorMap && imesh.colorPhased) {
@@ -1343,14 +1343,14 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     switch (mode) {
     case MeshData.MODE_GET_VERTICES:
       meshData.mergeVertexCount0 = mesh.mergeVertexCount0;
-      meshData.vertices = mesh.vertices;
+      meshData.vs = mesh.vs;
       meshData.vertexSource = mesh.vertexSource;
-      meshData.vertexValues = mesh.vertexValues;
-      meshData.vertexCount = mesh.vertexCount;
+      meshData.vvs = mesh.vvs;
+      meshData.vc = mesh.vc;
       meshData.vertexIncrement = mesh.vertexIncrement;
-      meshData.polygonCount = mesh.polygonCount;
-      meshData.polygonIndexes = mesh.polygonIndexes;
-      meshData.polygonColixes = mesh.polygonColixes;
+      meshData.pc = mesh.pc;
+      meshData.pis = mesh.pis;
+      meshData.pcs = mesh.pcs;
       meshData.bsSlabDisplay = mesh.bsSlabDisplay;
       meshData.bsSlabGhost = mesh.bsSlabGhost;
       meshData.slabColix = mesh.slabColix;
@@ -1360,10 +1360,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       meshData.slabOptions = mesh.slabOptions;
       return;
     case MeshData.MODE_GET_COLOR_INDEXES:
-      if (mesh.vertexColixes == null
-          || mesh.vertexCount > mesh.vertexColixes.length)
-        mesh.vertexColixes = new short[mesh.vertexCount];
-      meshData.vertexColixes = mesh.vertexColixes;
+      if (mesh.vcs == null
+          || mesh.vc > mesh.vcs.length)
+        mesh.vcs = new short[mesh.vc];
+      meshData.vcs = mesh.vcs;
       //meshData.polygonIndexes = null;
       return;
     case MeshData.MODE_PUT_SETS:
@@ -1372,14 +1372,14 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       mesh.nSets = meshData.nSets;
       return;
     case MeshData.MODE_PUT_VERTICES:
-      mesh.vertices = meshData.vertices;
-      mesh.vertexValues = meshData.vertexValues;
-      mesh.vertexCount = meshData.vertexCount;
+      mesh.vs = meshData.vs;
+      mesh.vvs = meshData.vvs;
+      mesh.vc = meshData.vc;
       mesh.vertexIncrement = meshData.vertexIncrement;
       mesh.vertexSource = meshData.vertexSource;
-      mesh.polygonCount = meshData.polygonCount;
-      mesh.polygonIndexes = meshData.polygonIndexes;
-      mesh.polygonColixes = meshData.polygonColixes;
+      mesh.pc = meshData.pc;
+      mesh.pis = meshData.pis;
+      mesh.pcs = meshData.pcs;
       mesh.bsSlabDisplay = meshData.bsSlabDisplay;
       mesh.bsSlabGhost = meshData.bsSlabGhost;
       mesh.slabColix = meshData.slabColix;
@@ -1487,7 +1487,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   public int addTriangleCheck(int iA, int iB, int iC, int check,
                               int check2, boolean isAbsolute, int color) {
    return (iA < 0 || iB < 0 || iC < 0 
-       || isAbsolute && !MeshData.checkCutoff(iA, iB, iC, thisMesh.vertexValues)
+       || isAbsolute && !MeshData.checkCutoff(iA, iB, iC, thisMesh.vvs)
        ? -1 : thisMesh.addTriangleCheck(iA, iB, iC, check, check2, color));
   }
 
@@ -1540,8 +1540,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     for (int i = 0; i < meshCount; i++) {
       Map<String, Object> info = new Hashtable<String, Object>();
       IsosurfaceMesh mesh = isomeshes[i];
-      if (mesh == null || mesh.vertices == null 
-          || mesh.vertexCount == 0 && mesh.polygonCount == 0)
+      if (mesh == null || mesh.vs == null 
+          || mesh.vc == 0 && mesh.pc == 0)
         continue;
       addMeshInfo(mesh, info);
       V.addLast(info);
@@ -1552,7 +1552,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   protected void addMeshInfo(IsosurfaceMesh mesh, Map<String, Object> info) {
     info.put("ID", (mesh.thisID == null ? "<noid>" : mesh.thisID));
     info.put("visible", Boolean.valueOf(mesh.visible));
-    info.put("vertexCount", Integer.valueOf(mesh.vertexCount));
+    info.put("vertexCount", Integer.valueOf(mesh.vc));
     if (mesh.calculatedVolume != null)
       info.put("volume", mesh.calculatedVolume);
     if (mesh.calculatedArea != null)
@@ -1672,7 +1672,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       IsosurfaceMesh m = isomeshes[i];
       if (!isPickable(m, bsVisible))
         continue;
-      P3[] centers = (pickFront ? m.vertices : m.getCenters());
+      P3[] centers = (pickFront ? m.vs : m.getCenters());
       if (centers == null)
         continue;
       for (int j = centers.length; --j >= 0; ) {
@@ -1702,7 +1702,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     setPropertySuper("thisID", pickedMesh.thisID, null);
     int iFace = pickedVertex = (pickFront ? jminz : jmaxz);
     P3 ptRet = new P3();
-    ptRet.setT((pickFront ? pickedMesh.vertices[pickedVertex] : ((IsosurfaceMesh)pickedMesh).centers[iFace]));
+    ptRet.setT((pickFront ? pickedMesh.vs[pickedVertex] : ((IsosurfaceMesh)pickedMesh).centers[iFace]));
     pickedModel = (short) pickedMesh.modelIndex;
     Map<String, Object> map = getPickedPoint(ptRet, pickedModel);
 //    if (pickFront) {
@@ -1866,10 +1866,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         }
         if (pickedContour != null)
           return pickedContour.get(JvxlCoder.CONTOUR_VALUE).toString() + (Logger.debugging ? " " + pickedJ : "");
-      } else if (m.jvxlData.jvxlPlane != null && m.vertexValues != null) {
+      } else if (m.jvxlData.jvxlPlane != null && m.vvs != null) {
         P3[] vertices = (m.mat4 == null && m.scale3d == 0 
-            ? m.vertices : m.getOffsetVertices(m.jvxlData.jvxlPlane)); 
-        for (int k = m.vertexCount; --k >= ilast;) {
+            ? m.vs : m.getOffsetVertices(m.jvxlData.jvxlPlane)); 
+        for (int k = m.vc; --k >= ilast;) {
           P3 v = vertices[k];
           int d2 = coordinateInRange(x, y, v, dmin2, ptXY);
           if (d2 >= 0) {
@@ -1881,9 +1881,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         }
         if (pickedVertex != -1)
           break;
-      } else if (m.vertexValues != null) {
-        for (int k = m.vertexCount; --k >= ilast;) {
-          P3 v = m.vertices[k];
+      } else if (m.vvs != null) {
+        for (int k = m.vc; --k >= ilast;) {
+          P3 v = m.vs[k];
           int d2 = coordinateInRange(x, y, v, dmin2, ptXY);
           if (d2 >= 0) {
             dmin2 = d2;
@@ -1898,7 +1898,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     }
     return (pickedVertex == -1 ? null 
         : (Logger.debugging ? "$" + m.thisID + "[" + (pickedVertex + 1) + "] "  
-            + m.vertices[pickedVertex] + ": " : m.thisID + ": ") + m.vertexValues[pickedVertex]);
+            + m.vs[pickedVertex] + ": " : m.thisID + ": ") + m.vvs[pickedVertex]);
   }
 
   @Override

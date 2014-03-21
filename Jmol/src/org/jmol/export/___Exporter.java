@@ -394,24 +394,24 @@ public abstract class ___Exporter {
     int ndeg = 10;
     int n = 360 / ndeg;
     ms.colix = colix;
-    ms.vertices = new P3[ms.vertexCount = n + 1];
-    ms.polygonIndexes = AU.newInt2(ms.polygonCount = n);
+    ms.vs = new P3[ms.vc = n + 1];
+    ms.pis = AU.newInt2(ms.pc = n);
     for (int i = 0; i < n; i++)
-      ms.polygonIndexes[i] = new int[] {i, (i + 1) % n, n };
+      ms.pis[i] = new int[] {i, (i + 1) % n, n };
     double d = ndeg / 180. * Math.PI; 
     for (int i = 0; i < n; i++) {
       float x = (float) (Math.cos(i * d));
       float y = (float) (Math.sin(i * d));
-      ms.vertices[i] = P3.new3(x, y, 0);
+      ms.vs[i] = P3.new3(x, y, 0);
     }
-    ms.vertices[n] = P3.new3(0, 0, 1);
+    ms.vs[n] = P3.new3(0, 0, 1);
     if (matRotateScale != null) {
-      ms.normals = new V3[ms.vertexCount];
-      for (int i = 0; i < ms.vertexCount; i++) {
-        matRotateScale.rotate(ms.vertices[i]);
-        ms.normals[i] = V3.newV(ms.vertices[i]);
+      ms.normals = new V3[ms.vc];
+      for (int i = 0; i < ms.vc; i++) {
+        matRotateScale.rotate(ms.vs[i]);
+        ms.normals[i] = V3.newV(ms.vs[i]);
         ms.normals[i].normalize();
-        ms.vertices[i].add(centerBase);
+        ms.vs[i].add(centerBase);
       }
     }
     return ms;
@@ -462,14 +462,14 @@ public abstract class ___Exporter {
                              short colix, boolean doFill);
 
   void drawSurface(MeshSurface meshSurface, short colix) {
-    int nVertices = meshSurface.vertexCount;
+    int nVertices = meshSurface.vc;
     if (nVertices == 0)
       return;
     int nFaces = 0;
-    int nPolygons = meshSurface.polygonCount;
+    int nPolygons = meshSurface.pc;
     BS bsPolygons = meshSurface.bsPolygons;
     int faceVertexMax = (meshSurface.haveQuads ? 4 : 3);
-    int[][] indices = meshSurface.polygonIndexes;
+    int[][] indices = meshSurface.pis;
     boolean isAll = (bsPolygons == null);
     int i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit(0));
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsPolygons.nextSetBit(i + 1)))
@@ -481,8 +481,8 @@ public abstract class ___Exporter {
     V3[] normals = (V3[]) meshSurface.normals;
 
     boolean colorSolid = (colix != 0);
-    short[] colixes = (colorSolid ? null : meshSurface.vertexColixes);
-    short[] polygonColixes = (colorSolid ? meshSurface.polygonColixes : null);
+    short[] colixes = (colorSolid ? null : meshSurface.vcs);
+    short[] polygonColixes = (colorSolid ? meshSurface.pcs : null);
 
     Map<Short, Integer> htColixes = null;
     List<Short> colorList = null;

@@ -167,7 +167,7 @@ abstract public Object getAtomSetCollectionReader(String name, String type,
 
 abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
   /**
-   * Associate a atomSetCollection object with an array of BufferedReader.
+   * Associate an atomSetCollection object with an array of BufferedReader.
    * 
    * <p>Given the array of BufferedReader, return an object which represents
    * the concatenation of every file contents. The parameter <code>name</code>

@@ -207,7 +207,7 @@ public class AminoPolymer extends AlphaPolymer {
       }
       if ((source = ((AminoMonomer) monomers[i])).getNHPoint(pt, vNH,
           checkDistances, dsspIgnoreHydrogens)) {
-        boolean isInA = (bsA == null || bsA.get(source.getNitrogenAtom().index));
+        boolean isInA = (bsA == null || bsA.get(source.getNitrogenAtom().i));
         if (!isInA)
           continue;
         // for DSSP, we also knock out all groups having no carbonyl oxygen
@@ -241,7 +241,7 @@ public class AminoPolymer extends AlphaPolymer {
       // 3mn5 GLY36->ARG37 is an example where we can have i-1 be the donor  
       AminoMonomer target = (AminoMonomer) polymer.monomers[i];
       Atom oxygen = target.getCarbonylOxygenAtom();
-      if (oxygen == null || bsB != null && !bsB.get(oxygen.index))
+      if (oxygen == null || bsB != null && !bsB.get(oxygen.i))
         continue;
       P3 targetAlphaPoint = target.getLeadAtom();
       float dist2 = sourceAlphaPoint.distanceSquared(targetAlphaPoint);

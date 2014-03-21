@@ -39,24 +39,24 @@ import javajs.util.V3;
 class AtomIterator implements JmolAdapterAtomIterator {
 	private int iatom;
 	private Atom atom;
-	private int atomCount;
+	private int ac;
 	private Atom[] atoms;
 	private BS bsAtoms;
 
-	AtomIterator(AtomSetCollection atomSetCollection) {
-		atomCount = atomSetCollection.atomCount;
-		atoms = atomSetCollection.atoms;
-		bsAtoms = atomSetCollection.bsAtoms;
+	AtomIterator(AtomSetCollection asc) {
+		ac = asc.ac;
+		atoms = asc.atoms;
+		bsAtoms = asc.bsAtoms;
 		iatom = 0;
 	}
 
 	@Override
   public boolean hasNext() {
-		if (iatom == atomCount)
+		if (iatom == ac)
 			return false;
 		while ((atom = atoms[iatom++]) == null
 				|| (bsAtoms != null && !bsAtoms.get(atom.index)))
-			if (iatom == atomCount)
+			if (iatom == ac)
 				return false;
 		atoms[iatom - 1] = null; // single pass
 		return true;

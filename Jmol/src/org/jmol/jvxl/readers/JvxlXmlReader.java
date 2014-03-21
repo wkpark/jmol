@@ -587,13 +587,13 @@ public class JvxlXmlReader extends VolumeFileReader {
     // overloads SurfaceReader
     // standard jvxl file read for color 
 
-    int vertexCount = jvxlData.vertexCount = meshData.vertexCount;
+    int vertexCount = jvxlData.vertexCount = meshData.vc;
     // the problem is that the new way to read data in Marching Cubes
     // is to ignore all points that are NaN. But then we also have to
     // remove those points from the color string. 
 
-    short[] colixes = meshData.vertexColixes;
-    float[] vertexValues = meshData.vertexValues;
+    short[] colixes = meshData.vcs;
+    float[] vertexValues = meshData.vvs;
     /*
      * haveReadColorData?
      = (isJvxl ? jvxlColorDataRead : "");
@@ -654,7 +654,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     float contourPlaneMinimumValue = Float.MAX_VALUE;
     float contourPlaneMaximumValue = -Float.MAX_VALUE;
     if (colixes == null || colixes.length < vertexCount)
-      meshData.vertexColixes = colixes = new short[vertexCount];
+      meshData.vcs = colixes = new short[vertexCount];
     //hasColorData = true;
     short colixNeg = 0, colixPos = 0;
     if (params.colorBySign) {

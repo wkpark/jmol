@@ -103,7 +103,7 @@ class CalculationsMMFF extends Calculations {
     calc = calculations[CALC_OOP] = new  List<Object[]>();
     // set up the special atom arrays
     MMFFOOPCalc oopCalc = (MMFFOOPCalc) new MMFFOOPCalc().set(this);
-    for (int i = 0; i < atomCount; i++)
+    for (int i = 0; i < ac; i++)
       if (isInvertible(minAtoms[i]))
         oopCalc.setData(calc, i);
 

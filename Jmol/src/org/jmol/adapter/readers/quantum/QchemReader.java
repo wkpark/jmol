@@ -150,11 +150,11 @@ public class QchemReader extends MOReader {
   */
 
   private void readAtoms() throws Exception {
-    atomSetCollection.newAtomSet();
+    asc.newAtomSet();
     setMOData(true);
     readLines(2);
     String[] tokens;
-    while (readLine() != null && !line.startsWith(" --")) {
+    while (rd() != null && !line.startsWith(" --")) {
       tokens = getTokens();
       if (tokens.length < 5)
         continue;
@@ -162,7 +162,7 @@ public class QchemReader extends MOReader {
       if (JmolAdapter.getElementNumber(symbol) > 0)
         addAtomXYZSymName(tokens, 2, symbol, null);
     }
-    atomSetCollection.setAtomSetModelProperty(SmarterJmolAdapter.PATH_KEY,
+    asc.setAtomSetModelProperty(SmarterJmolAdapter.PATH_KEY,
         "Calculation " + calculationNumber);
   }
   
@@ -180,35 +180,35 @@ public class QchemReader extends MOReader {
    *           If an I/O error occurs
    **/
   private void readFrequencies() throws Exception, IOException {
-    while (readLine() != null && line.indexOf("STANDARD") < 0) {
+    while (rd() != null && line.indexOf("STANDARD") < 0) {
       if (!line.startsWith(" Frequency:"))
         discardLinesUntilStartsWith(" Frequency:");
       String[] frequencies = getTokens();
       int frequencyCount = frequencies.length - 1;
       boolean[] ignore = new boolean[frequencyCount];
-      int atomCount = atomSetCollection.getLastAtomSetAtomCount();
-      int iAtom0 = atomSetCollection.atomCount;
+      int ac = asc.getLastAtomSetAtomCount();
+      int iAtom0 = asc.ac;
       for (int i = 0; i < frequencyCount; ++i) {
         ignore[i] = !doGetVibration(++vibrationNumber);
         if (ignore[i])
           continue;
-        atomSetCollection.cloneLastAtomSet();
-        atomSetCollection.setAtomSetFrequency("Calculation " + calculationNumber, 
+        asc.cloneLastAtomSet();
+        asc.setAtomSetFrequency("Calculation " + calculationNumber, 
             null, frequencies[i + 1], null);
       }
 
       // position to start reading the displacement vectors
       discardLinesUntilStartsWith("               X");
-      fillFrequencyData(iAtom0, atomCount, atomCount, ignore, true, 0, 0, null, 0);
+      fillFrequencyData(iAtom0, ac, ac, ignore, true, 0, 0, null, 0);
       discardLinesUntilBlank();
     }
   }
 
   private void readPartialCharges() throws Exception {
     readLines(3);
-    Atom[] atoms = atomSetCollection.atoms;
-    int atomCount = atomSetCollection.getLastAtomSetAtomCount();
-    for (int i = 0; i < atomCount && readLine() != null; ++i)
+    Atom[] atoms = asc.atoms;
+    int ac = asc.getLastAtomSetAtomCount();
+    for (int i = 0; i < ac && rd() != null; ++i)
       atoms[i].partialCharge = parseFloatStr(getTokens()[2]);
   }
 
@@ -265,7 +265,7 @@ $end
   private void readBasis() throws Exception {
     // initialize the 'global' variables
     moData = new Hashtable<String, Object>();
-    int atomCount = 0;
+    int ac = 0;
     int shellCount = 0;
     int gaussianCount = 0;
     // local variables
@@ -274,17 +274,17 @@ $end
     String[] tokens;
 
     discardLinesUntilStartsWith("$basis");
-    readLine(); // read the atom line
-    while (readLine() != null) {  // read shell line
+    rd(); // read the atom line
+    while (rd() != null) {  // read shell line
       if (line.startsWith("****")) {
-        atomCount++;           // end of basis for an atom
-        if (readLine() != null && line.startsWith("$end")) break;
+        ac++;           // end of basis for an atom
+        if (rd() != null && line.startsWith("$end")) break;
         continue; // atom line has been read
       }
       shellCount++;
       int[] slater = new int[4];
       tokens = getTokensStr(line);
-      slater[0] = atomCount;
+      slater[0] = ac;
       slater[1] = JmolAdapter.getQuantumShellTagID(tokens[0]); // default cartesian
       slater[2] = gaussianCount;
       int nGaussians = parseIntStr(tokens[1]);
@@ -292,7 +292,7 @@ $end
       shells.addLast(slater);
       gaussianCount += nGaussians;
       for (int i = 0; i < nGaussians; i++) {
-        gdata.addLast(getTokensStr(readLine()));
+        gdata.addLast(getTokensStr(rd()));
       }
     }
     // now rearrange the gaussians (direct copy from GaussianReader)
@@ -451,14 +451,14 @@ $end
     moInfos = alphas;
     for (int e = 0; e < 2; e++) { // do for A and B electrons
       int nMO = 0;
-      while (readLine() != null) { // will break out of loop
+      while (rd() != null) { // will break out of loop
         if (line.startsWith(" -- ")) {
           ne = 0;
           if (line.indexOf("Vacant") < 0) {
             if (line.indexOf("Occupied") > 0)
               ne = 1;
           }
-          readLine();
+          rd();
         }
         if (line.startsWith(" -------")) {
           e = 2; // pretend I did read beta whether it happened or not
@@ -472,7 +472,7 @@ $end
           break;
         }
         if (haveSym)
-          tokens = getTokensStr(readLine());
+          tokens = getTokensStr(rd());
         for (int i = 0, j = 0; i < nOrbs; i++, j += 2) {
           MOInfo info = new MOInfo();
           info.ne = ne;
@@ -615,17 +615,17 @@ $end
     String[] tokens, energy;
     int nMOs = 0;
 
-    while (readLine().length() > 2) {
+    while (rd().length() > 2) {
       tokens = getTokensStr(line);
       int nMO = tokens.length; // number of MO columns
-      energy = getTokensStr(readLine().substring(13));
+      energy = getTokensStr(rd().substring(13));
       for (int i = 0; i < nMO; i++) {
         moid[i] = parseIntStr(tokens[i]) - 1;
         mocoef[i] = new float[nBasis];
         mos[i] = new Hashtable<String, Object>();
       }
       for (int i = 0, pt = 0; i < nBasis; i++) {
-        tokens = getTokensStr(readLine());
+        tokens = getTokensStr(rd());
         String s = line.substring(12, 17).trim(); // collect the shell labels
         char ch = s.charAt(0);
         switch (ch) {

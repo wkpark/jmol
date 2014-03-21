@@ -92,7 +92,7 @@ public class Group {
   }
 
   public void setModelSet(ModelSet modelSet) {
-    chain.model.modelSet = modelSet;  
+    chain.model.ms = modelSet;  
   }
   
   public final void setShapeVisibility(int visFlag, boolean isVisible) {
@@ -317,15 +317,15 @@ public class Group {
   }
 
   protected float scaleToScreen(int Z, int mar) {
-    return chain.model.modelSet.vwr.scaleToScreen(Z, mar);
+    return chain.model.ms.vwr.scaleToScreen(Z, mar);
   }
   
   protected boolean isCursorOnTopOf(Atom atom, int x, int y, int radius, Atom champ) {
-    return chain.model.modelSet.isCursorOnTopOf(atom , x, y, radius, champ);
+    return chain.model.ms.isCursorOnTopOf(atom , x, y, radius, champ);
   }
   
   protected boolean isAtomHidden(int atomIndex) {
-    return chain.model.modelSet.isAtomHidden(atomIndex);
+    return chain.model.ms.isAtomHidden(atomIndex);
   }
 
   /**
@@ -488,8 +488,8 @@ public class Group {
     infoGroup.put("_apt2", Integer.valueOf(lastAtomIndex));
     if (bsAdded != null)
     infoGroup.put("addedAtoms", bsAdded);
-    infoGroup.put("atomInfo1", chain.model.modelSet.getAtomInfo(firstAtomIndex, null));
-    infoGroup.put("atomInfo2", chain.model.modelSet.getAtomInfo(lastAtomIndex, null));
+    infoGroup.put("atomInfo1", chain.model.ms.getAtomInfo(firstAtomIndex, null));
+    infoGroup.put("atomInfo2", chain.model.ms.getAtomInfo(lastAtomIndex, null));
     infoGroup.put("visibilityFlags", Integer.valueOf(shapeVisibilityFlags));
     return infoGroup;
   }

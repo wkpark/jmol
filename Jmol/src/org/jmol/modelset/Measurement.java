@@ -52,7 +52,7 @@ public class Measurement {
    */
   
   public String thisID;
-  public ModelSet modelSet;
+  public ModelSet ms;
   public int index;
   public boolean isVisible = true;
   public boolean isHidden = false;
@@ -89,7 +89,7 @@ public class Measurement {
   public Measurement setM(ModelSet modelSet, Measurement m, float value, short colix,
                           String strFormat, int index) {
     //value Float.isNaN ==> pending
-    this.modelSet = modelSet;
+    this.ms = modelSet;
     this.index = index;
     this.vwr = modelSet.vwr;
     this.colix = colix;
@@ -119,7 +119,7 @@ public class Measurement {
   public Measurement setPoints(ModelSet modelSet, int[] indices, Point3fi[] points,
       TickInfo tickInfo) {
     // temporary holding structure only; -- no vwr
-    this.modelSet = modelSet;
+    this.ms = modelSet;
     countPlusIndices = indices;
     count = indices[0];
     this.pts = (points == null ? new Point3fi[4] : points);
@@ -142,7 +142,7 @@ public class Measurement {
 
   public Point3fi getAtom(int n) {
     int pt = countPlusIndices[n];
-    return (pt < -1 ? pts[-2 - pt] : modelSet.atoms[pt]);
+    return (pt < -1 ? pts[-2 - pt] : ms.at[pt]);
   }
 
   public int getLastIndex() {
@@ -169,7 +169,7 @@ public class Measurement {
 
   public void refresh(Point3fi[] pts) {
     value = getMeasurement(pts);
-    isTrajectory = modelSet.isTrajectoryMeasurement(countPlusIndices);
+    isTrajectory = ms.isTrajectoryMeasurement(countPlusIndices);
     formatMeasurement(null);
   }
 
@@ -416,7 +416,7 @@ public class Measurement {
     // double parens here because of situations like
     //  draw symop({3}), which the compiler will interpret as symop()
     return (atomIndex < 0 ? (withModelIndex ? "modelIndex "
-        + getAtom(i).modelIndex + " " : "")
+        + getAtom(i).mi + " " : "")
         + Escape.eP(getAtom(i)) : asBitSet ? "(({" + atomIndex + "}))" : vwr
         .getAtomInfo(atomIndex));
   }
@@ -426,7 +426,7 @@ public class Measurement {
       return;
     for (int i = 0; i < count; i++) {
       if (pts[i] != null)
-        pts[i].modelIndex = modelIndex;
+        pts[i].mi = modelIndex;
     }
   }
 

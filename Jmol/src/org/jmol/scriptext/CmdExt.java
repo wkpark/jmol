@@ -1036,12 +1036,12 @@ public class CmdExt implements JmolCmdExtension {
       String smarts = stringParameter(slen == 3 ? 2 : 4);
       if (chk)
         return;
-      Atom[] atoms = vwr.ms.atoms;
-      int atomCount = vwr.getAtomCount();
+      Atom[] atoms = vwr.ms.at;
+      int ac = vwr.getAtomCount();
       int[][] maps = null;
       try {
         maps = vwr.getSmilesMatcher().getCorrelationMaps(smarts, atoms,
-            atomCount, vwr.getSelectedAtoms(), true, false);
+            ac, vwr.getSelectedAtoms(), true, false);
       } catch (Exception ex) {
         eval.evalError(ex.getMessage(), null);
       }
@@ -1256,7 +1256,7 @@ public class CmdExt implements JmolCmdExtension {
         if (value instanceof P3) {
           Point3fi v = new Point3fi();
           v.setT((P3) value);
-          v.modelIndex = (short) modelIndex;
+          v.mi = (short) modelIndex;
           value = v;
         }
         if ((nAtoms = ++expressionCount) > 4)
@@ -2563,16 +2563,16 @@ public class CmdExt implements JmolCmdExtension {
         atomNumberField = 0;
       if (propertyField < 0)
         propertyField = 0;
-      int atomCount = vwr.getAtomCount();
+      int ac = vwr.getAtomCount();
       int[] atomMap = null;
-      BS bsTemp = BS.newN(atomCount);
+      BS bsTemp = BS.newN(ac);
       if (atomNumberField > 0) {
-        atomMap = new int[atomCount + 2];
-        for (int j = 0; j <= atomCount; j++)
+        atomMap = new int[ac + 2];
+        for (int j = 0; j <= ac; j++)
           atomMap[j] = -1;
         for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1)) {
           int atomNo = vwr.getAtomNumber(j);
-          if (atomNo > atomCount + 1 || atomNo < 0 || bsTemp.get(atomNo))
+          if (atomNo > ac + 1 || atomNo < 0 || bsTemp.get(atomNo))
             continue;
           bsTemp.set(atomNo);
           atomMap[atomNo] = j;
@@ -2583,7 +2583,7 @@ public class CmdExt implements JmolCmdExtension {
       }
       d[1] = dataString;
       d[3] = Integer.valueOf(0);
-      vwr.setData(dataType, d, atomCount, atomNumberField,
+      vwr.setData(dataType, d, ac, atomNumberField,
           atomNumberFieldColumnCount, propertyField, propertyFieldColumnCount);
       return;
     }
@@ -3064,15 +3064,15 @@ public class CmdExt implements JmolCmdExtension {
           continue;
         }
 
-        int atomCount = vwr.getAtomCount();
-        data = new float[atomCount];
+        int ac = vwr.getAtomCount();
+        data = new float[ac];
 
         if (isVariable) {
           String vname = paramAsStr(++i);
           if (vname.length() == 0) {
-            data = eval.floatParameterSet(i, atomCount, atomCount);
+            data = eval.floatParameterSet(i, ac, ac);
           } else {
-            data = new float[atomCount];
+            data = new float[ac];
             if (!chk)
               Parser.parseStringInfestedFloatArray(
                   "" + eval.getParameter(vname, T.string), null, data);
@@ -3083,10 +3083,10 @@ public class CmdExt implements JmolCmdExtension {
           getToken(++i);
           if (!chk) {
             sbCommand.append(" " + eval.theToken.value);
-            Atom[] atoms = vwr.ms.atoms;
+            Atom[] atoms = vwr.ms.at;
             vwr.autoCalculate(tokProperty);
             if (tokProperty != T.color)
-              for (int iAtom = atomCount; --iAtom >= 0;)
+              for (int iAtom = ac; --iAtom >= 0;)
                 data[iAtom] = Atom.atomPropertyFloat(vwr, atoms[iAtom],
                     tokProperty);
           }
@@ -6892,29 +6892,29 @@ public class CmdExt implements JmolCmdExtension {
   private void assignAtom(int atomIndex, P3 pt, String type) {
     if (type.equals("X"))
       vwr.setRotateBondIndex(-1);
-    if (vwr.ms.atoms[atomIndex].modelIndex != vwr.ms.modelCount - 1)
+    if (vwr.ms.at[atomIndex].mi != vwr.ms.mc - 1)
       return;
     vwr.clearModelDependentObjects();
-    int atomCount = vwr.ms.getAtomCount();
+    int ac = vwr.ms.getAtomCount();
     if (pt == null) {
-      vwr.statusManager.modifySend(atomIndex,
-          vwr.ms.atoms[atomIndex].modelIndex, 1, e.fullCommand);
+      vwr.sm.modifySend(atomIndex,
+          vwr.ms.at[atomIndex].mi, 1, e.fullCommand);
       // After this next command, vwr.modelSet will be a different instance
       vwr.ms.assignAtom(atomIndex, type, true);
       if (!PT.isOneOf(type, ";Mi;Pl;X;"))
-        vwr.ms.setAtomNamesAndNumbers(atomIndex, -atomCount, null);
-      vwr.statusManager.modifySend(atomIndex,
-          vwr.ms.atoms[atomIndex].modelIndex, -1, "OK");
+        vwr.ms.setAtomNamesAndNumbers(atomIndex, -ac, null);
+      vwr.sm.modifySend(atomIndex,
+          vwr.ms.at[atomIndex].mi, -1, "OK");
       vwr.refresh(3, "assignAtom");
       return;
     }
-    Atom atom = vwr.ms.atoms[atomIndex];
+    Atom atom = vwr.ms.at[atomIndex];
     BS bs = BSUtil.newAndSetBit(atomIndex);
     P3[] pts = new P3[] { pt };
     List<Atom> vConnections = new List<Atom>();
     vConnections.addLast(atom);
-    int modelIndex = atom.modelIndex;
-    vwr.statusManager.modifySend(atomIndex, modelIndex, 3, e.fullCommand);
+    int modelIndex = atom.mi;
+    vwr.sm.modifySend(atomIndex, modelIndex, 3, e.fullCommand);
     try {
       bs = vwr.addHydrogensInline(bs, vConnections, pts);
       // new ModelSet here
@@ -6923,27 +6923,27 @@ public class CmdExt implements JmolCmdExtension {
     } catch (Exception ex) {
       //
     }
-    vwr.ms.setAtomNamesAndNumbers(atomIndex, -atomCount, null);
-    vwr.statusManager.modifySend(atomIndex, modelIndex, -3, "OK");
+    vwr.ms.setAtomNamesAndNumbers(atomIndex, -ac, null);
+    vwr.sm.modifySend(atomIndex, modelIndex, -3, "OK");
   }
 
   private void assignBond(int bondIndex, char type) {
     int modelIndex = -1;
     try {
       ModelSet modelSet = vwr.ms;
-      modelIndex = vwr.getAtomModelIndex(modelSet.bonds[bondIndex]
+      modelIndex = vwr.getAtomModelIndex(modelSet.bo[bondIndex]
           .getAtomIndex1());
-      vwr.statusManager.modifySend(bondIndex, modelIndex, 2,
+      vwr.sm.modifySend(bondIndex, modelIndex, 2,
           e.fullCommand);
       BS bsAtoms = modelSet.setBondOrder(bondIndex, type);
       if (bsAtoms == null || type == '0')
         vwr.refresh(3, "setBondOrder");
       else
         vwr.addHydrogens(bsAtoms, false, true);
-      vwr.statusManager.modifySend(bondIndex, modelIndex, -2, "" + type);
+      vwr.sm.modifySend(bondIndex, modelIndex, -2, "" + type);
     } catch (Exception ex) {
       Logger.error("assignBond failed");
-      vwr.statusManager.modifySend(bondIndex, modelIndex, -2, "ERROR " + ex);
+      vwr.sm.modifySend(bondIndex, modelIndex, -2, "ERROR " + ex);
     }
   }
 
@@ -6952,12 +6952,12 @@ public class CmdExt implements JmolCmdExtension {
     ModelSet modelSet = vwr.ms;
     float[][] connections = AU.newFloat2(1);
     connections[0] = new float[] { index, index2 };
-    int modelIndex = modelSet.atoms[index].modelIndex;
-    vwr.statusManager.modifySend(index, modelIndex, 2, e.fullCommand);
+    int modelIndex = modelSet.at[index].mi;
+    vwr.sm.modifySend(index, modelIndex, 2, e.fullCommand);
     modelSet.connect(connections);
     modelSet.assignAtom(index, ".", true);
     modelSet.assignAtom(index2, ".", true);
-    vwr.statusManager.modifySend(index, modelIndex, -2, "OK");
+    vwr.sm.modifySend(index, modelIndex, -2, "OK");
     vwr.refresh(3, "assignConnect");
   }
 
@@ -7008,7 +7008,7 @@ public class CmdExt implements JmolCmdExtension {
     m.set(vwr);
     String data = (fileName == null ? null : vwr.getFileAsString(fileName,
         false));
-    m.assignPotentials(vwr.ms.atoms, potentials, vwr
+    m.assignPotentials(vwr.ms.at, potentials, vwr
         .getSmartsMatch("a", bsSelected), vwr.getSmartsMatch(
         "/noAromatic/[$(C=O),$(O=C),$(NC=O)]", bsSelected), bsIgnore, data);
     return potentials;
@@ -7129,7 +7129,7 @@ public class CmdExt implements JmolCmdExtension {
           if (chk || !(eval.expressionResult instanceof BS)) {
             pts = new P3[] { pt };
           } else {
-            Atom[] atoms = vwr.ms.atoms;
+            Atom[] atoms = vwr.ms.at;
             bs = (BS) eval.expressionResult;
             pts = new P3[bs.cardinality()];
             for (int k = 0, j = bs.nextSetBit(0); j >= 0; j = bs
@@ -7689,9 +7689,9 @@ public class CmdExt implements JmolCmdExtension {
       String str;
       if (isAtoms) {
         if (asIdentity)
-          str = modelSet.atoms[j].getInfo();
+          str = modelSet.at[j].getInfo();
         else
-          str = labeler.formatLabelAtomArray(vwr, modelSet.atoms[j], tokens,
+          str = labeler.formatLabelAtomArray(vwr, modelSet.at[j], tokens,
               '\0', indices);
       } else {
         Bond bond = modelSet.getBondAt(j);

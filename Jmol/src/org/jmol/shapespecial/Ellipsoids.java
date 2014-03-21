@@ -66,7 +66,7 @@ public class Ellipsoids extends Shape {
 
   @Override
   protected void setSize(int size, BS bsSelected) {
-    if (modelSet.atoms == null || size == 0 && modelSet.atomTensors == null)
+    if (ms.at == null || size == 0 && ms.atomTensors == null)
       return;
     boolean isAll = (bsSelected == null);
     if (!isAll && selectedAtoms != null)
@@ -74,7 +74,7 @@ public class Ellipsoids extends Shape {
     List<Object> tensors = vwr.ms.getAllAtomTensors(typeSelected);
     if (tensors == null)
       return;
-    Atom[] atoms = modelSet.atoms;
+    Atom[] atoms = ms.at;
     for (int i = tensors.size(); --i >= 0;) {
       Tensor t = (Tensor) tensors.get(i);
       if (isAll || t.isSelected(bsSelected, -1)) {
@@ -377,11 +377,11 @@ private boolean initEllipsoids(Object value) {
      */
     if (!isActive())
       return;
-    Atom[] atoms = vwr.ms.atoms;
+    Atom[] atoms = vwr.ms.at;
     setVis(simpleEllipsoids, bs, atoms);
     if (atomEllipsoids != null)
       for (int i = atoms.length; --i >= 0;)
-        atoms[i].setShapeVisibility(myVisibilityFlag, false);
+        atoms[i].setShapeVisibility(vf, false);
     setVis(atomEllipsoids, bs, atoms);
   }
 
@@ -393,10 +393,10 @@ private boolean initEllipsoids(Object value) {
         if (t.iType == Tensor.TYPE_ADP) {
           boolean isModTensor = t.isModulated;
           boolean isUnmodTensor = t.isUnmodulated;
-          boolean isModAtom = modelSet.isModulated(t.atomIndex1);
+          boolean isModAtom = ms.isModulated(t.atomIndex1);
           isOK =(!isModTensor && !isUnmodTensor || isModTensor == isModAtom);
         }
-        atoms[t.atomIndex1].setShapeVisibility(myVisibilityFlag, true);
+        atoms[t.atomIndex1].setShapeVisibility(vf, true);
       }
       e.visible = isOK && e.isValid && e.isOn
       && (e.modelIndex < 0 || bs.get(e.modelIndex));
@@ -409,11 +409,11 @@ private boolean initEllipsoids(Object value) {
       return;
     for (Ellipsoid e: atomEllipsoids.values()) {
       int i = e.tensor.atomIndex1;
-      Atom atom = modelSet.atoms[i];
-      if ((atom.shapeVisibilityFlags & myVisibilityFlag) == 0
-          || modelSet.isAtomHidden(i))
+      Atom atom = ms.at[i];
+      if ((atom.shapeVisibilityFlags & vf) == 0
+          || ms.isAtomHidden(i))
         continue;
-      atom.setClickable(myVisibilityFlag);
+      atom.setClickable(vf);
     }
   }
 

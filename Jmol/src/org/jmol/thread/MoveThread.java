@@ -78,7 +78,7 @@ public class MoveThread extends JmolThread {
     radiansXStep = radiansPerDegreePerStep * dRot.x;
     radiansYStep = radiansPerDegreePerStep * dRot.y;
     radiansZStep = radiansPerDegreePerStep * dRot.z;
-    zoomPercent0 = transformManager.zoomPercent;
+    zoomPercent0 = transformManager.zmPct;
     iStep = 0;
     return totalSteps;
   }

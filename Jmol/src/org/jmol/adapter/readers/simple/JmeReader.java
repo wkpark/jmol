@@ -64,23 +64,23 @@ public class JmeReader extends AtomSetCollectionReader {
 
   @Override
   public void initializeReader() throws Exception {
-    atomSetCollection.setCollectionName("JME");
-    atomSetCollection.newAtomSet();
-    line = readLine().replace('\t', ' ');
+    asc.setCollectionName("JME");
+    asc.newAtomSet();
+    line = rd().replace('\t', ' ');
     checkCurrentLineForScript();
     addJmolScript("jmeString='" + line + "'");
-    int atomCount = parseInt();
+    int ac = parseInt();
     int bondCount = parseInt();
-    readAtoms(atomCount);
+    readAtoms(ac);
     readBonds(bondCount);
     set2D();
     continuing = false;
   }
 
-  private void readAtoms(int atomCount) throws Exception {
-    for (int i = 0; i < atomCount; ++i) {
+  private void readAtoms(int ac) throws Exception {
+    for (int i = 0; i < ac; ++i) {
       String strAtom = parseToken();
-      Atom atom = atomSetCollection.addNewAtom();
+      Atom atom = asc.addNewAtom();
       setAtomCoordXYZ(atom, parseFloat(), parseFloat(), 0);
       int indexColon = strAtom.indexOf(':');
       String elementSymbol = (indexColon > 0 ? strAtom.substring(0, indexColon)
@@ -97,8 +97,8 @@ public class JmeReader extends AtomSetCollectionReader {
     /*
     if (!doMinimize)
       return;
-    Atom[] atoms = atomSetCollection.atoms;
-    for (int i = 0; i < atomCount; i++) {
+    Atom[] atoms = asc.atoms;
+    for (int i = 0; i < ac; i++) {
       atoms[i].z += ((i % 2) == 0 ? 0.05f : -0.05f);
     }
     */
@@ -123,7 +123,7 @@ public class JmeReader extends AtomSetCollectionReader {
         order = JmolAdapter.ORDER_STEREO_FAR;
         break;
       }
-      atomSetCollection.addBond(new Bond(atomIndex1, atomIndex2, order));
+      asc.addBond(new Bond(atomIndex1, atomIndex2, order));
     }
   }
 }

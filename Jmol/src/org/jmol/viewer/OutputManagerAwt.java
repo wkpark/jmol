@@ -90,7 +90,7 @@ final public class OutputManagerAwt extends OutputManager {
       asAppend = false;
     return (fileName != null && !vwr.haveAccess(ACCESS.ALL)
         || !vwr.checkPrivateKey(privateKey) ? null
-        : (new OC()).setParams(vwr.fileManager, fileName, asWriter,
+        : (new OC()).setParams(vwr.fm, fileName, asWriter,
             (isLocal ? new FileOutputStream(fileName, asAppend) : null)));
   }
 
@@ -110,7 +110,7 @@ final public class OutputManagerAwt extends OutputManager {
     if (Logger.debugging)
       Logger.debug(script);
     script0 = PT.rep(script0, "pause scene", "delay "
-        + vwr.animationManager.lastFrameDelay + " # scene");
+        + vwr.am.lastFrameDelay + " # scene");
     String[] str = new String[] { script0, script, null };
     vwr.saveState("_scene0");
     int nFiles = 0;

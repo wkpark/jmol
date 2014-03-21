@@ -72,7 +72,7 @@ abstract class Calculations {
     return ffParams.get(o);
   }
 
-  int atomCount;
+  int ac;
   int bondCount;
   int angleCount;
   int torsionCount;
@@ -98,7 +98,7 @@ abstract class Calculations {
     this.minAngles = minAngles;
     this.minTorsions = minTorsions;
     this.minPositions = minPositions;
-    atomCount = minAtoms.length;
+    ac = minAtoms.length;
     bondCount = minBonds.length;
     angleCount = minAngles.length;
     torsionCount = minTorsions.length;
@@ -150,7 +150,7 @@ abstract class Calculations {
 
   protected void pairSearch(List<Object[]> calc1, Calculation pc1, 
                             List<Object[]> calc2, Calculation pc2) {
-    for (int i = 0; i < atomCount - 1; i++) {
+    for (int i = 0; i < ac - 1; i++) {
       BS bsVdw = minAtoms[i].bsVdw;
       for (int j = bsVdw.nextSetBit(0); j >= 0; j = bsVdw.nextSetBit(j + 1)) {
         pc1.setData(calc1, i, j, 0);
@@ -387,7 +387,7 @@ abstract class Calculations {
         + " ATOM    X        Y        Z    TYPE     GRADX    GRADY    GRADZ  "
         + "---------BONDED ATOMS--------\n"
         + trailer);
-    for (int i = 0; i < atomCount; i++) {
+    for (int i = 0; i < ac; i++) {
       MinAtom atom = minAtoms[i];
       int[] others = atom.getBondedAtomIndexes();
       int[] iVal = new int[others.length + 1];

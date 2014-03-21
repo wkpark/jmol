@@ -47,7 +47,7 @@ class SpartanArchive {
   // It's not a reader, but it needs the capabilities of BasisFunctionReader
   
 
-  private int atomCount = 0;
+  private int ac = 0;
   private String bondData; // not in archive; may or may not have
   private int moCount = 0;
   private int coefCount = 0;
@@ -74,15 +74,15 @@ class SpartanArchive {
   }
 
   int readArchive(String infoLine, boolean haveGeometryLine, 
-                  int atomCount0, boolean doAddAtoms) throws Exception {
+                  int ac0, boolean doAddAtoms) throws Exception {
     modelAtomCount = setInfo(infoLine);
     line = (haveGeometryLine ? "GEOMETRY" : "");
     boolean haveMOData = false;
     while (line != null) {
       if (line.equals("GEOMETRY")) {
-        readAtoms(atomCount0, doAddAtoms);
+        readAtoms(ac0, doAddAtoms);
         if (doAddAtoms && bondData.length() > 0)
-          addBonds(bondData, atomCount0);
+          addBonds(bondData, ac0);
       } else if (line.indexOf("BASIS") == 0) {
         readBasis();
       } else if (line.indexOf("WAVEFUNC") == 0 || line.indexOf("BETA") == 0) {
@@ -101,18 +101,18 @@ class SpartanArchive {
     }
     if (haveMOData)
       r.finalizeMOData(r.moData);
-    return atomCount;
+    return ac;
   }
 
   private void readEnergy() throws Exception {
     String[] tokens = getTokens(readLine());
     float value = parseFloat(tokens[0]);
-    r.atomSetCollection.setAtomSetAuxiliaryInfo("energy", Float.valueOf(value));
+    r.asc.setAtomSetAuxiliaryInfo("energy", Float.valueOf(value));
     if (r instanceof SpartanSmolReader) {
       String prefix = ((SpartanSmolReader)r).constraints;
-      r.atomSetCollection.setAtomSetName(prefix + (prefix.length() == 0 ? "" : " ") + "Energy=" + value + " KJ");
+      r.asc.setAtomSetName(prefix + (prefix.length() == 0 ? "" : " ") + "Energy=" + value + " KJ");
     }
-    r.atomSetCollection.setAtomSetEnergy(tokens[0], value);
+    r.asc.setAtomSetEnergy(tokens[0], value);
   }
 
   private int modelAtomCount;
@@ -141,21 +141,21 @@ class SpartanArchive {
     return modelAtomCount;
   }
 
-  private void readAtoms(int atomCount0, boolean doAddAtoms) throws Exception {
+  private void readAtoms(int ac0, boolean doAddAtoms) throws Exception {
     for (int i = 0; i < modelAtomCount; i++) {
       String tokens[] = getTokens(readLine());
-      Atom atom = (doAddAtoms ? r.atomSetCollection.addNewAtom()
-          : r.atomSetCollection.atoms[atomCount0 - modelAtomCount + i]);
+      Atom atom = (doAddAtoms ? r.asc.addNewAtom()
+          : r.asc.atoms[ac0 - modelAtomCount + i]);
       atom.elementSymbol = AtomSetCollectionReader
           .getElementSymbol(parseInt(tokens[0]));
       r.setAtomCoordScaled(atom, tokens, 1, AtomSetCollectionReader.ANGSTROMS_PER_BOHR);
     }
     if (doAddAtoms && Logger.debugging) {
-      Logger.debug(atomCount + " atoms read");
+      Logger.debug(ac + " atoms read");
     }
   }
 
-  void addBonds(String data, int atomCount0) {
+  void addBonds(String data, int ac0) {
     /* from cached data:
      
      <one number per atom>
@@ -170,15 +170,15 @@ class SpartanArchive {
 
     String tokens[] = getTokens(data);
     for (int i = modelAtomCount; i < tokens.length;) {
-      int sourceIndex = parseInt(tokens[i++]) - 1 + atomCount0;
-      int targetIndex = parseInt(tokens[i++]) - 1 + atomCount0;
+      int sourceIndex = parseInt(tokens[i++]) - 1 + ac0;
+      int targetIndex = parseInt(tokens[i++]) - 1 + ac0;
       int bondOrder = parseInt(tokens[i++]);
       if (bondOrder > 0) {
-        r.atomSetCollection.addBond(new Bond(sourceIndex, targetIndex,
+        r.asc.addBond(new Bond(sourceIndex, targetIndex,
             bondOrder < 4 ? bondOrder : bondOrder == 5 ? JmolAdapter.ORDER_AROMATIC : 1));
       }
     }
-    int bondCount = r.atomSetCollection.bondCount;
+    int bondCount = r.asc.bondCount;
     if (Logger.debugging) {
       Logger.debug(bondCount + " bonds read");
     }
@@ -397,7 +397,7 @@ class SpartanArchive {
       return;
     V3 dipole = V3.new3(parseFloat(tokens[0]),
         parseFloat(tokens[1]), parseFloat(tokens[2]));
-    r.atomSetCollection.setAtomSetAuxiliaryInfo("dipole", dipole);
+    r.asc.setAtomSetAuxiliaryInfo("dipole", dipole);
   }
 
   private void readProperty() throws Exception {
@@ -454,9 +454,9 @@ class SpartanArchive {
     }
     //Logger.debug(keyName + " = " + value + " ; " + vector);
     if (value != null)
-      r.atomSetCollection.setAtomSetCollectionAuxiliaryInfo(keyName, value);
+      r.asc.setAtomSetCollectionAuxiliaryInfo(keyName, value);
     if (vector.size() != 0)
-      r.atomSetCollection.setAtomSetCollectionAuxiliaryInfo(keyName, vector);
+      r.asc.setAtomSetCollectionAuxiliaryInfo(keyName, vector);
   }
 
   // Logger.debug("reading property line:" + line);
@@ -473,11 +473,11 @@ class SpartanArchive {
     }
     boolean[] ignore = new boolean[frequencyCount];
     for (int i = 0; i < frequencyCount; ++i) {
-      int atomCount0 = r.atomSetCollection.atomCount;
+      int ac0 = r.asc.ac;
       ignore[i] = !r.doGetVibration(i + 1);
       if (!ignore[i] && r.desiredVibrationNumber <= 0) {
-        r.atomSetCollection.cloneLastAtomSet();
-        addBonds(bondData, atomCount0);
+        r.asc.cloneLastAtomSet();
+        addBonds(bondData, ac0);
       }
       readLine();
       Map<String, Object> info = new Hashtable<String, Object>();
@@ -488,15 +488,15 @@ class SpartanArchive {
         info.put("label", label);
       freqs.addLast(info);
       if (!ignore[i]) {
-        r.atomSetCollection.setAtomSetFrequency(null, label, "" + freq, null);
+        r.asc.setAtomSetFrequency(null, label, "" + freq, null);
       }
     }
-    r.atomSetCollection.setAtomSetCollectionAuxiliaryInfo("VibFreqs", freqs);
-    int atomCount = r.atomSetCollection.getFirstAtomSetAtomCount();
+    r.asc.setAtomSetCollectionAuxiliaryInfo("VibFreqs", freqs);
+    int ac = r.asc.getFirstAtomSetAtomCount();
     List<List<Float>> vib = new  List<List<Float>>();
     List<Float> vibatom = new  List<Float>();
     int ifreq = 0;
-    int iatom = atomCount;
+    int iatom = ac;
     int nValues = 3;
     float[] atomInfo = new float[3];
     while (readLine() != null) {
@@ -507,14 +507,14 @@ class SpartanArchive {
         vibatom.addLast(Float.valueOf(f));
         if ((i + 1) % nValues == 0) {
           if (!ignore[ifreq]) {
-            r.atomSetCollection.addVibrationVector(iatom, atomInfo[0], atomInfo[1], atomInfo[2]);
+            r.asc.addVibrationVector(iatom, atomInfo[0], atomInfo[1], atomInfo[2]);
             vib.addLast(vibatom);
             vibatom = new  List<Float>();
           }
           ++iatom;
         }
       }
-      if (iatom % atomCount == 0) {
+      if (iatom % ac == 0) {
         if (!ignore[ifreq]) {
           vibrations.addLast(vib);
         }
@@ -524,17 +524,17 @@ class SpartanArchive {
         }
       }
     }
-    r.atomSetCollection.setAtomSetCollectionAuxiliaryInfo("vibration", vibrations);
+    r.asc.setAtomSetCollectionAuxiliaryInfo("vibration", vibrations);
   }
 
   @SuppressWarnings("unchecked")
   private void setVibrationsFromProperties() throws Exception {
-    List<List<Float>> freq_modes = (List<List<Float>>) r.atomSetCollection.getAtomSetCollectionAuxiliaryInfo("FREQ_MODES");
+    List<List<Float>> freq_modes = (List<List<Float>>) r.asc.getAtomSetCollectionAuxiliaryInfo("FREQ_MODES");
     if (freq_modes == null) {
       return;
     }
-    List<String> freq_lab = (List<String>) r.atomSetCollection.getAtomSetCollectionAuxiliaryInfo("FREQ_LAB");
-    List<Float> freq_val = (List<Float>) r.atomSetCollection.getAtomSetCollectionAuxiliaryInfo("FREQ_VAL");
+    List<String> freq_lab = (List<String>) r.asc.getAtomSetCollectionAuxiliaryInfo("FREQ_LAB");
+    List<Float> freq_val = (List<Float>) r.asc.getAtomSetCollectionAuxiliaryInfo("FREQ_VAL");
     int frequencyCount = freq_val.size();
     List<List<List<Float>>> vibrations = new  List<List<List<Float>>>();
     List<Map<String, Object>> freqs = new  List<Map<String,Object>>();
@@ -544,9 +544,9 @@ class SpartanArchive {
     }
     Float v;
     for (int i = 0; i < frequencyCount; ++i) {
-      int atomCount0 = r.atomSetCollection.atomCount;
-      r.atomSetCollection.cloneLastAtomSet();
-      addBonds(bondData, atomCount0);
+      int ac0 = r.asc.ac;
+      r.asc.cloneLastAtomSet();
+      addBonds(bondData, ac0);
       Map<String, Object> info = new Hashtable<String, Object>();
       info.put("freq", (v = freq_val.get(i)));
       float freq = v.floatValue();
@@ -555,20 +555,20 @@ class SpartanArchive {
         info.put("label", label);
       }
       freqs.addLast(info);
-      r.atomSetCollection.setAtomSetName(label + " " + freq + " cm^-1");
-      r.atomSetCollection.setAtomSetModelProperty("Frequency", freq + " cm^-1");
-      r.atomSetCollection.setAtomSetModelProperty(SmarterJmolAdapter.PATH_KEY, "Frequencies");
+      r.asc.setAtomSetName(label + " " + freq + " cm^-1");
+      r.asc.setAtomSetModelProperty("Frequency", freq + " cm^-1");
+      r.asc.setAtomSetModelProperty(SmarterJmolAdapter.PATH_KEY, "Frequencies");
     }
-    r.atomSetCollection.setAtomSetCollectionAuxiliaryInfo("VibFreqs", freqs);
-    int atomCount = r.atomSetCollection.getFirstAtomSetAtomCount();
-    int iatom = atomCount; // add vibrations starting at second atomset
+    r.asc.setAtomSetCollectionAuxiliaryInfo("VibFreqs", freqs);
+    int ac = r.asc.getFirstAtomSetAtomCount();
+    int iatom = ac; // add vibrations starting at second atomset
     for (int i = 0; i < frequencyCount; i++) {
       if (!r.doGetVibration(i + 1))
         continue;
       int ipt = 0;
       List<List<Float>> vib = new  List<List<Float>>();
       List<Float> mode = freq_modes.get(i);
-      for (int ia = 0; ia < atomCount; ia++, iatom++) {
+      for (int ia = 0; ia < ac; ia++, iatom++) {
         List<Float> vibatom = new  List<Float>();
         float vx = (v = mode.get(ipt++)).floatValue();
         vibatom.addLast(v);
@@ -576,12 +576,12 @@ class SpartanArchive {
         vibatom.addLast(v);
         float vz = (v = mode.get(ipt++)).floatValue();
         vibatom.addLast(v);
-        r.atomSetCollection.addVibrationVector(iatom, vx, vy, vz);
+        r.asc.addVibrationVector(iatom, vx, vy, vz);
         vib.addLast(vibatom);
       }
       vibrations.addLast(vib);
     }
-    r.atomSetCollection.setAtomSetCollectionAuxiliaryInfo("vibration", vibrations);
+    r.asc.setAtomSetCollectionAuxiliaryInfo("vibration", vibrations);
   }
 
   private String getQuotedString(String strQuote) {
@@ -605,6 +605,6 @@ class SpartanArchive {
   private String line;
  
   private String readLine() throws Exception {
-    return (line = r.readLine());
+    return (line = r.rd());
   }
 }

@@ -101,7 +101,7 @@ public class AbinitReader extends AtomSetCollectionReader {
     cellLattice = new float[9];
     for (int i = 0; i < 9; i++) {
       if (i % 3 == 0) {
-        line = readLine().substring(6);
+        line = rd().substring(6);
         f = parseFloatStr(line);
       }
       cellLattice[i] = f * ANGSTROMS_PER_BOHR;
@@ -116,10 +116,10 @@ public class AbinitReader extends AtomSetCollectionReader {
     setSpaceGroupName("P1");
     for (int i = 0; i < 3; i++)
       addPrimitiveLatticeVector(i, cellLattice, i * 3);
-    Atom[] atoms = atomSetCollection.atoms;
-    int i0 = atomSetCollection.getAtomSetAtomIndex(atomSetCollection.currentAtomSetIndex);
+    Atom[] atoms = asc.atoms;
+    int i0 = asc.getAtomSetAtomIndex(asc.currentAtomSetIndex);
     if (!iHaveFractionalCoordinates)
-      for (int i = atomSetCollection.atomCount; --i >= i0;)
+      for (int i = asc.ac; --i >= i0;)
         setAtomCoord(atoms[i]);
     applySymmetryAndSetTrajectory();
   }
@@ -133,19 +133,19 @@ public class AbinitReader extends AtomSetCollectionReader {
   
   private void readAtoms() throws Exception {
     // Read cartesian coordinates 
-    atomSetCollection.newAtomSet();
+    asc.newAtomSet();
     iHaveFractionalCoordinates = false;
-    int i0 = atomSetCollection.atomCount;
+    int i0 = asc.ac;
     line = line.substring(12);
     while (line != null && !line.contains("x")) {
-      Atom atom = atomSetCollection.addNewAtom();
+      Atom atom = asc.addNewAtom();
       setAtomCoordScaled(atom, getTokensStr(line), 0, ANGSTROMS_PER_BOHR);
-      readLine();
+      rd();
     }
     discardLinesUntilContains("z");
     if (znucl == null)
       fillFloatArray(line.substring(12), 0, znucl = new float[nType]);
-    Atom[] atoms = atomSetCollection.atoms;
+    Atom[] atoms = asc.atoms;
     for (int i = 0; i < nAtom; i++)
       atoms[i + i0].elementNumber = (short) znucl[(int) typeArray[i] - 1];
     applySymmetry();    

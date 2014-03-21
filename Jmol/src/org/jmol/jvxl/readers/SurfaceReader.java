@@ -519,12 +519,12 @@ public abstract class SurfaceReader implements VertexDataServer {
     if (jvxlData.vertexColors == null)
       return "";
     int vertexCount = jvxlData.vertexCount;
-    short[] colixes = meshData.vertexColixes;
-    float[] vertexValues = meshData.vertexValues;
+    short[] colixes = meshData.vcs;
+    float[] vertexValues = meshData.vvs;
     if (colixes == null || colixes.length < vertexCount)
-      meshData.vertexColixes = colixes = new short[vertexCount];
+      meshData.vcs = colixes = new short[vertexCount];
     if (vertexValues == null || vertexValues.length < vertexCount)
-      meshData.vertexValues = vertexValues = new float[vertexCount];
+      meshData.vvs = vertexValues = new float[vertexCount];
     for (int i = 0; i < vertexCount; i++)
       colixes[i] = C.getColix(jvxlData.vertexColors[i]);
     return "-";
@@ -726,7 +726,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     }
     return (meshDataServer != null ? meshDataServer.addTriangleCheck(iA, iB,
         iC, check, check2, isAbsolute, color) : isAbsolute
-        && !MeshData.checkCutoff(iA, iB, iC, meshData.vertexValues) ? -1
+        && !MeshData.checkCutoff(iA, iB, iC, meshData.vvs) ? -1
         : meshData.addTriangleCheck(iA, iB, iC, check, check2, color));
   }
 
@@ -776,7 +776,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     if (params.colorPhase == 0)
       params.colorPhase = 1;
     if (meshDataServer == null) {
-      meshData.vertexColixes = new short[meshData.vertexCount];
+      meshData.vcs = new short[meshData.vc];
     } else {
       meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
       if (params.contactPair == null)
@@ -792,7 +792,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     // colors mappable always now
     jvxlData.isJvxlPrecisionColor = true;
     jvxlData.vertexCount = (contourVertexCount > 0 ? contourVertexCount
-        : meshData.vertexCount);
+        : meshData.vc);
     jvxlData.minColorIndex = -1;
     jvxlData.maxColorIndex = 0;
     jvxlData.contourValues = params.contoursDiscrete;
@@ -814,12 +814,12 @@ public abstract class SurfaceReader implements VertexDataServer {
         && !params.isContoured;
     if (!useMeshDataValues) {
       if (haveSurfaceAtoms && meshData.vertexSource == null)
-        meshData.vertexSource = new int[meshData.vertexCount];
+        meshData.vertexSource = new int[meshData.vc];
       float min = Float.MAX_VALUE;
       float max = -Float.MAX_VALUE;
       float value;
       initializeMapping();
-      for (int i = meshData.vertexCount; --i >= meshData.mergeVertexCount0;) {
+      for (int i = meshData.vc; --i >= meshData.mergeVertexCount0;) {
         /* right, so what we are doing here is setting a range within the 
          * data for which we want red-->blue, but returning the actual
          * number so it can be encoded more precisely. This turned out to be
@@ -829,13 +829,13 @@ public abstract class SurfaceReader implements VertexDataServer {
         if (params.colorBySets) {
           value = meshData.vertexSets[i];
         } else if (params.colorByPhase) {
-          value = getPhase(meshData.vertices[i]);
+          value = getPhase(meshData.vs[i]);
         //else if (jvxlDataIs2dContour)
         //marchingSquares
         //    .getInterpolatedPixelValue(meshData.vertices[i]);
         } else {
           boolean needSource = haveSurfaceAtoms;//(haveSurfaceAtoms && meshData.vertexSource[i] < 0);
-          value = volumeData.lookupInterpolatedVoxelValue(meshData.vertices[i], needSource);
+          value = volumeData.lookupInterpolatedVoxelValue(meshData.vs[i], needSource);
           //System.out.println(i + " " + meshData.vertices[i] + " " + value);
           if (needSource)
             meshData.vertexSource[i] = getSurfaceAtomIndex();
@@ -844,7 +844,7 @@ public abstract class SurfaceReader implements VertexDataServer {
           min = value;
         if (value > max && value != Float.MAX_VALUE)
           max = value;
-        meshData.vertexValues[i] = value;
+        meshData.vvs[i] = value;
       }
       if (params.rangeSelected && minMax == null)
         minMax = new float[] { min, max };
@@ -859,7 +859,7 @@ public abstract class SurfaceReader implements VertexDataServer {
       colorData();
     
     JvxlCoder.jvxlCreateColorData(jvxlData,
-        (saveColorData ? meshData.vertexValues : null));
+        (saveColorData ? meshData.vvs : null));
 
     if (haveSurfaceAtoms && meshDataServer != null)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_VERTICES, null);
@@ -870,9 +870,9 @@ public abstract class SurfaceReader implements VertexDataServer {
 
   private void colorData() {
 
-    float[] vertexValues = meshData.vertexValues;
-    short[] vertexColixes = meshData.vertexColixes;
-    meshData.polygonColixes = null;
+    float[] vertexValues = meshData.vvs;
+    short[] vertexColixes = meshData.vcs;
+    meshData.pcs = null;
     float valueBlue = jvxlData.valueMappedToBlue;
     float valueRed = jvxlData.valueMappedToRed;
     short minColorIndex = jvxlData.minColorIndex;
@@ -881,7 +881,7 @@ public abstract class SurfaceReader implements VertexDataServer {
       params.colorEncoder = new ColorEncoder(null);
     params.colorEncoder.setRange(params.valueMappedToRed,
         params.valueMappedToBlue, params.isColorReversed);
-    for (int i = meshData.vertexCount; --i >= 0;) {
+    for (int i = meshData.vc; --i >= 0;) {
       float value = vertexValues[i];
       if (minColorIndex >= 0) {
         if (value <= 0)
@@ -980,13 +980,13 @@ public abstract class SurfaceReader implements VertexDataServer {
       return (minMax = new float[] { min, max });
     }
     int vertexCount = (contourVertexCount > 0 ? contourVertexCount
-        : meshData.vertexCount);
-    P3[] vertexes = meshData.vertices;
+        : meshData.vc);
+    P3[] vertexes = meshData.vs;
     boolean useVertexValue = (haveData || jvxlDataIs2dContour || vertexDataOnly || params.colorDensity);
     for (int i = meshData.mergeVertexCount0; i < vertexCount; i++) {
       float v;
       if (useVertexValue)
-        v = meshData.vertexValues[i];
+        v = meshData.vvs[i];
       else
         v = volumeData.lookupInterpolatedVoxelValue(vertexes[i], false);
       if (v < min)
@@ -1091,8 +1091,8 @@ public abstract class SurfaceReader implements VertexDataServer {
     if (meshDataServer != null)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
     xyzMin = null;
-    for (int i = 0; i < meshData.vertexCount; i++) {
-      P3 p = meshData.vertices[i];
+    for (int i = 0; i < meshData.vc; i++) {
+      P3 p = meshData.vs[i];
       if (!Float.isNaN(p.x))
         setBBox(p, 0);
     }

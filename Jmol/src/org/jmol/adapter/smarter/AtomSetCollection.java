@@ -60,7 +60,7 @@ public class AtomSetCollection {
     this.collectionName = collectionName;
   }
 
-  Map<String, Object> atomSetCollectionAuxiliaryInfo = new Hashtable<String, Object>();
+  Map<String, Object> ascAuxiliaryInfo = new Hashtable<String, Object>();
 
   private final static String[] globalBooleans = {
       "someModelsHaveFractionalCoordinates", "someModelsHaveSymmetry",
@@ -73,7 +73,7 @@ public class AtomSetCollection {
   public final static int GLOBAL_ISPDB = 4;
 
   public void clearGlobalBoolean(int globalIndex) {
-    atomSetCollectionAuxiliaryInfo.remove(globalBooleans[globalIndex]);
+    ascAuxiliaryInfo.remove(globalBooleans[globalIndex]);
   }
 
   public void setGlobalBoolean(int globalIndex) {
@@ -88,7 +88,7 @@ public class AtomSetCollection {
       "beta", "gamma" };
 
   public Atom[] atoms = new Atom[256];
-  public int atomCount;
+  public int ac;
   public Bond[] bonds = new Bond[256];
   public int bondCount;
   public Structure[] structures = new Structure[16];
@@ -134,7 +134,7 @@ public class AtomSetCollection {
       int n = 0;
       readerList = new List<AtomSetCollectionReader>();
       for (int i = 0; i < array.length; i++)
-        if (array[i].atomCount > 0 || array[i].reader != null
+        if (array[i].ac > 0 || array[i].reader != null
             && array[i].reader.mustFinalizeModelSet)
           appendAtomSetCollection(n++, array[i]);
       if (n > 1)
@@ -185,7 +185,7 @@ public class AtomSetCollection {
     if (collection.reader != null && collection.reader.mustFinalizeModelSet)
       readerList.addLast(collection.reader);
     // Initializations
-    int existingAtomsCount = atomCount;
+    int existingAtomsCount = ac;
 
     // auxiliary info
     setAtomSetCollectionAuxiliaryInfo("loadState",
@@ -215,7 +215,7 @@ public class AtomSetCollection {
       for (int atomNum = 0; atomNum < collection.atomSetAtomCounts[atomSetNum]; atomNum++) {
         try {
           if (bsAtoms != null)
-            bsAtoms.set(atomCount);
+            bsAtoms.set(ac);
           newCloneAtom(collection.atoms[clonedAtoms]);
         } catch (Exception e) {
           errorMessage = "appendAtomCollection error: " + e;
@@ -261,7 +261,7 @@ public class AtomSetCollection {
   void freeze(boolean reverseModels) {
     if (atomSetCount == 1 && collectionName == null)
       collectionName = (String) getAtomSetAuxiliaryInfoValue(0, "name");
-    //Logger.debug("AtomSetCollection.freeze; atomCount = " + atomCount);
+    //Logger.debug("AtomSetCollection.freeze; ac = " + ac);
     if (reverseModels)
       reverseAtomSets();
     if (trajectoryStepCount > 1)
@@ -285,7 +285,7 @@ public class AtomSetCollection {
     reverseList(trajectoryNames);
     reverseList(vibrationSteps);
     reverseObject(atomSetAuxiliaryInfo);
-    for (int i = 0; i < atomCount; i++)
+    for (int i = 0; i < ac; i++)
       atoms[i].atomSetIndex = atomSetCount - 1 - atoms[i].atomSetIndex;
     for (int i = 0; i < structureCount; i++) {
       int m = structures[i].modelStartEnd[0];
@@ -303,10 +303,10 @@ public class AtomSetCollection {
     List<Atom>[] lists = AU.createArrayOfArrayList(atomSetCount);
     for (int i = 0; i < atomSetCount; i++)
       lists[i] = new List<Atom>();
-    for (int i = 0; i < atomCount; i++)
+    for (int i = 0; i < ac; i++)
       lists[atoms[i].atomSetIndex].addLast(atoms[i]);
-    int[] newIndex = new int[atomCount];
-    int n = atomCount;
+    int[] newIndex = new int[ac];
+    int n = ac;
     for (int i = atomSetCount; --i >= 0;)
       for (int j = lists[i].size(); --j >= 0;) {
         Atom a = atoms[--n] = lists[i].get(j);
@@ -362,7 +362,7 @@ public class AtomSetCollection {
 
   private void getList(boolean isAltLoc) {
     int i;
-    for (i = atomCount; --i >= 0;)
+    for (i = ac; --i >= 0;)
       if (atoms[i] != null
           && (isAltLoc ? atoms[i].altLoc : atoms[i].insertionCode) != '\0')
         break;
@@ -372,7 +372,7 @@ public class AtomSetCollection {
     for (i = 0; i < atomSetCount; i++)
       lists[i] = "";
     int pt;
-    for (i = 0; i < atomCount; i++) {
+    for (i = 0; i < ac; i++) {
       if (atoms[i] == null)
         continue;
       char id = (isAltLoc ? atoms[i].altLoc : atoms[i].insertionCode);
@@ -394,7 +394,7 @@ public class AtomSetCollection {
     atoms = null;
     atomSetAtomCounts = new int[16];
     atomSetAuxiliaryInfo = new Hashtable[16];
-    atomSetCollectionAuxiliaryInfo = new Hashtable<String, Object>();
+    ascAuxiliaryInfo = new Hashtable<String, Object>();
     atomSetCount = 0;
     atomSetNumbers = new int[16];
     atomSymbolicMap = new Hashtable<Object, Integer>();
@@ -409,9 +409,9 @@ public class AtomSetCollection {
   }
 
   public void discardPreviousAtoms() {
-    for (int i = atomCount; --i >= 0;)
+    for (int i = ac; --i >= 0;)
       atoms[i] = null;
-    atomCount = 0;
+    ac = 0;
     clearSymbolicMap();
     atomSetCount = 0;
     currentAtomSetIndex = -1;
@@ -430,13 +430,13 @@ public class AtomSetCollection {
   public void removeAtomSet(int imodel) {
     if (bsAtoms == null) {
       bsAtoms = new BS();
-      bsAtoms.setBits(0, atomCount);
+      bsAtoms.setBits(0, ac);
     }
     int i0 = atomSetAtomIndexes[imodel];
     int nAtoms = atomSetAtomCounts[imodel];
     int i1 = i0 + nAtoms;
     bsAtoms.clearBits(i0, i1);
-    for (int i = i1; i < atomCount; i++)
+    for (int i = i1; i < ac; i++)
       atoms[i].atomSetIndex--;
     for (int i = imodel + 1; i < atomSetCount; i++) {
       atomSetAuxiliaryInfo[i - 1] = atomSetAuxiliaryInfo[i];
@@ -476,7 +476,7 @@ public class AtomSetCollection {
 
   public int getHydrogenAtomCount() {
     int n = 0;
-    for (int i = 0; i < atomCount; i++)
+    for (int i = 0; i < ac; i++)
       if (atoms[i].elementNumber == 1 || atoms[i].elementSymbol.equals("H"))
         n++;
     return n;
@@ -491,13 +491,13 @@ public class AtomSetCollection {
   // FIX ME This should really also clone the other things pertaining
   // to an atomSet, like the bonds (which probably should be remade...)
   // but also the atomSetProperties and atomSetName...
-  public void cloneFirstAtomSet(int atomCount) throws Exception {
+  public void cloneFirstAtomSet(int ac) throws Exception {
     if (!allowMultiple)
       return;
     newAtomSet();
-    if (atomCount == 0)
-      atomCount = atomSetAtomCounts[0];
-    for (int i = 0; i < atomCount; ++i)
+    if (ac == 0)
+      ac = atomSetAtomCounts[0];
+    for (int i = 0; i < ac; ++i)
       newCloneAtom(atoms[i]);
   }
 
@@ -517,11 +517,11 @@ public class AtomSetCollection {
     cloneLastAtomSetFromPoints(0, null);
   }
 
-  public void cloneLastAtomSetFromPoints(int atomCount, P3[] pts)
+  public void cloneLastAtomSetFromPoints(int ac, P3[] pts)
       throws Exception {
     if (!allowMultiple)
       return;
-    int count = (atomCount > 0 ? atomCount : getLastAtomSetAtomCount());
+    int count = (ac > 0 ? ac : getLastAtomSetAtomCount());
     int atomIndex = getLastAtomSetAtomIndex();
     newAtomSet();
     for (int i = 0; i < count; ++i) {
@@ -541,7 +541,7 @@ public class AtomSetCollection {
 
   public int getLastAtomSetAtomIndex() {
     //Logger.debug("atomSetCount=" + atomSetCount);
-    return atomCount - atomSetAtomCounts[currentAtomSetIndex];
+    return ac - atomSetAtomCounts[currentAtomSetIndex];
   }
 
   public Atom addNewAtom() {
@@ -549,16 +549,16 @@ public class AtomSetCollection {
   }
 
   public Atom addAtom(Atom atom) {
-    if (atomCount == atoms.length) {
-      if (atomCount > 200000)
-        atoms = (Atom[]) AU.ensureLength(atoms, atomCount + 50000);
+    if (ac == atoms.length) {
+      if (ac > 200000)
+        atoms = (Atom[]) AU.ensureLength(atoms, ac + 50000);
       else
         atoms = (Atom[]) AU.doubleLength(atoms);
     }
     if (atomSetCount == 0)
       newAtomSet();
-    atom.index = atomCount;
-    atoms[atomCount++] = atom;
+    atom.index = ac;
+    atoms[ac++] = atom;
     atom.atomSetIndex = currentAtomSetIndex;
     atom.atomSite = atomSetAtomCounts[currentAtomSetIndex]++;
     return atom;
@@ -578,8 +578,8 @@ public class AtomSetCollection {
   }
 
   public Bond addNewBondWithOrder(int atomIndex1, int atomIndex2, int order) {
-    if (atomIndex1 < 0 || atomIndex1 >= atomCount || atomIndex2 < 0
-        || atomIndex2 >= atomCount)
+    if (atomIndex1 < 0 || atomIndex1 >= ac || atomIndex2 < 0
+        || atomIndex2 >= ac)
       return null;
     Bond bond = new Bond(atomIndex1, atomIndex2, order);
     addBond(bond);
@@ -661,7 +661,7 @@ public class AtomSetCollection {
     }
     int atomSite = atoms[iatom].atomSite;
     int atomSetIndex = atoms[iatom].atomSetIndex;
-    for (int i = iatom; i < atomCount && atoms[i].atomSetIndex == atomSetIndex; i++) {
+    for (int i = iatom; i < ac && atoms[i].atomSetIndex == atomSetIndex; i++) {
       if (atoms[i].atomSite == atomSite)
         addVibrationVector(i, vx, vy, vz);
     }
@@ -669,7 +669,7 @@ public class AtomSetCollection {
 
   public void addVibrationVector(int iatom, float x, float y, float z) {
     if (!allowMultiple)
-      iatom = iatom % atomCount;
+      iatom = iatom % ac;
     atoms[iatom].vib = V3.new3(x, y, z);
   }
 
@@ -742,7 +742,7 @@ public class AtomSetCollection {
   public void createAtomSerialMap() {
     if (haveMappedSerials || currentAtomSetIndex < 0)
       return;
-    for (int i = getLastAtomSetAtomCount(); i < atomCount; i++) {
+    for (int i = getLastAtomSetAtomCount(); i < ac; i++) {
       int atomSerial = atoms[i].atomSerial;
       if (atomSerial != Integer.MIN_VALUE)
         atomSymbolicMap.put(Integer.valueOf(atomSerial), Integer.valueOf(i));
@@ -765,13 +765,13 @@ public class AtomSetCollection {
 
   public void setAtomSetCollectionAuxiliaryInfo(String key, Object value) {
     if (value == null)
-      atomSetCollectionAuxiliaryInfo.remove(key);
+      ascAuxiliaryInfo.remove(key);
     else
-      atomSetCollectionAuxiliaryInfo.put(key, value);
+      ascAuxiliaryInfo.put(key, value);
   }
 
   /**
-   * Sets the partial atomic charges based on atomSetCollection auxiliary info
+   * Sets the partial atomic charges based on asc auxiliary info
    * 
    * @param auxKey
    *        The auxiliary key name that contains the charges
@@ -779,10 +779,10 @@ public class AtomSetCollection {
    */
 
   public boolean setAtomSetCollectionPartialCharges(String auxKey) {
-    if (!atomSetCollectionAuxiliaryInfo.containsKey(auxKey)) {
+    if (!ascAuxiliaryInfo.containsKey(auxKey)) {
       return false;
     }
-    List<Float> atomData = (List<Float>) atomSetCollectionAuxiliaryInfo
+    List<Float> atomData = (List<Float>) ascAuxiliaryInfo
         .get(auxKey);
     for (int i = atomData.size(); --i >= 0;)
       atoms[i].partialCharge = atomData.get(i).floatValue();
@@ -795,7 +795,7 @@ public class AtomSetCollection {
   }
 
   public Object getAtomSetCollectionAuxiliaryInfo(String key) {
-    return atomSetCollectionAuxiliaryInfo.get(key);
+    return ascAuxiliaryInfo.get(key);
   }
 
   ////////////////////////////////////////////////////////////////
@@ -803,13 +803,13 @@ public class AtomSetCollection {
   ////////////////////////////////////////////////////////////////
 
   private void addTrajectoryStep() {
-    P3[] trajectoryStep = new P3[atomCount];
-    boolean haveVibrations = (atomCount > 0 && atoms[0].vib != null && !Float
+    P3[] trajectoryStep = new P3[ac];
+    boolean haveVibrations = (ac > 0 && atoms[0].vib != null && !Float
         .isNaN(atoms[0].vib.z));
-    V3[] vibrationStep = (haveVibrations ? new V3[atomCount] : null);
+    V3[] vibrationStep = (haveVibrations ? new V3[ac] : null);
     P3[] prevSteps = (trajectoryStepCount == 0 ? null : (P3[]) trajectorySteps
         .get(trajectoryStepCount - 1));
-    for (int i = 0; i < atomCount; i++) {
+    for (int i = 0; i < ac; i++) {
       P3 pt = P3.newP(atoms[i]);
       if (doFixPeriodic && prevSteps != null)
         pt = fixPeriodic(pt, prevSteps[i]);
@@ -862,11 +862,11 @@ public class AtomSetCollection {
     V3[] vibrations = (vibrationSteps == null ? null : vibrationSteps.get(0));
     V3 v = new V3();
     if (vibrationSteps != null && vibrations != null
-        && vibrations.length < atomCount || trajectory.length < atomCount) {
+        && vibrations.length < ac || trajectory.length < ac) {
       errorMessage = "File cannot be loaded as a trajectory";
       return;
     }
-    for (int i = 0; i < atomCount; i++) {
+    for (int i = 0; i < ac; i++) {
       if (vibrationSteps != null)
         atoms[i].vib = (vibrations == null ? v : vibrations[i]);
       if (trajectory[i] != null)
@@ -897,7 +897,7 @@ public class AtomSetCollection {
       atomSetAuxiliaryInfo = (Map<String, Object>[]) AU
           .doubleLength(atomSetAuxiliaryInfo);
     }
-    atomSetAtomIndexes[currentAtomSetIndex] = atomCount;
+    atomSetAtomIndexes[currentAtomSetIndex] = ac;
     if (atomSetCount + trajectoryStepCount > atomSetNumbers.length) {
       atomSetNumbers = AU.doubleLengthI(atomSetNumbers);
     }
@@ -1150,7 +1150,7 @@ public class AtomSetCollection {
     if (atomIdNames == null)
       return null;
     String s;
-    for (int i = 0; i < atomCount; i++)
+    for (int i = 0; i < ac; i++)
       if ((s = atomIdNames.getProperty(atoms[i].atomName)) != null)
         atoms[i].atomName = s;
     return null;
@@ -1181,7 +1181,7 @@ public class AtomSetCollection {
   }
 
   void toCartesian(SymmetryInterface symmetry) {
-    for (int i = getLastAtomSetAtomIndex(); i < atomCount; i++)
+    for (int i = getLastAtomSetAtomIndex(); i < ac; i++)
       symmetry.toCartesian(atoms[i], true);
   }
 

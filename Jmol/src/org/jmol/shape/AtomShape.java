@@ -46,7 +46,7 @@ public abstract class AtomShape extends Shape {
   public short[] mads;
   public short[] colixes;
   public byte[] paletteIDs;
-  public int atomCount;
+  public int ac;
   public Atom[] atoms;
   public boolean isActive;
   
@@ -59,15 +59,15 @@ public abstract class AtomShape extends Shape {
 
   @Override
   protected void initModelSet() {
-    atoms = modelSet.atoms;
-    atomCount = modelSet.getAtomCount();
+    atoms = ms.at;
+    ac = ms.getAtomCount();
     // in case this is due to "load append"
     if (mads != null)
-      mads = AU.arrayCopyShort(mads, atomCount);
+      mads = AU.arrayCopyShort(mads, ac);
     if (colixes != null)
-      colixes = AU.arrayCopyShort(colixes, atomCount);
+      colixes = AU.arrayCopyShort(colixes, ac);
     if (paletteIDs != null)
-      paletteIDs = AU.arrayCopyByte(paletteIDs, atomCount);
+      paletteIDs = AU.arrayCopyByte(paletteIDs, ac);
   }
 
   @Override
@@ -104,9 +104,9 @@ public abstract class AtomShape extends Shape {
       bsSizeSet = new BS();
     boolean isVisible = (rd != null && rd.value != 0);
     boolean isAll = (bsSelected == null);
-    int i0 = (isAll ? atomCount - 1 : bsSelected.nextSetBit(0));
+    int i0 = (isAll ? ac - 1 : bsSelected.nextSetBit(0));
     if (mads == null && i0 >= 0)
-      mads = new short[atomCount];
+      mads = new short[ac];
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsSelected.nextSetBit(i + 1)))
       setSizeRD2(i, rd, isVisible);
   }
@@ -143,7 +143,7 @@ public abstract class AtomShape extends Shape {
         bsSizeSet = new BS();
       int i0 = bs.nextSetBit(0);
       if (mads == null && i0 >= 0)
-        mads = new short[atomCount];
+        mads = new short[ac];
       for (int i = i0, pt = 0; i >= 0; i = bs.nextSetBit(i + 1), pt++) {
         short colix = (colixes == null ? 0 : colixes[pt]);
         if (colix == 0)
@@ -166,8 +166,8 @@ public abstract class AtomShape extends Shape {
         bsColixSet = new BS();
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
         if (colixes == null) {
-          colixes = new short[atomCount];
-          paletteIDs = new byte[atomCount];
+          colixes = new short[ac];
+          paletteIDs = new byte[ac];
         }
         colixes[i] = C.getColixTranslucent3(colixes[i], isTranslucent,
             translucentLevel);
@@ -179,7 +179,7 @@ public abstract class AtomShape extends Shape {
     if (propertyName == "deleteModelAtoms") {
       atoms = (Atom[]) ((Object[]) value)[1];
       int[] info = (int[]) ((Object[]) value)[2];
-      atomCount = modelSet.getAtomCount();
+      ac = ms.getAtomCount();
       int firstAtomDeleted = info[1];
       int nAtomsDeleted = info[2];
       mads = (short[]) AU.deleteElements(mads, firstAtomDeleted,
@@ -203,7 +203,7 @@ public abstract class AtomShape extends Shape {
       paletteIDs = AU.ensureLengthByte(paletteIDs, atomIndex + 1);
     }
     if (bsColixSet == null)
-      bsColixSet = BS.newN(atomCount);
+      bsColixSet = BS.newN(ac);
     colixes[atomIndex] = colix = getColixI(colix, paletteID, atomIndex);
     bsColixSet.setBitTo(atomIndex, colix != C.INHERIT_ALL);
     paletteIDs[atomIndex] = paletteID;
@@ -213,12 +213,12 @@ public abstract class AtomShape extends Shape {
   public void setModelClickability() {
     if (!isActive)
       return;
-    for (int i = atomCount; --i >= 0;) {
+    for (int i = ac; --i >= 0;) {
       Atom atom = atoms[i];
-      if ((atom.shapeVisibilityFlags & myVisibilityFlag) == 0
-          || modelSet.isAtomHidden(i))
+      if ((atom.shapeVisibilityFlags & vf) == 0
+          || ms.isAtomHidden(i))
         continue;
-      atom.setClickable(myVisibilityFlag);
+      atom.setClickable(vf);
     }
   }
 

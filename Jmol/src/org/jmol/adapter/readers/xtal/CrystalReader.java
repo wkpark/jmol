@@ -109,7 +109,7 @@ public class CrystalReader extends AtomSetCollectionReader {
   private boolean havePrimitiveMapping;
   private boolean isProperties;
 
-  private int atomCount;
+  private int ac;
   private int atomIndexLast;
   private int[] atomFrag;
   private int[] primitiveToIndex;
@@ -130,7 +130,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     addVibrations &= !inputOnly; 
     getLastConventional = (!isPrimitive && desiredModelNumber == 0);
     setFractionalCoordinates(readHeader());
-    atomSetCollection.checkLatticeOnly = true;
+    asc.checkLatticeOnly = true;
   }
 
   @Override
@@ -238,7 +238,7 @@ public class CrystalReader extends AtomSetCollectionReader {
 
     if (line.startsWith(" TOTAL ENERGY")) {
       readEnergy();
-      readLine();
+      rd();
       if (line.startsWith(" ********"))
         discardLinesUntilContains("SYMMETRY ALLOWED");
       else if (line.startsWith(" TTTTTTTT"))
@@ -352,7 +352,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     matUnitCellOrientation = Quat.getQuaternionFrame(new P3(), a, b)
     .getMatrix();
     Logger.info("oriented unit cell is in model "
-        + atomSetCollection.atomSetCount);
+        + asc.atomSetCount);
     return !isProperties;
   }
 
@@ -402,10 +402,10 @@ public class CrystalReader extends AtomSetCollectionReader {
    */
   private void setPrimitiveVolumeAndDensity() {
     if (primitiveVolume != 0)
-      atomSetCollection.setAtomSetModelProperty("volumePrimitive", DF
+      asc.setAtomSetModelProperty("volumePrimitive", DF
           .formatDecimal(primitiveVolume, 3));
     if (primitiveDensity != 0)
-      atomSetCollection.setAtomSetModelProperty("densityPrimitive", DF
+      asc.setAtomSetModelProperty("densityPrimitive", DF
           .formatDecimal(primitiveDensity, 3));
   }
   
@@ -430,13 +430,13 @@ public class CrystalReader extends AtomSetCollectionReader {
     isVersion3 = (line.indexOf("CRYSTAL03") >= 0);
     discardLinesUntilContains("EEEEEEEEEE");
     String name;
-    if (readLine().length() == 0) {
+    if (rd().length() == 0) {
       name = readLines(2).trim();
     } else {
       name = line.trim();
-      readLine();
+      rd();
     }
-    String type = readLine().trim();
+    String type = rd().trim();
     int pt = type.indexOf("- PROPERTIES"); 
     if (pt >= 0) {
       isProperties = true;
@@ -444,27 +444,27 @@ public class CrystalReader extends AtomSetCollectionReader {
     }
     if (type.indexOf("EXTERNAL FILE") >= 0) {
       // GEOMETRY INPUT FROM EXTERNAL FILE (FORTRAN UNIT 34)
-      type = readLine().trim();
+      type = rd().trim();
       isPolymer = (type.equals("1D - POLYMER"));
       isSlab = (type.equals("2D - SLAB"));
     } else {
       isPolymer = (type.equals("POLYMER CALCULATION"));
       isSlab = (type.equals("SLAB CALCULATION"));
     }
-    atomSetCollection.setCollectionName(name
+    asc.setCollectionName(name
         + (!isProperties && desiredModelNumber == 0 ? " (optimized)" : ""));
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("symmetryType", type);
+    asc.setAtomSetCollectionAuxiliaryInfo("symmetryType", type);
     if ((isPolymer || isSlab) && !isPrimitive) {
       Logger.error("Cannot use FILTER \"conventional\" with POLYMER or SLAB");
       isPrimitive = true;
     }
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("unitCellType",
+    asc.setAtomSetCollectionAuxiliaryInfo("unitCellType",
         (isPrimitive ? "primitive" : "conventional"));
 
     if (type.indexOf("MOLECULAR") >= 0) {
       isMolecular = doProcessLines = true;
-      readLine();
-      atomSetCollection.setAtomSetCollectionAuxiliaryInfo(
+      rd();
+      asc.setAtomSetCollectionAuxiliaryInfo(
           "molecularCalculationPointGroup",
           line.substring(line.indexOf(" OR ") + 4).trim());
       return false;
@@ -511,12 +511,12 @@ public class CrystalReader extends AtomSetCollectionReader {
     if (isPolymer && !isPrimitive) {
       setUnitCell(parseFloatStr(line.substring(line.indexOf("CELL") + 4)) * f, -1, -1, 90, 90, 90);
     } else {
-      while (readLine().indexOf("GAMMA") < 0)
+      while (rd().indexOf("GAMMA") < 0)
         if (line.indexOf("VOLUME=") >= 0) {
           primitiveVolume = parseFloatStr(line.substring(43));
           primitiveDensity = parseFloatStr(line.substring(66));
         }
-      String[] tokens = getTokensStr(readLine());
+      String[] tokens = getTokensStr(rd());
       if (isSlab) {
         if (isPrimitive)
           setUnitCell(parseFloatStr(tokens[0]) * f, parseFloatStr(tokens[1]) * f, -1,
@@ -551,7 +551,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     if (havePrimitiveMapping)
       return;
     vPrimitiveMapping = new List<String>();    
-    while (readLine() != null && line.indexOf("NUMBER") < 0)
+    while (rd() != null && line.indexOf("NUMBER") < 0)
       vPrimitiveMapping.addLast(line);
   }
   
@@ -585,7 +585,7 @@ public class CrystalReader extends AtomSetCollectionReader {
         continue;
       }
 
-      while (readLine() != null && line.indexOf("NUMBER") < 0) {
+      while (rd() != null && line.indexOf("NUMBER") < 0) {
         if (line.length() < 2 || line.indexOf("ATOM") >= 0)
           continue;
         int iAtom = parseIntRange(line, 4, 8) - 1;
@@ -599,13 +599,13 @@ public class CrystalReader extends AtomSetCollectionReader {
       for (int i = n; --i >= 0;)
         if (bsInputAtomsIgnore.get(i))
           vCoords.remove(i);
-    atomCount = vCoords.size();
-    Logger.info(nPrim + " primitive atoms and " + atomCount
+    ac = vCoords.size();
+    Logger.info(nPrim + " primitive atoms and " + ac
         + " conventionalAtoms");
     primitiveToIndex = new int[nPrim];
     for (int i = 0; i < nPrim; i++)
       primitiveToIndex[i] = -1;
-    for (int i = atomCount; --i >= 0;) {
+    for (int i = ac; --i >= 0;) {
       int iPrim = indexToPrimitive[parseIntStr(vCoords.get(i).substring(0, 4)) - 1];
       if (iPrim >= 0)
         primitiveToIndex[iPrim] = i;
@@ -641,7 +641,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     if (isMolecular)
       newAtomSet();
     vCoords = null;
-    while (readLine() != null && line.indexOf("*") < 0) {
+    while (rd() != null && line.indexOf("*") < 0) {
       if (line.indexOf("X(ANGSTROM") >= 0) {
         // fullerene from slab has this.
         setFractionalCoordinates(false);
@@ -655,10 +655,10 @@ public class CrystalReader extends AtomSetCollectionReader {
     // cases are VERY interesting and far better (in my opinion!)
     
     boolean doNormalizePrimitive = false;// && isPrimitive && !isMolecular && !isPolymer && !isSlab && (!doApplySymmetry || latticeCells[2] != 0);
-    atomIndexLast = atomSetCollection.atomCount;
+    atomIndexLast = asc.ac;
 
-    while (readLine() != null && line.length() > 0 && line.indexOf(isPrimitive ? "*" : "=") < 0) {
-      Atom atom = atomSetCollection.addNewAtom();
+    while (rd() != null && line.length() > 0 && line.indexOf(isPrimitive ? "*" : "=") < 0) {
+      Atom atom = asc.addNewAtom();
       String[] tokens = getTokens();
       int pt = (isProperties ? 1 : 2);
       atom.elementSymbol = getElementSymbol(getAtomicNumber(tokens[pt++]));
@@ -669,7 +669,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       float y = parseFloatStr(tokens[pt++]);
       float z = parseFloatStr(tokens[pt]);
       if (haveCharges)
-        atom.partialCharge = atomSetCollection.atoms[i++].partialCharge;
+        atom.partialCharge = asc.atoms[i++].partialCharge;
       if (iHaveFractionalCoordinates && !isProperties) {
         // note: this normalization is unique to this reader -- all other
         //       readers operate through symmetry application
@@ -682,7 +682,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       }
       setAtomCoordXYZ(atom, x, y, z);
     }
-    atomCount = atomSetCollection.atomCount - atomIndexLast;
+    ac = asc.ac - atomIndexLast;
     return true;
   }
 
@@ -733,10 +733,10 @@ public class CrystalReader extends AtomSetCollectionReader {
    * @throws Exception
    */
   private void readCoordLines() throws Exception {
-    readLine();
-    readLine();
+    rd();
+    rd();
     vCoords = new  List<String>();
-    while (readLine() != null && line.length() > 0)
+    while (rd() != null && line.length() > 0)
       vCoords.addLast(line);
   }
 
@@ -749,9 +749,9 @@ public class CrystalReader extends AtomSetCollectionReader {
     if (vCoords == null)
       return;
     // here we may have deleted unnecessary input coordinates
-    atomCount = vCoords.size();
-    for (int i = 0; i < atomCount; i++) {
-      Atom atom = atomSetCollection.addNewAtom();
+    ac = vCoords.size();
+    for (int i = 0; i < ac; i++) {
+      Atom atom = asc.addNewAtom();
       String[] tokens = getTokensStr(vCoords.get(i));
       atom.atomSerial = parseIntStr(tokens[0]);
       int atomicNumber, offset;
@@ -781,13 +781,13 @@ public class CrystalReader extends AtomSetCollectionReader {
   }
 
   private void newAtomSet() throws Exception {
-    if (atomCount > 0 && atomSetCollection.atomCount > 0) {
+    if (ac > 0 && asc.ac > 0) {
       applySymmetryAndSetTrajectory();
-      atomSetCollection.newAtomSet();
+      asc.newAtomSet();
     }
     if (spaceGroupName != null)
       setSpaceGroupName(spaceGroupName);
-    atomCount = 0;
+    ac = 0;
   }
 
   private void readEnergy() {
@@ -798,10 +798,10 @@ public class CrystalReader extends AtomSetCollectionReader {
   }
 
   private void setEnergy() {
-    atomSetCollection.setAtomSetEnergy("" + energy, energy.floatValue());
-    atomSetCollection.setAtomSetAuxiliaryInfo("Energy", energy);
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Energy", energy);
-    atomSetCollection.setAtomSetName("Energy = " + energy + " Hartree");
+    asc.setAtomSetEnergy("" + energy, energy.floatValue());
+    asc.setAtomSetAuxiliaryInfo("Energy", energy);
+    asc.setAtomSetCollectionAuxiliaryInfo("Energy", energy);
+    asc.setAtomSetName("Energy = " + energy + " Hartree");
   }
 
   /*
@@ -812,14 +812,14 @@ public class CrystalReader extends AtomSetCollectionReader {
    * 1 FE 26 23.991 2.000 1.920 2.057 2.057 2.057 0.384 0.674 0.674
    */
   private boolean readPartialCharges() throws Exception {
-    if (haveCharges || atomSetCollection.atomCount == 0)
+    if (haveCharges || asc.ac == 0)
       return true;
     haveCharges = true;
     readLines(3);
-    Atom[] atoms = atomSetCollection.atoms;
-    int i0 = atomSetCollection.getLastAtomSetAtomIndex();
+    Atom[] atoms = asc.atoms;
+    int i0 = asc.getLastAtomSetAtomIndex();
     int iPrim = 0;
-    while (readLine() != null && line.length() > 3)
+    while (rd() != null && line.length() > 3)
       if (line.charAt(3) != ' ') {
         int iConv = getAtomIndexFromPrimitiveIndex(iPrim);
         if (iConv >= 0)
@@ -832,17 +832,17 @@ public class CrystalReader extends AtomSetCollectionReader {
 
   private boolean readTotalAtomicCharges() throws Exception {
     SB data = new SB();
-    while (readLine() != null && line.indexOf("T") < 0)
+    while (rd() != null && line.indexOf("T") < 0)
       // TTTTT or SUMMED SPIN DENSITY
       data.append(line);
     String[] tokens = getTokensStr(data.toString());
     float[] charges = new float[tokens.length];
     if (nuclearCharges == null)
       nuclearCharges = charges;
-    if (atomSetCollection.atomCount == 0)
+    if (asc.ac == 0)
       return true;
-    Atom[] atoms = atomSetCollection.atoms;
-    int i0 = atomSetCollection.getLastAtomSetAtomIndex();
+    Atom[] atoms = asc.atoms;
+    int i0 = asc.getLastAtomSetAtomIndex();
     for (int i = 0; i < charges.length; i++) {
       int iConv = getAtomIndexFromPrimitiveIndex(i);
       if (iConv >= 0) {
@@ -883,7 +883,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       return true;
     atomFrag = new int[numAtomsFrag];
     String Sfrag = "";
-    while (readLine() != null && line.indexOf("(") >= 0)
+    while (rd() != null && line.indexOf("(") >= 0)
       Sfrag += line;
     Sfrag = PT.rep(Sfrag, "(", " ");
     Sfrag = PT.rep(Sfrag, ")", " ");
@@ -927,10 +927,10 @@ public class CrystalReader extends AtomSetCollectionReader {
     discardLinesUntilContains("MODES");
     // This line is always there
     boolean haveIntensities = (line.indexOf("INTENS") >= 0);
-    readLine();
+    rd();
     List<String[]> vData = new  List<String[]>();
-    int freqAtomCount = atomCount;
-    while (readLine() != null && line.length() > 0) {
+    int freqAtomCount = ac;
+    while (rd() != null && line.length() > 0) {
       int i0 = parseIntRange(line, 1, 5);
       int i1 = parseIntRange(line, 6, 10);
       String irrep = (isLongMode ? line.substring(48, 51) : line.substring(49,
@@ -948,9 +948,9 @@ public class CrystalReader extends AtomSetCollectionReader {
     discardLinesUntilContains(isLongMode ? "LO MODES FOR IRREP"
         : isVersion3 ? "THE CORRESPONDING MODES"
             : "NORMAL MODES NORMALIZED TO CLASSICAL AMPLITUDES");
-    readLine();
+    rd();
     int lastAtomCount = -1;
-    while (readLine() != null && line.startsWith(" FREQ(CM**-1)")) {
+    while (rd() != null && line.startsWith(" FREQ(CM**-1)")) {
       String[] tokens = getTokensStr(line.substring(15));
       float[] frequencies = new float[tokens.length];
       int frequencyCount = frequencies.length;
@@ -968,27 +968,27 @@ public class CrystalReader extends AtomSetCollectionReader {
         if (ignore[i])
           continue;
         applySymmetryAndSetTrajectory();
-        lastAtomCount = cloneLastAtomSet(atomCount, null);
+        lastAtomCount = cloneLastAtomSet(ac, null);
         if (i == 0)
-          iAtom0 = atomSetCollection.getLastAtomSetAtomIndex();
+          iAtom0 = asc.getLastAtomSetAtomIndex();
         setFreqValue(frequencies[i], tokens);
       }
-      readLine();
+      rd();
       fillFrequencyData(iAtom0, freqAtomCount, lastAtomCount, ignore, false,
           14, 10, atomFrag, 0);
-      readLine();
+      rd();
     }
     return true;
   }
 
   private void setFreqValue(float freq, String[] data) {
     String activity = "IR: " + data[2] + ", Ram.: " + data[3];
-    atomSetCollection.setAtomSetFrequency(null, activity, "" + freq, null);
-    atomSetCollection.setAtomSetModelProperty("IRintensity", data[1] + " km/Mole");
-    atomSetCollection.setAtomSetModelProperty("vibrationalSymmetry", data[0]);
-    atomSetCollection.setAtomSetModelProperty("IRactivity", data[2]);
-    atomSetCollection.setAtomSetModelProperty("Ramanactivity", data[3]);
-    atomSetCollection.setAtomSetName((isLongMode ? "LO " : "") + data[0] + " "
+    asc.setAtomSetFrequency(null, activity, "" + freq, null);
+    asc.setAtomSetModelProperty("IRintensity", data[1] + " km/Mole");
+    asc.setAtomSetModelProperty("vibrationalSymmetry", data[0]);
+    asc.setAtomSetModelProperty("IRactivity", data[2]);
+    asc.setAtomSetModelProperty("Ramanactivity", data[3]);
+    asc.setAtomSetName((isLongMode ? "LO " : "") + data[0] + " "
         + DF.formatDecimal(freq, 2) + " cm-1 ("
         + DF.formatDecimal(PT.fVal(data[1]), 0)
         + " km/Mole), " + activity);
@@ -1019,9 +1019,9 @@ public class CrystalReader extends AtomSetCollectionReader {
         key = "rmsDisplacement";
       else
         break;
-      if (atomSetCollection.atomCount > 0)
-        atomSetCollection.setAtomSetModelProperty(key, tokens[2]);
-      readLine();
+      if (asc.ac > 0)
+        asc.setAtomSetModelProperty(key, tokens[2]);
+      rd();
     }
     return true;
   }
@@ -1052,21 +1052,21 @@ public class CrystalReader extends AtomSetCollectionReader {
    */
   private boolean readData(String name, int nfields) throws Exception {
     createAtomsFromCoordLines();
-    String[] s = new String[atomCount];
-    for (int i = 0; i < atomCount; i++)
+    String[] s = new String[ac];
+    for (int i = 0; i < ac; i++)
       s[i] = "0";
     String data = "";
-    while (readLine() != null && (line.length() < 4 || Character.isDigit(line.charAt(3))))
+    while (rd() != null && (line.length() < 4 || Character.isDigit(line.charAt(3))))
       data += line;
     data = PT.rep(data, "-", " -");
     String[] tokens = getTokensStr(data);
-    for (int i = 0, pt = nfields - 1; i < atomCount; i++, pt += nfields) {
+    for (int i = 0, pt = nfields - 1; i < ac; i++, pt += nfields) {
       int iConv = getAtomIndexFromPrimitiveIndex(i);
       if (iConv >= 0)
         s[iConv] = tokens[pt];
     }
     data = PT.join(s, '\n', 0);
-    atomSetCollection.setAtomSetAtomProperty(name, data, -1);
+    asc.setAtomSetAtomProperty(name, data, -1);
     return true;
   }
 
@@ -1092,8 +1092,8 @@ public class CrystalReader extends AtomSetCollectionReader {
 
   private boolean getQuadrupoleTensors() throws Exception {
      readLines(6);
-     Atom[] atoms = atomSetCollection.atoms;
-     while (readLine() != null  && line.startsWith(" *** ATOM")) {
+     Atom[] atoms = asc.atoms;
+     while (rd() != null  && line.startsWith(" *** ATOM")) {
        String[] tokens = getTokens();
        int index = parseIntStr(tokens[3]) - 1;
        tokens = getTokensStr(readLines(3));
@@ -1101,7 +1101,7 @@ public class CrystalReader extends AtomSetCollectionReader {
            new float[] {parseFloatStr(tokens[1]), 
            parseFloatStr(tokens[3]), 
            parseFloatStr(tokens[5]) }, "quadrupole", atoms[index].atomName), null, false);
-       readLine();
+       rd();
      }
      appendLoadNote("Ellipsoids set \"quadrupole\": Quadrupole tensors");
      return true;
@@ -1119,20 +1119,20 @@ public class CrystalReader extends AtomSetCollectionReader {
 
   private boolean readBornChargeTensors() throws Exception {
     createAtomsFromCoordLines();
-    readLine();
-    Atom[] atoms = atomSetCollection.atoms;
-    while (readLine().startsWith(" ATOM")) {
+    rd();
+    Atom[] atoms = asc.atoms;
+    while (rd().startsWith(" ATOM")) {
       int index = parseIntStr(line.substring(5)) - 1;
       Atom atom = atoms[index];
       readLines(2);
       double[][] a = new double[3][3];
       for (int i = 0; i < 3; i++) {
-        String[] tokens = getTokensStr(readLine());
+        String[] tokens = getTokensStr(rd());
         for (int j = 0; j < 3; j++)
           a[i][j] = parseFloatStr(tokens[j + 1]);
       }
       atom.addTensor(new Tensor().setFromAsymmetricTensor(a, "charge", atom.elementSymbol + (index + 1)), null, false);
-      readLine();
+      rd();
     }
     appendLoadNote("Ellipsoids set \"charge\": Born charge tensors");
     return false;

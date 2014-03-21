@@ -64,13 +64,13 @@ public class XyzReader extends AtomSetCollectionReader {
     vibrationNumber = ++modelNumber;
     if (desiredVibrationNumber <= 0 ? doGetModel(modelNumber, null)
         : doGetVibration(vibrationNumber)) {
-      readLine();
+      rd();
       checkCurrentLineForScript();
-      atomSetCollection.newAtomSet();
+      asc.newAtomSet();
       String name = line;
       readAtoms(modelAtomCount);
       applySymmetryAndSetTrajectory();
-      atomSetCollection.setAtomSetName(name);
+      asc.setAtomSetName(name);
       if (isLastModel(modelNumber)) {
         continuing = false;
         return false;
@@ -89,14 +89,14 @@ public class XyzReader extends AtomSetCollectionReader {
   }
 
   private void skipAtomSet(int modelAtomCount) throws Exception {
-    readLine(); //comment
+    rd(); //comment
     for (int i = modelAtomCount; --i >= 0;)
-      readLine(); //atoms
+      rd(); //atoms
   }
 
   private void readAtoms(int modelAtomCount) throws Exception {
     for (int i = 0; i < modelAtomCount; ++i) {
-      readLine();
+      rd();
       String[] tokens = getTokens();
       if (tokens.length < 4) {
         Logger.warn("line cannot be read for XYZ atom data: " + line);
@@ -141,7 +141,7 @@ public class XyzReader extends AtomSetCollectionReader {
         float vz = parseFloatStr(tokens[vpt++]);
         if (Float.isNaN(vx) || Float.isNaN(vy) || Float.isNaN(vz))
           continue;
-        atomSetCollection.addVibrationVector(atom.index, vx, vy, vz);
+        asc.addVibrationVector(atom.index, vx, vy, vz);
       }
     }
   }

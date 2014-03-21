@@ -58,7 +58,7 @@ public class SmilesGenerator {
 
   // inputs:
   private Node[] atoms;
-  private int atomCount;
+  private int ac;
   private BS bsSelected;
   private BS bsAromatic;
   
@@ -84,23 +84,23 @@ public class SmilesGenerator {
 
   // generation of SMILES strings
 
-  String getSmiles(Node[] atoms, int atomCount, BS bsSelected, boolean explicitH)
+  String getSmiles(Node[] atoms, int ac, BS bsSelected, boolean explicitH)
       throws InvalidSmilesException {
     int i = bsSelected.nextSetBit(0);
     if (i < 0)
       return "";
     this.atoms = atoms;
-    this.atomCount = atomCount;
+    this.ac = ac;
     this.bsSelected = bsSelected = BSUtil.copy(bsSelected);
     this.explicitH = explicitH;
     return getSmilesComponent(atoms[i], bsSelected, false);
   }
 
-  String getBioSmiles(BNode[] atoms, int atomCount, BS bsSelected,
+  String getBioSmiles(BNode[] atoms, int ac, BS bsSelected,
                       boolean allowUnmatchedRings, boolean addCrossLinks, String comment)
       throws InvalidSmilesException {
     this.atoms = atoms;
-    this.atomCount = atomCount;
+    this.ac = ac;
     SB sb = new SB();
     BS bs = BSUtil.copy(bsSelected);
     if (comment != null)
@@ -248,7 +248,7 @@ public class SmilesGenerator {
       if (atoms instanceof BNode[])
         search.bioAtoms = (BNode[]) atoms;
       search.setSelected(bsSelected);
-      search.jmolAtomCount = atomCount;
+      search.jmolAtomCount = ac;
       search.ringDataMax = 7;
       search.setRingData(null);
       bsAromatic = search.bsAromatic;

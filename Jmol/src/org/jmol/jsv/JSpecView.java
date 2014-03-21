@@ -36,8 +36,8 @@ public class JSpecView implements JmolJSpecView {
   
   @SuppressWarnings("unchecked")
   private String getPeakAtomRecord(int atomIndex) {
-    Atom[] atoms = vwr.ms.atoms;
-    int iModel = atoms[atomIndex].modelIndex;
+    Atom[] atoms = vwr.ms.at;
+    int iModel = atoms[atomIndex].mi;
     String type = null;
     switch (atoms[atomIndex].getElementNumber()) {
     case 1:
@@ -90,14 +90,14 @@ public class JSpecView implements JmolJSpecView {
       vwr.scriptEcho(Logger.debugging ? peak : msg);
     peak = vwr.fullName + "JSpecView: " + peak;
     Logger.info("Jmol.JSpecView.sendJSpecView Jmol>JSV " + peak);
-    vwr.statusManager.syncSend(peak, ">", 0);
+    vwr.sm.syncSend(peak, ">", 0);
   }
 
   @Override
   public void setModel(int modelIndex) {
     int syncMode = ("sync on".equals(vwr.ms
         .getModelSetAuxiliaryInfoValue("jmolscript")) ? StatusManager.SYNC_DRIVER
-        : vwr.statusManager.getSyncMode());
+        : vwr.sm.getSyncMode());
     if (syncMode != StatusManager.SYNC_DRIVER)
       return;
     String peak = (String) vwr.getModelAuxiliaryInfoValue(modelIndex, "jdxModelSelect");
@@ -124,7 +124,7 @@ public class JSpecView implements JmolJSpecView {
     default:
       return null;
     case JC.JSV_SEND:
-      vwr.statusManager.syncSend(
+      vwr.sm.syncSend(
           vwr.fullName + "JSpecView" + script.substring(9), ">", 0);
       return null;
     case JC.JSV_SETPEAKS:

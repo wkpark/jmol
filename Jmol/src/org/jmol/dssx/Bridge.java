@@ -45,8 +45,8 @@ class Bridge {
     this.a = a;
     this.b = b;
     ladder = new int[2][2];
-    ladder[0][0] = ladder[0][1] = Math.min(a.index, b.index);
-    ladder[1][0] = ladder[1][1] = Math.max(a.index, b.index);
+    ladder[0][0] = ladder[0][1] = Math.min(a.i, b.i);
+    ladder[1][0] = ladder[1][1] = Math.max(a.i, b.i);
     addLadder(htLadders);
   }
   
@@ -69,8 +69,8 @@ class Bridge {
   }
 
   private boolean canAdd(Bridge bridge) {
-    int index1 = bridge.a.index;
-    int index2 = bridge.b.index;
+    int index1 = bridge.a.i;
+    int index2 = bridge.b.i;
     // no crossing of ladder rungs (2WUJ)
     return (isAntiparallel ?
         (index1 >= ladder[0][1] && index2 <= ladder[1][0] 

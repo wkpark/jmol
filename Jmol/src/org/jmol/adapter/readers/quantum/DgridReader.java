@@ -47,7 +47,7 @@ public class DgridReader extends SlaterReader {
   @Override
   protected boolean checkLine() throws Exception {
     if (line.indexOf(":title") == 0) {
-      title = readLine().substring(2);
+      title = rd().substring(2);
       return true;
     }
     if (line.indexOf("basis:  CARTESIAN  STO") >= 0) {
@@ -84,10 +84,10 @@ public class DgridReader extends SlaterReader {
   C     5:       2.3400     0.0000    -1.3762         4.00
      * 
      */
-    atomSetCollection.newAtomSet();
-    atomSetCollection.setAtomSetName(title);
+    asc.newAtomSet();
+    asc.setAtomSetName(title);
     discardLinesUntilContains("----");
-    while (readLine() != null && !line.startsWith(":-----")) {
+    while (rd() != null && !line.startsWith(":-----")) {
       String[] tokens = getTokens();
       if (tokens.length < 5)
         break;
@@ -114,7 +114,7 @@ public class DgridReader extends SlaterReader {
        */
     discardLinesUntilContains(":-");
     char ch = 'a';    
-    while (readLine() != null && line.indexOf(":-") < 0) {
+    while (rd() != null && line.indexOf(":-") < 0) {
       String atomSymbol = line.substring(3,6).trim();
       String xyz = line.substring(19, 21);
       String code = atomSymbol + xyz;
@@ -145,12 +145,12 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
         break;
       SB data = new SB();
       data.append(line.substring(15));
-      while (readLine() != null && line.length() >= 15)
+      while (rd() != null && line.length() >= 15)
         data.append(line);
       String[] tokens = getTokensStr(data.toString());
       int nFuncs = tokens.length / 2;
       int[] ptSlater = new int[nFuncs];
-      Atom[] atoms = atomSetCollection.atoms;
+      Atom[] atoms = asc.atoms;
       for (int i = 0, pt = 0; i < tokens.length;) {
         int iAtom = parseIntStr(tokens[i++]) - 1;
         String code = tokens[i++];
@@ -166,13 +166,13 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
         }
       }
       discardLinesUntilContains(":-");
-      readLine();
+      rd();
       while (line != null && line.length() >= 20) {
         int iOrb = parseIntRange(line, 0, 10);
         float energy = parseFloatRange(line, 10, 20);
         SB cData = new SB();
         cData.append(line.substring(20));
-        while (readLine() != null && line.length() >= 10) {
+        while (rd() != null && line.length() >= 10) {
           if (line.charAt(3) != ' ')
             break;
           cData.append(line);
@@ -210,9 +210,9 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
    3  A1                3      1.00000000000    1.00000000000
      */
     discardLinesUntilContains(":  #  symmetry");
-    readLine();
+    rd();
     for (int i = 0; i < orbitals.size(); i++) {
-      readLine();
+      rd();
       float occupancy = parseFloatRange(line, 31, 45) + parseFloatRange(line, 47, 61);
       orbitals.get(i).put("occupancy", Float.valueOf(occupancy));
     }

@@ -74,11 +74,11 @@ public class HyperChemReader extends AtomSetCollectionReader {
   private int baseAtomIndex;
 
   private void processMol() throws Exception {
-    atomSetCollection.newAtomSet();
+    asc.newAtomSet();
     String molName = getMolName();
-    atomSetCollection.setAtomSetName(molName);
+    asc.setAtomSetName(molName);
     atomIndex = 0;
-    baseAtomIndex = atomSetCollection.atomCount;
+    baseAtomIndex = asc.ac;
   }
 
   private String getMolName() {
@@ -94,7 +94,7 @@ public class HyperChemReader extends AtomSetCollectionReader {
       throw new Exception ("bad atom number sequence ... expected:" +
         (atomIndex + 1) + " found:" + fileAtomNumber);
     }
-    Atom atom = atomSetCollection.addNewAtom();
+    Atom atom = asc.addNewAtom();
     parseToken(); // discard
     atom.elementSymbol = parseToken();
     parseToken(); // discard
@@ -126,7 +126,7 @@ public class HyperChemReader extends AtomSetCollectionReader {
         throw new Exception ("unrecognized bond type:" + bondTypeToken +
           " atom #" + fileAtomNumber);
       }
-      atomSetCollection.addNewBondWithOrder(baseAtomIndex + atomIndex,
+      asc.addNewBondWithOrder(baseAtomIndex + atomIndex,
                        baseAtomIndex + otherAtomNumber - 1,
                        bondOrder);
     }

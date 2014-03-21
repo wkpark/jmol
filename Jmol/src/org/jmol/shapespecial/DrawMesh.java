@@ -83,17 +83,17 @@ public class DrawMesh extends Mesh {
     int iptlast = -1;
     int ipt = 0;
     int n = 0;
-    for (int i = polygonCount; --i >= 0;) {
-      if (iModel >=0 && i != iModel || polygonIndexes[i] == null)
+    for (int i = pc; --i >= 0;) {
+      if (iModel >=0 && i != iModel || pis[i] == null)
         continue;
       iptlast = -1;
       for (int iV = (drawType == EnumDrawType.POLYGON) ? 3 
-          : polygonIndexes[i].length; --iV >= 0;) {
-        ipt = polygonIndexes[i][iV];
+          : pis[i].length; --iV >= 0;) {
+        ipt = pis[i][iV];
         if (ipt == iptlast)
           continue;
         iptlast = ipt;
-        center.add(vertices[ipt]);
+        center.add(vs[ipt]);
         n++;
       }
       if (n > 0 && (i == iModel || i == 0)) {
@@ -116,10 +116,10 @@ public class DrawMesh extends Mesh {
   }
 
   public void deleteAtoms(int modelIndex) {
-    if (modelIndex >= polygonCount)
+    if (modelIndex >= pc)
       return;
-    polygonCount--;
-    polygonIndexes = (int[][]) AU.deleteElements(polygonIndexes, modelIndex, 1);
+    pc--;
+    pis = (int[][]) AU.deleteElements(pis, modelIndex, 1);
     drawTypes = (EnumDrawType[]) AU.deleteElements(drawTypes, modelIndex, 1);
     drawVertexCounts = (int[]) AU.deleteElements(drawVertexCounts, modelIndex, 1);
     ptCenters = (P3[]) AU.deleteElements(ptCenters, modelIndex, 1);

@@ -130,17 +130,17 @@ public class SmilesSearch extends JmolMolecule {
     
 
   void setAtomArray() {
-    if (patternAtoms.length > atomCount)
-      patternAtoms = (SmilesAtom[]) AU.arrayCopyObject(patternAtoms, atomCount);
+    if (patternAtoms.length > ac)
+      patternAtoms = (SmilesAtom[]) AU.arrayCopyObject(patternAtoms, ac);
     nodes = patternAtoms;
   }
 
   SmilesAtom addAtom() {
-    if (atomCount >= patternAtoms.length)
+    if (ac >= patternAtoms.length)
       patternAtoms = (SmilesAtom[]) AU.doubleLength(patternAtoms);
-    SmilesAtom sAtom = new SmilesAtom().setIndex(atomCount);
-    patternAtoms[atomCount] = sAtom;
-    atomCount++;
+    SmilesAtom sAtom = new SmilesAtom().setIndex(ac);
+    patternAtoms[ac] = sAtom;
+    ac++;
     return sAtom;
   }
 
@@ -170,7 +170,7 @@ public class SmilesSearch extends JmolMolecule {
   int getMissingHydrogenCount() {
     int n = 0;
     int nH;
-    for (int i = 0; i < atomCount; i++)
+    for (int i = 0; i < ac; i++)
       if ((nH = patternAtoms[i].missingHydrogenCount) >= 0)
           n += nH;
     return n;
@@ -412,7 +412,7 @@ public class SmilesSearch extends JmolMolecule {
             break;
         }
       }
-    } else if (atomCount > 0) {
+    } else if (ac > 0) {
       checkMatch(null, -1, -1, firstAtomOnly);
     }
     return (asVector || getMaps ? (Object) vReturn : bsReturn);
@@ -550,7 +550,7 @@ public class SmilesSearch extends JmolMolecule {
     Node jmolAtom;
     Edge[] jmolBonds;
 
-    if (++atomNum < atomCount) {
+    if (++atomNum < ac) {
 
       //System.out.println("atomno=" + atomNum + " bsFound = " + bsFound + " " + this);
       // so far, so good... not done yet... on to the next position...
@@ -701,7 +701,7 @@ public class SmilesSearch extends JmolMolecule {
     
     BS bs = new BS();
     int nMatch = 0;
-    for (int j = 0; j < atomCount; j++) {
+    for (int j = 0; j < ac; j++) {
       int i = patternAtoms[j].getMatchingAtom();
       if (!firstAtomOnly && top.haveSelected && !patternAtoms[j].selected)
         continue;
@@ -721,14 +721,14 @@ public class SmilesSearch extends JmolMolecule {
     if (bsCheck != null) {
       if (firstAtomOnly) {
         bsCheck.clearAll();
-        for (int j = 0; j < atomCount; j++) {
+        for (int j = 0; j < ac; j++) {
           //System.out.println("checking return for " + patternAtoms[j]);
           bsCheck.set(patternAtoms[j].getMatchingAtom());
         }
-        if (bsCheck.cardinality() != atomCount)
+        if (bsCheck.cardinality() != ac)
           return true;
       } else {
-        if (bs.cardinality() != atomCount)
+        if (bs.cardinality() != ac)
           return true;
       }
     }
@@ -737,7 +737,7 @@ public class SmilesSearch extends JmolMolecule {
     if (getMaps) {
       // every map is important always -- why??
       int[] map = new int[nMatch];
-      for (int j = 0, nn = 0; j < atomCount; j++) {
+      for (int j = 0, nn = 0; j < ac; j++) {
         if (!firstAtomOnly && top.haveSelected && !patternAtoms[j].selected)
           continue;
         map[nn++] = patternAtoms[j].getMatchingAtom();
@@ -1124,18 +1124,18 @@ public class SmilesSearch extends JmolMolecule {
       SmilesAtom sAtom1 = null, sAtom2 = null;
       Node[] jn;
       //for debugging, first try SET DEBUG
-      //for (int i = 0; i < atomCount; i++) {
+      //for (int i = 0; i < ac; i++) {
       //  SmilesAtom sAtom = patternAtoms[i];
       //  System.out.print(sAtom + "=");
       //}
       //System.out.println("");
-      //for (int i = 0; i < atomCount; i++) {
+      //for (int i = 0; i < ac; i++) {
       //  SmilesAtom sAtom = patternAtoms[i];
       //  JmolSmilesNode atom0 = jmolAtoms[sAtom.getMatchingAtom()];
       //  System.out.print(atom0.getIndex() + "-");
       //}
       //System.out.println("");
-      for (int i = 0; i < atomCount; i++) {
+      for (int i = 0; i < ac; i++) {
         SmilesAtom sAtom = patternAtoms[i];
         Node atom0 = jmolAtoms[sAtom.getMatchingAtom()];
         int nH = sAtom.missingHydrogenCount;
@@ -1268,7 +1268,7 @@ public class SmilesSearch extends JmolMolecule {
     // next, /C=C/ double bond stereochemistry
 
     if (haveBondStereochemistry) {
-      for (int k = 0; k < atomCount; k++) {
+      for (int k = 0; k < ac; k++) {
         SmilesAtom sAtom1 = patternAtoms[k];
         SmilesAtom sAtom2 = null;
         SmilesAtom sAtomDirected1 = null;
@@ -1789,11 +1789,11 @@ public class SmilesSearch extends JmolMolecule {
     if (bsAromatic == null)
       bsAromatic = new BS();
     int nAtomsMissing = getMissingHydrogenCount();
-    SmilesAtom[] atoms = new SmilesAtom[atomCount + nAtomsMissing];
+    SmilesAtom[] atoms = new SmilesAtom[ac + nAtomsMissing];
     jmolAtoms = atoms;
     int ptAtom = 0;
     BS bsFixH = new BS();
-    for (int i = 0; i < atomCount; i++) {
+    for (int i = 0; i < ac; i++) {
       SmilesAtom sAtom = patternAtoms[i];
       int cclass = sAtom.getChiralClass();
       int n = sAtom.missingHydrogenCount;
@@ -1843,7 +1843,7 @@ public class SmilesSearch extends JmolMolecule {
     }
 
     // set up bonds
-    for (int i = 0; i < atomCount; i++) {
+    for (int i = 0; i < ac; i++) {
       SmilesAtom sAtom = patternAtoms[i];
       int i1 = sAtom.getMatchingAtom();
       SmilesAtom atom1 = atoms[i1];

@@ -326,22 +326,22 @@ public class _ObjExporter extends __CartesianExporter {
   protected void drawSurface(MeshSurface meshSurface, short colix) {
     if (Logger.debugging) {
       debugPrint("outputSurface");
-      debugPrint("  nVertices=" + meshSurface.vertexCount);
+      debugPrint("  nVertices=" + meshSurface.vc);
       if (meshSurface.normals == null) {
         debugPrint("  no vertex normals");
       } else {
-        debugPrint("  nNormals=" + meshSurface.vertexCount);
+        debugPrint("  nNormals=" + meshSurface.vc);
       }
-      if (meshSurface.polygonColixes == null) {
+      if (meshSurface.pcs == null) {
         debugPrint("  no vertex colors");
       } else {
-        debugPrint("  nColixes=" + meshSurface.vertexCount);
+        debugPrint("  nColixes=" + meshSurface.vc);
       }
-      debugPrint("  number of triangles or quads=" + meshSurface.polygonCount);
-      if (meshSurface.polygonColixes == null) {
+      debugPrint("  number of triangles or quads=" + meshSurface.pc);
+      if (meshSurface.pcs == null) {
         debugPrint("  no face colors");
       } else {
-        debugPrint("  nPolygonColixes=" + meshSurface.polygonCount);
+        debugPrint("  nPolygonColixes=" + meshSurface.pc);
       }
       if (meshSurface.bsPolygons == null) {
         debugPrint("  all polygons used");
@@ -354,21 +354,21 @@ public class _ObjExporter extends __CartesianExporter {
     // Create reduced face set
     
     BS bsPolygons = meshSurface.bsPolygons;
-    int nPolygons = meshSurface.polygonCount;
+    int nPolygons = meshSurface.pc;
     if (meshSurface.normals != null)
-      meshSurface.normalCount = meshSurface.vertexCount;
+      meshSurface.normalCount = meshSurface.vc;
     boolean isAll = (bsPolygons == null);
     int[][] faces = AU.newInt2(isAll ? nPolygons : bsPolygons.cardinality());
     int i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit(0));
     for (int i = i0, ipt = 0; i >= 0; i = isAll ? i - 1 : bsPolygons
         .nextSetBit(i + 1)) {
-      int[] polygon = meshSurface.polygonIndexes[i];
+      int[] polygon = meshSurface.pis[i];
       faces[ipt++] = (meshSurface.haveQuads ? polygon : new int[] {
           polygon[0], polygon[1], polygon[2] });
     }
-    MeshSurface data = MeshSurface.newMesh(false, meshSurface.vertices, meshSurface.vertexCount, faces,
+    MeshSurface data = MeshSurface.newMesh(false, meshSurface.vs, meshSurface.vc, faces,
         meshSurface.normals, 0);
-    data.vertexColixes = meshSurface.vertexColixes;
+    data.vcs = meshSurface.vcs;
     // Do the texture
     String name = "Surface" + surfaceNum++;
     boolean isSolidColor = (colix != 0);
@@ -752,7 +752,7 @@ public class _ObjExporter extends __CartesianExporter {
     // vertices
     
     T3[] vertices = data.getVertices();
-    int nVertices = data.vertexCount;
+    int nVertices = data.vc;
     int[] map = new int[nVertices];
     int nCoord = getCoordinateMap(vertices, map, bsValid);
     output("# Number of vertices: " + nCoord + "\n");
@@ -905,8 +905,8 @@ public class _ObjExporter extends __CartesianExporter {
     // files.  Create the file even if it will be empty so we can denote that
     // in the console output.
     // Check input 
-    short[] colixes = (data.polygonColixes == null ? data.vertexColixes
-        : data.polygonColixes);
+    short[] colixes = (data.pcs == null ? data.vcs
+        : data.pcs);
     if (colixes == null || colixes.length == 0) {
       debugPrint("createTextureFile: Array problem");
       debugPrint("  colixes=" + colixes + " data=" + data);
@@ -916,7 +916,7 @@ public class _ObjExporter extends __CartesianExporter {
       return null;
     }
 
-    int nUsed = data.polygonIndexes.length;
+    int nUsed = data.pis.length;
     if (nUsed <= 0) {
       debugPrint("createTextureFile: nFaces = 0");
       return null;
@@ -938,10 +938,10 @@ public class _ObjExporter extends __CartesianExporter {
     byte[][] bytes = (textureType.equals("tga") ? new byte[h][w * 3] : null);
     int[] rgbbuf = (bytes == null ? new int[h * w] : null);
 
-    for (int i = 0; i < data.polygonIndexes.length; i++) {
+    for (int i = 0; i < data.pis.length; i++) {
       int rgb;
-      if (data.polygonColixes == null) {
-        int[] face = data.polygonIndexes[i];
+      if (data.pcs == null) {
+        int[] face = data.pis[i];
         // Get the vertex colors and average them
         sum.set(0, 0, 0);
         for (int iVertex : face)

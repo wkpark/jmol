@@ -338,7 +338,7 @@ public class ScriptManager implements JmolScriptManager {
     // "+scriptStarted,+scriptStatus,+scriptEcho,+scriptTerminated"
     // set up first with applet.jmolGetProperty("jmolStatus",statusList)
     // flush list
-    String oldStatusList = vwr.statusManager.getStatusList();
+    String oldStatusList = vwr.sm.getStatusList();
     vwr.getStatusChanged(statusList);
     if (vwr.isSyntaxCheck)
       Logger.info("--checking script:\n" + eval.getScript() + "\n----\n");
@@ -432,7 +432,7 @@ public class ScriptManager implements JmolScriptManager {
     // we append #NOSYNC; here so that the receiving applet does not attempt
     // to pass it back to us or any other applet.
     //System.out.println("OK, I'm in evalStringQUiet");
-    if (allowSyncScript && vwr.statusManager.syncingScripts
+    if (allowSyncScript && vwr.sm.syncingScripts
         && strScript.indexOf("#NOSYNC;") < 0)
       vwr.syncScript(strScript + " #NOSYNC;", null, 0);
     if (eval.isPaused() && strScript.charAt(0) != '!')
@@ -594,7 +594,7 @@ public class ScriptManager implements JmolScriptManager {
       return fileName.substring(0, pt);
     if (fileName.startsWith("="))
       return "pdb";
-    Object br = vwr.fileManager.getUnzippedReaderOrStreamFromName(fileName, null,
+    Object br = vwr.fm.getUnzippedReaderOrStreamFromName(fileName, null,
         true, false, true, true, null);
     if (br instanceof BufferedReader)
       return vwr.getModelAdapter().getFileTypeName(br);
@@ -612,7 +612,7 @@ public class ScriptManager implements JmolScriptManager {
   }
 
   private String getZipDirectoryAsString(String fileName) {
-    Object t = vwr.fileManager.getBufferedInputStreamOrErrorMessageFromName(
+    Object t = vwr.fm.getBufferedInputStreamOrErrorMessageFromName(
         fileName, fileName, false, false, null, false, true);
     return Rdr.getZipDirectoryAsStringAndClose((BufferedInputStream) t);
   }
@@ -652,7 +652,7 @@ public class ScriptManager implements JmolScriptManager {
   public BS addHydrogensInline(BS bsAtoms, List<Atom> vConnections, P3[] pts)
       throws Exception {
     int modelIndex = vwr.getAtomModelIndex(bsAtoms.nextSetBit(0));
-    if (modelIndex != vwr.ms.modelCount - 1)
+    if (modelIndex != vwr.ms.mc - 1)
       return new BS();
 
     // must be added to the LAST data set only
@@ -668,7 +668,7 @@ public class ScriptManager implements JmolScriptManager {
       Atom a = vConnections.get(i);
       sbConnect.append(";  connect 0 100 ")
           .append("({" + (atomIndex++) + "}) ")
-          .append("({" + a.index + "}) group;");
+          .append("({" + a.i + "}) group;");
     }
     SB sb = new SB();
     sb.appendI(pts.length).append("\n").append(JC.ADD_HYDROGEN_TITLE)

@@ -492,12 +492,12 @@ public class Symmetry implements SymmetryInterface {
     Object[][] infolist = null;
     if (spaceGroup == null) {
       if (modelIndex <= 0)
-        modelIndex = (pt1 instanceof Atom ? ((Atom) pt1).modelIndex
+        modelIndex = (pt1 instanceof Atom ? ((Atom) pt1).mi
             : modelSet.vwr.getCurrentModelIndex());
       boolean isBio = false;
       if (modelIndex < 0)
         strOperations = "no single current model";
-      else if (!(isBio = (cellInfo = modelSet.models[modelIndex].biosymmetry) != null)
+      else if (!(isBio = (cellInfo = modelSet.am[modelIndex].biosymmetry) != null)
           && (cellInfo = modelSet.getUnitCell(modelIndex)) == null)
         strOperations = "not applicable";
       if (strOperations != null) {
@@ -593,7 +593,7 @@ public class Symmetry implements SymmetryInterface {
     if (iSym < 0)
       return "";
     Object[] info;
-    pt = P3.newP(pt == null ? modelSet.atoms[iAtom] : pt);
+    pt = P3.newP(pt == null ? modelSet.at[iAtom] : pt);
     if (type == T.point) {
       if (isBio)
         return "";
@@ -665,8 +665,8 @@ public class Symmetry implements SymmetryInterface {
       int iAtom0 = bsAtoms.nextSetBit(0);
       JmolMolecule[] molecules = modelSet.getMolecules();
       int moleculeCount = molecules.length;
-      Atom[] atoms = modelSet.atoms;
-      boolean isOneMolecule = (molecules[moleculeCount - 1].firstAtomIndex == modelSet.models[atoms[iAtom0].modelIndex].firstAtomIndex);
+      Atom[] atoms = modelSet.at;
+      boolean isOneMolecule = (molecules[moleculeCount - 1].firstAtomIndex == modelSet.am[atoms[iAtom0].mi].firstAtomIndex);
       P3 center = new P3();
       boolean centroidPacked = (minmax[6] == 1);
       nextMol: for (int i = moleculeCount; --i >= 0

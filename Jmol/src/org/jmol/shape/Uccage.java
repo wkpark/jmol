@@ -36,7 +36,7 @@ public class Uccage extends FontLineShape {
   
   @Override
   public String getShapeState() {
-    if (!modelSet.haveUnitCells)
+    if (!ms.haveUnitCells)
       return "";
     String s = super.getShapeState();
     int iAtom = vwr.getCurrentAtom();

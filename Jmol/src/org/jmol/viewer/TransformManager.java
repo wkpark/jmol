@@ -120,7 +120,7 @@ public class TransformManager {
     //}
     setZoomEnabled(true);
     zoomToPercent(vwr.g.modelKitMode ? 50 : 100);
-    zoomPercent = zoomPercentSetting;
+    zmPct = zmPctSet;
     slabReset();
     resetFitToScreen(true);
     if (vwr.isJmolDataFrame()) {
@@ -663,7 +663,7 @@ public class TransformManager {
     info.put("rotateXYZ", getRotateXyzText());
     info.put("transXPercent", Float.valueOf(getTranslationXPercent()));
     info.put("transYPercent", Float.valueOf(getTranslationYPercent()));
-    info.put("zoom", Float.valueOf(zoomPercent));
+    info.put("zoom", Float.valueOf(zmPct));
     info.put("modelRadius", Float.valueOf(modelRadius));
     if (mode == MODE_NAVIGATION) {
       info.put("navigationCenter", "navigate center "
@@ -706,10 +706,10 @@ public class TransformManager {
    ****************************************************************/
   boolean zoomEnabled = true;
   // zoomPercent is the current displayed zoom value
-  public float zoomPercent = 100;
+  public float zmPct = 100;
   // zoomPercentSetting is the current setting of zoom
   // if zoom is not enabled then the two values will be different
-  float zoomPercentSetting = 100;
+  float zmPctSet = 100;
   float zoomRatio;
 
   /**
@@ -722,19 +722,19 @@ public class TransformManager {
       pixels = 20;
     else if (pixels < -20)
       pixels = -20;
-    float deltaPercent = pixels * zoomPercentSetting / 50;
+    float deltaPercent = pixels * zmPctSet / 50;
     if (deltaPercent == 0)
       deltaPercent = (pixels > 0 ? 1 : (deltaPercent < 0 ? -1 : 0));
-    zoomRatio = (deltaPercent + zoomPercentSetting) / zoomPercentSetting;
-    zoomPercentSetting += deltaPercent;
+    zoomRatio = (deltaPercent + zmPctSet) / zmPctSet;
+    zmPctSet += deltaPercent;
   }
 
   float getZoomPercentFloat() {
-    return zoomPercent;
+    return zmPct;
   }
 
   public void zoomToPercent(float percentZoom) {
-    zoomPercentSetting = percentZoom;
+    zmPctSet = percentZoom;
     zoomRatio = 0;
   }
 
@@ -746,8 +746,8 @@ public class TransformManager {
     if (sppa >= screenPixelCount)
       return;
     float newZoomPercent = sppa / scaleDefaultPixelsPerAngstrom * 100f;
-    zoomRatio = newZoomPercent / zoomPercentSetting;
-    zoomPercentSetting = newZoomPercent;
+    zoomRatio = newZoomPercent / zmPctSet;
+    zmPctSet = newZoomPercent;
   }
 
   void zoomByFactor0(float factor, int x, int y) {
@@ -755,7 +755,7 @@ public class TransformManager {
     if (factor <= 0 || !zoomEnabled)
       return;
     zoomRatio = factor;
-    zoomPercentSetting *= factor;
+    zmPctSet *= factor;
     resetXYCenter(x, y);
   }
 
@@ -773,11 +773,11 @@ public class TransformManager {
   }
 
   void zoomByPercent(float percentZoom) {
-    float deltaPercent = percentZoom * zoomPercentSetting / 100;
+    float deltaPercent = percentZoom * zmPctSet / 100;
     if (deltaPercent == 0)
       deltaPercent = (percentZoom < 0) ? -1 : 1;
-    zoomRatio = (deltaPercent + zoomPercentSetting) / zoomPercentSetting;
-    zoomPercentSetting += deltaPercent;
+    zoomRatio = (deltaPercent + zmPctSet) / zmPctSet;
+    zmPctSet += deltaPercent;
   }
 
   void setScaleAngstromsPerInch(float angstromsPerInch) {
@@ -1389,8 +1389,8 @@ public class TransformManager {
     camera.setT(cameraSetting);
     internalSlab = slabEnabled && (slabPlane != null || depthPlane != null);
     float newZoom = getZoomSetting();
-    if (zoomPercent != newZoom) {
-      zoomPercent = newZoom;
+    if (zmPct != newZoom) {
+      zmPct = newZoom;
       if (!vwr.g.fontCaching)
         vwr.getGraphicsData().clearFontCache();
     }
@@ -1403,11 +1403,11 @@ public class TransformManager {
   }
 
   float getZoomSetting() {
-    if (zoomPercentSetting < 5)
-      zoomPercentSetting = 5;
-    if (zoomPercentSetting > MAXIMUM_ZOOM_PERCENTAGE)
-      zoomPercentSetting = MAXIMUM_ZOOM_PERCENTAGE;
-    return (zoomEnabled || mode == MODE_NAVIGATION ? zoomPercentSetting : 100);
+    if (zmPctSet < 5)
+      zmPctSet = 5;
+    if (zmPctSet > MAXIMUM_ZOOM_PERCENTAGE)
+      zmPctSet = MAXIMUM_ZOOM_PERCENTAGE;
+    return (zoomEnabled || mode == MODE_NAVIGATION ? zmPctSet : 100);
   }
 
   /**
@@ -1423,7 +1423,7 @@ public class TransformManager {
       slabValue = zValueFromPercent(slabPercentSetting);
     else
       slabValue = (int) Math.floor(modelCenterOffset * slabRange
-          / (2 * modelRadius) * (zoomPercentSetting / 100));
+          / (2 * modelRadius) * (zmPctSet / 100));
     depthValue = zValueFromPercent(depthPercentSetting);
     if (zSlabPercentSetting == zDepthPercentSetting) {
       zSlabValue = slabValue;
@@ -1794,7 +1794,7 @@ public class TransformManager {
     sb.append(" ").append(getRotationText());
     if (addComments)
       sb.append(" /* zoom, translation */ ");
-    truncate2(sb, zoomPercentSetting);
+    truncate2(sb, zmPctSet);
     truncate2(sb, getTranslationXPercent());
     truncate2(sb, getTranslationYPercent());
     sb.append(" ");
@@ -1848,9 +1848,9 @@ public class TransformManager {
   }
 
   private void addZoomTranslationNavigationText(SB sb) {
-    if (zoomPercent != 100) {
+    if (zmPct != 100) {
       sb.append(" zoom");
-      truncate2(sb, zoomPercent);
+      truncate2(sb, zmPct);
       sb.append(";");
     }
     float tX = getTranslationXPercent();
@@ -2372,7 +2372,7 @@ public class TransformManager {
     modelCenterOffset = referencePlaneOffset;
     // now factor the scale by distance from camera and zoom
     if (!scale3D || perspectiveDepth)
-      scalePixelsPerAngstrom *= (modelCenterOffset / offset100) * zoomPercent
+      scalePixelsPerAngstrom *= (modelCenterOffset / offset100) * zmPct
           / 100; // (s/m)
 
     // so that's sppa = (spc / vR) * rPO * (vR / 2) / mR * rPO = spc/2/mR
@@ -2387,23 +2387,23 @@ public class TransformManager {
   private void calcNavCameraFactors(float offset100) {
     if (zoomFactor == Float.MAX_VALUE) {
       // entry point
-      if (zoomPercent > MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
-        zoomPercent = MAXIMUM_ZOOM_PERSPECTIVE_DEPTH;
+      if (zmPct > MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
+        zmPct = MAXIMUM_ZOOM_PERSPECTIVE_DEPTH;
       // screen offset to fixed rotation center
-      modelCenterOffset = offset100 * 100 / zoomPercent;
-    } else if (prevZoomSetting != zoomPercentSetting) {
+      modelCenterOffset = offset100 * 100 / zmPct;
+    } else if (prevZoomSetting != zmPctSet) {
       if (zoomRatio == 0) // scripted change zoom xxx
-        modelCenterOffset = offset100 * 100 / zoomPercentSetting;
+        modelCenterOffset = offset100 * 100 / zmPctSet;
       else
         // fractional change by script or mouse
         modelCenterOffset += (1 - zoomRatio) * referencePlaneOffset;
       navMode = NAV_MODE_ZOOMED;
     }
-    prevZoomSetting = zoomPercentSetting;
+    prevZoomSetting = zmPctSet;
     zoomFactor = modelCenterOffset / referencePlaneOffset;
     // infinite or negative value means there is no corresponding non-navigating
     // zoom setting
-    zoomPercent = (zoomFactor == 0 ? MAXIMUM_ZOOM_PERSPECTIVE_DEPTH : offset100
+    zmPct = (zoomFactor == 0 ? MAXIMUM_ZOOM_PERSPECTIVE_DEPTH : offset100
         / modelCenterOffset * 100);
 
   }
@@ -2548,7 +2548,7 @@ public class TransformManager {
    * @param doResetSlab
    */
   protected void resetNavigationPoint(boolean doResetSlab) {
-    if (zoomPercent < 5 && mode != MODE_NAVIGATION) {
+    if (zmPct < 5 && mode != MODE_NAVIGATION) {
       perspectiveDepth = true;
       mode = MODE_NAVIGATION;
       return;
@@ -2565,7 +2565,7 @@ public class TransformManager {
       setSlabEnabled(mode == MODE_NAVIGATION);
     }
     zoomFactor = Float.MAX_VALUE;
-    zoomPercentSetting = zoomPercent;
+    zmPctSet = zmPct;
   }
 
   /**

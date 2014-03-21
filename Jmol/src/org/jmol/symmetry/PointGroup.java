@@ -191,7 +191,7 @@ class PointGroup {
     cosTolerance = (float) (Math.cos(linearTolerance / 180 * Math.PI));
     if (!getAtomsAndElements(atomset, bsAtoms)) {
       Logger.error("Too many atoms for point group calculation");
-      name = "point group not determined -- atomCount > " + ATOM_COUNT_MAX
+      name = "point group not determined -- ac > " + ATOM_COUNT_MAX
           + " -- select fewer atoms and try again.";
       return true;
     }
@@ -364,13 +364,13 @@ class PointGroup {
 
   private final static int ATOM_COUNT_MAX = 100;
   private boolean getAtomsAndElements(Atom[] atomset, BS bsAtoms) {
-    int atomCount = BSUtil.cardinalityOf(bsAtoms);
-    if (atomCount > ATOM_COUNT_MAX)
+    int ac = BSUtil.cardinalityOf(bsAtoms);
+    if (ac > ATOM_COUNT_MAX)
       return false;
-    points = new P3[atomCount];
-    atoms = new Atom[atomCount];
-    elements = new int[atomCount];
-    if (atomCount == 0) 
+    points = new P3[ac];
+    atoms = new Atom[ac];
+    elements = new int[ac];
+    if (ac == 0) 
       return true;
     nAtoms = 0;
     for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {

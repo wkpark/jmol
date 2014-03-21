@@ -107,7 +107,7 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
     isVdw = (rd != null);
     if (isVdw) {
       radiusData = rd;
-      atoms = modelSet.atoms;
+      atoms = modelSet.at;
       vwr = modelSet.vwr;
       distance = (rd.factorType == EnumType.OFFSET ? 5f + rd.value : 5f * rd.value);
       vdw1 = atoms[atomIndex].getVanderwaalsRadiusFloat(vwr, rd.vdwType);
@@ -140,7 +140,7 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
     if (atomIndex >= 0)
       while (cubeIterator.hasMoreElements()) {
         Atom a = (Atom) cubeIterator.nextElement();
-        if ((iNext = a.index) != atomIndex
+        if ((iNext = a.i) != atomIndex
             && (!checkGreater || iNext > atomIndex)
             && (bsSelected == null || bsSelected.get(iNext))) {
           return true;
@@ -148,7 +148,7 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
       }
     else if (cubeIterator.hasMoreElements()) {
       Atom a = (Atom) cubeIterator.nextElement();
-      iNext = a.index;
+      iNext = a.i;
       return true;
     }
     iNext = -1;

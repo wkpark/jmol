@@ -110,7 +110,7 @@ public abstract class Monomer extends Group {
         return -1;
       if ("0".equals(name))
         return m.leadAtomIndex;
-      Atom[] atoms = chain.model.modelSet.atoms;
+      Atom[] atoms = chain.model.ms.at;
       // this is OK -- only used for finding special atom by name
       for (int i = m.firstAtomIndex; i <= m.lastAtomIndex; i++)
         if (name == null || name.equalsIgnoreCase(atoms[i].getAtomName()))

@@ -135,7 +135,7 @@ public abstract class AtomSetCollectionReader {
 
   public boolean isBinary;
 
-  public AtomSetCollection atomSetCollection;
+  public AtomSetCollection asc;
   protected BufferedReader reader;
   protected GenericBinaryDocument binaryDoc;
   protected String readerName;
@@ -231,15 +231,15 @@ public abstract class AtomSetCollectionReader {
 
   Object readData() throws Exception {
     initialize();
-    atomSetCollection = new AtomSetCollection(readerName, this, null, null);
+    asc = new AtomSetCollection(readerName, this, null, null);
     try {
       initializeReader();
       if (binaryDoc == null) {
         if (line == null && continuing)
-          readLine();
+          rd();
         while (line != null && continuing)
           if (checkLine())
-            readLine();
+            rd();
       } else {
         binaryDoc.setOutputChannel(out);
         processBinaryDocument();
@@ -262,8 +262,8 @@ public abstract class AtomSetCollectionReader {
     try {
     int baseAtomIndex = ((Integer) htParams.get("baseAtomIndex")).intValue();
     int baseModelIndex = ((Integer) htParams.get("baseModelIndex")).intValue();
-    baseAtomIndex += atomSetCollection.atomCount;
-    baseModelIndex += atomSetCollection.atomSetCount;
+    baseAtomIndex += asc.ac;
+    baseModelIndex += asc.atomSetCount;
     htParams.put("baseAtomIndex", Integer.valueOf(baseAtomIndex));
     htParams.put("baseModelIndex", Integer.valueOf(baseModelIndex));
     } catch (Exception e) {
@@ -273,7 +273,7 @@ public abstract class AtomSetCollectionReader {
 
   protected Object readDataObject(Object node) throws Exception {
     initialize();
-    atomSetCollection = new AtomSetCollection(readerName, this, null, null);
+    asc = new AtomSetCollection(readerName, this, null, null);
     initializeReader();
     processDOM(node);
     return finish();
@@ -342,7 +342,7 @@ public abstract class AtomSetCollectionReader {
   @SuppressWarnings("unchecked")
   protected void initializeTrajectoryFile() {
     // add a dummy atom, just so not "no atoms found"
-    atomSetCollection.addAtom(new Atom());
+    asc.addAtom(new Atom());
     trajectorySteps = (List<P3[]>) htParams.get("trajectorySteps");
     if (trajectorySteps == null)
       htParams.put("trajectorySteps", trajectorySteps = new  List<P3[]>());
@@ -359,63 +359,63 @@ public abstract class AtomSetCollectionReader {
   protected void finalizeReaderASCR() throws Exception {
     applySymmetryAndSetTrajectory();
     setLoadNote();
-    atomSetCollection.finalizeStructures();
+    asc.finalizeStructures();
     if (doCentralize)
-      atomSetCollection.centralize();
+      asc.centralize();
   }
 
   /////////////////////////////////////////////////////////////////////////////////////
 
   protected void setLoadNote() {
     if (loadNote.length() > 0)
-      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("modelLoadNote", loadNote.toString());
+      asc.setAtomSetCollectionAuxiliaryInfo("modelLoadNote", loadNote.toString());
   }
 
   public void setIsPDB() {
-    atomSetCollection.setGlobalBoolean(AtomSetCollection.GLOBAL_ISPDB);
-    atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
+    asc.setGlobalBoolean(AtomSetCollection.GLOBAL_ISPDB);
+    asc.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
     if (htParams.get("pdbNoHydrogens") != null)
-      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("pdbNoHydrogens",
+      asc.setAtomSetCollectionAuxiliaryInfo("pdbNoHydrogens",
           htParams.get("pdbNoHydrogens"));
     if (checkFilterKey("ADDHYDROGENS"))
-      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("pdbAddHydrogens",Boolean.TRUE);      
+      asc.setAtomSetCollectionAuxiliaryInfo("pdbAddHydrogens",Boolean.TRUE);      
   }
 
   private Object finish() {
     String s = (String) htParams.get("loadState");
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("loadState",
+    asc.setAtomSetCollectionAuxiliaryInfo("loadState",
         s == null ? "" : s);
     s = (String) htParams.get("smilesString");
     if (s != null)
-      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("smilesString", s);
+      asc.setAtomSetCollectionAuxiliaryInfo("smilesString", s);
     if (!htParams.containsKey("templateAtomCount"))
-      htParams.put("templateAtomCount", Integer.valueOf(atomSetCollection
-          .atomCount));
+      htParams.put("templateAtomCount", Integer.valueOf(asc
+          .ac));
     if (htParams.containsKey("bsFilter"))
       htParams.put("filteredAtomCount", Integer.valueOf(BSUtil
           .cardinalityOf((BS) htParams.get("bsFilter"))));
     if (!calculationType.equals("?"))
-      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("calculationType",
+      asc.setAtomSetCollectionAuxiliaryInfo("calculationType",
           calculationType);
 
-    String name = atomSetCollection.fileTypeName;
+    String name = asc.fileTypeName;
     String fileType = name;
     if (fileType.indexOf("(") >= 0)
       fileType = fileType.substring(0, fileType.indexOf("("));
-    for (int i = atomSetCollection.atomSetCount; --i >= 0;) {
-      atomSetCollection.setAtomSetAuxiliaryInfoForSet("fileName", filePath, i);
-      atomSetCollection.setAtomSetAuxiliaryInfoForSet("fileType", fileType, i);
+    for (int i = asc.atomSetCount; --i >= 0;) {
+      asc.setAtomSetAuxiliaryInfoForSet("fileName", filePath, i);
+      asc.setAtomSetAuxiliaryInfoForSet("fileType", fileType, i);
     }
-    atomSetCollection.freeze(reverseModels);
-    if (atomSetCollection.errorMessage != null)
-      return atomSetCollection.errorMessage + "\nfor file " + filePath
+    asc.freeze(reverseModels);
+    if (asc.errorMessage != null)
+      return asc.errorMessage + "\nfor file " + filePath
           + "\ntype " + name;
-    if ((atomSetCollection.bsAtoms == null ? atomSetCollection.atomCount
-        : atomSetCollection.bsAtoms.cardinality()) == 0
-        && fileType.indexOf("DataOnly") < 0 && atomSetCollection.getAtomSetCollectionAuxiliaryInfo("dataOnly") == null)
+    if ((asc.bsAtoms == null ? asc.ac
+        : asc.bsAtoms.cardinality()) == 0
+        && fileType.indexOf("DataOnly") < 0 && asc.getAtomSetCollectionAuxiliaryInfo("dataOnly") == null)
       return "No atoms found\nfor file " + filePath + "\ntype " + name;
     fixBaseIndices();
-    return atomSetCollection;
+    return asc;
   }
 
   /**
@@ -435,9 +435,9 @@ public abstract class AtomSetCollectionReader {
       s = e.getMessage();
     }
     if (line == null)
-      atomSetCollection.errorMessage = "Error reading file at end of file \n" + s;
+      asc.errorMessage = "Error reading file at end of file \n" + s;
     else
-      atomSetCollection.errorMessage = "Error reading file at line " + ptLine
+      asc.errorMessage = "Error reading file at line " + ptLine
           + ":\n" + line + "\n" + s;
     if (!vwr.isJS)
       e.printStackTrace();
@@ -601,7 +601,7 @@ public abstract class AtomSetCollectionReader {
             && (firstLastStep[2] < 2 || (modelNumber - 1 - firstLastStep[0])
                 % firstLastStep[2] == 0));
     if (isOK && desiredModelNumber == 0)
-      atomSetCollection.discardPreviousAtoms();
+      asc.discardPreviousAtoms();
     haveModel |= isOK;
     if (isOK)
       doProcessLines = true;
@@ -635,20 +635,20 @@ public abstract class AtomSetCollectionReader {
   }
 
   protected void newAtomSet(String name) {
-    if (atomSetCollection.currentAtomSetIndex >= 0) {
-      atomSetCollection.newAtomSet();
-      atomSetCollection.setCollectionName("<collection of "
-          + (atomSetCollection.currentAtomSetIndex + 1) + " models>");
+    if (asc.currentAtomSetIndex >= 0) {
+      asc.newAtomSet();
+      asc.setCollectionName("<collection of "
+          + (asc.currentAtomSetIndex + 1) + " models>");
     } else {
-      atomSetCollection.setCollectionName(name);
+      asc.setCollectionName(name);
     }
-    atomSetCollection.setAtomSetAuxiliaryInfoForSet("name", name, Math.max(0, atomSetCollection.currentAtomSetIndex));
+    asc.setAtomSetAuxiliaryInfoForSet("name", name, Math.max(0, asc.currentAtomSetIndex));
   }
 
-  protected int cloneLastAtomSet(int atomCount, P3[] pts) throws Exception {
-    int lastAtomCount = atomSetCollection.getLastAtomSetAtomCount();
-    atomSetCollection.cloneLastAtomSetFromPoints(atomCount, pts);
-    if (atomSetCollection.haveUnitCell) {
+  protected int cloneLastAtomSet(int ac, P3[] pts) throws Exception {
+    int lastAtomCount = asc.getLastAtomSetAtomCount();
+    asc.cloneLastAtomSetFromPoints(ac, pts);
+    if (asc.haveUnitCell) {
       iHaveUnitCell = true;
       doCheckUnitCell = true;
       spaceGroup = previousSpaceGroup;
@@ -667,7 +667,7 @@ public abstract class AtomSetCollectionReader {
   public int setSymmetryOperator(String xyz) {
     if (ignoreFileSymmetryOperators)
       return -1;
-    int isym = atomSetCollection.getXSymmetry().addSpaceGroupOperation(this, xyz);
+    int isym = asc.getXSymmetry().addSpaceGroupOperation(this, xyz);
     if (isym < 0)
       Logger.warn("Skippings symmetry operation " + xyz);
     iHaveSymmetryOperators = true;
@@ -936,7 +936,7 @@ public abstract class AtomSetCollectionReader {
       isOK |= checkFilter(atom, filter2);
     if (isOK && filterEveryNth)
       isOK = (((nFiltered++) % filterN) == 0);
-    bsFilter.setBitTo(iAtom >= 0 ? iAtom : atomSetCollection.atomCount, isOK);
+    bsFilter.setBitTo(iAtom >= 0 ? iAtom : asc.ac, isOK);
     return isOK;
   }
 
@@ -980,9 +980,9 @@ public abstract class AtomSetCollectionReader {
 
   protected void set2D() {
     // MOL and JME
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("is2D", Boolean.TRUE);
+    asc.setAtomSetCollectionAuxiliaryInfo("is2D", Boolean.TRUE);
     if (!checkFilterKey("NOMIN"))
-      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("doMinimize",
+      asc.setAtomSetCollectionAuxiliaryInfo("doMinimize",
           Boolean.TRUE);
   }
 
@@ -1011,11 +1011,11 @@ public abstract class AtomSetCollectionReader {
     v.set(x3, y3, z3);
     v.normalize();
     matrixRotate.setColumnV(2, v);
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo(
+    asc.setAtomSetCollectionAuxiliaryInfo(
         "defaultOrientationMatrix", M3.newM3(matrixRotate));
     // first two matrix column vectors define quaternion X and XY plane
     Quat q = Quat.newM(matrixRotate);
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo(
+    asc.setAtomSetCollectionAuxiliaryInfo(
         "defaultOrientationQuaternion", q);
     Logger.info("defaultOrientationMatrix = " + matrixRotate);
 
@@ -1030,7 +1030,7 @@ public abstract class AtomSetCollectionReader {
 
   public Atom setAtomCoordScaled(Atom atom, String[] tokens, int i, float f) {
     if (atom == null)
-      atom = atomSetCollection.addNewAtom();
+      atom = asc.addNewAtom();
     setAtomCoordXYZ(atom, parseFloatStr(tokens[i]) * f,
         parseFloatStr(tokens[i + 1]) * f, parseFloatStr(tokens[i + 2]) * f);
     return atom;
@@ -1042,7 +1042,7 @@ public abstract class AtomSetCollectionReader {
   }
 
   public Atom addAtomXYZSymName(String[] tokens, int i, String sym, String name) {
-    Atom atom = atomSetCollection.addNewAtom();
+    Atom atom = asc.addNewAtom();
     if (sym != null)
       atom.elementSymbol = sym;
     if (name != null)
@@ -1070,7 +1070,7 @@ public abstract class AtomSetCollectionReader {
   }
 
   public void addSites(Map<String, Map<String, Object>> htSites) {
-    atomSetCollection.setAtomSetAuxiliaryInfo("pdbSites", htSites);
+    asc.setAtomSetAuxiliaryInfo("pdbSites", htSites);
     String sites = "";
     for (Map.Entry<String, Map<String, Object>> entry : htSites.entrySet()) {
       String name = entry.getKey();
@@ -1100,10 +1100,10 @@ public abstract class AtomSetCollectionReader {
   public SymmetryInterface applySymTrajASCR() throws Exception {
     if (forcePacked)
       initializeSymmetryOptions();
-    SymmetryInterface sym = (iHaveUnitCell && doCheckUnitCell ? atomSetCollection
+    SymmetryInterface sym = (iHaveUnitCell && doCheckUnitCell ? asc
         .getXSymmetry().applySymmetryFromReader(this, getSymmetry()) : null);
     if (isTrajectory)
-      atomSetCollection.setTrajectory();
+      asc.setTrajectory();
     initializeSymmetry();
     return sym;
   }
@@ -1113,14 +1113,14 @@ public abstract class AtomSetCollectionReader {
 
   @SuppressWarnings("unchecked")
   public void finalizeMOData(Map<String, Object> moData) {
-    atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
+    asc.setAtomSetAuxiliaryInfo("moData", moData);
     if (moData == null)
       return;
     List<Map<String, Object>> orbitals = (List<Map<String, Object>>) moData
         .get("mos");
     if (orbitals != null)
       Logger.info(orbitals.size() + " molecular orbitals read in model "
-          + atomSetCollection.atomSetCount);
+          + asc.atomSetCount);
   }
 
   public static String getElementSymbol(int elementNumber) {
@@ -1186,7 +1186,7 @@ public abstract class AtomSetCollectionReader {
     for (int i = 0; i < data.length; i++) {
       while (tokens != null && pt >= tokens.length) {
         if (s == null)
-          s = readLine();
+          s = rd();
         if (width == 0) {
           tokens = getTokensStr(s);
         } else {
@@ -1212,7 +1212,7 @@ public abstract class AtomSetCollectionReader {
    * 
    * @param iAtom0
    *          the first atom to be assigned a frequency
-   * @param atomCount
+   * @param ac
    *          the number of atoms to be assigned
    * @param modelAtomCount
    *          the number of atoms in each model
@@ -1234,14 +1234,14 @@ public abstract class AtomSetCollectionReader {
    * @param minLineLen TODO
    * @throws Exception
    */
-  protected void fillFrequencyData(int iAtom0, int atomCount,
+  protected void fillFrequencyData(int iAtom0, int ac,
                                    int modelAtomCount, boolean[] ignore,
                                    boolean isWide, int col0, int colWidth,
                                    int[] atomIndexes, int minLineLen) throws Exception {
-    boolean withSymmetry = (modelAtomCount != atomCount);
+    boolean withSymmetry = (modelAtomCount != ac);
     if (atomIndexes != null)
-      atomCount = atomIndexes.length;
-    int nLines = (isWide ? atomCount : atomCount * 3);
+      ac = atomIndexes.length;
+    int nLines = (isWide ? ac : ac * 3);
     int nFreq = ignore.length;
     String[][] data = new String[nLines][];
     fillDataBlockFixed(data, col0, colWidth, minLineLen);
@@ -1266,7 +1266,7 @@ public abstract class AtomSetCollectionReader {
         if (Logger.debugging)
           Logger.debug("atom " + iAtom + " vib" + j + ": " + vx + " " + vy + " "
               + vz);
-        atomSetCollection.addVibrationVectorWithSymmetry(iAtom0 + modelAtomCount * j++
+        asc.addVibrationVectorWithSymmetry(iAtom0 + modelAtomCount * j++
             + iAtom, vx, vy, vz, withSymmetry);
       }
     }
@@ -1274,39 +1274,39 @@ public abstract class AtomSetCollectionReader {
 
   protected String readLines(int nLines) throws Exception {
     for (int i = nLines; --i >= 0;)
-      readLine();
+      rd();
     return line;
   }
 
   public String discardLinesUntilStartsWith(String startsWith)
       throws Exception {
-    while (readLine() != null && !line.startsWith(startsWith)) {
+    while (rd() != null && !line.startsWith(startsWith)) {
     }
     return line;
   }
 
   public String discardLinesUntilContains(String containsMatch)
       throws Exception {
-    while (readLine() != null && line.indexOf(containsMatch) < 0) {
+    while (rd() != null && line.indexOf(containsMatch) < 0) {
     }
     return line;
   }
 
   public String discardLinesUntilContains2(String s1, String s2)
       throws Exception {
-    while (readLine() != null && line.indexOf(s1) < 0 && line.indexOf(s2) < 0) {
+    while (rd() != null && line.indexOf(s1) < 0 && line.indexOf(s2) < 0) {
     }
     return line;
   }
 
   public String discardLinesUntilBlank() throws Exception {
-    while (readLine() != null && line.trim().length() != 0) {
+    while (rd() != null && line.trim().length() != 0) {
     }
     return line;
   }
 
   public String discardLinesUntilNonBlank() throws Exception {
-    while (readLine() != null && line.trim().length() == 0) {
+    while (rd() != null && line.trim().length() == 0) {
     }
     return line;
   }
@@ -1319,7 +1319,7 @@ public abstract class AtomSetCollectionReader {
   public void checkCurrentLineForScript() {
     if (line.indexOf("Jmol") >= 0) {
       if (line.indexOf("Jmol PDB-encoded data") >= 0) {
-        atomSetCollection.setAtomSetCollectionAuxiliaryInfo("jmolData", line);
+        asc.setAtomSetCollectionAuxiliaryInfo("jmolData", line);
         if (!line.endsWith("#noautobond"))
           line += "#noautobond";
       }
@@ -1363,7 +1363,7 @@ public abstract class AtomSetCollectionReader {
           fileScaling.z = 1;
         setFractionalCoordinates(true);
         latticeCells = new int[3];
-        atomSetCollection.xtalSymmetry = null;
+        asc.xtalSymmetry = null;
         setUnitCell(plotScale.x * 2 / (maxXYZ.x - minXYZ.x), plotScale.y * 2
             / (maxXYZ.y - minXYZ.y), plotScale.z * 2
             / (maxXYZ.z == minXYZ.z ? 1 : maxXYZ.z - minXYZ.z), 90, 90, 90);
@@ -1372,13 +1372,13 @@ public abstract class AtomSetCollectionReader {
         symmetry.toFractional(unitCellOffset, false);
         unitCellOffset.scaleAdd2(-1f, minXYZ, unitCellOffset);
         symmetry.setOffsetPt(unitCellOffset);
-        atomSetCollection.setAtomSetCollectionAuxiliaryInfo("jmolDataScaling",
+        asc.setAtomSetCollectionAuxiliaryInfo("jmolDataScaling",
             new P3[] { minXYZ, maxXYZ, plotScale });
       }
     }
     if (line.endsWith("#noautobond")) {
       line = line.substring(0, line.lastIndexOf('#')).trim();
-      atomSetCollection.setNoAutoBond();
+      asc.setNoAutoBond();
     }
     int pt = line.indexOf("jmolscript:");
     if (pt >= 0) {
@@ -1400,7 +1400,7 @@ public abstract class AtomSetCollectionReader {
     else if (!previousScript.endsWith(";"))
       previousScript += ";";
     previousScript += script;
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("jmolscript",
+    asc.setAtomSetCollectionAuxiliaryInfo("jmolscript",
         previousScript);
   }
 
@@ -1412,11 +1412,11 @@ public abstract class AtomSetCollectionReader {
     else if (!siteScript.endsWith(";"))
       siteScript += ";";
     siteScript += script;
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("sitescript",
+    asc.setAtomSetCollectionAuxiliaryInfo("sitescript",
         siteScript);  // checked in ScriptEvaluator.load()
   }
 
-  public String readLine() throws Exception {
+  public String rd() throws Exception {
     return RL();
   }
   
@@ -1593,7 +1593,7 @@ public abstract class AtomSetCollectionReader {
     float[] f = new float[3];
     for (int i = 0; i < 3; i++) {
       if (i > 0 || Float.isNaN(parseFloatStr(line))) {
-        readLine();
+        rd();
         if (i == 0 && line != null) {
           i = -1;
           continue;
@@ -1635,9 +1635,9 @@ public abstract class AtomSetCollectionReader {
 
   public void setU(Atom atom, int i, float val) {
     // Ortep Type 8: D = 2pi^2, C = 2, a*b*
-    float[] data = atomSetCollection.getAnisoBorU(atom);
+    float[] data = asc.getAnisoBorU(atom);
     if (data == null)
-      atomSetCollection.setAnisoBorU(atom, data = new float[8], 8);
+      asc.setAnisoBorU(atom, data = new float[8], 8);
     data[i] = val;
   }
 

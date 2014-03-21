@@ -37,11 +37,11 @@ public class BackboneRenderer extends BioShapeRenderer {
     boolean isDataFrame = vwr.isJmolDataFrameForModel(bioShape.modelIndex);
     for (int i = bsVisible.nextSetBit(0); i >= 0; i = bsVisible
         .nextSetBit(i + 1)) {
-      Atom atomA = modelSet.atoms[leadAtomIndices[i]];
-      Atom atomB = modelSet.atoms[leadAtomIndices[i + 1]];
+      Atom atomA = ms.at[leadAtomIndices[i]];
+      Atom atomB = ms.at[leadAtomIndices[i + 1]];
       if (atomA.getNBackbonesDisplayed() == 0
           || atomB.getNBackbonesDisplayed() == 0
-          || modelSet.isAtomHidden(atomB.index))
+          || ms.isAtomHidden(atomB.i))
         continue;
       if (!isDataFrame && atomA.distance(atomB) > 10)
         continue;

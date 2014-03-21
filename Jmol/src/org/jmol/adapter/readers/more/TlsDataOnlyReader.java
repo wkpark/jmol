@@ -69,7 +69,7 @@ public class TlsDataOnlyReader extends AtomSetCollectionReader {
     List<Map<String, Object>> ranges = null;
     Map<String, Object> range = null;
     tlsGroups = new  List<Map<String, Object>>();
-    while (readLine() != null) {
+    while (rd() != null) {
       String[] tokens = getTokensStr(line.replace('\'', ' '));
       if (tokens.length == 0)
         continue;

@@ -113,7 +113,7 @@ public class PsiReader extends MOReader {
    * @throws Exception If an error occurs
    **/
   private void readSCFDone() throws Exception {
-    atomSetCollection.setAtomSetName(line);
+    asc.setAtomSetName(line);
   }
 
   /* atom locations -- preliminary and final
@@ -136,15 +136,15 @@ public class PsiReader extends MOReader {
   List<String> atomNames = new  List<String>();
   private void readAtoms(boolean isInitial) throws Exception {
     if (isInitial) {
-      atomSetCollection.newAtomSet();
-      atomSetCollection.setAtomSetName(""); // start with an empty name
+      asc.newAtomSet();
+      asc.setAtomSetName(""); // start with an empty name
       discardLinesUntilContains("----");
     }
     int atomPt = 0;
-    while (readLine() != null && line.length() > 0) {
+    while (rd() != null && line.length() > 0) {
       String[] tokens = getTokens(); // get the tokens in the line
-      Atom atom = (isInitial ? atomSetCollection.addNewAtom()
-          : atomSetCollection.atoms[atomPt++]);
+      Atom atom = (isInitial ? asc.addNewAtom()
+          : asc.atoms[atomPt++]);
       if (isInitial) {
         atomNames.addLast(tokens[0]);
         if (tokens[0].length() <= 2)
@@ -194,17 +194,17 @@ public class PsiReader extends MOReader {
   List<List<int[]>> shellsByUniqueAtom = new  List<List<int[]>>();
   void readBasis() throws Exception {
     List<String[]> gdata = new  List<String[]>();
-    //atomCount = -1;
+    //ac = -1;
     gaussianCount = 0;
     shellCount = 0;
     String[] tokens;
     int[] slater = null;
     List<int[]> slatersByUniqueAtom = null;
-    readLine();
-    while (readLine() != null && line.startsWith("   -Basis set on")) {
+    rd();
+    while (rd() != null && line.startsWith("   -Basis set on")) {
       slatersByUniqueAtom = new  List<int[]>();
       int nGaussians = 0;
-      while (readLine() != null && !line.startsWith("       )")) {
+      while (rd() != null && !line.startsWith("       )")) {
         line = line.replace('(', ' ').replace(')',' ');
         tokens = getTokens();
         int ipt = 0;
@@ -231,7 +231,7 @@ public class PsiReader extends MOReader {
       }
       shellsByUniqueAtom.addLast(slatersByUniqueAtom);
       gaussianCount += nGaussians;
-      readLine();
+      rd();
     }
     float[][] garray = AU.newFloat2(gaussianCount);
     for (int i = 0; i < gaussianCount; i++) {
@@ -260,12 +260,12 @@ public class PsiReader extends MOReader {
     List<int[]> sdata = new  List<int[]>();
     discardLinesUntilContains("----");
     int n = 0;
-    while (readLine() != null && line.length() > 0) {
+    while (rd() != null && line.length() > 0) {
       String[] tokens = getTokens(); // get the tokens in the line
       uniqueAtomMap.put(tokens[0], Integer.valueOf(n++));
     }
-    int atomCount = atomNames.size();
-    for (int i = 0; i < atomCount; i++) {
+    int ac = atomNames.size();
+    for (int i = 0; i < ac; i++) {
       String atomType = atomNames.get(i);
       int iUnique = uniqueAtomMap.get(atomType).intValue();
       List<int[]> slaters = shellsByUniqueAtom.get(iUnique);
@@ -393,19 +393,19 @@ Orbital energies (a.u.):
     Map<String, Object>[] mos = AU.createArrayOfHashtable(5);
     List<String>[] data = AU.createArrayOfArrayList(5);
     int nThisLine = 0;
-    while (readLine() != null && line.toUpperCase().indexOf("DENS") < 0) {
+    while (rd() != null && line.toUpperCase().indexOf("DENS") < 0) {
       String[] tokens = getTokens();
       int ptData = (line.charAt(5) == ' ' ? 2 : 4);
       if (line.indexOf("                    ") == 0) {
         addMOData(nThisLine, data, mos);
         nThisLine = tokens.length;
-        tokens = getTokensStr(readLine());
+        tokens = getTokensStr(rd());
         for (int i = 0; i < nThisLine; i++) {
           mos[i] = new Hashtable<String, Object>();
           data[i] = new  List<String>();
           mos[i].put("symmetry", tokens[i]);
         }
-        tokens = getStrings(readLine().substring(21), nThisLine, 10);
+        tokens = getStrings(rd().substring(21), nThisLine, 10);
         for (int i = 0; i < nThisLine; i++) {
           mos[i].put("energy", Float.valueOf(PT.fVal(tokens[i])));
         }
@@ -427,20 +427,20 @@ Orbital energies (a.u.):
   }
 
   private void readFrequencies() throws Exception {
-    readLine();
-    int atomCount = atomSetCollection.getLastAtomSetAtomCount();
+    rd();
+    int ac = asc.getLastAtomSetAtomCount();
     String tokens[];
-    while (readLine() != null && line.indexOf("Frequency") >= 0) {
+    while (rd() != null && line.indexOf("Frequency") >= 0) {
       tokens = getTokens();
-      int iAtom0 = atomSetCollection.atomCount;
+      int iAtom0 = asc.ac;
       boolean[] ignore = new boolean[1];
       if (!doGetVibration(++vibrationNumber))
         continue;
-      atomSetCollection.cloneLastAtomSet();
-      atomSetCollection.setAtomSetFrequency(null, null, tokens[1], null);
+      asc.cloneLastAtomSet();
+      asc.setAtomSetFrequency(null, null, tokens[1], null);
       readLines(2);
-      fillFrequencyData(iAtom0, atomCount, atomCount, ignore, true, 0, 0, null, 0);
-      readLine();
+      fillFrequencyData(iAtom0, ac, ac, ignore, true, 0, 0, null, 0);
+      rd();
     }
   }
 

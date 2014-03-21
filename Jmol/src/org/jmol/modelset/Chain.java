@@ -37,7 +37,7 @@ public final class Chain {
   int selectedGroupCount;
 
   public Atom getAtom(int index) {
-    return model.modelSet.atoms[index];
+    return model.ms.at[index];
   }
   
   Chain(Model model, int chainID, int index) {
@@ -128,6 +128,6 @@ public final class Chain {
   }
 
   public String getIDStr() {
-    return (chainID == 0 ? "" : chainID < 256 ? "" + (char) chainID : (String) model.modelSet.vwr.chainMap.get(Integer.valueOf(chainID)));
+    return (chainID == 0 ? "" : chainID < 256 ? "" + (char) chainID : (String) model.ms.vwr.chainMap.get(Integer.valueOf(chainID)));
   }
 }

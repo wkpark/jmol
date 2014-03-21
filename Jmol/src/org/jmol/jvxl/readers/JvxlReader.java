@@ -69,15 +69,15 @@ public class JvxlReader extends JvxlXmlReader {
     String[] tokens = PT.getTokensAt(atomLine, 0);
     isXLowToHigh = false;
     negativeAtomCount = true;
-    atomCount = 0;
+    ac = 0;
     if (tokens[0] == "-0") {
     } else if (tokens[0].charAt(0) == '+') {
       isXLowToHigh = true;
-      atomCount = parseIntStr(tokens[0].substring(1));
+      ac = parseIntStr(tokens[0].substring(1));
     } else {
-      atomCount = -parseIntStr(tokens[0]);
+      ac = -parseIntStr(tokens[0]);
     }
-    if (atomCount == Integer.MIN_VALUE)
+    if (ac == Integer.MIN_VALUE)
       return;
     volumetricOrigin.set(parseFloatStr(tokens[1]), parseFloatStr(tokens[2]),
         parseFloatStr(tokens[3]));
@@ -88,7 +88,7 @@ public class JvxlReader extends JvxlXmlReader {
     readVoxelVector(0);
     readVoxelVector(1);
     readVoxelVector(2);
-    for (int i = 0; i < atomCount; ++i)
+    for (int i = 0; i < ac; ++i)
       jvxlFileHeaderBuffer.append(readLine() + "\n");    
     skipComments(true);
     Logger.info("Reading extra JVXL information line: " + line);

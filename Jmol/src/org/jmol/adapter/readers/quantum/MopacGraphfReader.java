@@ -41,7 +41,7 @@ import java.util.Map;
  */
 public class MopacGraphfReader extends MopacSlaterReader {
     
-  private int atomCount;
+  private int ac;
   private int nCoefficients;
   
   @Override
@@ -63,13 +63,13 @@ public class MopacGraphfReader extends MopacSlaterReader {
   }
     
   private void readAtoms() throws Exception {
-    atomSetCollection.newAtomSet();
-    atomCount = parseIntStr(line);
-    atomicNumbers = new int[atomCount];
-    for (int i = 0; i < atomCount; i++) {
-      readLine();
+    asc.newAtomSet();
+    ac = parseIntStr(line);
+    atomicNumbers = new int[ac];
+    for (int i = 0; i < ac; i++) {
+      rd();
       atomicNumbers[i] = parseIntRange(line, 0, 4);
-      Atom atom = atomSetCollection.addNewAtom();
+      Atom atom = asc.addNewAtom();
       setAtomCoordXYZ(atom, parseFloatRange(line, 4, 17), 
           parseFloatRange(line, 17, 29), 
           parseFloatRange(line, 29, 41));
@@ -122,8 +122,8 @@ public class MopacGraphfReader extends MopacSlaterReader {
      */
     nCoefficients = 0;
     float[] values = new float[3];
-    for (int iAtom = 0; iAtom < atomCount; iAtom++) {
-      getTokensFloat(readLine(), values, 3);
+    for (int iAtom = 0; iAtom < ac; iAtom++) {
+      getTokensFloat(rd(), values, 3);
       int atomicNumber = atomicNumbers[iAtom];
       float zeta;
       if ((zeta = values[0]) != 0) {
@@ -161,7 +161,7 @@ public class MopacGraphfReader extends MopacSlaterReader {
     if (isBeta)
       alphaBeta = "beta";
     float[][] list = null;
-    if (readLine() == null)
+    if (rd() == null)
       return;
     isNewFormat = (line.indexOf("ORBITAL") >= 0);
     if (isNewFormat) {
@@ -173,7 +173,7 @@ public class MopacGraphfReader extends MopacSlaterReader {
     }
     for (int iMo = 0; iMo < nCoefficients; iMo++) {
       if (iMo != 0)
-        readLine();
+        rd();
       float[] data;
       if (isNewFormat) {
         if (line == null || line.indexOf("ORBITAL") < 0 || line.indexOf("ORBITAL_LIST") >= 0)
@@ -181,7 +181,7 @@ public class MopacGraphfReader extends MopacSlaterReader {
         orbitalData.addLast(data = new float[nCoefficients]);
         if (orbitalInfo != null)
           orbitalInfo.addLast(line);
-        readLine();
+        rd();
       } else {
         data = list[iMo];
       }
@@ -189,7 +189,7 @@ public class MopacGraphfReader extends MopacSlaterReader {
     }
     if (invMatrix == null) {
       if (isNewFormat && line.indexOf("MATRIX") < 0)
-        readLine();
+        rd();
       // read lower triangle of symmetric inverse sqrt matrix and multiply
       invMatrix = AU.newFloat2(nCoefficients);
       for (int iMo = 0; iMo < nCoefficients; iMo++)
@@ -221,7 +221,7 @@ public class MopacGraphfReader extends MopacSlaterReader {
 
     // read MO energies and occupancies, and fill "coefficients" element
     if (isNewFormat && orbitalInfo == null && line != null && line.indexOf("ORBITAL_LIST") < 0)
-      readLine();
+      rd();
     float[] values = new float[2];
     for (int iMo = 0; iMo < nOrbitals; iMo++) {
       Map<String, Object> mo = new Hashtable<String, Object>();
@@ -230,7 +230,7 @@ public class MopacGraphfReader extends MopacSlaterReader {
         String[] tokens = getTokens();
         mo.put("energy", Float.valueOf(parseFloatStr(tokens[3])));
         mo.put("occupancy", Float.valueOf(parseFloatStr(tokens[1])));
-      } else if (readLine() != null) {
+      } else if (rd() != null) {
         getTokensFloat(line, values, 2);
         mo.put("energy", Float.valueOf(values[0]));
         mo.put("occupancy", Float.valueOf(values[1]));
@@ -246,7 +246,7 @@ public class MopacGraphfReader extends MopacSlaterReader {
   }
   
   private boolean readKeywords() throws Exception {
-    if (readLine() == null || line.indexOf(" Keywords:") < 0)
+    if (rd() == null || line.indexOf(" Keywords:") < 0)
       return false;
     moData.put("calculationType", calculationType = line.substring(11).trim());
     boolean isUHF = (line.indexOf("UHF") >= 0);

@@ -645,7 +645,7 @@ abstract class ScriptExpr extends ScriptParam {
     boolean ignoreSubset = (pcStart < 0);
     boolean isInMath = false;
     int nExpress = 0;
-    int atomCount = vwr.getAtomCount();
+    int ac = vwr.getAtomCount();
     if (ignoreSubset)
       pcStart = -pcStart;
     ignoreSubset |= chk;
@@ -764,7 +764,7 @@ abstract class ScriptExpr extends ScriptParam {
         rpn.addXBs(BSUtil.copy(vwr.getMotionFixedAtoms()));
         break;
       case T.displayed:
-        rpn.addXBs(BSUtil.copyInvert(vwr.getHiddenSet(), atomCount));
+        rpn.addXBs(BSUtil.copyInvert(vwr.getHiddenSet(), ac));
         break;
       case T.basemodel:
         rpn.addXBs(vwr.getBaseModelBitSet());
@@ -1143,12 +1143,12 @@ abstract class ScriptExpr extends ScriptParam {
   protected BS compareFloatData(int tokWhat, float[] data, int tokOperator,
                               float comparisonFloat) {
     BS bs = new BS();
-    int atomCount = vwr.getAtomCount();
+    int ac = vwr.getAtomCount();
     ModelSet modelSet = vwr.ms;
-    Atom[] atoms = modelSet.atoms;
+    Atom[] atoms = modelSet.at;
     float propertyFloat = 0;
     vwr.autoCalculate(tokWhat);
-    for (int i = atomCount; --i >= 0;) {
+    for (int i = ac; --i >= 0;) {
       boolean match = false;
       Atom atom = atoms[i];
       switch (tokWhat) {
@@ -1188,13 +1188,13 @@ abstract class ScriptExpr extends ScriptParam {
   protected BS compareString(int tokWhat, int tokOperator, String comparisonString)
       throws ScriptException {
     BS bs = new BS();
-    Atom[] atoms = vwr.ms.atoms;
-    int atomCount = vwr.getAtomCount();
+    Atom[] atoms = vwr.ms.at;
+    int ac = vwr.getAtomCount();
     boolean isCaseSensitive = (tokWhat == T.chain && vwr
         .getBoolean(T.chaincasesensitive));
     if (!isCaseSensitive)
       comparisonString = comparisonString.toLowerCase();
-    for (int i = atomCount; --i >= 0;) {
+    for (int i = ac; --i >= 0;) {
       String propertyString = Atom
           .atomPropertyString(vwr, atoms[i], tokWhat);
       if (!isCaseSensitive)
@@ -1223,9 +1223,9 @@ abstract class ScriptExpr extends ScriptParam {
     BS propertyBitSet = null;
     int bitsetComparator = tokOperator;
     int bitsetBaseValue = ival;
-    int atomCount = vwr.getAtomCount();
+    int ac = vwr.getAtomCount();
     ModelSet modelSet = vwr.ms;
-    Atom[] atoms = modelSet.atoms;
+    Atom[] atoms = modelSet.at;
     int imax = -1;
     int imin = 0;
     int iModel = -1;
@@ -1250,15 +1250,15 @@ abstract class ScriptExpr extends ScriptParam {
         case T.opLE:
           return BSUtil.newBitSet2(0, ival + 1);
         case T.opGE:
-          return BSUtil.newBitSet2(ival, atomCount);
+          return BSUtil.newBitSet2(ival, ac);
         case T.opGT:
-          return BSUtil.newBitSet2(ival + 1, atomCount);
+          return BSUtil.newBitSet2(ival + 1, ac);
         case T.opEQ:
-          return (ival < atomCount ? BSUtil.newBitSet2(
+          return (ival < ac ? BSUtil.newBitSet2(
               ival, ival + 1) : new BS());
         case T.opNE:
         default:
-          bs = BSUtil.setAll(atomCount);
+          bs = BSUtil.setAll(ac);
           if (ival >= 0)
             bs.clear(ival);
           return bs;
@@ -1267,8 +1267,8 @@ abstract class ScriptExpr extends ScriptParam {
         return new BS();
       }
     }
-    bs = BS.newN(atomCount);
-    for (int i = 0; i < atomCount; ++i) {
+    bs = BS.newN(ac);
+    for (int i = 0; i < ac; ++i) {
       boolean match = false;
       Atom atom = atoms[i];
       switch (tokWhat) {
@@ -1464,8 +1464,8 @@ abstract class ScriptExpr extends ScriptParam {
 
     int minmaxtype = tok & T.minmaxmask;
     boolean selectedFloat = (minmaxtype == T.selectedfloat);
-    int atomCount = vwr.getAtomCount();
-    float[] fout = (minmaxtype == T.allfloat ? new float[atomCount] : null);
+    int ac = vwr.getAtomCount();
+    float[] fout = (minmaxtype == T.allfloat ? new float[ac] : null);
     boolean isExplicitlyAll = (minmaxtype == T.minmaxmask || selectedFloat);
     tok &= ~T.minmaxmask;
     if (tok == T.nada)
@@ -1549,7 +1549,7 @@ abstract class ScriptExpr extends ScriptParam {
     case T.function:
       userFunction = (String) ((Object[]) opValue)[0];
       params = (List<SV>) ((Object[]) opValue)[1];
-      bsAtom = BS.newN(atomCount);
+      bsAtom = BS.newN(ac);
       tokenAtom = SV.newV(T.bitset, bsAtom);
       break;
     case T.straightness:
@@ -1593,17 +1593,17 @@ abstract class ScriptExpr extends ScriptParam {
         i1 = index + 1;
       } else if (haveBitSet) {
         i0 = bs.nextSetBit(0);
-        i1 = Math.min(atomCount, bs.length());
+        i1 = Math.min(ac, bs.length());
       } else {
         i0 = 0;
-        i1 = atomCount;
+        i1 = ac;
       }
       if (chk)
         i1 = 0;
       for (int i = i0; i >= 0 && i < i1; i = (haveBitSet ? bs.nextSetBit(i + 1)
           : i + 1)) {
         n++;
-        Atom atom = modelSet.atoms[i];
+        Atom atom = modelSet.at[i];
         switch (mode) {
         case 0: // float
           float fv = Float.MAX_VALUE;

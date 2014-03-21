@@ -68,7 +68,7 @@ public class MopacReader extends AtomSetCollectionReader {
     if (!haveHeader) {
       if (line.trim().equals("CARTESIAN COORDINATES")) {
         processCoordinates();
-        atomSetCollection.setAtomSetName("Input Structure");
+        asc.setAtomSetName("Input Structure");
         return true;
       }
       haveHeader = line.startsWith(" ---");
@@ -88,7 +88,7 @@ public class MopacReader extends AtomSetCollectionReader {
     }
     if (line.indexOf("ORIENTATION OF MOLECULE IN FORCE") >= 0) {
       processCoordinates();
-      atomSetCollection.setAtomSetName("Orientation in Force Field");
+      asc.setAtomSetName("Orientation in Force Field");
       return true;
     }
     if (line.indexOf("NORMAL COORDINATE ANALYSIS") >= 0) {
@@ -120,17 +120,17 @@ public class MopacReader extends AtomSetCollectionReader {
    */
 void processAtomicCharges() throws Exception {
     readLines(2);
-    atomSetCollection.newAtomSet(); // charges before coords, see JavaDoc
-    baseAtomIndex = atomSetCollection.atomCount;
+    asc.newAtomSet(); // charges before coords, see JavaDoc
+    baseAtomIndex = asc.ac;
     int expectedAtomNumber = 0;
-    while (readLine() != null) {
+    while (rd() != null) {
       int atomNumber = parseIntStr(line);
       if (atomNumber == Integer.MIN_VALUE) // a blank line
         break;
       ++expectedAtomNumber;
       if (atomNumber != expectedAtomNumber)
         throw new Exception("unexpected atom number in atomic charges");
-      Atom atom = atomSetCollection.addNewAtom();
+      Atom atom = asc.addNewAtom();
       atom.elementSymbol = parseToken();
       atom.partialCharge = parseFloat();
     }
@@ -168,21 +168,21 @@ void processAtomicCharges() throws Exception {
   void processCoordinates() throws Exception {
     readLines(3);
     if (!chargesFound) {
-      atomSetCollection.newAtomSet();
-      baseAtomIndex = atomSetCollection.atomCount;
+      asc.newAtomSet();
+      baseAtomIndex = asc.ac;
     } else {
       chargesFound = false;
     }
-    Atom[] atoms = atomSetCollection.atoms;
+    Atom[] atoms = asc.atoms;
     int atomNumber;
-    while (readLine() != null) {
+    while (rd() != null) {
       String[] tokens = getTokens();
       if (tokens.length == 0
           || (atomNumber = parseIntStr(tokens[0])) == Integer.MIN_VALUE)
         break;
       Atom atom = atoms[baseAtomIndex + atomNumber - 1];
       if (atom == null)
-        atom = atomSetCollection.addNewAtom(); // if no charges were found first
+        atom = asc.addNewAtom(); // if no charges were found first
       atom.atomSerial = atomNumber;
       setAtomCoordTokens(atom, tokens, 2);
       String elementSymbol = tokens[1];
@@ -224,11 +224,11 @@ void processAtomicCharges() throws Exception {
   private void readFrequencies() throws Exception {
     
     BS bsOK = new BS();
-    int n0 = atomSetCollection.currentAtomSetIndex + 1;
+    int n0 = asc.currentAtomSetIndex + 1;
     String[] tokens;
 
     boolean done = false;
-    while (!done && readLine() != null
+    while (!done && rd() != null
         && line.indexOf("DESCRIPTION") < 0 && line.indexOf("MASS-WEIGHTED") < 0)
       if (line.toUpperCase().indexOf("ROOT") >= 0) {
         discardLinesUntilNonBlank();
@@ -238,9 +238,9 @@ void processAtomicCharges() throws Exception {
           tokens = getTokens();
         }
         int frequencyCount = tokens.length;
-        readLine();
-        int iAtom0 = atomSetCollection.atomCount;
-        int atomCount = atomSetCollection.getLastAtomSetAtomCount();
+        rd();
+        int iAtom0 = asc.ac;
+        int ac = asc.getLastAtomSetAtomCount();
         boolean[] ignore = new boolean[frequencyCount];
         float freq1 = PT.parseFloatStrict(tokens[0]);
         boolean ignoreNegative = (freq1 < 0);
@@ -250,9 +250,9 @@ void processAtomicCharges() throws Exception {
           if (ignore[i])
             continue;  
           bsOK.set(vibrationNumber - 1);
-          atomSetCollection.cloneLastAtomSet();
+          asc.cloneLastAtomSet();
         }
-        fillFrequencyData(iAtom0, atomCount, atomCount, ignore, false, 0, 0, null, 2);
+        fillFrequencyData(iAtom0, ac, ac, ignore, false, 0, 0, null, 2);
       }
     String[][] info = new String[vibrationNumber][];
     if (line.indexOf("DESCRIPTION") < 0)
@@ -260,7 +260,7 @@ void processAtomicCharges() throws Exception {
     while (discardLinesUntilContains("VIBRATION") != null) {
       tokens = getTokens();
       int freqNo = parseIntStr(tokens[1]); 
-      tokens[0] = getTokensStr(readLine())[1]; // FREQ
+      tokens[0] = getTokensStr(rd())[1]; // FREQ
       if (tokens[2].equals("ATOM"))
         tokens[2] = null;
       info[freqNo - 1] = tokens;
@@ -275,8 +275,8 @@ void processAtomicCharges() throws Exception {
     for (int i = 0, n = n0; i < vibrationNumber; i++) {
       if (!bsOK.get(i))
         continue;
-      atomSetCollection.currentAtomSetIndex = n++;
-      atomSetCollection.setAtomSetFrequency(null, info[i][2], info[i][0], null);
+      asc.currentAtomSetIndex = n++;
+      asc.setAtomSetFrequency(null, info[i][2], info[i][0], null);
     }
   }
 }

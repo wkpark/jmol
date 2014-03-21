@@ -78,7 +78,7 @@ public class Contact extends Isosurface {
   }
     
   protected Atom[] atoms;
-  private int atomCount;
+  private int ac;
   private float minData, maxData;
   //private final static String hbondH = "_H & connected(_O|_N and his and not *.N |_S)";
   //private final static float HBOND_CUTOFF = -0.8f;
@@ -119,8 +119,8 @@ public class Contact extends Isosurface {
     }
 
     BS bs;
-    atomCount = vwr.getAtomCount();
-    atoms = vwr.getModelSet().atoms;
+    ac = vwr.getAtomCount();
+    atoms = vwr.getModelSet().at;
 
     int intramolecularMode = (int) (parameters == null || parameters.length < 2 ? 0
         : parameters[1]);
@@ -301,7 +301,7 @@ public class Contact extends Isosurface {
         cp.score = 0; // for now
       if (contactType != T.nada && cp.contactType != contactType)
         continue;
-      int nV = thisMesh.vertexCount;
+      int nV = thisMesh.vc;
       thisMesh.nSets++;
       if (contactType != T.nada || cp.contactType != T.vanderwaals)
         volume += cp.volume;
@@ -342,9 +342,9 @@ public class Contact extends Isosurface {
   }
   
   private int setColorByScore(float score, int nV) {
-    for (int iv = thisMesh.vertexCount; --iv >= nV;)
-      thisMesh.vertexValues[iv] = score;
-    return thisMesh.vertexCount;
+    for (int iv = thisMesh.vc; --iv >= nV;)
+      thisMesh.vvs[iv] = score;
+    return thisMesh.vc;
   }
 
   /**
@@ -366,8 +366,8 @@ public class Contact extends Isosurface {
     if (bs.isEmpty())
       return list;
     ad.bsSelected = bs;
-    boolean isMultiModel = (atoms[bs.nextSetBit(0)].modelIndex != atoms[bs
-        .length() - 1].modelIndex);
+    boolean isMultiModel = (atoms[bs.nextSetBit(0)].mi != atoms[bs
+        .length() - 1].mi);
     boolean isSelf = bsA.equals(bsB);
     vwr.fillAtomData(ad, AtomData.MODE_FILL_RADII
         | (isMultiModel ? AtomData.MODE_FILL_MULTIMODEL : 0)
@@ -517,7 +517,7 @@ public class Contact extends Isosurface {
       }
       if (cp == null) {
         params.atomRadiusData = rdA;
-        params.bsIgnore = BSUtil.copyInvert(bs1, atomCount);
+        params.bsIgnore = BSUtil.copyInvert(bs1, ac);
         params.bsSelected = bs1;
         params.bsSolvent = null;
       }
@@ -526,7 +526,7 @@ public class Contact extends Isosurface {
       setPropI("map", Boolean.TRUE, null);
       if (cp == null) {
         params.atomRadiusData = rdB;
-        params.bsIgnore = BSUtil.copyInvert(bs2, atomCount);
+        params.bsIgnore = BSUtil.copyInvert(bs2, ac);
         params.bsSelected = bs2;
       }
       params.volumeData = volumeData;
@@ -551,7 +551,7 @@ public class Contact extends Isosurface {
         sg.setParameter("parameters", parameters);
       if (cp == null) {
         params.atomRadiusData = rd;
-        params.bsIgnore = BSUtil.copyInvert(bs2, atomCount);
+        params.bsIgnore = BSUtil.copyInvert(bs2, ac);
         params.bsIgnore.andNot(bs1);
       }
       params.func = func;

@@ -50,7 +50,7 @@ public class JmolMolecule {
   public int modelIndex;
   public int indexInModel;
   public int firstAtomIndex;
-  public int atomCount;
+  public int ac;
   public int nElements;
   public int[] elementCounts = new int[Elements.elementNumberMax];
   public int[] altElementCounts = new int[Elements.altElementMax];
@@ -196,7 +196,7 @@ public class JmolMolecule {
     jm.nodes = nodes;
     jm.firstAtomIndex = firstAtomIndex;
     jm.atomList = atomList;
-    jm.atomCount = atomList.cardinality();
+    jm.ac = atomList.cardinality();
     jm.moleculeIndex = moleculeIndex;
     jm.modelIndex = modelIndex;
     jm.indexInModel = indexInModel;
@@ -210,7 +210,7 @@ public class JmolMolecule {
     }
     elementCounts = new int[Elements.elementNumberMax];
     altElementCounts = new int[Elements.altElementMax];
-    atomCount = atomList.cardinality();
+    ac = atomList.cardinality();
     for (int i = atomList.nextSetBit(0); i >= 0; i = atomList.nextSetBit(i + 1)) {
       int n = nodes[i].getAtomicAndIsotopeNumber();
       if (n < Elements.elementNumberMax) {

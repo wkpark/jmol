@@ -65,19 +65,19 @@ public class SiestaReader extends AtomSetCollectionReader {
     newAtomSet();
     setCell();
     discardLinesUntilContains("AtomicCoordinatesFormat Ang");
-    readLine();
+    rd();
     setFractionalCoordinates(false);
-    while (readLine() != null
+    while (rd() != null
         && line.indexOf("%endblock Atomic") < 0) {
       String[] tokens = getTokens();
       addAtomXYZSymName(tokens, 0, null, tokens[4]);
     }
-    noAtoms = atomSetCollection.atomCount;
+    noAtoms = asc.ac;
   }
 
   private void newAtomSet() throws Exception {
     applySymmetryAndSetTrajectory();
-    atomSetCollection.newAtomSet();
+    asc.newAtomSet();
     setSpaceGroupName("P1");
     setFractionalCoordinates(false);
   }
@@ -85,29 +85,29 @@ public class SiestaReader extends AtomSetCollectionReader {
   private void readAtomsCartGeomThenCell() throws Exception {
     readLines(1);
     newAtomSet();
-    int atom0 = atomSetCollection.atomCount;
+    int atom0 = asc.ac;
     for (int i = 0; i < noAtoms; i++) {
       String[] tokens = getTokens();
-      Atom atom = atomSetCollection.addNewAtom();
+      Atom atom = asc.addNewAtom();
       atom.atomName = tokens[4];
       float x = parseFloatStr(tokens[0]);
       float y = parseFloatStr(tokens[1]);
       float z = parseFloatStr(tokens[2]);
       atom.set(x, y, z); // will be set after reading unit cell
-      readLine();
+      rd();
     }
     discardLinesUntilContains("outcell: Unit cell vectors");
     setCell();
-    Atom[] atoms = atomSetCollection.atoms;
-    int atomCount = atomSetCollection.atomCount;
-    for (int i = atom0; i < atomCount; i++)
+    Atom[] atoms = asc.atoms;
+    int ac = asc.ac;
+    for (int i = atom0; i < ac; i++)
       setAtomCoord(atoms[i]);
     discardLinesUntilContains("siesta: E_KS(eV) = ");
     String[] tokens = getTokens();
     Double energy = Double.valueOf(Double.parseDouble(tokens[3]));
-    atomSetCollection.setAtomSetEnergy("" + energy, energy.floatValue());
-    atomSetCollection.setAtomSetAuxiliaryInfo("Energy", energy);
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Energy", energy);
-    atomSetCollection.setAtomSetName("Energy = " + energy + " eV");
+    asc.setAtomSetEnergy("" + energy, energy.floatValue());
+    asc.setAtomSetAuxiliaryInfo("Energy", energy);
+    asc.setAtomSetCollectionAuxiliaryInfo("Energy", energy);
+    asc.setAtomSetName("Energy = " + energy + " eV");
   }
 }

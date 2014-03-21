@@ -149,16 +149,16 @@ public class StateCreator extends JmolStateCreator {
           .getBooleanProperty("saveProteinStructureState")));
     // color scheme
     if (isAll || type.equalsIgnoreCase("colorState"))
-      s.append(getColorState(vwr.colorManager, sfunc));
+      s.append(getColorState(vwr.cm, sfunc));
     // frame information
     if (isAll || type.equalsIgnoreCase("frameState"))
-      s.append(getAnimState(vwr.animationManager, sfunc));
+      s.append(getAnimState(vwr.am, sfunc));
     // orientation and slabbing
     if (isAll || type.equalsIgnoreCase("perspectiveState"))
       s.append(getViewState(vwr.tm, sfunc));
     // display and selections
     if (isAll || type.equalsIgnoreCase("selectionState"))
-      s.append(getSelectionState(vwr.selectionManager, sfunc));
+      s.append(getSelectionState(vwr.slm, sfunc));
     if (sfunc != null) {
       app(sfunc, "set refreshing true");
       app(sfunc, "set antialiasDisplay " + global.antialiasDisplay);
@@ -192,8 +192,8 @@ public class StateCreator extends JmolStateCreator {
     }    
     if (vwr.nmrCalculation != null)
       haveData |= vwr.nmrCalculation.getState(commands);
-    if (vwr.dataManager != null)
-      haveData |= vwr.dataManager.getDataState(this, commands);
+    if (vwr.dm != null)
+      haveData |= vwr.dm.getDataState(this, commands);
     if (!haveData)
       return "";
     
@@ -247,9 +247,9 @@ public class StateCreator extends JmolStateCreator {
     // connections
 
     ModelSet ms = vwr.ms;
-    Bond[] bonds = ms.bonds;
-    Model[] models = ms.models;
-    int modelCount = ms.modelCount;
+    Bond[] bonds = ms.bo;
+    Model[] models = ms.am;
+    int modelCount = ms.mc;
 
     if (isAll) {
 
@@ -263,14 +263,14 @@ public class StateCreator extends JmolStateCreator {
 
       SB sb = new SB();
       for (int i = 0; i < ms.bondCount; i++)
-        if (!models[bonds[i].atom1.modelIndex].isModelKit)
+        if (!models[bonds[i].atom1.mi].isModelKit)
           if (bonds[i].isHydrogen()
               || (bonds[i].order & Edge.BOND_NEW) != 0) {
             Bond bond = bonds[i];
-            int index = bond.atom1.index;
+            int index = bond.atom1.i;
             if (bond.atom1.getGroup().isAdded(index))
               index = -1 - index;
-            sb.appendI(index).appendC('\t').appendI(bond.atom2.index).appendC(
+            sb.appendI(index).appendC('\t').appendI(bond.atom2.i).appendC(
                 '\t').appendI(bond.order & ~Edge.BOND_NEW).appendC('\t')
                 .appendF(bond.mad / 1000f).appendC('\t').appendF(
                     bond.getEnergy()).appendC('\t').append(
@@ -369,7 +369,7 @@ public class StateCreator extends JmolStateCreator {
         //        commands.append("  unitcell OFF;\n");
         if (haveModulation) {
           //commands.append("  modulation fps "
-          //  + vwr.animationManager.modulationFps + ";\n");
+          //  + vwr.am.modulationFps + ";\n");
           Map<String, BS> temp = new Hashtable<String, BS>();
           int ivib;
           for (int i = modelCount; --i >= 0;) {
@@ -395,7 +395,7 @@ public class StateCreator extends JmolStateCreator {
   }
 
   private void getShapeState(SB commands, boolean isAll, int iShape) {
-    Shape[] shapes = vwr.shapeManager.shapes;
+    Shape[] shapes = vwr.shm.shapes;
     if (shapes == null)
       return;
     String cmd;
@@ -498,8 +498,8 @@ public class StateCreator extends JmolStateCreator {
     }
     SB commands = new SB();
     ModelSet ms = vwr.ms;
-    Model[] models = ms.models;
-    int modelCount = ms.modelCount;
+    Model[] models = ms.am;
+    int modelCount = ms.mc;
     for (int i = 0; i < modelCount; i++) {
       if (ms.isJmolDataFrameForModel(i) || ms.isTrajectorySubFrame(i))
         continue;
@@ -548,7 +548,7 @@ public class StateCreator extends JmolStateCreator {
 
   private String getColorState(ColorManager cm, SB sfunc) {
     SB s = new SB();
-    int n = getCEState(cm.propertyColorEncoder, s);
+    int n = getCEState(cm.ce, s);
     //String colors = getColorSchemeList(getColorSchemeArray(USER));
     //if (colors.length() > 0)
     //s.append("userColorScheme = " + colors + ";\n");
@@ -604,7 +604,7 @@ public class StateCreator extends JmolStateCreator {
       app(commands, "anim frames " + Escape.eAI(frames));
       int i = am.getCurrentFrameIndex();
       app(commands, "frame " + (i + 1));
-      showModel = (am.currentModelIndex != am.modelIndexForFrame(i));
+      showModel = (am.cmi != am.modelIndexForFrame(i));
     }
     if (showModel)
       app(commands, "model "
@@ -684,9 +684,9 @@ public class StateCreator extends JmolStateCreator {
 
     // label defaults
 
-    if (vwr.shapeManager.getShape(JC.SHAPE_LABELS) != null)
+    if (vwr.shm.getShape(JC.SHAPE_LABELS) != null)
       commands
-          .append(getDefaultLabelState((Labels) vwr.shapeManager.shapes[JC.SHAPE_LABELS]));
+          .append(getDefaultLabelState((Labels) vwr.shm.shapes[JC.SHAPE_LABELS]));
 
     // structure defaults
 
@@ -761,11 +761,11 @@ public class StateCreator extends JmolStateCreator {
     ModelSet m = vwr.ms;
     if (m.trajectorySteps == null)
       return "";
-    for (int i = m.modelCount; --i >= 0;) {
-      int t = m.models[i].getSelectedTrajectory();
+    for (int i = m.mc; --i >= 0;) {
+      int t = m.am[i].getSelectedTrajectory();
       if (t >= 0) {
         s = " or " + m.getModelNumberDotted(t) + s;
-        i = m.models[i].trajectoryBaseIndex; //skip other trajectories
+        i = m.am[i].trajectoryBaseIndex; //skip other trajectories
       }
     }
     if (s.length() > 0)
@@ -1083,7 +1083,7 @@ public class StateCreator extends JmolStateCreator {
     clearTemp();
     ModelSet modelSet = vwr.ms;
     boolean haveTainted = false;
-    Bond[] bonds = modelSet.bonds;
+    Bond[] bonds = modelSet.bo;
     int bondCount = modelSet.bondCount;
     short r;
 
@@ -1256,13 +1256,13 @@ public class StateCreator extends JmolStateCreator {
       break;
     case JC.SHAPE_BALLS:
       clearTemp();
-      int atomCount = vwr.getAtomCount();
-      Atom[] atoms = vwr.ms.atoms;
+      int ac = vwr.getAtomCount();
+      Atom[] atoms = vwr.ms.at;
       Balls balls = (Balls) shape;
       short[] colixes = balls.colixes;
       byte[] pids = balls.paletteIDs;
       float r = 0;
-      for (int i = 0; i < atomCount; i++) {
+      for (int i = 0; i < ac; i++) {
         if (shape.bsSizeSet != null && shape.bsSizeSet.get(i)) {
           if ((r = atoms[i].madAtom) < 0)
             BSUtil.setMapBitSet(temp, i, i, "Spacefill on");
@@ -1345,7 +1345,7 @@ public class StateCreator extends JmolStateCreator {
           vwr.getModelNumberDotted(t.modelIndex)).append(";\n");
     if (t.pointerPt != null) {
       s.append("  ").append(echoCmd).append(" point ").append(
-          t.pointerPt instanceof Atom ? "({" + ((Atom) t.pointerPt).index
+          t.pointerPt instanceof Atom ? "({" + ((Atom) t.pointerPt).i
               + "})" : Escape.eP(t.pointerPt)).append(";\n");
 
     }
@@ -1524,7 +1524,7 @@ public class StateCreator extends JmolStateCreator {
         + " set";
     int n = 0;
     boolean isDefault = (type == AtomCollection.TAINT_COORD);
-    Atom[] atoms = vwr.ms.atoms;
+    Atom[] atoms = vwr.ms.at;
     BS[] tainted = vwr.ms.tainted;
     if (bs != null)
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
@@ -1645,8 +1645,8 @@ public class StateCreator extends JmolStateCreator {
     // called by actionManager
     if (!vwr.g.preserveState)
       return;
-    int modelIndex = (taintedAtom >= 0 ? vwr.ms.atoms[taintedAtom].modelIndex
-        : vwr.ms.modelCount - 1);
+    int modelIndex = (taintedAtom >= 0 ? vwr.ms.at[taintedAtom].mi
+        : vwr.ms.mc - 1);
     //System.out.print("undoAction " + type + " " + taintedAtom + " modelkit?"
     //    + modelSet.models[modelIndex].isModelkit());
     //System.out.println(" " + type + " size=" + actionStates.size() + " "
@@ -1689,7 +1689,7 @@ public class StateCreator extends JmolStateCreator {
       }
       //System.out.println("redo type = " + type + " size=" + actionStates.size()
       //    + " " + +actionStatesRedo.size());
-      if (vwr.ms.models[modelIndex].isModelkit()
+      if (vwr.ms.am[modelIndex].isModelkit()
           || s.indexOf("zap ") < 0) {
         if (Logger.debugging)
           vwr.log(s);
@@ -1744,7 +1744,7 @@ public class StateCreator extends JmolStateCreator {
 
   @Override
   void syncScript(String script, String applet, int port) {
-    StatusManager sm = vwr.statusManager;
+    StatusManager sm = vwr.sm;
     if (Viewer.SYNC_GRAPHICS_MESSAGE.equalsIgnoreCase(script)) {
       sm.setSyncDriver(StatusManager.SYNC_STEREO);
       sm.syncSend(script, applet, 0);

@@ -109,7 +109,7 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
   private boolean isVibration;
   private boolean isZapped;
 
-  private int modelIndex, modelCount, atomCount;
+  private int modelIndex, modelCount, ac;
 
   private String group3List;
   private int[] group3Counts;
@@ -368,7 +368,7 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
       modelSetRoot = "Jmol";
     modelIndex = vwr.getCurrentModelIndex();
     modelCount = vwr.getModelCount();
-    atomCount = vwr.getAtomCountInModel(modelIndex);
+    ac = vwr.getAtomCountInModel(modelIndex);
     modelSetInfo = vwr.getModelSetAuxiliaryInfo();
     modelInfo = vwr.getModelAuxiliaryInfo(modelIndex);
     if (modelInfo == null)
@@ -441,7 +441,7 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
     SC menu = htMenus.get("selectMenuText");
     if (menu == null)
       return;
-    menuEnable(menu, atomCount != 0);
+    menuEnable(menu, ac != 0);
     menuSetLabel(menu, gti("selectMenuText", vwr.getSelectionCount()));
   }
 
@@ -894,8 +894,8 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
     menuEnable(menu, true);
 
     // 100 here is totally arbitrary. You can do a minimization on any number of atoms
-    menuEnable(htMenus.get("computationMenu"), atomCount <= 100);
-    addMenuItem(menu, gti("atomsText", atomCount));
+    menuEnable(htMenus.get("computationMenu"), ac <= 100);
+    addMenuItem(menu, gti("atomsText", ac));
     addMenuItem(menu, gti("bondsText", vwr.getBondCountInModel(modelIndex)));
     if (isPDB) {
       menuAddSeparator(menu);

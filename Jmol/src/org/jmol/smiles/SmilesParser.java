@@ -336,7 +336,7 @@ public class SmilesParser {
 
     molecule.setAtomArray();
 
-    for (int i = molecule.atomCount; --i >= 0;) {
+    for (int i = molecule.ac; --i >= 0;) {
       SmilesAtom atom = molecule.patternAtoms[i];
       atom.setBondArray();
       if (!isSmarts && atom.bioType == '\0' && !atom.setHydrogenCount(molecule))
@@ -347,7 +347,7 @@ public class SmilesParser {
     // set the searches now that we know what's a bioAtom and what's not
 
     if (isSmarts)
-      for (int i = molecule.atomCount; --i >= 0;) {
+      for (int i = molecule.ac; --i >= 0;) {
         SmilesAtom atom = molecule.patternAtoms[i];
         checkNested(molecule, atom, flags);
         for (int k = 0; k < atom.nAtomsOr; k++)
@@ -373,7 +373,7 @@ public class SmilesParser {
         if (s.charAt(0) != '~' && atom.bioType != '\0')
           s = "~" + atom.bioType + "~" + s;
         SmilesSearch search = getSearch(molecule, s, flags);
-        if (search.atomCount > 0 && search.patternAtoms[0].selected)
+        if (search.ac > 0 && search.patternAtoms[0].selected)
           atom.selected = true;
         molecule.setNested(atom.iNested, search);
       }
@@ -382,7 +382,7 @@ public class SmilesParser {
 
   private void fixChirality(SmilesSearch molecule)
       throws InvalidSmilesException {
-    for (int i = molecule.atomCount; --i >= 0;) {
+    for (int i = molecule.ac; --i >= 0;) {
       SmilesAtom sAtom = molecule.patternAtoms[i];
       int stereoClass = sAtom.getChiralClass();
       if (stereoClass == Integer.MIN_VALUE)

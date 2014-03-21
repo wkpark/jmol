@@ -129,10 +129,10 @@ public class Atom extends Point3fi implements BNode {
         BS atomSymmetry, int atomSite,
         short atomicAndIsotopeNumber, int formalCharge, 
         boolean isHetero) {
-    this.modelIndex = (short)modelIndex;
+    this.mi = (short)modelIndex;
     this.atomSymmetry = atomSymmetry;
     this.atomSite = atomSite;
-    this.index = atomIndex;
+    this.i = atomIndex;
     this.atomicAndIsotopeNumber = atomicAndIsotopeNumber;
     if (isHetero)
       formalChargeAndFlags = IS_HETERO_FLAG;
@@ -221,7 +221,7 @@ public class Atom extends Point3fi implements BNode {
 
   @Override
   public int getBondedAtomIndex(int bondIndex) {
-    return bonds[bondIndex].getOtherAtom(this).index;
+    return bonds[bondIndex].getOtherAtom(this).i;
   }
 
   /*
@@ -300,13 +300,13 @@ public class Atom extends Point3fi implements BNode {
     Tensor t = (Tensor) tensors[0];
     if (t == null || t.iType != Tensor.TYPE_ADP)
       return 0;
-    if (group.chain.model.modelSet.isModulated(index) && t.isUnmodulated)
+    if (group.chain.model.ms.isModulated(i) && t.isUnmodulated)
       t = (Tensor) tensors[1];
     return t.getFactoredValue(isMax ? 2 : 1); 
   }
 
   public Object[] getTensors() {
-    return group.chain.model.modelSet.getAtomTensorList(index);
+    return group.chain.model.ms.getAtomTensorList(i);
   }
   
   public int getRasMolRadius() {
@@ -430,24 +430,24 @@ public class Atom extends Point3fi implements BNode {
 
   // a percentage value in the range 0-100
   public int getOccupancy100() {
-    byte[] occupancies = group.chain.model.modelSet.occupancies;
-    return occupancies == null ? 100 : occupancies[index];
+    byte[] occupancies = group.chain.model.ms.occupancies;
+    return occupancies == null ? 100 : occupancies[i];
   }
 
   // This is called bfactor100 because it is stored as an integer
   // 100 times the bfactor(temperature) value
   public int getBfactor100() {
-    short[] bfactor100s = group.chain.model.modelSet.bfactor100s;
+    short[] bfactor100s = group.chain.model.ms.bfactor100s;
     if (bfactor100s == null)
       return 0;
-    return bfactor100s[index];
+    return bfactor100s[i];
   }
 
   private float getHydrophobicity() {
-    float[] values = group.chain.model.modelSet.hydrophobicities;
+    float[] values = group.chain.model.ms.hydrophobicities;
     if (values == null)
       return Elements.getHydrophobicity(group.getGroupID());
-    return values[index];
+    return values[i];
   }
 
   public boolean setRadius(float radius) {
@@ -489,7 +489,7 @@ public class Atom extends Point3fi implements BNode {
 
   @Override
   public int getImplicitHydrogenCount() {
-    return group.chain.model.modelSet.getImplicitHydrogenCount(this, false);
+    return group.chain.model.ms.getImplicitHydrogenCount(this, false);
   }
 
   int getTargetValence() {
@@ -540,10 +540,10 @@ public class Atom extends Point3fi implements BNode {
   private VDW getVdwType(VDW type) {
     switch (type) {
     case AUTO:
-      type = group.chain.model.modelSet.getDefaultVdwType(modelIndex);
+      type = group.chain.model.ms.getDefaultVdwType(mi);
       break;
     case NOJMOL:
-      type = group.chain.model.modelSet.getDefaultVdwType(modelIndex);
+      type = group.chain.model.ms.getDefaultVdwType(mi);
       if (type == VDW.AUTO_JMOL)
         type = VDW.AUTO_BABEL;
       break;
@@ -552,8 +552,8 @@ public class Atom extends Point3fi implements BNode {
   }
 
   public float getBondingRadius() {
-    float[] rr = group.chain.model.modelSet.bondingRadii;
-    float r = (rr == null ? 0 : rr[index]);
+    float[] rr = group.chain.model.ms.bondingRadii;
+    float r = (rr == null ? 0 : rr[i]);
     return (r == 0 ? Elements.getBondingRadius(atomicAndIsotopeNumber,
         getFormalCharge()) : r);
   }
@@ -605,7 +605,7 @@ public class Atom extends Point3fi implements BNode {
 
   @Override
   public int getIndex() {
-    return index;
+    return i;
   }
 
   @Override
@@ -637,20 +637,20 @@ public class Atom extends Point3fi implements BNode {
    @Override
   public String getAtomName() {
      return (atomID > 0 ? JC.getSpecialAtomName(atomID) 
-         : group.chain.model.modelSet.atomNames[index]);
+         : group.chain.model.ms.atomNames[i]);
    }
    
    @Override
   public String getAtomType() {
-    String[] atomTypes = group.chain.model.modelSet.atomTypes;
-    String type = (atomTypes == null ? null : atomTypes[index]);
+    String[] atomTypes = group.chain.model.ms.atomTypes;
+    String type = (atomTypes == null ? null : atomTypes[i]);
     return (type == null ? getAtomName() : type);
   }
    
    public int getAtomNumber() {
-     int[] atomSerials = group.chain.model.modelSet.atomSerials;
+     int[] atomSerials = group.chain.model.ms.atomSerials;
      // shouldn't ever be null.
-     return (atomSerials != null ? atomSerials[index] : index);
+     return (atomSerials != null ? atomSerials[i] : i);
 //        : group.chain.model.modelSet.isZeroBased ? atomIndex : atomIndex);
    }
 
@@ -659,8 +659,8 @@ public class Atom extends Point3fi implements BNode {
    }
 
    public float getPartialCharge() {
-     float[] partialCharges = group.chain.model.modelSet.partialCharges;
-     return partialCharges == null ? 0 : partialCharges[index];
+     float[] partialCharges = group.chain.model.ms.partialCharges;
+     return partialCharges == null ? 0 : partialCharges[i];
    }
 
    /**
@@ -726,11 +726,11 @@ public class Atom extends Point3fi implements BNode {
    
    String getSymmetryOperatorList() {
     String str = "";
-    ModelSet f = group.chain.model.modelSet;
-    int nOps = f.getModelSymmetryCount(modelIndex);
+    ModelSet f = group.chain.model.ms;
+    int nOps = f.getModelSymmetryCount(mi);
     if (nOps == 0 || atomSymmetry == null)
       return "";
-    int[] cellRange = f.getModelCellRange(modelIndex);
+    int[] cellRange = f.getModelCellRange(mi);
     int pt = nOps;
     int n = (cellRange == null ? 1 : cellRange.length);
     for (int i = 0; i < n; i++)
@@ -742,11 +742,11 @@ public class Atom extends Point3fi implements BNode {
    
   @Override
   public int getModelIndex() {
-    return modelIndex;
+    return mi;
   }
    
   int getMoleculeNumber(boolean inModel) {
-    return (group.chain.model.modelSet.getMoleculeIndex(index, inModel) + 1);
+    return (group.chain.model.ms.getMoleculeIndex(i, inModel) + 1);
   }
    
   private float getFractionalCoord(char ch, boolean asAbsolute) {
@@ -765,7 +765,7 @@ public class Atom extends Point3fi implements BNode {
   }
   
   SymmetryInterface getUnitCell() {
-    return group.chain.model.modelSet.getUnitCellForAtom(this.index);
+    return group.chain.model.ms.getUnitCellForAtom(this.i);
   }
   
   private float getFractionalUnitCoord(char ch) {
@@ -938,7 +938,7 @@ public class Atom extends Point3fi implements BNode {
       info.append("%");
       info.appendC(altloc);
     }
-    if (group.chain.model.modelSet.modelCount > 1) {
+    if (group.chain.model.ms.mc > 1) {
       info.append("/");
       info.append(getModelNumberForLabel());
     }
@@ -1050,7 +1050,7 @@ public class Atom extends Point3fi implements BNode {
 
   @Override
   public boolean isLeadAtom() {
-    return group.isLeadAtom(index);
+    return group.isLeadAtom(i);
   }
   
   public float getGroupParameter(int tok) {
@@ -1068,15 +1068,15 @@ public class Atom extends Point3fi implements BNode {
   }
   
   public int getSurfaceDistance100() {
-    return group.chain.model.modelSet.getSurfaceDistance100(index);
+    return group.chain.model.ms.getSurfaceDistance100(i);
   }
 
   public V3 getVibrationVector() {
-    return group.chain.model.modelSet.getVibration(index, false);
+    return group.chain.model.ms.getVibration(i, false);
   }
 
   public float getVibrationCoord(char ch) {
-    return group.chain.model.modelSet.getVibrationCoord(index, ch);
+    return group.chain.model.ms.getVibrationCoord(i, ch);
   }
 
 
@@ -1113,11 +1113,11 @@ public class Atom extends Point3fi implements BNode {
   }
 
   public String getModelNumberForLabel() {
-    return group.chain.model.modelSet.getModelNumberForAtomLabel(modelIndex);
+    return group.chain.model.ms.getModelNumberForAtomLabel(mi);
   }
   
   public int getModelNumber() {
-    return group.chain.model.modelSet.getModelNumber(modelIndex) % 1000000;
+    return group.chain.model.ms.getModelNumber(mi) % 1000000;
   }
   
   public int getModelFileIndex() {
@@ -1125,7 +1125,7 @@ public class Atom extends Point3fi implements BNode {
   }
   
   public int getModelFileNumber() {
-    return group.chain.model.modelSet.getModelFileNumber(modelIndex);
+    return group.chain.model.ms.getModelFileNumber(mi);
   }
   
   @Override
@@ -1175,7 +1175,7 @@ public class Atom extends Point3fi implements BNode {
     //this overrides the Point3fi hashcode, which would
     //give a different hashcode for an atom depending upon
     //its screen location! Bug fix for 11.1.43 Bob Hanson
-    return index;
+    return i;
   }
   
   public Atom findAromaticNeighbor(int notAtomIndex) {
@@ -1184,7 +1184,7 @@ public class Atom extends Point3fi implements BNode {
     for (int i = bonds.length; --i >= 0; ) {
       Bond bondT = bonds[i];
       Atom a = bondT.getOtherAtom(this);
-      if (bondT.isAromatic() && a.index != notAtomIndex)
+      if (bondT.isAromatic() && a.i != notAtomIndex)
         return a;
     }
     return null;
@@ -1205,13 +1205,13 @@ public class Atom extends Point3fi implements BNode {
     case T.atomid:
       return atom.atomID;
     case T.atomindex:
-      return atom.index;
+      return atom.i;
     case T.bondcount:
       return atom.getCovalentBondCount();
     case T.chainno:
       return atom.group.chain.index + 1;
     case T.color:
-      return atom.group.chain.model.modelSet.vwr.getColorArgbOrGray(atom.getColix());
+      return atom.group.chain.model.ms.vwr.getColorArgbOrGray(atom.getColix());
     case T.element:
     case T.elemno:
       return atom.getElementNumber();
@@ -1233,7 +1233,7 @@ public class Atom extends Point3fi implements BNode {
       //float is handled differently
       return atom.getModelFileNumber();
     case T.modelindex:
-      return atom.modelIndex;
+      return atom.mi;
     case T.molecule:
       return atom.getMoleculeNumber(true);
     case T.occupancy:
@@ -1306,7 +1306,7 @@ public class Atom extends Point3fi implements BNode {
     case T.star:
     case T.strands:
     case T.trace:
-      return vwr.getAtomShapeValue(tokWhat, atom.group, atom.index);
+      return vwr.getAtomShapeValue(tokWhat, atom.group, atom.i);
     case T.bondingradius:
       return atom.getBondingRadius();
     case T.chemicalshift:
@@ -1366,13 +1366,13 @@ public class Atom extends Point3fi implements BNode {
     case T.screenx:
       return atom.sX;
     case T.screeny:
-      return atom.group.chain.model.modelSet.vwr.getScreenHeight() - atom.sY;
+      return atom.group.chain.model.ms.vwr.getScreenHeight() - atom.sY;
     case T.screenz:
       return atom.sZ;
     case T.selected:
-      return (vwr.isAtomSelected(atom.index) ? 1 : 0);
+      return (vwr.isAtomSelected(atom.i) ? 1 : 0);
     case T.surfacedistance:
-      atom.group.chain.model.modelSet.getSurfaceDistanceMax();
+      atom.group.chain.model.ms.getSurfaceDistanceMax();
       return atom.getSurfaceDistance100() / 100f;
     case T.temperature: // 0 - 9999
       return atom.getBfactor100() / 100f;
@@ -1431,7 +1431,7 @@ public class Atom extends Point3fi implements BNode {
       return (ch == '\0' ? "" : "" + ch);
     case T.label:
     case T.format:
-      String s = atom.group.chain.model.modelSet.getAtomLabel(atom.index);
+      String s = atom.group.chain.model.ms.getAtomLabel(atom.i);
       if (s == null)
         s = "";
       return s;
@@ -1442,7 +1442,7 @@ public class Atom extends Point3fi implements BNode {
     case T.strucid:
       return atom.getStructureId();
     case T.shape:
-      return vwr.getHybridizationAndAxes(atom.index, null, null, "d");
+      return vwr.getHybridizationAndAxes(atom.i, null, null, "d");
     case T.symbol:
       return atom.getElementSymbolIso(false);
     case T.symmetry:
@@ -1461,7 +1461,7 @@ public class Atom extends Point3fi implements BNode {
       return (atom.group.chain.model.isJmolDataFrame ? atom.getFractionalCoordPt(false) 
           : atom.getFractionalUnitCoordPt(false));
     case T.screenxyz:
-      return P3.new3(atom.sX, atom.group.chain.model.modelSet.vwr.getScreenHeight() - atom.sY, atom.sZ);
+      return P3.new3(atom.sX, atom.group.chain.model.ms.vwr.getScreenHeight() - atom.sY, atom.sZ);
     case T.vibxyz:
       V3 v = atom.getVibrationVector();
       if (v == null)
@@ -1471,7 +1471,7 @@ public class Atom extends Point3fi implements BNode {
       return atom;
     case T.color:
       return CU.colorPtFromInt2(
-          atom.group.chain.model.modelSet.vwr.getColorArgbOrGray(atom.getColix())
+          atom.group.chain.model.ms.vwr.getColorArgbOrGray(atom.getColix())
           );
     }
     return null;
@@ -1502,7 +1502,7 @@ public class Atom extends Point3fi implements BNode {
   }
 
   public boolean isWithinFourBonds(Atom atomOther) {
-    if (modelIndex != atomOther.modelIndex)
+    if (mi != atomOther.mi)
       return  false;
     if (isCovalentlyBonded(atomOther))
       return true; 
@@ -1521,7 +1521,7 @@ public class Atom extends Point3fi implements BNode {
   @Override
   public BS findAtomsLike(String atomExpression) {
     // for SMARTS searching
-    return group.chain.model.modelSet.vwr.getAtomBitSet(atomExpression);
+    return group.chain.model.ms.vwr.getAtomBitSet(atomExpression);
   }
 
 }

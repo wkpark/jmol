@@ -53,13 +53,13 @@ public class MdCrdReader extends AtomSetCollectionReader {
 
   private void readCoordinates() throws Exception {
     line = null;
-    int atomCount = (bsFilter == null ? templateAtomCount : ((Integer) htParams
+    int ac = (bsFilter == null ? templateAtomCount : ((Integer) htParams
         .get("filteredAtomCount")).intValue());
     boolean isPeriodic = htParams.containsKey("isPeriodic");
     int floatCount = templateAtomCount * 3 + (isPeriodic ? 3 : 0);
     while (true)
       if (doGetModel(++modelNumber, null)) {
-        P3[] trajectoryStep = new P3[atomCount];
+        P3[] trajectoryStep = new P3[ac];
         if (!getTrajectoryStep(trajectoryStep, isPeriodic))
           return;
         trajectorySteps.addLast(trajectoryStep);
@@ -76,7 +76,7 @@ public class MdCrdReader extends AtomSetCollectionReader {
 
   private float getFloat() throws Exception {
     while (line == null || ptFloat >= lenLine) {
-      if (readLine() == null)
+      if (rd() == null)
         return Float.NaN;
       ptFloat = 0;
       lenLine = line.length();
@@ -94,14 +94,14 @@ public class MdCrdReader extends AtomSetCollectionReader {
 
   private boolean getTrajectoryStep(P3[] trajectoryStep, boolean isPeriodic)
       throws Exception {
-    int atomCount = trajectoryStep.length;
+    int ac = trajectoryStep.length;
     int n = -1;
     for (int i = 0; i < templateAtomCount; i++) {
       P3 pt = getPoint();
       if (pt == null)
         return false;
       if (bsFilter == null || bsFilter.get(i)) {
-        if (++n == atomCount)
+        if (++n == ac)
           return false;
         trajectoryStep[n] = pt;
       }
@@ -114,7 +114,7 @@ public class MdCrdReader extends AtomSetCollectionReader {
   private boolean skipFloats(int n) throws Exception {
     int i = 0;
     // presumes float sets are separated by new line
-    while (i < n && readLine() != null)
+    while (i < n && rd() != null)
       i += getTokens().length;
     return (line != null);
   }

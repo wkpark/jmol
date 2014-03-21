@@ -37,14 +37,14 @@ public class GromacsReader extends AtomSetCollectionReader {
   
   @Override
   protected void initializeReader() {
-    atomSetCollection.newAtomSet();
+    asc.newAtomSet();
     setIsPDB();
   }
   
   @Override
   protected boolean checkLine() throws Exception {
       checkCurrentLineForScript();
-      atomSetCollection.setAtomSetName(line.trim());
+      asc.setAtomSetName(line.trim());
       readAtoms();
       readUnitCell();
       continuing = false;
@@ -64,9 +64,9 @@ public class GromacsReader extends AtomSetCollectionReader {
 
    */
   private void readAtoms() throws Exception {
-    int modelAtomCount = parseIntStr(readLine());
+    int modelAtomCount = parseIntStr(rd());
     for (int i = 0; i < modelAtomCount; ++i) {
-      readLine();
+      rd();
       int len = line.length();
       if (len != 44 && len != 68) {
         Logger.warn("line cannot be read for GROMACS atom data: " + line);
@@ -88,7 +88,7 @@ public class GromacsReader extends AtomSetCollectionReader {
       if (!filterAtom(atom, i))
         continue;
       atom.isHetero = false;
-      atomSetCollection.addAtom(atom);
+      asc.addAtom(atom);
       if (len < 69) 
         continue;
       float vx = parseFloatRange(line, 44, 52) * 10;
@@ -96,7 +96,7 @@ public class GromacsReader extends AtomSetCollectionReader {
       float vz = parseFloatRange(line, 60, 68) * 10;
       if (Float.isNaN(vx) || Float.isNaN(vy) || Float.isNaN(vz))
         continue;
-      atomSetCollection.addVibrationVector(atom.index, vx, vy, vz);
+      asc.addVibrationVector(atom.index, vx, vy, vz);
     }
   }
 
@@ -124,7 +124,7 @@ public class GromacsReader extends AtomSetCollectionReader {
   }
 
   private void readUnitCell() throws Exception {
-    if (readLine() == null)
+    if (rd() == null)
       return;
     String[] tokens = getTokensStr(line);
     if (tokens.length < 3 || !doApplySymmetry)
@@ -134,9 +134,9 @@ public class GromacsReader extends AtomSetCollectionReader {
     float c = 10 * parseFloatStr(tokens[2]);
     setUnitCell(a, b, c, 90, 90, 90);
     setSpaceGroupName("P1");
-    Atom[] atoms = atomSetCollection.atoms;
+    Atom[] atoms = asc.atoms;
     P3 pt = P3.new3(0.5f, 0.5f, 0.5f);
-    for (int i = atomSetCollection.atomCount; --i >= 0;) {
+    for (int i = asc.ac; --i >= 0;) {
       setAtomCoord(atoms[i]);
       atoms[i].add(pt);
     }

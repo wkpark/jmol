@@ -507,7 +507,7 @@ final class IsoShapeReader extends VolumeDataReader {
       pt.add(center);
       addVC(pt, 0, i);
     }
-    int[][] faces = ms.polygonIndexes;
+    int[][] faces = ms.pis;
     for (int i = 0; i < faces.length; i++) {
       int[] face = faces[i];
       addTriangleCheck(face[0], face[1], face[2], 7, 7, false, 0);

@@ -80,7 +80,7 @@ abstract public class AtomCollection {
   }
 
   protected void releaseModelSetAC() {
-    atoms = null;
+    at = null;
     vwr = null;
     g3d = null;
     bspf = null;
@@ -127,14 +127,14 @@ abstract public class AtomCollection {
   public Viewer vwr;
   protected GData g3d;
 
-  public Atom[] atoms;
-  public int atomCount;
+  public Atom[] at;
+  public int ac;
 
   public List<P3> getAtomPointVector(BS bs) {
     List<P3> v = new  List<P3>();
     if (bs != null) {
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i+1)) {
-        v.addLast(atoms[i]);
+        v.addLast(at[i]);
       }
     }
     return v;
@@ -142,7 +142,7 @@ abstract public class AtomCollection {
 
   public int getAtomCount() {
     // not established until AFTER model loading
-    return atomCount;
+    return ac;
   }
   
   ////////////////////////////////////////////////////////////////
@@ -209,9 +209,9 @@ abstract public class AtomCollection {
   @SuppressWarnings("static-access")
   public String getAtomInfo(int i, String format) {
     if (format == null)
-      return atoms[i].getInfo();
+      return at[i].getInfo();
     
-    return getLabeler().formatLabel(vwr, atoms[i], format);
+    return getLabeler().formatLabel(vwr, at[i], format);
   }
 
   public LabelToken getLabeler() {
@@ -221,66 +221,66 @@ abstract public class AtomCollection {
   }
 
   public String getAtomInfoXYZ(int i, boolean useChimeFormat) {
-    return atoms[i].getInfoXYZ(useChimeFormat);
+    return at[i].getInfoXYZ(useChimeFormat);
   }
 
   public String getElementSymbol(int i) {
-    return atoms[i].getElementSymbol();
+    return at[i].getElementSymbol();
   }
 
   public int getElementNumber(int i) {
-    return atoms[i].getElementNumber();
+    return at[i].getElementNumber();
   }
 
   public String getElementName(int i) {
-      return Elements.elementNameFromNumber(atoms[i]
+      return Elements.elementNameFromNumber(at[i]
           .getAtomicAndIsotopeNumber());
   }
 
   public String getAtomName(int i) {
-    return atoms[i].getAtomName();
+    return at[i].getAtomName();
   }
 
   public int getAtomNumber(int i) {
-    return atoms[i].getAtomNumber();
+    return at[i].getAtomNumber();
   }
 
   public P3 getAtomPoint3f(int i) {
-    return atoms[i];
+    return at[i];
   }
 
   public float getAtomRadius(int i) {
-    return atoms[i].getRadius();
+    return at[i].getRadius();
   }
 
   public float getAtomVdwRadius(int i, VDW type) {
-    return atoms[i].getVanderwaalsRadiusFloat(vwr, type);
+    return at[i].getVanderwaalsRadiusFloat(vwr, type);
   }
 
   public short getAtomColix(int i) {
-    return atoms[i].getColix();
+    return at[i].getColix();
   }
 
   public String getAtomChain(int i) {
-    return atoms[i].getChainIDStr();
+    return at[i].getChainIDStr();
   }
 
   public Quat getQuaternion(int i, char qtype) {
-    return (i < 0 ? null : atoms[i].group.getQuaternion(qtype));
+    return (i < 0 ? null : at[i].group.getQuaternion(qtype));
   } 
 
   public Object getHelixData(BS bs, int tokType) {
     int iAtom = bs.nextSetBit(0);
     return (iAtom < 0 ? "null"
-        : atoms[iAtom].group.getHelixData(tokType, 
+        : at[iAtom].group.getHelixData(tokType, 
         vwr.getQuaternionFrame(), vwr.getInt(T.helixstep)));
   }
   
   public int getAtomIndexFromAtomNumber(int atomNumber, BS bsVisibleFrames) {
     //definitely want FIRST (model) not last here
-    for (int i = 0; i < atomCount; i++) {
-      Atom atom = atoms[i];
-      if (atom.getAtomNumber() == atomNumber && bsVisibleFrames.get(atom.modelIndex))
+    for (int i = 0; i < ac; i++) {
+      Atom atom = at[i];
+      if (atom.getAtomNumber() == atomNumber && bsVisibleFrames.get(atom.mi))
         return i;
     }
     return -1;
@@ -289,15 +289,15 @@ abstract public class AtomCollection {
   public void setFormalCharges(BS bs, int formalCharge) {
     if (bs != null)
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-        atoms[i].setFormalCharge(formalCharge);
+        at[i].setFormalCharge(formalCharge);
         taintAtom(i, TAINT_FORMALCHARGE);
       }
   }
   
   public float[] getAtomicCharges() {
-    float[] charges = new float[atomCount];
-    for (int i = atomCount; --i >= 0; )
-      charges[i] = atoms[i].getElementNumber();
+    float[] charges = new float[ac];
+    for (int i = ac; --i >= 0; )
+      charges[i] = at[i].getElementNumber();
     return charges;
   }
 
@@ -320,8 +320,8 @@ abstract public class AtomCollection {
 
   protected void findMaxRadii() {
     float r;
-    for (int i = atomCount; --i >= 0;) {
-      Atom atom = atoms[i];
+    for (int i = ac; --i >= 0;) {
+      Atom atom = at[i];
       if ((r = atom.getBondingRadius()) > maxBondingRadius)
         maxBondingRadius = r;
       if ((r = atom.getVanderwaalsRadiusFloat(vwr, VDW.AUTO)) > maxVanderwaalsRadius)
@@ -343,7 +343,7 @@ abstract public class AtomCollection {
     bfactor100Lo = Integer.MAX_VALUE;
     bfactor100Hi = Integer.MIN_VALUE;
     if (bs == null) {
-      for (int i = 0; i < atomCount; i++)
+      for (int i = 0; i < ac; i++)
         setBf(i);
     } else {
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i+1))
@@ -353,7 +353,7 @@ abstract public class AtomCollection {
   }
 
   private void setBf(int i) {
-    int bf = atoms[i].getBfactor100();
+    int bf = at[i].getBfactor100();
     if (bf < bfactor100Lo)
       bfactor100Lo = bf;
     else if (bf > bfactor100Hi)
@@ -392,7 +392,7 @@ abstract public class AtomCollection {
     float volume = 0;
     if (bs != null)
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
-        volume += atoms[i].getVolume(vwr, vType);
+        volume += at[i].getVolume(vwr, vType);
     return volume;
   }
   
@@ -417,26 +417,26 @@ abstract public class AtomCollection {
       envelopeRadius = JC.ENC_CALC_MAX_DIST;
     
     JmolEnvCalc ec = ((JmolEnvCalc) Interface.getOption("geodesic.EnvelopeCalculation"))
-    .set(vwr, atomCount, null);
+    .set(vwr, ac, null);
     ec.calculate(new RadiusData(null, envelopeRadius, EnumType.ABSOLUTE, null), 
         Float.MAX_VALUE, 
-        bsSelected, BSUtil.copyInvert(bsSelected, atomCount), 
+        bsSelected, BSUtil.copyInvert(bsSelected, ac), 
         false, false, false, true);
     P3[] points = ec.getPoints();
     surfaceDistanceMax = 0;
     bsSurface = ec.getBsSurfaceClone();
-    surfaceDistance100s = new int[atomCount];
+    surfaceDistance100s = new int[ac];
     nSurfaceAtoms = BSUtil.cardinalityOf(bsSurface);
     if (nSurfaceAtoms == 0 || points == null || points.length == 0)
       return points;
     float radiusAdjust = (envelopeRadius == Float.MAX_VALUE ? 0 : envelopeRadius);
-    for (int i = 0; i < atomCount; i++) {
+    for (int i = 0; i < ac; i++) {
       //surfaceDistance100s[i] = Integer.MIN_VALUE;
       if (bsSurface.get(i)) {
         surfaceDistance100s[i] = 0;
       } else {
         float dMin = Float.MAX_VALUE;
-        Atom atom = atoms[i];
+        Atom atom = at[i];
         for (int j = points.length; --j >= 0;) {
           float d = Math.abs(points[j].distance(atom) - radiusAdjust);
           if (d < 0 && Logger.debugging)
@@ -493,11 +493,11 @@ abstract public class AtomCollection {
           setAtomCoord(i, xyz.x, xyz.y, xyz.z);
           break;
         case T.fracxyz:
-          atoms[i].setFractionalCoordTo(xyz, true);
+          at[i].setFractionalCoordTo(xyz, true);
           taintAtom(i, TAINT_COORD);
           break;
         case T.fuxyz:
-          atoms[i].setFractionalCoordTo(xyz, false);
+          at[i].setFractionalCoordTo(xyz, false);
           taintAtom(i, TAINT_COORD);
           break;
         case T.vibxyz:
@@ -513,31 +513,31 @@ abstract public class AtomCollection {
   }
   
   public void setAtomCoord(int atomIndex, float x, float y, float z) {
-    if (atomIndex < 0 || atomIndex >= atomCount)
+    if (atomIndex < 0 || atomIndex >= ac)
       return;
-    Atom a = atoms[atomIndex];
+    Atom a = at[atomIndex];
     a.set(x, y, z);
     fixTrajectory(a);
     taintAtom(atomIndex, TAINT_COORD);
   }
 
   private void fixTrajectory(Atom a) {
-    int m = a.modelIndex;
+    int m = a.mi;
     ModelCollection mc = (ModelCollection) this;
     boolean isTraj = mc.isTrajectory(m);
     if (!isTraj)
       return;
     boolean isFrac = mc.unitCells != null && mc.unitCells[m].getCoordinatesAreFractional();
-    P3 pt = mc.trajectorySteps.get(m)[a.index - mc.models[m].firstAtomIndex];
+    P3 pt = mc.trajectorySteps.get(m)[a.i - mc.am[m].firstAtomIndex];
     pt.set(a.x, a.y, a.z);
     if (isFrac)
       mc.unitCells[m].toFractional(pt, true);
   }
 
   public void setAtomCoordRelative(int atomIndex, float x, float y, float z) {
-    if (atomIndex < 0 || atomIndex >= atomCount)
+    if (atomIndex < 0 || atomIndex >= ac)
       return;
-    Atom a = atoms[atomIndex];
+    Atom a = at[atomIndex];
     a.add3(x, y, z);
     fixTrajectory(a);
     taintAtom(atomIndex, TAINT_COORD);
@@ -556,8 +556,8 @@ abstract public class AtomCollection {
 
     if (values != null && values.length == 0 || bs == null)
       return;
-    boolean isAll = (values != null && values.length == atomCount 
-        || list != null && list.length == atomCount);
+    boolean isAll = (values != null && values.length == ac 
+        || list != null && list.length == ac);
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       if (isAll)
         n = i;
@@ -571,7 +571,7 @@ abstract public class AtomCollection {
           return;
         sValue = list[n++];
       }
-      Atom atom = atoms[i];
+      Atom atom = at[i];
       switch (tok) {
       case T.atomname:
         taintAtom(i, TAINT_ATOMNAME);
@@ -653,7 +653,7 @@ abstract public class AtomCollection {
         atom.madAtom = ((short) (fValue * 2000));
         break;
       case T.selected:
-        vwr.setSelectedAtom(atom.index, (fValue != 0));
+        vwr.setSelectedAtom(atom.i, (fValue != 0));
         break;
       case T.temperature:
         if (setBFactor(i, fValue))
@@ -679,7 +679,7 @@ abstract public class AtomCollection {
   }
 
   protected void setElement(Atom atom, int atomicNumber) {
-    taintAtom(atom.index, TAINT_ELEMENT);
+    taintAtom(atom.i, TAINT_ELEMENT);
     atom.setAtomicAndIsotopeNumber(atomicNumber);
     atom.setPaletteID(PAL.CPK.id);
     atom.setColixAtom(vwr.getColixAtomPalette(atom,
@@ -709,7 +709,7 @@ abstract public class AtomCollection {
     if (Float.isNaN(vib.x) || Float.isNaN(vib.y) || Float.isNaN(vib.z))
       return;
     if (vibrations == null || vibrations.length < atomIndex)
-      vibrations = new Vibration[atoms.length];
+      vibrations = new Vibration[at.length];
     if (vib instanceof Vibration) {
       vibrations[atomIndex] = (Vibration) vib;
     } else {
@@ -717,7 +717,7 @@ abstract public class AtomCollection {
         vibrations[atomIndex] = new Vibration();
       vibrations[atomIndex].setT(vib);
     }
-    atoms[atomIndex].setVibrationVector();
+    at[atomIndex].setVibrationVector();
   }
 
   private void setVibrationVector2(int atomIndex, int tok, float fValue) {
@@ -738,23 +738,23 @@ abstract public class AtomCollection {
 
   public void setAtomName(int atomIndex, String name) {
     byte id = JC.lookupSpecialAtomID(name);
-    atoms[atomIndex].atomID = id;
-    if (id > 0 && ((ModelCollection)this).models[atoms[atomIndex].modelIndex].isBioModel)
+    at[atomIndex].atomID = id;
+    if (id > 0 && ((ModelCollection)this).am[at[atomIndex].mi].isBioModel)
       return;
     if (atomNames == null)
-      atomNames = new String[atoms.length];
+      atomNames = new String[at.length];
     atomNames[atomIndex] = name;
   }
 
   protected void setAtomType(int atomIndex, String type) {
       if (atomTypes == null)
-        atomTypes = new String[atoms.length];
+        atomTypes = new String[at.length];
       atomTypes[atomIndex] = type;
   }
   
   public boolean setAtomNumber(int atomIndex, int atomno) {
     if (atomSerials == null) {
-      atomSerials = new int[atoms.length];
+      atomSerials = new int[at.length];
     }
     atomSerials[atomIndex] = atomno;
     return true;
@@ -764,8 +764,8 @@ abstract public class AtomCollection {
     if (occupancies == null) {
       if (occupancy == 100)
         return false; // 100 is the default;
-      occupancies = new byte[atoms.length];
-      for (int i = atoms.length; --i >= 0;)
+      occupancies = new byte[at.length];
+      for (int i = at.length; --i >= 0;)
         occupancies[i] = 100;
     }
     occupancies[atomIndex] = (byte) (occupancy > 255 ? 255 : occupancy < 0 ? 0 : occupancy);
@@ -778,7 +778,7 @@ abstract public class AtomCollection {
     if (partialCharges == null) {
       if (partialCharge == 0 && !Float.valueOf(partialCharge).equals(MINUSZERO))
         return false; // no need to store a 0.
-      partialCharges = new float[atoms.length];
+      partialCharges = new float[at.length];
     }
     partialCharges[atomIndex] = partialCharge;
     return true;
@@ -788,7 +788,7 @@ abstract public class AtomCollection {
     if (Float.isNaN(radius))
       return false;
     if (bondingRadii == null) {
-      bondingRadii = new float[atoms.length];
+      bondingRadii = new float[at.length];
     }
     bondingRadii[atomIndex] = radius;
     return true;
@@ -800,7 +800,7 @@ abstract public class AtomCollection {
     if (bfactor100s == null) {
       if (bfactor == 0 && bfactor100s == null) // there's no need to store a 0.
         return false;
-      bfactor100s = new short[atoms.length];
+      bfactor100s = new short[at.length];
     }
     bfactor100s[atomIndex] = (short) ((bfactor < -327.68f ? -327.68f
         : bfactor > 327.67 ? 327.67 : bfactor) * 100 + (bfactor < 0 ? -0.5 : 0.5));
@@ -811,9 +811,9 @@ abstract public class AtomCollection {
     if (Float.isNaN(value))
       return false;
     if (hydrophobicities == null) {
-      hydrophobicities = new float[atoms.length];
-      for (int i = 0; i < atoms.length; i++)
-        hydrophobicities[i] = Elements.getHydrophobicity(atoms[i].getGroupID());
+      hydrophobicities = new float[at.length];
+      for (int i = 0; i < at.length; i++)
+        hydrophobicities[i] = Elements.getHydrophobicity(at[i].getGroupID());
     }
     hydrophobicities[atomIndex] = value;
     return true;
@@ -833,8 +833,8 @@ abstract public class AtomCollection {
       loadCoordinates(dataString, true, true);
       return;
     case TAINT_MAX:
-      fData = new float[atomCount];
-      bs = BS.newN(atomCount);
+      fData = new float[ac];
+      bs = BS.newN(ac);
       break;
     }
     int[] lines = Parser.markLines(dataString, ';');
@@ -845,9 +845,9 @@ abstract public class AtomCollection {
         String[] tokens = PT.getTokens(PT.parseTrimmed(dataString.substring(
             lines[i], lines[i + 1] - 1)));
         int atomIndex = PT.parseInt(tokens[0]) - 1;
-        if (atomIndex < 0 || atomIndex >= atomCount)
+        if (atomIndex < 0 || atomIndex >= ac)
           continue;
-        Atom atom = atoms[atomIndex];
+        Atom atom = at[atomIndex];
         n++;
         int pt = tokens.length - 1;
         float x = PT.parseFloat(tokens[pt]);
@@ -1023,10 +1023,10 @@ abstract public class AtomCollection {
     if (tainted == null)
       tainted = new BS[TAINT_MAX];
     if (tainted[type] == null)
-      tainted[type] = BS.newN(atomCount);
+      tainted[type] = BS.newN(ac);
     tainted[type].set(atomIndex);
     if (type  == TAINT_COORD)
-      validateBspfForModel(((ModelCollection) this).models[atoms[atomIndex].modelIndex].trajectoryBaseIndex, false);
+      validateBspfForModel(((ModelCollection) this).am[at[atomIndex].mi].trajectoryBaseIndex, false);
   }
 
   private void untaint(int atomIndex, byte type) {
@@ -1049,7 +1049,7 @@ abstract public class AtomCollection {
     if (tainted == null)
       tainted = new BS[TAINT_MAX];
     if (tainted[type] == null)
-      tainted[type] = BS.newN(atomCount);
+      tainted[type] = BS.newN(ac);
     BSUtil.copy2(bs, tainted[type]);
   }
 
@@ -1079,10 +1079,10 @@ abstract public class AtomCollection {
    */
   protected void findNearest2(int x, int y, Atom[] closest, BS bsNot, int min) {
     Atom champion = null;
-    for (int i = atomCount; --i >= 0;) {
+    for (int i = ac; --i >= 0;) {
       if (bsNot != null && bsNot.get(i))
         continue;
-      Atom contender = atoms[i];
+      Atom contender = at[i];
       if (contender.isClickable()
           && isCursorOnTopOf(contender, x, y, min,
               champion))
@@ -1114,9 +1114,9 @@ abstract public class AtomCollection {
 
   public BS findAtomsInRectangle(Rectangle rect, BS bsModels) {
     bsFoundRectangle.and(bsEmpty);
-    for (int i = atomCount; --i >= 0;) {
-      Atom atom = atoms[i];
-      if (bsModels.get(atom.modelIndex) && atom.checkVisible() 
+    for (int i = ac; --i >= 0;) {
+      Atom atom = at[i];
+      if (bsModels.get(atom.mi) && atom.checkVisible() 
           && rect.contains(atom.sX, atom.sY))
         bsFoundRectangle.set(i);
     }
@@ -1124,24 +1124,24 @@ abstract public class AtomCollection {
   }
 
   protected void fillADa(AtomData atomData, int mode) {
-    atomData.atomXyz = atoms;
-    atomData.atomCount = atomCount;
-    atomData.atomicNumber = new int[atomCount];
+    atomData.atomXyz = at;
+    atomData.ac = ac;
+    atomData.atomicNumber = new int[ac];
     boolean includeRadii = ((mode & AtomData.MODE_FILL_RADII) != 0);
     if (includeRadii)
-      atomData.atomRadius = new float[atomCount];
+      atomData.atomRadius = new float[ac];
     boolean isMultiModel = ((mode & AtomData.MODE_FILL_MULTIMODEL) != 0);
-    for (int i = 0; i < atomCount; i++) {
-      Atom atom = atoms[i];
+    for (int i = 0; i < ac; i++) {
+      Atom atom = at[i];
       if (atom.isDeleted() || !isMultiModel && atomData.modelIndex >= 0
-          && atom.modelIndex != atomData.firstModelIndex) {
+          && atom.mi != atomData.firstModelIndex) {
         if (atomData.bsIgnored == null)
           atomData.bsIgnored = new BS();
         atomData.bsIgnored.set(i);
         continue;
       }
       atomData.atomicNumber[i] = atom.getElementNumber();
-      atomData.lastModelIndex = atom.modelIndex;
+      atomData.lastModelIndex = atom.mi;
       if (includeRadii)
         atomData.atomRadius[i] = getWorkingRadius(atom, atomData); 
     }
@@ -1197,7 +1197,7 @@ abstract public class AtomCollection {
                                             List<Atom> vConnect) {
     V3 z = new V3();
     V3 x = new V3();
-    P3[][] hAtoms = new P3[atomCount][];
+    P3[][] hAtoms = new P3[ac][];
     BS bsDeleted = vwr.getDeletedAtoms();
     P3 pt;
     int nH = 0;
@@ -1207,7 +1207,7 @@ abstract public class AtomCollection {
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
         if (bsDeleted != null && bsDeleted.get(i))
           continue;
-        Atom atom = atoms[i];
+        Atom atom = at[i];
         int atomicNumber = atom.getElementNumber();
         if (justCarbon && atomicNumber != 6)
           continue;
@@ -1394,7 +1394,7 @@ abstract public class AtomCollection {
     aaRet[1] = charge;
     aaRet[2] = 0;
     aaRet[3] = atom.getCovalentBondCount();
-    Model model = ((ModelCollection) this).models[atom.modelIndex];
+    Model model = ((ModelCollection) this).am[atom.mi];
     String s = (model.isBioModel && !model.isPdbWithMultipleBonds ? atom.group.getGroup3() : null);
     if (s != null && charge == 0) {
       if (JC.getAminoAcidValenceAndCharge(s, atom.getAtomName(),
@@ -1414,7 +1414,7 @@ abstract public class AtomCollection {
   public int fixFormalCharges(BS bs) {
     int n = 0;
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-      Atom a = atoms[i];
+      Atom a = at[i];
       int nH = getImplicitHydrogenCount(a, true);
       if (nH != 0) {
 
@@ -1445,7 +1445,7 @@ abstract public class AtomCollection {
     if (lcaoTypeRaw.indexOf("d") >= 0 && !lcaoTypeRaw.endsWith("sp3d"))
       return getHybridizationAndAxesD(atomIndex, z, x, lcaoType);
 
-    Atom atom = atoms[atomIndex];
+    Atom atom = at[atomIndex];
     if (atomicNumber == 0)
       atomicNumber = atom.getElementNumber();
     Atom[] attached = getAttached(atom, 4, hybridizationCompatible);
@@ -1604,7 +1604,7 @@ abstract public class AtomCollection {
         // z is along the bond
         for (int i = 0; i < attached[0].bonds.length; i++) {
           if (attached[0].bonds[i].isCovalent()
-              && attached[0].getBondedAtomIndex(i) != atom.index) {
+              && attached[0].getBondedAtomIndex(i) != atom.i) {
             x.sub2(attached[0], attached[0].bonds[i].getOtherAtom(attached[0]));
             x.cross(z, x);
             if (x.length() == 0)
@@ -1692,7 +1692,7 @@ abstract public class AtomCollection {
         break;
       case 3:
         // special case, for example R2C=O oxygen
-        getHybridizationAndAxes(attached[0].index, 0, x, vTemp, "pz", false,
+        getHybridizationAndAxes(attached[0].i, 0, x, vTemp, "pz", false,
             doAlignZ);
         vTemp.setT(x);
         if (isSp2) { // align z as sp2 orbital
@@ -1720,7 +1720,7 @@ abstract public class AtomCollection {
             ok = ((a = attached[1]).getCovalentBondCount() == 3);
           if (ok) {
             // special case, for example R2C=C=CR2 central carbon
-            getHybridizationAndAxes(a.index, 0, x, z, "pz", false, doAlignZ);
+            getHybridizationAndAxes(a.i, 0, x, z, "pz", false, doAlignZ);
             if (lcaoType.equals("px"))
               x.scale(-1);
             z.setT(v[0]);
@@ -1813,7 +1813,7 @@ abstract public class AtomCollection {
     
     // pt: a 0   b 1   c 2   d 3   e 4   f 5
     
-    Atom atom = atoms[atomIndex];
+    Atom atom = at[atomIndex];
     Atom[] attached = getAttached(atom, 6, true);
     if (attached == null)
       return (z == null ? null : "?");
@@ -2049,7 +2049,7 @@ abstract public class AtomCollection {
   protected class AtomSorter implements Comparator<Atom>{
     @Override
     public int compare(Atom a1, Atom a2) {
-      return (a1.index > a2.index ? 1 : a1.index < a2.index ? -1 : 0);
+      return (a1.i > a2.i ? 1 : a1.i < a2.i ? -1 : 0);
     }    
   }
   
@@ -2083,24 +2083,24 @@ abstract public class AtomCollection {
       // fast search for water
       return getWaterAtoms(bs);
     case T.resno:
-      for (i = atomCount; --i >= 0;)
-        if (atoms[i].getResno() == iSpec)
+      for (i = ac; --i >= 0;)
+        if (at[i].getResno() == iSpec)
           bs.set(i);
       break;
     case T.symop:
-      for (i = atomCount; --i >= 0;)
-        if (atoms[i].getSymOp() == iSpec)
+      for (i = ac; --i >= 0;)
+        if (at[i].getSymOp() == iSpec)
           bs.set(i);
       break;
     case T.atomno:
-      for (i = atomCount; --i >= 0;)
-        if (atoms[i].getAtomNumber() == iSpec)
+      for (i = ac; --i >= 0;)
+        if (at[i].getAtomNumber() == iSpec)
           bs.set(i);
       break;
     case T.atomname:
       String names = "," + specInfo + ",";
-      for (i = atomCount; --i >= 0;) {
-        String name = atoms[i].getAtomName();
+      for (i = ac; --i >= 0;) {
+        String name = at[i].getAtomName();
         if (names.indexOf(name) >= 0)
           if (names.indexOf("," + name + ",") >= 0)
             bs.set(i);
@@ -2108,16 +2108,16 @@ abstract public class AtomCollection {
       break;
     case T.atomtype:
       String types = "," + specInfo + ",";
-      for (i = atomCount; --i >= 0;) {
-        String type = atoms[i].getAtomType();
+      for (i = ac; --i >= 0;) {
+        String type = at[i].getAtomType();
         if (types.indexOf(type) >= 0)
           if (types.indexOf("," + type + ",") >= 0)
             bs.set(i);
       }
       break;
     case T.spec_resid:
-      for (i = atomCount; --i >= 0;)
-        if (atoms[i].getGroupID() == iSpec)
+      for (i = ac; --i >= 0;)
+        if (at[i].getGroupID() == iSpec)
           bs.set(i);
       break;
     case T.spec_chain:
@@ -2125,56 +2125,56 @@ abstract public class AtomCollection {
     case T.spec_seqcode:
       return BSUtil.copy(getSeqcodeBits(iSpec, true));
     case T.hetero:
-      for (i = atomCount; --i >= 0;)
-        if (atoms[i].isHetero())
+      for (i = ac; --i >= 0;)
+        if (at[i].isHetero())
           bs.set(i);
       break;
     case T.hydrogen:
-      for (i = atomCount; --i >= 0;)
-        if (atoms[i].getElementNumber() == 1)
+      for (i = ac; --i >= 0;)
+        if (at[i].getElementNumber() == 1)
           bs.set(i);
       break;
     case T.protein:
-      for (i = atomCount; --i >= 0;)
-        if (atoms[i].isProtein())
+      for (i = ac; --i >= 0;)
+        if (at[i].isProtein())
           bs.set(i);
       break;
     case T.carbohydrate:
-      for (i = atomCount; --i >= 0;)
-        if (atoms[i].isCarbohydrate())
+      for (i = ac; --i >= 0;)
+        if (at[i].isCarbohydrate())
           bs.set(i);
       break;
     case T.helix: // WITHIN -- not ends
     case T.sheet: // WITHIN -- not ends
       STR type = (tokType == T.helix ? STR.HELIX
           : STR.SHEET);
-      for (i = atomCount; --i >= 0;)
-        if (atoms[i].isWithinStructure(type))
+      for (i = ac; --i >= 0;)
+        if (at[i].isWithinStructure(type))
           bs.set(i);
       break;
     case T.nucleic:
-      for (i = atomCount; --i >= 0;)
-        if (atoms[i].isNucleic())
+      for (i = ac; --i >= 0;)
+        if (at[i].isNucleic())
           bs.set(i);
       break;
     case T.dna:
-      for (i = atomCount; --i >= 0;)
-        if (atoms[i].isDna())
+      for (i = ac; --i >= 0;)
+        if (at[i].isDna())
           bs.set(i);
       break;
     case T.rna:
-      for (i = atomCount; --i >= 0;)
-        if (atoms[i].isRna())
+      for (i = ac; --i >= 0;)
+        if (at[i].isRna())
           bs.set(i);
       break;
     case T.purine:
-      for (i = atomCount; --i >= 0;)
-        if (atoms[i].isPurine())
+      for (i = ac; --i >= 0;)
+        if (at[i].isPurine())
           bs.set(i);
       break;
     case T.pyrimidine:
-      for (i = atomCount; --i >= 0;)
-        if (atoms[i].isPyrimidine())
+      for (i = ac; --i >= 0;)
+        if (at[i].isPyrimidine())
           bs.set(i);
       break;
     case T.element:
@@ -2182,7 +2182,7 @@ abstract public class AtomCollection {
       bsTemp = new BS();
       for (i = bsInfo.nextSetBit(0); i >= 0; i = bsInfo.nextSetBit(i + 1))
         bsTemp.set(getElementNumber(i));
-      for (i = atomCount; --i >= 0;)
+      for (i = ac; --i >= 0;)
         if (bsTemp.get(getElementNumber(i)))
           bs.set(i);
       break;
@@ -2190,9 +2190,9 @@ abstract public class AtomCollection {
       bsInfo = (BS) specInfo;
       bsTemp = new BS();
       for (i = bsInfo.nextSetBit(0); i >= 0; i = bsInfo.nextSetBit(i + 1))
-        bsTemp.set(atoms[i].atomSite);
-      for (i = atomCount; --i >= 0;)
-        if (bsTemp.get(atoms[i].atomSite))
+        bsTemp.set(at[i].atomSite);
+      for (i = ac; --i >= 0;)
+        if (bsTemp.get(at[i].atomSite))
           bs.set(i);
       break;
     case T.identifier:
@@ -2202,14 +2202,14 @@ abstract public class AtomCollection {
       if (atomSpec.indexOf("\\?") >= 0)
         atomSpec = PT.rep(atomSpec, "\\?", "\1");
       // / here xx*yy is NOT changed to "xx??????????yy"
-      for (i = atomCount; --i >= 0;)
-        if (isAtomNameMatch(atoms[i], atomSpec, false))
+      for (i = ac; --i >= 0;)
+        if (isAtomNameMatch(at[i], atomSpec, false))
           bs.set(i);
       break;
     case T.spec_alternate:
       String spec = (String) specInfo;
-      for (i = atomCount; --i >= 0;)
-        if (atoms[i].isAltLoc(spec))
+      for (i = ac; --i >= 0;)
+        if (at[i].isAltLoc(spec))
           bs.set(i);
       break;
     case T.spec_name_pattern:
@@ -2230,7 +2230,7 @@ abstract public class AtomCollection {
     switch (tokType) {
     case T.group:
       for (i = i0; i >= 0; i = bsInfo.nextSetBit(i+1)) {
-        int j = atoms[i].getGroup().selectAtoms(bs);
+        int j = at[i].getGroup().selectAtoms(bs);
         if (j > i)
           i = j;
       }
@@ -2239,15 +2239,15 @@ abstract public class AtomCollection {
       for (i = i0; i >= 0; i = bsInfo.nextSetBit(i+1)) {
         if (bs.get(i))
           continue;
-        iModel = atoms[i].modelIndex;
+        iModel = at[i].mi;
         bs.set(i);
         for (int j = i; --j >= 0;)
-          if (atoms[j].modelIndex == iModel)
+          if (at[j].mi == iModel)
             bs.set(j);
           else
             break;
-        for (; ++i < atomCount;)
-          if (atoms[i].modelIndex == iModel)
+        for (; ++i < ac;)
+          if (at[i].mi == iModel)
             bs.set(i);
           else
             break;
@@ -2256,7 +2256,7 @@ abstract public class AtomCollection {
     case T.chain:
       bsInfo = BSUtil.copy((BS) specInfo);
       for (i = bsInfo.nextSetBit(0); i >= 0; i = bsInfo.nextSetBit(i + 1)) {
-        Chain chain = atoms[i].getChain();
+        Chain chain = at[i].getChain();
         chain.setAtomBitSet(bs);
         bsInfo.andNot(bs);
       }
@@ -2265,15 +2265,15 @@ abstract public class AtomCollection {
       for (i = i0; i >= 0; i = bsInfo.nextSetBit(i+1)) {
         if (bs.get(i))
           continue;
-        iPolymer = atoms[i].getPolymerIndexInModel();
+        iPolymer = at[i].getPolymerIndexInModel();
         bs.set(i);
         for (int j = i; --j >= 0;)
-          if (atoms[j].getPolymerIndexInModel() == iPolymer)
+          if (at[j].getPolymerIndexInModel() == iPolymer)
             bs.set(j);
           else
             break;
-        for (; ++i < atomCount;)
-          if (atoms[i].getPolymerIndexInModel() == iPolymer)
+        for (; ++i < ac;)
+          if (at[i].getPolymerIndexInModel() == iPolymer)
             bs.set(i);
           else
             break;
@@ -2283,15 +2283,15 @@ abstract public class AtomCollection {
       for (i = i0; i >= 0; i = bsInfo.nextSetBit(i+1)) {
         if (bs.get(i))
           continue;
-        Object structure = atoms[i].getGroup().getStructure();
+        Object structure = at[i].getGroup().getStructure();
         bs.set(i);
         for (int j = i; --j >= 0;)
-          if (atoms[j].getGroup().getStructure() == structure)
+          if (at[j].getGroup().getStructure() == structure)
             bs.set(j);
           else
             break;
-        for (; ++i < atomCount;)
-          if (atoms[i].getGroup().getStructure() == structure)
+        for (; ++i < ac;)
+          if (at[i].getGroup().getStructure() == structure)
             bs.set(i);
           else
             break;
@@ -2312,10 +2312,10 @@ abstract public class AtomCollection {
     //(hydrogen) & connected(oxygen & connected(2) & connected(2, hydrogen))",
     
     int[] hs = new int[2];
-    for (int i = atomCount; --i >= 0;) {
-      if (atoms[i].getElementNumber() != 8)
+    for (int i = ac; --i >= 0;) {
+      if (at[i].getElementNumber() != 8)
         continue;
-      Atom a = atoms[i];
+      Atom a = at[i];
       Atom b;
       int g = a.getGroupID();
       if (g >= JC.GROUPID_WATER && g < JC.GROUPID_SOLVENT_MIN) {
@@ -2326,7 +2326,7 @@ abstract public class AtomCollection {
         for (int j = bonds.length; --j >= 0 && n < 3;)
           if (bonds[j].isCovalent()
               && (b=bonds[j].getOtherAtom(a)).getElementNumber() == 1)
-            hs[n++ % 2] = b.index;
+            hs[n++ % 2] = b.i;
         if (n == 2) {
           bs.set(hs[1]);
           bs.set(hs[0]);
@@ -2434,18 +2434,18 @@ abstract public class AtomCollection {
     name = name.toUpperCase();
     if (name.indexOf("\\?") >= 0)
       name = PT.rep(name, "\\?","\1");
-    for (int i = atomCount; --i >= 0;) {
-      String g3 = atoms[i].getGroup3(true);
+    for (int i = ac; --i >= 0;) {
+      String g3 = at[i].getGroup3(true);
       if (g3 != null && g3.length() > 0) {
         if (Txt.isMatch(g3, name, checkStar, true)) {
           if (bs == null)
             bs = BS.newN(i + 1);
           bs.set(i);
-          while (--i >= 0 && atoms[i].getGroup3(true).equals(g3))
+          while (--i >= 0 && at[i].getGroup3(true).equals(g3))
             bs.set(i);
           i++;
         }
-      } else if (isAtomNameMatch(atoms[i], name, checkStar)) {
+      } else if (isAtomNameMatch(at[i], name, checkStar)) {
         if (bs == null)
           bs = BS.newN(i + 1);
         bs.set(i);
@@ -2471,8 +2471,8 @@ abstract public class AtomCollection {
     char insCode = Group.getInsertionCodeChar(seqcode);
     switch (insCode) {
     case '?':
-      for (int i = atomCount; --i >= 0;) {
-        int atomSeqcode = atoms[i].getSeqcode();
+      for (int i = ac; --i >= 0;) {
+        int atomSeqcode = at[i].getSeqcode();
         if (!haveSeqNumber 
             || seqNum == Group.getSeqNumberFor(atomSeqcode)
             && Group.getInsertionCodeFor(atomSeqcode) != 0) {
@@ -2482,8 +2482,8 @@ abstract public class AtomCollection {
       }
       break;
     default:
-      for (int i = atomCount; --i >= 0;) {
-        int atomSeqcode = atoms[i].getSeqcode();
+      for (int i = ac; --i >= 0;) {
+        int atomSeqcode = at[i].getSeqcode();
         if (seqcode == atomSeqcode || 
             !haveSeqNumber && seqcode == Group.getInsertionCodeFor(atomSeqcode) 
             || insCode == '*' && seqNum == Group.getSeqNumberFor(atomSeqcode)) {
@@ -2500,10 +2500,10 @@ abstract public class AtomCollection {
     if (!caseSensitive)
       chainID = chainToUpper(chainID);
     BS bs = new BS();
-    BS bsDone = BS.newN(atomCount);
+    BS bsDone = BS.newN(ac);
     int id;
-    for (int i = bsDone.nextClearBit(0); i < atomCount; i = bsDone.nextClearBit(i + 1)) {
-      Chain chain = atoms[i].getChain();
+    for (int i = bsDone.nextClearBit(0); i < ac; i = bsDone.nextClearBit(i + 1)) {
+      Chain chain = at[i].getChain();
       if (chainID == (id = chain.chainID) || !caseSensitive && chainID == chainToUpper(id)) {
         chain.setAtomBitSet(bs);
         bsDone.or(bs);
@@ -2528,20 +2528,20 @@ abstract public class AtomCollection {
 
   public int[] getAtomIndices(BS bs) {
     int n = 0;
-    int[] indices = new int[atomCount];
-    for (int j = bs.nextSetBit(0); j >= 0 && j < atomCount; j = bs.nextSetBit(j + 1))
+    int[] indices = new int[ac];
+    for (int j = bs.nextSetBit(0); j >= 0 && j < ac; j = bs.nextSetBit(j + 1))
       indices[j] = ++n;
     return indices;
   }
 
   public BS getAtomsWithin(float distance, P4 plane) {
     BS bsResult = new BS();
-    for (int i = atomCount; --i >= 0;) {
-      Atom atom = atoms[i];
+    for (int i = ac; --i >= 0;) {
+      Atom atom = at[i];
       float d = Measure.distanceToPlane(plane, atom);
       if (distance > 0 && d >= -0.1 && d <= distance || distance < 0
           && d <= 0.1 && d >= distance || distance == 0 && Math.abs(d) < 0.01)
-        bsResult.set(atom.index);
+        bsResult.set(atom.i);
     }
     return bsResult;
   }
@@ -2553,8 +2553,8 @@ abstract public class AtomCollection {
       return bsResult;
     if (bsInclude == null)
       bsInclude = BSUtil.setAll(points.length);
-    for (int i = atomCount; --i >= 0;) {
-      Atom atom = atoms[i];
+    for (int i = ac; --i >= 0;) {
+      Atom atom = at[i];
       for (int j = bsInclude.nextSetBit(0); j >= 0; j = bsInclude
           .nextSetBit(j + 1))
         if (atom.distance(points[j]) < distance) {
@@ -2573,8 +2573,8 @@ abstract public class AtomCollection {
     bsAtoms.clearAll();
     haveBSVisible = false;
     haveBSClickable = false;
-    for (int i = atomCount; --i >= 0;)
-      if (atoms[i].isVisible(JC.ATOM_INFRAME))
+    for (int i = ac; --i >= 0;)
+      if (at[i].isVisible(JC.ATOM_INFRAME))
         bsAtoms.set(i);
   }
 
@@ -2582,8 +2582,8 @@ abstract public class AtomCollection {
     if (haveBSVisible)
       return bsVisible;
     bsVisible.clearAll();
-    for (int i = atomCount; --i >= 0;)
-      if (atoms[i].checkVisible())
+    for (int i = ac; --i >= 0;)
+      if (at[i].checkVisible())
         bsVisible.set(i);
     haveBSVisible = true;
     return bsVisible;
@@ -2593,8 +2593,8 @@ abstract public class AtomCollection {
     if (haveBSClickable)
       return bsClickable;
     bsClickable.clearAll();
-    for (int i = atomCount; --i >= 0;)
-      if (atoms[i].isClickable())
+    for (int i = ac; --i >= 0;)
+      if (at[i].isClickable())
         bsClickable.set(i);
     haveBSClickable = true;
     return bsClickable;
@@ -2608,11 +2608,11 @@ abstract public class AtomCollection {
 
   protected void deleteModelAtoms(int firstAtomIndex, int nAtoms, BS bsAtoms) {
     // all atoms in the model are being deleted here
-    atoms = (Atom[]) AU.deleteElements(atoms, firstAtomIndex, nAtoms);
-    atomCount = atoms.length;
-    for (int j = firstAtomIndex; j < atomCount; j++) {
-      atoms[j].index = j;
-      atoms[j].modelIndex--;
+    at = (Atom[]) AU.deleteElements(at, firstAtomIndex, nAtoms);
+    ac = at.length;
+    for (int j = firstAtomIndex; j < ac; j++) {
+      at[j].i = j;
+      at[j].mi--;
     }
     // fix modulation and tensors    
     if (bsModulated != null)
@@ -2683,14 +2683,14 @@ abstract public class AtomCollection {
     if (atomTensors == null)
      atomTensors = new Hashtable<String, List<Object>>();
     if (atomTensorList == null)
-      atomTensorList = new Object[atoms.length][];
-    atomTensorList = (Object[][]) AU.ensureLength(atomTensorList, atoms.length);
+      atomTensorList = new Object[at.length][];
+    atomTensorList = (Object[][]) AU.ensureLength(atomTensorList, at.length);
     atomTensorList[atomIndex] = getTensorList(list);
     for (int i = list.size(); --i >= 0;) {
       Tensor t = (Tensor) list.get(i);
       t.atomIndex1 = atomIndex;
       t.atomIndex2 = -1;
-      t.modelIndex = atoms[atomIndex].modelIndex;
+      t.modelIndex = at[atomIndex].mi;
       addTensor(t, t.type);
       if (t.altType != null)
         addTensor(t, t.altType); 

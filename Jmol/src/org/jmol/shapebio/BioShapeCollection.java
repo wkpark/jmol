@@ -69,7 +69,7 @@ public abstract class BioShapeCollection extends Shape {
   @Override
   public final void initModelSet() {
     isBioShape = true;
-    atoms = modelSet.atoms;
+    atoms = ms.at;
     initialize();
   }
 
@@ -77,12 +77,12 @@ public abstract class BioShapeCollection extends Shape {
   public int getSizeG(Group group) {
     Monomer m = (Monomer) group;
     int groupIndex = m.getGroupIndex();
-    int leadAtomIndex = m.getLeadAtom().index;
+    int leadAtomIndex = m.getLeadAtom().i;
     for (int i = bioShapes.length; --i >= 0;) {
       BioShape bioShape = bioShapes[i];
       for (int j = 0; j < bioShape.monomerCount; j++) {
         if (bioShape.monomers[j].getGroupIndex() == groupIndex 
-          && bioShape.monomers[j].getLeadAtom().index == leadAtomIndex)
+          && bioShape.monomers[j].getLeadAtom().i == leadAtomIndex)
             return bioShape.mads[j];
       }
     }
@@ -186,12 +186,12 @@ public abstract class BioShapeCollection extends Shape {
   }
 
   void initialize() {
-    int modelCount = modelSet.modelCount;
-    Model[] models = modelSet.models;
-    int n = modelSet.getBioPolymerCount();
+    int modelCount = ms.mc;
+    Model[] models = ms.am;
+    int n = ms.getBioPolymerCount();
     BioShape[] shapes = new BioShape[n--];
     for (int i = modelCount; --i >= 0;)
-      for (int j = modelSet.getBioPolymerCountInModel(i); --j >= 0; n--) {
+      for (int j = ms.getBioPolymerCountInModel(i); --j >= 0; n--) {
         BioPolymer bp = ((BioModel) models[i]).getBioPolymer(j);
         shapes[n] = (bioShapes == null || bioShapes.length <= n
             || bioShapes[n] == null || bioShapes[n].bioPolymer != bp ? new BioShape(
@@ -212,13 +212,13 @@ public abstract class BioShapeCollection extends Shape {
     if (bioShapes == null)
       return;
     bs = BSUtil.copy(bs);
-    for (int i = modelSet.modelCount; --i >= 0; )
-      if (bs.get(i) && modelSet.isTrajectory(i))
-        bs.set(modelSet.getTrajectoryIndex(i));
+    for (int i = ms.mc; --i >= 0; )
+      if (bs.get(i) && ms.isTrajectory(i))
+        bs.set(ms.getTrajectoryIndex(i));
     
     for (int i = bioShapes.length; --i >= 0;) {
       BioShape b = bioShapes[i];
-      b.modelVisibilityFlags = (bs.get(b.modelIndex) ? myVisibilityFlag : 0);
+      b.modelVisibilityFlags = (bs.get(b.modelIndex) ? vf : 0);
     }
   }
 

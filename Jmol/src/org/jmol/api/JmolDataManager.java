@@ -29,7 +29,7 @@ public interface JmolDataManager {
 
   void deleteModelAtoms(int firstAtomIndex, int nAtoms, BS bsDeleted);
 
-  void setData(String type, Object[] data, int arrayCount, int atomCount,
+  void setData(String type, Object[] data, int arrayCount, int ac,
                int matchField, int matchFieldColumnCount, int field,
                int fieldColumnCount);
 

@@ -58,16 +58,16 @@ public class SmarterJmolAdapter extends JmolAdapter {
   /**
    * Just get the resolved file type; if a file, does NOT close the reader
    * 
-   * @param atomSetCollectionOrReader 
+   * @param ascOrReader 
    * @return a file type or null
    * 
    */
   @Override
-  public String getFileTypeName(Object atomSetCollectionOrReader) {
-    if (atomSetCollectionOrReader instanceof AtomSetCollection)
-      return ((AtomSetCollection)atomSetCollectionOrReader).fileTypeName;
-    if (atomSetCollectionOrReader instanceof BufferedReader)
-      return Resolver.getFileType((BufferedReader)atomSetCollectionOrReader);
+  public String getFileTypeName(Object ascOrReader) {
+    if (ascOrReader instanceof AtomSetCollection)
+      return ((AtomSetCollection)ascOrReader).fileTypeName;
+    if (ascOrReader instanceof BufferedReader)
+      return Resolver.getFileType((BufferedReader)ascOrReader);
     return null;
   }
 
@@ -130,13 +130,13 @@ public class SmarterJmolAdapter extends JmolAdapter {
   /**
    * Create the AtomSetCollection and return it
    * 
-   * @param atomSetCollectionReader 
+   * @param ascReader 
    * @return an AtomSetCollection or an error string
    * 
    */
   @Override
-  public Object getAtomSetCollection(Object atomSetCollectionReader) {
-    return staticGetAtomSetCollection((AtomSetCollectionReader) atomSetCollectionReader);
+  public Object getAtomSetCollection(Object ascReader) {
+    return staticGetAtomSetCollection((AtomSetCollectionReader) ascReader);
   }
 
   public static Object staticGetAtomSetCollection(AtomSetCollectionReader a) {
@@ -146,10 +146,10 @@ public class SmarterJmolAdapter extends JmolAdapter {
       Object ret = a.readData();
       if (!(ret instanceof AtomSetCollection))
         return ret;
-      AtomSetCollection atomSetCollection = (AtomSetCollection) ret;
-      if (atomSetCollection.errorMessage != null)
-        return atomSetCollection.errorMessage;
-      return atomSetCollection;
+      AtomSetCollection asc = (AtomSetCollection) ret;
+      if (asc.errorMessage != null)
+        return asc.errorMessage;
+      return asc;
     } catch (Throwable e) {
       try{ 
         System.out.println(e.toString());
@@ -177,7 +177,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
    * @param types
    * @param htParams
    * @param getReadersOnly
-   *        TRUE for a set of readers; FALSE for one atomSetCollection
+   *        TRUE for a set of readers; FALSE for one asc
    * 
    * @return a set of AtomSetCollectionReaders, a single AtomSetCollection, or
    *         an error string
@@ -326,40 +326,40 @@ public class SmarterJmolAdapter extends JmolAdapter {
   }
   
   @Override
-  public void finish(Object atomSetCollection) {
-    ((AtomSetCollection)atomSetCollection).finish();
+  public void finish(Object asc) {
+    ((AtomSetCollection)asc).finish();
   }
 
   ////////////////////////// post processing ////////////////////////////
   
   @Override
-  public String getAtomSetCollectionName(Object atomSetCollection) {
-    return ((AtomSetCollection)atomSetCollection).collectionName;
+  public String getAtomSetCollectionName(Object asc) {
+    return ((AtomSetCollection)asc).collectionName;
   }
   
   @Override
-  public Map<String, Object> getAtomSetCollectionAuxiliaryInfo(Object atomSetCollection) {
-    return ((AtomSetCollection)atomSetCollection).atomSetCollectionAuxiliaryInfo;
+  public Map<String, Object> getAtomSetCollectionAuxiliaryInfo(Object asc) {
+    return ((AtomSetCollection)asc).ascAuxiliaryInfo;
   }
 
   @Override
-  public int getAtomSetCount(Object atomSetCollection) {
-    return ((AtomSetCollection)atomSetCollection).atomSetCount;
+  public int getAtomSetCount(Object asc) {
+    return ((AtomSetCollection)asc).atomSetCount;
   }
 
   @Override
-  public int getAtomSetNumber(Object atomSetCollection, int atomSetIndex) {
-    return ((AtomSetCollection)atomSetCollection).getAtomSetNumber(atomSetIndex);
+  public int getAtomSetNumber(Object asc, int atomSetIndex) {
+    return ((AtomSetCollection)asc).getAtomSetNumber(atomSetIndex);
   }
 
   @Override
-  public String getAtomSetName(Object atomSetCollection, int atomSetIndex) {
-    return ((AtomSetCollection)atomSetCollection).getAtomSetName(atomSetIndex);
+  public String getAtomSetName(Object asc, int atomSetIndex) {
+    return ((AtomSetCollection)asc).getAtomSetName(atomSetIndex);
   }
   
   @Override
-  public Map<String, Object> getAtomSetAuxiliaryInfo(Object atomSetCollection, int atomSetIndex) {
-    return ((AtomSetCollection) atomSetCollection)
+  public Map<String, Object> getAtomSetAuxiliaryInfo(Object asc, int atomSetIndex) {
+    return ((AtomSetCollection) asc)
         .getAtomSetAuxiliaryInfo(atomSetIndex);
   }
 
@@ -368,43 +368,43 @@ public class SmarterJmolAdapter extends JmolAdapter {
    * **************************************************************/
 
   @Override
-  public int getHydrogenAtomCount(Object atomSetCollection) {
-    return ((AtomSetCollection)atomSetCollection).getHydrogenAtomCount();
+  public int getHydrogenAtomCount(Object asc) {
+    return ((AtomSetCollection)asc).getHydrogenAtomCount();
   }
   
   @Override
-  public String[][] getBondList(Object atomSetCollection) {
-    return ((AtomSetCollection)atomSetCollection).getBondList();
+  public String[][] getBondList(Object asc) {
+    return ((AtomSetCollection)asc).getBondList();
   }
 
 
   @Override
-  public int getAtomCount(Object atomSetCollection) {
-    AtomSetCollection a = (AtomSetCollection)atomSetCollection; 
-    return (a.bsAtoms == null ? a.atomCount : a.bsAtoms.cardinality());
+  public int getAtomCount(Object asc) {
+    AtomSetCollection a = (AtomSetCollection)asc; 
+    return (a.bsAtoms == null ? a.ac : a.bsAtoms.cardinality());
   }
 
   @Override
-  public boolean coordinatesAreFractional(Object atomSetCollection) {
-    return ((AtomSetCollection)atomSetCollection).coordinatesAreFractional;
+  public boolean coordinatesAreFractional(Object asc) {
+    return ((AtomSetCollection)asc).coordinatesAreFractional;
   }
 
   ////////////////////////////////////////////////////////////////
 
   @Override
-  public JmolAdapterAtomIterator getAtomIterator(Object atomSetCollection) {
-    return new AtomIterator((AtomSetCollection)atomSetCollection);
+  public JmolAdapterAtomIterator getAtomIterator(Object asc) {
+    return new AtomIterator((AtomSetCollection)asc);
   }
 
   @Override
-  public JmolAdapterBondIterator getBondIterator(Object atomSetCollection) {
-    return new BondIterator((AtomSetCollection)atomSetCollection);
+  public JmolAdapterBondIterator getBondIterator(Object asc) {
+    return new BondIterator((AtomSetCollection)asc);
   }
 
   @Override
-  public JmolAdapterStructureIterator getStructureIterator(Object atomSetCollection) {
-    return ((AtomSetCollection)atomSetCollection).structureCount == 0 ? 
-        null : new StructureIterator((AtomSetCollection)atomSetCollection);
+  public JmolAdapterStructureIterator getStructureIterator(Object asc) {
+    return ((AtomSetCollection)asc).structureCount == 0 ? 
+        null : new StructureIterator((AtomSetCollection)asc);
   }
 
   public static void close(Object bufferedReader) throws IOException {

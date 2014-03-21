@@ -86,8 +86,8 @@ public class XmlQEReader extends XmlReader {
         return;
       }
       parent.setFractionalCoordinates(true);
-      atomSetCollection.doFixPeriodic = true;
-      atomSetCollection.newAtomSet();
+      asc.doFixPeriodic = true;
+      asc.newAtomSet();
       return;
     }
     if (!parent.doProcessLines)
@@ -107,7 +107,7 @@ public class XmlQEReader extends XmlReader {
         break;
 
 //      if ("NUMBER_OF_ATOMS".equals(localName)) {
-//        atomCount = parseIntStr(chars);
+//        ac = parseIntStr(chars);
 //        break;
 //      }
 

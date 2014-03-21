@@ -98,10 +98,10 @@ public class JaguarReader extends MOReader {
 
   private void readAtoms() throws Exception {
     // we only take the last set of atoms before the frequencies
-    atomSetCollection.discardPreviousAtoms();
+    asc.discardPreviousAtoms();
     // start parsing the atoms
     readLines(2);
-    while (readLine() != null && line.length() >= 60 && line.charAt(2) != ' ') {
+    while (rd() != null && line.length() >= 60 && line.charAt(2) != ' ') {
       String[] tokens = getTokens();
       String atomName = tokens[0];
       if (atomName.length() < 2)
@@ -123,12 +123,12 @@ public class JaguarReader extends MOReader {
    */
   private void readCharges() throws Exception {
    int iAtom = 0;
-    while (readLine() != null && line.indexOf("sum") < 0) {
+    while (rd() != null && line.indexOf("sum") < 0) {
       if (line.indexOf("Charge") < 0)
         continue;
       String[] tokens = getTokens();
       for (int i = 1; i < tokens.length; i++)
-        atomSetCollection.atoms[iAtom++].partialCharge = parseFloatStr(tokens[i]);
+        asc.atoms[iAtom++].partialCharge = parseFloatStr(tokens[i]);
     }
   }
 
@@ -168,7 +168,7 @@ public class JaguarReader extends MOReader {
     // trouble is that these can be out of order!
 
     discardLinesUntilContains("--------");
-    while (readLine() != null && (tokens = getTokens()).length == 9) {
+    while (rd() != null && (tokens = getTokens()).length == 9) {
       int jCont = parseIntStr(tokens[2]);
       if (jCont > 0) {
         if (!tokens[0].equals(lastAtom))
@@ -191,7 +191,7 @@ public class JaguarReader extends MOReader {
             parseFloatStr(tokens[8]) * factor });
         gaussianCount += jCont;
         for (int i = jCont - 1; --i >= 0;) {
-          tokens = getTokensStr(readLine());
+          tokens = getTokensStr(rd());
           sgdata[iFunc].addLast(new float[] { parseFloatStr(tokens[6]),
               parseFloatStr(tokens[8]) * factor });
         }
@@ -254,7 +254,7 @@ public class JaguarReader extends MOReader {
     gaussianCount = 0;
     int[] sdata = null;
     discardLinesUntilContains("--------");
-    while (readLine() != null && line.length() > 3) {
+    while (rd() != null && line.length() > 3) {
       String[] tokens = getTokens();
       if (tokens.length == 4) { //continuation
         id = tokens[0];
@@ -314,14 +314,14 @@ public class JaguarReader extends MOReader {
 
   private void readJaguarMolecularOrbitals() throws Exception {
     String[][] dataBlock = new String[moCount][];
-    readLine();
-    readLine();
-    readLine();
+    rd();
+    rd();
+    rd();
     int nMo = 0;
     while (line != null) {
-      readLine();
-      readLine();
-      readLine();
+      rd();
+      rd();
+      rd();
       if (line == null || line.indexOf("eigenvalues-") < 0)
         break;
       String[] eigenValues = getTokens();
@@ -375,10 +375,10 @@ public class JaguarReader extends MOReader {
    */
 
   private void readFrequencies() throws Exception {
-    int atomCount = atomSetCollection.getLastAtomSetAtomCount();
+    int ac = asc.getLastAtomSetAtomCount();
     discardLinesUntilStartsWith("  frequencies ");
     while (line != null && line.startsWith("  frequencies ")) {
-      int iAtom0 = atomSetCollection.atomCount;
+      int iAtom0 = asc.ac;
       String[] frequencies = getTokens();
       int frequencyCount = frequencies.length - 1;
       boolean[] ignore = new boolean[frequencyCount];
@@ -390,31 +390,31 @@ public class JaguarReader extends MOReader {
           symmetries = getTokens();
         else if (line.indexOf("intensities") >= 0)
           intensities = getTokens();
-        readLine();
+        rd();
       }
       for (int i = 0; i < frequencyCount; i++) {
         ignore[i] = !doGetVibration(++vibrationNumber);
         if (ignore[i]) 
           continue;
-        atomSetCollection.cloneFirstAtomSet(0);
-        atomSetCollection.setAtomSetFrequency(null, symmetries == null ? null : symmetries[i + 1], frequencies[i + 1], null);
+        asc.cloneFirstAtomSet(0);
+        asc.setAtomSetFrequency(null, symmetries == null ? null : symmetries[i + 1], frequencies[i + 1], null);
         if (intensities != null)
-          atomSetCollection.setAtomSetModelProperty("IRIntensity",
+          asc.setAtomSetModelProperty("IRIntensity",
               intensities[i + 1] + " km/mol");
       }
       haveLine = true;
-      fillFrequencyData(iAtom0, atomCount, atomCount, ignore, false, 0, 0, null, 0);
-      readLine();
-      readLine();
+      fillFrequencyData(iAtom0, ac, ac, ignore, false, 0, 0, null, 0);
+      rd();
+      rd();
     }
   }
   
   private boolean haveLine;
 
   @Override
-  public String readLine() throws Exception {
+  public String rd() throws Exception {
     if (!haveLine)
-      return super.readLine();
+      return super.rd();
     haveLine = false;
     return line;
   }

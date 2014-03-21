@@ -90,11 +90,11 @@ public class DrawRenderer extends MeshRenderer {
       // atom-bond [ a -1  c d  ]
       // atom-atom [ a -1  c -1 ]
       
-      mesh.vertices = new P3[4];
-      mesh.vertexCount = 4;
+      mesh.vs = new P3[4];
+      mesh.vc = 4;
       int[] c = mesh.connections;
       for (int i = 0; i < 4; i++) {
-        mesh.vertices[i] = (c[i] < 0 ? mesh.vertices[i - 1] : vwr
+        mesh.vs[i] = (c[i] < 0 ? mesh.vs[i - 1] : vwr
             .getAtomPoint3f(c[i]));
       }
       mesh.recalcAltVertices = true;
@@ -435,10 +435,10 @@ public class DrawRenderer extends MeshRenderer {
           0.5f);
       bsHandles.clearAll();
       g3d.addRenderer(T.circle);
-      for (int i = dmesh.polygonCount; --i >= 0;) {
+      for (int i = dmesh.pc; --i >= 0;) {
         if (!isPolygonDisplayable(i))
           continue;
-        int[] vertexIndexes = dmesh.polygonIndexes[i];
+        int[] vertexIndexes = dmesh.pis[i];
         if (vertexIndexes == null)
           continue;
         for (int j = (dmesh.isTriangleSet ? 3 : vertexIndexes.length); --j >= 0;) {
@@ -458,7 +458,7 @@ public class DrawRenderer extends MeshRenderer {
     if (mesh.title == null || vwr.getDrawHover()
         || !g3d.setColix(vwr.getColixBackgroundContrast()))
       return;
-    for (int i = dmesh.polygonCount; --i >= 0;)
+    for (int i = dmesh.pc; --i >= 0;)
       if (isPolygonDisplayable(i)) {
         //just the first line of the title -- nothing fancy here.
         float size = vwr.getFloat(T.drawfontsize);
@@ -469,13 +469,13 @@ public class DrawRenderer extends MeshRenderer {
         String s = mesh.title[i < mesh.title.length ? i : mesh.title.length - 1];
         int pt = 0;
         if (s.length() > 1 && s.charAt(0) == '>') {
-          pt = dmesh.polygonIndexes[i].length - 1;
+          pt = dmesh.pis[i].length - 1;
           s = s.substring(1);
           if (drawType == EnumDrawType.ARC)
             pt1f.setT(pt2f);
         }
         if (drawType != EnumDrawType.ARC)
-          pt1f.setT(vertices[dmesh.polygonIndexes[i][pt]]);
+          pt1f.setT(vertices[dmesh.pis[i][pt]]);
         vwr.transformPtScr(pt1f, pt1i);
         int offset = Math.round(5 * imageFontScaling);
         g3d.drawString(s, null, pt1i.x + offset, pt1i.y - offset, pt1i.z,

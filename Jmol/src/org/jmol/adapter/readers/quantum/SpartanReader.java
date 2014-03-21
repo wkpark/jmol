@@ -47,9 +47,9 @@ public class SpartanReader extends BasisFunctionReader {
     if (isSpartanArchive(cartesianHeader)) {
       moData = new Hashtable<String, Object>();
       SpartanArchive spartanArchive = new SpartanArchive(this);
-      int atomCount = spartanArchive.readArchive(line, true, 0, true);
-      if (atomCount > 0)
-        atomSetCollection.setAtomSetName("Spartan file");
+      int ac = spartanArchive.readArchive(line, true, 0, true);
+      if (ac > 0)
+        asc.setAtomSetName("Spartan file");
     } else if (line.indexOf(cartesianHeader) >= 0) {
       readAtoms();
       discardLinesUntilContains("Vibrational Frequencies");
@@ -61,7 +61,7 @@ public class SpartanReader extends BasisFunctionReader {
 
   private boolean isSpartanArchive(String strNotArchive) throws Exception {
     String lastLine = "";
-    while (readLine() != null) {
+    while (rd() != null) {
       if (line.equals("GEOMETRY")) {
         line = lastLine;
         return true;
@@ -75,10 +75,10 @@ public class SpartanReader extends BasisFunctionReader {
 
   private void readAtoms() throws Exception {
     discardLinesUntilBlank();
-    while (readLine() != null && (/* atomNum = */parseIntRange(line, 0, 3)) > 0) {
+    while (rd() != null && (/* atomNum = */parseIntRange(line, 0, 3)) > 0) {
       String elementSymbol = parseTokenRange(line, 4, 6);
       String atomName = parseTokenRange(line, 7, 13);
-      Atom atom = atomSetCollection.addNewAtom();
+      Atom atom = asc.addNewAtom();
       atom.elementSymbol = elementSymbol;
       atom.atomName = atomName;
       setAtomCoordXYZ(atom, parseFloatRange(line, 17, 30), parseFloatRange(line, 31, 44), parseFloatRange(
@@ -87,7 +87,7 @@ public class SpartanReader extends BasisFunctionReader {
   }
 
   private void readFrequencies() throws Exception {
-    int atomCount = atomSetCollection.getFirstAtomSetAtomCount();
+    int ac = asc.getFirstAtomSetAtomCount();
     while (true) {
       discardLinesUntilNonBlank();
       int lineBaseFreqCount = vibrationNumber;
@@ -101,23 +101,23 @@ public class SpartanReader extends BasisFunctionReader {
         ignore[lineFreqCount] = !doGetVibration(++vibrationNumber);
         if (!ignore[lineFreqCount]) {
           if (vibrationNumber > 1)
-            atomSetCollection.cloneFirstAtomSet(0);
-          atomSetCollection.setAtomSetFrequency(null, null, "" + frequency, null);
+            asc.cloneFirstAtomSet(0);
+          asc.setAtomSetFrequency(null, null, "" + frequency, null);
         }
       }
       if (lineFreqCount == 0)
         return;
       readLines(2);
-      for (int i = 0; i < atomCount; ++i) {
-        readLine();
+      for (int i = 0; i < ac; ++i) {
+        rd();
         for (int j = 0; j < lineFreqCount; ++j) {
           int ichCoords = j * 23 + 10;
           float x = parseFloatRange(line, ichCoords, ichCoords + 7);
           float y = parseFloatRange(line, ichCoords + 7, ichCoords + 14);
           float z = parseFloatRange(line, ichCoords + 14, ichCoords + 21);
           if (!ignore[j])
-            atomSetCollection.addVibrationVector(i + (lineBaseFreqCount + j)
-                * atomCount, x, y, z);
+            asc.addVibrationVector(i + (lineBaseFreqCount + j)
+                * ac, x, y, z);
         }
       }
     }

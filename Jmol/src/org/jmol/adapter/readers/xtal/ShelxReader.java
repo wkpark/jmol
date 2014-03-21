@@ -69,7 +69,7 @@ public class ShelxReader extends AtomSetCollectionReader {
     // '=' as last char of line means continue on next line
     while ((lineLength = (line = line.trim()).length()) > 0 
         && line.charAt(lineLength - 1) == '=') 
-      line = line.substring(0, lineLength - 1) + readLine();
+      line = line.substring(0, lineLength - 1) + rd();
     
     tokens = getTokens();
     if (tokens.length == 0)
@@ -81,8 +81,8 @@ public class ShelxReader extends AtomSetCollectionReader {
       sfacElementSymbols = null;
       applySymmetryAndSetTrajectory();
       setFractionalCoordinates(true);
-      atomSetCollection.newAtomSet();
-      atomSetCollection.setAtomSetName(line.substring(4).trim());
+      asc.newAtomSet();
+      asc.setAtomSetName(line.substring(4).trim());
       return true;
     }
 
@@ -150,7 +150,7 @@ public class ShelxReader extends AtomSetCollectionReader {
   }
 
   private void parseLattRecord() throws Exception {
-    atomSetCollection.getXSymmetry().setLatticeParameter(parseIntStr(tokens[1]));
+    asc.getXSymmetry().setLatticeParameter(parseIntStr(tokens[1]));
   }
 
   private void parseSymmRecord() throws Exception {
@@ -170,7 +170,7 @@ public class ShelxReader extends AtomSetCollectionReader {
 
     int ioff = tokens.length - 6;
     if (ioff == 2)
-      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("wavelength",
+      asc.setAtomSetCollectionAuxiliaryInfo("wavelength",
           Float.valueOf(parseFloatStr(tokens[1])));
     for (int ipt = 0; ipt < 6; ipt++)
       setUnitCellItem(ipt, parseFloatStr(tokens[ipt + ioff]));
@@ -238,7 +238,7 @@ public class ShelxReader extends AtomSetCollectionReader {
     }
       
     elementIndex--;
-    Atom atom = atomSetCollection.addNewAtom();
+    Atom atom = asc.addNewAtom();
     atom.atomName = atomName;
     if (sfacElementSymbols != null && elementIndex >= 0 && elementIndex < sfacElementSymbols.length)
         atom.elementSymbol = sfacElementSymbols[elementIndex];
@@ -257,13 +257,13 @@ public class ShelxReader extends AtomSetCollectionReader {
             Logger.error("Bad anisotropic Uij data: " + line);
             return;
         }
-      atomSetCollection.setAnisoBorU(atom, data, 8);
+      asc.setAnisoBorU(atom, data, 8);
       // Ortep Type 8: D = 2pi^2, C = 2, a*b*  
     }
   }
 
   private void processCmdfAtoms() throws Exception {
-    while (readLine() != null && line.length() > 10) {
+    while (rd() != null && line.length() > 10) {
       tokens = getTokens();
       addAtomXYZSymName(tokens, 2, getSymbol(tokens[0]), tokens[1]);
     }

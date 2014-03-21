@@ -389,7 +389,7 @@ public abstract class MeshCollection extends Shape {
       Map<String, T> map = (Map<String, T>) data[0];
       boolean withDollar = ((Boolean) data[1]).booleanValue();
       for (int i = meshCount; --i >= 0;)
-        if (meshes[i] != null && meshes[i].vertexCount != 0)
+        if (meshes[i] != null && meshes[i].vc != 0)
           map.put((withDollar ? "$" : "") + meshes[i].thisID, T.tokenOr); // just a placeholder
       return true;
     }
@@ -397,7 +397,7 @@ public abstract class MeshCollection extends Shape {
       Mesh m = getMesh((String) data[0]);
       if (m == null)
         return false;
-      data[1] = m.vertices;
+      data[1] = m.vs;
       data[2] = m.getVisibleVertexBitSet();
       return true;
 
@@ -419,12 +419,12 @@ public abstract class MeshCollection extends Shape {
       String id = (String) data[0];
       int index = ((Integer) data[1]).intValue();
       Mesh m;
-      if ((m = getMesh(id)) == null || m.vertices == null)
+      if ((m = getMesh(id)) == null || m.vs == null)
         return false;
       if (index == Integer.MAX_VALUE)
-        data[2] = P3.new3(m.index + 1, meshCount, m.vertexCount);
+        data[2] = P3.new3(m.index + 1, meshCount, m.vc);
       else
-        data[2] = m.vertices[m.getVertexIndexFromNumber(index)];
+        data[2] = m.vs[m.getVertexIndexFromNumber(index)];
       return true;
     }
     return false;
@@ -435,7 +435,7 @@ public abstract class MeshCollection extends Shape {
     if (property == "count") {
       int n = 0;
       for (int i = 0; i < meshCount; i++)
-        if ((m = meshes[i]) != null && m.vertexCount > 0)
+        if ((m = meshes[i]) != null && m.vc > 0)
           n++;
       return Integer.valueOf(n);
     }
@@ -452,8 +452,8 @@ public abstract class MeshCollection extends Shape {
           continue;
         sb.appendI((++k)).append(" id:" + m.thisID).append(
             "; model:" + vwr.getModelNumberDotted(m.modelIndex)).append(
-            "; vertices:" + m.vertexCount).append(
-            "; polygons:" + m.polygonCount)
+            "; vertices:" + m.vc).append(
+            "; polygons:" + m.pc)
             .append("; visible:" + m.visible);
         float[] range = (float[]) getProperty("dataRange", 0);
         if (range != null)
@@ -488,12 +488,12 @@ public abstract class MeshCollection extends Shape {
   private Object getVertices(Mesh mesh) {
     if (mesh == null)
       return null;
-    return mesh.vertices;
+    return mesh.vs;
   }
  
   protected void clean() {
     for (int i = meshCount; --i >= 0;)
-      if (meshes[i] == null || meshes[i].vertexCount == 0)
+      if (meshes[i] == null || meshes[i].vc == 0)
         deleteMeshI(i);
   }
 
@@ -555,7 +555,7 @@ public abstract class MeshCollection extends Shape {
         return (m == null ? -1 : m.index);
       }
       for (int i = meshCount; --i >= 0;) {
-        if (meshes[i] != null && meshes[i].vertexCount != 0 && thisID.equalsIgnoreCase(meshes[i].thisID))
+        if (meshes[i] != null && meshes[i].vc != 0 && thisID.equalsIgnoreCase(meshes[i].thisID))
           return i;
       }
     }
@@ -574,8 +574,8 @@ public abstract class MeshCollection extends Shape {
       mesh.visibilityFlags = (mesh.visible
           && mesh.isValid
           && (mesh.modelIndex < 0 || bs.get(mesh.modelIndex)
-              && (mesh.atomIndex < 0 || !modelSet.isAtomHidden(mesh.atomIndex)
-                  && !(bsDeleted != null && bsDeleted.get(mesh.atomIndex)))) ? myVisibilityFlag
+              && (mesh.atomIndex < 0 || !ms.isAtomHidden(mesh.atomIndex)
+                  && !(bsDeleted != null && bsDeleted.get(mesh.atomIndex)))) ? vf
           : 0);
     }
   }

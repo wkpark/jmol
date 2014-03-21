@@ -134,7 +134,7 @@ public class PdbReader extends AtomSetCollectionReader {
   
   private SB sbIgnored, sbSelected, sbConect, sb;
 
-  private int atomCount;
+  private int ac;
   private int maxSerial;
   private int nUNK;
   private int nRes;
@@ -256,7 +256,7 @@ public class PdbReader extends AtomSetCollectionReader {
       }
       if (!isCourseGrained)
         connectAll(maxSerial, isConnectStateBug);
-      if (atomCount > 0)
+      if (ac > 0)
         applySymmetryAndSetTrajectory();
       // supposedly MODEL is only for NMR
       model(modelNo);
@@ -356,7 +356,7 @@ public class PdbReader extends AtomSetCollectionReader {
 
   private String readHeader(boolean getLine) throws Exception {
     if (getLine) {
-      readLine();
+      rd();
       if (!getHeader)
         return line;
     }
@@ -375,18 +375,18 @@ public class PdbReader extends AtomSetCollectionReader {
       connectAll(maxSerial, isConnectStateBug);
     SymmetryInterface symmetry;
     if (vBiomolecules != null && vBiomolecules.size() > 0
-        && atomSetCollection.atomCount > 0) {
-      atomSetCollection.setAtomSetAuxiliaryInfo("biomolecules", vBiomolecules);
+        && asc.ac > 0) {
+      asc.setAtomSetAuxiliaryInfo("biomolecules", vBiomolecules);
       setBiomoleculeAtomCounts();
       if (thisBiomolecule != null && applySymmetry) {
-        atomSetCollection.getXSymmetry().applySymmetryBio(thisBiomolecule, notionalUnitCell, applySymmetryToBonds, filter);
+        asc.getXSymmetry().applySymmetryBio(thisBiomolecule, notionalUnitCell, applySymmetryToBonds, filter);
         vTlsModels = null; // for now, no TLS groups for biomolecules
-        atomSetCollection.xtalSymmetry = null;
+        asc.xtalSymmetry = null;
       }
     }
     if (vTlsModels != null) {
       symmetry = Interface.getSymmetry();
-      int n = atomSetCollection.atomSetCount;
+      int n = asc.atomSetCount;
       if (n == vTlsModels.size()) {
         for (int i = n; --i >= 0;)
           setTlsGroups(i, i, symmetry);
@@ -401,18 +401,18 @@ public class PdbReader extends AtomSetCollectionReader {
       checkForResidualBFactors(symmetry);
     }
     if (sbTlsErrors != null) {
-      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("tlsErrors", sbTlsErrors.toString());
+      asc.setAtomSetCollectionAuxiliaryInfo("tlsErrors", sbTlsErrors.toString());
       appendLoadNote(sbTlsErrors.toString());
     }
     doCheckUnitCell &= (iHaveUnitCell && (doApplySymmetry || isbiomol));
     finalizeReaderASCR();
     if (vCompnds != null)
-      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("compoundSource", vCompnds);
+      asc.setAtomSetCollectionAuxiliaryInfo("compoundSource", vCompnds);
     if (htSites != null) {
       addSites(htSites);
     }
     if (pdbHeader != null)
-      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("fileHeader",
+      asc.setAtomSetCollectionAuxiliaryInfo("fileHeader",
           pdbHeader.toString());
     if (configurationPtr > 0) {
       Logger.info(sbSelected.toString());
@@ -421,9 +421,9 @@ public class PdbReader extends AtomSetCollectionReader {
   }
 
   private void checkForResidualBFactors(SymmetryInterface symmetry) {
-    Atom[] atoms = atomSetCollection.atoms;
+    Atom[] atoms = asc.atoms;
     boolean isResidual = false;
-     for (int i = atomSetCollection.atomCount; --i >= 0;) {
+     for (int i = asc.ac; --i >= 0;) {
       float[] anisou = tlsU.get(atoms[i]);
       if (anisou == null)
         continue;
@@ -464,12 +464,12 @@ public class PdbReader extends AtomSetCollectionReader {
     appendLoadNote(line.substring(7).trim());
     String pdbID = (lineLength >= 66 ? line.substring(62, 66).trim() : "");
     if (pdbID.length() == 4) {
-      atomSetCollection.setCollectionName(pdbID);
-      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("havePDBHeaderName", Boolean.TRUE);
+      asc.setCollectionName(pdbID);
+      asc.setAtomSetCollectionAuxiliaryInfo("havePDBHeaderName", Boolean.TRUE);
     }
     if (lineLength > 50)
       line = line.substring(0, 50);
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("CLASSIFICATION", line.substring(7).trim());
+    asc.setAtomSetCollectionAuxiliaryInfo("CLASSIFICATION", line.substring(7).trim());
   }
 
   private void title() {
@@ -488,7 +488,7 @@ public class PdbReader extends AtomSetCollectionReader {
       if (lineLength > 62)
         s = s.substring(0, 62);
       compnd += s.substring(10).trim();
-      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("COMPND", compnd);
+      asc.setAtomSetCollectionAuxiliaryInfo("COMPND", compnd);
     }
     if (vCompnds == null) {
       if (isSource)
@@ -847,15 +847,15 @@ REMARK 290 REMARK: NULL
     atom.formalCharge = charge;
     setAdditionalAtomParameters(atom);
     if (haveMappedSerials)
-      atomSetCollection.addAtomWithMappedSerialNumber(atom);
+      asc.addAtomWithMappedSerialNumber(atom);
     else
-      atomSetCollection.addAtom(atom);
-    if (atomCount++ == 0 && !isCourseGrained)
-      atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
+      asc.addAtom(atom);
+    if (ac++ == 0 && !isCourseGrained)
+      asc.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
     // note that values are +1 in this serial map
     if (atom.isHetero) {
       if (htHetero != null) {
-        atomSetCollection.setAtomSetAuxiliaryInfo("hetNames", htHetero);
+        asc.setAtomSetAuxiliaryInfo("hetNames", htHetero);
         htHetero = null;
       }
     }
@@ -1197,7 +1197,7 @@ Polyproline 10
         structureID, serialID, strandCount);
     structure.set(startChainID, startSequenceNumber,
         startInsertionCode, endChainID, endSequenceNumber, endInsertionCode, Integer.MIN_VALUE, Integer.MAX_VALUE);
-    atomSetCollection.addStructure(structure);
+    asc.addStructure(structure);
   }
 
   private int getModelNumber() {
@@ -1224,12 +1224,12 @@ Polyproline 10
     checkNotPDB();
     haveMappedSerials = false;
     sbConect = null;
-    atomSetCollection.newAtomSet();
+    asc.newAtomSet();
     if (!isCourseGrained)
-      atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
-    atomSetCollection.setCurrentAtomSetNumber(modelNumber);
+      asc.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
+    asc.setCurrentAtomSetNumber(modelNumber);
     if (isCourseGrained)
-      atomSetCollection.setAtomSetAuxiliaryInfo("courseGrained", Boolean.TRUE);
+      asc.setAtomSetAuxiliaryInfo("courseGrained", Boolean.TRUE);
   }
 
   private void checkNotPDB() {
@@ -1238,8 +1238,8 @@ Polyproline 10
     // No special-position atoms in mmCIF files, because there will
     // be no center of symmetry, no rotation-inversions, 
     // no atom-centered rotation axes, and no mirror or glide planes. 
-    atomSetCollection.setCheckSpecial(!isPDB);
-    atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", isPDB ? Boolean.TRUE : Boolean.FALSE);
+    asc.setCheckSpecial(!isPDB);
+    asc.setAtomSetAuxiliaryInfo("isPDB", isPDB ? Boolean.TRUE : Boolean.FALSE);
     nUNK = nRes = 0;
     currentGroup3 = null;
   }
@@ -1268,7 +1268,7 @@ Polyproline 10
 
   private void expdta() {
     if (line.toUpperCase().indexOf("NMR") >= 0)
-      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("isNMRdata", "true");
+      asc.setAtomSetCollectionAuxiliaryInfo("isNMRdata", "true");
   }
 
   private void formul() {
@@ -1393,8 +1393,8 @@ Details
       index = lastAtomIndex;
     } else {
       if (!haveMappedSerials)
-        atomSetCollection.createAtomSerialMap();
-      index = atomSetCollection.getAtomIndexFromSerial(serial);
+        asc.createAtomSerialMap();
+      index = asc.getAtomIndexFromSerial(serial);
       haveMappedSerials = true;
     }
     if (index < 0) {
@@ -1402,7 +1402,7 @@ Details
       //System.out.println("ERROR: ANISOU record does not correspond to known atom");
       return;
     }
-    Atom atom = atomSetCollection.atoms[index];
+    Atom atom = asc.atoms[index];
     for (int i = 28, pt = 0; i < 70; i += 7, pt++)
       data[pt] = parseFloatRange(line, i, i + 7);
     for (int i = 0; i < 6; i++) {
@@ -1412,7 +1412,7 @@ Details
       }
       data[i] /= 10000f;
     }
-    atomSetCollection.setAnisoBorU(atom, data, 12); // was 8 12.3.16
+    asc.setAnisoBorU(atom, data, 12); // was 8 12.3.16
     // new type 12 - cartesian already
     // Ortep Type 0: D = 1, C = 2, Cartesian
     // Ortep Type 8: D = 2pi^2, C = 2, a*b*
@@ -1715,10 +1715,10 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     Map<String, Object> tlsGroupInfo = vTlsModels.get(iGroup);
     List<Map<String, Object>> groups = ( List<Map<String, Object>>) tlsGroupInfo
         .get("groups");
-    int index0 = atomSetCollection.getAtomSetAtomIndex(iModel);
-    int[] data = new int[atomSetCollection.getAtomSetAtomCount(iModel)];
+    int index0 = asc.getAtomSetAtomIndex(iModel);
+    int[] data = new int[asc.getAtomSetAtomCount(iModel)];
     int indexMax = index0 + data.length;
-    Atom[] atoms = atomSetCollection.atoms;
+    Atom[] atoms = asc.atoms;
     int nGroups = groups.size();
     for (int i = 0; i < nGroups; i++) {
       Map<String, Object> group = groups.get(i);
@@ -1759,10 +1759,10 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     SB sdata = new SB();
     for (int i = 0; i < data.length; i++)
       sdata.appendI(data[i]).appendC('\n');
-    atomSetCollection.setAtomSetAtomProperty("tlsGroup", sdata.toString(),
+    asc.setAtomSetAtomProperty("tlsGroup", sdata.toString(),
         iModel);
-    atomSetCollection.setAtomSetAuxiliaryInfoForSet("TLS", tlsGroupInfo, iModel);
-    atomSetCollection.setTensors();
+    asc.setAtomSetAuxiliaryInfoForSet("TLS", tlsGroupInfo, iModel);
+    asc.setTensors();
   }
 
   private int findAtomForRange(int atom1, int atom2, int chain, int resno,
@@ -1772,7 +1772,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
   }
 
   private int findAtom(int atom1, int atom2, int chain, int resno, boolean isTrue) {
-    Atom[] atoms = atomSetCollection.atoms;
+    Atom[] atoms = asc.atoms;
     for (int i = atom1; i < atom2; i++) {
      Atom atom = atoms[i];
      if ((atom.chainID == chain && atom.sequenceNumber == resno) == isTrue)
@@ -1901,41 +1901,41 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     // this means that scripts created during this time could have incorrect 
     // BOND indexes in the state script. It was when we added reading of H atoms
     int firstAtom = connectNextAtomIndex;
-    for (int i = connectNextAtomSet; i < atomSetCollection.atomSetCount; i++) {
-      int count = atomSetCollection.getAtomSetAtomCount(i);
-      atomSetCollection.setAtomSetAuxiliaryInfoForSet("PDB_CONECT_firstAtom_count_max",
+    for (int i = connectNextAtomSet; i < asc.atomSetCount; i++) {
+      int count = asc.getAtomSetAtomCount(i);
+      asc.setAtomSetAuxiliaryInfoForSet("PDB_CONECT_firstAtom_count_max",
           new int[] { firstAtom, count, maxSerial }, i);
       if (vConnect != null) {
-        atomSetCollection.setAtomSetAuxiliaryInfoForSet("PDB_CONECT_bonds", vConnect, i);
-        atomSetCollection.setGlobalBoolean(AtomSetCollection.GLOBAL_CONECT);
+        asc.setAtomSetAuxiliaryInfoForSet("PDB_CONECT_bonds", vConnect, i);
+        asc.setGlobalBoolean(AtomSetCollection.GLOBAL_CONECT);
       }
       firstAtom += count;
     }
     vConnect = null;
-    connectNextAtomSet = atomSetCollection.currentAtomSetIndex + 1;
+    connectNextAtomSet = asc.currentAtomSetIndex + 1;
     connectNextAtomIndex = firstAtom;
   }
 
   private void connectAll(int maxSerial, boolean isConnectStateBug) {
-    AtomSetCollection ac = atomSetCollection;
-    int index = ac.currentAtomSetIndex;
+    AtomSetCollection a = asc;
+    int index = a.currentAtomSetIndex;
     if (index < 0)
       return;
     if (isConnectStateBug) {
       connectAllBad(maxSerial);
       return;
     }
-    ac.setAtomSetAuxiliaryInfo(
+    a.setAtomSetAuxiliaryInfo(
         "PDB_CONECT_firstAtom_count_max",
-        new int[] { ac.getAtomSetAtomIndex(index),
-            ac.getAtomSetAtomCount(index), maxSerial });
+        new int[] { a.getAtomSetAtomIndex(index),
+            a.getAtomSetAtomCount(index), maxSerial });
     if (vConnect == null)
       return;
     int firstAtom = connectNextAtomIndex;
-    for (int i = ac.atomSetCount; --i >= connectNextAtomSet;) {
-      ac.setAtomSetAuxiliaryInfoForSet("PDB_CONECT_bonds", vConnect, i);
-      ac.setGlobalBoolean(AtomSetCollection.GLOBAL_CONECT);
-      firstAtom += ac.getAtomSetAtomCount(i);
+    for (int i = a.atomSetCount; --i >= connectNextAtomSet;) {
+      a.setAtomSetAuxiliaryInfoForSet("PDB_CONECT_bonds", vConnect, i);
+      a.setGlobalBoolean(AtomSetCollection.GLOBAL_CONECT);
+      firstAtom += a.getAtomSetAtomCount(i);
     }
     vConnect = null;
     connectNextAtomSet = index + 1;

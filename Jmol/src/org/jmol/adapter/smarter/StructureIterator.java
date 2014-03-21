@@ -36,11 +36,11 @@ public class StructureIterator extends JmolAdapterStructureIterator {
   private int istructure;
   private BS bsModelsDefined;
   
-  StructureIterator(AtomSetCollection atomSetCollection) {
-    structureCount = atomSetCollection.structureCount;
-    structures = atomSetCollection.structures;
+  StructureIterator(AtomSetCollection asc) {
+    structureCount = asc.structureCount;
+    structures = asc.structures;
     istructure = 0;
-    bsModelsDefined = atomSetCollection.bsStructuredModels;
+    bsModelsDefined = asc.bsStructuredModels;
   }
 
   @Override

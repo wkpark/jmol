@@ -49,7 +49,7 @@ abstract public class GamessReader extends MOReader {
     String strEnergy = tokens[2];
     float e = parseFloatStr(strEnergy);
     if (!Float.isNaN(e))
-      atomSetCollection.setAtomSetEnergy(strEnergy, e);
+      asc.setAtomSetEnergy(strEnergy, e);
   }
 
   protected void readGaussianBasis(String initiator, String terminator) throws Exception {
@@ -60,13 +60,13 @@ abstract public class GamessReader extends MOReader {
     String thisShell = "0";
     String[] tokens;
     discardLinesUntilContains(initiator);
-    readLine();
+    rd();
     int[] slater = null;
     Map<String, List<int[]>> shellsByAtomType = new Hashtable<String, List<int[]>>();
     List<int[]> slatersByAtomType = new  List<int[]>();
     String atomType = null;
     
-    while (readLine() != null && line.indexOf(terminator) < 0) {
+    while (rd() != null && line.indexOf(terminator) < 0) {
       //System.out.println(line);
       if (line.indexOf("(") >= 0)
         line = GamessReader.fixBasisLine(line);
@@ -117,10 +117,10 @@ abstract public class GamessReader extends MOReader {
       for (int j = 3; j < tokens.length; j++)
         gaussians[i][j - 3] = parseFloatStr(tokens[j]);
     }
-    int atomCount = atomNames.size();
-    if (shells == null && atomCount > 0) {
+    int ac = atomNames.size();
+    if (shells == null && ac > 0) {
       shells = new  List<int[]>();
-      for (int i = 0; i < atomCount; i++) {
+      for (int i = 0; i < ac; i++) {
         atomType = atomNames.get(i);
         List<int[]> slaters = shellsByAtomType.get(atomType);
         if (slaters == null) {
@@ -168,16 +168,16 @@ abstract public class GamessReader extends MOReader {
       }
       String[] red_masses = null;
       String[] intensities = null;
-      readLine();
+      rd();
       if (line.indexOf("MASS") >= 0) {
         red_masses = getTokens();
-        readLine();
+        rd();
       }
       if (line.indexOf("INTENS") >= 0) {
         intensities = getTokens();
       }
-      int atomCount = atomSetCollection.getLastAtomSetAtomCount();
-      int iAtom0 = atomSetCollection.atomCount;
+      int ac = asc.getLastAtomSetAtomCount();
+      int iAtom0 = asc.ac;
       boolean[] ignore = new boolean[frequencyCount];
       for (int i = 0; i < frequencyCount; i++) {
         ignore[i] = !doGetVibration(++vibrationNumber);
@@ -186,23 +186,23 @@ abstract public class GamessReader extends MOReader {
         if (ignore[i])
           continue;
         if (haveFreq) {
-          atomSetCollection.cloneLastAtomSet();
+          asc.cloneLastAtomSet();
         } else {
           haveFreq = true;
-          iAtom0 -= atomCount;
+          iAtom0 -= ac;
         }
-        atomSetCollection.setAtomSetFrequency(null, null, "" + frequencies[i], null);
+        asc.setAtomSetFrequency(null, null, "" + frequencies[i], null);
         if (red_masses != null)
-          atomSetCollection.setAtomSetModelProperty("ReducedMass",
+          asc.setAtomSetModelProperty("ReducedMass",
               red_masses[red_masses.length - frequencyCount + i] + " AMU");
         if (intensities != null)
-          atomSetCollection.setAtomSetModelProperty("IRIntensity",
+          asc.setAtomSetModelProperty("IRIntensity",
               intensities[intensities.length - frequencyCount + i]
                   + " D^2/AMU-Angstrom^2");
 
       }
       discardLinesUntilBlank();
-      fillFrequencyData(iAtom0, atomCount, atomCount, ignore, false, 20, 12, null, 0);
+      fillFrequencyData(iAtom0, ac, ac, ignore, false, 20, 12, null, 0);
       readLines(13);
     }
   }
@@ -377,10 +377,10 @@ $SYSTEM OPTIONS
   private void readCalculationInfo(String type) throws Exception {
     if (calcOptions == null) {
       calcOptions = new Hashtable<String, String>();
-      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("calculationOptions",
+      asc.setAtomSetCollectionAuxiliaryInfo("calculationOptions",
           calcOptions);
     }
-    while (readLine() != null && (line = line.trim()).length() > 0) {
+    while (rd() != null && (line = line.trim()).length() > 0) {
       if (line.indexOf("=") < 0)
         continue;
       String[] tokens = getTokensStr(PT.rep(line, "="," = ") + " ?");

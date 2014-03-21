@@ -90,8 +90,8 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
   private boolean isStateScript;
   private boolean sourcePNGJ;
 
-  private int atomCount0;
-  private int atomCount;
+  private int ac0;
+  private int ac;
   private int stateCount;
   private int structureCount;
 
@@ -148,10 +148,10 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
   protected void initializeReader() throws Exception {
     baseAtomIndex = ((Integer) htParams.get("baseAtomIndex")).intValue();
     baseModelIndex = ((Integer) htParams.get("baseModelIndex")).intValue();
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("noAutoBond",
+    asc.setAtomSetCollectionAuxiliaryInfo("noAutoBond",
         Boolean.TRUE);
-    atomSetCollection.setAtomSetAuxiliaryInfo("pdbNoHydrogens", Boolean.TRUE);
-    atomSetCollection
+    asc.setAtomSetAuxiliaryInfo("pdbNoHydrogens", Boolean.TRUE);
+    asc
         .setAtomSetCollectionAuxiliaryInfo("isPyMOL", Boolean.TRUE);
     if (isTrajectory)
       trajectorySteps = new List<P3[]>();
@@ -203,7 +203,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
   @Override
   protected void finalizeReader() throws Exception {
     finalizeReaderPDB();
-    atomSetCollection.setTensors();
+    asc.setTensors();
   }
   /**
    * At the end of the day, we need to finalize all the JmolObjects, set the
@@ -230,7 +230,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     }
     
     vwr.setTrajectoryBs(BSUtil.newBitSet2(baseModelIndex,
-        vwr.ms.modelCount));
+        vwr.ms.mc));
     if (!isStateScript)
       pymolScene.setFrameObject(0, null);
 
@@ -267,7 +267,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     List<Object> file = listAt(settings, PyMOL.session_file);
     if (file != null)
       Logger.info("PyMOL session file: " + file.get(2));
-    //atomSetCollection.setAtomSetCollectionAuxiliaryInfo("settings", settings);
+    //asc.setAtomSetCollectionAuxiliaryInfo("settings", settings);
     setUniqueSettings(getMapList(map, "unique_settings"));
     pymolScene = new PyMOLScene(this, vwr, settings, uniqueSettings, 
         pymolVersion, haveScenes, baseAtomIndex, baseModelIndex, doCache, filePath);
@@ -342,7 +342,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       String note;
       if (width > 0 && height > 0) {
         note = "PyMOL dimensions width=" + width + " height=" + height;
-        atomSetCollection.setAtomSetCollectionAuxiliaryInfo(
+        asc.setAtomSetCollectionAuxiliaryInfo(
             "perferredWidthHeight", new int[] { width, height });
         //Dimension d = 
         vwr.resizeInnerPanel(width, height);
@@ -360,7 +360,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
         processMovie(mov, frameCount);
     }
     if (totalAtomCount == 0)
-      atomSetCollection.newAtomSet();
+      asc.newAtomSet();
     //selections = new List<List<Object>>();
 
     if (allStates && desiredModelNumber == Integer.MIN_VALUE) {
@@ -390,7 +390,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       if (!doGetModel(++nModels, null))
         continue;
       model(nModels);
-      pymolScene.currentAtomSetIndex = atomSetCollection.currentAtomSetIndex;
+      pymolScene.currentAtomSetIndex = asc.currentAtomSetIndex;
       if (isTrajectory) {
         trajectoryStep = new P3[totalAtomCount];
         trajectorySteps.addLast(trajectoryStep);
@@ -413,7 +413,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     // trajectories are not supported yet
     if (isTrajectory) {
       appendLoadNote("PyMOL trajectories read: " + trajectorySteps.size());
-      atomSetCollection.finalizeTrajectoryAs(trajectorySteps, null);
+      asc.finalizeTrajectoryAs(trajectorySteps, null);
     }
 
     processDefinitions();
@@ -426,8 +426,8 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       addJmolScript(pymolScene.getViewScript(getMapList(map, "view"))
           .toString());
     }
-    if (atomCount == 0)
-      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("dataOnly",
+    if (ac == 0)
+      asc.setAtomSetCollectionAuxiliaryInfo("dataOnly",
           Boolean.TRUE);
     pymolScene.offsetObjects();
   }
@@ -879,7 +879,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     if (n == 0)
       return null;
 
-    atomCount = atomCount0 = atomSetCollection.atomCount;
+    ac = ac0 = asc.ac;
     int nAtoms = intAt(pymolObject, 3);
     if (nAtoms == 0)
       return null;
@@ -891,7 +891,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     
     List<Object> pymolAtoms = listAt(pymolObject, 7);
     atomMap = new int[nAtoms];
-    BS bsAtoms = pymolScene.setAtomMap(atomMap, atomCount0);
+    BS bsAtoms = pymolScene.setAtomMap(atomMap, ac0);
     for (int i = 0; i < PyMOL.REP_JMOL_MAX; i++)
       reps[i] = BS.newN(1000);
 
@@ -909,12 +909,12 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       }
     addBonds(bonds);
     addMolStructures();
-    atoms = atomSetCollection.atoms;
+    atoms = asc.atoms;
     if (!isStateScript)
       createShapeObjects();
     ssMapSeq = null;
 
-    Logger.info("reading " + (atomCount - atomCount0) + " atoms");
+    Logger.info("reading " + (ac - ac0) + " atoms");
     Logger.info("----------");
     return bsAtoms;
   }
@@ -1058,7 +1058,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       return null;
     boolean isNucleic = (nucleic.indexOf(group3) >= 0);
     if (bsState != null)
-      bsState.set(atomCount);
+      bsState.set(ac);
 
     String label = stringAt(a, 9);
     String ssType = stringAt(a, 10);
@@ -1095,7 +1095,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     atom.vib = V3.new3(uniqueID, cartoonType, Float.NaN);
     if (a.size() > 46) {
       float[] data = PyMOLScene.floatsAt(a, 41, new float[8], 6);
-      atomSetCollection.setAnisoBorU(atom, data, 12);
+      asc.setAnisoBorU(atom, data, 12);
     }
     //if (uniqueID > 0)
       //pymolScene.setUnique(uniqueID, atom);
@@ -1105,24 +1105,24 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     // set pymolScene bit sets and create labels
 
     if (!bonded)
-      pymolScene.bsNonbonded.set(atomCount);
+      pymolScene.bsNonbonded.set(ac);
     if (!label.equals(" ")) {
-      pymolScene.bsLabeled.set(atomCount);
+      pymolScene.bsLabeled.set(ac);
       List<Object> labelOffset = listAt(labelPositions, apt);
-      pymolScene.addLabel(atomCount, uniqueID, atomColor, labelOffset, label);
+      pymolScene.addLabel(ac, uniqueID, atomColor, labelOffset, label);
     }
     if (isHidden)
-      pymolScene.bsHidden.set(atomCount);
+      pymolScene.bsHidden.set(ac);
     if (isNucleic)
-      pymolScene.bsNucleic.set(atomCount);
+      pymolScene.bsNucleic.set(ac);
     for (int i = 0; i < PyMOL.REP_MAX; i++)
       if (bsReps.get(i))
-        reps[i].set(atomCount);
+        reps[i].set(ac);
     if (atom.elementSymbol.equals("H"))
-      pymolScene.bsHydrogen.set(atomCount);
+      pymolScene.bsHydrogen.set(ac);
     if ((flags & PyMOL.FLAG_NOSURFACE) != 0)
-      pymolScene.bsNoSurface.set(atomCount);
-    atomMap[apt] = atomCount++;
+      pymolScene.bsNoSurface.set(ac);
+    atomMap[apt] = ac++;
     return null;
   }
 
@@ -1135,7 +1135,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       if (bond.atomIndex1 < 0 || bond.atomIndex2 < 0)
         continue;
       pymolScene.setUniqueBond(bondCount++, bond.uniqueID);
-      atomSetCollection.addBond(bond);
+      asc.addBond(bond);
     }
   }
 
@@ -1158,16 +1158,16 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     int istart = -1;
     int iend = -1;
     int ichain = 0;
-    Atom[] atoms = atomSetCollection.atoms;
+    Atom[] atoms = asc.atoms;
     BS bsSeq = null;
     BS bsAtom = pymolScene.getSSMapAtom(ssType);
-    int n = atomCount + 1;
+    int n = ac + 1;
     int seqNo = -1;
     int thischain = 0;
     int imodel = -1;
     int thisModel = -1;
-    for (int i = atomCount0; i < n; i++) {
-      if (i == atomCount) {
+    for (int i = ac0; i < n; i++) {
+      if (i == ac) {
         thischain = 0;
       } else {
         seqNo = atoms[i].sequenceNumber;
@@ -1200,11 +1200,11 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
                 : 0);
         Atom a = atoms[istart];
         Atom b = atoms[iend];
-        int i0 = atomSetCollection.getAtomSetAtomIndex(thisModel);
+        int i0 = asc.getAtomSetAtomIndex(thisModel);
 	        //System.out.println("addstruc " + i0 + " " + istart + " " + iend + " " + a.atomName + " " + b.atomName + " " + a.atomSerial + " " + b.atomSerial);
         structure.set(a.chainID, a.sequenceNumber, a.insertionCode, b.chainID,
             b.sequenceNumber, b.insertionCode, istart - i0, iend - i0);
-        atomSetCollection.addStructure(structure);
+        asc.addStructure(structure);
       }
       bsAtom.setBits(istart, iend + 1);
       istart = -1;
@@ -1217,7 +1217,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
    * 
    */
   private void createShapeObjects() {
-    pymolScene.createShapeObjects(reps, allowSurface && !isHidden, atomCount0, atomCount);
+    pymolScene.createShapeObjects(reps, allowSurface && !isHidden, ac0, ac);
   }
 
   ////// end of molecule-specific JmolObjects //////
@@ -1312,14 +1312,14 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
    * permanent
    */
   private void finalizeSceneData() {
-    int[] cartoonTypes = new int[atomCount];
-    int[] uniqueIDs = new int[atomCount];
-    int[] sequenceNumbers = new int[atomCount];
-    boolean[] newChain = new boolean[atomCount];
-    float[] radii = new float[atomCount];
+    int[] cartoonTypes = new int[ac];
+    int[] uniqueIDs = new int[ac];
+    int[] sequenceNumbers = new int[ac];
+    boolean[] newChain = new boolean[ac];
+    float[] radii = new float[ac];
     int lastAtomChain = Integer.MIN_VALUE;
     int lastAtomSet = Integer.MIN_VALUE;
-    for (int i = 0; i < atomCount; i++) {
+    for (int i = 0; i < ac; i++) {
       cartoonTypes[i] = getCartoonType(i);
       uniqueIDs[i] = getUniqueID(i);
       sequenceNumbers[i] = getSequenceNumber(i);

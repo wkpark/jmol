@@ -209,19 +209,19 @@ public class NWChemReader extends MOReader {
   private void setEnergies(String key, String value, int nAtomSets) {
     energyKey = key;
     energyValue = value;
-    atomSetCollection.setAtomSetPropertyForSets(energyKey, energyValue,
+    asc.setAtomSetPropertyForSets(energyKey, energyValue,
         equivalentAtomSets);
-    atomSetCollection.setAtomSetNames(energyKey + " = " + energyValue,
+    asc.setAtomSetNames(energyKey + " = " + energyValue,
         equivalentAtomSets, null);
-    atomSetCollection.setAtomSetEnergy(value, parseFloatStr(value));
+    asc.setAtomSetEnergy(value, parseFloatStr(value));
     haveEnergy = true;
   }
 
   private void setEnergy(String key, String value) {
     energyKey = key;
     energyValue = value;
-    atomSetCollection.setAtomSetModelProperty(energyKey, energyValue);
-    atomSetCollection.setAtomSetName(energyKey + " = " + energyValue);
+    asc.setAtomSetModelProperty(energyKey, energyValue);
+    asc.setAtomSetName(energyKey + " = " + energyValue);
     haveEnergy = true;
   }
 
@@ -231,7 +231,7 @@ public class NWChemReader extends MOReader {
    */
   private void readSymmetry() throws Exception {
     String tokens[] = getTokensStr(readLines(3));
-    atomSetCollection.setAtomSetPropertyForSets("Symmetry group name",
+    asc.setAtomSetPropertyForSets("Symmetry group name",
         tokens[tokens.length - 1], equivalentAtomSets);
   }
 
@@ -268,7 +268,7 @@ public class NWChemReader extends MOReader {
       // atom sets that may be been parsed.
       setEnergies(energyKey, energyValue, equivalentAtomSets);
     }
-    atomSetCollection.setAtomSetPropertyForSets("Step", tokens[1],
+    asc.setAtomSetPropertyForSets("Step", tokens[1],
         equivalentAtomSets);
     haveAt = true;
   }
@@ -294,13 +294,13 @@ public class NWChemReader extends MOReader {
     readLines(3); // skip blank line, titles and dashes
     String tokens[];
     haveEnergy = false;
-    atomSetCollection.newAtomSet();
-    atomSetCollection.setAtomSetModelProperty(SmarterJmolAdapter.PATH_KEY, "Task "
+    asc.newAtomSet();
+    asc.setAtomSetModelProperty(SmarterJmolAdapter.PATH_KEY, "Task "
         + taskNumber
         + (inInput ? SmarterJmolAdapter.PATH_SEPARATOR + "Input"
             : SmarterJmolAdapter.PATH_SEPARATOR + "Geometry"));
     atomTypes = new  List<String>();
-    while (readLine() != null && line.length() > 0) {
+    while (rd() != null && line.length() > 0) {
       tokens = getTokens(); // get the tokens in the line
       if (tokens.length < 6)
         break; // if don't have enough of them: done
@@ -311,9 +311,9 @@ public class NWChemReader extends MOReader {
     // only if was converged, use the last energy for the name and properties
     if (converged) {
       setEnergy(energyKey, energyValue);
-      atomSetCollection.setAtomSetModelProperty("Step", "converged");
+      asc.setAtomSetModelProperty("Step", "converged");
     } else if (inInput) {
-      atomSetCollection.setAtomSetName("Input");
+      asc.setAtomSetName("Input");
     }
   }
 
@@ -342,13 +342,13 @@ public class NWChemReader extends MOReader {
   private void readGradients() throws Exception {
     readLines(3); // skip blank line, titles and dashes
     String tokens[];
-    atomSetCollection.newAtomSet();
+    asc.newAtomSet();
     if (equivalentAtomSets > 1)
-      atomSetCollection.cloneLastAtomSetProperties();
-    atomSetCollection.setAtomSetModelProperty("vector", "gradient");
-    atomSetCollection.setAtomSetModelProperty(SmarterJmolAdapter.PATH_KEY, "Task "
+      asc.cloneLastAtomSetProperties();
+    asc.setAtomSetModelProperty("vector", "gradient");
+    asc.setAtomSetModelProperty(SmarterJmolAdapter.PATH_KEY, "Task "
         + taskNumber + SmarterJmolAdapter.PATH_SEPARATOR + "Gradients");
-    while (readLine() != null && line.length() > 0) {
+    while (rd() != null && line.length() > 0) {
       tokens = getTokens(); // get the tokens in the line
       if (tokens.length < 8)
         break; // make sure I have enough tokens
@@ -358,7 +358,7 @@ public class NWChemReader extends MOReader {
       // Keep gradients in a.u. (larger value that way)
       // need to multiply with -1 so the direction is in the direction the
       // atom needs to move to lower the energy
-      atomSetCollection.addVibrationVector(atom.index,
+      asc.addVibrationVector(atom.index,
           -parseFloatStr(tokens[5]), -parseFloatStr(tokens[6]),
           -parseFloatStr(tokens[7]));
     }
@@ -458,16 +458,16 @@ public class NWChemReader extends MOReader {
    * @throws Exception If an error occurs.
    **/
   private void readFrequencies() throws Exception {
-    int firstFrequencyAtomSetIndex = atomSetCollection.atomSetCount;
+    int firstFrequencyAtomSetIndex = asc.atomSetCount;
     String path = "Task " + taskNumber + SmarterJmolAdapter.PATH_SEPARATOR
         + "Frequencies";
 
     // position myself to read the atom information, i.e., structure
     discardLinesUntilContains("Atom information");
     readLines(2);
-    atomSetCollection.newAtomSet();
+    asc.newAtomSet();
     String tokens[];
-    while (readLine() != null && line.indexOf("---") < 0) {
+    while (rd() != null && line.indexOf("---") < 0) {
       tokens = getTokens();
       setAtomCoordScaled(null, tokens, 3, ANGSTROMS_PER_BOHR).atomName = fixTag(tokens[0]);
     }
@@ -476,14 +476,14 @@ public class NWChemReader extends MOReader {
     readLines(3); // step over the line with the numbers
 
     boolean firstTime = true;
-    while (readLine() != null && line.indexOf("P.Frequency") >= 0) {
+    while (rd() != null && line.indexOf("P.Frequency") >= 0) {
       tokens = getTokensAt(line, 12);
       int frequencyCount = tokens.length;
-      int iAtom0 = atomSetCollection.atomCount;
-      int atomCount = atomSetCollection.getLastAtomSetAtomCount();
+      int iAtom0 = asc.ac;
+      int ac = asc.getLastAtomSetAtomCount();
       if (firstTime)
-        iAtom0 -= atomCount;
-      //System.out.println("freq "+ firstTime + " " + iAtom0 + " " + atomCount);
+        iAtom0 -= ac;
+      //System.out.println("freq "+ firstTime + " " + iAtom0 + " " + ac);
       boolean[] ignore = new boolean[frequencyCount];
       // clone the last atom set nFreq-1 times the first time, later nFreq times.
 
@@ -493,12 +493,12 @@ public class NWChemReader extends MOReader {
         if (ignore[i])
           continue;
         if (!firstTime)
-          atomSetCollection.cloneLastAtomSet();
+          asc.cloneLastAtomSet();
         firstTime = false;
-        atomSetCollection.setAtomSetFrequency(path, null, tokens[i], null);
+        asc.setAtomSetFrequency(path, null, tokens[i], null);
       }
       readLines(1);
-      fillFrequencyData(iAtom0, atomCount, atomCount, ignore, false, 0, 0, null, 0);
+      fillFrequencyData(iAtom0, ac, ac, ignore, false, 0, 0, null, 0);
       readLines(3);
     }
 
@@ -509,17 +509,17 @@ public class NWChemReader extends MOReader {
       discardLinesUntilContains("Projected Infra Red Intensities");
       readLines(2);
       for (int i = vibrationNumber, idx = firstFrequencyAtomSetIndex; --i >= 0;) {
-        if (readLine() == null)
+        if (rd() == null)
           return;
         if (!doGetVibration(i + 1))
           continue;
         tokens = getTokens();
-        int iset = atomSetCollection.currentAtomSetIndex;
-        atomSetCollection.currentAtomSetIndex = idx++;
-        atomSetCollection.setAtomSetFrequency(null, null, tokens[i], null);
-        atomSetCollection.setAtomSetModelProperty("IRIntensity", tokens[5]
+        int iset = asc.currentAtomSetIndex;
+        asc.currentAtomSetIndex = idx++;
+        asc.setAtomSetFrequency(null, null, tokens[i], null);
+        asc.setAtomSetModelProperty("IRIntensity", tokens[5]
             + " KM/mol");
-        atomSetCollection.currentAtomSetIndex = iset;
+        asc.currentAtomSetIndex = iset;
       }
     } catch (Exception e) {
       // If exception was thrown, don't do anything here...
@@ -533,16 +533,16 @@ public class NWChemReader extends MOReader {
   void readPartialCharges() throws Exception {
     String tokens[];
     readLines(4);
-    int atomCount = atomSetCollection.atomCount;
-    int i0 = atomSetCollection.getLastAtomSetAtomIndex();
-    Atom[] atoms = atomSetCollection.atoms;
-    for (int i = i0; i < atomCount; ++i) {
+    int ac = asc.ac;
+    int i0 = asc.getLastAtomSetAtomIndex();
+    Atom[] atoms = asc.atoms;
+    for (int i = i0; i < ac; ++i) {
       // first skip over the dummy atoms (not sure whether that really is needed..)
       while (atoms[i].elementNumber == 0)
         ++i;
       do {
         // assign the partial charge
-        if (readLine() == null || line.length() < 3)
+        if (rd() == null || line.length() < 3)
           return;
         tokens = getTokens();
       } while (tokens[0].indexOf(".") >= 0);
@@ -689,7 +689,7 @@ public class NWChemReader extends MOReader {
       int nBlankLines = 0;
       while (line.length() < 3 || line.charAt(2) == ' ') {
         shellData = new  List<Object[]>();
-        readLine();
+        rd();
         if (line.length() < 3)
           nBlankLines++;
       }
@@ -700,8 +700,8 @@ public class NWChemReader extends MOReader {
         atomSym = getTokens()[0];
         atomData = new  List<List<Object[]>>();
         atomInfo.put(atomSym, atomData);
-        readLine();
-        readLine();
+        rd();
+        rd();
         continue;
       }
       while (line != null && line.length() > 3) {
@@ -709,7 +709,7 @@ public class NWChemReader extends MOReader {
         Object[] o = new Object[] { tokens[1],
             new float[] { parseFloatStr(tokens[2]), parseFloatStr(tokens[3]) } };
         shellData.addLast(o);
-        readLine();
+        rd();
       }
       atomData.addLast(shellData);
     }
@@ -803,7 +803,7 @@ public class NWChemReader extends MOReader {
     htMOs.put(line, lines);
     lines.addLast(line);
     int nblank = 0;
-    while (nblank != 2 && readLine() != null) {
+    while (nblank != 2 && rd() != null) {
       lines.addLast(line);
       if (line.length() < 2)
         nblank++;
@@ -971,12 +971,12 @@ rate(mb/s): 3.96e+02  2.06e+03  0.00e+00* 2.49e+03*
   
   private boolean purging;
   @Override
-  public String readLine() throws Exception {
+  public String rd() throws Exception {
     RL();
     if (!purging && line != null && line.startsWith("--")) {
       purging = true;
       discardLinesUntilStartsWith("*");
-      readLine();
+      rd();
       purging = false;
       RL();
     }

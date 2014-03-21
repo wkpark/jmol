@@ -629,11 +629,11 @@ public class PropertyManager implements JmolPropertyManager {
       bsTemp.and(m.atomList);
       if (bsTemp.length() > 0) {
         Map<String, Object> info = new Hashtable<String, Object>();
-        info.put("mf", m.getMolecularFormula(false)); // sets atomCount and nElements
+        info.put("mf", m.getMolecularFormula(false)); // sets ac and nElements
         info.put("number", Integer.valueOf(m.moleculeIndex + 1)); //for now
         info.put("modelNumber", vwr.ms.getModelNumberDotted(m.modelIndex));
         info.put("numberInModel", Integer.valueOf(m.indexInModel + 1));
-        info.put("nAtoms", Integer.valueOf(m.atomCount));
+        info.put("nAtoms", Integer.valueOf(m.ac));
         info.put("nElements", Integer.valueOf(m.nElements));
         V.addLast(info);
       }
@@ -650,7 +650,7 @@ public class PropertyManager implements JmolPropertyManager {
     ModelSet m = vwr.getModelSet();
     Map<String, Object> info = new Hashtable<String, Object>();
     info.put("modelSetName", m.modelSetName);
-    info.put("modelCount", Integer.valueOf(m.modelCount));
+    info.put("modelCount", Integer.valueOf(m.mc));
     info.put("isTainted", Boolean.valueOf(m.tainted != null));
     info.put("canSkipLoad", Boolean.valueOf(m.canSkipLoad));
     info.put("modelSetHasVibrationVectors", Boolean.valueOf(m
@@ -680,8 +680,8 @@ public class PropertyManager implements JmolPropertyManager {
       if (s != null)
         model.put("id", s);
       model.put("vibrationVectors", Boolean.valueOf(vwr.modelHasVibrationVectors(i)));
-      Model mi = m.models[i];
-      model.put("atomCount", Integer.valueOf(mi.atomCount));
+      Model mi = m.am[i];
+      model.put("atomCount", Integer.valueOf(mi.ac));
       model.put("bondCount", Integer.valueOf(mi.getBondCount()));
       model.put("groupCount", Integer.valueOf(mi.getGroupCount()));
       model.put("moleculeCount", Integer.valueOf(mi.moleculeCount));
@@ -694,7 +694,7 @@ public class PropertyManager implements JmolPropertyManager {
       if (energy != null) {
         model.put("energy", energy);
       }
-      model.put("atomCount", Integer.valueOf(mi.atomCount));
+      model.put("atomCount", Integer.valueOf(mi.ac));
       vModels.addLast(model);
     }
     info.put("models", vModels);
@@ -709,14 +709,14 @@ public class PropertyManager implements JmolPropertyManager {
     List<Map<String, Object>> ligands = new  List<Map<String, Object>>();
     info.put("ligands", ligands);
     ModelSet ms = vwr.ms;
-    BS bsExclude = BSUtil.copyInvert(bsAtoms, ms.atomCount);
+    BS bsExclude = BSUtil.copyInvert(bsAtoms, ms.ac);
     bsExclude.or(bsSolvent);
-    Atom[] atoms = ms.atoms;
+    Atom[] atoms = ms.at;
     for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1))
       if (atoms[i].isProtein() || atoms[i].isNucleic())
         bsExclude.set(i);
-    BS[] bsModelAtoms = new BS[ms.modelCount];
-    for (int i = ms.modelCount; --i >= 0;) {
+    BS[] bsModelAtoms = new BS[ms.mc];
+    for (int i = ms.mc; --i >= 0;) {
       bsModelAtoms[i] = vwr.getModelUndeletedAtomsBitSet(i);
       bsModelAtoms[i].andNot(bsExclude);
     }
@@ -749,7 +749,7 @@ public class PropertyManager implements JmolPropertyManager {
           chain = -1;
           resnofirst = resno;
         }
-        model = "/" + ms.getModelNumberDotted(atom.modelIndex);
+        model = "/" + ms.getModelNumberDotted(atom.mi);
         if (iChainLast != 0 && chain != iChainLast)
           reslist += ":" + sChainLast + model;
         if (chain == -1)
@@ -781,8 +781,8 @@ public class PropertyManager implements JmolPropertyManager {
     int iAtom = bsAtoms.nextSetBit(0);
     if (iAtom < 0)
       return "";
-    iModel = vwr.ms.atoms[iAtom].modelIndex;
-    SymmetryInterface uc = vwr.ms.models[iModel].biosymmetry;
+    iModel = vwr.ms.at[iAtom].mi;
+    SymmetryInterface uc = vwr.ms.am[iModel].biosymmetry;
     if (uc == null)
       uc = vwr.ms.getUnitCell(iModel);
     if (uc == null)
@@ -838,11 +838,11 @@ public class PropertyManager implements JmolPropertyManager {
           " EXTRACT: ").append(Escape.eBS(bs)).append("\n");
     }
     BS bsAtoms = BSUtil.copy(bs);
-    Atom[] atoms = ms.atoms;
+    Atom[] atoms = ms.at;
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
       if (doTransform && atoms[i].isDeleted())
         bsAtoms.clear(i);
-    BS bsBonds = getCovalentBondsForAtoms(ms.bonds, ms.bondCount, bsAtoms);
+    BS bsBonds = getCovalentBondsForAtoms(ms.bo, ms.bondCount, bsAtoms);
     if (!asXYZVIB && bsAtoms.cardinality() == 0)
       return "";
     boolean isOK = true;
@@ -856,7 +856,7 @@ public class PropertyManager implements JmolPropertyManager {
         mol.append(header);
         BS bsTemp = BSUtil.copy(bsAtoms);
         bsTemp.and(ms.getModelAtomBitSetIncludingDeleted(i, false));
-        bsBonds = getCovalentBondsForAtoms(ms.bonds, ms.bondCount, bsTemp);
+        bsBonds = getCovalentBondsForAtoms(ms.bo, ms.bondCount, bsTemp);
         if (!(isOK = addMolFile(mol, bsTemp, bsBonds, false, false, q)))
           break;
         mol.append("$$$$\n");
@@ -874,7 +874,7 @@ public class PropertyManager implements JmolPropertyManager {
         if (bsTemp.cardinality() == 0)
           continue;
         mol.appendI(bsTemp.cardinality()).appendC('\n');
-        Properties props = ms.models[i].properties;
+        Properties props = ms.am[i].properties;
         mol.append("Model[" + (i + 1) + "]: ");
         if (ms.frameTitles[i] != null && ms.frameTitles[i].length() > 0) {
           mol.append(ms.frameTitles[i].replace('\n', ' '));
@@ -917,7 +917,7 @@ public class PropertyManager implements JmolPropertyManager {
     if (!asV3000 && !asJSON && (nAtoms > 999 || nBonds > 999))
       return false;
     ModelSet ms = vwr.ms;
-    int[] atomMap = new int[ms.atomCount];
+    int[] atomMap = new int[ms.ac];
     P3 pTemp = new P3();
     if (asV3000) {
       mol.append("  0  0  0  0  0  0            999 V3000");
@@ -938,7 +938,7 @@ public class PropertyManager implements JmolPropertyManager {
     P3 ptTemp = new P3();
     for (int i = bsAtoms.nextSetBit(0), n = 0; i >= 0; i = bsAtoms
         .nextSetBit(i + 1))
-      getAtomRecordMOL(ms, mol, atomMap[i] = ++n, ms.atoms[i], q, pTemp, ptTemp, asV3000,
+      getAtomRecordMOL(ms, mol, atomMap[i] = ++n, ms.at[i], q, pTemp, ptTemp, asV3000,
           asJSON);
     if (asV3000) {
       mol.append("M  V30 END ATOM\nM  V30 BEGIN BOND\n");
@@ -947,7 +947,7 @@ public class PropertyManager implements JmolPropertyManager {
     }
     for (int i = bsBonds.nextSetBit(0), n = 0; i >= 0; i = bsBonds
         .nextSetBit(i + 1))
-      getBondRecordMOL(mol, ++n, ms.bonds[i], atomMap, asV3000, asJSON);
+      getBondRecordMOL(mol, ++n, ms.bo[i], atomMap, asV3000, asJSON);
     // 21 21 0 0 0
     if (asV3000) {
       mol.append("M  V30 END BOND\nM  V30 END CTAB\n");
@@ -974,7 +974,7 @@ public class PropertyManager implements JmolPropertyManager {
     BS bsBonds = new BS();
     for (int i = 0; i < bondCount; i++) {
       Bond bond = bonds[i];
-      if (bsAtoms.get(bond.atom1.index) && bsAtoms.get(bond.atom2.index)
+      if (bsAtoms.get(bond.atom1.i) && bsAtoms.get(bond.atom2.i)
           && bond.isCovalent())
         bsBonds.set(i);
     }
@@ -1014,9 +1014,9 @@ public class PropertyManager implements JmolPropertyManager {
     //    3.4920    4.0920    5.8700 Cl  0  0  0  0  0
     //012345678901234567890123456789012
     
-    if (ms.models[a.modelIndex].isTrajectory)
-      a.setFractionalCoordPt(ptTemp, ms.trajectorySteps.get(a.modelIndex)[a.index
-          - ms.models[a.modelIndex].firstAtomIndex], true);
+    if (ms.am[a.mi].isTrajectory)
+      a.setFractionalCoordPt(ptTemp, ms.trajectorySteps.get(a.mi)[a.i
+          - ms.am[a.mi].firstAtomIndex], true);
     else
       pTemp.setT(a);
     if (q != null)
@@ -1065,8 +1065,8 @@ public class PropertyManager implements JmolPropertyManager {
   private void getBondRecordMOL(SB mol, int n, Bond b, int[] atomMap,
                                 boolean asV3000, boolean asJSON) {
     //  1  2  1  0
-    int a1 = atomMap[b.atom1.index];
-    int a2 = atomMap[b.atom2.index];
+    int a1 = atomMap[b.atom1.i];
+    int a2 = atomMap[b.atom2.i];
     int order = b.getValence();
     if (order > 3)
       order = 1;
@@ -1118,10 +1118,10 @@ public class PropertyManager implements JmolPropertyManager {
     case T.basepair:
       return getBasePairInfo(bs);
     default:
-      return getChimeInfoA(vwr.ms.atoms, tok, bs);
+      return getChimeInfoA(vwr.ms.at, tok, bs);
     }
     SB sb = new SB();
-    vwr.ms.models[0].getChimeInfo(sb, 0);
+    vwr.ms.am[0].getChimeInfo(sb, 0);
     return sb.appendC('\n').toString().substring(1);
   }
 
@@ -1200,7 +1200,7 @@ public class PropertyManager implements JmolPropertyManager {
   public String getModelFileInfo(BS frames) {
     ModelSet ms = vwr.ms;
     SB sb = new SB();
-    for (int i = 0; i < ms.modelCount; ++i) {
+    for (int i = 0; i < ms.mc; ++i) {
       if (frames != null && !frames.get(i))
         continue;
       String s = "[\"" + ms.getModelNumberDotted(i) + "\"] = ";
@@ -1225,7 +1225,7 @@ public class PropertyManager implements JmolPropertyManager {
 
   private Map<String, Object> getAtomInfoLong(int i) {
     ModelSet ms = vwr.ms;
-    Atom atom = ms.atoms[i];
+    Atom atom = ms.at[i];
     Map<String, Object> info = new Hashtable<String, Object>();
     vwr.getAtomIdentityInfo(i, info);
     info.put("element", ms.getElementName(i));
@@ -1259,7 +1259,7 @@ public class PropertyManager implements JmolPropertyManager {
     float d = atom.getSurfaceDistance100() / 100f;
     if (d >= 0)
       info.put("surfaceDistance", Float.valueOf(d));
-    if (ms.models[atom.modelIndex].isBioModel) {
+    if (ms.am[atom.mi].isBioModel) {
       info.put("resname", atom.getGroup3(false));
       char insCode = atom.getInsertionCode();
       int seqNum = atom.getResno();
@@ -1287,7 +1287,7 @@ public class PropertyManager implements JmolPropertyManager {
     List<Map<String, Object>> v = new List<Map<String, Object>>();
     ModelSet ms = vwr.ms;
     int bondCount = ms.bondCount;
-    Bond[] bonds = ms.bonds;
+    Bond[] bonds = ms.bo;
     BS bs1;
     if (bsOrArray instanceof String) {
       bsOrArray = vwr.getAtomBitSet(bsOrArray);
@@ -1296,8 +1296,8 @@ public class PropertyManager implements JmolPropertyManager {
       bs1 = ((BS[]) bsOrArray)[0];
       BS bs2 = ((BS[]) bsOrArray)[1];
       for (int i = 0; i < bondCount; i++) {
-        int ia = bonds[i].atom1.index;
-        int ib = bonds[i].atom2.index;
+        int ia = bonds[i].atom1.i;
+        int ib = bonds[i].atom2.i;
         if (bs1.get(ia) && bs2.get(ib) || bs2.get(ia) && bs1.get(ib))
           v.addLast(getBondInfo(i));
       }
@@ -1310,8 +1310,8 @@ public class PropertyManager implements JmolPropertyManager {
       bs1 = (BS) bsOrArray;
       int thisAtom = (bs1.cardinality() == 1 ? bs1.nextSetBit(0) : -1);
       for (int i = 0; i < bondCount; i++) {
-        if (thisAtom >= 0 ? (bonds[i].atom1.index == thisAtom || bonds[i].atom2.index == thisAtom)
-            : bs1.get(bonds[i].atom1.index) && bs1.get(bonds[i].atom2.index))
+        if (thisAtom >= 0 ? (bonds[i].atom1.i == thisAtom || bonds[i].atom2.i == thisAtom)
+            : bs1.get(bonds[i].atom1.i) && bs1.get(bonds[i].atom2.i))
           v.addLast(getBondInfo(i));
       }
     }
@@ -1319,15 +1319,15 @@ public class PropertyManager implements JmolPropertyManager {
   }
 
   private Map<String, Object> getBondInfo(int i) {
-    Bond bond = vwr.ms.bonds[i];
+    Bond bond = vwr.ms.bo[i];
     Atom atom1 = bond.atom1;
     Atom atom2 = bond.atom2;
     Map<String, Object> info = new Hashtable<String, Object>();
     info.put("_bpt", Integer.valueOf(i));
     Map<String, Object> infoA = new Hashtable<String, Object>();
-    vwr.getAtomIdentityInfo(atom1.index, infoA);
+    vwr.getAtomIdentityInfo(atom1.i, infoA);
     Map<String, Object> infoB = new Hashtable<String, Object>();
-    vwr.getAtomIdentityInfo(atom2.index, infoB);
+    vwr.getAtomIdentityInfo(atom2.i, infoB);
     info.put("atom1", infoA);
     info.put("atom2", infoB);
     info.put("order", Float.valueOf(PT.fVal(Edge
@@ -1348,7 +1348,7 @@ public class PropertyManager implements JmolPropertyManager {
   public Map<String, List<Map<String, Object>>> getAllChainInfo(BS bs) {
     Map<String, List<Map<String, Object>>> finalInfo = new Hashtable<String, List<Map<String, Object>>>();
     List<Map<String, Object>> modelVector = new  List<Map<String, Object>>();
-    int modelCount = vwr.ms.modelCount;
+    int modelCount = vwr.ms.mc;
     for (int i = 0; i < modelCount; ++i) {
       Map<String, Object> modelInfo = new Hashtable<String, Object>();
       List<Map<String, List<Map<String, Object>>>> info = getChainInfo(i, bs);
@@ -1365,7 +1365,7 @@ public class PropertyManager implements JmolPropertyManager {
   private List<Map<String, List<Map<String, Object>>>> getChainInfo(
                                                                     int modelIndex,
                                                                     BS bs) {
-    Model model = vwr.ms.models[modelIndex];
+    Model model = vwr.ms.am[modelIndex];
     int nChains = model.getChainCount(true);
     List<Map<String, List<Map<String, Object>>>> infoChains = new  List<Map<String, List<Map<String, Object>>>>();
     for (int i = 0; i < nChains; i++) {
@@ -1389,8 +1389,8 @@ public class PropertyManager implements JmolPropertyManager {
   private Map<String, List<Map<String, Object>>> getAllPolymerInfo(BS bs) {
     Map<String, List<Map<String, Object>>> finalInfo = new Hashtable<String, List<Map<String, Object>>>();
     List<Map<String, Object>> modelVector = new  List<Map<String, Object>>();
-    int modelCount = vwr.ms.modelCount;
-    Model[] models = vwr.ms.models;
+    int modelCount = vwr.ms.mc;
+    Model[] models = vwr.ms.am;
     for (int i = 0; i < modelCount; ++i)
       if (models[i].isBioModel)
         models[i].getAllPolymerInfo(bs, finalInfo, modelVector);
@@ -1427,7 +1427,7 @@ public class PropertyManager implements JmolPropertyManager {
     info.put("codeBase", "" + Viewer.appletCodeBase);
     if (vwr.isApplet()) {
       info.put("documentBase", Viewer.appletDocumentBase);
-      info.put("registry", vwr.statusManager.getRegistryInfo());
+      info.put("registry", vwr.sm.getRegistryInfo());
     }
     info.put("version", JC.version);
     info.put("date", JC.date);
@@ -1439,23 +1439,20 @@ public class PropertyManager implements JmolPropertyManager {
   }
 
   private Map<String, Object> getAnimationInfo() {
-    AnimationManager am = vwr.animationManager;
+    AnimationManager am = vwr.am;
     Map<String, Object> info = new Hashtable<String, Object>();
     info.put("firstModelIndex", Integer.valueOf(am.firstFrameIndex));
     info.put("lastModelIndex", Integer.valueOf(am.lastFrameIndex));
     info.put("animationDirection", Integer.valueOf(am.animationDirection));
     info.put("currentDirection", Integer.valueOf(am.currentDirection));
-    info.put("displayModelIndex", Integer.valueOf(am.currentModelIndex));
+    info.put("displayModelIndex", Integer.valueOf(am.cmi));
     if (am.animationFrames != null) {
       info.put("isMovie", Boolean.TRUE);
       info.put("frames", Escape.eAI(am.animationFrames));
-      info.put("currentAnimationFrame", Integer
-          .valueOf(am.currentAnimationFrame));
+      info.put("currentAnimationFrame", Integer.valueOf(am.caf));
     }
-    info.put("displayModelNumber", vwr
-        .getModelNumberDotted(am.currentModelIndex));
-    info.put("displayModelName", (am.currentModelIndex >= 0 ? vwr
-        .getModelName(am.currentModelIndex) : ""));
+    info.put("displayModelNumber", vwr.getModelNumberDotted(am.cmi));
+    info.put("displayModelName", (am.cmi >= 0 ? vwr.getModelName(am.cmi) : ""));
     info.put("animationFps", Integer.valueOf(am.animationFps));
     info.put("animationReplayMode", am.animationReplayMode.name());
     info.put("firstFrameDelay", Float.valueOf(am.firstFrameDelay));
@@ -1478,7 +1475,7 @@ public class PropertyManager implements JmolPropertyManager {
   private Map<String, Object> getShapeInfo() {
     Map<String, Object> info = new Hashtable<String, Object>();
     SB commands = new SB();
-    Shape[] shapes = vwr.shapeManager.shapes;
+    Shape[] shapes = vwr.shm.shapes;
     if (shapes != null)
       for (int i = 0; i < JC.SHAPE_MAX; ++i) {
         Shape shape = shapes[i];
@@ -1512,7 +1509,7 @@ public class PropertyManager implements JmolPropertyManager {
     Map<String, Object> info = new Hashtable<String, Object>();
     List<Object> list = new List<Object>();
     ActionManager am = vwr.actionManager;
-    for (Object obj : am.binding.getBindings().values()) {
+    for (Object obj : am.b.getBindings().values()) {
       if (obj instanceof Boolean)
         continue;
       if (PT.isAI(obj)) {
@@ -1523,7 +1520,7 @@ public class PropertyManager implements JmolPropertyManager {
       list.addLast(obj);
     }
     info.put("bindings", list);
-    info.put("bindingName", am.binding.name);
+    info.put("bindingName", am.b.name);
     info.put("actionNames", ActionManager.actionNames);
     info.put("actionInfo", ActionManager.actionInfo);
     info.put("bindingInfo", PT.split(am.getBindingInfo(null), "\n"));

@@ -214,8 +214,8 @@ public class MSCifReader extends MSReader implements MSCifInterface {
       return 0;
     if (modAverage)
       return -1;
-    if (cr.atomSetCollection.currentAtomSetIndex < 0)
-      cr.atomSetCollection.newAtomSet();
+    if (cr.asc.currentAtomSetIndex < 0)
+      cr.asc.newAtomSet();
     cr.parseLoopParameters(modulationFields);
     int tok;
     while (cr.parser.getData()) {

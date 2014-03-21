@@ -134,7 +134,7 @@ class JmolObject {
   @SuppressWarnings("unchecked")
   void finalizeObject(PyMOLScene pymolScene, ModelSet m, String mepList,
                       boolean doCache) {
-    ShapeManager sm = m.shapeManager;
+    ShapeManager sm = m.sm;
     String color = "color";
     String sID;
     SB sb = null;
@@ -249,7 +249,7 @@ class JmolObject {
       md.setModelSet(m);
       List<Object> points = md.points;
       for (int i = points.size(); --i >= 0;)
-        ((Point3fi) points.get(i)).modelIndex = (short) modelIndex;
+        ((Point3fi) points.get(i)).mi = (short) modelIndex;
       sm.setShapePropertyBs(id, "measure", md, bsAtoms);
       return;
     case T.isosurface:
@@ -266,7 +266,7 @@ class JmolObject {
       if (bsAtoms == null) {
         // point display of map 
         sb.append(" model ")
-            .append(m.models[modelIndex].getModelNumberDotted()).append(
+            .append(m.am[modelIndex].getModelNumberDotted()).append(
                 " color density sigma 1.0 ").append(PT.esc(cacheID)).append(" ").append(
                 PT.esc(sID));
         if (doCache)
@@ -285,7 +285,7 @@ class JmolObject {
           resolution = " resolution 1.5";
         }
         boolean haveMep = PT.isOneOf(sID, mepList);
-        String model = m.models[modelIndex].getModelNumberDotted();
+        String model = m.am[modelIndex].getModelNumberDotted();
         //        BS bsIgnore = sm.vwr.getAtomsWithinRadius(0.1f, bsAtoms, true, 
         //            new RadiusData(null, 0.1f, EnumType.ABSOLUTE, null));
         //        bsIgnore.andNot(bsAtoms);
@@ -333,7 +333,7 @@ class JmolObject {
       sID = mesh.get(mesh.size() - 2).toString();
       sb = new SB();
       sb.append("isosurface ID ").append(PT.esc(sID)).append(" model ")
-          .append(m.models[modelIndex].getModelNumberDotted())
+          .append(m.am[modelIndex].getModelNumberDotted())
           .append(" color ").append(Escape.escapeColor(argb)).append("  ").append(PT.esc(cacheID)).append(" ")
           .append(PT.esc(sID)).append(" mesh nofill frontonly");
       float within = PyMOLScene.floatAt(PyMOLScene.listAt(PyMOLScene.listAt(
@@ -383,9 +383,9 @@ class JmolObject {
     if (bsAtoms == null)
       return -1;
     int iAtom = bsAtoms.nextSetBit(0);
-    if (iAtom >= m.atoms.length)
+    if (iAtom >= m.at.length)
       System.out.println("PyMOL LOADING ERROR IN MERGE");
-    return (iAtom < 0 ? -1 : m.atoms[iAtom].modelIndex);
+    return (iAtom < 0 ? -1 : m.at[iAtom].mi);
   }
 
   void setColors(short[] colixes, float translucency) {

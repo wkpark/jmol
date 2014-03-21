@@ -112,7 +112,7 @@ public final class BioModel extends Model{
                                     boolean setStructure, boolean includeAlpha) {
     if (bioPolymerCount == 0 || !setStructure && !asDSSP)
       return "";
-    modelSet.proteinStructureTainted = structureTainted = true;
+    ms.proteinStructureTainted = structureTainted = true;
     if (setStructure)
       for (int i = bioPolymerCount; --i >= 0;)
         if (!asDSSP || bioPolymers[i].getGroups()[0].getNitrogenAtom() != null)
@@ -183,7 +183,7 @@ public final class BioModel extends Model{
     }
     if (bs2.nextSetBit(0) >= 0)
       sb.append("select ").append(Escape.eBS(bs2)).append(";backbone only;");
-    if (atomCount <= maxAtoms)
+    if (ac <= maxAtoms)
       return;
     // ...and it's a large model, to wireframe:
       sb.append("select ").append(Escape.eBS(bs)).append(" & connected; wireframe only;");
@@ -217,7 +217,7 @@ public final class BioModel extends Model{
       bsCheck = BSUtil.copy(bs1);
       bsCheck.or(bs2);
     }
-    Atom[] atoms = modelSet.atoms;
+    Atom[] atoms = modelSet.at;
     Viewer vwr = modelSet.vwr;
     bsCheck.and(vwr.getModelUndeletedAtomsBitSet(modelIndex));
     for (int i = bsCheck.nextSetBit(0); i >= 0; i = bsCheck.nextSetBit(i + 1))
@@ -371,7 +371,7 @@ public final class BioModel extends Model{
       Atom atom2 = bond.getAtom2();
       if (atom1.isBonded(atom2))
         continue;
-      int index = modelSet.addHBond(atom1, atom2, bond.order, bond.getEnergy());
+      int index = ms.addHBond(atom1, atom2, bond.order, bond.getEnergy());
       if (bsHBonds != null)
         bsHBonds.set(index);
     }
@@ -383,23 +383,23 @@ public final class BioModel extends Model{
     //      and setAtomPositions (bsAtoms null)
     BS bsDelete = new BS();
     hasRasmolHBonds = false;
-    Model[] models = modelSet.models;
-    Bond[] bonds = modelSet.bonds;
-    for (int i = modelSet.bondCount; --i >= 0;) {
+    Model[] models = ms.am;
+    Bond[] bonds = ms.bo;
+    for (int i = ms.bondCount; --i >= 0;) {
       Bond bond = bonds[i];
       Atom atom1 = bond.getAtom1();
-      Model m = models[atom1.modelIndex];
+      Model m = models[atom1.mi];
       if (!m.isBioModel || m.trajectoryBaseIndex != modelIndex
           || (bond.order & Edge.BOND_H_CALC_MASK) == 0)
         continue;
-      if (bsAtoms != null && !bsAtoms.get(atom1.index)) {
+      if (bsAtoms != null && !bsAtoms.get(atom1.i)) {
         hasRasmolHBonds = true;
         continue;
       }
       bsDelete.set(i);
     }
     if (bsDelete.nextSetBit(0) >= 0)
-      modelSet.deleteBonds(bsDelete, false);
+      ms.deleteBonds(bsDelete, false);
   }
 
   @Override
@@ -407,7 +407,7 @@ public final class BioModel extends Model{
                                 int baseGroupIndex, BS modelsExcluded, 
                                 boolean checkConnections) {
     if (groups == null) {
-      groups = modelSet.getGroups();
+      groups = ms.getGroups();
       groupCount = groups.length;
     }
     if (modelsExcluded != null)
@@ -426,7 +426,7 @@ public final class BioModel extends Model{
       if (!model.isBioModel || ! (g instanceof Monomer))
         continue;
       boolean doCheck = checkConnections 
-        && !modelSet.isJmolDataFrameForModel(modelSet.atoms[g.firstAtomIndex].modelIndex);
+        && !ms.isJmolDataFrameForModel(ms.at[g.firstAtomIndex].mi);
       BioPolymer bp = (((Monomer) g).getBioPolymer() == null ?
           Resolver.allocateBioPolymer(groups, i, doCheck) : null);
       if (bp == null || bp.monomerCount == 0)
@@ -474,14 +474,14 @@ public final class BioModel extends Model{
   @Override
   public void getChimeInfo(SB sb, int nHetero) {
     int n = 0;
-    Model[] models = modelSet.models;
-    int modelCount = modelSet.modelCount;
-    int atomCount = modelSet.getAtomCount();
-    Atom[] atoms = modelSet.atoms;
+    Model[] models = ms.am;
+    int modelCount = ms.mc;
+    int ac = ms.getAtomCount();
+    Atom[] atoms = ms.at;
     sb.append("\nMolecule name ....... "
-        + modelSet.getModelSetAuxiliaryInfoValue("COMPND"));
+        + ms.getModelSetAuxiliaryInfoValue("COMPND"));
     sb.append("\nSecondary Structure . PDB Data Records");
-    sb.append("\nBrookhaven Code ..... " + modelSet.modelSetName);
+    sb.append("\nBrookhaven Code ..... " + ms.modelSetName);
     for (int i = modelCount; --i >= 0;)
       n += models[i].getChainCount(false);
     sb.append("\nNumber of Chains .... " + n);
@@ -494,7 +494,7 @@ public final class BioModel extends Model{
     sb.append("\nNumber of Groups .... " + n);
     if (nHetero > 0)
       sb.append(" (" + nHetero + ")");
-    for (int i = atomCount; --i >= 0;)
+    for (int i = ac; --i >= 0;)
       if (atoms[i].isHetero())
         nHetero++;
     getChimeInfoM(sb, nHetero);
@@ -503,8 +503,8 @@ public final class BioModel extends Model{
     int nT = 0;
     int id;
     int lastid = -1;
-    for (int i = 0; i < atomCount; i++) {
-      if (atoms[i].modelIndex != 0)
+    for (int i = 0; i < ac; i++) {
+      if (atoms[i].mi != 0)
         break;
       if ((id = atoms[i].getStrucNo()) != lastid && id != 0) {
         lastid = id;
@@ -556,25 +556,25 @@ public final class BioModel extends Model{
     int nTurn = 0;
     int nSheet = 0;
     BS bsTainted = null;
-    Model[] models = modelSet.models;
-    Atom[] atoms = modelSet.atoms;
-    int atomCount = modelSet.getAtomCount();
+    Model[] models = ms.am;
+    Atom[] atoms = ms.at;
+    int ac = ms.getAtomCount();
     
     if (taintedOnly) {
-      if (!modelSet.proteinStructureTainted)
+      if (!ms.proteinStructureTainted)
         return "";
       bsTainted = new BS();
-      for (int i = firstAtomIndex; i < atomCount; i++)
-        if (models[atoms[i].modelIndex].isStructureTainted())
+      for (int i = firstAtomIndex; i < ac; i++)
+        if (models[atoms[i].mi].isStructureTainted())
           bsTainted.set(i);
-      bsTainted.set(atomCount);
+      bsTainted.set(ac);
     }
-    for (int i = 0; i <= atomCount; i++)
-      if (i == atomCount || bsAtoms == null || bsAtoms.get(i)) {
+    for (int i = 0; i <= ac; i++)
+      if (i == ac || bsAtoms == null || bsAtoms.get(i)) {
         if (taintedOnly && !bsTainted.get(i))
           continue;
         id = 0;
-        if (i == atomCount || (id = atoms[i].getStrucNo()) != lastId) {
+        if (i == ac || (id = atoms[i].getStrucNo()) != lastId) {
           if (bs != null) {
             switch  (type) {
             case HELIX:
@@ -582,13 +582,13 @@ public final class BioModel extends Model{
             case SHEET:
               n++;
               if (scriptMode) {
-                int iModel = atoms[iLastAtom].modelIndex;
+                int iModel = atoms[iLastAtom].mi;
                 String comment = "    \t# model="
-                    + modelSet.getModelNumberDotted(iModel);
+                    + ms.getModelNumberDotted(iModel);
                 if (iLastModel != iModel) {
                   iLastModel = iModel;
                     cmd.append("  structure none ").append(
-                        Escape.eBS(modelSet.getModelAtomBitSetIncludingDeleted(
+                        Escape.eBS(ms.getModelAtomBitSetIncludingDeleted(
                             iModel, false))).append(comment).append(";\n");
                 }
                 comment += " & (" + res1 + " - " + res2 + ")";
@@ -706,7 +706,7 @@ public final class BioModel extends Model{
     String info = (String) auxiliaryInfo.get("fileHeader");
     if (info != null)
       return info;
-    info = modelSet.vwr.getCurrentFileAsString();
+    info = ms.vwr.getCurrentFileAsString();
     int ichMin = info.length();
     for (int i = pdbRecords.length; --i >= 0;) {
       int ichFound;

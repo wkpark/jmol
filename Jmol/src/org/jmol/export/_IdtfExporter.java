@@ -992,7 +992,7 @@ public class _IdtfExporter extends __CartesianExporter {
 
   private String getConeResource() {
     MeshSurface m = getConeMesh(null, null, (short) 0);
-    return getMeshData("Cone", m.polygonIndexes, m.vertices, m.vertices);
+    return getMeshData("Cone", m.pis, m.vs, m.vs);
   }
   
   private String getCircleResource() {

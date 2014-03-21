@@ -40,7 +40,7 @@ public abstract class ShapeRenderer {
   
   protected Viewer vwr;
   protected JmolRendererInterface g3d;
-  protected ModelSet modelSet;
+  protected ModelSet ms;
   protected Shape shape;
 
   protected int myVisibilityFlag;
@@ -68,7 +68,7 @@ public abstract class ShapeRenderer {
 
   public boolean renderShape(JmolRendererInterface g3d, ModelSet modelSet, Shape shape) {
     this.g3d = g3d;
-    this.modelSet = modelSet;
+    this.ms = modelSet;
     this.shape = shape;
     exportType = g3d.getExportType();
     isExport = (exportType != GData.EXPORT_NOT);

@@ -55,10 +55,10 @@ public class XmlMolproReader extends XmlCmlReader {
       if (!parent.doGetVibration(++vibrationNumber))
         return;
       try {
-        atomSetCollection.cloneLastAtomSet();
+        asc.cloneLastAtomSet();
       } catch (Exception e) {
         System.out.println(e.getMessage());
-        atomSetCollection.errorMessage = "Error processing normalCoordinate: " + e.getMessage();
+        asc.errorMessage = "Error processing normalCoordinate: " + e.getMessage();
         vibrationNumber = 0;
         return;
       }
@@ -70,7 +70,7 @@ public class XmlMolproReader extends XmlCmlReader {
           if (units.startsWith("inverseCent"))
             units = "cm^-1";
         }
-        atomSetCollection.setAtomSetFrequency(null, null, wavenumber, units);
+        asc.setAtomSetFrequency(null, null, wavenumber, units);
         keepChars = true;
       }
       return;
@@ -87,11 +87,11 @@ public class XmlMolproReader extends XmlCmlReader {
     if (localName.equalsIgnoreCase("normalCoordinate")) {
       if (!keepChars)
         return;
-      int atomCount = atomSetCollection.getLastAtomSetAtomCount();
-      int baseAtomIndex = atomSetCollection.getLastAtomSetAtomIndex();
+      int ac = asc.getLastAtomSetAtomCount();
+      int baseAtomIndex = asc.getLastAtomSetAtomIndex();
       tokens = getTokensStr(chars);
-      for (int offset = tokens.length - atomCount * 3, i = 0; i < atomCount; i++) {
-        atomSetCollection.addVibrationVector(i + baseAtomIndex,
+      for (int offset = tokens.length - ac * 3, i = 0; i < ac; i++) {
+        asc.addVibrationVector(i + baseAtomIndex,
             parseFloatStr(tokens[offset++]),
             parseFloatStr(tokens[offset++]),
             parseFloatStr(tokens[offset++])

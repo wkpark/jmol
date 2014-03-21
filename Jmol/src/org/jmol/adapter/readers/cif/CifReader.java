@@ -131,7 +131,7 @@ public class CifReader extends AtomSetCollectionReader implements
       molecularType = "filter \"MOLECULAR\"";
     }
     checkSpecial = !checkFilterKey("NOSPECIAL");
-    atomSetCollection.setCheckSpecial(checkSpecial);
+    asc.setCheckSpecial(checkSpecial);
     allowRotations = !checkFilterKey("NOSYM");
     readCifData();
     continuing = false;
@@ -165,7 +165,7 @@ public class CifReader extends AtomSetCollectionReader implements
   @Override
   public String readNextLine() throws Exception {
     // from CifDataReader
-    if (readLine() != null && line.indexOf("#jmolscript:") >= 0)
+    if (rd() != null && line.indexOf("#jmolscript:") >= 0)
       checkCurrentLineForScript();
     return line;
   }
@@ -181,7 +181,7 @@ public class CifReader extends AtomSetCollectionReader implements
       newModel(++modelNumber);
       if (!skipping)
         processDataParameter();
-      nAtoms = atomSetCollection.atomCount;
+      nAtoms = asc.ac;
       return true;
     }
     if (lookingForPDB && !isPDBX && key.indexOf(".pdb") >= 0)
@@ -245,9 +245,9 @@ public class CifReader extends AtomSetCollectionReader implements
         if (htAudit != null && auditBlockCode.contains("_MOD_")) {
           String key = PT.rep(auditBlockCode, "_MOD_",
               "_REFRNCE_");
-          if (atomSetCollection.setSymmetry((SymmetryInterface) htAudit
+          if (asc.setSymmetry((SymmetryInterface) htAudit
               .get(key)) != null) {
-            notionalUnitCell = atomSetCollection.getSymmetry().getNotionalUnitCell();
+            notionalUnitCell = asc.getSymmetry().getNotionalUnitCell();
             iHaveUnitCell = true;
           }
         } else if (htAudit != null && symops != null) {
@@ -272,7 +272,7 @@ public class CifReader extends AtomSetCollectionReader implements
     atom.set(0, 0, 0);
     String s = atom.atomName = parser.fullTrim(data);
     atom.elementSymbol = s.length() == 1 ? s : s.substring(0, 1) + s.substring(1, 2).toLowerCase();
-    atomSetCollection.addAtom(atom);
+    asc.addAtom(atom);
   }
 
   private void initializeMMCIF() {
@@ -308,10 +308,10 @@ public class CifReader extends AtomSetCollectionReader implements
     thisStructuralFormula = "";
     thisFormula = "";
     if (isCourseGrained)
-      atomSetCollection.setAtomSetAuxiliaryInfo("courseGrained", Boolean.TRUE);
-    if (nAtoms == atomSetCollection.atomCount)
+      asc.setAtomSetAuxiliaryInfo("courseGrained", Boolean.TRUE);
+    if (nAtoms == asc.ac)
       // we found no atoms -- must revert
-      atomSetCollection.removeCurrentAtomSet();
+      asc.removeCurrentAtomSet();
     else
       applySymmetryAndSetTrajectory();
     iHaveDesiredModel = isLastModel(modelNumber);
@@ -323,13 +323,13 @@ public class CifReader extends AtomSetCollectionReader implements
       pr.finalizeReader(nAtoms);
     else
       applySymmetryAndSetTrajectory();
-    int n = atomSetCollection.atomSetCount;
+    int n = asc.atomSetCount;
     if (n > 1)
-      atomSetCollection.setCollectionName("<collection of " + n + " models>");
+      asc.setCollectionName("<collection of " + n + " models>");
     finalizeReaderASCR();
     String header = parser.getFileHeader();
     if (header.length() > 0)
-      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("fileHeader", header);
+      asc.setAtomSetCollectionAuxiliaryInfo("fileHeader", header);
     if (haveAromatic)
       addJmolScript("calculate aromatic");
   }
@@ -347,7 +347,7 @@ public class CifReader extends AtomSetCollectionReader implements
     // be no center of symmetry, no rotation-inversions, 
     // no atom-centered rotation axes, and no mirror or glide planes.
     if (isPDB)
-      atomSetCollection.setCheckSpecial(false);
+      asc.setCheckSpecial(false);
     boolean doCheckBonding = doCheckUnitCell && !isPDB;
     SymmetryInterface sym = applySymTrajASCR();
     if (mr != null) {
@@ -362,8 +362,8 @@ public class CifReader extends AtomSetCollectionReader implements
     }
     if (doCheckBonding && (bondTypes.size() > 0 || isMolecular))
       setBondingAndMolecules();
-    atomSetCollection.setAtomSetAuxiliaryInfo("fileHasUnitCell", Boolean.TRUE);
-    atomSetCollection.xtalSymmetry = null;
+    asc.setAtomSetAuxiliaryInfo("fileHasUnitCell", Boolean.TRUE);
+    asc.xtalSymmetry = null;
   }
 
   ////////////////////////////////////////////////////////////////
@@ -390,13 +390,13 @@ public class CifReader extends AtomSetCollectionReader implements
   }
 
   private void nextAtomSet() {
-    atomSetCollection.setAtomSetAuxiliaryInfo("isCIF", Boolean.TRUE);
-    if (atomSetCollection.currentAtomSetIndex >= 0) {
+    asc.setAtomSetAuxiliaryInfo("isCIF", Boolean.TRUE);
+    if (asc.currentAtomSetIndex >= 0) {
       // note that there can be problems with multi-data mmCIF sets each with
       // multiple models; and we could be loading multiple files!
-      atomSetCollection.newAtomSet();
+      asc.newAtomSet();
     } else {
-      atomSetCollection.setCollectionName(thisDataSetName);
+      asc.setCollectionName(thisDataSetName);
     }
   }
 
@@ -413,7 +413,7 @@ public class CifReader extends AtomSetCollectionReader implements
     if (type.equals("name")) {
       chemicalName = data = parser.fullTrim(data);
       if (!data.equals("?"))
-        atomSetCollection.setAtomSetCollectionAuxiliaryInfo("modelLoadNote",
+        asc.setAtomSetCollectionAuxiliaryInfo("modelLoadNote",
             data);
     } else if (type.equals("structuralFormula")) {
       thisStructuralFormula = data = parser.fullTrim(data);
@@ -452,7 +452,7 @@ public class CifReader extends AtomSetCollectionReader implements
       } catch (Exception e) {
         // n/a
       }
-      if (lattvecs != null && lattvecs.size() > 0 && atomSetCollection.getSymmetry().addLatticeVectors(lattvecs)) 
+      if (lattvecs != null && lattvecs.size() > 0 && asc.getSymmetry().addLatticeVectors(lattvecs)) 
         appendLoadNote("Note! Symmetry operators added for lattice centering " + latticeType);
       latticeType = null;
     }
@@ -570,11 +570,11 @@ public class CifReader extends AtomSetCollectionReader implements
         || (isLigand = key.equals("_chem_comp_atom_comp_id"))) {
       if (!processAtomSiteLoopBlock(isLigand))
         return;
-      atomSetCollection.setAtomSetName(thisDataSetName);
-      atomSetCollection.setAtomSetAuxiliaryInfo("chemicalName", chemicalName);
-      atomSetCollection.setAtomSetAuxiliaryInfo("structuralFormula",
+      asc.setAtomSetName(thisDataSetName);
+      asc.setAtomSetAuxiliaryInfo("chemicalName", chemicalName);
+      asc.setAtomSetAuxiliaryInfo("structuralFormula",
           thisStructuralFormula);
-      atomSetCollection.setAtomSetAuxiliaryInfo("formula", thisFormula);
+      asc.setAtomSetAuxiliaryInfo("formula", thisFormula);
       return;
     }
     if (key.startsWith("_symmetry_equiv_pos")
@@ -1015,13 +1015,13 @@ public class CifReader extends AtomSetCollectionReader implements
           }
           break;
         case ANISO_LABEL:
-          iAtom = atomSetCollection.getAtomIndexFromName(field);
+          iAtom = asc.getAtomIndexFromName(field);
           if (iAtom < 0)
             continue;
-          atom = atomSetCollection.atoms[iAtom];
+          atom = asc.atoms[iAtom];
           break;
         case ANISO_MMCIF_ID:
-          atom = atomSetCollection.atoms[++iAtom];
+          atom = asc.atoms[++iAtom];
           break;
         case ANISO_U11:
         case ANISO_U22:
@@ -1074,7 +1074,7 @@ public class CifReader extends AtomSetCollectionReader implements
         continue;
       setAtomCoord(atom);
 
-      if (pr != null && !pr.checkAtom(atom, assemblyId, atomCount))
+      if (pr != null && !pr.checkAtom(atom, assemblyId, ac))
         continue;
       if (atom.elementSymbol == null && atom.atomName != null) {
         String sym = atom.atomName;
@@ -1083,8 +1083,8 @@ public class CifReader extends AtomSetCollectionReader implements
           pt++;
         atom.elementSymbol = (pt == 0 || pt > 2 ? "Xx" : sym.substring(0, pt));
       }
-      atomSetCollection.addAtomWithMappedName(atom);
-      atomCount++;
+      asc.addAtomWithMappedName(atom);
+      ac++;
       if (modulated) {
         //        if (subid != null)
         //          mr.addSubsystem(subid, null, atom.atomName);
@@ -1094,7 +1094,7 @@ public class CifReader extends AtomSetCollectionReader implements
     }
     if (isPDB)
       setIsPDB();
-    atomSetCollection.setAtomSetAuxiliaryInfo("isCIF", Boolean.TRUE);
+    asc.setAtomSetAuxiliaryInfo("isCIF", Boolean.TRUE);
     if (isPDBX && skipping)
       skipping = false;
     return true;
@@ -1276,10 +1276,10 @@ public class CifReader extends AtomSetCollectionReader implements
         case NONE:
           break;
         case GEOM_BOND_ATOM_SITE_LABEL_1:
-          atomIndex1 = atomSetCollection.getAtomIndexFromName(name1 = field);
+          atomIndex1 = asc.getAtomIndexFromName(name1 = field);
           break;
         case GEOM_BOND_ATOM_SITE_LABEL_2:
-          atomIndex2 = atomSetCollection.getAtomIndexFromName(name2 = field);
+          atomIndex2 = asc.getAtomIndexFromName(name2 = field);
           break;
         case GEOM_BOND_DISTANCE:
           distance = parseFloatStr(field);
@@ -1339,7 +1339,7 @@ public class CifReader extends AtomSetCollectionReader implements
   private BS bsMolecule;
   private BS bsExclude;
   private int firstAtom;
-  private int atomCount;
+  private int ac;
 
   private Atom[] atoms;
 
@@ -1347,7 +1347,7 @@ public class CifReader extends AtomSetCollectionReader implements
    * (1) If GEOM_BOND records are present, we (a) use them to generate bonds (b)
    * add H atoms to bonds if necessary (c) turn off autoBonding ("hasBonds") (2)
    * If MOLECULAR, then we (a) use {1 1 1} if lattice is not defined (b) use
-   * atomSetCollection.bonds[] to construct a preliminary molecule and connect
+   * asc.bonds[] to construct a preliminary molecule and connect
    * as we go (c) check symmetry for connections to molecule in any one of the
    * 27 3x3 adjacent cells (d) move those atoms and their connected branch set
    * (e) iterate as necessary to get all atoms desired (f) delete unselected
@@ -1357,17 +1357,17 @@ public class CifReader extends AtomSetCollectionReader implements
   private void setBondingAndMolecules() {
     Logger.info("CIF creating molecule "
         + (bondTypes.size() > 0 ? " using GEOM_BOND records" : ""));
-    atoms = atomSetCollection.atoms;
-    firstAtom = atomSetCollection.getLastAtomSetAtomIndex();
-    int nAtoms = atomSetCollection.getLastAtomSetAtomCount();
-    atomCount = firstAtom + nAtoms;
+    atoms = asc.atoms;
+    firstAtom = asc.getLastAtomSetAtomIndex();
+    int nAtoms = asc.getLastAtomSetAtomCount();
+    ac = firstAtom + nAtoms;
 
     // get list of sites based on atom names
 
     bsSets = new BS[nAtoms];
-    symmetry = atomSetCollection.getSymmetry();
-    for (int i = firstAtom; i < atomCount; i++) {
-      int ipt = atomSetCollection.getAtomIndexFromName(atoms[i].atomName)
+    symmetry = asc.getSymmetry();
+    for (int i = firstAtom; i < ac; i++) {
+      int ipt = asc.getAtomIndexFromName(atoms[i].atomName)
           - firstAtom;
       if (bsSets[ipt] == null)
         bsSets[ipt] = new BS();
@@ -1377,8 +1377,8 @@ public class CifReader extends AtomSetCollectionReader implements
     // if molecular, we need atom connection lists and radii
 
     if (isMolecular) {
-      atomRadius = new float[atomCount];
-      for (int i = firstAtom; i < atomCount; i++) {
+      atomRadius = new float[ac];
+      for (int i = firstAtom; i < ac; i++) {
         int elemnoWithIsotope = JmolAdapter.getElementNumber(atoms[i]
             .getElementSymbol());
         atoms[i].elementNumber = (short) elemnoWithIsotope;
@@ -1388,8 +1388,8 @@ public class CifReader extends AtomSetCollectionReader implements
           atomRadius[i] = JmolAdapter.getBondingRadius(elemnoWithIsotope,
               charge);
       }
-      bsConnected = new BS[atomCount];
-      for (int i = firstAtom; i < atomCount; i++)
+      bsConnected = new BS[ac];
+      for (int i = firstAtom; i < ac; i++)
         bsConnected[i] = new BS();
 
       // Set up a working set of atoms in the "molecule".
@@ -1413,28 +1413,28 @@ public class CifReader extends AtomSetCollectionReader implements
       // Set bsAtoms to control which atoms and 
       // bonds are delivered by the iterators.
 
-      if (atomSetCollection.bsAtoms == null)
-        atomSetCollection.bsAtoms = new BS();
-      atomSetCollection.bsAtoms.clearBits(firstAtom, atomCount);
-      atomSetCollection.bsAtoms.or(bsMolecule);
-      atomSetCollection.bsAtoms.andNot(bsExclude);
+      if (asc.bsAtoms == null)
+        asc.bsAtoms = new BS();
+      asc.bsAtoms.clearBits(firstAtom, ac);
+      asc.bsAtoms.or(bsMolecule);
+      asc.bsAtoms.andNot(bsExclude);
 
       // Set atom positions to be Cartesians and clear out unit cell
       // so that the model displays without it.
 
-      for (int i = firstAtom; i < atomCount; i++) {
-        if (atomSetCollection.bsAtoms.get(i))
+      for (int i = firstAtom; i < ac; i++) {
+        if (asc.bsAtoms.get(i))
           symmetry.toCartesian(atoms[i], true);
         else if (Logger.debugging)
           Logger.debug(molecularType + " removing " + i + " "
               + atoms[i].atomName + " " + atoms[i]);
       }
-      atomSetCollection.setAtomSetAuxiliaryInfo("notionalUnitcell", null);
-      if (nMolecular++ == atomSetCollection.currentAtomSetIndex) {
-        atomSetCollection
+      asc.setAtomSetAuxiliaryInfo("notionalUnitcell", null);
+      if (nMolecular++ == asc.currentAtomSetIndex) {
+        asc
             .clearGlobalBoolean(AtomSetCollection.GLOBAL_FRACTCOORD);
-        atomSetCollection.clearGlobalBoolean(AtomSetCollection.GLOBAL_SYMMETRY);
-        atomSetCollection
+        asc.clearGlobalBoolean(AtomSetCollection.GLOBAL_SYMMETRY);
+        asc
             .clearGlobalBoolean(AtomSetCollection.GLOBAL_UNITCELLS);
       }
 
@@ -1443,7 +1443,7 @@ public class CifReader extends AtomSetCollectionReader implements
     // Set return info to enable desired defaults.
 
     if (bondTypes.size() > 0)
-      atomSetCollection.setAtomSetAuxiliaryInfo("hasBonds", Boolean.TRUE);
+      asc.setAtomSetAuxiliaryInfo("hasBonds", Boolean.TRUE);
 
     // Clear temporary fields.
 
@@ -1477,8 +1477,8 @@ public class CifReader extends AtomSetCollectionReader implements
       float distance = ((Float) o[2]).floatValue();
       float dx = ((Float) o[3]).floatValue();
       int order = ((Integer) o[4]).intValue();
-      int iatom1 = atomSetCollection.getAtomIndexFromName((String) o[0]);
-      int iatom2 = atomSetCollection.getAtomIndexFromName((String) o[1]);
+      int iatom1 = asc.getAtomIndexFromName((String) o[0]);
+      int iatom2 = asc.getAtomIndexFromName((String) o[1]);
       BS bs1 = bsSets[iatom1 - firstAtom];
       BS bs2 = bsSets[iatom2 - firstAtom];
       if (bs1 == null || bs2 == null)
@@ -1495,10 +1495,10 @@ public class CifReader extends AtomSetCollectionReader implements
     // do a quick check for H-X bonds if we have GEOM_BOND
 
     if (bondTypes.size() > 0)
-      for (int i = firstAtom; i < atomCount; i++)
+      for (int i = firstAtom; i < ac; i++)
         if (atoms[i].elementNumber == 1) {
           boolean checkAltLoc = (atoms[i].altLoc != '\0');
-          for (int k = firstAtom; k < atomCount; k++)
+          for (int k = firstAtom; k < ac; k++)
             if (k != i
                 && atoms[k].elementNumber != 1
                 && (!checkAltLoc || atoms[k].altLoc == '\0' || atoms[k].altLoc == atoms[i].altLoc)) {
@@ -1514,7 +1514,7 @@ public class CifReader extends AtomSetCollectionReader implements
     // generate the base atom set
 
     if (doInit)
-      for (int i = firstAtom; i < atomCount; i++)
+      for (int i = firstAtom; i < ac; i++)
         if (atoms[i].atomSite + firstAtom == i && !bsMolecule.get(i))
           setBs(atoms, i, bsConnected, bsMolecule);
 
@@ -1531,7 +1531,7 @@ public class CifReader extends AtomSetCollectionReader implements
     P3 cart1 = new P3();
     P3 cart2 = new P3();
     int nFactor = 2; // 1 was not enough. (see data/cif/triclinic_issue.cif)
-    for (int i = firstAtom; i < atomCount; i++)
+    for (int i = firstAtom; i < ac; i++)
       if (!bsMolecule.get(i) && !bsExclude.get(i))
         for (int j = bsMolecule.nextSetBit(0); j >= 0; j = bsMolecule
             .nextSetBit(j + 1))
@@ -1544,7 +1544,7 @@ public class CifReader extends AtomSetCollectionReader implements
               atoms[k].add(ptOffset);
               cart1.setT(atoms[k]);
               symmetry.toCartesian(cart1, true);
-              BS bs = bsSets[atomSetCollection
+              BS bs = bsSets[asc
                   .getAtomIndexFromName(atoms[k].atomName) - firstAtom];
               if (bs != null)
                 for (int ii = bs.nextSetBit(0); ii >= 0; ii = bs
@@ -1573,7 +1573,7 @@ public class CifReader extends AtomSetCollectionReader implements
    * @param order
    */
   private void addNewBond(int i, int j, int order) {
-    atomSetCollection.addNewBondWithOrder(i, j, order);
+    asc.addNewBondWithOrder(i, j, order);
     if (!isMolecular)
       return;
     bsConnected[i].set(j);

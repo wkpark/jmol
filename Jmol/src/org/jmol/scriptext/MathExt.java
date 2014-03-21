@@ -413,10 +413,10 @@ public class MathExt implements JmolMathExtension {
               .getRelationship(smiles1, smiles2).toUpperCase());
         String mf1 = (bs1 == null ? vwr.getSmilesMatcher()
             .getMolecularFormula(smiles1, false) : JmolMolecule
-            .getMolecularFormula(vwr.getModelSet().atoms, bs1, false));
+            .getMolecularFormula(vwr.getModelSet().at, bs1, false));
         String mf2 = (bs2 == null ? vwr.getSmilesMatcher()
             .getMolecularFormula(smiles2, false) : JmolMolecule
-            .getMolecularFormula(vwr.getModelSet().atoms, bs2, false));
+            .getMolecularFormula(vwr.getModelSet().at, bs2, false));
         if (!mf1.equals(mf2))
           return mp.addXStr("NONE");
         if (bs1 != null)
@@ -507,8 +507,8 @@ public class MathExt implements JmolMathExtension {
             int[][] a = AU.newInt2(nAtoms);
             ret.addLast(a);
             for (int j = 0; j < nAtoms; j++, pt++)
-              a[j] = new int[] { ((Atom) ptsA.get(j)).index,
-                  ((Atom) ptsB.get(pt)).index };
+              a[j] = new int[] { ((Atom) ptsA.get(j)).i,
+                  ((Atom) ptsB.get(pt)).i };
           }
           if (!allMaps)
             return (ret.size() > 0 ? mp.addXAII(ret.get(0)) : mp.addXStr(""));
@@ -769,7 +769,7 @@ public class MathExt implements JmolMathExtension {
           bs2 = (x2.tok == T.bitset ? SV.bsSelectVar(x2) : null);
           //$FALL-THROUGH$
         case T.point3f:
-          Atom[] atoms = vwr.ms.atoms;
+          Atom[] atoms = vwr.ms.at;
           if (returnAtom) {
             float dMinMax = Float.NaN;
             int iMinMax = Integer.MAX_VALUE;
@@ -941,7 +941,7 @@ public class MathExt implements JmolMathExtension {
         case T.bitset:
           if (isMF)
             return mp.addXStr(JmolMolecule.getMolecularFormula(
-                vwr.getModelSet().atoms, (BS) x1.value, false));
+                vwr.getModelSet().at, (BS) x1.value, false));
           if (isSequence)
             return mp.addXStr(vwr.getSmilesOpt((BS) x1.value, -1, -1, false,
                 true, isAll, isAll, false));
@@ -951,7 +951,7 @@ public class MathExt implements JmolMathExtension {
           if (asBonds) {
             // this will return a single match
             int[][] map = vwr.getSmilesMatcher().getCorrelationMaps(sFind,
-                vwr.ms.atoms, vwr.getAtomCount(), (BS) x1.value,
+                vwr.ms.at, vwr.getAtomCount(), (BS) x1.value,
                 !isSmiles, true);
             ret = (map.length > 0 ? vwr.getDihedralMap(map[0]) : new int[0]);
           } else {
@@ -2025,7 +2025,7 @@ public class MathExt implements JmolMathExtension {
         BS bsSelected = (args.length == 2 && args[1].tok == T.bitset ? SV
             .bsSelectVar(args[1]) : null);
         bs = vwr.getSmilesMatcher().getSubstructureSet(pattern,
-            vwr.getModelSet().atoms, vwr.getAtomCount(), bsSelected,
+            vwr.getModelSet().at, vwr.getAtomCount(), bsSelected,
             tok != T.smiles, false);
       } catch (Exception ex) {
         e.evalError(ex.getMessage(), null);

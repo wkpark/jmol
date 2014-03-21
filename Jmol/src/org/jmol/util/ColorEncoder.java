@@ -53,8 +53,8 @@ import javajs.util.P3;
 
  public class ColorEncoder {
 
-   public ColorEncoder(ColorEncoder propertyColorEncoder) {
-    if (propertyColorEncoder == null) {
+   public ColorEncoder(ColorEncoder ce) {
+    if (ce == null) {
       schemes = new Hashtable<String, int[]>();
       argbsCpk = PAL.argbsCpk;
       argbsRoygb = JC.argbsRoygbScale;
@@ -62,10 +62,10 @@ import javajs.util.P3;
       argbsShapely = JC.argbsShapely;
       argbsAmino = JC.argbsAmino;
       ihalf = JC.argbsRoygbScale.length / 3;
-      this.propertyColorEncoder = this;
+      this.ce = this;
     } else {
-      this.propertyColorEncoder = propertyColorEncoder;
-      schemes = propertyColorEncoder.schemes;
+      this.ce = ce;
+      schemes = ce.schemes;
     }
   }
     
@@ -153,7 +153,7 @@ import javajs.util.P3;
   String thisName = "scheme";
   boolean isColorIndex;
   
-  ColorEncoder propertyColorEncoder;
+  ColorEncoder ce;
 
   /**
    * 
@@ -337,7 +337,7 @@ import javajs.util.P3;
   public void setUserScale(int[] scale) {
     // getColorScheme
     // ColorManager.setUserScale
-    propertyColorEncoder.userScale = scale;  
+    ce.userScale = scale;  
     makeColorScheme("user", scale, false);
   }
   
@@ -352,14 +352,14 @@ import javajs.util.P3;
     case CUSTOM:
       return thisScale;      
     case ROYGB:
-      return propertyColorEncoder.argbsRoygb;
+      return ce.argbsRoygb;
     case BGYOR:
-      return AU.arrayCopyRangeRevI(propertyColorEncoder.argbsRoygb, 0, -1);
+      return AU.arrayCopyRangeRevI(ce.argbsRoygb, 0, -1);
     case LOW:
-      return AU.arrayCopyRangeI(propertyColorEncoder.argbsRoygb, 0, propertyColorEncoder.ihalf);
+      return AU.arrayCopyRangeI(ce.argbsRoygb, 0, ce.ihalf);
     case HIGH:
-      int[] a = AU.arrayCopyRangeI(propertyColorEncoder.argbsRoygb, propertyColorEncoder.argbsRoygb.length - 2 * propertyColorEncoder.ihalf, -1);
-      b = new int[propertyColorEncoder.ihalf];
+      int[] a = AU.arrayCopyRangeI(ce.argbsRoygb, ce.argbsRoygb.length - 2 * ce.ihalf, -1);
+      b = new int[ce.ihalf];
       for (int i = b.length, j = a.length; --i >= 0 && --j >= 0;)
         b[i] = a[j--];
       return b;
@@ -370,21 +370,21 @@ import javajs.util.P3;
     case WB:
       return getPaletteWB();
     case RWB:
-      return propertyColorEncoder.argbsRwb;
+      return ce.argbsRwb;
     case BWR:
-      return AU.arrayCopyRangeRevI(propertyColorEncoder.argbsRwb, 0, -1);
+      return AU.arrayCopyRangeRevI(ce.argbsRwb, 0, -1);
     case JMOL:
-      return propertyColorEncoder.argbsCpk;
+      return ce.argbsCpk;
     case RASMOL:
       return getRasmolScale();
     case SHAPELY:
-      return propertyColorEncoder.argbsShapely;
+      return ce.argbsShapely;
     case AMINO:
-      return propertyColorEncoder.argbsAmino;
+      return ce.argbsAmino;
     case USER:
-      return propertyColorEncoder.userScale;
+      return ce.userScale;
     case RESU:
-      return AU.arrayCopyRangeRevI(propertyColorEncoder.userScale, 0, -1);
+      return AU.arrayCopyRangeRevI(ce.userScale, 0, -1);
     default:
       return null;
     }
@@ -415,24 +415,24 @@ import javajs.util.P3;
       return getPaletteBW().length;
     case ROYGB:
     case BGYOR:
-      return propertyColorEncoder.argbsRoygb.length;
+      return ce.argbsRoygb.length;
     case LOW:
     case HIGH:
-      return propertyColorEncoder.ihalf;
+      return ce.ihalf;
     case RWB:
     case BWR:
-      return propertyColorEncoder.argbsRwb.length;
+      return ce.argbsRwb.length;
     case USER:
     case RESU:
-      return propertyColorEncoder.userScale.length;
+      return ce.userScale.length;
     case JMOL:
       return argbsCpk.length;
     case RASMOL:
       return getRasmolScale().length;
     case SHAPELY:
-      return propertyColorEncoder.argbsShapely.length;
+      return ce.argbsShapely.length;
     case AMINO:
-      return propertyColorEncoder.argbsAmino.length;
+      return ce.argbsAmino.length;
     case FRIENDLY:
       return getPaletteAC().length;
     default:
@@ -456,29 +456,29 @@ import javajs.util.P3;
     case WB:
       return getPaletteWB()[quantize(val, lo, hi, n)];
     case ROYGB:
-      return propertyColorEncoder.argbsRoygb[quantize(val, lo, hi, n)];
+      return ce.argbsRoygb[quantize(val, lo, hi, n)];
     case BGYOR:
-      return propertyColorEncoder.argbsRoygb[quantize(-val, -hi, -lo, n)];
+      return ce.argbsRoygb[quantize(-val, -hi, -lo, n)];
     case LOW:
-      return propertyColorEncoder.argbsRoygb[quantize(val, lo, hi, n)];
+      return ce.argbsRoygb[quantize(val, lo, hi, n)];
     case HIGH:
-      return propertyColorEncoder.argbsRoygb[propertyColorEncoder.ihalf + quantize(val, lo, hi, n) * 2];
+      return ce.argbsRoygb[ce.ihalf + quantize(val, lo, hi, n) * 2];
     case RWB:
-      return propertyColorEncoder.argbsRwb[quantize(val, lo, hi, n)];
+      return ce.argbsRwb[quantize(val, lo, hi, n)];
     case BWR:
-      return propertyColorEncoder.argbsRwb[quantize(-val, -hi, -lo, n)];
+      return ce.argbsRwb[quantize(-val, -hi, -lo, n)];
     case USER:
-      return (propertyColorEncoder.userScale.length == 0 ? GRAY : propertyColorEncoder.userScale[quantize(val, lo, hi, n)]);
+      return (ce.userScale.length == 0 ? GRAY : ce.userScale[quantize(val, lo, hi, n)]);
     case RESU:
-      return (propertyColorEncoder.userScale.length == 0 ? GRAY : propertyColorEncoder.userScale[quantize(-val, -hi, -lo, n)]);
+      return (ce.userScale.length == 0 ? GRAY : ce.userScale[quantize(-val, -hi, -lo, n)]);
     case JMOL:
-      return propertyColorEncoder.argbsCpk[colorIndex(val, n)];
+      return ce.argbsCpk[colorIndex(val, n)];
     case RASMOL:
       return getRasmolScale()[colorIndex(val, n)];
     case SHAPELY:
-      return propertyColorEncoder.argbsShapely[colorIndex(val, n)];
+      return ce.argbsShapely[colorIndex(val, n)];
     case AMINO:
-      return propertyColorEncoder.argbsAmino[colorIndex(val, n)];
+      return ce.argbsAmino[colorIndex(val, n)];
     case FRIENDLY:
       return getPaletteAC()[colorIndexRepeat(val, n)];
     default:
@@ -602,21 +602,21 @@ import javajs.util.P3;
   }
 
   private int[] getPaletteAC() {
-    return (propertyColorEncoder.paletteFriendly == null ? propertyColorEncoder.paletteFriendly = new int[] { 0x808080, 0x104BA9, 0xAA00A2,
+    return (ce.paletteFriendly == null ? ce.paletteFriendly = new int[] { 0x808080, 0x104BA9, 0xAA00A2,
         0xC9F600, 0xFFA200, 0x284A7E, 0x7F207B, 0x9FB82E, 0xBF8B30, 0x052D6E,
         0x6E0069, 0x83A000, 0xA66A00, 0x447BD4, 0xD435CD, 0xD8FA3F, 0xFFBA40,
-        0x6A93D4, 0xD460CF, 0xE1FA71, 0xFFCC73 } : propertyColorEncoder.paletteFriendly);
+        0x6A93D4, 0xD460CF, 0xE1FA71, 0xFFCC73 } : ce.paletteFriendly);
   }
 
   private int[] getPaletteWB() {
-    if (propertyColorEncoder.paletteWB != null) 
-      return propertyColorEncoder.paletteWB;
+    if (ce.paletteWB != null) 
+      return ce.paletteWB;
     int[] b = new int[JC.argbsRoygbScale.length];
     for (int i = 0; i < b.length; i++) {
       float xff = (1f / b.length * (b.length - i));        
       b[i] = CU.colorTriadToFFRGB(xff, xff, xff);
     }
-    return propertyColorEncoder.paletteWB = b;
+    return ce.paletteWB = b;
   }
 
   public static int[] getPaletteAtoB(int color1, int color2, int n) {
@@ -636,14 +636,14 @@ import javajs.util.P3;
     return b;
   }
   private int[] getPaletteBW() {
-    if (propertyColorEncoder.paletteBW != null) 
-      return propertyColorEncoder.paletteBW;
+    if (ce.paletteBW != null) 
+      return ce.paletteBW;
     int[] b = new int[JC.argbsRoygbScale.length];
     for (int i = 0; i < b.length; i++) {
       float xff = (1f / b.length * i); 
       b[i] = CU.colorTriadToFFRGB(xff, xff, xff);
     }
-    return propertyColorEncoder.paletteBW = b;
+    return ce.paletteBW = b;
   }
 
   /**

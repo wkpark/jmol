@@ -83,7 +83,7 @@ public class NMRCalculation implements JmolNMRInterface {
   public float getQuadrupolarConstant(Tensor efg) {
     if (efg == null)
       return 0;
-    Atom a = vwr.ms.atoms[efg.atomIndex1];
+    Atom a = vwr.ms.at[efg.atomIndex1];
     return (float) (getIsotopeData(a, QUADRUPOLE_MOMENT) * efg.eigenValues[2] * Q_FACTOR);
   }
 
@@ -131,14 +131,14 @@ public class NMRCalculation implements JmolNMRInterface {
     if (bsA == null)
       return null;
     BS bs = new BS();
-    Atom[] atoms = vwr.ms.atoms;
-    Model[] models = vwr.ms.models;
+    Atom[] atoms = vwr.ms.at;
+    Model[] models = vwr.ms.am;
     
     for (int i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1)) {
       if (!bsA.get(i))
         continue;
       Atom a = atoms[i];
-      bs.set(models[a.modelIndex].firstAtomIndex - 1 + a.atomSite);
+      bs.set(models[a.mi].firstAtomIndex - 1 + a.atomSite);
     }
     return bs;
   }
@@ -150,7 +150,7 @@ public class NMRCalculation implements JmolNMRInterface {
   @Override
   public BS getUniqueTensorSet(BS bsAtoms) {
     BS bs = new BS();
-    Atom[] atoms = vwr.ms.atoms;
+    Atom[] atoms = vwr.ms.at;
     for (int i = vwr.getModelCount(); --i >= 0;) {
       BS bsModelAtoms = vwr.getModelUndeletedAtomsBitSet(i);
       bsModelAtoms.and(bsAtoms);
@@ -160,7 +160,7 @@ public class NMRCalculation implements JmolNMRInterface {
       // exclude any symmetry-
       for (int j = bsModelAtoms.nextSetBit(0); j >= 0; j = bsModelAtoms
           .nextSetBit(j + 1))
-        if (atoms[j].atomSite != atoms[j].index + 1)
+        if (atoms[j].atomSite != atoms[j].i + 1)
           bsModelAtoms.clear(j);
       bs.or(bsModelAtoms);
       // march through all the atoms in the model...
@@ -204,18 +204,18 @@ public class NMRCalculation implements JmolNMRInterface {
   public float getIsoOrAnisoHz(boolean isIso, Atom a1, Atom a2, String type, Tensor isc) {
     if (isc == null) {
       type = getISCtype(a1, type);
-      if (type == null || a1.modelIndex != a2.modelIndex)
+      if (type == null || a1.mi != a2.mi)
         return 0;
       BS bs = new BS();
-      bs.set(a1.index);
-      bs.set(a2.index);
+      bs.set(a1.i);
+      bs.set(a2.i);
       List<Tensor> list = getInteractionTensorList(type, bs);
       if (list.size() == 0)
         return Float.NaN;
       isc = list.get(0);
     } else {
-      a1 = vwr.ms.atoms[isc.atomIndex1];
-      a2 = vwr.ms.atoms[isc.atomIndex2];
+      a1 = vwr.ms.at[isc.atomIndex1];
+      a2 = vwr.ms.at[isc.atomIndex2];
     }
     return (float) (getIsotopeData(a1, MAGNETOGYRIC_RATIO)
         * getIsotopeData(a2, MAGNETOGYRIC_RATIO) * (isIso ? isc.isotropy() : isc.anisotropy()) * J_FACTOR);
@@ -223,7 +223,7 @@ public class NMRCalculation implements JmolNMRInterface {
 
   @SuppressWarnings("unchecked")
   private String getISCtype(Atom a1, String type) {
-    List<Tensor> tensors = (List<Tensor>) vwr.getModelAuxiliaryInfoValue(a1.modelIndex, "interactionTensors");
+    List<Tensor> tensors = (List<Tensor>) vwr.getModelAuxiliaryInfoValue(a1.mi, "interactionTensors");
     if (tensors == null)
       return null;
     type = (type == null ? "" : type.toLowerCase());
@@ -373,7 +373,7 @@ public class NMRCalculation implements JmolNMRInterface {
 
   @Override
   public float getMagneticShielding(Atom atom) {
-    Tensor t = vwr.ms.getAtomTensor(atom.index, "ms");
+    Tensor t = vwr.ms.getAtomTensor(atom.i, "ms");
     return (t == null ? Float.NaN : t.isotropy());
   }
 
@@ -408,12 +408,12 @@ public class NMRCalculation implements JmolNMRInterface {
     List<Object> list1;
     if (";dc.".equals(infoType)) {
       // tensorType is irrelevant for dipolar coupling constant
-      Atom[] atoms = vwr.ms.atoms;
+      Atom[] atoms = vwr.ms.at;
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
         for (int j = bs.nextSetBit(i + 1); j >= 0; j = bs.nextSetBit(j + 1)) {
           list1 = new List<Object>();
-          list1.addLast(Integer.valueOf(atoms[i].index));
-          list1.addLast(Integer.valueOf(atoms[j].index));
+          list1.addLast(Integer.valueOf(atoms[i].i));
+          list1.addLast(Integer.valueOf(atoms[j].i));
           list1
               .addLast(Float.valueOf(getDipolarConstantHz(atoms[i], atoms[j])));
           data.addLast(list1);
@@ -467,7 +467,7 @@ public class NMRCalculation implements JmolNMRInterface {
     if (n1 < 2 && n2 < 2)
       return null;
     Map<String, Integer> htMin = new Hashtable<String, Integer>();
-    Atom[] atoms = vwr.ms.atoms;
+    Atom[] atoms = vwr.ms.at;
     for (int i = bsPoints1.nextSetBit(0); i >= 0; i = bsPoints1
         .nextSetBit(i + 1)) {
       Atom a1 = atoms[i];

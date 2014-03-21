@@ -59,10 +59,10 @@ public class JSONReader extends AtomSetCollectionReader {
 
   @Override
   public void initializeReader() throws Exception {
-    atomSetCollection.setCollectionName("JSON");
-    atomSetCollection.newAtomSet();
+    asc.setCollectionName("JSON");
+    asc.newAtomSet();
     String s = "";
-    while (readLine() != null)
+    while (rd() != null)
       s += line;
     s = PT.replaceAllCharacters(s, "\" ", "").replace(',', ':');
     if (s.contains("_is2D:true"))
@@ -109,7 +109,7 @@ public class JSONReader extends AtomSetCollectionReader {
 
     for (int i = 0; i < atoms.length; ++i) {
       String[] lxyz = atoms[i].split(":");
-      Atom atom = atomSetCollection.addNewAtom();
+      Atom atom = asc.addNewAtom();
       float x = 0, y = 0, z = 0;
       String l = "C";
       for (int j = 0; j < lxyz.length; j += 2)
@@ -178,7 +178,7 @@ public class JSONReader extends AtomSetCollectionReader {
             }
             break;
           }
-      atomSetCollection.addBond(new Bond(b, e, order));
+      asc.addBond(new Bond(b, e, order));
     }
   }
 }

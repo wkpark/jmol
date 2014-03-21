@@ -128,7 +128,7 @@ class CalculationsUFF extends Calculations {
     // set up the special atom arrays
     Calculation oopCalc = new UFFOOPCalc().set(this);
     int elemNo;
-    for (int i = 0; i < atomCount; i++) {
+    for (int i = 0; i < ac; i++) {
       MinAtom a = minAtoms[i];
       if (a.nBonds == 3 && isInvertible(elemNo = a.atom.getElementNumber()))
         oopCalc.setData(calc, i, elemNo, 0);

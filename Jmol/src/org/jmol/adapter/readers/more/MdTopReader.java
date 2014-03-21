@@ -56,7 +56,7 @@ import org.jmol.util.Logger;
 public class MdTopReader extends ForceFieldReader {
 
   private int nAtoms = 0;
-  private int atomCount = 0;
+  private int ac = 0;
 
   @Override
   protected void initializeReader() throws Exception {
@@ -88,9 +88,9 @@ public class MdTopReader extends ForceFieldReader {
   @Override
   protected void finalizeReader() throws Exception {
     finalizeReaderASCR();
-    Atom[] atoms = atomSetCollection.atoms;
+    Atom[] atoms = asc.atoms;
     Atom atom;
-    for (int i = 0; i < atomCount; i++) {
+    for (int i = 0; i < ac; i++) {
       atom = atoms[i];
       atom.isHetero = JmolAdapter.isHetero(atom.group3);
       String atomType = atomTypes[i];
@@ -100,15 +100,15 @@ public class MdTopReader extends ForceFieldReader {
     }
     Atom[] atoms2 = null;
     if (filter == null) {
-      nAtoms = atomCount;
+      nAtoms = ac;
     } else {
       atoms2 = new Atom[atoms.length];
       nAtoms = 0;
-      for (int i = 0; i < atomCount; i++)
+      for (int i = 0; i < ac; i++)
         if (filterAtom(atoms[i], i))
           atoms2[nAtoms++] = atoms[i];
     }
-    for (int i = 0, j = 0, k = 0; i < atomCount; i++) {
+    for (int i = 0, j = 0, k = 0; i < ac; i++) {
       if (filter == null || bsFilter.get(i)) {
         if (k % 100 == 0)
           j++;
@@ -116,9 +116,9 @@ public class MdTopReader extends ForceFieldReader {
       }
     }
     if (atoms2 != null) {
-      atomSetCollection.discardPreviousAtoms();
+      asc.discardPreviousAtoms();
       for (int i = 0; i < nAtoms; i++)
-        atomSetCollection.addAtom(atoms2[i]);
+        asc.addAtom(atoms2[i]);
     }
     Logger.info("Total number of atoms used=" + nAtoms);
     setIsPDB();
@@ -134,7 +134,7 @@ public class MdTopReader extends ForceFieldReader {
     int len = 0;
     while (true) {
       if (i >= len) {
-        if (readLine() == null)
+        if (rd() == null)
           break;
         i = 0;
         len = line.length();
@@ -197,16 +197,16 @@ public class MdTopReader extends ForceFieldReader {
      */
     private void getPointers() throws Exception {
       String[] tokens = getDataBlock();
-      atomCount = parseIntStr(tokens[0]);
+      ac = parseIntStr(tokens[0]);
       boolean isPeriodic = (tokens[27].charAt(0) != '0');
       if (isPeriodic) {
         Logger.info("Periodic type: " + tokens[27]);
         htParams.put("isPeriodic", Boolean.TRUE);
       }
-      Logger.info("Total number of atoms read=" + atomCount);
-      htParams.put("templateAtomCount", Integer.valueOf(atomCount));
-      for (int i = 0; i < atomCount; i++) 
-        atomSetCollection.addAtom(new Atom());
+      Logger.info("Total number of atoms read=" + ac);
+      htParams.put("templateAtomCount", Integer.valueOf(ac));
+      for (int i = 0; i < ac; i++) 
+        asc.addAtom(new Atom());
     }
 
   private String[] atomTypes;
@@ -224,19 +224,19 @@ public class MdTopReader extends ForceFieldReader {
    */
   private void getCharges() throws Exception {
     String[] data = getDataBlock();
-    if (data.length != atomCount)
+    if (data.length != ac)
       return;
-    Atom[] atoms = atomSetCollection.atoms;
-    for (int i = atomCount; --i >= 0;)
+    Atom[] atoms = asc.atoms;
+    for (int i = ac; --i >= 0;)
       atoms[i].partialCharge = parseFloatStr(data[i]);
   }
 
   private void getResiduePointers() throws Exception {
     String[] resPtrs = getDataBlock();
     Logger.info("Total number of residues=" + resPtrs.length);
-    int pt1 = atomCount;
+    int pt1 = ac;
     int pt2;
-    Atom[] atoms = atomSetCollection.atoms;
+    Atom[] atoms = asc.atoms;
     for (int i = resPtrs.length; --i >= 0;) {
       int ptr = pt2 = parseIntStr(resPtrs[i]) - 1;
       while (ptr < pt1) {
@@ -265,15 +265,15 @@ public class MdTopReader extends ForceFieldReader {
  
   private void getAtomNames() throws Exception {
     String[] names = getDataBlock();
-    Atom[] atoms = atomSetCollection.atoms;
-    for (int i = 0; i < atomCount; i++)
+    Atom[] atoms = asc.atoms;
+    for (int i = 0; i < ac; i++)
       atoms[i].atomName = names[i];
   }
 
   private void getMasses() throws Exception {
-    /*    float[] data = new float[atomCount];
+    /*    float[] data = new float[ac];
         readLine();
-        getTokensFloat(getDataBlock(), data, atomCount);
+        getTokensFloat(getDataBlock(), data, ac);
     */
   }
 

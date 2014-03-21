@@ -61,7 +61,7 @@ public class XcrysdenReader extends AtomSetCollectionReader {
 
   private void setSymmetry() throws Exception {
     applySymmetryAndSetTrajectory();
-    atomSetCollection.newAtomSet();
+    asc.newAtomSet();
     setSpaceGroupName("P1");
     setFractionalCoordinates(false);
   }
@@ -78,17 +78,17 @@ public class XcrysdenReader extends AtomSetCollectionReader {
       6  -4.773254987  4.300512942  6.348687286
   */
   private void readCoordinates() throws Exception {
-    String[] atomStr = getTokensStr(readLine());
+    String[] atomStr = getTokensStr(rd());
     nAtoms = Integer.parseInt(atomStr[0]);
 
     setFractionalCoordinates(false);
     int counter = 0;
-    while (counter < nAtoms && readLine() != null) {
+    while (counter < nAtoms && rd() != null) {
       String[] tokens = getTokens();
       addAtomXYZSymName(tokens, 1, null, getElementSymbol(Integer.parseInt(tokens[0])));
       counter++;
     }
-    atomSetCollection.setAtomSetName(animation ? "Structure " + (animationStep++) : "Initial coordinates");
+    asc.setAtomSetName(animation ? "Structure " + (animationStep++) : "Initial coordinates");
   }
 
 }

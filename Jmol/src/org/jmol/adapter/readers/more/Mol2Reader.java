@@ -52,7 +52,7 @@ import org.jmol.api.JmolAdapter;
 public class Mol2Reader extends ForceFieldReader {
 
   private int nAtoms = 0;
-  private int atomCount = 0;
+  private int ac = 0;
   private boolean isPDB = false;
 
   @Override
@@ -97,25 +97,25 @@ public class Mol2Reader extends ForceFieldReader {
      */
 
     isPDB = false;
-    String thisDataSetName = readLine().trim();
+    String thisDataSetName = rd().trim();
     if (!doGetModel(++modelNumber, thisDataSetName)) {
       return false;
     }
 
     lastSequenceNumber = Integer.MAX_VALUE;
     chainID = 64; // 'A' - 1;
-    readLine();
+    rd();
     line += " 0 0 0 0 0 0";
-    atomCount = parseIntStr(line);
+    ac = parseIntStr(line);
     int bondCount = parseInt();
     int resCount = parseInt();
-    readLine();//mol_type
-    readLine();//charge_type
+    rd();//mol_type
+    rd();//charge_type
     //boolean iHaveCharges = (line.indexOf("NO_CHARGES") != 0);
     //optional SYBYL status
-    if (readLine() != null && (line.length() == 0 || line.charAt(0) != '@')) {
+    if (rd() != null && (line.length() == 0 || line.charAt(0) != '@')) {
       //optional comment -- but present if comment is present
-      if (readLine() != null && line.length() != 0 && line.charAt(0) != '@') {
+      if (rd() != null && line.length() != 0 && line.charAt(0) != '@') {
         /* The MOLECULE's comment line may contain an inline Jmol script.
             (But don't expect it to be applied just to this molecule/model/frame.)
             Note: '#' is not needed here, but it is for general comments (out of the MOLECULE data structure), 
@@ -136,8 +136,8 @@ public class Mol2Reader extends ForceFieldReader {
     newAtomSet(thisDataSetName);
     while (line != null && !line.equals("@<TRIPOS>MOLECULE")) {
       if (line.equals("@<TRIPOS>ATOM")) {
-        readAtoms(atomCount);
-        atomSetCollection.setAtomSetName(thisDataSetName);
+        readAtoms(ac);
+        asc.setAtomSetName(thisDataSetName);
       } else if (line.equals("@<TRIPOS>BOND")) {
         readBonds(bondCount);
       } else if (line.equals("@<TRIPOS>SUBSTRUCTURE")) {
@@ -145,9 +145,9 @@ public class Mol2Reader extends ForceFieldReader {
       } else if (line.equals("@<TRIPOS>CRYSIN")) {
         readCrystalInfo();
       }
-      readLine();
+      rd();
     }
-    nAtoms += atomCount;
+    nAtoms += ac;
     if (isPDB)
       setIsPDB();
     applySymmetryAndSetTrajectory();
@@ -157,16 +157,16 @@ public class Mol2Reader extends ForceFieldReader {
   private int lastSequenceNumber = Integer.MAX_VALUE;
   private int chainID = 64; // 'A' - 1
 
-  private void readAtoms(int atomCount) throws Exception {
+  private void readAtoms(int ac) throws Exception {
     //     1 Cs       0.0000   4.1230   0.0000   Cs        1 RES1   0.0000
     //  1 C1          7.0053   11.3096   -1.5429 C.3       1 <0>        -0.1912
     // free format, but no blank lines
-    if (atomCount == 0)
+    if (ac == 0)
       return;
-    int i0 = atomSetCollection.atomCount;
-    for (int i = 0; i < atomCount; ++i) {
-      Atom atom = atomSetCollection.addNewAtom();
-      String[] tokens = getTokensStr(readLine());
+    int i0 = asc.ac;
+    for (int i = 0; i < ac; ++i) {
+      Atom atom = asc.addNewAtom();
+      String[] tokens = getTokensStr(rd());
       String atomType = tokens[5];
       atom.atomName = tokens[1] + '\0' + atomType;
       int pt = atomType.indexOf(".");
@@ -197,7 +197,7 @@ public class Mol2Reader extends ForceFieldReader {
 
     // trying to guess if this is a PDB-type file
 
-    Atom[] atoms = atomSetCollection.atoms;
+    Atom[] atoms = asc.atoms;
 
     // 1. Does the very first atom have a group name?
 
@@ -209,8 +209,8 @@ public class Mol2Reader extends ForceFieldReader {
 
     // 2. If so, is there more than one kind of group?
 
-    for (int i = atomSetCollection.atomCount; --i >= i0;)
-      if (!g3.equals(atoms[atomSetCollection.atomCount - 1].group3)) {
+    for (int i = asc.ac; --i >= i0;)
+      if (!g3.equals(atoms[asc.ac - 1].group3)) {
         isPDB = true;
         break;
       }
@@ -219,7 +219,7 @@ public class Mol2Reader extends ForceFieldReader {
 
     if (isPDB) {
       isPDB = false;
-      for (int i = atomSetCollection.atomCount; --i >= i0;) {
+      for (int i = asc.ac; --i >= i0;) {
         Atom atom = atoms[i];
         if (atom.group3.length() <= 3
             && JmolAdapter.lookupGroupID(atom.group3) >= 0) {
@@ -229,7 +229,7 @@ public class Mol2Reader extends ForceFieldReader {
       }
     }
     
-    for (int i = atomSetCollection.atomCount; --i >= i0;)
+    for (int i = asc.ac; --i >= i0;)
       if (isPDB)
         atoms[i].isHetero = JmolAdapter.isHetero(atoms[i].group3);
       else
@@ -240,14 +240,14 @@ public class Mol2Reader extends ForceFieldReader {
     //     6     1    42    1
     // free format, but no blank lines
     for (int i = 0; i < bondCount; ++i) {
-      String[] tokens = getTokensStr(readLine());
+      String[] tokens = getTokensStr(rd());
       int atomIndex1 = parseIntStr(tokens[1]);
       int atomIndex2 = parseIntStr(tokens[2]);
       int order = parseIntStr(tokens[3]);
       if (order == Integer.MIN_VALUE)
         order = (tokens[3].equals("ar") ? JmolAdapter.ORDER_AROMATIC
             : tokens[3].equals("am") ? 1 : JmolAdapter.ORDER_UNSPECIFIED);
-      atomSetCollection.addBond(new Bond(nAtoms + atomIndex1 - 1, nAtoms
+      asc.addBond(new Bond(nAtoms + atomIndex1 - 1, nAtoms
           + atomIndex2 - 1, order));
     }
   }
@@ -255,14 +255,14 @@ public class Mol2Reader extends ForceFieldReader {
   private void readResInfo(int resCount) throws Exception {
     // free format, but no blank lines
     for (int i = 0; i < resCount; ++i) {
-      readLine();
+      rd();
       //to be determined -- not implemented
     }
   }
 
   private void readCrystalInfo() throws Exception {
     //    4.1230    4.1230    4.1230   90.0000   90.0000   90.0000   221     1
-    readLine();
+    rd();
     String[] tokens = getTokens();
     if (tokens.length < 6)
       return;
@@ -279,8 +279,8 @@ public class Mol2Reader extends ForceFieldReader {
       return;
     for (int i = 0; i < 6; i++)
       setUnitCellItem(i, parseFloatStr(tokens[i]));
-    Atom[] atoms = atomSetCollection.atoms;
-    for (int i = 0; i < atomCount; ++i)
+    Atom[] atoms = asc.atoms;
+    for (int i = 0; i < ac; ++i)
       setAtomCoord(atoms[nAtoms + i]);
   }
 }

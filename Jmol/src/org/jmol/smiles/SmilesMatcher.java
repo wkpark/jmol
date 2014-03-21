@@ -133,15 +133,15 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   }
 
   @Override
-  public String getSmiles(Node[] atoms, int atomCount, BS bsSelected,
+  public String getSmiles(Node[] atoms, int ac, BS bsSelected,
                           boolean asBioSmiles, boolean bioAllowUnmatchedRings,
                           boolean bioAddCrossLinks, String bioComment,
                           boolean explicitH) throws Exception {
     InvalidSmilesException.clear();
     if (asBioSmiles)
-      return (new SmilesGenerator()).getBioSmiles((BNode[]) atoms, atomCount, bsSelected,
+      return (new SmilesGenerator()).getBioSmiles((BNode[]) atoms, ac, bsSelected,
           bioAllowUnmatchedRings, bioAddCrossLinks, bioComment);
-    return (new SmilesGenerator()).getSmiles(atoms, atomCount, bsSelected,
+    return (new SmilesGenerator()).getSmiles(atoms, ac, bsSelected,
         explicitH);
   }
 
@@ -243,7 +243,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    * @param pattern
    *        SMILES or SMARTS pattern.
    * @param atoms
-   * @param atomCount
+   * @param ac
    * @param bsSelected
    * @param isSmarts
    * @param firstMatchOnly
@@ -251,10 +251,10 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    */
 
   @Override
-  public BS getSubstructureSet(String pattern, Node[] atoms, int atomCount,
+  public BS getSubstructureSet(String pattern, Node[] atoms, int ac,
                                BS bsSelected, boolean isSmarts,
                                boolean firstMatchOnly) throws Exception {
-    return (BS) match(pattern, atoms, atomCount, bsSelected, null, isSmarts,
+    return (BS) match(pattern, atoms, ac, bsSelected, null, isSmarts,
         false, firstMatchOnly, MODE_BITSET);
   }
 
@@ -264,7 +264,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    */
   @Override
   public void getSubstructureSets(String[] smarts, Node[] atoms,
-                                  int atomCount, int flags, BS bsSelected,
+                                  int ac, int flags, BS bsSelected,
                                   List<BS> ret, List<BS>[] vRings)
       throws Exception {
     InvalidSmilesException.clear();
@@ -274,7 +274,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     search.firstMatchOnly = false;
     search.matchAllAtoms = false;
     search.jmolAtoms = atoms;
-    search.jmolAtomCount = Math.abs(atomCount);
+    search.jmolAtomCount = Math.abs(ac);
     search.setSelected(bsSelected);
     search.getRingData(true, flags, vRings);
     search.asVector = false;
@@ -296,7 +296,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
       //System.out.println(i + " " + bs);
       ret.addLast(bs);
       bsDone.or(bs);
-      if (bsDone.cardinality() == atomCount)
+      if (bsDone.cardinality() == ac)
         return;
       //if (ret[i] != null && ret[i].nextSetBit(0) >= 0)
       //System.out.println(smarts[i] + "  "+ ret[i]);
@@ -309,7 +309,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    * @param pattern
    *        SMILES or SMARTS pattern.
    * @param atoms
-   * @param atomCount
+   * @param ac
    * @param bsSelected
    * @param bsAromatic
    * @param isSmarts
@@ -319,10 +319,10 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    */
   @Override
   public BS[] getSubstructureSetArray(String pattern, Node[] atoms,
-                                      int atomCount, BS bsSelected,
+                                      int ac, BS bsSelected,
                                       BS bsAromatic, boolean isSmarts,
                                       boolean firstMatchOnly) throws Exception {
-    return (BS[]) match(pattern, atoms, atomCount, bsSelected, bsAromatic,
+    return (BS[]) match(pattern, atoms, ac, bsSelected, bsAromatic,
         isSmarts, false, firstMatchOnly, MODE_ARRAY);
   }
 
@@ -333,7 +333,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    * @param pattern
    *        SMILES or SMARTS pattern.
    * @param atoms
-   * @param atomCount
+   * @param ac
    * @param bsSelected
    * @param isSmarts
    * @param firstMatchOnly
@@ -342,10 +342,10 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    */
   @Override
   public int[][] getCorrelationMaps(String pattern, Node[] atoms,
-                                    int atomCount, BS bsSelected,
+                                    int ac, BS bsSelected,
                                     boolean isSmarts, boolean firstMatchOnly)
       throws Exception {
-    return (int[][]) match(pattern, atoms, atomCount, bsSelected, null,
+    return (int[][]) match(pattern, atoms, ac, bsSelected, null,
         isSmarts, false, firstMatchOnly, MODE_MAP);
   }
 
@@ -364,7 +364,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   }
 
   @SuppressWarnings({ "unchecked" })
-  private Object match(String pattern, Node[] atoms, int atomCount,
+  private Object match(String pattern, Node[] atoms, int ac,
                        BS bsSelected, BS bsAromatic, boolean isSmarts,
                        boolean matchAllAtoms, boolean firstMatchOnly, int mode)
       throws Exception {
@@ -372,8 +372,8 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     try {
       SmilesSearch search = SmilesParser.getMolecule(pattern, isSmarts);
       search.jmolAtoms = atoms;
-      search.jmolAtomCount = Math.abs(atomCount);
-      if (atomCount < 0)
+      search.jmolAtomCount = Math.abs(ac);
+      if (ac < 0)
         search.isSmilesFind = true;
       search.setSelected(bsSelected);
       search.getSelections();

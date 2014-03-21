@@ -86,16 +86,16 @@ public class AnimationManager {
   }
 
   public int getCurrentModelIndex() {
-    return currentModelIndex;
+    return cmi;
   }
   
   public boolean currentIsLast() {
-    return (isMovie ? lastFramePainted == currentAnimationFrame
-        : lastModelPainted == currentModelIndex);
+    return (isMovie ? lastFramePainted == caf
+        : lastModelPainted == cmi);
   }
 
   public boolean currentFrameIs(int f) {
-    int i = currentModelIndex;
+    int i = cmi;
     return (morphCount == 0 ? i == f : Math.abs(currentMorphModel - f) < 0.001f);
   }
 
@@ -118,8 +118,17 @@ public class AnimationManager {
   boolean isMovie;
   boolean animationPaused;
   
-  int currentModelIndex;
-  int currentAnimationFrame;
+  /**
+   * current model index
+   * 
+   */
+  int cmi;
+  
+  /**
+   * current animation frame
+   * 
+   */
+  int caf;
   int morphCount;
   int animationDirection = 1;
   int currentDirection = 1;
@@ -153,7 +162,7 @@ public class AnimationManager {
     case MODEL_CURRENT:
       if (morphCount > 0)
         return "-" + (1 + currentMorphModel);
-      i = currentModelIndex;
+      i = cmi;
       break;
     case FRAME_LAST:
       i = lastFrameIndex;
@@ -195,34 +204,34 @@ public class AnimationManager {
   void setModel(int modelIndex, boolean clearBackgroundModel) {
     if (modelIndex < 0)
       stopThread(false);
-    int formerModelIndex = currentModelIndex;
+    int formerModelIndex = cmi;
     ModelSet modelSet = vwr.getModelSet();
-    int modelCount = (modelSet == null ? 0 : modelSet.modelCount);
+    int modelCount = (modelSet == null ? 0 : modelSet.mc);
     if (modelCount == 1)
-      currentModelIndex = modelIndex = 0;
+      cmi = modelIndex = 0;
     else if (modelIndex < 0 || modelIndex >= modelCount)
       modelIndex = -1;
     String ids = null;
     boolean isSameSource = false;
-    if (currentModelIndex != modelIndex) {
+    if (cmi != modelIndex) {
       if (modelCount > 0) {
         boolean toDataModel = vwr.isJmolDataFrameForModel(modelIndex);
-        boolean fromDataModel = vwr.isJmolDataFrameForModel(currentModelIndex);
+        boolean fromDataModel = vwr.isJmolDataFrameForModel(cmi);
         if (fromDataModel)
-          vwr.setJmolDataFrame(null, -1, currentModelIndex);
-        if (currentModelIndex != -1)
+          vwr.setJmolDataFrame(null, -1, cmi);
+        if (cmi != -1)
           vwr.saveModelOrientation();
         if (fromDataModel || toDataModel) {
           ids = vwr.getJmolFrameType(modelIndex) 
           + " "  + modelIndex + " <-- " 
-          + " " + currentModelIndex + " " 
-          + vwr.getJmolFrameType(currentModelIndex);
+          + " " + cmi + " " 
+          + vwr.getJmolFrameType(cmi);
           
           isSameSource = (vwr.getJmolDataSourceFrame(modelIndex) == vwr
-              .getJmolDataSourceFrame(currentModelIndex));
+              .getJmolDataSourceFrame(cmi));
         }
       }
-      currentModelIndex = modelIndex;
+      cmi = modelIndex;
       if (ids != null) {
         if (modelIndex >= 0)
           vwr.restoreModelOrientation(modelIndex);
@@ -239,7 +248,7 @@ public class AnimationManager {
 
   void setBackgroundModelIndex(int modelIndex) {
     ModelSet modelSet = vwr.getModelSet();
-    if (modelSet == null || modelIndex < 0 || modelIndex >= modelSet.modelCount)
+    if (modelSet == null || modelIndex < 0 || modelIndex >= modelSet.mc)
       modelIndex = -1;
     backgroundModelIndex = modelIndex;
     if (modelIndex >= 0)
@@ -305,12 +314,12 @@ public class AnimationManager {
   }
   
   void repaintDone() {
-    lastModelPainted = currentModelIndex;
-    lastFramePainted = currentAnimationFrame;
+    lastModelPainted = cmi;
+    lastFramePainted = caf;
   }
   
   void resumeAnimation() {
-    if(currentModelIndex < 0)
+    if(cmi < 0)
       setAnimationRange(firstFrameIndex, lastFrameIndex);
     if (getFrameCount() <= 1) {
       animation(false);
@@ -370,11 +379,11 @@ public class AnimationManager {
       if (animationFrames == null || animationFrames.length == 0) {
         isMovie = false;
       } else {
-        currentAnimationFrame = ((Integer) info.get("currentFrame")).intValue();
-        if (currentAnimationFrame < 0 || currentAnimationFrame >= animationFrames.length)
-          currentAnimationFrame = 0;
+        caf = ((Integer) info.get("currentFrame")).intValue();
+        if (caf < 0 || caf >= animationFrames.length)
+          caf = 0;
       }
-      setFrame(currentAnimationFrame);
+      setFrame(caf);
     } 
     if (!isMovie) {
       //movie = null;
@@ -390,7 +399,7 @@ public class AnimationManager {
   }
 
   int getCurrentFrameIndex() {
-    return currentAnimationFrame;
+    return caf;
   }
 
   int modelIndexForFrame(int i) {
@@ -405,10 +414,10 @@ public class AnimationManager {
     try {
     if (isMovie) {
       int iModel = modelIndexForFrame(i);
-      currentAnimationFrame = i;
+      caf = i;
       i = iModel;
     } else {
-      currentAnimationFrame = i;
+      caf = i;
     }
     setModel(i, true);
     } catch (Exception e) {
@@ -423,23 +432,23 @@ public class AnimationManager {
   private int intAnimThread;
   public int currentAtomIndex = -1;
   private void setViewer(boolean clearBackgroundModel) {
-    vwr.setTrajectory(currentModelIndex);
-    vwr.setFrameOffset(currentModelIndex);
-    if (currentModelIndex == -1 && clearBackgroundModel)
+    vwr.setTrajectory(cmi);
+    vwr.setFrameOffset(cmi);
+    if (cmi == -1 && clearBackgroundModel)
       setBackgroundModelIndex(-1);  
     vwr.setTainted(true);
     setFrameRangeVisible();
     vwr.setStatusFrameChanged(false, true);
     if (vwr.ms != null && !vwr.g.selectAllModels)
-        vwr.setSelectionSubset(vwr.getModelUndeletedAtomsBitSet(currentModelIndex));
+        vwr.setSelectionSubset(vwr.getModelUndeletedAtomsBitSet(cmi));
   }
 
   private void setFrameRangeVisible() {
     bsVisibleModels.clearAll();
     if (backgroundModelIndex >= 0)
       bsVisibleModels.set(backgroundModelIndex);
-    if (currentModelIndex >= 0) {
-      bsVisibleModels.set(currentModelIndex);
+    if (cmi >= 0) {
+      bsVisibleModels.set(cmi);
       return;
     }
     if (frameStep == 0)
@@ -462,7 +471,7 @@ public class AnimationManager {
         firstFrameIndex = lastFrameIndex;
       nDisplayed = 0;
     }
-    if (nDisplayed == 1 && currentModelIndex < 0)
+    if (nDisplayed == 1 && cmi < 0)
       setFrame(frameDisplayed);   
   }
 
@@ -473,7 +482,7 @@ public class AnimationManager {
   
   private boolean setAnimationRelative(int direction) {
     int frameStep = getFrameStep(direction);
-    int thisFrame = (isMovie ? currentAnimationFrame : currentModelIndex);
+    int thisFrame = (isMovie ? caf : cmi);
     int frameNext = thisFrame + frameStep;
     float morphStep = 0f, nextMorphFrame = 0f;
     boolean isDone;

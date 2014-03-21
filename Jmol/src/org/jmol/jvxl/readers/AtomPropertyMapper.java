@@ -92,10 +92,10 @@ class AtomPropertyMapper extends AtomDataReader {
       meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
     if (!doSmoothProperty && meshData.vertexSource != null) {
       hasColorData = true;
-      for (int i = meshData.vertexCount; --i >= 0;) {
+      for (int i = meshData.vc; --i >= 0;) {
         int iAtom = meshData.vertexSource[i];
         if (iAtom >= 0) {
-          meshData.vertexValues[i] = params.theProperty[iAtom];
+          meshData.vvs[i] = params.theProperty[iAtom];
         } else {
           hasColorData = false;
           break;

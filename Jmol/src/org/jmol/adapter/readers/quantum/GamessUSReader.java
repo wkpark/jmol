@@ -91,7 +91,7 @@ public class GamessUSReader extends GamessReader {
   @Override
   protected boolean checkLine() throws Exception {
     if (line.indexOf("***************") >= 0)
-      Logger.info(readLine());
+      Logger.info(rd());
     boolean isBohr;
     if (line.indexOf("FINAL ENERGY IS") >= 0 || line.indexOf("TOTAL ENERGY = ") >= 0
         || line.indexOf("FINAL RHF ENERGY IS") >= 0)
@@ -215,15 +215,15 @@ public class GamessUSReader extends GamessReader {
     //it's really too bad that the EFP information is nowhere near
     //the ab initio molecule for single-point runs.
 
-    int atomCountInFirstModel = atomSetCollection.atomCount;
+    int acInFirstModel = asc.ac;
     //should only contain the $DATA card
     discardLinesUntilContains("MULTIPOLE COORDINATES");
 
-    readLine(); // blank line
-    readLine(); // X              Y              Z           ELEC.   NUC.
+    rd(); // blank line
+    rd(); // X              Y              Z           ELEC.   NUC.
     //at least for FRAGNAME=H2ORHF, the atoms come out as ZO1, ZH2, ZH3
     //Z stands for nuclear position.
-    while (readLine() != null && line.length() >= 72) {
+    while (rd() != null && line.length() >= 72) {
       String atomName = line.substring(1, 2);
       //Z is perhaps not officially deprecated, but the newer
       //H2ODFT potential doesn't use it.
@@ -237,8 +237,8 @@ public class GamessUSReader extends GamessReader {
       float z = parseFloatRange(line, 40, 56);
       if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
         break;
-      Atom atom = atomSetCollection.addNewAtom();
-      atom.atomName = atomName + (++atomCountInFirstModel);
+      Atom atom = asc.addNewAtom();
+      atom.atomName = atomName + (++acInFirstModel);
       setAtomCoordXYZ(atom, x * ANGSTROMS_PER_BOHR, y * ANGSTROMS_PER_BOHR, z * ANGSTROMS_PER_BOHR);
       atomNames.addLast(atomName);
     }
@@ -257,18 +257,18 @@ public class GamessUSReader extends GamessReader {
 
 */    
 
-    readLine(); // discard one line
+    rd(); // discard one line
     String atomName;
-    atomSetCollection.newAtomSet();
+    asc.newAtomSet();
     int n = 0;
-    while (readLine() != null
+    while (rd() != null
         && (atomName = parseTokenRange(line, 1, 11)) != null) {
       float x = parseFloatRange(line, 17, 37);
       float y = parseFloatRange(line, 37, 57);
       float z = parseFloatRange(line, 57, 77);
       if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
         break;
-      Atom atom = atomSetCollection.addNewAtom();
+      Atom atom = asc.addNewAtom();
       atom.elementSymbol = getElementSymbol(parseIntRange(line, 11, 14));
       atom.atomName = atom.elementSymbol + (++n);
       setAtomCoordXYZ(atom, x * ANGSTROMS_PER_BOHR, y * ANGSTROMS_PER_BOHR, z * ANGSTROMS_PER_BOHR);
@@ -277,10 +277,10 @@ public class GamessUSReader extends GamessReader {
   }
   
   private void readAtomsInAngstromCoordinates() throws Exception {
-    readLine(); 
-    readLine(); // discard two lines
+    rd(); 
+    rd(); // discard two lines
     String atomName;
-    atomSetCollection.newAtomSet();
+    asc.newAtomSet();
 /*    
        COORDINATES OF ALL ATOMS ARE (ANGS)
    ATOM   CHARGE       X              Y              Z
@@ -292,14 +292,14 @@ public class GamessUSReader extends GamessReader {
 
 */
     int n = 0;
-    while (readLine() != null
+    while (rd() != null
         && (atomName = parseTokenRange(line, 1, 11)) != null) {
       float x = parseFloatRange(line, 16, 31);
       float y = parseFloatRange(line, 31, 46);
       float z = parseFloatRange(line, 46, 61);
       if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
         break;
-      Atom atom = atomSetCollection.addNewAtom();
+      Atom atom = asc.addNewAtom();
       setAtomCoordXYZ(atom, x, y, z);
       atom.elementSymbol = getElementSymbol(parseIntRange(line, 11, 14));
       atom.atomName = atom.elementSymbol + (++n);
@@ -332,12 +332,12 @@ public class GamessUSReader extends GamessReader {
     
     // Now is the time to read Effective Fragments (EFP)
     if (line.indexOf("COORDINATES OF FRAGMENT MULTIPOLE CENTERS (ANGS)") >= 0) {
-         readLine(); // MULTIPONE NAME         X ...
-        readLine(); // ------------------------ ...
-        readLine(); // FRAGNAME=
+         rd(); // MULTIPONE NAME         X ...
+        rd(); // ------------------------ ...
+        rd(); // FRAGNAME=
         
         //at least for FRAGNAME=H2ORHF, the atoms come out as ZO1, ZH2, ZH3
-        while (readLine() != null
+        while (rd() != null
         && (atomName = parseTokenRange(line, 1, 2)) != null) {
               if (parseTokenRange(line,1,2).equals("Z")) //Z means nuclear position
                     atomName = parseTokenRange(line, 2, 3);
@@ -350,7 +350,7 @@ public class GamessUSReader extends GamessReader {
               float z = parseFloatRange(line, 46, 61);
               if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
                     break;
-              Atom atom = atomSetCollection.addNewAtom();
+              Atom atom = asc.addNewAtom();
               atom.atomName = atomName + (++n);
               setAtomCoordXYZ(atom, x, y, z);
               atomNames.addLast(atomName);
@@ -415,7 +415,7 @@ ATOM         MULL.POP.    CHARGE          LOW.POP.     CHARGE
     String tokens[]=null;
     String searchstr = (lowdenCharges ? "LOW.POP."
             : "MULL.POP.");
-    while (readLine() != null && ("".equals(line.trim())||line.indexOf("ATOM") >= 0)) {
+    while (rd() != null && ("".equals(line.trim())||line.indexOf("ATOM") >= 0)) {
       tokens = getTokens();      
     }
     int poploc = 0;
@@ -424,10 +424,10 @@ ATOM         MULL.POP.    CHARGE          LOW.POP.     CHARGE
         break;
     if (++poploc >= tokens.length || !"CHARGE".equals(tokens[poploc++]))
       return; // Not as expected don't read
-    Atom[] atoms = atomSetCollection.atoms;
-    int startAtom = atomSetCollection.getLastAtomSetAtomIndex();
-    int endAtom = atomSetCollection.atomCount;
-    for (int i = startAtom; i < endAtom && readLine() != null; ++i)
+    Atom[] atoms = asc.atoms;
+    int startAtom = asc.getLastAtomSetAtomIndex();
+    int endAtom = asc.ac;
+    for (int i = startAtom; i < endAtom && rd() != null; ++i)
       atoms[i].partialCharge = parseFloatStr(getTokensStr(prevline)[poploc]);
   }
  /*
@@ -442,21 +442,21 @@ ATOM         MULL.POP.    CHARGE          LOW.POP.     CHARGE
   */
   void readDipoleMoment() throws Exception {
     String tokens[] = null;
-    readLine();
+    rd();
     while (line != null && ("".equals(line.trim()) || line.indexOf("DX") < 0)) {
-      readLine();
+      rd();
     }
     tokens = getTokensStr(line);
     if (tokens.length != 5)
       return;
     if ("DX".equals(tokens[0]) && "DY".equals(tokens[1])
         && "DZ".equals(tokens[2])) {
-      tokens = getTokensStr(readLine());
+      tokens = getTokensStr(rd());
       V3 dipole = V3.new3(parseFloatStr(tokens[0]),
           parseFloatStr(tokens[1]), parseFloatStr(tokens[2]));
       Logger.info("Molecular dipole for model "
-          + atomSetCollection.atomSetCount + " = " + dipole);
-      atomSetCollection.setAtomSetAuxiliaryInfo("dipole", dipole);
+          + asc.atomSetCount + " = " + dipole);
+      asc.setAtomSetAuxiliaryInfo("dipole", dipole);
     }
   }
 }

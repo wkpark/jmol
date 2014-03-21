@@ -32,7 +32,7 @@ public class Vectors extends AtomShape {
 
  @Override
 protected void initModelSet() {
-    if (!(isActive = modelSet.modelSetHasVibrationVectors()))
+    if (!(isActive = ms.modelSetHasVibrationVectors()))
       return;
     super.initModelSet();
   }

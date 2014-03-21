@@ -45,8 +45,8 @@ public class StarsRenderer extends ShapeRenderer {
     mar = (int) (vwr.getFloat(T.starscale) * 1000);
     if (mar == 0 && (g3d.isAntialiased() || isExport))
       mar = 50;
-    Atom[] atoms = modelSet.atoms;
-    for (int i = modelSet.getAtomCount(); --i >= 0;) {
+    Atom[] atoms = ms.at;
+    for (int i = ms.getAtomCount(); --i >= 0;) {
       Atom atom = atoms[i];
       if (!isVisibleForMe(atom))
         continue;

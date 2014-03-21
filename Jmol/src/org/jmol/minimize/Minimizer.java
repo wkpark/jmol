@@ -62,7 +62,7 @@ public class Minimizer implements MinimizerInterface {
   public MinPosition[] minPositions;
   
   public BS bsMinFixed;
-  private int atomCount;
+  private int ac;
   private int bondCount;
   private int[] atomMap; 
  
@@ -163,7 +163,7 @@ public class Minimizer implements MinimizerInterface {
     
   private void clear() {
     setMinimizationOn(false);
-    atomCount = 0;
+    ac = 0;
     bondCount = 0;
     atoms = null;
     bonds = null;
@@ -226,14 +226,14 @@ public class Minimizer implements MinimizerInterface {
       Logger.error(GT._("No atoms selected -- nothing to do!"));
       return false;
     }
-    atoms = vwr.getModelSet().atoms;
+    atoms = vwr.getModelSet().at;
     bsAtoms = BSUtil.copy(bsSelected);
     for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1))
       if (atoms[i].getElementNumber() == 0)
         bsAtoms.clear(i);
     if (bsFixed != null)
       bsAtoms.or(bsFixed);
-    atomCount = bsAtoms.cardinality();
+    ac = bsAtoms.cardinality();
 
     boolean sameAtoms = BSUtil.areEqual(bsSelected, this.bsSelected);
     this.bsSelected = bsSelected;
@@ -293,7 +293,7 @@ public class Minimizer implements MinimizerInterface {
 
     coordSaved = null;
     atomMap = new int[atoms.length];
-    minAtoms = new MinAtom[atomCount];
+    minAtoms = new MinAtom[ac];
     elemnoMax = 0;
     BS bsElements = new BS();
     for (int i = bsAtoms.nextSetBit(0), pt = 0; i >= 0; i = bsAtoms
@@ -304,13 +304,13 @@ public class Minimizer implements MinimizerInterface {
       elemnoMax = Math.max(elemnoMax, atomicNo);
       bsElements.set(atomicNo);
       minAtoms[pt] = new MinAtom(pt, atom, new double[] { atom.x, atom.y,
-          atom.z }, atomCount);
+          atom.z }, ac);
       minAtoms[pt].sType = atom.getAtomName();
     }
 
-    Logger.info(GT.i(GT._("{0} atoms will be minimized."), atomCount));
+    Logger.info(GT.i(GT._("{0} atoms will be minimized."), ac));
     Logger.info("minimize: getting bonds...");
-    bonds = vwr.ms.bonds;
+    bonds = vwr.ms.bo;
     rawBondCount = vwr.ms.bondCount;
     getBonds();
     Logger.info("minimize: getting angles...");
@@ -335,7 +335,7 @@ public class Minimizer implements MinimizerInterface {
   }
 
   private void setAtomPositions() {
-    for (int i = 0; i < atomCount; i++)
+    for (int i = 0; i < ac; i++)
       minAtoms[i].set();
     bsMinFixed = null;
     if (bsFixed != null) {
@@ -383,7 +383,7 @@ public class Minimizer implements MinimizerInterface {
       minAtoms[atom1].addBond(bond, atom2);
       minAtoms[atom2].addBond(bond, atom1);
     }
-    for (int i = 0; i < atomCount; i++)
+    for (int i = 0; i < ac; i++)
       minAtoms[i].getBondedAtomIndexes();
   }
 
@@ -610,8 +610,8 @@ public class Minimizer implements MinimizerInterface {
   
   private void saveCoordinates() {
     if (coordSaved == null)
-      coordSaved = new double[atomCount][3];
-    for (int i = 0; i < atomCount; i++) 
+      coordSaved = new double[ac][3];
+    for (int i = 0; i < ac; i++) 
       for (int j = 0; j < 3; j++)
         coordSaved[i][j] = minAtoms[i].coord[j];
   }
@@ -619,7 +619,7 @@ public class Minimizer implements MinimizerInterface {
   private void restoreCoordinates() {
     if (coordSaved == null)
       return;
-    for (int i = 0; i < atomCount; i++) 
+    for (int i = 0; i < ac; i++) 
       for (int j = 0; j < 3; j++)
         minAtoms[i].coord[j] = coordSaved[i][j];
     updateAtomXYZ();
@@ -638,7 +638,7 @@ public class Minimizer implements MinimizerInterface {
   void updateAtomXYZ() {
     if (steps <= 0)
       return;
-    for (int i = 0; i < atomCount; i++) {
+    for (int i = 0; i < ac; i++) {
       MinAtom minAtom = minAtoms[i];
       Atom atom = minAtom.atom;
       atom.x = (float) minAtom.coord[0];

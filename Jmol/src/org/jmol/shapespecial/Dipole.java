@@ -193,8 +193,8 @@ public class Dipole {
     SB s = new SB();
     s.append("dipole ID ").append(thisID);
     if (haveAtoms)
-      s.append(" ({").appendI(atoms[0].index).append(" ").
-                      appendI(atoms[1].index).append("})");
+      s.append(" ({").appendI(atoms[0].i).append(" ").
+                      appendI(atoms[1].i).append("})");
     else if (coords[0] == null)
       return "";
     else

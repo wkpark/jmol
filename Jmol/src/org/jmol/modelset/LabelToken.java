@@ -297,7 +297,7 @@ public class LabelToken {
     if (tokens == null)
       return "";
     setValues(tokens, htValues);
-    Atom[] atoms = m.modelSet.atoms;
+    Atom[] atoms = m.ms.at;
     int[] indices = m.countPlusIndices;
     for (int i = indices[0]; i >= 1; --i)
       if (indices[i] >= 0)
@@ -466,20 +466,20 @@ public class LabelToken {
       // special cases only for labels 
 
       case T.atomindex:
-        strT = "" + (indices == null ? atom.index : indices[atom.index]);
+        strT = "" + (indices == null ? atom.i : indices[atom.i]);
         break;
       case T.color:
         ptT = Atom.atomPropertyTuple(atom, t.tok);
         break;
       case T.data:
         if (t.data != null) {
-          floatT = ((float[]) t.data)[atom.index];
+          floatT = ((float[]) t.data)[atom.i];
         }
         break;
       case T.array:
         if (t.data != null) {
           String[] sdata = (String[]) t.data;
-          strT = (atom.index < sdata.length ? sdata[atom.index] : "");
+          strT = (atom.i < sdata.length ? sdata[atom.i] : "");
         }
         break;
       case T.formalcharge:

@@ -75,7 +75,7 @@ public class SticksRenderer extends FontLineShapeRenderer {
   
   @Override
   protected boolean render() {
-    Bond[] bonds = modelSet.bonds;
+    Bond[] bonds = ms.bo;
     if (bonds == null)
       return false;
     isPass2 = g3d.isPass2();
@@ -101,7 +101,7 @@ public class SticksRenderer extends FontLineShapeRenderer {
         renderBond();
       }
     else
-      for (int i = modelSet.bondCount; --i >= 0;) {
+      for (int i = ms.bondCount; --i >= 0;) {
         bond = bonds[i];
         if ((bond.getShapeVisibilityFlags() & myVisibilityFlag) != 0
             && renderBond()) {
@@ -297,8 +297,8 @@ public class SticksRenderer extends FontLineShapeRenderer {
     if (isEndOn && asLineOnly)
       return;
     boolean doFixedSpacing = (bondOrder > 1 && multipleBondSpacing > 0);
-    boolean isPiBonded = doFixedSpacing && (vwr.getHybridizationAndAxes(a.index, z, x, "pz") != null || vwr
-            .getHybridizationAndAxes(b.index, z, x, "pz") != null) && !Float.isNaN(x.x);
+    boolean isPiBonded = doFixedSpacing && (vwr.getHybridizationAndAxes(a.i, z, x, "pz") != null || vwr
+            .getHybridizationAndAxes(b.i, z, x, "pz") != null) && !Float.isNaN(x.x);
     if (isEndOn && !doFixedSpacing) {
       // end-on view
       int space = width / 8 + 3;
@@ -402,7 +402,7 @@ public class SticksRenderer extends FontLineShapeRenderer {
   }
 
   private int getAromaticDottedBondMask() {
-    Atom atomC = b.findAromaticNeighbor(a.index);
+    Atom atomC = b.findAromaticNeighbor(a.i);
     if (atomC == null)
       return 1;
     int dxAC = atomC.sX - xA;

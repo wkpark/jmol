@@ -163,15 +163,15 @@ abstract public class MOReader extends BasisFunctionReader {
     discardLinesUntilContains("----");
     discardLinesUntilContains("----");
     haveNboCharges = true;
-    int atomCount = atomSetCollection.atomCount;
-    int i0 = atomSetCollection.getLastAtomSetAtomIndex();
-    Atom[] atoms = atomSetCollection.atoms;
-    for (int i = i0; i < atomCount; ++i) {
+    int ac = asc.ac;
+    int i0 = asc.getLastAtomSetAtomIndex();
+    Atom[] atoms = asc.atoms;
+    for (int i = i0; i < ac; ++i) {
       // first skip over the dummy atoms
       while (atoms[i].elementNumber == 0)
         ++i;
       // assign the partial charge
-      String[] tokens = getTokensStr(readLine());
+      String[] tokens = getTokensStr(rd());
       float charge;
       if (tokens == null || tokens.length < 3 || Float.isNaN(charge = parseFloatStr(tokens[2]))) {
         Logger.info("Error reading NBO charges: " + line);
@@ -181,7 +181,7 @@ abstract public class MOReader extends BasisFunctionReader {
       if (Logger.debugging)
         Logger.debug("Atom " + i + " using NBOcharge: " + charge);
     }
-    Logger.info("Using NBO charges for Model " + atomSetCollection.atomSetCount);
+    Logger.info("Using NBO charges for Model " + asc.atomSetCount);
   }
   
   
@@ -203,15 +203,15 @@ abstract public class MOReader extends BasisFunctionReader {
   protected void getNboTypes() throws Exception {
     moTypes = new  List<String>();
     iMo0 = (orbitals == null ? 0 : orbitals.size()) + 1;
-    readLine();
-    readLine();
+    rd();
+    rd();
     int n = 0;
     int pt = 0;
     while (line != null && (pt = line.indexOf(".")) >= 0 && pt < 10) {
       if (parseIntRange(line, 0, pt) != n + 1)
         break;
       moTypes.add(n++, line.substring(pt + 1, Math.min(40, line.length())).trim());
-      while (readLine() != null && line.startsWith("       ")) {
+      while (rd() != null && line.startsWith("       ")) {
       }
     }
     Logger.info(n + " natural bond AO basis functions found");
@@ -286,7 +286,7 @@ abstract public class MOReader extends BasisFunctionReader {
     if (ignoreMOs) {
       // but for now can override this with FILTER=" LOCALIZED ORBITALS"
       //should read alpha and beta
-      readLine();
+      rd();
       return;
     }
     // reset the coefficient maps
@@ -308,13 +308,13 @@ abstract public class MOReader extends BasisFunctionReader {
     int ptOffset = -1;
     int fieldSize = 0;
     int nThisLine = 0;
-    readLine();
+    rd();
     int moCount = 0;
     int nBlank = 0;
     boolean haveMOs = false;
     if (line.indexOf("---") >= 0)
-      readLine();
-    while (readLine() != null) {
+      rd();
+    while (rd() != null) {
       String[] tokens = getTokens();
       if (Logger.debugging) {
         Logger.debug(tokens.length + " --- " + line);
@@ -323,13 +323,13 @@ abstract public class MOReader extends BasisFunctionReader {
         break;
       if (line.indexOf(" ALPHA SET ") >= 0) {
         alphaBeta = "alpha";
-        if (readLine() == null)
+        if (rd() == null)
           break;
       } else if (line.indexOf(" BETA SET ") >= 0) {
         if (haveMOs)
           break;
         alphaBeta = "beta";
-        if (readLine() == null)
+        if (rd() == null)
           break;
       }
       //not everyone has followed the conventions for ending a section of output
@@ -487,7 +487,7 @@ abstract public class MOReader extends BasisFunctionReader {
   
   protected void getMOHeader(int headerType, String[] tokens, Map<String, Object>[] mos, int nThisLine)
       throws Exception {
-    readLine();
+    rd();
     switch (headerType) {
     default:
     case HEADER_NONE:
@@ -501,20 +501,20 @@ abstract public class MOReader extends BasisFunctionReader {
       // this is the original functionality
       tokens = getTokens();
       if (tokens.length == 0)
-        tokens = getTokensStr(readLine());
+        tokens = getTokensStr(rd());
       for (int i = 0; i < nThisLine; i++) {
         mos[i].put("energy", Float.valueOf(PT.fVal(tokens[i])));
       }
-      readLine();
+      rd();
       break;
     case HEADER_GAMESS_OCCUPANCIES:
       // MCSCF NATURAL ORBITALS only have occupancy
-      boolean haveSymmetry = (line.length() > 0 || readLine() != null);
+      boolean haveSymmetry = (line.length() > 0 || rd() != null);
       tokens = getTokens();
       for (int i = 0; i < nThisLine; i++)
         mos[i].put("occupancy", Float.valueOf(tokens[i].charAt(0) == '-' ? 2.0f
             : parseFloatStr(tokens[i])));
-      readLine(); // blank or symmetry
+      rd(); // blank or symmetry
       if (!haveSymmetry)
         return;
       // MCSCF NATURAL ORBITALS (from GUGA) using CSF configurations have
@@ -580,7 +580,7 @@ xxxxxxxxxxxxxxxxxxxxxxxxxx yyyyyyyyyyyyyyyyyyyyyyyyyyy zzzzzzz ....... ffffffff
       ht.put(PT.rep(moTypes.get(i).substring(10), " ", ""),
           Integer.valueOf(i + iMo0));
     List<String[]> strSecondOrderData = new  List<String[]>();
-    while (readLine() != null && line.indexOf("NBO") < 0) {
+    while (rd() != null && line.indexOf("NBO") < 0) {
       if (line.length() < 5 || line.charAt(4) != '.')
         continue;
       strSecondOrderData.addLast(new String[] {

@@ -154,11 +154,11 @@ public class MeshData extends MeshSurface {
       nSets = 0;
     }
     setsSuccessful = true;
-    for (int i = 0; i < polygonCount; i++)
-      if (polygonIndexes[i] != null) {
+    for (int i = 0; i < pc; i++)
+      if (pis[i] != null) {
         if (bsSlabDisplay != null && !bsSlabDisplay.get(i))
           continue;
-        int[] p = polygonIndexes[i];
+        int[] p = pis[i];
         int pt0 = findSet(p[0]);
         int pt1 = findSet(p[1]);
         int pt2 = findSet(p[2]);
@@ -254,7 +254,7 @@ public class MeshData extends MeshSurface {
     } else if (onlyIfNull) {
       return;
     }
-    vertexSets = new int[vertexCount];
+    vertexSets = new int[vc];
     for (int i = 0; i < nSets; i++)
       for (int j = surfaceSet[i].nextSetBit(0); j >= 0; j = surfaceSet[i]
           .nextSetBit(j + 1))
@@ -290,7 +290,7 @@ public class MeshData extends MeshSurface {
   
   public void invalidateSurfaceSet(int i) {
     for (int j = surfaceSet[i].nextSetBit(0); j >= 0; j = surfaceSet[i].nextSetBit(j + 1))
-      vertexValues[j] = Float.NaN;
+      vvs[j] = Float.NaN;
     surfaceSet[i] = null;
   }
   
@@ -326,23 +326,23 @@ public class MeshData extends MeshSurface {
     V3 vAB = new V3();
     V3 vAC = new V3();
     V3 vTemp = new V3();
-    for (int i = polygonCount; --i >= 0;) {
+    for (int i = pc; --i >= 0;) {
       if (!setABC(i))
         continue;
       int iSet = (nSets == 0 ? 0 : vertexSets[iA]);
       if (thisSet >= 0 && iSet != thisSet)
         continue;
       if (isArea) {
-        vAB.sub2(vertices[iB], vertices[iA]);
-        vAC.sub2(vertices[iC], vertices[iA]);
+        vAB.sub2(vs[iB], vs[iA]);
+        vAC.sub2(vs[iC], vs[iA]);
         vTemp.cross(vAB, vAC);
         v[justOne ? 0 : iSet] += vTemp.length();
       } else {
         // volume
-        vAB.setT(vertices[iB]);
-        vAC.setT(vertices[iC]);
+        vAB.setT(vs[iB]);
+        vAC.setT(vs[iC]);
         vTemp.cross(vAB, vAC);
-        vAC.setT(vertices[iA]);
+        vAC.setT(vs[iA]);
         v[justOne ? 0 : iSet] += vAC.dot(vTemp);
       }
     }
@@ -357,14 +357,14 @@ public class MeshData extends MeshSurface {
 
   public void updateInvalidatedVertices(BS bs) {
     bs.clearAll();
-    for (int i = 0; i < vertexCount; i += vertexIncrement)
-      if (Float.isNaN(vertexValues[i]))
+    for (int i = 0; i < vc; i += vertexIncrement)
+      if (Float.isNaN(vvs[i]))
         bs.set(i);
   }
 
   public void invalidateVertices(BS bsInvalid) {
     for (int i = bsInvalid.nextSetBit(0); i >= 0; i = bsInvalid.nextSetBit(i + 1))
-      vertexValues[i] = Float.NaN;
+      vvs[i] = Float.NaN;
   }
 
 }

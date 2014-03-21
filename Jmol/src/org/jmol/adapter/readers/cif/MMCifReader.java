@@ -94,22 +94,22 @@ public class MMCifReader implements MMCifInterface {
     if (byChain && !isBiomolecule)
       for (String id: chainAtomMap.keySet())
         createParticle(id);
-    AtomSetCollection ac = cr.atomSetCollection;
-    if (!isCourseGrained && ac.atomCount == nAtoms)
-      ac.removeCurrentAtomSet();
+    AtomSetCollection asc = cr.asc;
+    if (!isCourseGrained && asc.ac == nAtoms)
+      asc.removeCurrentAtomSet();
     else
       cr.applySymmetryAndSetTrajectory();
     if (htSites != null)
       cr.addSites(htSites);
     if (vBiomolecules != null && vBiomolecules.size() == 1
-        && (isCourseGrained || ac.atomCount > 0)) {
-      ac.setAtomSetAuxiliaryInfo("biomolecules", vBiomolecules);
+        && (isCourseGrained || asc.ac > 0)) {
+      asc.setAtomSetAuxiliaryInfo("biomolecules", vBiomolecules);
       Map<String, Object> ht = vBiomolecules.get(0);
       cr.appendLoadNote("Constructing " + ht.get("name"));
       setBiomolecules(ht);
       if (thisBiomolecule != null) {
-        ac.getXSymmetry().applySymmetryBio(thisBiomolecule, cr.notionalUnitCell, cr.applySymmetryToBonds, cr.filter);
-        ac.xtalSymmetry = null;
+        asc.getXSymmetry().applySymmetryBio(thisBiomolecule, cr.notionalUnitCell, cr.applySymmetryToBonds, cr.filter);
+        asc.xtalSymmetry = null;
       }
     }
 
@@ -554,7 +554,7 @@ _pdbx_struct_oper_list.vector[3]
           break;
         }
       }
-      cr.atomSetCollection.addStructure(structure);
+      cr.asc.addStructure(structure);
     }
     return true;
   }
@@ -622,7 +622,7 @@ _pdbx_struct_oper_list.vector[3]
           break;
         }
       }
-      cr.atomSetCollection.addStructure(structure);
+      cr.asc.addStructure(structure);
     }
     return true;
   }
@@ -801,8 +801,8 @@ _pdbx_struct_oper_list.vector[3]
       }
     } else {
       nAtoms = bsAll.cardinality();
-      if (nAtoms < cr.atomSetCollection.atomCount)
-        cr.atomSetCollection.bsAtoms = bsAll;
+      if (nAtoms < cr.asc.ac)
+        cr.asc.bsAtoms = bsAll;
     }
     biomolecule.put("atomCount", Integer.valueOf(nAtoms * ops.length));
   }
@@ -816,7 +816,7 @@ _pdbx_struct_oper_list.vector[3]
     a.elementSymbol = "Pt";
     a.chainID = cr.vwr.getChainID(id);
     a.radius = 16;
-    cr.atomSetCollection.addAtom(a);
+    cr.asc.addAtom(a);
   }
 
   private M4 getOpMatrix(String ops) {
@@ -865,10 +865,10 @@ _pdbx_struct_oper_list.vector[3]
       for (int i = 0; i < n; ++i) {
         switch (fieldProperty(i)) {
         case CHEM_COMP_BOND_ATOM_ID_1:
-          atomIndex1 = cr.atomSetCollection.getAtomIndexFromName(field);
+          atomIndex1 = cr.asc.getAtomIndexFromName(field);
           break;
         case CHEM_COMP_BOND_ATOM_ID_2:
-          atomIndex2 = cr.atomSetCollection.getAtomIndexFromName(field);
+          atomIndex2 = cr.asc.getAtomIndexFromName(field);
           break;
         case CHEM_COMP_BOND_AROMATIC_FLAG:
           isAromatic = (field.charAt(0) == 'Y');
@@ -889,7 +889,7 @@ _pdbx_struct_oper_list.vector[3]
           order = JmolAdapter.ORDER_AROMATIC_DOUBLE;
           break;
         }
-      cr.atomSetCollection.addNewBondWithOrder(atomIndex1, atomIndex2, order);
+      cr.asc.addNewBondWithOrder(atomIndex1, atomIndex2, order);
     }
     return true;
   }
@@ -929,8 +929,8 @@ _pdbx_struct_oper_list.vector[3]
       bs.set(index);
     }
     if (atom.isHetero && htHetero != null) {
-      cr.atomSetCollection.setAtomSetAuxiliaryInfo("hetNames", htHetero);
-      cr.atomSetCollection.setAtomSetCollectionAuxiliaryInfo("hetNames",
+      cr.asc.setAtomSetAuxiliaryInfo("hetNames", htHetero);
+      cr.asc.setAtomSetCollectionAuxiliaryInfo("hetNames",
           htHetero);
       htHetero = null;
     }

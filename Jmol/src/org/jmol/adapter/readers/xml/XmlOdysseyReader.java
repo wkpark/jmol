@@ -57,7 +57,7 @@ public class XmlOdysseyReader extends XmlReader {
   protected void processStartElement(String localName) {
 
     if ("structure".equals(localName)) {
-      atomSetCollection.newAtomSet();
+      asc.newAtomSet();
       return;
     }
 
@@ -85,7 +85,7 @@ public class XmlOdysseyReader extends XmlReader {
       int order = 1;
       if (atts.containsKey("order"))
         order = parseBondToken(atts.get("order"));
-      atomSetCollection.addNewBondFromNames(atom1, atom2, order);
+      asc.addNewBondFromNames(atom1, atom2, order);
       return;
     }
 
@@ -101,9 +101,9 @@ public class XmlOdysseyReader extends XmlReader {
       parent.setUnitCellItem(4, 90);
       parent.setUnitCellItem(5, 90);
       P3 pt = P3.new3(-x / 2, -y / 2, -z / 2);
-      atomSetCollection.setAtomSetAuxiliaryInfo("periodicOriginXyz", pt);
-      Atom[] atoms = atomSetCollection.atoms;
-      for (int i = atomSetCollection.atomCount; --i >= 0;) {
+      asc.setAtomSetAuxiliaryInfo("periodicOriginXyz", pt);
+      Atom[] atoms = asc.atoms;
+      for (int i = asc.ac; --i >= 0;) {
         atoms[i].sub(pt);
         parent.setAtomCoord(atoms[i]);
       }
@@ -119,9 +119,9 @@ public class XmlOdysseyReader extends XmlReader {
       if (modelName != null && phase != null)
         modelName += " - " + phase;
       if (modelName != null)
-        atomSetCollection.setAtomSetName(modelName);
+        asc.setAtomSetName(modelName);
       if (formula != null)
-        atomSetCollection.setAtomSetAuxiliaryInfo("formula", formula);
+        asc.setAtomSetAuxiliaryInfo("formula", formula);
     }
     if ("title".equals(localName) || "formula".equals(localName)
         || "phase".equals(localName))
@@ -149,7 +149,7 @@ public class XmlOdysseyReader extends XmlReader {
   void processEndElement(String localName) {
     if ("atom".equals(localName)) {
       if (atom.elementSymbol != null && !Float.isNaN(atom.z)) {
-        atomSetCollection.addAtomWithMappedName(atom);
+        asc.addAtomWithMappedName(atom);
       }
       atom = null;
       return;

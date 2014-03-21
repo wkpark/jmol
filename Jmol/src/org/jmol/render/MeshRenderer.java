@@ -105,7 +105,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
       P3 vTemp = new P3();
       SymmetryInterface unitcell;
       if ((unitcell = mesh.unitCell) == null
-          && (unitcell = vwr.ms.models[mesh.modelIndex].biosymmetry) == null
+          && (unitcell = vwr.ms.am[mesh.modelIndex].biosymmetry) == null
           && (unitcell = vwr.getModelUnitCell(mesh.modelIndex)) == null)
         unitcell = mesh.getUnitCell();
       if (mesh.symops != null) {
@@ -189,15 +189,15 @@ public abstract class MeshRenderer extends ShapeRenderer {
       needTranslucent = true;
     doRender = (setColix(mesh.colix) || mesh.showContourLines);
     if (!doRender || isGhostPass && !(doRender = g3d.setColix(mesh.slabColix))) {
-      vertices = mesh.vertices;
+      vertices = mesh.vs;
       if (needTranslucent)
         g3d.setColix(C.getColixTranslucent3(C.BLACK, true, 0.5f));
       return true;
     }
-    vertices = (mesh.scale3d == 0 && mesh.mat4 == null ? mesh.vertices : mesh.getOffsetVertices(thePlane));
+    vertices = (mesh.scale3d == 0 && mesh.mat4 == null ? mesh.vs : mesh.getOffsetVertices(thePlane));
     if (mesh.lineData == null) {
       // not a draw 
-      if ((vertexCount = mesh.vertexCount) == 0)
+      if ((vertexCount = mesh.vc) == 0)
         return false;
       normixes = mesh.normixes;
       if (normixes == null || vertices == null)
@@ -256,7 +256,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected void render2b(boolean generateSet) {
     if (!g3d.setColix(isGhostPass ? mesh.slabColix : colix))
       return;
-    if (renderLow || mesh.showPoints || mesh.polygonCount == 0)
+    if (renderLow || mesh.showPoints || mesh.pc == 0)
       renderPoints(); 
     if (!renderLow && (isGhostPass ? mesh.slabMeshType == T.mesh : mesh.drawTriangles))
       renderTriangles(false, mesh.showTriangles, false);
@@ -266,13 +266,13 @@ public abstract class MeshRenderer extends ShapeRenderer {
 
   protected void renderPoints() {
     if (mesh.isTriangleSet) {
-      int[][] polygonIndexes = mesh.polygonIndexes;
-      BS bsPoints = BS.newN(mesh.vertexCount);
+      int[][] polygonIndexes = mesh.pis;
+      BS bsPoints = BS.newN(mesh.vc);
       if (haveBsDisplay) {
-        bsPoints.setBits(0, mesh.vertexCount);
+        bsPoints.setBits(0, mesh.vc);
         bsPoints.andNot(mesh.bsDisplay);
       }
-      for (int i = mesh.polygonCount; --i >= 0;) {
+      for (int i = mesh.pc; --i >= 0;) {
         if (!isPolygonDisplayable(i))
           continue;
         int[] p = polygonIndexes[i];
@@ -304,7 +304,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected void renderTriangles(boolean fill, boolean iShowTriangles,
                                  boolean generateSet) {
     g3d.addRenderer(T.triangles);
-    int[][] polygonIndexes = mesh.polygonIndexes;
+    int[][] polygonIndexes = mesh.pis;
     colix = (isGhostPass ? mesh.slabColix : mesh.colix);
     // vertexColixes are only isosurface properties of IsosurfaceMesh, not Mesh
     if (isTranslucentInherit)
@@ -315,7 +315,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
         frontOnly = false;
       bsPolygonsToExport.clearAll();
     }
-    for (int i = mesh.polygonCount; --i >= 0;) {
+    for (int i = mesh.pc; --i >= 0;) {
       if (!isPolygonDisplayable(i))
         continue;
       int[] vertexIndexes = polygonIndexes[i];

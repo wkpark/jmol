@@ -178,14 +178,14 @@ public abstract class BioPolymer {
   }
 
   public void getConformation(BS bsConformation, int conformationIndex) {
-    Atom[] atoms = model.getModelSet().atoms;
+    Atom[] atoms = model.getModelSet().at;
     for (int i = monomerCount; --i >= 0;)
       monomers[i].getConformation(atoms, bsConformation, conformationIndex);
     recalculateLeadMidpointsAndWingVectors();
   }
 
   public void setConformation(BS bsSelected) {
-    Atom[] atoms = model.getModelSet().atoms;
+    Atom[] atoms = model.getModelSet().at;
     for (int i = monomerCount; --i >= 0;)
       monomers[i].updateOffsetsForAlternativeLocations(atoms, bsSelected);
     recalculateLeadMidpointsAndWingVectors();
@@ -278,7 +278,7 @@ public abstract class BioPolymer {
       reversed = BS.newN(monomerCount);
     else
       reversed.clearAll();
-    twistedSheets = model.modelSet.vwr.getBoolean(T.twistedsheets);
+    twistedSheets = model.ms.vwr.getBoolean(T.twistedsheets);
     V3 vectorA = new V3();
     V3 vectorB = new V3();
     V3 vectorC = new V3();
@@ -352,7 +352,7 @@ public abstract class BioPolymer {
       if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0)
         continue;
       Atom a = monomers[i].getLeadAtom();
-      if (!a.checkVisible() || bsNot != null && bsNot.get(a.index))
+      if (!a.checkVisible() || bsNot != null && bsNot.get(a.i))
         continue;
       if (mads[i] > 0 || mads[i + 1] > 0)
         monomers[i].findNearestAtomIndex(xMouse, yMouse, closest, mads[i],
@@ -638,7 +638,7 @@ public abstract class BioPolymer {
           z -= 180; // center on 0
           if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z)) {
             if (bsAtoms != null)
-              bsAtoms.clear(a.index);
+              bsAtoms.clear(a.i);
             continue;
           }
           float angledeg = (writeRamachandranStraightness ? p

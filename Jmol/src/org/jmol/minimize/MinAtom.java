@@ -55,11 +55,11 @@ public class MinAtom {
     return "#" + index + " " + sType;
   }
 
-  MinAtom(int index, Atom atom, double[] coord, int atomCount) {
+  MinAtom(int index, Atom atom, double[] coord, int ac) {
     this.index = index;
     this.atom = atom;
     this.coord = coord;
-    bsVdw.setBits(index + 1, atomCount);
+    bsVdw.setBits(index + 1, ac);
     bsVdw.clear(index);
     hCount = atom.getCovalentHydrogenCount();
   }

@@ -91,7 +91,7 @@ public class LabelsRenderer extends FontLineShapeRenderer {
     int[] offsets = labels.offsets;
     if (labelStrings == null)
       return false;
-    Atom[] atoms = modelSet.atoms;
+    Atom[] atoms = ms.at;
     short backgroundColixContrast = vwr.getColixBackgroundContrast();
     int backgroundColor = vwr.getBackgroundArgb();
     sppm = vwr.getScalePixelsPerAngstrom(true);

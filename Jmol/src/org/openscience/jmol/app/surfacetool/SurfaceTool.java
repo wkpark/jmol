@@ -128,7 +128,7 @@ public class SurfaceTool {
       return box;
     for (int i = 0; i < mc.meshCount; i++) {
       Mesh m = mc.meshes[i];
-      if (!m.isValid || m.vertexCount == 0 && m.polygonCount == 0)
+      if (!m.isValid || m.vc == 0 && m.pc == 0)
         continue;
       if (m.thisID.equalsIgnoreCase("_slicerleft")
           || m.thisID.equalsIgnoreCase("_slicerright"))
@@ -236,7 +236,7 @@ public class SurfaceTool {
   }
 
   private boolean checkMesh(Mesh m) {
-    if (!m.isValid || m.vertexCount == 0 && m.polygonCount == 0) {
+    if (!m.isValid || m.vc == 0 && m.pc == 0) {
       return false;
     }
     if (m.thisID.equalsIgnoreCase("_slicerleft")

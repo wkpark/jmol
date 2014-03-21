@@ -194,7 +194,7 @@ public class BioShape extends AtomShape {
   @Override
   public void findNearestAtomIndex(int xMouse, int yMouse, Atom[] closest, BS bsNot) {
     bioPolymer.findNearestAtomIndex(xMouse, yMouse, closest, mads,
-        shape.myVisibilityFlag, bsNot);
+        shape.vf, bsNot);
   }
   
   void setMad(short mad, BS bsSelected, float[] values) {
@@ -203,7 +203,7 @@ public class BioShape extends AtomShape {
     isActive = true;
     if (bsSizeSet == null)
       bsSizeSet = new BS();
-    int flag = shape.myVisibilityFlag;
+    int flag = shape.vf;
     for (int i = monomerCount; --i >= 0; ) {
       int leadAtomIndex = leadAtomIndices[i];
       if (bsSelected.get(leadAtomIndex)) {
@@ -383,7 +383,7 @@ public class BioShape extends AtomShape {
       if (mads[i] <= 0)
         continue;
       int iAtom = leadAtomIndices[i];
-      if (monomers[i].chain.model.modelSet.isAtomHidden(iAtom))
+      if (monomers[i].chain.model.ms.isAtomHidden(iAtom))
         continue;
       shape.atoms[iAtom].setClickable(ALPHA_CARBON_VISIBILITY_FLAG);
       if (isNucleicPolymer)

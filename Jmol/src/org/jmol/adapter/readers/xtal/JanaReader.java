@@ -59,7 +59,7 @@ public class JanaReader extends AtomSetCollectionReader {
     modAverage = checkFilterKey("MODAVE");
     modAxes = getFilter("MODAXES=");
     setFractionalCoordinates(true);
-    atomSetCollection.newAtomSet();
+    asc.newAtomSet();
   }
   
   final static String records = "tit  cell ndim qi   lat  sym  spg  end  wma";
@@ -100,7 +100,7 @@ public class JanaReader extends AtomSetCollectionReader {
     parseTokenStr(line);
     switch (records.indexOf(line.substring(0, 3))) {
       case TITLE:
-        atomSetCollection.setAtomSetName(line.substring(5).trim());
+        asc.setAtomSetName(line.substring(5).trim());
         break;
       case CELL:
         cell();
@@ -151,7 +151,7 @@ public class JanaReader extends AtomSetCollectionReader {
   public void finalizeReader() throws Exception {
     readM40Data();
     if (lattvecs != null && lattvecs.size() > 0)
-      atomSetCollection.getSymmetry().addLatticeVectors(lattvecs);
+      asc.getSymmetry().addLatticeVectors(lattvecs);
     if (ms != null) {
       ms.setModulation(false);
     }
@@ -265,7 +265,7 @@ public class JanaReader extends AtomSetCollectionReader {
       }
       float o_site = atom.foccupancy = floats[2];
       setAtomCoordXYZ(atom, floats[3], floats[4], floats[5]);
-      atomSetCollection.addAtom(atom);
+      asc.addAtom(atom);
       if (modDim == 0)
         continue;
       String label = ";" + atom.atomName;
@@ -470,9 +470,9 @@ public class JanaReader extends AtomSetCollectionReader {
    */
   private void adjustM40Occupancies() {
     Map<String, Integer> htSiteMult = new Hashtable<String, Integer>();    
-    Atom[] atoms = atomSetCollection.atoms;
-    SymmetryInterface symmetry = atomSetCollection.getSymmetry();
-    for (int i = atomSetCollection.atomCount; --i >= 0;) {
+    Atom[] atoms = asc.atoms;
+    SymmetryInterface symmetry = asc.getSymmetry();
+    for (int i = asc.ac; --i >= 0;) {
       Atom a = atoms[i];
       Integer ii = htSiteMult.get(a.atomName);
       if (ii == null)

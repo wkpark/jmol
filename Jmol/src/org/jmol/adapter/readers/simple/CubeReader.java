@@ -53,12 +53,12 @@ import org.jmol.adapter.smarter.AtomSetCollectionReader;
 
 public class CubeReader extends AtomSetCollectionReader {
     
-  private int atomCount;
+  private int ac;
   private boolean isAngstroms = false;
   
   @Override
   public void initializeReader() throws Exception {
-    atomSetCollection.newAtomSet();
+    asc.newAtomSet();
     readTitleLines();
     readAtomCountAndOrigin();
     readLines(3);
@@ -68,29 +68,29 @@ public class CubeReader extends AtomSetCollectionReader {
   }
 
   private void readTitleLines() throws Exception {
-    if (readLine().indexOf("#JVXL") == 0)
-      while (readLine().indexOf("#") == 0) {
+    if (rd().indexOf("#JVXL") == 0)
+      while (rd().indexOf("#") == 0) {
       }
     checkCurrentLineForScript();
     String name = line.trim();
-    readLine();
+    rd();
     checkCurrentLineForScript();
-    atomSetCollection.setAtomSetName(name + " - " + line.trim());
+    asc.setAtomSetName(name + " - " + line.trim());
   }
 
   private void readAtomCountAndOrigin() throws Exception {
-    readLine();
+    rd();
     isAngstroms = (line.indexOf("ANGSTROMS") >= 0); //JVXL flag for Angstroms
     String[] tokens = getTokens();
     if (tokens[0].charAt(0) == '+') //Jvxl progressive reader -- ignore and consider negative
       tokens[0] = tokens[0].substring(1);
-    atomCount = Math.abs(parseIntStr(tokens[0]));
+    ac = Math.abs(parseIntStr(tokens[0]));
   }
   
   private void readAtoms() throws Exception {
     float f = (isAngstroms ? 1 : ANGSTROMS_PER_BOHR);
-    for (int i = 0; i < atomCount; ++i) {
-      String[] tokens = getTokensStr(readLine());
+    for (int i = 0; i < ac; ++i) {
+      String[] tokens = getTokensStr(rd());
       //allowing atomicAndIsotope for JVXL format
       setAtomCoordScaled(null, tokens, 2, f).elementNumber = (short)parseIntStr(tokens[0]);
     }

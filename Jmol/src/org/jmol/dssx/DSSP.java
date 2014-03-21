@@ -429,7 +429,7 @@ public class DSSP implements DSSPInterface {
   private void getBridges(int[][][][] min) {
     // ooooooh! It IS possible to have 3 bridges to the same residue. (3A5F) 
     // 
-    Atom[] atoms = bioPolymers[0].model.getModelSet().atoms;
+    Atom[] atoms = bioPolymers[0].model.getModelSet().at;
     Bridge bridge = null;
 
     Map<String, Boolean> htTemp = new Hashtable<String, Boolean>();
@@ -504,7 +504,7 @@ public class DSSP implements DSSPInterface {
     Atom nitrogen = ((AminoMonomer) donor).getNitrogenAtom();
     Atom oxygen = ((AminoMonomer) acceptor).getCarbonylOxygenAtom();
     if (htTemp != null) {
-      String key = nitrogen.index + " " + oxygen.index;
+      String key = nitrogen.i + " " + oxygen.i;
       if (htTemp.containsKey(key))
         return;
       htTemp.put(key, Boolean.TRUE);

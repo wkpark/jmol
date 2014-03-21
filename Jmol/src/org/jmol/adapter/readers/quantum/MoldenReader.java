@@ -62,8 +62,8 @@ public class MoldenReader extends MopacSlaterReader {
     Logger.info(line);
     if (line.indexOf("[ATOMS]") == 0) {
       readAtoms();
-      modelAtomCount = atomSetCollection.getFirstAtomSetAtomCount();
-      if (atomSetCollection.atomSetCount == 1 && moData != null)
+      modelAtomCount = asc.getFirstAtomSetAtomCount();
+      if (asc.atomSetCount == 1 && moData != null)
         finalizeMOData(moData);
       return false;
     }
@@ -89,8 +89,8 @@ public class MoldenReader extends MopacSlaterReader {
       return;
     try {
       int ilast = 0;
-      Atom[] atoms = atomSetCollection.atoms;
-      int nAtoms = atomSetCollection.atomCount;
+      Atom[] atoms = asc.atoms;
+      int nAtoms = asc.ac;
       bsAtomOK.set(nAtoms);
       int n = shells.size();
       for (int i = 0; i < n; i++) {
@@ -116,7 +116,7 @@ public class MoldenReader extends MopacSlaterReader {
       }
     } catch (Exception e) {
       Logger.error("Molden reader could not assign shells -- abandoning MOs");
-      atomSetCollection.setAtomSetAuxiliaryInfo("moData", null);
+      asc.setAtomSetAuxiliaryInfo("moData", null);
     }
 
   }
@@ -138,7 +138,7 @@ public class MoldenReader extends MopacSlaterReader {
     }
     
     float f = (isAU ? ANGSTROMS_PER_BOHR : 1);
-    while (readLine() != null && line.indexOf('[') < 0) {    
+    while (rd() != null && line.indexOf('[') < 0) {    
       String [] tokens = getTokens();
       if (tokens.length < 6)
         continue;
@@ -162,7 +162,7 @@ public class MoldenReader extends MopacSlaterReader {
     2    0    0    0    0             1.4738648100        1.0095121222          
     3    0    0    0    0             1.4738648100        1.0095121222          
      */
-    while (readLine() != null && line.indexOf("[") < 0) {
+    while (rd() != null && line.indexOf("[") < 0) {
       String[] tokens = getTokens();
       if (tokens.length < 7)
         continue;
@@ -213,7 +213,7 @@ public class MoldenReader extends MopacSlaterReader {
         bsAtomOK.set(atomIndex);
       }
       // Next is a sequence of shells and their primitives
-      while (readLine() != null && (line = line.trim()).length() > 0 && line.charAt(0) != '[') {
+      while (rd() != null && (line = line.trim()).length() > 0 && line.charAt(0) != '[') {
         // Next line has the shell label and a count of the number of primitives
         tokens = getTokens();
         String shellLabel = tokens[0].toUpperCase();
@@ -231,7 +231,7 @@ public class MoldenReader extends MopacSlaterReader {
         for (int ip = nPrimitives; --ip >= 0;) {
           // Read ip primitives, each containing an exponent and one (s,p,d,f)
           // or two (sp) contraction coefficient(s)
-          String[] primTokens = getTokensStr(readLine());
+          String[] primTokens = getTokensStr(rd());
           int nTokens = primTokens.length;
           float orbData[] = new float[nTokens];
 
@@ -244,7 +244,7 @@ public class MoldenReader extends MopacSlaterReader {
       }
       if (line.length() > 0 && line.charAt(0) == '[')
         break;
-      readLine();
+      rd();
     }
 
     float[][] garray = AU.newFloat2(gaussianPtr);
@@ -256,7 +256,7 @@ public class MoldenReader extends MopacSlaterReader {
     Logger.info(shells.size() + " slater shells read");
     Logger.info(garray.length + " gaussian primitives read");
     Logger.info(nCoef + " MO coefficients expected for orbital type " + orbitalType);
-    atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
+    asc.setAtomSetAuxiliaryInfo("moData", moData);
     return false;
   }
  
@@ -280,7 +280,7 @@ public class MoldenReader extends MopacSlaterReader {
          3  -0.01553604903
      */
 
-    while (checkOrbitalType(readLine())) {
+    while (checkOrbitalType(rd())) {
       //
     }
 
@@ -365,7 +365,7 @@ public class MoldenReader extends MopacSlaterReader {
   }
 
   private String[] getMoTokens(String line) throws Exception {
-    return (line == null && (line = readLine()) == null ? null : getTokensStr(line.replace('=',' ')));
+    return (line == null && (line = rd()) == null ? null : getTokensStr(line.replace('=',' ')));
   }
 
   private boolean checkOrbitalType(String line) {
@@ -403,7 +403,7 @@ public class MoldenReader extends MopacSlaterReader {
     List<String> frequencies = new  List<String>();
  //   BitSet bsOK = new BitSet();
  //   int iFreq = 0;
-    while (readLine() != null && line.indexOf('[') < 0) {
+    while (rd() != null && line.indexOf('[') < 0) {
       String f = getTokens()[0];
 //      bsOK.set(iFreq++, parseFloatStr(f) != 0);
       frequencies.addLast(f);
@@ -421,13 +421,13 @@ public class MoldenReader extends MopacSlaterReader {
 //        continue;
       doGetVibration(++vibrationNumber);
       if (haveVib)
-        atomSetCollection.cloneLastAtomSet();
+        asc.cloneLastAtomSet();
       haveVib = true;
-      atomSetCollection.setAtomSetFrequency(null, null, "" + PT.dVal(frequencies.get(nFreq)), null);
-      int i0 = atomSetCollection.getLastAtomSetAtomIndex();
+      asc.setAtomSetFrequency(null, null, "" + PT.dVal(frequencies.get(nFreq)), null);
+      int i0 = asc.getLastAtomSetAtomIndex();
       for (int i = 0; i < modelAtomCount; i++) {
-        tokens = getTokensStr(readLine());
-        atomSetCollection.addVibrationVector(i + i0,
+        tokens = getTokensStr(rd());
+        asc.addVibrationVector(i + i0,
             parseFloatStr(tokens[0]) * ANGSTROMS_PER_BOHR,
             parseFloatStr(tokens[1]) * ANGSTROMS_PER_BOHR,
             parseFloatStr(tokens[2]) * ANGSTROMS_PER_BOHR);
@@ -462,8 +462,8 @@ max-force
   */
   private boolean readGeometryOptimization() throws Exception {
     List<String> energies = new  List<String>();
-    readLine(); // energy
-    while (readLine() != null 
+    rd(); // energy
+    while (rd() != null 
         && line.indexOf("force") < 0)
       energies.addLast("" + PT.dVal(line.trim()));
     skipTo("[GEOMETRIES] XYZ");
@@ -473,7 +473,7 @@ max-force
     boolean haveModel = false;
     if (desiredModelNumber == 0 || desiredModelNumber == nGeom)
       desiredModelNumber = nGeom; 
-    else if (atomSetCollection.atomSetCount > 0)
+    else if (asc.atomSetCount > 0)
       finalizeMOData(null);
     for (int i = 0; i < nGeom; i++) {
       readLines(2);
@@ -492,28 +492,28 @@ max-force
     key = key.toUpperCase();
     if (line == null || !line.toUpperCase().contains(key))
 //      discardLinesUntilContains(key);
-      while (readLine() != null && line.toUpperCase().indexOf(key) < 0) {
+      while (rd() != null && line.toUpperCase().indexOf(key) < 0) {
       }
     
   }
 
   private void readAtomSet(String atomSetName, boolean isBohr, boolean asClone) throws Exception {
     if (asClone && desiredModelNumber < 0)
-      atomSetCollection.cloneFirstAtomSet(0);
+      asc.cloneFirstAtomSet(0);
     float f = (isBohr ? ANGSTROMS_PER_BOHR : 1);
-    atomSetCollection.setAtomSetName(atomSetName);
-    if (atomSetCollection.atomCount == 0) {
-      while (readLine() != null && line.indexOf('[') < 0) {    
+    asc.setAtomSetName(atomSetName);
+    if (asc.ac == 0) {
+      while (rd() != null && line.indexOf('[') < 0) {    
         String [] tokens = getTokens();
         if (tokens.length == 4)
           setAtomCoordScaled(null, tokens, 1, f).atomName = tokens[0];
       }    
-      modelAtomCount = atomSetCollection.getLastAtomSetAtomCount();
+      modelAtomCount = asc.getLastAtomSetAtomCount();
       return;
     }
-    Atom[] atoms = atomSetCollection.atoms;
-    int i0 = atomSetCollection.getLastAtomSetAtomIndex();
+    Atom[] atoms = asc.atoms;
+    int i0 = asc.getLastAtomSetAtomIndex();
     for (int i = 0; i < modelAtomCount; i++)
-      setAtomCoordScaled(atoms[i + i0], getTokensStr(readLine()), 1, f);
+      setAtomCoordScaled(atoms[i + i0], getTokensStr(rd()), 1, f);
   }
 }

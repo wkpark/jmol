@@ -828,19 +828,19 @@ class PyMOLScene implements JmolSceneGenerator {
    * create all objects for a given molecule or scene
    * @param reps
    * @param allowSurface
-   * @param atomCount0     > 0 for a molecule; -1 for a scene
-   * @param atomCount
+   * @param ac0     > 0 for a molecule; -1 for a scene
+   * @param ac
    */
-  void createShapeObjects(BS[] reps, boolean allowSurface, int atomCount0,
-                          int atomCount) {
-    if (atomCount >= 0) {
+  void createShapeObjects(BS[] reps, boolean allowSurface, int ac0,
+                          int ac) {
+    if (ac >= 0) {
       // initial creation, not just going to this scene
-      bsAtoms = BSUtil.newBitSet2(atomCount0, atomCount);
+      bsAtoms = BSUtil.newBitSet2(ac0, ac);
       JmolObject jo;
       // from reader
       jo = addJmolObject(T.atoms, bsAtoms, null);
-      colixes = AU.ensureLengthShort(colixes, atomCount);
-      for (int i = atomCount; --i >= atomCount0;)
+      colixes = AU.ensureLengthShort(colixes, ac);
+      for (int i = ac; --i >= ac0;)
         colixes[i] = (short) atomColorList.get(i).intValue();
       jo.setColors(colixes, 0);
       jo.setSize(0);
@@ -1140,11 +1140,11 @@ class PyMOLScene implements JmolSceneGenerator {
     return (o == null ? 0 : ((Integer) o[1]).intValue());
   }
 
-  BS setAtomMap(int[] atomMap, int atomCount0) {
+  BS setAtomMap(int[] atomMap, int ac0) {
     htAtomMap.put(objectNameID, atomMap);
     BS bsAtoms = htDefinedAtoms.get(objectJmolName);
     if (bsAtoms == null) {
-      bsAtoms = BS.newN(atomCount0 + atomMap.length);
+      bsAtoms = BS.newN(ac0 + atomMap.length);
       Logger.info("PyMOL molecule " + objectName);
       htDefinedAtoms.put(objectJmolName, bsAtoms);
       htObjectAtoms.put(objectName, bsAtoms);
@@ -1700,7 +1700,7 @@ class PyMOLScene implements JmolSceneGenerator {
     if (uniqueList == null)
       return;
     int bondCount = vwr.getBondCount();
-    Bond[] bonds = vwr.ms.bonds;
+    Bond[] bonds = vwr.ms.bo;
     for (int i = bsUniqueBonds.nextSetBit(0); i >= 0; i = bsUniqueBonds.nextSetBit(i + 1)) {
       float rad = Float.NaN;
       int id = uniqueList.get(Integer.valueOf(i)).intValue();
@@ -1733,7 +1733,7 @@ class PyMOLScene implements JmolSceneGenerator {
    */
   public void setBondParameters(Bond b, int modelIndex, float rad, float pymolValence,
                              int argb, float trans) {
-    if (modelIndex >= 0 && b.atom1.modelIndex != modelIndex)
+    if (modelIndex >= 0 && b.atom1.mi != modelIndex)
       return; 
     if (!Float.isNaN(rad))
       b.mad = (short) (rad * 2000);

@@ -159,7 +159,7 @@ public class AtomData {
   public int[] atomicNumber;
   public int[] atomMolecule;
   public P3[][] hAtoms;
-  public int atomCount;
+  public int ac;
   public int hydrogenAtomCount;
   public int adpMode;
 }

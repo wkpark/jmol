@@ -48,7 +48,7 @@ public class SpartanSmolReader extends SpartanInputReader {
   @Override
   protected void initializeReader() throws Exception {
     modelName = "Spartan file";
-    isCompoundDocument = (readLine()
+    isCompoundDocument = (rd()
         .indexOf("Compound Document File Directory") >= 0);
     inputOnly = checkFilterKey("INPUT");
     espCharges = !checkFilterKey("MULLIKEN"); // changed default in Jmol 12.1.41, 12.0.38
@@ -75,7 +75,7 @@ public class SpartanSmolReader extends SpartanInputReader {
       if (!doGetModel(modelNumber, null))
         return checkLastModel();
       if (modelAtomCount == 0)
-        atomSetCollection.newAtomSet();
+        asc.newAtomSet();
       moData = new Hashtable<String, Object>();
       moData.put("isNormalized", Boolean.TRUE);
       if (modelNo == Integer.MIN_VALUE) {
@@ -86,9 +86,9 @@ public class SpartanSmolReader extends SpartanInputReader {
         title = "Profile " + modelNo + (title == null ? "" : ": " + title);
       }
       Logger.info(title);
-      atomSetCollection.setAtomSetName(title);
-      atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.FALSE);
-      atomSetCollection.setCurrentAtomSetNumber(modelNo);
+      asc.setAtomSetName(title);
+      asc.setAtomSetAuxiliaryInfo("isPDB", Boolean.FALSE);
+      asc.setCurrentAtomSetNumber(modelNo);
       if (isCompoundDocument)
         readTransform();
       return true;
@@ -100,12 +100,12 @@ public class SpartanSmolReader extends SpartanInputReader {
       if (lcline.endsWith("input")) {
         bondData = "";
         readInputRecords();
-        if (atomSetCollection.errorMessage != null) {
+        if (asc.errorMessage != null) {
           continuing = false;
           return false;
         }
         if (title != null)
-          atomSetCollection.setAtomSetName(title);
+          asc.setAtomSetName(title);
         setCharges();
         if (inputOnly) {
           continuing = false;
@@ -139,11 +139,11 @@ public class SpartanSmolReader extends SpartanInputReader {
   protected void finalizeReader() throws Exception {
     finalizeReaderASCR();
     // info out of order -- still a chance, at least for first model
-    if (atomCount > 0 && spartanArchive != null
-        && atomSetCollection.bondCount == 0 && bondData != null)
+    if (ac > 0 && spartanArchive != null
+        && asc.bondCount == 0 && bondData != null)
       spartanArchive.addBonds(bondData, 0);
     if (moData != null) {
-      Float n = (Float) atomSetCollection
+      Float n = (Float) asc
           .getAtomSetCollectionAuxiliaryInfo("HOMO_N");
       if (n != null)
         moData.put("HOMO", Integer.valueOf(n.intValue()));
@@ -152,7 +152,7 @@ public class SpartanSmolReader extends SpartanInputReader {
 
   private void readTransform() throws Exception {
     float[] mat;
-    String binaryCodes = readLine();
+    String binaryCodes = rd();
     // last 16x4 bytes constitutes the 4x4 matrix, using doubles
     String[] tokens = getTokensStr(binaryCodes.trim());
     if (tokens.length < 16)
@@ -179,13 +179,13 @@ public class SpartanSmolReader extends SpartanInputReader {
     titles = new Hashtable<String, String>();
     SB header = new SB();
     int pt;
-    while (readLine() != null && !line.startsWith("END ")) {
+    while (rd() != null && !line.startsWith("END ")) {
       header.append(line).append("\n");
       if ((pt = line.indexOf(")")) > 0)
         titles.put("Title" + parseIntRange(line, 0, pt), (line
             .substring(pt + 1).trim()));
     }
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("fileHeader", header
+    asc.setAtomSetCollectionAuxiliaryInfo("fileHeader", header
         .toString());
   }
 
@@ -193,31 +193,31 @@ public class SpartanSmolReader extends SpartanInputReader {
     spartanArchive = new SpartanArchive(this, bondData, endCheck);
     if (readArchiveHeader()) {
       modelAtomCount = spartanArchive
-          .readArchive(line, false, atomCount, false);
-      if (atomCount == 0 || !isTrajectory)
-        atomCount += modelAtomCount;
+          .readArchive(line, false, ac, false);
+      if (ac == 0 || !isTrajectory)
+        ac += modelAtomCount;
     }
   }
 
   private boolean haveCharges;
 
   private void setCharges() {
-    if (haveCharges || atomSetCollection.atomCount == 0)
+    if (haveCharges || asc.ac == 0)
       return;
     haveCharges = (espCharges
-        && atomSetCollection.setAtomSetCollectionPartialCharges("ESPCHARGES")
-        || atomSetCollection.setAtomSetCollectionPartialCharges("MULCHARGES")
-        || atomSetCollection.setAtomSetCollectionPartialCharges("Q1_CHARGES") || atomSetCollection
+        && asc.setAtomSetCollectionPartialCharges("ESPCHARGES")
+        || asc.setAtomSetCollectionPartialCharges("MULCHARGES")
+        || asc.setAtomSetCollectionPartialCharges("Q1_CHARGES") || asc
         .setAtomSetCollectionPartialCharges("ESPCHARGES"));
   }
 
   private void readProperties() throws Exception {
     if (spartanArchive == null) {
-      readLine();
+      rd();
       return;
     }
     spartanArchive.readProperties();
-    readLine();
+    rd();
     setCharges();
   }
 
@@ -231,17 +231,17 @@ public class SpartanSmolReader extends SpartanInputReader {
   }
 
   private boolean readArchiveHeader() throws Exception {
-    String modelInfo = readLine();
+    String modelInfo = rd();
     if (Logger.debugging)
       Logger.debug(modelInfo);
     if (modelInfo.indexOf("Error:") == 0) // no archive here
       return false;
-    atomSetCollection.setCollectionName(modelInfo);
-    modelName = readLine();
+    asc.setCollectionName(modelInfo);
+    modelName = rd();
     if (Logger.debugging)
       Logger.debug(modelName);
     //    5  17  11  18   0   1  17   0 RHF      3-21G(d)           NOOPT FREQ
-    readLine();
+    rd();
     return true;
   }
 

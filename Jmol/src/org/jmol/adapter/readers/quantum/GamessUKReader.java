@@ -101,8 +101,8 @@ public class GamessUKReader extends GamessReader {
     discardLinesUntilContains("*****");
     discardLinesUntilContains("atom");
     discardLinesUntilContains("*****");
-    atomSetCollection.newAtomSet();
-    while (readLine() != null
+    asc.newAtomSet();
+    while (rd() != null
         && line.indexOf("*****") < 0) {
       if (line.charAt(14) == ' ')
         continue;
@@ -188,7 +188,7 @@ public class GamessUKReader extends GamessReader {
      readLines(4);
      symmetries = new  List<String>();
      occupancies = new  List<Float>();
-     while (readLine() != null && line.indexOf("====") < 0) {
+     while (rd() != null && line.indexOf("====") < 0) {
        String[] tokens = getTokensStr(line.substring(20));
        symmetries.addLast(tokens[0] + " " + tokens[1]);
        occupancies.addLast(Float.valueOf(parseFloatStr(tokens[5])));

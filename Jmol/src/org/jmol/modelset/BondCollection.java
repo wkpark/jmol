@@ -47,7 +47,7 @@ abstract public class BondCollection extends AtomCollection {
   }
 
   protected void releaseModelSetBC() {
-    bonds = null;
+    bo = null;
     freeBonds = null;
     releaseModelSetAC();
   }
@@ -61,50 +61,50 @@ abstract public class BondCollection extends AtomCollection {
     moleculeCount = 0;
   }
 
-  public Bond[] bonds;
+  public Bond[] bo;
   public int bondCount;
   
   public Bond getBondAt(int bondIndex) {
-    return bonds[bondIndex];
+    return bo[bondIndex];
   }
 
   public BondIterator getBondIteratorForType(int bondType, BS bsAtoms) {
     //Dipoles, Sticks
-    return new BondIteratorSelected(bonds, bondCount, bondType, bsAtoms, 
+    return new BondIteratorSelected(bo, bondCount, bondType, bsAtoms, 
         vwr.getBoolean(T.bondmodeor));
   }
 
   public BondIterator getBondIterator(BS bsBonds) {
     //Sticks
-    return new BondIteratorSelected(bonds, bondCount, Edge.BOND_ORDER_NULL, bsBonds, false);
+    return new BondIteratorSelected(bo, bondCount, Edge.BOND_ORDER_NULL, bsBonds, false);
   }
   
   public Atom getBondAtom1(int i) {
-    return bonds[i].atom1;
+    return bo[i].atom1;
   }
 
   public Atom getBondAtom2(int i) {
-    return bonds[i].atom2;
+    return bo[i].atom2;
   }
 
   public float getBondRadius(int i) {
-    return bonds[i].getRadius();
+    return bo[i].getRadius();
   }
 
   public int getBondOrder(int i) {
-    return bonds[i].order;
+    return bo[i].order;
   }
 
   public short getBondColix1(int i) {
-    return bonds[i].getColix1();
+    return bo[i].getColix1();
   }
 
   public short getBondColix2(int i) {
-    return bonds[i].getColix2();
+    return bo[i].getColix2();
   }
   
   public int getBondModelIndex(int i) {
-    return bonds[i].atom1.modelIndex;
+    return bo[i].atom1.mi;
   }
 
   /**
@@ -116,7 +116,7 @@ abstract public class BondCollection extends AtomCollection {
   protected int getBondCountInModel(int modelIndex) {
     int n = 0;
     for (int i = bondCount; --i >= 0;)
-      if (bonds[i].atom1.modelIndex == modelIndex)
+      if (bo[i].atom1.mi == modelIndex)
         n++;
     return n;
   }
@@ -124,9 +124,9 @@ abstract public class BondCollection extends AtomCollection {
   public BS getBondsForSelectedAtoms(BS bsAtoms, boolean bondSelectionModeOr) {
     BS bs = new BS();
     for (int iBond = 0; iBond < bondCount; ++iBond) {
-      Bond bond = bonds[iBond];
-      boolean isSelected1 = bsAtoms.get(bond.atom1.index);
-      boolean isSelected2 = bsAtoms.get(bond.atom2.index);
+      Bond bond = bo[iBond];
+      boolean isSelected1 = bsAtoms.get(bond.atom1.i);
+      boolean isSelected2 = bsAtoms.get(bond.atom2.i);
       if ((!bondSelectionModeOr & isSelected1 & isSelected2)
           || (bondSelectionModeOr & (isSelected1 | isSelected2)))
         bs.set(iBond);
@@ -142,7 +142,7 @@ abstract public class BondCollection extends AtomCollection {
       if (addGroup) {
         // for adding hydrogens
         atom1.group = atom2.group;
-        atom1.group.addAtoms(atom1.index);
+        atom1.group.addAtoms(atom1.i);
       }
     }
     return bond;
@@ -158,25 +158,25 @@ abstract public class BondCollection extends AtomCollection {
     if (atom.isBonded(atomOther)) {
       i = atom.getBond(atomOther).index;
       if (overrideBonding) {
-        bonds[i].setOrder(order);
-        bonds[i].setMad(mad);
-        if (bonds[i] instanceof HBond)
-          ((HBond) bonds[i]).energy = energy;
+        bo[i].setOrder(order);
+        bo[i].setMad(mad);
+        if (bo[i] instanceof HBond)
+          ((HBond) bo[i]).energy = energy;
       }
     } else {
-      if (bondCount == bonds.length)
-        bonds = (Bond[]) AU.arrayCopyObject(bonds, bondCount
+      if (bondCount == bo.length)
+        bo = (Bond[]) AU.arrayCopyObject(bo, bondCount
             + BOND_GROWTH_INCREMENT);
       i = setBond(bondCount++,
           bondMutually(atom, atomOther, order, mad, energy)).index;
     }
     if (bsBonds != null)
       bsBonds.set(i);
-    return bonds[i];
+    return bo[i];
   }
 
   protected Bond setBond(int index, Bond bond) {
-    return bonds[bond.index = index] = bond;
+    return bo[bond.index = index] = bond;
   }
 
   protected Bond bondMutually(Atom atom, Atom atomOther, int order, short mad, float energy) {
@@ -239,8 +239,8 @@ abstract public class BondCollection extends AtomCollection {
 
   public int addHBond(Atom atom1, Atom atom2, int order, float energy) {
     // from autoHbond and BioModel.getRasmolHydrogenBonds
-    if (bondCount == bonds.length)
-      bonds = (Bond[]) AU.arrayCopyObject(bonds, bondCount
+    if (bondCount == bo.length)
+      bo = (Bond[]) AU.arrayCopyObject(bo, bondCount
           + BOND_GROWTH_INCREMENT);
     return setBond(bondCount++, bondMutually(atom1, atom2, order, (short) 1,
         energy)).index;
@@ -275,7 +275,7 @@ abstract public class BondCollection extends AtomCollection {
         return false;
     }
     if (atomA.altloc != atomB.altloc
-        && atomA.altloc != '\0' && atomB.altloc != '\0' && getVibration(atomA.index, false) == null)
+        && atomA.altloc != '\0' && atomB.altloc != '\0' && getVibration(atomA.i, false) == null)
       return false;
     getOrAddBond(atomA, atomB, order, mad, bsBonds, 0, false);
     return true;
@@ -284,8 +284,8 @@ abstract public class BondCollection extends AtomCollection {
   protected void deleteAllBonds2() {
     vwr.setShapeProperty(JC.SHAPE_STICKS, "reset", null);
     for (int i = bondCount; --i >= 0;) {
-      bonds[i].deleteAtomReferences();
-      bonds[i] = null;
+      bo[i].deleteAtomReferences();
+      bo[i] = null;
     }
     bondCount = 0;
   }
@@ -324,7 +324,7 @@ abstract public class BondCollection extends AtomCollection {
     } else {
       bsBonds = new BS();
       for (int i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1)) {
-        Atom a = atoms[i];
+        Atom a = at[i];
         if (a.bonds != null)
           for (int j = a.bonds.length; --j >= 0;)
             if (bsB.get(a.getBondedAtomIndex(j)))
@@ -333,7 +333,7 @@ abstract public class BondCollection extends AtomCollection {
     }
     for (int i = bsBonds.nextSetBit(0); i < bondCount && i >= 0; i = bsBonds
         .nextSetBit(i + 1)) {
-      Bond bond = bonds[i];
+      Bond bond = bo[i];
       if (!isInRange(bond.atom1, bond.atom2, minD, maxD, minDIsFraction, maxDIsFraction, isFractional))
         continue;
       if (matchNull
@@ -384,13 +384,13 @@ abstract public class BondCollection extends AtomCollection {
     int modelIndexLast = -1;
     int n = bsBond.cardinality();
     for (int iSrc = iDst; iSrc < bondCount; ++iSrc) {
-      Bond bond = bonds[iSrc];
+      Bond bond = bo[iSrc];
       if (n > 0 && bsBond.get(iSrc)) {
         n--;
         if (!isFullModel) {
-          int modelIndex = bond.atom1.modelIndex;
+          int modelIndex = bond.atom1.mi;
           if (modelIndex != modelIndexLast)
-            ((ModelCollection) this).models[modelIndexLast = modelIndex]
+            ((ModelCollection) this).am[modelIndexLast = modelIndex]
                 .resetBoundCount();
         }
         bond.deleteAtomReferences();
@@ -399,7 +399,7 @@ abstract public class BondCollection extends AtomCollection {
       }
     }
     for (int i = bondCount; --i >= iDst;)
-      bonds[i] = null;
+      bo[i] = null;
     bondCount = iDst;
     BS[] sets = (BS[]) vwr.getShapeProperty(
         JC.SHAPE_STICKS, "sets");
@@ -484,7 +484,7 @@ abstract public class BondCollection extends AtomCollection {
 
   public void resetAromatic() {
     for (int i = bondCount; --i >= 0;) {
-      Bond bond = bonds[i];
+      Bond bond = bo[i];
       if (bond.isAromatic())
         bond.setOrder(Edge.BOND_AROMATIC);
     }
@@ -516,7 +516,7 @@ abstract public class BondCollection extends AtomCollection {
     boolean isAll = (bsBonds == null);
     int i0 = (isAll ? bondCount - 1 : bsBonds.nextSetBit(0));
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsBonds.nextSetBit(i + 1))) {
-        Bond bond = bonds[i];
+        Bond bond = bo[i];
         if (bsAromatic.get(i))
           bond.setOrder(Edge.BOND_AROMATIC);
         switch (bond.order & ~Edge.BOND_NEW) {
@@ -536,7 +536,7 @@ abstract public class BondCollection extends AtomCollection {
     isAll = (bsBonds == null);
     i0 = (isAll ? bondCount - 1 : bsBonds.nextSetBit(0));
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsBonds.nextSetBit(i + 1))) {
-        bond = bonds[i];
+        bond = bo[i];
         if (!bond.is(Edge.BOND_AROMATIC)
             || bsAromaticDouble.get(i) || bsAromaticSingle.get(i))
           continue;
@@ -545,7 +545,7 @@ abstract public class BondCollection extends AtomCollection {
       }
     // all done: do the actual assignments and clear arrays.
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsBonds.nextSetBit(i + 1))) {
-        bond = bonds[i];
+        bond = bo[i];
         if (bsAromaticDouble.get(i)) {
           if (!bond.is(Edge.BOND_AROMATIC_DOUBLE)) {
             bsAromatic.set(i);
@@ -711,7 +711,7 @@ abstract public class BondCollection extends AtomCollection {
     boolean isAll = (bsSelected == null);
     int i0 = (isAll ? bondCount - 1 : bsSelected.nextSetBit(0));
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsSelected.nextSetBit(i + 1))) {
-        bond = bonds[i];
+        bond = bo[i];
         if (!bond.is(Edge.BOND_AROMATIC_SINGLE))
           continue;
         Atom atom1;
@@ -760,16 +760,16 @@ abstract public class BondCollection extends AtomCollection {
       bs = new BS();
       BS bsBonds = (BS) specInfo;
       for (int i = bsBonds.nextSetBit(0); i >= 0; i = bsBonds.nextSetBit(i + 1)) {
-        bs.set(bonds[i].atom1.index);
-        bs.set(bonds[i].atom2.index);
+        bs.set(bo[i].atom1.i);
+        bs.set(bo[i].atom2.i);
       }
       return bs;
     case T.isaromatic:
       bs = new BS();
       for (int i = bondCount; --i >= 0;)
-        if (bonds[i].isAromatic()) {
-          bs.set(bonds[i].atom1.index);
-          bs.set(bonds[i].atom2.index);
+        if (bo[i].isAromatic()) {
+          bs.set(bo[i].atom1.i);
+          bs.set(bo[i].atom2.i);
         }
       return bs;
     }
@@ -777,7 +777,7 @@ abstract public class BondCollection extends AtomCollection {
  
   public BS setBondOrder(int bondIndex, char type) {
     int bondOrder = type - '0';
-    Bond bond = bonds[bondIndex];
+    Bond bond = bo[bondIndex];
     switch (type) {
     case '0':
     case '1':
@@ -828,14 +828,14 @@ abstract public class BondCollection extends AtomCollection {
       if (bonds[i].isCovalent()) {
         Atom atom2 = bonds[i].getOtherAtom(atom);
         if (atom2.getElementNumber() == 1)
-          bs.set(bonds[i].getOtherAtom(atom).index);
+          bs.set(bonds[i].getOtherAtom(atom).i);
       } else {
         bsBonds.set(bonds[i].index);
       }
     if (bsBonds.nextSetBit(0) >= 0)
       dBm(bsBonds, false);
     if (deleteAtom)
-      bs.set(atom.index);
+      bs.set(atom.i);
     if (bs.nextSetBit(0) >= 0)
       vwr.deleteAtoms(bs, false);
   }
@@ -846,8 +846,8 @@ abstract public class BondCollection extends AtomCollection {
     if (!isDisplay)
       haveHiddenBonds = true;
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
-      if (i < bondCount && bonds[i].mad != 0)
-        bonds[i].setShapeVisibility(isDisplay);
+      if (i < bondCount && bo[i].mad != 0)
+        bo[i].setShapeVisibility(isDisplay);
   }
 
 }

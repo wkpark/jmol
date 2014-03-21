@@ -61,7 +61,7 @@ public class XmlXsdReader extends XmlReader {
                             Object saxReader) throws Exception {
     parent.htParams.put("backboneAtoms", bsBackbone);
     PX(parent, saxReader);
-    atomSetCollection.clearSymbolicMap(); 
+    asc.clearSymbolicMap(); 
   }
 
   @Override
@@ -70,8 +70,8 @@ public class XmlXsdReader extends XmlReader {
     System.out.println( " " + localName + " " + atts);
     System.out.println("xmlchem3d: start " + localName);
     if ("Molecule".equalsIgnoreCase(localName)) {
-      atomSetCollection.newAtomSet();
-      atomSetCollection.setAtomSetName(atts.get("Name"));      
+      asc.newAtomSet();
+      asc.setAtomSetName(atts.get("Name"));      
       return;
     }
     
@@ -115,7 +115,7 @@ public class XmlXsdReader extends XmlReader {
         else if (type.equals("Triple"))
           order = 3;
       }
-      atomSetCollection.addNewBondFromNames(atoms[0], atoms[1], order);
+      asc.addNewBondFromNames(atoms[0], atoms[1], order);
       return;
     }
   }
@@ -125,7 +125,7 @@ public class XmlXsdReader extends XmlReader {
     if ("Atom3d".equalsIgnoreCase(localName)) {
       if (atom.elementSymbol != null && !Float.isNaN(atom.z)) {
         parent.setAtomCoord(atom);
-        atomSetCollection.addAtomWithMappedName(atom);
+        asc.addAtomWithMappedName(atom);
       }
       atom = null;
       return;

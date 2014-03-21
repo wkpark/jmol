@@ -18,7 +18,7 @@ import org.jmol.util.Logger;
 public class VaspPoscarReader extends AtomSetCollectionReader {
 
   private List<String> atomLabels = new List<String>();
-  private int atomCount;
+  private int ac;
 
   @Override
   protected void initializeReader() throws Exception {
@@ -30,14 +30,14 @@ public class VaspPoscarReader extends AtomSetCollectionReader {
   }
 
   private void readJobTitle() throws Exception {
-    atomSetCollection.setAtomSetName(readLine().trim());
+    asc.setAtomSetName(rd().trim());
   }
 
   private void readUnitCellVectors() throws Exception {
     // Read Unit Cell
     setSpaceGroupName("P1");
     setFractionalCoordinates(true);
-    float scaleFac = parseFloatStr(readLine().trim());
+    float scaleFac = parseFloatStr(rd().trim());
     float[] unitCellData = new float[9];
     fillFloatArray(null, 0, unitCellData);
     if (scaleFac != 1)
@@ -52,31 +52,31 @@ public class VaspPoscarReader extends AtomSetCollectionReader {
     //   H    C    O    Be   C    H
     String elementLabel[] = getTokensStr(discardLinesUntilNonBlank());
     //   6    24    18     6     6    24
-    String elementCounts[] = getTokensStr(readLine());
+    String elementCounts[] = getTokensStr(rd());
     SB mf = new SB();
     for (int i = 0; i < elementCounts.length; i++) { 
       int n = Integer.parseInt(elementCounts[i]);
-      atomCount += n;
+      ac += n;
       String label = elementLabel[i];
       mf.append(" ").append(label).appendI(n);
       for (int j = n; --j >= 0;)
         atomLabels.addLast(label);
     }
     String s = mf.toString();
-    Logger.info("VaspPoscar reader: " + atomCount + " atoms identified for" + s);
+    Logger.info("VaspPoscar reader: " + ac + " atoms identified for" + s);
     appendLoadNote(s);
-    atomSetCollection.newAtomSet();
-    atomSetCollection.setAtomSetName(s);
+    asc.newAtomSet();
+    asc.setAtomSetName(s);
   }
 
   private void readCoordinates() throws Exception {
     // If Selective is there, then skip a line 
     if (discardLinesUntilNonBlank().toLowerCase().contains("selective"))
-      readLine();
+      rd();
     if (line.toLowerCase().contains("cartesian"))
       setFractionalCoordinates(false);
-    for (int i = 0; i < atomCount; i++)
-      addAtomXYZSymName(getTokensStr(readLine()), 0, null, atomLabels.get(i));
+    for (int i = 0; i < ac; i++)
+      addAtomXYZSymName(getTokensStr(rd()), 0, null, atomLabels.get(i));
   }
 
 }

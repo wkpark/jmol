@@ -165,12 +165,12 @@ public class Bond extends Edge {
 
   @Override
   public int getAtomIndex1() {
-    return atom1.index;
+    return atom1.i;
   }
   
   @Override
   public int getAtomIndex2() {
-    return atom2.index;
+    return atom2.i;
   }
   
   float getRadius() {

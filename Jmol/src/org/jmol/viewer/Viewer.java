@@ -232,7 +232,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public Object compiler;
   public Map<String, Object> definedAtomSets;
   public ModelSet ms;
-  public FileManager fileManager;
+  public FileManager fm;
 
   private boolean isApplet, isJNLP;
 
@@ -266,14 +266,14 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
 
-  AnimationManager animationManager;
-  ColorManager colorManager;
-  JmolDataManager dataManager;
-  ShapeManager shapeManager;
-  SelectionManager selectionManager;
-  JmolRepaintManager repaintManager;
+  AnimationManager am;
+  ColorManager cm;
+  JmolDataManager dm;
+  ShapeManager shm;
+  SelectionManager slm;
+  JmolRepaintManager rm;
   public GlobalSettings g;
-  public StatusManager statusManager;
+  public StatusManager sm;
   TransformManager tm;
   
   public final static String strJavaVendor = "Java: " + System.getProperty("java.vendor",
@@ -310,9 +310,9 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   private ACCESS access;
   private CommandHistory commandHistory = new CommandHistory();
 
-  private ModelManager modelManager;
-  private StateManager stateManager;
-  private JmolScriptManager scriptManager;
+  private ModelManager mm;
+  private StateManager stm;
+  private JmolScriptManager scm;
   public JmolScriptEvaluator eval;
   private TempArray tempArray;
   
@@ -375,7 +375,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   StatusManager getStatusManager() {
-    return statusManager;
+    return sm;
   }
 
   public boolean haveAccess(ACCESS a) {
@@ -401,7 +401,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public BS getSmartsMatch(String smarts, BS bsSelected) throws Exception {
     if (bsSelected == null)
       bsSelected = getSelectedAtoms();
-    return getSmilesMatcher().getSubstructureSet(smarts, ms.atoms,
+    return getSmilesMatcher().getSubstructureSet(smarts, ms.at,
         getAtomCount(), bsSelected, true, false);
   }
 
@@ -513,11 +513,11 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     gdata = (o == null ? new GData() : (GData) o);
     gdata.initialize(apiPlatform);
 
-    stateManager = new StateManager(this);
-    colorManager = new ColorManager(this, gdata);
-    statusManager = new StatusManager(this);
+    stm = new StateManager(this);
+    cm = new ColorManager(this, gdata);
+    sm = new StatusManager(this);
     tm = new TransformManager(this, Integer.MAX_VALUE, 0);
-    selectionManager = new SelectionManager(this);
+    slm = new SelectionManager(this);
     if (haveDisplay) {
       actionManager = (multiTouch ? (ActionManager) Interface
           .getOption("multitouch.ActionManagerMT")
@@ -528,17 +528,17 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       if (multiTouch && !checkOption2("-simulated", "-simulated"))
         apiPlatform.setTransparentCursor(display);
     }
-    modelManager = new ModelManager(this);
-    shapeManager = new ShapeManager(this);
+    mm = new ModelManager(this);
+    shm = new ShapeManager(this);
     tempArray = new TempArray();
-    animationManager = new AnimationManager(this);
+    am = new AnimationManager(this);
     o = info.get("repaintManager");
     if (o == null)
       o = (Interface.getOption("render.RepaintManager"));
     if (o != null && !o.equals(""))
-      (repaintManager = (JmolRepaintManager) o).set(this, shapeManager);
+      (rm = (JmolRepaintManager) o).set(this, shm);
     initialize(true);
-    fileManager = new FileManager(this);
+    fm = new FileManager(this);
     definedAtomSets = new Hashtable<String, Object>();
     setJmolStatusListener(statusListener);
     if (isApplet) {
@@ -561,7 +561,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       if (i >= 0)
         path = path.substring(0, i);
       jsDocumentBase = path;
-      fileManager.setAppletContext(appletDocumentBase);
+      fm.setAppletContext(appletDocumentBase);
       String appletProxy = (String) info.get("appletProxy");
       if (appletProxy != null)
         setStringProperty("appletProxy", appletProxy);
@@ -627,7 +627,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     }
     zap(false, true, false); // here to allow echos
     g.setS("language", GT.getLanguage());
-    stateManager.setJmolDefaults();
+    stm.setJmolDefaults();
     // this code will be shared between Jmol 14.0 and 14.1
     Elements.covalentVersion = (JC.versionInt < 1401011 ? Elements.RAD_COV_IONIC_OB1_100_1: Elements.RAD_COV_BODR_2014_02_22);
     allowArrayDotNotation = (JC.versionInt >= 1401011);
@@ -645,23 +645,23 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
   
   private JmolDataManager getDataManager() {
-    return (dataManager == null ? (dataManager = ((JmolDataManager) Interface
-        .getInterface("org.jmol.viewer.DataManager")).set(this)) : dataManager);
+    return (dm == null ? (dm = ((JmolDataManager) Interface
+        .getInterface("org.jmol.viewer.DataManager")).set(this)) : dm);
   }
   
   private JmolScriptManager getScriptManager() {
-    if (allowScripting && scriptManager == null) {
-      scriptManager = (JmolScriptManager) Interface
+    if (allowScripting && scm == null) {
+      scm = (JmolScriptManager) Interface
           .getOption("script.ScriptManager");
-      if (scriptManager == null) {
+      if (scm == null) {
         allowScripting = false;
         return null;
       }
-      eval = scriptManager.setViewer(this);
+      eval = scm.setViewer(this);
       if (useCommandThread)
-        scriptManager.startCommandWatcher(true);
+        scm.startCommandWatcher(true);
     }
-    return scriptManager;
+    return scm;
   }
 
   private boolean checkOption2(String key1, String key2) {
@@ -741,7 +741,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     axesAreTainted = true;
     tm.homePosition(includingSpin);
     if (ms.setCrystallographicDefaults())
-      stateManager.setCrystallographicDefaults();
+      stm.setCrystallographicDefaults();
     else
       setAxesModeMolecular(false);
     prevFrame = Integer.MIN_VALUE;
@@ -766,7 +766,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   // ///////////////////////////////////////////////////////////////
 
   public void initialize(boolean clearUserVariables) {
-    g = stateManager.getGlobalSettings(g, clearUserVariables);
+    g = stm.getGlobalSettings(g, clearUserVariables);
     setStartupBooleans();
     g.setI("_width", dimScreen.width);
     g.setI("_height", dimScreen.height);
@@ -775,7 +775,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       g.setB("_multiTouchClient", actionManager.isMTClient());
       g.setB("_multiTouchServer", actionManager.isMTServer());
     }
-    colorManager.resetElementColors();
+    cm.resetElementColors();
     setObjectColor("background", "black");
     setObjectColor("axis1", "red");
     setObjectColor("axis2", "green");
@@ -793,10 +793,10 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     gdata.setPhongExponent(g.phongExponent);
     gdata.setSpecularPower(g.specularPower);
     if (ms != null)
-      animationManager.setAnimationOn(false);
-    animationManager.setAnimationFps(g.animationFps);
+      am.setAnimationOn(false);
+    am.setAnimationFps(g.animationFps);
 
-    statusManager.setAllowStatusReporting(g.statusReporting);
+    sm.setAllowStatusReporting(g.statusReporting);
     setBooleanProperty("antialiasDisplay", g.antialiasDisplay);
 
     setTransformManagerDefaults();
@@ -804,38 +804,38 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public String listSavedStates() {
-    return stateManager.listSavedStates();
+    return stm.listSavedStates();
   }
 
   public void saveOrientation(String saveName, float[] pymolView) {
     // from Eval
-    stateManager.saveOrientation(saveName, pymolView);
+    stm.saveOrientation(saveName, pymolView);
   }
 
   public void saveScene(String saveName, Map<String, Object> scene) {
-    stateManager.saveScene(saveName, scene);
+    stm.saveScene(saveName, scene);
   }
 
   public void restoreScene(String saveName, float timeSeconds) {
-    stateManager.restoreScene(saveName, timeSeconds);
+    stm.restoreScene(saveName, timeSeconds);
   }
 
   public boolean restoreOrientation(String saveName, float timeSeconds) {
     // from Eval
-    return stateManager.restoreOrientation(saveName, timeSeconds, true);
+    return stm.restoreOrientation(saveName, timeSeconds, true);
   }
 
   public void restoreRotation(String saveName, float timeSeconds) {
-    stateManager.restoreOrientation(saveName, timeSeconds, false);
+    stm.restoreOrientation(saveName, timeSeconds, false);
   }
 
   void saveModelOrientation() {
     ms.saveModelOrientation(getCurrentModelIndex(),
-        stateManager.getOrientation());
+        stm.getOrientation());
   }
 
   public Orientation getOrientation() {
-    return stateManager.getOrientation();
+    return stm.getOrientation();
   }
 
   void restoreModelOrientation(int modelIndex) {
@@ -852,69 +852,69 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public void saveBonds(String saveName) {
     // from Eval
-    stateManager.saveBonds(saveName);
+    stm.saveBonds(saveName);
   }
 
   public ScriptContext saveContext(String saveName) {
     // from Eval
     ScriptContext sc = getScriptContext("Context_" + saveName);
-    stateManager.saveContext(saveName, sc);
+    stm.saveContext(saveName, sc);
     setUserVariable(saveName, SV.newV(T.context, sc));
     return sc;
   }
 
   public ScriptContext getContext(String saveName) {
     // from Eval
-    return (ScriptContext) stateManager.getContext(saveName);
+    return (ScriptContext) stm.getContext(saveName);
   }
   
   public boolean restoreBonds(String saveName) {
     // from Eval
     clearModelDependentObjects();
-    return stateManager.restoreBonds(saveName);
+    return stm.restoreBonds(saveName);
   }
 
   public void saveState(String saveName) {
     // from Eval
-    stateManager.saveState(saveName);
+    stm.saveState(saveName);
   }
 
   public void deleteSaved(String name) {
-    stateManager.deleteSaved(name);
+    stm.deleteSaved(name);
   }
 
   public String getSavedState(String saveName) {
-    return stateManager.getSavedState(saveName);
+    return stm.getSavedState(saveName);
   }
 
   public void saveStructure(String saveName) {
     // from Eval
-    stateManager.saveStructure(saveName);
+    stm.saveStructure(saveName);
   }
 
   public String getSavedStructure(String saveName) {
-    return stateManager.getSavedStructure(saveName);
+    return stm.getSavedStructure(saveName);
   }
 
   public void saveCoordinates(String saveName, BS bsSelected) {
     // from Eval
-    stateManager.saveCoordinates(saveName, bsSelected);
+    stm.saveCoordinates(saveName, bsSelected);
   }
 
   public String getSavedCoordinates(String saveName) {
-    return stateManager.getSavedCoordinates(saveName);
+    return stm.getSavedCoordinates(saveName);
   }
 
   public void saveSelection(String saveName) {
     // from Eval
-    stateManager.saveSelection(saveName, getSelectedAtoms());
-    stateManager.restoreSelection(saveName); // just to register the # of
+    stm.saveSelection(saveName, getSelectedAtoms());
+    stm.restoreSelection(saveName); // just to register the # of
     // selected atoms
   }
 
   public boolean restoreSelection(String saveName) {
     // from Eval
-    return stateManager.restoreSelection(saveName);
+    return stm.restoreSelection(saveName);
   }
 
   // ///////////////////////////////////////////////////////////////
@@ -1113,14 +1113,14 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     // MouseManager.mouseSinglePressDrag
     if (mouseEnabled)
       tm.zoomBy(pixels);
-    refresh(2, statusManager.syncingMouse ? "Mouse: zoomBy " + pixels : "");
+    refresh(2, sm.syncingMouse ? "Mouse: zoomBy " + pixels : "");
   }
 
   void zoomByFactor(float factor, int x, int y) {
     // MouseManager.mouseWheel
     if (mouseEnabled)
       tm.zoomByFactor(factor, x, y);
-    refresh(2, !statusManager.syncingMouse ? "" : "Mouse: zoomByFactor "
+    refresh(2, !sm.syncingMouse ? "" : "Mouse: zoomByFactor "
         + factor + (x == Integer.MAX_VALUE ? "" : " " + x + " " + y));
   }
 
@@ -1128,7 +1128,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     // mouseSinglePressDrag
     if (mouseEnabled)
       tm.rotateXYBy(xDelta, yDelta, null);
-    refresh(2, statusManager.syncingMouse ? "Mouse: rotateXYBy " + xDelta + " "
+    refresh(2, sm.syncingMouse ? "Mouse: rotateXYBy " + xDelta + " "
         + yDelta : "");
   }
 
@@ -1137,7 +1137,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       tm.spinXYBy(xDelta, yDelta, speed);
     if (xDelta == 0 && yDelta == 0)
       return;
-    refresh(2, statusManager.syncingMouse ? "Mouse: spinXYBy " + xDelta + " "
+    refresh(2, sm.syncingMouse ? "Mouse: spinXYBy " + xDelta + " "
         + yDelta + " " + speed : "");
   }
 
@@ -1145,7 +1145,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     // mouseSinglePressDrag
     if (mouseEnabled)
       tm.rotateZBy(zDelta, x, y);
-    refresh(2, statusManager.syncingMouse ? "Mouse: rotateZBy " + zDelta
+    refresh(2, sm.syncingMouse ? "Mouse: rotateZBy " + zDelta
         + (x == Integer.MAX_VALUE ? "" : " " + x + " " + y) : "");
   }
 
@@ -1158,7 +1158,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       refreshMeasures(true);
     }
     //TODO: note that sync may not work with set allowRotateSelectedAtoms
-    refresh(2, statusManager.syncingMouse ? "Mouse: rotateMolecule " + deltaX
+    refresh(2, sm.syncingMouse ? "Mouse: rotateMolecule " + deltaX
         + " " + deltaY : "");
   }
 
@@ -1176,7 +1176,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     // mouseDoublePressDrag, mouseSinglePressDrag
     if (mouseEnabled)
       tm.translateXYBy(xDelta, yDelta);
-    refresh(2, statusManager.syncingMouse ? "Mouse: translateXYBy " + xDelta
+    refresh(2, sm.syncingMouse ? "Mouse: translateXYBy " + xDelta
         + " " + yDelta : "");
   }
 
@@ -1513,7 +1513,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     case T.quaternion:
       return ms.getBoundBoxOrientation(type, getSelectedAtoms());
     case T.name:
-      return stateManager.getSavedOrientationText(name);
+      return stm.getSavedOrientationText(name);
     default:
       return tm.getOrientationText(type);
     }
@@ -1544,11 +1544,11 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   // ///////////////////////////////////////////////////////////////
 
   public float[] getCurrentColorRange() {
-    return colorManager.getPropertyColorRange();
+    return cm.getPropertyColorRange();
   }
 
   private void setDefaultColors(boolean isRasmol) {
-    colorManager.setDefaultColors(isRasmol);
+    cm.setDefaultColors(isRasmol);
     g.setB("colorRasmol", isRasmol);
     g.setS("defaultColorScheme", (isRasmol ? "rasmol" : "jmol"));
   }
@@ -1559,18 +1559,18 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public void setRubberbandArgb(int argb) {
     // Eval
-    colorManager.setRubberbandArgb(argb);
+    cm.setRubberbandArgb(argb);
   }
 
   public short getColixRubberband() {
-    return colorManager.colixRubberband;
+    return cm.colixRubberband;
   }
 
   public void setElementArgb(int elementNumber, int argb) {
     // Eval
     g.setS("=color " + Elements.elementNameFromNumber(elementNumber),
         Escape.escapeColor(argb));
-    colorManager.setElementArgb(elementNumber, argb);
+    cm.setElementArgb(elementNumber, argb);
   }
 
   @Override
@@ -1635,7 +1635,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     switch (objId) {
     case StateManager.OBJ_BACKGROUND:
       gdata.setBackgroundArgb(argb);
-      colorManager.setColixBackgroundContrast(argb);
+      cm.setColixBackgroundContrast(argb);
       break;
     }
     g.setS(name + "Color", Escape.escapeColor(argb));
@@ -1703,7 +1703,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       isTranslucent = true;
       scheme = scheme.substring(12).trim();
     }
-    colorManager.setPropertyColorScheme(scheme, isTranslucent, isOverloaded);
+    cm.setPropertyColorScheme(scheme, isTranslucent, isOverloaded);
   }
 
   public String getPropertyColorScheme() {
@@ -1711,7 +1711,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public short getColixBackgroundContrast() {
-    return colorManager.colixBackgroundContrast;
+    return cm.colixBackgroundContrast;
   }
 
   public String getSpecularState() {
@@ -1719,29 +1719,29 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public short getColixAtomPalette(Atom atom, byte pid) {
-    return colorManager.getColixAtomPalette(atom, pid);
+    return cm.getColixAtomPalette(atom, pid);
   }
 
   public short getColixBondPalette(Bond bond, int pid) {
-    return colorManager.getColixBondPalette(bond, pid);
+    return cm.getColixBondPalette(bond, pid);
   }
 
   public String getColorSchemeList(String colorScheme) {
-    return colorManager.getColorSchemeList(colorScheme);
+    return cm.getColorSchemeList(colorScheme);
   }
 
   public void setUserScale(int[] scale) {
-    colorManager.setUserScale(scale);
+    cm.setUserScale(scale);
   }
 
   public short getColixForPropertyValue(float val) {
     // isosurface
-    return colorManager.getColixForPropertyValue(val);
+    return cm.getColixForPropertyValue(val);
   }
 
   public P3 getColorPointForPropertyValue(float val) {
     // x = {atomno=3}.partialcharge.color
-    return CU.colorPtFromInt2(gdata.getColorArgbOrGray(colorManager
+    return CU.colorPtFromInt2(gdata.getColorArgbOrGray(cm
         .getColixForPropertyValue(val)));
   }
 
@@ -1753,8 +1753,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     // Eval, ActionManager
     if (isGroup)
       bs = getUndeletedGroupAtomBits(bs);
-    selectionManager.select(bs, addRemove, isQuiet);
-    shapeManager.setShapeSizeBs(JC.SHAPE_STICKS, Integer.MAX_VALUE, null, null);
+    slm.select(bs, addRemove, isQuiet);
+    shm.setShapeSizeBs(JC.SHAPE_STICKS, Integer.MAX_VALUE, null, null);
   }
 
   @Override
@@ -1764,7 +1764,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public void selectBonds(BS bs) {
-    shapeManager.setShapeSizeBs(JC.SHAPE_STICKS, Integer.MAX_VALUE, null, bs);
+    shm.setShapeSizeBs(JC.SHAPE_STICKS, Integer.MAX_VALUE, null, bs);
   }
 
   public void displayAtoms(BS bs, boolean isDisplay, boolean isGroup,
@@ -1773,27 +1773,27 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     if (isGroup)
       bs = getUndeletedGroupAtomBits(bs);
     if (isDisplay)
-      selectionManager.display(ms, bs, addRemove, isQuiet);
+      slm.display(ms, bs, addRemove, isQuiet);
     else
-      selectionManager.hide(ms, bs, addRemove, isQuiet);
+      slm.hide(ms, bs, addRemove, isQuiet);
   }
 
   private BS getUndeletedGroupAtomBits(BS bs) {
     bs = getAtomBits(T.group, bs);
-    BSUtil.andNot(bs, selectionManager.getDeletedAtoms());
+    BSUtil.andNot(bs, slm.getDeletedAtoms());
     return bs;
   }
 
   public BS getHiddenSet() {
-    return selectionManager.getHiddenSet();
+    return slm.getHiddenSet();
   }
 
   public boolean isSelected(int atomIndex) {
-    return selectionManager.isSelected(atomIndex);
+    return slm.isSelected(atomIndex);
   }
 
   boolean isInSelectionSubset(int atomIndex) {
-    return selectionManager.isInSelectionSubset(atomIndex);
+    return slm.isInSelectionSubset(atomIndex);
   }
 
   void reportSelection(String msg) {
@@ -1820,7 +1820,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   @Override
   public void selectAll() {
     // initializeModel
-    selectionManager.selectAll(false);
+    slm.selectAll(false);
   }
 
   private boolean noneSelected;
@@ -1836,43 +1836,43 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   @Override
   public void clearSelection() {
     // not used in this project; in jmolViewer interface, though
-    selectionManager.clearSelection(true);
+    slm.clearSelection(true);
     g.setB("hideNotSelected", false);
   }
 
   public void setSelectionSubset(BS subset) {
-    selectionManager.setSelectionSubset(subset);
+    slm.setSelectionSubset(subset);
   }
 
   public BS getSelectionSubset() {
-    return selectionManager.getSelectionSubset();
+    return slm.getSelectionSubset();
   }
 
   public void invertSelection() {
     // Eval
-    selectionManager.invertSelection();
+    slm.invertSelection();
   }
 
   @Override
   public BS getSelectedAtoms() {
-    return selectionManager.getSelectedAtoms();
+    return slm.getSelectedAtoms();
   }
 
   public BS getSelectedAtomsNoSubset() {
-    return selectionManager.getSelectedAtomsNoSubset();
+    return slm.getSelectedAtomsNoSubset();
   }
 
   public void setSelectedAtom(int atomIndex, boolean TF) {
-    selectionManager.setSelectedAtom(atomIndex, TF);
+    slm.setSelectedAtom(atomIndex, TF);
   }
 
   public boolean isAtomSelected(int atomIndex) {
-    return selectionManager.isAtomSelected(atomIndex);
+    return slm.isAtomSelected(atomIndex);
   }
 
   @Override
   public int getSelectionCount() {
-    return selectionManager.getSelectionCount();
+    return slm.getSelectionCount();
   }
 
   public void setFormalCharges(int formalCharge) {
@@ -1881,12 +1881,12 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   @Override
   public void addSelectionListener(JmolSelectionListener listener) {
-    selectionManager.addListener(listener);
+    slm.addListener(listener);
   }
 
   @Override
   public void removeSelectionListener(JmolSelectionListener listener) {
-    selectionManager.addListener(listener);
+    slm.addListener(listener);
   }
 
   BS getAtomBitSetEval(JmolScriptEvaluator eval, Object atomExpression) {
@@ -1907,8 +1907,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       clearScriptQueue();
       clearThreads();
       haltScriptExecution();
-      if (scriptManager != null)
-        scriptManager.clear(true);
+      if (scm != null)
+        scm.clear(true);
       gdata.destroy();
       if (jmolpopup != null)
         jmolpopup.jpiDispose();
@@ -1961,14 +1961,14 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   @Override
   public BufferedInputStream getBufferedInputStream(String fullPathName) {
     // used by some JVXL readers
-    return fileManager.getBufferedInputStream(fullPathName);
+    return fm.getBufferedInputStream(fullPathName);
   }
 
   public Object getBufferedReaderOrErrorMessageFromName(
                                                         String name,
                                                         String[] fullPathNameReturn,
                                                         boolean isBinary) {
-    return fileManager.getBufferedReaderOrErrorMessageFromName(name,
+    return fm.getBufferedReaderOrErrorMessageFromName(name,
         fullPathNameReturn, isBinary, true);
   }
 
@@ -2145,7 +2145,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     if (htParams == null)
       htParams = setLoadParameters(null, isAppend);
     Object atomSetCollection;
-    String[] saveInfo = fileManager.getFileInfo();
+    String[] saveInfo = fm.getFileInfo();
     if (fileNames != null) {
 
       // 1) a set of file names
@@ -2157,7 +2157,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       }
       long timeBegin = System.currentTimeMillis();
 
-      atomSetCollection = fileManager.createAtomSetCollectionFromFiles(
+      atomSetCollection = fm.createAtomSetCollectionFromFiles(
           fileNames, setLoadParameters(htParams, isAppend), isAppend);
       long ms = System.currentTimeMillis() - timeBegin;
       Logger.info("openFiles(" + fileNames.length + ") " + ms + " ms");
@@ -2187,21 +2187,21 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
       // 3) a file reader (not used by Jmol) 
 
-      atomSetCollection = fileManager.createAtomSetCollectionFromReader(
+      atomSetCollection = fm.createAtomSetCollectionFromReader(
           fullPathName, fileName, reader, htParams);
 
     } else {
 
       // 4) a DOM reader (could be used by Jmol) 
 
-      atomSetCollection = fileManager.createAtomSetCollectionFromDOM(reader,
+      atomSetCollection = fm.createAtomSetCollectionFromDOM(reader,
           htParams);
     }
 
     // OK, the file has been read and is now closed.
 
     if (tokType != 0) { // all we are doing is reading atom data
-      fileManager.setFileInfo(saveInfo);
+      fm.setFileInfo(saveInfo);
       return loadAtomDataAndReturnError(atomSetCollection, tokType);
     }
 
@@ -2378,14 +2378,14 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         zap(true, false/*true*/, false);
       if (!isLoadVariable && (!haveFileData || isString))
           getStateCreator().getInlineData(loadScript, strModel, isAppend, getDefaultLoadFilter());
-      atomSetCollection = fileManager.createAtomSetCollectionFromString(
+      atomSetCollection = fm.createAtomSetCollectionFromString(
           strModel, htParams, isAppend);
     } else {
 
       // if the filename has a "?" at the beginning, we don't zap, 
       // because the user might cancel the operation.
 
-      atomSetCollection = fileManager.createAtomSetCollectionFromFile(fileName,
+      atomSetCollection = fm.createAtomSetCollectionFromFile(fileName,
           htParams, isAppend);
     }
     Logger.checkTimer(msg, false);
@@ -2489,7 +2489,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     List<Object> list = new List<Object>();
     for (int i = 0; i < arrayData.size(); i++)
       list.addLast(arrayData.get(i));
-    Object atomSetCollection = fileManager.createAtomSeCollectionFromArrayData(
+    Object atomSetCollection = fm.createAtomSeCollectionFromArrayData(
         list, setLoadParameters(null, isAppend), isAppend);
     String ret = createModelSetAndReturnError(atomSetCollection, isAppend,
         null, null);
@@ -2599,7 +2599,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     if (!isLoadCommand)
       getStateCreator().getInlineData(loadScript, strModel, isAppend,
           getDefaultLoadFilter());
-    Object atomSetCollection = fileManager.createAtomSetCollectionFromString(
+    Object atomSetCollection = fm.createAtomSetCollectionFromString(
         strModel, htParams, isAppend);
     return createModelSetAndReturnError(atomSetCollection, isAppend,
         loadScript, null);
@@ -2620,7 +2620,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     SB loadScript = new SB();
     if (!isAppend)
       zap(true, false/*true*/, false);
-    Object atomSetCollection = fileManager.createAtomSeCollectionFromStrings(
+    Object atomSetCollection = fm.createAtomSeCollectionFromStrings(
         arrayModels, loadScript, setLoadParameters(htParams, isAppend),
         isAppend);
     return createModelSetAndReturnError(atomSetCollection, isAppend,
@@ -2653,8 +2653,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   private String createModelSetAndReturnError(Object atomSetCollection,
                                               boolean isAppend, SB loadScript,
                                               Map<String, Object> htParams) {
-    String fullPathName = fileManager.getFullPathName(false);
-    String fileName = fileManager.getFileName();
+    String fullPathName = fm.getFullPathName(false);
+    String fileName = fm.getFileName();
     String errMsg;
     if (loadScript == null) {
       setBooleanProperty("preserveState", false);
@@ -2680,7 +2680,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     setErrorMessage(null, null);
     try {
       BS bsNew = new BS();
-      modelManager.createModelSet(fullPathName, fileName, loadScript,
+      mm.createModelSet(fullPathName, fileName, loadScript,
           atomSetCollection, bsNew, isAppend);
       if (bsNew.cardinality() > 0) {
         // is a 2D dataset, as from JME
@@ -2737,7 +2737,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       return (String) atomSetCollection;
     setErrorMessage(null, null);
     try {
-      String script = modelManager.createAtomDataSet(atomSetCollection, tokType);
+      String script = mm.createAtomDataSet(atomSetCollection, tokType);
       switch (tokType) {
       case T.xyz:
         if (script != null)
@@ -2747,7 +2747,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         setStatusFrameChanged(true, true);
         break;
       case T.vanderwaals:
-        shapeManager.deleteVdwDependentShapes(null);
+        shm.deleteVdwDependentShapes(null);
         break;
       }
     } catch (Error er) {
@@ -2766,12 +2766,12 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   @Override
   public String getEmbeddedFileState(String filename) {
-    return fileManager.getEmbeddedFileState(filename);
+    return fm.getEmbeddedFileState(filename);
   }
 
   @Override
   public Object getFileAsBytes(String pathName, OC out) {
-    return fileManager.getFileAsBytes(pathName, out, true);
+    return fm.getFileAsBytes(pathName, out, true);
   }
 
   public String getCurrentFileAsString() {
@@ -2782,18 +2782,18 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       return filename;
     if (filename == "JSNode")
       return "<DOM NODE>";
-    String pathName = modelManager.getModelSetPathName();
+    String pathName = mm.getModelSetPathName();
     if (pathName == null)
       return null;
     return getFileAsString4(pathName, -1, true, false, false);
   }
 
   public String getFullPathName(boolean orPrevious) {
-    return fileManager.getFullPathName(orPrevious);
+    return fm.getFullPathName(orPrevious);
   }
 
   public String getFileName() {
-    return fileManager.getFileName();
+    return fm.getFileName();
   }
 
   /**
@@ -2804,7 +2804,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
    */
   public String[] getFullPathNameOrError(String filename) {
     String[] data = new String[2];
-    fileManager.getFullPathNameOrError(filename, false, data);
+    fm.getFullPathNameOrError(filename, false, data);
     return data;
   }
 
@@ -2814,7 +2814,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public Map<String, Object> getFileAsMap(String name) {
-    return fileManager.getFileAsMap(name);
+    return fm.getFileAsMap(name);
   }
   
   public String getFileAsString4(String name, int nBytesMax,
@@ -2825,25 +2825,25 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     String[] data = new String[2];
     data[0] = name;
     // ignore error completely
-    fileManager.getFileDataOrErrorAsString(data, nBytesMax, doSpecialLoad,
+    fm.getFileDataOrErrorAsString(data, nBytesMax, doSpecialLoad,
         allowBinary, checkProtected);
     return data[1];
   }
 
   public boolean getFileAsStringBin(String[] data, boolean allowBinary) {
-    return fileManager.getFileDataOrErrorAsString(data, -1, false, allowBinary, !allowBinary);
+    return fm.getFileDataOrErrorAsString(data, -1, false, allowBinary, !allowBinary);
   }
 
   public String getFilePath(String name, boolean asShortName) {
-    return fileManager.getFilePath(name, false, asShortName);
+    return fm.getFilePath(name, false, asShortName);
   }
 
   public String[] getFileInfo() {
-    return fileManager.getFileInfo();
+    return fm.getFileInfo();
   }
 
   public void setFileInfo(String[] fileInfo) {
-    fileManager.setFileInfo(fileInfo);
+    fm.setFileInfo(fileInfo);
   }
 
   // ///////////////////////////////////////////////////////////////
@@ -3004,17 +3004,17 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       //setBooleanProperty("appendNew", true);
       ligandModelSet = null;
       clearModelDependentObjects();
-      fileManager.clear();
+      fm.clear();
       clearRepaintManager(-1);
-      animationManager.clear();
+      am.clear();
       tm.clear();
-      selectionManager.clear();
+      slm.clear();
       clearAllMeasurements();
       clearMinimization();
       gdata.clear();
-      modelManager.zap();
-      if (scriptManager != null)
-        scriptManager.clear(false);
+      mm.zap();
+      if (scm != null)
+        scm.clear(false);
       if (nmrCalculation != null)
         getNMRCalculation().setChemicalShiftReference(null, 0);
 
@@ -3023,14 +3023,14 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         clearTimeouts();
         actionManager.clear();
       }
-      stateManager.clear(g);
+      stm.clear(g);
       tempArray.clear();
       chainMap.clear();
       chainList.clear();
-      colorManager.clear();
+      cm.clear();
       definedAtomSets.clear();
-      if (dataManager != null)
-        dataManager.clear();
+      if (dm != null)
+        dm.clear();
       if (resetUndo) {
         if (zapModelKit && g.modelKitMode) {
           openStringInlineParamsAppend(JC.MODELKIT_ZAP_STRING, null, true);
@@ -3042,7 +3042,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       }
       System.gc();
     } else {
-      modelManager.zap();
+      mm.zap();
     }
     initializeModel(false);
     if (notify) {
@@ -3069,7 +3069,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   private void initializeModel(boolean isAppend) {
     clearThreads();
     if (isAppend) {
-      animationManager.initializePointers(1);
+      am.initializePointers(1);
       return;
     }
     reset(true);
@@ -3079,7 +3079,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     noneSelected = false;
     hoverEnabled = true;
     tm.setCenter();
-    animationManager.initializePointers(1);
+    am.initializePointers(1);
     if (!ms.getModelSetAuxiliaryInfoBoolean("isPyMOL")) {
       clearAtomSets();
       setCurrentModelIndex(0);
@@ -3093,7 +3093,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   @Override
   public void startHoverWatcher(boolean tf) {
-    if (tf && inMotion || !haveDisplay || tf && (!hoverEnabled || animationManager.animationOn))
+    if (tf && inMotion || !haveDisplay || tf && (!hoverEnabled || am.animationOn))
       return;
     actionManager.startHoverWatcher(tf);
   }
@@ -3107,7 +3107,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   @Override
   public String getModelSetFileName() {
-    return modelManager.getModelSetFileName();
+    return mm.getModelSetFileName();
   }
 
   public String getUnitCellInfoText() {
@@ -3141,7 +3141,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   @Override
   public String getModelSetPathName() {
-    return modelManager.getModelSetPathName();
+    return mm.getModelSetPathName();
   }
 
   public String getModelSetTypeName() {
@@ -3189,7 +3189,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public BS excludeAtoms(BS bs, boolean ignoreSubset) {
-    selectionManager.excludeAtoms(bs, ignoreSubset);
+    slm.excludeAtoms(bs, ignoreSubset);
     return bs;
   }
 
@@ -3255,7 +3255,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   @Override
   public int getModelCount() {
-    return (ms == null ? 0 : ms.modelCount);
+    return (ms == null ? 0 : ms.mc);
   }
 
   public String getModelInfoAsString() {
@@ -3427,7 +3427,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public boolean frankClicked(int x, int y) {
     // bottom right Jmol logo
     return !g.disablePopupMenu && getShowFrank()
-        && shapeManager.checkFrankclicked(x, y);
+        && shm.checkFrankclicked(x, y);
   }
 
   public boolean frankClickedModelKit(int x, int y) {
@@ -3443,7 +3443,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public int findNearestAtomIndexMovable(int x, int y, boolean mustBeMovable) {
     return (ms == null || !g.atomPicking ? -1 : ms
-        .findNearestAtomIndex(x, y, mustBeMovable ? selectionManager
+        .findNearestAtomIndex(x, y, mustBeMovable ? slm
             .getMotionFixedAtoms() : null, g.minPixelSelRadius));
   }
 
@@ -3491,7 +3491,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public void setCurrentCage(String isosurfaceId) {
     Object[] data = new Object[] { isosurfaceId, null };
-    shapeManager.getShapePropertyData(JC.SHAPE_ISOSURFACE, "unitCell", data);
+    shm.getShapePropertyData(JC.SHAPE_ISOSURFACE, "unitCell", data);
     ms.setModelCage(getCurrentModelIndex(), (SymmetryInterface) data[1]);
   }
 
@@ -3580,8 +3580,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public BS getBranchBitSet(int atomIndex, int atomIndexNot, boolean allowCyclic) {
     if (atomIndex < 0 || atomIndex >= getAtomCount())
       return new BS();
-    return JmolMolecule.getBranchBitSet(ms.atoms, atomIndex,
-        getModelUndeletedAtomsBitSet(ms.atoms[atomIndex].modelIndex),
+    return JmolMolecule.getBranchBitSet(ms.at, atomIndex,
+        getModelUndeletedAtomsBitSet(ms.at[atomIndex].mi),
         null, atomIndexNot, allowCyclic, true);
   }
 
@@ -3688,16 +3688,16 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public void setCurrentColorRangeData(float[] data, BS bs) {
-    colorManager
+    cm
         .setPropertyColorRangeData(data, bs, g.propertyColorScheme);
   }
 
   public void setCurrentColorRange(float min, float max) {
-    colorManager.setPropertyColorRange(min, max);
+    cm.setPropertyColorRange(min, max);
   }
 
   public int getArgbMinMax(float val, float min, float max) {
-    return colorManager.propertyColorEncoder.getArgbMinMax(val, min, max);
+    return cm.ce.getArgbMinMax(val, min, max);
   }
 
   public void setData(String type, Object[] data, int arrayCount,
@@ -3762,8 +3762,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public SymmetryInterface getCurrentUnitCell() {
-    if (animationManager.currentAtomIndex >= 0)
-      return ms.getUnitCellForAtom(animationManager.currentAtomIndex);
+    if (am.currentAtomIndex >= 0)
+      return ms.getUnitCellForAtom(am.currentAtomIndex);
     int m = getCurrentModelIndex();
     if (m >= 0)
       return ms.getUnitCell(m);
@@ -3828,10 +3828,10 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return List;
   }
 
-  void setPendingMeasurement(MeasurementPending measurementPending) {
+  void setPendingMeasurement(MeasurementPending mp) {
     // from MouseManager
     loadShape(JC.SHAPE_MEASURES);
-    setShapeProperty(JC.SHAPE_MEASURES, "pending", measurementPending);
+    setShapeProperty(JC.SHAPE_MEASURES, "pending", mp);
   }
 
   MeasurementPending getPendingMeasurement() {
@@ -3857,40 +3857,40 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public void setAnimation(int tok) {
     switch (tok) {
     case T.playrev:
-      animationManager.reverseAnimation();
+      am.reverseAnimation();
       //$FALL-THROUGH$
     case T.play:
     case T.resume:
-      if (!animationManager.animationOn)
-        animationManager.resumeAnimation();
+      if (!am.animationOn)
+        am.resumeAnimation();
       return;
     case T.pause:
-      if (animationManager.animationOn && !animationManager.animationPaused)
-        animationManager.pauseAnimation();
+      if (am.animationOn && !am.animationPaused)
+        am.pauseAnimation();
       return;
     case T.next:
-      animationManager.setAnimationNext();
+      am.setAnimationNext();
       return;
     case T.prev:
-      animationManager.setAnimationPrevious();
+      am.setAnimationPrevious();
       return;
     case T.first:
     case T.rewind:
-      animationManager.rewindAnimation();
+      am.rewindAnimation();
       return;
     case T.last:
-      animationManager.setAnimationLast();
+      am.setAnimationLast();
       return;
     }
   }
 
   public void setAnimationDirection(int direction) {// 1 or -1
     // Eval
-    animationManager.setAnimationDirection(direction);
+    am.setAnimationDirection(direction);
   }
 
   int getAnimationDirection() {
-    return animationManager.animationDirection;
+    return am.animationDirection;
   }
 
   @Override
@@ -3901,7 +3901,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       fps = 50;
     // Eval
     // app AtomSetChooser
-    animationManager.setAnimationFps(fps);
+    am.setAnimationFps(fps);
   }
 
   private void setAnimationMode(String mode) {
@@ -3918,50 +3918,50 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
                                      float firstFrameDelay, float lastFrameDelay) {
     // Eval
 
-    animationManager.setAnimationReplayMode(replayMode, firstFrameDelay,
+    am.setAnimationReplayMode(replayMode, firstFrameDelay,
         lastFrameDelay);
   }
 
   public ANIM getAnimationReplayMode() {
-    return animationManager.animationReplayMode;
+    return am.animationReplayMode;
   }
 
   public void setAnimationOn(boolean animationOn) {
     // Eval
-    boolean wasAnimating = animationManager.animationOn;
+    boolean wasAnimating = am.animationOn;
     if (animationOn == wasAnimating)
       return;
-    animationManager.setAnimationOn(animationOn);
+    am.setAnimationOn(animationOn);
   }
 
   public void setAnimationRange(int modelIndex1, int modelIndex2) {
-    animationManager.setAnimationRange(modelIndex1, modelIndex2);
+    am.setAnimationRange(modelIndex1, modelIndex2);
   }
 
   @Override
   public BS getVisibleFramesBitSet() {
     return ms.selectDisplayedTrajectories(BSUtil
-        .copy(animationManager.bsVisibleModels));
+        .copy(am.bsVisibleModels));
   }
 
   boolean isAnimationOn() {
-    return animationManager.animationOn;
+    return am.animationOn;
   }
 
   public void setMovie(Map<String, Object> info) {
-    animationManager.setMovie(info);
+    am.setMovie(info);
   }
 
   public void setAnimMorphCount(int n) {
-    animationManager.setMorphCount(n);
+    am.setMorphCount(n);
   }
 
   public boolean isMovie() {
-    return animationManager.isMovie;
+    return am.isMovie;
   }
 
   public int getFrameCount() {
-    return animationManager.getFrameCount();
+    return am.getFrameCount();
   }
 
   public void defineAtomSets(Map<String, Object> info) {
@@ -3969,13 +3969,13 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public void morph(float frame) {
-    animationManager.morph(frame);
+    am.morph(frame);
   }
 
   public void setAnimDisplay(BS bs) {
-    animationManager.setDisplay(bs);
+    am.setDisplay(bs);
     if (!isAnimationOn())
-      animationManager.morph(animationManager.currentMorphModel + 1);
+      am.morph(am.currentMorphModel + 1);
   }
 
   public void setCurrentModelIndex(int modelIndex) {
@@ -3987,7 +3987,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       setCurrentModelIndexClear(getCurrentModelIndex(), true);
       return;
     }
-    animationManager.setModel(modelIndex, true);
+    am.setModel(modelIndex, true);
   }
 
   void setTrajectory(int modelIndex) {
@@ -4030,11 +4030,11 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public void setCurrentModelIndexClear(int modelIndex, boolean clearBackground) {
     // Eval
     // initializeModel
-    animationManager.setModel(modelIndex, clearBackground);
+    am.setModel(modelIndex, clearBackground);
   }
 
   public int getCurrentModelIndex() {
-    return animationManager.currentModelIndex;
+    return am.cmi;
   }
 
   @Override
@@ -4048,24 +4048,24 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public void setBackgroundModelIndex(int modelIndex) {
-    animationManager.setBackgroundModelIndex(modelIndex);
+    am.setBackgroundModelIndex(modelIndex);
     g.setS("backgroundModel", ms.getModelNumberDotted(modelIndex));
   }
 
   void setFrameVariables() {
-    g.setS("animationMode", animationManager.animationReplayMode.name());
-    g.setI("animationFps", animationManager.animationFps);
-    g.setS("_firstFrame", animationManager.getModelSpecial(-1));
-    g.setS("_lastFrame", animationManager.getModelSpecial(1));
-    g.setF("_animTimeSec", animationManager.getAnimRunTimeSeconds());
-    g.setB("_animMovie", animationManager.isMovie);
+    g.setS("animationMode", am.animationReplayMode.name());
+    g.setI("animationFps", am.animationFps);
+    g.setS("_firstFrame", am.getModelSpecial(-1));
+    g.setS("_lastFrame", am.getModelSpecial(1));
+    g.setF("_animTimeSec", am.getAnimRunTimeSeconds());
+    g.setB("_animMovie", am.isMovie);
   }
 
   private int motionEventNumber;
   private boolean inMotion;
 
   public boolean getInMotion(boolean includeAnim) {
-    return (inMotion || includeAnim && animationManager.animationOn);
+    return (inMotion || includeAnim && am.animationOn);
   }
 
   @Override
@@ -4108,15 +4108,15 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
    * @param why
    */
   public void pushHoldRepaintWhy(String why) {
-    if (repaintManager != null)
-      repaintManager.pushHoldRepaint(why);
+    if (rm != null)
+      rm.pushHoldRepaint(why);
   }
 
   @Override
   public void popHoldRepaint(String why) {
     //System.out.println("vwr popHoldRepaint " + why);
-    if (repaintManager != null) {
-      repaintManager.popHoldRepaint(why.indexOf(JC.REPAINT_IGNORE) < 0, why);
+    if (rm != null) {
+      rm.popHoldRepaint(why.indexOf(JC.REPAINT_IGNORE) < 0, why);
       //System.out.println("vwr popHoldRepaint " + why + " " + ((org.jmol.render.RepaintManager)repaintManager).holdRepaint);
     }
   }
@@ -4156,7 +4156,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     // refresh(6) is used to do no refresh if in motion
     // refresh(7) is used to send JavaScript a "new orientation" command
     //            for example, at the end of a script
-    if (repaintManager == null || !refreshing)
+    if (rm == null || !refreshing)
       return;
     if (mode == 6 && getInMotion(true))
       return;
@@ -4176,12 +4176,12 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       }
     } else {
       if (mode > 0 && mode != 7)
-        repaintManager.repaintIfReady("refresh " + mode + " " + strWhy);
+        rm.repaintIfReady("refresh " + mode + " " + strWhy);
     }
     if (mode == 7)
       return;
-    if (mode % 3 != 0 && statusManager.doSync())
-      statusManager.setSync(mode == 2 ? strWhy : null);
+    if (mode % 3 != 0 && sm.doSync())
+      sm.setSync(mode == 2 ? strWhy : null);
   }
 
   public void requestRepaintAndWait(String why) {
@@ -4191,9 +4191,9 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     // called by AnimationThread run()
     // called by TransformationManager move and moveTo
     // called by TransformationManager11 navigate, navigateTo
-    if (!haveDisplay || repaintManager == null)
+    if (!haveDisplay || rm == null)
       return;
-    repaintManager.requestRepaintAndWait(why);
+    rm.requestRepaintAndWait(why);
     setSync();
   }
 
@@ -4202,14 +4202,14 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public boolean isRepaintPending() {
-    return (repaintManager == null ? false : repaintManager.isRepaintPending());
+    return (rm == null ? false : rm.isRepaintPending());
   }
 
   @Override
   public void notifyViewerRepaintDone() {
-    if (repaintManager != null)
-      repaintManager.repaintDone();
-    animationManager.repaintDone();
+    if (rm != null)
+      rm.repaintDone();
+    am.repaintDone();
   }
 
   private boolean axesAreTainted = false;
@@ -4301,13 +4301,13 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   @Override
   public String generateOutputForExport(Map<String, Object> params) {
-    return (noGraphicsAllowed || repaintManager == null ? null 
+    return (noGraphicsAllowed || rm == null ? null 
         : getOutputManager().getOutputFromExport(params));
   }
 
   private void clearRepaintManager(int iShape) {
-    if (repaintManager != null)
-      repaintManager.clear(iShape);
+    if (rm != null)
+      rm.clear(iShape);
   }
 
   @Override
@@ -4365,9 +4365,9 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       /**
        * @j2sNative
        *
-       * if (this.statusManager.jmolStatusListener.isStereoSlave) return;
+       * if (this.stm.jmolStatusListener.isStereoSlave) return;
        * g = this.apiPlatform.context;
-       * gright = this.statusManager.jmolStatusListener.gright;
+       * gright = this.stm.jmolStatusListener.gright;
        *
        * 
        */
@@ -4401,7 +4401,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     if (isTainted || getSlabEnabled())
       setModelVisibility();
     isTainted = false;
-    if (repaintManager != null) {
+    if (rm != null) {
       if (width != 0)
         setScreenDimension(width, height);
     }
@@ -4461,22 +4461,22 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   private void render() {
     if (ms == null || !mustRender || !refreshing && !creatingImage
-        || repaintManager == null)
+        || rm == null)
       return;
     boolean antialias2 = antialiasDisplay && g.antialiasTranslucent;
     finalizeTransformParameters();
-    int[] minMax = shapeManager.finalizeAtoms(tm.bsSelectedAtoms,
+    int[] minMax = shm.finalizeAtoms(tm.bsSelectedAtoms,
         tm.ptOffset);
     tm.bsSelectedAtoms = null;
     if (isWebGL) {
-      repaintManager.renderExport(gdata, ms, jsParams);
+      rm.renderExport(gdata, ms, jsParams);
       notifyViewerRepaintDone();
       return;
     }
-    repaintManager.render(gdata, ms, true, minMax);
+    rm.render(gdata, ms, true, minMax);
     if (gdata.setPass2(antialias2)) {
       tm.setAntialias(antialias2);
-      repaintManager.render(gdata, ms, false, null);
+      rm.render(gdata, ms, false, null);
       tm.setAntialias(antialiasDisplay);
     }
   }
@@ -4548,7 +4548,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   @Override
   public String evalFile(String strFilename) {
-    return (allowScripting && getScriptManager() != null ? scriptManager
+    return (allowScripting && getScriptManager() != null ? scm
         .evalFile(strFilename) : null);
   }
 
@@ -4580,13 +4580,13 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public String evalStringQuietSync(String strScript, boolean isQuiet,
                              boolean allowSyncScript) {
-    return (getScriptManager() == null ? null : scriptManager
+    return (getScriptManager() == null ? null : scm
         .evalStringQuietSync(strScript, isQuiet, allowSyncScript));
   }
 
   public void clearScriptQueue() {
-    if (scriptManager != null)
-      scriptManager.clearQueue();
+    if (scm != null)
+      scm.clearQueue();
   }
 
   private void setScriptQueue(boolean TF) {
@@ -4597,7 +4597,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   @Override
   public boolean checkHalt(String str, boolean isInsert) {
-    return (scriptManager != null && scriptManager.checkHalt(str, isInsert));
+    return (scm != null && scm.checkHalt(str, isInsert));
   }
 
   // / direct no-queue use:
@@ -4620,7 +4620,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     //can't do waitForQueue in JavaScript and then wait for the queue:
     if (getScriptManager() == null)
       return null;
-    scriptManager.waitForQueue();
+    scm.waitForQueue();
     boolean doTranslateTemp = GT.setDoTranslate(false);
     Object ret = evalStringWaitStatusQueued(returnType, strScript, statusList,
         false, false, false);
@@ -4645,7 +4645,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     {
     }
     return (getScriptManager() == null ? null :
-      scriptManager.evalStringWaitStatusQueued(returnType, strScript,
+      scm.evalStringWaitStatusQueued(returnType, strScript,
         statusList, isScriptFile, isQuiet, isQueued));
   }
 
@@ -4670,7 +4670,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   private Object scriptCheckRet(String strScript, boolean returnContext) {
     if (getScriptManager() == null)
       return null;
-    return scriptManager.scriptCheckRet(strScript, returnContext);
+    return scm.scriptCheckRet(strScript, returnContext);
   }
 
   @Override
@@ -4912,7 +4912,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       return;
     loadShape(JC.SHAPE_HOVER);
     if (isLabel
-        && ms.atoms[atomIndex].isVisible(JC.VIS_LABEL_FLAG)) {
+        && ms.at[atomIndex].isVisible(JC.VIS_LABEL_FLAG)) {
       setShapeProperty(JC.SHAPE_HOVER, "specialLabel", GT
           ._("Drag to move label"));
     }
@@ -5054,7 +5054,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public String getAtomInfo(int atomOrPointIndex) {
     // only for MeasurementTable and actionManager
     return (atomOrPointIndex >= 0 ? ms
-        .getAtomInfo(atomOrPointIndex, null) : (String) shapeManager
+        .getAtomInfo(atomOrPointIndex, null) : (String) shm
         .getShapePropertyIndex(JC.SHAPE_MEASURES, "pointInfo",
             -atomOrPointIndex));
   }
@@ -5066,28 +5066,28 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   // //////////////status manager dispatch//////////////
 
   private void setSync() {
-    if (statusManager.doSync())
-      statusManager.setSync(null);
+    if (sm.doSync())
+      sm.setSync(null);
   }
 
   @Override
   public void setJmolCallbackListener(JmolCallbackListener jmolCallbackListener) {
-    statusManager.setJmolCallbackListener(jmolCallbackListener);
+    sm.setJmolCallbackListener(jmolCallbackListener);
   }
 
   @Override
   public void setJmolStatusListener(JmolStatusListener jmolStatusListener) {
-    statusManager.setJmolStatusListener(jmolStatusListener, null);
+    sm.setJmolStatusListener(jmolStatusListener, null);
   }
 
   public Map<String, List<List<Object>>> getMessageQueue() {
     // called by PropertyManager.getPropertyAsObject for "messageQueue"
-    return statusManager.getMessageQueue();
+    return sm.getMessageQueue();
   }
 
   public List<List<List<Object>>> getStatusChanged(
                                                                String statusNameList) {
-    return (statusNameList == null ? null : statusManager
+    return (statusNameList == null ? null : sm
         .getStatusChanged(statusNameList));
   }
 
@@ -5155,7 +5155,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     else if (isFile)
       fileOrText = getFileAsString(fileOrText, false);
     getProperty("DATA_API", "setMenu", fileOrText);
-    statusManager.setCallbackFunction("menu", fileOrText);
+    sm.setCallbackFunction("menu", fileOrText);
   }
 
   // // JavaScript callback methods for the applet
@@ -5209,15 +5209,15 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       prevFrame = Integer.MIN_VALUE;
     }
     tm.setVibrationPeriod(Float.NaN);
-    int firstIndex = animationManager.firstFrameIndex;
-    int lastIndex = animationManager.lastFrameIndex;
+    int firstIndex = am.firstFrameIndex;
+    int lastIndex = am.lastFrameIndex;
 
     boolean isMovie = isMovie();
     int modelIndex = getCurrentModelIndex();
     if (firstIndex == lastIndex && !isMovie)
       modelIndex = firstIndex;
     int frameID = getModelFileNumber(modelIndex);
-    int currentFrame = animationManager.currentModelIndex;
+    int currentFrame = am.cmi;
     int fileNo = frameID;
     int modelNo = frameID % 1000000;
     int firstNo = (isMovie ? firstIndex : getModelFileNumber(firstIndex));
@@ -5242,9 +5242,9 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       g.setI("_currentFileNumber", fileNo);
       g.setI("_currentModelNumberInFile", modelNo);
     }
-    float currentMorphModel = animationManager.currentMorphModel;
+    float currentMorphModel = am.currentMorphModel;
     g.setI("_currentFrame", currentFrame);
-    g.setI("_morphCount", animationManager.morphCount);
+    g.setI("_morphCount", am.morphCount);
     g.setF("_currentMorphFrame", currentMorphModel);
     g.setI("_frameID", frameID);
     g.setS("_modelNumber", strModelNo);
@@ -5274,9 +5274,9 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     }
     // there was a point where I thought frameNo and currentFrame
     // might be different. 
-    statusManager.setStatusFrameChanged(fileNo, modelNo,
-        (animationManager.animationDirection < 0 ? -firstNo : firstNo),
-        (animationManager.currentDirection < 0 ? -lastNo : lastNo),
+    sm.setStatusFrameChanged(fileNo, modelNo,
+        (am.animationDirection < 0 ? -firstNo : firstNo),
+        (am.currentDirection < 0 ? -lastNo : lastNo),
         currentFrame, currentMorphModel, entryName);
     if (doHaveJDX())
       getJSV().setModel(modelIndex);
@@ -5321,7 +5321,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public Object getJspecViewProperties(Object myParam) {
     // from getProperty("JSpecView...")
-    Object o = statusManager.getJspecViewProperties("" + myParam);
+    Object o = sm.getJspecViewProperties("" + myParam);
     if (o != null)
       haveJDX = true;
     return o;
@@ -5364,13 +5364,13 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
      */
     {
     }
-    statusManager.setScriptEcho(strEcho, isScriptQueued());
+    sm.setScriptEcho(strEcho, isScriptQueued());
     if (listCommands && strEcho != null && strEcho.indexOf("$[") == 0)
       Logger.info(strEcho);
   }
 
   private boolean isScriptQueued() {
-    return scriptManager != null && scriptManager.isScriptQueued();
+    return scm != null && scm.isScriptQueued();
   }
 
   /*
@@ -5391,7 +5391,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public void notifyError(String errType, String errMsg,
                           String errMsgUntranslated) {
     g.setS("_errormessage", errMsgUntranslated);
-    statusManager.notifyError(errType, errMsg, errMsgUntranslated);
+    sm.notifyError(errType, errMsg, errMsgUntranslated);
   }
 
   /*
@@ -5403,7 +5403,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
    */
 
   public String jsEval(String strEval) {
-    return statusManager.jsEval(strEval);
+    return sm.jsEval(strEval);
   }
 
   /*
@@ -5421,12 +5421,12 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public void setStatusAtomHovered(int atomIndex, String info) {
     g.setI("_atomhovered", atomIndex);
-    statusManager.setStatusAtomHovered(atomIndex, info);
+    sm.setStatusAtomHovered(atomIndex, info);
   }
 
   public void setStatusObjectHovered(String id, String info, P3 pt) {
     g.setS("_objecthovered", id);
-    statusManager.setStatusObjectHovered(id, info, pt);
+    sm.setStatusObjectHovered(id, info, pt);
   }
 
   /*
@@ -5461,7 +5461,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     boolean doCallback = (ptLoad != FIL.CREATING_MODELSET);
     if (doCallback)
       setStatusFrameChanged(false, false);
-    statusManager.setFileLoadStatus(fullPathName, fileName, modelName,
+    sm.setFileLoadStatus(fullPathName, fileName, modelName,
         strError, ptLoad.getCode(), doCallback, isAsync);
     if (doCallback) {      
       if(doHaveJDX())
@@ -5522,7 +5522,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     // measurePending   atom count
     // measureDeleted   -1 (all) or index
     // measureSequence  -2
-    statusManager.setStatusMeasuring(status, intInfo, strMeasure, value);
+    sm.setStatusMeasuring(status, intInfo, strMeasure, value);
   }
 
   /*
@@ -5543,7 +5543,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public void notifyMinimizationStatus() {
     Object step = getParameter("_minimizationStep");
     String ff = (String) getParameter("_minimizationForceField");
-    statusManager.notifyMinimizationStatus(
+    sm.notifyMinimizationStatus(
         (String) getParameter("_minimizationStatus"),
         step instanceof String ? Integer.valueOf(0) : (Integer) step,
         (Float) getParameter("_minimizationEnergy"), (step.toString().equals(
@@ -5598,10 +5598,10 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     }
     g.setPicked(atomIndex);
     g.setS("_pickinfo", info);
-    statusManager.setStatusAtomPicked(atomIndex, info, map);
+    sm.setStatusAtomPicked(atomIndex, info, map);
     if (atomIndex < 0)
       return;
-    int syncMode = statusManager.getSyncMode();
+    int syncMode = sm.getSyncMode();
     if (syncMode == StatusManager.SYNC_DRIVER && doHaveJDX())
       getJSV().atomPicked(atomIndex);
     if (isJS)
@@ -5617,7 +5617,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
    */
 
   public void setStatusResized(int width, int height) {
-    statusManager.setStatusResized(width, height);
+    sm.setStatusResized(width, height);
   }
 
   /*
@@ -5662,7 +5662,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public void setScriptStatus(String strStatus, String statusMessage,
                               int msWalltime, String strErrorMessageUntranslated) {
-    statusManager.setScriptStatus(strStatus, statusMessage, msWalltime,
+    sm.setScriptStatus(strStatus, statusMessage, msWalltime,
         strErrorMessageUntranslated);
   }
 
@@ -5697,7 +5697,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
      * 
      */
     {
-      return (isKiosk || !haveAccess(ACCESS.ALL) ? null : statusManager
+      return (isKiosk || !haveAccess(ACCESS.ALL) ? null : sm
           .dialogAsk(type, fileName));
     }
   }
@@ -5710,9 +5710,9 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     if (urlString == null)
       return;
     if (urlString.indexOf(":") < 0) {
-      String base = fileManager.getAppletDocumentBase();
+      String base = fm.getAppletDocumentBase();
       if (base == "")
-        base = fileManager.getFullPathName(false);
+        base = fm.getFullPathName(false);
       if (base.indexOf("/") >= 0) {
         base = base.substring(0, base.lastIndexOf("/") + 1);
       } else if (base.indexOf("\\") >= 0) {
@@ -5721,7 +5721,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       urlString = base + urlString;
     }
     Logger.info("showUrl:" + urlString);
-    statusManager.showUrl(urlString);
+    sm.showUrl(urlString);
   }
 
   /**
@@ -5756,7 +5756,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public void clearConsole() {
     // Eval
-    statusManager.clearConsole();
+    sm.clearConsole();
   }
 
   public Object getParameterEscaped(String key) {
@@ -5779,7 +5779,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public void unsetProperty(String key) {
     key = key.toLowerCase();
     if (key.equals("all") || key.equals("variables"))
-      fileManager.setPathForAllFiles("");
+      fm.setPathForAllFiles("");
     g.unsetUserVariable(key);
   }
 
@@ -5792,7 +5792,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     System.out.println("Jmol applet " + fullName + (isReady ? " ready" : " destroyed"));
     if (!isReady)
       setModeMouse(JC.MOUSE_NONE);  
-    statusManager.setStatusAppletReady(fullName, isReady);
+    sm.setStatusAppletReady(fullName, isReady);
   }
 
   @Override
@@ -5815,7 +5815,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     if (key.equalsIgnoreCase("haveBFactors"))
       return (ms.getBFactors() != null);
     if (key.equalsIgnoreCase("colorRasmol"))
-      return colorManager.getDefaultColorRasmol();
+      return cm.getDefaultColorRasmol();
     if (key.equalsIgnoreCase("frank"))
       return getShowFrank();
     if (key.equalsIgnoreCase("spinOn"))
@@ -5839,7 +5839,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public int getInt(int tok) {
     switch (tok) {
     case T.animationfps:
-      return animationManager.animationFps;
+      return am.animationFps;
     case T.dotdensity:
       return g.dotDensity;
     case T.dotscale:
@@ -6156,7 +6156,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
     case T.pathforallfiles:
       // 12.3.29
-      value = fileManager.setPathForAllFiles(value);
+      value = fm.setPathForAllFiles(value);
       break;
     case T.energyunits:
       // 12.3.26
@@ -6238,7 +6238,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         jmolpopup = null;
         getPopupMenu();
       }
-      statusManager.setCallbackFunction("language", language);
+      sm.setCallbackFunction("language", language);
       value = GT.getLanguage();
       break;
     case T.loadformat:
@@ -6285,7 +6285,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       g.defaultLoadScript = value;
       break;
     case T.appletproxy:
-      fileManager.setAppletProxy(value);
+      fm.setAppletProxy(value);
       break;
     case T.defaultdirectory:
       if (value == null)
@@ -6316,7 +6316,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       break;
     default:
       if (key.toLowerCase().endsWith("callback")) {
-        statusManager.setCallbackFunction(key, (value.length() == 0
+        sm.setCallbackFunction(key, (value.length() == 0
             || value.equalsIgnoreCase("none") ? null : value));
         break;
       }
@@ -7145,7 +7145,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       GT.setDoTranslate(value);
       break;
     case T.hidenotselected:
-      selectionManager.setHideNotSelected(value);
+      slm.setHideNotSelected(value);
       break;
     case T.scriptqueue:
       setScriptQueue(value);
@@ -7275,7 +7275,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     case T.statusreporting:
       doRepaint = false;
       // not part of the state
-      statusManager.setAllowStatusReporting(value);
+      sm.setAllowStatusReporting(value);
       break;
     case T.chaincasesensitive:
       doRepaint = false;
@@ -7337,7 +7337,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       if (!isApplet)
         popupMenu(0, 0, 'm');
       if (isChange)
-        statusManager.setCallbackFunction("modelkit", "ON");
+        sm.setCallbackFunction("modelkit", "ON");
       g.modelKitMode = true;
       if (getAtomCount() == 0)
         zap(false, true, true);
@@ -7346,7 +7346,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       setStringProperty("pickingStyle", "toggle");
       setBooleanProperty("bondPicking", false);
       if (isChange)
-        statusManager.setCallbackFunction("modelkit", "OFF");
+        sm.setCallbackFunction("modelkit", "OFF");
     }
   }
 
@@ -7366,7 +7366,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public void removeUserVariable(String key) {
     g.removeUserVariable(key);
     if (key.endsWith("callback"))
-      statusManager.setCallbackFunction(key, null);
+      sm.setCallbackFunction(key, null);
   }
 
   public boolean isJmolVariable(String key) {
@@ -7808,14 +7808,14 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   private void setDefaultsType(String type) {
     if (type.equalsIgnoreCase("RasMol")) {
-      stateManager.setRasMolDefaults();
+      stm.setRasMolDefaults();
       return;
     }
     if (type.equalsIgnoreCase("PyMOL")) {
-      stateManager.setPyMOLDefaults();
+      stm.setPyMOLDefaults();
       return;
     }
-    stateManager.setJmolDefaults();
+    stm.setJmolDefaults();
     setIntProperty("bondingVersion", Elements.RAD_COV_IONIC_OB1_100_1);
     setShapeSizeRD(JC.SHAPE_BALLS, rd, getAllAtoms());
   }
@@ -7945,7 +7945,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   @Override
   public P3 getAtomPoint3f(int i) {
-    return ms.atoms[i];
+    return ms.at[i];
   }
 
   public List<P3> getAtomPointVector(BS bs) {
@@ -7964,7 +7964,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   @Override
   public int getAtomModelIndex(int i) {
-    return ms.atoms[i].modelIndex;
+    return ms.at[i].mi;
   }
 
   @Override
@@ -8142,7 +8142,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         return getMenu((String) paramInfo);
       return getPopupMenu();
     case 220:
-      return shapeManager.getProperty(paramInfo);
+      return shm.getProperty(paramInfo);
     }
     Logger.error("ERROR in getProperty DATA_API: " + infoType);
     return null;
@@ -8188,17 +8188,17 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     g.setI("_mouseAction", action);
     g.setI("_mouseModifiers", modifiers);
     g.setI("_clickCount", clickCount);
-    return statusManager.setStatusClicked(x, dimScreen.height - y, action,
+    return sm.setStatusClicked(x, dimScreen.height - y, action,
         clickCount, mode);
   }
 
   Map<String, Object> checkObjectClicked(int x, int y, int modifiers) {
-    return shapeManager.checkObjectClicked(x, y, modifiers,
+    return shm.checkObjectClicked(x, y, modifiers,
         getVisibleFramesBitSet(), g.drawPicking);
   }
 
   public boolean checkObjectHovered(int x, int y) {
-    return (x >= 0 && shapeManager != null && shapeManager.checkObjectHovered(
+    return (x >= 0 && shm != null && shm.checkObjectHovered(
         x, y, getVisibleFramesBitSet(), getBondPicking()));
   }
 
@@ -8212,7 +8212,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       iShape = JC.SHAPE_DRAW;
       break;
     }
-    if (shapeManager.checkObjectDragged(prevX, prevY, x, y, action,
+    if (shm.checkObjectDragged(prevX, prevY, x, y, action,
         getVisibleFramesBitSet(), iShape)) {
       refresh(1, "checkObjectDragged");
       if (iShape == JC.SHAPE_DRAW)
@@ -8373,7 +8373,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public void setAtomProperty(BS bs, int tok, int iValue, float fValue,
                               String sValue, float[] values, String[] list) {
     if (tok == T.vanderwaals)
-      shapeManager.deleteVdwDependentShapes(bs);
+      shm.deleteVdwDependentShapes(bs);
     clearMinimization();
     ms.setAtomProperty(bs, tok, iValue, fValue, sValue, values, list);
     switch (tok) {
@@ -8417,7 +8417,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       return;
     ms.setAtomCoords(bs, tokType, xyzValues);
     checkMinimization();
-    statusManager.setStatusAtomMoved(bs);
+    sm.setStatusAtomMoved(bs);
   }
 
   public void setAtomCoordsRelative(T3 offset, BS bs) {
@@ -8428,20 +8428,20 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       return;
     ms.setAtomCoordsRelative(offset, bs);
     checkMinimization();
-    statusManager.setStatusAtomMoved(bs);
+    sm.setStatusAtomMoved(bs);
   }
 
   public void invertAtomCoordPt(P3 pt, BS bs) {
     // Eval
     ms.invertSelected(pt, null, -1, null, bs);
     checkMinimization();
-    statusManager.setStatusAtomMoved(bs);
+    sm.setStatusAtomMoved(bs);
   }
 
   public void invertAtomCoordPlane(P4 plane, BS bs) {
     ms.invertSelected(null, plane, -1, null, bs);
     checkMinimization();
-    statusManager.setStatusAtomMoved(bs);
+    sm.setStatusAtomMoved(bs);
   }
 
   public void invertSelected(P3 pt, P4 plane, int iAtom, BS invAtoms) {
@@ -8451,7 +8451,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       return;
     ms.invertSelected(pt, plane, iAtom, invAtoms, bs);
     checkMinimization();
-    statusManager.setStatusAtomMoved(bs);
+    sm.setStatusAtomMoved(bs);
   }
 
   public void moveAtoms(M3 mNew, M3 matrixRotate, V3 translation,
@@ -8462,7 +8462,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     ms.moveAtoms(mNew, matrixRotate, translation, bsAtoms, center,
         isInternal, translationOnly);
     checkMinimization();
-    statusManager.setStatusAtomMoved(bsAtoms);
+    sm.setStatusAtomMoved(bsAtoms);
   }
 
   private boolean movingSelected;
@@ -8532,7 +8532,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       return;
     BS bs = null;
     if (index >= 0) {
-      Bond b = ms.bonds[index];
+      Bond b = ms.bo[index];
       int i = b.getAtomIndex2();
       if (!isAtomAssignable(i))
         return;
@@ -8579,10 +8579,10 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     BS bsBranch = bsRotateBranch;
     Atom atom1, atom2;
     if (bsBranch == null) {
-      Bond b = ms.bonds[rotateBondIndex];
+      Bond b = ms.bo[rotateBondIndex];
       atom1 = b.getAtom1();
       atom2 = b.getAtom2();
-      undoMoveActionClear(atom1.index, AtomCollection.TAINT_COORD, true);
+      undoMoveActionClear(atom1.i, AtomCollection.TAINT_COORD, true);
       P3 pt = P3.new3(x, y, (atom1.sZ + atom2.sZ) / 2);
       tm.unTransformPoint(pt, pt);
       if (atom2.getCovalentBondCount() == 1
@@ -8594,7 +8594,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       }
       if (Measure.computeAngleABC(pt, atom1, atom2, true) > 90
           || Measure.computeAngleABC(pt, atom2, atom1, true) > 90) {
-        bsBranch = getBranchBitSet(atom2.index, atom1.index, true);
+        bsBranch = getBranchBitSet(atom2.i, atom1.i, true);
       }
       if (bsBranch != null)
         for (int n = 0, i = atom1.getBonds().length; --i >= 0;) {
@@ -8604,14 +8604,14 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
           }
         }
       if (bsBranch == null) {
-        bsBranch = getMoleculeBitSet(atom1.index);
+        bsBranch = getMoleculeBitSet(atom1.i);
       }
       bsRotateBranch = bsBranch;
-      rotatePrev1 = atom1.index;
-      rotatePrev2 = atom2.index;
+      rotatePrev1 = atom1.i;
+      rotatePrev2 = atom2.i;
     } else {
-      atom1 = ms.atoms[rotatePrev1];
-      atom2 = ms.atoms[rotatePrev2];
+      atom1 = ms.at[rotatePrev1];
+      atom2 = ms.at[rotatePrev2];
     }
     V3 v1 = V3.new3(atom2.sX - atom1.sX, atom2.sY
         - atom1.sY, 0);
@@ -8620,7 +8620,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     float degrees = (v1.z > 0 ? 1 : -1) * v2.length();
 
     BS bs = BSUtil.copy(bsBranch);
-    bs.andNot(selectionManager.getMotionFixedAtoms());
+    bs.andNot(slm.getMotionFixedAtoms());
 
     rotateAboutPointsInternal(eval, atom1, atom2, 0, degrees, false, bs, null,
         null, null);
@@ -8652,7 +8652,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     if (functionName.indexOf("file:") == 0)
       data = getFileAsString(functionName.substring(5), false);
     else if (functionName.indexOf("data2d_") != 0)
-      return statusManager.functionXY(functionName, nX, nY);
+      return sm.functionXY(functionName, nX, nY);
     nX = Math.abs(nX);
     nY = Math.abs(nY);
     float[][] fdata;
@@ -8676,7 +8676,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     if (functionName.indexOf("file:") == 0)
       data = getFileAsString(functionName.substring(5), false);
     else if (functionName.indexOf("data3d_") != 0)
-      return statusManager.functionXYZ(functionName, nX, nY, nZ);
+      return sm.functionXYZ(functionName, nX, nY, nZ);
     nX = Math.abs(nX);
     nY = Math.abs(nY);
     nZ = Math.abs(nZ);
@@ -8905,13 +8905,13 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   private void setSyncTarget(int mode, boolean TF) {
     switch (mode) {
     case 0:
-      statusManager.syncingMouse = TF;
+      sm.syncingMouse = TF;
       break;
     case 1:
-      statusManager.syncingScripts = TF;
+      sm.syncingScripts = TF;
       break;
     case 2:
-      statusManager.syncSend(TF ? SYNC_GRAPHICS_MESSAGE
+      sm.syncSend(TF ? SYNC_GRAPHICS_MESSAGE
           : SYNC_NO_GRAPHICS_MESSAGE, "*", 0);
       if (Float.isNaN(tm.stereoDegrees))
         setFloatProperty("stereoDegrees", STER.DEFAULT_STEREO_DEGREES);
@@ -8922,7 +8922,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       return;
     }
     // if turning both off, sync the orientation now
-    if (!statusManager.syncingScripts && !statusManager.syncingMouse)
+    if (!sm.syncingScripts && !sm.syncingMouse)
       refresh(-1, "set sync");
   }
 
@@ -8941,7 +8941,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public void setSyncDriver(int mode) {
-    statusManager.setSyncDriver(mode);
+    sm.setSyncDriver(mode);
   }
 
   public float[] getPartialCharges() {
@@ -9070,58 +9070,58 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       return 0;
     clearModelDependentObjects();
     if (!fullModels) {
-      statusManager.modifySend(atomIndex, ms.atoms[atomIndex].modelIndex,
+      sm.modifySend(atomIndex, ms.at[atomIndex].mi,
           4, "deleting atom " + getAtomName(atomIndex));
       ms.deleteAtoms(bs);
-      int n = selectionManager.deleteAtoms(bs);
+      int n = slm.deleteAtoms(bs);
       setTainted(true);
-      statusManager.modifySend(atomIndex, ms.atoms[atomIndex].modelIndex,
+      sm.modifySend(atomIndex, ms.at[atomIndex].mi,
           -4, "OK");
       return n;
     }
     // fileManager.addLoadScript("zap " + Escape.escape(bs));
-    int modelIndex = ms.atoms[atomIndex].modelIndex;
-    statusManager.modifySend(-1, modelIndex, 5, "deleting model " + getModelNumberDotted(modelIndex));
+    int modelIndex = ms.at[atomIndex].mi;
+    sm.modifySend(-1, modelIndex, 5, "deleting model " + getModelNumberDotted(modelIndex));
     setCurrentModelIndexClear(0, false);
-    animationManager.setAnimationOn(false);
+    am.setAnimationOn(false);
     BS bsD0 = BSUtil.copy(getDeletedAtoms());
     BS bsDeleted = ms.deleteModels(bs);
-    selectionManager.processDeletedModelAtoms(bsDeleted);
+    slm.processDeletedModelAtoms(bsDeleted);
     setAnimationRange(0, 0);
     if (eval != null)
       eval.deleteAtomsInVariables(bsDeleted);
     clearRepaintManager(-1);
-    animationManager.clear();
-    animationManager.initializePointers(1);
+    am.clear();
+    am.initializePointers(1);
     setCurrentModelIndexClear(getModelCount() > 1 ? -1 : 0, getModelCount() > 1);
     hoverAtomIndex = -1;
     setFileLoadStatus(FIL.DELETED, null, null, null, null, null);
     refreshMeasures(true);
     if (bsD0 != null)
       bsDeleted.andNot(bsD0);
-    statusManager.modifySend(-1, modelIndex, -5, "OK");
+    sm.modifySend(-1, modelIndex, -5, "OK");
     return BSUtil.cardinalityOf(bsDeleted);
   }
 
   public void deleteBonds(BS bsDeleted) {
     int modelIndex = ms.getBondModelIndex(bsDeleted.nextSetBit(0));
-    statusManager.modifySend(-1, modelIndex, 2, "delete bonds " + Escape.eBond(bsDeleted));
+    sm.modifySend(-1, modelIndex, 2, "delete bonds " + Escape.eBond(bsDeleted));
     ms.deleteBonds(bsDeleted, false);
-    statusManager.modifySend(-1, modelIndex, -2, "OK");
+    sm.modifySend(-1, modelIndex, -2, "OK");
   }
 
   public void deleteModelAtoms(int modelIndex, int firstAtomIndex, int nAtoms, BS bsDeleted) {
     // called from ModelCollection.deleteModel
-    statusManager.modifySend(-1, modelIndex, 1, "delete atoms " + Escape.eBS(bsDeleted));
-    selectionManager.deleteModelAtoms(bsDeleted);
+    sm.modifySend(-1, modelIndex, 1, "delete atoms " + Escape.eBS(bsDeleted));
+    slm.deleteModelAtoms(bsDeleted);
     BSUtil.deleteBits(getFrameOffsets(), bsDeleted);
     setFrameOffsets(getFrameOffsets());
     getDataManager().deleteModelAtoms(firstAtomIndex, nAtoms, bsDeleted);
-    statusManager.modifySend(-1, modelIndex, -1, "OK");
+    sm.modifySend(-1, modelIndex, -1, "OK");
   }
 
   public BS getDeletedAtoms() {
-    return selectionManager.getDeletedAtoms();
+    return slm.getDeletedAtoms();
   }
 
   public char getQuaternionFrame() {
@@ -9144,7 +9144,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public void loadImage(String pathName, String echoName) {
-    fileManager.loadImage(pathName, echoName);
+    fm.loadImage(pathName, echoName);
   }
 
   void loadImageData(Object image, String nameOrError, String echoName,
@@ -9178,11 +9178,11 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       setStringProperty("defaultDirectory", "");
       dir = ".";
     }
-    dir = fileManager.getDefaultDirectory(dir
+    dir = fm.getDefaultDirectory(dir
         + (dir.equals("=") ? "" : dir.endsWith("/") ? "X.spt" : "/X.spt"));
     if (dir.length() > 0)
       setStringProperty("defaultDirectory", dir);
-    String path = fileManager.getFilePath(dir + "/", true, false);
+    String path = fm.getFilePath(dir + "/", true, false);
     if (path.startsWith("file:/"))
       FileManager.setLocalPath(this, dir, false);
     return dir;
@@ -9223,7 +9223,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     if (currentShapeID < 0)
       return "";
     if (ms != null)
-      shapeManager.releaseShape(currentShapeID);
+      shm.releaseShape(currentShapeID);
     clearRepaintManager(currentShapeID);
     return JC.getShapeClassName(currentShapeID, false) + " "
         + currentShapeState;
@@ -9239,7 +9239,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         Logger.setLogLevel(Logger.LEVEL_INFO);
       setCursor(GenericPlatform.CURSOR_DEFAULT);
       setBooleanProperty("refreshing", true);
-      fileManager.setPathForAllFiles("");
+      fm.setPathForAllFiles("");
       Logger.error("vwr handling error condition: " + er + "  ");
       if (!isJS)
         er.printStackTrace();
@@ -9374,7 +9374,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
    * @return TRUE or FALSE
    */
   public boolean getPreserveState() {
-    return (g.preserveState && scriptManager != null);
+    return (g.preserveState && scm != null);
   }
 
   boolean isKiosk;
@@ -9452,7 +9452,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     // we allow for a set of atoms to be fixed, 
     // but that is only used by default
 
-    BS bsMotionFixed = BSUtil.copy(bsFixed == null ? selectionManager
+    BS bsMotionFixed = BSUtil.copy(bsFixed == null ? slm
         .getMotionFixedAtoms() : bsFixed);
     boolean haveFixed = (bsMotionFixed.cardinality() > 0);
     if (haveFixed)
@@ -9492,16 +9492,16 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public void setMotionFixedAtoms(BS bs) {
-    selectionManager.setMotionFixedAtoms(bs);
+    slm.setMotionFixedAtoms(bs);
   }
 
   public BS getMotionFixedAtoms() {
-    return selectionManager.getMotionFixedAtoms();
+    return slm.getMotionFixedAtoms();
   }
 
   void rotateArcBall(int x, int y, float factor) {
     tm.rotateArcBall(x, y, factor);
-    refresh(2, statusManager.syncingMouse ? "Mouse: rotateArcBall " + x + " "
+    refresh(2, sm.syncingMouse ? "Mouse: rotateArcBall " + x + " "
         + y + " " + factor : "");
   }
 
@@ -9572,44 +9572,44 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       bs = getSelectedAtoms();
     loadShape(JC.SHAPE_LABELS);
     // setShapeSize(JmolConstants.SHAPE_LABELS, 0, Float.NaN, bs);
-    shapeManager.setShapePropertyBs(JC.SHAPE_LABELS, "toggleLabel", null, bs);
+    shm.setShapePropertyBs(JC.SHAPE_LABELS, "toggleLabel", null, bs);
   }
 
   public void loadShape(int shapeID) {
-    shapeManager.loadShape(shapeID);
+    shm.loadShape(shapeID);
   }
 
   public void setShapeSize(int shapeID, int mad, BS bsSelected) {
     // might be atoms or bonds
     if (bsSelected == null)
       bsSelected = getSelectedAtoms();
-    shapeManager.setShapeSizeBs(shapeID, mad, null, bsSelected);
+    shm.setShapeSizeBs(shapeID, mad, null, bsSelected);
   }
 
   public void setShapeSizeRD(int shapeID, RadiusData rd, BS bsAtoms) {
-    shapeManager.setShapeSizeBs(shapeID, 0, rd, bsAtoms);
+    shm.setShapeSizeBs(shapeID, 0, rd, bsAtoms);
   }
 
   public void setShapeProperty(int shapeID, String propertyName, Object value) {
     // Eval, BondCollection, StateManager, local
     if (shapeID < 0)
       return; // not applicable
-    shapeManager.setShapePropertyBs(shapeID, propertyName, value, null);
+    shm.setShapePropertyBs(shapeID, propertyName, value, null);
   }
 
   public Object getShapeProperty(int shapeType, String propertyName) {
-    return shapeManager.getShapePropertyIndex(shapeType, propertyName,
+    return shm.getShapePropertyIndex(shapeType, propertyName,
         Integer.MIN_VALUE);
   }
 
   public boolean getShapePropertyData(int shapeType, String propertyName,
                                       Object[] data) {
-    return shapeManager.getShapePropertyData(shapeType, propertyName, data);
+    return shm.getShapePropertyData(shapeType, propertyName, data);
   }
 
   public Object getShapePropertyIndex(int shapeType, String propertyName,
                                       int index) {
-    return shapeManager.getShapePropertyIndex(shapeType, propertyName, index);
+    return shm.getShapePropertyIndex(shapeType, propertyName, index);
   }
 
   private int getShapePropertyAsInt(int shapeID, String propertyName) {
@@ -9619,43 +9619,43 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public void setModelVisibility() {
-    if (shapeManager == null) // necessary for file chooser
+    if (shm == null) // necessary for file chooser
       return;
-    shapeManager.setModelVisibility();
+    shm.setModelVisibility();
   }
 
   public void resetShapes(boolean andCreateNew) {
-    shapeManager.resetShapes();
+    shm.resetShapes();
     if (andCreateNew) {
-      shapeManager.loadDefaultShapes(ms);
+      shm.loadDefaultShapes(ms);
       clearRepaintManager(-1);
     }
   }
 
   public void setAtomLabel(String value, int i) {
-    shapeManager.setAtomLabel(value, i);
+    shm.setAtomLabel(value, i);
   }
 
   public void deleteShapeAtoms(Object[] value, BS bs) {
-    shapeManager.deleteShapeAtoms(value, bs);
+    shm.deleteShapeAtoms(value, bs);
   }
 
   public void resetBioshapes(BS bsAllAtoms) {
-    shapeManager.resetBioshapes(bsAllAtoms);
+    shm.resetBioshapes(bsAllAtoms);
   }
 
   public float getAtomShapeValue(int tok, Group group, int atomIndex) {
     // Atom
-    return shapeManager.getAtomShapeValue(tok, group, atomIndex);
+    return shm.getAtomShapeValue(tok, group, atomIndex);
   }
 
   public void mergeShapes(Shape[] newShapes) {
     // ParallelProcessor
-    shapeManager.mergeShapes(newShapes);
+    shm.mergeShapes(newShapes);
   }
 
   public ShapeManager getShapeManager() {
-    return shapeManager;
+    return shm;
   }
 
   boolean isParallel;
@@ -9669,7 +9669,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public BS getRenderableBitSet() {
-    return shapeManager.getRenderableBitSet();
+    return shm.getRenderableBitSet();
   }
 
   private void setAtomPickingOption(String option) {
@@ -9715,14 +9715,14 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     // called by actionManager
     stopMinimization();
     if (bsAtoms == null) {
-      Atom atom = ms.atoms[atomIndex];
+      Atom atom = ms.at[atomIndex];
       bsAtoms = BSUtil.newAndSetBit(atomIndex);
       Bond[] bonds = atom.getBonds();
       if (bonds != null)
         for (int i = 0; i < bonds.length; i++) {
           Atom atom2 = bonds[i].getOtherAtom(atom);
           if (atom2.getElementNumber() == 1)
-            bsAtoms.set(atom2.index);
+            bsAtoms.set(atom2.i);
         }
     }
     moveSelected(deltaX, deltaY, deltaZ, Integer.MIN_VALUE, Integer.MIN_VALUE,
@@ -9734,7 +9734,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public boolean isModelPDB(int i) {
-    return ms.models[i].isBioModel;
+    return ms.am[i].isBioModel;
   }
 
   boolean isAtomAssignable(int i) {
@@ -9777,7 +9777,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public String getSmilesOpt(BS bsSelected, int index1, int index2,
                           boolean explicitH, boolean isBioSmiles,
                           boolean bioAllowUnmatchedRings, boolean bioAddCrossLinks, boolean bioAddComment) throws Exception {
-    Atom[] atoms = ms.atoms;
+    Atom[] atoms = ms.at;
     if (bsSelected == null) {
       if (index1 < 0 || index2 < 0) {
         bsSelected = getSelectedAtoms();
@@ -9811,7 +9811,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public ColorEncoder getColorEncoder(String colorScheme) {
-    return colorManager.getColorEncoder(colorScheme);
+    return cm.getColorEncoder(colorScheme);
   }
 
   public void displayBonds(BondSet bs, boolean isDisplay) {
@@ -9885,7 +9885,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       return;
     case '$':
     case '0':
-      shapeManager.getObjectMap(map, c == '$');
+      shm.getObjectMap(map, c == '$');
       return;
     }
   }
@@ -9980,8 +9980,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public void calculatePartialCharges(BS bsSelected) {
     if (bsSelected == null || bsSelected.cardinality() == 0)
       bsSelected = getModelUndeletedAtomsBitSetBs(getVisibleFramesBitSet());
-    getMinimizer(true).calculatePartialCharges(ms.bonds,
-        ms.bondCount, ms.atoms, bsSelected);
+    getMinimizer(true).calculatePartialCharges(ms.bo,
+        ms.bondCount, ms.at, bsSelected);
   }
 
   public void setCurrentModelID(String id) {
@@ -9995,16 +9995,16 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public String getPathForAllFiles() {
-    return fileManager.getPathForAllFiles();
+    return fm.getPathForAllFiles();
   }
 
   public Object cacheGet(String key) {
-    return fileManager.cacheGet(key, false);
+    return fm.cacheGet(key, false);
   }
 
   public void cacheClear() {
     // script: reset cache
-    fileManager.cacheClear();
+    fm.cacheClear();
   }
 
   /**
@@ -10020,17 +10020,17 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     // PyMOL reader and isosurface
     // HTML5/JavaScript load ?  and  script ? 
     Logger.info("Viewer cachePut " + key);
-    fileManager.cachePut(key, data);
+    fm.cachePut(key, data);
   }
 
   @Override
   public int cacheFileByName(String fileName, boolean isAdd) {
     // cache command in script
-    return fileManager.cacheFileByNameAdd(fileName, isAdd);
+    return fm.cacheFileByNameAdd(fileName, isAdd);
   }
 
   public Map<String, Integer> cacheList() {
-    return fileManager.cacheList();
+    return fm.cacheList();
   }
 
   public void clearThreads() {
@@ -10053,7 +10053,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public void checkInheritedShapes() {
-    shapeManager.checkInheritedShapes();
+    shm.checkInheritedShapes();
   }
 
   @Override
@@ -10062,7 +10062,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       setScreenDimension(width, height);
       return dimScreen;
     }
-    return statusManager.resizeInnerPanel(width, height);
+    return sm.resizeInnerPanel(width, height);
   }
 
   public String getFontLineShapeState(String s, String myType,
@@ -10128,8 +10128,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     BS bsB = new BS();
     if (bsAtoms.cardinality() == 0)
       return bsB;
-    int modelIndex = ms.atoms[bsAtoms.nextSetBit(0)].modelIndex;
-    if (modelIndex != ms.modelCount - 1)
+    int modelIndex = ms.at[bsAtoms.nextSetBit(0)].mi;
+    if (modelIndex != ms.mc - 1)
       return bsB;
     List<Atom> vConnections = new List<Atom>();
     P3[] pts = getAdditionalHydrogens(bsAtoms, doAll, false, vConnections);
@@ -10156,7 +10156,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
                                 P3[] pts) throws Exception {
     if (getScriptManager() == null)
       return null;
-    return scriptManager.addHydrogensInline(bsAtoms, vConnections, pts);
+    return scm.addHydrogensInline(bsAtoms, vConnections, pts);
   }
 
   @Override
@@ -10169,7 +10169,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     displayLoadErrors = false;
     boolean isOK = getScriptManager() != null
         && eval.evalParallel(context,
-            (shapeManager == null ? this.shapeManager : shapeManager));
+            (shapeManager == null ? this.shm : shapeManager));
     displayLoadErrors = true;
     return isOK;
   }
@@ -10224,12 +10224,12 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public void setCGO(List<Object> info) {
-    shapeManager.loadShape(JC.SHAPE_CGO);
-    shapeManager.setShapePropertyBs(JC.SHAPE_CGO, "setCGO", info, null);
+    shm.loadShape(JC.SHAPE_CGO);
+    shm.setShapePropertyBs(JC.SHAPE_CGO, "setCGO", info, null);
   }
 
   public void setFrame(int i) {
-    animationManager.setFrame(i - 1);
+    am.setFrame(i - 1);
   }
 
   public boolean movePyMOL(JmolScriptEvaluator eval, float floatSecondsTotal,
@@ -10243,7 +10243,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public void setModelSet(ModelSet modelSet) {
-    this.ms = modelManager.modelSet = modelSet;
+    this.ms = mm.modelSet = modelSet;
   }
 
   public String setObjectProp(String id, int tokCommand) {
@@ -10310,7 +10310,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public Boolean getScriptQueueInfo() {
-    return (scriptManager != null && scriptManager.isQueueProcessing() ? Boolean.TRUE
+    return (scm != null && scm.isQueueProcessing() ? Boolean.TRUE
         : Boolean.FALSE);
   }
 
@@ -10371,7 +10371,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
    */
   public boolean checkMotionRendering(int tok) {
     if (!getInMotion(true) && !tm.spinOn
-        && !tm.vibrationOn && !animationManager.animationOn)
+        && !tm.vibrationOn && !am.animationOn)
       return true;
     if (g.wireframeRotation)
       return false;
@@ -10447,11 +10447,11 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public void setCurrentAtom(int iAtom) {
-    animationManager.currentAtomIndex = iAtom;
+    am.currentAtomIndex = iAtom;
   }
 
   public int getCurrentAtom() {
-    return animationManager.currentAtomIndex;
+    return am.currentAtomIndex;
   }
 
 }

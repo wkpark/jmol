@@ -103,7 +103,7 @@ public class WebMOReader extends MopacSlaterReader {
   
   void readHeader() throws Exception {
     moData.put("isNormalized", Boolean.TRUE);
-    while (readLine() != null && line.length() > 0) {
+    while (rd() != null && line.length() > 0) {
       moData.put("calculationType", "?");
       String[] tokens = getTokens();
       tokens[0] = tokens[0].substring(0, 1).toLowerCase()
@@ -155,7 +155,7 @@ public class WebMOReader extends MopacSlaterReader {
       int atomIndex1 = parseIntStr(tokens[0]);
       int atomIndex2 = parseIntStr(tokens[1]);
       int order = parseIntStr(tokens[2]);
-      atomSetCollection
+      asc
           .addBond(new Bond(atomIndex1 - 1, atomIndex2 - 1, order));
     }
   }
@@ -227,7 +227,7 @@ public class WebMOReader extends MopacSlaterReader {
   }
 
   private boolean getLine() throws Exception {
-    return (readLine() != null && (line.length() == 0 || line.charAt(0) != '['));
+    return (rd() != null && (line.length() == 0 || line.charAt(0) != '['));
   }
 
   void readGaussianBasis() throws Exception {
@@ -261,14 +261,14 @@ public class WebMOReader extends MopacSlaterReader {
         throw new Exception("Error reading GTOs: missing atom index");
       int[] slater = new int[4];
       atomIndex = parseIntStr(tokens[0]) - 1;
-      tokens = getTokensStr(readLine());
+      tokens = getTokensStr(rd());
       int nGaussians = parseIntStr(tokens[1]);
       slater[0] = atomIndex;
       slater[1] = JmolAdapter.getQuantumShellTagID(tokens[0]);
       slater[2] = gaussianPtr;
       slater[3] = nGaussians;
       for (int i = 0; i < nGaussians; i++) {
-        String[] strData = getTokensStr(readLine());
+        String[] strData = getTokensStr(rd());
         int nData = strData.length;
         float[] data = new float[nData];
         for (int d = 0; d < nData; d++) {
@@ -289,7 +289,7 @@ public class WebMOReader extends MopacSlaterReader {
       Logger.debug(sdata.size() + " slater shells read");
       Logger.debug(garray.length + " gaussian primitives read");
     }
-    atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
+    asc.setAtomSetAuxiliaryInfo("moData", moData);
   }
 
   void readSlaterBasis() throws Exception {
@@ -328,8 +328,8 @@ public class WebMOReader extends MopacSlaterReader {
     }
     Map<String, Object> mo = new Hashtable<String, Object>();
     List<String> data = new  List<String>();
-    float energy = parseFloatStr(readLine());
-    float occupancy = parseFloatStr(readLine());
+    float energy = parseFloatStr(rd());
+    float occupancy = parseFloatStr(rd());
     while (getLine()) {
       String[] tokens = getTokens();
       if (tokens.length == 0) {

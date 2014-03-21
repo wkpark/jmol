@@ -37,7 +37,7 @@ import javajs.util.P3;
  */
 public class AmpacReader extends AtomSetCollectionReader {
 
-  private int atomCount;
+  private int ac;
   private int freqAtom0 = -1;
   private float[] partialCharges;
   private P3[] atomPositions;
@@ -83,33 +83,33 @@ public class AmpacReader extends AtomSetCollectionReader {
      */
     boolean haveFreq = (freqAtom0 >= 0);
     if (haveFreq) {
-      atomPositions = new P3[atomCount];
+      atomPositions = new P3[ac];
     } else {
-      atomSetCollection.newAtomSet();
+      asc.newAtomSet();
     }
-    readLine();
-    atomCount = 0;
-    while (readLine() != null) {
+    rd();
+    ac = 0;
+    while (rd() != null) {
       String[] tokens = getTokens();
       if (tokens.length < 5)
         break;
       if (haveFreq) {
-        atomPositions[atomCount] = P3.new3(parseFloatStr(tokens[2]), parseFloatStr(tokens[3]), parseFloatStr(tokens[4]));
+        atomPositions[ac] = P3.new3(parseFloatStr(tokens[2]), parseFloatStr(tokens[3]), parseFloatStr(tokens[4]));
       } else {
         addAtomXYZSymName(tokens, 2, tokens[1], null);
       }
-      atomCount++;
+      ac++;
     }
     if (haveFreq)
       setPositions();
   }
 
   private void setPositions() {
-    int maxAtom = atomSetCollection.atomCount;
-    Atom[] atoms = atomSetCollection.atoms;
+    int maxAtom = asc.ac;
+    Atom[] atoms = asc.atoms;
     for (int i = freqAtom0; i <  maxAtom; i++) {
-      atoms[i].setT(atomPositions[i % atomCount]);
-      atoms[i].partialCharge = partialCharges[i % atomCount];  
+      atoms[i].setT(atomPositions[i % ac]);
+      atoms[i].partialCharge = partialCharges[i % ac];  
     }
   }
 
@@ -121,11 +121,11 @@ public class AmpacReader extends AtomSetCollectionReader {
            2         C            0.1005          3.8995
            3         C           -0.0249          4.0249
  */
-    readLine();
-    partialCharges = new float[atomCount];
+    rd();
+    partialCharges = new float[ac];
     String[] tokens;
-    for (int i = 0; i < atomCount; i++) {
-      if (readLine() == null || (tokens = getTokens()).length < 4)
+    for (int i = 0; i < ac; i++) {
+      if (rd() == null || (tokens = getTokens()).length < 4)
         break;
       partialCharges[i] = parseFloatStr(tokens[2]);
     }
@@ -175,13 +175,13 @@ public class AmpacReader extends AtomSetCollectionReader {
    * @exception Exception  if an I/O error occurs
    */
   private void readFrequencies() throws Exception {
-    while (readLine() != null && line.indexOf("FREQ  :") < 0) {
+    while (rd() != null && line.indexOf("FREQ  :") < 0) {
     }
     while (line != null && line.indexOf("FREQ  :") >= 0) {
       String[] frequencies = getTokens();
-      while (readLine() != null && line.indexOf("IR I") < 0) {
+      while (rd() != null && line.indexOf("IR I") < 0) {
       }
-      int iAtom0 = atomSetCollection.atomCount;
+      int iAtom0 = asc.ac;
       if (vibrationNumber == 0)
         freqAtom0 = iAtom0;
       int frequencyCount = frequencies.length - 2;
@@ -190,16 +190,16 @@ public class AmpacReader extends AtomSetCollectionReader {
         ignore[i] = !doGetVibration(++vibrationNumber);
         if (ignore[i])
           continue;
-        atomSetCollection.cloneLastAtomSet();
-        atomSetCollection.setAtomSetName(frequencies[i + 2] + " cm^-1");
-        atomSetCollection.setAtomSetModelProperty("Frequency", frequencies[i + 2]
+        asc.cloneLastAtomSet();
+        asc.setAtomSetName(frequencies[i + 2] + " cm^-1");
+        asc.setAtomSetModelProperty("Frequency", frequencies[i + 2]
             + " cm^-1");
-        atomSetCollection.setAtomSetModelProperty(SmarterJmolAdapter.PATH_KEY,
+        asc.setAtomSetModelProperty(SmarterJmolAdapter.PATH_KEY,
             "Frequencies");
       }
-      fillFrequencyData(iAtom0, atomCount, atomCount, ignore, false, 8, 9, null, 0);
-      readLine();
-      readLine();
+      fillFrequencyData(iAtom0, ac, ac, ignore, false, 8, 9, null, 0);
+      rd();
+      rd();
     }
   }
   

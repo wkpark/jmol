@@ -56,7 +56,7 @@ public class DmolReader extends AtomSetCollectionReader {
   private void readCellParam() throws Exception {
     unitCellData = new float[9];
     for (int n = 0, i = 0; n < 3; n++) {
-      String[] tokens = getTokensStr(readLine());
+      String[] tokens = getTokensStr(rd());
       unitCellData[i++] = parseFloatStr(!geomOpt ? tokens[0] : tokens[4])
       * ANGSTROMS_PER_BOHR;
       unitCellData[i++] = parseFloatStr(!geomOpt ? tokens[1] : tokens[5])
@@ -68,7 +68,7 @@ public class DmolReader extends AtomSetCollectionReader {
 
   private void newAtomSet() throws Exception {
     applySymmetryAndSetTrajectory();
-    atomSetCollection.newAtomSet();
+    asc.newAtomSet();
     if (totE != null)
       setEnergy();
     doApplySymmetry = true;
@@ -103,10 +103,10 @@ public class DmolReader extends AtomSetCollectionReader {
     newAtomSet();
     if (geomOpt)
       readLines(2);
-    while (readLine() != null && !geomOpt ? !line.contains("$end") : !line
+    while (rd() != null && !geomOpt ? !line.contains("$end") : !line
         .contains("-----")) {
       String[] tokens = getTokens();
-      Atom atom = atomSetCollection.addNewAtom();
+      Atom atom = asc.addNewAtom();
       atom.atomName = !geomOpt ? tokens[0] : tokens[1];
       float factor = (float) (!geomOpt ? ANGSTROMS_PER_BOHR : 1.00);
       float x = parseFloatStr(!geomOpt ? tokens[1] : tokens[2]) * factor;
@@ -118,15 +118,15 @@ public class DmolReader extends AtomSetCollectionReader {
   }
 
   private void readEnergy() throws Exception {
-    readLine();
+    rd();
     if (line.contains("Ef"))
       totE = Double.valueOf(Double.parseDouble(getTokensStr(line.substring(line.indexOf("Ef") +1 , line.indexOf("Ha")  ))[1]));
   }
 
   private void setEnergy() {
-    atomSetCollection.setAtomSetEnergy("" + totE, totE.floatValue());
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Energy", totE);
-    atomSetCollection.setAtomSetName("E = " + totE + " Hartree");
+    asc.setAtomSetEnergy("" + totE, totE.floatValue());
+    asc.setAtomSetCollectionAuxiliaryInfo("Energy", totE);
+    asc.setAtomSetName("E = " + totE + " Hartree");
   }
 
   /*  
@@ -148,8 +148,8 @@ public class DmolReader extends AtomSetCollectionReader {
 
   private void readFreq() throws Exception {
     int lastAtomCount = 0;
-    int atomCount = atomSetCollection.getLastAtomSetAtomCount();
-    while (readLine() != null && line.charAt(1) == ' ') {
+    int ac = asc.getLastAtomSetAtomCount();
+    while (rd() != null && line.charAt(1) == ' ') {
       String[] tokens = getTokensStr(line);
       int frequencyCount = tokens.length / 2;
       float[] frequencies = new float[frequencyCount];
@@ -167,17 +167,17 @@ public class DmolReader extends AtomSetCollectionReader {
         if (ignore[i])
           continue;
         applySymmetryAndSetTrajectory();
-        lastAtomCount = cloneLastAtomSet(atomCount, null);
+        lastAtomCount = cloneLastAtomSet(ac, null);
         if (i == 0)
-          iAtom0 = atomSetCollection.getLastAtomSetAtomIndex();
-        atomSetCollection.setAtomSetFrequency(null, null,
+          iAtom0 = asc.getLastAtomSetAtomIndex();
+        asc.setAtomSetFrequency(null, null,
             String.valueOf(frequencies[i]), null);
-        atomSetCollection.setAtomSetName(DF.formatDecimal(
+        asc.setAtomSetName(DF.formatDecimal(
             frequencies[i], 2) + " cm-1");
 
       }
-      readLine();
-      fillFrequencyData(iAtom0, atomCount, lastAtomCount, ignore, false, 5, 13,
+      rd();
+      fillFrequencyData(iAtom0, ac, lastAtomCount, ignore, false, 5, 13,
           null, 0);
       readLines(2);
     }

@@ -157,7 +157,7 @@ public class Mesh extends MeshSurface {
     lattice = null;
     mat4 = null;
     normixes = null;
-    polygonIndexes = null;
+    pis = null;
     polygonTranslucencies = null;
     scale3d = 0;
     showContourLines = false;
@@ -170,8 +170,8 @@ public class Mesh extends MeshSurface {
     title = null;
     unitCell = null;
     useColix = true;
-    vertexCount0 = polygonCount0 = vertexCount = polygonCount = 0;
-    vertices = null;
+    vertexCount0 = polygonCount0 = vc = pc = 0;
+    vs = null;
     volumeRenderPointSize = 0.15f;
     this.meshType = meshType;
   }
@@ -180,7 +180,7 @@ public class Mesh extends MeshSurface {
   
   public void initialize(int lighting, P3[] vertices, P4 plane) {
     if (vertices == null)
-      vertices = this.vertices;
+      vertices = this.vs;
     V3[] normals = getNormals(vertices, plane);
     setNormixes(normals);
     this.lighting = T.frontlit;
@@ -203,7 +203,7 @@ public class Mesh extends MeshSurface {
   }
 
   public V3[] getNormals(P3[] vertices, P4 plane) {
-    normixCount = (isTriangleSet ? polygonCount : vertexCount);
+    normixCount = (isTriangleSet ? pc : vc);
     V3[] normals = new V3[normixCount];
     for (int i = normixCount; --i >= 0;)
       normals[i] = new V3();
@@ -273,7 +273,7 @@ public class Mesh extends MeshSurface {
     // subclassed in IsosurfaceMesh
     int adjustment = checkByteCount;
     float min = getMinDistance2ForVertexGrouping();
-    for (int i = polygonCount; --i >= 0;) {
+    for (int i = pc; --i >= 0;) {
       try {
         if (!setABC(i))
           continue;
@@ -291,8 +291,8 @@ public class Mesh extends MeshSurface {
         }
         float l = vTemp.length();
         if (l > 0.9 && l < 1.1) // test for not infinity or -infinity or isNaN
-          for (int j = polygonIndexes[i].length - adjustment; --j >= 0;) {
-            int k = polygonIndexes[i][j];
+          for (int j = pis[i].length - adjustment; --j >= 0;) {
+            int k = pis[i][j];
             normals[k].add(vTemp);
           }
       } catch (Exception e) {
@@ -346,12 +346,12 @@ public class Mesh extends MeshSurface {
   public P3[] getOffsetVertices(P4 thePlane) {
     if (altVertices != null && !recalcAltVertices)
       return (P3[]) altVertices;
-    altVertices = new P3[vertexCount];
-    for (int i = 0; i < vertexCount; i++)
-      altVertices[i] = P3.newP(vertices[i]);
+    altVertices = new P3[vc];
+    for (int i = 0; i < vc; i++)
+      altVertices[i] = P3.newP(vs[i]);
     V3 normal = null;
     float val = 0;
-    if (scale3d != 0 && vertexValues != null && thePlane != null) {
+    if (scale3d != 0 && vvs != null && thePlane != null) {
         normal = V3.new3(thePlane.x, thePlane.y, thePlane.z);
         normal.normalize();
         normal.scale(scale3d);
@@ -361,8 +361,8 @@ public class Mesh extends MeshSurface {
           m3.rotate(normal);
         }
     }
-    for (int i = 0; i < vertexCount; i++) {
-      if (vertexValues != null && Float.isNaN(val = vertexValues[i]))
+    for (int i = 0; i < vc; i++) {
+      if (vvs != null && Float.isNaN(val = vvs[i]))
         continue;
       if (mat4 != null)
         mat4.rotTrans(altVertices[i]);
@@ -385,12 +385,12 @@ public class Mesh extends MeshSurface {
   public void setShowWithin(List<P3> showWithinPoints,
                             float showWithinDistance2, boolean isWithinNot) {
     if (showWithinPoints.size() == 0) {
-      bsDisplay = (isWithinNot ? BSUtil.newBitSet2(0, vertexCount) : null);
+      bsDisplay = (isWithinNot ? BSUtil.newBitSet2(0, vc) : null);
       return;
     }
     bsDisplay = new BS();
-    for (int i = 0; i < vertexCount; i++)
-      if (checkWithin(vertices[i], showWithinPoints, showWithinDistance2, isWithinNot))
+    for (int i = 0; i < vc; i++)
+      if (checkWithin(vs[i], showWithinPoints, showWithinDistance2, isWithinNot))
         bsDisplay.set(i);
   }
 
@@ -405,8 +405,8 @@ public class Mesh extends MeshSurface {
 
   public int getVertexIndexFromNumber(int vertexIndex) {
     if (--vertexIndex < 0)
-      vertexIndex = vertexCount + vertexIndex;
-    return (vertexCount <= vertexIndex ? vertexCount - 1
+      vertexIndex = vc + vertexIndex;
+    return (vc <= vertexIndex ? vc - 1
         : vertexIndex < 0 ? 0 : vertexIndex);
   }
 
@@ -416,12 +416,12 @@ public class Mesh extends MeshSurface {
 
   protected BS getVisibleVBS() {
     BS bs = new BS();
-    if (polygonCount == 0 && bsSlabDisplay != null)
+    if (pc == 0 && bsSlabDisplay != null)
       BSUtil.copy2(bsSlabDisplay, bs);
     else
-      for (int i = polygonCount; --i >= 0;)
+      for (int i = pc; --i >= 0;)
         if (bsSlabDisplay == null || bsSlabDisplay.get(i)) {
-          int[] vertexIndexes = polygonIndexes[i];
+          int[] vertexIndexes = pis[i];
           if (vertexIndexes == null)
             continue;
           bs.set(vertexIndexes[0]);
@@ -485,16 +485,16 @@ public class Mesh extends MeshSurface {
   Object getInfo(boolean isAll) {
     Hashtable<String, Object> info = new Hashtable<String, Object>();
     info.put("id", thisID);
-    info.put("vertexCount", Integer.valueOf(vertexCount));
-    info.put("polygonCount", Integer.valueOf(polygonCount));
+    info.put("vertexCount", Integer.valueOf(vc));
+    info.put("polygonCount", Integer.valueOf(pc));
     info.put("haveQuads", Boolean.valueOf(haveQuads));
-    info.put("haveValues", Boolean.valueOf(vertexValues != null));
-    if (vertexCount > 0 && isAll)
-      info.put("vertices", AU.arrayCopyPt(vertices, vertexCount));
-    if (vertexValues != null && isAll)
-      info.put("vertexValues", AU.arrayCopyF(vertexValues, vertexCount));
-    if (polygonCount > 0 && isAll)
-      info.put("polygons", AU.arrayCopyII(polygonIndexes, polygonCount));
+    info.put("haveValues", Boolean.valueOf(vvs != null));
+    if (vc > 0 && isAll)
+      info.put("vertices", AU.arrayCopyPt(vs, vc));
+    if (vvs != null && isAll)
+      info.put("vertexValues", AU.arrayCopyF(vvs, vc));
+    if (pc > 0 && isAll)
+      info.put("polygons", AU.arrayCopyII(pis, pc));
     return info;
   }
 
@@ -531,7 +531,7 @@ public class Mesh extends MeshSurface {
   }
 
   public V3[] getNormalsTemp() {
-    return (normalsTemp == null ? (normalsTemp = getNormals(vertices, null))
+    return (normalsTemp == null ? (normalsTemp = getNormals(vs, null))
         : normalsTemp);
   }
 

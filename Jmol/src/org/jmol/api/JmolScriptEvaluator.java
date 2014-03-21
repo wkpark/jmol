@@ -34,7 +34,7 @@ public interface JmolScriptEvaluator {
 
   void notifyResumeStatus();
 
-  List<Integer> getAtomBitSetVector(int atomCount, Object atomExpression);
+  List<Integer> getAtomBitSetVector(int ac, Object atomExpression);
 
   boolean isPaused();
 

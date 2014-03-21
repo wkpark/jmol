@@ -97,7 +97,7 @@ public class CastepReader extends AtomSetCollectionReader {
   private float a, b, c, alpha, beta, gamma;
   private V3[] abc = new V3[3];
   
-  private int atomCount;
+  private int ac;
   private P3[] atomPts;
 
   private boolean havePhonons = false;
@@ -237,7 +237,7 @@ public class CastepReader extends AtomSetCollectionReader {
     if (isPhonon || isOutput) {
       if (isPhonon) {
         isTrajectory = (desiredVibrationNumber <= 0);
-        atomSetCollection.allowMultiple = false;
+        asc.allowMultiple = false;
       }
       return true; // use checkLine
     }
@@ -314,12 +314,12 @@ public class CastepReader extends AtomSetCollectionReader {
    */
   private void readOutputAtoms() throws Exception {
     readLines(2);
-    while (readLine().indexOf("xxx") < 0) {
+    while (rd().indexOf("xxx") < 0) {
       Atom atom = new Atom();
       tokens = getTokens();
       atom.elementSymbol = tokens[1];
       atom.atomName = tokens[1] + tokens[2];
-      atomSetCollection.addAtomWithMappedName(atom);
+      asc.addAtomWithMappedName(atom);
       setAtomCoordTokens(atom, tokens, 3);
     }
 
@@ -329,9 +329,9 @@ public class CastepReader extends AtomSetCollectionReader {
     tokens = getTokens();
     try {
       Double energy = Double.valueOf(Double.parseDouble(tokens[pt]));
-      atomSetCollection.setAtomSetName("Energy = " + energy + " eV");
-      atomSetCollection.setAtomSetEnergy("" + energy, energy.floatValue());
-      atomSetCollection.setAtomSetAuxiliaryInfo("Energy", energy);
+      asc.setAtomSetName("Energy = " + energy + " eV");
+      asc.setAtomSetEnergy("" + energy, energy.floatValue());
+      asc.setAtomSetAuxiliaryInfo("Energy", energy);
     } catch (Exception e) {
       appendLoadNote("CASTEP Energy could not be read: " + line);
     }
@@ -342,7 +342,7 @@ public class CastepReader extends AtomSetCollectionReader {
     both volume and geometry
      */
     applySymmetryAndSetTrajectory();
-    atomSetCollection.newAtomSetClear(false);
+    asc.newAtomSetClear(false);
     setLatticeVectors();
   }
   
@@ -350,7 +350,7 @@ public class CastepReader extends AtomSetCollectionReader {
     isTrajectory = (desiredVibrationNumber <= 0);
     doApplySymmetry = true;
     while (line != null && line.contains("<-- E")) {
-      atomSetCollection.newAtomSetClear(false);
+      asc.newAtomSetClear(false);
       discardLinesUntilContains("<-- h");
       setSpaceGroupName("P1");
       abc = read3Vectors(true);
@@ -360,7 +360,7 @@ public class CastepReader extends AtomSetCollectionReader {
       while (line != null && line.contains("<-- R")) {
         tokens = getTokens();
         setAtomCoordScaled(null, tokens, 2, ANGSTROMS_PER_BOHR).elementSymbol = tokens[0];
-        readLine();
+        rd();
       }
       applySymmetryAndSetTrajectory();
       discardLinesUntilContains("<-- E");
@@ -374,13 +374,13 @@ public class CastepReader extends AtomSetCollectionReader {
     } else {
       doApplySymmetry = true;
       setLatticeVectors();
-      int nAtoms = atomSetCollection.atomCount;
+      int nAtoms = asc.ac;
       /*
        * this needs to be run either way (i.e. even if coordinates are already
        * fractional) - to satisfy the logic in AtomSetCollectionReader()
        */
       for (int i = 0; i < nAtoms; i++)
-        setAtomCoord(atomSetCollection.atoms[i]);
+        setAtomCoord(asc.atoms[i]);
     }
     finalizeReaderASCR();
   }
@@ -489,7 +489,7 @@ public class CastepReader extends AtomSetCollectionReader {
   private void readAtomData(float factor) throws Exception {
     do {
       if (tokens.length >= 4) {
-        Atom atom = atomSetCollection.addNewAtom();
+        Atom atom = asc.addNewAtom();
         int pt = tokens[0].indexOf(":");
         if (pt >= 0) {
           atom.elementSymbol = tokens[0].substring(0, pt);
@@ -509,7 +509,7 @@ public class CastepReader extends AtomSetCollectionReader {
   }
 
   private int tokenizeCastepCell() throws Exception {
-    while (readLine() != null) {
+    while (rd() != null) {
       if ((line = line.trim()).length() == 0 || line.startsWith("#")
           || line.startsWith("!"))
         continue;
@@ -542,11 +542,11 @@ public class CastepReader extends AtomSetCollectionReader {
                      1.81939     0.06085    -1.80221
    */
   private void readOutputBornChargeTensors() throws Exception {
-    if (readLine().indexOf("--------") < 0)
+    if (rd().indexOf("--------") < 0)
       return;
-    Atom[] atoms = atomSetCollection.atoms;
+    Atom[] atoms = asc.atoms;
     appendLoadNote("Ellipsoids: Born Charge Tensors");
-    while (readLine().indexOf('=') < 0)
+    while (rd().indexOf('=') < 0)
       getTensor(atoms[readOutputAtomIndex()], line.substring(12));
   }
 
@@ -554,7 +554,7 @@ public class CastepReader extends AtomSetCollectionReader {
   private int readOutputAtomIndex() {
     tokens = getTokensStr(line);
     String name = tokens[0] + tokens[1];
-    return atomSetCollection.getAtomIndexFromName(name);
+    return asc.getAtomIndexFromName(name);
   }
 
   private void getTensor(Atom atom, String line0) throws Exception {
@@ -608,13 +608,13 @@ Species   Ion     s      p      d      f     Total  Charge (e)
     Logger.info("reading charges: " + line);
     readLines(2);
     boolean haveSpin = (line.indexOf("Spin") >= 0);
-    readLine();
-    Atom[] atoms = atomSetCollection.atoms;
+    rd();
+    Atom[] atoms = asc.atoms;
     String[] spins = (haveSpin ? new String[atoms.length] : null);
     if (spins != null)
       for (int i = 0; i < spins.length; i++)
         spins[i] = "0";
-    while (readLine() != null && line.indexOf('=') < 0) {
+    while (rd() != null && line.indexOf('=') < 0) {
       int index = readOutputAtomIndex();
       float charge = parseFloatStr(tokens[haveSpin ? tokens.length - 2 : tokens.length - 1]);
       atoms[index].partialCharge = charge;
@@ -623,7 +623,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
     }
     if (haveSpin) {
       String data = PT.join(spins, '\n', 0);
-      atomSetCollection.setAtomSetAtomProperty("spin", data, -1);
+      asc.setAtomSetAtomProperty("spin", data, -1);
     }
 
     
@@ -649,16 +649,16 @@ Species   Ion     s      p      d      f     Total  Charge (e)
 
   private void readPhononFractionalCoord() throws Exception {
     setFractionalCoordinates(true);
-    while (readLine() != null && line.indexOf("END") < 0) {
+    while (rd() != null && line.indexOf("END") < 0) {
       tokens = getTokens();
       addAtomXYZSymName(tokens, 1, tokens[4], null).bfactor = parseFloatStr(tokens[5]); // mass, actually
     }
-    atomCount = atomSetCollection.atomCount;
+    ac = asc.ac;
     // we collect the atom points, because any supercell business
     // will trash those, and we need the originals
-    atomPts = new P3[atomCount];
-    Atom[] atoms = atomSetCollection.atoms;
-    for (int i = 0; i < atomCount; i++)
+    atomPts = new P3[ac];
+    Atom[] atoms = asc.atoms;
+    for (int i = 0; i < ac; i++)
       atomPts[i] = P3.newP(atoms[i]);
   }
 
@@ -720,7 +720,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
     boolean isGammaPoint = (qvec.length() == 0);
     float nx = 1, ny = 1, nz = 1;
     if (ptSupercell != null && !isOK && !isSecond) {
-      atomSetCollection.getXSymmetry().setSupercellFromPoint(ptSupercell);
+      asc.getXSymmetry().setSupercellFromPoint(ptSupercell);
       nx = ptSupercell.x;
       ny = ptSupercell.y;
       nz = ptSupercell.z;
@@ -748,33 +748,33 @@ Species   Ion     s      p      d      f     Total  Charge (e)
     if (isGammaPoint)
       qvec = null;
     List<Float> freqs = new  List<Float>();
-    while (readLine() != null && line.indexOf("Phonon") < 0) {
+    while (rd() != null && line.indexOf("Phonon") < 0) {
       tokens = getTokens();
       freqs.addLast(Float.valueOf(parseFloatStr(tokens[1])));
     }
-    readLine();
+    rd();
     int frequencyCount = freqs.size();
     float[] data = new float[8];
     V3 t = new V3();
-    atomSetCollection.setCollectionName(qname);
+    asc.setCollectionName(qname);
     for (int i = 0; i < frequencyCount; i++) {
       if (!doGetVibration(++vibrationNumber)) {
-        for (int j = 0; j < atomCount; j++)
-          readLine();
+        for (int j = 0; j < ac; j++)
+          rd();
         continue;
       }
       if (desiredVibrationNumber <= 0) {
         if (!isTrajectory) {
-          cloneLastAtomSet(atomCount, atomPts);
+          cloneLastAtomSet(ac, atomPts);
           applySymmetryAndSetTrajectory();
         }
       }
-      symmetry = atomSetCollection.getSymmetry();
-      int iatom = atomSetCollection.getLastAtomSetAtomIndex();
+      symmetry = asc.getSymmetry();
+      int iatom = asc.getLastAtomSetAtomIndex();
       float freq = freqs.get(i).floatValue();
-      Atom[] atoms = atomSetCollection.atoms;
-      int aCount = atomSetCollection.atomCount;
-      for (int j = 0; j < atomCount; j++) {
+      Atom[] atoms = asc.atoms;
+      int aCount = asc.ac;
+      for (int j = 0; j < ac; j++) {
         fillFloatArray(null, 0, data);
         for (int k = iatom++; k < aCount; k++)
           if (atoms[k].atomSite == j) {
@@ -786,13 +786,13 @@ Species   Ion     s      p      d      f     Total  Charge (e)
             t.y *= ny;
             t.z *= nz;
             setPhononVector(data, atoms[k], t, qvec, v);
-            atomSetCollection.addVibrationVectorWithSymmetry(k, v.x, v.y, v.z, true);
+            asc.addVibrationVectorWithSymmetry(k, v.x, v.y, v.z, true);
           }
       }
       if (isTrajectory)
-        atomSetCollection.setTrajectory();
-      atomSetCollection.setAtomSetFrequency(null, null, "" + freq, null);
-      atomSetCollection.setAtomSetName(DF.formatDecimal(freq, 2)
+        asc.setTrajectory();
+      asc.setAtomSetFrequency(null, null, "" + freq, null);
+      asc.setAtomSetName(DF.formatDecimal(freq, 2)
           + " cm-1 " + qname);
     }
   }

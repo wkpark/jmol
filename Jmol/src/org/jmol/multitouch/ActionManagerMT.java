@@ -82,7 +82,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     } else if (isJNI) {
       adapter.setMultiTouchClient(vwr, this, false);
     }
-    setBinding(binding);
+    setBinding(b);
     xyRange = 10; // allow for more slop in double-clicks and press/releases
   }
 
@@ -111,12 +111,12 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
 
   @Override
   protected void setBinding(Binding newBinding) {
-    binding = newBinding;
-    binding.unbindMouseAction(Binding.RIGHT|Binding.DOWN);
-    if (simulator != null && binding != null) {
+    b = newBinding;
+    b.unbindMouseAction(Binding.RIGHT|Binding.DOWN);
+    if (simulator != null && b != null) {
       //binding.unbindJmolAction(ACTION_center);
-      binding.unbindName(Binding.CTRL|Binding.LEFT|Binding.SINGLE|Binding.DOWN, null);
-      binding.bindAction(Binding.CTRL|Binding.LEFT|Binding.SINGLE|Binding.DOWN, ACTION_multiTouchSimulation);
+      b.unbindName(Binding.CTRL|Binding.LEFT|Binding.SINGLE|Binding.DOWN, null);
+      b.bindAction(Binding.CTRL|Binding.LEFT|Binding.SINGLE|Binding.DOWN, ACTION_multiTouchSimulation);
     }
   }
 
@@ -336,7 +336,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     case Event.PRESSED:
       if (simulator != null) {
         int maction = Binding.getMouseAction(1, modifiers, mode);
-        if (binding.isBound(maction, ACTION_multiTouchSimulation)) {
+        if (b.isBound(maction, ACTION_multiTouchSimulation)) {
           setCurrent(0, x, y, modifiers);
           vwr.setFocus();
           if (simulationPhase++ == 0)

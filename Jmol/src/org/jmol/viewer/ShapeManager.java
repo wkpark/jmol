@@ -289,7 +289,7 @@ public class ShapeManager {
       return 0;
     int mad = shapes[iShape].getSize(atomIndex);
     if (mad == 0) {
-      if ((group.shapeVisibilityFlags & shapes[iShape].myVisibilityFlag) == 0)
+      if ((group.shapeVisibilityFlags & shapes[iShape].vf) == 0)
         return 0;
       mad = shapes[iShape].getSizeG(group);
     }
@@ -382,9 +382,9 @@ public class ShapeManager {
     
     boolean showHydrogens = vwr.getBoolean(T.showhydrogens);
     BS bsDeleted = vwr.getDeletedAtoms();
-    Atom[] atoms = modelSet.atoms;
+    Atom[] atoms = modelSet.at;
     int flag0 = JC.ATOM_NOFLAGS & ~JC.VIS_BOND_FLAG;
-    for (int i = modelSet.atomCount; --i >= 0;) {
+    for (int i = modelSet.ac; --i >= 0;) {
       Atom atom = atoms[i];
       atom.shapeVisibilityFlags &= flag0;
       if (bsDeleted != null && bsDeleted.get(i) || !showHydrogens
@@ -428,7 +428,7 @@ public class ShapeManager {
     }
     modelSet.getRenderable(bsRenderableAtoms);
     Object[] vibrationVectors = modelSet.vibrations;
-    Atom[] atoms = modelSet.atoms;
+    Atom[] atoms = modelSet.at;
     boolean vibs = (vibrationVectors != null && vwr.isVibrationOn());
     for (int i = bsRenderableAtoms.nextSetBit(0); i >= 0; i = bsRenderableAtoms.nextSetBit(i + 1)) {
       // note that this vibration business is not compatible with
@@ -460,13 +460,13 @@ public class ShapeManager {
           int pt = m.firstAtomIndex;
           if (!bsRenderableAtoms.get(pt))
             continue;
-          for (; j < m.atomCount; j++, pt++)
+          for (; j < m.ac; j++, pt++)
             if (gdata.isClippedZ(atoms[pt].sZ
                 - (atoms[pt].sD >> 1)))
               break;
-          if (j != m.atomCount) {
+          if (j != m.ac) {
             pt = m.firstAtomIndex;
-            for (int k = 0; k < m.atomCount; k++) {
+            for (int k = 0; k < m.ac; k++) {
               bsRenderableAtoms.clear(pt);
               atoms[pt++].sZ = 0;
             }

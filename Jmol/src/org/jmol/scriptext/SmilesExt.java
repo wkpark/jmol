@@ -95,10 +95,10 @@ public class SmilesExt implements JmolSmilesExtension {
       M4 m = new M4();
       P3 c = new P3();
 
-      Atom[] atoms = e.vwr.ms.atoms;
-      int atomCount = e.vwr.getAtomCount();
+      Atom[] atoms = e.vwr.ms.at;
+      int ac = e.vwr.getAtomCount();
       int[][] maps = sm.getCorrelationMaps(smiles,
-          atoms, atomCount, bsA, isSmarts, true);
+          atoms, ac, bsA, isSmarts, true);
       if (maps == null)
         e.evalError(sm.getLastException(), null);
       if (maps.length == 0)
@@ -107,7 +107,7 @@ public class SmilesExt implements JmolSmilesExtension {
       for (int i = 0; i < mapFirst.length; i++)
         ptsA.addLast(atoms[mapFirst[i]]);
       maps = sm.getCorrelationMaps(smiles, atoms,
-          atomCount, bsB, isSmarts, firstMatchOnly);
+          ac, bsB, isSmarts, firstMatchOnly);
       if (maps == null)
         e.evalError(sm.getLastException(), null);
       if (maps.length == 0)
@@ -185,7 +185,7 @@ public class SmilesExt implements JmolSmilesExtension {
       try {
         if (asAtoms)
           b = sm.getSubstructureSetArray(pattern,
-              e.vwr.ms.atoms, e.vwr.getAtomCount(), bsSelected, null,
+              e.vwr.ms.at, e.vwr.getAtomCount(), bsSelected, null,
               isSmarts, false);
         else
           b = sm.find(pattern, smiles, isSmarts, false);
@@ -246,7 +246,7 @@ public class SmilesExt implements JmolSmilesExtension {
     if (bondMap2 == null || bondMap2.length != bondMap1.length)
       return null;
     float[][] angles = new float[bondMap1.length][3];
-    Atom[] atoms = e.vwr.ms.atoms;
+    Atom[] atoms = e.vwr.ms.at;
     getTorsions(atoms, bondMap2, angles, 0);
     getTorsions(atoms, bondMap1, angles, 1);
     float[] data = new float[bondMap1.length * 6];

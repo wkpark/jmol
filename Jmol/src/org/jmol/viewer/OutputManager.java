@@ -234,7 +234,7 @@ abstract class OutputManager {
     String s = vwr.getStateInfo3(null, width, height);
     if (out != null) {
       if (fileName != null)
-        vwr.fileManager.clearPngjCache(fileName);
+        vwr.fm.clearPngjCache(fileName);
       // when writing a file, we need to make sure
       // the pngj cache for that file is cleared
       return createZipSet(s, scripts, true, out);
@@ -465,7 +465,7 @@ abstract class OutputManager {
     int saveHeight = vwr.dimScreen.height;
     vwr.resizeImage(width, height, true, true, false);
     vwr.setModelVisibility();
-    String data = vwr.repaintManager.renderExport(vwr.gdata,
+    String data = vwr.rm.renderExport(vwr.gdata,
         vwr.ms, params);
     vwr.resizeImage(saveWidth, saveHeight, true, true, true);
     return data;
@@ -663,7 +663,7 @@ abstract class OutputManager {
         // both Jmol application and applet return null
         byte[] bytes = (byte[]) params.get("bytes");
         // String return here
-        sret = vwr.statusManager.createImage(fileName, type, text, bytes,
+        sret = vwr.sm.createImage(fileName, type, text, bytes,
             quality);
         if (sret == null) {
           // allow Jmol to do it            
@@ -746,7 +746,7 @@ abstract class OutputManager {
             params.put("fileName", localName);
           if (sret == null)
             sret = writeToOutputChannel(params);
-          vwr.statusManager.createImage(sret, type, null, null, quality);
+          vwr.sm.createImage(sret, type, null, null, quality);
           if (msg != null)
             vwr.showString(msg + " (" + params.get("captureByteCount")
                 + " bytes)", false);
@@ -833,7 +833,7 @@ abstract class OutputManager {
   private String createZipSet(String script, String[] scripts,
                               boolean includeRemoteFiles, OC out) {
     List<Object> v = new List<Object>();
-    FileManager fm = vwr.fileManager;
+    FileManager fm = vwr.fm;
     List<String> fileNames = new List<String>();
     Hashtable<Object, String> crcMap = new Hashtable<Object, String>();
     boolean haveSceneScript = (scripts != null && scripts.length == 3 && scripts[1]
@@ -988,7 +988,7 @@ abstract class OutputManager {
       {
         bos = new BufferedOutputStream(out);
       }
-      FileManager fm = vwr.fileManager;
+      FileManager fm = vwr.fm;
       OutputStream zos = (OutputStream) Rdr.getZipOutputStream(bos);
       for (int i = 0; i < fileNamesAndByteArrays.size(); i += 3) {
         String fname = (String) fileNamesAndByteArrays.get(i);

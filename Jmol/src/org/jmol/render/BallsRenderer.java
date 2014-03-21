@@ -38,7 +38,7 @@ public class BallsRenderer extends ShapeRenderer {
   protected boolean render() {
     boolean needTranslucent = false;
     if (isExport || vwr.checkMotionRendering(T.atoms)) {
-      Atom[] atoms = modelSet.atoms;
+      Atom[] atoms = ms.at;
       short[] colixes = ((Balls) shape).colixes;
       BS bsOK = vwr.getRenderableBitSet();
       for (int i = bsOK.nextSetBit(0); i >= 0; i = bsOK.nextSetBit(i + 1)) {

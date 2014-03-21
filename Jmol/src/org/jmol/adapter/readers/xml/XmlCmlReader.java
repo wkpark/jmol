@@ -97,8 +97,8 @@ public class XmlCmlReader extends XmlReader {
 
   // the same atom array gets reused
   // it will grow to the maximum length;
-  // atomCount holds the current number of atoms
-  private int atomCount;
+  // ac holds the current number of atoms
+  private int ac;
   private Atom[] atomArray = new Atom[100];
 
   private int bondCount;
@@ -270,19 +270,19 @@ public class XmlCmlReader extends XmlReader {
         if (atts.containsKey("atomRef1")) {
           breakOutBondTokens(atts.get("atomRef1"));
           for (int i = tokenCount; --i >= 0;)
-            bondArray[i].atomIndex1 = atomSetCollection
+            bondArray[i].atomIndex1 = asc
                 .getAtomIndexFromName(tokens[i]);
         }
         if (atts.containsKey("atomRef2")) {
           breakOutBondTokens(atts.get("atomRef2"));
           for (int i = tokenCount; --i >= 0;)
-            bondArray[i].atomIndex2 = atomSetCollection
+            bondArray[i].atomIndex2 = asc
                 .getAtomIndexFromName(tokens[i]);
         }
       }
       if (name.equalsIgnoreCase("atomArray")) {
         state = MOLECULE_ATOM_ARRAY;
-        atomCount = 0;
+        ac = 0;
         boolean coords3D = false;
         if (atts.containsKey("atomID")) {
           breakOutAtomTokens(atts.get("atomID"));
@@ -320,7 +320,7 @@ public class XmlCmlReader extends XmlReader {
           for (int i = tokenCount; --i >= 0;)
             atomArray[i].elementSymbol = tokens[i];
         }
-        for (int i = atomCount; --i >= 0;) {
+        for (int i = ac; --i >= 0;) {
           Atom atom = atomArray[i];
           if (!coords3D)
             atom.z = 0;
@@ -439,7 +439,7 @@ public class XmlCmlReader extends XmlReader {
         if (--moduleNestingLevel == 0) {
           if (parent.iHaveUnitCell)
             applySymmetryAndSetTrajectory();
-          atomIdNames = atomSetCollection.setAtomNames(atomIdNames);
+          atomIdNames = asc.setAtomNames(atomIdNames);
         }
       }
       break;
@@ -513,7 +513,7 @@ public class XmlCmlReader extends XmlReader {
           // we have to wait until the end of all <molecule>s to
           // apply symmetry.
           applySymmetryAndSetTrajectory();
-          atomIdNames = atomSetCollection.setAtomNames(atomIdNames);
+          atomIdNames = asc.setAtomNames(atomIdNames);
           state = START;
         } else {
           state = MOLECULE;
@@ -524,14 +524,14 @@ public class XmlCmlReader extends XmlReader {
       if (name.equalsIgnoreCase("bondArray")) {
         state = MOLECULE;
         for (int i = 0; i < bondCount; ++i)
-          atomSetCollection.addBond(bondArray[i]);
+          asc.addBond(bondArray[i]);
         parent.applySymmetryToBonds = true;
       }
       break;
     case MOLECULE_ATOM_ARRAY:
       if (name.equalsIgnoreCase("atomArray")) {
         state = MOLECULE;
-        for (int i = 0; i < atomCount; ++i)
+        for (int i = 0; i < ac; ++i)
           addAtom(atomArray[i]);
       }
       break;
@@ -599,10 +599,10 @@ public class XmlCmlReader extends XmlReader {
     parent.applySymmetryToBonds = true;
     //System.out.println("atomsetcollection addnewbond " + a1 + " " + a2);
     if (isSerial)
-      atomSetCollection.addNewBondWithMappedSerialNumbers(PT.parseInt(a1.substring(1)),
+      asc.addNewBondWithMappedSerialNumbers(PT.parseInt(a1.substring(1)),
           PT.parseInt(a2.substring(1)), order);
       else
-        atomSetCollection.addNewBondFromNames(a1, a2, order);
+        asc.addNewBondFromNames(a1, a2, order);
   }
 
   private void getDictRefValue() {
@@ -627,9 +627,9 @@ public class XmlCmlReader extends XmlReader {
       return;
     parent.setAtomCoord(atom);
     if (isSerial)
-      atomSetCollection.addAtomWithMappedSerialNumber(atom);
+      asc.addAtomWithMappedSerialNumber(atom);
     else
-      atomSetCollection.addAtomWithMappedName(atom);
+      asc.addAtomWithMappedName(atom);
   }
 
   private int parseBondToken(String str) {
@@ -682,13 +682,13 @@ public class XmlCmlReader extends XmlReader {
   }
 
   void checkAtomArrayLength(int newAtomCount) {
-    if (atomCount == 0) {
+    if (ac == 0) {
       if (newAtomCount > atomArray.length)
         atomArray = new Atom[newAtomCount];
       for (int i = newAtomCount; --i >= 0;)
         atomArray[i] = new Atom();
-      atomCount = newAtomCount;
-    } else if (newAtomCount != atomCount) {
+      ac = newAtomCount;
+    } else if (newAtomCount != ac) {
       throw new IndexOutOfBoundsException("bad atom attribute length");
     }
   }
@@ -711,14 +711,14 @@ public class XmlCmlReader extends XmlReader {
   }
 
   private void createNewAtomSet() {
-    atomSetCollection.newAtomSet();
+    asc.newAtomSet();
     String collectionName = null;
     if (atts.containsKey("title"))
       collectionName = atts.get("title");
     else if (atts.containsKey("id"))
       collectionName = atts.get("id");
     if (collectionName != null) {
-      atomSetCollection.setAtomSetName(collectionName);
+      asc.setAtomSetName(collectionName);
     }
   }
   

@@ -100,10 +100,13 @@ public abstract class Shape {
   
   public static final float RADIUS_MAX = 4;
   public Viewer vwr; //public for now for Backbone
-  public ModelSet modelSet;
+  public ModelSet ms;
   public GData gdata;
   public int shapeID;
-  public int myVisibilityFlag;
+  /**
+   * shape visibility flag
+   */
+  public int vf;
   // AtomShape: Balls, Dots, GeoSurface, Ellipsoids, Halos, Labels, Polyhedra, Stars, Vectors
   // Sticks, Dipoles, BioShape
   // MeshCollection: Draw, CGO, Isosurface, LcaoCartoon, MolecularOrbital, Pmesh 
@@ -123,7 +126,7 @@ public abstract class Shape {
     this.vwr = vwr;
     this.gdata = g3d;
     this.shapeID = shapeID;
-    this.myVisibilityFlag = JC.getShapeVisibilityFlag(shapeID);
+    this.vf = JC.getShapeVisibilityFlag(shapeID);
     setModelSet(modelSet);
     initShape();
     //System.out.println("Shape " + shapeID + " " + this + " initialized");
@@ -155,7 +158,7 @@ public abstract class Shape {
   }
 
   public void setModelSet(ModelSet modelSet) {
-    this.modelSet = modelSet;
+    this.ms = modelSet;
     initModelSet();
   }
   
@@ -164,7 +167,7 @@ public abstract class Shape {
 
   protected void setShapeVisibility(Atom atom, boolean isVisible) {
     // only used for AtomShapes and BioShapes 
-    atom.setShapeVisibility(myVisibilityFlag, isVisible);
+    atom.setShapeVisibility(vf, isVisible);
   }
 
   public void initShape() {
@@ -334,7 +337,7 @@ public abstract class Shape {
   }
   
   public short getColixI(short colix, byte paletteID, int atomIndex) {
-    return getColixA(colix, paletteID, modelSet.atoms[atomIndex]);
+    return getColixA(colix, paletteID, ms.at[atomIndex]);
   }
 
   protected short getColixA(short colix, byte paletteID, Atom atom) {

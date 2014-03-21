@@ -17,26 +17,26 @@ public interface SmilesMatcherInterface {
                                 boolean isSmarts, boolean firstMatchOnly) throws Exception;
 
   public abstract BS getSubstructureSet(String pattern, Node[] atoms,
-                                            int atomCount, BS bsSelected,
+                                            int ac, BS bsSelected,
                                             boolean isSmarts,
                                             boolean firstMatchOnly) throws Exception;
 
   public abstract BS[] getSubstructureSetArray(String pattern,
                                                    Node[] atoms,
-                                                   int atomCount,
+                                                   int ac,
                                                    BS bsSelected,
                                                    BS bsAromatic,
                                                    boolean isSmarts,
                                                    boolean firstMatchOnly) throws Exception;
 
   public abstract int[][] getCorrelationMaps(String pattern, Node[] atoms,
-                                             int atomCount, BS bsSelected,
+                                             int ac, BS bsSelected,
                                              boolean isSmarts,
                                              boolean firstMatchOnly) throws Exception;
 
   public abstract String getMolecularFormula(String pattern, boolean isSearch) throws Exception;
 
-  public abstract String getSmiles(Node[] atoms, int atomCount,
+  public abstract String getSmiles(Node[] atoms, int ac,
                                    BS bsSelected, boolean asBioSmiles,
                                    boolean bioAllowUnmatchedRings,
                                    boolean bioAddCrossLinks, String bioComment,
@@ -46,7 +46,7 @@ public interface SmilesMatcherInterface {
 
   public abstract String reverseChirality(String smiles) throws Exception;
 
-  public abstract void getSubstructureSets(String[] smarts, Node[] atoms, int atomCount,
+  public abstract void getSubstructureSets(String[] smarts, Node[] atoms, int ac,
                                            int flags,
                          BS bsSelected, List<BS> bitSets, List<BS>[] vRings) throws Exception;
 

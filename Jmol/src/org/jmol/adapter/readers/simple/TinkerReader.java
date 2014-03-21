@@ -50,9 +50,9 @@ public class TinkerReader extends FoldingXyzReader {
 //      continuing = false;
 //      return false;
 //    }
-//    atomSetCollection.newAtomSet();
+//    asc.newAtomSet();
 //    String name = line.substring(line.indexOf(" ") + 1);
-//    atomSetCollection.setAtomSetName(name);
+//    asc.setAtomSetName(name);
 //    readAtomsAndBonds(modelAtomCount);
 //    applySymmetryAndSetTrajectory();
 //    continuing = false;
@@ -73,7 +73,7 @@ public class TinkerReader extends FoldingXyzReader {
 //        continue;
 //      }
 //      lines.addLast(tokens);
-//      Atom atom = atomSetCollection.addNewAtom();
+//      Atom atom = asc.addNewAtom();
 //      setElementAndIsotope(atom, tokens[1]);
 //      atom.x = parseFloatStr(tokens[2]);
 //      atom.y = parseFloatStr(tokens[3]);
@@ -81,7 +81,7 @@ public class TinkerReader extends FoldingXyzReader {
 //      types += tokens[5] + "\n";
 //    }
 //    // add the atom types
-//    atomSetCollection.setAtomSetAtomProperty("atomType", types, -1);
+//    asc.setAtomSetAtomProperty("atomType", types, -1);
 //    // now create the bonds
 //    String temp = "";
 //    for (int i = 0; i < n; i++) {
@@ -95,7 +95,7 @@ public class TinkerReader extends FoldingXyzReader {
 //        if (temp.indexOf(key) >= 0)
 //          continue;
 //        temp += key;
-//        atomSetCollection.addNewBondWithOrder(i1, i2, 1);
+//        asc.addNewBondWithOrder(i1, i2, 1);
 //      }
 //    }
 //  }

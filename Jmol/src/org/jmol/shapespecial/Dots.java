@@ -70,7 +70,7 @@ public class Dots extends AtomShape {
   public void initShape() {
     super.initShape();
     translucentAllowed = false; //except for geosurface
-    ec = new EnvelopeCalculation().set(vwr, atomCount, mads);
+    ec = new EnvelopeCalculation().set(vwr, ac, mads);
   }
 
   @Override
@@ -118,7 +118,7 @@ public class Dots extends AtomShape {
       if (thisAtom >= atoms.length)
         return;
       setShapeVisibility(atoms[thisAtom], true);
-      ec.allocDotsConvexMaps(atomCount);
+      ec.allocDotsConvexMaps(ac);
       return;
     }
     if ("dots" == propertyName) {
@@ -129,9 +129,9 @@ public class Dots extends AtomShape {
       setShapeVisibility(atoms[thisAtom], true);
       if (mads == null) {
         ec.setMads(null);
-        mads = new short[atomCount];
-        for (int i = 0; i < atomCount; i++)          
-          if (atoms[i].isVisible(JC.ATOM_INFRAME | myVisibilityFlag)) 
+        mads = new short[ac];
+        for (int i = 0; i < ac; i++)          
+          if (atoms[i].isVisible(JC.ATOM_INFRAME | vf)) 
             // was there a reason we were not checking for hidden?
             try {
               mads[i] = (short) (ec.getAppropriateRadius(i) * 1000);
@@ -142,8 +142,8 @@ public class Dots extends AtomShape {
       }
       mads[thisAtom] = (short) (thisRadius * 1000f);
       if (colixes == null) {
-        colixes = new short[atomCount];
-        paletteIDs = new byte[atomCount];
+        colixes = new short[ac];
+        paletteIDs = new byte[ac];
       }
       colixes[thisAtom] = C.getColix(thisArgb);
       bsOn.set(thisAtom);
@@ -178,7 +178,7 @@ public class Dots extends AtomShape {
     bsIgnore = null;
     isActive = false;
     if (ec == null)
-      ec = new EnvelopeCalculation().set(vwr, atomCount, mads);
+      ec = new EnvelopeCalculation().set(vwr, ac, mads);
   }
 
   @Override
@@ -222,10 +222,10 @@ public class Dots extends AtomShape {
       maxRadius = setRadius;
       break;
     case BONDING:
-      maxRadius = modelSet.getMaxVanderwaalsRadius() * 2; // TODO?
+      maxRadius = ms.getMaxVanderwaalsRadius() * 2; // TODO?
       break;
     default:
-      maxRadius = modelSet.getMaxVanderwaalsRadius();
+      maxRadius = ms.getMaxVanderwaalsRadius();
     }
 
     // combine current and selected set
@@ -245,14 +245,14 @@ public class Dots extends AtomShape {
         }
     } else {
       boolean isAll = (bsSelected == null);
-      int i0 = (isAll ? atomCount - 1 : bsSelected.nextSetBit(0));
+      int i0 = (isAll ? ac - 1 : bsSelected.nextSetBit(0));
       for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsSelected
           .nextSetBit(i + 1)))
         bsOn.setBitTo(i, false);
     }
 
-    for (int i = atomCount; --i >= 0;) {
-      atoms[i].setShapeVisibility(myVisibilityFlag, bsOn.get(i));
+    for (int i = ac; --i >= 0;) {
+      atoms[i].setShapeVisibility(vf, bsOn.get(i));
     }
     if (!isVisible)
       return;
@@ -264,16 +264,16 @@ public class Dots extends AtomShape {
     // always delete old surfaces for selected atoms
     BS[] dotsConvexMaps = ec.getDotsConvexMaps();
     if (dotsConvexMaps != null) {
-      for (int i = atomCount; --i >= 0;)
+      for (int i = ac; --i >= 0;)
         if (bsOn.get(i)) {
           dotsConvexMaps[i] = null;
         }
     }
     // now, calculate surface for selected atoms
 
-    if (dotsConvexMaps == null && (colixes == null || colixes.length != atomCount)) {
-      colixes = new short[atomCount];
-      paletteIDs = new byte[atomCount];
+    if (dotsConvexMaps == null && (colixes == null || colixes.length != ac)) {
+      colixes = new short[ac];
+      paletteIDs = new byte[ac];
     }
     ec.calculate(rd, maxRadius, bsOn, bsIgnore, !vwr.getBoolean(T.dotsurface),
         vwr.getBoolean(T.dotsselectedonly), isSurface, true);
@@ -284,12 +284,12 @@ public class Dots extends AtomShape {
 
   @Override
   public void setModelClickability() {
-    for (int i = atomCount; --i >= 0;) {
+    for (int i = ac; --i >= 0;) {
       Atom atom = atoms[i];
-      if ((atom.shapeVisibilityFlags & myVisibilityFlag) == 0
-          || modelSet.isAtomHidden(i))
+      if ((atom.shapeVisibilityFlags & vf) == 0
+          || ms.isAtomHidden(i))
         continue;
-      atom.setClickable(myVisibilityFlag);
+      atom.setClickable(vf);
     }
   }
 
@@ -300,9 +300,9 @@ public class Dots extends AtomShape {
       return "";
     SB s = new SB();
     Map<String, BS> temp = new Hashtable<String, BS>();
-    int atomCount = vwr.getAtomCount();
+    int ac = vwr.getAtomCount();
     String type = (isSurface ? "geoSurface " : "dots ");
-    for (int i = 0; i < atomCount; i++) {
+    for (int i = 0; i < ac; i++) {
       if (!bsOn.get(i) || dotsConvexMaps[i] == null)
         continue;
       if (bsColixSet != null && bsColixSet.get(i))

@@ -47,10 +47,10 @@ class CubeReader extends VolumeFileReader {
     jvxlFileHeaderBuffer.append(readLine()).appendC('\n');
     String atomLine = readLine();
     String[] tokens = PT.getTokensAt(atomLine, 0);
-    atomCount = parseIntStr(tokens[0]);
-    negativeAtomCount = (atomCount < 0); // MO list
+    ac = parseIntStr(tokens[0]);
+    negativeAtomCount = (ac < 0); // MO list
     if (negativeAtomCount)
-      atomCount = -atomCount;
+      ac = -ac;
     volumetricOrigin.set(parseFloatStr(tokens[1]), parseFloatStr(tokens[2]),
         parseFloatStr(tokens[3]));
     VolumeFileReader.checkAtomLine(isXLowToHigh, isAngstroms, tokens[0],
@@ -59,7 +59,7 @@ class CubeReader extends VolumeFileReader {
       volumetricOrigin.scale(ANGSTROMS_PER_BOHR);
     for (int i = 0; i < 3; ++i)
       readVoxelVector(i);
-    for (int i = 0; i < atomCount; ++i)
+    for (int i = 0; i < ac; ++i)
       jvxlFileHeaderBuffer.append(readLine() + "\n");
 
     if (!negativeAtomCount) {

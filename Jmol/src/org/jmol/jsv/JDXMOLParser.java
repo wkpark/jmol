@@ -386,7 +386,7 @@ public class JDXMOLParser implements JmolJDXMOLParser {
   }
 
   private String readLine() throws Exception {
-    return line = loader.readLine();
+    return line = loader.rd();
   }
 
   @Override

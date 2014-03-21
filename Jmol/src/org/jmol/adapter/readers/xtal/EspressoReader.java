@@ -105,7 +105,7 @@ public class EspressoReader extends AtomSetCollectionReader {
 
     cellParams = new float[9];
     for (int n = 0, i = 0; n < 3; n++) {
-      String[] tokens = getTokensStr(readLine());
+      String[] tokens = getTokensStr(rd());
       cellParams[i++] = parseFloatStr(tokens[i0]) * aPar;
       cellParams[i++] = parseFloatStr(tokens[i0 + 1]) * aPar;
       cellParams[i++] = parseFloatStr(tokens[i0 + 2]) * aPar;
@@ -113,7 +113,7 @@ public class EspressoReader extends AtomSetCollectionReader {
   }
 
   private void newAtomSet() throws Exception {
-    atomSetCollection.newAtomSet();
+    asc.newAtomSet();
     if (totEnergy != null)
       setEnergy();
   }
@@ -167,9 +167,9 @@ public class EspressoReader extends AtomSetCollectionReader {
       setCellParams();
     setFractionalCoordinates(isFractional);
 
-    while (readLine() != null && line.length() > 45) {
+    while (rd() != null && line.length() > 45) {
       String[] tokens = getTokens();
-      Atom atom = atomSetCollection.addNewAtom();
+      Atom atom = asc.addNewAtom();
       atom.atomName = tokens[(isBohr || tokens.length == 4 || !firstStr ? 0 : 1)];
       int i1 = (isBohr || tokens.length == 4 || !firstStr ? 1
           : tokens.length - 4);
@@ -203,8 +203,8 @@ public class EspressoReader extends AtomSetCollectionReader {
 
   private void setEnergy() {
 
-    atomSetCollection.setAtomSetEnergy("" + totEnergy, totEnergy.floatValue());
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Energy", totEnergy);
-    atomSetCollection.setAtomSetName("E = " + totEnergy + " Ry");
+    asc.setAtomSetEnergy("" + totEnergy, totEnergy.floatValue());
+    asc.setAtomSetCollectionAuxiliaryInfo("Energy", totEnergy);
+    asc.setAtomSetName("E = " + totEnergy + " Ry");
   }
 }

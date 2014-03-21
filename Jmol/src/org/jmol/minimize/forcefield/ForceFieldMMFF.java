@@ -681,14 +681,14 @@ public class ForceFieldMMFF extends ForceField {
       // It's possible that some of our atoms are not in the atom set,
       // but we don't want both of them to be out of the set.
       
-      boolean ok1 = bsAtoms.get(a1.index);
-      boolean ok2 = bsAtoms.get(a2.index); 
+      boolean ok1 = bsAtoms.get(a1.i);
+      boolean ok2 = bsAtoms.get(a2.i); 
       if (!ok1 && !ok2)
         continue;
-      int it = aTypes[a1.index];
+      int it = aTypes[a1.i];
       AtomType at1 = atomTypes.get(Math.max(0, it));
       int type1 = (it < 0 ? -it : at1.mmType);
-      it = aTypes[a2.index];
+      it = aTypes[a2.i];
       AtomType at2 = atomTypes.get(Math.max(0, it));
       int type2 = (it < 0 ? -it : at2.mmType);
       
@@ -744,9 +744,9 @@ public class ForceFieldMMFF extends ForceField {
         dq = Float.NaN;
       }
       if (ok1)
-        partialCharges[a1.index] += dq;
+        partialCharges[a1.i] += dq;
       if (ok2)
-        partialCharges[a2.index] -= dq;
+        partialCharges[a2.i] -= dq;
     }
     
     // just rounding to 0.001 here:
@@ -758,7 +758,7 @@ public class ForceFieldMMFF extends ForceField {
         abscharge += Math.abs(partialCharges[i]);
       }
       if (abscharge == 0 && a1 != null) {
-        partialCharges[a1.index]= -0.0f;
+        partialCharges[a1.i]= -0.0f;
       }
     }    
     return partialCharges;
@@ -831,7 +831,7 @@ public class ForceFieldMMFF extends ForceField {
       if (bonds != null)
         for (int j = bonds.length; --j >= 0;)
           if (bonds[j].isCovalent())
-            bsConnected.set(bonds[j].getOtherAtom(a).index);
+            bsConnected.set(bonds[j].getOtherAtom(a).i);
     }
 
     // we need to identify H atoms and also make a BitSet of all the elements
@@ -893,7 +893,7 @@ public class ForceFieldMMFF extends ForceField {
         .nextSetBit(i + 1)) {
       Bond[] bonds = atoms[i].getBonds();
       if (bonds != null) {
-        int j = types[bonds[0].getOtherAtom(atoms[i]).index];
+        int j = types[bonds[0].getOtherAtom(atoms[i]).i];
         if (j != 0)
           bsDone.set(i);
         types[i] = -atomTypes.get(j).hType;
@@ -919,15 +919,15 @@ public class ForceFieldMMFF extends ForceField {
      for (int i = bondCount; --i >= 0;) {
        Atom a1 = bonds[i].getAtom1();
        Atom a2 = bonds[i].getAtom2();
-       boolean ok1 = bsAtoms.get(a1.index);
-       boolean ok2 = bsAtoms.get(a2.index);
+       boolean ok1 = bsAtoms.get(a1.i);
+       boolean ok2 = bsAtoms.get(a2.i);
        if (!ok1 && !ok2)
          continue;
-       int it = rawAtomTypes[a1.index];
+       int it = rawAtomTypes[a1.i];
        AtomType at1 = atomTypes.get(Math.max(0, it));
-       it = rawAtomTypes[a2.index];
+       it = rawAtomTypes[a2.i];
        AtomType at2 = atomTypes.get(Math.max(0, it));
-       bTypes[i] = getBondType(bonds[i], at1, at2, a1.index, a2.index);
+       bTypes[i] = getBondType(bonds[i], at1, at2, a1.i, a2.i);
      }
      return bTypes;
    }
@@ -936,7 +936,7 @@ public class ForceFieldMMFF extends ForceField {
     // set atom types in minAtoms
     for (int i = minAtomCount; --i >= 0;) {
       MinAtom a = minAtoms[i];
-      int rawIndex = a.atom.index;
+      int rawIndex = a.atom.i;
       int it = rawAtomTypes[rawIndex];
       a.ffAtomType = atomTypes.get(Math.max(0, it));
       int type = (it < 0 ? -it : atomTypes.get(it).mmType);
@@ -1031,10 +1031,10 @@ public class ForceFieldMMFF extends ForceField {
     if (v != null)
       for (int i = v.size(); --i >= 0;) {
         BS bs = v.get(i);
-        if (bs.get(minAtoms[minlist[0]].atom.index)
-            && bs.get(minAtoms[minlist[1]].atom.index)
-            && (n < 3 || bs.get(minAtoms[minlist[2]].atom.index))
-            && (n < 4 || bs.get(minAtoms[minlist[3]].atom.index)))
+        if (bs.get(minAtoms[minlist[0]].atom.i)
+            && bs.get(minAtoms[minlist[1]].atom.i)
+            && (n < 3 || bs.get(minAtoms[minlist[2]].atom.i))
+            && (n < 4 || bs.get(minAtoms[minlist[3]].atom.i)))
           return true;
       }
     return false; 

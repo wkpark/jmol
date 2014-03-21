@@ -147,7 +147,7 @@ public final class EnvelopeCalculation implements JmolEnvCalc {
   private short[] mads;
   private AtomData atomData = new AtomData();
   private AtomDataServer vwr;
-  private int atomCount;
+  private int ac;
   private static BS EMPTY_SET;
   
   public EnvelopeCalculation() {
@@ -156,14 +156,14 @@ public final class EnvelopeCalculation implements JmolEnvCalc {
   /**
    * 
    * @param vwr
-   * @param atomCount
+   * @param ac
    * @param mads
    * @return this
    */
   @Override
-  public EnvelopeCalculation set(AtomDataServer vwr, int atomCount, short[] mads) {
+  public EnvelopeCalculation set(AtomDataServer vwr, int ac, short[] mads) {
     this.vwr = vwr;
-    this.atomCount = atomCount; //preliminary, for setFromBits()
+    this.ac = ac; //preliminary, for setFromBits()
     this.mads = mads;
     geodesicCount = Geodesic.getVertexCount(JC.ENV_CALC_MAX_LEVEL);    
     geodesicMap = BS.newN(geodesicCount);
@@ -214,7 +214,7 @@ public final class EnvelopeCalculation implements JmolEnvCalc {
       if (!bs.get(iDot))
         geodesicMap.clear(iDot);
     if (dotsConvexMaps == null)
-      dotsConvexMaps = new BS[atomCount];
+      dotsConvexMaps = new BS[ac];
     BS map;
     if (geodesicMap.isEmpty())
       map = EMPTY_SET;
@@ -317,13 +317,13 @@ public final class EnvelopeCalculation implements JmolEnvCalc {
 
     vwr.fillAtomData(atomData, AtomData.MODE_FILL_COORDS
         | (mads == null ? AtomData.MODE_FILL_RADII : 0));
-    atomCount = atomData.atomCount;
+    ac = atomData.ac;
     if (mads != null)
-      for (int i = 0; i < atomCount; i++)
+      for (int i = 0; i < ac; i++)
         atomData.atomRadius[i] = mads[i] / 1000f;
 
     bsMySelected = (onlySelectedDots && bsSelected != null ? BSUtil
-        .copy(bsSelected) : bsIgnore != null ? BSUtil.setAll(atomCount)
+        .copy(bsSelected) : bsIgnore != null ? BSUtil.setAll(ac)
         : null);
     BSUtil.andNot(bsMySelected, bsIgnore);
     this.disregardNeighbors = disregardNeighbors;
@@ -334,7 +334,7 @@ public final class EnvelopeCalculation implements JmolEnvCalc {
     AtomIndexIterator iter = vwr.getSelectedAtomIterator(bsMySelected,
         false, modelZeroBased, false);
     //true ==> only atom index > this atom accepted
-    int i0 = (isAll ? atomCount - 1 : bsSelected.nextSetBit(0));
+    int i0 = (isAll ? ac - 1 : bsSelected.nextSetBit(0));
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsSelected.nextSetBit(i + 1)))
       if (bsIgnore == null || !bsIgnore.get(i)) {
         setAtomI(i);
@@ -392,7 +392,7 @@ public final class EnvelopeCalculation implements JmolEnvCalc {
       dotsConvexMax = 0;
     else {
       int i;
-      for (i = atomCount; --i >= 0 && dotsConvexMaps[i] == null;) {
+      for (i = ac; --i >= 0 && dotsConvexMaps[i] == null;) {
       }
       dotsConvexMax = i + 1;
     }
@@ -423,7 +423,7 @@ public final class EnvelopeCalculation implements JmolEnvCalc {
   
   private void calcConvexMap(boolean isSurface) {
     if (dotsConvexMaps == null)
-      dotsConvexMaps = new BS[atomCount];
+      dotsConvexMaps = new BS[ac];
     calcConvexBits();
     BS map;
     if (geodesicMap.isEmpty())
@@ -600,8 +600,8 @@ public final class EnvelopeCalculation implements JmolEnvCalc {
       mads = (short[]) AU.deleteElements(mads, firstAtomDeleted, nAtomsDeleted);
     atomData.atomRadius = (float[]) AU.deleteElements(atomData.atomRadius, firstAtomDeleted, nAtomsDeleted);
     atomData.atomXyz = (P3[]) AU.deleteElements(atomData.atomXyz, firstAtomDeleted, nAtomsDeleted);
-    atomData.atomCount -= nAtomsDeleted;
-    atomCount = atomData.atomCount;
+    atomData.ac -= nAtomsDeleted;
+    ac = atomData.ac;
     
   }
 

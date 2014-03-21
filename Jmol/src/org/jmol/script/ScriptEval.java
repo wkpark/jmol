@@ -861,12 +861,12 @@ public class ScriptEval extends ScriptExpr {
   /**
    * just provides a vector list of atoms in a string-based expression
    * 
-   * @param atomCount
+   * @param ac
    * @param atomExpression
    * @return vector list of selected atoms
    */
   @Override
-  public List<Integer> getAtomBitSetVector(int atomCount, Object atomExpression) {
+  public List<Integer> getAtomBitSetVector(int ac, Object atomExpression) {
     List<Integer> V = new List<Integer>();
     BS bs = getAtomBitSet(atomExpression);
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
@@ -3978,7 +3978,7 @@ public class ScriptEval extends ScriptExpr {
     List<Object> firstLastSteps = null;
     int modelCount0 = vwr.getModelCount()
         - (vwr.getFileName().equals("zapped") ? 1 : 0);
-    int atomCount0 = vwr.getAtomCount();
+    int ac0 = vwr.getAtomCount();
     SB loadScript = new SB().append("load");
     int nFiles = 1;
     Map<String, Object> htParams = new Hashtable<String, Object>();
@@ -4661,7 +4661,7 @@ public class ScriptEval extends ScriptExpr {
     Map<String, Object> info = vwr.getModelSetAuxiliaryInfo();
     if (info != null && info.containsKey("centroidMinMax")
         && vwr.getAtomCount() > 0) {
-      BS bs = BSUtil.newBitSet2(isAppend ? atomCount0 : 0,
+      BS bs = BSUtil.newBitSet2(isAppend ? ac0 : 0,
           vwr.getAtomCount());
       vwr.setCentroid(bs, (int[]) info.get("centroidMinMax"));
     }

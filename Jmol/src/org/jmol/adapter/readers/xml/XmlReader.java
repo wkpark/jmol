@@ -107,9 +107,9 @@ public class XmlReader extends AtomSetCollectionReader {
 
   private void setMyError(String err) {
     if (err != null
-        && (atomSetCollection == null || atomSetCollection.errorMessage == null)) {
-      atomSetCollection = new AtomSetCollection("xml", this, null, null);
-      atomSetCollection.errorMessage = err;
+        && (asc == null || asc.errorMessage == null)) {
+      asc = new AtomSetCollection("xml", this, null, null);
+      asc.errorMessage = err;
     }
   }
 
@@ -143,7 +143,7 @@ public class XmlReader extends AtomSetCollectionReader {
   }
 
   private String selectReaderAndGo(Object saxReader) {
-    atomSetCollection = new AtomSetCollection(readerName, this, null, null);
+    asc = new AtomSetCollection(readerName, this, null, null);
     String className = null;
     XmlReader thisReader = null;
     int pt = readerName.indexOf("(");
@@ -172,7 +172,7 @@ public class XmlReader extends AtomSetCollectionReader {
 
   protected void PX(XmlReader parent, Object saxReader) throws Exception {
     this.parent = parent;
-    atomSetCollection = parent.atomSetCollection;
+    asc = parent.asc;
     reader = parent.reader;
     atts = parent.atts;
     if (saxReader == null) {

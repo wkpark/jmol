@@ -609,13 +609,13 @@ public class JvxlCoder {
 
   private static void appendXmlVertexOnlyData(SB sb, 
                                         JvxlData jvxlData, MeshData meshData, boolean escapeXml) {
-    int[] vertexIdNew = new int[meshData.vertexCount];
-    if (appendXmlTriangleData(sb, meshData.polygonIndexes,
-        meshData.polygonCount, meshData.bsSlabDisplay,
+    int[] vertexIdNew = new int[meshData.vc];
+    if (appendXmlTriangleData(sb, meshData.pis,
+        meshData.pc, meshData.bsSlabDisplay,
         vertexIdNew, escapeXml))
       appendXmlVertexData(sb, jvxlData, vertexIdNew,
-          meshData.vertices, meshData.vertexValues, meshData.vertexCount,
-          meshData.polygonColorData, meshData.polygonCount, 
+          meshData.vs, meshData.vvs, meshData.vc,
+          meshData.polygonColorData, meshData.pc, 
           meshData.bsSlabDisplay,
           jvxlData.vertexColors, 
           jvxlData.jvxlColorData.length() > 0, escapeXml);

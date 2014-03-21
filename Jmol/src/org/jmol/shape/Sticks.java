@@ -77,8 +77,8 @@ public class Sticks extends Shape {
     }
     if (bsSizeSet == null)
       bsSizeSet = new BS();
-    BondIterator iter = (selectedBonds != null ? modelSet.getBondIterator(selectedBonds)
-        : modelSet.getBondIteratorForType(myMask, bsSelected));
+    BondIterator iter = (selectedBonds != null ? ms.getBondIterator(selectedBonds)
+        : ms.getBondIteratorForType(myMask, bsSelected));
     short mad = (short) size;
     while (iter.hasNext()) {
       bsSizeSet.set(iter.nextIndex());
@@ -112,8 +112,8 @@ public class Sticks extends Shape {
       if (bsOrderSet == null)
         bsOrderSet = new BS();
       int order = ((Integer) value).shortValue();
-      BondIterator iter = (selectedBonds != null ? modelSet.getBondIterator(selectedBonds)
-          : modelSet.getBondIteratorForType(Edge.BOND_ORDER_ANY, bs));
+      BondIterator iter = (selectedBonds != null ? ms.getBondIterator(selectedBonds)
+          : ms.getBondIteratorForType(Edge.BOND_ORDER_ANY, bs));
       while (iter.hasNext()) {
         bsOrderSet.set(iter.nextIndex());
         iter.next().setOrder(order);
@@ -128,8 +128,8 @@ public class Sticks extends Shape {
       if (pal == PAL.TYPE || pal == PAL.ENERGY) {
         //only for hydrogen bonds
         boolean isEnergy = (pal == PAL.ENERGY);
-        BondIterator iter = (selectedBonds != null ? modelSet.getBondIterator(selectedBonds)
-            : modelSet.getBondIteratorForType(myMask, bs));
+        BondIterator iter = (selectedBonds != null ? ms.getBondIterator(selectedBonds)
+            : ms.getBondIteratorForType(myMask, bs));
         while (iter.hasNext()) {
           bsColixSet.set(iter.nextIndex());
           Bond bond = iter.next();
@@ -144,8 +144,8 @@ public class Sticks extends Shape {
       }
       if (colix == C.USE_PALETTE && pal != PAL.CPK)
         return; //palettes not implemented for bonds
-      BondIterator iter = (selectedBonds != null ? modelSet.getBondIterator(selectedBonds)
-          : modelSet.getBondIteratorForType(myMask, bs));
+      BondIterator iter = (selectedBonds != null ? ms.getBondIterator(selectedBonds)
+          : ms.getBondIteratorForType(myMask, bs));
       while (iter.hasNext()) {
         int iBond = iter.nextIndex();
         Bond bond = iter.next();
@@ -159,8 +159,8 @@ public class Sticks extends Shape {
       if (bsColixSet == null)
         bsColixSet = new BS();
       boolean isTranslucent = (((String) value).equals("translucent"));
-      BondIterator iter = (selectedBonds != null ? modelSet.getBondIterator(selectedBonds)
-          : modelSet.getBondIteratorForType(myMask, bs));
+      BondIterator iter = (selectedBonds != null ? ms.getBondIterator(selectedBonds)
+          : ms.getBondIteratorForType(myMask, bs));
       while (iter.hasNext()) {
         bsColixSet.set(iter.nextIndex());
         iter.next().setTranslucent(isTranslucent, translucentLevel);
@@ -186,15 +186,15 @@ public class Sticks extends Shape {
 
   @Override
   public void setModelClickability() {
-    Bond[] bonds = modelSet.bonds;
-    for (int i = modelSet.bondCount; --i >= 0;) {
+    Bond[] bonds = ms.bo;
+    for (int i = ms.bondCount; --i >= 0;) {
       Bond bond = bonds[i];
-      if ((bond.getShapeVisibilityFlags() & myVisibilityFlag) == 0
-          || modelSet.isAtomHidden(bond.getAtomIndex1())
-          || modelSet.isAtomHidden(bond.getAtomIndex2()))
+      if ((bond.getShapeVisibilityFlags() & vf) == 0
+          || ms.isAtomHidden(bond.getAtomIndex1())
+          || ms.isAtomHidden(bond.getAtomIndex2()))
         continue;
-      bond.getAtom1().setClickable(myVisibilityFlag);
-      bond.getAtom2().setClickable(myVisibilityFlag);
+      bond.getAtom1().setClickable(vf);
+      bond.getAtom2().setClickable(vf);
     }
   }
 
@@ -221,7 +221,7 @@ public class Sticks extends Shape {
     Bond bond = findPickedBond(x, y, bsVisible, pt);
     if (bond == null)
       return null;
-    int modelIndex = bond.getAtom1().modelIndex;
+    int modelIndex = bond.getAtom1().mi;
     String info = bond.getIdentity();
     Map<String, Object> map = new Hashtable<String, Object>();
     map.put("pt", pt);
@@ -254,8 +254,8 @@ public class Sticks extends Shape {
     }
     Bond pickedBond = null;
     P3 v = new P3();
-    Bond[] bonds = modelSet.bonds;
-    for (int i = modelSet.bondCount; --i >= 0;) {
+    Bond[] bonds = ms.bo;
+    for (int i = ms.bondCount; --i >= 0;) {
       Bond bond = bonds[i];
       if (bond.getShapeVisibilityFlags() == 0)
         continue;

@@ -45,7 +45,7 @@ public class XmlVaspReader extends XmlReader {
   
   private SB data;
   private String name;
-  private int atomCount;
+  private int ac;
   private int iAtom;
   private boolean isE_wo_entrp = false;
   private boolean isE_fr_energy = false;
@@ -98,17 +98,17 @@ public class XmlVaspReader extends XmlReader {
         return;
       }
       parent.setFractionalCoordinates(true);
-      atomSetCollection.doFixPeriodic = true;
-      atomSetCollection.newAtomSet();
+      asc.doFixPeriodic = true;
+      asc.newAtomSet();
       if (enthalpy != null) {
-        atomSetCollection.setAtomSetAuxiliaryInfo("enthalpy", Double.valueOf(PT.dVal(enthalpy)));
+        asc.setAtomSetAuxiliaryInfo("enthalpy", Double.valueOf(PT.dVal(enthalpy)));
       }
       if (gibbsEnergy != null) {
-        atomSetCollection.setAtomSetEnergy("" + gibbsEnergy, parseFloatStr(gibbsEnergy));
-        atomSetCollection.setAtomSetAuxiliaryInfo("gibbsEnergy", Double.valueOf(PT.dVal(gibbsEnergy)));
+        asc.setAtomSetEnergy("" + gibbsEnergy, parseFloatStr(gibbsEnergy));
+        asc.setAtomSetAuxiliaryInfo("gibbsEnergy", Double.valueOf(PT.dVal(gibbsEnergy)));
       }
       if (enthalpy != null && gibbsEnergy != null)
-        atomSetCollection.setAtomSetName("Enthalpy = " + enthalpy + " eV Gibbs Energy = " + gibbsEnergy + " eV");
+        asc.setAtomSetName("Enthalpy = " + enthalpy + " eV Gibbs Energy = " + gibbsEnergy + " eV");
       return;
     }
     if (!parent.doProcessLines)
@@ -120,7 +120,7 @@ public class XmlVaspReader extends XmlReader {
     }
 
     if ("c".equals(localName)) {
-      keepChars = (iAtom < atomCount);
+      keepChars = (iAtom < ac);
       return;
     }
 
@@ -179,7 +179,7 @@ public class XmlVaspReader extends XmlReader {
       }
 
       if ("c".equals(localName)) {
-        if (iAtom < atomCount) {
+        if (iAtom < ac) {
           if (atomName == null) {
             atomName = atomSym = chars.trim();
           } else {
@@ -191,9 +191,9 @@ public class XmlVaspReader extends XmlReader {
       }
 
       if ("atoms".equals(localName)) {
-        atomCount = parseIntStr(chars);
-        atomNames = new String[atomCount];
-        atomSyms = new String[atomCount];
+        ac = parseIntStr(chars);
+        atomNames = new String[ac];
+        atomSyms = new String[ac];
         iAtom = 0;
         break;
       }
@@ -217,25 +217,25 @@ public class XmlVaspReader extends XmlReader {
           gamma = (float) (Math.acos(va.dot(vb)) * 180 / Math.PI);
         } else if ("positions".equals(name)) {
           parent.setUnitCell(a, b, c, alpha, beta, gamma);
-          float[] fdata = new float[atomCount * 3];
-          getTokensFloat(data.toString(), fdata, atomCount * 3);
+          float[] fdata = new float[ac * 3];
+          getTokensFloat(data.toString(), fdata, ac * 3);
           int fpt = 0;
-          for (int i = 0; i < atomCount; i++) {
-            Atom atom = atomSetCollection.addNewAtom();
+          for (int i = 0; i < ac; i++) {
+            Atom atom = asc.addNewAtom();
             parent.setAtomCoordXYZ(atom, fdata[fpt++], fdata[fpt++], fdata[fpt++]);
             atom.elementSymbol = atomSyms[i];
             atom.atomName = atomNames[i];
           }
         } else if ("forces".equals(name)) {
-          float[] fdata = new float[atomCount * 3];
-          getTokensFloat(data.toString(), fdata, atomCount * 3);
+          float[] fdata = new float[ac * 3];
+          getTokensFloat(data.toString(), fdata, ac * 3);
           int fpt = 0;
-          int i0 = atomSetCollection.getLastAtomSetAtomIndex();
+          int i0 = asc.getLastAtomSetAtomIndex();
 
           //TODO question here as to whether these need transformation
 
-          for (int i = 0; i < atomCount; i++)
-            atomSetCollection.addVibrationVector(i0 + i, fdata[fpt++],
+          for (int i = 0; i < ac; i++)
+            asc.addVibrationVector(i0 + i, fdata[fpt++],
                 fdata[fpt++], fdata[fpt++]);
         }
         data = null;

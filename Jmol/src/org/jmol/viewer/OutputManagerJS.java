@@ -52,7 +52,7 @@ public class OutputManagerJS extends OutputManager {
   OC openOutputChannel(double privateKey, String fileName,
                                       boolean asWriter, boolean asAppend) {
     return (new OC())
-        .setParams(vwr.fileManager, fileName, asWriter, null);
+        .setParams(vwr.fm, fileName, asWriter, null);
   }
 
   @Override

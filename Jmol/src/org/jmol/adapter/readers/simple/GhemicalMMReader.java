@@ -105,18 +105,18 @@ public class GhemicalMMReader extends AtomSetCollectionReader {
   }
 
   void processAtoms() throws Exception {
-    int atomCount = parseIntAt(line, 6);
-    //Logger.debug("atomCount=" + atomCount);
-    for (int i = 0; i < atomCount; ++i) {
-      if (atomSetCollection.atomCount != i)
+    int ac = parseIntAt(line, 6);
+    //Logger.debug("ac=" + ac);
+    for (int i = 0; i < ac; ++i) {
+      if (asc.ac != i)
         throw new Exception("GhemicalMMReader error #1");
-      readLine();
+      rd();
       int atomIndex = parseIntStr(line);
       if (atomIndex != i)
         throw new Exception("bad atom index in !Atoms" +
                             "expected: " + i + " saw:" + atomIndex);
       int elementNumber = parseInt();
-      Atom atom = atomSetCollection.addNewAtom();
+      Atom atom = asc.addNewAtom();
       atom.elementNumber = (short)elementNumber;
     }
   }
@@ -124,7 +124,7 @@ public class GhemicalMMReader extends AtomSetCollectionReader {
   void processBonds() throws Exception {
     int bondCount = parseIntAt(line, 6);
     for (int i = 0; i < bondCount; ++i) {
-      readLine();
+      rd();
       int atomIndex1 = parseIntStr(line);
       int atomIndex2 = parseInt();
       String orderCode = parseToken();
@@ -144,22 +144,22 @@ public class GhemicalMMReader extends AtomSetCollectionReader {
       default:
         order = JmolAdapter.ORDER_COVALENT_SINGLE;
       }
-      atomSetCollection.addNewBondWithOrder(atomIndex1, atomIndex2, order);
+      asc.addNewBondWithOrder(atomIndex1, atomIndex2, order);
     }
   }
 
   void processCoord() throws Exception {
-    Atom[] atoms = atomSetCollection.atoms;
-    int atomCount = atomSetCollection.atomCount;
-    for (int i = 0; i < atomCount; ++i)
-      setAtomCoordScaled(atoms[i], getTokensStr(readLine()), 1, 10);
+    Atom[] atoms = asc.atoms;
+    int ac = asc.ac;
+    for (int i = 0; i < ac; ++i)
+      setAtomCoordScaled(atoms[i], getTokensStr(rd()), 1, 10);
   }
 
   void processCharges() throws Exception {
-    Atom[] atoms = atomSetCollection.atoms;
-    int atomCount = atomSetCollection.atomCount;
-    for (int i = 0; i < atomCount; ++i) {
-      readLine();
+    Atom[] atoms = asc.atoms;
+    int ac = asc.ac;
+    for (int i = 0; i < ac; ++i) {
+      rd();
       int atomIndex = parseIntStr(line);
       if (atomIndex != i)
         throw new Exception("bad atom index in !Charges" +

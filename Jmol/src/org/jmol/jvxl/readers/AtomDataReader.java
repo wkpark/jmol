@@ -72,7 +72,7 @@ abstract class AtomDataReader extends VolumeDataReader {
   protected int[] atomNo;
   protected int[] atomIndex;
   protected int[] myIndex;
-  protected int atomCount;
+  protected int ac;
   protected int myAtomCount;
   protected int nearbyAtomCount;
   protected int firstNearbyAtom;
@@ -187,10 +187,10 @@ abstract class AtomDataReader extends VolumeDataReader {
         | (getRadii ? AtomData.MODE_FILL_RADII : 0));
     if (doUseIterator)
       atomData.bsSelected = null;
-    atomCount = atomData.atomCount;
+    ac = atomData.ac;
     modelIndex = atomData.firstModelIndex;
     boolean needRadius = false;
-    for (int i = 0; i < atomCount; i++) {
+    for (int i = 0; i < ac; i++) {
       if ((bsSelected == null || bsSelected.get(i)) && (!bsMyIgnored.get(i))) {
         if (havePlane
             && Math.abs(volumeData.distancePointToPlane(atomData.atomXyz[i])) > 2 * (atomData.atomRadius[i] = getWorkingRadius(
@@ -234,7 +234,7 @@ abstract class AtomDataReader extends VolumeDataReader {
         atomProp = new float[n];
       atomNo = new int[n];
       atomIndex = new int[n];
-      myIndex = new int[atomCount];
+      myIndex = new int[ac];
 
       for (int i = 0; i < nH; i++) {
         if (getRadii)
@@ -286,7 +286,7 @@ abstract class AtomDataReader extends VolumeDataReader {
     P3 pt = new P3();
 
     bsNearby = new BS();
-    for (int i = 0; i < atomCount; i++) {
+    for (int i = 0; i < ac; i++) {
       if (atomSet.get(i) || bsMyIgnored.get(i))
         continue;
       float rA = atomData.atomRadius[i];
@@ -323,8 +323,43 @@ abstract class AtomDataReader extends VolumeDataReader {
         atomRadius[myAtomCount++] = atomData.atomRadius[i];
       }
     }
+    
+    if (getRadii)
+      setRadii();
+    
     haveOneProperty = (!Float.isNaN(theProperty));
     //System.out.println("AtomDataR theProperty=" + theProperty);
+  }
+
+  /**
+   * solvent radius
+   */
+  protected float sr;
+  /**
+   * atom radius + solvent radius
+   */
+  protected float[] rs;
+  /**
+   * square of (atom radius + solvent radius)
+   */
+  protected float[] rs2;
+  /**
+   * maximun (atom radius + solvent radius) 
+   */
+  protected float maxRS;
+
+  protected void setRadii() {
+    if (rs != null)
+      return;
+    maxRS = 0;
+    rs = new float[myAtomCount];
+    rs2 = new float[myAtomCount];
+    for (int i = 0; i < myAtomCount; i++) {
+      float r = rs[i] = atomRadius[i] + sr;
+      if (r > maxRS)
+        maxRS = r;
+      rs2[i] = rs[i] * rs[i];
+    }   
   }
 
   private void addAtomProp(int i, float f) {
@@ -391,8 +426,8 @@ abstract class AtomDataReader extends VolumeDataReader {
       meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
     if (params.vertexSource != null) {
       params.vertexSource = AU.arrayCopyI(params.vertexSource,
-          meshData.vertexCount);
-      for (int i = 0; i < meshData.vertexCount; i++)
+          meshData.vc);
+      for (int i = 0; i < meshData.vc; i++)
         params.vertexSource[i] = Math.abs(params.vertexSource[i]) - 1;
     }
   }

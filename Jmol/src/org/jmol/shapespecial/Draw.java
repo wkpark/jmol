@@ -172,8 +172,8 @@ public void initShape() {
       Mesh m = meshes[meshIndex];
       if (m.checkByteCount != 1)
         return;
-      slabData = MeshSurface.newSlab(m.vertices, m.vertexCount, new float[m.vertexCount], 
-          m.polygonIndexes, m.polygonCount, 1);
+      slabData = MeshSurface.newSlab(m.vs, m.vc, new float[m.vc], 
+          m.pis, m.pc, 1);
       return;
     }
     
@@ -382,7 +382,7 @@ public void initShape() {
       }
       thisMesh.isValid = (isValid ? setDrawing((int[]) value) : false);
       if (thisMesh.isValid) {
-        if (thisMesh.vertexCount > 2 && length != Float.MAX_VALUE
+        if (thisMesh.vc > 2 && length != Float.MAX_VALUE
             && newScale == 1)
           newScale = length;
         scale(thisMesh, newScale);
@@ -515,23 +515,23 @@ protected void resetObjects() {
       id = axisID;
     }
     DrawMesh m = (DrawMesh) getMesh(id);
-    if (m == null || m.vertices == null)
+    if (m == null || m.vs == null)
       return null;
     // >= 0 ? that vertexIndex
     // < 0 and no ptCenters or modelIndex < 0 -- center point
     // < 0 center for modelIndex
     if (vertexIndex == Integer.MAX_VALUE)
-      return P3.new3(m.index + 1, meshCount, m.vertexCount);
+      return P3.new3(m.index + 1, meshCount, m.vc);
     if (vertexIndex != Integer.MIN_VALUE) 
       vertexIndex = m.getVertexIndexFromNumber(vertexIndex);
-    return (vertexIndex >= 0 ? m.vertices[vertexIndex] : m.ptCenters == null
+    return (vertexIndex >= 0 ? m.vs[vertexIndex] : m.ptCenters == null
         || modelIndex < 0 || modelIndex >= m.ptCenters.length 
         ? m.ptCenter : m.ptCenters[modelIndex]);
   }
    
   private V3 getSpinAxis(String axisID, int modelIndex) {
     DrawMesh m = (DrawMesh) getMesh(axisID);
-    return (m == null || m.vertices == null ? null 
+    return (m == null || m.vs == null ? null 
         : m.ptCenters == null || modelIndex < 0 ? m.axis : m.axes[modelIndex]);
    }
   
@@ -569,13 +569,13 @@ protected void resetObjects() {
         if (polygon.size() == 0)
           return false;
         thisMesh.isTriangleSet = true;
-        thisMesh.vertices = (P3[]) polygon.get(0);
-        thisMesh.polygonIndexes = (int[][]) polygon.get(1);          
-        thisMesh.drawVertexCount = thisMesh.vertexCount = thisMesh.vertices.length;
-        thisMesh.polygonCount = thisMesh.polygonIndexes.length;
-        for (int i = 0; i < thisMesh.polygonCount; i++) {
+        thisMesh.vs = (P3[]) polygon.get(0);
+        thisMesh.pis = (int[][]) polygon.get(1);          
+        thisMesh.drawVertexCount = thisMesh.vc = thisMesh.vs.length;
+        thisMesh.pc = thisMesh.pis.length;
+        for (int i = 0; i < thisMesh.pc; i++) {
           for (int j = 0; j < 3; j++)
-            if (thisMesh.polygonIndexes[i][j] >= thisMesh.vertexCount)
+            if (thisMesh.pis[i][j] >= thisMesh.vc)
               return false;
         }
         thisMesh.drawType = EnumDrawType.POLYGON;
@@ -596,7 +596,7 @@ protected void resetObjects() {
       thisMesh.modelFlags = new BS();
       thisMesh.drawTypes = new EnumDrawType[modelCount];
       thisMesh.drawVertexCounts = new int[modelCount];
-      thisMesh.vertexCount = 0;
+      thisMesh.vc = 0;
       if (indicatedModelIndex >= 0) {
         setPoints(-1, 0);
         thisMesh.drawType = EnumDrawType.MULTIPLE;
@@ -617,7 +617,7 @@ protected void resetObjects() {
             thisMesh.modelFlags.set(iModel);
           } else {
             thisMesh.drawTypes[iModel] = EnumDrawType.NONE;
-            thisMesh.polygonIndexes[iModel] = new int[0];
+            thisMesh.pis[iModel] = new int[0];
           }
         }
       }
@@ -641,7 +641,7 @@ protected void resetObjects() {
   @Override
   protected void clean() {
     for (int i = meshCount; --i >= 0;)
-      if (meshes[i] == null || meshes[i].vertexCount == 0 
+      if (meshes[i] == null || meshes[i].vc == 0 
           && meshes[i].connections == null && meshes[i].lineData == null)
         deleteMeshI(i);
   }
@@ -670,8 +670,8 @@ protected void resetObjects() {
     if (plane != null) {
       slabData.getIntersection(0, plane, null, null, null, null, null, false, true, T.plane, false);
       polygon = new  List<Object>();
-      polygon.addLast(slabData.vertices);
-      polygon.addLast(slabData.polygonIndexes);
+      polygon.addLast(slabData.vs);
+      polygon.addLast(slabData.pis);
     }
   }
 
@@ -720,9 +720,9 @@ protected void resetObjects() {
         modelIndex = modelInfo[0];
         nPoints = modelInfo[1];
         int nVertices = Math.max(nPoints, 3);
-        int n0 = thisMesh.vertexCount;
+        int n0 = thisMesh.vc;
         if (nPoints > 0) {
-          int[] p = thisMesh.polygonIndexes[modelIndex] = new int[nVertices];
+          int[] p = thisMesh.pis[modelIndex] = new int[nVertices];
           for (int j = 0; j < nPoints; j++) {
             info = vData.get(++i);
             p[j] = thisMesh.addV((P3) info[1]);
@@ -759,19 +759,19 @@ protected void resetObjects() {
           bsAllModels = new BS();
         if (isPlane && !isCircle || isPerpendicular || isVertices) {
           if (isReversed) {
-            if (iModel < 0 || iModel >= m.polygonCount)
+            if (iModel < 0 || iModel >= m.pc)
               for (int ipt = m.drawVertexCount; --ipt >= 0;)
-                addPoint(m.vertices[ipt], iModel);
-            else if (m.polygonIndexes[iModel] != null)
+                addPoint(m.vs[ipt], iModel);
+            else if (m.pis[iModel] != null)
               for (int ipt = m.drawVertexCounts[iModel]; --ipt >= 0;)
-                addPoint(m.vertices[m.polygonIndexes[iModel][ipt]], iModel);
+                addPoint(m.vs[m.pis[iModel][ipt]], iModel);
           } else {
-            if (iModel < 0 || iModel >= m.polygonCount)
+            if (iModel < 0 || iModel >= m.pc)
               for (int ipt = 0; ipt < m.drawVertexCount; ipt++)
-                addPoint(m.vertices[ipt], iModel);
-            else if (m.polygonIndexes[iModel] != null)
+                addPoint(m.vs[ipt], iModel);
+            else if (m.pis[iModel] != null)
               for (int ipt = 0; ipt < m.drawVertexCounts[iModel]; ipt++)
-                addPoint(m.vertices[m.polygonIndexes[iModel][ipt]], iModel);
+                addPoint(m.vs[m.pis[iModel][ipt]], iModel);
           }
         } else {
           if (iModel < 0 || m.ptCenters == null || m.ptCenters[iModel] == null)
@@ -1006,15 +1006,15 @@ protected void resetObjects() {
 
     if (nVertices == 0)
       return;
-    int nVertices0 = thisMesh.vertexCount;
+    int nVertices0 = thisMesh.vc;
     for (int i = 0; i < nVertices; i++) {
       thisMesh.addV(ptList[i]);
     }
     int npoints = (nVertices < 3 ? 3 : nVertices);
     thisMesh.setPolygonCount(nPoly + 1);
-    thisMesh.polygonIndexes[nPoly] = new int[npoints];
+    thisMesh.pis[nPoly] = new int[npoints];
     for (int i = 0; i < npoints; i++) {
-      thisMesh.polygonIndexes[nPoly][i] = nVertices0
+      thisMesh.pis[nPoly][i] = nVertices0
           + (i < nVertices ? i : nVertices - 1);
     }
     return;
@@ -1027,7 +1027,7 @@ protected void resetObjects() {
      * have to watch out for double-listed vertices
      * 
      */
-    if (newScale == 0 || dmesh.vertexCount == 0 && dmesh.connections == null || dmesh.scale == newScale)
+    if (newScale == 0 || dmesh.vc == 0 && dmesh.connections == null || dmesh.scale == newScale)
       return;
     float f = newScale / dmesh.scale;
     dmesh.scale = newScale;
@@ -1037,47 +1037,47 @@ protected void resetObjects() {
     V3 diff = new V3();
     int iptlast = -1;
     int ipt = 0;
-    for (int i = dmesh.polygonCount; --i >= 0;) {
-      P3 center = (dmesh.isVector ? dmesh.vertices[0] 
+    for (int i = dmesh.pc; --i >= 0;) {
+      P3 center = (dmesh.isVector ? dmesh.vs[0] 
           : dmesh.ptCenters == null ? dmesh.ptCenter
           : dmesh.ptCenters[i]);
       if (center == null)
         return;
-      if (dmesh.polygonIndexes[i] == null)
+      if (dmesh.pis[i] == null)
         continue;
       iptlast = -1;
-      for (int iV = dmesh.polygonIndexes[i].length; --iV >= 0;) {
-        ipt = dmesh.polygonIndexes[i][iV];
+      for (int iV = dmesh.pis[i].length; --iV >= 0;) {
+        ipt = dmesh.pis[i][iV];
         if (ipt == iptlast)
           continue;
         iptlast = ipt;
-        diff.sub2(dmesh.vertices[ipt], center);
+        diff.sub2(dmesh.vs[ipt], center);
         diff.scale(f);
         diff.add(center);
-        dmesh.vertices[ipt].setT(diff);
+        dmesh.vs[ipt].setT(diff);
       }
     }
   }
 
   private final static void setAxes(DrawMesh m) {
     m.axis = V3.new3(0, 0, 0);
-    m.axes = new V3[m.polygonCount > 0 ? m.polygonCount : 1];
-    if (m.vertices == null)
+    m.axes = new V3[m.pc > 0 ? m.pc : 1];
+    if (m.vs == null)
       return;
     int n = 0;
-    for (int i = m.polygonCount; --i >= 0;) {
-      int[] p = m.polygonIndexes[i];
+    for (int i = m.pc; --i >= 0;) {
+      int[] p = m.pis[i];
       m.axes[i] = new V3();
       if (p == null || p.length == 0) {
       } else if (m.drawVertexCount == 2 || m.drawVertexCount < 0
           && m.drawVertexCounts[i] == 2) {
-        m.axes[i].sub2(m.vertices[p[0]],
-            m.vertices[p[1]]);
+        m.axes[i].sub2(m.vs[p[0]],
+            m.vs[p[1]]);
         n++;
       } else {
-        Measure.calcNormalizedNormal(m.vertices[p[0]],
-            m.vertices[p[1]],
-            m.vertices[p[2]], m.axes[i], m.vAB, m.vAC);
+        Measure.calcNormalizedNormal(m.vs[p[0]],
+            m.vs[p[1]],
+            m.vs[p[2]], m.axes[i], m.vAB, m.vAC);
         n++;
       }
       m.axis.add(m.axes[i]);
@@ -1099,7 +1099,7 @@ protected void resetObjects() {
       if (m == null) {
         continue;
       }
-      m.visibilityFlags = (m.isValid && m.visible ? myVisibilityFlag : 0);
+      m.visibilityFlags = (m.isValid && m.visible ? vf : 0);
       if (m.modelIndex >= 0 && !bs.get(m.modelIndex) || m.modelFlags != null
           && !BSUtil.haveCommon(bs, m.modelFlags)) {
         m.visibilityFlags = 0;
@@ -1127,7 +1127,7 @@ protected void resetObjects() {
       return null;
     if (!findPickedObject(x, y, false, bsVisible))
       return null;
-    P3 v = pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][pickedVertex]];
+    P3 v = pickedMesh.vs[pickedMesh.pis[pickedModel][pickedVertex]];
     int modelIndex = pickedMesh.modelIndex;
     BS bs = ((DrawMesh) pickedMesh).modelFlags;
     if (modelIndex < 0 && bs != null && BSUtil.cardinalityOf(bs) == 1)
@@ -1141,20 +1141,20 @@ protected void resetObjects() {
       return getPickedPoint(v, modelIndex);
     }
     if (action == 0
-        || pickedMesh.polygonIndexes[pickedModel][0] == pickedMesh.polygonIndexes[pickedModel][1]) {
+        || pickedMesh.pis[pickedModel][0] == pickedMesh.pis[pickedModel][1]) {
       return map;
     }
     boolean isClockwise = vwr.isBound(action,
         ActionManager.ACTION_spinDrawObjectCW);
     if (pickedVertex == 0) {
       vwr.startSpinningAxis(
-          pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][1]],
-          pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][0]],
+          pickedMesh.vs[pickedMesh.pis[pickedModel][1]],
+          pickedMesh.vs[pickedMesh.pis[pickedModel][0]],
           isClockwise);
     } else {
       vwr.startSpinningAxis(
-          pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][0]],
-          pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][1]],
+          pickedMesh.vs[pickedMesh.pis[pickedModel][0]],
+          pickedMesh.vs[pickedMesh.pis[pickedModel][1]],
           isClockwise);
     }
     return getPickedPoint(null, 0);
@@ -1205,7 +1205,7 @@ protected void resetObjects() {
     if (pickedMesh == null)
       return false;
     DrawMesh dm = (DrawMesh) pickedMesh;
-    move2D(dm, dm.polygonIndexes[pickedModel], pickedVertex, x,
+    move2D(dm, dm.pis[pickedModel], pickedVertex, x,
         y, moveAll);
     thisMesh = dm;
     return true;
@@ -1222,7 +1222,7 @@ protected void resetObjects() {
     }
     P3 pt = new P3();
     int ptVertex = vertexes[iVertex];
-    P3 coord = P3.newP(mesh.altVertices == null ? mesh.vertices[ptVertex] : (P3) mesh.altVertices[ptVertex]);
+    P3 coord = P3.newP(mesh.altVertices == null ? mesh.vs[ptVertex] : (P3) mesh.altVertices[ptVertex]);
     P3 newcoord = new P3();
     V3 move = new V3();
     vwr.transformPt3f(coord, pt);
@@ -1234,7 +1234,7 @@ protected void resetObjects() {
       iVertex = ptVertex; // operate on entire set of vertices, not just the
                           // one for this model
     int n = (!moveAll ? iVertex + 1 
-        : mesh.isTriangleSet ? mesh.vertices.length : vertexes.length);
+        : mesh.isTriangleSet ? mesh.vs.length : vertexes.length);
     BS bsMoved = new BS();
     for (int i = (moveAll ? 0 : iVertex); i < n; i++)
       if (moveAll || i == iVertex) {
@@ -1242,7 +1242,7 @@ protected void resetObjects() {
         if (bsMoved.get(k))
           continue;
         bsMoved.set(k);
-        mesh.vertices[k].add(move);
+        mesh.vs[k].add(move);
       }
     if (mesh.altVertices != null)
       mesh.recalcAltVertices = true;
@@ -1271,20 +1271,20 @@ protected void resetObjects() {
     for (int i = 0; i < meshCount; i++) {
       DrawMesh m = dmeshes[i];
       if (m.visibilityFlags != 0) {
-        int mCount = (m.isTriangleSet ? m.polygonCount
+        int mCount = (m.isTriangleSet ? m.pc
             : m.modelFlags == null ? 1 : vwr.getModelCount());
         for (int iModel = mCount; --iModel >= 0;) {
           if (m.modelFlags != null
               && !m.modelFlags.get(iModel)
-              || m.polygonIndexes == null
+              || m.pis == null
               || !m.isTriangleSet
-              && (iModel >= m.polygonIndexes.length || m.polygonIndexes[iModel] == null))
+              && (iModel >= m.pis.length || m.pis[iModel] == null))
             continue;
           for (int iVertex = (m.isTriangleSet ? 3
-              : m.polygonIndexes[iModel].length); --iVertex >= 0;) {
+              : m.pis[iModel].length); --iVertex >= 0;) {
             try {
-              int iv = m.polygonIndexes[iModel][iVertex];
-              P3 pt = (m.altVertices == null ? m.vertices[iv]
+              int iv = m.pis[iModel][iVertex];
+              P3 pt = (m.altVertices == null ? m.vs[iv]
                   : (P3) m.altVertices[iv]);
               int d2 = coordinateInRange(x, y, pt, dmin2, ptXY);
               if (d2 >= 0) {
@@ -1421,14 +1421,14 @@ protected void resetObjects() {
             str.append(" ] ");
           }
       } else if (dmesh.drawType == EnumDrawType.POLYGON) {
-        for (int i = 0; i < dmesh.vertexCount; i++)
-          str.append(" ").append(Escape.eP(dmesh.vertices[i]));
-        str.append(" ").appendI(dmesh.polygonCount);
-        for (int i = 0; i < dmesh.polygonCount; i++)
-          if (dmesh.polygonIndexes[i] == null)
+        for (int i = 0; i < dmesh.vc; i++)
+          str.append(" ").append(Escape.eP(dmesh.vs[i]));
+        str.append(" ").appendI(dmesh.pc);
+        for (int i = 0; i < dmesh.pc; i++)
+          if (dmesh.pis[i] == null)
             str.append(" [0 0 0 0]");
           else
-            str.append(" ").append(Escape.eAI(dmesh.polygonIndexes[i]));
+            str.append(" ").append(Escape.eAI(dmesh.pis[i]));
       } else {
         String s = getVertexList(dmesh, iModel, nVertices);
         if (s.indexOf("NaN") >= 0)
@@ -1454,24 +1454,24 @@ protected void resetObjects() {
   }
 
   public static boolean isPolygonDisplayable(Mesh mesh, int i) {
-    return (i < mesh.polygonIndexes.length 
-        && mesh.polygonIndexes[i] != null 
-        && mesh.polygonIndexes[i].length > 0);
+    return (i < mesh.pis.length 
+        && mesh.pis[i] != null 
+        && mesh.pis[i].length > 0);
   }
   
   private static String getVertexList(DrawMesh mesh, int iModel, int nVertices) {
     String str = "";
     try {
-      if (iModel >= mesh.polygonIndexes.length)
+      if (iModel >= mesh.pis.length)
         iModel = 0; // arrows and curves may not have multiple model representations
       boolean adjustPt = (mesh.isVector && mesh.drawType != EnumDrawType.ARC);
       for (int i = 0; i < nVertices; i++) {
-        P3 pt = mesh.vertices[mesh.polygonIndexes[iModel][i]];
+        P3 pt = mesh.vs[mesh.pis[iModel][i]];
         if (pt.z == Float.MAX_VALUE || pt.z == -Float.MAX_VALUE) {
           str += (i == 0 ? " " : " ,") + "[" + (int) pt.x + " " + (int) pt.y + (pt.z < 0 ? " %]" : "]");
         } else if (adjustPt && i == 1){
           P3 pt1 = P3.newP(pt);
-          pt1.sub(mesh.vertices[mesh.polygonIndexes[iModel][0]]);
+          pt1.sub(mesh.vs[mesh.pis[iModel][0]]);
           str += " " + Escape.eP(pt1);
         } else {
           str += " " + Escape.eP(pt);
@@ -1488,7 +1488,7 @@ protected void resetObjects() {
     List<Map<String, Object>> V = new  List<Map<String,Object>>();
     for (int i = 0; i < meshCount; i++) {
       DrawMesh mesh = dmeshes[i];
-      if (mesh.vertexCount == 0)
+      if (mesh.vc == 0)
         continue;
       Map<String, Object> info = new Hashtable<String, Object>();
       info.put("fixed", mesh.ptCenters == null ? Boolean.TRUE : Boolean.FALSE);
@@ -1515,11 +1515,11 @@ protected void resetObjects() {
             mInfo.put("axis", mesh.axes[k]);
           List<P3> v = new  List<P3>();
           for (int ipt = 0; ipt < nPoints; ipt++)
-            v.addLast(mesh.vertices[mesh.polygonIndexes[k][ipt]]);
+            v.addLast(mesh.vs[mesh.pis[k][ipt]]);
           mInfo.put("vertices", v);
           if (mesh.drawTypes[k] == EnumDrawType.LINE) {
-            float d = mesh.vertices[mesh.polygonIndexes[k][0]]
-                .distance(mesh.vertices[mesh.polygonIndexes[k][1]]);
+            float d = mesh.vs[mesh.pis[k][0]]
+                .distance(mesh.vs[mesh.pis[k][1]]);
             mInfo.put("length_Ang", Float.valueOf(d));
           }
           m.addLast(mInfo);
@@ -1531,12 +1531,12 @@ protected void resetObjects() {
         if (mesh.drawVertexCount > 1)
           info.put("axis", mesh.axis);
         List<P3> v = new  List<P3>();
-        for (int j = 0; j < mesh.vertexCount; j++)
-          v.addLast(mesh.vertices[j]);
+        for (int j = 0; j < mesh.vc; j++)
+          v.addLast(mesh.vs[j]);
         info.put("vertices", v);
         if (mesh.drawType == EnumDrawType.LINE)
-          info.put("length_Ang", Float.valueOf(mesh.vertices[0]
-              .distance(mesh.vertices[1])));
+          info.put("length_Ang", Float.valueOf(mesh.vs[0]
+              .distance(mesh.vs[1])));
       }
       V.addLast(info);
     }
@@ -1550,7 +1550,7 @@ protected void resetObjects() {
     appendCmd(s, myType + " delete");
     for (int i = 0; i < meshCount; i++) {
       DrawMesh mesh = dmeshes[i];
-      if (mesh.vertexCount == 0 && mesh.lineData == null)
+      if (mesh.vc == 0 && mesh.lineData == null)
         continue;
       s.append(getCommand2(mesh, mesh.modelIndex));
       if (!mesh.visible)

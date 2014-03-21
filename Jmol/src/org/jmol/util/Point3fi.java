@@ -40,12 +40,32 @@ import javajs.util.P3i;
  * 
  */
 public class Point3fi extends P3 implements Cloneable {
-  public int index;
+  /**
+   * index in full collection
+   * 
+   */
+  /**
+   * model index
+   */
+  public short mi = -1;
+  public int i;
+  /**
+   * screen X
+   */
   public int sX;
+  /**
+   * screen Y
+   */
   public int sY;
+  /**
+   * screen Z
+   * 
+   */
   public int sZ;
+  /**
+   * screen diameter
+   */
   public short sD = -1;
-  public short modelIndex = -1;
 
   public static void set2(P3 p3f, P3i p3i) {
     p3f.x = p3i.x;

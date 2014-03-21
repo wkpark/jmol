@@ -69,7 +69,7 @@ public class XmlChem3dReader extends XmlReader {
     String[] tokens;
     //System.out.println("xmlchem3d: start " + localName);
     if ("model".equals(localName)) {
-      atomSetCollection.newAtomSet();
+      asc.newAtomSet();
       return;
     }
 
@@ -91,7 +91,7 @@ public class XmlChem3dReader extends XmlReader {
       int order = 1;
       if (atts.containsKey("bondOrder"))
         order = parseIntStr(atts.get("bondOrder"));
-      atomSetCollection.addNewBondFromNames(atom1, atom2, order);
+      asc.addNewBondFromNames(atom1, atom2, order);
       return;
     }
 
@@ -99,7 +99,7 @@ public class XmlChem3dReader extends XmlReader {
       tokens = getTokensStr(atts.get("calcPartialCharges"));
       String[] tokens2 = getTokensStr(atts.get("calcAtoms"));
       for (int i = parseIntStr(tokens[0]); --i >= 0;)
-        atomSetCollection.mapPartialCharge(tokens2[i + 1],
+        asc.mapPartialCharge(tokens2[i + 1],
             parseFloatStr(tokens[i + 1]));
     }
 
@@ -182,7 +182,7 @@ public class XmlChem3dReader extends XmlReader {
     if ("atom".equals(localName)) {
       if (atom.elementSymbol != null && !Float.isNaN(atom.z)) {
         parent.setAtomCoord(atom);
-        atomSetCollection.addAtomWithMappedName(atom);
+        asc.addAtomWithMappedName(atom);
       }
       atom = null;
       return;

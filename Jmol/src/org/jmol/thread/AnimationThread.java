@@ -33,7 +33,7 @@ public class AnimationThread extends JmolThread {
   /**
    * 
    */
-  private AnimationManager animationManager;
+  private AnimationManager am;
   private int framePointer1;
   private int framePointer2;
   private int intThread;
@@ -47,7 +47,7 @@ public class AnimationThread extends JmolThread {
     framePointer1 = options[0];
     framePointer2 = options[1];
     intThread = options[2];
-    animationManager = (AnimationManager) manager;
+    am = (AnimationManager) manager;
     setViewer(vwr, "AnimationThread");
     vwr.startHoverWatcher(false);
     return 0;
@@ -61,7 +61,7 @@ public class AnimationThread extends JmolThread {
     if (Logger.debugging)
       Logger.debug("animation thread interrupted!");
     try {
-      animationManager.setAnimationOn(false);
+      am.setAnimationOn(false);
     } catch (Exception e) {
       // null pointer -- don't care;
     }
@@ -84,12 +84,12 @@ public class AnimationThread extends JmolThread {
         break;
       case MAIN:
         //System.out.println("anim thred " + animationManager.getCurrentFrame() +" "+ framePointer);
-        if (!animationManager.animationOn || checkInterrupted(animationManager.animationThread)) {
+        if (!am.animationOn || checkInterrupted(am.animationThread)) {
           mode = FINISH;
           break;
         }
-        if (animationManager.currentFrameIs(framePointer1)) {
-          targetTime += animationManager.firstFrameDelayMs;
+        if (am.currentFrameIs(framePointer1)) {
+          targetTime += am.firstFrameDelayMs;
           sleepTime = (int) (targetTime - (System.currentTimeMillis() - startTime));
           if (!runSleep(sleepTime, CHECK1))
             return;
@@ -97,8 +97,8 @@ public class AnimationThread extends JmolThread {
         mode = CHECK1;
         break;
       case CHECK1:
-        if (animationManager.currentFrameIs(framePointer2)) {
-          targetTime += animationManager.lastFrameDelayMs;
+        if (am.currentFrameIs(framePointer2)) {
+          targetTime += am.lastFrameDelayMs;
           sleepTime = (int) (targetTime - (System.currentTimeMillis() - startTime));
           if (!runSleep(sleepTime, CHECK2))
             return;
@@ -107,18 +107,18 @@ public class AnimationThread extends JmolThread {
         break;
       case CHECK2:
         if (!isFirst
-            && animationManager.currentIsLast()
-            && !animationManager.setAnimationNext()) {
+            && am.currentIsLast()
+            && !am.setAnimationNext()) {
           mode = FINISH;
           break;
         }
         isFirst = false;
-        targetTime += (int) ((1000f / animationManager.animationFps) + vwr
-            .getFrameDelayMs(animationManager.getCurrentModelIndex()));
+        targetTime += (int) ((1000f / am.animationFps) + vwr
+            .getFrameDelayMs(am.getCurrentModelIndex()));
         mode = CHECK3;
         break;
       case CHECK3:
-        while (animationManager.animationOn && !checkInterrupted(animationManager.animationThread)
+        while (am.animationOn && !checkInterrupted(am.animationThread)
             && !vwr.getRefreshing()) {
           if (!runSleep(10, CHECK3))
             return;
@@ -133,7 +133,7 @@ public class AnimationThread extends JmolThread {
       case FINISH:
         if (Logger.debugging)
           Logger.debug("animation thread " + intThread + " exiting");
-        animationManager.stopThread(false);
+        am.stopThread(false);
         return;
       }
     }

@@ -107,7 +107,7 @@ public class Labels extends AtomShape {
       byte pid = PAL.pidOf(value);
       short colix = C.getColixO(value);
       if (!setDefaults)
-        for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
+        for (int i = bsSelected.nextSetBit(0); i >= 0 && i < ac; i = bsSelected
             .nextSetBit(i + 1))
           setLabelColix(i, colix, pid);
       if (setDefaults || !defaultsOnlyForNone) {
@@ -122,7 +122,7 @@ public class Labels extends AtomShape {
         return;
       float val = ((Float) value).floatValue();
       float scalePixelsPerMicron = (val == 0 ? 0 : 10000f / val);
-      for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
+      for (int i = bsSelected.nextSetBit(0); i >= 0 && i < ac; i = bsSelected
           .nextSetBit(i + 1)) {
         if (strings.length <= i)
           continue;
@@ -145,7 +145,7 @@ public class Labels extends AtomShape {
         List<SV> list = (List<SV>) value;
         int n = list.size();
         tokens = new LabelToken[][] { null };
-        for (int pt = 0, i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
+        for (int pt = 0, i = bsSelected.nextSetBit(0); i >= 0 && i < ac; i = bsSelected
             .nextSetBit(i + 1)) {
           if (pt >= n) {
             setLabel(nullToken, "", i);
@@ -158,7 +158,7 @@ public class Labels extends AtomShape {
         String strLabel = (String) value;
         tokens = (strLabel == null || strLabel.length() == 0 ? nullToken
             : new LabelToken[][] { null });
-        for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
+        for (int i = bsSelected.nextSetBit(0); i >= 0 && i < ac; i = bsSelected
             .nextSetBit(i + 1))
           setLabel(tokens, strLabel, i);
       }
@@ -168,7 +168,7 @@ public class Labels extends AtomShape {
     if ("labels" == propertyName) {
       setScaling();
       List<String> labels = (List<String>) value;
-      for (int i = bsSelected.nextSetBit(0), pt = 0; i >= 0 && i < atomCount; i = bsSelected
+      for (int i = bsSelected.nextSetBit(0), pt = 0; i >= 0 && i < ac; i = bsSelected
           .nextSetBit(i + 1)) {
         String strLabel = labels.get(pt++);
         LabelToken[][] tokens = (strLabel == null || strLabel.length() == 0 ? nullToken
@@ -194,7 +194,7 @@ public class Labels extends AtomShape {
         bsBgColixSet = new BS();
       short bgcolix = C.getColixO(value);
       if (!setDefaults)
-        for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
+        for (int i = bsSelected.nextSetBit(0); i >= 0 && i < ac; i = bsSelected
             .nextSetBit(i + 1))
           setBgcolix(i, bgcolix);
       if (setDefaults || !defaultsOnlyForNone)
@@ -210,7 +210,7 @@ public class Labels extends AtomShape {
     if ("textLabels" == propertyName) {
       setScaling();
       Map<Integer, Text> labels = (Map<Integer, Text>) value;
-      for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
+      for (int i = bsSelected.nextSetBit(0); i >= 0 && i < ac; i = bsSelected
           .nextSetBit(i + 1))
         setTextLabel(i, labels.get(Integer.valueOf(i)));
       return;
@@ -224,7 +224,7 @@ public class Labels extends AtomShape {
       }
       byte fid = gdata.getFontFid(fontsize);
       if (!setDefaults)
-        for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
+        for (int i = bsSelected.nextSetBit(0); i >= 0 && i < ac; i = bsSelected
             .nextSetBit(i + 1))
           setFont(i, fid);
       if (setDefaults || !defaultsOnlyForNone)
@@ -235,7 +235,7 @@ public class Labels extends AtomShape {
     if ("font" == propertyName) {
       byte fid = ((Font) value).fid;
       if (!setDefaults)
-        for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
+        for (int i = bsSelected.nextSetBit(0); i >= 0 && i < ac; i = bsSelected
             .nextSetBit(i + 1))
           setFont(i, fid);
       if (setDefaults || !defaultsOnlyForNone)
@@ -246,7 +246,7 @@ public class Labels extends AtomShape {
     if ("offset" == propertyName || "offsetexact" == propertyName) {
       if (!(value instanceof Integer)) {
         if (!setDefaults)
-          for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
+          for (int i = bsSelected.nextSetBit(0); i >= 0 && i < ac; i = bsSelected
               .nextSetBit(i + 1))
             setPymolOffset(i, (float[]) value);
         return;
@@ -263,7 +263,7 @@ public class Labels extends AtomShape {
       else if (offset == zeroOffset)
         offset = 0;
       if (!setDefaults)
-        for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
+        for (int i = bsSelected.nextSetBit(0); i >= 0 && i < ac; i = bsSelected
             .nextSetBit(i + 1))
           setOffsets(i, offset, isExact);
       if (setDefaults || !defaultsOnlyForNone)
@@ -278,7 +278,7 @@ public class Labels extends AtomShape {
         alignment = JC.ALIGN_RIGHT;
       else if (type.equalsIgnoreCase("center"))
         alignment = JC.ALIGN_CENTER;
-      for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
+      for (int i = bsSelected.nextSetBit(0); i >= 0 && i < ac; i = bsSelected
           .nextSetBit(i + 1))
         setAlignment(i, alignment);
       if (setDefaults || !defaultsOnlyForNone)
@@ -289,7 +289,7 @@ public class Labels extends AtomShape {
     if ("pointer" == propertyName) {
       int pointer = ((Integer) value).intValue();
       if (!setDefaults)
-        for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
+        for (int i = bsSelected.nextSetBit(0); i >= 0 && i < ac; i = bsSelected
             .nextSetBit(i + 1))
           setPointer(i, pointer);
       if (setDefaults || !defaultsOnlyForNone)
@@ -300,7 +300,7 @@ public class Labels extends AtomShape {
     if ("front" == propertyName) {
       boolean TF = ((Boolean) value).booleanValue();
       if (!setDefaults)
-        for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
+        for (int i = bsSelected.nextSetBit(0); i >= 0 && i < ac; i = bsSelected
             .nextSetBit(i + 1))
           setFront(i, TF);
       if (setDefaults || !defaultsOnlyForNone)
@@ -311,7 +311,7 @@ public class Labels extends AtomShape {
     if ("group" == propertyName) {
       boolean TF = ((Boolean) value).booleanValue();
       if (!setDefaults)
-        for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
+        for (int i = bsSelected.nextSetBit(0); i >= 0 && i < ac; i = bsSelected
             .nextSetBit(i + 1))
           setGroup(i, TF);
       if (setDefaults || !defaultsOnlyForNone)
@@ -324,14 +324,14 @@ public class Labels extends AtomShape {
       int mode = ("toggleLabel" == propertyName ? 0 : ((Boolean) value)
           .booleanValue() ? 1 : -1);
       if (mads == null)
-        mads = new short[atomCount];
+        mads = new short[ac];
       String strLabelPDB = null;
       LabelToken[] tokensPDB = null;
       String strLabelUNK = null;
       LabelToken[] tokensUNK = null;
       String strLabel;
       LabelToken[] tokens;
-      for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
+      for (int i = bsSelected.nextSetBit(0); i >= 0 && i < ac; i = bsSelected
           .nextSetBit(i + 1)) {
         Atom atom = atoms[i];
         if (formats == null || i >= formats.length)
@@ -623,9 +623,9 @@ public class Labels extends AtomShape {
       return;
     for (int i = strings.length; --i >= 0;) {
       String label = strings[i];
-      if (label != null && modelSet.atoms.length > i
-          && !modelSet.isAtomHidden(i))
-        modelSet.atoms[i].setClickable(myVisibilityFlag);
+      if (label != null && ms.at.length > i
+          && !ms.isAtomHidden(i))
+        ms.at[i].setClickable(vf);
     }
   }
 
@@ -679,7 +679,7 @@ public class Labels extends AtomShape {
     int imin = -1;
     float zmin = Float.MAX_VALUE;
     for (Map.Entry<Integer, float[]> entry : labelBoxes.entrySet()) {
-      if (!atoms[entry.getKey().intValue()].isVisible(myVisibilityFlag | JC.ATOM_INFRAME_NOTHIDDEN))
+      if (!atoms[entry.getKey().intValue()].isVisible(vf | JC.ATOM_INFRAME_NOTHIDDEN))
         continue;
       float[] boxXY = entry.getValue();
       float dx = x - boxXY[0];

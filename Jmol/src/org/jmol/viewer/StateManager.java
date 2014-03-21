@@ -411,7 +411,7 @@ public class StateManager {
         return;
       bondCount = modelSet.bondCount;
       connections = new Connection[bondCount + 1];
-      Bond[] bonds = modelSet.bonds;
+      Bond[] bonds = modelSet.bo;
       for (int i = bondCount; --i >= 0;) {
         Bond b = bonds[i];
         connections[i] = new Connection(b.getAtomIndex1(), b.getAtomIndex2(), b
@@ -426,11 +426,11 @@ public class StateManager {
       modelSet.deleteAllBonds();
       for (int i = bondCount; --i >= 0;) {
         Connection c = connections[i];
-        int atomCount = modelSet.getAtomCount();
-        if (c.atomIndex1 >= atomCount || c.atomIndex2 >= atomCount)
+        int ac = modelSet.getAtomCount();
+        if (c.atomIndex1 >= ac || c.atomIndex2 >= ac)
           continue;
-        Bond b = modelSet.bondAtoms(modelSet.atoms[c.atomIndex1],
-            modelSet.atoms[c.atomIndex2], c.order, c.mad, null, c.energy, false, true);
+        Bond b = modelSet.bondAtoms(modelSet.at[c.atomIndex1],
+            modelSet.at[c.atomIndex2], c.order, c.mad, null, c.energy, false, true);
         b.setColix(c.colix);
         b.setShapeVisibilityFlags(c.shapeVisibilityFlags);
       }

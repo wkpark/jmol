@@ -321,7 +321,7 @@ public class FileManager implements BytePoster {
                                                   Map<String, Object> htParams,
                                                   boolean isAppend) {
     JmolFilesReaderInterface fr = (JmolFilesReaderInterface) Interface
-        .getOption("io2.FilesReader");
+        .getOption("io.FilesReader");
     fr.set(this, vwr, fullPathNames, namesAsGiven, fileTypes, readers, htParams,
         isAppend);
     return fr;
@@ -329,7 +329,7 @@ public class FileManager implements BytePoster {
 
   Object createAtomSetCollectionFromDOM(Object DOMNode,
                                         Map<String, Object> htParams) {
-    JmolDomReaderInterface aDOMReader = (JmolDomReaderInterface) Interface.getOption("io2.DOMReadaer");
+    JmolDomReaderInterface aDOMReader = (JmolDomReaderInterface) Interface.getOption("io.DOMReadaer");
     aDOMReader.set(this, vwr, DOMNode, htParams);
     aDOMReader.run();
     return aDOMReader.getAtomSetCollection();

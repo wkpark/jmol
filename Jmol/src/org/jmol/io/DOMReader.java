@@ -23,7 +23,7 @@
  *  02110-1301, USA.
  */
 
-package org.jmol.io2;
+package org.jmol.io;
 
 import java.util.Map;
 

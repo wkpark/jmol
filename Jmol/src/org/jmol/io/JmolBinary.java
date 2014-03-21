@@ -34,6 +34,7 @@ import java.util.Map;
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
+import org.jmol.api.JmolZipUtilities;
 
 import javajs.util.Rdr;
 import javajs.util.List;
@@ -95,7 +96,7 @@ public class JmolBinary {
   static JmolZipUtilities jzu;
   
   static JmolZipUtilities getJzu() {
-    return (jzu == null ? jzu = (JmolZipUtilities) Interface.getOption("io2.JmolUtil") : jzu);
+    return (jzu == null ? jzu = (JmolZipUtilities) Interface.getOption("io.JmolUtil") : jzu);
   }
 
   public byte[] getCachedPngjBytes(String pathName) {

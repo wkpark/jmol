@@ -23,7 +23,7 @@
  *  02110-1301, USA.
  */
 
-package org.jmol.io2;
+package org.jmol.io;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -48,8 +48,7 @@ import java.util.zip.ZipInputStream;
 import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
-import org.jmol.io.JmolBinary;
-import org.jmol.io.JmolZipUtilities;
+import org.jmol.api.JmolZipUtilities;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 

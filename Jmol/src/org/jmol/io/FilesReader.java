@@ -1,4 +1,4 @@
-package org.jmol.io2;
+package org.jmol.io;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -11,7 +11,6 @@ import javajs.util.PT;
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolFilesReaderInterface;
-import org.jmol.io.JmolBinary;
 import org.jmol.util.Logger;
 import org.jmol.viewer.FileManager;
 import org.jmol.viewer.Viewer;

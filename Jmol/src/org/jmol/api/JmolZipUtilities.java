@@ -1,4 +1,4 @@
-package org.jmol.io;
+package org.jmol.api;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -7,7 +7,7 @@ import java.util.Map;
 
 import javajs.api.GenericZipTools;
 
-import org.jmol.api.JmolAdapter;
+import org.jmol.io.JmolBinary;
 
 public interface JmolZipUtilities {
 

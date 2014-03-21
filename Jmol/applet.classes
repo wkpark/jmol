@@ -29,6 +29,7 @@ org/jmol/applet/*.java
 org/jmol/atomdata/*.java
 org/jmol/awt/*.java
 org/jmol/bspt/*.java
+org/jmol/c/*.java
 org/jmol/console/*.java
 org/jmol/dialog/*.java
 org/jmol/dssx/*.java

@@ -24,7 +24,7 @@
 
 package org.jmol.api;
 
-import org.jmol.c.EnumCallback;
+import org.jmol.c.CBK;
 
 public interface JmolCallbackListener {
 /*
@@ -37,8 +37,8 @@ public interface JmolCallbackListener {
 
   public void setCallbackFunction(String callbackType, String callbackFunction);
   
-  public void notifyCallback(EnumCallback message, Object[] data);
+  public void notifyCallback(CBK message, Object[] data);
 
-  public boolean notifyEnabled(EnumCallback type);
+  public boolean notifyEnabled(CBK type);
 
 }

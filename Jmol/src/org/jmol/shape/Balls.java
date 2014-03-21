@@ -26,7 +26,7 @@
 package org.jmol.shape;
 
 import org.jmol.atomdata.RadiusData;
-import org.jmol.c.EnumPalette;
+import org.jmol.c.PAL;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.util.C;
@@ -55,12 +55,12 @@ public class Balls extends AtomShape {
         colix = C.USE_PALETTE;
       if (bsColixSet == null)
         bsColixSet = new BS();
-      byte pid = EnumPalette.pidOf(value);
+      byte pid = PAL.pidOf(value);
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
         Atom atom = atoms[i];
         atom.setColixAtom(getColixA(colix, pid, atom));
         bsColixSet.setBitTo(i, colix != C.USE_PALETTE
-            || pid != EnumPalette.NONE.id);
+            || pid != PAL.NONE.id);
         atom.setPaletteID(pid);
       }
       return;
@@ -80,11 +80,11 @@ public class Balls extends AtomShape {
         short colix = C.getColixO(color);
         if (colix == C.INHERIT_ALL)
           colix = C.USE_PALETTE;
-        byte pid = EnumPalette.pidOf(color);
+        byte pid = PAL.pidOf(color);
         Atom atom = atoms[i];
         atom.setColixAtom(getColixA(colix, pid, atom));
         bsColixSet.setBitTo(i, colix != C.USE_PALETTE
-            || pid != EnumPalette.NONE.id);
+            || pid != PAL.NONE.id);
         atom.setPaletteID(pid);
       }
       return;
@@ -99,7 +99,7 @@ public class Balls extends AtomShape {
         if (i >= colixes.length)
           continue;
         atoms[i].setColixAtom(colixes[i]);
-        atoms[i].setPaletteID(EnumPalette.UNKNOWN.id);
+        atoms[i].setPaletteID(PAL.UNKNOWN.id);
         bsColixSet.set(i);
       }
       return;

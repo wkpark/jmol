@@ -39,7 +39,7 @@ import javajs.util.V3;
 import org.jmol.api.Interface;
 import org.jmol.api.MOCalculationInterface;
 import org.jmol.api.QuantumPlaneCalculationInterface;
-import org.jmol.c.EnumQuantumShell;
+import org.jmol.c.QS;
 import org.jmol.jvxl.data.VolumeData;
 
 class IsoMOReader extends AtomDataReader {
@@ -150,7 +150,7 @@ class IsoMOReader extends AtomDataReader {
     if (line.indexOf("%I") >= 0)
       line = Txt.formatStringS(line, "I",
           params.qm_moLinearCombination == null ? "" + params.qm_moNumber
-              : EnumQuantumShell.getMOString(params.qm_moLinearCombination));
+              : QS.getMOString(params.qm_moLinearCombination));
     if (line.indexOf("%N") >= 0)
       line = Txt.formatStringS(line, "N", "" + params.qmOrbitalCount);
     Float energy = null;

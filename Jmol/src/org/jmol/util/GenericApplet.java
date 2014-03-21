@@ -16,7 +16,7 @@ import org.jmol.api.JmolCallbackListener;
 import org.jmol.api.JmolStatusListener;
 import org.jmol.api.JmolSyncInterface;
 import org.jmol.api.JmolViewer;
-import org.jmol.c.EnumCallback;
+import org.jmol.c.CBK;
 import org.jmol.i18n.GT;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
@@ -54,7 +54,7 @@ public abstract class GenericApplet implements JmolAppletInterface,
 
   protected Object gRight;
   protected JmolViewer viewer;
-  protected Map<EnumCallback, String> callbacks = new Hashtable<EnumCallback, String>();
+  protected Map<CBK, String> callbacks = new Hashtable<CBK, String>();
 
   protected Map<String, Object> vwrOptions;
 
@@ -122,7 +122,7 @@ public abstract class GenericApplet implements JmolAppletInterface,
         getValue("bgcolor", getValue("boxbgcolor", "black")));
     viewer.setBooleanProperty("frank", true);
     loading = true;
-    for (EnumCallback item : EnumCallback.values())
+    for (CBK item : CBK.values())
       setValue(item.name() + "Callback", null);
     loading = false;
     language = getJmolParameter("language");
@@ -134,9 +134,9 @@ public abstract class GenericApplet implements JmolAppletInterface,
     language = GT.getLanguage();
     System.out.println("language=" + language);
 
-    if (callbacks.get(EnumCallback.SCRIPT) == null
-        && callbacks.get(EnumCallback.ERROR) == null)
-      if (callbacks.get(EnumCallback.MESSAGE) != null || statusForm != null
+    if (callbacks.get(CBK.SCRIPT) == null
+        && callbacks.get(CBK.ERROR) == null)
+      if (callbacks.get(CBK.MESSAGE) != null || statusForm != null
           || statusText != null) {
         if (doTranslate && (getValue("doTranslate", null) == null)) {
           doTranslate = false;
@@ -539,8 +539,8 @@ public abstract class GenericApplet implements JmolAppletInterface,
       consoleMessage(null); // show default message
       return;
     }
-    EnumCallback callback = EnumCallback.getCallback(callbackName);
-    if (callback != null && (loading || callback != EnumCallback.EVAL)) {
+    CBK callback = CBK.getCallback(callbackName);
+    if (callback != null && (loading || callback != CBK.EVAL)) {
       if (callbackFunction == null)
         callbacks.remove(callback);
       else
@@ -548,17 +548,17 @@ public abstract class GenericApplet implements JmolAppletInterface,
       return;
     }
     consoleMessage("Available callbacks include: "
-        + EnumCallback.getNameList().replace(';', ' ').trim());
+        + CBK.getNameList().replace(';', ' ').trim());
   }
 
   private void consoleMessage(String message) {
-    notifyCallback(EnumCallback.ECHO, new Object[] { "", message });
+    notifyCallback(CBK.ECHO, new Object[] { "", message });
   }
 
   /////////////  JmolStatusListener ///////////
   
   @Override
-  public boolean notifyEnabled(EnumCallback type) {
+  public boolean notifyEnabled(CBK type) {
     switch (type) {
     case ECHO:
     case MESSAGE:
@@ -585,7 +585,7 @@ public abstract class GenericApplet implements JmolAppletInterface,
   }
 
   @Override
-  public void notifyCallback(EnumCallback type, Object[] data) {
+  public void notifyCallback(CBK type, Object[] data) {
     String callback = callbacks.get(type);
     boolean doCallback = (callback != null && (data == null || data[0] == null));
     boolean toConsole = false;
@@ -659,7 +659,7 @@ public abstract class GenericApplet implements JmolAppletInterface,
         if (isScriptQueued)
           toConsole = true;
         doCallback = (!isPrivate && (callback = callbacks
-            .get((type = EnumCallback.MESSAGE))) != null);
+            .get((type = CBK.MESSAGE))) != null);
       }
       if (!toConsole)
         output(strInfo);
@@ -670,14 +670,14 @@ public abstract class GenericApplet implements JmolAppletInterface,
         errorMsg = (errorMsg.indexOf("NOTE:") >= 0 ? "" : GT._("File Error:"))
             + errorMsg;
         doShowStatus(errorMsg);
-        notifyCallback(EnumCallback.MESSAGE, new Object[] { "", errorMsg });
+        notifyCallback(CBK.MESSAGE, new Object[] { "", errorMsg });
         return;
       }
       break;
     case MEASURE:
       // pending, deleted, or completed
       if (!doCallback)
-        doCallback = ((callback = callbacks.get((type = EnumCallback.MESSAGE))) != null);
+        doCallback = ((callback = callbacks.get((type = CBK.MESSAGE))) != null);
       String status = (String) data[3];
       if (status.indexOf("Picked") >= 0 || status.indexOf("Sequence") >= 0) {// picking mode
         doShowStatus(strInfo); // set picking measure distance
@@ -708,7 +708,7 @@ public abstract class GenericApplet implements JmolAppletInterface,
         // termination messsage ONLY if script callback enabled -- not to
         // message queue
         // for compatibility reasons
-        doCallback = ((callback = callbacks.get((type = EnumCallback.MESSAGE))) != null);
+        doCallback = ((callback = callbacks.get((type = CBK.MESSAGE))) != null);
       }
       output(strInfo);
       doShowStatus(strInfo);
@@ -806,7 +806,7 @@ public abstract class GenericApplet implements JmolAppletInterface,
   }
 
   private String notifySync(String info, String appletName) {
-    String syncCallback = callbacks.get(EnumCallback.SYNC);
+    String syncCallback = callbacks.get(CBK.SYNC);
     if (!mayScript || syncCallback == null)
       return info;
     try {
@@ -831,8 +831,8 @@ public abstract class GenericApplet implements JmolAppletInterface,
           false, false);
     if (!haveDocumentAccess)
       return "NO EVAL ALLOWED";
-    if (callbacks.get(EnumCallback.EVAL) != null) {
-      notifyCallback(EnumCallback.EVAL, new Object[] { null, strEval });
+    if (callbacks.get(CBK.EVAL) != null) {
+      notifyCallback(CBK.EVAL, new Object[] { null, strEval });
       return "";
     }
     return doEval(strEval);

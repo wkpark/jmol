@@ -24,7 +24,7 @@
 package org.jmol.modelsetbio;
 
 
-import org.jmol.c.EnumStructure;
+import org.jmol.c.STR;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Chain;
 import javajs.util.P3;
@@ -85,14 +85,14 @@ public class AlphaMonomer extends Monomer {
   }
 
   @Override
-  public EnumStructure getProteinStructureType() {
-    return proteinStructure == null ? EnumStructure.NONE
+  public STR getProteinStructureType() {
+    return proteinStructure == null ? STR.NONE
         : proteinStructure.type;
   }
 
   @Override
-  public EnumStructure getProteinStructureSubType() {
-    return proteinStructure == null ? EnumStructure.NONE
+  public STR getProteinStructureSubType() {
+    return proteinStructure == null ? STR.NONE
         : proteinStructure.subtype;
   }
 
@@ -104,13 +104,13 @@ public class AlphaMonomer extends Monomer {
   @Override
   public boolean isHelix() {
     return proteinStructure != null &&
-      proteinStructure.type == EnumStructure.HELIX;
+      proteinStructure.type == STR.HELIX;
   }
 
   @Override
   public boolean isSheet() {
     return proteinStructure != null &&
-      proteinStructure.type == EnumStructure.SHEET;
+      proteinStructure.type == STR.SHEET;
   }
 
   /**
@@ -121,7 +121,7 @@ public class AlphaMonomer extends Monomer {
    */
   @SuppressWarnings("incomplete-switch")
   @Override
-  public int setProteinStructureType(EnumStructure type, int monomerIndexCurrent) {
+  public int setProteinStructureType(STR type, int monomerIndexCurrent) {
     if (monomerIndexCurrent < 0 
         || monomerIndexCurrent > 0 && monomerIndex == 0) {
       if (proteinStructure != null) {
@@ -181,7 +181,7 @@ public class AlphaMonomer extends Monomer {
   }
 
   @Override
-  public boolean isWithinStructure(EnumStructure type) {
+  public boolean isWithinStructure(STR type) {
     ProteinStructure s = (ProteinStructure) getStructure();
     return (s != null && s.type == type && s.isWithin(monomerIndex));
   }

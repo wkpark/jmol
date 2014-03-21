@@ -26,7 +26,7 @@
 package org.jmol.render;
 
 
-import org.jmol.c.EnumPalette;
+import org.jmol.c.PAL;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
@@ -175,9 +175,9 @@ public class SticksRenderer extends FontLineShapeRenderer {
     if (((colix = bond.colix) & C.OPAQUE_MASK) == C.USE_PALETTE) {
       colix = (short) (colix & ~C.OPAQUE_MASK);
       colixA = C.getColixInherited((short) (colix | vwr
-          .getColixAtomPalette(atomA0, EnumPalette.CPK.id)), colixA);
+          .getColixAtomPalette(atomA0, PAL.CPK.id)), colixA);
       colixB = C.getColixInherited((short) (colix | vwr
-          .getColixAtomPalette(atomB0, EnumPalette.CPK.id)), colixB);
+          .getColixAtomPalette(atomB0, PAL.CPK.id)), colixB);
     } else {
       colixA = C.getColixInherited(colix, colixA);
       colixB = C.getColixInherited(colix, colixB);

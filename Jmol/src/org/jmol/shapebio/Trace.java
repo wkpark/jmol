@@ -25,7 +25,7 @@
 package org.jmol.shapebio;
 
 import org.jmol.atomdata.RadiusData;
-import org.jmol.c.EnumVdw;
+import org.jmol.c.VDW;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.script.T;
@@ -141,7 +141,7 @@ public class Trace extends BioShapeCollection {
       data[i] = scale * rad;
     }
     RadiusData rd = new RadiusData(data, 0, RadiusData.EnumType.ABSOLUTE,
-        EnumVdw.AUTO);
+        VDW.AUTO);
     setShapeSizeRD(0, rd, bsAtoms);
   }
 

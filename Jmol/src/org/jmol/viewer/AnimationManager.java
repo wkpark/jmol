@@ -31,7 +31,7 @@ import org.jmol.util.BSUtil;
 //import javajs.util.List;
 
 import org.jmol.api.Interface;
-import org.jmol.c.EnumAnimationMode;
+import org.jmol.c.ANIM;
 import org.jmol.java.BS;
 import org.jmol.modelset.ModelSet;
 
@@ -109,7 +109,7 @@ public class AnimationManager {
 
   final BS bsVisibleModels = new BS();
 
-  EnumAnimationMode animationReplayMode = EnumAnimationMode.ONCE;
+  ANIM animationReplayMode = ANIM.ONCE;
 
   BS bsDisplay;
 
@@ -141,7 +141,7 @@ public class AnimationManager {
     currentAtomIndex = -1;
     setAnimationDirection(1);
     setAnimationFps(10);
-    setAnimationReplayMode(EnumAnimationMode.ONCE, 0, 0);
+    setAnimationReplayMode(ANIM.ONCE, 0, 0);
     initializePointers(0);
   }
   
@@ -270,7 +270,7 @@ public class AnimationManager {
   // 1 = loop
   // 2 = palindrome
   
-  void setAnimationReplayMode(EnumAnimationMode animationReplayMode,
+  void setAnimationReplayMode(ANIM animationReplayMode,
                                      float firstFrameDelay,
                                      float lastFrameDelay) {
     this.firstFrameDelay = firstFrameDelay > 0 ? firstFrameDelay : 0;

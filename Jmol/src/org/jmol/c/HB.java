@@ -33,10 +33,10 @@ import org.jmol.viewer.JC;
 /**
  * Enum for hydrogen bonding donor/acceptor type
  */
-public enum EnumHBondType {
+public enum HB {
   NOT, ACCEPTOR, DONOR, UNKNOWN;
 
-  public static EnumHBondType getType(Atom atom) {
+  public static HB getType(Atom atom) {
     Group group = atom.getGroup();
     int groupID = group.getGroupID();
     boolean considerHydrogens = !atom.isHetero();
@@ -90,7 +90,7 @@ public enum EnumHBondType {
     }
   }
 
-  public static boolean isPossibleHBond(EnumHBondType typeA, EnumHBondType typeB) {
+  public static boolean isPossibleHBond(HB typeA, HB typeB) {
     return (typeA == NOT || typeB == NOT ? false
         : typeA == UNKNOWN || typeA != typeB);
   }

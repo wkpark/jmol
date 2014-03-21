@@ -35,7 +35,7 @@ import javajs.util.PT;
 import org.jmol.util.Measure;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
-import org.jmol.c.EnumVdw;
+import org.jmol.c.VDW;
 import org.jmol.modelset.TickInfo;
 
 import org.jmol.viewer.JC;
@@ -275,8 +275,8 @@ public class Measurement {
           type = (isPercent ? "percent" : isDC ? "dipoleCouplingConstant"
               : "J-CouplingConstant");
           dist = (isPercent ? dist
-              / (a1.getVanderwaalsRadiusFloat(vwr, EnumVdw.AUTO)
-              + a2.getVanderwaalsRadiusFloat(vwr, EnumVdw.AUTO))
+              / (a1.getVanderwaalsRadiusFloat(vwr, VDW.AUTO)
+              + a2.getVanderwaalsRadiusFloat(vwr, VDW.AUTO))
               : isDC ? vwr.getNMRCalculation().getDipolarConstantHz(a1, a2)
                   : vwr.getNMRCalculation().getIsoOrAnisoHz(true, a1, a2, units,
                       null));

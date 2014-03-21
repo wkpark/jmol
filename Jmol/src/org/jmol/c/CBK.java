@@ -25,44 +25,46 @@
 
 package org.jmol.c;
 
-/**
- * Enum for axes mode.
- */
-public enum EnumAxesMode {
+import javajs.util.SB;
 
-  BOUNDBOX(0),
-  MOLECULAR(1),
-  UNITCELL(2);
+public enum CBK {
 
-  /**
-   * Code of axes mode.
-   */
-  private final int code;
+  ANIMFRAME,
+  APPLETREADY,
+  ATOMMOVED,
+  CLICK,
+  ECHO,
+  ERROR,
+  EVAL,
+  HOVER,
+  LOADSTRUCT,
+  MEASURE,
+  MESSAGE,
+  MINIMIZATION,
+  PICK,
+  RESIZE,
+  SCRIPT,
+  SYNC, STRUCTUREMODIFIED;
 
-  /**
-   * @param code Code of axes mode.
-   */
-  private EnumAxesMode(int code) {
-    this.code = code;
-  }
-
-  /**
-   * @return Code of axes mode.
-   */
-  public int getCode() {
-    return code;
-  }
-
-  /**
-   * @param code Code of axes mode.
-   * @return Axes mode.
-   */
-  public static EnumAxesMode getAxesMode(int code) {
-    for (EnumAxesMode mode : values()) {
-      if (mode.getCode() == code) {
-        return mode;
-      }
-    }
+  public static CBK getCallback(String name) {
+    
+    name = name.toUpperCase();
+    name = name.substring(0, Math.max(name.indexOf("CALLBACK"), 0));
+    for (CBK item : values())
+      if (item.name().equalsIgnoreCase(name))
+        return item;
     return null;
+  }
+
+  private static String nameList;
+
+  public static synchronized String getNameList() {
+    if (nameList == null) {
+      SB names = new SB();
+      for (CBK item : values())
+        names.append(item.name().toLowerCase()).append("Callback;");
+      nameList = names.toString();
+    }
+    return nameList;
   }
 }

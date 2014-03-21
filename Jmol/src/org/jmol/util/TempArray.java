@@ -24,7 +24,7 @@
 package org.jmol.util;
 
 
-import org.jmol.c.EnumStructure;
+import org.jmol.c.STR;
 import org.jmol.script.T;
 
 import javajs.util.P3;
@@ -159,20 +159,20 @@ public class TempArray {
   ////////////////////////////////////////////////////////////////
   private final static int freeEnumSize = 2;
   private final int[] lengthsFreeEnum = new int[freeEnumSize];
-  private final EnumStructure[][] freeEnum = new EnumStructure[freeEnumSize][];
+  private final STR[][] freeEnum = new STR[freeEnumSize][];
 
-  public EnumStructure[] allocTempEnum(int size) {
-    EnumStructure[] tempEnum;
+  public STR[] allocTempEnum(int size) {
+    STR[] tempEnum;
     int iFit = findBestFit(size, lengthsFreeEnum);
     if (iFit > 0) {
       tempEnum = freeEnum[iFit];
     } else {
-      tempEnum = new EnumStructure[size];
+      tempEnum = new STR[size];
     }
     return tempEnum;
   }
 
-  public void freeTempEnum(EnumStructure[] tempEnum) {
+  public void freeTempEnum(STR[] tempEnum) {
     for (int i = 0; i < freeEnum.length; i++)
       if (freeEnum[i] == tempEnum) {
         lengthsFreeEnum[i] = tempEnum.length;

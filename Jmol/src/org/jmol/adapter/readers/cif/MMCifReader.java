@@ -36,7 +36,7 @@ import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.adapter.smarter.Structure;
 import org.jmol.api.JmolAdapter;
-import org.jmol.c.EnumStructure;
+import org.jmol.c.STR;
 import org.jmol.java.BS;
 import org.jmol.util.Logger;
 import org.jmol.util.SimpleUnitCell;
@@ -511,7 +511,7 @@ _pdbx_struct_oper_list.vector[3]
         return false;
       }
     while (cr.parser.getData()) {
-      Structure structure = new Structure(-1, EnumStructure.HELIX, EnumStructure.HELIX, null, 0, 0);
+      Structure structure = new Structure(-1, STR.HELIX, STR.HELIX, null, 0, 0);
       int n = cr.parser.getFieldCount();
       for (int i = 0; i < n; ++i) {
         switch (fieldProperty(i)) {
@@ -519,9 +519,9 @@ _pdbx_struct_oper_list.vector[3]
           break;
         case CONF_TYPE_ID:
           if (field.startsWith("TURN"))
-            structure.structureType = structure.substructureType = EnumStructure.TURN;
+            structure.structureType = structure.substructureType = STR.TURN;
           else if (!field.startsWith("HELX"))
-            structure.structureType = structure.substructureType = EnumStructure.NONE;
+            structure.structureType = structure.substructureType = STR.NONE;
           break;
         case BEG_ASYM_ID:
           structure.startChainStr = field;
@@ -591,7 +591,7 @@ _pdbx_struct_oper_list.vector[3]
         return false;
       }
     while (cr.parser.getData()) {
-      Structure structure = new Structure(-1, EnumStructure.SHEET, EnumStructure.SHEET, null, 0, 0);
+      Structure structure = new Structure(-1, STR.SHEET, STR.SHEET, null, 0, 0);
       int n = cr.parser.getFieldCount();
       for (int i = 0; i < n; ++i) {
         switch (fieldProperty(i)) {

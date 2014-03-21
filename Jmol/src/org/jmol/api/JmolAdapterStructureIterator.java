@@ -24,15 +24,15 @@
 
 package org.jmol.api;
 
-import org.jmol.c.EnumStructure;
+import org.jmol.c.STR;
 import org.jmol.java.BS;
 
 public abstract class JmolAdapterStructureIterator {
 	public abstract boolean hasNext();
 
-	public abstract EnumStructure getStructureType();
+	public abstract STR getStructureType();
 
-	public abstract EnumStructure getSubstructureType();
+	public abstract STR getSubstructureType();
 
 	public abstract String getStructureID();
 

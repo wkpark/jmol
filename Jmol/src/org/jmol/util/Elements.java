@@ -29,7 +29,7 @@ import java.util.Map;
 
 import javajs.util.PT;
 
-import org.jmol.c.EnumVdw;
+import org.jmol.c.VDW;
 import org.jmol.java.BS;
 
 
@@ -1123,7 +1123,7 @@ public class Elements {
     return table[(iMid << 1) + 1] / 1000f;
   }
 
-  public static int getVanderwaalsMar(int atomicAndIsotopeNumber, EnumVdw type) {
+  public static int getVanderwaalsMar(int atomicAndIsotopeNumber, VDW type) {
     return vanderwaalsMars[((atomicAndIsotopeNumber & 127) << 2) + (type.pt % 4)];
   }
 

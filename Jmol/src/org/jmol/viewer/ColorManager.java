@@ -31,7 +31,7 @@ import org.jmol.util.C;
 import org.jmol.util.Elements;
 import org.jmol.util.GData;
 import org.jmol.util.Logger;
-import org.jmol.c.EnumPalette;
+import org.jmol.c.PAL;
 import org.jmol.c.StaticConstants;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
@@ -67,7 +67,7 @@ class ColorManager {
   ColorManager(Viewer vwr, GData gdata) {
     this.vwr = vwr;
     g3d = gdata;
-    argbsCpk = EnumPalette.argbsCpk;
+    argbsCpk = PAL.argbsCpk;
     altArgbsCpk = AU.arrayCopyRangeI(JC.altArgbsCpk, 0, -1);
   }
 
@@ -91,12 +91,12 @@ class ColorManager {
       argbsCpk = AU.arrayCopyI(ColorEncoder.getRasmolScale(), -1);
     } else {
       isDefaultColorRasmol = false;
-      argbsCpk = EnumPalette.argbsCpk;
+      argbsCpk = PAL.argbsCpk;
     }
     altArgbsCpk = AU.arrayCopyRangeI(JC.altArgbsCpk, 0, -1);
     propertyColorEncoder.createColorScheme((isRasmol ? "Rasmol="
         : "Jmol="), true, true);
-    for (int i = EnumPalette.argbsCpk.length; --i >= 0;)
+    for (int i = PAL.argbsCpk.length; --i >= 0;)
       g3d.changeColixArgb(i, argbsCpk[i]);
     for (int i = JC.altArgbsCpk.length; --i >= 0;)
       g3d.changeColixArgb(Elements.elementNumberMax + i,
@@ -280,11 +280,11 @@ class ColorManager {
   }
 
   void setElementArgb(int id, int argb) {
-    if (argb == T.jmol && argbsCpk == EnumPalette.argbsCpk)
+    if (argb == T.jmol && argbsCpk == PAL.argbsCpk)
       return;
     argb = getJmolOrRasmolArgb(id, argb);
-    if (argbsCpk == EnumPalette.argbsCpk) {
-      argbsCpk = AU.arrayCopyRangeI(EnumPalette.argbsCpk, 0, -1);
+    if (argbsCpk == PAL.argbsCpk) {
+      argbsCpk = AU.arrayCopyRangeI(PAL.argbsCpk, 0, -1);
       altArgbsCpk = AU.arrayCopyRangeI(JC.altArgbsCpk, 0, -1);
     }
     if (id < Elements.elementNumberMax) {

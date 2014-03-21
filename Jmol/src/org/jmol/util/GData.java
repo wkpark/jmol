@@ -13,7 +13,7 @@ import javajs.util.V3;
 
 import org.jmol.api.JmolGraphicsInterface;
 import org.jmol.api.JmolRendererInterface;
-import org.jmol.c.EnumStereoMode;
+import org.jmol.c.STER;
 
 public class GData implements JmolGraphicsInterface {
 
@@ -585,7 +585,7 @@ public class GData implements JmolGraphicsInterface {
    * @param stereoMode  
    * @param stereoColors 
    */
-  public void applyAnaglygh(EnumStereoMode stereoMode, int[] stereoColors) {
+  public void applyAnaglygh(STER stereoMode, int[] stereoColors) {
   }
 
   /**

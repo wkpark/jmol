@@ -24,7 +24,7 @@
 
 package org.jmol.renderbio;
 
-import org.jmol.c.EnumStructure;
+import org.jmol.c.STR;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom; //import org.jmol.modelsetbio.AlphaMonomer;
 import org.jmol.modelsetbio.CarbohydratePolymer;
@@ -88,7 +88,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
   protected short[] mads;
   protected short[] colixes;
   protected short[] colixesBack;
-  protected EnumStructure[] structureTypes;
+  protected STR[] structureTypes;
   
   protected boolean isPass2;
   protected boolean wireframeOnly;
@@ -244,14 +244,14 @@ abstract class BioShapeRenderer extends MeshRenderer {
     structureTypes = vwr.allocTempEnum(monomerCount + 1);
     for (int i = monomerCount; --i >= 0;) {
       structureTypes[i] = monomers[i].getProteinStructureType();
-      if (structureTypes[i] == EnumStructure.TURN)
-        structureTypes[i] = EnumStructure.NONE;
+      if (structureTypes[i] == STR.TURN)
+        structureTypes[i] = STR.NONE;
     }
     structureTypes[monomerCount] = structureTypes[monomerCount - 1];
   }
 
   protected boolean isHelix(int i) {
-    return structureTypes[i] == EnumStructure.HELIX;
+    return structureTypes[i] == STR.HELIX;
   }
 
   protected void getScreenControlPoints() {

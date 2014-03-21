@@ -34,8 +34,8 @@ import org.jmol.api.MinimizerInterface;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
-import org.jmol.c.EnumStereoMode;
-import org.jmol.c.EnumVdw;
+import org.jmol.c.STER;
+import org.jmol.c.VDW;
 import org.jmol.i18n.GT;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
@@ -1787,9 +1787,9 @@ public class CmdExt implements JmolCmdExtension {
     if (bsA != null) {
       // bond mode, intramolec set here
       if (contactType == T.vanderwaals && rd == null)
-        rd = new RadiusData(null, 0, EnumType.OFFSET, EnumVdw.AUTO);
+        rd = new RadiusData(null, 0, EnumType.OFFSET, VDW.AUTO);
       RadiusData rd1 = (rd == null ? new RadiusData(null, 0.26f,
-          EnumType.OFFSET, EnumVdw.AUTO) : rd);
+          EnumType.OFFSET, VDW.AUTO) : rd);
       if (displayType == T.nci && bsB == null && intramolecular != null
           && intramolecular.booleanValue())
         bsB = bsA;
@@ -6355,9 +6355,9 @@ public class CmdExt implements JmolCmdExtension {
       }
       break;
     case T.vanderwaals:
-      EnumVdw vdwType = null;
+      VDW vdwType = null;
       if (slen > 2) {
-        vdwType = EnumVdw.getVdwType(paramAsStr(2));
+        vdwType = VDW.getVdwType(paramAsStr(2));
         if (vdwType == null)
           invArg();
       }
@@ -6779,13 +6779,13 @@ public class CmdExt implements JmolCmdExtension {
   }
 
   private void stereo() throws ScriptException {
-    EnumStereoMode stereoMode = EnumStereoMode.DOUBLE;
+    STER stereoMode = STER.DOUBLE;
     // see www.usm.maine.edu/~rhodes/0Help/StereoViewing.html
     // stereo on/off
     // stereo color1 color2 6
     // stereo redgreen 5
 
-    float degrees = EnumStereoMode.DEFAULT_STEREO_DEGREES;
+    float degrees = STER.DEFAULT_STEREO_DEGREES;
     boolean degreesSeen = false;
     int[] colors = null;
     int colorpt = 0;
@@ -6810,7 +6810,7 @@ public class CmdExt implements JmolCmdExtension {
         break;
       case T.off:
         e.checkLast(e.iToken = 1);
-        stereoMode = EnumStereoMode.NONE;
+        stereoMode = STER.NONE;
         break;
       case T.integer:
       case T.decimal:
@@ -6820,7 +6820,7 @@ public class CmdExt implements JmolCmdExtension {
       case T.identifier:
         if (!degreesSeen)
           degrees = 3;
-        stereoMode = EnumStereoMode.getStereoMode(paramAsStr(i));
+        stereoMode = STER.getStereoMode(paramAsStr(i));
         if (stereoMode != null)
           break;
         //$FALL-THROUGH$

@@ -25,7 +25,7 @@
 package org.jmol.applet;
 
 import org.jmol.awt.FileDropper;
-import org.jmol.c.EnumCallback;
+import org.jmol.c.CBK;
 import org.jmol.util.GenericApplet;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
@@ -306,7 +306,7 @@ public class Jmol extends GenericApplet implements WrappedApplet {
       info.put(putKey == null ? key : putKey, value);
     boolean haveCallback = false;
     // these are set by vwr.setStringProperty() from setValue
-    for (EnumCallback item : EnumCallback.values()) {
+    for (CBK item : CBK.values()) {
       if (callbacks.get(item) != null) {
         haveCallback = true;
         break;

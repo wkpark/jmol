@@ -26,7 +26,7 @@
 package org.jmol.shapebio;
 
 import org.jmol.atomdata.RadiusData;
-import org.jmol.c.EnumPalette;
+import org.jmol.c.PAL;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Group;
@@ -134,7 +134,7 @@ public abstract class BioShapeCollection extends Shape {
 
     initialize();
     if ("color" == propertyName) {
-      byte pid = EnumPalette.pidOf(value);
+      byte pid = PAL.pidOf(value);
       short colix = C.getColixO(value);
       for (int i = bioShapes.length; --i >= 0;) {
         BioShape bioShape = bioShapes[i];

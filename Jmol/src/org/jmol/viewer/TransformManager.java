@@ -26,7 +26,7 @@ package org.jmol.viewer;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolNavigatorInterface;
 import org.jmol.api.JmolScriptEvaluator;
-import org.jmol.c.EnumStereoMode;
+import org.jmol.c.STER;
 import org.jmol.java.BS;
 import org.jmol.script.T;
 import org.jmol.thread.JmolThread;
@@ -2130,15 +2130,15 @@ public class TransformManager {
     vibrationScale = 0;
   }
 
-  EnumStereoMode stereoMode = EnumStereoMode.NONE;
+  STER stereoMode = STER.NONE;
   int[] stereoColors;
 
   void setStereoMode2(int[] twoColors) {
-    stereoMode = EnumStereoMode.CUSTOM;
+    stereoMode = STER.CUSTOM;
     stereoColors = twoColors;
   }
 
-  void setStereoMode(EnumStereoMode stereoMode) {
+  void setStereoMode(STER stereoMode) {
     stereoColors = null;
     this.stereoMode = stereoMode;
   }

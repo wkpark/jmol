@@ -24,7 +24,7 @@
 package org.jmol.modelsetbio;
 
 
-import org.jmol.c.EnumStructure;
+import org.jmol.c.STR;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
@@ -185,7 +185,7 @@ public abstract class Monomer extends Group {
 
   public ProteinStructure getProteinStructure() { return null; }
   @Override
-  public EnumStructure getProteinStructureType() { return EnumStructure.NONE; }
+  public STR getProteinStructureType() { return STR.NONE; }
   public boolean isHelix() { return false; }
   public boolean isSheet() { return false; }
   @Override

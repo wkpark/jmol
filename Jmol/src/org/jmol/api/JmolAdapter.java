@@ -29,7 +29,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.jmol.api.JmolFilesReaderInterface;
-import org.jmol.c.EnumQuantumShell;
+import org.jmol.c.QS;
 import org.jmol.modelset.Group;
 import org.jmol.util.Elements;
 import org.jmol.util.Edge;
@@ -72,22 +72,22 @@ public abstract class JmolAdapter {
   public final static int ORDER_UNSPECIFIED     = Edge.BOND_ORDER_UNSPECIFIED;
   public final static int ORDER_PYMOL_SINGLE    = Edge.BOND_PYMOL_SINGLE;
   public final static int ORDER_PYMOL_MULT      = Edge.BOND_PYMOL_MULT;
-  public final static EnumQuantumShell getShellEnumeration(int i) { return EnumQuantumShell.getItem(i); }
-  public final static int[][] getNewDfCoefMap() { return EnumQuantumShell.getNewDfCoefMap(); }
+  public final static QS getShellEnumeration(int i) { return QS.getItem(i); }
+  public final static int[][] getNewDfCoefMap() { return QS.getNewDfCoefMap(); }
   // We need the shell ids only because we are storing these in the (int) shell[1] spot
-  public final static int        SHELL_S           = EnumQuantumShell.S.id;
-  public final static int        SHELL_P           = EnumQuantumShell.P.id;
-  public final static int        SHELL_SP          = EnumQuantumShell.SP.id;
-  public final static int        SHELL_L           = EnumQuantumShell.SP.id;
-  public final static int        SHELL_D_SPHERICAL = EnumQuantumShell.D_SPHERICAL.id;
-  public final static int        SHELL_D_CARTESIAN = EnumQuantumShell.D_CARTESIAN.id;
-  public final static int        SHELL_F_SPHERICAL = EnumQuantumShell.F_SPHERICAL.id;
-  public final static int        SHELL_F_CARTESIAN = EnumQuantumShell.F_CARTESIAN.id;
-  public final static int        SHELL_G_SPHERICAL = EnumQuantumShell.G_SPHERICAL.id;
-  public final static int        SHELL_G_CARTESIAN = EnumQuantumShell.G_CARTESIAN.id;
-  public final static int        SHELL_H_SPHERICAL = EnumQuantumShell.H_SPHERICAL.id;
-  public final static int        SHELL_H_CARTESIAN = EnumQuantumShell.H_CARTESIAN.id;
-  public static final String SUPPORTED_BASIS_FUNCTIONS = EnumQuantumShell.SUPPORTED_BASIS_FUNCTIONS;
+  public final static int        SHELL_S           = QS.S.id;
+  public final static int        SHELL_P           = QS.P.id;
+  public final static int        SHELL_SP          = QS.SP.id;
+  public final static int        SHELL_L           = QS.SP.id;
+  public final static int        SHELL_D_SPHERICAL = QS.D_SPHERICAL.id;
+  public final static int        SHELL_D_CARTESIAN = QS.D_CARTESIAN.id;
+  public final static int        SHELL_F_SPHERICAL = QS.F_SPHERICAL.id;
+  public final static int        SHELL_F_CARTESIAN = QS.F_CARTESIAN.id;
+  public final static int        SHELL_G_SPHERICAL = QS.G_SPHERICAL.id;
+  public final static int        SHELL_G_CARTESIAN = QS.G_CARTESIAN.id;
+  public final static int        SHELL_H_SPHERICAL = QS.H_SPHERICAL.id;
+  public final static int        SHELL_H_CARTESIAN = QS.H_CARTESIAN.id;
+  public static final String SUPPORTED_BASIS_FUNCTIONS = QS.SUPPORTED_BASIS_FUNCTIONS;
   public static final String NOTE_SCRIPT_FILE = JC.NOTE_SCRIPT_FILE;
   
   public static String getElementSymbol(int elementNumber) {
@@ -107,15 +107,15 @@ public abstract class JmolAdapter {
   }
   
   public static String getQuantumShellTag(int id) {
-    return EnumQuantumShell.getQuantumShellTag(id);
+    return QS.getQuantumShellTag(id);
   }
                                            
   public static int getQuantumShellTagID(String tag) {
-    return EnumQuantumShell.getQuantumShellTagID(tag);
+    return QS.getQuantumShellTagID(tag);
   }
                                            
   public static int getQuantumShellTagIDSpherical(String tag) {
-    return EnumQuantumShell.getQuantumShellTagIDSpherical(tag);
+    return QS.getQuantumShellTagIDSpherical(tag);
   }
   
   final public static short lookupGroupID(String group3) {

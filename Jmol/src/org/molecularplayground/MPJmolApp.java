@@ -29,7 +29,7 @@ import javax.swing.JPanel;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.JmolCallbackListener;
 import org.jmol.api.JmolViewer;
-import org.jmol.constant.EnumCallback;
+import org.jmol.c.CBK;
 import org.jmol.util.Logger;
 import org.openscience.jmol.app.jmolpanel.JmolPanel;
 import org.openscience.jmol.app.jsonkiosk.BannerFrame;
@@ -249,7 +249,7 @@ public class MPJmolApp implements JsonNioClient {
 
     // / JmolCallbackListener interface ///
     @Override
-    public boolean notifyEnabled(EnumCallback type) {
+    public boolean notifyEnabled(CBK type) {
       switch (type) {
       case SCRIPT:
       case ECHO:
@@ -275,7 +275,7 @@ public class MPJmolApp implements JsonNioClient {
     }
 
     @Override
-    public void notifyCallback(EnumCallback type, Object[] data) {
+    public void notifyCallback(CBK type, Object[] data) {
       if (service == null || jmolViewer == null)
         return;
       String strInfo = (data == null || data[1] == null ? null : data[1]

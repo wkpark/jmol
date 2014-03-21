@@ -28,9 +28,9 @@ package org.jmol.modelset;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
-import org.jmol.c.EnumPalette;
-import org.jmol.c.EnumStructure;
-import org.jmol.c.EnumVdw;
+import org.jmol.c.PAL;
+import org.jmol.c.STR;
+import org.jmol.c.VDW;
 import org.jmol.java.BS;
 import org.jmol.script.T;
 import org.jmol.util.C;
@@ -81,7 +81,7 @@ public class Atom extends Point3fi implements BNode {
   public short madAtom;
 
   public short colixAtom;
-  byte paletteID = EnumPalette.CPK.id;
+  byte paletteID = PAL.CPK.id;
 
   Bond[] bonds;
   
@@ -272,7 +272,7 @@ public class Atom extends Point3fi implements BNode {
         break;
       case ADPMIN:
       case ADPMAX:
-        r = getADPMinMax(rd.vdwType == EnumVdw.ADPMAX);
+        r = getADPMinMax(rd.vdwType == VDW.ADPMAX);
         break;
       default:
         r = getVanderwaalsRadiusFloat(vwr, rd.vdwType);
@@ -519,7 +519,7 @@ public class Atom extends Point3fi implements BNode {
     return (dimension == 0 ? x : (dimension == 1 ? y : z));
   }
 
-  public float getVanderwaalsRadiusFloat(Viewer vwr, EnumVdw type) {
+  public float getVanderwaalsRadiusFloat(Viewer vwr, VDW type) {
     // called by atomPropertyFloat as VDW_AUTO,
     // AtomCollection.fillAtomData with VDW_AUTO or VDW_NOJMOL
     // AtomCollection.findMaxRadii with VDW_AUTO
@@ -537,15 +537,15 @@ public class Atom extends Point3fi implements BNode {
    *         based on the model type
    */
   @SuppressWarnings("incomplete-switch")
-  private EnumVdw getVdwType(EnumVdw type) {
+  private VDW getVdwType(VDW type) {
     switch (type) {
     case AUTO:
       type = group.chain.model.modelSet.getDefaultVdwType(modelIndex);
       break;
     case NOJMOL:
       type = group.chain.model.modelSet.getDefaultVdwType(modelIndex);
-      if (type == EnumVdw.AUTO_JMOL)
-        type = EnumVdw.AUTO_BABEL;
+      if (type == VDW.AUTO_JMOL)
+        type = VDW.AUTO_BABEL;
       break;
     }
     return type;
@@ -558,7 +558,7 @@ public class Atom extends Point3fi implements BNode {
         getFormalCharge()) : r);
   }
 
-  float getVolume(Viewer vwr, EnumVdw vType) {
+  float getVolume(Viewer vwr, VDW vType) {
     float r1 = (vType == null ? userDefinedVanDerWaalRadius : Float.NaN);
     if (Float.isNaN(r1))
       r1 = vwr.getVanderwaalsMarType(getElementNumber(), getVdwType(vType)) / 1000f;
@@ -1133,11 +1133,11 @@ public class Atom extends Point3fi implements BNode {
     return getProteinStructureType().getBioStructureTypeName(true);
   }
   
-  public EnumStructure getProteinStructureType() {
+  public STR getProteinStructureType() {
     return group.getProteinStructureType();
   }
   
-  public EnumStructure getProteinStructureSubType() {
+  public STR getProteinStructureSubType() {
     return group.getProteinStructureSubType();
   }
   
@@ -1383,7 +1383,7 @@ public class Atom extends Point3fi implements BNode {
     case T.unitz:
       return atom.getFractionalUnitCoord('Z');
     case T.vanderwaals:
-      return atom.getVanderwaalsRadiusFloat(vwr, EnumVdw.AUTO);
+      return atom.getVanderwaalsRadiusFloat(vwr, VDW.AUTO);
     case T.vectorscale:
       V3 v = atom.getVibrationVector();
       return (v == null ? 0 : v.length() * vwr.getFloat(T.vectorscale));
@@ -1394,7 +1394,7 @@ public class Atom extends Point3fi implements BNode {
     case T.vibz:
       return atom.getVibrationCoord('Z');
     case T.volume:
-      return atom.getVolume(vwr, EnumVdw.AUTO);
+      return atom.getVolume(vwr, VDW.AUTO);
     }
     return atomPropertyInt(atom, tokWhat);
   }
@@ -1477,7 +1477,7 @@ public class Atom extends Point3fi implements BNode {
     return null;
   }
 
-  boolean isWithinStructure(EnumStructure type) {
+  boolean isWithinStructure(STR type) {
     return group.isWithinStructure(type);
   }
   

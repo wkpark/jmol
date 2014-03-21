@@ -29,7 +29,7 @@ package org.jmol.c;
 
 
 
-public enum EnumVdw {
+public enum VDW {
 
   JMOL(0, "Jmol",null),  //OpenBabel-1.0
   BABEL(1, "Babel",null),  //OpenBabel-2.2
@@ -56,7 +56,7 @@ public enum EnumVdw {
   private String type;
   private String type2;
   
-  private EnumVdw(int pt, String type, String type2) {
+  private VDW(int pt, String type, String type2) {
     this.pt = pt;
     this.type = type;
     this.type2 = type2;
@@ -65,17 +65,17 @@ public enum EnumVdw {
     return (type == null ? type2 : type);
   }
 
-  public static EnumVdw getVdwType(String label) {
+  public static VDW getVdwType(String label) {
     if (label != null)
-      for (EnumVdw item : values())
+      for (VDW item : values())
         if (label.equalsIgnoreCase(item.type))
           return item;
     return null;
   }
   
-  public static EnumVdw getVdwType2(String label) {
+  public static VDW getVdwType2(String label) {
     if (label != null)
-      for (EnumVdw item : values())
+      for (VDW item : values())
         if (label.equalsIgnoreCase(item.type2))
           return item;
     return null;

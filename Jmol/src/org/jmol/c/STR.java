@@ -27,7 +27,7 @@ package org.jmol.c;
 
 
 
-public enum EnumStructure {
+public enum STR {
   
   // Note: These id numbers are non-negotiable. They are documented and 
   // accessible via {atom}.structure and {atom}.substructure
@@ -48,7 +48,7 @@ public enum EnumStructure {
   private int id;
   private int color;
   
-  private EnumStructure(int id, int color) {
+  private STR(int id, int color) {
     this.id = id;
     this.color = color;
   }
@@ -82,8 +82,8 @@ public enum EnumStructure {
    * @param name 
    * @return     0-3 or 7-9, but not dna, rna, carbohydrate
    ****************************************************************/
-  public final static EnumStructure getProteinStructureType(String name) {
-    for (EnumStructure item : values())
+  public final static STR getProteinStructureType(String name) {
+    for (STR item : values())
       if (name.equalsIgnoreCase(item.name()))
         return (item.isProtein() ? item : NOT);
     return NOT;

@@ -10,10 +10,10 @@ import javajs.util.P3;
 import javajs.util.PT;
 import javajs.util.SB;
 
-import org.jmol.c.EnumAxesMode;
-import org.jmol.c.EnumCallback;
-import org.jmol.c.EnumStereoMode;
-import org.jmol.c.EnumStructure;
+import org.jmol.c.AXES;
+import org.jmol.c.CBK;
+import org.jmol.c.STER;
+import org.jmol.c.STR;
 import org.jmol.java.BS;
 import org.jmol.script.SV;
 import org.jmol.script.T;
@@ -113,7 +113,7 @@ public class GlobalSettings {
 
       // beyond these six, they are just in the form load =xxx/id
 
-      for (EnumCallback item : EnumCallback.values())
+      for (CBK item : CBK.values())
         resetValue(item.name() + "Callback", g);
 
       setI("historyLevel", 0); //deprecated ? doesn't do anything
@@ -164,7 +164,7 @@ public class GlobalSettings {
       setI("spinY", TransformManager.DEFAULT_SPIN_Y);
       setI("spinZ", 0); // maintained by TransformManager
       setI("spinFps", TransformManager.DEFAULT_SPIN_FPS);
-      setI("stereoDegrees", EnumStereoMode.DEFAULT_STEREO_DEGREES);
+      setI("stereoDegrees", STER.DEFAULT_STEREO_DEGREES);
       setI("stateversion", 0); // only set by a saved state being recalled
       setB("syncScript", vwr.getStatusManager().syncingScripts);
       setB("syncMouse", vwr.getStatusManager().syncingMouse);
@@ -576,7 +576,7 @@ public class GlobalSettings {
     int animationFps = 10;
     boolean atomPicking = true;
     boolean autoFps = false;
-    EnumAxesMode axesMode = EnumAxesMode.BOUNDBOX;
+    AXES axesMode = AXES.BOUNDBOX;
     float axesScale = 2;
     float starScale = 0.05f;
     boolean bondPicking = false;
@@ -877,20 +877,20 @@ public class GlobalSettings {
     }
 
     // static because we don't plan to be changing these
-    Map<EnumStructure, float[]> structureList = new Hashtable<EnumStructure, float[]>();
+    Map<STR, float[]> structureList = new Hashtable<STR, float[]>();
     
     {
-      structureList.put(EnumStructure.TURN, 
+      structureList.put(STR.TURN, 
           new float[] { // turn
               30, 90, -15, 95,
           });
-      structureList.put(EnumStructure.SHEET, 
+      structureList.put(STR.SHEET, 
       new float[] { // sheet
           -180, -10,   70,  180, 
           -180, -45, -180, -130, 
            140, 180,   90, 180, 
         });
-      structureList.put(EnumStructure.HELIX, 
+      structureList.put(STR.HELIX, 
       new float[] {  // helix
         -160, 0, -100, 45,
       });
@@ -901,12 +901,12 @@ public class GlobalSettings {
 
     public int bondingVersion = Elements.RAD_COV_IONIC_OB1_100_1;
     
-    public void setStructureList(float[] list, EnumStructure type) {
+    public void setStructureList(float[] list, STR type) {
       haveSetStructureList = true;
       structureList.put(type, list);
     }
     
-    public Map<EnumStructure, float[]> getStructureList() {
+    public Map<STR, float[]> getStructureList() {
       return structureList;
     }
 
@@ -997,7 +997,7 @@ public class GlobalSettings {
           + ";hoverlabel;hydrogen;languagetranslation;measurementunits;navigationdepth;navigationslab"
           + ";picking;pickingstyle;propertycolorschemeoverload;radius;rgbblue;rgbgreen;rgbred"
           + ";scaleangstromsperinch;selectionhalos;showscript;showselections;solvent;strandcount"
-          + ";spinx;spiny;spinz;spinfps;navx;navy;navz;navfps;" + EnumCallback.getNameList()
+          + ";spinx;spiny;spinz;spinfps;navx;navy;navz;navfps;" + CBK.getNameList()
           + ";undo;bondpicking;modelkitmode;allowgestures;allowkeystrokes;allowmultitouch;allowmodelkit"
           + ";").toLowerCase();
 

@@ -23,7 +23,7 @@
 */
 package org.jmol.modelsetbio;
 
-import org.jmol.c.EnumStructure;
+import org.jmol.c.STR;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
@@ -107,7 +107,7 @@ public abstract class BioPolymer {
 
   protected void removeProteinStructure(int monomerIndex, int count) {
     Monomer m = monomers[monomerIndex];
-    EnumStructure type = m.getProteinStructureType();
+    STR type = m.getProteinStructureType();
     int mLast = -1;
     for (int i = 0, pt = monomerIndex; i < count && pt < monomerCount; i++, pt++) {
       monomers[pt].setStructure(null);
@@ -1034,7 +1034,7 @@ public abstract class BioPolymer {
    * @param structureList
    *        protein only -- helix, sheet, turn definitions
    */
-  public void setStructureList(Map<EnumStructure, float[]> structureList) {
+  public void setStructureList(Map<STR, float[]> structureList) {
   }
 
   /**

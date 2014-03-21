@@ -24,11 +24,11 @@
 
 package org.jmol.adapter.smarter;
 
-import org.jmol.c.EnumStructure;
+import org.jmol.c.STR;
 
 public class Structure {
-  public EnumStructure structureType;
-  public EnumStructure substructureType;
+  public STR structureType;
+  public STR substructureType;
   public String structureID;
   public int serialID;
   public int strandCount;
@@ -46,20 +46,20 @@ public class Structure {
   public int[] modelStartEnd = new int[] {-1, -1};
   
 
-  public static EnumStructure getHelixType(int type) {
+  public static STR getHelixType(int type) {
     switch (type) {
     case 1:
-      return EnumStructure.HELIXALPHA;
+      return STR.HELIXALPHA;
     case 3:
-      return EnumStructure.HELIXPI;
+      return STR.HELIXPI;
     case 5:
-      return EnumStructure.HELIX310;
+      return STR.HELIX310;
     }
-    return EnumStructure.HELIX;
+    return STR.HELIX;
   }
 
-  public Structure(int modelIndex, EnumStructure structureType,
-      EnumStructure substructureType, String structureID, int serialID,
+  public Structure(int modelIndex, STR structureType,
+      STR substructureType, String structureID, int serialID,
       int strandCount) {
     this.structureType = structureType;
     this.substructureType = substructureType;

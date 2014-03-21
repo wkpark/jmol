@@ -24,7 +24,7 @@
 
 package org.jmol.shape;
 
-import org.jmol.c.EnumPalette;
+import org.jmol.c.PAL;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.LabelToken;
@@ -104,7 +104,7 @@ public class Labels extends AtomShape {
     }
 
     if ("color" == propertyName) {
-      byte pid = EnumPalette.pidOf(value);
+      byte pid = PAL.pidOf(value);
       short colix = C.getColixO(value);
       if (!setDefaults)
         for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
@@ -440,7 +440,7 @@ public class Labels extends AtomShape {
     addString(atom, i, label, label);
     setShapeVisibility(atom, true);
     if (t.colix >= 0)
-      setLabelColix(i, t.colix, EnumPalette.UNKNOWN.id);
+      setLabelColix(i, t.colix, PAL.UNKNOWN.id);
     setFont(i, t.font.fid);
     putLabel(i, t);
   }

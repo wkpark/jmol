@@ -38,7 +38,7 @@ import javajs.util.P3i;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 import org.jmol.atomdata.RadiusData;
-import org.jmol.c.EnumPalette;
+import org.jmol.c.PAL;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
@@ -365,18 +365,18 @@ public abstract class Shape {
 
   public static String getColorCommandUnk(String type, short colix,
                                    boolean translucentAllowed) {
-    return getColorCommand(type, EnumPalette.UNKNOWN.id, colix,
+    return getColorCommand(type, PAL.UNKNOWN.id, colix,
         translucentAllowed);
   }
 
   public static String getColorCommand(String type, byte pid, short colix,
                                        boolean translucentAllowed) {
-    if (pid == EnumPalette.UNKNOWN.id && colix == C.INHERIT_ALL)
+    if (pid == PAL.UNKNOWN.id && colix == C.INHERIT_ALL)
       return "";
-    String s = (pid == EnumPalette.UNKNOWN.id && colix == C.INHERIT_ALL ? ""
+    String s = (pid == PAL.UNKNOWN.id && colix == C.INHERIT_ALL ? ""
         : (translucentAllowed ? getTranslucentLabel(colix) + " " : "")
-            + (pid != EnumPalette.UNKNOWN.id
-                && !EnumPalette.isPaletteVariable(pid) ? EnumPalette
+            + (pid != PAL.UNKNOWN.id
+                && !PAL.isPaletteVariable(pid) ? PAL
                 .getPaletteName(pid) : encodeColor(colix)));
     return "color " + type + " " + s;
   }

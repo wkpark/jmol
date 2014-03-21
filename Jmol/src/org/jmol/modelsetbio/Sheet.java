@@ -24,7 +24,7 @@
 package org.jmol.modelsetbio;
 
 
-import org.jmol.c.EnumStructure;
+import org.jmol.c.STR;
 import org.jmol.util.Measure;
 import javajs.util.P3;
 import javajs.util.V3;
@@ -33,8 +33,8 @@ public class Sheet extends ProteinStructure {
 
   AlphaPolymer alphaPolymer;
 
-  Sheet(AlphaPolymer alphaPolymer, int monomerIndex, int monomerCount, EnumStructure subtype) {
-    setupPS(alphaPolymer, EnumStructure.SHEET, monomerIndex,
+  Sheet(AlphaPolymer alphaPolymer, int monomerIndex, int monomerCount, STR subtype) {
+    setupPS(alphaPolymer, STR.SHEET, monomerIndex,
         monomerCount);
     this.alphaPolymer = alphaPolymer;
     this.subtype = subtype;

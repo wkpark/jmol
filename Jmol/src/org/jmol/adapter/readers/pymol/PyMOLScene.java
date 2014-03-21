@@ -9,7 +9,7 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolSceneGenerator;
 import org.jmol.api.PymolAtomReader;
 import org.jmol.atomdata.RadiusData;
-import org.jmol.c.EnumVdw;
+import org.jmol.c.VDW;
 import org.jmol.java.BS;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.MeasurementData;
@@ -1513,7 +1513,7 @@ class PyMOLScene implements JmolSceneGenerator {
       float r = e.getKey().floatValue();
       BS bs = e.getValue();
       addJmolObject(T.atoms, bs, null).rd = new RadiusData(null, r,
-          RadiusData.EnumType.ABSOLUTE, EnumVdw.AUTO);
+          RadiusData.EnumType.ABSOLUTE, VDW.AUTO);
     }
     htSpacefill.clear();
   }

@@ -50,9 +50,9 @@ import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.bspt.Bspf;
 import org.jmol.bspt.CubeIterator;
-import org.jmol.c.EnumPalette;
-import org.jmol.c.EnumStructure;
-import org.jmol.c.EnumVdw;
+import org.jmol.c.PAL;
+import org.jmol.c.STR;
+import org.jmol.c.VDW;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
 
@@ -345,10 +345,10 @@ abstract public class ModelCollection extends BondCollection {
     return s;
   }
 
-  public EnumVdw getDefaultVdwType(int modelIndex) {
-    return (!models[modelIndex].isBioModel ? EnumVdw.AUTO_BABEL
-        : models[modelIndex].hydrogenCount == 0 ? EnumVdw.AUTO_JMOL
-            : EnumVdw.AUTO_BABEL); // RASMOL is too small
+  public VDW getDefaultVdwType(int modelIndex) {
+    return (!models[modelIndex].isBioModel ? VDW.AUTO_BABEL
+        : models[modelIndex].hydrogenCount == 0 ? VDW.AUTO_JMOL
+            : VDW.AUTO_BABEL); // RASMOL is too small
   }
 
   public boolean setRotationRadius(int modelIndex, float angstroms) {
@@ -612,7 +612,7 @@ abstract public class ModelCollection extends BondCollection {
             models[i].bsAtoms, false, false, 0);
   }
 
-  public void setProteinType(BS bs, EnumStructure type) {
+  public void setProteinType(BS bs, STR type) {
     int monomerIndexCurrent = -1;
     int iLast = -1;
     BS bsModels = getModelBitSet(bs, false);
@@ -655,11 +655,11 @@ abstract public class ModelCollection extends BondCollection {
       models[iModel].freeze();
   }
 
-  public Map<EnumStructure, float[]> getStructureList() {
+  public Map<STR, float[]> getStructureList() {
     return vwr.getStructureList();
   }
 
-  public void setStructureList(Map<EnumStructure, float[]> structureList) {
+  public void setStructureList(Map<STR, float[]> structureList) {
     for (int iModel = modelCount; --iModel >= 0;)
       models[iModel].setStructureList(structureList);
   }
@@ -3105,7 +3105,7 @@ abstract public class ModelCollection extends BondCollection {
     if (tensors != null)
       setAtomTensors(atomCount, tensors);
     atom.group = group;
-    atom.colixAtom = vwr.getColixAtomPalette(atom, EnumPalette.CPK.id);
+    atom.colixAtom = vwr.getColixAtomPalette(atom, PAL.CPK.id);
     if (atomName != null) {
       int i;
       if ((i = atomName.indexOf('\0')) >= 0) {

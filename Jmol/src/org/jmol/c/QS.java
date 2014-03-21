@@ -31,7 +31,7 @@ import javajs.util.SB;
 /**
  * Enum for quantum shells.
  */
-public enum EnumQuantumShell {
+public enum QS {
 
   S("S","S",0,0),
   P("P","X",1,1),
@@ -54,7 +54,7 @@ public enum EnumQuantumShell {
   public final int id;
   private final int idSpherical;
   
-  private EnumQuantumShell(String tag, String tag2, int id, int idSpherical) {
+  private QS(String tag, String tag2, int id, int idSpherical) {
     this.tag = tag;
     this.tag2 = tag2;
     this.id = id;
@@ -82,12 +82,12 @@ public enum EnumQuantumShell {
   final public static int getQuantumShellTagID(String tag) {
     if (tag.equals("L"))
       return SP.id;
-    EnumQuantumShell item = getQuantumShell(tag);
+    QS item = getQuantumShell(tag);
     return (item == null ? -1 : item.id);
   }
 
-  private static EnumQuantumShell getQuantumShell(String tag) {
-    for (EnumQuantumShell item : values())
+  private static QS getQuantumShell(String tag) {
+    for (QS item : values())
       if (item.tag.equals(tag) || item.tag2.equals(tag))
         return item;
     return null;
@@ -96,11 +96,11 @@ public enum EnumQuantumShell {
   final public static int getQuantumShellTagIDSpherical(String tag) {
     if (tag.equals("L"))
       return SP.idSpherical;
-    EnumQuantumShell item = getQuantumShell(tag);
+    QS item = getQuantumShell(tag);
     return (item == null ? -1 : item.idSpherical);
   }
 
-  public static EnumQuantumShell getItem(int id) {
+  public static QS getItem(int id) {
     // Sorry -- The only way to do this efficiently, since we have
     // encoded the id into shells[] base on its integer value
     switch(id) {
@@ -135,7 +135,7 @@ public enum EnumQuantumShell {
   }
   
   final public static String getQuantumShellTag(int id) {
-    for (EnumQuantumShell item : values())
+    for (QS item : values())
       if (item.id == id)
         return item.tag;
     return "" + id;

@@ -34,7 +34,7 @@ import org.jmol.api.JmolNMRInterface;
 import org.jmol.api.JmolPatternMatcher;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
-import org.jmol.c.EnumVdw;
+import org.jmol.c.VDW;
 import org.jmol.i18n.GT;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
@@ -649,7 +649,7 @@ public class MathExt implements JmolMathExtension {
     BS bsB = (i < args.length ? BSUtil.copy(SV.bsSelectVar(args[i])) : null);
     RadiusData rd = new RadiusData(null, (distance > 10 ? distance / 100
         : distance), (distance > 10 ? EnumType.FACTOR : EnumType.OFFSET),
-        EnumVdw.AUTO);
+        VDW.AUTO);
     bsB = setContactBitSets(bsA, bsB, true, Float.NaN, rd, false);
     bsB.or(bsA);
     return mp.addXBs(bsB);
@@ -1391,7 +1391,7 @@ public class MathExt implements JmolMathExtension {
       if (vdw != Float.MAX_VALUE && (nBitSets != 2 || nPoints != 2))
         return mp.addXStr("");
       rd = (vdw == Float.MAX_VALUE ? new RadiusData(rangeMinMax, 0, null, null)
-          : new RadiusData(null, vdw, EnumType.FACTOR, EnumVdw.AUTO));
+          : new RadiusData(null, vdw, EnumType.FACTOR, VDW.AUTO));
       return mp.addXObj((vwr.newMeasurementData(null, points)).set(0, null, rd,
           strFormat, units, null, isAllConnected, isNotConnected, null, true,
           0, (short) 0, null).getMeasurements(asArray, asMinArray));
@@ -2297,7 +2297,7 @@ public class MathExt implements JmolMathExtension {
       return mp.addXBs(vwr.getGroupsWithin((int) distance, bs));
     if (isVdw)
       rd = new RadiusData(null, (distance > 10 ? distance / 100 : distance),
-          (distance > 10 ? EnumType.FACTOR : EnumType.OFFSET), EnumVdw.AUTO);
+          (distance > 10 ? EnumType.FACTOR : EnumType.OFFSET), VDW.AUTO);
     return mp.addXBs(vwr.getAtomsWithinRadius(distance, bs,
         isWithinModelSet, rd));
   }

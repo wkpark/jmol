@@ -36,7 +36,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 
-import org.jmol.c.EnumPalette;
+import org.jmol.c.PAL;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
@@ -124,10 +124,10 @@ public class Sticks extends Shape {
       if (bsColixSet == null)
         bsColixSet = new BS();
       short colix = C.getColixO(value);
-      EnumPalette pal = (value instanceof EnumPalette ? (EnumPalette) value : null);
-      if (pal == EnumPalette.TYPE || pal == EnumPalette.ENERGY) {
+      PAL pal = (value instanceof PAL ? (PAL) value : null);
+      if (pal == PAL.TYPE || pal == PAL.ENERGY) {
         //only for hydrogen bonds
-        boolean isEnergy = (pal == EnumPalette.ENERGY);
+        boolean isEnergy = (pal == PAL.ENERGY);
         BondIterator iter = (selectedBonds != null ? modelSet.getBondIterator(selectedBonds)
             : modelSet.getBondIteratorForType(myMask, bs));
         while (iter.hasNext()) {
@@ -142,7 +142,7 @@ public class Sticks extends Shape {
         }
         return;
       }
-      if (colix == C.USE_PALETTE && pal != EnumPalette.CPK)
+      if (colix == C.USE_PALETTE && pal != PAL.CPK)
         return; //palettes not implemented for bonds
       BondIterator iter = (selectedBonds != null ? modelSet.getBondIterator(selectedBonds)
           : modelSet.getBondIteratorForType(myMask, bs));

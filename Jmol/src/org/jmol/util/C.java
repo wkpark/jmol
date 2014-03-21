@@ -30,7 +30,7 @@ import javajs.util.CU;
 import javajs.util.PT;
 import javajs.util.SB;
 
-import org.jmol.c.EnumPalette;
+import org.jmol.c.PAL;
 
 /**
  * 
@@ -296,8 +296,8 @@ public final class C {
   public static short getColixO(Object obj) {
     if (obj == null)
       return INHERIT_ALL;
-    if (obj instanceof EnumPalette)
-      return (((EnumPalette) obj) == EnumPalette.NONE ? INHERIT_ALL
+    if (obj instanceof PAL)
+      return (((PAL) obj) == PAL.NONE ? INHERIT_ALL
           : USE_PALETTE);
     if (obj instanceof Integer)
       return getColix(((Integer) obj).intValue());

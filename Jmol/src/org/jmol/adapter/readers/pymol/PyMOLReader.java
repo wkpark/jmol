@@ -35,7 +35,7 @@ import org.jmol.adapter.smarter.Bond;
 import org.jmol.adapter.smarter.Structure;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.PymolAtomReader;
-import org.jmol.c.EnumStructure;
+import org.jmol.c.STR;
 import org.jmol.java.BS;
 import org.jmol.script.T;
 import org.jmol.util.BoxInfo;
@@ -1140,10 +1140,10 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
   }
 
   private void addMolStructures() {
-    addMolSS("H", EnumStructure.HELIX);
-    addMolSS("S", EnumStructure.SHEET);
-    addMolSS("L", EnumStructure.TURN);
-    addMolSS(" ", EnumStructure.NONE);
+    addMolSS("H", STR.HELIX);
+    addMolSS("S", STR.SHEET);
+    addMolSS("L", STR.TURN);
+    addMolSS(" ", STR.NONE);
   }
 
   /**
@@ -1152,7 +1152,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
    * @param ssType
    * @param type
    */
-  private void addMolSS(String ssType, EnumStructure type) {
+  private void addMolSS(String ssType, STR type) {
     if (ssMapSeq.get(ssType) == null)
       return;
     int istart = -1;
@@ -1190,13 +1190,13 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       } else if (istart < 0) {
         continue;
       }
-      if (type != EnumStructure.NONE) {
+      if (type != STR.NONE) {
         int pt = bsStructureDefined.nextSetBit(istart);
         if (pt >= 0 && pt <= iend)
           continue;
         bsStructureDefined.setBits(istart, iend + 1);
         Structure structure = new Structure(imodel, type, type,
-            type.toString(), ++structureCount, type == EnumStructure.SHEET ? 1
+            type.toString(), ++structureCount, type == STR.SHEET ? 1
                 : 0);
         Atom a = atoms[istart];
         Atom b = atoms[iend];

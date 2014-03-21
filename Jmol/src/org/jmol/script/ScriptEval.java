@@ -36,10 +36,10 @@ import org.jmol.api.JmolScriptFunction;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
-import org.jmol.c.EnumAnimationMode;
-import org.jmol.c.EnumPalette;
-import org.jmol.c.EnumStructure;
-import org.jmol.c.EnumVdw;
+import org.jmol.c.ANIM;
+import org.jmol.c.PAL;
+import org.jmol.c.STR;
+import org.jmol.c.VDW;
 import org.jmol.i18n.GT;
 import org.jmol.io.JmolBinary;
 import org.jmol.java.BS;
@@ -2715,17 +2715,17 @@ public class ScriptEval extends ScriptExpr {
       endDelay = 1;
       if (slen > 5)
         bad();
-      EnumAnimationMode animationMode = null;
+      ANIM animationMode = null;
       switch (T.getTokFromName(paramAsStr(2))) {
       case T.once:
-        animationMode = EnumAnimationMode.ONCE;
+        animationMode = ANIM.ONCE;
         startDelay = endDelay = 0;
         break;
       case T.loop:
-        animationMode = EnumAnimationMode.LOOP;
+        animationMode = ANIM.LOOP;
         break;
       case T.palindrome:
-        animationMode = EnumAnimationMode.PALINDROME;
+        animationMode = ANIM.PALINDROME;
         break;
       default:
         invArg();
@@ -3280,7 +3280,7 @@ public class ScriptEval extends ScriptExpr {
       break;
     }
     RadiusData rd = (Float.isNaN(value) ? encodeRadiusParameter(ipt, false,
-        true) : new RadiusData(null, value, type, EnumVdw.AUTO));
+        true) : new RadiusData(null, value, type, VDW.AUTO));
     if (rd == null)
       return;
     if (Float.isNaN(rd.value))
@@ -6261,8 +6261,8 @@ public class ScriptEval extends ScriptExpr {
 
     switch (tok) {
     case T.structure:
-      EnumStructure type = EnumStructure.getProteinStructureType(paramAsStr(2));
-      if (type == EnumStructure.NOT)
+      STR type = STR.getProteinStructureType(paramAsStr(2));
+      if (type == STR.NOT)
         invArg();
       float[] data = floatParameterSet(3, 0, Integer.MAX_VALUE);
       if (data.length % 4 != 0)
@@ -6439,8 +6439,8 @@ public class ScriptEval extends ScriptExpr {
       // allows unquoted string for known vdw type
       if (slen > 2) {
         sval = paramAsStr(2);
-        if (slen == 3 && EnumVdw.getVdwType(sval) == null 
-            && EnumVdw.getVdwType(sval = getSettingStr(2, false)) == null)
+        if (slen == 3 && VDW.getVdwType(sval) == null 
+            && VDW.getVdwType(sval = getSettingStr(2, false)) == null)
           invArg();
         setStringProperty(key, sval);
       }
@@ -7175,9 +7175,9 @@ public class ScriptEval extends ScriptExpr {
   }
 
   private void cmdStructure() throws ScriptException {
-    EnumStructure type = EnumStructure
+    STR type = STR
         .getProteinStructureType(paramAsStr(1));
-    if (type == EnumStructure.NOT)
+    if (type == STR.NOT)
       invArg();
     BS bs = null;
     switch (tokAt(2)) {
@@ -7799,19 +7799,19 @@ public class ScriptEval extends ScriptExpr {
         boolean isByElement = (name.indexOf(ColorEncoder.BYELEMENT_PREFIX) == 0);
         boolean isColorIndex = (isByElement || name
             .indexOf(ColorEncoder.BYRESIDUE_PREFIX) == 0);
-        EnumPalette pal = (isColorIndex || isIsosurface ? EnumPalette.PROPERTY
-            : tok == T.spacefill ? EnumPalette.CPK : EnumPalette
+        PAL pal = (isColorIndex || isIsosurface ? PAL.PROPERTY
+            : tok == T.spacefill ? PAL.CPK : PAL
                 .getPalette(name));
         // color atoms "cpkScheme"
-        if (pal == EnumPalette.UNKNOWN
-            || (pal == EnumPalette.TYPE || pal == EnumPalette.ENERGY)
+        if (pal == PAL.UNKNOWN
+            || (pal == PAL.TYPE || pal == PAL.ENERGY)
             && shapeType != JC.SHAPE_HSTICKS)
           invArg();
         Object data = null;
-        BS bsSelected = (pal != EnumPalette.PROPERTY
-            && pal != EnumPalette.VARIABLE || !vwr.g.rangeSelected ? null
+        BS bsSelected = (pal != PAL.PROPERTY
+            && pal != PAL.VARIABLE || !vwr.g.rangeSelected ? null
             : vwr.getSelectedAtoms());
-        if (pal == EnumPalette.PROPERTY) {
+        if (pal == PAL.PROPERTY) {
           if (isColorIndex) {
             if (!chk) {
               data = getBitsetPropertyFloat(bsSelected, (isByElement ? T.elemno
@@ -7829,15 +7829,15 @@ public class ScriptEval extends ScriptExpr {
               }
             }
           }
-        } else if (pal == EnumPalette.VARIABLE) {
+        } else if (pal == PAL.VARIABLE) {
           index++;
           name = paramAsStr(index++);
           data = new float[vwr.getAtomCount()];
           Parser.parseStringInfestedFloatArray(""
               + getParameter(name, T.string), null, (float[]) data);
-          pal = EnumPalette.PROPERTY;
+          pal = PAL.PROPERTY;
         }
-        if (pal == EnumPalette.PROPERTY) {
+        if (pal == PAL.PROPERTY) {
           String scheme = null;
           if (tokAt(index) == T.string) {
             scheme = paramAsStr(index++).toLowerCase();
@@ -8002,7 +8002,7 @@ public class ScriptEval extends ScriptExpr {
 
     float value = Float.NaN;
     EnumType factorType = EnumType.ABSOLUTE;
-    EnumVdw vdwType = null;
+    VDW vdwType = null;
 
     int tok = (index == -1 ? T.vanderwaals : getToken(index).tok);
     switch (tok) {
@@ -8014,7 +8014,7 @@ public class ScriptEval extends ScriptExpr {
     case T.vanderwaals:
       value = 1;
       factorType = EnumType.FACTOR;
-      vdwType = (tok == T.vanderwaals ? null : EnumVdw.getVdwType2(T
+      vdwType = (tok == T.vanderwaals ? null : VDW.getVdwType2(T
           .nameOf(tok)));
       tok = tokAt(++index);
       break;
@@ -8070,7 +8070,7 @@ public class ScriptEval extends ScriptExpr {
         max = Atom.RADIUS_MAX;
       } else {
         factorType = EnumType.ABSOLUTE;
-        vdwType = EnumVdw.NADA;
+        vdwType = VDW.NADA;
         max = 100;
       }
       value = floatParameterRange(index, (isOnly || !allowAbsolute ? -max : 0),
@@ -8087,10 +8087,10 @@ public class ScriptEval extends ScriptExpr {
         index--;
     }
     if (vdwType == null) {
-      vdwType = EnumVdw.getVdwType(optParameterAsString(++iToken));
+      vdwType = VDW.getVdwType(optParameterAsString(++iToken));
       if (vdwType == null) {
         iToken = index;
-        vdwType = EnumVdw.AUTO;
+        vdwType = VDW.AUTO;
       }
     }
     return new RadiusData(null, value, factorType, vdwType);
@@ -8666,7 +8666,7 @@ public class ScriptEval extends ScriptExpr {
         invArg();
     }
     if (rd == null)
-      rd = new RadiusData(null, scale, EnumType.FACTOR, EnumVdw.AUTO);
+      rd = new RadiusData(null, scale, EnumType.FACTOR, VDW.AUTO);
     if (isOnly)
       restrictSelected(false, false);
     setShapeSize(shape, rd);

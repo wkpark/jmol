@@ -40,7 +40,7 @@ import org.jmol.api.JmolAppConsoleInterface;
 import org.jmol.api.JmolCallbackListener;
 import org.jmol.api.JmolDialogInterface;
 import org.jmol.api.JmolStatusListener;
-import org.jmol.c.EnumCallback;
+import org.jmol.c.CBK;
 import org.jmol.java.BS;
 
 /**
@@ -262,9 +262,9 @@ public class StatusManager {
     this.jmolCallbackListener = jmolCallbackListener;
   }
   
-  Map<EnumCallback, String> jmolScriptCallbacks = new Hashtable<EnumCallback, String>();
+  Map<CBK, String> jmolScriptCallbacks = new Hashtable<CBK, String>();
 
-  private String jmolScriptCallback(EnumCallback callback) {
+  private String jmolScriptCallback(CBK callback) {
     String s = jmolScriptCallbacks.get(callback);
     if (s != null)
       vwr.evalStringQuietSync(s, true, false);
@@ -274,7 +274,7 @@ public class StatusManager {
   synchronized void setCallbackFunction(String callbackType,
                                         String callbackFunction) {
     // menu and language setting also use this route
-    EnumCallback callback = EnumCallback.getCallback(callbackType);
+    CBK callback = CBK.getCallback(callbackType);
     if (callback != null) {
       int pt = (callbackFunction == null ? 0
           : callbackFunction.length() > 7
@@ -291,22 +291,22 @@ public class StatusManager {
       jmolCallbackListener.setCallbackFunction(callbackType, callbackFunction);
   }
   
-  private boolean notifyEnabled(EnumCallback type) {
+  private boolean notifyEnabled(CBK type) {
     return jmolCallbackListener != null && jmolCallbackListener.notifyEnabled(type);
   }
 
   synchronized void setStatusAppletReady(String htmlName, boolean isReady) {
-    String sJmol = (isReady ? jmolScriptCallback(EnumCallback.APPLETREADY) : null);
-    if (notifyEnabled(EnumCallback.APPLETREADY))
-      jmolCallbackListener.notifyCallback(EnumCallback.APPLETREADY,
+    String sJmol = (isReady ? jmolScriptCallback(CBK.APPLETREADY) : null);
+    if (notifyEnabled(CBK.APPLETREADY))
+      jmolCallbackListener.notifyCallback(CBK.APPLETREADY,
           new Object[] { sJmol, htmlName, Boolean.valueOf(isReady), null });
   }
 
   synchronized void setStatusAtomMoved(BS bsMoved) {
-    String sJmol = jmolScriptCallback(EnumCallback.ATOMMOVED);
+    String sJmol = jmolScriptCallback(CBK.ATOMMOVED);
     setStatusChanged("atomMoved", -1, bsMoved, false);
-    if (notifyEnabled(EnumCallback.ATOMMOVED))
-      jmolCallbackListener.notifyCallback(EnumCallback.ATOMMOVED,
+    if (notifyEnabled(CBK.ATOMMOVED))
+      jmolCallbackListener.notifyCallback(CBK.ATOMMOVED,
           new Object[] { sJmol, bsMoved });
   }
 
@@ -317,43 +317,43 @@ public class StatusManager {
    * @param map 
    */
   synchronized void setStatusAtomPicked(int atomIndex, String strInfo, Map<String, Object> map) {
-    String sJmol = jmolScriptCallback(EnumCallback.PICK);
+    String sJmol = jmolScriptCallback(CBK.PICK);
     Logger.info("setStatusAtomPicked(" + atomIndex + "," + strInfo + ")");
     setStatusChanged("atomPicked", atomIndex, strInfo, false);
-    if (notifyEnabled(EnumCallback.PICK))
-      jmolCallbackListener.notifyCallback(EnumCallback.PICK,
+    if (notifyEnabled(CBK.PICK))
+      jmolCallbackListener.notifyCallback(CBK.PICK,
           new Object[] { sJmol, strInfo, Integer.valueOf(atomIndex), map });
   }
 
   synchronized int setStatusClicked(int x, int y, int action, int clickCount, int mode) {
-    String sJmol = jmolScriptCallback(EnumCallback.CLICK);
-    if (!notifyEnabled(EnumCallback.CLICK))
+    String sJmol = jmolScriptCallback(CBK.CLICK);
+    if (!notifyEnabled(CBK.CLICK))
       return action;
     // allows modification of action
     int[] m = new int[] { action, mode };
-    jmolCallbackListener.notifyCallback(EnumCallback.CLICK,
+    jmolCallbackListener.notifyCallback(CBK.CLICK,
         new Object[] { sJmol, Integer.valueOf(x), Integer.valueOf(y), Integer.valueOf(action), Integer.valueOf(clickCount), m });
     return m[0];
   }
 
   synchronized void setStatusResized(int width, int height){
-    String sJmol = jmolScriptCallback(EnumCallback.RESIZE);
-    if (notifyEnabled(EnumCallback.RESIZE))
-      jmolCallbackListener.notifyCallback(EnumCallback.RESIZE,
+    String sJmol = jmolScriptCallback(CBK.RESIZE);
+    if (notifyEnabled(CBK.RESIZE))
+      jmolCallbackListener.notifyCallback(CBK.RESIZE,
           new Object[] { sJmol, Integer.valueOf(width), Integer.valueOf(height) }); 
   }
 
   synchronized void setStatusAtomHovered(int iatom, String strInfo) {
-    String sJmol = jmolScriptCallback(EnumCallback.HOVER);
-    if (notifyEnabled(EnumCallback.HOVER))
-      jmolCallbackListener.notifyCallback(EnumCallback.HOVER, 
+    String sJmol = jmolScriptCallback(CBK.HOVER);
+    if (notifyEnabled(CBK.HOVER))
+      jmolCallbackListener.notifyCallback(CBK.HOVER, 
           new Object[] {sJmol, strInfo, Integer.valueOf(iatom) });
   }
   
   synchronized void setStatusObjectHovered(String id, String strInfo, P3 pt) {
-    String sJmol = jmolScriptCallback(EnumCallback.HOVER);
-    if (notifyEnabled(EnumCallback.HOVER))
-      jmolCallbackListener.notifyCallback(EnumCallback.HOVER, 
+    String sJmol = jmolScriptCallback(CBK.HOVER);
+    if (notifyEnabled(CBK.HOVER))
+      jmolCallbackListener.notifyCallback(CBK.HOVER, 
           new Object[] {sJmol, strInfo, Integer.valueOf(-1), id, Float.valueOf(pt.x), Float.valueOf(pt.y), Float.valueOf(pt.z) });
   }
   
@@ -371,13 +371,13 @@ public class StatusManager {
     setStatusChanged("fileLoaded", ptLoad, fullPathName, false);
     if (errorMsg != null)
       setStatusChanged("fileLoadError", ptLoad, errorMsg, false);
-    String sJmol = jmolScriptCallback(EnumCallback.LOADSTRUCT);
-    if (doCallback && notifyEnabled(EnumCallback.LOADSTRUCT)) {
+    String sJmol = jmolScriptCallback(CBK.LOADSTRUCT);
+    if (doCallback && notifyEnabled(CBK.LOADSTRUCT)) {
       String name = (String) vwr.getParameter("_smilesString");
       if (name.length() != 0)
         fileName = name;
       jmolCallbackListener
-          .notifyCallback(EnumCallback.LOADSTRUCT,
+          .notifyCallback(CBK.LOADSTRUCT,
               new Object[] { sJmol, fullPathName, fileName, modelName,
                   errorMsg, Integer.valueOf(ptLoad),
                   vwr.getParameter("_modelNumber"),
@@ -395,9 +395,9 @@ public class StatusManager {
     int frameNo = (animating ? -2 - currentFrame : currentFrame);
     setStatusChanged("frameChanged", frameNo,
         (currentFrame >= 0 ? vwr.getModelNumberDotted(currentFrame) : ""), false);
-    String sJmol = jmolScriptCallback(EnumCallback.ANIMFRAME);
-    if (notifyEnabled(EnumCallback.ANIMFRAME))
-      jmolCallbackListener.notifyCallback(EnumCallback.ANIMFRAME,
+    String sJmol = jmolScriptCallback(CBK.ANIMFRAME);
+    if (notifyEnabled(CBK.ANIMFRAME))
+      jmolCallbackListener.notifyCallback(CBK.ANIMFRAME,
           new Object[] {
               sJmol,
               new int[] { frameNo, fileNo, modelNo, firstNo, lastNo,
@@ -411,9 +411,9 @@ public class StatusManager {
     if (strEcho == null)
       return;
     setStatusChanged("scriptEcho", 0, strEcho, false);
-    String sJmol = jmolScriptCallback(EnumCallback.ECHO);
-    if (notifyEnabled(EnumCallback.ECHO))
-      jmolCallbackListener.notifyCallback(EnumCallback.ECHO,
+    String sJmol = jmolScriptCallback(CBK.ECHO);
+    if (notifyEnabled(CBK.ECHO))
+      jmolCallbackListener.notifyCallback(CBK.ECHO,
           new Object[] { sJmol, strEcho, Integer.valueOf(isScriptQueued ? 1 : 0) });
   }
 
@@ -422,30 +422,30 @@ public class StatusManager {
     String sJmol = null;
     if(status.equals("measureCompleted")) { 
       Logger.info("measurement["+intInfo+"] = "+strMeasure);
-      sJmol = jmolScriptCallback(EnumCallback.MEASURE);
+      sJmol = jmolScriptCallback(CBK.MEASURE);
     } else if (status.equals("measurePicked")) {
         setStatusChanged("measurePicked", intInfo, strMeasure, false);
         Logger.info("measurePicked " + intInfo + " " + strMeasure);
     }
-    if (notifyEnabled(EnumCallback.MEASURE))
-      jmolCallbackListener.notifyCallback(EnumCallback.MEASURE, 
+    if (notifyEnabled(CBK.MEASURE))
+      jmolCallbackListener.notifyCallback(CBK.MEASURE, 
           new Object[] { sJmol, strMeasure,  Integer.valueOf(intInfo), status , Float.valueOf(value)});
   }
   
   synchronized void notifyError(String errType, String errMsg,
                                 String errMsgUntranslated) {
-    String sJmol = jmolScriptCallback(EnumCallback.ERROR);
-    if (notifyEnabled(EnumCallback.ERROR))
-      jmolCallbackListener.notifyCallback(EnumCallback.ERROR,
+    String sJmol = jmolScriptCallback(CBK.ERROR);
+    if (notifyEnabled(CBK.ERROR))
+      jmolCallbackListener.notifyCallback(CBK.ERROR,
           new Object[] { sJmol, errType, errMsg, vwr.getShapeErrorState(),
               errMsgUntranslated });
   }
   
   synchronized void notifyMinimizationStatus(String minStatus, Integer minSteps, 
                                              Float minEnergy, Float minEnergyDiff, String ff) {
-    String sJmol = jmolScriptCallback(EnumCallback.MINIMIZATION);
-    if (notifyEnabled(EnumCallback.MINIMIZATION))
-      jmolCallbackListener.notifyCallback(EnumCallback.MINIMIZATION,
+    String sJmol = jmolScriptCallback(CBK.MINIMIZATION);
+    if (notifyEnabled(CBK.MINIMIZATION))
+      jmolCallbackListener.notifyCallback(CBK.MINIMIZATION,
           new Object[] { sJmol, minStatus, minSteps, minEnergy, minEnergyDiff, ff });
   }
   
@@ -460,7 +460,7 @@ public class StatusManager {
     } else if (strStatus == null) {
       return;
     }
-    String sJmol = (msWalltime == 0 ? jmolScriptCallback(EnumCallback.SCRIPT)
+    String sJmol = (msWalltime == 0 ? jmolScriptCallback(CBK.SCRIPT)
         : null);
     boolean isScriptCompletion = (strStatus == JC.SCRIPT_COMPLETED);
 
@@ -479,17 +479,17 @@ public class StatusManager {
         && vwr.getBoolean(T.debugscript)) {
       data = new Object[] { null, "script <exiting>", statusMessage,
           Integer.valueOf(-1), strErrorMessageUntranslated };
-      if (notifyEnabled(EnumCallback.SCRIPT))
+      if (notifyEnabled(CBK.SCRIPT))
         jmolCallbackListener
-            .notifyCallback(EnumCallback.SCRIPT, data);
+            .notifyCallback(CBK.SCRIPT, data);
       processScript(data);
       strStatus = "Jmol script completed.";
     }
     data = new Object[] { sJmol, strStatus, statusMessage,
         Integer.valueOf(isScriptCompletion ? -1 : msWalltime),
         strErrorMessageUntranslated };
-    if (notifyEnabled(EnumCallback.SCRIPT))
-      jmolCallbackListener.notifyCallback(EnumCallback.SCRIPT, data);
+    if (notifyEnabled(CBK.SCRIPT))
+      jmolCallbackListener.notifyCallback(CBK.SCRIPT, data);
     processScript(data);
   }
 
@@ -596,14 +596,14 @@ public class StatusManager {
 
   public void syncSend(String script, String appletName, int port) {
     // no jmolscript option for syncSend
-    if (port != 0 || notifyEnabled(EnumCallback.SYNC))
-      jmolCallbackListener.notifyCallback(EnumCallback.SYNC,
+    if (port != 0 || notifyEnabled(CBK.SYNC))
+      jmolCallbackListener.notifyCallback(CBK.SYNC,
           new Object[] { null, script, appletName, Integer.valueOf(port) });
   }
  
   public void modifySend(int atomIndex, int modelIndex, int mode, String msg) {
-    if (notifyEnabled(EnumCallback.STRUCTUREMODIFIED))
-      jmolCallbackListener.notifyCallback(EnumCallback.STRUCTUREMODIFIED,
+    if (notifyEnabled(CBK.STRUCTUREMODIFIED))
+      jmolCallbackListener.notifyCallback(CBK.STRUCTUREMODIFIED,
           new Object[] { null, Integer.valueOf(mode), Integer.valueOf(atomIndex), Integer.valueOf(modelIndex), msg });
   }
   
@@ -621,7 +621,7 @@ public class StatusManager {
       vwr.appConsole.sendConsoleMessage(null);
     }
     if (jmolStatusListener != null)
-      jmolCallbackListener.notifyCallback(EnumCallback.MESSAGE, null);
+      jmolCallbackListener.notifyCallback(CBK.MESSAGE, null);
   }
 
   float[][] functionXY(String functionName, int nX, int nY) {

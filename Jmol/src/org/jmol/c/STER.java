@@ -25,20 +25,37 @@
 
 package org.jmol.c;
 
-public enum EnumFileStatus {
-  
-  DELETED(5), 
-  CREATED(3), 
-  CREATING_MODELSET(2), 
-  ZAPPED(0), 
-  NOT_LOADED(-1);
+public enum STER {
+  NONE("OFF", false),
+  DOUBLE("", false),
+  REDCYAN("REDCYAN", true),
+  REDBLUE("REDBLUE", true),
+  REDGREEN("REDGREEN", true),
+  CUSTOM("", true)
+  ;
 
-  private int code;
-  public int getCode() {
-    return code;
+  private String name;
+  private boolean isBiColor;
+  
+  private STER(String name, boolean isBiColor) {
+    this.name = name;
+    this.isBiColor = isBiColor;
+  }
+
+  public String getName() {
+    return name;
   }
   
-  private EnumFileStatus(int code) {
-    this.code = code;
+  public boolean isBiColor() {
+    return isBiColor;
+  }
+  public final static int DEFAULT_STEREO_DEGREES = -5;
+
+
+  public static STER getStereoMode(String id) {
+    for (STER item : values())
+      if (item.name.equalsIgnoreCase(id))
+        return item;
+    return null;
   }
 }

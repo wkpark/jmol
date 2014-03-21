@@ -29,7 +29,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.jmol.c.EnumPalette;
+import org.jmol.c.PAL;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 //import org.jmol.script.T;
@@ -241,7 +241,7 @@ public class Ellipsoids extends Shape {
 
     if ("color" == propertyName) {
       short colix = C.getColixO(value);
-      byte pid = EnumPalette.pidOf(value);
+      byte pid = PAL.pidOf(value);
       if (selectedAtoms != null)
         bs = selectedAtoms;
       for (Ellipsoid e : atomEllipsoids.values())

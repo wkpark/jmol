@@ -24,7 +24,7 @@
 package org.jmol.dssx;
 
 import org.jmol.api.DSSPInterface;
-import org.jmol.c.EnumStructure;
+import org.jmol.c.STR;
 import org.jmol.i18n.GT;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
@@ -570,7 +570,7 @@ public class DSSP implements DSSPInterface {
         setTag(labels[i], bsSheet, 'E');
       }
       if (setStructure) {
-        setStructure(ap, bsSheet, EnumStructure.SHEET);
+        setStructure(ap, bsSheet, STR.SHEET);
       }
       done[i].or(bsSheet);
       done[i].or(bsBridge);
@@ -739,17 +739,17 @@ public class DSSP implements DSSPInterface {
 
     BS bsTurn = new BS();
 
-    String line4 = findHelixes2(iPolymer, 4, min, EnumStructure.HELIXALPHA,
+    String line4 = findHelixes2(iPolymer, 4, min, STR.HELIXALPHA,
         Edge.BOND_H_PLUS_4, bsTurn);
-    String line3 = findHelixes2(iPolymer, 3, min, EnumStructure.HELIX310,
+    String line3 = findHelixes2(iPolymer, 3, min, STR.HELIX310,
         Edge.BOND_H_PLUS_3, bsTurn);
-    String line5 = findHelixes2(iPolymer, 5, min, EnumStructure.HELIXPI,
+    String line5 = findHelixes2(iPolymer, 5, min, STR.HELIXPI,
         Edge.BOND_H_PLUS_5, bsTurn);
 
     // G, H, and I have been set; now set what is left over as turn
 
     if (setStructure)
-      setStructure(ap, bsTurn, EnumStructure.TURN);
+      setStructure(ap, bsTurn, STR.TURN);
 
     if (doReport) {
       setTag(labels[iPolymer], bsTurn, 'T');
@@ -761,7 +761,7 @@ public class DSSP implements DSSPInterface {
   }
 
   private String findHelixes2(int iPolymer, int pitch, int[][][] min,
-                              EnumStructure subtype, int type,
+                              STR subtype, int type,
                               BS bsTurn) {
 
     // The idea here is to run down the polymer setting bit sets
@@ -870,7 +870,7 @@ public class DSSP implements DSSPInterface {
       tags[i] = ch;
   }
 
-  private void setStructure(AminoPolymer ap, BS bs, EnumStructure type) {
+  private void setStructure(AminoPolymer ap, BS bs, STR type) {
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       int i2 = bs.nextClearBit(i);
       if (i2 < 0)

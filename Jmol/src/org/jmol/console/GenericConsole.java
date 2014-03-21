@@ -35,7 +35,7 @@ import org.jmol.api.JmolAppConsoleInterface;
 import org.jmol.api.JmolCallbackListener;
 import org.jmol.api.JmolScriptEditorInterface;
 import org.jmol.api.JmolViewer;
-import org.jmol.c.EnumCallback;
+import org.jmol.c.CBK;
 import org.jmol.i18n.GT;
 import org.jmol.script.T;
 import org.jmol.viewer.JC;
@@ -297,7 +297,7 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
   // For applications that embed Jmol, see the example application Integration.java.
 
   @Override
-  public boolean notifyEnabled(EnumCallback type) {
+  public boolean notifyEnabled(CBK type) {
     // See org.jmol.viewer.JmolConstants.java for a complete list
     switch (type) {
     case ECHO:
@@ -363,7 +363,7 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
   
   @Override
   @SuppressWarnings("incomplete-switch")
-  public void notifyCallback(EnumCallback type, Object[] data) {
+  public void notifyCallback(CBK type, Object[] data) {
     String strInfo = (data == null || data[1] == null ? null : data[1]
         .toString());
     switch (type) {

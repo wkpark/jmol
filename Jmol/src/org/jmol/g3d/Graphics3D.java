@@ -31,7 +31,7 @@ import java.util.Map;
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolRendererInterface;
-import org.jmol.c.EnumStereoMode;
+import org.jmol.c.STER;
 import org.jmol.modelset.Atom;
 import org.jmol.script.T;
 import org.jmol.util.C;
@@ -466,7 +466,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     }
   }
   @Override
-  public void applyAnaglygh(EnumStereoMode stereoMode, int[] stereoColors) {
+  public void applyAnaglygh(STER stereoMode, int[] stereoColors) {
     switch (stereoMode) {
     case REDCYAN:
       applyCyanAnaglyph();

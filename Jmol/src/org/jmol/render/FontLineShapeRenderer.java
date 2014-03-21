@@ -24,7 +24,7 @@
 package org.jmol.render;
 
 
-import org.jmol.c.EnumAxesMode;
+import org.jmol.c.AXES;
 import org.jmol.modelset.TickInfo;
 import org.jmol.util.GData;
 import org.jmol.util.Point3fi;
@@ -179,7 +179,7 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
     P3 ptRef = tickInfo.reference; // not implemented
     if (ptRef == null) {
       pointT3.setT(vwr.getBoundBoxCenter());
-      if (vwr.getAxesMode() == EnumAxesMode.BOUNDBOX) {
+      if (vwr.getAxesMode() == AXES.BOUNDBOX) {
         pointT3.add3(1, 1, 1);
       }
     } else {

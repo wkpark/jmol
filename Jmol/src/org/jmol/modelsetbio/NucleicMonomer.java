@@ -27,7 +27,7 @@ package org.jmol.modelsetbio;
 
 
 
-import org.jmol.c.EnumStructure;
+import org.jmol.c.STR;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Group;
@@ -202,10 +202,10 @@ public class NucleicMonomer extends PhosphorusMonomer {
   public boolean isGuanine() { return have(offsets, N2); }
 
   @Override
-  public EnumStructure getProteinStructureType() {
+  public STR getProteinStructureType() {
     return (hasRnaO2Prime
-            ? EnumStructure.RNA
-            : EnumStructure.DNA);
+            ? STR.RNA
+            : STR.DNA);
   }
 
     ////////////////////////////////////////////////////////////////

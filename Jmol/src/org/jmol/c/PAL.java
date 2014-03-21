@@ -31,7 +31,7 @@ package org.jmol.c;
 /**
  * Enum for animation mode.
  */
-public enum EnumPalette {
+public enum PAL {
 
   UNKNOWN(null, (byte) 0xFF),
   NONE("none",StaticConstants.PALETTE_NONE),
@@ -62,14 +62,14 @@ public enum EnumPalette {
   private String name;
   public byte id;
 
-  private EnumPalette(String name, int id) {
+  private PAL(String name, int id) {
     this.name = name;
     this.id = (byte) id;
   }
   
   public static byte pidOf(Object value) {
-    return (value instanceof EnumPalette ? 
-        ((EnumPalette) value).id 
+    return (value instanceof PAL ? 
+        ((PAL) value).id 
         : value instanceof Byte ? ((Byte) value).byteValue() 
             : UNKNOWN.id);
   }
@@ -78,9 +78,9 @@ public enum EnumPalette {
     return ((pid & StaticConstants.PALETTE_VOLATILE) != 0);
   }
 
-  public static EnumPalette getPalette(String paletteName) {
+  public static PAL getPalette(String paletteName) {
     if (paletteName.indexOf('_') < 0)
-      for (EnumPalette item : values())
+      for (PAL item : values())
         if (paletteName.equalsIgnoreCase(item.name))
           return item;
     return (paletteName.indexOf("property_") == 0 ? PROPERTY : UNKNOWN);
@@ -88,14 +88,14 @@ public enum EnumPalette {
 
   public final static byte getPaletteID(String paletteName) {
     if (paletteName.indexOf('_') < 0)
-      for (EnumPalette item : values())
+      for (PAL item : values())
         if (paletteName.equalsIgnoreCase(item.name))
           return item.id;
     return (paletteName.indexOf("property_") == 0 ? PROPERTY.id : UNKNOWN.id);
   }
 
   public final static String getPaletteName(byte pid) {
-    for (EnumPalette item : values())
+    for (PAL item : values())
       if (item.id == pid)
         return item.name;
     return null;

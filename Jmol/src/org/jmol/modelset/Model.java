@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.jmol.api.SymmetryInterface;
-import org.jmol.c.EnumStructure;
+import org.jmol.c.STR;
 import org.jmol.java.BS;
 
 import org.jmol.util.BSUtil;
@@ -448,7 +448,7 @@ public class Model {
   /**
    * @param structureList
    */
-  public void setStructureList(Map<EnumStructure, float[]> structureList) {
+  public void setStructureList(Map<STR, float[]> structureList) {
   }
 
   public void getChimeInfo(SB sb, int nHetero) {

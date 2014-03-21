@@ -39,7 +39,7 @@ import org.jmol.util.Escape;
 import javajs.util.P4;
 import org.jmol.script.T;
 import org.jmol.shape.Shape;
-import org.jmol.c.EnumQuantumShell;
+import org.jmol.c.QS;
 import org.jmol.java.BS;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.readers.Parameters;
@@ -522,7 +522,7 @@ public class MolecularOrbital extends Isosurface {
     if (moLinearCombination == null) {
       appendCmd(s, "mo " + (moSquareData == Boolean.TRUE ? "squared ": "") + moNumber);
     } else {
-      appendCmd(s, "mo " + EnumQuantumShell.getMOString(moLinearCombination) + (moSquareLinear == Boolean.TRUE ? " squared": ""));
+      appendCmd(s, "mo " + QS.getMOString(moLinearCombination) + (moSquareLinear == Boolean.TRUE ? " squared": ""));
     }
     if (moTranslucency != null)
       appendCmd(s, "mo translucent " + moTranslucentLevel);

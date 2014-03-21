@@ -29,7 +29,7 @@ import org.jmol.api.JmolCallbackListener;
 import org.jmol.api.JmolStatusListener;
 import org.jmol.api.JmolSyncInterface;
 import org.jmol.api.JmolViewer;
-import org.jmol.constant.EnumCallback;
+import org.jmol.c.CBK;
 import org.jmol.dialog.Dialog;
 import javajs.awt.Dimension;
 import javajs.util.PT;
@@ -88,7 +88,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
   
   // / JmolCallbackListener interface ///
   @Override
-  public boolean notifyEnabled(EnumCallback type) {
+  public boolean notifyEnabled(CBK type) {
     switch (type) {
     case ANIMFRAME:
     case ECHO:
@@ -115,7 +115,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
   }
 
   @Override
-  public void notifyCallback(EnumCallback type, Object[] data) {
+  public void notifyCallback(CBK type, Object[] data) {
     String strInfo = (data == null || data[1] == null ? null : data[1]
         .toString());
     switch (type) {

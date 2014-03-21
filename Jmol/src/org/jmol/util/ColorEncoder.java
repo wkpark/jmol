@@ -34,7 +34,7 @@ import java.util.Map;
 
 
 import org.jmol.viewer.JC;
-import org.jmol.c.EnumPalette;
+import org.jmol.c.PAL;
 
 import javajs.util.P3;
 
@@ -56,7 +56,7 @@ import javajs.util.P3;
    public ColorEncoder(ColorEncoder propertyColorEncoder) {
     if (propertyColorEncoder == null) {
       schemes = new Hashtable<String, int[]>();
-      argbsCpk = EnumPalette.argbsCpk;
+      argbsCpk = PAL.argbsCpk;
       argbsRoygb = JC.argbsRoygbScale;
       argbsRwb = JC.argbsRwbScale;
       argbsShapely = JC.argbsShapely;
@@ -192,7 +192,7 @@ import javajs.util.P3;
           argbsRwb = JC.argbsRwbScale;
           break;
         case JMOL:
-          argbsCpk = EnumPalette.argbsCpk;
+          argbsCpk = PAL.argbsCpk;
           break;
         case RASMOL:
           getRasmolScale();
@@ -590,12 +590,12 @@ import javajs.util.P3;
   public final static synchronized int[] getRasmolScale() {
     if (rasmolScale != null)
       return rasmolScale;
-    rasmolScale = new int[EnumPalette.argbsCpk.length];
-    int argb = EnumPalette.argbsCpkRasmol[0] | 0xFF000000;
+    rasmolScale = new int[PAL.argbsCpk.length];
+    int argb = PAL.argbsCpkRasmol[0] | 0xFF000000;
     for (int i = rasmolScale.length; --i >= 0;)
       rasmolScale[i] = argb;
-    for (int i = EnumPalette.argbsCpkRasmol.length; --i >= 0;) {
-      argb = EnumPalette.argbsCpkRasmol[i];
+    for (int i = PAL.argbsCpkRasmol.length; --i >= 0;) {
+      argb = PAL.argbsCpkRasmol[i];
       rasmolScale[argb >> 24] = argb | 0xFF000000;
     }
     return rasmolScale;

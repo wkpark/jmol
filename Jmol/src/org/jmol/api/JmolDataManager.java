@@ -2,7 +2,7 @@ package org.jmol.api;
 
 import javajs.util.SB;
 
-import org.jmol.c.EnumVdw;
+import org.jmol.c.VDW;
 import org.jmol.java.BS;
 import org.jmol.viewer.JmolStateCreator;
 import org.jmol.viewer.Viewer;
@@ -25,7 +25,7 @@ public interface JmolDataManager {
 
   float[] getDataFloatA(String label);
 
-  String getDefaultVdwNameOrData(EnumVdw type, BS bs);
+  String getDefaultVdwNameOrData(VDW type, BS bs);
 
   void deleteModelAtoms(int firstAtomIndex, int nAtoms, BS bsDeleted);
 

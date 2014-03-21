@@ -31,7 +31,7 @@ import org.jmol.adapter.smarter.Structure;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.SymmetryInterface;
-import org.jmol.c.EnumStructure;
+import org.jmol.c.STR;
 import org.jmol.util.Escape;
 import javajs.util.List;
 import javajs.util.PT;
@@ -1142,15 +1142,15 @@ Polyproline 10
    */
   
   private void structure() {
-    EnumStructure structureType = EnumStructure.NONE;
-    EnumStructure substructureType = EnumStructure.NONE;
+    STR structureType = STR.NONE;
+    STR substructureType = STR.NONE;
     int startChainIDIndex;
     int startIndex;
     int endChainIDIndex;
     int endIndex;
     int strandCount = 0;
     if (line.startsWith("HELIX ")) {
-      structureType = EnumStructure.HELIX;
+      structureType = STR.HELIX;
       startChainIDIndex = 19;
       startIndex = 21;
       endChainIDIndex = 31;
@@ -1158,14 +1158,14 @@ Polyproline 10
       if (line.length() >= 40)
       substructureType = Structure.getHelixType(parseIntRange(line, 38, 40));
     } else if (line.startsWith("SHEET ")) {
-      structureType = EnumStructure.SHEET;
+      structureType = STR.SHEET;
       startChainIDIndex = 21;
       startIndex = 22;
       endChainIDIndex = 32;
       endIndex = 33;
       strandCount = parseIntRange(line, 14, 16);
     } else if (line.startsWith("TURN  ")) {
-      structureType = EnumStructure.TURN;
+      structureType = STR.TURN;
       startChainIDIndex = 19;
       startIndex = 20;
       endChainIDIndex = 30;
@@ -1191,7 +1191,7 @@ Polyproline 10
     // this should probably call Structure.validateAndAllocate
     // in order to check validity of parameters
     // model number set to -1 here to indicate ALL MODELS
-    if (substructureType == EnumStructure.NONE)
+    if (substructureType == STR.NONE)
       substructureType = structureType;
     Structure structure = new Structure(-1, structureType, substructureType,
         structureID, serialID, strandCount);

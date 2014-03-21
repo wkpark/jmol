@@ -23,7 +23,7 @@
  */
 package org.jmol.modelsetbio;
 
-import org.jmol.c.EnumStructure;
+import org.jmol.c.STR;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
@@ -416,7 +416,7 @@ public class AminoPolymer extends AlphaPolymer {
         }
         end--;
         if (end >= start + 3) {
-          addStructureProtected(EnumStructure.HELIX, null, 0,
+          addStructureProtected(STR.HELIX, null, 0,
               0, start, end);
         }
         start = end;
@@ -430,7 +430,7 @@ public class AminoPolymer extends AlphaPolymer {
         }
         end--;
         if (end >= start + 3) {
-          addStructureProtected(EnumStructure.HELIX, null, 0,
+          addStructureProtected(STR.HELIX, null, 0,
               0, start, end);
         }
         start = end;
@@ -445,7 +445,7 @@ public class AminoPolymer extends AlphaPolymer {
         }
         end--;
         if (end >= start + 2) {
-          addStructureProtected(EnumStructure.SHEET, null, 0,
+          addStructureProtected(STR.SHEET, null, 0,
               0, start, end);
         }
         start = end;
@@ -460,7 +460,7 @@ public class AminoPolymer extends AlphaPolymer {
         }
         end--;
         if (end >= start + 2) {
-          addStructureProtected(EnumStructure.TURN, null, 0,
+          addStructureProtected(STR.TURN, null, 0,
               0, start, end);
         }
         start = end;
@@ -475,17 +475,17 @@ public class AminoPolymer extends AlphaPolymer {
    * @return whether this corresponds to a helix
    */
   private boolean isTurn(float psi, float phi) {
-    return checkPhiPsi(structureList.get(EnumStructure.TURN),
+    return checkPhiPsi(structureList.get(STR.TURN),
         psi, phi);
   }
 
   private boolean isSheet(float psi, float phi) {
-    return checkPhiPsi(structureList.get(EnumStructure.SHEET),
+    return checkPhiPsi(structureList.get(STR.SHEET),
         psi, phi);
   }
 
   private boolean isHelix(float psi, float phi) {
-    return checkPhiPsi(structureList.get(EnumStructure.HELIX),
+    return checkPhiPsi(structureList.get(STR.HELIX),
         psi, phi);
   }
 
@@ -497,10 +497,10 @@ public class AminoPolymer extends AlphaPolymer {
     return false;
   }
 
-  private Map<EnumStructure, float[]> structureList; // kept in StateManager.globalSettings
+  private Map<STR, float[]> structureList; // kept in StateManager.globalSettings
 
   @Override
-  public void setStructureList(Map<EnumStructure, float[]> structureList) {
+  public void setStructureList(Map<STR, float[]> structureList) {
     this.structureList = structureList;
   }
 

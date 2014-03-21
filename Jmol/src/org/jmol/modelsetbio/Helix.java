@@ -24,15 +24,15 @@
 package org.jmol.modelsetbio;
 
 
-import org.jmol.c.EnumStructure;
+import org.jmol.c.STR;
 import org.jmol.util.Measure;
 import javajs.util.P3;
 import javajs.util.V3;
 
 public class Helix extends ProteinStructure {
 
-  Helix(AlphaPolymer apolymer, int monomerIndex, int monomerCount, EnumStructure subtype) {
-    setupPS(apolymer, EnumStructure.HELIX, monomerIndex,
+  Helix(AlphaPolymer apolymer, int monomerIndex, int monomerCount, STR subtype) {
+    setupPS(apolymer, STR.HELIX, monomerIndex,
         monomerCount);
     this.subtype = subtype;
   }

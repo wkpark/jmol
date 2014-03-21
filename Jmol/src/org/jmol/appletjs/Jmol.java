@@ -24,7 +24,7 @@
 
 package org.jmol.appletjs;
 
-import org.jmol.c.EnumCallback;
+import org.jmol.c.CBK;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.GenericApplet;
@@ -101,7 +101,7 @@ public class Jmol extends GenericApplet {
   }
 
   String doNotifySync(String info, String appletName) {
-    String syncCallback = callbacks.get(EnumCallback.SYNC);
+    String syncCallback = callbacks.get(CBK.SYNC);
     if (!mayScript || syncCallback == null || !haveDocumentAccess
         && !syncCallback.startsWith("Jmol."))
       return info;

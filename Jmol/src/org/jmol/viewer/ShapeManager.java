@@ -29,8 +29,8 @@ import java.util.Map;
 
 import org.jmol.api.Interface;
 import org.jmol.atomdata.RadiusData;
-import org.jmol.c.EnumPalette;
-import org.jmol.c.EnumVdw;
+import org.jmol.c.PAL;
+import org.jmol.c.VDW;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Group;
@@ -176,7 +176,7 @@ public class ShapeManager {
     if (bsSelected == null && 
         (shapeID != JC.SHAPE_STICKS || size != Integer.MAX_VALUE))
       bsSelected = vwr.getSelectedAtoms();
-    if (rd != null && rd.value != 0 && rd.vdwType == EnumVdw.TEMP)
+    if (rd != null && rd.value != 0 && rd.vdwType == VDW.TEMP)
       modelSet.getBfactor100Lo();
     vwr.setShapeErrorState(shapeID, "set size");
     if (rd == null ? size != 0 : rd.value != 0)
@@ -342,7 +342,7 @@ public class ShapeManager {
       if (shapes[i] != null && shapes[i].isBioShape) {
         shapes[i].setModelSet(modelSet);
         shapes[i].setShapeSizeRD(0, null, bsAllAtoms);
-        shapes[i].setProperty("color", EnumPalette.NONE, bsAllAtoms);
+        shapes[i].setProperty("color", PAL.NONE, bsAllAtoms);
       }
   }
 

@@ -24,7 +24,7 @@
 
 package org.jmol.renderbio;
 
-import org.jmol.c.EnumStructure;
+import org.jmol.c.STR;
 import org.jmol.modelsetbio.AlphaPolymer;
 import org.jmol.modelsetbio.Helix;
 import org.jmol.modelsetbio.Monomer;
@@ -66,7 +66,7 @@ public class RocketsRenderer extends StrandsRenderer {
   protected P3[] cordMidPoints;
 
   protected boolean isSheet(int i) {
-    return structureTypes[i] == EnumStructure.SHEET;
+    return structureTypes[i] == STR.SHEET;
   }
 
   protected void calcRopeMidPoints(boolean isNewStyle) {

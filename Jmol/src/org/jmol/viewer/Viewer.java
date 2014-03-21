@@ -74,12 +74,12 @@ import org.jmol.atomdata.AtomDataServer;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
 
-import org.jmol.c.EnumAnimationMode;
-import org.jmol.c.EnumAxesMode;
-import org.jmol.c.EnumFileStatus;
-import org.jmol.c.EnumStereoMode;
-import org.jmol.c.EnumStructure;
-import org.jmol.c.EnumVdw;
+import org.jmol.c.ANIM;
+import org.jmol.c.AXES;
+import org.jmol.c.FIL;
+import org.jmol.c.STER;
+import org.jmol.c.STR;
+import org.jmol.c.VDW;
 
 import javajs.J2SIgnoreImport;
 import org.jmol.util.BSUtil;
@@ -2662,7 +2662,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     }
     if (atomSetCollection instanceof String) {
       errMsg = (String) atomSetCollection;
-      setFileLoadStatus(EnumFileStatus.NOT_LOADED, fullPathName, null, null,
+      setFileLoadStatus(FIL.NOT_LOADED, fullPathName, null, null,
           errMsg, null);
       if (displayLoadErrors && !isAppend && !errMsg.equals("#CANCELED#"))
         zapMsg(errMsg);
@@ -2672,7 +2672,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       clearAtomSets();
     else if (g.modelKitMode && !fileName.equals("Jmol Model Kit"))
       setModelKitMode(false);
-    setFileLoadStatus(EnumFileStatus.CREATING_MODELSET, fullPathName, fileName,
+    setFileLoadStatus(FIL.CREATING_MODELSET, fullPathName, fileName,
         null, null, null);
 
     // null fullPathName implies we are doing a merge
@@ -2710,7 +2710,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     popHoldRepaint("createModelSet " + JC.REPAINT_IGNORE);
     errMsg = getErrorMessage();
 
-    setFileLoadStatus(EnumFileStatus.CREATED, fullPathName, fileName,
+    setFileLoadStatus(FIL.CREATED, fullPathName, fileName,
         getModelSetName(), errMsg, htParams == null ? null : (Boolean) htParams
             .get("async"));
     if (isAppend) {
@@ -2894,11 +2894,11 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return ms.calculateSurface(bsSelected, envelopeRadius);
   }
 
-  public Map<EnumStructure, float[]> getStructureList() {
+  public Map<STR, float[]> getStructureList() {
     return g.getStructureList();
   }
 
-  public void setStructureList(float[] list, EnumStructure type) {
+  public void setStructureList(float[] list, STR type) {
     // none, turn, sheet, helix
     g.setStructureList(list, type);
     ms.setStructureList(getStructureList());
@@ -3046,7 +3046,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     }
     initializeModel(false);
     if (notify) {
-      setFileLoadStatus(EnumFileStatus.ZAPPED, null, (resetUndo ? "resetUndo"
+      setFileLoadStatus(FIL.ZAPPED, null, (resetUndo ? "resetUndo"
           : getZapName()), null, null, null);
     }
     if (Logger.debugging)
@@ -3906,15 +3906,15 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   private void setAnimationMode(String mode) {
     if (mode.equalsIgnoreCase("once")) {
-      setAnimationReplayMode(EnumAnimationMode.ONCE, 0, 0);
+      setAnimationReplayMode(ANIM.ONCE, 0, 0);
     } else if (mode.equalsIgnoreCase("loop")) {
-      setAnimationReplayMode(EnumAnimationMode.LOOP, 1, 1);
+      setAnimationReplayMode(ANIM.LOOP, 1, 1);
     } else if (mode.startsWith("pal")) {
-      setAnimationReplayMode(EnumAnimationMode.PALINDROME, 1, 1);
+      setAnimationReplayMode(ANIM.PALINDROME, 1, 1);
     }
   }
   
-  public void setAnimationReplayMode(EnumAnimationMode replayMode,
+  public void setAnimationReplayMode(ANIM replayMode,
                                      float firstFrameDelay, float lastFrameDelay) {
     // Eval
 
@@ -3922,7 +3922,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         lastFrameDelay);
   }
 
-  public EnumAnimationMode getAnimationReplayMode() {
+  public ANIM getAnimationReplayMode() {
     return animationManager.animationReplayMode;
   }
 
@@ -5453,12 +5453,12 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
    * Viewer.createModelSetAndReturnError (-1, 1, 4) Viewer.deleteAtoms (5)
    * Viewer.zap (0)
    */
-  private void setFileLoadStatus(EnumFileStatus ptLoad, String fullPathName,
+  private void setFileLoadStatus(FIL ptLoad, String fullPathName,
                                  String fileName, String modelName,
                                  String strError, Boolean isAsync) {
     setErrorMessage(strError, null);
     g.setI("_loadPoint", ptLoad.getCode());
-    boolean doCallback = (ptLoad != EnumFileStatus.CREATING_MODELSET);
+    boolean doCallback = (ptLoad != FIL.CREATING_MODELSET);
     if (doCallback)
       setStatusFrameChanged(false, false);
     statusManager.setFileLoadStatus(fullPathName, fileName, modelName,
@@ -6644,7 +6644,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         eval.setDebugging();
       return;
     case T.axesmode:
-      switch (EnumAxesMode.getAxesMode(value)) {
+      switch (AXES.getAxesMode(value)) {
       case MOLECULAR:
         setAxesModeMolecular(true);
         return;
@@ -7498,7 +7498,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public P3[] getAxisPoints() {
     // for uccage renderer
     return (getObjectMad(StateManager.OBJ_AXIS1) == 0
-        || getAxesMode() != EnumAxesMode.UNITCELL
+        || getAxesMode() != AXES.UNITCELL
         || ((Boolean) getShapeProperty(JC.SHAPE_AXES, "axesTypeXY"))
             .booleanValue()
         || getShapeProperty(JC.SHAPE_AXES, "origin") != null ? null
@@ -7510,7 +7510,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   private void setAxesModeMolecular(boolean TF) {
-    g.axesMode = (TF ? EnumAxesMode.MOLECULAR : EnumAxesMode.BOUNDBOX);
+    g.axesMode = (TF ? AXES.MOLECULAR : AXES.BOUNDBOX);
     axesAreTainted = true;
     g.removeParam("axesunitcell");
     g.removeParam(TF ? "axeswindow" : "axesmolecular");
@@ -7522,7 +7522,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   void setAxesModeUnitCell(boolean TF) {
     // stateManager
     // setBooleanproperty
-    g.axesMode = (TF ? EnumAxesMode.UNITCELL : EnumAxesMode.BOUNDBOX);
+    g.axesMode = (TF ? AXES.UNITCELL : AXES.BOUNDBOX);
     axesAreTainted = true;
     g.removeParam("axesmolecular");
     g.removeParam(TF ? "axeswindow" : "axesunitcell");
@@ -7530,7 +7530,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     g.setI("axesMode", g.axesMode.getCode());
   }
 
-  public EnumAxesMode getAxesMode() {
+  public AXES getAxesMode() {
     return g.axesMode;
   }
 
@@ -7590,7 +7590,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   private void setTransformManagerDefaults() {
     tm.setCameraDepthPercent(g.defaultCameraDepth, true);
     tm.setPerspectiveDepth(g.defaultPerspectiveDepth);
-    tm.setStereoDegrees(EnumStereoMode.DEFAULT_STEREO_DEGREES);
+    tm.setStereoDegrees(STER.DEFAULT_STEREO_DEGREES);
     tm.setVisualRange(g.visualRange);
     tm.setSpinOff();
     tm.setVibrationPeriod(0);
@@ -7676,7 +7676,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     g.percentVdwAtom = value;
     rd.value = value / 100f;
     rd.factorType = EnumType.FACTOR;
-    rd.vdwType = EnumVdw.AUTO;
+    rd.vdwType = VDW.AUTO;
     setShapeSizeRD(JC.SHAPE_BALLS, rd, null);
   }
 
@@ -7858,12 +7858,12 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     tempArray.freeTempScreens(tempScreens);
   }
 
-  public EnumStructure[] allocTempEnum(int size) {
+  public STR[] allocTempEnum(int size) {
     // mps renderer
     return tempArray.allocTempEnum(size);
   }
 
-  public void freeTempEnum(EnumStructure[] temp) {
+  public void freeTempEnum(STR[] temp) {
     tempArray.freeTempEnum(temp);
   }
 
@@ -8010,7 +8010,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   // stereo support
   // //////////////////////////////////////////////////////////////
 
-  public void setStereoMode(int[] twoColors, EnumStereoMode stereoMode,
+  public void setStereoMode(int[] twoColors, STER stereoMode,
                             float degrees) {
     setFloatProperty("stereoDegrees", degrees);
     setBooleanProperty("greyscaleRendering", stereoMode.isBiColor());
@@ -8021,7 +8021,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   boolean isStereoDouble() {
-    return tm.stereoMode == EnumStereoMode.DOUBLE;
+    return tm.stereoMode == STER.DOUBLE;
   }
 
   // //////////////////////////////////////////////////////////////
@@ -8914,7 +8914,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       statusManager.syncSend(TF ? SYNC_GRAPHICS_MESSAGE
           : SYNC_NO_GRAPHICS_MESSAGE, "*", 0);
       if (Float.isNaN(tm.stereoDegrees))
-        setFloatProperty("stereoDegrees", EnumStereoMode.DEFAULT_STEREO_DEGREES);
+        setFloatProperty("stereoDegrees", STER.DEFAULT_STEREO_DEGREES);
       if (TF) {
         setBooleanProperty("_syncMouse", false);
         setBooleanProperty("_syncScript", false);
@@ -8948,7 +8948,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return ms.getPartialCharges();
   }
 
-  public void setProteinType(EnumStructure type, BS bs) {
+  public void setProteinType(STR type, BS bs) {
     ms.setProteinType(bs == null ? getSelectedAtoms() : bs, type);
   }
 
@@ -8975,12 +8975,12 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public int getVanderwaalsMar(int i) {
-    return (defaultVdw == EnumVdw.USER ? userVdwMars[i]
+    return (defaultVdw == VDW.USER ? userVdwMars[i]
         : Elements.getVanderwaalsMar(i, defaultVdw));
   }
 
   @SuppressWarnings("incomplete-switch")
-  public int getVanderwaalsMarType(int atomicAndIsotopeNumber, EnumVdw type) {
+  public int getVanderwaalsMarType(int atomicAndIsotopeNumber, VDW type) {
     if (type == null)
       type = defaultVdw;
     else
@@ -8997,7 +8997,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       case RASMOL:
         // could be a bug here -- why override these
         // with dataManager's if not AUTO?
-        if (defaultVdw != EnumVdw.AUTO)
+        if (defaultVdw != VDW.AUTO)
           type = defaultVdw;
         break;
       }
@@ -9005,9 +9005,9 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   void setVdwStr(String name) {
-    EnumVdw type = EnumVdw.getVdwType(name);
+    VDW type = VDW.getVdwType(name);
     if (type == null)
-      type = EnumVdw.AUTO;
+      type = VDW.AUTO;
     // only allowed types here are VDW_JMOL, VDW_BABEL, VDW_RASMOL, VDW_USER, VDW_AUTO
     switch (type) {
     case JMOL:
@@ -9017,9 +9017,9 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     case USER:
       break;
     default:
-      type = EnumVdw.JMOL;
+      type = VDW.JMOL;
     }
-    if (type != defaultVdw && type == EnumVdw.USER  
+    if (type != defaultVdw && type == VDW.USER  
         && bsUserVdws == null)
       setUserVdw(defaultVdw);
     defaultVdw = type;    
@@ -9030,19 +9030,19 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   float[] userVdws;
   int[] userVdwMars;
   
-  void setUserVdw(EnumVdw mode) {
+  void setUserVdw(VDW mode) {
     userVdwMars = new int[Elements.elementNumberMax];
     userVdws = new float[Elements.elementNumberMax];
     bsUserVdws = new BS();
-    if (mode == EnumVdw.USER)
-      mode = EnumVdw.JMOL;
+    if (mode == VDW.USER)
+      mode = VDW.JMOL;
     for (int i = 1; i < Elements.elementNumberMax; i++) {
       userVdwMars[i] = Elements.getVanderwaalsMar(i, mode);
       userVdws[i] = userVdwMars[i] / 1000f;
     }
   }
 
-  public String getDefaultVdwNameOrData(int mode, EnumVdw type, BS bs) {
+  public String getDefaultVdwNameOrData(int mode, VDW type, BS bs) {
     // called by getDataState and via Viewer: Eval.calculate,
     // Eval.show, StateManager.getLoadState, Viewer.setDefaultVdw
     switch (mode) {
@@ -9053,12 +9053,12 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       // iMode = Integer.MAX_VALUE -- user, only selected
       if ((bs = bsUserVdws) == null)
         return "";
-      type = EnumVdw.USER;
+      type = VDW.USER;
       break;
     }
-    if (type == null || type == EnumVdw.AUTO)
+    if (type == null || type == VDW.AUTO)
      type = defaultVdw;
-    if (type == EnumVdw.USER && bsUserVdws == null)
+    if (type == VDW.USER && bsUserVdws == null)
       setUserVdw(defaultVdw);
 
     return getDataManager().getDefaultVdwNameOrData(type, bs);
@@ -9095,7 +9095,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     animationManager.initializePointers(1);
     setCurrentModelIndexClear(getModelCount() > 1 ? -1 : 0, getModelCount() > 1);
     hoverAtomIndex = -1;
-    setFileLoadStatus(EnumFileStatus.DELETED, null, null, null, null, null);
+    setFileLoadStatus(FIL.DELETED, null, null, null, null, null);
     refreshMeasures(true);
     if (bsD0 != null)
       bsDeleted.andNot(bsD0);
@@ -9169,7 +9169,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     }
   }
 
-  EnumVdw defaultVdw = EnumVdw.JMOL;
+  VDW defaultVdw = VDW.JMOL;
 
   public String cd(String dir) {
     if (dir == null) {

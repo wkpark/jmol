@@ -25,7 +25,7 @@
 
 package org.jmol.shapebio;
 
-import org.jmol.c.EnumPalette;
+import org.jmol.c.PAL;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Group;
@@ -307,10 +307,10 @@ public class BioShape extends AtomShape {
     for (int i = monomerCount; --i >= 0;) {
       int atomIndex = leadAtomIndices[i];
       if (bsSelected.get(atomIndex) && i < colixes.length && atomIndex < atomColixes.length) {
-        colixes[i] = shape.getColixI(atomColixes[atomIndex], EnumPalette.UNKNOWN.id, atomIndex);
+        colixes[i] = shape.getColixI(atomColixes[atomIndex], PAL.UNKNOWN.id, atomIndex);
         if (colixesBack != null && i < colixesBack.length)
           colixesBack[i] = 0;
-        paletteIDs[i] = EnumPalette.UNKNOWN.id;
+        paletteIDs[i] = PAL.UNKNOWN.id;
         bsColixSet.set(i);
       }
     }
@@ -337,10 +337,10 @@ public class BioShape extends AtomShape {
         float f = (atrans == null ? 0 : atrans[pt]);
         if (f > 0.01f)
           colix = C.getColixTranslucent3(colix, true, f);
-        colixes[i] = shape.getColixI(colix, EnumPalette.UNKNOWN.id, atomIndex);
+        colixes[i] = shape.getColixI(colix, PAL.UNKNOWN.id, atomIndex);
         if (colixesBack != null && i < colixesBack.length)
           colixesBack[i] = 0;
-        paletteIDs[i] = EnumPalette.UNKNOWN.id;
+        paletteIDs[i] = PAL.UNKNOWN.id;
         bsColixSet.set(i);
       }
     }    

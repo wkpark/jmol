@@ -30,13 +30,13 @@ import javajs.util.AU;
 import javajs.util.P3;
 import javajs.util.V3;
 
-import org.jmol.c.EnumStructure;
+import org.jmol.c.STR;
 import org.jmol.util.Logger;
 
 public abstract class ProteinStructure {
 
-  EnumStructure type;
-  EnumStructure subtype;
+  STR type;
+  STR subtype;
   String structureID;
   int strucNo;
   int serialID;
@@ -60,7 +60,7 @@ public abstract class ProteinStructure {
    * @param monomerIndex
    * @param monomerCount
    */
-  protected void setupPS(AlphaPolymer apolymer, EnumStructure type,
+  protected void setupPS(AlphaPolymer apolymer, STR type,
                        int monomerIndex, int monomerCount) {
     strucNo = ++globalStrucNo;
     this.apolymer = apolymer;

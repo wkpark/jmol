@@ -114,7 +114,7 @@
 package org.jmol.atomdata;
 
 
-import org.jmol.c.EnumVdw;
+import org.jmol.c.VDW;
 
 import javajs.util.SB;
 
@@ -125,12 +125,12 @@ public class RadiusData {
   }
   //private static final String[] typeNames = new String[] { "=", "+", "*", "." };
   public EnumType factorType = EnumType.ABSOLUTE;
-  public EnumVdw vdwType = EnumVdw.AUTO;
+  public VDW vdwType = VDW.AUTO;
   public float value = Float.NaN;
   public float valueExtended = 0;
   public float[] values;
   
-  public RadiusData(float[] values, float value, EnumType factorType, EnumVdw vdwType) {
+  public RadiusData(float[] values, float value, EnumType factorType, VDW vdwType) {
     if (values != null) {
       this.values = values;
       this.value = Integer.MAX_VALUE;
@@ -158,7 +158,7 @@ public class RadiusData {
       break;
     case FACTOR:
       sb.appendI((int) (value * 100)).append("%");
-      if (vdwType != EnumVdw.AUTO)
+      if (vdwType != VDW.AUTO)
         sb.append(vdwType.getVdwLabel());
       break;
     case SCREEN:

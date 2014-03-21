@@ -25,7 +25,7 @@ package org.jmol.quantum;
 
 import org.jmol.api.MOCalculationInterface;
 import org.jmol.api.VolumeDataInterface;
-import org.jmol.c.EnumQuantumShell;
+import org.jmol.c.QS;
 import org.jmol.java.BS;
 
 import javajs.util.List;
@@ -273,7 +273,7 @@ public class MOCalculation extends QuantumCalculation implements
   private double normalizeShell(int iShell) {
     double c = 0;
     int[] shell = shells.get(iShell);
-    basisType = EnumQuantumShell.getItem(shell[1]);
+    basisType = QS.getItem(shell[1]);
     gaussianPtr = shell[2];
     nGaussians = shell[3];
     doShowShellType = doDebug;
@@ -286,13 +286,13 @@ public class MOCalculation extends QuantumCalculation implements
 
   private int nGaussians;
   private boolean doShowShellType;
-  private EnumQuantumShell basisType;
+  private QS basisType;
   
   private void processShell(int iShell) {
     int lastAtom = atomIndex;
     int[] shell = shells.get(iShell);
     atomIndex = shell[0] + firstAtomOffset;
-    basisType = EnumQuantumShell.getItem(shell[1]);
+    basisType = QS.getItem(shell[1]);
     gaussianPtr = shell[2];
     nGaussians = shell[3];
     doShowShellType = doDebug;
@@ -1158,7 +1158,7 @@ public class MOCalculation extends QuantumCalculation implements
   private void dumpInfo(int shell) {
     if (doShowShellType) {
       Logger.debug("\n\t\t\tprocessShell: " + shell + " type="
-          + EnumQuantumShell.getQuantumShellTag(shell) + " nGaussians="
+          + QS.getQuantumShellTag(shell) + " nGaussians="
           + nGaussians + " atom=" + atomIndex);
       doShowShellType = false;
     }

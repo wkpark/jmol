@@ -36,8 +36,8 @@ import org.jmol.api.AtomIndexIterator;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
-import org.jmol.c.EnumHBondType;
-import org.jmol.c.EnumVdw;
+import org.jmol.c.HB;
+import org.jmol.c.VDW;
 import org.jmol.java.BS;
 import org.jmol.jvxl.data.MeshData;
 import org.jmol.jvxl.data.VolumeData;
@@ -82,7 +82,7 @@ public class Contact extends Isosurface {
   private float minData, maxData;
   //private final static String hbondH = "_H & connected(_O|_N and his and not *.N |_S)";
   //private final static float HBOND_CUTOFF = -0.8f;
-  private final static RadiusData rdVDW =  new RadiusData(null, 1, EnumType.FACTOR, EnumVdw.AUTO);
+  private final static RadiusData rdVDW =  new RadiusData(null, 1, EnumType.FACTOR, VDW.AUTO);
   
   private void setContacts(Object[] value, boolean doEditCpList) {
     int contactType = ((Integer) value[0]).intValue();
@@ -98,7 +98,7 @@ public class Contact extends Isosurface {
     if (Float.isNaN(saProbeRadius))
       saProbeRadius = 0;
     if (rd == null)
-      rd = new RadiusData(null, saProbeRadius, EnumType.OFFSET, EnumVdw.AUTO);
+      rd = new RadiusData(null, saProbeRadius, EnumType.OFFSET, VDW.AUTO);
     if (colorDensity) {
       switch (displayType) {
       case T.full:
@@ -380,7 +380,7 @@ public class Contact extends Isosurface {
         isMultiModel);
     for (int ia = bsA.nextSetBit(0); ia >= 0; ia = bsA.nextSetBit(ia + 1)) {
       Atom atomA = atoms[ia];
-      float vdwA = atomA.getVanderwaalsRadiusFloat(vwr, EnumVdw.AUTO);
+      float vdwA = atomA.getVanderwaalsRadiusFloat(vwr, VDW.AUTO);
       if (isMultiModel)
         vwr.setIteratorForPoint(iter, -1, ad.atomXyz[ia], ad.atomRadius[ia]
             + maxRadius);
@@ -402,7 +402,7 @@ public class Contact extends Isosurface {
           if (isSameMolecule != (intramolecularMode == 1))
             continue;
         }
-        float vdwB = atomB.getVanderwaalsRadiusFloat(vwr, EnumVdw.AUTO);
+        float vdwB = atomB.getVanderwaalsRadiusFloat(vwr, VDW.AUTO);
         float ra = ad.atomRadius[ia];
         float rb = ad.atomRadius[ib];
         float d = atomA.distance(atomB);
@@ -417,10 +417,10 @@ public class Contact extends Isosurface {
         // hydrogens and still have a filter
         // a bit of asymmetry here: set A may or may not have H atoms added.
         // This is particularly important for amines
-        EnumHBondType typeA = EnumHBondType.getType(atomA);
-        EnumHBondType typeB = (typeA == EnumHBondType.NOT ? EnumHBondType.NOT
-            : EnumHBondType.getType(atomB));
-        boolean isHBond = EnumHBondType.isPossibleHBond(typeA, typeB);
+        HB typeA = HB.getType(atomA);
+        HB typeB = (typeA == HB.NOT ? HB.NOT
+            : HB.getType(atomB));
+        boolean isHBond = HB.isPossibleHBond(typeA, typeB);
         //float hbondCutoff = -1.0f;//HBOND_CUTOFF;
         float hbondCutoff = (atomA.getElementNumber() == 1 || atomB.getElementNumber() == 1 ? -1.2f : -1.0f);
         

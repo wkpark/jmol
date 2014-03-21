@@ -26,7 +26,7 @@ package org.jmol.adapter.smarter;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolAdapterStructureIterator;
-import org.jmol.c.EnumStructure;
+import org.jmol.c.STR;
 import org.jmol.java.BS;
 
 public class StructureIterator extends JmolAdapterStructureIterator {
@@ -52,12 +52,12 @@ public class StructureIterator extends JmolAdapterStructureIterator {
   }
 
   @Override
-  public EnumStructure getStructureType() {
+  public STR getStructureType() {
     return structure.structureType;
   }
 
   @Override
-  public EnumStructure getSubstructureType() {
+  public STR getSubstructureType() {
     return structure.substructureType;
   }
 

@@ -55,7 +55,7 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolAdapterAtomIterator;
 import org.jmol.api.JmolAdapterStructureIterator;
 import org.jmol.api.JmolBioResolver;
-import org.jmol.c.EnumStructure;
+import org.jmol.c.STR;
 
 /**
  * a class used by ModelLoader only to handle all loading
@@ -676,7 +676,7 @@ public final class Resolver implements JmolBioResolver {
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
         modelLoader.structuresDefinedInFile.set(modelLoader.baseModelIndex + i);
     while (iterStructure.hasNext())
-      if (iterStructure.getStructureType() != EnumStructure.TURN)
+      if (iterStructure.getStructureType() != STR.TURN)
         setStructure(iterStructure);
 
     // define turns LAST. (pulled by the iterator first)
@@ -684,7 +684,7 @@ public final class Resolver implements JmolBioResolver {
 
     iterStructure = adapter.getStructureIterator(atomSetCollection);
     while (iterStructure.hasNext())
-      if (iterStructure.getStructureType() == EnumStructure.TURN)
+      if (iterStructure.getStructureType() == STR.TURN)
         setStructure(iterStructure);
   }
 
@@ -694,7 +694,7 @@ public final class Resolver implements JmolBioResolver {
    * @param iterStructure
    */
   private void setStructure(JmolAdapterStructureIterator iterStructure) {
-    EnumStructure t = iterStructure.getSubstructureType();
+    STR t = iterStructure.getSubstructureType();
     String id = iterStructure.getStructureID();
     int serID = iterStructure.getSerialID();
     int count = iterStructure.getStrandCount();
@@ -709,13 +709,13 @@ public final class Resolver implements JmolBioResolver {
               .getEndInsertionCode(), atomRange, modelRange, bsAssigned);
   }
 
-  private void defineStructure(EnumStructure subType, String structureID,
+  private void defineStructure(STR subType, String structureID,
                                int serialID, int strandCount, int startChainID,
                                int startSequenceNumber,
                                char startInsertionCode, int endChainID,
                                int endSequenceNumber, char endInsertionCode,
                                int[] atomRange, int[] modelRange, BS bsAssigned) {
-    EnumStructure type = (subType == EnumStructure.NOT ? EnumStructure.NONE
+    STR type = (subType == STR.NOT ? STR.NONE
         : subType);
     int startSeqCode = Group.getSeqcodeFor(startSequenceNumber,
         startInsertionCode);

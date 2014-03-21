@@ -27,7 +27,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.jmol.api.JmolDataManager;
-import org.jmol.c.EnumVdw;
+import org.jmol.c.VDW;
 import org.jmol.java.BS;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.script.T;
@@ -290,7 +290,7 @@ public class DataManager implements JmolDataManager {
   }
 
   @Override
-  public String getDefaultVdwNameOrData(EnumVdw type, BS bs) {
+  public String getDefaultVdwNameOrData(VDW type, BS bs) {
     SB sb = new SB();
     sb.append(type.getVdwLabel()).append("\n");
     boolean isAll = (bs == null);
@@ -299,7 +299,7 @@ public class DataManager implements JmolDataManager {
     for (int i = i0; i < i1 && i >= 0; i = (isAll ? i + 1 : bs
         .nextSetBit(i + 1)))
       sb.appendI(i).appendC('\t').appendF(
-          type == EnumVdw.USER ? vwr.userVdws[i] : Elements
+          type == VDW.USER ? vwr.userVdws[i] : Elements
               .getVanderwaalsMar(i, type) / 1000f).appendC('\t').append(
           Elements.elementSymbolFromNumber(i)).appendC('\n');
     return (bs == null ? sb.toString() : "\n  DATA \"element_vdw\"\n"

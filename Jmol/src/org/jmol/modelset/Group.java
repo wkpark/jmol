@@ -35,7 +35,7 @@ import org.jmol.util.Logger;
 import javajs.util.P3;
 import javajs.util.V3;
 import org.jmol.viewer.JC;
-import org.jmol.c.EnumStructure;
+import org.jmol.c.STR;
 import org.jmol.java.BS;
 import org.jmol.script.T;
 
@@ -145,11 +145,11 @@ public class Group {
     return 0;
   }
   
-  public EnumStructure getProteinStructureType() {
-    return EnumStructure.NOT;
+  public STR getProteinStructureType() {
+    return STR.NOT;
   }
 
-  public EnumStructure getProteinStructureSubType() {
+  public STR getProteinStructureSubType() {
     return getProteinStructureType();
   }
 
@@ -160,7 +160,7 @@ public class Group {
    * @param monomerIndexCurrent
    * @return type
    */
-  public int setProteinStructureType(EnumStructure type, int monomerIndexCurrent) {
+  public int setProteinStructureType(STR type, int monomerIndexCurrent) {
     return -1;
   }
 
@@ -423,7 +423,7 @@ public class Group {
    * @param type
    * @return T/F
    */
-  public boolean isWithinStructure(EnumStructure type) {
+  public boolean isWithinStructure(STR type) {
     return false;
   }
 

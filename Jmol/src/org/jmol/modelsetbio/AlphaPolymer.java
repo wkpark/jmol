@@ -29,7 +29,7 @@ import javajs.util.SB;
 
 
 
-import org.jmol.c.EnumStructure;
+import org.jmol.c.STR;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.ModelSet;
@@ -68,7 +68,7 @@ public class AlphaPolymer extends BioPolymer {
         isDraw, addHeader, tokens, pdbATOM, pdbCONECT, bsWritten);
   }
 
-  public void addStructure(EnumStructure type, String structureID,
+  public void addStructure(STR type, String structureID,
                            int serialID, int strandCount, int startChainID,
                            int startSeqcode, int endChainID, int endSeqcode,
                            int istart, int iend, BS bsAssigned) {
@@ -95,7 +95,7 @@ public class AlphaPolymer extends BioPolymer {
       bsAssigned.setBits(istart, iend + 1);
   }
 
-  public void addStructureProtected(EnumStructure type, 
+  public void addStructureProtected(STR type, 
                              String structureID, int serialID, int strandCount,
                              int indexStart, int indexEnd) {
 
@@ -393,7 +393,7 @@ public class AlphaPolymer extends BioPolymer {
     float[] angles = calculateAnglesInDegrees();
     Code[] codes = calculateCodes(angles);
     checkBetaSheetAlphaHelixOverlap(codes, angles);
-    EnumStructure[] tags = calculateRunsFourOrMore(codes);
+    STR[] tags = calculateRunsFourOrMore(codes);
     extendRuns(tags);
     searchForTurns(codes, angles, tags);
     addStructuresFromTags(tags);
@@ -440,9 +440,9 @@ public class AlphaPolymer extends BioPolymer {
         codes[i] = Code.RIGHT_HELIX;
   }
 
-  private EnumStructure[] calculateRunsFourOrMore(Code[] codes) {
-    EnumStructure[] tags = new EnumStructure[monomerCount];
-    EnumStructure tag = EnumStructure.NONE;
+  private STR[] calculateRunsFourOrMore(Code[] codes) {
+    STR[] tags = new STR[monomerCount];
+    STR tag = STR.NONE;
     Code code = Code.NADA;
     int runLength = 0;
     for (int i = 0; i < monomerCount; ++i) {
@@ -450,7 +450,7 @@ public class AlphaPolymer extends BioPolymer {
       if (codes[i] == code && code != Code.NADA && code != Code.BETA_SHEET) {
         ++runLength;
         if (runLength == 4) {
-          tag = (code == Code.BETA_SHEET ? EnumStructure.SHEET : EnumStructure.HELIX);
+          tag = (code == Code.BETA_SHEET ? STR.SHEET : STR.HELIX);
           for (int j = 4; --j >= 0; )
             tags[i - j] = tag;
         } else if (runLength > 4)
@@ -463,19 +463,19 @@ public class AlphaPolymer extends BioPolymer {
     return tags;
   }
 
-  private void extendRuns(EnumStructure[] tags) {
+  private void extendRuns(STR[] tags) {
     for (int i = 1; i < monomerCount - 4; ++i)
-      if (tags[i] == EnumStructure.NONE && tags[i + 1] != EnumStructure.NONE)
+      if (tags[i] == STR.NONE && tags[i + 1] != STR.NONE)
         tags[i] = tags[i + 1];
     
     tags[0] = tags[1];
     tags[monomerCount - 1] = tags[monomerCount - 2];
   }
 
-  private void searchForTurns(Code[] codes, float[] angles, EnumStructure[] tags) {
+  private void searchForTurns(Code[] codes, float[] angles, STR[] tags) {
     for (int i = monomerCount - 1; --i >= 2; ) {
       codes[i] = Code.NADA;
-      if (tags[i] == null || tags[i] == EnumStructure.NONE) {
+      if (tags[i] == null || tags[i] == STR.NONE) {
         float angle = angles[i];
         if (angle >= -90 && angle < 0)
           codes[i] = Code.LEFT_TURN;
@@ -487,16 +487,16 @@ public class AlphaPolymer extends BioPolymer {
     for (int i = monomerCount - 1; --i >= 0; ) {
       if (codes[i] != Code.NADA &&
           codes[i + 1] == codes[i] &&
-          tags[i] == EnumStructure.NONE)
-        tags[i] = EnumStructure.TURN;
+          tags[i] == STR.NONE)
+        tags[i] = STR.TURN;
     }
   }
 
-  private void addStructuresFromTags(EnumStructure[] tags) {
+  private void addStructuresFromTags(STR[] tags) {
     int i = 0;
     while (i < monomerCount) {
-      EnumStructure tag = tags[i];
-      if (tag == null || tag == EnumStructure.NONE) {
+      STR tag = tags[i];
+      if (tag == null || tag == STR.NONE) {
         ++i;
         continue;
       }

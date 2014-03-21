@@ -24,7 +24,7 @@
 package org.jmol.modelsetbio;
 
 
-import org.jmol.c.EnumStructure;
+import org.jmol.c.STR;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Chain;
 import javajs.util.P3;
@@ -100,8 +100,8 @@ public class PhosphorusMonomer extends Monomer {
   public Object getStructure() { return chain; }
 
   @Override
-  public EnumStructure getProteinStructureType() {
-    return EnumStructure.NONE;
+  public STR getProteinStructureType() {
+    return STR.NONE;
   }
 
   @Override

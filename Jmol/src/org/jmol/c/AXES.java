@@ -26,8 +26,43 @@
 package org.jmol.c;
 
 /**
- * Enum for animation mode.
+ * Enum for axes mode.
  */
-public enum EnumAnimationMode {
-  ONCE, LOOP, PALINDROME;  
+public enum AXES {
+
+  BOUNDBOX(0),
+  MOLECULAR(1),
+  UNITCELL(2);
+
+  /**
+   * Code of axes mode.
+   */
+  private final int code;
+
+  /**
+   * @param code Code of axes mode.
+   */
+  private AXES(int code) {
+    this.code = code;
+  }
+
+  /**
+   * @return Code of axes mode.
+   */
+  public int getCode() {
+    return code;
+  }
+
+  /**
+   * @param code Code of axes mode.
+   * @return Axes mode.
+   */
+  public static AXES getAxesMode(int code) {
+    for (AXES mode : values()) {
+      if (mode.getCode() == code) {
+        return mode;
+      }
+    }
+    return null;
+  }
 }

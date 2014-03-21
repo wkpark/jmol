@@ -24,7 +24,7 @@
 package org.jmol.modelsetbio;
 
 
-import org.jmol.c.EnumStructure;
+import org.jmol.c.STR;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Chain;
@@ -395,7 +395,7 @@ public class AminoMonomer extends AlphaMonomer {
     String tag = "%3N %3ID";
     tag = Txt.formatStringI(tag, "N", proteinStructure.serialID);
     tag = Txt.formatStringS(tag, "ID", proteinStructure.structureID);
-    if (proteinStructure.type == EnumStructure.SHEET)
+    if (proteinStructure.type == STR.SHEET)
       tag += Txt.formatStringI("%2SC", "SC", proteinStructure.strandCount);
     return tag;
   }

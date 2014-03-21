@@ -36,7 +36,7 @@ import java.util.Properties;
 
 import org.jmol.api.DSSPInterface;
 import org.jmol.api.Interface;
-import org.jmol.c.EnumStructure;
+import org.jmol.c.STR;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
@@ -94,7 +94,7 @@ public final class BioModel extends Model{
     bioPolymers = (BioPolymer[])AU.arrayCopyObject(bioPolymers, bioPolymerCount);
   }
   
-  public void addSecondaryStructure(EnumStructure type, String structureID,
+  public void addSecondaryStructure(STR type, String structureID,
                                     int serialID, int strandCount,
                                     int startChainID, int startSeqcode,
                                     int endChainID, int endSeqcode, int istart,
@@ -241,7 +241,7 @@ public final class BioModel extends Model{
   }
   
   @Override
-  public void setStructureList(Map<EnumStructure, float[]> structureList) {
+  public void setStructureList(Map<STR, float[]> structureList) {
     bioPolymers = (BioPolymer[])AU.arrayCopyObject(bioPolymers, bioPolymerCount);
     for (int i = bioPolymerCount; --i >= 0; )
       bioPolymers[i].setStructureList(structureList);
@@ -538,8 +538,8 @@ public final class BioModel extends Model{
     SB sbTurn = new SB();
     SB sbHelix = new SB();
     SB sbSheet = new SB();
-    EnumStructure type = EnumStructure.NONE;
-    EnumStructure subtype = EnumStructure.NONE;
+    STR type = STR.NONE;
+    STR subtype = STR.NONE;
     int id = 0;
     int iLastAtom = 0;
     int iLastModel = -1;

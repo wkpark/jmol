@@ -39,9 +39,9 @@ import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.bspt.Bspf;
-import org.jmol.c.EnumPalette;
-import org.jmol.c.EnumStructure;
-import org.jmol.c.EnumVdw;
+import org.jmol.c.PAL;
+import org.jmol.c.STR;
+import org.jmol.c.VDW;
 import org.jmol.java.BS;
 
 import org.jmol.util.BSUtil;
@@ -253,7 +253,7 @@ abstract public class AtomCollection {
     return atoms[i].getRadius();
   }
 
-  public float getAtomVdwRadius(int i, EnumVdw type) {
+  public float getAtomVdwRadius(int i, VDW type) {
     return atoms[i].getVanderwaalsRadiusFloat(vwr, type);
   }
 
@@ -303,7 +303,7 @@ abstract public class AtomCollection {
 
   protected float getRadiusVdwJmol(Atom atom) {
     return Elements.getVanderwaalsMar(atom.getElementNumber(),
-        EnumVdw.JMOL) / 1000f;
+        VDW.JMOL) / 1000f;
   }
   
   // the maximum BondingRadius seen in this set of atoms
@@ -324,7 +324,7 @@ abstract public class AtomCollection {
       Atom atom = atoms[i];
       if ((r = atom.getBondingRadius()) > maxBondingRadius)
         maxBondingRadius = r;
-      if ((r = atom.getVanderwaalsRadiusFloat(vwr, EnumVdw.AUTO)) > maxVanderwaalsRadius)
+      if ((r = atom.getVanderwaalsRadiusFloat(vwr, VDW.AUTO)) > maxVanderwaalsRadius)
         maxVanderwaalsRadius = r;
     }
   }
@@ -387,7 +387,7 @@ abstract public class AtomCollection {
     return surfaceDistanceMax;
   }
 
-  public float calculateVolume(BS bs, EnumVdw vType) {
+  public float calculateVolume(BS bs, VDW vType) {
     // Eval
     float volume = 0;
     if (bs != null)
@@ -681,9 +681,9 @@ abstract public class AtomCollection {
   protected void setElement(Atom atom, int atomicNumber) {
     taintAtom(atom.index, TAINT_ELEMENT);
     atom.setAtomicAndIsotopeNumber(atomicNumber);
-    atom.setPaletteID(EnumPalette.CPK.id);
+    atom.setPaletteID(PAL.CPK.id);
     atom.setColixAtom(vwr.getColixAtomPalette(atom,
-        EnumPalette.CPK.id));
+        PAL.CPK.id));
   }
 
   public float getVibrationCoord(int atomIndex, char c) {
@@ -867,8 +867,8 @@ abstract public class AtomCollection {
           break;
         case TAINT_ELEMENT:
           atom.setAtomicAndIsotopeNumber((int)x);
-          atom.setPaletteID(EnumPalette.CPK.id);
-          atom.setColixAtom(vwr.getColixAtomPalette(atom, EnumPalette.CPK.id));
+          atom.setPaletteID(PAL.CPK.id);
+          atom.setColixAtom(vwr.getColixAtomPalette(atom, PAL.CPK.id));
           break;
         case TAINT_FORMALCHARGE:
           atom.setFormalCharge((int)x);          
@@ -2146,8 +2146,8 @@ abstract public class AtomCollection {
       break;
     case T.helix: // WITHIN -- not ends
     case T.sheet: // WITHIN -- not ends
-      EnumStructure type = (tokType == T.helix ? EnumStructure.HELIX
-          : EnumStructure.SHEET);
+      STR type = (tokType == T.helix ? STR.HELIX
+          : STR.SHEET);
       for (i = atomCount; --i >= 0;)
         if (atoms[i].isWithinStructure(type))
           bs.set(i);

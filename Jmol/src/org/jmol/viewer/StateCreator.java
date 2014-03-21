@@ -37,10 +37,10 @@ import java.util.Map;
 import org.jmol.api.JmolModulationSet;
 import org.jmol.api.JmolScriptFunction;
 import org.jmol.api.SymmetryInterface;
-import org.jmol.c.EnumPalette;
-import org.jmol.c.EnumStereoMode;
-import org.jmol.c.EnumStructure;
-import org.jmol.c.EnumVdw;
+import org.jmol.c.PAL;
+import org.jmol.c.STER;
+import org.jmol.c.STR;
+import org.jmol.c.VDW;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
@@ -183,7 +183,7 @@ public class StateCreator extends JmolStateCreator {
       commands.append(atomProps);
     }
     if (vwr.userVdws != null) {
-      String info = vwr.getDefaultVdwNameOrData(0, EnumVdw.USER,
+      String info = vwr.getDefaultVdwNameOrData(0, VDW.USER,
           vwr.bsUserVdws);
       if (info.length() > 0) {
         haveData = true;
@@ -691,13 +691,13 @@ public class StateCreator extends JmolStateCreator {
     // structure defaults
 
     if (global.haveSetStructureList) {
-      Map<EnumStructure, float[]> slist = global.structureList;
+      Map<STR, float[]> slist = global.structureList;
       commands.append("struture HELIX set "
-          + Escape.eAF(slist.get(EnumStructure.HELIX)));
+          + Escape.eAF(slist.get(STR.HELIX)));
       commands.append("struture SHEET set "
-          + Escape.eAF(slist.get(EnumStructure.SHEET)));
+          + Escape.eAF(slist.get(STR.SHEET)));
       commands.append("struture TURN set "
-          + Escape.eAF(slist.get(EnumStructure.TURN)));
+          + Escape.eAF(slist.get(STR.TURN)));
     }
     if (sfunc != null)
       commands.append("\n}\n\n");
@@ -797,7 +797,7 @@ public class StateCreator extends JmolStateCreator {
     commands.append(vwr.getOrientationText(T.name, null));
 
     app(commands, moveToText);
-    if (tm.stereoMode != EnumStereoMode.NONE)
+    if (tm.stereoMode != STER.NONE)
       app(commands, "stereo "
           + (tm.stereoColors == null ? tm.stereoMode.getName() : Escape
               .escapeColor(tm.stereoColors[0])
@@ -1110,7 +1110,7 @@ public class StateCreator extends JmolStateCreator {
         short colix = bonds[i].colix;
         if ((colix & C.OPAQUE_MASK) == C.USE_PALETTE)
           BSUtil.setMapBitSet(temp, i, i, Shape.getColorCommand("bonds",
-              EnumPalette.CPK.id, colix, shape.translucentAllowed));
+              PAL.CPK.id, colix, shape.translucentAllowed));
         else
           BSUtil.setMapBitSet(temp, i, i, Shape.getColorCommandUnk("bonds",
               colix, shape.translucentAllowed));
@@ -1271,7 +1271,7 @@ public class StateCreator extends JmolStateCreator {
         }
         if (shape.bsColixSet != null && shape.bsColixSet.get(i)) {
           byte pid = atoms[i].getPaletteID();
-          if (pid != EnumPalette.CPK.id || atoms[i].isTranslucent())
+          if (pid != PAL.CPK.id || atoms[i].isTranslucent())
             BSUtil.setMapBitSet(temp, i, i, Shape.getColorCommand("atoms", pid,
                 atoms[i].getColix(), shape.translucentAllowed));
           if (colixes != null && i < colixes.length)
@@ -1580,7 +1580,7 @@ public class StateCreator extends JmolStateCreator {
           s.appendI(atoms[i].getValence());
           break;
         case AtomCollection.TAINT_VANDERWAALS:
-          s.appendF(atoms[i].getVanderwaalsRadiusFloat(vwr, EnumVdw.AUTO));
+          s.appendF(atoms[i].getVanderwaalsRadiusFloat(vwr, VDW.AUTO));
           break;
         }
         s.append(" ;\n");

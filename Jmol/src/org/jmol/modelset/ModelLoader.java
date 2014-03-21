@@ -43,7 +43,7 @@ import org.jmol.api.JmolAdapterBondIterator;
 import org.jmol.api.JmolBioResolver;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
-import org.jmol.c.EnumVdw;
+import org.jmol.c.VDW;
 import org.jmol.java.BS;
 
 
@@ -794,13 +794,13 @@ public final class ModelLoader {
       jbr.addImplicitHydrogenAtoms(adapter, groupCount - 1, isNewChain && !isLegacyHAddition? 1 : 0);
     }
     iLast = -1;
-    EnumVdw vdwtypeLast = null;
+    VDW vdwtypeLast = null;
     Atom[] atoms = modelSet.atoms;
     for (int i = 0; i < modelSet.atomCount; i++) {
       if (atoms[i].modelIndex != iLast) {
         iLast = atoms[i].modelIndex;
         models[iLast].firstAtomIndex = i;
-        EnumVdw vdwtype = modelSet.getDefaultVdwType(iLast);
+        VDW vdwtype = modelSet.getDefaultVdwType(iLast);
         if (vdwtype != vdwtypeLast) {
           Logger.info("Default Van der Waals type for model" + " set to " + vdwtype.getVdwLabel());
           vdwtypeLast = vdwtype;

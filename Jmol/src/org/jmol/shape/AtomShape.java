@@ -27,8 +27,8 @@ package org.jmol.shape;
 
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
-import org.jmol.c.EnumPalette;
-import org.jmol.c.EnumVdw;
+import org.jmol.c.PAL;
+import org.jmol.c.VDW;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Group;
@@ -122,7 +122,7 @@ public abstract class AtomShape extends Shape {
     if ("color" == propertyName) {
       isActive = true;
       short colix = C.getColixO(value);
-      byte pid = EnumPalette.pidOf(value);
+      byte pid = PAL.pidOf(value);
       if (bsColixSet == null)
         bsColixSet = new BS();
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
@@ -136,7 +136,7 @@ public abstract class AtomShape extends Shape {
       float[] atrans = (float[]) data[1];
       float[] sizes = (float[]) data[2];
       RadiusData rd = new RadiusData(null, 0, RadiusData.EnumType.FACTOR,
-          EnumVdw.AUTO);
+          VDW.AUTO);
       if (bsColixSet == null)
         bsColixSet = new BS();
       if (bsSizeSet == null)
@@ -151,7 +151,7 @@ public abstract class AtomShape extends Shape {
         float f = (atrans == null ? 0 : atrans[pt]);
         if (f > 0.01f)
           colix = C.getColixTranslucent3(colix, true, f);
-        setColixAndPalette(colix, EnumPalette.UNKNOWN.id, i);
+        setColixAndPalette(colix, PAL.UNKNOWN.id, i);
         if (sizes == null)
           continue;
         boolean isVisible = ((rd.value = sizes[pt]) > 0);

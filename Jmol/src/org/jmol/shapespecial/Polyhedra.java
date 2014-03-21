@@ -25,7 +25,7 @@
 package org.jmol.shapespecial;
 
 import org.jmol.api.AtomIndexIterator;
-import org.jmol.c.EnumPalette;
+import org.jmol.c.PAL;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
@@ -241,7 +241,7 @@ public class Polyhedra extends AtomShape {
 
   private void deletePolyhedra() {
     int newCount = 0;
-    byte pid = EnumPalette.pidOf(null);
+    byte pid = PAL.pidOf(null);
     for (int i = 0; i < polyhedronCount; ++i) {
       Polyhedron p = polyhedrons[i];
       int iAtom = p.centralAtom.index;

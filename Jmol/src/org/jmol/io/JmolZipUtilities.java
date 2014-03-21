@@ -1,5 +1,6 @@
 package org.jmol.io;
 
+import java.io.BufferedReader;
 import java.io.InputStream;
 
 import java.util.Map;
@@ -10,6 +11,10 @@ import org.jmol.api.JmolAdapter;
 
 public interface JmolZipUtilities {
 
+  public boolean cachePngjFile(JmolBinary jmb, String[] data);
+
+  public String determineSurfaceFileType(BufferedReader br);
+
   public Object getAtomSetCollectionOrBufferedReaderFromZip(GenericZipTools zpt, JmolAdapter adapter,
                                                             InputStream is,
                                                             String fileName,
@@ -18,10 +23,8 @@ public interface JmolZipUtilities {
                                                             int i,
                                                             boolean asBufferedReader);
 
-  public String[] spartanFileList(GenericZipTools zpt, String name, String zipDirectory);
-
   public byte[] getCachedPngjBytes(JmolBinary jmb, String pathName);
 
-  public boolean cachePngjFile(JmolBinary jmb, String[] data);  
+  public String[] spartanFileList(GenericZipTools zpt, String name, String zipDirectory);  
 
 }

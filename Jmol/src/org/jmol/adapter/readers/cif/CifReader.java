@@ -34,6 +34,7 @@ import org.jmol.java.BS;
 import org.jmol.script.T;
 
 import javajs.api.GenericCifDataParser;
+import javajs.api.GenericLineReader;
 import javajs.util.List;
 import java.util.Hashtable;
 import java.util.Map;
@@ -42,7 +43,6 @@ import org.jmol.util.Logger;
 
 import javajs.util.Rdr;
 import javajs.util.CifDataParser;
-import javajs.util.GenericLineReader;
 import javajs.util.P3;
 import javajs.util.PT;
 import javajs.util.V3;
@@ -74,6 +74,9 @@ public class CifReader extends AtomSetCollectionReader implements
   private MSCifInterface mr;
   private MMCifInterface pr;
 
+  // no need for reflection here -- the CIF reader is already
+  // protected by reflection
+  
   GenericCifDataParser parser = new CifDataParser().set(this, null);
 
   private boolean isMolecular;
@@ -152,7 +155,7 @@ public class CifReader extends AtomSetCollectionReader implements
       if (!readAllData())
         break;
     if (appendedData != null) {
-      parser = Rdr.getCifReader().set(null, Rdr.getBR(appendedData));
+      parser = Rdr.getCifParser().set(null, Rdr.getBR(appendedData));
       while ((key = parser.peekToken()) != null)
         if (!readAllData())
           break;

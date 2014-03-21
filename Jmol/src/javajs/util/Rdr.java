@@ -56,12 +56,12 @@ import javajs.api.ZInputStream;
  */
 public class Rdr {
 
-  public static GenericCifDataParser getCifReader() {
+  public static GenericCifDataParser getCifParser() {
     return (GenericCifDataParser) Interface.getInterface("javajs.util.CifDataParser");
   }
 
   public static Map<String, Object> readCifData(BufferedReader br) {
-    return new CifDataParser().set(null, br).getAllCifData();
+    return getCifParser().set(null, br).getAllCifData();
   }
   
   

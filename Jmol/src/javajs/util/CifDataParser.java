@@ -7,6 +7,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import javajs.api.GenericCifDataParser;
+import javajs.api.GenericLineReader;
 
 
 

@@ -31,6 +31,7 @@ import java.io.InputStream;
 
 import javajs.api.GenericZipTools;
 import javajs.api.GenericBinaryDocument;
+import javajs.util.LimitedLineReader;
 import javajs.util.Rdr;
 import javajs.util.List;
 import javajs.util.PT;
@@ -56,6 +57,319 @@ public class JmolUtil implements JmolZipUtilities {
 
   public JmolUtil() {
     // for reflection
+  }
+
+  private final static String DELPHI_BINARY_MAGIC_NUMBER = "\24\0\0\0";
+
+  /**
+   * called by SmarterJmolAdapter to see if we have a Spartan directory and, if
+   * so, open it and get all the data into the correct order.
+   * @param zpt 
+   * 
+   * @param is
+   * @param zipDirectory
+   * @return String data for processing
+   */
+  private static SB checkSpecialData(GenericZipTools zpt, InputStream is, String[] zipDirectory) {
+    boolean isSpartan = false;
+    // 0 entry is not used here
+    for (int i = 1; i < zipDirectory.length; i++) {
+      if (zipDirectory[i].endsWith(".spardir/")
+          || zipDirectory[i].indexOf("_spartandir") >= 0) {
+        isSpartan = true;
+        break;
+      }
+    }
+    if (!isSpartan)
+      return null;
+    SB data = new SB();
+    data.append("Zip File Directory: ").append("\n")
+        .append(Escape.eAS(zipDirectory, true)).append("\n");
+    Map<String, String> fileData = new Hashtable<String, String>();
+    zpt.getAllZipData(is, new String[] {}, "", "Molecule", fileData);
+    String prefix = "|";
+    String outputData = fileData.get(prefix + "output");
+    if (outputData == null)
+      outputData = fileData.get((prefix = "|" + zipDirectory[1]) + "output");
+    data.append(outputData);
+    String[] files = getSpartanFileList(prefix, getSpartanDirs(outputData));
+    for (int i = 2; i < files.length; i++) {
+      String name = files[i];
+      if (fileData.containsKey(name))
+        data.append(fileData.get(name));
+      else
+        data.append(name + "\n");
+    }
+    return data;
+  }
+
+  /**
+   * called by SmarterJmolAdapter to see if we can automatically assign a file
+   * from the zip file. If so, return a subfile list for this file. The first
+   * element of the list is left empty -- it would be the zipfile name.
+   * 
+   * Assignment can be made if (1) there is only one file in the collection or
+   * (2) if the first file is xxxx.spardir/
+   * 
+   * Note that __MACOS? files are ignored by the ZIP file reader.
+   * 
+   * @param zipDirectory
+   * @return subFileList
+   */
+  static String[] checkSpecialInZip(String[] zipDirectory) {
+    String name;
+    return (zipDirectory.length < 2 ? null : (name = zipDirectory[1])
+        .endsWith(".spardir/") || zipDirectory.length == 2 ? new String[] { "",
+        (name.endsWith("/") ? name.substring(0, name.length() - 1) : name) }
+        : null);
+  }
+
+  /**
+   * read the output file from the Spartan directory and decide from that what
+   * files need to be read and in what order - usually M0001 or a set of
+   * Profiles. But Spartan saves the Profiles in alphabetical order, not
+   * numerical. So we fix that here.
+   * 
+   * @param outputFileData
+   * @return String[] list of files to read
+   */
+  private static String[] getSpartanDirs(String outputFileData) {
+    if (outputFileData == null)
+      return new String[] {};
+    if (outputFileData.startsWith("java.io.FileNotFoundException")
+        || outputFileData.startsWith("FILE NOT FOUND")
+        || outputFileData.indexOf("<html") >= 0)
+      return new String[] { "M0001" };
+    List<String> v = new List<String>();
+    String token;
+    String lasttoken = "";
+    try {
+      StringTokenizer tokens = new StringTokenizer(outputFileData, " \t\r\n");
+      while (tokens.hasMoreTokens()) {
+        // profile file name is just before each right-paren:
+        /*
+         * MacSPARTAN '08 ENERGY PROFILE: x86/Darwin 130
+         * 
+         * Dihedral Move : C3 - C2 - C1 - O1 [ 4] -180.000000 .. 180.000000
+         * Dihedral Move : C2 - C1 - O1 - H3 [ 4] -180.000000 .. 180.000000
+         * 
+         * 1 ) -180.00 -180.00 -504208.11982719 2 ) -90.00 -180.00
+         * -504200.18593376
+         * 
+         * ...
+         * 
+         * 24 ) 90.00 180.00 -504200.18564495 25 ) 180.00 180.00
+         * -504208.12129747
+         * 
+         * Found a local maxima E = -504178.25455465 [ 3 3 ]
+         * 
+         * 
+         * Reason for exit: Successful completion Mechanics CPU Time : 1:51.42
+         * Mechanics Wall Time: 12:31.54
+         */
+        if ((token = tokens.nextToken()).equals(")"))
+          v.addLast(lasttoken);
+        else if (token.equals("Start-")
+            && tokens.nextToken().equals("Molecule"))
+          v.addLast(PT.split(tokens.nextToken(), "\"")[1]);
+        lasttoken = token;
+      }
+    } catch (Exception e) {
+      //
+    }
+    return v.toArray(new String[v.size()]);
+  }
+
+  /**
+   * returns the list of files to read for every Spartan spardir. Simple numbers
+   * are assumed to be Profiles; others are models.
+   * 
+   * @param name
+   * @param dirNums
+   * @return String[] list of files to read given a list of directory names
+   * 
+   */
+  private static String[] getSpartanFileList(String name, String[] dirNums) {
+    String[] files = new String[2 + dirNums.length * 5];
+    files[0] = "SpartanSmol";
+    files[1] = "Directory Entry ";
+    int pt = 2;
+    name = name.replace('\\', '/');
+    if (name.endsWith("/"))
+      name = name.substring(0, name.length() - 1);
+    for (int i = 0; i < dirNums.length; i++) {
+      String path = name
+          + (Character.isDigit(dirNums[i].charAt(0)) ? "/Profile." + dirNums[i]
+              : "/" + dirNums[i]);
+      files[pt++] = path + "/#JMOL_MODEL " + dirNums[i];
+      files[pt++] = path + "/input";
+      files[pt++] = path + "/archive";
+      files[pt++] = path + "/Molecule:asBinaryString";
+      files[pt++] = path + "/proparc";
+    }
+    return files;
+  }
+
+  private static String shortSceneFilename(String pathName) {
+    int pt = pathName.indexOf("_scene_") + 7;
+    if (pt < 7)
+      return pathName;
+    String s = "";
+    if (pathName.endsWith("|state.spt")) {
+      int pt1 = pathName.indexOf('.', pt);
+      if (pt1 < 0)
+        return pathName;
+      s = pathName.substring(pt, pt1);
+    }
+    int pt2 = pathName.lastIndexOf("|");
+    return pathName.substring(0, pt) + s
+        + (pt2 > 0 ? pathName.substring(pt2) : "");
+  }
+
+  @Override
+  public boolean cachePngjFile(JmolBinary jmb, String[] data) {
+    data[0] = Rdr.getZipRoot(data[0]);
+    String shortName = shortSceneFilename(data[0]);
+    try {
+      data[1] = ZipTools.cacheZipContents( 
+          Rdr.getPngZipStream((BufferedInputStream) jmb.fm
+              .getBufferedInputStreamOrErrorMessageFromName(data[0], null,
+                  false, false, null, false, true), true), shortName, jmb.pngjCache, false);
+    } catch (Exception e) {
+      return false;
+    }
+    if (data[1] == null)
+      return false;
+    byte[] bytes = data[1].getBytes();
+    jmb.pngjCache.put(jmb.fm.getCanonicalName(data[0]), bytes); // marker in case the .all. file is changed
+    if (shortName.indexOf("_scene_") >= 0) {
+      jmb.pngjCache.put(shortSceneFilename(data[0]), bytes); // good for all .min. files of this scene set
+      bytes = (byte[]) jmb.pngjCache.remove(shortName + "|state.spt");
+      if (bytes != null)
+        jmb.pngjCache.put(shortSceneFilename(data[0] + "|state.spt"), bytes);
+    }
+    for (String key : jmb.pngjCache.keySet())
+      System.out.println(key);
+    return true;
+  }
+
+  @Override
+  public String determineSurfaceFileType(BufferedReader bufferedReader) {
+    // drag-drop and isosurface command only
+    // JVXL should be on the FIRST line of the file, but it may be 
+    // after comments or missing.
+
+    // Apbs, Jvxl, or Cube, also efvet and DHBD
+
+    String line = null;
+    LimitedLineReader br = null;
+    
+    try {
+      br = new LimitedLineReader(bufferedReader, 16000);
+      line = br.getHeader(0);
+    } catch (Exception e) {
+      //
+    }
+    if (br == null || line == null || line.length() == 0)
+      return null;
+
+    //for (int i = 0; i < 220; i++)
+    //  System.out.print(" " + i + ":" + (0 + line.charAt(i)));
+    //System.out.println("");
+    
+    switch (line.charAt(0)) {
+    case '@':
+      if (line.indexOf("@text") == 0)
+        return "Kinemage";
+      break;
+    case '#':
+      if (line.indexOf(".obj") >= 0)
+        return "Obj"; // #file: pymol.obj
+      if (line.indexOf("MSMS") >= 0)
+        return "Msms";
+      break;
+    case '&':
+      if (line.indexOf("&plot") == 0)
+        return "Jaguar";
+      break;
+    case '\r':
+    case '\n':
+      if (line.indexOf("ZYX") >= 0)
+        return "Xplor";
+      break;
+    }
+    if (line.indexOf("Here is your gzipped map") >= 0)
+      return "UPPSALA" + line;
+    if (line.indexOf("! nspins") >= 0)
+      return "CastepDensity";
+    if (line.indexOf("<jvxl") >= 0 && line.indexOf("<?xml") >= 0)
+      return "JvxlXml";
+    if (line.indexOf("#JVXL+") >= 0)
+      return "Jvxl+";
+    if (line.indexOf("#JVXL") >= 0)
+      return "Jvxl";
+    if (line.indexOf("<efvet ") >= 0)
+      return "Efvet";
+    if (line.indexOf("usemtl") >= 0)
+      return "Obj";
+    if (line.indexOf("# object with") == 0)
+      return "Nff";
+    if (line.indexOf("BEGIN_DATAGRID_3D") >= 0 || line.indexOf("BEGIN_BANDGRID_3D") >= 0)
+      return "Xsf";
+    // binary formats: problem here is that the buffered reader
+    // may be translating byte sequences into unicode
+    // and thus shifting the offset
+    int pt0 = line.indexOf('\0');
+    if (pt0 >= 0) {
+      if (line.indexOf(JmolBinary.PMESH_BINARY_MAGIC_NUMBER) == 0)
+        return "Pmesh";
+      if (line.indexOf(DELPHI_BINARY_MAGIC_NUMBER) == 0)
+        return "DelPhi";
+      if (line.indexOf("MAP ") == 208)
+        return "Mrc";
+      if (line.length() > 37 && (line.charAt(36) == 0 && line.charAt(37) == 100 
+          || line.charAt(36) == 0 && line.charAt(37) == 100)) { 
+           // header19 (short)100
+          return "Dsn6";
+      }
+    }
+    
+    if (line.indexOf(" 0.00000e+00 0.00000e+00      0      0\n") >= 0)
+      return "Uhbd"; // older APBS http://sourceforge.net/p/apbs/code/ci/9527462a39126fb6cd880924b3cc4880ec4b78a9/tree/src/mg/vgrid.c
+    
+    // Apbs, Jvxl, Obj, or Cube, maybe formatted Plt
+
+    line = br.readLineWithNewline();
+    if (line.indexOf("object 1 class gridpositions counts") == 0)
+      return "Apbs";
+
+    String[] tokens = PT.getTokens(line);
+    String line2 = br.readLineWithNewline();// second line
+    if (tokens.length == 2 && PT.parseInt(tokens[0]) == 3
+        && PT.parseInt(tokens[1]) != Integer.MIN_VALUE) {
+      tokens = PT.getTokens(line2);
+      if (tokens.length == 3 && PT.parseInt(tokens[0]) != Integer.MIN_VALUE
+          && PT.parseInt(tokens[1]) != Integer.MIN_VALUE
+          && PT.parseInt(tokens[2]) != Integer.MIN_VALUE)
+        return "PltFormatted";
+    }
+    String line3 = br.readLineWithNewline(); // third line
+    if (line.startsWith("v ") && line2.startsWith("v ") && line3.startsWith("v "))
+        return "Obj";
+    //next line should be the atom line
+    int nAtoms = PT.parseInt(line3);
+    if (nAtoms == Integer.MIN_VALUE)
+      return (line3.indexOf("+") == 0 ? "Jvxl+" : null);
+    if (nAtoms >= 0)
+      return "Cube"; //Can't be a Jvxl file
+    nAtoms = -nAtoms;
+    for (int i = 4 + nAtoms; --i >= 0;)
+      if ((line = br.readLineWithNewline()) == null)
+        return null;
+    int nSurfaces = PT.parseInt(line);
+    if (nSurfaces == Integer.MIN_VALUE)
+      return null;
+    return (nSurfaces < 0 ? "Jvxl" : "Cube"); //Final test looks at surface definition line    
   }
 
   @Override
@@ -288,46 +602,34 @@ public class JmolUtil implements JmolZipUtilities {
     }
   }
 
-  /**
-   * called by SmarterJmolAdapter to see if we have a Spartan directory and, if
-   * so, open it and get all the data into the correct order.
-   * @param zpt 
-   * 
-   * @param is
-   * @param zipDirectory
-   * @return String data for processing
-   */
-  private static SB checkSpecialData(GenericZipTools zpt, InputStream is, String[] zipDirectory) {
-    boolean isSpartan = false;
-    // 0 entry is not used here
-    for (int i = 1; i < zipDirectory.length; i++) {
-      if (zipDirectory[i].endsWith(".spardir/")
-          || zipDirectory[i].indexOf("_spartandir") >= 0) {
-        isSpartan = true;
-        break;
-      }
-    }
-    if (!isSpartan)
+  @Override
+  public byte[] getCachedPngjBytes(JmolBinary jmb, String pathName) {
+    Logger.info("JmolUtil checking PNGJ cache for " + pathName);
+    String shortName = shortSceneFilename(pathName);
+    if (jmb.pngjCache == null
+        && !jmb.clearAndCachePngjFile(new String[] { pathName, null }))
       return null;
-    SB data = new SB();
-    data.append("Zip File Directory: ").append("\n")
-        .append(Escape.eAS(zipDirectory, true)).append("\n");
-    Map<String, String> fileData = new Hashtable<String, String>();
-    zpt.getAllZipData(is, new String[] {}, "", "Molecule", fileData);
-    String prefix = "|";
-    String outputData = fileData.get(prefix + "output");
-    if (outputData == null)
-      outputData = fileData.get((prefix = "|" + zipDirectory[1]) + "output");
-    data.append(outputData);
-    String[] files = getSpartanFileList(prefix, getSpartanDirs(outputData));
-    for (int i = 2; i < files.length; i++) {
-      String name = files[i];
-      if (fileData.containsKey(name))
-        data.append(fileData.get(name));
-      else
-        data.append(name + "\n");
+    boolean isMin = (pathName.indexOf(".min.") >= 0);
+    if (!isMin) {
+      String cName = jmb.fm.getCanonicalName(Rdr.getZipRoot(pathName));
+      if (!jmb.pngjCache.containsKey(cName)
+          && !jmb.clearAndCachePngjFile(new String[] { pathName, null }))
+        return null;
+      if (pathName.indexOf("|") < 0)
+        shortName = cName;
     }
-    return data;
+    if (jmb.pngjCache.containsKey(shortName)) {
+      Logger.info("FileManager using memory cache " + shortName);
+      return (byte[]) jmb.pngjCache.get(shortName);
+    }
+    //    for (String key : pngjCache.keySet())
+    //    System.out.println(" key=" + key);
+    //System.out.println("FileManager memory cache size=" + pngjCache.size()
+    //  + " did not find " + pathName + " as " + shortName);
+    if (!isMin || !jmb.clearAndCachePngjFile(new String[] { pathName, null }))
+      return null;
+    Logger.info("FileManager using memory cache " + shortName);
+    return (byte[]) jmb.pngjCache.get(shortName);
   }
 
   /**
@@ -367,186 +669,6 @@ public class JmolUtil implements JmolZipUtilities {
       return new String[] { "SpartanSmol", sname, sname + "/output" };
     }
     return getSpartanFileList(name, dirNums);
-  }
-
-  /**
-   * read the output file from the Spartan directory and decide from that what
-   * files need to be read and in what order - usually M0001 or a set of
-   * Profiles. But Spartan saves the Profiles in alphabetical order, not
-   * numerical. So we fix that here.
-   * 
-   * @param outputFileData
-   * @return String[] list of files to read
-   */
-  private static String[] getSpartanDirs(String outputFileData) {
-    if (outputFileData == null)
-      return new String[] {};
-    if (outputFileData.startsWith("java.io.FileNotFoundException")
-        || outputFileData.startsWith("FILE NOT FOUND")
-        || outputFileData.indexOf("<html") >= 0)
-      return new String[] { "M0001" };
-    List<String> v = new List<String>();
-    String token;
-    String lasttoken = "";
-    try {
-      StringTokenizer tokens = new StringTokenizer(outputFileData, " \t\r\n");
-      while (tokens.hasMoreTokens()) {
-        // profile file name is just before each right-paren:
-        /*
-         * MacSPARTAN '08 ENERGY PROFILE: x86/Darwin 130
-         * 
-         * Dihedral Move : C3 - C2 - C1 - O1 [ 4] -180.000000 .. 180.000000
-         * Dihedral Move : C2 - C1 - O1 - H3 [ 4] -180.000000 .. 180.000000
-         * 
-         * 1 ) -180.00 -180.00 -504208.11982719 2 ) -90.00 -180.00
-         * -504200.18593376
-         * 
-         * ...
-         * 
-         * 24 ) 90.00 180.00 -504200.18564495 25 ) 180.00 180.00
-         * -504208.12129747
-         * 
-         * Found a local maxima E = -504178.25455465 [ 3 3 ]
-         * 
-         * 
-         * Reason for exit: Successful completion Mechanics CPU Time : 1:51.42
-         * Mechanics Wall Time: 12:31.54
-         */
-        if ((token = tokens.nextToken()).equals(")"))
-          v.addLast(lasttoken);
-        else if (token.equals("Start-")
-            && tokens.nextToken().equals("Molecule"))
-          v.addLast(PT.split(tokens.nextToken(), "\"")[1]);
-        lasttoken = token;
-      }
-    } catch (Exception e) {
-      //
-    }
-    return v.toArray(new String[v.size()]);
-  }
-
-  /**
-   * returns the list of files to read for every Spartan spardir. Simple numbers
-   * are assumed to be Profiles; others are models.
-   * 
-   * @param name
-   * @param dirNums
-   * @return String[] list of files to read given a list of directory names
-   * 
-   */
-  private static String[] getSpartanFileList(String name, String[] dirNums) {
-    String[] files = new String[2 + dirNums.length * 5];
-    files[0] = "SpartanSmol";
-    files[1] = "Directory Entry ";
-    int pt = 2;
-    name = name.replace('\\', '/');
-    if (name.endsWith("/"))
-      name = name.substring(0, name.length() - 1);
-    for (int i = 0; i < dirNums.length; i++) {
-      String path = name
-          + (Character.isDigit(dirNums[i].charAt(0)) ? "/Profile." + dirNums[i]
-              : "/" + dirNums[i]);
-      files[pt++] = path + "/#JMOL_MODEL " + dirNums[i];
-      files[pt++] = path + "/input";
-      files[pt++] = path + "/archive";
-      files[pt++] = path + "/Molecule:asBinaryString";
-      files[pt++] = path + "/proparc";
-    }
-    return files;
-  }
-
-  /**
-   * called by SmarterJmolAdapter to see if we can automatically assign a file
-   * from the zip file. If so, return a subfile list for this file. The first
-   * element of the list is left empty -- it would be the zipfile name.
-   * 
-   * Assignment can be made if (1) there is only one file in the collection or
-   * (2) if the first file is xxxx.spardir/
-   * 
-   * Note that __MACOS? files are ignored by the ZIP file reader.
-   * 
-   * @param zipDirectory
-   * @return subFileList
-   */
-  static String[] checkSpecialInZip(String[] zipDirectory) {
-    String name;
-    return (zipDirectory.length < 2 ? null : (name = zipDirectory[1])
-        .endsWith(".spardir/") || zipDirectory.length == 2 ? new String[] { "",
-        (name.endsWith("/") ? name.substring(0, name.length() - 1) : name) }
-        : null);
-  }
-
-  @Override
-  public byte[] getCachedPngjBytes(JmolBinary jmb, String pathName) {
-    Logger.info("JmolUtil checking PNGJ cache for " + pathName);
-    String shortName = shortSceneFilename(pathName);
-    if (jmb.pngjCache == null
-        && !jmb.clearAndCachePngjFile(new String[] { pathName, null }))
-      return null;
-    boolean isMin = (pathName.indexOf(".min.") >= 0);
-    if (!isMin) {
-      String cName = jmb.fm.getCanonicalName(Rdr.getZipRoot(pathName));
-      if (!jmb.pngjCache.containsKey(cName)
-          && !jmb.clearAndCachePngjFile(new String[] { pathName, null }))
-        return null;
-      if (pathName.indexOf("|") < 0)
-        shortName = cName;
-    }
-    if (jmb.pngjCache.containsKey(shortName)) {
-      Logger.info("FileManager using memory cache " + shortName);
-      return (byte[]) jmb.pngjCache.get(shortName);
-    }
-    //    for (String key : pngjCache.keySet())
-    //    System.out.println(" key=" + key);
-    //System.out.println("FileManager memory cache size=" + pngjCache.size()
-    //  + " did not find " + pathName + " as " + shortName);
-    if (!isMin || !jmb.clearAndCachePngjFile(new String[] { pathName, null }))
-      return null;
-    Logger.info("FileManager using memory cache " + shortName);
-    return (byte[]) jmb.pngjCache.get(shortName);
-  }
-
-  @Override
-  public boolean cachePngjFile(JmolBinary jmb, String[] data) {
-    data[0] = Rdr.getZipRoot(data[0]);
-    String shortName = shortSceneFilename(data[0]);
-    try {
-      data[1] = ZipTools.cacheZipContents( 
-          Rdr.getPngZipStream((BufferedInputStream) jmb.fm
-              .getBufferedInputStreamOrErrorMessageFromName(data[0], null,
-                  false, false, null, false, true), true), shortName, jmb.pngjCache, false);
-    } catch (Exception e) {
-      return false;
-    }
-    if (data[1] == null)
-      return false;
-    byte[] bytes = data[1].getBytes();
-    jmb.pngjCache.put(jmb.fm.getCanonicalName(data[0]), bytes); // marker in case the .all. file is changed
-    if (shortName.indexOf("_scene_") >= 0) {
-      jmb.pngjCache.put(shortSceneFilename(data[0]), bytes); // good for all .min. files of this scene set
-      bytes = (byte[]) jmb.pngjCache.remove(shortName + "|state.spt");
-      if (bytes != null)
-        jmb.pngjCache.put(shortSceneFilename(data[0] + "|state.spt"), bytes);
-    }
-    for (String key : jmb.pngjCache.keySet())
-      System.out.println(key);
-    return true;
-  }
-
-  private static String shortSceneFilename(String pathName) {
-    int pt = pathName.indexOf("_scene_") + 7;
-    if (pt < 7)
-      return pathName;
-    String s = "";
-    if (pathName.endsWith("|state.spt")) {
-      int pt1 = pathName.indexOf('.', pt);
-      if (pt1 < 0)
-        return pathName;
-      s = pathName.substring(pt, pt1);
-    }
-    int pt2 = pathName.lastIndexOf("|");
-    return pathName.substring(0, pt) + s
-        + (pt2 > 0 ? pathName.substring(pt2) : "");
   }
 
 }

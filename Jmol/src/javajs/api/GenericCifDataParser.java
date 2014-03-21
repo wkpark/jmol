@@ -3,8 +3,6 @@ package javajs.api;
 import java.io.BufferedReader;
 import java.util.Map;
 
-import javajs.util.CifDataParser;
-import javajs.util.GenericLineReader;
 
 public interface GenericCifDataParser {
 
@@ -36,7 +34,7 @@ public interface GenericCifDataParser {
 
   String readLine();
 
-  CifDataParser set(GenericLineReader reader, BufferedReader br);
+  GenericCifDataParser set(GenericLineReader reader, BufferedReader br);
 
   String toUnicode(String data);
 

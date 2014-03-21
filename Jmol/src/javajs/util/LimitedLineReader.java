@@ -2,6 +2,14 @@ package javajs.util;
 
 import java.io.BufferedReader;
 
+/**
+ *  A simple class to read a designated number of bytes from a 
+ *  file and then return them line by line, skipping lines that
+ *  start with #, and including the \n or \r characters at line ends.
+ *  
+ *  Generally useful for determining what sort of data a file contains.
+ *   
+ */
 public class LimitedLineReader {
   private char[] buf;
   private int cchBuf;

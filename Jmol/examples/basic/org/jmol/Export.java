@@ -38,7 +38,7 @@ import javax.swing.JFrame;
 import javax.swing.JTextField;
 
 import org.jmol.api.JmolStatusListener;
-import org.jmol.constant.EnumCallback;
+import org.jmol.c.CBK;
 import org.openscience.jmol.app.Jmol;
 
 public class Export {
@@ -69,7 +69,7 @@ class MyStatusListener implements JmolStatusListener {
   public JTextField monitor;
   
   @Override
-  public boolean notifyEnabled(EnumCallback type) {
+  public boolean notifyEnabled(CBK type) {
     // indicate here any callbacks you will be working with.
     // some of these flags are not tested. See org.jmol.viewer.StatusManager.java
     switch (type) {
@@ -98,7 +98,7 @@ class MyStatusListener implements JmolStatusListener {
   
   @Override
   @SuppressWarnings("incomplete-switch")
-  public void notifyCallback(EnumCallback type, Object[] data) {
+  public void notifyCallback(CBK type, Object[] data) {
     // this method as of 11.5.23 gets all the callback notifications for
     // any embedding application or for the applet.
     // see org.jmol.applet.Jmol.java and org.jmol.openscience.app.Jmol.java

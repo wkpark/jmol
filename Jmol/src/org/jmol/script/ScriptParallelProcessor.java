@@ -21,7 +21,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.parallel;
+package org.jmol.script;
 
 import javajs.util.List;
 
@@ -29,8 +29,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import org.jmol.api.JmolParallelProcessor;
-import org.jmol.script.ScriptContext;
-import org.jmol.script.ScriptFunction;
 import org.jmol.util.Logger;
 import org.jmol.viewer.ShapeManager;
 import org.jmol.viewer.Viewer;

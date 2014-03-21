@@ -1,6 +1,5 @@
-package org.jmol.parallel;
+package org.jmol.script;
 
-import org.jmol.script.ScriptContext;
 
 /**
  * the idea here is that the process { ... } command would collect and

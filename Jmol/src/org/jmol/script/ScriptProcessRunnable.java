@@ -23,9 +23,8 @@
  *  02110-1301, USA.
  */
 
-package org.jmol.parallel;
+package org.jmol.script;
 
-import org.jmol.script.T;
 import org.jmol.util.Logger;
 import org.jmol.viewer.ShapeManager;
 

@@ -31,6 +31,7 @@ import org.jmol.api.JmolCallbackListener;
 import org.jmol.api.JmolViewer;
 import org.jmol.c.CBK;
 import org.jmol.util.Logger;
+import org.jmol.viewer.JC;
 import org.openscience.jmol.app.jmolpanel.JmolPanel;
 import org.openscience.jmol.app.jsonkiosk.BannerFrame;
 import org.openscience.jmol.app.jsonkiosk.JsonNioClient;
@@ -217,7 +218,7 @@ public class MPJmolApp implements JsonNioClient {
   @Override
   public void nioClosed(JsonNioServer jns) {
     try {
-      jmolViewer.setModeMouse(-1);
+      jmolViewer.dispose();
       bannerFrame.dispose();
       kioskFrame.dispose();
     } catch (Throwable e) {

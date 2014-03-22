@@ -433,7 +433,7 @@ public class Jmol extends GenericApplet implements WrappedApplet {
     applet.getSize(size);
     viewer.setScreenDimension(size.width, size.height);
     if (!isStereoSlave)
-      viewer.renderScreenImageStereo(g, gRight, size.width, size.height);
+      viewer.renderScreenImageStereo(g, true, size.width, size.height);
     if (showPaintTime) {
       stopPaintClock();
       showTimes(10, 10, g);

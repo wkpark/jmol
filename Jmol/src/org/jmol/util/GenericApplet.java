@@ -53,7 +53,7 @@ public abstract class GenericApplet implements JmolAppletInterface,
   protected String statusTextarea;
 
   protected Object gRight;
-  protected JmolViewer viewer;
+  protected Viewer viewer;
   protected Map<CBK, String> callbacks = new Hashtable<CBK, String>();
 
   protected Map<String, Object> vwrOptions;
@@ -776,7 +776,7 @@ public abstract class GenericApplet implements JmolAppletInterface,
     boolean setNoGraphics = (isSync && script
         .equals(Viewer.SYNC_NO_GRAPHICS_MESSAGE));
     if (getGraphics)
-      gRight = null;
+      viewer.setStereo(false, (gRight = null));
     for (int i = 0; i < nApplets; i++) {
       String theApplet = apps.get(i);
       JmolSyncInterface app = (JmolSyncInterface) htRegistry.get(theApplet);
@@ -785,8 +785,7 @@ public abstract class GenericApplet implements JmolAppletInterface,
         Logger.debug(fullName + " sending to " + theApplet + ": " + script);
       try {
         if (isScriptable && (getGraphics || setNoGraphics)) {
-          isStereoSlave = getGraphics;
-          gRight = ((JmolAppletInterface) app).setStereoGraphics(getGraphics);
+          viewer.setStereo(isStereoSlave = getGraphics, gRight = ((JmolAppletInterface) app).setStereoGraphics(getGraphics));
           return "";
         }
         if (isSync)

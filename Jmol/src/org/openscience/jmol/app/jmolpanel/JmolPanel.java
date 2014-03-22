@@ -617,7 +617,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       System.exit(0);
     } else {
       numWindows--;
-      vwr.setModeMouse(JC.MOUSE_NONE);
+      vwr.dispose();
       try {
         f.dispose();
       } catch (Exception e) {
@@ -1630,7 +1630,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     if (bannerFrame != null) {
       vwr.scriptWait("delay 2");
       bannerFrame.dispose();
-      vwr.setModeMouse(JC.MOUSE_NONE);
+      vwr.dispose();
       // would not nec. have to close this....
       System.exit(0);
     }

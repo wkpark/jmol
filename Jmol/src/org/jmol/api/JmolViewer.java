@@ -180,16 +180,6 @@ abstract public class JmolViewer implements JSInterface {
 
   abstract public BS getSmartsMatch(String smarts, BS bsSelected) throws Exception;
   
-  /**
-   * an added class for rendering stereo in two independent applets
-   * 
-   * @param gLeft
-   * @param gRight
-   * @param width 
-   * @param height 
-   */
-  abstract public void renderScreenImageStereo(Object gLeft, Object gRight, int width, int height);
-
   static public String getJmolVersion() {
     return Viewer.getJmolVersion();
   }
@@ -440,8 +430,6 @@ abstract public class JmolViewer implements JSInterface {
   abstract public void setFloatProperty(String propertyName, float value);
   abstract public void setStringProperty(String propertyName, String value);
 
-  abstract public void setModeMouse(int modeMouse); //only MOUSEMODE_NONE, prior to nulling vwr
-
   abstract public void setShowHydrogens(boolean showHydrogens);
   abstract public void setShowMeasurements(boolean showMeasurements);
   abstract public void setPerspectiveDepth(boolean perspectiveDepth);
@@ -622,6 +610,10 @@ abstract public class JmolViewer implements JSInterface {
   abstract public int getModelIndexFromId(String id);
   
   abstract public void setMenu(String menuFile, boolean isFile);
+  public void dispose() {
+    // TODO
+    
+  }
   
 }
 

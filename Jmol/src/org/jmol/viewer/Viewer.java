@@ -710,28 +710,39 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return display;
   }
 
-  private GenericMouseInterface mouse;
-
-  public void clearMouse() {
-    mouse.clear();
-  }
-
-  public void disposeMouse() {
-    actionManager.dispose();
-    mouse.dispose();
-    mouse = null;
-  }
-
+  /**
+   * end of life for this viewer
+   */
   @Override
-  public void processTwoPointGesture(float[][][] touches) {
-    mouse.processTwoPointGesture(touches);
-  }
-  
-  @Override
-  public boolean processMouseEvent(int id, int x, int y, int modifiers,
-                                     long time) {
-    // also used for JavaScript from jQuery
-    return mouse.processEvent(id, x, y, modifiers, time);
+  public void dispose() {
+    gRight = null;
+    if (mouse != null) {
+      actionManager.dispose();
+      mouse.dispose();
+      mouse = null;
+    }
+    clearScriptQueue();
+    clearThreads();
+    haltScriptExecution();
+    if (scm != null)
+      scm.clear(true);
+    gdata.destroy();
+    if (jmolpopup != null)
+      jmolpopup.jpiDispose();
+    if (modelkitPopup != null)
+      modelkitPopup.jpiDispose();
+    try {
+      if (appConsole != null) {
+        appConsole.dispose();
+        appConsole = null;
+      }
+      if (scriptEditor != null) {
+        scriptEditor.dispose();
+        scriptEditor = null;
+      }
+    } catch (Exception e) {
+      // ignore -- Disposal was interrupted only in Eclipse
+    }
   }
 
   public void reset(boolean includingSpin) {
@@ -1894,40 +1905,29 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   // ///////////////////////////////////////////////////////////////
-  // delegated to MouseManager
+  // delegated to Mouse (part of the apiPlatform system), 
   // ///////////////////////////////////////////////////////////////
 
+  /**
+   * either org.jmol.awt.Mouse or org.jmol.awtjs2d.Mouse
+   */
+  private GenericMouseInterface mouse;
+
   @Override
-  public void setModeMouse(int modeMouse) {
-    // call before setting vwr=null
-    if (modeMouse == JC.MOUSE_NONE) {
-      // applet is being destroyed
-      if (mouse != null)
-        disposeMouse();
-      clearScriptQueue();
-      clearThreads();
-      haltScriptExecution();
-      if (scm != null)
-        scm.clear(true);
-      gdata.destroy();
-      if (jmolpopup != null)
-        jmolpopup.jpiDispose();
-      if (modelkitPopup != null)
-        modelkitPopup.jpiDispose();
-      try {
-        if (appConsole != null) {
-          appConsole.dispose();
-          appConsole = null;
-        }
-        if (scriptEditor != null) {
-          scriptEditor.dispose();
-          scriptEditor = null;
-        }
-      } catch (Exception e) {
-        // ignore -- Disposal was interrupted only in Eclipse
-      }
-    }
+  public void processTwoPointGesture(float[][][] touches) {
+    mouse.processTwoPointGesture(touches);
   }
+  
+  @Override
+  public boolean processMouseEvent(int id, int x, int y, int modifiers,
+                                     long time) {
+    // also used for JavaScript from jQuery
+    return mouse.processEvent(id, x, y, modifiers, time);
+  }
+
+  // ///////////////////////////////////////////////////////////////
+  // delegated to ActionManager
+  // ///////////////////////////////////////////////////////////////
 
   public Rectangle getRubberBandSelection() {
     return (haveDisplay ? actionManager.getRubberBand() : null);
@@ -4247,6 +4247,27 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   private float imageFontScaling = 1;
+  
+  /**
+   * A graphics from a "slave" stereo display
+   * that has been synchronized with this this applet.
+   */
+  private Object gRight;
+
+  /**
+   * A flag to indicate that THIS is the 
+   * right-side panel of a pair of synced applets
+   * running a left-right stereo display (that would
+   * be piped into a dual-image polarized projector system
+   * such as GeoWall).
+   * 
+   */
+  private boolean isStereoSlave;
+  
+  public void setStereo(boolean isStereoSlave, Object gRight) {
+    this.isStereoSlave = isStereoSlave;
+    this.gRight = gRight;
+  }
 
   public float getImageFontScaling() {
     return imageFontScaling;
@@ -4310,8 +4331,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       rm.clear(iShape);
   }
 
-  @Override
-  public void renderScreenImageStereo(Object gLeft, Object gRight, int width,
+  public void renderScreenImageStereo(Object gLeft, boolean checkStereoSlave, int width,
                                       int height) {
     // from paint/update event
     // gRight is for second stereo applet
@@ -4322,7 +4342,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     //System.out.println(Thread.currentThread() + "render Screen Image " +
     // creatingImage);
     if (updateWindow(width, height)) {
-      if (gRight == null) {
+      if (!checkStereoSlave || gRight == null) {
         getScreenImageBuffer(gLeft, false);
       } else {
         render1(gRight, getImage(true, false), 0, 0);
@@ -4360,20 +4380,9 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         render();
       notifyViewerRepaintDone();
     } else {
-      Object g = null;
-      Object gright = null;
-      /**
-       * @j2sNative
-       *
-       * if (this.sm.jmolStatusListener.isStereoSlave) return;
-       * g = this.apiPlatform.context;
-       * gright = this.sm.jmolStatusListener.gright;
-       *
-       * 
-       */
-      {
-      }
-      renderScreenImageStereo(g, gright, width, height);
+      if (isStereoSlave)
+        return;
+      renderScreenImageStereo(apiPlatform.getGraphics(null), true, width, height);
     }
   }
 
@@ -4410,17 +4419,21 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   @Override
   public void renderScreenImage(Object g, int width, int height) {
-    //System.out.println("Viewer renderscreenimage " + width + " " + height + " " + ((JPanel) display).getSize().width  + " " + ((JPanel) display).getSize().height);
     /*
-     * Jmol repaint/update system:
+     * Jmol repaint/update system for the application:
      * 
-     * threads invoke vwr.refresh() --> repaintManager.refresh() -->
-     * vwr.repaint() --> display.repaint() --> OS event queue | Jmol.paint()
-     * <-- vwr.renderScreenImage() <-- vwr.notifyViewerRepaintDone() <--
-     * repaintManager.repaintDone()<-- which sets repaintPending false and does
-     * notify();
+     * threads invoke vwr.refresh()
+     *  
+     *   --> repaintManager.refresh()
+     *   --> vwr.repaint() 
+     *   --> display.repaint()
+     *   --> OS event queue | Jmol.paint()
+     *   <-- vwr.renderScreenImage() 
+     *   <-- vwr.notifyViewerRepaintDone() 
+     *   <-- repaintManager.repaintDone()
+     *   <-- which sets repaintPending false and does notify();
      */
-    renderScreenImageStereo(g, null, width, height);
+    renderScreenImageStereo(g, false, width, height);
   }
 
   /**
@@ -5791,7 +5804,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public void notifyStatusReady(boolean isReady) {
     System.out.println("Jmol applet " + fullName + (isReady ? " ready" : " destroyed"));
     if (!isReady)
-      setModeMouse(JC.MOUSE_NONE);  
+      dispose();
     sm.setStatusAppletReady(fullName, isReady);
   }
 
@@ -10413,7 +10426,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   /*default*/ String logFileName;
-  
+
   @Override
   public void log(String data) {
     if (data != null)

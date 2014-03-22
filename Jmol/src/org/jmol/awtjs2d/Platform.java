@@ -241,7 +241,7 @@ public class Platform implements GenericPlatform {
 
 	@Override
   public Object getGraphics(Object image) {
-		return Image.getGraphics(image);
+		return (image == null ? context : Image.getGraphics(image));
 	}
 
   @Override

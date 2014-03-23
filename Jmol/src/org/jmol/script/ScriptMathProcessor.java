@@ -675,9 +675,6 @@ public class ScriptMathProcessor {
     // immediate operation check:
     switch (op.tok) {
     case T.propselector:
-      if (!doSelections) {
-        
-      }
       return (((op.intValue & ~T.minmaxmask) == T.function
           && op.intValue != T.function)? evaluateFunction(T.nada) : true);
     case T.plusPlus:

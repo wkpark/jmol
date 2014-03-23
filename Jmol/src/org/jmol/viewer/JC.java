@@ -72,7 +72,7 @@ public final class JC {
       try {
         // Reading version from resource   inside jar
         is = JC.class.getClassLoader().getResourceAsStream(
-            "org/jmol/vwr/Jmol.properties");
+            "org/jmol/viewer/Jmol.properties");
         bis = new BufferedInputStream(is);
         Properties props = new Properties();
         props.load(bis);

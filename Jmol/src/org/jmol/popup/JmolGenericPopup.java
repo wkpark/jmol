@@ -118,7 +118,7 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
 
   protected void initialize(Viewer vwr, PopupResource bundle, String title) {
     this.vwr = vwr;
-    initSwing(title, bundle, vwr.getApplet(), vwr.isJS,
+    initSwing(title, bundle, vwr.getApplet(), vwr.isJS, vwr.isWebGL,
         vwr.getBooleanProperty("_signedApplet"));
   }
 

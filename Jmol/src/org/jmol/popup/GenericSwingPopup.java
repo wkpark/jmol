@@ -38,7 +38,7 @@ public abstract class GenericSwingPopup implements GenericMenuInterface {
   protected String strMenuStructure;
 
   protected boolean allowSignedFeatures;
-  protected boolean isJS, isApplet, isSigned;
+  protected boolean isJS, isApplet, isSigned, isWebGL;
   protected int thisx, thisy;
   protected boolean isTainted = true;
 
@@ -52,10 +52,11 @@ public abstract class GenericSwingPopup implements GenericMenuInterface {
   private List<SC> SignedOnly = new List<SC>();
 
   protected void initSwing(String title, PopupResource bundle, Object applet,
-                           boolean isJS, boolean isSigned) {
+                           boolean isJS, boolean isSigned, boolean isWebGL) {
       this.isJS = isJS;
       this.isApplet = (applet!= null);
       this.isSigned = isSigned;
+      this.isWebGL = isWebGL;
       this.allowSignedFeatures = (!isApplet || isSigned);
       menuName = title;
       popupMenu = helper.menuCreatePopup(title, applet);
@@ -140,6 +141,7 @@ public abstract class GenericSwingPopup implements GenericMenuInterface {
         }
         // menus or menu items:
         htMenus.put(item, newItem);
+        // signed items are listed, but not enabled
         if (item.startsWith("SIGNED")) {
           SignedOnly.addLast(newItem);
           if (!allowSignedFeatures)
@@ -159,16 +161,8 @@ public abstract class GenericSwingPopup implements GenericMenuInterface {
    * @return true unless a JAVA-only key in JavaScript
    */
   private boolean checkKey(String key) {
-    /**
-     * @j2sNative
-     * 
-     *            return (key.indexOf("JAVA") < 0 && !(key.indexOf("NOGL") &&
-     *            this.vwr.isWebGL));
-     * 
-     */
-    {
-      return (isApplet || !key.contains("APPLET"));
-    }
+    return (key.indexOf(isApplet ? "JAVA" : "APPLET") < 0 
+        && (!isWebGL || key.indexOf("NOGL") < 0));
   }
 
   private void rememberCheckbox(String key, SC checkboxMenuItem) {

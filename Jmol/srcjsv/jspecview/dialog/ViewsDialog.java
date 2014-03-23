@@ -62,15 +62,15 @@ public class ViewsDialog extends JSVDialog {
     treeNodes = new List<JSVTreeNode>();
     dialog.addButton("btnSelectAll", "Select All");
     dialog.addButton("btnSelectNone", "Select None");
-    txt2 = dialog.addTextField("txtOffset", "Offset", "" + viewer.parameters.viewOffset, "%", null, true);
+    txt2 = dialog.addTextField("txtOffset", "Offset", "" + vwr.parameters.viewOffset, "%", null, true);
     viewSelectedButton = dialog.addButton("btnViewSelected", "View Selected");
     combineSelectedButton = dialog.addButton("btnCombineSelected", "Combine Selected");
     closeSelectedButton = dialog.addButton("btnCloseSelected", "Close Selected");
     dialog.addButton("btnDone", "Done");
     dialog.setPreferredSize(500, 350);
     txt1 = dialog.addCheckBox(null, null, 0, false); // resets iRow; sets to rightPanel
-    addCheckBoxes(viewer.spectraTree.getRootNode(), 0, true);
-    addCheckBoxes(viewer.spectraTree.getRootNode(), 0, false);
+    addCheckBoxes(vwr.spectraTree.getRootNode(), 0, true);
+    addCheckBoxes(vwr.spectraTree.getRootNode(), 0, false);
   }
 
 	private void addCheckBoxes(JSVTreeNode rootNode, int level, boolean isViews) {
@@ -189,20 +189,20 @@ public class ViewsDialog extends JSVDialog {
 		String script = null;
 		if (n > 1) {
 			eventApply();
-			script = "STACKOFFSETY " + viewer.parameters.viewOffset;
+			script = "STACKOFFSETY " + vwr.parameters.viewOffset;
 		}
 		if (thisNode == null) {
-			viewer.execView(sb.toString().trim(), false);
+			vwr.execView(sb.toString().trim(), false);
 			layoutDialog();
 		} else {
-			viewer.setNode(thisNode); // was fromTree TRUE
+			vwr.setNode(thisNode); // was fromTree TRUE
 		}
 		if (script != null)
-			viewer.runScript(script);
+			vwr.runScript(script);
 	}
 
 	protected void closeSelected() {
-		viewer.runScript("close !selected");
+		vwr.runScript("close !selected");
     layoutDialog();
 	}
 

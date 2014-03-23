@@ -17,7 +17,7 @@ public class SimpleTree implements JSVTree {
 	protected ScriptInterface si;
   private JSVTreeNode rootNode;
   private SimpleTreeModel spectraTreeModel;
-	protected JSViewer viewer;
+	protected JSViewer vwr;
 	private SimpleTreePath selectedPath;
 
 	@Override
@@ -26,13 +26,13 @@ public class SimpleTree implements JSVTree {
 	}
 
 	public SimpleTree(JSViewer viewer) {
-		this.viewer = viewer;
+		this.vwr = viewer;
     rootNode = new SimpleTreeNode("Spectra", null);
     spectraTreeModel = new SimpleTreeModel(rootNode);
 	}
 	
   public void valueChanged() {
-  	viewer.selectedTreeNode(getLastSelectedPathComponent());
+  	vwr.selectedTreeNode(getLastSelectedPathComponent());
   }
 
   private JSVTreeNode getLastSelectedPathComponent() {
@@ -42,8 +42,8 @@ public class SimpleTree implements JSVTree {
 	@Override
 	public void setSelectedPanel(ScriptInterface si, JSVPanel jsvp) {
 		if (jsvp != null) {
-			JSVTreeNode treeNode = PanelNode.findNode(jsvp, viewer.panelNodes).treeNode;
-			setSelectionPath(viewer.spectraTree.newTreePath(treeNode.getPath()));
+			JSVTreeNode treeNode = PanelNode.findNode(jsvp, vwr.panelNodes).treeNode;
+			setSelectionPath(vwr.spectraTree.newTreePath(treeNode.getPath()));
 		}
 	}
 	
@@ -54,9 +54,9 @@ public class SimpleTree implements JSVTree {
 
 	@Override
 	public JSVTreeNode createTree(int fileCount, JDXSource source, JSVPanel[] panels) {
-		SimpleTree tree = (SimpleTree) viewer.spectraTree;
+		SimpleTree tree = (SimpleTree) vwr.spectraTree;
 		JSVTreeNode rootNode = tree.getRootNode();
-		List<PanelNode> panelNodes = viewer.panelNodes;
+		List<PanelNode> panelNodes = vwr.panelNodes;
 
 		String fileName = JSVFileManager.getTagName(source.getFilePath());
 		PanelNode panelNode = new PanelNode(null, fileName, source, null);
@@ -77,7 +77,7 @@ public class SimpleTree implements JSVTree {
 					fileNode.getChildCount());
 			// tree.scrollPathToVisible(new TreePath(treeNode.getPath()));
 		}
-		viewer.selectFrameNode(panels[0]);
+		vwr.selectFrameNode(panels[0]);
 		return fileNode;
 	}
 

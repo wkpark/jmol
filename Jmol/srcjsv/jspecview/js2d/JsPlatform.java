@@ -39,7 +39,7 @@ public class JsPlatform implements GenericPlatform {
 	  /**
 	   * @j2sNative
 	   * 
-     *     this.viewer = viewer;
+     *     this.vwr = viewer;
      *     this.canvas = canvas;
      *     if (canvas != null) {
 	   *       this.context = canvas.getContext("2d");
@@ -256,7 +256,7 @@ public class JsPlatform implements GenericPlatform {
      * @j2sNative
      * 
      *  if (typeof Jmol != "undefined" && Jmol._getHiddenCanvas)
-     *    return Jmol._getHiddenCanvas(this.viewer.applet, "stereoImage", w, h); 
+     *    return Jmol._getHiddenCanvas(this.vwr.applet, "stereoImage", w, h); 
      */
     {}
     return null;
@@ -268,7 +268,7 @@ public class JsPlatform implements GenericPlatform {
      * @j2sNative
      * 
      *  if (typeof Jmol != "undefined" && Jmol._getHiddenCanvas)
-     *    return Jmol._getHiddenCanvas(this.viewer.applet, "textImage", w, h); 
+     *    return Jmol._getHiddenCanvas(this.vwr.applet, "textImage", w, h); 
      */
     {}
     return null;
@@ -277,29 +277,8 @@ public class JsPlatform implements GenericPlatform {
 	@Override
 	public boolean waitForDisplay(Object echoNameAndPath, Object zipBytes)
 			throws InterruptedException {
-  
-	  /**
-	   * 
-	   * this is important specifically for retrieving images from
-	   * files, as in set echo ID myimage "image.gif"
-	   * 
-	   * return will be immediate, before the image is created, so here there is
-	   * no "wait." Instead, we give it a callback 
-	   * 
-	   * @j2sNative
-	   * 
-     * if (typeof Jmol == "undefined" || !Jmol._getHiddenCanvas) return false;
-	   * var viewer = this.viewer;
-	   * var sc = viewer.getEvalContextAndHoldQueue(viewer.eval);
-	   * var echoName = echoNameAndPath[0];
-	   * return Jmol._loadImage(this, echoNameAndPath, zipBytes, 
-	   *   function(canvas, pathOrError) { viewer.loadImageData(canvas, pathOrError, echoName, sc) }
-	   * );
-	   * 
-	   */	  
-	  {
-	    return false;	    
-	  }
+		// not implmented in JSpecView
+	  return false;	    
 	}
 
 	// /// FONT

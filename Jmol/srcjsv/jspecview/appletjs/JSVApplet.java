@@ -89,16 +89,16 @@ public class JSVApplet implements JSVAppletInterface,
 		AppletFrame {
 
 	protected JSVApp app;
-	public JSViewer viewer;
+	public JSViewer vwr;
 
 	private boolean isStandalone = false;
-	protected Map<String, Object> viewerOptions;
+	protected Map<String, Object> vwrOptions;
 	private Map<String, Object> htParams;
 
   public JSVApplet(Map<String, Object>viewerOptions) {
   	if (viewerOptions == null)
   		viewerOptions = new Hashtable<String, Object>();
-  	this.viewerOptions = viewerOptions;
+  	this.vwrOptions = viewerOptions;
   	htParams = new Hashtable<String, Object>();
   	for (Map.Entry<String, Object> entry : viewerOptions.entrySet())
   		htParams.put(entry.getKey().toLowerCase(), entry.getValue());
@@ -115,23 +115,23 @@ public class JSVApplet implements JSVAppletInterface,
 		app = new JSVApp(this, true);
 		initViewer();
 		
-		if (app.appletReadyCallbackFunctionName != null && viewer.fullName != null)
+		if (app.appletReadyCallbackFunctionName != null && vwr.fullName != null)
 			callToJavaScript(app.appletReadyCallbackFunctionName, new Object[] {
-					viewer.appletID, viewer.fullName, Boolean.TRUE, this });
+					vwr.appletID, vwr.fullName, Boolean.TRUE, this });
 	}
 
 	protected void initViewer() {
-		viewer = app.viewer;
+		vwr = app.vwr;
     setLogging();
-    viewerOptions.remove("debug");
-    Object o = viewerOptions.get("display");
+    vwrOptions.remove("debug");
+    Object o = vwrOptions.get("display");
     /**
      * @j2sNative
      * 
      *            o = document.getElementById(o);
      */
     {}
-    viewer.setDisplay(o);
+    vwr.setDisplay(o);
      
 //	  app.viewer.scriptQueue = new JmolList<String>();
 //		commandWatcherThread = new Thread(new CommandWatcher());
@@ -546,7 +546,7 @@ public class JSVApplet implements JSVAppletInterface,
 	@Override
 	public URL getDocumentBase() {
 		try {
-			return new URL((URL) null, (String) viewerOptions.get("documentBase"), null);
+			return new URL((URL) null, (String) vwrOptions.get("documentBase"), null);
 		} catch (MalformedURLException e) {
 			return null;
 		}

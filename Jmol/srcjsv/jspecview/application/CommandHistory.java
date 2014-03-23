@@ -36,14 +36,14 @@ import jspecview.common.JSViewer;
 
 public class CommandHistory {
 
-  private JSViewer viewer;
+  private JSViewer vwr;
   private JTextField input;
   private List<String> cmdList = new List<String>();
   private int cmdPt = -1;
   private int cmdOffset = 0;
 
   public CommandHistory(JSViewer viewer, JTextField commandInput) {
-    this.viewer = viewer;
+    this.vwr = viewer;
     input = commandInput;
     // TODO Auto-generated constructor stub
   }
@@ -56,7 +56,7 @@ public class CommandHistory {
     case KeyEvent.VK_ENTER:
       String cmd = input.getText();
       addCommand(cmd);
-      viewer.runScript(cmd);
+      vwr.runScript(cmd);
       input.setText("");
       input.requestFocusInWindow(); 
       return;

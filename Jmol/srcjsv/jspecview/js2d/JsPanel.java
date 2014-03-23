@@ -88,7 +88,7 @@ public class JsPanel implements JSVPanel {
   }
 
 	private GenericMouseInterface mouse;
-	private JSViewer viewer;
+	private JSViewer vwr;
 
 	String name;
 	private GenericColor bgcolor;
@@ -126,7 +126,7 @@ public class JsPanel implements JSVPanel {
   }
 
   private JsPanel(JSViewer viewer, boolean withPd) {
-  	this.viewer = viewer;
+  	this.vwr = viewer;
     this.pd = (withPd ? new PanelData(this, viewer) : null);
   	apiPlatform = viewer.apiPlatform;
     mouse = apiPlatform.getMouseManager(0, this);
@@ -184,7 +184,7 @@ public class JsPanel implements JSVPanel {
 		Logger.info(msg);
 		/**
 		 * @j2sNative
-		 * this.viewer.applet._showStatus(msg, title);
+		 * this.vwr.applet._showStatus(msg, title);
 		 */
 		{
 		}
@@ -211,7 +211,7 @@ public class JsPanel implements JSVPanel {
   	pd.taintedAll |= andTaintAll;
   	// from dialogs, to the system
   	if (!pd.isPrinting)
-      viewer.requestRepaint();
+      vwr.requestRepaint();
   }
   
 //  @Override
@@ -247,15 +247,15 @@ public class JsPanel implements JSVPanel {
      */
     {}
 
-    if (viewer == null)
+    if (vwr == null)
       return;
 
     if (pd == null) {
     	if (bgcolor == null)
-    		bgcolor = viewer.g2d.getColor1(-1);
-			viewer.g2d.fillBackground(context, bgcolor);
-			viewer.g2d.fillBackground(contextRear, bgcolor);
-			viewer.g2d.fillBackground(contextFront, bgcolor);
+    		bgcolor = vwr.g2d.getColor1(-1);
+			vwr.g2d.fillBackground(context, bgcolor);
+			vwr.g2d.fillBackground(contextRear, bgcolor);
+			vwr.g2d.fillBackground(contextFront, bgcolor);
 			return;
   	}
   	
@@ -263,7 +263,7 @@ public class JsPanel implements JSVPanel {
       return;
     pd.g2d = pd.g2d0;
     pd.drawGraph(context, contextFront, contextRear, getWidth(), getHeight(), false);
-    viewer.repaintDone();
+    vwr.repaintDone();
   }
 
   /*----------------- METHODS IN INTERFACE Printable ---------------------- */
@@ -317,12 +317,12 @@ public class JsPanel implements JSVPanel {
 	@Override
 	public int getHeight() {
 		// TODO Auto-generated method stub
-		return viewer.getHeight();
+		return vwr.getHeight();
 	}
 
 	@Override
 	public int getWidth() {
-		return viewer.getWidth();
+		return vwr.getWidth();
 	}
 
 	@Override
@@ -383,7 +383,7 @@ public class JsPanel implements JSVPanel {
 
 	@Override
 	public void showMenu(int x, int y) {
-  	viewer.showMenu(x, y);
+  	vwr.showMenu(x, y);
 	}
 }
 	

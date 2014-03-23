@@ -121,7 +121,7 @@ public class JSVApplet extends JApplet implements JSVAppletInterface,
 
 	protected void init2() {
 		isJNLP = (getParameter("syncId") == null);
-		viewer = app.viewer;
+		viewer = app.vwr;
 		viewer.display = getContentPane();
 		viewer.scriptQueue = new List<String>();
 		commandWatcherThread = new Thread(new CommandWatcher());
@@ -523,7 +523,7 @@ public class JSVApplet extends JApplet implements JSVAppletInterface,
 				try {
 					Thread.sleep(commandDelay);
 					if (commandWatcherThread != null) {
-						List<String> q = app.viewer.scriptQueue;
+						List<String> q = app.vwr.scriptQueue;
 						if (q.size() > 0) {
 							String scriptItem = q.remove(0);
 							if (scriptItem != null)

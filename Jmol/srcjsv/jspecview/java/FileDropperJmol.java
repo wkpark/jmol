@@ -60,9 +60,7 @@ public class FileDropperJmol implements DropTargetListener {
 
   static public final String FD_PROPERTY_INLINE = "inline";
 
-  //JmolViewer viewer;
   PropertyChangeListener pcl;
-  //JmolStatusListener statusListener;
 
   /**
 	 * @param viewer  
@@ -70,7 +68,6 @@ public class FileDropperJmol implements DropTargetListener {
   public FileDropperJmol(PlatformViewer viewer) {
     fd_oldFileName = "";
     fd_propSupport = new PropertyChangeSupport(this);
-    //this.viewer = viewer;
     addPropertyChangeListener((pcl = new PropertyChangeListener() {
       @Override
 			public void propertyChange(PropertyChangeEvent evt) {
@@ -84,7 +81,6 @@ public class FileDropperJmol implements DropTargetListener {
 
   public void dispose() {
     removePropertyChangeListener(pcl);
-   // viewer = null;
   }
 
   private void loadFile(String fname) {

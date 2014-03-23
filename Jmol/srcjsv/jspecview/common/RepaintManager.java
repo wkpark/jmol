@@ -3,12 +3,12 @@ package jspecview.common;
 public class RepaintManager {
 
 	public RepaintManager(JSViewer viewer) {
-		this.viewer = viewer;
+		this.vwr = viewer;
 	}
   /////////// thread management ///////////
   
   boolean repaintPending;
-	private JSViewer viewer;
+	private JSViewer vwr;
 
 //  private int n;
   public boolean refresh() {
@@ -18,16 +18,16 @@ public class RepaintManager {
       return false;
     }
     repaintPending = true;
-    viewer.pd().taintedAll = true;
+    vwr.pd().taintedAll = true;
     /**
      * @j2sNative
      * 
-     *  if (typeof Jmol != "undefined" && Jmol._repaint && this.viewer.applet) 
-     *    Jmol._repaint(this.viewer.applet, false);
+     *  if (typeof Jmol != "undefined" && Jmol._repaint && this.vwr.applet) 
+     *    Jmol._repaint(this.vwr.applet, false);
      *  this.repaintDone();
      */
     {
-    	viewer.selectedPanel.repaint();
+    	vwr.selectedPanel.repaint();
     }
     return true;
   }

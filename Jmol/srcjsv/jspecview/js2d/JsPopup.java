@@ -61,7 +61,7 @@ public class JsPopup extends JSVGenericPopup {
   public void menuShowPopup(SC popup, int x, int y) {
 
     try {
-      ((JPopupMenu) popup).show(isTainted ? (Component) viewer.getApplet() : null, x, y);
+      ((JPopupMenu) popup).show(isTainted ? (Component) vwr.getApplet() : null, x, y);
     } catch (Exception e) {
       // ignore
     }

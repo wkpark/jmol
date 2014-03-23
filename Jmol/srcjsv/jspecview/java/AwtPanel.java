@@ -112,7 +112,7 @@ public class AwtPanel extends JPanel implements JSVPanel, Printable {
     return pd;
   }
 
-	private JSViewer viewer;
+	private JSViewer vwr;
 	private GenericMouseInterface mouse;
 
   private GenericColor bgcolor;
@@ -167,7 +167,7 @@ public class AwtPanel extends JPanel implements JSVPanel, Printable {
   }
 
   private AwtPanel(JSViewer viewer, boolean withPD) {
-  	this.viewer = viewer;
+  	this.vwr = viewer;
     this.pd = (withPD ? new PanelData(this, viewer) : null);
   	this.apiPlatform = viewer.apiPlatform;
     mouse = apiPlatform.getMouseManager(0, this);
@@ -214,7 +214,7 @@ public class AwtPanel extends JPanel implements JSVPanel, Printable {
   	pd.taintedAll |= andTaintAll;
   	// to the system
   	if (!pd.isPrinting)
-      viewer.requestRepaint();
+      vwr.requestRepaint();
   }
   
   @Override
@@ -237,7 +237,7 @@ public class AwtPanel extends JPanel implements JSVPanel, Printable {
   	
   	// from the system, via update or applet/app repaint
   	
-    if (viewer == null || pd == null || pd.graphSets == null || pd.isPrinting)
+    if (vwr == null || pd == null || pd.graphSets == null || pd.isPrinting)
       return;
     
     super.paintComponent(g); // paint background
@@ -249,7 +249,7 @@ public class AwtPanel extends JPanel implements JSVPanel, Printable {
     	// tough luck
     }
     
-    viewer.repaintDone();
+    vwr.repaintDone();
   }
   
   @Override
@@ -425,7 +425,7 @@ public class AwtPanel extends JPanel implements JSVPanel, Printable {
 
 	@Override
 	public void showMenu(int x, int y) {
-  	viewer.showMenu(x, y);
+  	vwr.showMenu(x, y);
 	}
 
 }

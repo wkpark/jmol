@@ -18,7 +18,7 @@ public class AppToolBar extends JToolBar {
 
   private static final long serialVersionUID = 1L;
   protected MainFrame mainFrame;
-  protected JSViewer viewer;
+  protected JSViewer vwr;
 
   JToggleButton gridToggleButton, coordsToggleButton, revPlotToggleButton;
   
@@ -27,7 +27,7 @@ public class AppToolBar extends JToolBar {
 
   public AppToolBar(MainFrame mainFrame) {
     this.mainFrame = mainFrame;
-    this.viewer = mainFrame.viewer;
+    this.vwr = mainFrame.vwr;
     jbInit();
   }
 
@@ -114,11 +114,11 @@ public class AppToolBar extends JToolBar {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (script.equals("open"))
-	        viewer.openFileFromDialog(false, false, false, null);
+	        vwr.openFileFromDialog(false, false, false, null);
 				else if (script.equals("about"))
 	        new AboutDialog(mainFrame);
 				else
-					viewer.runScript(script);
+					vwr.runScript(script);
 			}
     });
     add(button, null);

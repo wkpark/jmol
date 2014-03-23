@@ -73,10 +73,10 @@ import org.jmol.util.Logger;
 public class PanelData implements EventManager {
 
 	public JSVGraphics g2d, g2d0;
-	private JSViewer viewer;
+	private JSViewer vwr;
 
 	public PanelData(JSVPanel panel, JSViewer viewer) {
-		this.viewer = viewer;
+		this.vwr = viewer;
 		this.jsvp = panel;
 		this.g2d = this.g2d0 = viewer.g2d;
     BLACK = g2d.getColor1(0);
@@ -1363,7 +1363,7 @@ public class PanelData implements EventManager {
 			return null;
 		}
 		Spectrum spec = getSpectrum();
-		JSVDialog dialog = viewer.getDialog(type, spec);
+		JSVDialog dialog = vwr.getDialog(type, spec);
 		if (ad == null && type == AType.Measurements)
 			ad = new MeasurementData(AType.Measurements, spec);
 		if (ad != null)

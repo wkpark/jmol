@@ -30,7 +30,7 @@ public class AwtTree extends JTree implements JSVTree {
 	protected ScriptInterface si;
   private JSVTreeNode rootNode;
   private DefaultTreeModel spectraTreeModel;
-	protected JSViewer viewer;
+	protected JSViewer vwr;
 
 	@Override
 	public JSVTreeNode getRootNode() {
@@ -39,7 +39,7 @@ public class AwtTree extends JTree implements JSVTree {
 
 	public AwtTree(JSViewer viewer) {
 		super();
-		final JSViewer v = this.viewer = viewer;
+		final JSViewer v = this.vwr = viewer;
     rootNode = new AwtTreeNode("Spectra", null);
     spectraTreeModel = new DefaultTreeModel((TreeNode) rootNode);
     setModel(spectraTreeModel);
@@ -58,18 +58,18 @@ public class AwtTree extends JTree implements JSVTree {
 	@Override
 	public void setSelectedPanel(ScriptInterface si, JSVPanel jsvp) {
 		if (jsvp != null) {
-			JSVTreeNode treeNode = PanelNode.findNode(jsvp, viewer.panelNodes).treeNode;
-			scrollPathToVisible((TreePath) viewer.spectraTree.newTreePath(treeNode.getPath()));
-			setSelectionPath((TreePath) viewer.spectraTree.newTreePath(treeNode.getPath()));
+			JSVTreeNode treeNode = PanelNode.findNode(jsvp, vwr.panelNodes).treeNode;
+			scrollPathToVisible((TreePath) vwr.spectraTree.newTreePath(treeNode.getPath()));
+			setSelectionPath((TreePath) vwr.spectraTree.newTreePath(treeNode.getPath()));
 		}
 	}
 	
 	@Override
 	public JSVTreeNode createTree(int fileCount,
 			JDXSource source, JSVPanel[] panels) {
-  	AwtTree tree = (AwtTree) viewer.spectraTree;
+  	AwtTree tree = (AwtTree) vwr.spectraTree;
 		JSVTreeNode rootNode = tree.getRootNode();
-    List<PanelNode> panelNodes = viewer.panelNodes;
+    List<PanelNode> panelNodes = vwr.panelNodes;
 
     String fileName = JSVFileManager.getTagName(source.getFilePath());
     PanelNode panelNode = new PanelNode(null, fileName, source, null);
@@ -90,7 +90,7 @@ public class AwtTree extends JTree implements JSVTree {
           .getChildCount());
       tree.scrollPathToVisible(new TreePath(treeNode.getPath()));
     }
-    viewer.selectFrameNode(panels[0]);
+    vwr.selectFrameNode(panels[0]);
     return fileNode;
 	}
 

@@ -45,11 +45,11 @@ abstract class FormExporter implements JSVExporter {
   String errMsg;
   String currentTime;
   protected OC out;
-  protected JSViewer viewer;
+  protected JSViewer vwr;
 
 
   protected void initForm(JSViewer viewer, OC out) {
-  	this.viewer = viewer;
+  	this.vwr = viewer;
   	this.out = out;
     currentTime = viewer.apiPlatform.getDateFormat(false);
   }

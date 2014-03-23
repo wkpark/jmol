@@ -80,7 +80,7 @@ public class AwtPopup extends JSVGenericPopup  {
 		if (name.indexOf("Focus") < 0)
 			return;
 		if (isFocus)
-			viewer.runScript(cmd);
+			vwr.runScript(cmd);
 	}
 
 

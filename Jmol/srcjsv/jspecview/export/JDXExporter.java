@@ -53,7 +53,7 @@ public class JDXExporter implements JSVExporter {
 	private OC out;
 	private ExportType type;
 	private Spectrum spectrum;
-	private JSViewer viewer;
+	private JSViewer vwr;
 
 	public JDXExporter() {
 		
@@ -79,7 +79,7 @@ public class JDXExporter implements JSVExporter {
   	this.out = out;
   	this.type = type;
   	this.spectrum = spectrum;
-  	this.viewer = viewer;
+  	this.vwr = viewer;
     toStringAux(startIndex, endIndex);
     out.closeChannel();
     return "OK " + out.getByteCount() + " bytes";
@@ -207,7 +207,7 @@ public class JDXExporter implements JSVExporter {
         newLine);
     String d = spectrum.getDate();
     String longdate = "";
-    String currentTime = viewer.apiPlatform.getDateFormat(false);
+    String currentTime = vwr.apiPlatform.getDateFormat(false);
     if (spectrum.getLongDate().equals("") || d.length() != 8) {
       longdate = currentTime + " $$ export date from JSpecView";
     } else if (d.length() == 8) { // give a 50 year window; Y2K compliant

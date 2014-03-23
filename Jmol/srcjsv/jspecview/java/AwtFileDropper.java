@@ -23,11 +23,11 @@ import org.jmol.util.Logger;
 
 public class AwtFileDropper implements JSVFileDropper, DropTargetListener {
 
-  private JSViewer viewer;
+  private JSViewer vwr;
 
 	@Override
 	public AwtFileDropper set(JSViewer viewer) {
-    this.viewer = viewer;
+    this.vwr = viewer;
     return this;
   }
 
@@ -65,7 +65,7 @@ public class AwtFileDropper implements JSVFileDropper, DropTargetListener {
 		Transferable t = dtde.getTransferable();
 		boolean isAccepted = false;
 		boolean doAppend = false;
-		if (viewer.currentSource != null) {
+		if (vwr.currentSource != null) {
 			Object[] options = { "Replace", "Append", "Cancel" };
 			int ret = JOptionPane.showOptionDialog(null, "Select an option",
 					"JSpecView File Drop", JOptionPane.DEFAULT_OPTION,
@@ -101,7 +101,7 @@ public class AwtFileDropper implements JSVFileDropper, DropTargetListener {
 				sb.append(postfix);
 				cmd = sb.toString();
 				Logger.info("Drop command = " + cmd);
-				viewer.runScript(cmd);
+				vwr.runScript(cmd);
 				return;
 			}
 		}
@@ -201,7 +201,7 @@ public class AwtFileDropper implements JSVFileDropper, DropTargetListener {
 		if (fileToLoad != null) {
 			cmd = prefix + cmd + PT.esc(fileToLoad) + "\";" + postfix;
 			Logger.info("Drop command = " + cmd);
-			viewer.runScriptNow(cmd);
+			vwr.runScriptNow(cmd);
 		}
 	}
   

@@ -28,7 +28,7 @@ abstract public class JSVDialog extends Annotation implements AnnotationData {
 	
 	protected AType type;
 	protected String title;
-	protected JSViewer viewer;
+	protected JSViewer vwr;
 	protected Spectrum spec;
 	protected DialogManager manager;
 	protected PlatformDialog dialog;
@@ -69,7 +69,7 @@ abstract public class JSVDialog extends Annotation implements AnnotationData {
 	 */
 	public JSVDialog setParams(String title, JSViewer viewer, Spectrum spec) {
 		this.title = title;
-		this.viewer = viewer;
+		this.vwr = viewer;
 		this.spec = spec;
 		manager = viewer.getDialogManager();
 		jsvp = viewer.selectedPanel;
@@ -431,7 +431,7 @@ abstract public class JSVDialog extends Annotation implements AnnotationData {
 			case OverlayLegend:
 				break;
 			case Views:
-				viewer.parameters.viewOffset = Double.parseDouble((String) objects[0]);
+				vwr.parameters.viewOffset = Double.parseDouble((String) objects[0]);
 				break;
 			}
 			loadData();
@@ -503,7 +503,7 @@ abstract public class JSVDialog extends Annotation implements AnnotationData {
 	}
 
 	private boolean checkVisible() {
-		return viewer.pd().getShowAnnotation(type);
+		return vwr.pd().getShowAnnotation(type);
 	}
 
 	private void getUnitOptions() {
@@ -693,7 +693,7 @@ abstract public class JSVDialog extends Annotation implements AnnotationData {
 			break;
 		case OverlayLegend:
 			header = new String[] { "No.", "Plot Color", "Title" };
-			data = viewer.selectedPanel.getPanelData().getOverlayLegendData();
+			data = vwr.selectedPanel.getPanelData().getOverlayLegendData();
 			widths = new int[] { 30, 60, 250 };
 			createTable(data, header, widths);
 			setTableSelectionEnabled(true);

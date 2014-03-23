@@ -89,7 +89,7 @@ public class JSpecView implements JSVInterface {
       else
         for (int i = 0; i < args.length; i++) {
           System.out.println("JSpecView is attempting to open " + args[i]);
-          jsv.mainFrame.viewer.openFile(args[i], false);
+          jsv.mainFrame.vwr.openFile(args[i], false);
         }
     }
     jsv.mainFrame.setVisible(true);

@@ -28,13 +28,13 @@ import jspecview.source.JDXSource;
  */
 abstract public class DialogManager {
 
-	protected JSViewer viewer;
+	protected JSViewer vwr;
 	private Map<Object, String> htSelectors;
 	protected Map<String, JSVDialog> htDialogs;
 	private Map<String, Object> options;
 
 	public DialogManager set(JSViewer viewer) {
-		this.viewer = viewer;
+		this.vwr = viewer;
 		htSelectors = new Hashtable<Object, String>();
 		htDialogs = new Hashtable<String, JSVDialog>();
 		return this;
@@ -111,7 +111,7 @@ abstract public class DialogManager {
 		}
 		try {
 			String s = JSVFileManager.getFileAsString(f);
-			if (viewer.isJS)
+			if (vwr.isJS)
 				s = PT.rep(s, "<", "&lt;");
 			showMessage(null, s, f);
 		} catch (Exception ex) {

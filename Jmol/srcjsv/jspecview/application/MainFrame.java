@@ -133,7 +133,7 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 
 	// ----------------------------------------------------------------------
 
-	public JSViewer      viewer;
+	public JSViewer      vwr;
 	private ApplicationMenu         appMenu;
 	private AppToolBar      toolBar;
 	private JTextField      commandInput = new JTextField();
@@ -205,8 +205,8 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 	 * @param jmolOrAdvancedApplet
 	 */
 	public MainFrame(Component jmolDisplay, JSVInterface jmolOrAdvancedApplet) {
-		viewer = new JSViewer(this, false, false);
-		JSVFileManager.setDocumentBase(viewer, null);
+		vwr = new JSViewer(this, false, false);
+		JSVFileManager.setDocumentBase(vwr, null);
 		this.jmolDisplay = jmolDisplay;
 		if (jmolDisplay != null)
 			jmolFrame = jmolDisplay.getParent();
@@ -217,7 +217,7 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 	}
 
 	void exitJSpecView(boolean withDialog) {
-		jmolOrAdvancedApplet.saveProperties(viewer.properties);
+		jmolOrAdvancedApplet.saveProperties(vwr.properties);
 		if (isEmbedded) {
 			awaken(false);
 			return;
@@ -268,8 +268,8 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 	private void init() {
 
 		// initialise MainFrame as a target for the drag-and-drop action
-		DropTargetListener dtl = (DropTargetListener) viewer.getPlatformInterface("FileDropper");
-		((JSVFileDropper) dtl).set(viewer);
+		DropTargetListener dtl = (DropTargetListener) vwr.getPlatformInterface("FileDropper");
+		((JSVFileDropper) dtl).set(vwr);
 		new DropTarget(this, dtl);
 		Class<? extends MainFrame> cl = getClass();
 		URL iconURL = cl.getResource("icons/spec16.gif"); // imageIcon
@@ -277,7 +277,7 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 
 		// Initalize application properties with defaults
 		// and load properties from file
-		Properties properties = viewer.properties = new Properties();
+		Properties properties = vwr.properties = new Properties();
 		// sets the list of recently opened files property to be initially empty
 		properties.setProperty("recentFilePaths", "");
 		properties.setProperty("confirmBeforeExit", "true");
@@ -320,7 +320,7 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 		setApplicationProperties(true);
 		tempDS = defaultDisplaySchemeName;
 		// initialise Spectra tree
-		viewer.spectraTree = tree = new AwtTree(viewer);
+		vwr.spectraTree = tree = new AwtTree(vwr);
 		tree.setCellRenderer(new SpectraTreeCellRenderer());
 		tree.putClientProperty("JTree.lineStyle", "Angled");
 		tree.setShowsRootHandles(true);
@@ -328,8 +328,8 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 		tree.addMouseListener(new MouseListener() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2 && viewer.selectedPanel != null) {
-					viewer.selectedPanel.getPanelData().setZoom(0, 0, 0, 0);
+				if (e.getClickCount() == 2 && vwr.selectedPanel != null) {
+					vwr.selectedPanel.getPanelData().setZoom(0, 0, 0, 0);
 					repaint();
 				}
 			}
@@ -379,8 +379,8 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 	 */
 	private void setApplicationElements() {
 		appMenu.setSelections(sidePanelOn, toolbarOn, statusbarOn,
-				viewer.selectedPanel);
-		toolBar.setSelections(viewer.selectedPanel);
+				vwr.selectedPanel);
+		toolBar.setSelections(vwr.selectedPanel);
 	}
 
 	/**
@@ -391,7 +391,7 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 	private void setApplicationProperties(
 			boolean shouldApplySpectrumDisplaySettings) {
 
-		Properties properties = viewer.properties;
+		Properties properties = vwr.properties;
 		String recentFilesString = properties.getProperty("recentFilePaths");
 		recentFilePaths.clear();
 		if (!recentFilesString.equals("")) {
@@ -405,11 +405,11 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 		showExitDialog = Boolean.parseBoolean(properties
 				.getProperty("confirmBeforeExit"));
 
-		viewer.interfaceOverlaid = Boolean.parseBoolean(properties
+		vwr.interfaceOverlaid = Boolean.parseBoolean(properties
 				.getProperty("automaticallyOverlay"));
-		viewer.autoShowLegend = Boolean.parseBoolean(properties
+		vwr.autoShowLegend = Boolean.parseBoolean(properties
 				.getProperty("automaticallyShowLegend"));
-		AwtFileHelper fh = (AwtFileHelper) viewer.fileHelper; 
+		AwtFileHelper fh = (AwtFileHelper) vwr.fileHelper; 
 		fh.useDirLastOpened = Boolean.parseBoolean(properties
 				.getProperty("useDirectoryLastOpenedFile"));
 		fh.useDirLastExported = Boolean.parseBoolean(properties
@@ -426,13 +426,13 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 				.getProperty("defaultDisplaySchemeName");
 
 		if (shouldApplySpectrumDisplaySettings) {
-			viewer.parameters.setBoolean(ScriptToken.GRIDON, Parameters.isTrue(properties
+			vwr.parameters.setBoolean(ScriptToken.GRIDON, Parameters.isTrue(properties
 					.getProperty("showGrid")));
-			viewer.parameters.setBoolean(ScriptToken.COORDINATESON, Parameters
+			vwr.parameters.setBoolean(ScriptToken.COORDINATESON, Parameters
 					.isTrue(properties.getProperty("showCoordinates")));
-			viewer.parameters.setBoolean(ScriptToken.XSCALEON, Parameters.isTrue(properties
+			vwr.parameters.setBoolean(ScriptToken.XSCALEON, Parameters.isTrue(properties
 					.getProperty("showXScale")));
-			viewer.parameters.setBoolean(ScriptToken.YSCALEON, Parameters.isTrue(properties
+			vwr.parameters.setBoolean(ScriptToken.YSCALEON, Parameters.isTrue(properties
 					.getProperty("showYScale")));
 		}
 
@@ -440,17 +440,17 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 		// and update coordinates and grid CheckBoxMenuItems
 
 		// Processing Properties
-		viewer.setIRmode(properties.getProperty("automaticTAConversion"));
+		vwr.setIRmode(properties.getProperty("automaticTAConversion"));
 		try {
-			viewer.autoIntegrate = Boolean.parseBoolean(properties
+			vwr.autoIntegrate = Boolean.parseBoolean(properties
 					.getProperty("automaticallyIntegrate"));
-			viewer.parameters.integralMinY = Double.parseDouble(properties
+			vwr.parameters.integralMinY = Double.parseDouble(properties
 					.getProperty("integralMinY"));
-			viewer.parameters.integralRange = Double.parseDouble(properties
+			vwr.parameters.integralRange = Double.parseDouble(properties
 					.getProperty("integralRange"));
-			viewer.parameters.integralOffset = Double.parseDouble(properties
+			vwr.parameters.integralOffset = Double.parseDouble(properties
 					.getProperty("integralOffset"));
-			viewer.parameters.set(null, ScriptToken.INTEGRALPLOTCOLOR, properties
+			vwr.parameters.set(null, ScriptToken.INTEGRALPLOTCOLOR, properties
 					.getProperty("integralPlotColor"));
 		} catch (Exception e) {
 			// bad property value
@@ -489,7 +489,7 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 		getContentPane().add(statusPanel, BorderLayout.SOUTH);
 		statusPanel.add(statusLabel, BorderLayout.NORTH);
 		statusPanel.add(commandInput, BorderLayout.SOUTH);
-		commandHistory = new CommandHistory(viewer, commandInput);
+		commandHistory = new CommandHistory(vwr, commandInput);
 		commandInput.setFocusTraversalKeysEnabled(false);
 		commandInput.addKeyListener(new KeyListener() {
 			@Override
@@ -526,7 +526,7 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 		} else {
 			mainSplitPane.setLeftComponent(spectraTreeScrollPane);
 		}
-		mainPanel = (Component) (viewer.mainPanel = new AwtMainPanel(new BorderLayout()));
+		mainPanel = (Component) (vwr.mainPanel = new AwtMainPanel(new BorderLayout()));
 		mainSplitPane.setRightComponent(mainPanel);
 	}
 
@@ -563,9 +563,9 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 				ScriptToken st = list.get(0);
 				tip = st.getTip();
 				if (tip.indexOf("TRUE") >= 0)
-					tip = " (" + viewer.parameters.getBoolean(st) + ")";
+					tip = " (" + vwr.parameters.getBoolean(st) + ")";
 				else if (st.name().indexOf("COLOR") >= 0)
-					tip = " (" + CU.toRGBHexString(viewer.parameters.getElementColor(st))
+					tip = " (" + CU.toRGBHexString(vwr.parameters.getElementColor(st))
 							+ ")";
 				else
 					tip = "";
@@ -599,13 +599,13 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 
 	@Override
 	public boolean runScriptNow(String peakScript) {
-		return viewer.runScriptNow(peakScript);
+		return vwr.runScriptNow(peakScript);
 	}
 
 	@Override
 	public void panelEvent(Object eventObj) {
 		if (eventObj instanceof PeakPickEvent) {
-			viewer.processPeakPickEvent(eventObj, true);
+			vwr.processPeakPickEvent(eventObj, true);
 		} else if (eventObj instanceof ZoomEvent) {
 			writeStatus("Double-Click highlighted spectrum in menu to zoom out; CTRL+/CTRL- to adjust Y scaling.");
 		} else if (eventObj instanceof SubSpecChangeEvent) {
@@ -616,12 +616,12 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 	}
 
 	private void advanceSpectrumBy(int n) {
-		int i = viewer.panelNodes.size();
+		int i = vwr.panelNodes.size();
 		for (; --i >= 0;)
-			if (viewer.panelNodes.get(i).jsvp == viewer.selectedPanel)
+			if (vwr.panelNodes.get(i).jsvp == vwr.selectedPanel)
 				break;
-		viewer.setFrameAndTreeNode(i + n);
-		viewer.selectedPanel.getFocusNow(false);
+		vwr.setFrameAndTreeNode(i + n);
+		vwr.selectedPanel.getFocusNow(false);
 	}
 
 	@Override
@@ -648,22 +648,22 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 	}
 
 	public void showPreferences() {
-		PreferencesDialog pd = new PreferencesDialog(this, viewer, "Preferences", true, dsp);
-		viewer.properties = pd.getPreferences();
+		PreferencesDialog pd = new PreferencesDialog(this, vwr, "Preferences", true, dsp);
+		vwr.properties = pd.getPreferences();
 		boolean shouldApplySpectrumDisplaySetting = pd
 				.shouldApplySpectrumDisplaySettingsNow();
 		// Apply Properties where appropriate
 		setApplicationProperties(shouldApplySpectrumDisplaySetting);
 
-		for (int i = viewer.panelNodes.size(); --i >= 0;)
-			siSetPropertiesFromPreferences(viewer.panelNodes.get(i).jsvp,
+		for (int i = vwr.panelNodes.size(); --i >= 0;)
+			siSetPropertiesFromPreferences(vwr.panelNodes.get(i).jsvp,
 					shouldApplySpectrumDisplaySetting);
 
 		setApplicationElements();
 
 		dsp.getDisplaySchemes();
 		if (defaultDisplaySchemeName.equals("Current")) {
-			viewer.setProperty("defaultDisplaySchemeName", tempDS);
+			vwr.setProperty("defaultDisplaySchemeName", tempDS);
 		}
 	}
 
@@ -674,7 +674,7 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 	 *          the name of the format to export in
 	 */
 	void exportSpectrumViaMenu(String command) {
-		new Exporter().write(viewer, ScriptToken.getTokens(command), false);
+		new Exporter().write(vwr, ScriptToken.getTokens(command), false);
 	}
 
 	public void enableStatus(boolean TF) {
@@ -728,7 +728,7 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 
 	@Override
 	public Map<String, Object> getJSpecViewProperty(String key) {
-		return viewer.getPropertyAsJavaObject(key);
+		return vwr.getPropertyAsJavaObject(key);
 	}
 
 	/**
@@ -761,7 +761,7 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 		//System.out.println(Thread.currentThread() + "MainFrame Jmol>JSV sync 11"
 			//	+ Thread.currentThread());
 		tree.setEnabled(false);
-		viewer.syncScript(peakScript);
+		vwr.syncScript(peakScript);
 		tree.setEnabled(true);
 		//System.out.println(Thread.currentThread() + "MainFrame Jmol>JSV sync 12"
 			//	+ Thread.currentThread());
@@ -883,7 +883,7 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 	public void siOpenDataOrFile(Object data, String name,
 			List<Spectrum> specs, String url, int firstSpec, int lastSpec,
 			boolean isAppend, String script, String id) {
-		switch (viewer.openDataOrFile(data, name, specs, url, firstSpec, lastSpec,
+		switch (vwr.openDataOrFile(data, name, specs, url, firstSpec, lastSpec,
 				isAppend, id)) {
 		case JSViewer.FILE_OPEN_OK:
 			if (script != null)
@@ -895,7 +895,7 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 
 	@Override
 	public void siSetCurrentSource(JDXSource source) {
-		viewer.currentSource = source;
+		vwr.currentSource = source;
 		if (source != null)
 		  appMenu.setCloseMenuItem(JSVFileManager.getTagName(source.getFilePath()));
 		boolean isError = (source != null && source.getErrorLog().length() > 0);
@@ -914,9 +914,9 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 			boolean includeMeasures) {
 		ColorParameters ds = dsp.getDisplaySchemes().get(defaultDisplaySchemeName);
 		jsvp.getPanelData().addListener(this);
-		viewer.parameters.setFor(jsvp, (ds == null ? dsp.getDefaultScheme() : ds),
+		vwr.parameters.setFor(jsvp, (ds == null ? dsp.getDefaultScheme() : ds),
 				includeMeasures);
-		viewer.checkAutoIntegrate();
+		vwr.checkAutoIntegrate();
 		jsvp.doRepaint(true);
 	}
 
@@ -928,11 +928,11 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 
 	@Override
 	public void siSetSelectedPanel(JSVPanel jsvp) {
-		if (viewer.selectedPanel != null)
+		if (vwr.selectedPanel != null)
       mainSplitPosition = mainSplitPane.getDividerLocation();
-		viewer.mainPanel.setSelectedPanel(viewer, jsvp, viewer.panelNodes);
-		viewer.selectedPanel = jsvp;
-		viewer.spectraTree.setSelectedPanel(this, jsvp);
+		vwr.mainPanel.setSelectedPanel(vwr, jsvp, vwr.panelNodes);
+		vwr.selectedPanel = jsvp;
+		vwr.spectraTree.setSelectedPanel(this, jsvp);
 		validate();
 		if (jsvp != null) {
       jsvp.setEnabled(true);
@@ -945,20 +945,20 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 
 	@Override
 	public void siSendPanelChange() {
-		if (viewer.selectedPanel == prevPanel)
+		if (vwr.selectedPanel == prevPanel)
 			return;
-		prevPanel = viewer.selectedPanel;
-		viewer.sendPanelChange();
+		prevPanel = vwr.selectedPanel;
+		vwr.sendPanelChange();
 	}
 
 	@Override
 	public void siSyncLoad(String filePath) {
-		viewer.closeSource(null);
+		vwr.closeSource(null);
 		siOpenDataOrFile(null, null, null, filePath, -1, -1, false, null, null);
-		if (viewer.currentSource == null)
+		if (vwr.currentSource == null)
 			return;
-		if (viewer.panelNodes.get(0).getSpectrum().isAutoOverlayFromJmolClick())
-			viewer.execView("*", false);
+		if (vwr.panelNodes.get(0).getSpectrum().isAutoOverlayFromJmolClick())
+			vwr.execView("*", false);
 	}
 
 	@Override
@@ -967,7 +967,7 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 		if (isAll)
 			repaint();
 		else
-			viewer.requestRepaint();
+			vwr.requestRepaint();
 	}
 
 	@Override
@@ -978,14 +978,14 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 
 	@Override
 	public String siLoaded(String value) {
-		PanelData pd = viewer.pd();
+		PanelData pd = vwr.pd();
 		return (!pd.getSpectrum().is1D() && pd.getDisplay1D() ?
 				"Click on the spectrum and use UP or DOWN keys to see subspectra." : null);
 	}
 
 	@Override
 	public void siExecScriptComplete(String msg, boolean isOK) {
-		viewer.requestRepaint();
+		vwr.requestRepaint();
 		if (msg != null) {
 			writeStatus(msg);
 			if (msg.length() == 0)
@@ -1005,7 +1005,7 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 	@Override
 	@SuppressWarnings("incomplete-switch")
 	public void siUpdateBoolean(ScriptToken st, boolean TF) {
-		JSVPanel jsvp = viewer.selectedPanel;
+		JSVPanel jsvp = vwr.selectedPanel;
 		if (jsvp == null)
 			return;
 		switch (st) {
@@ -1065,7 +1065,7 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 		int n = recentFilePaths.size();
 		for (int index = 0; index < n; index++)
 			filePaths.append(", ").append(recentFilePaths.get(index));
-		viewer.setProperty("recentFilePaths", (n == 0 ? "" : filePaths
+		vwr.setProperty("recentFilePaths", (n == 0 ? "" : filePaths
 				.substring(2)));
 		appMenu.updateRecentMenus(recentFilePaths);
 	}
@@ -1080,17 +1080,17 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 
 	@Override
 	public JSVPanel siGetNewJSVPanel2(List<Spectrum> specs) {
-		return AwtPanel.getPanelMany(viewer, specs, 0, 0);
+		return AwtPanel.getPanelMany(vwr, specs, 0, 0);
 	}
 
 	@Override
 	public JSVPanel siGetNewJSVPanel(Spectrum spec) {
-		return (spec == null ? null : AwtPanel.getPanelOne(viewer, spec));
+		return (spec == null ? null : AwtPanel.getPanelOne(vwr, spec));
 	}
 
 	@Override
 	public void siExecTest(String value) {
-		System.out.println(PT.toJSON(null, viewer.getPropertyAsJavaObject(value)));
+		System.out.println(PT.toJSON(null, vwr.getPropertyAsJavaObject(value)));
 		//syncScript("Jmol sending to JSpecView: jmolApplet_object__5768809713073075__JSpecView: <PeakData file=\"file:/C:/jmol-dev/workspace/Jmol-documentation/script_documentation/examples-12/jspecview/acetophenone.jdx\" index=\"31\" type=\"13CNMR\" id=\"6\" title=\"carbonyl ~200\" peakShape=\"multiplet\" model=\"acetophenone\" atoms=\"1\" xMax=\"199\" xMin=\"197\"  yMax=\"10000\" yMin=\"0\" />");
 	}
 

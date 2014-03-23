@@ -9,14 +9,14 @@ import jspecview.common.JSViewer;
 
 public class JsFileHelper implements JSVFileHelper {
 
-	private JSViewer viewer;
+	private JSViewer vwr;
 
 	public JsFileHelper() {
 	}
 
 	@Override
 	public JSVFileHelper set(JSViewer viewer) {
-		this.viewer = viewer;
+		this.vwr = viewer;
 		return this;
 	}
 
@@ -52,7 +52,7 @@ public class JsFileHelper implements JSVFileHelper {
 	  // userData[0]: isAppend
 	  // userData[1]: script
 		
-		Object applet = viewer.applet;
+		Object applet = vwr.applet;
 		/**
 		 * @j2sNative
 		 * 
@@ -66,7 +66,7 @@ public class JsFileHelper implements JSVFileHelper {
 	}
 
   /**
-   * Called by Jmol._loadFileAsyncDone(this.viewer.applet). Allows for callback
+   * Called by Jmol._loadFileAsyncDone(this.vwr.applet). Allows for callback
    * to set the file name.
    * 
    * @param fileName
@@ -78,7 +78,7 @@ public class JsFileHelper implements JSVFileHelper {
     if (fileName == null)
     	return;
     if (data == null) {
-    	viewer.selectedPanel.showMessage(fileName, "File Open Error");
+    	vwr.selectedPanel.showMessage(fileName, "File Open Error");
     	return;
     }
     String script = (userInfo == null ? null : "");
@@ -92,9 +92,9 @@ public class JsFileHelper implements JSVFileHelper {
     {
     }
     // this file name
-    viewer.si.siOpenDataOrFile(new String((byte[]) data), "cache://" + fileName, null, null, -1, -1, isAppend, null, null);
+    vwr.si.siOpenDataOrFile(new String((byte[]) data), "cache://" + fileName, null, null, -1, -1, isAppend, null, null);
     if (script != null)
-      viewer.runScript(script);
+      vwr.runScript(script);
   }   
 
   @Override

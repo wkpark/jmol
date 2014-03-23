@@ -26,11 +26,11 @@ import netscape.javascript.JSObject;
 
 public class AwtPlatform implements GenericPlatform {
 
-  PlatformViewer viewer;
+  PlatformViewer vwr;
   
   @Override
 	public void setViewer(PlatformViewer viewer, Object display) {
-    this.viewer = viewer;
+    this.vwr = viewer;
   }
   
   ///// Display 
@@ -69,7 +69,7 @@ public class AwtPlatform implements GenericPlatform {
    */
   @Override
 	public void renderScreenImage(Object g, Object size) {
-    Display.renderScreenImage(viewer, g, size);
+    Display.renderScreenImage(vwr, g, size);
   }
 
   @Override
@@ -183,7 +183,7 @@ public class AwtPlatform implements GenericPlatform {
 
   @Override
 	public boolean waitForDisplay(Object ignored, Object image) throws InterruptedException {
-    Image.waitForDisplay(viewer, image);
+    Image.waitForDisplay(vwr, image);
     return true;
   }
 

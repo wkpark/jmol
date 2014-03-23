@@ -21,11 +21,11 @@ public class AwtFileHelper implements JSVFileHelper {
 	public String dirLastExported;
 
 	private JFileChooser fc;
-	private JSViewer viewer;
+	private JSViewer vwr;
 
 	@Override
 	public AwtFileHelper set(JSViewer viewer) {
-		this.viewer = viewer;
+		this.vwr = viewer;
 		return this;
 	}
 	
@@ -89,7 +89,7 @@ public class AwtFileHelper implements JSVFileHelper {
 			return null;
 		AwtFile file = new AwtFile(fc.getSelectedFile().getAbsolutePath());
 		if (isSave) {
-			viewer.setProperty("directoryLastExportedFile", dirLastExported = file.getParent());
+			vwr.setProperty("directoryLastExportedFile", dirLastExported = file.getParent());
 	    if (file.exists()) {
 	      int option = JOptionPane.showConfirmDialog(c,
 	          "Overwrite " + file.getName() + "?", "Confirm Overwrite Existing File",
@@ -98,7 +98,7 @@ public class AwtFileHelper implements JSVFileHelper {
 	        return null;
 	    }
 		} else {
-			viewer.setProperty("directoryLastOpenedFile", dirLastOpened = file.getParent());
+			vwr.setProperty("directoryLastOpenedFile", dirLastOpened = file.getParent());
 		}
 		return file;
 	}

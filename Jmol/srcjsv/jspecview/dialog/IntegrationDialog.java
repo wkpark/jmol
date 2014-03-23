@@ -46,9 +46,9 @@ public class IntegrationDialog extends JSVDialog {
 	@Override
 	public void addUniqueControls() {
 		txt1 = dialog.addTextField("txtBaselineOffset", "Baseline Offset", null, "%", ""
-				+ viewer.parameters.integralOffset, true);
+				+ vwr.parameters.integralOffset, true);
 		txt2 = dialog.addTextField("txtScale", "Scale", null, "%", ""
-				+ viewer.parameters.integralRange, true);
+				+ vwr.parameters.integralRange, true);
 		// no luck getting this to work.
 		//txt3 = dialog.addTextField("txtMinimum", "Minimum", null, "", "" + viewer.parameters.integralMinY, true);
 		dialog.addButton("btnApply", "Apply");
@@ -83,7 +83,7 @@ public class IntegrationDialog extends JSVDialog {
 			}
 			if (!id.equals("windowClosing") && !id.equals("FOCUS")) {
 				if (id.equals("btnAuto") || xyData == null || xyData.size() == 0) {
-					viewer.runScript("integrate auto");
+					vwr.runScript("integrate auto");
 					eventApply();
 					return true;
 				}

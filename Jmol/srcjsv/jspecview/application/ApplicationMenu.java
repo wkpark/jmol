@@ -82,7 +82,7 @@ public class ApplicationMenu extends JMenuBar {
 
   public ApplicationMenu(MainFrame si) throws Exception {
     this.mainFrame = si;
-    viewer = si.viewer;
+    viewer = si.vwr;
     jbInit();
   }
 
@@ -473,7 +473,7 @@ public class ApplicationMenu extends JMenuBar {
   }
 
 	protected void doMenuSelected() {
-		PanelData pd = mainFrame.viewer.pd();
+		PanelData pd = mainFrame.vwr.pd();
     gridCheckBoxMenuItem.setSelected(pd != null && pd.getBoolean(ScriptToken.GRIDON));
     coordsCheckBoxMenuItem.setSelected(pd != null && pd.getBoolean(ScriptToken.COORDINATESON));
     revPlotCheckBoxMenuItem.setSelected(pd != null && pd.getBoolean(ScriptToken.REVERSEPLOT));

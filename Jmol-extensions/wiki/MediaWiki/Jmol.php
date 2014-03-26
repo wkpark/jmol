@@ -85,6 +85,8 @@ global $wgJmolForceHTML5;
 global $wgJmolShowWarnings;
 global $wgJmolUsingSignedAppletByDefault;
 global $wgJmolMaxAppletSize;
+global $wgJmolPlatformSpeed;
+global $wgJmolCoverImageGenerator;
 
 // These are the default (recommended) values.
 // They can be changed here, but it is advisable to change them in LocalSettings.php
@@ -99,20 +101,30 @@ $wgJmolDefaultScript = "";
 $wgJmolExtensionPath = $wgScriptPath."/extensions/jsmol/wiki"; // Jmol";
 $wgJmolForceNameSpace = "";
 $wgJmolShowWarnings = true;
-$wgJmolUsingSignedAppletByDefault = false;
+$wgJmolUsingSignedAppletByDefault = true;
 $wgJmolDefaultAppletSize = "400";
 $wgJmolMaxAppletSize = "600";
 $wgJmolDrawControls = false;
+$wgJmolPlatformSpeed = 8;
+$wgJmolCoverImageGenerator = false;
 
 global $wgHooks;
 if ( defined( 'MW_SUPPORTS_PARSERFIRSTCALLINIT' ) ) {
   $wgHooks['ParserFirstCallInit'][] = 'wfJmolParserInit';
+  $wgHooks['UserToggles'][] = 'JmolUserToggle';
 } else { # support mediawiki < 1.20
   $wgExtensionFunctions[] = 'wfJmolParserInit';
+  $wgHooks['UserToggles'][] = 'JmolUserToggle';
 }
 
 function wfJmolParserInit( ) {
   new Jmol;  return true;
+}
+
+function JmolUserToggle(&$arr) {
+	$arr[] = 'jmolusejava';
+	$arr[] = 'jmolloadfullmodel';
+	return true;
 }
 
 function currentJmolVersion() {

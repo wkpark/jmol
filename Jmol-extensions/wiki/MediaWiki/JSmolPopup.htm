@@ -6,6 +6,7 @@
 <meta charset="utf-8">
 <style type="text/css">
 html , body { height:100%; overflow:hidden; margin:0; padding:0; }
+#controls {position:absolute;bottom:4px;left:4px;z-index:900001;}
 </style>
 <script type="text/javascript" src="/wiki/extensions/jsmol/JSmol.min.js"></script>
 <script type="text/javascript">
@@ -18,10 +19,12 @@ if (opener.JSmolCloneData.type == 'WebGL') {
 <body>
 <script type="text/javascript">
 var cloneInfo = {
+  disableJ2SLoadMonitor: true, 
+  disableInitialConsole: true, 
   height: '100%',
   width: '100%',
   isSigned: false,
-  jarFile: '/wiki/extensions/jsmol/JmolApplet0.jar',
+  jarFile: 'JmolApplet0.jar',
   jarPath: '/wiki/extensions/jsmol/java',
   j2sPath: '/wiki/extensions/jsmol/j2s',
   serverURL: '/wiki/extensions/jsmol/php/jsmol.php',
@@ -29,6 +32,11 @@ var cloneInfo = {
   use: opener.JSmolCloneData.type
 };
 Jmol._alertNoBinary = false;
-Jmol.getApplet("JSmolClone", cloneInfo);
+JSmolClone = Jmol.getApplet("JSmolClone", cloneInfo);
+Jmol.script(JSmolClone,"set platformSpeed " + opener.JSmolCloneData.platformSpeed);
 </script>
+<div id='controls'><script>
+Jmol.jmolButton(JSmolClone,"if(_spinning);spin off;spinflag = false;else;spin on;spinflag = true;endif","toggle spin");
+Jmol.jmolButton(JSmolClone,"set refreshing off;if(antialiasDisplay);antialiasDisplay = false;antialiasDisplayFlag = false;else;antialiasDisplay = true;antialiasDisplayFlag = true;endif;set refreshing on;refresh;","toggle quality");
+</script></div>
 </body>

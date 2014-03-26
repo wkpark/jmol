@@ -24,7 +24,6 @@
 
 package org.jmol.appletjs;
 
-import org.jmol.c.CBK;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.GenericApplet;
@@ -100,35 +99,6 @@ public class Jmol extends GenericApplet {
     // not implemented
   }
 
-  String doNotifySync(String info, String appletName) {
-    String syncCallback = callbacks.get(CBK.SYNC);
-    if (!mayScript || syncCallback == null || !haveDocumentAccess
-        && !syncCallback.startsWith("Jmol."))
-      return info;
-    // ignoring 
-    Logger.info("Jmol.notifySync " + appletName + " >> " + info);
-    try {
-      /**
-       * @j2sNative
-       * 
-       *            if (syncCallback=="Jmol._mySyncCallback") return
-       *            Jmol._mySyncCallback(this.htmlName, info, appletName); var f
-       *            = eval(syncCallback); return f(this.htmlName, info,
-       *            appletName);
-       */
-      {
-        System.out.println(appletName);
-      }
-    } catch (Exception e) {
-      if (!haveNotifiedError)
-        if (Logger.debugging) {
-          Logger.debug("syncCallback call error to " + syncCallback + ": " + e);
-        }
-      haveNotifiedError = true;
-    }
-    return info;
-  }
-
   @Override
   protected float[][] doFunctionXY(String functionName, int nX, int nY) {
     /*three options:
@@ -178,7 +148,7 @@ public class Jmol extends GenericApplet {
         /**
          * @j2sNative
          * 
-         *            data = eval(functionName)(htmlName, nX, nY, fxy);
+         *            data = eval(functionName)(this.htmlName, nX, nY, fxy);
          * 
          */
         {

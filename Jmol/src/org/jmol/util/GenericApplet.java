@@ -15,7 +15,6 @@ import org.jmol.api.JmolAppletInterface;
 import org.jmol.api.JmolCallbackListener;
 import org.jmol.api.JmolStatusListener;
 import org.jmol.api.JmolSyncInterface;
-import org.jmol.api.JmolViewer;
 import org.jmol.c.CBK;
 import org.jmol.i18n.GT;
 import org.jmol.viewer.JC;
@@ -809,7 +808,7 @@ public abstract class GenericApplet implements JmolAppletInterface,
     if (!mayScript || syncCallback == null)
       return info;
     try {
-      return doSendCallback(syncCallback, new Object[] { htmlName, info,
+      return doSendCallback(syncCallback, new Object[] { fullName, info,
           appletName }, null);
     } catch (Exception e) {
       if (!haveNotifiedError)

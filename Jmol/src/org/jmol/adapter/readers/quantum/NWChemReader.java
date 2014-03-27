@@ -34,6 +34,7 @@ import java.util.Map.Entry;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.JmolAdapter;
+import org.jmol.util.Elements;
 import org.jmol.util.Logger;
 
 /**
@@ -140,7 +141,7 @@ public class NWChemReader extends MOReader {
       readSymmetry();
       return true;
     }
-    if (line.indexOf("Output coordinates in angstroms") >= 0) {
+    if (line.indexOf("Output coordinates in ") >= 0) {
       if (!doGetModel(++modelNumber, null))
         return checkLastModel();
       equivalentAtomSets++;
@@ -291,6 +292,7 @@ public class NWChemReader extends MOReader {
    * @throws Exception If an error occurs.
    **/
   private void readAtoms() throws Exception {
+    float scale = (line.indexOf("angstroms") < 0 ? ANGSTROMS_PER_BOHR : 1);
     readLines(3); // skip blank line, titles and dashes
     String tokens[];
     haveEnergy = false;
@@ -305,7 +307,7 @@ public class NWChemReader extends MOReader {
       if (tokens.length < 6)
         break; // if don't have enough of them: done
       String name = fixTag(tokens[1]);
-      addAtomXYZSymName(tokens, 3, null, name);
+      setAtomCoordScaled(null, tokens, 3, scale).atomName = name;
       atomTypes.addLast(name);
     }
     // only if was converged, use the last energy for the name and properties
@@ -469,7 +471,7 @@ public class NWChemReader extends MOReader {
     String tokens[];
     while (rd() != null && line.indexOf("---") < 0) {
       tokens = getTokens();
-      setAtomCoordScaled(null, tokens, 3, ANGSTROMS_PER_BOHR).atomName = fixTag(tokens[0]);
+      setAtomCoordScaled(null, tokens, 2, ANGSTROMS_PER_BOHR).atomName = fixTag(tokens[0]);
     }
 
     discardLinesUntilContains("(Projected Frequencies expressed in cm-1)");
@@ -698,6 +700,8 @@ public class NWChemReader extends MOReader {
       if (parseIntStr(line) == Integer.MIN_VALUE) {
         // next atom type
         atomSym = getTokens()[0];
+        if (atomSym.length() > 2)
+          atomSym = JmolAdapter.getElementSymbol(Elements.elementNumberFromName(atomSym));
         atomData = new  List<List<Object[]>>();
         atomInfo.put(atomSym, atomData);
         rd();

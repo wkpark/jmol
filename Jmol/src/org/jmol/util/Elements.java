@@ -33,7 +33,6 @@ import org.jmol.c.VDW;
 import org.jmol.java.BS;
 
 
-
 public class Elements {
 
   /**
@@ -389,6 +388,12 @@ public class Elements {
     return elementNames[elementNumber];
   }
   
+  public final static int elementNumberFromName(String name) {
+    for (int i = 1; i < elementNumberMax; i++)
+      if (elementNames[i].equalsIgnoreCase(name))
+        return i;
+    return -1;
+  }
   /**
    * @param i index into altElementNames
    * @return elementName

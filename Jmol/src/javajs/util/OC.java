@@ -34,7 +34,9 @@ import javajs.api.BytePoster;
  * send characters or bytes to a JavaScript function
  *  when JavaScript and (typeof fileName == "function")
  *  
- *  
+ * if fileName equals ";base64,", then the data are base64-encoded
+ * prior to writing, and closeChannel() returns the data.
+ * 
  *  @author hansonr  Bob Hanson hansonr@stolaf.edu  9/2013
  *  
  *  
@@ -52,15 +54,23 @@ public class OC extends OutputStream {
   private OutputStream os;
   private SB sb;
   private String type;
+	private boolean isBase64;
+	private OutputStream os0;
   
   public OC setParams(BytePoster bytePoster, String fileName,
                                      boolean asWriter, OutputStream os) {
     this.bytePoster = bytePoster;
     this.fileName = fileName;
+    isBase64 = ";base64,".equals(fileName);
+    if (isBase64) {
+    	fileName = null;
+    	os0 = os;
+    	os = null;
+    }
     this.os = os;
     isLocalFile = (fileName != null && !(fileName.startsWith("http://") || fileName
         .startsWith("https://")));
-    if (asWriter && os != null)
+    if (asWriter && !isBase64 && os != null)
       bw = new BufferedWriter(new OutputStreamWriter(os));
     return this;
   }
@@ -199,49 +209,73 @@ public class OC extends OutputStream {
     closeChannel();
   }
 
-  public String closeChannel() {
-    if (closed)
-      return null;
-    // can't cancel file writers
-    try {
-      if (bw != null) {
-        bw.flush();
-        bw.close();
-      } else if (os != null) {
-        os.flush();
-        os.close();
-      }
-    } catch (Exception e) {
-      // ignore closing issues
-    }
-    if (isCanceled) {
-      closed = true;
-      return null;
-    }
-    if (fileName == null || closed)
-      return (sb == null ? null : sb.toString());
-    closed = true;
-    /**
-     * @j2sNative
-     * 
-     *            var data = (this.sb == null ? this.toByteArray() :
-     *            this.sb.toString()); if (typeof this.fileName == "function") {
-     *            this.fileName(data); } else { Jmol._doAjax(this.fileName,
-     *            null, data); }
-     *            
-     * 
-     */
-    {
-      if (!isLocalFile) {
-        String ret = postByteArray(); // unsigned applet could do this
-        if (ret.startsWith("java.net"))
-          byteCount = -1;
-        return ret;
-      }
-    }
-    return null;
-  }
+	public String closeChannel() {
+		if (closed)
+			return null;
+		// can't cancel file writers
+		try {
+			if (bw != null) {
+				bw.flush();
+				bw.close();
+			} else if (os != null) {
+				os.flush();
+				os.close();
+			}
+			if (os0 != null && isCanceled) {
+				os0.flush();
+				os0.close();
+			}
+		} catch (Exception e) {
+			// ignore closing issues
+		}
+		if (isCanceled) {
+			closed = true;
+			return null;
+		}
+		if (fileName == null) {
+			if (isBase64) {
+				String s = getBase64();
+				if (os0 != null) {
+					os = os0;
+					append(s);
+				}
+				sb = new SB();
+				sb.append(s);
+				isBase64 = false;
+				return closeChannel();
+			}
+			return (sb == null ? null : sb.toString());
+		}
+		closed = true;
+		/**
+		 * @j2sNative
+		 * 
+		 *            var data = (this.sb == null ? this.toByteArray() :
+		 *            this.sb.toString()); if (typeof this.fileName == "function") {
+		 *            this.fileName(data); } else { Jmol._doAjax(this.fileName,
+		 *            null, data); }
+		 * 
+		 * 
+		 */
+		{
+			if (!isLocalFile) {
+				String ret = postByteArray(); // unsigned applet could do this
+				if (ret.startsWith("java.net"))
+					byteCount = -1;
+				return ret;
+			}
+		}
+		return null;
+	}
 
+	public boolean isBase64() {
+		return isBase64;
+	}
+
+	public String getBase64() {
+    return Base64.getBase64(toByteArray()).toString();
+	}
+	
   public byte[] toByteArray() {
     return (os instanceof ByteArrayOutputStream ? ((ByteArrayOutputStream)os).toByteArray() : null);
   }

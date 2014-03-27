@@ -304,7 +304,6 @@ abstract public class JSVDialog extends Annotation implements AnnotationData {
 	}
 
 	public void setFocus(boolean tf) {
-		System.out.println("setFocus " + this.spec);
 		dialog.setFocus(tf);		
 	}
 
@@ -519,7 +518,6 @@ abstract public class JSVDialog extends Annotation implements AnnotationData {
 	private boolean skipCreate;
 	
 	protected void eventFocus() {
-		System.out.println("eventFocus on " + spec);
 		if (spec != null)
 			jsvp.getPanelData().jumpToSpectrum(spec);
 		switch (type) {

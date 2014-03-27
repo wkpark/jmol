@@ -876,16 +876,19 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 		statusLabel.setText(msg);
 	}
 
-	///////////// JSApp/MainFrame ScriptInterface ////////////
-	
+	// /////////// JSApp/MainFrame ScriptInterface ////////////
 
 	@Override
-	public void siOpenDataOrFile(Object data, String name,
-			List<Spectrum> specs, String url, int firstSpec, int lastSpec,
-			boolean isAppend, String script, String id) {
+	public void siOpenDataOrFile(Object data, String name, List<Spectrum> specs,
+			String url, int firstSpec, int lastSpec, boolean isAppend, String script,
+			String id) {
+		boolean isOne = (vwr.currentSource == null);
 		switch (vwr.openDataOrFile(data, name, specs, url, firstSpec, lastSpec,
 				isAppend, id)) {
 		case JSViewer.FILE_OPEN_OK:
+			if (script == null && isOne && vwr.currentSource.isCompoundSource
+					&& vwr.pd().getSpectrum().isGC())
+				script = "VIEW ALL;PEAK GC/MS ID=#1";
 			if (script != null)
 				runScript(script);
 			break;

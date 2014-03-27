@@ -613,7 +613,7 @@ public class Spectrum extends JDXDataObject {
 		// and both must be continuous (because of X scaling)
 		// and must have same xUnits if not a link check
 		if (isNMR1 != s2.isNMR() 
-				|| !s1.isContinuous() || !s2.isContinuous()
+				|| s1.isContinuous() != s2.isContinuous()
 				|| !isLinkCheck && !areUnitsCompatible(s1.xUnits, s2.xUnits))
 			return false;
 		if (isSubspecCheck) {

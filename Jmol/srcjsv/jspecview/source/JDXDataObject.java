@@ -470,11 +470,11 @@ public abstract class JDXDataObject extends JDXHeader {
     return (isGC());// || isUVVis());
   }
 
-  private boolean isGC() {
-    return dataType.startsWith("GC");
+  public boolean isGC() {
+    return dataType.startsWith("GC") || dataType.startsWith("GAS");
   }
 
-  private boolean isMS() {
+  public boolean isMS() {
     return dataType.startsWith("MASS") || dataType.startsWith("MS");
   }
 
@@ -878,7 +878,9 @@ public abstract class JDXDataObject extends JDXHeader {
 
 	public double[] getPeakListArray(Measurement m, double[]last, double maxY) {
 		double x = m.getXVal();
-		double y = m.getYVal() / maxY;
+		double y = m.getYVal();
+		if (isNMR())
+			y /= maxY;
 		double dx = Math.abs(x - last[0]);
 		last[0] = x;
 		double ddx = dx + last[1];

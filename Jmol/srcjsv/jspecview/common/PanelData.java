@@ -368,7 +368,7 @@ public class PanelData implements EventManager {
 			return;
 		}
 		
-		for (int i = 0; i < graphSets.size(); i += 1)
+		for (int i = 0; i < graphSets.size(); i++)
 			if (graphSets.get(i) != currentGraphSet)
 				graphSets.get(i).selectSpectrum(filePath, type, model);
 	}
@@ -579,7 +579,11 @@ public class PanelData implements EventManager {
 	// //// currentGraphSet methods
 
 	private void setCurrentGraphSet(GraphSet gs, int yPixel, int clickCount) {
-		int splitPoint = gs.getSplitPoint(yPixel);
+		// Need to check for nSplit > 1 here because this could be a 
+		// mass spec that has been selected by clicking on a GC peak.
+		// In that case, there is no split, and we should not be changing
+		// the selected spectrum to 0 just because the split point is 0.
+		int splitPoint = (gs.nSplit > 1 ? gs.getSplitPoint(yPixel) : gs.getCurrentSpectrumIndex());
 		boolean isNewSet = (currentGraphSet != gs);
 		boolean isNewSplitPoint = (isNewSet || currentSplitPoint != splitPoint);
 		currentGraphSet = gs;

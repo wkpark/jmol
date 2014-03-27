@@ -1899,6 +1899,7 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 				closeSource(source);
 		}
 		si.siOpenDataOrFile(null, null, null, fileName, -1, -1, true, defaultLoadScript, null);
+		
 	}
 
 	public int selectPanel(JSVPanel jsvp, List<PanelNode> panelNodes) {

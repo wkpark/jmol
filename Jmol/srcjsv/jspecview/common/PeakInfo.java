@@ -155,8 +155,9 @@ public class PeakInfo {
 
 	private boolean checkId(String match) {
 		return (id != null && match != null
-				&& match.toUpperCase().startsWith("ID=") && match.substring(3).equals(
-				id));
+				&& match.toUpperCase().startsWith("ID=") 
+				&& ((match=match.substring(3)).equals(id)
+						|| match.startsWith("#") && match.equals("#" + index)));
 	}
 
 	public String getModel() {

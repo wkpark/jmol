@@ -431,6 +431,11 @@ public class JSVApplet implements JSVAppletInterface,
 		return app.runScriptNow(script);
 	}
 
+	@Override
+	public String print(String fileName) {
+		return app.print(fileName);
+	}
+
 //	private DropTargetListener dtl;
 //	private Component spectrumPanel;
 //	private JFrame offWindowFrame;

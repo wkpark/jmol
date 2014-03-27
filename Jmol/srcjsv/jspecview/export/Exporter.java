@@ -33,7 +33,7 @@ public class Exporter implements ExportInterface {
 	public String write(JSViewer viewer, List<String> tokens, boolean forInkscape) {
 		// MainFrame or applet WRITE command
 		if (tokens == null)
-			return printPDF(viewer, null);
+			return printPDF(viewer, null, false);
 		
 		String type = null;
 		String fileName = null;
@@ -55,7 +55,7 @@ public class Exporter implements ExportInterface {
 				case PDF:
 				case PNG:
 				case JPG:
-					return exportTheSpectrum(viewer, eType, null, null, -1, -1, null);
+					return exportTheSpectrum(viewer, eType, null, null, -1, -1, null, false);
 				default:
 					// select a spectrum
 					viewer.fileHelper.setFileChooser(eType);
@@ -80,7 +80,9 @@ public class Exporter implements ExportInterface {
 			}
 			String ext = fileName.substring(fileName.lastIndexOf(".") + 1)
 					.toUpperCase();
-			if (ext.equals("JDX")) {
+			if (ext.equals("BASE64")) {
+				fileName = ";base64,";
+			} else if (ext.equals("JDX")) {
 				if (type == null)
 					type = "XY";
 			} else if (ExportType.isExportMode(ext)) {
@@ -121,7 +123,10 @@ public class Exporter implements ExportInterface {
     int endIndex = pd.getEndingPointIndex(index);
     String msg = null;
     try {
-    	msg = exportTheSpectrum(viewer, eType, out, spec, startIndex, endIndex, pd);
+    	boolean asBase64 = out.isBase64();
+    	msg = exportTheSpectrum(viewer, eType, out, spec, startIndex, endIndex, pd, asBase64);
+    	if (asBase64)
+    		return msg;
     	if (msg.startsWith("OK"))
     		return "OK - Exported " + eType.name() + ": " + out.getFileName() + msg.substring(2);
     } catch (Exception ioe) {
@@ -133,7 +138,7 @@ public class Exporter implements ExportInterface {
 	@Override
 	public String exportTheSpectrum(JSViewer viewer, ExportType mode,
 			OC out, Spectrum spec, int startIndex, int endIndex,
-			PanelData pd) throws Exception {
+			PanelData pd, boolean asBase64) throws Exception {
 		JSVPanel jsvp = viewer.selectedPanel;
 		String type = mode.name();
 		switch (mode) {
@@ -187,7 +192,7 @@ public class Exporter implements ExportInterface {
 			}
 			return jsvp.saveImage(type.toLowerCase(), file);
 		case PDF:
-			return printPDF(viewer, "PDF");
+			return printPDF(viewer, "PDF", asBase64);
 		case SOURCE:
 			if (jsvp == null)
 				return null;
@@ -197,16 +202,15 @@ public class Exporter implements ExportInterface {
 		}
 		return ((JSVExporter) JSViewer.getInterface("jspecview.export."
 				+ type.toUpperCase() + "Exporter")).exportTheSpectrum(viewer, mode,
-				out, spec, startIndex, endIndex, null);
+				out, spec, startIndex, endIndex, null, false);
 	}
 
 	@SuppressWarnings("resource")
-	private String printPDF(JSViewer viewer, String pdfFileName) {
-		if (!viewer.si.isSigned())
-			return "Error: Applet must be signed for the PRINT command.";
+	private String printPDF(JSViewer viewer, String pdfFileName, boolean isBase64) {
+		
 		boolean isJob = (pdfFileName == null || pdfFileName.length() == 0);
-		boolean isBase64 = (!isJob && pdfFileName.toLowerCase()
-				.startsWith("base64"));
+		if (!isBase64 && !viewer.si.isSigned())
+			return "Error: Applet must be signed for the PRINT command.";
 		PanelData pd = viewer.pd();
 		if (pd == null)
 			return null;

@@ -154,5 +154,7 @@ public interface JSVAppletInterface {
   public abstract void setVisible(boolean b);
 
   public abstract boolean runScriptNow(String script);
+  
+  public abstract String print(String fileName);
 
 }

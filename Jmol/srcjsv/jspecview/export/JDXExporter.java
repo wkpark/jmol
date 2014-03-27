@@ -68,14 +68,14 @@ public class JDXExporter implements JSVExporter {
    * Exports spectrum in one of several formats
    * @param type
    * @param out
-   * @param spectrum the spectrum
    * @param startIndex
    * @param endIndex
+   * @param spectrum the spectrum
    * @return data if path is null
    * @throws IOException
    */
   @Override
-	public String exportTheSpectrum(JSViewer viewer, ExportType type, OC out, Spectrum spectrum, int startIndex, int endIndex, PanelData pd) throws IOException{
+	public String exportTheSpectrum(JSViewer viewer, ExportType type, OC out, Spectrum spectrum, int startIndex, int endIndex, PanelData pd, boolean asBase64) throws IOException{
   	this.out = out;
   	this.type = type;
   	this.spectrum = spectrum;

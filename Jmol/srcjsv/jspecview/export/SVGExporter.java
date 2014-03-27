@@ -70,7 +70,6 @@ public class SVGExporter extends FormExporter {
   
 	/**
 	 * Export a Graph as SVG to a file given by fileName
-	 * 
 	 * @param out
 	 *          the file path
 	 * @param spec
@@ -79,13 +78,14 @@ public class SVGExporter extends FormExporter {
 	 * @param endIndex
 	 * @param mode
 	 *          TODO
+	 * 
 	 * @return data if fileName is null
 	 * @throws IOException
 	 */
 	@Override
 	public String exportTheSpectrum(JSViewer viewer, ExportType mode,
 			OC out, Spectrum spec, int startIndex, int endIndex,
-			PanelData pd) throws IOException {
+			PanelData pd, boolean asBase64) throws IOException {
 		initForm(viewer, out);
 		GenericColor plotAreaColor, backgroundColor, plotColor, gridColor, titleColor, scaleColor, unitsColor;
 		if (pd == null) {

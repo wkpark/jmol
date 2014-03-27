@@ -41,17 +41,17 @@ public class CMLExporter extends XMLExporter {
   /**
    * Exports the Spectrum that is displayed by JSVPanel to a file given by fileName
    * If display is zoomed then export the current view
-   * @param mode TODO
    * @param out
    * @param spec the spectrum to export
    * @param startIndex the starting point of the spectrum
    * @param endIndex the end point
+   * @param mode TODO
    * @return data if fileName is null
    * @throws IOException
    */
   @Override
 	public String exportTheSpectrum(JSViewer viewer, ExportType mode, OC out, Spectrum spec,
-                   int startIndex, int endIndex, PanelData pd) throws IOException {
+                   int startIndex, int endIndex, PanelData pd, boolean asBase64) throws IOException {
 
     if (!setup(viewer, spec, out, startIndex, endIndex))
       return null;

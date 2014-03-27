@@ -556,4 +556,8 @@ public class JSVApplet extends JApplet implements JSVAppletInterface,
 		return app;
 	}
 
+	@Override
+	public String print(String fileName) {
+		return app.print(fileName);
+	}
 }

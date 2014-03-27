@@ -18,10 +18,11 @@ public interface JSVExporter {
 	 * @param startIndex  not relevant for PDF, JPG, PNG
 	 * @param endIndex  not relevant for PDF, JPG, PNG
 	 * @param pd only for SVG/SVGI
+	 * @param asBase64 TODO
 	 * @return message or text
 	 * @throws Exception
 	 */
 	String exportTheSpectrum(JSViewer viewer, ExportType type,
-			OC out, Spectrum spec, int startIndex, int endIndex, PanelData pd) throws Exception;
+			OC out, Spectrum spec, int startIndex, int endIndex, PanelData pd, boolean asBase64) throws Exception;
 
 }

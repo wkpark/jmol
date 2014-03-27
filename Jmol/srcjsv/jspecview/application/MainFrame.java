@@ -1102,4 +1102,9 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 		// not implemented for MainFrame
 	}
 
+	@Override
+	public String print(String fileName) {
+		return  vwr.print(fileName);
+	}
+
 }

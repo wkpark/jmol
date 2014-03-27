@@ -1786,6 +1786,10 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 				label);
 	}
 
+	public String print(String fileName) {
+		return execWrite("PDF \"" + fileName + "\"");
+	}
+
 	private String execWrite(String value) {
 		if (isJS && value == null)
 			value = "PDF";
@@ -1807,7 +1811,7 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 		try {
 			return ((ExportInterface) JSViewer
 					.getInterface("jspecview.export.Exporter")).exportTheSpectrum(this,
-					ExportType.getType(type), null, spec, 0, spec.getXYCoords().length - 1, null);
+					ExportType.getType(type), null, spec, 0, spec.getXYCoords().length - 1, null, false);
 		} catch (Exception e) {
 			Logger.error(e.toString());
 			return null;
@@ -1833,7 +1837,7 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 		 * 
 		 */
 		{
-			os = (fileName == null ? null : new FileOutputStream(fileName));
+			os = (fileName == null || fileName.equals(";base64,") ? null : new FileOutputStream(fileName));
 		}
 		return new OC().setParams(this, fileName, !isBinary, os);
 	}

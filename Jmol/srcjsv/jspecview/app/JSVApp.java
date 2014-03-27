@@ -841,4 +841,9 @@ public class JSVApp implements PanelListener, JSVAppInterface {
 		loadInline(data);
 	}
 
+	@Override
+	public String print(String fileName) {
+		return vwr.print(fileName);
+	}
+
 }

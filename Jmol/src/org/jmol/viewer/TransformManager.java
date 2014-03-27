@@ -1208,8 +1208,8 @@ public class TransformManager {
       return;
     cameraDepthSetting = screenMultiples;
     vwr.g.setF("cameraDepth", cameraDepthSetting);
-    if (vwr.getTestFlag(2))//mode == MODE_NAVIGATION)
-      cameraDepth = Float.NaN;
+    //if (mode == MODE_NAVIGATION)// don't remember why we would do that...
+    cameraDepth = Float.NaN;
   }
 
   public float getCameraDepth() {

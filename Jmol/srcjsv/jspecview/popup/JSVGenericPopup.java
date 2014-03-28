@@ -128,6 +128,7 @@ abstract public class JSVGenericPopup extends GenericSwingPopup implements
 			label = label.substring(label.indexOf("_", 2) + 1);
 		else if (label.equals("VERSION"))
 			label = JSVersion.VERSION;
+		label = PT.rep(label, "JAVA", "");
 		label = PT.rep(label, "CB", "");
 		label = PT.rep(label, "Menu", "");
 		label = PT.rep(label, "_", " ");

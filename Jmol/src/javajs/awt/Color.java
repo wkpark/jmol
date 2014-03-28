@@ -45,8 +45,8 @@ public class Color implements GenericColor {
 
   @Override
   public String toString() {
-    String s = ("000000" + Integer.toHexString(argb));
-    return "[0x" + s.substring(s.length() - 6, s.length()) + "]";
+    String s = ("00000000" + Integer.toHexString(argb));
+    return "[0x" + s.substring(s.length() - 8, s.length()) + "]";
   }
 
 	

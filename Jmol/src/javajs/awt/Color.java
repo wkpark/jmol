@@ -42,5 +42,12 @@ public class Color implements GenericColor {
 		argb = ((a << 24) | (r << 16) | (g << 8) | b) & 0xFFFFFFFF;
 		return this;
 	}
+
+  @Override
+  public String toString() {
+    String s = ("000000" + Integer.toHexString(argb));
+    return "[0x" + s.substring(s.length() - 6, s.length()) + "]";
+  }
+
 	
 }

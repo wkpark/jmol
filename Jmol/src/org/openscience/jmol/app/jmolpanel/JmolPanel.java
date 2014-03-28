@@ -43,7 +43,6 @@ import org.openscience.jmol.app.surfacetool.SurfaceTool;
 import org.jmol.script.T;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 import org.openscience.jmol.app.HistoryFile;
 import org.openscience.jmol.app.Jmol;

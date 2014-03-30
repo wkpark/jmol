@@ -618,12 +618,9 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 
 	private void execIRMode(String value) {
 		IRMode mode = IRMode.getMode(value); // T, A, or TOGGLE
-		PanelData pd = pd();
-		Spectrum spec = pd.getSpectrum();
-		Spectrum spec2 = Spectrum.taConvert(spec, mode);
-		if (spec2 == spec)
-			return;
-		pd.setSpecForIRMode(spec2);
+		String type = pd().getSpectrum().dataType;
+		for (int i = panelNodes.size(); --i >= 0;)
+			panelNodes.get(i).pd().setIRMode(mode, type);
 		setIRmode(value);
 		// jsvp.doRepaint();
 	}
@@ -2034,7 +2031,7 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 	}
 
 	public String getSolutionColorStr(boolean asFit) {
-		P3 pt = CU.colorPtFromInt2(getSolutionColor(asFit));
+		P3 pt = CU.colorPtFromInt(getSolutionColor(asFit));
 		return (int) pt.x + "," + (int) pt.y + "," + (int) pt.z;
 	}
 

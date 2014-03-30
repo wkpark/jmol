@@ -21,6 +21,7 @@ import jspecview.api.JSVPanel;
 import jspecview.api.VisibleInterface;
 import jspecview.common.Annotation.AType;
 import jspecview.common.PanelData.LinkMode;
+import jspecview.common.Spectrum.IRMode;
 import jspecview.dialog.JSVDialog;
 
 // should not be necessary, but "x instanceof JSVDialog" is requiring it.
@@ -1872,8 +1873,10 @@ class GraphSet implements XYScaleConverter {
 		setPlotColor(g, iColor);
 		boolean plotOn = true;
 		int y0 = toPixelY(0);
-		if (ig != null)
+		if (isIntegral)
 			fillPeaks &= (y0 == fixY(y0));
+		else
+			y0 = fixY(y0);
 		int iFirst = viewData.getStartingPointIndex(index);
 		int iLast = viewData.getEndingPointIndex(index);
 		if (isContinuous) {
@@ -1908,14 +1911,15 @@ class GraphSet implements XYScaleConverter {
 				if (x2 == x1 && y1 == y2)
 					continue;
 				if (fillPeaks
-						&& (ig == null || pendingIntegral.overlaps(point1.getXVal(), point2.getXVal()))) {
-					if (ig == null) {
-						g2d.setGraphicsColor(g, spec.fillColor);
-					} else {
+						&& (!isIntegral || pendingIntegral.overlaps(point1.getXVal(), point2.getXVal()))) {
+					if (isIntegral) {
 						g2d.setGraphicsColor(g,
 								pd.getColor(ScriptToken.INTEGRALPLOTCOLOR));
+						g2d.drawLine(g, x1, y0, x1, y1);
+					} else {
+						g2d.setGraphicsColor(g, spec.fillColor);
+						g2d.fillRect(g, x1, Math.min(y0, y1), x2 - x1, Math.abs(y0 - y1));
 					}
-					g2d.drawLine(g, x1, fixY(y0), x1, y1);
 					setPlotColor(g, iColor);
 					continue;
 				}
@@ -4318,13 +4322,18 @@ synchronized void checkWidgetEvent(int xPixel, int yPixel, boolean isPress) {
 		for (int i = 0; i < nSpectra; i++) {
 			Spectrum spec = spectra.get(i);
 			int color = (isNone || !spec.canShowSolutionColor() ? -1 : vi.getColour(spec, asFitted));
-			getSpectrum().setFillColor(color == -1 ? null : pd.vwr.parameters.getColor1(color));
-			
+			spec.setFillColor(color == -1 ? null : pd.vwr.parameters.getColor1(color));
 		}
-
-		// TODO Auto-generated method stub
-		
 	}
 
-
+	public void setIRMode(IRMode mode, String type) {
+		for (int i = 0; i < nSpectra; i++) {
+			Spectrum spec = spectra.get(i);
+			if (!spec.dataType.equals(type))
+				continue;
+			Spectrum spec2 = Spectrum.taConvert(spec, mode);
+			if (spec2 != spec)
+				pd.setSpecForIRMode(spec2);
+		}
+	}
 }

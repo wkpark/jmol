@@ -120,6 +120,7 @@ public class Spectrum extends JDXDataObject {
     Spectrum newSpectrum = new Spectrum();
     copyTo(newSpectrum);
     newSpectrum.setPeakList(peakList, piUnitsX, null);
+    newSpectrum.fillColor = fillColor;
     return newSpectrum;
   }
 
@@ -661,7 +662,7 @@ public class Spectrum extends JDXDataObject {
 	}
 
 	public void setSimulated(String filePath) {
-		this.isSimulation = true;
+		isSimulation = true;
 		String s = sourceID;
 		if (s.length() == 0)
 			s = PT.rep(filePath, JSVFileManager.SIMULATION_PROTOCOL, "");
@@ -675,6 +676,8 @@ public class Spectrum extends JDXDataObject {
 
 	public void setFillColor(GenericColor color) {
 		fillColor = color;
+		if (convertedSpectrum != null)
+			convertedSpectrum.fillColor = color;
 	}
 
 }

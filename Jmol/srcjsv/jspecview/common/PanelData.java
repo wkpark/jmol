@@ -55,6 +55,7 @@ import jspecview.api.JSVPanel;
 import jspecview.api.PanelListener;
 import jspecview.api.VisibleInterface;
 import jspecview.common.Annotation.AType;
+import jspecview.common.Spectrum.IRMode;
 import jspecview.dialog.JSVDialog;
 
 
@@ -1636,6 +1637,11 @@ public class PanelData implements EventManager {
 
 		// TODO Auto-generated method stub
 		
+	}
+
+	public void setIRMode(IRMode mode, String type) {
+		for (int i = graphSets.size(); --i >= 0;)
+			graphSets.get(i).setIRMode(mode, type);
 	}
 
 }

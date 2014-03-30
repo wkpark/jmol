@@ -60,7 +60,7 @@ public enum ScriptToken {
   ENDINDEX, 
   FINDX("x-value"),
   GETPROPERTY("[ALL] [propertyName]"),
-  GETSOLUTIONCOLOR,  
+  GETSOLUTIONCOLOR(" FILL or FILLNONE or FILLALL or FILLALLNONE"),  
   GRIDCOLOR("C"), 
   GRIDON("T"), 
   HIDDEN("TF"), 

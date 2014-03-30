@@ -213,8 +213,14 @@ for (var i = 0; i < Jmol._coreFiles.length; i++)
         	  "$.JSVExporter"
 	]);
 
+
 	ClazzLoader.jarClasspath (base + "corejsvdialog.z.js",	[
-        	"JSV.dialog.IntegrationDialog",
+					"JSV.api.PlatformDialog",
+					"JSV.js2d.JsDialogManager",
+					"$.DialogTableModel",
+					"$.JsDialog",
+        	"JSV.dialog.DialogManager",
+        	"$.IntegrationDialog",
         	"$.PeakListDialog",
           "$.MeasurementsDialog",
           "$.OverlayLegendDialog",

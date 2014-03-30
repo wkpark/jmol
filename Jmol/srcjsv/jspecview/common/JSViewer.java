@@ -12,8 +12,10 @@ import java.util.Properties;
 
 import java.util.Map;
 
+import javajs.util.CU;
 import javajs.util.OC;
 import javajs.util.List;
+import javajs.util.P3;
 import javajs.util.SB;
 import javajs.api.BytePoster;
 import javajs.api.GenericFileInterface;
@@ -23,6 +25,7 @@ import javajs.api.PlatformViewer;
 import javajs.awt.Dimension;
 
 import org.jmol.util.Logger;
+
 import javajs.util.PT;
 
 
@@ -70,8 +73,6 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 	public static final int PAGE_EXISTS = 0;
 	public static final int NO_SUCH_PAGE = 1;
 
-	private final static String noColor = "255,255,255";
-
 	private static String testScript = "<PeakData  index=\"1\" title=\"\" model=\"~1.1\" type=\"1HNMR\" xMin=\"3.2915\" xMax=\"3.2965\" atoms=\"15,16,17,18,19,20\" multiplicity=\"\" integral=\"1\"> src=\"JPECVIEW\" file=\"http://SIMULATION/$caffeine\"";
 
 	private final static int NLEVEL_MAX = 100;
@@ -99,7 +100,11 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 	public boolean interfaceOverlaid;
 	public boolean autoIntegrate;
 	public boolean autoShowLegend;
-	public Boolean obscureTitleFromUser;
+	public Boolean obscureTitleFromUser;	
+	public boolean allowCompoundMenu = true;
+	public boolean allowMenu = true;
+	public int initialStartIndex = -1;
+	public int initialEndIndex = -1;
 
 	public boolean isSingleThreaded;
 	public boolean isApplet;
@@ -209,7 +214,7 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 		int nErrorsLeft = 10;
 		ScriptTokenizer commandTokens = new ScriptTokenizer(script, true);
 		String msg = null;
-		while (commandTokens.hasMoreTokens() && nErrorsLeft > 0 && isOK) {
+		while (commandTokens != null && commandTokens.hasMoreTokens() && nErrorsLeft > 0 && isOK) {
 			String token = commandTokens.nextToken();
 			// now split the key/value pair
 
@@ -293,6 +298,7 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 					}
 					load(value, (defaultLoadScript == null ? "" : defaultLoadScript + ";") + commandTokens.getRemainingScript());
 					msg = (selectedPanel == null ? null : si.siLoaded(value));
+					commandTokens = null;
 					break;
 				case LOADIMAGINARY:
 					loadImaginary = Parameters.isTrue(value);
@@ -367,7 +373,7 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 						pd().findX(null, Double.parseDouble(value));
 						break;
 					case GETSOLUTIONCOLOR:
-						show("solutioncolor");
+						show("solutioncolor" + value.toLowerCase());
 						break;
 					case INTEGRATION:
 					case INTEGRATE:
@@ -1098,11 +1104,11 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 		}
 	}
 
-	public String getSolutionColor() {
+	public int getSolutionColor(boolean asFitted) {
 		Spectrum spectrum = pd().getSpectrum();
-		return (spectrum.canShowSolutionColor() ? ((VisibleInterface) JSViewer
-				.getInterface("jspecview.common.Visible")).getColour(spectrum
-				.getXYCoords(), spectrum.getYUnits()) : noColor);
+		VisibleInterface vi = (spectrum.canShowSolutionColor() ? (VisibleInterface) JSViewer
+				.getInterface("jspecview.common.Visible") : null);
+		return (vi == null ? -1 : vi.getColour(spectrum, asFitted));
 	}
 
 	public int openDataOrFile(Object data, String name, List<Spectrum> specs,
@@ -1741,8 +1747,15 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 				return;
 			}
 			dialogManager.showSource(this, pd().getSpectrum().getFilePath());
-		} else if (what.equals("solutioncolor")) {
-			String msg = getSolutionColor();
+		} else if (what.startsWith("solutioncolorfill")) {
+			if (what.indexOf("all") >= 0) {
+				for (int i = panelNodes.size(); --i >= 0;)
+					panelNodes.get(i).pd().setSolutionColor(what);
+			} else {
+				pd().setSolutionColor(what);
+			}
+		} else if (what.startsWith("solutioncolor")) {
+			String msg = getSolutionColorStr(what.indexOf("false") < 0);
 			msg = "background-color:rgb(" + msg
 					+ ")'><br />Predicted Solution Colour- RGB(" + msg + ")<br /><br />";
 			if (isJS) {
@@ -1927,6 +1940,102 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 	public void checkAutoIntegrate() {
 		if (autoIntegrate)
 			pd().integrateAll(parameters);
+	}
+
+	/**
+	 * Parses the JavaScript call parameters and executes them accordingly
+	 * 
+	 * @param params
+	 *          String
+	 */
+	public void parseInitScript(String params) {
+		if (params == null)
+			params = "";
+		ScriptTokenizer allParamTokens = new ScriptTokenizer(params, true);
+		if (Logger.debugging) {
+			Logger.info("Running in DEBUG mode");
+		}
+		while (allParamTokens.hasMoreTokens()) {
+			String token = allParamTokens.nextToken();
+			// now split the key/value pair
+			ScriptTokenizer eachParam = new ScriptTokenizer(token, false);
+			String key = eachParam.nextToken();
+			if (key.equalsIgnoreCase("SET"))
+				key = eachParam.nextToken();
+			key = key.toUpperCase();
+			ScriptToken st = ScriptToken.getScriptToken(key);
+			String value = ScriptToken.getValue(st, eachParam, token);
+			//if (Logger.debugging)
+				Logger.info("KEY-> " + key + " VALUE-> " + value + " : " + st);
+			try {
+				switch (st) {
+				default:
+					parameters.set(null, st, value);
+					break;
+				case UNKNOWN:
+					break;
+				case APPLETID:
+					fullName = appletID + "__" 
+				      + (appletID = value) + "__";
+					/**
+					 * @j2sNative
+					 * 
+					 *            if(typeof Jmol != "undefined") this.si.applet =
+					 *            Jmol._applets[value];
+					 * 
+					 * 
+					 */
+					{
+					}
+					break;
+				case AUTOINTEGRATE:
+					autoIntegrate = Parameters.isTrue(value);
+					break;
+				case COMPOUNDMENUON:
+					allowCompoundMenu = Boolean.parseBoolean(value);
+					break;
+				case APPLETREADYCALLBACKFUNCTIONNAME:
+				case COORDCALLBACKFUNCTIONNAME:
+				case LOADFILECALLBACKFUNCTIONNAME:
+				case PEAKCALLBACKFUNCTIONNAME:
+				case SYNCCALLBACKFUNCTIONNAME:
+					si.siExecSetCallback(st, value);
+					break;
+				case ENDINDEX:
+					initialEndIndex = Integer.parseInt(value);
+					break;
+				case INTERFACE:
+					checkOvelayInterface(value);
+					break;
+				case IRMODE:
+					setIRmode(value);
+					break;
+				case MENUON:
+					allowMenu = Boolean.parseBoolean(value);
+					break;
+				case OBSCURE:
+					if (obscureTitleFromUser == null) // once only
+						obscureTitleFromUser = Boolean.valueOf(value);
+					break;
+				case STARTINDEX:
+					initialStartIndex = Integer.parseInt(value);
+					break;
+				// case SPECTRUMNUMBER:
+				// initialSpectrumNumber = Integer.parseInt(value);
+				// break;
+				case SYNCID:
+					fullName = appletID + "__" 
+							+ (syncID = value) + "__";
+					break;
+				}
+			} catch (Exception e) {
+			}
+		}
+	}
+
+	public String getSolutionColorStr(boolean asFit) {
+		P3 pt = CU.colorPtFromInt2(getSolutionColor(asFit));
+		return (int) pt.x + "," + (int) pt.y + "," + (int) pt.z;
 	}
 
 }

@@ -524,12 +524,8 @@ public class Coordinate {
     return y0 + (y1 - y0) / (x1 - x0) * (xPt - x0);
   }
 
-  public static int intoRange(int i, int i0, int i1) {
+  static int intoRange(int i, int i0, int i1) {
     return Math.max(Math.min(i, i1), i0);
-  }
-
-  public static double intoRange(double x, double x0, double x1) {
-    return Math.max(Math.min(x, x1), x0);
   }
 
   public static int getNearestIndexForX(Coordinate[] xyCoords, double xPt) {

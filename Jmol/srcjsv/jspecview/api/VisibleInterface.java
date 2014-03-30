@@ -1,9 +1,9 @@
 package jspecview.api;
 
-import jspecview.common.Coordinate;
+import jspecview.common.Spectrum;
 
 public interface VisibleInterface {
 
-	String getColour(Coordinate[] xyCoords, String yUnits);
+	int getColour(Spectrum spec, boolean asFitted);
 
 }

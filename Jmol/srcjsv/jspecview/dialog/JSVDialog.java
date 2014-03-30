@@ -523,7 +523,7 @@ abstract public class JSVDialog extends Annotation implements AnnotationData {
 		switch (type) {
 		case Integration:
 			if (iRowSelected >= 0) {
-				int i = iRowSelected++;
+				iRowSelected++;
 				tableCellSelect(-1, -1);
 			}
 			break;

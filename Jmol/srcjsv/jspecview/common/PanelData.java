@@ -53,6 +53,7 @@ import jspecview.api.AnnotationData;
 import jspecview.api.JSVGraphics;
 import jspecview.api.JSVPanel;
 import jspecview.api.PanelListener;
+import jspecview.api.VisibleInterface;
 import jspecview.common.Annotation.AType;
 import jspecview.dialog.JSVDialog;
 
@@ -73,7 +74,7 @@ import org.jmol.util.Logger;
 public class PanelData implements EventManager {
 
 	public JSVGraphics g2d, g2d0;
-	private JSViewer vwr;
+	JSViewer vwr;
 
 	public PanelData(JSVPanel panel, JSViewer viewer) {
 		this.vwr = viewer;
@@ -734,7 +735,7 @@ public class PanelData implements EventManager {
 		currentGraphSet.setZoom(x1, y1, x2, y2);
 		doReset = true;
 		taintedAll = true;
-		notifyListeners(new ZoomEvent(x1, y1, x2, y2));
+		notifyListeners(new ZoomEvent());//x1, y1, x2, y2));
 	}
 
 	/**
@@ -1160,8 +1161,8 @@ public class PanelData implements EventManager {
 
 	public void set2DCrossHairsLinked(GraphSet graphSet, double x, double y,
 			boolean isLocked) {
-		if (Math.abs(x - y) < 0.1)
-			x = y = Double.MAX_VALUE;
+		//if (Math.abs(x - y) < 0.1)
+			//x = y = Double.MAX_VALUE;
 		for (int i = graphSets.size(); --i >= 0;) {
 			GraphSet gs = graphSets.get(i);
 			if (gs != graphSet)
@@ -1619,6 +1620,22 @@ public class PanelData implements EventManager {
 				System.out.println("pd " + this + " cannot focus");
 			}
 		}			
+	}
+
+	public void setSolutionColor(String what) {
+		boolean isNone = (what.indexOf("none") >= 0);
+		boolean asFitted = (what.indexOf("false") < 0);
+		if (what.indexOf("all") < 0) {
+			int color = (isNone ? -1 : vwr.getSolutionColor(asFitted));
+			getSpectrum().setFillColor(color == -1 ? null : vwr.parameters.getColor1(color));
+		} else {
+			VisibleInterface vi = (VisibleInterface) JSViewer.getInterface("jspecview.common.Visible");
+			for (int i = graphSets.size(); --i >= 0;)
+				graphSets.get(i).setSolutionColor(vi, isNone, asFitted);
+		}
+
+		// TODO Auto-generated method stub
+		
 	}
 
 }

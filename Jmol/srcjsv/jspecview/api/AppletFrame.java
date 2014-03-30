@@ -23,8 +23,7 @@ public interface AppletFrame {
 
 	URL getDocumentBase();
 
-	JSVPanel getJSVPanel(JSViewer viewer, List<Spectrum> specs,
-			int initialStartIndex, int initialEndIndex);
+	JSVPanel getJSVPanel(JSViewer viewer, List<Spectrum> specs);
 
 	String getParameter(String name);
 

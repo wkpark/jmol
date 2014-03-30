@@ -18,7 +18,7 @@ import javajs.util.PT;
 import jspecview.api.AnnotationData;
 import jspecview.api.JSVGraphics;
 import jspecview.api.JSVPanel;
-import jspecview.api.XYScaleConverter;
+import jspecview.api.VisibleInterface;
 import jspecview.common.Annotation.AType;
 import jspecview.common.PanelData.LinkMode;
 import jspecview.dialog.JSVDialog;
@@ -26,12 +26,16 @@ import jspecview.dialog.JSVDialog;
 // should not be necessary, but "x instanceof JSVDialog" is requiring it.
 
 @J2SRequireImport(jspecview.dialog.JSVDialog.class)
-public class GraphSet implements XYScaleConverter {
+class GraphSet implements XYScaleConverter {
 
-	public enum ArrowType {
-		LEFT, RIGHT, UP, DOWN, RESET, HOME
-	}
-
+	private final static int ARROW_RESET = -1;
+	private final static int ARROW_HOME = 0;
+	private final static int ARROW_LEFT  = 1;
+	private final static int ARROW_RIGHT = 2;
+	private final static int ARROW_UP    = 3;
+	private final static int ARROW_DOWN  = 4;
+	
+	
 	private GraphSet gs2dLinkedX;
 	private GraphSet gs2dLinkedY;
 	private boolean cur1D2Locked;
@@ -53,10 +57,10 @@ public class GraphSet implements XYScaleConverter {
 	private boolean isLinked;
 	private boolean haveSingleYScale;
 
-	public final static double RT2 = Math.sqrt(2.0);
+	final static double RT2 = Math.sqrt(2.0);
   private static GenericColor veryLightGrey;
 
-  public GraphSet(PanelData pd) {
+  GraphSet(PanelData pd) {
     this.pd = pd;
     jsvp = pd.jsvp;
     g2d = pd.g2d;
@@ -178,26 +182,26 @@ public class GraphSet implements XYScaleConverter {
 
 	// needed by PanelData
 
-	public ViewData viewData; 
-	public boolean reversePlot;
-	public int nSplit = 1;
-	public int yStackOffsetPercent = 0;
+	ViewData viewData; 
+	boolean reversePlot;
+	int nSplit = 1;
+	int yStackOffsetPercent = 0;
 
 	/**
 	 * if nSplit > 1, then showAllStacked is false, but if nSplit == 1, then
 	 * showAllStacked may be true or false
 	 */
-	public boolean showAllStacked = true;
+	boolean showAllStacked = true;
 
 	// needed by AwtGraphSet
 
-	public List<ViewData> viewList;
+	List<ViewData> viewList;
 	ImageView imageView;
 	private PanelData pd;
 	private boolean sticky2Dcursor;
 	int nSpectra; // also needed by PanelData
 
-	public void closeDialogsExcept(AType type) {
+	void closeDialogsExcept(AType type) {
 		if (dialogs != null)
 			for (Map.Entry<String, AnnotationData> e : dialogs.entrySet()) {
 				AnnotationData ad = e.getValue();
@@ -206,7 +210,7 @@ public class GraphSet implements XYScaleConverter {
 			}
 	}
 
-	public void dispose() {
+	void dispose() {
 //		for (int i = 0; i < spectra.size(); i++)
 //			spectra.get(i).dispose();
 		spectra = null;
@@ -307,7 +311,7 @@ public class GraphSet implements XYScaleConverter {
 	 *          the index of the <code>Spectrum</code>
 	 * @return the <code>Spectrum</code> at the specified index
 	 */
-	public Spectrum getSpectrumAt(int index) {
+	Spectrum getSpectrumAt(int index) {
 		return spectra.get(index);
 	}
 
@@ -489,11 +493,6 @@ public class GraphSet implements XYScaleConverter {
 			(spectra.get(i)).setExportXAxisDirection(drawXAxisLeftToRight);
 	}
 
-	@Override
-	public int fixX(int xPixel) {
-		return Coordinate.intoRange(xPixel, xPixel0, xPixel1);
-	}
-
 	private boolean isInTopBar(int xPixel, int yPixel) {
 		return (xPixel == fixX(xPixel) && yPixel > pin1Dx0.yPixel0 - 2 && yPixel < pin1Dx0.yPixel1);
 	}
@@ -513,44 +512,19 @@ public class GraphSet implements XYScaleConverter {
 				&& xPixel > pin2Dy0.xPixel1 && xPixel < pin2Dy0.xPixel0 + 2);
 	}
 
-	@Override
-	public ScaleData getScale() {
-		return viewData.getScale();
-	}
-	
-  @Override
-	public int getXPixels() {
-  	return xPixels;
-  }
-  
-  @Override
-	public int getXPixel0() {
-  	return xPixel0;
-  }
-  
-  @Override
-	public int getYPixels() {
-  	return yPixels;
-  }
-  
-  @Override
-	public double toX(int xPixel) {
-		if (imageView != null && imageView.isXWithinRange(xPixel))
-			return imageView.toX(xPixel);
-		return getScale().toX(fixX(xPixel), xPixel1, drawXAxisLeftToRight);
-	}
-
 	private double toX0(int xPixel) {
 		return viewList.get(0).getScale().toX0(fixX(xPixel), xPixel0, xPixel1, drawXAxisLeftToRight);
 	}
 
-  @Override
-	public int toPixelX(double dx) {
-  	return getScale().toPixelX(dx, xPixel0, xPixel1, drawXAxisLeftToRight);
+	private double toY0(int yPixel) {
+		return viewList.get(0).getScale().toY0(fixY(yPixel), yPixel0, yPixel1);
 	}
 
-	private int toPixelX0(double x) {
-		return viewList.get(0).getScale().toPixelX0(x, xPixel0, xPixel1, drawXAxisLeftToRight);
+  @Override
+  public double toX(int xPixel) {
+		if (imageView != null && imageView.isXWithinRange(xPixel))
+			return imageView.toX(xPixel);
+		return getScale().toX(fixX(xPixel), xPixel1, drawXAxisLeftToRight);
 	}
 
 	@Override
@@ -558,13 +532,18 @@ public class GraphSet implements XYScaleConverter {
 		return getScale().toY(yPixel, yPixel0);
 	}
 
+  @Override
+  public int toPixelX(double dx) {
+  	return getScale().toPixelX(dx, xPixel0, xPixel1, drawXAxisLeftToRight);
+	}
+
 	@Override
 	public int toPixelY(double yVal) {
 		return getScale().toPixelY(yVal, yPixel1);
 	}
 
-	private double toY0(int yPixel) {
-		return viewList.get(0).getScale().toY0(fixY(yPixel), yPixel0, yPixel1);
+	private int toPixelX0(double x) {
+		return viewList.get(0).getScale().toPixelX0(x, xPixel0, xPixel1, drawXAxisLeftToRight);
 	}
 
 	private int toPixelY0(double y) {
@@ -572,10 +551,35 @@ public class GraphSet implements XYScaleConverter {
 	}
 
 	@Override
+	public int fixX(int xPixel) {
+		return Coordinate.intoRange(xPixel, xPixel0, xPixel1);
+	}
+
+	@Override
 	public int fixY(int yPixel) {
 		return Coordinate.intoRange(yPixel, yPixel0, yPixel1);
 	}
 
+  @Override
+  public int getXPixel0() {
+  	return xPixel0;
+  }
+  
+  @Override
+	public int getXPixels() {
+  	return xPixels;
+  }
+  
+  @Override
+  public int getYPixels() {
+  	return yPixels;
+  }
+  
+	@Override
+	public ScaleData getScale() {
+		return viewData.getScale();
+	}
+	
 	private int toPixelYint(double yVal) {
 		return yPixel1
 				- (int) (Double.isNaN(yVal) ? Integer.MIN_VALUE : yPixels * yVal);
@@ -837,8 +841,8 @@ public class GraphSet implements XYScaleConverter {
 
 	private boolean checkArrowUpDownClick(int xPixel, int yPixel) {
 		boolean ok = false;
-		double f = (isArrowClick(xPixel, yPixel, ArrowType.UP) ? RT2
-				: isArrowClick(xPixel, yPixel, ArrowType.DOWN) ? 1 / RT2 : 0);
+		double f = (isArrowClick(xPixel, yPixel, ARROW_UP) ? RT2
+				: isArrowClick(xPixel, yPixel, ARROW_DOWN) ? 1 / RT2 : 0);
 		if (f != 0) {
 			if (nSplit > 1)
 				setSpectrumSelected(iSpectrumMovedTo);
@@ -847,7 +851,7 @@ public class GraphSet implements XYScaleConverter {
 				f = 1 / f;
 			viewData.scaleSpectrum(imageView == null ? iSpectrumSelected : -2, f);
 			ok = true;
-		} else if (isArrowClick(xPixel, yPixel, ArrowType.RESET)) {
+		} else if (isArrowClick(xPixel, yPixel, ARROW_RESET)) {
 			resetViewCompletely();
 			ok = true;
 		}
@@ -875,13 +879,13 @@ public class GraphSet implements XYScaleConverter {
 
 	private boolean checkArrowLeftRightClick(int xPixel, int yPixel) {
 		if (haveLeftRightArrows) {
-			int dx = (isArrowClick(xPixel, yPixel, ArrowType.LEFT) ? -1
-					: isArrowClick(xPixel, yPixel, ArrowType.RIGHT) ? 1 : 0);
+			int dx = (isArrowClick(xPixel, yPixel, ARROW_LEFT) ? -1
+					: isArrowClick(xPixel, yPixel, ARROW_RIGHT) ? 1 : 0);
 			if (dx != 0) {
 				setSpectrumClicked((iSpectrumSelected + dx) % nSpectra);
 				return true;
 			}
-			if (isArrowClick(xPixel, yPixel, ArrowType.HOME)) {
+			if (isArrowClick(xPixel, yPixel, ARROW_HOME)) {
 				if (showAllStacked) {
 					showAllStacked = false;
 					setSpectrumClicked(getFixedSelectedSpectrumIndex());
@@ -895,20 +899,20 @@ public class GraphSet implements XYScaleConverter {
 		return false;
 	}
 
-	private boolean isArrowClick(int xPixel, int yPixel, ArrowType type) {
+	private boolean isArrowClick(int xPixel, int yPixel, int type) {
 		int pt;
 		switch (type) {
-		case UP:
-		case DOWN:
-		case RESET:
+		case ARROW_UP:
+		case ARROW_DOWN:
+		case ARROW_RESET:
 			pt = (yPixel00 + yPixel11) / 2
-					+ (type == ArrowType.UP ? -1 : type == ArrowType.DOWN ? 1 : 0) * 15;
+					+ (type == ARROW_UP ? -1 : type == ARROW_DOWN ? 1 : 0) * 15;
 			return (Math.abs(xVArrows - xPixel) < 10 && Math.abs(pt - yPixel) < 10);
-		case LEFT:
-		case RIGHT:
-		case HOME:
+		case ARROW_LEFT:
+		case ARROW_RIGHT:
+		case ARROW_HOME:
 			pt = xHArrows
-					+ (type == ArrowType.LEFT ? -1 : type == ArrowType.RIGHT ? 1 : 0)
+					+ (type == ARROW_LEFT ? -1 : type == ARROW_RIGHT ? 1 : 0)
 					* 15;
 			return (Math.abs(pt - xPixel) < 10 && Math.abs(yHArrows - yPixel) < 10);
 		}
@@ -1498,16 +1502,17 @@ public class GraphSet implements XYScaleConverter {
 					}
 				}
 				boolean isContinuous = spec.isContinuous();
+				boolean onSpectrum = ((nSplit > 1 ? i == iSpectrumMovedTo : isLinked
+						|| i == iSpectrumForScale)
+						&& !pd.isPrinting && spec.isContinuous());
 				if (doAll) {
-					drawSpectrum(gMain, i, offset, isGrey, ig, isContinuous);
+					drawSpectrum(gMain, i, offset, isGrey, ig, isContinuous, onSpectrum);
 				}
 				// drawSpectrum(gFront, i, offset, isGrey, ig, isContinuous);
 				drawMeasurements(gFront, i);
 				if (pendingMeasurement != null && pendingMeasurement.spec == spec)
 					drawMeasurement(gFront, pendingMeasurement);
-				if ((nSplit > 1 ? i == iSpectrumMovedTo : isLinked
-						|| i == iSpectrumForScale)
-						&& !pd.isPrinting && xPixelMovedTo >= 0 && spec.isContinuous()) {
+				if (onSpectrum && xPixelMovedTo >= 0) {
 					drawSpectrumPointer(gFront, spec, offset, ig);
 				}
 				if (nSpectra > 1 && nSplit == 1 && pd.isCurrentGraphSet(this) && doAll) {
@@ -1517,9 +1522,9 @@ public class GraphSet implements XYScaleConverter {
 						iSpecForFrame = (iSpectrumSelected);
 						if (nSpectra != 2) {
 							setPlotColor(gMain, (iSpecForFrame + nSpectra - 1) % nSpectra);
-							fillArrow(gMain, ArrowType.LEFT, yHArrows, xHArrows - 9, true);
+							fillArrow(gMain, ARROW_LEFT, yHArrows, xHArrows - 9, true);
 							setCurrentBoxColor(gMain);
-							fillArrow(gMain, ArrowType.LEFT, yHArrows, xHArrows - 9, false);
+							fillArrow(gMain, ARROW_LEFT, yHArrows, xHArrows - 9, false);
 						}
 						if (iSpecForFrame >= 0) {
 							setPlotColor(gMain, iSpecForFrame);
@@ -1528,9 +1533,9 @@ public class GraphSet implements XYScaleConverter {
 						setCurrentBoxColor(gMain);
 						fillCircle(gMain, xHArrows, yHArrows, false);
 						setPlotColor(gMain, (iSpecForFrame + 1) % nSpectra);
-						fillArrow(gMain, ArrowType.RIGHT, yHArrows, xHArrows + 9, true);
+						fillArrow(gMain, ARROW_RIGHT, yHArrows, xHArrows + 9, true);
 						setCurrentBoxColor(gMain);
-						fillArrow(gMain, ArrowType.RIGHT, yHArrows, xHArrows + 9, false);
+						fillArrow(gMain, ARROW_RIGHT, yHArrows, xHArrows + 9, false);
 					}
 				}
 				offset -= yOffsetPixels;
@@ -1645,7 +1650,7 @@ public class GraphSet implements XYScaleConverter {
 			g2d.setStrokeBold(g, false);
 	}
 
-	public void setScale(int i) {
+	void setScale(int i) {
 		viewData.setScale(i, xPixels, yPixels, spectra.get(i).isInverted());
 	}
 
@@ -1829,21 +1834,20 @@ public class GraphSet implements XYScaleConverter {
 	 *          the <code>Graphics</code> object
 	 * @param index
 	 *          the index of the Spectrum to draw
-	 * @param yOffset 
-	 * @param isGrey 
-	 * @param ig 
-	 * @param isContinuous 
+	 * @param yOffset
+	 * @param isGrey
+	 * @param ig
+	 * @param isContinuous
+	 * @param isSelected 
 	 */
 	private void drawSpectrum(Object g, int index, int yOffset, boolean isGrey,
-			IntegralData ig, boolean isContinuous) {
+			IntegralData ig, boolean isContinuous, boolean isSelected) {
 		// Check if specInfo in null or xyCoords is null
 		Spectrum spec = spectra.get(index);
-		drawPlot(g, index, spec.getXYCoords(), isContinuous, yOffset,
-				isGrey, null);
+		drawPlot(g, index, spec, isContinuous, yOffset, isGrey, null, isSelected);
 		if (ig != null) {
 			if (haveIntegralDisplayed(index))
-				drawPlot(g, index, getIntegrationGraph(index).getXYCoords(), true,
-						yOffset, false, ig);
+				drawPlot(g, index, spec, true, yOffset, false, ig, true);
 			drawIntegralValues(g, index, yOffset);
 		}
 		if (getIntegrationRatios(index) != null)
@@ -1856,18 +1860,20 @@ public class GraphSet implements XYScaleConverter {
 		return (ad == null || ad.getData().size() == 0 || !ad.getState() ? null : ad.getData());
 	}
 
-	private void drawPlot(Object g, int index, Coordinate[] xyCoords,
-			boolean isContinuous, int yOffset, boolean isGrey, IntegralData ig) {
+	private void drawPlot(Object g, int index, Spectrum spec,
+			boolean isContinuous, int yOffset, boolean isGrey, IntegralData ig, boolean isSelected) {
+		Coordinate[] xyCoords = (ig == null ? spec.getXYCoords() : getIntegrationGraph(index).getXYCoords());
 		boolean isIntegral = (ig != null);
 		BS bsDraw = (ig == null ? null : ig.getBitSet());
 		boolean fillPeaks = (!isIntegral && !isGrey
 				&& pendingIntegral != null && pendingIntegral.spec == spectra
-				.get(index));
+				.get(index) || spec.fillColor != null && isSelected);
 		int iColor = (isGrey ? -2 : isIntegral ? -1 : !allowStacking ? 0 : index);
 		setPlotColor(g, iColor);
 		boolean plotOn = true;
 		int y0 = toPixelY(0);
-		fillPeaks &= (y0 == fixY(y0));
+		if (ig != null)
+			fillPeaks &= (y0 == fixY(y0));
 		int iFirst = viewData.getStartingPointIndex(index);
 		int iLast = viewData.getEndingPointIndex(index);
 		if (isContinuous) {
@@ -1902,9 +1908,14 @@ public class GraphSet implements XYScaleConverter {
 				if (x2 == x1 && y1 == y2)
 					continue;
 				if (fillPeaks
-						&& pendingIntegral.overlaps(point1.getXVal(), point2.getXVal())) {
-					setColorFromToken(g, ScriptToken.INTEGRALPLOTCOLOR);
-					g2d.drawLine(g, x1, y0, x1, y1);
+						&& (ig == null || pendingIntegral.overlaps(point1.getXVal(), point2.getXVal()))) {
+					if (ig == null) {
+						g2d.setGraphicsColor(g, spec.fillColor);
+					} else {
+						g2d.setGraphicsColor(g,
+								pd.getColor(ScriptToken.INTEGRALPLOTCOLOR));
+					}
+					g2d.drawLine(g, x1, fixY(y0), x1, y1);
 					setPlotColor(g, iColor);
 					continue;
 				}
@@ -1973,16 +1984,16 @@ public class GraphSet implements XYScaleConverter {
 		if (drawUpDownArrows) {
 			if (iSpec >= 0) {
 				setPlotColor(g, iSpec);
-				fillArrow(g, ArrowType.UP, xVArrows,
+				fillArrow(g, ARROW_UP, xVArrows,
 						(yPixel00 + yPixel11) / 2 - 9, true);
-				fillArrow(g, ArrowType.DOWN, xVArrows,
+				fillArrow(g, ARROW_DOWN, xVArrows,
 						(yPixel00 + yPixel11) / 2 + 9, true);
 				setCurrentBoxColor(g);
 			}
-			fillArrow(g, ArrowType.UP, xVArrows, (yPixel00 + yPixel11) / 2 - 9,
+			fillArrow(g, ARROW_UP, xVArrows, (yPixel00 + yPixel11) / 2 - 9,
 					false);
 			fillCircle(g, xVArrows, (yPixel00 + yPixel11) / 2, false);
-			fillArrow(g, ArrowType.DOWN, xVArrows,
+			fillArrow(g, ARROW_DOWN, xVArrows,
 					(yPixel00 + yPixel11) / 2 + 9, false);
 		}
 
@@ -3891,7 +3902,7 @@ synchronized void checkWidgetEvent(int xPixel, int yPixel, boolean isPress) {
 			dialogs.put(key, data);
 	}
 
-	public MeasurementData getPeakListing(int iSpec, Parameters p, boolean forceNew) {
+	MeasurementData getPeakListing(int iSpec, Parameters p, boolean forceNew) {
 		if (iSpec < 0)
 			iSpec = getCurrentSpectrumIndex();
 		if (iSpec < 0)
@@ -3909,7 +3920,7 @@ synchronized void checkWidgetEvent(int xPixel, int yPixel, boolean isPress) {
 		return dialog.getData();
 	}
 
-	public void setPeakListing(Boolean tfToggle) {
+	void setPeakListing(Boolean tfToggle) {
 		AnnotationData dialog = getDialog(AType.PeakList, -1);
 		JSVDialog ad = (dialog instanceof JSVDialog ? (JSVDialog) dialog : null);
 		boolean isON = (tfToggle == null ? ad == null || !ad.isVisible() : tfToggle.booleanValue());
@@ -3931,7 +3942,7 @@ synchronized void checkWidgetEvent(int xPixel, int yPixel, boolean isPress) {
 		return (ad == null ? null : (IntegralData) ad.getData());
 	}
 
-	public void setIntegrationRatios(String value) {
+	void setIntegrationRatios(String value) {
 		int iSpec = getFixedSelectedSpectrumIndex();
 		if (aIntegrationRatios == null)
 			aIntegrationRatios = new Object[nSpectra];
@@ -3961,7 +3972,7 @@ synchronized void checkWidgetEvent(int xPixel, int yPixel, boolean isPress) {
 		return true;
 	}
 
-	public IntegralData getIntegration(int iSpec, Parameters p, boolean forceNew) {
+	IntegralData getIntegration(int iSpec, Parameters p, boolean forceNew) {
 		if (iSpec < 0)
 			iSpec = getCurrentSpectrumIndex();
 		if (iSpec < 0)
@@ -3975,7 +3986,7 @@ synchronized void checkWidgetEvent(int xPixel, int yPixel, boolean isPress) {
 		return (IntegralData) dialog.getData();
 	}
 
-	public Map<String, Object> getMeasurementInfo(AType type, int iSpec) {
+	Map<String, Object> getMeasurementInfo(AType type, int iSpec) {
 	  MeasurementData md;	
 		switch (type) {
 		case PeakList:
@@ -4036,20 +4047,33 @@ synchronized void checkWidgetEvent(int xPixel, int yPixel, boolean isPress) {
 			getSpectrum().getTitle() : null);
 	}
 
-	public ScaleData getCurrentView() {
+	ScaleData getCurrentView() {
 		setScale(getFixedSelectedSpectrumIndex());
 		return viewData.getScale();
 	}
 
-	public void set2DXY(double x, double y, boolean isLocked) {
-		if (gs2dLinkedX != null)
-  		cur1D2x1.setX(x, toPixelX(x));
-		if (gs2dLinkedY != null)
-  		cur1D2x2.setX(y, toPixelX(y));
+	void set2DXY(double x, double y, boolean isLocked) {
+		int p;
+		if (gs2dLinkedX != null) {
+			p = toPixelX(x);
+			if(p != fixX(p)) {
+				p = Integer.MIN_VALUE;
+				x = Double.MAX_VALUE;
+			}
+			cur1D2x1.setX(x, p);
+		}
+		if (gs2dLinkedY != null) {
+			p = toPixelX(y);
+			if(p != fixX(p)) {
+				p = Integer.MIN_VALUE;
+				y = Double.MAX_VALUE;
+			}
+			cur1D2x2.setX(y, p);
+		}
 		cur1D2Locked = isLocked;
 	}
 
-	public void dialogsToFront(Spectrum spec) {
+	void dialogsToFront(Spectrum spec) {
 		if (dialogs == null)
 			return;
 		if (spec == null)
@@ -4069,7 +4093,7 @@ synchronized void checkWidgetEvent(int xPixel, int yPixel, boolean isPress) {
 	//////////////////////////// WAS AWTGRAPHSET //////////////
 	
 
-  public void setPlotColors(Object oColors) {
+  void setPlotColors(Object oColors) {
     GenericColor[] colors = (GenericColor[]) oColors;
     if (colors.length > nSpectra) {
       GenericColor[] tmpPlotColors = new GenericColor[nSpectra];
@@ -4121,7 +4145,7 @@ synchronized void checkWidgetEvent(int xPixel, int yPixel, boolean isPress) {
     }
   }
 
-	public void setPlotColor0(Object oColor) {
+	void setPlotColor0(Object oColor) {
     plotColors[0] = (GenericColor) oColor;
   }
 
@@ -4132,7 +4156,7 @@ synchronized void checkWidgetEvent(int xPixel, int yPixel, boolean isPress) {
    *        the index
    * @return the color of the plot
    */
-  public GenericColor getPlotColor(int index) {
+  GenericColor getPlotColor(int index) {
     if (index >= plotColors.length)
       return null;
     return plotColors[index];
@@ -4241,28 +4265,26 @@ synchronized void checkWidgetEvent(int xPixel, int yPixel, boolean isPress) {
     g2d.setGraphicsColor(g, pd.BLACK);
   }
   
-	@SuppressWarnings("incomplete-switch")
-	
-	private void fillArrow(Object g, ArrowType type, int x, int y, boolean doFill) {
+	private void fillArrow(Object g, int type, int x, int y, boolean doFill) {
 		int f = 1;
 		switch (type) {
-		case LEFT:
-		case UP:
+		case ARROW_LEFT:
+		case ARROW_UP:
 			f = -1;
 			break;
 		}
 		int[] axPoints = new int[] { x - 5,   x - 5, x + 5,   x + 5,   x + 8,        x, x - 8 }; 
 		int[] ayPoints = new int[] { y + 5*f, y - f, y - f, y + 5*f, y + 5*f, y + 10*f, y + 5*f };
 		switch (type) {
-		case LEFT:
-		case RIGHT:
+		case ARROW_LEFT:
+		case ARROW_RIGHT:
 			if (doFill)
 				g2d.fillPolygon(g, ayPoints, axPoints, 7);
 			else
 				g2d.drawPolygon(g, ayPoints, axPoints, 7);
 			break;
-		case UP:
-		case DOWN:
+		case ARROW_UP:
+		case ARROW_DOWN:
 			if (doFill)
 				g2d.fillPolygon(g, axPoints, ayPoints, 7);
 			else
@@ -4278,7 +4300,7 @@ synchronized void checkWidgetEvent(int xPixel, int yPixel, boolean isPress) {
 			g2d.drawCircle(g, x-4, y-4, 8);
 	}
 
-	public void setAnnotationColor(Object g, Annotation note,
+	void setAnnotationColor(Object g, Annotation note,
 			ScriptToken whatColor) {
 		if (whatColor != null) {
 			setColorFromToken(g, whatColor);
@@ -4290,6 +4312,18 @@ synchronized void checkWidgetEvent(int xPixel, int yPixel, boolean isPress) {
 		if (color == null)
 			color = pd.BLACK;
 		g2d.setGraphicsColor(g, color);
+	}
+
+	public void setSolutionColor(VisibleInterface vi, boolean isNone, boolean asFitted) {
+		for (int i = 0; i < nSpectra; i++) {
+			Spectrum spec = spectra.get(i);
+			int color = (isNone || !spec.canShowSolutionColor() ? -1 : vi.getColour(spec, asFitted));
+			getSpectrum().setFillColor(color == -1 ? null : pd.vwr.parameters.getColor1(color));
+			
+		}
+
+		// TODO Auto-generated method stub
+		
 	}
 
 

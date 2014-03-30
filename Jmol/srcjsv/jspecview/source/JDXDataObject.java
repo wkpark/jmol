@@ -501,9 +501,9 @@ public abstract class JDXDataObject extends JDXHeader {
   }
 
   public boolean canShowSolutionColor() {
-    return (canConvertTransAbs()
+    return (isContinuous() && canConvertTransAbs()
         && (xUnits.toLowerCase().contains("nanometer") || xUnits.equalsIgnoreCase("nm")) 
-        && getFirstX() < 401 && getLastX() > 699);
+        && getFirstX() < 401 && getLastX() > 699 && xyCoords.length >= 30);
   }
 
   /**
@@ -634,7 +634,7 @@ public abstract class JDXDataObject extends JDXHeader {
     rowData[i++] = new String[] { "##XFACTOR", String.valueOf(getXFactor()) };
     rowData[i++] = new String[] { "##YFACTOR", String.valueOf(getYFactor()) };
     rowData[i++] = new String[] { "##NPOINTS",
-        String.valueOf(getNumberOfPoints()) };
+        String.valueOf(xyCoords.length) };
     return rowData;
   }
 
@@ -722,7 +722,7 @@ public abstract class JDXDataObject extends JDXHeader {
    */
   public double getLastX() {
     // if(isIncreasing())
-    return xyCoords[getNumberOfPoints() - 1].getXVal();
+    return xyCoords[xyCoords.length - 1].getXVal();
     // else
     //   return xyCoords[0].getXVal();
   }
@@ -733,16 +733,7 @@ public abstract class JDXDataObject extends JDXHeader {
    * @return the last Y value
    */
   public double getLastY() {
-    return xyCoords[getNumberOfPoints() - 1].getYVal();
-  }
-
-  /**
-   * Returns the number of points
-   * 
-   * @return the number of points
-   */
-  public int getNumberOfPoints() {
-    return xyCoords.length;
+    return xyCoords[xyCoords.length - 1].getYVal();
   }
 
   private double minX = Double.NaN, minY = Double.NaN;
@@ -807,7 +798,7 @@ public abstract class JDXDataObject extends JDXHeader {
    * @return the delta X
    */
   public double getDeltaX() {
-    return (Double.isNaN(deltaX) ? (deltaX = Coordinate.deltaX(getLastX(), getFirstX(), getNumberOfPoints())) : deltaX);
+    return (Double.isNaN(deltaX) ? (deltaX = Coordinate.deltaX(getLastX(), getFirstX(), xyCoords.length)) : deltaX);
   }
 
   public void copyTo(JDXDataObject newObj) {

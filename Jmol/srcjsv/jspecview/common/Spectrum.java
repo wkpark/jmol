@@ -22,6 +22,7 @@ package jspecview.common;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javajs.api.GenericColor;
 import javajs.util.List;
 import javajs.util.PT;
 
@@ -668,6 +669,12 @@ public class Spectrum extends JDXDataObject {
 			s = "";
 		title = "SIMULATED " + PT.rep(s, "$", "");
 
+	}
+
+	GenericColor fillColor;
+
+	public void setFillColor(GenericColor color) {
+		fillColor = color;
 	}
 
 }

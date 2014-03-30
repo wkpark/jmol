@@ -95,6 +95,13 @@ class Display {
     }
   }
 
+  /**
+	 * @param label  
+   * @param data 
+   * @param list 
+   * @param asButtons 
+   * @return "null" or response
+	 */
   public static String prompt(String label, String data, String[] list,
                               boolean asButtons) {
     /**

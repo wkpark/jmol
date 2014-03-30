@@ -154,15 +154,11 @@ public class AwtPanel extends JPanel implements JSVPanel, Printable {
    * 
    * @param spectra
    *        the List of <code>Graph</code> instances
-   * @param startIndex
-   *        the start index
-   * @param endIndex
-   *        the end index
    * @return this
    */
-  public static AwtPanel getPanelMany(JSViewer viewer, List<Spectrum> spectra, int startIndex, int endIndex) {
+  public static AwtPanel getPanelMany(JSViewer viewer, List<Spectrum> spectra) {
   	AwtPanel p = new AwtPanel(viewer, true);
-    p.pd.initMany(spectra, startIndex, endIndex);
+    p.pd.initMany(spectra, viewer.initialStartIndex, viewer.initialEndIndex);
     return p;
   }
 

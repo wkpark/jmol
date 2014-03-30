@@ -20,8 +20,6 @@
 package jspecview.export;
 
 import java.io.IOException;
-import java.util.Arrays;
-
 
 import javajs.util.DF;
 import javajs.util.OC;

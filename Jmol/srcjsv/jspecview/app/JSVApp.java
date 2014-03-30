@@ -57,9 +57,7 @@ import jspecview.common.JSVFileManager;
 import jspecview.common.PanelData;
 import jspecview.common.PanelNode;
 import jspecview.common.JSViewer;
-import jspecview.common.Parameters;
 import jspecview.common.PeakPickEvent;
-import jspecview.common.ScriptTokenizer;
 import jspecview.common.ScriptToken;
 import jspecview.common.Coordinate;
 import jspecview.common.SubSpecChangeEvent;
@@ -98,12 +96,6 @@ public class JSVApp implements PanelListener, JSVAppInterface {
 	boolean isNewWindow;
 
 	// ------- settable parameters ------------
-
-	private boolean allowCompoundMenu = true;
-	private boolean allowMenu = true;
-
-	private int initialStartIndex = -1;
-	private int initialEndIndex = -1;
 
 	public String appletReadyCallbackFunctionName;
 
@@ -345,11 +337,11 @@ public class JSVApp implements PanelListener, JSVAppInterface {
 	 * @param params
 	 */
 	public void initParams(String params) {
-		parseInitScript(params);
+		vwr.parseInitScript(params);
 		newAppletPanel();
-		vwr.setPopupMenu(allowMenu, vwr.parameters
+		vwr.setPopupMenu(vwr.allowMenu, vwr.parameters
 				.getBoolean(ScriptToken.ENABLEZOOM));
-		if (allowMenu) {
+		if (vwr.allowMenu) {
 			vwr.closeSource(null);
 		}
 		runScriptNow(params);
@@ -394,100 +386,6 @@ public class JSVApp implements PanelListener, JSVAppInterface {
 	 */
 	public void updateJS(int width, int height) {
 		
-	}
-
-	/**
-	 * Parses the javascript call parameters and executes them accordingly
-	 * 
-	 * @param params
-	 *          String
-	 */
-	private void parseInitScript(String params) {
-		if (params == null)
-			params = "";
-		ScriptTokenizer allParamTokens = new ScriptTokenizer(params, true);
-		if (Logger.debugging) {
-			Logger.info("Running in DEBUG mode");
-		}
-		while (allParamTokens.hasMoreTokens()) {
-			String token = allParamTokens.nextToken();
-			// now split the key/value pair
-			ScriptTokenizer eachParam = new ScriptTokenizer(token, false);
-			String key = eachParam.nextToken();
-			if (key.equalsIgnoreCase("SET"))
-				key = eachParam.nextToken();
-			key = key.toUpperCase();
-			ScriptToken st = ScriptToken.getScriptToken(key);
-			String value = ScriptToken.getValue(st, eachParam, token);
-			//if (Logger.debugging)
-				Logger.info("KEY-> " + key + " VALUE-> " + value + " : " + st);
-			try {
-				switch (st) {
-				default:
-					vwr.parameters.set(null, st, value);
-					break;
-				case UNKNOWN:
-					break;
-				case APPLETID:
-					vwr.fullName = vwr.appletID + "__" 
-				      + (vwr.appletID = value) + "__";
-					/**
-					 * @j2sNative
-					 * 
-					 *            if(typeof Jmol != "undefined") this.vwr.applet =
-					 *            Jmol._applets[value];
-					 * 
-					 * 
-					 */
-					{
-					}
-
-					break;
-				case APPLETREADYCALLBACKFUNCTIONNAME:
-					appletReadyCallbackFunctionName = value;
-					break;
-				case AUTOINTEGRATE:
-					vwr.autoIntegrate = Parameters.isTrue(value);
-					break;
-				case COMPOUNDMENUON:
-					allowCompoundMenu = Boolean.parseBoolean(value);
-					break;
-				case COORDCALLBACKFUNCTIONNAME:
-				case LOADFILECALLBACKFUNCTIONNAME:
-				case PEAKCALLBACKFUNCTIONNAME:
-				case SYNCCALLBACKFUNCTIONNAME:
-					siExecSetCallback(st, value);
-					break;
-				case ENDINDEX:
-					initialEndIndex = Integer.parseInt(value);
-					break;
-				case INTERFACE:
-					vwr.checkOvelayInterface(value);
-					break;
-				case IRMODE:
-					vwr.setIRmode(value);
-					break;
-				case MENUON:
-					allowMenu = Boolean.parseBoolean(value);
-					break;
-				case OBSCURE:
-					if (vwr.obscureTitleFromUser == null) // once only
-						vwr.obscureTitleFromUser = Boolean.valueOf(value);
-					break;
-				case STARTINDEX:
-					initialStartIndex = Integer.parseInt(value);
-					break;
-				// case SPECTRUMNUMBER:
-				// initialSpectrumNumber = Integer.parseInt(value);
-				// break;
-				case SYNCID:
-					vwr.fullName = vwr.appletID + "__" 
-							+ (vwr.syncID = value) + "__";
-					break;
-				}
-			} catch (Exception e) {
-			}
-		}
 	}
 
 	@Override
@@ -560,7 +458,7 @@ public class JSVApp implements PanelListener, JSVAppInterface {
 
 	@Override
 	public String getSolnColour() {
-		return vwr.getSolutionColor();
+		return vwr.getSolutionColorStr(true);
 	}
 	
   /**
@@ -689,7 +587,7 @@ public class JSVApp implements PanelListener, JSVAppInterface {
 
 		if (vwr.jsvpPopupMenu != null)
 			vwr.jsvpPopupMenu
-					.setCompoundMenu(vwr.panelNodes, allowCompoundMenu);
+					.setCompoundMenu(vwr.panelNodes, vwr.allowCompoundMenu);
 
 		Logger.info(appletFrame.getAppletInfo() + " File "
 				+ vwr.currentSource.getFilePath() + " Loaded Successfully");
@@ -712,7 +610,7 @@ public class JSVApp implements PanelListener, JSVAppInterface {
 		vwr.selectedPanel = jsvp;
 		vwr.spectraTree.setSelectedPanel(this, jsvp);
 		if (jsvp == null) {
-			vwr.selectedPanel = jsvp = appletFrame.getJSVPanel(vwr, null, -1, -1);
+			vwr.selectedPanel = jsvp = appletFrame.getJSVPanel(vwr, null);
 			vwr.mainPanel.setSelectedPanel(vwr, jsvp, null);
 		}
 		appletFrame.validate();
@@ -726,6 +624,9 @@ public class JSVApp implements PanelListener, JSVAppInterface {
 	@SuppressWarnings("incomplete-switch")
 	public void siExecSetCallback(ScriptToken st, String value) {
 		switch (st) {
+		case APPLETREADYCALLBACKFUNCTIONNAME:
+			appletReadyCallbackFunctionName = value;
+			break;
 		case LOADFILECALLBACKFUNCTIONNAME:
 			loadFileCallbackFunctionName = value;
 			break;
@@ -786,29 +687,27 @@ public class JSVApp implements PanelListener, JSVAppInterface {
 	}
 
 	@Override
-	public JSVPanel siGetNewJSVPanel2(List<Spectrum> specs) {
-		if (specs == null) {
-			initialEndIndex = initialStartIndex = -1;
-			return appletFrame.getJSVPanel(vwr, null, -1, -1);
+	public JSVPanel siGetNewJSVPanel(Spectrum spec) {
+		if (spec == null) {
+			vwr.initialEndIndex = vwr.initialStartIndex = -1;
+			return null;
 		}
-		JSVPanel jsvp = appletFrame.getJSVPanel(vwr, specs, initialStartIndex,
-				initialEndIndex);
-		initialEndIndex = initialStartIndex = -1;
+		List<Spectrum> specs = new List<Spectrum>();
+		specs.addLast(spec);
+		JSVPanel jsvp = appletFrame.getJSVPanel(vwr, specs);
 		jsvp.getPanelData().addListener(this);
 		vwr.parameters.setFor(jsvp, null, true);
 		return jsvp;
 	}
 
 	@Override
-	public JSVPanel siGetNewJSVPanel(Spectrum spec) {
-		if (spec == null) {
-			initialEndIndex = initialStartIndex = -1;
-			return null;
+	public JSVPanel siGetNewJSVPanel2(List<Spectrum> specs) {
+		if (specs == null) {
+			vwr.initialEndIndex = vwr.initialStartIndex = -1;
+			return appletFrame.getJSVPanel(vwr, null);
 		}
-		List<Spectrum> specs = new List<Spectrum>();
-		specs.addLast(spec);
-		JSVPanel jsvp = appletFrame.getJSVPanel(vwr, specs, initialStartIndex,
-				initialEndIndex);
+		JSVPanel jsvp = appletFrame.getJSVPanel(vwr, specs);
+		vwr.initialEndIndex = vwr.initialStartIndex = -1;
 		jsvp.getPanelData().addListener(this);
 		vwr.parameters.setFor(jsvp, null, true);
 		return jsvp;

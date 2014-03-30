@@ -104,7 +104,13 @@ public class JsDialogManager extends DialogManager {
 
 	@Override
 	public void showMessage(Object frame, String text, String title) {
-		JDialog dialog = new JDialog();// no manager needed here
+		JDialog dialog = new JDialog();
+		/**
+		 * @j2sNative
+		 * 
+		 * dialog.manager = this; 
+		 */
+		{}
 		dialog.setTitle(title);
 		JComponent pane;
 		if (text.indexOf("</div>") >= 0) {

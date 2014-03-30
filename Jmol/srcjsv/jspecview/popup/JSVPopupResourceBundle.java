@@ -65,7 +65,7 @@ public class JSVPopupResourceBundle extends PopupResource {
       {   "ShowMenu", "Show_Header Show_Source Show_Overlay_Key" }, //Window?
 
       {   "OptionsMenu",
-          "Toggle_Grid Toggle_X_Axis Toggle_Y_Axis Toggle_Coordinates Toggle_Trans/Abs Reverse_Plot Predicted_Solution_Colour" }, //Window?
+          "Toggle_Grid Toggle_X_Axis Toggle_Y_Axis Toggle_Coordinates Toggle_Trans/Abs Reverse_Plot - Predicted_Solution_Colour Predicted_Solution_Colour_(interpolated) Fill_Solution_Colour_(all)  Fill_Solution_Colour_(none)" }, //Window?
 
       {   "ZoomMenu", "Next_Zoom Previous_Zoom Reset_Zoom - Set_X_Scale... Reset_X_Scale" },
 
@@ -105,6 +105,9 @@ public class JSVPopupResourceBundle extends PopupResource {
   	{"Integration","SHOWINTEGRATION"},
   	{"Toggle_Trans/Abs","IRMODE TOGGLE"},
   	{"Predicted_Solution_Colour","GETSOLUTIONCOLOR"},
+  	{"Predicted_Solution_Colour_(interpolated)","GETSOLUTIONCOLOR false"},
+  	{"Fill_Solution_Colour_(all)","GETSOLUTIONCOLOR fillall"},
+  	{"Fill_Solution_Colour_(none)","GETSOLUTIONCOLOR fillallnone"},
   	{"Print...","print"},
   	{"Original...","write SOURCE"},
   	{"CML","write CML"},

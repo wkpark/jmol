@@ -504,11 +504,9 @@ public class JSVApplet extends JApplet implements JSVAppletInterface,
 	}
 
 	@Override
-	public JSVPanel getJSVPanel(JSViewer viewer, List<Spectrum> specs,
-			int initialStartIndex, int initialEndIndex) {
+	public JSVPanel getJSVPanel(JSViewer viewer, List<Spectrum> specs) {
 		return (specs == null ? AwtPanel.getEmptyPanel(viewer)
-				: AwtPanel.getPanelMany(viewer, specs, initialStartIndex,
-				initialEndIndex));
+				: AwtPanel.getPanelMany(viewer, specs));
 	}
 
 	// for the signed applet to load a remote file, it must

@@ -531,10 +531,9 @@ public class JSVApplet implements JSVAppletInterface,
 	}
 
 	@Override
-	public JSVPanel getJSVPanel(JSViewer viewer, List<Spectrum> specs,
-			int initialStartIndex, int initialEndIndex) {
+	public JSVPanel getJSVPanel(JSViewer viewer, List<Spectrum> specs) {
 		return (specs == null ? JsPanel.getEmptyPanel(viewer) 
-			  : JsPanel.getPanelMany(viewer, specs, initialStartIndex, initialEndIndex));
+			  : JsPanel.getPanelMany(viewer, specs));
 	}
 
 	@Override

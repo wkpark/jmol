@@ -113,15 +113,11 @@ public class JsPanel implements JSVPanel {
    * 
    * @param spectra
    *        the List of <code>Graph</code> instances
-   * @param startIndex
-   *        the start index
-   * @param endIndex
-   *        the end index
    * @return this
    */
-  public static JsPanel getPanelMany(JSViewer viewer, List<Spectrum> spectra, int startIndex, int endIndex) {
+  public static JsPanel getPanelMany(JSViewer viewer, List<Spectrum> spectra) {
   	JsPanel p = new JsPanel(viewer, true);
-    p.pd.initMany(spectra, startIndex, endIndex);
+    p.pd.initMany(spectra, viewer.initialStartIndex, viewer.initialEndIndex);
     return p;
   }
 

@@ -562,13 +562,17 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 			case 1:
 				ScriptToken st = list.get(0);
 				tip = st.getTip();
-				if (tip.indexOf("TRUE") >= 0)
-					tip = " (" + vwr.parameters.getBoolean(st) + ")";
-				else if (st.name().indexOf("COLOR") >= 0)
-					tip = " (" + CU.toRGBHexString(vwr.parameters.getElementColor(st))
-							+ ")";
-				else
-					tip = "";
+				try {
+					if (tip.indexOf("TRUE") >= 0)
+						tip = " (" + vwr.parameters.getBoolean(st) + ")";
+					else if (st.name().indexOf("COLOR") >= 0)
+						tip = " (" + CU.toRGBHexString(vwr.parameters.getElementColor(st))
+								+ ")";
+					else
+						tip = "";
+				} catch (Exception e) {
+					return;
+				}
 				if (c == '\t' || isExact) {
 					tip = st.name() + " " + st.getTip() + tip;
 					if (c == '\t')
@@ -1082,13 +1086,13 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 	}
 
 	@Override
-	public JSVPanel siGetNewJSVPanel2(List<Spectrum> specs) {
-		return AwtPanel.getPanelMany(vwr, specs, 0, 0);
+	public JSVPanel siGetNewJSVPanel(Spectrum spec) {
+		return (spec == null ? null : AwtPanel.getPanelOne(vwr, spec));
 	}
 
 	@Override
-	public JSVPanel siGetNewJSVPanel(Spectrum spec) {
-		return (spec == null ? null : AwtPanel.getPanelOne(vwr, spec));
+	public JSVPanel siGetNewJSVPanel2(List<Spectrum> specs) {
+		return AwtPanel.getPanelMany(vwr, specs);
 	}
 
 	@Override

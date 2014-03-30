@@ -303,7 +303,9 @@ abstract public class JSVGenericPopup extends GenericSwingPopup implements
 				//pd != null && pd.hasCurrentMeasurements(AType.Measurements));
 		setItemEnabled("Peaks", pd != null && pd.getSpectrum().is1D());
 
-		setItemEnabled("Predicted_Solution_Colour",
+		setItemEnabled("Predicted_Solution_Colour_(fitted)",
+				isSingle && spec0.canShowSolutionColor());
+		setItemEnabled("Predicted_Solution_Colour_(interpolated)",
 				isSingle && spec0.canShowSolutionColor());
 		setItemEnabled("Toggle_Trans/Abs", isSingle && spec0.canConvertTransAbs());
 		setItemEnabled("Show_Overlay_Key", isOverlaid

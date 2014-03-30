@@ -355,7 +355,7 @@ public class MathExt implements JmolMathExtension {
     }
     Map<String, Object> key = ce.getColorKey();
     if (getValue)
-      return mp.addXPt(CU.colorPtFromInt2(ce.getArgb(hi == Float.MAX_VALUE ? lo
+      return mp.addXPt(CU.colorPtFromInt(ce.getArgb(hi == Float.MAX_VALUE ? lo
           : value)));
     return mp.addX(SV.getVariableMap(key));
   }

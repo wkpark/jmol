@@ -469,7 +469,7 @@ public class IsosurfaceMesh extends Mesh {
     if (jvxlData.contourColixes != null) {
       // set in SurfaceReader.colorData()
       for (int i = 0; i < jvxlData.contourColixes.length; i++) {
-        colors.addLast(CU.colorPtFromInt2(C
+        colors.addLast(CU.colorPtFromInt(C
             .getArgb(jvxlData.contourColixes[i])));
       }
       ht.put("colors", colors);

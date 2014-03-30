@@ -534,7 +534,7 @@ import javajs.util.P3;
 
     for (int i = 0; i < segmentCount; i++) {
       values[i] = (isReversed ? hi - i * quantum : lo + i * quantum);
-      colors.addLast(CU.colorPtFromInt2(getArgb(values[i] + f)));
+      colors.addLast(CU.colorPtFromInt(getArgb(values[i] + f)));
     }
     values[segmentCount] = (isReversed ? lo : hi);
     info.put("values", values);

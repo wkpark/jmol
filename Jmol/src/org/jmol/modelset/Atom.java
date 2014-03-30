@@ -1470,7 +1470,7 @@ public class Atom extends Point3fi implements BNode {
     case T.xyz:
       return atom;
     case T.color:
-      return CU.colorPtFromInt2(
+      return CU.colorPtFromInt(
           atom.group.chain.model.ms.vwr.getColorArgbOrGray(atom.getColix())
           );
     }

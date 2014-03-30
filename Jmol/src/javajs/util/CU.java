@@ -444,7 +444,7 @@ public class CU {
     return toRGBpt(getArgbFromString(colorName), pt);
   }
 
-  public final static P3 colorPtFromInt2(int color) {
+  public final static P3 colorPtFromInt(int color) {
     return P3.new3((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF);
   }
 

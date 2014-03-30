@@ -102,7 +102,7 @@ class Widgets {
     
     @Override
     String getJavaScript(int appletID, JmolInstance instance) {
-      P3 ptRGB = CU.colorPtFromInt2(instance.bgColor);
+      P3 ptRGB = CU.colorPtFromInt(instance.bgColor);
       return "<table><tbody><tr><td style=\"min-width:70px;\">"
           + GT.escapeHTML(GT._("background color:"))
           + "</td><td style=\"min-width:70px;\"><script type = 'text/javascript'>"

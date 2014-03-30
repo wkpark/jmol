@@ -1752,7 +1752,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public P3 getColorPointForPropertyValue(float val) {
     // x = {atomno=3}.partialcharge.color
-    return CU.colorPtFromInt2(gdata.getColorArgbOrGray(cm
+    return CU.colorPtFromInt(gdata.getColorArgbOrGray(cm
         .getColixForPropertyValue(val)));
   }
 

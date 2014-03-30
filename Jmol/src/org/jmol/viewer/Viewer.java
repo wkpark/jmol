@@ -4806,6 +4806,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       if (name.startsWith("$$")) {
         // 2D version
         f = f.substring(1);
+        
+        //http://cactus.nci.nih.gov/chemical/structure/C%28O%29CCC/file?format=sdf
         format = PT.rep(g.smilesUrlFormat,
             "&get3d=True", "");
         return Txt.formatStringS(format, "FILE", PT.escapeUrl(f));
@@ -8775,6 +8777,10 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       break;
     default:
       info = SV.sValue(t);
+      // the following should not be necessary
+      // but an NCI server fault on 3/29/2014 required this
+      //if (info.equals("sdf"))
+        //info = "file?format=sdf";
     }
     String s = (String) setLoadFormat("_" + smiles, type, false);
     if (type == '/')

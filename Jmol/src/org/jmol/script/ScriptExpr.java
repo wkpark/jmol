@@ -1939,13 +1939,10 @@ abstract class ScriptExpr extends ScriptParam {
     boolean settingData = key.startsWith("property_");
     boolean isThrown = key.equals("thrown_value");
     boolean isExpression = (tokAt(1) == T.expressionBegin);
-    // boolean isNull = key.equals("all");
-
     SV t = (settingData ? null : getContextVariableAsVariable(key));
-
     // determine whether this is some sort of 
     // special assignment of a known variable
-    
+
     if (isSet && !isExpression) {
       // pt will be 1 unless...
       switch (tokAt(2)) {
@@ -1970,10 +1967,10 @@ abstract class ScriptExpr extends ScriptParam {
       if (pt == 1)
         key = null;
     }
+    int nv = 0;
     List<SV> v = (List<SV>) parameterExpression(pt, ptMax, key, true, true, -1,
         false, null, null, isSet && pt == 1);
-
-    int nv = v.size();
+    nv = v.size();
     if (nv == 0)
       invArg();
     if (chk)
@@ -2074,7 +2071,6 @@ abstract class ScriptExpr extends ScriptParam {
           || (t = vwr.getOrSetNewVariable(key, true)) == null)
         errorStr(ERROR_invalidArgument, key);
     }
-
     if (t != null) {
       t.setv(tv);
       t.setModified(true);

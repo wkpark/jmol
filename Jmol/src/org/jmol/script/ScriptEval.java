@@ -2435,6 +2435,8 @@ public class ScriptEval extends ScriptExpr {
     case T.unbind:
       cmdUnbind();
       break;
+    case T.var:
+      break;
     case T.vibration:
       cmdVibration();
       break;
@@ -6052,7 +6054,8 @@ public class ScriptEval extends ScriptExpr {
       isCmdLine_C_Option &= loadCheck;
       executionStepping |= doStep;
 
-      contextVariables = new Hashtable<String, SV>();
+      if (contextVariables == null)
+        contextVariables = new Hashtable<String, SV>();
       contextVariables.put(
           "_arguments",
           (params == null ? SV.getVariableAI(new int[] {}) : SV
@@ -8532,8 +8535,7 @@ public class ScriptEval extends ScriptExpr {
     String s = "";
     boolean isWild = Txt.isWild(id);
     for (int iShape = JC.SHAPE_DIPOLES;;) {
-      if (iShape != JC.SHAPE_MO
-          && getShapePropertyData(iShape, "checkID", data)) {
+      if (getShapePropertyData(iShape, "checkID", data)) {
         setShapeProperty(iShape, "thisID", id);
         switch (tokCommand) {
         case T.delete:
@@ -8559,10 +8561,17 @@ public class ScriptEval extends ScriptExpr {
         if (!isWild)
           break;
       }
-      if (iShape == JC.SHAPE_DIPOLES)
+      switch (iShape) {
+      case JC.SHAPE_DIPOLES:
+        iShape = JC.SHAPE_ELLIPSOIDS;
+        continue;
+      case JC.SHAPE_ELLIPSOIDS:
         iShape = JC.SHAPE_MAX_HAS_ID;
+      }
       if (--iShape < JC.SHAPE_MIN_HAS_ID)
         break;
+      if (iShape == JC.SHAPE_MO)
+        iShape--;
     }
     return s;
   }

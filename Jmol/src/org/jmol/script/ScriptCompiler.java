@@ -175,7 +175,7 @@ public class ScriptCompiler extends ScriptTokenParser {
     return sc;
   }
 
-  private void addContextVariable(String ident) {
+  private void newContextVariable(String ident) {
     theToken = T.o(T.identifier, ident);
     if (pushCount > 0) {
       ContextToken ct = (ContextToken) vPush.get(pushCount - 1);
@@ -1607,7 +1607,7 @@ public class ScriptCompiler extends ScriptTokenParser {
       case 2:
         if (theTok != T.rightparen)
           ((ContextToken) tokenCommand).name0 = ident;
-        addContextVariable(ident);
+        newContextVariable(ident);
         break;
       case 3:
         if (theTok != T.rightparen)
@@ -1683,13 +1683,6 @@ public class ScriptCompiler extends ScriptTokenParser {
           .newCmd(T.elseif, "elseif"));
       tokCommand = T.elseif;
       return CONTINUE;
-    case T.var:
-      if (nTokens != 1)
-        break;
-      addContextVariable(ident);
-      replaceCommand(T.tokenSetVar);
-      tokCommand = T.set;
-      break;
     case T.end:
       if (nTokens != 1)
         return ERROR(ERROR_badArgumentCount);
@@ -1728,7 +1721,7 @@ public class ScriptCompiler extends ScriptTokenParser {
         forPoint3 = nSemiSkip = 0;
         nSemiSkip += 2;
       } else if (nTokens == 3 && tokAt(2) == T.var) {
-        addContextVariable(ident);
+        newContextVariable(ident);
       } else if ((nTokens == 3 || nTokens == 4) && theTok == T.in) {
         // for ( var x IN
         // for ( x IN
@@ -1743,6 +1736,23 @@ public class ScriptCompiler extends ScriptTokenParser {
       }
       break;
     case T.set:
+    case T.var:
+      if (tokCommand == T.var) {
+        if (nTokens == 1) {
+          replaceCommand(T.tokenSetVar);
+          newContextVariable(ident);
+          break;
+        } else if (ident.equals(",")) {
+          return CONTINUE;
+        } else if (!Character.isAlphabetic(ident.charAt(0))) {
+          if (nTokens != 2)
+            return ERROR(ERROR_badArgumentCount);
+          tokCommand = T.set;
+        } else {
+          newContextVariable(ident);
+          break;
+        }
+      }
       if (theTok == T.leftbrace)
         setBraceCount++;
       else if (theTok == T.rightbrace) {

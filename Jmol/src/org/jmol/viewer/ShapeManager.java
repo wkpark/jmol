@@ -377,7 +377,7 @@ public class ShapeManager {
       if (shapes[i] != null)
         shapes[i].setVisibilityFlags(bs);
     
-    // now et the JC.ATOM_IN_FRAME and JC.ATOM_NOTHIDDEN flags
+    // now set the JC.ATOM_IN_FRAME and JC.ATOM_NOTHIDDEN flags
     // along with the bonds flag.
     
     boolean showHydrogens = vwr.getBoolean(T.showhydrogens);

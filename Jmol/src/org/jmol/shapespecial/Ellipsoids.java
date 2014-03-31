@@ -28,26 +28,28 @@ package org.jmol.shapespecial;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.jmol.c.PAL;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
-//import org.jmol.script.T;
 import org.jmol.shape.Shape;
-//import org.jmol.shapesurface.IsosurfaceMesh;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.Escape;
+import org.jmol.util.Txt;
+
 import javajs.util.List;
 import javajs.util.PT;
 import javajs.util.SB;
 import javajs.util.P3;
-//import javajs.util.P4;
 import org.jmol.util.Tensor;
 import javajs.util.V3;
 
 public class Ellipsoids extends Shape {
 
+  private static final String PROPERTY_MODES = "ax ce co de eq mo on op sc tr";
+  
   public Map<String, Ellipsoid> simpleEllipsoids = new Hashtable<String, Ellipsoid>();
   public Map<Tensor, Ellipsoid> atomEllipsoids = new Hashtable<Tensor, Ellipsoid>();
 
@@ -56,12 +58,12 @@ public class Ellipsoids extends Shape {
   }
 
   private String typeSelected = "1";
-  private Ellipsoid ellipsoidSelected;
   private BS selectedAtoms;
+  private List<Ellipsoid> ellipsoidSet;
 
   @Override
   public int getIndexFromName(String thisID) {
-    return ((ellipsoidSelected = simpleEllipsoids.get(thisID)) == null ? -1 : 1);
+    return (checkID(thisID) ? 1 : -1);
   }
 
   @Override
@@ -109,19 +111,63 @@ public class Ellipsoids extends Shape {
   //    }
   //    return false;
   //  }
+  
+  @Override
+  public boolean getPropertyData(String property, Object[] data) {
+    if (property == "checkID") {
+      return (checkID((String) data[0]));
+    }
+    return false;
+  }
+
+
+
+  private boolean checkID(String thisID) {
+    ellipsoidSet = new List<Ellipsoid>();
+    if (thisID == null)
+      return false;
+    thisID = thisID.toLowerCase();
+    if (Txt.isWild(thisID)) {
+      for (Entry<String, Ellipsoid> e : simpleEllipsoids.entrySet()) {
+        String key = e.getKey().toLowerCase();
+        if (Txt.isMatch(key, thisID, true, true))
+          ellipsoidSet.addLast(e.getValue());
+      }
+    }
+    Ellipsoid e = simpleEllipsoids.get(thisID);
+    if (e != null)
+      ellipsoidSet.addLast(e);
+    return (ellipsoidSet.size() > 0);
+  }
+
+  private boolean initEllipsoids(Object value) {
+    boolean haveID = (value != null);
+    checkID((String) value);
+    if (haveID)
+      typeSelected = null;
+    selectedAtoms = null;
+    return haveID;
+  }
 
   @Override
   public void setProperty(String propertyName, Object value, BS bs) {
     //System.out.println(propertyName + " " + value + " " + bs);
     if (propertyName == "thisID") {
-      if (initEllipsoids(value) && ellipsoidSelected == null) {
+      if (initEllipsoids(value) && ellipsoidSet.size() == 0) {
         String id = (String) value;
-        ellipsoidSelected = Ellipsoid.getEmptyEllipsoid(id, vwr
-            .getCurrentModelIndex());
-        simpleEllipsoids.put(id, ellipsoidSelected);
+        Ellipsoid e = Ellipsoid.getEmptyEllipsoid(id,
+            vwr.getCurrentModelIndex());
+        ellipsoidSet.addLast(e);
+        simpleEllipsoids.put(id, e);
       }
       return;
     }
+
+    if ("atoms" == propertyName) {
+      selectedAtoms = (BS) value;
+      return;
+    }
+    
     if (propertyName == "deleteModelAtoms") {
       int modelIndex = ((int[]) ((Object[]) value)[2])[0];
       Iterator<Ellipsoid> e = simpleEllipsoids.values().iterator();
@@ -132,81 +178,32 @@ public class Ellipsoids extends Shape {
       while (e.hasNext())
         if (e.next().modelIndex == modelIndex)
           e.remove();
-      ellipsoidSelected = null;
+      ellipsoidSet.clear();
       return;
     }
-    if ("atoms" == propertyName) {
-      selectedAtoms = (BS) value;
-      return;
-    }
-    if (ellipsoidSelected != null) {
-      if ("delete" == propertyName) {
-        simpleEllipsoids.remove(ellipsoidSelected.id);
-        return;
-      }
-      if ("modelindex" == propertyName) {
-        ellipsoidSelected.tensor.modelIndex = ((Integer) value).intValue();
-        return;
-      }
-      if ("on" == propertyName) {
-        ellipsoidSelected.isOn = ((Boolean) value).booleanValue();
-        return;
-      }
-      if ("options" == propertyName) {
-        ellipsoidSelected.options = ((String) value).toLowerCase();
-      }
-      if ("points" == propertyName) {
-        //Object[] o = (Object[]) value;
-        //setPoints((P3[]) o[1], (BS) o[2]);
-        return;
-      }
-      if ("axes" == propertyName) {
-        ellipsoidSelected.setAxes((V3[]) value);
-        return;
-      }
-      if ("equation" == propertyName) {
-        ellipsoidSelected.setEquation((double[]) value);
-        return;
-      }
-      if ("center" == propertyName) {
-        ellipsoidSelected.setCenter((P3) value);
-        return;
-      }
-      if ("scale" == propertyName) {
-        ellipsoidSelected.setScale(((Float) value).floatValue(), false);
-        return;
-      }
-      if ("color" == propertyName) {
-        ellipsoidSelected.colix = C.getColixO(value);
-        return;
-      }
+    int mode = PROPERTY_MODES.indexOf((propertyName+"  ").substring(0, 2));
+    if (ellipsoidSet.size() > 0) {
       if ("translucentLevel" == propertyName) {
         setPropS(propertyName, value, bs);
         return;
       }
-      if ("translucency" == propertyName) {
-        boolean isTranslucent = (value.equals("translucent"));
-        ellipsoidSelected.colix = C.getColixTranslucent3(
-            ellipsoidSelected.colix, isTranslucent, translucentLevel);
-        return;
-      }
-    }
-
-    if ("select" == propertyName) {
-      typeSelected = ((String) value).toLowerCase();
+      if (mode >= 0) 
+      for (int i = ellipsoidSet.size(); --i >= 0;)
+        setProp(ellipsoidSet.get(i), mode / 3, value);
       return;
     }
 
-    if ("scale" == propertyName) {
-      setSize((int) (((Float) value).floatValue() * 100), bs);
+   if ("color" == propertyName) {
+      short colix = C.getColixO(value);
+      byte pid = PAL.pidOf(value);
+      if (selectedAtoms != null)
+        bs = selectedAtoms;
+      for (Ellipsoid e : atomEllipsoids.values())
+        if (e.tensor.type.equals(typeSelected) && e.tensor.isSelected(bs, -1)) {
+          e.colix = getColixI(colix, pid, e.tensor.atomIndex1);
+          e.pid = pid;
+        }
       return;
-    }
-    if ("params" == propertyName) {
-      Object[] data = (Object[]) value;
-      data[2] = null;// Jmol does not allow setting sizes this way from PyMOL yet
-      typeSelected = "0";
-      setSize(50, bs);
-      // onward...
     }
 
     if ("on" == propertyName) {
@@ -239,16 +236,27 @@ public class Ellipsoids extends Shape {
       return;
     }
 
-    if ("color" == propertyName) {
-      short colix = C.getColixO(value);
-      byte pid = PAL.pidOf(value);
-      if (selectedAtoms != null)
-        bs = selectedAtoms;
-      for (Ellipsoid e : atomEllipsoids.values())
-        if (e.tensor.type.equals(typeSelected) && e.tensor.isSelected(bs, -1)) {
-          e.colix = getColixI(colix, pid, e.tensor.atomIndex1);
-          e.pid = pid;
-        }
+    if ("params" == propertyName) {
+      Object[] data = (Object[]) value;
+      data[2] = null;// Jmol does not allow setting sizes this way from PyMOL yet
+      typeSelected = "0";
+      setSize(50, bs);
+      // onward...
+    }
+
+    if ("points" == propertyName) {
+      //Object[] o = (Object[]) value;
+      //setPoints((P3[]) o[1], (BS) o[2]);
+      return;
+    }
+
+    if ("scale" == propertyName) {
+      setSize((int) (((Float) value).floatValue() * 100), bs);
+      return;
+    }
+
+    if ("select" == propertyName) {
+      typeSelected = ((String) value).toLowerCase();
       return;
     }
 
@@ -262,16 +270,6 @@ public class Ellipsoids extends Shape {
     }
     setPropS(propertyName, value, bs);
   }
-
-private boolean initEllipsoids(Object value) {
-  boolean haveID = (value != null);
-  ellipsoidSelected = (haveID ? (Ellipsoid) simpleEllipsoids.get(value) : null);
-  if (haveID) {
-    typeSelected = null;
-  }
-  selectedAtoms = null;
-  return haveID;
-}
 
   //  private void setPoints(P3[] points, BS bs) {
   //    return;
@@ -304,6 +302,45 @@ private boolean initEllipsoids(Object value) {
   //    Eigen eigen = Eigen.newM(N);
   //    ellipsoid.setEigen(ptCenter, eigen, 1f / n / 3);
   //  }
+
+  private void setProp(Ellipsoid e, int mode, Object value) {
+    // "ax ce co de eq mo on op sc tr"
+    //  0  1  2  3  4  5  6  7  8  9
+    switch (mode) {
+    case 0: // axes
+      e.setAxes((V3[]) value);
+      return;
+    case 1: // center
+      e.setCenter((P3) value);
+      return;
+    case 2: // color
+      e.colix = C.getColixO(value);
+      return;
+    case 3: // delete
+      simpleEllipsoids.remove(e.id);
+      return;
+    case 4: // equation
+      e.setEquation((double[]) value);
+      return;
+    case 5: // modelindex
+      e.tensor.modelIndex = ((Integer) value).intValue();
+      return;
+    case 6: // on
+      e.isOn = ((Boolean) value).booleanValue();
+      return;
+    case 7: // options
+      e.options = ((String) value).toLowerCase();
+      return;
+    case 8: // scale
+      e.setScale(((Float) value).floatValue(), false);
+      return;
+    case 9: // translucency
+      e.colix = C.getColixTranslucent3(e.colix, value.equals("translucent"),
+          translucentLevel);
+      return;
+    }
+    return;
+  }
 
   @Override
   public String getShapeState() {
@@ -388,8 +425,8 @@ private boolean initEllipsoids(Object value) {
   private void setVis(Map<?, Ellipsoid> ellipsoids, BS bs, Atom[] atoms) {
     for (Ellipsoid e: ellipsoids.values()) {
       Tensor t = e.tensor; 
-      boolean isOK = true;
-      if (t.atomIndex1 >= 0) {
+      boolean isOK = (t != null && e.isValid && e.isOn);
+      if (isOK && t.atomIndex1 >= 0) {
         if (t.iType == Tensor.TYPE_ADP) {
           boolean isModTensor = t.isModulated;
           boolean isUnmodTensor = t.isUnmodulated;
@@ -398,8 +435,7 @@ private boolean initEllipsoids(Object value) {
         }
         atoms[t.atomIndex1].setShapeVisibility(vf, true);
       }
-      e.visible = isOK && e.isValid && e.isOn
-      && (e.modelIndex < 0 || bs.get(e.modelIndex));
+      e.visible = isOK && (e.modelIndex < 0 || bs.get(e.modelIndex));
     }
   }
 

@@ -1359,7 +1359,7 @@ public class T {
   public final static T tokenSet             = tv(set, '=', "");
   public final static T tokenSetArray        = tv(set, '[', "");
   public final static T tokenSetProperty     = tv(set, '.', "");
-  public final static T tokenSetVar          = tv(set, '=', "var");
+  public final static T tokenSetVar          = tv(var, '=', "var");
   public final static T tokenEquals          = o(opEQ, "=");
   public final static T tokenScript          = o(script, "script");
   public final static T tokenSwitch          = o(switchcmd, "switch");

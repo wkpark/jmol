@@ -161,9 +161,6 @@ public class CmdExt implements JmolCmdExtension {
     case T.data:
       data();
       break;
-    case T.ellipsoid:
-      ellipsoid();
-      break;
     case T.hbond:
       connect(0);
       break;
@@ -214,6 +211,9 @@ public class CmdExt implements JmolCmdExtension {
       return mo(b);
     case JC.SHAPE_POLYHEDRA:
       return polyhedra();
+    case JC.SHAPE_ELLIPSOIDS:
+      ellipsoid();
+      break;
     case JC.SHAPE_STRUTS:
       return struts();
     }

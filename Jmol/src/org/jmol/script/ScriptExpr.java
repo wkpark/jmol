@@ -1980,6 +1980,7 @@ abstract class ScriptExpr extends ScriptParam {
       SV sel = (nv > 2 ? v.get(1) : null);
       t = v.get(0);
       // -- hash, key, value
+      // -- array[i], value
       // -- array, index, value
       // -- string, index, value
       // -- matrix, index/index, value
@@ -1994,12 +1995,12 @@ abstract class ScriptExpr extends ScriptParam {
         t.mapPut(sel.asString(), tv);
         break;
       case T.varray:
-        if (nv > 2)
+        if (nv > 2 + (sel == null ? 0 : 1))
           invArg();
-        t = SV.selectItemVar(t);
         if (sel == null) {
-          t.setv(tv);
-          break;
+          sel = t;
+        } else {
+          t = SV.selectItemVar(t);
         }
         selectOne = true;
         break;

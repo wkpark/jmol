@@ -135,48 +135,48 @@ public class JmolUtil implements JmolZipUtilities {
   private static String[] getSpartanDirs(String outputFileData) {
     if (outputFileData == null)
       return new String[] {};
-    if (outputFileData.startsWith("java.io.FileNotFoundException")
-        || outputFileData.startsWith("FILE NOT FOUND")
-        || outputFileData.indexOf("<html") >= 0)
-      return new String[] { "M0001" };
     List<String> v = new List<String>();
     String token;
     String lasttoken = "";
-    try {
-      StringTokenizer tokens = new StringTokenizer(outputFileData, " \t\r\n");
-      while (tokens.hasMoreTokens()) {
-        // profile file name is just before each right-paren:
-        /*
-         * MacSPARTAN '08 ENERGY PROFILE: x86/Darwin 130
-         * 
-         * Dihedral Move : C3 - C2 - C1 - O1 [ 4] -180.000000 .. 180.000000
-         * Dihedral Move : C2 - C1 - O1 - H3 [ 4] -180.000000 .. 180.000000
-         * 
-         * 1 ) -180.00 -180.00 -504208.11982719 2 ) -90.00 -180.00
-         * -504200.18593376
-         * 
-         * ...
-         * 
-         * 24 ) 90.00 180.00 -504200.18564495 25 ) 180.00 180.00
-         * -504208.12129747
-         * 
-         * Found a local maxima E = -504178.25455465 [ 3 3 ]
-         * 
-         * 
-         * Reason for exit: Successful completion Mechanics CPU Time : 1:51.42
-         * Mechanics Wall Time: 12:31.54
-         */
-        if ((token = tokens.nextToken()).equals(")"))
-          v.addLast(lasttoken);
-        else if (token.equals("Start-")
-            && tokens.nextToken().equals("Molecule"))
-          v.addLast(PT.split(tokens.nextToken(), "\"")[1]);
-        lasttoken = token;
+    if (!outputFileData.startsWith("java.io.FileNotFoundException")
+        && !outputFileData.startsWith("FILE NOT FOUND")
+        && outputFileData.indexOf("<html") < 0)
+      try {
+        StringTokenizer tokens = new StringTokenizer(outputFileData, " \t\r\n");
+        while (tokens.hasMoreTokens()) {
+          // profile file name is just before each right-paren:
+          /*
+           * MacSPARTAN '08 ENERGY PROFILE: x86/Darwin 130
+           * 
+           * Dihedral Move : C3 - C2 - C1 - O1 [ 4] -180.000000 .. 180.000000
+           * Dihedral Move : C2 - C1 - O1 - H3 [ 4] -180.000000 .. 180.000000
+           * 
+           * 1 ) -180.00 -180.00 -504208.11982719 2 ) -90.00 -180.00
+           * -504200.18593376
+           * 
+           * ...
+           * 
+           * 24 ) 90.00 180.00 -504200.18564495 25 ) 180.00 180.00
+           * -504208.12129747
+           * 
+           * Found a local maxima E = -504178.25455465 [ 3 3 ]
+           * 
+           * 
+           * Reason for exit: Successful completion Mechanics CPU Time : 1:51.42
+           * Mechanics Wall Time: 12:31.54
+           */
+          if ((token = tokens.nextToken()).equals(")"))
+            v.addLast(lasttoken);
+          else if (token.equals("Start-")
+              && tokens.nextToken().equals("Molecule"))
+            v.addLast(PT.split(tokens.nextToken(), "\"")[1]);
+          lasttoken = token;
+        }
+      } catch (Exception e) {
+        //
       }
-    } catch (Exception e) {
-      //
-    }
-    return v.toArray(new String[v.size()]);
+    return (v.size() == 0 ? new String[] { "M0001" } : v.toArray(new String[v
+        .size()]));
   }
 
   /**
@@ -196,15 +196,16 @@ public class JmolUtil implements JmolZipUtilities {
     name = name.replace('\\', '/');
     if (name.endsWith("/"))
       name = name.substring(0, name.length() - 1);
+    String sep = (name.endsWith(".zip") ? "|" : "/");
     for (int i = 0; i < dirNums.length; i++) {
-      String path = name
-          + (Character.isDigit(dirNums[i].charAt(0)) ? "/Profile." + dirNums[i]
-              : "/" + dirNums[i]);
-      files[pt++] = path + "/#JMOL_MODEL " + dirNums[i];
-      files[pt++] = path + "/input";
-      files[pt++] = path + "/archive";
-      files[pt++] = path + "/Molecule:asBinaryString";
-      files[pt++] = path + "/proparc";
+      String path = name + sep;
+      path += (Character.isDigit(dirNums[i].charAt(0)) ? "Profile." + dirNums[i]
+              : dirNums[i]) + "/";
+      files[pt++] = path + "#JMOL_MODEL " + dirNums[i];
+      files[pt++] = path + "input";
+      files[pt++] = path + "archive";
+      files[pt++] = path + "Molecule:asBinaryString";
+      files[pt++] = path + "proparc";
     }
     return files;
   }

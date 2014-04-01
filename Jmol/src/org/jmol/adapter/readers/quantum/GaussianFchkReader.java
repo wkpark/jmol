@@ -75,6 +75,8 @@ public class GaussianFchkReader extends MOReader {
 
   private void readAllData() throws Exception {
     while ((line == null ? rd() : line) != null) {
+      if (line.length() < 40)
+        continue;
       String name = PT.rep(line.substring(0, 40).trim(), " ","");
       char type = line.charAt(43);
       boolean isArray = (line.indexOf("N=") >= 0);
@@ -132,18 +134,18 @@ public class GaussianFchkReader extends MOReader {
   }
 
   /*
-MxBond                                     I                3
-NBond                                      I   N=          11
+  MxBond                                     I                3
+  NBond                                      I   N=          11
            3           3           2           3           3           3
            1           1           1           1           1
-IBond                                      I   N=          33
+  IBond                                      I   N=          33
            2           3           7           1           4           8
            1           6           0           2           5           9
            4           6          10           3           5          11
            1           0           0           2           0           0
            4           0           0           5           0           0
            6           0           0
-RBond                                      R   N=          33
+  RBond                                      R   N=          33
   1.50000000E+00  1.50000000E+00  1.00000000E+00  1.50000000E+00  1.50000000E+00
   1.00000000E+00  1.50000000E+00  1.50000000E+00  0.00000000E+00  1.50000000E+00
   1.50000000E+00  1.00000000E+00  1.50000000E+00  1.50000000E+00  1.00000000E+00
@@ -154,11 +156,13 @@ RBond                                      R   N=          33
    */
 
   private void readBonds() {
-    float[] iBond  = (float[]) fileData.get("IBond");
-    if (iBond == null)
+    try {
+    float[] nBond = (float[]) fileData.get("NBond");
+    float[] iBond = (float[]) fileData.get("IBond");
+    if (nBond.length == 0)
       return;
-    float[] rBond  = (float[]) fileData.get("RBond");
-    int mxBond = ((Integer) fileData.get("MxBond")).intValue();
+    float[] rBond = (float[]) fileData.get("RBond");
+    int mxBond = rBond.length / nBond.length;
     for (int ia = 0, pt = 0; ia < atomCount; ia++)
       for (int j = 0; j < mxBond; j++, pt++) {
         int ib = (int) iBond[pt] - 1;
@@ -166,8 +170,11 @@ RBond                                      R   N=          33
           continue;
         float order = rBond[pt];
         int iorder = (order == 1.5f ? JmolAdapter.ORDER_AROMATIC : (int) order);
-        asc.addBond(new Bond(ia, ib, iorder));        
+        asc.addBond(new Bond(ia, ib, iorder));
       }
+    } catch (Exception e) {
+      Logger.info("GaussianFchkReader -- bonding ignored");
+    }
   }
   
   private void readDipoleMoment() throws Exception {

@@ -44,37 +44,31 @@ public class Int2IntHash {
 
   public synchronized void put(int key, int value) {
     Entry[] entries = this.entries;
-    int hash = (key & 0x7FFFFFFF) % entries.length;
+    int n = entries.length;
+    int hash = (key & 0x7FFFFFFF) % n;
     for (Entry e = entries[hash]; e != null; e = e.next)
       if (e.key == key) {
         e.value = value;
         return;
       }
-    if (entryCount > entries.length)
-      rehash();
-    entries = this.entries;
-    hash = (key & 0x7FFFFFFF) % entries.length;
+    if (entryCount > n) {
+      int oldSize = n;
+      n += n + 1;
+      Entry[] newEntries = new Entry[n];
+      for (int i = oldSize; --i >= 0;) {
+        for (Entry e = entries[i]; e != null;) {
+          Entry t = e;
+          e = e.next;
+          hash = (t.key & 0x7FFFFFFF) % n;
+          t.next = newEntries[hash];
+          newEntries[hash] = t;
+        }
+      }
+      entries = this.entries = newEntries;
+      hash = (key & 0x7FFFFFFF) % n;
+    }
     entries[hash] = new Entry(key, value, entries[hash]);
     ++entryCount;
-  }
-
-  private void rehash() {
-    Entry[] oldEntries = entries;
-    int oldSize = oldEntries.length;
-    int newSize = oldSize * 2 + 1;
-    Entry[] newEntries = new Entry[newSize];
-
-    for (int i = oldSize; --i >= 0; ) {
-      for (Entry e = oldEntries[i]; e != null; ) {
-        Entry t = e;
-        e = e.next;
-
-        int hash = (t.key & 0x7FFFFFFF) % newSize;
-        t.next = newEntries[hash];
-        newEntries[hash] = t;
-      }
-    }
-    entries = newEntries;
   }
 
   private class Entry {

@@ -6,7 +6,7 @@
 if (!window["java.registered"])
  window["java.registered"] = false;
 
-(function () {
+(function (ClazzLoader) {
 
 if (window["java.packaged"]) return;
 window["java.packaged"] = true;
@@ -276,5 +276,5 @@ for (var i = 0; i < Jmol._coreFiles.length; i++)
 		"$.PopupResource"
 	]);
 
-}) ();
+}) (Clazz._Loader);
 window["java.registered"] = true;

@@ -121,8 +121,9 @@ Bob Hanson hansonr@stolaf.edu 11/26/2013
   <property name="selfsign.storetype" value="jks" />
   <property name="selfsign.storepass" value="selfSignedCertificate" />
   <property name="selfsign.alias" value="selfSignedCertificate" />
-  <property name="tsa.url" value="http://timestamp.globalsign.com/scripts/timestamp.dll" />
-	<!-- was http://tsa.starfieldtech.com/, which stopped working 3/27/14 -->
+  <property name="tsa.url" value="http://tsa.starfieldtech.com/" />
+	
+	<!-- http://timestamp.globalsign.com/scripts/timestamp.dll or  http://tsa.starfieldtech.com/, which stopped working 3/27/14 -->
 
 
 	<!-- you can set this by defining it in ~/.jmol.build.properties -->
@@ -1103,6 +1104,7 @@ all support for previous versions removed
         <include name="org/jmol/awt/**" />		
 		<include name="org/jmol/bspt/**" />
         <include name="org/jmol/c/**" />
+   		<include name="org/jmol/export/**" />
 		<include name="org/jmol/g3d/**" />
 		<include name="org/jmol/geodesic/**" />
 		<include name="org/jmol/i18n/**" />

@@ -162,6 +162,7 @@ public class GaussianFchkReader extends MOReader {
     if (nBond.length == 0)
       return;
     float[] rBond = (float[]) fileData.get("RBond");
+    // MxBond record is not critical here
     int mxBond = rBond.length / nBond.length;
     for (int ia = 0, pt = 0; ia < atomCount; ia++)
       for (int j = 0; j < mxBond; j++, pt++) {

@@ -45,7 +45,7 @@ public class Resolver {
     "cif.", ";Cif;",
     "molxyz.", ";Mol3D;Mol;Xyz;",
     "more.", ";BinaryDcd;Gromacs;Jcampdx;MdCrd;MdTop;Mol2;TlsDataOnly;",
-    "quantum.", ";Adf;Csf;Dgrid;GamessUK;GamessUS;Gaussian;GausianWfn;Jaguar;" +
+    "quantum.", ";Adf;Csf;Dgrid;GamessUK;GamessUS;Gaussian;GaussianFchk;GaussianWfn;Jaguar;" +
                  "Molden;MopacGraphf;GenNBO;NWChem;Odyssey;Psi;Qchem;Spartan;SpartanSmol;" +
                  "WebMO;",
     "pdb.", ";Pdb;Pqr;P2n;",
@@ -747,7 +747,7 @@ public class Resolver {
   
   private final static String[] m3dStartRecords = 
   { "Alchemy", "STRUCTURE  1.00     1" }; // M3D reader is very similar to Alchemy
-
+  
   private final static String[][] fileStartsWithRecords =
   { sptContainsRecords, m3dStartRecords, cubeFileStartRecords, mol2Records, webmoFileStartRecords, 
     moldenFileStartRecords, dcdFileStartRecords, tlsDataOnlyFileStartRecords,
@@ -828,6 +828,9 @@ public class Resolver {
   { "GaussianWfn", "MO ORBITALS" };
   */
 
+  private final static String[] gaussianFchkContainsRecords =
+  { "GaussianFchk", "Number of point charges in /Mol/" };
+
   private final static String[] ampacContainsRecords =
   { "Ampac", "AMPAC Version" };
   
@@ -902,7 +905,7 @@ public class Resolver {
     spartanBinaryContainsRecords, spartanContainsRecords, mol2Records, adfContainsRecords, psiContainsRecords,
     nwchemContainsRecords, uicrcifContainsRecords, dgridContainsRecords, crystalContainsRecords, 
     dmolContainsRecords, gulpContainsRecords, espressoContainsRecords, siestaContainsRecords,xcrysDenContainsRecords,
-    mopacArchiveContainsRecords,abinitContainsRecords
+    mopacArchiveContainsRecords,abinitContainsRecords,gaussianFchkContainsRecords,
   };
 }
 

@@ -574,9 +574,12 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
       String entryName = "#"
           + (i + 1)
           + " "
-          + (mo.containsKey("type") ? (String) mo.get("type") + " " : "")
-          + (mo.containsKey("symmetry") ? (String) mo.get("symmetry") + " "
-              : "") + (mo.containsKey("energy") ? mo.get("energy") : "");
+          + (mo.containsKey("type") ? mo.get("type") + " " : "")
+          + (mo.containsKey("symmetry") ? mo.get("symmetry") + " "
+              : "") 
+          + (mo.containsKey("occupancy") ? "(" + ((Number) mo.get("occupancy")).intValue() + ") " : "")
+              
+              + (mo.containsKey("energy") ? mo.get("energy") : "");
       String script = "mo " + (i + 1);
       menuCreateItem(subMenu, entryName, script, null);
     }

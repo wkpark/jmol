@@ -74,22 +74,44 @@ public class GaussianFchkReader extends MOReader {
   }
 
   private void readAllData() throws Exception {
-    while (rd() != null) {
+    while ((line == null ? rd() : line) != null) {
       String name = PT.rep(line.substring(0, 40).trim(), " ","");
       char type = line.charAt(43);
       boolean isArray = (line.indexOf("N=") >= 0);
       String v = line.substring(50).trim();
       Logger.info(name + " = " + v + " " + isArray);
-      Object o;
+      Object o = null;
       if (isArray) {
-        o = fillFloatArray(null, 0, new float[parseIntStr(v)]);
+        switch (type) {
+        case 'I':
+        case 'R':
+          o = fillFloatArray(null, 0, new float[parseIntStr(v)]);
+          line = null;
+          break;
+        default: // C H L
+          v = rd().trim();
+          while (rd() != null && line.indexOf("   N=   ") < 0)
+            v += " " + line.trim();
+          o = v;
+          break;
+        }
       } else {
-        if (type == 'I')
+        switch (type) {
+        case 'I':
           o = Integer.valueOf(parseIntStr(v));
-        else
+          break;
+        case 'R':
           o = Double.valueOf(Double.parseDouble(v));
+          break;
+        case 'C':
+        case 'L':
+          o = v;
+          break;
+        }
+        line = null;
       }
-      fileData.put(name, o);      
+      if (o != null)
+        fileData.put(name, o);
     }
   }
   
@@ -279,7 +301,7 @@ RBond                                      R   N=          33
     int nElec = ((Integer) fileData.get("Numberofelectrons")).intValue();
     int nAlpha = ((Integer) fileData.get("Numberofalphaelectrons")).intValue();
     int nBeta = ((Integer) fileData.get("Numberofbetaelectrons")).intValue();
-    int mult = ((Integer) fileData.get("Multiplicity")).intValue();
+    //int mult = ((Integer) fileData.get("Multiplicity")).intValue();
     float[] aenergies = (float[]) fileData.get("AlphaOrbitalEnergies");
     float[] benergies = (float[]) fileData.get("BetaOrbitalEnergies");
     float[] acoefs = (float[]) fileData.get("AlphaMOcoefficients");

@@ -225,7 +225,7 @@ public class _VrmlExporter extends __CartesianExporter {
     return true;
   }
 
-  private void outputCylinderChildScaled(P3 pt1, P3 pt2, short colix,
+  protected void outputCylinderChildScaled(P3 pt1, P3 pt2, short colix,
                                    byte endcaps, float radius) {
     output(" children ");    
     float length = scale(pt1.distance(pt2));
@@ -445,7 +445,7 @@ public class _VrmlExporter extends __CartesianExporter {
     output("}\n");
   }
 
-  private void outputTransRot(P3 pt1, P3 pt2, int x, int y, int z) {    
+  protected void outputTransRot(P3 pt1, P3 pt2, int x, int y, int z) {    
     output("Transform{");
     outputTransRot(pt1, pt2, x, y, z, " ", "");
   }

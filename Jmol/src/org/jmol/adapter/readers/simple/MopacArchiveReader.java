@@ -66,14 +66,14 @@ public class MopacArchiveReader extends ZMatrixReader {
   @Override
   protected boolean checkLine() throws Exception {
     if (line.indexOf("=") == 34)
-      return getValue();
+      return getMyValue();
     if (line.indexOf("FINAL GEOMETRY OBTAINED") >= 0)
       return readCoordinates();
     return true;
   }
 
-  String energyWithUnits;
-  private boolean getValue() {
+  private String energyWithUnits;
+  private boolean getMyValue() {
     if (line.substring(0, 10).trim().length() != 0)
       return true;
     String key = line.substring(0, 34).trim().replace(' ', '_');

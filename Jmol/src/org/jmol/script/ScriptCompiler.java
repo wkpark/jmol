@@ -47,8 +47,6 @@ import java.util.Hashtable;
 
 import java.util.Map;
 
-
-
 public class ScriptCompiler extends ScriptTokenParser {
 
   /*
@@ -1744,10 +1742,10 @@ public class ScriptCompiler extends ScriptTokenParser {
           break;
         } else if (ident.equals(",")) {
           return CONTINUE;
-        } else if (!Character.isAlphabetic(ident.charAt(0))) {
+        } else if (!Character.isLetter(ident.charAt(0))) {
           if (nTokens != 2)
             return ERROR(ERROR_badArgumentCount);
-          tokCommand = T.set;
+          replaceCommand(T.tokenSet);
         } else {
           newContextVariable(ident);
           break;

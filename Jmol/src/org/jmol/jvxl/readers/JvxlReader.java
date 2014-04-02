@@ -275,7 +275,7 @@ public class JvxlReader extends JvxlXmlReader {
       throws Exception {
     // surfaceDataCount is quantitatively unreliable in pre-4/2007 versions (Jvxl 1.0)
     // so we just add them all up -- they must sum to nX * nY * nZ points 
-    if (surfaceDataCount > 0) // unreliable in pre-4/2007 versions (Jvxl 1.0)
+    if (surfaceDataCount > 0)
       jvxlSkipDataBlock(nPoints, true);
     if (edgeDataCount > 0)
       jvxlSkipDataBlock(edgeDataCount, false);
@@ -284,20 +284,17 @@ public class JvxlReader extends JvxlXmlReader {
   }
 
   private void jvxlSkipDataBlock(int nPoints, boolean isInt) throws Exception {
-    int n = 0;
-    while (n < nPoints) {
-      readLine();
-      n += (isInt ? countData(line) : JvxlCoder.jvxlDecompressString(line).length());
+    if (isInt) {
+      int n;
+      while (nPoints > 0) {
+        next[0] = 0;
+        while ((n = parseIntNext(readLine())) >= 0)
+          nPoints -= n;
+      }
+    } else {
+      while (nPoints > 0)
+        nPoints -= JvxlCoder.jvxlDecompressString(readLine()).length();
     }
   }
 
-  private int countData(String str) {
-    int count = 0;
-    int n = parseIntStr(str);
-    while (n != Integer.MIN_VALUE) {
-      count += n;
-      n = parseIntNext(str);
-    }
-    return count;
-  }
 }

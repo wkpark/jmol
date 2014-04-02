@@ -90,7 +90,7 @@ public class SpartanSmolReader extends SpartanInputReader {
       asc.setAtomSetAuxiliaryInfo("isPDB", Boolean.FALSE);
       asc.setCurrentAtomSetNumber(modelNo);
       if (isCompoundDocument)
-        readTransform();
+        readMyTransform();
       return true;
     }
     if (iHaveModelStatement && !doProcessLines)
@@ -118,7 +118,7 @@ public class SpartanSmolReader extends SpartanInputReader {
         return false;
       } else if (lcline.endsWith("molecule")
           || lcline.endsWith("molecule:asbinarystring")) {
-        readTransform();
+        readMyTransform();
         return false;
       } else if (lcline.endsWith("proparc")
           || lcline.endsWith("propertyarchive")) {
@@ -150,7 +150,7 @@ public class SpartanSmolReader extends SpartanInputReader {
     }
   }
 
-  private void readTransform() throws Exception {
+  private void readMyTransform() throws Exception {
     float[] mat;
     String binaryCodes = rd();
     // last 16x4 bytes constitutes the 4x4 matrix, using doubles

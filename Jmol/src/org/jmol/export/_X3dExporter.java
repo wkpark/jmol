@@ -120,7 +120,8 @@ public class _X3dExporter extends _VrmlExporter {
     output("</Appearance>");
   }
   
-  private void outputTransRot(P3 pt1, P3 pt2, int x, int y, int z) {    
+  @Override
+  protected void outputTransRot(P3 pt1, P3 pt2, int x, int y, int z) {    
     output(" ");
     outputTransRot(pt1, pt2, x, y, z, "='", "'");
   }
@@ -231,7 +232,8 @@ public class _X3dExporter extends _VrmlExporter {
     return true;
   }
 
-  private void outputCylinderChildScaled(P3 pt1, P3 pt2, short colix,
+  @Override
+  protected void outputCylinderChildScaled(P3 pt1, P3 pt2, short colix,
                                    byte endcaps, float radius) {
     float length = scale(pt1.distance(pt2));
     radius = scale(radius);

@@ -42,6 +42,8 @@ import org.jmol.util.Logger;
 
 /**
  * Reader for Gaussian fchk files
+ * also allows appended frequency info from the log file
+ * 
  * 
  * @author hansonr  Bob Hanson hansonr@stolaf.edu
  *

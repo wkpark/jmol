@@ -54,7 +54,7 @@ import org.jmol.util.Parser;
 import org.jmol.util.Point3fi;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.SB;
 
 import org.jmol.util.JmolMolecule;
@@ -214,7 +214,7 @@ public class MathExt implements JmolMathExtension {
         float[] m = new float[len * len];
         int pt = 0;
         for (int i = 0; i < len && isMatrix; i++) {
-          List<SV> list = args[i].getList();
+          Lst<SV> list = args[i].getList();
           for (int j = 0; j < len; j++) {
             float x = SV.fValue(list.get(j));
             if (Float.isNaN(x)) {
@@ -253,7 +253,7 @@ public class MathExt implements JmolMathExtension {
     if (isListf) {
       data = (float[]) x1.value;
     } else {
-      List<SV> list = x1.getList();
+      Lst<SV> list = x1.getList();
       data = new float[list.size()];
       for (int i = list.size(); --i >= 0;)
         data[i] = SV.fValue(list.get(i));
@@ -385,7 +385,7 @@ public class MathExt implements JmolMathExtension {
     String smiles2 = (bs2 == null ? SV.sValue(args[1]) : "");
     M4 m = new M4();
     stddev = Float.NaN;
-    List<P3> ptsA, ptsB;
+    Lst<P3> ptsA, ptsB;
     if (isSmiles) {
       if (bs1 == null || bs2 == null)
         return false;
@@ -470,8 +470,8 @@ public class MathExt implements JmolMathExtension {
         return mp.addXStr(stddev < 0.2f ? "IDENTICAL"
             : "IDENTICAL or CONFORMATIONAL ISOMERS (RMSD=" + stddev + ")");
       } else if (isSmiles) {
-        ptsA = new List<P3>();
-        ptsB = new List<P3>();
+        ptsA = new Lst<P3>();
+        ptsB = new Lst<P3>();
         sOpt = SV.sValue(args[2]);
         boolean isMap = sOpt.equalsIgnoreCase("MAP");
         isSmiles = (sOpt.equalsIgnoreCase("SMILES"));
@@ -502,7 +502,7 @@ public class MathExt implements JmolMathExtension {
           if (nAtoms == 0)
             return mp.addXStr("");
           int nMatch = ptsB.size() / nAtoms;
-          List<int[][]> ret = new List<int[][]>();
+          Lst<int[][]> ret = new Lst<int[][]>();
           for (int i = 0, pt = 0; i < nMatch; i++) {
             int[][] a = AU.newInt2(nAtoms);
             ret.addLast(a);
@@ -987,7 +987,7 @@ public class MathExt implements JmolMathExtension {
       int ipt = 0;
       int n = 0;
       Matcher matcher = null;
-      List<String> v = (asMatch ? new List<String>() : null);
+      Lst<String> v = (asMatch ? new Lst<String>() : null);
       for (int i = 0; i < list.length; i++) {
         String what = list[i];
         matcher = pattern.matcher(what);
@@ -1072,8 +1072,8 @@ public class MathExt implements JmolMathExtension {
     Object property = vwr.getProperty(null, propertyName, propertyValue);
     if (pt < args.length)
       property = vwr.extractProperty(property, args, pt);
-    if (isAtomProperty && property instanceof List)
-      property = (((List<?>) property).size() > 0 ? ((List<?>) property).get(0)
+    if (isAtomProperty && property instanceof Lst)
+      property = (((Lst<?>) property).size() > 0 ? ((Lst<?>) property).get(0)
           : "");
     return mp.addXObj(isJSON ? "{" + PT.toJSON("value", property) + "}" : SV
         .isVariableType(property) ? property : Escape.toReadable(propertyName,
@@ -1096,7 +1096,7 @@ public class MathExt implements JmolMathExtension {
     if (x1 == null) {
       if (args.length < 2 || args[1].tok != T.varray)
         return mp.addXStr(SV.sprintfArray(args));
-      List<SV> a = args[1].getList();
+      Lst<SV> a = args[1].getList();
       SV[] args2 = new SV[] { args[0], null };
       String[] sa = new String[a.size()];
       for (int i = sa.length; --i >= 0;) {
@@ -1166,8 +1166,8 @@ public class MathExt implements JmolMathExtension {
 
     float[] list1 = null;
     float[] list2 = null;
-    List<SV> alist1 = x1.getList();
-    List<SV> alist2 = x2.getList();
+    Lst<SV> alist1 = x1.getList();
+    Lst<SV> alist2 = x2.getList();
 
     if (x1.tok == T.varray) {
       len = alist1.size();
@@ -1236,7 +1236,7 @@ public class MathExt implements JmolMathExtension {
       }
       if (tok == T.join) {
         if (a.tok != T.varray) {
-          List<SV> l = new List<SV>();
+          Lst<SV> l = new Lst<SV>();
           l.addLast(a);
           a = SV.getVariableList(l);
         }
@@ -1325,7 +1325,7 @@ public class MathExt implements JmolMathExtension {
       // measure({a},{b},{c},{d}, min, max, format, units)
       // measure({a} {b} "minArray") -- returns array of minimum distance values
 
-      List<Object> points = new List<Object>();
+      Lst<Object> points = new Lst<Object>();
       float[] rangeMinMax = new float[] { Float.MAX_VALUE, Float.MAX_VALUE };
       String strFormat = null;
       String units = null;
@@ -1465,7 +1465,7 @@ public class MathExt implements JmolMathExtension {
       if (args[0].tok == T.bitset) {
         BS bs = SV.getBitSet(args[0], false);
         if (bs.cardinality() == 3) {
-          List<P3> pts = vwr.getAtomPointVector(bs);
+          Lst<P3> pts = vwr.getAtomPointVector(bs);
           V3 vNorm = new V3();
           V3 vAB = new V3();
           V3 vAC = new V3();
@@ -1491,7 +1491,7 @@ public class MathExt implements JmolMathExtension {
 
         plane = (P4) args[1].value;
         if (args[0].tok == T.point4f) {
-          List<Object> list = Measure.getIntersectionPP((P4) args[0].value,
+          Lst<Object> list = Measure.getIntersectionPP((P4) args[0].value,
               plane);
           if (list == null)
             return mp.addXStr("");
@@ -1809,7 +1809,7 @@ public class MathExt implements JmolMathExtension {
     }
     if (qs != null) {
       if (nMax != Integer.MAX_VALUE) {
-        List<P4> list = new List<P4>();
+        Lst<P4> list = new Lst<P4>();
         for (int i = 0; i < qs.length; i++)
           list.addLast(qs[i].toPoint4f());
         return mp.addXList(list);
@@ -1938,10 +1938,10 @@ public class MathExt implements JmolMathExtension {
       }
       return mp.addXInt(n);
     }
-    List<SV> counts = new List<SV>();
+    Lst<SV> counts = new Lst<SV>();
     SV last = null;
     SV count = null;
-    List<SV> xList = SV.getVariable(x.value).sortOrReverse(0).getList();
+    Lst<SV> xList = SV.getVariable(x.value).sortOrReverse(0).getList();
     if (xList == null)
       return (match == null ? mp.addXStr("") : mp.addXInt(0));
     for (int i = 0, nLast = xList.size(); i <= nLast; i++) {
@@ -1952,7 +1952,7 @@ public class MathExt implements JmolMathExtension {
         count.intValue++;
         continue;
       } else if (last != null) {
-        List<SV> y = new List<SV>();
+        Lst<SV> y = new Lst<SV>();
         y.addLast(last);
         y.addLast(count);
         counts.addLast(SV.getVariableList(y));
@@ -2117,7 +2117,7 @@ public class MathExt implements JmolMathExtension {
         return false;
     }
     mp.wasX = false;
-    List<SV> params = new List<SV>();
+    Lst<SV> params = new Lst<SV>();
     for (int i = 0; i < args.length; i++) {
       params.addLast(args[i]);
     }
@@ -2354,7 +2354,7 @@ public class MathExt implements JmolMathExtension {
   @SuppressWarnings("unchecked")
   public Object getMinMax(Object floatOrSVArray, int tok) {
     float[] data = null;
-    List<SV> sv = null;
+    Lst<SV> sv = null;
     int ndata = 0;
     while (true) {
       if (PT.isAF(floatOrSVArray)) {
@@ -2362,8 +2362,8 @@ public class MathExt implements JmolMathExtension {
         ndata = data.length;
         if (ndata == 0)
           break;
-      } else if (floatOrSVArray instanceof List<?>) {
-        sv = (List<SV>) floatOrSVArray;
+      } else if (floatOrSVArray instanceof Lst<?>) {
+        sv = (Lst<SV>) floatOrSVArray;
         ndata = sv.size();
         if (ndata == 0)
           break;
@@ -2450,13 +2450,13 @@ public class MathExt implements JmolMathExtension {
   @SuppressWarnings("unchecked")
   private Object getMinMaxPoint(Object pointOrSVArray, int tok) {
     P3[] data = null;
-    List<SV> sv = null;
+    Lst<SV> sv = null;
     int ndata = 0;
     if (pointOrSVArray instanceof Quat[]) {
       data = (P3[]) pointOrSVArray;
       ndata = data.length;
-    } else if (pointOrSVArray instanceof List<?>) {
-      sv = (List<SV>) pointOrSVArray;
+    } else if (pointOrSVArray instanceof Lst<?>) {
+      sv = (Lst<SV>) pointOrSVArray;
       ndata = sv.size();
     }
     if (sv != null || data != null) {
@@ -2507,7 +2507,7 @@ public class MathExt implements JmolMathExtension {
     return "NaN";
   }
 
-  private Object getMinMaxQuaternion(List<SV> svData, int tok) {
+  private Object getMinMaxQuaternion(Lst<SV> svData, int tok) {
     Quat[] data;
     switch (tok) {
     case T.min:

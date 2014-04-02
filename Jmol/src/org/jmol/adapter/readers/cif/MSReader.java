@@ -4,7 +4,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.M3;
 import javajs.util.Matrix;
 import javajs.util.P3;
@@ -68,7 +68,7 @@ public class MSReader implements MSInterface {
   private double[] q1;
   private P3 q1Norm;
   private Map<String, double[]> htModulation;
-  private Map<String, List<Modulation>> htAtomMods;
+  private Map<String, Lst<Modulation>> htAtomMods;
 
   private int iopLast = -1;
   private M3 gammaE; // standard operator rotation matrix
@@ -391,7 +391,7 @@ public class MSReader implements MSInterface {
       haveAtomMods = false;
     } else {
       haveAtomMods = true;
-      htAtomMods = new Hashtable<String, List<Modulation>>();
+      htAtomMods = new Hashtable<String, Lst<Modulation>>();
     }
     for (Entry<String, double[]> e : htModulation.entrySet()) {
       if ((key = checkKey(e.getKey(), true)) == null)
@@ -422,7 +422,7 @@ public class MSReader implements MSInterface {
                     : type == 'U' ? Modulation.TYPE_U_FOURIER
                         : Modulation.TYPE_DISP_FOURIER);
         if (htAtomMods == null)
-          htAtomMods = new Hashtable<String, List<Modulation>>();
+          htAtomMods = new Hashtable<String, Lst<Modulation>>();
         int fn = (id == 'S' ? 0 : cr.parseIntStr(key.substring(2)));
         double[] p = new double[] { params[0], params[1], params[2] };
         if (fn == 0) {
@@ -557,10 +557,10 @@ public class MSReader implements MSInterface {
    */
   private void addAtomModulation(String atomName, char axis, char type,
                                  double[] params, String utens, double[] qcoefs) {
-    List<Modulation> list = htAtomMods.get(atomName);
+    Lst<Modulation> list = htAtomMods.get(atomName);
     if (list == null) {
       ac++;
-      htAtomMods.put(atomName, list = new List<Modulation>());
+      htAtomMods.put(atomName, list = new Lst<Modulation>());
     }
     list.addLast(new Modulation(axis, type, params, utens, qcoefs));
     modCount++;
@@ -619,10 +619,10 @@ public class MSReader implements MSInterface {
       SymmetryInterface spt = getSymmetry(a);
       spt.toCartesian(ptc, true);
     }
-    List<Modulation> list = htAtomMods.get(a.atomName);
+    Lst<Modulation> list = htAtomMods.get(a.atomName);
     if (list == null && a.altLoc != '\0' && htSubsystems != null) {
       // force treatment if a subsystem
-      list = new List<Modulation>();
+      list = new Lst<Modulation>();
     }
     if (list == null || cr.symmetry == null || a.bsSymmetry == null)
       return;
@@ -832,7 +832,7 @@ public class MSReader implements MSInterface {
   }
 
   @Override
-  public boolean addLatticeVector(List<float[]> lattvecs, String data) throws Exception {
+  public boolean addLatticeVector(Lst<float[]> lattvecs, String data) throws Exception {
     float[] a = null;
     char c = data.charAt(0);
     switch(c) {

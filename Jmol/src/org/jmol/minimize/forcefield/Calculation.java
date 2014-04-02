@@ -24,7 +24,7 @@
 
 package org.jmol.minimize.forcefield;
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 import org.jmol.minimize.MinAtom;
 
@@ -56,7 +56,7 @@ abstract class Calculation {
    * @param ib 
    * @param d 
    */
-  void setData(List<Object[]> calc, int ia, int ib, double d) {
+  void setData(Lst<Object[]> calc, int ia, int ib, double d) {
     // varies
   }
 

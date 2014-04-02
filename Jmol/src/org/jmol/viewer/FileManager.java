@@ -49,7 +49,7 @@ import javajs.util.Base64;
 import javajs.util.Rdr;
 import javajs.util.DataReader;
 import javajs.util.OC;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.SB;
 
@@ -286,7 +286,7 @@ public class FileManager implements BytePoster {
     return filesReader.getAtomSetCollection();
   }
 
-  Object createAtomSeCollectionFromArrayData(List<Object> arrayData,
+  Object createAtomSeCollectionFromArrayData(Lst<Object> arrayData,
                                              Map<String, Object> htParams,
                                              boolean isAppend) {
     // NO STATE SCRIPT -- HERE WE ARE TRYING TO CONSERVE SPACE
@@ -307,7 +307,7 @@ public class FileManager implements BytePoster {
   static DataReader newDataReader(Object data) {
     String reader = (data instanceof String ? "String"
         : PT.isAS(data) ? "Array" 
-        : data instanceof List<?> ? "List" : null);
+        : data instanceof Lst<?> ? "List" : null);
     if (reader == null)
       return null;
     DataReader dr = (DataReader) Interface.getInterface("javajs.util." + reader + "DataReader");
@@ -1212,10 +1212,10 @@ public class FileManager implements BytePoster {
     if (dataPath == null)
       return script;
     boolean noPath = (dataPath.length() == 0);
-    List<String> fileNames = new  List<String>();
+    Lst<String> fileNames = new  Lst<String>();
     JmolBinary.getFileReferences(script, fileNames);
-    List<String> oldFileNames = new  List<String>();
-    List<String> newFileNames = new  List<String>();
+    Lst<String> oldFileNames = new  Lst<String>();
+    Lst<String> newFileNames = new  Lst<String>();
     int nFiles = fileNames.size();
     for (int iFile = 0; iFile < nFiles; iFile++) {
       String name0 = fileNames.get(iFile);

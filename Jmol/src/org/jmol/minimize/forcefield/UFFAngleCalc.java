@@ -1,12 +1,12 @@
 package org.jmol.minimize.forcefield;
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 import org.jmol.minimize.MinBond;
 
 class UFFAngleCalc extends Calculation {
 
-  void setData(List<Object[]> calc, int[] angle) {
+  void setData(Lst<Object[]> calc, int[] angle) {
     a = calcs.minAtoms[ia = angle[0]];
     b = calcs.minAtoms[ib = angle[1]];
     c = calcs.minAtoms[ic = angle[2]];

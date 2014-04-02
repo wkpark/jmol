@@ -49,7 +49,7 @@ import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.shape.Shape;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.SB;
 
 
@@ -495,7 +495,7 @@ import java.util.Map;
                                   BS bsExclude) {
     short mad = vwr.getMadBond();
     for (int i = baseModelIndex; i < mc; i++) {
-      List<int[]> vConnect = (List<int[]>) getModelAuxiliaryInfoValue(i, "PDB_CONECT_bonds");
+      Lst<int[]> vConnect = (Lst<int[]>) getModelAuxiliaryInfoValue(i, "PDB_CONECT_bonds");
       if (vConnect == null)
         continue;
       int nConnect = vConnect.size();
@@ -728,7 +728,7 @@ import java.util.Map;
    * @param pts
    * @return            BitSet of new atoms
    */
-  public BS addHydrogens(List<Atom> vConnections, P3[] pts) {
+  public BS addHydrogens(Lst<Atom> vConnections, P3[] pts) {
     int modelIndex = mc - 1;
     BS bs = new BS();
     if (isTrajectory(modelIndex) || am[modelIndex].getGroupCount() > 1) {
@@ -807,7 +807,7 @@ import java.util.Map;
       if (bonds == null)
         return;
       BS bsAtoms = new BS();
-      List<P3> vNot = new  List<P3>();
+      Lst<P3> vNot = new  Lst<P3>();
       BS bsModel = vwr.getModelUndeletedAtomsBitSet(thisAtom.mi);
       for (int i = 0; i < bonds.length; i++) {
         Atom a = bonds[i].getOtherAtom(thisAtom);

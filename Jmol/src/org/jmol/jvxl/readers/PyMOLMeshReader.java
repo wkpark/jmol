@@ -27,7 +27,7 @@ package org.jmol.jvxl.readers;
 import java.io.BufferedReader;
 import java.util.Hashtable;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.SB;
 
 import org.jmol.util.Logger;
@@ -45,8 +45,8 @@ import org.jmol.util.Logger;
 
 class PyMOLMeshReader extends MapFileReader {
 
-  private List<Object> data;
-  private List<Object> voxelList;
+  private Lst<Object> data;
+  private Lst<Object> voxelList;
   private String surfaceName;
   private int pymolType;
   private boolean isMesh;
@@ -74,7 +74,7 @@ class PyMOLMeshReader extends MapFileReader {
     init2MFR(sg, null);
     allowSigma = true;
     nSurfaces = 1;
-    Hashtable<String, List<Object>> map = (Hashtable<String, List<Object>>) sg.getReaderData();    
+    Hashtable<String, Lst<Object>> map = (Hashtable<String, Lst<Object>>) sg.getReaderData();    
     data = map.get(params.calculationType);
     if (data == null)
       return;
@@ -99,8 +99,8 @@ class PyMOLMeshReader extends MapFileReader {
   }
 
   @SuppressWarnings("unchecked")
-  private static List<Object> getList(List<Object> list, int i) {
-    return (List<Object>) list.get(i);
+  private static Lst<Object> getList(Lst<Object> list, int i) {
+    return (Lst<Object>) list.get(i);
   }
 
   // mesh data:
@@ -179,7 +179,7 @@ class PyMOLMeshReader extends MapFileReader {
 
     // reading the map data
 
-    List<Object> t;
+    Lst<Object> t;
 
     jvxlFileHeaderBuffer = new SB();
     jvxlFileHeaderBuffer.append("PyMOL surface reader\n");
@@ -187,7 +187,7 @@ class PyMOLMeshReader extends MapFileReader {
         + ")\n");
 
     // cell parameters
-    List<Object> s = getList(data, 1);
+    Lst<Object> s = getList(data, 1);
     t = getList(s, 0);
     // change in format between PyMOL versions? States?
     // sometimes list is in a wrapper list.
@@ -270,7 +270,7 @@ class PyMOLMeshReader extends MapFileReader {
     return getFloat(voxelList, pt++);
   }
 
-  private float getFloat(List<Object> list, int i) {
+  private float getFloat(Lst<Object> list, int i) {
     return ((Number) list.get(i)).floatValue();
   }
 

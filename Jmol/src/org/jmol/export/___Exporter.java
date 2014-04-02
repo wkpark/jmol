@@ -30,7 +30,7 @@ import java.util.Map;
 
 import javajs.awt.Font;
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.Quat;
 import javajs.util.SB;
 import javajs.util.P3;
@@ -373,10 +373,10 @@ public abstract class ___Exporter {
    * @param htColixes
    * @return Vector and HashTable
    */
-  protected List<Short> getColorList(int i00, short[] colixes, int nVertices,
+  protected Lst<Short> getColorList(int i00, short[] colixes, int nVertices,
                                 BS bsSelected, Map<Short, Integer> htColixes) {
     int nColix = 0;
-    List<Short> list = new  List<Short>();
+    Lst<Short> list = new  Lst<Short>();
     boolean isAll = (bsSelected == null);
     int i0 = (isAll ? nVertices - 1 : bsSelected.nextSetBit(0));
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsSelected.nextSetBit(i + 1))) {
@@ -485,7 +485,7 @@ public abstract class ___Exporter {
     short[] polygonColixes = (colorSolid ? meshSurface.pcs : null);
 
     Map<Short, Integer> htColixes = null;
-    List<Short> colorList = null;
+    Lst<Short> colorList = null;
     if (!isWebGL) {
       htColixes = new Hashtable<Short, Integer>();
       if (polygonColixes != null)
@@ -523,7 +523,7 @@ public abstract class ___Exporter {
                                 short[] colixes, int[][] indices,
                                 short[] polygonColixes,
                                 int nVertices, int nPolygons, int nFaces, BS bsPolygons,
-                                int faceVertexMax, short colix, List<Short> colorList,
+                                int faceVertexMax, short colix, Lst<Short> colorList,
                                 Map<Short, Integer> htColixes, P3 offset) {
     // not implemented in _ObjExporter
   }

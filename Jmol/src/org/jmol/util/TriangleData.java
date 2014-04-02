@@ -1,7 +1,7 @@
 package org.jmol.util;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 
 import org.jmol.java.BS;
 
@@ -315,7 +315,7 @@ public class TriangleData implements Triangulator {
 
 
   @Override
-  public List<Object> intersectPlane(P4 plane, List<Object> v, int flags) {
+  public Lst<Object> intersectPlane(P4 plane, Lst<Object> v, int flags) {
     if (plane == null) {
       v.addLast(fullCubePolygon);
       return v;

@@ -29,7 +29,7 @@ import org.jmol.shapespecial.DrawMesh;
 import org.jmol.util.C;
 
 import javajs.util.CU;
-import javajs.util.List;
+import javajs.util.Lst;
 import org.jmol.util.Logger;
 import org.jmol.util.Normix;
 import javajs.util.T3;
@@ -42,7 +42,7 @@ import javajs.util.T3;
 
 public class CGOMesh extends DrawMesh {
   
-  public List<Object> cmds;
+  public Lst<Object> cmds;
 
   CGOMesh(String thisID, short colix, int index) {
     super(thisID, colix, index);
@@ -113,7 +113,7 @@ public class CGOMesh extends DrawMesh {
   }
 
   @SuppressWarnings("unchecked")
-  boolean set(List<Object> list) {
+  boolean set(Lst<Object> list) {
     // vertices will be in list.get(0). normals?
     width = 200;
     diameter = 0;//200;
@@ -123,10 +123,10 @@ public class CGOMesh extends DrawMesh {
       if (list.get(0) instanceof Float) {
         cmds = list;
       } else {
-        cmds = (List<Object>) list.get(1);
+        cmds = (Lst<Object>) list.get(1);
         if (cmds == null)
-          cmds = (List<Object>) list.get(0);
-        cmds = (List<Object>) cmds.get(1);
+          cmds = (Lst<Object>) list.get(0);
+        cmds = (Lst<Object>) cmds.get(1);
       }
 
       int n = cmds.size();
@@ -186,8 +186,8 @@ public class CGOMesh extends DrawMesh {
     nList.addLast(Short.valueOf(Normix.get2SidedNormix(vTemp, bsTemp)));
   }
 
-  public List<Short> nList = new List<Short>();
-  public List<Short> cList = new List<Short>();
+  public Lst<Short> nList = new Lst<Short>();
+  public Lst<Short> cList = new Lst<Short>();
   
   /**
    * 

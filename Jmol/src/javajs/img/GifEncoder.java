@@ -62,7 +62,7 @@
 
 package javajs.img;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
@@ -112,7 +112,7 @@ public class GifEncoder extends ImageEncoder {
     }
   }
 
-  protected class ColorVector extends List<ColorItem> {
+  protected class ColorVector extends Lst<ColorItem> {
 
     void sort() {
       CountComparator comparator = new CountComparator();
@@ -366,7 +366,7 @@ public class GifEncoder extends ImageEncoder {
    * @return map from all unique colors to a specific index
    */
   private Map<Integer, AdaptiveColorCollection> finalizeColorMap(
-                                                                 List<ColorItem> colors,
+                                                                 Lst<ColorItem> colors,
                                                                  Map<Integer, AdaptiveColorCollection> colors256) {
     int mapSize = 1 << bitsPerPixel;
     red = new int[mapSize];

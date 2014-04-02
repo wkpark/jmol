@@ -28,7 +28,7 @@ package org.jmol.thread;
 
 import org.jmol.java.BS;
 import org.jmol.script.T;
-import javajs.util.List;
+import javajs.util.Lst;
 import org.jmol.util.Logger;
 import javajs.util.P3;
 import org.jmol.viewer.JC;
@@ -41,7 +41,7 @@ public class SpinThread extends JmolThread {
    */
   private TransformManager transformManager;
   private float endDegrees;
-  private List<P3> endPositions;
+  private Lst<P3> endPositions;
   private float[] dihedralList;
   private float nDegrees;
   private BS bsAtoms;
@@ -77,7 +77,7 @@ public class SpinThread extends JmolThread {
       isNav = true;
     } else {
       endDegrees = ((Float) options[0]).floatValue();
-      endPositions = (List<P3>) options[1];
+      endPositions = (Lst<P3>) options[1];
       dihedralList = (float[]) options[2];
       if (dihedralList != null)
         bsBranches = vwr.getBsBranches(dihedralList);

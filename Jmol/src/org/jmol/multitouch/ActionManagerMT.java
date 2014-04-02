@@ -27,7 +27,7 @@ import org.jmol.script.T;
 
 import javajs.api.GenericPlatform;
 import javajs.awt.event.Event;
-import javajs.util.List;
+import javajs.util.Lst;
 
 
 
@@ -200,11 +200,11 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   }
   
   @Override
-  public List<GestureType> getAllowedGestures(int groupID) {
+  public Lst<GestureType> getAllowedGestures(int groupID) {
     //System.out.println("ActionManagerMT getAllowedGestures " + groupID);
     if (groupID != this.groupID || !vwr.getBoolean(T.allowmultitouch))
       return null;
-    List<GestureType> list = new  List<GestureType>();
+    Lst<GestureType> list = new  Lst<GestureType>();
     //list.add(Integer.valueOf(DRAG_GESTURE));
     //list.add(Integer.valueOf(MULTI_POINT_DRAG_GESTURE));
     //list.add(Integer.valueOf(SPIN_GESTURE));

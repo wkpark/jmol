@@ -24,7 +24,7 @@
 package org.jmol.script;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import java.util.Arrays;
 
 import java.util.Hashtable;
@@ -130,7 +130,7 @@ public class ScriptMathProcessor {
         // check for y = x x  or  y = x + ;
         if (isAssignment && (xPt > 0 && oPt < 0 || oPt >= 0 && (oStack[oPt] != null)))
           eval.invArg();
-        List<SV> result = new List<SV>();
+        Lst<SV> result = new Lst<SV>();
         for (int i = 0; i <= xPt; i++)
           result.addLast(isSpecialAssignment ? xStack[i] : SV.selectItemVar(xStack[i]));
         if (lastAssignedString != null) {
@@ -152,7 +152,7 @@ public class ScriptMathProcessor {
           x = SV.selectItemVar(x);
         if (asBitSet && x.tok == T.varray)
           x = SV.newV(T.bitset,
-              SV.unEscapeBitSetArray((List<SV>) x.value, false));
+              SV.unEscapeBitSetArray((Lst<SV>) x.value, false));
         return x;
       }
     }
@@ -240,7 +240,7 @@ public class ScriptMathProcessor {
     return wasX = true;
   }
 
-  public boolean addXList(List<?> x) {
+  public boolean addXList(Lst<?> x) {
     putX(SV.getVariableList(x));
     return wasX = true;
   }
@@ -1060,7 +1060,7 @@ public class ScriptMathProcessor {
           bs.set(x);
           return addXBs(bs);
         case T.varray:
-          List<SV> sv = (List<SV>) x2.value;
+          Lst<SV> sv = (Lst<SV>) x2.value;
           for (int i = sv.size(); --i >= 0;) {
             int b = sv.get(i).asInt();
             if (b >= 0)
@@ -1581,7 +1581,7 @@ public class ScriptMathProcessor {
     if (chk)
       return addXStr("");
     BS bs = SV.bsSelectVar(x2);
-    List<T> tokens;
+    Lst<T> tokens;
     int n = bs.cardinality();
     if (n == 0
         || (tokens = T.getAtomPropertiesLike(abbr.substring(0, abbr
@@ -1617,7 +1617,7 @@ public class ScriptMathProcessor {
       return addXStr("");
     BoxInfo b = vwr.getBoxInfo(SV.bsSelectVar(x2), 1);
     P3[] pts = b.getBoundBoxPoints(true);
-    List<P3> list = new  List<P3>();
+    Lst<P3> list = new  Lst<P3>();
     for (int i = 0; i < 4; i++)
       list.addLast(pts[i]);
     return addXList(list);

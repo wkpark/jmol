@@ -115,7 +115,7 @@ import org.jmol.util.ColorEncoder;
 
 import javajs.api.GenericBinaryDocument;
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.SB;
 
 import org.jmol.util.Logger;
@@ -194,7 +194,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   private float withinDistance2;
   private boolean isWithinNot;
-  private List<P3> withinPoints;
+  private Lst<P3> withinPoints;
   private float[] cutoffRange;
 
   //private boolean allowContourLines;
@@ -462,7 +462,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       displayWithinDistance2 = ((Float) o[0]).floatValue();
       isDisplayWithinNot = (displayWithinDistance2 < 0);
       displayWithinDistance2 *= displayWithinDistance2;
-      displayWithinPoints = (List<P3>) o[3];
+      displayWithinPoints = (Lst<P3>) o[3];
       if (displayWithinPoints.size() == 0)
         displayWithinPoints = vwr.getAtomPointVector((BS) o[2]);
       return;
@@ -633,7 +633,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       withinDistance2 = ((Float) o[0]).floatValue();
       isWithinNot = (withinDistance2 < 0);
       withinDistance2 *= withinDistance2;
-      withinPoints = (List<P3>) o[3];
+      withinPoints = (Lst<P3>) o[3];
       if (withinPoints.size() == 0)
         withinPoints = vwr.getAtomPointVector((BS) o[2]);
     } else if (("nci" == propertyName || "orbital" == propertyName)
@@ -780,7 +780,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       if (mesh == null)
         return false;
       data[3] = Integer.valueOf(mesh.modelIndex);
-      mesh.getIntersection(0, (P4) data[1], null, (List<P3[]>) data[2], null, null, null, false, false, T.plane, false);
+      mesh.getIntersection(0, (P4) data[1], null, (Lst<P3[]>) data[2], null, null, null, false, false, T.plane, false);
       return true;
     }
     if (property == "getBoundingBox") {
@@ -1437,7 +1437,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       thisMesh.havePlanarContours = true;
     setPropertySuper("token", Integer.valueOf(explicitContours ? T.nofill : T.fill), null);
     setPropertySuper("token", Integer.valueOf(explicitContours ? T.contourlines : T.nocontourlines), null);
-    List<Object[]> slabInfo = sg.getSlabInfo();
+    Lst<Object[]> slabInfo = sg.getSlabInfo();
     if (slabInfo != null) {
       thisMesh.slabPolygonsList(slabInfo, false);
       thisMesh.reinitializeLightingAndColor(vwr);
@@ -1535,8 +1535,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   }
 
   @Override
-  public List<Map<String, Object>> getShapeDetail() {
-    List<Map<String, Object>> V = new  List<Map<String, Object>>();
+  public Lst<Map<String, Object>> getShapeDetail() {
+    Lst<Map<String, Object>> V = new  Lst<Map<String, Object>>();
     for (int i = 0; i < meshCount; i++) {
       Map<String, Object> info = new Hashtable<String, Object>();
       IsosurfaceMesh mesh = isomeshes[i];
@@ -1616,7 +1616,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       String s;
       float f = 1 - 1.0f * (y - keyXy[1]) / (keyXy[3] - keyXy[1]);
       if (thisMesh.showContourLines) {
-        List<Object>[] vContours = thisMesh.getContours();
+        Lst<Object>[] vContours = thisMesh.getContours();
         if (vContours == null) {
           if (thisMesh.jvxlData.contourValues == null)
             return;
@@ -1839,18 +1839,18 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       dmin2 <<= 1;
     }
     int pickedVertex = -1;
-    List<Object> pickedContour = null;
+    Lst<Object> pickedContour = null;
     IsosurfaceMesh m = null;
     for (int i = 0; i < meshCount; i++) {
       m = isomeshes[i];
       if (!isPickable(m, bsVisible))
         continue;
-      List<Object>[] vs = m.jvxlData.vContours;
+      Lst<Object>[] vs = m.jvxlData.vContours;
       int ilast = (m.firstRealVertex < 0 ? 0 : m.firstRealVertex);
       int pickedJ = 0;
       if (vs != null && vs.length > 0) {
         for (int j = 0; j < vs.length; j++) {
-          List<Object> vc = vs[j];
+          Lst<Object> vc = vs[j];
           int n = vc.size() - 1;
           for (int k = JvxlCoder.CONTOUR_POINTS; k < n; k++) {
             P3 v = (P3) vc.get(k);

@@ -26,7 +26,7 @@
 package org.jmol.shapesurface;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.SB;
 
@@ -115,9 +115,9 @@ public class MolecularOrbital extends Isosurface {
       } else {
         Object[] slabInfo = (Object[]) value;
         int tok = ((Integer) slabInfo[0]).intValue();
-        moSlab = (List<Object>) thisModel.get("slab");
+        moSlab = (Lst<Object>) thisModel.get("slab");
         if (moSlab == null)
-          thisModel.put("slab", moSlab = new  List<Object>());
+          thisModel.put("slab", moSlab = new  Lst<Object>());
         if (tok == T.none) {
           moSlab = null;
           thisModel.remove("slab");
@@ -329,7 +329,7 @@ public class MolecularOrbital extends Isosurface {
       return moLinearCombination;
     if (propertyName == "showMO") {
       SB str = new SB();
-      List<Map<String, Object>> mos = (List<Map<String, Object>>) (sg.getMoData().get("mos"));
+      Lst<Map<String, Object>> mos = (Lst<Map<String, Object>>) (sg.getMoData().get("mos"));
       int nOrb = (mos == null ? 0 : mos.size());
       int thisMO = param;
       int currentMO = moNumber;
@@ -378,7 +378,7 @@ public class MolecularOrbital extends Isosurface {
     //sg = null; // not Molecular Orbitals
   }
 
-  private List<Object> moSlab;
+  private Lst<Object> moSlab;
   private Integer moSlabValue;
   
   @SuppressWarnings("unchecked")
@@ -405,7 +405,7 @@ public class MolecularOrbital extends Isosurface {
     moMonteCarloCount = (Integer) thisModel.get("monteCarloCount");
     moRandomSeed = (Integer) thisModel.get("randomSeed");
     moSlabValue = (Integer)  thisModel.get("slabValue");
-    moSlab = (List<Object>) thisModel.get("slab");
+    moSlab = (Lst<Object>) thisModel.get("slab");
     if (moRandomSeed == null)
       thisModel.put("randomSeed", moRandomSeed = Integer.valueOf(
           ((int) -System.currentTimeMillis())% 10000));

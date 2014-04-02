@@ -38,7 +38,7 @@ import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Point3fi;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.SB;
 import javajs.util.P3;
 
@@ -226,7 +226,7 @@ class JmolObject {
 
     switch (id) {
     case JC.SHAPE_CGO:
-      sm.vwr.setCGO((List<Object>) info);
+      sm.vwr.setCGO((Lst<Object>) info);
       break;
     case JC.SHAPE_DOTS:
     case JC.SHAPE_BALLS:
@@ -247,7 +247,7 @@ class JmolObject {
       sm.loadShape(id);
       MeasurementData md = (MeasurementData) info;
       md.setModelSet(m);
-      List<Object> points = md.points;
+      Lst<Object> points = md.points;
       for (int i = points.size(); --i >= 0;)
         ((Point3fi) points.get(i)).mi = (short) modelIndex;
       sm.setShapePropertyBs(id, "measure", md, bsAtoms);
@@ -312,7 +312,7 @@ class JmolObject {
       }
       break;
     case T.mep:
-      List<Object> mep = (List<Object>) info;
+      Lst<Object> mep = (Lst<Object>) info;
       sID = mep.get(mep.size() - 2).toString();
       String mapID = mep.get(mep.size() - 1).toString();
       float min = PyMOLScene.floatAt(PyMOLScene.listAt(mep, 3), 0);
@@ -329,7 +329,7 @@ class JmolObject {
       break;
     case T.mesh:
       modelIndex = sm.vwr.getCurrentModelIndex();
-      List<Object> mesh = (List<Object>) info;
+      Lst<Object> mesh = (Lst<Object>) info;
       sID = mesh.get(mesh.size() - 2).toString();
       sb = new SB();
       sb.append("isosurface ID ").append(PT.esc(sID)).append(" model ")
@@ -338,7 +338,7 @@ class JmolObject {
           .append(PT.esc(sID)).append(" mesh nofill frontonly");
       float within = PyMOLScene.floatAt(PyMOLScene.listAt(PyMOLScene.listAt(
           mesh, 2), 0), 11);
-      List<Object> list = PyMOLScene.listAt(PyMOLScene.listAt(PyMOLScene
+      Lst<Object> list = PyMOLScene.listAt(PyMOLScene.listAt(PyMOLScene
           .listAt(mesh, 2), 0), 12);
       if (within > 0) {
         P3 pt = new P3();

@@ -33,7 +33,7 @@ import javajs.api.GenericZipTools;
 import javajs.api.GenericBinaryDocument;
 import javajs.util.LimitedLineReader;
 import javajs.util.Rdr;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.SB;
 import javajs.util.ZipTools;
@@ -135,7 +135,7 @@ public class JmolUtil implements JmolZipUtilities {
   private static String[] getSpartanDirs(String outputFileData) {
     if (outputFileData == null)
       return new String[] {};
-    List<String> v = new List<String>();
+    Lst<String> v = new Lst<String>();
     String token;
     String lasttoken = "";
     if (!outputFileData.startsWith("java.io.FileNotFoundException")
@@ -422,7 +422,7 @@ public class JmolUtil implements JmolZipUtilities {
       if (path != null)
         return JmolAdapter.NOTE_SCRIPT_FILE + fileName + path + "\n";
     }
-    List<Object> vCollections = new List<Object>();
+    Lst<Object> vCollections = new Lst<Object>();
     Map<String, Object> htCollections = (haveManifest ? new Hashtable<String, Object>()
         : null);
     int nFiles = 0;
@@ -496,7 +496,7 @@ public class JmolUtil implements JmolZipUtilities {
               continue;
             return atomSetCollections;
           } else if (atomSetCollections instanceof AtomSetCollection
-              || atomSetCollections instanceof List<?>) {
+              || atomSetCollections instanceof Lst<?>) {
             if (haveManifest && !exceptFiles)
               htCollections.put(thisEntry, atomSetCollections);
             else

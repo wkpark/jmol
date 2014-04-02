@@ -24,7 +24,7 @@
 
 package org.jmol.adapter.readers.pdb;
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 
 import org.jmol.adapter.readers.pdb.PdbReader;
@@ -40,7 +40,7 @@ import org.jmol.adapter.smarter.Atom;
 
 public class P2nReader extends PdbReader {
 
-  private List<String> altNames = new  List<String>();
+  private Lst<String> altNames = new  Lst<String>();
   
   @Override
   protected void setAdditionalAtomParameters(Atom atom) {

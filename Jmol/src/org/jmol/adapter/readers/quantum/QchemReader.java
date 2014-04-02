@@ -33,7 +33,7 @@ import org.jmol.util.Logger;
 import java.io.IOException;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 
 import java.util.Hashtable;
@@ -269,8 +269,8 @@ $end
     int shellCount = 0;
     int gaussianCount = 0;
     // local variables
-    shells = new  List<int[]>();
-    List<String[]> gdata = new  List<String[]>();
+    shells = new  Lst<int[]>();
+    Lst<String[]> gdata = new  Lst<String[]>();
     String[] tokens;
 
     discardLinesUntilStartsWith("$basis");

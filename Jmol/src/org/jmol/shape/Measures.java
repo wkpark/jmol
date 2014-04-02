@@ -41,7 +41,7 @@ import org.jmol.viewer.JC;
 import org.jmol.script.T;
 
 import javajs.awt.Font;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 
 
@@ -60,7 +60,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
   private boolean measureAllModels;
 
   public int measurementCount = 0;
-  public final List<Measurement> measurements = new  List<Measurement>();
+  public final Lst<Measurement> measurements = new  Lst<Measurement>();
   public MeasurementPending mPending;
   
   public short colix; // default to none in order to contrast with background
@@ -324,7 +324,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
     }
   }
 
-  private Measurement setSingleItem(List<Object> vector) {
+  private Measurement setSingleItem(Lst<Object> vector) {
     Point3fi[] points = new Point3fi[4];
     int[] indices = new int[5];
     indices[0] = vector.size();
@@ -469,7 +469,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
     }
     // we create a set of atoms involving all atoms with the
     // same atom number in each model
-    List<Object> points = new  List<Object>();
+    Lst<Object> points = new  Lst<Object>();
     int nPoints = m.count;
     for (int i = 1; i <= nPoints; i++) {
       int atomIndex = m.getAtomIndex(i);
@@ -588,8 +588,8 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
       measurements.get(i).reformatDistanceIfSelected();    
   }
   
-  private List<Map<String, Object>> getAllInfo() {
-    List<Map<String, Object>> info = new  List<Map<String,Object>>();
+  private Lst<Map<String, Object>> getAllInfo() {
+    Lst<Map<String, Object>> info = new  Lst<Map<String,Object>>();
     for (int i = 0; i< measurementCount; i++) {
       info.addLast(getInfo(i));
     }
@@ -624,7 +624,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
       if (!Float.isNaN(tickInfo.first))
         info.put("tickStart", Float.valueOf(tickInfo.first));
     }
-    List<Map<String, Object>> atomsInfo = new  List<Map<String,Object>>();
+    Lst<Map<String, Object>> atomsInfo = new  Lst<Map<String,Object>>();
     for (int i = 1; i <= count; i++) {
       Map<String, Object> atomInfo = new Hashtable<String, Object>();
       int atomIndex = m.getAtomIndex(i);

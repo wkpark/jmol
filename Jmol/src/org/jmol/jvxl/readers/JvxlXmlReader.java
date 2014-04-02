@@ -28,7 +28,7 @@ import java.io.BufferedReader;
 
 import javajs.util.AU;
 import javajs.util.CU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.SB;
 
@@ -938,7 +938,7 @@ public class JvxlXmlReader extends VolumeFileReader {
 
   protected void jvxlDecodeContourData(JvxlData jvxlData, String data)
       throws Exception {
-    List<List<Object>> vs = new  List<List<Object>>();
+    Lst<Lst<Object>> vs = new  Lst<Lst<Object>>();
     SB values = new SB();
     SB colors = new SB();
     int pt = -1;
@@ -946,7 +946,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     if (data == null)
       return;
     while ((pt = data.indexOf("<jvxlContour", pt + 1)) >= 0) {
-      List<Object> v = new  List<Object>();
+      Lst<Object> v = new  Lst<Object>();
       String s = xr.getXmlData("jvxlContour", data.substring(pt), true, false);
       float value = parseFloatStr(XmlReader.getXmlAttrib(s, "value"));
       values.append(" ").appendF(value);

@@ -47,7 +47,7 @@ import org.jmol.viewer.Viewer;
 import org.jmol.script.T;
 
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.SB;
 
 import java.util.Hashtable;
@@ -386,7 +386,7 @@ public abstract class BioPolymer {
   }
 
   public int getPolymerPointsAndVectors(int last, BS bs,
-                                        List<P3[]> vList,
+                                        Lst<P3[]> vList,
                                         boolean isTraceAlpha,
                                         float sheetSmoothing) {
     P3[] points = getControlPoints(isTraceAlpha, sheetSmoothing, false);
@@ -415,8 +415,8 @@ public abstract class BioPolymer {
 
   public Map<String, Object> getPolymerInfo(BS bs) {
     Map<String, Object> returnInfo = new Hashtable<String, Object>();
-    List<Map<String, Object>> info = new  List<Map<String, Object>>();
-    List<Map<String, Object>> structureInfo = null;
+    Lst<Map<String, Object>> info = new  Lst<Map<String, Object>>();
+    Lst<Map<String, Object>> structureInfo = null;
     ProteinStructure ps;
     ProteinStructure psLast = null;
     int n = 0;
@@ -429,7 +429,7 @@ public abstract class BioPolymer {
           Map<String, Object> psInfo = new Hashtable<String, Object>();
           (psLast = ps).getInfo(psInfo);
           if (structureInfo == null) {
-            structureInfo = new  List<Map<String, Object>>();
+            structureInfo = new  Lst<Map<String, Object>>();
           }
           psInfo.put("index", Integer.valueOf(n++));
           structureInfo.addLast(psInfo);
@@ -1023,7 +1023,7 @@ public abstract class BioPolymer {
    * @param dsspIgnoreHydrogens
    */
   public void calcRasmolHydrogenBonds(BioPolymer polymer, BS bsA,
-                                      BS bsB, List<Bond> vHBonds,
+                                      BS bsB, Lst<Bond> vHBonds,
                                       int nMaxPerResidue, int[][][] min,
                                       boolean checkDistances,
                                       boolean dsspIgnoreHydrogens) {
@@ -1077,8 +1077,8 @@ public abstract class BioPolymer {
    * @param allowMultiple
    * @return List [ {atom1, atom2}, {atom1, atom2}...]
    */
-  public List<Atom[]> calculateStruts(ModelSet modelSet, BS bs1,
-                                      BS bs2, List<Atom> vCA, float thresh,
+  public Lst<Atom[]> calculateStruts(ModelSet modelSet, BS bs1,
+                                      BS bs2, Lst<Atom> vCA, float thresh,
                                       int delta, boolean allowMultiple) {
     return null;
   }

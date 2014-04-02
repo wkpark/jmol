@@ -28,7 +28,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3;
@@ -476,7 +476,7 @@ public class XtalSymmetry {
           atom1.bsSymmetry.set(iSym);
           if (addCartesian)
             cartesians[pt++] = cartesian;
-          List<Object> tensors = a.tensors;
+          Lst<Object> tensors = a.tensors;
           if (tensors != null) {
             atom1.tensors = null;
             for (int j = tensors.size(); --j >= 0;) {
@@ -768,7 +768,7 @@ public class XtalSymmetry {
         : filter.indexOf("BYSYMOP") >= 0 ? PARTICLE_SYMOP : PARTICLE_NONE);
 
     doNormalize = false;
-    List<M4> biomts = (List<M4>) thisBiomolecule.get("biomts");
+    Lst<M4> biomts = (Lst<M4>) thisBiomolecule.get("biomts");
     if (biomts.size() < 2)
       return;
     symmetry = null;

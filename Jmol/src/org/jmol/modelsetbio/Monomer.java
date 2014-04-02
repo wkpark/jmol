@@ -31,7 +31,7 @@ import org.jmol.modelset.Bond;
 import org.jmol.modelset.Chain;
 import org.jmol.modelset.Group;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.Quat;
 
 import org.jmol.util.Logger;
@@ -466,18 +466,18 @@ public abstract class Monomer extends Group {
   }
  
   @Override
-  public boolean getCrossLinkLead(List<Integer> vReturn) {    
+  public boolean getCrossLinkLead(Lst<Integer> vReturn) {    
    for (int i = firstAtomIndex; i <= lastAtomIndex; i++)
       if (getCrossLink(i, vReturn) && vReturn == null)
           return true;
     return false;
   }  
 
-  protected boolean getCrossLink(int i, List<Integer> vReturn) {
+  protected boolean getCrossLink(int i, Lst<Integer> vReturn) {
     return getCrossLinkGroup(i, vReturn, null);
   }
   
-  private boolean getCrossLinkGroup(int i, List<Integer> vReturn, Group group) {
+  private boolean getCrossLinkGroup(int i, Lst<Integer> vReturn, Group group) {
     // vReturn null --> just checking for connection to previous group
     // not obvious from PDB file for carbohydrates
     Atom atom = chain.getAtom(i);

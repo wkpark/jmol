@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.P3;
 import javajs.util.Quat;
 import javajs.util.SB;
@@ -77,7 +77,7 @@ public class _ObjExporter extends __CartesianExporter {
   /** HashSet for textures. */
   Set<Short> textures = new HashSet<Short>();
   /** List of texture files created. */
-  List<String> textureFiles;
+  Lst<String> textureFiles;
 
   /** Number for the next mesh of this type. */
   private int sphereNum = 1;
@@ -460,7 +460,7 @@ public class _ObjExporter extends __CartesianExporter {
     output("\nmtllib " + mtlout.getName() + "\n");
 
     // Keep a list of texture files created
-    textureFiles = new  List<String>();
+    textureFiles = new  Lst<String>();
     debugPrint("End initializeOutput:");
     return true;
   }
@@ -764,9 +764,9 @@ public class _ObjExporter extends __CartesianExporter {
     T3[] normals = data.normals;
     int nNormals = data.normalCount;
     int[] map2 = null;
-    List<String> vNormals = null;
+    Lst<String> vNormals = null;
     if (normals != null) {
-      vNormals = new  List<String>();
+      vNormals = new  Lst<String>();
       map2 = getNormalMap(normals, nNormals, bsValid, vNormals);
       nNormals = vNormals.size();
       output("# Number of normals: " + nNormals + "\n");

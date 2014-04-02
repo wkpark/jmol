@@ -26,7 +26,7 @@
 package org.jmol.modelset;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Hashtable;
@@ -130,8 +130,8 @@ abstract public class AtomCollection {
   public Atom[] at;
   public int ac;
 
-  public List<P3> getAtomPointVector(BS bs) {
-    List<P3> v = new  List<P3>();
+  public Lst<P3> getAtomPointVector(BS bs) {
+    Lst<P3> v = new  Lst<P3>();
     if (bs != null) {
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i+1)) {
         v.addLast(at[i]);
@@ -162,7 +162,7 @@ abstract public class AtomCollection {
   float[] hydrophobicities;
   
   public Object[][] atomTensorList; // specifically now for {*}.adpmin {*}.adpmax
-  public Map<String, List<Object>> atomTensors;
+  public Map<String, Lst<Object>> atomTensors;
 
   protected int[] surfaceDistance100s;
 
@@ -455,13 +455,13 @@ abstract public class AtomCollection {
   protected void setAtomCoord2(BS bs, int tokType, Object xyzValues) {
     P3 xyz = null;
     P3[] values = null;
-    List<P3> v = null;
+    Lst<P3> v = null;
     int type = 0;
     int nValues = 1;
     if (xyzValues instanceof P3) {
       xyz = (P3) xyzValues;
-    } else if (xyzValues instanceof List<?>) {
-      v = (List<P3>) xyzValues;
+    } else if (xyzValues instanceof Lst<?>) {
+      v = (Lst<P3>) xyzValues;
       if ((nValues = v.size()) == 0)
         return;
       type = 1;
@@ -1194,7 +1194,7 @@ abstract public class AtomCollection {
    */
   public P3[][] calculateHydrogens(BS bs, int[] nTotal,
                                             boolean doAll, boolean justCarbon,
-                                            List<Atom> vConnect) {
+                                            Lst<Atom> vConnect) {
     V3 z = new V3();
     V3 x = new V3();
     P3[][] hAtoms = new P3[ac][];
@@ -2662,9 +2662,9 @@ abstract public class AtomCollection {
   private void deleteAtomTensors(BS bsAtoms) {
     if (atomTensors == null)
       return;
-    List<String> toDelete = new List<String>();
+    Lst<String> toDelete = new Lst<String>();
     for (String key: atomTensors.keySet()) {
-      List<Object> list = atomTensors.get(key);
+      Lst<Object> list = atomTensors.get(key);
       for (int i = list.size(); --i >= 0;) {
         Tensor t = (Tensor) list.get(i);
         if (bsAtoms.get(t.atomIndex1) || t.atomIndex2 >= 0 && bsAtoms.get(t.atomIndex2))
@@ -2677,11 +2677,11 @@ abstract public class AtomCollection {
       atomTensors.remove(toDelete.get(i));
   }
 
-  public void setAtomTensors(int atomIndex, List<Object> list) {
+  public void setAtomTensors(int atomIndex, Lst<Object> list) {
     if (list == null || list.size() == 0)
       return;
     if (atomTensors == null)
-     atomTensors = new Hashtable<String, List<Object>>();
+     atomTensors = new Hashtable<String, Lst<Object>>();
     if (atomTensorList == null)
       atomTensorList = new Object[at.length][];
     atomTensorList = (Object[][]) AU.ensureLength(atomTensorList, at.length);
@@ -2697,7 +2697,7 @@ abstract public class AtomCollection {
     }
   }
 
-  private static Object[] getTensorList(List<Object> list) {
+  private static Object[] getTensorList(Lst<Object> list) {
     int pt = -1;
     boolean haveTLS = false;
     int n = list.size();
@@ -2746,19 +2746,19 @@ abstract public class AtomCollection {
 
   public void addTensor(Tensor t, String type) {
     type = type.toLowerCase();
-    List<Object> tensors = atomTensors.get(type);
+    Lst<Object> tensors = atomTensors.get(type);
     if (tensors == null)
-      atomTensors.put(type, tensors = new List<Object>()); 
+      atomTensors.put(type, tensors = new Lst<Object>()); 
     tensors.addLast(t);
   }
 
-  public List<Object> getAllAtomTensors(String type) {
+  public Lst<Object> getAllAtomTensors(String type) {
     if (atomTensors == null)
       return null;
     if (type != null)
       return atomTensors.get(type.toLowerCase());
-    List<Object> list = new List<Object>();
-    for (Entry<String, List<Object>> e : atomTensors.entrySet())
+    Lst<Object> list = new Lst<Object>();
+    for (Entry<String, Lst<Object>> e : atomTensors.entrySet())
       list.addAll(e.getValue());
     return list;
   }

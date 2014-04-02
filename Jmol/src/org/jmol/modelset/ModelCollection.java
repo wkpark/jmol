@@ -28,7 +28,7 @@ package org.jmol.modelset;
 import javajs.J2SIgnoreImport;
 import javajs.util.AU;
 import javajs.util.OC;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.Quat;
 import javajs.util.SB;
@@ -164,7 +164,7 @@ abstract public class ModelCollection extends BondCollection {
    *        1 -- edges only 2 -- triangles only 3 -- both
    * @return Vector
    */
-  public List<Object> getPlaneIntersection(int type, P4 plane, float scale,
+  public Lst<Object> getPlaneIntersection(int type, P4 plane, float scale,
                                            int flags, SymmetryInterface uc) {
     P3[] pts = null;
     switch (type) {
@@ -177,7 +177,7 @@ abstract public class ModelCollection extends BondCollection {
       pts = boxInfo.getCanonicalCopy(scale);
       break;
     }
-    List<Object> v = new List<Object>();
+    Lst<Object> v = new Lst<Object>();
     v.addLast(pts);
     return intersectPlane(plane, v, flags);
   }
@@ -453,7 +453,7 @@ abstract public class ModelCollection extends BondCollection {
    * @return array of two lists of points, centers first if desired
    */
 
-  public P3[][] getCenterAndPoints(List<Object[]> vAtomSets, boolean addCenters) {
+  public P3[][] getCenterAndPoints(Lst<Object[]> vAtomSets, boolean addCenters) {
     BS bsAtoms1, bsAtoms2;
     int n = (addCenters ? 1 : 0);
     for (int ii = vAtomSets.size(); --ii >= 0;) {
@@ -539,7 +539,7 @@ abstract public class ModelCollection extends BondCollection {
     }
   }
 
-  public List<StateScript> stateScripts = new List<StateScript>();
+  public Lst<StateScript> stateScripts = new Lst<StateScript>();
   /*
    * stateScripts are connect commands that must be executed in sequence.
    * 
@@ -755,14 +755,14 @@ abstract public class ModelCollection extends BondCollection {
     }
   */
 
-  public List<P3[]> trajectorySteps;
-  protected List<V3[]> vibrationSteps;
+  public Lst<P3[]> trajectorySteps;
+  protected Lst<V3[]> vibrationSteps;
 
   protected int mergeTrajectories(boolean isTrajectory) {
     if (trajectorySteps == null) {
       if (!isTrajectory)
         return 0;
-      trajectorySteps = new List<P3[]>();
+      trajectorySteps = new Lst<P3[]>();
     }
     for (int i = trajectorySteps.size(); i < mc; i++)
       trajectorySteps.addLast(null);
@@ -976,7 +976,7 @@ abstract public class ModelCollection extends BondCollection {
             .getBioPolymerCount());
   }
 
-  public void getPolymerPointsAndVectors(BS bs, List<P3[]> vList,
+  public void getPolymerPointsAndVectors(BS bs, Lst<P3[]> vList,
                                          boolean isTraceAlpha,
                                          float sheetSmoothing) {
     for (int i = 0; i < mc; ++i)
@@ -1042,7 +1042,7 @@ abstract public class ModelCollection extends BondCollection {
    * @param bsHBonds
    */
 
-  public void calcRasmolHydrogenBonds(BS bsA, BS bsB, List<Bond> vHBonds,
+  public void calcRasmolHydrogenBonds(BS bsA, BS bsB, Lst<Bond> vHBonds,
                                       boolean nucleicOnly, int nMax,
                                       boolean dsspIgnoreHydrogens, BS bsHBonds) {
     boolean isSame = (bsB == null || bsA.equals(bsB));
@@ -1076,7 +1076,7 @@ abstract public class ModelCollection extends BondCollection {
     // go ahead and take first three atoms
     // for PDB files, do not include NON-protein groups.
     int n = 0;
-    List<Quat> v = new List<Quat>();
+    Lst<Quat> v = new Lst<Quat>();
     for (int i = bsAtoms.nextSetBit(0); i >= 0 && n < nMax; i = bsAtoms
         .nextSetBit(i + 1)) {
       Group g = at[i].group;
@@ -1454,8 +1454,8 @@ abstract public class ModelCollection extends BondCollection {
     return -1;
   }
 
-  public List<Object> getModulationList(BS bs, String type, P3 t456) {
-    List<Object> list = new List<Object>();
+  public Lst<Object> getModulationList(BS bs, String type, P3 t456) {
+    Lst<Object> list = new Lst<Object>();
     if (vibrations != null)
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
         if (vibrations[i] instanceof JmolModulationSet)
@@ -1639,7 +1639,7 @@ abstract public class ModelCollection extends BondCollection {
     moleculeCount = 0;
     Model m = null;
     BS[] bsModelAtoms = new BS[mc];
-    List<BS> biobranches = null;
+    Lst<BS> biobranches = null;
     for (int i = 0; i < mc; i++) {
       // TODO: Trajectories?
       bsModelAtoms[i] = vwr.getModelUndeletedAtomsBitSet(i);
@@ -2058,7 +2058,7 @@ abstract public class ModelCollection extends BondCollection {
       return bs;
     BS bsA = null;
     BS bsB = null;
-    List<Bond> vHBonds = new List<Bond>();
+    Lst<Bond> vHBonds = new Lst<Bond>();
     if (specInfo.length() == 0) {
       bsA = bsB = vwr.getAllAtoms();
       calcRasmolHydrogenBonds(bsA, bsB, vHBonds, true, 1, false, null);
@@ -2825,7 +2825,7 @@ abstract public class ModelCollection extends BondCollection {
       if (moData == null) {
         continue;
       }
-      List<Map<String, Object>> mos = (List<Map<String, Object>>) (moData
+      Lst<Map<String, Object>> mos = (Lst<Map<String, Object>>) (moData
           .get("mos"));
       int nOrb = (mos == null ? 0 : mos.size());
       if (nOrb == 0) {
@@ -3090,7 +3090,7 @@ abstract public class ModelCollection extends BondCollection {
                       String atomName, int atomSerial, int atomSite, P3 xyz,
                       float radius, V3 vib, int formalCharge,
                       float partialCharge, int occupancy, float bfactor,
-                      List<Object> tensors, boolean isHetero,
+                      Lst<Object> tensors, boolean isHetero,
                       byte specialAtomID, BS atomSymmetry) {
     Atom atom = new Atom().setAtom(modelIndex, ac, xyz, radius,
         atomSymmetry, atomSite, (short) atomicAndIsotopeNumber, formalCharge,
@@ -3321,7 +3321,7 @@ abstract public class ModelCollection extends BondCollection {
     Map<String, Object> info = modelSetAuxiliaryInfo;
     if (info == null)
       return null;
-    List<Map<String, Object>> models = new List<Map<String, Object>>();
+    Lst<Map<String, Object>> models = new Lst<Map<String, Object>>();
     for (int i = 0; i < mc; ++i) {
       if (bsModels != null && !bsModels.get(i)) {
         continue;
@@ -3334,7 +3334,7 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public int[][] getDihedralMap(int[] alist) {
-    List<int[]> list = new List<int[]>();
+    Lst<int[]> list = new Lst<int[]>();
     int n = alist.length;
     Atom ai = null, aj = null, ak = null, al = null;
     for (int i = n - 1; --i >= 0;)
@@ -3502,7 +3502,7 @@ abstract public class ModelCollection extends BondCollection {
 
   private Triangulator triangulator;
 
-  public List<Object> intersectPlane(P4 plane, List<Object> v, int i) {
+  public Lst<Object> intersectPlane(P4 plane, Lst<Object> v, int i) {
     return (triangulator == null ? (triangulator = (Triangulator) Interface
         .getUtil("TriangleData")) : triangulator).intersectPlane(plane, v, i);
   }

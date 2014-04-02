@@ -27,7 +27,7 @@ package org.jmol.util;
 
 
 import org.jmol.modelset.ModelSet;
-import javajs.util.List;
+import javajs.util.Lst;
 
 import javajs.util.P3;
 import javajs.util.P3i;
@@ -82,8 +82,8 @@ public class BoxInfo {
    * @return    a set of points
    * 
    */
-  public List<Object> intersectPlane(ModelSet modelSet, P4 plane, float scale, int flags) {
-    List<Object> v = new  List<Object>();
+  public Lst<Object> intersectPlane(ModelSet modelSet, P4 plane, float scale, int flags) {
+    Lst<Object> v = new  Lst<Object>();
     v.addLast(getCanonicalCopy(scale));
     return modelSet.intersectPlane(plane, v, flags);
   }

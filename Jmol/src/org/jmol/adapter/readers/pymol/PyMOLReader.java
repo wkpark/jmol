@@ -24,7 +24,7 @@
 
 package org.jmol.adapter.readers.pymol;
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 import java.util.Hashtable;
 import java.util.Map;
@@ -125,17 +125,17 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
   private String objectName;
 
   //private List<List<Object>> selections;
-  private Map<String, List<Object>> volumeData;
-  private List<List<Object>> mapObjects;
+  private Map<String, Lst<Object>> volumeData;
+  private Lst<Lst<Object>> mapObjects;
   private boolean haveMeasurements;
   private int[] frames;
-  private Hashtable<Integer, List<Object>> uniqueSettings;
+  private Hashtable<Integer, Lst<Object>> uniqueSettings;
   private Atom[] atoms;
   private boolean haveScenes;
   private int baseAtomIndex; // preliminary only; may be revised later if load FILES
   private int baseModelIndex; // preliminary only; may be revised later if load FILES
 
-  private List<Object> sceneOrder;
+  private Lst<Object> sceneOrder;
 
   private int bondCount;
   @Override
@@ -154,7 +154,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     asc
         .setAtomSetCollectionAuxiliaryInfo("isPyMOL", Boolean.TRUE);
     if (isTrajectory)
-      trajectorySteps = new List<P3[]>();
+      trajectorySteps = new Lst<P3[]>();
 
     isStateScript = htParams.containsKey("isStateScript");
     sourcePNGJ = htParams.containsKey("sourcePNGJ");
@@ -261,10 +261,10 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     appendLoadNote("PyMOL version: " + pymolVersion);
 
     // create settings and uniqueSettings lists
-    List<Object> settings = fixSettings(getMapList(map, "settings"));
+    Lst<Object> settings = fixSettings(getMapList(map, "settings"));
     sceneOrder = getMapList(map, "scene_order");
     haveScenes = getFrameScenes(map);
-    List<Object> file = listAt(settings, PyMOL.session_file);
+    Lst<Object> file = listAt(settings, PyMOL.session_file);
     if (file != null)
       Logger.info("PyMOL session file: " + file.get(2));
     //asc.setAtomSetCollectionAuxiliaryInfo("settings", settings);
@@ -275,13 +275,13 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     // just log and display some information here
 
     logging = (vwr.getLogFileName().length() > 0);
-    List<Object> names = getMapList(map, "names");
+    Lst<Object> names = getMapList(map, "names");
     for (Map.Entry<String, Object> e : map.entrySet()) {
       String name = e.getKey();
       Logger.info(name);
       if (name.equals("names")) {
         for (int i = 1; i < names.size(); i++) {
-          List<Object> obj = listAt(names, i);
+          Lst<Object> obj = listAt(names, i);
           Logger.info("  " + stringAt(obj, 0));
         }
       }
@@ -301,7 +301,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       vwr.log("\n===names===");
       for (int i = 1; i < names.size(); i++) {
         vwr.log("");
-        List<Object> list = (List<Object>) names.get(i);
+        Lst<Object> list = (Lst<Object>) names.get(i);
         vwr.log(" =" + list.get(0).toString() + "=");
         try {
           vwr.log(PT.rep(list.toString(), "[", "\n["));
@@ -352,7 +352,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       appendLoadNote(note);
     }
     // PyMOL setting all_states disables movies
-    List<Object> mov;
+    Lst<Object> mov;
     if (!isStateScript && !allStates
         && (mov = getMapList(map, "movie")) != null) {
       int frameCount = intAt(mov, 0);
@@ -438,14 +438,14 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
    * @param settings
    * @return settings
    */
-  private List<Object> fixSettings(List<Object> settings) {
+  private Lst<Object> fixSettings(Lst<Object> settings) {
     int n = settings.size();
     for (int i = 0; i < n; i++) {
       @SuppressWarnings("unchecked")
-      int i2 = intAt((List<Object>) settings.get(i), 0);
+      int i2 = intAt((Lst<Object>) settings.get(i), 0);
       while (i < i2) {
         Logger.info("PyMOL reader adding null settings #" + i);
-        settings.add(i++, new List<Object>());
+        settings.add(i++, new Lst<Object>());
         n++;
       }
       
@@ -465,7 +465,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     Map<String, Object> scenes = (Map<String, Object>) map.get("scene_dict");
     for (int i = 0; i < sceneOrder.size(); i++) {
       String name = stringAt(sceneOrder, i);
-      List<Object> thisScene = getMapList(scenes, name);
+      Lst<Object> thisScene = getMapList(scenes, name);
       if (thisScene == null || thisScene.get(2) == null)
         sceneOrder.remove(i--);
     }
@@ -480,18 +480,18 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
    * @return max id
    */
   @SuppressWarnings("unchecked")
-  private int setUniqueSettings(List<Object> list) {
-    uniqueSettings = new Hashtable<Integer, List<Object>>();
+  private int setUniqueSettings(Lst<Object> list) {
+    uniqueSettings = new Hashtable<Integer, Lst<Object>>();
     int max = 0;
     if (list != null && list.size() != 0) {
       for (int i = list.size(); --i >= 0;) {
-        List<Object> atomSettings = (List<Object>) list.get(i);
+        Lst<Object> atomSettings = (Lst<Object>) list.get(i);
         int id = intAt(atomSettings, 0);
         if (id > max)
           max = id;
-        List<Object> mySettings = (List<Object>) atomSettings.get(1);
+        Lst<Object> mySettings = (Lst<Object>) atomSettings.get(1);
         for (int j = mySettings.size(); --j >= 0;) {
-          List<Object> setting = (List<Object>) mySettings.get(j);
+          Lst<Object> setting = (Lst<Object>) mySettings.get(j);
           int uid = (id << 10) + intAt(setting, 0);
           uniqueSettings.put(Integer.valueOf(uid), setting);
           Logger.info("PyMOL unique setting " + id + " " + setting);
@@ -508,12 +508,12 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
    * @param colors
    * @param isClamped
    */
-  private void addColors(List<Object> colors, boolean isClamped) {
+  private void addColors(Lst<Object> colors, boolean isClamped) {
     if (colors == null || colors.size() == 0)
       return;
     // note, we are ignoring lookup-table colors
     for (int i = colors.size(); --i >= 0;) {
-      List<Object> c = listAt(colors, i);
+      Lst<Object> c = listAt(colors, i);
       PyMOL.addColor((Integer) c.get(1), isClamped ? PyMOLScene.colorSettingClamped(c)
           : PyMOLScene.colorSetting(c));
     }
@@ -525,23 +525,23 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
    *  
    * @param names
    */
-  private void getAtomAndStateCount(List<Object> names) {
+  private void getAtomAndStateCount(Lst<Object> names) {
     int n = 0;
     for (int i = 1; i < names.size(); i++) {
-      List<Object> execObject = listAt(names, i);
+      Lst<Object> execObject = listAt(names, i);
       int type = intAt(execObject, 4);
       if (!checkObject(execObject))
         continue;
       if (type == PyMOL.OBJECT_MOLECULE) {
-        List<Object> pymolObject = listAt(execObject, 5);
-        List<Object> states = listAt(pymolObject, 4);
+        Lst<Object> pymolObject = listAt(execObject, 5);
+        Lst<Object> states = listAt(pymolObject, 4);
         int ns = states.size();
         if (ns > stateCount)
           stateCount = ns;
         int nAtoms = listAt(pymolObject, 7).size();
         for (int j = 0; j < ns; j++) {
-          List<Object> state = listAt(states, j);
-          List<Object> idxToAtm = listAt(state, 3);
+          Lst<Object> state = listAt(states, j);
+          Lst<Object> idxToAtm = listAt(state, 3);
           if (idxToAtm == null) {
             isTrajectory = false;
           } else {
@@ -558,7 +558,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     Logger.info("PyMOL state count = " + stateCount);
   }
 
-  private boolean checkObject(List<Object> execObject) {
+  private boolean checkObject(Lst<Object> execObject) {
     objectName = stringAt(execObject, 0);
     isHidden = (intAt(execObject, 2) != 1);
     return (objectName.indexOf("_") != 0);
@@ -571,12 +571,12 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
    * @param mov
    * @param frameCount
    */
-  private void processMovie(List<Object> mov, int frameCount) {
+  private void processMovie(Lst<Object> mov, int frameCount) {
     Map<String, Object> movie = new Hashtable<String, Object>();
     movie.put("frameCount", Integer.valueOf(frameCount));
     movie.put("currentFrame", Integer.valueOf(pymolFrame - 1));
     boolean haveCommands = false, haveViews = false, haveFrames = false;
-    List<Object> list = listAt(mov, 4);
+    Lst<Object> list = listAt(mov, 4);
     for (int i = list.size(); --i >= 0;)
       if (intAt(list, i) != 0) {
         frames = new int[list.size()];
@@ -586,7 +586,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
         haveFrames = true;
         break;
       }
-    List<Object> cmds = listAt(mov, 5);
+    Lst<Object> cmds = listAt(mov, 5);
     String cmd;
     for (int i = cmds.size(); --i >= 0;)
       if ((cmd = stringAt(cmds, i)) != null && cmd.length() > 1) {
@@ -597,8 +597,8 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
           break;
         }
       }
-    List<Object> views = listAt(mov, 6);
-    List<Object> view;
+    Lst<Object> views = listAt(mov, 6);
+    Lst<Object> view;
     for (int i = views.size(); --i >= 0;)
       if ((view = listAt(views, i)) != null && view.size() >= 12
           && view.get(1) != null) {
@@ -627,7 +627,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
    * @param views
    * @return new views
    */
-  private static List<Object> fixMovieViews(List<Object> views) {
+  private static Lst<Object> fixMovieViews(Lst<Object> views) {
     // TODO -- PyMOL to Jmol views
     return views;
   }
@@ -638,7 +638,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
    * @param cmds
    * @return new cmds
    */
-  private static List<Object> fixMovieCommands(List<Object> cmds) {
+  private static Lst<Object> fixMovieCommands(Lst<Object> cmds) {
     // TODO -- PyMOL to Jmol commands
     return cmds;
   }
@@ -652,21 +652,21 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
    * @param iState
    */
   @SuppressWarnings("unchecked")
-  private void processObject(List<Object> execObject, boolean moleculeOnly,
+  private void processObject(Lst<Object> execObject, boolean moleculeOnly,
                              int iState) {
     if (execObject == null)
       return;
     int type = intAt(execObject, 4);
-    List<Object> startLen = (List<Object>) execObject
+    Lst<Object> startLen = (Lst<Object>) execObject
         .get(execObject.size() - 1);
     if ((type == PyMOL.OBJECT_MOLECULE) != moleculeOnly || !checkObject(execObject))
       return;
-    List<Object> pymolObject = listAt(execObject, 5);
-    List<Object> stateSettings = null;
+    Lst<Object> pymolObject = listAt(execObject, 5);
+    Lst<Object> stateSettings = null;
     if (type == PyMOL.OBJECT_MOLECULE) {
-      List<Object> states = listAt(pymolObject, 4);
-      List<Object> state = listAt(states, iState);
-      List<Object> idxToAtm = listAt(state, 3);
+      Lst<Object> states = listAt(pymolObject, 4);
+      Lst<Object> state = listAt(states, iState);
+      Lst<Object> idxToAtm = listAt(state, 3);
       if (iState > 0 && (idxToAtm == null || idxToAtm.size() == 0))
         return;
       stateSettings = listAt(state, 7);
@@ -676,7 +676,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     
     Logger.info("PyMOL model " + (nModels) + " Object " + objectName
         + (isHidden ? " (hidden)" : " (visible)"));
-    List<Object> objectHeader = listAt(pymolObject, 0);
+    Lst<Object> objectHeader = listAt(pymolObject, 0);
     String parentGroupName = (execObject.size() < 8 ? null : stringAt(
         execObject, 6));
     if (" ".equals(parentGroupName))
@@ -756,12 +756,12 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
    * 
    * @param pymolObject
    */
-  private void processCGO(List<Object> pymolObject) {
+  private void processCGO(Lst<Object> pymolObject) {
     if (isStateScript)
       return;
     if (isHidden)
       return;
-    List<Object> data = listAt(listAt(pymolObject, 2), 0);
+    Lst<Object> data = listAt(listAt(pymolObject, 2), 0);
     int color = PyMOL.getRGB(intAt(listAt(pymolObject, 0), 2));
     String name = pymolScene.addCGO(data, color);
     if (name != null)
@@ -772,7 +772,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
    * Only process _e_pot objects -- which we need for color settings 
    * @param pymolObject
    */
-  private void processGadget(List<Object> pymolObject) {
+  private void processGadget(Lst<Object> pymolObject) {
     if (objectName.endsWith("_e_pot"))
       processMap(pymolObject, true, true);
   }
@@ -784,18 +784,18 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
    * @param isObject
    * @param isGadget 
    */
-  private void processMap(List<Object> pymolObject, boolean isObject, boolean isGadget) {
+  private void processMap(Lst<Object> pymolObject, boolean isObject, boolean isGadget) {
     if (isObject) {
       if (sourcePNGJ)
         return;
       if (isHidden && !isGadget)
         return; // for now
       if (mapObjects == null)
-        mapObjects = new List<List<Object>>();
+        mapObjects = new Lst<Lst<Object>>();
       mapObjects.addLast(pymolObject);
     } else {
       if (volumeData == null)
-        volumeData = new Hashtable<String, List<Object>>();
+        volumeData = new Hashtable<String, Lst<Object>>();
       volumeData.put(objectName, pymolObject);
       if (!isHidden && !isStateScript)
         pymolScene.addIsosurface(objectName);
@@ -841,23 +841,23 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
    * 
    * @param pymolObject
    */
-  private void processMeasure(List<Object> pymolObject) {
+  private void processMeasure(Lst<Object> pymolObject) {
     if (isStateScript)
       return;
     if (isHidden)
       return; // will have to reconsider this if there is a movie, though
     Logger.info("PyMOL measure " + objectName);
-    List<Object> measure = listAt(listAt(pymolObject, 2), 0);
+    Lst<Object> measure = listAt(listAt(pymolObject, 2), 0);
     int pt;
-    int nCoord = (measure.get(pt = 1) instanceof List<?> ? 2 : measure
-        .get(pt = 4) instanceof List<?> ? 3
-        : measure.get(pt = 6) instanceof List<?> ? 4 : 0);
+    int nCoord = (measure.get(pt = 1) instanceof Lst<?> ? 2 : measure
+        .get(pt = 4) instanceof Lst<?> ? 3
+        : measure.get(pt = 6) instanceof Lst<?> ? 4 : 0);
     if (nCoord == 0)
       return;
-    List<Object> setting = listAt(pymolObject, 0);
+    Lst<Object> setting = listAt(pymolObject, 0);
     BS bsReps = getBsReps(listAt(setting, 3));
-    List<Object> list = listAt(measure, pt);
-    List<Object> offsets = listAt(measure, 8);
+    Lst<Object> list = listAt(measure, pt);
+    Lst<Object> offsets = listAt(measure, 8);
     boolean haveLabels = (measure.size() > 8);
     int color = intAt(setting, 2);
     if (pymolScene.addMeasurements(null, nCoord, list, bsReps, color, offsets, haveLabels))
@@ -871,10 +871,10 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
    * @param iState
    * @return atom set only if this is a trajectory.
    */
-  private BS processMolecule(List<Object> pymolObject, int iState) {
-    List<Object> states = listAt(pymolObject, 4);
-    List<Object> state = listAt(states, iState);
-    List<Object> idxToAtm = listAt(state, 3);
+  private BS processMolecule(Lst<Object> pymolObject, int iState) {
+    Lst<Object> states = listAt(pymolObject, 4);
+    Lst<Object> state = listAt(states, iState);
+    Lst<Object> idxToAtm = listAt(state, 3);
     int n = (idxToAtm == null ? 0 : idxToAtm.size());
     if (n == 0)
       return null;
@@ -886,10 +886,10 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     ssMapSeq = new Hashtable<String, BS>();
     if (iState == 0)
       processMolCryst(listAt(pymolObject, 10));
-    List<Bond> bonds = getBondList(listAt(pymolObject, 6));
+    Lst<Bond> bonds = getBondList(listAt(pymolObject, 6));
 
     
-    List<Object> pymolAtoms = listAt(pymolObject, 7);
+    Lst<Object> pymolAtoms = listAt(pymolObject, 7);
     atomMap = new int[nAtoms];
     BS bsAtoms = pymolScene.setAtomMap(atomMap, ac0);
     for (int i = 0; i < PyMOL.REP_JMOL_MAX; i++)
@@ -898,8 +898,8 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     // TODO: Implement trajectory business here.
 
 
-    List<Object> coords = listAt(state, 2);
-    List<Object> labelPositions = listAt(state, 8);
+    Lst<Object> coords = listAt(state, 2);
+    Lst<Object> labelPositions = listAt(state, 8);
     if (iState == 0 || !isTrajectory)
       for (int idx = 0; idx < n; idx++) {
         P3 a = addAtom(pymolAtoms, intAt(idxToAtm, idx), idx, coords, 
@@ -924,11 +924,11 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
    * 
    * @param cryst
    */
-  private void processMolCryst(List<Object> cryst) {
+  private void processMolCryst(Lst<Object> cryst) {
     if (cryst == null || cryst.size() == 0)
       return;
-    List<Object> l = listAt(listAt(cryst, 0), 0);
-    List<Object> a = listAt(listAt(cryst, 0), 1);
+    Lst<Object> l = listAt(listAt(cryst, 0), 0);
+    Lst<Object> a = listAt(listAt(cryst, 0), 1);
     setUnitCell(floatAt(l, 0), floatAt(l, 1), floatAt(l, 2), floatAt(a, 0),
         floatAt(a, 1), floatAt(a, 2));
     setSpaceGroupName(stringAt(cryst, 1));
@@ -940,12 +940,12 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
    * @param bonds
    * @return list of bonds
    */
-  private List<Bond> getBondList(List<Object> bonds) {
-    List<Bond> bondList = new List<Bond>();
+  private Lst<Bond> getBondList(Lst<Object> bonds) {
+    Lst<Bond> bondList = new Lst<Bond>();
     int asSingle = (pymolScene.booleanSetting(PyMOL.valence) ? 0 : JmolAdapter.ORDER_PYMOL_SINGLE);
     int n = bonds.size();
     for (int i = 0; i < n; i++) {
-      List<Object> b = listAt(bonds, i);
+      Lst<Object> b = listAt(bonds, i);
       int order = intAt(b, 2);
       if (order < 1 || order > 3)
         order = 1;
@@ -1026,11 +1026,11 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
    * @return true if successful
    * 
    */
-  private P3 addAtom(List<Object> pymolAtoms, int apt, int icoord,
-                     List<Object> coords, List<Object> labelPositions,
+  private P3 addAtom(Lst<Object> pymolAtoms, int apt, int icoord,
+                     Lst<Object> coords, Lst<Object> labelPositions,
                      BS bsState, int iState) {
     atomMap[apt] = -1;
-    List<Object> a = listAt(pymolAtoms, apt);
+    Lst<Object> a = listAt(pymolAtoms, apt);
     int seqNo = intAt(a, 0); // may be negative
     String chainID = stringAt(a, 1); // may be more than one char.
     String altLoc = stringAt(a, 2);
@@ -1108,7 +1108,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       pymolScene.bsNonbonded.set(ac);
     if (!label.equals(" ")) {
       pymolScene.bsLabeled.set(ac);
-      List<Object> labelOffset = listAt(labelPositions, apt);
+      Lst<Object> labelOffset = listAt(labelPositions, apt);
       pymolScene.addLabel(ac, uniqueID, atomColor, labelOffset, label);
     }
     if (isHidden)
@@ -1126,7 +1126,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     return null;
   }
 
-  private void addBonds(List<Bond> bonds) {
+  private void addBonds(Lst<Bond> bonds) {
     int n = bonds.size();
     for (int i = 0; i < n; i++) {
       Bond bond = bonds.get(i);
@@ -1232,7 +1232,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
   private void processMeshes() {
     vwr.cachePut(pymolScene.surfaceInfoName, volumeData);
     for (int i = mapObjects.size(); --i >= 0;) {
-      List<Object> obj = mapObjects.get(i);
+      Lst<Object> obj = mapObjects.get(i);
       String objName = obj.get(obj.size() - 1).toString();
       boolean isMep = objName.endsWith("_e_pot");
       String mapName;
@@ -1252,7 +1252,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
         tok = T.mesh;
         mapName = stringAt(listAt(listAt(obj, 2), 0), 1);
       }
-      List<Object> surface = volumeData.get(mapName);
+      Lst<Object> surface = volumeData.get(mapName);
       if (surface == null)
         continue;
       obj.addLast(mapName);
@@ -1286,16 +1286,16 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
   private void processSelectionsAndScenes(Map<String, Object> map) {
     if (!pymolScene.needSelections())
       return;
-    Map<String, List<Object>> htObjNames = PyMOLScene.listToMap(getMapList(
+    Map<String, Lst<Object>> htObjNames = PyMOLScene.listToMap(getMapList(
         map, "names"));
     if (haveScenes) {
       Map<String, Object> scenes = (Map<String, Object>) map.get("scene_dict");
       finalizeSceneData();
-      Map<String, List<Object>> htSecrets = PyMOLScene
+      Map<String, Lst<Object>> htSecrets = PyMOLScene
           .listToMap(getMapList(map, "selector_secrets"));
       for (int i = 0; i < sceneOrder.size(); i++) {
         String name = stringAt(sceneOrder, i);
-        List<Object> thisScene = getMapList(scenes, name);
+        Lst<Object> thisScene = getMapList(scenes, name);
         if (thisScene == null)
           continue;
         pymolScene.buildScene(name, thisScene, htObjNames, htSecrets);
@@ -1337,21 +1337,21 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
 
   // generally useful static methods
 
-  private static int intAt(List<Object> list, int i) {
+  private static int intAt(Lst<Object> list, int i) {
     return ((Number) list.get(i)).intValue();
   }
 
-  private static String stringAt(List<Object> list, int i) {
+  private static String stringAt(Lst<Object> list, int i) {
     String s = list.get(i).toString();
     return (s.length() == 0 ? " " : s);
   }
 
   @SuppressWarnings("unchecked")
-  private static List<Object> getMapList(Map<String, Object> map, String key) {
-    return (List<Object>) map.get(key);
+  private static Lst<Object> getMapList(Map<String, Object> map, String key) {
+    return (Lst<Object>) map.get(key);
   }
 
-  private static BS getBsReps(List<Object> list) {
+  private static BS getBsReps(Lst<Object> list) {
     BS bsReps = new BS();
     int n = Math.min(list.size(), PyMOL.REP_MAX);
     for (int i = 0; i < n; i++) {
@@ -1361,11 +1361,11 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     return bsReps;
   }
 
-  private float floatAt(List<Object> a, int i) {
+  private float floatAt(Lst<Object> a, int i) {
     return PyMOLScene.floatAt(a, i);
   }
 
-  private List<Object> listAt(List<Object> list, int i) {
+  private Lst<Object> listAt(Lst<Object> list, int i) {
     return PyMOLScene.listAt(list, i);
   }
 

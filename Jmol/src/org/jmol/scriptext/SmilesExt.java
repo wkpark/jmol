@@ -33,7 +33,7 @@ import org.jmol.script.ScriptException;
 import org.jmol.util.Escape;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
@@ -81,16 +81,16 @@ public class SmilesExt implements JmolSmilesExtension {
    */
   @Override
   public float getSmilesCorrelation(BS bsA, BS bsB, String smiles,
-                                     List<P3> ptsA, List<P3> ptsB, M4 m4,
-                                     List<BS> vReturn, boolean isSmarts,
+                                     Lst<P3> ptsA, Lst<P3> ptsB, M4 m4,
+                                     Lst<BS> vReturn, boolean isSmarts,
                                      boolean asMap, int[][] mapSet, P3 center,
                                      boolean firstMatchOnly, boolean bestMap)
       throws ScriptException {
     float tolerance = (mapSet == null ? 0.1f : Float.MAX_VALUE);
     try {
       if (ptsA == null) {
-        ptsA = new List<P3>();
-        ptsB = new List<P3>();
+        ptsA = new Lst<P3>();
+        ptsB = new Lst<P3>();
       }
       M4 m = new M4();
       P3 c = new P3();
@@ -200,7 +200,7 @@ public class SmilesExt implements JmolSmilesExtension {
 
       // getting a correlation
 
-      List<BS> vReturn = new List<BS>();
+      Lst<BS> vReturn = new Lst<BS>();
       float stddev = getSmilesCorrelation(bsMatch3D, bsSelected, pattern, null,
           null, null, vReturn, isSmarts, false, null, null, false, false);
       if (Float.isNaN(stddev)) {

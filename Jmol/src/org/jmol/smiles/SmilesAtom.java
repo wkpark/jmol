@@ -25,7 +25,7 @@
 package org.jmol.smiles;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.P3;
 
 import org.jmol.java.BS;
@@ -713,7 +713,7 @@ public class SmilesAtom extends P3 implements BNode {
   }
 
   @Override
-  public boolean getCrossLinkLeadAtomIndexes(List<Integer> vLinks) {
+  public boolean getCrossLinkLeadAtomIndexes(Lst<Integer> vLinks) {
     for (int k = 0; k < bonds.length; k++)
       if (bonds[k].order == SmilesBond.TYPE_BIO_PAIR)
         vLinks.addLast(Integer.valueOf(bonds[k].getOtherAtom(this).index));

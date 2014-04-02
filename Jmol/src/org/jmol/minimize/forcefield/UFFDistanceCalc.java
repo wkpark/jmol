@@ -1,12 +1,12 @@
 package org.jmol.minimize.forcefield;
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 class UFFDistanceCalc extends Calculation {
 
   double r0, kb;
 
-  void setData(List<Object[]> calc, int ia, int ib, double bondOrder) {
+  void setData(Lst<Object[]> calc, int ia, int ib, double bondOrder) {
     calcs.parA = (FFParam) calcs.getParameter(calcs.minAtoms[ia].sType);
     calcs.parB = (FFParam) calcs.getParameter(calcs.minAtoms[ib].sType);
     r0 = CalculationsUFF.calculateR0(calcs.parA.dVal[CalculationsUFF.PAR_R], calcs.parB.dVal[CalculationsUFF.PAR_R], calcs.parA.dVal[CalculationsUFF.PAR_XI],

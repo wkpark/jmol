@@ -23,7 +23,7 @@
  */
 package org.openscience.jvxl.simplewriter;
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 
 
@@ -55,13 +55,13 @@ public class SimpleMarchingCubes extends MarchingCubes {
   private boolean doSaveSurfacePoints;
   private float calculatedArea = Float.NaN;
   private float calculatedVolume = Float.NaN;
-  private List<P3> surfacePoints;  
+  private Lst<P3> surfacePoints;  
   private VoxelDataCreator vdc;
 
 
   public SimpleMarchingCubes(VoxelDataCreator vdc, VolumeData volumeData,
       Parameters params, JvxlData jvxlData, 
-      List<P3> surfacePointsReturn, float[] areaVolumeReturn) {
+      Lst<P3> surfacePointsReturn, float[] areaVolumeReturn) {
 
     // when just creating a JVXL file all you really need are:
     //
@@ -83,7 +83,7 @@ public class SimpleMarchingCubes extends MarchingCubes {
     doCalcArea = (areaVolumeReturn != null);
     surfacePoints = surfacePointsReturn;
     if (surfacePoints == null && doCalcArea)
-      surfacePoints = new  List<P3>();
+      surfacePoints = new  Lst<P3>();
     doSaveSurfacePoints = (surfacePoints != null);
     jvxlData.jvxlEdgeData = getEdgeData();
     jvxlData.nPointsX = volumeData.voxelCounts[0];

@@ -24,7 +24,7 @@
 
 package org.jmol.minimize.forcefield;
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 import java.util.Map;
 
@@ -56,7 +56,7 @@ class CalculationsMMFF extends Calculations {
   CalculationsMMFF(ForceField ff, Map<Object, Object> ffParams, 
       MinAtom[] minAtoms, MinBond[] minBonds, 
       MinAngle[] minAngles, MinTorsion[] minTorsions, MinPosition[] minPositions,
-      List<Object[]> constraints) {
+      Lst<Object[]> constraints) {
     super(ff, minAtoms, minBonds, minAngles, minTorsions, minPositions, constraints);
     mmff = (ForceFieldMMFF) ff;
     this.ffParams = ffParams;
@@ -78,29 +78,29 @@ class CalculationsMMFF extends Calculations {
   @Override
   boolean setupCalculations() {
 
-    List<Object[]> calc;
+    Lst<Object[]> calc;
 
     MMFFDistanceCalc distanceCalc = (MMFFDistanceCalc) new MMFFDistanceCalc().set(this);
-    calc = calculations[CALC_DISTANCE] = new  List<Object[]>();
+    calc = calculations[CALC_DISTANCE] = new  Lst<Object[]>();
     for (int i = 0; i < bondCount; i++)
       distanceCalc.setData(calc, minBonds[i]);
 
-    calc = calculations[CALC_ANGLE] = new  List<Object[]>();
+    calc = calculations[CALC_ANGLE] = new  Lst<Object[]>();
     MMFFAngleCalc angleCalc = (MMFFAngleCalc) new MMFFAngleCalc().set(this);
     for (int i = 0; i < angleCount; i++)
       angleCalc.setData(calc, minAngles[i]);
 
-    calc = calculations[CALC_STRETCH_BEND] = new  List<Object[]>();
+    calc = calculations[CALC_STRETCH_BEND] = new  Lst<Object[]>();
     MMFFSBCalc sbCalc = (MMFFSBCalc) new MMFFSBCalc().set(this);
     for (int i = 0; i < angleCount; i++)
       sbCalc.setData(calc, minAngles[i]);
 
-    calc = calculations[CALC_TORSION] = new  List<Object[]>();
+    calc = calculations[CALC_TORSION] = new  Lst<Object[]>();
     MMFFTorsionCalc torsionCalc = (MMFFTorsionCalc) new MMFFTorsionCalc().set(this);
     for (int i = 0; i < torsionCount; i++)
       torsionCalc.setData(calc, minTorsions[i]);
 
-    calc = calculations[CALC_OOP] = new  List<Object[]>();
+    calc = calculations[CALC_OOP] = new  Lst<Object[]>();
     // set up the special atom arrays
     MMFFOOPCalc oopCalc = (MMFFOOPCalc) new MMFFOOPCalc().set(this);
     for (int i = 0; i < ac; i++)
@@ -115,8 +115,8 @@ class CalculationsMMFF extends Calculations {
 //      //  posCalc.setData(calc, minPositions[i].data, minPositions[i].ddata);
 //    }
 
-    pairSearch(calculations[CALC_VDW] = new  List<Object[]>(), new MMFFVDWCalc().set(this),
-        calculations[CALC_ES] = new  List<Object[]>(), new MMFFESCalc().set(this));
+    pairSearch(calculations[CALC_VDW] = new  Lst<Object[]>(), new MMFFVDWCalc().set(this),
+        calculations[CALC_ES] = new  Lst<Object[]>(), new MMFFESCalc().set(this));
 
     return true;
   }

@@ -8,7 +8,7 @@ import org.jmol.adapter.smarter.JmolJDXMOLParser;
 import org.jmol.java.BS;
 import org.jmol.util.Logger;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.SB;
 
@@ -128,7 +128,7 @@ public class JDXMOLParser implements JmolJDXMOLParser {
   }
 
   @Override
-  public List<String[]> readACDAssignments(int nPoints) throws Exception {
+  public Lst<String[]> readACDAssignments(int nPoints) throws Exception {
     // NMR:
     // ##PEAK ASSIGNMENTS=(XYMA)
     // (25.13376,1.00, ,<1>)
@@ -144,7 +144,7 @@ public class JDXMOLParser implements JmolJDXMOLParser {
     // ('1-6,10;2a;2b;3a;6a;6b',C6H5O,M - C4H9,93.0335,93,0.0872,8.7166,0.5041,1,4.0)
     
     
-    List<String[]> list = new List<String[]>();
+    Lst<String[]> list = new Lst<String[]>();
     readLine(); // flushes "XYMA"
     if (nPoints < 0)
     	nPoints = Integer.MAX_VALUE;
@@ -166,7 +166,7 @@ public class JDXMOLParser implements JmolJDXMOLParser {
 
 	@Override
 	public int setACDAssignments(String model, String mytype, int peakCount,
-			List<String[]> acdlist, String molFile) throws Exception {
+			Lst<String[]> acdlist, String molFile) throws Exception {
 		try {
 			if (peakCount >= 0)
 				peakIndex = new int[] { peakCount };
@@ -177,7 +177,7 @@ public class JDXMOLParser implements JmolJDXMOLParser {
 			piUnitsY = "";
 			float dx = getACDPeakWidth(mytype) / 2;
 			Map<String, Object[]> htSets = new Hashtable<String, Object[]>();
-			List<Object[]> list = new List<Object[]>();
+			Lst<Object[]> list = new Lst<Object[]>();
 			Map<String, String> zzcMap = null;
 			int ptx, pta;
 			int nAtoms = 0;
@@ -267,7 +267,7 @@ public class JDXMOLParser implements JmolJDXMOLParser {
 			piUnitsX = PT.getQuotedAttribute(line, "xLabel");
 			piUnitsY = PT.getQuotedAttribute(line, "yLabel");
 			Map<String, Object[]> htSets = new Hashtable<String, Object[]>();
-			List<Object[]> list = new List<Object[]>();
+			Lst<Object[]> list = new Lst<Object[]>();
 			while (readLine() != null
 					&& !(line = line.trim()).startsWith("</" + tag1)) {
 				if (line.startsWith(tag2)) {
@@ -292,7 +292,7 @@ public class JDXMOLParser implements JmolJDXMOLParser {
 		}
 	}
 
-	private int setPeakData(List<Object[]> list, int offset) {
+	private int setPeakData(Lst<Object[]> list, int offset) {
 		int nH = 0;
 		int n = list.size();
 		for (int i = 0; i < n; i++) {
@@ -318,7 +318,7 @@ public class JDXMOLParser implements JmolJDXMOLParser {
 
 	private void getStringInfo(String file, String title, String mytype,
 			String model, String atoms, Map<String, Object[]> htSets,
-			String key, List<Object[]> list, String more) {
+			String key, Lst<Object[]> list, String more) {
 		if ("HNMR".equals(mytype))
 			mytype = "1HNMR";
 		else if ("CNMR".equals(mytype))

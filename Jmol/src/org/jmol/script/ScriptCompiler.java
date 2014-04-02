@@ -26,7 +26,6 @@ package org.jmol.script;
 import org.jmol.util.Escape;
 import org.jmol.util.CommandHistory;
 import org.jmol.util.Logger;
-import javajs.util.PT;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 import org.jmol.api.Interface;
@@ -37,10 +36,11 @@ import org.jmol.modelset.BondSet;
 import org.jmol.modelset.Group;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.M34;
 import javajs.util.SB;
 import javajs.util.M4;
+import javajs.util.PT;
 
 import java.util.Hashtable;
 
@@ -90,9 +90,9 @@ public class ScriptCompiler extends ScriptTokenParser {
   private ScriptFunction thisFunction;
   
   private ScriptFlowContext flowContext;
-  private List<T> ltoken;
-  private List<T[]> lltoken;
-  private List<T> vBraces;
+  private Lst<T> ltoken;
+  private Lst<T[]> lltoken;
+  private Lst<T> vBraces;
 
 
   private int ichBrace;
@@ -125,7 +125,7 @@ public class ScriptCompiler extends ScriptTokenParser {
   private int tokLastMath;
   private boolean checkImpliedScriptCmd;
   
-  private List<ScriptFunction> vFunctionStack;
+  private Lst<ScriptFunction> vFunctionStack;
   private boolean allowMissingEnd;
   
   private boolean isShowCommand;
@@ -252,7 +252,7 @@ public class ScriptCompiler extends ScriptTokenParser {
   }
 
   private boolean compile0(boolean isFull) {
-    vFunctionStack = new  List<ScriptFunction>();
+    vFunctionStack = new  Lst<ScriptFunction>();
     htUserFunctions = new Hashtable<String, Boolean>();
     script = cleanScriptComments(script);
     ichToken = script.indexOf(JC.STATE_VERSION_STAMP);
@@ -286,8 +286,8 @@ public class ScriptCompiler extends ScriptTokenParser {
     iCommand = 0;
     tokLastMath = 0;
     lastToken = T.tokenOff;
-    vBraces = new  List<T>();
-    vPush = new  List<T>();
+    vBraces = new  Lst<T>();
+    vPush = new  Lst<T>();
     pushCount = 0;
     iBrace = 0;
     braceCount = 0;
@@ -303,8 +303,8 @@ public class ScriptCompiler extends ScriptTokenParser {
     isShowScriptOutput = false;    
     iHaveQuotedString = false;
     checkImpliedScriptCmd = false;
-    lltoken = new  List<T[]>();
-    ltoken = new  List<T>();
+    lltoken = new  Lst<T[]>();
+    ltoken = new  Lst<T>();
     tokCommand = T.nada;
     lastFlowCommand = null;
     tokenAndEquals = null;
@@ -1866,7 +1866,7 @@ public class ScriptCompiler extends ScriptTokenParser {
   }
 
   private static ScriptFunction newScriptParallelProcessor(String name, int tok) {
-    ScriptFunction jpp = (ScriptFunction) Interface.getOption("script.ScriptParallelProcessor");
+    ScriptFunction jpp = (ScriptFunction) Interface.getInterface("org.jmol.script.ScriptParallelProcessor");
     jpp.set(name, tok);
     return jpp;
   }
@@ -1909,7 +1909,7 @@ public class ScriptCompiler extends ScriptTokenParser {
     return true;
   }
 
-  List<T> vPush = new  List<T>();
+  Lst<T> vPush = new  Lst<T>();
   int pushCount;
   
   private int checkFlowEndBrace() {

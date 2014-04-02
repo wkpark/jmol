@@ -24,7 +24,7 @@
 
 package org.jmol.adapter.readers.more;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.SB;
 
@@ -45,7 +45,7 @@ import javajs.util.P3;
 
 public class TlsDataOnlyReader extends AtomSetCollectionReader {
 
-  private List<Map<String, Object>> vTlsModels;
+  private Lst<Map<String, Object>> vTlsModels;
   private SB sbTlsErrors;
   private int tlsGroupID;
 
@@ -63,19 +63,19 @@ public class TlsDataOnlyReader extends AtomSetCollectionReader {
   private final static String[] Snn = new String[] { "22", "11", "12", "13", "23", "21", "31", "32" };
 
   private void readTlsData() throws Exception {
-    vTlsModels = new  List<Map<String, Object>>();
-    List<Map<String, Object>> tlsGroups;
+    vTlsModels = new  Lst<Map<String, Object>>();
+    Lst<Map<String, Object>> tlsGroups;
     Map<String, Object> tlsGroup = null;
-    List<Map<String, Object>> ranges = null;
+    Lst<Map<String, Object>> ranges = null;
     Map<String, Object> range = null;
-    tlsGroups = new  List<Map<String, Object>>();
+    tlsGroups = new  Lst<Map<String, Object>>();
     while (rd() != null) {
       String[] tokens = getTokensStr(line.replace('\'', ' '));
       if (tokens.length == 0)
         continue;
       if (tokens[0].equals("TLS")) {
         tlsGroup = new Hashtable<String, Object>();
-        ranges = new  List<Map<String, Object>>();
+        ranges = new  Lst<Map<String, Object>>();
         tlsGroup.put("ranges", ranges);
         tlsGroups.addLast(tlsGroup);
         tlsGroup.put("id", Integer.valueOf(++tlsGroupID));

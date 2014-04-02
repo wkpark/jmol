@@ -1,10 +1,10 @@
 package javajs.awt;
 
-import javajs.util.List;
+import javajs.util.Lst;
   
 abstract public class Container extends Component {
   
-  protected List<Component> list;
+  protected Lst<Component> list;
   
   private Component[] cList;
 
@@ -35,7 +35,7 @@ abstract public class Container extends Component {
 
   protected Component addComponent(Component component) {
     if (list == null)
-      list = new List<Component>();
+      list = new Lst<Component>();
     list.addLast(component);
     cList = null;
     component.parent = this;

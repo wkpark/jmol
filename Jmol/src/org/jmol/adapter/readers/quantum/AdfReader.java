@@ -29,7 +29,7 @@ import org.jmol.quantum.SlaterData;
 import org.jmol.util.Logger;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 
 import java.util.Hashtable;
 
@@ -68,7 +68,7 @@ public class AdfReader extends SlaterReader {
 
   
   private Map<String, SymmetryData> htSymmetries;
-  private List<SymmetryData> vSymmetries;
+  private Lst<SymmetryData> vSymmetries;
   private String energy = null;
   private int nXX = 0;
   private String symLine;
@@ -227,7 +227,7 @@ OR
  B1
  B2
      */
-    vSymmetries = new  List<SymmetryData>();
+    vSymmetries = new  Lst<SymmetryData>();
     htSymmetries = new Hashtable<String, SymmetryData>();
     rd();
     int index = 0;

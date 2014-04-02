@@ -33,7 +33,7 @@ import java.util.Map;
 
 import org.jmol.java.BS;
 import org.jmol.util.GData;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.SB;
 import javajs.util.P3;
 import javajs.util.M3;
@@ -254,7 +254,7 @@ public class _TachyonExporter extends __RayTracerExporter {
                                short[] polygonColixes, int nVertices,
                                int nPolygons, int nFaces, BS bsPolygons,
                                int faceVertexMax, short colix,
-                               List<Short> colorList, Map<Short, Integer> htColixes, P3 offset) {
+                               Lst<Short> colorList, Map<Short, Integer> htColixes, P3 offset) {
     if (polygonColixes != null) {
       boolean isAll = (bsPolygons == null);
       int i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit(0));

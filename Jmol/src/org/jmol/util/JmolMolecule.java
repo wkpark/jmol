@@ -28,7 +28,7 @@ package org.jmol.util;
 import org.jmol.java.BS;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 
 
 
@@ -74,7 +74,7 @@ public class JmolMolecule {
    */
   public final static JmolMolecule[] getMolecules(BNode[] atoms,
                                                   BS[] bsModelAtoms,
-                                                  List<BS> biobranches, BS bsExclude) {
+                                                  Lst<BS> biobranches, BS bsExclude) {
     BS bsToTest = null;
     BS bsBranch = new BS();
     int thisModelIndex = -1;
@@ -129,7 +129,7 @@ public class JmolMolecule {
    * @return a bitset of atoms along this branch
    */
   public static BS getBranchBitSet(Node[] atoms, int atomIndex,
-                                       BS bsToTest, List<BS> biobranches,
+                                       BS bsToTest, Lst<BS> biobranches,
                                        int atomIndexNot, boolean allowCyclic,
                                        boolean allowBioResidue) {
     BS bs = BS.newN(atoms.length);
@@ -241,7 +241,7 @@ public class JmolMolecule {
                                                       BS bsToTest,
                                                       boolean allowCyclic,
                                                       boolean allowBioResidue,
-                                                      List<BS> biobranches,
+                                                      Lst<BS> biobranches,
                                                       BS bsResult) {
     int atomIndex = atom.getIndex();
     if (!bsToTest.get(atomIndex))

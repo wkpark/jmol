@@ -1,12 +1,12 @@
 package org.jmol.minimize.forcefield;
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 import org.jmol.minimize.MinAngle;
 
 class MMFFAngleCalc extends Calculation {
 
-  void setData(List<Object[]> calc, MinAngle angle) {
+  void setData(Lst<Object[]> calc, MinAngle angle) {
     Object data = calcs.getParameterObj(angle);
     if (data == null)
       return;

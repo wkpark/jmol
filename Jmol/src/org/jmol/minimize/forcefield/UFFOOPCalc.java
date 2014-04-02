@@ -1,6 +1,6 @@
 package org.jmol.minimize.forcefield;
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 //  class PositionCalc extends Calculation {
 //
@@ -20,7 +20,7 @@ import javajs.util.List;
   class UFFOOPCalc extends Calculation {
 
     @Override
-    void setData(List<Object[]> calc, int ib, int elemNo, double dd) {
+    void setData(Lst<Object[]> calc, int ib, int elemNo, double dd) {
 
       // The original Rappe paper in JACS isn't very clear about the parameters
       // The following was adapted from Towhee

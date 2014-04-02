@@ -29,7 +29,7 @@ import org.jmol.util.C;
 import org.jmol.util.GData;
 
 import javajs.awt.Font;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.SB;
 
 import org.jmol.util.Logger;
@@ -222,7 +222,7 @@ public abstract class Shape {
     if (propertyName == "setProperties") {
       if (bsSelected == null)
         bsSelected = vwr.getSelectedAtoms();
-      List<Object[]> propertyList = (List<Object[]>) value;
+      Lst<Object[]> propertyList = (Lst<Object[]>) value;
       while (propertyList.size() > 0) {
         Object[] data = propertyList.remove(0);
         setProperty(((String) data[0]).intern(), data[1], bsSelected);
@@ -350,7 +350,7 @@ public abstract class Shape {
         pid) : colix);
   }
 
-  public List<Map<String, Object>> getShapeDetail() {
+  public Lst<Map<String, Object>> getShapeDetail() {
     return null;
   }
 

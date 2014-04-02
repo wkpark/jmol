@@ -24,7 +24,7 @@
 package org.jmol.script;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.SB;
 
 import java.util.Hashtable;
@@ -57,7 +57,7 @@ public class ScriptFunction implements JmolScriptFunction {
   protected String typeName;
   String name;
   int nParameters;
-  List<String> names = new  List<String>();
+  Lst<String> names = new  Lst<String>();
   int tok;
 
   Map<String, String> variables = new Hashtable<String, String>();
@@ -85,7 +85,7 @@ public class ScriptFunction implements JmolScriptFunction {
     this.tok = tok;
   }
 
-  void setVariables(Map<String, SV> contextVariables, List<SV> params) {
+  void setVariables(Map<String, SV> contextVariables, Lst<SV> params) {
     int nParams = (params == null ? 0 : params.size());
     for (int i = names.size(); --i >= 0;) {
       String name = names.get(i).toLowerCase();
@@ -98,7 +98,7 @@ public class ScriptFunction implements JmolScriptFunction {
     contextVariables.put("_retval", SV.newI(tok == T.trycmd ? Integer.MAX_VALUE : 0));
   }
 
-  void unsetVariables(Map<String, SV> contextVariables, List<SV> params) {
+  void unsetVariables(Map<String, SV> contextVariables, Lst<SV> params) {
     // note: this method is never called.
     // set list values in case they have changed.
     int nParams = (params == null ? 0 : params.size());
@@ -125,7 +125,7 @@ public class ScriptFunction implements JmolScriptFunction {
 
   static void setFunction(ScriptFunction function, String script,
                           int ichCurrentCommand, int pt, short[] lineNumbers,
-                          int[][] lineIndices, List<T[]> lltoken) {
+                          int[][] lineIndices, Lst<T[]> lltoken) {
     int cmdpt0 = function.cmdpt0;
     int chpt0 = function.chpt0;
     int nCommands = pt - cmdpt0;

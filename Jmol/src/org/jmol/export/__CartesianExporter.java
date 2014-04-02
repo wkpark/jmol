@@ -36,7 +36,7 @@ import org.jmol.util.C;
 import org.jmol.util.GData;
 
 import javajs.awt.Font;
-import javajs.util.List;
+import javajs.util.Lst;
 
 import javajs.util.A4;
 import javajs.util.M3;
@@ -150,7 +150,7 @@ abstract public class __CartesianExporter extends ___Exporter {
   }
 
   protected int[] getNormalMap(T3[] normals, int nNormals,
-                               BS bsValid, List<String> vNormals) {
+                               BS bsValid, Lst<String> vNormals) {
     Map<String, Integer> htNormals = new Hashtable<String, Integer>();
     int[] normalMap = new int[nNormals];
     for (int i = 0; i < nNormals; i++) {

@@ -1,13 +1,13 @@
 package org.jmol.minimize.forcefield;
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 class MMFFESCalc extends Calculation {
 
   private static final double BUFF = 0.05;
 
   @Override
-  void setData(List<Object[]> calc, int ia, int ib, double d) {
+  void setData(Lst<Object[]> calc, int ia, int ib, double d) {
     if (calcs.minAtoms[ia].partialCharge == 0 || calcs.minAtoms[ib].partialCharge == 0)
       return;
     calc.addLast(new Object[] { new int[] { ia, ib }, new double[] {

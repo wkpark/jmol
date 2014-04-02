@@ -772,13 +772,13 @@ public class PT {
         sb.append(" }");
         break;
       }
-      if (info instanceof List) {
+      if (info instanceof Lst) {
         sb.append("[ ");
-        int n = ((List<?>) info).size();
+        int n = ((Lst<?>) info).size();
         for (int i = 0; i < n; i++) {
           if (i > 0)
             sb.appendC(',');
-          sb.append(toJSON(null, ((List<?>) info).get(i)));
+          sb.append(toJSON(null, ((Lst<?>) info).get(i)));
         }
         sb.append(" ]");
         break;

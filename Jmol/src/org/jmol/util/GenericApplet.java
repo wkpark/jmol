@@ -7,7 +7,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import javajs.awt.Dimension;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.SB;
 
@@ -761,7 +761,7 @@ public abstract class GenericApplet implements JmolAppletInterface,
         return "";
     }
 
-    List<String> apps = new List<String>();
+    Lst<String> apps = new Lst<String>();
     findApplets(appletName, syncId, fullName, apps);
     int nApplets = apps.size();
     if (nApplets == 0) {
@@ -896,7 +896,7 @@ public abstract class GenericApplet implements JmolAppletInterface,
   }
 
   synchronized static void findApplets(String appletName, String mySyncId,
-                                       String excludeName, List<String> apps) {
+                                       String excludeName, Lst<String> apps) {
     if (appletName != null && appletName.indexOf(",") >= 0) {
       String[] names = PT.split(appletName, ",");
       for (int i = 0; i < names.length; i++)

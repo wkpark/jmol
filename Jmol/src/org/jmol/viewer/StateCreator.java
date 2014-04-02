@@ -24,7 +24,7 @@
 package org.jmol.viewer;
 
 import javajs.awt.Font;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.SB;
 
@@ -1003,7 +1003,7 @@ public class StateCreator extends JmolStateCreator {
 
   @Override
   String getMeasurementState(Measures shape,
-                                    List<Measurement> mList,
+                                    Lst<Measurement> mList,
                                     int measurementCount, Font font3d,
                                     TickInfo ti) {
     SB commands = new SB();
@@ -1659,8 +1659,8 @@ public class StateCreator extends JmolStateCreator {
       // CTRL-Y: type = -1 REDO
       vwr.stopMinimization();
       String s = "";
-      List<String> list1;
-      List<String> list2;
+      Lst<String> list1;
+      Lst<String> list2;
       switch (type) {
       default:
       case T.undomove:

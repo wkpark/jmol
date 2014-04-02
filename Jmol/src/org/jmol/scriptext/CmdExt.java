@@ -71,7 +71,7 @@ import org.jmol.util.Point3fi;
 
 import javajs.awt.Font;
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.SB;
 
 import org.jmol.util.Logger;
@@ -600,7 +600,7 @@ public class CmdExt implements JmolCmdExtension {
     boolean idSeen = (thisId != null);
     boolean isWild = (idSeen && getShapeProperty(JC.SHAPE_CGO, "ID") == null);
     boolean isInitialized = false;
-    List<Object> data = null;
+    Lst<Object> data = null;
     float translucentLevel = Float.MAX_VALUE;
     int[] colorArgb = new int[] { Integer.MIN_VALUE };
     int intScale = 0;
@@ -691,8 +691,8 @@ public class CmdExt implements JmolCmdExtension {
     boolean isFlexFit = false;
     Quat[] data1 = null, data2 = null;
     BS bsAtoms1 = null, bsAtoms2 = null;
-    List<Object[]> vAtomSets = null;
-    List<Object[]> vQuatSets = null;
+    Lst<Object[]> vAtomSets = null;
+    Lst<Object[]> vQuatSets = null;
     e.iToken = 0;
     float nSeconds = (isFloatParameter(1) ? floatParameter(++e.iToken)
         : Float.NaN);
@@ -773,7 +773,7 @@ public class CmdExt implements JmolCmdExtension {
         else
           bsAtoms2.and(bsTo);
         if (vAtomSets == null)
-          vAtomSets = new List<Object[]>();
+          vAtomSets = new Lst<Object[]>();
         vAtomSets.addLast(new BS[] { bsAtoms1, bsAtoms2 });
         i = e.iToken;
         break;
@@ -785,7 +785,7 @@ public class CmdExt implements JmolCmdExtension {
         getToken(++i);
         data2 = e.getQuaternionArray(((SV) e.theToken).getList(), T.list);
         if (vQuatSets == null)
-          vQuatSets = new List<Object[]>();
+          vQuatSets = new Lst<Object[]>();
         vQuatSets.addLast(new Object[] { data1, data2 });
         break;
       case T.orientation:
@@ -837,7 +837,7 @@ public class CmdExt implements JmolCmdExtension {
         bsAtoms1.and(bsFrom);
         bsAtoms2.and(bsTo);
       }
-      vAtomSets = new List<Object[]>();
+      vAtomSets = new Lst<Object[]>();
       vAtomSets.addLast(new BS[] { bsAtoms1, bsAtoms2 });
     }
 
@@ -855,9 +855,9 @@ public class CmdExt implements JmolCmdExtension {
       bsFrom = bsFrames[iFrame];
       float[] retStddev = new float[2]; // [0] final, [1] initial for atoms
       Quat q = null;
-      List<Quat> vQ = new List<Quat>();
+      Lst<Quat> vQ = new Lst<Quat>();
       P3[][] centerAndPoints = null;
-      List<Object[]> vAtomSets2 = (isFrames ? new List<Object[]>() : vAtomSets);
+      Lst<Object[]> vAtomSets2 = (isFrames ? new Lst<Object[]>() : vAtomSets);
       for (int i = 0; i < vAtomSets.size(); ++i) {
         BS[] bss = (BS[]) vAtomSets.get(i);
         if (isFrames)
@@ -973,9 +973,9 @@ public class CmdExt implements JmolCmdExtension {
       }
       if (Float.isNaN(endDegrees) || Float.isNaN(pt1.x))
         continue;
-      List<P3> ptsB = null;
+      Lst<P3> ptsB = null;
       if (doRotate && doTranslate && nSeconds != 0) {
-        List<P3> ptsA = vwr.getAtomPointVector(bsFrom);
+        Lst<P3> ptsA = vwr.getAtomPointVector(bsFrom);
         M4 m4 = ScriptMathProcessor.getMatrix4f(q.getMatrix(), translation);
         ptsB = Measure.transformPoints(ptsA, m4, center);
       }
@@ -1101,7 +1101,7 @@ public class CmdExt implements JmolCmdExtension {
     String strFormat = null;
     Font font = null;
 
-    List<Object> points = new List<Object>();
+    Lst<Object> points = new Lst<Object>();
     BS bs = new BS();
     Object value = null;
     TickInfo tickInfo = null;
@@ -2030,7 +2030,7 @@ public class CmdExt implements JmolCmdExtension {
       case T.boundbox:
         if (chk)
           break;
-        List<Object> vp = vwr.getPlaneIntersection(eval.theTok, null,
+        Lst<Object> vp = vwr.getPlaneIntersection(eval.theTok, null,
             intScale / 100f, 0);
         intScale = 0;
         propertyName = "polygon";
@@ -2093,11 +2093,11 @@ public class CmdExt implements JmolCmdExtension {
       case T.polygon:
         propertyName = "polygon";
         havePoints = true;
-        List<Object> v = new List<Object>();
+        Lst<Object> v = new Lst<Object>();
         int nVertices = 0;
         int nTriangles = 0;
         P3[] points = null;
-        List<SV> vpolygons = null;
+        Lst<SV> vpolygons = null;
         if (eval.isArrayParameter(++i)) {
           points = eval.getPointArray(i, -1);
           nVertices = points.length;
@@ -2220,7 +2220,7 @@ public class CmdExt implements JmolCmdExtension {
         if (tokIntersect != 0) {
           if (chk)
             break;
-          List<Object> vpc = vwr.getPlaneIntersection(tokIntersect, plane,
+          Lst<Object> vpc = vwr.getPlaneIntersection(tokIntersect, plane,
               intScale / 100f, 0);
           intScale = 0;
           propertyName = "polygon";
@@ -2789,7 +2789,7 @@ public class CmdExt implements JmolCmdExtension {
     String mepOrMlp = null;
     M4[] symops = null;
     short[] discreteColixes = null;
-    List<Object[]> propertyList = new List<Object[]>();
+    Lst<Object[]> propertyList = new Lst<Object[]>();
     boolean defaultMesh = false;
     if (isPmesh || isPlot3d)
       addShapeProperty(propertyList, "fileType", "Pmesh");
@@ -3687,7 +3687,7 @@ public class CmdExt implements JmolCmdExtension {
         // isosurface origin.. step... count... functionXY[Z] = "x + y + z"
         boolean isFxyz = (eval.theTok == T.functionxyz);
         propertyName = "" + eval.theToken.value;
-        List<Object> vxy = new List<Object>();
+        Lst<Object> vxy = new Lst<Object>();
         propertyValue = vxy;
         isFxy = surfaceObjectSeen = true;
         //if (surfaceObjectSeen)
@@ -4732,7 +4732,7 @@ public class CmdExt implements JmolCmdExtension {
     int offset = Integer.MAX_VALUE;
     boolean isNegOffset = false;
     BS bsModels = vwr.getVisibleFramesBitSet();
-    List<Object[]> propertyList = new List<Object[]>();
+    Lst<Object[]> propertyList = new Lst<Object[]>();
     int i0 = 1;
     if (tokAt(1) == T.model || tokAt(1) == T.frame) {
       i0 = eval.modelNumberParameter(2);
@@ -4985,7 +4985,7 @@ public class CmdExt implements JmolCmdExtension {
       return;
     }
     V3 rotAxis = V3.new3(0, 1, 0);
-    List<Object[]> list = new List<Object[]>();
+    Lst<Object[]> list = new Lst<Object[]>();
     P3 pt;
     if (slen == 2) {
       switch (getToken(1).tok) {
@@ -5106,7 +5106,7 @@ public class CmdExt implements JmolCmdExtension {
         continue;
       case T.trace:
         P3[][] pathGuide;
-        List<P3[]> vp = new List<P3[]>();
+        Lst<P3[]> vp = new Lst<P3[]>();
         BS bs;
         if (tokAt(i + 1) == T.bitset || tokAt(i + 1) == T.expressionBegin) {
           bs = atomExpressionAt(++i);
@@ -5153,7 +5153,7 @@ public class CmdExt implements JmolCmdExtension {
           //vwr.navigatePath(timeSec, path, theta, indexStart, indexEnd);
           continue;
         }
-        List<P3> v = new List<P3>();
+        Lst<P3> v = new Lst<P3>();
         while (eval.isCenterParameter(i + 1)) {
           v.addLast(centerParameter(++i));
           i = eval.iToken;
@@ -6102,15 +6102,15 @@ public class CmdExt implements JmolCmdExtension {
             tVar = (SV) e.getParameter(
                 SV.sValue(tokenAt(isCommand ? 2 : 1, args)), T.variable);
           }
-          List<Object> v = null;
+          Lst<Object> v = null;
           if (tVar.tok == T.barray) {
-            v = new List<Object>();
+            v = new Lst<Object>();
             v.addLast(((BArray)tVar.value).data);
           } else if (tVar.tok == T.hash) {
             @SuppressWarnings("unchecked")
             Map<String, SV> m = (Map<String, SV>) tVar.value;
             if (m.containsKey("$_BINARY_$")) {
-              v = new List<Object>();
+              v = new Lst<Object>();
               if (fileName != null)
                 for (Entry<String, SV> e : m.entrySet()) {
                   String key = e.getKey();
@@ -6854,7 +6854,7 @@ public class CmdExt implements JmolCmdExtension {
   ///////// private methods used by commands ///////////
 
   
-  private void addShapeProperty(List<Object[]> propertyList, String key,
+  private void addShapeProperty(Lst<Object[]> propertyList, String key,
                                 Object value) {
     if (chk)
       return;
@@ -6911,7 +6911,7 @@ public class CmdExt implements JmolCmdExtension {
     Atom atom = vwr.ms.at[atomIndex];
     BS bs = BSUtil.newAndSetBit(atomIndex);
     P3[] pts = new P3[] { pt };
-    List<Atom> vConnections = new List<Atom>();
+    Lst<Atom> vConnections = new Lst<Atom>();
     vConnections.addLast(atom);
     int modelIndex = atom.mi;
     vwr.sm.modifySend(atomIndex, modelIndex, 3, e.fullCommand);
@@ -7290,7 +7290,7 @@ public class CmdExt implements JmolCmdExtension {
      }
    }
 
-  private float[] moCombo(List<Object[]> propertyList) {
+  private float[] moCombo(Lst<Object[]> propertyList) {
     if (tokAt(e.iToken + 1) != T.squared)
       return null;
     addShapeProperty(propertyList, "squareLinear", Boolean.TRUE);
@@ -7312,7 +7312,7 @@ public class CmdExt implements JmolCmdExtension {
   }
 
   @SuppressWarnings("unchecked")
-  private void setMoData(List<Object[]> propertyList, int moNumber, float[] lc,
+  private void setMoData(Lst<Object[]> propertyList, int moNumber, float[] lc,
                          int offset, boolean isNegOffset, int modelIndex,
                          String title) throws ScriptException {
     ScriptEval eval = e;
@@ -7326,7 +7326,7 @@ public class CmdExt implements JmolCmdExtension {
     }
     Map<String, Object> moData = (Map<String, Object>) vwr
         .getModelAuxiliaryInfoValue(modelIndex, "moData");
-    List<Map<String, Object>> mos = null;
+    Lst<Map<String, Object>> mos = null;
     Map<String, Object> mo;
     Float f;
     int nOrb = 0;
@@ -7343,7 +7343,7 @@ public class CmdExt implements JmolCmdExtension {
         moNumber = lastMoNumber - 1;
       else if (moNumber == T.next)
         moNumber = lastMoNumber + lastMoCount;
-      mos = (List<Map<String, Object>>) (moData.get("mos"));
+      mos = (Lst<Map<String, Object>>) (moData.get("mos"));
       nOrb = (mos == null ? 0 : mos.size());
       if (nOrb == 0)
         error(ScriptError.ERROR_moCoefficients);
@@ -7486,10 +7486,10 @@ public class CmdExt implements JmolCmdExtension {
     return null;
   }
 
-  private void getWithinDistanceVector(List<Object[]> propertyList,
+  private void getWithinDistanceVector(Lst<Object[]> propertyList,
                                        float distance, P3 ptc, BS bs,
                                        boolean isShow) {
-    List<P3> v = new List<P3>();
+    Lst<P3> v = new Lst<P3>();
     P3[] pts = new P3[2];
     if (bs == null) {
       P3 pt1 = P3.new3(distance, distance, distance);
@@ -7568,7 +7568,7 @@ public class CmdExt implements JmolCmdExtension {
     try {
       e.compileScript(null, "function " + fname + "(" + xyz + ") { return "
           + ret + "}", false);
-      List<SV> params = new List<SV>();
+      Lst<SV> params = new Lst<SV>();
       for (int i = 0; i < xyz.length(); i += 2)
         params.addLast(SV.newV(T.decimal, Float.valueOf(0f)).setName(
             xyz.substring(i, i + 1)));

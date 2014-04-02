@@ -25,7 +25,7 @@
 package org.jmol.adapter.readers.more;
 
 import javajs.util.Rdr;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 
 import org.jmol.adapter.readers.molxyz.MolReader;
@@ -84,7 +84,7 @@ public class JcampdxReader extends MolReader implements JmolJDXMOLReader {
   private JmolJDXMOLParser mpr;
   private String acdMolFile;
   private int nPeaks;
-  private List<String[]> acdAssignments; // JSV only 
+  private Lst<String[]> acdAssignments; // JSV only 
   private String title;
   private String nucleus = "";
   private String type;
@@ -287,7 +287,7 @@ public class JcampdxReader extends MolReader implements JmolJDXMOLReader {
           + (++pt), i);
   }
 
-  private List<String> peakData = new List<String>();
+  private Lst<String> peakData = new Lst<String>();
 
   @Override
   public void addPeakData(String info) {
@@ -406,11 +406,11 @@ public class JcampdxReader extends MolReader implements JmolJDXMOLReader {
 
   @SuppressWarnings("unchecked")
   private void processPeakSelectAtom(int i, String key, String data) {
-    List<String> peaks = (List<String>) asc
+    Lst<String> peaks = (Lst<String>) asc
         .getAtomSetAuxiliaryInfoValue(i, key);
     if (peaks == null)
       asc.setAtomSetAuxiliaryInfoForSet(key,
-          peaks = new List<String>(), i);
+          peaks = new Lst<String>(), i);
     peaks.addLast(data);
   }
 

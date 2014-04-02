@@ -23,7 +23,7 @@
 
 package org.jmol.script;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 
 import java.util.Map;
@@ -91,7 +91,7 @@ abstract class ScriptTokenParser {
   protected boolean isMathExpressionCommand;
   protected boolean isSetOrDefine;
 
-  private List<T> ltokenPostfix;
+  private Lst<T> ltokenPostfix;
 
   protected boolean isEmbeddedExpression;
   protected boolean isCommaAsOrAllowed;
@@ -155,7 +155,7 @@ abstract class ScriptTokenParser {
 
   protected boolean compileExpression() {
     int firstToken = (isSetOrDefine && !isSetBrace ? 2 : 1);
-    ltokenPostfix = new  List<T>();
+    ltokenPostfix = new  Lst<T>();
     itokenInfix = 0;
     T tokenBegin = null;
     int tok = tokAt(1);

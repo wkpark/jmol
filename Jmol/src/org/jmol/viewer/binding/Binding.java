@@ -1,7 +1,7 @@
 package org.jmol.viewer.binding;
 
 import javajs.awt.event.Event;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.SB;
 
@@ -304,14 +304,14 @@ abstract public class Binding {
     SB sb = new SB();
     String qlow = (qualifiers == null || qualifiers.equalsIgnoreCase("all") ? null
         : qualifiers.toLowerCase());
-    List<String>[] names = new List[actionInfo.length];
-    List<String[]> user = new List<String[]>();
+    Lst<String>[] names = new Lst[actionInfo.length];
+    Lst<String[]> user = new Lst<String[]>();
     for (Object obj : bindings.values()) {
       if (PT.isAI(obj)) {
         int[] info = (int[]) obj;
         int i = info[1];
         if (names[i] == null)
-          names[i] = new List<String>();
+          names[i] = new Lst<String>();
         String name = getMouseActionName(info[0], true);
         if (qlow == null
           || (actionNames[i] + ";" + actionInfo[i] + ";" + name).toLowerCase().indexOf(qlow) >= 0)

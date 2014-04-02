@@ -3,7 +3,7 @@ package org.jmol.script;
 import java.util.Map;
 
 import javajs.util.CU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.P3;
 import javajs.util.P4;
 import javajs.util.PT;
@@ -37,7 +37,7 @@ abstract public class ScriptParam extends ScriptError {
                throws ScriptException;
   abstract protected P3 getObjectCenter(String id, int index, int modelIndex);
   abstract protected P4 getPlaneForObject(String id, V3 vAB, V3 vAC);
-  abstract protected List<SV> parameterExpressionList(int pt, int ptAtom,
+  abstract protected Lst<SV> parameterExpressionList(int pt, int ptAtom,
       boolean isArrayItem) throws ScriptException;
   abstract protected void restrictSelected(boolean isBond, boolean doInvert);
   
@@ -84,9 +84,9 @@ abstract public class ScriptParam extends ScriptError {
     case T.variable:
       return SV.getVariable(v);
     case T.string:
-      if (!(v instanceof List<?>))
+      if (!(v instanceof Lst<?>))
         break;
-      List<SV> sv = (List<SV>) v;
+      Lst<SV> sv = (Lst<SV>) v;
       SB sb = new SB();
       for (int i = 0; i < sv.size(); i++)
         sb.append(sv.get(i).asString()).appendC('\n');
@@ -146,7 +146,7 @@ abstract public class ScriptParam extends ScriptError {
       invArg();
     }
     int tok;
-    List<String> v = new List<String>();
+    Lst<String> v = new Lst<String>();
     while ((tok = tokAt(i)) != T.rightsquare) {
       switch (tok) {
       case T.comma:
@@ -570,11 +570,11 @@ abstract public class ScriptParam extends ScriptError {
   
   public P3[] getPointArray(int i, int nPoints) throws ScriptException {
     P3[] points = (nPoints < 0 ? null : new P3[nPoints]);
-    List<P3> vp = (nPoints < 0 ? new List<P3>() : null);
+    Lst<P3> vp = (nPoints < 0 ? new Lst<P3>() : null);
     int tok = (i < 0 ? T.varray : getToken(i++).tok);
     switch (tok) {
     case T.varray:
-      List<SV> v = ((SV) theToken).getList();
+      Lst<SV> v = ((SV) theToken).getList();
       if (nPoints >= 0 && v.size() != nPoints)
         invArg();
       nPoints = v.size();
@@ -621,9 +621,9 @@ abstract public class ScriptParam extends ScriptError {
     return points;
   }
 
-  public List<Object> listParameter(int i, int nMin, int nMax)
+  public Lst<Object> listParameter(int i, int nMin, int nMax)
       throws ScriptException {
-    List<Object> v = new List<Object>();
+    Lst<Object> v = new Lst<Object>();
     P3 pt;
     int tok = tokAt(i);
     if (tok == T.spacebeforesquare)
@@ -687,7 +687,7 @@ abstract public class ScriptParam extends ScriptError {
    */
   public float[] floatParameterSet(int i, int nMin, int nMax)
       throws ScriptException {
-    List<Object> v = null;
+    Lst<Object> v = null;
     float[] fparams = null;
     int n = 0;
     String s = null;
@@ -732,7 +732,7 @@ abstract public class ScriptParam extends ScriptError {
   public Quat getQuaternionParameter(int i) throws ScriptException {
     switch (tokAt(i)) {
     case T.varray:
-      List<SV> sv = ((SV) getToken(i)).getList();
+      Lst<SV> sv = ((SV) getToken(i)).getList();
       P4 p4 = null;
       if (sv.size() == 0 || (p4 = SV.pt4Value(sv.get(0))) == null)
         invArg();
@@ -862,14 +862,14 @@ abstract public class ScriptParam extends ScriptError {
     return val;
   }
 
-  public List<P3> getPointVector(T t, int i) throws ScriptException {
+  public Lst<P3> getPointVector(T t, int i) throws ScriptException {
     switch (t.tok) {
     case T.bitset:
       return vwr.getAtomPointVector((BS) t.value);
     case T.varray:
-      List<P3> data = new List<P3>();
+      Lst<P3> data = new Lst<P3>();
       P3 pt;
-      List<SV> pts = ((SV) t).getList();
+      Lst<SV> pts = ((SV) t).getList();
       for (int j = 0; j < pts.size(); j++)
         if ((pt = SV.ptValue(pts.get(j))) != null)
           data.addLast(pt);

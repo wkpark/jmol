@@ -6,7 +6,7 @@ import java.util.Map;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.ModelSet;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.P3;
 
 import org.jmol.util.Tensor;
@@ -170,7 +170,7 @@ public interface SymmetryInterface {
 
   public void unitize(P3 ptFrac);
 
-  public boolean addLatticeVectors(List<float[]> lattvecs);
+  public boolean addLatticeVectors(Lst<float[]> lattvecs);
 
   public int getLatticeOp();
 

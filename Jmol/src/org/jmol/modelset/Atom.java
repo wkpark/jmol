@@ -38,7 +38,7 @@ import org.jmol.util.Elements;
 import org.jmol.util.Point3fi;
 
 import javajs.util.CU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.SB;
 import javajs.util.P3;
@@ -1492,7 +1492,7 @@ public class Atom extends Point3fi implements BNode {
   }
 
   @Override
-  public boolean getCrossLinkLeadAtomIndexes(List<Integer> vReturn) {
+  public boolean getCrossLinkLeadAtomIndexes(Lst<Integer> vReturn) {
     return group.getCrossLinkLead(vReturn);
   }
   

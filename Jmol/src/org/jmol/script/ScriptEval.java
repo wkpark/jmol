@@ -24,7 +24,7 @@
 package org.jmol.script;
 
 import javajs.awt.Font;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.SB;
 
 import java.util.Hashtable;
@@ -232,13 +232,11 @@ public class ScriptEval extends ScriptExpr {
   private JmolSmilesExtension smilesExt;
 
   public JmolMathExtension getMathExt() {
-    return (mathExt == null ? (mathExt = (JmolMathExtension) Interface
-        .getOption("scriptext.MathExt")).init(this) : mathExt);
+    return (mathExt == null ? (mathExt = (JmolMathExtension) getExt("Math")).init(this) : mathExt);
   }
 
   public JmolSmilesExtension getSmilesExt() {
-    return (smilesExt == null ? (smilesExt = (JmolSmilesExtension) Interface
-        .getOption("scriptext.SmilesExt")).init(this) : smilesExt);
+    return (smilesExt == null ? (smilesExt = (JmolSmilesExtension) getExt("Smiles")).init(this) : smilesExt);
   }
 
   public ShapeManager sm;
@@ -866,8 +864,8 @@ public class ScriptEval extends ScriptExpr {
    * @return vector list of selected atoms
    */
   @Override
-  public List<Integer> getAtomBitSetVector(int ac, Object atomExpression) {
-    List<Integer> V = new List<Integer>();
+  public Lst<Integer> getAtomBitSetVector(int ac, Object atomExpression) {
+    Lst<Integer> V = new Lst<Integer>();
     BS bs = getAtomBitSet(atomExpression);
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       V.addLast(Integer.valueOf(i));
@@ -986,7 +984,7 @@ public class ScriptEval extends ScriptExpr {
   @SuppressWarnings("unchecked")
   public float evalFunctionFloat(Object func, Object params, float[] values) {
     try {
-      List<SV> p = (List<SV>) params;
+      Lst<SV> p = (Lst<SV>) params;
       for (int i = 0; i < values.length; i++)
         p.get(i).value = Float.valueOf(values[i]);
       ScriptFunction f = (ScriptFunction) func;
@@ -998,7 +996,7 @@ public class ScriptEval extends ScriptExpr {
   }
 
   @Override
-  public SV getUserFunctionResult(String name, List<SV> params, SV tokenAtom)
+  public SV getUserFunctionResult(String name, Lst<SV> params, SV tokenAtom)
       throws ScriptException {
 
     // called by ScriptExpr(getBitsetProperty) and ScriptExt(evaluateUserFunction)
@@ -1008,7 +1006,7 @@ public class ScriptEval extends ScriptExpr {
   }
   
   private SV runFunctionAndRet(JmolScriptFunction function, String name,
-                           List<SV> params, SV tokenAtom, boolean getReturn,
+                           Lst<SV> params, SV tokenAtom, boolean getReturn,
                            boolean setContextPath, boolean allowThreads)
       throws ScriptException {
     
@@ -1138,7 +1136,7 @@ public class ScriptEval extends ScriptExpr {
    * @param tokenAtom
    * @throws ScriptException
    */
-  private void restoreFunction(JmolScriptFunction f, List<SV> params,
+  private void restoreFunction(JmolScriptFunction f, Lst<SV> params,
                                SV tokenAtom) throws ScriptException {
     ScriptFunction function = (ScriptFunction) f;
     aatoken = function.aatoken;
@@ -1792,7 +1790,7 @@ public class ScriptEval extends ScriptExpr {
    * =============== command processing checks ===============================
    */
 
-  private void addProcess(List<T[]> vProcess, int pc, int pt) {
+  private void addProcess(Lst<T[]> vProcess, int pc, int pt) {
     if (parallelProcessor == null)
       return;
     T[][] statements = new T[pt][];
@@ -1978,7 +1976,7 @@ public class ScriptEval extends ScriptExpr {
           .getModelAuxiliaryInfoValue(i, "moData");
       if (moData == null)
         continue;
-      sb.appendI(((List<Map<String, Object>>) moData.get("mos")).size())
+      sb.appendI(((Lst<Map<String, Object>>) moData.get("mos")).size())
           .append(" molecular orbitals in model ")
           .append(vwr.getModelNumberDotted(i)).append("\n");
     }
@@ -2087,7 +2085,7 @@ public class ScriptEval extends ScriptExpr {
   private void commandLoop(boolean allowInterrupt) throws ScriptException {
     String lastCommand = "";
     boolean isForCheck = false; // indicates the stage of the for command loop
-    List<T[]> vProcess = null;
+    Lst<T[]> vProcess = null;
     long lastTime = System.currentTimeMillis();
 
     if (debugScript && debugHigh && !chk) {
@@ -2187,7 +2185,7 @@ public class ScriptEval extends ScriptExpr {
       } else if (tok == T.process){
         pushContext((ContextToken) theToken, "PROCESS");
         if (parallelProcessor != null)
-          vProcess = new List<T[]>();
+          vProcess = new Lst<T[]>();
       } else {
         processCommand(tok);
       }
@@ -3338,7 +3336,7 @@ public class ScriptEval extends ScriptExpr {
     vwr.setMotionFixedAtoms(bs);
   }
 
-  private boolean cmdFlow(int tok, boolean isForCheck, List<T[]> vProcess)
+  private boolean cmdFlow(int tok, boolean isForCheck, Lst<T[]> vProcess)
       throws ScriptException {
     ContextToken ct;
     int pt;
@@ -3462,7 +3460,7 @@ public class ScriptEval extends ScriptExpr {
             if (isBondSet)
               bsOrList = new BondSet((BS) bsOrList);
           } else {
-            List<SV> what = parameterExpressionList(-i, 1, false);
+            Lst<SV> what = parameterExpressionList(-i, 1, false);
             if (what == null || what.size() < 1)
               invArg();
             SV vl = what.get(0);
@@ -3698,7 +3696,7 @@ public class ScriptEval extends ScriptExpr {
     String name = ((String) getToken(0).value).toLowerCase();
     if (!vwr.isFunction(name))
       error(ERROR_commandExpected);
-    List<SV> params = (slen == 1 || slen == 3 && tokAt(1) == T.leftparen
+    Lst<SV> params = (slen == 1 || slen == 3 && tokAt(1) == T.leftparen
         && tokAt(2) == T.rightparen ? null : parameterExpressionList(1, -1,
         false));
     if (chk)
@@ -3977,7 +3975,7 @@ public class ScriptEval extends ScriptExpr {
     int i = (tokAt(0) == T.data ? 0 : 1);
     boolean appendNew = vwr.getBoolean(T.appendnew);
     String filter = null;
-    List<Object> firstLastSteps = null;
+    Lst<Object> firstLastSteps = null;
     int modelCount0 = vwr.getModelCount()
         - (vwr.getFileName().equals("zapped") ? 1 : 0);
     int ac0 = vwr.getAtomCount();
@@ -4090,6 +4088,11 @@ public class ScriptEval extends ScriptExpr {
       case T.file:
         i++;
         loadScript.append(" " + modelName);
+        if (optParameterAsString(i).equals("+")) {
+          htParams.put("concatenate", Boolean.TRUE);
+          i++;
+          loadScript.append(" +");
+        }
         if (tokAt(i) == T.varray) {
           filenames = stringParameterSet(i);
           i = iToken;
@@ -4493,9 +4496,14 @@ public class ScriptEval extends ScriptExpr {
 
       P3 pt = null;
       BS bs = null;
-      List<String> fNames = new List<String>();
+      Lst<String> fNames = new Lst<String>();
       while (i < slen) {
         switch (tokAt(i)) {
+        case T.plus:
+          htParams.put("concatenate", Boolean.TRUE);
+          loadScript.append(" +");
+          ++i;
+          continue;
         case T.filter:
           filter = stringParameter(++i);
           ++i;
@@ -4503,7 +4511,7 @@ public class ScriptEval extends ScriptExpr {
         case T.coord:
           htParams.remove("isTrajectory");
           if (firstLastSteps == null) {
-            firstLastSteps = new List<Object>();
+            firstLastSteps = new Lst<Object>();
             pt = P3.new3(0, -1, 1);
           }
           if (isPoint3f(++i)) {
@@ -4627,8 +4635,8 @@ public class ScriptEval extends ScriptExpr {
     boolean timeMsg = vwr.getBoolean(T.showtiming);
     if (timeMsg)
       Logger.startTimer("load");
-    errMsg = vwr.loadModelFromFile(null, filename, filenames, null,
-        isAppend, htParams, loadScript, tokType);
+    errMsg = vwr.loadModelFromFile(null, filename, filenames, null, isAppend,
+        htParams, loadScript, tokType);
     if (out != null) {
       vwr.setFileInfo(new String[] { localName });
       Logger.info(GT.o(GT._("file {0} created"), localName));
@@ -4663,8 +4671,7 @@ public class ScriptEval extends ScriptExpr {
     Map<String, Object> info = vwr.getModelSetAuxiliaryInfo();
     if (info != null && info.containsKey("centroidMinMax")
         && vwr.getAtomCount() > 0) {
-      BS bs = BSUtil.newBitSet2(isAppend ? ac0 : 0,
-          vwr.getAtomCount());
+      BS bs = BSUtil.newBitSet2(isAppend ? ac0 : 0, vwr.getAtomCount());
       vwr.setCentroid(bs, (int[]) info.get("centroidMinMax"));
     }
     String script = vwr.getDefaultLoadScript();
@@ -5430,7 +5437,7 @@ public class ScriptEval extends ScriptExpr {
     boolean isMolecular = false;
     boolean haveRotation = false;
     float[] dihedralList = null;
-    List<P3> ptsA = null;
+    Lst<P3> ptsA = null;
     P3[] points = new P3[2];
     V3 rotAxis = V3.new3(0, 1, 0);
     V3 translation = null;
@@ -5440,7 +5447,7 @@ public class ScriptEval extends ScriptExpr {
     int tok;
     Quat q = null;
     boolean helicalPath = false;
-    List<P3> ptsB = null;
+    Lst<P3> ptsB = null;
     BS bsCompare = null;
     P3 invPoint = null;
     P4 invPlane = null;
@@ -5935,7 +5942,7 @@ public class ScriptEval extends ScriptExpr {
     String localPath = null;
     String remotePath = null;
     String scriptPath = null;
-    List<SV> params = null;
+    Lst<SV> params = null;
 
     if (tok == T.javascript) {
       checkLength(2);
@@ -6370,7 +6377,7 @@ public class ScriptEval extends ScriptExpr {
       cmdSetLabel("toggle");
       return;
     case T.usercolorscheme:
-      List<Integer> v = new List<Integer>();
+      Lst<Integer> v = new Lst<Integer>();
       for (int i = 2; i < slen; i++) {
         int argb = getArgbParam(i);
         v.addLast(Integer.valueOf(argb));
@@ -8245,7 +8252,7 @@ public class ScriptEval extends ScriptExpr {
         data[i] = Quat.newP4(pts[i]);
       break;
     case T.list:
-      List<SV> sv = (List<SV>) quaternionOrSVData;
+      Lst<SV> sv = (Lst<SV>) quaternionOrSVData;
       data = new Quat[sv.size()];
       for (int i = 0; i < sv.size(); i++) {
         P4 pt = SV.pt4Value(sv.get(i));

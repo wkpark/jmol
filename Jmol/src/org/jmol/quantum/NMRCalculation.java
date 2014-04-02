@@ -35,7 +35,7 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.Model;
 import org.jmol.util.Escape;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.SB;
 
@@ -99,15 +99,15 @@ public class NMRCalculation implements JmolNMRInterface {
    * @return list of Tensors
    */
   @SuppressWarnings("unchecked")
-  private List<Tensor> getInteractionTensorList(String type, BS bsA) {
+  private Lst<Tensor> getInteractionTensorList(String type, BS bsA) {
     if (type != null)
       type = type.toLowerCase();
     BS bsModels = vwr.getModelBitSet(bsA, false);
     BS bs1 = getAtomSiteBS(bsA);
     int iAtom = (bs1.cardinality() == 1 ? bs1.nextSetBit(0) : -1);
-    List<Tensor> list = new List<Tensor>();
+    Lst<Tensor> list = new Lst<Tensor>();
     for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1)) {
-      List<Tensor> tensors = (List<Tensor>) vwr
+      Lst<Tensor> tensors = (Lst<Tensor>) vwr
           .getModelAuxiliaryInfoValue(i, "interactionTensors");
       if (tensors == null)
         continue;
@@ -209,7 +209,7 @@ public class NMRCalculation implements JmolNMRInterface {
       BS bs = new BS();
       bs.set(a1.i);
       bs.set(a2.i);
-      List<Tensor> list = getInteractionTensorList(type, bs);
+      Lst<Tensor> list = getInteractionTensorList(type, bs);
       if (list.size() == 0)
         return Float.NaN;
       isc = list.get(0);
@@ -223,7 +223,7 @@ public class NMRCalculation implements JmolNMRInterface {
 
   @SuppressWarnings("unchecked")
   private String getISCtype(Atom a1, String type) {
-    List<Tensor> tensors = (List<Tensor>) vwr.getModelAuxiliaryInfoValue(a1.mi, "interactionTensors");
+    Lst<Tensor> tensors = (Lst<Tensor>) vwr.getModelAuxiliaryInfoValue(a1.mi, "interactionTensors");
     if (tensors == null)
       return null;
     type = (type == null ? "" : type.toLowerCase());
@@ -353,7 +353,7 @@ public class NMRCalculation implements JmolNMRInterface {
     }
     if (Character.isDigit(what.charAt(0)))
       return isotopeData.get(what);
-    List<Object> info = new List<Object>();
+    Lst<Object> info = new Lst<Object>();
     for (Entry<String, double[]> e: isotopeData.entrySet()) {
       String key = e.getKey();
       if (Character.isDigit(key.charAt(0)) && key.endsWith(what))
@@ -400,18 +400,18 @@ public class NMRCalculation implements JmolNMRInterface {
   }
 
   @Override
-  public List<Object> getTensorInfo(String tensorType, String infoType, BS bs) {
+  public Lst<Object> getTensorInfo(String tensorType, String infoType, BS bs) {
     if ("".equals(tensorType))
       tensorType = null;
     infoType = (infoType == null ? ";all." : ";" + infoType + ".");
-    List<Object> data = new List<Object>();
-    List<Object> list1;
+    Lst<Object> data = new Lst<Object>();
+    Lst<Object> list1;
     if (";dc.".equals(infoType)) {
       // tensorType is irrelevant for dipolar coupling constant
       Atom[] atoms = vwr.ms.at;
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
         for (int j = bs.nextSetBit(i + 1); j >= 0; j = bs.nextSetBit(j + 1)) {
-          list1 = new List<Object>();
+          list1 = new Lst<Object>();
           list1.addLast(Integer.valueOf(atoms[i].i));
           list1.addLast(Integer.valueOf(atoms[j].i));
           list1
@@ -423,11 +423,11 @@ public class NMRCalculation implements JmolNMRInterface {
     if (tensorType == null || tensorType.startsWith("isc")) {
       boolean isJ = infoType.equals(";j.");
       boolean isEta = infoType.equals(";eta.");
-      List<Tensor> list = getInteractionTensorList(tensorType, bs);
+      Lst<Tensor> list = getInteractionTensorList(tensorType, bs);
       int n = (list == null ? 0 : list.size());
       for (int i = 0; i < n; i++) {
         Tensor t = list.get(i);
-        list1 = new List<Object>();
+        list1 = new Lst<Object>();
         list1.addLast(Integer.valueOf(t.atomIndex1));
         list1.addLast(Integer.valueOf(t.atomIndex2));
         list1.addLast(isEta || isJ ? Float.valueOf(getIsoOrAnisoHz(isJ, null,

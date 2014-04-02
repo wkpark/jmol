@@ -31,7 +31,7 @@ import org.jmol.shapesurface.Isosurface;
 import org.jmol.shapesurface.IsosurfaceMesh;
 import org.jmol.util.C;
 import org.jmol.util.GData;
-import javajs.util.List;
+import javajs.util.Lst;
 import org.jmol.util.Normix;
 import org.jmol.viewer.JC;
 
@@ -109,7 +109,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     showKey = Boolean.FALSE; // once only
     int[] colors = null;
     short[] colixes = null;
-    List<Object>[] vContours = null;
+    Lst<Object>[] vContours = null;
     int n = 0;
     int type = 0;
     if (imesh.showContourLines) {
@@ -246,7 +246,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
   
   private void renderContourLines() {
     // no check here for within distance
-    List<Object>[] vContours = imesh.getContours();
+    Lst<Object>[] vContours = imesh.getContours();
     if (vContours == null) {
       if (imesh.jvxlData.contourValues != null)
         hasColorRange = true;
@@ -257,7 +257,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       //return;
     hasColorRange = (mesh.meshColix == 0);
     for (int i = vContours.length; --i >= 0;) {
-      List<Object> v = vContours[i];
+      Lst<Object> v = vContours[i];
       if (v.size() < JvxlCoder.CONTOUR_POINTS)
         continue;
       colix = (mesh.meshColix == 0 ? ((short[]) v.get(JvxlCoder.CONTOUR_COLIX))[0]

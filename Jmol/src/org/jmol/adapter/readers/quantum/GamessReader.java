@@ -25,7 +25,7 @@
 package org.jmol.adapter.readers.quantum;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 
 import java.util.Hashtable;
@@ -37,7 +37,7 @@ import org.jmol.util.Logger;
 
 abstract public class GamessReader extends MOReader {
 
-  protected List<String> atomNames;
+  protected Lst<String> atomNames;
 
   abstract protected void readAtomsInBohrCoordinates() throws Exception;  
  
@@ -53,7 +53,7 @@ abstract public class GamessReader extends MOReader {
   }
 
   protected void readGaussianBasis(String initiator, String terminator) throws Exception {
-    List<String[]> gdata = new  List<String[]>();
+    Lst<String[]> gdata = new  Lst<String[]>();
     gaussianCount = 0;
     int nGaussians = 0;
     shellCount = 0;
@@ -62,8 +62,8 @@ abstract public class GamessReader extends MOReader {
     discardLinesUntilContains(initiator);
     rd();
     int[] slater = null;
-    Map<String, List<int[]>> shellsByAtomType = new Hashtable<String, List<int[]>>();
-    List<int[]> slatersByAtomType = new  List<int[]>();
+    Map<String, Lst<int[]>> shellsByAtomType = new Hashtable<String, Lst<int[]>>();
+    Lst<int[]> slatersByAtomType = new  Lst<int[]>();
     String atomType = null;
     
     while (rd() != null && line.indexOf(terminator) < 0) {
@@ -81,7 +81,7 @@ abstract public class GamessReader extends MOReader {
           }
           shellsByAtomType.put(atomType, slatersByAtomType);
         }
-        slatersByAtomType = new  List<int[]>();
+        slatersByAtomType = new  Lst<int[]>();
         atomType = tokens[0];
         break;
       case 0:
@@ -119,10 +119,10 @@ abstract public class GamessReader extends MOReader {
     }
     int ac = atomNames.size();
     if (shells == null && ac > 0) {
-      shells = new  List<int[]>();
+      shells = new  Lst<int[]>();
       for (int i = 0; i < ac; i++) {
         atomType = atomNames.get(i);
-        List<int[]> slaters = shellsByAtomType.get(atomType);
+        Lst<int[]> slaters = shellsByAtomType.get(atomType);
         if (slaters == null) {
           Logger.error("slater for atom " + i + " atomType " + atomType
               + " was not found in listing. Ignoring molecular orbitals");

@@ -6,7 +6,7 @@ package org.jmol.api;
 
 import org.jmol.java.BS;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.P3;
 
 
@@ -16,7 +16,7 @@ public interface MOCalculationInterface {
                                  BS bsExclude,
                                  BS[] bsMolecules,
                                  String calculationType, P3[] atomCoordAngstroms,
-                                 int firstAtomOffset, List<int[]> shells,
+                                 int firstAtomOffset, Lst<int[]> shells,
                                  float[][] gaussians,
                                  int[][] dfCoefMaps, 
                                  Object slaters, float[] moCoefficients,

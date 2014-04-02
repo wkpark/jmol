@@ -33,7 +33,7 @@ import org.jmol.thread.JmolThread;
 import org.jmol.util.Escape;
 import org.jmol.util.Point3fi;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.SB;
 
 import org.jmol.util.Logger;
@@ -412,7 +412,7 @@ public class TransformManager {
                                     float endDegrees, boolean isClockwise,
                                     boolean isSpin, BS bsAtoms,
                                     boolean isGesture, V3 translation,
-                                    List<P3> finalPoints, float[] dihedralList) {
+                                    Lst<P3> finalPoints, float[] dihedralList) {
 
     // *THE* Viewer INTERNAL frame rotation entry point
 
@@ -1997,7 +1997,7 @@ public class TransformManager {
   }
 
   private void setSpin(JmolScriptEvaluator eval, boolean spinOn,
-                       float endDegrees, List<P3> endPositions, float[] dihedralList, 
+                       float endDegrees, Lst<P3> endPositions, float[] dihedralList, 
                        BS bsAtoms,
                        boolean isGesture) {
     if (navOn && spinOn)
@@ -2661,7 +2661,7 @@ public class TransformManager {
     return true;
   }
 
-  public void navigateList(JmolScriptEvaluator eval, List<Object[]> list) {
+  public void navigateList(JmolScriptEvaluator eval, Lst<Object[]> list) {
     if (getNav())
       nav.navigateList(eval, list);
   }

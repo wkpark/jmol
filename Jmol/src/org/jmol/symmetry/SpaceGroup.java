@@ -33,7 +33,7 @@ import java.util.Map;
 import org.jmol.api.SymmetryInterface;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.SB;
 
@@ -144,8 +144,8 @@ class SpaceGroup {
     if (desiredSpaceGroupIndex >= 0) {
       sg = getSpaceGroups()[desiredSpaceGroupIndex];
     } else {
-      if (data instanceof List<?>)
-        sg = createSGFromList(name, (List<M4>) data); 
+      if (data instanceof Lst<?>)
+        sg = createSGFromList(name, (Lst<M4>) data); 
       else
         sg = determineSpaceGroupNA(name, (float[]) data);
       if (sg == null)
@@ -156,7 +156,7 @@ class SpaceGroup {
     return sg;
   }
 
-  private static SpaceGroup createSGFromList(String name, List<M4> data) {
+  private static SpaceGroup createSGFromList(String name, Lst<M4> data) {
     // try unconventional Hall symbol
     SpaceGroup sg = new SpaceGroup("0;--;--;--", true);
     sg.doNormalize = false;
@@ -1404,7 +1404,7 @@ class SpaceGroup {
     } : spaceGroupDefinitions);
   }
 
-  public boolean addLatticeVectors(List<float[]> lattvecs) {
+  public boolean addLatticeVectors(Lst<float[]> lattvecs) {
     if (latticeOp >= 0)
       return false;
     int nOps = latticeOp = operationCount;
@@ -1428,7 +1428,7 @@ class SpaceGroup {
 
   public int getSiteMultiplicity(P3 pt, UnitCell unitCell) {
     int n = finalOperations.length;
-    List<P3> pts = new List<P3>();
+    Lst<P3> pts = new Lst<P3>();
     for (int i = n; --i >= 0;) {
       P3 pt1 = P3.newP(pt);
       finalOperations[i].rotTrans(pt1);

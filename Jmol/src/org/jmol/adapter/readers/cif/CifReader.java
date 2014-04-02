@@ -35,7 +35,7 @@ import org.jmol.script.T;
 
 import javajs.api.GenericCifDataParser;
 import javajs.api.GenericLineReader;
-import javajs.util.List;
+import javajs.util.Lst;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -371,7 +371,7 @@ public class CifReader extends AtomSetCollectionReader implements
   ////////////////////////////////////////////////////////////////
 
   private Hashtable<String, Object> htAudit;
-  private List<String> symops;
+  private Lst<String> symops;
 
   /**
    * initialize a new atom set
@@ -446,7 +446,7 @@ public class CifReader extends AtomSetCollectionReader implements
 
   private void addLatticeVectors() {
     if (latticeType != null && "ABCFI".indexOf(latticeType) >= 0) {
-      lattvecs = new List<float[]>(); 
+      lattvecs = new Lst<float[]>(); 
       try {
         ms.addLatticeVector(lattvecs, latticeType);
       } catch (Exception e) {
@@ -643,11 +643,11 @@ public class CifReader extends AtomSetCollectionReader implements
   ////////////////////////////////////////////////////////////////
 
   private Map<String, Float> atomTypes;
-  private List<Object[]> bondTypes = new List<Object[]>();
+  private Lst<Object[]> bondTypes = new Lst<Object[]>();
 
   private String disorderAssembly = ".";
   private String lastDisorderAssembly;
-  private List<float[]> lattvecs;
+  private Lst<float[]> lattvecs;
 
   final private static byte ATOM_TYPE_SYMBOL = 0;
   final private static byte ATOM_TYPE_OXIDATION_NUMBER = 1;
@@ -1173,7 +1173,7 @@ public class CifReader extends AtomSetCollectionReader implements
   private void processSymmetryOperationsLoopBlock() throws Exception {
     parseLoopParameters(symmetryOperationsFields);
     int nRefs = 0;
-    symops = new List<String>();
+    symops = new Lst<String>();
     for (int i = propertyCount; --i >= 0;)
       if (fieldOf[i] != NONE)
         nRefs++;

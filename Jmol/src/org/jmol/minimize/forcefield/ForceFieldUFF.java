@@ -25,7 +25,7 @@
 package org.jmol.minimize.forcefield;
 
 import java.io.BufferedReader;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 
 import java.util.Hashtable;
@@ -41,7 +41,7 @@ import org.jmol.util.Logger;
 
 public class ForceFieldUFF extends ForceField {
 
-  private static List<String[]> atomTypes;
+  private static Lst<String[]> atomTypes;
   private static Map<Object, Object> ffParams;
   private BS bsAromatic;
   
@@ -256,8 +256,8 @@ public class ForceFieldUFF extends ForceField {
     return temp;
   }
 
-  private List<String[]> getAtomTypes() {
-    List<String[]> types = new  List<String[]>(); //!< external atom type rules
+  private Lst<String[]> getAtomTypes() {
+    Lst<String[]> types = new  Lst<String[]>(); //!< external atom type rules
     String fileName = "UFF.txt";
     try {
       BufferedReader br = getBufferedReader(fileName);

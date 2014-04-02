@@ -28,7 +28,7 @@ package org.jmol.adapter.readers.quantum;
 import org.jmol.adapter.smarter.Atom;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 
 import java.util.Hashtable;
@@ -133,7 +133,7 @@ public class PsiReader extends MOReader {
    1.0   0.0000000000  -1.3972759189   0.9709968388
    */
 
-  List<String> atomNames = new  List<String>();
+  Lst<String> atomNames = new  Lst<String>();
   private void readAtoms(boolean isInitial) throws Exception {
     if (isInitial) {
       asc.newAtomSet();
@@ -191,18 +191,18 @@ public class PsiReader extends MOReader {
    */
 
   
-  List<List<int[]>> shellsByUniqueAtom = new  List<List<int[]>>();
+  Lst<Lst<int[]>> shellsByUniqueAtom = new  Lst<Lst<int[]>>();
   void readBasis() throws Exception {
-    List<String[]> gdata = new  List<String[]>();
+    Lst<String[]> gdata = new  Lst<String[]>();
     //ac = -1;
     gaussianCount = 0;
     shellCount = 0;
     String[] tokens;
     int[] slater = null;
-    List<int[]> slatersByUniqueAtom = null;
+    Lst<int[]> slatersByUniqueAtom = null;
     rd();
     while (rd() != null && line.startsWith("   -Basis set on")) {
-      slatersByUniqueAtom = new  List<int[]>();
+      slatersByUniqueAtom = new  Lst<int[]>();
       int nGaussians = 0;
       while (rd() != null && !line.startsWith("       )")) {
         line = line.replace('(', ' ').replace(')',' ');
@@ -257,7 +257,7 @@ public class PsiReader extends MOReader {
   
   Map<String, Integer> uniqueAtomMap = new Hashtable<String, Integer>();
   private void readUniqueAtoms() throws Exception {
-    List<int[]> sdata = new  List<int[]>();
+    Lst<int[]> sdata = new  Lst<int[]>();
     discardLinesUntilContains("----");
     int n = 0;
     while (rd() != null && line.length() > 0) {
@@ -268,7 +268,7 @@ public class PsiReader extends MOReader {
     for (int i = 0; i < ac; i++) {
       String atomType = atomNames.get(i);
       int iUnique = uniqueAtomMap.get(atomType).intValue();
-      List<int[]> slaters = shellsByUniqueAtom.get(iUnique);
+      Lst<int[]> slaters = shellsByUniqueAtom.get(iUnique);
       if (slaters == null) {
         Logger.error("slater for atom " + i + " atomType " + atomType
             + " was not found in listing. Ignoring molecular orbitals");
@@ -391,7 +391,7 @@ Orbital energies (a.u.):
     //TODO: No way to check order
     
     Map<String, Object>[] mos = AU.createArrayOfHashtable(5);
-    List<String>[] data = AU.createArrayOfArrayList(5);
+    Lst<String>[] data = AU.createArrayOfArrayList(5);
     int nThisLine = 0;
     while (rd() != null && line.toUpperCase().indexOf("DENS") < 0) {
       String[] tokens = getTokens();
@@ -402,7 +402,7 @@ Orbital energies (a.u.):
         tokens = getTokensStr(rd());
         for (int i = 0; i < nThisLine; i++) {
           mos[i] = new Hashtable<String, Object>();
-          data[i] = new  List<String>();
+          data[i] = new  Lst<String>();
           mos[i].put("symmetry", tokens[i]);
         }
         tokens = getStrings(rd().substring(21), nThisLine, 10);

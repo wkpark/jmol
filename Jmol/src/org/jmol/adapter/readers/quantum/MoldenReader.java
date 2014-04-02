@@ -3,7 +3,7 @@ package org.jmol.adapter.readers.quantum;
 import org.jmol.adapter.smarter.Atom;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 
 import java.util.Arrays;
@@ -192,8 +192,8 @@ public class MoldenReader extends MopacSlaterReader {
        0.1285000000D+00  0.2384999379D-02
       s   10 1.00
      */
-    shells = new  List<int[]>();
-    List<float[]> gdata = new  List<float[]>();
+    shells = new  Lst<int[]>();
+    Lst<float[]> gdata = new  Lst<float[]>();
     int atomIndex = 0;
     int gaussianPtr = 0;
     nCoef = 0;
@@ -292,7 +292,7 @@ public class MoldenReader extends MopacSlaterReader {
     String[] tokens = getMoTokens(line);
     while (tokens != null && tokens.length > 0 && tokens[0].indexOf('[') < 0) {
       Map<String, Object> mo = new Hashtable<String, Object>();
-      List<String> data = new List<String>();
+      Lst<String> data = new Lst<String>();
       float energy = Float.NaN;
       float occupancy = Float.NaN;
       String symmetry = null;
@@ -400,7 +400,7 @@ public class MoldenReader extends MopacSlaterReader {
 
   private boolean readFreqsAndModes() throws Exception {
     String[] tokens;
-    List<String> frequencies = new  List<String>();
+    Lst<String> frequencies = new  Lst<String>();
  //   BitSet bsOK = new BitSet();
  //   int iFreq = 0;
     while (rd() != null && line.indexOf('[') < 0) {
@@ -461,7 +461,7 @@ max-force
 
   */
   private boolean readGeometryOptimization() throws Exception {
-    List<String> energies = new  List<String>();
+    Lst<String> energies = new  Lst<String>();
     rd(); // energy
     while (rd() != null 
         && line.indexOf("force") < 0)

@@ -31,10 +31,10 @@ import java.util.ArrayList;
  * 
  * @param <V>
  */
-public class List<V> extends ArrayList<V> {
+public class Lst<V> extends ArrayList<V> {
 
   //needed?
-  public List() {
+  public Lst() {
     super();  
   }
   

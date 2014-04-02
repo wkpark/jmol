@@ -4,7 +4,7 @@ package org.jmol.api;
 
 import org.jmol.java.BS;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import org.jmol.util.Node;
 
 public interface SmilesMatcherInterface {
@@ -48,6 +48,6 @@ public interface SmilesMatcherInterface {
 
   public abstract void getSubstructureSets(String[] smarts, Node[] atoms, int ac,
                                            int flags,
-                         BS bsSelected, List<BS> bitSets, List<BS>[] vRings) throws Exception;
+                         BS bsSelected, Lst<BS> bitSets, Lst<BS>[] vRings) throws Exception;
 
 }

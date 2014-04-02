@@ -30,7 +30,7 @@
 package org.jmol.export;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.SB;
 
 import java.util.Hashtable;
@@ -524,12 +524,12 @@ public class _IdtfExporter extends __CartesianExporter {
   //    return q.q0 + " " + q.q1  + " " + q.q2 + " " + q.q3;
  // }
 
-  private Map<String, List<String>> htNodes = new Hashtable<String, List<String>>();
+  private Map<String, Lst<String>> htNodes = new Hashtable<String, Lst<String>>();
   
   private void outputNodes() {
-    for (Map.Entry<String, List<String>> entry : htNodes.entrySet()) {
+    for (Map.Entry<String, Lst<String>> entry : htNodes.entrySet()) {
       String key = entry.getKey();
-      List<String> v = entry.getValue();
+      Lst<String> v = entry.getValue();
       output("NODE \"MODEL\" {\n");
       output("NODE_NAME \"" + key + "\"\n");
       System.out.println("output idtf " + key);
@@ -576,9 +576,9 @@ public class _IdtfExporter extends __CartesianExporter {
     checkPoint(center);
     addColix(colix, false);
     String key = "Sphere_" + colix;
-    List<String> v = htNodes.get(key);
+    Lst<String> v = htNodes.get(key);
     if (v == null) {
-      v = new  List<String>();
+      v = new  Lst<String>();
       htNodes.put(key, v);
       addShader(key, colix);
     }
@@ -694,9 +694,9 @@ public class _IdtfExporter extends __CartesianExporter {
     int n = (ptX != null && endcaps == GData.ENDCAPS_NONE ? 2 : 1);
     for (int i = 0; i < n; i++) {
       String key = "Cylinder" + (i == 0 ? "_" : "In_") + colix;
-      List<String> v = htNodes.get(key);
+      Lst<String> v = htNodes.get(key);
       if (v == null) {
-        v = new  List<String>();
+        v = new  Lst<String>();
         htNodes.put(key, v);
         addShader(key, colix);
       }
@@ -747,9 +747,9 @@ public class _IdtfExporter extends __CartesianExporter {
     }
     addColix(colix, false);
     String key = "Ellipse_" + colix;
-    List<String> v = htNodes.get(key);
+    Lst<String> v = htNodes.get(key);
     if (v == null) {
-      v = new  List<String>();
+      v = new  Lst<String>();
       htNodes.put(key, v);
       addShader(key, colix);
     }
@@ -771,9 +771,9 @@ public class _IdtfExporter extends __CartesianExporter {
     }
     addColix(colix, false);
     String key = "Circle_" + colix;
-    List<String> v = htNodes.get(key);
+    Lst<String> v = htNodes.get(key);
     if (v == null) {
-      v = new  List<String>();
+      v = new  Lst<String>();
       htNodes.put(key, v);
       addShader(key, colix);
     }
@@ -846,7 +846,7 @@ public class _IdtfExporter extends __CartesianExporter {
                                short[] polygonColixes, int nVertices,
                                int nPolygons, int nFaces, BS bsPolygons,
                                int faceVertexMax, short colix,
-                               List<Short> colorList, Map<Short, Integer> htColixes,
+                               Lst<Short> colorList, Map<Short, Integer> htColixes,
                                P3 offset) {
     addColix(colix, polygonColixes != null || colixes != null);
     if (polygonColixes != null) {
@@ -864,9 +864,9 @@ public class _IdtfExporter extends __CartesianExporter {
     // normals, part 1
 
     SB sbFaceNormalIndices = sbTemp = new SB();
-    List<String> vNormals = null;
+    Lst<String> vNormals = null;
     if (normals != null) {
-      vNormals = new  List<String>();
+      vNormals = new  Lst<String>();
       map = getNormalMap(normals, nVertices, null, vNormals);
       outputIndices(indices, map, nPolygons, bsPolygons, faceVertexMax);
     }
@@ -928,7 +928,7 @@ public class _IdtfExporter extends __CartesianExporter {
     String key = "mesh" + (++iObj);
     addMeshData(key, nFaces, nCoord, nNormals, nColors, sbFaceCoordIndices,
         sbFaceNormalIndices, sbColorIndexes, sbCoords, sbNormals, sbColors);
-    List<String> v = new  List<String>();
+    Lst<String> v = new  Lst<String>();
     htNodes.put(key, v);
     addShader(key, colix);
     cylinderMatrix.setIdentity();
@@ -976,9 +976,9 @@ public class _IdtfExporter extends __CartesianExporter {
     checkPoint(ptTip);
     addColix(colix, false);
     String key = "Cone_" + colix;
-    List<String> v = htNodes.get(key);
+    Lst<String> v = htNodes.get(key);
     if (v == null) {
-      v = new  List<String>();
+      v = new  Lst<String>();
       htNodes.put(key, v);
       addShader(key, colix);
     }
@@ -1032,7 +1032,7 @@ public class _IdtfExporter extends __CartesianExporter {
     addColix(colix, false);
     String key = "T" + (++iObj);
     models.append(getTriangleResource(key, pt1, pt2, pt3));
-    List<String> v = new  List<String>();
+    Lst<String> v = new  Lst<String>();
     htNodes.put(key, v);
     addShader(key, colix);
     if (cylinderMatrix == null)

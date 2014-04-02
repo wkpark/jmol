@@ -33,7 +33,7 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.ModelSet;
 import org.jmol.script.T;
 import org.jmol.util.Escape;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.SB;
 
 import org.jmol.util.JmolMolecule;
@@ -732,7 +732,7 @@ public class Symmetry implements SymmetryInterface {
   }
 
   @Override
-  public boolean addLatticeVectors(List<float[]> lattvecs) {
+  public boolean addLatticeVectors(Lst<float[]> lattvecs) {
     return spaceGroup.addLatticeVectors(lattvecs);
   }
 

@@ -35,7 +35,7 @@ import org.jmol.api.SymmetryInterface;
 import org.jmol.java.BS;
 
 import javajs.util.Rdr;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.Matrix;
 import javajs.util.PT;
 
@@ -48,7 +48,7 @@ import org.jmol.util.Logger;
 
 public class JanaReader extends AtomSetCollectionReader {
 
-  private List<float[]> lattvecs;
+  private Lst<float[]> lattvecs;
   private int thisSub;
   private boolean modAverage;
   private String modAxes;
@@ -111,7 +111,7 @@ public class JanaReader extends AtomSetCollectionReader {
         break;
       case LATT:
         if (lattvecs == null)
-          lattvecs = new List<float[]>();
+          lattvecs = new Lst<float[]>();
         if (!ms.addLatticeVector(lattvecs, line.substring(8)))
           appendLoadNote(line + " not supported");
         break;

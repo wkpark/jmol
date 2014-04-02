@@ -28,7 +28,7 @@ import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.JmolAdapter;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 
 import java.util.Hashtable;
@@ -642,8 +642,8 @@ public class CsfReader extends MopacSlaterReader {
       }
     }
     if (isGaussian) {
-      List<int[]> sdata = new  List<int[]>();
-      List<float[]> gdata = new  List<float[]>();
+      Lst<int[]> sdata = new  Lst<int[]>();
+      Lst<float[]> gdata = new  Lst<float[]>();
       int iShell = 0;
       int gaussianCount = 0;
       for (int ipt = 0; ipt < nGaussians; ipt++) {

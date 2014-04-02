@@ -36,7 +36,7 @@ import org.jmol.util.Measure;
 import javajs.util.P3;
 import javajs.util.V3;
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 import java.util.Map;
 
@@ -186,7 +186,7 @@ public class AminoPolymer extends AlphaPolymer {
   
   @Override
   public void calcRasmolHydrogenBonds(BioPolymer polymer, BS bsA, BS bsB,
-                                      List<Bond> vHBonds, int nMaxPerResidue,
+                                      Lst<Bond> vHBonds, int nMaxPerResidue,
                                       int[][][] min, boolean checkDistances, 
                                       boolean dsspIgnoreHydrogens) {
     if (polymer == null)
@@ -228,7 +228,7 @@ public class AminoPolymer extends AlphaPolymer {
 
   private void checkRasmolHydrogenBond(AminoMonomer source, BioPolymer polymer,
                                        int indexDonor, P3 hydrogenPoint,
-                                       BS bsB, List<Bond> vHBonds,
+                                       BS bsB, Lst<Bond> vHBonds,
                                        int[][] min, boolean checkDistances) {
     P3 sourceAlphaPoint = source.getLeadAtom();
     P3 sourceNitrogenPoint = source.getNitrogenAtom();
@@ -334,7 +334,7 @@ public class AminoPolymer extends AlphaPolymer {
   private void addResidueHydrogenBond(Atom nitrogen, Atom oxygen,
                                       int indexAminoGroup,
                                       int indexCarbonylGroup, float energy,
-                                      List<Bond> vHBonds) {
+                                      Lst<Bond> vHBonds) {
     int order;
     switch (indexAminoGroup - indexCarbonylGroup) {
     case 2:

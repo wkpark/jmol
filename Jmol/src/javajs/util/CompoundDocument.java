@@ -50,7 +50,7 @@ public class CompoundDocument extends BinaryDocument{
 
 //  RandomAccessFile file;
   CompoundDocHeader header = new CompoundDocHeader(this);
-  List<CompoundDocDirEntry> directory = new  List<CompoundDocDirEntry>();
+  Lst<CompoundDocDirEntry> directory = new  Lst<CompoundDocDirEntry>();
   CompoundDocDirEntry rootEntry;
 
   int[] SAT;
@@ -89,7 +89,7 @@ public class CompoundDocument extends BinaryDocument{
     getDirectoryTable();
   }
 
-  public List<CompoundDocDirEntry> getDirectory() {
+  public Lst<CompoundDocDirEntry> getDirectory() {
     return directory;
   }
 

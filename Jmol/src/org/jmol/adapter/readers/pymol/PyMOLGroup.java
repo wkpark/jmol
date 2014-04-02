@@ -5,13 +5,13 @@ import java.util.Map;
 
 import org.jmol.java.BS;
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 class PyMOLGroup {
   String name;
   String objectNameID;
   Map<String, PyMOLGroup> list = new Hashtable<String, PyMOLGroup>();
-  List<Object> object;
+  Lst<Object> object;
   boolean visible = true;
   boolean occluded = false;
   BS bsAtoms = new BS();

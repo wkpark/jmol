@@ -28,7 +28,7 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolAdapterAtomIterator;
 import org.jmol.java.BS;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.P3;
 import javajs.util.V3;
 
@@ -112,7 +112,7 @@ class AtomIterator implements JmolAdapterAtomIterator {
 
 	
 	@Override
-  public List<Object> getTensors() {
+  public Lst<Object> getTensors() {
 		return atom.tensors;
 	}
 

@@ -28,7 +28,7 @@ package org.jmol.adapter.smarter;
 import org.jmol.java.BS;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.P3;
 
 import org.jmol.util.Tensor;
@@ -57,13 +57,13 @@ public class Atom extends P3 implements Cloneable {
   public int sequenceNumber = Integer.MIN_VALUE;
   public char insertionCode = '\0';
   public float[] anisoBorU; //[6] = 1 for U, 0 for B; [7] = bFactor
-  public List<Object> tensors;
+  public Lst<Object> tensors;
   
   public Tensor addTensor(Tensor tensor, String type, boolean reset) {
     if (tensor == null)
       return null;
     if (reset || tensors == null)
-      tensors = new List<Object>();
+      tensors = new Lst<Object>();
     tensors.addLast(tensor);
     if (type != null)
       tensor.setType(type);
@@ -89,7 +89,7 @@ public class Atom extends P3 implements Cloneable {
     if (anisoBorU != null)
       a.anisoBorU = AU.arrayCopyF(anisoBorU, -1);
     if (tensors != null) {
-      a.tensors = new List<Object>();
+      a.tensors = new Lst<Object>();
       for (int i = tensors.size(); --i >= 0;)
         a.tensors.addLast(((Tensor)tensors.get(i)).copyTensor());
     }

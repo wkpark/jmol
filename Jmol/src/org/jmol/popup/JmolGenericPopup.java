@@ -37,7 +37,7 @@ import java.util.Hashtable;
 
 import javajs.api.SC;
 import javajs.util.PT;
-import javajs.util.List;
+import javajs.util.Lst;
 
 /**
  * A generic popup class that is then instantiated for a given platform and
@@ -84,18 +84,18 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
   private Map<String, Object> modelSetInfo;
   private Map<String, Object> modelInfo;
 
-  private List<SC> NotPDB = new List<SC>();
-  private List<SC> PDBOnly = new List<SC>();
-  private List<SC> FileUnitOnly = new List<SC>();
-  private List<SC> FileMolOnly = new List<SC>();
-  private List<SC> UnitcellOnly = new List<SC>();
-  private List<SC> SingleModelOnly = new List<SC>();
-  private List<SC> FramesOnly = new List<SC>();
-  private List<SC> VibrationOnly = new List<SC>();
-  private List<SC> Special = new List<SC>();
-  private List<SC> SymmetryOnly = new List<SC>();
-  private List<SC> ChargesOnly = new List<SC>();
-  private List<SC> TemperatureOnly = new List<SC>();
+  private Lst<SC> NotPDB = new Lst<SC>();
+  private Lst<SC> PDBOnly = new Lst<SC>();
+  private Lst<SC> FileUnitOnly = new Lst<SC>();
+  private Lst<SC> FileMolOnly = new Lst<SC>();
+  private Lst<SC> UnitcellOnly = new Lst<SC>();
+  private Lst<SC> SingleModelOnly = new Lst<SC>();
+  private Lst<SC> FramesOnly = new Lst<SC>();
+  private Lst<SC> VibrationOnly = new Lst<SC>();
+  private Lst<SC> Special = new Lst<SC>();
+  private Lst<SC> SymmetryOnly = new Lst<SC>();
+  private Lst<SC> ChargesOnly = new Lst<SC>();
+  private Lst<SC> TemperatureOnly = new Lst<SC>();
 
   private boolean fileHasUnitCell;
   private boolean haveBFactors;
@@ -113,8 +113,8 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
 
   private String group3List;
   private int[] group3Counts;
-  private List<String> cnmrPeaks;
-  private List<String> hnmrPeaks;
+  private Lst<String> cnmrPeaks;
+  private Lst<String> hnmrPeaks;
 
   protected void initialize(Viewer vwr, PopupResource bundle, String title) {
     this.vwr = vwr;
@@ -385,8 +385,8 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
     isVibration = (vwr.modelHasVibrationVectors(modelIndex));
     haveCharges = (vwr.havePartialCharges());
     haveBFactors = (vwr.getBooleanProperty("haveBFactors"));
-    cnmrPeaks = (List<String>) modelInfo.get("jdxAtomSelect_13CNMR");
-    hnmrPeaks = (List<String>) modelInfo.get("jdxAtomSelect_1HNMR");
+    cnmrPeaks = (Lst<String>) modelInfo.get("jdxAtomSelect_13CNMR");
+    hnmrPeaks = (Lst<String>) modelInfo.get("jdxAtomSelect_1HNMR");
   }
 
   @Override
@@ -496,7 +496,7 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
     menuEnable(menu, isOK);
   }
 
-  private boolean setSpectraMenu(SC menu, List<String> peaks) {
+  private boolean setSpectraMenu(SC menu, Lst<String> peaks) {
     if (menu == null)
       return false;
     menuEnable(menu, false);
@@ -543,8 +543,8 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
     if (menu == null)
       return;
     menuRemoveAll(menu, 0);
-    List<Map<String, Object>> mos = (moData == null ? null
-        : (List<Map<String, Object>>) (moData.get("mos")));
+    Lst<Map<String, Object>> mos = (moData == null ? null
+        : (Lst<Map<String, Object>>) (moData.get("mos")));
     int nOrb = (mos == null ? 0 : mos.size());
     String text = getMenuText("surfMoComputedMenuText");
     if (nOrb == 0) {
@@ -916,9 +916,9 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
       }
       menuRemoveAll(submenu, 0);
       menuEnable(submenu, false);
-      List<Map<String, Object>> biomolecules;
+      Lst<Map<String, Object>> biomolecules;
       if (modelIndex >= 0
-          && (biomolecules = (List<Map<String, Object>>) vwr
+          && (biomolecules = (Lst<Map<String, Object>>) vwr
               .getModelAuxiliaryInfoValue(modelIndex, "biomolecules")) != null) {
         menuEnable(submenu, true);
         int nBiomolecules = biomolecules.size();

@@ -352,7 +352,7 @@ final public class AU {
     return str;
   }
 
-  public static String sortedItem(List<String> v, int n) {
+  public static String sortedItem(Lst<String> v, int n) {
     if (v.size() == 0)
       return null;
     if (v.size() == 1)
@@ -370,8 +370,8 @@ final public class AU {
    * @return Array of List<type>
    */
   @SuppressWarnings("unchecked")
-  public static <type> List<type>[] createArrayOfArrayList(int size) {
-    return new List[size];
+  public static <type> Lst<type>[] createArrayOfArrayList(int size) {
+    return new Lst[size];
   }
 
   /**
@@ -496,7 +496,7 @@ final public class AU {
    * @return number removed
    */
   public static int removeMapKeys(Map<String, ?> map, String root) {
-    List<String> list = new List<String>();
+    Lst<String> list = new Lst<String>();
     for (String key: map.keySet())
       if (key.startsWith(root))
         list.addLast(key);

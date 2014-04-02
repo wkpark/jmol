@@ -36,7 +36,7 @@ import org.jmol.minimize.MinTorsion;
 import org.jmol.minimize.Util;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.SB;
 import javajs.util.V3d;
 import org.jmol.util.Txt;
@@ -62,7 +62,7 @@ abstract class Calculations {
   FFParam parA, parB, parC;
   
   ForceField ff;
-  List<Object[]>[] calculations = AU.createArrayOfArrayList(CALC_MAX);
+  Lst<Object[]>[] calculations = AU.createArrayOfArrayList(CALC_MAX);
 
   Map<Object, Object> ffParams;
 
@@ -81,17 +81,17 @@ abstract class Calculations {
   MinAngle[] minAngles;
   MinTorsion[] minTorsions;
   MinPosition[] minPositions;
-  List<Object[]> constraints;
+  Lst<Object[]> constraints;
   boolean isPreliminary;
 
-  public void setConstraints(List<Object[]> constraints) {
+  public void setConstraints(Lst<Object[]> constraints) {
     this.constraints = constraints;
   }
 
   Calculations(ForceField ff, 
       MinAtom[] minAtoms, MinBond[] minBonds,
       MinAngle[] minAngles, MinTorsion[] minTorsions, MinPosition[] minPositions,
-      List<Object[]> constraints) {
+      Lst<Object[]> constraints) {
     this.ff = ff;
     this.minAtoms = minAtoms;
     this.minBonds = minBonds;
@@ -148,8 +148,8 @@ abstract class Calculations {
     isPreliminary = TF;
   }
 
-  protected void pairSearch(List<Object[]> calc1, Calculation pc1, 
-                            List<Object[]> calc2, Calculation pc2) {
+  protected void pairSearch(Lst<Object[]> calc1, Calculation pc1, 
+                            Lst<Object[]> calc2, Calculation pc2) {
     for (int i = 0; i < ac - 1; i++) {
       BS bsVdw = minAtoms[i].bsVdw;
       for (int j = bsVdw.nextSetBit(0); j >= 0; j = bsVdw.nextSetBit(j + 1)) {
@@ -163,7 +163,7 @@ abstract class Calculations {
   private double calc(int iType, boolean gradients) {
     logging = loggingEnabled && !silent;
     this.gradients = gradients;
-    List<Object[]> calcs = calculations[iType];
+    Lst<Object[]> calcs = calculations[iType];
     int nCalc;
     double energy = 0;
     if (calcs == null || (nCalc = calcs.size()) == 0)

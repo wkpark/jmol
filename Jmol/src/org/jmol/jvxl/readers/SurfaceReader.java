@@ -40,7 +40,7 @@ import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.SB;
 
 import org.jmol.util.Logger;
@@ -1049,7 +1049,7 @@ public abstract class SurfaceReader implements VertexDataServer {
       meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS, null);
   }
   
-  public void slabIsosurface(List<Object[]> slabInfo) {
+  public void slabIsosurface(Lst<Object[]> slabInfo) {
     if (meshDataServer != null)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
     meshData.slabPolygonsList(slabInfo, true);

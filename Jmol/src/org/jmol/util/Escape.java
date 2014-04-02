@@ -28,7 +28,7 @@ package org.jmol.util;
 import java.util.Iterator;
 import java.util.Map;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.M34;
 import javajs.util.PT;
 import javajs.util.Quat;
@@ -104,8 +104,8 @@ public class Escape {
       return x.toString();
     if (x instanceof String)
       return PT.esc((String) x);
-    if (x instanceof List<?>)
-      return eV((List<SV>) x);
+    if (x instanceof Lst<?>)
+      return eV((Lst<SV>) x);
     if (x instanceof Map)
       return escapeMap((Map<String, Object>) x);
     if (x instanceof BS) 
@@ -128,7 +128,7 @@ public class Escape {
     return (s == null ? PT.toJSON(null, x) : s);
   }
 
-  public static String eV(List<SV> list) {
+  public static String eV(Lst<SV> list) {
     if (list == null)
       return PT.esc("");
     SB s = new SB();
@@ -488,10 +488,10 @@ public class Escape {
       sb.append("]");
       return packageReadableSb(name, "double[][]", sb);
     }
-    if (info instanceof List<?>) {
-      int imax = ((List<?>) info).size();
+    if (info instanceof Lst<?>) {
+      int imax = ((Lst<?>) info).size();
       for (int i = 0; i < imax; i++) {
-        sb.append(toReadable(name + "[" + (i + 1) + "]", ((List<?>) info).get(i)));
+        sb.append(toReadable(name + "[" + (i + 1) + "]", ((Lst<?>) info).get(i)));
       }
       return packageReadableSb(name, "List[" + imax + "]", sb);
     }
@@ -597,7 +597,7 @@ public class Escape {
     //TODO -- should recognize '..' as well as "..." ?
     if (data == null || !data.startsWith("[") || !data.endsWith("]"))
       return null; 
-    List<String> v = new  List<String>();
+    Lst<String> v = new  Lst<String>();
     int[] next = new int[1];
     next[0] = 1;
     while (next[0] < data.length()) {

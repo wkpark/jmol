@@ -40,7 +40,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 
 
 import javax.swing.JDialog;
@@ -137,7 +137,7 @@ public abstract class JmolConsole extends GenericConsole implements ActionListen
 
   private class FileChecker implements FilenameFilter {
     private String stub;
-    private List<String> v = new  List<String>();
+    private Lst<String> v = new  Lst<String>();
     
     protected FileChecker(String stub) {
       this.stub = stub.toLowerCase();

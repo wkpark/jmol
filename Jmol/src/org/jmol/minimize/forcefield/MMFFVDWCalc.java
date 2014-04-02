@@ -1,11 +1,11 @@
 package org.jmol.minimize.forcefield;
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 class MMFFVDWCalc extends Calculation {
   
   @Override
-  void setData(List<Object[]> calc, int ia, int ib, double dd) {
+  void setData(Lst<Object[]> calc, int ia, int ib, double dd) {
     a = calcs.minAtoms[ia];
     b = calcs.minAtoms[ib];
     double[] dataA = (double[]) calcs.getParameter(a.vdwKey);

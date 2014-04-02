@@ -41,7 +41,7 @@ import org.jmol.modelset.TickInfo;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.SB;
 
 public class Measurement {
@@ -375,8 +375,8 @@ public class Measurement {
     return sameAsIJ(countPlusIndices, pts, i, j);
   }
 
-  public List<String> toVector(boolean asBitSet) {
-    List<String> V = new List<String>();
+  public Lst<String> toVector(boolean asBitSet) {
+    Lst<String> V = new Lst<String>();
     for (int i = 1; i <= count; i++)
       V.addLast(getLabel(i, asBitSet, false));
     V.addLast(strMeasurement);
@@ -436,7 +436,7 @@ public class Measurement {
         && sameAs(2, 4));
   }
 
-  public static int find(List<Measurement> measurements, Measurement m) {
+  public static int find(Lst<Measurement> measurements, Measurement m) {
     int[] indices = m.countPlusIndices;
     Point3fi[] points = m.pts;
     for (int i = measurements.size(); --i >= 0;)

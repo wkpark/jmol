@@ -15,7 +15,7 @@ import java.io.IOException;
  */
 
 public class ListDataReader extends DataReader {
-  private List<String> data;
+  private Lst<String> data;
   private int pt;
   private int len;
 
@@ -26,7 +26,7 @@ public class ListDataReader extends DataReader {
   @SuppressWarnings("unchecked")
   @Override
   public DataReader setData(Object data) {
-    this.data = (List<String>) data;
+    this.data = (Lst<String>) data;
     len = this.data.size();
     return this;
   }

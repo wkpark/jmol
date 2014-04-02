@@ -25,7 +25,7 @@ package org.jmol.modelset;
 
 import java.util.Map;
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 
 import org.jmol.api.JmolMeasurementClient;
@@ -45,10 +45,10 @@ public class MeasurementData implements JmolMeasurementClient {
    */
   
   private JmolMeasurementClient client;
-  private List<String> measurementStrings;
-  private List<Float> measurements;
+  private Lst<String> measurementStrings;
+  private Lst<Float> measurements;
 
-  public List<Object> points;
+  public Lst<Object> points;
   public boolean mustBeConnected;
   public boolean mustNotBeConnected;
   public TickInfo tickInfo;
@@ -73,7 +73,7 @@ public class MeasurementData implements JmolMeasurementClient {
   public MeasurementData() {
     // by reflection
   }
-  public MeasurementData init(String id, Viewer vwr, List<Object> points) {
+  public MeasurementData init(String id, Viewer vwr, Lst<Object> points) {
     this.vwr = vwr;
     this.points = points;
     thisID = id;
@@ -163,11 +163,11 @@ public class MeasurementData implements JmolMeasurementClient {
       return minArray;      
     }
     if (asArray) {
-      measurements = new List<Float>();
+      measurements = new Lst<Float>();
       define(null, ms);
       return measurements;
     }
-    measurementStrings = new  List<String>();
+    measurementStrings = new  Lst<String>();
     define(null, ms);
     return measurementStrings;
   }

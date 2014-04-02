@@ -31,7 +31,7 @@ import org.jmol.shape.MeshCollection;
 import org.jmol.shapespecial.Draw;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.SB;
 public class CGO extends Draw {
@@ -75,7 +75,7 @@ public class CGO extends Draw {
     }
     
     if ("setCGO" == propertyName) {
-      List<Object> list = (List<Object>) value;
+      Lst<Object> list = (Lst<Object>) value;
       setProperty("init", null, null);
       int n = list.size() - 1;
       setProperty("thisID", list.get(n), null);
@@ -91,7 +91,7 @@ public class CGO extends Draw {
         cgoMesh.color = color;
         cgoMesh.useColix = useColix;
       }
-      cgoMesh.isValid = setCGO((List<Object>) value);
+      cgoMesh.isValid = setCGO((Lst<Object>) value);
       if (cgoMesh.isValid) {
         scale(cgoMesh, newScale);
         cgoMesh.initialize(T.fullylit, null, null);
@@ -127,7 +127,7 @@ public class CGO extends Draw {
         deleteMeshI(i);
   }
 
-  private boolean setCGO(List<Object> data) {
+  private boolean setCGO(Lst<Object> data) {
     if (cgoMesh == null)
       allocMesh(null, null);
     cgoMesh.clear("cgo");

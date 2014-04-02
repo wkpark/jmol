@@ -32,7 +32,7 @@ import java.util.Map;
 
 import org.jmol.java.BS;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.P3;
 import javajs.util.T3;
 import javajs.util.V3;
@@ -175,7 +175,7 @@ public class _MayaExporter extends __CartesianExporter {
                                   short[] polygonColixes,
                                   int nVertices, int nPolygons, int nFaces, BS bsPolygons,
                                   int faceVertexMax, short colix,
-                                  List<Short> colorList, Map<Short, Integer> htColixes, P3 offset) {
+                                  Lst<Short> colorList, Map<Short, Integer> htColixes, P3 offset) {
   }
 
   @Override

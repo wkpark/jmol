@@ -36,7 +36,7 @@ import org.jmol.util.C;
 import org.jmol.util.Escape;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.SB;
 
 import org.jmol.util.Measure;
@@ -64,7 +64,7 @@ public class Mesh extends MeshSurface {
   
   public short meshColix;
   public short[] normixes;
-  public List<P3[]> lineData;
+  public Lst<P3[]> lineData;
   public String thisID;
   public boolean isValid = true;
   public String scriptCommand;
@@ -382,7 +382,7 @@ public class Mesh extends MeshSurface {
    * @param showWithinDistance2
    * @param isWithinNot
    */
-  public void setShowWithin(List<P3> showWithinPoints,
+  public void setShowWithin(Lst<P3> showWithinPoints,
                             float showWithinDistance2, boolean isWithinNot) {
     if (showWithinPoints.size() == 0) {
       bsDisplay = (isWithinNot ? BSUtil.newBitSet2(0, vc) : null);
@@ -394,7 +394,7 @@ public class Mesh extends MeshSurface {
         bsDisplay.set(i);
   }
 
-  public static boolean checkWithin(P3 pti, List<P3> withinPoints,
+  public static boolean checkWithin(P3 pti, Lst<P3> withinPoints,
                                     float withinDistance2, boolean isWithinNot) {
     if (withinPoints.size() != 0)
       for (int i = withinPoints.size(); --i >= 0;)

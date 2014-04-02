@@ -1,6 +1,6 @@
 package org.jmol.minimize.forcefield;
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 class MMFFOOPCalc extends Calculation {
 
@@ -9,7 +9,7 @@ class MMFFOOPCalc extends Calculation {
 
   int[] list = new int[4];
   
-  void setData(List<Object[]> calc, int i) {
+  void setData(Lst<Object[]> calc, int i) {
     if (calcs.minAtoms[i].nBonds != 3)
       return;// should not be possible...
     int[] indices = calcs.minAtoms[i].getBondedAtomIndexes();

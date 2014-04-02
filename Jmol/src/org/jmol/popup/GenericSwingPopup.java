@@ -8,7 +8,7 @@ import org.jmol.util.Logger;
 
 import javajs.api.GenericMenuInterface;
 import javajs.api.SC;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.SB;
 
@@ -49,7 +49,7 @@ public abstract class GenericSwingPopup implements GenericMenuInterface {
   protected Object buttonGroup;
   protected String currentMenuItemId;
   protected Map<String, SC> htMenus = new Hashtable<String, SC>();
-  private List<SC> SignedOnly = new List<SC>();
+  private Lst<SC> SignedOnly = new Lst<SC>();
 
   protected void initSwing(String title, PopupResource bundle, Object applet,
                            boolean isJS, boolean isSigned, boolean isWebGL) {

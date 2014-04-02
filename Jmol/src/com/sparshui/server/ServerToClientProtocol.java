@@ -5,7 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 import com.sparshui.GestureType;
 import com.sparshui.common.ClientProtocol;
@@ -49,8 +49,8 @@ public class ServerToClientProtocol extends ClientProtocol {
    * @throws IOException
    *           If an error occurs while communication with the client.
    */
-  public List<GestureType> getGestures(int groupID) throws IOException {
-    List<GestureType> gestures = new List<GestureType>();
+  public Lst<GestureType> getGestures(int groupID) throws IOException {
+    Lst<GestureType> gestures = new Lst<GestureType>();
     _bufferOut.writeInt(groupID);
     sendBuffer(MessageType.GET_ALLOWED_GESTURES);
 
@@ -108,7 +108,7 @@ public class ServerToClientProtocol extends ClientProtocol {
    * @throws IOException
    *           If there is a communication error.
    */
-  public void processEvents(int groupID, List<Event> events) throws IOException {
+  public void processEvents(int groupID, Lst<Event> events) throws IOException {
     for (int i = 0; i < events.size(); i++) {
       _bufferOut.writeInt(groupID);
       _bufferOut.write(events.get(i).serialize());

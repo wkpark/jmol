@@ -24,7 +24,7 @@
 package org.jmol.modelsetbio;
 
 import javajs.util.OC;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.SB;
 
 
@@ -184,17 +184,17 @@ public class AlphaPolymer extends BioPolymer {
    * 
    */
   @Override
-  public List<Atom[]> calculateStruts(ModelSet modelSet, BS bs1,
-                                      BS bs2, List<Atom> vCA, float thresh,
+  public Lst<Atom[]> calculateStruts(ModelSet modelSet, BS bs1,
+                                      BS bs2, Lst<Atom> vCA, float thresh,
                                       int delta, boolean allowMultiple) {
     return calculateStrutsStatic(modelSet, bs1, bs2, vCA, thresh, delta,
         allowMultiple);
   }
     
-  private List<Atom[]> calculateStrutsStatic(ModelSet modelSet, BS bs1, BS bs2,
-                                             List<Atom> vCA, float thresh,
+  private Lst<Atom[]> calculateStrutsStatic(ModelSet modelSet, BS bs1, BS bs2,
+                                             Lst<Atom> vCA, float thresh,
                                              int delta, boolean allowMultiple) {
-    List<Atom[]> vStruts = new  List<Atom[]>(); // the output vector
+    Lst<Atom[]> vStruts = new  Lst<Atom[]>(); // the output vector
     float thresh2 = thresh * thresh; // use distance squared for speed
 
     int n = vCA.size();  // the set of alpha carbons
@@ -339,8 +339,8 @@ public class AlphaPolymer extends BioPolymer {
      : i * (2 * n - i - 1) / 2 + j - i - 1);
   }
 
-  private static void setStrut(int i, int j, int n, List<Atom> vCA, BS bs1, BS bs2, 
-                        List<Atom[]> vStruts,
+  private static void setStrut(int i, int j, int n, Lst<Atom> vCA, BS bs1, BS bs2, 
+                        Lst<Atom[]> vStruts,
                         BS bsStruts, BS bsNotAvailable,
                         BS bsNearbyResidues, int delta) {
     Atom a1 = vCA.get(i);

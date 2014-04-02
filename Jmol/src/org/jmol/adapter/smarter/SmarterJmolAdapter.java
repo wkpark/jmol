@@ -31,9 +31,10 @@ import org.jmol.api.JmolAdapterStructureIterator;
 import org.jmol.api.JmolFilesReaderInterface;
 
 import javajs.api.GenericBinaryDocument;
-import javajs.util.List;
+import javajs.util.Lst;
 import org.jmol.util.Logger;
 import javajs.util.P3;
+import javajs.util.Rdr;
 import javajs.util.V3;
 import org.jmol.viewer.Viewer;
 
@@ -190,19 +191,31 @@ public class SmarterJmolAdapter extends JmolAdapter {
                                             Map<String, Object> htParams,
                                             boolean getReadersOnly) {
     //FilesOpenThread
+    Viewer vwr = (Viewer) htParams.get("vwr"); // don't pass this on to user
     int size = names.length;
     AtomSetCollectionReader[] readers = (getReadersOnly ? new AtomSetCollectionReader[size]
         : null);
+    Object reader = null;
+    if (htParams.containsKey("concatenate")) {
+      String s = "";
+      for (int i = 0; i < size; i++) {
+        s += vwr.getFileAsString(names[i], false);
+        if (!s.endsWith("\n"))
+          s += "\n";
+      }
+      size = 1;
+      reader = Rdr.getBR(s);
+    }
     AtomSetCollection[] atomsets = (getReadersOnly ? null
         : new AtomSetCollection[size]);
     AtomSetCollectionReader r = null;
-    Viewer vwr = (Viewer) htParams.get("vwr"); // don't pass this on to user
 
     for (int i = 0; i < size; i++) {
       try {
         if (r != null)
           htParams.put("vwr", vwr);
-        Object reader = filesReader.getBufferedReaderOrBinaryDocument(i, false);
+        if (reader == null)
+          reader = filesReader.getBufferedReaderOrBinaryDocument(i, false);
         if (!(reader instanceof BufferedReader || reader instanceof GenericBinaryDocument))
           return reader;
         Object ret = Resolver.getAtomCollectionReader(names[i],
@@ -217,6 +230,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
         } else {
           r.setup(names[i], htParams, reader);
         }
+        reader = null;
         if (getReadersOnly) {
           readers[i] = r;
         } else {
@@ -280,8 +294,8 @@ public class SmarterJmolAdapter extends JmolAdapter {
       result = asc[0];
       try {
         result.finalizeTrajectoryAs(
-            (List<P3[]>) htParams.get("trajectorySteps"),
-            (List<V3[]>) htParams.get("vibrationSteps"));
+            (Lst<P3[]>) htParams.get("trajectorySteps"),
+            (Lst<V3[]>) htParams.get("vibrationSteps"));
       } catch (Exception e) {
         if (result.errorMessage == null)
           result.errorMessage = "" + e;

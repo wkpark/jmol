@@ -5,7 +5,7 @@ package org.jmol.api;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.P3;
 
 import org.jmol.viewer.Viewer;
@@ -24,11 +24,11 @@ public interface JmolScriptManager {
   
   void waitForQueue();
 
-  List<List<Object>> getScriptQueue();
+  Lst<Lst<Object>> getScriptQueue();
 
   void queueThreadFinished(int pt);
 
-  List<Object> getScriptItem(boolean b, boolean startedByCommandThread);
+  Lst<Object> getScriptItem(boolean b, boolean startedByCommandThread);
 
   String evalStringQuietSync(String strScript, boolean isQuiet,
                              boolean allowSyncScript);
@@ -52,6 +52,6 @@ public interface JmolScriptManager {
 
   String evalFile(String strFilename);
 
-  BS addHydrogensInline(BS bsAtoms, List<Atom> vConnections, P3[] pts) throws Exception;
+  BS addHydrogensInline(BS bsAtoms, Lst<Atom> vConnections, P3[] pts) throws Exception;
 }
 

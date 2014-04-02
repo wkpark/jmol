@@ -44,7 +44,7 @@ import javajs.util.OC;
 import javajs.util.PT;
 import javajs.util.Quat;
 import javajs.util.V3;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.SB;
 
 import org.jmol.viewer.Viewer;
@@ -140,7 +140,7 @@ public abstract class AtomSetCollectionReader {
   protected GenericBinaryDocument binaryDoc;
   protected String readerName;
   public Map<String, Object> htParams;
-  public List<P3[]> trajectorySteps;
+  public Lst<P3[]> trajectorySteps;
 
   //protected String parameterData;
 
@@ -343,9 +343,9 @@ public abstract class AtomSetCollectionReader {
   protected void initializeTrajectoryFile() {
     // add a dummy atom, just so not "no atoms found"
     asc.addAtom(new Atom());
-    trajectorySteps = (List<P3[]>) htParams.get("trajectorySteps");
+    trajectorySteps = (Lst<P3[]>) htParams.get("trajectorySteps");
     if (trajectorySteps == null)
-      htParams.put("trajectorySteps", trajectorySteps = new  List<P3[]>());
+      htParams.put("trajectorySteps", trajectorySteps = new  Lst<P3[]>());
   }
 
   /**
@@ -478,7 +478,7 @@ public abstract class AtomSetCollectionReader {
         .get("ptFile")).intValue() : -1);
     isTrajectory = htParams.containsKey("isTrajectory");
     if (ptFile > 0 && htParams.containsKey("firstLastSteps")) {
-      Object val = ((List<Object>) htParams.get("firstLastSteps"))
+      Object val = ((Lst<Object>) htParams.get("firstLastSteps"))
           .get(ptFile - 1);
       if (val instanceof BS) {
         bsModels = (BS) val;
@@ -1116,7 +1116,7 @@ public abstract class AtomSetCollectionReader {
     asc.setAtomSetAuxiliaryInfo("moData", moData);
     if (moData == null)
       return;
-    List<Map<String, Object>> orbitals = (List<Map<String, Object>>) moData
+    Lst<Map<String, Object>> orbitals = (Lst<Map<String, Object>>) moData
         .get("mos");
     if (orbitals != null)
       Logger.info(orbitals.size() + " molecular orbitals read in model "
@@ -1533,8 +1533,8 @@ public abstract class AtomSetCollectionReader {
    * @param s
    * @return Vector of integers
    */
-  protected static List<Integer> getFortranFormatLengths(String s) {
-    List<Integer> vdata = new  List<Integer>();
+  protected static Lst<Integer> getFortranFormatLengths(String s) {
+    Lst<Integer> vdata = new  Lst<Integer>();
     int n = 0;
     int c = 0;
     int factor = 1;

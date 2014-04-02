@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import javajs.util.DF;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.P3;
 import javajs.util.PT;
 import javajs.util.SB;
@@ -920,7 +920,7 @@ public class GlobalSettings {
       }
       if (pickedSet == null || pickedSet.tok != T.bitset) {
         pickedSet = SV.newV(T.bitset, new BS());
-        pickedList = SV.getVariableList(new List<Object>());
+        pickedList = SV.getVariableList(new Lst<Object>());
         setUserVariable("picked", pickedSet);
         setUserVariable("pickedList", pickedList);
       }

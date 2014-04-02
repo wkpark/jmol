@@ -48,7 +48,7 @@ import org.jmol.java.BS;
 
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.Quat;
 import javajs.util.SB;
@@ -170,7 +170,7 @@ public final class ModelLoader {
     }
     jmolData = (String) ms.getModelSetAuxiliaryInfoValue("jmolData");
     fileHeader = (String) ms.getModelSetAuxiliaryInfoValue("fileHeader");
-    ms.trajectorySteps = (List<P3[]>) ms
+    ms.trajectorySteps = (Lst<P3[]>) ms
         .getModelSetAuxiliaryInfoValue("trajectorySteps");
     isTrajectory = (ms.trajectorySteps != null);
     isPyMOLsession = ms.getModelSetAuxiliaryInfoBoolean("isPyMOL");
@@ -183,7 +183,7 @@ public final class ModelLoader {
       info.remove("pdbAddHydrogens");
       info.remove("trajectorySteps");
       if (isTrajectory)
-        ms.vibrationSteps = (List<V3[]>) info.remove("vibrationSteps");
+        ms.vibrationSteps = (Lst<V3[]>) info.remove("vibrationSteps");
     }
     modulationOn = ms.getModelSetAuxiliaryInfoBoolean("modulationOn");
     noAutoBond = ms.getModelSetAuxiliaryInfoBoolean("noAutoBond");
@@ -289,7 +289,7 @@ public final class ModelLoader {
       if (baseTrajectoryCount > 0) {
         if (isTrajectory) {
           if (mergeModelSet.vibrationSteps == null) {
-            mergeModelSet.vibrationSteps = new  List<V3[]>();
+            mergeModelSet.vibrationSteps = new  Lst<V3[]>();
             for (int i = mergeModelSet.trajectorySteps.size(); --i >= 0; )
               mergeModelSet.vibrationSteps.addLast(null);
           }
@@ -830,7 +830,7 @@ public final class ModelLoader {
   private void addAtom(boolean isPDB, BS atomSymmetry, int atomSite,
                        Object atomUid, int atomicAndIsotopeNumber,
                        String atomName, int formalCharge, float partialCharge,
-                       List<Object> tensors, int occupancy, float bfactor,
+                       Lst<Object> tensors, int occupancy, float bfactor,
                        P3 xyz, boolean isHetero,
                        int atomSerial, String group3,
                        V3 vib,
@@ -932,7 +932,7 @@ public final class ModelLoader {
     ms.defaultCovalentMad = mad;
   }
   
-  private List<Bond> vStereo;
+  private Lst<Bond> vStereo;
   
   private Bond bondAtoms(Object atomUid1, Object atomUid2, short order) {
     Atom atom1 = htAtomMap.get(atomUid1);
@@ -955,7 +955,7 @@ public final class ModelLoader {
     if (isNear || isFar) {
       bond = ms.bondMutually(atom1, atom2, (is2D ? order : 1), ms.getDefaultMadFromOrder(1), 0);
       if (vStereo == null) {
-        vStereo = new  List<Bond>();
+        vStereo = new  Lst<Bond>();
       }
       vStereo.addLast(bond);
     } else {

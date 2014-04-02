@@ -1,7 +1,7 @@
 package org.jmol.adapter.readers.pymol;
 
 import javajs.api.GenericBinaryDocument;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.SB;
 
 import org.jmol.util.Logger;
@@ -33,9 +33,9 @@ class PickleReader {
 
   private Viewer vwr;
   private GenericBinaryDocument binaryDoc;
-  private List<Object> stack = new List<Object>();
-  private List<Integer> marks = new List<Integer>();
-  private List<Object> build = new List<Object>();
+  private Lst<Object> stack = new Lst<Object>();
+  private Lst<Integer> marks = new Lst<Integer>();
+  private Lst<Object> build = new Lst<Object>();
 
   private Map<Integer, Object> memo = new Hashtable<Integer, Object>();
   
@@ -114,7 +114,7 @@ class PickleReader {
     Object o;
     byte[] a;
     Map<String, Object> map;
-    List<Object> l;
+    Lst<Object> l;
     boolean going = true;
 
     while (going) {
@@ -127,19 +127,19 @@ class PickleReader {
         break;
       case APPEND:
         o = pop();
-        ((List<Object>) peek()).addLast(o);
+        ((Lst<Object>) peek()).addLast(o);
         break;
       case APPENDS:
         l = getObjects(getMark());
         if (inNames && markCount == 2){// && l.size() > 0 && l.get(0) == thisName) {
           int pt = (int) binaryDoc.getPosition();
           System.out.println(" " + thisName + " " + filePt + " " + (pt - filePt));
-          List<Object> l2 = new List<Object>();
+          Lst<Object> l2 = new Lst<Object>();
           l2.addLast(Integer.valueOf(filePt));
           l2.addLast(Integer.valueOf(pt - filePt));
           l.addLast(l2); // [ptr to start of this PyMOL object, length in bytes ] 
         }
-        ((List<Object>) peek()).addAll(l);
+        ((Lst<Object>) peek()).addAll(l);
         break;
       case BINFLOAT:
         d = binaryDoc.readDouble();
@@ -208,10 +208,10 @@ class PickleReader {
         break;
       case EMPTY_LIST:
         emptyListPt = (int) binaryDoc.getPosition() - 1;
-        push(new  List<Object>());
+        push(new  Lst<Object>());
         break;
       case GLOBAL:
-        l = new List<Object>();
+        l = new Lst<Object>();
         l.addLast("global");
         l.addLast(readString());
         l.addLast(readString());
@@ -241,9 +241,9 @@ class PickleReader {
         mark = getMark();
         l = getObjects(mark);
         o = peek();
-        if (o instanceof List) {
+        if (o instanceof Lst) {
           for (i = 0; i < l.size(); i++)
-            ((List<Object>) o).addLast(l.get(i));
+            ((Lst<Object>) o).addLast(l.get(i));
         } else {
         map = (Map<String, Object>) o;
         for (i = l.size(); --i >= 0;) {
@@ -383,9 +383,9 @@ class PickleReader {
     return o;
   }
 
-  private List<Object> getObjects(int mark) {
+  private Lst<Object> getObjects(int mark) {
     int n = stack.size() - mark;
-    List<Object> args = new  List<Object>();
+    Lst<Object> args = new  Lst<Object>();
     for (int j = 0; j < n; j++)
       args.addLast(null);
     for (int j = n, i = stack.size(); --i >= mark;)

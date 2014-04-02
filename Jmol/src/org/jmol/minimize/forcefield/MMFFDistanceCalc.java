@@ -1,6 +1,6 @@
 package org.jmol.minimize.forcefield;
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 import org.jmol.minimize.MinBond;
 
@@ -13,7 +13,7 @@ class MMFFDistanceCalc extends Calculation {
   double r0, kb;
   double delta2;
 
-  void setData(List<Object[]> calc, MinBond bond) {
+  void setData(Lst<Object[]> calc, MinBond bond) {
     ia = bond.data[0];
     ib = bond.data[1];
     Object data = calcs.getParameterObj(bond);

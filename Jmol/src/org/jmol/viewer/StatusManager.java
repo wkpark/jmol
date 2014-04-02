@@ -27,7 +27,7 @@ import org.jmol.script.T;
 import javajs.awt.Dimension;
 import org.jmol.util.Logger;
 import javajs.util.P3;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 
 import java.util.Hashtable;
@@ -181,8 +181,8 @@ public class StatusManager {
    * 
    */
   
-  private Map<String, List<List<Object>>> messageQueue = new Hashtable<String, List<List<Object>>>();
-  Map<String, List<List<Object>>> getMessageQueue() {
+  private Map<String, Lst<Lst<Object>>> messageQueue = new Hashtable<String, Lst<Lst<Object>>>();
+  Map<String, Lst<Lst<Object>>> getMessageQueue() {
     return messageQueue;
   }
   
@@ -200,20 +200,20 @@ public class StatusManager {
       int intInfo, Object statusInfo, boolean isReplace) {
     if (!recordStatus(statusName))
       return;
-    List<Object> msgRecord = new List<Object>();
+    Lst<Object> msgRecord = new Lst<Object>();
     msgRecord.addLast(Integer.valueOf(++statusPtr));
     msgRecord.addLast(statusName);
     msgRecord.addLast(Integer.valueOf(intInfo));
     msgRecord.addLast(statusInfo);
-    List<List<Object>> statusRecordSet = (isReplace ? null : messageQueue.get(statusName));
+    Lst<Lst<Object>> statusRecordSet = (isReplace ? null : messageQueue.get(statusName));
     if (statusRecordSet == null)
-      messageQueue.put(statusName, statusRecordSet = new  List<List<Object>>());
+      messageQueue.put(statusName, statusRecordSet = new  Lst<Lst<Object>>());
     else if (statusRecordSet.size() == MAXIMUM_QUEUE_LENGTH)
       statusRecordSet.remove(0);    
     statusRecordSet.addLast(msgRecord);
   }
   
-  synchronized List<List<List<Object>>> getStatusChanged(
+  synchronized Lst<Lst<Lst<Object>>> getStatusChanged(
                                                                  String newStatusList) {
     /*
      * returns a Vector of statusRecordSets, one per status type,
@@ -244,9 +244,9 @@ public class StatusManager {
           Logger.debug("StatusManager messageQueue = " + statusList);
       }
     }
-    List<List<List<Object>>> list = new List<List<List<Object>>>();
+    Lst<Lst<Lst<Object>>> list = new Lst<Lst<Lst<Object>>>();
     if (getList)
-      for (Map.Entry<String, List<List<Object>>> e: messageQueue.entrySet())
+      for (Map.Entry<String, Lst<Lst<Object>>> e: messageQueue.entrySet())
         list.addLast(e.getValue());
     messageQueue.clear();
     statusPtr = 0;

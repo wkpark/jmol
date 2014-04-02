@@ -16,7 +16,7 @@ import org.jmol.java.BS;
 import javajs.api.GenericImageEncoder;
 import javajs.util.Rdr;
 import javajs.util.OC;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.SB;
 
@@ -264,7 +264,7 @@ abstract class OutputManager {
     type = type.substring(0, 1) + type.substring(1).toLowerCase();
     if (type.equals("Zipdata")) {
       @SuppressWarnings("unchecked")
-      List<Object> v = (List<Object>) params.get("imageData");
+      Lst<Object> v = (Lst<Object>) params.get("imageData");
       if (v.size() >= 2 && v.get(0).equals("_IMAGE_")) {
         objImage = null;
         v.remove(0);
@@ -832,9 +832,9 @@ abstract class OutputManager {
 
   private String createZipSet(String script, String[] scripts,
                               boolean includeRemoteFiles, OC out) {
-    List<Object> v = new List<Object>();
+    Lst<Object> v = new Lst<Object>();
     FileManager fm = vwr.fm;
-    List<String> fileNames = new List<String>();
+    Lst<String> fileNames = new Lst<String>();
     Hashtable<Object, String> crcMap = new Hashtable<Object, String>();
     boolean haveSceneScript = (scripts != null && scripts.length == 3 && scripts[1]
         .startsWith(SCENE_TAG));
@@ -851,7 +851,7 @@ abstract class OutputManager {
         fileNames.addLast(scripts[i]);
     }
     int nFiles = fileNames.size();
-    List<String> newFileNames = new List<String>();
+    Lst<String> newFileNames = new Lst<String>();
     for (int iFile = 0; iFile < nFiles; iFile++) {
       String name = fileNames.get(iFile);
       boolean isLocal = !vwr.isJS && FileManager.isLocal(name);
@@ -927,7 +927,7 @@ abstract class OutputManager {
   private String addPngFileBytes(String name, byte[] ret, int iFile,
                                  Hashtable<Object, String> crcMap,
                                  boolean isSparDir, String newName, int ptSlash,
-                                 List<Object> v) {
+                                 Lst<Object> v) {
      Integer crcValue = Integer.valueOf(Rdr.getCrcValue(ret));
      // only add to the data list v when the data in the file is new
      if (crcMap.containsKey(crcValue)) {
@@ -965,7 +965,7 @@ abstract class OutputManager {
    * @return msg bytes filename or errorMessage or byte[]
    */
 
-  private String writeZipFile(OC out, List<Object> fileNamesAndByteArrays,
+  private String writeZipFile(OC out, Lst<Object> fileNamesAndByteArrays,
                               String msg) {
     byte[] buf = new byte[1024];
     long nBytesOut = 0;

@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 
 import org.jmol.util.Logger;
 
@@ -1449,9 +1449,9 @@ public class T {
     return cmds;
   }
   
-  public static List<T> getAtomPropertiesLike(String type) {
+  public static Lst<T> getAtomPropertiesLike(String type) {
     type = type.toLowerCase();
-    List<T> v = new  List<T>();
+    Lst<T> v = new  Lst<T>();
     boolean isAll = (type.length() == 0);
     for (Map.Entry<String, T> entry : tokenMap.entrySet()) {
       String name = entry.getKey();
@@ -1472,7 +1472,7 @@ public class T {
         : type.equals("misc") ? misc 
         : type.equals("mathfunc") ? mathfunc : scriptCommand);
     int notattr = (attr == setparam ? deprecatedparam : nada);
-    List<String> v = new  List<String>();
+    Lst<String> v = new  Lst<String>();
     for (Map.Entry<String, T> entry : tokenMap.entrySet()) {
       String name = entry.getKey();
       T token = entry.getValue();
@@ -1497,7 +1497,7 @@ public class T {
       map = tokenMap;
     else
       asCommand = false;
-    List<String> v = new  List<String>();
+    Lst<String> v = new  Lst<String>();
     str = str.toLowerCase();
     for (String name : map.keySet()) {
       if (!name.startsWith(str))

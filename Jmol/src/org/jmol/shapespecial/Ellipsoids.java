@@ -39,7 +39,7 @@ import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.Txt;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.SB;
 import javajs.util.P3;
@@ -59,7 +59,7 @@ public class Ellipsoids extends Shape {
 
   private String typeSelected = "1";
   private BS selectedAtoms;
-  private List<Ellipsoid> ellipsoidSet;
+  private Lst<Ellipsoid> ellipsoidSet;
 
   @Override
   public int getIndexFromName(String thisID) {
@@ -73,7 +73,7 @@ public class Ellipsoids extends Shape {
     boolean isAll = (bsSelected == null);
     if (!isAll && selectedAtoms != null)
       bsSelected = selectedAtoms;
-    List<Object> tensors = vwr.ms.getAllAtomTensors(typeSelected);
+    Lst<Object> tensors = vwr.ms.getAllAtomTensors(typeSelected);
     if (tensors == null)
       return;
     Atom[] atoms = ms.at;
@@ -123,7 +123,7 @@ public class Ellipsoids extends Shape {
 
 
   private boolean checkID(String thisID) {
-    ellipsoidSet = new List<Ellipsoid>();
+    ellipsoidSet = new Lst<Ellipsoid>();
     if (thisID == null)
       return false;
     thisID = thisID.toLowerCase();

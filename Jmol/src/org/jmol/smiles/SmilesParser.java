@@ -25,7 +25,7 @@
 package org.jmol.smiles;
 
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.SB;
 
@@ -708,8 +708,8 @@ public class SmilesParser {
   }
 
   private String parseVariables(String pattern) throws InvalidSmilesException {
-    List<String> keys = new  List<String>();
-    List<String> values = new  List<String>();
+    Lst<String> keys = new  Lst<String>();
+    Lst<String> values = new  Lst<String>();
     int index;
     int ipt = 0;
     int iptLast = -1;

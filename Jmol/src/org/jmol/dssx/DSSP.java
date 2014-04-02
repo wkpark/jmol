@@ -43,7 +43,7 @@ import org.jmol.viewer.Viewer;
 
 //import javajs.util.List;
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.SB;
 
@@ -198,7 +198,7 @@ public class DSSP implements DSSPInterface {
   }
 
   private BioPolymer[] bioPolymers;
-  private List<Bond> vHBonds;
+  private Lst<Bond> vHBonds;
   private BS[] done;
   private boolean doReport;
   private boolean dsspIgnoreHydrogens;
@@ -208,8 +208,8 @@ public class DSSP implements DSSPInterface {
   private int bioPolymerCount;
   private Map<String, Bridge> htBridges;
   private Map<int[][], Boolean> htLadders;
-  private List<Bridge> bridgesA;
-  private List<Bridge> bridgesP;
+  private Lst<Bridge> bridgesA;
+  private Lst<Bridge> bridgesP;
 
   /**
    * 
@@ -230,7 +230,7 @@ public class DSSP implements DSSPInterface {
                               boolean dsspIgnoreHydrogens, boolean setStructure) {
     bioPolymers = (BioPolymer[]) objBioPolymers;
     this.bioPolymerCount = bioPolymerCount;
-    vHBonds = (List<Bond>) objVHBonds;
+    vHBonds = (Lst<Bond>) objVHBonds;
     this.doReport = doReport;
     this.dsspIgnoreHydrogens = dsspIgnoreHydrogens;
     this.setStructure = setStructure;
@@ -319,8 +319,8 @@ public class DSSP implements DSSPInterface {
 
     // Step 2: Find the bridges and mark them all as "B".
 
-    bridgesA = new List<Bridge>();
-    bridgesP = new List<Bridge>();
+    bridgesA = new Lst<Bridge>();
+    bridgesP = new Lst<Bridge>();
     htBridges = new Hashtable<String, Bridge>();
     htLadders = new Hashtable<int[][], Boolean>();
     getBridges(min);
@@ -472,7 +472,7 @@ public class DSSP implements DSSPInterface {
       new int[] { 0, 0, 0, 0, 1, -1, 1, -1 } };
 
   private Bridge getBridge(int[][][][] min, int p1, int a, int p2, int b,
-                             List<Bridge> bridges, Atom atom1, Atom atom2,
+                             Lst<Bridge> bridges, Atom atom1, Atom atom2,
                              AminoPolymer ap1, AminoPolymer ap2,
                              Map<String, Boolean> htTemp,
                              boolean isAntiparallel) {
@@ -590,7 +590,7 @@ public class DSSP implements DSSPInterface {
    * @param isAntiparallel
    * 
    */
-  private void createLadders(List<Bridge> bridges,
+  private void createLadders(Lst<Bridge> bridges,
                              boolean isAntiparallel) {
     int dir = (isAntiparallel ? -1 : 1);
     int n = bridges.size();

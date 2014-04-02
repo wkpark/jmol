@@ -11,7 +11,7 @@ import org.jmol.shape.Measures;
 import org.jmol.shape.Shape;
 
 import javajs.awt.Font;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.SB;
 
 public abstract class JmolStateCreator {
@@ -34,7 +34,7 @@ public abstract class JmolStateCreator {
   abstract void getShapeSetState(AtomShape atomShape, Shape shape, int monomerCount, Group[] monomers,
                      BS bsSizeDefault, Map<String, BS> temp, Map<String, BS> temp2);
 
-  abstract String getMeasurementState(Measures shape, List<Measurement> mList, int measurementCount,
+  abstract String getMeasurementState(Measures shape, Lst<Measurement> mList, int measurementCount,
                              Font font3d, TickInfo tickInfo);
 
   abstract String getBondState(Shape shape, BS bsOrderSet, boolean reportAll);

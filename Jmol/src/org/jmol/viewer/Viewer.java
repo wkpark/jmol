@@ -125,7 +125,7 @@ import org.jmol.util.TempArray;
 import org.jmol.util.Txt;
 import org.jmol.viewer.binding.Binding;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.SB;
 
 import java.util.Hashtable;
@@ -639,7 +639,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     apiPlatform.setViewer(this, canvas);
   }
 
-  public MeasurementData newMeasurementData(String id, List<Object> points) {
+  public MeasurementData newMeasurementData(String id, Lst<Object> points) {
     return ((MeasurementData) Interface
         .getInterface("org.jmol.modelset.MeasurementData")).init(id, this, points);
   }
@@ -652,7 +652,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   private JmolScriptManager getScriptManager() {
     if (allowScripting && scm == null) {
       scm = (JmolScriptManager) Interface
-          .getOption("script.ScriptManager");
+          .getInterface("org.jmol.script.ScriptManager");
       if (scm == null) {
         allowScripting = false;
         return null;
@@ -1082,7 +1082,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return tm.getMoveToText(timespan, false);
   }
 
-  public void navigateList(JmolScriptEvaluator eval, List<Object[]> list) {
+  public void navigateList(JmolScriptEvaluator eval, Lst<Object[]> list) {
     if (isJmolDataFrame())
       return;
     tm.navigateList(eval, list);
@@ -2486,7 +2486,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       return null;
     if (!isAppend)
       zap(true, false/*true*/, false);
-    List<Object> list = new List<Object>();
+    Lst<Object> list = new Lst<Object>();
     for (int i = 0; i < arrayData.size(); i++)
       list.addLast(arrayData.get(i));
     Object atomSetCollection = fm.createAtomSeCollectionFromArrayData(
@@ -3125,7 +3125,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         spaceGroup, 0, null, null, null);
   }
 
-  public void getPolymerPointsAndVectors(BS bs, List<P3[]> vList) {
+  public void getPolymerPointsAndVectors(BS bs, Lst<P3[]> vList) {
     ms.getPolymerPointsAndVectors(bs, vList, g.traceAlpha,
         g.sheetSmoothing);
   }
@@ -4877,7 +4877,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public P3[] getAdditionalHydrogens(BS bsAtoms, boolean doAll,
                                      boolean justCarbon,
-                                     List<Atom> vConnections) {
+                                     Lst<Atom> vConnections) {
     if (bsAtoms == null)
       bsAtoms = getSelectedAtoms();
     int[] nTotal = new int[1];
@@ -5095,12 +5095,12 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     sm.setJmolStatusListener(jmolStatusListener, null);
   }
 
-  public Map<String, List<List<Object>>> getMessageQueue() {
+  public Map<String, Lst<Lst<Object>>> getMessageQueue() {
     // called by PropertyManager.getPropertyAsObject for "messageQueue"
     return sm.getMessageQueue();
   }
 
-  public List<List<List<Object>>> getStatusChanged(
+  public Lst<Lst<Lst<Object>>> getStatusChanged(
                                                                String statusNameList) {
     return (statusNameList == null ? null : sm
         .getStatusChanged(statusNameList));
@@ -7963,7 +7963,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return ms.at[i];
   }
 
-  public List<P3> getAtomPointVector(BS bs) {
+  public Lst<P3> getAtomPointVector(BS bs) {
     return ms.getAtomPointVector(bs);
   }
 
@@ -8253,7 +8253,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
                                            P3 point2, float degreesPerSecond,
                                            float endDegrees, boolean isSpin,
                                            BS bsSelected, V3 translation,
-                                           List<P3> finalPoints,
+                                           Lst<P3> finalPoints,
                                            float[] dihedralList) {
     // Eval: rotate INTERNAL
     boolean isOK = tm.rotateAboutPointsInternal(eval, point1,
@@ -8901,7 +8901,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     params.put("text", getStateInfo());
     if (data instanceof String[])
       params.put("scripts", data);
-    else if (data instanceof List)
+    else if (data instanceof Lst)
       params.put("imageData", data);
     return getOutputManager().outputToFile(params);
   }
@@ -9367,7 +9367,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return tm.getFrontPlane();
   }
 
-  public List<Object> getPlaneIntersection(int type, P4 plane, float scale,
+  public Lst<Object> getPlaneIntersection(int type, P4 plane, float scale,
                                                int flags) {
     return ms.getPlaneIntersection(type, plane, scale, flags,
         type == T.unitcell ? getCurrentUnitCell() : null);
@@ -9530,7 +9530,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         data);
   }
 
-  public P3[][] getCenterAndPoints(List<Object[]> atomSets,
+  public P3[][] getCenterAndPoints(Lst<Object[]> atomSets,
                                    boolean addCenter) {
     return ms.getCenterAndPoints(atomSets, addCenter);
   }
@@ -9571,7 +9571,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       return executor; // note -- a Java 1.5 function
     try {
       executor = ((JmolParallelProcessor) Interface
-          .getOption("parallel.ScriptParallelProcessor"))
+          .getInterface("org.jmol.script.ScriptParallelProcessor"))
           .getExecutor();
     } catch (Exception e) {
       executor = null;
@@ -9701,8 +9701,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       actionManager.setBondPickingOption(option);
   }
 
-  final List<String> actionStates = new List<String>();
-  final List<String> actionStatesRedo = new List<String>();
+  final Lst<String> actionStates = new Lst<String>();
+  final Lst<String> actionStatesRedo = new Lst<String>();
 
   void undoClear() {
     actionStates.clear();
@@ -10099,7 +10099,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public String getMeasurementState(Measures measures,
-                                    List<Measurement> mList,
+                                    Lst<Measurement> mList,
                                     int measurementCount, Font font3d,
                                     TickInfo ti) {
     return getStateCreator().getMeasurementState(measures, mList,
@@ -10150,7 +10150,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     int modelIndex = ms.at[bsAtoms.nextSetBit(0)].mi;
     if (modelIndex != ms.mc - 1)
       return bsB;
-    List<Atom> vConnections = new List<Atom>();
+    Lst<Atom> vConnections = new Lst<Atom>();
     P3[] pts = getAdditionalHydrogens(bsAtoms, doAll, false, vConnections);
     boolean wasAppendNew = false;
     wasAppendNew = g.appendNew;
@@ -10171,7 +10171,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return bsB;
   }
 
-  public BS addHydrogensInline(BS bsAtoms, List<Atom> vConnections,
+  public BS addHydrogensInline(BS bsAtoms, Lst<Atom> vConnections,
                                 P3[] pts) throws Exception {
     if (getScriptManager() == null)
       return null;
@@ -10220,7 +10220,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return getAtomBitSetEval(eval, atomExpression);
   }
 
-  List<Integer> getAtomBitSetVector(Object atomExpression) {
+  Lst<Integer> getAtomBitSetVector(Object atomExpression) {
     return (getScriptManager() == null ? null : eval.getAtomBitSetVector(getAtomCount(), atomExpression));
   }
 
@@ -10242,7 +10242,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     ms.createModels(n);
   }
 
-  public void setCGO(List<Object> info) {
+  public void setCGO(Lst<Object> info) {
     shm.loadShape(JC.SHAPE_CGO);
     shm.setShapePropertyBs(JC.SHAPE_CGO, "setCGO", info, null);
   }
@@ -10296,7 +10296,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public Map<Object, Object> chainMap = new Hashtable<Object, Object>();
-  public List<String> chainList = new List<String>();
+  public Lst<String> chainList = new Lst<String>();
 
   /**
    * Create a unique integer for any chain string. Note that if there are any
@@ -10457,7 +10457,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return applet;
   }
 
-  public List<Object> getModulationList(BS bs, String type, P3 t456) {
+  public Lst<Object> getModulationList(BS bs, String type, P3 t456) {
     return ms.getModulationList(bs, type, t456);
   }
 

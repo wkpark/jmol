@@ -28,7 +28,7 @@
 package org.jmol.adapter.readers.xtal;
 
 import javajs.util.DF;
-import javajs.util.List;
+import javajs.util.Lst;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 
@@ -98,7 +98,7 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
 
 
 
-  private List<String> elementNames = new List<String>();
+  private Lst<String> elementNames = new Lst<String>();
 
   private void readElementNames() throws Exception {
     //TITEL  = PAW_PBE Al 04Jan2001

@@ -27,7 +27,7 @@ import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.Interface;
 import org.jmol.api.VolumeDataInterface;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -40,7 +40,7 @@ import org.jmol.util.Logger;
 
 public class XmlChem3dReader extends XmlReader {
 
-  private List<Map<String, Object>> orbitals = new  List<Map<String, Object>>();
+  private Lst<Map<String, Object>> orbitals = new  Lst<Map<String, Object>>();
 
   public XmlChem3dReader() {
   }
@@ -161,7 +161,7 @@ public class XmlChem3dReader extends XmlReader {
         moData.put("defaultCutoff", Float.valueOf((float) 0.01));
         moData.put("haveVolumeData", Boolean.TRUE);
         moData.put("calculationType", "Chem3D");
-        orbitals = new  List<Map<String, Object>>();
+        orbitals = new  Lst<Map<String, Object>>();
         moData.put("mos", orbitals);
       }
       Map<String, Object> mo = new Hashtable<String, Object>();

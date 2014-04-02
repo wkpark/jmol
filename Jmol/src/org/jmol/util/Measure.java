@@ -24,7 +24,7 @@
 package org.jmol.util;
 
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 import javajs.util.M4;
 import javajs.util.P3;
@@ -442,7 +442,7 @@ final public class Measure {
     averagePoint.scale(1f / nPoints);
   }
 
-  public static P3[] getCenterAndPoints(List<P3> vPts) {
+  public static P3[] getCenterAndPoints(Lst<P3> vPts) {
     int n = vPts.size();
     P3[] pts = new P3[n + 1];
     pts[0] = new P3();
@@ -455,7 +455,7 @@ final public class Measure {
     return pts;
   }
 
-  public static float getTransformMatrix4(List<P3> ptsA, List<P3> ptsB, M4 m, P3 centerA, boolean doReport) {
+  public static float getTransformMatrix4(Lst<P3> ptsA, Lst<P3> ptsB, M4 m, P3 centerA, boolean doReport) {
     P3[] cptsA = getCenterAndPoints(ptsA);
     P3[] cptsB = getCenterAndPoints(ptsB);
     //System.out.println("draw d1 " + cptsA[0]);
@@ -582,8 +582,8 @@ final public class Measure {
     return (float) Math.sqrt(sum2 / n);
   }
 
-  public static List<P3> transformPoints(List<P3> vPts, M4 m4, P3 center) {
-    List<P3> v = new  List<P3>();
+  public static Lst<P3> transformPoints(Lst<P3> vPts, M4 m4, P3 center) {
+    Lst<P3> v = new  Lst<P3>();
     for (int i = 0; i < vPts.size(); i++) {
       P3 pt = P3.newP(vPts.get(i));
       pt.sub(center);
@@ -621,7 +621,7 @@ final public class Measure {
    * @param plane2
    * @return       [ point, vector ] or []
    */
-  public static List<Object> getIntersectionPP(P4 plane1, P4 plane2) {
+  public static Lst<Object> getIntersectionPP(P4 plane1, P4 plane2) {
     float a1 = plane1.x;
     float b1 = plane1.y;
     float c1 = plane1.z;
@@ -662,7 +662,7 @@ final public class Measure {
       y = (a2 * d1 - d2 * a1) / diff;
       z = 0;
     }
-    List<Object>list = new  List<Object>();
+    Lst<Object>list = new  Lst<Object>();
     list.addLast(P3.new3(x, y, z));
     nxn.normalize();
     list.addLast(nxn);

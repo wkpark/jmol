@@ -25,7 +25,7 @@
 package org.jmol.smiles;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 
 import org.jmol.api.SmilesMatcherInterface;
@@ -265,7 +265,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   @Override
   public void getSubstructureSets(String[] smarts, Node[] atoms,
                                   int ac, int flags, BS bsSelected,
-                                  List<BS> ret, List<BS>[] vRings)
+                                  Lst<BS> ret, Lst<BS>[] vRings)
       throws Exception {
     InvalidSmilesException.clear();
     SmilesParser sp = new SmilesParser(true);
@@ -387,11 +387,11 @@ public class SmilesMatcher implements SmilesMatcherInterface {
         return search.search(false);
       case MODE_ARRAY:
         search.asVector = true;
-        List<BS> vb = (List<BS>) search.search(false);
+        Lst<BS> vb = (Lst<BS>) search.search(false);
         return vb.toArray(new BS[vb.size()]);
       case MODE_MAP:
         search.getMaps = true;
-        List<int[]> vl = (List<int[]>) search.search(false);
+        Lst<int[]> vl = (Lst<int[]>) search.search(false);
         return vl.toArray(AU.newInt2(vl.size()));
       }
     } catch (Exception e) {

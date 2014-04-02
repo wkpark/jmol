@@ -24,7 +24,7 @@
 
 package org.jmol.minimize;
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 
 import org.jmol.java.BS;
@@ -41,7 +41,7 @@ public class MinAtom {
   public Integer vdwKey;
   public double[] coord = new double[3];
   public double[] force = new double[3];
-  private List<MinBond> bonds = new  List<MinBond>();
+  private Lst<MinBond> bonds = new  Lst<MinBond>();
   public int nBonds;
   public int hCount;
   public double partialCharge;

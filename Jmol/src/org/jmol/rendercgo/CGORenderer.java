@@ -30,7 +30,7 @@ import org.jmol.shape.Mesh;
 import org.jmol.shapecgo.CGO;
 import org.jmol.shapecgo.CGOMesh;
 import org.jmol.util.C;
-import javajs.util.List;
+import javajs.util.Lst;
 import org.jmol.util.Logger;
 import javajs.util.P3;
 import javajs.util.P3i;
@@ -38,7 +38,7 @@ import javajs.util.P3i;
 public class CGORenderer extends DrawRenderer {
 
   private CGOMesh cgoMesh;
-  private List<Object> cmds;
+  private Lst<Object> cmds;
   private P3 pt3 = new P3();
   private short colix0, colix1, colix2, normix0, normix1, normix2, normix;
   private boolean doColor;

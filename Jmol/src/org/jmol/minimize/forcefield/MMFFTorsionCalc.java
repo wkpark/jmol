@@ -1,12 +1,12 @@
 package org.jmol.minimize.forcefield;
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 import org.jmol.minimize.MinTorsion;
 
 class MMFFTorsionCalc extends Calculation {
 
-    void setData(List<Object[]> calc, MinTorsion t) {
+    void setData(Lst<Object[]> calc, MinTorsion t) {
       if (calcs.isLinear(t.data[1]) || calcs.isLinear(t.data[2]))
         return;
       Object data = calcs.getParameterObj(t);

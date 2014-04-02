@@ -24,7 +24,7 @@
 
 package org.jmol.adapter.readers.simple;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -189,11 +189,11 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
    */
 
   protected int ac;
-  protected List<Atom> vAtoms = new List<Atom>();
+  protected Lst<Atom> vAtoms = new Lst<Atom>();
   private Map<String, Integer> atomMap = new Hashtable<String, Integer>();
   private String[] tokens;
   private boolean isJmolZformat;
-  private List<String[]> lineBuffer = new List<String[]>();
+  private Lst<String[]> lineBuffer = new Lst<String[]>();
   private Map<String, Float> symbolicMap = new Hashtable<String, Float>();
   private boolean isMopac;
   private boolean isHeader = true;
@@ -438,7 +438,7 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
           v1, plane1);
       Measure.getPlaneThroughPoint(setAtom(atom, ia, ic, ib, -d, theta2, 0),
           v1, plane2);
-      List<Object> list = Measure.getIntersectionPP(plane1, plane2);
+      Lst<Object> list = Measure.getIntersectionPP(plane1, plane2);
       if (list.size() == 0)
         return null;
       pt0.setT((P3) list.get(0));

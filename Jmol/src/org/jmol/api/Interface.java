@@ -42,7 +42,7 @@ public class Interface {
   /**
    * Note! Do not use this method with "viewer." or "util." because
    * when the JavaScript is built, "org.jmol.util" and "org.jmol.viewer"
-   * are condensed to "JW" and "JV"  (javajs.util is JU)
+   * are condensed to "JU" and "JV"  (javajs.util is also JU)
    * 
    * @param className
    * @return class instance

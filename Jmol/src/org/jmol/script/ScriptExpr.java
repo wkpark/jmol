@@ -5,7 +5,7 @@ import java.util.Map;
 
 import javajs.util.BArray;
 import javajs.util.CU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.M34;
 import javajs.util.M4;
 import javajs.util.P3;
@@ -44,7 +44,7 @@ abstract class ScriptExpr extends ScriptParam {
   abstract public void clearDefinedVariableAtomSets();
   abstract public BS lookupIdentifierValue(String identifier) throws ScriptException;
   abstract public void refresh(boolean doDelay) throws ScriptException;
-  abstract public SV getUserFunctionResult(String name, List<SV> params, SV tokenAtom)
+  abstract public SV getUserFunctionResult(String name, Lst<SV> params, SV tokenAtom)
                throws ScriptException;
   abstract protected void setAtomProp(String prop, Object value, BS bs);  
   
@@ -52,20 +52,23 @@ abstract class ScriptExpr extends ScriptParam {
 
   private JmolCmdExtension cmdExt;
   public JmolCmdExtension getCmdExt() {
-    return (cmdExt == null ? (cmdExt = (JmolCmdExtension) Interface
-        .getOption("scriptext.CmdExt")).init(this) : cmdExt);
+    return (cmdExt == null ? (cmdExt = (JmolCmdExtension) getExt("Cmd")).init(this) : cmdExt);
+  }
+
+  public Object getExt(String type) {
+    return Interface.getInterface("org.jmol.scriptext." + type + "Ext");
   }
 
   @Override
   @SuppressWarnings("unchecked")
-  protected List<SV> parameterExpressionList(int pt, int ptAtom,
+  protected Lst<SV> parameterExpressionList(int pt, int ptAtom,
                                            boolean isArrayItem)
       throws ScriptException {
     
     // isArrayItem will be true for centerParameter with $id[n]
     // in which case pt will be negative 
     
-    return (List<SV>) parameterExpression(pt, -1, null, true, true, ptAtom,
+    return (Lst<SV>) parameterExpression(pt, -1, null, true, true, ptAtom,
         isArrayItem, null, null, false);
   }
 
@@ -82,7 +85,7 @@ abstract class ScriptExpr extends ScriptParam {
   }
 
   protected SV parameterExpressionToken(int pt) throws ScriptException {
-    List<SV> result = parameterExpressionList(pt, -1, false);
+    Lst<SV> result = parameterExpressionList(pt, -1, false);
     return (result.size() > 0 ? result.get(0) : SV.newS(""));
   }
 
@@ -293,9 +296,9 @@ abstract class ScriptExpr extends ScriptParam {
                 ignoreComma, isFor, j, false, localVars, isFunctionOfX ? null
                     : dummy, false);
             if (isFor) {
-              if (res == null || ((List<?>) res).size() == 0)
+              if (res == null || ((Lst<?>) res).size() == 0)
                 invArg();
-              sout[p++] = ((SV) ((List<?>) res).get(0)).asString();
+              sout[p++] = ((SV) ((Lst<?>) res).get(0)).asString();
             } else if (((Boolean) res).booleanValue()) {
               bsSelect.set(j);
             }
@@ -1043,8 +1046,8 @@ abstract class ScriptExpr extends ScriptParam {
         if (val instanceof String)
           val = getStringObjectAsVariable((String) val, null);
         // or maybe a list of bitsets
-        if (val instanceof List<?>) {
-          BS bs = SV.unEscapeBitSetArray((List<SV>) val, true);
+        if (val instanceof Lst<?>) {
+          BS bs = SV.unEscapeBitSetArray((Lst<SV>) val, true);
           val = (bs == null ? "" : val);
         }
         // otherwise, this is a new atom expression
@@ -1113,7 +1116,7 @@ abstract class ScriptExpr extends ScriptParam {
       if (tokAt(i++) != T.colon)
         invArg();
       // look to end of array or next comma
-      List<SV> v = (List<SV>) parameterExpression(i, 0, null, false, true, -1,
+      Lst<SV> v = (Lst<SV>) parameterExpression(i, 0, null, false, true, -1,
           false, null, null, false);
       ht.put(key, v.get(0));
       i = iToken;
@@ -1126,8 +1129,8 @@ abstract class ScriptExpr extends ScriptParam {
     return ht;
   }
 
-  protected List<SV> listBS(BS bs) {
-    List<SV> l = new List<SV>();
+  protected Lst<SV> listBS(BS bs) {
+    Lst<SV> l = new Lst<SV>();
     l.addLast(SV.newV(T.bitset, bs));
     return l;
   }
@@ -1502,10 +1505,10 @@ abstract class ScriptExpr extends ScriptParam {
     if (isExplicitlyAll || isString && !haveIndex && minmaxtype != T.allfloat
         && minmaxtype != T.min)
       minmaxtype = T.all;
-    List<Object> vout = (minmaxtype == T.all ? new List<Object>() : null);
+    Lst<Object> vout = (minmaxtype == T.all ? new Lst<Object>() : null);
     BS bsNew = null;
     String userFunction = null;
-    List<SV> params = null;
+    Lst<SV> params = null;
     BS bsAtom = null;
     SV tokenAtom = null;
     P3 ptT = null;
@@ -1548,7 +1551,7 @@ abstract class ScriptExpr extends ScriptParam {
       return "";
     case T.function:
       userFunction = (String) ((Object[]) opValue)[0];
-      params = (List<SV>) ((Object[]) opValue)[1];
+      params = (Lst<SV>) ((Object[]) opValue)[1];
       bsAtom = BS.newN(ac);
       tokenAtom = SV.newV(T.bitset, bsAtom);
       break;
@@ -1968,7 +1971,7 @@ abstract class ScriptExpr extends ScriptParam {
         key = null;
     }
     int nv = 0;
-    List<SV> v = (List<SV>) parameterExpression(pt, ptMax, key, true, true, -1,
+    Lst<SV> v = (Lst<SV>) parameterExpression(pt, ptMax, key, true, true, -1,
         false, null, null, isSet && pt == 1);
     nv = v.size();
     if (nv == 0)
@@ -2113,7 +2116,7 @@ abstract class ScriptExpr extends ScriptParam {
     String sValue = null;
     float[] fvalues = null;
     P3 pt;
-    List<SV> sv = null;
+    Lst<SV> sv = null;
     int nValues = 0;
     boolean isStrProperty = T.tokAttr(tok, T.strproperty);
     if (tokenValue.tok == T.varray) {
@@ -2374,8 +2377,8 @@ abstract class ScriptExpr extends ScriptParam {
           fixed[j] = SV.newV(T.hash, v);
         } else if (v instanceof ScriptContext) {
           fixed[j] = SV.newV(T.hash, ((ScriptContext)v).getFullMap());
-        } else if (v instanceof List<?>) {
-          List<SV> sv = (List<SV>) v;
+        } else if (v instanceof Lst<?>) {
+          Lst<SV> sv = (Lst<SV>) v;
           BS bs = null;
           for (int k = 0; k < sv.size(); k++) {
             SV svk = sv.get(k);

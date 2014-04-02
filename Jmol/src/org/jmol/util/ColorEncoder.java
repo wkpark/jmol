@@ -25,7 +25,7 @@ package org.jmol.util;
 
 import javajs.util.AU;
 import javajs.util.CU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 
 import java.util.Hashtable;
@@ -516,7 +516,7 @@ import javajs.util.P3;
   public Map<String, Object> getColorKey() {
     Map<String, Object> info = new Hashtable<String, Object>();
     int segmentCount = getPaletteColorCount(currentPalette);
-    List<P3> colors = new  List<P3>();//segmentCount);
+    Lst<P3> colors = new  Lst<P3>();//segmentCount);
 /*    
     boolean isReverse = isReversed;
     

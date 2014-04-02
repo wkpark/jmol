@@ -23,7 +23,7 @@
  */
 package org.jmol.util;
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 
 /**
@@ -40,7 +40,7 @@ final public class CommandHistory {
   /**
    * Array of commands.
    */
-  private List<String> commandList = null;
+  private Lst<String> commandList = null;
   private int maxSize = DEFAULT_MAX_SIZE;
 
   /**
@@ -77,7 +77,7 @@ final public class CommandHistory {
    */
   public void reset(int maxSize) {
     this.maxSize = maxSize; 
-    commandList = new  List<String>();
+    commandList = new  Lst<String>();
     nextCommand = 0;
     commandList.addLast("");
     cursorPos = 0;

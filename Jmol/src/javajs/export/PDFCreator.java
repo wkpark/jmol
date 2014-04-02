@@ -29,7 +29,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.SB;
 
 
@@ -37,7 +37,7 @@ import javajs.util.SB;
 public class PDFCreator {
  
   private OutputStream os;
-  private List<PDFObject> indirectObjects;
+  private Lst<PDFObject> indirectObjects;
   private PDFObject root;
   private PDFObject graphics; 
 //  private PDFObject pageResources;
@@ -65,7 +65,7 @@ public class PDFCreator {
     height = (isLandscape ? paperWidth : paperHeight);
     System.out.println("Creating PDF with width=" + width + " and height=" + height);
     fonts = new Hashtable<String, PDFObject>();
-    indirectObjects = new List<PDFObject>();
+    indirectObjects = new Lst<PDFObject>();
     //graphicsResources = newObject(null);
     //pageResources = newObject(null); // will set this to compressed stream later
     root = newObject("Catalog");

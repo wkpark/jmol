@@ -113,7 +113,7 @@
 package org.jmol.jvxl.readers;
 
 
-import javajs.util.List;
+import javajs.util.Lst;
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -293,7 +293,7 @@ public class Parameters {
   boolean isCavity;
   Boolean pocket; //three states: TRUE, FALSE, and NULL
   int minSet;
-  public List<Object[]> slabInfo;
+  public Lst<Object[]> slabInfo;
   float slabPlaneOffset = Float.NaN;
 
   float[] theProperty;
@@ -574,16 +574,16 @@ public class Parameters {
     }
   }
   
-  public List<Object> functionInfo;
+  public Lst<Object> functionInfo;
   
-  void setFunctionXY(List<Object> value) {
+  void setFunctionXY(Lst<Object> value) {
     dataType = SURFACE_FUNCTIONXY;
     functionInfo = value;
     cutoff = PT.FLOAT_MIN_SAFE;
     isEccentric = isAnisotropic = false;
   }
 
-  void setFunctionXYZ(List<Object> value) {
+  void setFunctionXYZ(Lst<Object> value) {
     dataType = SURFACE_FUNCTIONXYZ;
     functionInfo = value;
     if (cutoff == Float.MAX_VALUE)
@@ -713,7 +713,7 @@ public class Parameters {
           .error("MO ERROR: No basis functions found in file for MO calculation. (GAUSSIAN 'gfprint' keyword may be missing?)");
       title = new String[] {"no basis functions found in file"};
     } else {
-      List<Object> mos = (List<Object>) moData.get("mos");
+      Lst<Object> mos = (Lst<Object>) moData.get("mos");
       qmOrbitalCount = mos.size();
       calculationType = (String) moData.get("calculationType");
       calculationType = "Molecular orbital #" + qm_moNumber + "/"
@@ -876,7 +876,7 @@ public class Parameters {
 
     public void addSlabInfo(Object[] slabObject) {
     if (slabInfo == null)
-      slabInfo = new  List<Object[]>();
+      slabInfo = new  Lst<Object[]>();
     slabInfo.addLast(slabObject);
   }
 

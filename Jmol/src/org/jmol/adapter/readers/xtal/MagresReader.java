@@ -11,7 +11,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.jmol.util.Escape;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.SB;
 
@@ -34,7 +34,7 @@ public class MagresReader extends AtomSetCollectionReader {
   //private static float maxIso = 10000; // the old code was checking for this.
   
   private Map<String, String> magresUnits = new Hashtable<String, String>();
-  private List<Tensor> interactionTensors = new List<Tensor>();
+  private Lst<Tensor> interactionTensors = new Lst<Tensor>();
   private SB header = new SB();
   
   /**

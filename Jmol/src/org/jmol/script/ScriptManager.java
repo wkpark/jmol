@@ -28,7 +28,7 @@ import java.io.BufferedReader;
 
 import javajs.api.ZInputStream;
 import javajs.util.Rdr;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.P3;
 import javajs.util.PT;
 import javajs.util.SB;
@@ -59,10 +59,10 @@ public class ScriptManager implements JmolScriptManager {
   private JmolThread commandWatcherThread;
   
 
-  public List<List<Object>> scriptQueue = new  List<List<Object>>();
+  public Lst<Lst<Object>> scriptQueue = new  Lst<Lst<Object>>();
 
   @Override
-  public List<List<Object>> getScriptQueue() {
+  public Lst<Lst<Object>> getScriptQueue() {
     return scriptQueue;
   }
 
@@ -85,7 +85,7 @@ public class ScriptManager implements JmolScriptManager {
  
   private ScriptEval newScriptEvaluator() {
     return ((ScriptEval) Interface
-        .getOption("script.ScriptEval")).setViewer(vwr);
+        .getInterface("org.jmol.script.ScriptEval")).setViewer(vwr);
   }
 
   @Override
@@ -129,7 +129,7 @@ public class ScriptManager implements JmolScriptManager {
         (strScript.indexOf("javascript") < 0 
             || strScript.indexOf("#javascript ") >= 0));
     // scripts with #javascript will be processed at the browser end
-    List<Object> scriptItem = new  List<Object>();
+    Lst<Object> scriptItem = new  Lst<Object>();
     scriptItem.addLast(strScript);
     scriptItem.addLast(statusList);
     scriptItem.addLast(returnType);
@@ -204,10 +204,10 @@ public class ScriptManager implements JmolScriptManager {
   }
 
   @Override
-  public List<Object> getScriptItem(boolean watching, boolean isByCommandWatcher) {
+  public Lst<Object> getScriptItem(boolean watching, boolean isByCommandWatcher) {
     if (vwr.isSingleThreaded && vwr.queueOnHold)
       return null;
-    List<Object> scriptItem = scriptQueue.get(0);
+    Lst<Object> scriptItem = scriptQueue.get(0);
     int flag = (((Integer) scriptItem.get(5)).intValue());
     boolean isOK = (watching ? flag < 0 
         : isByCommandWatcher ? flag == 0
@@ -225,7 +225,7 @@ public class ScriptManager implements JmolScriptManager {
       if (commandWatcherThread != null)
         return;
       commandWatcherThread = (JmolThread) Interface
-      .getOption("script.CommandWatcherThread");
+      .getInterface("org.jmol.script.CommandWatcherThread");
       commandWatcherThread.setManager(this, vwr, null);
       commandWatcherThread.start();
     } else {
@@ -298,7 +298,7 @@ public class ScriptManager implements JmolScriptManager {
   public void runScriptNow() {
     // from ScriptQueueThread
     if (scriptQueue.size() > 0) {
-      List<Object> scriptItem = getScriptItem(true, true);
+      Lst<Object> scriptItem = getScriptItem(true, true);
       if (scriptItem != null) {
         scriptItem.set(5, Integer.valueOf(0));
         startScriptQueue(true);
@@ -649,7 +649,7 @@ public class ScriptManager implements JmolScriptManager {
   }
   
   @Override
-  public BS addHydrogensInline(BS bsAtoms, List<Atom> vConnections, P3[] pts)
+  public BS addHydrogensInline(BS bsAtoms, Lst<Atom> vConnections, P3[] pts)
       throws Exception {
     int modelIndex = vwr.getAtomModelIndex(bsAtoms.nextSetBit(0));
     if (modelIndex != vwr.ms.mc - 1)

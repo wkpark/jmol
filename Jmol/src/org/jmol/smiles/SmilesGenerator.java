@@ -28,7 +28,7 @@ import java.util.Iterator;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.SB;
 import javajs.util.P3;
 
@@ -110,7 +110,7 @@ public class SmilesGenerator {
     BS bsIgnore = new BS();
     String lastComponent = null;
     String s;
-    List<Integer> vLinks = new  List<Integer>();
+    Lst<Integer> vLinks = new  Lst<Integer>();
     try {
       int len = 0;
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
@@ -451,7 +451,7 @@ public class SmilesGenerator {
     int nSp2Atoms = 0;
     int atomicNumber = atom.getElementNumber();
     int nH = 0;
-    List<Edge> v = new  List<Edge>();
+    Lst<Edge> v = new  Lst<Edge>();
     Edge bond0 = null;
     Edge bondPrev = null;
     Edge[] bonds = atom.getEdges();
@@ -699,11 +699,11 @@ public class SmilesGenerator {
    * @param v
    * @return  "@" or "@@" or ""
    */
-  private String sortInorganic(Node atom, List<Edge> v) {
+  private String sortInorganic(Node atom, Lst<Edge> v) {
     int atomIndex = atom.getIndex();
     int n = v.size();
-    List<Edge[]> axialPairs = new  List<Edge[]>();
-    List<Edge> bonds = new  List<Edge>();
+    Lst<Edge[]> axialPairs = new  Lst<Edge[]>();
+    Lst<Edge> bonds = new  Lst<Edge>();
     Node a1, a2;
     Edge bond1, bond2;
     BS bsDone = new BS();

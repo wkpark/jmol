@@ -25,7 +25,7 @@
 package org.jmol.adapter.smarter;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 
 import java.util.Collections;
 import java.util.Hashtable;
@@ -108,17 +108,17 @@ public class AtomSetCollection {
   boolean isTrajectory;
   private int trajectoryStepCount = 0;
 
-  private List<P3[]> trajectorySteps;
-  private List<V3[]> vibrationSteps;
-  private List<String> trajectoryNames;
+  private Lst<P3[]> trajectorySteps;
+  private Lst<V3[]> vibrationSteps;
+  private Lst<String> trajectoryNames;
  
   public boolean doFixPeriodic;
   public boolean allowMultiple;
  
-  private List<AtomSetCollectionReader> readerList;
+  private Lst<AtomSetCollectionReader> readerList;
 
   public AtomSetCollection(String fileTypeName, AtomSetCollectionReader reader,
-      AtomSetCollection[] array, List<?> list) {
+      AtomSetCollection[] array, Lst<?> list) {
 
     // merging files
 
@@ -132,7 +132,7 @@ public class AtomSetCollection {
     setAtomSetCollectionAuxiliaryInfo("properties", p);
     if (array != null) {
       int n = 0;
-      readerList = new List<AtomSetCollectionReader>();
+      readerList = new Lst<AtomSetCollectionReader>();
       for (int i = 0; i < array.length; i++)
         if (array[i].ac > 0 || array[i].reader != null
             && array[i].reader.mustFinalizeModelSet)
@@ -146,7 +146,7 @@ public class AtomSetCollection {
     }
   }
 
-  private void appendAtomSetCollectionList(List<?> list) {
+  private void appendAtomSetCollectionList(Lst<?> list) {
     int n = list.size();
     if (n == 0) {
       errorMessage = "No file found!";
@@ -155,8 +155,8 @@ public class AtomSetCollection {
 
     for (int i = 0; i < n; i++) {
       Object o = list.get(i);
-      if (o instanceof List)
-        appendAtomSetCollectionList((List<?>) o);
+      if (o instanceof Lst)
+        appendAtomSetCollectionList((Lst<?>) o);
       else
         appendAtomSetCollection(i, (AtomSetCollection) o);
     }
@@ -164,7 +164,7 @@ public class AtomSetCollection {
 
   public void setTrajectory() {
     if (!isTrajectory) {
-      trajectorySteps = new List<P3[]>();
+      trajectorySteps = new Lst<P3[]>();
     }
     isTrajectory = true;
     addTrajectoryStep();
@@ -300,9 +300,9 @@ public class AtomSetCollection {
           - atoms[bonds[i].atomIndex1].atomSetIndex;
     reverseSets(bonds, bondCount);
     //getAtomSetAuxiliaryInfo("PDB_CONECT_firstAtom_count_max" ??
-    List<Atom>[] lists = AU.createArrayOfArrayList(atomSetCount);
+    Lst<Atom>[] lists = AU.createArrayOfArrayList(atomSetCount);
     for (int i = 0; i < atomSetCount; i++)
-      lists[i] = new List<Atom>();
+      lists[i] = new Lst<Atom>();
     for (int i = 0; i < ac; i++)
       lists[atoms[i].atomSetIndex].addLast(atoms[i]);
     int[] newIndex = new int[ac];
@@ -328,9 +328,9 @@ public class AtomSetCollection {
   }
 
   private void reverseSets(AtomSetObject[] o, int n) {
-    List<AtomSetObject>[] lists = AU.createArrayOfArrayList(atomSetCount);
+    Lst<AtomSetObject>[] lists = AU.createArrayOfArrayList(atomSetCount);
     for (int i = 0; i < atomSetCount; i++)
-      lists[i] = new List<AtomSetObject>();
+      lists[i] = new Lst<AtomSetObject>();
     for (int i = 0; i < n; i++) {
       int index = o[i].atomSetIndex;
       if (index < 0)
@@ -348,7 +348,7 @@ public class AtomSetCollection {
       AU.swap(o, i, n - 1 - i);
   }
 
-  private static void reverseList(List<?> list) {
+  private static void reverseList(Lst<?> list) {
     if (list == null)
       return;
     Collections.reverse(list);
@@ -782,7 +782,7 @@ public class AtomSetCollection {
     if (!ascAuxiliaryInfo.containsKey(auxKey)) {
       return false;
     }
-    List<Float> atomData = (List<Float>) ascAuxiliaryInfo
+    Lst<Float> atomData = (Lst<Float>) ascAuxiliaryInfo
         .get(auxKey);
     for (int i = atomData.size(); --i >= 0;)
       atoms[i].partialCharge = atomData.get(i).floatValue();
@@ -819,7 +819,7 @@ public class AtomSetCollection {
     }
     if (haveVibrations) {
       if (vibrationSteps == null) {
-        vibrationSteps = new List<V3[]>();
+        vibrationSteps = new Lst<V3[]>();
         for (int i = 0; i < trajectoryStepCount; i++)
           vibrationSteps.addLast(null);
       }
@@ -846,8 +846,8 @@ public class AtomSetCollection {
     return x;
   }
 
-  public void finalizeTrajectoryAs(List<P3[]> trajectorySteps,
-                                   List<V3[]> vibrationSteps) {
+  public void finalizeTrajectoryAs(Lst<P3[]> trajectorySteps,
+                                   Lst<V3[]> vibrationSteps) {
     this.trajectorySteps = trajectorySteps;
     this.vibrationSteps = vibrationSteps;
     trajectoryStepCount = trajectorySteps.size();
@@ -945,7 +945,7 @@ public class AtomSetCollection {
     if (trajectoryStepCount == 0)
       return;
     if (trajectoryNames == null) {
-      trajectoryNames = new List<String>();
+      trajectoryNames = new Lst<String>();
     }
     for (int i = trajectoryNames.size(); i < trajectoryStepCount; i++)
       trajectoryNames.addLast(null);
@@ -1041,7 +1041,7 @@ public class AtomSetCollection {
     if (!atomSetAuxiliaryInfo[currentAtomSetIndex].containsKey(auxKey)) {
       return false;
     }
-    List<Float> atomData = (List<Float>) getAtomSetAuxiliaryInfoValue(
+    Lst<Float> atomData = (Lst<Float>) getAtomSetAuxiliaryInfoValue(
         currentAtomSetIndex, auxKey);
     for (int i = atomData.size(); --i >= 0;) {
       atoms[i].partialCharge = atomData.get(i).floatValue();

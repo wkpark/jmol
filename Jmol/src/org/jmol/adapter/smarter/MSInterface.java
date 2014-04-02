@@ -4,7 +4,7 @@ import java.util.Map;
 
 import org.jmol.api.SymmetryInterface;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.Matrix;
 import javajs.util.P3;
 
@@ -35,6 +35,6 @@ public interface MSInterface {
 
   SymmetryInterface getSymmetryFromCode(String spaceGroupOperationCode);
 
-  boolean addLatticeVector(List<float[]> lattvecs, String substring) throws Exception;
+  boolean addLatticeVector(Lst<float[]> lattvecs, String substring) throws Exception;
 
 }

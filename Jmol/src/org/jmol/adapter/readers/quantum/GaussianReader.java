@@ -30,7 +30,7 @@ import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import java.io.IOException;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 
 import java.util.Hashtable;
@@ -364,8 +364,8 @@ public class GaussianReader extends MOReader {
    */
 
   private void readBasis() throws Exception {
-    shells = new  List<int[]>();
-    List<String[]> gdata = new  List<String[]>();
+    shells = new  Lst<int[]>();
+    Lst<String[]> gdata = new  Lst<String[]>();
     int ac = 0;
     gaussianCount = 0;
     shellCount = 0;
@@ -482,7 +482,7 @@ public class GaussianReader extends MOReader {
     if (shells == null)
       return;
     Map<String, Object>[] mos = AU.createArrayOfHashtable(5);
-    List<String>[] data = AU.createArrayOfArrayList(5);
+    Lst<String>[] data = AU.createArrayOfArrayList(5);
     int nThisLine = 0;
     boolean isNOtype = line.contains("Natural Orbital"); //gfprint pop(full,NO)
     while (rd() != null && line.toUpperCase().indexOf("DENS") < 0) {
@@ -499,7 +499,7 @@ public class GaussianReader extends MOReader {
         }
         for (int i = 0; i < nThisLine; i++) {
           mos[i] = new Hashtable<String, Object>();
-          data[i] = new  List<String>();
+          data[i] = new  Lst<String>();
           String sym;
           if (isNOtype) {
             mos[i]

@@ -35,7 +35,7 @@ import org.jmol.shapespecial.DrawMesh;
 import org.jmol.shapespecial.Draw.EnumDrawType;
 import org.jmol.util.C;
 import org.jmol.util.GData;
-import javajs.util.List;
+import javajs.util.Lst;
 import org.jmol.util.Measure;
 
 import javajs.util.A4;
@@ -327,7 +327,7 @@ public class DrawRenderer extends MeshRenderer {
     }
   }
 
-  private void drawLineData(List<P3[]> lineData) {
+  private void drawLineData(Lst<P3[]> lineData) {
     if (diameter == 0)
       diameter = 3;
     for (int i = lineData.size(); --i >= 0;) {

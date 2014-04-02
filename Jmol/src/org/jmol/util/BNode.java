@@ -26,7 +26,7 @@ package org.jmol.util;
 
 import org.jmol.java.BS;
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 
 
@@ -43,7 +43,7 @@ public interface BNode extends Node {
   public int getChainID();
   public String getChainIDStr();
   public int getOffsetResidueAtom(String name, int offset);
-  public boolean getCrossLinkLeadAtomIndexes(List<Integer> vReturn);
+  public boolean getCrossLinkLeadAtomIndexes(Lst<Integer> vReturn);
   public void getGroupBits(BS bs);
   public boolean isLeadAtom();
   public boolean isCrossLinked(BNode node);

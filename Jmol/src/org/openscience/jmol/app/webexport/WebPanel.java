@@ -48,7 +48,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipEntry;
 import java.util.Enumeration;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 
 import javax.swing.BorderFactory;
@@ -596,7 +596,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
         } catch (IOException IOe) {
           throw IOe;
         }
-        List<String> filesToCopy = new List<String>();
+        Lst<String> filesToCopy = new Lst<String>();
         String localPath = localAppletPath.getText();
         if (localPath.equals(".") || remoteAppletPath.getText().equals(".")) {
           try{
@@ -982,13 +982,13 @@ class ArrayListTransferHandler extends TransferHandler {
       return false;
     }
     JList<?> target = null;
-    List<?> alist = null;
+    Lst<?> alist = null;
     try {
       target = (JList<?>) c;
       if (hasLocalArrayListFlavor(t.getTransferDataFlavors())) {
-        alist = (List<?>) t.getTransferData(localArrayListFlavor);
+        alist = (Lst<?>) t.getTransferData(localArrayListFlavor);
       } else if (hasSerialArrayListFlavor(t.getTransferDataFlavors())) {
-        alist = (List<?>) t.getTransferData(serialArrayListFlavor);
+        alist = (Lst<?>) t.getTransferData(serialArrayListFlavor);
       } else {
         return false;
       }
@@ -1133,7 +1133,7 @@ class ArrayListTransferHandler extends TransferHandler {
       if (values == null || values.size() == 0) {
         return null;
       }
-      List<String> alist = new List<String>();
+      Lst<String> alist = new Lst<String>();
       for (int i = 0; i < values.size(); i++) {
         Object o = values.get(i);
         String str = o.toString();
@@ -1152,9 +1152,9 @@ class ArrayListTransferHandler extends TransferHandler {
   }
 
   class ArrayListTransferable implements Transferable {
-    List<String> data;
+    Lst<String> data;
 
-    ArrayListTransferable(List<String> alist) {
+    ArrayListTransferable(Lst<String> alist) {
       data = alist;
     }
 

@@ -24,7 +24,7 @@
 
 package org.jmol.adapter.readers.more;
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.JmolAdapter;
@@ -126,7 +126,7 @@ public class MdTopReader extends ForceFieldReader {
   }
 
   private String[] getDataBlock() throws Exception {
-    List<String> vdata = new  List<String>();
+    Lst<String> vdata = new  Lst<String>();
     // for these purposes, we just read the first length
     discardLinesUntilContains("FORMAT");
     int n = getFortranFormatLengths(line.substring(line.indexOf("("))).get(0).intValue();

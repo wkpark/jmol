@@ -30,7 +30,7 @@ import org.jmol.adapter.smarter.Bond;
 import java.io.IOException;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.V3;
 
@@ -69,15 +69,18 @@ public class GaussianFchkReader extends MOReader {
     readPartialCharges();
     readBasis();
     readMOs();
-    //readFrequencies();
+    readFrequencies();
     continuing = false;
   }
 
   private void readAllData() throws Exception {
     while ((line == null ? rd() : line) != null) {
-      if (line.length() < 40)
+      if (line.length() < 40) {
+        if (line.indexOf("NumAtom") == 0)
+          return;
         continue;
-      String name = PT.rep(line.substring(0, 40).trim(), " ","");
+      }
+      String name = PT.rep(line.substring(0, 40).trim(), " ", "");
       char type = line.charAt(43);
       boolean isArray = (line.indexOf("N=") >= 0);
       String v = line.substring(50).trim();
@@ -157,22 +160,24 @@ public class GaussianFchkReader extends MOReader {
 
   private void readBonds() {
     try {
-    float[] nBond = (float[]) fileData.get("NBond");
-    float[] iBond = (float[]) fileData.get("IBond");
-    if (nBond.length == 0)
-      return;
-    float[] rBond = (float[]) fileData.get("RBond");
-    // MxBond record is not critical here
-    int mxBond = rBond.length / nBond.length;
-    for (int ia = 0, pt = 0; ia < atomCount; ia++)
-      for (int j = 0; j < mxBond; j++, pt++) {
-        int ib = (int) iBond[pt] - 1;
-        if (ib <= ia)
-          continue;
-        float order = rBond[pt];
-        int iorder = (order == 1.5f ? JmolAdapter.ORDER_AROMATIC : (int) order);
-        asc.addBond(new Bond(ia, ib, iorder));
-      }
+      float[] nBond = (float[]) fileData.get("NBond");
+      float[] iBond = (float[]) fileData.get("IBond");
+      if (nBond.length == 0)
+        return;
+      float[] rBond = (float[]) fileData.get("RBond");
+      // MxBond record is not critical here
+      int mxBond = rBond.length / nBond.length;
+      for (int ia = 0, pt = 0; ia < atomCount; ia++)
+        for (int j = 0; j < mxBond; j++, pt++) {
+          int ib = (int) iBond[pt] - 1;
+          if (ib <= ia)
+            continue;
+          float order = rBond[pt];
+          int iorder = (order == 1.5f ? JmolAdapter.ORDER_AROMATIC
+              : (int) order);
+          asc.addBond(new Bond(ia, ib, iorder));
+        }
+      addJmolScript("connect 1.1 {_H} {*} ");
     } catch (Exception e) {
       Logger.info("GaussianFchkReader -- bonding ignored");
     }
@@ -269,7 +274,7 @@ public class GaussianFchkReader extends MOReader {
     if (types == null)
       return;
     shellCount = types.length;    
-    shells = new  List<int[]>();
+    shells = new  Lst<int[]>();
     float[] pps = (float[]) fileData.get("Numberofprimitivespershell");
     float[] atomMap = (float[]) fileData.get("Shelltoatommap");
     float[] exps = (float[]) fileData.get("Primitiveexponents");
@@ -348,43 +353,43 @@ public class GaussianFchkReader extends MOReader {
   }
 
   private void readFrequencies() throws Exception, IOException {
-//    discardLinesUntilContains(":");
-//    if (line == null)
-//      throw (new Exception("No frequencies encountered"));
-//    while ((line= rd()) != null && line.length() > 15) {
-//      // we now have the line with the vibration numbers in them, but don't need it
-//      String[] symmetries = getTokensStr(rd());
-//      String[] frequencies = getTokensAt(
-//          discardLinesUntilStartsWith(" Frequencies"), 15);
-//      String[] red_masses = getTokensAt(
-//          discardLinesUntilStartsWith(" Red. masses"), 15);
-//      String[] frc_consts = getTokensAt(
-//          discardLinesUntilStartsWith(" Frc consts"), 15);
-//      String[] intensities = getTokensAt(
-//          discardLinesUntilStartsWith(" IR Inten"), 15);
-//      int iAtom0 = asc.ac;
-//      int ac = asc.getLastAtomSetAtomCount();
-//      int frequencyCount = frequencies.length;
-//      boolean[] ignore = new boolean[frequencyCount];
-//      for (int i = 0; i < frequencyCount; ++i) {
-//        ignore[i] = !doGetVibration(++vibrationNumber);
-//        if (ignore[i])
-//          continue;  
-//        asc.cloneLastAtomSet();
-//        // set the properties
-//        //String name = asc.setAtomSetFrequency("Calculation " + calculationNumber, symmetries[i], frequencies[i], null);
-//        //appendLoadNote("model " + asc.atomSetCount + ": " + name);
-//        //namedSets.set(asc.currentAtomSetIndex);
-//        asc.setAtomSetModelProperty("ReducedMass",
-//            red_masses[i]+" AMU");
-//        asc.setAtomSetModelProperty("ForceConstant",
-//            frc_consts[i]+" mDyne/A");
-//        asc.setAtomSetModelProperty("IRIntensity",
-//            intensities[i]+" KM/Mole");
-//      }
-//      discardLinesUntilContains(" AN ");
-//      fillFrequencyData(iAtom0, ac, ac, ignore, true, 0, 0, null, 0);
-//    }
+    rd();
+    if (line == null)
+      throw (new Exception("No frequencies encountered"));
+    while ((line= rd()) != null && line.length() > 15) {
+      // we now have the line with the vibration numbers in them, but don't need it
+      String[] symmetries = getTokensStr(rd());
+      String[] frequencies = getTokensAt(
+          discardLinesUntilStartsWith(" Frequencies"), 15);
+      String[] red_masses = getTokensAt(
+          discardLinesUntilStartsWith(" Red. masses"), 15);
+      String[] frc_consts = getTokensAt(
+          discardLinesUntilStartsWith(" Frc consts"), 15);
+      String[] intensities = getTokensAt(
+          discardLinesUntilStartsWith(" IR Inten"), 15);
+      int iAtom0 = asc.ac;
+      int ac = asc.getLastAtomSetAtomCount();
+      int frequencyCount = frequencies.length;
+      boolean[] ignore = new boolean[frequencyCount];
+      for (int i = 0; i < frequencyCount; ++i) {
+        ignore[i] = !doGetVibration(++vibrationNumber);
+        if (ignore[i])
+          continue;  
+        asc.cloneLastAtomSet();
+        // set the properties
+        //String name = asc.setAtomSetFrequency("Calculation " + calculationNumber, symmetries[i], frequencies[i], null);
+        //appendLoadNote("model " + asc.atomSetCount + ": " + name);
+        //namedSets.set(asc.currentAtomSetIndex);
+        asc.setAtomSetModelProperty("ReducedMass",
+            red_masses[i]+" AMU");
+        asc.setAtomSetModelProperty("ForceConstant",
+            frc_consts[i]+" mDyne/A");
+        asc.setAtomSetModelProperty("IRIntensity",
+            intensities[i]+" KM/Mole");
+      }
+      discardLinesUntilContains(" AN ");
+      fillFrequencyData(iAtom0, ac, ac, ignore, true, 0, 0, null, 0);
+    }
   }
   
 }

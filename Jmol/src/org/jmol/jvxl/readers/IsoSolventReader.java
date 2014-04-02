@@ -24,7 +24,7 @@
 
 package org.jmol.jvxl.readers;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -149,8 +149,8 @@ class IsoSolventReader extends AtomDataReader {
   private BS bsSurfacePoints, bsSurfaceDone;
   private BS[] bsLocale;
   private Map<String, Edge> htEdges;
-  protected List<Edge> vEdges;
-  private List<Face> vFaces;
+  protected Lst<Edge> vEdges;
+  private Lst<Face> vFaces;
   
   final private P3 ptS1 = new P3();
   final private P3 ptS2 = new P3();
@@ -255,7 +255,7 @@ class IsoSolventReader extends AtomDataReader {
     }
     unsetVoxelData();
     // apply cap here
-    List<Object[]> info = params.slabInfo;
+    Lst<Object[]> info = params.slabInfo;
     if (info != null)
       for (int i = 0; i < info.size(); i++)
         if (((Boolean) info.get(i)[2]).booleanValue()
@@ -583,7 +583,7 @@ class IsoSolventReader extends AtomDataReader {
       // PHASE I: Construction of the surface edge and face data
 
       // 1) -- same as MSMS -- get edges
-      vEdges = new  List<Edge>();
+      vEdges = new  Lst<Edge>();
       bsLocale = new BS[myAtomCount];
       htEdges = new Hashtable<String, Edge>();
       //long t = System.currentTimeMillis();
@@ -593,7 +593,7 @@ class IsoSolventReader extends AtomDataReader {
 
       // 2) -- as in MSMS BUT get two faces for each atom triple
       // 3) -- check for interference of solvent position with other atoms
-      vFaces = new  List<Face>();
+      vFaces = new  Lst<Face>();
       getFaces();
       
       //System.out.println("f " + (System.currentTimeMillis() - t));

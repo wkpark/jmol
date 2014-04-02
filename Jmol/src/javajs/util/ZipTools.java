@@ -254,7 +254,7 @@ public class ZipTools implements GenericZipTools {
                                                   String manifestID)
       throws IOException {
     bis = Rdr.getPngZipStream(bis, true);
-    List<String> v = new List<String>();
+    Lst<String> v = new Lst<String>();
     ZipInputStream zis = new ZipInputStream(bis);
     ZipEntry ze;
     String manifest = null;

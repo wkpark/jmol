@@ -25,7 +25,7 @@ package org.jmol.modelsetbio;
 
 import javajs.util.AU;
 import javajs.util.OC;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.SB;
 
 import java.util.Hashtable;
@@ -124,7 +124,7 @@ public final class BioModel extends Model{
     return (asDSSP ? calculateDssp(null, doReport, dsspIgnoreHydrogen, setStructure) : "");
   }
   
-  private String calculateDssp(List<Bond> vHBonds, boolean doReport,
+  private String calculateDssp(Lst<Bond> vHBonds, boolean doReport,
                                boolean dsspIgnoreHydrogen, boolean setStructure) {
     return ((DSSPInterface) Interface.getOption("dssx.DSSP"))
         .calculateDssp(bioPolymers, bioPolymerCount, vHBonds, doReport,
@@ -208,7 +208,7 @@ public final class BioModel extends Model{
   public int calculateStruts(ModelSet modelSet, BS bs1, BS bs2) {
 
     // only check the atoms in THIS model
-    List<Atom> vCA = new  List<Atom>();
+    Lst<Atom> vCA = new  Lst<Atom>();
     Atom a1 = null;
     BS bsCheck;
     if (bs1.equals(bs2)) {
@@ -231,7 +231,7 @@ public final class BioModel extends Model{
     short mad = (short) (vwr.getFloat(T.strutdefaultradius) * 2000);
     int delta = vwr.getInt(T.strutspacing);
     boolean strutsMultiple = vwr.getBoolean(T.strutsmultiple);
-    List<Atom[]> struts = getBioPolymer(a1.getPolymerIndexInModel())
+    Lst<Atom[]> struts = getBioPolymer(a1.getPolymerIndexInModel())
         .calculateStruts(modelSet, bs1, bs2, vCA, thresh, delta, strutsMultiple);
     for (int i = 0; i < struts.size(); i++) {
       Atom[] o = struts.get(i);
@@ -257,7 +257,7 @@ public final class BioModel extends Model{
   
   
   @Override
-  public void getPolymerPointsAndVectors(BS bs, List<P3[]> vList,
+  public void getPolymerPointsAndVectors(BS bs, Lst<P3[]> vList,
                                          boolean isTraceAlpha,
                                          float sheetSmoothing) {
     int last = Integer.MAX_VALUE - 1;
@@ -279,7 +279,7 @@ public final class BioModel extends Model{
 
   
   @Override
-  public List<BS> getBioBranches(List<BS> biobranches) {
+  public Lst<BS> getBioBranches(Lst<BS> biobranches) {
     // scan through biopolymers quickly -- 
     BS bsBranch;
     for (int j = 0; j < bioPolymerCount; j++) {
@@ -288,7 +288,7 @@ public final class BioModel extends Model{
       int iAtom = bsBranch.nextSetBit(0);
       if (iAtom >= 0) {
         if (biobranches == null)
-          biobranches = new  List<BS>();
+          biobranches = new  Lst<BS>();
         biobranches.addLast(bsBranch);
       }
     }
@@ -328,12 +328,12 @@ public final class BioModel extends Model{
 
   @Override
   public void getRasmolHydrogenBonds(BS bsA, BS bsB,
-                                     List<Bond> vHBonds, boolean nucleicOnly,
+                                     Lst<Bond> vHBonds, boolean nucleicOnly,
                                      int nMax, boolean dsspIgnoreHydrogens,
                                      BS bsHBonds) {    
     boolean doAdd = (vHBonds == null);
     if (doAdd)
-      vHBonds = new  List<Bond>();
+      vHBonds = new  Lst<Bond>();
     if (nMax < 0)
       nMax = Integer.MAX_VALUE;
     boolean asDSSP = (bsB == null);
@@ -454,10 +454,10 @@ public final class BioModel extends Model{
   @Override
   public void getAllPolymerInfo(
                                 BS bs,
-                                Map<String, List<Map<String, Object>>> finalInfo,
-                                List<Map<String, Object>> modelVector) {
+                                Map<String, Lst<Map<String, Object>>> finalInfo,
+                                Lst<Map<String, Object>> modelVector) {
     Map<String, Object> modelInfo = new Hashtable<String, Object>();
-    List<Map<String, Object>> info = new  List<Map<String, Object>>();
+    Lst<Map<String, Object>> info = new  Lst<Map<String, Object>>();
     for (int ip = 0; ip < bioPolymerCount; ip++) {
       Map<String, Object> polyInfo = bioPolymers[ip].getPolymerInfo(bs); 
       if (!polyInfo.isEmpty())

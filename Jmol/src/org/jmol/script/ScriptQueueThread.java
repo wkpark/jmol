@@ -29,7 +29,7 @@ package org.jmol.script;
 
 import org.jmol.api.JmolScriptManager;
 import org.jmol.thread.JmolThread;
-import javajs.util.List;
+import javajs.util.Lst;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
 
@@ -78,11 +78,11 @@ public class ScriptQueueThread extends JmolThread {
   }
 
   private boolean runNextScript() {
-    List<List<Object>> queue = scriptManager.getScriptQueue();
+    Lst<Lst<Object>> queue = scriptManager.getScriptQueue();
     if (queue.size() == 0)
       return false;
     //Logger.info("SCRIPT QUEUE BUSY" +  scriptQueue.size());
-    List<Object> scriptItem = scriptManager.getScriptItem(false, startedByCommandThread);
+    Lst<Object> scriptItem = scriptManager.getScriptItem(false, startedByCommandThread);
     if (scriptItem == null)
       return false; 
     String script = (String) scriptItem.get(0);

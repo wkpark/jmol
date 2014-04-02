@@ -32,7 +32,7 @@ import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.JmolAdapter;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 
 import java.util.Hashtable;
 import java.util.Map;
@@ -221,7 +221,7 @@ class SpartanArchive {
 
      */
 
-    List<int[]> shells = new  List<int[]>();
+    Lst<int[]> shells = new  Lst<int[]>();
     float[][] gaussians = AU.newFloat2(gaussianCount);
     int[] typeArray = new int[gaussianCount];
     //if (false) { // checking these still
@@ -339,7 +339,7 @@ class SpartanArchive {
 
   void readMolecularOrbital() throws Exception {
     int tokenPt = 0;
-    r.orbitals = new  List<Map<String, Object>>();
+    r.orbitals = new  Lst<Map<String, Object>>();
     String[] tokens = getTokens("");
     float[] energies = new float[moCount];
     float[][] coefficients = new float[moCount][coefCount];
@@ -409,7 +409,7 @@ class SpartanArchive {
     String keyName = tokens[2];
     boolean isDipole = (keyName.equals("DIPOLE_VEC"));
     Object value = new Object();
-    List<Object> vector = new  List<Object>();
+    Lst<Object> vector = new  Lst<Object>();
     if (tokens[3].equals("=")) {
       if (isString) {
         value = getQuotedString(tokens[4].substring(0, 1));
@@ -421,7 +421,7 @@ class SpartanArchive {
       if (nValues == 0)
         nValues = 1;
       boolean isArray = (tokens.length == 6);
-      List<Float> atomInfo = new  List<Float>();
+      Lst<Float> atomInfo = new  Lst<Float>();
       int ipt = 0;
       while (readLine() != null
           && !line.substring(0, 3).equals("END")) {
@@ -437,7 +437,7 @@ class SpartanArchive {
               atomInfo.addLast(Float.valueOf(parseFloat(tokens2[i])));
               if ((ipt + 1) % nValues == 0) {
                 vector.addLast(atomInfo);
-                atomInfo = new  List<Float>();
+                atomInfo = new  Lst<Float>();
               }
             } else {
               value = Float.valueOf(parseFloat(tokens2[i]));
@@ -465,8 +465,8 @@ class SpartanArchive {
     readLine();
     String label = "";
     int frequencyCount = parseInt(line);
-    List<List<List<Float>>> vibrations = new  List<List<List<Float>>>();
-    List<Map<String, Object>> freqs = new  List<Map<String,Object>>();
+    Lst<Lst<Lst<Float>>> vibrations = new  Lst<Lst<Lst<Float>>>();
+    Lst<Map<String, Object>> freqs = new  Lst<Map<String,Object>>();
     if (Logger.debugging) {
       Logger.debug("reading VIBFREQ vibration records: frequencyCount = "
           + frequencyCount);
@@ -493,8 +493,8 @@ class SpartanArchive {
     }
     r.asc.setAtomSetCollectionAuxiliaryInfo("VibFreqs", freqs);
     int ac = r.asc.getFirstAtomSetAtomCount();
-    List<List<Float>> vib = new  List<List<Float>>();
-    List<Float> vibatom = new  List<Float>();
+    Lst<Lst<Float>> vib = new  Lst<Lst<Float>>();
+    Lst<Float> vibatom = new  Lst<Float>();
     int ifreq = 0;
     int iatom = ac;
     int nValues = 3;
@@ -509,7 +509,7 @@ class SpartanArchive {
           if (!ignore[ifreq]) {
             r.asc.addVibrationVector(iatom, atomInfo[0], atomInfo[1], atomInfo[2]);
             vib.addLast(vibatom);
-            vibatom = new  List<Float>();
+            vibatom = new  Lst<Float>();
           }
           ++iatom;
         }
@@ -518,7 +518,7 @@ class SpartanArchive {
         if (!ignore[ifreq]) {
           vibrations.addLast(vib);
         }
-        vib = new  List<List<Float>>();
+        vib = new  Lst<Lst<Float>>();
         if (++ifreq == frequencyCount) {
           break; // /loop exit
         }
@@ -529,15 +529,15 @@ class SpartanArchive {
 
   @SuppressWarnings("unchecked")
   private void setVibrationsFromProperties() throws Exception {
-    List<List<Float>> freq_modes = (List<List<Float>>) r.asc.getAtomSetCollectionAuxiliaryInfo("FREQ_MODES");
+    Lst<Lst<Float>> freq_modes = (Lst<Lst<Float>>) r.asc.getAtomSetCollectionAuxiliaryInfo("FREQ_MODES");
     if (freq_modes == null) {
       return;
     }
-    List<String> freq_lab = (List<String>) r.asc.getAtomSetCollectionAuxiliaryInfo("FREQ_LAB");
-    List<Float> freq_val = (List<Float>) r.asc.getAtomSetCollectionAuxiliaryInfo("FREQ_VAL");
+    Lst<String> freq_lab = (Lst<String>) r.asc.getAtomSetCollectionAuxiliaryInfo("FREQ_LAB");
+    Lst<Float> freq_val = (Lst<Float>) r.asc.getAtomSetCollectionAuxiliaryInfo("FREQ_VAL");
     int frequencyCount = freq_val.size();
-    List<List<List<Float>>> vibrations = new  List<List<List<Float>>>();
-    List<Map<String, Object>> freqs = new  List<Map<String,Object>>();
+    Lst<Lst<Lst<Float>>> vibrations = new  Lst<Lst<Lst<Float>>>();
+    Lst<Map<String, Object>> freqs = new  Lst<Map<String,Object>>();
     if (Logger.debugging) {
       Logger.debug(
           "reading PROP VALUE:VIB FREQ_MODE vibration records: frequencyCount = " + frequencyCount);
@@ -566,10 +566,10 @@ class SpartanArchive {
       if (!r.doGetVibration(i + 1))
         continue;
       int ipt = 0;
-      List<List<Float>> vib = new  List<List<Float>>();
-      List<Float> mode = freq_modes.get(i);
+      Lst<Lst<Float>> vib = new  Lst<Lst<Float>>();
+      Lst<Float> mode = freq_modes.get(i);
       for (int ia = 0; ia < ac; ia++, iatom++) {
-        List<Float> vibatom = new  List<Float>();
+        Lst<Float> vibatom = new  Lst<Float>();
         float vx = (v = mode.get(ipt++)).floatValue();
         vibatom.addLast(v);
         float vy = (v = mode.get(ipt++)).floatValue();

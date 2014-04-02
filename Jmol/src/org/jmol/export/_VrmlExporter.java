@@ -27,7 +27,7 @@ package org.jmol.export;
 
 
 import javajs.awt.Font;
-import javajs.util.List;
+import javajs.util.Lst;
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -304,7 +304,7 @@ public class _VrmlExporter extends __CartesianExporter {
                                short[] polygonColixes,
                                int nVertices, int nPolygons, int nFaces, BS bsPolygons,
                                int faceVertexMax, short colix,
-                               List<Short> colorList, Map<Short, Integer> htColixes, P3 offset) {
+                               Lst<Short> colorList, Map<Short, Integer> htColixes, P3 offset) {
     output("Shape {\n");
     outputAppearance(colix, false);
     output(" geometry IndexedFaceSet {\n");
@@ -327,7 +327,7 @@ public class _VrmlExporter extends __CartesianExporter {
     // normals
 
     if (normals != null) {
-      List<String> vNormals = new  List<String>();
+      Lst<String> vNormals = new  Lst<String>();
       map = getNormalMap(normals, nVertices, null, vNormals);
       output("  solid FALSE\n  normalPerVertex TRUE\n   normal Normal {\n  vector [\n");
       outputNormals(vNormals);
@@ -362,14 +362,14 @@ public class _VrmlExporter extends __CartesianExporter {
       output(map[face[0]] + " " + map[face[2]] + " " + map[face[3]] + " -1\n");
   }
 
-  protected void outputNormals(List<String> vNormals) {
+  protected void outputNormals(Lst<String> vNormals) {
     int n = vNormals.size();
     for (int i = 0; i < n; i++) {
       output(vNormals.get(i));
     }
   }
 
-  protected void outputColors(List<Short> colorList) {
+  protected void outputColors(Lst<Short> colorList) {
     int nColors = colorList.size();
     for (int i = 0; i < nColors; i++) {
       String color = rgbFractionalFromColix(colorList.get(i).shortValue());

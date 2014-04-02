@@ -1,13 +1,13 @@
 package org.jmol.minimize.forcefield;
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 import org.jmol.minimize.MinBond;
 import org.jmol.minimize.Util;
 
 class UFFTorsionCalc extends Calculation {
 
-void setData(List<Object[]> calc, int[] t) {
+void setData(Lst<Object[]> calc, int[] t) {
     double cosNPhi0 = -1; // n * phi0 = 180; max at 0 
     int n = 0;
     double V = 0;

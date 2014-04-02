@@ -28,7 +28,7 @@ import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 
 import java.util.Hashtable;
@@ -88,7 +88,7 @@ abstract public class MOReader extends BasisFunctionReader {
   protected float[][] gaussians;
   protected String energyUnits = "";
   
-  protected List<String> moTypes;
+  protected Lst<String> moTypes;
   private boolean getNBOs;
   private boolean getNBOCharges;
   protected boolean haveNboCharges;
@@ -201,7 +201,7 @@ abstract public class MOReader extends BasisFunctionReader {
 
    */
   protected void getNboTypes() throws Exception {
-    moTypes = new  List<String>();
+    moTypes = new  Lst<String>();
     iMo0 = (orbitals == null ? 0 : orbitals.size()) + 1;
     rd();
     rd();
@@ -295,13 +295,13 @@ abstract public class MOReader extends BasisFunctionReader {
     // and these will replace previous results. 
     // we still need atom positions and bases functions.
     if (haveNboOrbitals) {
-      orbitals = new  List<Map<String,Object>>();
+      orbitals = new  Lst<Map<String,Object>>();
       alphaBeta = "";
     }
     haveNboOrbitals = true;
     orbitalsRead = true;
     Map<String, Object>[] mos = null;
-    List<String>[] data = null;
+    Lst<String>[] data = null;
     String dCoeffLabels = "";
     String fCoeffLabels = "";
     String pCoeffLabels = "";
@@ -414,7 +414,7 @@ abstract public class MOReader extends BasisFunctionReader {
         }
         for (int i = 0; i < nThisLine; i++) {
           mos[i] = new Hashtable<String, Object>();
-          data[i] = new  List<String>();
+          data[i] = new  Lst<String>();
         }
         getMOHeader(headerType, tokens, mos, nThisLine);
         continue;
@@ -527,7 +527,7 @@ abstract public class MOReader extends BasisFunctionReader {
     }
   }
 
-  protected void addMOData(int nColumns, List<String>[] data, Map<String, Object>[] mos) {
+  protected void addMOData(int nColumns, Lst<String>[] data, Map<String, Object>[] mos) {
     for (int i = 0; i < nColumns; i++) {
       float[] coefs = new float[data[i].size()];
       for (int j = coefs.length; --j >= 0;)
@@ -549,7 +549,7 @@ abstract public class MOReader extends BasisFunctionReader {
       finalizeMOData(lastMoData = moData);
     }
     if (clearOrbitals) {
-      orbitals = new  List<Map<String, Object>>();
+      orbitals = new  Lst<Map<String, Object>>();
       moData = new Hashtable<String, Object>();
       alphaBeta = "";
     }
@@ -579,7 +579,7 @@ xxxxxxxxxxxxxxxxxxxxxxxxxx yyyyyyyyyyyyyyyyyyyyyyyyyyy zzzzzzz ....... ffffffff
     for (int i = moTypes.size(); --i >= 0;)
       ht.put(PT.rep(moTypes.get(i).substring(10), " ", ""),
           Integer.valueOf(i + iMo0));
-    List<String[]> strSecondOrderData = new  List<String[]>();
+    Lst<String[]> strSecondOrderData = new  Lst<String[]>();
     while (rd() != null && line.indexOf("NBO") < 0) {
       if (line.length() < 5 || line.charAt(4) != '.')
         continue;

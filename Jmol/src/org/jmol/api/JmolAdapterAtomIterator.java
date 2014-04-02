@@ -27,7 +27,7 @@ package org.jmol.api;
 
 import org.jmol.java.BS;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.P3;
 import javajs.util.V3;
 
@@ -51,7 +51,7 @@ public interface JmolAdapterAtomIterator {
 
 	abstract public float getPartialCharge();
 
-	abstract public List<Object> getTensors();
+	abstract public Lst<Object> getTensors();
 
 	abstract public float getRadius();
 

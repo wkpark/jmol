@@ -28,7 +28,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 
 import java.util.Hashtable;
@@ -205,7 +205,7 @@ public class ForceFieldMMFF extends ForceField {
   private static final int TYPE_OOP = 0xD;     // 00 1101;
   
 
-  private static List<AtomType> atomTypes;
+  private static Lst<AtomType> atomTypes;
   private static Map<Object, Object> ffParams;
 
   private int[] rawAtomTypes;
@@ -228,7 +228,7 @@ public class ForceFieldMMFF extends ForceField {
    * vRings[2] list of all 5-membered rings
    * vRings[3] list of aromatic 5-membered and 6-membered rings
    */
-  private List<BS>[] vRings;
+  private Lst<BS>[] vRings;
   
   public ForceFieldMMFF(Minimizer m) {
     this.minimizer = m;
@@ -466,7 +466,7 @@ public class ForceFieldMMFF extends ForceField {
 
   private void getAtomTypes() {
     String resourceName = "MMFF94-smarts.txt";
-    List<AtomType> types = new  List<AtomType>();
+    Lst<AtomType> types = new  Lst<AtomType>();
     try {
       BufferedReader br = getBufferedReader(resourceName);      
       //turns out from the Jar file
@@ -815,8 +815,8 @@ public class ForceFieldMMFF extends ForceField {
    */
   private static int[] setAtomTypes(Atom[] atoms, BS bsAtoms,
                                     SmilesMatcherInterface smartsMatcher,
-                                    List<BS>[] vRings, boolean allowUnknowns) {
-    List<BS> bitSets = new  List<BS>();
+                                    Lst<BS>[] vRings, boolean allowUnknowns) {
+    Lst<BS> bitSets = new  Lst<BS>();
     String[] smarts = new String[atomTypes.size()];
     int[] types = new int[atoms.length];
     BS bsElements = new BS();
@@ -1027,7 +1027,7 @@ public class ForceFieldMMFF extends ForceField {
     return minAtoms[iAtom].ffType;
   }
   
-  private boolean checkRings(List<BS> v, int[] minlist, int n) {
+  private boolean checkRings(Lst<BS> v, int[] minlist, int n) {
     if (v != null)
       for (int i = v.size(); --i >= 0;) {
         BS bs = v.get(i);

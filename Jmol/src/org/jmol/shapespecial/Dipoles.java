@@ -41,7 +41,7 @@ import org.jmol.modelset.Bond;
 import org.jmol.modelset.BondIterator;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.SB;
 
 import java.util.Hashtable;
@@ -576,8 +576,8 @@ public class Dipoles extends Shape {
   }
 
   @Override
-  public List<Map<String, Object>> getShapeDetail() {
-    List<Map<String, Object>> V = new  List<Map<String,Object>>();
+  public Lst<Map<String, Object>> getShapeDetail() {
+    Lst<Map<String, Object>> V = new  Lst<Map<String,Object>>();
     Map<String, Object> atomInfo;
     for (int i = 0; i < dipoleCount; i++) {
       Map<String, Object> info = new Hashtable<String, Object>();
@@ -588,7 +588,7 @@ public class Dipoles extends Shape {
       if (dipole.atoms[0] != null) {
         atomInfo = new Hashtable<String, Object>();
         vwr.getAtomIdentityInfo(dipole.atoms[0].i, atomInfo);
-        List<Map<String, Object>> atoms = new  List<Map<String,Object>>();
+        Lst<Map<String, Object>> atoms = new  Lst<Map<String,Object>>();
         atoms.addLast(atomInfo);
         atomInfo = new Hashtable<String, Object>();
         vwr.getAtomIdentityInfo(dipole.atoms[1].i, atomInfo);

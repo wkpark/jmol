@@ -41,7 +41,7 @@ import javajs.util.Quat;
 import org.jmol.util.Tensor;
 import javajs.util.V3;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.SB;
 
 import java.util.Arrays;
@@ -114,7 +114,7 @@ public class CrystalReader extends AtomSetCollectionReader {
   private int[] atomFrag;
   private int[] primitiveToIndex;
   private float[] nuclearCharges;
-  private List<String> vCoords;
+  private Lst<String> vCoords;
 
   private Double energy;
   private P3 ptOriginShift = new P3();
@@ -546,11 +546,11 @@ public class CrystalReader extends AtomSetCollectionReader {
   // 
 
 
-  private List<String> vPrimitiveMapping;
+  private Lst<String> vPrimitiveMapping;
   private void readPrimitiveMapping() throws Exception {
     if (havePrimitiveMapping)
       return;
-    vPrimitiveMapping = new List<String>();    
+    vPrimitiveMapping = new Lst<String>();    
     while (rd() != null && line.indexOf("NUMBER") < 0)
       vPrimitiveMapping.addLast(line);
   }
@@ -735,7 +735,7 @@ public class CrystalReader extends AtomSetCollectionReader {
   private void readCoordLines() throws Exception {
     rd();
     rd();
-    vCoords = new  List<String>();
+    vCoords = new  Lst<String>();
     while (rd() != null && line.length() > 0)
       vCoords.addLast(line);
   }
@@ -928,7 +928,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     // This line is always there
     boolean haveIntensities = (line.indexOf("INTENS") >= 0);
     rd();
-    List<String[]> vData = new  List<String[]>();
+    Lst<String[]> vData = new  Lst<String[]>();
     int freqAtomCount = ac;
     while (rd() != null && line.length() > 0) {
       int i0 = parseIntRange(line, 1, 5);

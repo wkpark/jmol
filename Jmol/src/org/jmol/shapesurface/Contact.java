@@ -26,7 +26,7 @@
 package org.jmol.shapesurface;
 
 import javajs.util.CU;
-import javajs.util.List;
+import javajs.util.Lst;
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -208,7 +208,7 @@ public class Contact extends Isosurface {
                   EnumVdw.AUTO);
       */
       float volume = 0;
-      List<ContactPair> pairs = getPairs(bsA, bsB, rd, intramolecularMode, doEditCpList);
+      Lst<ContactPair> pairs = getPairs(bsA, bsB, rd, intramolecularMode, doEditCpList);
       thisMesh.info = pairs;
       volume += combineSurfaces(pairs, contactType, displayType, parameters,
           func, colorDensity, colorByType);
@@ -278,7 +278,7 @@ public class Contact extends Isosurface {
    * @param colorByType  
    * @return               volume
    */
-  private float combineSurfaces(List<ContactPair> pairs, int contactType,
+  private float combineSurfaces(Lst<ContactPair> pairs, int contactType,
                                 int displayType, float[] parameters,
                                 Object func, boolean isColorDensity,
                                 boolean colorByType) {
@@ -356,9 +356,9 @@ public class Contact extends Isosurface {
    * @param doEditCpList 
    * @return a list of pairs of atoms to process
    */
-  private List<ContactPair> getPairs(BS bsA, BS bsB, RadiusData rd,
+  private Lst<ContactPair> getPairs(BS bsA, BS bsB, RadiusData rd,
                                      int intramolecularMode, boolean doEditCpList) {
-    List<ContactPair> list = new  List<ContactPair>();
+    Lst<ContactPair> list = new  Lst<ContactPair>();
     AtomData ad = new AtomData();
     ad.radiusData = rd;
     BS bs = BSUtil.copy(bsA);
@@ -654,9 +654,9 @@ public class Contact extends Isosurface {
   protected void addMeshInfo(IsosurfaceMesh mesh, Map<String, Object> info) {
     if (mesh.info == null)
       return;
-    List<Map<String, Object>> pairInfo = new  List<Map<String, Object>>();
+    Lst<Map<String, Object>> pairInfo = new  Lst<Map<String, Object>>();
     info.put("pairInfo", pairInfo);
-    List<ContactPair> list = (List<ContactPair>) mesh.info;
+    Lst<ContactPair> list = (Lst<ContactPair>) mesh.info;
     for (int i = 0; i < list.size(); i++) {
       Map<String, Object> cpInfo = new Hashtable<String, Object>();
       pairInfo.addLast(cpInfo);

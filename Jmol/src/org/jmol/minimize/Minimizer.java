@@ -25,7 +25,7 @@
 package org.jmol.minimize;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -80,7 +80,7 @@ public class Minimizer implements MinimizerInterface {
   private BS bsFixedDefault;
   private BS bsFixed;
   
-  public List<Object[]> constraints;
+  public Lst<Object[]> constraints;
   
   private boolean isSilent;
   
@@ -143,7 +143,7 @@ public class Minimizer implements MinimizerInterface {
       return;
     }
     if (constraints == null) {
-      constraints = new  List<Object[]>();
+      constraints = new  Lst<Object[]>();
       constraintMap = new Hashtable<String, Object[]>();
     }
     if (atoms[1] > atoms[nAtoms]) {
@@ -348,7 +348,7 @@ public class Minimizer implements MinimizerInterface {
   }
 
   private void getBonds() {
-    List<MinBond> bondInfo = new  List<MinBond>();
+    Lst<MinBond> bondInfo = new  Lst<MinBond>();
     bondCount = 0;
     int i1, i2;
     for (int i = 0; i < rawBondCount; i++) {
@@ -388,7 +388,7 @@ public class Minimizer implements MinimizerInterface {
   }
 
   public void getAngles() {
-    List<MinAngle> vAngles = new  List<MinAngle>();
+    Lst<MinAngle> vAngles = new  Lst<MinAngle>();
     int[] atomList;
     int ic;
     for (int i = 0; i < bondCount; i++) {
@@ -431,7 +431,7 @@ public class Minimizer implements MinimizerInterface {
   }
 
   public void getTorsions() {
-    List<MinTorsion> vTorsions = new  List<MinTorsion>();
+    Lst<MinTorsion> vTorsions = new  Lst<MinTorsion>();
     int id;
     // extend all angles a-b-c by one, but only
     // when when c > b or a > b

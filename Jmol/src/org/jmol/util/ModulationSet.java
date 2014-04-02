@@ -6,7 +6,7 @@ import java.util.Map;
 import org.jmol.api.JmolModulationSet;
 import org.jmol.api.SymmetryInterface;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.M3;
 import javajs.util.Matrix;
 import javajs.util.P3;
@@ -28,7 +28,7 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
 
   String id;
   
-  private List<Modulation> mods;
+  private Lst<Modulation> mods;
   private int modDim;
   private int iop;
   private P3 r0;
@@ -131,7 +131,7 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
    * 
    */
 
-  public ModulationSet set(String id, P3 r, int modDim, List<Modulation> mods,
+  public ModulationSet set(String id, P3 r, int modDim, Lst<Modulation> mods,
                            M3 gammaE, Matrix[] factors, int iop,
                            SymmetryInterface symmetry) {
     this.id = id + "_" + symmetry.getSpaceGroupName();
@@ -361,7 +361,7 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
     modInfo.put("strop", strop);
     modInfo.put("unitcell", symmetry.getUnitCellInfo());
 
-    List<Hashtable<String, Object>> mInfo = new List<Hashtable<String, Object>>();
+    Lst<Hashtable<String, Object>> mInfo = new Lst<Hashtable<String, Object>>();
     for (int i = 0; i < mods.size(); i++)
       mInfo.addLast(mods.get(i).getInfo());
     modInfo.put("mods", mInfo);

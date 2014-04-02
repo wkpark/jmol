@@ -1,6 +1,6 @@
 package org.jmol.script;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.M4;
 import javajs.util.P3;
 
@@ -10,8 +10,8 @@ public interface JmolSmilesExtension {
 
   JmolSmilesExtension init(Object se);
 
-  float getSmilesCorrelation(BS bsA, BS bsB, String smiles, List<P3> ptsA,
-                             List<P3> ptsB, M4 m4, List<BS> vReturn,
+  float getSmilesCorrelation(BS bsA, BS bsB, String smiles, Lst<P3> ptsA,
+                             Lst<P3> ptsB, M4 m4, Lst<BS> vReturn,
                              boolean isSmarts, boolean asMap, int[][] mapSet,
                              P3 center, boolean firstMatchOnly, boolean bestMap)
       throws ScriptException;

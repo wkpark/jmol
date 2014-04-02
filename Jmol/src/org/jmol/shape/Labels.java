@@ -36,7 +36,7 @@ import org.jmol.util.C;
 
 import javajs.awt.Font;
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.JC;
 
@@ -141,8 +141,8 @@ public class Labels extends AtomShape {
     if ("label" == propertyName) {
       setScaling();
       LabelToken[][] tokens = null;
-      if (value instanceof List) {
-        List<SV> list = (List<SV>) value;
+      if (value instanceof Lst) {
+        Lst<SV> list = (Lst<SV>) value;
         int n = list.size();
         tokens = new LabelToken[][] { null };
         for (int pt = 0, i = bsSelected.nextSetBit(0); i >= 0 && i < ac; i = bsSelected
@@ -167,7 +167,7 @@ public class Labels extends AtomShape {
 
     if ("labels" == propertyName) {
       setScaling();
-      List<String> labels = (List<String>) value;
+      Lst<String> labels = (Lst<String>) value;
       for (int i = bsSelected.nextSetBit(0), pt = 0; i >= 0 && i < ac; i = bsSelected
           .nextSetBit(i + 1)) {
         String strLabel = labels.get(pt++);

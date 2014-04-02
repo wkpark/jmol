@@ -37,7 +37,7 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolZipUtilities;
 
 import javajs.util.Rdr;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 
 import org.jmol.util.Logger;
@@ -154,7 +154,7 @@ public class JmolBinary {
     return getJzu().determineSurfaceFileType(br);
   }
 
-  public static void getFileReferences(String script, List<String> fileList) {
+  public static void getFileReferences(String script, Lst<String> fileList) {
     for (int ipt = 0; ipt < FileManager.scriptFilePrefixes.length; ipt++) {
       String tag = FileManager.scriptFilePrefixes[ipt];
       int i = -1;

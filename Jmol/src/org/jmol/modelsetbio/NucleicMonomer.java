@@ -32,7 +32,7 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.Chain;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.P3;
 import javajs.util.Quat;
 
@@ -490,7 +490,7 @@ public boolean isCrossLinked(Group g) {
   }
  
   @Override
-  public boolean getCrossLinkLead(List<Integer> vReturn) {
+  public boolean getCrossLinkLead(Lst<Integer> vReturn) {
     Atom N = (isPurine ? getN1() : getN3());
     //System.out.println(N.getInfo());
     Bond[] bonds = N.getBonds();

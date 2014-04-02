@@ -43,7 +43,7 @@
 package org.jmol.adapter.readers.xtal;
 
 import javajs.util.DF;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 
 
@@ -747,7 +747,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
     applySymmetryAndSetTrajectory();
     if (isGammaPoint)
       qvec = null;
-    List<Float> freqs = new  List<Float>();
+    Lst<Float> freqs = new  Lst<Float>();
     while (rd() != null && line.indexOf("Phonon") < 0) {
       tokens = getTokens();
       freqs.addLast(Float.valueOf(parseFloatStr(tokens[1])));

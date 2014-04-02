@@ -39,7 +39,7 @@ import org.jmol.util.C;
 import org.jmol.util.Escape;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.SB;
 import javajs.util.M4;
@@ -66,7 +66,7 @@ public abstract class MeshCollection extends Shape {
 
   protected float displayWithinDistance2;
   protected boolean isDisplayWithinNot;
-  protected List<P3> displayWithinPoints;
+  protected Lst<P3> displayWithinPoints;
   protected BS bsDisplay;
 
   public String[] title;

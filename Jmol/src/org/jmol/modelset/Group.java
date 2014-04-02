@@ -28,7 +28,7 @@ import javajs.J2SRequireImport;
 import org.jmol.util.BSUtil;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.Quat;
 
 import org.jmol.util.Logger;
@@ -453,7 +453,7 @@ public class Group {
    * @param vReturn
    * @return T/F
    */
-  public boolean getCrossLinkLead(List<Integer> vReturn) {
+  public boolean getCrossLinkLead(Lst<Integer> vReturn) {
     return false;
   }
 

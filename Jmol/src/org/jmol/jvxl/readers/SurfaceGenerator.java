@@ -135,7 +135,7 @@ import org.jmol.util.ColorEncoder;
 
 import javajs.api.GenericBinaryDocument;
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 
@@ -888,7 +888,7 @@ public class SurfaceGenerator {
     }
 
     if ("functionXY" == propertyName) {
-      params.setFunctionXY((List<Object>) value);
+      params.setFunctionXY((Lst<Object>) value);
       if (params.isContoured)
         volumeData.setPlaneParameters(P4.new4(0, 0, 1, 0)); // xy plane
       // through
@@ -900,7 +900,7 @@ public class SurfaceGenerator {
     }
 
     if ("functionXYZ" == propertyName) {
-      params.setFunctionXYZ((List<Object>) value);
+      params.setFunctionXYZ((Lst<Object>) value);
       processState();
       return true;
     }
@@ -1226,7 +1226,7 @@ public class SurfaceGenerator {
     surfaceReader = null;
   }
 
-  public List<Object[]> getSlabInfo() {
+  public Lst<Object[]> getSlabInfo() {
     return params.slabInfo;
   }
   

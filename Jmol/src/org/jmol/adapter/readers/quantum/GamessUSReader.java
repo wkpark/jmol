@@ -31,7 +31,7 @@
 package org.jmol.adapter.readers.quantum;
 
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 
 import org.jmol.adapter.smarter.Atom;
@@ -112,7 +112,7 @@ public class GamessUSReader extends GamessReader {
         || line.indexOf("COORDINATES OF ALL ATOMS ARE (ANGS)") >= 0) {
       if (!doGetModel(++modelNumber, null))
         return checkLastModel();
-      atomNames = new  List<String>();
+      atomNames = new  Lst<String>();
       if (isBohr)
         readAtomsInBohrCoordinates();
       else

@@ -8,7 +8,7 @@ import org.jmol.script.ScriptException;
 
 import org.jmol.script.ScriptContext;
 import org.jmol.script.SV;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.SB;
 
 import org.jmol.viewer.ShapeManager;
@@ -34,7 +34,7 @@ public interface JmolScriptEvaluator {
 
   void notifyResumeStatus();
 
-  List<Integer> getAtomBitSetVector(int ac, Object atomExpression);
+  Lst<Integer> getAtomBitSetVector(int ac, Object atomExpression);
 
   boolean isPaused();
 

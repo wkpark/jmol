@@ -24,7 +24,7 @@
 
 package org.jmol.symmetry;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.SB;
 
 
@@ -1134,7 +1134,7 @@ class SymmetryOperation extends M4 {
         // so if a point is in the plane, then N dot X = -d
         float w = -vtemp.x * pa1.x - vtemp.y * pa1.y - vtemp.z * pa1.z;
         P4 plane = P4.new4(vtemp.x, vtemp.y, vtemp.z, w);
-        List<Object> v = new List<Object>();
+        Lst<Object> v = new Lst<Object>();
         v.addLast(uc.getCanonicalCopy(1.05f, false));
         modelSet.intersectPlane(plane, v, 3);
 

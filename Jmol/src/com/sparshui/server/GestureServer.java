@@ -6,7 +6,7 @@ import java.net.Socket;
 import java.util.Map;
 
 import org.jmol.api.JmolGestureServerInterface;
-import javajs.util.List;
+import javajs.util.Lst;
 import org.jmol.util.Logger;
 
 import com.sparshui.common.ConnectionType;
@@ -31,7 +31,7 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
   ServerSocket _clientSocket;
   ServerSocket _deviceSocket;
   ServerSocket _mySocket;
-  private List<ClientConnection> _clients = new List<ClientConnection>();
+  private Lst<ClientConnection> _clients = new Lst<ClientConnection>();
   private int port;
 
   InputDeviceConnection ic = null;
@@ -256,7 +256,7 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
    * 
    */
   private boolean processBirth(TouchPoint touchPoint) {
-    List<ClientConnection> clients_to_remove = null;
+    Lst<ClientConnection> clients_to_remove = null;
     boolean isClaimed = false;
     for (int i = 0; i < main._clients.size(); i++) {
       ClientConnection client = main._clients.get(i);
@@ -273,7 +273,7 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
         // with the client. In this case, we will want
         // to remove the client.
         if (clients_to_remove == null)
-          clients_to_remove = new List<ClientConnection>();
+          clients_to_remove = new Lst<ClientConnection>();
         clients_to_remove.addLast(client);
       }
     }

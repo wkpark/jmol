@@ -6,7 +6,7 @@ import java.util.Hashtable;
 import org.jmol.api.JmolJSpecView;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
-import javajs.util.List;
+import javajs.util.Lst;
 
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
@@ -49,7 +49,7 @@ public class JSpecView implements JmolJSpecView {
     default:
       return null;
     }
-    List<String> peaks = (List<String>) vwr.getModelAuxiliaryInfoValue(iModel,
+    Lst<String> peaks = (Lst<String>) vwr.getModelAuxiliaryInfoValue(iModel,
         "jdxAtomSelect_" + type);
     if (peaks == null)
       return null;
@@ -130,7 +130,7 @@ public class JSpecView implements JmolJSpecView {
     case JC.JSV_SETPEAKS:
       // JSpecView sending us the peak information it has
       String[] list = Escape.unescapeStringArray(script.substring(7));
-      List<String> peaks = new List<String>();
+      Lst<String> peaks = new Lst<String>();
       for (int i = 0; i < list.length; i++)
         peaks.addLast(list[i]);
       vwr.getModelSet().setModelAuxiliaryInfo(vwr.getCurrentModelIndex(),

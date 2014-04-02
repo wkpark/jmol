@@ -159,7 +159,7 @@ public class CifDataParser implements GenericCifDataParser {
     String key;
     Map<String, Object> data = null;
     Map<String, Object> allData = new Hashtable<String, Object>();
-    List<Map<String, Object>> models = new  List<Map<String,Object>>();
+    Lst<Map<String, Object>> models = new  Lst<Map<String,Object>>();
     allData.put("models", models);
     try {
       while ((key = getNextToken()) != null) {
@@ -206,11 +206,11 @@ public class CifDataParser implements GenericCifDataParser {
   @SuppressWarnings("unchecked")
   private void getCifLoopData(Map<String, Object> data) throws Exception {
     String str;
-    List<String> keyWords = new  List<String>();
+    Lst<String> keyWords = new  Lst<String>();
     while ((str = peekToken()) != null && str.charAt(0) == '_') {
       str  = getTokenPeeked();
       keyWords.addLast(str);
-      data.put(str, new  List<String>());
+      data.put(str, new  Lst<String>());
     }
     fieldCount = keyWords.size();
     if (fieldCount == 0)
@@ -218,7 +218,7 @@ public class CifDataParser implements GenericCifDataParser {
     loopData = new String[fieldCount];
     while (getData())
       for (int i = 0; i < fieldCount; i++)
-        ((List<String>)data.get(keyWords.get(i))).addLast(loopData[i]);
+        ((Lst<String>)data.get(keyWords.get(i))).addLast(loopData[i]);
   }
 
   @Override

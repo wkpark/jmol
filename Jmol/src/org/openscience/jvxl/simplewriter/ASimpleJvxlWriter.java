@@ -28,7 +28,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
-import javajs.util.List;
+import javajs.util.Lst;
 import java.util.Date;
 
 
@@ -76,7 +76,7 @@ public class ASimpleJvxlWriter {
     // -- set to null for faster calculation of JVXL data
     
     float[] areaVolumeReturn = new float[2]; // or null;
-    List<P3> surfacePointsReturn = new  List<P3>(); // or null;
+    Lst<P3> surfacePointsReturn = new  Lst<P3>(); // or null;
 
     params.isXLowToHigh = false;
     writeFile(outputFile + "A", jvxlGetData(null, params,
@@ -98,7 +98,7 @@ public class ASimpleJvxlWriter {
 
   public static String jvxlGetData(VoxelDataCreator vdc, Parameters params,
                                    VolumeData volumeData, String[] title,
-                                   List<P3> surfacePointsReturn,
+                                   Lst<P3> surfacePointsReturn,
                                    float[] areaVolumeReturn) {
     
     JvxlData jvxlData = new JvxlData();

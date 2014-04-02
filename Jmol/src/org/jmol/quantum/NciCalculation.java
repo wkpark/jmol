@@ -32,7 +32,7 @@ import org.jmol.util.Eigen;
 import org.jmol.util.Escape;
 
 import javajs.util.AU;
-import javajs.util.List;
+import javajs.util.Lst;
 import org.jmol.util.Logger;
 import javajs.util.P3;
 
@@ -134,7 +134,7 @@ public class NciCalculation extends QuantumCalculation implements
                                   BS bsSelected, BS bsExcluded,
                                   BS[] bsMolecules, String calculationType,
                                   P3[] atomCoordAngstroms,
-                                  int firstAtomOffset, List<int[]> shells,
+                                  int firstAtomOffset, Lst<int[]> shells,
                                   float[][] gaussians, int[][] dfCoefMaps,
                                   Object slaters, float[] moCoefficients,
                                   float[] linearCombination, boolean isSquaredLinear,

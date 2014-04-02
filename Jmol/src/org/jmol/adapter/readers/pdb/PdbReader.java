@@ -33,7 +33,7 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.c.STR;
 import org.jmol.util.Escape;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.SB;
 
@@ -124,10 +124,10 @@ public class PdbReader extends AtomSetCollectionReader {
   private Map<String, Boolean> htElementsInCurrentGroup;
   private Map<String, Map<String, String>> htMolIds;
   
-  private  List<Map<String, String>> vCompnds;
+  private  Lst<Map<String, String>> vCompnds;
   private  Map<String, Object> thisBiomolecule;
-  private  List<Map<String, Object>> vBiomolecules;
-  private  List<Map<String, Object>> vTlsModels;
+  private  Lst<Map<String, Object>> vBiomolecules;
+  private  Lst<Map<String, Object>> vTlsModels;
   private SB sbTlsErrors;
 
   protected int[] chainAtomCounts;  
@@ -203,7 +203,7 @@ public class PdbReader extends AtomSetCollectionReader {
      setIsPDB();
    if (htParams.containsKey("vTlsModels")) {
      // from   load files "tls.out" "xxxx.pdb"
-     vTlsModels = ( List<Map<String, Object>>) htParams.remove("vTlsModels");
+     vTlsModels = ( Lst<Map<String, Object>>) htParams.remove("vTlsModels");
    }
    String s = getFilter("TYPE ");
    if (s != null) {
@@ -493,7 +493,7 @@ public class PdbReader extends AtomSetCollectionReader {
     if (vCompnds == null) {
       if (isSource)
         return;
-      vCompnds = new  List<Map<String,String>>();
+      vCompnds = new  Lst<Map<String,String>>();
       htMolIds = new Hashtable<String, Map<String,String>>();
       currentCompnd = new Hashtable<String, String>();
       currentCompnd.put("select", "(*)");
@@ -548,7 +548,7 @@ public class PdbReader extends AtomSetCollectionReader {
     for (int i = vBiomolecules.size(); --i >= 0;) {
       Map<String, Object> biomolecule = vBiomolecules.get(i);
       String chain = (String) biomolecule.get("chains");
-      int nTransforms = ((List<M4>) biomolecule.get("biomts")).size();
+      int nTransforms = ((Lst<M4>) biomolecule.get("biomts")).size();
       int nAtoms = 0;
       for (int j = chain.length() - 1; --j >= 0;)
         if (chain.charAt(j) == ':')
@@ -592,8 +592,8 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
  
   
   private void remark350() throws Exception {
-     List<M4> biomts = null;
-    vBiomolecules = new  List<Map<String,Object>>();
+     Lst<M4> biomts = null;
+    vBiomolecules = new  Lst<Map<String,Object>>();
     chainAtomCounts = new int[255];
     String title = "";
     String chainlist = "";
@@ -615,7 +615,7 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
             Logger.info("biomolecule " + id + ": number of transforms: "
                 + nBiomt);
           info = new Hashtable<String, Object>();
-          biomts = new  List<M4>();
+          biomts = new  Lst<M4>();
           id = line.substring(line.indexOf(":") + 1).trim();
 
           title = line.trim();
@@ -1518,9 +1518,9 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     int nGroups = 0;
     int iGroup = 0;
     String components = null;
-     List<Map<String, Object>> tlsGroups = null;
+     Lst<Map<String, Object>> tlsGroups = null;
     Map<String, Object> tlsGroup = null;
-     List<Map<String, Object>> ranges = null;
+     Lst<Map<String, Object>> ranges = null;
     Map<String, Object> range = null;
     String remark = line.substring(0, 11);
     while (readHeader(true) != null && line.startsWith(remark)) {
@@ -1531,7 +1531,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
         Logger.info(line);
         if (tokens[1].equalsIgnoreCase("GROUP")) {
           tlsGroup = new Hashtable<String, Object>();
-          ranges = new  List<Map<String, Object>>();
+          ranges = new  Lst<Map<String, Object>>();
           tlsGroup.put("ranges", ranges);
           tlsGroups.addLast(tlsGroup);
           tlsGroupID = parseIntStr(tokens[tokens.length - 1]);
@@ -1544,8 +1544,8 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
             if (nGroups < 1)
               break;
             if (vTlsModels == null)
-              vTlsModels = new  List<Map<String, Object>>();
-            tlsGroups = new  List<Map<String, Object>>();
+              vTlsModels = new  Lst<Map<String, Object>>();
+            tlsGroups = new  Lst<Map<String, Object>>();
             appendLoadNote(line.substring(11).trim());
           }
         } else if (tokens[0].equalsIgnoreCase("COMPONENTS")) {
@@ -1713,7 +1713,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     
     Logger.info("TLS model " + (iModel + 1) + " set " + (iGroup + 1));
     Map<String, Object> tlsGroupInfo = vTlsModels.get(iGroup);
-    List<Map<String, Object>> groups = ( List<Map<String, Object>>) tlsGroupInfo
+    Lst<Map<String, Object>> groups = ( Lst<Map<String, Object>>) tlsGroupInfo
         .get("groups");
     int index0 = asc.getAtomSetAtomIndex(iModel);
     int[] data = new int[asc.getAtomSetAtomCount(iModel)];
@@ -1722,7 +1722,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     int nGroups = groups.size();
     for (int i = 0; i < nGroups; i++) {
       Map<String, Object> group = groups.get(i);
-      List<Map<String, Object>> ranges = ( List<Map<String, Object>>) group
+      Lst<Map<String, Object>> ranges = ( Lst<Map<String, Object>>) group
           .get("ranges");
       tlsGroupID = ((Integer) group.get("id")).intValue();
       for (int j = ranges.size(); --j >= 0;) {
@@ -1875,7 +1875,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     // SWANSON forcefield, HW (on water) will be given 0 radius, and H on oxygen given 0.9170
   }
 
-  private List<int[]> vConnect;
+  private Lst<int[]> vConnect;
   private int connectNextAtomIndex = 0;
   private int connectNextAtomSet = 0;
   private int[] connectLast;
@@ -1883,7 +1883,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
   private void addConnection(int[] is) {
     if (vConnect == null) {
       connectLast = null;
-      vConnect = new List<int[]>();
+      vConnect = new Lst<int[]>();
     }
     if (connectLast != null) {
       if (is[0] == connectLast[0] && is[1] == connectLast[1]

@@ -24,7 +24,7 @@
 
 package org.jmol.minimize.forcefield;
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 import java.util.Map;
 
@@ -78,7 +78,7 @@ class CalculationsUFF extends Calculations {
   CalculationsUFF(ForceField ff, Map<Object, Object> ffParams,
       MinAtom[] minAtoms, MinBond[] minBonds, MinAngle[] minAngles,
       MinTorsion[] minTorsions, MinPosition[] minPositions,
-      List<Object[]> constraints) {
+      Lst<Object[]> constraints) {
     super(ff, minAtoms, minBonds, minAngles, minTorsions, minPositions,
         constraints);
     this.ffParams = ffParams;
@@ -99,10 +99,10 @@ class CalculationsUFF extends Calculations {
   @Override
   boolean setupCalculations() {
 
-    List<Object[]> calc;
+    Lst<Object[]> calc;
 
     Calculation distanceCalc = new UFFDistanceCalc().set(this);
-    calc = calculations[CALC_DISTANCE] = new List<Object[]>();
+    calc = calculations[CALC_DISTANCE] = new Lst<Object[]>();
     for (int i = 0; i < bondCount; i++) {
       MinBond bond = minBonds[i];
       double bondOrder = bond.order;
@@ -113,18 +113,18 @@ class CalculationsUFF extends Calculations {
       distanceCalc.setData(calc, bond.data[0], bond.data[1], bondOrder);
     }
 
-    calc = calculations[CALC_ANGLE] = new List<Object[]>();
+    calc = calculations[CALC_ANGLE] = new Lst<Object[]>();
     UFFAngleCalc angleCalc = (UFFAngleCalc) new UFFAngleCalc().set(this);
     for (int i = minAngles.length; --i >= 0;)
       angleCalc.setData(calc, minAngles[i].data);
 
-    calc = calculations[CALC_TORSION] = new List<Object[]>();
+    calc = calculations[CALC_TORSION] = new Lst<Object[]>();
     UFFTorsionCalc torsionCalc = (UFFTorsionCalc) new UFFTorsionCalc()
         .set(this);
     for (int i = minTorsions.length; --i >= 0;)
       torsionCalc.setData(calc, minTorsions[i].data);
 
-    calc = calculations[CALC_OOP] = new List<Object[]>();
+    calc = calculations[CALC_OOP] = new Lst<Object[]>();
     // set up the special atom arrays
     Calculation oopCalc = new UFFOOPCalc().set(this);
     int elemNo;
@@ -146,7 +146,7 @@ class CalculationsUFF extends Calculations {
     // it does not actually use it. Both Towhee and the UFF FAQ
     // discourage the use of electrostatics with UFF.
 
-    pairSearch(calculations[CALC_VDW] = new List<Object[]>(),
+    pairSearch(calculations[CALC_VDW] = new Lst<Object[]>(),
         new UFFVDWCalc().set(this), null, null);
     return true;
   }

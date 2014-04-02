@@ -2,7 +2,7 @@ package org.jmol.adapter.readers.cif;
 
 import java.util.Map.Entry;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.M4;
 import javajs.util.Matrix;
 import javajs.util.V3;
@@ -106,7 +106,7 @@ class Subsystem {
     // 
 
     Logger.info("unit cell parameters: " + symmetry.getUnitCellInfo());
-    symmetry.createSpaceGroup(-1, "[subsystem " + code + "]", new List<M4>());
+    symmetry.createSpaceGroup(-1, "[subsystem " + code + "]", new Lst<M4>());
     int nOps = s0.getSpaceGroupOperationCount();
     for (int iop = 0; iop < nOps; iop++) {
       Matrix rv = s0.getOperationRsVs(iop);

@@ -32,7 +32,7 @@ import java.io.BufferedReader;
 
 import javajs.util.AU;
 import javajs.util.Rdr;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.SB;
 
 import java.util.Hashtable;
@@ -252,7 +252,7 @@ public class GenNBOReader extends MOReader {
     }
 
     // read basis functions
-    shells = new  List<int[]>();
+    shells = new  Lst<int[]>();
     gaussians = AU.newFloat2(gaussianCount);
     for (int i = 0; i < gaussianCount; i++)
       gaussians[i] = new float[6];

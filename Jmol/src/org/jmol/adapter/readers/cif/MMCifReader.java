@@ -26,7 +26,7 @@ package org.jmol.adapter.readers.cif;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.PT;
@@ -59,7 +59,7 @@ public class MMCifReader implements MMCifInterface {
   private Map<String, P3> chainAtomMap;
   private Map<String, int[]> chainAtomCounts;
 
-  private  List<Map<String, Object>> vBiomolecules;
+  private  Lst<Map<String, Object>> vBiomolecules;
   private Map<String, Object> thisBiomolecule;
   private Map<String,M4> htBiomts;
   private Map<String, Map<String, Object>> htSites;
@@ -251,14 +251,14 @@ _pdbx_struct_oper_list.vector[3]
     if (!cr.checkFilterKey("ASSEMBLY " + id + ";"))
       return;
     if (vBiomolecules == null) {
-      vBiomolecules = new  List<Map<String,Object>>();
+      vBiomolecules = new  Lst<Map<String,Object>>();
     }
     Map<String, Object> info = new Hashtable<String, Object>();
     info.put("name", "biomolecule " + id);
     info.put("molecule", iMolecule == Integer.MIN_VALUE ? id : Integer.valueOf(iMolecule));
     info.put("assemblies", "$" + list.replace(',', '$'));
     info.put("operators", decodeAssemblyOperators(assem[ASSEM_OPERS]));
-    info.put("biomts", new  List<M4>());
+    info.put("biomts", new  Lst<M4>());
     thisBiomolecule = info;
     Logger.info("assembly " + id + " operators " + assem[ASSEM_OPERS] + " ASYM_IDs " + assem[ASSEM_LIST]);
     vBiomolecules.addLast(info);
@@ -756,7 +756,7 @@ _pdbx_struct_oper_list.vector[3]
     M4 mident = M4.newM4(null);
     String[] ops = PT.split((String) biomolecule.get("operators"), ",");
     String assemblies = (String) biomolecule.get("assemblies");
-    List<M4> biomts = new List<M4>();
+    Lst<M4> biomts = new Lst<M4>();
     biomolecule.put("biomts", biomts);
     biomts.addLast(mident);
     for (int j = 0; j < ops.length; j++) {

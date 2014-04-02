@@ -39,7 +39,7 @@ import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
 
 import javajs.api.JSONEncodable;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.SB;
 
 import org.jmol.util.Measure;
@@ -192,7 +192,7 @@ public class SV extends T implements JSONEncodable {
         || x instanceof Quat // stored as point4f
         || x instanceof M34
         || x instanceof Map<?, ?>  // stored as Map<String, ScriptVariable>
-        || x instanceof List<?>
+        || x instanceof Lst<?>
         || x instanceof BArray
         || x instanceof ScriptContext
     // in JavaScript, all these will be "Array" which is fine;
@@ -279,8 +279,8 @@ public class SV extends T implements JSONEncodable {
       return newV(x instanceof M4 ? matrix4f : matrix3f, x);
     if (x instanceof Map)
       return getVariableMap((Map<String, ?>)x);
-    if (x instanceof List)
-      return getVariableList((List<?>) x);
+    if (x instanceof Lst)
+      return getVariableList((Lst<?>) x);
     if (x instanceof BArray)
       return newV(barray, x);
     if (x instanceof ScriptContext)
@@ -331,88 +331,88 @@ public class SV extends T implements JSONEncodable {
     return newV(hash, x);
   }
 
-  public static SV getVariableList(List<?> v) {
+  public static SV getVariableList(Lst<?> v) {
     int len = v.size();
     if (len > 0 && v.get(0) instanceof SV)
       return newV(varray, v);
-    List<SV> objects = new  List<SV>();
+    Lst<SV> objects = new  Lst<SV>();
     for (int i = 0; i < len; i++)
       objects.addLast(getVariable(v.get(i)));
     return newV(varray, objects);
   }
 
   static SV getVariableAV(SV[] v) {
-    List<SV> objects = new  List<SV>();
+    Lst<SV> objects = new  Lst<SV>();
     for (int i = 0; i < v.length; i++)
       objects.addLast(v[i]);
     return newV(varray, objects);
   }
 
   public static SV getVariableAD(double[] f) {
-    List<SV> objects = new  List<SV>();
+    Lst<SV> objects = new  Lst<SV>();
     for (int i = 0; i < f.length; i++)
       objects.addLast(newV(decimal, Float.valueOf((float) f[i])));
     return newV(varray, objects);
   }
 
   static SV getVariableAS(String[] s) {
-    List<SV> objects = new  List<SV>();
+    Lst<SV> objects = new  Lst<SV>();
     for (int i = 0; i < s.length; i++)
       objects.addLast(newV(string, s[i]));
     return newV(varray, objects);
   }
 
   static SV getVariableAP(P3[] p) {
-    List<SV> objects = new  List<SV>();
+    Lst<SV> objects = new  Lst<SV>();
     for (int i = 0; i < p.length; i++)
       objects.addLast(newV(point3f, p[i]));
     return newV(varray, objects);
   }
 
   static SV getVariableAFF(float[][] fx) {
-    List<SV> objects = new  List<SV>();
+    Lst<SV> objects = new  Lst<SV>();
     for (int i = 0; i < fx.length; i++)
       objects.addLast(getVariableAF(fx[i]));
     return newV(varray, objects);
   }
 
   static SV getVariableADD(double[][] fx) {
-    List<SV> objects = new  List<SV>();
+    Lst<SV> objects = new  Lst<SV>();
     for (int i = 0; i < fx.length; i++)
       objects.addLast(getVariableAD(fx[i]));
     return newV(varray, objects);
   }
 
   static SV getVariableASS(String[][] fx) {
-    List<SV> objects = new  List<SV>();
+    Lst<SV> objects = new  Lst<SV>();
     for (int i = 0; i < fx.length; i++)
       objects.addLast(getVariableAS(fx[i]));
     return newV(varray, objects);
   }
 
   static SV getVariableAII(int[][] ix) {
-    List<SV> objects = new  List<SV>();
+    Lst<SV> objects = new  Lst<SV>();
     for (int i = 0; i < ix.length; i++)
       objects.addLast(getVariableAI(ix[i]));
     return newV(varray, objects);
   }
 
   static SV getVariableAF(float[] f) {
-    List<SV> objects = new  List<SV>();
+    Lst<SV> objects = new  Lst<SV>();
     for (int i = 0; i < f.length; i++)
       objects.addLast(newV(decimal, Float.valueOf(f[i])));
     return newV(varray, objects);
   }
 
   static SV getVariableAI(int[] ix) {
-    List<SV> objects = new  List<SV>();
+    Lst<SV> objects = new  Lst<SV>();
     for (int i = 0; i < ix.length; i++)
       objects.addLast(newI(ix[i]));
     return newV(varray, objects);
   }
 
   static SV getVariableAB(byte[] ix) {
-    List<SV> objects = new  List<SV>();
+    Lst<SV> objects = new  Lst<SV>();
     for (int i = 0; i < ix.length; i++)
       objects.addLast(newI(ix[i]));
     return newV(varray, objects);
@@ -631,7 +631,7 @@ public class SV extends T implements JSONEncodable {
       BS bs = bsSelectToken(x);
       return (x.value instanceof BondSet ? Escape.eBond(bs) : Escape.eBS(bs));
     case varray:
-      List<SV> sv = ((SV) x).getList();
+      Lst<SV> sv = ((SV) x).getList();
       i = x.intValue;
       if (i <= 0)
         i = sv.size() - i;
@@ -683,7 +683,7 @@ public class SV extends T implements JSONEncodable {
       if (vx.tok == varray) {
         if (!isRaw)
           sb.append(isEscaped ? "[ " : tabs + "[\n");
-        List<SV> sx = vx.getList();
+        Lst<SV> sx = vx.getList();
         for (int i = 0; i < sx.size(); i++) {
           if (isEscaped && i > 0)
             sb.append(",");
@@ -791,8 +791,8 @@ public class SV extends T implements JSONEncodable {
   }
 
   public static SV concatList(SV x1, SV x2, boolean asNew) {
-    List<SV> v1 = x1.getList();
-    List<SV> v2 = x2.getList();
+    Lst<SV> v1 = x1.getList();
+    Lst<SV> v2 = x2.getList();
     if (!asNew) {
       if (v2 == null)
         v1.addLast(newT(x2));
@@ -801,7 +801,7 @@ public class SV extends T implements JSONEncodable {
           v1.addLast(v2.get(i));
       return x1;
     }
-    List<SV> vlist = new List<SV>();
+    Lst<SV> vlist = new Lst<SV>();
     //(v1 == null ? 1 : v1.size()) + (v2 == null ? 1 : v2.size())
     if (v1 == null)
       vlist.addLast(x1);
@@ -994,8 +994,8 @@ public class SV extends T implements JSONEncodable {
         return newV(string, "");
       if (isOne)
         return ((SV) tokenIn).getList().get(i1);
-      List<SV> o2 = new List<SV>();
-      List<SV> o1 = ((SV) tokenIn).getList();
+      Lst<SV> o2 = new Lst<SV>();
+      Lst<SV> o1 = ((SV) tokenIn).getList();
       
       int nn = Math.min(i2, len) - i1;
       for (int i = 0; i < nn; i++)
@@ -1027,7 +1027,7 @@ public class SV extends T implements JSONEncodable {
       }
       if (pt1 != 0 && Math.abs(pt1) <= len
           && var.tok == varray) {
-        List<SV> sv = var.getList();
+        Lst<SV> sv = var.getList();
         if (sv.size() == len) {
           float[] data = new float[len];
           for (int i = 0; i < len; i++)
@@ -1162,7 +1162,7 @@ public class SV extends T implements JSONEncodable {
     Object[] of = new Object[] { vd, vf, ve, null, null, null};
     if (var.tok != varray)
       return sprintf(strFormat, var, of, vd, vf, ve, getS, getP, getQ);
-    List<SV> sv = var.getList();
+    Lst<SV> sv = var.getList();
     String[] list2 = new String[sv.size()];
     for (int i = 0; i < list2.length; i++)
       list2[i] = sprintf(strFormat, sv.get(i), of, vd, vf, ve, getS, getP, getQ);
@@ -1232,7 +1232,7 @@ public class SV extends T implements JSONEncodable {
       return bsSelectVar(x);
     case varray:
       BS bs = new BS();
-      List<SV> sv = (List<SV>) x.value;
+      Lst<SV> sv = (Lst<SV>) x.value;
       for (int i = 0; i < sv.size(); i++)
         if (!sv.get(i).unEscapeBitSetArray(bs) && allowNull)
           return null;
@@ -1285,8 +1285,8 @@ public class SV extends T implements JSONEncodable {
       case string:
         return sValue(x).compareTo(sValue(y));
       case varray:
-        List<SV> sx = x.getList();
-        List<SV> sy = y.getList();
+        Lst<SV> sx = x.getList();
+        Lst<SV> sy = y.getList();
         if (sx.size() != sy.size())
           return (sx.size() < sy.size() ? -1 : 1);
         int iPt = arrayPt;
@@ -1310,7 +1310,7 @@ public class SV extends T implements JSONEncodable {
    * @return sorted or reversed array
    */
   public SV sortOrReverse(int arrayPt) {
-    List<SV> x = getList();
+    Lst<SV> x = getList();
     if (x != null && x.size() > 1) {
       if (arrayPt == Integer.MIN_VALUE) {
         // reverse
@@ -1339,7 +1339,7 @@ public class SV extends T implements JSONEncodable {
    * @return array
    */
   public SV pushPop(SV o) {
-    List<SV> x = getList();
+    Lst<SV> x = getList();
     if (o == null || x == null)
       return (x == null || x.size() == 0 ? newS("") : x.remove(x.size() - 1));
       x.addLast(newI(0).setv(o));
@@ -1372,7 +1372,7 @@ public class SV extends T implements JSONEncodable {
   public static String[] listValue(T x) {
     if (x.tok != varray)
       return new String[] { sValue(x) };
-    List<SV> sv = ((SV) x).getList();
+    Lst<SV> sv = ((SV) x).getList();
     String[] list = new String[sv.size()];
     for (int i = sv.size(); --i >= 0;)
       list[i] = sValue(sv.get(i));
@@ -1403,7 +1403,7 @@ public class SV extends T implements JSONEncodable {
   public static float[] flistValue(T x, int nMin) {
     if (x.tok != varray)
       return new float[] { fValue(x) };
-    List<SV> sv = ((SV) x).getList();
+    Lst<SV> sv = ((SV) x).getList();
     float[] list;
     list = new float[Math.max(nMin, sv.size())];
     if (nMin == 0)
@@ -1430,7 +1430,7 @@ public class SV extends T implements JSONEncodable {
       return;
     }
     tok = varray;
-    List<SV> o2 = new  List<SV>(); //dim;
+    Lst<SV> o2 = new  Lst<SV>(); //dim;
     for (int i = 0; i < dim; i++) {
       float[] a = new float[dim];
       if (m3 == null)
@@ -1455,8 +1455,8 @@ public class SV extends T implements JSONEncodable {
   }
 
   @SuppressWarnings("unchecked")
-  public List<SV> getList() {
-    return (tok == varray ? (List<SV>) value : null);
+  public Lst<SV> getList() {
+    return (tok == varray ? (Lst<SV>) value : null);
   }
 
   public static boolean isScalar(SV x) {

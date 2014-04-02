@@ -24,7 +24,7 @@
 
 package org.jmol.symmetry;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.Quat;
 import javajs.util.SB;
 
@@ -999,7 +999,7 @@ class PointGroup {
         n *= nAxes[i];
         nTotal += n;
         nType[axes[i][0].type][1] += n;
-        List<V3> vinfo = (info == null ? null : new  List<V3>());
+        Lst<V3> vinfo = (info == null ? null : new  Lst<V3>());
         for (int j = 0; j < nAxes[i]; j++) {
           //axes[i][j].typeIndex = j + 1;
           if (vinfo == null)

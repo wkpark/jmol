@@ -505,6 +505,7 @@ all support for previous versions removed
         <include name="javajs/api/**" />
         <include name="javajs/awt/**" />
         <include name="javajs/export/**" />
+        <include name="javajs/img/**" />
         <include name="javajs/util/**" />
         <exclude name="**/Test*.class" />
         <exclude name="**/jmol/jcamp/**" />
@@ -532,6 +533,7 @@ all support for previous versions removed
         <include name="javajs/api/**" />
         <include name="javajs/awt/**" />
         <include name="javajs/export/**" />
+        <include name="javajs/img/**" />
         <include name="javajs/util/**" />
         <include name="**/jmol/**" />
         <exclude name="**/jmol/_documents/**" />
@@ -907,13 +909,13 @@ all support for previous versions removed
     <delete dir="build">
       <include name="JmolAppletSigned*"/>
     </delete>
-    <echo message="Creating JmolAppletsigned.jar" />
+    <echo message="Creating JmolAppletSigned.jar" />
     <jar destfile="build/JmolAppletSigned.jar"
          manifest="manifest/appletMonolithicSigned.txt" index="true" >
       <fileset dir="${applet.classes.dir}" >
         <include name="**/*" />
         <exclude name="JmolSmiles*" />
-        <include name="javajs/swing/**" />
+        <exclude name="javajs/swing/**" />
         <exclude name="org/openscience/**/*" />
       </fileset>
     </jar>
@@ -1096,6 +1098,7 @@ all support for previous versions removed
         <include name="javajs/api/**" />
         <include name="javajs/awt/**" />
         <include name="javajs/export/**" />
+        <include name="javajs/img/**" />
         <include name="javajs/util/**" />
 		<include name="org/jmol/adapter/smarter/**" />
   		<include name="org/jmol/api/**" />

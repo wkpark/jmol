@@ -19,7 +19,7 @@
 
 package jspecview.source;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import jspecview.common.Spectrum;
 
 
@@ -44,7 +44,7 @@ public class JDXSource extends JDXHeader {
   public int type = TYPE_SIMPLE;
   public boolean isCompoundSource = false;
   
-  private List<Spectrum> jdxSpectra;
+  private Lst<Spectrum> jdxSpectra;
   private String errors = "";
   private String filePath;
 
@@ -61,8 +61,8 @@ public class JDXSource extends JDXHeader {
   public JDXSource(int type, String filePath) {
     this.type = type;
     setFilePath(filePath);
-    headerTable = new List<String[]>();
-    jdxSpectra = new List<Spectrum>();
+    headerTable = new Lst<String[]>();
+    jdxSpectra = new Lst<Spectrum>();
     isCompoundSource = (type != TYPE_SIMPLE);
   }
 
@@ -108,7 +108,7 @@ public class JDXSource extends JDXHeader {
    * 
    * @return the Vector of Spectra
    */
-  public List<Spectrum> getSpectra() {
+  public Lst<Spectrum> getSpectra() {
     return jdxSpectra;
   }
 
@@ -148,7 +148,7 @@ public class JDXSource extends JDXHeader {
     return filePath;
   }
 
-  public static JDXSource createView(List<Spectrum> specs) {
+  public static JDXSource createView(Lst<Spectrum> specs) {
     JDXSource source = new JDXSource(TYPE_VIEW, "view");
     source.isView = true;
     for (int i = 0; i < specs.size(); i++)

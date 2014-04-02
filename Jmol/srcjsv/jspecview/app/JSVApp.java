@@ -42,7 +42,7 @@ package jspecview.app;
 import java.net.URL;
 import java.util.Map;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 
 import org.jmol.util.Logger;
@@ -359,6 +359,8 @@ public class JSVApp implements PanelListener, JSVAppInterface {
 	@Override
 	public void repaint() {
 		
+		@SuppressWarnings("unused")
+		Object applet = (vwr == null ? null : vwr.applet);
     /**
      * Jmol._repaint(applet,asNewThread)
      * 
@@ -370,8 +372,7 @@ public class JSVApp implements PanelListener, JSVAppInterface {
      * 
      * @j2sNative
      * 
-     * if (typeof Jmol != "undefined" && Jmol._repaint && this.vwr.applet)
-     *   Jmol._repaint(this.vwr.applet,true);
+     * applet && self.Jmol && Jmol._repaint &&(Jmol._repaint(applet,true));
      * 
      */
 		{
@@ -469,10 +470,16 @@ public class JSVApp implements PanelListener, JSVAppInterface {
    * 
    */
   private void updateJSView(String msg) {
+  	
+  	// actually, this is not implemented in JSmolJSV.js
+  	
+  	Object applet = this.vwr.applet;
+  	@SuppressWarnings("unused")
+		JSVPanel panel = (applet == null ? null : vwr.selectedPanel);
     /**
      * @j2sNative
      * 
-     * this.vwr.applet && this.vwr.applet._viewSet != null && this.vwr.applet._updateView(this.vwr.seletedPanel, msg);
+     * applet && applet._viewSet != null && applet._updateView(panel, msg);
      * 
      */
     {}
@@ -506,7 +513,7 @@ public class JSVApp implements PanelListener, JSVAppInterface {
 	}
 
 	@Override
-	public List<String> getScriptQueue() {
+	public Lst<String> getScriptQueue() {
 		return vwr.scriptQueue;
 	}
 
@@ -570,7 +577,7 @@ public class JSVApp implements PanelListener, JSVAppInterface {
 	 */
 	@Override
 	public void siOpenDataOrFile(Object data, String name,
-			List<Spectrum> specs, String url, int firstSpec, int lastSpec,
+			Lst<Spectrum> specs, String url, int firstSpec, int lastSpec,
 			boolean isAppend, String script, String id) {
 		switch (vwr.openDataOrFile(data, name, specs, url, firstSpec, lastSpec,
 				isAppend, id)) {
@@ -692,7 +699,7 @@ public class JSVApp implements PanelListener, JSVAppInterface {
 			vwr.initialEndIndex = vwr.initialStartIndex = -1;
 			return null;
 		}
-		List<Spectrum> specs = new List<Spectrum>();
+		Lst<Spectrum> specs = new Lst<Spectrum>();
 		specs.addLast(spec);
 		JSVPanel jsvp = appletFrame.getJSVPanel(vwr, specs);
 		jsvp.getPanelData().addListener(this);
@@ -701,7 +708,7 @@ public class JSVApp implements PanelListener, JSVAppInterface {
 	}
 
 	@Override
-	public JSVPanel siGetNewJSVPanel2(List<Spectrum> specs) {
+	public JSVPanel siGetNewJSVPanel2(Lst<Spectrum> specs) {
 		if (specs == null) {
 			vwr.initialEndIndex = vwr.initialStartIndex = -1;
 			return appletFrame.getJSVPanel(vwr, null);

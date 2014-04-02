@@ -2,7 +2,7 @@ package jspecview.api;
 
 
 import javajs.api.GenericMenuInterface;
-import javajs.util.List;
+import javajs.util.Lst;
 import jspecview.common.PanelNode;
 
 
@@ -15,7 +15,7 @@ public interface JSVPopupMenu extends GenericMenuInterface {
 
 	boolean getSelected(String key);
 
-	void setCompoundMenu(List<PanelNode> panelNodes,
+	void setCompoundMenu(Lst<PanelNode> panelNodes,
 			boolean allowCompoundMenu);
 
 	void setEnabled(boolean allowMenu, boolean zoomEnabled);

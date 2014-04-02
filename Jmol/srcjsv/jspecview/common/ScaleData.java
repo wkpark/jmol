@@ -3,7 +3,7 @@ package jspecview.common;
 
 import java.util.Map;
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 
 
@@ -433,7 +433,7 @@ public class ScaleData {
    * @param endIndices    to fill
    * @return true if OK
    */
-	static boolean setDataPointIndices(List<Spectrum> graphsTemp,
+	static boolean setDataPointIndices(Lst<Spectrum> graphsTemp,
 			double initX, double finalX, int minPoints, int[] startIndices,
 			int[] endIndices) {
 		int nSpectraOK = 0;

@@ -6,7 +6,7 @@ package jspecview.java;
 import java.awt.BorderLayout;
 
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 import javax.swing.JPanel;
 
@@ -44,7 +44,7 @@ public class AwtMainPanel extends JPanel implements JSVMainPanel {
 	}
 
 	@Override
-	public void setSelectedPanel(JSViewer viewer, JSVPanel jsvp, List<PanelNode> panelNodes) {
+	public void setSelectedPanel(JSViewer viewer, JSVPanel jsvp, Lst<PanelNode> panelNodes) {
 		if (jsvp != selectedPanel) {
 			if (selectedPanel != null)
 				remove((AwtPanel) selectedPanel);

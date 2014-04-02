@@ -23,7 +23,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import javajs.api.GenericColor;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 
 
@@ -68,8 +68,8 @@ public class Spectrum extends JDXDataObject {
    * spectra that can never be displayed independently, or at least not by default
    * 2D slices, for example.
    */
-  private List<Spectrum> subSpectra;
-  private List<PeakInfo> peakList = new List<PeakInfo>();
+  private Lst<Spectrum> subSpectra;
+  private Lst<PeakInfo> peakList = new Lst<PeakInfo>();
   private String piUnitsX, piUnitsY;
   private PeakInfo selectedPeak, highlightedPeak;
   private double specShift = 0;
@@ -106,7 +106,7 @@ public class Spectrum extends JDXDataObject {
    */
   public Spectrum() {
     //System.out.println("initialize JDXSpectrum " + this);
-    headerTable = new List<String[]>();
+    headerTable = new Lst<String[]>();
     xyCoords = new Coordinate[0];
     parent = this;
   }
@@ -134,11 +134,11 @@ public class Spectrum extends JDXDataObject {
   }
 
   
-  public List<PeakInfo> getPeakList() {
+  public Lst<PeakInfo> getPeakList() {
     return peakList;
   }
 
-  public int setPeakList(List<PeakInfo> list, String piUnitsX, String piUnitsY) {
+  public int setPeakList(Lst<PeakInfo> list, String piUnitsX, String piUnitsY) {
     peakList = list;
     this.piUnitsX = piUnitsX;
     this.piUnitsY = piUnitsY;
@@ -437,14 +437,14 @@ public class Spectrum extends JDXDataObject {
     return Math.log(value) / Math.log(10);
   }
 
-  public static boolean process(List<Spectrum> specs, IRMode irMode) {
+  public static boolean process(Lst<Spectrum> specs, IRMode irMode) {
     if (irMode == IRMode.TO_ABS || irMode == IRMode.TO_TRANS)
       for (int i = 0; i < specs.size(); i++)
         specs.set(i, taConvert(specs.get(i), irMode));
     return true;
   }
 
-  public List<Spectrum> getSubSpectra() {
+  public Lst<Spectrum> getSubSpectra() {
     return subSpectra;
   }
   
@@ -474,7 +474,7 @@ public class Spectrum extends JDXDataObject {
       return false;
     isForcedSubset = forceSub; // too many blocks (>100)
     if (subSpectra == null) {
-      subSpectra = new List<Spectrum>();
+      subSpectra = new Lst<Spectrum>();
       addSubSpectrum(this, true);
     }
     subSpectra.addLast(spectrum);

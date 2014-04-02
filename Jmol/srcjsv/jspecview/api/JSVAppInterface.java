@@ -1,9 +1,9 @@
 package jspecview.api;
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 public interface JSVAppInterface extends JSVAppletInterface, ScriptInterface {
 
-	List<String> getScriptQueue();
+	Lst<String> getScriptQueue();
 
 }

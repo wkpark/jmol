@@ -25,7 +25,7 @@ import java.util.Comparator;
 import java.util.StringTokenizer;
 
 import javajs.util.DF;
-import javajs.util.List;
+import javajs.util.Lst;
 
 
 
@@ -219,7 +219,7 @@ public class Coordinate {
     Coordinate point;
     double xval = 0;
     double yval = 0;
-    List<Coordinate> xyCoords = new List<Coordinate>();
+    Lst<Coordinate> xyCoords = new Lst<Coordinate>();
   
     String delim = " \t\n\r\f,;";
     StringTokenizer st = new StringTokenizer(dataPoints, delim);
@@ -373,7 +373,7 @@ public class Coordinate {
    * @return the minimum x value value from an array of arrays of
    *         <code>Coordinate</code>s
    */
-  public static double getMinX(List<Spectrum> spectra, ViewData vd) {
+  public static double getMinX(Lst<Spectrum> spectra, ViewData vd) {
     double min = Double.MAX_VALUE;
     for (int i = 0; i < spectra.size(); i++) {
     	Coordinate[] xyCoords = spectra.get(i).getXYCoords();
@@ -413,7 +413,7 @@ public class Coordinate {
    * @return the maximum x value value from an array of arrays of
    *         <code>Coordinate</code>s
    */
-  public static double getMaxX(List<Spectrum> spectra, ViewData vd) {
+  public static double getMaxX(Lst<Spectrum> spectra, ViewData vd) {
     double max = -Double.MAX_VALUE;
     for (int i = 0; i < spectra.size(); i++) {
     	Coordinate[] xyCoords = spectra.get(i).getXYCoords();
@@ -454,7 +454,7 @@ public class Coordinate {
    * @return the minimum y value value from an array of arrays of
    *         <code>Coordinate</code>s
    */
-  public static double getMinYUser(List<Spectrum> spectra, ViewData vd) {
+  public static double getMinYUser(Lst<Spectrum> spectra, ViewData vd) {
     double min = Double.MAX_VALUE;
     for (int i = 0; i < spectra.size(); i++) {
       double u = spectra.get(i).getUserYFactor();
@@ -496,7 +496,7 @@ public class Coordinate {
    * @return the maximum y value value from an array of arrays of
    *         <code>Coordinate</code>s
    */
-  public static double getMaxYUser(List<Spectrum> spectra, ViewData vd) {
+  public static double getMaxYUser(Lst<Spectrum> spectra, ViewData vd) {
     double max = -Double.MAX_VALUE;
     for (int i = 0; i < spectra.size(); i++) {
       double u = spectra.get(i).getUserYFactor();

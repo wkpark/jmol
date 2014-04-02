@@ -22,7 +22,7 @@ package jspecview.source;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.SB;
 
 
@@ -104,7 +104,7 @@ abstract class XMLReader implements SourceReader {
     // end of import of CML document
     // now populate all the JSpecView spectrum variables.....
 
-    List<String[]> LDRTable = new List<String[]>();
+    Lst<String[]> LDRTable = new Lst<String[]>();
     Spectrum spectrum = new Spectrum();
 
     spectrum.setTitle(title);

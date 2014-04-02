@@ -1,6 +1,6 @@
 package jspecview.source;
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 /**
  * could be a spectrum or a source
@@ -218,7 +218,7 @@ public class JDXHeader {
   }
 
   // Table of header variables specific to the jdx source or spectrum
-  protected List<String[]> headerTable = new List<String[]>();
+  protected Lst<String[]> headerTable = new Lst<String[]>();
   
   /**
    * Sets the headerTable for this Source or spectrum
@@ -226,7 +226,7 @@ public class JDXHeader {
    * @param table
    *        the header table
    */
-  public void setHeaderTable(List<String[]> table) {
+  public void setHeaderTable(Lst<String[]> table) {
     headerTable = table;
   }
 
@@ -235,7 +235,7 @@ public class JDXHeader {
    * 
    * @return the table of headers
    */
-  public List<String[]> getHeaderTable() {
+  public Lst<String[]> getHeaderTable() {
     return headerTable;
   }
 

@@ -24,7 +24,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import javajs.util.OC;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 
 import org.jmol.util.Logger;
@@ -43,7 +43,7 @@ class FormContext {
 
   String[] tokens;
   Hashtable<String, Object> context = new Hashtable<String, Object>();
-  List<FormToken> formTokens;
+  Lst<FormToken> formTokens;
 
   FormContext() {
   }
@@ -62,7 +62,7 @@ class FormContext {
   }
 
   int commandLevel;
-  List<Integer> cmds = new List<Integer>();
+  Lst<Integer> cmds = new Lst<Integer>();
   String strError;
 
   final static int VT_DATA = 0;
@@ -81,7 +81,7 @@ class FormContext {
     int endPtr = -1;
     int ptr;
     String var;
-    List<Object> vc;
+    Lst<Object> vc;
     int pointCount;
     String data;
 
@@ -159,7 +159,7 @@ class FormContext {
   }
 
   private String getFormTokens(String template) {
-    formTokens = new List<FormToken>();
+    formTokens = new Lst<FormToken>();
     if (template.indexOf("\r\n") >= 0)
       template = PT.replaceAllCharacters(template, "\r\n", "\n");
     template = template.replace('\r', '\n');
@@ -279,8 +279,8 @@ class FormContext {
     // #foreach  $xxx in XXX
     vt.var = tokens[1].substring(1);
     Object vc = context.get(tokens[3].substring(1));
-    if (vc instanceof List)
-      vt.vc = (List<Object>) vc;
+    if (vc instanceof Lst)
+      vt.vc = (Lst<Object>) vc;
     vt.cmdPtr = vt.ptr;
     vt.pointCount = -1;
   }

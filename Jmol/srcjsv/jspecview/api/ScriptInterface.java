@@ -1,6 +1,6 @@
 package jspecview.api;
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 import jspecview.common.Spectrum;
 import jspecview.common.PanelNode;
@@ -38,9 +38,9 @@ public interface ScriptInterface {
 
 	public JSVPanel siGetNewJSVPanel(Spectrum spec);
 
-	public JSVPanel siGetNewJSVPanel2(List<Spectrum> specs);
+	public JSVPanel siGetNewJSVPanel2(Lst<Spectrum> specs);
 
-	public void siOpenDataOrFile(Object data, String name, List<Spectrum> specs,
+	public void siOpenDataOrFile(Object data, String name, Lst<Spectrum> specs,
 			String url, int firstSpec, int lastSpec, boolean doCheck, String script, String id);
 
 	public void siProcessCommand(String script);

@@ -36,7 +36,7 @@ import jspecview.common.JSVersion;
 import jspecview.common.PanelNode;
 import jspecview.common.JSViewer;
 import jspecview.common.PanelData;
-import javajs.util.List;
+import javajs.util.Lst;
 
 abstract public class JSVGenericPopup extends GenericSwingPopup implements
 		JSVPopupMenu {
@@ -59,8 +59,8 @@ abstract public class JSVGenericPopup extends GenericSwingPopup implements
 	// private int itemMax = 25;
 	// private int titleWidthMax = 20;
 
-	private List<String> cnmrPeaks;
-	private List<String> hnmrPeaks;
+	private Lst<String> cnmrPeaks;
+	private Lst<String> hnmrPeaks;
 	private int aboutComputedMenuBaseCount;
 	private boolean allowMenu;
 	private boolean zoomEnabled;
@@ -224,7 +224,7 @@ abstract public class JSVGenericPopup extends GenericSwingPopup implements
 		menuEnable(menu, isOK);
 	}
 
-	private boolean setSpectraMenu(SC menu, List<String> peaks) {
+	private boolean setSpectraMenu(SC menu, Lst<String> peaks) {
 		if (menu == null)
 			return false;
 		menuEnable(menu, false);
@@ -258,7 +258,7 @@ abstract public class JSVGenericPopup extends GenericSwingPopup implements
 	}
 
 	@Override
-	public void setCompoundMenu(List<PanelNode> panelNodes,
+	public void setCompoundMenu(Lst<PanelNode> panelNodes,
 			boolean allowCompoundMenu) {
 		// TODO Auto-generated method stub
 

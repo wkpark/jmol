@@ -1,6 +1,6 @@
 package jspecview.api;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import jspecview.common.JSViewer;
 
 
@@ -14,7 +14,7 @@ public interface ExportInterface extends JSVExporter {
 	 * @param forInkscape 
 	 * @return message for status line
 	 */
-	String write(JSViewer viewer, List<String> tokens,
+	String write(JSViewer viewer, Lst<String> tokens,
 			boolean forInkscape);
 
 }

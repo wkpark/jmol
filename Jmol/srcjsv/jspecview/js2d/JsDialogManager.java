@@ -70,16 +70,18 @@ public class JsDialogManager extends DialogManager {
 			String dialogName, String labelName) {
     // for export and others
 		int i = -1;
+		@SuppressWarnings("unused")
+		Object applet = this.vwr.applet;
 		/**
 		 * @j2sNative
 		 * 
-		 * return this.vwr.applet.getOption(items, dialogName, labelName);
+		 * i = applet.getOption(items, dialogName, labelName);
 		 * 
 		 * 
 		 */
 		{
-		  return i;
 		}
+	  return i;
 	}
 
 	/**

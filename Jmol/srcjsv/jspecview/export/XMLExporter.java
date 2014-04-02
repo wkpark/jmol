@@ -23,7 +23,7 @@ import java.io.IOException;
 
 
 import javajs.util.OC;
-import javajs.util.List;
+import javajs.util.Lst;
 
 import jspecview.common.Coordinate;
 import jspecview.common.Spectrum;
@@ -81,7 +81,7 @@ abstract class XMLExporter extends FormExporter {
   protected Coordinate[] xyCoords;
   protected int npoints;
 
-  protected List<Coordinate> newXYCoords = new List<Coordinate>();
+  protected Lst<Coordinate> newXYCoords = new Lst<Coordinate>();
 
   protected boolean setup(JSViewer viewer, Spectrum spec, OC out, int startIndex,
                              int endIndex) {
@@ -204,7 +204,7 @@ abstract class XMLExporter extends FormExporter {
     return -1;
   }
 
-  private void setParams(List<String[]> table) {
+  private void setParams(Lst<String[]> table) {
     for (int i = 0; i < table.size(); i++) {
       String[] entry = table.get(i);
       String val = entry[1];

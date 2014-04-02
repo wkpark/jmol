@@ -56,7 +56,7 @@ import javajs.api.GenericFileInterface;
 import javajs.api.GenericMouseInterface;
 import javajs.api.GenericPlatform;
 import javajs.awt.Font;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 
 import javax.imageio.ImageIO;
@@ -156,7 +156,7 @@ public class AwtPanel extends JPanel implements JSVPanel, Printable {
    *        the List of <code>Graph</code> instances
    * @return this
    */
-  public static AwtPanel getPanelMany(JSViewer viewer, List<Spectrum> spectra) {
+  public static AwtPanel getPanelMany(JSViewer viewer, Lst<Spectrum> spectra) {
   	AwtPanel p = new AwtPanel(viewer, true);
     p.pd.initMany(spectra, viewer.initialStartIndex, viewer.initialEndIndex);
     return p;
@@ -422,6 +422,11 @@ public class AwtPanel extends JPanel implements JSVPanel, Printable {
 	@Override
 	public void showMenu(int x, int y) {
   	vwr.showMenu(x, y);
+	}
+
+	@Override
+	public void paintComponent(Object display) {
+		super.paintComponent((Graphics) display);
 	}
 
 }

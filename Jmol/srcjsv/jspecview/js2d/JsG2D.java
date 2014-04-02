@@ -37,6 +37,8 @@
 
 package jspecview.js2d;
 
+import java.net.URL;
+
 import javajs.api.GenericColor;
 import javajs.awt.Color;
 import javajs.awt.Font;
@@ -84,48 +86,7 @@ public class JsG2D implements JSVGraphics {
 		/**
 		 * @j2sNative
 		 * 
-		 *		var id, canvas;
-		 *		if (image == null) {
-		 *			id = ("" + Math.random()).substring(3);
-		 *			canvas = document.createElement("canvas");
-		 *			canvas.id = id;
-		 *			canvas.style.width = width + "px";
-		 *			canvas.style.height = height + "px";
-		 *			canvas.width = width;
-		 *			canvas.height = height;
-		 *			var appId = context.canvas.applet._id;
-		 *			var layer = document.getElementById(appId + "_imagelayer");
-		 *			image = new Image();
-		 *			image.canvas = canvas;
-		 *			image.appId = appId;
-		 *			image.id = appId + "_image";
-		 *			image.layer = layer;
-		 *			image.w = width;
-		 *			image.h = height;
-		 *			image.onload = function(e) {
-		 *		 	 try {
-		 *		 	   URL.revokeObjectURL(image.src);
-		 *			  } catch (e) {}
-		 *			};
-		 *			var div = document.createElement("div");
-		 *			image.div = div;
-		 *			div.style.position="relative";
-		 *			layer.appendChild(div);
-		 *			div.appendChild(image);
-		 *		} else {
-		 *			canvas = image.canvas;
-		 *		}
-		 *		var c = canvas.getContext("2d");
-		 *		var imageData = c.getImageData(0, 0, width, height);
-		 *		var buf = imageData.data;
-		 *		var ng = grayBuffer.length;
-		 *		var pt = 0;
-		 *		for (var i = 0; i < ng; i++) {
-		 *			buf[pt++] = buf[pt++] = buf[pt++] = grayBuffer[i];
-		 *			buf[pt++] = 0xFF;
-		 *		}
-		 *		c.putImageData(imageData, 0, 0);
-		 *		canvas.toBlob(function(blob){image.src = URL.createObjectURL(blob)});
+		 * image = Jmol._newGrayScaleImage(context, image, width, height, grayBuffer);
 		 */
 		{
 		}
@@ -180,13 +141,15 @@ public class JsG2D implements JSVGraphics {
 
 	@Override
 	public void drawLine(Object g, int x0, int y0, int x1, int y1) {
+		@SuppressWarnings("unused")
+		boolean inPath = this.inPath;
 		/**
 		 * @j2sNative
 		 * 
-		 *            if (!this.inPath) g.beginPath(); 
+		 *            if (!inPath) g.beginPath(); 
 		 *            g.moveTo(x0, y0); 
 		 *            g.lineTo(x1, y1); 
-		 *            if (!this.inPath) g.stroke();
+		 *            if (!inPath) g.stroke();
 		 * 
 		 */
 		{}
@@ -392,11 +355,11 @@ public class JsG2D implements JSVGraphics {
 	
 	@Override
 	public void doStroke(Object g, boolean isBegin) {
+		inPath = isBegin;
 		/**
 		 *  
 		 * @j2sNative
 		 * 
-		 * this.inPath = isBegin;
 		 * if (isBegin) {
 		 * 	 g.beginPath();
 		 * } else {

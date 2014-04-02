@@ -28,7 +28,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.SB;
 
@@ -218,7 +218,7 @@ public class JDXReader implements JmolJDXMOLReader {
       if (label != null && !isZipFile)
         errorLog.append("Warning - file is a concatenation without LINK record -- does not conform to IUPAC standards!\n");
       Spectrum spectrum = new Spectrum();
-      List<String[]> dataLDRTable = new List<String[]>();
+      Lst<String[]> dataLDRTable = new Lst<String[]>();
       while (!done && (label = t.getLabel()) != null && (value = getValue(label)) != null) {
         if (isTabularData) {
           setTabularDataType(spectrum, label);
@@ -276,7 +276,7 @@ public class JDXReader implements JmolJDXMOLReader {
 
 	private Spectrum modelSpectrum;
 
-	private List<String[]> acdAssignments;
+	private Lst<String[]> acdAssignments;
 	private String acdMolFile;
 
 	private boolean addSpectrum(Spectrum spectrum, boolean forceSub) {
@@ -324,7 +324,7 @@ public class JDXReader implements JmolJDXMOLReader {
 	 * @return source
 	 * @throws JSVException
 	 */
-	private JDXSource getBlockSpectra(List<String[]> sourceLDRTable)
+	private JDXSource getBlockSpectra(Lst<String[]> sourceLDRTable)
 			throws JSVException {
 
 		Logger.debug("--JDX block start--");
@@ -351,9 +351,9 @@ public class JDXReader implements JmolJDXMOLReader {
 			source.setHeaderTable(sourceLDRTable);
 		source.type = JDXSource.TYPE_BLOCK;
 		source.isCompoundSource = true;
-		List<String[]> dataLDRTable;
+		Lst<String[]> dataLDRTable;
 		Spectrum spectrum = new Spectrum();
-		dataLDRTable = new List<String[]>();
+		dataLDRTable = new Lst<String[]>();
 		readDataLabel(spectrum, label, value, errorLog, obscure);
 		try {
 			String tmp;
@@ -384,7 +384,7 @@ public class JDXReader implements JmolJDXMOLReader {
 					break;
 				if (spectrum == null) {
 					spectrum = new Spectrum();
-					dataLDRTable = new List<String[]>();
+					dataLDRTable = new Lst<String[]>();
 					if (label == "")
 						continue;
 					if (label == null) {
@@ -399,7 +399,7 @@ public class JDXReader implements JmolJDXMOLReader {
 							&& !addSpectrum(spectrum, forceSub))
 						return source;
 					spectrum = new Spectrum();
-					dataLDRTable = new List<String[]>();
+					dataLDRTable = new Lst<String[]>();
 					continue;
 				}
 				if (readDataLabel(spectrum, label, value, errorLog, obscure))
@@ -449,7 +449,7 @@ public class JDXReader implements JmolJDXMOLReader {
    * @return source
    */
   @SuppressWarnings("null")
-	private JDXSource getNTupleSpectra(List<String[]> sourceLDRTable,
+	private JDXSource getNTupleSpectra(Lst<String[]> sourceLDRTable,
                                      JDXDataObject spectrum0, String label)
       throws JSVException {
     double[] minMaxY = new double[] { Double.MAX_VALUE, Double.MIN_VALUE };
@@ -462,7 +462,7 @@ public class JDXReader implements JmolJDXMOLReader {
     if (!isVARNAME) {
       label = "";
     }
-    Map<String, List<String>> nTupleTable = new Hashtable<String, List<String>>();
+    Map<String, Lst<String>> nTupleTable = new Hashtable<String, Lst<String>>();
     String[] plotSymbols = new String[2];
 
     boolean isNew = (source.type == JDXSource.TYPE_SIMPLE);
@@ -476,12 +476,12 @@ public class JDXReader implements JmolJDXMOLReader {
     while (!(label = (isVARNAME ? label : t.getLabel())).equals("##PAGE")) {
       isVARNAME = false;
       StringTokenizer st = new StringTokenizer(t.getValue(), ",");
-      List<String> attrList = new List<String>();
+      Lst<String> attrList = new Lst<String>();
       while (st.hasMoreTokens())
         attrList.addLast(st.nextToken().trim());
       nTupleTable.put(label, attrList);
     }//Finished With Page Data
-    List<String> symbols = nTupleTable.get("##SYMBOL");
+    Lst<String> symbols = nTupleTable.get("##SYMBOL");
     if (!label.equals("##PAGE"))
       throw new JSVException("Error Reading NTuple Source");
     String page = t.getValue();
@@ -531,7 +531,7 @@ public class JDXReader implements JmolJDXMOLReader {
         }
       }
 
-      List<String[]> dataLDRTable = new List<String[]>();
+      Lst<String[]> dataLDRTable = new Lst<String[]>();
       spectrum.setHeaderTable(dataLDRTable);
 
       while (!label.equals("##DATATABLE")) {
@@ -776,7 +776,7 @@ public class JDXReader implements JmolJDXMOLReader {
 //    }
   }
 
-	private boolean processTabularData(JDXDataObject spec, List<String[]> table)
+	private boolean processTabularData(JDXDataObject spec, Lst<String[]> table)
 			throws JSVException {
 		spec.setHeaderTable(table);
 
@@ -812,10 +812,10 @@ public class JDXReader implements JmolJDXMOLReader {
 	}
 
   private boolean readNTUPLECoords(JDXDataObject spec, 
-                                          Map<String, List<String>> nTupleTable,
+                                          Map<String, Lst<String>> nTupleTable,
                                           String[] plotSymbols,
                                           double[] minMaxY) {
-    List<String> list;
+    Lst<String> list;
     if (spec.dataClass.equals("XYDATA")) {
       // Get Label Values
 
@@ -929,7 +929,7 @@ public class JDXReader implements JmolJDXMOLReader {
 
   }
 
-  public static void addHeader(List<String[]> table, String label, String value) {
+  public static void addHeader(Lst<String[]> table, String label, String value) {
     String[] entry;
     for (int i = 0; i < table.size(); i++)
       if ((entry = table.get(i))[0].equals(label)) {
@@ -962,12 +962,12 @@ public class JDXReader implements JmolJDXMOLReader {
 				break;
 			case 10:
 			case 20:
-				peakData = new List<PeakInfo>();
+				peakData = new Lst<PeakInfo>();
 				source.peakCount += mpr.readPeaks(pt == 20, source.peakCount);
 				break;
 			case 30:
 				// moldata - skip
-				acdAssignments = new List<String[]>();
+				acdAssignments = new Lst<String[]>();
 				acdMolFile = PT.rep(value, "$$ Empty String", "");
 				break;
 	    case 40:
@@ -996,7 +996,7 @@ public class JDXReader implements JmolJDXMOLReader {
 	return reader.readLine();
 	}
 
-	private List<PeakInfo> peakData;
+	private Lst<PeakInfo> peakData;
 
 	@Override
 	public void setSpectrumPeaks(int nH, String piUnitsX, String piUnitsY) {
@@ -1008,7 +1008,7 @@ public class JDXReader implements JmolJDXMOLReader {
 	@Override
   public void addPeakData(String info) {
 		if (peakData == null)
-			peakData = new List<PeakInfo>();
+			peakData = new Lst<PeakInfo>();
   	peakData.addLast(new PeakInfo(info));
 	}
 

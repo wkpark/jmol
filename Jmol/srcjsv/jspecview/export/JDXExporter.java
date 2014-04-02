@@ -23,7 +23,7 @@ import java.io.IOException;
 
 import javajs.util.DF;
 import javajs.util.OC;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 
 import jspecview.api.JSVExporter;
@@ -216,7 +216,7 @@ public class JDXExporter implements JSVExporter {
     out.append("##LONGDATE= ").append(longdate).append(newLine);
 
     // optional header
-    List<String[]> headerTable = spectrum.getHeaderTable();
+    Lst<String[]> headerTable = spectrum.getHeaderTable();
     for (int i = 0; i < headerTable.size(); i++) {
       String[] entry = headerTable.get(i);
       String label = entry[0];

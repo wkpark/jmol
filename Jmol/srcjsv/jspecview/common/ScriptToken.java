@@ -24,7 +24,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.SB;
 
@@ -161,10 +161,10 @@ public enum ScriptToken {
     return (st == null ? UNKNOWN : st);
   }
 
-  public static List<ScriptToken> getScriptTokenList(String name,
+  public static Lst<ScriptToken> getScriptTokenList(String name,
                                                      boolean isExact) {
     name = name.toUpperCase();
-    List<ScriptToken> list = new List<ScriptToken>();
+    Lst<ScriptToken> list = new Lst<ScriptToken>();
     ScriptToken st = getScriptToken(name);
     if (isExact) {
       if (st != null)
@@ -238,10 +238,10 @@ public enum ScriptToken {
    * @param value
    * @return list of tokens
    */
-  public static List<String> getTokens(String value) {
+  public static Lst<String> getTokens(String value) {
 		if (value.startsWith("'") && value.endsWith("'"))
 			value = "\"" + PT.trim(value, "'") + "\"";
-    List<String> tokens = new List<String>();
+    Lst<String> tokens = new Lst<String>();
     ScriptTokenizer st = new ScriptTokenizer(value, false);
     while (st.hasMoreTokens()) {
       String s = ScriptTokenizer.nextStringToken(st, false);
@@ -252,7 +252,7 @@ public enum ScriptToken {
     return tokens;
   }
 
-  public static String getNameList(List<ScriptToken> list) {
+  public static String getNameList(Lst<ScriptToken> list) {
     if (list.size() == 0)
       return "";
     SB sb = new SB();

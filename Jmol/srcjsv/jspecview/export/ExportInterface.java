@@ -1,6 +1,6 @@
 package jspecview.export;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import jspecview.api.JSVPanel;
 import jspecview.common.Spectrum;
 import jspecview.common.JSViewer;
@@ -16,7 +16,7 @@ public interface ExportInterface {
 	 * 
 	 * @return message for status line
 	 */
-	String exportCmd(JSVPanel jsvp, List<String> tokens,
+	String exportCmd(JSVPanel jsvp, Lst<String> tokens,
 			boolean forInkscape);
 
 	void exportSpectrum(JSViewer viewer, String type);

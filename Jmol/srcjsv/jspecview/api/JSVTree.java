@@ -1,6 +1,6 @@
 package jspecview.api;
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 import jspecview.api.ScriptInterface;
 import jspecview.source.JDXSource;
@@ -15,7 +15,7 @@ public interface JSVTree {
 
 	public JSVTreePath newTreePath(Object[] path);
 
-	public void deleteNodes(List<JSVTreeNode> toDelete);
+	public void deleteNodes(Lst<JSVTreeNode> toDelete);
 
 	public JSVTreeNode createTree(int fileCount, JDXSource source,
 			JSVPanel[] jsvPanels);

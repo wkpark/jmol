@@ -53,7 +53,7 @@ import java.net.URL;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 
 import org.jmol.util.Logger;
@@ -531,7 +531,7 @@ public class JSVApplet implements JSVAppletInterface,
 	}
 
 	@Override
-	public JSVPanel getJSVPanel(JSViewer viewer, List<Spectrum> specs) {
+	public JSVPanel getJSVPanel(JSViewer viewer, Lst<Spectrum> specs) {
 		return (specs == null ? JsPanel.getEmptyPanel(viewer) 
 			  : JsPanel.getPanelMany(viewer, specs));
 	}

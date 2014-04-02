@@ -3,7 +3,7 @@
  */
 package jspecview.js2d;
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 import jspecview.api.JSVMainPanel;
 import jspecview.api.JSVPanel;
@@ -38,7 +38,7 @@ public class JsMainPanel implements JSVMainPanel {
 	}
 
 	@Override
-	public void setSelectedPanel(JSViewer viewer, JSVPanel jsvp, List<PanelNode> panelNodes) {
+	public void setSelectedPanel(JSViewer viewer, JSVPanel jsvp, Lst<PanelNode> panelNodes) {
 		if (jsvp != selectedPanel)
 			selectedPanel = jsvp;
     int i = viewer.selectPanel(jsvp, panelNodes);

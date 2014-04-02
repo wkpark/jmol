@@ -2,7 +2,7 @@ package jspecview.tree;
 
 import java.util.Enumeration;
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 
 import jspecview.api.JSVTreeNode;
@@ -14,14 +14,14 @@ public class SimpleTreeNode implements JSVTreeNode {
 	  public PanelNode panelNode;
 		public int index;
 	  SimpleTreeNode prevNode;
-	  List<SimpleTreeNode> children;
+	  Lst<SimpleTreeNode> children;
 
 		private String text;
 
 	  public SimpleTreeNode(String text, PanelNode panelNode) {
 	  	this.text = text;
 	    this.panelNode = panelNode;
-	    children = new List<SimpleTreeNode>();
+	    children = new Lst<SimpleTreeNode>();
 	   // System.out.println("adding " + text);
 	  }
 
@@ -52,7 +52,7 @@ public class SimpleTreeNode implements JSVTreeNode {
 
 		@Override
 		public Object[] getPath() {
-			List<Object> o = new List<Object>();
+			Lst<Object> o = new Lst<Object>();
 			SimpleTreeNode node = this;
 			o.addLast(node);
 			while ((node = node.prevNode) != null)

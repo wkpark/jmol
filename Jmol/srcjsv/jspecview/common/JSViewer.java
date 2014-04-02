@@ -14,7 +14,7 @@ import java.util.Map;
 
 import javajs.util.CU;
 import javajs.util.OC;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.P3;
 import javajs.util.SB;
 import javajs.api.BytePoster;
@@ -81,13 +81,13 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 	public JSVGraphics g2d;
 	public JSVTree spectraTree;
 	public JDXSource currentSource;
-	public List<PanelNode> panelNodes;
+	public Lst<PanelNode> panelNodes;
 	public ColorParameters parameters;
 	public RepaintManager repaintManager;
 	public JSVPanel selectedPanel;
 	public JSVMainPanel mainPanel;
 	public Properties properties; // application only
-	public List<String> scriptQueue;
+	public Lst<String> scriptQueue;
 	public JSVFileHelper fileHelper;
 	public JSVPopupMenu jsvpPopupMenu;
 	private DialogManager dialogManager;
@@ -160,7 +160,7 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 		parameters.setName("applet");
 		fileHelper = ((JSVFileHelper) getPlatformInterface("FileHelper")).set(this);
 		isSingleThreaded = apiPlatform.isSingleThreaded();
-		panelNodes = new List<PanelNode>();
+		panelNodes = new Lst<PanelNode>();
 		repaintManager = new RepaintManager(this);
 		if (!isApplet)
 			setPopupMenu(true, true);
@@ -488,7 +488,7 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 
 	private void execPeak(String value) {
 		try {
-			List<String> tokens = ScriptToken.getTokens(value);
+			Lst<String> tokens = ScriptToken.getTokens(value);
 			value = " type=\"" + tokens.get(0).toUpperCase() + "\" _match=\""
 					+ PT.trimQuotes(tokens.get(1).toUpperCase()) + "\"";
 			if (tokens.size() > 2 && tokens.get(2).equalsIgnoreCase("all"))
@@ -506,7 +506,7 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 			if (!isClosed())
 				pd().getPeakListing(null, b);
 		} else {
-			List<String> tokens = ScriptToken.getTokens(value);
+			Lst<String> tokens = ScriptToken.getTokens(value);
 			for (int i = tokens.size(); --i >= 0;) {
 				String token = tokens.get(i);
 				int pt = token.indexOf("=");
@@ -533,7 +533,7 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 
 	private boolean execZoom(String value) {
 		double x1 = 0, x2 = 0, y1 = 0, y2 = 0;
-		List<String> tokens;
+		Lst<String> tokens;
 		value = PT.rep(value, " - ", " ").replace(',',' ');
 		tokens = ScriptToken.getTokens(value);
 		switch (tokens.size()) {
@@ -570,7 +570,7 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 		return true;
 	}
 
-	private void scaleSelectedBy(List<PanelNode> nodes, String value) {
+	private void scaleSelectedBy(Lst<PanelNode> nodes, String value) {
 		try {
 			double f = Double.parseDouble(value);
 			for (int i = nodes.size(); --i >= 0;)
@@ -594,10 +594,10 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 				}
 			return;
 		}
-		List<PanelNode> nodes = panelNodes;
+		Lst<PanelNode> nodes = panelNodes;
 		for (int i = nodes.size(); --i >= 0;)
 			nodes.get(i).pd().selectFromEntireSet(Integer.MIN_VALUE);
-		List<Spectrum> speclist = new List<Spectrum>();
+		Lst<Spectrum> speclist = new Lst<Spectrum>();
 		fillSpecList(value, speclist, false);
 		// not sure where this is going...
 	}
@@ -607,7 +607,7 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 			checkOverlay();
 			return;
 		}
-		List<Spectrum> speclist = new List<Spectrum>();
+		Lst<Spectrum> speclist = new Lst<Spectrum>();
 		String strlist = fillSpecList(value, speclist, true);
 		if (speclist.size() > 0)
 			si.siOpenDataOrFile(null, strlist, speclist, strlist, -1, -1, false, null, null);
@@ -655,7 +655,7 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 	}
 
 	private void setYScale(String value) {
-		List<String> tokens = ScriptToken.getTokens(value);
+		Lst<String> tokens = ScriptToken.getTokens(value);
 		int pt = 0;
 		boolean isAll = false;
 		if (tokens.size() > 1 && tokens.get(0).equalsIgnoreCase("ALL")) {
@@ -782,7 +782,7 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 			return;
 		try {
 			String file = "file=" + PT.esc(source.getFilePath());
-			List<PeakInfo> peaks = source.getSpectra().get(0).getPeakList();
+			Lst<PeakInfo> peaks = source.getSpectra().get(0).getPeakList();
 			SB sb = new SB();
 			sb.append("[");
 			int n = peaks.size();
@@ -946,7 +946,7 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 			return map0;
 		if (map0 != null)
 			map.put("current", map0);
-		List<Map<String, Object>> info = new List<Map<String, Object>>();
+		Lst<Map<String, Object>> info = new Lst<Map<String, Object>>();
 		for (int i = 0; i < panelNodes.size(); i++) {
 			JSVPanel jsvp = panelNodes.get(i).jsvp;
 			if (jsvp == null)
@@ -977,12 +977,12 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 	 * @param isView
 	 * @return comma-separated list, for the title
 	 */
-	private String fillSpecList(String value, List<Spectrum> speclist,
+	private String fillSpecList(String value, Lst<Spectrum> speclist,
 			boolean isView) {
 
 		String prefix = "1.";
-		List<String> list;
-		List<String> list0 = null;
+		Lst<String> list;
+		Lst<String> list0 = null;
 		boolean isNone = (value.equalsIgnoreCase("NONE"));
 		if (isNone || value.equalsIgnoreCase("all"))
 			value = "*";
@@ -1091,7 +1091,7 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 	}
 
 	private void addSpecToList(PanelData pd, double userYFactor, int isubspec,
-			List<Spectrum> list, boolean isView) {
+			Lst<Spectrum> list, boolean isView) {
 		if (isView) {
 			Spectrum spec = pd.getSpectrumAt(0);
 			spec.setUserYFactor(Double.isNaN(userYFactor) ? 1 : userYFactor);
@@ -1108,7 +1108,7 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 		return (vi == null ? -1 : vi.getColour(spectrum, asFitted));
 	}
 
-	public int openDataOrFile(Object data, String name, List<Spectrum> specs,
+	public int openDataOrFile(Object data, String name, Lst<Spectrum> specs,
 			String strUrl, int firstSpec, int lastSpec, boolean isAppend, String id) {
 		if ("NONE".equals(name)) {
 			close("View*");
@@ -1249,7 +1249,7 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 			return;
 		}
 		boolean isViews = value.equalsIgnoreCase("views");
-		List<JDXSource> list = new List<JDXSource>();
+		Lst<JDXSource> list = new Lst<JDXSource>();
 		JDXSource source;
 		value = value.replace('\\', '/');
 		int n = panelNodes.size();
@@ -1299,7 +1299,7 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 		 */
 		// load   (alone) just runs defaultLoadScript
 		// load ID "xx"...
-		List<String> tokens = ScriptToken.getTokens(value);
+		Lst<String> tokens = ScriptToken.getTokens(value);
 		String filename = tokens.get(0);
 		String id = null;
 		int pt = 0;
@@ -1352,7 +1352,7 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 
 	public void combineSpectra(String name) {
 		JDXSource source = currentSource;
-		List<Spectrum> specs = source.getSpectra();
+		Lst<Spectrum> specs = source.getSpectra();
 		JSVPanel jsvp = si.siGetNewJSVPanel2(specs);
 		jsvp.setTitle(source.getTitle());
 		if (jsvp.getTitle().equals("")) {
@@ -1373,7 +1373,7 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 		// Remove nodes and dispose of frames
 		JSVTreeNode rootNode = spectraTree.getRootNode();
 		String fileName = (source == null ? null : source.getFilePath());
-		List<JSVTreeNode> toDelete = new List<JSVTreeNode>();
+		Lst<JSVTreeNode> toDelete = new Lst<JSVTreeNode>();
 		Enumeration<JSVTreeNode> enume = rootNode.children();
 		while (enume.hasMoreElements()) {
 			JSVTreeNode node = enume.nextElement();
@@ -1455,7 +1455,7 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 
 	public void splitSpectra() {
 		JDXSource source = currentSource;
-		List<Spectrum> specs = source.getSpectra();
+		Lst<Spectrum> specs = source.getSpectra();
 		JSVPanel[] panels = new JSVPanel[specs.size()];
 		JSVPanel jsvp = null;
 		for (int i = 0; i < specs.size(); i++) {
@@ -1539,7 +1539,7 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 		viewDialog = getDialog(AType.Views, null);
 	}
 
-	private void markSelectedPanels(List<PanelNode> panelNodes, int ip) {
+	private void markSelectedPanels(Lst<PanelNode> panelNodes, int ip) {
 		for (int i = panelNodes.size(); --i >= 0;)
 			panelNodes.get(i).isSelected = (ip == i);
 	}
@@ -1617,16 +1617,8 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 	 */
 	@Override
 	public void updateJS(int width, int height) {
-		if (selectedPanel == null)
-			return;
-		/**
-		 * @j2sNative
-		 * 
-		 *            this.selectedPanel.paintComponent(this.apiPlatform.context);
-		 * 
-		 */
-		{
-		}
+		if (selectedPanel != null)
+			selectedPanel.paintComponent(apiPlatform.getGraphics(null));
 	}
 
 	/**
@@ -1916,7 +1908,7 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 		
 	}
 
-	public int selectPanel(JSVPanel jsvp, List<PanelNode> panelNodes) {
+	public int selectPanel(JSVPanel jsvp, Lst<PanelNode> panelNodes) {
 		int iPanel = -1;
 		if (panelNodes != null) {
 			for (int i = panelNodes.size(); --i >= 0;) {
@@ -1974,16 +1966,18 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 				case APPLETID:
 					fullName = appletID + "__" 
 				      + (appletID = value) + "__";
+					Object applet = null;
 					/**
 					 * @j2sNative
 					 * 
-					 *            if(typeof Jmol != "undefined") this.si.applet =
+					 *            if(typeof Jmol != "undefined") applet =
 					 *            Jmol._applets[value];
 					 * 
 					 * 
 					 */
 					{
 					}
+					this.applet = applet;
 					break;
 				case AUTOINTEGRATE:
 					autoIntegrate = Parameters.isTrue(value);

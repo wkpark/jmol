@@ -36,18 +36,21 @@ public class JsPlatform implements GenericPlatform {
   
 	@Override
 	public void setViewer(PlatformViewer viewer, Object canvas) {
+		Object context = "";
+		this.viewer = viewer;
+		this.canvas = canvas;
 	  /**
 	   * @j2sNative
 	   * 
-     *     this.vwr = viewer;
-     *     this.canvas = canvas;
      *     if (canvas != null) {
-	   *       this.context = canvas.getContext("2d");
-	   *       canvas.imgdata = this.context.getImageData(0, 0, canvas.width, canvas.height);
+	   *       context = canvas.getContext("2d");
+	   *       canvas.imgdata = context.getImageData(0, 0, canvas.width, canvas.height);
 	   *       canvas.buf8 = canvas.imgdata.data;
 	   *     }
 	   */
 	  {}
+	  if (context != "")
+	  	this.context = context;
 		//
 		try {
 		  URL.setURLStreamHandlerFactory(new AjaxURLStreamHandlerFactory());
@@ -232,7 +235,7 @@ public class JsPlatform implements GenericPlatform {
 
 	@Override
 	public Object getGraphics(Object image) {
-		return Image.getGraphics(image);
+		return (image == null ? context : Image.getGraphics(image));
 	}
 
   @Override
@@ -255,7 +258,7 @@ public class JsPlatform implements GenericPlatform {
     /**
      * @j2sNative
      * 
-     *  if (typeof Jmol != "undefined" && Jmol._getHiddenCanvas)
+     *  if (self.Jmol && Jmol._getHiddenCanvas)
      *    return Jmol._getHiddenCanvas(this.vwr.applet, "stereoImage", w, h); 
      */
     {}
@@ -267,7 +270,7 @@ public class JsPlatform implements GenericPlatform {
     /**
      * @j2sNative
      * 
-     *  if (typeof Jmol != "undefined" && Jmol._getHiddenCanvas)
+     *  if (self.Jmol && Jmol._getHiddenCanvas)
      *    return Jmol._getHiddenCanvas(this.vwr.applet, "textImage", w, h); 
      */
     {}

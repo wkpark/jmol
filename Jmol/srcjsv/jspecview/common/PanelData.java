@@ -47,7 +47,7 @@ import javajs.awt.Font;
 import javajs.awt.event.Event;
 import javajs.api.EventManager;
 import javajs.util.CU;
-import javajs.util.List;
+import javajs.util.Lst;
 
 import jspecview.api.AnnotationData;
 import jspecview.api.JSVGraphics;
@@ -89,7 +89,7 @@ public class PanelData implements EventManager {
 
 	// Critical fields
 
-	private List<PanelListener> listeners = new List<PanelListener>();
+	private Lst<PanelListener> listeners = new Lst<PanelListener>();
 
 	public void addListener(PanelListener listener) {
 		if (!listeners.contains(listener)) {
@@ -105,7 +105,7 @@ public class PanelData implements EventManager {
 
 	public Hashtable<ScriptToken, Object> options = new Hashtable<ScriptToken, Object>();
 	public JSVPanel jsvp;
-	public List<GraphSet> graphSets;
+	public Lst<GraphSet> graphSets;
 	public int currentSplitPoint;
 	public PlotWidget thisWidget;
 	public Coordinate coordClicked;
@@ -165,7 +165,7 @@ public class PanelData implements EventManager {
 
 	public Map<String, Object> getInfo(boolean selectedOnly, String key) {
 		Map<String, Object> info = new Hashtable<String, Object>();
-		List<Map<String, Object>> sets = null;
+		Lst<Map<String, Object>> sets = null;
 		if (selectedOnly)
 			return currentGraphSet.getInfo(key, getCurrentSpectrumIndex());
 		Set<Entry<ScriptToken, Object>> entries = options.entrySet();
@@ -174,7 +174,7 @@ public class PanelData implements EventManager {
 		Parameters.putInfo(key, info, "type", getSpectrumAt(0).getDataType());
 		Parameters.putInfo(key, info, "title", title);
 		Parameters.putInfo(key, info, "nSets", Integer.valueOf(graphSets.size()));
-		sets = new List<Map<String, Object>>();
+		sets = new Lst<Map<String, Object>>();
 		for (int i = graphSets.size(); --i >= 0;)
 			sets.addLast(graphSets.get(i).getInfo(key, -1));
 		info.put("sets", sets);
@@ -255,11 +255,11 @@ public class PanelData implements EventManager {
 
 	// //// initialization - from AwtPanel
 
-	public List<Spectrum> spectra;
+	public Lst<Spectrum> spectra;
 	public boolean taintedAll = true;
 
 	public void initOne(Spectrum spectrum) {
-		spectra = new List<Spectrum>();
+		spectra = new Lst<Spectrum>();
 		spectra.addLast(spectrum);
 		initMany(spectra, 0, 0);
 	}
@@ -278,7 +278,7 @@ public class PanelData implements EventManager {
 		}
 	}
 
-	public void initMany(List<Spectrum> spectra, int startIndex,
+	public void initMany(Lst<Spectrum> spectra, int startIndex,
 			int endIndex) {
 		this.startIndex = startIndex;
 		this.endIndex = endIndex;
@@ -335,7 +335,7 @@ public class PanelData implements EventManager {
 		doReset = true;
 	}
 
-	public void addAnnotation(List<String> tokens) {
+	public void addAnnotation(Lst<String> tokens) {
 		String title = currentGraphSet.addAnnotation(tokens, getTitle());
 		if (title != null)
 			this.title = title;
@@ -559,14 +559,14 @@ public class PanelData implements EventManager {
 				graphSets.get(i).setSelected(-1);
 				continue;
 			}
-			List<Spectrum> specs = graphSets.get(i).spectra;
+			Lst<Spectrum> specs = graphSets.get(i).spectra;
 			for (int j = 0; j < specs.size(); j++, pt++)
 				if (iSpec < 0 || iSpec == pt)
 					graphSets.get(i).setSelected(j);
 		}
 	}
 
-	public void addToList(int iSpec, List<Spectrum> list) {
+	public void addToList(int iSpec, Lst<Spectrum> list) {
 		for (int i = 0; i < spectra.size(); i++)
 			if (iSpec < 0 || i == iSpec)
 				list.addLast(spectra.get(i));

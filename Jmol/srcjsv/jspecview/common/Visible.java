@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2009 The University of the West Indies
+/* Copyright (c) 2008-2014 The University of the West Indies
  *
  * Contact: robert.lancashire@uwimona.edu.jm
  *
@@ -60,6 +60,7 @@ import jspecview.api.VisibleInterface;
  * Version 1.10, November 5, 1996 
  * http://www.color.org/sRGB.xalter
  * 
+ * @author Bob Hanson
  * @author Craig Walters
  * @author Prof Robert J. Lancashire
  */
@@ -75,8 +76,8 @@ public class Visible implements VisibleInterface {
 	 * 
 	 * @param spec
 	 * @param useFitted
-	 *          if true, use approximate CIE curves and every point; if false, use
-	 *          exact CIE 5-nm data and interpolated values
+	 *          if true,  use curve fitted equations for CIE curves and every point; 
+	 *          if false, use exact CIE 5-nm data and interpolated values
 	 * @return 0xFFRRGGBB
 	 * 
 	 */
@@ -138,7 +139,7 @@ public class Visible implements VisibleInterface {
 	private static void getXYZfitted(Coordinate[] xyCoords, boolean isAbsorbance,
 			double[] xyzd) {
 		// Lancashire method -- using actual data and curve-fit CIE data
-
+        // 1931 data used to match the J Chem Educ article
 		// Approximate x-bar, y-bar, z-bar, and CIE D65 curves.
 
 		double cie, xb, yb, zb;
@@ -165,7 +166,7 @@ public class Visible implements VisibleInterface {
 			double y = xyCoords[i].getYVal();
 			if (isAbsorbance)
 				y = Math.pow(10, -Math.max(y, 0));
-			//y = 1; // test for 255 255 255 gives 255 255 254
+//			y = 1; // test for 255 255 255 gives 255 255 254
 			xyzd[0] += y * xb * cie;
 			xyzd[1] += y * yb * cie;
 			xyzd[2] += y * zb * cie;

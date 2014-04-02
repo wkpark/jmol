@@ -72,15 +72,15 @@ class Image {
    * @return null
    */
   static int[] grabPixels(Object context, int width, int height) {
+  	int[] data = null;
     /**
      * @j2sNative
      *            if (context._buf32) return context._buf32; // non-canvas internal buffer for image writing
-     *            var data = context.getImageData(0, 0, width, height).data;
-     *            return this.toIntARGB(data);
+     *            data = context.getImageData(0, 0, width, height).data;
      */
     {
-      return toIntARGB(null);
     }
+    return toIntARGB(data);
   }
 
   static int[] toIntARGB(int[] imgData) {
@@ -133,11 +133,10 @@ class Image {
      * context.fillStyle = "#FFFFFF";
      * context.font = font3d.font;
      * context.fillText(text, 0, ascent);
-     * return this.grabPixels(context, width, height);
      */
     {
-      return null;
     }
+    return grabPixels(context, width, height);
   }
 
   /**
@@ -161,11 +160,9 @@ class Image {
      * if (canvas == null) 
      *   canvas = {width:windowWidth,height:windowHeight};
      * canvas.buf32 = pBuffer; 
-     * return canvas;
-     * 
      */
     {
-      return null;
+      return canvas;
     }
   }
 
@@ -176,15 +173,7 @@ class Image {
    */
   static Object getStaticGraphics(Object canvas, boolean backgroundTransparent) {
     // for text processing;
-    /**
-     * @j2sNative
-     * 
-     * return this.getGraphics(canvas);
-     * 
-     */
-    {
-    return null;
-    }
+    return getGraphics(canvas);
   }
 
   /**

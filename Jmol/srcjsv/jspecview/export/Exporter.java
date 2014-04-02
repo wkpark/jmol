@@ -5,7 +5,7 @@ import java.io.BufferedReader;
 import javajs.api.GenericFileInterface;
 import javajs.util.Base64;
 import javajs.util.OC;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 
 
@@ -30,7 +30,7 @@ public class Exporter implements ExportInterface {
 	}
 
 	@Override
-	public String write(JSViewer viewer, List<String> tokens, boolean forInkscape) {
+	public String write(JSViewer viewer, Lst<String> tokens, boolean forInkscape) {
 		// MainFrame or applet WRITE command
 		if (tokens == null)
 			return printPDF(viewer, null, false);

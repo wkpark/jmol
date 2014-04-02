@@ -2,7 +2,7 @@ package jspecview.api;
 
 import java.net.URL;
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 
 import jspecview.app.JSVApp;
@@ -23,7 +23,7 @@ public interface AppletFrame {
 
 	URL getDocumentBase();
 
-	JSVPanel getJSVPanel(JSViewer viewer, List<Spectrum> specs);
+	JSVPanel getJSVPanel(JSViewer viewer, Lst<Spectrum> specs);
 
 	String getParameter(String name);
 

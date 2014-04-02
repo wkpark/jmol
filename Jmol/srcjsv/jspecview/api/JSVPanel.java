@@ -42,4 +42,6 @@ public interface JSVPanel extends JSVViewPanel {
 
 	public void showMenu(int x, int y);
 
+	public void paintComponent(Object display);
+
 }

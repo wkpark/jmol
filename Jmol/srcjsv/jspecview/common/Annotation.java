@@ -26,7 +26,7 @@ package jspecview.common;
 
 import javajs.api.GenericColor;
 import javajs.util.CU;
-import javajs.util.List;
+import javajs.util.Lst;
 import jspecview.api.JSVGraphics;
 
 
@@ -86,7 +86,7 @@ public class Annotation extends Coordinate {
 
 
 	public static Annotation getColoredAnnotation(JSVGraphics g2d,
-			Spectrum spec, List<String> args, Annotation lastAnnotation) {
+			Spectrum spec, Lst<String> args, Annotation lastAnnotation) {
 		String arg;
 		int xPt = 0;
 		int yPt = 1;

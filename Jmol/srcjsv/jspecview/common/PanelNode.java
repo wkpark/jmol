@@ -5,7 +5,7 @@ package jspecview.common;
 
 import java.util.Map;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.SB;
 
 
@@ -76,7 +76,7 @@ public class PanelNode {
   public String toString() {
     return ((id == null ? "" : id + ": ") + (frameTitle == null ? fileName : frameTitle));
   }
-  public static JDXSource findSourceByNameOrId(String id, List<PanelNode> panelNodes) {
+  public static JDXSource findSourceByNameOrId(String id, Lst<PanelNode> panelNodes) {
     for (int i = panelNodes.size(); --i >= 0;) {
       PanelNode node = panelNodes.get(i);
       if (id.equals(node.id) || id.equalsIgnoreCase(node.source.getFilePath()))
@@ -91,7 +91,7 @@ public class PanelNode {
     return null;
   }
   
-	public static PanelNode findNodeById(String id, List<PanelNode> panelNodes) {
+	public static PanelNode findNodeById(String id, Lst<PanelNode> panelNodes) {
 		if (id != null)
 			for (int i = panelNodes.size(); --i >= 0;)
 				if (id.equals(panelNodes.get(i).id) || id.equals(panelNodes.get(i).frameTitle))
@@ -106,14 +106,14 @@ public class PanelNode {
    * 
    * @return the tree node that is associated with a panel
    */
-  static public PanelNode findNode(JSVPanel jsvp, List<PanelNode> panelNodes) {
+  static public PanelNode findNode(JSVPanel jsvp, Lst<PanelNode> panelNodes) {
     for (int i = panelNodes.size(); --i >= 0;)
       if (panelNodes.get(i).jsvp == jsvp)
         return panelNodes.get(i);
     return null;
   }
 
-	static public String getSpectrumListAsString(List<PanelNode> panelNodes) {
+	static public String getSpectrumListAsString(Lst<PanelNode> panelNodes) {
       SB sb = new SB();
       for (int i = 0; i < panelNodes.size(); i++) {
       	PanelNode node = panelNodes.get(i);
@@ -132,7 +132,7 @@ public class PanelNode {
 //    return specList;
 //  }
  
-	public static int isOpen(List<PanelNode> panelNodes, String filePath) {
+	public static int isOpen(Lst<PanelNode> panelNodes, String filePath) {
 		int pt = -1;
     if (filePath != null)
       for (int i = panelNodes.size(); --i >= 0;) {
@@ -154,7 +154,7 @@ public class PanelNode {
   public void setFrameTitle(String name) {
 		frameTitle = name;
 	}
-	public static JSVPanel getLastFileFirstNode(List<PanelNode> panelNodes) {
+	public static JSVPanel getLastFileFirstNode(Lst<PanelNode> panelNodes) {
 		int n = panelNodes.size();
 		PanelNode node = (n == 0 ? null : panelNodes.get(n - 1));
 		// first in last file

@@ -29,13 +29,13 @@ import java.util.Map;
 
 import javajs.util.AU;
 import javajs.util.DF;
-import javajs.util.List;
+import javajs.util.Lst;
 
 
 import jspecview.api.AnnotationData;
 import jspecview.common.Annotation.AType;
 
-public class MeasurementData extends List<Measurement> implements
+public class MeasurementData extends Lst<Measurement> implements
 		AnnotationData {
 
 	private static final long serialVersionUID = 1L;
@@ -58,7 +58,7 @@ public class MeasurementData extends List<Measurement> implements
 		myParams = new Parameters().setName("MeasurementData");
 	}
 
-	List<Measurement> getMeasurements() {
+	Lst<Measurement> getMeasurements() {
 		return this;
 	}
 
@@ -78,7 +78,7 @@ public class MeasurementData extends List<Measurement> implements
 	}
 
 	void setMeasurements(
-			@SuppressWarnings("unused") List<Measurement> measurements) {
+			@SuppressWarnings("unused") Lst<Measurement> measurements) {
 		// won't happen
 	}
 

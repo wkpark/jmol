@@ -56,7 +56,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Map;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 
 import javax.swing.JApplet;
@@ -123,7 +123,7 @@ public class JSVApplet extends JApplet implements JSVAppletInterface,
 		isJNLP = (getParameter("syncId") == null);
 		viewer = app.vwr;
 		viewer.display = getContentPane();
-		viewer.scriptQueue = new List<String>();
+		viewer.scriptQueue = new Lst<String>();
 		commandWatcherThread = new Thread(new CommandWatcher());
 		commandWatcherThread.setName("CommmandWatcherThread");
 		commandWatcherThread.start();
@@ -504,7 +504,7 @@ public class JSVApplet extends JApplet implements JSVAppletInterface,
 	}
 
 	@Override
-	public JSVPanel getJSVPanel(JSViewer viewer, List<Spectrum> specs) {
+	public JSVPanel getJSVPanel(JSViewer viewer, Lst<Spectrum> specs) {
 		return (specs == null ? AwtPanel.getEmptyPanel(viewer)
 				: AwtPanel.getPanelMany(viewer, specs));
 	}
@@ -521,7 +521,7 @@ public class JSVApplet extends JApplet implements JSVAppletInterface,
 				try {
 					Thread.sleep(commandDelay);
 					if (commandWatcherThread != null) {
-						List<String> q = app.vwr.scriptQueue;
+						Lst<String> q = app.vwr.scriptQueue;
 						if (q.size() > 0) {
 							String scriptItem = q.remove(0);
 							if (scriptItem != null)

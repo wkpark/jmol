@@ -64,7 +64,7 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 
 import javajs.util.CU;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.SB;
 
@@ -160,7 +160,7 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 	private Dimension               jmolDimensionNew = new Dimension(250, 200);
 	private JSVInterface            jmolOrAdvancedApplet;
 	private JSVPanel                prevPanel;
-	private List<String>        recentFilePaths = new List<String>();
+	private Lst<String>        recentFilePaths = new Lst<String>();
 	private JScrollPane             spectraTreeScrollPane;
 	private Component               mainPanel;
 	private JPanel                  statusPanel = new JPanel();
@@ -549,11 +549,11 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 		if (cmd.length() == 0) {
 			tip = "Enter a command:";
 		} else {
-			List<String> tokens = ScriptToken.getTokens(cmd);
+			Lst<String> tokens = ScriptToken.getTokens(cmd);
 			if (tokens.size() == 0)
 				return;
 			boolean isExact = (cmd.endsWith(" ") || tokens.size() > 1);
-			List<ScriptToken> list = ScriptToken.getScriptTokenList(tokens.get(0),
+			Lst<ScriptToken> list = ScriptToken.getScriptTokenList(tokens.get(0),
 					isExact);
 			switch (list.size()) {
 			case 0:
@@ -629,7 +629,7 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 	}
 
 	@Override
-	public List<String> getScriptQueue() {
+	public Lst<String> getScriptQueue() {
   // applet only
 		return null;
 	}
@@ -883,7 +883,7 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 	// /////////// JSApp/MainFrame ScriptInterface ////////////
 
 	@Override
-	public void siOpenDataOrFile(Object data, String name, List<Spectrum> specs,
+	public void siOpenDataOrFile(Object data, String name, Lst<Spectrum> specs,
 			String url, int firstSpec, int lastSpec, boolean isAppend, String script,
 			String id) {
 		boolean isOne = (vwr.currentSource == null);
@@ -1091,7 +1091,7 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 	}
 
 	@Override
-	public JSVPanel siGetNewJSVPanel2(List<Spectrum> specs) {
+	public JSVPanel siGetNewJSVPanel2(Lst<Spectrum> specs) {
 		return AwtPanel.getPanelMany(vwr, specs);
 	}
 

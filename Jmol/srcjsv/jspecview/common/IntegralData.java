@@ -9,7 +9,7 @@ import java.util.StringTokenizer;
 import javajs.util.AU;
 import javajs.util.BS;
 import javajs.util.DF;
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.PT;
 
 
@@ -185,7 +185,7 @@ public class IntegralData extends MeasurementData {
     ppms = PT.rep(ppms, "--","-#");
     ppms = ppms.replace('-','^');
     ppms = ppms.replace('#','-');
-    List<String> tokens = ScriptToken.getTokens(ppms);
+    Lst<String> tokens = ScriptToken.getTokens(ppms);
     for (int i = 0; i < tokens.size(); i++) {
       try {
         String s = tokens.get(i);
@@ -265,9 +265,9 @@ public class IntegralData extends MeasurementData {
 	 * @param value
 	 * @return JmolList<IntegrationRatio> object representing integration ratios
 	 */
-	public static List<Annotation> getIntegrationRatiosFromString(
+	public static Lst<Annotation> getIntegrationRatiosFromString(
 			Spectrum spec, String value) {
-		List<Annotation> ratios = new List<Annotation>();
+		Lst<Annotation> ratios = new Lst<Annotation>();
 		// split input into x-value/integral-value pairs
 		StringTokenizer allParamTokens = new StringTokenizer(value, ",");
 		while (allParamTokens.hasMoreTokens()) {

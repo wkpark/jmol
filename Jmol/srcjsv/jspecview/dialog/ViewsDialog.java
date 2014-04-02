@@ -21,7 +21,7 @@ package jspecview.dialog;
 
 import java.util.Enumeration;
 
-import javajs.util.List;
+import javajs.util.Lst;
 import javajs.util.SB;
 
 import jspecview.api.JSVTreeNode;
@@ -38,8 +38,8 @@ import javajs.util.PT;
  */
 public class ViewsDialog extends JSVDialog {
 
-	private List<JSVTreeNode> treeNodes;	
-	private List<Object> checkBoxes;
+	private Lst<JSVTreeNode> treeNodes;	
+	private Lst<Object> checkBoxes;
 	private Object closeSelectedButton;
 	private Object combineSelectedButton;
 	private Object viewSelectedButton;
@@ -58,8 +58,8 @@ public class ViewsDialog extends JSVDialog {
 
 	@Override
 	protected void addUniqueControls() {
-    checkBoxes = new List<Object>();
-    treeNodes = new List<JSVTreeNode>();
+    checkBoxes = new Lst<Object>();
+    treeNodes = new Lst<JSVTreeNode>();
     dialog.addButton("btnSelectAll", "Select All");
     dialog.addButton("btnSelectNone", "Select None");
     txt2 = dialog.addTextField("txtOffset", "Offset", "" + vwr.parameters.viewOffset, "%", null, true);

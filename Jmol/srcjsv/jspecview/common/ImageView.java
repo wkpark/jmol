@@ -2,7 +2,7 @@ package jspecview.common;
 
 
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 
 class ImageView implements XYScaleConverter {
@@ -190,7 +190,7 @@ class ImageView implements XYScaleConverter {
    * @return image buffer
    */
   synchronized int[] get2dBuffer(Spectrum spec, boolean forceNew) {
-    List<Spectrum> subSpectra = spec.getSubSpectra();
+    Lst<Spectrum> subSpectra = spec.getSubSpectra();
     if (subSpectra == null || !subSpectra.get(0).isContinuous())
       return null;
     Coordinate[] xyCoords = spec.getXYCoords();
@@ -242,7 +242,7 @@ class ImageView implements XYScaleConverter {
 	}
 
 	void setMinMaxY(Spectrum spec) {
-    List<Spectrum> subSpectra = spec.getSubSpectra();
+    Lst<Spectrum> subSpectra = spec.getSubSpectra();
     Spectrum spec0 = subSpectra.get(0); 
     maxY = spec0.getY2D();
     minY = subSpectra.get(subSpectra.size() - 1).getY2D();

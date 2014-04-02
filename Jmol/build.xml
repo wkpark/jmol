@@ -817,6 +817,8 @@ all support for previous versions removed
         <include name="jmol75x29x8.gif" />
         <include name="javajs/api/**" />
         <include name="javajs/awt/**" />
+        <include name="javajs/img/**" />
+        <include name="javajs/export/**" />
         <include name="javajs/util/**" />
         <include name="org/jmol/adapter/smarter/**" />
         <include name="org/jmol/api/**" />

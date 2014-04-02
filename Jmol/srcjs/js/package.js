@@ -42,7 +42,7 @@ for (var i = 0; i < Jmol._coreFiles.length; i++)
     "J.api.JmolScriptManager", 
     "$.JmolScriptEvaluator",
     "$.JmolScriptFunction",
-    "J.script.ScriptError", 
+    "JS.ScriptError", 
     "$.ScriptParam", 
     "$.ScriptExpr", 
     "$.ScriptEval", 
@@ -59,21 +59,21 @@ for (var i = 0; i < Jmol._coreFiles.length; i++)
 	]);
 	
 	ClazzLoader.jarClasspath (base + "corescriptcmd.z.js",	[  
-	"J.scriptext.CmdExt"
+	"JS.CmdExt"
 	]);
 	                                                 	
 	ClazzLoader.jarClasspath (base + "corescriptmath.z.js",	[  
-	"J.scriptext.MathExt"
+	"JS.MathExt"
 	]);
 	                                                 	
 	ClazzLoader.jarClasspath (base + "corestate.z.js",	[  
     "J.api.JmolStateCreator", 
-    "JW.StateCreator" 
+    "JU.StateCreator" 
 	]);
 	
 	ClazzLoader.jarClasspath (base + "coreprop.z.js",	[  
     "J.api.JmolPropertyManager", 
-    "JW.PropertyManager" 
+    "JU.PropertyManager" 
 	]);  
   
 	ClazzLoader.jarClasspath (base + "coreconsole.z.js",	[
@@ -92,7 +92,7 @@ for (var i = 0; i < Jmol._coreFiles.length; i++)
 	ClazzLoader.jarClasspath (base + "corebinary.z.js",	[
     "java.io.DataInputStream",
     "$.PushbackInputStream",
-    "javajs.api.GenericBinaryDocument",
+    "JS.api.GenericBinaryDocument",
     "JU.BC",
     "$.BinaryDocument"
 	]);
@@ -187,7 +187,7 @@ for (var i = 0; i < Jmol._coreFiles.length; i++)
 
 	ClazzLoader.jarClasspath (base + "coresmiles.z.js",	[
     "J.api.SmilesMatcherInterface",
-    "J.scriptext.SmilesExt",
+    "JS.SmilesExt",
     "J.smiles.VTemp",
     "$.SmilesMatcher",
     "$.InvalidSmilesException",

@@ -31,7 +31,7 @@ import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javajs.util.List;
+import javajs.util.Lst;
 
 import com.jcraft.jzlib.ZStream;
 
@@ -46,7 +46,7 @@ import com.jcraft.jzlib.ZStream;
 public class ZipOutputStream extends DeflaterOutputStream implements
     ZipConstants {
   private ZipEntry current;
-  private List<ZipEntry> xentries = new List<ZipEntry>();
+  private Lst<ZipEntry> xentries = new Lst<ZipEntry>();
   private Map<String, Boolean> names = new Hashtable<String, Boolean>();
   private CRC32 crc = new CRC32();
   private long written = 0;

@@ -27,8 +27,6 @@ package org.jmol.adapter.readers.quantum;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.Bond;
 
-import java.io.IOException;
-
 import javajs.util.AU;
 import javajs.util.Lst;
 import javajs.util.PT;
@@ -48,7 +46,7 @@ import org.jmol.util.Logger;
  * @author hansonr  Bob Hanson hansonr@stolaf.edu
  *
  **/
-public class GaussianFchkReader extends MOReader {
+public class GaussianFchkReader extends GaussianReader {
   
   private Map<String, Object> fileData;
   private int atomCount;
@@ -68,8 +66,8 @@ public class GaussianFchkReader extends MOReader {
     readDipoleMoment();
     readPartialCharges();
     readBasis();
-    readMOs();
-    readFrequencies();
+    readMolecularObitals();
+    readFrequencies("NumFreq", false); // if log frequency info is appended
     continuing = false;
   }
 
@@ -120,7 +118,8 @@ public class GaussianFchkReader extends MOReader {
     }
   }
   
-  private void readAtoms() throws Exception {
+  @Override
+  protected void readAtoms() throws Exception {
     float[] atomNumbers = (float[]) fileData.get("Atomicnumbers");
     float[] data = (float[]) fileData.get("Currentcartesiancoordinates");
     String e = "" + fileData.get("TotalEnergy"); 
@@ -158,7 +157,7 @@ public class GaussianFchkReader extends MOReader {
   1.00000000E+00  0.00000000E+00  0.00000000E+00
    */
 
-  private void readBonds() {
+  protected void readBonds() {
     try {
       float[] nBond = (float[]) fileData.get("NBond");
       float[] iBond = (float[]) fileData.get("IBond");
@@ -183,7 +182,8 @@ public class GaussianFchkReader extends MOReader {
     }
   }
   
-  private void readDipoleMoment() throws Exception {
+  @Override
+  protected void readDipoleMoment() throws Exception {
     float[] data = (float[]) fileData.get("DipoleMoment");
     if (data == null)
       return;
@@ -193,7 +193,8 @@ public class GaussianFchkReader extends MOReader {
     asc.setAtomSetAuxiliaryInfo("dipole", dipole);
   }
 
-  private void readPartialCharges() throws Exception {
+  @Override
+  protected void readPartialCharges() throws Exception {
     float[] data = (float[]) fileData.get("Mulliken Charges");
     if (data == null)
       return;
@@ -267,7 +268,8 @@ public class GaussianFchkReader extends MOReader {
 
   //S,X,Y,Z,XX,YY,ZZ,XY,XZ,YZ,XXX,YYY,ZZZ,XYY,XXY,XXZ,XZZ,YZZ,YYZ,XYZ
   private static String[] AO_TYPES = {"F7", "D5", "L", "S", "P", "D", "F", "G", "H"};  
-  private void readBasis() throws Exception {
+  @Override
+  protected void readBasis() throws Exception {
     float[] types = (float[]) fileData.get("Shelltypes");
     gaussianCount = 0;
     shellCount = 0;    
@@ -308,7 +310,7 @@ public class GaussianFchkReader extends MOReader {
     Logger.info(gaussianCount + " gaussian primitives read");
   }
   
-  private void readMOs() throws Exception {
+  protected void readMolecularObitals() throws Exception {
     if (shells == null)
       return;
     int nElec = ((Integer) fileData.get("Numberofelectrons")).intValue();
@@ -351,45 +353,4 @@ public class GaussianFchkReader extends MOReader {
       setMO(mo);
     }
   }
-
-  private void readFrequencies() throws Exception, IOException {
-    rd();
-    if (line == null)
-      throw (new Exception("No frequencies encountered"));
-    while ((line= rd()) != null && line.length() > 15) {
-      // we now have the line with the vibration numbers in them, but don't need it
-      String[] symmetries = getTokensStr(rd());
-      String[] frequencies = getTokensAt(
-          discardLinesUntilStartsWith(" Frequencies"), 15);
-      String[] red_masses = getTokensAt(
-          discardLinesUntilStartsWith(" Red. masses"), 15);
-      String[] frc_consts = getTokensAt(
-          discardLinesUntilStartsWith(" Frc consts"), 15);
-      String[] intensities = getTokensAt(
-          discardLinesUntilStartsWith(" IR Inten"), 15);
-      int iAtom0 = asc.ac;
-      int ac = asc.getLastAtomSetAtomCount();
-      int frequencyCount = frequencies.length;
-      boolean[] ignore = new boolean[frequencyCount];
-      for (int i = 0; i < frequencyCount; ++i) {
-        ignore[i] = !doGetVibration(++vibrationNumber);
-        if (ignore[i])
-          continue;  
-        asc.cloneLastAtomSet();
-        // set the properties
-        //String name = asc.setAtomSetFrequency("Calculation " + calculationNumber, symmetries[i], frequencies[i], null);
-        //appendLoadNote("model " + asc.atomSetCount + ": " + name);
-        //namedSets.set(asc.currentAtomSetIndex);
-        asc.setAtomSetModelProperty("ReducedMass",
-            red_masses[i]+" AMU");
-        asc.setAtomSetModelProperty("ForceConstant",
-            frc_consts[i]+" mDyne/A");
-        asc.setAtomSetModelProperty("IRIntensity",
-            intensities[i]+" KM/Mole");
-      }
-      discardLinesUntilContains(" AN ");
-      fillFrequencyData(iAtom0, ac, ac, ignore, true, 0, 0, null, 0);
-    }
-  }
-  
 }

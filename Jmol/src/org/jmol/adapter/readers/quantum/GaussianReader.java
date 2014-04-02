@@ -27,8 +27,6 @@ package org.jmol.adapter.readers.quantum;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 
-import java.io.IOException;
-
 import javajs.util.AU;
 import javajs.util.Lst;
 import javajs.util.PT;
@@ -157,7 +155,7 @@ public class GaussianReader extends MOReader {
       return true;
     }
     if (line.startsWith(" Harmonic frequencies")) {
-      readFrequencies();
+      readFrequencies(":", true);
       return true;
     }
     if (line.startsWith(" Total atomic charges:")
@@ -277,7 +275,7 @@ public class GaussianReader extends MOReader {
    ---------------------------------------------------------------------
    */
   
-  private void readAtoms() throws Exception {
+  protected void readAtoms() throws Exception {
     asc.newAtomSet();
     // default title : the energy of the previous structure as title
     // this is needed for the last structure in an optimization
@@ -363,7 +361,7 @@ public class GaussianReader extends MOReader {
 ...
    */
 
-  private void readBasis() throws Exception {
+  protected void readBasis() throws Exception {
     shells = new  Lst<int[]>();
     Lst<String[]> gdata = new  Lst<String[]>();
     int ac = 0;
@@ -478,7 +476,7 @@ public class GaussianReader extends MOReader {
 
 
    */
-  private void readMolecularOrbitals() throws Exception {
+  protected void readMolecularOrbitals() throws Exception {
     if (shells == null)
       return;
     Map<String, Object>[] mos = AU.createArrayOfHashtable(5);
@@ -600,13 +598,14 @@ public class GaussianReader extends MOReader {
    * <p>The vectors are added to a clone of the last read AtomSet.
    * Only the Frequencies, reduced masses, force constants and IR intensities
    * are set as properties for each of the frequency type AtomSet generated.
+   * @param mustHave 
+   * @param key 
    *
-   * @throws Exception If no frequences were encountered
-   * @throws IOException If an I/O error occurs
+   * @throws Exception If no frequencies were encountered
    **/
-  private void readFrequencies() throws Exception, IOException {
-    discardLinesUntilContains(":");
-    if (line == null)
+  protected void readFrequencies(String key, boolean mustHave) throws Exception {
+    discardLinesUntilContains2(key, ":");
+    if (line == null && mustHave)
       throw (new Exception("No frequencies encountered"));
     while ((line= rd()) != null && line.length() > 15) {
       // we now have the line with the vibration numbers in them, but don't need it

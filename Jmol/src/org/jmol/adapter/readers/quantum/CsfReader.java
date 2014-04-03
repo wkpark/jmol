@@ -243,10 +243,8 @@ public class CsfReader extends MopacSlaterReader {
         if (connectors.containsKey(thisBondID)) {
           int[] connect = connectors.get(thisBondID);
           connect[1] = thisAtomID;
-          if (htBonds != null) {
-            Bond bond = htBonds.get(thisBondID);
-            setBond(bond, connect);
-          }
+          if (htBonds != null)
+            setBond(htBonds.get(thisBondID), connect);
         } else {
           int[] connect = new int[2];
           connect[0] = thisAtomID;
@@ -264,16 +262,15 @@ public class CsfReader extends MopacSlaterReader {
     bond.atomIndex1 = asc.getAtomIndexFromSerial(connect[0]);
     bond.atomIndex2 = asc.getAtomIndexFromSerial(connect[1]);
     asc.addBond(bond);
-    nBonds++;    
   }
 
-  private final static byte ID             = -1;
+  private final static byte ID     = -1;
 
-  private final static byte sym            = 1;
-  private final static byte anum           = 2;
-  private final static byte chrg           = 3;
-  private final static byte xyz_coordinates = 4;
-  private final static byte pchrg           = 5;
+  private final static byte SYM    = 1;
+  private final static byte ANUM   = 2;
+  private final static byte CHRG   = 3;
+  private final static byte XYZ    = 4;
+  private final static byte PCHRG  = 5;
   
 
   private final static String[] atomFields = {
@@ -281,7 +278,7 @@ public class CsfReader extends MopacSlaterReader {
   };
 
   private final static byte[] atomFieldMap = {
-    ID, sym, anum, chrg, xyz_coordinates, pchrg
+    ID, SYM, ANUM, CHRG, XYZ, PCHRG
   };
 
   private void processAtomObject() throws Exception {
@@ -304,20 +301,20 @@ public class CsfReader extends MopacSlaterReader {
         case ID:
           atom.atomSerial = PT.parseInt(field);
           break;
-        case sym:
+        case SYM:
           atom.elementSymbol = field;
           atom.atomName = field + atom.atomSerial;
           break;
-        case anum:
+        case ANUM:
           strAtomicNumbers += field + " "; // for MO slater basis calc
           break;
-        case chrg:
+        case CHRG:
           atom.formalCharge = parseIntStr(field);
           break;
-        case pchrg:
+        case PCHRG:
           atom.partialCharge = parseFloatStr(field);
           break;
-        case xyz_coordinates:
+        case XYZ:
           setAtomCoordTokens(atom, tokens, i);
           i += 2;
           break;
@@ -336,18 +333,16 @@ public class CsfReader extends MopacSlaterReader {
   // bond order data
   ////////////////////////////////////////////////////////////////
 
-  private final static byte bondType = 1;
+  private final static byte BTYPE = 1;
 
   private final static String[] bondFields  = {
     "ID", "type"
   };
 
   private final static byte[] bondFieldMap = {
-    ID, bondType
+    ID, BTYPE
   };
 
-  private int nBonds = 0;
-  
   private void processBondObject() throws Exception {
     rd();
     parseLineParameters(bondFields, bondFieldMap);
@@ -362,7 +357,7 @@ public class CsfReader extends MopacSlaterReader {
         case ID:
           thisBondID = "bond" + field;
           break;
-        case bondType:
+        case BTYPE:
           int order = 1;
           if (field.equals("single"))
             order = 1;
@@ -379,8 +374,7 @@ public class CsfReader extends MopacSlaterReader {
               htBonds = new Hashtable<String, Bond>();
             htBonds.put(thisBondID, bond);
           } else {
-            int[] connect = connectors.get(thisBondID);
-            setBond(bond, connect);
+            setBond(bond, connectors.get(thisBondID));
           }
           break;
         }
@@ -389,16 +383,16 @@ public class CsfReader extends MopacSlaterReader {
   }
 
   
-  private final static byte normalMode       = 1;
-  private final static byte vibEnergy        = 2;
-  private final static byte transitionDipole = 3;
+  private final static byte NORMAL_MODE = 1;
+  private final static byte VIB_ENERGY = 2;
+  private final static byte DIPOLE = 3;
 
-  private final static String[] vibFields  = {
+  private final static String[] vibFields = {
     "ID", "normalMode", "Energy", "transitionDipole"
   };
 
   private final static byte[] vibFieldMap = {
-    ID, normalMode, vibEnergy, transitionDipole
+    ID, NORMAL_MODE, VIB_ENERGY, DIPOLE
   };
 
   private void processVibrationObject() throws Exception {
@@ -416,10 +410,10 @@ public class CsfReader extends MopacSlaterReader {
           case ID:
             thisvib = parseIntStr(field) - 1;
             break;
-          case normalMode:
+          case NORMAL_MODE:
             fillCsfArray("normalMode", tokens, i, vibData[thisvib], false);
             break;
-          case vibEnergy:
+          case VIB_ENERGY:
             energies[thisvib] = field;
             break;
           }
@@ -429,7 +423,7 @@ public class CsfReader extends MopacSlaterReader {
     for (int i = 0; i < nVibrations; i++) {
       if (!doGetVibration(i + 1))
         continue;
-      asc.cloneFirstAtomSetWithBonds(nBonds);
+      asc.cloneAtomSetWithBonds(false);
       asc.setAtomSetFrequency(null, null, energies[i], null);
       int ipt = 0;
       int baseAtom = nAtoms * (i + 1);
@@ -445,16 +439,16 @@ public class CsfReader extends MopacSlaterReader {
   // Molecular Orbitals
   ////////////////////////////////////////////////////////////////
 
-  private final static byte eig_val = 1;
-  private final static byte mo_occ  = 2;
-  private final static byte eig_vec = 3;
-  private final static byte eig_vec_compressed = 4;
-  private final static byte coef_indices  = 5;
-  private final static byte bfxn_ang  = 6;
-  private final static byte sto_exp  = 7;
-  private final static byte contractions  = 8;
-  private final static byte gto_exp = 9;
-  private final static byte shell = 10;
+  private final static byte EIG_VAL = 1;
+  private final static byte MO_OCC  = 2;
+  private final static byte EIG_VEC = 3;
+  private final static byte EIG_VEC_COMPRESSED = 4;
+  private final static byte COEF_INDICES  = 5;
+  private final static byte BFXN_ANGL  = 6;
+  private final static byte STO_EXP  = 7;
+  private final static byte CONTRACTIONS  = 8;
+  private final static byte GTO_EXP = 9;
+  private final static byte SHELL = 10;
 
   private final static String[] moFields = {
     "ID", "eig_val", "mo_occ", "eig_vec",
@@ -463,8 +457,8 @@ public class CsfReader extends MopacSlaterReader {
   };
 
   private final static byte[] moFieldMap = {
-    ID, eig_val, mo_occ, eig_vec, eig_vec_compressed, 
-    coef_indices, bfxn_ang, sto_exp, contractions, gto_exp, shell
+    ID, EIG_VAL, MO_OCC, EIG_VEC, EIG_VEC_COMPRESSED, 
+    COEF_INDICES, BFXN_ANGL, STO_EXP, CONTRACTIONS, GTO_EXP, SHELL
   };
    
   private void processMolecularOrbitalObject() throws Exception {
@@ -534,22 +528,22 @@ public class CsfReader extends MopacSlaterReader {
           case ID:
             ipt = parseIntStr(tokens[i]) - 1;
             break;
-          case eig_val:
+          case EIG_VAL:
             energy[ipt] = parseFloatStr(tokens[i]);
             break;
-          case mo_occ:
+          case MO_OCC:
             occupancy[ipt] = parseFloatStr(tokens[i]);
             break;
-          case eig_vec:
+          case EIG_VEC:
             fillCsfArray("eig_vec", tokens, i, list[ipt], false);
             break;
-          case eig_vec_compressed:
+          case EIG_VEC_COMPRESSED:
             isCompressed = true;
             if (listCompressed == null)
               listCompressed = new float[nOrbitals][nOrbitals];
             fillCsfArray("eig_vec_compressed", tokens, i, listCompressed[ipt], false);
             break;
-          case coef_indices:
+          case COEF_INDICES:
             if (coefIndices == null)
               coefIndices = new int[nOrbitals][nOrbitals];
             fillCsfArray("coef_indices", tokens, i, coefIndices[ipt], true);
@@ -622,18 +616,18 @@ public class CsfReader extends MopacSlaterReader {
           case ID:
             ipt = parseIntStr(field) - 1;
             break;
-          case bfxn_ang:
+          case BFXN_ANGL:
             types[ipt] = field;
             break;
-          case sto_exp:
-          case gto_exp:
+          case STO_EXP:
+          case GTO_EXP:
             zetas[ipt] = new float[nZetas];
             fillCsfArray(sto_gto + "_exp", tokens, i, zetas[ipt], false);
             break;
-          case shell:
+          case SHELL:
             shells[ipt] = parseIntStr(field);
             break;
-          case contractions:
+          case CONTRACTIONS:
             if (contractionCoefs == null)
               contractionCoefs = new float[nOrbitals][nZetas];
             fillCsfArray("contractions", tokens, i, contractionCoefs[ipt], false);

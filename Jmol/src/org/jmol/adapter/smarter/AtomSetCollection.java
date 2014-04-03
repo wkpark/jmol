@@ -491,36 +491,36 @@ public class AtomSetCollection {
   // FIX ME This should really also clone the other things pertaining
   // to an atomSet, like the bonds (which probably should be remade...)
   // but also the atomSetProperties and atomSetName...
-  public void cloneFirstAtomSet(int ac) throws Exception {
+  public int cloneFirstAtomSet(int atomCount) throws Exception {
     if (!allowMultiple)
-      return;
+      return 0;
     newAtomSet();
-    if (ac == 0)
-      ac = atomSetAtomCounts[0];
-    for (int i = 0; i < ac; ++i)
+    if (atomCount == 0)
+      atomCount = atomSetAtomCounts[0];
+    for (int i = 0; i < atomCount; ++i)
       newCloneAtom(atoms[i]);
+    return ac;
   }
 
-  public void cloneFirstAtomSetWithBonds(int nBonds) throws Exception {
-    if (!allowMultiple)
-      return;
-    cloneFirstAtomSet(0);
-    int firstCount = atomSetAtomCounts[0];
-    for (int bondNum = 0; bondNum < nBonds; bondNum++) {
-      Bond bond = bonds[bondCount - nBonds];
-      addNewBondWithOrder(bond.atomIndex1 + firstCount, bond.atomIndex2
-          + firstCount, bond.order);
-    }
+  public void cloneAtomSetWithBonds(boolean isLast) throws Exception {
+    int nBonds = atomSetBondCounts[isLast ? currentAtomSetIndex : 0];
+    int atomIncrement = (isLast ? cloneLastAtomSet() : cloneFirstAtomSet(0));
+    if (atomIncrement > 0)
+      for (int i = 0; i < nBonds; i++) {
+        Bond bond = bonds[bondCount - nBonds];
+        addNewBondWithOrder(bond.atomIndex1 + atomIncrement, bond.atomIndex2 + atomIncrement,
+            bond.order);
+      }
   }
 
-  public void cloneLastAtomSet() throws Exception {
-    cloneLastAtomSetFromPoints(0, null);
+  public int cloneLastAtomSet() throws Exception {
+    return cloneLastAtomSetFromPoints(0, null);
   }
 
-  public void cloneLastAtomSetFromPoints(int ac, P3[] pts)
+  public int cloneLastAtomSetFromPoints(int ac, P3[] pts)
       throws Exception {
-    if (!allowMultiple)
-      return;
+    if (!allowMultiple) // CASTEP reader only
+      return 0;
     int count = (ac > 0 ? ac : getLastAtomSetAtomCount());
     int atomIndex = getLastAtomSetAtomIndex();
     newAtomSet();
@@ -529,6 +529,7 @@ public class AtomSetCollection {
       if (pts != null)
         atom.setT(pts[i]);
     }
+    return count;
   }
 
   public int getFirstAtomSetAtomCount() {

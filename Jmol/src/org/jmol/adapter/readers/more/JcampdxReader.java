@@ -120,15 +120,18 @@ public class JcampdxReader extends MolReader implements JmolJDXMOLReader {
     String label = PT.replaceAllCharacters(line.substring(0, i).trim(), " ","").toUpperCase();
     if (label.length() > 12)
       label = label.substring(0, 12);
-    int pt = ("##$MODELS   " +
-    		     "##$PEAKS    " +
-    		     "##$SIGNALS  " +
-    		     "##$MOLFILE  " +
-    		     "##NPOINTS   " +
-    		     "##TITLE     " +
-    		     "##PEAKASSIGN" +
-    		     "##.OBSERVENU" +
-    		     "##DATATYPE  ").indexOf(label);    
+    int pt = ("##$MODELS   " +  // 0
+    		     "##$PEAKS    " +   // 12
+    		     "##$SIGNALS  " +   // 24
+    		     "##$MOLFILE  " +   // 36
+    		     "##NPOINTS   " +   // 48
+    		     "##TITLE     " +   // 60
+    		     "##PEAKASSIGN" +   // 72
+             "##$UVIR_ASSI" +   // 84
+             "##$MS_FRAGME" +   // 96
+    		     "##.OBSERVENU" +   // 108
+    		     "##DATATYPE  "    // 120
+    		     ).indexOf(label);    
     if (pt < 0)
       return true;
     if (mpr == null)
@@ -138,30 +141,32 @@ public class JcampdxReader extends MolReader implements JmolJDXMOLReader {
     String value = line.substring(i + 1).trim();
     mpr.setLine(value);
     switch (pt) {
-    case 0:
+    case 0:// $MODELS
       mpr.readModels();
       break;
-    case 12:
+    case 12:// $PEAKS or $SIGNALS
     case 24:
       mpr.readPeaks(pt == 24, -1);
       break;
-    case 36:
+    case 36:// $MOLFILE
       acdMolFile = mpr.readACDMolFile();
       processModelData(acdMolFile, title + " (assigned)", "MOL", "mol", "", 0.01f, Float.NaN, true);
       break;
-    case 48:
+    case 48:// NPOINTS
       nPeaks = PT.parseInt(value);
       break;
-    case 60:
+    case 60:// TITLE
       title = PT.split(value, "$$")[0].trim(); 
       break;
-    case 72:
-      acdAssignments = mpr.readACDAssignments(nPeaks);
-      break;
+    case 72:// PEAKASSIGNMENTS $UVIR_ASSIGNMENTS $MS_FRAGMENTS
     case 84:
+    case 96:
+      acdAssignments = mpr.readACDAssignments(nPeaks, pt == 72);
+      break;
+    case 108:// .OBSERVENUCLEUS
       nucleus = value.substring(1);
       break;
-    case 96:
+    case 120:// DATATYPE
       type = value;
       if ((pt = type.indexOf(" ")) >= 0)
         type = type.substring(0, pt);

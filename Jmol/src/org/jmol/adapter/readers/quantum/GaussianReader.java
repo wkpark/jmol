@@ -626,7 +626,7 @@ public class GaussianReader extends MOReader {
         ignore[i] = !doGetVibration(++vibrationNumber);
         if (ignore[i])
           continue;  
-        asc.cloneLastAtomSet();
+        asc.cloneAtomSetWithBonds(true);
         // set the properties
         String name = asc.setAtomSetFrequency("Calculation " + calculationNumber, symmetries[i], frequencies[i], null);
         appendLoadNote("model " + asc.atomSetCount + ": " + name);

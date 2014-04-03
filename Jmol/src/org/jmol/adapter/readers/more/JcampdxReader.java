@@ -33,10 +33,10 @@ import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Bond;
 import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.adapter.smarter.Atom;
-import org.jmol.adapter.smarter.JmolJDXMOLReader;
-import org.jmol.adapter.smarter.JmolJDXMOLParser;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.Interface;
+import org.jmol.api.JmolJDXMOLParser;
+import org.jmol.api.JmolJDXMOLReader;
 import org.jmol.java.BS;
 import org.jmol.util.Logger;
 

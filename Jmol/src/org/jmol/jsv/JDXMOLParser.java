@@ -3,8 +3,8 @@ package org.jmol.jsv;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.jmol.adapter.smarter.JmolJDXMOLReader;
-import org.jmol.adapter.smarter.JmolJDXMOLParser;
+import org.jmol.api.JmolJDXMOLParser;
+import org.jmol.api.JmolJDXMOLReader;
 import org.jmol.java.BS;
 import org.jmol.util.Logger;
 

@@ -1,4 +1,4 @@
-package org.jmol.adapter.smarter;
+package org.jmol.api;
 
 import java.util.Map;
 

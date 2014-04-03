@@ -110,14 +110,14 @@ for (var i = 0; i < Jmol._coreFiles.length; i++)
 
 	ClazzLoader.jarClasspath (base + "coremin.z.js",	[
 		"J.api.MinimizerInterface", // -- required by J.minimize.Minimizer
-		"J.minimize.Minimizer",
+		"JM.Minimizer",
 		"$.MinObject", // -- required by $.MinAngle
 		"$.MinAngle",
 		"$.MinAtom",
 		"$.MinBond",
 		"$.MinTorsion",
 		"$.Util",
-		"J.minimize.forcefield.AtomType",
+		"JM.FF.AtomType",
 		"$.Calculation", // -- required by $.CalculationsMMFF
 		"$.Calculations", // -- required by $.CalculationsMMFF
 		"$.CalculationsMMFF",
@@ -173,7 +173,7 @@ for (var i = 0; i < Jmol._coreFiles.length; i++)
 	ClazzLoader.jarClasspath (base + "coresym.z.js",	[
     "J.adapter.smarter.XtalSymmetry",
 		"J.api.SymmetryInterface",
-		"J.symmetry.Symmetry",
+		"JS.Symmetry",
 		"$.PointGroup",
 		"$.SpaceGroup",
 		"$.HallInfo",
@@ -188,7 +188,7 @@ for (var i = 0; i < Jmol._coreFiles.length; i++)
 	ClazzLoader.jarClasspath (base + "coresmiles.z.js",	[
     "J.api.SmilesMatcherInterface",
     "JS.SmilesExt",
-    "J.smiles.VTemp",
+    "$.VTemp",
     "$.SmilesMatcher",
     "$.InvalidSmilesException",
     "$.SmilesSearch",

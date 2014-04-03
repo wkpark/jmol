@@ -159,7 +159,7 @@ public abstract class Reader implements /*Readable,*/ Closeable {
     abstract public int read(char cbuf[], int off, int len) throws IOException;
 
     /** Maximum skip-buffer size */
-    private static final int maxSkipBufferSize = 8192;
+    private static final int MAX_SKIP_BUFFE_SIZE = 8192;
 
     /** Skip buffer, null until allocated */
     private char skipBuffer[] = null;
@@ -178,7 +178,7 @@ public abstract class Reader implements /*Readable,*/ Closeable {
     public long skip(long n) throws IOException {
         if (n < 0L)
             throw new IllegalArgumentException("skip value is negative");
-        int nn = (int) Math.min(n, maxSkipBufferSize);
+        int nn = (int) Math.min(n, MAX_SKIP_BUFFE_SIZE);
         synchronized (lock) {
             if ((skipBuffer == null) || (skipBuffer.length < nn))
                 skipBuffer = new char[nn];

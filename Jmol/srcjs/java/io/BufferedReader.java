@@ -80,8 +80,8 @@ public class BufferedReader extends Reader {
   /** The skipLF flag when the mark was set */
   private boolean markedSkipLF = false;
 
-  private static int defaultCharBufferSize = 8192;
-  private static int defaultExpectedLineLength = 80;
+  private final static int DEFAULT_CHAR_BUFFER_SIZE = 8192;
+  private final static int DEFAULT_EXPECTED_LINE_LENGTH = 80;
 
   /**
    * Creates a buffering character-input stream that uses an input buffer of the
@@ -110,7 +110,7 @@ public class BufferedReader extends Reader {
   public BufferedReader(Reader in) {
     super(in);
     this.in = in;
-    setSize(defaultCharBufferSize);
+    setSize(DEFAULT_CHAR_BUFFER_SIZE);
   }
 
   /**
@@ -386,7 +386,7 @@ public class BufferedReader extends Reader {
         }
 
         if (s == null)
-          s = SB.newN(defaultExpectedLineLength);
+          s = SB.newN(DEFAULT_EXPECTED_LINE_LENGTH);
         s.appendCB(cb, startChar, i - startChar);
       }
     }

@@ -52,7 +52,7 @@ import java.io.IOException;
 public
 class BufferedInputStream extends FilterInputStream {
 
-    private static int defaultBufferSize = 8192;
+    private final static int DEFAULT_BUFFER_SIZE = 8192;
 
     /**
      * The internal buffer array where the data is stored. When necessary,
@@ -191,7 +191,7 @@ class BufferedInputStream extends FilterInputStream {
      */
     public BufferedInputStream(InputStream in) {
         super(in);
-        buf = new byte[defaultBufferSize];
+        buf = new byte[DEFAULT_BUFFER_SIZE];
     }
 
     /**

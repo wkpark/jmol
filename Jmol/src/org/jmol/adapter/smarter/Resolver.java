@@ -52,7 +52,8 @@ public class Resolver {
     "pymol.", ";PyMOL;",
     "simple.", ";Alchemy;Ampac;Cube;FoldingXyz;GhemicalMM;HyperChem;Jme;JSON;Mopac;MopacArchive;Tinker;ZMatrix;", 
     "xtal.", ";Abinit;Aims;Castep;Crystal;Dmol;Espresso;Gulp;Jana;Magres;Shelx;Siesta;VaspOutcar;" +
-             "VaspPoscar;Wien2k;Xcrysden;"
+             "VaspPoscar;Wien2k;Xcrysden;",
+    "xml.",  ";XmlArgus;XmlCml;XmlChem3d;XmlMolpro;XmlOdyssey;XmlXsd;XmlVasp;XmlQE;",
   };
 
   // Tinker is only as explicit Tinker::fileName.xyz
@@ -106,6 +107,8 @@ public class Resolver {
     if (type != null) {
       readerName = getReaderFromType(type);
       if (readerName == null)
+        readerName = getReaderFromType("Xml" + type);
+      if (readerName == null)
         errMsg = "unrecognized file format type " + type;
       else
         Logger.info("The Resolver assumes " + readerName);
@@ -140,8 +143,7 @@ public class Resolver {
     String className = null;
     String err = null;
     className = getReaderClassBase(readerName);
-    if ((rdr = (AtomSetCollectionReader) Interface
-        .getInterface(className)) == null) {
+    if ((rdr = (AtomSetCollectionReader) Interface.getInterface(className)) == null) {
       err = "File reader was not found:" + className;
       Logger.error(err);
       return err;
@@ -149,6 +151,16 @@ public class Resolver {
     return rdr;
   }
 
+  private final static String getReaderFromType(String type) {
+    type = ";" + type.toLowerCase() + ";";
+    String set;
+    int pt;
+    for (int i = readerSets.length; --i >= 0;)
+      if ((pt = (set = readerSets[i--]).toLowerCase().indexOf(type)) >= 0)
+        return set.substring(pt + 1, set.indexOf(";", pt + 2));
+    return null;
+  }
+  
   private static String split(String a, int n) {
     String s = "";
     int l = a.length();
@@ -407,16 +419,6 @@ public class Resolver {
 
   };
 
-  private final static String getReaderFromType(String type) {
-    type = type.toLowerCase();
-    String key = ";" + type + ";";
-    for (int i = readerSets.length; --i >= 0;) {
-      int pt = readerSets[i].toLowerCase().indexOf(key);
-      if (pt >= 0)
-        return readerSets[i].substring(pt + 1, readerSets[i].indexOf(";", pt + 2));
-    }
-    return null;
-  }
 //  
 //  private final static String checkType(String[][] typeTags, String type) {
 //    for (int i = 0; i < typeTags.length; ++i)

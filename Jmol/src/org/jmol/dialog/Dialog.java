@@ -112,7 +112,8 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     }
 
     openChooser.resetChoosableFileFilters();
-    openPreview.setPreviewOptions(allowAppend);
+    if (openPreview != null)
+      openPreview.setPreviewOptions(allowAppend);
 
     if (fileName != null) {
       int pt = fileName.lastIndexOf(".");

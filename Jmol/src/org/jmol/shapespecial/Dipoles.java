@@ -609,14 +609,14 @@ public class Dipoles extends Shape {
   }
 
   @Override
-  public void setVisibilityFlags(BS bs) {
+  public void setVisibilityFlags(BS bsModels) {
     /*
      * set all fixed objects visible; others based on model being displayed
      * 
      */
     for (int i = dipoleCount; --i >= 0;) {
       Dipole dipole = dipoles[i];
-      dipole.visibilityFlags = ((dipole.modelIndex < 0 || bs
+      dipole.visibilityFlags = ((dipole.modelIndex < 0 || bsModels
           .get(dipole.modelIndex))
           && dipole.mad != 0
           && dipole.visible

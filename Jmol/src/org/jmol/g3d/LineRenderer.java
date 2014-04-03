@@ -458,7 +458,7 @@ final class LineRenderer {
     }
     int offset = y * width + x;
     int offsetMax = g3d.bufferSize;
-    int shadeIndexUp = (shadeIndex < Shader.shadeIndexLast ? shadeIndex + 1
+    int shadeIndexUp = (shadeIndex < Shader.SHADE_INDEX_LAST ? shadeIndex + 1
         : shadeIndex);
     int shadeIndexDn = (shadeIndex > 0 ? shadeIndex - 1 : shadeIndex);
     int argb1 = shades1[shadeIndex];
@@ -605,7 +605,7 @@ final class LineRenderer {
 //    if (x != 227 || y != 843)return;
 //System.out.println("plcb " + x + " " + y + " " + z + " " + dx + " " + dy + " " + dz + " " + width);
 
-int shadeIndexUp = (shadeIndex < Shader.shadeIndexLast ? shadeIndex + 1
+int shadeIndexUp = (shadeIndex < Shader.SHADE_INDEX_LAST ? shadeIndex + 1
         : shadeIndex);
     int shadeIndexDn = (shadeIndex > 0 ? shadeIndex - 1 : shadeIndex);
     int argb1 = shades1[shadeIndex];

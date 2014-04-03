@@ -654,8 +654,8 @@ class CylinderRenderer {
       //Logger.debug("endcap is B");
     }
     // limit specular glare on endcap
-    if (endcapShadeIndex > Shader.shadeIndexNoisyLimit)
-      endcapShadeIndex = Shader.shadeIndexNoisyLimit;
+    if (endcapShadeIndex > Shader.SHADE_INDEX_NOISY_LIMIT)
+      endcapShadeIndex = Shader.SHADE_INDEX_NOISY_LIMIT;
     argbEndcap = shadesEndcap[endcapShadeIndex];
     tEndcapOpen = (endcaps == GData.ENDCAPS_OPEN);
   }

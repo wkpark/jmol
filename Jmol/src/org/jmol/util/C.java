@@ -264,30 +264,29 @@ public final class C {
   }
   */
   
-  public final static int[] predefinedArgbs = {
-    0xFF000000, // black
-    0xFFFFA500, // orange
-    0xFFFFC0CB, // pink
-    0xFF0000FF, // blue
-    0xFFFFFFFF, // white
-    0xFF00FFFF, // cyan
-    0xFFFF0000, // red
-    0xFF008000, // green -- really!
-    0xFF808080, // gray
-    0xFFC0C0C0, // silver
-    0xFF00FF00, // lime  -- no kidding!
-    0xFF800000, // maroon
-    0xFF000080, // navy
-    0xFF808000, // olive
-    0xFF800080, // purple
-    0xFF008080, // teal
-    0xFFFF00FF, // magenta
-    0xFFFFFF00, // yellow
-    0xFFFF69B4, // hotpink
-    0xFFFFD700, // gold
-  };
-
   static {
+    int[] predefinedArgbs =  { // For Google Closure Compiler
+      0xFF000000, // black
+      0xFFFFA500, // orange
+      0xFFFFC0CB, // pink
+      0xFF0000FF, // blue
+      0xFFFFFFFF, // white
+      0xFF00FFFF, // cyan
+      0xFFFF0000, // red
+      0xFF008000, // green -- really!
+      0xFF808080, // gray
+      0xFFC0C0C0, // silver
+      0xFF00FF00, // lime  -- no kidding!
+      0xFF800000, // maroon
+      0xFF000080, // navy
+      0xFF808000, // olive
+      0xFF800080, // purple
+      0xFF008080, // teal
+      0xFFFF00FF, // magenta
+      0xFFFFFF00, // yellow
+      0xFFFF69B4, // hotpink
+      0xFFFFD700, // gold
+    };
     // OK for J2S compiler because this is a final class
     for (int i = 0; i < predefinedArgbs.length; ++i)
       getColix(predefinedArgbs[i]);

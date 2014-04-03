@@ -51,28 +51,34 @@ public class T {
   }
  
   public final static T tv(int tok, int intValue, Object value) {
-    T token = T.t(tok);
+    T token = t(tok);
     token.intValue = intValue;
     token.value = value;
     return token;
   }
  
   public final static T o(int tok, Object value) {
-    T token = T.t(tok);
+    T token = t(tok);
     token.value = value;
     return token;
   }
 
   public final static T n(int tok, int intValue) {
-    T token = T.t(tok);
+    T token = t(tok);
     token.intValue = intValue;
     return token;
   }
 
   public final static T i(int intValue) {
-    T token = T.t(integer);
+    T token = t(integer);
     token.intValue = intValue;
     return token;
+  }
+
+  public final static String[] astrType;
+  
+  static {
+    astrType = "nada identifier integer decimal string seqcode hash array point point4 bitset matrix3f matrix4f array hash bytearray keyword".split(" ");    
   }
 
   public final static int nada       =  0;
@@ -96,12 +102,6 @@ public class T {
   public final static int barray     = 15; // byte array
   final private static int keyword   = 16;
   
-
-  public final static String[] astrType = {
-    "nada", "identifier", "integer", "decimal", "string",
-    "seqcode", "hash", "array", "point", "point4", "bitset",
-    "matrix3f",  "matrix4f", "array", "hash", "bytearray", "keyword"
-  };
 
   public static boolean tokAttr(int a, int b) {
     return (a & b) == (b & b);
@@ -191,13 +191,13 @@ public class T {
   // parameter bit flags
   //
   
-  public final static int setparam          = (1 << 29); // parameter to set command
-  public final static int misc              = (1 << 30); // misc parameter
+  public final static int setparam          = 1 << 29; // parameter to set command
+  public final static int misc              = 1 << 30; // misc parameter
   public final static int deprecatedparam   = setparam | misc;
   
   public final static int identifier =  misc;
 
-  public final static int scriptCommand            = (1 << 12);
+  public final static int scriptCommand            = 1 << 12;
   
   // the command assumes an atom expression as the first parameter
   // -- center, define, delete, display, hide, restrict, select, subset, zap
@@ -223,10 +223,10 @@ public class T {
 
   // Command argument compile flags
   
-  public final static int noArgs         = (1 << 18);
-  public final static int defaultON      = (1 << 19);
+  public final static int noArgs         = 1 << 18;
+  public final static int defaultON      = 1 << 19;
   
-  public final static int expression           = (1 << 20);
+  public final static int expression           = 1 << 20;
   public final static int predefinedset = (1 << 21) | expression;
   
   public final static int atomproperty  = (1 << 22) | expression | misc; 
@@ -243,7 +243,7 @@ public class T {
   public final static int intparam   = (1 << 24) | setparam; // int parameter
   public final static int floatparam = (1 << 25) | setparam; // float parameter
   public final static int booleanparam = (1 << 26) | setparam; // boolean parameter
-  public final static int paramTypes = (strparam | intparam | floatparam | booleanparam);
+  public final static int paramTypes = strparam | intparam | floatparam | booleanparam;
   
   // note: the booleanparam and the mathproperty bits are the same, but there is no
   //       conflict because mathproperty is only checked in ScriptEvaluator.getBitsetProperty
@@ -1321,6 +1321,11 @@ public class T {
   public final static int spacebeforesquare      = misc  | 371;
   public final static int width           = misc  | 372;
   
+  // NOTE: It is important that width is the last token. 
+  //       build_13_tojs.xml needs to see that to clear out
+  //       the unnecessary static defs.
+
+  
   
   // predefined Tokens: 
   
@@ -1371,6 +1376,8 @@ public class T {
   
   public static T getTokenFromName(String name) {
     // this one needs to NOT be lower case for ScriptCompiler
+    if (name == null)
+      System.out.println("???");
     return tokenMap.get(name);
   }
   
@@ -1515,7 +1522,7 @@ public class T {
 
     // OK for J2S compiler even though T is not final because 
     // tokenMap is private
-    
+
     Object[] arrayPairs  = {
 
     // atom expressions
@@ -1530,1031 +1537,2049 @@ public class T {
       "||",           null,
       "?",            tokenOpIf,
       ",",            tokenComma,
-      "+=",           T.t(andequals),
-      "-=",           null,
-      "*=",           null,
-      "/=",           null,
-      "\\=",          null,
-      "&=",           null,
-      "|=",           null,
-      "not",          T.t(opNot),
-      "!",            null,
-      "xor",          T.t(opXor),
-    //no-- don't do this; it interferes with define
-    //  "~",            null,
-      "tog",          T.t(opToggle),
-      "<",            T.t(opLT),
-      "<=",           T.t(opLE),
-      ">=",           T.t(opGE),
-      ">",            T.t(opGT),
       "=",            tokenEquals,
       "==",           null,
-      "!=",           T.t(opNE),
-      "<>",           null,
-      "within",       T.t(within),
-      ".",            T.t(per),
-      "..",           T.t(perper),
-      "[",            T.t(leftsquare),
-      "]",            T.t(rightsquare),
-      "{",            T.t(leftbrace),
-      "}",            T.t(rightbrace),
-      "$",            T.t(dollarsign),
-      "%",            T.t(percent),
       ":",            tokenColon,
-      ";",            T.t(semicolon),
-      "++",           T.t(plusPlus),
-      "--",           T.t(minusMinus),
-      "**",           T.t(timestimes),
       "+",            tokenPlus,
       "-",            tokenMinus,
       "*",            tokenTimes,
       "/",            tokenDivide,
-      "\\",           T.t(leftdivide),
     
     // commands
         
-      "animation",         T.t(animation),
-      "anim",              null,
-      "assign",            T.t(assign),
-      "axes",              T.t(axes),
-      "backbone",          T.t(backbone),
-      "background",        T.t(background),
-      "bind",              T.t(bind),
-      "bondorder",         T.t(bondorder),
-      "boundbox",          T.t(boundbox),
-      "boundingBox",       null,
-      "break",             T.t(breakcmd),
-      "calculate",         T.t(calculate),
-      "capture",           T.t(capture),
-      "cartoon",           T.t(cartoon),
-      "cartoons",          null,
-      "case",              T.t(casecmd),
-      "catch",             T.t(catchcmd),
-      "cd",                T.t(cd),
-      "center",            T.t(center),
-      "centre",            null,
-      "centerat",          T.t(centerat),
-      "cgo",               T.t(cgo),
-      "color",             T.t(color),
-      "colour",            null,
-      "compare",           T.t(compare),
-      "configuration",     T.t(configuration),
-      "conformation",      null,
-      "config",            null,
-      "connect",           T.t(connect),
-      "console",           T.t(console),
-      "contact",           T.t(contact),
-      "contacts",          null,
-      "continue",          T.t(continuecmd),
-      "data",              T.t(data),
-      "default",           T.t(defaultcmd),
-      "define",            T.t(define),
-      "@",                 null,
-      "delay",             T.t(delay),
-      "delete",            T.t(delete),
-      "density",           T.t(density),
-      "depth",             T.t(depth),
-      "dipole",            T.t(dipole),
-      "dipoles",           null,
-      "display",           T.t(display),
-      "dot",               T.t(dot),
-      "dots",              T.t(dots),
-      "draw",              T.t(draw),
-      "echo",              T.t(echo),
-      "ellipsoid",         T.t(ellipsoid),
-      "ellipsoids",        null,
-      "else",              T.t(elsecmd),
-      "elseif",            T.t(elseif),
-      "end",               T.t(end),
-      "endif",             T.t(endifcmd),
-      "exit",              T.t(exit),
-      "file",              T.t(file),
-      "files",             null,
-      "font",              T.t(font),
-      "for",               T.t(forcmd),
-      "format",            T.t(format),
-      "frame",             T.t(frame),
-      "frames",            null,
-      "frank",             T.t(frank),
-      "function",          T.t(function),
-      "functions",         null,
-      "geosurface",        T.t(geosurface),
-      "getProperty",       T.t(getproperty),
-      "goto",              T.t(gotocmd),
-      "halo",              T.t(halo),
-      "halos",             null,
-      "helix",             T.t(helix),
-      "helixalpha",        T.t(helixalpha),
-      "helix310",          T.t(helix310),
-      "helixpi",           T.t(helixpi),
-      "hbond",             T.t(hbond),
-      "hbonds",            null,
-      "help",              T.t(help),
-      "hide",              T.t(hide),
-      "history",           T.t(history),
-      "hover",             T.t(hover),
-      "if",                T.t(ifcmd),
-      "in",                T.t(in),
-      "initialize",        T.t(initialize),
-      "invertSelected",    T.t(invertSelected),
-      "isosurface",        T.t(isosurface),
-      "javascript",        T.t(javascript),
-      "label",             T.t(label),
-      "labels",            null,
-      "lcaoCartoon",       T.t(lcaocartoon),
-      "lcaoCartoons",      null,
-      "load",              T.t(load),
-      "log",               T.t(log),
-      "loop",              T.t(loop),
-      "measure",           T.t(measure),
-      "measures",          null,
-      "monitor",           null,
-      "monitors",          null,
-      "meshribbon",        T.t(meshRibbon),
-      "meshribbons",       null,
-      "message",           T.t(message),
-      "minimize",          T.t(minimize),
-      "minimization",      null,
-      "mo",                T.t(mo),
-      "model",             T.t(model),
-      "models",            null,
-      "modulation",        T.t(modulation),
-      "move",              T.t(move),
-      "moveTo",            T.t(moveto),
-      "navigate",          T.t(navigate),
-      "navigation",        null,
-      "origin",            T.t(origin),
-      "out",               T.t(out),
-      "parallel",          T.t(parallel),
-      "pause",             T.t(pause),
-      "wait",              null,
-      "plot",              T.t(plot),
-      "plot3d",            T.t(plot3d),
-      "pmesh",             T.t(pmesh),
-      "polygon",           T.t(polygon),
-      "polyhedra",         T.t(polyhedra),
-      "print",             T.t(print),
-      "process",           T.t(process),
-      "prompt",            T.t(prompt),
-      "quaternion",        T.t(quaternion),
-      "quaternions",       null,
-      "quit",              T.t(quit),
-      "ramachandran",      T.t(ramachandran),
-      "rama",              null,
-      "refresh",           T.t(refresh),
-      "reset",             T.t(reset),
-      "unset",             null,
-      "restore",           T.t(restore),
-      "restrict",          T.t(restrict),
-      "return",            T.t(returncmd),
-      "ribbon",            T.t(ribbon),
-      "ribbons",           null,
-      "rocket",            T.t(rocket),
-      "rockets",           null,
-      "rotate",            T.t(rotate),
-      "rotateSelected",    T.t(rotateSelected),
-      "save",              T.t(save),
-      "script",            tokenScript,
-      "source",            null,
-      "select",            T.t(select),
-      "selectionHalos",    T.t(selectionhalos),
-      "selectionHalo",     null,
-      "showSelections",    null,
-      "set",               tokenSetCmd,
-      "sheet",             T.t(sheet),
-      "show",              T.t(show),
-      "slab",              T.t(slab),
-      "spacefill",         T.t(spacefill),
-      "cpk",               null,
-      "spin",              T.t(spin),
-      "ssbond",            T.t(ssbond),
-      "ssbonds",           null,
-      "star",              T.t(star),
-      "stars",             null,
-      "step",              T.t(step),
-      "steps",             null,
-      "stereo",            T.t(stereo),
-      "strand",            T.t(strands),
-      "strands",           null,
-      "structure",         T.t(structure),
-      "_structure",        null,
-      "strucNo",           T.t(strucno),
-      "struts",            T.t(struts),
-      "strut",             null,
-      "subset",            T.t(subset),
-      "switch",            tokenSwitch,
-      "synchronize",       T.t(sync),
-      "sync",              null,
-      "trace",             T.t(trace),
-      "translate",         T.t(translate),
-      "translateSelected", T.t(translateSelected),
-      "try",               T.t(trycmd),
-      "unbind",            T.t(unbind),
-      "unitcell",          T.t(unitcell),
-      "var",               T.t(var),
-      "vector",            T.t(vector),
-      "vectors",           null,
-      "vibration",         T.t(vibration),
-      "while",             T.t(whilecmd),
-      "wireframe",         T.t(wireframe),
-      "write",             T.t(write),
-      "zap",               T.t(zap),
-      "zoom",              T.t(zoom),
-      "zoomTo",            T.t(zoomTo),
-                            
-      //                   show parameters
-  
-      "atom",              T.t(atoms),
-      "atoms",             null,
-      "axis",              T.t(axis),
-      "axisangle",         T.t(axisangle),
-      "basepair",          T.t(basepair),
-      "basepairs",         null,
-      "orientation",       T.t(orientation),
-      "orientations",      null,
-      "pdbheader",         T.t(pdbheader),                          
-      "polymer",           T.t(polymer),
-      "polymers",          null,
-      "residue",           T.t(residue),
-      "residues",          null,
-      "rotation",          T.t(rotation),
-      "row",               T.t(row),
-      "sequence",          T.t(sequence),
-      "shape",             T.t(shape),
-      "state",             T.t(state),
-      "symbol",            T.t(symbol),
-      "symmetry",          T.t(symmetry),
-      "spaceGroup",        T.t(spacegroup),
-      "transform",         T.t(transform),
-      "translation",       T.t(translation),
-      "url",               T.t(url),
-  
+      "script",       tokenScript,
+      "source",       null,
+      "set",          tokenSetCmd,
+      "switch",       tokenSwitch,
+
       // misc
-  
-      "abs",             T.t(abs),
-      "absolute",        T.t(absolute),
-      "acos",            T.t(acos),
-      "add",             T.t(add),
-      "adpmax",          T.t(adpmax),
-      "adpmin",          T.t(adpmin),
-      "align",           T.t(align),
-      "all",             tokenAll,
-      "altloc",          T.t(altloc),
-      "altlocs",         null,
-      "ambientOcclusion", T.t(ambientocclusion),
-      "amino",           T.t(amino),
-      "angle",           T.t(angle),
-      "array",           T.t(array),
-      "as",              T.t(as),
-      "atomID",          T.t(atomid),
-      "_atomID",         null,
-      "_a",              null, 
-      "atomIndex",       T.t(atomindex),
-      "atomName",        T.t(atomname),
-      "atomno",          T.t(atomno),
-      "atomType",        T.t(atomtype),
-      "atomX",           T.t(atomx),
-      "atomY",           T.t(atomy),
-      "atomZ",           T.t(atomz),
-      "average",         T.t(average),
-      "babel",           T.t(babel),
-      "babel21",         T.t(babel21), 
-      "back",            T.t(back),
-      "backlit",         T.t(backlit),
-      "balls",           T.t(balls),
-      "baseModel",       T.t(basemodel), // Jmol 12.3.19
-      "best",            T.t(best), // rotate BEST
-      "bin",             T.t(bin),
-      "bondCount",       T.t(bondcount),
-      "bottom",          T.t(bottom),
-      "branch",          T.t(branch),
-      "brillouin",       T.t(brillouin),
-      "bzone",           null,
-      "wignerSeitz",     null,
-      "cache",           T.t(cache), // Jmol 12.3.24 
-      "carbohydrate",    T.t(carbohydrate),
-      "cell",            T.t(cell),
-      "chain",           T.t(chain),
-      "chains",          null,
-      "chainNo",         T.t(chainno),
-      "chemicalShift",   T.t(chemicalshift),
-      "cs",              null,
-      "clash",           T.t(clash),
-      "clear",           T.t(clear),
-      "clickable",       T.t(clickable),
-      "clipboard",       T.t(clipboard),
-      "connected",       T.t(connected),
-      "context",         T.t(context),
-      "constraint",      T.t(constraint),
-      "contourLines",    T.t(contourlines),
-      "coord",           T.t(coord),
-      "coordinates",     null,
-      "coords",          null,
-      "cos",             T.t(cos),
-      "cross",           T.t(cross),
-      "covalentRadius",  T.t(covalentradius),
-      "covalent",        null,
-      "direction",       T.t(direction),
-      "displacement",    T.t(displacement),
-      "displayed",       T.t(displayed),
-      "distance",        T.t(distance),
-      "div",             T.t(div),
-      "DNA",             T.t(dna),
-      "dotted",          T.t(dotted),
-      "DSSP",            T.t(dssp),
-      "element",         T.t(element),
-      "elemno",          T.t(elemno),
-      "_e",              T.t(elemisono),
-      "error",           T.t(error),
-      "exportScale",     T.t(exportscale),
-      "fill",            T.t(fill),
-      "find",            T.t(find),
-      "fixedTemperature",T.t(fixedtemp),
-      "forcefield",      T.t(forcefield),
-      "formalCharge",    T.t(formalcharge),
-      "charge",          null, 
-      "eta",             T.t(eta),
-      "front",           T.t(front),
-      "frontlit",        T.t(frontlit),
-      "frontOnly",       T.t(frontonly),
-      "fullylit",        T.t(fullylit),
-      "fx",              T.t(fracx),
-      "fy",              T.t(fracy),
-      "fz",              T.t(fracz),
-      "fxyz",            T.t(fracxyz),
-      "fux",             T.t(fux),
-      "fuy",             T.t(fuy),
-      "fuz",             T.t(fuz),
-      "fuxyz",           T.t(fuxyz),
-      "group",           T.t(group),
-      "groups",          null,
-      "group1",          T.t(group1),
-      "groupID",         T.t(groupid),
-      "_groupID",        null, 
-      "_g",              null, 
-      "groupIndex",      T.t(groupindex),
-      "hidden",          T.t(hidden),
-      "highlight",       T.t(highlight),
-      "hkl",             T.t(hkl),
-      "hydrophobicity",  T.t(hydrophobicity),
-      "hydrophobic",     null,
-      "hydro",           null,
-      "id",              T.t(id),
-      "identify",        T.t(identify),
-      "ident",           null,
-      "image",           T.t(image),
-      "info",            T.t(info),
-      "inline",          T.t(inline),
-      "insertion",       T.t(insertion),
-      "insertions",      null, 
-      "intramolecular",  T.t(intramolecular),
-      "intra",           null,
-      "intermolecular",  T.t(intermolecular),
-      "inter",           null,
-      "bondingRadius",   T.t(bondingradius),
-      "ionicRadius",     null,
-      "ionic",           null,
-      "isAromatic",      T.t(isaromatic),
-      "Jmol",            T.t(jmol),
-      "JSON",            T.t(json),
-      "join",            T.t(join),
-      "keys",            T.t(keys),
-      "last",            T.t(last),
-      "left",            T.t(left),
-      "length",          T.t(length),
-      "lines",           T.t(lines),
-      "list",            T.t(list),
-      "magneticShielding", T.t(magneticshielding),
-      "ms",              null,
-      "mass",            T.t(mass),
-      "max",             T.t(max),
-      "mep",             T.t(mep),
-      "mesh",            T.t(mesh),
-      "middle",          T.t(middle),
-      "min",             T.t(min),
-      "mlp",             T.t(mlp),
-      "mode",            T.t(mode),
-      "modify",          T.t(modify),
-      "modifyOrCreate",  T.t(modifyorcreate),
-      "molecule",        T.t(molecule),
-      "molecules",       null, 
-      "modelIndex",      T.t(modelindex),
-      "monomer",         T.t(monomer),
-      "morph",           T.t(morph),
-      "movie",           T.t(movie),
-      "mouse",           T.t(mouse),
-      "mul",             T.t(mul),
-      "mul3",            T.t(mul3),
-      "nci",             T.t(nci),
-      "next",            T.t(next),
-      "noDots",          T.t(nodots),
-      "noFill",          T.t(nofill),
-      "noMesh",          T.t(nomesh),
-      "none",            T.t(none),
-      "null",            null,
-      "inherit",         null,
-      "normal",          T.t(normal),
-      "noContourLines",  T.t(nocontourlines),
-      "nonequivalent",   T.t(nonequivalent),
-      "notFrontOnly",    T.t(notfrontonly),
-      "noTriangles",     T.t(notriangles),
-      "now",             T.t(now),
-      "nucleic",         T.t(nucleic),
-      "occupancy",       T.t(occupancy),
-      "off",             tokenOff, 
-      "false",           null, 
-      "on",              tokenOn,
-      "true",            null, 
-      "omega",           T.t(omega),
-      "only",            T.t(only),
-      "opaque",          T.t(opaque),
-      "options",         T.t(options),
-      "partialCharge",   T.t(partialcharge),
-      "phi",             T.t(phi),
-      "plane",           T.t(plane),
-      "planar",          null,
-      "play",            T.t(play),
-      "playRev",         T.t(playrev),
-      "point",           T.t(point),
-      "points",          null,
-      "pointGroup",      T.t(pointgroup),
-      "polymerLength",   T.t(polymerlength),
-      "pop",             T.t(pop),
-      "previous",        T.t(prev),
-      "prev",            null,
-      "probe",           T.t(probe),
-      "property",        T.t(property),
-      "properties",      null,
-      "protein",         T.t(protein),
-      "psi",             T.t(psi),
-      "purine",          T.t(purine),
-      "push",            T.t(push),
-      "PyMOL",           T.t(pymol),
-      "pyrimidine",      T.t(pyrimidine),
-      "random",          T.t(random),
-      "range",           T.t(range),
-      "rasmol",          T.t(rasmol),
-      "replace",         T.t(replace),
-      "resno",           T.t(resno),
-      "resume",          T.t(resume),
-      "rewind",          T.t(rewind),
-      "reverse",         T.t(reverse),
-      "right",           T.t(right),
-      "RNA",             T.t(rna),
-      "rock",            T.t(rock),
-      "rubberband",      T.t(rubberband),
-      "saSurface",       T.t(sasurface),
-      "saved",           T.t(saved),
-      "scale",           T.t(scale),
-      "scene",           T.t(scene),
-      "search",          T.t(search),
-      "smarts",          null,
-      "selected",        T.t(selected),
-      "shapely",         T.t(shapely),
-      "sidechain",       T.t(sidechain),
-      "sin",             T.t(sin),
-      "site",            T.t(site),
-      "size",            T.t(size),
-      "smiles",          T.t(smiles),
-      "substructure",    T.t(substructure),  // 12.0 substructure-->smiles (should be smarts, but for legacy reasons, need this to be smiles
-      "solid",           T.t(solid),
-      "sort",            T.t(sort),
-      "specialPosition", T.t(specialposition),
-      "sqrt",            T.t(sqrt),
-      "split",           T.t(split),
-      "starScale",       T.t(starscale),
-      "stddev",          T.t(stddev),
-      "straightness",    T.t(straightness),
-      "structureId",     T.t(strucid),
-      "supercell",       T.t(supercell),
-      "sub",             T.t(sub),
-      "sum",             T.t(sum), // sum
-      "sum2",            T.t(sum2), // sum of squares
-      "surface",         T.t(surface),
-      "surfaceDistance", T.t(surfacedistance),
-      "symop",           T.t(symop),
-      "sx",              T.t(screenx),
-      "sy",              T.t(screeny),
-      "sz",              T.t(screenz),
-      "sxyz",            T.t(screenxyz),
-      "temperature",     T.t(temperature),
-      "relativeTemperature", null,
-      "tensor",          T.t(tensor),
-      "theta",           T.t(theta),
-      "thisModel",       T.t(thismodel),
-      "ticks",           T.t(ticks),
-      "top",             T.t(top),
-      "torsion",         T.t(torsion),
-      "trajectory",      T.t(trajectory),
-      "trajectories",    null,
-      "translucent",     T.t(translucent),
-      "triangles",       T.t(triangles),
-      "trim",            T.t(trim),
-      "type",            T.t(type),
-      "ux",              T.t(unitx),
-      "uy",              T.t(unity),
-      "uz",              T.t(unitz),
-      "uxyz",            T.t(unitxyz),
-      "user",            T.t(user),
-      "valence",         T.t(valence),
-      "vanderWaals",     T.t(vanderwaals),
-      "vdw",             null,
-      "vdwRadius",       null,
-      "visible",         T.t(visible),
-      "volume",          T.t(volume),
-      "vx",              T.t(vibx),
-      "vy",              T.t(viby),
-      "vz",              T.t(vibz),
-      "vxyz",            T.t(vibxyz),
-      "xyz",             T.t(xyz),
-      "w",               T.t(w),
-      "x",               T.t(x),
-      "y",               T.t(y),
-      "z",               T.t(z),
-
-      // more misc parameters
-      "addHydrogens",    T.t(addhydrogens),
-      "allConnected",    T.t(allconnected),
-      "angstroms",       T.t(angstroms),
-      "anisotropy",      T.t(anisotropy),
-      "append",          T.t(append),
-      "arc",             T.t(arc),
-      "area",            T.t(area),
-      "aromatic",        T.t(aromatic),
-      "arrow",           T.t(arrow),
-      "auto",            T.t(auto),
-      "barb",            T.t(barb),
-      "binary",          T.t(binary),
-      "blockData",       T.t(blockdata),
-      "cancel",          T.t(cancel),
-      "cap",             T.t(cap),
-      "cavity",          T.t(cavity),
-      "centroid",        T.t(centroid),
-      "check",           T.t(check),
-      "chemical",        T.t(chemical),
-      "circle",          T.t(circle),
-      "collapsed",       T.t(collapsed),
-      "col",             T.t(col),
-      "colorScheme",     T.t(colorscheme),
-      "command",         T.t(command),
-      "commands",        T.t(commands),
-      "contour",         T.t(contour),
-      "contours",        T.t(contours),
-      "corners",         T.t(corners),
-      "count",           T.t(count),
-      "criterion",       T.t(criterion),
-      "create",          T.t(create),
-      "crossed",         T.t(crossed),
-      "curve",           T.t(curve),
-      "cutoff",          T.t(cutoff),
-      "cylinder",        T.t(cylinder),
-      "diameter",        T.t(diameter),
-      "discrete",        T.t(discrete),
-      "distanceFactor",  T.t(distancefactor),
-      "downsample",      T.t(downsample),
-      "drawing",         T.t(drawing),
-      "eccentricity",    T.t(eccentricity),
-      "ed",              T.t(ed),
-      "edges",           T.t(edges),
-      "energy",          T.t(energy),
-      "exitJmol",        T.t(exitjmol),
-      "faceCenterOffset",T.t(facecenteroffset),
-      "filter",          T.t(filter),
-      "first",           T.t(first),
-      "fixed",           T.t(fixed),
-      "fix",             null,
-      "flat",            T.t(flat),
-      "fps",             T.t(fps),
-      "from",            T.t(from),
-      "frontEdges",      T.t(frontedges),
-      "full",            T.t(full),
-      "fullPlane",       T.t(fullplane),
-      "functionXY",      T.t(functionxy),
-      "functionXYZ",     T.t(functionxyz),
-      "gridPoints",      T.t(gridpoints),
-      "homo",            T.t(homo),
-      "ignore",          T.t(ignore),
-      "InChI",           T.t(inchi),
-      "InChIKey",        T.t(inchikey),
-      "increment",       T.t(increment),
-      "insideout",       T.t(insideout),
-      "interior",        T.t(interior),
-      "intersection",    T.t(intersection),
-      "intersect",       null,
-      "internal",        T.t(internal),
-      "lattice",         T.t(lattice),
-      "line",            T.t(line),
-      "lineData",        T.t(linedata),
-      "link",            T.t(link),
-      "lobe",            T.t(lobe),
-      "lonePair",        T.t(lonepair),
-      "lp",              T.t(lp),
-      "lumo",            T.t(lumo),
-      "manifest",        T.t(manifest),
-      "mapProperty",     T.t(mapproperty),
-      "map",             null,
-      "maxSet",          T.t(maxset),
-      "menu",            T.t(menu),
-      "minSet",          T.t(minset),
-      "modelBased",      T.t(modelbased),
-      "molecular",       T.t(molecular),
-      "mrc",             T.t(mrc),
-      "msms",            T.t(msms),
-      "name",            T.t(name),
-      "nmr",             T.t(nmr),
-      "noCross",         T.t(nocross),
-      "noDebug",         T.t(nodebug),
-      "noEdges",         T.t(noedges),
-      "noHead",          T.t(nohead),
-      "noLoad",          T.t(noload),
-      "noPlane",         T.t(noplane),
-      "object",          T.t(object),
-      "obj",             T.t(obj),
-      "offset",          T.t(offset),
-      "offsetSide",      T.t(offsetside),
-      "once",            T.t(once),
-      "orbital",         T.t(orbital),
-      "atomicOrbital",   T.t(atomicorbital),
-      "packed",          T.t(packed),
-      "palindrome",      T.t(palindrome),
-      "parameters",      T.t(parameters),
-      "path",            T.t(path),
-      "pdb",             T.t(pdb),
-      "period",          T.t(period),
-      "periodic",        null,
-      "perpendicular",   T.t(perpendicular),
-      "perp",            null,
-      "phase",           T.t(phase),
-      "pocket",          T.t(pocket),
-      "pointsPerAngstrom", T.t(pointsperangstrom),
-      "radical",         T.t(radical),
-      "rad",             T.t(rad),
-      "reference",       T.t(reference),
-      "remove",          T.t(remove),
-      "resolution",      T.t(resolution),
-      "reverseColor",    T.t(reversecolor),
-      "rotate45",        T.t(rotate45),
-      "selection",       T.t(selection),
-      "sigma",           T.t(sigma),
-      "sign",            T.t(sign),
-      "silent",          T.t(silent),
-      "sphere",          T.t(sphere),
-      "squared",         T.t(squared),
-      "stdInChI",        T.t(stdinchi),
-      "stdInChIKey",     T.t(stdinchikey),
-      "stop",            T.t(stop),
-      "title",           T.t(title),
-      "titleFormat",     T.t(titleformat),
-      "to",              T.t(to),
-      "value",           T.t(val),
-      "variable",        T.t(variable),
-      "variables",       T.t(variables),
-      "vertices",        T.t(vertices),
-      "width",           T.t(width),
-
-      // set params
-
-      "backgroundModel",                          T.t(backgroundmodel),
-      "celShading",                               T.t(celshading),
-      "celShadingPower",                          T.t(celshadingpower),
-      "debug",                                    T.t(debug),
-      "defaultLattice",                           T.t(defaultlattice),
-      "measurements",                             T.t(measurements),
-      "measurement",                              null,
-      "scale3D",                                  T.t(scale3d),
-      "toggleLabel",                              T.t(togglelabel),
-      "userColorScheme",                          T.t(usercolorscheme),
-      "throw",                                    T.t(throwcmd),
-      "timeout",                                  T.t(timeout),
-      "timeouts",                                 null,
       
-      // string
-      
-      "animationMode",                            T.t(animationmode),
-      "appletProxy",                              T.t(appletproxy),
-      "atomTypes",                                T.t(atomtypes),
-      "axesColor",                                T.t(axescolor),
-      "axis1Color",                               T.t(axis1color),
-      "axis2Color",                               T.t(axis2color),
-      "axis3Color",                               T.t(axis3color),
-      "backgroundColor",                          T.t(backgroundcolor),
-      "bondmode",                                 T.t(bondmode),
-      "boundBoxColor",                            T.t(boundboxcolor),
-      "boundingBoxColor",                         null,
-      "currentLocalPath",                         T.t(currentlocalpath),
-      "dataSeparator",                            T.t(dataseparator),
-      "defaultAngleLabel",                        T.t(defaultanglelabel),
-      "defaultColorScheme",                       T.t(defaultcolorscheme),
-      "defaultColors",                            null,
-      "defaultDirectory",                         T.t(defaultdirectory),
-      "defaultDistanceLabel",                     T.t(defaultdistancelabel),
-      "defaultDropScript",                        T.t(defaultdropscript), 
-      "defaultLabelPDB",                          T.t(defaultlabelpdb),
-      "defaultLabelXYZ",                          T.t(defaultlabelxyz),
-      "defaultLoadFilter",                        T.t(defaultloadfilter),
-      "defaultLoadScript",                        T.t(defaultloadscript),
-      "defaults",                                 T.t(defaults),
-      "defaultTorsionLabel",                      T.t(defaulttorsionlabel),
-      "defaultVDW",                               T.t(defaultvdw),
-      "drawFontSize",                             T.t(drawfontsize),
-      "edsUrlCutoff",                             T.t(edsurlcutoff),
-      "edsUrlFormat",                             T.t(edsurlformat),
-      "energyUnits",                              T.t(energyunits),
-      "fileCacheDirectory",                       T.t(filecachedirectory),
-      "fontsize",                                 T.t(fontsize),
-      "helpPath",                                 T.t(helppath),
-      "hoverLabel",                               T.t(hoverlabel),
-      "language",                                 T.t(language),
-      "loadFormat",                               T.t(loadformat),
-      "loadLigandFormat",                         T.t(loadligandformat),
-      "logFile",                                  T.t(logfile),
-      "measurementUnits",                         T.t(measurementunits),
-      "nmrPredictFormat",                         T.t(nmrpredictformat),
-      "nmrUrlFormat",                             T.t(nmrurlformat),
-      "pathForAllFiles",                          T.t(pathforallfiles),
-      "picking",                                  T.t(picking),
-      "pickingStyle",                             T.t(pickingstyle),
-      "pickLabel",                                T.t(picklabel),
-      "platformSpeed",                            T.t(platformspeed),
-      "propertyColorScheme",                      T.t(propertycolorscheme),
-      "quaternionFrame",                          T.t(quaternionframe),
-      "smilesUrlFormat",                          T.t(smilesurlformat),
-      "smiles2dImageFormat",                      T.t(smiles2dimageformat),
-      "unitCellColor",                            T.t(unitcellcolor),
-
-      // float
-      
-      "axesScale",                                T.t(axesscale),
-      "axisScale",                                null, // legacy
-      "bondTolerance",                            T.t(bondtolerance),
-      "cameraDepth",                              T.t(cameradepth),
-      "defaultDrawArrowScale",                    T.t(defaultdrawarrowscale),
-      "defaultTranslucent",                       T.t(defaulttranslucent),
-      "dipoleScale",                              T.t(dipolescale),
-      "ellipsoidAxisDiameter",                    T.t(ellipsoidaxisdiameter),
-      "gestureSwipeFactor",                       T.t(gestureswipefactor),
-      "hbondsAngleMinimum",                       T.t(hbondsangleminimum),
-      "hbondsDistanceMaximum",                    T.t(hbondsdistancemaximum),
-      "hoverDelay",                               T.t(hoverdelay),
-      "loadAtomDataTolerance",                    T.t(loadatomdatatolerance),
-      "minBondDistance",                          T.t(minbonddistance),
-      "minimizationCriterion",                    T.t(minimizationcriterion),
-      "modulationScale",                          T.t(modulationscale),
-      "mouseDragFactor",                          T.t(mousedragfactor),
-      "mouseWheelFactor",                         T.t(mousewheelfactor),
-      "navFPS",                                   T.t(navfps),
-      "navigationDepth",                          T.t(navigationdepth),
-      "navigationSlab",                           T.t(navigationslab),
-      "navigationSpeed",                          T.t(navigationspeed),
-      "navX",                                     T.t(navx),
-      "navY",                                     T.t(navy),
-      "navZ",                                     T.t(navz),
-      "particleRadius",                           T.t(particleradius),
-      "pointGroupDistanceTolerance",              T.t(pointgroupdistancetolerance),
-      "pointGroupLinearTolerance",                T.t(pointgrouplineartolerance),
-      "radius",                                   T.t(radius),
-      "rotationRadius",                           T.t(rotationradius),
-      "scaleAngstromsPerInch",                    T.t(scaleangstromsperinch),
-      "sheetSmoothing",                           T.t(sheetsmoothing),
-      "slabRange",                                T.t(slabrange),
-      "solventProbeRadius",                       T.t(solventproberadius),
-      "spinFPS",                                  T.t(spinfps),
-      "spinX",                                    T.t(spinx),
-      "spinY",                                    T.t(spiny),
-      "spinZ",                                    T.t(spinz),
-      "stereoDegrees",                            T.t(stereodegrees),
-      "strutDefaultRadius",                       T.t(strutdefaultradius),
-      "strutLengthMaximum",                       T.t(strutlengthmaximum),
-      "vectorScale",                              T.t(vectorscale),
-      "vectorSymmetry",                           T.t(vectorsymmetry),
-      "vibrationPeriod",                          T.t(vibrationperiod),
-      "vibrationScale",                           T.t(vibrationscale),
-      "visualRange",                              T.t(visualrange),
-
-      // int
-
-      "ambientPercent",                           T.t(ambientpercent),
-      "ambient",                                  null, 
-      "animationFps",                             T.t(animationfps),
-      "axesMode",                                 T.t(axesmode),
-      "bondRadiusMilliAngstroms",                 T.t(bondradiusmilliangstroms),
-      "bondingVersion",                          T.t(bondingversion),
-      "delayMaximumMs",                           T.t(delaymaximumms),
-      "diffusePercent",                           T.t(diffusepercent),
-      "diffuse",                                  null, 
-      "dotDensity",                               T.t(dotdensity),
-      "dotScale",                                 T.t(dotscale),
-      "ellipsoidDotCount",                        T.t(ellipsoiddotcount),
-      "helixStep",                                T.t(helixstep),
-      "hermiteLevel",                             T.t(hermitelevel),
-      "historyLevel",                             T.t(historylevel),
-      "lighting",                                 T.t(lighting),
-      "logLevel",                                 T.t(loglevel),
-      "meshScale",                                T.t(meshscale),
-      "minimizationSteps",                        T.t(minimizationsteps),
-      "minPixelSelRadius",                        T.t(minpixelselradius),
-      "percentVdwAtom",                           T.t(percentvdwatom),
-      "perspectiveModel",                         T.t(perspectivemodel),
-      "phongExponent",                            T.t(phongexponent),
-      "pickingSpinRate",                          T.t(pickingspinrate),
-      "propertyAtomNumberField",                  T.t(propertyatomnumberfield),
-      "propertyAtomNumberColumnCount",            T.t(propertyatomnumbercolumncount),
-      "propertyDataColumnCount",                  T.t(propertydatacolumncount),
-      "propertyDataField",                        T.t(propertydatafield),
-      "repaintWaitMs",                            T.t(repaintwaitms),
-      "ribbonAspectRatio",                        T.t(ribbonaspectratio),
-      "scriptReportingLevel",                     T.t(scriptreportinglevel),
-      "showScript",                               T.t(showscript),
-      "smallMoleculeMaxAtoms",                    T.t(smallmoleculemaxatoms),
-      "specular",                                 T.t(specular),
-      "specularExponent",                         T.t(specularexponent),
-      "specularPercent",                          T.t(specularpercent),
-      "specPercent",                              null,
-      "specularPower",                            T.t(specularpower),
-      "specpower",                                null, 
-      "strandCount",                              T.t(strandcount),
-      "strandCountForMeshRibbon",                 T.t(strandcountformeshribbon),
-      "strandCountForStrands",                    T.t(strandcountforstrands),
-      "strutSpacing",                             T.t(strutspacing),
-      "zDepth",                                   T.t(zdepth),
-      "zSlab",                                    T.t(zslab),
-      "zshadePower",                              T.t(zshadepower),
-
-      // boolean
-
-      "allowEmbeddedScripts",                     T.t(allowembeddedscripts),
-      "allowGestures",                            T.t(allowgestures),
-      "allowKeyStrokes",                          T.t(allowkeystrokes),
-      "allowModelKit",                            T.t(allowmodelkit),
-      "allowMoveAtoms",                           T.t(allowmoveatoms),
-      "allowMultiTouch",                          T.t(allowmultitouch),
-      "allowRotateSelected",                      T.t(allowrotateselected),
-      "antialiasDisplay",                         T.t(antialiasdisplay),
-      "antialiasImages",                          T.t(antialiasimages),
-      "antialiasTranslucent",                     T.t(antialiastranslucent),
-      "appendNew",                                T.t(appendnew),
-      "applySymmetryToBonds",                     T.t(applysymmetrytobonds),
-      "atomPicking",                              T.t(atompicking),
-      "autobond",                                 T.t(autobond),
-      "autoFPS",                                  T.t(autofps),
-//      "autoLoadOrientation",                      new Token(autoloadorientation),
-      "axesMolecular",                            T.t(axesmolecular),
-      "axesOrientationRasmol",                    T.t(axesorientationrasmol),
-      "axesUnitCell",                             T.t(axesunitcell),
-      "axesWindow",                               T.t(axeswindow),
-      "bondModeOr",                               T.t(bondmodeor),
-      "bondPicking",                              T.t(bondpicking),
-      "bonds",                                    T.t(bonds),
-      "bond",                                     null, 
-      "cartoonBaseEdges",                         T.t(cartoonbaseedges),
-      "cartoonsFancy",                            T.t(cartoonsfancy),
-      "cartoonFancy",                             null,
-      "cartoonLadders",                           T.t(cartoonladders),
-      "cartoonRibose",                            T.t(cartoonribose),
-      "cartoonRockets",                           T.t(cartoonrockets),
-      "chainCaseSensitive",                       T.t(chaincasesensitive),
-      "colorRasmol",                              T.t(colorrasmol),
-      "debugScript",                              T.t(debugscript),
-      "defaultStructureDssp",                     T.t(defaultstructuredssp),
-      "disablePopupMenu",                         T.t(disablepopupmenu),
-      "displayCellParameters",                    T.t(displaycellparameters),
-      "dotsSelectedOnly",                         T.t(dotsselectedonly),
-      "dotSurface",                               T.t(dotsurface),
-      "dragSelected",                             T.t(dragselected),
-      "drawHover",                                T.t(drawhover),
-      "drawPicking",                              T.t(drawpicking),
-      "dsspCalculateHydrogenAlways",              T.t(dsspcalchydrogen),
-      "ellipsoidArcs",                            T.t(ellipsoidarcs),
-      "ellipsoidArrows",                          T.t(ellipsoidarrows),
-      "ellipsoidAxes",                            T.t(ellipsoidaxes),
-      "ellipsoidBall",                            T.t(ellipsoidball),
-      "ellipsoidDots",                            T.t(ellipsoiddots),
-      "ellipsoidFill",                            T.t(ellipsoidfill),
-      "fileCaching",                              T.t(filecaching),
-      "fontCaching",                              T.t(fontcaching),
-      "fontScaling",                              T.t(fontscaling),
-      "forceAutoBond",                            T.t(forceautobond),
-      "fractionalRelative",                       T.t(fractionalrelative),
-// see commands     "frank",                                    new Token(frank),
-      "greyscaleRendering",                       T.t(greyscalerendering),
-      "hbondsBackbone",                           T.t(hbondsbackbone),
-      "hbondsRasmol",                             T.t(hbondsrasmol),
-      "hbondsSolid",                              T.t(hbondssolid),
-      "hetero",                                   T.t(hetero),
-      "hideNameInPopup",                          T.t(hidenameinpopup),
-      "hideNavigationPoint",                      T.t(hidenavigationpoint),
-      "hideNotSelected",                          T.t(hidenotselected),
-      "highResolution",                           T.t(highresolution),
-      "hydrogen",                                 T.t(hydrogen),
-      "hydrogens",                                null,
-      "imageState",                               T.t(imagestate),
-      "isKiosk",                                  T.t(iskiosk),
-      "isosurfaceKey",                            T.t(isosurfacekey),
-      "isosurfacePropertySmoothing",              T.t(isosurfacepropertysmoothing),
-      "isosurfacePropertySmoothingPower",         T.t(isosurfacepropertysmoothingpower),
-      "justifyMeasurements",                      T.t(justifymeasurements),
-      "languageTranslation",                      T.t(languagetranslation),
-      "legacyAutoBonding",                        T.t(legacyautobonding),
-      "legacyHAddition",                          T.t(legacyhaddition),
-      "logCommands",                              T.t(logcommands),
-      "logGestures",                              T.t(loggestures),
-      "measureAllModels",                         T.t(measureallmodels),
-      "measurementLabels",                        T.t(measurementlabels),
-      "measurementNumbers",                       T.t(measurementnumbers),
-      "messageStyleChime",                        T.t(messagestylechime),
-      "minimizationRefresh",                      T.t(minimizationrefresh),
-      "minimizationSilent",                       T.t(minimizationsilent),
-      "modelkitMode",                             T.t(modelkitmode),
-      "monitorEnergy",                            T.t(monitorenergy),
-      "multipleBondRadiusFactor",                 T.t(multiplebondradiusfactor),
-      "multipleBondSpacing",                      T.t(multiplebondspacing),
-      "multiProcessor",                           T.t(multiprocessor),
-      "navigateSurface",                          T.t(navigatesurface),
-      "navigationMode",                           T.t(navigationmode),
-      "navigationPeriodic",                       T.t(navigationperiodic),
-      "partialDots",                              T.t(partialdots),
-      "pdbAddHydrogens",                          T.t(pdbaddhydrogens),
-      "pdbGetHeader",                             T.t(pdbgetheader),
-      "pdbSequential",                            T.t(pdbsequential),
-      "perspectiveDepth",                         T.t(perspectivedepth),
-      "preserveState",                            T.t(preservestate),
-      "rangeSelected",                            T.t(rangeselected),
-      "redoMove",                                 T.t(redomove),
-      "refreshing",                               T.t(refreshing),
-      "ribbonBorder",                             T.t(ribbonborder),
-      "rocketBarrels",                            T.t(rocketbarrels),
-      "saveProteinStructureState",                T.t(saveproteinstructurestate),
-      "scriptQueue",                              T.t(scriptqueue),
-      "selectAllModels",                          T.t(selectallmodels),
-      "selectHetero",                             T.t(selecthetero),
-      "selectHydrogen",                           T.t(selecthydrogen),
-// see commands     "selectionHalos",                           new Token(selectionhalo),
-      "showAxes",                                 T.t(showaxes),
-      "showBoundBox",                             T.t(showboundbox),
-      "showBoundingBox",                          null,
-      "showFrank",                                T.t(showfrank),
-      "showHiddenSelectionHalos",                 T.t(showhiddenselectionhalos),
-      "showHydrogens",                            T.t(showhydrogens),
-      "showKeyStrokes",                           T.t(showkeystrokes),
-      "showMeasurements",                         T.t(showmeasurements),
-      "showMultipleBonds",                        T.t(showmultiplebonds),
-      "showNavigationPointAlways",                T.t(shownavigationpointalways),
-// see intparam      "showScript",                               new Token(showscript),
-      "showTiming",                               T.t(showtiming),
-      "showUnitcell",                             T.t(showunitcell),
-      "slabByAtom",                               T.t(slabbyatom),
-      "slabByMolecule",                           T.t(slabbymolecule),
-      "slabEnabled",                              T.t(slabenabled),
-      "smartAromatic",                            T.t(smartaromatic),
-      "solvent",                                  T.t(solvent),
-      "solventProbe",                             T.t(solventprobe),
-// see intparam     "specular",                                 new Token(specular),
-      "ssBondsBackbone",                          T.t(ssbondsbackbone),
-      "statusReporting",                          T.t(statusreporting),
-      "strutsMultiple",                           T.t(strutsmultiple),
-      "syncMouse",                                T.t(syncmouse),
-      "syncScript",                               T.t(syncscript),
-      "testFlag1",                                T.t(testflag1),
-      "testFlag2",                                T.t(testflag2),
-      "testFlag3",                                T.t(testflag3),
-      "testFlag4",                                T.t(testflag4),
-      "traceAlpha",                               T.t(tracealpha),
-      "twistedSheets",                            T.t(twistedsheets),
-      "undo",                                     T.t(undo),
-      "undoMove",                                 T.t(undomove),
-      "useArcBall",                               T.t(usearcball),
-      "useMinimizationThread",                    T.t(useminimizationthread),
-      "useNumberLocalization",                    T.t(usenumberlocalization),
-      "waitForMoveTo",                            T.t(waitformoveto),
-      "windowCentered",                           T.t(windowcentered),
-      "wireframeRotation",                        T.t(wireframerotation),
-      "zeroBasedXyzRasmol",                       T.t(zerobasedxyzrasmol),
-      "zoomEnabled",                              T.t(zoomenabled),
-      "zoomHeight",                               T.t(zoomheight),
-      "zoomLarge",                                T.t(zoomlarge),
-      "zShade",                                   T.t(zshade),
-
+      "all",          tokenAll,
+      "off",          tokenOff, 
+      "false",        null, 
+      "on",           tokenOn,
+      "true",         null, 
     };
 
-    T tokenLast = null;
-    String stringThis;
-    T tokenThis;
-    String lcase;
-    for (int i = 0; i + 1 < arrayPairs.length; i += 2) {
-      stringThis = (String) arrayPairs[i];
-      lcase = stringThis.toLowerCase();
+    T tokenThis, tokenLast = null;
+    String sTok, lcase;
+    int n = arrayPairs.length - 1;
+    for (int i = 0; i < n; i += 2) {
+      sTok = (String) arrayPairs[i];
+      lcase = sTok.toLowerCase();
       tokenThis = (T) arrayPairs[i + 1];
       if (tokenThis == null)
         tokenThis = tokenLast;
-      if (tokenThis.value == null)
-        tokenThis.value = stringThis;
-      if (tokenMap.get(lcase) != null)
-        Logger.error("duplicate token definition:" + lcase);
+      else if (tokenThis.value == null)
+        tokenThis.value = sTok;
       tokenMap.put(lcase, tokenThis);
       tokenLast = tokenThis;
     }
-    arrayPairs = null;
-    //Logger.info(arrayPairs.length + " script command tokens");
+    
+    arrayPairs = null;    
+
+    // This two-array system is risky, but I think worth the risk in
+    // terms of how much it saves ( KB).
+
+    String[] sTokens = {
+        "+=",
+        "-=",
+        "*=",
+        "/=",
+        "\\=",
+        "&=",
+        "|=",
+        "not",
+        "!",
+        "xor",
+        //no-- don't do this; it interferes with define
+        // "~"
+        "tog",
+        "<",
+        "<=",
+        ">=",
+        ">",
+        "!=",
+        "<>",
+        "within",
+        ".",
+        "..",
+        "[",
+        "]",
+        "{",
+        "}",
+        "$",
+        "%",
+        ";",
+        "++",
+        "--",
+        "**",
+        "\\",
+        
+        // commands
+        
+        "animation",
+        "anim",
+        "assign",
+        "axes",
+        "backbone",
+        "background",
+        "bind",
+        "bondorder",
+        "boundbox",
+        "boundingBox",
+        "break",
+        "calculate",
+        "capture",
+        "cartoon",
+        "cartoons",
+        "case",
+        "catch",
+        "cd",
+        "center",
+        "centre",
+        "centerat",
+        "cgo",
+        "color",
+        "colour",
+        "compare",
+        "configuration",
+        "conformation",
+        "config",
+        "connect",
+        "console",
+        "contact",
+        "contacts",
+        "continue",
+        "data",
+        "default",
+        "define",
+        "@",
+        "delay",
+        "delete",
+        "density",
+        "depth",
+        "dipole",
+        "dipoles",
+        "display",
+        "dot",
+        "dots",
+        "draw",
+        "echo",
+        "ellipsoid",
+        "ellipsoids",
+        "else",
+        "elseif",
+        "end",
+        "endif",
+        "exit",
+        "file",
+        "files",
+        "font",
+        "for",
+        "format",
+        "frame",
+        "frames",
+        "frank",
+        "function",
+        "functions",
+        "geosurface",
+        "getProperty",
+        "goto",
+        "halo",
+        "halos",
+        "helix",
+        "helixalpha",
+        "helix310",
+        "helixpi",
+        "hbond",
+        "hbonds",
+        "help",
+        "hide",
+        "history",
+        "hover",
+        "if",
+        "in",
+        "initialize",
+        "invertSelected",
+        "isosurface",
+        "javascript",
+        "label",
+        "labels",
+        "lcaoCartoon",
+        "lcaoCartoons",
+        "load",
+        "log",
+        "loop",
+        "measure",
+        "measures",
+        "monitor",
+        "monitors",
+        "meshribbon",
+        "meshribbons",
+        "message",
+        "minimize",
+        "minimization",
+        "mo",
+        "model",
+        "models",
+        "modulation",
+        "move",
+        "moveTo",
+        "navigate",
+        "navigation",
+        "origin",
+        "out",
+        "parallel",
+        "pause",
+        "wait",
+        "plot",
+        "plot3d",
+        "pmesh",
+        "polygon",
+        "polyhedra",
+        "print",
+        "process",
+        "prompt",
+        "quaternion",
+        "quaternions",
+        "quit",
+        "ramachandran",
+        "rama",
+        "refresh",
+        "reset",
+        "unset",
+        "restore",
+        "restrict",
+        "return",
+        "ribbon",
+        "ribbons",
+        "rocket",
+        "rockets",
+        "rotate",
+        "rotateSelected",
+        "save",
+        "select",
+        "selectionHalos",
+        "selectionHalo",
+        "showSelections",
+        "sheet",
+        "show",
+        "slab",
+        "spacefill",
+        "cpk",
+        "spin",
+        "ssbond",
+        "ssbonds",
+        "star",
+        "stars",
+        "step",
+        "steps",
+        "stereo",
+        "strand",
+        "strands",
+        "structure",
+        "_structure",
+        "strucNo",
+        "struts",
+        "strut",
+        "subset",
+        "synchronize",
+        "sync",
+        "trace",
+        "translate",
+        "translateSelected",
+        "try",
+        "unbind",
+        "unitcell",
+        "var",
+        "vector",
+        "vectors",
+        "vibration",
+        "while",
+        "wireframe",
+        "write",
+        "zap",
+        "zoom",
+        "zoomTo",
+        
+        // show parameters
+        
+        "atom",
+        "atoms",
+        "axis",
+        "axisangle",
+        "basepair",
+        "basepairs",
+        "orientation",
+        "orientations",
+        "pdbheader",
+        "polymer",
+        "polymers",
+        "residue",
+        "residues",
+        "rotation",
+        "row",
+        "sequence",
+        "shape",
+        "state",
+        "symbol",
+        "symmetry",
+        "spaceGroup",
+        "transform",
+        "translation",
+        "url",
+        
+        // misc
+        
+        "abs",
+        "absolute",
+        "acos",
+        "add",
+        "adpmax",
+        "adpmin",
+        "align",
+        "altloc",
+        "altlocs",
+        "ambientOcclusion",
+        "amino",
+        "angle",
+        "array",
+        "as",
+        "atomID",
+        "_atomID",
+        "_a",
+        "atomIndex",
+        "atomName",
+        "atomno",
+        "atomType",
+        "atomX",
+        "atomY",
+        "atomZ",
+        "average",
+        "babel",
+        "babel21",
+        "back",
+        "backlit",
+        "balls",
+        "baseModel",
+        "best",
+        "bin",
+        "bondCount",
+        "bottom",
+        "branch",
+        "brillouin",
+        "bzone",
+        "wignerSeitz",
+        "cache",
+        "carbohydrate",
+        "cell",
+        "chain",
+        "chains",
+        "chainNo",
+        "chemicalShift",
+        "cs",
+        "clash",
+        "clear",
+        "clickable",
+        "clipboard",
+        "connected",
+        "context",
+        "constraint",
+        "contourLines",
+        "coord",
+        "coordinates",
+        "coords",
+        "cos",
+        "cross",
+        "covalentRadius",
+        "covalent",
+        "direction",
+        "displacement",
+        "displayed",
+        "distance",
+        "div",
+        "DNA",
+        "dotted",
+        "DSSP",
+        "element",
+        "elemno",
+        "_e",
+        "error",
+        "exportScale",
+        "fill",
+        "find",
+        "fixedTemperature",
+        "forcefield",
+        "formalCharge",
+        "charge",
+        "eta",
+        "front",
+        "frontlit",
+        "frontOnly",
+        "fullylit",
+        "fx",
+        "fy",
+        "fz",
+        "fxyz",
+        "fux",
+        "fuy",
+        "fuz",
+        "fuxyz",
+        "group",
+        "groups",
+        "group1",
+        "groupID",
+        "_groupID",
+        "_g",
+        "groupIndex",
+        "hidden",
+        "highlight",
+        "hkl",
+        "hydrophobicity",
+        "hydrophobic",
+        "hydro",
+        "id",
+        "identify",
+        "ident",
+        "image",
+        "info",
+        "inline",
+        "insertion",
+        "insertions",
+        "intramolecular",
+        "intra",
+        "intermolecular",
+        "inter",
+        "bondingRadius",
+        "ionicRadius",
+        "ionic",
+        "isAromatic",
+        "Jmol",
+        "JSON",
+        "join",
+        "keys",
+        "last",
+        "left",
+        "length",
+        "lines",
+        "list",
+        "magneticShielding",
+        "ms",
+        "mass",
+        "max",
+        "mep",
+        "mesh",
+        "middle",
+        "min",
+        "mlp",
+        "mode",
+        "modify",
+        "modifyOrCreate",
+        "molecule",
+        "molecules",
+        "modelIndex",
+        "monomer",
+        "morph",
+        "movie",
+        "mouse",
+        "mul",
+        "mul3",
+        "nci",
+        "next",
+        "noDots",
+        "noFill",
+        "noMesh",
+        "none",
+        "null",
+        "inherit",
+        "normal",
+        "noContourLines",
+        "nonequivalent",
+        "notFrontOnly",
+        "noTriangles",
+        "now",
+        "nucleic",
+        "occupancy",
+        "omega",
+        "only",
+        "opaque",
+        "options",
+        "partialCharge",
+        "phi",
+        "plane",
+        "planar",
+        "play",
+        "playRev",
+        "point",
+        "points",
+        "pointGroup",
+        "polymerLength",
+        "pop",
+        "previous",
+        "prev",
+        "probe",
+        "property",
+        "properties",
+        "protein",
+        "psi",
+        "purine",
+        "push",
+        "PyMOL",
+        "pyrimidine",
+        "random",
+        "range",
+        "rasmol",
+        "replace",
+        "resno",
+        "resume",
+        "rewind",
+        "reverse",
+        "right",
+        "RNA",
+        "rock",
+        "rubberband",
+        "saSurface",
+        "saved",
+        "scale",
+        "scene",
+        "search",
+        "smarts",
+        "selected",
+        "shapely",
+        "sidechain",
+        "sin",
+        "site",
+        "size",
+        "smiles",
+        "substructure",
+        "solid",
+        "sort",
+        "specialPosition",
+        "sqrt",
+        "split",
+        "starScale",
+        "stddev",
+        "straightness",
+        "structureId",
+        "supercell",
+        "sub",
+        "sum",
+        "sum2",
+        "surface",
+        "surfaceDistance",
+        "symop",
+        "sx",
+        "sy",
+        "sz",
+        "sxyz",
+        "temperature",
+        "relativeTemperature",
+        "tensor",
+        "theta",
+        "thisModel",
+        "ticks",
+        "top",
+        "torsion",
+        "trajectory",
+        "trajectories",
+        "translucent",
+        "triangles",
+        "trim",
+        "type",
+        "ux",
+        "uy",
+        "uz",
+        "uxyz",
+        "user",
+        "valence",
+        "vanderWaals",
+        "vdw",
+        "vdwRadius",
+        "visible",
+        "volume",
+        "vx",
+        "vy",
+        "vz",
+        "vxyz",
+        "xyz",
+        "w",
+        "x",
+        "y",
+        "z",
+  
+       // more misc parameters
+       "addHydrogens",
+       "allConnected",
+       "angstroms",
+       "anisotropy",
+       "append",
+       "arc",
+       "area",
+       "aromatic",
+       "arrow",
+       "auto",
+       "barb",
+       "binary",
+       "blockData",
+       "cancel",
+       "cap",
+       "cavity",
+       "centroid",
+       "check",
+       "chemical",
+       "circle",
+       "collapsed",
+       "col",
+       "colorScheme",
+       "command",
+       "commands",
+       "contour",
+       "contours",
+       "corners",
+       "count",
+       "criterion",
+       "create",
+       "crossed",
+       "curve",
+       "cutoff",
+       "cylinder",
+       "diameter",
+       "discrete",
+       "distanceFactor",
+       "downsample",
+       "drawing",
+       "eccentricity",
+       "ed",
+       "edges",
+       "energy",
+       "exitJmol",
+       "faceCenterOffset",
+       "filter",
+       "first",
+       "fixed",
+       "fix",
+       "flat",
+       "fps",
+       "from",
+       "frontEdges",
+       "full",
+       "fullPlane",
+       "functionXY",
+       "functionXYZ",
+       "gridPoints",
+       "homo",
+       "ignore",
+       "InChI",
+       "InChIKey",
+       "increment",
+       "insideout",
+       "interior",
+       "intersection",
+       "intersect",
+       "internal",
+       "lattice",
+       "line",
+       "lineData",
+       "link",
+       "lobe",
+       "lonePair",
+       "lp",
+       "lumo",
+       "manifest",
+       "mapProperty",
+       "map",
+       "maxSet",
+       "menu",
+       "minSet",
+       "modelBased",
+       "molecular",
+       "mrc",
+       "msms",
+       "name",
+       "nmr",
+       "noCross",
+       "noDebug",
+       "noEdges",
+       "noHead",
+       "noLoad",
+       "noPlane",
+       "object",
+       "obj",
+       "offset",
+       "offsetSide",
+       "once",
+       "orbital",
+       "atomicOrbital",
+       "packed",
+       "palindrome",
+       "parameters",
+       "path",
+       "pdb",
+       "period",
+       "periodic",
+       "perpendicular",
+       "perp",
+       "phase",
+       "pocket",
+       "pointsPerAngstrom",
+       "radical",
+       "rad",
+       "reference",
+       "remove",
+       "resolution",
+       "reverseColor",
+       "rotate45",
+       "selection",
+       "sigma",
+       "sign",
+       "silent",
+       "sphere",
+       "squared",
+       "stdInChI",
+       "stdInChIKey",
+       "stop",
+       "title",
+       "titleFormat",
+       "to",
+       "value",
+       "variable",
+       "variables",
+       "vertices",
+       "width",
+  
+       // set params
+  
+       "backgroundModel",
+       "celShading",
+       "celShadingPower",
+       "debug",
+       "defaultLattice",
+       "measurements",
+       "measurement",
+       "scale3D",
+       "toggleLabel",
+       "userColorScheme",
+       "throw",
+       "timeout",
+       "timeouts",
+       
+       // string
+       
+       "animationMode",
+       "appletProxy",
+       "atomTypes",
+       "axesColor",
+       "axis1Color",
+       "axis2Color",
+       "axis3Color",
+       "backgroundColor",
+       "bondmode",
+       "boundBoxColor",
+       "boundingBoxColor",
+       "currentLocalPath",
+       "dataSeparator",
+       "defaultAngleLabel",
+       "defaultColorScheme",
+       "defaultColors",
+       "defaultDirectory",
+       "defaultDistanceLabel",
+       "defaultDropScript",
+       "defaultLabelPDB",
+       "defaultLabelXYZ",
+       "defaultLoadFilter",
+       "defaultLoadScript",
+       "defaults",
+       "defaultTorsionLabel",
+       "defaultVDW",
+       "drawFontSize",
+       "edsUrlCutoff",
+       "edsUrlFormat",
+       "energyUnits",
+       "fileCacheDirectory",
+       "fontsize",
+       "helpPath",
+       "hoverLabel",
+       "language",
+       "loadFormat",
+       "loadLigandFormat",
+       "logFile",
+       "measurementUnits",
+       "nmrPredictFormat",
+       "nmrUrlFormat",
+       "pathForAllFiles",
+       "picking",
+       "pickingStyle",
+       "pickLabel",
+       "platformSpeed",
+       "propertyColorScheme",
+       "quaternionFrame",
+       "smilesUrlFormat",
+       "smiles2dImageFormat",
+       "unitCellColor",
+  
+       // float
+       
+       "axesScale",
+       "axisScale",
+       "bondTolerance",
+       "cameraDepth",
+       "defaultDrawArrowScale",
+       "defaultTranslucent",
+       "dipoleScale",
+       "ellipsoidAxisDiameter",
+       "gestureSwipeFactor",
+       "hbondsAngleMinimum",
+       "hbondsDistanceMaximum",
+       "hoverDelay",
+       "loadAtomDataTolerance",
+       "minBondDistance",
+       "minimizationCriterion",
+       "modulationScale",
+       "mouseDragFactor",
+       "mouseWheelFactor",
+       "navFPS",
+       "navigationDepth",
+       "navigationSlab",
+       "navigationSpeed",
+       "navX",
+       "navY",
+       "navZ",
+       "particleRadius",
+       "pointGroupDistanceTolerance",
+       "pointGroupLinearTolerance",
+       "radius",
+       "rotationRadius",
+       "scaleAngstromsPerInch",
+       "sheetSmoothing",
+       "slabRange",
+       "solventProbeRadius",
+       "spinFPS",
+       "spinX",
+       "spinY",
+       "spinZ",
+       "stereoDegrees",
+       "strutDefaultRadius",
+       "strutLengthMaximum",
+       "vectorScale",
+       "vectorSymmetry",
+       "vibrationPeriod",
+       "vibrationScale",
+       "visualRange",
+  
+       // int
+  
+       "ambientPercent",
+       "ambient",
+       "animationFps",
+       "axesMode",
+       "bondRadiusMilliAngstroms",
+       "bondingVersion",
+       "delayMaximumMs",
+       "diffusePercent",
+       "diffuse",
+       "dotDensity",
+       "dotScale",
+       "ellipsoidDotCount",
+       "helixStep",
+       "hermiteLevel",
+       "historyLevel",
+       "lighting",
+       "logLevel",
+       "meshScale",
+       "minimizationSteps",
+       "minPixelSelRadius",
+       "percentVdwAtom",
+       "perspectiveModel",
+       "phongExponent",
+       "pickingSpinRate",
+       "propertyAtomNumberField",
+       "propertyAtomNumberColumnCount",
+       "propertyDataColumnCount",
+       "propertyDataField",
+       "repaintWaitMs",
+       "ribbonAspectRatio",
+       "scriptReportingLevel",
+       "showScript",
+       "smallMoleculeMaxAtoms",
+       "specular",
+       "specularExponent",
+       "specularPercent",
+       "specPercent",
+       "specularPower",
+       "specpower",
+       "strandCount",
+       "strandCountForMeshRibbon",
+       "strandCountForStrands",
+       "strutSpacing",
+       "zDepth",
+       "zSlab",
+       "zshadePower",
+  
+       // boolean
+  
+       "allowEmbeddedScripts",
+       "allowGestures",
+       "allowKeyStrokes",
+       "allowModelKit",
+       "allowMoveAtoms",
+       "allowMultiTouch",
+       "allowRotateSelected",
+       "antialiasDisplay",
+       "antialiasImages",
+       "antialiasTranslucent",
+       "appendNew",
+       "applySymmetryToBonds",
+       "atomPicking",
+       "autobond",
+       "autoFPS",
+  //               "autoLoadOrientation",
+       "axesMolecular",
+       "axesOrientationRasmol",
+       "axesUnitCell",
+       "axesWindow",
+       "bondModeOr",
+       "bondPicking",
+       "bonds",
+       "bond",
+       "cartoonBaseEdges",
+       "cartoonsFancy",
+       "cartoonFancy",
+       "cartoonLadders",
+       "cartoonRibose",
+       "cartoonRockets",
+       "chainCaseSensitive",
+       "colorRasmol",
+       "debugScript",
+       "defaultStructureDssp",
+       "disablePopupMenu",
+       "displayCellParameters",
+       "dotsSelectedOnly",
+       "dotSurface",
+       "dragSelected",
+       "drawHover",
+       "drawPicking",
+       "dsspCalculateHydrogenAlways",
+       "ellipsoidArcs",
+       "ellipsoidArrows",
+       "ellipsoidAxes",
+       "ellipsoidBall",
+       "ellipsoidDots",
+       "ellipsoidFill",
+       "fileCaching",
+       "fontCaching",
+       "fontScaling",
+       "forceAutoBond",
+       "fractionalRelative",
+   // see commands     "frank",
+       "greyscaleRendering",
+       "hbondsBackbone",
+       "hbondsRasmol",
+       "hbondsSolid",
+       "hetero",
+       "hideNameInPopup",
+       "hideNavigationPoint",
+       "hideNotSelected",
+       "highResolution",
+       "hydrogen",
+       "hydrogens",
+       "imageState",
+       "isKiosk",
+       "isosurfaceKey",
+       "isosurfacePropertySmoothing",
+       "isosurfacePropertySmoothingPower",
+       "justifyMeasurements",
+       "languageTranslation",
+       "legacyAutoBonding",
+       "legacyHAddition",
+       "logCommands",
+       "logGestures",
+       "measureAllModels",
+       "measurementLabels",
+       "measurementNumbers",
+       "messageStyleChime",
+       "minimizationRefresh",
+       "minimizationSilent",
+       "modelkitMode",
+       "monitorEnergy",
+       "multipleBondRadiusFactor",
+       "multipleBondSpacing",
+       "multiProcessor",
+       "navigateSurface",
+       "navigationMode",
+       "navigationPeriodic",
+       "partialDots",
+       "pdbAddHydrogens",
+       "pdbGetHeader",
+       "pdbSequential",
+       "perspectiveDepth",
+       "preserveState",
+       "rangeSelected",
+       "redoMove",
+       "refreshing",
+       "ribbonBorder",
+       "rocketBarrels",
+       "saveProteinStructureState",
+       "scriptQueue",
+       "selectAllModels",
+       "selectHetero",
+       "selectHydrogen",
+   // see commands     "selectionHalos",
+       "showAxes",
+       "showBoundBox",
+       "showBoundingBox",
+       "showFrank",
+       "showHiddenSelectionHalos",
+       "showHydrogens",
+       "showKeyStrokes",
+       "showMeasurements",
+       "showMultipleBonds",
+       "showNavigationPointAlways",
+   // see intparam      "showScript",
+       "showTiming",
+       "showUnitcell",
+       "slabByAtom",
+       "slabByMolecule",
+       "slabEnabled",
+       "smartAromatic",
+       "solvent",
+       "solventProbe",
+   // see intparam     "specular",
+       "ssBondsBackbone",
+       "statusReporting",
+       "strutsMultiple",
+       "syncMouse",
+       "syncScript",
+       "testFlag1",
+       "testFlag2",
+       "testFlag3",
+       "testFlag4",
+       "traceAlpha",
+       "twistedSheets",
+       "undo",
+       "undoMove",
+       "useArcBall",
+       "useMinimizationThread",
+       "useNumberLocalization",
+       "waitForMoveTo",
+       "windowCentered",
+       "wireframeRotation",
+       "zeroBasedXyzRasmol",
+       "zoomEnabled",
+       "zoomHeight",
+       "zoomLarge",
+       "zShade",
+        
+    };
+    
+    int[] iTokens = {
+        andequals,                          // "+="
+        -1,                                 // "-="
+        -1,                                 // "*="
+        -1,                                 // "/="
+        -1,                                 // "\\="
+        -1,                                 // "&="
+        -1,                                 // "|="
+        opNot,                              // "not"
+        -1,                                 // "!"
+        opXor,                              // "xor"
+         //no-- don't do this; it interferes with define
+         // "~"
+        opToggle,                           // "tog"
+        opLT,                               // "<"
+        opLE,                               // "<="
+        opGE,                               // ">="
+        opGT,                               // ">"
+        opNE,                               // "!="
+        -1,                                 // "<>"
+        within,                             // "within"
+        per,                                // "."
+        perper,                             // ".."
+        leftsquare,                         // "["
+        rightsquare,                        // "]"
+        leftbrace,                          // "{"
+        rightbrace,                         // "}"
+        dollarsign,                         // "$"
+        percent,                            // "%"
+        semicolon,                          // ";"
+        plusPlus,                           // "++"
+        minusMinus,                         // "--"
+        timestimes,                         // "**"
+        leftdivide,                         // "\\"
+         
+         // commands
+         
+        animation,                          // "animation"
+        -1,                                 // "anim"
+        assign,                             // "assign"
+        axes,                               // "axes"
+        backbone,                           // "backbone"
+        background,                         // "background"
+        bind,                               // "bind"
+        bondorder,                          // "bondorder"
+        boundbox,                           // "boundbox"
+        -1,                                 // "boundingBox"
+        breakcmd,                           // "break"
+        calculate,                          // "calculate"
+        capture,                            // "capture"
+        cartoon,                            // "cartoon"
+        -1,                                 // "cartoons"
+        casecmd,                            // "case"
+        catchcmd,                           // "catch"
+        cd,                                 // "cd"
+        center,                             // "center"
+        -1,                                 // "centre"
+        centerat,                           // "centerat"
+        cgo,                                // "cgo"
+        color,                              // "color"
+        -1,                                 // "colour"
+        compare,                            // "compare"
+        configuration,                      // "configuration"
+        -1,                                 // "conformation"
+        -1,                                 // "config"
+        connect,                            // "connect"
+        console,                            // "console"
+        contact,                            // "contact"
+        -1,                                 // "contacts"
+        continuecmd,                        // "continue"
+        data,                               // "data"
+        defaultcmd,                         // "default"
+        define,                             // "define"
+        -1,                                 // "@"
+        delay,                              // "delay"
+        delete,                             // "delete"
+        density,                            // "density"
+        depth,                              // "depth"
+        dipole,                             // "dipole"
+        -1,                                 // "dipoles"
+        display,                            // "display"
+        dot,                                // "dot"
+        dots,                               // "dots"
+        draw,                               // "draw"
+        echo,                               // "echo"
+        ellipsoid,                          // "ellipsoid"
+        -1,                                 // "ellipsoids"
+        elsecmd,                            // "else"
+        elseif,                             // "elseif"
+        end,                                // "end"
+        endifcmd,                           // "endif"
+        exit,                               // "exit"
+        file,                               // "file"
+        -1,                                 // "files"
+        font,                               // "font"
+        forcmd,                             // "for"
+        format,                             // "format"
+        frame,                              // "frame"
+        -1,                                 // "frames"
+        frank,                              // "frank"
+        function,                           // "function"
+        -1,                                 // "functions"
+        geosurface,                         // "geosurface"
+        getproperty,                        // "getProperty"
+        gotocmd,                            // "goto"
+        halo,                               // "halo"
+        -1,                                 // "halos"
+        helix,                              // "helix"
+        helixalpha,                         // "helixalpha"
+        helix310,                           // "helix310"
+        helixpi,                            // "helixpi"
+        hbond,                              // "hbond"
+        -1,                                 // "hbonds"
+        help,                               // "help"
+        hide,                               // "hide"
+        history,                            // "history"
+        hover,                              // "hover"
+        ifcmd,                              // "if"
+        in,                                 // "in"
+        initialize,                         // "initialize"
+        invertSelected,                     // "invertSelected"
+        isosurface,                         // "isosurface"
+        javascript,                         // "javascript"
+        label,                              // "label"
+        -1,                                 // "labels"
+        lcaocartoon,                        // "lcaoCartoon"
+        -1,                                 // "lcaoCartoons"
+        load,                               // "load"
+        log,                                // "log"
+        loop,                               // "loop"
+        measure,                            // "measure"
+        -1,                                 // "measures"
+        -1,                                 // "monitor"
+        -1,                                 // "monitors"
+        meshRibbon,                         // "meshribbon"
+        -1,                                 // "meshribbons"
+        message,                            // "message"
+        minimize,                           // "minimize"
+        -1,                                 // "minimization"
+        mo,                                 // "mo"
+        model,                              // "model"
+        -1,                                 // "models"
+        modulation,                         // "modulation"
+        move,                               // "move"
+        moveto,                             // "moveTo"
+        navigate,                           // "navigate"
+        -1,                                 // "navigation"
+        origin,                             // "origin"
+        out,                                // "out"
+        parallel,                           // "parallel"
+        pause,                              // "pause"
+        -1,                                 // "wait"
+        plot,                               // "plot"
+        plot3d,                             // "plot3d"
+        pmesh,                              // "pmesh"
+        polygon,                            // "polygon"
+        polyhedra,                          // "polyhedra"
+        print,                              // "print"
+        process,                            // "process"
+        prompt,                             // "prompt"
+        quaternion,                         // "quaternion"
+        -1,                                 // "quaternions"
+        quit,                               // "quit"
+        ramachandran,                       // "ramachandran"
+        -1,                                 // "rama"
+        refresh,                            // "refresh"
+        reset,                              // "reset"
+        -1,                                 // "unset"
+        restore,                            // "restore"
+        restrict,                           // "restrict"
+        returncmd,                          // "return"
+        ribbon,                             // "ribbon"
+        -1,                                 // "ribbons"
+        rocket,                             // "rocket"
+        -1,                                 // "rockets"
+        rotate,                             // "rotate"
+        rotateSelected,                     // "rotateSelected"
+        save,                               // "save"
+        select,                             // "select"
+        selectionhalos,                     // "selectionHalos"
+        -1,                                 // "selectionHalo"
+        -1,                                 // "showSelections"
+        sheet,                              // "sheet"
+        show,                               // "show"
+        slab,                               // "slab"
+        spacefill,                          // "spacefill"
+        -1,                                 // "cpk"
+        spin,                               // "spin"
+        ssbond,                             // "ssbond"
+        -1,                                 // "ssbonds"
+        star,                               // "star"
+        -1,                                 // "stars"
+        step,                               // "step"
+        -1,                                 // "steps"
+        stereo,                             // "stereo"
+        strands,                            // "strand"
+        -1,                                 // "strands"
+        structure,                          // "structure"
+        -1,                                 // "_structure"
+        strucno,                            // "strucNo"
+        struts,                             // "struts"
+        -1,                                 // "strut"
+        subset,                             // "subset"
+        sync,                               // "synchronize"
+        -1,                                 // "sync"
+        trace,                              // "trace"
+        translate,                          // "translate"
+        translateSelected,                  // "translateSelected"
+        trycmd,                             // "try"
+        unbind,                             // "unbind"
+        unitcell,                           // "unitcell"
+        var,                                // "var"
+        vector,                             // "vector"
+        -1,                                 // "vectors"
+        vibration,                          // "vibration"
+        whilecmd,                           // "while"
+        wireframe,                          // "wireframe"
+        write,                              // "write"
+        zap,                                // "zap"
+        zoom,                               // "zoom"
+        zoomTo,                             // "zoomTo"
+         
+         // show parameters
+         
+        atoms,                              // "atom"
+        -1,                                 // "atoms"
+        axis,                               // "axis"
+        axisangle,                          // "axisangle"
+        basepair,                           // "basepair"
+        -1,                                 // "basepairs"
+        orientation,                        // "orientation"
+        -1,                                 // "orientations"
+        pdbheader,                          // "pdbheader"
+        polymer,                            // "polymer"
+        -1,                                 // "polymers"
+        residue,                            // "residue"
+        -1,                                 // "residues"
+        rotation,                           // "rotation"
+        row,                                // "row"
+        sequence,                           // "sequence"
+        shape,                              // "shape"
+        state,                              // "state"
+        symbol,                             // "symbol"
+        symmetry,                           // "symmetry"
+        spacegroup,                         // "spaceGroup"
+        transform,                          // "transform"
+        translation,                        // "translation"
+        url,                                // "url"
+         
+         // misc
+         
+        abs,                                // "abs"
+        absolute,                           // "absolute"
+        acos,                               // "acos"
+        add,                                // "add"
+        adpmax,                             // "adpmax"
+        adpmin,                             // "adpmin"
+        align,                              // "align"
+        altloc,                             // "altloc"
+        -1,                                 // "altlocs"
+        ambientocclusion,                   // "ambientOcclusion"
+        amino,                              // "amino"
+        angle,                              // "angle"
+        array,                              // "array"
+        as,                                 // "as"
+        atomid,                             // "atomID"
+        -1,                                 // "_atomID"
+        -1,                                 // "_a"
+        atomindex,                          // "atomIndex"
+        atomname,                           // "atomName"
+        atomno,                             // "atomno"
+        atomtype,                           // "atomType"
+        atomx,                              // "atomX"
+        atomy,                              // "atomY"
+        atomz,                              // "atomZ"
+        average,                            // "average"
+        babel,                              // "babel"
+        babel21,                            // "babel21"
+        back,                               // "back"
+        backlit,                            // "backlit"
+        balls,                              // "balls"
+        basemodel,                          // "baseModel"
+        best,                               // "best"
+        bin,                                // "bin"
+        bondcount,                          // "bondCount"
+        bottom,                             // "bottom"
+        branch,                             // "branch"
+        brillouin,                          // "brillouin"
+        -1,                                 // "bzone"
+        -1,                                 // "wignerSeitz"
+        cache,                              // "cache"
+        carbohydrate,                       // "carbohydrate"
+        cell,                               // "cell"
+        chain,                              // "chain"
+        -1,                                 // "chains"
+        chainno,                            // "chainNo"
+        chemicalshift,                      // "chemicalShift"
+        -1,                                 // "cs"
+        clash,                              // "clash"
+        clear,                              // "clear"
+        clickable,                          // "clickable"
+        clipboard,                          // "clipboard"
+        connected,                          // "connected"
+        context,                            // "context"
+        constraint,                         // "constraint"
+        contourlines,                       // "contourLines"
+        coord,                              // "coord"
+        -1,                                 // "coordinates"
+        -1,                                 // "coords"
+        cos,                                // "cos"
+        cross,                              // "cross"
+        covalentradius,                     // "covalentRadius"
+        -1,                                 // "covalent"
+        direction,                          // "direction"
+        displacement,                       // "displacement"
+        displayed,                          // "displayed"
+        distance,                           // "distance"
+        div,                                // "div"
+        dna,                                // "DNA"
+        dotted,                             // "dotted"
+        dssp,                               // "DSSP"
+        element,                            // "element"
+        elemno,                             // "elemno"
+        elemisono,                          // "_e"
+        error,                              // "error"
+        exportscale,                        // "exportScale"
+        fill,                               // "fill"
+        find,                               // "find"
+        fixedtemp,                          // "fixedTemperature"
+        forcefield,                         // "forcefield"
+        formalcharge,                       // "formalCharge"
+        -1,                                 // "charge"
+        eta,                                // "eta"
+        front,                              // "front"
+        frontlit,                           // "frontlit"
+        frontonly,                          // "frontOnly"
+        fullylit,                           // "fullylit"
+        fracx,                              // "fx"
+        fracy,                              // "fy"
+        fracz,                              // "fz"
+        fracxyz,                            // "fxyz"
+        fux,                                // "fux"
+        fuy,                                // "fuy"
+        fuz,                                // "fuz"
+        fuxyz,                              // "fuxyz"
+        group,                              // "group"
+        -1,                                 // "groups"
+        group1,                             // "group1"
+        groupid,                            // "groupID"
+        -1,                                 // "_groupID"
+        -1,                                 // "_g"
+        groupindex,                         // "groupIndex"
+        hidden,                             // "hidden"
+        highlight,                          // "highlight"
+        hkl,                                // "hkl"
+        hydrophobicity,                     // "hydrophobicity"
+        -1,                                 // "hydrophobic"
+        -1,                                 // "hydro"
+        id,                                 // "id"
+        identify,                           // "identify"
+        -1,                                 // "ident"
+        image,                              // "image"
+        info,                               // "info"
+        inline,                             // "inline"
+        insertion,                          // "insertion"
+        -1,                                 // "insertions"
+        intramolecular,                     // "intramolecular"
+        -1,                                 // "intra"
+        intermolecular,                     // "intermolecular"
+        -1,                                 // "inter"
+        bondingradius,                      // "bondingRadius"
+        -1,                                 // "ionicRadius"
+        -1,                                 // "ionic"
+        isaromatic,                         // "isAromatic"
+        jmol,                               // "Jmol"
+        json,                               // "JSON"
+        join,                               // "join"
+        keys,                               // "keys"
+        last,                               // "last"
+        left,                               // "left"
+        length,                             // "length"
+        lines,                              // "lines"
+        list,                               // "list"
+        magneticshielding,                  // "magneticShielding"
+        -1,                                 // "ms"
+        mass,                               // "mass"
+        max,                                // "max"
+        mep,                                // "mep"
+        mesh,                               // "mesh"
+        middle,                             // "middle"
+        min,                                // "min"
+        mlp,                                // "mlp"
+        mode,                               // "mode"
+        modify,                             // "modify"
+        modifyorcreate,                     // "modifyOrCreate"
+        molecule,                           // "molecule"
+        -1,                                 // "molecules"
+        modelindex,                         // "modelIndex"
+        monomer,                            // "monomer"
+        morph,                              // "morph"
+        movie,                              // "movie"
+        mouse,                              // "mouse"
+        mul,                                // "mul"
+        mul3,                               // "mul3"
+        nci,                                // "nci"
+        next,                               // "next"
+        nodots,                             // "noDots"
+        nofill,                             // "noFill"
+        nomesh,                             // "noMesh"
+        none,                               // "none"
+        -1,                                 // "null"
+        -1,                                 // "inherit"
+        normal,                             // "normal"
+        nocontourlines,                     // "noContourLines"
+        nonequivalent,                      // "nonequivalent"
+        notfrontonly,                       // "notFrontOnly"
+        notriangles,                        // "noTriangles"
+        now,                                // "now"
+        nucleic,                            // "nucleic"
+        occupancy,                          // "occupancy"
+        omega,                              // "omega"
+        only,                               // "only"
+        opaque,                             // "opaque"
+        options,                            // "options"
+        partialcharge,                      // "partialCharge"
+        phi,                                // "phi"
+        plane,                              // "plane"
+        -1,                                 // "planar"
+        play,                               // "play"
+        playrev,                            // "playRev"
+        point,                              // "point"
+        -1,                                 // "points"
+        pointgroup,                         // "pointGroup"
+        polymerlength,                      // "polymerLength"
+        pop,                                // "pop"
+        prev,                               // "previous"
+        -1,                                 // "prev"
+        probe,                              // "probe"
+        property,                           // "property"
+        -1,                                 // "properties"
+        protein,                            // "protein"
+        psi,                                // "psi"
+        purine,                             // "purine"
+        push,                               // "push"
+        pymol,                              // "PyMOL"
+        pyrimidine,                         // "pyrimidine"
+        random,                             // "random"
+        range,                              // "range"
+        rasmol,                             // "rasmol"
+        replace,                            // "replace"
+        resno,                              // "resno"
+        resume,                             // "resume"
+        rewind,                             // "rewind"
+        reverse,                            // "reverse"
+        right,                              // "right"
+        rna,                                // "RNA"
+        rock,                               // "rock"
+        rubberband,                         // "rubberband"
+        sasurface,                          // "saSurface"
+        saved,                              // "saved"
+        scale,                              // "scale"
+        scene,                              // "scene"
+        search,                             // "search"
+        -1,                                 // "smarts"
+        selected,                           // "selected"
+        shapely,                            // "shapely"
+        sidechain,                          // "sidechain"
+        sin,                                // "sin"
+        site,                               // "site"
+        size,                               // "size"
+        smiles,                             // "smiles"
+        substructure,                       // "substructure"
+        solid,                              // "solid"
+        sort,                               // "sort"
+        specialposition,                    // "specialPosition"
+        sqrt,                               // "sqrt"
+        split,                              // "split"
+        starscale,                          // "starScale"
+        stddev,                             // "stddev"
+        straightness,                       // "straightness"
+        strucid,                            // "structureId"
+        supercell,                          // "supercell"
+        sub,                                // "sub"
+        sum,                                // "sum"
+        sum2,                               // "sum2"
+        surface,                            // "surface"
+        surfacedistance,                    // "surfaceDistance"
+        symop,                              // "symop"
+        screenx,                            // "sx"
+        screeny,                            // "sy"
+        screenz,                            // "sz"
+        screenxyz,                          // "sxyz"
+        temperature,                        // "temperature"
+        -1,                                 // "relativeTemperature"
+        tensor,                             // "tensor"
+        theta,                              // "theta"
+        thismodel,                          // "thisModel"
+        ticks,                              // "ticks"
+        top,                                // "top"
+        torsion,                            // "torsion"
+        trajectory,                         // "trajectory"
+        -1,                                 // "trajectories"
+        translucent,                        // "translucent"
+        triangles,                          // "triangles"
+        trim,                               // "trim"
+        type,                               // "type"
+        unitx,                              // "ux"
+        unity,                              // "uy"
+        unitz,                              // "uz"
+        unitxyz,                            // "uxyz"
+        user,                               // "user"
+        valence,                            // "valence"
+        vanderwaals,                        // "vanderWaals"
+        -1,                                 // "vdw"
+        -1,                                 // "vdwRadius"
+        visible,                            // "visible"
+        volume,                             // "volume"
+        vibx,                               // "vx"
+        viby,                               // "vy"
+        vibz,                               // "vz"
+        vibxyz,                             // "vxyz"
+        xyz,                                // "xyz"
+        w,                                  // "w"
+        x,                                  // "x"
+        y,                                  // "y"
+        z,                                  // "z"
+
+                // more misc parameters
+        addhydrogens,                       //        "addHydrogens"
+        allconnected,                       //        "allConnected"
+        angstroms,                          //        "angstroms"
+        anisotropy,                         //        "anisotropy"
+        append,                             //        "append"
+        arc,                                //        "arc"
+        area,                               //        "area"
+        aromatic,                           //        "aromatic"
+        arrow,                              //        "arrow"
+        auto,                               //        "auto"
+        barb,                               //        "barb"
+        binary,                             //        "binary"
+        blockdata,                          //        "blockData"
+        cancel,                             //        "cancel"
+        cap,                                //        "cap"
+        cavity,                             //        "cavity"
+        centroid,                           //        "centroid"
+        check,                              //        "check"
+        chemical,                           //        "chemical"
+        circle,                             //        "circle"
+        collapsed,                          //        "collapsed"
+        col,                                //        "col"
+        colorscheme,                        //        "colorScheme"
+        command,                            //        "command"
+        commands,                           //        "commands"
+        contour,                            //        "contour"
+        contours,                           //        "contours"
+        corners,                            //        "corners"
+        count,                              //        "count"
+        criterion,                          //        "criterion"
+        create,                             //        "create"
+        crossed,                            //        "crossed"
+        curve,                              //        "curve"
+        cutoff,                             //        "cutoff"
+        cylinder,                           //        "cylinder"
+        diameter,                           //        "diameter"
+        discrete,                           //        "discrete"
+        distancefactor,                     //        "distanceFactor"
+        downsample,                         //        "downsample"
+        drawing,                            //        "drawing"
+        eccentricity,                       //        "eccentricity"
+        ed,                                 //        "ed"
+        edges,                              //        "edges"
+        energy,                             //        "energy"
+        exitjmol,                           //        "exitJmol"
+        facecenteroffset,                   //        "faceCenterOffset"
+        filter,                             //        "filter"
+        first,                              //        "first"
+        fixed,                              //        "fixed"
+        -1,                                 //        "fix"
+        flat,                               //        "flat"
+        fps,                                //        "fps"
+        from,                               //        "from"
+        frontedges,                         //        "frontEdges"
+        full,                               //        "full"
+        fullplane,                          //        "fullPlane"
+        functionxy,                         //        "functionXY"
+        functionxyz,                        //        "functionXYZ"
+        gridpoints,                         //        "gridPoints"
+        homo,                               //        "homo"
+        ignore,                             //        "ignore"
+        inchi,                              //        "InChI"
+        inchikey,                           //        "InChIKey"
+        increment,                          //        "increment"
+        insideout,                          //        "insideout"
+        interior,                           //        "interior"
+        intersection,                       //        "intersection"
+        -1,                                 //        "intersect"
+        internal,                           //        "internal"
+        lattice,                            //        "lattice"
+        line,                               //        "line"
+        linedata,                           //        "lineData"
+        link,                               //        "link"
+        lobe,                               //        "lobe"
+        lonepair,                           //        "lonePair"
+        lp,                                 //        "lp"
+        lumo,                               //        "lumo"
+        manifest,                           //        "manifest"
+        mapproperty,                        //        "mapProperty"
+        -1,                                 //        "map"
+        maxset,                             //        "maxSet"
+        menu,                               //        "menu"
+        minset,                             //        "minSet"
+        modelbased,                         //        "modelBased"
+        molecular,                          //        "molecular"
+        mrc,                                //        "mrc"
+        msms,                               //        "msms"
+        name,                               //        "name"
+        nmr,                                //        "nmr"
+        nocross,                            //        "noCross"
+        nodebug,                            //        "noDebug"
+        noedges,                            //        "noEdges"
+        nohead,                             //        "noHead"
+        noload,                             //        "noLoad"
+        noplane,                            //        "noPlane"
+        object,                             //        "object"
+        obj,                                //        "obj"
+        offset,                             //        "offset"
+        offsetside,                         //        "offsetSide"
+        once,                               //        "once"
+        orbital,                            //        "orbital"
+        atomicorbital,                      //        "atomicOrbital"
+        packed,                             //        "packed"
+        palindrome,                         //        "palindrome"
+        parameters,                         //        "parameters"
+        path,                               //        "path"
+        pdb,                                //        "pdb"
+        period,                             //        "period"
+        -1,                                 //        "periodic"
+        perpendicular,                      //        "perpendicular"
+        -1,                                 //        "perp"
+        phase,                              //        "phase"
+        pocket,                             //        "pocket"
+        pointsperangstrom,                  //        "pointsPerAngstrom"
+        radical,                            //        "radical"
+        rad,                                //        "rad"
+        reference,                          //        "reference"
+        remove,                             //        "remove"
+        resolution,                         //        "resolution"
+        reversecolor,                       //        "reverseColor"
+        rotate45,                           //        "rotate45"
+        selection,                          //        "selection"
+        sigma,                              //        "sigma"
+        sign,                               //        "sign"
+        silent,                             //        "silent"
+        sphere,                             //        "sphere"
+        squared,                            //        "squared"
+        stdinchi,                           //        "stdInChI"
+        stdinchikey,                        //        "stdInChIKey"
+        stop,                               //        "stop"
+        title,                              //        "title"
+        titleformat,                        //        "titleFormat"
+        to,                                 //        "to"
+        val,                                //        "value"
+        variable,                           //        "variable"
+        variables,                          //        "variables"
+        vertices,                           //        "vertices"
+        width,                              //        "width"
+
+                // set params
+
+        backgroundmodel,                    //        "backgroundModel"
+        celshading,                         //        "celShading"
+        celshadingpower,                    //        "celShadingPower"
+        debug,                              //        "debug"
+        defaultlattice,                     //        "defaultLattice"
+        measurements,                       //        "measurements"
+        -1,                                 //        "measurement"
+        scale3d,                            //        "scale3D"
+        togglelabel,                        //        "toggleLabel"
+        usercolorscheme,                    //        "userColorScheme"
+        throwcmd,                           //        "throw"
+        timeout,                            //        "timeout"
+        -1,                                 //        "timeouts"
+                
+                // string
+                
+        animationmode,                      //        "animationMode"
+        appletproxy,                        //        "appletProxy"
+        atomtypes,                          //        "atomTypes"
+        axescolor,                          //        "axesColor"
+        axis1color,                         //        "axis1Color"
+        axis2color,                         //        "axis2Color"
+        axis3color,                         //        "axis3Color"
+        backgroundcolor,                    //        "backgroundColor"
+        bondmode,                           //        "bondmode"
+        boundboxcolor,                      //        "boundBoxColor"
+        -1,                                 //        "boundingBoxColor"
+        currentlocalpath,                   //        "currentLocalPath"
+        dataseparator,                      //        "dataSeparator"
+        defaultanglelabel,                  //        "defaultAngleLabel"
+        defaultcolorscheme,                 //        "defaultColorScheme"
+        -1,                                 //        "defaultColors"
+        defaultdirectory,                   //        "defaultDirectory"
+        defaultdistancelabel,               //        "defaultDistanceLabel"
+        defaultdropscript,                  //        "defaultDropScript"
+        defaultlabelpdb,                    //        "defaultLabelPDB"
+        defaultlabelxyz,                    //        "defaultLabelXYZ"
+        defaultloadfilter,                  //        "defaultLoadFilter"
+        defaultloadscript,                  //        "defaultLoadScript"
+        defaults,                           //        "defaults"
+        defaulttorsionlabel,                //        "defaultTorsionLabel"
+        defaultvdw,                         //        "defaultVDW"
+        drawfontsize,                       //        "drawFontSize"
+        edsurlcutoff,                       //        "edsUrlCutoff"
+        edsurlformat,                       //        "edsUrlFormat"
+        energyunits,                        //        "energyUnits"
+        filecachedirectory,                 //        "fileCacheDirectory"
+        fontsize,                           //        "fontsize"
+        helppath,                           //        "helpPath"
+        hoverlabel,                         //        "hoverLabel"
+        language,                           //        "language"
+        loadformat,                         //        "loadFormat"
+        loadligandformat,                   //        "loadLigandFormat"
+        logfile,                            //        "logFile"
+        measurementunits,                   //        "measurementUnits"
+        nmrpredictformat,                   //        "nmrPredictFormat"
+        nmrurlformat,                       //        "nmrUrlFormat"
+        pathforallfiles,                    //        "pathForAllFiles"
+        picking,                            //        "picking"
+        pickingstyle,                       //        "pickingStyle"
+        picklabel,                          //        "pickLabel"
+        platformspeed,                      //        "platformSpeed"
+        propertycolorscheme,                //        "propertyColorScheme"
+        quaternionframe,                    //        "quaternionFrame"
+        smilesurlformat,                    //        "smilesUrlFormat"
+        smiles2dimageformat,                //        "smiles2dImageFormat"
+        unitcellcolor,                      //        "unitCellColor"
+
+                // float
+                
+        axesscale,                          //        "axesScale"
+        -1,                                 //        "axisScale"
+        bondtolerance,                      //        "bondTolerance"
+        cameradepth,                        //        "cameraDepth"
+        defaultdrawarrowscale,              //        "defaultDrawArrowScale"
+        defaulttranslucent,                 //        "defaultTranslucent"
+        dipolescale,                        //        "dipoleScale"
+        ellipsoidaxisdiameter,              //        "ellipsoidAxisDiameter"
+        gestureswipefactor,                 //        "gestureSwipeFactor"
+        hbondsangleminimum,                 //        "hbondsAngleMinimum"
+        hbondsdistancemaximum,              //        "hbondsDistanceMaximum"
+        hoverdelay,                         //        "hoverDelay"
+        loadatomdatatolerance,              //        "loadAtomDataTolerance"
+        minbonddistance,                    //        "minBondDistance"
+        minimizationcriterion,              //        "minimizationCriterion"
+        modulationscale,                    //        "modulationScale"
+        mousedragfactor,                    //        "mouseDragFactor"
+        mousewheelfactor,                   //        "mouseWheelFactor"
+        navfps,                             //        "navFPS"
+        navigationdepth,                    //        "navigationDepth"
+        navigationslab,                     //        "navigationSlab"
+        navigationspeed,                    //        "navigationSpeed"
+        navx,                               //        "navX"
+        navy,                               //        "navY"
+        navz,                               //        "navZ"
+        particleradius,                     //        "particleRadius"
+        pointgroupdistancetolerance,        //        "pointGroupDistanceTolerance"
+        pointgrouplineartolerance,          //        "pointGroupLinearTolerance"
+        radius,                             //        "radius"
+        rotationradius,                     //        "rotationRadius"
+        scaleangstromsperinch,              //        "scaleAngstromsPerInch"
+        sheetsmoothing,                     //        "sheetSmoothing"
+        slabrange,                          //        "slabRange"
+        solventproberadius,                 //        "solventProbeRadius"
+        spinfps,                            //        "spinFPS"
+        spinx,                              //        "spinX"
+        spiny,                              //        "spinY"
+        spinz,                              //        "spinZ"
+        stereodegrees,                      //        "stereoDegrees"
+        strutdefaultradius,                 //        "strutDefaultRadius"
+        strutlengthmaximum,                 //        "strutLengthMaximum"
+        vectorscale,                        //        "vectorScale"
+        vectorsymmetry,                     //        "vectorSymmetry"
+        vibrationperiod,                    //        "vibrationPeriod"
+        vibrationscale,                     //        "vibrationScale"
+        visualrange,                        //        "visualRange"
+
+                // int
+
+        ambientpercent,                     //        "ambientPercent"
+        -1,                                 //        "ambient"
+        animationfps,                       //        "animationFps"
+        axesmode,                           //        "axesMode"
+        bondradiusmilliangstroms,           //        "bondRadiusMilliAngstroms"
+        bondingversion,                     //        "bondingVersion"
+        delaymaximumms,                     //        "delayMaximumMs"
+        diffusepercent,                     //        "diffusePercent"
+        -1,                                 //        "diffuse"
+        dotdensity,                         //        "dotDensity"
+        dotscale,                           //        "dotScale"
+        ellipsoiddotcount,                  //        "ellipsoidDotCount"
+        helixstep,                          //        "helixStep"
+        hermitelevel,                       //        "hermiteLevel"
+        historylevel,                       //        "historyLevel"
+        lighting,                           //        "lighting"
+        loglevel,                           //        "logLevel"
+        meshscale,                          //        "meshScale"
+        minimizationsteps,                  //        "minimizationSteps"
+        minpixelselradius,                  //        "minPixelSelRadius"
+        percentvdwatom,                     //        "percentVdwAtom"
+        perspectivemodel,                   //        "perspectiveModel"
+        phongexponent,                      //        "phongExponent"
+        pickingspinrate,                    //        "pickingSpinRate"
+        propertyatomnumberfield,            //        "propertyAtomNumberField"
+        propertyatomnumbercolumncount,      //        "propertyAtomNumberColumnCount"
+        propertydatacolumncount,            //        "propertyDataColumnCount"
+        propertydatafield,                  //        "propertyDataField"
+        repaintwaitms,                      //        "repaintWaitMs"
+        ribbonaspectratio,                  //        "ribbonAspectRatio"
+        scriptreportinglevel,               //        "scriptReportingLevel"
+        showscript,                         //        "showScript"
+        smallmoleculemaxatoms,              //        "smallMoleculeMaxAtoms"
+        specular,                           //        "specular"
+        specularexponent,                   //        "specularExponent"
+        specularpercent,                    //        "specularPercent"
+        -1,                                 //        "specPercent"
+        specularpower,                      //        "specularPower"
+        -1,                                 //        "specpower"
+        strandcount,                        //        "strandCount"
+        strandcountformeshribbon,           //        "strandCountForMeshRibbon"
+        strandcountforstrands,              //        "strandCountForStrands"
+        strutspacing,                       //        "strutSpacing"
+        zdepth,                             //        "zDepth"
+        zslab,                              //        "zSlab"
+        zshadepower,                        //        "zshadePower"
+
+                // boolean
+
+        allowembeddedscripts,               //        "allowEmbeddedScripts"
+        allowgestures,                      //        "allowGestures"
+        allowkeystrokes,                    //        "allowKeyStrokes"
+        allowmodelkit,                      //        "allowModelKit"
+        allowmoveatoms,                     //        "allowMoveAtoms"
+        allowmultitouch,                    //        "allowMultiTouch"
+        allowrotateselected,                //        "allowRotateSelected"
+        antialiasdisplay,                   //        "antialiasDisplay"
+        antialiasimages,                    //        "antialiasImages"
+        antialiastranslucent,               //        "antialiasTranslucent"
+        appendnew,                          //        "appendNew"
+        applysymmetrytobonds,               //        "applySymmetryToBonds"
+        atompicking,                        //        "atomPicking"
+        autobond,                           //        "autobond"
+        autofps,                            //        "autoFPS"
+//                "autoLoadOrientation"
+        axesmolecular,                      //        "axesMolecular"
+        axesorientationrasmol,              //        "axesOrientationRasmol"
+        axesunitcell,                       //        "axesUnitCell"
+        axeswindow,                         //        "axesWindow"
+        bondmodeor,                         //        "bondModeOr"
+        bondpicking,                        //        "bondPicking"
+        bonds,                              //        "bonds"
+        -1,                                 //        "bond"
+        cartoonbaseedges,                   //        "cartoonBaseEdges"
+        cartoonsfancy,                      //        "cartoonsFancy"
+        -1,                                 //        "cartoonFancy"
+        cartoonladders,                     //        "cartoonLadders"
+        cartoonribose,                      //        "cartoonRibose"
+        cartoonrockets,                     //        "cartoonRockets"
+        chaincasesensitive,                 //        "chainCaseSensitive"
+        colorrasmol,                        //        "colorRasmol"
+        debugscript,                        //        "debugScript"
+        defaultstructuredssp,               //        "defaultStructureDssp"
+        disablepopupmenu,                   //        "disablePopupMenu"
+        displaycellparameters,              //        "displayCellParameters"
+        dotsselectedonly,                   //        "dotsSelectedOnly"
+        dotsurface,                         //        "dotSurface"
+        dragselected,                       //        "dragSelected"
+        drawhover,                          //        "drawHover"
+        drawpicking,                        //        "drawPicking"
+        dsspcalchydrogen,                   //        "dsspCalculateHydrogenAlways"
+        ellipsoidarcs,                      //        "ellipsoidArcs"
+        ellipsoidarrows,                    //        "ellipsoidArrows"
+        ellipsoidaxes,                      //        "ellipsoidAxes"
+        ellipsoidball,                      //        "ellipsoidBall"
+        ellipsoiddots,                      //        "ellipsoidDots"
+        ellipsoidfill,                      //        "ellipsoidFill"
+        filecaching,                        //        "fileCaching"
+        fontcaching,                        //        "fontCaching"
+        fontscaling,                        //        "fontScaling"
+        forceautobond,                      //        "forceAutoBond"
+        fractionalrelative,                 //        "fractionalRelative"
+          // see commands     "frank"
+        greyscalerendering,                 //        "greyscaleRendering"
+        hbondsbackbone,                     //        "hbondsBackbone"
+        hbondsrasmol,                       //        "hbondsRasmol"
+        hbondssolid,                        //        "hbondsSolid"
+        hetero,                             //        "hetero"
+        hidenameinpopup,                    //        "hideNameInPopup"
+        hidenavigationpoint,                //        "hideNavigationPoint"
+        hidenotselected,                    //        "hideNotSelected"
+        highresolution,                     //        "highResolution"
+        hydrogen,                           //        "hydrogen"
+        -1,                                 //        "hydrogens"
+        imagestate,                         //        "imageState"
+        iskiosk,                            //        "isKiosk"
+        isosurfacekey,                      //        "isosurfaceKey"
+        isosurfacepropertysmoothing,        //        "isosurfacePropertySmoothing"
+        isosurfacepropertysmoothingpower,   //        "isosurfacePropertySmoothingPower"
+        justifymeasurements,                //        "justifyMeasurements"
+        languagetranslation,                //        "languageTranslation"
+        legacyautobonding,                  //        "legacyAutoBonding"
+        legacyhaddition,                    //        "legacyHAddition"
+        logcommands,                        //        "logCommands"
+        loggestures,                        //        "logGestures"
+        measureallmodels,                   //        "measureAllModels"
+        measurementlabels,                  //        "measurementLabels"
+        measurementnumbers,                 //        "measurementNumbers"
+        messagestylechime,                  //        "messageStyleChime"
+        minimizationrefresh,                //        "minimizationRefresh"
+        minimizationsilent,                 //        "minimizationSilent"
+        modelkitmode,                       //        "modelkitMode"
+        monitorenergy,                      //        "monitorEnergy"
+        multiplebondradiusfactor,           //        "multipleBondRadiusFactor"
+        multiplebondspacing,                //        "multipleBondSpacing"
+        multiprocessor,                     //        "multiProcessor"
+        navigatesurface,                    //        "navigateSurface"
+        navigationmode,                     //        "navigationMode"
+        navigationperiodic,                 //        "navigationPeriodic"
+        partialdots,                        //        "partialDots"
+        pdbaddhydrogens,                    //        "pdbAddHydrogens"
+        pdbgetheader,                       //        "pdbGetHeader"
+        pdbsequential,                      //        "pdbSequential"
+        perspectivedepth,                   //        "perspectiveDepth"
+        preservestate,                      //        "preserveState"
+        rangeselected,                      //        "rangeSelected"
+        redomove,                           //        "redoMove"
+        refreshing,                         //        "refreshing"
+        ribbonborder,                       //        "ribbonBorder"
+        rocketbarrels,                      //        "rocketBarrels"
+        saveproteinstructurestate,          //        "saveProteinStructureState"
+        scriptqueue,                        //        "scriptQueue"
+        selectallmodels,                    //        "selectAllModels"
+        selecthetero,                       //        "selectHetero"
+        selecthydrogen,                     //        "selectHydrogen"
+          // see commands     "selectionHalos"
+        showaxes,                           //        "showAxes"
+        showboundbox,                       //        "showBoundBox"
+        -1,                                 //        "showBoundingBox"
+        showfrank,                          //        "showFrank"
+        showhiddenselectionhalos,           //        "showHiddenSelectionHalos"
+        showhydrogens,                      //        "showHydrogens"
+        showkeystrokes,                     //        "showKeyStrokes"
+        showmeasurements,                   //        "showMeasurements"
+        showmultiplebonds,                  //        "showMultipleBonds"
+        shownavigationpointalways,          //        "showNavigationPointAlways"
+          // see intparam      "showScript"
+        showtiming,                         //        "showTiming"
+        showunitcell,                       //        "showUnitcell"
+        slabbyatom,                         //        "slabByAtom"
+        slabbymolecule,                     //        "slabByMolecule"
+        slabenabled,                        //        "slabEnabled"
+        smartaromatic,                      //        "smartAromatic"
+        solvent,                            //        "solvent"
+        solventprobe,                       //        "solventProbe"
+          // see intparam     "specular"
+        ssbondsbackbone,                    //        "ssBondsBackbone"
+        statusreporting,                    //        "statusReporting"
+        strutsmultiple,                     //        "strutsMultiple"
+        syncmouse,                          //        "syncMouse"
+        syncscript,                         //        "syncScript"
+        testflag1,                          //        "testFlag1"
+        testflag2,                          //        "testFlag2"
+        testflag3,                          //        "testFlag3"
+        testflag4,                          //        "testFlag4"
+        tracealpha,                         //        "traceAlpha"
+        twistedsheets,                      //        "twistedSheets"
+        undo,                               //        "undo"
+        undomove,                           //        "undoMove"
+        usearcball,                         //        "useArcBall"
+        useminimizationthread,              //        "useMinimizationThread"
+        usenumberlocalization,              //        "useNumberLocalization"
+        waitformoveto,                      //        "waitForMoveTo"
+        windowcentered,                     //        "windowCentered"
+        wireframerotation,                  //        "wireframeRotation"
+        zerobasedxyzrasmol,                 //        "zeroBasedXyzRasmol"
+        zoomenabled,                        //        "zoomEnabled"
+        zoomheight,                         //        "zoomHeight"
+        zoomlarge,                          //        "zoomLarge"
+        zshade,                             //        "zShade"
+        
+    };
+    
+
+    if (sTokens.length != iTokens.length)
+      Logger.error("sTokens.length ("+sTokens.length+") != iTokens.length! ("+iTokens.length+")");
+
+    n = sTokens.length;
+    for (int i = 0; i < n; i++) {
+      sTok = sTokens[i];
+      lcase = sTok.toLowerCase();
+      int t = iTokens[i];
+      tokenThis = tokenLast = (t == -1 ? tokenLast : o(t, sTok));
+      if (tokenMap.get(lcase) != null)
+        Logger.error("duplicate token definition:" + lcase);
+      tokenMap.put(lcase, tokenThis);
+    }
+    
+    sTokens = null;
+    iTokens = null;
   }
 
   public static int getParamType(int tok) {
@@ -2579,11 +3604,11 @@ public class T {
    */
   public static boolean isIDcmd(int cmdtok) {
     switch (cmdtok) {
-    case T.isosurface:
-    case T.draw:
-    case T.cgo:
-    case T.pmesh:
-    case T.contact:
+    case isosurface:
+    case draw:
+    case cgo:
+    case pmesh:
+    case contact:
       return true;
     default:
       return false;
@@ -2600,10 +3625,10 @@ public class T {
       return (t.intValue == intValue && (tok == integer || t.value
           .equals(value)));
     switch (tok) {
-    case T.integer:
-      return (t.tok == T.decimal && ((Float) t.value).floatValue() == intValue);
-    case T.decimal:
-      return (t.tok == T.integer && ((Float) value).floatValue() == t.intValue);
+    case integer:
+      return (t.tok == decimal && ((Float) t.value).floatValue() == intValue);
+    case decimal:
+      return (t.tok == integer && ((Float) value).floatValue() == t.intValue);
     default:
       return false;
     }

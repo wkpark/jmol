@@ -134,9 +134,9 @@ public abstract class Shape {
   }
 
   /**
-   * @param bs  
+   * @param bsModels  
    */
-  public void setVisibilityFlags(BS bs) {
+  public void setVisibilityFlags(BS bsModels) {
     // only some atom-based shapes implement this.
   }
   /**

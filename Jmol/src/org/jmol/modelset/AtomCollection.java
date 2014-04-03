@@ -971,26 +971,10 @@ abstract public class AtomCollection {
   final public static byte TAINT_ATOMNO = 13;
   final public static byte TAINT_MAX = 14; // 1 more than last number, above
   
-  public final static String[] userSettableValues = {
-    "atomName",
-    "atomType",
-    "coord",
-    "element",
-    "formalCharge",
-    "hydrophobicity",
-    "ionic",
-    "occupany",
-    "partialCharge",
-    "temperature",
-    "valence",
-    "vanderWaals",
-    "vibrationVector",
-    "atomNo"
-  };
-  
+  public static String[] userSettableValues;
   static {
-   if (userSettableValues.length != TAINT_MAX)
-     Logger.error("AtomCollection.java userSettableValues is not length TAINT_MAX!");
+    // this allows the Google Closure compiler to skip all the TAINTED defs in Clazz.defineStatics
+    userSettableValues = "atomName atomType coord element formalCharge hydrophobicity ionic occupany partialCharge temperature valence vanderWaals vibrationVector atomNo".split(" ");
   }
   
   public BS[] tainted;  // not final -- can be set to null

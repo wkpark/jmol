@@ -407,7 +407,7 @@ public class Ellipsoids extends Shape {
   }
 
   @Override
-  public void setVisibilityFlags(BS bs) {
+  public void setVisibilityFlags(BS bsModels) {
     /*
      * set all fixed objects visible; others based on model being displayed
      *      
@@ -415,11 +415,11 @@ public class Ellipsoids extends Shape {
     if (!isActive())
       return;
     Atom[] atoms = vwr.ms.at;
-    setVis(simpleEllipsoids, bs, atoms);
+    setVis(simpleEllipsoids, bsModels, atoms);
     if (atomEllipsoids != null)
       for (int i = atoms.length; --i >= 0;)
         atoms[i].setShapeVisibility(vf, false);
-    setVis(atomEllipsoids, bs, atoms);
+    setVis(atomEllipsoids, bsModels, atoms);
   }
 
   private void setVis(Map<?, Ellipsoid> ellipsoids, BS bs, Atom[] atoms) {

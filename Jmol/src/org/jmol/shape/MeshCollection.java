@@ -563,7 +563,7 @@ public abstract class MeshCollection extends Shape {
   }
   
   @Override
-  public void setVisibilityFlags(BS bs) {
+  public void setVisibilityFlags(BS bsModels) {
     /*
      * set all fixed objects visible; others based on model being displayed
      * 
@@ -573,7 +573,7 @@ public abstract class MeshCollection extends Shape {
       Mesh mesh = meshes[i];
       mesh.visibilityFlags = (mesh.visible
           && mesh.isValid
-          && (mesh.modelIndex < 0 || bs.get(mesh.modelIndex)
+          && (mesh.modelIndex < 0 || bsModels.get(mesh.modelIndex)
               && (mesh.atomIndex < 0 || !ms.isAtomHidden(mesh.atomIndex)
                   && !(bsDeleted != null && bsDeleted.get(mesh.atomIndex)))) ? vf
           : 0);

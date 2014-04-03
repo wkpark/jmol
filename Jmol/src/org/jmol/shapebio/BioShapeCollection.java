@@ -208,17 +208,17 @@ public abstract class BioShapeCollection extends Shape {
   }
 
   @Override
-  public void setVisibilityFlags(BS bs) {
+  public void setVisibilityFlags(BS bsModels) {
     if (bioShapes == null)
       return;
-    bs = BSUtil.copy(bs);
+    bsModels = BSUtil.copy(bsModels);
     for (int i = ms.mc; --i >= 0; )
-      if (bs.get(i) && ms.isTrajectory(i))
-        bs.set(ms.getTrajectoryIndex(i));
+      if (bsModels.get(i) && ms.isTrajectory(i))
+        bsModels.set(ms.getTrajectoryIndex(i));
     
     for (int i = bioShapes.length; --i >= 0;) {
       BioShape b = bioShapes[i];
-      b.modelVisibilityFlags = (bs.get(b.modelIndex) ? vf : 0);
+      b.modelVisibilityFlags = (bsModels.get(b.modelIndex) ? vf : 0);
     }
   }
 

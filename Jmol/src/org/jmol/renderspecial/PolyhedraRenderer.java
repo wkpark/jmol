@@ -79,10 +79,11 @@ public class PolyhedraRenderer extends ShapeRenderer {
     planes = p.planes;
     for (int i = vertices.length; --i >= 0;) {
       Atom atom = (vertices[i] instanceof Atom ? (Atom) vertices[i] : null);
-      if (atom == null)
+      if (atom == null || !atom.isVisible(myVisibilityFlag))
         vwr.transformPtScr(vertices[i], screens[i]);
       else
         screens[i].set(atom.sX, atom.sY, atom.sZ);
+ System.out.println(i + " " + screens[i]);
     }
 
     isAll = (drawEdges == Polyhedra.EDGES_ALL);

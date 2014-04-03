@@ -1834,8 +1834,8 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   void setColorNoisy(int shadeIndex) {
     currentShadeIndex = shadeIndex;
     argbCurrent = shadesCurrent[shadeIndex];
-    argbNoisyUp = shadesCurrent[shadeIndex < Shader.shadeIndexLast ? shadeIndex + 1
-        : Shader.shadeIndexLast];
+    argbNoisyUp = shadesCurrent[shadeIndex < Shader.SHADE_INDEX_LAST ? shadeIndex + 1
+        : Shader.SHADE_INDEX_LAST];
     argbNoisyDn = shadesCurrent[shadeIndex > 0 ? shadeIndex - 1 : 0];
   }
 
@@ -1861,8 +1861,8 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
           -vectorAB.y, vectorAB.z) : shader.getShadeIndex(vectorAB.x,
           vectorAB.y, -vectorAB.z);
     }
-    if (shadeIndex > Shader.shadeIndexNoisyLimit)
-      shadeIndex = Shader.shadeIndexNoisyLimit;
+    if (shadeIndex > Shader.SHADE_INDEX_NOISY_LIMIT)
+      shadeIndex = Shader.SHADE_INDEX_NOISY_LIMIT;
     setColorNoisy(shadeIndex);
   }
 

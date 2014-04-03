@@ -2982,13 +2982,13 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public MinimizerInterface getMinimizer(boolean createNew) {
     return (minimizer == null && createNew ? (minimizer = (MinimizerInterface) Interface
-        .getOption("minimize.Minimizer")).setProperty("vwr", this)
+        .getInterface("org.jmol.minimize.Minimizer")).setProperty("vwr", this)
         : minimizer);
   }
 
   public SmilesMatcherInterface getSmilesMatcher() {
     return (smilesMatcher == null ? (smilesMatcher = (SmilesMatcherInterface) Interface
-        .getOption("smiles.SmilesMatcher")) : smilesMatcher);
+        .getInterface("org.jmol.smiles.SmilesMatcher")) : smilesMatcher);
   }
 
   public void clearModelDependentObjects() {

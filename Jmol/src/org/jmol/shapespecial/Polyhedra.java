@@ -562,7 +562,7 @@ public class Polyhedra extends AtomShape {
   }
 
   @Override
-  public void setVisibilityFlags(BS bs) {
+  public void setVisibilityFlags(BS bsModels) {
     /*
      * set all fixed objects visible; others based on model being displayed note
      * that this is NOT done with atoms and bonds, because they have mads. When
@@ -570,7 +570,7 @@ public class Polyhedra extends AtomShape {
      */
     for (int i = polyhedronCount; --i >= 0;) {
       Polyhedron p = polyhedrons[i];
-      p.visibilityFlags = (p.visible && bs.get(p.modelIndex)
+      p.visibilityFlags = (p.visible && bsModels.get(p.modelIndex)
           && !ms.isAtomHidden(p.centralAtom.i) ? vf
           : 0);
     }

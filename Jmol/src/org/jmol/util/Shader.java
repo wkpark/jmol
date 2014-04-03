@@ -53,10 +53,10 @@ public class Shader {
   // 52 = normal
   // 56 = max for 
   // 63 = specular
-  private static int shadeIndexMax = 64;
-  public static int shadeIndexLast = shadeIndexMax - 1;
-  public static byte shadeIndexNormal = 52;
-  public static byte shadeIndexNoisyLimit = 56;
+  private final static int SHADE_INDEX_MAX = 64;
+  public final static int SHADE_INDEX_LAST = SHADE_INDEX_MAX - 1;
+  public final static byte SHADE_INDEX_NORMAL = 52;
+  public final static byte SHADE_INDEX_NOISY_LIMIT = 56;
 
   // the vwr vector is always {0 0 1}
 
@@ -193,7 +193,7 @@ public class Shader {
    */
 
   private int[] getShades2(int rgb, boolean greyScale) {
-    int[] shades = new int[shadeIndexMax];
+    int[] shades = new int[SHADE_INDEX_MAX];
     if (rgb == 0)
       return shades;
 
@@ -229,7 +229,7 @@ public class Shader {
 
     int i = 0;
 
-    f = (1 - f) / shadeIndexNormal;
+    f = (1 - f) / SHADE_INDEX_NORMAL;
 
     float redStep = red0 * f;
     float grnStep = grn0 * f;
@@ -237,7 +237,7 @@ public class Shader {
 
     if (celOn) {
 
-      int max = shadeIndexMax / 2;
+      int max = SHADE_INDEX_MAX / 2;
 
       int _rgb = CU.rgb((int) Math.floor(red), (int) Math.floor(grn),
           (int) Math.floor(blu));
@@ -250,7 +250,7 @@ public class Shader {
       blu += bluStep * max;
       _rgb = CU.rgb((int) Math.floor(red), (int) Math.floor(grn),
           (int) Math.floor(blu));
-      for (; i < shadeIndexMax; i++)
+      for (; i < SHADE_INDEX_MAX; i++)
         shades[i] = _rgb;
 
       // Min r,g,b is 4,4,4 or else antialiasing bleeds background colour into edges.
@@ -258,7 +258,7 @@ public class Shader {
         shades[0] = shades[1] = celRGB;
     } else {
 
-      for (; i < shadeIndexNormal; ++i) {
+      for (; i < SHADE_INDEX_NORMAL; ++i) {
         shades[i] = CU.rgb((int) Math.floor(red), (int) Math.floor(grn),
             (int) Math.floor(blu));
         red += redStep;
@@ -268,12 +268,12 @@ public class Shader {
 
       shades[i++] = rgb;
 
-      f = intenseFraction / (shadeIndexMax - i);
+      f = intenseFraction / (SHADE_INDEX_MAX - i);
       redStep = (255.5f - red) * f;
       grnStep = (255.5f - grn) * f;
       bluStep = (255.5f - blu) * f;
 
-      for (; i < shadeIndexMax; i++) {
+      for (; i < SHADE_INDEX_MAX; i++) {
         red += redStep;
         grn += grnStep;
         blu += bluStep;
@@ -293,13 +293,13 @@ public class Shader {
     double magnitude = Math.sqrt(x * x + y * y + z * z);
     return Math.round(getShadeF((float) (x / magnitude),
         (float) (y / magnitude), (float) (z / magnitude))
-        * shadeIndexLast);
+        * SHADE_INDEX_LAST);
   }
 
   public byte getShadeB(float x, float y, float z) {
     //from Normix3D.setRotationMatrix
     return (byte) Math.round (getShadeF(x, y, z)
-                  * shadeIndexLast);
+                  * SHADE_INDEX_LAST);
   }
 
   public int getShadeFp8(float x, float y, float z) {
@@ -309,7 +309,7 @@ public class Shader {
     return (int) Math.floor(getShadeF((float)(x/magnitude),
                                               (float)(y/magnitude),
                                               (float)(z/magnitude))
-                 * shadeIndexLast * (1 << 8));
+                 * SHADE_INDEX_LAST * (1 << 8));
   }
 
   private float getShadeF(float x, float y, float z) {
@@ -381,7 +381,7 @@ public class Shader {
     // from Sphere3D only
     // add some randomness to prevent banding
     int fp8ShadeIndex = (int) Math.floor(getShadeF(x / r, y / r, z / r)
-        * shadeIndexLast * (1 << 8));
+        * SHADE_INDEX_LAST * (1 << 8));
     int shadeIndex = fp8ShadeIndex >> 8;
     // this cannot overflow because the if the float shadeIndex is 1.0
     // then shadeIndex will be == shadeLast
@@ -393,7 +393,7 @@ public class Shader {
     int random16bit = seed & 0xFFFF;
     if (random16bit < 65536 / 3 && shadeIndex > 0)
       --shadeIndex;
-    else if (random16bit > 65536 * 2 / 3 && shadeIndex < shadeIndexLast)
+    else if (random16bit > 65536 * 2 / 3 && shadeIndex < SHADE_INDEX_LAST)
       ++shadeIndex;
     return (byte) shadeIndex;
   }

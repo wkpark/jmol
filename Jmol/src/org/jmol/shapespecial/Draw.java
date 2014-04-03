@@ -1088,7 +1088,7 @@ protected void resetObjects() {
   }
 
   @Override
-  public void setVisibilityFlags(BS bs) {
+  public void setVisibilityFlags(BS bsModels) {
     /*
      * set all fixed objects visible; others based on model being displayed note
      * that this is NOT done with atoms and bonds, because they have mads. When
@@ -1100,13 +1100,13 @@ protected void resetObjects() {
         continue;
       }
       m.visibilityFlags = (m.isValid && m.visible ? vf : 0);
-      if (m.modelIndex >= 0 && !bs.get(m.modelIndex) || m.modelFlags != null
-          && !BSUtil.haveCommon(bs, m.modelFlags)) {
+      if (m.modelIndex >= 0 && !bsModels.get(m.modelIndex) || m.modelFlags != null
+          && !BSUtil.haveCommon(bsModels, m.modelFlags)) {
         m.visibilityFlags = 0;
       } else if (m.modelFlags != null) {
         m.bsMeshesVisible.clearAll();
         m.bsMeshesVisible.or(m.modelFlags);
-        m.bsMeshesVisible.and(bs);
+        m.bsMeshesVisible.and(bsModels);
       }
 
     }

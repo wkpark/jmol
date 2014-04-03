@@ -284,7 +284,7 @@ public class SphereRenderer {
     } while (--nLines > 0);
   }
 
-  private final static int SHADE_SLAB_CLIPPED = Shader.shadeIndexNormal - 5;
+  private final static int SHADE_SLAB_CLIPPED = Shader.SHADE_INDEX_NORMAL - 5;
 
   private void renderShapeClipped(int[] sphereShape) {
     int offsetSphere = 0;

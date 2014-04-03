@@ -190,10 +190,10 @@ public abstract class Object2dShape extends Shape {
 
 
   @Override
-  public void setVisibilityFlags(BS bs) {
+  public void setVisibilityFlags(BS bsModels) {
     if (!isHover)
       for (Text t : objects.values())
-        t.setVisibility(t.modelIndex < 0 || bs.get(t.modelIndex));
+        t.setVisibility(t.modelIndex < 0 || bsModels.get(t.modelIndex));
   }
 
   @Override

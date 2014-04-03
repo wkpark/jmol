@@ -46,9 +46,8 @@ public class Normix {
   private static short normixCount;
   public static short getNormixCount() {
     // Grahics3D, Normix.setInverseNormixes
-    if (normixCount == 0)
-      normixCount = Geodesic.getVertexCount(NORMIX_GEODESIC_LEVEL);
-    return normixCount;
+    return (normixCount > 1 ? normixCount : 
+      (normixCount = Geodesic.getVertexCount(NORMIX_GEODESIC_LEVEL)));
   }
   
   public static BS newVertexBitSet() {

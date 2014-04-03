@@ -521,15 +521,22 @@ public class ActionManager implements EventManager {
   public final static int PICKING_IDENTIFY_BOND = 35;
   public final static int PICKING_DRAG_LIGAND = 36;
 
-  private final static String[] pickingModeNames = { "off", "identify",
-      "label", "center", "draw", "spin", "symmetry", "deleteatom",
-      "deletebond", "atom", "group", "chain", "molecule", "polymer",
-      "structure", "site", "model", "element", "measure", "distance", "angle",
-      "torsion", "sequence", "navigate", "connect", "struts", "dragselected",
-      "dragmolecule", "dragatom", "dragminimize", "dragminimizemolecule",
-      "invertstereo", "assignatom", "assignbond", "rotatebond", "identifybond",
-      "dragligand" };
+  /**
+   * picking styles
+   */
+  public final static int PICKINGSTYLE_SELECT_JMOL = 0;
+  public final static int PICKINGSTYLE_SELECT_CHIME = 0;
+  public final static int PICKINGSTYLE_SELECT_RASMOL = 1;
+  public final static int PICKINGSTYLE_SELECT_PFAAT = 2;
+  public final static int PICKINGSTYLE_SELECT_DRAG = 3;
+  public final static int PICKINGSTYLE_MEASURE_ON = 4;
+  public final static int PICKINGSTYLE_MEASURE_OFF = 5;
 
+  private final static String[] pickingModeNames;
+  static {
+    pickingModeNames = "off identify label center draw spin symmetry deleteatom deletebond atom group chain molecule polymer structure site model element measure distance angle torsion sequence navigate connect struts dragselected dragmolecule dragatom dragminimize dragminimizemolecule invertstereo assignatom assignbond rotatebond identifybond dragligand".split(" ");
+  }
+  
   public final static String getPickingModeName(int pickingMode) {
     return (pickingMode < 0 || pickingMode >= pickingModeNames.length ? "off"
         : pickingModeNames[pickingMode]);
@@ -538,6 +545,24 @@ public class ActionManager implements EventManager {
   public final static int getPickingMode(String str) {
     for (int i = pickingModeNames.length; --i >= 0;)
       if (str.equalsIgnoreCase(pickingModeNames[i]))
+        return i;
+    return -1;
+  }
+
+  private final static String[] pickingStyleNames;
+  
+  static {
+    pickingStyleNames = "toggle selectOrToggle extendedSelect drag measure measureoff".split(" ");
+  }
+  
+  public final static String getPickingStyleName(int pickingStyle) {
+    return (pickingStyle < 0 || pickingStyle >= pickingStyleNames.length ? "toggle"
+        : pickingStyleNames[pickingStyle]);
+  }
+
+  public final static int getPickingStyleIndex(String str) {
+    for (int i = pickingStyleNames.length; --i >= 0;)
+      if (str.equalsIgnoreCase(pickingStyleNames[i]))
         return i;
     return -1;
   }
@@ -590,32 +615,6 @@ public class ActionManager implements EventManager {
       pickBondAssignType = Character.toLowerCase(option.charAt(0));
       break;
     }
-  }
-
-  /**
-   * picking styles
-   */
-  public final static int PICKINGSTYLE_SELECT_JMOL = 0;
-  public final static int PICKINGSTYLE_SELECT_CHIME = 0;
-  public final static int PICKINGSTYLE_SELECT_RASMOL = 1;
-  public final static int PICKINGSTYLE_SELECT_PFAAT = 2;
-  public final static int PICKINGSTYLE_SELECT_DRAG = 3;
-  public final static int PICKINGSTYLE_MEASURE_ON = 4;
-  public final static int PICKINGSTYLE_MEASURE_OFF = 5;
-
-  private final static String[] pickingStyleNames = { "toggle",
-      "selectOrToggle", "extendedSelect", "drag", "measure", "measureoff" };
-
-  public final static String getPickingStyleName(int pickingStyle) {
-    return (pickingStyle < 0 || pickingStyle >= pickingStyleNames.length ? "toggle"
-        : pickingStyleNames[pickingStyle]);
-  }
-
-  public final static int getPickingStyleIndex(String str) {
-    for (int i = pickingStyleNames.length; --i >= 0;)
-      if (str.equalsIgnoreCase(pickingStyleNames[i]))
-        return i;
-    return -1;
   }
 
   private int pickingStyle;

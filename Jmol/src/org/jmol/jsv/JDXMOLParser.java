@@ -127,42 +127,64 @@ public class JDXMOLParser implements JmolJDXMOLParser {
     return PT.rep(sb.toString(), "  $$ Empty String", "");
   }
 
-  @Override
-  public Lst<String[]> readACDAssignments(int nPoints) throws Exception {
-    // NMR:
-    // ##PEAK ASSIGNMENTS=(XYMA)
-    // (25.13376,1.00, ,<1>)
-    // (25.13376,1.00, ,<3>)
-    // (63.97395,0.35, ,<2>)
-    // ##$UVIR_ASSIGNMENT=ACDTABLE(X,Y,A,VT)
-    // (1645.2935,33.1941,'1,3',undefined)
-    // (3022.9614,65.476,'1,13',undefined)
-    // (2854.6709,56.5426,'4,12',undefined)
-    // ##$MS_FRAGMENTS=ACDTABLE(Fragment,Formula,Label,mzCalc,mzExp,TICCalc,TICExp,RICalc,AQI,RDBE)
-    // ('7-8,11;11a;11b;8a;8b;8c',C3H5,M - C7H9O,41.0386,41,0.046,4.5954,0.2754,1,4.0)
-    // ('1,7-8,11;11a;11b;1a;8a;8b;8c',C4H6,M - C6H8O,54.0464,54,0.1582,15.1322,0.9372,0.9568,4.0)
-    // ('1-6,10;2a;2b;3a;6a;6b',C6H5O,M - C4H9,93.0335,93,0.0872,8.7166,0.5041,1,4.0)
-    
-    
-    Lst<String[]> list = new Lst<String[]>();
-    readLine(); // flushes "XYMA"
-    if (nPoints < 0)
-    	nPoints = Integer.MAX_VALUE;
-    for (int i = 0; i < nPoints; i++) {
-      line = PT.replaceAllCharacters(readLine(), "()<>", " ").trim();
-      if (line.length() == 0 || line.indexOf("#") >= 0 || line.indexOf("$") >= 0)
-      	break;
-      int pt = line.indexOf("'");
-      if (pt >= 0) {
-        int pt2 = line.indexOf("'", pt + 1);
-        line = line.substring(0, pt) + PT.rep(line.substring(pt+1, pt2), "," , ";") + line.substring(pt2 + 1);
-      }     
-      Logger.info("Peak Assignment: " + line);
-      String[] tokens = PT.split(line, ",");
-      list.addLast(tokens);
-    }
-    return list;
-  }
+	@Override
+	public Lst<String[]> readACDAssignments(int nPoints, boolean isPeakAssignment)
+			throws Exception {
+		// NMR:
+		// ##PEAK ASSIGNMENTS=(XYMA)
+		// (25.13376,1.00, ,<1>)
+		// (25.13376,1.00, ,<3>)
+		// (63.97395,0.35, ,<2>)
+		// ##$UVIR_ASSIGNMENT=ACDTABLE(X,Y,A,VT)
+		// (1645.2935,33.1941,'1,3',undefined)
+		// (3022.9614,65.476,'1,13',undefined)
+		// (2854.6709,56.5426,'4,12',undefined)
+		// ##$MS_FRAGMENTS=ACDTABLE(Fragment,Formula,Label,mzCalc,mzExp,TICCalc,TICExp,RICalc,AQI,RDBE)
+		// ('7-8,11;11a;11b;8a;8b;8c',C3H5,M -
+		// C7H9O,41.0386,41,0.046,4.5954,0.2754,1,4.0)
+		// ('1,7-8,11;11a;11b;1a;8a;8b;8c',C4H6,M -
+		// C6H8O,54.0464,54,0.1582,15.1322,0.9372,0.9568,4.0)
+		// ('1-6,10;2a;2b;3a;6a;6b',C6H5O,M -
+		// C4H9,93.0335,93,0.0872,8.7166,0.5041,1,4.0)
+		
+	  // also accepts old Chime method,looking for "select atomno=n":
+	  // 38, -1, 1, <reset; select *; color atoms cpk; spacefill off; wireframe on; 
+		//   select atomno=4; color atoms yellow; spacefill 90>
+
+
+		Lst<String[]> list = new Lst<String[]>();
+		try {
+			readLine(); // flushes "XYMA"
+			if (nPoints < 0)
+				nPoints = Integer.MAX_VALUE;
+			for (int i = 0; i < nPoints; i++) {
+				String s = readLine();
+				if (s == null || s.indexOf("#") == 0)
+					break;
+				if (isPeakAssignment) {
+					while (s.indexOf(">") < 0)
+						s += " " + readLine();
+					s = s.trim();
+				}
+				s = PT.replaceAllCharacters(s, "()<>", " ").trim();
+				if (s.length() == 0)
+					break;
+				int pt = s.indexOf("'");
+				if (pt >= 0) {
+					int pt2 = s.indexOf("'", pt + 1);
+					s = s.substring(0, pt)
+							+ PT.rep(s.substring(pt + 1, pt2), ",", ";")
+							+ s.substring(pt2 + 1);
+				}
+				Logger.info("Peak Assignment: " + s);
+				String[] tokens = PT.split(s, ",");
+				list.addLast(tokens);
+			}
+		} catch (Exception e) {
+			Logger.error("Error reading peak assignments at " + line + ": " + e);
+		}
+		return list;
+	}
 
 	@Override
 	public int setACDAssignments(String model, String mytype, int peakCount,
@@ -207,6 +229,12 @@ public class JDXMOLParser implements JmolJDXMOLParser {
 					a = fixACDAtomList(a, zzcMap, nAtoms);
 				else
 					a = a.replace(';', ',');
+				if (a.indexOf("select") >= 0) {
+					int pt = a.indexOf("select atomno=");
+					if (pt < 0)
+						continue;
+					a = PT.split(a.substring(pt + 14), " ")[0];
+				}
 				String title = (isMS ? "m/z=" + Math.round(x) + ": " + data[2] + " (" + data[1] + ")" : 
 					pta == 2 ? "" + (Math.round(x * 10) / 10f) : null);
 				getStringInfo(file, title, mytype, model, a, htSets, "" + x, list,
@@ -342,6 +370,8 @@ public class JDXMOLParser implements JmolJDXMOLParser {
 		if (atoms != null) {
 			BS bs = (BS) o[1];
 			atoms = atoms.replace(',', ' ');
+			if (atoms.equals("*"))
+				atoms = "0:1000";
       bs.or(BS.unescape("({" + atoms + "})"));
 		}
 	}

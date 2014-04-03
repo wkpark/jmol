@@ -1543,16 +1543,18 @@ public class TransformManager {
   /**
    * @param ptXYZ
    * @param v
+   * @param scale TODO
    * @return POINTER TO TEMPORARY VARIABLE (caution!) point3iScreenTemp
    */
-  P3i transformPointVib(P3 ptXYZ, Vibration v) {
+  P3i transformPointVib(P3 ptXYZ, Vibration v, float scale) {
     ptVibTemp.setT(ptXYZ);
-    return getTempScreenPt(getVibrationPoint(v, ptVibTemp), ptXYZ);
+    return getTempScreenPt(getVibrationPoint(v, ptVibTemp, Float.NaN), ptXYZ);
   }
 
-  public Point3fi getVibrationPoint(Vibration v, Point3fi pt) {
-    v.setTempPoint(pt, vibrationT, vibrationScale, vwr.g.modulationScale);
-    return pt; 
+  public Point3fi getVibrationPoint(Vibration v, Point3fi pt, float scale) {
+    v.setTempPoint(pt, vibrationT,
+        (Float.isNaN(scale) ? vibrationScale : scale), vwr.g.modulationScale);
+    return pt;
   }
 
 

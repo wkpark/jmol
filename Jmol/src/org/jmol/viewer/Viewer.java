@@ -1389,8 +1389,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return tm.transformPoint(pointAngstroms);
   }
 
-  public P3i transformPtVib(P3 pointAngstroms, Vibration vibrationVector) {
-    return tm.transformPointVib(pointAngstroms, vibrationVector);
+  public P3i transformPtVib(P3 pointAngstroms, Vibration vibrationVector, float scale) {
+    return tm.transformPointVib(pointAngstroms, vibrationVector, scale);
   }
 
   public void transformPtScr(P3 pointAngstroms, P3i pointScreen) {
@@ -10462,7 +10462,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public Point3fi getVibrationPoint(Vibration vibration, Point3fi pt) {
-    return tm.getVibrationPoint(vibration, pt);
+    return tm.getVibrationPoint(vibration, pt, Float.NaN);
   }
 
   public void setCurrentAtom(int iAtom) {

@@ -109,9 +109,9 @@ public class VectorsRenderer extends ShapeRenderer {
     headOffsetVector.scale(headScale / len);
     pointVectorEnd.scaleAdd2(vectorScale, vibrationVector, atom);
     pointArrowHead.add2(pointVectorEnd, headOffsetVector);
-    screenArrowHead.setT(vwr.transformPtVib(pointArrowHead, vibrationVector));
-    screenVectorEnd.setT(vwr.transformPtVib(pointVectorEnd, vibrationVector));
-    diameter = (int) (mad < 1 ? 1 : mad <= 20 ? mad : vwr.scaleToScreen(screenVectorEnd.z, mad));
+    screenArrowHead.setT(vwr.transformPtVib(pointArrowHead, vibrationVector, vectorScale));
+    screenVectorEnd.setT(vwr.transformPtVib(pointVectorEnd, vibrationVector, vectorScale));
+    diameter = (int) (mad < 0 ? -mad : mad < 1 ? 1 : vwr.scaleToScreen(screenVectorEnd.z, mad));
     headWidthPixels = diameter << 1;
     if (headWidthPixels < diameter + 2)
       headWidthPixels = diameter + 2;
@@ -123,7 +123,7 @@ public class VectorsRenderer extends ShapeRenderer {
       g3d.fillCylinderScreen(GData.ENDCAPS_OPEN, diameter, atom.sX,
           atom.sY, atom.sZ, screenArrowHead.x, screenArrowHead.y,
           screenArrowHead.z);
-    g3d.fillConeScreen(GData.ENDCAPS_FLAT, headWidthPixels, screenArrowHead,
-        screenVectorEnd, false);
+      g3d.fillConeScreen(GData.ENDCAPS_FLAT, headWidthPixels, screenArrowHead,
+          screenVectorEnd, false);
   }
 }

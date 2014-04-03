@@ -436,7 +436,7 @@ public class ShapeManager {
       // use Cartesian coordinates, not screen coordinates
       Atom atom = atoms[i];
       P3i screen = (vibs && atom.hasVibration() ? vwr
-          .transformPtVib(atom, (Vibration) vibrationVectors[i])
+          .transformPtVib(atom, (Vibration) vibrationVectors[i], Float.NaN)
           : vwr.transformPt(atom));
       atom.sX = screen.x;
       atom.sY = screen.y;

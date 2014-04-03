@@ -25,7 +25,9 @@
 package org.jmol.shapespecial;
 
 
+import org.jmol.atomdata.RadiusData;
 import org.jmol.java.BS;
+import org.jmol.modelset.Atom;
 import org.jmol.shape.AtomShape;
 
 public class Vectors extends AtomShape {
@@ -50,5 +52,14 @@ public Object getProperty(String propertyName, int param) {
      return Integer.valueOf(mads == null || param < 0 || mads.length <= param ? 0 : mads[param]);
    return null;
  }
+ 
+ @Override
+protected void setSizeRD2(int i, RadiusData rd, boolean isVisible) {
+   super.setSizeRD2(i, rd, isVisible);
+   if (rd != null && rd.factorType == RadiusData.EnumType.SCREEN)
+     mads[i] = (short) -mads[i];
+ }
+
+
 
 }

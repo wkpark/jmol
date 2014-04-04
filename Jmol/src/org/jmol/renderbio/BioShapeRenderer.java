@@ -177,7 +177,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
   }
 
   protected boolean setBioColix(short colix) {
-    if (g3d.setColix(colix))
+    if (g3d.setC(colix))
       return true;
     needTranslucent = true;
     return false;
@@ -262,7 +262,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     int count = monomerCount + 1;
     controlPointScreens = vwr.allocTempScreens(count);
     for (int i = count; --i >= 0;) {
-      vwr.transformPtScr(points[i], controlPointScreens[i]);
+      tm.transformPtScr(points[i], controlPointScreens[i]);
     }
     haveControlPointScreens = true;
   }
@@ -279,7 +279,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     P3i[] screens = vwr.allocTempScreens(count);
     if (offsetFraction == 0) {
       for (int i = count; --i >= 0;)
-        vwr.transformPtScr(controlPoints[i], screens[i]);
+        tm.transformPtScr(controlPoints[i], screens[i]);
     } else {
       float offset_1000 = offsetFraction / 1000f;
       for (int i = count; --i >= 0;)
@@ -295,7 +295,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
   private void calc1Screen(P3 center, V3 vector, short mad,
                            float offset_1000, P3i screen) {
     pointT.scaleAdd2(mad * offset_1000, vector, center);
-    vwr.transformPtScr(pointT, screen);
+    tm.transformPtScr(pointT, screen);
   }
 
   protected short getLeadColix(int i) {
@@ -763,7 +763,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
 
   /*
   private void dumpPoint(Point3f pt, short color) {
-    Point3i pt1 = vwr.transformPoint(pt);
+    Point3i pt1 = tm.transformPoint(pt);
     g3d.fillSphereCentered(color, 20, pt1);
   }
 
@@ -772,8 +772,8 @@ abstract class BioShapeRenderer extends MeshRenderer {
     Point3i pt1 = new Point3i();
     Point3i pt2 = new Point3i();
     p1.add(pt, v);
-    pt1.set(vwr.transformPoint(pt));
-    pt2.set(vwr.transformPoint(p1));
+    pt1.set(tm.transformPoint(pt));
+    pt2.set(tm.transformPoint(p1));
     System.out.print("draw pt" + ("" + Math.random()).substring(3, 10) + " {"
         + pt.x + " " + pt.y + " " + pt.z + "} {" + p1.x + " " + p1.y + " "
         + p1.z + "}" + ";" + " ");

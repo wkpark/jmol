@@ -200,7 +200,7 @@ public abstract class Object2dShape extends Shape {
   public Map<String, Object> checkObjectClicked(int x, int y, int modifiers, BS bsVisible, boolean drawPicking) {
     if (isHover || modifiers == 0)
       return null;
-    boolean isAntialiased = vwr.isAntialiased();
+    boolean isAntialiased = vwr.antialiased;
     for (Object2d obj: objects.values()) {
       if (obj.checkObjectClicked(isAntialiased, x, y, bsVisible)) {
         String s = obj.getScript();
@@ -227,7 +227,7 @@ public abstract class Object2dShape extends Shape {
     if (isHover)
       return false;
     boolean haveScripts = false;
-    boolean isAntialiased = vwr.isAntialiased();
+    boolean isAntialiased = vwr.antialiased;
     for (Object2d obj: objects.values()) {
       String s = obj.getScript();
       if (s != null) {

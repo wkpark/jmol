@@ -366,7 +366,7 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
         i < 0 ? modelSetFileName.length() : i);
     if (modelSetRoot.length() == 0)
       modelSetRoot = "Jmol";
-    modelIndex = vwr.getCurrentModelIndex();
+    modelIndex = vwr.am.cmi;
     modelCount = vwr.getModelCount();
     ac = vwr.getAtomCountInModel(modelIndex);
     modelSetInfo = vwr.getModelSetAuxiliaryInfo();
@@ -1017,7 +1017,7 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
       pt = text.length();
     String info = null;
     if (name.indexOf("captureLooping") >= 0)
-      info = (vwr.getAnimationReplayMode().name().equals("ONCE") ? "ONCE"
+      info = (vwr.am.animationReplayMode.name().equals("ONCE") ? "ONCE"
           : "LOOP");
     else if (name.indexOf("captureFps") >= 0)
       info = "" + vwr.getInt(T.animationfps);

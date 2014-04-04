@@ -30,6 +30,7 @@ import org.jmol.modelset.ModelSet;
 import org.jmol.shape.Shape;
 import org.jmol.util.GData;
 import org.jmol.viewer.JC;
+import org.jmol.viewer.TransformManager;
 import org.jmol.viewer.Viewer;
 
 public abstract class ShapeRenderer {
@@ -39,6 +40,7 @@ public abstract class ShapeRenderer {
   //}
   
   protected Viewer vwr;
+  protected TransformManager tm;
   protected JmolRendererInterface g3d;
   protected ModelSet ms;
   protected Shape shape;
@@ -61,6 +63,7 @@ public abstract class ShapeRenderer {
 
   public final void setViewerG3dShapeID(Viewer vwr, int shapeID) {
     this.vwr = vwr;
+    tm = vwr.tm;
     this.shapeID = shapeID;
     myVisibilityFlag = JC.getShapeVisibilityFlag(shapeID);
     initRenderer();

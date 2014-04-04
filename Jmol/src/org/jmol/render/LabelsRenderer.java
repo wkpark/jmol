@@ -79,7 +79,7 @@ public class LabelsRenderer extends FontLineShapeRenderer {
   @Override
   protected boolean render() {
     fidPrevious = 0;
-    zCutoff = vwr.getZShadeStart();
+    zCutoff = tm.getZShadeStart();
 
     Labels labels = (Labels) shape;
 
@@ -178,7 +178,7 @@ public class LabelsRenderer extends FontLineShapeRenderer {
         else
           pTemp.set(0, 0, 0);
         pTemp.add3(text.pymolOffset[4], text.pymolOffset[5], text.pymolOffset[6]);
-        vwr.transformPtScr(pTemp, screen);
+        tm.transformPtScr(pTemp, screen);
         text.setXYZs(screen.x, screen.y, screen.z, zSlab);
         text.setScalePixelsPerMicron(sppm);
       }

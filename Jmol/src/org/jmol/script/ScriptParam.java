@@ -79,7 +79,7 @@ abstract public class ScriptParam extends ScriptError {
   public Object getParameter(String key, int tokType) {
     Object v = getContextVariableAsVariable(key);
     if (v == null)
-      v = vwr.getParameter(key);
+      v = vwr.getP(key);
     switch (tokType) {
     case T.variable:
       return SV.getVariable(v);
@@ -99,7 +99,7 @@ abstract public class ScriptParam extends ScriptError {
     SV v = getContextVariableAsVariable(var);
     if (v != null)
       return v.asString();
-    String val = "" + vwr.getParameter(var);
+    String val = "" + vwr.getP(var);
     return (val.length() == 0 && orReturnName ? var : val);
   }
 
@@ -183,7 +183,7 @@ abstract public class ScriptParam extends ScriptError {
       if (bs != null && bs.cardinality() == 1)
         return vwr.getAtomPoint3f(bs.nextSetBit(0));
       if (bs != null)
-        return vwr.getAtomSetCenter(bs);
+        return vwr.ms.getAtomSetCenter(bs);
       if (expressionResult instanceof P3)
         return (P3) expressionResult;
       invArg();
@@ -810,7 +810,7 @@ abstract public class ScriptParam extends ScriptError {
     default:
       invArg();
     }
-    return vwr.getModelNumberIndex(iFrame, useModelNumber, true);
+    return vwr.ms.getModelNumberIndex(iFrame, useModelNumber, true);
   }
 
   public int getMadParameter() throws ScriptException {
@@ -865,7 +865,7 @@ abstract public class ScriptParam extends ScriptError {
   public Lst<P3> getPointVector(T t, int i) throws ScriptException {
     switch (t.tok) {
     case T.bitset:
-      return vwr.getAtomPointVector((BS) t.value);
+      return vwr.ms.getAtomPointVector((BS) t.value);
     case T.varray:
       Lst<P3> data = new Lst<P3>();
       P3 pt;
@@ -878,7 +878,7 @@ abstract public class ScriptParam extends ScriptError {
       return data;
     }
     if (i > 0)
-      return vwr.getAtomPointVector(atomExpressionAt(i));
+      return vwr.ms.getAtomPointVector(atomExpressionAt(i));
     return null;
   }
 

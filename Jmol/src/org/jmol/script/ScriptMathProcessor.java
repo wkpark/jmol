@@ -1615,7 +1615,7 @@ public class ScriptMathProcessor {
       return false;
     if (chk)
       return addXStr("");
-    BoxInfo b = vwr.getBoxInfo(SV.bsSelectVar(x2), 1);
+    BoxInfo b = vwr.ms.getBoxInfo(SV.bsSelectVar(x2), 1);
     P3[] pts = b.getBoundBoxPoints(true);
     Lst<P3> list = new  Lst<P3>();
     for (int i = 0; i < 4; i++)
@@ -1724,7 +1724,7 @@ public class ScriptMathProcessor {
       if (op.intValue != T.bonds)
         return addXObj(val);
       return addX(SV.newV(T.bitset, new BondSet(
-          (BS) val, vwr.getAtomIndices(bs))));
+          (BS) val, vwr.ms.getAtomIndices(bs))));
     }
     return false;
   }

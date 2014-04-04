@@ -368,26 +368,26 @@ public abstract class AtomSetCollectionReader {
 
   protected void setLoadNote() {
     if (loadNote.length() > 0)
-      asc.setAtomSetCollectionAuxiliaryInfo("modelLoadNote", loadNote.toString());
+      asc.setInfo("modelLoadNote", loadNote.toString());
   }
 
   public void setIsPDB() {
     asc.setGlobalBoolean(AtomSetCollection.GLOBAL_ISPDB);
     asc.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
     if (htParams.get("pdbNoHydrogens") != null)
-      asc.setAtomSetCollectionAuxiliaryInfo("pdbNoHydrogens",
+      asc.setInfo("pdbNoHydrogens",
           htParams.get("pdbNoHydrogens"));
     if (checkFilterKey("ADDHYDROGENS"))
-      asc.setAtomSetCollectionAuxiliaryInfo("pdbAddHydrogens",Boolean.TRUE);      
+      asc.setInfo("pdbAddHydrogens",Boolean.TRUE);      
   }
 
   private Object finish() {
     String s = (String) htParams.get("loadState");
-    asc.setAtomSetCollectionAuxiliaryInfo("loadState",
+    asc.setInfo("loadState",
         s == null ? "" : s);
     s = (String) htParams.get("smilesString");
     if (s != null)
-      asc.setAtomSetCollectionAuxiliaryInfo("smilesString", s);
+      asc.setInfo("smilesString", s);
     if (!htParams.containsKey("templateAtomCount"))
       htParams.put("templateAtomCount", Integer.valueOf(asc
           .ac));
@@ -395,7 +395,7 @@ public abstract class AtomSetCollectionReader {
       htParams.put("filteredAtomCount", Integer.valueOf(BSUtil
           .cardinalityOf((BS) htParams.get("bsFilter"))));
     if (!calculationType.equals("?"))
-      asc.setAtomSetCollectionAuxiliaryInfo("calculationType",
+      asc.setInfo("calculationType",
           calculationType);
 
     String name = asc.fileTypeName;
@@ -635,14 +635,14 @@ public abstract class AtomSetCollectionReader {
   }
 
   protected void newAtomSet(String name) {
-    if (asc.currentAtomSetIndex >= 0) {
+    if (asc.iSet >= 0) {
       asc.newAtomSet();
       asc.setCollectionName("<collection of "
-          + (asc.currentAtomSetIndex + 1) + " models>");
+          + (asc.iSet + 1) + " models>");
     } else {
       asc.setCollectionName(name);
     }
-    asc.setAtomSetAuxiliaryInfoForSet("name", name, Math.max(0, asc.currentAtomSetIndex));
+    asc.setAtomSetAuxiliaryInfoForSet("name", name, Math.max(0, asc.iSet));
   }
 
   protected int cloneLastAtomSet(int ac, P3[] pts) throws Exception {
@@ -980,9 +980,9 @@ public abstract class AtomSetCollectionReader {
 
   protected void set2D() {
     // MOL and JME
-    asc.setAtomSetCollectionAuxiliaryInfo("is2D", Boolean.TRUE);
+    asc.setInfo("is2D", Boolean.TRUE);
     if (!checkFilterKey("NOMIN"))
-      asc.setAtomSetCollectionAuxiliaryInfo("doMinimize",
+      asc.setInfo("doMinimize",
           Boolean.TRUE);
   }
 
@@ -1011,11 +1011,11 @@ public abstract class AtomSetCollectionReader {
     v.set(x3, y3, z3);
     v.normalize();
     matrixRotate.setColumnV(2, v);
-    asc.setAtomSetCollectionAuxiliaryInfo(
+    asc.setInfo(
         "defaultOrientationMatrix", M3.newM3(matrixRotate));
     // first two matrix column vectors define quaternion X and XY plane
     Quat q = Quat.newM(matrixRotate);
-    asc.setAtomSetCollectionAuxiliaryInfo(
+    asc.setInfo(
         "defaultOrientationQuaternion", q);
     Logger.info("defaultOrientationMatrix = " + matrixRotate);
 
@@ -1319,7 +1319,7 @@ public abstract class AtomSetCollectionReader {
   public void checkCurrentLineForScript() {
     if (line.indexOf("Jmol") >= 0) {
       if (line.indexOf("Jmol PDB-encoded data") >= 0) {
-        asc.setAtomSetCollectionAuxiliaryInfo("jmolData", line);
+        asc.setInfo("jmolData", line);
         if (!line.endsWith("#noautobond"))
           line += "#noautobond";
       }
@@ -1372,7 +1372,7 @@ public abstract class AtomSetCollectionReader {
         symmetry.toFractional(unitCellOffset, false);
         unitCellOffset.scaleAdd2(-1f, minXYZ, unitCellOffset);
         symmetry.setOffsetPt(unitCellOffset);
-        asc.setAtomSetCollectionAuxiliaryInfo("jmolDataScaling",
+        asc.setInfo("jmolDataScaling",
             new P3[] { minXYZ, maxXYZ, plotScale });
       }
     }
@@ -1400,7 +1400,7 @@ public abstract class AtomSetCollectionReader {
     else if (!previousScript.endsWith(";"))
       previousScript += ";";
     previousScript += script;
-    asc.setAtomSetCollectionAuxiliaryInfo("jmolscript",
+    asc.setInfo("jmolscript",
         previousScript);
   }
 
@@ -1412,7 +1412,7 @@ public abstract class AtomSetCollectionReader {
     else if (!siteScript.endsWith(";"))
       siteScript += ";";
     siteScript += script;
-    asc.setAtomSetCollectionAuxiliaryInfo("sitescript",
+    asc.setInfo("sitescript",
         siteScript);  // checked in ScriptEvaluator.load()
   }
 

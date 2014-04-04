@@ -194,7 +194,7 @@ public class Minimizer implements MinimizerInterface {
     Object val;
     setEnergyUnits();
     if (steps == Integer.MAX_VALUE) {
-      val = vwr.getParameter("minimizationSteps");
+      val = vwr.getP("minimizationSteps");
       if (val != null && val instanceof Integer)
         steps = ((Integer) val).intValue();
     }
@@ -206,7 +206,7 @@ public class Minimizer implements MinimizerInterface {
     if (!haveFixed && bsFixedDefault != null)
       bsFixed.and(bsFixedDefault);
     if (crit <= 0) {
-      val = vwr.getParameter("minimizationCriterion");
+      val = vwr.getP("minimizationCriterion");
       if (val != null && val instanceof Float)
         crit = ((Float) val).floatValue();
     }
@@ -226,7 +226,7 @@ public class Minimizer implements MinimizerInterface {
       Logger.error(GT._("No atoms selected -- nothing to do!"));
       return false;
     }
-    atoms = vwr.getModelSet().at;
+    atoms = vwr.ms.at;
     bsAtoms = BSUtil.copy(bsSelected);
     for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1))
       if (atoms[i].getElementNumber() == 0)
@@ -285,7 +285,7 @@ public class Minimizer implements MinimizerInterface {
   }
 
   private void setEnergyUnits() {
-    String s = vwr.getEnergyUnits();
+    String s = vwr.g.energyUnits;
     units = (s.equalsIgnoreCase("kcal") ? "kcal" : "kJ");
   }
 
@@ -560,7 +560,7 @@ public class Minimizer implements MinimizerInterface {
       vwr.setFloatProperty("_minimizationEnergy", 0);
       vwr.setFloatProperty("_minimizationEnergyDiff", 0);
       vwr.notifyMinimizationStatus();
-      vwr.saveCoordinates("minimize", bsTaint);
+      vwr.stm.saveCoordinates("minimize", bsTaint);
       pFF.steepestDescentInitialize(steps, crit);
       reportEnergy();
       saveCoordinates();

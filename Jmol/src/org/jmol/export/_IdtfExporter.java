@@ -281,7 +281,7 @@ public class _IdtfExporter extends __CartesianExporter {
     */
 
     m.setIdentity();
-    Quat q = vwr.getRotationQuaternion();
+    Quat q = tm.getRotationQuaternion();
     m.setToM3(q.getMatrix());
     q.transformP2(referenceCenter, tempP1);
     m.m03 = -tempP1.x;

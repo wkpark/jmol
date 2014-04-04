@@ -112,7 +112,7 @@ final public class OutputManagerAwt extends OutputManager {
     script0 = PT.rep(script0, "pause scene", "delay "
         + vwr.am.lastFrameDelay + " # scene");
     String[] str = new String[] { script0, script, null };
-    vwr.saveState("_scene0");
+    vwr.stm.saveState("_scene0");
     int nFiles = 0;
     if (scenes[0] != "")
       vwr.zap(true, true, false);
@@ -149,7 +149,7 @@ final public class OutputManagerAwt extends OutputManager {
       }
     }
     try {
-      vwr.eval.runScript(vwr.getSavedState("_scene0"));
+      vwr.eval.runScript(vwr.stm.getSavedState("_scene0"));
     } catch (Exception e) {
       // ignore
     }

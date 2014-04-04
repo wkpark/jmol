@@ -205,19 +205,17 @@ abstract public class AtomCollection {
   
   //////////// atoms //////////////
   
-  LabelToken labeler;
-  @SuppressWarnings("static-access")
-  public String getAtomInfo(int i, String format) {
-    if (format == null)
-      return at[i].getInfo();
-    
-    return getLabeler().formatLabel(vwr, at[i], format);
-  }
-
+  private LabelToken labeler;
+  
   public LabelToken getLabeler() {
     // prevents JavaScript from requiring LabelToken upon core load
     // will be abbreviated to JM., so don't use getOption here.
     return (labeler == null ? labeler = (LabelToken) Interface.getInterface("org.jmol.modelset.LabelToken") : labeler);
+  }
+
+  public String getAtomInfo(int i, String format) {
+    return (format == null ? at[i].getInfo() 
+        : getLabeler().formatLabel(vwr, at[i], format));
   }
 
   public String getAtomInfoXYZ(int i, boolean useChimeFormat) {
@@ -364,7 +362,7 @@ abstract public class AtomCollection {
     //ColorManager
     if (!hasBfactorRange) {
       if (vwr.g.rangeSelected) {
-        calcBfactorRange(vwr.getSelectedAtoms());
+        calcBfactorRange(vwr.bsA());
       } else {
         calcBfactorRange(null);
       }
@@ -628,7 +626,7 @@ abstract public class AtomCollection {
         break;
       case T.label:
       case T.format:
-        vwr.setAtomLabel(sValue, i);
+        vwr.shm.setAtomLabel(sValue, i);
         break;
       case T.occupancy:
         if (iValue < 2)
@@ -653,7 +651,7 @@ abstract public class AtomCollection {
         atom.madAtom = ((short) (fValue * 2000));
         break;
       case T.selected:
-        vwr.setSelectedAtom(atom.i, (fValue != 0));
+        vwr.slm.setSelectedAtom(atom.i, (fValue != 0));
         break;
       case T.temperature:
         if (setBFactor(i, fValue))
@@ -675,7 +673,7 @@ abstract public class AtomCollection {
       }
     }
     if (tok == T.selected)
-      vwr.setSelectedAtom(-1, false);
+      vwr.slm.setSelectedAtom(-1, false);
   }
 
   protected void setElement(Atom atom, int atomicNumber) {
@@ -1096,7 +1094,8 @@ abstract public class AtomCollection {
   private final BS bsEmpty = new BS();
   private final BS bsFoundRectangle = new BS();
 
-  public BS findAtomsInRectangle(Rectangle rect, BS bsModels) {
+  public BS findAtomsInRectangle(Rectangle rect) {
+    BS bsModels = vwr.getVisibleFramesBitSet();
     bsFoundRectangle.and(bsEmpty);
     for (int i = ac; --i >= 0;) {
       Atom atom = at[i];
@@ -2518,7 +2517,7 @@ abstract public class AtomCollection {
     return indices;
   }
 
-  public BS getAtomsWithin(float distance, P4 plane) {
+  public BS getAtomsNearPlane(float distance, P4 plane) {
     BS bsResult = new BS();
     for (int i = ac; --i >= 0;) {
       Atom atom = at[i];
@@ -2530,7 +2529,7 @@ abstract public class AtomCollection {
     return bsResult;
   }
   
-  public BS getAtomsWithinBs(float distance, P3[] points,
+  public BS getAtomsNearPts(float distance, P3[] points,
                                BS bsInclude) {
     BS bsResult = new BS();
     if (points.length == 0 || bsInclude != null && bsInclude.cardinality() == 0)

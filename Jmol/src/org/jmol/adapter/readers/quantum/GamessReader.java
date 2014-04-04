@@ -377,7 +377,7 @@ $SYSTEM OPTIONS
   private void readCalculationInfo(String type) throws Exception {
     if (calcOptions == null) {
       calcOptions = new Hashtable<String, String>();
-      asc.setAtomSetCollectionAuxiliaryInfo("calculationOptions",
+      asc.setInfo("calculationOptions",
           calcOptions);
     }
     while (rd() != null && (line = line.trim()).length() > 0) {

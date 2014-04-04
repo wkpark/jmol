@@ -37,12 +37,12 @@ class MMFFSBCalc extends Calculation {
     calcs.setPairVariables(this);
     calcs.setAngleVariables(this);
     double dr_ab = rab - r0_ab;
-    delta = theta * CalculationsMMFF.RAD_TO_DEG - t0;
+    delta = theta * Calculations.RAD_TO_DEG - t0;
     // equation 5
     energy = k * dr_ab * delta;
 
     if (calcs.logging)
-      calcs.appendLogData(calcs.getDebugLine(CalculationsMMFF.CALC_STRETCH_BEND, this));
+      calcs.appendLogData(calcs.getDebugLine(Calculations.CALC_STRETCH_BEND, this));
     
     if (calcs.gradients) {
       dE = k * dr_ab;

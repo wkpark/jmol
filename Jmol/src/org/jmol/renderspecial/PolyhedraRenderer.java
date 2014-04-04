@@ -66,7 +66,7 @@ public class PolyhedraRenderer extends ShapeRenderer {
     boolean needTranslucent = false;
     if (C.isColixTranslucent(colix)) {
       needTranslucent = true;
-    } else if (!g3d.setColix(colix)) {
+    } else if (!g3d.setC(colix)) {
       return false;
     }
     P3[] vertices = p.vertices;
@@ -80,22 +80,21 @@ public class PolyhedraRenderer extends ShapeRenderer {
     for (int i = vertices.length; --i >= 0;) {
       Atom atom = (vertices[i] instanceof Atom ? (Atom) vertices[i] : null);
       if (atom == null || !atom.isVisible(myVisibilityFlag))
-        vwr.transformPtScr(vertices[i], screens[i]);
+        tm.transformPtScr(vertices[i], screens[i]);
       else
         screens[i].set(atom.sX, atom.sY, atom.sZ);
- System.out.println(i + " " + screens[i]);
     }
 
     isAll = (drawEdges == Polyhedra.EDGES_ALL);
     frontOnly = (drawEdges == Polyhedra.EDGES_FRONT);
 
     // no edges to new points when not collapsed
-    if (!needTranslucent || g3d.setColix(colix))
+    if (!needTranslucent || g3d.setC(colix))
       for (int i = 0, j = 0; j < planes.length;)
         fillFace(p.normixes[i++], screens[planes[j++]], screens[planes[j++]],
             screens[planes[j++]]);
     // edges are not drawn translucently ever
-    if (g3d.setColix(C.getColixTranslucent3(colix, false, 0)))
+    if (g3d.setC(C.getColixTranslucent3(colix, false, 0)))
     for (int i = 0, j = 0; j < planes.length;)
       drawFace(p.normixes[i++], screens[planes[j++]],
           screens[planes[j++]], screens[planes[j++]]);

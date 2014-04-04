@@ -169,7 +169,7 @@ public class MSReader implements MSInterface {
     if (map == null)
       map = htModulation;
     id += "@"
-        + (iModel >= 0 ? iModel : cr.asc.currentAtomSetIndex);
+        + (iModel >= 0 ? iModel : cr.asc.iSet);
     Logger.info("Adding " + id + " " + Escape.e(pt));
     map.put(id, pt);
   }
@@ -185,8 +185,8 @@ public class MSReader implements MSInterface {
       return;
     if (modDebug)
       Logger.debugging = Logger.debuggingHigh = true;
-    cr.asc.setAtomSetCollectionAuxiliaryInfo("someModelsAreModulated", Boolean.TRUE);
-    setModulationForStructure(cr.asc.currentAtomSetIndex, isPost);
+    cr.asc.setInfo("someModelsAreModulated", Boolean.TRUE);
+    setModulationForStructure(cr.asc.iSet, isPost);
     if (modDebug)
       Logger.debugging = Logger.debuggingHigh = false;
   }
@@ -199,7 +199,7 @@ public class MSReader implements MSInterface {
   @Override
   public void finalizeModulation() {
     if (!finalized && modDim > 0 && !modVib) {
-      cr.asc.setAtomSetCollectionAuxiliaryInfo("modulationOn", Boolean.TRUE);
+      cr.asc.setInfo("modulationOn", Boolean.TRUE);
       cr.addJmolScript((haveOccupancy && !isCommensurate ? ";display occupancy >= 0.5" : ""));
     }
     finalized = true;

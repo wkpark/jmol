@@ -50,7 +50,7 @@ public class EchoRenderer extends LabelsRenderer {
           continue;
       }
       if (t.valign == JC.VALIGN_XYZ) {
-        vwr.transformPtScr(t.xyz, pt0i);
+        tm.transformPtScr(t.xyz, pt0i);
         t.setXYZs(pt0i.x, pt0i.y, pt0i.z, pt0i.z);
       } else if (t.movableZPercent != Integer.MAX_VALUE) {
         int z = vwr.zValueFromPercent(t.movableZPercent);
@@ -60,7 +60,7 @@ public class EchoRenderer extends LabelsRenderer {
         t.pointer = JC.POINTER_NONE;
       } else {
         t.pointer = JC.POINTER_ON;
-        vwr.transformPtScr(t.pointerPt, pt0i);
+        tm.transformPtScr(t.pointerPt, pt0i);
         t.atomX = pt0i.x;
         t.atomY = pt0i.y;
         t.atomZ = pt0i.z;
@@ -75,7 +75,7 @@ public class EchoRenderer extends LabelsRenderer {
     if (!isExport) {
       String frameTitle = vwr.getFrameTitle();
       if (frameTitle != null && frameTitle.length() > 0) {
-        if (g3d.setColix(vwr.getColixBackgroundContrast())) {
+        if (g3d.setC(vwr.getColixBackgroundContrast())) {
           if (frameTitle.indexOf("%{") >= 0 || frameTitle.indexOf("@{") >= 0)
             frameTitle = vwr.formatText(frameTitle);
           renderFrameTitle(frameTitle);

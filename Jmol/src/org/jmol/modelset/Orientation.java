@@ -42,7 +42,7 @@ public class Orientation {
     vwr.finalizeTransformParameters();
     if (asDefault) {
       M3 rotationMatrix = (M3) vwr
-          .getModelSetAuxiliaryInfoValue("defaultOrientationMatrix");
+          .ms.getInfoM("defaultOrientationMatrix");
       if (rotationMatrix == null)
         this.rotationMatrix.setScale(1);
       else
@@ -50,25 +50,25 @@ public class Orientation {
     } else {
       vwr.getRotation(this.rotationMatrix);
     }
-    xTrans = vwr.getTranslationXPercent();
-    yTrans = vwr.getTranslationYPercent();
-    zoom = vwr.getZoomSetting();
-    center.setT(vwr.getRotationCenter());
-    windowCenteredFlag = vwr.isWindowCentered();
+    xTrans = vwr.tm.getTranslationXPercent();
+    yTrans = vwr.tm.getTranslationYPercent();
+    zoom = vwr.tm.getZoomSetting();
+    center.setT(vwr.tm.getRotationCenter());
+    windowCenteredFlag = vwr.tm.isWindowCentered();
     rotationRadius = vwr.getFloat(T.rotationradius);
     navigationMode = vwr.getBoolean(T.navigationmode);
     //navigateSurface = vwr.getNavigateSurface();
-    moveToText = vwr.getMoveToText(-1);
+    moveToText = vwr.tm.getMoveToText(-1, false);
     if (navigationMode) {
-      xNav = vwr.getNavigationOffsetPercent('X');
-      yNav = vwr.getNavigationOffsetPercent('Y');
-      navDepth = vwr.getNavigationDepthPercent();
-      navCenter = P3.newP(vwr.getNavigationCenter());
+      xNav = vwr.tm.getNavigationOffsetPercent('X');
+      yNav = vwr.tm.getNavigationOffsetPercent('Y');
+      navDepth = vwr.tm.getNavigationDepthPercent();
+      navCenter = P3.newP(vwr.tm.getNavigationCenter());
     }
-    if (vwr.getCamera().z != 0) { // PyMOL mode
+    if (vwr.tm.camera.z != 0) { // PyMOL mode
       cameraDepth = vwr.getCameraDepth();
-      cameraX = vwr.getCamera().x;
-      cameraY = vwr.getCamera().y;
+      cameraX = vwr.tm.camera.x;
+      cameraY = vwr.tm.camera.y;
     }
   }
 
@@ -88,7 +88,7 @@ public class Orientation {
       else
         vwr.movePyMOL(vwr.eval, timeSeconds, pymolView);
     } else {
-      vwr.setRotationMatrix(rotationMatrix);
+      vwr.tm.setRotation(rotationMatrix);
     }
     return true;
   }

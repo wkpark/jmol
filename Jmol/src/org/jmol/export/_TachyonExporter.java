@@ -201,8 +201,8 @@ public class _TachyonExporter extends __RayTracerExporter {
     
     // as mesh, which uses Cartesian coordinates
     
-    vwr.unTransformPoint(screenBase, tempP1);
-    vwr.unTransformPoint(screenTip, tempP2);
+    tm.unTransformPoint(screenBase, tempP1);
+    tm.unTransformPoint(screenTip, tempP2);
     radius = vwr.unscaleToScreen(screenBase.z, radius);
     M3 matRotateScale = getRotationMatrix(tempP1, tempP2, radius);
     jmolRenderer.drawSurface(getConeMesh(tempP1, matRotateScale, colix), colix);
@@ -243,7 +243,7 @@ public class _TachyonExporter extends __RayTracerExporter {
 
   @Override
   protected void outputEllipsoid(P3 center, float radius, double[] coef, short colix) {
-    vwr.transformPt3f(center, tempP1);
+    tm.transformPt3f(center, tempP1);
     // no support for ellipsoids -- just draw ball
     outputSphere(tempP1.x, tempP1.y, tempP1.z, radius, colix);
   }
@@ -262,9 +262,9 @@ public class _TachyonExporter extends __RayTracerExporter {
         setTempVertex(vertices[indices[i][0]], offset, tempP1);
         setTempVertex(vertices[indices[i][1]], offset, tempP2);
         setTempVertex(vertices[indices[i][2]], offset, tempP3);
-        vwr.transformPt3f(tempP1, tempP1);
-        vwr.transformPt3f(tempP2, tempP2);
-        vwr.transformPt3f(tempP3, tempP3);
+        tm.transformPt3f(tempP1, tempP1);
+        tm.transformPt3f(tempP2, tempP2);
+        tm.transformPt3f(tempP3, tempP3);
         outputTriangle(tempP1, tempP2, tempP3, colix);
       }
       return;

@@ -516,12 +516,12 @@ public class NWChemReader extends MOReader {
         if (!doGetVibration(i + 1))
           continue;
         tokens = getTokens();
-        int iset = asc.currentAtomSetIndex;
-        asc.currentAtomSetIndex = idx++;
+        int iset = asc.iSet;
+        asc.iSet = idx++;
         asc.setAtomSetFrequency(null, null, tokens[i], null);
         asc.setAtomSetModelProperty("IRIntensity", tokens[5]
             + " KM/mol");
-        asc.currentAtomSetIndex = iset;
+        asc.iSet = iset;
       }
     } catch (Exception e) {
       // If exception was thrown, don't do anything here...

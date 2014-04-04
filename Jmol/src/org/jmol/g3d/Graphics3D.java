@@ -651,7 +651,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
    * @return true or false if this is the right pass
    */
   @Override
-  public boolean setColix(short colix) {
+  public boolean setC(short colix) {
     boolean isLast = C.isColixLastAvailable(colix); 
     if (!isLast && colix == colixCurrent && currentShadeIndex == -1)
       return true;
@@ -704,13 +704,13 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     boolean isClipped = x < r || x + r >= width || y < r || y + r >= height;
     if (isClipped && isClippedXY(diameter, x, y))
       return;
-    if (colixRing != 0 && setColix(colixRing)) {
+    if (colixRing != 0 && setC(colixRing)) {
       if (isClipped)
         ((CircleRenderer)circle3d).plotCircleCenteredClipped(x, y, z, diameter);
       else
         ((CircleRenderer)circle3d).plotCircleCenteredUnclipped(x, y, z, diameter);
     }
-    if (colixFill != 0 && setColix(colixFill)) {
+    if (colixFill != 0 && setC(colixFill)) {
       if (isClipped)
         ((CircleRenderer)circle3d).plotFilledCircleCenteredClipped(x, y, z, diameter);
       else
@@ -1038,7 +1038,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   @Override
   public void plotImage(int x, int y, int z, Object image, JmolRendererInterface jmolRenderer,
                         short bgcolix, int width, int height) {
-    setColix(bgcolix);
+    setC(bgcolix);
     if (!isPass2)
       translucencyMask = -1;
     if (bgcolix == 0)
@@ -1150,11 +1150,11 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   public void drawLine(short colixA, short colixB,
                        int x1, int y1, int z1, int x2, int y2, int z2) {
     // backbone and sticks
-    if (!setColix(colixA))
+    if (!setC(colixA))
       colixA = 0;
     boolean isScreenedA = !aap;
     int argbA = argbCurrent;
-    if (!setColix(colixB))
+    if (!setC(colixB))
       colixB = 0;
     if (colixA == 0 && colixB == 0)
       return;
@@ -1175,10 +1175,10 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                            int diameter,
                            int xA, int yA, int zA, int xB, int yB, int zB) {
     //Backbone, Mps, Sticks
-    if (!setColix(colixA))
+    if (!setC(colixA))
       colixA = 0;
     boolean isScreenedA = !aap;
-    if (!setColix(colixB))
+    if (!setC(colixB))
       colixB = 0;
     if (colixA == 0 && colixB == 0)
       return;
@@ -1260,10 +1260,10 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     ((HermiteRenderer) hermite3d).renderHermiteRibbon(fill, border, tension, s0, s1, s2, s3, s4,
         s5, s6, s7, aspectRatio, 1);
     short colix = colixCurrent;
-    setColix(colixBack);
+    setC(colixBack);
     ((HermiteRenderer) hermite3d).renderHermiteRibbon(fill, border, tension, s0, s1, s2, s3, s4,
         s5, s6, s7, aspectRatio, -1);
-    setColix(colix);
+    setC(colix);
   }
 
   @Override
@@ -1402,7 +1402,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     if (colix == colixCurrent && currentShadeIndex == shadeIndex)
       return;
     currentShadeIndex = -1;
-    setColix(colix);
+    setC(colix);
     setColorNoisy(shadeIndex);
   }
 
@@ -1428,7 +1428,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   public void drawQuadrilateral(short colix, P3i screenA, P3i screenB,
                                 P3i screenC, P3i screenD) {
     //mesh only -- translucency has been checked
-    setColix(colix);
+    setC(colix);
     drawLineAB(screenA, screenB);
     drawLineAB(screenB, screenC);
     drawLineAB(screenC, screenD);
@@ -2009,7 +2009,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                                int screenHeight, P3 navOffset, float navDepth) {
     // this is the square and crosshairs for the navigator
     boolean antialiased = isAntialiased();
-    setColix(navDepth < 0 ? C.RED
+    setC(navDepth < 0 ? C.RED
         : navDepth > 100 ? C.GREEN : C.GOLD);
     int x = Math.max(Math.min(width, Math.round(navOffset.x)), 0);
     int y = Math.max(Math.min(height, Math.round(navOffset.y)), 0);
@@ -2023,16 +2023,16 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     drawRect(x - off, y - off, z, 0, h, h);
     off = h;
     h = h >> 1;
-    setColix(minMax[1] < navOffset.x ? C.YELLOW
+    setC(minMax[1] < navOffset.x ? C.YELLOW
             : C.GREEN);
     drawRect(x - off, y, z, 0, h, w);
-    setColix(minMax[0] > navOffset.x ? C.YELLOW
+    setC(minMax[0] > navOffset.x ? C.YELLOW
             : C.GREEN);
     drawRect(x + h, y, z, 0, h, w);
-    setColix(minMax[3] < navOffset.y ? C.YELLOW
+    setC(minMax[3] < navOffset.y ? C.YELLOW
             : C.GREEN);
     drawRect(x, y - off, z, 0, w, h);
-    setColix(minMax[2] > navOffset.y ? C.YELLOW
+    setC(minMax[2] > navOffset.y ? C.YELLOW
             : C.GREEN);
     drawRect(x, y + h, z, 0, w, h);
   }

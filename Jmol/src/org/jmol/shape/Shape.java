@@ -221,7 +221,7 @@ public abstract class Shape {
   protected void setPropS(String propertyName, Object value, BS bsSelected) {
     if (propertyName == "setProperties") {
       if (bsSelected == null)
-        bsSelected = vwr.getSelectedAtoms();
+        bsSelected = vwr.bsA();
       Lst<Object[]> propertyList = (Lst<Object[]>) value;
       while (propertyList.size() > 0) {
         Object[] data = propertyList.remove(0);
@@ -331,7 +331,7 @@ public abstract class Shape {
   }
 
   protected int coordinateInRange(int x, int y, P3 vertex, int dmin2, P3i ptXY) {
-    vwr.transformPtScr(vertex, ptXY);
+    vwr.tm.transformPtScr(vertex, ptXY);
     int d2 = (x - ptXY.x) * (x - ptXY.x) + (y - ptXY.y) * (y - ptXY.y);
     return (d2 < dmin2 ? d2 : -1);
   }

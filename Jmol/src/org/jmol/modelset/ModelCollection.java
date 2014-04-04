@@ -194,15 +194,15 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public String getModelTitle(int modelIndex) {
-    return (String) getModelAuxiliaryInfoValue(modelIndex, "title");
+    return (String) getInfo(modelIndex, "title");
   }
 
   public String getModelFileName(int modelIndex) {
-    return (String) getModelAuxiliaryInfoValue(modelIndex, "fileName");
+    return (String) getInfo(modelIndex, "fileName");
   }
 
   public String getModelFileType(int modelIndex) {
-    return (String) getModelAuxiliaryInfoValue(modelIndex, "fileType");
+    return (String) getInfo(modelIndex, "fileType");
   }
 
   public void setFrameTitle(BS bsFrames, Object title) {
@@ -234,7 +234,7 @@ abstract public class ModelCollection extends BondCollection {
   protected boolean isPDB;
 
   public Properties modelSetProperties;
-  protected Map<String, Object> modelSetAuxiliaryInfo;
+  protected Map<String, Object> msInfo;
 
   protected void calculatePolymers(Group[] groups, int groupCount,
                                    int baseGroupIndex, BS modelsExcluded) {
@@ -319,7 +319,7 @@ abstract public class ModelCollection extends BondCollection {
     return boxInfo.getBoundBoxCornerVector();
   }
 
-  public Point3fi[] getBboxVertices() {
+  public Point3fi[] getBBoxVertices() {
     return boxInfo.getBoundBoxVertices();
   }
 
@@ -390,7 +390,7 @@ abstract public class ModelCollection extends BondCollection {
       bs = null;
     if (bs == null && isBbcageDefault || ac == 0)
       return;
-    bboxModels = getModelBitSet(bboxAtoms = BSUtil.copy(bs), false);
+    bboxModels = getModelBS(bboxAtoms = BSUtil.copy(bs), false);
     if (calcAtomsMinMax(bs, boxInfo) == ac)
       isBbcageDefault = true;
     if (bs == null) { // from modelLoader or reset
@@ -554,7 +554,7 @@ abstract public class ModelCollection extends BondCollection {
                                     BS bsAtoms2, String script2,
                                     boolean addFrameNumber,
                                     boolean postDefinitions) {
-    int iModel = vwr.getCurrentModelIndex();
+    int iModel = vwr.am.cmi;
     if (addFrameNumber) {
       if (thisStateModel != iModel)
         script1 = "frame "
@@ -619,7 +619,7 @@ abstract public class ModelCollection extends BondCollection {
   public void setProteinType(BS bs, STR type) {
     int monomerIndexCurrent = -1;
     int iLast = -1;
-    BS bsModels = getModelBitSet(bs, false);
+    BS bsModels = getModelBS(bs, false);
     setDefaultStructure(bsModels);
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       if (iLast != i - 1)
@@ -669,7 +669,7 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public BS setConformation(BS bsAtoms) {
-    BS bsModels = getModelBitSet(bsAtoms, false);
+    BS bsModels = getModelBS(bsAtoms, false);
     for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1))
       am[i].setConformation(bsAtoms);
     return bsAtoms;
@@ -706,7 +706,7 @@ abstract public class ModelCollection extends BondCollection {
     boolean ok = false;
     for (int i = mc; --i >= 0;)
       if (modelIndex < 0 || i == modelIndex) {
-        Map<String, String> ht = (Map<String, String>) getModelAuxiliaryInfoValue(
+        Map<String, String> ht = (Map<String, String>) getInfo(
             i, "hetNames");
         if (ht == null)
           continue;
@@ -717,31 +717,25 @@ abstract public class ModelCollection extends BondCollection {
         }
       }
     return (ok ? htFull
-        : (Map<String, String>) getModelSetAuxiliaryInfoValue("hetNames"));
+        : (Map<String, String>) getInfoM("hetNames"));
   }
 
-  public Properties getModelSetProperties() {
+  public Properties getMSProperties() {
     return modelSetProperties;
   }
 
-  public Map<String, Object> getModelSetAuxiliaryInfo() {
-    return modelSetAuxiliaryInfo;
+  public Map<String, Object> getMSInfo() {
+    return msInfo;
   }
 
-  public String getModelSetProperty(String propertyName) {
-    // no longer used in Jmol
-    return (modelSetProperties == null ? null : modelSetProperties
-        .getProperty(propertyName));
-  }
-
-  public Object getModelSetAuxiliaryInfoValue(String keyName) {
+  public Object getInfoM(String keyName) {
     // the preferred method now
-    return (modelSetAuxiliaryInfo == null ? null : modelSetAuxiliaryInfo
+    return (msInfo == null ? null : msInfo
         .get(keyName));
   }
 
-  public boolean getModelSetAuxiliaryInfoBoolean(String keyName) {
-    Object val = getModelSetAuxiliaryInfoValue(keyName);
+  public boolean getMSInfoB(String keyName) {
+    Object val = getInfoM(keyName);
     return (val instanceof Boolean && ((Boolean) val).booleanValue());
   }
 
@@ -789,7 +783,7 @@ abstract public class ModelCollection extends BondCollection {
     return false;
   }
 
-  public BS getModelBitSet(BS atomList, boolean allTrajectories) {
+  public BS getModelBS(BS atomList, boolean allTrajectories) {
     BS bs = new BS();
     int modelIndex = 0;
     boolean isAll = (atomList == null);
@@ -902,24 +896,24 @@ abstract public class ModelCollection extends BondCollection {
     return (modelIndex < 0 ? null : am[modelIndex].auxiliaryInfo);
   }
 
-  public void setModelAuxiliaryInfo(int modelIndex, Object key, Object value) {
+  public void setInfo(int modelIndex, Object key, Object value) {
     am[modelIndex].auxiliaryInfo.put((String) key, value);
   }
 
-  public Object getModelAuxiliaryInfoValue(int modelIndex, String key) {
+  public Object getInfo(int modelIndex, String key) {
     if (modelIndex < 0) {
       return null;
     }
     return am[modelIndex].auxiliaryInfo.get(key);
   }
 
-  protected boolean getModelAuxiliaryInfoBoolean(int modelIndex, String keyName) {
+  protected boolean getInfoB(int modelIndex, String keyName) {
     Map<String, Object> info = am[modelIndex].auxiliaryInfo;
     return (info != null && info.containsKey(keyName) && ((Boolean) info
         .get(keyName)).booleanValue());
   }
 
-  protected int getModelAuxiliaryInfoInt(int modelIndex, String keyName) {
+  protected int getInfoI(int modelIndex, String keyName) {
     Map<String, Object> info = am[modelIndex].auxiliaryInfo;
     if (info != null && info.containsKey(keyName)) {
       return ((Integer) info.get(keyName)).intValue();
@@ -927,8 +921,8 @@ abstract public class ModelCollection extends BondCollection {
     return Integer.MIN_VALUE;
   }
 
-  public String getModelAtomProperty(Atom atom, String text) {
-    Object data = getModelAuxiliaryInfoValue(atom.mi, text);
+  public String getAtomProp(Atom atom, String text) {
+    Object data = getInfo(atom.mi, text);
     if (!(data instanceof Object[]))
       return "";
     Object[] sdata = (Object[]) data;
@@ -998,7 +992,7 @@ abstract public class ModelCollection extends BondCollection {
     return am[iModel].getPolymerLeadMidPoints(iPolymer);
   }
 
-  public int getChainCountInModel(int modelIndex, boolean countWater) {
+  public int getChainCountInModelWater(int modelIndex, boolean countWater) {
     if (modelIndex < 0)
       return getChainCount(countWater);
     return am[modelIndex].getChainCount(countWater);
@@ -1017,12 +1011,14 @@ abstract public class ModelCollection extends BondCollection {
     return am[modelIndex].getGroupCount();
   }
 
-  public void calcSelectedGroupsCount(BS bsSelected) {
+  public void calcSelectedGroupsCount() {
+    BS bsSelected = vwr.bsA();
     for (int i = mc; --i >= 0;)
       am[i].calcSelectedGroupsCount(bsSelected);
   }
 
-  public void calcSelectedMonomersCount(BS bsSelected) {
+  public void calcSelectedMonomersCount() {
+    BS bsSelected = vwr.bsA();
     for (int i = mc; --i >= 0;)
       am[i].calcSelectedMonomersCount(bsSelected);
   }
@@ -1378,7 +1374,7 @@ abstract public class ModelCollection extends BondCollection {
       return "";
     if (am[modelIndex].isBioModel)
       return am[modelIndex].getFullPDBHeader();
-    String info = (String) getModelAuxiliaryInfoValue(modelIndex, "fileHeader");
+    String info = (String) getInfo(modelIndex, "fileHeader");
     if (info == null)
       info = modelSetName;
     if (info != null)
@@ -1411,12 +1407,12 @@ abstract public class ModelCollection extends BondCollection {
   public String getAltLocListInModel(int modelIndex) {
     if (modelIndex < 0)
       return "";
-    String str = (String) getModelAuxiliaryInfoValue(modelIndex, "altLocs");
+    String str = (String) getInfo(modelIndex, "altLocs");
     return (str == null ? "" : str);
   }
 
   private String getInsertionListInModel(int modelIndex) {
-    String str = (String) getModelAuxiliaryInfoValue(modelIndex,
+    String str = (String) getInfo(modelIndex,
         "insertionCodes");
     return (str == null ? "" : str);
   }
@@ -1528,9 +1524,9 @@ abstract public class ModelCollection extends BondCollection {
   public V3 getModelDipole(int modelIndex) {
     if (modelIndex < 0)
       return null;
-    V3 dipole = (V3) getModelAuxiliaryInfoValue(modelIndex, "dipole");
+    V3 dipole = (V3) getInfo(modelIndex, "dipole");
     if (dipole == null)
-      dipole = (V3) getModelAuxiliaryInfoValue(modelIndex, "DIPOLE_VEC");
+      dipole = (V3) getInfo(modelIndex, "DIPOLE_VEC");
     return dipole;
   }
 
@@ -1591,9 +1587,8 @@ abstract public class ModelCollection extends BondCollection {
 
   private BS selectedMolecules = new BS();
 
-  //private int selectedMoleculeCount;
-
-  public void calcSelectedMoleculesCount(BS bsSelected) {
+  public void calcSelectedMoleculesCount() {
+    BS bsSelected = vwr.bsA();
     if (moleculeCount == 0)
       getMolecules();
     selectedMolecules.xor(selectedMolecules);
@@ -1747,7 +1742,7 @@ abstract public class ModelCollection extends BondCollection {
     initializeBspf();
     AtomIteratorWithinModel iter;
     if (isMultiModel) {
-      BS bsModels = getModelBitSet(bsSelected, false);
+      BS bsModels = getModelBS(bsSelected, false);
       for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels
           .nextSetBit(i + 1))
         initializeBspt(i);
@@ -1971,7 +1966,7 @@ abstract public class ModelCollection extends BondCollection {
    * @param rd
    * @return the set of atoms
    */
-  public BS getAtomsWithinRD(float distance, BS bs, boolean withinAllModels,
+  public BS getAtomsWithinRadius(float distance, BS bs, boolean withinAllModels,
                              RadiusData rd) {
     BS bsResult = new BS();
     BS bsCheck = getIterativeModels(false);
@@ -2431,7 +2426,7 @@ abstract public class ModelCollection extends BondCollection {
    */
   public int autoHbond(BS bsA, BS bsB, boolean onlyIfHaveCalculated) {
     if (onlyIfHaveCalculated) {
-      BS bsModels = getModelBitSet(bsA, false);
+      BS bsModels = getModelBS(bsA, false);
       for (int i = bsModels.nextSetBit(0); i >= 0 && onlyIfHaveCalculated; i = bsModels
           .nextSetBit(i + 1))
         onlyIfHaveCalculated = !am[i].hasRasmolHBonds;
@@ -2649,11 +2644,11 @@ abstract public class ModelCollection extends BondCollection {
     for (int i = 0; i < mc; ++i) {
       sb.append("\n<model index=\"").appendI(i).append("\" n=\"")
           .append(getModelNumberDotted(i)).append("\" id=")
-          .append(PT.esc("" + getModelAuxiliaryInfoValue(i, "modelID")));
+          .append(PT.esc("" + getInfo(i, "modelID")));
       int ib = vwr.getJDXBaseModelIndex(i);
       if (ib != i)
         sb.append(" baseModelId=").append(
-            PT.esc((String) getModelAuxiliaryInfoValue(ib, "jdxModelID")));
+            PT.esc((String) getInfo(ib, "jdxModelID")));
       sb.append(" name=").append(PT.esc(getModelName(i))).append(" title=")
           .append(PT.esc(getModelTitle(i)))
           .append(" hasVibrationVectors=\"")
@@ -2734,13 +2729,13 @@ abstract public class ModelCollection extends BondCollection {
       modelNumbersForAtomLabel[i] = modelNames[i] = f + "." + pt;
     }
     thisStateModel = -1;
-    String[] group3Lists = (String[]) getModelSetAuxiliaryInfoValue("group3Lists");
+    String[] group3Lists = (String[]) getInfoM("group3Lists");
     if (group3Lists != null) {
-      int[][] group3Counts = (int[][]) getModelSetAuxiliaryInfoValue("group3Counts");
+      int[][] group3Counts = (int[][]) getInfoM("group3Counts");
       group3Lists = AU.arrayCopyS(group3Lists, newModelCount);
       group3Counts = AU.arrayCopyII(group3Counts, newModelCount);
-      modelSetAuxiliaryInfo.put("group3Lists", group3Lists);
-      modelSetAuxiliaryInfo.put("group3Counts", group3Counts);
+      msInfo.put("group3Lists", group3Lists);
+      msInfo.put("group3Counts", group3Counts);
     }
     unitCells = (SymmetryInterface[]) AU.arrayCopyObject(unitCells,
         newModelCount);
@@ -2776,8 +2771,8 @@ abstract public class ModelCollection extends BondCollection {
     modelNames = (String[]) AU.deleteElements(modelNames, modelIndex, 1);
     frameTitles = (String[]) AU.deleteElements(frameTitles, modelIndex, 1);
     thisStateModel = -1;
-    String[] group3Lists = (String[]) getModelSetAuxiliaryInfoValue("group3Lists");
-    int[][] group3Counts = (int[][]) getModelSetAuxiliaryInfoValue("group3Counts");
+    String[] group3Lists = (String[]) getInfoM("group3Lists");
+    int[][] group3Counts = (int[][]) getInfoM("group3Counts");
     int ptm = modelIndex + 1;
     if (group3Lists != null && group3Lists[ptm] != null) {
       for (int i = group3Lists[ptm].length() / 6; --i >= 0;)
@@ -2789,9 +2784,9 @@ abstract public class ModelCollection extends BondCollection {
         }
     }
     if (group3Lists != null) {
-      modelSetAuxiliaryInfo.put("group3Lists",
+      msInfo.put("group3Lists",
           AU.deleteElements(group3Lists, modelIndex, 1));
-      modelSetAuxiliaryInfo.put("group3Counts",
+      msInfo.put("group3Counts",
           AU.deleteElements(group3Counts, modelIndex, 1));
     }
 
@@ -2883,7 +2878,7 @@ abstract public class ModelCollection extends BondCollection {
     boolean isDelete = false;
     if (atomicNumber > 0) {
       setElement(atom, atomicNumber);
-      vwr.setShapeSizeRD(JC.SHAPE_BALLS, vwr.getDefaultRadiusData(),
+      vwr.shm.setShapeSizeBs(JC.SHAPE_BALLS, 0, vwr.rd,
           BSUtil.newAndSetBit(atomIndex));
       setAtomName(atomIndex, type + atom.getAtomNumber());
       if (!am[atom.mi].isModelKit)
@@ -2925,7 +2920,7 @@ abstract public class ModelCollection extends BondCollection {
 
       // 4) clear out all atoms within 1.0 angstrom
       validateBspf(false);
-      bs = getAtomsWithinRD(1.0f, bsA, false, null);
+      bs = getAtomsWithinRadius(1.0f, bsA, false, null);
       bs.andNot(bsA);
       if (bs.nextSetBit(0) >= 0)
         vwr.deleteAtoms(bs, false);
@@ -3296,7 +3291,7 @@ abstract public class ModelCollection extends BondCollection {
     int errCode = -1;
     String fname = null;
     for (int i = 0; i < mc; i++) {
-      String mid = (String) getModelAuxiliaryInfoValue(i, "modelID");
+      String mid = (String) getInfo(i, "modelID");
       String mnum = (id.startsWith("~") ? "~" + getModelNumberDotted(i) : null);
       if (mnum == null && mid == null && (mid = getModelTitle(i)) == null)
         continue;
@@ -3318,7 +3313,7 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public Map<String, Object> getAuxiliaryInfo(BS bsModels) {
-    Map<String, Object> info = modelSetAuxiliaryInfo;
+    Map<String, Object> info = msInfo;
     if (info == null)
       return null;
     Lst<Map<String, Object>> models = new Lst<Map<String, Object>>();
@@ -3402,7 +3397,7 @@ abstract public class ModelCollection extends BondCollection {
     if (pt == null)
       pt = new Point3fi();
     pt.setT(at[i]);
-    pt = vwr.getVibrationPoint(v, pt);
+    pt = vwr.tm.getVibrationPoint(v, pt, Float.NaN);
     pt.sD = -1;
     return pt;
   }

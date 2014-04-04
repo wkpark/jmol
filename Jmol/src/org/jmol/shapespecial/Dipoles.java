@@ -220,7 +220,7 @@ public class Dipoles extends Shape {
 
     if ("startSet" == propertyName) {
       BS atomset = (BS) value;
-      startCoord = vwr.getAtomSetCenter(atomset);
+      startCoord = vwr.ms.getAtomSetCenter(atomset);
       tempDipole.set(startCoord, P3.new3(0, 0, 0), dipoleValue);
       if (BSUtil.cardinalityOf(atomset) == 1)
         atomIndex1 = atomset.nextSetBit(0);
@@ -251,7 +251,7 @@ public class Dipoles extends Shape {
             tempDipole.dipoleValue = dipoleValue;
         }
       } else {
-        tempDipole.set(startCoord, vwr.getAtomSetCenter(atomset),
+        tempDipole.set(startCoord, vwr.ms.getAtomSetCenter(atomset),
             dipoleValue);
       }
       //NOTTTTTT!!!! currentDipole = tempDipole;
@@ -434,7 +434,7 @@ public class Dipoles extends Shape {
         tempDipole.offsetAngstroms, tempDipole.offsetPercent,
         tempDipole.offsetSide, tempDipole.origin, tempDipole.vector);
     currentDipole.isUserValue = isUserValue;
-    currentDipole.modelIndex = vwr.getCurrentModelIndex();
+    currentDipole.modelIndex = vwr.am.cmi;
   }
 
   final private static float E_ANG_PER_DEBYE = 0.208194f;
@@ -533,7 +533,7 @@ public class Dipoles extends Shape {
     if (thisID == null || thisID.length() == 0)
       thisID = "dipole" + (dipoleCount + 1);
     Dipole d = dipoles[dipoleCount++] = new Dipole(vwr
-        .getCurrentModelIndex(), thisID, dipoleInfo, colix, DEFAULT_MAD, true);
+        .am.cmi, thisID, dipoleInfo, colix, DEFAULT_MAD, true);
     return d;
   }
 
@@ -605,7 +605,7 @@ public class Dipoles extends Shape {
     if (currentDipole == null)
       return;
     currentDipole.visible = true;
-    currentDipole.modelIndex = vwr.getCurrentModelIndex();
+    currentDipole.modelIndex = vwr.am.cmi;
   }
 
   @Override

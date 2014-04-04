@@ -120,7 +120,7 @@ public class Contact extends Isosurface {
 
     BS bs;
     ac = vwr.getAtomCount();
-    atoms = vwr.getModelSet().at;
+    atoms = vwr.ms.at;
 
     int intramolecularMode = (int) (parameters == null || parameters.length < 2 ? 0
         : parameters[1]);
@@ -249,16 +249,16 @@ public class Contact extends Isosurface {
     }
     ColorEncoder ce = null;
     if (colorByType) {
-      ce = vwr.getColorEncoder("rwb");
+      ce = vwr.cm.getColorEncoder("rwb");
       ce.setRange(-0.5f, 0.5f, false);
     } else if (defaultColor != null) {
       setPropI("color", Integer.valueOf(CU
           .getArgbFromString(defaultColor)), null);
     } else if (displayType == T.nci) {
-      ce = vwr.getColorEncoder("bgr");
+      ce = vwr.cm.getColorEncoder("bgr");
       ce.setRange(-0.03f, 0.03f, false);
     } else {
-      ce = vwr.getColorEncoder("rgb");
+      ce = vwr.cm.getColorEncoder("rgb");
       if (colorDensity)
         ce.setRange(-0.3f, 0.3f, false);
       else

@@ -169,7 +169,7 @@ class JmolObject {
       sm.vwr.defineAtomSets((Map<String, Object>) info);
       return;
     case T.movie:
-      sm.vwr.setMovie((Map<String, Object>) info);
+      sm.vwr.am.setMovie((Map<String, Object>) info);
       return;
     case T.frame:
       int frame = ((Integer) info).intValue();
@@ -181,8 +181,8 @@ class JmolObject {
       }
       return;
     case T.scene:
-      sm.vwr.saveScene(jmolName, (Map<String, Object>) info);
-      sm.vwr.saveOrientation(jmolName,
+      sm.vwr.stm.saveScene(jmolName, (Map<String, Object>) info);
+      sm.vwr.stm.saveOrientation(jmolName,
           (float[]) ((Map<String, Object>) info).get("pymolView"));
       return;
     case JC.SHAPE_LABELS:
@@ -210,7 +210,7 @@ class JmolObject {
     case JC.SHAPE_TRACE:
     case JC.SHAPE_BACKBONE:
       sm.loadShape(id);
-      BS bsCarb = m.getAtomBits(T.carbohydrate, null);
+      BS bsCarb = m.getAtoms(T.carbohydrate, null);
       BSUtil.andNot(bsAtoms, bsCarb);
       break;
     case JC.SHAPE_DOTS:
@@ -262,7 +262,7 @@ class JmolObject {
       sb = new SB();
       sb.append("isosurface ID ").append(PT.esc(sID));
       if (modelIndex < 0)
-        modelIndex = sm.vwr.getCurrentModelIndex();
+        modelIndex = sm.vwr.am.cmi;
       if (bsAtoms == null) {
         // point display of map 
         sb.append(" model ")
@@ -328,7 +328,7 @@ class JmolObject {
         sb.append(";isosurface cache");
       break;
     case T.mesh:
-      modelIndex = sm.vwr.getCurrentModelIndex();
+      modelIndex = sm.vwr.am.cmi;
       Lst<Object> mesh = (Lst<Object>) info;
       sID = mesh.get(mesh.size() - 2).toString();
       sb = new SB();

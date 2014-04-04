@@ -84,7 +84,7 @@ public class ActionManager implements EventManager {
       int atomIndex = vwr.findNearestAtomIndex(current.x, current.y);
       if (atomIndex < 0)
         return;
-      boolean isLabel = (getAtomPickingMode() == PICKING_LABEL && isBound(
+      boolean isLabel = (getAtomPickingMode() == PICKING_LABEL && bnd(
           Binding
               .getMouseAction(clickedCount, moved.modifiers, Event.DRAGGED),
           ACTION_dragLabel));
@@ -108,7 +108,7 @@ public class ActionManager implements EventManager {
                            P3 pt, long time) {
   }
 
-  boolean isBound(int mouseAction, int jmolAction) {
+  boolean bnd(int mouseAction, int jmolAction) {
     return b.isBound(mouseAction, jmolAction);
   }
 
@@ -117,7 +117,7 @@ public class ActionManager implements EventManager {
    * @param desc
    * @param name
    */
-  void bindAction(String desc, String name) {
+  void bind(String desc, String name) {
     int jmolAction = getActionFromName(name);
     int mouseAction = Binding.getMouseActionStr(desc);
     if (mouseAction == 0)
@@ -985,7 +985,7 @@ public class ActionManager implements EventManager {
         checkMotionRotateZoom(LEFT_DRAGGED, 0, 0, 0, false);
         return;
       }
-      if (vwr.getCursor() == GenericPlatform.CURSOR_ZOOM)//if (dragSelectedMode)
+      if (vwr.currentCursor == GenericPlatform.CURSOR_ZOOM)//if (dragSelectedMode)
         vwr.setCursor(GenericPlatform.CURSOR_DEFAULT);
       return;
     case Event.PRESSED:
@@ -1044,7 +1044,7 @@ public class ActionManager implements EventManager {
       clicked.setCurrent(current, clickedCount);
       vwr.setFocus();
       if (apm != PICKING_SELECT_ATOM
-          && isBound(Binding.getMouseAction(1, buttonMods, Event.PRESSED),
+          && bnd(Binding.getMouseAction(1, buttonMods, Event.PRESSED),
               ACTION_selectAndDrag))
         return;
       clickAction = Binding.getMouseAction(clickedCount, buttonMods,
@@ -1056,7 +1056,7 @@ public class ActionManager implements EventManager {
 
   private void checkPressedAction(int x, int y, long time) {
     int buttonMods = Binding.getButtonMods(pressAction);
-    boolean isSelectAndDrag = isBound(Binding.getMouseAction(1, buttonMods,
+    boolean isSelectAndDrag = bnd(Binding.getMouseAction(1, buttonMods,
         Event.PRESSED), ACTION_selectAndDrag);
     if (buttonMods != 0) {
       pressAction = vwr.notifyMouseClicked(x, y, pressAction,
@@ -1070,9 +1070,9 @@ public class ActionManager implements EventManager {
       Logger.debug(Binding.getMouseActionName(pressAction, false));
 
     if (drawMode
-        && (isBound(dragAction, ACTION_dragDrawObject) || isBound(dragAction,
+        && (bnd(dragAction, ACTION_dragDrawObject) || bnd(dragAction,
             ACTION_dragDrawPoint)) || labelMode
-        && isBound(dragAction, ACTION_dragLabel)) {
+        && bnd(dragAction, ACTION_dragLabel)) {
       vwr.checkObjectDragged(Integer.MIN_VALUE, 0, x, y, dragAction);
       return;
     }
@@ -1080,27 +1080,27 @@ public class ActionManager implements EventManager {
     boolean isBound = false;
     switch (apm) {
     case PICKING_ASSIGN_ATOM:
-      isBound = isBound(clickAction, ACTION_assignNew);
+      isBound = bnd(clickAction, ACTION_assignNew);
       break;
     case PICKING_DRAG_ATOM:
-      isBound = isBound(dragAction, ACTION_dragAtom)
-          || isBound(dragAction, ACTION_dragZ);
+      isBound = bnd(dragAction, ACTION_dragAtom)
+          || bnd(dragAction, ACTION_dragZ);
       break;
     case PICKING_DRAG_SELECTED:
     case PICKING_DRAG_LIGAND:
     case PICKING_DRAG_MOLECULE:
-      isBound = isBound(dragAction, ACTION_dragAtom)
-          || isBound(dragAction, ACTION_rotateSelected)
-          || isBound(dragAction, ACTION_dragZ);
+      isBound = bnd(dragAction, ACTION_dragAtom)
+          || bnd(dragAction, ACTION_rotateSelected)
+          || bnd(dragAction, ACTION_dragZ);
       break;
     case PICKING_DRAG_MINIMIZE:
-      isBound = isBound(dragAction, ACTION_dragMinimize)
-          || isBound(dragAction, ACTION_dragZ);
+      isBound = bnd(dragAction, ACTION_dragMinimize)
+          || bnd(dragAction, ACTION_dragZ);
       break;
     case PICKING_DRAG_MINIMIZE_MOLECULE:
-      isBound = isBound(dragAction, ACTION_dragMinimizeMolecule)
-          || isBound(dragAction, ACTION_rotateSelected)
-          || isBound(dragAction, ACTION_dragZ);
+      isBound = bnd(dragAction, ACTION_dragMinimizeMolecule)
+          || bnd(dragAction, ACTION_rotateSelected)
+          || bnd(dragAction, ACTION_dragZ);
       break;
     }
     if (isBound) {
@@ -1113,7 +1113,7 @@ public class ActionManager implements EventManager {
       }
       return;
     }
-    if (isBound(pressAction, ACTION_popupMenu)) {
+    if (bnd(pressAction, ACTION_popupMenu)) {
       char type = 'j';
       if (vwr.getBoolean(T.modelkitmode)) {
         Map<String, Object> t = vwr.checkObjectClicked(x, y, LEFT_CLICKED);
@@ -1131,8 +1131,8 @@ public class ActionManager implements EventManager {
       }
       if (!haveSelection)
         return;
-      if (isBound(dragAction, ACTION_dragSelected)
-          || isBound(dragAction, ACTION_dragZ))
+      if (bnd(dragAction, ACTION_dragSelected)
+          || bnd(dragAction, ACTION_dragZ))
         vwr.moveSelected(Integer.MIN_VALUE, 0, Integer.MIN_VALUE,
             Integer.MIN_VALUE, Integer.MIN_VALUE, null, false, false);
       return;
@@ -1164,12 +1164,12 @@ public class ActionManager implements EventManager {
       return;
 
     if (vwr.getRotateBondIndex() >= 0) {
-      if (isBound(dragWheelAction, ACTION_rotateBranch)) {
+      if (bnd(dragWheelAction, ACTION_rotateBranch)) {
         vwr.moveSelected(deltaX, deltaY, Integer.MIN_VALUE, x, y, null,
             false, false);
         return;
       }
-      if (!isBound(dragWheelAction, ACTION_rotate))
+      if (!bnd(dragWheelAction, ACTION_rotate))
         vwr.setRotateBondIndex(-1);
     }
     BS bs = null;
@@ -1177,12 +1177,12 @@ public class ActionManager implements EventManager {
       switch (apm) {
       case PICKING_DRAG_SELECTED:
         setMotion(GenericPlatform.CURSOR_MOVE, true);
-        if (isBound(dragWheelAction, ACTION_rotateSelected)
+        if (bnd(dragWheelAction, ACTION_rotateSelected)
             && vwr.getBoolean(T.allowrotateselected)) {
           vwr.rotateSelected(getDegrees(deltaX, 0), getDegrees(deltaY, 1),
               null);
         } else {
-          vwr.moveSelected(deltaX, deltaY, (isBound(dragWheelAction,
+          vwr.moveSelected(deltaX, deltaY, (bnd(dragWheelAction,
               ACTION_dragZ) ? -deltaY : Integer.MIN_VALUE), Integer.MIN_VALUE,
               Integer.MIN_VALUE, null, true, false);
         }
@@ -1190,7 +1190,7 @@ public class ActionManager implements EventManager {
       case PICKING_DRAG_LIGAND:
       case PICKING_DRAG_MOLECULE:
       case PICKING_DRAG_MINIMIZE_MOLECULE:
-        bs = vwr.getAtomBits(T.molecule, BSUtil.newAndSetBit(dragAtomIndex));
+        bs = vwr.ms.getAtoms(T.molecule, BSUtil.newAndSetBit(dragAtomIndex));
         if (apm == PICKING_DRAG_LIGAND)
           bs.and(vwr.getAtomBitSet("ligand"));
         //$FALL-THROUGH$
@@ -1200,7 +1200,7 @@ public class ActionManager implements EventManager {
           vwr.undoMoveActionClear(dragAtomIndex, AtomCollection.TAINT_COORD,
               true);
         setMotion(GenericPlatform.CURSOR_MOVE, true);
-        if (isBound(dragWheelAction, ACTION_rotateSelected)) {
+        if (bnd(dragWheelAction, ACTION_rotateSelected)) {
           vwr.rotateSelected(getDegrees(deltaX, 0), getDegrees(deltaY, 1),
               bs);
         } else {
@@ -1213,7 +1213,7 @@ public class ActionManager implements EventManager {
           }
           vwr
               .moveAtomWithHydrogens(dragAtomIndex, deltaX, deltaY,
-                  (isBound(dragWheelAction, ACTION_dragZ) ? -deltaY
+                  (bnd(dragWheelAction, ACTION_dragZ) ? -deltaY
                       : Integer.MIN_VALUE), bs);
         }
         // NAH! if (atomPickingMode == PICKING_DRAG_MINIMIZE_MOLECULE && (dragGesture.getPointCount() % 5 == 0))
@@ -1222,7 +1222,7 @@ public class ActionManager implements EventManager {
       }
     }
 
-    if (dragAtomIndex >= 0 && mode == Event.DRAGGED && isBound(clickAction, ACTION_assignNew)
+    if (dragAtomIndex >= 0 && mode == Event.DRAGGED && bnd(clickAction, ACTION_assignNew)
         && apm == PICKING_ASSIGN_ATOM) {
       int nearestAtomIndex = vwr.findNearestAtomIndexMovable(x, y, false);
       if (nearestAtomIndex >= 0) {
@@ -1245,15 +1245,15 @@ public class ActionManager implements EventManager {
       return;
     }
 
-    if (!drawMode && !labelMode && isBound(dragWheelAction, ACTION_translate)) {
+    if (!drawMode && !labelMode && bnd(dragWheelAction, ACTION_translate)) {
       vwr.translateXYBy(deltaX, deltaY);
       return;
     }
     if (dragSelectedMode
         && haveSelection
-        && (isBound(dragWheelAction, ACTION_dragSelected) || isBound(
+        && (bnd(dragWheelAction, ACTION_dragSelected) || bnd(
             dragWheelAction, ACTION_rotateSelected))) {
-      int iatom = vwr.getSelectedAtoms().nextSetBit(0);
+      int iatom = vwr.bsA().nextSetBit(0);
       if (iatom < 0)
         return;
       if (dragGesture.getPointCount() == 1)
@@ -1262,7 +1262,7 @@ public class ActionManager implements EventManager {
         vwr.moveSelected(Integer.MAX_VALUE, 0, Integer.MIN_VALUE,
             Integer.MIN_VALUE, Integer.MIN_VALUE, null, false, false);
       setMotion(GenericPlatform.CURSOR_MOVE, true);
-      if (isBound(dragWheelAction, ACTION_rotateSelected)
+      if (bnd(dragWheelAction, ACTION_rotateSelected)
           && vwr.getBoolean(T.allowrotateselected))
         vwr.rotateSelected(getDegrees(deltaX, 0), getDegrees(deltaY, 1),
             null);
@@ -1273,21 +1273,21 @@ public class ActionManager implements EventManager {
     }
 
     if (drawMode
-        && (isBound(dragWheelAction, ACTION_dragDrawObject) || isBound(
+        && (bnd(dragWheelAction, ACTION_dragDrawObject) || bnd(
             dragWheelAction, ACTION_dragDrawPoint)) || labelMode
-        && isBound(dragWheelAction, ACTION_dragLabel)) {
+        && bnd(dragWheelAction, ACTION_dragLabel)) {
       setMotion(GenericPlatform.CURSOR_MOVE, true);
       vwr.checkObjectDragged(dragged.x, dragged.y, x, y, dragWheelAction);
       return;
     }
     if (checkMotionRotateZoom(dragWheelAction, x, deltaX, deltaY, true)) {
-      if (vwr.getSlabEnabled() && checkSlideZoom(dragWheelAction))
+      if (vwr.tm.slabEnabled && checkSlideZoom(dragWheelAction))
         vwr.slabDepthByPixels(deltaY);
       else
         vwr.zoomBy(deltaY);
       return;
     }
-    if (isBound(dragWheelAction, ACTION_rotate)) {
+    if (bnd(dragWheelAction, ACTION_rotate)) {
       float degX = getDegrees(deltaX, 0);
       float degY = getDegrees(deltaY, 1);
       if (vwr.g.useArcBall)
@@ -1296,7 +1296,7 @@ public class ActionManager implements EventManager {
         vwr.rotateXYBy(degX, degY);
       return;
     }
-    if (isBound(dragWheelAction, ACTION_rotateZorZoom)) {
+    if (bnd(dragWheelAction, ACTION_rotateZorZoom)) {
       if (deltaX == 0 && Math.abs(deltaY) > 1) {
         // if (deltaY < 0 && deltaX > deltaY || deltaY > 0 && deltaX < deltaY)
         setMotion(GenericPlatform.CURSOR_ZOOM, true);
@@ -1308,24 +1308,24 @@ public class ActionManager implements EventManager {
             Integer.MAX_VALUE);
       }
       return;
-    } else if (isBound(dragWheelAction, ACTION_wheelZoom)) {
+    } else if (bnd(dragWheelAction, ACTION_wheelZoom)) {
       zoomByFactor(deltaY, Integer.MAX_VALUE, Integer.MAX_VALUE);
       return;
-    } else if (isBound(dragWheelAction, ACTION_rotateZ)) {
+    } else if (bnd(dragWheelAction, ACTION_rotateZ)) {
       setMotion(GenericPlatform.CURSOR_MOVE, true);
       vwr.rotateZBy(-deltaX, Integer.MAX_VALUE, Integer.MAX_VALUE);
       return;
     }
-    if (vwr.getSlabEnabled()) {
-      if (isBound(dragWheelAction, ACTION_depth)) {
+    if (vwr.tm.slabEnabled) {
+      if (bnd(dragWheelAction, ACTION_depth)) {
         vwr.depthByPixels(deltaY);
         return;
       }
-      if (isBound(dragWheelAction, ACTION_slab)) {
+      if (bnd(dragWheelAction, ACTION_slab)) {
         vwr.slabByPixels(deltaY);
         return;
       }
-      if (isBound(dragWheelAction, ACTION_slabAndDepth)) {
+      if (bnd(dragWheelAction, ACTION_slabAndDepth)) {
         vwr.slabDepthByPixels(deltaY);
         return;
       }
@@ -1347,7 +1347,7 @@ public class ActionManager implements EventManager {
         minimize(true);
     }
     if (apm == PICKING_ASSIGN_ATOM
-        && isBound(clickAction, ACTION_assignNew)) {
+        && bnd(clickAction, ACTION_assignNew)) {
       if (mp == null || dragAtomIndex < 0)
         return;
       assignNew(x, y);
@@ -1364,13 +1364,13 @@ public class ActionManager implements EventManager {
           Event.RELEASED), Event.RELEASED);
     }
     if (drawMode
-        && (isBound(dragAction, ACTION_dragDrawObject) || isBound(dragAction,
+        && (bnd(dragAction, ACTION_dragDrawObject) || bnd(dragAction,
             ACTION_dragDrawPoint)) || labelMode
-        && isBound(dragAction, ACTION_dragLabel)) {
+        && bnd(dragAction, ACTION_dragLabel)) {
       vwr.checkObjectDragged(Integer.MAX_VALUE, 0, x, y, dragAction);
       return;
     }
-    if (dragSelectedMode && isBound(dragAction, ACTION_dragSelected)
+    if (dragSelectedMode && bnd(dragAction, ACTION_dragSelected)
         && haveSelection)
       vwr.moveSelected(Integer.MAX_VALUE, 0, Integer.MIN_VALUE,
           Integer.MIN_VALUE, Integer.MIN_VALUE, null, false, false);
@@ -1380,7 +1380,7 @@ public class ActionManager implements EventManager {
       return;
 
     if (vwr.getBoolean(T.allowgestures)) {
-      if (isBound(dragAction, ACTION_swipe)) {
+      if (bnd(dragAction, ACTION_swipe)) {
         float speed = getExitRate();
         if (speed > 0)
           vwr.spinXYBy(dragGesture.getDX(4, 2), dragGesture.getDY(4, 2),
@@ -1408,7 +1408,7 @@ public class ActionManager implements EventManager {
     }
     if (Logger.debugging)
       Logger.debug(Binding.getMouseActionName(clickAction, false));
-    if (isBound(clickAction, ACTION_clickFrank)) {
+    if (bnd(clickAction, ACTION_clickFrank)) {
       if (vwr.frankClicked(x, y)) {
         vwr.popupMenu(-x, y, 'j');
         return;
@@ -1452,14 +1452,14 @@ public class ActionManager implements EventManager {
     }
     setMouseMode();
 
-    if (isBound(clickAction, ACTION_stopMotion)) {
-      vwr.stopMotion();
+    if (bnd(clickAction, ACTION_stopMotion)) {
+      vwr.tm.stopMotion();
       // continue checking --- no need to exit here
     }
 
     if (vwr.getBoolean(T.navigationmode)
         && apm == PICKING_NAVIGATE
-        && isBound(clickAction, ACTION_pickNavigate)) {
+        && bnd(clickAction, ACTION_pickNavigate)) {
       vwr.navTranslatePercent(x * 100f / vwr.getScreenWidth() - 50f, y
           * 100f / vwr.getScreenHeight() - 50f);
       return;
@@ -1468,7 +1468,7 @@ public class ActionManager implements EventManager {
     // bond change by clicking on a bond
     // bond deletion by clicking a bond
     if (isBond) {
-      if (isBound(clickAction, bondPickingMode == PICKING_ROTATE_BOND
+      if (bnd(clickAction, bondPickingMode == PICKING_ROTATE_BOND
           || bondPickingMode == PICKING_ASSIGN_BOND ? ACTION_assignNew
           : ACTION_deleteBond)) {
         bondPicked(((Integer) t.get("index")).intValue());
@@ -1478,14 +1478,14 @@ public class ActionManager implements EventManager {
       return;
     } else {
       if (apm != PICKING_ASSIGN_ATOM && mp != null
-          && isBound(clickAction, ACTION_pickMeasure)) {
+          && bnd(clickAction, ACTION_pickMeasure)) {
         atomOrPointPicked(nearestAtomIndex, nearestPoint);
         if (addToMeasurement(nearestAtomIndex, nearestPoint, false) == 4)
           toggleMeasurement();
         return;
       }
 
-      if (isBound(clickAction, ACTION_setMeasure)) {
+      if (bnd(clickAction, ACTION_setMeasure)) {
         if (mp != null) {
           addToMeasurement(nearestAtomIndex, nearestPoint, true);
           toggleMeasurement();
@@ -1504,7 +1504,7 @@ public class ActionManager implements EventManager {
         atomOrPointPicked(nearestAtomIndex, nearestPoint);
       return;
     }
-    if (isBound(clickAction, ACTION_reset)) {
+    if (bnd(clickAction, ACTION_reset)) {
       if (nearestAtomIndex < 0)
         reset();
       return;
@@ -1530,7 +1530,7 @@ public class ActionManager implements EventManager {
             + (iatom >= 0 ? "" + iatom : "") + "})");
         if (iatom >= 0)
           script = PT.rep(script, "_POINT", Escape.eP(vwr
-              .getModelSet().at[iatom]));
+              .ms.at[iatom]));
       }
       if (!drawMode
           && (script.indexOf("_POINT") >= 0 || script.indexOf("_OBJECT") >= 0 || script
@@ -1579,15 +1579,15 @@ public class ActionManager implements EventManager {
   private boolean checkMotionRotateZoom(int mouseAction, int x, int deltaX,
                                         int deltaY, boolean isDrag) {
     boolean isSlideZoom = checkSlideZoom(mouseAction);
-    boolean isRotateXY = isBound(mouseAction, ACTION_rotate);
-    boolean isRotateZorZoom = isBound(mouseAction, ACTION_rotateZorZoom);
+    boolean isRotateXY = bnd(mouseAction, ACTION_rotate);
+    boolean isRotateZorZoom = bnd(mouseAction, ACTION_rotateZorZoom);
     if (!isSlideZoom && !isRotateXY && !isRotateZorZoom)
       return false;
     boolean isZoom = (isRotateZorZoom && (deltaX == 0 || Math.abs(deltaY) > 5 * Math
         .abs(deltaX)));
     int cursor = (isZoom || isZoomArea(moved.x)
-        || isBound(mouseAction, ACTION_wheelZoom) ? GenericPlatform.CURSOR_ZOOM : isRotateXY
-        || isRotateZorZoom ? GenericPlatform.CURSOR_MOVE : isBound(mouseAction,
+        || bnd(mouseAction, ACTION_wheelZoom) ? GenericPlatform.CURSOR_ZOOM : isRotateXY
+        || isRotateZorZoom ? GenericPlatform.CURSOR_MOVE : bnd(mouseAction,
         ACTION_center) ? GenericPlatform.CURSOR_HAND : GenericPlatform.CURSOR_DEFAULT);
     setMotion(cursor, isDrag);
     return (isZoom || isSlideZoom);
@@ -1603,19 +1603,18 @@ public class ActionManager implements EventManager {
     // drag and wheel and release
     action = action & ~Binding.DRAG | Binding.CLICK;
     return rubberbandSelectionMode
-        && (isBound(action, ACTION_selectToggle)
-            || isBound(action, ACTION_selectOr) || isBound(action,
+        && (bnd(action, ACTION_selectToggle)
+            || bnd(action, ACTION_selectOr) || bnd(action,
             ACTION_selectAndNot));
   }
 
   Rectangle getRubberBand() {
-    if (!rubberbandSelectionMode || rectRubber.x == Integer.MAX_VALUE)
-      return null;
-    return rectRubber;
+    return (rubberbandSelectionMode && rectRubber.x != Integer.MAX_VALUE ? rectRubber
+        : null);
   }
 
   private void calcRectRubberBand() {
-    int factor = (vwr.isAntialiased() ? 2 : 1);
+    int factor = (vwr.antialiased ? 2 : 1);
     if (current.x < pressed.x) {
       rectRubber.x = current.x * factor;
       rectRubber.width = (pressed.x - current.x) * factor;
@@ -1640,7 +1639,7 @@ public class ActionManager implements EventManager {
   }
 
   private boolean checkSlideZoom(int action) {
-    return isBound(action, ACTION_slideZoom) && isZoomArea(pressed.x);
+    return bnd(action, ACTION_slideZoom) && isZoomArea(pressed.x);
   }
 
   private boolean isZoomArea(int x) {
@@ -1660,22 +1659,22 @@ public class ActionManager implements EventManager {
     int index = (drawMode || nearestPoint != null ? -1 : vwr
         .findNearestAtomIndexMovable(x, y, false));
     return (index >= 0 && (isClicked || mp == null)
-        && !vwr.isInSelectionSubset(index) ? -1 : index);
+        && !vwr.slm.isInSelectionSubset(index) ? -1 : index);
   }
 
   private boolean isSelectAction(int action) {
-    return (isBound(action, ACTION_pickAtom)
+    return (bnd(action, ACTION_pickAtom)
         || !drawMode
         && !labelMode
         && apm == PICKING_IDENTIFY
-        && isBound(action, ACTION_center)
+        && bnd(action, ACTION_center)
         || dragSelectedMode
-        && (isBound(dragAction, ACTION_rotateSelected) || isBound(dragAction,
-            ACTION_dragSelected)) || isBound(action, ACTION_pickPoint)
-        || isBound(action, ACTION_selectToggle)
-        || isBound(action, ACTION_selectAndNot)
-        || isBound(action, ACTION_selectOr)
-        || isBound(action, ACTION_selectToggleExtended) || isBound(action,
+        && (bnd(dragAction, ACTION_rotateSelected) || bnd(dragAction,
+            ACTION_dragSelected)) || bnd(action, ACTION_pickPoint)
+        || bnd(action, ACTION_selectToggle)
+        || bnd(action, ACTION_selectAndNot)
+        || bnd(action, ACTION_selectOr)
+        || bnd(action, ACTION_selectToggleExtended) || bnd(action,
         ACTION_select));
   }
 
@@ -1744,7 +1743,7 @@ public class ActionManager implements EventManager {
     if (dragDone)
       dragAtomIndex = -1;
     BS bs = (vwr.getMotionFixedAtoms().cardinality() == 0 ? vwr
-        .getAtomBits((vwr.isAtomPDB(iAtom) ? T.group : T.molecule), BSUtil
+        .ms.getAtoms((vwr.isAtomPDB(iAtom) ? T.group : T.molecule), BSUtil
             .newAndSetBit(iAtom)) : BSUtil.setAll(vwr.getAtomCount()));
     vwr.minimize(Integer.MAX_VALUE, 0, bs, null, 0, false, false, false, false);
   }
@@ -1758,7 +1757,7 @@ public class ActionManager implements EventManager {
   }
 
   protected void setMotion(int cursor, boolean inMotion) {
-    switch (vwr.getCursor()) {
+    switch (vwr.currentCursor) {
     case GenericPlatform.CURSOR_WAIT:
       break;
     default:
@@ -1789,7 +1788,7 @@ public class ActionManager implements EventManager {
     // we need to enter this method to process those events.
     if (atomIndex < 0) {
       resetMeasurement(); // for set picking measure only
-      if (isBound(clickAction, ACTION_selectNone)) {
+      if (bnd(clickAction, ACTION_selectNone)) {
         runScript("select none");
         return;
       }
@@ -1810,7 +1809,7 @@ public class ActionManager implements EventManager {
     case PICKING_DELETE_BOND:
       boolean isDelete = (apm == PICKING_DELETE_BOND);
       boolean isStruts = (apm == PICKING_STRUTS);
-      if (!isBound(clickAction, (isDelete ? ACTION_deleteBond
+      if (!bnd(clickAction, (isDelete ? ACTION_deleteBond
           : ACTION_connectAtoms)))
         return;
       if (measurementQueued == null || measurementQueued.count == 0
@@ -1822,7 +1821,7 @@ public class ActionManager implements EventManager {
       if (queueAtom(atomIndex, ptClicked) != 2)
         return;
       String cAction = (isDelete
-          || measurementQueued.isConnected(vwr.getModelSet().at, 2) ? " DELETE"
+          || measurementQueued.isConnected(vwr.ms.at, 2) ? " DELETE"
           : isStruts ? "STRUTS" : "");
       runScript("connect " + measurementQueued.getMeasurementScript(" ", true)
           + cAction);
@@ -1837,7 +1836,7 @@ public class ActionManager implements EventManager {
     case PICKING_MEASURE:
     case PICKING_MEASURE_DISTANCE:
     case PICKING_MEASURE_SEQUENCE:
-      if (!isBound(clickAction, ACTION_pickMeasure))
+      if (!bnd(clickAction, ACTION_pickMeasure))
         return;
       if (measurementQueued == null || measurementQueued.count == 0
           || measurementQueued.count > n) {
@@ -1872,7 +1871,7 @@ public class ActionManager implements EventManager {
         : apm);
     switch (mode) {
     case PICKING_CENTER:
-      if (!isBound(clickAction, ACTION_pickAtom))
+      if (!bnd(clickAction, ACTION_pickAtom))
         return;
       if (ptClicked == null) {
         zoomTo(atomIndex);
@@ -1882,7 +1881,7 @@ public class ActionManager implements EventManager {
       return;
     case PICKING_SPIN:
     case PICKING_SYMMETRY:
-      if (isBound(clickAction, ACTION_pickAtom))
+      if (bnd(clickAction, ACTION_pickAtom))
         checkTwoAtomAction(ptClicked, atomIndex);
     }
     if (ptClicked != null)
@@ -1891,19 +1890,19 @@ public class ActionManager implements EventManager {
     BS bs;
     switch (mode) {
     case PICKING_IDENTIFY:
-      if (!drawMode && !labelMode && isBound(clickAction, ACTION_center))
+      if (!drawMode && !labelMode && bnd(clickAction, ACTION_center))
         zoomTo(atomIndex);
-      else if (isBound(clickAction, ACTION_pickAtom))
+      else if (bnd(clickAction, ACTION_pickAtom))
         vwr.setStatusAtomPicked(atomIndex, null, null);
       return;
     case PICKING_LABEL:
-      if (isBound(clickAction, ACTION_pickLabel)) {
+      if (bnd(clickAction, ACTION_pickLabel)) {
         runScript("set labeltoggle {atomindex=" + atomIndex + "}");
         vwr.setStatusAtomPicked(atomIndex, null, null);
       }
       return;
     case PICKING_INVERT_STEREO:
-      if (isBound(clickAction, ACTION_assignNew)) {
+      if (bnd(clickAction, ACTION_assignNew)) {
         bs = vwr.getAtomBitSet("connected(atomIndex=" + atomIndex
             + ") and !within(SMARTS,'[r50,R]')");
         int nb = bs.cardinality();
@@ -1943,7 +1942,7 @@ public class ActionManager implements EventManager {
       }
       return;
     case PICKING_DELETE_ATOM:
-      if (isBound(clickAction, ACTION_deleteAtom)) {
+      if (bnd(clickAction, ACTION_deleteAtom)) {
         bs = BSUtil.newAndSetBit(atomIndex);
         vwr.deleteAtoms(bs, false);
         vwr.setStatusAtomPicked(atomIndex, "deleted: " + Escape.eBS(bs), null);
@@ -2011,12 +2010,12 @@ public class ActionManager implements EventManager {
         runScript(s);
       } else if (!isPickAtomAssignCharge) {
         vwr.undoMoveActionClear(-1, T.save, true);
-        Atom a = vwr.getModelSet().at[dragAtomIndex];
+        Atom a = vwr.ms.at[dragAtomIndex];
         if (a.getElementNumber() == 1) {
           runScript("assign atom ({" + dragAtomIndex + "}) \"X\"");
         } else {
           P3 ptNew = P3.new3(x, y, a.sZ);
-          vwr.unTransformPoint(ptNew, ptNew);
+          vwr.tm.unTransformPoint(ptNew, ptNew);
           runScript("assign atom ({" + dragAtomIndex + "}) \""
               + pickAtomAssignType + "\" " + Escape.eP(ptNew));
         }
@@ -2096,12 +2095,12 @@ public class ActionManager implements EventManager {
       return;
     selectionWorking = true;
     String s = (rubberbandSelectionMode
-        || isBound(clickAction, ACTION_selectToggle) ? "selected and not ("
-        + item + ") or (not selected) and " : isBound(clickAction,
-        ACTION_selectAndNot) ? "selected and not " : isBound(clickAction,
+        || bnd(clickAction, ACTION_selectToggle) ? "selected and not ("
+        + item + ") or (not selected) and " : bnd(clickAction,
+        ACTION_selectAndNot) ? "selected and not " : bnd(clickAction,
         ACTION_selectOr) ? "selected or " : clickAction == 0
-        || isBound(clickAction, ACTION_selectToggleExtended) ? "selected tog "
-        : isBound(clickAction, ACTION_select) ? "" : null);
+        || bnd(clickAction, ACTION_selectToggleExtended) ? "selected tog "
+        : bnd(clickAction, ACTION_select) ? "" : null);
     if (s != null) {
       s += "(" + item + ")";
       try {
@@ -2116,12 +2115,12 @@ public class ActionManager implements EventManager {
   }
 
   private void selectRb(int action) {
-    BS bs = vwr.findAtomsInRectangle(rectRubber);
+    BS bs = vwr.ms.findAtomsInRectangle(rectRubber);
     if (bs.length() > 0) {
       String s = Escape.eBS(bs);
-      if (isBound(action, ACTION_selectOr))
+      if (bnd(action, ACTION_selectOr))
         runScript("selectionHalos on;select selected or " + s);
-      else if (isBound(action, ACTION_selectAndNot))
+      else if (bnd(action, ACTION_selectAndNot))
         runScript("selectionHalos on;select selected and not " + s);
       else
         // ACTION_selectToggle

@@ -86,7 +86,7 @@ public class XtalSymmetry {
 
   private void setSymmetryRange(float factor) {
     symmetryRange = factor;
-    asc.setAtomSetCollectionAuxiliaryInfo("symmetryRange", Float.valueOf(factor));
+    asc.setInfo("symmetryRange", Float.valueOf(factor));
   }
 
   private boolean applySymmetryToBonds = false;
@@ -529,7 +529,7 @@ public class XtalSymmetry {
     dtype = (int) symmetry.getUnitCellInfoType(SimpleUnitCell.INFO_DIMENSIONS);
     symmetry.setMinMaxLatticeParameters(minXYZ, maxXYZ);
     if (doCentroidUnitCell)
-      asc.setAtomSetCollectionAuxiliaryInfo("centroidMinMax", new int[] { minXYZ.x,
+      asc.setInfo("centroidMinMax", new int[] { minXYZ.x,
           minXYZ.y, minXYZ.z, maxXYZ.x, maxXYZ.y, maxXYZ.z,
           (centroidPacked ? 1 : 0) });
     if (ptSupercell != null) {

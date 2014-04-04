@@ -464,7 +464,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       displayWithinDistance2 *= displayWithinDistance2;
       displayWithinPoints = (Lst<P3>) o[3];
       if (displayWithinPoints.size() == 0)
-        displayWithinPoints = vwr.getAtomPointVector((BS) o[2]);
+        displayWithinPoints = vwr.ms.getAtomPointVector((BS) o[2]);
       return;
     }
 
@@ -635,7 +635,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       withinDistance2 *= withinDistance2;
       withinPoints = (Lst<P3>) o[3];
       if (withinPoints.size() == 0)
-        withinPoints = vwr.getAtomPointVector((BS) o[2]);
+        withinPoints = vwr.ms.getAtomPointVector((BS) o[2]);
     } else if (("nci" == propertyName || "orbital" == propertyName)
         && sg != null) {
       sg.getParams().testFlags = (vwr.getTestFlag(2) ? 2 : 0);
@@ -1065,7 +1065,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         return false;
       bs = BS.unescape(script.substring(i + 3, j + 1));
       if (bsCmd == null)
-        vwr.setTrajectoryBs(bs);
+        vwr.ms.setTrajectoryBs(bs);
       else
         bsCmd[2] = bs;
     }
@@ -1086,7 +1086,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   private void initializeIsosurface() {
     //System.out.println("isosurface initializing " + thisMesh);
     if (!iHaveModelIndex)
-      modelIndex = vwr.getCurrentModelIndex();
+      modelIndex = vwr.am.cmi;
     atomIndex = -1;
     //allowContourLines = true; //but not for f(x,y) or plane, which use mesh
     bsDisplay = null;
@@ -1127,7 +1127,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     else if (modelIndex >= 0)
       thisMesh.modelIndex = modelIndex;
     else
-      thisMesh.modelIndex = vwr.getCurrentModelIndex();
+      thisMesh.modelIndex = vwr.am.cmi;
     thisMesh.scriptCommand = script;
     thisMesh.ptCenter.setT(center);
     thisMesh.scale3d = (thisMesh.jvxlData.jvxlPlane == null ? 0 : scale3d);
@@ -1738,7 +1738,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 //    Point3f pt2 = Point3f.newP(ptRet);
 //    pt2.add(vNorm);
 //    Point3f pt2s = new Point3f();
-//    vwr.transformPt3f(pt2, pt2s);
+//    vwr.tm.transformPt3f(pt2, pt2s);
 //    if (pt2s.y > navPt.y)
 //      vNorm.scale(-1);
 //    setHeading(ptRet, vNorm, 0);     
@@ -1760,7 +1760,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 //    Point3f toPt = Point3f.newP(vNorm);
 //    //vwr.script("draw test2 vector " + Escape.escape(pt) + " " + Escape.escape(toPt));
 //    toPt.add(pt);
-//    vwr.transformPt3f(toPt, toPts);
+//    vwr.tm.transformPt3f(toPt, toPts);
 //    
 //    // subtract the navigation point to get a relative point
 //    // that we can project into the xy plane by setting z = 0
@@ -1775,7 +1775,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 //    vwr.navigateAxis(JmolConstants.axisZ, angle);        
 //    toPt.setT(vNorm);
 //    toPt.add(pt);
-//    vwr.transformPt3f(toPt, toPts);
+//    vwr.tm.transformPt3f(toPt, toPts);
 //    toPts.sub(navPt);
 //    angle = Measure.computeTorsion(JmolConstants.axisNY,
 //        JmolConstants.center, JmolConstants.axisX, toPts, true);

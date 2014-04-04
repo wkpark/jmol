@@ -401,18 +401,18 @@ public class PdbReader extends AtomSetCollectionReader {
       checkForResidualBFactors(symmetry);
     }
     if (sbTlsErrors != null) {
-      asc.setAtomSetCollectionAuxiliaryInfo("tlsErrors", sbTlsErrors.toString());
+      asc.setInfo("tlsErrors", sbTlsErrors.toString());
       appendLoadNote(sbTlsErrors.toString());
     }
     doCheckUnitCell &= (iHaveUnitCell && (doApplySymmetry || isbiomol));
     finalizeReaderASCR();
     if (vCompnds != null)
-      asc.setAtomSetCollectionAuxiliaryInfo("compoundSource", vCompnds);
+      asc.setInfo("compoundSource", vCompnds);
     if (htSites != null) {
       addSites(htSites);
     }
     if (pdbHeader != null)
-      asc.setAtomSetCollectionAuxiliaryInfo("fileHeader",
+      asc.setInfo("fileHeader",
           pdbHeader.toString());
     if (configurationPtr > 0) {
       Logger.info(sbSelected.toString());
@@ -465,11 +465,11 @@ public class PdbReader extends AtomSetCollectionReader {
     String pdbID = (lineLength >= 66 ? line.substring(62, 66).trim() : "");
     if (pdbID.length() == 4) {
       asc.setCollectionName(pdbID);
-      asc.setAtomSetCollectionAuxiliaryInfo("havePDBHeaderName", Boolean.TRUE);
+      asc.setInfo("havePDBHeaderName", Boolean.TRUE);
     }
     if (lineLength > 50)
       line = line.substring(0, 50);
-    asc.setAtomSetCollectionAuxiliaryInfo("CLASSIFICATION", line.substring(7).trim());
+    asc.setInfo("CLASSIFICATION", line.substring(7).trim());
   }
 
   private void title() {
@@ -488,7 +488,7 @@ public class PdbReader extends AtomSetCollectionReader {
       if (lineLength > 62)
         s = s.substring(0, 62);
       compnd += s.substring(10).trim();
-      asc.setAtomSetCollectionAuxiliaryInfo("COMPND", compnd);
+      asc.setInfo("COMPND", compnd);
     }
     if (vCompnds == null) {
       if (isSource)
@@ -1268,7 +1268,7 @@ Polyproline 10
 
   private void expdta() {
     if (line.toUpperCase().indexOf("NMR") >= 0)
-      asc.setAtomSetCollectionAuxiliaryInfo("isNMRdata", "true");
+      asc.setInfo("isNMRdata", "true");
   }
 
   private void formul() {
@@ -1912,13 +1912,13 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
       firstAtom += count;
     }
     vConnect = null;
-    connectNextAtomSet = asc.currentAtomSetIndex + 1;
+    connectNextAtomSet = asc.iSet + 1;
     connectNextAtomIndex = firstAtom;
   }
 
   private void connectAll(int maxSerial, boolean isConnectStateBug) {
     AtomSetCollection a = asc;
-    int index = a.currentAtomSetIndex;
+    int index = a.iSet;
     if (index < 0)
       return;
     if (isConnectStateBug) {

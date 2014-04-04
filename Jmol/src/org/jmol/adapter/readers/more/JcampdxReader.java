@@ -186,7 +186,7 @@ public class JcampdxReader extends MolReader implements JmolJDXMOLReader {
   public void processModelData(String data, String id, String type,
                                String base, String last, float modelScale,
                                float vibScale, boolean isFirst) throws Exception {
-    int model0 = asc.currentAtomSetIndex;
+    int model0 = asc.iSet;
     AtomSetCollection model = null;
     while (true) {
       Object ret = SmarterJmolAdapter.staticGetAtomSetCollectionReader(

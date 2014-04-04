@@ -41,7 +41,7 @@ import org.jmol.modelset.ModelSet;
 import org.jmol.util.ColorEncoder;
 
 
-class ColorManager {
+public class ColorManager {
 
   /*
    * ce is a "master" colorEncoded. It will be used
@@ -51,7 +51,7 @@ class ColorManager {
    * 
    */
 
-  ColorEncoder ce = new ColorEncoder(null);
+  public ColorEncoder ce = new ColorEncoder(null);
   private Viewer vwr;
   private GData g3d;
 
@@ -103,9 +103,9 @@ class ColorManager {
           altArgbsCpk[i]);
   }
 
-  short colixRubberband = C.HOTPINK;
+  public short colixRubberband = C.HOTPINK;
 
-  void setRubberbandArgb(int argb) {
+  public void setRubberbandArgb(int argb) {
     colixRubberband = (argb == 0 ? 0 : C.getColix(argb));
   }
 
@@ -135,7 +135,7 @@ class ColorManager {
     int argb = 0;
     int index;
     int id;
-    ModelSet modelSet;
+    ModelSet modelSet = vwr.ms;
     int modelIndex;
     float lo, hi;
     // we need to use the byte form here for speed
@@ -159,7 +159,7 @@ class ColorManager {
       return g3d.getChangeableColix(id, argbsCpk[id]);
     case StaticConstants.PALETTE_PARTIAL_CHARGE:
       // This code assumes that the range of partial charges is [-1, 1].
-      index = ColorEncoder.quantize(atom.getPartialCharge(), -1, 1,
+      index = ColorEncoder.quantize4(atom.getPartialCharge(), -1, 1,
           JC.PARTIAL_CHARGE_RANGE_SIZE);
       return g3d.getChangeableColix(JC.PARTIAL_CHARGE_COLIX_RED + index,
           JC.argbsRwbScale[index]);
@@ -170,9 +170,8 @@ class ColorManager {
     case StaticConstants.PALETTE_TEMP:
     case StaticConstants.PALETTE_FIXEDTEMP:
       if (pid == StaticConstants.PALETTE_TEMP) {
-        modelSet = vwr.getModelSet();
-        lo = modelSet.getBfactor100Lo();
-        hi = modelSet.getBfactor100Hi();
+        lo = vwr.ms.getBfactor100Lo();
+        hi = vwr.ms.getBfactor100Hi();
       } else {
         lo = 0;
         hi = 100 * 100; // scaled by 100
@@ -184,7 +183,7 @@ class ColorManager {
           atom.getGroupParameter(T.straightness), -1, 1, ColorEncoder.BWR,
           false);
     case StaticConstants.PALETTE_SURFACE:
-      hi = vwr.getSurfaceDistanceMax();
+      hi = vwr.ms.getSurfaceDistanceMax();
       return ce.getColorIndexFromPalette(
           atom.getSurfaceDistance100(), 0, hi, ColorEncoder.BWR, false);
     case StaticConstants.PALETTE_AMINO:
@@ -205,7 +204,7 @@ class ColorManager {
           atom.getSelectedGroupCountWithinChain() - 1, ColorEncoder.BGYOR,
           false);
     case StaticConstants.PALETTE_POLYMER:
-      Model m = vwr.getModelSet().am[atom.mi];
+      Model m = vwr.ms.am[atom.mi];
       return ce.getColorIndexFromPalette(
           atom.getPolymerIndexInModel(), 0, m.getBioPolymerCount() - 1,
           ColorEncoder.BGYOR, false);
@@ -216,13 +215,11 @@ class ColorManager {
           atom.getSelectedMonomerCountWithinPolymer() - 1, ColorEncoder.BGYOR,
           false);
     case StaticConstants.PALETTE_MOLECULE:
-      modelSet = vwr.getModelSet();
       return ce.getColorIndexFromPalette(
           modelSet.getMoleculeIndex(atom.i, true), 0,
           modelSet.getMoleculeCountInModel(atom.getModelIndex()) - 1,
           ColorEncoder.ROYGB, false);
     case StaticConstants.PALETTE_ALTLOC:
-      modelSet = vwr.getModelSet();
       //very inefficient!
       modelIndex = atom.getModelIndex();
       return ce
@@ -232,7 +229,6 @@ class ColorManager {
               modelSet.getAltLocCountInModel(modelIndex), ColorEncoder.ROYGB,
               false);
     case StaticConstants.PALETTE_INSERTION:
-      modelSet = vwr.getModelSet();
       //very inefficient!
       modelIndex = atom.getModelIndex();
       return ce.getColorIndexFromPalette(
@@ -305,10 +301,10 @@ class ColorManager {
     return new float[] { ce.lo, ce.hi };
   }
 
-  void setPropertyColorRangeData(float[] data, BS bs, String colorScheme) {
+  public void setPropertyColorRangeData(float[] data, BS bs) {
     colorData = data;
     ce.currentPalette = ce.createColorScheme(
-        colorScheme, true, false);
+        vwr.g.propertyColorScheme, true, false);
     ce.hi = -Float.MAX_VALUE;
     ce.lo = Float.MAX_VALUE;
     if (data == null)
@@ -325,7 +321,7 @@ class ColorManager {
     setPropertyColorRange(ce.lo, ce.hi);
   }
 
-  void setPropertyColorRange(float min, float max) {
+  public void setPropertyColorRange(float min, float max) {
     ce.setRange(min, max, min > max);
     if (Logger.debugging)
       Logger.debug("ColorManager: color \""

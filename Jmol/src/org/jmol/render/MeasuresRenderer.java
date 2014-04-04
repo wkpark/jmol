@@ -104,7 +104,7 @@ public class MeasuresRenderer extends LabelsRenderer {
         labelColix = vwr.getColixBackgroundContrast();
       else if (labelColix == -1)
         labelColix = colix;
-      g3d.setColix(colix);
+      g3d.setC(colix);
       colixA = colixB = colix;
       renderMeasurement(showMeasurementLabels);
       //checkAtoms("m3");
@@ -117,7 +117,7 @@ public class MeasuresRenderer extends LabelsRenderer {
       int i = m.getAtomIndex(j + 1);
       Point3fi pt = (i >= 0 && modulating ? getModAtom(i) : m.getAtom(j + 1));
       if (pt.sD < 0) {
-        vwr.transformPtScr(pt, pt0i);
+        tm.transformPtScr(pt, pt0i);
         pt.sX = pt0i.x;
         pt.sY = pt0i.y;
         pt.sZ = pt0i.z;
@@ -197,7 +197,7 @@ public class MeasuresRenderer extends LabelsRenderer {
     int x = (a.sX + b.sX) / 2;
     int y = (a.sY + b.sY) / 2;
     if (m.text == null) {
-      g3d.setColix(labelColix);
+      g3d.setC(labelColix);
       drawString(x, y, z, radius, doJustify
           && (x - a.sX) * (y - a.sY) > 0, false, false,
           (doJustify ? 0 : Integer.MAX_VALUE), s);
@@ -224,7 +224,7 @@ public class MeasuresRenderer extends LabelsRenderer {
     if (m.value > 175) {
       if (m.text == null) {
         int offset = (int) Math.floor(5 * imageFontScaling);
-        g3d.setColix(labelColix);
+        g3d.setC(labelColix);
         drawString(b.sX + offset, b.sY - offset, zB, radius,
             false, false, false, (doJustify ? 0 : Integer.MAX_VALUE), s);
       } else {
@@ -257,8 +257,8 @@ public class MeasuresRenderer extends LabelsRenderer {
       matrixT.rotate(pointT);
       pointT.add(b);
       // NOTE! Point3i screen is just a pointer 
-      //  to vwr.transformManager.point3iScreenTemp
-      P3i p3i = vwr.transformPt(pointT);
+      //  to tm.transformManager.point3iScreenTemp
+      P3i p3i = tm.transformPt(pointT);
       int zArc = p3i.z - zOffset;
       if (zArc < 0)
         zArc = 0;
@@ -270,10 +270,10 @@ public class MeasuresRenderer extends LabelsRenderer {
       // next line modifies Point3i point3iScreenTemp
       matrixT.rotate(pointT);
       pointT.add(b);
-      vwr.transformPt(pointT);
+      tm.transformPt(pointT);
       int zLabel = p3i.z - zOffset;
       if (m.text == null) {
-        g3d.setColix(labelColix);
+        g3d.setC(labelColix);
         drawString(p3i.x, p3i.y, zLabel, radius, p3i.x < b.sX, false,
             false, (doJustify ? b.sY : Integer.MAX_VALUE), s);
       } else {
@@ -298,7 +298,7 @@ public class MeasuresRenderer extends LabelsRenderer {
       return;
     radius /= 3;
     if (m.text == null) {
-      g3d.setColix(labelColix);
+      g3d.setC(labelColix);
       drawString((a.sX + b.sX + c.sX + d.sX) / 4,
           (a.sY + b.sY + c.sY + d.sY) / 4,
           (zA + zB + zC + zD) / 4, radius, false, false, false,
@@ -315,7 +315,7 @@ public class MeasuresRenderer extends LabelsRenderer {
   private void renderPendingMeasurement() {
     getPoints();
     boolean renderLabel = (m.traceX == Integer.MIN_VALUE);
-    g3d.setColix(labelColix = (renderLabel ? vwr.getColixRubberband()
+    g3d.setC(labelColix = (renderLabel ? vwr.cm.colixRubberband
         : count == 2 ? C.MAGENTA : C.GOLD));
     if (((MeasurementPending) m).haveTarget) {
       renderMeasurement(renderLabel);

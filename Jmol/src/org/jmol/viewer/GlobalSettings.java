@@ -65,7 +65,7 @@ public class GlobalSettings {
       setB("hidenotselected", false); // to synchronize with selectionManager
       setB("measurementlabels", measurementLabels = true);
       setB("drawHover", drawHover = false);
-      vwr.saveScene("DELETE",null);
+      vwr.stm.saveScene("DELETE",null);
     }
 
     void registerAllValues(GlobalSettings g, boolean clearUserVariables) {
@@ -439,7 +439,7 @@ public class GlobalSettings {
     //file loading
 
     boolean allowEmbeddedScripts = true;
-    boolean appendNew = true;
+    public boolean appendNew = true;
     String appletProxy = "";
     boolean applySymmetryToBonds = false; //new 11.1.29
     String atomTypes = "";
@@ -453,8 +453,8 @@ public class GlobalSettings {
     String defaultDirectory = "";
     boolean defaultStructureDSSP = true; // Jmol 12.1.15
     final P3 ptDefaultLattice = new P3();
-    String defaultLoadScript = "";
-    String defaultLoadFilter = "";
+    public String defaultLoadScript = "";
+    public String defaultLoadFilter = "";
     public String defaultDropScript = "zap; load SYNC \"%FILE\";if (%ALLOWCARTOONS && _loadScript == '' && defaultLoadScript == '' && _filetype == 'Pdb') {if ({(protein or nucleic)&*/1.1} && {*/1.1}[1].groupindex != {*/1.1}[0].groupindex){select protein or nucleic;cartoons only;}if ({visible}){color structure}else{wireframe -0.1};if (!{visible}){spacefill 23%};select *}";
 //    boolean _fileCaching = false;
 //    String _fileCache = "";
@@ -539,7 +539,7 @@ public class GlobalSettings {
     float hbondsDistanceMaximum = 3.25f;
     boolean hbondsRasmol = true; // 12.0.RC3
     boolean hbondsSolid = false;
-    byte modeMultipleBond = JC.MULTIBOND_NOTSMALL;
+    public byte modeMultipleBond = JC.MULTIBOND_NOTSMALL;
     boolean showHydrogens = true;
     boolean showMultipleBonds = true;
     boolean ssbondsBackbone = false;
@@ -576,7 +576,7 @@ public class GlobalSettings {
     int animationFps = 10;
     boolean atomPicking = true;
     boolean autoFps = false;
-    AXES axesMode = AXES.BOUNDBOX;
+    public AXES axesMode = AXES.BOUNDBOX;
     float axesScale = 2;
     float starScale = 0.05f;
     boolean bondPicking = false;
@@ -597,7 +597,7 @@ public class GlobalSettings {
     boolean drawHover = false;
     boolean drawPicking = false;
     boolean dsspCalcHydrogen = true;
-    String energyUnits = "kJ";
+    public String energyUnits = "kJ";
     float exportScale = 1f;
     String helpPath = JC.DEFAULT_HELP_PATH;
     boolean fontScaling = false;
@@ -609,7 +609,7 @@ public class GlobalSettings {
     float loadAtomDataTolerance = 0.01f;
     public boolean logCommands = false;
     public boolean logGestures = false;
-    String measureDistanceUnits = "nanometers";
+    public String measureDistanceUnits = "nanometers";
     boolean measurementLabels = true;
     boolean messageStyleChime = false;
     boolean monitorEnergy = false;
@@ -768,7 +768,7 @@ public class GlobalSettings {
         htNonbooleanParameterValues.remove(key);
     }
 
-    SV setUserVariable(String key, SV var) {
+    public SV setUserVariable(String key, SV var) {
       if (var == null) 
         return null;
       key = key.toLowerCase();
@@ -832,7 +832,7 @@ public class GlobalSettings {
      * @return     a new variable if possible, but null if "_xxx"
      * 
      */
-    SV getOrSetNewVariable(String name, boolean doSet) {
+    public SV getOrSetNewVariable(String name, boolean doSet) {
       if (name == null || name.length() == 0)
         name = "x";
       Object v = getParam(name, true);
@@ -872,7 +872,7 @@ public class GlobalSettings {
       return null;
     }
 
-    String getVariableList() {
+    public String getVariableList() {
       return StateManager.getVariableList(htUserVariables, 0, true, false);
     }
 

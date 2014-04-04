@@ -453,18 +453,18 @@ public class CrystalReader extends AtomSetCollectionReader {
     }
     asc.setCollectionName(name
         + (!isProperties && desiredModelNumber == 0 ? " (optimized)" : ""));
-    asc.setAtomSetCollectionAuxiliaryInfo("symmetryType", type);
+    asc.setInfo("symmetryType", type);
     if ((isPolymer || isSlab) && !isPrimitive) {
       Logger.error("Cannot use FILTER \"conventional\" with POLYMER or SLAB");
       isPrimitive = true;
     }
-    asc.setAtomSetCollectionAuxiliaryInfo("unitCellType",
+    asc.setInfo("unitCellType",
         (isPrimitive ? "primitive" : "conventional"));
 
     if (type.indexOf("MOLECULAR") >= 0) {
       isMolecular = doProcessLines = true;
       rd();
-      asc.setAtomSetCollectionAuxiliaryInfo(
+      asc.setInfo(
           "molecularCalculationPointGroup",
           line.substring(line.indexOf(" OR ") + 4).trim());
       return false;
@@ -800,7 +800,7 @@ public class CrystalReader extends AtomSetCollectionReader {
   private void setEnergy() {
     asc.setAtomSetEnergy("" + energy, energy.floatValue());
     asc.setAtomSetAuxiliaryInfo("Energy", energy);
-    asc.setAtomSetCollectionAuxiliaryInfo("Energy", energy);
+    asc.setInfo("Energy", energy);
     asc.setAtomSetName("Energy = " + energy + " Hartree");
   }
 

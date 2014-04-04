@@ -51,27 +51,24 @@ import org.jmol.util.Vibration;
 public class ShapeManager {
 
   private GData gdata;
-  private ModelSet modelSet;
+  private ModelSet ms;
   Shape[] shapes;
   public Viewer vwr;
+
+  public ShapeManager(Viewer vwr) {
+    this.vwr = vwr;
+    gdata = vwr.gdata;
+  }
 
   /**
    * @j2sIgnore
    * 
-   * @param vwr
-   * @param modelSet
    */
-  public ShapeManager(Viewer vwr, ModelSet modelSet) {
-    // from ParallelProcessor
-    this(vwr);
+  public void setParallel() {
     resetShapes();
-    loadDefaultShapes(modelSet);
+    loadDefaultShapes(vwr.ms);
   }
-
-  ShapeManager(Viewer vwr) {
-    this.vwr = vwr;
-    gdata = vwr.getGraphicsData();
-  }
+  
 
   // public methods 
   
@@ -119,7 +116,7 @@ public class ShapeManager {
   }
 
   public void loadDefaultShapes(ModelSet newModelSet) {
-    modelSet = newModelSet;
+    ms = newModelSet;
     if (shapes != null)
       for (int i = 0; i < shapes.length; ++i)
         if (shapes[i] != null)
@@ -141,7 +138,7 @@ public class ShapeManager {
     if ((shape = (Shape) Interface.getInterface(className)) == null)
       return null;
     vwr.setShapeErrorState(shapeID, "allocate");
-    shape.initializeShape(vwr, gdata, modelSet, shapeID);
+    shape.initializeShape(vwr, gdata, ms, shapeID);
     vwr.setShapeErrorState(-1, null);
     return shapes[shapeID] = shape;
   }
@@ -175,9 +172,9 @@ public class ShapeManager {
       return;
     if (bsSelected == null && 
         (shapeID != JC.SHAPE_STICKS || size != Integer.MAX_VALUE))
-      bsSelected = vwr.getSelectedAtoms();
+      bsSelected = vwr.bsA();
     if (rd != null && rd.value != 0 && rd.vdwType == VDW.TEMP)
-      modelSet.getBfactor100Lo();
+      ms.getBfactor100Lo();
     vwr.setShapeErrorState(shapeID, "set size");
     if (rd == null ? size != 0 : rd.value != 0)
       loadShape(shapeID);
@@ -203,7 +200,7 @@ public class ShapeManager {
     if (shapes == null || shapes[shapeID] == null)
       return;
     if (bsSelected == null)
-      bsSelected = vwr.getSelectedAtoms();
+      bsSelected = vwr.bsA();
     vwr.setShapeErrorState(shapeID, "set " + propertyName);
     shapes[shapeID].setProperty(propertyName.intern(), value, bsSelected);
     vwr.setShapeErrorState(-1, null);
@@ -267,7 +264,7 @@ public class ShapeManager {
     return false;
   }
 
-  void deleteShapeAtoms(Object[] value, BS bs) {
+  public void deleteShapeAtoms(Object[] value, BS bs) {
     if (shapes != null)
       for (int j = 0; j < JC.SHAPE_MAX; j++)
         if (shapes[j] != null)
@@ -276,14 +273,14 @@ public class ShapeManager {
 
   void deleteVdwDependentShapes(BS bs) {
     if (bs == null)
-      bs = vwr.getSelectedAtoms();
+      bs = vwr.bsA();
     if (shapes[JC.SHAPE_ISOSURFACE] != null)
       shapes[JC.SHAPE_ISOSURFACE].setProperty("deleteVdw", null, bs);
     if (shapes[JC.SHAPE_CONTACT] != null)
       shapes[JC.SHAPE_CONTACT].setProperty("deleteVdw", null, bs);
   }
   
-  float getAtomShapeValue(int tok, Group group, int atomIndex) {
+  public float getAtomShapeValue(int tok, Group group, int atomIndex) {
     int iShape = JC.shapeTokenIndex(tok);
     if (iShape < 0 || shapes[iShape] == null) 
       return 0;
@@ -321,7 +318,7 @@ public class ShapeManager {
     return (shapes == null ? null : shapes[i]);
   }
   
-  void mergeShapes(Shape[] newShapes) {
+  public void mergeShapes(Shape[] newShapes) {
     if (newShapes == null)
       return;
     if (shapes == null)
@@ -335,18 +332,18 @@ public class ShapeManager {
         }
   }
 
-  void resetBioshapes(BS bsAllAtoms) {
+  public void resetBioshapes(BS bsAllAtoms) {
     if (shapes == null)
       return;
     for (int i = 0; i < shapes.length; ++i)
       if (shapes[i] != null && shapes[i].isBioShape) {
-        shapes[i].setModelSet(modelSet);
+        shapes[i].setModelSet(ms);
         shapes[i].setShapeSizeRD(0, null, bsAllAtoms);
         shapes[i].setProperty("color", PAL.NONE, bsAllAtoms);
       }
   }
 
-  void setAtomLabel(String strLabel, int i) {
+  public void setAtomLabel(String strLabel, int i) {
     if (shapes == null)
       return;
     loadShape(JC.SHAPE_LABELS);
@@ -359,6 +356,7 @@ public class ShapeManager {
    * 
    */
   void setModelVisibility() {
+    Shape[] shapes = this.shapes;
     if (shapes == null || shapes[JC.SHAPE_BALLS] == null)
       return;
 
@@ -382,9 +380,9 @@ public class ShapeManager {
     
     boolean showHydrogens = vwr.getBoolean(T.showhydrogens);
     BS bsDeleted = vwr.getDeletedAtoms();
-    Atom[] atoms = modelSet.at;
+    Atom[] atoms = ms.at;
     int flag0 = JC.ATOM_NOFLAGS & ~JC.VIS_BOND_FLAG;
-    for (int i = modelSet.ac; --i >= 0;) {
+    for (int i = ms.ac; --i >= 0;) {
       Atom atom = atoms[i];
       atom.shapeVisibilityFlags &= flag0;
       if (bsDeleted != null && bsDeleted.get(i) || !showHydrogens
@@ -393,7 +391,7 @@ public class ShapeManager {
       int modelIndex = atom.getModelIndex();
       if (bs.get(modelIndex)) {
         int f = JC.ATOM_INFRAME;
-        if (!modelSet.isAtomHidden(i)) {
+        if (!ms.isAtomHidden(i)) {
           f |= JC.ATOM_NOTHIDDEN;
         if (atom.madAtom != 0)
           f |= JC.VIS_BALLS_FLAG;
@@ -415,29 +413,32 @@ public class ShapeManager {
   private final int[] navigationCrossHairMinMax = new int[4];
 
   public int[] finalizeAtoms(BS bsAtoms, P3 ptOffset) {
+    Viewer vwr = this.vwr;
+    TransformManager tm = vwr.tm;
+    BS bs = bsRenderableAtoms;
+    GData gdata = this.gdata;
     if (bsAtoms != null) {
       // translateSelected operation
-      P3 ptCenter = vwr.getAtomSetCenter(bsAtoms);
+      P3 ptCenter = ms.getAtomSetCenter(bsAtoms);
       P3 pt = new P3();
-      vwr.transformPt3f(ptCenter, pt);
+      tm.transformPt3f(ptCenter, pt);
       pt.add(ptOffset);
-      vwr.unTransformPoint(pt, pt);
+      tm.unTransformPoint(pt, pt);
       pt.sub(ptCenter);
       vwr.setAtomCoordsRelative(pt, bsAtoms);
       ptOffset.set(0, 0, 0);
     }
-    modelSet.getRenderable(bsRenderableAtoms);
-    Object[] vibrationVectors = modelSet.vibrations;
-    Atom[] atoms = modelSet.at;
-    boolean vibs = (vibrationVectors != null && vwr.isVibrationOn());
-    for (int i = bsRenderableAtoms.nextSetBit(0); i >= 0; i = bsRenderableAtoms.nextSetBit(i + 1)) {
+    ms.getRenderable(bs);
+    Object[] vibrationVectors = ms.vibrations;
+    Atom[] atoms = ms.at;
+    boolean vibs = (vibrationVectors != null && tm.vibrationOn);
+    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       // note that this vibration business is not compatible with
       // PDB objects such as cartoons and traces, which 
       // use Cartesian coordinates, not screen coordinates
       Atom atom = atoms[i];
-      P3i screen = (vibs && atom.hasVibration() ? vwr
-          .transformPtVib(atom, (Vibration) vibrationVectors[i], Float.NaN)
-          : vwr.transformPt(atom));
+      P3i screen = (vibs && atom.hasVibration() ? tm.transformPtVib(atom,
+          (Vibration) vibrationVectors[i], Float.NaN) : tm.transformPt(atom));
       atom.sX = screen.x;
       atom.sY = screen.y;
       atom.sZ = screen.z;
@@ -446,58 +447,55 @@ public class ShapeManager {
         d = (int) (vwr.getFloat(T.atoms) * 2000);
       atom.sD = (short) vwr.scaleToScreen(screen.z, d);
     }
-    if (vwr.getSlabEnabled()) {
+    if (tm.slabEnabled) {
       boolean slabByMolecule = vwr.getBoolean(T.slabbymolecule);
       boolean slabByAtom = vwr.getBoolean(T.slabbyatom);
       int minZ = gdata.getSlab();
       int maxZ = gdata.getDepth();
       if (slabByMolecule) {
-        JmolMolecule[] molecules = modelSet.getMolecules();
-        int moleculeCount = modelSet.getMoleculeCountInModel(-1);
+        JmolMolecule[] molecules = ms.getMolecules();
+        int moleculeCount = ms.getMoleculeCountInModel(-1);
         for (int i = 0; i < moleculeCount; i++) {
           JmolMolecule m = molecules[i];
           int j = 0;
           int pt = m.firstAtomIndex;
-          if (!bsRenderableAtoms.get(pt))
+          if (!bs.get(pt))
             continue;
           for (; j < m.ac; j++, pt++)
-            if (gdata.isClippedZ(atoms[pt].sZ
-                - (atoms[pt].sD >> 1)))
+            if (gdata.isClippedZ(atoms[pt].sZ - (atoms[pt].sD >> 1)))
               break;
           if (j != m.ac) {
             pt = m.firstAtomIndex;
             for (int k = 0; k < m.ac; k++) {
-              bsRenderableAtoms.clear(pt);
+              bs.clear(pt);
               atoms[pt++].sZ = 0;
             }
           }
         }
       }
-      for (int i = bsRenderableAtoms.nextSetBit(0); i >= 0; i = bsRenderableAtoms
+      for (int i = bs.nextSetBit(0); i >= 0; i = bsRenderableAtoms
           .nextSetBit(i + 1)) {
         Atom atom = atoms[i];
-        if (gdata.isClippedZ(atom.sZ
-            - (slabByAtom ? atoms[i].sD >> 1 : 0))) {
+        if (gdata.isClippedZ(atom.sZ - (slabByAtom ? atoms[i].sD >> 1 : 0))) {
           atom.setClickable(0);
           // note that in the case of navigation,
           // maxZ is set to Integer.MAX_VALUE.
           int r = (slabByAtom ? -1 : 1) * atom.sD / 2;
           if (atom.sZ + r < minZ || atom.sZ - r > maxZ
               || !gdata.isInDisplayRange(atom.sX, atom.sY)) {
-            bsRenderableAtoms.clear(i);
+            bs.clear(i);
           }
         }
       }
     }
-    if (modelSet.getAtomCount() == 0 || !vwr.getShowNavigationPoint())
+    if (ms.getAtomCount() == 0 || !vwr.getShowNavigationPoint())
       return null;
     // set min/max for navigation crosshair rendering
     int minX = Integer.MAX_VALUE;
     int maxX = Integer.MIN_VALUE;
     int minY = Integer.MAX_VALUE;
     int maxY = Integer.MIN_VALUE;
-    for (int i = bsRenderableAtoms.nextSetBit(0); i >= 0; i = bsRenderableAtoms
-        .nextSetBit(i + 1)) {
+    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       Atom atom = atoms[i];
       if (atom.sX < minX)
         minX = atom.sX;
@@ -516,7 +514,7 @@ public class ShapeManager {
   }
 
   public void setModelSet(ModelSet modelSet) {
-    this.modelSet = vwr.ms = modelSet;
+    ms = vwr.ms = modelSet;
   }
 
   /**
@@ -557,7 +555,7 @@ public class ShapeManager {
     setShapePropertyBs(JC.SHAPE_STICKS, "type", Integer
         .valueOf(Edge.BOND_COVALENT_MASK), null);
     // also need to turn off backbones, ribbons, strands, cartoons
-    BS bs = vwr.getSelectedAtoms();
+    BS bs = vwr.bsA();
     for (int iShape = JC.SHAPE_MAX_SIZE_ZERO_ON_RESTRICT; --iShape >= 0;)
       if (iShape != JC.SHAPE_MEASURES && getShape(iShape) != null)
         setShapeSizeBs(iShape, 0, null, bs);

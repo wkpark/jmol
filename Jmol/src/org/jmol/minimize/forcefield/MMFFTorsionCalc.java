@@ -55,7 +55,7 @@ class MMFFTorsionCalc extends Calculation {
       }
       
       if (calcs.logging)
-        calcs.appendLogData(calcs.getDebugLine(CalculationsMMFF.CALC_TORSION, this));
+        calcs.appendLogData(calcs.getDebugLine(Calculations.CALC_TORSION, this));
       
       return energy;
     }

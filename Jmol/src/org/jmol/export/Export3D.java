@@ -710,7 +710,7 @@ public class Export3D implements JmolRendererInterface {
   public void drawQuadrilateral(short colix, P3i pointA, P3i pointB,
                                 P3i pointC, P3i screenD) {
     // mesh only -- translucency has been checked
-    setColix(colix);
+    setC(colix);
     drawLineAB(pointA, pointB);
     drawLineAB(pointB, pointC);
     drawLineAB(pointC, screenD);
@@ -850,9 +850,9 @@ public class Export3D implements JmolRendererInterface {
    * @return true or false if this is the right pass
    */
   @Override
-  public boolean setColix(short colix) {
+  public boolean setC(short colix) {
     this.colix = colix;
-    g3d.setColix(colix);
+    g3d.setC(colix);
     return true;
   }
 
@@ -1016,10 +1016,10 @@ public class Export3D implements JmolRendererInterface {
     hermite3d.renderHermiteRibbon(fill, border, tension, s0, s1, s2, s3, s4,
         s5, s6, s7, aspectRatio, 1);
     short colix = this.colix;
-    setColix(colixBack);
+    setC(colixBack);
     hermite3d.renderHermiteRibbon(fill, border, tension, s0, s1, s2, s3, s4,
         s5, s6, s7, aspectRatio, -1);
-    setColix(colix);
+    setC(colix);
   }
 
   @Override

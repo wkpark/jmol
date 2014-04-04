@@ -96,7 +96,7 @@ public class JSpecView implements JmolJSpecView {
   @Override
   public void setModel(int modelIndex) {
     int syncMode = ("sync on".equals(vwr.ms
-        .getModelSetAuxiliaryInfoValue("jmolscript")) ? StatusManager.SYNC_DRIVER
+        .getInfoM("jmolscript")) ? StatusManager.SYNC_DRIVER
         : vwr.sm.getSyncMode());
     if (syncMode != StatusManager.SYNC_DRIVER)
       return;
@@ -133,7 +133,7 @@ public class JSpecView implements JmolJSpecView {
       Lst<String> peaks = new Lst<String>();
       for (int i = 0; i < list.length; i++)
         peaks.addLast(list[i]);
-      vwr.getModelSet().setModelAuxiliaryInfo(vwr.getCurrentModelIndex(),
+      vwr.ms.setInfo(vwr.am.cmi,
           "jdxAtomSelect_1HNMR", peaks);
       return null;
     case JC.JSV_SELECT:

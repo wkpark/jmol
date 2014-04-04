@@ -125,7 +125,7 @@ public class DmolReader extends AtomSetCollectionReader {
 
   private void setEnergy() {
     asc.setAtomSetEnergy("" + totE, totE.floatValue());
-    asc.setAtomSetCollectionAuxiliaryInfo("Energy", totE);
+    asc.setInfo("Energy", totE);
     asc.setAtomSetName("E = " + totE + " Hartree");
   }
 

@@ -107,7 +107,7 @@ public class SiestaReader extends AtomSetCollectionReader {
     Double energy = Double.valueOf(Double.parseDouble(tokens[3]));
     asc.setAtomSetEnergy("" + energy, energy.floatValue());
     asc.setAtomSetAuxiliaryInfo("Energy", energy);
-    asc.setAtomSetCollectionAuxiliaryInfo("Energy", energy);
+    asc.setInfo("Energy", energy);
     asc.setAtomSetName("Energy = " + energy + " eV");
   }
 }

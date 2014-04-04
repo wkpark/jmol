@@ -172,17 +172,17 @@ public class RocketsRenderer extends StrandsRenderer {
   private void renderPendingRocketSegment(int i, P3 pointStart,
                                           P3 pointBeforeEnd, P3 pointEnd,
                                           boolean tEnd) {
-    vwr.transformPt3f(pointStart, screenA);
-    vwr.transformPt3f(pointEnd, screenB);
+    tm.transformPt3f(pointStart, screenA);
+    tm.transformPt3f(pointEnd, screenB);
     int zMid = (int) Math.floor((screenA.z + screenB.z) / 2f);
     int diameter = (int) vwr.scaleToScreen(zMid, mad);
-    if (g3d.setColix(colix)) {
+    if (g3d.setC(colix)) {
       g3d.fillCylinderBits(GData.ENDCAPS_FLAT, diameter, screenA, screenB);
       if (tEnd && renderArrowHeads) {
         vtemp.sub2(pointEnd, pointStart);
         vtemp.normalize();
         screenA.scaleAdd2(4.0f, vtemp, pointEnd);
-        vwr.transformPt3f(screenA, screenC);
+        tm.transformPt3f(screenA, screenC);
         renderCone(i, pointEnd, screenA, screenB, screenC);
       }
       if (startIndexPending == endIndexPending)
@@ -216,7 +216,7 @@ public class RocketsRenderer extends StrandsRenderer {
 
   private void renderPendingSheet(P3 ptStart, P3 pointBeforeEnd,
                                   P3 ptEnd, boolean tEnd) {
-    if (!g3d.setColix(colix))
+    if (!g3d.setC(colix))
       return;
     if (corners[0] == null)
       for (int i = 8; --i >= 0;) {
@@ -233,12 +233,12 @@ public class RocketsRenderer extends StrandsRenderer {
           corner.add(vW);
         if ((i & 2) != 0)
           corner.add(vH);
-        vwr.transformPt3f(corner, screenCorners[i]);
+        tm.transformPt3f(corner, screenCorners[i]);
       }
       corners[4].setT(ptTip);
-      vwr.transformPt3f(ptTip, screenCorners[4]);
+      tm.transformPt3f(ptTip, screenCorners[4]);
       corners[5].add2(ptTip, vH);
-      vwr.transformPt3f(corners[5], screenCorners[5]);
+      tm.transformPt3f(corners[5], screenCorners[5]);
 
       g3d.fillTriangle3f(screenCorners[0], screenCorners[1], screenCorners[4],
           true);
@@ -289,7 +289,7 @@ public class RocketsRenderer extends StrandsRenderer {
         corner.add(scaledHeightVector);
       if ((i & 4) != 0)
         corner.add(lengthVector);
-      vwr.transformPt3f(corner, screenCorners[i]);
+      tm.transformPt3f(corner, screenCorners[i]);
     }
   }
 

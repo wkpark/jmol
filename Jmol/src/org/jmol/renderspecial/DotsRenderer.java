@@ -67,7 +67,7 @@ public class DotsRenderer extends ShapeRenderer {
   
   protected void render1(Dots dots) {
     //dots.timeBeginExecution = System.currentTimeMillis();
-    if (!iShowSolid && !g3d.setColix(C.BLACK)) // no translucent for dots
+    if (!iShowSolid && !g3d.setC(C.BLACK)) // no translucent for dots
       return;
     int sppa = (int) vwr.getScalePixelsPerAngstrom(true);
     screenLevel = (iShowSolid || sppa > 20 ? 3 : sppa > 10 ? 2 : sppa > 5 ? 1
@@ -78,7 +78,7 @@ public class DotsRenderer extends ShapeRenderer {
     screenDotCount = Geodesic.getVertexCount(screenLevel);
     dotScale = vwr.getInt(T.dotscale);
     for (int i = screenDotCount; --i >= 0;)
-      vwr.transformVector(Geodesic.getVertexVector(i),
+      tm.transformVector(Geodesic.getVertexVector(i),
           verticesTransformed[i]);
     BS[] maps = dots.ec.getDotsConvexMaps();
     for (int i = dots.ec.getDotsConvexMax(); --i >= 0;) {
@@ -153,7 +153,7 @@ public class DotsRenderer extends ShapeRenderer {
    * @param nPoints
    */
   protected void renderDots(int nPoints) {
-    g3d.setColix(colix);
+    g3d.setC(colix);
     g3d.drawPoints(nPoints, screenCoordinates, dotScale);
   }
 }

@@ -488,7 +488,7 @@ public class ScriptManager implements JmolScriptManager {
       vwr.queueOnHold = false;
     }
     if (isInsert || vwr.g.waitForMoveTo) {
-      vwr.stopMotion();
+      vwr.tm.stopMotion();
     }
     Logger.info(vwr.isSyntaxCheck ? haltType
         + " -- stops script checking" : (isInsert ? "!" : "") + haltType
@@ -658,7 +658,7 @@ public class ScriptManager implements JmolScriptManager {
     // must be added to the LAST data set only
 
     BS bsA = vwr.getModelUndeletedAtomsBitSet(modelIndex);
-    vwr.setAppendNew(false);
+    vwr.g.appendNew = false;
     // BitSet bsB = getAtomBits(Token.hydrogen, null);
     // bsA.andNot(bsB);
     int atomIndex = vwr.ms.getAtomCount();

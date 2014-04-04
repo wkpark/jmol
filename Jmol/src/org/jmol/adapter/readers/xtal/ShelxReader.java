@@ -170,7 +170,7 @@ public class ShelxReader extends AtomSetCollectionReader {
 
     int ioff = tokens.length - 6;
     if (ioff == 2)
-      asc.setAtomSetCollectionAuxiliaryInfo("wavelength",
+      asc.setInfo("wavelength",
           Float.valueOf(parseFloatStr(tokens[1])));
     for (int ipt = 0; ipt < 6; ipt++)
       setUnitCellItem(ipt, parseFloatStr(tokens[ipt + ioff]));

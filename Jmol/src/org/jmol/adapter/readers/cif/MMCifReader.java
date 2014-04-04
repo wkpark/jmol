@@ -930,7 +930,7 @@ _pdbx_struct_oper_list.vector[3]
     }
     if (atom.isHetero && htHetero != null) {
       cr.asc.setAtomSetAuxiliaryInfo("hetNames", htHetero);
-      cr.asc.setAtomSetCollectionAuxiliaryInfo("hetNames",
+      cr.asc.setInfo("hetNames",
           htHetero);
       htHetero = null;
     }

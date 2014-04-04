@@ -590,7 +590,7 @@ public final class Resolver implements JmolBioResolver {
       return;
     Atom[] atoms = ms.at;
     if (lastSetH == Integer.MIN_VALUE || atoms[iAtom].mi != atoms[lastSetH].mi) 
-      maxSerial = ((int[]) ms.getModelAuxiliaryInfoValue(atoms[lastSetH = iAtom].mi, "PDB_CONECT_firstAtom_count_max"))[2];
+      maxSerial = ((int[]) ms.getInfo(atoms[lastSetH = iAtom].mi, "PDB_CONECT_firstAtom_count_max"))[2];
     bsAddedHydrogens.clear(iAtom);
     ms.setAtomName(iAtom, name);
     atoms[iAtom].setT(pt);

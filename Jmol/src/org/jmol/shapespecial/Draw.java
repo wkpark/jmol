@@ -180,7 +180,7 @@ public void initShape() {
     if ("lineData" == propertyName) {
       lineData = new  Lst<P3[]>();
       if (indicatedModelIndex < 0)
-        indicatedModelIndex = vwr.getCurrentModelIndex();
+        indicatedModelIndex = vwr.am.cmi;
       float[] fdata = (float[]) value;
       int n = fdata.length / 6;
       for (int i = 0, pt = 0; i < n; i++)
@@ -365,7 +365,7 @@ public void initShape() {
       vData.addLast(new Object[] { Integer.valueOf(PT_BITSET), bsAtoms });
       //nbitsets++;
       if (isCircle && diameter == 0 && width == 0)
-        width = vwr.calcRotationRadiusBs(bsAtoms) * 2.0f;
+        width = vwr.ms.calcRotationRadiusBs(bsAtoms) * 2.0f;
       return;
     }
 
@@ -554,7 +554,7 @@ protected void resetObjects() {
       // make just ONE copy 
       // arrows and curves simply can't be handled as
       // multiple frames yet
-      thisMesh.modelIndex = (lineData == null ? vwr.getCurrentModelIndex() : indicatedModelIndex);
+      thisMesh.modelIndex = (lineData == null ? vwr.am.cmi : indicatedModelIndex);
       thisMesh.isFixed = (isFixed || lineData == null && thisMesh.modelIndex < 0 && modelCount > 1);
       if (isFixed && modelCount > 1)
         thisMesh.modelIndex = -1;
@@ -655,7 +655,7 @@ protected void resetObjects() {
     } else if (plane != null && intersectID != null) {
       Lst<P3[]> vData = new  Lst<P3[]>();
       Object[] data = new Object[] { intersectID, plane, vData, null };
-      vwr.getShapePropertyData(JC.SHAPE_ISOSURFACE, "intersectPlane",
+      vwr.shm.getShapePropertyData(JC.SHAPE_ISOSURFACE, "intersectPlane",
           data);
       if (vData.size() == 0)
         return;
@@ -746,7 +746,7 @@ protected void resetObjects() {
         if (bsModel != null)
           bs.and(bsModel);
         if (bs.length() > 0)
-          addPoint(vwr.getAtomSetCenter(bs), (makePoints ? iModel : -1));
+          addPoint(vwr.ms.getAtomSetCenter(bs), (makePoints ? iModel : -1));
         break;
       case PT_IDENTIFIER:
         int[] idInfo = (int[]) info[1];
@@ -796,7 +796,7 @@ protected void resetObjects() {
               if (bsModel != null)
                 bs.and(bsModel);
               if (bs.length() > 0)
-                addPoint(vwr.getAtomSetCenter(bs), j);
+                addPoint(vwr.ms.getAtomSetCenter(bs), j);
             }
           }
         break;
@@ -1225,10 +1225,10 @@ protected void resetObjects() {
     P3 coord = P3.newP(mesh.altVertices == null ? mesh.vs[ptVertex] : (P3) mesh.altVertices[ptVertex]);
     P3 newcoord = new P3();
     V3 move = new V3();
-    vwr.transformPt3f(coord, pt);
+    vwr.tm.transformPt3f(coord, pt);
     pt.x = x;
     pt.y = y;
-    vwr.unTransformPoint(pt, newcoord);
+    vwr.tm.unTransformPoint(pt, newcoord);
     move.sub2(newcoord, coord);
     if (mesh.isTriangleSet)
       iVertex = ptVertex; // operate on entire set of vertices, not just the

@@ -54,7 +54,7 @@ abstract class __RayTracerExporter extends ___Exporter {
   @Override
   protected void outputVertex(P3 pt, P3 offset) {
     setTempVertex(pt, offset, tempP1);
-    vwr.transformPt3f(tempP1, tempP1);
+    tm.transformPt3f(tempP1, tempP1);
     output(tempP1);
   }
 
@@ -86,15 +86,15 @@ abstract class __RayTracerExporter extends ___Exporter {
       return tempP3;
     }
     tempP1.add2(pt, normal);
-    vwr.transformPt3f(pt, tempP2);
-    vwr.transformPt3f(tempP1, tempP3);
+    tm.transformPt3f(pt, tempP2);
+    tm.transformPt3f(tempP1, tempP3);
     tempP3.sub(tempP2);
     tempP3.scale(factor);
     return tempP3;
   }
 
   protected void initVars() {
-    isSlabEnabled = vwr.getSlabEnabled();
+    isSlabEnabled = tm.slabEnabled;
     minScreenDimension = Math.min(screenWidth, screenHeight);
   }
 

@@ -127,7 +127,7 @@ public class SelectionManager {
     }
   }
 
-  BS getHiddenSet() {
+  public BS getHiddenSet() {
     return bsHidden;
   }
 
@@ -141,7 +141,7 @@ public class SelectionManager {
       selectionChanged(false);
   }
 
-  boolean isSelected(int atomIndex) {
+  public boolean isSelected(int atomIndex) {
     return (atomIndex >= 0 && bsSelection.get(atomIndex));
   }
 
@@ -149,9 +149,9 @@ public class SelectionManager {
     if (bs == null) {
       selectAll(true);
       if (!vwr.getBoolean(T.hydrogen))
-        excludeSelectionSet(vwr.getAtomBits(T.hydrogen, null));
+        excludeSelectionSet(vwr.ms.getAtoms(T.hydrogen, null));
       if (!vwr.getBoolean(T.hetero))
-        excludeSelectionSet(vwr.getAtomBits(T.hetero, null));
+        excludeSelectionSet(vwr.ms.getAtoms(T.hetero, null));
       selectionChanged(false);
     } else {
       setSelectionSet(bs, addRemove);
@@ -275,7 +275,7 @@ public class SelectionManager {
 
   private void selectionChanged(boolean isQuiet) {
     if (hideNotSelected)
-      hide(vwr.getModelSet(), BSUtil.copyInvert(bsSelection, vwr.getAtomCount()), 0, isQuiet);
+      hide(vwr.ms, BSUtil.copyInvert(bsSelection, vwr.getAtomCount()), 0, isQuiet);
     if (isQuiet || listeners.length == 0)
       return;
     for (int i = listeners.length; --i >= 0;)

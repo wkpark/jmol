@@ -192,7 +192,7 @@ abstract class ScriptExpr extends ScriptParam {
           v = parameterExpressionToken(++i);
           i = iToken;
         } else if (tokAt(i) == T.integer) {
-          v = vwr.getAtomBits(T.atomno, Integer.valueOf(st[i].intValue));
+          v = vwr.ms.getAtoms(T.atomno, Integer.valueOf(st[i].intValue));
           break;
         } else {
           v = getParameter(SV.sValue(st[i]), T.variable);
@@ -539,7 +539,7 @@ abstract class ScriptExpr extends ScriptParam {
                 rpn.addOp(T.tokenRightParen);
               }
             } else {
-              var = vwr.getOrSetNewVariable(name, false);
+              var = vwr.g.getOrSetNewVariable(name, false);
               switch (var.tok) {
               case T.integer:
               case T.decimal:
@@ -751,7 +751,7 @@ abstract class ScriptExpr extends ScriptParam {
         rpn.addX(SV.newT(instruction));
         break;
       case T.selected:
-        rpn.addXBs(BSUtil.copy(vwr.getSelectedAtoms()));
+        rpn.addXBs(BSUtil.copy(vwr.bsA()));
         break;
       //removed in 13.1.17. Undocumented; unneccessary (same as "all")
 
@@ -761,13 +761,13 @@ abstract class ScriptExpr extends ScriptParam {
       //    : BSUtil.copy(bsSubset));
       //break;
       case T.hidden:
-        rpn.addXBs(BSUtil.copy(vwr.getHiddenSet()));
+        rpn.addXBs(BSUtil.copy(vwr.slm.getHiddenSet()));
         break;
       case T.fixed:
         rpn.addXBs(BSUtil.copy(vwr.getMotionFixedAtoms()));
         break;
       case T.displayed:
-        rpn.addXBs(BSUtil.copyInvert(vwr.getHiddenSet(), ac));
+        rpn.addXBs(BSUtil.copyInvert(vwr.slm.getHiddenSet(), ac));
         break;
       case T.basemodel:
         rpn.addXBs(vwr.getBaseModelBitSet());
@@ -776,13 +776,13 @@ abstract class ScriptExpr extends ScriptParam {
         if (!chk && !refreshed)
           vwr.setModelVisibility();
         refreshed = true;
-        rpn.addXBs(vwr.getVisibleSet());
+        rpn.addXBs(vwr.ms.getVisibleSet());
         break;
       case T.clickable:
         // a bit different, because it requires knowing what got slabbed
         if (!chk && allowRefresh)
           refresh(false);
-        rpn.addXBs(vwr.getClickableSet());
+        rpn.addXBs(vwr.ms.getClickableSet());
         break;
       case T.spec_atom:
         if (vwr.allowSpecAtom()) {
@@ -866,8 +866,7 @@ abstract class ScriptExpr extends ScriptParam {
                 (int) Math.floor(pt.y * 1000), (int) Math.floor(pt.z * 1000) }));
         break;
       case T.thismodel:
-        rpn.addXBs(vwr.getModelUndeletedAtomsBitSet(vwr
-            .getCurrentModelIndex()));
+        rpn.addXBs(vwr.getModelUndeletedAtomsBitSet(vwr.am.cmi));
         break;
       case T.hydrogen:
       case T.amino:
@@ -944,7 +943,7 @@ abstract class ScriptExpr extends ScriptParam {
           } else {
             if (T.tokAttr(tokValue, T.identifier)) {
               if ("_modelNumber".equalsIgnoreCase((String) val)) {
-                int modelIndex = vwr.getCurrentModelIndex();
+                int modelIndex = vwr.am.cmi;
                 val = Integer.valueOf(modelIndex < 0 ? 0 : vwr
                     .getModelFileNumber(modelIndex));
               } else {
@@ -1076,8 +1075,7 @@ abstract class ScriptExpr extends ScriptParam {
     BS bs = (expressionResult instanceof BS ? (BS) expressionResult : new BS());
     isBondSet = (expressionResult instanceof BondSet);
     if (!isBondSet
-        && vwr.excludeAtoms(bs, ignoreSubset).length() > vwr
-            .getAtomCount())
+        && vwr.excludeAtoms(bs, ignoreSubset).length() > vwr.getAtomCount())
       bs.clearAll();
     if (tempStatement != null) {
       st = tempStatement;
@@ -1519,7 +1517,7 @@ abstract class ScriptExpr extends ScriptParam {
     case T.bonds:
       if (chk)
         return bs;
-      bsNew = (tok == T.atoms ? (isAtoms ? bs : vwr.getAtomBits(T.bonds, bs))
+      bsNew = (tok == T.atoms ? (isAtoms ? bs : vwr.ms.getAtoms(T.bonds, bs))
           : (isAtoms ? (BS) new BondSet(vwr.getBondsForSelectedAtoms(bs))
               : bs));
       int i;
@@ -1880,21 +1878,21 @@ abstract class ScriptExpr extends ScriptParam {
       m *= 1000000;
     int pt = m % 1000000;
     if (pt == 0) {
-      int model1 = vwr.getModelNumberIndex(m + 1, false, false);
+      int model1 = vwr.ms.getModelNumberIndex(m + 1, false, false);
       if (model1 < 0)
         return bs;
-      int model2 = (m == 0 ? modelCount : vwr.getModelNumberIndex(
+      int model2 = (m == 0 ? modelCount : vwr.ms.getModelNumberIndex(
           m + 1000001, false, false));
       if (model1 < 0)
         model1 = 0;
       if (model2 < 0)
         model2 = modelCount;
-      if (vwr.isTrajectory(model1))
+      if (vwr.ms.isTrajectory(model1))
         model2 = model1 + 1;
       for (int j = model1; j < model2; j++)
         bs.or(vwr.getModelUndeletedAtomsBitSet(j));
     } else {
-      int modelIndex = vwr.getModelNumberIndex(m, false, true);
+      int modelIndex = vwr.ms.getModelNumberIndex(m, false, true);
       if (modelIndex >= 0)
         bs.or(vwr.getModelUndeletedAtomsBitSet(modelIndex));
     }
@@ -1905,13 +1903,12 @@ abstract class ScriptExpr extends ScriptParam {
     if (s == null || s.length() == 0)
       return s;
     Object v = SV.unescapePointOrBitsetAsVariable(s);
-    if (v instanceof String && key != null)
-      v = vwr.setUserVariable(key, SV.newS((String) v));
-    return v;
+    return (v instanceof String && key != null ? vwr.g.setUserVariable(key,
+        SV.newS((String) v)) : v);
   }
 
   protected BS getAtomBits(int tokType, Object specInfo) {
-    return (chk ? new BS() : vwr.getAtomBits(tokType, specInfo));
+    return (chk ? new BS() : vwr.ms.getAtoms(tokType, specInfo));
   }
 
   static protected int getSeqCode(T instruction) {
@@ -2072,7 +2069,7 @@ abstract class ScriptExpr extends ScriptParam {
 
     if (needVariable && key != null) {
       if (key.startsWith("_")
-          || (t = vwr.getOrSetNewVariable(key, true)) == null)
+          || (t = vwr.g.getOrSetNewVariable(key, true)) == null)
         errorStr(ERROR_invalidArgument, key);
     }
     if (t != null) {
@@ -2088,7 +2085,7 @@ abstract class ScriptExpr extends ScriptParam {
         vv = tv.asString();
       // very inefficient!
       vwr.setData(key,
-          new Object[] { key, "" + vv, BSUtil.copy(vwr.getSelectedAtoms()),
+          new Object[] { key, "" + vv, BSUtil.copy(vwr.bsA()),
               Integer.valueOf(0) }, vwr.getAtomCount(), 0, 0,
           Integer.MIN_VALUE, 0);
       return null;
@@ -2290,7 +2287,7 @@ abstract class ScriptExpr extends ScriptParam {
           v = (vt.tok == T.varray ? vt : SV.oValue(vt));
         } else {
           if (tokAt(i) == T.integer) {
-            v = vwr.getAtomBits(T.atomno, Integer.valueOf(st[i].intValue));
+            v = vwr.ms.getAtoms(T.atomno, Integer.valueOf(st[i].intValue));
           } else {
             v = getParameter(var, 0);
           }

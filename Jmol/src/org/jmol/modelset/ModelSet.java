@@ -175,7 +175,7 @@ import java.util.Map;
     setAtomPositions(baseModelIndex, modelIndex, trajectorySteps.get(modelIndex),
         null, 0,
         (vibrationSteps == null ? null : vibrationSteps.get(modelIndex)), true);    
-    int m = vwr.getCurrentModelIndex();
+    int m = vwr.am.cmi;
     if (m >= 0 && m != modelIndex 
         && am[m].fileIndex == am[modelIndex].fileIndex)
       vwr.setCurrentModelIndexClear(modelIndex, false);
@@ -197,7 +197,7 @@ import java.util.Map;
     setAtomPositions(baseModelIndex, m1, trajectorySteps.get(m1),
         trajectorySteps.get(m2), f, (vibrationSteps == null ? null
             : vibrationSteps.get(m1)), true);
-    int m = vwr.getCurrentModelIndex();
+    int m = vwr.am.cmi;
     if (m >= 0 && m != m1 && am[m].fileIndex == am[m1].fileIndex)
       vwr.setCurrentModelIndexClear(m1, false);
   }  
@@ -319,7 +319,7 @@ import java.util.Map;
    * @param specInfo  
    * @return bitset; null only if we mess up with name
    */
-  public BS getAtomBits(int tokType, Object specInfo) {
+  public BS getAtoms(int tokType, Object specInfo) {
     switch (tokType) {
     default:
       return BSUtil.andNot(getAtomBitsMaybeDeleted(tokType, specInfo), vwr
@@ -330,10 +330,6 @@ import java.util.Map;
       return (modelIndex < 0 && modelNumber > 0 ? new BS()
           : vwr.getModelUndeletedAtomsBitSet(modelIndex));
     }
-  }
-
-  public String getAtomLabel(int i) {
-    return (String) vwr.getShapePropertyIndex(JC.SHAPE_LABELS, "label", i);
   }
   
   protected final Atom[] closest = new Atom[1];
@@ -384,7 +380,7 @@ import java.util.Map;
     calculatePolymers(null, 0, 0, bsModelsExcluded);
     String ret = calculateStructuresAllExcept(bsModelsExcluded, asDSSP, doReport,
         dsspIgnoreHydrogen, true, false);
-    vwr.resetBioshapes(bsAllAtoms);
+    vwr.shm.resetBioshapes(bsAllAtoms);
     setStructureIndexes();
     return ret;
   }
@@ -412,7 +408,7 @@ import java.util.Map;
                                                   boolean asDraw,
                                                   boolean asInfo, String type,
                                                   int index, float scale) {
-    int modelIndex = vwr.getCurrentModelIndex();
+    int modelIndex = vwr.am.cmi;
     int iAtom = (bsAtoms == null ? -1 : bsAtoms.nextSetBit(0));
     if (modelIndex < 0 && iAtom >= 0)
       modelIndex = at[iAtom].getModelIndex();
@@ -428,9 +424,9 @@ import java.util.Map;
       bs = vwr.getModelUndeletedAtomsBitSet(modelIndex);
       iAtom = bs.nextSetBit(0);
     }
-    Object obj = vwr.getShapePropertyIndex(JC.SHAPE_VECTORS, "mad", iAtom);
+    Object obj = vwr.shm.getShapePropertyIndex(JC.SHAPE_VECTORS, "mad", iAtom);
     boolean haveVibration = (obj != null && ((Integer) obj).intValue() != 0 || vwr
-        .isVibrationOn());
+        .tm.vibrationOn);
     SymmetryInterface symmetry = Interface.getSymmetry();
     pointGroup = symmetry.setPointGroup(pointGroup, at, bs, haveVibration,
         vwr.getFloat(T.pointgroupdistancetolerance), vwr.getFloat(T.pointgrouplineartolerance));
@@ -495,12 +491,12 @@ import java.util.Map;
                                   BS bsExclude) {
     short mad = vwr.getMadBond();
     for (int i = baseModelIndex; i < mc; i++) {
-      Lst<int[]> vConnect = (Lst<int[]>) getModelAuxiliaryInfoValue(i, "PDB_CONECT_bonds");
+      Lst<int[]> vConnect = (Lst<int[]>) getInfo(i, "PDB_CONECT_bonds");
       if (vConnect == null)
         continue;
       int nConnect = vConnect.size();
-      setModelAuxiliaryInfo(i, "initialBondCount", Integer.valueOf(nConnect));
-      int[] atomInfo = (int[]) getModelAuxiliaryInfoValue(i, "PDB_CONECT_firstAtom_count_max");
+      setInfo(i, "initialBondCount", Integer.valueOf(nConnect));
+      int[] atomInfo = (int[]) getInfo(i, "PDB_CONECT_firstAtom_count_max");
       int firstAtom = atomInfo[0] +  baseAtomIndex;
       int atomMax = firstAtom + atomInfo[1];
       int max = atomInfo[2];
@@ -574,7 +570,7 @@ import java.util.Map;
   public BS deleteModels(BS bsAtoms) {
     // full models are deleted for any model containing the specified atoms
     moleculeCount = 0;
-    BS bsModels = getModelBitSet(bsAtoms, false);
+    BS bsModels = getModelBS(bsAtoms, false);
     includeAllRelatedFrames(bsModels);
 
     int nModelsDeleted = BSUtil.cardinalityOf(bsModels);
@@ -641,7 +637,7 @@ import java.util.Map;
         oldModels[j].fixIndices(mpt, nAtoms, bs);
 
       // adjust all shapes
-      vwr.deleteShapeAtoms(new Object[] { newModels, at,
+      vwr.shm.deleteShapeAtoms(new Object[] { newModels, at,
           new int[] { mpt, firstAtomIndex, nAtoms } }, bs);
       mc--;
     }
@@ -695,13 +691,13 @@ import java.util.Map;
   public Object getFileData(int modelIndex) {
     if (modelIndex < 0)
       return "";
-    Map<String, Object> fileData = (Map<String, Object>) getModelAuxiliaryInfoValue(modelIndex, "fileData");
+    Map<String, Object> fileData = (Map<String, Object>) getInfo(modelIndex, "fileData");
     if (fileData != null)
       return fileData;
-    if (!getModelAuxiliaryInfoBoolean(modelIndex, "isCIF"))
+    if (!getInfoB(modelIndex, "isCIF"))
       return getPDBHeader(modelIndex);
     fileData = vwr.getCifData(modelIndex);
-    setModelAuxiliaryInfo(modelIndex, "fileData", fileData);
+    setInfo(modelIndex, "fileData", fileData);
     return fileData;
   }
   
@@ -735,7 +731,7 @@ import java.util.Map;
       return bs; // can't add atoms to a trajectory or a system with multiple groups!
     }
     growAtomArrays(ac + pts.length);
-    RadiusData rd = vwr.getDefaultRadiusData();
+    RadiusData rd = vwr.rd;
     short mad = getDefaultMadFromOrder(1);
     for (int i = 0, n = am[modelIndex].ac + 1; i < vConnections.size(); i++, n++) {
       Atom atom1 = vConnections.get(i);
@@ -913,7 +909,7 @@ import java.util.Map;
     if (getHaveStraightness())
       calculateStraightness();
     recalculateLeadMidpointsAndWingVectors(-1);
-    BS bsModels = getModelBitSet(bs, false);
+    BS bsModels = getModelBS(bs, false);
     for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1))
       sm.refreshShapeTrajectories(i, bs, mat);
     averageAtomPoint = null;

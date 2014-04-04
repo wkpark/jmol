@@ -89,7 +89,7 @@ public class FileManager implements BytePoster {
 
   private void setLoadState(Map<String, Object> htParams) {
     if (vwr.getPreserveState()) {
-      htParams.put("loadState", vwr.getLoadState(htParams));
+      htParams.put("loadState", vwr.g.getLoadState(htParams));
     }
   }
 
@@ -1111,9 +1111,9 @@ public class FileManager implements BytePoster {
 
   public static GenericFileInterface getLocalDirectory(Viewer vwr, boolean forDialog) {
     String localDir = (String) vwr
-        .getParameter(forDialog ? "currentLocalPath" : "defaultDirectoryLocal");
+        .getP(forDialog ? "currentLocalPath" : "defaultDirectoryLocal");
     if (forDialog && localDir.length() == 0)
-      localDir = (String) vwr.getParameter("defaultDirectoryLocal");
+      localDir = (String) vwr.getP("defaultDirectoryLocal");
     if (localDir.length() == 0)
       return (vwr.isApplet() ? null : vwr.apiPlatform.newFile(System
           .getProperty("user.dir", ".")));

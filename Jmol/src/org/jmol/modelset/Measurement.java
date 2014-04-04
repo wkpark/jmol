@@ -219,8 +219,8 @@ public class Measurement {
   public void reformatDistanceIfSelected() {
     if (count != 2)
       return;
-    if (vwr.isSelected(countPlusIndices[1])
-        && vwr.isSelected(countPlusIndices[2]))
+    if (vwr.slm.isSelected(countPlusIndices[1])
+        && vwr.slm.isSelected(countPlusIndices[2]))
       formatMeasurement(null);
   }
 
@@ -232,7 +232,7 @@ public class Measurement {
       int pt = strFormat.indexOf("//");
       units = (pt >= 0 ? strFormat.substring(pt + 2) : null);
       if (units == null) {
-        units = vwr.getMeasureDistanceUnits();
+        units = vwr.g.measureDistanceUnits;
         strFormat += "//" + units;
       }
     }

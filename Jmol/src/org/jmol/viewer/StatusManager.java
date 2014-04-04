@@ -82,8 +82,8 @@ vwrRefreshed
 public class StatusManager {
 
   protected Viewer vwr;
-  private JmolStatusListener jmolStatusListener;
-  private JmolCallbackListener jmolCallbackListener;
+  private JmolStatusListener jsl;
+  private JmolCallbackListener cbl;
   private String statusList = "";
 
   StatusManager(Viewer vwr) {
@@ -254,12 +254,12 @@ public class StatusManager {
   }
 
   synchronized void setJmolStatusListener(JmolStatusListener jmolStatusListener, JmolCallbackListener jmolCallbackListener) {
-    this.jmolStatusListener = jmolStatusListener;
-    this.jmolCallbackListener = (jmolCallbackListener == null ? (JmolCallbackListener) jmolStatusListener : jmolCallbackListener);
+    this.jsl = jmolStatusListener;
+    this.cbl = (jmolCallbackListener == null ? (JmolCallbackListener) jmolStatusListener : jmolCallbackListener);
   }
   
   synchronized void setJmolCallbackListener(JmolCallbackListener jmolCallbackListener) {
-    this.jmolCallbackListener = jmolCallbackListener;
+    this.cbl = jmolCallbackListener;
   }
   
   Map<CBK, String> jmolScriptCallbacks = new Hashtable<CBK, String>();
@@ -287,18 +287,18 @@ public class StatusManager {
       else
         jmolScriptCallbacks.put(callback, callbackFunction.substring(pt).trim());
     }
-    if (jmolCallbackListener != null)
-      jmolCallbackListener.setCallbackFunction(callbackType, callbackFunction);
+    if (cbl != null)
+      cbl.setCallbackFunction(callbackType, callbackFunction);
   }
   
   private boolean notifyEnabled(CBK type) {
-    return jmolCallbackListener != null && jmolCallbackListener.notifyEnabled(type);
+    return cbl != null && cbl.notifyEnabled(type);
   }
 
   synchronized void setStatusAppletReady(String htmlName, boolean isReady) {
     String sJmol = (isReady ? jmolScriptCallback(CBK.APPLETREADY) : null);
     if (notifyEnabled(CBK.APPLETREADY))
-      jmolCallbackListener.notifyCallback(CBK.APPLETREADY,
+      cbl.notifyCallback(CBK.APPLETREADY,
           new Object[] { sJmol, htmlName, Boolean.valueOf(isReady), null });
   }
 
@@ -306,7 +306,7 @@ public class StatusManager {
     String sJmol = jmolScriptCallback(CBK.ATOMMOVED);
     setStatusChanged("atomMoved", -1, bsMoved, false);
     if (notifyEnabled(CBK.ATOMMOVED))
-      jmolCallbackListener.notifyCallback(CBK.ATOMMOVED,
+      cbl.notifyCallback(CBK.ATOMMOVED,
           new Object[] { sJmol, bsMoved });
   }
 
@@ -321,7 +321,7 @@ public class StatusManager {
     Logger.info("setStatusAtomPicked(" + atomIndex + "," + strInfo + ")");
     setStatusChanged("atomPicked", atomIndex, strInfo, false);
     if (notifyEnabled(CBK.PICK))
-      jmolCallbackListener.notifyCallback(CBK.PICK,
+      cbl.notifyCallback(CBK.PICK,
           new Object[] { sJmol, strInfo, Integer.valueOf(atomIndex), map });
   }
 
@@ -331,7 +331,7 @@ public class StatusManager {
       return action;
     // allows modification of action
     int[] m = new int[] { action, mode };
-    jmolCallbackListener.notifyCallback(CBK.CLICK,
+    cbl.notifyCallback(CBK.CLICK,
         new Object[] { sJmol, Integer.valueOf(x), Integer.valueOf(y), Integer.valueOf(action), Integer.valueOf(clickCount), m });
     return m[0];
   }
@@ -339,21 +339,21 @@ public class StatusManager {
   synchronized void setStatusResized(int width, int height){
     String sJmol = jmolScriptCallback(CBK.RESIZE);
     if (notifyEnabled(CBK.RESIZE))
-      jmolCallbackListener.notifyCallback(CBK.RESIZE,
+      cbl.notifyCallback(CBK.RESIZE,
           new Object[] { sJmol, Integer.valueOf(width), Integer.valueOf(height) }); 
   }
 
   synchronized void setStatusAtomHovered(int iatom, String strInfo) {
     String sJmol = jmolScriptCallback(CBK.HOVER);
     if (notifyEnabled(CBK.HOVER))
-      jmolCallbackListener.notifyCallback(CBK.HOVER, 
+      cbl.notifyCallback(CBK.HOVER, 
           new Object[] {sJmol, strInfo, Integer.valueOf(iatom) });
   }
   
   synchronized void setStatusObjectHovered(String id, String strInfo, P3 pt) {
     String sJmol = jmolScriptCallback(CBK.HOVER);
     if (notifyEnabled(CBK.HOVER))
-      jmolCallbackListener.notifyCallback(CBK.HOVER, 
+      cbl.notifyCallback(CBK.HOVER, 
           new Object[] {sJmol, strInfo, Integer.valueOf(-1), id, Float.valueOf(pt.x), Float.valueOf(pt.y), Float.valueOf(pt.z) });
   }
   
@@ -373,14 +373,14 @@ public class StatusManager {
       setStatusChanged("fileLoadError", ptLoad, errorMsg, false);
     String sJmol = jmolScriptCallback(CBK.LOADSTRUCT);
     if (doCallback && notifyEnabled(CBK.LOADSTRUCT)) {
-      String name = (String) vwr.getParameter("_smilesString");
+      String name = (String) vwr.getP("_smilesString");
       if (name.length() != 0)
         fileName = name;
-      jmolCallbackListener
+      cbl
           .notifyCallback(CBK.LOADSTRUCT,
               new Object[] { sJmol, fullPathName, fileName, modelName,
                   errorMsg, Integer.valueOf(ptLoad),
-                  vwr.getParameter("_modelNumber"),
+                  vwr.getP("_modelNumber"),
                   vwr.getModelNumberDotted(vwr.getModelCount() - 1),
                   isAsync });
     }
@@ -389,15 +389,15 @@ public class StatusManager {
   synchronized void setStatusFrameChanged(int fileNo, int modelNo, int firstNo,
                                           int lastNo, int currentFrame,
                                           float currentMorphModel, String entryName) {
-    if (vwr.getModelSet() == null)
+    if (vwr.ms == null)
       return;
-    boolean animating = vwr.isAnimationOn();
+    boolean animating = vwr.am.animationOn;
     int frameNo = (animating ? -2 - currentFrame : currentFrame);
     setStatusChanged("frameChanged", frameNo,
         (currentFrame >= 0 ? vwr.getModelNumberDotted(currentFrame) : ""), false);
     String sJmol = jmolScriptCallback(CBK.ANIMFRAME);
     if (notifyEnabled(CBK.ANIMFRAME))
-      jmolCallbackListener.notifyCallback(CBK.ANIMFRAME,
+      cbl.notifyCallback(CBK.ANIMFRAME,
           new Object[] {
               sJmol,
               new int[] { frameNo, fileNo, modelNo, firstNo, lastNo,
@@ -413,7 +413,7 @@ public class StatusManager {
     setStatusChanged("scriptEcho", 0, strEcho, false);
     String sJmol = jmolScriptCallback(CBK.ECHO);
     if (notifyEnabled(CBK.ECHO))
-      jmolCallbackListener.notifyCallback(CBK.ECHO,
+      cbl.notifyCallback(CBK.ECHO,
           new Object[] { sJmol, strEcho, Integer.valueOf(isScriptQueued ? 1 : 0) });
   }
 
@@ -428,7 +428,7 @@ public class StatusManager {
         Logger.info("measurePicked " + intInfo + " " + strMeasure);
     }
     if (notifyEnabled(CBK.MEASURE))
-      jmolCallbackListener.notifyCallback(CBK.MEASURE, 
+      cbl.notifyCallback(CBK.MEASURE, 
           new Object[] { sJmol, strMeasure,  Integer.valueOf(intInfo), status , Float.valueOf(value)});
   }
   
@@ -436,7 +436,7 @@ public class StatusManager {
                                 String errMsgUntranslated) {
     String sJmol = jmolScriptCallback(CBK.ERROR);
     if (notifyEnabled(CBK.ERROR))
-      jmolCallbackListener.notifyCallback(CBK.ERROR,
+      cbl.notifyCallback(CBK.ERROR,
           new Object[] { sJmol, errType, errMsg, vwr.getShapeErrorState(),
               errMsgUntranslated });
   }
@@ -445,7 +445,7 @@ public class StatusManager {
                                              Float minEnergy, Float minEnergyDiff, String ff) {
     String sJmol = jmolScriptCallback(CBK.MINIMIZATION);
     if (notifyEnabled(CBK.MINIMIZATION))
-      jmolCallbackListener.notifyCallback(CBK.MINIMIZATION,
+      cbl.notifyCallback(CBK.MINIMIZATION,
           new Object[] { sJmol, minStatus, minSteps, minEnergy, minEnergyDiff, ff });
   }
   
@@ -480,7 +480,7 @@ public class StatusManager {
       data = new Object[] { null, "script <exiting>", statusMessage,
           Integer.valueOf(-1), strErrorMessageUntranslated };
       if (notifyEnabled(CBK.SCRIPT))
-        jmolCallbackListener
+        cbl
             .notifyCallback(CBK.SCRIPT, data);
       processScript(data);
       strStatus = "Jmol script completed.";
@@ -489,7 +489,7 @@ public class StatusManager {
         Integer.valueOf(isScriptCompletion ? -1 : msWalltime),
         strErrorMessageUntranslated };
     if (notifyEnabled(CBK.SCRIPT))
-      jmolCallbackListener.notifyCallback(CBK.SCRIPT, data);
+      cbl.notifyCallback(CBK.SCRIPT, data);
     processScript(data);
   }
 
@@ -535,7 +535,7 @@ public class StatusManager {
       if (mouseCommand != null)
         syncSend(mouseCommand, "*", 0);
     } else if (!syncingScripts)
-      syncSend("!" + vwr.getMoveToText(minSyncRepeatMs / 1000f), "*", 0);
+      syncSend("!" + vwr.tm.getMoveToText(minSyncRepeatMs / 1000f, false), "*", 0);
   }
 
   boolean drivingSync = false;
@@ -597,13 +597,13 @@ public class StatusManager {
   public void syncSend(String script, String appletName, int port) {
     // no jmolscript option for syncSend
     if (port != 0 || notifyEnabled(CBK.SYNC))
-      jmolCallbackListener.notifyCallback(CBK.SYNC,
+      cbl.notifyCallback(CBK.SYNC,
           new Object[] { null, script, appletName, Integer.valueOf(port) });
   }
  
   public void modifySend(int atomIndex, int modelIndex, int mode, String msg) {
     if (notifyEnabled(CBK.STRUCTUREMODIFIED))
-      jmolCallbackListener.notifyCallback(CBK.STRUCTUREMODIFIED,
+      cbl.notifyCallback(CBK.STRUCTUREMODIFIED,
           new Object[] { null, Integer.valueOf(mode), Integer.valueOf(atomIndex), Integer.valueOf(modelIndex), msg });
   }
   
@@ -612,30 +612,30 @@ public class StatusManager {
   }
   
   synchronized void showUrl(String urlString) {
-    if (jmolStatusListener != null)
-      jmolStatusListener.showUrl(urlString);
+    if (jsl != null)
+      jsl.showUrl(urlString);
   }
 
-  synchronized void clearConsole() {
+  public synchronized void clearConsole() {
     if (vwr.appConsole != null) {
       vwr.appConsole.sendConsoleMessage(null);
     }
-    if (jmolStatusListener != null)
-      jmolCallbackListener.notifyCallback(CBK.MESSAGE, null);
+    if (jsl != null)
+      cbl.notifyCallback(CBK.MESSAGE, null);
   }
 
   float[][] functionXY(String functionName, int nX, int nY) {
-    return (jmolStatusListener == null ? new float[Math.abs(nX)][Math.abs(nY)] :
-      jmolStatusListener.functionXY(functionName, nX, nY));
+    return (jsl == null ? new float[Math.abs(nX)][Math.abs(nY)] :
+      jsl.functionXY(functionName, nX, nY));
   }
   
   float[][][] functionXYZ(String functionName, int nX, int nY, int nZ) {
-    return (jmolStatusListener == null ? new float[Math.abs(nX)][Math.abs(nY)][Math.abs(nY)] :
-      jmolStatusListener.functionXYZ(functionName, nX, nY, nZ));
+    return (jsl == null ? new float[Math.abs(nX)][Math.abs(nY)][Math.abs(nY)] :
+      jsl.functionXYZ(functionName, nX, nY, nZ));
   }
   
   String jsEval(String strEval) {
-    return (jmolStatusListener == null ? "" : jmolStatusListener.eval(strEval));
+    return (jsl == null ? "" : jsl.eval(strEval));
   }
 
   /**
@@ -651,8 +651,8 @@ public class StatusManager {
    */
   String createImage(String fileNameOrError, String type, String text, byte[] bytes,
                      int quality) {
-    return (jmolStatusListener == null  ? null :
-      jmolStatusListener.createImage(fileNameOrError, type, text == null ? bytes : text, quality));
+    return (jsl == null  ? null :
+      jsl.createImage(fileNameOrError, type, text == null ? bytes : text, quality));
   }
 
   Map<String, Object> getRegistryInfo() {
@@ -671,7 +671,7 @@ public class StatusManager {
         registry.get(AppletNames[0]).script("background white")
         
      */
-    return (jmolStatusListener == null ? null : jmolStatusListener.getRegistryInfo());
+    return (jsl == null ? null : jsl.getRegistryInfo());
   }
 
   private int qualityJPG = -1;
@@ -699,13 +699,13 @@ public class StatusManager {
   }
 
   Map<String, Object> getJspecViewProperties(String myParam) {
-    return (jmolStatusListener == null ? null : jmolStatusListener
+    return (jsl == null ? null : jsl
         .getJSpecViewProperty(myParam == null || myParam.length() == 0 ? "" : ":" + myParam));
   }
 
   public Dimension resizeInnerPanel(int width, int height) {
-   return (jmolStatusListener == null ? new Dimension(width, height) :
-      jmolStatusListener.resizeInnerPanel("preferredWidthHeight " + width + " " + height + ";"));    
+   return (jsl == null ? new Dimension(width, height) :
+      jsl.resizeInnerPanel("preferredWidthHeight " + width + " " + height + ";"));    
   }
 
 }

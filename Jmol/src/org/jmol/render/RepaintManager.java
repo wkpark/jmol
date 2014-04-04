@@ -202,9 +202,9 @@ public class RepaintManager implements JmolRepaintManager {
         bsTranslucent.clearAll();
         if (minMax != null)
           g3d.renderCrossHairs(minMax, vwr.getScreenWidth(), vwr.getScreenHeight(), 
-              vwr.getNavigationOffset(), vwr.getNavigationDepthPercent());
+              vwr.tm.getNavigationOffset(), vwr.tm.getNavigationDepthPercent());
         Rectangle band = vwr.getRubberBandSelection();
-          if (band != null && g3d.setColix(vwr.getColixRubberband()))
+          if (band != null && g3d.setC(vwr.cm.colixRubberband))
             g3d.drawRect(band.x, band.y, 0, 0, band.width, band.height);
       }
       if (renderers == null)

@@ -39,10 +39,10 @@ public class MolecularOrbitalRenderer extends IsosurfaceRenderer {
 
   @Override
   protected void renderInfo() {
-    if (vwr.getCurrentModelIndex() < 0
+    if (vwr.am.cmi < 0
         
         || mesh.title == null 
-        || !g3d.setColix(vwr.getColixBackgroundContrast()))
+        || !g3d.setC(vwr.getColixBackgroundContrast()))
       return;
 //    if (nf == null)
 //      nf = NumberFormat.getInstance();

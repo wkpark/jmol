@@ -479,7 +479,7 @@ public final class BioModel extends Model{
     int ac = ms.getAtomCount();
     Atom[] atoms = ms.at;
     sb.append("\nMolecule name ....... "
-        + ms.getModelSetAuxiliaryInfoValue("COMPND"));
+        + ms.getInfoM("COMPND"));
     sb.append("\nSecondary Structure . PDB Data Records");
     sb.append("\nBrookhaven Code ..... " + ms.modelSetName);
     for (int i = modelCount; --i >= 0;)

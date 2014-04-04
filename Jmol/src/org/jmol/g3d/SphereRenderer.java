@@ -139,24 +139,22 @@ public class SphereRenderer {
         this.octantPoints = null;
       }
     } else {
-      int[] ss = getSphereShape(diameter);
+      int[] ss = shader.sphereShapeCache[diameter - 1];
+      if (ss == null)
+        ss = createSphereShape(diameter);
       if (minX < 0 || maxX >= width || minY < 0 || maxY >= height
           || minZ < slab || z > depth)
-        renderShapeClipped(ss);
+        renderShapeClipped(ss, x, y, z, diameter);
       else
-        renderShapeUnclipped(ss);
+        renderShapeUnclipped(ss, x, y, z, diameter);
     }
     this.shades = null;
     this.zbuf = null;
     //System.out.println("sphere3d " + nIn + " " + nOut + " " + (1.0 * nIn / (nIn + nOut)));
   } 
   
-  private int[] getSphereShape(int diameter) {
-    int[] ss;
-    return ((ss = shader.sphereShapeCache[diameter - 1]) == null ? createSphereShape(diameter): ss);
-  }
-
   private int[] createSphereShape(int diameter) {
+    Shader shader = this.shader;
     int countSE = 0;
     boolean oddDiameter = (diameter & 1) != 0;
     float radiusF = diameter / 2.0f;
@@ -205,12 +203,16 @@ public class SphereRenderer {
     return shader.sphereShapeCache[diameter - 1] = sphereShape;
   }
 
-  private void renderShapeUnclipped(int[] sphereShape) {
+  private void renderShapeUnclipped(int[] sphereShape, int x, int y, int z, int diameter) {
     int offsetSphere = 0;
     int evenSizeCorrection = 1 - (diameter & 1);
     int offsetSouthCenter = offsetPbufBeginLine;
     int offsetNorthCenter = offsetSouthCenter - evenSizeCorrection * width;
     int nLines = (diameter + 1) / 2;
+    int[] shades = this.shades;
+    Graphics3D g3d = this.g3d;
+    int[] zbuf = this.zbuf;
+    int width = this.width;
     if (!tScreened) {
       do {
         int offsetSE = offsetSouthCenter;
@@ -286,7 +288,7 @@ public class SphereRenderer {
 
   private final static int SHADE_SLAB_CLIPPED = Shader.SHADE_INDEX_NORMAL - 5;
 
-  private void renderShapeClipped(int[] sphereShape) {
+  private void renderShapeClipped(int[] sphereShape, int x, int y, int z, int diameter) {
     int offsetSphere = 0;
     int evenSizeCorrection = 1 - (diameter & 1);
     int offsetSouthCenter = offsetPbufBeginLine;
@@ -303,6 +305,9 @@ public class SphereRenderer {
     int flipflopNW = flipflopNorthCenter ^ evenSizeCorrection;
     int flipflopsCenter = flipflopSE | (flipflopSW << 1) | (flipflopNE << 2)
         | (flipflopNW << 3);
+    int[] shades = this.shades;
+    Graphics3D g3d = this.g3d;
+    int[] zbuf = this.zbuf;
     do {
       boolean tSouthVisible = ySouth >= 0 && ySouth < height;
       boolean tNorthVisible = yNorth >= 0 && yNorth < height;

@@ -49,7 +49,7 @@ public class Bbcage extends FontLineShape {
     isVisible = ((mad = (short) vwr.getObjectMad(StateManager.OBJ_BOUNDBOX)) != 0);
     if (!isVisible)
       return;
-    BS bboxModels = vwr.getBoundBoxModels();
+    BS bboxModels = vwr.ms.getBoundBoxModels();
     if (bboxModels == null)
       return;
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))

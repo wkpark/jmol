@@ -39,6 +39,7 @@ import org.jmol.i18n.GT;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.BondSet;
+import org.jmol.modelset.ModelSet;
 import org.jmol.script.JmolMathExtension;
 import org.jmol.script.SV;
 import org.jmol.script.ScriptEval;
@@ -327,7 +328,7 @@ public class MathExt implements JmolMathExtension {
     }
 
     ColorEncoder ce = (isIsosurface ? null : vwr
-        .getColorEncoder(colorScheme));
+        .cm.getColorEncoder(colorScheme));
     if (!isIsosurface && ce == null)
       return mp.addXStr("");
     float lo = (args.length > 1 ? SV.fValue(args[1]) : Float.MAX_VALUE);
@@ -346,7 +347,7 @@ public class MathExt implements JmolMathExtension {
       // isosurface color scheme      
       String id = colorScheme.substring(1);
       Object[] data = new Object[] { id, null };
-      if (!vwr.getShapePropertyData(JC.SHAPE_ISOSURFACE, "colorEncoder",
+      if (!vwr.shm.getShapePropertyData(JC.SHAPE_ISOSURFACE, "colorEncoder",
           data))
         return mp.addXStr("");
       ce = (ColorEncoder) data[1];
@@ -413,10 +414,10 @@ public class MathExt implements JmolMathExtension {
               .getRelationship(smiles1, smiles2).toUpperCase());
         String mf1 = (bs1 == null ? vwr.getSmilesMatcher()
             .getMolecularFormula(smiles1, false) : JmolMolecule
-            .getMolecularFormula(vwr.getModelSet().at, bs1, false));
+            .getMolecularFormula(vwr.ms.at, bs1, false));
         String mf2 = (bs2 == null ? vwr.getSmilesMatcher()
             .getMolecularFormula(smiles2, false) : JmolMolecule
-            .getMolecularFormula(vwr.getModelSet().at, bs2, false));
+            .getMolecularFormula(vwr.ms.at, bs2, false));
         if (!mf1.equals(mf2))
           return mp.addXStr("NONE");
         if (bs1 != null)
@@ -621,7 +622,7 @@ public class MathExt implements JmolMathExtension {
           bsBonds, isBonds, false, 0);
       return mp.addX(SV.newV(
           T.bitset,
-          new BondSet(bsBonds, vwr.getAtomIndices(vwr.getAtomBits(
+          new BondSet(bsBonds, vwr.ms.getAtomIndices(vwr.ms.getAtoms(
               T.bonds, bsBonds)))));
     }
     return mp.addXBs(vwr.ms.getAtomsConnected(min, max, order, atoms1));
@@ -860,7 +861,7 @@ public class MathExt implements JmolMathExtension {
       }
     } else {
       BS bs = (args[0].value instanceof BS ? (BS) args[0].value : 
-        vwr.getAtomBits(T.resno, new Integer(args[0].asInt())));
+        vwr.ms.getAtoms(T.resno, new Integer(args[0].asInt())));
       switch (tok) {
       case T.point:
         return mp.addXObj(vwr.getHelixData(bs, T.point));
@@ -941,7 +942,7 @@ public class MathExt implements JmolMathExtension {
         case T.bitset:
           if (isMF)
             return mp.addXStr(JmolMolecule.getMolecularFormula(
-                vwr.getModelSet().at, (BS) x1.value, false));
+                vwr.ms.at, (BS) x1.value, false));
           if (isSequence)
             return mp.addXStr(vwr.getSmilesOpt((BS) x1.value, -1, -1, false,
                 true, isAll, isAll, false));
@@ -1447,7 +1448,7 @@ public class MathExt implements JmolMathExtension {
     if (t456 == null && t < 1e6)
       t456 = P3.new3(t, t, t);
     BS bs = SV.getBitSet(mp.getX(), false);
-    return mp.addXList(vwr.getModulationList(bs, type, t456));
+    return mp.addXList(vwr.ms.getModulationList(bs, type, t456));
   }
 
   private boolean evaluatePlane(ScriptMathProcessor mp, SV[] args, int tok)
@@ -1465,7 +1466,7 @@ public class MathExt implements JmolMathExtension {
       if (args[0].tok == T.bitset) {
         BS bs = SV.getBitSet(args[0], false);
         if (bs.cardinality() == 3) {
-          Lst<P3> pts = vwr.getAtomPointVector(bs);
+          Lst<P3> pts = vwr.ms.getAtomPointVector(bs);
           V3 vNorm = new V3();
           V3 vAB = new V3();
           V3 vAC = new V3();
@@ -1728,7 +1729,7 @@ public class MathExt implements JmolMathExtension {
     P4 p4 = null;
     switch (nArgs) {
     case 0:
-      return mp.addXPt4(Quat.newQ(vwr.getRotationQuaternion()).toPoint4f());
+      return mp.addXPt4(Quat.newQ(vwr.tm.getRotationQuaternion()).toPoint4f());
     case 1:
     default:
       if (tok == T.quaternion && args[0].tok == T.varray) {
@@ -1786,14 +1787,14 @@ public class MathExt implements JmolMathExtension {
     case 3:
       if (args[0].tok == T.point4f) {
         P3 pt = (args[2].tok == T.point3f ? (P3) args[2].value : vwr
-            .getAtomSetCenter((BS) args[2].value));
+            .ms.getAtomSetCenter((BS) args[2].value));
         return mp.addXStr(Escape.drawQuat(Quat.newP4((P4) args[0].value), "q",
             SV.sValue(args[1]), pt, 1f));
       }
       P3[] pts = new P3[3];
       for (int i = 0; i < 3; i++)
         pts[i] = (args[i].tok == T.point3f ? (P3) args[i].value : vwr
-            .getAtomSetCenter((BS) args[i].value));
+            .ms.getAtomSetCenter((BS) args[i].value));
       q = Quat.getQuaternionFrame(pts[0], pts[1], pts[2]);
       break;
     case 4:
@@ -2025,7 +2026,7 @@ public class MathExt implements JmolMathExtension {
         BS bsSelected = (args.length == 2 && args[1].tok == T.bitset ? SV
             .bsSelectVar(args[1]) : null);
         bs = vwr.getSmilesMatcher().getSubstructureSet(pattern,
-            vwr.getModelSet().at, vwr.getAtomCount(), bsSelected,
+            vwr.ms.at, vwr.getAtomCount(), bsSelected,
             tok != T.smiles, false);
       } catch (Exception ex) {
         e.evalError(ex.getMessage(), null);
@@ -2147,6 +2148,7 @@ public class MathExt implements JmolMathExtension {
       withinSpec = null;
     }
     BS bs;
+    ModelSet ms = vwr.ms;
     boolean isWithinModelSet = false;
     boolean isWithinGroup = false;
     boolean isDistance = (isVdw || tok == T.decimal || tok == T.integer);
@@ -2228,11 +2230,11 @@ public class MathExt implements JmolMathExtension {
       case T.helix:
       case T.sheet:
       case T.boundbox:
-        return mp.addXBs(vwr.getAtomBits(tok, null));
+        return mp.addXBs(ms.getAtoms(tok, null));
       case T.basepair:
-        return mp.addXBs(vwr.getAtomBits(tok, ""));
+        return mp.addXBs(ms.getAtoms(tok, ""));
       case T.spec_seqcode:
-        return mp.addXBs(vwr.getAtomBits(T.sequence, withinStr));
+        return mp.addXBs(ms.getAtoms(T.sequence, withinStr));
       }
       return false;
     case 2:
@@ -2245,7 +2247,7 @@ public class MathExt implements JmolMathExtension {
       case T.atomtype:
       case T.basepair:
       case T.sequence:
-        return mp.addXBs(vwr.getAtomBits(tok,
+        return mp.addXBs(vwr.ms.getAtoms(tok,
             SV.sValue(args[args.length - 1])));
       }
       break;
@@ -2283,22 +2285,22 @@ public class MathExt implements JmolMathExtension {
     if (i > 0 && plane == null && pt == null && !(args[i].value instanceof BS))
       return false;
     if (plane != null)
-      return mp.addXBs(vwr.getAtomsNearPlane(distance, plane));
+      return mp.addXBs(ms.getAtomsNearPlane(distance, plane));
     if (pt != null)
       return mp.addXBs(vwr.getAtomsNearPt(distance, pt));
     bs = (args[i].tok == T.bitset ? SV.bsSelectVar(args[i]) : null);
     if (tok == T.sequence)
-      return mp.addXBs(vwr.getSequenceBits(withinStr, bs));
+      return mp.addXBs(vwr.ms.getSequenceBits(withinStr, bs));
     if (bs == null)
       bs = new BS();
     if (!isDistance)
-      return mp.addXBs(vwr.getAtomBits(tok, bs));
+      return mp.addXBs(vwr.ms.getAtoms(tok, bs));
     if (isWithinGroup)
       return mp.addXBs(vwr.getGroupsWithin((int) distance, bs));
     if (isVdw)
       rd = new RadiusData(null, (distance > 10 ? distance / 100 : distance),
           (distance > 10 ? EnumType.FACTOR : EnumType.OFFSET), VDW.AUTO);
-    return mp.addXBs(vwr.getAtomsWithinRadius(distance, bs,
+    return mp.addXBs(vwr.ms.getAtomsWithinRadius(distance, bs,
         isWithinModelSet, rd));
   }
 
@@ -2316,7 +2318,7 @@ public class MathExt implements JmolMathExtension {
   private BS getAtomsNearSurface(float distance, String surfaceId) {
     Object[] data = new Object[] { surfaceId, null, null };
     if (e.getShapePropertyData(JC.SHAPE_ISOSURFACE, "getVertices", data))
-      return vwr.getAtomsNearPts(distance, (P3[]) data[1], (BS) data[2]);
+      return vwr.ms.getAtomsNearPts(distance, (P3[]) data[1], (BS) data[2]);
     data[1] = Integer.valueOf(0);
     data[2] = Integer.valueOf(-1);
     if (e.getShapePropertyData(JC.SHAPE_DRAW, "getCenter", data))
@@ -2576,7 +2578,7 @@ public class MathExt implements JmolMathExtension {
       // two atom sets specified; within ALL MODELS here
       bs = BSUtil.copy(bsA);
       bs.or(bsB);
-      int nModels = vwr.getModelBitSet(bs, false).cardinality();
+      int nModels = vwr.ms.getModelBS(bs, false).cardinality();
       withinAllModels = (nModels > 1);
       if (warnMultiModel && nModels > 1 && !e.tQuiet)
         e.showString(GT
@@ -2586,17 +2588,17 @@ public class MathExt implements JmolMathExtension {
     if (!bsA.equals(bsB)) {
       boolean setBfirst = (!localOnly || bsA.cardinality() < bsB.cardinality());
       if (setBfirst) {
-        bs = vwr.getAtomsWithinRadius(distance, bsA, withinAllModels,
+        bs = vwr.ms.getAtomsWithinRadius(distance, bsA, withinAllModels,
             (Float.isNaN(distance) ? rd : null));
         bsB.and(bs);
       }
       if (localOnly) {
         // we can just get the near atoms for A as well.
-        bs = vwr.getAtomsWithinRadius(distance, bsB, withinAllModels,
+        bs = vwr.ms.getAtomsWithinRadius(distance, bsB, withinAllModels,
             (Float.isNaN(distance) ? rd : null));
         bsA.and(bs);
         if (!setBfirst) {
-          bs = vwr.getAtomsWithinRadius(distance, bsA, withinAllModels,
+          bs = vwr.ms.getAtomsWithinRadius(distance, bsA, withinAllModels,
               (Float.isNaN(distance) ? rd : null));
           bsB.and(bs);
         }

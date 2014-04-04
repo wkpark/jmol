@@ -58,7 +58,7 @@ public class MagresReader extends AtomSetCollectionReader {
   @Override
   protected void finalizeReader() throws Exception {
     //doApplySymmetry = true;
-    asc.setAtomSetCollectionAuxiliaryInfo("fileHeader",
+    asc.setInfo("fileHeader",
         header.toString());
     finalizeReaderASCR();
     if (interactionTensors.size() > 0)

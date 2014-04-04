@@ -68,12 +68,13 @@ public class ScriptParallelProcessor extends ScriptFunction implements JmolParal
 
     counter = processes.size();
     for (int i = processes.size(); --i >= 0;) {
-      ShapeManager shapeManager = null;
+      ShapeManager sm = null;
       if (inParallel) {
-        shapeManager = new ShapeManager(vwr, vwr.getModelSet());
-        vShapeManagers.addLast(shapeManager);
+        sm = new ShapeManager(vwr);
+        sm.setParallel();
+        vShapeManagers.addLast(sm);
       }
-      runProcess(processes.remove(0), shapeManager);
+      runProcess(processes.remove(0), sm);
     }
 
     synchronized (lock) {
@@ -93,7 +94,7 @@ public class ScriptParallelProcessor extends ScriptFunction implements JmolParal
   void mergeResults(Lst<ShapeManager> vShapeManagers) {
     try {
       for (int i = 0; i < vShapeManagers.size(); i++)
-        vwr.mergeShapes(vShapeManagers.get(i).getShapes());
+        vwr.shm.mergeShapes(vShapeManagers.get(i).getShapes());
     } catch (Error e) {
       throw e;
     } finally {

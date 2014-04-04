@@ -50,7 +50,7 @@ public class GeoSurfaceRenderer extends DotsRenderer {
   protected boolean render() {
     GeoSurface gs = (GeoSurface) shape;
     iShowSolid = !(!vwr.checkMotionRendering(T.geosurface) && gs.ec.getDotsConvexMax() > 100);
-    if (!iShowSolid && !g3d.setColix(C.BLACK))
+    if (!iShowSolid && !g3d.setC(C.BLACK))
       return false;
     // need to hide inner parts if translucent
     boolean tcover = g3d.getTranslucentCoverOnly();
@@ -68,7 +68,7 @@ public class GeoSurfaceRenderer extends DotsRenderer {
 protected void renderConvex(short colix, BS visibilityMap, int nPoints) {
     this.colix = colix;
     if (iShowSolid) {
-      if (g3d.setColix(colix))       
+      if (g3d.setC(colix))       
         renderSurface(visibilityMap);
       else
         requireTranslucent = true;

@@ -443,7 +443,7 @@ public class PropertyManager implements JmolPropertyManager {
     case PROP_BOUNDBOX_INFO:
       return getBoundBoxInfo();
     case PROP_CENTER_INFO:
-      return vwr.getRotationCenter();
+      return vwr.tm.getRotationCenter();
     case PROP_CHAIN_INFO:
       return getAllChainInfo(vwr.getAtomBitSet(myParam));
     case PROP_CONSOLE_TEXT:
@@ -491,7 +491,7 @@ public class PropertyManager implements JmolPropertyManager {
     case PROP_MENU:
       return vwr.getMenu(myParam.toString());
     case PROP_MESSAGE_QUEUE:
-      return vwr.getMessageQueue();
+      return vwr.sm.getMessageQueue();
     case PROP_MINIMIZATION_INFO:
       return vwr.getMinimizationInfo();
     case PROP_MODEL_INFO:
@@ -644,10 +644,10 @@ public class PropertyManager implements JmolPropertyManager {
   @Override
   public Map<String, Object> getModelInfo(Object atomExpression) {
 
-    BS bsModels = vwr.getModelBitSet(vwr
+    BS bsModels = vwr.ms.getModelBS(vwr
         .getAtomBitSet(atomExpression), false);
 
-    ModelSet m = vwr.getModelSet();
+    ModelSet m = vwr.ms;
     Map<String, Object> info = new Hashtable<String, Object>();
     info.put("modelSetName", m.modelSetName);
     info.put("modelCount", Integer.valueOf(m.mc));
@@ -676,7 +676,7 @@ public class PropertyManager implements JmolPropertyManager {
       s = m.getModelFileName(i);
       if (s != null)
         model.put("file", s);
-      s = (String) m.getModelAuxiliaryInfoValue(i, "modelID");
+      s = (String) m.getInfo(i, "modelID");
       if (s != null)
         model.put("id", s);
       model.put("vibrationVectors", Boolean.valueOf(vwr.modelHasVibrationVectors(i)));
@@ -686,11 +686,11 @@ public class PropertyManager implements JmolPropertyManager {
       model.put("groupCount", Integer.valueOf(mi.getGroupCount()));
       model.put("moleculeCount", Integer.valueOf(mi.moleculeCount));
       model.put("polymerCount", Integer.valueOf(mi.getBioPolymerCount()));
-      model.put("chainCount", Integer.valueOf(m.getChainCountInModel(i, true)));
+      model.put("chainCount", Integer.valueOf(m.getChainCountInModelWater(i, true)));
       if (mi.properties != null) {
         model.put("modelProperties", mi.properties);
       }
-      Float energy = (Float) m.getModelAuxiliaryInfoValue(i, "Energy");
+      Float energy = (Float) m.getInfo(i, "Energy");
       if (energy != null) {
         model.put("energy", energy);
       }
@@ -773,7 +773,7 @@ public class PropertyManager implements JmolPropertyManager {
                                 P3 pt2, String id, int type) {
     int iModel = -1;
     if (bsAtoms == null) {
-      iModel = vwr.getCurrentModelIndex();
+      iModel = vwr.am.cmi;
       if (iModel < 0)
         return "";
       bsAtoms = vwr.getModelUndeletedAtomsBitSet(iModel);
@@ -846,11 +846,11 @@ public class PropertyManager implements JmolPropertyManager {
     if (!asXYZVIB && bsAtoms.cardinality() == 0)
       return "";
     boolean isOK = true;
-    Quat q = (doTransform ? vwr.getRotationQuaternion() : null);
+    Quat q = (doTransform ? vwr.tm.getRotationQuaternion() : null);
     if (asSDF) {
       String header = mol.toString();
       mol = new SB();
-      BS bsModels = vwr.getModelBitSet(bsAtoms, true);
+      BS bsModels = vwr.ms.getModelBS(bsAtoms, true);
       for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels
           .nextSetBit(i + 1)) {
         mol.append(header);
@@ -866,7 +866,7 @@ public class PropertyManager implements JmolPropertyManager {
           "%-2e %10.5x %10.5y %10.5z %10.5vx %10.5vy %10.5vz\n", '\0', null);
       LabelToken[] tokens2 = LabelToken.compile(vwr,
           "%-2e %10.5x %10.5y %10.5z\n", '\0', null);
-      BS bsModels = vwr.getModelBitSet(bsAtoms, true);
+      BS bsModels = vwr.ms.getModelBS(bsAtoms, true);
       for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels
           .nextSetBit(i + 1)) {
         BS bsTemp = BSUtil.copy(bsAtoms);
@@ -1205,7 +1205,7 @@ public class PropertyManager implements JmolPropertyManager {
         continue;
       String s = "[\"" + ms.getModelNumberDotted(i) + "\"] = ";
       sb.append("\n\nfile").append(s).append(PT.esc(ms.getModelFileName(i)));
-      String id = (String) ms.getModelAuxiliaryInfoValue(i, "modelID");
+      String id = (String) ms.getInfo(i, "modelID");
       if (id != null)
         sb.append("\nid").append(s).append(PT.esc(id));
       sb.append("\ntitle").append(s).append(PT.esc(ms.getModelTitle(i)));
@@ -1463,7 +1463,7 @@ public class PropertyManager implements JmolPropertyManager {
   }
 
   private Map<String, Object> getBoundBoxInfo() {
-    P3[] pts = vwr.getBoxInfo(null, 1).getBoundBoxPoints(true);
+    P3[] pts = vwr.ms.getBoxInfo(null, 1).getBoundBoxPoints(true);
     Map<String, Object> info = new Hashtable<String, Object>();
     info.put("center", P3.newP(pts[0]));
     info.put("vector", V3.newV(pts[1]));
@@ -1492,7 +1492,7 @@ public class PropertyManager implements JmolPropertyManager {
   }
 
   private Map<String, Object> getAuxiliaryInfo(Object atomExpression) {
-    return vwr.ms.getAuxiliaryInfo(vwr.getModelBitSet(
+    return vwr.ms.getAuxiliaryInfo(vwr.ms.getModelBS(
         vwr.getAtomBitSet(atomExpression), false));
   }
 

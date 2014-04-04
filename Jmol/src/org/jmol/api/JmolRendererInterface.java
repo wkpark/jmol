@@ -327,7 +327,7 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
    *        the color index
    * @return true or false if this is the right pass
    */
-  public abstract boolean setColix(short colix);
+  public abstract boolean setC(short colix);
 
   public abstract void setColor(int color);
 

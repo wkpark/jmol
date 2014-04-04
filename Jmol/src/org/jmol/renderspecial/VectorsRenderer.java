@@ -79,7 +79,7 @@ public class VectorsRenderer extends ShapeRenderer {
         continue;
       if (!transform(mads[i], atom, vibrationVector))
         continue;
-      if (!g3d.setColix(Shape.getColix(colixes, i, atom))) {
+      if (!g3d.setC(Shape.getColix(colixes, i, atom))) {
         needTranslucent = true;
         continue;
       }
@@ -109,8 +109,8 @@ public class VectorsRenderer extends ShapeRenderer {
     headOffsetVector.scale(headScale / len);
     pointVectorEnd.scaleAdd2(vectorScale, vibrationVector, atom);
     pointArrowHead.add2(pointVectorEnd, headOffsetVector);
-    screenArrowHead.setT(vwr.transformPtVib(pointArrowHead, vibrationVector, vectorScale));
-    screenVectorEnd.setT(vwr.transformPtVib(pointVectorEnd, vibrationVector, vectorScale));
+    screenArrowHead.setT(tm.transformPtVib(pointArrowHead, vibrationVector, vectorScale));
+    screenVectorEnd.setT(tm.transformPtVib(pointVectorEnd, vibrationVector, vectorScale));
     diameter = (int) (mad < 0 ? -mad : mad < 1 ? 1 : vwr.scaleToScreen(screenVectorEnd.z, mad));
     headWidthPixels = diameter << 1;
     if (headWidthPixels < diameter + 2)

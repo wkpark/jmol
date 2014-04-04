@@ -487,14 +487,14 @@ public class _VrmlExporter extends __CartesianExporter {
   @Override
   void plotText(int x, int y, int z, short colix, String text, Font font3d) {
     if (z < 3)
-      z = vwr.getFrontPlane();
+      z = (int) tm.cameraDistance;
     String useFontStyle = font3d.fontStyle.toUpperCase();
     String preFontFace = font3d.fontFace.toUpperCase();
     String useFontFace = (preFontFace.equals("MONOSPACED") ? "TYPEWRITER"
         : preFontFace.equals("SERIF") ? "SERIF" : "SANS");
     output("Transform{translation ");
     tempP3.set(x, y, z);
-    vwr.unTransformPoint(tempP3, tempP1);
+    tm.unTransformPoint(tempP3, tempP1);
     output(tempP1);
     // These x y z are 3D coordinates of echo or the atom the label is attached
     // to.

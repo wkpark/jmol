@@ -153,7 +153,7 @@ public final class Navigator extends JmolThread implements
     case T.translate:
     case T.percent: 
       if (tok == T.translate) {
-        tm.transformPoint2((P3) o[2], ptTemp);        
+        tm.transformPt3f((P3) o[2], ptTemp);        
       } else {
         ptTemp.x = ((Float) o[2]).floatValue();
         ptTemp.y = ((Float) o[3]).floatValue();
@@ -174,7 +174,7 @@ public final class Navigator extends JmolThread implements
   }
 
   private void setNavPercent(P3 pt1) {
-    tm.transformPoint2(tm.navigationCenter, tm.navigationOffset);
+    tm.transformPt3f(tm.navigationCenter, tm.navigationOffset);
     float x = pt1.x;
     float y = pt1.y;
     if (!Float.isNaN(x))
@@ -528,11 +528,11 @@ public final class Navigator extends JmolThread implements
             .rotTrans2(tm.navigationCenter, tm.navigationShiftXY);
       }
     }
-    tm.transformPoint2(tm.fixedRotationCenter, tm.fixedTranslation);
+    tm.transformPt3f(tm.fixedRotationCenter, tm.fixedTranslation);
     tm.fixedRotationOffset.setT(tm.fixedTranslation);
     tm.previousX = tm.fixedTranslation.x;
     tm.previousY = tm.fixedTranslation.y;
-    tm.transformPoint2(tm.navigationCenter, tm.navigationOffset);
+    tm.transformPt3f(tm.navigationCenter, tm.navigationOffset);
     tm.navigationOffset.z = tm.referencePlaneOffset;
     tm.navMode = TransformManager.NAV_MODE_NONE;
     calcNavSlabAndDepthValues();
@@ -581,7 +581,7 @@ public final class Navigator extends JmolThread implements
     tm.mode = tm.defaultMode;
     // get the rotation center's Z offset and move X and Y to 0,0
     P3 pt = new P3();
-    tm.transformPoint2(tm.fixedRotationCenter, pt);
+    tm.transformPt3f(tm.fixedRotationCenter, pt);
     pt.x -= tm.navigationOffset.x;
     pt.y -= tm.navigationOffset.y;
     // unapply the perspective as if IT were the navigation center
@@ -609,7 +609,7 @@ public final class Navigator extends JmolThread implements
     tm.rotateYRadians(JC.radiansPerDegree * .02f * tm.navX, null);
     P3 pt = tm.getNavigationCenter();
     P3 pts = new P3();
-    tm.transformPoint2(pt, pts);
+    tm.transformPt3f(pt, pts);
     pts.z += tm.navZ;
     tm.unTransformPoint(pts, pt);
     tm.setNavigatePt(pt);

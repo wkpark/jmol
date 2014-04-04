@@ -148,11 +148,11 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
   protected void initializeReader() throws Exception {
     baseAtomIndex = ((Integer) htParams.get("baseAtomIndex")).intValue();
     baseModelIndex = ((Integer) htParams.get("baseModelIndex")).intValue();
-    asc.setAtomSetCollectionAuxiliaryInfo("noAutoBond",
+    asc.setInfo("noAutoBond",
         Boolean.TRUE);
     asc.setAtomSetAuxiliaryInfo("pdbNoHydrogens", Boolean.TRUE);
     asc
-        .setAtomSetCollectionAuxiliaryInfo("isPyMOL", Boolean.TRUE);
+        .setInfo("isPyMOL", Boolean.TRUE);
     if (isTrajectory)
       trajectorySteps = new Lst<P3[]>();
 
@@ -229,7 +229,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       info.put("scenes", scenes);
     }
     
-    vwr.setTrajectoryBs(BSUtil.newBitSet2(baseModelIndex,
+    vwr.ms.setTrajectoryBs(BSUtil.newBitSet2(baseModelIndex,
         vwr.ms.mc));
     if (!isStateScript)
       pymolScene.setFrameObject(0, null);
@@ -342,7 +342,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       String note;
       if (width > 0 && height > 0) {
         note = "PyMOL dimensions width=" + width + " height=" + height;
-        asc.setAtomSetCollectionAuxiliaryInfo(
+        asc.setInfo(
             "perferredWidthHeight", new int[] { width, height });
         //Dimension d = 
         vwr.resizeInnerPanel(width, height);
@@ -390,7 +390,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       if (!doGetModel(++nModels, null))
         continue;
       model(nModels);
-      pymolScene.currentAtomSetIndex = asc.currentAtomSetIndex;
+      pymolScene.currentAtomSetIndex = asc.iSet;
       if (isTrajectory) {
         trajectoryStep = new P3[totalAtomCount];
         trajectorySteps.addLast(trajectoryStep);
@@ -427,7 +427,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
           .toString());
     }
     if (ac == 0)
-      asc.setAtomSetCollectionAuxiliaryInfo("dataOnly",
+      asc.setInfo("dataOnly",
           Boolean.TRUE);
     pymolScene.offsetObjects();
   }

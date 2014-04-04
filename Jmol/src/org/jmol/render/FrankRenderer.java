@@ -42,7 +42,7 @@ public class FrankRenderer extends ShapeRenderer {
         : vwr.isSignedApplet() ? (allowKeys || vwr.isJS && !vwr.isWebGL ? C.ORANGE : C.RED) : allowKeys ? C.BLUE : C.GRAY);
     if (isExport || !vwr.getShowFrank())
       return false;
-    if (!g3d.setColix(C.getColixTranslucent3(colix,
+    if (!g3d.setC(C.getColixTranslucent3(colix,
             g3d.haveTranslucentObjects(), 0.5f)))
       return true;
     float imageFontScaling = vwr.getImageFontScaling();

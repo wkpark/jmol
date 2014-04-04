@@ -317,9 +317,9 @@ public class StateCreator extends JmolStateCreator {
         }
       for (int i = 0; i < modelCount; i++) {
         String fcmd = "  frame " + ms.getModelNumberDotted(i);
-        String s = (String) ms.getModelAuxiliaryInfoValue(i, "modelID");
+        String s = (String) ms.getInfo(i, "modelID");
         if (s != null
-            && !s.equals(ms.getModelAuxiliaryInfoValue(i, "modelID0")))
+            && !s.equals(ms.getInfo(i, "modelID0")))
           commands.append(fcmd).append("; frame ID ").append(PT.esc(s))
               .append(";\n");
         String t = ms.frameTitles[i];
@@ -363,7 +363,7 @@ public class StateCreator extends JmolStateCreator {
           haveModulation |= (vwr.modelGetLastVibrationIndex(i, T.modulation) >= 0);
         }
         if (loadUC)
-          vwr.loadShape(JC.SHAPE_UCCAGE); // just in case
+          vwr.shm.loadShape(JC.SHAPE_UCCAGE); // just in case
         getShapeState(commands, isAll, JC.SHAPE_UCCAGE);
         //        if (vwr.getObjectMad(StateManager.OBJ_UNITCELL) == 0)
         //        commands.append("  unitcell OFF;\n");
@@ -792,7 +792,7 @@ public class StateCreator extends JmolStateCreator {
     boolean navigating = (tm.mode == TransformManager.MODE_NAVIGATION);
     if (navigating)
       app(commands, "set navigationMode true");
-    app(commands, vwr.getBoundBoxCommand(false));
+    app(commands, vwr.ms.getBoundBoxCommand(false));
     app(commands, "center " + Escape.eP(tm.fixedRotationCenter));
     commands.append(vwr.getOrientationText(T.name, null));
 
@@ -825,7 +825,7 @@ public class StateCreator extends JmolStateCreator {
       commands.append("  depth plane ").append(Escape.eP4(tm.depthPlane))
           .append(";\n");
     commands.append(getSpinState(true)).append("\n");
-    if (vwr.modelSetHasVibrationVectors() && tm.vibrationOn)
+    if (vwr.ms.modelSetHasVibrationVectors() && tm.vibrationOn)
       app(commands, "set vibrationPeriod " + tm.vibrationPeriod
           + ";vibration on");
     if (navigating) {
@@ -857,7 +857,7 @@ public class StateCreator extends JmolStateCreator {
     if (!tm.spinOn)
       return s;
     String prefix = (tm.isSpinSelected ? "\n  select "
-        + Escape.eBS(vwr.getSelectedAtoms()) + ";\n  rotateSelected"
+        + Escape.eBS(vwr.bsA()) + ";\n  rotateSelected"
         : "\n ");
     if (tm.isSpinInternal) {
       P3 pt = P3.newP(tm.internalRotationCenter);
@@ -1033,7 +1033,7 @@ public class StateCreator extends JmolStateCreator {
       app(commands, sb.toString());
     }
     app(commands, "select *; set measures "
-        + vwr.getMeasureDistanceUnits());
+        + vwr.g.measureDistanceUnits);
     app(commands, Shape.getFontCommand("measures", font3d));
     int nHidden = 0;
     Map<String, BS> temp = new Hashtable<String, BS>();

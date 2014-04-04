@@ -94,12 +94,12 @@ public class MeasurementData implements JmolMeasurementClient {
                  boolean mustBeConnected, boolean mustNotBeConnected,
                  Boolean intramolecular, boolean isAll, 
                  int mad, short colix, Text text) {
-    this.ms = vwr.getModelSet();
+    this.ms = vwr.ms;
     this.tokAction = tokAction;
     if (points.size() >= 2 && points.get(0) instanceof BS && points.get(1) instanceof BS) {
       justOneModel = BSUtil.haveCommon(
-          vwr.getModelBitSet((BS) points.get(0), false),
-          vwr.getModelBitSet((BS) points.get(1), false)); 
+          vwr.ms.getModelBS((BS) points.get(0), false),
+          vwr.ms.getModelBS((BS) points.get(1), false)); 
     }
     //this.rangeMinMax = rangeMinMax;
     this.htMin = htMin;

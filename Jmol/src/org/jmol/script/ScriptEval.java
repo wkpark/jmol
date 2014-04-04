@@ -31,7 +31,6 @@ import java.util.Hashtable;
 
 import java.util.Map;
 
-import org.jmol.api.Interface;
 import org.jmol.api.JmolScriptFunction;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
@@ -1068,7 +1067,7 @@ public class ScriptEval extends ScriptExpr {
   private void processTry(Map<String, SV> cv) throws ScriptException {
     vwr.displayLoadErrors = thisContext.displayLoadErrorsSave;
     popContext(false, false);
-    String err = (String) vwr.getParameter("_errormessage");
+    String err = (String) vwr.getP("_errormessage");
     if (err.length() > 0) {
       cv.put("_errorval", SV.newS(err));
       vwr.resetError();
@@ -1302,7 +1301,7 @@ public class ScriptEval extends ScriptExpr {
       return bs;
     }
     if (setName.equals("water")) {
-      BS bs = vwr.getAtomBits(T.solvent, null);
+      BS bs = vwr.ms.getAtoms(T.solvent, null);
       if (!isDynamic)
         definedAtomSets.put(setName, bs);
       return bs;
@@ -1329,7 +1328,7 @@ public class ScriptEval extends ScriptExpr {
         BSUtil.deleteBits((BS) value, bsDeleted);
         if (!entry.getKey().startsWith("!"))
           vwr
-              .setUserVariable("@" + entry.getKey(), SV.newV(T.bitset, value));
+              .g.setUserVariable("@" + entry.getKey(), SV.newV(T.bitset, value));
       }
     }
   }
@@ -1969,7 +1968,7 @@ public class ScriptEval extends ScriptExpr {
     SB sb = new SB();
     int modelCount = vwr.getModelCount();
     if (modelCount > 1)
-      sb.append((vwr.isMovie() ? vwr.getFrameCount() + " frames"
+      sb.append((vwr.am.isMovie ? vwr.am.getFrameCount() + " frames"
           : modelCount + " models") + "\n");
     for (int i = 0; i < modelCount; i++) {
       Map<String, Object> moData = (Map<String, Object>) vwr
@@ -2050,7 +2049,7 @@ public class ScriptEval extends ScriptExpr {
   public boolean dispatchCommands(boolean isSpt, boolean fromFunc)
       throws ScriptException {
     if (sm == null)
-      sm = vwr.getShapeManager();
+      sm = vwr.shm;
     debugScript = debugHigh = false;
     if (!chk)
       setDebugging();
@@ -2681,7 +2680,7 @@ public class ScriptEval extends ScriptExpr {
     case T.morph:
       int morphCount = (int) floatParameter(2);
       if (!chk)
-        vwr.setAnimMorphCount(Math.abs(morphCount));
+        vwr.am.setMorphCount(Math.abs(morphCount));
       break;
     case T.display:
       iToken = 2;
@@ -2705,7 +2704,7 @@ public class ScriptEval extends ScriptExpr {
         Map<String, Object> movie = new Hashtable<String, Object>();
         movie.put("frames", frames);
         movie.put("currentFrame", Integer.valueOf(0));
-        vwr.setMovie(movie);
+        vwr.am.setMovie(movie);
       } else {
         cmdModel(2);
       }
@@ -2736,7 +2735,7 @@ public class ScriptEval extends ScriptExpr {
           endDelay = floatParameter(4);
       }
       if (!chk)
-        vwr.setAnimationReplayMode(animationMode, startDelay, endDelay);
+        vwr.am.setAnimationReplayMode(animationMode, startDelay, endDelay);
       break;
     case T.direction:
       int i = 2;
@@ -2758,7 +2757,7 @@ public class ScriptEval extends ScriptExpr {
       if (direction != 1 && direction != -1)
         errorStr2(ERROR_numberMustBe, "-1", "1");
       if (!chk)
-        vwr.setAnimationDirection(direction);
+        vwr.am.setAnimationDirection(direction);
       break;
     case T.fps:
       setIntProperty("animationFps", intParameter(checkLast(2)));
@@ -2906,7 +2905,7 @@ public class ScriptEval extends ScriptExpr {
       index++;
       if (index == slen) {
         if (!chk)
-          vwr.setBoundBox(null, null, true, scale);
+          vwr.ms.setBoundBox(null, null, true, scale);
         return;
       }
     }
@@ -2924,7 +2923,7 @@ public class ScriptEval extends ScriptExpr {
         P3 pt2 = (byCorner ? centerParameter(index) : getPoint3f(index, true));
         index = iToken + 1;
         if (!chk)
-          vwr.setBoundBox(pt1, pt2, byCorner, scale);
+          vwr.ms.setBoundBox(pt1, pt2, byCorner, scale);
       } else if (expressionResult != null && expressionResult instanceof BS) {
         // boundbox {expression}
         if (!chk)
@@ -2935,7 +2934,7 @@ public class ScriptEval extends ScriptExpr {
         P3[] bbox = getObjectBoundingBox(objectNameParameter(++index0));
         if (bbox == null)
           invArg();
-        vwr.setBoundBox(bbox[0], bbox[1], true, scale);
+        vwr.ms.setBoundBox(bbox[0], bbox[1], true, scale);
         index = iToken + 1;
       } else {
         invArg();
@@ -3032,7 +3031,7 @@ public class ScriptEval extends ScriptExpr {
           float min = floatParameter(++i);
           float max = floatParameter(++i);
           if (!chk)
-            vwr.setCurrentColorRange(min, max);
+            vwr.cm.setPropertyColorRange(min, max);
         }
         return;
       case T.range:
@@ -3040,7 +3039,7 @@ public class ScriptEval extends ScriptExpr {
         float min = floatParameter(2);
         float max = floatParameter(checkLast(3));
         if (!chk)
-          vwr.setCurrentColorRange(min, max);
+          vwr.cm.setPropertyColorRange(min, max);
         return;
       case T.background:
         argb = getArgbParamLast(2, true);
@@ -3055,7 +3054,7 @@ public class ScriptEval extends ScriptExpr {
       case T.rubberband:
         argb = getArgbParamLast(2, false);
         if (!chk)
-          vwr.setRubberbandArgb(argb);
+          vwr.cm.setRubberbandArgb(argb);
         return;
       case T.highlight:
       case T.selectionhalos:
@@ -3152,7 +3151,7 @@ public class ScriptEval extends ScriptExpr {
       BS bs = atomExpressionAt(2);
       definedAtomSets.put(setName, bs);
       if (!chk)
-        vwr.setUserVariable("@" + setName, SV.newV(T.bitset, bs));
+        vwr.g.setUserVariable("@" + setName, SV.newV(T.bitset, bs));
     }
   }
 
@@ -3178,9 +3177,9 @@ public class ScriptEval extends ScriptExpr {
   private void cmdDelete() throws ScriptException {
     if (tokAt(1) == T.dollarsign) {
       if (slen == 4 && optParameterAsString(2).equals("saved") && slen == 4) {
-        vwr.deleteSaved(optParameterAsString(3));
+        vwr.stm.deleteSaved(optParameterAsString(3));
         if (doReport())
-          report(GT.o(GT._("show saved: {0}"), vwr.listSavedStates()));
+          report(GT.o(GT._("show saved: {0}"), vwr.stm.listSavedStates()));
         return;
       }
       setObjectProperty();
@@ -3227,7 +3226,7 @@ public class ScriptEval extends ScriptExpr {
     if (chk)
       return;
     if (bs instanceof BondSet) {
-      vwr.displayBonds((BondSet) bs, isDisplay);
+      vwr.ms.displayBonds((BondSet) bs, isDisplay);
       return;
     }
     vwr.displayAtoms(bs, isDisplay, isGroup, addRemove, tQuiet);
@@ -3293,7 +3292,7 @@ public class ScriptEval extends ScriptExpr {
     if (chk)
       return;
     String text = optParameterAsString(index);
-    if (vwr.getEchoStateActive()) {
+    if (vwr.ms.getEchoStateActive()) {
       if (isImage) {
         vwr.loadImage(text, id);
         return;
@@ -3313,18 +3312,18 @@ public class ScriptEval extends ScriptExpr {
     int file = intParameter(checkLast(1));
     if (chk)
       return;
-    int modelIndex = vwr.getModelNumberIndex(file * 1000000 + 1, false,
+    int modelIndex = vwr.ms.getModelNumberIndex(file * 1000000 + 1, false,
         false);
     int modelIndex2 = -1;
     if (modelIndex >= 0) {
-      modelIndex2 = vwr.getModelNumberIndex((file + 1) * 1000000 + 1, false,
+      modelIndex2 = vwr.ms.getModelNumberIndex((file + 1) * 1000000 + 1, false,
           false);
       if (modelIndex2 < 0)
         modelIndex2 = vwr.getModelCount();
       modelIndex2--;
     }
     vwr.setAnimationOn(false);
-    vwr.setAnimationDirection(1);
+    vwr.am.setAnimationDirection(1);
     vwr.setAnimationRange(modelIndex, modelIndex2);
     vwr.setCurrentModelIndex(-1);
   }
@@ -3614,7 +3613,7 @@ public class ScriptEval extends ScriptExpr {
     case 6:
       scaleAngstromsPerPixel = floatParameter(5);
       if (scaleAngstromsPerPixel >= 5) // actually a zoom value
-        scaleAngstromsPerPixel = vwr.getZoomSetting()
+        scaleAngstromsPerPixel = vwr.tm.getZoomSetting()
             / scaleAngstromsPerPixel / vwr.getScalePixelsPerAngstrom(false);
       //$FALL-THROUGH$
     case 5:
@@ -3741,7 +3740,7 @@ public class ScriptEval extends ScriptExpr {
       param = vwr.getDefaultPropertyParam(propertyID);
       if (param.equals("(visible)")) {
         vwr.setModelVisibility();
-        param = vwr.getVisibleSet();
+        param = vwr.ms.getVisibleSet();
       }
     } else if (propertyID == vwr.getPropertyNumber("fileContents")) {
       String s = param.toString();
@@ -3910,8 +3909,8 @@ public class ScriptEval extends ScriptExpr {
     case T.nada:
       if (chk)
         return;
-      bs = vwr.getSelectedAtoms();
-      pt = vwr.getAtomSetCenter(bs);
+      bs = vwr.bsA();
+      pt = vwr.ms.getAtomSetCenter(bs);
       vwr.invertAtomCoordPt(pt, bs);
       return;
     case T.stereo:
@@ -3961,7 +3960,7 @@ public class ScriptEval extends ScriptExpr {
     default:
       strLabel = paramAsStr(index);
     }
-    sm.setLabel(strLabel, vwr.getSelectedAtoms());
+    sm.setLabel(strLabel, vwr.bsA());
   }
 
   public void cmdLoad() throws ScriptException {
@@ -4560,7 +4559,7 @@ public class ScriptEval extends ScriptExpr {
           + "\"";
     }
     if (filter == null)
-      filter = vwr.getDefaultLoadFilter();
+      filter = vwr.g.defaultLoadFilter;
     if (filter.length() > 0) {
       if (filter.toUpperCase().indexOf("DOCACHE") >= 0) {
         if (!isStateScript && !isAppend)
@@ -4664,7 +4663,7 @@ public class ScriptEval extends ScriptExpr {
       vwr.setCurrentModelIndex(modelCount0);
     }
     if (scriptLevel == 0 && !isAppend && nFiles < 2)
-      showString((String) vwr.getModelSetAuxiliaryInfoValue("modelLoadNote"));
+      showString((String) vwr.ms.getInfoM("modelLoadNote"));
     if (debugHigh)
       report("Successfully loaded:"
           + (filenames == null ? htParams.get("fullPathName") : modelName));
@@ -4674,7 +4673,7 @@ public class ScriptEval extends ScriptExpr {
       BS bs = BSUtil.newBitSet2(isAppend ? ac0 : 0, vwr.getAtomCount());
       vwr.setCentroid(bs, (int[]) info.get("centroidMinMax"));
     }
-    String script = vwr.getDefaultLoadScript();
+    String script = vwr.g.defaultLoadScript;
     String msg = "";
     if (script.length() > 0)
       msg += "\nUsing defaultLoadScript: " + script;
@@ -4740,7 +4739,7 @@ public class ScriptEval extends ScriptExpr {
     boolean isFrame = (theTok == T.frame);
     boolean useModelNumber = true;
     if (slen == 1 && offset == 1) {
-      int modelIndex = vwr.getCurrentModelIndex();
+      int modelIndex = vwr.am.cmi;
       int m;
       if (!chk && modelIndex >= 0
           && (m = vwr.getJmolDataSourceFrame(modelIndex)) >= 0)
@@ -4752,7 +4751,7 @@ public class ScriptEval extends ScriptExpr {
       if (isFrame && slen == 2) {
         // FRAME n
         if (!chk)
-          vwr.setFrame(intParameter(1));
+          vwr.setFrame(intParameter(1) - 1);
         return;
       }
       break;
@@ -4764,7 +4763,7 @@ public class ScriptEval extends ScriptExpr {
         return;
       BS bsa = new BS();
       bsa.set(i);
-      vwr.setCurrentModelIndex(vwr.getModelBitSet(bsa, false).nextSetBit(
+      vwr.setCurrentModelIndex(vwr.ms.getModelBS(bsa, false).nextSetBit(
           0));
       return;
     case T.create:
@@ -4772,7 +4771,7 @@ public class ScriptEval extends ScriptExpr {
       int n = (tokAt(2) == T.integer ? intParameter(++iToken) : 1);
       checkLength(iToken + 1);
       if (!chk && n > 0)
-        vwr.createModels(n);
+        vwr.ms.createModels(n);
       return;
     case T.id:
       checkLength(3);
@@ -4845,7 +4844,7 @@ public class ScriptEval extends ScriptExpr {
         if ((fFrame = floatParameter(i)) < 0) {
           checkLength(i + 1);
           if (!chk)
-            vwr.morph(-fFrame);
+            vwr.am.morph(-fFrame);
           return;
         }
         //$FALL-THROUGH$
@@ -4919,7 +4918,7 @@ public class ScriptEval extends ScriptExpr {
       for (int i = 0; i < nFrames; i++)
         if (frameList[i] >= 0)
           frameList[i] %= 1000000;
-    int modelIndex = vwr.getModelNumberIndex(frameList[0], useModelNumber,
+    int modelIndex = vwr.ms.getModelNumberIndex(frameList[0], useModelNumber,
         false);
     int modelIndex2 = -1;
     if (haveFileSet && modelIndex < 0 && frameList[0] != 0) {
@@ -4931,13 +4930,13 @@ public class ScriptEval extends ScriptExpr {
         frameList[1] *= 1000000;
       if (frameList[0] % 1000000 == 0) {
         frameList[0]++;
-        modelIndex = vwr.getModelNumberIndex(frameList[0], false, false);
+        modelIndex = vwr.ms.getModelNumberIndex(frameList[0], false, false);
         if (modelIndex >= 0) {
           int i2 = (nFrames == 1 ? frameList[0] + 1000000
               : frameList[1] == 0 ? -1
                   : frameList[1] % 1000000 == 0 ? frameList[1] + 1000001
                       : frameList[1] + 1);
-          modelIndex2 = vwr.getModelNumberIndex(i2, false, false);
+          modelIndex2 = vwr.ms.getModelNumberIndex(i2, false, false);
           if (modelIndex2 < 0)
             modelIndex2 = vwr.getModelCount();
           modelIndex2--;
@@ -4960,10 +4959,10 @@ public class ScriptEval extends ScriptExpr {
       vwr.setCurrentModelIndexClear(modelIndex, false);
     if (isPlay && nFrames == 2 || isRange || isHyphen) {
       if (modelIndex2 < 0)
-        modelIndex2 = vwr.getModelNumberIndex(frameList[1], useModelNumber,
+        modelIndex2 = vwr.ms.getModelNumberIndex(frameList[1], useModelNumber,
             false);
       vwr.setAnimationOn(false);
-      vwr.setAnimationDirection(1);
+      vwr.am.setAnimationDirection(1);
       vwr.setAnimationRange(modelIndex, modelIndex2);
       vwr.setCurrentModelIndexClear(isHyphen && !isRange ? -1
           : modelIndex >= 0 ? modelIndex : 0, false);
@@ -5003,7 +5002,7 @@ public class ScriptEval extends ScriptExpr {
     // moveto [time] front|back|left|right|top|bottom
     if (slen == 2 && tokAt(1) == T.stop) {
       if (!chk)
-        vwr.stopMotion();
+        vwr.tm.stopMotion();
       return;
     }
     float floatSecondsTotal;
@@ -5033,7 +5032,7 @@ public class ScriptEval extends ScriptExpr {
     float yTrans = 0;
     float zoom = Float.NaN;
     float rotationRadius = Float.NaN;
-    float zoom0 = vwr.getZoomSetting();
+    float zoom0 = vwr.tm.getZoomSetting();
     P3 navCenter = null;
     float xNav = Float.NaN;
     float yNav = Float.NaN;
@@ -5073,8 +5072,8 @@ public class ScriptEval extends ScriptExpr {
         if (!(expressionResult instanceof BS))
           invArg();
         bsCenter = (BS) expressionResult;
-        q = (chk ? new Quat() : vwr.getAtomQuaternion(bsCenter
-            .nextSetBit(0)));
+        q = (chk ? new Quat() : vwr.ms.getQuaternion(bsCenter
+            .nextSetBit(0), vwr.getQuaternionFrame()));
       } else {
         q = getQuaternionParameter(i);
       }
@@ -5150,7 +5149,7 @@ public class ScriptEval extends ScriptExpr {
       axis.set(0, 0, 0);
     else if (axis.length() == 0 && degrees == 0)
       degrees = Float.NaN;
-    isChange = !vwr.isInPosition(axis, degrees);
+    isChange = !vwr.tm.isInPosition(axis, degrees);
     // optional zoom
     if (isFloatParameter(i))
       zoom = floatParameter(i++);
@@ -5158,9 +5157,9 @@ public class ScriptEval extends ScriptExpr {
     if (isFloatParameter(i) && !isCenterParameter(i)) {
       xTrans = floatParameter(i++);
       yTrans = floatParameter(i++);
-      if (!isChange && Math.abs(xTrans - vwr.getTranslationXPercent()) >= 1)
+      if (!isChange && Math.abs(xTrans - vwr.tm.getTranslationXPercent()) >= 1)
         isChange = true;
-      if (!isChange && Math.abs(yTrans - vwr.getTranslationYPercent()) >= 1)
+      if (!isChange && Math.abs(yTrans - vwr.tm.getTranslationYPercent()) >= 1)
         isChange = true;
     }
     if (bsCenter == null && i != slen) {
@@ -5171,7 +5170,7 @@ public class ScriptEval extends ScriptExpr {
       i = iToken + 1;
     }
     if (center != null) {
-      if (!isChange && center.distance(vwr.getRotationCenter()) >= 0.1)
+      if (!isChange && center.distance(vwr.tm.getRotationCenter()) >= 0.1)
         isChange = true;
       // optional {center} rotationRadius
       if (isFloatParameter(i))
@@ -5217,9 +5216,9 @@ public class ScriptEval extends ScriptExpr {
         if (i + 1 < slen) {
           cameraX = floatParameter(i++);
           cameraY = floatParameter(i++);
-          if (!isChange && Math.abs(cameraX - vwr.getCamera().x) >= 0.01f)
+          if (!isChange && Math.abs(cameraX - vwr.tm.camera.x) >= 0.01f)
             isChange = true;
-          if (!isChange && Math.abs(cameraY - vwr.getCamera().y) >= 0.01f)
+          if (!isChange && Math.abs(cameraY - vwr.tm.camera.y) >= 0.01f)
             isChange = true;
         }
       }
@@ -5318,13 +5317,13 @@ public class ScriptEval extends ScriptExpr {
     case T.structure:
       BS bsAllAtoms = new BS();
       runScript(vwr.getDefaultStructure(null, bsAllAtoms));
-      vwr.resetBioshapes(bsAllAtoms);
+      vwr.shm.resetBioshapes(bsAllAtoms);
       return;
     case T.vanderwaals:
       vwr.setData("element_vdw", new Object[] { null, "" }, 0, 0, 0, 0, 0);
       return;
     case T.aromatic:
-      vwr.resetAromatic();
+      vwr.ms.resetAromatic();
       return;
     case T.spin:
       vwr.reset(true);
@@ -5472,12 +5471,12 @@ public class ScriptEval extends ScriptExpr {
           nPoints = 0;
         // {X, Y, Z}
         // $drawObject[n]
-        P3 pt1 = centerParameterForModel(i, vwr.getCurrentModelIndex());
+        P3 pt1 = centerParameterForModel(i, vwr.am.cmi);
         if (!chk && tok == T.dollarsign && tokAt(i + 2) != T.leftsquare) {
           // rotation about an axis such as $line1
           isMolecular = true;
           Object[] data = new Object[] { objectNameParameter(++i),
-              Integer.valueOf(vwr.getCurrentModelIndex()), null };
+              Integer.valueOf(vwr.am.cmi), null };
           rotAxis = (getShapePropertyData(JC.SHAPE_DRAW, "getSpinAxis", data) ? (V3) data[2]
               : null);
         }
@@ -5551,7 +5550,7 @@ public class ScriptEval extends ScriptExpr {
         q = getQuaternionParameter(i);
         if (q != null) {
           if (tok == T.best && !(isMolecular = isSelected)) // yes, setting isMolecular here.
-            q = q.mulQ(vwr.getRotationQuaternion().mul(-1));
+            q = q.mulQ(vwr.tm.getRotationQuaternion().mul(-1));
           rotAxis.setT(q.getNormal());
           endDegrees = q.getTheta();
         }
@@ -5633,7 +5632,7 @@ public class ScriptEval extends ScriptExpr {
         haveRotation = true;
         if (tok == T.compare) {
           bsCompare = atomExpressionAt(++i);
-          ptsA = vwr.getAtomPointVector(bsCompare);
+          ptsA = vwr.ms.getAtomPointVector(bsCompare);
           if (ptsA == null) {
             iToken = i;
             invArg();
@@ -5686,7 +5685,7 @@ public class ScriptEval extends ScriptExpr {
     }
 
     if (isSelected && bsAtoms == null)
-      bsAtoms = vwr.getSelectedAtoms();
+      bsAtoms = vwr.bsA();
     if (bsCompare != null) {
       isSelected = true;
       if (bsAtoms == null)
@@ -5711,8 +5710,8 @@ public class ScriptEval extends ScriptExpr {
       // only when there is a translation (4x4 matrix or TRANSLATE)
       // do we set the rotation to be the center of the selected atoms or model
       if (nPoints == 0 && translation != null)
-        points[0] = vwr.getAtomSetCenter(bsAtoms != null ? bsAtoms
-            : isSelected ? vwr.getSelectedAtoms() : vwr.getAllAtoms());
+        points[0] = vwr.ms.getAtomSetCenter(bsAtoms != null ? bsAtoms
+            : isSelected ? vwr.bsA() : vwr.getAllAtoms());
       if (helicalPath && translation != null) {
         points[1] = P3.newP(points[0]);
         points[1].add(translation);
@@ -5789,7 +5788,7 @@ public class ScriptEval extends ScriptExpr {
       degreesPerSecond = 0.01f;
     }
     if (bsAtoms != null && isSpin && ptsB == null && m4 != null) {
-      ptsA = vwr.getAtomPointVector(bsAtoms);
+      ptsA = vwr.ms.getAtomPointVector(bsAtoms);
       ptsB = Measure.transformPoints(ptsA, m4, points[0]);
     }
     if (bsAtoms != null && !isSpin && ptsB != null) {
@@ -5823,15 +5822,15 @@ public class ScriptEval extends ScriptExpr {
         switch (tok) {
         case T.orientation:
           type = "Orientation";
-          vwr.restoreOrientation(saveName, floatSecondsTotal);
+          vwr.stm.restoreOrientation(saveName, floatSecondsTotal, true);
           break;
         case T.rotation:
           type = "Rotation";
-          vwr.restoreRotation(saveName, floatSecondsTotal);
+          vwr.stm.restoreOrientation(saveName, floatSecondsTotal, false);
           break;
         case T.scene:
           type = "Scene";
-          vwr.restoreScene(saveName, floatSecondsTotal);
+          vwr.stm.restoreScene(saveName, floatSecondsTotal);
           break;
         }
         if (isJS && floatSecondsTotal > 0 && vwr.g.waitForMoveTo)
@@ -5842,12 +5841,12 @@ public class ScriptEval extends ScriptExpr {
       switch (tok) {
       case T.bonds:
         if (!chk)
-          vwr.restoreBonds(saveName);
+          vwr.stm.restoreBonds(saveName);
         return;
       case T.context:
         if (chk)
           return;
-        ScriptContext sc = vwr.getContext(saveName);
+        ScriptContext sc = (ScriptContext) vwr.stm.getContext(saveName);
         if (sc != null) {
           restoreScriptContext(sc, true, false, false);
           if (thisContext != null) {
@@ -5860,7 +5859,7 @@ public class ScriptEval extends ScriptExpr {
       case T.coord:
         if (chk)
           return;
-        String script = vwr.getSavedCoordinates(saveName);
+        String script = vwr.stm.getSavedCoordinates(saveName);
         if (script == null)
           invArg();
         runScript(script);
@@ -5868,12 +5867,12 @@ public class ScriptEval extends ScriptExpr {
         return;
       case T.selection:
         if (!chk)
-          vwr.restoreSelection(saveName);
+          vwr.stm.restoreSelection(saveName);
         return;
       case T.state:
         if (chk)
           return;
-        String state = vwr.getSavedState(saveName);
+        String state = vwr.stm.getSavedState(saveName);
         if (state == null)
           invArg();
         runScript(state);
@@ -5881,7 +5880,7 @@ public class ScriptEval extends ScriptExpr {
       case T.structure:
         if (chk)
           return;
-        String shape = vwr.getSavedStructure(saveName);
+        String shape = vwr.stm.getSavedStructure(saveName);
         if (shape == null)
           invArg();
         runScript(shape);
@@ -5897,32 +5896,34 @@ public class ScriptEval extends ScriptExpr {
       switch (tokAt(1)) {
       case T.bonds:
         if (!chk)
-          vwr.saveBonds(saveName);
+          vwr.stm.saveBonds(saveName);
         return;
       case T.context:
         if (!chk)
-          vwr.saveContext(saveName);
+          saveContext(saveName);
         return;
       case T.coord:
         if (!chk)
-          vwr.saveCoordinates(saveName, vwr.getSelectedAtoms());
+          vwr.stm.saveCoordinates(saveName, vwr.bsA());
         return;
       case T.orientation:
       case T.rotation:
         if (!chk)
-          vwr.saveOrientation(saveName, null);
+          vwr.stm.saveOrientation(saveName, null);
         return;
       case T.selection:
-        if (!chk)
-          vwr.saveSelection(saveName);
+        if (!chk) {
+          vwr.stm.saveSelection(saveName, vwr.bsA());
+          vwr.stm.restoreSelection(saveName); // just to register the # of
+        }
         return;
       case T.state:
         if (!chk)
-          vwr.saveState(saveName);
+          vwr.stm.saveState(saveName);
         return;
       case T.structure:
         if (!chk)
-          vwr.saveStructure(saveName);
+          vwr.stm.saveStructure(saveName);
         return;
       }
     }
@@ -6351,7 +6352,7 @@ public class ScriptEval extends ScriptExpr {
       case T.dotted:
       case T.integer:
       case T.decimal:
-        vwr.loadShape(JC.SHAPE_MEASURES);
+        vwr.shm.loadShape(JC.SHAPE_MEASURES);
         int mad = getSetAxesTypeMad(2);
         if (mad != Integer.MAX_VALUE)
           setShapeSizeBs(JC.SHAPE_MEASURES, mad, null);
@@ -6404,7 +6405,7 @@ public class ScriptEval extends ScriptExpr {
         checkLength(iToken + 1);
       }
       if (!chk)
-        vwr.setZslabPoint(pt);
+        vwr.tm.setZslabPoint(pt);
       return;
     }
 
@@ -6428,7 +6429,7 @@ public class ScriptEval extends ScriptExpr {
         }
         if (chk)
           return;
-        int modelIndex = vwr.getModelNumberIndex(modelNumber,
+        int modelIndex = vwr.ms.getModelNumberIndex(modelNumber,
             useModelNumber, true);
         vwr.setBackgroundModelIndex(modelIndex);
         return;
@@ -6729,7 +6730,7 @@ public class ScriptEval extends ScriptExpr {
     }
 
     if (!chk) {
-      vwr.setEchoStateActive(echoShapeActive);
+      vwr.ms.setEchoStateActive(echoShapeActive);
       sm.loadShape(JC.SHAPE_ECHO);
       if (id != null)
         setShapeProperty(JC.SHAPE_ECHO, propertyName == null ? "target"
@@ -6858,9 +6859,8 @@ public class ScriptEval extends ScriptExpr {
       if (str.equals("scalereference")) {
         float scaleAngstromsPerPixel = floatParameter(2);
         if (scaleAngstromsPerPixel >= 5) // actually a zoom value
-          scaleAngstromsPerPixel = vwr.getZoomSetting()
-              / scaleAngstromsPerPixel
-              / vwr.getScalePixelsPerAngstrom(false);
+          scaleAngstromsPerPixel = vwr.tm.getZoomSetting()
+              / scaleAngstromsPerPixel / vwr.getScalePixelsPerAngstrom(false);
         propertyValue = Float.valueOf(scaleAngstromsPerPixel);
         break;
       }
@@ -6914,10 +6914,12 @@ public class ScriptEval extends ScriptExpr {
       }
       if (str.equals("toggle")) {
         iToken = 1;
-        BS bs = (slen == 2 ? null : atomExpressionAt(2));
+        BS bs = (slen == 2 ? vwr.bsA() : atomExpressionAt(2));
         checkLast(iToken);
-        if (!chk)
-          vwr.togglePickingLabel(bs);
+        if (chk)
+          return true;
+        vwr.shm.loadShape(JC.SHAPE_LABELS);
+        vwr.shm.setShapePropertyBs(JC.SHAPE_LABELS, "toggleLabel", null, bs);
         return true;
       }
       iToken = 1;
@@ -7089,7 +7091,7 @@ public class ScriptEval extends ScriptExpr {
         checkLength(2);
         if (chk)
           return;
-        vwr.slabReset();
+        vwr.tm.slabReset();
         setBooleanProperty("slabEnabled", true);
         return;
       case T.set:
@@ -7264,17 +7266,24 @@ public class ScriptEval extends ScriptExpr {
       return;
     int pt = (tokAt(1) == T.context ? 2 : 1);
     SV v = (pt == 1 ? setVariable(1, slen, "thrown_value", false)
-        : vwr.setUserVariable("thrown_value", SV.newS(optParameterAsString(2))));
+        : vwr.g.setUserVariable("thrown_value", SV.newS(optParameterAsString(2))));
     String info = v.asString();
     if (info.length() == 0 && (info = optParameterAsString(1)).length() == 0)
       info = "context";
     if (pt == 2) {
-      vwr.saveContext(info);
+      saveContext(info);
       if (doReport())
         report(GT.o(GT._("to resume, enter: &{0}"), info));
       throw new ScriptInterruption(this, info, Integer.MIN_VALUE);
     }
     evalError(info, null);
+  }
+
+  private ScriptContext saveContext(String saveName) {
+    ScriptContext sc = getScriptContext("Context_" + saveName);
+    vwr.stm.saveContext(saveName, sc);
+    vwr.g.setUserVariable(saveName, SV.newV(T.context, sc));
+    return sc;
   }
 
   private void cmdTimeout(int index) throws ScriptException {
@@ -7363,7 +7372,7 @@ public class ScriptEval extends ScriptExpr {
     if (amount == 0 && type != '\0')
       return;
     iToken = i0 + (type == '\0' ? 2 : 3);
-    bs = (isSelected ? vwr.getSelectedAtoms()
+    bs = (isSelected ? vwr.bsA()
         : iToken + 1 < slen ? atomExpressionAt(++iToken) : null);
     checkLast(iToken);
     if (!chk)
@@ -7433,7 +7442,7 @@ public class ScriptEval extends ScriptExpr {
     case T.expressionBegin:
       int iAtom = atomExpressionAt(1).nextSetBit(0);
       if (!chk)
-        vwr.setCurrentAtom(iAtom);
+        vwr.am.cai = iAtom;
       if (iAtom < 0)
         return;
       index = iToken;
@@ -7443,7 +7452,7 @@ public class ScriptEval extends ScriptExpr {
       switch (tokAt(++index)) {
       case T.bitset:
       case T.expressionBegin:
-        pt = P3.newP(vwr.getAtomSetCenter(atomExpressionAt(index)));
+        pt = P3.newP(vwr.ms.getAtomSetCenter(atomExpressionAt(index)));
         vwr.toFractional(pt, true);
         index = iToken;
         break;
@@ -7477,16 +7486,16 @@ public class ScriptEval extends ScriptExpr {
     if (chk || mad == Integer.MAX_VALUE)
       return;
     if (mad == Integer.MAX_VALUE)
-      vwr.setCurrentAtom(-1);
+      vwr.am.cai = -1;
     if (icell != Integer.MAX_VALUE)
-      vwr.setCurrentUnitCellOffset(null, icell);
+      vwr.ms.setUnitCellOffset(vwr.getCurrentUnitCell(), null, icell);
     else if (id != null)
       vwr.setCurrentCage(id);
     else if (points != null)
       vwr.setCurrentCagePts(points);
     setObjectMad(JC.SHAPE_UCCAGE, "unitCell", mad);
     if (pt != null)
-      vwr.setCurrentUnitCellOffset(pt, 0);
+      vwr.ms.setUnitCellOffset(vwr.getCurrentUnitCell(), pt, 0);
     if (tickInfo != null)
       setShapeProperty(JC.SHAPE_UCCAGE, "tickInfo", tickInfo);
   }
@@ -7648,14 +7657,14 @@ public class ScriptEval extends ScriptExpr {
       i = iToken + 1;
     } else if (tokAt(i) == T.integer && getToken(i).intValue == 0) {
       bsCenter = vwr.getAtomBitSet("visible");
-      center = vwr.getAtomSetCenter(bsCenter);
+      center = vwr.ms.getAtomSetCenter(bsCenter);
     }
 
     // disabled sameAtom stuff -- just too weird
     boolean isSameAtom = false;// && (center != null && currentCenter.distance(center) < 0.1);
     // zoom/zoomTo [0|n|+n|-n|*n|/n|IN|OUT]
     // zoom/zoomTo percent|-factor|+factor|*factor|/factor | 0
-    float zoom = vwr.getZoomSetting();
+    float zoom = vwr.tm.getZoomSetting();
 
     float newZoom = getZoom(ptCenter, i, bsCenter, zoom);
     i = iToken + 1;
@@ -7681,18 +7690,18 @@ public class ScriptEval extends ScriptExpr {
     float max = vwr.getMaxZoomPercent();
     if (newZoom < 5 || newZoom > max)
       numberOutOfRange(5, max);
-    if (!vwr.isWindowCentered()) {
+    if (!vwr.tm.isWindowCentered()) {
       // do a smooth zoom only if not windowCentered
       if (center != null) {
         BS bs = atomExpressionAt(ptCenter);
         if (!chk)
           vwr.setCenterBitSet(bs, false);
       }
-      center = vwr.getRotationCenter();
+      center = vwr.tm.getRotationCenter();
       if (Float.isNaN(xTrans))
-        xTrans = vwr.getTranslationXPercent();
+        xTrans = vwr.tm.getTranslationXPercent();
       if (Float.isNaN(yTrans))
-        yTrans = vwr.getTranslationYPercent();
+        yTrans = vwr.tm.getTranslationYPercent();
     }
     if (chk)
       return;
@@ -7820,7 +7829,7 @@ public class ScriptEval extends ScriptExpr {
         Object data = null;
         BS bsSelected = (pal != PAL.PROPERTY
             && pal != PAL.VARIABLE || !vwr.g.rangeSelected ? null
-            : vwr.getSelectedAtoms());
+            : vwr.bsA());
         if (pal == PAL.PROPERTY) {
           if (isColorIndex) {
             if (!chk) {
@@ -7890,12 +7899,12 @@ public class ScriptEval extends ScriptExpr {
             } else if (data == null) {
               vwr.setCurrentColorRange(name);
             } else {
-              vwr.setCurrentColorRangeData((float[]) data, bsSelected);
+              vwr.cm.setPropertyColorRangeData((float[]) data, bsSelected);
             }
             if (isIsosurface) {
               checkLength(index);
               isColor = false;
-              ColorEncoder ce = vwr.getColorEncoder(scheme);
+              ColorEncoder ce = vwr.cm.getColorEncoder(scheme);
               if (ce == null)
                 return;
               ce.isTranslucent = (isTranslucent && translucentLevel == Float.MAX_VALUE);
@@ -7907,7 +7916,7 @@ public class ScriptEval extends ScriptExpr {
               if (translucentLevel == Float.MAX_VALUE)
                 return;
             } else if (max != Float.MAX_VALUE) {
-              vwr.setCurrentColorRange(min, max);
+              vwr.cm.setPropertyColorRange(min, max);
             }
           }
         } else {
@@ -7959,17 +7968,17 @@ public class ScriptEval extends ScriptExpr {
         break;
       case T.temperature:
         if (vwr.g.rangeSelected)
-          vwr.clearBfactorRange();
+          vwr.ms.clearBfactorRange();
         break;
       case T.group:
-        vwr.calcSelectedGroupsCount();
+        vwr.ms.calcSelectedGroupsCount();
         break;
       case T.polymer:
       case T.monomer:
-        vwr.calcSelectedMonomersCount();
+        vwr.ms.calcSelectedMonomersCount();
         break;
       case T.molecule:
-        vwr.calcSelectedMoleculesCount();
+        vwr.ms.calcSelectedMoleculesCount();
         break;
       }
       if (colorvalue1 != null
@@ -8031,7 +8040,7 @@ public class ScriptEval extends ScriptExpr {
     }
     switch (tok) {
     case T.reset:
-      return vwr.getDefaultRadiusData();
+      return vwr.rd;
     case T.auto:
     case T.rasmol:
     case T.babel:
@@ -8168,7 +8177,7 @@ public class ScriptEval extends ScriptExpr {
       if (key.indexOf("/") >= 0)
         contextVariables.put(key, t = SV.newI(0));
       else
-      t = vwr.getOrSetNewVariable(key, true);
+      t = vwr.g.getOrSetNewVariable(key, true);
     }
     return t;
   }
@@ -8348,7 +8357,7 @@ public class ScriptEval extends ScriptExpr {
             invArg();
         }
       } else {
-        r = vwr.calcRotationRadiusBs(bs);
+        r = vwr.ms.calcRotationRadiusBs(bs);
       }
       if (Float.isNaN(r))
         invArg();

@@ -261,7 +261,7 @@ public class Atom extends Point3fi implements BNode {
       float r = 0;
       switch (rd.vdwType) {
       case TEMP:
-        float tmax = vwr.getBfactor100Hi();
+        float tmax = vwr.ms.getBfactor100Hi();
         r = (tmax > 0 ? getBfactor100() / tmax : 0);
         break;
       case HYDRO:
@@ -1306,7 +1306,7 @@ public class Atom extends Point3fi implements BNode {
     case T.star:
     case T.strands:
     case T.trace:
-      return vwr.getAtomShapeValue(tokWhat, atom.group, atom.i);
+      return vwr.shm.getAtomShapeValue(tokWhat, atom.group, atom.i);
     case T.bondingradius:
       return atom.getBondingRadius();
     case T.chemicalshift:
@@ -1431,7 +1431,7 @@ public class Atom extends Point3fi implements BNode {
       return (ch == '\0' ? "" : "" + ch);
     case T.label:
     case T.format:
-      String s = atom.group.chain.model.ms.getAtomLabel(atom.i);
+      String s = (String) vwr.shm.getShapePropertyIndex(JC.SHAPE_LABELS, "label", atom.i);
       if (s == null)
         s = "";
       return s;

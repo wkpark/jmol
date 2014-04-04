@@ -99,7 +99,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
     if (mesh.lattice == null && mesh.symops == null || mesh.modelIndex < 0) {
       for (int i = vertexCount; --i >= 0;)
         if (vertices[i] != null)
-          vwr.transformPtScr(vertices[i], screens[i]);
+          tm.transformPtScr(vertices[i], screens[i]);
       render2(isExport);
     } else {
       P3 vTemp = new P3();
@@ -128,7 +128,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
             unitcell.toFractional(vTemp, true);
             m.rotTrans(vTemp);
             unitcell.toCartesian(vTemp, true);
-            vwr.transformPtScr(vTemp, screens[i]);
+            tm.transformPtScr(vTemp, screens[i]);
             if (needNormals) {
               verticesTemp[i] = vTemp;
               vTemp = new P3();
@@ -155,7 +155,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
                 unitcell.toCartesian(latticeOffset, false);
                 for (int i = vertexCount; --i >= 0;) {
                   vTemp.add2(vertices[i], latticeOffset);
-                  vwr.transformPtScr(vTemp, screens[i]);
+                  tm.transformPtScr(vTemp, screens[i]);
                 }
                 render2(isExport);
               }
@@ -179,7 +179,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
     if (mesh.visibilityFlags == 0)
       return false;
     if (mesh.bsSlabGhost != null)
-      g3d.setColix(mesh.slabColix); // forces a second pass
+      g3d.setC(mesh.slabColix); // forces a second pass
     isGhostPass = (mesh.bsSlabGhost != null && (isExport ? exportPass == 2
         : g3d.isPass2()));
     isTranslucentInherit = (isGhostPass && C.getColixTranslucent3(mesh.slabColix, false, 0)== C.INHERIT_COLOR);
@@ -188,10 +188,10 @@ public abstract class MeshRenderer extends ShapeRenderer {
     if (isTranslucent || volumeRender || mesh.bsSlabGhost != null)
       needTranslucent = true;
     doRender = (setColix(mesh.colix) || mesh.showContourLines);
-    if (!doRender || isGhostPass && !(doRender = g3d.setColix(mesh.slabColix))) {
+    if (!doRender || isGhostPass && !(doRender = g3d.setC(mesh.slabColix))) {
       vertices = mesh.vs;
       if (needTranslucent)
-        g3d.setColix(C.getColixTranslucent3(C.BLACK, true, 0.5f));
+        g3d.setC(C.getColixTranslucent3(C.BLACK, true, 0.5f));
       return true;
     }
     vertices = (mesh.scale3d == 0 && mesh.mat4 == null ? mesh.vs : mesh.getOffsetVertices(thePlane));
@@ -212,7 +212,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
           : selectedPolyOnly ? mesh.bsSlabDisplay : null);
       
       renderLow = (!isExport && !vwr.checkMotionRendering(T.mesh));
-      frontOnly = renderLow || !vwr.getSlabEnabled() && mesh.frontOnly
+      frontOnly = renderLow || !tm.slabEnabled && mesh.frontOnly
           && !mesh.isTwoSided && !selectedPolyOnly 
           && (meshSlabValue == Integer.MIN_VALUE || meshSlabValue >= 100);
       screens = vwr.allocTempScreens(vertexCount);
@@ -232,7 +232,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
     this.colix = colix;
     if (C.isColixLastAvailable(colix))
       g3d.setColor(mesh.color);
-    return g3d.setColix(colix);
+    return g3d.setC(colix);
   }
 
   // all of the following methods are overridden in subclasses
@@ -254,7 +254,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   }
   
   protected void render2b(boolean generateSet) {
-    if (!g3d.setColix(isGhostPass ? mesh.slabColix : colix))
+    if (!g3d.setC(isGhostPass ? mesh.slabColix : colix))
       return;
     if (renderLow || mesh.showPoints || mesh.pc == 0)
       renderPoints(); 
@@ -309,7 +309,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
     // vertexColixes are only isosurface properties of IsosurfaceMesh, not Mesh
     if (isTranslucentInherit)
       colix = C.copyColixTranslucency(mesh.slabColix, mesh.colix);
-    g3d.setColix(colix);
+    g3d.setC(colix);
     if (generateSet) {
       if (frontOnly && fill)
         frontOnly = false;
@@ -455,7 +455,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
         diameter = (mesh.diameter > 0 ? mesh.diameter : iA == iB ? 7 : 3);
       if (exportType == GData.EXPORT_CARTESIAN) {
         pt1f.ave(vA, vB);
-        vwr.transformPtScr(pt1f, pt1i);
+        tm.transformPtScr(pt1f, pt1i);
         diameter = (int) Math.floor(vwr.unscaleToScreen(pt1i.z, diameter) * 1000);
       }
       if (iA == iB) {
@@ -465,14 +465,14 @@ public abstract class MeshRenderer extends ShapeRenderer {
       }
     } else {
       pt1f.ave(vA, vB);
-      vwr.transformPtScr(pt1f, pt1i);
+      tm.transformPtScr(pt1f, pt1i);
       int mad = (int) Math.floor(Math.abs(width) * 1000); 
       diameter = (int) (exportType == GData.EXPORT_CARTESIAN ? mad 
           : vwr.scaleToScreen(pt1i.z, mad));
       if (diameter == 0)
         diameter = 1;
-      vwr.transformPt3f(vA, pt1f);
-      vwr.transformPt3f(vB, pt2f);
+      tm.transformPt3f(vA, pt1f);
+      tm.transformPt3f(vB, pt2f);
       g3d.fillCylinderBits(endCap, diameter, pt1f, pt2f);
     }
   }

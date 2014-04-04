@@ -87,7 +87,7 @@ class ModelManager {
       new ModelLoader(vwr, modelSetName, loadScript,
           atomSetCollection, (isAppend ? modelSet : null), bsNew);
     }
-    if (modelSet.getAtomCount() == 0 && !modelSet.getModelSetAuxiliaryInfoBoolean("isPyMOL"))
+    if (modelSet.getAtomCount() == 0 && !modelSet.getMSInfoB("isPyMOL"))
       zap();
   }
 
@@ -104,7 +104,7 @@ class ModelManager {
 
   String createAtomDataSet(Object atomSetCollection, int tokType) {
     return ModelLoader.createAtomDataSet(vwr, modelSet, tokType, atomSetCollection,
-    vwr.getSelectedAtoms());
+    vwr.bsA());
   }
 
 }

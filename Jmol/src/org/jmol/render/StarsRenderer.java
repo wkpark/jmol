@@ -51,7 +51,7 @@ public class StarsRenderer extends ShapeRenderer {
       if (!isVisibleForMe(atom))
         continue;
       colix = Shape.getColix(stars.colixes, i, atom);
-      if (g3d.setColix(colix))
+      if (g3d.setC(colix))
         render1(atom, stars.mads[i]);
       else
         needTranslucent = true;

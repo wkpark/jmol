@@ -31,11 +31,10 @@ public class HoverRenderer extends ShapeRenderer {
   
   private float[] tempXY = new float[3];
 
-  @SuppressWarnings("static-access")
   @Override
   protected boolean render() {
     // hover rendering always involves translucent pass
-    if (vwr.isNavigating())
+    if (tm.isNavigating())
       return false;
     Hover hover = (Hover) shape;
     boolean antialias = g3d.isAntialiased();

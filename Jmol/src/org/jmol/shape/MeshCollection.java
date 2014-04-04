@@ -185,7 +185,7 @@ public abstract class MeshCollection extends Shape {
         int n = currentMesh.symops.length;
         currentMesh.symopColixes = new short[n];
         for (int i = n; --i >= 0;)
-        currentMesh.symopColixes[i] = C.getColix(vwr.getArgbMinMax(i + 1, 1, n));        
+        currentMesh.symopColixes[i] = C.getColix(vwr.cm.ce.getArgbMinMax(i + 1, 1, n));        
       }
       return;
     }

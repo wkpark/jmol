@@ -68,7 +68,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
 
     for (int i = isosurface.meshCount; --i >= 0;) {
       mesh = imesh = (IsosurfaceMesh) isosurface.meshes[i];
-      if (imesh.connections != null && !vwr.getModelSet().at[imesh.connections[0]].checkVisible())
+      if (imesh.connections != null && !vwr.ms.at[imesh.connections[0]].checkVisible())
         continue;
       hasColorRange = false;
       if (renderMeshSlab()) {
@@ -97,7 +97,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     isosurface.keyXy = null;
     meshScale = -1;
     globalSlabValue = g3d.getSlab();
-    mySlabValue = (isNavigationMode ? (int) vwr.getNavigationOffset().z : Integer.MAX_VALUE);
+    mySlabValue = (isNavigationMode ? (int) tm.getNavigationOffset().z : Integer.MAX_VALUE);
   }
 
   protected void renderInfo() {
@@ -141,11 +141,11 @@ public class IsosurfaceRenderer extends MeshRenderer {
     for (int i = 0; i < n; i++, y -= dy) {
       switch (type) {
       case 0:
-        if (!g3d.setColix(colixes[i]))
+        if (!g3d.setC(colixes[i]))
           return;
         break;
       case 1:
-        if (!g3d.setColix(((short[]) vContours[i].get(JvxlCoder.CONTOUR_COLIX))[0]))
+        if (!g3d.setC(((short[]) vContours[i].get(JvxlCoder.CONTOUR_COLIX))[0]))
           return;
         break;
       case 2:
@@ -170,7 +170,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
         float z1 = Float.MIN_VALUE;
         for (int i = points.length; --i >= 0;) {
           pt2f.setT(points[i]);
-          vwr.transformPt3f(pt2f, pt2f);
+          tm.transformPt3f(pt2f, pt2f);
           if (pt2f.z < z0)
             z0 = pt2f.z;
           if (pt2f.z > z1)
@@ -212,7 +212,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     }
     isBicolorMap = imesh.jvxlData.isBicolorMap;
     render2b(isExport);
-    if (!g3d.setColix(C.BLACK)) // must be 1st pass
+    if (!g3d.setC(C.BLACK)) // must be 1st pass
       return;
     if (imesh.showContourLines)
       renderContourLines();
@@ -220,7 +220,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
   
   private void renderLonePair(boolean isRadical) {
     pt2f.setT(vertices[1]);
-    vwr.transformPt3f(pt2f, pt2f);
+    tm.transformPt3f(pt2f, pt2f);
     int r = (int) vwr.scaleToScreen((int)pt2f.z, 100);
     if (r < 1)
       r = 1;
@@ -228,7 +228,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       V3 v1 = new V3();
       V3 v2 = new V3();
       pt1f.setT(vertices[0]);
-      vwr.transformPt3f(pt1f, pt1f);
+      tm.transformPt3f(pt1f, pt1f);
       v1.sub2(pt2f, pt1f);
       v2.set(v1.x, v1.y, v1.z + 1);
       v2.cross(v2,v1);
@@ -262,14 +262,14 @@ public class IsosurfaceRenderer extends MeshRenderer {
         continue;
       colix = (mesh.meshColix == 0 ? ((short[]) v.get(JvxlCoder.CONTOUR_COLIX))[0]
           : mesh.meshColix);
-      if (!g3d.setColix(colix))
+      if (!g3d.setC(colix))
         return;
       int n = v.size() - 1;
       for (int j = JvxlCoder.CONTOUR_POINTS; j < n; j++) {
         P3 pt1 = (P3) v.get(j);
         P3 pt2 = (P3) v.get(++j);
-        vwr.transformPtScr(pt1, pt1i);
-        vwr.transformPtScr(pt2, pt2i);
+        tm.transformPtScr(pt1, pt1i);
+        tm.transformPtScr(pt2, pt2i);
         if (Float.isNaN(pt1.x) || Float.isNaN(pt2.x))
           break;
         pt1i.z -= 2;
@@ -318,7 +318,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
             && Math.abs(screens[i].y - cY) < 150) {
           String s = i
               + (mesh.isColorSolid ? "" : " " + mesh.vvs[i]);
-          g3d.setColix(C.BLACK);
+          g3d.setC(C.BLACK);
           g3d.drawStringNoSlab(s, null, screens[i].x, screens[i].y,
               screens[i].z - 30, (short) 0);
         }
@@ -332,17 +332,17 @@ public class IsosurfaceRenderer extends MeshRenderer {
         }
       }
       if (incr == 3) {
-        g3d.setColix(isTranslucent ? C.getColixTranslucent3(
+        g3d.setC(isTranslucent ? C.getColixTranslucent3(
             C.GRAY, true, 0.5f) : C.GRAY);
         for (int i = 1; i < vertexCount; i += 3)
           g3d.fillCylinder(GData.ENDCAPS_SPHERICAL, diam / 4, screens[i],
               screens[i + 1]);
-        g3d.setColix(isTranslucent ? C.getColixTranslucent3(
+        g3d.setC(isTranslucent ? C.getColixTranslucent3(
             C.YELLOW, true, 0.5f) : C.YELLOW);
         for (int i = 1; i < vertexCount; i += 3)
           g3d.fillSphereI(diam, screens[i]);
 
-        g3d.setColix(isTranslucent ? C.getColixTranslucent3(
+        g3d.setC(isTranslucent ? C.getColixTranslucent3(
             C.BLUE, true, 0.5f) : C.BLUE);
         for (int i = 2; i < vertexCount; i += 3) {
           g3d.fillSphereI(diam, screens[i]);
@@ -366,7 +366,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
         : mesh.vcs);
     if (isTranslucentInherit)
       colix = C.copyColixTranslucency(mesh.slabColix, mesh.colix);
-    g3d.setColix(colix);
+    g3d.setC(colix);
     boolean generateSet = isExport;
     if (generateSet) {
       if (frontOnly && fill)
@@ -494,7 +494,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
         pt3i.z -= 2;
         if (noColor) {
         } else if (colorArrayed) {
-          g3d.setColix(mesh.fillTriangles ? C.BLACK : contourColixes[polygon[4]
+          g3d.setC(mesh.fillTriangles ? C.BLACK : contourColixes[polygon[4]
               % contourColixes.length]);
         } else {
           drawTriangle(pt1i, colixA, pt2i, colixB, pt3i, colixC, check, diam);
@@ -509,7 +509,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
 
   private void renderNormals() {
     // Logger.debug("mesh renderPoints: " + vertexCount);
-    if (!g3d.setColix(C.WHITE))
+    if (!g3d.setC(C.WHITE))
       return;
     g3d.setFontFid(g3d.getFontFidFS("Monospaced", 24));
     V3[] vertexVectors = Normix.getVertexVectors();
@@ -524,7 +524,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       // index
       if (n >= 0) {
         ptTemp.scaleAdd2(3, vertexVectors[n], ptTemp);
-        vwr.transformPtScr(ptTemp, ptTempi);
+        tm.transformPtScr(ptTemp, ptTempi);
         g3d.drawLineAB(screens[i], ptTempi);
         //g3d.drawStringNoSlab("" + n, null, ptTempi.x, ptTempi.y, ptTempi.z);
       }

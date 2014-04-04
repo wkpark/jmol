@@ -220,11 +220,10 @@ public class LabelToken {
 
   //////////// label formatting for atoms, bonds, and measurements ///////////
 
-  public static String formatLabel(Viewer vwr, Atom atom, String strFormat) {
-    if (strFormat == null || strFormat.length() == 0)
-      return null;
-    LabelToken[] tokens = compile(vwr, strFormat, '\0', null);
-    return formatLabelAtomArray(vwr, atom, tokens, '\0', null);    
+  public String formatLabel(Viewer vwr, Atom atom, String strFormat) {
+    return (strFormat == null || strFormat.length() == 0 ? null
+        : formatLabelAtomArray(vwr, atom, compile(vwr, strFormat, '\0', null),
+            '\0', null));
   }
 
   /**
@@ -523,7 +522,7 @@ public class LabelToken {
         break;
       case T.string:
         // label %{altName}
-        strT = vwr.getModelAtomProperty(atom, t.text.substring(2, t.text
+        strT = vwr.ms.getAtomProp(atom, t.text.substring(2, t.text
             .length() - 1));
         break;
       case T.structure:

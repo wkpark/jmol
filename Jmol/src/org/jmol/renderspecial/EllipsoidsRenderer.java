@@ -137,9 +137,9 @@ final public class EllipsoidsRenderer extends ShapeRenderer {
     bGlobals[OPT_DOTS] = vwr.getBooleanProperty("ellipsoidDots");
     bGlobals[OPT_FILL] = vwr.getBooleanProperty("ellipsoidFill");
     bGlobals[OPT_WIREFRAME] = !isExport && !vwr.checkMotionRendering(T.ellipsoid);
-    diameter0 = Math.round (((Float) vwr.getParameter("ellipsoidAxisDiameter"))
+    diameter0 = Math.round (((Float) vwr.getP("ellipsoidAxisDiameter"))
         .floatValue() * 1000);    
-    M4 m4 = vwr.getMatrixtransform();
+    M4 m4 = tm.getMatrixtransform();
     mat.setRow(0, m4.m00, m4.m01, m4.m02);
     mat.setRow(1, m4.m10, m4.m11, m4.m12);
     mat.setRow(2, m4.m20, m4.m21, m4.m22);
@@ -194,7 +194,7 @@ final public class EllipsoidsRenderer extends ShapeRenderer {
     }
 
     if (bOptions[OPT_DOTS]) {
-      dotCount = ((Integer) vwr.getParameter("ellipsoidDotCount"))
+      dotCount = ((Integer) vwr.getP("ellipsoidDotCount"))
           .intValue();
       if (coords == null || coords.length != dotCount * 3)
         coords = new int[dotCount * 3];
@@ -215,11 +215,11 @@ final public class EllipsoidsRenderer extends ShapeRenderer {
           continue;
         colix = C.getColixInherited(ellipsoid.colix, atom.getColix());
       }
-      if (!g3d.setColix(colix)) {
+      if (!g3d.setC(colix)) {
         needTranslucent = true;
         continue;
       }
-      vwr.transformPtScr(ellipsoid.center, s0);
+      tm.transformPtScr(ellipsoid.center, s0);
       renderOne(ellipsoid);
     }
     return needTranslucent;
@@ -252,13 +252,13 @@ final public class EllipsoidsRenderer extends ShapeRenderer {
     if (bOptions[OPT_BALL]) {
       renderBall();
       if (bOptions[OPT_ARCS] || bOptions[OPT_AXES]) {
-        g3d.setColix(vwr.getColixBackgroundContrast());
+        g3d.setC(vwr.getColixBackgroundContrast());
         //setAxes(atom, 1.0f);
         if (bOptions[OPT_AXES])
           renderAxes();
         if (bOptions[OPT_ARCS])
           renderArcs();
-        g3d.setColix(colix);
+        g3d.setC(colix);
       }
     } else {
       if (bOptions[OPT_AXES])
@@ -444,7 +444,7 @@ final public class EllipsoidsRenderer extends ShapeRenderer {
       pt1.scaleAdd2(fx * factoredLengths[0], axes[0], center);
       pt1.scaleAdd2(fy * factoredLengths[1], axes[1], pt1);
       pt1.scaleAdd2(fz * factoredLengths[2], axes[2], pt1);
-      vwr.transformPtScr(pt1, s1);
+      tm.transformPtScr(pt1, s1);
       coords[i++] = s1.x;
       coords[i++] = s1.y;
       coords[i++] = s1.z;
@@ -482,7 +482,7 @@ final public class EllipsoidsRenderer extends ShapeRenderer {
     for (int i = 0, pt = 0; i < 18; i++, pt += 2) {
       pt2.scaleAdd2(cossin[pt] * d1, v1, center);
       pt2.scaleAdd2(cossin[pt + 1] * d2, v2, pt2);
-      vwr.transformPtScr(pt2, s2);
+      tm.transformPtScr(pt2, s2);
       if (fillArc)
         g3d.fillTriangle3CN(s0, colix, normix, s1, colix, normix, s2, colix,
             normix);

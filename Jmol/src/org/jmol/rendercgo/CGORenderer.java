@@ -63,7 +63,7 @@ public class CGORenderer extends DrawRenderer {
     cmds = cgoMesh.cmds;
     if (cmds == null || !cgoMesh.visible)
       return false;
-    if (!g3d.setColix(cgoMesh.colix))
+    if (!g3d.setC(cgoMesh.colix))
       return needTranslucent = true;
     int n = cmds.size();
     int glMode = -1;
@@ -251,7 +251,7 @@ public class CGORenderer extends DrawRenderer {
       colix = C.copyColixTranslucency(cgoMesh.colix, cgoMesh.cList.get(
           ptColor++).shortValue());
       if (doSet)
-        g3d.setColix(colix);
+        g3d.setC(colix);
     }
     return colix;
   }
@@ -259,7 +259,7 @@ public class CGORenderer extends DrawRenderer {
 
   private void getPoint(int i, P3 pt, P3i pti) {
     cgoMesh.getPoint(i, pt);
-    vwr.transformPtScr(pt, pti);
+    tm.transformPtScr(pt, pti);
   }
 
 

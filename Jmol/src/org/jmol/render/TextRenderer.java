@@ -39,16 +39,16 @@ class TextRenderer {
                      boolean isExact, float[] boxXY, float[] temp) {
     if (text == null || text.image == null && text.lines == null)
       return;
-    boolean showText = g3d.setColix(text.colix);
+    boolean showText = g3d.setC(text.colix);
     if (!showText
         && (text.image == null && (text.bgcolix == 0 || !g3d
-            .setColix(text.bgcolix))))
+            .setC(text.bgcolix))))
       return;
     text.setPosition(vwr, g3d.getRenderWidth(), g3d.getRenderHeight(),
         scalePixelsPerMicron, imageFontScaling, isExact, boxXY);
     // draw the box if necessary; colix has been set
     if (text.image == null && text.bgcolix != 0) {
-      if (g3d.setColix(text.bgcolix))
+      if (g3d.setC(text.bgcolix))
         showBox(g3d, text.colix, (int) text.boxX, (int) text.boxY
             + text.boxYoff2 * 2, text.z + 2, text.zSlab, (int) text.boxWidth,
             (int) text.boxHeight, text.fontScale, text.isLabelOrHover);
@@ -76,7 +76,7 @@ class TextRenderer {
     // now draw the pointer, if requested
 
     if ((text.pointer & JC.POINTER_ON) == 0
-        || !g3d.setColix((text.pointer & JC.POINTER_BACKGROUND) != 0
+        || !g3d.setC((text.pointer & JC.POINTER_BACKGROUND) != 0
             && text.bgcolix != 0 ? text.bgcolix : text.colix))
       return;
     float w = text.boxWidth;
@@ -114,16 +114,16 @@ class TextRenderer {
 
     float x = boxXY[0];
     float y = boxXY[1];
-    if (bgcolix != 0 && g3d.setColix(bgcolix))
+    if (bgcolix != 0 && g3d.setC(bgcolix))
       showBox(g3d, colix, (int) x, (int) y, z, zSlab, (int) boxWidth,
           (int) boxHeight, 1, true);
     else
-      g3d.setColix(colix);
+      g3d.setC(colix);
     g3d.drawString(strLabel, font, (int) (x + 4),
         (int) (y + 4 + ascent), z - 1, zSlab, bgcolix);
 
     if (doPointer) {
-      g3d.setColix(pointerColix);
+      g3d.setC(pointerColix);
       if (xOffset > 0)
         g3d.drawLineXYZ(x0, y0, zSlab, (int) x, (int) (y + boxHeight / 2), zSlab);
       else if (xOffset < 0)
@@ -137,7 +137,7 @@ class TextRenderer {
                               int boxWidth, int boxHeight,
                               float imageFontScaling, boolean atomBased) {
     g3d.fillRect(x, y, z, zSlab, boxWidth, boxHeight);
-    g3d.setColix(colix);
+    g3d.setC(colix);
     if (!atomBased)
       return;
     if (imageFontScaling >= 2) {

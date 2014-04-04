@@ -117,7 +117,7 @@ public class AbinitReader extends AtomSetCollectionReader {
     for (int i = 0; i < 3; i++)
       addPrimitiveLatticeVector(i, cellLattice, i * 3);
     Atom[] atoms = asc.atoms;
-    int i0 = asc.getAtomSetAtomIndex(asc.currentAtomSetIndex);
+    int i0 = asc.getAtomSetAtomIndex(asc.iSet);
     if (!iHaveFractionalCoordinates)
       for (int i = asc.ac; --i >= i0;)
         setAtomCoord(atoms[i]);

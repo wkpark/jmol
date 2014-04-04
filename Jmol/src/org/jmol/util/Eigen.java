@@ -26,9 +26,6 @@ package org.jmol.util;
 
 import javajs.util.V3;
 
-
-//import org.jmol.util.Escape;
-
 /**
  * Eigenvalues and eigenvectors of a real matrix.
  * 

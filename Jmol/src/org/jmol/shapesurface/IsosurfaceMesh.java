@@ -746,7 +746,7 @@ public class IsosurfaceMesh extends Mesh {
       jvxlData.vertexDataOnly = true;
       jvxlData.vertexColors = new int[vc];
       jvxlData.nVertexColors = vc;
-      Atom[] atoms = vwr.getModelSet().at;
+      Atom[] atoms = vwr.ms.at;
       for (int i = mergeVertexCount0; i < vc; i++) {
         int pt = vertexSource[i];
         if (pt >= 0 && pt < atoms.length)

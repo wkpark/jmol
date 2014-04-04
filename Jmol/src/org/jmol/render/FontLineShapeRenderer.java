@@ -179,13 +179,13 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
     P3 ptRef = tickInfo.reference; // not implemented
     if (ptRef == null) {
       pointT3.setT(vwr.getBoundBoxCenter());
-      if (vwr.getAxesMode() == AXES.BOUNDBOX) {
+      if (vwr.g.axesMode == AXES.BOUNDBOX) {
         pointT3.add3(1, 1, 1);
       }
     } else {
       pointT3.setT(ptRef);
     }
-    vwr.transformPtScr(pointT3, pt2i);
+    tm.transformPtScr(pointT3, pt2i);
     //too annoying! float tx = vectorT2.x * ((ptA.screenX + ptB.screenX) / 2 - pt2.x);
     //float ty = vectorT2.y * ((ptA.screenY + ptB.screenY) / 2 - pt2.y);
     //if (tx + ty < -0.1)
@@ -203,7 +203,7 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
     while (p < d) {
       if (p >= tickInfo.first) {
         pointT2.setT(pointT);
-        vwr.transformPt3f(pointT2, pointT2);
+        tm.transformPt3f(pointT2, pointT2);
         drawLine((int) Math.floor(pointT2.x), (int) Math.floor(pointT2.y), (int) z,
             (x = (int) Math.floor(pointT2.x + vectorT2.x)),
             (y = (int) Math.floor(pointT2.y + vectorT2.y)), (int) z, diameter);
@@ -323,9 +323,9 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
       if (isDots) {
         s1.set(xS, yS, zS);
         if (pt == ptS)
-          g3d.setColix(colixA);
+          g3d.setC(colixA);
         else if (pt == ptE)
-          g3d.setColix(colixB);
+          g3d.setC(colixB);
         g3d.fillSphereI(width, s1);
         continue;
       }

@@ -45,7 +45,7 @@ public class HalosRenderer extends ShapeRenderer {
       return false;
     isAntialiased = g3d.isAntialiased();
     Atom[] atoms = ms.at;
-    BS bsSelected = (selectDisplayTrue ? vwr.getSelectedAtoms() : null);
+    BS bsSelected = (selectDisplayTrue ? vwr.bsA() : null);
     boolean needTranslucent = false;
     g3d.addRenderer(T.circle);
     for (int i = ms.getAtomCount(); --i >= 0;) {
@@ -89,10 +89,10 @@ public class HalosRenderer extends ShapeRenderer {
   boolean render1(Atom atom) {
     short colixFill = (mad == -2 ? 0 : C.getColixTranslucent3(colix, true, 0.5f));
     boolean needTranslucent = (mad != -2);
-    if (!g3d.setColix(colix)) {
+    if (!g3d.setC(colix)) {
       needTranslucent = true;
       colix = 0;
-      if (colixFill == 0 || !g3d.setColix(colixFill))
+      if (colixFill == 0 || !g3d.setC(colixFill))
         return needTranslucent;      
     }
     int z = atom.sZ;

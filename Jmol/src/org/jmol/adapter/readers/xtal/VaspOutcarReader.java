@@ -250,9 +250,9 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
         gibbsEnergy.floatValue());
     asc.setAtomSetAuxiliaryInfo("Energy", gibbsEnergy);
     asc.setAtomSetAuxiliaryInfo("Entropy", gibbsEntropy);
-    asc.setAtomSetCollectionAuxiliaryInfo("Energy", gibbsEnergy);
+    asc.setInfo("Energy", gibbsEnergy);
     asc
-        .setAtomSetCollectionAuxiliaryInfo("Entropy", gibbsEntropy);
+        .setInfo("Entropy", gibbsEntropy);
     asc.setAtomSetName("G = " + gibbsEnergy + " eV, T*S = "
         + gibbsEntropy + " eV");
   }
@@ -278,15 +278,15 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
     asc.setAtomSetName("Temp. = " + DF.formatDecimal((temp), 2)
         + " K, Energy = " + totEne + " eV");
     asc.setAtomSetAuxiliaryInfo("Energy", totEne);
-    asc.setAtomSetCollectionAuxiliaryInfo("Energy", totEne);
+    asc.setInfo("Energy", totEne);
     asc.setAtomSetAuxiliaryInfo("EleEnergy", kinEne);
-    asc.setAtomSetCollectionAuxiliaryInfo("EleEnergy",
+    asc.setInfo("EleEnergy",
         electronEne);
     asc.setAtomSetAuxiliaryInfo("Kinetic", electronEne);
-    asc.setAtomSetCollectionAuxiliaryInfo("Kinetic", kinEne);
+    asc.setInfo("Kinetic", kinEne);
     asc.setAtomSetAuxiliaryInfo("Temperature",
         DF.formatDecimal((temp), 2));
-    asc.setAtomSetCollectionAuxiliaryInfo("Temperature",
+    asc.setInfo("Temperature",
         DF.formatDecimal((temp), 2));
   }
 
@@ -324,7 +324,7 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
    */
   private void readFrequency() throws Exception {
 
-    int pt = asc.currentAtomSetIndex;
+    int pt = asc.iSet;
     asc.baseSymmetryAtomCount = ac;
 
     if (isVersion5) {
@@ -341,7 +341,7 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
       int iAtom0 = asc.ac;
       cloneLastAtomSet(ac, null);
       if (!ignore[0]) {
-        asc.currentAtomSetIndex = ++pt;
+        asc.iSet = ++pt;
         asc.setAtomSetFrequency(null, null,
             line.substring(line.indexOf("2PiTHz") + 6, line.indexOf("c") - 1)
                 .trim(), null);

@@ -329,7 +329,7 @@ public class CifReader extends AtomSetCollectionReader implements
     finalizeReaderASCR();
     String header = parser.getFileHeader();
     if (header.length() > 0)
-      asc.setAtomSetCollectionAuxiliaryInfo("fileHeader", header);
+      asc.setInfo("fileHeader", header);
     if (haveAromatic)
       addJmolScript("calculate aromatic");
   }
@@ -391,7 +391,7 @@ public class CifReader extends AtomSetCollectionReader implements
 
   private void nextAtomSet() {
     asc.setAtomSetAuxiliaryInfo("isCIF", Boolean.TRUE);
-    if (asc.currentAtomSetIndex >= 0) {
+    if (asc.iSet >= 0) {
       // note that there can be problems with multi-data mmCIF sets each with
       // multiple models; and we could be loading multiple files!
       asc.newAtomSet();
@@ -413,7 +413,7 @@ public class CifReader extends AtomSetCollectionReader implements
     if (type.equals("name")) {
       chemicalName = data = parser.fullTrim(data);
       if (!data.equals("?"))
-        asc.setAtomSetCollectionAuxiliaryInfo("modelLoadNote",
+        asc.setInfo("modelLoadNote",
             data);
     } else if (type.equals("structuralFormula")) {
       thisStructuralFormula = data = parser.fullTrim(data);
@@ -1430,7 +1430,7 @@ public class CifReader extends AtomSetCollectionReader implements
               + atoms[i].atomName + " " + atoms[i]);
       }
       asc.setAtomSetAuxiliaryInfo("notionalUnitcell", null);
-      if (nMolecular++ == asc.currentAtomSetIndex) {
+      if (nMolecular++ == asc.iSet) {
         asc
             .clearGlobalBoolean(AtomSetCollection.GLOBAL_FRACTCOORD);
         asc.clearGlobalBoolean(AtomSetCollection.GLOBAL_SYMMETRY);

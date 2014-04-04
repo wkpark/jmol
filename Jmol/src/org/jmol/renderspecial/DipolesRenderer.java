@@ -124,9 +124,9 @@ public class DipolesRenderer extends ShapeRenderer {
     for (int i = 0; i < 6; i++)
       points[i].add(offset);
     for (int i = 0; i < 6; i++)
-      vwr.transformPtScr(points[i], screens[i]);
-    vwr.transformPt3f(points[cross], cross0);
-    vwr.transformPt3f(points[crossEnd], cross1);
+      tm.transformPtScr(points[i], screens[i]);
+    tm.transformPt3f(points[cross], cross0);
+    tm.transformPt3f(points[crossEnd], cross1);
     mad = dipole.mad;
     float d = vwr.scaleToScreen(screens[center].z, mad);
     diameter = (int) d;
@@ -156,7 +156,7 @@ public class DipolesRenderer extends ShapeRenderer {
     }
     colix = colixA;
     if (colix == colixB) {
-      if (!g3d.setColix(colix))
+      if (!g3d.setC(colix))
         return true;
       g3d.fillCylinder(GData.ENDCAPS_OPEN, diameter,
           screens[cylinderBase], screens[arrowHeadBase]);
@@ -168,7 +168,7 @@ public class DipolesRenderer extends ShapeRenderer {
       return false;
     }
     boolean needTranslucent = false;
-    if (g3d.setColix(colix)) {
+    if (g3d.setC(colix)) {
       g3d.fillCylinder(GData.ENDCAPS_OPEN, diameter,
           screens[cylinderBase], screens[center]);
       if (!dipole.noCross)
@@ -178,7 +178,7 @@ public class DipolesRenderer extends ShapeRenderer {
       needTranslucent = true;
     }
     colix = colixB;
-    if (g3d.setColix(colix)) {
+    if (g3d.setC(colix)) {
       g3d.fillCylinder(GData.ENDCAPS_OPENEND, diameter, screens[center],
           screens[arrowHeadBase]);
       g3d.fillConeScreen(GData.ENDCAPS_FLAT, headWidthPixels,

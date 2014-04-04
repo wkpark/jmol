@@ -6,6 +6,7 @@ class UFFDistanceCalc extends Calculation {
 
   double r0, kb;
 
+  @Override
   void setData(Lst<Object[]> calc, int ia, int ib, double bondOrder) {
     calcs.parA = (FFParam) calcs.getParameter(calcs.minAtoms[ia].sType);
     calcs.parB = (FFParam) calcs.getParameter(calcs.minAtoms[ib].sType);

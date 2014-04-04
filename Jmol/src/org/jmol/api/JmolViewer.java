@@ -614,6 +614,5 @@ abstract public class JmolViewer implements JSInterface {
     // TODO
     
   }
-  
 }
 

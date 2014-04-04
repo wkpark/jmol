@@ -473,7 +473,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
     int nPoints = m.count;
     for (int i = 1; i <= nPoints; i++) {
       int atomIndex = m.getAtomIndex(i);
-      points.addLast(atomIndex >= 0 ? (Object) vwr.getAtomBits(T.atomno,
+      points.addLast(atomIndex >= 0 ? (Object) vwr.ms.getAtoms(T.atomno,
           Integer.valueOf(atoms[atomIndex].getAtomNumber())) : (Object) m
           .getAtom(i));
     }

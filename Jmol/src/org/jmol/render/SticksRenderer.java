@@ -81,7 +81,7 @@ public class SticksRenderer extends FontLineShapeRenderer {
     isPass2 = g3d.isPass2();
     if (!isPass2)
       bsForPass2.clearAll();
-    slabbing = vwr.getSlabEnabled();
+    slabbing = tm.slabEnabled;
     slabByAtom = vwr.getBoolean(T.slabbyatom);
     endcaps = GData.ENDCAPS_SPHERICAL;
     dashDots = (vwr.getBoolean(T.partialdots) ? sixdots : dashes);
@@ -122,7 +122,7 @@ public class SticksRenderer extends FontLineShapeRenderer {
     multipleBondRadiusFactor = (isPymol ? 0.4f : vwr.getFloat(T.multiplebondradiusfactor));    
     if (multipleBondSpacing == 0 && isCartesianExport)
       multipleBondSpacing = 0.2f;
-    modeMultipleBond = vwr.getModeMultipleBond();
+    modeMultipleBond = vwr.g.modeMultipleBond;
     showMultipleBonds = (multipleBondSpacing != 0
         && modeMultipleBond != JC.MULTIBOND_NEVER
         && vwr.getBoolean(T.showmultiplebonds));
@@ -188,7 +188,7 @@ public class SticksRenderer extends FontLineShapeRenderer {
       boolean doB = !C.isColixTranslucent(colixB);
       if (!doA || !doB) {
         if (!doA && !doB && !needTranslucent) {
-          g3d.setColix(!doA ? colixA : colixB);
+          g3d.setC(!doA ? colixA : colixB);
           return true;
         }
         needTranslucent = true;
@@ -341,8 +341,8 @@ public class SticksRenderer extends FontLineShapeRenderer {
           // bypass screen rendering and just use the atoms themselves
           g3d.drawBond(p1, p2, colixA, colixB, endcaps, mad, -2);
         } else {
-          vwr.transformPtScr(p1, s1);
-          vwr.transformPtScr(p2, s2);
+          tm.transformPtScr(p1, s1);
+          tm.transformPtScr(p2, s2);
           if (isDashed)
             drawDashed(s1.x, s1.y, s1.z, s2.x, s2.y, s2.z, dashDots);
           else

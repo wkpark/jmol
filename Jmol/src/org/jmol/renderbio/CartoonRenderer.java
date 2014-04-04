@@ -195,7 +195,7 @@ public class CartoonRenderer extends RocketsRenderer {
       return;
     }
     nucleotide.getBaseRing6Points(rPt);
-    vwr.transformPoints(6, rPt, rScr);
+    tm.transformPoints(6, rPt, rScr);
     if (!ladderOnly)
       renderRing6();
     P3i stepScreen;
@@ -212,7 +212,7 @@ public class CartoonRenderer extends RocketsRenderer {
         stepScreen = rScr[2]; // N1
         stepPt = rPt[2];
       } else {
-        vwr.transformPoints(5, rPt5, rScr5);
+        tm.transformPoints(5, rPt5, rScr5);
         renderRing5();
         stepScreen = rScr5[3]; // N9
         stepPt = rPt5[3];
@@ -244,7 +244,7 @@ public class CartoonRenderer extends RocketsRenderer {
       for (int i = 0; i < 5; i++) 
         c.add(rPt[i]);
       c.scale(0.2f);
-      vwr.transformPoints(10, rPt, rScr);
+      tm.transformPoints(10, rPt, rScr);
       renderRibose();
       renderEdge(rScr, rPt, 2, 5); // C3' - O3'
       renderEdge(rScr, rPt, 3, 6); // C4' - C5' 
@@ -272,7 +272,7 @@ public class CartoonRenderer extends RocketsRenderer {
 
     if (!nucleotide.getEdgePoints(rPt))
       return;
-    vwr.transformPoints(6, rPt, rScr);
+    tm.transformPoints(6, rPt, rScr);
     renderTriangle(rScr, rPt, 2, 3, 4, true);
     mad = (short) (thisMad > 1 ? thisMad / 2 : thisMad);
     renderEdge(rScr, rPt, 0, 1);
@@ -285,11 +285,11 @@ public class CartoonRenderer extends RocketsRenderer {
         isTranslucent, tl);
     short colixHoogsteenEdge = C.getColixTranslucent3(C.BLUE,
         isTranslucent, tl);
-    g3d.setColix(colixSugarEdge);
+    g3d.setC(colixSugarEdge);
     renderEdge(rScr, rPt, 2, 3);
-    g3d.setColix(colixWatsonCrickEdge);
+    g3d.setC(colixWatsonCrickEdge);
     renderEdge(rScr, rPt, 3, 4);
-    g3d.setColix(colixHoogsteenEdge);
+    g3d.setC(colixHoogsteenEdge);
     renderEdge(rScr, rPt, 4, 5);
   }
 

@@ -314,7 +314,7 @@ public class LcaoCartoon extends Isosurface {
       setPropI((isRadical ? "radical" : isLonePair ? "lonePair" : "lcaoCartoon"), axes, null);
     }
     if (isCpk) {
-      short colix = vwr.getModelSet().getAtomColix(iAtom);
+      short colix = vwr.ms.getAtomColix(iAtom);
       if (C.isColixTranslucent(colix)) {
         setPropI("translucentLevel", Float.valueOf(C.getColixTranslucencyLevel(colix)), null);
         setPropI("translucency", "translucent", null);

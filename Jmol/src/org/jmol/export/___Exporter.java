@@ -50,6 +50,7 @@ import org.jmol.util.GData;
 import org.jmol.util.Logger;
 import org.jmol.util.MeshSurface;
 import org.jmol.viewer.StateManager;
+import org.jmol.viewer.TransformManager;
 import org.jmol.viewer.Viewer;
 
 
@@ -136,6 +137,7 @@ public abstract class ___Exporter {
   // generally useful functionality:
 
   protected Viewer vwr;
+  protected TransformManager tm;
   protected double privateKey;
   protected JmolRendererInterface jmolRenderer;
   protected OC out;
@@ -202,11 +204,12 @@ public abstract class ___Exporter {
   protected boolean initOutput(Viewer vwr, double privateKey, GData g3d,
                              Map<String, Object> params) {
     this.vwr = vwr;
+    tm = vwr.tm;
     isWebGL = params.get("type").equals("JS");
     this.g3d = g3d;
     this.privateKey = privateKey;
     backgroundColix = vwr.getObjectColix(StateManager.OBJ_BACKGROUND);
-    center.setT(vwr.getRotationCenter());
+    center.setT(tm.getRotationCenter());
     exportScale = vwr.getFloat(T.exportscale);
 
     if ((screenWidth <= 0) || (screenHeight <= 0)) {
@@ -285,7 +288,7 @@ public abstract class ___Exporter {
     sb.append("\n").append(commentChar).append("center: " + center);
     sb.append("\n").append(commentChar).append("rotationRadius: " + vwr.getFloat(T.rotationradius));
     sb.append("\n").append(commentChar).append("boundboxCenter: " + vwr.getBoundBoxCenter());
-    sb.append("\n").append(commentChar).append("translationOffset: " + vwr.getTranslationScript());
+    sb.append("\n").append(commentChar).append("translationOffset: " + tm.getTranslationScript());
     sb.append("\n").append(commentChar).append("zoom: " + vwr.getZoomPercentFloat());
     sb.append("\n").append(commentChar).append("moveto command: " + vwr.getOrientationText(T.moveto, null));
     sb.append("\n");
@@ -571,7 +574,7 @@ public abstract class ___Exporter {
   void plotImage(int x, int y, int z, Object image, short bgcolix, int width,
                  int height) {
     if (z < 3)
-      z = vwr.getFrontPlane();
+      z = (int) tm.cameraDistance;
     outputComment("start image " + (++nImage));
     g3d.plotImage(x, y, z, image, jmolRenderer, bgcolix, width, height);
     outputComment("end image " + nImage);
@@ -583,7 +586,7 @@ public abstract class ___Exporter {
     // the bitmap, but then output to jmolRenderer, which returns control
     // here via drawPixel.
     if (z < 3)
-      z = vwr.getFrontPlane();
+      z = (int) tm.cameraDistance;
     outputComment("start text " + (++nText) + ": " + text);
     g3d.plotText(x, y, z, g3d.getColorArgbOrGray(colix), 0, text, font3d, jmolRenderer);
     outputComment("end text " + nText + ": " + text);

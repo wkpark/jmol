@@ -450,27 +450,27 @@ import javajs.util.P3;
         lo = 0;
         hi = thisScale.length;
       }
-      return thisScale[quantize(val, lo, hi, n)];
+      return thisScale[quantize4(val, lo, hi, n)];
     case BW:
-      return getPaletteBW()[quantize(val, lo, hi, n)];
+      return getPaletteBW()[quantize4(val, lo, hi, n)];
     case WB:
-      return getPaletteWB()[quantize(val, lo, hi, n)];
+      return getPaletteWB()[quantize4(val, lo, hi, n)];
     case ROYGB:
-      return ce.argbsRoygb[quantize(val, lo, hi, n)];
+      return ce.argbsRoygb[quantize4(val, lo, hi, n)];
     case BGYOR:
-      return ce.argbsRoygb[quantize(-val, -hi, -lo, n)];
+      return ce.argbsRoygb[quantize4(-val, -hi, -lo, n)];
     case LOW:
-      return ce.argbsRoygb[quantize(val, lo, hi, n)];
+      return ce.argbsRoygb[quantize4(val, lo, hi, n)];
     case HIGH:
-      return ce.argbsRoygb[ce.ihalf + quantize(val, lo, hi, n) * 2];
+      return ce.argbsRoygb[ce.ihalf + quantize4(val, lo, hi, n) * 2];
     case RWB:
-      return ce.argbsRwb[quantize(val, lo, hi, n)];
+      return ce.argbsRwb[quantize4(val, lo, hi, n)];
     case BWR:
-      return ce.argbsRwb[quantize(-val, -hi, -lo, n)];
+      return ce.argbsRwb[quantize4(-val, -hi, -lo, n)];
     case USER:
-      return (ce.userScale.length == 0 ? GRAY : ce.userScale[quantize(val, lo, hi, n)]);
+      return (ce.userScale.length == 0 ? GRAY : ce.userScale[quantize4(val, lo, hi, n)]);
     case RESU:
-      return (ce.userScale.length == 0 ? GRAY : ce.userScale[quantize(-val, -hi, -lo, n)]);
+      return (ce.userScale.length == 0 ? GRAY : ce.userScale[quantize4(-val, -hi, -lo, n)]);
     case JMOL:
       return ce.argbsCpk[colorIndex(val, n)];
     case RASMOL:
@@ -517,17 +517,6 @@ import javajs.util.P3;
     Map<String, Object> info = new Hashtable<String, Object>();
     int segmentCount = getPaletteColorCount(currentPalette);
     Lst<P3> colors = new  Lst<P3>();//segmentCount);
-/*    
-    boolean isReverse = isReversed;
-    
-    switch (currentPalette) {
-    case BGYOR:
-    case BWR:
-    case RESU:
-      isReverse = !isReverse;
-      break;
-    }
-    */
     float[] values = new float[segmentCount + 1];
     float quantum = (hi - lo) / segmentCount;
     float f = quantum * (isReversed ? -0.5f : 0.5f);
@@ -544,6 +533,12 @@ import javajs.util.P3;
     info.put("reversed", Boolean.valueOf(isReversed));
     info.put("name", getCurrentColorSchemeName());
     return info;
+  }
+
+  public String getColorScheme() {
+    return (isTranslucent ? "translucent " : "")
+        + (currentPalette < 0 ? getColorSchemeList(getColorSchemeArray(currentPalette))
+            : getColorSchemeName(currentPalette));
   }
 
   /**
@@ -658,7 +653,7 @@ import javajs.util.P3;
     return (x <= 0 ? lo : x >= 1 ? hi : lo + (hi - lo) * x);
   }
   
-  public final static int quantize(float val, float lo, float hi, int segmentCount) {
+  public final static int quantize4(float val, float lo, float hi, int segmentCount) {
     /* oy! Say you have an array with 10 values, so segmentCount=10
      * then we expect 0,1,2,...,9  EVENLY
      * If f = fractional distance from lo to hi, say 0.0 to 10.0 again,
@@ -719,22 +714,6 @@ import javajs.util.P3;
   private final static int colorIndexRepeat(float q, int segmentCount) {
     int i = (int) Math.floor(q <= 0 ? 0 : q);
     return i % segmentCount;
-  }
-//  static {
-//    for (int i = 0; i < 10; i++) {
-//      System.out.println(i + " " + quantize(i, 0, 10, 10));
-//    }
-//    for (int i = -10; i < 0; i++) {
-//      System.out.println((i) + " " + quantize(i, -10, 0, 10));
-//    }
-//    System.out.println("ColorEncoder test");
-//  }
-
-
-  public String getColorScheme() {
-    return (isTranslucent ? "translucent " : "")
-        + (currentPalette < 0 ? getColorSchemeList(getColorSchemeArray(currentPalette))
-            : getColorSchemeName(currentPalette));
   }
 
 }

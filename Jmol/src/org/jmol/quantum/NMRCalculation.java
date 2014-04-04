@@ -102,7 +102,7 @@ public class NMRCalculation implements JmolNMRInterface {
   private Lst<Tensor> getInteractionTensorList(String type, BS bsA) {
     if (type != null)
       type = type.toLowerCase();
-    BS bsModels = vwr.getModelBitSet(bsA, false);
+    BS bsModels = vwr.ms.getModelBS(bsA, false);
     BS bs1 = getAtomSiteBS(bsA);
     int iAtom = (bs1.cardinality() == 1 ? bs1.nextSetBit(0) : -1);
     Lst<Tensor> list = new Lst<Tensor>();

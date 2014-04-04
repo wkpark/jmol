@@ -674,7 +674,7 @@ public class GData implements JmolGraphicsInterface {
    * @param colix  
    * @return TRUE if correct pass (translucent or opaque)
    */
-  public boolean setColix(short colix) {    
+  public boolean setC(short colix) {    
     return true;
   }
 

@@ -454,9 +454,9 @@ class SpartanArchive {
     }
     //Logger.debug(keyName + " = " + value + " ; " + vector);
     if (value != null)
-      r.asc.setAtomSetCollectionAuxiliaryInfo(keyName, value);
+      r.asc.setInfo(keyName, value);
     if (vector.size() != 0)
-      r.asc.setAtomSetCollectionAuxiliaryInfo(keyName, vector);
+      r.asc.setInfo(keyName, vector);
   }
 
   // Logger.debug("reading property line:" + line);
@@ -491,7 +491,7 @@ class SpartanArchive {
         r.asc.setAtomSetFrequency(null, label, "" + freq, null);
       }
     }
-    r.asc.setAtomSetCollectionAuxiliaryInfo("VibFreqs", freqs);
+    r.asc.setInfo("VibFreqs", freqs);
     int ac = r.asc.getFirstAtomSetAtomCount();
     Lst<Lst<Float>> vib = new  Lst<Lst<Float>>();
     Lst<Float> vibatom = new  Lst<Float>();
@@ -524,7 +524,7 @@ class SpartanArchive {
         }
       }
     }
-    r.asc.setAtomSetCollectionAuxiliaryInfo("vibration", vibrations);
+    r.asc.setInfo("vibration", vibrations);
   }
 
   @SuppressWarnings("unchecked")
@@ -559,7 +559,7 @@ class SpartanArchive {
       r.asc.setAtomSetModelProperty("Frequency", freq + " cm^-1");
       r.asc.setAtomSetModelProperty(SmarterJmolAdapter.PATH_KEY, "Frequencies");
     }
-    r.asc.setAtomSetCollectionAuxiliaryInfo("VibFreqs", freqs);
+    r.asc.setInfo("VibFreqs", freqs);
     int ac = r.asc.getFirstAtomSetAtomCount();
     int iatom = ac; // add vibrations starting at second atomset
     for (int i = 0; i < frequencyCount; i++) {
@@ -581,7 +581,7 @@ class SpartanArchive {
       }
       vibrations.addLast(vib);
     }
-    r.asc.setAtomSetCollectionAuxiliaryInfo("vibration", vibrations);
+    r.asc.setInfo("vibration", vibrations);
   }
 
   private String getQuotedString(String strQuote) {

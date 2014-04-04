@@ -493,7 +493,7 @@ public class Symmetry implements SymmetryInterface {
     if (spaceGroup == null) {
       if (modelIndex <= 0)
         modelIndex = (pt1 instanceof Atom ? ((Atom) pt1).mi
-            : modelSet.vwr.getCurrentModelIndex());
+            : modelSet.vwr.am.cmi);
       boolean isBio = false;
       if (modelIndex < 0)
         strOperations = "no single current model";
@@ -505,14 +505,14 @@ public class Symmetry implements SymmetryInterface {
         info.put("spaceGroupInfo", strOperations);
         info.put("symmetryInfo", "");
       } else if (pt1 == null && drawID == null && symOp != 0) {
-        info = (Map<String, Object>) modelSet.getModelAuxiliaryInfoValue(
+        info = (Map<String, Object>) modelSet.getInfo(
             modelIndex, "spaceGroupInfo");
       }
       if (info != null)
         return info;
       info = new Hashtable<String, Object>();
       if (pt1 == null && drawID == null && symOp == 0)
-        modelSet.setModelAuxiliaryInfo(modelIndex, "spaceGroupInfo", info);
+        modelSet.setInfo(modelIndex, "spaceGroupInfo", info);
       spaceGroup = cellInfo.getSpaceGroupName();
       String[] list = cellInfo.getSymmetryOperations();
       SpaceGroup sg = (isBio ? ((Symmetry) cellInfo).spaceGroup : null);

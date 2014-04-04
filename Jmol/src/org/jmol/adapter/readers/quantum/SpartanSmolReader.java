@@ -185,7 +185,7 @@ public class SpartanSmolReader extends SpartanInputReader {
         titles.put("Title" + parseIntRange(line, 0, pt), (line
             .substring(pt + 1).trim()));
     }
-    asc.setAtomSetCollectionAuxiliaryInfo("fileHeader", header
+    asc.setInfo("fileHeader", header
         .toString());
   }
 

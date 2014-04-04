@@ -224,7 +224,7 @@ void processAtomicCharges() throws Exception {
   private void readFrequencies() throws Exception {
     
     BS bsOK = new BS();
-    int n0 = asc.currentAtomSetIndex + 1;
+    int n0 = asc.iSet + 1;
     String[] tokens;
 
     boolean done = false;
@@ -275,7 +275,7 @@ void processAtomicCharges() throws Exception {
     for (int i = 0, n = n0; i < vibrationNumber; i++) {
       if (!bsOK.get(i))
         continue;
-      asc.currentAtomSetIndex = n++;
+      asc.iSet = n++;
       asc.setAtomSetFrequency(null, info[i][2], info[i][0], null);
     }
   }

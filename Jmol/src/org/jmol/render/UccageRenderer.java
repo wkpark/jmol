@@ -57,7 +57,7 @@ public class UccageRenderer extends CageRenderer {
     imageFontScaling = vwr.getImageFontScaling();
     font3d = g3d.getFont3DScaled(((Uccage) shape).font3d, imageFontScaling);
     int mad = vwr.getObjectMad(StateManager.OBJ_UNITCELL);
-    if (mad == 0 || vwr.isJmolDataFrame() || vwr.isNavigating()
+    if (mad == 0 || vwr.isJmolDataFrame() || tm.isNavigating()
         && vwr.getBoolean(T.navigationperiodic))
       return false;
     colix = vwr.getObjectColix(StateManager.OBJ_UNITCELL);
@@ -76,7 +76,7 @@ public class UccageRenderer extends CageRenderer {
   private P3 offsetT = new P3();
   
   private void render1(int mad) {
-    g3d.setColix(colix);
+    g3d.setC(colix);
     SymmetryInterface unitcell = vwr.getCurrentUnitCell();
     if (unitcell == null)
       return;
@@ -140,7 +140,7 @@ public class UccageRenderer extends CageRenderer {
 
   private void renderInfo(SymmetryInterface symmetry) {
     if (isExport
-        || !g3d.setColix(vwr.getColixBackgroundContrast()))
+        || !g3d.setC(vwr.getColixBackgroundContrast()))
       return;
     fid = g3d.getFontFidFS("Monospaced", 14 * imageFontScaling);
 

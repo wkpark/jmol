@@ -186,7 +186,7 @@ public class MolReader extends AtomSetCollectionReader {
     dimension = (line.length() < 22 ? "3D" : line.substring(20,22));
     if (!allow2D && dimension.equals("2D"))
       throw new Exception("File is 2D, not 3D");
-    asc.setAtomSetCollectionAuxiliaryInfo("dimension", dimension);
+    asc.setInfo("dimension", dimension);
     //line 3: comment
     rd();
     if (line == null)
@@ -194,7 +194,7 @@ public class MolReader extends AtomSetCollectionReader {
     header += line + "\n";
     Logger.info(header);
     checkCurrentLineForScript();
-    asc.setAtomSetCollectionAuxiliaryInfo("fileHeader", header);
+    asc.setInfo("fileHeader", header);
     newAtomSet(thisDataSetName);
   }
 

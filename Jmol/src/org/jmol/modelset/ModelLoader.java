@@ -154,29 +154,29 @@ public final class ModelLoader {
 
   @SuppressWarnings("unchecked")
   private void initializeInfo(String name, Map<String, Object> info) {
-    ms.g3d = vwr.getGraphicsData();
+    ms.g3d = vwr.gdata;
     //long timeBegin = System.currentTimeMillis();
     ms.modelSetTypeName = name;
     ms.isXYZ = (name == "xyz");
-    ms.modelSetAuxiliaryInfo = info;
+    ms.msInfo = info;
     ms.modelSetProperties = (Properties) ms
-        .getModelSetAuxiliaryInfoValue("properties");
+        .getInfoM("properties");
     //isMultiFile = getModelSetAuxiliaryInfoBoolean("isMultiFile"); -- no longer necessary
-    isPDB = ms.isPDB = ms.getModelSetAuxiliaryInfoBoolean("isPDB");
+    isPDB = ms.isPDB = ms.getMSInfoB("isPDB");
     if (isPDB) {
       jbr = (JmolBioResolver) Interface
           .getInterface("org.jmol.modelsetbio.Resolver");
       jbr.initialize(this);
     }
-    jmolData = (String) ms.getModelSetAuxiliaryInfoValue("jmolData");
-    fileHeader = (String) ms.getModelSetAuxiliaryInfoValue("fileHeader");
+    jmolData = (String) ms.getInfoM("jmolData");
+    fileHeader = (String) ms.getInfoM("fileHeader");
     ms.trajectorySteps = (Lst<P3[]>) ms
-        .getModelSetAuxiliaryInfoValue("trajectorySteps");
+        .getInfoM("trajectorySteps");
     isTrajectory = (ms.trajectorySteps != null);
-    isPyMOLsession = ms.getModelSetAuxiliaryInfoBoolean("isPyMOL");
+    isPyMOLsession = ms.getMSInfoB("isPyMOL");
     doAddHydrogens = (jbr != null && !isTrajectory && !isPyMOLsession
-        && !ms.getModelSetAuxiliaryInfoBoolean("pdbNoHydrogens") && (ms
-        .getModelSetAuxiliaryInfoBoolean("pdbAddHydrogens") || vwr
+        && !ms.getMSInfoB("pdbNoHydrogens") && (ms
+        .getMSInfoB("pdbAddHydrogens") || vwr
         .getBooleanProperty("pdbAddHydrogens")));
     if (info != null) {
       info.remove("pdbNoHydrogens");
@@ -185,36 +185,36 @@ public final class ModelLoader {
       if (isTrajectory)
         ms.vibrationSteps = (Lst<V3[]>) info.remove("vibrationSteps");
     }
-    modulationOn = ms.getModelSetAuxiliaryInfoBoolean("modulationOn");
-    noAutoBond = ms.getModelSetAuxiliaryInfoBoolean("noAutoBond");
-    is2D = ms.getModelSetAuxiliaryInfoBoolean("is2D");
-    doMinimize = is2D && ms.getModelSetAuxiliaryInfoBoolean("doMinimize");
+    modulationOn = ms.getMSInfoB("modulationOn");
+    noAutoBond = ms.getMSInfoB("noAutoBond");
+    is2D = ms.getMSInfoB("is2D");
+    doMinimize = is2D && ms.getMSInfoB("doMinimize");
     adapterTrajectoryCount = (ms.trajectorySteps == null ? 0
         : ms.trajectorySteps.size());
     ms.someModelsHaveSymmetry = ms
-        .getModelSetAuxiliaryInfoBoolean("someModelsHaveSymmetry");
+        .getMSInfoB("someModelsHaveSymmetry");
     someModelsHaveUnitcells = ms
-        .getModelSetAuxiliaryInfoBoolean("someModelsHaveUnitcells");
+        .getMSInfoB("someModelsHaveUnitcells");
     someModelsAreModulated = ms
-        .getModelSetAuxiliaryInfoBoolean("someModelsAreModulated");
+        .getMSInfoB("someModelsAreModulated");
     ms.someModelsHaveFractionalCoordinates = ms
-        .getModelSetAuxiliaryInfoBoolean("someModelsHaveFractionalCoordinates");
+        .getMSInfoB("someModelsHaveFractionalCoordinates");
     if (merging) {
       ms.isPDB |= mergeModelSet.isPDB;
       ms.someModelsHaveSymmetry |= mergeModelSet
-          .getModelSetAuxiliaryInfoBoolean("someModelsHaveSymmetry");
+          .getMSInfoB("someModelsHaveSymmetry");
       someModelsHaveUnitcells |= mergeModelSet
-          .getModelSetAuxiliaryInfoBoolean("someModelsHaveUnitcells");
+          .getMSInfoB("someModelsHaveUnitcells");
       ms.someModelsHaveFractionalCoordinates |= mergeModelSet
-          .getModelSetAuxiliaryInfoBoolean("someModelsHaveFractionalCoordinates");
+          .getMSInfoB("someModelsHaveFractionalCoordinates");
       ms.someModelsHaveAromaticBonds |= mergeModelSet.someModelsHaveAromaticBonds;
-      ms.modelSetAuxiliaryInfo.put("someModelsHaveSymmetry",
+      ms.msInfo.put("someModelsHaveSymmetry",
           Boolean.valueOf(ms.someModelsHaveSymmetry));
-      ms.modelSetAuxiliaryInfo.put("someModelsHaveUnitcells",
+      ms.msInfo.put("someModelsHaveUnitcells",
           Boolean.valueOf(someModelsHaveUnitcells));
-      ms.modelSetAuxiliaryInfo.put("someModelsHaveFractionalCoordinates",
+      ms.msInfo.put("someModelsHaveFractionalCoordinates",
           Boolean.valueOf(ms.someModelsHaveFractionalCoordinates));
-      ms.modelSetAuxiliaryInfo.put("someModelsHaveAromaticBonds",
+      ms.msInfo.put("someModelsHaveAromaticBonds",
           Boolean.valueOf(ms.someModelsHaveAromaticBonds));
     }
   }
@@ -236,8 +236,8 @@ public final class ModelLoader {
     return firstAtomIndexes[iGroup];
   }
   
-  private int currentModelIndex;
-  private Model currentModel;
+  private int iModel;
+  private Model model;
   private int currentChainID;
   private boolean isNewChain;
   private Chain currentChain;
@@ -281,8 +281,8 @@ public final class ModelLoader {
     currentChain = null;
     currentGroupInsertionCode = '\uFFFF';
     currentGroup3 = "xxxxx";
-    currentModelIndex = -1;
-    currentModel = null;
+    iModel = -1;
+    model = null;
     if (merging) {
       baseModelCount = mergeModelSet.mc;
       baseTrajectoryCount = mergeModelSet.mergeTrajectories(isTrajectory);
@@ -317,7 +317,7 @@ public final class ModelLoader {
             + " in this collection. Use getProperty \"modelInfo\" or"
             + " getProperty \"auxiliaryInfo\" to inspect them.");
       }
-      Quat q = (Quat) ms.getModelSetAuxiliaryInfoValue("defaultOrientationQuaternion");
+      Quat q = (Quat) ms.getInfoM("defaultOrientationQuaternion");
       if (q != null) {
         Logger.info("defaultOrientationQuaternion = " + q);
         Logger
@@ -329,9 +329,9 @@ public final class ModelLoader {
       if (merging && !appendNew) {
         Map<String, Object> info = adapter.getAtomSetAuxiliaryInfo(
             asc, 0);
-        ms.setModelAuxiliaryInfo(baseModelIndex, "initialAtomCount", info
+        ms.setInfo(baseModelIndex, "initialAtomCount", info
             .get("initialAtomCount"));
-        ms.setModelAuxiliaryInfo(baseModelIndex, "initialBondCount", info
+        ms.setInfo(baseModelIndex, "initialBondCount", info
             .get("initialBondCount"));
       }
       initializeUnitCellAndSymmetry();
@@ -358,7 +358,7 @@ public final class ModelLoader {
     
     setDefaultRendering(vwr.getInt(T.smallmoleculemaxatoms));
 
-    RadiusData rd = vwr.getDefaultRadiusData();
+    RadiusData rd = vwr.rd;
     int ac = ms.ac;
     Atom[] atoms = ms.at;
     for (int i = baseAtomIndex; i < ac; i++)
@@ -392,11 +392,11 @@ public final class ModelLoader {
       return;
     sb.append("select *;");
     String script = (String) ms
-        .getModelSetAuxiliaryInfoValue("jmolscript");
+        .getInfoM("jmolscript");
     if (script == null)
       script = "";
     sb.append(script);
-    ms.modelSetAuxiliaryInfo.put("jmolscript", sb.toString());
+    ms.msInfo.put("jmolscript", sb.toString());
   }
 
   @SuppressWarnings("unchecked")
@@ -404,7 +404,7 @@ public final class ModelLoader {
     // Crystal reader, PDB tlsGroup
     int modelCount = ms.mc;
     for (int i = baseModelIndex; i < modelCount; i++) {
-      Map<String, String> atomProperties = (Map<String, String>) ms.getModelAuxiliaryInfoValue(i,
+      Map<String, String> atomProperties = (Map<String, String>) ms.getInfo(i,
           "atomProperties");
       if (atomProperties == null)
         continue;
@@ -433,7 +433,7 @@ public final class ModelLoader {
         baseModelIndex = baseModelCount;
         ms.mc = baseModelCount + adapterModelCount;
       } else {
-        baseModelIndex = vwr.getCurrentModelIndex();
+        baseModelIndex = vwr.am.cmi;
         if (baseModelIndex < 0)
           baseModelIndex = baseModelCount - 1;
         ms.mc = baseModelCount;
@@ -525,13 +525,13 @@ public final class ModelLoader {
           group3Counts[0] = new int[JC.getGroup3Count() + 10];
         }
       }
-      if (ms.getModelAuxiliaryInfoValue(ipt, "periodicOriginXyz") != null)
+      if (ms.getInfo(ipt, "periodicOriginXyz") != null)
         ms.someModelsHaveSymmetry = true;
     }
     Model m = ms.am[baseModelIndex];
-    vwr.setSmilesString((String) ms.modelSetAuxiliaryInfo.get("smilesString"));
-    String loadState = (String) ms.modelSetAuxiliaryInfo.remove("loadState");
-    SB loadScript = (SB)ms.modelSetAuxiliaryInfo.remove("loadScript");
+    vwr.setSmilesString((String) ms.msInfo.get("smilesString"));
+    String loadState = (String) ms.msInfo.remove("loadState");
+    SB loadScript = (SB)ms.msInfo.remove("loadScript");
     if (loadScript.indexOf("Viewer.AddHydrogens") < 0 || !m.isModelKit) {
       String[] lines = PT.split(loadState, "\n");
       SB sb = new SB();
@@ -549,7 +549,7 @@ public final class ModelLoader {
       // fill in the rest of the data
       int n = (ms.mc - ipt + 1);
       Logger.info(n + " trajectory steps read");
-      ms.setModelAuxiliaryInfo(baseModelCount, "trajectoryStepCount", Integer.valueOf(n));
+      ms.setInfo(baseModelCount, "trajectoryStepCount", Integer.valueOf(n));
       for (int ia = adapterModelCount, i = ipt; i < ms.mc; i++, ia++) {
         ms.am[i] = ms.am[baseModelCount];
         ms.modelNumbers[i] = adapter.getAtomSetNumber(asc, ia);
@@ -582,7 +582,7 @@ public final class ModelLoader {
       // set appendNew false
       Object atomInfo = modelAuxiliaryInfo.get("PDB_CONECT_firstAtom_count_max"); 
       if (atomInfo != null)
-        ms.setModelAuxiliaryInfo(modelIndex, "PDB_CONECT_firstAtom_count_max", atomInfo); 
+        ms.setInfo(modelIndex, "PDB_CONECT_firstAtom_count_max", atomInfo); 
     }
     // this next sets the bitset length to avoid 
     // unnecessary calls to System.arrayCopy
@@ -590,20 +590,20 @@ public final class ModelLoader {
     Atom[] atoms = ms.at;
     models[modelIndex].bsAtoms.set(atoms.length + 1);
     models[modelIndex].bsAtoms.clear(atoms.length + 1);
-    String codes = (String) ms.getModelAuxiliaryInfoValue(modelIndex, "altLocs");
+    String codes = (String) ms.getInfo(modelIndex, "altLocs");
     models[modelIndex].setNAltLocs(codes == null ? 0 : codes.length());
     if (codes != null) {
       char[] altlocs = codes.toCharArray();
       Arrays.sort(altlocs);
       codes = String.valueOf(altlocs);
-      ms.setModelAuxiliaryInfo(modelIndex, "altLocs", codes);
+      ms.setInfo(modelIndex, "altLocs", codes);
     }
-    codes = (String) ms.getModelAuxiliaryInfoValue(modelIndex, "insertionCodes");
+    codes = (String) ms.getInfo(modelIndex, "insertionCodes");
     models[modelIndex].setNInsertions(codes == null ? 0 : codes.length());
     boolean isModelKit = (ms.modelSetName != null
         && ms.modelSetName.startsWith("Jmol Model Kit")
         || modelName.startsWith("Jmol Model Kit") || "Jme"
-        .equals(ms.getModelAuxiliaryInfoValue(modelIndex, "fileType")));
+        .equals(ms.getInfo(modelIndex, "fileType")));
     models[modelIndex].isModelKit = isModelKit;
     return modelIsPDB;
   }
@@ -685,9 +685,9 @@ public final class ModelLoader {
     }
     Model[] models = ms.am;
     for (int i = baseModelCount; i < modelCount; ++i) {
-      ms.setModelAuxiliaryInfo(i, "fileType", ms.modelSetTypeName);
+      ms.setInfo(i, "fileType", ms.modelSetTypeName);
       if (fileHeader != null)
-        ms.setModelAuxiliaryInfo(i, "fileHeader", fileHeader);
+        ms.setInfo(i, "fileHeader", fileHeader);
       int filenumber = modelNumbers[i] / 1000000;
       if (filenumber != lastfilenumber) {
         modelnumber = 0;
@@ -718,14 +718,14 @@ public final class ModelLoader {
 
     // this won't do in the case of trajectories
     for (int i = 0; i < modelCount; i++) {
-      ms.setModelAuxiliaryInfo(i, "modelName", modelNames[i]);
-      ms.setModelAuxiliaryInfo(i, "modelNumber", Integer
+      ms.setInfo(i, "modelName", modelNames[i]);
+      ms.setInfo(i, "modelNumber", Integer
           .valueOf(modelNumbers[i] % 1000000));
-      ms.setModelAuxiliaryInfo(i, "modelFileNumber", Integer
+      ms.setInfo(i, "modelFileNumber", Integer
           .valueOf(ms.modelFileNumbers[i]));
-      ms.setModelAuxiliaryInfo(i, "modelNumberDotted", ms
+      ms.setInfo(i, "modelNumberDotted", ms
           .getModelNumberDotted(i));
-      String codes = (String) ms.getModelAuxiliaryInfoValue(i, "altLocs");
+      String codes = (String) ms.getInfo(i, "altLocs");
       if (codes != null) {
         Logger.info("model " + ms.getModelNumberDotted(i)
             + " alternative locations: " + codes);
@@ -751,8 +751,8 @@ public final class ModelLoader {
       int modelIndex = iterAtom.getAtomSetIndex() + baseModelIndex;
       if (modelIndex != iLast) {
         iChain = 0;
-        currentModelIndex = modelIndex;
-        currentModel = models[modelIndex];
+        iModel = modelIndex;
+        model = models[modelIndex];
         currentChainID = Integer.MAX_VALUE;
         isNewChain = true;
         models[modelIndex].bsAtoms.clearAll();
@@ -844,7 +844,7 @@ public final class ModelLoader {
           && "CA".equalsIgnoreCase(group3)) // calcium
         specialAtomID = 0;
     }
-    Atom atom = ms.addAtom(currentModelIndex, nullGroup, atomicAndIsotopeNumber,
+    Atom atom = ms.addAtom(iModel, nullGroup, atomicAndIsotopeNumber,
         atomName, atomSerial, atomSite, xyz, radius, vib, formalCharge, partialCharge, occupancy, bfactor, tensors,
         isHetero, specialAtomID, atomSymmetry);
     atom.setAltLoc(alternateLocationID);
@@ -857,7 +857,7 @@ public final class ModelLoader {
     String group3i = (group3 == null ? null : group3.intern());
     if (chainID != currentChainID) {
       currentChainID = chainID;
-      currentChain = getOrAllocateChain(currentModel, chainID);
+      currentChain = getOrAllocateChain(model, chainID);
       currentGroupInsertionCode = '\uFFFF';
       currentGroupSequenceNumber = -1;
       currentGroup3 = "xxxx";
@@ -1002,15 +1002,15 @@ public final class ModelLoader {
       }
     }
     if (appendNew && ms.someModelsHaveSymmetry) {
-      ms.getAtomBits(T.symmetry, null);
+      ms.getAtoms(T.symmetry, null);
       Atom[] atoms = ms.at;
       for (int iAtom = baseAtomIndex, iModel = -1, i0 = 0; iAtom < ms.ac; iAtom++) {
         if (atoms[iAtom].mi != iModel) {
           iModel = atoms[iAtom].mi;
           i0 = baseAtomIndex
-              + ms.getModelAuxiliaryInfoInt(iModel,
+              + ms.getInfoI(iModel,
                   "presymmetryAtomIndex")
-              + ms.getModelAuxiliaryInfoInt(iModel,
+              + ms.getInfoI(iModel,
                   "presymmetryAtomCount");
         }
         if (iAtom >= i0)
@@ -1052,7 +1052,7 @@ public final class ModelLoader {
     // 2. apply stereochemistry from JME
 
     BS bsExclude = (ms
-        .getModelSetAuxiliaryInfoValue("someModelsHaveCONECT") == null ? null
+        .getInfoM("someModelsHaveCONECT") == null ? null
         : new BS());
     if (bsExclude != null)
       ms.setPdbConectBonding(baseAtomIndex, baseModelIndex, bsExclude);
@@ -1069,14 +1069,14 @@ public final class ModelLoader {
     if (!noAutoBond)
       for (int i = baseModelIndex; i < modelCount; i++) {
         modelAtomCount = models[i].bsAtoms.cardinality();
-        int modelBondCount = ms.getModelAuxiliaryInfoInt(i,
+        int modelBondCount = ms.getInfoI(i,
             "initialBondCount");
 
         boolean modelIsPDB = models[i].isBioModel;
         if (modelBondCount < 0) {
           modelBondCount = ms.bondCount;
         }
-        boolean modelHasSymmetry = ms.getModelAuxiliaryInfoBoolean(i,
+        boolean modelHasSymmetry = ms.getInfoB(i,
             "hasSymmetry");
         // check for PDB file with fewer than one bond per every two atoms
         // this is in case the PDB format is being usurped for non-RCSB uses
@@ -1092,9 +1092,9 @@ public final class ModelLoader {
                 || modelIsPDB
                 && jmolData == null
                 && (ms
-                    .getModelSetAuxiliaryInfoBoolean("havePDBHeaderName") || modelBondCount < modelAtomCount / 2) || modelHasSymmetry
+                    .getMSInfoB("havePDBHeaderName") || modelBondCount < modelAtomCount / 2) || modelHasSymmetry
                 && !symmetryAlreadyAppliedToBonds
-                && !ms.getModelAuxiliaryInfoBoolean(i, "hasBonds")));
+                && !ms.getInfoB(i, "hasBonds")));
         if (!doBond)
           continue;
         autoBonding = true;
@@ -1133,9 +1133,9 @@ public final class ModelLoader {
           firstAtomIndexes[i], (i == groupCount - 1 ? ms.ac
               : firstAtomIndexes[i + 1]));
     if (group3Lists != null)
-      if (ms.modelSetAuxiliaryInfo != null) {
-        ms.modelSetAuxiliaryInfo.put("group3Lists", group3Lists);
-        ms.modelSetAuxiliaryInfo.put("group3Counts", group3Counts);
+      if (ms.msInfo != null) {
+        ms.msInfo.put("group3Lists", group3Lists);
+        ms.msInfo.put("group3Counts", group3Counts);
         for (int i = 0; i < group3Counts.length; i++)
           if (group3Counts[i] == null)
             group3Counts[i] = new int[0];
@@ -1243,7 +1243,7 @@ public final class ModelLoader {
     findElementsPresent();
 
     ms.resetMolecules();
-    currentModel = null;
+    model = null;
     currentChain = null;
 
     // finalize all structures
@@ -1376,9 +1376,9 @@ public final class ModelLoader {
   ///////////////  shapes  ///////////////
   
   private void finalizeShapes() {
-    ms.sm = vwr.getShapeManager();
+    ms.sm = vwr.shm;
     ms.sm.setModelSet(ms);
-    ms.setBsHidden(vwr.getHiddenSet());
+    ms.setBsHidden(vwr.slm.getHiddenSet());
     if (!merging)
       ms.sm.resetShapes();
     ms.sm.loadDefaultShapes(ms);
@@ -1423,7 +1423,7 @@ public final class ModelLoader {
           mapOldToNew[i] = n++;
         }
       }
-      ms.modelSetAuxiliaryInfo.put("bsDeletedAtoms", bsDeletedAtoms);
+      ms.msInfo.put("bsDeletedAtoms", bsDeletedAtoms);
       // adjust group pointers
       for (int i = baseGroupIndex; i < groups.length; i++) {
         Group g = groups[i];

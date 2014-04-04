@@ -189,7 +189,7 @@ public class StateManager {
    return null;
   }
 
-  String listSavedStates() {
+  public String listSavedStates() {
     String names = "";
     for (String name: saved.keySet())
       names += "\n" + name;
@@ -203,7 +203,7 @@ public class StateManager {
         e.remove();
   }
 
-  void deleteSaved(String namelike) {
+  public void deleteSaved(String namelike) {
     Iterator<String> e = saved.keySet().iterator();
     while (e.hasNext()) {
       String name = e.next();
@@ -213,7 +213,7 @@ public class StateManager {
     }
   }
   
-  void saveSelection(String saveName, BS bsSelected) {
+  public void saveSelection(String saveName, BS bsSelected) {
     if (saveName.equalsIgnoreCase("DELETE")) {
       deleteSavedType("Selected_");
       return;
@@ -222,7 +222,7 @@ public class StateManager {
     saved.put(saveName, BSUtil.copy(bsSelected));
   }
 
-  boolean restoreSelection(String saveName) {
+  public boolean restoreSelection(String saveName) {
     String name = (saveName.length() > 0 ? "Selected_" + saveName
         : lastSelected);
     BS bsSelected = (BS) getNoCase(saved, name);
@@ -234,7 +234,7 @@ public class StateManager {
     return true;
   }
 
-  void saveState(String saveName) {
+  public void saveState(String saveName) {
     if (saveName.equalsIgnoreCase("DELETE")) {
       deleteSavedType("State_");
       return;
@@ -243,7 +243,7 @@ public class StateManager {
     saved.put(saveName, vwr.getStateInfo());
   }
 
-  String getSavedState(String saveName) {
+  public String getSavedState(String saveName) {
     String name = (saveName.length() > 0 ? "State_" + saveName : lastState);
     String script = (String) getNoCase(saved, name);
     return (script == null ? "" : script);
@@ -261,7 +261,7 @@ public class StateManager {
    return true;
    }
    */
-  void saveStructure(String saveName) {
+  public void saveStructure(String saveName) {
     if (saveName.equalsIgnoreCase("DELETE")) {
       deleteSavedType("Shape_");
       return;
@@ -270,13 +270,13 @@ public class StateManager {
     saved.put(saveName, vwr.getStructureState());
   }
 
-  String getSavedStructure(String saveName) {
+  public String getSavedStructure(String saveName) {
     String name = (saveName.length() > 0 ? "Shape_" + saveName : lastShape);
     String script = (String) getNoCase(saved, name);
     return (script == null ? "" : script);
   }
 
-  void saveCoordinates(String saveName, BS bsSelected) {
+  public void saveCoordinates(String saveName, BS bsSelected) {
     if (saveName.equalsIgnoreCase("DELETE")) {
       deleteSavedType("Coordinates_");
       return;
@@ -285,7 +285,7 @@ public class StateManager {
     saved.put(saveName, vwr.getCoordinateState(bsSelected));
   }
 
-  String getSavedCoordinates(String saveName) {
+  public String getSavedCoordinates(String saveName) {
     String name = (saveName.length() > 0 ? "Coordinates_" + saveName
         : lastCoordinates);
     String script = (String) getNoCase(saved, name);
@@ -311,7 +311,7 @@ public class StateManager {
     return sb.toString();
   }
 
-  void saveScene(String saveName, Map<String, Object> scene) {
+  public void saveScene(String saveName, Map<String, Object> scene) {
     if (saveName.equalsIgnoreCase("DELETE")) {
       deleteSavedType("Scene_");
       return;
@@ -321,15 +321,10 @@ public class StateManager {
     saved.put(o.saveName, o);
   }
 
-  boolean restoreScene(String saveName, float timeSeconds) {
-    Scene o = getSceneFor(saveName);
+  public boolean restoreScene(String saveName, float timeSeconds) {
+    Scene o = (Scene) getNoCase(saved, (saveName.length() > 0 ? "Scene_"
+        + saveName : lastScene));
     return (o != null && o.restore(timeSeconds));
-  }
-
-  private Scene getSceneFor(String saveName) {
-    String name = (saveName.length() > 0 ? "Scene_" + saveName
-        : lastScene);    
-    return (Scene) getNoCase(saved, name);
   }
 
   private class Scene {
@@ -349,7 +344,7 @@ public class StateManager {
     }
   }
 
-  void saveOrientation(String saveName, float[] pymolView) {
+  public void saveOrientation(String saveName, float[] pymolView) {
     if (saveName.equalsIgnoreCase("DELETE")) {
       deleteSavedType("Orientation_");
       return;
@@ -359,7 +354,7 @@ public class StateManager {
     saved.put(o.saveName, o);
   }
   
-  boolean restoreOrientation(String saveName, float timeSeconds, boolean isAll) {
+  public boolean restoreOrientation(String saveName, float timeSeconds, boolean isAll) {
     Orientation o = getOrientationFor(saveName);
     return (o != null && o.restore(timeSeconds, isAll));
   }
@@ -370,7 +365,7 @@ public class StateManager {
     return (Orientation) getNoCase(saved, name);
   }
 
-  void saveContext(String saveName, Object context) {
+  public void saveContext(String saveName, Object context) {
     if (saveName.equalsIgnoreCase("DELETE")) {
       deleteSavedType("Context_");
       return;
@@ -378,11 +373,11 @@ public class StateManager {
     saved.put((lastContext = "Context_" + saveName), context);
   }
 
-  Object getContext(String saveName) {
+  public Object getContext(String saveName) {
     return saved.get(saveName.length() == 0 ? lastContext : "Context_" + saveName);
   }
   
-  void saveBonds(String saveName) {
+  public void saveBonds(String saveName) {
     if (saveName.equalsIgnoreCase("DELETE")) {
       deleteSavedType("Bonds_");
       return;
@@ -392,7 +387,8 @@ public class StateManager {
     saved.put(b.saveName, b);
   }
 
-  boolean restoreBonds(String saveName) {
+  public boolean restoreBonds(String saveName) {
+    vwr.clearModelDependentObjects();
     String name = (saveName.length() > 0 ? "Bonds_" + saveName
         : lastConnections);
     Connections c = (Connections) getNoCase(saved, name);
@@ -406,7 +402,7 @@ public class StateManager {
     protected Connection[] connections;
 
     protected Connections() {
-      ModelSet modelSet = vwr.getModelSet();
+      ModelSet modelSet = vwr.ms;
       if (modelSet == null)
         return;
       bondCount = modelSet.bondCount;
@@ -420,7 +416,7 @@ public class StateManager {
     }
 
     protected boolean restore() {
-      ModelSet modelSet = vwr.getModelSet();
+      ModelSet modelSet = vwr.ms;
       if (modelSet == null)
         return false;
       modelSet.deleteAllBonds();

@@ -77,7 +77,7 @@ public class AtomSetCollection {
   }
 
   public void setGlobalBoolean(int globalIndex) {
-    setAtomSetCollectionAuxiliaryInfo(globalBooleans[globalIndex], Boolean.TRUE);
+    setInfo(globalBooleans[globalIndex], Boolean.TRUE);
   }
 
   boolean getGlobalBoolean(int globalIndex) {
@@ -94,7 +94,7 @@ public class AtomSetCollection {
   public Structure[] structures = new Structure[16];
   public int structureCount;
   public int atomSetCount;
-  public int currentAtomSetIndex = -1;
+  public int iSet = -1;
 
   private int[] atomSetNumbers = new int[16];
   private int[] atomSetAtomIndexes = new int[16];
@@ -129,7 +129,7 @@ public class AtomSetCollection {
     Properties p = new Properties();
     p.put("PATH_KEY", SmarterJmolAdapter.PATH_KEY);
     p.put("PATH_SEPARATOR", SmarterJmolAdapter.PATH_SEPARATOR);
-    setAtomSetCollectionAuxiliaryInfo("properties", p);
+    setInfo("properties", p);
     if (array != null) {
       int n = 0;
       readerList = new Lst<AtomSetCollectionReader>();
@@ -138,10 +138,10 @@ public class AtomSetCollection {
             && array[i].reader.mustFinalizeModelSet)
           appendAtomSetCollection(n++, array[i]);
       if (n > 1)
-        setAtomSetCollectionAuxiliaryInfo("isMultiFile", Boolean.TRUE);
+        setInfo("isMultiFile", Boolean.TRUE);
     } else if (list != null) {
       // (from zipped zip files)
-      setAtomSetCollectionAuxiliaryInfo("isMultiFile", Boolean.TRUE);
+      setInfo("isMultiFile", Boolean.TRUE);
       appendAtomSetCollectionList(list);
     }
   }
@@ -188,7 +188,7 @@ public class AtomSetCollection {
     int existingAtomsCount = ac;
 
     // auxiliary info
-    setAtomSetCollectionAuxiliaryInfo("loadState",
+    setInfo("loadState",
         collection.getAtomSetCollectionAuxiliaryInfo("loadState"));
 
     // append to bsAtoms if necessary (CIF reader molecular mode)
@@ -206,7 +206,7 @@ public class AtomSetCollection {
     for (int atomSetNum = 0; atomSetNum < collection.atomSetCount; atomSetNum++) {
       newAtomSet();
       // must fix referencing for someModelsHaveCONECT business
-      Map<String, Object> info = atomSetAuxiliaryInfo[currentAtomSetIndex] = collection.atomSetAuxiliaryInfo[atomSetNum];
+      Map<String, Object> info = atomSetAuxiliaryInfo[iSet] = collection.atomSetAuxiliaryInfo[atomSetNum];
       int[] atomInfo = (int[]) info.get("PDB_CONECT_firstAtom_count_max");
       if (atomInfo != null)
         atomInfo[0] += existingAtomsCount;
@@ -224,7 +224,7 @@ public class AtomSetCollection {
       }
 
       // numbers
-      atomSetNumbers[currentAtomSetIndex] = (collectionIndex < 0 ? currentAtomSetIndex + 1
+      atomSetNumbers[iSet] = (collectionIndex < 0 ? iSet + 1
           : ((collectionIndex + 1) * 1000000)
               + collection.atomSetNumbers[atomSetNum]);
 
@@ -255,7 +255,7 @@ public class AtomSetCollection {
   }
 
   public void setNoAutoBond() {
-    setAtomSetCollectionAuxiliaryInfo("noAutoBond", Boolean.TRUE);
+    setInfo("noAutoBond", Boolean.TRUE);
   }
 
   void freeze(boolean reverseModels) {
@@ -399,7 +399,7 @@ public class AtomSetCollection {
     atomSetNumbers = new int[16];
     atomSymbolicMap = new Hashtable<Object, Integer>();
     bonds = null;
-    currentAtomSetIndex = -1;
+    iSet = -1;
     readerList = null;
     xtalSymmetry = null;
     structures = new Structure[16];
@@ -414,7 +414,7 @@ public class AtomSetCollection {
     ac = 0;
     clearSymbolicMap();
     atomSetCount = 0;
-    currentAtomSetIndex = -1;
+    iSet = -1;
     for (int i = atomSetAuxiliaryInfo.length; --i >= 0;) {
       atomSetAtomCounts[i] = 0;
       atomSetBondCounts[i] = 0;
@@ -468,9 +468,9 @@ public class AtomSetCollection {
   }
 
   public void removeCurrentAtomSet() {
-    if (currentAtomSetIndex < 0)
+    if (iSet < 0)
       return;
-    currentAtomSetIndex--;
+    iSet--;
     atomSetCount--;
   }
 
@@ -503,7 +503,7 @@ public class AtomSetCollection {
   }
 
   public void cloneAtomSetWithBonds(boolean isLast) throws Exception {
-    int nBonds = atomSetBondCounts[isLast ? currentAtomSetIndex : 0];
+    int nBonds = atomSetBondCounts[isLast ? iSet : 0];
     int atomIncrement = (isLast ? cloneLastAtomSet() : cloneFirstAtomSet(0));
     if (atomIncrement > 0)
       for (int i = 0; i < nBonds; i++) {
@@ -537,12 +537,12 @@ public class AtomSetCollection {
   }
 
   public int getLastAtomSetAtomCount() {
-    return atomSetAtomCounts[currentAtomSetIndex];
+    return atomSetAtomCounts[iSet];
   }
 
   public int getLastAtomSetAtomIndex() {
     //Logger.debug("atomSetCount=" + atomSetCount);
-    return ac - atomSetAtomCounts[currentAtomSetIndex];
+    return ac - atomSetAtomCounts[iSet];
   }
 
   public Atom addNewAtom() {
@@ -560,8 +560,8 @@ public class AtomSetCollection {
       newAtomSet();
     atom.index = ac;
     atoms[ac++] = atom;
-    atom.atomSetIndex = currentAtomSetIndex;
-    atom.atomSite = atomSetAtomCounts[currentAtomSetIndex]++;
+    atom.atomSetIndex = iSet;
+    atom.atomSite = atomSetAtomCounts[iSet]++;
     return atom;
   }
 
@@ -615,7 +615,7 @@ public class AtomSetCollection {
     if (bondCount == bonds.length)
       bonds = (Bond[]) AU.arrayCopyObject(bonds, bondCount + 1024);
     bonds[bondCount++] = bond;
-    atomSetBondCounts[currentAtomSetIndex]++;
+    atomSetBondCounts[iSet]++;
   }
 
   public BS bsStructuredModels;
@@ -741,7 +741,7 @@ public class AtomSetCollection {
   public boolean haveUnitCell;
 
   public void createAtomSerialMap() {
-    if (haveMappedSerials || currentAtomSetIndex < 0)
+    if (haveMappedSerials || iSet < 0)
       return;
     for (int i = getLastAtomSetAtomCount(); i < ac; i++) {
       int atomSerial = atoms[i].atomSerial;
@@ -764,7 +764,7 @@ public class AtomSetCollection {
     return (value == null ? -1 : value.intValue());
   }
 
-  public void setAtomSetCollectionAuxiliaryInfo(String key, Object value) {
+  public void setInfo(String key, Object value) {
     if (value == null)
       ascAuxiliaryInfo.remove(key);
     else
@@ -873,9 +873,9 @@ public class AtomSetCollection {
       if (trajectory[i] != null)
         atoms[i].setT(trajectory[i]);
     }
-    setAtomSetCollectionAuxiliaryInfo("trajectorySteps", trajectorySteps);
+    setInfo("trajectorySteps", trajectorySteps);
     if (vibrationSteps != null)
-      setAtomSetCollectionAuxiliaryInfo("vibrationSteps", vibrationSteps);
+      setInfo("vibrationSteps", vibrationSteps);
   }
 
   public void newAtomSet() {
@@ -884,13 +884,13 @@ public class AtomSetCollection {
 
   public void newAtomSetClear(boolean doClearMap) {
 
-    if (!allowMultiple && currentAtomSetIndex >= 0)
+    if (!allowMultiple && iSet >= 0)
       discardPreviousAtoms();
     bondIndex0 = bondCount;
     if (isTrajectory) {
       discardPreviousAtoms();
     }
-    currentAtomSetIndex = atomSetCount++;
+    iSet = atomSetCount++;
     if (atomSetCount > atomSetNumbers.length) {
       atomSetAtomIndexes = AU.doubleLengthI(atomSetAtomIndexes);
       atomSetAtomCounts = AU.doubleLengthI(atomSetAtomCounts);
@@ -898,15 +898,15 @@ public class AtomSetCollection {
       atomSetAuxiliaryInfo = (Map<String, Object>[]) AU
           .doubleLength(atomSetAuxiliaryInfo);
     }
-    atomSetAtomIndexes[currentAtomSetIndex] = ac;
+    atomSetAtomIndexes[iSet] = ac;
     if (atomSetCount + trajectoryStepCount > atomSetNumbers.length) {
       atomSetNumbers = AU.doubleLengthI(atomSetNumbers);
     }
     if (isTrajectory) {
-      atomSetNumbers[currentAtomSetIndex + trajectoryStepCount] = atomSetCount
+      atomSetNumbers[iSet + trajectoryStepCount] = atomSetCount
           + trajectoryStepCount;
     } else {
-      atomSetNumbers[currentAtomSetIndex] = atomSetCount;
+      atomSetNumbers[iSet] = atomSetCount;
     }
     if (doClearMap)
       atomSymbolicMap.clear();
@@ -936,7 +936,7 @@ public class AtomSetCollection {
       setTrajectoryName(atomSetName);
       return;
     }
-    setAtomSetAuxiliaryInfoForSet("name", atomSetName, currentAtomSetIndex);
+    setAtomSetAuxiliaryInfoForSet("name", atomSetName, iSet);
     // TODO -- trajectories could have different names. Need this for vibrations?
     if (!allowMultiple)
       setCollectionName(atomSetName);
@@ -963,7 +963,7 @@ public class AtomSetCollection {
    * @param namedSets
    */
   public void setAtomSetNames(String atomSetName, int n, BS namedSets) {
-    for (int i = currentAtomSetIndex; --n >= 0 && i >= 0; --i)
+    for (int i = iSet; --n >= 0 && i >= 0; --i)
       if (namedSets == null || !namedSets.get(i))
         setAtomSetAuxiliaryInfoForSet("name", atomSetName, i);
   }
@@ -975,7 +975,7 @@ public class AtomSetCollection {
    *        The number for the current AtomSet.
    */
   public void setCurrentAtomSetNumber(int atomSetNumber) {
-    setAtomSetNumber(currentAtomSetIndex
+    setAtomSetNumber(iSet
         + (isTrajectory ? trajectoryStepCount : 0), atomSetNumber);
   }
 
@@ -993,7 +993,7 @@ public class AtomSetCollection {
    *        The value to be associated with the key
    */
   public void setAtomSetModelProperty(String key, String value) {
-    setAtomSetModelPropertyForSet(key, value, currentAtomSetIndex);
+    setAtomSetModelPropertyForSet(key, value, iSet);
   }
 
   /**
@@ -1021,7 +1021,7 @@ public class AtomSetCollection {
     if (!data.endsWith("\n"))
       data += "\n";
     if (atomSetIndex < 0)
-      atomSetIndex = currentAtomSetIndex;
+      atomSetIndex = iSet;
     Map<String, String> p = (Map<String, String>) getAtomSetAuxiliaryInfoValue(
         atomSetIndex, "atomProperties");
     if (p == null)
@@ -1039,11 +1039,11 @@ public class AtomSetCollection {
    */
 
   boolean setAtomSetPartialCharges(String auxKey) {
-    if (!atomSetAuxiliaryInfo[currentAtomSetIndex].containsKey(auxKey)) {
+    if (!atomSetAuxiliaryInfo[iSet].containsKey(auxKey)) {
       return false;
     }
     Lst<Float> atomData = (Lst<Float>) getAtomSetAuxiliaryInfoValue(
-        currentAtomSetIndex, auxKey);
+        iSet, auxKey);
     for (int i = atomData.size(); --i >= 0;) {
       atoms[i].partialCharge = atomData.get(i).floatValue();
     }
@@ -1051,7 +1051,7 @@ public class AtomSetCollection {
   }
 
   public Object getAtomSetAuxiliaryInfoValue(int index, String key) {
-    return atomSetAuxiliaryInfo[index >= 0 ? index : currentAtomSetIndex]
+    return atomSetAuxiliaryInfo[index >= 0 ? index : iSet]
         .get(key);
   }
 
@@ -1064,7 +1064,7 @@ public class AtomSetCollection {
    *        The value to be associated with the key
    */
   public void setAtomSetAuxiliaryInfo(String key, Object value) {
-    setAtomSetAuxiliaryInfoForSet(key, value, currentAtomSetIndex);
+    setAtomSetAuxiliaryInfoForSet(key, value, iSet);
   }
 
   /**
@@ -1100,7 +1100,7 @@ public class AtomSetCollection {
    *        The number of last AtomSets that needs these set
    */
   public void setAtomSetPropertyForSets(String key, String value, int n) {
-    for (int idx = currentAtomSetIndex; --n >= 0 && idx >= 0; --idx)
+    for (int idx = iSet; --n >= 0 && idx >= 0; --idx)
       setAtomSetModelPropertyForSet(key, value, idx);
   }
 
@@ -1109,7 +1109,7 @@ public class AtomSetCollection {
    * current atom set.
    */
   public void cloneLastAtomSetProperties() {
-    cloneAtomSetProperties(currentAtomSetIndex - 1);
+    cloneAtomSetProperties(iSet - 1);
   }
 
   /**
@@ -1124,7 +1124,7 @@ public class AtomSetCollection {
         "modelProperties");
     if (p != null)
       setAtomSetAuxiliaryInfoForSet("modelProperties", p.clone(),
-          currentAtomSetIndex);
+          iSet);
   }
 
   int getAtomSetNumber(int atomSetIndex) {
@@ -1158,9 +1158,9 @@ public class AtomSetCollection {
   }
 
   public void setAtomSetEnergy(String energyString, float value) {
-    if (currentAtomSetIndex < 0)
+    if (iSet < 0)
       return;
-    Logger.info("Energy for model " + (currentAtomSetIndex + 1) + " = "
+    Logger.info("Energy for model " + (iSet + 1) + " = "
         + energyString);
     setAtomSetAuxiliaryInfo("EnergyString", energyString);
     setAtomSetAuxiliaryInfo("Energy", Float.valueOf(value));
@@ -1214,7 +1214,7 @@ public class AtomSetCollection {
       return;
     for (int i = 0; i < a.trajectoryStepCount; i++)
       trajectorySteps.add(trajectoryStepCount++, a.trajectorySteps.get(i));
-    setAtomSetCollectionAuxiliaryInfo("trajectorySteps", trajectorySteps);
+    setInfo("trajectorySteps", trajectorySteps);
   }
 
 }

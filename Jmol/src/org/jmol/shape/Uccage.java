@@ -39,7 +39,7 @@ public class Uccage extends FontLineShape {
     if (!ms.haveUnitCells)
       return "";
     String s = super.getShapeState();
-    int iAtom = vwr.getCurrentAtom();
+    int iAtom = vwr.am.cai;
     if (iAtom >= 0)
       s += "  unitcell ({" + iAtom + "});\n"; 
     SymmetryInterface uc = vwr.getCurrentUnitCell();

@@ -156,7 +156,7 @@ public class Ellipsoids extends Shape {
       if (initEllipsoids(value) && ellipsoidSet.size() == 0) {
         String id = (String) value;
         Ellipsoid e = Ellipsoid.getEmptyEllipsoid(id,
-            vwr.getCurrentModelIndex());
+            vwr.am.cmi);
         ellipsoidSet.addLast(e);
         simpleEllipsoids.put(id, e);
       }

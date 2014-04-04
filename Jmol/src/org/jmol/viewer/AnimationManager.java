@@ -109,20 +109,20 @@ public class AnimationManager {
 
   final BS bsVisibleModels = new BS();
 
-  ANIM animationReplayMode = ANIM.ONCE;
+  public ANIM animationReplayMode = ANIM.ONCE;
 
   BS bsDisplay;
 
   int[] animationFrames;
 
-  boolean isMovie;
+  public boolean isMovie;
   boolean animationPaused;
   
   /**
    * current model index
    * 
    */
-  int cmi;
+  public int cmi;
   
   /**
    * current animation frame
@@ -147,7 +147,7 @@ public class AnimationManager {
     setAnimationOn(false);
     setModel(0, true);
     currentDirection = 1;
-    currentAtomIndex = -1;
+    cai = -1;
     setAnimationDirection(1);
     setAnimationFps(10);
     setAnimationReplayMode(ANIM.ONCE, 0, 0);
@@ -175,11 +175,11 @@ public class AnimationManager {
     bsDisplay = (bs == null || bs.cardinality() == 0? null : BSUtil.copy(bs));
   }
 
-  void setMorphCount(int n) {
+  public void setMorphCount(int n) {
     morphCount = (isMovie ? 0 : n); // for now -- no morphing in movies
   }
 
-  void morph(float modelIndex) {
+  public void morph(float modelIndex) {
     int m = (int) modelIndex;
     if (Math.abs(m - modelIndex) < 0.001f)
       modelIndex = m;
@@ -205,7 +205,7 @@ public class AnimationManager {
     if (modelIndex < 0)
       stopThread(false);
     int formerModelIndex = cmi;
-    ModelSet modelSet = vwr.getModelSet();
+    ModelSet modelSet = vwr.ms;
     int modelCount = (modelSet == null ? 0 : modelSet.mc);
     if (modelCount == 1)
       cmi = modelIndex = 0;
@@ -247,12 +247,12 @@ public class AnimationManager {
   }
 
   void setBackgroundModelIndex(int modelIndex) {
-    ModelSet modelSet = vwr.getModelSet();
+    ModelSet modelSet = vwr.ms;
     if (modelSet == null || modelIndex < 0 || modelIndex >= modelSet.mc)
       modelIndex = -1;
     backgroundModelIndex = modelIndex;
     if (modelIndex >= 0)
-      vwr.setTrajectory(modelIndex);
+      vwr.ms.setTrajectory(modelIndex);
     vwr.setTainted(true);
     setFrameRangeVisible(); 
   }
@@ -264,14 +264,18 @@ public class AnimationManager {
     vwr.setFrameVariables();
   }
 
-  void setAnimationDirection(int animationDirection) {
+  public void setAnimationDirection(int animationDirection) {
     this.animationDirection = animationDirection;
     //if (animationReplayMode != ANIMATION_LOOP)
       //currentDirection = 1;
   }
 
-  void setAnimationFps(int animationFps) {
-    this.animationFps = animationFps;
+  void setAnimationFps(int fps) {
+    if (fps < 1)
+      fps = 1;
+    if (fps > 50)
+      fps = 50;
+    animationFps = fps;
     vwr.setFrameVariables();
   }
 
@@ -279,7 +283,7 @@ public class AnimationManager {
   // 1 = loop
   // 2 = palindrome
   
-  void setAnimationReplayMode(ANIM animationReplayMode,
+  public void setAnimationReplayMode(ANIM animationReplayMode,
                                      float firstFrameDelay,
                                      float lastFrameDelay) {
     this.firstFrameDelay = firstFrameDelay > 0 ? firstFrameDelay : 0;
@@ -372,7 +376,7 @@ public class AnimationManager {
    * 
    * @param info
    */
-  void setMovie(Map<String, Object> info) {
+  public void setMovie(Map<String, Object> info) {
     isMovie = (info != null && info.get("scripts") == null);
     if (isMovie) {
       animationFrames = (int[]) info.get("frames");
@@ -406,7 +410,7 @@ public class AnimationManager {
     return (isMovie ? animationFrames[i] - 1 : i);
   }
 
-  int getFrameCount() {
+  public int getFrameCount() {
     return (isMovie ? animationFrames.length : vwr.getModelCount());
   }
 
@@ -430,9 +434,9 @@ public class AnimationManager {
   private int lastFramePainted;
   private int lastModelPainted;
   private int intAnimThread;
-  public int currentAtomIndex = -1;
+  public int cai = -1;
   private void setViewer(boolean clearBackgroundModel) {
-    vwr.setTrajectory(cmi);
+    vwr.ms.setTrajectory(cmi);
     vwr.setFrameOffset(cmi);
     if (cmi == -1 && clearBackgroundModel)
       setBackgroundModelIndex(-1);  

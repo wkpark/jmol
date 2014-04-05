@@ -9396,7 +9396,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return getPropertyManager().checkPropertyParameter(name);
   }
 
-  public Object extractProperty(Object property, SV[] args, int pt) {
+  public Object extractProperty(Object property, Object args, int pt) {
     return getPropertyManager().extractProperty(property, args, pt, null);
   }
 

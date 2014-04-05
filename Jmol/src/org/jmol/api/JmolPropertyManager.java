@@ -4,7 +4,6 @@ package org.jmol.api;
 import java.util.Map;
 
 import org.jmol.java.BS;
-import org.jmol.script.SV;
 
 import javajs.util.Lst;
 import javajs.util.P3;
@@ -22,7 +21,7 @@ public interface JmolPropertyManager {
 
   boolean checkPropertyParameter(String name);
 
-  Object extractProperty(Object property, SV[] args, int pt, Lst<Object> v2);
+  Object extractProperty(Object property, Object args, int pt, Lst<Object> v2);
 
   Map<String, Object> getModelInfo(Object atomExpression);
 
@@ -37,6 +36,5 @@ public interface JmolPropertyManager {
 
   String getModelExtract(BS atomBitSet, boolean doTransform, boolean isModelKit,
                          String type);
-
 
 }

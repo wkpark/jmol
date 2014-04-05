@@ -221,7 +221,10 @@ public class PropertyManager implements JmolPropertyManager {
           + propertyTypes.length + " != " + PROP_COUNT * 3);
     Object info;
     if (infoType.indexOf(".") >= 0 || infoType.indexOf("[") >= 0) {
-      info = getModelProperty(infoType, paramInfo);
+      SV[] args = getArguments(infoType);
+      info = extractProperty(
+          getPropertyAsObject(args[0].asString(), paramInfo, null), args, 1,
+          null);
     } else {
       info = getPropertyAsObject(infoType, paramInfo, returnType);
     }
@@ -239,37 +242,36 @@ public class PropertyManager implements JmolPropertyManager {
     return info;
   }
 
-  private Object getModelProperty(String propertyName, Object propertyValue) {
-    propertyName = propertyName.replace(']', '\0').replace('[', '\0').replace(
-        '.', '\0');
+  private SV[] getArguments(String propertyName) {
+    propertyName = propertyName.replace(']', '\0').replace('[', '\0')
+        .replace('.', '\0');
     propertyName = PT.rep(propertyName, "\0\0", "\0");
-    String[] names = PT.split(PT.trim(propertyName, "\0"),
-        "\0");
+    String[] names = PT.split(PT.trim(propertyName, "\0"), "\0");
     SV[] args = new SV[names.length];
-    propertyName = names[0];
-    int n;
-    for (int i = 1; i < names.length; i++) {
-      if ((n = PT.parseInt(names[i])) != Integer.MIN_VALUE)
-        args[i] = SV.newI(n);
-      else
-        args[i] = SV.newV(T.string, names[i]);
+    for (int i = 0, n; i < names.length; i++) {
+      args[i] = ((n = PT.parseInt(names[i])) == Integer.MIN_VALUE ? SV.newV(
+          T.string, names[i]) : SV.newI(n));
     }
-    return extractProperty(getProperty(null, propertyName, propertyValue),
-        args, 1, null);
+    return args;
   }
 
   @Override
-  @SuppressWarnings("unchecked")
-  public Object extractProperty(Object property, SV[] args, int ptr,
+  public Object extractProperty(Object prop, Object args, int ptr,
                                 Lst<Object> v2) {
-    if (ptr >= args.length)
-      return property;
+    if (ptr < 0) {
+      args = getArguments((String) args);
+      ptr = 0;
+    }
+    if (ptr >= ((SV[]) args).length)
+      return prop;
     int pt;
-    SV arg = args[ptr++];
+    SV arg = ((SV[]) args)[ptr++];
+    Object property = getObj(prop);
     switch (arg.tok) {
     case T.integer:
-      pt = arg.asInt() - 1; //one-based, as for array selectors
+      pt = arg.intValue - 1; //one-based, as for array selectors
       if (property instanceof Lst<?>) {
+        @SuppressWarnings("unchecked")
         Lst<Object> v = (Lst<Object>) property;
         if (pt < 0)
           pt += v.size();
@@ -362,6 +364,7 @@ public class PropertyManager implements JmolPropertyManager {
     case T.string:
       String key = arg.asString();
       if (property instanceof Map<?, ?>) {
+        @SuppressWarnings("unchecked")
         Map<String, Object> h = (Map<String, Object>) property;
         if (key.equalsIgnoreCase("keys")) {
           Lst<Object> keys = new Lst<Object>();
@@ -391,7 +394,7 @@ public class PropertyManager implements JmolPropertyManager {
                 pt1 = (pt = ptEq) + 1;
               else
                 return "";
-            Object val = h.get(where.substring(0, pt).trim());
+            Object val = getObj(h.get(where.substring(0, pt).trim()));
             if (val == null || !Txt.isSQLMatch(val, where.substring(pt1).trim(), ptNotEq >= 0, ptLike >= 0, ptNotLike >= 0))
               return "";
           }          
@@ -419,22 +422,28 @@ public class PropertyManager implements JmolPropertyManager {
       }
       if (property instanceof Lst<?>) {
         // drill down into vectors for this key
+        @SuppressWarnings("unchecked")
         Lst<Object> v = (Lst<Object>) property;
         v2 = new Lst<Object>();
         ptr--;
         for (pt = 0; pt < v.size(); pt++) {
           Object o = v.get(pt);
-          if (o instanceof Map<?, ?>)
+          if (o instanceof Map<?, ?> 
+            || (o instanceof SV) && ((SV) o).getMap() != null) 
             extractProperty(o, args, ptr, v2);
         }
         return v2;
       }
       break;
     }
-    return property;
+    return prop;
   }
 
   //// private static methods ////
+
+  private Object getObj(Object prop) {
+    return (prop instanceof SV ? SV.oValue((SV) prop) : prop);
+  }
 
   private static String getPropertyName(int propID) {
     return (propID < 0 ? "" : propertyTypes[propID * 3]);

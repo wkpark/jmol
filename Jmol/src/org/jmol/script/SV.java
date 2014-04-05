@@ -1492,7 +1492,7 @@ public class SV extends T implements JSONEncodable {
   }
 
   @SuppressWarnings("unchecked")
-  private Map<String, SV> getMap() {
+  public Map<String, SV> getMap() {
     switch (tok) {
     case hash:
       return (Map<String, SV>) value;

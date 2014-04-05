@@ -1026,7 +1026,12 @@ public class MathExt implements JmolMathExtension {
                                       boolean isAtomProperty)
       throws ScriptException {
     int pt = 0;
-    String propertyName = (args.length > pt ? SV.sValue(args[pt++]) : "");
+    int tok = (args.length == 0 ? T.nada : args[0].tok);
+    if (args.length == 2 && (tok == T.varray || tok == T.hash || tok == T.context)) {
+      return mp.addXObj(vwr.extractProperty(args[0].value, args[1].value.toString(), -1));
+
+    }
+    String propertyName = (args.length > 0 ? SV.sValue(args[pt++]) : "");
     if (propertyName.indexOf("SELECT ") < 0)
       propertyName = propertyName.toLowerCase();
     boolean isJSON = false;

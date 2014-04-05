@@ -24,6 +24,7 @@
 
 package org.jmol.adapter.smarter;
 
+import javajs.api.GenericLineReader;
 import javajs.util.AU;
 import javajs.util.Lst;
 
@@ -34,6 +35,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.jmol.api.Interface;
+import org.jmol.api.JmolDSSRParser;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.java.BS;
 
@@ -1215,6 +1217,11 @@ public class AtomSetCollection {
     for (int i = 0; i < a.trajectoryStepCount; i++)
       trajectorySteps.add(trajectoryStepCount++, a.trajectorySteps.get(i));
     setInfo("trajectorySteps", trajectorySteps);
+  }
+
+  public void processDSSR(GenericLineReader reader) throws Exception {
+    ((JmolDSSRParser) Interface.getOption("dssr.DSSRParser")).process(
+        getAtomSetAuxiliaryInfo(Integer.MAX_VALUE), reader);
   }
 
 }

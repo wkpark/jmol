@@ -1026,8 +1026,9 @@ public class MathExt implements JmolMathExtension {
                                       boolean isAtomProperty)
       throws ScriptException {
     int pt = 0;
-    String propertyName = (args.length > pt ? SV.sValue(args[pt++])
-        .toLowerCase() : "");
+    String propertyName = (args.length > pt ? SV.sValue(args[pt++]) : "");
+    if (propertyName.indexOf("SELECT ") < 0)
+      propertyName = propertyName.toLowerCase();
     boolean isJSON = false;
     if (propertyName.equals("json") && args.length > pt) {
       isJSON = true;
@@ -1127,6 +1128,7 @@ public class MathExt implements JmolMathExtension {
       throws ScriptException {
     int len = args.length;
     SV x1 = mp.getX();
+    boolean isArray1 = (x1.tok == T.varray);
     SV x2;
     switch (tok) {
     case T.push:
@@ -1136,6 +1138,8 @@ public class MathExt implements JmolMathExtension {
     case T.add:
       if (len != 1 && len != 2)
         return false;
+      break;
+    case T.join:
       break;
     default:
       if (len != 1)
@@ -1147,7 +1151,7 @@ public class MathExt implements JmolMathExtension {
       // [xxxx].add("\t", [...])
       int itab = (args[0].tok == T.string ? 0 : 1);
       String tab = SV.sValue(args[itab]);
-      sList1 = (x1.tok == T.varray ? SV.listValue(x1) : PT.split(SV.sValue(x1),
+      sList1 = (isArray1 ? SV.listValue(x1) : PT.split(SV.sValue(x1),
           "\n"));
       x2 = args[1 - itab];
       sList2 = (x2.tok == T.varray ? SV.listValue(x2) : PT.split(SV.sValue(x2),
@@ -1160,7 +1164,7 @@ public class MathExt implements JmolMathExtension {
     }
     x2 = (len == 0 ? SV.newV(T.all, "all") : args[0]);
     boolean isAll = (x2.tok == T.all);
-    if (x1.tok != T.varray && x1.tok != T.string)
+    if (!isArray1 && x1.tok != T.string)
       return mp.binaryOp(opTokenFor(tok), x1, x2);
     boolean isScalar1 = SV.isScalar(x1);
     boolean isScalar2 = SV.isScalar(x2);
@@ -1170,7 +1174,7 @@ public class MathExt implements JmolMathExtension {
     Lst<SV> alist1 = x1.getList();
     Lst<SV> alist2 = x2.getList();
 
-    if (x1.tok == T.varray) {
+    if (isArray1) {
       len = alist1.size();
     } else if (isScalar1) {
       len = Integer.MAX_VALUE;
@@ -1179,9 +1183,9 @@ public class MathExt implements JmolMathExtension {
       list1 = new float[len = sList1.length];
       PT.parseFloatArrayData(sList1, list1);
     }
-    if (isAll) {
+    if (isAll && tok != T.join) {
       float sum = 0f;
-      if (x1.tok == T.varray) {
+      if (isArray1) {
         for (int i = len; --i >= 0;)
           sum += SV.fValue(alist1.get(i));
       } else if (!isScalar1) {
@@ -1192,11 +1196,13 @@ public class MathExt implements JmolMathExtension {
     }
     if (tok == T.join && x2.tok == T.string) {
       SB sb = new SB();
-      if (isScalar1)
+      if (isScalar1) {
         sb.append(SV.sValue(x1));
-      else
+      } else {
+        String s = (isAll ? "" : x2.value.toString());
         for (int i = 0; i < len; i++)
-          sb.appendO(i > 0 ? x2.value : null).append(SV.sValue(alist1.get(i)));
+          sb.append(i > 0 ? s : "").append(SV.sValue(alist1.get(i)));
+      }
       return mp.addXStr(sb.toString());
     }
 
@@ -1215,7 +1221,10 @@ public class MathExt implements JmolMathExtension {
     T token = opTokenFor(tok);
 
     SV[] olist = new SV[len];
-
+    if (isArray1 && isAll) {
+      Lst<SV>  llist = new Lst<SV>();
+      return mp.addXList(addAllLists(x1.getList(), llist));
+    }
     SV a = (isScalar1 ? x1 : null);
     SV b;
     for (int i = 0; i < len; i++) {
@@ -1228,7 +1237,7 @@ public class MathExt implements JmolMathExtension {
       else
         b = SV.newV(T.decimal, Float.valueOf(list2[i]));
       if (!isScalar1) {
-        if (x1.tok == T.varray)
+        if (isArray1)
           a = alist1.get(i);
         else if (Float.isNaN(list1[i]))
           a = SV.getVariable(SV.unescapePointOrBitsetAsVariable(sList1[i]));
@@ -1247,6 +1256,18 @@ public class MathExt implements JmolMathExtension {
       olist[i] = mp.getX();
     }
     return mp.addXAV(olist);
+  }
+
+  private Lst<SV> addAllLists(Lst<SV> list, Lst<SV> l) {
+    int n = list.size(); 
+    for (int i = 0; i < n; i++) {
+      SV v = list.get(i);
+      if (v.tok == T.varray)
+        addAllLists(v.getList(), l);
+      else
+        l.addLast(v);
+    }
+    return l;
   }
 
   private boolean evaluateLoad(ScriptMathProcessor mp, SV[] args, boolean isFile)

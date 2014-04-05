@@ -34,7 +34,6 @@ import org.jmol.java.BS;
 import org.jmol.script.T;
 
 import javajs.api.GenericCifDataParser;
-import javajs.api.GenericLineReader;
 import javajs.util.Lst;
 import java.util.Hashtable;
 import java.util.Map;
@@ -68,8 +67,7 @@ import javajs.util.V3;
  *         applySymmetryAndSetTrajectory()
  * 
  */
-public class CifReader extends AtomSetCollectionReader implements
-    GenericLineReader {
+public class CifReader extends AtomSetCollectionReader {
 
   private MSCifInterface mr;
   private MMCifInterface pr;
@@ -162,14 +160,6 @@ public class CifReader extends AtomSetCollectionReader implements
     }
   }
 
-  @Override
-  public String readNextLine() throws Exception {
-    // from CifDataReader
-    if (rd() != null && line.indexOf("#jmolscript:") >= 0)
-      checkCurrentLineForScript();
-    return line;
-  }
-
   private boolean readAllData() throws Exception {
     if (key.startsWith("data_")) {
       //      if (isPDBX) {
@@ -212,7 +202,10 @@ public class CifReader extends AtomSetCollectionReader implements
      * tokenizer.getTokenPeeked(); continue; }
      */
     if (key.indexOf("_") != 0) {
-      Logger.warn("CIF ERROR ? should be an underscore: " + key);
+      if (key.equals("DSSR:"))
+        asc.processDSSR(this);
+      else
+        Logger.warn("CIF ERROR ? should be an underscore: " + key);
       parser.getTokenPeeked();
     } else if (!getData()) {
       return true;

@@ -604,8 +604,11 @@ public class ScriptMathProcessor {
       oPt--;
       if (oPt < 0)
         return true;
-      if (isOpFunc(oStack[oPt]) && !evaluateFunction(T.nada))
-        return false;
+      if (isOpFunc(oStack[oPt])) {
+         wasX = false;
+         if(!evaluateFunction(T.nada))
+           return false;
+      }
       skipping = (ifPt >= 0 && ifStack[ifPt] == 'X');
       return true;
     case T.comma:

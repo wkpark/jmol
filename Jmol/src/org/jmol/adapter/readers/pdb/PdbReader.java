@@ -33,6 +33,7 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.c.STR;
 import org.jmol.util.Escape;
+
 import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.SB;
@@ -350,6 +351,9 @@ public class PdbReader extends AtomSetCollectionReader {
     case 21:
       title();
       return true;
+    default:
+      if (line.trim().startsWith("DSSR:"))
+        asc.processDSSR(this);
     }
     return true;
   }
@@ -1941,5 +1945,6 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     connectNextAtomSet = index + 1;
     connectNextAtomIndex = firstAtom;
   }
+  
 }
 

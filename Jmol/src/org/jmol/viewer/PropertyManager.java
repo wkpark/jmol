@@ -240,11 +240,11 @@ public class PropertyManager implements JmolPropertyManager {
   }
 
   private Object getModelProperty(String propertyName, Object propertyValue) {
-    propertyName = propertyName.replace(']', ' ').replace('[', ' ').replace(
-        '.', ' ');
-    propertyName = PT.rep(propertyName, "  ", " ");
-    String[] names = PT.split(PT.trim(propertyName, " "),
-        " ");
+    propertyName = propertyName.replace(']', '\0').replace('[', '\0').replace(
+        '.', '\0');
+    propertyName = PT.rep(propertyName, "\0\0", "\0");
+    String[] names = PT.split(PT.trim(propertyName, "\0"),
+        "\0");
     SV[] args = new SV[names.length];
     propertyName = names[0];
     int n;
@@ -255,12 +255,13 @@ public class PropertyManager implements JmolPropertyManager {
         args[i] = SV.newV(T.string, names[i]);
     }
     return extractProperty(getProperty(null, propertyName, propertyValue),
-        args, 1);
+        args, 1, null);
   }
 
   @Override
   @SuppressWarnings("unchecked")
-  public Object extractProperty(Object property, SV[] args, int ptr) {
+  public Object extractProperty(Object property, SV[] args, int ptr,
+                                Lst<Object> v2) {
     if (ptr >= args.length)
       return property;
     int pt;
@@ -273,7 +274,7 @@ public class PropertyManager implements JmolPropertyManager {
         if (pt < 0)
           pt += v.size();
         if (pt >= 0 && pt < v.size())
-          return extractProperty(v.get(pt), args, ptr);
+          return extractProperty(v.get(pt), args, ptr, null);
         return "";
       }
       if (property instanceof M3) {
@@ -284,19 +285,20 @@ public class PropertyManager implements JmolPropertyManager {
         if (pt < 0)
           pt += 3;
         if (pt >= 0 && pt < 3)
-          return extractProperty(f, args, --ptr);
+          return extractProperty(f, args, --ptr, null);
         return "";
       }
       if (property instanceof M4) {
         M4 m = (M4) property;
-        float[][] f = new float[][] { new float[] { m.m00, m.m01, m.m02, m.m03 },
+        float[][] f = new float[][] {
+            new float[] { m.m00, m.m01, m.m02, m.m03 },
             new float[] { m.m10, m.m11, m.m12, m.m13 },
             new float[] { m.m20, m.m21, m.m22, m.m23 },
-            new float[] { m.m30, m.m31, m.m32, m.m33 }};
+            new float[] { m.m30, m.m31, m.m32, m.m33 } };
         if (pt < 0)
           pt += 4;
         if (pt >= 0 && pt < 4)
-          return extractProperty(f, args, --ptr);
+          return extractProperty(f, args, --ptr, null);
         return "";
       }
       if (PT.isAI(property)) {
@@ -328,7 +330,7 @@ public class PropertyManager implements JmolPropertyManager {
         if (pt < 0)
           pt += iilist.length;
         if (pt >= 0 && pt < iilist.length)
-          return extractProperty(iilist[pt], args, ptr);
+          return extractProperty(iilist[pt], args, ptr, null);
         return "";
       }
       if (PT.isAFF(property)) {
@@ -336,7 +338,7 @@ public class PropertyManager implements JmolPropertyManager {
         if (pt < 0)
           pt += fflist.length;
         if (pt >= 0 && pt < fflist.length)
-          return extractProperty(fflist[pt], args, ptr);
+          return extractProperty(fflist[pt], args, ptr, null);
         return "";
       }
       if (PT.isAS(property)) {
@@ -362,31 +364,68 @@ public class PropertyManager implements JmolPropertyManager {
       if (property instanceof Map<?, ?>) {
         Map<String, Object> h = (Map<String, Object>) property;
         if (key.equalsIgnoreCase("keys")) {
-          Lst<Object> keys = new  Lst<Object>();
-          for (String k: h.keySet())
+          Lst<Object> keys = new Lst<Object>();
+          for (String k : h.keySet())
             keys.addLast(k);
-          return extractProperty(keys, args, ptr);
+          return extractProperty(keys, args, ptr, null);
         }
-        if (!h.containsKey(key)) {
-          for (String k: h.keySet())
-            if (k.equalsIgnoreCase(key)) {
+        // SELECT nt* WHERE name!=WC
+        if (key.toUpperCase().startsWith("SELECT ")) {
+          key = key.substring(6).trim();
+          pt = key.toUpperCase().indexOf(" WHERE ");
+          if (pt >= 0) {            
+            String where = key.substring(pt + 6).trim();
+            key = key.substring(0, pt).trim();
+            int ptNotLike = where.toUpperCase().indexOf(" NOT LIKE ");
+            int ptLike = where.toUpperCase().indexOf(" LIKE ");
+            int ptEq = where.indexOf("=");
+            int ptNotEq = where.indexOf("!=");
+            int pt1;
+              if (ptNotLike >= 0)
+                pt1 = (pt = ptNotLike) + 10;
+              else if (ptLike >= 0)
+                pt1 = (pt = ptLike) + 6;
+              else if (ptNotEq >= 0)
+                pt1 = (pt = ptNotEq) + 2;
+              else if (ptEq >= 0)
+                pt1 = (pt = ptEq) + 1;
+              else
+                return "";
+            Object val = h.get(where.substring(0, pt).trim());
+            if (val == null || !Txt.isSQLMatch(val, where.substring(pt1).trim(), ptNotEq >= 0, ptLike >= 0, ptNotLike >= 0))
+              return "";
+          }          
+        }
+        boolean isWild = (v2 != null && Txt.isWild(key));
+        boolean isOK = (v2 == null && h.containsKey(key));
+        if (!isOK) {
+          String lckey = (isWild ? PT.rep(key.toLowerCase(), "?", "*") : null);
+          for (String k : h.keySet()) {
+            if (k.equalsIgnoreCase(key) || lckey != null
+                && Txt.isMatch(k.toLowerCase(), lckey, true, true)) {
               key = k;
-              break;
+              if (v2 == null) {
+                isOK = true;
+                break;
+              }
+              v2.addLast(extractProperty(h.get(k), args, ptr, null));
+              if (!isWild)
+                break;
             }
+          }
         }
-        if (h.containsKey(key))
-          return extractProperty(h.get(key), args, ptr);
-        return "";
+        return (isOK && !isWild ? extractProperty(h.get(key), args, ptr, null)
+            : "");
       }
       if (property instanceof Lst<?>) {
         // drill down into vectors for this key
         Lst<Object> v = (Lst<Object>) property;
-        Lst<Object> v2 = new  Lst<Object>();
+        v2 = new Lst<Object>();
         ptr--;
         for (pt = 0; pt < v.size(); pt++) {
           Object o = v.get(pt);
           if (o instanceof Map<?, ?>)
-            v2.addLast(extractProperty(o, args, ptr));
+            extractProperty(o, args, ptr, v2);
         }
         return v2;
       }

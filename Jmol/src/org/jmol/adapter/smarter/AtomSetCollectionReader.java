@@ -37,6 +37,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
 import javajs.api.GenericBinaryDocument;
+import javajs.api.GenericLineReader;
 import javajs.util.M3;
 import javajs.util.P3;
 
@@ -129,7 +130,7 @@ import org.jmol.viewer.Viewer;
  * 
  */
 
-public abstract class AtomSetCollectionReader {
+public abstract class AtomSetCollectionReader implements GenericLineReader {
 
   public final static float ANGSTROMS_PER_BOHR = 0.5291772f; // used by SpartanArchive
 
@@ -1640,5 +1641,14 @@ public abstract class AtomSetCollectionReader {
       asc.setAnisoBorU(atom, data = new float[8], 8);
     data[i] = val;
   }
+
+  @Override
+  public String readNextLine() throws Exception {
+    // from CifDataReader, DSSRDataReader
+    if (rd() != null && line.indexOf("#jmolscript:") >= 0)
+      checkCurrentLineForScript();
+    return line;
+  }
+
 
 }

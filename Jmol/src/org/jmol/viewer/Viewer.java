@@ -626,8 +626,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     g.setS("language", GT.getLanguage());
     stm.setJmolDefaults();
     // this code will be shared between Jmol 14.0 and 14.1
-    Elements.covalentVersion = (JC.versionInt < 1401011 ? Elements.RAD_COV_IONIC_OB1_100_1: Elements.RAD_COV_BODR_2014_02_22);
-    allowArrayDotNotation = (JC.versionInt >= 1401011);
+    Elements.covalentVersion = Elements.RAD_COV_BODR_2014_02_22;
+    allowArrayDotNotation = true;
   }
 
   public void setDisplay(Object canvas) {
@@ -9397,7 +9397,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public Object extractProperty(Object property, SV[] args, int pt) {
-    return getPropertyManager().extractProperty(property, args, pt);
+    return getPropertyManager().extractProperty(property, args, pt, null);
   }
 
   //// requiring ScriptEvaluator:

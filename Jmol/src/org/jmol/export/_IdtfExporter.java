@@ -339,7 +339,7 @@ public class _IdtfExporter extends __CartesianExporter {
         + "\n            3Dnavpane=false,"
         + "\n            3Dmenu,"
         + "\n            3Droo=" + cameraDistance + ","
-        + "\n            3Dcoo= 0.0 0.0 -" + cameraDistance + ","
+        + "\n            3Dcoo= 0.0 0.0 0.0,"
         + "\n            3Dc2c=0.0 0.0 1.0,"
         + "\n            3Daac=" + aperatureAngle + ","
         + "\n            3Droll=0.0,"

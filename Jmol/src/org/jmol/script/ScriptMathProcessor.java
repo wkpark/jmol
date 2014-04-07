@@ -28,7 +28,7 @@ import javajs.util.Lst;
 import java.util.Arrays;
 
 import java.util.Hashtable;
-import java.util.Set;
+import java.util.Map.Entry;
 
 import java.util.Map;
 
@@ -826,16 +826,13 @@ public class ScriptMathProcessor {
   }
   
   
-  @SuppressWarnings("unchecked")
   private boolean operate() throws ScriptException {
-
     T op = oStack[oPt--];
     P3 pt;
     M3 m;
     M4 m4;
     String s;
     SV x1;
-
     if (debugHigh) {
       dumpStacks("operate: " + op);
     }
@@ -930,6 +927,7 @@ public class ScriptMathProcessor {
         switch (x2.tok) {
         case T.hash:
         case T.context:
+        case T.varray:
           switch (iv) {
           case T.type:
           case T.keys:
@@ -949,13 +947,7 @@ public class ScriptMathProcessor {
       case T.type:
         return addXStr(typeOf(x2));
       case T.keys:
-        if (x2.tok != T.hash && x2.tok != T.context)
-          return addXStr("");
-        Set<String> keyset = ((Map<String, SV>) (x2.tok == T.hash ? x2.value
-            : ((ScriptContext) x2.value).getFullMap())).keySet();
-        String[] keys = keyset.toArray(new String[keyset.size()]);
-        Arrays.sort(keys);
-        return addXAS(keys);
+        return getKeys(x2, (op.intValue & T.minmaxmask) == T.minmaxmask);
       case T.length:
       case T.count:
       case T.size:
@@ -1018,6 +1010,41 @@ public class ScriptMathProcessor {
     }
 
     return binaryOp(op, x1, x2);
+  }
+
+  private boolean getKeys(SV x2, boolean isAll) {
+    switch (x2.tok) {
+    case T.hash:
+    case T.context:
+    case T.varray:
+      break;
+    default:
+      return addXStr("");
+    }
+    Lst<String> keys = new Lst<String>();
+    getKeyList(x2, isAll, keys, "");
+    String[] skeys = keys.toArray(new String[keys.size()]);
+    Arrays.sort(skeys);
+    return addXAS(skeys);
+  }
+
+  private void getKeyList(SV x2, boolean isAll, Lst<String> keys, String prefix) {
+    Map<String, SV> map = x2.getMap();
+    if (map == null) {
+      if (isAll) {
+        Lst<SV> lst;
+        int n;
+        if ((lst = x2.getList()) != null && (n = lst.size()) > 0)
+          getKeyList(lst.get(n - 1), true, keys, prefix + n + ".");
+      }
+      return;
+    }
+    for(Entry<String, SV> e: map.entrySet()) {
+      String k = e.getKey();
+      keys.addLast(prefix + k);
+      if (isAll)
+        getKeyList(e.getValue(), true, keys, prefix + k + ".");
+    }
   }
 
   private static final String qMods = " w:0 x:1 y:2 z:3 normal:4 eulerzxz:5 eulerzyz:6 vector:-1 theta:-2 axisx:-3 axisy:-4 axisz:-5 axisangle:-6 matrix:-9";

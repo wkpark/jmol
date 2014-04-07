@@ -28,6 +28,7 @@ import java.util.Map;
 
 import javajs.api.GenericLineReader;
 import javajs.util.Lst;
+import javajs.util.P3;
 import javajs.util.PT;
 import javajs.util.SB;
 
@@ -39,6 +40,7 @@ public class DSSRParser implements JmolDSSRParser {
   private GenericLineReader reader;
   private String line;
   private Map<String, Object> dssr;
+  private Map<String, Object> htTemp;
 
   public DSSRParser() {
     // for reflection
@@ -47,6 +49,7 @@ public class DSSRParser implements JmolDSSRParser {
   @Override
   public void process(Map<String, Object> info, GenericLineReader reader) throws Exception {
     info.put("dssr", dssr = new Hashtable<String, Object>());
+    htTemp = new Hashtable<String, Object>();
     this.reader = reader;
     while (rd() != null) {
       if (line.startsWith("List of")) {
@@ -55,24 +58,21 @@ public class DSSRParser implements JmolDSSRParser {
         if (n < 0)
           continue;
         line = PT.rep(PT.trim(line,  "s"), " interaction", "");
-        int pt = "pair elix lice stem plet tack loop ulge otif pper turn tion ment".indexOf(line.trim().substring(line.length() - 4));
+        int pt = "pair elix lice plet stem tack loop ulge tion ment otif pper turn".indexOf(line.trim().substring(line.length() - 4));
                 //0    5    10        20        30        40        50        60
         switch(pt) {
         case 0:
           readPairs(n);
           break;
-        default:
-          Logger.info("DSSRParser ignored: " + line);
-          break;
         case 5:
         case 10:
-          getList(n, "helices", "  helix#");
+          getList(n, "helices", "helix#", true);
           break;
         case 15:
-          getList(n, "stems", "  stem#");
+          readNTList(null, "multiplets", n);
           break;
         case 20:
-          readNTList("multiplets", n);
+          getList(n, "stems", "stem#", false);
           break;
         case 25:
           readStacks(n);
@@ -84,30 +84,33 @@ public class DSSRParser implements JmolDSSRParser {
           readBulges(n);
           break;          
         case 40:
-          readMotifs(n);
-          break;          
-        case 45:
-          readNTList("riboseZippers", n);
-          break;          
-        case 50:
-          readTurns(n);
-          break;          
-        case 55:
           readJunctions(n);
           break;
+        case 45:
+          readNTList(null, "singleStrandedSegments", n);
+          break;
+        case 50:
+          readMotifs(n);
+          break;          
+        case 55:
+          readNTList(null, "riboseZippers", n);
+          break;          
         case 60:
-          readNTList("singleStrandedSegments", n);
+          readTurns(n);
+          break;          
+        default:
+          Logger.info("DSSRParser ignored: " + line);
           break;
         }        
       }
     }
   }
 
-  private Lst<Map<String, Object>> addList(String name) {    
-    Lst<Map<String, Object>> map = new Lst<Map<String, Object>>();
+  private Lst<Map<String, Object>> newList(String name) {    
+    Lst<Map<String, Object>> list = new Lst<Map<String, Object>>();
     if (name != null)
-      dssr.put(name, map);
-    return map;
+      dssr.put(name, list);
+    return list;
   }
 
   /**
@@ -125,7 +128,15 @@ public class DSSRParser implements JmolDSSRParser {
    * @throws Exception 
    */
   private void readStacks(int n) throws Exception {
-    readInfo("coaxialStacks", n);
+    Lst<Map<String, Object>> list = newList("coaxialStacks");
+    Map<String, Object> data = new Hashtable<String, Object>();
+    for (int i = 0; i < n; i++) {
+      String[] tokens = PT.getTokens(rd());
+      data.put("helix", tokens[1]);
+      data.put("stemCount", Integer.valueOf(tokens[3]));
+      data.put("nts", getLinkNTList(tokens[5], "stem"));
+      list.addLast(data);
+    }
   }
 
   /**
@@ -232,20 +243,30 @@ List of 38 bulges
   }
 
   private void readSets(String key, int n, int nway, int ptnts) throws Exception {
-    Lst<Map<String, Object>>sets = addList(key);
+    Lst<Map<String, Object>>sets = newList(key);
     boolean isJunction = (nway == 0);
     for (int i = 0; i < n; i++) {
       Map<String, Object>set = new Hashtable<String, Object>(); 
       String[] tokens = PT.getTokens(rd());
-      set.put("type", tokens[1]);
+      set.put("id", tokens[0]);
+      set.put("dssrType", tokens[1]);
       if (isJunction)
         nway = PT.parseInt(tokens[1].substring(0, tokens[1].indexOf("-")));
       set.put("count", Integer.valueOf(nway));
       set.put("nts", Integer.valueOf(PT.trim(tokens[ptnts],";").substring(4)));
-      set.put("linkedBy", tokens[ptnts + 4]);
-      set.put("nts", readNTList(null, nway + 1));
+      set.put("linkedBy", getLinkNTList(tokens[ptnts + 4], ""));
+      set.put("nts", readNTList(null, null, nway + 1));
       sets.addLast(set);
     }
+  }
+
+  private Lst<Object> getLinkNTList(String linkStr, String type) {
+    //  [#3,#4]
+    Lst<Object> list = new Lst<Object>();
+    String[] tokens = PT.getTokens(PT.replaceAllCharacters(linkStr, "[,]"," "));
+    for (int i = 0; i < tokens.length; i++)
+      list.addLast(htTemp.get(type + tokens[i]));
+    return list;
   }
 
   /*
@@ -264,11 +285,11 @@ List of 106 A-minor motifs
         -0.C440 H-bonds[3]: "O2'(hydroxyl)-O3'[3.17],O2'(hydroxyl)-O2'(hydroxyl)[2.73],N3-O2'(hydroxyl)[2.70]"
    */
   private void readMotifs(int n) throws Exception {
-    Lst<Map<String, Object>>motifs = addList("aMinorMotifs");
+    Lst<Map<String, Object>>motifs = newList("aMinorMotifs");
     for (int i = 0; i < n; i++) {
       Map<String, Object>motif = new Hashtable<String, Object>(); 
       String[] tokens = PT.getTokens(rd());
-      motif.put("type", tokens[1].substring(tokens[1].indexOf("=") + 1) + " " + tokens[2]);
+      motif.put("motiftype", after(tokens[1],"=") + " " + tokens[2]);
       motif.put("info", line);
       motif.put("data", readInfo(null, 2));      
       motifs.addLast(motif);
@@ -287,14 +308,14 @@ List of 9 (possible) kink turns
       strand2 nts=10; GUGCGGUAGU 0.G365,0.U366,0.G367,0.C368,0.G369,0.G370,0.U371,0.A372,0.G373,0.U374
    */
   private void readTurns(int n) throws Exception {    
-    Lst<Map<String, Object>>turns = addList("kinkTurns");
+    Lst<Map<String, Object>>turns = newList("kinkTurns");
     for (int i = 0; i < n; i++) {
       Map<String, Object>turn = new Hashtable<String, Object>(); 
       String[] tokens = PT.getTokens(rd());
-      turn.put("type", tokens[1]);
+      turn.put("turnType", tokens[1]);
       turn.put("info", line);
       turn.put("details", rd());
-      turn.put("nts", readNTList(null, 2));
+      turn.put("nts", readNTList(null, null, 2));
       turns.addLast(turn);
     }
   }
@@ -322,16 +343,29 @@ List of 50 lone WC/wobble pairs
   -1 0.U27            0.A516           U-A WC           20-XX     cWW cW-W
    */
   private void readPairs(int n) throws Exception {
-    boolean isWobble = (line.indexOf("wobble") >= 0);
-    Lst<Map<String, Object>>pairs = addList(isWobble ? "wobblePairs" : "basePairs");
-    for (int i = (isWobble ? 3 : 1); --i >= 0;)
+    if (line.indexOf("wobble") >= 0) {
+      // just store negative indices in temporary map.
+      // pointing to original base pair
       rd();
+      skipHeader();
+      for (int i = 0; i < n; i++) {
+        String[] tokens = PT.getTokens(line);
+        @SuppressWarnings("unchecked")
+        Map<String, Object>data = (Map<String, Object>) htTemp.get(tokens[1]+tokens[2]);
+        htTemp.put("#" + line.substring(0,5).trim(), data);
+        data.put("lonePair", Boolean.TRUE);
+        rd();
+      }
+      return;
+    }
+    Lst<Map<String, Object>>pairs = newList("basePairs");
+    skipHeader();
     for (int i = 0; i < n; i++)
-      pairs.addLast(getBPData());
+      pairs.addLast(getBPData(null, true));
  }
 
   /*
-List of 1 helix
+  List of 1 helix
   Note: a helix is defined by base-stacking interactions, regardless of bp
         type and backbone connectivity, and may contain more than one stem.
       helix#number[stems-contained] bps=number-of-base-pairs in the helix
@@ -360,7 +394,7 @@ List of 1 helix
   11 A.C11            B.G2             C-G WC           19-XIX    cWW cW-W
   12 A.G12            B.C1             G-C WC           19-XIX    cWW cW-W
 
-List of 1 stem
+  List of 1 stem
   Note: a stem is defined as a helix consisting of only canonical WC/wobble
         pairs, with a continuous backbone.
       stem#number[#helix-number containing this stem]
@@ -386,21 +420,65 @@ List of 1 stem
 
 
    */
-  
-  private Map<String, Object> getBPData() throws Exception {
-    Map<String, Object> data = new Hashtable<String, Object>();
-    String[] tokens = PT.getTokens(rd());
-    data.put("nt1", fix(tokens[1]));
-    data.put("nt2", fix(tokens[2]));
-    data.put("bp",  tokens[3]);
-    int pt = (tokens.length == 8 ? 5 : 4);
-    data.put("name", pt == 5 ? tokens[4] : "?");
-    data.put("Saenger", tokens[pt++]);
-    data.put("LW", tokens[pt++]);
-    data.put("DSSR", tokens[pt]);
+
+  private Map<String, Object> getBPData(Lst<Object> ntList, boolean readParams) throws Exception {
+    String[] tokens = PT.getTokens(line);
+    String nt12 = tokens[1] + tokens[2];
+    @SuppressWarnings("unchecked")
+    Map<String, Object> data = (Map<String, Object>) htTemp.get(nt12);
+    if (data == null) {
+      data = new Hashtable<String, Object>();
+      data.put("id", tokens[0]);
+      data.put("nt1", fix(tokens[1]));
+      data.put("nt2", fix(tokens[2]));
+      data.put("bp", tokens[3]);
+      // helix can be missing name
+      //    1 0.C2769          0.A2805          C-A              00-n/a    t.S c.-m
+
+      int pt = (tokens.length == 8 ? 5 : 4);
+      data.put("name", pt == 5 ? tokens[4] : "?");
+      data.put("Saenger",
+          Integer.valueOf(tokens[pt].substring(0, tokens[pt].indexOf("-"))));
+      data.put("LW", tokens[++pt]);
+      data.put("DSSR", tokens[++pt]);
+      htTemp.put(nt12, data);
+    } else {
+      ntList.addLast(data);
+    }
+    if (readParams)
+      readParameters(nt12, ntList == null);
+    else
+      skipHeader();
     return data;
   }
 
+  private void readParameters(String key, boolean isBP) throws Exception {
+    @SuppressWarnings("unchecked")
+    Map<String, Object> data = (Map<String, Object>) htTemp.get(key);
+    String info = "";
+    while (isHeader(rd())) {
+      int pt = line.indexOf("[");
+      if (isBP)
+        info += line + "\n";
+      if (line.indexOf("bp_pars:") >= 0) {
+        data.put("bpParams", PT.parseFloatArray(line.substring(pt + 1)));
+      } else if (line.indexOf("heli_pars:") >= 0) {
+        data.put("helixParams", PT.parseFloatArray(line.substring(pt + 1)));
+      } else if (line.indexOf("step_pars:") >= 0) {
+        data.put("stepParams", PT.parseFloatArray(line.substring(pt + 1)));
+      } else if ((pt = line.indexOf("h-rise=")) >= 0) {
+        addFloat(data, "rise_h", pt + 7);
+        addFloat(data, "twist_h", line.indexOf("h-twist=") + 8);
+      } else if ((pt = line.indexOf("rise=")) >= 0) {
+        addFloat(data, "rise", pt + 5);
+        addFloat(data, "twist", line.indexOf("twist=") + 6);
+      }
+    }
+    if (isBP)
+      data.put("info", info);
+  }
+
+  
   /*
 List of 31 non-loop single-stranded segments
    1 nts=3 UAU 0.U10,0.A11,0.U12
@@ -415,27 +493,55 @@ List of 233 multiplets
   11 nts=3* AGG 0.A80,0.G94,0.G97
    */
 
-  private Lst<Map<String, Object>> readNTList(String type, int n) throws Exception {
-    Lst<Map<String, Object>>list = addList(type);
-    System.out.println("readNTlist " + type + " " + n);
+
+  private void addFloat(Map<String, Object> data, String key, int pt) {
+    data.put(key, Float.valueOf(PT.parseFloat(line.substring(pt, Math.min(line.length(), pt + 10)))));
+  }
+
+  private Lst<Map<String, Object>> readNTList(String ntsKey, String type, int n) throws Exception {
+    Lst<Map<String, Object>>list = newList(type);
+    if (ntsKey != null)
+      htTemp.put(ntsKey, list);
     for (int i = 0; i < n; i++)
       list.addLast(getNTList());
     return list;
   }
 
-  private void getList(int n, String key, String str) throws Exception {
-    Lst<Map<String, Object>>list = addList(key);
+  private void getList(int n, String key, String htKey, boolean getHelixParams) throws Exception {
+    Lst<Map<String, Object>>list = newList(key);
     for (int i = 0; i < n; i++) {
-      skipTo(str);
-      int bps = PT.parseInt(line.substring(line.indexOf("=") + 1));
+      skipTo("  " + htKey);
+      int bps = PT.parseInt(after(line,"="));
       Map<String, Object> data = new Hashtable<String, Object>();
-      data.put("info", getHeader(4));
+      String header = getHeader();
+      data.put("info", header);
+      if (getHelixParams) {
+        String[] lines = PT.split(header, "\n");
+        if (lines.length == 8) {
+          data.put("helicalAxisData", after(lines[5], "s"));
+          data.put("p1", getPoint(lines[6]));
+          data.put("p2", getPoint(lines[7]));
+      //    helical-axis[2.87(0.31)]:   0.534   0.823   0.193 
+      //    point-one:  49.135  20.676  97.513
+      //    point-two:  56.822  32.522 100.293
+        }
+      }
+
+      
       list.addLast(data);
       Lst<Map<String, Object>>pairs = new Lst<Map<String, Object>>();    
       data.put("basePairs", pairs);
+      Lst<Object> ntList = new Lst<Object>();
+      htTemp.put(htKey + (i + 1), ntList);
       for (int j = 0; j < bps; j++)
-        pairs.addLast(getBPData());
+        pairs.addLast(getBPData(ntList, getHelixParams));
     }
+  }
+
+  private P3 getPoint(String data) {
+    float[] a = PT.parseFloatArray(after(data, ":"));
+    return P3.new3(a[0], a[1], a[2]);
+    
   }
 
   private Map<String, Object> getNTList() throws Exception {
@@ -444,10 +550,11 @@ List of 233 multiplets
     //3 nts=4 CGAA 0.C303,0.G304,0.A305,0.A306
     //nts=8 GCCAAGCU 0.G56,0.C57,0.C58,0.A59,0.A60,0.G61,0.C62,0.U63
     String[] tokens = PT.getTokens(rd());
-    int pt = (tokens[0].startsWith("nts") ? 1 : 2);
-    if (tokens.length > pt) {
-      data.put("seq", tokens[pt++]);
-      data.put("nt", getNT(tokens[pt]));
+    int pt = (tokens[0].startsWith("nts") ? 0 : 1);
+    if (tokens.length > pt + 2) {
+      data.put("count", Integer.valueOf(PT.replaceAllCharacters(after(tokens[pt], "="), "*;", "")));
+      data.put("seq", tokens[++pt]);
+      data.put("nt", getNT(tokens[++pt]));
     }
     return data;
   }
@@ -455,18 +562,37 @@ List of 233 multiplets
   private Object getNT(String s) {
     String[] tokens = PT.split(s, ",");
     Lst<String> list = new Lst<String>();
-    System.out.println("getNT "+ s + " " + tokens.length);
     for (int i = 0; i < tokens.length; i++)
       list.addLast(fix(tokens[i]));
     return list;
   }
 
-  private Object getHeader(int n) throws Exception {
+  private String getHeader() throws Exception {
     SB header = new SB();
     header.append(line).append("\n");
-    for (int j = 0; j < n; j++)
-      header.append(rd()).append("\n");
+    while (isHeader(rd()))
+      header.append(line).append("\n");
     return header.toString();
+  }
+
+  /**
+   * Numbers are right justified in columns 0-3
+   * followed by a space and a character;
+   * 
+   * base-pair data start in column 5, but
+   * notes start with "Note: " or "     ", both
+   * of which have a space in column 5.
+   * 
+   * 
+   * 
+   * @throws Exception
+   */
+  private void skipHeader() throws Exception {
+    while (isHeader(rd())){}
+  }
+
+  private boolean isHeader(String line) {
+    return line.length() < 6 || line.charAt(3) == ' ' || line.charAt(5) == ' ';
   }
 
   private void skipTo(String key) throws Exception {
@@ -483,14 +609,16 @@ List of 233 multiplets
    */
   private String fix(String nt) {
     int pt1 = nt.indexOf(".");
-    if (pt1 < 0)
-      System.out.println(line);
     String chain = nt.substring(0, pt1);
     int pt = nt.length();
     while (Character.isDigit(nt.charAt(--pt))) {
     }
     return "[" + nt.substring(pt1 + 1, pt + 1) + "]" + nt.substring(pt + 1) + ":"
         + chain;
+  }
+
+  private String after(String s, String key) {
+    return s.substring(s.indexOf(key) + 1);
   }
 
   private String rd() throws Exception {

@@ -424,12 +424,14 @@ public class PropertyManager implements JmolPropertyManager {
         // drill down into vectors for this key
         @SuppressWarnings("unchecked")
         Lst<Object> v = (Lst<Object>) property;
-        v2 = new Lst<Object>();
+        if (v2 == null)
+          v2 = new Lst<Object>();
         ptr--;
         for (pt = 0; pt < v.size(); pt++) {
           Object o = v.get(pt);
           if (o instanceof Map<?, ?> 
-            || (o instanceof SV) && ((SV) o).getMap() != null) 
+            || (o instanceof SV) && 
+            (((SV) o).getMap() != null || ((SV) o).getList() != null)) 
             extractProperty(o, args, ptr, v2);
         }
         return v2;

@@ -46,6 +46,7 @@ import org.jmol.modelset.StateScript;
 import org.jmol.modelset.TickInfo;
 
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
+import org.jmol.api.JmolDSSRParser;
 import org.jmol.api.JmolDataManager;
 import org.jmol.api.JmolNMRInterface;
 import org.jmol.api.AtomIndexIterator;
@@ -9710,5 +9711,10 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public Object getApplet() {
     return applet;
   }
+  private JmolDSSRParser dssrParser;  
+  public JmolDSSRParser getDSSRParser() {
+    return (dssrParser == null ? (dssrParser = (JmolDSSRParser) Interface.getOption("dssr.DSSRParser")) : dssrParser);
+  }
+
 
 }

@@ -2181,12 +2181,10 @@ public class MathExt implements JmolMathExtension {
     RadiusData rd = null;
     switch (tok) {
     case T.branch:
-      if (i != 3 || !(args[1].value instanceof BS)
-          || !(args[2].value instanceof BS))
-        return false;
-      return mp.addXBs(vwr.getBranchBitSet(
+      return (i == 3 && args[1].value instanceof BS 
+      && args[2].value instanceof BS && mp.addXBs(vwr.getBranchBitSet(
           ((BS) args[2].value).nextSetBit(0),
-          ((BS) args[1].value).nextSetBit(0), true));
+          ((BS) args[1].value).nextSetBit(0), true)));
     case T.smiles:
     case T.substructure: // same as "SMILES"
     case T.search:
@@ -2273,6 +2271,7 @@ public class MathExt implements JmolMathExtension {
       case T.atomtype:
       case T.basepair:
       case T.sequence:
+      case T.dssr:
         return mp.addXBs(vwr.ms.getAtoms(tok,
             SV.sValue(args[args.length - 1])));
       }

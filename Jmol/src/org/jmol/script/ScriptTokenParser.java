@@ -679,6 +679,7 @@ abstract class ScriptTokenParser {
       switch (tok0) {
       case T.define:
         break;
+      case T.dssr:
       case T.search:
       case T.smiles:
       case T.substructure:

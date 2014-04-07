@@ -345,6 +345,7 @@ abstract class ScriptExpr extends ScriptParam {
       case T.smiles:
       case T.substructure:
       case T.structure:
+      case T.dssr:
         ////
       case T.on:
       case T.off:
@@ -642,7 +643,6 @@ abstract class ScriptExpr extends ScriptParam {
     ScriptMathProcessor rpn = new ScriptMathProcessor(this, false, false,
         false, mustBeBitSet, allowUnderflow, null);
     Object val;
-    int comparisonValue = Integer.MAX_VALUE;
     boolean refreshed = false;
     iToken = 1000;
     boolean ignoreSubset = (pcStart < 0);
@@ -886,133 +886,24 @@ abstract class ScriptExpr extends ScriptParam {
       case T.opGT:
       case T.opEQ:
       case T.opNE:
-        if (pc + 1 == code.length)
-          invArg();
-        val = code[++pc].value;
-        int tokOperator = instruction.tok;
+        int tok = instruction.tok;
         int tokWhat = instruction.intValue;
-        String property = (tokWhat == T.property ? (String) val : null);
-        if (property != null) {
-          if (pc + 1 == code.length)
-            invArg();
-          val = code[++pc].value;
-        }
-        if (tokWhat == T.configuration && tokOperator != T.opEQ)
+        if (tokWhat == T.configuration && tok != T.opEQ)
           invArg();
+        float[] data = null;
+        if (tokWhat == T.property) {
+          if (pc + 2 == code.length)
+            invArg();
+          if (!chk)
+            data = vwr.getDataFloat((String) code[++pc].value);
+        }
         if (chk) {
           rpn.addXBs(new BS());
           break;
         }
-        boolean isModel = (tokWhat == T.model);
-        boolean isIntProperty = T.tokAttr(tokWhat, T.intproperty);
-        boolean isFloatProperty = T.tokAttr(tokWhat, T.floatproperty);
-        boolean isIntOrFloat = isIntProperty && isFloatProperty;
-        boolean isStringProperty = !isIntProperty
-            && T.tokAttr(tokWhat, T.strproperty);
-        if (tokWhat == T.element)
-          isIntProperty = !(isStringProperty = false);
-        int tokValue = code[pc].tok;
-        comparisonValue = code[pc].intValue;
-        float comparisonFloat = Float.NaN;
-        if (val instanceof P3) {
-          if (tokWhat == T.color) {
-            comparisonValue = CU.colorPtToFFRGB((P3) val);
-            tokValue = T.integer;
-            isIntProperty = true;
-          }
-        } else if (val instanceof String) {
-          if (tokWhat == T.color) {
-            comparisonValue = CU.getArgbFromString((String) val);
-            if (comparisonValue == 0 && T.tokAttr(tokValue, T.identifier)) {
-              val = getStringParameter((String) val, true);
-              if (((String) val).startsWith("{")) {
-                val = Escape.uP((String) val);
-                if (val instanceof P3)
-                  comparisonValue = CU.colorPtToFFRGB((P3) val);
-                else
-                  comparisonValue = 0;
-              } else {
-                comparisonValue = CU.getArgbFromString((String) val);
-              }
-            }
-            tokValue = T.integer;
-            isIntProperty = true;
-          } else if (isStringProperty) {
-            if (T.tokAttr(tokValue, T.identifier))
-              val = getStringParameter((String) val, true);
-          } else {
-            if (T.tokAttr(tokValue, T.identifier)) {
-              if ("_modelNumber".equalsIgnoreCase((String) val)) {
-                int modelIndex = vwr.am.cmi;
-                val = Integer.valueOf(modelIndex < 0 ? 0 : vwr
-                    .getModelFileNumber(modelIndex));
-              } else {
-                val = SV.nValue((SV) getParameter((String) val, T.variable));
-              }
-            }
-            if (val instanceof String) {
-              if (tokWhat == T.structure || tokWhat == T.substructure
-                  || tokWhat == T.element)
-                isStringProperty = !(isIntProperty = (comparisonValue != Integer.MAX_VALUE));
-              else
-                val = SV.nValue(code[pc]);
-            }
-            if (val instanceof Integer)
-              comparisonFloat = comparisonValue = ((Integer) val).intValue();
-            else if (val instanceof Float && isModel)
-              comparisonValue = ModelCollection
-                  .modelFileNumberFromFloat(((Float) val).floatValue());
-          }
-        }
-        if (isStringProperty && !(val instanceof String)) {
-          val = "" + val;
-        }
-        if (val instanceof Integer || tokValue == T.integer) {
-          if (isModel) {
-            if (comparisonValue >= 1000000)
-              tokWhat = -T.model;
-          } else if (isIntOrFloat) {
-            isFloatProperty = false;
-          } else if (isFloatProperty) {
-            comparisonFloat = comparisonValue;
-          }
-        } else if (val instanceof Float) {
-          if (isModel) {
-            tokWhat = -T.model;
-          } else {
-            comparisonFloat = ((Float) val).floatValue();
-            if (isIntOrFloat) {
-              isIntProperty = false;
-            } else if (isIntProperty) {
-              comparisonValue = (int) (comparisonFloat);
-            }
-          }
-        } else if (!isStringProperty) {
-          iToken++;
+        if (pc + 1 == code.length)
           invArg();
-        }
-        if (isModel && comparisonValue >= 1000000
-            && comparisonValue % 1000000 == 0) {
-          comparisonValue /= 1000000;
-          tokWhat = T.file;
-          isModel = false;
-        }
-        if (tokWhat == -T.model && tokOperator == T.opEQ) {
-          rpn.addXBs(bitSetForModelFileNumber(comparisonValue));
-          break;
-        }
-        if (value != null && ((String) value).indexOf("-") >= 0) {
-          if (isIntProperty)
-            comparisonValue = -comparisonValue;
-          else if (!Float.isNaN(comparisonFloat))
-            comparisonFloat = -comparisonFloat;
-        }
-        float[] data = (tokWhat == T.property ? vwr.getDataFloat(property)
-            : null);
-        rpn.addXBs(isIntProperty ? compareInt(tokWhat, tokOperator,
-            comparisonValue) : isStringProperty ? compareString(tokWhat,
-            tokOperator, (String) val) : compareFloatData(tokWhat, data,
-            tokOperator, comparisonFloat));
+        rpn.addXBs(getComparison(code[++pc], tokWhat, tok, (String) value, data));
         break;
       case T.decimal:
       case T.integer:
@@ -1084,6 +975,131 @@ abstract class ScriptExpr extends ScriptParam {
     return bs;
   }
 
+  private BS getComparison(T t, int tokWhat, int tokOp, String strOp,
+                           float[] data) throws ScriptException {
+    int tokValue = t.tok;
+    if (tokValue == T.varray) {
+      BS bs = new BS();
+      if (tokOp != T.opEQ)
+        bs.setBits(0, vwr.getAtomCount());
+      Lst<SV> lst = ((SV) t).getList();
+      for (int i = lst.size(); --i >= 0;) {
+        BS res = getComparison(lst.get(i), tokWhat, tokOp, strOp, data);
+        if (tokOp == T.opEQ)
+          bs.or(res);
+        else
+          bs.and(res);
+      }
+      return bs;
+    }
+    Object val = t.value;
+    if (T.tokAttr(tokValue, T.identifier)) {
+      if ("_modelNumber".equalsIgnoreCase((String) val)) {
+        int modelIndex = vwr.am.cmi;
+        val = Integer.valueOf(modelIndex < 0 ? 0 : vwr
+            .getModelFileNumber(modelIndex));
+      } else {
+        val = getParameter((String) val, T.variable);
+        if (((SV) val).tok == T.varray)
+          return getComparison((SV) val, tokWhat, tokOp, strOp, data);
+        val = SV.nValue((SV) val);
+      }
+    }
+
+    int comparisonInt = t.intValue;
+    float comparisonFloat = Float.NaN;
+
+    boolean isModel = (tokWhat == T.model);
+    boolean isIntProperty = T.tokAttr(tokWhat, T.intproperty);
+    boolean isFloatProperty = T.tokAttr(tokWhat, T.floatproperty);
+    boolean isIntOrFloat = isIntProperty && isFloatProperty;
+    boolean isStringProperty = !isIntProperty
+        && T.tokAttr(tokWhat, T.strproperty);
+    if (tokWhat == T.element)
+      isIntProperty = !(isStringProperty = false);
+
+    if (val instanceof P3) {
+      if (tokWhat == T.color) {
+        comparisonInt = CU.colorPtToFFRGB((P3) val);
+        tokValue = T.integer;
+        isIntProperty = true;
+      }
+    } else if (val instanceof String) {
+      if (tokWhat == T.color) {
+        comparisonInt = CU.getArgbFromString((String) val);
+        if (comparisonInt == 0 && T.tokAttr(tokValue, T.identifier)) {
+          val = getStringParameter((String) val, true);
+          if (((String) val).startsWith("{")) {
+            val = Escape.uP((String) val);
+            if (val instanceof P3)
+              comparisonInt = CU.colorPtToFFRGB((P3) val);
+            else
+              comparisonInt = 0;
+          } else {
+            comparisonInt = CU.getArgbFromString((String) val);
+          }
+        }
+        tokValue = T.integer;
+        isIntProperty = true;
+      } else if (!isStringProperty) {
+        if (tokWhat == T.structure || tokWhat == T.substructure
+            || tokWhat == T.element)
+          isStringProperty = !(isIntProperty = (comparisonInt != Integer.MAX_VALUE));
+        else
+          val = SV.nValue(t);
+        if (val instanceof Integer)
+          comparisonFloat = comparisonInt = ((Integer) val).intValue();
+        else if (val instanceof Float && isModel)
+          comparisonInt = ModelCollection
+              .modelFileNumberFromFloat(((Float) val).floatValue());
+      }
+    }
+    if (isStringProperty && !(val instanceof String)) {
+      val = "" + val;
+    }
+    if (val instanceof Integer || tokValue == T.integer) {
+      if (isModel) {
+        if (comparisonInt >= 1000000)
+          tokWhat = -T.model;
+      } else if (isIntOrFloat) {
+        isFloatProperty = false;
+      } else if (isFloatProperty) {
+        comparisonFloat = comparisonInt;
+      }
+    } else if (val instanceof Float) {
+      if (isModel) {
+        tokWhat = -T.model;
+      } else {
+        comparisonFloat = ((Float) val).floatValue();
+        if (isIntOrFloat) {
+          isIntProperty = false;
+        } else if (isIntProperty) {
+          comparisonInt = (int) (comparisonFloat);
+        }
+      }
+    } else if (!isStringProperty) {
+      iToken++;
+      invArg();
+    }
+    if (isModel && comparisonInt >= 1000000 && comparisonInt % 1000000 == 0) {
+      comparisonInt /= 1000000;
+      tokWhat = T.file;
+      isModel = false;
+    }
+    if (tokWhat == -T.model && tokOp == T.opEQ) {
+      return bitSetForModelFileNumber(comparisonInt);
+    }
+    if (strOp != null && strOp.indexOf("-") >= 0) {
+      if (isIntProperty)
+        comparisonInt = -comparisonInt;
+      else if (!Float.isNaN(comparisonFloat))
+        comparisonFloat = -comparisonFloat;
+    }
+    return (isIntProperty ? compareInt(tokWhat, tokOp, comparisonInt)
+        : isStringProperty ? compareString(tokWhat, tokOp, (String) val)
+            : compareFloatData(tokWhat, data, tokOp, comparisonFloat));
+
+  }
   protected boolean noCopy(int i, int dir) {
     // when there is a ++ or -- before or after
     // an integer or decimal variable by name we must 

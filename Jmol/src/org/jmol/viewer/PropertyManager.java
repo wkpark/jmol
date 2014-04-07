@@ -275,9 +275,7 @@ public class PropertyManager implements JmolPropertyManager {
         Lst<Object> v = (Lst<Object>) property;
         if (pt < 0)
           pt += v.size();
-        if (pt >= 0 && pt < v.size())
-          return extractProperty(v.get(pt), args, ptr, null);
-        return "";
+        return (pt >= 0 && pt < v.size()? extractProperty(v.get(pt), args, ptr, null): "");
       }
       if (property instanceof M3) {
         M3 m = (M3) property;
@@ -405,10 +403,12 @@ public class PropertyManager implements JmolPropertyManager {
               return "";
           }          
         }
-        boolean isWild = (v2 != null && Txt.isWild(key));
+        boolean isWild = Txt.isWild(key);
+        if (isWild && v2 == null)
+          v2 = new Lst<Object>();
         if (isWild && key.equals("*")) {
           v2.addLast(h);
-          return "";
+          return v2;
         }
         boolean isOK = (v2 == null && h.containsKey(key));
         if (!isOK) {
@@ -428,7 +428,7 @@ public class PropertyManager implements JmolPropertyManager {
           }
         }
         return (isOK && !isWild ? extractProperty(h.get(key), args, ptr, null)
-            : "");
+            : isWild ? v2 : "");
       }
       if (property instanceof Lst<?>) {
         // drill down into vectors for this key

@@ -44,6 +44,7 @@ import java.util.Properties;
 
 import org.jmol.api.AtomIndexIterator;
 import org.jmol.api.Interface;
+import org.jmol.api.JmolDSSRParser;
 import org.jmol.api.JmolModulationSet;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.AtomData;
@@ -1840,6 +1841,34 @@ abstract public class ModelCollection extends BondCollection {
     switch (tokType) {
     default:
       return getAtomBitsMDa(tokType, specInfo);
+    case T.dssr:
+      bs = new BS();
+      JmolDSSRParser p = vwr.getDSSRParser();
+      for (int i = mc; --i >= 0;) {
+        Object dssr = getInfo(i, "dssr");
+        if (dssr != null) {
+          if (am[i].dssrCache == null)
+            am[i].dssrCache = new Hashtable<String, BS>();
+          String key = (String) specInfo;
+          if (key.indexOf("Pairs") < 0 && key.indexOf("linkedBy") < 0)
+            key += ".basePairs";
+          if (key.indexOf(".res") < 0)
+            key += ".res*";
+          BS bsm = am[i].dssrCache.get(key);
+          if (bsm == null) {
+            bsm = new BS();
+            Object data = vwr.extractProperty(dssr, key, -1);
+            if (!data.equals("")) {
+              float[] f = PT.parseFloatArray(PT.replaceAllCharacters(data.toString(), "[,]", " "));
+              for (int j = f.length; --j >= 0;)
+                bsm.or(getAtomBitsMDa(T.resno, Integer.valueOf((int) f[j])));
+            }
+            am[i].dssrCache.put(key, bsm);
+          }
+          bs.or(bsm);
+        }
+      }
+      return bs;
     case T.bonds:
     case T.isaromatic:
       return getAtomBitsMDb(tokType, specInfo);
@@ -2948,6 +2977,7 @@ abstract public class ModelCollection extends BondCollection {
     for (int i = 0; i < mc; i++) {
       am[i].bsAtomsDeleted.or(bs);
       am[i].bsAtomsDeleted.and(am[i].bsAtoms);
+      am[i].dssrCache = null;
     }
     deleteBonds(bsBonds, false);
   }

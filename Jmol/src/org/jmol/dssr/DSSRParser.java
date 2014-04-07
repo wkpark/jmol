@@ -146,7 +146,7 @@ public class DSSRParser implements JmolDSSRParser {
       String[] tokens = PT.getTokens(rd());
       data.put("helix", tokens[1]);
       data.put("stemCount", Integer.valueOf(tokens[3]));
-      data.put("nts", getLinkNTList(tokens[5], "stem"));
+      data.put("basePairs", getLinkNTList(tokens[5], "stem"));
       list.addLast(data);
     }
   }
@@ -264,10 +264,10 @@ List of 38 bulges
       set.put("dssrType", tokens[1]);
       if (isJunction)
         nway = PT.parseInt(tokens[1].substring(0, tokens[1].indexOf("-")));
-      set.put("count", Integer.valueOf(nway));
-      set.put("nts", Integer.valueOf(PT.trim(tokens[ptnts],";").substring(4)));
+      set.put("nway", Integer.valueOf(nway));
+      set.put("n", Integer.valueOf(PT.trim(tokens[ptnts],";").substring(4)));
       set.put("linkedBy", getLinkNTList(tokens[ptnts + 4], ""));
-      set.put("nts", readNTList(null, null, nway + 1));
+      set.put("basePairs", readNTList(null, null, nway + 1));
       sets.addLast(set);
     }
   }
@@ -327,7 +327,7 @@ List of 9 (possible) kink turns
       turn.put("turnType", tokens[1]);
       turn.put("info", line);
       turn.put("details", rd());
-      turn.put("nts", readNTList(null, null, 2));
+      turn.put("basePairs", readNTList(null, null, 2));
       turns.addLast(turn);
     }
   }
@@ -355,22 +355,25 @@ List of 50 lone WC/wobble pairs
   -1 0.U27            0.A516           U-A WC           20-XX     cWW cW-W
    */
   private void readPairs(int n) throws Exception {
-    if (line.indexOf("wobble") >= 0) {
+    Lst<Map<String, Object>>pairs;
+    if (line.indexOf("lone ") >= 0) {
       // just store negative indices in temporary map.
       // pointing to original base pair
       rd();
       skipHeader();
+      pairs = newList("lonePairs");
       for (int i = 0; i < n; i++) {
         String[] tokens = PT.getTokens(line);
         @SuppressWarnings("unchecked")
         Map<String, Object>data = (Map<String, Object>) htTemp.get(tokens[1]+tokens[2]);
         htTemp.put("#" + line.substring(0,5).trim(), data);
         data.put("lonePair", Boolean.TRUE);
+        pairs.addLast(data);
         rd();
       }
       return;
     }
-    Lst<Map<String, Object>>pairs = newList("basePairs");
+    pairs = newList("basePairs");
     skipHeader();
     for (int i = 0; i < n; i++)
       pairs.addLast(getBPData(null, true));
@@ -443,6 +446,8 @@ List of 50 lone WC/wobble pairs
       data.put("id", tokens[0]);
       data.put("nt1", fix(tokens[1]));
       data.put("nt2", fix(tokens[2]));
+      data.put("res1", getResno(tokens[1]));
+      data.put("res2", getResno(tokens[2]));
       data.put("bp", tokens[3]);
       // helix can be missing name
       //    1 0.C2769          0.A2805          C-A              00-n/a    t.S c.-m
@@ -570,18 +575,19 @@ List of 233 multiplets
     String[] tokens = PT.getTokens(rd());
     int pt = (tokens[0].startsWith("nts") ? 0 : 1);
     if (tokens.length > pt + 2) {
-      data.put("count", Integer.valueOf(PT.replaceAllCharacters(after(tokens[pt], "="), "*;", "")));
+      data.put("n", Integer.valueOf(PT.replaceAllCharacters(after(tokens[pt], "="), "*;", "")));
       data.put("seq", tokens[++pt]);
-      data.put("nt", getNT(tokens[++pt]));
+      data.put("nt", getNT(tokens[++pt], false));
+      data.put("resno", getNT(tokens[pt], true));
     }
     return data;
   }
   
-  private Object getNT(String s) {
+  private Object getNT(String s, boolean isResno) {
     String[] tokens = PT.split(s, ",");
-    Lst<String> list = new Lst<String>();
+    Lst<Object> list = new Lst<Object>();
     for (int i = 0; i < tokens.length; i++)
-      list.addLast(fix(tokens[i]));
+      list.addLast(isResno ? getResno(tokens[i]) : fix(tokens[i]));
     return list;
   }
 
@@ -633,6 +639,19 @@ List of 233 multiplets
     }
     return "[" + nt.substring(pt1 + 1, pt + 1) + "]" + nt.substring(pt + 1) + ":"
         + chain;
+  }
+
+  /**
+   * A.T8 --> 8
+   * 
+   * @param nt
+   * @return Jmol atom residue as [name]resno:chain
+   */
+  private Integer getResno(String nt) {
+    int pt = nt.length();
+    while (Character.isDigit(nt.charAt(--pt))) {
+    }
+    return Integer.valueOf(nt.substring(++pt));
   }
 
   private String after(String s, String key) {

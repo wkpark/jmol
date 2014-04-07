@@ -733,6 +733,7 @@ import java.util.Map;
     growAtomArrays(ac + pts.length);
     RadiusData rd = vwr.rd;
     short mad = getDefaultMadFromOrder(1);
+    am[modelIndex].dssrCache = null;
     for (int i = 0, n = am[modelIndex].ac + 1; i < vConnections.size(); i++, n++) {
       Atom atom1 = vConnections.get(i);
       // hmm. atom1.group will not be expanded, though...

@@ -6305,6 +6305,19 @@ public class CmdExt implements JmolCmdExtension {
       if (!chk)
         msg = Escape.e(vwr.cacheList());
       break;
+    case T.dssr:
+      e.checkLength23();
+      len = st.length;
+      if (!chk) {
+        Object d = vwr.ms.getInfo(vwr.am.cmi, "dssr");
+        if (d == null)
+          msg = "no DSSR information has been read";
+        else if (len > 2)
+          msg = SV.getVariable(vwr.extractProperty(d, stringParameter(2), -1)).asString();
+        else
+          msg = "" + SV.getVariable(d).asString();
+      }
+      break;
     case T.dssp:
       checkLength(2);
       if (!chk)

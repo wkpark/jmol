@@ -85,10 +85,6 @@ public class AnimationManager {
     return setAnimationRelative(animationDirection);
   }
 
-  public int getCurrentModelIndex() {
-    return cmi;
-  }
-  
   public boolean currentIsLast() {
     return (isMovie ? lastFramePainted == caf
         : lastModelPainted == cmi);

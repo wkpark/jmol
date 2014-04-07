@@ -1144,7 +1144,8 @@ public class T {
   public final static int cylinder      = misc  | 88;
   public final static int density        = misc  | 90;
   public final static int dssp           = misc  | 91;
-  public final static int diameter       = misc  | 92;
+  public final static int dssr           = misc  | 92;
+  public final static int diameter       = misc  | 93;
   public final static int direction      = misc  | 94;
   public final static int discrete       = misc  | 96;
   public final static int displacement   = misc  | 98;
@@ -1902,6 +1903,7 @@ public class T {
         "DNA",
         "dotted",
         "DSSP",
+        "DSSR",
         "element",
         "elemno",
         "_e",
@@ -2893,6 +2895,7 @@ public class T {
         dna,                                // "DNA"
         dotted,                             // "dotted"
         dssp,                               // "DSSP"
+        dssr,                               // "DSSR"
         element,                            // "element"
         elemno,                             // "elemno"
         elemisono,                          // "_e"

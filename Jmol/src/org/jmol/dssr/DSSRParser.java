@@ -33,6 +33,9 @@ import javajs.util.PT;
 import javajs.util.SB;
 
 import org.jmol.api.JmolDSSRParser;
+import org.jmol.java.BS;
+import org.jmol.script.T;
+import org.jmol.viewer.Viewer;
 
 public class DSSRParser implements JmolDSSRParser {
 
@@ -444,10 +447,10 @@ List of 50 lone WC/wobble pairs
     if (data == null) {
       data = new Hashtable<String, Object>();
       data.put("id", tokens[0]);
-      data.put("nt1", fix(tokens[1]));
-      data.put("nt2", fix(tokens[2]));
-      data.put("res1", getResno(tokens[1]));
-      data.put("res2", getResno(tokens[2]));
+      data.put("nt1", fix(tokens[1], true));
+      data.put("nt2", fix(tokens[2], true));
+      data.put("res1", fix(tokens[1], false));
+      data.put("res2", fix(tokens[2], false));
       data.put("bp", tokens[3]);
       // helix can be missing name
       //    1 0.C2769          0.A2805          C-A              00-n/a    t.S c.-m
@@ -587,7 +590,7 @@ List of 233 multiplets
     String[] tokens = PT.split(s, ",");
     Lst<Object> list = new Lst<Object>();
     for (int i = 0; i < tokens.length; i++)
-      list.addLast(isResno ? getResno(tokens[i]) : fix(tokens[i]));
+      list.addLast(fix(tokens[i], isResno));
     return list;
   }
 
@@ -629,29 +632,17 @@ List of 233 multiplets
    * A.T8 --> [T]8:A
    * 
    * @param nt
-   * @return Jmol atom residue as [name]resno:chain
+   * @param withName 
+   * @return Jmol atom residue as [name]resno:chain or just resno:chain
    */
-  private String fix(String nt) {
+  private String fix(String nt, boolean withName) {
     int pt1 = nt.indexOf(".");
     String chain = nt.substring(0, pt1);
     int pt = nt.length();
     while (Character.isDigit(nt.charAt(--pt))) {
     }
-    return "[" + nt.substring(pt1 + 1, pt + 1) + "]" + nt.substring(pt + 1) + ":"
-        + chain;
-  }
-
-  /**
-   * A.T8 --> 8
-   * 
-   * @param nt
-   * @return Jmol atom residue as [name]resno:chain
-   */
-  private Integer getResno(String nt) {
-    int pt = nt.length();
-    while (Character.isDigit(nt.charAt(--pt))) {
-    }
-    return Integer.valueOf(nt.substring(++pt));
+    return (withName ? "[" + nt.substring(pt1 + 1, pt + 1) + "]" : "")
+        + nt.substring(pt + 1) + ":" + chain;
   }
 
   private String after(String s, String key) {
@@ -660,5 +651,36 @@ List of 233 multiplets
 
   private String rd() throws Exception {
     return (line = reader.readNextLine());    
+  }
+
+  @Override
+  public BS getAtomBits(String key, Object dssr, Map<String, BS> dssrCache, Viewer vwr) {
+    if (key.indexOf("Pairs") < 0 && key.indexOf("linkedBy") < 0)
+      key += ".basePairs";
+    if (key.indexOf(".res") < 0)
+      key += ".res*";
+    BS bs = dssrCache.get(key);
+    Map<String, BS> htChains = new Hashtable<String, BS>();
+    if (bs == null) {
+      dssrCache.put(key, bs = new BS());
+      Object data = vwr.extractProperty(dssr, key, -1);
+      if (!data.equals("")) {
+        String[] tokens = PT.getTokens(PT.replaceAllCharacters(data.toString(), "[,]", " "));
+        for (int j = tokens.length; --j >= 0;) {
+          String t = tokens[j];
+          int pt = t.indexOf(":"); 
+          if (pt < 0)
+            continue;
+          String chain = t.substring(pt + 1);
+          BS bsChain = htChains.get(chain);
+          if (bsChain == null)
+            htChains.put(chain, bsChain = vwr.ms.getAtoms(T.spec_chain, Integer.valueOf(vwr.getChainID(chain))));
+          BS bsRes = vwr.ms.getAtoms(T.resno, Integer.valueOf(t.substring(0, pt)));
+          bsRes.and(bsChain);
+          bs.or(bsRes);
+        }
+      }
+    }
+    return bs;
   }
 }

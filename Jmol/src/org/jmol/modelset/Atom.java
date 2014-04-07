@@ -1006,15 +1006,18 @@ public class Atom extends Point3fi implements BNode {
 
   public boolean isClickable() {
     // certainly if it is not visible, then it can't be clickable
-    return (checkVisible() && clickabilityFlags != 0 
+    return (checkVisible() 
+        && clickabilityFlags != 0 
         && ((shapeVisibilityFlags | group.shapeVisibilityFlags) & clickabilityFlags) != 0);
   }
 
   public void setClickable(int flag) {
-    if (flag == 0)
+    if (flag == 0) {
       clickabilityFlags = 0;
-    else
+    } else {
       clickabilityFlags |= flag;
+      shapeVisibilityFlags |= flag;
+    }
   }
   
   public boolean checkVisible() {

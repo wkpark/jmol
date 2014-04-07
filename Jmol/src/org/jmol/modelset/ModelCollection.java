@@ -1844,30 +1844,15 @@ abstract public class ModelCollection extends BondCollection {
     case T.dssr:
       bs = new BS();
       JmolDSSRParser p = vwr.getDSSRParser();
-      for (int i = mc; --i >= 0;) {
-        Object dssr = getInfo(i, "dssr");
-        if (dssr != null) {
-          if (am[i].dssrCache == null)
-            am[i].dssrCache = new Hashtable<String, BS>();
-          String key = (String) specInfo;
-          if (key.indexOf("Pairs") < 0 && key.indexOf("linkedBy") < 0)
-            key += ".basePairs";
-          if (key.indexOf(".res") < 0)
-            key += ".res*";
-          BS bsm = am[i].dssrCache.get(key);
-          if (bsm == null) {
-            bsm = new BS();
-            Object data = vwr.extractProperty(dssr, key, -1);
-            if (!data.equals("")) {
-              float[] f = PT.parseFloatArray(PT.replaceAllCharacters(data.toString(), "[,]", " "));
-              for (int j = f.length; --j >= 0;)
-                bsm.or(getAtomBitsMDa(T.resno, Integer.valueOf((int) f[j])));
-            }
-            am[i].dssrCache.put(key, bsm);
-          }
-          bs.or(bsm);
-        }
-      }
+      Object dssr;
+      for (int i = mc; --i >= 0;)
+        if ((dssr = getInfo(i, "dssr")) != null)
+          bs.or(p
+              .getAtomBits(
+                  (String) specInfo,
+                  dssr,
+                  (am[i].dssrCache == null ? am[i].dssrCache = new Hashtable<String, BS>()
+                      : am[i].dssrCache), vwr));
       return bs;
     case T.bonds:
     case T.isaromatic:

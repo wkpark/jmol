@@ -927,7 +927,6 @@ public class ScriptMathProcessor {
         switch (x2.tok) {
         case T.hash:
         case T.context:
-        case T.varray:
           switch (iv) {
           case T.type:
           case T.keys:

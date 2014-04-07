@@ -3970,6 +3970,7 @@ public class ScriptEval extends ScriptExpr {
     boolean isSmiles = false;
     boolean isData = false;
     boolean isAsync = false;
+    boolean isConcat = false;
     BS bsModels;
     int i = (tokAt(0) == T.data ? 0 : 1);
     boolean appendNew = vwr.getBoolean(T.appendnew);
@@ -4088,7 +4089,7 @@ public class ScriptEval extends ScriptExpr {
         i++;
         loadScript.append(" " + modelName);
         if (optParameterAsString(i).equals("+")) {
-          htParams.put("concatenate", Boolean.TRUE);
+          isConcat = true;
           i++;
           loadScript.append(" +");
         }
@@ -4499,7 +4500,7 @@ public class ScriptEval extends ScriptExpr {
       while (i < slen) {
         switch (tokAt(i)) {
         case T.plus:
-          htParams.put("concatenate", Boolean.TRUE);
+          isConcat = true;
           loadScript.append(" +");
           ++i;
           continue;
@@ -4539,8 +4540,7 @@ public class ScriptEval extends ScriptExpr {
       if (firstLastSteps != null) {
         htParams.put("firstLastSteps", firstLastSteps);
       }
-      nFiles = fNames.size();
-      filenames = fNames.toArray(new String[nFiles]);
+      filenames = fNames.toArray(new String[nFiles = fNames.size()]);
     }
 
     // end of parsing
@@ -4634,6 +4634,8 @@ public class ScriptEval extends ScriptExpr {
     boolean timeMsg = vwr.getBoolean(T.showtiming);
     if (timeMsg)
       Logger.startTimer("load");
+    if (isConcat)
+      htParams.put("concatenate", Boolean.TRUE);
     errMsg = vwr.loadModelFromFile(null, filename, filenames, null, isAppend,
         htParams, loadScript, tokType);
     if (out != null) {
@@ -4662,7 +4664,7 @@ public class ScriptEval extends ScriptExpr {
       vwr.setAnimationRange(-1, -1);
       vwr.setCurrentModelIndex(modelCount0);
     }
-    if (scriptLevel == 0 && !isAppend && nFiles < 2)
+    if (scriptLevel == 0 && !isAppend && (isConcat || nFiles < 2))
       showString((String) vwr.ms.getInfoM("modelLoadNote"));
     if (debugHigh)
       report("Successfully loaded:"

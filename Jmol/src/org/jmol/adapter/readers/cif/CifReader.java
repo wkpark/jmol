@@ -203,7 +203,7 @@ public class CifReader extends AtomSetCollectionReader {
      */
     if (key.indexOf("_") != 0) {
       if (key.equals("DSSR:"))
-        asc.processDSSR(this);
+        processDSSR(this);
       else
         Logger.warn("CIF ERROR ? should be an underscore: " + key);
       parser.getTokenPeeked();

@@ -353,7 +353,7 @@ public class PdbReader extends AtomSetCollectionReader {
       return true;
     default:
       if (line.trim().startsWith("DSSR:"))
-        asc.processDSSR(this);
+        processDSSR(this);
     }
     return true;
   }

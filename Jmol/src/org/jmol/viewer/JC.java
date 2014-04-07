@@ -1355,13 +1355,14 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   };
   public static String[] databases = { 
+    "dssr", "http://x3dna.bio.columbia.edu/dssr?id=%FILE",
     "ligand", "http://www.rcsb.org/pdb/files/ligand/%FILE.cif",
     "mp", "http://www.materialsproject.org/materials/%FILE/cif",
     "nci", "http://cactus.nci.nih.gov/chemical/structure/%FILE",
     "nmr", "http://www.nmrdb.org/predictor?POST?molfile=",
     "nmrdb", "http://www.nmrdb.org/service/predictor?POST?molfile=",
     "pdb", "http://www.rcsb.org/pdb/files/%FILE.pdb.gz",
-    "pubchem", "http://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/%FILE/SDF?record_type=3d"
+    "pubchem", "http://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/%FILE/SDF?record_type=3d",
   };
 
   public final static String MODELKIT_ZAP_STRING = "5\n\nC 0 0 0\nH .63 .63 .63\nH -.63 -.63 .63\nH -.63 .63 -.63\nH .63 -.63 -.63";

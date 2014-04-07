@@ -305,7 +305,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
       for (int i = 1; i < asc.length; i++)
         asc[0].mergeTrajectories(asc[i]);
     } else {
-      result = new AtomSetCollection("Array", null, asc, null);
+      result = (asc.length == 1 ? asc[0]: new AtomSetCollection("Array", null, asc, null));
     }
     return (result.errorMessage == null ? result : result.errorMessage);
   }

@@ -30,6 +30,7 @@ import java.util.Map;
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
+import org.jmol.api.JmolDSSRParser;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.java.BS;
 import org.jmol.util.BSUtil;
@@ -1649,6 +1650,13 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
       checkCurrentLineForScript();
     return line;
   }
+
+  protected void processDSSR(GenericLineReader reader) throws Exception {
+    appendLoadNote(((JmolDSSRParser) Interface.getOption("dssr.DSSRParser")).process(
+        asc.getAtomSetAuxiliaryInfo(Integer.MAX_VALUE), reader));
+    
+  }
+
 
 
 }

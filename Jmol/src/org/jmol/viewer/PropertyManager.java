@@ -381,6 +381,8 @@ public class PropertyManager implements JmolPropertyManager {
             key = key.substring(0, pt).trim();
             int ptNotLike = where.toUpperCase().indexOf(" NOT LIKE ");
             int ptLike = where.toUpperCase().indexOf(" LIKE ");
+            int ptLT = where.indexOf("<");
+            int ptGT = where.indexOf(">");
             int ptEq = where.indexOf("=");
             int ptNotEq = where.indexOf("!=");
             int pt1;
@@ -392,14 +394,22 @@ public class PropertyManager implements JmolPropertyManager {
                 pt1 = (pt = ptNotEq) + 2;
               else if (ptEq >= 0)
                 pt1 = (pt = ptEq) + 1;
+              else if (ptLT >= 0)
+                pt1 = (pt = ptLT) + 1;
+              else if (ptGT >= 0)
+                pt1 = (pt = ptGT) + 1;
               else
                 return "";
             Object val = getObj(h.get(where.substring(0, pt).trim()));
-            if (val == null || !Txt.isSQLMatch(val, where.substring(pt1).trim(), ptNotEq >= 0, ptLike >= 0, ptNotLike >= 0))
+            if (val == null || !Txt.isSQLMatch(val, where.substring(pt1).trim(), (ptNotEq >= 0 ? 1 : ptLT >= 0 ? 2 : ptGT>= 0? 3 : ptLike >= 0 ? 4 : ptNotLike >= 0 ? 5 : 0)))
               return "";
           }          
         }
         boolean isWild = (v2 != null && Txt.isWild(key));
+        if (isWild && key.equals("*")) {
+          v2.addLast(h);
+          return "";
+        }
         boolean isOK = (v2 == null && h.containsKey(key));
         if (!isOK) {
           String lckey = (isWild ? PT.rep(key.toLowerCase(), "?", "*") : null);

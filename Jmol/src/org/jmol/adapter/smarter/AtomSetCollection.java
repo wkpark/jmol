@@ -1221,9 +1221,4 @@ public class AtomSetCollection {
     setInfo("trajectorySteps", trajectorySteps);
   }
 
-  public void processDSSR(GenericLineReader reader) throws Exception {
-    ((JmolDSSRParser) Interface.getOption("dssr.DSSRParser")).process(
-        getAtomSetAuxiliaryInfo(Integer.MAX_VALUE), reader);
-  }
-
 }

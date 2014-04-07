@@ -33,7 +33,6 @@ import javajs.util.PT;
 import javajs.util.SB;
 
 import org.jmol.api.JmolDSSRParser;
-import org.jmol.util.Logger;
 
 public class DSSRParser implements JmolDSSRParser {
 
@@ -41,24 +40,29 @@ public class DSSRParser implements JmolDSSRParser {
   private String line;
   private Map<String, Object> dssr;
   private Map<String, Object> htTemp;
+  private SB message;
 
   public DSSRParser() {
     // for reflection
   }
   
   @Override
-  public void process(Map<String, Object> info, GenericLineReader reader) throws Exception {
+  public String process(Map<String, Object> info, GenericLineReader reader) throws Exception {
     info.put("dssr", dssr = new Hashtable<String, Object>());
     htTemp = new Hashtable<String, Object>();
     this.reader = reader;
+    message = new SB(); 
+    addMessage("\nDSSR: a software program for Defining the Secondary");
+    addMessage(rd().trim());
+    addMessage(rd().trim());
     while (rd() != null) {
       if (line.startsWith("List of")) {
-        Logger.info(line);
         int n = PT.parseInt(line.substring(8));
-        if (n < 0)
+        if (n < 0 || line.endsWith("files"))
           continue;
+        addMessage(line);
         line = PT.rep(PT.trim(line,  "s"), " interaction", "");
-        int pt = "pair elix lice plet stem tack loop ulge tion ment otif pper turn".indexOf(line.trim().substring(line.length() - 4));
+        int pt = "pair elix lice plet stem tack loop ulge tion ment otif pper turn file".indexOf(line.trim().substring(line.length() - 4));
                 //0    5    10        20        30        40        50        60
         switch(pt) {
         case 0:
@@ -98,12 +102,20 @@ public class DSSRParser implements JmolDSSRParser {
         case 60:
           readTurns(n);
           break;          
+        case 65: // files
+          break;          
         default:
-          Logger.info("DSSRParser ignored: " + line);
+          addMessage("DSSRParser ignored: " + line);
           break;
         }        
       }
     }
+    return message.toString();
+  }
+
+  private void addMessage(String s) {
+    message.append(s).append("\n");
+    
   }
 
   private Lst<Map<String, Object>> newList(String name) {    
@@ -458,14 +470,12 @@ List of 50 lone WC/wobble pairs
     String info = "";
     while (isHeader(rd())) {
       int pt = line.indexOf("[");
-      if (isBP)
-        info += line + "\n";
       if (line.indexOf("bp_pars:") >= 0) {
-        data.put("bpParams", PT.parseFloatArray(line.substring(pt + 1)));
+        addArray(data, "bpPar", PT.parseFloatArray(line.substring(pt + 1)));
       } else if (line.indexOf("heli_pars:") >= 0) {
-        data.put("helixParams", PT.parseFloatArray(line.substring(pt + 1)));
+        addArray(data, "helixPar", PT.parseFloatArray(line.substring(pt + 1)));
       } else if (line.indexOf("step_pars:") >= 0) {
-        data.put("stepParams", PT.parseFloatArray(line.substring(pt + 1)));
+        addArray(data, "stepPar", PT.parseFloatArray(line.substring(pt + 1)));
       } else if ((pt = line.indexOf("h-rise=")) >= 0) {
         addFloat(data, "rise_h", pt + 7);
         addFloat(data, "twist_h", line.indexOf("h-twist=") + 8);
@@ -473,6 +483,8 @@ List of 50 lone WC/wobble pairs
         addFloat(data, "rise", pt + 5);
         addFloat(data, "twist", line.indexOf("twist=") + 6);
       }
+      if (isBP && pt < 0)
+        info += line + "\n";
     }
     if (isBP)
       data.put("info", info);
@@ -493,6 +505,12 @@ List of 233 multiplets
   11 nts=3* AGG 0.A80,0.G94,0.G97
    */
 
+
+  private void addArray(Map<String, Object> data, String key,
+                        float[] f) {
+    for (int i = f.length; --i >= 0;)
+      data.put(key + (i + 1), Float.valueOf(f[i]));
+  }
 
   private void addFloat(Map<String, Object> data, String key, int pt) {
     data.put(key, Float.valueOf(PT.parseFloat(line.substring(pt, Math.min(line.length(), pt + 10)))));

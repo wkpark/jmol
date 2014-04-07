@@ -6,7 +6,7 @@ import javajs.api.GenericLineReader;
 
 public interface JmolDSSRParser {
 
-  void process(Map<String, Object> info, GenericLineReader reader)
+  String process(Map<String, Object> info, GenericLineReader reader)
       throws Exception;
 
 }

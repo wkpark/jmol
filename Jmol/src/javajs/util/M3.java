@@ -608,20 +608,24 @@ public class M3 extends M34 implements Serializable {
 
   /**
    * 3D ball rotation from dx dy in-plane mouse motion
+   * adapted from Andrew Hanson
+   * Computer Graphics beyond the Third Dimension:
+   * Geometry, Orientation Control, and Rendering for
+   * Graphics in Dimensions Greater than Three
+   * Course Notes for SIGGRAPH ’98
+   * http://www.cse.ohio-state.edu/~hwshen/888_su02/hanson_note.pdf
    * 
-   * @param scale Jmol uses 50 here
+   * @param responseFactor Jmol uses 0.02 here
    * @param dx
    * @param dy
-   * @author Andrew Hanson -- see http://www.cse.ohio-state.edu/~hwshen/888_su02/hanson_note.pdf
    */
-  public void setAsBallRotation(float scale, float dx, float dy) {
-    float dxy2 = dx * dx + dy * dy;
-    float sxy = (float) Math.sqrt(dxy2);
-    float th =  sxy / scale;
+  public void setAsBallRotation(float responseFactor, float dx, float dy) {
+    float r = (float) Math.sqrt(dx * dx + dy * dy);
+    float th =  r * responseFactor;
     float c = (float) Math.cos(th);
     float s = (float) Math.sin(th);
-    float nx = -dy / sxy;
-    float ny = dx / sxy;
+    float nx = -dy / r;
+    float ny = dx / r;
     float c1 = c - 1;
     m00 = 1 + c1 * nx * nx;
     m01 = m10 = c1 * nx * ny;

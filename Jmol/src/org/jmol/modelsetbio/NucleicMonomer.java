@@ -24,14 +24,12 @@
  */
 package org.jmol.modelsetbio;
 
-
-
-
 import org.jmol.c.STR;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.Chain;
+
 import javajs.util.Lst;
 import javajs.util.P3;
 import javajs.util.Quat;
@@ -543,5 +541,19 @@ public boolean isCrossLinked(Group g) {
       return false;
     }    
   }
+
+  private Lst<BasePair> bps;
+  public void addBasePair(BasePair bp) {
+    if (bps == null)
+      bps = new Lst<BasePair>();
+    bps.addLast(bp);
+  }
+
+  public Lst<BasePair> getBasePairs() {
+    if (!((NucleicPolymer) bioPolymer).isDssrSet)
+      bioPolymer.model.ms.vwr.getDSSRParser().setAllDSSRParametersForModel(bioPolymer.model.ms.vwr, bioPolymer.model.modelIndex);    
+    return bps;
+  }
+
 
 }

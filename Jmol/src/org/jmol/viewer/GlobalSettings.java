@@ -227,6 +227,7 @@ public class GlobalSettings {
       setI("axesMode", axesMode.getCode());
       setF("axesScale", axesScale);
       setB("axesOrientationRasmol", axesOrientationRasmol);
+      setB("backboneSteps", backboneSteps);
       setB("bondModeOr", bondModeOr);
       setB("bondPicking", bondPicking);
       setI("bondRadiusMilliAngstroms", bondRadiusMilliAngstroms);
@@ -550,6 +551,7 @@ public class GlobalSettings {
 
     boolean cartoonBaseEdges = false;
     boolean cartoonRockets = false;
+    boolean backboneSteps = false;
     boolean cartoonFancy = false;
     boolean cartoonLadders = false;
     boolean cartoonRibose = false;

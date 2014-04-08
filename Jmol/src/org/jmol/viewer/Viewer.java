@@ -976,12 +976,12 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         + factor + (x == Integer.MAX_VALUE ? "" : " " + x + " " + y));
   }
 
-  void rotateXYBy(float xDelta, float yDelta) {
+  void rotateXYBy(float degX, float degY) {
     // mouseSinglePressDrag
     if (mouseEnabled)
-      tm.rotateXYBy(xDelta, yDelta, null);
-    refresh(2, sm.syncingMouse ? "Mouse: rotateXYBy " + xDelta + " "
-        + yDelta : "");
+      tm.rotateXYBy(degX, degY, null);
+    refresh(2, sm.syncingMouse ? "Mouse: rotateXYBy " + degX + " "
+        + degY : "");
   }
 
   public void spinXYBy(int xDelta, int yDelta, float speed) {
@@ -1807,10 +1807,21 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return loadModelFromFileRepaint("?", "?", null, DOMNode);
   }
 
+  /**
+   * 
+   * for JmolSimpleViewer -- external applications only (and no-script
+   * JavaScript)
+   * @param fullPathName 
+   * @param fileName 
+   * @param fileNames 
+   * @param reader 
+   * @return error message or null
+   * 
+   */
   private String loadModelFromFileRepaint(String fullPathName, String fileName,
                                           String[] fileNames, Object reader) {
     String ret = loadModelFromFile(fullPathName, fileName, fileNames, reader,
-        false, null, null, 0);
+        false, null, null, 0, false);
     refresh(1, "loadModelFromFileRepaint");
     return ret;
   }
@@ -1830,15 +1841,18 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
    * @param htParams
    * @param loadScript
    * @param tokType
+   * @param isConcat 
    * @return null or error
    */
   public String loadModelFromFile(String fullPathName, String fileName,
                                   String[] fileNames, Object reader,
                                   boolean isAppend,
                                   Map<String, Object> htParams, SB loadScript,
-                                  int tokType) {
+                                  int tokType, boolean isConcat) {
     if (htParams == null)
       htParams = setLoadParameters(null, isAppend);
+    if (isConcat)
+      htParams.put("concatenate", Boolean.TRUE);
     Object atomSetCollection;
     String[] saveInfo = fm.getFileInfo();
     if (fileNames != null) {
@@ -1848,7 +1862,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       if (loadScript == null) {
         loadScript = new SB().append("load files");
         for (int i = 0; i < fileNames.length; i++)
-          loadScript.append(" /*file*/$FILENAME" + (i + 1) + "$");
+          loadScript.append(i == 0 || !isConcat ? " " : "+").append("/*file*/$FILENAME" + (i + 1) + "$");
       }
       long timeBegin = System.currentTimeMillis();
 
@@ -2063,7 +2077,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
           return "cannot find string data";
       if (loadScript != null)
         htParams
-            .put("loadScript", loadScript = new SB().append(javajs.util.PT
+            .put("loadScript", loadScript = new SB().append(PT
                 .rep(loadScript.toString(), "$FILENAME$",
                     "data \"model inline\"\n" + strModel
                         + "end \"model inline\"")));
@@ -5299,6 +5313,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       return g.autoFps;
     case T.axesorientationrasmol:
       return g.axesOrientationRasmol;
+    case T.backbonesteps:
+      return g.backboneSteps;
     case T.bondmodeor:
       return g.bondModeOr;
     case T.cartoonbaseedges:
@@ -6178,6 +6194,10 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   private void setBooleanPropertyTok(String key, int tok, boolean value) {
     boolean doRepaint = true;
     switch (tok) {
+    case T.backbonesteps:
+      // 14.1.14
+      g.backboneSteps = value;
+      break;
     case T.cartoonribose:
       // 14.1.8
       g.cartoonRibose = value;

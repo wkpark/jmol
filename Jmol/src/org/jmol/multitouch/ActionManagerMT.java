@@ -375,9 +375,8 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   }
 
   @Override
-  protected float getDegrees(int delta, int i) {
-    int dim = (i == 0 ? vwr.getScreenWidth() : vwr.getScreenHeight());
-    return ((float) delta) / dim * 180 * mouseDragFactor;
+  protected float getDegrees(float delta, boolean isX) {
+    return delta / (isX ? vwr.getScreenWidth() : vwr.getScreenHeight()) * 180 * mouseDragFactor;
   }
 
 } 

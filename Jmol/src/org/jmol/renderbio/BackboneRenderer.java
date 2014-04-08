@@ -25,41 +25,64 @@
 
 package org.jmol.renderbio;
 
+import javajs.util.Lst;
+
 import org.jmol.modelset.Atom;
+import org.jmol.modelsetbio.BasePair;
+import org.jmol.modelsetbio.NucleicMonomer;
+import org.jmol.script.T;
 import org.jmol.shapebio.BioShape;
 import org.jmol.util.C;
 import org.jmol.util.GData;
 
 public class BackboneRenderer extends BioShapeRenderer {
 
+  private boolean isDataFrame;
+
   @Override
   protected void renderBioShape(BioShape bioShape) {
-    boolean isDataFrame = vwr.isJmolDataFrameForModel(bioShape.modelIndex);
+    boolean showSteps = vwr.getBoolean(T.backbonesteps)
+        && bioShape.bioPolymer.isNucleic();
+    isDataFrame = vwr.isJmolDataFrameForModel(bioShape.modelIndex);
     for (int i = bsVisible.nextSetBit(0); i >= 0; i = bsVisible
         .nextSetBit(i + 1)) {
       Atom atomA = ms.at[leadAtomIndices[i]];
-      Atom atomB = ms.at[leadAtomIndices[i + 1]];
-      if (atomA.getNBackbonesDisplayed() == 0
-          || atomB.getNBackbonesDisplayed() == 0
-          || ms.isAtomHidden(atomB.i))
-        continue;
-      if (!isDataFrame && atomA.distance(atomB) > 10)
-        continue;
-      short colixA = C.getColixInherited(colixes[i], atomA.getColix());
-      short colixB = C.getColixInherited(colixes[i + 1], atomB.getColix());
-      if (!isExport && !isPass2 && !setBioColix(colixA) && !setBioColix(colixB))
-        continue;
-      int xA = atomA.sX, yA = atomA.sY, zA = atomA.sZ;
-      int xB = atomB.sX, yB = atomB.sY, zB = atomB.sZ;
+      short cA = colixes[i];
       mad = mads[i];
-      if (mad < 0) {
-        g3d.drawLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
-      } else {
-        int width = (int) (exportType == GData.EXPORT_CARTESIAN ? mad : vwr
-            .scaleToScreen((zA + zB) / 2, mad));
-        g3d.fillCylinderXYZ(colixA, colixB, GData.ENDCAPS_SPHERICAL, width, xA,
-            yA, zA, xB, yB, zB);
+      drawSegment(atomA, ms.at[leadAtomIndices[i + 1]], cA, colixes[i + 1], 100);
+      if (showSteps) {
+        NucleicMonomer g = (NucleicMonomer) monomers[i];
+        Lst<BasePair> bps = g.getBasePairs();
+        if (bps != null) {
+          for (int j = bps.size(); --j >= 0;) {
+            int iAtom = bps.get(j).getPartnerAtom(g);
+            if (iAtom > i)
+              drawSegment(atomA, ms.at[iAtom], cA, cA, 1000);
+          }
+        }
       }
+    }
+  }
+
+  private void drawSegment(Atom atomA, Atom atomB, short colixA, short colixB, float max) {    
+    if (atomA.getNBackbonesDisplayed() == 0
+        || atomB.getNBackbonesDisplayed() == 0
+        || ms.isAtomHidden(atomB.i)
+        || !isDataFrame && atomA.distanceSquared(atomB) > max)
+      return;
+    colixA = C.getColixInherited(colixA, atomA.getColix());
+    colixB = C.getColixInherited(colixB, atomB.getColix());
+    if (!isExport && !isPass2 && !setBioColix(colixA) && !setBioColix(colixB))
+      return;
+    int xA = atomA.sX, yA = atomA.sY, zA = atomA.sZ;
+    int xB = atomB.sX, yB = atomB.sY, zB = atomB.sZ;
+    if (mad < 0) {
+      g3d.drawLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
+    } else {
+      int width = (int) (exportType == GData.EXPORT_CARTESIAN ? mad : vwr
+          .scaleToScreen((zA + zB) / 2, mad));
+      g3d.fillCylinderXYZ(colixA, colixB, GData.ENDCAPS_SPHERICAL, width, xA,
+          yA, zA, xB, yB, zB);
     }
   }  
 }

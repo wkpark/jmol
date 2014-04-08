@@ -275,7 +275,8 @@ public class PropertyManager implements JmolPropertyManager {
         Lst<Object> v = (Lst<Object>) property;
         if (pt < 0)
           pt += v.size();
-        return (pt >= 0 && pt < v.size()? extractProperty(v.get(pt), args, ptr, null): "");
+        return (pt >= 0 && pt < v.size() ? extractProperty(v.get(pt), args,
+            ptr, null) : "");
       }
       if (property instanceof M3) {
         M3 m = (M3) property;
@@ -374,34 +375,12 @@ public class PropertyManager implements JmolPropertyManager {
         if (key.toUpperCase().startsWith("SELECT ")) {
           key = key.substring(6).trim();
           pt = key.toUpperCase().indexOf(" WHERE ");
-          if (pt >= 0) {            
+          if (pt >= 0) {
             String where = key.substring(pt + 6).trim();
             key = key.substring(0, pt).trim();
-            int ptNotLike = where.toUpperCase().indexOf(" NOT LIKE ");
-            int ptLike = where.toUpperCase().indexOf(" LIKE ");
-            int ptLT = where.indexOf("<");
-            int ptGT = where.indexOf(">");
-            int ptEq = where.indexOf("=");
-            int ptNotEq = where.indexOf("!=");
-            int pt1;
-              if (ptNotLike >= 0)
-                pt1 = (pt = ptNotLike) + 10;
-              else if (ptLike >= 0)
-                pt1 = (pt = ptLike) + 6;
-              else if (ptNotEq >= 0)
-                pt1 = (pt = ptNotEq) + 2;
-              else if (ptEq >= 0)
-                pt1 = (pt = ptEq) + 1;
-              else if (ptLT >= 0)
-                pt1 = (pt = ptLT) + 1;
-              else if (ptGT >= 0)
-                pt1 = (pt = ptGT) + 1;
-              else
-                return "";
-            Object val = getObj(h.get(where.substring(0, pt).trim()));
-            if (val == null || !Txt.isSQLMatch(val, where.substring(pt1).trim(), (ptNotEq >= 0 ? 1 : ptLT >= 0 ? 2 : ptGT>= 0? 3 : ptLike >= 0 ? 4 : ptNotLike >= 0 ? 5 : 0)))
+            if (checkMap(h, where, false, null, null, 0) == null)
               return "";
-          }          
+          }
         }
         boolean isWild = Txt.isWild(key);
         if (isWild && v2 == null)
@@ -410,24 +389,8 @@ public class PropertyManager implements JmolPropertyManager {
           v2.addLast(h);
           return v2;
         }
-        boolean isOK = (v2 == null && h.containsKey(key));
-        if (!isOK) {
-          String lckey = (isWild ? PT.rep(key.toLowerCase(), "?", "*") : null);
-          for (String k : h.keySet()) {
-            if (k.equalsIgnoreCase(key) || lckey != null
-                && Txt.isMatch(k.toLowerCase(), lckey, true, true)) {
-              key = k;
-              if (v2 == null) {
-                isOK = true;
-                break;
-              }
-              v2.addLast(extractProperty(h.get(k), args, ptr, null));
-              if (!isWild)
-                break;
-            }
-          }
-        }
-        return (isOK && !isWild ? extractProperty(h.get(key), args, ptr, null)
+        key = checkMap(h, key, isWild, v2, args, ptr);
+        return (key != null && !isWild ? extractProperty(h.get(key), args, ptr, null)
             : isWild ? v2 : "");
       }
       if (property instanceof Lst<?>) {
@@ -439,9 +402,8 @@ public class PropertyManager implements JmolPropertyManager {
         ptr--;
         for (pt = 0; pt < v.size(); pt++) {
           Object o = v.get(pt);
-          if (o instanceof Map<?, ?> 
-            || (o instanceof SV) && 
-            (((SV) o).getMap() != null || ((SV) o).getList() != null)) 
+          if (o instanceof Map<?, ?> || (o instanceof SV)
+              && (((SV) o).getMap() != null || ((SV) o).getList() != null))
             extractProperty(o, args, ptr, v2);
         }
         return v2;
@@ -452,6 +414,62 @@ public class PropertyManager implements JmolPropertyManager {
   }
 
   //// private static methods ////
+
+  private String checkMap(Map<String, Object> h, String key, boolean isWild,
+                          Lst<Object> v2, Object args, int ptr) {
+    String strLike = null;
+    int likeMode = -1;
+    if (args == null) {
+      int pt;
+      int ptNotLike = key.toUpperCase().indexOf(" NOT LIKE ");
+      int ptLike = key.toUpperCase().indexOf(" LIKE ");
+      int ptLT = key.indexOf("<");
+      int ptGT = key.indexOf(">");
+      int ptEq = key.indexOf("=");
+      int ptNotEq = key.indexOf("!=");
+      int pt1;
+      if (ptNotLike >= 0)
+        pt1 = (pt = ptNotLike) + 10;
+      else if (ptLike >= 0)
+        pt1 = (pt = ptLike) + 6;
+      else if (ptNotEq >= 0)
+        pt1 = (pt = ptNotEq) + 2;
+      else if (ptEq >= 0)
+        pt1 = (pt = ptEq) + 1;
+      else if (ptLT >= 0)
+        pt1 = (pt = ptLT) + 1;
+      else if (ptGT >= 0)
+        pt1 = (pt = ptGT) + 1;
+      else
+        return null;
+      strLike = key.substring(pt1).trim();
+      key = key.substring(0, pt).trim();
+      isWild = Txt.isWild(key);
+      likeMode = (ptNotEq >= 0 ? 1 : ptLT >= 0 ? 2 : ptGT >= 0 ? 3
+          : ptLike >= 0 ? 4 : ptNotLike >= 0 ? 5 : 0);
+    }
+    boolean isOK = (likeMode < 0 && v2 == null && h.containsKey(key));
+    if (!isOK) {
+      String lckey = (isWild ? PT.rep(key.toLowerCase(), "?", "*") : null);
+      for (String k : h.keySet()) {
+        if (k.equalsIgnoreCase(key) || lckey != null
+            && Txt.isMatch(k.toLowerCase(), lckey, true, true)) {
+          if (v2 == null) {
+            if (likeMode >= 0) {
+              Object val = getObj(h.get(k));
+              if (val == null || !Txt.isSQLMatch(val, strLike, likeMode))
+                continue;
+            }
+            return k;
+          }
+          v2.addLast(extractProperty(h.get(k), args, ptr, null));
+          if (!isWild)
+            return null;
+        }
+      }
+    }
+    return (isOK ? key : null);
+  }
 
   private Object getObj(Object prop) {
     return (prop instanceof SV ? SV.oValue((SV) prop) : prop);

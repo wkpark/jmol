@@ -990,12 +990,12 @@ public abstract class BioPolymer {
     return (float) (1 - 2 * Math.acos(Math.abs(cosHalfTheta)) / Math.PI);
   }
 
-  public boolean isDna() {
-    return (monomerCount > 0 && monomers[0].isDna());
-  }
-
   public boolean isRna() {
     return (monomerCount > 0 && monomers[0].isRna());
+  }
+
+  public boolean isNucleic() {
+    return (monomerCount > 0 && (monomers[0].isDna() || monomers[0].isRna()));
   }
 
   public void getRangeGroups(int nResidues, BS bsAtoms, BS bsResult) {

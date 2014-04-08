@@ -436,6 +436,7 @@ public class T {
   public final static int helix310             = predefinedset | 8;   // Jmol 12.1.14
   public final static int helixpi              = predefinedset | 10; 
   public final static int hydrogen      = predefinedset | 12 | deprecatedparam;
+  public final static int leadatom      = predefinedset | 13;
   public final static int nucleic       = predefinedset | 14;
   public final static int protein       = predefinedset | 16;
   public final static int purine        = predefinedset | 18;
@@ -961,14 +962,15 @@ public class T {
   public final static int axesorientationrasmol          = booleanparam | 30;
   public final static int axesunitcell                   = booleanparam | 32;
   public final static int axeswindow                     = booleanparam | 34;
+  public final static int backbonesteps                  = booleanparam | 35;
   public final static int bondmodeor                     = booleanparam | 36;
   public final static int bondpicking                    = booleanparam | 38;
 // set mathproperty  public final static int bonds                          = booleanparam | 40;
-  public final static int cartoonbaseedges               = booleanparam | 41;
-  public final static int cartoonrockets                 = booleanparam | 42;
-  public final static int cartoonsfancy                  = booleanparam | 43;
-  public final static int cartoonladders                 = booleanparam | 44;
-  public final static int cartoonribose                  = booleanparam | 45;
+  public final static int cartoonbaseedges               = booleanparam | 40;
+  public final static int cartoonsfancy                  = booleanparam | 41;
+  public final static int cartoonladders                 = booleanparam | 42;
+  public final static int cartoonribose                  = booleanparam | 43;
+  public final static int cartoonrockets                 = booleanparam | 44;
   public final static int celshading                     = booleanparam | 46;
   public final static int chaincasesensitive             = booleanparam | 47;
   public final static int colorrasmol                    = booleanparam | 48;
@@ -2440,6 +2442,7 @@ public class T {
        "axesOrientationRasmol",
        "axesUnitCell",
        "axesWindow",
+       "backboneSteps",
        "bondModeOr",
        "bondPicking",
        "bonds",
@@ -2492,6 +2495,8 @@ public class T {
        "isosurfacePropertySmoothingPower",
        "justifyMeasurements",
        "languageTranslation",
+       "leadAtom",
+       "leadAtoms",
        "legacyAutoBonding",
        "legacyHAddition",
        "logCommands",
@@ -3432,6 +3437,7 @@ public class T {
         axesorientationrasmol,              //        "axesOrientationRasmol"
         axesunitcell,                       //        "axesUnitCell"
         axeswindow,                         //        "axesWindow"
+        backbonesteps,                      //        "backboneSteps"
         bondmodeor,                         //        "bondModeOr"
         bondpicking,                        //        "bondPicking"
         bonds,                              //        "bonds"
@@ -3484,6 +3490,8 @@ public class T {
         isosurfacepropertysmoothingpower,   //        "isosurfacePropertySmoothingPower"
         justifymeasurements,                //        "justifyMeasurements"
         languagetranslation,                //        "languageTranslation"
+        leadatom,                           //        "leadAtom"
+        -1,                                 //        "leadAtoms"
         legacyautobonding,                  //        "legacyAutoBonding"
         legacyhaddition,                    //        "legacyHAddition"
         logcommands,                        //        "logCommands"

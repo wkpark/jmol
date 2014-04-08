@@ -801,6 +801,7 @@ abstract class ScriptExpr extends ScriptParam {
       case T.hetero:
       case T.isaromatic:
       case T.nucleic:
+      case T.leadatom:
       case T.protein:
       case T.purine:
       case T.pyrimidine:

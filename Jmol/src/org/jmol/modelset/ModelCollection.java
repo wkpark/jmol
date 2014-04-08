@@ -1850,10 +1850,10 @@ abstract public class ModelCollection extends BondCollection {
         if ((dssr = getInfo(i, "dssr")) != null)
           bs.or(p
               .getAtomBits(
+                  vwr,
                   (String) specInfo,
-                  dssr,
-                  (am[i].dssrCache == null ? am[i].dssrCache = new Hashtable<String, BS>()
-                      : am[i].dssrCache), vwr));
+                  dssr, (am[i].dssrCache == null ? am[i].dssrCache = new Hashtable<String, BS>()
+                          : am[i].dssrCache)));
       return bs;
     case T.bonds:
     case T.isaromatic:

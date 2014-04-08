@@ -49,6 +49,8 @@ import org.jmol.viewer.Viewer;
 
 public class NucleicPolymer extends BioPolymer {
 
+  public boolean isDssrSet;
+  
   NucleicPolymer(Monomer[] monomers) {
     super(monomers);
     type = TYPE_NUCLEIC;
@@ -172,5 +174,6 @@ public class NucleicPolymer extends BioPolymer {
                          boolean addHeader, LabelToken[] tokens, OC pdbATOM, SB pdbCONECT, BS bsWritten) {
     getPdbData(vwr, this, ctype, qtype, mStep, derivType, bsAtoms, bsSelected, bothEnds, 
         isDraw, addHeader, tokens, pdbATOM, pdbCONECT, bsWritten);
-  }   
+  }
+  
 }

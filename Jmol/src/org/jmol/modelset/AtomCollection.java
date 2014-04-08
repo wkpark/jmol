@@ -2115,6 +2115,11 @@ abstract public class AtomCollection {
         if (at[i].getElementNumber() == 1)
           bs.set(i);
       break;
+    case T.leadatom:
+      for (i = ac; --i >= 0;)
+        if (at[i].isLeadAtom())
+          bs.set(i);
+      break;
     case T.protein:
       for (i = ac; --i >= 0;)
         if (at[i].isProtein())

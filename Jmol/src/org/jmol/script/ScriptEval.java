@@ -4634,10 +4634,16 @@ public class ScriptEval extends ScriptExpr {
     boolean timeMsg = vwr.getBoolean(T.showtiming);
     if (timeMsg)
       Logger.startTimer("load");
-    if (isConcat)
-      htParams.put("concatenate", Boolean.TRUE);
+    if (!isConcat && filename.length() == 10 && filename.startsWith("=") && filename.endsWith("/dssr")) {
+      // load =1mys/dssr
+      isConcat = true;
+      filenames = new String[] {filename.substring(0, 5), "=dssr/" + filename.substring(1,5)};
+      filename = "fileSet";
+      loadScript = null;
+      htParams.remove("loadScript");
+    }
     errMsg = vwr.loadModelFromFile(null, filename, filenames, null, isAppend,
-        htParams, loadScript, tokType);
+        htParams, loadScript, tokType, isConcat);
     if (out != null) {
       vwr.setFileInfo(new String[] { localName });
       Logger.info(GT.o(GT._("file {0} created"), localName));

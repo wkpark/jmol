@@ -34,6 +34,11 @@ import javajs.util.SB;
 
 import org.jmol.api.JmolDSSRParser;
 import org.jmol.java.BS;
+import org.jmol.modelsetbio.BasePair;
+import org.jmol.modelsetbio.BioModel;
+import org.jmol.modelsetbio.BioPolymer;
+import org.jmol.modelsetbio.NucleicMonomer;
+import org.jmol.modelsetbio.NucleicPolymer;
 import org.jmol.script.T;
 import org.jmol.viewer.Viewer;
 
@@ -73,13 +78,13 @@ public class DSSRParser implements JmolDSSRParser {
           break;
         case 5:
         case 10:
-          getList(n, "helices", "helix#", true);
+          getHelixOrStem(n, "helices", "helix", true);
           break;
         case 15:
           readNTList(null, "multiplets", n);
           break;
         case 20:
-          getList(n, "stems", "stem#", false);
+          getHelixOrStem(n, "stems", "stem", false);
           break;
         case 25:
           readStacks(n);
@@ -94,7 +99,7 @@ public class DSSRParser implements JmolDSSRParser {
           readJunctions(n);
           break;
         case 45:
-          readNTList(null, "singleStrandedSegments", n);
+          readNTList(null, "singleStranded", n);
           break;
         case 50:
           readMotifs(n);
@@ -379,7 +384,7 @@ List of 50 lone WC/wobble pairs
     pairs = newList("basePairs");
     skipHeader();
     for (int i = 0; i < n; i++)
-      pairs.addLast(getBPData(null, true));
+      pairs.addLast(getBPData(null, null, true));
  }
 
   /*
@@ -439,7 +444,7 @@ List of 50 lone WC/wobble pairs
 
    */
 
-  private Map<String, Object> getBPData(Lst<Object> ntList, boolean readParams) throws Exception {
+  private Map<String, Object> getBPData(String type, Lst<Object> ntList, boolean readParams) throws Exception {
     String[] tokens = PT.getTokens(line);
     String nt12 = tokens[1] + tokens[2];
     @SuppressWarnings("unchecked")
@@ -463,6 +468,7 @@ List of 50 lone WC/wobble pairs
       data.put("DSSR", tokens[++pt]);
       htTemp.put(nt12, data);
     } else {
+      data.put(type + "Id", tokens[0]);
       ntList.addLast(data);
     }
     if (readParams)
@@ -533,15 +539,15 @@ List of 233 multiplets
     return list;
   }
 
-  private void getList(int n, String key, String htKey, boolean getHelixParams) throws Exception {
+  private void getHelixOrStem(int n, String key, String type, boolean isHelix) throws Exception {
     Lst<Map<String, Object>>list = newList(key);
     for (int i = 0; i < n; i++) {
-      skipTo("  " + htKey);
+      skipTo("  " + type + "#");
       int bps = PT.parseInt(after(line,"="));
       Map<String, Object> data = new Hashtable<String, Object>();
       String header = getHeader();
       data.put("info", header);
-      if (getHelixParams) {
+      if (isHelix) {
         String[] lines = PT.split(header, "\n");
         if (lines.length == 8) {
           data.put("helicalAxisData", after(lines[5], "s"));
@@ -552,15 +558,14 @@ List of 233 multiplets
       //    point-two:  56.822  32.522 100.293
         }
       }
-
       
       list.addLast(data);
       Lst<Map<String, Object>>pairs = new Lst<Map<String, Object>>();    
       data.put("basePairs", pairs);
       Lst<Object> ntList = new Lst<Object>();
-      htTemp.put(htKey + (i + 1), ntList);
-      for (int j = 0; j < bps; j++)
-        pairs.addLast(getBPData(ntList, getHelixParams));
+      htTemp.put(type + "#" + (i + 1), ntList);
+      for (int j = 0; j < bps; j++) 
+        pairs.addLast(getBPData(type, ntList, isHelix));
     }
   }
 
@@ -578,10 +583,10 @@ List of 233 multiplets
     String[] tokens = PT.getTokens(rd());
     int pt = (tokens[0].startsWith("nts") ? 0 : 1);
     if (tokens.length > pt + 2) {
-      data.put("n", Integer.valueOf(PT.replaceAllCharacters(after(tokens[pt], "="), "*;", "")));
+      data.put("nres", Integer.valueOf(PT.replaceAllCharacters(after(tokens[pt], "="), "*;", "")));
       data.put("seq", tokens[++pt]);
-      data.put("nt", getNT(tokens[++pt], false));
-      data.put("resno", getNT(tokens[pt], true));
+      data.put("nts", getNT(tokens[++pt], false));
+      data.put("resnos", getNT(tokens[pt], true));
     }
     return data;
   }
@@ -590,7 +595,7 @@ List of 233 multiplets
     String[] tokens = PT.split(s, ",");
     Lst<Object> list = new Lst<Object>();
     for (int i = 0; i < tokens.length; i++)
-      list.addLast(fix(tokens[i], isResno));
+      list.addLast(fix(tokens[i], !isResno));
     return list;
   }
 
@@ -653,9 +658,13 @@ List of 233 multiplets
     return (line = reader.readNextLine());    
   }
 
+  
+  ///////////////////// post-load processing ////////////////
+  
   @Override
-  public BS getAtomBits(String key, Object dssr, Map<String, BS> dssrCache, Viewer vwr) {
-    if (key.indexOf("Pairs") < 0 && key.indexOf("linkedBy") < 0)
+  public BS getAtomBits(Viewer vwr, String key, Object dssr, Map<String, BS> dssrCache) {
+    if (key.indexOf("Pairs") < 0 && key.indexOf("linkedBy") < 0
+        && key.indexOf("multiplets") < 0 && key.indexOf("singleStrand") < 0)
       key += ".basePairs";
     if (key.indexOf(".res") < 0)
       key += ".res*";
@@ -664,23 +673,62 @@ List of 233 multiplets
     if (bs == null) {
       dssrCache.put(key, bs = new BS());
       Object data = vwr.extractProperty(dssr, key, -1);
-      if (!data.equals("")) {
-        String[] tokens = PT.getTokens(PT.replaceAllCharacters(data.toString(), "[,]", " "));
-        for (int j = tokens.length; --j >= 0;) {
-          String t = tokens[j];
-          int pt = t.indexOf(":"); 
-          if (pt < 0)
-            continue;
-          String chain = t.substring(pt + 1);
-          BS bsChain = htChains.get(chain);
-          if (bsChain == null)
-            htChains.put(chain, bsChain = vwr.ms.getAtoms(T.spec_chain, Integer.valueOf(vwr.getChainID(chain))));
-          BS bsRes = vwr.ms.getAtoms(T.resno, Integer.valueOf(t.substring(0, pt)));
-          bsRes.and(bsChain);
-          bs.or(bsRes);
-        }
-      }
+      if (!data.equals(""))
+        getBsAtoms(vwr, data, bs, htChains);
     }
     return bs;
   }
+
+  private void getBsAtoms(Viewer vwr, Object data, BS bs, Map<String, BS> htChains) {
+    String[] tokens = PT.getTokens(PT.replaceAllCharacters(data.toString(), "[,]", " "));
+    for (int j = tokens.length; --j >= 0;) {
+      String t = tokens[j];
+      int pt = t.indexOf(":"); 
+      if (pt < 0)
+        continue;
+      String chain = t.substring(pt + 1);
+      BS bsChain = htChains.get(chain);
+      if (bsChain == null)
+        htChains.put(chain, bsChain = vwr.ms.getAtoms(T.spec_chain, Integer.valueOf(vwr.getChainID(chain))));
+      BS bsRes = vwr.ms.getAtoms(T.resno, Integer.valueOf(t.substring(0, pt)));
+      bsRes.and(bsChain);
+      bs.or(bsRes);
+    }
+ }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public void setAllDSSRParametersForModel(Viewer vwr, int modelIndex) {
+    Object info = vwr.ms.getInfo(modelIndex, "dssr");
+    if (info != null)
+      info = ((Map<String, Object>) info).get("basePairs");
+    if (info == null) {
+      BioModel m = (BioModel) vwr.ms.am[modelIndex];
+      int n = m.getBioPolymerCount();
+      for (int i = n; --i >= 0;) {
+        BioPolymer bp = m.getBioPolymer(i);
+        if (bp.isNucleic())
+          ((NucleicPolymer) bp).isDssrSet = true;
+      }
+      return;
+    }
+    Lst<Map<String, Object>> lst = (Lst<Map<String, Object>>) info;
+    Map<String, BS> htChains = new Hashtable<String, BS>();
+    BS bs = new BS();
+    for (int i = lst.size(); --i >= 0;) {
+      Map<String, Object> bpInfo = lst.get(i);
+      new BasePair(bpInfo, setPhos(vwr, 1, bpInfo, bs, htChains), setPhos(vwr,
+          2, bpInfo, bs, htChains));
+    }
+  }
+
+  private NucleicMonomer setPhos(Viewer vwr, int n, Map<String, Object> bp,
+                       BS bs, Map<String, BS> htChains) {
+    bs.clearAll();
+    getBsAtoms(vwr, bp.get("res" + n), bs, htChains);
+    NucleicMonomer group = (NucleicMonomer) vwr.ms.at[bs.nextSetBit(0)].getGroup();
+    ((NucleicPolymer) group.getBioPolymer()).isDssrSet = true;
+    return group;
+  }
+
 }

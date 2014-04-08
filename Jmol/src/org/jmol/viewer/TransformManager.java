@@ -271,10 +271,14 @@ public class TransformManager {
     rotateAxisAngle2(axisangleT, null);
   }
 
-  protected void rotateXYBy(float xDelta, float yDelta, BS bsAtoms) {
+  protected void rotateXYBy(float degX, float degY, BS bsAtoms) {
     // from mouse action
-    rotateXRadians(yDelta * JC.radiansPerDegree, bsAtoms);
-    rotateYRadians(xDelta * JC.radiansPerDegree, bsAtoms);
+    if (vwr.getTestFlag(2)) {
+      rotateXRadians(degY * JC.radiansPerDegree, bsAtoms);
+      rotateYRadians(degX * JC.radiansPerDegree, bsAtoms);
+    } else {
+      rotate3DBall(degX, degY, bsAtoms);
+    }
   }
 
   void rotateZBy(int zDelta, int x, int y) {
@@ -301,9 +305,18 @@ public class TransformManager {
     }
   }
 
-  protected void rotate3DBall(float xDelta, float yDelta, BS bsAtoms) {
-    float scale = 50f;
-    matrixTemp3.setAsBallRotation(scale, -yDelta, -xDelta);
+  protected void rotate3DBall(float xDeg, float yDeg, BS bsAtoms) {
+    // xDeg and yDeg are calibrated to be 180 degrees for 
+    // a full drag across the frame or from top to bottom.
+    
+    // Note: We will apply this matrix to the untransformed
+    // model coordinates, not their screen counterparts. 
+    // Nonetheless, dx and dy are in terms of the screen. 
+    // The swapping of dx and dy, and their reversal in sign
+    // probably has to do with the fact that we are changing
+    // the signs of both screen Y and screen Z in the end.
+
+    matrixTemp3.setAsBallRotation(JC.radiansPerDegree, -yDeg, -xDeg);
     applyRotation(matrixTemp3, false, bsAtoms, null, false);
   }
 
@@ -1061,6 +1074,7 @@ public class TransformManager {
    This is a linear function of p, with 1/f=0 at p = -c, the camera position:
    
    
+ 
    
    \----------------0----------------/    midplane, p = 0.5, 1/f = 1
     \        model center           /     viewingRange = screenPixelCount
@@ -1073,13 +1087,13 @@ public class TransformManager {
            \                 /
             \               /   The distance across is the distance that is viewable
              \             /    for this Z position. Just magnify a model and place its
-              \           /     center at 0. Whatever part of the model is within the
-               \         /      triangle will be viewed, scaling each distance so that
-                \       /       it ends up screenWidthPixels wide.
-                 \     /
-                  \   /
+ ^            \           /     center at 0. Whatever part of the model is within the
+ |             \         /      triangle will be viewed, scaling each distance so that
+Z increasing    \       /       it ends up screenWidthPixels wide.
+ |               \     /
+ |                \   /
                    \ /
-                    X  camera position, p = -c, 1/f = 0
+ Z = 0              X  camera position, p = -c, 1/f = 0
                        viewingRange = 0
 
    VISUAL RANGE

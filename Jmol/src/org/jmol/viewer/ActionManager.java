@@ -1179,7 +1179,7 @@ public class ActionManager implements EventManager {
         setMotion(GenericPlatform.CURSOR_MOVE, true);
         if (bnd(dragWheelAction, ACTION_rotateSelected)
             && vwr.getBoolean(T.allowrotateselected)) {
-          vwr.rotateSelected(getDegrees(deltaX, 0), getDegrees(deltaY, 1),
+          vwr.rotateSelected(getDegrees(deltaX, true), getDegrees(deltaY, false),
               null);
         } else {
           vwr.moveSelected(deltaX, deltaY, (bnd(dragWheelAction,
@@ -1201,7 +1201,7 @@ public class ActionManager implements EventManager {
               true);
         setMotion(GenericPlatform.CURSOR_MOVE, true);
         if (bnd(dragWheelAction, ACTION_rotateSelected)) {
-          vwr.rotateSelected(getDegrees(deltaX, 0), getDegrees(deltaY, 1),
+          vwr.rotateSelected(getDegrees(deltaX, true), getDegrees(deltaY, false),
               bs);
         } else {
           switch (apm) {
@@ -1264,7 +1264,7 @@ public class ActionManager implements EventManager {
       setMotion(GenericPlatform.CURSOR_MOVE, true);
       if (bnd(dragWheelAction, ACTION_rotateSelected)
           && vwr.getBoolean(T.allowrotateselected))
-        vwr.rotateSelected(getDegrees(deltaX, 0), getDegrees(deltaY, 1),
+        vwr.rotateSelected(getDegrees(deltaX, true), getDegrees(deltaY, false),
             null);
       else
         vwr.moveSelected(deltaX, deltaY, Integer.MIN_VALUE,
@@ -1288,8 +1288,8 @@ public class ActionManager implements EventManager {
       return;
     }
     if (bnd(dragWheelAction, ACTION_rotate)) {
-      float degX = getDegrees(deltaX, 0);
-      float degY = getDegrees(deltaY, 1);
+      float degX = getDegrees(deltaX, true);
+      float degY = getDegrees(deltaY, false);
       if (vwr.g.useArcBall)
         vwr.rotateArcBall(x, y, mouseDragFactor);
       else
@@ -1631,11 +1631,18 @@ public class ActionManager implements EventManager {
     }
   }
 
-  protected float getDegrees(int delta, int i) {
-    int dim = (i == 0 ? vwr.getScreenWidth() : vwr.getScreenHeight());
-    if (dim > 500)
-      dim = 500;
-    return ((float) delta) / dim * 180 * mouseDragFactor;
+  /**
+   * Transform a screen pixel change to an angular change
+   * such that a full sweep of the dimension (up to 500 pixels)
+   * corresponds to 180 degrees of rotation.
+   *  
+   * @param delta
+   * @param isX
+   * @return desired scaled rotation, in degrees
+   */
+  protected float getDegrees(float delta, boolean isX) {
+    return delta / Math.min(500, isX ? vwr.getScreenWidth() 
+        : vwr.getScreenHeight()) * 180 * mouseDragFactor;
   }
 
   private boolean checkSlideZoom(int action) {

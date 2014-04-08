@@ -1706,12 +1706,12 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     @Override
     public void mousePressed(MouseEvent e) {
       vwr.evalStringQuiet(script);
-      vwr.evalStringQuiet("timeout '__animBtn' -200 \"" + script + "\"");
+      vwr.evalStringQuiet("animation_running = true; delay 0.5; if(animation_running){timeout '__animBtn' -200 \"" + script + "\"}");
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-      vwr.evalStringQuiet("timeout '__animBtn' OFF");
+      vwr.evalStringQuiet("animation_running = false; timeout '__animBtn' OFF");
     }
 
     @Override

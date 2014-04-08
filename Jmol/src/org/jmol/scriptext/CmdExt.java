@@ -345,7 +345,7 @@ public class CmdExt implements JmolCmdExtension {
         return;
       case T.hbond:
         if (e.slen != 2) {
-          // calculate hbonds STRUCTURE -- only the DSSP structurally-defining H bonds
+          // calculate hbonds STRUCTURE -- only the DSSP/DSSR structurally-defining H bonds
           asDSSP = (tokAt(++e.iToken) == T.structure);
           if (asDSSP)
             bs1 = vwr.bsA();

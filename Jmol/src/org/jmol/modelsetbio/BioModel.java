@@ -121,14 +121,28 @@ public final class BioModel extends Model{
       for (int i = bioPolymerCount; --i >= 0;)
         if (bioPolymers[i] instanceof AlphaPolymer)
           ((AlphaPolymer) bioPolymers[i]).calculateStructures(includeAlpha);
-    return (asDSSP ? calculateDssp(null, doReport, dsspIgnoreHydrogen, setStructure) : "");
+    return (asDSSP ? calculateDssx(null, doReport, dsspIgnoreHydrogen, setStructure) : "");
   }
   
-  private String calculateDssp(Lst<Bond> vHBonds, boolean doReport,
+  private String calculateDssx(Lst<Bond> vHBonds, boolean doReport,
                                boolean dsspIgnoreHydrogen, boolean setStructure) {
-    return ((DSSPInterface) Interface.getOption("dssx.DSSP"))
+    boolean haveProt = false;
+    boolean haveNucl = false;
+    for (int i = 0; i < bioPolymerCount && !(haveProt && haveNucl); i++) {
+      if (bioPolymers[i].isNucleic())
+        haveNucl = true;
+      else if (bioPolymers[i] instanceof AminoPolymer)
+        haveProt = true;
+    }
+    
+    String s = "";
+    if (haveProt)
+    ((DSSPInterface) Interface.getOption("dssx.DSSP"))
         .calculateDssp(bioPolymers, bioPolymerCount, vHBonds, doReport,
             dsspIgnoreHydrogen, setStructure);
+    if (haveNucl && auxiliaryInfo.containsKey("dssr"))
+      s += ms.vwr.getDSSRParser().getHBonds(ms.vwr, modelIndex, vHBonds, doReport);
+    return s;
   }
 
   @Override
@@ -336,10 +350,12 @@ public final class BioModel extends Model{
       vHBonds = new  Lst<Bond>();
     if (nMax < 0)
       nMax = Integer.MAX_VALUE;
-    boolean asDSSP = (bsB == null);
+    boolean asDSSX = (bsB == null);
     BioPolymer bp, bp1;
-    if (asDSSP && bioPolymerCount > 0) {
-      calculateDssp(vHBonds, false, dsspIgnoreHydrogens, false);
+    if (asDSSX && bioPolymerCount > 0) {
+      
+      calculateDssx(vHBonds, false, dsspIgnoreHydrogens, false);
+      
     } else {
       for (int i = bioPolymerCount; --i >= 0;) {
         bp = bioPolymers[i];

@@ -34,12 +34,16 @@ import javajs.util.SB;
 
 import org.jmol.api.JmolDSSRParser;
 import org.jmol.java.BS;
+import org.jmol.modelset.Bond;
+import org.jmol.modelset.HBond;
 import org.jmol.modelsetbio.BasePair;
 import org.jmol.modelsetbio.BioModel;
 import org.jmol.modelsetbio.BioPolymer;
 import org.jmol.modelsetbio.NucleicMonomer;
 import org.jmol.modelsetbio.NucleicPolymer;
 import org.jmol.script.T;
+import org.jmol.util.C;
+import org.jmol.util.Edge;
 import org.jmol.viewer.Viewer;
 
 public class DSSRParser implements JmolDSSRParser {
@@ -55,24 +59,27 @@ public class DSSRParser implements JmolDSSRParser {
   }
   
   @Override
-  public String process(Map<String, Object> info, GenericLineReader reader) throws Exception {
+  public String process(Map<String, Object> info, GenericLineReader reader)
+      throws Exception {
     info.put("dssr", dssr = new Hashtable<String, Object>());
     htTemp = new Hashtable<String, Object>();
     this.reader = reader;
-    message = new SB(); 
+    message = new SB();
     addMessage("\nDSSR: a software program for Defining the Secondary");
     addMessage(rd().trim());
     addMessage(rd().trim());
+    boolean haveHeader = false;
     while (rd() != null) {
       if (line.startsWith("List of")) {
         int n = PT.parseInt(line.substring(8));
         if (n < 0 || line.endsWith("files"))
           continue;
         addMessage(line);
-        line = PT.rep(PT.trim(line,  "s"), " interaction", "");
-        int pt = "pair elix lice plet stem tack loop ulge tion ment otif pper turn file".indexOf(line.trim().substring(line.length() - 4));
+        line = PT.rep(PT.trim(line, "s"), " interaction", "");
+        int pt = "pair elix lice plet stem tack loop ulge tion ment otif pper turn bond file"
+            .indexOf(line.trim().substring(line.length() - 4));
                 //0    5    10        20        30        40        50        60
-        switch(pt) {
+        switch (pt) {
         case 0:
           readPairs(n);
           break;
@@ -94,7 +101,7 @@ public class DSSRParser implements JmolDSSRParser {
           break;
         case 35:
           readBulges(n);
-          break;          
+          break;
         case 40:
           readJunctions(n);
           break;
@@ -103,22 +110,63 @@ public class DSSRParser implements JmolDSSRParser {
           break;
         case 50:
           readMotifs(n);
-          break;          
+          break;
         case 55:
           readNTList(null, "riboseZippers", n);
-          break;          
+          break;
         case 60:
           readTurns(n);
-          break;          
-        case 65: // files
-          break;          
+          break;
+        case 65:
+          readHBonds(n);
+          break;
+        case 70: // files
+          break;
         default:
           addMessage("DSSRParser ignored: " + line);
           break;
-        }        
+        }
+      } else if (!haveHeader && line.startsWith("Date and time")) {
+        addToMessages();
+        haveHeader = true;
+      } else if (line.startsWith("Secondary structures in dot-bracket")) {
+        addToMessages();        
       }
     }
+    dssr.put("summary", message.toString());
     return message.toString();
+  }
+
+  /*
+List of 39 H-bonds
+   15   578  #1     p    2.768 O/N O4@A.U2647 N1@A.G2673
+   35   555  #2     p    2.776 O/N O6@A.G2648 N3@A.U2672
+   36   554  #3     p    2.826 N/O N1@A.G2648 O2@A.U2672
+   55   537  #4     p    2.965 O/N O2@A.C2649 N2@A.G2671
+   */
+  private void readHBonds(int n) throws Exception {
+    Lst<Map<String, Object>> list = newList("hBonds");
+    for (int i = 0; i < n; i++) {
+      Map<String, Object> data = new Hashtable<String, Object>();
+      String[] tokens = PT.getTokens(rd());
+      data.put("atno1", Integer.valueOf(PT.parseInt(tokens[0])));
+      data.put("atno2", Integer.valueOf(PT.parseInt(tokens[1])));
+      data.put("id", tokens[2]);
+      data.put("hbType", tokens[3]);
+      data.put("distAng", Float.valueOf(tokens[4]));
+      data.put("label", tokens[5]);
+      data.put("atom1", fix(tokens[6], true));
+      data.put("atom2", fix(tokens[7], true));
+      list.addLast(data);
+    }
+  }
+
+  private void addToMessages() throws Exception {
+    addMessage("");
+    while (line.indexOf("****") < 0) {
+      addMessage(line);
+      rd();
+    }
   }
 
   private void addMessage(String s) {
@@ -149,8 +197,8 @@ public class DSSRParser implements JmolDSSRParser {
    */
   private void readStacks(int n) throws Exception {
     Lst<Map<String, Object>> list = newList("coaxialStacks");
-    Map<String, Object> data = new Hashtable<String, Object>();
     for (int i = 0; i < n; i++) {
+      Map<String, Object> data = new Hashtable<String, Object>();
       String[] tokens = PT.getTokens(rd());
       data.put("helix", tokens[1]);
       data.put("stemCount", Integer.valueOf(tokens[3]));
@@ -635,10 +683,10 @@ List of 233 multiplets
   }
 
   /**
-   * A.T8 --> [T]8:A
+   * A.T8 --> [T]8:A N1@A.G2673 --> [G]2673:A.N1
    * 
    * @param nt
-   * @param withName 
+   * @param withName
    * @return Jmol atom residue as [name]resno:chain or just resno:chain
    */
   private String fix(String nt, boolean withName) {
@@ -647,6 +695,10 @@ List of 233 multiplets
     int pt = nt.length();
     while (Character.isDigit(nt.charAt(--pt))) {
     }
+    int ptn = chain.indexOf("@");
+    if (ptn >= 0)
+      chain = chain.substring(ptn + 1)
+          + (withName ? "." + chain.substring(0, ptn) : "");
     return (withName ? "[" + nt.substring(pt1 + 1, pt + 1) + "]" : "")
         + nt.substring(pt + 1) + ":" + chain;
   }
@@ -730,6 +782,25 @@ List of 233 multiplets
     NucleicMonomer group = (NucleicMonomer) vwr.ms.at[bs.nextSetBit(0)].getGroup();
     ((NucleicPolymer) group.getBioPolymer()).isDssrSet = true;
     return group;
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public String getHBonds(Viewer vwr, int modelIndex, Lst<Bond> vHBonds, boolean doReport) {
+    Object info = vwr.ms.getInfo(modelIndex, "dssr");
+    if (info != null)
+      info = ((Map<String, Object>) info).get("hBonds");
+    if (info == null)
+      return "no DSSR hydrogen-bond data";
+    Lst<Map<String, Object>> list = (Lst<Map<String, Object>>) info;
+    int a0 = vwr.ms.am[modelIndex].firstAtomIndex - 1;
+    for (int i = list.size(); --i >= 0;) {
+      Map<String, Object> hbond = list.get(i);
+      int a1 = ((Integer) hbond.get("atno1")).intValue() + a0;
+      int a2 = ((Integer) hbond.get("atno2")).intValue() + a0;
+      vHBonds.addLast(new HBond(vwr.ms.at[a1], vwr.ms.at[a2], Edge.BOND_H_REGULAR, (short) 1, C.INHERIT_ALL, 0));
+    }
+    return "DSSR reports " + list.size() + " hydrogen bonds";
   }
 
 }

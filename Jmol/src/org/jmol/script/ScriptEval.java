@@ -8646,16 +8646,14 @@ public class ScriptEval extends ScriptExpr {
   }
 
   private void setShapeSize(int shapeType, RadiusData rd) {
-    if (chk)
-      return;
-    sm.setShapeSizeBs(shapeType, 0, rd, null);
+    if (!chk)
+      sm.setShapeSizeBs(shapeType, 0, rd, null);
   }
 
   public void setShapeSizeBs(int shapeType, int size, BS bs) {
     // stars, halos, balls only
-    if (chk)
-      return;
-    sm.setShapeSizeBs(shapeType, size, null, bs);
+    if (!chk)
+      sm.setShapeSizeBs(shapeType, size, null, bs);
   }
 
   public void setShapeTranslucency(int shapeType, String prefix,

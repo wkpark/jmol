@@ -2457,7 +2457,7 @@ abstract public class ModelCollection extends BondCollection {
     BS bsHBonds = new BS();
     boolean useRasMol = vwr.getBoolean(T.hbondsrasmol);
     if (bsB == null || useRasMol && !haveHAtoms) {
-      Logger.info((bsB == null ? "DSSP " : "RasMol")
+      Logger.info((bsB == null ? "DSSP/DSSR " : "RasMol")
           + " pseudo-hbond calculation");
       calcRasmolHydrogenBonds(bsA, bsB, null, false, Integer.MAX_VALUE, false,
           bsHBonds);
@@ -3453,7 +3453,7 @@ abstract public class ModelCollection extends BondCollection {
       BoxInfo b = new BoxInfo();
       b.setMargin(0);
       for (int j = j0; j >= 0; j = bsAtoms.nextSetBit(j + 1))
-        b.addBoundBoxPoint((P3) q.transformP2(at[j], pt));
+        b.addBoundBoxPoint(q.transformP2(at[j], pt));
       switch (type) {
       default:
       case T.volume:

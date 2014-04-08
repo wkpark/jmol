@@ -154,9 +154,15 @@ List of 39 H-bonds
       data.put("id", tokens[2]);
       data.put("hbType", tokens[3]);
       data.put("distAng", Float.valueOf(tokens[4]));
-      data.put("label", tokens[5]);
-      data.put("atom1", fix(tokens[6], true));
-      data.put("atom2", fix(tokens[7], true));
+      int pt = (tokens.length > 8 ? 6 : 5);
+      data.put("energy",  Float.valueOf(pt == 6 ? tokens[5] : "0"));
+      data.put("label", tokens[pt++]);
+      data.put("atom1", fix(tokens[pt++], true));
+      data.put("atom2", fix(tokens[pt++], true));
+// --more option:
+//  1678  1703  #187   p    2.722    1.438 O/N O@B.LEU61 N@B.LEU64 primary
+      if (pt < tokens.length)
+        data.put("primary", Boolean.valueOf(tokens[pt++].equals("primary")));
       list.addLast(data);
     }
   }
@@ -798,7 +804,8 @@ List of 233 multiplets
       Map<String, Object> hbond = list.get(i);
       int a1 = ((Integer) hbond.get("atno1")).intValue() + a0;
       int a2 = ((Integer) hbond.get("atno2")).intValue() + a0;
-      vHBonds.addLast(new HBond(vwr.ms.at[a1], vwr.ms.at[a2], Edge.BOND_H_REGULAR, (short) 1, C.INHERIT_ALL, 0));
+      float energy = (hbond.containsKey("energy") ? ((Float)hbond.get("energy")).floatValue() : 0);
+      vHBonds.addLast(new HBond(vwr.ms.at[a1], vwr.ms.at[a2], Edge.BOND_H_REGULAR, (short) 1, C.INHERIT_ALL, energy));
     }
     return "DSSR reports " + list.size() + " hydrogen bonds";
   }

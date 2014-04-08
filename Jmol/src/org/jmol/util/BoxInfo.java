@@ -275,12 +275,12 @@ public class BoxInfo {
     margin = m;
   }
   
-  public void addBoundBoxPoint(P3 pt) {
+  public void addBoundBoxPoint(T3 pt) {
     isScaleSet = false;
     addPoint(pt, bbCorner0, bbCorner1, margin);
   }
 
-  public static void addPoint(P3 pt, P3 xyzMin, P3 xyzMax, float margin) {
+  public static void addPoint(T3 pt, P3 xyzMin, P3 xyzMax, float margin) {
     if (pt.x - margin < xyzMin.x)
       xyzMin.x = pt.x - margin;
     if (pt.x + margin > xyzMax.x)

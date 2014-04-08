@@ -43,6 +43,7 @@ import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.SB;
 import javajs.util.M4;
+import javajs.util.T3;
 
 import org.jmol.util.Logger;
 import javajs.util.P3;
@@ -74,7 +75,7 @@ public abstract class MeshCollection extends Shape {
   protected Mesh pickedMesh;
   protected int pickedModel;
   protected int pickedVertex;
-  protected P3 pickedPt;
+  protected T3 pickedPt;
   
   protected int[] connections;
 
@@ -580,7 +581,7 @@ public abstract class MeshCollection extends Shape {
     }
   }
  
-  protected void setStatusPicked(int flag, P3 v, Map<String, Object> map) {
+  protected void setStatusPicked(int flag, T3 v, Map<String, Object> map) {
     // for draw and isosurface
     vwr.setStatusAtomPicked(flag, "[\"" + myType + "\"," + PT.esc(pickedMesh.thisID) + "," +
         + pickedModel + "," + pickedVertex + "," + v.x + "," + v.y + "," + v.z + "," 
@@ -588,7 +589,7 @@ public abstract class MeshCollection extends Shape {
                : PT.esc(pickedMesh.title[0]))+"]", map);
   }
 
-  protected Map<String, Object> getPickedPoint(P3 v, int modelIndex) {
+  protected Map<String, Object> getPickedPoint(T3 v, int modelIndex) {
     Map<String, Object> map = new Hashtable<String, Object>();
     if (v != null) {
       map.put("pt", v);

@@ -38,12 +38,13 @@ import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.P3i;
 import javajs.util.P4;
+import javajs.util.T3;
 import javajs.util.V3;
 
 public abstract class MeshRenderer extends ShapeRenderer {
 
   protected Mesh mesh;
-  protected P3[] vertices;
+  protected T3[] vertices;
   protected short[] normixes;
   protected P3i[] screens;
   protected V3[] transformedVectors;
@@ -445,7 +446,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   }
 
   protected void drawLine(int iA, int iB, boolean fill, 
-                          P3 vA, P3 vB, 
+                          T3 vA, T3 vB, 
                           P3i sA, P3i sB) {
     byte endCap = (iA != iB  && !fill ? GData.ENDCAPS_NONE 
         : width < 0 || width == -0.0 || iA != iB && isTranslucent ? GData.ENDCAPS_FLAT

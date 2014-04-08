@@ -198,15 +198,14 @@ class PmeshReader extends PolygonFileReader {
       return false;
     }
     pmeshError = type + " ERROR: invalid vertex list";
-    P3 pt = new P3();
     vertexMap = new int[nVertices];
     for (int i = 0; i < nVertices; i++) {
-      pt.set(getFloat(), getFloat(), getFloat());
+      P3 pt = P3.new3(getFloat(), getFloat(), getFloat());
       if (isAnisotropic)
         setVertexAnisotropy(pt);
       if (Logger.debugging)
         Logger.debug(i + ": " + pt);
-      vertexMap[i] = addVertexCopy(pt, 0, i);
+      vertexMap[i] = addVertexCopy(pt, 0, i, false);
       if (onePerLine)
         iToken = Integer.MAX_VALUE;
     }

@@ -126,7 +126,7 @@ class ObjReader extends PmeshReader {
         if (i == nVertices) {
           if (isAnisotropic)
             setVertexAnisotropy(pt);
-          j = addVertexCopy(pt, 0, nVertices++);
+          j = addVertexCopy(pt, 0, nVertices++, true);
           if (j >= 0)
             bsOK.set(i);
         }

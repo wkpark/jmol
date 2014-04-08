@@ -16,12 +16,6 @@
 */
 package javajs.util;
 
-import java.io.Serializable;
-
-import javajs.api.JSONEncodable;
-
-
-
 /**
  * A generic 4 element tuple that is represented by single precision floating
  * point x,y,z and w coordinates.
@@ -34,22 +28,7 @@ import javajs.api.JSONEncodable;
  * for unique constructor and method names
  * for the optimization of compiled JavaScript using Java2Script
  */
-public abstract class T4 implements Serializable, JSONEncodable {
-
-  /**
-   * The x coordinate.
-   */
-  public float x;
-
-  /**
-   * The y coordinate.
-   */
-  public float y;
-
-  /**
-   * The z coordinate.
-   */
-  public float z;
+public abstract class T4 extends T3 {
 
   /**
    * The w coordinate.
@@ -74,7 +53,7 @@ public abstract class T4 implements Serializable, JSONEncodable {
    * @param w
    *        the w coordinate
    */
-  public final void set(float x, float y, float z, float w) {
+  public final void set4(float x, float y, float z, float w) {
     this.x = x;
     this.y = y;
     this.z = z;
@@ -87,10 +66,8 @@ public abstract class T4 implements Serializable, JSONEncodable {
    * @param s
    *        the scalar value
    */
-  public final void scale(float s) {
-    x *= s;
-    y *= s;
-    z *= s;
+  public final void scale4(float s) {
+    scale(s);
     w *= s;
   }
 
@@ -103,8 +80,8 @@ public abstract class T4 implements Serializable, JSONEncodable {
    */
   @Override
   public int hashCode() {
-    return T3.floatToIntBits0(x) ^ T3.floatToIntBits0(y)
-        ^ T3.floatToIntBits0(z) ^ T3.floatToIntBits0(w);
+    return floatToIntBits0(x) ^ floatToIntBits0(y)
+        ^ floatToIntBits0(z) ^ floatToIntBits0(w);
   }
 
   /**

@@ -42,6 +42,7 @@ import javajs.util.P3;
 import javajs.util.P3i;
 import javajs.util.P4;
 import javajs.util.PT;
+import javajs.util.T3;
 import javajs.util.V3;
 
 import org.jmol.util.Measure;
@@ -498,7 +499,7 @@ protected void resetObjects() {
     return getPropMC(property);
   }
 
-  private P3 getSpinCenter(String axisID, int vertexIndex, int modelIndex) {
+  private T3 getSpinCenter(String axisID, int vertexIndex, int modelIndex) {
     String id;
     int pt = axisID.indexOf("[");
     int pt2;
@@ -675,7 +676,7 @@ protected void resetObjects() {
     }
   }
 
-  private void addPoint(P3 newPt, int iModel) {
+  private void addPoint(T3 newPt, int iModel) {
     boolean isOK = (iModel < 0 || bsAllModels.get(iModel));
     if (makePoints) {
       if (!isOK)
@@ -725,7 +726,7 @@ protected void resetObjects() {
           int[] p = thisMesh.pis[modelIndex] = new int[nVertices];
           for (int j = 0; j < nPoints; j++) {
             info = vData.get(++i);
-            p[j] = thisMesh.addV((P3) info[1]);
+            p[j] = thisMesh.addV((P3) info[1], false);
           }
           for (int j = nPoints; j < 3; j++) {
             p[j] = n0 + nPoints - 1;
@@ -1008,7 +1009,7 @@ protected void resetObjects() {
       return;
     int nVertices0 = thisMesh.vc;
     for (int i = 0; i < nVertices; i++) {
-      thisMesh.addV(ptList[i]);
+      thisMesh.addV(ptList[i], false);
     }
     int npoints = (nVertices < 3 ? 3 : nVertices);
     thisMesh.setPolygonCount(nPoly + 1);
@@ -1038,7 +1039,7 @@ protected void resetObjects() {
     int iptlast = -1;
     int ipt = 0;
     for (int i = dmesh.pc; --i >= 0;) {
-      P3 center = (dmesh.isVector ? dmesh.vs[0] 
+      T3 center = (dmesh.isVector ? dmesh.vs[0] 
           : dmesh.ptCenters == null ? dmesh.ptCenter
           : dmesh.ptCenters[i]);
       if (center == null)
@@ -1127,7 +1128,7 @@ protected void resetObjects() {
       return null;
     if (!findPickedObject(x, y, false, bsVisible))
       return null;
-    P3 v = pickedMesh.vs[pickedMesh.pis[pickedModel][pickedVertex]];
+    T3 v = pickedMesh.vs[pickedMesh.pis[pickedModel][pickedVertex]];
     int modelIndex = pickedMesh.modelIndex;
     BS bs = ((DrawMesh) pickedMesh).modelFlags;
     if (modelIndex < 0 && bs != null && BSUtil.cardinalityOf(bs) == 1)
@@ -1284,7 +1285,7 @@ protected void resetObjects() {
               : m.pis[iModel].length); --iVertex >= 0;) {
             try {
               int iv = m.pis[iModel][iVertex];
-              P3 pt = (m.altVertices == null ? m.vs[iv]
+              T3 pt = (m.altVertices == null ? m.vs[iv]
                   : (P3) m.altVertices[iv]);
               int d2 = coordinateInRange(x, y, pt, dmin2, ptXY);
               if (d2 >= 0) {
@@ -1466,7 +1467,7 @@ protected void resetObjects() {
         iModel = 0; // arrows and curves may not have multiple model representations
       boolean adjustPt = (mesh.isVector && mesh.drawType != EnumDrawType.ARC);
       for (int i = 0; i < nVertices; i++) {
-        P3 pt = mesh.vs[mesh.pis[iModel][i]];
+        T3 pt = mesh.vs[mesh.pis[iModel][i]];
         if (pt.z == Float.MAX_VALUE || pt.z == -Float.MAX_VALUE) {
           str += (i == 0 ? " " : " ,") + "[" + (int) pt.x + " " + (int) pt.y + (pt.z < 0 ? " %]" : "]");
         } else if (adjustPt && i == 1){
@@ -1513,7 +1514,7 @@ protected void resetObjects() {
           mInfo.put("vertexCount", Integer.valueOf(nPoints));
           if (nPoints > 1)
             mInfo.put("axis", mesh.axes[k]);
-          Lst<P3> v = new  Lst<P3>();
+          Lst<T3> v = new  Lst<T3>();
           for (int ipt = 0; ipt < nPoints; ipt++)
             v.addLast(mesh.vs[mesh.pis[k][ipt]]);
           mInfo.put("vertices", v);
@@ -1530,7 +1531,7 @@ protected void resetObjects() {
         info.put("center", mesh.ptCenter);
         if (mesh.drawVertexCount > 1)
           info.put("axis", mesh.axis);
-        Lst<P3> v = new  Lst<P3>();
+        Lst<T3> v = new  Lst<T3>();
         for (int j = 0; j < mesh.vc; j++)
           v.addLast(mesh.vs[j]);
         info.put("vertices", v);

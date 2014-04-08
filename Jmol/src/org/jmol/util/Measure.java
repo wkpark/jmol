@@ -197,19 +197,19 @@ final public class Measure {
     }
   }
 
-  public static void getPlaneThroughPoints(P3 pointA,
-                                              P3 pointB,
-                                              P3 pointC, V3 vNorm,
+  public static void getPlaneThroughPoints(T3 pointA,
+                                              T3 pointB,
+                                              T3 pointC, V3 vNorm,
                                               V3 vAB, V3 vAC, P4 plane) {
     float w = getNormalThroughPoints(pointA, pointB, pointC, vNorm, vAB, vAC);
-    plane.set(vNorm.x, vNorm.y, vNorm.z, w);
+    plane.set4(vNorm.x, vNorm.y, vNorm.z, w);
   }
   
-  public static void getPlaneThroughPoint(P3 pt, V3 normal, P4 plane) {
-    plane.set(normal.x, normal.y, normal.z, -normal.dot(pt));
+  public static void getPlaneThroughPoint(T3 pt, V3 normal, P4 plane) {
+    plane.set4(normal.x, normal.y, normal.z, -normal.dot(pt));
   }
   
-  public static float distanceToPlane(P4 plane, P3 pt) {
+  public static float distanceToPlane(P4 plane, T3 pt) {
     return (plane == null ? Float.NaN 
         : (plane.x * pt.x + plane.y * pt.y + plane.z * pt.z + plane.w)
         / (float) Math.sqrt(plane.x * plane.x + plane.y * plane.y + plane.z
@@ -228,16 +228,16 @@ final public class Measure {
             * norm.z));
   }
 
-  public static void calcNormalizedNormal(P3 pointA, P3 pointB,
-         P3 pointC, V3 vNormNorm, V3 vAB, V3 vAC) {
+  public static void calcNormalizedNormal(T3 pointA, T3 pointB,
+         T3 pointC, V3 vNormNorm, V3 vAB, V3 vAC) {
     vAB.sub2(pointB, pointA);
     vAC.sub2(pointC, pointA);
     vNormNorm.cross(vAB, vAC);
     vNormNorm.normalize();
   }
 
-  public static float getDirectedNormalThroughPoints(P3 pointA, 
-         P3 pointB, P3 pointC, P3 ptRef, V3 vNorm, 
+  public static float getDirectedNormalThroughPoints(T3 pointA, 
+         T3 pointB, T3 pointC, T3 ptRef, V3 vNorm, 
          V3 vAB, V3 vAC) {
     // for x = plane({atomno=1}, {atomno=2}, {atomno=3}, {atomno=4})
     float nd = getNormalThroughPoints(pointA, pointB, pointC, vNorm, vAB, vAC);
@@ -254,8 +254,8 @@ final public class Measure {
     return nd;
   }
   
-  public static float getNormalThroughPoints(P3 pointA, P3 pointB,
-                                   P3 pointC, V3 vNorm, V3 vAB, V3 vAC) {
+  public static float getNormalThroughPoints(T3 pointA, T3 pointB,
+                                   T3 pointC, V3 vNorm, V3 vAB, V3 vAC) {
     // for Polyhedra
     calcNormalizedNormal(pointA, pointB, pointC, vNorm, vAB, vAC);
     // ax + by + cz + d = 0

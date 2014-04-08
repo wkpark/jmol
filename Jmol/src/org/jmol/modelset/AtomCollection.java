@@ -1609,11 +1609,9 @@ abstract public class AtomCollection {
         x.scaleAdd2(2.828f, x, z); // 2*sqrt(2)
         if (pt != 3) {
           x.normalize();
-          A4 a = A4.new4(z.x, z.y, z.z,
-              (pt == 2 ? 1 : -1) * 2.09439507f); // PI*2/3
-          M3 m = M3.newM3(null);
-          m.setAA(a);
-          m.rotate(x);
+          // PI*2/3
+          new M3().setAA(A4.new4(z.x, z.y, z.z,
+              (pt == 2 ? 1 : -1) * 2.09439507f)).rotate(x);
         }
         z.setT(x);
         x.cross(vTemp, z);

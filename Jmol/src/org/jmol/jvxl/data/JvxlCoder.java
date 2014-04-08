@@ -26,8 +26,10 @@ package org.jmol.jvxl.data;
 
 
 import javajs.util.Lst;
+import javajs.util.P3;
 import javajs.util.PT;
 import javajs.util.SB;
+import javajs.util.T3;
 import javajs.util.XmlUtil;
 
 import java.util.Map;
@@ -37,7 +39,6 @@ import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import javajs.util.P3;
 
 
 public class JvxlCoder {
@@ -467,7 +468,7 @@ public class JvxlCoder {
    * @param polygonIndexes
    * @param vertices
    */
-  public static void set3dContourVector(Lst<Object> v, int[][] polygonIndexes, P3[] vertices) {
+  public static void set3dContourVector(Lst<Object> v, int[][] polygonIndexes, T3[] vertices) {
     // we must add points only after the MarchingCubes process has completed.
     if (v.size() < CONTOUR_POINTS)
       return;
@@ -521,7 +522,7 @@ public class JvxlCoder {
     }
   }
 
-  private static P3 getContourPoint(P3[] vertices, int i, int j, float f) {
+  private static T3 getContourPoint(T3[] vertices, int i, int j, float f) {
     P3 pt = new P3();
     pt.sub2(vertices[j], vertices[i]);
     pt.scaleAdd2(f, pt, vertices[i]);
@@ -774,7 +775,7 @@ public class JvxlCoder {
    * @param escapeXml
    */
   private static void appendXmlVertexData(SB sb, JvxlData jvxlData,
-                                          int[] vertexIdNew, P3[] vertices,
+                                          int[] vertexIdNew, T3[] vertices,
                                           float[] vertexValues,
                                           int vertexCount,
                                           String polygonColorData,
@@ -784,7 +785,7 @@ public class JvxlCoder {
                                           boolean escapeXml) {
     int colorFractionBase = jvxlData.colorFractionBase;
     int colorFractionRange = jvxlData.colorFractionRange;
-    P3 p;
+    T3 p;
     P3 min = jvxlData.boundingBox[0];
     P3 max = jvxlData.boundingBox[1];
     SB list1 = new SB();

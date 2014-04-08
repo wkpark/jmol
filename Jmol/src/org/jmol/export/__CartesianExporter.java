@@ -368,12 +368,11 @@ abstract public class __CartesianExporter extends ___Exporter {
   protected void setSphereMatrix(T3 center, float rx, float ry, float rz,
                                  A4 a, M4 sphereMatrix) {
     if (a != null) {
-      M3 mq = new M3();
       M3 m = new M3();
       m.m00 = rx;
       m.m11 = ry;
       m.m22 = rz;
-      mq.setAA(a);
+      M3 mq = new M3().setAA(a);
       mq.mul(m);
       sphereMatrix.setToM3(mq);
     } else {

@@ -111,7 +111,7 @@ public class Quat {
    * @param pt
    */
   private void setP4(P4 pt) {
-    float factor = (pt == null ? 0 : pt.distance(qZero));
+    float factor = (pt == null ? 0 : pt.distance4(qZero));
     if (factor == 0) {
       q0 = 1;
       return;
@@ -145,9 +145,7 @@ public class Quat {
     A4 aa = A4.newAA(a);
     if (aa.angle == 0)
       aa.y = 1;
-    M3 m3 = new M3();
-    m3.setAA(aa);
-    setM(m3);
+    setM(new M3().setAA(aa));
   }
 
   public void setM(M3 mat) {
@@ -546,7 +544,7 @@ public class Quat {
       v.scale(-1);
       theta = -theta;
     }
-    axisAngle.set(v.x, v.y, v.z, theta);
+    axisAngle.set4(v.x, v.y, v.z, theta);
     return axisAngle;
   }
 

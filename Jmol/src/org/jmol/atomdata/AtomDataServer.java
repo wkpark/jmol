@@ -6,7 +6,7 @@ import java.io.BufferedInputStream;
 import org.jmol.api.AtomIndexIterator;
 import org.jmol.java.BS;
 
-import javajs.util.P3;
+import javajs.util.T3;
 
 
 
@@ -17,7 +17,7 @@ public interface AtomDataServer {
 
   public void setIteratorForAtom(AtomIndexIterator iterator, int atomIndex, float distance);
 
-  public void setIteratorForPoint(AtomIndexIterator iter, int modelIndex, P3 pt,
+  public void setIteratorForPoint(AtomIndexIterator iter, int modelIndex, T3 pt,
                                   float maxDistance);
 
   public void fillAtomData(AtomData atomData, int mode);

@@ -37,6 +37,7 @@ import org.jmol.viewer.JC;
 
 import javajs.util.P3;
 import javajs.util.P3i;
+import javajs.util.T3;
 import javajs.util.V3;
 
 public class IsosurfaceRenderer extends MeshRenderer {
@@ -266,8 +267,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
         return;
       int n = v.size() - 1;
       for (int j = JvxlCoder.CONTOUR_POINTS; j < n; j++) {
-        P3 pt1 = (P3) v.get(j);
-        P3 pt2 = (P3) v.get(++j);
+        T3 pt1 = (T3) v.get(j);
+        T3 pt2 = (T3) v.get(++j);
         tm.transformPtScr(pt1, pt1i);
         tm.transformPtScr(pt2, pt2i);
         if (Float.isNaN(pt1.x) || Float.isNaN(pt2.x))

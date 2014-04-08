@@ -55,7 +55,7 @@ import java.util.Map;
 
 public class TransformManager {
 
-  Viewer vwr;
+  protected Viewer vwr;
 
   public JmolThread movetoThread;
   public JmolThread vibrationThread;
@@ -82,18 +82,18 @@ public class TransformManager {
   protected final M4 matrixTemp = new M4();
   protected final V3 vectorTemp = new V3();
 
-  TransformManager(Viewer vwr, int width, int height) {
-    setViewer(vwr, width, height);
+  public TransformManager() {
   }
 
-  private void setViewer(Viewer vwr, int width, int height) {
-    this.vwr = vwr;
-    setScreenParameters(width, height, true, false, true, true);
+  static TransformManager getTransformManager(Viewer vwr, int width,
+                                              int height, boolean is4D) {
+    TransformManager me = (is4D ? (TransformManager) Interface
+        .getInterface("org.jmol.viewer.TransformManager4D")
+        : new TransformManager());
+    me.vwr = vwr;
+    me.setScreenParameters(width, height, true, false, true, true);
+    return me;
   }
-
-  //  TransformManager getNavigationManager(Viewer vwr, int width, int height) {
-  //    return new TransformManager11(vwr, width, height);
-  //  }
 
   /* ***************************************************************
    * GENERAL METHODS
@@ -111,7 +111,7 @@ public class TransformManager {
     rotationRadiusDefault = setRotationRadius(0, true);
     windowCentered = true;
     setRotationCenterAndRadiusXYZ(null, true);
-    matrixRotate.setScale(1); // no rotations
+    resetRotation();
     //if (vwr.autoLoadOrientation()) {
     M3 m = (M3) vwr
         .ms.getInfoM("defaultOrientationMatrix");
@@ -127,11 +127,15 @@ public class TransformManager {
       fixedRotationCenter.set(0, 0, 0);
     } else {
       if (vwr.g.axesOrientationRasmol)
-        rotateX((float) Math.PI);
+        matrixRotate.setAsXRotation((float) Math.PI);
     }
     vwr.stm.saveOrientation("default", null);
     if (mode == MODE_NAVIGATION)
       setNavigationMode(true);
+  }
+
+  protected void resetRotation() {
+    matrixRotate.setScale(1); // no rotations
   }
 
   void clearThreads() {
@@ -169,6 +173,8 @@ public class TransformManager {
   public boolean isSpinInternal = false;
   public boolean isSpinFixed = false;
   boolean isSpinSelected = false;
+  protected boolean doTransform4D;
+
 
   public final P3 fixedRotationOffset = new P3();
   public final P3 fixedRotationCenter = new P3();
@@ -191,7 +197,7 @@ public class TransformManager {
   // this matrix only holds rotations ... no translations
   protected final M3 matrixRotate = new M3();
 
-  private final M3 matrixTemp3 = new M3();
+  protected final M3 matrixTemp3 = new M3();
   private final M4 matrixTemp4 = new M4();
   private final A4 axisangleT = new A4();
   private final V3 vectorT = new V3();
@@ -265,7 +271,7 @@ public class TransformManager {
     rotateAxisAngle2(axisangleT, null);
   }
 
-  void rotateXYBy(float xDelta, float yDelta, BS bsAtoms) {
+  protected void rotateXYBy(float xDelta, float yDelta, BS bsAtoms) {
     // from mouse action
     rotateXRadians(yDelta * JC.radiansPerDegree, bsAtoms);
     rotateYRadians(xDelta * JC.radiansPerDegree, bsAtoms);
@@ -278,19 +284,8 @@ public class TransformManager {
   }
 
   void rotateFront() {
+    // set Identity
     matrixRotate.setScale(1);
-  }
-
-  void rotateX(float angleRadians) {
-    matrixRotate.rotX(angleRadians);
-  }
-
-  void rotateY(float angleRadians) {
-    matrixRotate.rotY(angleRadians);
-  }
-
-  void rotateZ(float angleRadians) {
-    matrixRotate.rotZ(angleRadians);
   }
 
   private void applyRotation(M3 mNew, boolean isInternal, BS bsAtoms,
@@ -306,19 +301,23 @@ public class TransformManager {
     }
   }
 
-  public synchronized void rotateXRadians(float angleRadians, BS bsAtoms) {
-    matrixTemp3.rotX(angleRadians);
+  protected void rotate3DBall(float xDelta, float yDelta, BS bsAtoms) {
+    float scale = 50f;
+    matrixTemp3.setAsBallRotation(scale, -yDelta, -xDelta);
     applyRotation(matrixTemp3, false, bsAtoms, null, false);
+  }
+
+
+  public synchronized void rotateXRadians(float angleRadians, BS bsAtoms) {
+    applyRotation(matrixTemp3.setAsXRotation(angleRadians), false, bsAtoms, null, false);
   }
 
   public synchronized void rotateYRadians(float angleRadians, BS bsAtoms) {
-    matrixTemp3.rotY(angleRadians);
-    applyRotation(matrixTemp3, false, bsAtoms, null, false);
+    applyRotation(matrixTemp3.setAsYRotation(angleRadians), false, bsAtoms, null, false);
   }
 
   public synchronized void rotateZRadians(float angleRadians) {
-    matrixTemp3.rotZ(angleRadians);
-    applyRotation(matrixTemp3, false, null, null, false);
+    applyRotation(matrixTemp3.setAsZRotation(angleRadians), false, null, null, false);
   }
 
   public void rotateAxisAngle(V3 rotAxis, float radians) {
@@ -327,9 +326,7 @@ public class TransformManager {
   }
 
   private synchronized void rotateAxisAngle2(A4 axisAngle, BS bsAtoms) {
-    //matrixTemp3.setIdentity();
-    matrixTemp3.setAA(axisAngle);
-    applyRotation(matrixTemp3, false, bsAtoms, null, false);
+    applyRotation(matrixTemp3.setAA(axisAngle), false, bsAtoms, null, false);
   }
 
   /*
@@ -407,8 +404,8 @@ public class TransformManager {
    * @param dihedralList
    * @return true if synchronous so that JavaScript can restart properly
    */
-  boolean rotateAboutPointsInternal(JmolScriptEvaluator eval, P3 point1,
-                                    P3 point2, float degreesPerSecond,
+  boolean rotateAboutPointsInternal(JmolScriptEvaluator eval, T3 point1,
+                                    T3 point2, float degreesPerSecond,
                                     float endDegrees, boolean isClockwise,
                                     boolean isSpin, BS bsAtoms,
                                     boolean isGesture, V3 translation,
@@ -491,8 +488,7 @@ public class TransformManager {
 
     // NOW apply that rotation  
 
-    matrixTemp3.setAA(axisangleT);
-    applyRotation(matrixTemp3, true, bsAtoms, internalTranslation, radians > 1e6f);
+    applyRotation(matrixTemp3.setAA(axisangleT), true, bsAtoms, internalTranslation, radians > 1e6f);
     if (bsAtoms == null)
       getNewFixedRotationCenter();
   }
@@ -748,15 +744,6 @@ public class TransformManager {
     float newZoomPercent = sppa / scaleDefaultPixelsPerAngstrom * 100f;
     zoomRatio = newZoomPercent / zmPctSet;
     zmPctSet = newZoomPercent;
-  }
-
-  void zoomByFactor0(float factor, int x, int y) {
-    // overloaded in TransformManager11
-    if (factor <= 0 || !zoomEnabled)
-      return;
-    zoomRatio = factor;
-    zmPctSet *= factor;
-    resetXYCenter(x, y);
   }
 
   private void resetXYCenter(int x, int y) {
@@ -1453,20 +1440,19 @@ public class TransformManager {
   }
 
   public synchronized void calcTransformMatrix() {
+    
     matrixTransform.setIdentity();
 
     // first, translate the coordinates back to the center
 
-    vectorTemp.sub2(fixedRotationCenter, frameOffset);
-    matrixTemp.setZero();
-    matrixTemp.setTranslation(vectorTemp);
-    matrixTransform.sub(matrixTemp);
+    vectorTemp.sub2(frameOffset, fixedRotationCenter);
+    matrixTransform.setTranslation(vectorTemp);
 
     // multiply by angular rotations
     // this is *not* the same as  matrixTransform.mul(matrixRotate);
     matrixTemp.setToM3(stereoFrame ? matrixStereo : matrixRotate);
     matrixTransform.mul2(matrixTemp, matrixTransform);
-    // cale to screen coordinates
+    // scale to screen coordinates
     matrixTemp.setIdentity();
     matrixTemp.m00 = matrixTemp.m11 = matrixTemp.m22 = scalePixelsPerAngstrom;
     // negate y (for screen) and z (for zbuf)
@@ -1485,22 +1471,26 @@ public class TransformManager {
 
   }
 
-  public void rotatePoint(P3 pt, P3 ptRot) {
+  public void rotatePoint(T3 pt, T3 ptRot) {
     matrixRotate.rotate2(pt, ptRot);
     ptRot.y = -ptRot.y;
   }
 
-  public void transformPoints(int count, P3[] angstroms, P3i[] screens) {
+  protected void getScreenTemp(T3 ptXYZ) {
+    matrixTransform.rotTrans2(ptXYZ, point3fScreenTemp);
+  }
+
+  public void transformPoints(int count, T3[] angstroms, P3i[] screens) {
     for (int i = count; --i >= 0;)
       screens[i].setT(transformPt(angstroms[i]));
   }
 
-  public void transformPtScr(P3 ptXYZ, P3i pointScreen) {
+  public void transformPtScr(T3 ptXYZ, P3i pointScreen) {
     pointScreen.setT(transformPt(ptXYZ));
   }
 
   public void transformPtNoClip(P3 ptXYZ, P3 pointScreen) {
-    getTempScreenPt(ptXYZ, null);
+    applyPerspective(ptXYZ, null);
     pointScreen.setT(point3fScreenTemp);
   }
 
@@ -1510,14 +1500,35 @@ public class TransformManager {
    * @param ptXYZ
    * @return POINTER TO point3iScreenTemp
    */
-  public synchronized P3i transformPt(P3 ptXYZ) {
-    return (ptXYZ.z == Float.MAX_VALUE || ptXYZ.z == -Float.MAX_VALUE ? transformScreenPoint(ptXYZ)
-        : getTempScreenPt(ptXYZ, internalSlab ? ptXYZ : null));
+  public synchronized P3i transformPt(T3 ptXYZ) {
+    return applyPerspective(ptXYZ, internalSlab ? ptXYZ : null);
   }
 
-  private final P3 pointTsp = new P3();
+  /**
+   * @param ptXYZ
+   * @param v
+   * @param scale TODO
+   * @return POINTER TO TEMPORARY VARIABLE (caution!) point3iScreenTemp
+   */
+  public P3i transformPtVib(P3 ptXYZ, Vibration v, float scale) {
+    ptVibTemp.setT(ptXYZ);
+    return applyPerspective(getVibrationPoint(v, ptVibTemp, Float.NaN), ptXYZ);
+  }
 
-  private P3i transformScreenPoint(P3 ptXyp) {
+  public Point3fi getVibrationPoint(Vibration v, Point3fi pt, float scale) {
+    v.setTempPoint(pt, vibrationT,
+        (Float.isNaN(scale) ? vibrationScale : scale), vwr.g.modulationScale);
+    return pt;
+  }
+
+
+  public void transformPt3f(T3 ptXYZ, P3 screen) {
+    applyPerspective(ptXYZ, ptXYZ);
+    screen.setT(point3fScreenTemp);
+  }
+
+  public synchronized P3i transformPt2D(T3 ptXyp) {
+    // axes position [50 50]
     // just does the processing for [x y] and [x y %]
     if (ptXyp.z == -Float.MAX_VALUE) {
       point3iScreenTemp.x = (int) Math.floor(ptXyp.x / 100 * screenWidth);
@@ -1531,32 +1542,96 @@ public class TransformManager {
       point3iScreenTemp.x <<= 1;
       point3iScreenTemp.y <<= 1;
     }
-    matrixTransform.rotTrans2(fixedRotationCenter, pointTsp);
-    point3iScreenTemp.z = (int) pointTsp.z;
+    matrixTransform.rotTrans2(fixedRotationCenter, point3fScreenTemp);
+    point3iScreenTemp.z = (int) point3fScreenTemp.z;
     return point3iScreenTemp;
   }
 
   /**
+   * adjusts the temporary point for perspective and offsets
+   * 
    * @param ptXYZ
-   * @param v
-   * @param scale TODO
-   * @return POINTER TO TEMPORARY VARIABLE (caution!) point3iScreenTemp
+   * @param ptRef
+   * @return  temporary point!!!
+   * 
    */
-  public P3i transformPtVib(P3 ptXYZ, Vibration v, float scale) {
-    ptVibTemp.setT(ptXYZ);
-    return getTempScreenPt(getVibrationPoint(v, ptVibTemp, Float.NaN), ptXYZ);
-  }
+  private P3i applyPerspective(T3 ptXYZ, T3 ptRef) {
+    
+    getScreenTemp(ptXYZ);
 
-  public Point3fi getVibrationPoint(Vibration v, Point3fi pt, float scale) {
-    v.setTempPoint(pt, vibrationT,
-        (Float.isNaN(scale) ? vibrationScale : scale), vwr.g.modulationScale);
-    return pt;
-  }
+    // fixedRotation point is at the origin initially
 
+    float z = point3fScreenTemp.z;
 
-  public void transformPt3f(P3 ptXYZ, P3 screen) {
-    getTempScreenPt(ptXYZ, ptXYZ);
-    screen.setT(point3fScreenTemp);
+    // this could easily go negative -- behind the screen --
+    // but we don't care. In fact, that just makes it easier,
+    // because it means we won't render it.
+    // we should probably assign z = 0 as "unrenderable"
+
+    if (Float.isNaN(z)) {
+      if (!haveNotifiedNaN && Logger.debugging)
+        Logger.debug("NaN seen in TransformPoint");
+      haveNotifiedNaN = true;
+      z = point3fScreenTemp.z = 1;
+    } else if (z <= 0) {
+      // just don't let z go past 1 BH 11/15/06
+      z = point3fScreenTemp.z = 1;
+    }
+
+    // x and y are moved inward (generally) relative to 0, which
+    // is either the fixed rotation center or the navigation center
+
+    // at this point coordinates are centered on rotation center
+
+    switch (mode) {
+    case MODE_NAVIGATION:
+      // move nav center to 0; refOffset = Nav - Rot
+      point3fScreenTemp.x -= navigationShiftXY.x;
+      point3fScreenTemp.y -= navigationShiftXY.y;
+      break;
+    case MODE_PERSPECTIVE_PYMOL:
+      point3fScreenTemp.x += perspectiveShiftXY.x;
+      point3fScreenTemp.y += perspectiveShiftXY.y;
+      break;
+    }
+    if (perspectiveDepth) {
+      // apply perspective factor
+      float factor = getPerspectiveFactor(z);
+      point3fScreenTemp.x *= factor;
+      point3fScreenTemp.y *= factor;
+    }
+    switch (mode) {
+    case MODE_NAVIGATION:
+      point3fScreenTemp.x += navigationOffset.x;
+      point3fScreenTemp.y += navigationOffset.y;
+      break;
+    case MODE_PERSPECTIVE_PYMOL:
+      point3fScreenTemp.x -= perspectiveShiftXY.x;
+      point3fScreenTemp.y -= perspectiveShiftXY.y;
+      //$FALL-THROUGH$
+    case MODE_STANDARD:
+      point3fScreenTemp.x += fixedRotationOffset.x;
+      point3fScreenTemp.y += fixedRotationOffset.y;
+      break;
+    }
+    if (Float.isNaN(point3fScreenTemp.x) && !haveNotifiedNaN) {
+      if (Logger.debugging)
+        Logger.debug("NaN found in transformPoint ");
+      haveNotifiedNaN = true;
+    }
+
+    point3iScreenTemp.set((int) point3fScreenTemp.x, (int) point3fScreenTemp.y,
+        (int) point3fScreenTemp.z);
+
+    if (ptRef != null
+        && (slabPlane != null
+            && ptRef.x * slabPlane.x + ptRef.y * slabPlane.y + ptRef.z * slabPlane.z
+                + slabPlane.w > 0 
+                || depthPlane != null
+            && ptRef.x * depthPlane.x + ptRef.y * depthPlane.y + ptRef.z
+                * depthPlane.z + depthPlane.w < 0))
+      point3iScreenTemp.z = 1;
+    return point3iScreenTemp;
   }
 
   public void transformVector(V3 vectorAngstroms, V3 vectorTransformed) {
@@ -1595,8 +1670,7 @@ public class TransformManager {
     ptTest1.set(4.321f, 1.23456f, 3.14159f);
     getRotation(matrixTest);
     matrixTest.rotate2(ptTest1, ptTest2);
-    matrixTest.setAA(aaTest1);
-    matrixTest.rotate2(ptTest1, ptTest3);
+    matrixTest.setAA(aaTest1).rotate2(ptTest1, ptTest3);
     return (ptTest3.distance(ptTest2) < 0.1);
   }
 
@@ -2157,7 +2231,7 @@ public class TransformManager {
     this.stereoFrame = stereoFrame;
     if (!stereoFrame)
       return matrixRotate;
-    matrixTemp3.rotY(-stereoRadians);
+    matrixTemp3.setAsYRotation(-stereoRadians);
     matrixStereo.mul2(matrixTemp3, matrixRotate);
     return matrixStereo;
   }
@@ -2416,94 +2490,10 @@ public class TransformManager {
     return (z <= 0 ? referencePlaneOffset : referencePlaneOffset / z);
   }
 
-  /**
-   * adjusts the temporary point for perspective and offsets
-   * 
-   * @param ptXYZ
-   * @param ptRef
-   * @return  temporary point!!!
-   * 
-   */
-  protected P3i getTempScreenPt(P3 ptXYZ, P3 ptRef) {
-
-    matrixTransform.rotTrans2(ptXYZ, point3fScreenTemp);
-
-    // fixedRotation point is at the origin initially
-
-    float z = point3fScreenTemp.z;
-
-    // this could easily go negative -- behind the screen --
-    // but we don't care. In fact, that just makes it easier,
-    // because it means we won't render it.
-    // we should probably assign z = 0 as "unrenderable"
-
-    if (Float.isNaN(z)) {
-      if (!haveNotifiedNaN && Logger.debugging)
-        Logger.debug("NaN seen in TransformPoint");
-      haveNotifiedNaN = true;
-      z = point3fScreenTemp.z = 1;
-    } else if (z <= 0) {
-      // just don't let z go past 1 BH 11/15/06
-      z = point3fScreenTemp.z = 1;
-    }
-
-    // x and y are moved inward (generally) relative to 0, which
-    // is either the fixed rotation center or the navigation center
-
-    // at this point coordinates are centered on rotation center
-
-    switch (mode) {
-    case MODE_NAVIGATION:
-      // move nav center to 0; refOffset = Nav - Rot
-      point3fScreenTemp.x -= navigationShiftXY.x;
-      point3fScreenTemp.y -= navigationShiftXY.y;
-      break;
-    case MODE_PERSPECTIVE_PYMOL:
-      point3fScreenTemp.x += perspectiveShiftXY.x;
-      point3fScreenTemp.y += perspectiveShiftXY.y;
-      break;
-    }
-    if (perspectiveDepth) {
-      // apply perspective factor
-      float factor = getPerspectiveFactor(z);
-      point3fScreenTemp.x *= factor;
-      point3fScreenTemp.y *= factor;
-    }
-    switch (mode) {
-    case MODE_NAVIGATION:
-      point3fScreenTemp.x += navigationOffset.x;
-      point3fScreenTemp.y += navigationOffset.y;
-      break;
-    case MODE_PERSPECTIVE_PYMOL:
-      point3fScreenTemp.x -= perspectiveShiftXY.x;
-      point3fScreenTemp.y -= perspectiveShiftXY.y;
-      //$FALL-THROUGH$
-    case MODE_STANDARD:
-      point3fScreenTemp.x += fixedRotationOffset.x;
-      point3fScreenTemp.y += fixedRotationOffset.y;
-      break;
-    }
-    if (Float.isNaN(point3fScreenTemp.x) && !haveNotifiedNaN) {
-      if (Logger.debugging)
-        Logger.debug("NaN found in transformPoint ");
-      haveNotifiedNaN = true;
-    }
-
-    point3iScreenTemp.set((int) point3fScreenTemp.x, (int) point3fScreenTemp.y,
-        (int) point3fScreenTemp.z);
-
-    if (ptRef != null
-        && (slabPlane != null
-            && ptRef.x * slabPlane.x + ptRef.y * slabPlane.y + ptRef.z * slabPlane.z
-                + slabPlane.w > 0 
-                || depthPlane != null
-            && ptRef.x * depthPlane.x + ptRef.y * depthPlane.y + ptRef.z
-                * depthPlane.z + depthPlane.w < 0))
-      point3iScreenTemp.z = 1;
-    return point3iScreenTemp;
-  }
-
-  public void unTransformPoint(P3 screenPt, P3 coordPt) {
+  public void unTransformPoint(T3 screenPt, T3 coordPt) {
+    // mostly for exporters and navigation mode
+    // but also for translate selected, assign atom, 
+    // 
     untransformedPoint.setT(screenPt);
     switch (mode) {
     case MODE_NAVIGATION:
@@ -2676,10 +2666,15 @@ public class TransformManager {
   }
 
   void zoomByFactor(float factor, int x, int y) {
-    if (mode != MODE_NAVIGATION || !zoomEnabled || factor <= 0)
-      zoomByFactor0(factor, x, y);
-    else if (getNav())
+    if (factor <= 0 || !zoomEnabled)
+      return;
+    if (mode != MODE_NAVIGATION) {
+      zoomRatio = factor;
+      zmPctSet *= factor;
+      resetXYCenter(x, y);
+    } else if (getNav()) {
       nav.zoomByFactor(factor, x, y);
+    }
   }
 
   public void setNavigationOffsetRelative() {//boolean navigatingSurface) {

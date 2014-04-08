@@ -57,7 +57,7 @@ class Slice {
    */
   static void makePlane(float length, float angleXY, float anglefromZ,
                         P4 result) {
-    result.set((float) (Math.cos(angleXY) * Math.sin(anglefromZ)),
+    result.set4((float) (Math.cos(angleXY) * Math.sin(anglefromZ)),
         (float) (Math.sin(angleXY) * Math.sin(anglefromZ)),
         (float) (Math.cos(anglefromZ)), -length);
   }
@@ -115,9 +115,9 @@ class Slice {
       Measure.getPlaneThroughPoint(pt, V3.new3(middle.x, middle.y,
           middle.z), middle);
     }
-    leftPlane.set(middle.x, middle.y, middle.z, middle.w);
+    leftPlane.set4(middle.x, middle.y, middle.z, middle.w);
     leftPlane.w += thickness / 2;
-    rightPlane.set(middle.x, middle.y, middle.z, middle.w);
+    rightPlane.set4(middle.x, middle.y, middle.z, middle.w);
     rightPlane.w -= thickness / 2;
     System.out.println(thickness + " left:" + leftPlane + " right:"
         + rightPlane);

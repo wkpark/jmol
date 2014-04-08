@@ -28,7 +28,7 @@ package org.jmol.jvxl.readers;
 
 import org.jmol.java.BS;
 
-import javajs.util.P3;
+import javajs.util.T3;
 
 class IsoIntersectReader extends AtomDataReader {
 
@@ -173,12 +173,12 @@ class IsoIntersectReader extends AtomDataReader {
   }
   
   @Override
-  public float getValueAtPoint(P3 pt, boolean getSource) {
+  public float getValueAtPoint(T3 pt, boolean getSource) {
     // mapping sasurface/vdw 
     return getValueAB(getValueAtPoint2(pt, myBsA), getValueAtPoint2(pt, myBsB));
   }
   
-  private float getValueAtPoint2(P3 pt, BS bs) {
+  private float getValueAtPoint2(T3 pt, BS bs) {
     float value = Float.MAX_VALUE;
     for (int iAtom = bs.nextSetBit(0); iAtom >= 0; iAtom = bs.nextSetBit(iAtom + 1)) {
       float r = pt.distance(atomXyz[iAtom]) - atomRadius[iAtom];

@@ -31,6 +31,8 @@ import java.util.Random;
 
 import javajs.util.AU;
 import javajs.util.Lst;
+import javajs.util.T3;
+
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import javajs.util.P3;
@@ -240,7 +242,7 @@ class IsoMOReader extends AtomDataReader {
         float absValue = Math.abs(value);
         if (absValue <= getRnd(f))
           continue;
-        addVC(points[j], value, 0);
+        addVC(points[j], value, 0, false);
         if (++i == params.psi_monteCarloCount)
           break;
       }
@@ -268,7 +270,7 @@ class IsoMOReader extends AtomDataReader {
   }
 
   @Override
-  public float getValueAtPoint(P3 pt, boolean getSource) {
+  public float getValueAtPoint(T3 pt, boolean getSource) {
     return (q == null ? 0 : q.processPt(pt));
   }
   
@@ -363,10 +365,10 @@ class IsoMOReader extends AtomDataReader {
   protected float getSurfacePointAndFraction(float cutoff,
                                              boolean isCutoffAbsolute,
                                              float valueA, float valueB,
-                                             P3 pointA,
+                                             T3 pointA,
                                              V3 edgeVector, int x, int y,
                                              int z, int vA, int vB,
-                                             float[] fReturn, P3 ptReturn) {
+                                             float[] fReturn, T3 ptReturn) {
       float zero = getSPF(cutoff, isCutoffAbsolute, valueA,
           valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn);
       if (q != null && !Float.isNaN(zero)) {

@@ -123,8 +123,9 @@ import org.jmol.util.Logger;
 import javajs.util.SB;
 import javajs.util.M3;
 import javajs.util.P3;
-import javajs.util.P3i;
+import javajs.util.T3i;
 import javajs.util.P4;
+import javajs.util.T3;
 import javajs.util.V3;
 import javajs.util.XmlUtil;
 
@@ -192,7 +193,7 @@ public class VolumeData implements VolumeDataInterface {
         * plane.y + plane.z * plane.z);
   }
 
-  public float distanceToMappingPlane(P3 pt) {
+  public float distanceToMappingPlane(T3 pt) {
     return (mappingPlane.x * pt.x + mappingPlane.y * pt.y + mappingPlane.z
         * pt.z + mappingPlane.w)
         / mappingPlaneNormalMag;
@@ -334,13 +335,13 @@ public class VolumeData implements VolumeDataInterface {
   }
 
   @Override
-  public float distancePointToPlane(P3 pt) {
+  public float distancePointToPlane(T3 pt) {
     return (thePlane.x * pt.x + thePlane.y * pt.y + thePlane.z * pt.z + thePlane.w)
         / thePlaneNormalMag;
   }
 
   @Override
-  public void voxelPtToXYZ(int x, int y, int z, P3 pt) {
+  public void voxelPtToXYZ(int x, int y, int z, T3 pt) {
     pt.scaleAdd2(x, volumetricVectors[0], volumetricOrigin);
     pt.scaleAdd2(y, volumetricVectors[1], pt);
     pt.scaleAdd2(z, volumetricVectors[2], pt);
@@ -373,7 +374,7 @@ public class VolumeData implements VolumeDataInterface {
   }
 
   @Override
-  public void xyzToVoxelPt(float x, float y, float z, P3i pt3i) {
+  public void xyzToVoxelPt(float x, float y, float z, T3i pt3i) {
     ptXyzTemp.set(x, y, z);
     ptXyzTemp.sub(volumetricOrigin);
     inverseMatrix.rotate(ptXyzTemp);
@@ -384,7 +385,7 @@ public class VolumeData implements VolumeDataInterface {
   public boolean isPeriodic;
 
   @Override
-  public float lookupInterpolatedVoxelValue(P3 point, boolean getSource) {
+  public float lookupInterpolatedVoxelValue(T3 point, boolean getSource) {
     if (mappingPlane != null)
       return distanceToMappingPlane(point);
     if (sr != null) {

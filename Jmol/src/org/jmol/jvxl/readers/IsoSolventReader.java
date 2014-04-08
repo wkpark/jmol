@@ -341,10 +341,10 @@ class IsoSolventReader extends AtomDataReader {
   protected float getSurfacePointAndFraction(float cutoff,
                                              boolean isCutoffAbsolute,
                                              float valueA, float valueB,
-                                             P3 pointA,
+                                             T3 pointA,
                                              V3 edgeVector, int x, int y,
                                              int z, int vA0, int vB0,
-                                             float[] fReturn, P3 ptReturn) {
+                                             float[] fReturn, T3 ptReturn) {
 
     // nonlinear Marching Cubes -- hansonr@stolaf.edu 12/31/2010
 
@@ -402,11 +402,11 @@ class IsoSolventReader extends AtomDataReader {
   }
 
   @Override
-  public int addVertexCopy(P3 vertexXYZ, float value, int assocVertex) {
+  public int addVertexCopy(T3 vertexXYZ, float value, int assocVertex, boolean asCopy) {
     // Boolean isSurfacePoint has been set in getSurfacePointAndFraction.
     // We use it to identify all points derived from (a) all +F and (b)
     // all -S voxels for atoms that are not related to a face. 
-    int i = addVC(vertexXYZ, value, assocVertex);
+    int i = addVC(vertexXYZ, value, assocVertex, asCopy);
     if (i < 0)
       return i;
     if (isSurfacePoint)
@@ -421,7 +421,7 @@ class IsoSolventReader extends AtomDataReader {
     if (meshDataServer != null)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
     //mark VERTICES for proximity to surface
-    P3[] v = meshData.vs;
+    T3[] v = meshData.vs;
     int nVertices = meshData.vc;
     float[] vv = meshData.vvs;
     int nDots = dots.length;
@@ -1310,7 +1310,7 @@ class IsoSolventReader extends AtomDataReader {
   }
 
   @Override
-  public float getValueAtPoint(P3 pt, boolean getSource) {
+  public float getValueAtPoint(T3 pt, boolean getSource) {
     // mapping sasurface/vdw
     if (contactPair != null)
       return pt.distance(contactPair.myAtoms[1]) - contactPair.radii[1];

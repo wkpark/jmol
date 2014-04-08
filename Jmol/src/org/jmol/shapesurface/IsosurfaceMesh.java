@@ -116,9 +116,9 @@ public class IsosurfaceMesh extends Mesh {
   private Map<Integer, Integer> assocGridPointMap;
   private Map<Integer, V3> assocGridPointNormals;
 
-  int addVertexCopy(P3 vertex, float value, int assocVertex,
-                    boolean associateNormals) {
-    int vPt = addVCVal(vertex, value);
+  int addVertexCopy(T3 vertex, float value, int assocVertex,
+                    boolean associateNormals, boolean asCopy) {
+    int vPt = addVCVal(vertex, value, asCopy);
     switch (assocVertex) {
     case MarchingSquares.CONTOUR_POINT:
       if (firstRealVertex < 0)
@@ -164,7 +164,7 @@ public class IsosurfaceMesh extends Mesh {
 
 
   @Override
-  protected void sumVertexNormals(P3[] vertices, V3[] vectorSums) {
+  protected void sumVertexNormals(T3[] vertices, V3[] vectorSums) {
     sumVertexNormals2(vertices, vectorSums);
     /* 
      * OK, so if there is an associated grid point (because the 
@@ -305,7 +305,7 @@ public class IsosurfaceMesh extends Mesh {
   }
 
   public static void addContourPoints(Lst<Object> v, BS bsContour, int i,
-                                      SB fData, P3[] vertices,
+                                      SB fData, T3[] vertices,
                                       float[] vertexValues, int iA, int iB,
                                       int iC, float value) {
     P3 pt1 = null;
@@ -394,7 +394,7 @@ public class IsosurfaceMesh extends Mesh {
         : (v1 < v) == (v < v2) ? (v - v1) / (v2 - v1) : Float.NaN);
   }
 
-  private static P3 getContourPoint(P3[] vertices, int i, int j,
+  private static P3 getContourPoint(T3[] vertices, int i, int j,
                                          float f) {
     P3 pt = new P3();
     pt.sub2(vertices[j], vertices[i]);
@@ -866,7 +866,7 @@ public class IsosurfaceMesh extends Mesh {
             : m.bsSlabDisplay.cardinality());
     if (vs == null)
       vs = new P3[0];
-    vs = (P3[]) AU.ensureLength(vs, nV);
+    vs = (T3[]) AU.ensureLength(vs, nV);
     vvs = AU.ensureLengthA(vvs, nV);
     boolean haveSources = (vertexSource != null && (m == null || m.vertexSource != null));
     vertexSource = AU.ensureLengthI(vertexSource, nV);

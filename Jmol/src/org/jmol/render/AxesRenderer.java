@@ -124,7 +124,8 @@ public class AxesRenderer extends FontLineShapeRenderer {
           diameter += diameter;
       }
       g3d.setSlab(0);
-      pt0i.setT(tm.transformPt(axes.axisXY));
+      float z = axes.axisXY.z;
+      pt0i.setT(z == Float.MAX_VALUE || z == -Float.MAX_VALUE ? tm.transformPt2D(axes.axisXY): tm.transformPt(axes.axisXY));
       originScreen.set(pt0i.x, pt0i.y, pt0i.z);
       float zoomDimension = vwr.getScreenDim();
       float scaleFactor = zoomDimension / 10f * axes.scale;

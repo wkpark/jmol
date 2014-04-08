@@ -778,7 +778,7 @@ public class M4 extends M34 {
    */
   public void transform2(T4 vec, T4 vecOut) {
     // alias-safe
-    vecOut.set(m00 * vec.x + m01 * vec.y + m02 * vec.z + m03 * vec.w, m10
+    vecOut.set4(m00 * vec.x + m01 * vec.y + m02 * vec.z + m03 * vec.w, m10
         * vec.x + m11 * vec.y + m12 * vec.z + m13 * vec.w, m20 * vec.x + m21
         * vec.y + m22 * vec.z + m23 * vec.w, m30 * vec.x + m31 * vec.y + m32
         * vec.z + m33 * vec.w);
@@ -812,6 +812,62 @@ public class M4 extends M34 {
           * point.y + m22 * point.z + m23);
   }
 
+  /**
+   * Sets the value of this matrix to a rotation matrix about the w axis by the
+   * passed angle.
+   * 
+   * @param angle
+   *        the angle to rotate about the W axis in radians
+   * @return this
+   */
+  public M4 setAsXYRotation(float angle) {
+    setIdentity();
+    double c = Math.cos(angle);
+    double s = Math.sin(angle);
+    m22 = (float) c;
+    m23 = (float) -s;
+    m32 = (float) s;
+    m33 = (float) c;
+    return this;
+  }
+
+  /**
+   * Sets the value of this matrix to a rotation matrix about the w axis by the
+   * passed angle.
+   * 
+   * @param angle
+   *        the angle to rotate about the W axis in radians
+   * @return this
+   */
+  public M4 setAsYZRotation(float angle) {
+    setIdentity();
+    double c = Math.cos(angle);
+    double s = Math.sin(angle);
+    m00 = (float) c;
+    m03 = (float) -s;
+    m30 = (float) s;
+    m33 = (float) c;
+    return this;
+  }
+
+  /**
+   * Sets the value of this matrix to a rotation matrix about the w axis by the
+   * passed angle.
+   * 
+   * @param angle
+   *        the angle to rotate about the W axis in radians
+   * @return this
+   */
+  public M4 setAsXZRotation(float angle) {
+    setIdentity();
+    double c = Math.cos(angle);
+    double s = Math.sin(angle);
+    m11 = (float) c;
+    m13 = (float) -s;
+    m31 = (float) s;
+    m33 = (float) c;
+    return this;
+  }
 
   /**
    * Returns true if the Object o is of type Matrix4f and all of the data

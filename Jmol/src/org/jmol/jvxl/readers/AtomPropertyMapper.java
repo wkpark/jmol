@@ -26,6 +26,7 @@ package org.jmol.jvxl.readers;
 
 import org.jmol.util.Logger;
 import javajs.util.P3;
+import javajs.util.T3;
 
 import org.jmol.api.AtomIndexIterator;
 import org.jmol.api.Interface;
@@ -149,7 +150,7 @@ class AtomPropertyMapper extends AtomDataReader {
   }
   
   @Override
-  public float getValueAtPoint(P3 pt, boolean getSource) {
+  public float getValueAtPoint(T3 pt, boolean getSource) {
     if (haveOneProperty && !getSource)
       return theProperty;
     float dmin = Float.MAX_VALUE;

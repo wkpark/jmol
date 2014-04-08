@@ -124,7 +124,7 @@ public class MarchingSquares {
     if (contourVertexCount == contourVertexes.length)
       contourVertexes = (ContourVertex[]) AU
           .doubleLength(contourVertexes);
-    int vPt = surfaceReader.addVertexCopy(vertexXYZ, value, VERTEX_POINT);
+    int vPt = surfaceReader.addVertexCopy(vertexXYZ, value, VERTEX_POINT, true);
     contourVertexes[contourVertexCount++] = new ContourVertex(vertexXYZ);
     return vPt;
   }

@@ -252,9 +252,8 @@ public class MeasuresRenderer extends LabelsRenderer {
     int iMid = dotCount / 2;
     for (int i = dotCount; --i >= 0;) {
       aaT.angle = i * stepAngle;
-      matrixT.setAA(aaT);
       pointT.setT(m.renderArc);
-      matrixT.rotate(pointT);
+      matrixT.setAA(aaT).rotate(pointT);
       pointT.add(b);
       // NOTE! Point3i screen is just a pointer 
       //  to tm.transformManager.point3iScreenTemp

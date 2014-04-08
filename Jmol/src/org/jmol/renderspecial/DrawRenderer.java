@@ -42,6 +42,7 @@ import javajs.util.A4;
 import javajs.util.M3;
 import javajs.util.P3;
 import javajs.util.P3i;
+import javajs.util.T3;
 import javajs.util.V3;
 import org.jmol.viewer.ActionManager;
 
@@ -186,8 +187,7 @@ public class DrawRenderer extends MeshRenderer {
       // crossing point
       pt1f.scaleAdd2(fractionalOffset, vTemp, vertices[0]);
       // define rotational axis
-      M3 mat = new M3();
-      mat.setAA(A4.newVA(vTemp, (float) (nDegreesOffset * Math.PI / 180)));
+      M3 mat = new M3().setAA(A4.newVA(vTemp, (float) (nDegreesOffset * Math.PI / 180)));
       // vector to rotate
       vTemp2.sub2(vertexCount > 2 ? vertices[2] : Draw.randomPoint(), vertices[0]);
       vTemp2.cross(vTemp, vTemp2);
@@ -364,7 +364,7 @@ public class DrawRenderer extends MeshRenderer {
   private final P3 pt0f = new P3();
   protected P3i pt0i = new P3i();
 
-  private void renderArrowHead(P3 pt1, P3 pt2, float factor2,
+  private void renderArrowHead(T3 pt1, T3 pt2, float factor2,
                                boolean isTransformed, boolean withShaft,
                                boolean isBarb) {
     if (dmesh.noHead)

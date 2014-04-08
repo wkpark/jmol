@@ -36,6 +36,7 @@ import org.jmol.util.Logger;
 import javajs.util.AU;
 import javajs.util.SB;
 import javajs.util.P3;
+import javajs.util.T3;
 import javajs.util.V3;
 
 
@@ -566,17 +567,17 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   protected float getSurfacePointAndFraction(float cutoff,
                                              boolean isCutoffAbsolute,
                                              float valueA, float valueB,
-                                             P3 pointA,
+                                             T3 pointA,
                                              V3 edgeVector, int x, int y,
                                              int z, int vA, int vB,
-                                             float[] fReturn, P3 ptReturn) {
+                                             float[] fReturn, T3 ptReturn) {
     return getSPFv(cutoff, isCutoffAbsolute,
         valueA, valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn);
   }
   
   protected float getSPFv(float cutoff, boolean isCutoffAbsolute, float valueA,
-                          float valueB, P3 pointA, V3 edgeVector, int x, int y,
-                          int z, int vA, int vB, float[] fReturn, P3 ptReturn) {
+                          float valueB, T3 pointA, V3 edgeVector, int x, int y,
+                          int z, int vA, int vB, float[] fReturn, T3 ptReturn) {
     float zero = getSPF(cutoff, isCutoffAbsolute,
         valueA, valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn);
     if (qpc == null || Float.isNaN(zero) || !hasColorData)

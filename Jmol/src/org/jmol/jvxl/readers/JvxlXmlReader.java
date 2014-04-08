@@ -31,6 +31,7 @@ import javajs.util.CU;
 import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.SB;
+import javajs.util.T3;
 
 import java.util.Hashtable;
 
@@ -503,9 +504,9 @@ public class JvxlXmlReader extends VolumeFileReader {
   protected float getSurfacePointAndFraction(float cutoff,
                                              boolean isCutoffAbsolute,
                                              float valueA, float valueB,
-                                             P3 pointA,
+                                             T3 pointA,
                                              V3 edgeVector,
-                                             int x, int y, int z, int vA, int vB, float[] fReturn, P3 ptReturn) {
+                                             int x, int y, int z, int vA, int vB, float[] fReturn, T3 ptReturn) {
     if (edgeDataCount <= 0)
       return getSPFv(cutoff, isCutoffAbsolute, valueA,
           valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn);
@@ -784,7 +785,6 @@ public class JvxlXmlReader extends VolumeFileReader {
       Logger.info("Reading " + vertexCount + " vertices");
     int ptCount = vertexCount * 3;
     P3[] vertices = (asArray ? new P3[vertexCount] : null);
-    P3 p = (asArray ? null : new P3());
     float fraction;
     String vData = XmlReader.getXmlAttrib(data, "data");
     String encoding = getEncoding(data);
@@ -796,11 +796,11 @@ public class JvxlXmlReader extends VolumeFileReader {
       if (fdata[0] != vertexCount * 3)
         Logger.info("JvxlXmlReader: vertexData count=" + ((int)fdata[0]) + "; expected " + (vertexCount * 3));
       for (int i = 0, pt = 1; i < vertexCount; i++) {
-        p = P3.new3(fdata[pt++], fdata[pt++], fdata[pt++]);
+        P3 p = P3.new3(fdata[pt++], fdata[pt++], fdata[pt++]);
         if (asArray)
           vertices[i] = p;
         else
-          addVertexCopy(p, 0, i);
+          addVertexCopy(p, 0, i, false);
       }
     } else {
       P3 min = xr.getXmlPoint(data, "min");
@@ -812,8 +812,7 @@ public class JvxlXmlReader extends VolumeFileReader {
       if (s.length() == 0)
         s = xr.getXmlData("jvxlVertexData", data, false, false);
       for (int i = 0, pt = -1; i < vertexCount; i++) {
-        if (asArray)
-          p = vertices[i] = new P3();
+        P3 p = new P3();
         fraction = JvxlCoder.jvxlFractionFromCharacter2(s.charAt(++pt), s
             .charAt(pt + ptCount), colorFractionBase, colorFractionRange);
         p.x = min.x + fraction * range.x;
@@ -823,8 +822,10 @@ public class JvxlXmlReader extends VolumeFileReader {
         fraction = JvxlCoder.jvxlFractionFromCharacter2(s.charAt(++pt), s
             .charAt(pt + ptCount), colorFractionBase, colorFractionRange);
         p.z = min.z + fraction * range.z;
-        if (!asArray)
-          addVertexCopy(p, 0, i);
+        if (asArray)
+          vertices[i] = p;
+        else
+          addVertexCopy(p, 0, i, false);
       }
     }
     return vertices;

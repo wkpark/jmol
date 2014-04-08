@@ -446,7 +446,7 @@ public class MarchingCubes extends TriangleData {
 
   protected void addVertex(int x, int y, int z, int pti, float value) {
     volumeData.voxelPtToXYZ(x, y, z, pt0);
-    if (surfaceReader.addVertexCopy(pt0, value, -4) < 0)
+    if (surfaceReader.addVertexCopy(pt0, value, -4, true) < 0)
       bsExcludedVertices.set(pti);
   }
 

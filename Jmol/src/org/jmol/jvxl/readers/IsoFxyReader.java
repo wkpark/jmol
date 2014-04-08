@@ -27,7 +27,7 @@ package org.jmol.jvxl.readers;
 import org.jmol.jvxl.data.JvxlCoder;
 
 import javajs.util.SB;
-import javajs.util.P3;
+import javajs.util.T3;
 import javajs.util.P4;
 
 class IsoFxyReader extends AtomDataReader {
@@ -81,7 +81,7 @@ class IsoFxyReader extends AtomDataReader {
       setVolumeDataADR(); 
       return;
     }
-    volumetricOrigin.setT((P3) params.functionInfo.get(1));
+    volumetricOrigin.setT((T3) params.functionInfo.get(1));
     for (int i = 0; i < 3; i++) {
       P4 info = (P4) params.functionInfo.get(i + 2);
       voxelCounts[i] = Math.abs((int) info.x);
@@ -126,7 +126,7 @@ class IsoFxyReader extends AtomDataReader {
 
   
   @Override
-  public float getValueAtPoint(P3 pt, boolean getSource) {
+  public float getValueAtPoint(T3 pt, boolean getSource) {
     if (params.func == null)
       return 0;
     values[0] = pt.x;

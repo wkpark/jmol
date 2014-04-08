@@ -124,6 +124,7 @@ import org.jmol.util.MeshSurface;
 
 import javajs.util.AU;
 import javajs.util.P3;
+import javajs.util.T3;
 import javajs.util.V3;
 
 public class MeshData extends MeshSurface {
@@ -138,10 +139,10 @@ public class MeshData extends MeshSurface {
 
   public String polygonColorData;
 
-  public int addVertexCopy(P3 vertex, float value, int assocVertex) {
+  public int addVertexCopy(T3 vertex, float value, int assocVertex, boolean asCopy) {
     if (assocVertex < 0)
       vertexIncrement = -assocVertex;  //3 in some cases
-    return addVCVal(vertex, value);
+    return addVCVal(vertex, value, asCopy);
   }
 
   public BS[] getSurfaceSet() {

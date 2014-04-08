@@ -308,7 +308,7 @@ abstract public class ScriptParam extends ScriptError {
         V3 norm = new V3();
         float w = Measure.getNormalThroughPoints(pt1, pt2, pt3, norm, vAB, vAC);
         plane = new P4();
-        plane.set(norm.x, norm.y, norm.z, w);
+        plane.set4(norm.x, norm.y, norm.z, w);
         if (!chk && Logger.debugging)
           Logger.debug("points: " + pt1 + pt2 + pt3 + " defined plane: "
               + plane);
@@ -318,7 +318,7 @@ abstract public class ScriptParam extends ScriptError {
       errorMore(ERROR_planeExpected, "{a b c d}",
           "\"xy\" \"xz\" \"yz\" \"x=...\" \"y=...\" \"z=...\"", "$xxxxx");
     if (isNegated) {
-      plane.scale(-1);
+      plane.scale4(-1);
     }
     return plane;
   }
@@ -367,7 +367,7 @@ abstract public class ScriptParam extends ScriptError {
     V3 plane = new V3();
     float w = Measure.getNormalThroughPoints(pt1, pt2, pt3, plane, vAB, vAC);
     P4 pt4 = new P4();
-    pt4.set(plane.x, plane.y, plane.z, w);
+    pt4.set4(plane.x, plane.y, plane.z, w);
     return pt4;
   }
 

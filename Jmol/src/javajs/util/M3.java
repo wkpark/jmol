@@ -435,19 +435,11 @@ public class M3 extends M34 implements Serializable {
    * 
    * @param angle
    *        the angle to rotate about the X axis in radians
+   * @return this
    */
-  public void rotX(float angle) {
-    double c = Math.cos(angle);
-    double s = Math.sin(angle);
-    m00 = 1.0f;
-    m01 = 0.0f;
-    m02 = 0.0f;
-    m10 = 0.0f;
-    m11 = (float) c;
-    m12 = (float) -s;
-    m20 = 0.0f;
-    m21 = (float) s;
-    m22 = (float) c;
+  public M3 setAsXRotation(float angle) {
+    setXRot(angle);
+    return this;
   }
   
   /**
@@ -456,19 +448,11 @@ public class M3 extends M34 implements Serializable {
    * 
    * @param angle
    *        the angle to rotate about the Y axis in radians
+   * @return this
    */
-  public void rotY(float angle) {
-    double c = Math.cos(angle);
-    double s = Math.sin(angle);
-    m00 = (float) c;
-    m01 = 0.0f;
-    m02 = (float) s;
-    m10 = 0.0f;
-    m11 = 1.0f;
-    m12 = 0.0f;
-    m20 = (float) -s;
-    m21 = 0.0f;
-    m22 = (float) c;
+  public M3 setAsYRotation(float angle) {
+    setYRot(angle);
+    return this;
   }
 
   /**
@@ -477,19 +461,11 @@ public class M3 extends M34 implements Serializable {
    * 
    * @param angle
    *        the angle to rotate about the Z axis in radians
+   * @return this
    */
-  public void rotZ(float angle) {
-    double c = Math.cos(angle);
-    double s = Math.sin(angle);
-    m00 = (float) c;
-    m01 = (float) -s;
-    m02 = 0.0f;
-    m10 = (float) s;
-    m11 = (float) c;
-    m12 = 0.0f;
-    m20 = 0.0f;
-    m21 = 0.0f;
-    m22 = 1.0f;
+  public M3 setAsZRotation(float angle) {
+    setZRot(angle);
+    return this;
   }
 
   /**
@@ -623,9 +599,36 @@ public class M3 extends M34 implements Serializable {
    * 
    * @param a
    *        the axis and angle to be converted
+   * @return this
    */
-  public void setAA(A4 a) {
+  public M3 setAA(A4 a) {
     setAA33(a);
+    return this;
+  }
+
+  /**
+   * 3D ball rotation from dx dy in-plane mouse motion
+   * 
+   * @param scale Jmol uses 50 here
+   * @param dx
+   * @param dy
+   * @author Andrew Hanson -- see http://www.cse.ohio-state.edu/~hwshen/888_su02/hanson_note.pdf
+   */
+  public void setAsBallRotation(float scale, float dx, float dy) {
+    float dxy2 = dx * dx + dy * dy;
+    float sxy = (float) Math.sqrt(dxy2);
+    float th =  sxy / scale;
+    float c = (float) Math.cos(th);
+    float s = (float) Math.sin(th);
+    float nx = -dy / sxy;
+    float ny = dx / sxy;
+    float c1 = c - 1;
+    m00 = 1 + c1 * nx * nx;
+    m01 = m10 = c1 * nx * ny;
+    m20 = -(m02 = s * nx);
+    m11 = 1 + c1 * ny * ny;
+    m21 = -(m12 = s * ny);
+    m22 = c;
   }
 
 }

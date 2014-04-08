@@ -35,6 +35,8 @@ import org.jmol.bspt.CubeIterator;
 import org.jmol.java.BS;
 
 import javajs.util.P3;
+import javajs.util.T3;
+
 import org.jmol.viewer.Viewer;
 
 public class AtomIteratorWithinModel implements AtomIndexIterator {
@@ -92,7 +94,7 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
   
  
   @Override
-  public void setModel(ModelCollection modelSet, int modelIndex, int firstModelAtom, int atomIndex, P3 center, float distance, RadiusData rd) {
+  public void setModel(ModelCollection modelSet, int modelIndex, int firstModelAtom, int atomIndex, T3 center, float distance, RadiusData rd) {
     if (threadSafe)
       modelIndex = -1 - modelIndex; // no caching
     if (modelIndex != this.modelIndex || cubeIterator == null) {
@@ -118,11 +120,11 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
 
 
   @Override
-  public void setCenter(P3 center, float distance) {
+  public void setCenter(T3 center, float distance) {
     setCenter2(center, distance);
   }
   
-  protected void setCenter2(P3 center, float distance) {
+  protected void setCenter2(T3 center, float distance) {
     if (cubeIterator == null)
       return;
     cubeIterator.initialize(center, distance, hemisphereOnly);

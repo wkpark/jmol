@@ -49,6 +49,7 @@ import javajs.util.OC;
 import javajs.util.M3;
 import javajs.util.P3;
 import javajs.util.P3i;
+import javajs.util.T3;
 import javajs.util.V3;
 
 
@@ -623,7 +624,7 @@ public abstract class SurfaceReader implements VertexDataServer {
   public int getSurfacePointIndexAndFraction(float cutoff, boolean isCutoffAbsolute,
                                   int x, int y, int z, P3i offset, int vA,
                                   int vB, float valueA, float valueB,
-                                  P3 pointA, V3 edgeVector,
+                                  T3 pointA, V3 edgeVector,
                                   boolean isContourType, float[] fReturn) {
     float thisValue = getSurfacePointAndFraction(cutoff, isCutoffAbsolute, valueA,
         valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptTemp);
@@ -644,21 +645,21 @@ public abstract class SurfaceReader implements VertexDataServer {
         : MarchingSquares.CONTOUR_POINT);
     if (assocVertex >= 0)
       assocVertex = marchingCubes.getLinearOffset(x, y, z, assocVertex);
-    int n = addVertexCopy(ptTemp, thisValue, assocVertex);
+    int n = addVertexCopy(ptTemp, thisValue, assocVertex, true);
     if (n >= 0 && params.iAddGridPoints) {
       marchingCubes.calcVertexPoint(x, y, z, vB, ptTemp);
       addVertexCopy(valueA < valueB ? pointA : ptTemp, Math.min(valueA, valueB),
-          MarchingSquares.EDGE_POINT);
+          MarchingSquares.EDGE_POINT, true);
       addVertexCopy(valueA < valueB ? ptTemp : pointA, Math.max(valueA, valueB),
-          MarchingSquares.EDGE_POINT);
+          MarchingSquares.EDGE_POINT, true);
     }
     return n;
   }
 
   protected float getSurfacePointAndFraction(float cutoff, boolean isCutoffAbsolute,
-                                   float valueA, float valueB, P3 pointA,
+                                   float valueA, float valueB, T3 pointA,
                                    V3 edgeVector, int x,
-                                   int y, int z, int vA, int vB, float[] fReturn, P3 ptReturn) {
+                                   int y, int z, int vA, int vB, float[] fReturn, T3 ptReturn) {
     // will be subclassed in many cases.
     // JavaScript optimization: DO NOT CALL THIS method from subclassed method of the same name!
     return getSPF(cutoff, isCutoffAbsolute, valueA, valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn);
@@ -682,8 +683,8 @@ public abstract class SurfaceReader implements VertexDataServer {
    * @return          fractional distance from A to B
    */
   protected float getSPF(float cutoff, boolean isCutoffAbsolute, float valueA,
-                     float valueB, P3 pointA, V3 edgeVector, int x, int y,
-                     int z, int vA, int vB, float[] fReturn, P3 ptReturn) {
+                     float valueB, T3 pointA, V3 edgeVector, int x, int y,
+                     int z, int vA, int vB, float[] fReturn, T3 ptReturn) {
 
     //JvxlReader may or may not call this
     //IsoSolventReader overrides this for nonlinear Marching Cubes (12.1.29)
@@ -704,16 +705,13 @@ public abstract class SurfaceReader implements VertexDataServer {
   }
 
   @Override
-  public int addVertexCopy(P3 vertexXYZ, float value, int assocVertex) {
-    return addVC(vertexXYZ, value, assocVertex);
+  public int addVertexCopy(T3 vertexXYZ, float value, int assocVertex, boolean asCopy) {
+    return addVC(vertexXYZ, value, assocVertex, asCopy);
   }
 
-  protected int addVC(P3 vertexXYZ, float value, int assocVertex) {
-    if (Float.isNaN(value) && assocVertex != MarchingSquares.EDGE_POINT)
-      return -1;
-    if (meshDataServer == null)
-      return meshData.addVertexCopy(vertexXYZ, value, assocVertex);
-    return meshDataServer.addVertexCopy(vertexXYZ, value, assocVertex);
+  protected int addVC(T3 vertexXYZ, float value, int assocVertex, boolean asCopy) {
+    return (Float.isNaN(value) && assocVertex != MarchingSquares.EDGE_POINT ? -1
+      : meshDataServer == null ? meshData.addVertexCopy(vertexXYZ, value, assocVertex, asCopy) : meshDataServer.addVertexCopy(vertexXYZ, value, assocVertex, asCopy));
   }
 
   @Override
@@ -932,7 +930,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     return colorPhase;
   }
 
-  private float getPhase(P3 pt) {
+  private float getPhase(T3 pt) {
     switch (params.colorPhase) {
     case 0:
     case -1:
@@ -981,7 +979,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     }
     int vertexCount = (contourVertexCount > 0 ? contourVertexCount
         : meshData.vc);
-    P3[] vertexes = meshData.vs;
+    T3[] vertexes = meshData.vs;
     boolean useVertexValue = (haveData || jvxlDataIs2dContour || vertexDataOnly || params.colorDensity);
     for (int i = meshData.mergeVertexCount0; i < vertexCount; i++) {
       float v;
@@ -1057,14 +1055,14 @@ public abstract class SurfaceReader implements VertexDataServer {
       meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_VERTICES, null);
   }
  
-  protected void setVertexAnisotropy(P3 pt) {
+  protected void setVertexAnisotropy(T3 pt) {
     pt.x *= anisotropy[0];
     pt.y *= anisotropy[1];
     pt.z *= anisotropy[2];
     pt.add(center);
   }
 
-  protected void setVectorAnisotropy(V3 v) {
+  protected void setVectorAnisotropy(T3 v) {
     haveSetAnisotropy = true;
     v.x *= anisotropy[0];
     v.y *= anisotropy[1];
@@ -1092,13 +1090,13 @@ public abstract class SurfaceReader implements VertexDataServer {
       meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
     xyzMin = null;
     for (int i = 0; i < meshData.vc; i++) {
-      P3 p = meshData.vs[i];
+      T3 p = meshData.vs[i];
       if (!Float.isNaN(p.x))
         setBBox(p, 0);
     }
   }
 
-  protected void setBBox(P3 pt, float margin) {
+  protected void setBBox(T3 pt, float margin) {
     if (xyzMin == null) {
       xyzMin = P3.new3(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
       xyzMax = P3.new3(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
@@ -1112,7 +1110,7 @@ public abstract class SurfaceReader implements VertexDataServer {
    * @param getSource TODO
    * @return   value
    */
-  public float getValueAtPoint(P3 pt, boolean getSource) {
+  public float getValueAtPoint(T3 pt, boolean getSource) {
     // only for readers that can support it (IsoShapeReader, AtomPropertyMapper)
     return 0;
   }

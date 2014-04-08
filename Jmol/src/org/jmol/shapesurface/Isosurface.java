@@ -123,12 +123,13 @@ import org.jmol.util.MeshSurface;
 import javajs.util.PT;
 
 import javajs.util.A4;
+import javajs.util.P3;
 import javajs.util.Rdr;
 import javajs.util.CU;
 import javajs.util.OC;
 import javajs.util.M3;
 import javajs.util.M4;
-import javajs.util.P3;
+import javajs.util.T3;
 import javajs.util.P3i;
 import javajs.util.P4;
 import javajs.util.Quat;
@@ -1199,8 +1200,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         a.setVA(y, rotRadians);
       else
         a.setVA(z, rotRadians);
-      M3 m = new M3();
-      m.setAA(a);
+      M3 m = new M3().setAA(a);
       m.rotate(x);
       m.rotate(y);
       m.rotate(z);
@@ -1467,7 +1467,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   public int getSurfacePointIndexAndFraction(float cutoff, boolean isCutoffAbsolute,
                                   int x, int y, int z, P3i offset, int vA,
                                   int vB, float valueA, float valueB,
-                                  P3 pointA, V3 edgeVector,
+                                  T3 pointA, V3 edgeVector,
                                   boolean isContourType, float[] fReturn) {
     return 0;
   }
@@ -1475,12 +1475,12 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   private boolean associateNormals;
 
   @Override
-  public int addVertexCopy(P3 vertexXYZ, float value, int assocVertex) {
+  public int addVertexCopy(T3 vertexXYZ, float value, int assocVertex, boolean asCopy) {
     if (cutoffRange != null && (value < cutoffRange[0] || value > cutoffRange[1]))
       return -1;
     return (withinPoints != null && !Mesh.checkWithin(vertexXYZ, withinPoints, withinDistance2, isWithinNot) ? -1
         : thisMesh.addVertexCopy(vertexXYZ, value, assocVertex,
-        associateNormals));
+        associateNormals, asCopy));
   }
 
   @Override
@@ -1672,11 +1672,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       IsosurfaceMesh m = isomeshes[i];
       if (!isPickable(m, bsVisible))
         continue;
-      P3[] centers = (pickFront ? m.vs : m.getCenters());
+      T3[] centers = (pickFront ? m.vs : m.getCenters());
       if (centers == null)
         continue;
       for (int j = centers.length; --j >= 0; ) {
-          P3 v = centers[j];
+          T3 v = centers[j];
           if (v == null)
             continue;
           int d2 = coordinateInRange(x, y, v, dmin2, ptXY);
@@ -1853,7 +1853,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
           Lst<Object> vc = vs[j];
           int n = vc.size() - 1;
           for (int k = JvxlCoder.CONTOUR_POINTS; k < n; k++) {
-            P3 v = (P3) vc.get(k);
+            T3 v = (T3) vc.get(k);
             int d2 = coordinateInRange(x, y, v, dmin2, ptXY);
             if (d2 >= 0) {
               dmin2 = d2;
@@ -1867,10 +1867,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         if (pickedContour != null)
           return pickedContour.get(JvxlCoder.CONTOUR_VALUE).toString() + (Logger.debugging ? " " + pickedJ : "");
       } else if (m.jvxlData.jvxlPlane != null && m.vvs != null) {
-        P3[] vertices = (m.mat4 == null && m.scale3d == 0 
+        T3[] vertices = (m.mat4 == null && m.scale3d == 0 
             ? m.vs : m.getOffsetVertices(m.jvxlData.jvxlPlane)); 
         for (int k = m.vc; --k >= ilast;) {
-          P3 v = vertices[k];
+          T3 v = vertices[k];
           int d2 = coordinateInRange(x, y, v, dmin2, ptXY);
           if (d2 >= 0) {
             dmin2 = d2;
@@ -1883,7 +1883,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
           break;
       } else if (m.vvs != null) {
         for (int k = m.vc; --k >= ilast;) {
-          P3 v = m.vs[k];
+          T3 v = m.vs[k];
           int d2 = coordinateInRange(x, y, v, dmin2, ptXY);
           if (d2 >= 0) {
             dmin2 = d2;

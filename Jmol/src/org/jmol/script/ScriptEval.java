@@ -7111,7 +7111,7 @@ public class ScriptEval extends ScriptExpr {
           plane = planeParameter(3);
         if (plane == null)
           invArg();
-        plane.scale(-1);
+        plane.scale4(-1);
         break;
       case T.plane:
         switch (getToken(2).tok) {

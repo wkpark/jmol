@@ -31,6 +31,7 @@ import org.jmol.util.GData;
 import javajs.awt.Font;
 import javajs.util.Lst;
 import javajs.util.SB;
+import javajs.util.T3;
 
 import org.jmol.util.Logger;
 import javajs.util.P3;
@@ -330,7 +331,7 @@ public abstract class Shape {
     return false;
   }
 
-  protected int coordinateInRange(int x, int y, P3 vertex, int dmin2, P3i ptXY) {
+  protected int coordinateInRange(int x, int y, T3 vertex, int dmin2, P3i ptXY) {
     vwr.tm.transformPtScr(vertex, ptXY);
     int d2 = (x - ptXY.x) * (x - ptXY.x) + (y - ptXY.y) * (y - ptXY.y);
     return (d2 < dmin2 ? d2 : -1);

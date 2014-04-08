@@ -514,7 +514,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     stm = new StateManager(this);
     cm = new ColorManager(this, gdata);
     sm = new StatusManager(this);
-    tm = new TransformManager(this, Integer.MAX_VALUE, 0);
+    boolean is4D = info.containsKey("4DMouse");
+    tm = TransformManager.getTransformManager(this, Integer.MAX_VALUE, 0, is4D);
     slm = new SelectionManager(this);
     if (haveDisplay) {
       actionManager = (multiTouch ? (ActionManager) Interface
@@ -1036,39 +1037,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     // deprecated
     tm.rotateFront();
     refresh(1, "Viewer:rotateFront()");
-  }
-
-  @Override
-  public void rotateX(float angleRadians) {
-    // deprecated
-    tm.rotateX(angleRadians);
-    refresh(1, "Viewer:rotateX()");
-  }
-
-  @Override
-  public void rotateY(float angleRadians) {
-    // deprecated
-    tm.rotateY(angleRadians);
-    refresh(1, "Viewer:rotateY()");
-  }
-
-  @Override
-  public void rotateZ(float angleRadians) {
-    // deprecated
-    tm.rotateZ(angleRadians);
-    refresh(1, "Viewer:rotateZ()");
-  }
-
-  @Override
-  public void rotateXDeg(int angleDegrees) {
-    // deprecated
-    rotateX(angleDegrees * Measure.radiansPerDegree);
-  }
-
-  @Override
-  public void rotateYDeg(int angleDegrees) {
-    // deprecated
-    rotateY(angleDegrees * Measure.radiansPerDegree);
   }
 
   public void translate(char xyz, float x, char type, BS bsAtoms) {
@@ -2660,7 +2628,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   @Override
   public void setIteratorForPoint(AtomIndexIterator iterator, int modelIndex,
-                                  P3 pt, float distance) {
+                                  T3 pt, float distance) {
     ms.setIteratorForPoint(iterator, modelIndex, pt, distance);
   }
 
@@ -4385,7 +4353,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     refresh(3, "hover on atom");
   }
 
-  public void hoverOnPt(int x, int y, String text, String id, P3 pt) {
+  public void hoverOnPt(int x, int y, String text, String id, T3 pt) {
     if (!hoverEnabled)
       return;
     // from draw for drawhover on
@@ -4867,7 +4835,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     sm.setStatusAtomHovered(atomIndex, info);
   }
 
-  private void setStatusObjectHovered(String id, String info, P3 pt) {
+  private void setStatusObjectHovered(String id, String info, T3 pt) {
     g.setS("_objecthovered", id);
     sm.setStatusObjectHovered(id, info, pt);
   }
@@ -7600,7 +7568,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return isOK;
   }
 
-  public void startSpinningAxis(P3 pt1, P3 pt2, boolean isClockwise) {
+  public void startSpinningAxis(T3 pt1, T3 pt2, boolean isClockwise) {
     // Draw.checkObjectClicked ** could be difficult
     // from draw object click
     if (getSpinOn() || getNavOn()) {

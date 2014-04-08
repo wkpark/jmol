@@ -2,8 +2,8 @@ package org.jmol.jvxl.api;
 
 
 
-import javajs.util.P3;
 import javajs.util.P3i;
+import javajs.util.T3;
 import javajs.util.V3;
 
 public interface VertexDataServer {
@@ -69,7 +69,7 @@ public interface VertexDataServer {
                                            int y, int z, P3i offset,
                                            int vertexA, int vertexB, 
                                            float valueA, float valueB,
-                                           P3 pointA, V3 edgeVector,
+                                           T3 pointA, V3 edgeVector,
                                            boolean isContourType, float[] fReturn);
 
   /**
@@ -86,7 +86,7 @@ public interface VertexDataServer {
    * @return                  new vertex index
    * 
    */
-  public abstract int addVertexCopy(P3 vertexXYZ, float value, int assocVertex);
+  public abstract int addVertexCopy(T3 vertexXYZ, float value, int assocVertex, boolean asCopy);
 
   /**
    * addTriangleCheck adds a triangle along with a 3-bit check indicating

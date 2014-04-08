@@ -32,22 +32,15 @@ package javajs.util;
  */
 public class P4 extends T4 {
 
-  /**
-   * Constructs and initializes a Point4f to (0,0,0,0).
-   */
-  public P4() {
-    super();
-  }
-
   public static P4 new4(float x, float y, float z, float w) {
     P4 pt = new P4();
-    pt.set(x, y, z, w);
+    pt.set4(x, y, z, w);
     return pt;
   }
 
   public static P4 newPt(P4 value) {
     P4 pt = new P4();
-    pt.set(value.x, value.y, value.z, value.w);    
+    pt.set4(value.x, value.y, value.z, value.w);    
     return pt;
   }
 
@@ -58,7 +51,7 @@ public class P4 extends T4 {
    *        the other point
    * @return the distance between these two points
    */
-  public final float distance(P4 p1) {
+  public final float distance4(P4 p1) {
     double dx = x - p1.x;
     double dy = y - p1.y;
     double dz = z - p1.z;

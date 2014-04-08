@@ -669,7 +669,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
           break;
         }
         pt.add2(pt1, wingT);
-        mesh.addV(pt);
+        mesh.addV(pt, true);
       }
       if (p > 0) {
         int nLast = (isFlatMesh ? nPer - 1 : nPer);
@@ -694,7 +694,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
       // the mesh preventing light leaking around the sharp edges
       if (doCap0) {
         for (int l = 0; l < nPer; l++)
-          mesh.addV(mesh.vs[l]);
+          mesh.addV(mesh.vs[l], true);
         nPoints += nPer;
         for (int k = hermiteLevel * 2; --k >= 0;)
           mesh.addQuad(nPoints - nPer + k + 2, nPoints - nPer + k + 1, nPoints
@@ -702,7 +702,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
       }
       if (doCap1) {
         for (int l = 0; l < nPer; l++)
-          mesh.addV(mesh.vs[nPointsPreCap - nPer + l]);
+          mesh.addV(mesh.vs[nPointsPreCap - nPer + l], true);
         nPoints += nPer;
         for (int k = hermiteLevel * 2; --k >= 0;)
           mesh.addQuad(nPoints - k - 1, nPoints - nPer + (nPer - k) % nPer,

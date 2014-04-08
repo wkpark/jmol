@@ -1,8 +1,8 @@
 package org.jmol.api;
 
 
-import javajs.util.P3;
-import javajs.util.P3i;
+import javajs.util.T3;
+import javajs.util.T3i;
 import javajs.util.P4;
 import javajs.util.V3;
 
@@ -30,15 +30,15 @@ public interface VolumeDataInterface {
 
   public abstract float calcVoxelPlaneDistance(int x, int y, int z);
 
-  public abstract float distancePointToPlane(P3 pt);
+  public abstract float distancePointToPlane(T3 pt);
 
   public abstract void transform(V3 v1, V3 v2);
 
-  public abstract void voxelPtToXYZ(int x, int y, int z, P3 pt);
+  public abstract void voxelPtToXYZ(int x, int y, int z, T3 pt);
 
-  public abstract void xyzToVoxelPt(float x, float y, float z, P3i pt3i);
+  public abstract void xyzToVoxelPt(float x, float y, float z, T3i pt3i);
 
-  public abstract float lookupInterpolatedVoxelValue(P3 point, boolean getSource);
+  public abstract float lookupInterpolatedVoxelValue(T3 point, boolean getSource);
 
   public abstract void filterData(boolean isSquared, float invertCutoff);
 

@@ -29,7 +29,7 @@ package org.jmol.modelset;
 
 import org.jmol.java.BS;
 
-import javajs.util.P3;
+import javajs.util.T3;
 
 public class AtomIteratorWithinModelSet extends AtomIteratorWithinModel {
   private BS bsModels;
@@ -38,11 +38,11 @@ public class AtomIteratorWithinModelSet extends AtomIteratorWithinModel {
     this.bsModels = bsModels;
   }
 
-  private P3 center;
+  private T3 center;
   private float distance;
 
   @Override
-  public void setCenter(P3 center, float distance) {
+  public void setCenter(T3 center, float distance) {
     this.center = center;
     this.distance = distance;
     set(0);

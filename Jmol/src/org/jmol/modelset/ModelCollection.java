@@ -29,9 +29,12 @@ import javajs.J2SIgnoreImport;
 import javajs.util.AU;
 import javajs.util.OC;
 import javajs.util.Lst;
+import javajs.util.P3;
+import javajs.util.P4;
 import javajs.util.PT;
 import javajs.util.Quat;
 import javajs.util.SB;
+import javajs.util.T3;
 import javajs.util.XmlUtil;
 
 import java.util.Date;
@@ -59,8 +62,6 @@ import org.jmol.util.Escape;
 
 import org.jmol.util.BoxInfo;
 import org.jmol.util.Elements;
-import javajs.util.P3;
-import javajs.util.P4;
 
 import org.jmol.util.Point3fi;
 import org.jmol.util.Tensor;
@@ -167,7 +168,7 @@ abstract public class ModelCollection extends BondCollection {
    */
   public Lst<Object> getPlaneIntersection(int type, P4 plane, float scale,
                                            int flags, SymmetryInterface uc) {
-    P3[] pts = null;
+    T3[] pts = null;
     switch (type) {
     case T.unitcell:
       if (uc == null)
@@ -1701,7 +1702,7 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public void setIteratorForPoint(AtomIndexIterator iterator, int modelIndex,
-                                  P3 pt, float distance) {
+                                  T3 pt, float distance) {
     if (modelIndex < 0) {
       iterator.setCenter(pt, distance);
       return;
@@ -3438,7 +3439,7 @@ abstract public class ModelCollection extends BondCollection {
         float cos = (float) Math.sqrt(1 - av[i].lengthSquared());
         if (Float.isNaN(cos))
           cos = 0;
-        p4.set(av[i].x, av[i].y, av[i].z, cos);
+        p4.set4(av[i].x, av[i].y, av[i].z, cos);
         vOrientations[i] = Quat.newP4(p4);
       }
     }

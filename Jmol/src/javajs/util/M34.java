@@ -357,9 +357,52 @@ public abstract class M34 {
     m21 = tmp;
   }
 
+  protected void setXRot(float angle) {
+    double c = Math.cos(angle);
+    double s = Math.sin(angle);
+    m00 = 1.0f;
+    m01 = 0.0f;
+    m02 = 0.0f;
+    m10 = 0.0f;
+    m11 = (float) c;
+    m12 = (float) -s;
+    m20 = 0.0f;
+    m21 = (float) s;
+    m22 = (float) c;
+  }
+
+  protected void setYRot(float angle) {
+    double c = Math.cos(angle);
+    double s = Math.sin(angle);
+    m00 = (float) c;
+    m01 = 0.0f;
+    m02 = (float) s;
+    m10 = 0.0f;
+    m11 = 1.0f;
+    m12 = 0.0f;
+    m20 = (float) -s;
+    m21 = 0.0f;
+    m22 = (float) c;
+  }
+  
+  protected void setZRot(float angle) {
+    double c = Math.cos(angle);
+    double s = Math.sin(angle);
+    m00 = (float) c;
+    m01 = (float) -s;
+    m02 = 0.0f;
+    m10 = (float) s;
+    m11 = (float) c;
+    m12 = 0.0f;
+    m20 = 0.0f;
+    m21 = 0.0f;
+    m22 = 1.0f;
+  }
+  
   protected void err() {
     throw new ArrayIndexOutOfBoundsException(
         "matrix column/row out of bounds");
   }
+
 
 }

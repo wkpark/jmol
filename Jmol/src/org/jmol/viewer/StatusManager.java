@@ -26,9 +26,9 @@ package org.jmol.viewer;
 import org.jmol.script.T;
 import javajs.awt.Dimension;
 import org.jmol.util.Logger;
-import javajs.util.P3;
 import javajs.util.Lst;
 import javajs.util.PT;
+import javajs.util.T3;
 
 import java.util.Hashtable;
 
@@ -350,7 +350,7 @@ public class StatusManager {
           new Object[] {sJmol, strInfo, Integer.valueOf(iatom) });
   }
   
-  synchronized void setStatusObjectHovered(String id, String strInfo, P3 pt) {
+  synchronized void setStatusObjectHovered(String id, String strInfo, T3 pt) {
     String sJmol = jmolScriptCallback(CBK.HOVER);
     if (notifyEnabled(CBK.HOVER))
       cbl.notifyCallback(CBK.HOVER, 

@@ -189,7 +189,7 @@ class KinemageReader extends PmeshReader {
         .parseFloat(tokens[1]), PT.parseFloat(tokens[2]));
     if (isAnisotropic)
       setVertexAnisotropy(pt);
-    return addVertexCopy(pt, value, nVertices++);
+    return addVertexCopy(pt, value, nVertices++, false);
   }
 
   private int getColor(String color) {

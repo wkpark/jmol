@@ -120,7 +120,7 @@ class NffReader extends PolygonFileReader {
         pt.scale(params.scale);
       if (isAnisotropic)
         setVertexAnisotropy(pt);
-      i = Integer.valueOf(addVertexCopy(pt, 0, nVertices++));
+      i = Integer.valueOf(addVertexCopy(pt, 0, nVertices++, true));
       vertexMap.put(line, i);
     }
     return i.intValue();

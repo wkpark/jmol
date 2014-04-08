@@ -5,7 +5,7 @@ package org.jmol.api;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.java.BS;
 import org.jmol.modelset.ModelCollection;
-import javajs.util.P3;
+import javajs.util.T3;
 
 
 /**
@@ -21,8 +21,8 @@ public interface AtomIndexIterator {
    * @param distance
    * @param rd 
    */
-  public void setModel(ModelCollection modelSet, int modelIndex, int zeroBase, int atomIndex, P3 center, float distance, RadiusData rd);
-  public void setCenter(P3 center, float distance);
+  public void setModel(ModelCollection modelSet, int modelIndex, int zeroBase, int atomIndex, T3 center, float distance, RadiusData rd);
+  public void setCenter(T3 center, float distance);
   public void addAtoms(BS bsResult);
   public boolean hasNext();
   public int next();

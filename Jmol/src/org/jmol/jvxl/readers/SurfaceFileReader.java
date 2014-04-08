@@ -40,7 +40,7 @@ abstract class SurfaceFileReader extends SurfaceReader {
   protected BufferedReader br;
   protected GenericBinaryDocument binarydoc;
   protected OC out;
-
+  
   SurfaceFileReader() {
   }
 

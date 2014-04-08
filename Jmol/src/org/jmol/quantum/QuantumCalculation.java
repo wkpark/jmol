@@ -28,7 +28,9 @@ import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+
 import javajs.util.P3;
+import javajs.util.T3;
 
 
 abstract class QuantumCalculation {
@@ -43,7 +45,7 @@ abstract class QuantumCalculation {
   protected float[] vd;
   protected int[] countsXYZ;
   
-  protected P3[] points;
+  protected T3[] points;
   protected int xMin, xMax, yMin, yMax, zMin, zMax;
 
   protected QMAtom[] qmAtoms;
@@ -74,11 +76,11 @@ abstract class QuantumCalculation {
   
   protected float unitFactor = bohr_per_angstrom;
 
-  protected void initialize(int nX, int nY, int nZ, P3[] points) {
+  protected void initialize(int nX, int nY, int nZ, T3[] points) {
     initialize0(nX, nY ,nZ, points);
   }
 
-  protected void initialize0(int nX, int nY, int nZ, P3[] points) {
+  protected void initialize0(int nX, int nY, int nZ, T3[] points) {
     if (points != null) {
       this.points = points;
       nX = nY = nZ = points.length;
@@ -111,9 +113,9 @@ abstract class QuantumCalculation {
 
   protected void setupCoordinates(float[] originXYZ, float[] stepsXYZ,
                                   BS bsSelected,
-                                  P3[] atomCoordAngstroms,
-                                  P3[] points, boolean renumber) {
-
+                                  T3[] atomCoordAngstroms,
+                                  T3[] points, boolean renumber) {
+    
     // all coordinates come in as angstroms, not bohr, and are converted here into bohr
 
     if (points == null) {
@@ -149,7 +151,7 @@ abstract class QuantumCalculation {
     }
   }
 
-  public float processPt(P3 pt) {
+  public float processPt(T3 pt) {
     // implementation from QuantumCalculationInterface for NCI and MO calculations
     // it IS called.
     doDebug = false;
@@ -187,13 +189,13 @@ abstract class QuantumCalculation {
 
   protected abstract void process();
   
-  protected void setXYZBohr(P3[] points) {
+  protected void setXYZBohr(T3[] points) {
     setXYZBohrI(xBohr, 0, nX, points);
     setXYZBohrI(yBohr, 1, nY, points);
     setXYZBohrI(zBohr, 2, nZ, points);
   }
 
-  private void setXYZBohrI(float[] bohr, int i, int n, P3[] points) {
+  private void setXYZBohrI(float[] bohr, int i, int n, T3[] points) {
     if (points != null) {
       float x = 0;
       for (int j = 0; j < n; j++) {

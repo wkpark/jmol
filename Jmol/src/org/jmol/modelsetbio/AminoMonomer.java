@@ -341,9 +341,7 @@ public class AminoMonomer extends AlphaMonomer {
       getNHPoint(ptTemp, vC, true, false);
       vB.sub2(ptCa, getNitrogenAtom());
       vB.cross(vC, vB);
-      M3 mat = new M3();
-      mat.setAA(A4.newVA(vB, -beta));
-      mat.rotate(vC);
+      new M3().setAA(A4.newVA(vB, -beta)).rotate(vC);
       vA.cross(vB, vC);
       break;
     case 'b': // backbone

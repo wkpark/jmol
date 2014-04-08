@@ -470,11 +470,6 @@ abstract public class JmolViewer implements JSInterface {
   abstract public void setCenterSelected(); 
 
   abstract public void rotateFront();
-  abstract public void rotateXDeg(int degrees);
-  abstract public void rotateYDeg(int degrees);
-  abstract public void rotateX(float radians);
-  abstract public void rotateY(float radians);
-  abstract public void rotateZ(float radians);
 
   abstract public JmolAdapter getModelAdapter();
 

@@ -882,7 +882,7 @@ public class ScriptMathProcessor {
         return addXPt(pt);
       case T.point4f:
         P4 pt4 = P4.newPt((P4) x2.value);
-        pt4.scale(-1f);
+        pt4.scale4(-1f);
         return addXPt4(pt4);
       case T.matrix3f:
         m = M3.newM3((M3) x2.value);
@@ -1302,9 +1302,7 @@ public class ScriptMathProcessor {
         A4 aa = new A4();
         aa.setM(m3);
         aa.angle *= f;
-        M3 m2 = new M3();
-        m2.setAA(aa);
-        return addXM3(m2);
+        return addXM3(new M3().setAA(aa));
       case T.matrix4f:
         M4 m4 = (M4) x1.value;
         if (pt != null) {

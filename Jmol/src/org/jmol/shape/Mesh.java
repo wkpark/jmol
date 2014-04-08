@@ -178,7 +178,7 @@ public class Mesh extends MeshSurface {
 
   protected BS bsTemp;
   
-  public void initialize(int lighting, P3[] vertices, P4 plane) {
+  public void initialize(int lighting, T3[] vertices, P4 plane) {
     if (vertices == null)
       vertices = this.vs;
     V3[] normals = getNormals(vertices, plane);
@@ -202,7 +202,7 @@ public class Mesh extends MeshSurface {
     return normixes;
   }
 
-  public V3[] getNormals(P3[] vertices, P4 plane) {
+  public V3[] getNormals(T3[] vertices, P4 plane) {
     normixCount = (isTriangleSet ? pc : vc);
     V3[] normals = new V3[normixCount];
     for (int i = normixCount; --i >= 0;)
@@ -265,11 +265,11 @@ public class Mesh extends MeshSurface {
 
   public short[] symopColixes;
   
-  protected void sumVertexNormals(P3[] vertices, V3[] normals) {
+  protected void sumVertexNormals(T3[] vertices, V3[] normals) {
     sumVertexNormals2(vertices, normals);
   }
 
-  protected void sumVertexNormals2(P3[] vertices, V3[] normals) {
+  protected void sumVertexNormals2(T3[] vertices, V3[] normals) {
     // subclassed in IsosurfaceMesh
     int adjustment = checkByteCount;
     float min = getMinDistance2ForVertexGrouping();
@@ -277,9 +277,9 @@ public class Mesh extends MeshSurface {
       try {
         if (!setABC(i))
           continue;
-        P3 vA = vertices[iA];
-        P3 vB = vertices[iB];
-        P3 vC = vertices[iC];
+        T3 vA = vertices[iA];
+        T3 vB = vertices[iB];
+        T3 vC = vertices[iC];
         // no skinny triangles
         if (vA.distanceSquared(vB) < min || vB.distanceSquared(vC) < min
             || vA.distanceSquared(vC) < min)
@@ -371,7 +371,7 @@ public class Mesh extends MeshSurface {
         pt.scaleAdd2(val, normal, pt);
     }
     
-    initialize(lighting, (P3[]) altVertices, null);
+    initialize(lighting, altVertices, null);
     recalcAltVertices = false;
     return (P3[]) altVertices;
   }
@@ -394,7 +394,7 @@ public class Mesh extends MeshSurface {
         bsDisplay.set(i);
   }
 
-  public static boolean checkWithin(P3 pti, Lst<P3> withinPoints,
+  public static boolean checkWithin(T3 pti, Lst<P3> withinPoints,
                                     float withinDistance2, boolean isWithinNot) {
     if (withinPoints.size() != 0)
       for (int i = withinPoints.size(); --i >= 0;)
@@ -490,7 +490,7 @@ public class Mesh extends MeshSurface {
     info.put("haveQuads", Boolean.valueOf(haveQuads));
     info.put("haveValues", Boolean.valueOf(vvs != null));
     if (vc > 0 && isAll)
-      info.put("vertices", AU.arrayCopyPt(vs, vc));
+      info.put("vertices", AU.arrayCopyPt((P3[]) vs, vc));
     if (vvs != null && isAll)
       info.put("vertexValues", AU.arrayCopyF(vvs, vc));
     if (pc > 0 && isAll)

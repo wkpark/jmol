@@ -484,11 +484,12 @@ List of 50 lone WC/wobble pairs
     String info = "";
     while (isHeader(rd())) {
       int pt = line.indexOf("[");
-      if (line.indexOf("bp_pars:") >= 0) {
+      line = PT.rep(line,  "_pars",  "-pars");
+      if (line.indexOf("bp-pars:") >= 0) {
         addArray(data, "bpPar", PT.parseFloatArray(line.substring(pt + 1)));
-      } else if (line.indexOf("heli_pars:") >= 0) {
+      } else if (line.indexOf("heli-pars:") >= 0) {
         addArray(data, "helixPar", PT.parseFloatArray(line.substring(pt + 1)));
-      } else if (line.indexOf("step_pars:") >= 0) {
+      } else if (line.indexOf("step-pars:") >= 0) {
         addArray(data, "stepPar", PT.parseFloatArray(line.substring(pt + 1)));
       } else if ((pt = line.indexOf("h-rise=")) >= 0) {
         addFloat(data, "rise_h", pt + 7);

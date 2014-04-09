@@ -45,7 +45,9 @@ when the Jmol or JSpecView code is modified, is as follows:
    jsmol.zip will be created and copied to appletweb/.
 
 Note that I have had trouble with signjar ramdomly stopping with an IOException. 
-I just do it a second time, and it works.
+I just do it a second time, and it works. 
+
+[This tracked down to http://tsa.starfieldtech.com on Apr 9, 2014]
 
 Bob Hanson hansonr@stolaf.edu 11/26/2013
 
@@ -121,9 +123,9 @@ Bob Hanson hansonr@stolaf.edu 11/26/2013
   <property name="selfsign.storetype" value="jks" />
   <property name="selfsign.storepass" value="selfSignedCertificate" />
   <property name="selfsign.alias" value="selfSignedCertificate" />
-  <property name="tsa.url" value="http://tsa.starfieldtech.com/" />
+  <property name="tsa.url" value="http://timestamp.globalsign.com/scripts/timestamp.dll" />
 	
-	<!-- http://timestamp.globalsign.com/scripts/timestamp.dll or  http://tsa.starfieldtech.com/, which stopped working 3/27/14 -->
+	<!-- http://timestamp.globalsign.com/scripts/timestamp.dll or  http://tsa.starfieldtech.com/, which stopped working 3/27/14 and again on 4/8/14 -->
 
 
 	<!-- you can set this by defining it in ~/.jmol.build.properties -->
@@ -1692,7 +1694,7 @@ all support for previous versions removed
   <!-- tools  -->
   <target name="sign-jar-file" >
     <if><available file="${Private.propertyFile}" /><then>
-      	<echo>using keystore="${Private.keystore}" alias="${Private.alias}"</echo> 
+      	<echo>using keystore="${Private.keystore}" alias="${Private.alias} tsa=${tsa.url}"</echo> 
         <signjar keystore="${Private.keystore}"
                  storetype="${Private.storetype}"
                  storepass="${Private.storepass}"

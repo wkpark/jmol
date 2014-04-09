@@ -70,6 +70,7 @@ public class JmolApp implements JmolAppAPI {
   public boolean isSilent;
   public Map<String, Object>info = new Hashtable<String, Object>();
   public Point jmolPosition;
+  public int autoAnimationRate = 200; // ms
   
   private String modelFilename;
   private String scriptFilename;
@@ -167,6 +168,11 @@ public class JmolApp implements JmolAppAPI {
     options.addOption("x", "exit", false, GT
         ._("exit after script (implicit with -n)"));
 
+    OptionBuilder.withLongOpt("autoanimationrate");
+    OptionBuilder.withDescription(GT._("ms delay time for press-and-hold operation of toolbar animation buttons (set to 0 to disable)"));
+    OptionBuilder.hasArg();
+    options.addOption(OptionBuilder.create("a"));
+    
     OptionBuilder.withLongOpt("port");
     OptionBuilder.withDescription(GT._("port for JSON/MolecularPlayground-style communication"));
     OptionBuilder.hasArg();
@@ -268,6 +274,13 @@ public class JmolApp implements JmolAppAPI {
 
       System.exit(0);
     }
+
+    if (line.hasOption("a")) {
+      autoAnimationRate =  PT.parseInt(line.getOptionValue("a"));
+      Logger.info("setting autoAnimationRate to " + autoAnimationRate);
+    }
+
+
 
     // Process more command line arguments
     // these are also passed to vwr

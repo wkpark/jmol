@@ -126,10 +126,9 @@ public class DSSRParser implements JmolDSSRParser {
           addMessage("DSSRParser ignored: " + line);
           break;
         }
-      } else if (!haveHeader && line.startsWith("Date and time")) {
-        addToMessages();
+      } else if (!haveHeader && line.startsWith("Date and time") 
+          || line.startsWith("Secondary structures in dot-bracket")) {
         haveHeader = true;
-      } else if (line.startsWith("Secondary structures in dot-bracket")) {
         addToMessages();        
       }
     }

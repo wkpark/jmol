@@ -28,6 +28,7 @@ import java.awt.Dimension;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.io.File;
+import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Scanner;
@@ -39,6 +40,7 @@ import org.jmol.util.Logger;
 import org.jmol.api.JmolAppAPI;
 import org.jmol.api.JmolViewer;
 
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -70,7 +72,7 @@ public class JmolApp implements JmolAppAPI {
   public boolean isSilent;
   public Map<String, Object>info = new Hashtable<String, Object>();
   public Point jmolPosition;
-  public int autoAnimationRate = 200; // ms
+  public float autoAnimationDelay = 0.2f; // sec
   
   private String modelFilename;
   private String scriptFilename;
@@ -137,116 +139,103 @@ public class JmolApp implements JmolAppAPI {
 
   private Options getOptions() {
     Options options = new Options();
-    options.addOption("b", "backgroundtransparent", false, GT
-        ._("transparent background"));
-    options.addOption("h", "help", false, GT._("give this help page"));
-    options.addOption("n", "nodisplay", false, GT
-        ._("no display (and also exit when done)"));
-    options.addOption("c", "check", false, GT
-        ._("check script syntax only - no file loading"));
-    options.addOption("C", "checkload", false, GT
-        ._("check script syntax only - with file loading"));
-    options.addOption("d", "debug", false, GT._("debug"));
-    options.addOption("i", "silent", false, GT._("silent startup operation"));
-    options.addOption("I", "input", false, GT._("allow piping of input from System.Input"));
-    options.addOption("k", "kiosk", false, GT
-        ._("kiosk mode -- no frame"));
-    options.addOption("l", "list", false, GT
-        ._("list commands during script execution"));
-    options.addOption("L", "nosplash", false, GT
-        ._("start with no splash screen"));
-    options.addOption("o", "noconsole", false, GT
-        ._("no console -- all output to sysout"));
-    options.addOption("p", "printOnly", false, GT
-        ._("send only output from print messages to console (implies -i)"));
-    options.addOption("R", "restricted", false, GT
-        ._("restrict local file access"));
-    options.addOption("r", "restrictSpt", false, GT
-        ._("restrict local file access (allow reading of SPT files)"));
-    options.addOption("t", "threaded", false, GT
-        ._("independent command thread"));
-    options.addOption("x", "exit", false, GT
-        ._("exit after script (implicit with -n)"));
 
-    OptionBuilder.withLongOpt("autoanimationrate");
-    OptionBuilder.withDescription(GT._("ms delay time for press-and-hold operation of toolbar animation buttons (set to 0 to disable)"));
-    OptionBuilder.hasArg();
-    options.addOption(OptionBuilder.create("a"));
-    
-    OptionBuilder.withLongOpt("port");
-    OptionBuilder.withDescription(GT._("port for JSON/MolecularPlayground-style communication"));
-    OptionBuilder.hasArg();
-    options.addOption(OptionBuilder.create("P"));
-    
-    OptionBuilder.withLongOpt("script");
-    OptionBuilder.withDescription(GT
-        ._("script file to execute or '-' for System.in"));
-    OptionBuilder.hasArg();
-    options.addOption(OptionBuilder.create("s"));
+    options.addOption("a","autoanimationdelay", true, GT
+            ._("delay time in seconds for press-and-hold operation of toolbar animation buttons (default 0.2; set to 0 to disable)"));
 
-    OptionBuilder.withLongOpt("multitouch");
-    OptionBuilder.withDescription(GT
-        ._("use multitouch interface (requires \"sparshui\" parameter"));
-    OptionBuilder.hasArg();
-    options.addOption(OptionBuilder.create("M"));
+    options.addOption("b", "backgroundtransparent", false,
+        GT._("transparent background"));
 
+    options.addOption("C", "checkload", false,
+        GT._("check script syntax only - with file loading"));
+    options.addOption("c", "check", false,
+        GT._("check script syntax only - no file loading"));
 
-    OptionBuilder.withLongOpt("jmolscript1");
-    OptionBuilder.withDescription(GT
-        ._("Jmol script to execute BEFORE -s option"));
-    OptionBuilder.hasArg();
-    options.addOption(OptionBuilder.create("J"));
-
-    OptionBuilder.withLongOpt("jmolscript2");
-    OptionBuilder.withDescription(GT
-        ._("Jmol script to execute AFTER -s option"));
-    OptionBuilder.hasArg();
-    options.addOption(OptionBuilder.create("j"));
-
-    OptionBuilder.withLongOpt("menu");
-    OptionBuilder.withDescription("menu file to use");
-    OptionBuilder.hasArg();
-    options.addOption(OptionBuilder.create("m"));
-
-    OptionBuilder.withLongOpt("headlessmaxtime");
-    OptionBuilder.withDescription("headless max time (sec)");
-    OptionBuilder.hasArg();
-    options.addOption(OptionBuilder.create("T"));
-
-    OptionBuilder.withArgName(GT._("property=value"));
-    OptionBuilder.hasArg();
     OptionBuilder.withValueSeparator();
-    OptionBuilder.withDescription(GT._("supported options are given below"));
-    options.addOption(OptionBuilder.create("D"));
+    options.addOption("D", "property=value", true,
+        GT._("supported options are given below"));
+    options.addOption("d", "debug", false, GT._("debug"));
 
-    OptionBuilder.withLongOpt("geometry");
-    // OptionBuilder.withDescription(GT._("overall window width x height, e.g. {0}",
-    // "-g512x616"));
-    OptionBuilder.withDescription(GT.o(GT._("window width x height, e.g. {0}"),
-        "-g500x500"));
-    OptionBuilder.hasArg();
-    options.addOption(OptionBuilder.create("g"));
+    options.addOption("g", "geometry", true,
+        GT.o(GT._("window width x height, e.g. {0}"), "-g500x500"));
 
-    OptionBuilder.withLongOpt("quality");
-    // OptionBuilder.withDescription(GT._("overall window width x height, e.g. {0}",
-    // "-g512x616"));
-    OptionBuilder
-        .withDescription(GT
+    options.addOption("h", "help", false, GT._("give this help page"));
+
+    options.addOption("I", "input", false,
+        GT._("allow piping of input from System.Input"));
+    options.addOption("i", "silent", false, GT._("silent startup operation"));
+
+    options.addOption("J", "jmolscript1", true,
+        GT._("Jmol script to execute BEFORE -s option"));
+
+    options.addOption("j","jmolscript2", true, GT
+        ._("Jmol script to execute AFTER -s option"));
+
+    options.addOption("k", "kiosk", false, GT._("kiosk mode -- no frame"));
+
+    options.addOption("L", "nosplash", false,
+        GT._("start with no splash screen"));
+    options.addOption("l", "list", false,
+        GT._("list commands during script execution"));
+
+    options.addOption("M","multitouch", true, GT
+        ._("use multitouch interface (requires \"sparshui\" parameter"));
+
+    options.addOption("m","menu", true, GT._("menu file to use"));
+
+    options.addOption("n", "nodisplay", false,
+        GT._("no display (and also exit when done)"));
+
+    options.addOption("o", "noconsole", false,
+        GT._("no console -- all output to sysout"));
+
+    options.addOption("P","port", true,GT
+        ._("port for JSON/MolecularPlayground-style communication"));
+
+    options.addOption("p", "printOnly", false,
+        GT._("send only output from print messages to console (implies -i)"));
+
+    options.addOption("q","quality", true, GT
             ._("JPG image quality (1-100; default 75) or PNG image compression (0-9; default 2, maximum compression 9)"));
-    OptionBuilder.hasArg();
-    options.addOption(OptionBuilder.create("q"));
 
-    OptionBuilder.withLongOpt("write");
-    OptionBuilder.withDescription(GT.o(GT._("{0} or {1}:filename"), new Object[] {
-        "CLIP", "GIF|JPG|JPG64|PNG|PPM" }));
-    OptionBuilder.hasArg();
-    options.addOption(OptionBuilder.create("w"));
+    options.addOption("R", "restricted", false,
+        GT._("restrict local file access"));
+    options.addOption("r", "restrictSpt", false,
+        GT._("restrict local file access (allow reading of SPT files)"));
+
+    options.addOption("s","script", true, GT
+        ._("script file to execute or '-' for System.in"));
+
+    options.addOption("T","headlessmaxtime", true, GT._("headless max time (sec)"));
+
+    options.addOption("t", "threaded", false,
+        GT._("independent command thread"));
+
+    options.addOption("w","write", true,GT.o(GT._("{0} or {1}:filename"),
+        new Object[] { "CLIP", "GIF|JPG|JPG64|PNG|PPM" }));
+
+    options.addOption("x", "exit", false,
+        GT._("exit after script (implicit with -n)"));
+
     return options;
+  }
+  
+  class OptSort implements Comparator<Option> {
+
+    @Override
+    public int compare(Option o1, Option o2) {
+      char c1 = o1.getOpt().charAt(0);
+      char c2 = o2.getOpt().charAt(0);
+      char uc1 = Character.toUpperCase(c1);
+      char uc2 = Character.toUpperCase(c2);
+      return (uc1 == uc2 ? (c1 < c2 ? -1 : 1) : Character.compare(uc1, uc2));
+    }
   }
   
   private void checkOptions(CommandLine line, Options options) {
     if (line.hasOption("h")) {
       HelpFormatter formatter = new HelpFormatter();
+      formatter.setOptionComparator(new OptSort());
       formatter.printHelp("Jmol", options);
 
       // now report on the -D options
@@ -276,8 +265,8 @@ public class JmolApp implements JmolAppAPI {
     }
 
     if (line.hasOption("a")) {
-      autoAnimationRate =  PT.parseInt(line.getOptionValue("a"));
-      Logger.info("setting autoAnimationRate to " + autoAnimationRate);
+      autoAnimationDelay =  PT.parseFloat(line.getOptionValue("a"));
+      Logger.info("setting autoAnimationDelay to " + autoAnimationDelay);
     }
 
 

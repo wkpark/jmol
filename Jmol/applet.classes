@@ -32,6 +32,7 @@ org/jmol/bspt/*.java
 org/jmol/c/*.java
 org/jmol/console/*.java
 org/jmol/dialog/*.java
+org/jmol/dssr/*.java
 org/jmol/dssx/*.java
 org/jmol/export/*.java
 org/jmol/g3d/*.java

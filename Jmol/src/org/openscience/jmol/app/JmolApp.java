@@ -266,7 +266,9 @@ public class JmolApp implements JmolAppAPI {
 
     if (line.hasOption("a")) {
       autoAnimationDelay =  PT.parseFloat(line.getOptionValue("a"));
-      Logger.info("setting autoAnimationDelay to " + autoAnimationDelay);
+      if (autoAnimationDelay > 10)
+        autoAnimationDelay /= 1000;
+      Logger.info("setting autoAnimationDelay to " + autoAnimationDelay + " seconds");
     }
 
 

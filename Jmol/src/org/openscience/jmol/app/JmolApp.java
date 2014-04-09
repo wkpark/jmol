@@ -141,7 +141,7 @@ public class JmolApp implements JmolAppAPI {
     Options options = new Options();
 
     options.addOption("a","autoanimationdelay", true, GT
-            ._("delay time in seconds for press-and-hold operation of toolbar animation buttons (default 0.2; set to 0 to disable)"));
+            ._("delay time in seconds for press-and-hold operation of toolbar animation buttons (default 0.2; numbers > 10 assumed to be milliseconds; set to 0 to disable)"));
 
     options.addOption("b", "backgroundtransparent", false,
         GT._("transparent background"));

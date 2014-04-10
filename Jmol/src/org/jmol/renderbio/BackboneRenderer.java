@@ -43,7 +43,7 @@ public class BackboneRenderer extends BioShapeRenderer {
   protected void renderBioShape(BioShape bioShape) {
     boolean showSteps = vwr.getBoolean(T.backbonesteps)
         && bioShape.bioPolymer.isNucleic();
-    isDataFrame = vwr.isJmolDataFrameForModel(bioShape.modelIndex);
+    isDataFrame = vwr.ms.isJmolDataFrameForModel(bioShape.modelIndex);
     for (int i = bsVisible.nextSetBit(0); i >= 0; i = bsVisible
         .nextSetBit(i + 1)) {
       Atom atomA = ms.at[leadAtomIndices[i]];

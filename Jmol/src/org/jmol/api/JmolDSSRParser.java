@@ -20,4 +20,6 @@ public interface JmolDSSRParser {
 
   String getHBonds(Viewer vwr, int modelIndex, Lst<Bond> vHBonds, boolean doReport);
 
+  String calculateStructure(Viewer vwr);
+
 }

@@ -30,6 +30,7 @@ import javajs.api.GenericLineReader;
 import javajs.util.Lst;
 import javajs.util.P3;
 import javajs.util.PT;
+import javajs.util.Rdr;
 import javajs.util.SB;
 
 import org.jmol.api.JmolDSSRParser;
@@ -44,6 +45,7 @@ import org.jmol.modelsetbio.NucleicPolymer;
 import org.jmol.script.T;
 import org.jmol.util.C;
 import org.jmol.util.Edge;
+import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
 
 public class DSSRParser implements JmolDSSRParser {
@@ -65,8 +67,15 @@ public class DSSRParser implements JmolDSSRParser {
     htTemp = new Hashtable<String, Object>();
     this.reader = reader;
     message = new SB();
-    addMessage("\nDSSR: a software program for Defining the Secondary");
-    addMessage(rd().trim());
+    // output the header section with credits
+    line = rd();
+    if (line.indexOf("***") >= 0) {
+      addMessage(rd().trim());
+      rd();
+    } else {
+      addMessage("\nDSSR: a software program for Defining the Secondary");
+    }
+    addMessage(line.trim());
     addMessage(rd().trim());
     boolean haveHeader = false;
     while (rd() != null) {
@@ -807,6 +816,40 @@ List of 233 multiplets
       vHBonds.addLast(new HBond(vwr.ms.at[a1], vwr.ms.at[a2], Edge.BOND_H_REGULAR, (short) 1, C.INHERIT_ALL, energy));
     }
     return "DSSR reports " + list.size() + " hydrogen bonds";
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public String calculateStructure(Viewer vwr) {
+    int modelIndex = vwr.getVisibleFramesBitSet().nextSetBit(0);
+    Map<String, Object> info = null;
+    String out = null;
+    while (true) {
+      if (!vwr.ms.am[modelIndex].isBioModel)
+        break;
+      info = vwr.ms.getModelAuxiliaryInfo(modelIndex);
+      if (info.containsKey("dssr"))
+        break;
+      BS bs = vwr.getModelUndeletedAtomsBitSet(modelIndex);
+      bs.and(vwr.ms.getAtoms(T.nucleic, null));
+      if (bs.nextClearBit(0) < 0) {
+        info = null;
+        break;
+      }
+      try {
+        String name = (String) vwr.setLoadFormat("=dssrModel/", '=', false);
+        Logger.info("fetching " + name + "[pdb data]");
+        String data = vwr.getPdbAtomData(bs, null);
+        data = vwr.getFileAsString(name + data, false);
+        vwr.getDSSRParser().process(info, new Rdr(Rdr.getBR(data)));
+      } catch (Exception e) {
+        info = null;
+        out = "" + e;
+      }
+      break;
+    }
+    return (info != null ? (String) ((Map<String, Object>) info
+        .get("dssr")).get("summary") : out == null ? "model has no nucleotides" : out);
   }
 
 }

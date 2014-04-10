@@ -4750,7 +4750,7 @@ public class ScriptEval extends ScriptExpr {
       int modelIndex = vwr.am.cmi;
       int m;
       if (!chk && modelIndex >= 0
-          && (m = vwr.getJmolDataSourceFrame(modelIndex)) >= 0)
+          && (m = vwr.ms.getJmolDataSourceFrame(modelIndex)) >= 0)
         vwr.setCurrentModelIndex(m == modelIndex ? Integer.MIN_VALUE : m);
       return;
     }

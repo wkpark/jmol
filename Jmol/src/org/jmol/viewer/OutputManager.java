@@ -553,9 +553,8 @@ abstract class OutputManager {
     // which will then be posted to a server for a return that allows saving.
     out.setType(type);
     String msg = (type.equals("PDB") || type.equals("PQR") ? vwr
-        .getPdbAtomData(null, out) : type.startsWith("PLOT") ? vwr.ms
-        .getPdbData(modelIndex, type.substring(5), vwr
-            .bsA(), parameters, out) : getCurrentFile ? out
+        .getPdbAtomData(null, out) : type.startsWith("PLOT") ? vwr
+        .getPdbData(modelIndex, type.substring(5), null, parameters, out, true) : getCurrentFile ? out
         .append(vwr.getCurrentFileAsString()).toString() : (String) vwr
         .getFileAsBytes(pathName, out));
     out.closeChannel();

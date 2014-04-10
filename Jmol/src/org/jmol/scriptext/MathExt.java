@@ -864,19 +864,19 @@ public class MathExt implements JmolMathExtension {
         vwr.ms.getAtoms(T.resno, new Integer(args[0].asInt())));
       switch (tok) {
       case T.point:
-        return mp.addXObj(vwr.getHelixData(bs, T.point));
+        return mp.addXObj(getHelixData(bs, T.point));
       case T.axis:
-        return mp.addXObj(vwr.getHelixData(bs, T.axis));
+        return mp.addXObj(getHelixData(bs, T.axis));
       case T.radius:
-        return mp.addXObj(vwr.getHelixData(bs, T.radius));
+        return mp.addXObj(getHelixData(bs, T.radius));
       case T.angle:
-        return mp.addXFloat(((Float) vwr.getHelixData(bs, T.angle))
+        return mp.addXFloat(((Float) getHelixData(bs, T.angle))
             .floatValue());
       case T.draw:
       case T.measure:
-        return mp.addXObj(vwr.getHelixData(bs, tok));
+        return mp.addXObj(getHelixData(bs, tok));
       case T.array:
-        String[] data = (String[]) vwr.getHelixData(bs, T.list);
+        String[] data = (String[]) getHelixData(bs, T.list);
         if (data == null)
           return false;
         return mp.addXAS(data);
@@ -885,6 +885,13 @@ public class MathExt implements JmolMathExtension {
     return false;
   }
 
+  private Object getHelixData(BS bs, int tokType) {
+    int iAtom = bs.nextSetBit(0);
+    return (iAtom < 0 ? "null"
+        : vwr.ms.at[iAtom].group.getHelixData(tokType, 
+        vwr.getQuaternionFrame(), vwr.getInt(T.helixstep)));
+  }
+  
   private boolean evaluateFind(ScriptMathProcessor mp, SV[] args)
       throws ScriptException {
     if (args.length == 0)

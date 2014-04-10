@@ -267,13 +267,6 @@ abstract public class AtomCollection {
     return (i < 0 ? null : at[i].group.getQuaternion(qtype));
   } 
 
-  public Object getHelixData(BS bs, int tokType) {
-    int iAtom = bs.nextSetBit(0);
-    return (iAtom < 0 ? "null"
-        : at[iAtom].group.getHelixData(tokType, 
-        vwr.getQuaternionFrame(), vwr.getInt(T.helixstep)));
-  }
-  
   public int getAtomIndexFromAtomNumber(int atomNumber, BS bsVisibleFrames) {
     //definitely want FIRST (model) not last here
     for (int i = 0; i < ac; i++) {

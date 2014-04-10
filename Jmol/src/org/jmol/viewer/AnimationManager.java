@@ -211,19 +211,20 @@ public class AnimationManager {
     boolean isSameSource = false;
     if (cmi != modelIndex) {
       if (modelCount > 0) {
-        boolean toDataModel = vwr.isJmolDataFrameForModel(modelIndex);
-        boolean fromDataModel = vwr.isJmolDataFrameForModel(cmi);
+        ModelSet ms = vwr.ms;
+        boolean toDataModel = ms.isJmolDataFrameForModel(modelIndex);
+        boolean fromDataModel = ms.isJmolDataFrameForModel(cmi);
         if (fromDataModel)
-          vwr.setJmolDataFrame(null, -1, cmi);
+          ms.setJmolDataFrame(null, -1, cmi);
         if (cmi != -1)
           vwr.saveModelOrientation();
         if (fromDataModel || toDataModel) {
-          ids = vwr.getJmolFrameType(modelIndex) 
+          ids = ms.getJmolFrameType(modelIndex) 
           + " "  + modelIndex + " <-- " 
           + " " + cmi + " " 
-          + vwr.getJmolFrameType(cmi);
+          + ms.getJmolFrameType(cmi);
           
-          isSameSource = (vwr.getJmolDataSourceFrame(modelIndex) == vwr
+          isSameSource = (ms.getJmolDataSourceFrame(modelIndex) == ms
               .getJmolDataSourceFrame(cmi));
         }
       }
@@ -457,14 +458,14 @@ public class AnimationManager {
     int frameDisplayed = 0;
     for (int iframe = firstFrameIndex; iframe != lastFrameIndex; iframe += frameStep) {
       int i = modelIndexForFrame(iframe);
-      if (!vwr.isJmolDataFrameForModel(i)) {
+      if (!vwr.ms.isJmolDataFrameForModel(i)) {
         bsVisibleModels.set(i);
         nDisplayed++;
         frameDisplayed = iframe;
       }
     }
     int i = modelIndexForFrame(lastFrameIndex);
-    if (firstFrameIndex == lastFrameIndex || !vwr.isJmolDataFrameForModel(i)
+    if (firstFrameIndex == lastFrameIndex || !vwr.ms.isJmolDataFrameForModel(i)
         || nDisplayed == 0) {
       bsVisibleModels.set(i);
       if (nDisplayed == 0)

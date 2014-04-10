@@ -1355,7 +1355,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   };
   public static String[] databases = { 
-    "dssr", "http://x3dna.bio.columbia.edu/dssr?id=%FILE&opts=--hl%20--more",
+    "dssr", "http://x3dna.bio.columbia.edu/dssr/?id=%FILE&opts=--hl%20--more",
+    "dssrModel", "http://x3dna.bio.columbia.edu/dssr/?POST?opts=--hl%20--more&model=",
     "ligand", "http://www.rcsb.org/pdb/files/ligand/%FILE.cif",
     "mp", "http://www.materialsproject.org/materials/%FILE/cif",
     "nci", "http://cactus.nci.nih.gov/chemical/structure/%FILE",

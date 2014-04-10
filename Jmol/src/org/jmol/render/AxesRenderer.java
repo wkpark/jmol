@@ -80,7 +80,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
     int modelIndex = vwr.am.cmi;
     // includes check here for background model present
     boolean isUnitCell = (axesMode == AXES.UNITCELL);
-    if (vwr.isJmolDataFrameForModel(modelIndex)
+    if (vwr.ms.isJmolDataFrameForModel(modelIndex)
         && !vwr.ms.getJmolFrameType(modelIndex).equals(
             "plot data"))
       return false;

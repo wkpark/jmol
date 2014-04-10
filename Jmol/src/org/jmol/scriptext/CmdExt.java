@@ -358,8 +358,7 @@ public class CmdExt implements JmolCmdExtension {
           return;
         n = vwr.autoHbond(bs1, bs2, false);
         if (n != Integer.MIN_VALUE)
-          e.report(GT.i(GT._("{0} hydrogen bonds"),
-              Math.abs(n)));
+          e.report(GT.i(GT._("{0} hydrogen bonds"), Math.abs(n)));
         return;
       case T.hydrogen:
         bs1 = (slen == 2 ? null : atomExpressionAt(2));
@@ -382,9 +381,8 @@ public class CmdExt implements JmolCmdExtension {
         checkLength(2);
         if (!chk) {
           vwr.calculateStraightness();
-          vwr.addStateScript(
-              "set quaternionFrame '" + vwr.getQuaternionFrame()
-                  + "'; calculate straightness", false, true);
+          vwr.addStateScript("set quaternionFrame '" + vwr.getQuaternionFrame()
+              + "'; calculate straightness", false, true);
         }
         return;
       case T.structure:
@@ -392,6 +390,11 @@ public class CmdExt implements JmolCmdExtension {
         switch (tokAt(++e.iToken)) {
         case T.ramachandran:
           break;
+        case T.dssr:
+          if (chk)
+            return;
+          e.showString(vwr.getDSSRParser().calculateStructure(vwr));
+          return;
         case T.dssp:
           asDSSP = true;
           break;
@@ -446,8 +449,7 @@ public class CmdExt implements JmolCmdExtension {
         default:
           isFrom = true;
         }
-        bs1 = (e.iToken + 1 < slen ? atomExpressionAt(++e.iToken)
-            : vwr.bsA());
+        bs1 = (e.iToken + 1 < slen ? atomExpressionAt(++e.iToken) : vwr.bsA());
         checkLength(++e.iToken);
         if (!chk)
           vwr.calculateSurface(bs1, (isFrom ? Float.MAX_VALUE : -1));
@@ -5201,7 +5203,7 @@ public class CmdExt implements JmolCmdExtension {
     int modelIndex = vwr.am.cmi;
     if (modelIndex < 0)
       e.errorStr(ScriptError.ERROR_multipleModelsDisplayedNotOK, "plot");
-    modelIndex = vwr.getJmolDataSourceFrame(modelIndex);
+    modelIndex = vwr.ms.getJmolDataSourceFrame(modelIndex);
     int pt = args.length - 1;
     boolean isReturnOnly = (args != st);
     T[] statementSave = st;
@@ -5334,7 +5336,7 @@ public class CmdExt implements JmolCmdExtension {
 
     if (makeNewFrame) {
       stateScript += "plot " + type;
-      int ptDataFrame = vwr.getJmolDataFrameIndex(modelIndex, stateScript);
+      int ptDataFrame = vwr.ms.getJmolDataFrameIndex(modelIndex, stateScript);
       if (ptDataFrame > 0 && tokCmd != T.write && tokCmd != T.show) {
         // no -- this is that way we switch frames. vwr.deleteAtoms(vwr.getModelUndeletedAtomsBitSet(ptDataFrame), true);
         // data frame can't be 0.
@@ -5413,7 +5415,7 @@ public class CmdExt implements JmolCmdExtension {
           parameters);
 
     String data = (type.equals("data") ? "1 0 H 0 0 0 # Jmol PDB-encoded data"
-        : vwr.getPdbData(modelIndex, type, parameters));
+        : vwr.getPdbData(modelIndex, type, null, parameters, null, true));
 
     if (tokCmd == T.show)
       return data;
@@ -5438,7 +5440,7 @@ public class CmdExt implements JmolCmdExtension {
     if (!isOK)
       return "";
     int modelCount = vwr.getModelCount();
-    vwr.setJmolDataFrame(stateScript, modelIndex, modelCount - 1);
+    vwr.ms.setJmolDataFrame(stateScript, modelIndex, modelCount - 1);
     if (tok != T.property)
       stateScript += ";\n" + preSelected;
     StateScript ss = vwr.addStateScript(stateScript, true, false);

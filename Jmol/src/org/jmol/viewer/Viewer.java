@@ -7661,31 +7661,15 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public String getModelCml(BS bs, int nAtomsMax, boolean addBonds) {
-    return ms.getModelCml(bs, nAtomsMax, addBonds);
-  }
-
-  public Object getHelixData(BS bs, int tokType) {
-    return ms.getHelixData(bs, tokType);
+    return getPropertyManager().getModelCml(bs, nAtomsMax, addBonds);
   }
 
   public String getPdbAtomData(BS bs, OC sb) {
-    return ms.getPdbAtomData(bs == null ? bsA() : bs, sb);
-  }
-
-  public boolean isJmolDataFrameForModel(int modelIndex) {
-    return ms.isJmolDataFrameForModel(modelIndex);
+    return getPropertyManager().getPdbAtomData(bs == null ? bsA() : bs, sb);
   }
 
   public boolean isJmolDataFrame() {
     return ms.isJmolDataFrameForModel(am.cmi);
-  }
-
-  public int getJmolDataFrameIndex(int modelIndex, String type) {
-    return ms.getJmolDataFrameIndex(modelIndex, type);
-  }
-
-  public void setJmolDataFrame(String type, int modelIndex, int dataIndex) {
-    ms.setJmolDataFrame(type, modelIndex, dataIndex);
   }
 
   public void setFrameTitle(int modelIndex, String title) {
@@ -7699,14 +7683,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public String getFrameTitle() {
     return ms.getFrameTitle(am.cmi);
-  }
-
-  String getJmolFrameType(int modelIndex) {
-    return ms.getJmolFrameType(modelIndex);
-  }
-
-  public int getJmolDataSourceFrame(int modelIndex) {
-    return ms.getJmolDataSourceFrame(modelIndex);
   }
 
   public void setAtomProperty(BS bs, int tok, int iValue, float fValue,
@@ -8861,9 +8837,10 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         parameters);
   }
 
-  public String getPdbData(int modelIndex, String type, Object[] parameters) {
-    return ms.getPdbData(modelIndex, type, bsA(),
-        parameters, null);
+  public String getPdbData(int modelIndex, String type, BS bsAtoms, Object[] parameters, OC oc, boolean getStructure) {
+    // plot command
+    return getPropertyManager().getPdbData(modelIndex, type, bsAtoms == null ? bsA() : bsAtoms,
+        parameters, oc, getStructure);
   }
 
   public BS getGroupsWithin(int nResidues, BS bs) {
@@ -9466,7 +9443,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
     if (atomExpression instanceof BS)
       return excludeAtoms((BS) atomExpression, false);
-
     getScriptManager();
     return getAtomBitSetEval(eval, atomExpression);
   }

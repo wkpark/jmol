@@ -36,6 +36,7 @@ import java.util.Map;
 
 
 import javajs.api.GenericCifDataParser;
+import javajs.api.GenericLineReader;
 import javajs.api.Interface;
 import javajs.api.GenericZipTools;
 import javajs.api.ZInputStream;
@@ -54,7 +55,18 @@ import javajs.api.ZInputStream;
  * 
  * 
  */
-public class Rdr {
+public class Rdr implements GenericLineReader {
+
+  BufferedReader reader;
+
+  public Rdr(BufferedReader reader) {
+    this.reader = reader;
+  }
+  
+  @Override
+  public String readNextLine() throws Exception {
+    return reader.readLine();
+  }
 
   public static GenericCifDataParser getCifParser() {
     return (GenericCifDataParser) Interface.getInterface("javajs.util.CifDataParser");

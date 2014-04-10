@@ -6,6 +6,7 @@ import java.util.Map;
 import org.jmol.java.BS;
 
 import javajs.util.Lst;
+import javajs.util.OC;
 import javajs.util.P3;
 import org.jmol.viewer.Viewer;
 
@@ -36,5 +37,12 @@ public interface JmolPropertyManager {
 
   String getModelExtract(BS atomBitSet, boolean doTransform, boolean isModelKit,
                          String type);
+
+  String getPdbAtomData(BS bs, OC sb);
+
+  String getPdbData(int modelIndex, String type, BS bsA, Object[] parameters,
+                    OC oc, boolean addStructure);
+
+  String getModelCml(BS bs, int nAtomsMax, boolean addBonds);
 
 }

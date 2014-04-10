@@ -8591,6 +8591,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public void removeFunction(String name) {
+    name = name.toLowerCase();
     JmolScriptFunction function = getFunction(name);
     if (function == null)
       return;

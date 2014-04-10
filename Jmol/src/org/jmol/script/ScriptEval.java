@@ -1015,6 +1015,7 @@ public class ScriptEval extends ScriptExpr {
     // 
     if (function == null) {
       // general function call
+      name = name.toLowerCase();
       function = vwr.getFunction(name);
       if (function == null)
         return null;

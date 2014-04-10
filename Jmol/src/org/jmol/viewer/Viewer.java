@@ -9677,7 +9677,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
   private JmolDSSRParser dssrParser;  
   public JmolDSSRParser getDSSRParser() {
-    return (dssrParser == null ? (dssrParser = (JmolDSSRParser) Interface.getOption("dssr.DSSRParser")) : dssrParser);
+    return (dssrParser == null ? (dssrParser = (JmolDSSRParser) Interface.getOption("dssx.DSSRParser")) : dssrParser);
   }
 
 

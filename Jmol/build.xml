@@ -285,12 +285,8 @@ Bob Hanson hansonr@stolaf.edu 11/26/2013
            debug="${debug}" deprecation="${deprecation}"
            optimize="${optimization}" source="1.6" target="1.6">
       <classpath refid="project.class.path" />
-      <!-- removed all CDK based code, use BioClipse instead -->
-      <exclude name="org/openscience/jmol/app/JmolEditBus.java"/>
-      <exclude name="org/openscience/jmol/io/ShelXReader.java"/>
-      <exclude name="org/jmol/adapter/cdk/CdkJmolAdapter.java"/>
-      <!-- removed all JCamp code, not finished -->
-      <exclude name="org/jmol/jcamp/**/*.java"/>
+      <exclude name="astex/**/*.java"/>
+      <exclude name="java_cup/**/*.java"/>
     </javac>
     <copy todir="${classes.dir}" >
       <fileset dir="src">

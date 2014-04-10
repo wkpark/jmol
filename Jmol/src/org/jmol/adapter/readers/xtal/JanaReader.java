@@ -265,8 +265,11 @@ public class JanaReader extends AtomSetCollectionReader {
       }
       float o_site = atom.foccupancy = floats[2];
       setAtomCoordXYZ(atom, floats[3], floats[4], floats[5]);
+      System.out.println(floats[3]);
+      if (Float.isNaN(floats[3]))
+        continue;
       asc.addAtom(atom);
-      if (modDim == 0)
+      if (modDim == 0 || line.length() < 60)
         continue;
       String label = ";" + atom.atomName;
       boolean haveSpecialOcc = (getInt(60, 61) > 0);

@@ -2625,6 +2625,11 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         g.dsspCalcHydrogen, setStructure);
   }
 
+  private JmolDSSRParser dssrParser;  
+  public JmolDSSRParser getDSSRParser() {
+    return (dssrParser == null ? (dssrParser = (JmolDSSRParser) Interface.getOption("dssx.DSSRParser")) : dssrParser);
+  }
+
   @Override
   public AtomIndexIterator getSelectedAtomIterator(BS bsSelected,
                                                    boolean isGreaterOnly,
@@ -9675,10 +9680,5 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public Object getApplet() {
     return applet;
   }
-  private JmolDSSRParser dssrParser;  
-  public JmolDSSRParser getDSSRParser() {
-    return (dssrParser == null ? (dssrParser = (JmolDSSRParser) Interface.getOption("dssx.DSSRParser")) : dssrParser);
-  }
-
 
 }

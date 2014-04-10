@@ -406,7 +406,8 @@ public class PropertyManager implements JmolPropertyManager {
         ptr--;
         for (pt = 0; pt < v.size(); pt++) {
           Object o = v.get(pt);
-          if (o instanceof Map<?, ?> || (o instanceof SV)
+          if (o instanceof Map<?, ?> || o instanceof Lst<?> 
+          || (o instanceof SV)
               && (((SV) o).getMap() != null || ((SV) o).getList() != null))
             extractProperty(o, args, ptr, v2);
         }

@@ -393,7 +393,7 @@ public class CmdExt implements JmolCmdExtension {
         case T.dssr:
           if (chk)
             return;
-          e.showString(vwr.getDSSRParser().calculateStructure(vwr));
+          e.showString(vwr.getDSSRParser().calculateStructure(vwr, bs1));
           return;
         case T.dssp:
           asDSSP = true;

@@ -61,22 +61,16 @@ public class DSSRParser implements JmolDSSRParser {
   }
   
   @Override
-  public String process(Map<String, Object> info, GenericLineReader reader)
+  public String process(Map<String, Object> info, GenericLineReader reader, String line0)
       throws Exception {
     info.put("dssr", dssr = new Hashtable<String, Object>());
     htTemp = new Hashtable<String, Object>();
     this.reader = reader;
     message = new SB();
+    line = (line0 == null ? "" : line0.trim());
     // output the header section with credits
-    line = rd();
-    if (line.indexOf("***") >= 0) {
-      addMessage(rd().trim());
-      rd();
-    } else {
-      addMessage("\nDSSR: a software program for Defining the Secondary");
-    }
-    addMessage(line.trim());
-    addMessage(rd().trim());
+    skipTo("DSSR:");
+    addToMessages(null);
     boolean haveHeader = false;
     while (rd() != null) {
       if (line.startsWith("List of")) {
@@ -135,14 +129,31 @@ public class DSSRParser implements JmolDSSRParser {
           addMessage("DSSRParser ignored: " + line);
           break;
         }
-      } else if (!haveHeader && line.startsWith("Date and time") 
-          || line.startsWith("Secondary structures in dot-bracket")) {
+      } else if (!haveHeader && line.startsWith("Date and time")) {
         haveHeader = true;
-        addToMessages();        
+        addToMessages("");        
+      } else if (line.startsWith("Secondary structures in dot-bracket")) {
+        readStructure();
       }
     }
     dssr.put("summary", message.toString());
     return message.toString();
+  }
+
+  /*
+>1ehz nts=18 [whole]
+TAACGGTTA&TAACCGTTA
+.((((((((&)))))))).
+   */
+  private void readStructure() throws Exception {
+    addMessage("");        
+    addMessage(line);
+    addMessage(rd());
+    dssr.put("seq", rd());
+    addMessage(line);
+    dssr.put("dbn", rd());
+    addToMessages(line);
+    addMessage("");        
   }
 
   /*
@@ -175,10 +186,11 @@ List of 39 H-bonds
     }
   }
 
-  private void addToMessages() throws Exception {
-    addMessage("");
-    while (line.indexOf("****") < 0) {
-      addMessage(line);
+  private void addToMessages(String s) throws Exception {
+    if (s != null)
+      addMessage(s);
+    while (line != null && line.length() > 0 && line.indexOf("****") < 0) {
+      addMessage(s == null ? line.trim() : line);
       rd();
     }
   }
@@ -216,7 +228,8 @@ List of 39 H-bonds
       String[] tokens = PT.getTokens(rd());
       data.put("helix", tokens[1]);
       data.put("stemCount", Integer.valueOf(tokens[3]));
-      data.put("basePairs", getLinkNTList(tokens[5], "stem"));
+      data.put("stems", tokens[5]);
+      data.put("basePairs", getLinkNTList(tokens[5], "stem", null));
       list.addLast(data);
     }
   }
@@ -279,7 +292,7 @@ List of 1 kissing loop interaction
     } else if (line.indexOf("hairpin") >= 0) {
       readSets("hairpinLoops", n, 1, 3);
     } else if (line.indexOf("kissing") >= 0) {
-      readInfo("kissingLoops", n);
+      readSets("kissingLoops", n, -1, -1);
     }
   }
 
@@ -324,30 +337,71 @@ List of 38 bulges
     readSets("bulges", n, 2, 2);
   }
 
-  private void readSets(String key, int n, int nway, int ptnts) throws Exception {
-    Lst<Map<String, Object>>sets = newList(key);
+  private void readSets(String key, int n, int nway, int ptnts)
+      throws Exception {
+    Lst<Map<String, Object>> sets = newList(key);
     boolean isJunction = (nway == 0);
+    boolean isKissingLoop = (ptnts == -1);
+    boolean isHairpinLoop = (nway == 1);
     for (int i = 0; i < n; i++) {
-      Map<String, Object>set = new Hashtable<String, Object>(); 
+      Map<String, Object> set = new Hashtable<String, Object>();
       String[] tokens = PT.getTokens(rd());
       set.put("id", tokens[0]);
-      set.put("dssrType", tokens[1]);
-      if (isJunction)
-        nway = PT.parseInt(tokens[1].substring(0, tokens[1].indexOf("-")));
-      set.put("nway", Integer.valueOf(nway));
-      set.put("n", Integer.valueOf(PT.trim(tokens[ptnts],";").substring(4)));
-      set.put("linkedBy", getLinkNTList(tokens[ptnts + 4], ""));
-      set.put("basePairs", readNTList(null, null, nway + 1));
+      htTemp.put(key + tokens[0], set);
+      Lst<Object> lst = new Lst<Object>();
+      set.put("desc", line);
+      if (isKissingLoop) {
+        //    1 stem #8 between hairpin loops #1 and #3
+        //    0   1  2    3       4       5    6   7  8
+        getNTs(getLinkNTList(tokens[2], "stem", null), lst, true, false);
+        getNTs(getLinkNTList(tokens[6], "hairpinLoops", null), lst, false, false);
+        getNTs(getLinkNTList(tokens[8], "hairpinLoops", null), lst, false, false);
+        set.put("nts", lst);
+        lst = new Lst<Object>();
+        getNTs(getLinkNTList(tokens[2], "stem", null), lst, true, true);
+        getNTs(getLinkNTList(tokens[6], "hairpinLoops", null), lst, false, true);
+        getNTs(getLinkNTList(tokens[8], "hairpinLoops", null), lst, false, true);
+        set.put("resnos", lst);
+      } else {
+        set.put("dssrType", tokens[1]);
+        if (isJunction)
+          nway = PT.parseInt(tokens[1].substring(0, tokens[1].indexOf("-")));
+        set.put("nway", Integer.valueOf(nway));
+        set.put("n", Integer.valueOf(PT.trim(tokens[ptnts], ";").substring(4)));
+        set.put("linkedBy", getLinkNTList(tokens[ptnts + 4], "stem", lst));        
+        set.put("basePairs", readNTList(key + "#" + (i + 1), null, nway + 1));
+      }
       sets.addLast(set);
     }
   }
 
-  private Lst<Object> getLinkNTList(String linkStr, String type) {
+  @SuppressWarnings("unchecked")
+  private void getNTs(Lst<Object> linkNTList, Lst<Object> lst, boolean isStem, boolean isResno) {
+    Lst<Object> o = (Lst<Object>) linkNTList.get(0);
+    int n = o.size();
+    String key = (!isResno ? "nt" : isStem ? "res" : "resno");
+    Lst<Object> nts = (isStem ? new Lst<Object>() : null);
+    for (int i = 0; i < n; i++) {
+      Map<String, Object> m = (Map<String, Object>) o.get(i);
+      if (isStem) {
+        nts.addLast(m.get(key + "1"));
+        nts.addLast(m.get(key + "2"));
+      } else {
+        lst.addLast(m.get(key + "s"));
+      }
+    }
+    if (isStem) {
+      lst.addLast(nts);
+    }
+  }
+
+  private Lst<Object> getLinkNTList(String linkStr, String type, Lst<Object> list) {
     //  [#3,#4]
-    Lst<Object> list = new Lst<Object>();
+    if (list == null)
+      list = new Lst<Object>();
     String[] tokens = PT.getTokens(PT.replaceAllCharacters(linkStr, "[,]"," "));
     for (int i = 0; i < tokens.length; i++)
-      list.addLast(htTemp.get(type + tokens[i]));
+      list.addLast(htTemp.get((tokens[i].startsWith("-") ? "" : type) + tokens[i]));
     return list;
   }
 
@@ -594,10 +648,13 @@ List of 233 multiplets
   }
 
   private Lst<Map<String, Object>> readNTList(String ntsKey, String type, int n) throws Exception {
+    boolean isHairpin = (n == 2);
     Lst<Map<String, Object>>list = newList(type);
     if (ntsKey != null)
       htTemp.put(ntsKey, list);
-    for (int i = 0; i < n; i++)
+    if (isHairpin)
+      rd();
+    for (int i = (isHairpin ? 1 : 0); i < n; i++)
       list.addLast(getNTList());
     return list;
   }
@@ -623,7 +680,7 @@ List of 233 multiplets
       }
       
       list.addLast(data);
-      Lst<Map<String, Object>>pairs = new Lst<Map<String, Object>>();    
+      Lst<Map<String, Object>>pairs = newList(null);    
       data.put("basePairs", pairs);
       Lst<Object> ntList = new Lst<Object>();
       htTemp.put(type + "#" + (i + 1), ntList);
@@ -722,7 +779,8 @@ List of 233 multiplets
   }
 
   private String rd() throws Exception {
-    return (line = reader.readNextLine());    
+    line = reader.readNextLine();
+    return line;
   }
 
   
@@ -730,8 +788,13 @@ List of 233 multiplets
   
   @Override
   public BS getAtomBits(Viewer vwr, String key, Object dssr, Map<String, BS> dssrCache) {
-    if (key.indexOf("Pairs") < 0 && key.indexOf("linkedBy") < 0
-        && key.indexOf("multiplets") < 0 && key.indexOf("singleStrand") < 0)
+    // Check to see if we have already asked for pairs or the data type
+    // does not have the "basePairs" key
+    if (key.indexOf("Pairs") < 0 
+        && key.indexOf("kissingLoops") < 0 
+        && key.indexOf("linkedBy") < 0
+        && key.indexOf("multiplets") < 0 
+        && key.indexOf("singleStrand") < 0)
       key += ".basePairs";
     if (key.indexOf(".res") < 0)
       key += ".res*";
@@ -818,10 +881,17 @@ List of 233 multiplets
     return "DSSR reports " + list.size() + " hydrogen bonds";
   }
 
-  @SuppressWarnings("unchecked")
   @Override
-  public String calculateStructure(Viewer vwr) {
-    int modelIndex = vwr.getVisibleFramesBitSet().nextSetBit(0);
+  public String calculateStructure(Viewer vwr, BS bsAtoms) {
+    BS bs = vwr.ms.getModelBS(bsAtoms == null ? vwr.bsA() : bsAtoms, true);
+    String s = "";
+    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
+      s += getDSSRForModel(vwr, i);
+    return s;
+  }
+
+  @SuppressWarnings("unchecked")
+  private String getDSSRForModel(Viewer vwr, int modelIndex) {
     Map<String, Object> info = null;
     String out = null;
     while (true) {
@@ -841,7 +911,7 @@ List of 233 multiplets
         Logger.info("fetching " + name + "[pdb data]");
         String data = vwr.getPdbAtomData(bs, null);
         data = vwr.getFileAsString(name + data, false);
-        vwr.getDSSRParser().process(info, new Rdr(Rdr.getBR(data)));
+        process(info, new Rdr(Rdr.getBR(data)), null);
       } catch (Exception e) {
         info = null;
         out = "" + e;

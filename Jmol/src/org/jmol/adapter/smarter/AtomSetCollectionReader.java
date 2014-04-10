@@ -1652,7 +1652,7 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
   }
 
   protected void processDSSR(GenericLineReader reader) throws Exception {
-    appendLoadNote(((JmolDSSRParser) Interface.getOption("dssr.DSSRParser")).process(
+    appendLoadNote(((JmolDSSRParser) Interface.getOption("dssx.DSSRParser")).process(
         asc.getAtomSetAuxiliaryInfo(Integer.MAX_VALUE), reader));
     
   }

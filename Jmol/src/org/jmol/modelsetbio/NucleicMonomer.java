@@ -549,11 +549,21 @@ public boolean isCrossLinked(Group g) {
     bps.addLast(bp);
   }
 
+  public void setGroup1(char g) {
+    group1 = g;
+  }
+  
   public Lst<BasePair> getBasePairs() {
     if (!((NucleicPolymer) bioPolymer).isDssrSet)
       bioPolymer.model.ms.vwr.getDSSRParser().setAllDSSRParametersForModel(bioPolymer.model.ms.vwr, bioPolymer.model.modelIndex);    
     return bps;
   }
 
+  @Override
+  protected char getGroup1b () {
+    if (!((NucleicPolymer) bioPolymer).isDssrSet)
+      bioPolymer.model.ms.vwr.getDSSRParser().setAllDSSRParametersForModel(bioPolymer.model.ms.vwr, bioPolymer.model.modelIndex);
+    return group1;
+  }
 
 }

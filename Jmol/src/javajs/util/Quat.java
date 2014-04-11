@@ -56,9 +56,9 @@ public class Quat {
     return q1;
   }
 
-  public static Quat newVA(T3 pt, float theta) {
+  public static Quat newVA(T3 v, float theta) {
     Quat q = new Quat();
-    q.setTA(pt, theta);
+    q.setTA(v, theta);
     return q;
   }
 

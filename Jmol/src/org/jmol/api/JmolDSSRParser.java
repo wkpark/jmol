@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.jmol.java.BS;
 import org.jmol.modelset.Bond;
+import org.jmol.modelset.Group;
 import org.jmol.viewer.Viewer;
 
 import javajs.api.GenericLineReader;

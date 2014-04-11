@@ -1978,12 +1978,12 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     ligandModelSet.put(id, Boolean.TRUE);
     if (ligandModels == null)
       ligandModels = new Hashtable<String, Object>();
-    Object model = ligandModels.get(id);
+    Object model = (terminator == null ? ligandModels.get(id) : null);
     String data;
     String fname = null;
     if (model instanceof Boolean)
       return null;
-    if (model == null)
+    if (model == null && terminator == null)
       model = ligandModels.get(id + suffix);
     boolean isError = false;
     if (model == null) {
@@ -9258,6 +9258,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public void cacheClear() {
     // script: reset cache
     fm.cacheClear();
+    ligandModelSet = null;
+    ligandModels = null;
   }
 
   /**

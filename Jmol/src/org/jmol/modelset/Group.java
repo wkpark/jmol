@@ -48,6 +48,7 @@ import java.util.Map;
 public class Group {
 
   protected int groupIndex;
+  public char group1; // set by DSSR
   
   public int getGroupIndex() {
     return groupIndex;
@@ -112,9 +113,16 @@ public class Group {
   }
 
   public final char getGroup1() {
-    if (groupID >= JC.predefinedGroup1Names.length)
-      return '?';
-    return JC.predefinedGroup1Names[groupID];
+    
+    return (groupID < JC.predefinedGroup1Names.length 
+        ? JC.predefinedGroup1Names[groupID] : 
+          group1 > 1 ? group1 
+              : group1 == 1 ? '?' 
+                  : (group1 = getGroup1b()));
+  }
+
+  protected char getGroup1b() {
+    return '?';
   }
 
   public final short getGroupID() {

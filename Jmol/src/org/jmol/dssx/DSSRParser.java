@@ -40,6 +40,7 @@ import org.jmol.modelset.HBond;
 import org.jmol.modelsetbio.BasePair;
 import org.jmol.modelsetbio.BioModel;
 import org.jmol.modelsetbio.BioPolymer;
+import org.jmol.modelsetbio.Monomer;
 import org.jmol.modelsetbio.NucleicMonomer;
 import org.jmol.modelsetbio.NucleicPolymer;
 import org.jmol.script.T;
@@ -342,7 +343,6 @@ List of 38 bulges
     Lst<Map<String, Object>> sets = newList(key);
     boolean isJunction = (nway == 0);
     boolean isKissingLoop = (ptnts == -1);
-    boolean isHairpinLoop = (nway == 1);
     for (int i = 0; i < n; i++) {
       Map<String, Object> set = new Hashtable<String, Object>();
       String[] tokens = PT.getTokens(rd());
@@ -572,7 +572,10 @@ List of 50 lone WC/wobble pairs
       data.put("nt2", fix(tokens[2], true));
       data.put("res1", fix(tokens[1], false));
       data.put("res2", fix(tokens[2], false));
-      data.put("bp", tokens[3]);
+      String bp = tokens[3];
+      data.put("bp", bp);
+      data.put("g1", bp.substring(0, 1));
+      data.put("g2", bp.substring(2, 3));
       // helix can be missing name
       //    1 0.C2769          0.A2805          C-A              00-n/a    t.S c.-m
 
@@ -829,35 +832,58 @@ List of 233 multiplets
   @SuppressWarnings("unchecked")
   @Override
   public void setAllDSSRParametersForModel(Viewer vwr, int modelIndex) {
-    Object info = vwr.ms.getInfo(modelIndex, "dssr");
-    if (info != null)
-      info = ((Map<String, Object>) info).get("basePairs");
-    if (info == null) {
+    Map<String, Object> dssr = (Map<String, Object>) vwr.ms.getInfo(modelIndex,
+        "dssr");
+    Lst<Map<String, Object>> lst = (dssr == null ? null
+        : (Lst<Map<String, Object>>) dssr.get("basePairs"));
+    Lst<Map<String, Object>> lst1 = (dssr == null ? null
+        : (Lst<Map<String, Object>>) dssr.get("singleStranded"));
+
+    if (lst == null && lst1 == null) {
       BioModel m = (BioModel) vwr.ms.am[modelIndex];
       int n = m.getBioPolymerCount();
       for (int i = n; --i >= 0;) {
         BioPolymer bp = m.getBioPolymer(i);
-        if (bp.isNucleic())
+        if (bp.isNucleic()) {
           ((NucleicPolymer) bp).isDssrSet = true;
+          Monomer[] monomers = bp.monomers;
+          for (int ii = bp.monomerCount; --ii >= 0;)
+            ((NucleicMonomer) monomers[ii]).setGroup1('?');
+        }
       }
       return;
     }
-    Lst<Map<String, Object>> lst = (Lst<Map<String, Object>>) info;
     Map<String, BS> htChains = new Hashtable<String, BS>();
     BS bs = new BS();
-    for (int i = lst.size(); --i >= 0;) {
-      Map<String, Object> bpInfo = lst.get(i);
-      new BasePair(bpInfo, setPhos(vwr, 1, bpInfo, bs, htChains), setPhos(vwr,
-          2, bpInfo, bs, htChains));
+    if (lst != null) {
+      for (int i = lst.size(); --i >= 0;) {
+        Map<String, Object> bpInfo = lst.get(i);
+        new BasePair(bpInfo, setPhos(vwr, 1, bpInfo, bs, htChains), setPhos(
+            vwr, 2, bpInfo, bs, htChains));
+      }
     }
+    if (lst1 != null)
+      for (int i = lst1.size(); --i >= 0;) {
+        Map<String, Object> bp = lst1.get(i);
+        String seq = (String) bp.get("seq");
+        Lst<Object> resnos = (Lst<Object>) bp.get("resnos");
+        for (int j = resnos.size(); --j >= 0;)
+          setRes(vwr, (String) resnos.get(j), bs, htChains, seq.charAt(j));   
+      }
   }
 
   private NucleicMonomer setPhos(Viewer vwr, int n, Map<String, Object> bp,
                        BS bs, Map<String, BS> htChains) {
+    return setRes(vwr, (String) bp.get("res" + n), bs, htChains, ((String)bp.get("g" + n)).charAt(0));
+  }
+
+  private NucleicMonomer setRes(Viewer vwr, String res, BS bs, Map<String, BS> htChains,
+                      char g) {
     bs.clearAll();
-    getBsAtoms(vwr, bp.get("res" + n), bs, htChains);
+    getBsAtoms(vwr, res, bs, htChains);
     NucleicMonomer group = (NucleicMonomer) vwr.ms.at[bs.nextSetBit(0)].getGroup();
     ((NucleicPolymer) group.getBioPolymer()).isDssrSet = true;
+    group.setGroup1(g);
     return group;
   }
 

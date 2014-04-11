@@ -776,8 +776,8 @@ List of 233 multiplets
     if (ptn >= 0)
       chain = chain.substring(ptn + 1)
           + (withName ? "." + chain.substring(0, ptn) : "");
-    int pt2 = (ch == '/' ? pt - 1 : pt);
-    return (withName ? "[" + nt.substring(pt1 + 1, pt2 + 1) + "]" : "")
+    int pt2 = (ch == '/' ? pt : pt + 1);
+    return (withName ? "[" + nt.substring(pt1 + 1, pt2) + "]" : "")
         + nt.substring(pt + 1) + ":" + chain;
   }
 

@@ -11,6 +11,7 @@ com/sparshui/server/*.java
 
 javajs/api/*.java
 javajs/awt/*.java
+javajs/img/*.java
 javajs/export/*.java
 javajs/util/*.java
 

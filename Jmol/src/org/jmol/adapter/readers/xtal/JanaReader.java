@@ -34,10 +34,12 @@ import org.jmol.api.Interface;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.java.BS;
 
+import javajs.util.P3;
 import javajs.util.Rdr;
 import javajs.util.Lst;
 import javajs.util.Matrix;
 import javajs.util.PT;
+import javajs.util.T3;
 
 import org.jmol.util.Logger;
 
@@ -237,14 +239,38 @@ public class JanaReader extends AtomSetCollectionReader {
     String id = name.substring(0, ipt);
     ipt = id.lastIndexOf("/");
     id = id.substring(ipt + 1);
-    BufferedReader r = Rdr.getBR((String) vwr.getLigandModel(id,
-        name, "_file", "----"));
+    BufferedReader r = Rdr.getBR((String) vwr.getLigandModel(id, name, "_file",
+        "----"));
     if (readM40Floats(r).startsWith("command"))
       readM40WaveVectors(r);
     BS newSub = getSubSystemList();
     int iSub = (newSub == null ? 0 : 1);
     int nAtoms = -1;
+    boolean allowAltLoc = (iSub == 0);
+    // read atom/group list
+    //    0    5    0    1
+    //    8    2
+    //    8    2
+    //   20    2
+    //    3    1
+    //    3    1
+    int nFree = (int) floats[0];
+    int nGroups = (int) floats[1];
+    Lst<Atom> molAtoms = null;
+    Hashtable<String, T3> pts = null;
+    String molName = null;
+    P3 pt0 = null;
+    if (nGroups > 0) {
+      Logger.info("JanaReader found " + nFree + " free atoms and " + nGroups
+          + " groups");
+      molAtoms = new Lst<Atom>();
+      pts = new Hashtable<String, T3>();
+      ms.setGroupPoints(pts);
+      if (allowAltLoc)
+        asc.setAtomSetAuxiliaryInfo("altLocsAreBondSets", Boolean.TRUE);
+    }
     while (readM40Floats(r) != null) {
+      // skip molecule part; we don't need to know this.
       while (line != null
           && (line.length() == 0 || line.charAt(0) == ' ' || line.charAt(0) == '-')) {
         readM40Floats(r);
@@ -254,7 +280,8 @@ public class JanaReader extends AtomSetCollectionReader {
       nAtoms++;
       Atom atom = new Atom();
       Logger.info(line);
-      atom.atomName = line.substring(0, 9).trim();
+      name = line.substring(0, 9).trim();
+      atom.atomName = name;
       if (!filterAtom(atom, 0))
         continue;
       if (iSub > 0) {
@@ -265,13 +292,18 @@ public class JanaReader extends AtomSetCollectionReader {
       }
       float o_site = atom.foccupancy = floats[2];
       setAtomCoordXYZ(atom, floats[3], floats[4], floats[5]);
-      System.out.println(floats[3]);
-      if (Float.isNaN(floats[3]))
+      if (Float.isNaN(o_site)) {
+        // new group - note, this does not allow for "C1" as a reference atoms
+        molAtoms.clear();
+        molName = name;
+        pt0 = atom;
         continue;
-      asc.addAtom(atom);
-      if (modDim == 0 || line.length() < 60)
+      }
+      if (modDim == 0) {
+        asc.addAtom(atom);
         continue;
-      String label = ";" + atom.atomName;
+      }
+      String label = ";" + name;
       boolean haveSpecialOcc = (getInt(60, 61) > 0);
       boolean haveSpecialDisp = (getInt(61, 62) > 0);
       boolean haveSpecialUij = (getInt(62, 63) > 0);
@@ -316,8 +348,8 @@ public class JanaReader extends AtomSetCollectionReader {
       // However, first we need to adjust o_0 because the value given in m40 is 
       // divided by the number of operators giving this site.
       if (o_0 != 1) {
-        ms.addModulation(null, "J_O#0;" + atom.atomName, new double[] { o_site,
-            o_0, 0 }, -1);
+        ms.addModulation(null, "J_O#0;" + name,
+            new double[] { o_site, o_0, 0 }, -1);
       }
       atom.foccupancy = o_0 * o_site;
       int wv = 0;
@@ -334,7 +366,7 @@ public class JanaReader extends AtomSetCollectionReader {
           a1 = floats[1]; // cos (second on line)
         }
         id = "O_" + wv + "#0" + label;
-        pt = new double[] {a1, a2, 0};
+        pt = new double[] { a1, a2, 0 };
         if (a1 != 0 || a2 != 0)
           ms.addModulation(null, id, pt, -1);
       }
@@ -348,7 +380,7 @@ public class JanaReader extends AtomSetCollectionReader {
           for (int k = 0; k < 3; k++)
             if (floats[k] != 0)
               ms.addModulation(null, "D_S#" + LABELS.charAt(k) + label,
-                  new double[] {c, w, floats[k]}, -1);
+                  new double[] { c, w, floats[k] }, -1);
         } else {
           // Fourier
           addSinCos(j, "D_", label, r);
@@ -370,9 +402,46 @@ public class JanaReader extends AtomSetCollectionReader {
             for (int k = 0, p = 0; k < 6; k++, p += 3)
               ms.addModulation(null,
                   "U_" + (j + 1) + "#" + U_LIST.substring(p, p + 3) + label,
-                  new double[] {data[1][k], data[0][k], 0}, -1);
+                  new double[] { data[1][k], data[0][k], 0 }, -1);
           }
         }
+      }
+      if (nGroups > 0 && name.startsWith("pos#")) {
+        int n = molAtoms.size();
+        if (n == 0 || !allowAltLoc)
+          continue;
+        Logger.info(name + " Molecule " + molName + " has " + n + " atoms");
+        String script = "";
+        String ext = "_" + name.substring(4);
+        char charLoc = name.charAt(4);
+        P3 pt1 = P3.newP(pt0);
+        //atom.anisoBorU are the rotation/translation terms.
+        // TODO -- consider rotation;
+        pt1.x += atom.anisoBorU[3];
+        pt1.y += atom.anisoBorU[4];
+        pt1.z += atom.anisoBorU[5];
+        for (int i = 0; i < n; i++) {
+          // process molecule atoms
+          Atom a = molAtoms.get(i);
+          String newName = a.atomName;
+          if (a.altLoc == '\0') {
+            newName += ext;
+          } else {
+            a = asc.newCloneAtom(a);
+            newName = newName.substring(0, newName.lastIndexOf("_")) + ext;
+          }
+          a.altLoc = charLoc;
+          script += ", " + newName;
+          ms.copyModulations(null, label, ";" + newName);
+          pts.put(a.atomName = newName, pt1);
+        }
+        if (thisSub != 0)
+          Logger.info("Don't know what to do if subsystems AND groups!");
+        script = "@" + molName + ext + script.substring(1);
+        addJmolScript(script);
+        appendLoadNote(script);
+      } else {
+        molAtoms.addLast(asc.addAtom(atom));
       }
     }
     r.close();

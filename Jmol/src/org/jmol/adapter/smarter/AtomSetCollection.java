@@ -24,7 +24,6 @@
 
 package org.jmol.adapter.smarter;
 
-import javajs.api.GenericLineReader;
 import javajs.util.AU;
 import javajs.util.Lst;
 
@@ -35,7 +34,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.jmol.api.Interface;
-import org.jmol.api.JmolDSSRParser;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.java.BS;
 
@@ -484,7 +482,7 @@ public class AtomSetCollection {
     return n;
   }
 
-  Atom newCloneAtom(Atom atom) throws Exception {
+  public Atom newCloneAtom(Atom atom) throws Exception {
     Atom clone = atom.getClone();
     addAtom(clone);
     return clone;

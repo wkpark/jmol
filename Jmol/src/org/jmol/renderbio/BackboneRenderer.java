@@ -76,6 +76,9 @@ public class BackboneRenderer extends BioShapeRenderer {
       return;
     int xA = atomA.sX, yA = atomA.sY, zA = atomA.sZ;
     int xB = atomB.sX, yB = atomB.sY, zB = atomB.sZ;
+    int mad = this.mad;
+    if (max == 1000)
+      mad = mad >> 1;
     if (mad < 0) {
       g3d.drawLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
     } else {

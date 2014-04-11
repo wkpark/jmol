@@ -2075,6 +2075,7 @@ abstract public class ModelCollection extends BondCollection {
     }
     AtomIndexIterator iter = getSelectedAtomIterator(null, false, false, true,
         false);
+    boolean noAltLocBonding = true;
     for (int i = i0; i >= 0 && i < ac; i = (isAll ? i + 1 : bsCheck
         .nextSetBit(i + 1))) {
       boolean isAtomInSetA = (isAll || bsA.get(i));
@@ -2091,6 +2092,7 @@ abstract public class ModelCollection extends BondCollection {
               - 1;
           continue;
         }
+        noAltLocBonding = getInfoB(modelIndex, "altLocsAreBondSets");
       }
       // Covalent bonds
       float myBondingRadius = atom.getBondingRadius();
@@ -2109,7 +2111,8 @@ abstract public class ModelCollection extends BondCollection {
         // BOTH must be excluded in order to ignore bonding
         if (!isNearInSetA && !isNearInSetB
             || !(isAtomInSetA && isNearInSetB || isAtomInSetB && isNearInSetA)
-            || isFirstExcluded && bsExclude.get(atomIndexNear))
+            || isFirstExcluded && bsExclude.get(atomIndexNear)
+            || noAltLocBonding && atom.altloc != atomNear.altloc)
           continue;
         short order = getBondOrderFull(myBondingRadius,
             atomNear.getBondingRadius(), iter.foundDistance2(),

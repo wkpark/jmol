@@ -52,6 +52,7 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
   private String strop;
   private boolean isSubsystem;
   private Matrix tFactor;
+  private P3 ptAtom;
 
   @Override
   public float getScale() {
@@ -119,7 +120,8 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
    * GammaIinv and tau.
    * 
    * @param id
-   * @param r
+   * @param ptAtom
+   * @param r0 TODO
    * @param modDim
    * @param mods
    * @param gammaE
@@ -131,10 +133,13 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
    * 
    */
 
-  public ModulationSet set(String id, P3 r, int modDim, Lst<Modulation> mods,
-                           M3 gammaE, Matrix[] factors, int iop,
-                           SymmetryInterface symmetry) {
+  public ModulationSet set(String id, P3 ptAtom, T3 r0, int modDim,
+                           Lst<Modulation> mods, M3 gammaE, Matrix[] factors,
+                           int iop, SymmetryInterface symmetry) {
     this.id = id + "_" + symmetry.getSpaceGroupName();
+    this.ptAtom = P3.newP(ptAtom);
+    this.r0 = P3.newP(r0); // could be a group position
+    Logger.info("ModulationSet atom " + id + " at " + r0);
     strop = symmetry.getSpaceGroupXyz(iop, false);
     this.modDim = modDim;
     this.mods = mods;
@@ -157,10 +162,10 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
     Matrix rsvs = symmetry.getOperationRsVs(iop);
     gammaIinv = rsvs.getSubmatrix(3,  3,  modDim,  modDim).inverse();
     sI = rsvs.getSubmatrix(3, 3 + modDim, modDim, 1);
-    r0 = P3.newP(r);
-    tau = gammaIinv.mul(sigma.mul(Matrix.newT(r, true)).sub(sI));
+    
+    tau = gammaIinv.mul(sigma.mul(Matrix.newT(r0, true)).sub(sI));
     if (Logger.debuggingHigh)
-      Logger.debug("MODSET create r=" + Escape.eP(r) + " si=" + Escape.e(sI.getArray())
+      Logger.debug("MODSET create r=" + Escape.eP(r0) + " si=" + Escape.e(sI.getArray())
               + " ginv=" + gammaIinv.toString().replace('\n', ' '));
     
     t = new Matrix(null, modDim, 1);
@@ -314,7 +319,7 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
   public Object getModulation(String type, T3 t456) {
     getModTemp();
     if (type.equals("D")) {
-      return P3.newP(t456 == null ? r0 : modTemp.calculate(t456, false));
+      return P3.newP(t456 == null ? ptAtom : modTemp.calculate(t456, false));
     }
     return null;
   }
@@ -341,6 +346,7 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
     modTemp.modDim = modDim;
     modTemp.gammaIinv = gammaIinv;
     modTemp.sigma = sigma;
+    modTemp.ptAtom = ptAtom;
     modTemp.r0 = r0;
     modTemp.symmetry = symmetry;
     modTemp.t = t;

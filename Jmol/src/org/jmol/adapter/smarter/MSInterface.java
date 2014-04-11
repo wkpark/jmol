@@ -7,6 +7,7 @@ import org.jmol.api.SymmetryInterface;
 import javajs.util.Lst;
 import javajs.util.Matrix;
 import javajs.util.P3;
+import javajs.util.T3;
 
 
 /**
@@ -36,5 +37,9 @@ public interface MSInterface {
   SymmetryInterface getSymmetryFromCode(String spaceGroupOperationCode);
 
   boolean addLatticeVector(Lst<float[]> lattvecs, String substring) throws Exception;
+
+  void copyModulations(Map<String, double[]> map, String label, String newLabel);
+
+  void setGroupPoints(Map<String, T3> pts);
 
 }

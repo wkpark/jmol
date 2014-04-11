@@ -759,6 +759,8 @@ List of 233 multiplets
   /**
    * A.T8 --> [T]8:A N1@A.G2673 --> [G]2673:A.N1
    * 
+   * A.US3/4 --> [US3]4:A
+   *    
    * @param nt
    * @param withName
    * @return Jmol atom residue as [name]resno:chain or just resno:chain
@@ -767,13 +769,15 @@ List of 233 multiplets
     int pt1 = nt.indexOf(".");
     String chain = nt.substring(0, pt1);
     int pt = nt.length();
-    while (Character.isDigit(nt.charAt(--pt))) {
+    char ch;
+    while (Character.isDigit(ch = nt.charAt(--pt))) {
     }
     int ptn = chain.indexOf("@");
     if (ptn >= 0)
       chain = chain.substring(ptn + 1)
           + (withName ? "." + chain.substring(0, ptn) : "");
-    return (withName ? "[" + nt.substring(pt1 + 1, pt + 1) + "]" : "")
+    int pt2 = (ch == '/' ? pt - 1 : pt);
+    return (withName ? "[" + nt.substring(pt1 + 1, pt2 + 1) + "]" : "")
         + nt.substring(pt + 1) + ":" + chain;
   }
 

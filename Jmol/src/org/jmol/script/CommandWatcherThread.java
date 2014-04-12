@@ -61,8 +61,14 @@ public class CommandWatcherThread extends JmolThread {
         break;
       } catch (Exception ie) {
         String s = "script processing ERROR:\n\n" + ie.toString();
-        for (int i = 0; i < ie.getStackTrace().length; i++) {
-          s += "\n" + ie.getStackTrace()[i].toString();
+        /**
+         * @j2sNative
+         * 
+         */
+        {
+          for (int i = 0; i < ie.getStackTrace().length; i++) {
+            s += "\n" + ie.getStackTrace()[i].toString();
+          }
         }
         Logger.warn("CommandWatcher Exception! " + s);
         break;

@@ -107,6 +107,7 @@ public class CifReader extends AtomSetCollectionReader {
   private boolean lookingForPDB = true;
   private boolean isCourseGrained;
   private String latticeType = null;
+  private int modDim;
 
   @Override
   public void initializeReader() throws Exception {
@@ -221,7 +222,7 @@ public class CifReader extends AtomSetCollectionReader {
           || key.equals("_chem_comp_formula")) {
         processChemicalInfo("formula");
       } else if (key.equals("_cell_modulation_dimension")) {
-        initializeMSCIF(data);
+        modDim = parseIntStr(data);
       } else if (key.equals("_citation_title")) {
         appendLoadNote("TITLE: " + parser.fullTrim(data));
       } else if (key.startsWith("_cell_")) {
@@ -253,11 +254,15 @@ public class CifReader extends AtomSetCollectionReader {
         readSingleAtom();
       } else if (pr != null) {
         pr.processEntry();
-      } else if (mr != null) {
-          mr.processEntry();
+      } else if (modDim > 0) {
+          getModulationReader().processEntry();
       }
     }
     return true;
+  }
+
+  private MSCifInterface getModulationReader() throws Exception {
+    return (mr == null ? initializeMSCIF() : mr);
   }
 
   private void readSingleAtom() {
@@ -277,12 +282,12 @@ public class CifReader extends AtomSetCollectionReader {
     isCourseGrained = pr.initialize(this);
   }
 
-  private void initializeMSCIF(String data) throws Exception {
+  private MSCifInterface initializeMSCIF() throws Exception {
     if (mr == null)
       ms = mr = (MSCifInterface) Interface
           .getOption("adapter.readers.cif.MSCifReader");
-    addLatticeVectors();
-    modulated = (mr.initialize(this, data) > 0);
+    modulated = (mr.initialize(this, modDim) > 0);
+    return mr;
   }
 
   private String fixKey(String key) {
@@ -328,9 +333,9 @@ public class CifReader extends AtomSetCollectionReader {
   }
 
   @Override
-  public void doPreSymmetry() {
-    if (mr != null)
-      mr.setModulation(false);
+  public void doPreSymmetry() throws Exception {
+    if (modDim > 0)
+      getModulationReader().setModulation(false);
   }
 
   @Override
@@ -343,8 +348,9 @@ public class CifReader extends AtomSetCollectionReader {
       asc.setCheckSpecial(false);
     boolean doCheckBonding = doCheckUnitCell && !isPDB;
     SymmetryInterface sym = applySymTrajASCR();
-    if (mr != null) {
-      mr.setModulation(true);
+    if (modDim > 0) {
+      addLatticeVectors();
+      getModulationReader().setModulation(true);
       mr.finalizeModulation();
     }
     if (auditBlockCode != null && auditBlockCode.contains("REFRNCE")
@@ -549,8 +555,8 @@ public class CifReader extends AtomSetCollectionReader {
     if (lookingForPDB && !isPDBX && key.indexOf("_pdb") >= 0)
       initializeMMCIF();
     
-    if (mr != null)
-      switch (mr.processLoopBlock()) {
+    if (modDim > 0)
+      switch (getModulationReader().processLoopBlock()) {
       case 0:
         break;
       case -1:
@@ -1078,12 +1084,8 @@ public class CifReader extends AtomSetCollectionReader {
       }
       asc.addAtomWithMappedName(atom);
       ac++;
-      if (modulated) {
-        //        if (subid != null)
-        //          mr.addSubsystem(subid, null, atom.atomName);
-        if (siteMult != 0)
-          atom.vib = V3.new3(siteMult, 0, Float.NaN);
-      }
+      if (modDim > 0 && siteMult != 0)
+        atom.vib = V3.new3(siteMult, 0, Float.NaN);
     }
     if (isPDB)
       setIsPDB();

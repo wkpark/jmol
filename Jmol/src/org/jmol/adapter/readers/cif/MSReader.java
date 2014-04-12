@@ -89,7 +89,7 @@ public class MSReader implements MSInterface {
   }
 
   @Override
-  public int initialize(AtomSetCollectionReader r, String data)
+  public int initialize(AtomSetCollectionReader r, int modDim)
       throws Exception {
     cr = r;
     modCoord = r.checkFilterKey("MODCOORD");
@@ -102,7 +102,7 @@ public class MSReader implements MSInterface {
     modSelected = r.parseIntStr("" + r.getFilter("MOD="));
     modVib = r.checkFilterKey("MODVIB"); // then use MODULATION ON  to see modulation
     modAverage = r.checkFilterKey("MODAVE");
-    setModDim(r.parseIntStr(data));
+    setModDim(modDim);
     return modDim;
   }
 

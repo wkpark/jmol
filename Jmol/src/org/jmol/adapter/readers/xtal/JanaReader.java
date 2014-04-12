@@ -157,9 +157,8 @@ public class JanaReader extends AtomSetCollectionReader {
     readM40Data();
     if (lattvecs != null && lattvecs.size() > 0)
       asc.getSymmetry().addLatticeVectors(lattvecs);
-    if (ms != null) {
+    if (ms != null)
       ms.setModulation(false);
-    }
     applySymmetryAndSetTrajectory();
     adjustM40Occupancies();
     if (ms != null) {
@@ -177,7 +176,7 @@ public class JanaReader extends AtomSetCollectionReader {
   private void ndim() throws Exception {
     ms = (MSInterface) Interface
         .getOption("adapter.readers.cif.MSReader");
-    modDim = ms.initialize(this, "" + (parseIntStr(getTokens()[1]) - 3));
+    modDim = ms.initialize(this, (parseIntStr(getTokens()[1]) - 3));
   }
 
   private int qicount;
@@ -277,6 +276,8 @@ public class JanaReader extends AtomSetCollectionReader {
     //    Natm2 Number of atoms in the 2nd molecule of the 1st composite part
     //    Npos2 Number of positions of the 2nd molecule of the 1st composite part
 
+    // except Jana2006 may have changed this:
+    
     int nFree = 0, nGroups = 0;
     boolean isAxial = false;
     BS newSub = (thisSub == 0 ? null : new BS());
@@ -362,8 +363,11 @@ public class JanaReader extends AtomSetCollectionReader {
         posName = name;
       if (posName == null) {
         readModulation(r, atom);
-        molAtoms.addLast(asc.addAtom(atom));
-        freePositions.addLast(P3.newP(atom));
+        asc.addAtom(atom);
+        if (molAtoms != null) {
+          molAtoms.addLast(atom);
+          freePositions.addLast(P3.newP(atom));
+        }
       } else {
         if (molAtoms.size() == 0 || !allowAltLoc)
           continue;
@@ -410,8 +414,8 @@ public class JanaReader extends AtomSetCollectionReader {
     V3 vTrans = V3.new3(atom.anisoBorU[3], atom.anisoBorU[4], atom.anisoBorU[5]);
     Quat qR =phi.mulQ(chi).mulQ(psi);
     System.out.println(qR);
-    P3 ptMod = new P3();
-    ptMod.setT(ptRef);
+    P3 ptMod = P3.newP(ptRef);
+    ptMod.add(vTrans);
     //getModelPosition(ptRef, qR, vTrans, isImproper, ptMod);
     for (int i = 0; i < n; i++) {
       // process molecule atoms

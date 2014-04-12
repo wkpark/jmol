@@ -1110,7 +1110,7 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
     return sym;
   }
 
-  protected void doPreSymmetry() {
+  protected void doPreSymmetry() throws Exception {
   }
 
   @SuppressWarnings("unchecked")

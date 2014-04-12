@@ -138,7 +138,9 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
                            int iop, SymmetryInterface symmetry) {
     this.id = id + "_" + symmetry.getSpaceGroupName();
     this.ptAtom = P3.newP(ptAtom);
-    this.r0 = P3.newP(r0); // could be a group position
+    if (r0 == null)
+      r0 = ptAtom;
+    this.r0 = P3.newP(r0); // could be a group position or null
     Logger.info("ModulationSet atom " + id + " at " + r0);
     strop = symmetry.getSpaceGroupXyz(iop, false);
     this.modDim = modDim;

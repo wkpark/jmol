@@ -26,7 +26,7 @@ public interface MSInterface {
 
   double[] getMod(String key);
 
-  int initialize(AtomSetCollectionReader r, String data) throws Exception;
+  int initialize(AtomSetCollectionReader r, int modDim) throws Exception;
 
   void setModulation(boolean isPost);
 

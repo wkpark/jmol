@@ -553,7 +553,7 @@ public class ScriptManager implements JmolScriptManager {
         return;
       }
       if (!fileName.toLowerCase().endsWith(".spt")) {
-        String type = getFileTypeName(fileName);
+        String type = getDragDropFileTypeName(fileName);
         if (type == null) {
           type = JmolBinary.determineSurfaceTypeIs(vwr
               .getBufferedInputStream(fileName));
@@ -588,7 +588,7 @@ public class ScriptManager implements JmolScriptManager {
     }
   }
 
-  private String getFileTypeName(String fileName) {
+  private String getDragDropFileTypeName(String fileName) {
     int pt = fileName.indexOf("::");
     if (pt >= 0)
       return fileName.substring(0, pt);

@@ -73,7 +73,7 @@ abstract class SlaterReader extends BasisFunctionReader {
    */
   protected final void addSlater(int iAtom, int a, int b, int c, int d, 
                         double zeta, float coef) {
-    System.out.println ("SlaterReader " + slaters.size() + ": " + iAtom + " " + a + " " + b +  " " + c + " " + d + " " + zeta + " " + coef);
+    //System.out.println ("SlaterReader " + slaters.size() + ": " + iAtom + " " + a + " " + b +  " " + c + " " + d + " " + zeta + " " + coef);
     slaters.addLast(new SlaterData(iAtom, a, b, c, d, zeta, coef));
   }
 

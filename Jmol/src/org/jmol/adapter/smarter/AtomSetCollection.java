@@ -1164,8 +1164,6 @@ public class AtomSetCollection {
         + energyString);
     setAtomSetAuxiliaryInfo("EnergyString", energyString);
     setAtomSetAuxiliaryInfo("Energy", Float.valueOf(value));
-    if (Float.isNaN(Float.valueOf(value).floatValue()))
-      System.out.println("testing here");
     setAtomSetModelProperty("Energy", "" + value);
   }
 

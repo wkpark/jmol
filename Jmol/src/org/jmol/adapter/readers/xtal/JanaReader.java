@@ -839,7 +839,7 @@ public class JanaReader extends AtomSetCollectionReader {
     int n = data.length / 6;
     V3 vCart = V3.newV(ptRel);
     symmetry.toCartesian(vCart, true);
-    System.out.println(label + " " + Escape.eAF(data));
+    //System.out.println(label + " " + Escape.eAF(data));
     Quat qrrev = qR.inv();
     for (int i = 0, p = 0; i < n; i++, p+= 6) {
       checkFourier(i);
@@ -864,7 +864,7 @@ public class JanaReader extends AtomSetCollectionReader {
 
   private void addRotMod(String key, float ccos, float csin, T3 pt) {
     double[] v = ms.getMod(key);
-    System.out.println(" addrotmod " + v[0]/csin + " " + v[1]/ccos);
+    //System.out.println(" addrotmod " + v[0]/csin + " " + v[1]/ccos);
     
     double[] v2 = setRigidBodyPhase(key, new double[] {v[0] + csin,  v[1] + ccos, 0}, pt);
     ms.addModulation(null, key, v2, -1);

@@ -568,12 +568,10 @@ public class CsfReader extends MopacSlaterReader {
       mo.put("energy", Float.valueOf(energy[iMo]));
       mo.put("occupancy", Float.valueOf(occupancy[iMo]));
       mo.put("coefficients", list[iMo]);
-      /*      
-       System.out.print("MO " + iMo + " : ");
-       for (int i = 0; i < nOrbitals; i++)
-       System.out.print(" " + list[iMo][i]);
-       System.out.println();
-       */
+//       System.out.print("MO " + iMo + " : ");
+//       for (int i = 0; i < nOrbitals; i++)
+//       System.out.print(" " + list[iMo][i]);
+//       System.out.println();
       setMO(mo);
     }
     setMOs("eV");

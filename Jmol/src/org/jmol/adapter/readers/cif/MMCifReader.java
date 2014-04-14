@@ -774,7 +774,7 @@ _pdbx_struct_oper_list.vector[3]
         if (assemblyIdAtoms != null) {
           BS bs = assemblyIdAtoms.get(id);
           if (bs != null) {
-            System.out.println(id + " " + bs.cardinality());
+            //System.out.println(id + " " + bs.cardinality());
             bsAll.or(bs);
           }
         } else if (isCourseGrained) {

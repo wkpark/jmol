@@ -622,6 +622,8 @@ public class M3 extends M34 implements Serializable {
   public void setAsBallRotation(float responseFactor, float dx, float dy) {
     float r = (float) Math.sqrt(dx * dx + dy * dy);
     float th =  r * responseFactor;
+    if (th == 0)
+      return;
     float c = (float) Math.cos(th);
     float s = (float) Math.sin(th);
     float nx = -dy / r;

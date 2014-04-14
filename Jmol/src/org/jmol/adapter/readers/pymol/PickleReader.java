@@ -133,7 +133,7 @@ class PickleReader {
         l = getObjects(getMark());
         if (inNames && markCount == 2){// && l.size() > 0 && l.get(0) == thisName) {
           int pt = (int) binaryDoc.getPosition();
-          System.out.println(" " + thisName + " " + filePt + " " + (pt - filePt));
+          //System.out.println(" " + thisName + " " + filePt + " " + (pt - filePt));
           Lst<Object> l2 = new Lst<Object>();
           l2.addLast(Integer.valueOf(filePt));
           l2.addLast(Integer.valueOf(pt - filePt));
@@ -378,7 +378,7 @@ class PickleReader {
     Object o = memo.get(Integer.valueOf(i));
     if (o == null)
       return o;
-    System.out.println("retrieving string " + o + " at " + binaryDoc.getPosition());
+    //System.out.println("retrieving string " + o + " at " + binaryDoc.getPosition());
     retrieveCount++;
     return o;
   }

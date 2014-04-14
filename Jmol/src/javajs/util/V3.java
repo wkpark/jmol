@@ -56,7 +56,7 @@ public class V3 extends T3 {
    * @param v2
    *        the second vector
    */
-  public final void cross(V3 v1, V3 v2) {
+  public final void cross(T3 v1, T3 v2) {
     set(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y
         - v1.y * v2.x);
   }

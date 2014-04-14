@@ -226,7 +226,7 @@ public class MoldenReader extends MopacSlaterReader {
         slater[2] = gaussianPtr;
         slater[3] = nPrimitives;
         int n = getDfCoefMaps()[type].length;
-        System.out.println("adding " + n + " coefficients type " + JmolAdapter.getQuantumShellTag(type) + " for atom " + atomIndex);
+        //System.out.println("adding " + n + " coefficients type " + JmolAdapter.getQuantumShellTag(type) + " for atom " + atomIndex);
         nCoef += n;
         for (int ip = nPrimitives; --ip >= 0;) {
           // Read ip primitives, each containing an exponent and one (s,p,d,f)

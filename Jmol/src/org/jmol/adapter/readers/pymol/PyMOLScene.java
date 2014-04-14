@@ -452,7 +452,7 @@ class PyMOLScene implements JmolSceneGenerator {
       offsetObjects();
       finalizeObjects();
     } catch (Exception e) {
-      System.out.println("PyMOLScene exception " + e);
+      Logger.info("PyMOLScene exception " + e);
       if (!vwr.isJS)
         e.printStackTrace();
     }

@@ -153,7 +153,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
       return asc;
     } catch (Throwable e) {
       try{ 
-        System.out.println(e.toString());
+        Logger.info(e.toString());
       } catch (Exception ee) {
         Logger.error(e.toString());
       }

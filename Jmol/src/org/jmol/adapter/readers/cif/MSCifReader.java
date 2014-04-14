@@ -296,13 +296,14 @@ public class MSCifReader extends MSReader implements MSCifInterface {
         case FWV_U_TENS:
           axis = field.toUpperCase();
           break;
-        case DEPR_FO_COS:
-        case DEPR_FD_COS:
-        case DEPR_FU_COS:
-        case FWV_OCC_COS:
-        case FWV_DISP_COS:
-        case FWV_U_COS:
+          
+        case FWV_OCC_SIN:
         case OCC_CRENEL_C:
+        case FWV_DISP_SIN:
+        case FWV_U_SIN:
+        case DEPR_FU_SIN:
+        case DEPR_FD_SIN:
+        case DEPR_FO_SIN:
           pt[2] = 0;
           //$FALL-THROUGH$
         case WV_X:
@@ -321,23 +322,25 @@ public class MSCifReader extends MSReader implements MSCifInterface {
           pt[0] = cr.parseFloatStr(field);
           pt[2] = 1;
           break;
-        case DEPR_FO_SIN:
-        case FWV_OCC_SIN:
+        case DEPR_FO_COS:
+        case FWV_OCC_COS:
           axis = "0";
           //$FALL-THROUGH$
         case WV_Y:
         case FWV_Y:
         case FWV_Q2_COEF:
-        case FWV_DISP_SIN:
         case FWV_DISP_PHASE:
         case FWV_OCC_PHASE:
-        case FWV_U_SIN:
         case FWV_U_PHASE:
         case OCC_CRENEL_W:
         case DISP_SAW_AY:
         case JANA_OCC_ABS_O_0:
-        case DEPR_FU_SIN:
-        case DEPR_FD_SIN:
+          
+        case FWV_DISP_COS:
+        case FWV_U_COS:
+        case DEPR_FD_COS:
+        case DEPR_FU_COS:
+
           pt[1] = cr.parseFloatStr(field);
           break;
         case WV_Z:

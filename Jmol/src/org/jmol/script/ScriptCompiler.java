@@ -2740,6 +2740,7 @@ public class ScriptCompiler extends ScriptTokenParser {
       // select c3^a
       while (Character.isLetterOrDigit(ch = charAt(ichT)) 
               || ch == '_' 
+              || ch == '*' 
               || ch == '?' 
               || ch == '~' 
               || ch == '\''

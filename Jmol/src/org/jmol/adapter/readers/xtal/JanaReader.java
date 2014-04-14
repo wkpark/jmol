@@ -26,6 +26,7 @@ package org.jmol.adapter.readers.xtal;
 import java.io.BufferedReader;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
@@ -44,7 +45,9 @@ import javajs.util.PT;
 import javajs.util.T3;
 import javajs.util.V3;
 
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.Modulation;
 
 /**
  * A reader for Jana M50+M40 file pairs.  *
@@ -157,8 +160,6 @@ public class JanaReader extends AtomSetCollectionReader {
     readM40Data();
     if (lattvecs != null && lattvecs.size() > 0)
       asc.getSymmetry().addLatticeVectors(lattvecs);
-    if (ms != null)
-      ms.setModulation(false);
     applySymmetryAndSetTrajectory();
     adjustM40Occupancies();
     if (ms != null) {
@@ -227,6 +228,14 @@ public class JanaReader extends AtomSetCollectionReader {
   //  0.000000
   //
 
+  private String molName;
+  private Lst<Atom> molAtoms;
+  private Lst<Integer> molTtypes;
+  private Lst<P3> freePositions;
+  private boolean molHasTLS;
+  private Quat qR;
+
+
   /**
    * read the M40 file
    * 
@@ -277,7 +286,7 @@ public class JanaReader extends AtomSetCollectionReader {
     //    Npos2 Number of positions of the 2nd molecule of the 1st composite part
 
     // except Jana2006 may have changed this:
-    
+
     int nFree = 0, nGroups = 0;
     boolean isAxial = false;
     BS newSub = (thisSub == 0 ? null : new BS());
@@ -286,102 +295,123 @@ public class JanaReader extends AtomSetCollectionReader {
       nFree = getInt(pt, pt + 5);
       nGroups = getInt(pt + 5, pt + 10);
       isAxial = (getInt(pt + 15, pt + 20) == 1);
-      if (nGroups != 0 && i > 0)
+      if (nGroups != 0 && i > 0) {
         throw new Exception(
             "Jmol cannot read rigid body M40 files for composites");
+      }
       if (newSub != null)
         newSub.set(n = n + nFree);
     }
     iSub = (newSub == null ? 0 : 1);
     int nAtoms = -1;
-    boolean allowAltLoc = (iSub == 0);
-    Lst<Atom> molAtoms = null;
-    Lst<P3> freePositions = null;
-    Hashtable<String, T3> pts = null;
-    String molName = null;
+    //Hashtable<String, T3> pts = null;
     String refAtomName = null;
     int refType = 0;
     P3 pt0 = null;
     if (nGroups > 0) {
       Logger.info("JanaReader found " + nFree + " free atoms and " + nGroups
           + " groups");
+      molName = null;
       molAtoms = new Lst<Atom>();
-      pts = new Hashtable<String, T3>();
-      freePositions = new Lst<P3>();
-      ms.setGroupPoints(pts);
-      if (allowAltLoc)
+      molTtypes = new Lst<Integer>();
+      //pts = new Hashtable<String, T3>();
+      // ms.setGroupPoints(pts);
+      if (thisSub == 0)
         asc.setAtomSetAuxiliaryInfo("altLocsAreBondSets", Boolean.TRUE);
     }
-    while (readM40Floats(r) != null) {
-      while (line != null
-          && (line.length() == 0 || line.charAt(0) == ' ' || line.charAt(0) == '-')) {
-        // skip entry for a filtered atom
-        readM40Floats(r);
-      }
-      if (line == null)
-        break;
+    
+    // note that we are skipping scale, overall isotropic temperature factor, and extinction parameters
+    
+    while (skipToNextAtom(r) != null) {
       nAtoms++;
       Atom atom = new Atom();
       Logger.info(line);
       atom.atomName = name = line.substring(0, 9).trim();
-      if (!filterAtom(atom, 0))
-        continue;
-      if (iSub > 0) {
-        if (newSub.get(nAtoms))
-          iSub++;
-        atom.altLoc = ("" + iSub).charAt(0);
-        //mr.addSubsystem("" + iSub, null, atom.atomName);
-      }
+      boolean isRefAtom = name.equals(refAtomName);
       atom.foccupancy = floats[2];
-      setAtomCoordXYZ(atom, floats[3], floats[4], floats[5]);
-      if (Float.isNaN(floats[2])) {
+      boolean isJanaMolecule = Float.isNaN(atom.foccupancy);
+      if (isJanaMolecule) {
         // new "molecule" group
         refType = getInt(10, 11);
         // IR The type of the reference point 
         // (0=explicit, 1=gravity centre, 2=geometry centre)
-        //if (refType != 0)
-         // throw new Exception(
-          //    "Jmol can only read rigid body groups with explicit references (not point groups)");
+        String pointGroup = getStr(12, 18);
+
+        // see http://en.wikipedia.org/wiki/Crystallographic_point_group
+        if (pointGroup.length() > 0 && !pointGroup.equals("1")) {
+          throw new Exception("Jmol cannot process M40 files with molecule positions based on point-group symmetry.");
+        }
         refAtomName = null;
         if (Float.isNaN(floats[4]))
-          refAtomName = line.substring(28, 37).trim();
+          refAtomName = getStr(28, 37);
         else
-          pt0 = P3.newP(atom);
+          pt0 = P3.new3(floats[3], floats[4], floats[5]);
         molName = name;
         molAtoms.clear();
-        freePositions.clear();
+        molTtypes.clear();
+        molHasTLS = false;
         continue;
       }
-      if (modDim == 0) {
-        asc.addAtom(atom);
-        continue;
-      }
-      String posName = null;
-      if (name.equals(refAtomName))
-        pt0 = P3.newP(atom);
-      else if (name.startsWith("pos#"))
-        posName = name;
+      boolean isExcluded = false;
+      String posName = (name.startsWith("pos#") ? name : null);
       if (posName == null) {
-        readModulation(r, atom);
-        asc.addAtom(atom);
-        if (molAtoms != null) {
-          molAtoms.addLast(atom);
-          freePositions.addLast(P3.newP(atom));
+        if (!filterAtom(atom, 0)) {
+          if (!isRefAtom)
+            continue;
+          isExcluded = true;
         }
+        setAtomCoordXYZ(atom, floats[3], floats[4], floats[5]);
+        if (isRefAtom) {
+          pt0 = P3.newP(atom);
+          if (isExcluded)
+            continue;
+        }
+        asc.addAtom(atom);
+        if (iSub > 0) {
+          if (newSub.get(nAtoms))
+            iSub++;
+          atom.altLoc = ("" + iSub).charAt(0);
+        }
+        readModulation(r, atom, null, null, false);
+        if (molAtoms != null)
+          molAtoms.addLast(atom);
       } else {
-        if (molAtoms.size() == 0 || !allowAltLoc)
+        if (molAtoms.size() == 0)
           continue;
-        processPosition(r, molName, posName, atom, molAtoms, freePositions,
-            pt0, pts, isAxial);
+        processPosition(r, posName, atom, pt0, isAxial);
       }
     }
-    r.close();
   }
 
-  private void processPosition(BufferedReader r, String molName,
-                               String posName, Atom atom, Lst<Atom> molAtoms, Lst<P3> freePositions,
-                               T3 ptRef, Hashtable<String, T3> pts, boolean isAxial)
-      throws Exception {
+  private String skipToNextAtom(BufferedReader r) throws Exception {
+    while (readM40Floats(r) != null
+        && (line.length() == 0 || line.charAt(0) == ' ' || line.charAt(0) == '-')) {
+    }
+    return line;
+  }
+
+  /**
+   * We process the Pos#n record here. This involves cloning the free atoms,
+   * translating and rotating them to the proper locations, and copying the
+   * modulations. Jmol uses the alternative location PDB option (%1, %2,...) to
+   * specify the group, enabling the Jmol command DISPLAY configuration=1, for
+   * example. We also set a flag to prevent autobonding between alt-loc sets.
+   * 
+   * At this point we only support systType=1 (basic coordinates)
+   * 
+   * @param r
+   * @param posName
+   * @param atom
+   * @param ptRef
+   * @param isAxial
+   * @throws Exception
+   */
+  private void processPosition(BufferedReader r, String posName, Atom atom,
+                               T3 ptRef, boolean isAxial) throws Exception {
+
+    // read the Pos# line.
+
+    atom.atomName = molName + "_" + posName;
     char altLoc = (posName.length() == 5 ? posName.charAt(4)
         : (char) (55 + parseIntStr(posName.substring(4))));
     // this does not seem to be quite right
@@ -389,59 +419,96 @@ public class JanaReader extends AtomSetCollectionReader {
     // atoms that have different modulations but 
     // are really different true molecules, not just different groups
     // no obvious fix for this
-    boolean isImproper = (getInt(10, 11) == -1); // "sign" of rotation
-    int systType = getInt(13, 14); 
+    boolean isImproper = (getInt(9, 11) == -1); // "sign" of rotation
+    int systType = getInt(13, 14);
+    P3 rm = (systType == 0 ? null : new P3());
+    P3 rp = (systType == 0 ? null : new P3());
+
     // Type of the local coordinate system. 
     // 0 if the basic crystallographic setting is used. 
     // 1 if the local system for the model molecule is defined 
     //   explicitly
     // 2 if an explicit choice is used also for the actual position.  
-    if (systType != 0)
+    if (systType != 0) {
       throw new Exception(
-          "Jmol can only read rigid body groups with explicit references (not point groups)");
-    readModulation(r, atom);
+          "Jmol can only read rigid body groups with basic crystallographic settings.");
+    }
+
+    // read the modulation --  atom.anisoBorU will be the rotation/translation terms.
+    float[] rotData = readModulation(r, atom, rm, rp, true);
+
+    // generate R and t in r' = R(r - rho) + rho + t
+    // where rho is the model reference position.
+
     String name = atom.atomName;
     int n = molAtoms.size();
     Logger.info(name + " Molecule " + molName + " has " + n + " atoms");
     String script = "";
-    String ext = "_" + name.substring(4);
-    //atom.anisoBorU are the rotation/translation terms.   
-    //  isAxial: Z Y X (Z first)
+    String ext = "_" + posName.substring(4);
+    //  isAxial: X Y Z (X first)
     // notAxial: Z X Z
-    Quat phi = Quat.newAA(A4.newVA(V3.new3(0, 0, 1), (float)(atom.anisoBorU[0] / 180* Math.PI)));
-    Quat chi = Quat.newAA(A4.newVA(isAxial ? V3.new3(0, 1, 0) : V3.new3(1, 0, 0), (float)(atom.anisoBorU[1] / 180* Math.PI)));
-    Quat psi = Quat.newAA(A4.newVA(isAxial ? V3.new3(1, 0, 0) : V3.new3(0, 0, 1), (float)(atom.anisoBorU[2] / 180* Math.PI)));
-    V3 vTrans = V3.new3(atom.anisoBorU[3], atom.anisoBorU[4], atom.anisoBorU[5]);
-    Quat qR =phi.mulQ(chi).mulQ(psi);
-    System.out.println(qR);
-    P3 ptMod = P3.newP(ptRef);
-    ptMod.add(vTrans);
-    //getModelPosition(ptRef, qR, vTrans, isImproper, ptMod);
+    Quat phi = Quat.newAA(A4.newVA(V3.new3(0, 0, 1),
+        (float) (atom.anisoBorU[0] / 180 * Math.PI)));
+    Quat chi = Quat.newAA(A4.newVA(
+        isAxial ? V3.new3(0, 1, 0) : V3.new3(1, 0, 0),
+        (float) (atom.anisoBorU[1] / 180 * Math.PI)));
+    Quat psi = Quat.newAA(A4.newVA(
+        isAxial ? V3.new3(1, 0, 0) : V3.new3(0, 0, 1),
+        (float) (atom.anisoBorU[2] / 180 * Math.PI)));
+    V3 vTrans = V3
+        .new3(atom.anisoBorU[3], atom.anisoBorU[4], atom.anisoBorU[5]);
+    qR = phi.mulQ(chi).mulQ(psi);
+
+    // generate the modulation point for this group
+
+    // process atoms
+    P3 ptRel = new P3();
     for (int i = 0; i < n; i++) {
-      // process molecule atoms
       Atom a = molAtoms.get(i);
       String newName = a.atomName;
-      if (a.altLoc == '\0') {
+      if (a.altLoc == '\0' && a.insertionCode == '\0') {
         newName += ext;
+        if (i == 0)
+          freePositions = new Lst<P3>();
+        freePositions.addLast(P3.newP(a));
       } else {
         a = asc.newCloneAtom(a);
         a.setT(freePositions.get(i));
         newName = newName.substring(0, newName.lastIndexOf("_")) + ext;
       }
-      pts.put(a.atomName = newName, ptMod);
-      System.out.println(a.atomName + " 1 " + a);
-      getModelPosition(ptRef, qR, vTrans, isImproper, a);
-      System.out.println(a.atomName + " 2 " + a);
-      a.altLoc = altLoc;
+      a.atomName = newName;
+      getAtomPosition(ptRef, qR, vTrans, isImproper, a);
+      if (thisSub == 0)
+        a.altLoc = altLoc;
+      else
+        a.insertionCode = altLoc;
       script += ", " + newName;
-      ms.copyModulations(null, ";" + posName, ";" + newName);
+      // we define dFrac as a - pt
+      ptRel.sub2(a, ptRef);
+      copyModulations(";" + atom.atomName, ";" + newName, ptRel);
+      if (rotData != null)
+        setRigidBodyRotations(";" + newName, ptRel, rotData);
     }
+
+    // generate a script that will define the model name as an atom selection
+
     script = "@" + molName + ext + script.substring(1);
     addJmolScript(script);
     appendLoadNote(script);
   }
 
-  private void getModelPosition(T3 ptRef, Quat qR, V3 vTrans,
+  /**
+   * The model position is calculated as
+   * 
+   *  r' = (+/-)R(r - rho) + rho + t
+   * 
+   * @param ptRef      rho
+   * @param qR         R
+   * @param vTrans     t
+   * @param isImproper 
+   * @param pt         return value
+   */
+  private void getAtomPosition(T3 ptRef, Quat qR, V3 vTrans,
                                 boolean isImproper, P3 pt) {
     P3 rho = P3.newP(ptRef);
     getSymmetry().toCartesian(rho, true);
@@ -455,46 +522,60 @@ public class JanaReader extends AtomSetCollectionReader {
     pt.add(vTrans);
   }
 
-  private void readModulation(BufferedReader r, Atom atom) throws Exception {
+  private float[] readModulation(BufferedReader r, Atom atom, P3 rm, P3 rp,
+                                  boolean isPos) throws Exception {
     String label = ";" + atom.atomName;
-    boolean haveSpecialOcc = (getInt(60, 61) > 0);
-    boolean haveSpecialDisp = (getInt(61, 62) > 0);
-    boolean haveSpecialUij = (getInt(62, 63) > 0);
-    int nOcc = getInt(65, 68);
+    int tType = (isPos ? -1 : getInt(13, 14));
+    if (!isPos && molTtypes != null)
+      molTtypes.addLast(Integer.valueOf(tType));
+    boolean haveSpecialOcc = getFlag(60);
+    boolean haveSpecialDisp = getFlag(61);
+    boolean haveSpecialUij = getFlag(62);
+    int nOcc = getInt(65, 68); // could be -1
     int nDisp = getInt(68, 71);
     int nUij = getInt(71, 74);
-    // read anisotropies
-    readM40Floats(r);
-    boolean extended = false;
-    if (Float.isNaN(floats[0])) {
-      extended = true;
-      readM40Floats(r); // second atom line
+    if (rm != null) {
+      readM40Floats(r);
+      rm.set(floats[0], floats[1], floats[2]);
+      rp.set(floats[3], floats[4], floats[5]);
     }
-    System.out.println(line);
-    boolean isIso = true;
-    for (int j = 1; j < 6; j++)
-      if (floats[j] != 0) {
-        isIso = false;
-        break;
-      }
-    if (isIso) {
-      if (floats[0] != 0)
-        setU(atom, 7, floats[0]);
-    } else {
+    if (tType > 2)
+      readM40Floats(r);
+    // read anisotropies (or Pos#n rotation/translations)
+    readM40Floats(r);
+    switch (tType) {
+    case 6:
+    case 5:
+    case 4:
+    case 3:
+      skipLines(r, tType - 1);
+      appendLoadNote("Skipping temperature factors with order > 2");
+      //$FALL-THROUGH$
+    case 2:
+    case -1:
       for (int j = 0; j < 6; j++)
         setU(atom, j, floats[j]);
+      break;
+    case 1:
+      if (floats[0] != 0)
+        setU(atom, 7, floats[0]);
+      break;
+    case 0:
+      molHasTLS = true;
+      appendLoadNote("Jmol cannot process molecular TLS parameters");
+      break;
     }
+    if (modDim == 0)
+      return null; // return for nonmodulated Pos#n
 
-    if (extended) {
-      r.readLine();
-      r.readLine(); //???
-    }
+    if (isPos && molHasTLS)
+      skipLines(r, 4);
 
-    // read occupancy parameters
+    // read occupancy modulation
+
     double[] pt;
-    float o_0 = (nOcc > 0 && !haveSpecialOcc ? parseFloatStr(r.readLine())
-        : 1);
-    // we add a pt that save the original (unadjusted) o_0 and o_site
+    float o_0 = (nOcc > 0 && !haveSpecialOcc ? parseFloatStr(r.readLine()) : 1);
+    // we add a pt that saves the original (unadjusted) o_0 and o_site
     // will implement 
     //
     //  O = o_site (o_0 + SUM)
@@ -503,8 +584,8 @@ public class JanaReader extends AtomSetCollectionReader {
     // divided by the number of operators giving this site.
 
     if (o_0 != 1)
-      ms.addModulation(null, "J_O#0" + label,
-          new double[] { atom.foccupancy, o_0, 0 }, -1);
+      ms.addModulation(null, "J_O#0" + label, new double[] { atom.foccupancy,
+          o_0, 0 }, -1);
     atom.foccupancy *= o_0;
     int wv = 0;
     float a1, a2;
@@ -516,49 +597,79 @@ public class JanaReader extends AtomSetCollectionReader {
       } else {
         wv = j + 1;
         readM40Floats(r);
-        a2 = floats[0]; // sin (first on line)
-        a1 = floats[1]; // cos (second on line)
+        a1 = floats[0]; // sin (first on line)
+        a2 = floats[1]; // cos (second on line)
       }
       pt = new double[] { a1, a2, 0 };
       if (a1 != 0 || a2 != 0)
         ms.addModulation(null, "O_" + wv + "#0" + label, pt, -1);
     }
 
-    // read displacement data
+    // read displacement modulation
+
     for (int j = 0; j < nDisp; j++) {
       if (haveSpecialDisp) {
         readM40Floats(r);
-        float c = floats[3];
-        float w = floats[4];
+        float c = floats[3]; // center
+        float w = floats[4]; // width
         for (int k = 0; k < 3; k++)
           if (floats[k] != 0)
             ms.addModulation(null, "D_S#" + LABELS.charAt(k) + label,
                 new double[] { c, w, floats[k] }, -1);
       } else {
-        // Fourier
-        addSinCos(j, "D_", label, r);
+        // Fourier displacements
+        addSinCos(j, "D_", label, r, isPos);
       }
     }
+
+    float[] rotData = null;
+    if (isPos && nDisp > 0) {
+      int n = nDisp * 6;
+      rotData = new float[n];
+      for (int p = 0, j = 0; p < n; p++, j++) {
+        if (p % 6 == 0) {
+          j = 0;
+          readM40Floats(r);
+        }
+        rotData[p] = floats[j];
+      }
+    }
+
     // finally read Uij sines and cosines
-    for (int j = 0; j < nUij; j++) {
-      checkFourier(j);
-      if (isIso) {
-        // fourier?
-        addSinCos(j, "U_", label, r);
-      } else {
-        if (haveSpecialUij) {
-          //TODO
-          Logger.error("JanaReader -- not interpreting SpecialUij flag: "
-              + line);
+
+    if (!isPos) // No TLS here
+      for (int j = 0; j < nUij; j++) {
+        checkFourier(j);
+        if (tType == 1) {
+          // fourier?
+          addSinCos(j, "U_", label, r, false);
         } else {
-          float[][] data = readM40FloatLines(2, 6, r);
-          for (int k = 0, p = 0; k < 6; k++, p += 3)
-            ms.addModulation(null,
-                "U_" + (j + 1) + "#" + U_LIST.substring(p, p + 3) + label,
-                new double[] { data[1][k], data[0][k], 0 }, -1);
+          if (haveSpecialUij) {
+            //TODO
+            Logger.error("JanaReader -- not interpreting SpecialUij flag: "
+                + line);
+          } else {
+            float[][] data = readM40FloatLines(2, 6, r);
+            for (int k = 0, p = 0; k < 6; k++, p += 3)
+              ms.addModulation(null,
+                  "U_" + (j + 1) + "#" + U_LIST.substring(p, p + 3) + label,
+                  new double[] { data[1][k], data[0][k], 0 }, -1);
+          }
         }
       }
-    }
+    // higher order temperature factor modulation ignored
+
+    // phason ignored
+    return rotData;
+  }
+
+  private void skipLines(BufferedReader r, int n) throws Exception {
+    for (int i = 1; i < n; i++)
+      r.readLine();
+  }
+
+  private boolean getFlag(int i) {
+    return (getInt(i, i + 1) > 0);
   }
 
   public final static String U_LIST = "U11U22U33U12U13U23UISO";
@@ -575,19 +686,30 @@ public class JanaReader extends AtomSetCollectionReader {
     readM40Floats(r);
   }
 
-  private void addSinCos(int j, String key, String label, BufferedReader r) throws Exception {
+  /**
+   * Add x, y, and z modulations as [ csin, ccos, 0]
+   * 
+   * @param j
+   * @param key
+   * @param label
+   * @param r
+   * @param isPos
+   * @throws Exception
+   */
+  private void addSinCos(int j, String key, String label, BufferedReader r, boolean isPos)
+      throws Exception {
     checkFourier(j);
     readM40Floats(r);
     for (int k = 0; k < 3; ++k) {
-      float ccos = floats[k + 3];
       float csin = floats[k];
-      if (csin == 0 && ccos == 0)
+      float ccos = floats[k + 3];
+      if (csin == 0 && ccos == 0 && !isPos)
         continue;
       String axis = "" + LABELS.charAt(k % 3);
       if (modAxes != null && modAxes.indexOf(axis.toUpperCase()) < 0)
         continue;
       String id = key + (j + 1) + "#" + axis + label;
-      ms.addModulation(null, id, new double[] { ccos, csin, 0 }, -1);
+      ms.addModulation(null, id, new double[] { csin, ccos, 0 }, -1);
     }
   }
 
@@ -612,11 +734,23 @@ public class JanaReader extends AtomSetCollectionReader {
    * 
    * @param col1
    * @param col2
-   * @return
+   * @return value or 0
    */
   private int getInt(int col1, int col2) {
     int n = line.length();
-    return (n > col1 ? parseIntStr(line.substring(col1, Math.min(n, col2))) : 0);
+    return (n > col1 ? parseIntStr(getStr(col1, col2)) : 0);
+  }
+  
+  /**
+   * safe string parsing of line.substring(col1, col2);
+   * 
+   * @param col1
+   * @param col2
+   * @return value or ""
+   */
+  private String getStr(int col1, int col2) {
+    int n = line.length();
+    return (n > col1 ? line.substring(col1, Math.min(n, col2)).trim(): "");
   }
 
   private float[] floats = new float[6];
@@ -627,8 +761,9 @@ public class JanaReader extends AtomSetCollectionReader {
     if (Logger.debugging)
       Logger.debug(line);
     int ptLast = line.length() - 9;
-    for (int i = 0, pt = 0; i < 6 && pt <= ptLast; i++, pt += 9)
-      floats[i] = parseFloatStr(line.substring(pt, pt + 9));
+    for (int i = 0, pt = 0; i < 6; i++, pt += 9) {
+      floats[i] = (pt <= ptLast ? parseFloatStr(line.substring(pt, pt + 9)) : Float.NaN);
+    }
     return line;
   }
 
@@ -661,9 +796,128 @@ public class JanaReader extends AtomSetCollectionReader {
   }
 
   @Override
-  public void doPreSymmetry() {
+  public void doPreSymmetry() throws Exception {
     if (ms != null)
       ms.setModulation(false);
+  }
+
+  private void copyModulations(String label, String newLabel, P3 ptRel) {
+    Map<String, double[]> mapTemp = new Hashtable<String, double[]>();
+    for (Entry<String, double[]> e : ms.getModulationMap().entrySet()) {
+      String key = e.getKey();
+      if (!key.contains(label))
+        continue;
+      key = PT.rep(key, label, newLabel);
+      double[] val = e.getValue();
+      switch (key.charAt(0)) {
+      case 'O':
+        setRigidBodyPhase(key, e.getValue(), ptRel);
+        break;
+      case 'D':
+        // we will phase at the time of rotation
+        break;
+      case 'U':
+        // not implemented
+        continue;
+      }
+      mapTemp.put(key, val);
+    }
+
+    for (Entry<String, double[]> e : mapTemp.entrySet())
+      ms.addModulation(null, e.getKey(), e.getValue(), -1);
+  }
+
+  /**
+   * Transform unphased Fourier x,y,z cos/sin coefficients in a 
+   * rigid body system based on distance from center.
+   * @param label ";atomName"
+   * @param ptRel vector to atom relative from reference point
+   * @param data block of nDisp*6 rotational parameters
+   * 
+   */
+  private void setRigidBodyRotations(String label, T3 ptRel, float[] data) {
+    int n = data.length / 6;
+    V3 vCart = V3.newV(ptRel);
+    symmetry.toCartesian(vCart, true);
+    System.out.println(label + " " + Escape.eAF(data));
+    Quat qrrev = qR.inv();
+    for (int i = 0, p = 0; i < n; i++, p+= 6) {
+      checkFourier(i);
+      String key = "D_"+ (i + 1);
+      V3 vsin = V3.new3(data[p], data[p + 1], data[p + 2]);
+      V3 vcos = V3.new3(data[p + 3], data[p + 4], data[p + 5]);
+      
+      
+      symmetry.toCartesian(vcos,  true);
+      vcos.cross(vcos,  vCart);
+      symmetry.toFractional(vcos,  true);
+
+      symmetry.toCartesian(vsin,  true);
+      vsin.cross(vsin,  vCart);
+      symmetry.toFractional(vsin,  true);
+      
+      addRotMod(key + "#x" + label, vcos.x, vsin.x, ptRel);
+      addRotMod(key + "#y" + label, vcos.y, vsin.y, ptRel);
+      addRotMod(key + "#z" + label, vcos.z, vsin.z, ptRel);      
+    }
+  }
+
+  private void addRotMod(String key, float ccos, float csin, T3 pt) {
+    double[] v = ms.getMod(key);
+    System.out.println(" addrotmod " + v[0]/csin + " " + v[1]/ccos);
+    
+    double[] v2 = setRigidBodyPhase(key, new double[] {v[0] + csin,  v[1] + ccos, 0}, pt);
+    ms.addModulation(null, key, v2, -1);
+  }
+
+  /**
+   * 
+   * Adjust phases to match the difference between the atom's position and the
+   * rigid molecular fragment's reference point.
+   * @param key 
+   * @param v 
+   * @param pt 
+   * @return phase-adjusted parameters
+   * 
+   */
+  private double[] setRigidBodyPhase(String key, double[] v, T3 pt) {
+    boolean isCenter = false;
+    switch (ms.getModType(key)) {
+    case Modulation.TYPE_OCC_FOURIER:
+    case Modulation.TYPE_DISP_FOURIER:
+    case Modulation.TYPE_U_FOURIER:
+      break;
+    case Modulation.TYPE_OCC_CRENEL:
+    case Modulation.TYPE_DISP_SAWTOOTH:
+      isCenter = true;
+      break;
+    }
+    double nqDotD = 0;
+    double n = -1;
+    double[] qcoefs = ms.getQCoefs(key);
+    for (int i = modDim; --i >= 0;) {
+      if (qcoefs[i] != 0) {
+        n = qcoefs[i];
+        // n in sin(2 pi n q.ptRel), where pt is (<final atom position> - <reference point>)
+        double[] q = ms.getMod("W_" + (i + 1));
+        nqDotD = n * (q[0] * pt.x + q[1] * pt.y + q[2] * pt.z);
+        break;
+      }
+    }
+    //Logger.info ("unphased coefficients: " + key + " " + n + " " +  v[0] + " " + v[1]);
+    if (isCenter) {
+      v[0] += nqDotD; // move center of sawtooth or crenel to match this atom
+    } else {
+      double cA = v[0]; // A sin...
+      double cB = v[1]; // B cos....
+      double sin = Math.sin(2 * Math.PI * nqDotD);
+      double cos = Math.cos(2 * Math.PI * nqDotD);
+      v[0] = cA * cos + cB * sin;   // A sin
+      v[1] = -cA * sin + cB * cos;  // B cos
+    }
+    //Logger.info ("phased coefficients: " + key+ " "  + n + " " +  v[0] + " " + v[1]);
+    //Logger.info ("");
+    return v;
   }
 
 

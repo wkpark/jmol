@@ -2182,7 +2182,7 @@ abstract public class AtomCollection {
         atomSpec = PT.rep(atomSpec, "\\?", "\1");
       // / here xx*yy is NOT changed to "xx??????????yy"
       for (i = ac; --i >= 0;)
-        if (isAtomNameMatch(at[i], atomSpec, false))
+        if (isAtomNameMatch(at[i], atomSpec, false, false))
           bs.set(i);
       break;
     case T.spec_alternate:
@@ -2291,17 +2291,15 @@ abstract public class AtomCollection {
     //(hydrogen) & connected(oxygen & connected(2) & connected(2, hydrogen))",
     
     int[] hs = new int[2];
-    for (int i = ac; --i >= 0;) {
-      if (at[i].getElementNumber() != 8)
-        continue;
-      Atom a = at[i];
-      Atom b;
-      int g = a.getGroupID();
+    Atom a;
+   for (int i = ac; --i >= 0;) {
+      int g = at[i].getGroupID();
       if (g >= JC.GROUPID_WATER && g < JC.GROUPID_SOLVENT_MIN) {
         bs.set(i);
-      } else if (a.getCovalentBondCount() == 2) {
+      } else if ((a = at[i]).getElementNumber() == 8 && a.getCovalentBondCount() == 2) {
         Bond[] bonds = a.getBonds();
         int n = 0;
+        Atom b;
         for (int j = bonds.length; --j >= 0 && n < 3;)
           if (bonds[j].isCovalent()
               && (b=bonds[j].getOtherAtom(a)).getElementNumber() == 1)
@@ -2339,6 +2337,9 @@ abstract public class AtomCollection {
 
     //in the case of a ?, we take the whole thing
     // * can be used here, but not with ?
+    // Jmol 14.1.14: allows initial ?* to be same as *
+    // and therefore can be used in atom expression
+    
     //first check with * option OFF
     BS bs = getSpecNameOrNull(identifier, false);
     
@@ -2347,8 +2348,9 @@ abstract public class AtomCollection {
     if (bs != null || identifier.indexOf("?") > 0)
       return bs;
     // now check with * option ON
-    if (identifier.indexOf("*") > 0) 
+    if (identifier.indexOf("*") > 0) {
       return getSpecNameOrNull(identifier, true);
+    }
     
     int len = identifier.length();
     int pt = 0;
@@ -2413,6 +2415,10 @@ abstract public class AtomCollection {
     name = name.toUpperCase();
     if (name.indexOf("\\?") >= 0)
       name = PT.rep(name, "\\?","\1");
+    boolean allowInitialStar = name.startsWith("?*");
+      if (allowInitialStar)
+        name = name.substring(1);
+
     for (int i = ac; --i >= 0;) {
       String g3 = at[i].getGroup3(true);
       if (g3 != null && g3.length() > 0) {
@@ -2424,7 +2430,7 @@ abstract public class AtomCollection {
             bs.set(i);
           i++;
         }
-      } else if (isAtomNameMatch(at[i], name, checkStar)) {
+      } else if (isAtomNameMatch(at[i], name, checkStar, allowInitialStar)) {
         if (bs == null)
           bs = BS.newN(i + 1);
         bs.set(i);
@@ -2433,13 +2439,13 @@ abstract public class AtomCollection {
     return bs;
   }
 
-  private boolean isAtomNameMatch(Atom atom, String strPattern, boolean checkStar) {
+  private boolean isAtomNameMatch(Atom atom, String strPattern, boolean checkStar, boolean allowInitialStar) {
     /// here xx*yy is changed to "xx??????????yy" when coming from getSpecName
     /// but not necessarily when coming from getIdentifierOrNull
     /// and NOT when coming from getAtomBits with Token.spec_atom
     /// because it is presumed that some names can include "*"
     return Txt.isMatch(atom.getAtomName().toUpperCase(), strPattern,
-        checkStar, false);
+        checkStar, allowInitialStar);
   }
   
   protected BS getSeqcodeBits(int seqcode, boolean returnEmpty) {

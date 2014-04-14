@@ -39,6 +39,12 @@ public class Modulation {
    * Fourier power n, a modulation axis (x, y, or, z), and specified parameters
    * that depend upon the type of function.
    * 
+   * Types supported:
+   * 
+   * Fourier    [csin, ccos]
+   * Crenel     [center, width, amplitude]
+   * Sawtooth   [center, width, amplitude]
+   * 
    * 
    * @param axis
    * @param type
@@ -62,8 +68,8 @@ public class Modulation {
     case TYPE_DISP_FOURIER:
     case TYPE_OCC_FOURIER:
     case TYPE_U_FOURIER:
-      a1 = params[0]; // cos
-      a2 = params[1]; // sin
+      a1 = params[0]; // sin
+      a2 = params[1]; // cos
       //System.out.println("ccos=" + a1 + " csin=" + a2);
       break;
     case TYPE_DISP_SAWTOOTH:
@@ -97,25 +103,21 @@ public class Modulation {
    */
 
   void apply(ModulationSet ms, double[][] t) {
-    double nt = 0;
+    double v = 0, nt = 0;
     for (int i = qCoefs.length; --i >= 0;)
       nt += qCoefs[i] * t[i][0];
-    double v = 0;
-    //if (type == TYPE_OCC_CRENEL)
-    //delta = 0;
-
     switch (type) {
     case TYPE_DISP_FOURIER:
     case TYPE_OCC_FOURIER:
     case TYPE_U_FOURIER:
       double theta = TWOPI * nt;
       if (a1 != 0)
-        v += a1 * Math.cos(theta);
+        v += a1 * Math.sin(theta);
       if (a2 != 0)
-        v += a2 * Math.sin(theta);
+        v += a2 * Math.cos(theta);
       if (Logger.debuggingHigh)
-        Logger.debug("MOD " + ms.id + " " + Escape.e(qCoefs) + " axis=" + axis
-            + " v=" + v + " ccos,csin=" + a1 + "," + a2 + " / theta=" + theta);
+        Logger.info("MOD " + ms.id + " " + Escape.e(qCoefs) + " axis=" + axis
+            + " v=" + v + " csin,ccos=" + a1 + "," + a2 + " / theta=" + theta);
       break;
     case TYPE_OCC_CRENEL:
 

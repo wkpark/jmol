@@ -52,7 +52,6 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
   private String strop;
   private boolean isSubsystem;
   private Matrix tFactor;
-  private P3 ptAtom;
 
   @Override
   public float getScale() {
@@ -73,7 +72,7 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
    * A collection of modulations for a specific atom.
    * 
    * The set of cell wave vectors form the sigma (d x 3) array, one vector per row. 
-   * Muliplying sigma by the atom vector r (3 x 1) gives us a (d x 1) column vector.
+   * Multiplying sigma by the atom vector r (3 x 1) gives us a (d x 1) column vector.
    * This column vector is the set of coefficients of [x4, x5, x6...] that I will
    * call X. 
 
@@ -133,14 +132,11 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
    * 
    */
 
-  public ModulationSet set(String id, P3 ptAtom, T3 r0, int modDim,
+  public ModulationSet set(String id, P3 r0, int modDim,
                            Lst<Modulation> mods, M3 gammaE, Matrix[] factors,
                            int iop, SymmetryInterface symmetry) {
     this.id = id + "_" + symmetry.getSpaceGroupName();
-    this.ptAtom = P3.newP(ptAtom);
-    if (r0 == null)
-      r0 = ptAtom;
-    this.r0 = P3.newP(r0); // could be a group position or null
+    this.r0 = P3.newP(r0); 
     Logger.info("ModulationSet atom " + id + " at " + r0);
     strop = symmetry.getSpaceGroupXyz(iop, false);
     this.modDim = modDim;
@@ -321,7 +317,7 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
   public Object getModulation(String type, T3 t456) {
     getModTemp();
     if (type.equals("D")) {
-      return P3.newP(t456 == null ? ptAtom : modTemp.calculate(t456, false));
+      return P3.newP(t456 == null ? r0 : modTemp.calculate(t456, false));
     }
     return null;
   }
@@ -348,7 +344,6 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
     modTemp.modDim = modDim;
     modTemp.gammaIinv = gammaIinv;
     modTemp.sigma = sigma;
-    modTemp.ptAtom = ptAtom;
     modTemp.r0 = r0;
     modTemp.symmetry = symmetry;
     modTemp.t = t;

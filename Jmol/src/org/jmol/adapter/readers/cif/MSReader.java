@@ -8,9 +8,7 @@ import javajs.util.Lst;
 import javajs.util.M3;
 import javajs.util.Matrix;
 import javajs.util.P3;
-import javajs.util.PT;
 import javajs.util.SB;
-import javajs.util.T3;
 
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollection;
@@ -170,7 +168,8 @@ public class MSReader implements MSInterface {
       return;
     if (map == null)
       map = htModulation;
-    id += "@" + (iModel >= 0 ? iModel : cr.asc.iSet);
+    if (id.indexOf("@") < 0)
+      id += "@" + (iModel >= 0 ? iModel : cr.asc.iSet);
     Logger.info("Adding " + id + " " + Escape.e(pt));
     map.put(id, pt);
   }
@@ -178,10 +177,11 @@ public class MSReader implements MSInterface {
   /**
    * Both the Jana reader and the CIF reader will call this to set the
    * modulation for a given model.
+   * @throws Exception 
    * 
    */
   @Override
-  public void setModulation(boolean isPost) {
+  public void setModulation(boolean isPost) throws Exception {
     if (modDim == 0 || htModulation == null)
       return;
     if (modDebug)
@@ -190,12 +190,6 @@ public class MSReader implements MSInterface {
     setModulationForStructure(cr.asc.iSet, isPost);
     if (modDebug)
       Logger.debugging = Logger.debuggingHigh = false;
-  }
-
-  private Map<String, T3> groupPts;
-  @Override
-  public void setGroupPoints(Map<String, T3> pts) {
-    groupPts = pts;    
   }
 
   /**
@@ -217,6 +211,8 @@ public class MSReader implements MSInterface {
 
   private Matrix[] modMatrices;
 
+  private double[] qlist100;
+
   /**
    * Filter keys only for this model.
    * 
@@ -227,7 +223,7 @@ public class MSReader implements MSInterface {
    */
   private String checkKey(String key, boolean checkQ) {
     int pt = key.indexOf(atModel);
-    return (pt < 0 || key.indexOf("*;*") >= 0 || checkQ
+    return (pt < 0 || key.indexOf("_pos#") >= 0 || key.indexOf("*;*") >= 0 || checkQ
         && key.indexOf("?") >= 0 ? null : key.substring(0, pt));
   }
 
@@ -243,14 +239,20 @@ public class MSReader implements MSInterface {
     return htModulation.get(key + atModel);
   }
 
+  @Override
+  public Map<String, double[]> getModulationMap() {
+    return htModulation;
+  }
+
   /**
    * Called when structure creation is complete and all modulation data has been
    * collected.
    * 
    * @param iModel
    * @param isPost
+   * @throws Exception 
    */
-  private void setModulationForStructure(int iModel, boolean isPost) {
+  private void setModulationForStructure(int iModel, boolean isPost) throws Exception {
     atModel = "@" + iModel;
 
     if (htModulation.containsKey("X_" + atModel))
@@ -287,7 +289,7 @@ public class MSReader implements MSInterface {
     htSubsystems = null;
   }
 
-  private void initModForStructure(int iModel) {
+  private void initModForStructure(int iModel) throws Exception {
     String key;
 
     // we allow for up to three wave vectors in the form of a matrix
@@ -316,8 +318,6 @@ public class MSReader implements MSInterface {
 
     q1Norm = P3
         .new3(q1[0] == 0 ? 0 : 1, q1[1] == 0 ? 0 : 1, q1[2] == 0 ? 0 : 1);
-    double[] qlist100 = new double[modDim];
-    qlist100[0] = 1;
     double[] pt;
 
     // Take care of loose ends.
@@ -368,9 +368,9 @@ public class MSReader implements MSInterface {
         // convert JANA Fourier descriptions to standard descriptions
         if (key.indexOf("_coefs_") >= 0) {
           // d > 1 -- already set from coefficients
-          cr.appendLoadNote("Wave vector " + key + "=" + Escape.e(pt));
+          cr.appendLoadNote("Wave vector " + key + "=" + Escape.eAD(pt));
         } else {
-          double[] ptHarmonic = getQCoefs(pt);
+          double[] ptHarmonic = calculateQCoefs(pt);
           if (ptHarmonic == null) {
             cr.appendLoadNote("Cannot match atom wave vector " + key + " "
                 + Escape.eAD(pt) + " to a cell wave vector or its harmonic");
@@ -422,35 +422,45 @@ public class MSReader implements MSInterface {
         //$FALL-THROUGH$
       case 'O':
       case 'D':
-        char id = key.charAt(2);
         char axis = key.charAt(pt_);
-        type = (id == 'S' ? Modulation.TYPE_DISP_SAWTOOTH
-            : id == '0' ? Modulation.TYPE_OCC_CRENEL
-                : type == 'O' ? Modulation.TYPE_OCC_FOURIER
-                    : type == 'U' ? Modulation.TYPE_U_FOURIER
-                        : Modulation.TYPE_DISP_FOURIER);
+        type = getModType(key);
         if (htAtomMods == null)
           htAtomMods = new Hashtable<String, Lst<Modulation>>();
-        int fn = (id == 'S' ? 0 : cr.parseIntStr(key.substring(2)));
-        double[] p = new double[] { params[0], params[1], params[2] };
-        if (fn == 0) {
-          addAtomModulation(atomName, axis, type, p, utens, qlist100);
-        } else {
-          double[] qlist = getMod("F_" + fn + "_coefs_");
-          if (qlist == null) {
-            Logger.error("Missing qlist for F_" + fn);
-            cr.appendLoadNote("Missing cell wave vector for atom wave vector "
-                + fn + " for " + key + " " + Escape.e(params));
-            qlist = getMod("F_1_coefs_");
-          }
-          if (qlist != null) {
-            addAtomModulation(atomName, axis, type, p, utens, qlist);
-          }
-        }
+        double[] p = new double[params.length];
+        for (int i = p.length; --i >= 0;)
+          p[i] = params[i];
+        double[] qcoefs = getQCoefs(key);
+        if (qcoefs == null)
+            throw new Exception("Missing cell wave vector for atom wave vector for " + key + " " + Escape.e(params));
+        addAtomModulation(atomName, axis, type, p, utens, qcoefs);
         haveAtomMods = true;
         break;
       }
     }
+  }
+
+  @Override
+  public double[] getQCoefs(String key) {
+    int fn = Math.max(0, cr.parseIntStr(key.substring(2)));        
+    if (fn == 0) {
+      if (qlist100 == null) {
+        qlist100 = new double[modDim];
+        qlist100[0] = 1;
+      }
+      return qlist100;
+    }     
+    return getMod("F_" + fn + "_coefs_");
+  }
+
+  @Override
+  public char getModType(String key) {
+    char type = key.charAt(0);
+    char id = key.charAt(2);
+    return  (id == 'S' ? Modulation.TYPE_DISP_SAWTOOTH
+        : id == '0' ? Modulation.TYPE_OCC_CRENEL
+            : type == 'O' ? Modulation.TYPE_OCC_FOURIER
+                : type == 'U' ? Modulation.TYPE_U_FOURIER
+                    : Modulation.TYPE_DISP_FOURIER);
   }
 
   private P3[] qs;
@@ -464,7 +474,7 @@ public class MSReader implements MSInterface {
    * @param p
    * @return {i j k}
    */
-  private double[] getQCoefs(double[] p) {
+  private double[] calculateQCoefs(double[] p) {
     if (qs == null) {
       qs = new P3[modDim];
       for (int i = 0; i < modDim; i++) {
@@ -628,14 +638,6 @@ public class MSReader implements MSInterface {
       spt.toCartesian(ptc, true);
     }
     
-    T3 gPt = (groupPts == null ? null : groupPts.get(a.atomName));
-    if (gPt != null) {
-      P3 ptc = P3.newP(gPt);
-      SymmetryInterface spt = getSymmetry(a);
-      spt.toCartesian(ptc, true);
-      gPt = ptc;
-    }
-    
     Lst<Modulation> list = htAtomMods.get(a.atomName);
     if (list == null && a.altLoc != '\0' && htSubsystems != null) {
       // force treatment if a subsystem
@@ -667,7 +669,7 @@ public class MSReader implements MSInterface {
     // The magic happens here.
 
     ModulationSet ms = new ModulationSet().set(a.index + " " + a.atomName,
-        a, gPt, modDim, list, gammaE, getMatrices(a), iop, getSymmetry(a));
+        a, modDim, list, gammaE, getMatrices(a), iop, getSymmetry(a));
     ms.calculate(null, false);
 
     // ms parameter values are used to set occupancies, 
@@ -694,6 +696,7 @@ public class MSReader implements MSInterface {
         // m40 Fourier
         // occ_site * (occ_0 + SUM)
         occ = pt[0] * (pt[1] + ms.vOcc);
+        System.out.println("occupancy for " + a.atomName + " is " + occ);
       }
       a.foccupancy = (float) Math.min(1, Math.max(0, occ));
     }
@@ -882,19 +885,6 @@ public class MSReader implements MSInterface {
     if (a != null)
       lattvecs.addLast(a);
     return true;
-  }
-
-  @Override
-  public void copyModulations(Map<String, double[]> map,  String label, String newLabel){      
-    if (map == null)
-      map = htModulation;
-    Map<String, double[]> mapTemp = new Hashtable<String, double[]>(); 
-    for (Entry<String, double[]> e: map.entrySet()) {
-      String key = e.getKey();
-      if (key.contains(label))
-        mapTemp.put(PT.rep(key, label, newLabel), e.getValue());
-    }
-    map.putAll(mapTemp);
   }
 
 }

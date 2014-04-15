@@ -116,7 +116,7 @@ Bob Hanson hansonr@stolaf.edu 11/26/2013
   <property name="docbook-xsl" value="docbook-xsl-1.76.1" />
   <property name="docbook-xml" value="docbook-xml-4.4" />
   <property name="naga.jar" value="naga-3_0.jar" />
-  <property name="commons-cli.jar" value="commons-cli-1.0.jar" />
+  <property name="commons-cli.jar" value="commons-cli-1.2.jar" />
   <property name="saxon.jar" value="saxon.jar" />
   <property name="saxon.main" value="com.icl.saxon.StyleSheet" />
   <property name="selfsign.store" value="ca-cert/selfSignedCertificate/selfSignedCertificate.store" />

@@ -766,7 +766,19 @@ List of 233 multiplets
    * @return Jmol atom residue as [name]resno:chain or just resno:chain
    */
   private String fix(String nt, boolean withName) {
-    int pt1 = nt.indexOf(".");
+    int pt1;
+    if (nt.startsWith("[")) {
+       // Jmol [res]resno^ins.atm%alt
+       // disregard any model indicator
+      if ((pt1 = nt.indexOf("/")) >= 0)
+        nt = nt.substring(0, pt1);
+      if (withName)
+        return nt;
+      if ((pt1 = nt.indexOf(".")) >= 0)
+        nt = nt.substring(0, pt1);
+      return (nt.substring(nt.indexOf("]") + 1));      
+    }
+    pt1 = nt.indexOf(".");
     String chain = nt.substring(0, pt1);
     int pt = nt.length();
     char ch;

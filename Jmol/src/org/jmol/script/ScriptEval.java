@@ -5751,6 +5751,13 @@ public class ScriptEval extends ScriptExpr {
       if (rotAxis == null)
         return;
     }
+    // a thread will be required if we are spinning 
+    // UNLESS we are headless, 
+    // in which case we just turn off the spin
+    boolean requiresThread = (isSpin && (!vwr.isHeadless() || endDegrees == Float.MAX_VALUE));
+    // just turn this into a rotation if we cannot spin
+    if (isSpin && !requiresThread)
+      isSpin = false;
     if (nPoints < 2 && dihedralList == null) {
       if (!isMolecular) {
         // fixed-frame rotation
@@ -5758,13 +5765,19 @@ public class ScriptEval extends ScriptExpr {
         // rotate axisangle {0 1 0} 10
         // rotate x 10 (atoms) # point-centered
         // rotate x 10 $object # point-centered
-        if (isSpin && bsAtoms == null && !useThreads())
-          return;
+        if (requiresThread && bsAtoms == null && !useThreads()) {
+          isSpin = false;
+          if (endDegrees == Float.MAX_VALUE)
+            return;
+        }
         if (vwr.rotateAxisAngleAtCenter(this, points[0], rotAxis, rate,
             endDegrees, isSpin, bsAtoms) && isJS && isSpin && bsAtoms == null)
           throw new ScriptInterruption(this, "rotate", 1);
         return;
       }
+      
+      // must be an internal rotation
+      
       if (nPoints == 0)
         points[0] = new P3();
       // rotate MOLECULAR
@@ -5803,12 +5816,11 @@ public class ScriptEval extends ScriptExpr {
     if (bsAtoms != null && !isSpin && ptsB != null) {
       vwr.setAtomCoords(bsAtoms, T.xyz, ptsB);
     } else {
-      if (!useThreads())
+      if (requiresThread && !useThreads())
         return;
       if (vwr.rotateAboutPointsInternal(this, points[0], points[1], rate,
           endDegrees, isSpin, bsAtoms, translation, ptsB, dihedralList)
-          && isJS
-          && isSpin)
+          && isJS && isSpin)
         throw new ScriptInterruption(this, "rotate", 1);
     }
   }
@@ -7728,7 +7740,7 @@ public class ScriptEval extends ScriptExpr {
 
   }
 
-/////////////////////////////// methods used just by cmdXXXXX methods
+  /////////////////////////////// methods used just by cmdXXXXX methods
 
   private void colorShape(int shapeType, int index, boolean isBackground)
       throws ScriptException {
@@ -7828,17 +7840,14 @@ public class ScriptEval extends ScriptExpr {
         boolean isColorIndex = (isByElement || name
             .indexOf(ColorEncoder.BYRESIDUE_PREFIX) == 0);
         PAL pal = (isColorIndex || isIsosurface ? PAL.PROPERTY
-            : tok == T.spacefill ? PAL.CPK : PAL
-                .getPalette(name));
+            : tok == T.spacefill ? PAL.CPK : PAL.getPalette(name));
         // color atoms "cpkScheme"
-        if (pal == PAL.UNKNOWN
-            || (pal == PAL.TYPE || pal == PAL.ENERGY)
+        if (pal == PAL.UNKNOWN || (pal == PAL.TYPE || pal == PAL.ENERGY)
             && shapeType != JC.SHAPE_HSTICKS)
           invArg();
         Object data = null;
-        BS bsSelected = (pal != PAL.PROPERTY
-            && pal != PAL.VARIABLE || !vwr.g.rangeSelected ? null
-            : vwr.bsA());
+        BS bsSelected = (pal != PAL.PROPERTY && pal != PAL.VARIABLE
+            || !vwr.g.rangeSelected ? null : vwr.bsA());
         if (pal == PAL.PROPERTY) {
           if (isColorIndex) {
             if (!chk) {
@@ -7846,9 +7855,10 @@ public class ScriptEval extends ScriptExpr {
                   : T.groupid) | T.allfloat, Float.NaN, Float.NaN);
             }
           } else {
-            //if (!isIsosurface)
+            boolean isPropertyExplicit = name.equals("property");
+            if (isPropertyExplicit)
               index++;
-            if (name.equals("property")
+            if (isPropertyExplicit
                 && T.tokAttr((tok = getToken(index).tok), T.atomproperty)
                 && !T.tokAttr(tok, T.strproperty)) {
               if (!chk) {
@@ -7956,8 +7966,7 @@ public class ScriptEval extends ScriptExpr {
     if (typeMask == 0) {
       sm.loadShape(shapeType);
       if (shapeType == JC.SHAPE_LABELS)
-        setShapeProperty(JC.SHAPE_LABELS, "setDefaults",
-            vwr.getNoneSelected());
+        setShapeProperty(JC.SHAPE_LABELS, "setDefaults", vwr.getNoneSelected());
     } else {
       if (bs != null) {
         vwr.selectBonds(bs);

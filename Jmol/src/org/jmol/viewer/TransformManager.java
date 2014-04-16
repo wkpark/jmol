@@ -429,12 +429,6 @@ public class TransformManager {
     setSpinOff();
     setNavOn(false);
 
-    if (vwr.isHeadless()) {
-      if (isSpin && endDegrees == Float.MAX_VALUE)
-        return false;
-      isSpin = false;
-    }
-
     if (dihedralList == null
         && (translation == null || translation.length() < 0.001)
         && (!isSpin || endDegrees == 0 || Float.isNaN(degreesPerSecond) || degreesPerSecond == 0)

@@ -2182,8 +2182,11 @@ abstract public class AtomCollection {
       if (atomSpec.indexOf("\\?") >= 0)
         atomSpec = PT.rep(atomSpec, "\\?", "\1");
       // / here xx*yy is NOT changed to "xx??????????yy"
+      boolean allowStar = atomSpec.startsWith("?*");
+      if (allowStar)
+        atomSpec = atomSpec.substring(1);
       for (i = ac; --i >= 0;)
-        if (isAtomNameMatch(at[i], atomSpec, false, false))
+        if (isAtomNameMatch(at[i], atomSpec, allowStar, allowStar))
           bs.set(i);
       break;
     case T.spec_alternate:
@@ -2441,6 +2444,7 @@ abstract public class AtomCollection {
   }
 
   private boolean isAtomNameMatch(Atom atom, String strPattern, boolean checkStar, boolean allowInitialStar) {
+    // called from getAtomBitsMa (spec_atom) and getSpecNameOrNull
     /// here xx*yy is changed to "xx??????????yy" when coming from getSpecName
     /// but not necessarily when coming from getIdentifierOrNull
     /// and NOT when coming from getAtomBits with Token.spec_atom

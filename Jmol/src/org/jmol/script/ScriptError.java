@@ -76,11 +76,11 @@ public abstract class ScriptError implements JmolScriptEvaluator {
   }
 
   private void errorOrWarn(int iError, String value, String more, String more2,
-                   boolean warningOnly) throws ScriptException {
-    String strError = ignoreError ? null : errorString(iError, value, more,
-        more2, true);
-    String strUntranslated = (!ignoreError && GT.getDoTranslate() ? errorString(
-        iError, value, more, more2, false) : null);
+                           boolean warningOnly) throws ScriptException {
+    String strError = (ignoreError ? null : errorString(iError, value, more,
+        more2, true));
+    String strUntranslated = (ignoreError || !GT.getDoTranslate() ? null
+        : errorString(iError, value, more, more2, false));
     if (!warningOnly)
       evalError(strError, strUntranslated);
     showString(strError);

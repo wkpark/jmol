@@ -363,7 +363,7 @@ public class ColorManager {
     if (colorScheme == null || colorScheme.length() == 0)
       return ce;
     ColorEncoder c = new ColorEncoder(ce);
-    ce.currentPalette = ce.createColorScheme(colorScheme, false, true);
-    return (ce.currentPalette == Integer.MAX_VALUE ? null : c);
+    c.currentPalette = c.createColorScheme(colorScheme, false, true);
+    return (c.currentPalette == Integer.MAX_VALUE ? null : c);
   }
 }

@@ -7585,6 +7585,13 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
                                            Lst<P3> finalPoints,
                                            float[] dihedralList) {
     // Eval: rotate INTERNAL
+    
+    if (isHeadless()) {
+      if (isSpin && endDegrees == Float.MAX_VALUE)
+        return false;
+      isSpin = false;
+    }
+
     boolean isOK = tm.rotateAboutPointsInternal(eval, point1,
         point2, degreesPerSecond, endDegrees, false, isSpin, bsSelected, false,
         translation, finalPoints, dihedralList);

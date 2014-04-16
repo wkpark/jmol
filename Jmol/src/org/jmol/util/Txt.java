@@ -328,59 +328,96 @@ public class Txt {
     return s != null && (s.indexOf("*") >= 0 || s.indexOf("?") >= 0);
   }
 
-  public static boolean isMatch(String s, String strWildcard,
-                                boolean checkStar, boolean allowInitialStar) {
-    int ich = 0;
-    int cchWildcard = strWildcard.length();
-    int cchs = s.length();
-    if (cchs == 0 || cchWildcard == 0)
-      return (cchs == cchWildcard || cchWildcard == 1 && strWildcard.charAt(0) == '*');
-    boolean isStar0 = (checkStar && allowInitialStar ? strWildcard.charAt(0) == '*' : false);
-    if (isStar0 && strWildcard.charAt(cchWildcard - 1) == '*')
-      return (cchWildcard < 3 || s.indexOf(strWildcard.substring(1,
-          cchWildcard - 1)) >= 0); 
-    String qqq = "????";
-    while (qqq.length() < s.length())
-      qqq += qqq;
-    if (checkStar) {
-      if (allowInitialStar && isStar0)
-        strWildcard = qqq + strWildcard.substring(1);
-      if (strWildcard.charAt(ich = strWildcard.length() - 1) == '*')
-        strWildcard = strWildcard.substring(0, ich) + qqq;
-      cchWildcard = strWildcard.length();
+  /**
+   * A general non-regex (for performance) text matcher that utilizes ? and *.
+   * 
+   * ??? means "at most three" characters if at beginning or end; 
+   *   "exactly three" otherwise
+   * \1 in search is a stand-in for actual ?
+   * 
+   * @param search
+   *        the string to search
+   * @param match
+   *        the match string
+   * @param checkStar
+   * @param allowInitialStar
+   * @return true if found
+   */
+  public static boolean isMatch(String search, String match, boolean checkStar,
+                                boolean allowInitialStar) {
+    // search == match --> true
+    if (search.equals(match))
+      return true;
+    int mLen = match.length();
+    // match == ""  --> false
+    if (mLen == 0)
+      return false;
+    boolean isStar0 = (checkStar && allowInitialStar ? match.charAt(0) == '*'
+        : false);
+    // match == "*" --> true
+    if (mLen == 1 && isStar0)
+      return true;
+    boolean isStar1 = (checkStar && match.endsWith("*"));
+    boolean haveQ = (match.indexOf('?') >= 0);
+    // match == "**" --> true
+    // match == "*xxx*" --> search contains "xxx"
+    // match == "*xxx" --> search ends with "xxx"
+    // match == "xxx*" --> search starts with "xxx"
+    if (!haveQ) {
+      if (isStar0)
+        return (isStar1 ? (mLen < 3 || search.indexOf(match.substring(1,
+            mLen - 1)) >= 0) : search.endsWith(match.substring(1)));
+      else if (isStar1)
+        return search.startsWith(match.substring(0, mLen - 1));
     }
-
-    if (cchWildcard < cchs)
+    int sLen = search.length();
+    // pad match with "?" -- same as *
+    String qqqq = "????";
+    int nq = 4;
+    while (nq < sLen) {
+      qqqq += qqqq;
+      nq += 4;
+    }
+    if (checkStar) {
+      if (isStar0) {
+        match = qqqq + match.substring(1);
+        mLen += nq - 1;
+      }
+      if (isStar1) {
+        match = match.substring(0, mLen - 1) + qqqq;
+        mLen += nq - 1;
+      }
+    }
+    // length of match < length of search --> false 
+    if (mLen < sLen)
       return false;
 
-    ich = 0;
-
-    // atom name variant (trimLeadingMarks == false)
-
     // -- each ? matches ONE character if not at end
     // -- extra ? at end ignored
 
-    //group3 variant (trimLeadingMarks == true)
-
-    // -- each ? matches ONE character if not at end
+    // (allowInitialStar == true)
     // -- extra ? at beginning reduced to match length
-    // -- extra ? at end ignored
 
-    while (cchWildcard > cchs) {
-      if (allowInitialStar && strWildcard.charAt(ich) == '?') {
+    int ich = 0;
+    while (mLen > sLen) {
+      if (allowInitialStar && match.charAt(ich) == '?') {
         ++ich;
-      } else if (strWildcard.charAt(ich + cchWildcard - 1) != '?') {
+      } else if (match.charAt(ich + mLen - 1) != '?') {
         return false;
       }
-      --cchWildcard;
+      --mLen;
     }
 
-    for (int i = cchs; --i >= 0;) {
-      char charWild = strWildcard.charAt(ich + i);
-      if (charWild == '?')
+    // both are effectively same length now.
+    // \1 is stand-in for "?"
+
+    for (int i = sLen; --i >= 0;) {
+      char chm = match.charAt(ich + i);
+      if (chm == '?')
         continue;
-      if (charWild != s.charAt(i) && (charWild != '\1' || s.charAt(i) != '?'))
-          return false;
+      char chs = search.charAt(i);
+      if (chm != chs && (chm != '\1' || chs != '?'))
+        return false;
     }
     return true;
   }

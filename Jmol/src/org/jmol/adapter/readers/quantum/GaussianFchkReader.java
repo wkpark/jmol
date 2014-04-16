@@ -304,7 +304,8 @@ public class GaussianFchkReader extends GaussianReader {
         float[] g = gaussians[gaussianCount] = new float[3];
         g[0] = exps[gaussianCount]; 
         g[1] = coefs[gaussianCount]; 
-        g[2] = spcoefs[gaussianCount]; 
+        if (spcoefs != null)
+          g[2] = spcoefs[gaussianCount]; 
         gaussianCount++;
       }
     }

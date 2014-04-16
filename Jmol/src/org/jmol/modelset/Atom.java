@@ -430,8 +430,8 @@ public class Atom extends Point3fi implements BNode {
 
   // a percentage value in the range 0-100
   public int getOccupancy100() {
-    byte[] occupancies = group.chain.model.ms.occupancies;
-    return occupancies == null ? 100 : occupancies[i];
+    float[] occupancies = group.chain.model.ms.occupancies;
+    return occupancies == null ? 100 : Math.round(occupancies[i]);
   }
 
   // This is called bfactor100 because it is stored as an integer

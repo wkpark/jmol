@@ -56,6 +56,7 @@ public class DSSRParser implements JmolDSSRParser {
   private Map<String, Object> dssr;
   private Map<String, Object> htTemp;
   private SB message;
+  private Map<String, String[]> htPar;
 
   public DSSRParser() {
     // for reflection
@@ -66,6 +67,13 @@ public class DSSRParser implements JmolDSSRParser {
       throws Exception {
     info.put("dssr", dssr = new Hashtable<String, Object>());
     htTemp = new Hashtable<String, Object>();
+    htPar = new Hashtable<String, String[]>();
+    htPar.put("bp", new String[] {"bpShear", "bpStretch", "bpStagger", "bpPropeller", "bpBuckle", "bpOpening"});
+    htPar.put("bpChiLambda", new String[] {"bpChi1", "bpLambda1", "bpChi2", "bpLambda2"});
+    htPar.put("bpDistTor", new String[] {"bpDistC1C1", "bpDistNN", "bpDistC6C8", "bpTorCNNC"});
+    htPar.put("step", new String[] {"stShift", "stSlide", "stRise", "stTilt", "stRoll", "stTwist"});
+    htPar.put("hel", new String[] {"heXDisp", "heYDisp", "heRise", "heIncl", "heTip", "heTwist"});    
+
     this.reader = reader;
     message = new SB();
     line = (line0 == null ? "" : line0.trim());
@@ -500,7 +508,7 @@ List of 50 lone WC/wobble pairs
     pairs = newList("basePairs");
     skipHeader();
     for (int i = 0; i < n; i++)
-      pairs.addLast(getBPData(null, null, true));
+      pairs.addLast(getBPData(0, null, null, true));
  }
 
   /*
@@ -532,7 +540,7 @@ List of 50 lone WC/wobble pairs
   10 A.G10            B.C3             G-C WC           19-XIX    cWW cW-W
   11 A.C11            B.G2             C-G WC           19-XIX    cWW cW-W
   12 A.G12            B.C1             G-C WC           19-XIX    cWW cW-W
-
+  
   List of 1 stem
   Note: a stem is defined as a helix consisting of only canonical WC/wobble
         pairs, with a continuous backbone.
@@ -560,15 +568,31 @@ List of 50 lone WC/wobble pairs
 
    */
 
-  private Map<String, Object> getBPData(String type, Lst<Object> ntList, boolean readParams) throws Exception {
+  /**
+   * 
+   * @param i 
+   * @param type
+   * @param ntList
+   * @param readParams
+   *        helix or base pair, not stem
+   * @return data
+   * @throws Exception
+   */
+  @SuppressWarnings("unchecked")
+  private Map<String, Object> getBPData(int i, String type, Lst<Object> ntList,
+                                        boolean readParams) throws Exception {
     String[] tokens = PT.getTokens(line);
     String nt12 = tokens[1] + tokens[2];
-    @SuppressWarnings("unchecked")
-    Map<String, Object> data = (Map<String, Object>) htTemp.get(nt12);
-    if (data == null) {
+    Map<String, Object> data;
+    boolean isReversed = false;
+    if (ntList == null) {
+      i = PT.parseInt(tokens[0]);
       data = new Hashtable<String, Object>();
-      data.put("id", tokens[0]);
-      data.put("nt1", fix(tokens[1], true));
+      String nt1 = fix(tokens[1], true);
+      String nt2 = fix(tokens[2], true);
+      data.put("key", nt1 + " " + nt2);
+      data.put("nt1", nt1);
+      data.put("nt2", nt2);
       data.put("nt2", fix(tokens[2], true));
       data.put("res1", fix(tokens[1], false));
       data.put("res2", fix(tokens[2], false));
@@ -587,36 +611,73 @@ List of 50 lone WC/wobble pairs
       data.put("DSSR", tokens[++pt]);
       htTemp.put(nt12, data);
     } else {
-      data.put(type + "Id", tokens[0]);
-      ntList.addLast(data);
+      data = (Map<String, Object>) htTemp.get(nt12);
+      isReversed = (data == null);
+      if (isReversed) {
+        nt12 = tokens[2] + tokens[1];
+        data = (Map<String, Object>) htTemp.get(nt12);
+      }
+      if (data == null) {
+        Logger.error("DSSR base pair not found in readMore: " + type + " " + tokens[0] + " " + tokens[1]);        
+      } else {
+        ntList.addLast(data);
+        data.put(type + "Rev", Boolean.valueOf(isReversed ));
+      }
     }
-    if (readParams)
-      readParameters(nt12, ntList == null);
-    else
+    if (data == null) {
       skipHeader();
+    } else {
+      data.put((type == null ? "id" : type + "Id"),
+          (i < 0 ? tokens[0] : Integer.valueOf(i)));
+      if (readParams)
+        readMore(data, ntList == null);
+      else
+        skipHeader();
+    }
     return data;
   }
 
-  private void readParameters(String key, boolean isBP) throws Exception {
-    @SuppressWarnings("unchecked")
-    Map<String, Object> data = (Map<String, Object>) htTemp.get(key);
+  /*
+  "--more" option for base pairs:
+   [-167.8(anti) C3'-endo lambda=42.1] [-152.8(anti) C3'-endo lambda=68.6] 
+   d(C1'-C1')=10.44 d(N1-N9)=8.84 d(C6-C8)=9.70 tor(C1'-N1-N9-C1')=-8.1 
+   H-bonds[2]: "O6(carbonyl)-N3(imino)[2.78],N1(imino)-O2(carbonyl)[2.83]" 
+   bp-pars: [-2.37 -0.60 0.11 4.67 -7.75 -2.95]
+ 
+   stems/helices:
+   
+       bp1-pars:  [-0.09    -0.11    0.08     -4.80    -11.89   0.28]
+       step-pars:  [0.38     -1.60    2.63     -5.03    7.04     22.51]
+       heli-pars:  [-5.46    -2.08    1.92     17.23    12.32    24.10]
+        bp2-pars:  [-2.56    -0.51    0.46     11.05    -9.69    -1.55]
+       C1'-based:                rise=3.62                 twist=36.20
+       C1'-based:              h-rise=2.57               h-twist=37.91
+
+   */
+  private void readMore(Map<String, Object> data, boolean isBP) throws Exception {
     String info = "";
     while (isHeader(rd())) {
       int pt = line.indexOf("[");
       line = PT.rep(line,  "_pars",  "-pars");
       if (line.indexOf("bp-pars:") >= 0) {
-        addArray(data, "bpPar", PT.parseFloatArray(line.substring(pt + 1)));
+        addArray(data, "bp", PT.parseFloatArray(line.substring(pt + 1)));
       } else if (line.indexOf("heli-pars:") >= 0) {
-        addArray(data, "helixPar", PT.parseFloatArray(line.substring(pt + 1)));
+        addArray(data, "hel",   PT.parseFloatArray(line.substring(pt + 1)));
       } else if (line.indexOf("step-pars:") >= 0) {
-        addArray(data, "stepPar", PT.parseFloatArray(line.substring(pt + 1)));
+        addArray(data, "step", PT.parseFloatArray(line.substring(pt + 1)));
       } else if ((pt = line.indexOf("h-rise=")) >= 0) {
-        addFloat(data, "rise_h", pt + 7);
-        addFloat(data, "twist_h", line.indexOf("h-twist=") + 8);
+        addFloat(data, "heRiseC1", pt + 7);
+        addFloat(data, "heTwistC1", line.indexOf("h-twist=") + 8);
       } else if ((pt = line.indexOf("rise=")) >= 0) {
-        addFloat(data, "rise", pt + 5);
-        addFloat(data, "twist", line.indexOf("twist=") + 6);
-      }
+        addFloat(data, "stRiseC1", pt + 5);
+        addFloat(data, "stTwistC1", line.indexOf("twist=") + 6);
+      } else if (line.indexOf("lambda") >= 0) {
+        //[-156.7(anti) C3'-endo lambda=84.4] [-165.6(anti) C3'-endo lambda=38.0]
+         extractFloats(data, htPar.get("bpChiLambda"));
+      } else if (line.indexOf("tor(") >= 0) {
+        // d(C1'-C1')=10.44 d(N1-N9)=8.84 d(C6-C8)=9.70 tor(C1'-N1-N9-C1')=-8.1 
+         extractFloats(data, htPar.get("bpDistTor"));
+      }     
       if (isBP && pt < 0)
         info += line + "\n";
     }
@@ -625,6 +686,31 @@ List of 50 lone WC/wobble pairs
   }
 
   
+  private int[] next = new int[1];
+  
+  private void extractFloats(Map<String, Object> data, String[] names) {
+    line = line.replace('[', '=').replace('(', ' ').replace(']', ' ');
+    next[0] = -1;
+    int n = names.length;
+    for (int i = 0, pt = 0; i < n; i++) {
+      if ((next[0] = pt = line.indexOf("=", pt) + 1) == 0)
+        break;
+      data.put(names[i], Float.valueOf(PT.parseFloatNext(line, next)));
+    }
+  }
+
+  private void addArray(Map<String, Object> data, String key,
+                        float[] f) {
+    String[] keys = htPar.get(key);
+    int n = Math.min(f.length, keys == null ? f.length : keys.length);
+    for (int i = 0; i < n; i++)
+      data.put(keys == null ? key + (i + 1) : keys[i], Float.valueOf(f[i]));
+  }
+
+  private void addFloat(Map<String, Object> data, String key, int pt) {
+    data.put(key, Float.valueOf(PT.parseFloat(line.substring(pt, Math.min(line.length(), pt + 10)))));
+  }
+
   /*
 List of 31 non-loop single-stranded segments
    1 nts=3 UAU 0.U10,0.A11,0.U12
@@ -639,16 +725,6 @@ List of 233 multiplets
   11 nts=3* AGG 0.A80,0.G94,0.G97
    */
 
-
-  private void addArray(Map<String, Object> data, String key,
-                        float[] f) {
-    for (int i = f.length; --i >= 0;)
-      data.put(key + (i + 1), Float.valueOf(f[i]));
-  }
-
-  private void addFloat(Map<String, Object> data, String key, int pt) {
-    data.put(key, Float.valueOf(PT.parseFloat(line.substring(pt, Math.min(line.length(), pt + 10)))));
-  }
 
   private Lst<Map<String, Object>> readNTList(String ntsKey, String type, int n) throws Exception {
     boolean isHairpin = (n == 2);
@@ -688,7 +764,7 @@ List of 233 multiplets
       Lst<Object> ntList = new Lst<Object>();
       htTemp.put(type + "#" + (i + 1), ntList);
       for (int j = 0; j < bps; j++) 
-        pairs.addLast(getBPData(type, ntList, isHelix));
+        pairs.addLast(getBPData(i + 1, type, ntList, isHelix));
     }
   }
 
@@ -815,7 +891,7 @@ List of 233 multiplets
         && key.indexOf("multiplets") < 0 
         && key.indexOf("singleStrand") < 0)
       key += ".basePairs";
-    if (key.indexOf(".res") < 0)
+    if (key.indexOf(".res") < 0 && key.indexOf("[SELECT res") < 0)
       key += ".res*";
     BS bs = dssrCache.get(key);
     Map<String, BS> htChains = new Hashtable<String, BS>();
@@ -829,19 +905,23 @@ List of 233 multiplets
   }
 
   private void getBsAtoms(Viewer vwr, Object data, BS bs, Map<String, BS> htChains) {
-    String[] tokens = PT.getTokens(PT.replaceAllCharacters(data.toString(), "[,]", " "));
+    String[] tokens = PT.getTokens(PT.replaceAllCharacters(data.toString(), "=[,]", " "));
     for (int j = tokens.length; --j >= 0;) {
       String t = tokens[j];
       int pt = t.indexOf(":"); 
-      if (pt < 0)
+      if (pt < 0 || pt + 1 == t.length())
         continue;
       String chain = t.substring(pt + 1);
       BS bsChain = htChains.get(chain);
+      try {
       if (bsChain == null)
         htChains.put(chain, bsChain = vwr.ms.getAtoms(T.spec_chain, Integer.valueOf(vwr.getChainID(chain))));
       BS bsRes = vwr.ms.getAtoms(T.resno, Integer.valueOf(t.substring(0, pt)));
       bsRes.and(bsChain);
       bs.or(bsRes);
+      } catch (Exception e) {
+        // ignore
+      }
     }
  }
 

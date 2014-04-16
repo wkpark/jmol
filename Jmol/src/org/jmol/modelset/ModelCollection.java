@@ -2075,7 +2075,7 @@ abstract public class ModelCollection extends BondCollection {
     }
     AtomIndexIterator iter = getSelectedAtomIterator(null, false, false, true,
         false);
-    boolean noAltLocBonding = true;
+    boolean useOccupation = false;
     for (int i = i0; i >= 0 && i < ac; i = (isAll ? i + 1 : bsCheck
         .nextSetBit(i + 1))) {
       boolean isAtomInSetA = (isAll || bsA.get(i));
@@ -2092,7 +2092,7 @@ abstract public class ModelCollection extends BondCollection {
               - 1;
           continue;
         }
-        noAltLocBonding = getInfoB(modelIndex, "altLocsAreBondSets");
+        useOccupation = getInfoB(modelIndex, "autoBondUsingOccupation"); // JANA reader
       }
       // Covalent bonds
       float myBondingRadius = atom.getBondingRadius();
@@ -2105,15 +2105,14 @@ abstract public class ModelCollection extends BondCollection {
         Atom atomNear = at[iter.next()];
         if (atomNear.isDeleted())
           continue;
-        int atomIndexNear = atomNear.i;
-        boolean isNearInSetA = (isAll || bsA.get(atomIndexNear));
-        boolean isNearInSetB = (isAll || bsB.get(atomIndexNear));
+        int j = atomNear.i;
+        boolean isNearInSetA = (isAll || bsA.get(j));
+        boolean isNearInSetB = (isAll || bsB.get(j));
         // BOTH must be excluded in order to ignore bonding
         if (!isNearInSetA && !isNearInSetB
             || !(isAtomInSetA && isNearInSetB || isAtomInSetB && isNearInSetA)
-            || isFirstExcluded && bsExclude.get(atomIndexNear)
-            || noAltLocBonding && atom.altloc != atomNear.altloc
-            && atom.altloc != 0 && atomNear.altloc !=0)
+            || isFirstExcluded && bsExclude.get(j)
+            || useOccupation && occupancies != null && (occupancies[i] < 50) == (occupancies[j] < 50))
           continue;
         short order = getBondOrderFull(myBondingRadius,
             atomNear.getBondingRadius(), iter.foundDistance2(),
@@ -2821,7 +2820,7 @@ abstract public class ModelCollection extends BondCollection {
     if (vibrations != null)
       vibrations = (Vibration[]) AU.arrayCopyObject(vibrations, newLength);
     if (occupancies != null)
-      occupancies = AU.arrayCopyByte(occupancies, newLength);
+      occupancies = AU.arrayCopyF(occupancies, newLength);
     if (bfactor100s != null)
       bfactor100s = AU.arrayCopyShort(bfactor100s, newLength);
     if (partialCharges != null)
@@ -2840,7 +2839,7 @@ abstract public class ModelCollection extends BondCollection {
   public Atom addAtom(int modelIndex, Group group, int atomicAndIsotopeNumber,
                       String atomName, int atomSerial, int atomSite, P3 xyz,
                       float radius, V3 vib, int formalCharge,
-                      float partialCharge, int occupancy, float bfactor,
+                      float partialCharge, float occupancy, float bfactor,
                       Lst<Object> tensors, boolean isHetero,
                       byte specialAtomID, BS atomSymmetry) {
     Atom atom = new Atom().setAtom(modelIndex, ac, xyz, radius,

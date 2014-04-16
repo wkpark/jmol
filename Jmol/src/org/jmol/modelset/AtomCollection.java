@@ -155,7 +155,7 @@ abstract public class AtomCollection {
   String[] atomTypes;
   int[] atomSerials;
   public Vibration[] vibrations;
-  byte[] occupancies;
+  float[] occupancies;
   short[] bfactor100s;
   float[] partialCharges;
   float[] bondingRadii;
@@ -622,9 +622,10 @@ abstract public class AtomCollection {
         vwr.shm.setAtomLabel(sValue, i);
         break;
       case T.occupancy:
-        if (iValue < 2)
-          iValue = (int) Math.floor(100 * fValue);
-        if (setOccupancy(i, iValue))
+        // a legacy thing
+        if (fValue < 2 && fValue > 0.01f)
+          fValue = 100 * fValue;
+        if (setOccupancy(i, fValue))
           taintAtom(i, TAINT_OCCUPANCY);
         break;
       case T.partialcharge:
@@ -751,15 +752,15 @@ abstract public class AtomCollection {
     return true;
   }
   
-  protected boolean setOccupancy(int atomIndex, int occupancy) {
+  protected boolean setOccupancy(int atomIndex, float occupancy) {
     if (occupancies == null) {
       if (occupancy == 100)
         return false; // 100 is the default;
-      occupancies = new byte[at.length];
+      occupancies = new float[at.length];
       for (int i = at.length; --i >= 0;)
         occupancies[i] = 100;
     }
-    occupancies[atomIndex] = (byte) (occupancy > 255 ? 255 : occupancy < 0 ? 0 : occupancy);
+    occupancies[atomIndex] = occupancy;
     return true;
   }
   
@@ -2613,7 +2614,7 @@ abstract public class AtomCollection {
     bfactor100s = (short[]) AU.deleteElements(bfactor100s,
         firstAtomIndex, nAtoms);
     hasBfactorRange = false;
-    occupancies = (byte[]) AU.deleteElements(occupancies,
+    occupancies = (float[]) AU.deleteElements(occupancies,
         firstAtomIndex, nAtoms);
     partialCharges = (float[]) AU.deleteElements(partialCharges,
         firstAtomIndex, nAtoms);

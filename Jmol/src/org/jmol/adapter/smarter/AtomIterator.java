@@ -136,8 +136,8 @@ class AtomIterator implements JmolAdapterAtomIterator {
 
 	
 	@Override
-  public int getOccupancy() {
-		return (int) (atom.foccupancy * 100);
+  public float getOccupancy() {
+		return atom.foccupancy * 100;
 	}
 
 	

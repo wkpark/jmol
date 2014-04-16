@@ -61,7 +61,7 @@ public interface JmolAdapterAtomIterator {
 
   abstract public float getBfactor();
 	
-	abstract public int getOccupancy();
+	abstract public float getOccupancy();
 
 	abstract public boolean getIsHetero();
 

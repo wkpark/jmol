@@ -830,7 +830,7 @@ public final class ModelLoader {
   private void addAtom(boolean isPDB, BS atomSymmetry, int atomSite,
                        Object atomUid, int atomicAndIsotopeNumber,
                        String atomName, int formalCharge, float partialCharge,
-                       Lst<Object> tensors, int occupancy, float bfactor,
+                       Lst<Object> tensors, float occupancy, float bfactor,
                        P3 xyz, boolean isHetero,
                        int atomSerial, String group3,
                        V3 vib,
@@ -1508,7 +1508,7 @@ public final class ModelLoader {
         break;
       case T.occupancy:
         // [0 to 100], default 100
-        modelSet.setAtomProperty(bs, tokType, iterAtom.getOccupancy(), 0, null, null,
+        modelSet.setAtomProperty(bs, tokType, 0, iterAtom.getOccupancy(), null, null,
             null);
         break;
       case T.partialcharge:

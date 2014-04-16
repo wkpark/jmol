@@ -33,9 +33,7 @@ import org.jmol.util.Tensor;
  * reading composite subsystem files such as ms-fit-1.cif but not handling
  * matrix yet
  * 
- * TODO: Uij, d > 1 TODO: handle subsystems properly
- * 
- * No plan to implement rigid-body rotation
+ * TODO: Uij, d > 1
  * 
  * @author Bob Hanson hansonr@stolaf.edu 8/7/13
  * 
@@ -696,9 +694,9 @@ public class MSReader implements MSInterface {
         // m40 Fourier
         // occ_site * (occ_0 + SUM)
         occ = pt[0] * (pt[1] + ms.vOcc);
-        System.out.println("occupancy for " + a.atomName + " is " + occ);
       }
-      a.foccupancy = (float) Math.min(1, Math.max(0, occ));
+      // 49/50 is an important range for cutoffs -- we let this range be void
+      a.foccupancy = (occ > 0.49 && occ < 0.50 ? 0.489f : (float) Math.min(1, Math.max(0, occ)));
     }
     if (ms.htUij != null) {
       // Uiso or Uij. We add the displacements, create the tensor, then rotate it, 

@@ -865,6 +865,9 @@ public class JanaReader extends AtomSetCollectionReader {
   private double[] setRigidBodyPhase(String key, double[] v, T3 vRot) {
     P3 pt = P3.newP(vRot);
     boolean isCenter = false;
+    
+    // really only OCC and DISP processed here.
+    
     switch (ms.getModType(key)) {
     case Modulation.TYPE_OCC_FOURIER:
     case Modulation.TYPE_DISP_FOURIER:
@@ -875,31 +878,34 @@ public class JanaReader extends AtomSetCollectionReader {
       isCenter = true;
       break;
     }
+    
+    // calculate the overall sum of all wave vector products
+    // including here the Fourier number "n" (untested)
     double nqDotD = 0;
     double n = -1;
     double[] qcoefs = ms.getQCoefs(key);
     for (int i = modDim; --i >= 0;) {
       if (qcoefs[i] != 0) {
         n = qcoefs[i];
-        // n in sin(2 pi n q.vRot), where pt is (<final atom position> - <reference point>)
+        // n in sin(2 pi n q.vRot),
         double[] q = ms.getMod("W_" + (i + 1));
         nqDotD = n * (q[0] * pt.x + q[1] * pt.y + q[2] * pt.z);
         break;
       }
     }
-    Logger.info ("unphased coefficients: " + key + " " + n + " " +  v[0] + " " + v[1]);
     if (isCenter) {
+      // untested -- shift center
       v[0] += nqDotD; // move center of sawtooth or crenel to match this atom
     } else {
-      double cA = v[0]; // A sin...
-      double cB = v[1]; // B cos....
-      double sin = Math.sin(2 * Math.PI * nqDotD);
-      double cos = Math.cos(2 * Math.PI * nqDotD);
-      v[0] = cA * cos + cB * sin;   // A sin
-      v[1] = -cA * sin + cB * cos;  // B cos
+      // apply sin(a + x) = sin(a)cos(x) + cos(a)sin(x)
+      //       cos(a + x) = cos(a)cos(x) - sin(a)sin(x) 
+      double sA = v[0]; // A sin...
+      double cA = v[1]; // B cos....
+      double sX = Math.sin(2 * Math.PI * nqDotD);
+      double cX = Math.cos(2 * Math.PI * nqDotD);
+      v[0] = sA * cX + cA * sX;   // A sin
+      v[1] = -sA * sX + cA * cX;  // B cos
     }
-    Logger.info ("phased coefficients: " + key+ " "  + n + " " +  v[0] + " " + v[1]);
-    Logger.info ("");
     return v;
   }
 

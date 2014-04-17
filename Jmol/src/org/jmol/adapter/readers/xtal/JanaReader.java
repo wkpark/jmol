@@ -23,7 +23,6 @@
  */
 package org.jmol.adapter.readers.xtal;
 
-import java.io.BufferedReader;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -65,6 +64,7 @@ public class JanaReader extends AtomSetCollectionReader {
   private boolean modAverage;
   private String modAxes;
   private int modDim;
+  private boolean haveM40Data;
   
   @Override
   public void initializeReader() throws Exception {
@@ -144,6 +144,13 @@ public class JanaReader extends AtomSetCollectionReader {
           qi();
         break;
       case END:
+        // look for appended M40 data from load x.M50 + x.M40
+        while (rd() != null) {
+          if (line.startsWith("command") || parseIntStr(line) >= 0) {
+            readM40Data(true);
+            break;
+          }
+        }
         continuing = false;
         break;
       case WMATRIX:
@@ -173,7 +180,8 @@ public class JanaReader extends AtomSetCollectionReader {
 
   @Override
   public void finalizeReader() throws Exception {
-    readM40Data();
+    if (!haveM40Data)
+      readM40Data(false);
     if (lattvecs != null && lattvecs.size() > 0)
       asc.getSymmetry().addLatticeVectors(lattvecs);
     applySymmetryAndSetTrajectory();
@@ -294,23 +302,35 @@ public class JanaReader extends AtomSetCollectionReader {
 
 
   /**
-   * read the M40 file
+   * read the M40 file, possibly as the extension of M50+M40
+   * 
+   * @param haveReader
    * 
    * @throws Exception
    */
-  private void readM40Data() throws Exception {
-    String name = filePath;
-    int ipt = name.lastIndexOf(".");
-    if (ipt < 0)
-      return;
-    name = name.substring(0, ipt + 2) + "40";
-    String id = name.substring(0, ipt);
-    ipt = id.lastIndexOf("/");
-    id = id.substring(ipt + 1);
-    BufferedReader r = Rdr.getBR((String) vwr.getLigandModel(id, name, "_file",
-        "----"));
-    if (readM40Floats(r).startsWith("command"))
-      readM40WaveVectors(r);
+  private void readM40Data(boolean haveReader) throws Exception {
+    if (haveReader) {
+      // already have the line
+      parseM40Floats();
+    } else {
+      // must retrieve separate file
+      String m40File = filePath;
+      int ipt = m40File.lastIndexOf(".");
+      if (ipt < 0)
+        return;
+      m40File = m40File.substring(0, ipt + 2) + "40";
+      String id = m40File.substring(0, ipt);
+      ipt = id.lastIndexOf("/");
+      id = id.substring(ipt + 1);
+      reader.close();
+      reader = Rdr.getBR((String) vwr.getLigandModel(id, m40File, "_file", "----"));
+      if (out != null)
+        out.append("******************************* M40 DATA *******************************\n");
+      readM40Floats();
+    }
+    haveM40Data = true;
+    if (line.startsWith("command"))
+      readM40WaveVectors();
 
     // ref: manual98.pdf
     // Jana98: The Crystallographic Computing System
@@ -370,14 +390,15 @@ public class JanaReader extends AtomSetCollectionReader {
       molAtoms = new Lst<Atom>();
       molTtypes = new Lst<Integer>();
     }
-    
+
     // note that we are skipping scale, overall isotropic temperature factor, and extinction parameters
-    
-    while (skipToNextAtom(r) != null) {
+
+    while (skipToNextAtom() != null) {
       nAtoms++;
       Atom atom = new Atom();
       Logger.info(line);
-      atom.atomName = name = line.substring(0, 9).trim();
+      String name = line.substring(0, 9).trim();
+      atom.atomName = name;
       boolean isRefAtom = name.equals(refAtomName);
       atom.foccupancy = floats[2];
       boolean isJanaMolecule = Float.isNaN(atom.foccupancy);
@@ -390,7 +411,8 @@ public class JanaReader extends AtomSetCollectionReader {
 
         // see http://en.wikipedia.org/wiki/Crystallographic_point_group
         if (pointGroup.length() > 0 && !pointGroup.equals("1")) {
-          throw new Exception("Jmol cannot process M40 files with molecule positions based on point-group symmetry.");
+          throw new Exception(
+              "Jmol cannot process M40 files with molecule positions based on point-group symmetry.");
         }
         refAtomName = null;
         if (Float.isNaN(floats[4]))
@@ -425,13 +447,13 @@ public class JanaReader extends AtomSetCollectionReader {
             iSub++;
           atom.altLoc = ("" + iSub).charAt(0);
         }
-        readAtomRecord(r, atom, null, null, false);
+        readAtomRecord(atom, null, null, false);
         if (molAtoms != null)
           molAtoms.addLast(atom);
       } else {
         if (molAtoms.size() == 0)
           continue;
-        processPosition(r, posName, atom, isAxial);
+        processPosition(posName, atom, isAxial);
       }
     }
   }
@@ -470,23 +492,18 @@ public class JanaReader extends AtomSetCollectionReader {
   private boolean getFlag(int i) {
     return (getInt(i, i + 1) > 0);
   }
-  private String skipToNextAtom(BufferedReader r) throws Exception {
-    while (readM40Floats(r) != null
+  private String skipToNextAtom() throws Exception {
+    while (readM40Floats() != null
         && (line.length() == 0 || line.charAt(0) == ' ' || line.charAt(0) == '-')) {
     }
     return line;
   }
 
-  private void skipLines(BufferedReader r, int n) throws Exception {
-    for (int i = 1; i < n; i++)
-      r.readLine();
-  }
-
   public final static String U_LIST = "U11U22U33U12U13U23UISO";
   
   
-  private void readM40WaveVectors(BufferedReader r) throws Exception {
-    while (!readM40Floats(r).contains("end"))
+  private void readM40WaveVectors() throws Exception {
+    while (!readM40Floats().contains("end"))
       if (line.startsWith("wave")) {
         String[] tokens = getTokens();
         double[] pt = new double[modDim];
@@ -494,7 +511,7 @@ public class JanaReader extends AtomSetCollectionReader {
           pt[i] = parseFloatStr(tokens[i + 2]);
         ms.addModulation(null, "F_" + parseIntStr(tokens[1]) + "_coefs_", pt, -1);
       }
-    readM40Floats(r);
+    readM40Floats();
   }
 
   //////////////// JANA "molecule" business //////////////
@@ -510,13 +527,12 @@ public class JanaReader extends AtomSetCollectionReader {
    * 
    * At this point we only support systType=1 (basic coordinates)
    * 
-   * @param r
    * @param posName
    * @param pos
    * @param isAxial
    * @throws Exception
    */
-  private void processPosition(BufferedReader r, String posName, Atom pos,
+  private void processPosition( String posName, Atom pos,
                                boolean isAxial) throws Exception {
 
     // read the first pos# line.
@@ -540,7 +556,7 @@ public class JanaReader extends AtomSetCollectionReader {
 
     // read the modulation --  phi, chi, psi, and vTrans will be stored in atom.anisoBorU
     
-    float[][] rotData = readAtomRecord(r, pos, rm, rp, true);
+    float[][] rotData = readAtomRecord(pos, rm, rp, true);
 
     String name = pos.atomName;
     int n = molAtoms.size();
@@ -650,7 +666,6 @@ public class JanaReader extends AtomSetCollectionReader {
    * 
    * Not implemented: TLS, space groups, and local position rotation axes.
    * 
-   * @param r
    * @param atom
    * @param rm
    *        // rotation vector/point not implemented
@@ -661,7 +676,7 @@ public class JanaReader extends AtomSetCollectionReader {
    * 
    * @throws Exception
    */
-  private float[][] readAtomRecord(BufferedReader r, Atom atom, P3 rm, P3 rp,
+  private float[][] readAtomRecord( Atom atom, P3 rm, P3 rp,
                                    boolean isPos) throws Exception {
     String label = ";" + atom.atomName;
     int tType = (isPos ? -1 : getInt(13, 14));
@@ -674,20 +689,20 @@ public class JanaReader extends AtomSetCollectionReader {
     int nDisp = getInt(68, 71);
     int nUij = getInt(71, 74);
     if (rm != null) {
-      readM40Floats(r);
+      readM40Floats();
       rm.set(floats[0], floats[1], floats[2]);
       rp.set(floats[3], floats[4], floats[5]);
     }
     if (tType > 2)
-      readM40Floats(r);
+      readM40Floats();
     // read anisotropies (or Pos#n rotation/translations)
-    readM40Floats(r);
+    readM40Floats();
     switch (tType) {
     case 6:
     case 5:
     case 4:
     case 3:
-      skipLines(r, tType - 1);
+      readLines(tType - 1);
       appendLoadNote("Skipping temperature factors with order > 2");
       //$FALL-THROUGH$
     case 2:
@@ -708,12 +723,12 @@ public class JanaReader extends AtomSetCollectionReader {
       return null; // return for unmodulated Pos#n
 
     if (isPos && molHasTLS)
-      skipLines(r, 4);
+      readLines(4);
 
     // read occupancy modulation
 
     double[] pt;
-    float o_0 = (nOcc > 0 && !haveSpecialOcc ? parseFloatStr(r.readLine()) : 1);
+    float o_0 = (nOcc > 0 && !haveSpecialOcc ? parseFloatStr(rd()) : 1);
 
     // We add a J_O record that saves the original (unadjusted) o_0 and o_site
     //
@@ -730,12 +745,12 @@ public class JanaReader extends AtomSetCollectionReader {
     float a1, a2;
     for (int j = 0; j < nOcc; j++) {
       if (haveSpecialOcc) {
-        float[][] data = readM40FloatLines(2, 1, r);
+        float[][] data = readM40FloatLines(2, 1);
         a2 = data[0][0]; // width (first line)
         a1 = data[1][0]; // center (second line)
       } else {
         wv = j + 1;
-        readM40Floats(r);
+        readM40Floats();
         a1 = floats[0]; // sin (first on line)
         a2 = floats[1]; // cos (second on line)
       }
@@ -748,7 +763,7 @@ public class JanaReader extends AtomSetCollectionReader {
 
     for (int j = 0; j < nDisp; j++) {
       if (haveSpecialDisp) {
-        readM40Floats(r);
+        readM40Floats();
         float c = floats[3]; // center
         float w = floats[4]; // width
         for (int k = 0; k < 3; k++)
@@ -757,13 +772,13 @@ public class JanaReader extends AtomSetCollectionReader {
                 new double[] { c, w, floats[k] }, -1);
       } else {
         // Fourier displacements
-        addSinCos(j, "D_", label, r, isPos);
+        addSinCos(j, "D_", label, isPos);
       }
     }
 
     // collect rotational displacive parameters
 
-    float[][] rotData = (isPos && nDisp > 0 ? readM40FloatLines(nDisp, 6, r)
+    float[][] rotData = (isPos && nDisp > 0 ? readM40FloatLines(nDisp, 6)
         : null);
 
     // finally read Uij sines and cosines
@@ -773,14 +788,14 @@ public class JanaReader extends AtomSetCollectionReader {
         ensureFourier(j);
         if (tType == 1) {
           // fourier?
-          addSinCos(j, "U_", label, r, false);
+          addSinCos(j, "U_", label, false);
         } else {
           if (haveSpecialUij) {
             //TODO
             Logger.error("JanaReader -- not interpreting SpecialUij flag: "
                 + line);
           } else {
-            float[][] data = readM40FloatLines(2, 6, r);
+            float[][] data = readM40FloatLines(2, 6);
             for (int k = 0, p = 0; k < 6; k++, p += 3)
               ms.addModulation(null,
                   "U_" + (j + 1) + "#" + U_LIST.substring(p, p + 3) + label,
@@ -801,14 +816,13 @@ public class JanaReader extends AtomSetCollectionReader {
    * @param j
    * @param key
    * @param label
-   * @param r
    * @param isPos
    * @throws Exception
    */
-  private void addSinCos(int j, String key, String label, BufferedReader r, boolean isPos)
+  private void addSinCos(int j, String key, String label, boolean isPos)
       throws Exception {
     ensureFourier(j);
-    readM40Floats(r);
+    readM40Floats();
     for (int k = 0; k < 3; ++k) {
       float csin = floats[k];
       float ccos = floats[k + 3];
@@ -842,22 +856,26 @@ public class JanaReader extends AtomSetCollectionReader {
 
   private float[] floats = new float[6];
   
-  private String readM40Floats(BufferedReader r) throws Exception {
-    if ((line = r.readLine()) == null || line.indexOf("-------") >= 0) 
+  private String readM40Floats() throws Exception {
+    if ((line = rd()) == null || line.indexOf("-------") >= 0) 
       return (line = null);
     if (Logger.debugging)
       Logger.debug(line);
+    parseM40Floats();
+    return line;
+  }
+
+  private void parseM40Floats() {
     int ptLast = line.length() - 9;
     for (int i = 0, pt = 0; i < 6; i++, pt += 9) {
       floats[i] = (pt <= ptLast ? parseFloatStr(line.substring(pt, pt + 9)) : Float.NaN);
     }
-    return line;
   }
 
-  private float[][] readM40FloatLines(int nLines, int nFloats, BufferedReader r) throws Exception {
+  private float[][] readM40FloatLines(int nLines, int nFloats) throws Exception {
     float[][] data = new float[nLines][nFloats];
     for (int i = 0; i < nLines; i++) {
-      readM40Floats(r);
+      readM40Floats();
       for (int j = 0; j < nFloats; j++)
         data[i][j] = floats[j];
     }

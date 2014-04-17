@@ -2112,7 +2112,7 @@ abstract public class ModelCollection extends BondCollection {
         if (!isNearInSetA && !isNearInSetB
             || !(isAtomInSetA && isNearInSetB || isAtomInSetB && isNearInSetA)
             || isFirstExcluded && bsExclude.get(j)
-            || useOccupation && occupancies != null && (occupancies[i] < 50) == (occupancies[j] < 50))
+            || useOccupation && occupancies != null && (occupancies[i] < 50) != (occupancies[j] < 50))
           continue;
         short order = getBondOrderFull(myBondingRadius,
             atomNear.getBondingRadius(), iter.foundDistance2(),

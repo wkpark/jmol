@@ -697,6 +697,7 @@ public class MSReader implements MSInterface {
       }
       // 49/50 is an important range for cutoffs -- we let this range be void
       a.foccupancy = (occ > 0.49 && occ < 0.50 ? 0.489f : (float) Math.min(1, Math.max(0, occ)));
+      Logger.info("atom " + a.atomName + " occupancy = " + a.foccupancy);
     }
     if (ms.htUij != null) {
       // Uiso or Uij. We add the displacements, create the tensor, then rotate it, 

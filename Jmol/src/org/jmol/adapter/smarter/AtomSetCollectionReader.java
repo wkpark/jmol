@@ -1425,11 +1425,8 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
   public String RL() throws Exception {
     prevline = line;
     line = reader.readLine();
-    if (out != null && line != null) {
-      byte[] b = line.getBytes();
-      out.write(b, 0, b.length);
-      out.writeByteAsInt(0x0A);
-    }
+    if (out != null && line != null)
+      out.append(line).append("\n");
     ptLine++;
     if (Logger.debugging)
       Logger.debug(line);

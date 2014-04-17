@@ -260,6 +260,19 @@ public abstract class T3 implements JSONEncodable, Serializable {
   }
 
   /**
+   * Sets this tuple to be the vector cross product of vectors v1 and v2.
+   * 
+   * @param v1
+   *        the first vector
+   * @param v2
+   *        the second vector
+   */
+  public final void cross(T3 v1, T3 v2) {
+    set(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y
+        - v1.y * v2.x);
+  }
+
+  /**
    * Returns a hash number based on the data values in this object. Two
    * different Tuple3f objects with identical data values (ie, returns true for
    * equals(Tuple3f) ) will return the same hash number. Two vectors with

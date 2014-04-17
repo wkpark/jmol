@@ -1,4 +1,4 @@
-  /* $RCSfile$
+/* $RCSfile$
  * $Author: hansonr $
  * $Date: 2006-09-30 10:16:53 -0500 (Sat, 30 Sep 2006) $
  * $Revision: 5778 $
@@ -36,6 +36,7 @@ import org.jmol.api.SymmetryInterface;
 import org.jmol.java.BS;
 
 import javajs.util.A4;
+import javajs.util.M3;
 import javajs.util.P3;
 import javajs.util.Quat;
 import javajs.util.Rdr;
@@ -244,9 +245,10 @@ public class JanaReader extends AtomSetCollectionReader {
   private Lst<Integer> molTtypes;
   private Lst<P3> freePositions;
   private boolean molHasTLS;
-  private Quat qR, qRev;
+  private M3 matR;
   private P3 ptRef;
   private boolean firstPosition;
+  private V3 vRot, v0cart;
 
 
   /**
@@ -517,13 +519,13 @@ public class JanaReader extends AtomSetCollectionReader {
     Quat psi = Quat.newAA(A4.newVA(
         isAxial ? V3.new3(1, 0, 0) : V3.new3(0, 0, 1),
         (float) (pos.anisoBorU[2] / 180 * Math.PI)));
-    qR = phi.mulQ(chi).mulQ(psi);
-    qRev = qR.inv();
+    matR = phi.mulQ(chi).mulQ(psi).getMatrix();
+    if (isImproper)
+      matR.scale(-1);
 
-    
     /**
      * vTrans is the fractional-coordinate offset of this
-     * pos# fragment's offset from the molecular reference point.
+     * pos# fragment's from the molecular reference point.
      * 
      * atom.anisoBorU is just a convenient array that we are
      * temporarily using. "atom" itself is never added to the 
@@ -561,18 +563,17 @@ public class JanaReader extends AtomSetCollectionReader {
       // 
       
       a.sub2(freePositions.get(i), ptRef);
+      symmetry.toCartesian(v0cart = V3.newV(a), true);
       cartesianProduct(a, null);
-      if (isImproper)
-        a.scale(-1);      
-      V3 vRot = V3.newV(a);      
+      vRot = V3.newV(a); 
       a.add(ptRef);
       a.add(vTrans);
       
       // copy and process all modulations
       
-      copyModulations(";" + pos.atomName, ";" + newName, vRot);
+      copyModulations(";" + pos.atomName, ";" + newName);
       if (rotData != null)
-        setRigidBodyRotations(";" + newName, vRot, rotData);
+        setRigidBodyRotations(";" + newName, rotData);
     }
     firstPosition = false;
     script = "@" + molName + ext + script.substring(1);
@@ -641,7 +642,7 @@ public class JanaReader extends AtomSetCollectionReader {
       break;
     }
     if (modDim == 0)
-      return null; // return for nonmodulated Pos#n
+      return null; // return for unmodulated Pos#n
 
     if (isPos && molHasTLS)
       skipLines(r, 4);
@@ -732,7 +733,7 @@ public class JanaReader extends AtomSetCollectionReader {
   }
 
   /**
-   * Add x, y, and z modulations as [ csin, ccos, 0]
+   * Add x, y, and z modulations as [ csin, ccos, 0 ]
    * 
    * @param j
    * @param key
@@ -818,7 +819,7 @@ public class JanaReader extends AtomSetCollectionReader {
     }
   }
 
-  private void copyModulations(String label, String newLabel, T3 vRot) {
+  private void copyModulations(String label, String newLabel) {
     Map<String, double[]> mapTemp = new Hashtable<String, double[]>();
     for (Entry<String, double[]> e : ms.getModulationMap().entrySet()) {
       String key = e.getKey();
@@ -828,7 +829,7 @@ public class JanaReader extends AtomSetCollectionReader {
       double[] val = e.getValue();
       switch (key.charAt(0)) {
       case 'O':
-        setRigidBodyPhase(key, val = new double[] {val[0], val[1], 0}, vRot);
+        setRigidBodyPhase(key, val = new double[] {val[0], val[1], 0});
         break;
       case 'D':
         // we will phase at the time of rotation
@@ -849,21 +850,17 @@ public class JanaReader extends AtomSetCollectionReader {
    * Adjust phases to match the difference between the atom's position and the
    * rigid molecular fragment's reference point. We have:
    * 
-   * r' = R(r - rho) + rho + t
+   *   a' = ptRef + vTrans + vRot
    * 
-   * Here we want just the local rotational part:
-   * 
-   * r'- rho - t = R(r - rho)
+   * Here we want just the local rotational part, vRot
    * 
    * 
    * @param key 
    * @param v 
-   * @param vRot 
    * @return phase-adjusted parameters
    * 
    */
-  private double[] setRigidBodyPhase(String key, double[] v, T3 vRot) {
-    P3 pt = P3.newP(vRot);
+  private double[] setRigidBodyPhase(String key, double[] v) {
     boolean isCenter = false;
     
     // really only OCC and DISP processed here.
@@ -889,7 +886,7 @@ public class JanaReader extends AtomSetCollectionReader {
         n = qcoefs[i];
         // n in sin(2 pi n q.vRot),
         double[] q = ms.getMod("W_" + (i + 1));
-        nqDotD = n * (q[0] * pt.x + q[1] * pt.y + q[2] * pt.z);
+        nqDotD = n * (q[0] * vRot.x + q[1] * vRot.y + q[2] * vRot.z);
         break;
       }
     }
@@ -910,57 +907,52 @@ public class JanaReader extends AtomSetCollectionReader {
   }
 
   /**
-   * Transform unphased Fourier x,y,z cos/sin coefficients in a 
-   * rigid body system based on distance from center. We have:
+   * Transform unphased Fourier x,y,z cos/sin coefficients in a rigid body
+   * system based on distance from center. We have:
    * 
-   * a' = ptRef + vTrans + vRot
+   * a' = ptRef + vTrans + v0
    * 
-   * Here we need just the local rotational part, vRot,
-   * made cartesian and UN rotated.
+   * Here we need just the local rotational part, v0, 
+   * as a Cartesian vector.
    * 
-   * @param label ";atomName"
-   * @param vRot 
-   * @param params block of [nDisp][6] rotational parameters
+   * @param label
+   *        ";atomName"
+   * @param params
+   *        block of [nDisp][6] rotational parameters
    * 
    */
-  private void setRigidBodyRotations(String label, T3 vRot, float[][] params) {
-    
-    // transform to Cartesians for this operation
-    
-    V3 vCart = V3.newV(vRot);
-    symmetry.toCartesian(vCart, true);
-    qRev.transformP2(vCart, vCart);
-    
+  private void setRigidBodyRotations(String label, float[][] params) {
+
     // process each contribution as a separate set of x y z modulations
-    
+
     int n = params.length;
     for (int i = 0; i < n; i++) {
       ensureFourier(i);
-      String key = "D_"+ (i + 1);
+      String key = "D_" + (i + 1);
       float[] data = params[i];
       V3 vsin = V3.new3(data[0], data[1], data[2]);
       V3 vcos = V3.new3(data[3], data[4], data[5]);
-      
+
       // sines and cosines vectors into cartesians, 
       // cross with rotation vector, and back to fractional
-      
-      cartesianProduct(vcos, vCart);
-      cartesianProduct(vsin, vCart);
-      
+
+      cartesianProduct(vcos, v0cart);
+      cartesianProduct(vsin, v0cart);
+
       // add in already-cataloged raw displacement component
-      
+
       String keyx = key + "#x" + label;
       String keyy = key + "#y" + label;
       String keyz = key + "#z" + label;
-      double[] vx = addRotMod(keyx, vsin.x, vcos.x);
-      double[] vy = addRotMod(keyy, vsin.y, vcos.y);
-      double[] vz = addRotMod(keyz, vsin.z, vcos.z);
-      
+      double[] vx = addDisplacement(keyx, vsin.x, vcos.x);
+      double[] vy = addDisplacement(keyy, vsin.y, vcos.y);
+      double[] vz = addDisplacement(keyz, vsin.z, vcos.z);
+
       // set back into T3 vector mode for processing
-      
-      vsin.set((float) vx[0],(float)  vy[0],(float)  vz[0]);
-      vcos.set((float) vx[1],(float)  vy[1],(float)  vz[1]);
-      
+
+      vsin.set((float) vx[0], (float) vy[0], (float) vz[0]);
+      vcos.set((float) vx[1], (float) vy[1], (float) vz[1]);
+
       // now take combined translation and rotation
       // to Cartesian, rotate by qR, then back to fractional
 
@@ -968,40 +960,42 @@ public class JanaReader extends AtomSetCollectionReader {
       cartesianProduct(vcos, null);
 
       // save the displacement sines and cosines again
-      
-      setRotMod(keyx, vsin.x, vcos.x, vRot);
-      setRotMod(keyy, vsin.y, vcos.y, vRot);
-      setRotMod(keyz, vsin.z, vcos.z, vRot);
-      
+
+      setRotMod(keyx, vsin.x, vcos.x);
+      setRotMod(keyy, vsin.y, vcos.y);
+      setRotMod(keyz, vsin.z, vcos.z);
+
       // not so bad!!!!
 
     }
   }
 
   /**
-   * dual-purpose function for cross products and rotations
+   * dual-purpose function for cross products,
+   * proper rotations, and improper rotations
    * 
    * @param vA
    * @param vB
    */
   private void cartesianProduct(T3 vA, T3 vB) {
     symmetry.toCartesian(vA, true);
-    if (vB == null)
-      qR.transformP2(vA, vA);
-    else
-      ((V3) vA).cross(vA, vB);
+    if (vB == null) // proper or improper rotation
+      matR.rotate2(vA, vA);
+    else  //cross these two
+      vA.cross(vA, vB);
     symmetry.toFractional(vA, true);
   }
 
   /**
-   * convenience only
+   * Retrieve cataloged displacement and add in this component,
+   * returning a new double[3].
    * 
    * @param key
    * @param csin
    * @param ccos
    * @return new array
    */
-  private double[] addRotMod(String key, float csin, float ccos) {
+  private double[] addDisplacement(String key, float csin, float ccos) {
     double[] v = ms.getMod(key);
     return new double[] {v[0] + csin,  v[1] + ccos, 0};
   }
@@ -1012,10 +1006,9 @@ public class JanaReader extends AtomSetCollectionReader {
    * @param key
    * @param csin
    * @param ccos
-   * @param vRot
    */
-  private void setRotMod(String key, float csin, float ccos, T3 vRot) {
-    ms.addModulation(null, key, setRigidBodyPhase(key, new double[] {csin, ccos, 0}, vRot), -1);
+  private void setRotMod(String key, float csin, float ccos) {
+    ms.addModulation(null, key, setRigidBodyPhase(key, new double[] {csin, ccos, 0}), -1);
   }
 
 }

@@ -49,19 +49,6 @@ public class V3 extends T3 {
   }
 
   /**
-   * Sets this vector to be the vector cross product of vectors v1 and v2.
-   * 
-   * @param v1
-   *        the first vector
-   * @param v2
-   *        the second vector
-   */
-  public final void cross(T3 v1, T3 v2) {
-    set(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y
-        - v1.y * v2.x);
-  }
-
-  /**
    * Returns the angle in radians between this vector and the vector parameter;
    * the return value is constrained to the range [0,PI].
    * 

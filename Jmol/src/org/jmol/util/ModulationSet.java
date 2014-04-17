@@ -119,8 +119,7 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
    * GammaIinv and tau.
    * 
    * @param id
-   * @param ptAtom
-   * @param r0 TODO
+   * @param r0        unmodulated (average) position
    * @param modDim
    * @param mods
    * @param gammaE
@@ -137,7 +136,7 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
                            int iop, SymmetryInterface symmetry) {
     this.id = id + "_" + symmetry.getSpaceGroupName();
     this.r0 = P3.newP(r0); 
-    Logger.info("ModulationSet atom " + id + " at " + r0);
+    //Logger.info("ModulationSet atom " + id + " at " + r0);
     strop = symmetry.getSpaceGroupXyz(iop, false);
     this.modDim = modDim;
     this.mods = mods;

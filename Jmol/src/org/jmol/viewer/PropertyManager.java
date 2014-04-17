@@ -390,12 +390,15 @@ public class PropertyManager implements JmolPropertyManager {
         if (isWild && v2 == null)
           v2 = new Lst<Object>();
         if (isWild && key.equals("*")) {
-          v2.addLast(h);
-          return v2;
+          if (ptr == ((SV[]) args).length) {
+            v2.addLast(h);
+            return v2;
+          }
+          return extractProperty(h, args, ptr, v2);
         }
         key = checkMap(h, key, isWild, v2, args, ptr);
-        return (key != null && !isWild ? extractProperty(h.get(key), args, ptr, null)
-            : isWild ? v2 : "");
+        return (key != null && !isWild ? extractProperty(h.get(key), args, ptr,
+            null) : isWild ? v2 : "");
       }
       if (property instanceof Lst<?>) {
         // drill down into vectors for this key
@@ -406,8 +409,8 @@ public class PropertyManager implements JmolPropertyManager {
         ptr--;
         for (pt = 0; pt < v.size(); pt++) {
           Object o = v.get(pt);
-          if (o instanceof Map<?, ?> || o instanceof Lst<?> 
-          || (o instanceof SV)
+          if (o instanceof Map<?, ?> || o instanceof Lst<?>
+              || (o instanceof SV)
               && (((SV) o).getMap() != null || ((SV) o).getList() != null))
             extractProperty(o, args, ptr, v2);
         }

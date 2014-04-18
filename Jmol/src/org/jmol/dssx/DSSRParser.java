@@ -584,8 +584,9 @@ List of 50 lone WC/wobble pairs
     String[] tokens = PT.getTokens(line);
     String nt12 = tokens[1] + tokens[2];
     Map<String, Object> data;
-    boolean isReversed = false;
-    if (ntList == null) {
+    //boolean isReversed = false;
+    data = (Map<String, Object>) htTemp.get(nt12);
+    if (data == null) {
       i = PT.parseInt(tokens[0]);
       data = new Hashtable<String, Object>();
       String nt1 = fix(tokens[1], true);
@@ -611,29 +612,29 @@ List of 50 lone WC/wobble pairs
       data.put("DSSR", tokens[++pt]);
       htTemp.put(nt12, data);
     } else {
-      data = (Map<String, Object>) htTemp.get(nt12);
-      isReversed = (data == null);
-      if (isReversed) {
-        nt12 = tokens[2] + tokens[1];
-        data = (Map<String, Object>) htTemp.get(nt12);
-      }
-      if (data == null) {
-        Logger.error("DSSR base pair not found in readMore: " + type + " " + tokens[0] + " " + tokens[1]);        
-      } else {
-        ntList.addLast(data);
-        data.put(type + "Rev", Boolean.valueOf(isReversed ));
-      }
+//      isReversed = true;
+//      if (isReversed) {
+//        nt12 = tokens[2] + tokens[1];
+//        data = (Map<String, Object>) htTemp.get(nt12);
+//      }
+//      if (data == null) {
+//        Logger.error("DSSR base pair not found in readMore: " + type + " " + tokens[0] + " " + tokens[1]);        
+//      }
     }
-    if (data == null) {
-      skipHeader();
-    } else {
+//    if (data == null) {
+//      skipHeader();
+//    } else {
+//      if (readParams)
+//        data.put(type + "Rev", Boolean.valueOf(isReversed ));
+      if (ntList != null)
+        ntList.addLast(data);
       data.put((type == null ? "id" : type + "Id"),
           (i < 0 ? tokens[0] : Integer.valueOf(i)));
       if (readParams)
         readMore(data, ntList == null);
       else
         skipHeader();
-    }
+//    }
     return data;
   }
 

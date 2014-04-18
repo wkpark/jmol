@@ -486,41 +486,4 @@ public class Txt {
     return ichT;
   }
 
-  public static boolean isSQLMatch(Object val, String match, int mode) {
-    switch (mode) {
-    case 0: // =
-    case 1: // != 
-      return (mode == 0) == val.toString().equals(match);
-    case 2: // <
-    case 3: // >
-      float f = (val instanceof Float ? ((Float) val).floatValue() 
-          : val instanceof Integer ? ((Integer) val).floatValue() 
-          : Float.NaN);
-      float fm = PT.parseFloat(match);
-      return (mode == 2 ? f < fm : f > fm);
-    case 4: // LIKE
-    case 5: // NOT LIKE
-      String v = val.toString();
-      String q = "";
-      if (match.length() > 1
-          && (match.startsWith(q = "'") || match.startsWith(q = "\""))
-          && match.endsWith(q))
-        match = match.substring(1, match.length() - 1);
-      boolean isStart = match.startsWith("%");
-      boolean isEnd = match.endsWith("%");
-      boolean isOK;
-      if (!isStart && !isEnd) {
-        isOK = v.equals(match);
-      } else if (isStart && isEnd) {
-        isOK = v.contains(match.substring(1, match.length() - 1));
-      } else if (isStart) {
-        isOK = v.endsWith(match.substring(1));
-      } else {
-        isOK = v.startsWith(match.substring(0, match.length() - 1));
-      }
-      return isOK == (mode == 4);
-    }
-    return false;
-  }
-
 }

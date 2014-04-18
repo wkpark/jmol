@@ -373,7 +373,7 @@ abstract public class BondCollection extends AtomCollection {
    * @param isFullModel
    */
   protected void dBm(BS bsBonds, boolean isFullModel) {
-    ((ModelCollection) this).deleteBonds(bsBonds, isFullModel);
+    ((ModelSet) this).deleteBonds(bsBonds, isFullModel);
   }
 
   protected void dBb(BS bsBond, boolean isFullModel) {
@@ -390,7 +390,7 @@ abstract public class BondCollection extends AtomCollection {
         if (!isFullModel) {
           int modelIndex = bond.atom1.mi;
           if (modelIndex != modelIndexLast)
-            ((ModelCollection) this).am[modelIndexLast = modelIndex]
+            ((ModelSet) this).am[modelIndexLast = modelIndex]
                 .resetBoundCount();
         }
         bond.deleteAtomReferences();

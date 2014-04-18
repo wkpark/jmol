@@ -213,7 +213,7 @@ public class Model {
   public boolean isJmolDataFrame;
   public long frameDelay;
   public SymmetryInterface simpleCage;
-  public Map<String, BS> dssrCache;
+  public Map<String, Object> dssrCache;
 
   public String getModelNumberDotted() {
     return ms.getModelNumberDotted(modelIndex);

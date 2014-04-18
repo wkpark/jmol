@@ -777,19 +777,17 @@ public class ScriptEval extends ScriptExpr {
 
   // /////////////// string-based evaluation support /////////////////////
 
-  private final static String EXPRESSION_KEY = "e_x_p_r_e_s_s_i_o_n";
-
   /**
    * a general-use method to evaluate a "SET" type expression.
-   * 
-   * @param expr
    * @param asVariable
+   * @param expr
+   * 
    * @return an object of one of the following types: Boolean, Integer, Float,
    *         String, Point3f, BitSet
    */
 
   @Override
-  public Object evaluateExpression(Object expr, boolean asVariable) {
+  public Object evaluateExpression(Object expr, boolean asVariable, boolean compileOnly) {
     // Text.formatText for MESSAGE and ECHO
     // prior to 12.[2/3].32 was not thread-safe for compilation.
     ScriptEval e = (new ScriptEval()).setViewer(vwr);
@@ -800,13 +798,15 @@ public class ScriptEval extends ScriptExpr {
     } catch (ScriptException e1) {
       //ignore
     }
-    return (e.evaluate(expr, asVariable));
+    return (e.evaluate(expr, asVariable, compileOnly));
   }
 
-  private Object evaluate(Object expr, boolean asVariable) {
+  private Object evaluate(Object expr, boolean asVariable, boolean compileOnly) {
     try {
       if (expr instanceof String) {
-        if (compileScript(null, EXPRESSION_KEY + " = " + expr, false)) {
+        if (compileScript(null, "e_x_p_r_e_s_s_i_o_n = " + expr, false)) {
+          if (compileOnly)
+            return aatoken[0];
           contextVariables = vwr.getContextVariables();
           setStatement(aatoken[0]);
           return (asVariable ? parameterExpressionList(2, -1, false).get(0)
@@ -822,6 +822,23 @@ public class ScriptEval extends ScriptExpr {
       Logger.error("Error evaluating: " + expr + "\n" + ex);
     }
     return (asVariable ? SV.getVariable("ERROR") : "ERROR");
+  }
+
+  /**
+   * Check a map for a WHERE phrase
+   * 
+   */
+  @Override
+  public boolean checkSelect(Map<String, SV> h, T[] where) {
+    boolean ok = false;
+    try {
+      pushContext(null, "checkSelect");
+      ok = parameterExpressionSelect(h, where);
+    } catch (Exception ex) {
+      Logger.error("checkSelect " + ex);
+    }
+    popContext(false, false);
+    return ok;
   }
 
   /**
@@ -8803,6 +8820,5 @@ public class ScriptEval extends ScriptExpr {
   protected void setAtomProp(String prop, Object value, BS bs) {
     setShapePropertyBs(JC.SHAPE_BALLS, prop, value, bs);
   }
-
 
 }

@@ -8,6 +8,8 @@ import org.jmol.script.ScriptException;
 
 import org.jmol.script.ScriptContext;
 import org.jmol.script.SV;
+import org.jmol.script.T;
+
 import javajs.util.Lst;
 import javajs.util.SB;
 
@@ -68,7 +70,7 @@ public interface JmolScriptEvaluator {
 
   ScriptContext getScriptContext(String why);
 
-  Object evaluateExpression(Object stringOrTokens, boolean asVariable);
+  Object evaluateExpression(Object stringOrTokens, boolean asVariable, boolean compileOnly);
 
   void deleteAtomsInVariables(BS bsDeleted);
 
@@ -94,5 +96,7 @@ public interface JmolScriptEvaluator {
   void stopScriptThreads();
 
   boolean isStateScript();
+
+  boolean checkSelect(Map<String, SV> h, T[] where);
 
 }

@@ -514,7 +514,7 @@ abstract public class AtomCollection {
 
   private void fixTrajectory(Atom a) {
     int m = a.mi;
-    ModelCollection mc = (ModelCollection) this;
+    ModelSet mc = (ModelSet) this;
     boolean isTraj = mc.isTrajectory(m);
     if (!isTraj)
       return;
@@ -731,7 +731,7 @@ abstract public class AtomCollection {
   public void setAtomName(int atomIndex, String name) {
     byte id = JC.lookupSpecialAtomID(name);
     at[atomIndex].atomID = id;
-    if (id > 0 && ((ModelCollection)this).am[at[atomIndex].mi].isBioModel)
+    if (id > 0 && ((ModelSet)this).am[at[atomIndex].mi].isBioModel)
       return;
     if (atomNames == null)
       atomNames = new String[at.length];
@@ -1002,7 +1002,7 @@ abstract public class AtomCollection {
       tainted[type] = BS.newN(ac);
     tainted[type].set(atomIndex);
     if (type  == TAINT_COORD)
-      validateBspfForModel(((ModelCollection) this).am[at[atomIndex].mi].trajectoryBaseIndex, false);
+      validateBspfForModel(((ModelSet) this).am[at[atomIndex].mi].trajectoryBaseIndex, false);
   }
 
   private void untaint(int atomIndex, byte type) {
@@ -1371,7 +1371,7 @@ abstract public class AtomCollection {
     aaRet[1] = charge;
     aaRet[2] = 0;
     aaRet[3] = atom.getCovalentBondCount();
-    Model model = ((ModelCollection) this).am[atom.mi];
+    Model model = ((ModelSet) this).am[atom.mi];
     String s = (model.isBioModel && !model.isPdbWithMultipleBonds ? atom.group.getGroup3() : null);
     if (s != null && charge == 0) {
       if (JC.getAminoAcidValenceAndCharge(s, atom.getAtomName(),

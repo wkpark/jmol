@@ -73,7 +73,7 @@ public class SV extends T implements JSONEncodable {
   private final static int FLAG_MODIFIED = 2;
 
   private int flags = ~FLAG_CANINCREMENT & FLAG_MODIFIED;
-  private String myName;
+  public String myName;
 
   public static SV newV(int tok, Object value) {
     SV sv = new SV();
@@ -1260,6 +1260,22 @@ public class SV extends T implements JSONEncodable {
       }
     }
     return (Math.abs(fValue(x1) - fValue(x2)) < 0.000001);
+  }
+
+  /**
+   * a LIKE "x"    a is a string and equals x
+   * a LIKE "*x"   a is a string and ends with x
+   * a LIKE "x*"   a is a string and starts with x
+   * a LIKE "*x*"  a is a string and contains x
+   *  
+   * @param x1
+   * @param x2
+   * @return  x1 LIKE x2
+   */
+  public static boolean isLike(SV x1, SV x2) {
+    return (x1 != null && x2 != null 
+        && x1.tok == string && x2.tok == string
+        && PT.isLike((String)x1.value, (String) x2.value));
   }
 
   protected class Sort implements Comparator<SV> {

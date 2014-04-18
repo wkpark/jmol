@@ -1128,6 +1128,8 @@ public class ScriptMathProcessor {
       return addXBool(SV.areEqual(x1, x2));
     case T.opNE:
       return addXBool(!SV.areEqual(x1, x2));
+    case T.opLike:
+      return addXBool(SV.isLike(x1, x2));
     case T.plus:
       switch (x1.tok) {
       case T.integer:

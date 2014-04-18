@@ -23,6 +23,7 @@
  */
 package org.jmol.viewer;
 
+import javajs.util.AU;
 import javajs.util.Base64;
 import javajs.util.Lst;
 import javajs.util.M4;
@@ -228,7 +229,7 @@ public class PropertyManager implements JmolPropertyManager {
       SV[] args = getArguments(infoType);
       info = extractProperty(
           getPropertyAsObject(args[0].asString(), paramInfo, null), args, 1,
-          null);
+          null, false);
     } else {
       info = getPropertyAsObject(infoType, paramInfo, returnType);
     }
@@ -259,15 +260,18 @@ public class PropertyManager implements JmolPropertyManager {
     return args;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public Object extractProperty(Object prop, Object args, int ptr,
-                                Lst<Object> v2) {
+                                Lst<Object> v2, boolean isCompiled) {
     if (ptr < 0) {
       args = getArguments((String) args);
       ptr = 0;
     }
     if (ptr >= ((SV[]) args).length)
       return prop;
+    if (!isCompiled)
+      args = compileSelect((SV[]) args);
     int pt;
     SV arg = ((SV[]) args)[ptr++];
     Object property = getObj(prop);
@@ -275,12 +279,11 @@ public class PropertyManager implements JmolPropertyManager {
     case T.integer:
       pt = arg.intValue - 1; //one-based, as for array selectors
       if (property instanceof Lst<?>) {
-        @SuppressWarnings("unchecked")
         Lst<Object> v = (Lst<Object>) property;
         if (pt < 0)
           pt += v.size();
         return (pt >= 0 && pt < v.size() ? extractProperty(v.get(pt), args,
-            ptr, null) : "");
+            ptr, null, true) : "");
       }
       if (property instanceof M3) {
         M3 m = (M3) property;
@@ -290,7 +293,7 @@ public class PropertyManager implements JmolPropertyManager {
         if (pt < 0)
           pt += 3;
         if (pt >= 0 && pt < 3)
-          return extractProperty(f, args, --ptr, null);
+          return extractProperty(f, args, --ptr, null, true);
         return "";
       }
       if (property instanceof M4) {
@@ -303,7 +306,7 @@ public class PropertyManager implements JmolPropertyManager {
         if (pt < 0)
           pt += 4;
         if (pt >= 0 && pt < 4)
-          return extractProperty(f, args, --ptr, null);
+          return extractProperty(f, args, --ptr, null, true);
         return "";
       }
       if (PT.isAI(property)) {
@@ -335,7 +338,7 @@ public class PropertyManager implements JmolPropertyManager {
         if (pt < 0)
           pt += iilist.length;
         if (pt >= 0 && pt < iilist.length)
-          return extractProperty(iilist[pt], args, ptr, null);
+          return extractProperty(iilist[pt], args, ptr, null, true);
         return "";
       }
       if (PT.isAFF(property)) {
@@ -343,7 +346,7 @@ public class PropertyManager implements JmolPropertyManager {
         if (pt < 0)
           pt += fflist.length;
         if (pt >= 0 && pt < fflist.length)
-          return extractProperty(fflist[pt], args, ptr, null);
+          return extractProperty(fflist[pt], args, ptr, null, true);
         return "";
       }
       if (PT.isAS(property)) {
@@ -363,48 +366,53 @@ public class PropertyManager implements JmolPropertyManager {
         return "";
       }
       break;
-
+    case T.select:
     case T.string:
-      String key = arg.asString();
       if (property instanceof Map<?, ?>) {
-        @SuppressWarnings("unchecked")
-        Map<String, Object> h = (Map<String, Object>) property;
-        if (key.equalsIgnoreCase("keys")) {
-          Lst<Object> keys = new Lst<Object>();
-          for (String k : h.keySet())
-            keys.addLast(k);
-          return extractProperty(keys, args, ptr, null);
-        }
-        // SELECT nt* WHERE name!=WC
-        if (key.toUpperCase().startsWith("SELECT ")) {
-          key = key.substring(6).trim();
-          if (key.toUpperCase().startsWith("WHERE "))
-            key = "* " + key;
-          pt = key.toUpperCase().indexOf(" WHERE ");
-          if (pt >= 0) {
-            String where = key.substring(pt + 6).trim();
-            key = key.substring(0, pt).trim();
-            if (checkMap(h, where, false, null, null, 0) == null)
-              return "";
+        Map<String, ?> h = (Map<String, ?>) property;
+        String key;
+        if (arg.tok == T.select) {
+          key = arg.myName;
+          if (!vwr.checkSelect((Map<String, SV>) property, (T[]) arg.value))
+            return "";
+        } else {
+          key = arg.asString();
+          if (key.equalsIgnoreCase("keys")) {
+            Lst<Object> keys = new Lst<Object>();
+            for (String k : h.keySet())
+              keys.addLast(k);
+            return extractProperty(keys, args, ptr, null, true);
           }
         }
-        boolean isWild = Txt.isWild(key);
+
+        boolean isWild = (key.startsWith("*") || key.endsWith("*"));
         if (isWild && v2 == null)
           v2 = new Lst<Object>();
-        if (isWild && key.equals("*")) {
+        if (isWild && key.length() == 1 || key.equals("*/")) {
           if (ptr == ((SV[]) args).length) {
-            v2.addLast(h);
+            v2.addLast(property);
             return v2;
           }
-          return extractProperty(h, args, ptr, v2);
+          return extractProperty(property, args, ptr, v2, true);
+        }
+        if (key.startsWith("*/")) {
+          Map<String, Object> mapNew = null;
+          mapNew = new Hashtable<String, Object>();
+          String[] tokens = PT.split(key.substring(2), ",");
+          for (int i = tokens.length; --i >= 0;)
+            PT.getMapSubset(h, tokens[i], mapNew);
+          if (ptr == ((SV[]) args).length) {
+            v2.addLast(mapNew);
+            return v2;
+          }
+          return extractProperty(mapNew, args, ptr, v2, true);
         }
         key = checkMap(h, key, isWild, v2, args, ptr);
         return (key != null && !isWild ? extractProperty(h.get(key), args, ptr,
-            null) : isWild ? v2 : "");
+            null, true) : isWild ? v2 : "");
       }
       if (property instanceof Lst<?>) {
         // drill down into vectors for this key
-        @SuppressWarnings("unchecked")
         Lst<Object> v = (Lst<Object>) property;
         if (v2 == null)
           v2 = new Lst<Object>();
@@ -414,7 +422,7 @@ public class PropertyManager implements JmolPropertyManager {
           if (o instanceof Map<?, ?> || o instanceof Lst<?>
               || (o instanceof SV)
               && (((SV) o).getMap() != null || ((SV) o).getList() != null))
-            extractProperty(o, args, ptr, v2);
+            extractProperty(o, args, ptr, v2, true);
         }
         return v2;
       }
@@ -423,56 +431,43 @@ public class PropertyManager implements JmolPropertyManager {
     return prop;
   }
 
-  //// private static methods ////
-
-  private String checkMap(Map<String, Object> h, String key, boolean isWild,
-                          Lst<Object> v2, Object args, int ptr) {
-    String strLike = null;
-    int likeMode = -1;
-    if (args == null) {
-      int pt;
-      int ptNotLike = key.toUpperCase().indexOf(" NOT LIKE ");
-      int ptLike = key.toUpperCase().indexOf(" LIKE ");
-      int ptLT = key.indexOf("<");
-      int ptGT = key.indexOf(">");
-      int ptEq = key.indexOf("=");
-      int ptNotEq = key.indexOf("!=");
-      int pt1;
-      if (ptNotLike >= 0)
-        pt1 = (pt = ptNotLike) + 10;
-      else if (ptLike >= 0)
-        pt1 = (pt = ptLike) + 6;
-      else if (ptNotEq >= 0)
-        pt1 = (pt = ptNotEq) + 2;
-      else if (ptEq >= 0)
-        pt1 = (pt = ptEq) + 1;
-      else if (ptLT >= 0)
-        pt1 = (pt = ptLT) + 1;
-      else if (ptGT >= 0)
-        pt1 = (pt = ptGT) + 1;
-      else
-        return null;
-      strLike = key.substring(pt1).trim();
-      key = key.substring(0, pt).trim();
-      isWild = Txt.isWild(key);
-      likeMode = (ptNotEq >= 0 ? 1 : ptLT >= 0 ? 2 : ptGT >= 0 ? 3
-          : ptLike >= 0 ? 4 : ptNotLike >= 0 ? 5 : 0);
+  private Object compileSelect(SV[] args) {
+    SV[] argsNew = null;
+    for (int i = args.length; --i >= 0;) {
+      if (args[i].tok == T.string) {
+        String key = (String) args[i].value;
+        // SELECT nt* WHERE name!=WC
+        if (key.toUpperCase().startsWith("SELECT ")) {
+          if (argsNew == null)
+            argsNew = (SV[]) AU.arrayCopyObject(args, args.length);
+          key = key.substring(6).trim();
+          if (key.toUpperCase().startsWith("WHERE "))
+            key = "* " + key;
+          int pt = key.toUpperCase().indexOf(" WHERE ");
+          if (pt < 0) {
+            argsNew[i].value = key;
+          } else {
+            argsNew[i] = SV.newV(T.select, vwr.comileExpr(key.substring(pt + 6)
+                .trim()));
+            argsNew[i].myName = key.substring(0, pt).trim();
+          }
+        }
+      }
     }
-    boolean isOK = (likeMode < 0 && v2 == null && h.containsKey(key));
+    return (argsNew == null ? args : argsNew);
+  }
+
+  private String checkMap(Map<String, ?> h, String key, boolean isWild,
+                          Lst<Object> v2, Object args, int ptr) {
+    boolean isOK = (v2 == null && h.containsKey(key));
     if (!isOK) {
-      String lckey = (isWild ? PT.rep(key.toLowerCase(), "?", "*") : null);
+      String lckey = (isWild ? key.toLowerCase() : null);
       for (String k : h.keySet()) {
         if (k.equalsIgnoreCase(key) || lckey != null
-            && Txt.isMatch(k.toLowerCase(), lckey, true, true)) {
-          if (v2 == null) {
-            if (likeMode >= 0) {
-              Object val = getObj(h.get(k));
-              if (val == null || !Txt.isSQLMatch(val, strLike, likeMode))
-                continue;
-            }
+            && PT.isLike(k.toLowerCase(), lckey)) {
+          if (v2 == null)
             return k;
-          }
-          v2.addLast(extractProperty(h.get(k), args, ptr, null));
+          v2.addLast(extractProperty(h.get(k), args, ptr, null, true));
           if (!isWild)
             return null;
         }

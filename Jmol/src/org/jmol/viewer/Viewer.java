@@ -9267,6 +9267,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     fm.cacheClear();
     ligandModelSet = null;
     ligandModels = null;
+    ms.clearCache();
   }
 
   /**
@@ -9288,6 +9289,10 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   @Override
   public int cacheFileByName(String fileName, boolean isAdd) {
     // cache command in script
+    if (fileName == null) {
+      cacheClear();
+      return -1;
+    }
     return fm.cacheFileByNameAdd(fileName, isAdd);
   }
 
@@ -9378,7 +9383,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public Object extractProperty(Object property, Object args, int pt) {
-    return getPropertyManager().extractProperty(property, args, pt, null);
+    return getPropertyManager().extractProperty(property, args, pt, null, false);
   }
 
   //// requiring ScriptEvaluator:
@@ -9439,15 +9444,11 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   // synchronized here trapped the eventQueue
   @Override
   public Object evaluateExpression(Object stringOrTokens) {
-    if (getScriptManager() == null)
-      return null;
-    return eval.evaluateExpression(stringOrTokens, false);
+    return (getScriptManager() == null ? null : eval.evaluateExpression(stringOrTokens, false, false));
   }
 
   public SV evaluateExpressionAsVariable(Object stringOrTokens) {
-    if (getScriptManager() == null)
-      return null;
-    return (SV) eval.evaluateExpression(stringOrTokens, true);
+    return (getScriptManager() == null ? null : (SV) eval.evaluateExpression(stringOrTokens, true, false));
   }
 
   public BS getAtomBitSet(Object atomExpression) {
@@ -9689,6 +9690,15 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   @Override
   public Object getApplet() {
     return applet;
+  }
+
+  public T[] comileExpr(String expr) {
+    Object o = (getScriptManager() == null ? null : eval.evaluateExpression(expr, false, true));
+    return (o instanceof T[] ? (T[]) o : new T[] {T.o(T.string, expr)});
+  }
+
+  public boolean checkSelect(Map<String, SV> h, T[] value) {
+    return getScriptManager() != null  && eval.checkSelect(h, value);
   }
 
 }

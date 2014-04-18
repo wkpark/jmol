@@ -20,7 +20,6 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.BondSet;
 import org.jmol.modelset.Group;
-import org.jmol.modelset.ModelCollection;
 import org.jmol.modelset.ModelSet;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Elements;
@@ -89,6 +88,14 @@ abstract class ScriptExpr extends ScriptParam {
     return (result.size() > 0 ? result.get(0) : SV.newS(""));
   }
 
+  protected boolean parameterExpressionSelect(Map<String, SV> h, T[] where) throws ScriptException {
+    st = where;
+    slen = st.length;
+    return ((Boolean) parameterExpression(2, Integer.MIN_VALUE, null, true, false, -1,
+        false, h, null, false)).booleanValue();
+  }
+
+
   /**
    * This is the primary driver of the RPN (reverse Polish notation) expression
    * processor. It handles all math outside of a "traditional" Jmol
@@ -138,21 +145,22 @@ abstract class ScriptExpr extends ScriptParam {
      * or while is simply added to the context for a given script or function.
      * These assignments are made by the compiler when seeing a VAR keyword.
      */
-    Object v, res;
     boolean isImplicitAtomProperty = (localVar != null);
     boolean isOneExpressionOnly = (pt < 0);
     boolean returnBoolean = (!asVector && key == null);
     boolean returnString = (!asVector && key != null && key.length() == 0);
     if (isOneExpressionOnly)
       pt = -pt;
-    int nSquare = 0;
-    int nParen = 0;
-    boolean topLevel = true;
-    ScriptMathProcessor rpn = new ScriptMathProcessor(this, isSpecialAssignment, isArrayItem, asVector,
-        false, false, key);
+    boolean allContext = (localVars == null || ptMax != Integer.MIN_VALUE);
     if (ptMax < pt)
       ptMax = slen;
     int ptEq = (isSpecialAssignment ? 0 : 1);
+    ScriptMathProcessor rpn = new ScriptMathProcessor(this, isSpecialAssignment, isArrayItem, asVector,
+        false, false, key);
+    Object v, res;
+    int nSquare = 0;
+    int nParen = 0;
+    boolean topLevel = true;
     out: for (int i = pt; i < ptMax; i++) {
       v = null;
       int tok = getToken(i).tok;
@@ -528,7 +536,7 @@ abstract class ScriptExpr extends ScriptParam {
           if (chk) {
             v = name;
           } else if (!haveParens
-              && (localVars == null || (v = localVars.get(name)) == null)) {
+              && (localVars == null || (v = PT.getMapValueNoCase(localVars, name)) == null && allContext)) {
             v = getContextVariableAsVariable(name);
           }
           if (v == null) {
@@ -1051,7 +1059,7 @@ abstract class ScriptExpr extends ScriptParam {
         if (val instanceof Integer)
           comparisonFloat = comparisonInt = ((Integer) val).intValue();
         else if (val instanceof Float && isModel)
-          comparisonInt = ModelCollection
+          comparisonInt = ModelSet
               .modelFileNumberFromFloat(((Float) val).floatValue());
       }
     }
@@ -2425,4 +2433,5 @@ abstract class ScriptExpr extends ScriptParam {
 
     return true;
   }
+  
 }

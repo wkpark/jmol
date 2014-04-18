@@ -26,6 +26,7 @@ package javajs.util;
 
 import java.lang.reflect.Array;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javajs.J2SIgnoreImport;
 import javajs.api.JSONEncodable;
@@ -1052,5 +1053,51 @@ public class PT {
     return sb.toString();
   }
 
+  /**
+   * a LIKE "x"    a is a string and equals x
+   * 
+   * a LIKE "*x"   a is a string and ends with x
+   * 
+   * a LIKE "x*"   a is a string and starts with x
+   * 
+   * a LIKE "*x*"  a is a string and contains x
+   *  
+   * @param a
+   * @param b
+   * @return  a LIKE b
+   */
+  public static boolean isLike(String a, String b) {
+    boolean areEqual = a.equals(b);
+    if (areEqual)
+      return true;
+    boolean isStart = b.startsWith("*");
+    boolean isEnd = b.endsWith("*");
+    return (!isStart && !isEnd) ? areEqual
+        : isStart && isEnd ? b.length() == 1 || a.contains(b.substring(1, b.length() - 1))
+        : isStart ? a.endsWith(b.substring(1))
+        : a.startsWith(b.substring(0, b.length() - 1));
+  }
 
+  public static Object getMapValueNoCase(Map<String, ?> h, String key) {
+    Object val = h.get(key);
+    if (val == null)
+      for (Entry<String, ?> e : h.entrySet())
+        if (e.getKey().equalsIgnoreCase(key))
+          return e.getValue();
+    return val;
+  }
+
+  public static void getMapSubset(Map<String, ?> h, String key,
+                                      Map<String, Object> h2) {
+    Object val = h.get(key);
+    if (val != null) {
+      h2.put(key, val);
+      return;
+    }
+    for (Entry<String, ?> e : h.entrySet()) {
+      String k = e.getKey();
+      if (isLike(k, key))
+        h2.put(k, e.getValue());
+    }
+  }
 }

@@ -22,7 +22,7 @@ public interface JmolPropertyManager {
 
   boolean checkPropertyParameter(String name);
 
-  Object extractProperty(Object property, Object args, int pt, Lst<Object> v2);
+  Object extractProperty(Object property, Object args, int pt, Lst<Object> v2, boolean isCompiled);
 
   Map<String, Object> getModelInfo(Object atomExpression);
 

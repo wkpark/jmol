@@ -684,5 +684,4 @@ public class ScriptManager implements JmolScriptManager {
     return bsB;
   }
 
-
 }

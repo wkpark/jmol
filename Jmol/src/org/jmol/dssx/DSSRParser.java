@@ -43,6 +43,7 @@ import org.jmol.modelsetbio.BioPolymer;
 import org.jmol.modelsetbio.Monomer;
 import org.jmol.modelsetbio.NucleicMonomer;
 import org.jmol.modelsetbio.NucleicPolymer;
+import org.jmol.script.SV;
 import org.jmol.script.T;
 import org.jmol.util.C;
 import org.jmol.util.Edge;
@@ -57,6 +58,7 @@ public class DSSRParser implements JmolDSSRParser {
   private Map<String, Object> htTemp;
   private SB message;
   private Map<String, String[]> htPar;
+  private Lst<Map<String, Object>> basePairs;
 
   public DSSRParser() {
     // for reflection
@@ -505,10 +507,10 @@ List of 50 lone WC/wobble pairs
       }
       return;
     }
-    pairs = newList("basePairs");
+    basePairs = newList("basePairs");
     skipHeader();
     for (int i = 0; i < n; i++)
-      pairs.addLast(getBPData(0, null, null, true));
+      getBPData(0, null, true);
  }
 
   /*
@@ -570,25 +572,27 @@ List of 50 lone WC/wobble pairs
 
   /**
    * 
-   * @param i 
+   * @param i0
    * @param type
-   * @param ntList
    * @param readParams
    *        helix or base pair, not stem
    * @return data
    * @throws Exception
    */
   @SuppressWarnings("unchecked")
-  private Map<String, Object> getBPData(int i, String type, Lst<Object> ntList,
-                                        boolean readParams) throws Exception {
+  private Map<String, Object> getBPData(int i0, String type, boolean readParams) throws Exception {
     String[] tokens = PT.getTokens(line);
     String nt12 = tokens[1] + tokens[2];
     Map<String, Object> data;
     //boolean isReversed = false;
     data = (Map<String, Object>) htTemp.get(nt12);
+    int i = i0;
     if (data == null) {
-      i = PT.parseInt(tokens[0]);
       data = new Hashtable<String, Object>();
+      i = PT.parseInt(tokens[0]);
+      if (type != null)
+        i = -((Integer)((Map<String, Object>) htTemp.get(tokens[2]+ tokens[1])).get("id")).intValue();
+      data.put("id", Integer.valueOf(i));
       String nt1 = fix(tokens[1], true);
       String nt2 = fix(tokens[2], true);
       data.put("key", nt1 + " " + nt2);
@@ -611,30 +615,14 @@ List of 50 lone WC/wobble pairs
       data.put("LW", tokens[++pt]);
       data.put("DSSR", tokens[++pt]);
       htTemp.put(nt12, data);
-    } else {
-//      isReversed = true;
-//      if (isReversed) {
-//        nt12 = tokens[2] + tokens[1];
-//        data = (Map<String, Object>) htTemp.get(nt12);
-//      }
-//      if (data == null) {
-//        Logger.error("DSSR base pair not found in readMore: " + type + " " + tokens[0] + " " + tokens[1]);        
-//      }
+      basePairs.addLast(data);
     }
-//    if (data == null) {
-//      skipHeader();
-//    } else {
-//      if (readParams)
-//        data.put(type + "Rev", Boolean.valueOf(isReversed ));
-      if (ntList != null)
-        ntList.addLast(data);
-      data.put((type == null ? "id" : type + "Id"),
-          (i < 0 ? tokens[0] : Integer.valueOf(i)));
-      if (readParams)
-        readMore(data, ntList == null);
-      else
-        skipHeader();
-//    }
+    if (type != null)
+      data.put(type + "Id", Integer.valueOf(i0));
+    if (readParams)
+      readMore(data, type == null, i < 0);
+    else
+      skipHeader();
     return data;
   }
 
@@ -644,7 +632,7 @@ List of 50 lone WC/wobble pairs
    d(C1'-C1')=10.44 d(N1-N9)=8.84 d(C6-C8)=9.70 tor(C1'-N1-N9-C1')=-8.1 
    H-bonds[2]: "O6(carbonyl)-N3(imino)[2.78],N1(imino)-O2(carbonyl)[2.83]" 
    bp-pars: [-2.37 -0.60 0.11 4.67 -7.75 -2.95]
- 
+  
    stems/helices:
    
        bp1-pars:  [-0.09    -0.11    0.08     -4.80    -11.89   0.28]
@@ -655,32 +643,38 @@ List of 50 lone WC/wobble pairs
        C1'-based:              h-rise=2.57               h-twist=37.91
 
    */
-  private void readMore(Map<String, Object> data, boolean isBP) throws Exception {
+  private void readMore(Map<String, Object> data, boolean isBP, boolean isRev)
+      throws Exception {
     String info = "";
     while (isHeader(rd())) {
       int pt = line.indexOf("[");
-      line = PT.rep(line,  "_pars",  "-pars");
-      if (line.indexOf("bp-pars:") >= 0) {
-        addArray(data, "bp", PT.parseFloatArray(line.substring(pt + 1)));
-      } else if (line.indexOf("heli-pars:") >= 0) {
-        addArray(data, "hel",   PT.parseFloatArray(line.substring(pt + 1)));
-      } else if (line.indexOf("step-pars:") >= 0) {
-        addArray(data, "step", PT.parseFloatArray(line.substring(pt + 1)));
-      } else if ((pt = line.indexOf("h-rise=")) >= 0) {
-        addFloat(data, "heRiseC1", pt + 7);
-        addFloat(data, "heTwistC1", line.indexOf("h-twist=") + 8);
-      } else if ((pt = line.indexOf("rise=")) >= 0) {
-        addFloat(data, "stRiseC1", pt + 5);
-        addFloat(data, "stTwistC1", line.indexOf("twist=") + 6);
-      } else if (line.indexOf("lambda") >= 0) {
-        //[-156.7(anti) C3'-endo lambda=84.4] [-165.6(anti) C3'-endo lambda=38.0]
-         extractFloats(data, htPar.get("bpChiLambda"));
-      } else if (line.indexOf("tor(") >= 0) {
-        // d(C1'-C1')=10.44 d(N1-N9)=8.84 d(C6-C8)=9.70 tor(C1'-N1-N9-C1')=-8.1 
-         extractFloats(data, htPar.get("bpDistTor"));
-      }     
-      if (isBP && pt < 0)
+      line = PT.rep(line, "_pars", "-pars");
+      if (isBP) {
+        if (line.indexOf("bp-pars:") >= 0) {
+          addArray(data, "bp", PT.parseFloatArray(line.substring(pt + 1)));
+        } else if (line.indexOf("lambda") >= 0) {
+          //[-156.7(anti) C3'-endo lambda=84.4] [-165.6(anti) C3'-endo lambda=38.0]
+          extractFloats(data, htPar.get("bpChiLambda"));
+        } else if (line.indexOf("tor(") >= 0) {
+          // d(C1'-C1')=10.44 d(N1-N9)=8.84 d(C6-C8)=9.70 tor(C1'-N1-N9-C1')=-8.1 
+          extractFloats(data, htPar.get("bpDistTor"));
+        }
         info += line + "\n";
+      } else {
+        if (isRev && line.indexOf("bp1-pars:") >= 0) {
+          addArray(data, "bp", PT.parseFloatArray(line.substring(pt + 1)));
+        } else if (line.indexOf("heli-pars:") >= 0) {
+          addArray(data, "hel", PT.parseFloatArray(line.substring(pt + 1)));
+        } else if (line.indexOf("step-pars:") >= 0) {
+          addArray(data, "step", PT.parseFloatArray(line.substring(pt + 1)));
+        } else if ((pt = line.indexOf("h-rise=")) >= 0) {
+          addFloat(data, "heRiseC1", pt + 7);
+          addFloat(data, "heTwistC1", line.indexOf("h-twist=") + 8);
+        } else if ((pt = line.indexOf("rise=")) >= 0) {
+          addFloat(data, "stRiseC1", pt + 5);
+          addFloat(data, "stTwistC1", line.indexOf("twist=") + 6);
+        }
+      }
     }
     if (isBP)
       data.put("info", info);
@@ -747,6 +741,7 @@ List of 233 multiplets
       Map<String, Object> data = new Hashtable<String, Object>();
       String header = getHeader();
       data.put("info", header);
+      data.put("bpCount", Integer.valueOf(bps));
       if (isHelix) {
         String[] lines = PT.split(header, "\n");
         if (lines.length == 8) {
@@ -762,10 +757,9 @@ List of 233 multiplets
       list.addLast(data);
       Lst<Map<String, Object>>pairs = newList(null);    
       data.put("basePairs", pairs);
-      Lst<Object> ntList = new Lst<Object>();
-      htTemp.put(type + "#" + (i + 1), ntList);
+      htTemp.put(type + "#" + (i + 1), pairs);
       for (int j = 0; j < bps; j++) 
-        pairs.addLast(getBPData(i + 1, type, ntList, isHelix));
+        pairs.addLast(getBPData(i + 1, type, isHelix));
     }
   }
 
@@ -882,8 +876,9 @@ List of 233 multiplets
   
   ///////////////////// post-load processing ////////////////
   
+  @SuppressWarnings("unchecked")
   @Override
-  public BS getAtomBits(Viewer vwr, String key, Object dssr, Map<String, BS> dssrCache) {
+  public BS getAtomBits(Viewer vwr, String key, Object dssr, Map<String, Object> dssrCache) {
     // Check to see if we have already asked for pairs or the data type
     // does not have the "basePairs" key
     String s = key.toLowerCase();
@@ -896,21 +891,31 @@ List of 233 multiplets
     if (s.indexOf(".nt") < 0 && s.indexOf(".res") < 0 
         && s.indexOf("[selecet res") < 0 && s.indexOf("[selecet nt") < 0)
       key += ".res*";
-    BS bs = dssrCache.get(key);
+    BS bs = (BS) dssrCache.get(key);
     Map<String, BS> htChains = new Hashtable<String, BS>();
     if (bs == null) {
       dssrCache.put(key, bs = new BS());
       Object data = vwr.extractProperty(dssr, key, -1);
-      if (!data.equals(""))
-        getBsAtoms(vwr, data, bs, htChains);
+      if (data instanceof Lst<?>)
+        getBsAtoms(vwr, null, (Lst<SV>) data, bs, htChains);
     }
     return bs;
   }
 
-  private void getBsAtoms(Viewer vwr, Object data, BS bs, Map<String, BS> htChains) {
-    String[] tokens = PT.getTokens(PT.replaceAllCharacters(data.toString(), "=[,]", " "));
+  private void getBsAtoms(Viewer vwr, String res, Lst<SV> lst, BS bs, Map<String, BS> htChains) {
+    String[] tokens;
+    if (lst == null) {
+      tokens = PT.getTokens(PT.replaceAllCharacters(res.toString(), "=[,]", " "));
+    } else {
+      tokens = new String[lst.size()];
+      for (int i = lst.size(); --i >= 0;) {
+        String s = lst.get(i).asString();
+        tokens[i] = (s.startsWith("[") ? s.substring(s.indexOf("]") + 1) : s);
+      }
+    }          
     for (int j = tokens.length; --j >= 0;) {
       String t = tokens[j];
+      System.out.println(t);
       int pt = t.indexOf(":"); 
       if (pt < 0 || pt + 1 == t.length())
         continue;
@@ -979,7 +984,7 @@ List of 233 multiplets
   private NucleicMonomer setRes(Viewer vwr, String res, BS bs, Map<String, BS> htChains,
                       char g) {
     bs.clearAll();
-    getBsAtoms(vwr, res, bs, htChains);
+    getBsAtoms(vwr, res, null, bs, htChains);
     NucleicMonomer group = (NucleicMonomer) vwr.ms.at[bs.nextSetBit(0)].getGroup();
     ((NucleicPolymer) group.getBioPolymer()).isDssrSet = true;
     group.setGroup1(g);

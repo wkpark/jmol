@@ -15,7 +15,7 @@ public interface JmolDSSRParser {
   String process(Map<String, Object> info, GenericLineReader reader, String line0)
       throws Exception;
 
-  BS getAtomBits(Viewer vwr, String key, Object dssr, Map<String, BS> dssrCache);
+  BS getAtomBits(Viewer vwr, String key, Object dssr, Map<String, Object> cache);
 
   void setAllDSSRParametersForModel(Viewer vwr, int modelIndex);
 

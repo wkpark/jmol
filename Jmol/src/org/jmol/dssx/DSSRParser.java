@@ -886,13 +886,15 @@ List of 233 multiplets
   public BS getAtomBits(Viewer vwr, String key, Object dssr, Map<String, BS> dssrCache) {
     // Check to see if we have already asked for pairs or the data type
     // does not have the "basePairs" key
-    if (key.indexOf("Pairs") < 0 
-        && key.indexOf("kissingLoops") < 0 
-        && key.indexOf("linkedBy") < 0
-        && key.indexOf("multiplets") < 0 
-        && key.indexOf("singleStrand") < 0)
+    String s = key.toLowerCase();
+    if (s.indexOf("pairs") < 0 
+        && s.indexOf("kissingloops") < 0 
+        && s.indexOf("linkedby") < 0
+        && s.indexOf("multiplets") < 0 
+        && s.indexOf("singlestrand") < 0)
       key += ".basePairs";
-    if (key.indexOf(".res") < 0 && key.indexOf("[SELECT res") < 0)
+    if (s.indexOf(".nt") < 0 && s.indexOf(".res") < 0 
+        && s.indexOf("[selecet res") < 0 && s.indexOf("[selecet nt") < 0)
       key += ".res*";
     BS bs = dssrCache.get(key);
     Map<String, BS> htChains = new Hashtable<String, BS>();

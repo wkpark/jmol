@@ -378,6 +378,8 @@ public class PropertyManager implements JmolPropertyManager {
         // SELECT nt* WHERE name!=WC
         if (key.toUpperCase().startsWith("SELECT ")) {
           key = key.substring(6).trim();
+          if (key.toUpperCase().startsWith("WHERE "))
+            key = "* " + key;
           pt = key.toUpperCase().indexOf(" WHERE ");
           if (pt >= 0) {
             String where = key.substring(pt + 6).trim();

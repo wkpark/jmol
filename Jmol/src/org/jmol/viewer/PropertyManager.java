@@ -23,11 +23,15 @@
  */
 package org.jmol.viewer;
 
+import javajs.J2SIgnoreImport;
+
 import javajs.util.AU;
 import javajs.util.Base64;
 import javajs.util.Lst;
+import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.OC;
+import javajs.util.P3;
 import javajs.util.PT;
 import javajs.util.Quat;
 import javajs.util.SB;
@@ -39,7 +43,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
-
 import java.util.Map;
 import java.util.Properties;
 
@@ -65,9 +68,6 @@ import org.jmol.util.Escape;
 import org.jmol.util.Edge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
-
-import javajs.util.M3;
-import javajs.util.P3;
 import org.jmol.util.Txt;
 import org.jmol.viewer.binding.Binding;
 
@@ -81,6 +81,8 @@ import org.jmol.viewer.binding.Binding;
  * 
  */
 
+
+@J2SIgnoreImport({ javajs.util.XmlUtil.class })
 public class PropertyManager implements JmolPropertyManager {
 
   public PropertyManager() {
@@ -547,12 +549,13 @@ public class PropertyManager implements JmolPropertyManager {
       return vwr.getFileHeader();
     case PROP_FILECONTENTS:
     case PROP_FILECONTENTS_PATH:
-      return (iHaveParameter ? vwr.getFileAsString(myParam.toString(), true) : vwr.getCurrentFileAsString());
+      return (iHaveParameter ? vwr.getFileAsString(myParam.toString(), true)
+          : vwr.getCurrentFileAsString());
     case PROP_IMAGE:
       String params = myParam.toString().toLowerCase();
-      if (params.indexOf("g64") >= 0 || params.indexOf("base64") >= 0)
-        returnType = "string";
-      return getImage(params, returnType);
+      return getImage(params,
+          params.indexOf("g64") < 0 && params.indexOf("base64") < 0
+              && (returnType == null || returnType.equalsIgnoreCase("java")));
     case PROP_ISOSURFACE_INFO:
       return vwr.getShapeProperty(JC.SHAPE_ISOSURFACE, "getInfo");
     case PROP_ISOSURFACE_DATA:
@@ -611,15 +614,15 @@ public class PropertyManager implements JmolPropertyManager {
     }
     Arrays.sort(data);
     SB info = new SB();
-    info.append("getProperty ERROR\n").append(infoType).append(
-        "?\nOptions include:\n");
+    info.append("getProperty ERROR\n").append(infoType)
+        .append("?\nOptions include:\n");
     for (int i = 0; i < PROP_COUNT; i++)
       if (data[i].length() > 0)
         info.append("\n getProperty ").append(data[i]);
     return info.toString();
   }
 
-  private Object getImage(String params, String returnType) {
+  private Object getImage(String params, boolean asBytes) {
     int height = -1,
     width = -1;
     int pt;
@@ -638,7 +641,7 @@ public class PropertyManager implements JmolPropertyManager {
       type = PT.getTokens(PT.replaceWithCharacter(params.substring(params.indexOf("type=") + 5), ";,", ' '))[0];
     String[] errMsg = new String[1];
     byte[] bytes = vwr.getImageAsBytes(type.toUpperCase(), width,  height, -1, errMsg);
-    return (errMsg[0] != null ? errMsg[0] : returnType == null ? bytes : Base64
+    return (errMsg[0] != null ? errMsg[0] : asBytes ? bytes : Base64
         .getBase64(bytes).toString());
   }
 

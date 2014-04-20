@@ -28,7 +28,7 @@ package javajs.util;
 public class XmlUtil {
 
   public XmlUtil() {
-    // Jmol's ModelCollection class uses reflection 
+    // Jmol's PropertyManager class uses reflection 
   }
   // / simple Xml parser/generator ///
 

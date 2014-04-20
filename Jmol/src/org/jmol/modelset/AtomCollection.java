@@ -2208,7 +2208,7 @@ abstract public class AtomCollection {
     int iModel, iPolymer;
     int i0 = bsInfo.nextSetBit(0);
     if (i0 < 0)
-      return bs;
+      return bs;    
     i = 0;
     switch (tokType) {
     case T.group:

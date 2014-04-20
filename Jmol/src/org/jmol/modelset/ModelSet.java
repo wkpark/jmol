@@ -1414,16 +1414,6 @@ import java.util.Properties;
     return (val instanceof Boolean && ((Boolean) val).booleanValue());
   }
 
-  /*
-    int getModelSetAuxiliaryInfoInt(String keyName) {
-      if (modelSetAuxiliaryInfo != null
-          && modelSetAuxiliaryInfo.contains(keyName)) {
-        return ((Integer) modelSetAuxiliaryInfo.get(keyName)).intValue();
-      }
-      return Integer.MIN_VALUE;
-    }
-  */
-
   public Lst<P3[]> trajectorySteps;
   protected Lst<V3[]> vibrationSteps;
 

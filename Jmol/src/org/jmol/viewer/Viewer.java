@@ -8310,29 +8310,25 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         : Elements.getVanderwaalsMar(i, defaultVdw));
   }
 
-  @SuppressWarnings("incomplete-switch")
   public int getVanderwaalsMarType(int atomicAndIsotopeNumber, VDW type) {
     if (type == null)
       type = defaultVdw;
     else
       switch (type) {
-      case USER:
-        if (bsUserVdws == null)
-          type = defaultVdw;
-        else
-          return userVdwMars[atomicAndIsotopeNumber & 127];
-        break;
       case AUTO:
-      case JMOL:
-      case BABEL:
-      case RASMOL:
-        // could be a bug here -- why override these
-        // with dataManager's if not AUTO?
+      case AUTO_BABEL:
+      case AUTO_JMOL:
+      case AUTO_RASMOL:
         if (defaultVdw != VDW.AUTO)
           type = defaultVdw;
         break;
+      default:
+        break;
       }
-        return (Elements.getVanderwaalsMar(atomicAndIsotopeNumber, type));
+    if (type == VDW.USER && bsUserVdws == null)
+      type = VDW.JMOL;
+    return (type == VDW.USER ? userVdwMars[atomicAndIsotopeNumber & 127]
+        : Elements.getVanderwaalsMar(atomicAndIsotopeNumber, type));
   }
 
   void setVdwStr(String name) {

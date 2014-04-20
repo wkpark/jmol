@@ -127,7 +127,6 @@ import javajs.util.T3i;
 import javajs.util.P4;
 import javajs.util.T3;
 import javajs.util.V3;
-import javajs.util.XmlUtil;
 
 public class VolumeData implements VolumeDataInterface {
 
@@ -530,16 +529,16 @@ public class VolumeData implements VolumeDataInterface {
   public String setVolumetricXml() {
     SB sb = new SB();
     if (voxelCounts[0] == 0) {
-      XmlUtil.appendTag(sb, "jvxlVolumeData", null);
+      sb.append("<jvxlVolumeData>\n");
     } else {
-      XmlUtil.openTagAttr(sb, "jvxlVolumeData", new String[] { "origin",
-          Escape.eP(volumetricOrigin) });
+      sb.append("<jvxlVolumeData origin=\"" + Escape.eP(volumetricOrigin)
+          + "\">\n");
       for (int i = 0; i < 3; i++)
-        XmlUtil.appendTag(sb, "jvxlVolumeVector", new String[] { "type",
-            "" + i, "count", "" + voxelCounts[i], "vector",
-            Escape.eP(volumetricVectors[i]) });
-      XmlUtil.closeTag(sb, "jvxlVolumeData");
+        sb.append("<jvxlVolumeVector type=\"" + i + "\" count=\""
+            + voxelCounts[i] + "\" vector=\"" + Escape.eP(volumetricVectors[i])
+            + "\"></jvxlVolumeVector>\n");
     }
+    sb.append("</jvxlVolumeData>\n");
     return xmlData = sb.toString();
   }
 

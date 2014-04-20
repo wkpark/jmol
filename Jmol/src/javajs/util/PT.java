@@ -753,12 +753,26 @@ public class PT {
     SB sb = null;
     while (true) {
       if (info instanceof String) {
-        s = fixString((String) info);
+        s = (String) info;
+        /**
+         * @j2sNative
+         * 
+         * if (typeof s == "undefined") s = "null"
+         * 
+         */
+        {}
+        if (s.indexOf("{\"") != 0) {
+          //don't doubly fix JSON strings when retrieving status
+          s = rep(s, "\"", "\\\"");
+          s = rep(s, "\n", "\\n");
+          s = "\"" + s + "\"";
+        }
         break;
       }
       if (info instanceof JSONEncodable) {
         // includes javajs.util.BS, org.jmol.script.SV
-        s = ((JSONEncodable) info).toJSON();
+        if ((s = ((JSONEncodable) info).toJSON()) == null)
+          s = "null"; // perhaps a list has a null value (group3List, for example)
         break;
       }
       sb = new SB();
@@ -856,21 +870,6 @@ public class PT {
   
   public static String packageJSON(String infoType, String info) {
     return (infoType == null ? info : "\"" + infoType + "\": " + info);
-  }
-
-  private static String fixString(String s) {
-    /**
-     * @j2sNative
-     * 
-     * if (typeof s == "undefined") return "null"
-     * 
-     */
-    {}
-    if (s == null || s.indexOf("{\"") == 0) //don't doubly fix JSON strings when retrieving status
-      return s;
-    s = rep(s, "\"", "\\\"");
-    s = rep(s, "\n", "\\n");
-    return "\"" + s + "\"";
   }
 
   public static boolean isAS(Object x) {

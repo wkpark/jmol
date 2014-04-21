@@ -196,7 +196,7 @@ abstract class ScriptTokenParser {
         tok = tokAt(++firstToken);
         break;
       }
-      if (tok == T.group)
+      if (tok == T.group  && !T.tokAttr(tokAt(firstToken + 1), T.mathop))
         firstToken++;
     }
     for (int i = 0; i < firstToken && addNextToken(); i++) {
@@ -916,6 +916,7 @@ abstract class ScriptTokenParser {
     }
     if (tokenAttr(tokenAtomProperty, T.strproperty) 
         && tokenComparator.tok != T.opEQ 
+        && tokenComparator.tok != T.opLIKE
         && tokenComparator.tok != T.opNE)
       return errorStr(ERROR_tokenExpected, "== !=");
     if (tokPeek() == T.leftsquare) {

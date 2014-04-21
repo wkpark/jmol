@@ -895,6 +895,7 @@ abstract class ScriptExpr extends ScriptParam {
       case T.opGT:
       case T.opEQ:
       case T.opNE:
+      case T.opLIKE:
         int tok = instruction.tok;
         int tokWhat = instruction.intValue;
         if (tokWhat == T.configuration && tok != T.opEQ)
@@ -1238,6 +1239,8 @@ abstract class ScriptExpr extends ScriptParam {
     case T.opEQ:
     case T.opNE:
       return (Txt.isMatch(propertyValue, comparisonValue, true, true) == (tokOperator == T.opEQ));
+    case T.opLIKE:
+      return PT.isLike(propertyValue, comparisonValue);
     default:
       invArg();
     }

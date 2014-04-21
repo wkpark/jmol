@@ -491,7 +491,7 @@ public class T {
   public final static int opLT         = 3 | comparator | 9 << 4;
   public final static int opEQ         = 4 | comparator | 9 << 4;
   public final static int opNE         = 5 | comparator | 9 << 4;
-  public final static int opLike       = 6 | comparator | 9 << 4;
+  public final static int opLIKE       = 6 | comparator | 9 << 4;
    
   public final static int minus        = 0 | mathop | 10 << 4;
   public final static int plus         = 1 | mathop | 10 << 4;
@@ -1605,7 +1605,7 @@ public class T {
         ">",
         "!=",
         "<>",
-        "like",
+        "LIKE",
         "within",
         ".",
         "..",
@@ -2601,7 +2601,7 @@ public class T {
         opGT,                               // ">"
         opNE,                               // "!="
         -1,                                 // "<>"
-        opLike,                             // "like"
+        opLIKE,                             // "like"
         within,                             // "within"
         per,                                // "."
         perper,                             // ".."

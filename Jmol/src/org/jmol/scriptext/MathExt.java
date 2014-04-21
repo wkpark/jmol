@@ -1039,8 +1039,9 @@ public class MathExt implements JmolMathExtension {
 
     }
     String propertyName = (args.length > 0 ? SV.sValue(args[pt++]) : "");
-    if (propertyName.indexOf("SELECT ") < 0)
-      propertyName = propertyName.toLowerCase();
+    String lc = propertyName.toLowerCase();
+    if (lc.indexOf("[select ") < 0)
+      propertyName = lc;
     boolean isJSON = false;
     if (propertyName.equals("json") && args.length > pt) {
       isJSON = true;

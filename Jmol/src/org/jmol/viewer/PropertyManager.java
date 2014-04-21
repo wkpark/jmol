@@ -250,8 +250,19 @@ public class PropertyManager implements JmolPropertyManager {
   }
 
   private SV[] getArguments(String propertyName) {
+    String lc = propertyName.toLowerCase();
+    int pt = -1;
+    while ((pt = lc.indexOf("[select ", ++pt)) >= 0) {
+      int pt2 = lc.indexOf(" where ", pt);
+      int pt3 = lc.indexOf("]", pt);
+      if (pt2 < 0 || pt2 > pt3)
+        continue;
+      propertyName = propertyName.substring(0, pt2)
+          + propertyName.substring(pt2, pt3).replace('.', '\1')
+          + propertyName.substring(pt3);
+    }
     propertyName = propertyName.replace(']', '\0').replace('[', '\0')
-        .replace('.', '\0');
+        .replace('.', '\0').replace('\1', '.');
     propertyName = PT.rep(propertyName, "\0\0", "\0");
     String[] names = PT.split(PT.trim(propertyName, "\0"), "\0");
     SV[] args = new SV[names.length];

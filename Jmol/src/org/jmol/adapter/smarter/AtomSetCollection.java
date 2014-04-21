@@ -1015,6 +1015,8 @@ public class AtomSetCollection {
       setAtomSetAuxiliaryInfoForSet("modelProperties", p = new Properties(),
           atomSetIndex);
     p.put(key, value);
+    if (key.startsWith(".")) //.PATH will not be usable in Jmol
+      p.put(key.substring(1), value);      
   }
 
   public void setAtomSetAtomProperty(String key, String data, int atomSetIndex) {
@@ -1169,6 +1171,7 @@ public class AtomSetCollection {
 
   public String setAtomSetFrequency(String pathKey, String label, String freq,
                                     String units) {
+    setAtomSetModelProperty("FreqValue", freq);
     freq += " " + (units == null ? "cm^-1" : units);
     String name = (label == null ? "" : label + " ") + freq;
     setAtomSetName(name);

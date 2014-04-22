@@ -52,7 +52,7 @@ public final class JC {
   
   public static String[] databases = { 
     "dssr", "http://x3dna.bio.columbia.edu/dssr/report.php?id=%FILE&opts=--jmol%20--more",
-    "dssrModel", "http://x3dna.bio.columbia.edu/dssr/report.php?POST?opts=--jmol%20--more&model=",  
+    "dssrModel", "http://x3dna.bio.columbia.edu/dssr/report.php?POST?opts=--jmol --more&model=",  
     "ligand", "http://www.rcsb.org/pdb/files/ligand/%FILE.cif",
     "mp", "http://www.materialsproject.org/materials/%FILE/cif",
     "nci", "http://cactus.nci.nih.gov/chemical/structure/%FILE",

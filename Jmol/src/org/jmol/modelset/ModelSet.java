@@ -4063,7 +4063,6 @@ import java.util.Properties;
   private final M4 mat4 = new M4();
   private final M4 mat4t = new M4();
   private final V3 vTemp = new V3();
-
   public void setDihedrals(float[] dihedralList, BS[] bsBranches, float f) {
     int n = dihedralList.length / 6;
     if (f > 1)

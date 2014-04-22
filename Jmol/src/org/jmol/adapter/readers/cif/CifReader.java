@@ -109,6 +109,8 @@ public class CifReader extends AtomSetCollectionReader {
   private String latticeType = null;
   private int modDim;
 
+  protected Map<String, String> htGroup1;
+
   @Override
   public void initializeReader() throws Exception {
     allowPDBFilter = true;
@@ -204,7 +206,7 @@ public class CifReader extends AtomSetCollectionReader {
      */
     if (key.indexOf("_") != 0) {
       if (key.equals("DSSR:"))
-        processDSSR(this);
+        processDSSR(this, htGroup1);
       else
         Logger.warn("CIF ERROR ? should be an underscore: " + key);
       parser.getTokenPeeked();

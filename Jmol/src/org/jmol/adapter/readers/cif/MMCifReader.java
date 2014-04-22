@@ -217,15 +217,13 @@ _pdbx_struct_oper_list.vector[3]
         }
       }
       if (g1 != null && g3 != null) {
-        if (htGroup1 == null)
-          cr.asc.setInfo("htGroup1", htGroup1 = new Hashtable<String, String>());
-        htGroup1.put(g3, g1);
+        if (cr.htGroup1 == null)
+          cr.asc.setInfo("htGroup1", cr.htGroup1 = new Hashtable<String, String>());
+        cr.htGroup1.put(g3, g1);
       }
     }
     return true;
   }
-
-  Map<String, String> htGroup1;
 
   private void processDataNonpoly() throws Exception {
     if (hetatmData == null)

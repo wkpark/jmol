@@ -41,7 +41,6 @@ import org.jmol.modelset.ModelSet;
 import org.jmol.modelsetbio.BasePair;
 import org.jmol.modelsetbio.BioModel;
 import org.jmol.modelsetbio.BioPolymer;
-import org.jmol.modelsetbio.Monomer;
 import org.jmol.modelsetbio.NucleicMonomer;
 import org.jmol.modelsetbio.NucleicPolymer;
 import org.jmol.script.SV;
@@ -67,7 +66,7 @@ public class DSSRParser implements JmolDSSRParser {
 
   @Override
   public String process(Map<String, Object> info, GenericLineReader reader,
-                        String line0) throws Exception {
+                        String line0, Map<String, String> htGroup1) throws Exception {
     info.put("dssr", dssr = new Hashtable<String, Object>());
     htTemp = new Hashtable<String, Object>();
     htPar = new Hashtable<String, String[]>();
@@ -151,12 +150,46 @@ public class DSSRParser implements JmolDSSRParser {
         addToMessages("");
       } else if (line.startsWith("Secondary structures in dot-bracket")) {
         readStructure();
+      } else if (line.startsWith("Mapping of")) {
+        mapGroups(htGroup1);
       }
     }
     dssr.put("summary", message.toString());
     return message.toString();
   }
 
+  /*
+Mapping of 76 nucleotide identifiers
+  no.    3-letter   1-letter    idstr
+  58     1MA         a        [1MA]58:A
+  76       A         A        [A]76:A
+0         1         2
+0123456789012345678901
+   */
+  private void mapGroups(Map<String, String> map) throws Exception {
+    rd();
+    int n = 0;
+    String s = "";
+    if (NucleicPolymer.htGroup1 == null)
+      NucleicPolymer.htGroup1 = new Hashtable<String, String>();
+    while (rd() != null && line.length() > 21) {
+      String g3 = line.substring(9, 12).trim();
+      String g1 = line.substring(21, 22);
+      if ("ACGTU".indexOf(g1) < 0) {
+        NucleicPolymer.htGroup1.put(g3, g1);
+        String key = " " + g3 + "(" + g1 + ")";
+        if (s.indexOf(key) < 0) {
+          n++;
+          s += key;
+        }
+        if (map != null)
+          map.put(g3, g1);
+      }
+    }
+    if (n > 0)
+      addMessage(n + " nonstandard base" + (n > 1 ? "s" :"") + ":" + s);
+  }
+  
   /*
   >1ehz nts=18 [whole]
   TAACGGTTA&TAACCGTTA
@@ -997,12 +1030,8 @@ public class DSSRParser implements JmolDSSRParser {
       int n = m.getBioPolymerCount();
       for (int i = n; --i >= 0;) {
         BioPolymer bp = m.getBioPolymer(i);
-        if (bp.isNucleic()) {
+        if (bp.isNucleic())
           ((NucleicPolymer) bp).isDssrSet = true;
-          Monomer[] monomers = bp.monomers;
-          for (int ii = bp.monomerCount; --ii >= 0;)
-            ((NucleicMonomer) monomers[ii]).setGroup1('?');
-        }
       }
       return;
     }
@@ -1018,27 +1047,24 @@ public class DSSRParser implements JmolDSSRParser {
     if (lst1 != null)
       for (int i = lst1.size(); --i >= 0;) {
         Map<String, Object> bp = lst1.get(i);
-        String seq = (String) bp.get("seq");
         Lst<Object> resnos = (Lst<Object>) bp.get("resnos");
         for (int j = resnos.size(); --j >= 0;)
-          setRes(vwr, (String) resnos.get(j), bs, htChains, seq.charAt(j));
+          setRes(vwr, (String) resnos.get(j), bs, htChains);
       }
   }
 
   private NucleicMonomer setPhos(Viewer vwr, int n, Map<String, Object> bp,
                                  BS bs, Map<String, BS> htChains) {
-    return setRes(vwr, (String) bp.get("res" + n), bs, htChains,
-        ((String) bp.get("g" + n)).charAt(0));
+    return setRes(vwr, (String) bp.get("res" + n), bs, htChains);
   }
 
   private NucleicMonomer setRes(Viewer vwr, String res, BS bs,
-                                Map<String, BS> htChains, char g) {
+                                Map<String, BS> htChains) {
     bs.clearAll();
     getBsAtoms(vwr, res, null, bs, htChains);
     NucleicMonomer group = (NucleicMonomer) vwr.ms.at[bs.nextSetBit(0)]
         .getGroup();
     ((NucleicPolymer) group.getBioPolymer()).isDssrSet = true;
-    group.setGroup1(g);
     return group;
   }
 
@@ -1100,7 +1126,7 @@ public class DSSRParser implements JmolDSSRParser {
         Logger.info("fetching " + name + "[pdb data]");
         String data = vwr.getPdbAtomData(bs, null);
         data = vwr.getFileAsString(name + data, false);
-        process(info, new Rdr(Rdr.getBR(data)), null);
+        process(info, new Rdr(Rdr.getBR(data)), null, null);
       } catch (Exception e) {
         info = null;
         out = "" + e;

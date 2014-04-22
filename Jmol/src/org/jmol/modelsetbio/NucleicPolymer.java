@@ -27,6 +27,9 @@ package org.jmol.modelsetbio;
 
 
 
+
+import java.util.Map;
+
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
@@ -50,6 +53,7 @@ import org.jmol.viewer.Viewer;
 public class NucleicPolymer extends BioPolymer {
 
   public boolean isDssrSet;
+  public static Map<String, String> htGroup1;
   
   NucleicPolymer(Monomer[] monomers) {
     super(monomers);

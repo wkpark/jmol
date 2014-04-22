@@ -112,8 +112,7 @@ public class Group {
     return group3Names[groupID];
   }
 
-  public final char getGroup1() {
-    
+  public final char getGroup1() {    
     return (groupID < JC.predefinedGroup1Names.length 
         ? JC.predefinedGroup1Names[groupID] : 
           group1 > 1 ? group1 
@@ -192,7 +191,7 @@ public class Group {
 
   private static Map<String, Short> htGroup = new Hashtable<String, Short>();
 
-  private static String[] group3Names = new String[128];
+  protected static String[] group3Names = new String[128];
   private static short group3NameCount;
   
   static {

@@ -12,8 +12,8 @@ import javajs.util.Lst;
 
 public interface JmolDSSRParser {
 
-  String process(Map<String, Object> info, GenericLineReader reader, String line0)
-      throws Exception;
+  String process(Map<String, Object> info, GenericLineReader reader, 
+                 String line0, Map<String, String> htGroup1) throws Exception;
 
   BS getAtomBits(Viewer vwr, String key, Object dssr, Map<String, Object> cache);
 
@@ -22,5 +22,6 @@ public interface JmolDSSRParser {
   String getHBonds(ModelSet ms, int modelIndex, Lst<Bond> vHBonds, boolean doReport);
 
   String calculateStructure(Viewer vwr, BS bsAtoms);
+
 
 }

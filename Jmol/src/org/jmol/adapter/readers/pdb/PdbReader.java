@@ -371,7 +371,7 @@ public class PdbReader extends AtomSetCollectionReader {
 
   private void checkDSSR() throws Exception {
     if (line.trim().startsWith("DSSR:") && asc.ac > 0)
-      processDSSR(this);
+      processDSSR(this, htGroup1);
   }
 
   /*
@@ -392,6 +392,9 @@ SEQADV 1EHZ 1MA A   58  GB   M10263      A    58 TRNA
 SEQADV 1BLU GLU      7  SWS  P00208    GLN     7 CONFLICT                       
    */
   private void seqAdv() {
+    
+    // Note: this will be overridden by DSSR if present
+    
     String g1 = line.substring(39, 42).trim().toLowerCase();
     if (g1.length() != 1)
       return;

@@ -950,7 +950,7 @@ public class Atom extends Point3fi implements BNode {
   @Override
   public String getGroup3(boolean allowNull) {
     String group3 = group.getGroup3();
-    return (allowNull 
+    return (allowNull     
         || group3 != null && group3.length() > 0 
         ? group3 : "UNK");
   }

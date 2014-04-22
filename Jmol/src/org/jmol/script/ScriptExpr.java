@@ -1217,7 +1217,7 @@ abstract class ScriptExpr extends ScriptParam {
     BS bs = new BS();
     Atom[] atoms = vwr.ms.at;
     int ac = vwr.getAtomCount();
-    boolean isCaseSensitive = (tokWhat == T.chain && vwr
+    boolean isCaseSensitive = (tokOperator == T.opLIKE || tokWhat == T.chain && vwr
         .getBoolean(T.chaincasesensitive));
     if (!isCaseSensitive)
       comparisonString = comparisonString.toLowerCase();

@@ -48,7 +48,7 @@ import java.util.Map;
 public class Group {
 
   protected int groupIndex;
-  public char group1; // set by DSSR
+  public char group1; // set by modelLoader or possibly DSSRParser
   
   public int getGroupIndex() {
     return groupIndex;

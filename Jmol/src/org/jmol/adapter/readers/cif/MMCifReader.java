@@ -145,7 +145,7 @@ public class MMCifReader implements MMCifInterface {
     "_pdbx_struct_assembly_gen_oper_expression", 
     "_pdbx_struct_assembly_gen_asym_id_list" 
   };
-
+  
   /*
 _pdbx_struct_assembly_gen.assembly_id       1 
 _pdbx_struct_assembly_gen.oper_expression   1,2,3,4 
@@ -192,6 +192,41 @@ _pdbx_struct_oper_list.vector[3]
       processDataAssemblyGen();
   }
   
+  final private static byte STRUCT_REF_G3 = 0;
+  final private static byte STRUCT_REF_G1 = 1;
+
+  final private static String[] structRefFields = {
+    "_struct_ref_seq_dif_mon_id", 
+    "_struct_ref_seq_dif.db_mon_id" 
+  };
+
+  private boolean processSequence() throws Exception {
+    parseLoopParameters(structRefFields);
+    while (cr.parser.getData()) {
+      String g1 = null;
+      String g3 = null;
+      int n = cr.parser.getFieldCount();
+      for (int i = 0; i < n; ++i) {
+        switch (fieldProperty(i)) {
+        case STRUCT_REF_G3:
+          g3 = field;
+          break;
+        case STRUCT_REF_G1:
+          if (field.length() == 1)
+            g1 = field.toLowerCase();
+        }
+      }
+      if (g1 != null && g3 != null) {
+        if (htGroup1 == null)
+          cr.asc.setInfo("htGroup1", htGroup1 = new Hashtable<String, String>());
+        htGroup1.put(g3, g1);
+      }
+    }
+    return true;
+  }
+
+  Map<String, String> htGroup1;
+
   private void processDataNonpoly() throws Exception {
     if (hetatmData == null)
       hetatmData = new String[3];
@@ -944,6 +979,8 @@ _pdbx_struct_oper_list.vector[3]
       return processStructOperListBlock();
     if (key.startsWith("_pdbx_struct_assembly_gen"))
       return processAssemblyGenBlock();
+    if (key.startsWith("_struct_ref_seq_dif"))
+      return processSequence();
 
     if (isCourseGrained)
       return false;

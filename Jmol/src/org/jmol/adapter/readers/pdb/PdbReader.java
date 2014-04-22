@@ -184,7 +184,8 @@ public class PdbReader extends AtomSetCollectionReader {
    "HEADER  " + //18
    "COMPND  " + //19
    "SOURCE  " + //20
-   "TITLE   ";  //21
+   "TITLE   " + //21
+   "SEQADV  ";  //22
 
 
  @SuppressWarnings("unchecked")
@@ -351,6 +352,9 @@ public class PdbReader extends AtomSetCollectionReader {
     case 21:
       title();
       return true;
+    case 22:
+      seqAdv();
+      return true;
     default:
       if (line.trim().startsWith("DSSR:"))
         processDSSR(this);
@@ -358,6 +362,35 @@ public class PdbReader extends AtomSetCollectionReader {
     return true;
   }
 
+  /*
+SEQADV 1EHZ 2MG A   10  GB   M10263      G    10 TRNA                           
+SEQADV 1EHZ H2U A   16  GB   M10263      U    16 TRNA                           
+SEQADV 1EHZ H2U A   17  GB   M10263      U    17 TRNA                           
+SEQADV 1EHZ M2G A   26  GB   M10263      G    26 TRNA                           
+SEQADV 1EHZ OMC A   32  GB   M10263      C    32 TRNA                           
+SEQADV 1EHZ OMG A   34  GB   M10263      G    34 TRNA                           
+SEQADV 1EHZ YYG A   37  GB   M10263      G    37 TRNA                           
+SEQADV 1EHZ PSU A   39  GB   M10263      U    39 TRNA                           
+SEQADV 1EHZ 5MC A   40  GB   M10263      C    40 TRNA                           
+SEQADV 1EHZ 7MG A   46  GB   M10263      G    46 TRNA                           
+SEQADV 1EHZ 5MC A   49  GB   M10263      C    49 TRNA                           
+SEQADV 1EHZ 5MU A   54  GB   M10263      U    54 TRNA                           
+SEQADV 1EHZ PSU A   55  GB   M10263      U    55 TRNA                           
+SEQADV 1EHZ 1MA A   58  GB   M10263      A    58 TRNA                           
+SEQADV 1BLU GLU      7  SWS  P00208    GLN     7 CONFLICT                       
+   */
+  private void seqAdv() {
+    String g1 = line.substring(39, 42).trim().toLowerCase();
+    if (g1.length() != 1)
+      return;
+    if (htGroup1 == null)
+      asc.setInfo("htGroup1", htGroup1 = new Hashtable<String, String>());
+    String g3 = line.substring(12, 15).trim();
+    htGroup1.put(g3, g1);
+  }
+
+  Map<String, String> htGroup1;
+  
   private String readHeader(boolean getLine) throws Exception {
     if (getLine) {
       rd();

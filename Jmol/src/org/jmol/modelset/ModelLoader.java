@@ -185,6 +185,7 @@ public final class ModelLoader {
       if (isTrajectory)
         ms.vibrationSteps = (Lst<V3[]>) info.remove("vibrationSteps");
     }
+    htGroup1 = (Map<String, String>) ms.getInfoM("htGroup1");
     modulationOn = ms.getMSInfoB("modulationOn");
     noAutoBond = ms.getMSInfoB("noAutoBond");
     is2D = ms.getMSInfoB("is2D");
@@ -257,6 +258,9 @@ public final class ModelLoader {
   private int adapterTrajectoryCount = 0;
   private boolean noAutoBond;
   private boolean modulationOn;
+  
+  private Map<String, String> htGroup1; // from mmCIF and PDB
+
   
   public int getAtomCount() {
     return ms.ac;
@@ -1179,8 +1183,14 @@ public final class ModelLoader {
       key = (group.isProtein() ? "p>" : group.isNucleic() ? "n>" : group
           .isCarbohydrate() ? "c>" : "o>");
     }
-    if (group3 != null)
+    if (group3 != null) {
       countGroup(modelIndex, key, group3);
+      if (group.isNucleic()) {
+        String g1 = (htGroup1 == null ? null : htGroup1.get(group3));
+        if (g1 != null) // from SEQADV or _struct_ref_seq_dif.db_mon_id
+          group.group1 = g1.charAt(0);
+      }
+    }
     addGroup(chain, group);
     groups[groupIndex] = group;
     group.setGroupIndex(groupIndex);

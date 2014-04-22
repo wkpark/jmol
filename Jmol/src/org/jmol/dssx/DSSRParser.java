@@ -987,6 +987,7 @@ List of 233 multiplets
     if (lst != null) {
       for (int i = lst.size(); --i >= 0;) {
         Map<String, Object> bpInfo = lst.get(i);
+        System.out.println(i);
         new BasePair(bpInfo, setPhos(vwr, 1, bpInfo, bs, htChains), setPhos(
             vwr, 2, bpInfo, bs, htChains));
       }
@@ -996,8 +997,10 @@ List of 233 multiplets
         Map<String, Object> bp = lst1.get(i);
         String seq = (String) bp.get("seq");
         Lst<Object> resnos = (Lst<Object>) bp.get("resnos");
-        for (int j = resnos.size(); --j >= 0;)
-          setRes(vwr, (String) resnos.get(j), bs, htChains, seq.charAt(j));   
+        for (int j = resnos.size(); --j >= 0;) {
+          System.out.println(j);
+          setRes(vwr, (String) resnos.get(j), bs, htChains, seq.charAt(j));
+        }
       }
   }
 

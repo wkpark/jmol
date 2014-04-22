@@ -36,6 +36,8 @@ import javajs.util.Quat;
 
 import org.jmol.shapebio.BioShape;
 import javajs.util.V3;
+
+import org.jmol.util.Logger;
 import org.jmol.viewer.JC;
 
 public class NucleicMonomer extends PhosphorusMonomer {
@@ -550,7 +552,9 @@ public boolean isCrossLinked(Group g) {
   }
 
   public void setGroup1(char g) {
-    group1 = g;
+    // once only
+    if (group1 == '\0')
+      group1 = g;
   }
   
   public Lst<BasePair> getBasePairs() {
@@ -563,6 +567,11 @@ public boolean isCrossLinked(Group g) {
   protected char getGroup1b () {
     if (!((NucleicPolymer) bioPolymer).isDssrSet)
       bioPolymer.model.ms.vwr.getDSSRParser().setAllDSSRParametersForModel(bioPolymer.model.ms.vwr, bioPolymer.model.modelIndex);
+    if (group1 == '\0') {
+      String g3 = getLeadAtom().getGroup3(true);
+      Logger.info("Group1 not found for " + g3);
+      group1 = (g3 == null || g3.length() == 0 ? '?' : g3.toLowerCase().charAt(g3.length() - 1));
+    }
     return group1;
   }
 

@@ -2709,16 +2709,12 @@ public class ScriptEval extends ScriptExpr {
       return;
     case T.frame:
       if (isArrayParameter(2)) {
-        float[] f = expandFloatArray(floatParameterSet(2, 0, Integer.MAX_VALUE));
-
-        if (f == null)
+        int[] frames = expandFloatArray(floatParameterSet(2, 0, Integer.MAX_VALUE));
+        if (frames == null)
           invArg();
         checkLength(iToken + 1);
         if (chk)
           return;
-        int[] frames = new int[f.length];
-        for (int i = f.length; --i >= 0;)
-          frames[i] = (int) f[i];
         Map<String, Object> movie = new Hashtable<String, Object>();
         movie.put("frames", frames);
         movie.put("currentFrame", Integer.valueOf(0));
@@ -6142,24 +6138,48 @@ public class ScriptEval extends ScriptExpr {
     if (slen == 2 && tokAt(1) == T.only)
       return; // coming from "cartoon only"
     // select beginexpr none endexpr
-    vwr.setNoneSelected(slen == 4 && tokAt(2) == T.none);
-    // select beginexpr bonds ( {...} ) endex pr
-    if (tokAt(2) == T.bitset && getToken(2).value instanceof BondSet
-        || tokAt(2) == T.bonds && getToken(3).tok == T.bitset) {
-      if (slen != iToken + 2)
+    int tok = tokAt(2);
+    vwr.setNoneSelected(slen == 4 && tok == T.none);
+    BS bs = null;
+    switch (tok) {
+    case T.bitset:
+      // select beginexpr bonds ( {...} ) endex pr
+      if (getToken(2).value instanceof BondSet || tokAt(2) == T.bonds
+          && getToken(3).tok == T.bitset) {
+        if (slen != iToken + 2)
+          invArg();
+        if (!chk)
+          vwr.selectBonds((BS) theToken.value);
+        return;
+      }
+      break;
+    case T.measure:
+    case T.bonds:
+      if (slen == 5 && tokAt(3) == T.bitset) {
+        bs = (BS) getToken(3).value;
+        iToken++;
+      } else if (isArrayParameter(4)) {
+        bs = new BS();
+        // 0-based here, to conform with getProperty measurementInfo.index
+        int[] a = expandFloatArray(floatParameterSet(4, 0,
+            Integer.MAX_VALUE));
+        if (a == null)
+          invArg();
+        for (int ii = 0; ii < a.length; ii++)
+          bs.set(a[ii]);
+      }
+      checkLast(iToken);
+      if (chk)
+        return;
+      if (bs == null)
         invArg();
-      if (!chk)
-        vwr.selectBonds((BS) theToken.value);
+      if (tok == T.measure)
+        setShapeProperty(JC.SHAPE_MEASURES, "select", bs);
+      else
+        vwr.selectBonds(bs);
       return;
     }
-    if (tokAt(2) == T.measure) {
-      if (slen != 5 || getToken(3).tok != T.bitset)
-        invArg();
-      if (!chk)
-        setShapeProperty(JC.SHAPE_MEASURES, "select", theToken.value);
-      return;
-    }
-    BS bs;
+
     int addRemove = 0;
     boolean isGroup = false;
     if (getToken(1).intValue == 0 && theTok != T.off) {
@@ -6169,7 +6189,7 @@ public class ScriptEval extends ScriptExpr {
       checkLast(iToken);
       bs = (BS) v;
     } else {
-      int tok = tokAt(i);
+      tok = tokAt(i);
       switch (tok) {
       case T.on:
       case T.off:
@@ -8150,27 +8170,41 @@ public class ScriptEval extends ScriptExpr {
     return new RadiusData(null, value, factorType, vdwType);
   }
 
-  private static float[] expandFloatArray(float[] a) {
+  /**
+   * Accepts a float array and expands [1 -3] to [1 2 3], for example.
+   * 
+   * @param a
+   * @return int array
+   */
+  private static int[] expandFloatArray(float[] a) {
     int n = a.length;
+    boolean haveNeg = false;
     try {
       for (int i = 0; i < a.length; i++)
-        if (a[i] < 0)
+        if (a[i] < 0) {
           n += Math.abs(a[i - 1] + a[i]) - 1; // 100 - 102 or 11 - 3
-      if (n == a.length)
-        return a;
-      float[] b = new float[n];
-      for (int pt = 0, i = 0; i < a.length; i++) {
-        n = (int) a[i];
-        if (n >= 0) {
-          b[pt++] = n;
-        } else {
-          int dif = (int) (a[i - 1] + n);
-          int dir = (dif < 0 ? 1 : -1);
-          for (int j = (int) a[i - 1]; j != -a[i]; j += dir, pt++)
-            b[pt] = b[pt - 1] + dir;
+          haveNeg = true;
         }
+      if (haveNeg) {
+        float[] b = new float[n];
+        for (int pt = 0, i = 0; i < a.length; i++) {
+          n = (int) a[i];
+          if (n >= 0) {
+            b[pt++] = n;
+          } else {
+            int dif = (int) (a[i - 1] + n);
+            int dir = (dif < 0 ? 1 : -1);
+            for (int j = (int) a[i - 1]; j != -a[i]; j += dir, pt++)
+              b[pt] = b[pt - 1] + dir;
+          }
+        }
+        a = b;
+        n = a.length;
       }
-      return b;
+      int[] ia = new int[n];
+      for (int i = n; --i >= 0;)
+        ia[i] = (int) a[i];
+      return ia;
     } catch (Exception e) {
       return null;
     }

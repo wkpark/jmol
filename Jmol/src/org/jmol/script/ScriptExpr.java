@@ -127,7 +127,7 @@ abstract class ScriptExpr extends ScriptParam {
    * @throws ScriptException
    *         errors are thrown directly to the Eval error system.
    */
-  protected Object parameterExpression(int pt, int ptMax, String key,
+  private Object parameterExpression(int pt, int ptMax, String key,
                                      boolean ignoreComma, boolean asVector,
                                      int ptAtom, boolean isArrayItem,
                                      Map<String, SV> localVars, String localVar, boolean isSpecialAssignment)
@@ -1212,7 +1212,7 @@ abstract class ScriptExpr extends ScriptParam {
     return false;
   }
 
-  protected BS compareString(int tokWhat, int tokOperator, String comparisonString)
+  private BS compareString(int tokWhat, int tokOperator, String comparisonString)
       throws ScriptException {
     BS bs = new BS();
     Atom[] atoms = vwr.ms.at;
@@ -1232,7 +1232,7 @@ abstract class ScriptExpr extends ScriptParam {
     return bs;
   }
 
-  protected boolean compareStringValues(int tokOperator, String propertyValue,
+  private boolean compareStringValues(int tokOperator, String propertyValue,
                                       String comparisonValue)
       throws ScriptException {
     switch (tokOperator) {
@@ -1247,7 +1247,7 @@ abstract class ScriptExpr extends ScriptParam {
     return false;
   }
 
-  protected BS compareInt(int tokWhat, int tokOperator, int ival) {
+  private BS compareInt(int tokWhat, int tokOperator, int ival) {
     int ia = Integer.MAX_VALUE;
     BS propertyBitSet = null;
     int bitsetComparator = tokOperator;
@@ -1428,7 +1428,7 @@ abstract class ScriptExpr extends ScriptParam {
     return bs;
   }
 
-  protected SV getBitsetPropertySelector(int i, boolean mustBeSettable,
+  private SV getBitsetPropertySelector(int i, boolean mustBeSettable,
                                        boolean isExpression)
       throws ScriptException {
     int tok = getToken(i).tok;
@@ -1927,7 +1927,7 @@ abstract class ScriptExpr extends ScriptParam {
     return bs;
   }
 
-  protected Object getStringObjectAsVariable(String s, String key) {
+  private Object getStringObjectAsVariable(String s, String key) {
     if (s == null || s.length() == 0)
       return s;
     Object v = SV.unescapePointOrBitsetAsVariable(s);

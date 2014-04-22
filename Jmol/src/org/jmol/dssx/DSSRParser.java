@@ -481,6 +481,20 @@ List of 12 base pairs
   10 A.G10            B.C3             G-C WC           19-XIX    cWW cW-W
   11 A.C11            B.G2             C-G WC           19-XIX    cWW cW-W
   12 A.G12            B.C1             G-C WC           19-XIX    cWW cW-W
+  
+     9 [U]8:A           [A]21:A          U+A --           n/a       ... ....
+       [-161.5(anti) C3'-endo lambda=111.1] [-160.2(anti) C3'-endo lambda=50.1]
+       d(C1'-C1')=8.76 d(N1-N9)=8.70 d(C6-C8)=10.78 tor(C1'-N1-N9-C1')=158.5
+       H-bonds[1]: "O2'(hydroxyl)-N1[2.68]"
+       bp-pars: [-1.22   -8.06   -0.19   -9.35   19.04   -117.98]
+       
+       
+   9 [U]8:A           [A]21:A          U+A --           00-n/a    ... ....
+       [-161.5(anti) C3'-endo lambda=111.1] [-160.2(anti) C3'-endo lambda=50.1]
+       d(C1'-C1')=8.76 d(N1-N9)=8.70 d(C6-C8)=10.78 tor(C1'-N1-N9-C1')=158.5
+       H-bonds[1]: "O2'(hydroxyl)-N1[2.68]"
+       bp-pars: [-1.22   -8.06   -0.19   -9.35   19.04   -117.98]
+
 
 List of 50 lone WC/wobble pairs
   Note: lone WC/wobble pairs are assigned negative indices to differentiate
@@ -580,7 +594,8 @@ List of 50 lone WC/wobble pairs
    * @throws Exception
    */
   @SuppressWarnings("unchecked")
-  private Map<String, Object> getBPData(int i0, String type, boolean readParams) throws Exception {
+  private Map<String, Object> getBPData(int i0, String type, boolean readParams)
+      throws Exception {
     String[] tokens = PT.getTokens(line);
     String nt12 = tokens[1] + tokens[2];
     Map<String, Object> data;
@@ -591,7 +606,8 @@ List of 50 lone WC/wobble pairs
       data = new Hashtable<String, Object>();
       i = PT.parseInt(tokens[0]);
       if (type != null)
-        i = -((Integer)((Map<String, Object>) htTemp.get(tokens[2]+ tokens[1])).get("id")).intValue();
+        i = -((Integer) ((Map<String, Object>) htTemp
+            .get(tokens[2] + tokens[1])).get("id")).intValue();
       data.put("id", Integer.valueOf(i));
       String nt1 = fix(tokens[1], true);
       String nt2 = fix(tokens[2], true);
@@ -606,12 +622,13 @@ List of 50 lone WC/wobble pairs
       data.put("g1", bp.substring(0, 1));
       data.put("g2", bp.substring(2, 3));
       // helix can be missing name
-      //    1 0.C2769          0.A2805          C-A              00-n/a    t.S c.-m
+      //    1 0.C2769          0.A2805          C-A              n/a    t.S c.-m
 
       int pt = (tokens.length == 8 ? 5 : 4);
       data.put("name", pt == 5 ? tokens[4] : "?");
+      int pt1 = tokens[pt].indexOf("-");
       data.put("Saenger",
-          Integer.valueOf(tokens[pt].substring(0, tokens[pt].indexOf("-"))));
+          Integer.valueOf(pt1 > 0 ? tokens[pt].substring(0, pt1) : "0"));
       data.put("LW", tokens[++pt]);
       data.put("DSSR", tokens[++pt]);
       htTemp.put(nt12, data);
@@ -902,20 +919,28 @@ List of 233 multiplets
     return bs;
   }
 
-  private void getBsAtoms(Viewer vwr, String res, Lst<SV> lst, BS bs, Map<String, BS> htChains) {
+  private void getBsAtoms(Viewer vwr, String res, Lst<?> lst, BS bs, Map<String, BS> htChains) {
     String[] tokens;
     if (lst == null) {
       tokens = PT.getTokens(PT.replaceAllCharacters(res.toString(), "=[,]", " "));
+    } else if (lst.size() == 0){
+      return;
     } else {
       tokens = new String[lst.size()];
       for (int i = lst.size(); --i >= 0;) {
-        String s = lst.get(i).asString();
-        tokens[i] = (s.startsWith("[") ? s.substring(s.indexOf("]") + 1) : s);
+        Object o = lst.get(i);
+        if (o instanceof Lst<?>) {
+          getBsAtoms(vwr, null, (Lst<?>)o, bs, htChains);
+        } else {
+          String s = (o instanceof SV ? ((SV) o).asString() : o.toString());
+          tokens[i] = (s.startsWith("[") ? s.substring(s.indexOf("]") + 1) : s);
+        }
       }
     }          
     for (int j = tokens.length; --j >= 0;) {
       String t = tokens[j];
-      System.out.println(t);
+      if (t == null)
+        continue;
       int pt = t.indexOf(":"); 
       if (pt < 0 || pt + 1 == t.length())
         continue;

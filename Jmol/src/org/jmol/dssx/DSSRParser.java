@@ -37,6 +37,7 @@ import org.jmol.api.JmolDSSRParser;
 import org.jmol.java.BS;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.HBond;
+import org.jmol.modelset.ModelSet;
 import org.jmol.modelsetbio.BasePair;
 import org.jmol.modelsetbio.BioModel;
 import org.jmol.modelsetbio.BioPolymer;
@@ -929,6 +930,8 @@ List of 233 multiplets
       tokens = new String[lst.size()];
       for (int i = lst.size(); --i >= 0;) {
         Object o = lst.get(i);
+        if (o instanceof SV)
+          o = ((SV) o).value;
         if (o instanceof Lst<?>) {
           getBsAtoms(vwr, null, (Lst<?>)o, bs, htChains);
         } else {
@@ -987,7 +990,6 @@ List of 233 multiplets
     if (lst != null) {
       for (int i = lst.size(); --i >= 0;) {
         Map<String, Object> bpInfo = lst.get(i);
-        System.out.println(i);
         new BasePair(bpInfo, setPhos(vwr, 1, bpInfo, bs, htChains), setPhos(
             vwr, 2, bpInfo, bs, htChains));
       }
@@ -997,10 +999,8 @@ List of 233 multiplets
         Map<String, Object> bp = lst1.get(i);
         String seq = (String) bp.get("seq");
         Lst<Object> resnos = (Lst<Object>) bp.get("resnos");
-        for (int j = resnos.size(); --j >= 0;) {
-          System.out.println(j);
+        for (int j = resnos.size(); --j >= 0;)
           setRes(vwr, (String) resnos.get(j), bs, htChains, seq.charAt(j));
-        }
       }
   }
 
@@ -1021,20 +1021,24 @@ List of 233 multiplets
 
   @SuppressWarnings("unchecked")
   @Override
-  public String getHBonds(Viewer vwr, int modelIndex, Lst<Bond> vHBonds, boolean doReport) {
-    Object info = vwr.ms.getInfo(modelIndex, "dssr");
+  public String getHBonds(ModelSet ms, int modelIndex, Lst<Bond> vHBonds, boolean doReport) {
+    Object info = ms.getInfo(modelIndex, "dssr");
     if (info != null)
       info = ((Map<String, Object>) info).get("hBonds");
     if (info == null)
       return "no DSSR hydrogen-bond data";
     Lst<Map<String, Object>> list = (Lst<Map<String, Object>>) info;
-    int a0 = vwr.ms.am[modelIndex].firstAtomIndex - 1;
+    int a0 = ms.am[modelIndex].firstAtomIndex - 1;
+    try {
     for (int i = list.size(); --i >= 0;) {
       Map<String, Object> hbond = list.get(i);
       int a1 = ((Integer) hbond.get("atno1")).intValue() + a0;
       int a2 = ((Integer) hbond.get("atno2")).intValue() + a0;
       float energy = (hbond.containsKey("energy") ? ((Float)hbond.get("energy")).floatValue() : 0);
-      vHBonds.addLast(new HBond(vwr.ms.at[a1], vwr.ms.at[a2], Edge.BOND_H_REGULAR, (short) 1, C.INHERIT_ALL, energy));
+      vHBonds.addLast(new HBond(ms.at[a1], ms.at[a2], Edge.BOND_H_REGULAR, (short) 1, C.INHERIT_ALL, energy));
+    }
+    } catch (Exception e) {
+      Logger.error("Exception " + e + " in DSSRParser.getHBonds");
     }
     return "DSSR reports " + list.size() + " hydrogen bonds";
   }

@@ -140,8 +140,8 @@ public final class BioModel extends Model{
     ((DSSPInterface) Interface.getOption("dssx.DSSP"))
         .calculateDssp(bioPolymers, bioPolymerCount, vHBonds, doReport,
             dsspIgnoreHydrogen, setStructure);
-    if (haveNucl && auxiliaryInfo.containsKey("dssr"))
-      s += ms.vwr.getDSSRParser().getHBonds(ms.vwr, modelIndex, vHBonds, doReport);
+    if (haveNucl && auxiliaryInfo.containsKey("dssr") && vHBonds != null)
+      s += ms.vwr.getDSSRParser().getHBonds(ms, modelIndex, vHBonds, doReport);
     return s;
   }
 

@@ -4,7 +4,7 @@ import java.util.Map;
 
 import org.jmol.java.BS;
 import org.jmol.modelset.Bond;
-import org.jmol.modelset.Group;
+import org.jmol.modelset.ModelSet;
 import org.jmol.viewer.Viewer;
 
 import javajs.api.GenericLineReader;
@@ -19,7 +19,7 @@ public interface JmolDSSRParser {
 
   void setAllDSSRParametersForModel(Viewer vwr, int modelIndex);
 
-  String getHBonds(Viewer vwr, int modelIndex, Lst<Bond> vHBonds, boolean doReport);
+  String getHBonds(ModelSet ms, int modelIndex, Lst<Bond> vHBonds, boolean doReport);
 
   String calculateStructure(Viewer vwr, BS bsAtoms);
 

@@ -317,10 +317,8 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
    * 
    */
   public boolean checkLastModel() {
-    if (isLastModel(modelNumber) && doProcessLines) {
-      continuing = false;
-      return false;
-    }
+    if (isLastModel(modelNumber) && doProcessLines)
+      return (continuing = doProcessLines = false);
     doProcessLines = false;
     return true;
   }

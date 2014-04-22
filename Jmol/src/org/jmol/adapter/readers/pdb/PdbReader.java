@@ -161,6 +161,7 @@ public class PdbReader extends AtomSetCollectionReader {
   private int atomTypeLen;
   private boolean isCourseGrained;
   private boolean isbiomol;
+  private boolean isConcatenated;
 
   final private static String lineOptions = 
    "ATOM    " + //0
@@ -203,6 +204,7 @@ public class PdbReader extends AtomSetCollectionReader {
    isCourseGrained = byChain || bySymop;
    if (!isCourseGrained)
      setIsPDB();
+   isConcatenated = htParams.containsKey("concatenate");
    if (htParams.containsKey("vTlsModels")) {
      // from   load files "tls.out" "xxxx.pdb"
      vTlsModels = ( Lst<Map<String, Object>>) htParams.remove("vTlsModels");
@@ -254,7 +256,10 @@ public class PdbReader extends AtomSetCollectionReader {
       modelNumber = (bsModels == null ? modelNo : modelNumber + 1);
       if (!doGetModel(modelNumber, null)) {
         handleTlsMissingModels();
-        return checkLastModel();
+        boolean isOK = checkLastModel();
+        if (!isOK && isConcatenated)
+          isOK = continuing = true;
+        return isOK;
       }
       if (!isCourseGrained)
         connectAll(maxSerial, isConnectStateBug);
@@ -272,8 +277,11 @@ public class PdbReader extends AtomSetCollectionReader {
      * actually supports this. So you can't concatinate PDB files the way you
      * can CIF files. --Bob Hanson 8/30/06
      */
-    if (isMultiModel && !doProcessLines)
+    if (isMultiModel && !doProcessLines) {
+      if (isConcatenated)
+        checkDSSR();
       return true;
+    }
     if (isAtom) {
       getHeader = false;
       atom();
@@ -356,10 +364,14 @@ public class PdbReader extends AtomSetCollectionReader {
       seqAdv();
       return true;
     default:
-      if (line.trim().startsWith("DSSR:"))
-        processDSSR(this);
+      checkDSSR();
     }
     return true;
+  }
+
+  private void checkDSSR() throws Exception {
+    if (line.trim().startsWith("DSSR:") && asc.ac > 0)
+      processDSSR(this);
   }
 
   /*

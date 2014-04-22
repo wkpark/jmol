@@ -44,11 +44,17 @@ class CheckedInputStream extends FilterInputStream {
     /**
      * Creates an input stream using the specified Checksum.
      * @param in the input stream
-     * @param cksum the Checksum
      */
-    public CheckedInputStream(InputStream in, Checksum cksum) {
-        super(in);
-        this.cksum = cksum;
+    public CheckedInputStream(InputStream in) {
+      super(in);
+    }
+    
+    public CheckedInputStream set(Checksum cksum) {
+      // necessary because of a J2S compiler bug sometimes missing the constructor
+      
+      this.in = in;
+      this.cksum = cksum;
+      return this;
     }
 
     /**

@@ -160,7 +160,11 @@ class GZIPInputStream extends InflaterInputStream {
      * of this member header.
      */
     private int readHeader(InputStream this_in) throws IOException {
-        CheckedInputStream in = new CheckedInputStream(this_in, crc);
+      
+      // J2S compiler fails to execute constructor when (this_in, crc)
+      // I don't know why. -- BH 4/22/14
+      
+        CheckedInputStream in = new CheckedInputStream(this_in).set(crc);
         crc.reset();
         // Check header magic
         if (readUShort(in) != GZIP_MAGIC) {

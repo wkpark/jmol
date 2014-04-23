@@ -1821,7 +1821,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   private String loadModelFromFileRepaint(String fullPathName, String fileName,
                                           String[] fileNames, Object reader) {
     String ret = loadModelFromFile(fullPathName, fileName, fileNames, reader,
-        false, null, null, 0, false);
+        false, null, null, null, 0, false);
     refresh(1, "loadModelFromFileRepaint");
     return ret;
   }
@@ -1840,6 +1840,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
    * @param isAppend
    * @param htParams
    * @param loadScript
+   * @param sOptions 
    * @param tokType
    * @param isConcat 
    * @return null or error
@@ -1848,7 +1849,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
                                   String[] fileNames, Object reader,
                                   boolean isAppend,
                                   Map<String, Object> htParams, SB loadScript,
-                                  int tokType, boolean isConcat) {
+                                  SB sOptions, int tokType, boolean isConcat) {
     if (htParams == null)
       htParams = setLoadParameters(null, isAppend);
     if (isConcat)
@@ -1864,6 +1865,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         for (int i = 0; i < fileNames.length; i++)
           loadScript.append(i == 0 || !isConcat ? " " : "+").append("/*file*/$FILENAME" + (i + 1) + "$");
       }
+      if (sOptions.length() > 0)
+        loadScript.append(" /*options*/ ").append(sOptions.toString());
       long timeBegin = System.currentTimeMillis();
 
       atomSetCollection = fm.createAtomSetCollectionFromFiles(

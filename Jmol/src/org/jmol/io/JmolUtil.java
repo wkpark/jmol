@@ -606,6 +606,8 @@ public class JmolUtil implements JmolZipUtilities {
 
   @Override
   public byte[] getCachedPngjBytes(JmolBinary jmb, String pathName) {
+    if (pathName.startsWith("file:///"))
+      pathName = "file:" +pathName.substring(7);
     Logger.info("JmolUtil checking PNGJ cache for " + pathName);
     String shortName = shortSceneFilename(pathName);
     if (jmb.pngjCache == null

@@ -3989,7 +3989,6 @@ public class ScriptEval extends ScriptExpr {
     int i = (tokAt(0) == T.data ? 0 : 1);
     boolean appendNew = vwr.getBoolean(T.appendnew);
     String filter = null;
-    Lst<Object> firstLastSteps = null;
     int modelCount0 = vwr.getModelCount()
         - (vwr.getFileName().equals("zapped") ? 1 : 0);
     int ac0 = vwr.getAtomCount();
@@ -4006,7 +4005,7 @@ public class ScriptEval extends ScriptExpr {
     String[] filenames = null;
     String[] tempFileInfo = null;
     String errMsg = null;
-    String sOptions = "";
+    SB sOptions = new SB();
     int tokType = 0;
     int tok;
 
@@ -4212,37 +4211,7 @@ public class ScriptEval extends ScriptExpr {
       if (filenames != null)
         for (int j = 0; j < nFiles; j++)
           loadScript.append(" /*file*/").append(PT.esc(filenames[j]));
-    } else if (getToken(i + 1).tok == T.manifest
-        // model/vibration index or list of model indices
-        || theTok == T.integer || theTok == T.varray || theTok == T.leftsquare
-        || theTok == T.spacebeforesquare
-        // {i j k} (lattice)
-        || theTok == T.leftbrace || theTok == T.point3f
-        // PACKED/CENTROID, either order
-        || theTok == T.packed || theTok == T.centroid
-        // SUPERCELL {i j k}
-        || theTok == T.supercell
-        // RANGE x.x or RANGE -x.x
-        || theTok == T.range
-        // SPACEGROUP "nameOrNumber" 
-        // or SPACEGROUP "IGNOREOPERATORS" 
-        // or SPACEGROUP "" (same as current)
-        || theTok == T.spacegroup
-        // UNITCELL [a b c alpha beta gamma]
-        // or UNITCELL [ax ay az bx by bz cx cy cz] 
-        // or UNITCELL "" (same as current)
-        // UNITCELL "..." or UNITCELL ""
-        || theTok == T.unitcell
-        // OFFSET {x y z}
-        || theTok == T.offset
-        // FILTER "..."
-        || theTok == T.filter && tokAt(i + 3) != T.coord
-        // Jmol 13.1.5 -- APPEND "data..."
-        || theTok == T.append
-        // don't remember what this is:
-        || theTok == T.identifier && tokAt(i + 3) != T.coord
-
-    ) {
+    } else if (isLoadOption(getToken(i + 1).tok)) {
 
       // more complicated command options, in order
       // (checking the tokens after "....") 
@@ -4265,7 +4234,7 @@ public class ScriptEval extends ScriptExpr {
       if ((tok = tokAt(i)) == T.manifest) {
         String manifest = stringParameter(++i);
         htParams.put("manifest", manifest);
-        sOptions += " MANIFEST " + PT.esc(manifest);
+        sOptions.append(" MANIFEST " + PT.esc(manifest));
         tok = tokAt(++i);
       }
       // n >= 0: model number
@@ -4274,206 +4243,14 @@ public class ScriptEval extends ScriptExpr {
 
       switch (tok) {
       case T.integer:
-        int n = intParameter(i);
-        sOptions += " " + n;
-        if (n < 0)
-          htParams.put("vibrationNumber", Integer.valueOf(-n));
-        else
-          htParams.put("modelNumber", Integer.valueOf(n));
-        tok = tokAt(++i);
-        break;
       case T.varray:
       case T.leftsquare:
       case T.spacebeforesquare:
-        float[] data = floatParameterSet(i, 1, Integer.MAX_VALUE);
-        i = iToken;
-        BS bs = new BS();
-        for (int j = 0; j < data.length; j++)
-          if (data[j] >= 1 && data[j] == (int) data[j])
-            bs.set((int) data[j] - 1);
-        htParams.put("bsModels", bs);
-        int[] iArray = new int[bs.cardinality()];
-        for (int pt = 0, j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1))
-          iArray[pt++] = j + 1;
-        sOptions += " " + Escape.eAI(iArray);
-        tok = tokAt(i);
+        getLoadModelIndex(i, sOptions, htParams);
+        tok = tokAt(i = ++iToken);
         break;
       }
-
-      // {i j k}
-
-      P3 lattice = null;
-      if (tok == T.leftbrace || tok == T.point3f) {
-        lattice = getPoint3f(i, false);
-        i = iToken + 1;
-        tok = tokAt(i);
-      }
-
-      // default lattice {555 555 -1} (packed) 
-      // for PACKED, CENTROID, SUPERCELL, RANGE, SPACEGROUP, UNITCELL
-
-      switch (tok) {
-      case T.packed:
-      case T.centroid:
-      case T.supercell:
-      case T.range:
-      case T.spacegroup:
-      case T.unitcell:
-        if (lattice == null)
-          lattice = P3.new3(555, 555, -1);
-        iToken = i - 1;
-      }
-      P3 offset = null;
-      if (lattice != null) {
-        htParams.put("lattice", lattice);
-        i = iToken + 1;
-        sOptions += " {" + (int) lattice.x + " " + (int) lattice.y + " "
-            + (int) lattice.z + "}";
-
-        // {i j k} PACKED, CENTROID -- either or both; either order
-
-        if (tokAt(i) == T.packed) {
-          htParams.put("packed", Boolean.TRUE);
-          sOptions += " PACKED";
-          i++;
-        }
-        if (tokAt(i) == T.centroid) {
-          htParams.put("centroid", Boolean.TRUE);
-          sOptions += " CENTROID";
-          i++;
-          if (tokAt(i) == T.packed && !htParams.containsKey("packed")) {
-            htParams.put("packed", Boolean.TRUE);
-            sOptions += " PACKED";
-            i++;
-          }
-        }
-
-        // {i j k} ... SUPERCELL {i' j' k'}
-
-        if (tokAt(i) == T.supercell) {
-          Object supercell;
-          if (isPoint3f(++i)) {
-            P3 pt = getPoint3f(i, false);
-            if (pt.x != (int) pt.x || pt.y != (int) pt.y || pt.z != (int) pt.z
-                || pt.x < 1 || pt.y < 1 || pt.z < 1) {
-              iToken = i;
-              invArg();
-            }
-            supercell = pt;
-            i = iToken + 1;
-          } else {
-            supercell = stringParameter(i++);
-          }
-          htParams.put("supercell", supercell);
-        }
-
-        // {i j k} ... RANGE x.y  (from full unit cell set)
-        // {i j k} ... RANGE -x.y (from non-symmetry set)
-
-        float distance = 0;
-        if (tokAt(i) == T.range) {
-          /*
-           * # Jmol 11.3.9 introduces the capability of visualizing the close
-           * contacts around a crystalline protein (or any other cyrstal
-           * structure) that are to atoms that are in proteins in adjacent unit
-           * cells or adjacent to the protein itself. The option RANGE x, where x
-           * is a distance in angstroms, placed right after the braces containing
-           * the set of unit cells to load does this. The distance, if a positive
-           * number, is the maximum distance away from the closest atom in the {1
-           * 1 1} set. If the distance x is a negative number, then -x is the
-           * maximum distance from the {not symmetry} set. The difference is that
-           * in the first case the primary unit cell (555) is first filled as
-           * usual, using symmetry operators, and close contacts to this set are
-           * found. In the second case, only the file-based atoms ( Jones-Faithful
-           * operator x,y,z) are initially included, then close contacts to that
-           * set are found. Depending upon the application, one or the other of
-           * these options may be desirable.
-           */
-          i++;
-          distance = floatParameter(i++);
-          sOptions += " range " + distance;
-        }
-        htParams.put("symmetryRange", Float.valueOf(distance));
-
-        // {i j k} ... SPACEGROUP "nameOrNumber"
-        // {i j k} ... SPACEGROUP "IGNOREOPERATORS"
-        // {i j k} ... SPACEGROUP ""
-
-        String spacegroup = null;
-        SymmetryInterface sg;
-        int iGroup = Integer.MIN_VALUE;
-        if (tokAt(i) == T.spacegroup) {
-          ++i;
-          spacegroup = PT.rep(paramAsStr(i++), "''", "\"");
-          sOptions += " spacegroup " + PT.esc(spacegroup);
-          if (spacegroup.equalsIgnoreCase("ignoreOperators")) {
-            iGroup = -999;
-          } else {
-            if (spacegroup.length() == 0) {
-              sg = vwr.getCurrentUnitCell();
-              if (sg != null)
-                spacegroup = sg.getSpaceGroupName();
-            } else {
-              if (spacegroup.indexOf(",") >= 0) // Jones Faithful
-                if ((lattice.x < 9 && lattice.y < 9 && lattice.z == 0))
-                  spacegroup += "#doNormalize=0";
-            }
-            htParams.put("spaceGroupName", spacegroup);
-            iGroup = -2;
-          }
-        }
-
-        // {i j k} ... UNITCELL [a b c alpha beta gamma]
-        // {i j k} ... UNITCELL [ax ay az bx by bz cx cy cz] 
-        // {i j k} ... UNITCELL ""  // same as current
-
-        float[] fparams = null;
-        if (tokAt(i) == T.unitcell) {
-          ++i;
-          if (optParameterAsString(i).length() == 0) {
-            // unitcell "" -- use current unit cell
-            sg = vwr.getCurrentUnitCell();
-            if (sg != null) {
-              fparams = sg.getUnitCellAsArray(true);
-              offset = sg.getCartesianOffset();
-            }
-          } else {
-            fparams = floatParameterSet(i, 6, 9);
-          }
-          if (fparams == null || fparams.length != 6 && fparams.length != 9)
-            invArg();
-          sOptions += " unitcell {";
-          for (int j = 0; j < fparams.length; j++)
-            sOptions += (j == 0 ? "" : " ") + fparams[j];
-          sOptions += "}";
-          htParams.put("unitcell", fparams);
-          if (iGroup == Integer.MIN_VALUE)
-            iGroup = -1;
-          i = iToken + 1;
-        }
-        if (iGroup != Integer.MIN_VALUE)
-          htParams.put("spaceGroupIndex", Integer.valueOf(iGroup));
-      }
-
-      // OFFSET {x y z} (fractional or not) (Jmol 12.1.17)
-
-      if (offset != null)
-        coordinatesAreFractional = false;
-      else if (tokAt(i) == T.offset)
-        offset = getPoint3f(++i, true);
-      if (offset != null) {
-        if (coordinatesAreFractional) {
-          offset.setT(fractionalPoint);
-          htParams.put("unitCellOffsetFractional",
-              (coordinatesAreFractional ? Boolean.TRUE : Boolean.FALSE));
-          sOptions += " offset {" + offset.x + " " + offset.y + " " + offset.z
-              + "/1}";
-        } else {
-          sOptions += " offset " + Escape.eP(offset);
-        }
-        htParams.put("unitCellOffset", offset);
-        i = iToken + 1;
-      }
+      i = getLoadSymmetryParams(i, sOptions, htParams);
 
       // .... APPEND DATA "appendedData" .... end "appendedData"
       // option here to designate other than "appendedData"
@@ -4497,64 +4274,15 @@ public class ScriptEval extends ScriptExpr {
         filter = stringParameter(++i);
 
     } else {
-
-      // list of file names 
-      // or COORD {i j k} "fileName" 
-      // or COORD ({bitset}) "fileName"
-      // or FILTER "xxxx"
-
+      Lst<String> fNames = new Lst<String>();
       if (i == 1) {
         i++;
         loadScript.append(" " + modelName);
       }
-
-      P3 pt = null;
-      BS bs = null;
-      Lst<String> fNames = new Lst<String>();
-      while (i < slen) {
-        switch (tokAt(i)) {
-        case T.plus:
-          isConcat = true;
-          loadScript.append(" +");
-          ++i;
-          continue;
-        case T.filter:
-          filter = stringParameter(++i);
-          ++i;
-          continue;
-        case T.coord:
-          htParams.remove("isTrajectory");
-          if (firstLastSteps == null) {
-            firstLastSteps = new Lst<Object>();
-            pt = P3.new3(0, -1, 1);
-          }
-          if (isPoint3f(++i)) {
-            pt = getPoint3f(i, false);
-            i = iToken + 1;
-          } else if (tokAt(i) == T.bitset) {
-            bs = (BS) getToken(i).value;
-            pt = null;
-            i = iToken + 1;
-          }
-          break;
-        case T.identifier:
-          invArg();
-        }
-        fNames.addLast(filename = paramAsStr(i++));
-        if (pt != null) {
-          firstLastSteps
-              .addLast(new int[] { (int) pt.x, (int) pt.y, (int) pt.z });
-          loadScript.append(" COORD " + Escape.eP(pt));
-        } else if (bs != null) {
-          firstLastSteps.addLast(bs);
-          loadScript.append(" COORD " + Escape.eBS(bs));
-        }
-        loadScript.append(" /*file*/$FILENAME" + fNames.size() + "$");
-      }
-      if (firstLastSteps != null) {
-        htParams.put("firstLastSteps", firstLastSteps);
-      }
+      filter = getLoadFilesList(i, loadScript, sOptions, htParams, fNames);
       filenames = fNames.toArray(new String[nFiles = fNames.size()]);
+      if (!isConcat && loadScript.indexOf("/*concat*/") >= 0)
+        isConcat = true;
     }
 
     // end of parsing
@@ -4568,9 +4296,9 @@ public class ScriptEval extends ScriptExpr {
     // get default filter if necessary
 
     if (appendedData != null) {
-      sOptions += " APPEND data \"" + appendedKey + "\"\n" + appendedData
+      sOptions.append(" APPEND data \"" + appendedKey + "\"\n" + appendedData
           + (appendedData.endsWith("\n") ? "" : "\n") + "end \"" + appendedKey
-          + "\"";
+          + "\"");
     }
     if (filter == null)
       filter = vwr.g.defaultLoadFilter;
@@ -4582,7 +4310,7 @@ public class ScriptEval extends ScriptExpr {
       htParams.put("filter", filter);
       if (filter.equalsIgnoreCase("2d")) // MOL file hack
         filter = "2D-noMin";
-      sOptions += " FILTER " + PT.esc(filter);
+      sOptions.append(" FILTER " + PT.esc(filter));
     }
 
     // store inline data or variable data in htParams
@@ -4625,53 +4353,75 @@ public class ScriptEval extends ScriptExpr {
         htParams.put("outputChannel", out);
     }
 
+    // check for single file or string
+
     if (filenames == null && tokType == 0) {
-      // a single file or string -- complete the loadScript
+
+      // finalize the loadScript
+
       loadScript.append(" ");
       if (isVariable || isInline) {
         loadScript.append(PT.esc(filename));
       } else if (!isData) {
-        if (!filename.equals("string") && !filename.equals("string[]"))
-          loadScript.append("/*file*/");
+        // check for AS
         if (localName != null)
           localName = vwr.getFilePath(localName, false);
-        loadScript
-            .append((localName != null ? PT.esc(localName) : "$FILENAME$"));
+        if (!filename.equals("string") && !filename.equals("string[]"))
+          loadScript.append("/*file*/").append((localName != null ? PT.esc(localName) : "$FILENAME$"));
       }
-      if (sOptions.length() > 0)
-        loadScript.append(" /*options*/ ").append(sOptions);
-      if (isVariable)
-        loadScript.append("\n  }");
-      htParams.put("loadScript", loadScript);
+      if (!isConcat && filename.startsWith("=") && filename.endsWith("/dssr")) {
+        
+        // load =1mys/dssr  -->  load =1mys + =dssr/1mys
+
+        isConcat = true;
+        filenames = new String[] {
+            filename.substring(0, filename.length() - 5),
+            "=dssr/" + filename.substring(1, 5) 
+            };
+        filename = "fileSet";
+        loadScript = null;
+      } else {
+        if (sOptions.length() > 0)
+          loadScript.append(" /*options*/ ").append(sOptions.toString());
+        if (isVariable)
+          loadScript.append("\n  }");
+      }
+      if (loadScript != null)
+        htParams.put("loadScript", loadScript);
     }
+
+    // load model
+
     setCursorWait(true);
     boolean timeMsg = vwr.getBoolean(T.showtiming);
     if (timeMsg)
       Logger.startTimer("load");
-    if (!isConcat && filename.length() == 10 && filename.startsWith("=") && filename.endsWith("/dssr")) {
-      // load =1mys/dssr
-      isConcat = true;
-      filenames = new String[] {filename.substring(0, 5), "=dssr/" + filename.substring(1,5)};
-      filename = "fileSet";
-      loadScript = null;
-      htParams.remove("loadScript");
-    }
     errMsg = vwr.loadModelFromFile(null, filename, filenames, null, isAppend,
-        htParams, loadScript, tokType, isConcat);
+        htParams, loadScript, sOptions, tokType, isConcat);
+    if (timeMsg)
+      showString(Logger.getTimerMsg("load", 0));
+
+    // close output channel
+
     if (out != null) {
       vwr.setFileInfo(new String[] { localName });
       Logger.info(GT.o(GT._("file {0} created"), localName));
       showString(vwr.getFilePath(localName, false) + " created");
       out.closeChannel();
     }
+
+    // check for just loading an atom property
+
     if (tokType > 0) {
-      // we are just loading an atom property
       // reset the file info in FileManager, check for errors, and return
       vwr.setFileInfo(tempFileInfo);
       if (errMsg != null && !isCmdLine_c_or_C_Option)
         evalError(errMsg, null);
       return;
     }
+
+    // check for an error
+
     if (errMsg != null && !isCmdLine_c_or_C_Option) {
       if (errMsg.indexOf(JC.NOTE_SCRIPT_FILE) == 0) {
         filename = errMsg.substring(JC.NOTE_SCRIPT_FILE.length()).trim();
@@ -4680,15 +4430,335 @@ public class ScriptEval extends ScriptExpr {
       }
       evalError(errMsg, null);
     }
-    if (isAppend && (appendNew || nFiles > 1)) {
-      vwr.setAnimationRange(-1, -1);
-      vwr.setCurrentModelIndex(modelCount0);
-    }
-    if (scriptLevel == 0 && !isAppend && (isConcat || nFiles < 2))
-      showString((String) vwr.ms.getInfoM("modelLoadNote"));
+
     if (debugHigh)
       report("Successfully loaded:"
           + (filenames == null ? htParams.get("fullPathName") : modelName));
+
+    finalizeLoad(isAppend, appendNew, isConcat, nFiles, ac0, modelCount0);
+
+  }
+
+  private String getLoadFilesList(int i, SB loadScript, SB sOptions,
+                                Map<String, Object> htParams, Lst<String> fNames) throws ScriptException {
+    // list of file names 
+    // or COORD {i j k} "fileName" 
+    // or COORD ({bitset}) "fileName"
+    // or FILTER "xxxx"
+
+    Lst<Object> firstLastSteps = null;
+    String filter = null;
+    P3 pt = null;
+    BS bs = null;
+    while (i < slen) {
+      switch (tokAt(i)) {
+      case T.plus:
+        loadScript.append("/*concat*/ +");
+        ++i;
+        continue;
+      case T.integer:
+      case T.varray:
+      case T.leftsquare:
+      case T.spacebeforesquare:
+        getLoadModelIndex(i, sOptions, htParams);
+        i = iToken + 1;
+        continue;
+      case T.filter:
+        filter = stringParameter(++i);
+        ++i;
+        continue;
+      case T.coord:
+        htParams.remove("isTrajectory");
+        if (firstLastSteps == null) {
+          firstLastSteps = new Lst<Object>();
+          pt = P3.new3(0, -1, 1);
+        }
+        if (isPoint3f(++i)) {
+          pt = getPoint3f(i, false);
+          i = iToken + 1;
+        } else if (tokAt(i) == T.bitset) {
+          bs = (BS) getToken(i).value;
+          pt = null;
+          i = iToken + 1;
+        }
+        break;
+      case T.identifier:
+        invArg();
+      }
+      fNames.addLast(paramAsStr(i++));
+      if (pt != null) {
+        firstLastSteps
+            .addLast(new int[] { (int) pt.x, (int) pt.y, (int) pt.z });
+        loadScript.append(" COORD " + Escape.eP(pt));
+      } else if (bs != null) {
+        firstLastSteps.addLast(bs);
+        loadScript.append(" COORD " + Escape.eBS(bs));
+      }          
+      loadScript.append(" /*file*/$FILENAME" + fNames.size() + "$");
+    }
+    if (firstLastSteps != null)
+      htParams.put("firstLastSteps", firstLastSteps);
+    return filter;
+  }
+
+  private boolean isLoadOption(int tok) {
+    switch (tok) {
+    case T.manifest:
+      // model/vibration index or list of model indices
+    case T.integer:
+    case T.varray:
+    case T.leftsquare:
+    case T.spacebeforesquare:
+    // {i j k} (lattice)
+    case T.leftbrace:
+    case T.point3f:
+    // PACKED/CENTROID, either order
+    case T.packed:
+    case T.centroid:
+    // SUPERCELL {i j k}
+    case T.supercell:
+    // RANGE x.x or RANGE -x.x
+    case T.range:
+    // SPACEGROUP "nameOrNumber" 
+    // or SPACEGROUP "IGNOREOPERATORS" 
+    // or SPACEGROUP "" (same as current)
+    case T.spacegroup:
+    // UNITCELL [a b c alpha beta gamma]
+    // or UNITCELL [ax ay az bx by bz cx cy cz] 
+    // or UNITCELL "" (same as current)
+    // UNITCELL "..." or UNITCELL ""
+    case T.unitcell:
+    // OFFSET {x y z}
+    case T.offset:
+    // FILTER "..."
+    case T.append:
+      // Jmol 13.1.5 -- APPEND "data..."
+      return true;
+    case T.filter:
+    case T.identifier:
+      return (tokAt(iToken + 2) != T.coord);
+    }
+    return false;
+  }
+
+  private void getLoadModelIndex(int i, SB sOptions,
+                                 Map<String, Object> htParams)
+      throws ScriptException {
+    switch (tokAt(i)) {
+    case T.integer:
+      int n = intParameter(i);
+      sOptions.append(" ").appendI(n);
+      if (n < 0)
+        htParams.put("vibrationNumber", Integer.valueOf(-n));
+      else
+        htParams.put("modelNumber", Integer.valueOf(n));
+      break;
+    case T.varray:
+    case T.leftsquare:
+    case T.spacebeforesquare:
+      float[] data = floatParameterSet(i, 1, Integer.MAX_VALUE);
+      i = iToken;
+      BS bs = new BS();
+      for (int j = 0; j < data.length; j++)
+        if (data[j] >= 1 && data[j] == (int) data[j])
+          bs.set((int) data[j] - 1);
+      htParams.put("bsModels", bs);
+      int[] iArray = new int[bs.cardinality()];
+      for (int pt = 0, j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1))
+        iArray[pt++] = j + 1;
+      sOptions.append(" " + Escape.eAI(iArray));
+      break;
+    }
+  }
+
+  private int getLoadSymmetryParams(int i, SB sOptions,
+                                    Map<String, Object> htParams) throws ScriptException {
+    // {i j k}
+
+    P3 lattice = null;
+    int tok = tokAt(i);
+    if (tok == T.leftbrace || tok == T.point3f) {
+      lattice = getPoint3f(i, false);
+      i = iToken + 1;
+      tok = tokAt(i);
+    }
+
+    // default lattice {555 555 -1} (packed) 
+    // for PACKED, CENTROID, SUPERCELL, RANGE, SPACEGROUP, UNITCELL
+
+    switch (tok) {
+    case T.packed:
+    case T.centroid:
+    case T.supercell:
+    case T.range:
+    case T.spacegroup:
+    case T.unitcell:
+      if (lattice == null)
+        lattice = P3.new3(555, 555, -1);
+      iToken = i - 1;
+    }
+    P3 offset = null;
+    if (lattice != null) {
+      htParams.put("lattice", lattice);
+      i = iToken + 1;
+      sOptions.append( " {" + (int) lattice.x + " " + (int) lattice.y + " "
+          + (int) lattice.z + "}");
+
+      // {i j k} PACKED, CENTROID -- either or both; either order
+
+      if (tokAt(i) == T.packed) {
+        htParams.put("packed", Boolean.TRUE);
+        sOptions.append(" PACKED");
+        i++;
+      }
+      if (tokAt(i) == T.centroid) {
+        htParams.put("centroid", Boolean.TRUE);
+        sOptions.append(" CENTROID");
+        i++;
+        if (tokAt(i) == T.packed && !htParams.containsKey("packed")) {
+          htParams.put("packed", Boolean.TRUE);
+          sOptions.append( " PACKED");
+          i++;
+        }
+      }
+
+      // {i j k} ... SUPERCELL {i' j' k'}
+
+      if (tokAt(i) == T.supercell) {
+        Object supercell;
+        if (isPoint3f(++i)) {
+          P3 pt = getPoint3f(i, false);
+          if (pt.x != (int) pt.x || pt.y != (int) pt.y || pt.z != (int) pt.z
+              || pt.x < 1 || pt.y < 1 || pt.z < 1) {
+            iToken = i;
+            invArg();
+          }
+          supercell = pt;
+          i = iToken + 1;
+        } else {
+          supercell = stringParameter(i++);
+        }
+        htParams.put("supercell", supercell);
+      }
+
+      // {i j k} ... RANGE x.y  (from full unit cell set)
+      // {i j k} ... RANGE -x.y (from non-symmetry set)
+
+      float distance = 0;
+      if (tokAt(i) == T.range) {
+        /*
+         * # Jmol 11.3.9 introduces the capability of visualizing the close
+         * contacts around a crystalline protein (or any other cyrstal
+         * structure) that are to atoms that are in proteins in adjacent unit
+         * cells or adjacent to the protein itself. The option RANGE x, where x
+         * is a distance in angstroms, placed right after the braces containing
+         * the set of unit cells to load does this. The distance, if a positive
+         * number, is the maximum distance away from the closest atom in the {1
+         * 1 1} set. If the distance x is a negative number, then -x is the
+         * maximum distance from the {not symmetry} set. The difference is that
+         * in the first case the primary unit cell (555) is first filled as
+         * usual, using symmetry operators, and close contacts to this set are
+         * found. In the second case, only the file-based atoms ( Jones-Faithful
+         * operator x,y,z) are initially included, then close contacts to that
+         * set are found. Depending upon the application, one or the other of
+         * these options may be desirable.
+         */
+        i++;
+        distance = floatParameter(i++);
+        sOptions.append( " range " + distance);
+      }
+      htParams.put("symmetryRange", Float.valueOf(distance));
+
+      // {i j k} ... SPACEGROUP "nameOrNumber"
+      // {i j k} ... SPACEGROUP "IGNOREOPERATORS"
+      // {i j k} ... SPACEGROUP ""
+
+      String spacegroup = null;
+      SymmetryInterface sg;
+      int iGroup = Integer.MIN_VALUE;
+      if (tokAt(i) == T.spacegroup) {
+        ++i;
+        spacegroup = PT.rep(paramAsStr(i++), "''", "\"");
+        sOptions.append( " spacegroup " + PT.esc(spacegroup));
+        if (spacegroup.equalsIgnoreCase("ignoreOperators")) {
+          iGroup = -999;
+        } else {
+          if (spacegroup.length() == 0) {
+            sg = vwr.getCurrentUnitCell();
+            if (sg != null)
+              spacegroup = sg.getSpaceGroupName();
+          } else {
+            if (spacegroup.indexOf(",") >= 0) // Jones Faithful
+              if ((lattice.x < 9 && lattice.y < 9 && lattice.z == 0))
+                spacegroup += "#doNormalize=0";
+          }
+          htParams.put("spaceGroupName", spacegroup);
+          iGroup = -2;
+        }
+      }
+
+      // {i j k} ... UNITCELL [a b c alpha beta gamma]
+      // {i j k} ... UNITCELL [ax ay az bx by bz cx cy cz] 
+      // {i j k} ... UNITCELL ""  // same as current
+
+      float[] fparams = null;
+      if (tokAt(i) == T.unitcell) {
+        ++i;
+        if (optParameterAsString(i).length() == 0) {
+          // unitcell "" -- use current unit cell
+          sg = vwr.getCurrentUnitCell();
+          if (sg != null) {
+            fparams = sg.getUnitCellAsArray(true);
+            offset = sg.getCartesianOffset();
+          }
+        } else {
+          fparams = floatParameterSet(i, 6, 9);
+        }
+        if (fparams == null || fparams.length != 6 && fparams.length != 9)
+          invArg();
+        sOptions.append( " unitcell {");
+        for (int j = 0; j < fparams.length; j++)
+          sOptions.append( (j == 0 ? "" : " ") + fparams[j]);
+        sOptions.append( "}");
+        htParams.put("unitcell", fparams);
+        if (iGroup == Integer.MIN_VALUE)
+          iGroup = -1;
+        i = iToken + 1;
+      }
+      if (iGroup != Integer.MIN_VALUE)
+        htParams.put("spaceGroupIndex", Integer.valueOf(iGroup));
+    }
+
+    // OFFSET {x y z} (fractional or not) (Jmol 12.1.17)
+
+    if (offset != null)
+      coordinatesAreFractional = false;
+    else if (tokAt(i) == T.offset)
+      offset = getPoint3f(++i, true);
+    if (offset != null) {
+      if (coordinatesAreFractional) {
+        offset.setT(fractionalPoint);
+        htParams.put("unitCellOffsetFractional",
+            (coordinatesAreFractional ? Boolean.TRUE : Boolean.FALSE));
+        sOptions.append( " offset {" + offset.x + " " + offset.y + " " + offset.z
+            + "/1}");
+      } else {
+        sOptions.append( " offset " + Escape.eP(offset));
+      }
+      htParams.put("unitCellOffset", offset);
+      i = iToken + 1;
+    }
+    return i;
+  }
+
+  private void finalizeLoad(boolean isAppend, boolean appendNew,
+                            boolean isConcat, int nFiles, int ac0, int modelCount0) throws ScriptException {
+    if (isAppend && (appendNew || nFiles > 1)) {
+      vwr.setAnimationRange(-1, -1);
+      vwr.setCurrentModelIndex(modelCount0);
+    }    
+    if (scriptLevel == 0 && !isAppend && (isConcat || nFiles < 2))
+      showString((String) vwr.ms.getInfoM("modelLoadNote"));
     Map<String, Object> info = vwr.getModelSetAuxiliaryInfo();
     if (info != null && info.containsKey("centroidMinMax")
         && vwr.getAtomCount() > 0) {
@@ -4720,8 +4790,6 @@ public class ScriptEval extends ScriptExpr {
     if (script.length() > 0 && !isCmdLine_c_or_C_Option)
       // NOT checking embedded scripts in some cases
       runScript(script);
-    if (timeMsg)
-      showString(Logger.getTimerMsg("load", 0));
   }
 
   private void cmdLog() throws ScriptException {

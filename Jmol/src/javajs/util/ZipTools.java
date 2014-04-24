@@ -193,6 +193,9 @@ public class ZipTools implements GenericZipTools {
            ret.append(Integer.toHexString(bytes[i] & 0xFF)).appendC(' ');
          return ret.toString();
        }
+       if (Rdr.isGzipB(bytes))
+         bytes = Rdr.getLimitedStreamBytes(
+             getUnGzippedInputStream(bytes), -1);
        return Rdr.fixUTF(bytes);
      } catch (Exception e) {
        return "";

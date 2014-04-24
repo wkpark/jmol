@@ -2635,7 +2635,7 @@ public class ScriptEval extends ScriptExpr {
     case T.halo:
     case T.spacefill: // aka cpk
     case T.star:
-      setSize(iShape, (tok == T.halo ? -1f : 1f));
+      setSize(iShape, (tok == T.halo ? -1000f : 1f));
       return;
     case T.label:
       cmdLabel(1);

@@ -110,6 +110,7 @@ public class CifReader extends AtomSetCollectionReader {
   private int modDim;
 
   protected Map<String, String> htGroup1;
+  private int nAtoms0;
 
   @Override
   public void initializeReader() throws Exception {
@@ -172,9 +173,11 @@ public class CifReader extends AtomSetCollectionReader {
       if (iHaveDesiredModel)
         return false;
       newModel(++modelNumber);
-      if (!skipping)
+      if (!skipping) {
+        nAtoms0 = asc.ac;
         processDataParameter();
-      nAtoms = asc.ac;
+        nAtoms = asc.ac;
+      }
       return true;
     }
     if (lookingForPDB && !isPDBX && key.indexOf(".pdb") >= 0)
@@ -309,7 +312,7 @@ public class CifReader extends AtomSetCollectionReader {
     thisFormula = "";
     if (isCourseGrained)
       asc.setAtomSetAuxiliaryInfo("courseGrained", Boolean.TRUE);
-    if (nAtoms == asc.ac)
+    if (nAtoms0 == asc.ac)
       // we found no atoms -- must revert
       asc.removeCurrentAtomSet();
     else

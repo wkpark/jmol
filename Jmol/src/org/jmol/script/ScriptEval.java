@@ -1553,8 +1553,8 @@ public class ScriptEval extends ScriptExpr {
       popContext(false, false);
     sx.message += s;
     sx.untranslated += s;
-    if (isThrown)
-      resumeViewer("throw context");
+    //if (isThrown)
+      resumeViewer(isThrown ? "throw context" : "scriptException");
     if (isThrown || thisContext != null || chk || msg.indexOf(JC.NOTE_SCRIPT_FILE) >= 0)
       return;
     Logger.error("eval ERROR: " + toString());

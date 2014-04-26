@@ -8022,6 +8022,7 @@ public class ScriptEval extends ScriptExpr {
             if (isIsosurface) {
             } else if (data == null) {
               vwr.setCurrentColorRange(name);
+              index++;
             } else {
               vwr.cm.setPropertyColorRangeData((float[]) data, bsSelected);
             }

@@ -1241,12 +1241,20 @@ public class SV extends T implements JSONEncodable {
     return (allowNull ? null : new BS());
   }
 
+  /**
+   * For legacy reasons, "x" == "X" but see isLike()
+   * 
+   * @param x1
+   * @param x2
+   * @return x1 == x2
+   */
   public static boolean areEqual(SV x1, SV x2) {
     if (x1 == null || x2 == null)
       return false;
     if (x1.tok == x2.tok) {
       switch (x1.tok) {
       case string:
+        return ((String)x1.value).equalsIgnoreCase((String) x2.value);
       case bitset:
       case barray:
       case hash:

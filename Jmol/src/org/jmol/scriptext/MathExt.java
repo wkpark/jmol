@@ -1948,6 +1948,15 @@ public class MathExt implements JmolMathExtension {
         .indexOf(".") >= 0 ? mp.addXFloat(f) : mp.addXInt(PT.parseInt(s)));
   }
 
+  /**
+   * sort() or sort(n) or count() or count("xxxx")
+   * 
+   * @param mp
+   * @param args
+   * @param tok
+   * @return
+   * @throws ScriptException
+   */
   private boolean evaluateSort(ScriptMathProcessor mp, SV[] args, int tok)
       throws ScriptException {
     if (args.length > 1)

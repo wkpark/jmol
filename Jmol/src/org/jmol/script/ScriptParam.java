@@ -76,10 +76,14 @@ abstract public class ScriptParam extends ScriptError {
 
 
   @SuppressWarnings("unchecked")
-  public Object getParameter(String key, int tokType) {
+  public Object getParameter(String key, int tokType, boolean nullAsString) {
     Object v = getContextVariableAsVariable(key);
-    if (v == null)
-      v = vwr.getP(key);
+    if (v == null) {
+      if (nullAsString)
+        v = vwr.getP(key);
+      else if ((v = vwr.getPOrNull(key)) == null)
+        return null;
+    }
     switch (tokType) {
     case T.variable:
       return SV.getVariable(v);

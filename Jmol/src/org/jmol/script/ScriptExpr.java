@@ -203,9 +203,9 @@ abstract class ScriptExpr extends ScriptParam {
           v = vwr.ms.getAtoms(T.atomno, Integer.valueOf(st[i].intValue));
           break;
         } else {
-          v = getParameter(SV.sValue(st[i]), T.variable);
+          v = getParameter(SV.sValue(st[i]), T.variable, true);
         }
-        v = getParameter(((SV) v).asString(), T.variable);
+        v = getParameter(((SV) v).asString(), T.variable, true);
         break;
       case T.ifcmd:
         if (getToken(++i).tok != T.leftparen)
@@ -937,7 +937,7 @@ abstract class ScriptExpr extends ScriptParam {
           rpn.addXObj(value);
           break;
         }
-        val = getParameter((String) value, 0);
+        val = getParameter((String) value, T.nada, true);
         if (isInMath) {
           rpn.addXObj(val);
           break;
@@ -1002,20 +1002,7 @@ abstract class ScriptExpr extends ScriptParam {
       }
       return bs;
     }
-    Object val = t.value;
-    if (T.tokAttr(tokValue, T.identifier)) {
-      if ("_modelNumber".equalsIgnoreCase((String) val)) {
-        int modelIndex = vwr.am.cmi;
-        val = Integer.valueOf(modelIndex < 0 ? 0 : vwr
-            .getModelFileNumber(modelIndex));
-      } else {
-        val = getParameter((String) val, T.variable);
-        if (((SV) val).tok == T.varray)
-          return getComparison((SV) val, tokWhat, tokOp, strOp, data);
-        val = SV.nValue((SV) val);
-      }
-    }
-
+    
     int comparisonInt = t.intValue;
     float comparisonFloat = Float.NaN;
 
@@ -1025,8 +1012,26 @@ abstract class ScriptExpr extends ScriptParam {
     boolean isIntOrFloat = isIntProperty && isFloatProperty;
     boolean isStringProperty = !isIntProperty
         && T.tokAttr(tokWhat, T.strproperty);
+    // element comparisons must be numerical
     if (tokWhat == T.element)
       isIntProperty = !(isStringProperty = false);
+
+    Object val = t.value;
+    if (T.tokAttr(tokValue, T.identifier)) {
+      if ("_modelNumber".equalsIgnoreCase((String) val)) {
+        int modelIndex = vwr.am.cmi;
+        val = Integer.valueOf(modelIndex < 0 ? 0 : vwr
+            .getModelFileNumber(modelIndex));
+      } else {
+        SV v = (SV) getParameter((String) val, T.variable, false);
+        if (v != null) {
+          if (v.tok == T.varray)
+            return getComparison(v, tokWhat, tokOp, strOp, data);
+          comparisonInt = v.intValue;
+          val = (isStringProperty ? SV.sValue(v) : SV.nValue(v));
+        }          
+      }
+    }
 
     if (val instanceof P3) {
       if (tokWhat == T.color) {
@@ -1066,7 +1071,7 @@ abstract class ScriptExpr extends ScriptParam {
     }
     if (isStringProperty && !(val instanceof String)) {
       val = "" + val;
-    }
+    } 
     if (val instanceof Integer || tokValue == T.integer) {
       if (isModel) {
         if (comparisonInt >= 1000000)
@@ -2317,7 +2322,7 @@ abstract class ScriptExpr extends ScriptParam {
           if (tokAt(i) == T.integer) {
             v = vwr.ms.getAtoms(T.atomno, Integer.valueOf(st[i].intValue));
           } else {
-            v = getParameter(var, 0);
+            v = getParameter(var, T.nada, true);
           }
           if (!isExpression && !isSetAt)
             isClauseDefine = true;
@@ -2349,7 +2354,7 @@ abstract class ScriptExpr extends ScriptParam {
           if (!forceString && !isExpression) {
             if ((tok != T.set || j > 1 && st[1].tok != T.echo)
                 && T.tokAttr(tok, T.mathExpressionCommand)) {
-              v = getParameter((String) v, T.variable);
+              v = getParameter((String) v, T.variable, true);
             }
             if (v instanceof String) {
               v = getStringObjectAsVariable((String) v, null);
@@ -2362,7 +2367,9 @@ abstract class ScriptExpr extends ScriptParam {
             s = (String) v;
             if (isExpression && !forceString) {
               // select @x  where x is "arg", for example
-              fixed[j] = T.o(T.bitset, getAtomBitSet(s));
+              // but not chain=@x  -- in that case we need a literal value
+              
+              fixed[j] = (T.tokAttr(fixed[j - 1].tok, T.comparator) ? T.o(T.string, s) : T.o(T.bitset, getAtomBitSet(s)));
             } else {
 
               // bit of a hack here....

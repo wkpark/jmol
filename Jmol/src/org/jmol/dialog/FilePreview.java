@@ -167,18 +167,18 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
       if (fileName.indexOf(".spt") >= 0) {
         script = "script " + script;
       } else {
-        script = PT.rep((String) display.getViewer()
+        script = PT.rep((String) display.vwr
             .getParameter("defaultdropscript"), "%FILE", script + " 1");
         script = PT.rep(script, "%ALLOWCARTOONS", ""
             + isCartoonsSelected());
       }
     }
-    display.getViewer().evalStringQuiet(script);
+    display.vwr.evalStringQuiet(script);
     //display.repaint();
   }
 
   private static class FPPanel extends JPanel {
-    JmolViewer vwr;
+    Viewer vwr;
 
     FPPanel(Map<String, Object> info) {
       info.put("previewOnly", Boolean.TRUE);
@@ -186,10 +186,6 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
       info.put("display", this);
       vwr = new Viewer(info);
       info.put("display", display);
-    }
-
-    public JmolViewer getViewer() {
-      return vwr;
     }
 
     final Dimension currentSize = new Dimension();

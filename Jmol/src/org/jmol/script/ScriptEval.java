@@ -4053,7 +4053,7 @@ public class ScriptEval extends ScriptExpr {
         loadScript.append(" ").append(PT.esc(key));
         isAppend = key.startsWith("append");
         String strModel = (key.indexOf("@") >= 0 ? ""
-            + getParameter(key.substring(key.indexOf("@") + 1), T.string)
+            + getParameter(key.substring(key.indexOf("@") + 1), T.string, true)
             : paramAsStr(++i));
         strModel = Viewer.fixInlineString(strModel, vwr.getInlineChar());
         htParams.put("fileData", strModel);
@@ -7977,7 +7977,7 @@ public class ScriptEval extends ScriptExpr {
           name = paramAsStr(index++);
           data = new float[vwr.getAtomCount()];
           Parser.parseStringInfestedFloatArray(""
-              + getParameter(name, T.string), null, (float[]) data);
+              + getParameter(name, T.string, true), null, (float[]) data);
           pal = PAL.PROPERTY;
         }
         if (pal == PAL.PROPERTY) {

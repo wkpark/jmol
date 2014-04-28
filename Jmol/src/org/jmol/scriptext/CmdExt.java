@@ -2479,7 +2479,7 @@ public class CmdExt implements JmolCmdExtension {
       }
       if ((i = dataLabel.indexOf("@")) >= 0) {
         dataString = ""
-            + eval.getParameter(dataLabel.substring(i + 1), T.string);
+            + eval.getParameter(dataLabel.substring(i + 1), T.string, true);
         dataLabel = dataLabel.substring(0, i).trim();
       } else if (dataString == null && (i = dataLabel.indexOf(" ")) >= 0) {
         dataString = dataLabel.substring(i + 1).trim();
@@ -3092,7 +3092,7 @@ public class CmdExt implements JmolCmdExtension {
             data = new float[ac];
             if (!chk)
               Parser.parseStringInfestedFloatArray(
-                  "" + eval.getParameter(vname, T.string), null, data);
+                  "" + eval.getParameter(vname, T.string, true), null, data);
           }
           if (!chk/* && (surfaceObjectSeen)*/)
             sbCommand.append(" \"\" ").append(Escape.eAF(data));
@@ -6117,7 +6117,7 @@ public class CmdExt implements JmolCmdExtension {
         } else if (data == "VAR") {
           if (tVar == null) {
             tVar = (SV) e.getParameter(
-                SV.sValue(tokenAt(isCommand ? 2 : 1, args)), T.variable);
+                SV.sValue(tokenAt(isCommand ? 2 : 1, args)), T.variable, true);
           }
           Lst<Object> v = null;
           if (tVar.tok == T.barray) {
@@ -6785,7 +6785,7 @@ public class CmdExt implements JmolCmdExtension {
     case T.json:
     case T.var:
       str = paramAsStr(len++);
-      SV v = (SV) e.getParameter(str, T.variable);
+      SV v = (SV) e.getParameter(str, T.variable, true);
       if (tok == T.json) {
         msg = v.toJSON();
       } else {
@@ -6804,7 +6804,7 @@ public class CmdExt implements JmolCmdExtension {
       if (str.indexOf(" ") >= 0)
         showString(str);
       else
-        showString(str + " = " + ((SV) e.getParameter(str, T.variable)).escape());
+        showString(str + " = " + ((SV) e.getParameter(str, T.variable, true)).escape());
     }
   }
 

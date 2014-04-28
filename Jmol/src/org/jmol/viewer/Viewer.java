@@ -697,7 +697,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public String getExportDriverList() {
     return (haveAccess(ACCESS.ALL) ? (String) g
-        .getParameter("exportDrivers") : "");
+        .getParameter("exportDrivers", true) : "");
   }
 
   public String getHtmlName() {
@@ -2346,7 +2346,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   String getDataSeparator() {
     // used to separate data files within a single DATA command
-    return (String) g.getParameter("dataseparator");
+    return (String) g.getParameter("dataseparator", true);
   }
 
   ////////// create the model set ////////////
@@ -5193,7 +5193,11 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public Object getP(String key) {
-    return g.getParameter(key);
+    return g.getParameter(key, true);
+  }
+
+  public Object getPOrNull(String key) {
+    return g.getParameter(key, false);
   }
 
   public void unsetProperty(String key) {

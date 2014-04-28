@@ -718,7 +718,7 @@ public class GlobalSettings {
     }
 
     private void resetValue(String name, GlobalSettings g) {
-      setS(name, g == null ? "" : (String) g.getParameter(name));
+      setS(name, g == null ? "" : (String) g.getParameter(name, true));
     }
     
     public void setB(String name, boolean value) {
@@ -816,14 +816,15 @@ public class GlobalSettings {
 
     /**
      * 
-     * strictly a getter -- returns "" if not found
+     * strictly a getter
      * 
      * @param name
-     * @return      a Integer, Float, String, BitSet, or Variable
+     * @param nullAsString returns "" if not found 
+     * @return      a Integer, Float, String, BitSet, or Variable, or null
      */
-    Object getParameter(String name) {
+    Object getParameter(String name, boolean nullAsString) {
       Object v = getParam(name, false);
-      return (v == null ? "" : v);
+      return (v == null && nullAsString ? "" : v);
     }
 
     /**

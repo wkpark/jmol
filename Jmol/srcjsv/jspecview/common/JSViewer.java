@@ -724,6 +724,10 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 			peakScript = testScript;
 		Logger.info("JSViewer.syncScript Jmol>JSV " + peakScript);
 		if (peakScript.indexOf("<PeakData") < 0) {
+					if (peakScript.startsWith("JSVSTR:")) {
+						si.syncToJmol(peakScript);
+						return;
+					}
 			runScriptNow(peakScript);
 			if (peakScript.indexOf("#SYNC_PEAKS") >= 0)
 			  syncPeaksAfterSyncScript();
@@ -890,6 +894,11 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 		si.siCheckCallbacks(pi.getTitle());
 	}
 
+	void newStructToJmol(String data) {
+	  Logger.info("sending new structure to Jmol:\n" + data);
+		si.syncToJmol("struct:" + data);
+	}
+	
 	private void syncToJmol(PeakInfo pi) {
 		repaint(true);
 		returnFromJmolModel = pi.getModel();

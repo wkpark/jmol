@@ -440,7 +440,11 @@ public class JSVFileManager {
 		 * 		if (!isInline) Jmol.Cache.put("http://SIMULATION/" + name + "#molfile", jsonMolFile.getBytes());
 	   *
 		 */
-		{}
+		{
+			// application only
+			System.out.println("jsonMolFile is " + jsonMolFile);
+			viewer.syncScript("JSVSTR:" + jsonMolFile);
+		}
 		String xml = getQuotedJSONAttribute(json, "xml", null);
 		xml = PT.rep(xml, "<Signals>",  "<Signals src=" + PT.esc(PT.rep(nmrdbServer,"?POST?molfile=","")) + ">");
 		xml = PT.rep(xml, "</", "\n</");

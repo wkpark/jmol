@@ -1800,13 +1800,15 @@ public class StateCreator extends JmolStateCreator {
       switch (jsvMode) {
       case JC.JSV_NOT:
         break;
-      case JC.JSV_SEND:
+      case JC.JSV_SEND_JDXMOL:
+      case JC.JSV_SEND_H1SIMULATE:
         if (disableSend)
           return;
         //$FALL-THROUGH$
+      case JC.JSV_STRUCTURE:
       case JC.JSV_SETPEAKS:
       case JC.JSV_SELECT:
-      case JC.JSV_STRUCTURE:
+        // from JSpecView...
         if ((script = vwr.getJSV().processSync(script, jsvMode)) == null)
           return;
       }

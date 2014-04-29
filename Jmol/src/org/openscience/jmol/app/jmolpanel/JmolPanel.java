@@ -978,7 +978,8 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     guimap.setSelected("measurementsCheck", vwr.getBoolean(T.showmeasurements));
     guimap.setSelected("axesCheck", vwr.getShowAxes());
     guimap.setSelected("boundboxCheck", vwr.getShowBbcage());
-    //guimap.setEnabled("openJSpecViewScript", !vwr.getBoolean(T.pdb));
+    guimap.setEnabled("openJSpecViewScript", !vwr.getBoolean(T.pdb));
+    guimap.setEnabled("simulate1HSpectrumScript", !vwr.getBoolean(T.pdb));
   }
 
   private static class ActionChangedListener implements PropertyChangeListener {

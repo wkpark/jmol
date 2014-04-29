@@ -123,21 +123,24 @@ public class JSpecView implements JmolJSpecView {
     switch (jsvMode ) {
     default:
       return null;
-    case JC.JSV_SEND:
+    case JC.JSV_SEND_JDXMOL:
+    case JC.JSV_SEND_H1SIMULATE:
       vwr.sm.syncSend(vwr.fullName + "JSpecView" + script.substring(9), ">", 0);
-      return null;
-    case JC.JSV_SETPEAKS:
-      // JSpecView sending us the peak information it has
-      String[] list = Escape.unescapeStringArray(script.substring(7));
-      Lst<String> peaks = new Lst<String>();
-      for (int i = 0; i < list.length; i++)
-        peaks.addLast(list[i]);
-      vwr.ms.setInfo(vwr.am.cmi, "jdxAtomSelect_1HNMR", peaks);
       return null;
     case JC.JSV_STRUCTURE:
       // application only -- NO! This is 2D -- does no good. We need
       // a full 3D model!
-      return "load DATA 'myfile'" + script.substring(7) + "\nEND 'myfile'";
+      if (vwr.isApplet())
+        return null;
+      return null;//"~_thisModel = _modelNumber; load append DATA 'myfile'" + script.substring(7) + "\nEND 'myfile';model @~_thisModel info 'atomMap' @{compare({1.1} {2.1} 'MAP' 'H')}; zap {*}[0]";
+      // these are Jmol atom indexes. The second number will be >= n, and all must be incremented by 1.
+      
+//      for (var i = 0; i < map.length; i++) {
+//        var c = map[i];
+//        A[c[0] + 1] = c[1] - n + 1;
+//        B[c[1] - n + 1] = c[0] + 1;
+//      }
+//      return {fromJmol:A, toJmol:B}; // forward and rev.    
     case JC.JSV_SELECT:
       // from JSpecView peak pick or possibly model change
       String filename = PT.getQuotedAttribute(script, "file");
@@ -166,9 +169,7 @@ public class JSpecView implements JmolJSpecView {
       if (modelIndex != -1 || filename == null) {
         script = "";
       } else if (isSimulation && !vwr.isApplet()) {
-        filename = filename.substring(filename.indexOf("map="));
-        
-        script = "load append " + PT.esc(filename);
+        return null;
       } else {
         if (isSimulation)
           filename += "#molfile";
@@ -177,6 +178,8 @@ public class JSpecView implements JmolJSpecView {
       //script = PT.rep(script, FileManager.SIMULATION_PROTOCOL, "");
       if (id != null)
         script += ";model " + PT.esc(id);
+      // needs work here to use the atomMap if it exists.
+      
       if (atoms != null)
         script += ";select visible & (@" + PT.rep(atoms, ",", " or @") + ")";
       else if (select != null)
@@ -184,6 +187,14 @@ public class JSpecView implements JmolJSpecView {
       if (script2 != null)
         script += ";" + script2;
       return script;
+    case JC.JSV_SETPEAKS:
+      // JSpecView sending us the peak information it has
+      String[] list = Escape.unescapeStringArray(script.substring(7));
+      Lst<String> peaks = new Lst<String>();
+      for (int i = 0; i < list.length; i++)
+        peaks.addLast(list[i]);
+      vwr.ms.setInfo(vwr.am.cmi, "jdxAtomSelect_1HNMR", peaks);
+      return null;
     }
   }
 }

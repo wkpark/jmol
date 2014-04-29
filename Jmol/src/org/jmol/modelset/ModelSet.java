@@ -4158,6 +4158,5 @@ import java.util.Properties;
       moveAtoms(null, q.getMatrix(), null, bsAtoms, thisAtom, true, false);
     }
   }
-
 }
 

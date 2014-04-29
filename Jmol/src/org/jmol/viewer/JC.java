@@ -55,7 +55,7 @@ public final class JC {
     "dssrModel", "http://x3dna.bio.columbia.edu/dssr/report.php?POST?opts=--jmol --more&model=",  
     "ligand", "http://www.rcsb.org/pdb/files/ligand/%FILE.cif",
     "mp", "http://www.materialsproject.org/materials/%FILE/cif",
-    "nci", "  /chemical/structure/%FILE",
+    "nci", "http://cactus.nci.nih.gov/chemical/structure/%FILE",
     "nmr", "http://www.nmrdb.org/predictor?POST?molfile=",
     "nmrdb", "http://www.nmrdb.org/service/predictor?POST?molfile=",
     "pdb", "http://www.rcsb.org/pdb/files/%FILE.pdb.gz",
@@ -1706,17 +1706,19 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   
 
   public static final int JSV_NOT = -1;
-  public static final int JSV_SEND = 0;
+  public static final int JSV_SEND_JDXMOL = 0;
   public static final int JSV_SETPEAKS = 7;
   public static final int JSV_SELECT = 14;
   public static final int JSV_STRUCTURE = 21;
+  public static final int JSV_SEND_H1SIMULATE = 28;
 
   public static int getJSVSyncSignal(String script) {
     return (script.length() < 7 ? -1 : ("" +
     		"JSPECVI" +
     		"PEAKS: " +
     		"SELECT:" +
-    		"JSVSTR:")
+    		"JSVSTR:" +
+    		"H1SIMUL")
         .indexOf(script.substring(0, 7).toUpperCase()));
   }
   

@@ -1806,6 +1806,7 @@ public class StateCreator extends JmolStateCreator {
         //$FALL-THROUGH$
       case JC.JSV_SETPEAKS:
       case JC.JSV_SELECT:
+      case JC.JSV_STRUCTURE:
         if ((script = vwr.getJSV().processSync(script, jsvMode)) == null)
           return;
       }

@@ -120,12 +120,11 @@ public class JSpecView implements JmolJSpecView {
 
   @Override
   public String processSync(String script, int jsvMode) {
-    switch (jsvMode) {
+    switch (jsvMode ) {
     default:
       return null;
     case JC.JSV_SEND:
-      vwr.sm.syncSend(
-          vwr.fullName + "JSpecView" + script.substring(9), ">", 0);
+      vwr.sm.syncSend(vwr.fullName + "JSpecView" + script.substring(9), ">", 0);
       return null;
     case JC.JSV_SETPEAKS:
       // JSpecView sending us the peak information it has
@@ -133,17 +132,25 @@ public class JSpecView implements JmolJSpecView {
       Lst<String> peaks = new Lst<String>();
       for (int i = 0; i < list.length; i++)
         peaks.addLast(list[i]);
-      vwr.ms.setInfo(vwr.am.cmi,
-          "jdxAtomSelect_1HNMR", peaks);
+      vwr.ms.setInfo(vwr.am.cmi, "jdxAtomSelect_1HNMR", peaks);
       return null;
+    case JC.JSV_STRUCTURE:
+      // application only -- NO! This is 2D -- does no good. We need
+      // a full 3D model!
+      return "load DATA 'myfile'" + script.substring(7) + "\nEND 'myfile'";
     case JC.JSV_SELECT:
       // from JSpecView peak pick or possibly model change
       String filename = PT.getQuotedAttribute(script, "file");
-      boolean isSimulation = filename.startsWith(FileManager.SIMULATION_PROTOCOL);
-      //if (filename.startsWith(FileManager.SIMULATION_PROTOCOL + "MOL="))
-      //filename = null; // from our sending; don't reload
-      String modelID = (isSimulation ? "molfile" : PT.getQuotedAttribute(script, "model"));
-      filename = PT.rep(filename, "#molfile", "");
+      // this is a real problem -- JSpecView will have unmatched
+      // model if a simulation.
+      boolean isSimulation = filename
+          .startsWith(FileManager.SIMULATION_PROTOCOL);
+      if (isSimulation && !vwr.isApplet() && filename.startsWith(FileManager.SIMULATION_PROTOCOL + "MOL="))
+        filename = null; // from our sending; don't reload
+      else
+        filename = PT.rep(filename, "#molfile", "");
+      String modelID = (isSimulation ? "molfile" : PT.getQuotedAttribute(
+          script, "model"));
       String baseModel = PT.getQuotedAttribute(script, "baseModel");
       String atoms = PT.getQuotedAttribute(script, "atoms");
       String select = PT.getQuotedAttribute(script, "select");
@@ -156,10 +163,17 @@ public class JSpecView implements JmolJSpecView {
       int modelIndex = (id == null ? -3 : vwr.getModelIndexFromId(id));
       if (modelIndex == -2)
         return null; // file was found, or no file was indicated, but not this model -- ignore
-      if (isSimulation)
-        filename += "#molfile";
-      script = (modelIndex == -1 && filename != null ? script = "load "
-          + PT.esc(filename) : "");
+      if (modelIndex != -1 || filename == null) {
+        script = "";
+      } else if (isSimulation && !vwr.isApplet()) {
+        filename = filename.substring(filename.indexOf("map="));
+        
+        script = "load append " + PT.esc(filename);
+      } else {
+        if (isSimulation)
+          filename += "#molfile";
+        script = "load " + PT.esc(filename);
+      }
       //script = PT.rep(script, FileManager.SIMULATION_PROTOCOL, "");
       if (id != null)
         script += ";model " + PT.esc(id);

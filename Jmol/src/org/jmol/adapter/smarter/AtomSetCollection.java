@@ -668,10 +668,10 @@ public class AtomSetCollection {
     }
   }
 
-  public void addVibrationVector(int iatom, float x, float y, float z) {
+  public V3 addVibrationVector(int iatom, float x, float y, float z) {
     if (!allowMultiple)
       iatom = iatom % ac;
-    atoms[iatom].vib = V3.new3(x, y, z);
+    return (atoms[iatom].vib = V3.new3(x, y, z));
   }
 
   void setAtomSetSpaceGroupName(String spaceGroupName) {

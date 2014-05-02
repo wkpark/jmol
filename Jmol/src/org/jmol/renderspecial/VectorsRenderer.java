@@ -40,8 +40,10 @@ import org.jmol.util.Vibration;
 public class VectorsRenderer extends ShapeRenderer {
 
   private final static float arrowHeadOffset = -0.2f;
+  private P3 pointVectorStart;
   private final P3 pointVectorEnd = new P3();
   private final P3 pointArrowHead = new P3();
+  private P3i screenVectorStart;
   private final P3i screenVectorEnd = new P3i();
   private final P3i screenArrowHead = new P3i();
   private final V3 headOffsetVector = new V3();
@@ -54,6 +56,7 @@ public class VectorsRenderer extends ShapeRenderer {
   private float headScale;
   private boolean doShaft;
   private Vibration vibTemp;
+  private boolean vectorsCentered;
 
 
   @Override
@@ -69,7 +72,13 @@ public class VectorsRenderer extends ShapeRenderer {
     boolean needTranslucent = false;
     vectorScale = vwr.getFloat(T.vectorscale);
     vectorSymmetry = vwr.getBoolean(T.vectorsymmetry);
-    
+    vectorsCentered = vwr.getBoolean(T.vectorscentered);
+    if (vectorsCentered) {
+      pointVectorStart = new P3();
+      screenVectorStart = new P3i();
+    } else {
+      pointVectorStart = null;
+    }
     for (int i = ms.getAtomCount(); --i >= 0;) {
       Atom atom = atoms[i];
       if (!isVisibleForMe(atom))
@@ -107,10 +116,20 @@ public class VectorsRenderer extends ShapeRenderer {
     doShaft = (0.1 + Math.abs(headScale/len) < Math.abs(vectorScale));
     headOffsetVector.setT(vibrationVector);
     headOffsetVector.scale(headScale / len);
-    pointVectorEnd.scaleAdd2(vectorScale, vibrationVector, atom);
-    pointArrowHead.add2(pointVectorEnd, headOffsetVector);
-    screenArrowHead.setT(tm.transformPtVib(pointArrowHead, vibrationVector, vectorScale));
-    screenVectorEnd.setT(tm.transformPtVib(pointVectorEnd, vibrationVector, vectorScale));
+    
+    if (vectorsCentered) {
+      pointVectorEnd.scaleAdd2(0.5f * vectorScale, vibrationVector, atom);
+      screenVectorEnd.setT(tm.transformPt(pointVectorEnd));
+      pointVectorStart.scaleAdd2(-0.5f * vectorScale, vibrationVector, atom);
+      screenVectorStart.setT(tm.transformPt(pointVectorStart));
+      pointArrowHead.add2(pointVectorEnd, headOffsetVector);
+      screenArrowHead.setT(tm.transformPt(pointArrowHead));
+    } else {
+      pointVectorEnd.scaleAdd2(vectorScale, vibrationVector, atom);
+      screenVectorEnd.setT(tm.transformPtVib(pointVectorEnd, vibrationVector, vectorScale));
+      pointArrowHead.add2(pointVectorEnd, headOffsetVector);
+      screenArrowHead.setT(tm.transformPtVib(pointArrowHead, vibrationVector, vectorScale));
+    }
     diameter = (int) (mad < 0 ? -mad : mad < 1 ? 1 : vwr.scaleToScreen(screenVectorEnd.z, mad));
     headWidthPixels = diameter << 1;
     if (headWidthPixels < diameter + 2)
@@ -119,10 +138,17 @@ public class VectorsRenderer extends ShapeRenderer {
   }
   
   private void renderVector(Atom atom) {
-    if (doShaft)
-      g3d.fillCylinderScreen(GData.ENDCAPS_OPEN, diameter, atom.sX,
-          atom.sY, atom.sZ, screenArrowHead.x, screenArrowHead.y,
-          screenArrowHead.z);
+    if (doShaft) {
+      if (pointVectorStart == null)
+        g3d.fillCylinderScreen(GData.ENDCAPS_OPEN, diameter, atom.sX,
+            atom.sY, atom.sZ, screenArrowHead.x, screenArrowHead.y,
+            screenArrowHead.z);
+      else 
+        g3d.fillCylinderScreen(GData.ENDCAPS_FLAT, diameter, screenVectorStart.x,
+            screenVectorStart.y, screenVectorStart.z, screenArrowHead.x, screenArrowHead.y,
+            screenArrowHead.z);
+
+    }
       g3d.fillConeScreen(GData.ENDCAPS_FLAT, headWidthPixels, screenArrowHead,
           screenVectorEnd, false);
   }

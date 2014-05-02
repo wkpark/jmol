@@ -1398,6 +1398,13 @@ public class Atom extends Point3fi implements BNode {
       return atom.getVibrationCoord('Z');
     case T.volume:
       return atom.getVolume(vwr, VDW.AUTO);
+    case T.fracxyz:
+    case T.fuxyz:
+    case T.unitxyz:
+    case T.screenxyz:
+    case T.vibxyz:
+    case T.xyz:
+      return atomPropertyTuple(atom, tokWhat).length();
     }
     return atomPropertyInt(atom, tokWhat);
   }

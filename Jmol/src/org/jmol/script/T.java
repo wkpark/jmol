@@ -216,7 +216,7 @@ public class T {
   // program flow commands include:
   // -- breakcmd, continuecmd, elsecmd, elseif, end, endifcmd, switch, case, 
   //    forcmd, function, ifcmd, whilecmd
-  public final static int flowCommand        = (1 << 16) | mathExpressionCommand;
+  public final static int flowCommand    = (1 << 16) | mathExpressionCommand;
 
   // these commands will be handled specially
   public final static int shapeCommand   = (1 << 17) | scriptCommand;
@@ -226,7 +226,7 @@ public class T {
   public final static int noArgs         = 1 << 18;
   public final static int defaultON      = 1 << 19;
   
-  public final static int expression           = 1 << 20;
+  public final static int expression     = 1 << 20;
   public final static int predefinedset = (1 << 21) | expression;
   
   public final static int atomproperty  = (1 << 22) | expression | misc; 
@@ -236,7 +236,7 @@ public class T {
   public final static int intproperty   = (1 << 24) | atomproperty; // int parameter
   public final static int floatproperty = (1 << 25) | atomproperty; // float parameter
 
-  public final static int PROPERTYFLAGS = strproperty | intproperty | floatproperty;
+  public final static int PROPERTYFLAGS = strproperty | intproperty | floatproperty; // includes point-type
 
   // parameters that can be set using the SET command
   public final static int strparam   = (1 << 23) | setparam; // string parameter
@@ -1077,7 +1077,8 @@ public class T {
   public final static int twistedsheets                  = booleanparam | 192;
   public final static int usearcball                     = booleanparam | 193;
   public final static int useminimizationthread          = booleanparam | 194;
-  public final static int usenumberlocalization          = booleanparam | 196;
+  public final static int usenumberlocalization          = booleanparam | 195;
+  public final static int vectorscentered                = booleanparam | 196;
   public final static int vectorsymmetry                 = booleanparam | 197;
   public final static int waitformoveto                  = booleanparam | 198;
   public final static int windowcentered                 = booleanparam | 199;
@@ -2368,6 +2369,7 @@ public class T {
        "strutDefaultRadius",
        "strutLengthMaximum",
        "vectorScale",
+       "vectorsCentered",
        "vectorSymmetry",
        "vibrationPeriod",
        "vibrationScale",
@@ -3364,6 +3366,7 @@ public class T {
         strutdefaultradius,                 //        "strutDefaultRadius"
         strutlengthmaximum,                 //        "strutLengthMaximum"
         vectorscale,                        //        "vectorScale"
+        vectorscentered,                    //        "vectorsCenered"
         vectorsymmetry,                     //        "vectorSymmetry"
         vibrationperiod,                    //        "vibrationPeriod"
         vibrationscale,                     //        "vibrationScale"

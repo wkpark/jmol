@@ -5446,6 +5446,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       return g.translucent;
     case T.twistedsheets:
       return g.twistedSheets;
+    case T.vectorscentered:
+      return g.vectorsCentered;
     case T.vectorsymmetry:
       return g.vectorSymmetry;
     case T.waitformoveto:
@@ -6206,6 +6208,10 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   private void setBooleanPropertyTok(String key, int tok, boolean value) {
     boolean doRepaint = true;
     switch (tok) {
+    case T.vectorscentered:
+      // 14.1.15
+      g.vectorsCentered = value;
+      break;
     case T.backbonesteps:
       // 14.1.14
       g.backboneSteps = value;

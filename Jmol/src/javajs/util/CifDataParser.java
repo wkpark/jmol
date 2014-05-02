@@ -440,7 +440,8 @@ public class CifDataParser implements GenericCifDataParser {
   }
 
    private String fixKey(String key) {
-     return PT.rep(key, ".", "_").toLowerCase();
+     return (key.startsWith("_magnetic") ?
+       key.substring(9) : PT.rep(key, ".", "_").toLowerCase());
    }
 
   //////////////////// private methods ////////////////////

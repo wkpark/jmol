@@ -406,6 +406,7 @@ public class GlobalSettings {
       setB("useArcBall", useArcBall);
       setB("useMinimizationThread", useMinimizationThread);
       setB("useNumberLocalization", useNumberLocalization);
+      setB("vectorsCentered", vectorsCentered);
       setF("vectorScale", vectorScale);
       setB("vectorSymmetry", vectorSymmetry);
       setF("vibrationPeriod", vibrationPeriod);
@@ -643,6 +644,7 @@ public class GlobalSettings {
     public boolean waitForMoveTo = true; // Jmol 11.9.24
     float vectorScale = 1f;
     boolean vectorSymmetry = false; // Jmol 12.3.2
+    boolean vectorsCentered = false; // Jmol 14.1.14
     float vibrationPeriod = 1f;
     float vibrationScale = 1f;
     boolean wireframeRotation = false;

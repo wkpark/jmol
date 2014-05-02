@@ -71,6 +71,8 @@ public class CifReader extends AtomSetCollectionReader {
 
   private MSCifInterface mr;
   private MMCifInterface pr;
+  private MagCifInterface magr;
+  
 
   // no need for reflection here -- the CIF reader is already
   // protected by reflection
@@ -91,6 +93,7 @@ public class CifReader extends AtomSetCollectionReader {
   private boolean iHaveDesiredModel;
   private boolean isPDB;
   private boolean isPDBX;
+  private boolean isMagTag;
   private String molecularType = "GEOM_BOND default";
   private char lastAltLoc = '\0';
   private boolean haveAromatic;
@@ -105,6 +108,7 @@ public class CifReader extends AtomSetCollectionReader {
 
   private boolean modulated;
   private boolean lookingForPDB = true;
+  private boolean lookingForMag = true;
   private boolean isCourseGrained;
   private String latticeType = null;
   private int modDim;
@@ -180,13 +184,10 @@ public class CifReader extends AtomSetCollectionReader {
       }
       return true;
     }
-    if (lookingForPDB && !isPDBX && key.indexOf(".pdb") >= 0)
-      initializeMMCIF();
     if (skipping && key.equals("_audit_block_code")) {
       iHaveDesiredModel = false;
       skipping = false;
     }
-
     if (key.startsWith("loop_")) {
       if (skipping) {
         parser.getTokenPeeked();
@@ -266,16 +267,28 @@ public class CifReader extends AtomSetCollectionReader {
     return true;
   }
 
-  private MSCifInterface getModulationReader() throws Exception {
-    return (mr == null ? initializeMSCIF() : mr);
-  }
-
   private void readSingleAtom() {
     Atom atom = new Atom();
     atom.set(0, 0, 0);
     String s = atom.atomName = parser.fullTrim(data);
     atom.elementSymbol = s.length() == 1 ? s : s.substring(0, 1) + s.substring(1, 2).toLowerCase();
     asc.addAtom(atom);
+  }
+
+  private MSCifInterface getModulationReader() throws Exception {
+    return (mr == null ? initializeMSCIF() : mr);
+  }
+
+  private MagCifInterface getMagCifReader() throws Exception {
+    return (magr == null ? initializeMagCIF() : magr);
+  }
+
+  private MagCifInterface initializeMagCIF() {
+    asc.setAtomSetAuxiliaryInfo("isMagnetic", Boolean.TRUE);
+      magr = (MagCifInterface) Interface
+          .getOption("adapter.readers.cif.MagCifReader");
+      magr.initialize(this);
+    return magr;
   }
 
   private void initializeMMCIF() {
@@ -295,8 +308,18 @@ public class CifReader extends AtomSetCollectionReader {
     return mr;
   }
 
-  private String fixKey(String key) {
-    return PT.rep(key, ".", "_").toLowerCase();
+  private String fixKey(String key) throws Exception {
+    key =  PT.rep(key, ".", "_").toLowerCase();
+    if (lookingForPDB && !isPDBX && key.indexOf("_pdb") >= 0)
+      initializeMMCIF();    
+    isMagTag = key.startsWith("_mag");
+    if (isMagTag) {
+      getMagCifReader();
+      if (key.startsWith("_magnetic"))
+        key = key.substring(9);
+      key = PT.rep(key,  "BNS_", ""); // _magnetic_space_group_BNS_name    "P_C b c a"
+    }
+    return key;
   }
 
   protected void newModel(int modelNo) throws Exception {
@@ -557,9 +580,6 @@ public class CifReader extends AtomSetCollectionReader {
       return;
     boolean isLigand = false;
     key = fixKey(key);
-    if (lookingForPDB && !isPDBX && key.indexOf("_pdb") >= 0)
-      initializeMMCIF();
-    
     if (modDim > 0)
       switch (getModulationReader().processLoopBlock()) {
       case 0:
@@ -767,7 +787,10 @@ public class CifReader extends AtomSetCollectionReader {
   final private static byte SUBSYS_ID = 60;
   final private static byte SITE_MULT = 61;
   final private static byte THERMAL_TYPE = 62;
-
+  final private static byte MOMENT_LABEL = 63;
+  final private static byte MX = 64;
+  final private static byte MY = 65;
+  final private static byte MZ = 66;
   final private static String[] atomFields = { "_atom_site_type_symbol",
       "_atom_site_label", "_atom_site_auth_atom_id", "_atom_site_fract_x",
       "_atom_site_fract_y", "_atom_site_fract_z", "_atom_site_cartn_x",
@@ -800,7 +823,12 @@ public class CifReader extends AtomSetCollectionReader {
       "_chem_comp_atom_pdbx_model_cartn_z_ideal",
       "_atom_site_disorder_assembly", "_atom_site_label_asym_id",
       "_atom_site_subsystem_code", "_atom_site_symmetry_multiplicity",
-      "_atom_site_thermal_displace_type" };
+      "_atom_site_thermal_displace_type",
+      "_atom_site_moment_label",
+      "_atom_site_moment_crystalaxis_mx",
+      "_atom_site_moment_crystalaxis_my",
+      "_atom_site_moment_crystalaxis_mz",
+      };
 
   final private static String singleAtomID = atomFields[CHEM_COMP_AC_ID]; 
   
@@ -826,7 +854,7 @@ public class CifReader extends AtomSetCollectionReader {
     int currentModelNO = -1; // PDBX
     boolean isAnisoData = false;
     String assemblyId = null;
-    parseLoopParameters(atomFields);
+    parseLoopParameters(atomFields);  
     if (fieldOf[CHEM_COMP_AC_X_IDEAL] != NONE) {
       isPDB = false;
       setFractionalCoordinates(false);
@@ -846,7 +874,10 @@ public class CifReader extends AtomSetCollectionReader {
     } else if (fieldOf[ANISO_MMCIF_ID] != NONE) {
       // MMCIF
       isAnisoData = true;
+    } else if (isMagTag) {
+      // ok
     } else {
+        
       // it is a different kind of _atom_site loop block
       parser.skipLoop();
       return false;
@@ -1019,6 +1050,7 @@ public class CifReader extends AtomSetCollectionReader {
           }
           break;
         case ANISO_LABEL:
+        case MOMENT_LABEL:
           iAtom = asc.getAtomIndexFromName(field);
           if (iAtom < 0)
             continue;
@@ -1065,6 +1097,26 @@ public class CifReader extends AtomSetCollectionReader {
         case SITE_MULT:
           if (modulated)
             siteMult = parseIntStr(field);
+          break;
+        case MX:
+        case MY:
+        case MZ:
+          V3 pt = atom.vib;
+          if (pt == null)
+            pt = asc.addVibrationVector(atom.index, 0, 0, 0);
+          float v = parseFloatStr(field);
+          switch (tok) {
+          case MX:
+            pt.x = v;
+            break;
+          case MY:
+            pt.y = v;
+            break;
+          case MZ:
+            pt.z = v;
+            break;
+          }
+          break;
         }
       }
       if (isAnisoData)
@@ -1164,7 +1216,6 @@ public class CifReader extends AtomSetCollectionReader {
       "_space_group_symop_operation_xyz", "_symmetry_equiv_pos_as_xyz",
       "_symmetry_ssg_equiv_pos_as_xyz",
       "_space_group_symop_ssg_operation_algebraic" };
-
   /**
    * retrieves symmetry operations
    * 

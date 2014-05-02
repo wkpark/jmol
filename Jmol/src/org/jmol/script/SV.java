@@ -517,6 +517,8 @@ public class SV extends T implements JSONEncodable {
         return Float.valueOf(toFloat((String) x.value));
       iValue = (int) toFloat((String) x.value);
       break;
+    case point3f:
+      return Float.valueOf(((T3) x.value).length());
     default:
       iValue = 0;
     }

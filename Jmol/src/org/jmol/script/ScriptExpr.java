@@ -1008,7 +1008,8 @@ abstract class ScriptExpr extends ScriptParam {
 
     boolean isModel = (tokWhat == T.model);
     boolean isIntProperty = T.tokAttr(tokWhat, T.intproperty);
-    boolean isFloatProperty = T.tokAttr(tokWhat, T.floatproperty);
+    boolean isFloatProperty = (T.tokAttr(tokWhat, T.floatproperty)
+        || (tokWhat & T.PROPERTYFLAGS) == T.atomproperty); // point
     boolean isIntOrFloat = isIntProperty && isFloatProperty;
     boolean isStringProperty = !isIntProperty
         && T.tokAttr(tokWhat, T.strproperty);

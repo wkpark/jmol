@@ -313,7 +313,11 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
   }
 
   @Override
-  public Object getModulation(String type, T3 t456) {
+  public T3 getModPoint(boolean asEnabled) {
+    return (asEnabled ? this : r0);
+  }
+  @Override
+  public T3 getModulation(String type, T3 t456) {
     getModTemp();
     if (type.equals("D")) {
       return P3.newP(t456 == null ? r0 : modTemp.calculate(t456, false));

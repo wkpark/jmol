@@ -353,6 +353,8 @@ public class Symmetry implements SymmetryInterface {
 
   @Override
   public Tensor getTensor(float[] parBorU) {
+    if (parBorU == null)
+      return null;
     if (unitCell == null)
       unitCell = UnitCell.newA(new float[] { 1, 1, 1, 90, 90, 90 });
     return unitCell.getTensor(parBorU);

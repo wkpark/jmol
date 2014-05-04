@@ -132,8 +132,10 @@ public class Tensor {
   public int modelIndex;
   public int atomIndex1 = -1;
   public int atomIndex2 = -1;
+  
   public boolean isModulated;
   public boolean isUnmodulated;
+  public float[] parBorU;  // unmodulated
 
   private static final String infoList = 
     ";............." + ";eigenvalues.." + ";eigenvectors."
@@ -457,10 +459,11 @@ public class Tensor {
    * @param eigenValues
    * @param type
    * @param id 
+   * @param t 
    * @return this
    */
   public Tensor setFromEigenVectors(V3[] eigenVectors,
-                                            float[] eigenValues, String type, String id) {
+                                            float[] eigenValues, String type, String id, Tensor t) {
     float[] values = new float[3];
     V3[] vectors = new V3[3];
     for (int i = 0; i < 3; i++) {
@@ -468,6 +471,11 @@ public class Tensor {
       values[i] = eigenValues[i];
     }    
     newTensorType(vectors, values, type, id);
+    if (t != null) {
+      isModulated = t.isModulated;
+      isUnmodulated = t.isUnmodulated;
+      parBorU = t.parBorU;
+    }
     return this;
   }
 

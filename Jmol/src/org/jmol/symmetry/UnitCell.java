@@ -231,8 +231,6 @@ class UnitCell extends SimpleUnitCell {
     JC.axisX, JC.axisY, JC.axisZ};
   
   Tensor getTensor(float[] parBorU) {
-    if (parBorU == null)
-      return null;
     /*
      * 
      * returns {Vector3f[3] unitVectors, float[3] lengths} from J.W. Jeffery,
@@ -305,11 +303,11 @@ class UnitCell extends SimpleUnitCell {
       float f = parBorU[7];
       float[] eigenValues = new float[] {f, f, f};
       // sqrt will be taken when converted to lengths later
-      // no factor of 0.5 pi^2
-       
-      return t.setFromEigenVectors(unitVectors, eigenValues, "iso", "Uiso=" + f);
+      // no factor of 0.5 pi^2       
+      return t.setFromEigenVectors(unitVectors, eigenValues, "iso", "Uiso=" + f, null);
     }
-
+    t.parBorU = parBorU;
+    
     double[] Bcart = new double[6];
 
     int ortepType = (int) parBorU[6];

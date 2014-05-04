@@ -337,14 +337,15 @@ public class MolReader extends AtomSetCollectionReader {
       discardLinesUntilContains("BEGIN BOND");
     for (int i = 0; i < bondCount; ++i) {
       rd();
-      int iAtom1, iAtom2, order;
+      String iAtom1, iAtom2;
+      int order;
       int stereo = 0;
       if (isV3000) {
         checkLineContinuation();
         String[] tokens = getTokens();
         order = parseIntStr(tokens[3]);
-        iAtom1 = parseIntStr(tokens[4]);
-        iAtom2 = parseIntStr(tokens[5]);
+        iAtom1 = tokens[4];
+        iAtom2 = tokens[5];
         for (int j = 6; j < tokens.length; j++) {
           String s = tokens[j].toUpperCase();
           if (s.startsWith("CFG=")) {
@@ -357,24 +358,25 @@ public class MolReader extends AtomSetCollectionReader {
             int n = parseIntStr(tokens[0]);
             order = fixOrder(order, 0);
             for (int k = 1; k <= n; k++) {
-              iAtom2 = parseIntStr(tokens[k]);
-              asc.addNewBondWithMappedSerialNumbers(iAtom1, iAtom2, order);
+              iAtom2 = tokens[k];
+              asc.addNewBondFromNames(iAtom1, iAtom2, order);
             }
             break;
           }
         }
       } else {
-        iAtom1 = parseIntRange(line, 0, 3);
-        iAtom2 = parseIntRange(line, 3, 6);
+        iAtom1 = line.substring(0, 3).trim();
+        iAtom2 = line.substring(3, 6).trim();
         order = parseIntRange(line, 6, 9);
         if (is2D && order == 1 && line.length() >= 12)
           stereo = parseIntRange(line, 9, 12);
       }
       order = fixOrder(order, stereo);
       if (haveAtomSerials)
-        asc.addNewBondWithMappedSerialNumbers(iAtom1, iAtom2, order);
+        asc.addNewBondFromNames(iAtom1, iAtom2, order);
       else
-        asc.addNewBondWithOrder(iatom0 + iAtom1 - 1, iatom0 + iAtom2 - 1, order);        
+        asc.addNewBondWithOrder(iatom0 + parseIntStr(iAtom1) - 1, 
+            iatom0 + parseIntStr(iAtom2) - 1, order);        
     }
     if (isV3000)
       discardLinesUntilContains("END BOND");

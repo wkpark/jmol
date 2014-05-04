@@ -3809,18 +3809,6 @@ import java.util.Properties;
     }
   }
 
-  public Point3fi getDynamicAtom(int i, Point3fi pt) {
-    Vibration v = getVibration(i, false);
-    if (v == null)
-      return at[i];
-    if (pt == null)
-      pt = new Point3fi();
-    pt.setT(at[i]);
-    pt = vwr.tm.getVibrationPoint(v, pt, Float.NaN);
-    pt.sD = -1;
-    return pt;
-  }
-
   private Quat[] vOrientations;
 
   public String getBoundBoxOrientation(int type, BS bsAtoms) {

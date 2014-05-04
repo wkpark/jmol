@@ -4981,8 +4981,10 @@ public class CmdExt implements JmolCmdExtension {
     default:
       invArg();
     }
-    if (!chk)
+    if (!chk) {
+      vwr.setVibrationOff();
       vwr.setModulation(bs, mod, qtOffset, isQ);
+    }
   }
 
   public void navigate() throws ScriptException {

@@ -196,16 +196,16 @@ public class CsfReader extends MopacSlaterReader {
     objCls1, objID1, objCls2, objID2
   };
   
-  private Map<String, int[]> connectors;
+  private Map<String, String[]> connectors;
   
   private void processConnectorObject() throws Exception {
-    connectors = new Hashtable<String, int[]>();
+    connectors = new Hashtable<String, String[]>();
     rd();
     parseLineParameters(connectorFields, connectorFieldMap);
     out: for (; rd() != null;) {
       if (line.startsWith("property_flags:"))
         break;
-      int thisAtomID = Integer.MIN_VALUE;
+      String thisAtomID = null;
       String thisBondID = null;
       String tokens[] = getTokens();
       String field2 = "";
@@ -229,7 +229,7 @@ public class CsfReader extends MopacSlaterReader {
             continue out;
           break;
         case objID1:
-          thisAtomID = PT.parseInt(field);
+          thisAtomID = field;
           break;
         case objID2:
           thisBondID = field2+field;
@@ -239,14 +239,14 @@ public class CsfReader extends MopacSlaterReader {
         default:
         }
       }
-      if (thisAtomID != Integer.MIN_VALUE && thisBondID != null) {
+      if (thisAtomID != null && thisBondID != null) {
         if (connectors.containsKey(thisBondID)) {
-          int[] connect = connectors.get(thisBondID);
+          String[] connect = connectors.get(thisBondID);
           connect[1] = thisAtomID;
           if (htBonds != null)
             setBond(htBonds.get(thisBondID), connect);
         } else {
-          int[] connect = new int[2];
+          String[] connect = new String[2];
           connect[0] = thisAtomID;
           connectors.put(thisBondID, connect);
         }
@@ -258,9 +258,9 @@ public class CsfReader extends MopacSlaterReader {
   // atom data
   ////////////////////////////////////////////////////////////////
 
-  private void setBond(Bond bond, int[] connect) {
-    bond.atomIndex1 = asc.getAtomIndexFromSerial(connect[0]);
-    bond.atomIndex2 = asc.getAtomIndexFromSerial(connect[1]);
+  private void setBond(Bond bond, String[] connect) {
+    bond.atomIndex1 = asc.getAtomIndex(connect[0]);
+    bond.atomIndex2 = asc.getAtomIndex(connect[1]);
     asc.addBond(bond);
   }
 
@@ -643,7 +643,7 @@ public class CsfReader extends MopacSlaterReader {
           iShell = shells[ipt];
           int[] slater = new int[4];
           int iAtom = asc
-              .getAtomIndexFromSerial((connectors.get(sto_gto + "_basis_fxn" + (ipt + 1)))[0]);
+              .getAtomIndex(connectors.get(sto_gto + "_basis_fxn" + (ipt + 1))[0]);
           slater[0] = iAtom;
           slater[1] = JmolAdapter.getQuantumShellTagID(types[ipt]
               .substring(0, 1));
@@ -665,8 +665,8 @@ public class CsfReader extends MopacSlaterReader {
       moData.put("gaussians", garray);
     } else {
       for (int ipt = 0; ipt < nSlaters; ipt++) {
-        int iAtom = asc.getAtomIndexFromSerial((connectors
-            .get(sto_gto + "_basis_fxn" + (ipt + 1)))[0]);
+        int iAtom = asc.getAtomIndex(connectors
+            .get(sto_gto + "_basis_fxn" + (ipt + 1))[0]);
         for (int i = 0; i < nZetas; i++) {
           if (zetas[ipt][i] == 0)
             break;

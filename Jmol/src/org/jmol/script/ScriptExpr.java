@@ -1021,8 +1021,8 @@ abstract class ScriptExpr extends ScriptParam {
     if (T.tokAttr(tokValue, T.identifier)) {
       if ("_modelNumber".equalsIgnoreCase((String) val)) {
         int modelIndex = vwr.am.cmi;
-        val = Integer.valueOf(modelIndex < 0 ? 0 : vwr
-            .getModelFileNumber(modelIndex));
+        val = Integer.valueOf(comparisonInt = (modelIndex < 0 ? 0 : vwr
+            .getModelFileNumber(modelIndex)));
       } else {
         SV v = (SV) getParameter((String) val, T.variable, false);
         if (v != null) {

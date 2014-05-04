@@ -153,8 +153,8 @@ public class AlchemyReader extends AtomSetCollectionReader {
   private void readBonds() throws Exception {
     for (int i = bondCount; --i >= 0;) {
       String[] tokens = getTokensStr(rd());
-      int atomSerial1 = parseIntStr(tokens[1]);
-      int atomSerial2 = parseIntStr(tokens[2]);
+      String atomSerial1 = tokens[1];
+      String atomSerial2 = tokens[2];
       String sOrder = (tokens.length < 4 ? "1" : tokens[3].toUpperCase());
       int order = 0;
       switch (sOrder.charAt(0)) {
@@ -178,8 +178,7 @@ public class AlchemyReader extends AtomSetCollectionReader {
         order = JmolAdapter.ORDER_HBOND;
         break;
       }
-      asc.addNewBondWithMappedSerialNumbers(atomSerial1,
-          atomSerial2, order);
+      asc.addNewBondFromNames(atomSerial1, atomSerial2, order);
     }
   }
 }

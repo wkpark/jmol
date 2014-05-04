@@ -30,7 +30,6 @@ import org.jmol.adapter.smarter.Atom;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javajs.util.AU;
 import javajs.util.PT;
 
 
@@ -108,7 +107,7 @@ public class FoldingXyzReader extends AtomSetCollectionReader {
   boolean readAtoms(int ac, boolean addAtoms) throws Exception {
     // Stores bond informations
     Map<String, int[]> htBondCounts = new Hashtable<String, int[]>();
-    int[][] bonds = AU.newInt2(ac);
+    String[][] bonds = new String[ac][];
     boolean haveAtomTypes = true;
     boolean checking = true;
     String lastAtom = null;
@@ -135,12 +134,12 @@ public class FoldingXyzReader extends AtomSetCollectionReader {
       setAtomCoordTokens(atom, tokens, 2);
       asc.addAtomWithMappedSerialNumber(atom);
       int n = tokens.length - 5;
-      bonds[i] = new int[n + 1];
-      bonds[i][n] = atom.atomSerial;
+      bonds[i] = new String[n + 1];
+      bonds[i][n] = sIndex;
       for (int j = 0; j < n; j++) {
         String t = tokens[j + 5];
         int i2 = parseIntStr(t);
-        bonds[i][j] = i2;
+        bonds[i][j] = t;
         if (checking) {
           // Tinker files may or may not include an atom type in column 6
           if (n == 0 || t.equals(sIndex) || i2 <= 0 || i2 > ac) {
@@ -163,19 +162,20 @@ public class FoldingXyzReader extends AtomSetCollectionReader {
     return readNextLine;
   }
 
-  private void makeBonds(int[][] bonds, boolean haveAtomTypes) {
-    Atom[] atoms = asc.atoms;
+  private void makeBonds(String[][] bonds, boolean haveAtomTypes) {
     for (int i = bonds.length; --i >= 0;) {
-      int[] b = bonds[i];
+      String[] b = bonds[i];
       if (b == null)
         continue; // discarded atom
-      Atom a1 = atoms[asc.getAtomIndexFromSerial(b[b.length - 1])];
+      Atom a1 = asc.getAtomFromName(b[b.length - 1]);
       int b0 = 0;
       if (haveAtomTypes)
-        a1.atomName += "\0" + (b[b0++]);
-      for (int j = b.length - 1; --j >= b0;)
-        if (b[j] > i && asc.addNewBondWithOrder(a1.index, asc.getAtomIndexFromSerial(b[j]), 1) != null)
-            haveBonds = true;
+        a1.atomName += "\0" + b[b0++];
+      for (int j = b.length - 1; --j >= b0;) {
+        Atom a2 = asc.getAtomFromName(b[j]);
+        if (a1.index < a2.index && asc.addNewBondWithOrderA(a1, a2, 1) != null)
+          haveBonds = true;
+      }
     }
   }
 

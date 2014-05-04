@@ -79,6 +79,7 @@ public class RepaintManager implements JmolRepaintManager {
       holdRepaint = 0;
       if (andRepaint) {
         repaintPending = true;
+        //System.out.println("pophold repaintPending "+ why);
         repaintNow(why);
       }
     }
@@ -112,9 +113,11 @@ public class RepaintManager implements JmolRepaintManager {
 
   @Override
   public boolean repaintIfReady(String why) {
+    //System.out.println("ifready repaintPending " + why);
     if (repaintPending)
       return false;
     repaintPending = true;
+    //System.out.println("ifready repaintPending set TRUE");
     if (holdRepaint == 0)
       repaintNow(why);
     return true;
@@ -153,6 +156,8 @@ public class RepaintManager implements JmolRepaintManager {
   @Override
   synchronized public void repaintDone() {
     repaintPending = false;
+    //System.out.println("repaintPending false");
+
     /**
      * @j2sNative
      * 

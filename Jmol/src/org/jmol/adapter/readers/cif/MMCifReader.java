@@ -890,18 +890,18 @@ _pdbx_struct_oper_list.vector[3]
     int order = 0;
     boolean isAromatic = false;
     while (cr.parser.getData()) {
-      int atomIndex1 = -1;
-      int atomIndex2 = -1;
+      Atom atom1 = null;
+      Atom atom2 = null;
       order = 0;
       isAromatic = false;
       int n = cr.parser.getFieldCount();
       for (int i = 0; i < n; ++i) {
         switch (fieldProperty(i)) {
         case CHEM_COMP_BOND_ATOM_ID_1:
-          atomIndex1 = cr.asc.getAtomIndexFromName(field);
+          atom1 = cr.asc.getAtomFromName(field);
           break;
         case CHEM_COMP_BOND_ATOM_ID_2:
-          atomIndex2 = cr.asc.getAtomIndexFromName(field);
+          atom2 = cr.asc.getAtomFromName(field);
           break;
         case CHEM_COMP_BOND_AROMATIC_FLAG:
           isAromatic = (field.charAt(0) == 'Y');
@@ -911,8 +911,6 @@ _pdbx_struct_oper_list.vector[3]
           break;
         }
       }
-      if (atomIndex1 < 0 || atomIndex2 < 0)
-        continue;
       if (isAromatic)
         switch (order) {
         case JmolAdapter.ORDER_COVALENT_SINGLE:
@@ -922,7 +920,7 @@ _pdbx_struct_oper_list.vector[3]
           order = JmolAdapter.ORDER_AROMATIC_DOUBLE;
           break;
         }
-      cr.asc.addNewBondWithOrder(atomIndex1, atomIndex2, order);
+      cr.asc.addNewBondWithOrderA(atom1, atom2, order);
     }
     return true;
   }

@@ -605,12 +605,7 @@ public class MSReader implements MSInterface {
     if (Logger.debuggingHigh)
       Logger.debug("MOD RDR adding " + id + " " + i + " " + val + " to "
           + atom.anisoBorU[i]);
-    if (atom.anisoBorU == null)
-      Logger
-          .error("MOD RDR cannot modulate nonexistent atom anisoBorU for atom "
-              + atom.atomName);
-    else
-      cr.setU(atom, i, val + atom.anisoBorU[i]);
+    cr.setU(atom, i, val + atom.anisoBorU[i]);
   }
 
   /**
@@ -635,7 +630,7 @@ public class MSReader implements MSInterface {
       SymmetryInterface spt = getSymmetry(a);
       spt.toCartesian(ptc, true);
     }
-    
+
     Lst<Modulation> list = htAtomMods.get(a.atomName);
     if (list == null && a.altLoc != '\0' && htSubsystems != null) {
       // force treatment if a subsystem
@@ -666,8 +661,8 @@ public class MSReader implements MSInterface {
 
     // The magic happens here.
 
-    ModulationSet ms = new ModulationSet().set(a.index + " " + a.atomName,
-        a, modDim, list, gammaE, getMatrices(a), iop, getSymmetry(a));
+    ModulationSet ms = new ModulationSet().set(a.index + " " + a.atomName, a,
+        modDim, list, gammaE, getMatrices(a), iop, getSymmetry(a));
     ms.calculate(null, false);
 
     // ms parameter values are used to set occupancies, 
@@ -696,31 +691,49 @@ public class MSReader implements MSInterface {
         occ = pt[0] * (pt[1] + ms.vOcc);
       }
       // 49/50 is an important range for cutoffs -- we let this range be void
-      a.foccupancy = (occ > 0.49 && occ < 0.50 ? 0.489f : (float) Math.min(1, Math.max(0, occ)));
+      a.foccupancy = (occ > 0.49 && occ < 0.50 ? 0.489f : (float) Math.min(1,
+          Math.max(0, occ)));
       Logger.info("atom " + a.atomName + " occupancy = " + a.foccupancy);
     }
     if (ms.htUij != null) {
       // Uiso or Uij. We add the displacements, create the tensor, then rotate it, 
       // replacing the tensor already present for that atom.
-      if (Logger.debuggingHigh) {
-        Logger.debug("setModulation Uij(initial)=" + Escape.eAF(a.anisoBorU));
-        Logger.debug("setModulation tensor="
-            + Escape.e(((Tensor) a.tensors.get(0)).getInfo("all")));
+      Tensor t = (a.tensors == null ? null : (Tensor) a.tensors.get(0));
+      if (t != null && t.parBorU != null) {
+        // restore ORIGINAL (unrotated) anisotropy parameters
+        a.anisoBorU = new float[8];
+        for (int i = 0; i < 8; i++)
+            a.anisoBorU[i] = t.parBorU[i];
+        t.isUnmodulated = true;
       }
-      for (Entry<String, Float> e : ms.htUij.entrySet())
-        addUStr(a, e.getKey(), e.getValue().floatValue());
+      if (a.anisoBorU == null) {
+        Logger
+            .error("MOD RDR cannot modulate nonexistent atom anisoBorU for atom "
+                + a.atomName);
+      } else {
+        if (Logger.debuggingHigh) {
+          Logger.debug("setModulation Uij(initial)=" + Escape.eAF(a.anisoBorU));
+          Logger.debug("setModulation tensor="
+              + Escape.e(((Tensor) a.tensors.get(0)).getInfo("all")));
+        }
+        for (Entry<String, Float> e : ms.htUij.entrySet())
+          addUStr(a, e.getKey(), e.getValue().floatValue());
 
-      if (a.tensors != null)
-        ((Tensor) a.tensors.get(0)).isUnmodulated = true;
-      SymmetryInterface symmetry = getAtomSymmetry(a, cr.symmetry);
-      Tensor t = cr.asc.getXSymmetry().addRotatedTensor(a,
-          symmetry.getTensor(a.anisoBorU), iop, false, symmetry);
-      t.isModulated = true;
-      if (Logger.debuggingHigh) {
-        Logger.debug("setModulation Uij(final)=" + Escape.eAF(a.anisoBorU)
-            + "\n");
-        Logger.debug("setModulation tensor="
-            + ((Tensor) a.tensors.get(0)).getInfo("all"));
+        SymmetryInterface symmetry = getAtomSymmetry(a, cr.symmetry);
+        t = cr.asc.getXSymmetry().addRotatedTensor(a,
+            symmetry.getTensor(a.anisoBorU), iop, false, symmetry);
+        t.isModulated = true;
+        t.id = Escape.e(a.anisoBorU);
+        // note that a.bFactor will be modulated value
+        a.bfactor = a.anisoBorU[7] * 100f;
+        // prevent further tensor production
+        a.anisoBorU = null;
+        if (Logger.debuggingHigh) {
+          Logger.debug("setModulation Uij(final)=" + Escape.eAF(a.anisoBorU)
+              + "\n");
+          Logger.debug("setModulation tensor="
+              + Escape.e(((Tensor) a.tensors.get(1)).getInfo("all")));
+        }
       }
     }
     if (Float.isNaN(ms.x))

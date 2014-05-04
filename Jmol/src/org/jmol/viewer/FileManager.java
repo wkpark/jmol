@@ -947,8 +947,8 @@ public class FileManager implements BytePoster {
     vwr.loadImageData(image, fullPathName, echoName, null);
   }
 
-  public final static int URL_LOCAL = 3;
-  private final static String[] urlPrefixes = { "http:", "https:", "ftp:",
+  public final static int URL_LOCAL = 4;
+  private final static String[] urlPrefixes = { "http:", "https:", "sftp:", "ftp:",
       "file:" };
 
   public static int urlTypeIndex(String name) {

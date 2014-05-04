@@ -1102,6 +1102,8 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
       initializeSymmetryOptions();
     SymmetryInterface sym = (iHaveUnitCell && doCheckUnitCell ? asc
         .getXSymmetry().applySymmetryFromReader(this, getSymmetry()) : null);
+    if (sym == null)
+      asc.setTensors();
     if (isTrajectory)
       asc.setTrajectory();
     initializeSymmetry();

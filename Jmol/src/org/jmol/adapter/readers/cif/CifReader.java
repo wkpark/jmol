@@ -51,6 +51,8 @@ import javajs.util.V3;
  * 
  * Subclasses of CIF -- mmCIF/PDBx and msCIF -- are initialized from here.
  * 
+ * Added nonstandard mCIF (magnetic_ tags) 5/2/2014
+ * 
  * <p>
  * <a href='http://www.iucr.org/iucr-top/cif/'>
  * http://www.iucr.org/iucr-top/cif/ </a>
@@ -71,7 +73,6 @@ public class CifReader extends AtomSetCollectionReader {
 
   private MSCifInterface mr;
   private MMCifInterface pr;
-  private MagCifInterface magr;
   
 
   // no need for reflection here -- the CIF reader is already
@@ -92,8 +93,8 @@ public class CifReader extends AtomSetCollectionReader {
   private String thisFormula = "";
   private boolean iHaveDesiredModel;
   private boolean isPDB;
-  private boolean isPDBX;
-  private boolean isMagTag;
+  private boolean isMMCIF;
+  private boolean isMagCIF;
   private String molecularType = "GEOM_BOND default";
   private char lastAltLoc = '\0';
   private boolean haveAromatic;
@@ -108,7 +109,6 @@ public class CifReader extends AtomSetCollectionReader {
 
   private boolean modulated;
   private boolean lookingForPDB = true;
-  private boolean lookingForMag = true;
   private boolean isCourseGrained;
   private String latticeType = null;
   private int modDim;
@@ -170,10 +170,6 @@ public class CifReader extends AtomSetCollectionReader {
 
   private boolean readAllData() throws Exception {
     if (key.startsWith("data_")) {
-      //      if (isPDBX) {
-      //        tokenizer.getTokenPeeked();
-      //        return true;
-      //      }
       if (iHaveDesiredModel)
         return false;
       newModel(++modelNumber);
@@ -267,6 +263,10 @@ public class CifReader extends AtomSetCollectionReader {
     return true;
   }
 
+  /**
+   * No need for anything other than the atom name and symbol; 
+   * coordinates will be (0 0 0), and no other information is needed. 
+   */
   private void readSingleAtom() {
     Atom atom = new Atom();
     atom.set(0, 0, 0);
@@ -279,20 +279,8 @@ public class CifReader extends AtomSetCollectionReader {
     return (mr == null ? initializeMSCIF() : mr);
   }
 
-  private MagCifInterface getMagCifReader() throws Exception {
-    return (magr == null ? initializeMagCIF() : magr);
-  }
-
-  private MagCifInterface initializeMagCIF() {
-    asc.setAtomSetAuxiliaryInfo("isMagnetic", Boolean.TRUE);
-      magr = (MagCifInterface) Interface
-          .getOption("adapter.readers.cif.MagCifReader");
-      magr.initialize(this);
-    return magr;
-  }
-
   private void initializeMMCIF() {
-    isPDBX = true;
+    isMMCIF = true;
     lookingForPDB = false;
     if (pr == null)
       pr = (MMCifInterface) Interface
@@ -309,15 +297,13 @@ public class CifReader extends AtomSetCollectionReader {
   }
 
   private String fixKey(String key) throws Exception {
-    key =  PT.rep(key, ".", "_").toLowerCase();
-    if (lookingForPDB && !isPDBX && key.indexOf("_pdb") >= 0)
-      initializeMMCIF();    
-    isMagTag = key.startsWith("_mag");
-    if (isMagTag) {
-      getMagCifReader();
-      if (key.startsWith("_magnetic"))
-        key = key.substring(9);
-      key = PT.rep(key,  "BNS_", ""); // _magnetic_space_group_BNS_name    "P_C b c a"
+    key = PT.rep(key, ".", "_").toLowerCase();
+    if (lookingForPDB && !isMMCIF && key.indexOf("_pdb") >= 0)
+      initializeMMCIF();
+    else if (key.startsWith("_magnetic")) {
+      isMagCIF = true;
+      key = key.substring(9);
+      key = PT.rep(key, "BNS_", ""); // _magnetic_space_group_BNS_name    "P_C b c a"
     }
     return key;
   }
@@ -349,6 +335,11 @@ public class CifReader extends AtomSetCollectionReader {
       pr.finalizeReader(nAtoms);
     else
       applySymmetryAndSetTrajectory();
+    if (isMagCIF) {
+      asc.setAtomSetAuxiliaryInfo("isMagnetic", Boolean.TRUE);
+      addJmolScript("set vectorsCentered TRUE");
+    }
+
     int n = asc.atomSetCount;
     if (n > 1)
       asc.setCollectionName("<collection of " + n + " models>");
@@ -630,7 +621,7 @@ public class CifReader extends AtomSetCollectionReader {
   }
 
   private int fieldProperty(int i) {
-    return ((field = parser.getLoopData(i)).length() > 0
+    return (i >= 0 && (field = parser.getLoopData(i)).length() > 0
         && (firstChar = field.charAt(0)) != '\0' ? propertyOf[i] : NONE);
   }
 
@@ -772,25 +763,26 @@ public class CifReader extends AtomSetCollectionReader {
   final private static byte ANISO_BETA_13 = 45;
   final private static byte ANISO_BETA_23 = 46;
   final private static byte ADP_TYPE = 47;
-  final private static byte CHEM_COMP_AC_ID = 48;
-  final private static byte CHEM_COMP_AC_NAME = 49;
-  final private static byte CHEM_COMP_AC_SYM = 50;
-  final private static byte CHEM_COMP_AC_CHARGE = 51;
-  final private static byte CHEM_COMP_AC_X = 52;
-  final private static byte CHEM_COMP_AC_Y = 53;
-  final private static byte CHEM_COMP_AC_Z = 54;
-  final private static byte CHEM_COMP_AC_X_IDEAL = 55;
-  final private static byte CHEM_COMP_AC_Y_IDEAL = 56;
-  final private static byte CHEM_COMP_AC_Z_IDEAL = 57;
+  final private static byte CC_COMP_ID = 48;
+  final private static byte CC_ATOM_ID = 49;
+  final private static byte CC_ATOM_SYM = 50;
+  final private static byte CC_ATOM_CHARGE = 51;
+  final private static byte CC_ATOM_X = 52;
+  final private static byte CC_ATOM_Y = 53;
+  final private static byte CC_ATOM_Z = 54;
+  final private static byte CC_ATOM_X_IDEAL = 55;
+  final private static byte CC_ATOM_Y_IDEAL = 56;
+  final private static byte CC_ATOM_Z_IDEAL = 57;
   final private static byte DISORDER_ASSEMBLY = 58;
   final private static byte ASYM_ID = 59;
   final private static byte SUBSYS_ID = 60;
   final private static byte SITE_MULT = 61;
   final private static byte THERMAL_TYPE = 62;
   final private static byte MOMENT_LABEL = 63;
-  final private static byte MX = 64;
-  final private static byte MY = 65;
-  final private static byte MZ = 66;
+  final private static byte MOMENT_X = 64;
+  final private static byte MOMENT_Y = 65;
+  final private static byte MOMENT_Z = 66;
+  final private static byte ATOM_ID = 67;
   final private static String[] atomFields = { "_atom_site_type_symbol",
       "_atom_site_label", "_atom_site_auth_atom_id", "_atom_site_fract_x",
       "_atom_site_fract_y", "_atom_site_fract_z", "_atom_site_cartn_x",
@@ -828,9 +820,10 @@ public class CifReader extends AtomSetCollectionReader {
       "_atom_site_moment_crystalaxis_mx",
       "_atom_site_moment_crystalaxis_my",
       "_atom_site_moment_crystalaxis_mz",
+      "_atom_site_id"
       };
 
-  final private static String singleAtomID = atomFields[CHEM_COMP_AC_ID]; 
+  final private static String singleAtomID = atomFields[CC_COMP_ID]; 
   
   /* to: hansonr@stolaf.edu
    * from: Zukang Feng zfeng@rcsb.rutgers.edu
@@ -852,13 +845,12 @@ public class CifReader extends AtomSetCollectionReader {
   boolean processAtomSiteLoopBlock(boolean isLigand) throws Exception {
     lookingForPDB = false;
     int currentModelNO = -1; // PDBX
-    boolean isAnisoData = false;
-    String assemblyId = null;
-    parseLoopParameters(atomFields);  
-    if (fieldOf[CHEM_COMP_AC_X_IDEAL] != NONE) {
+    boolean haveCoord = true;
+    parseLoopParameters(atomFields);
+    if (fieldOf[CC_ATOM_X_IDEAL] != NONE) {
       isPDB = false;
       setFractionalCoordinates(false);
-    } else if (fieldOf[CARTN_X] != NONE || fieldOf[CHEM_COMP_AC_X] != NONE) {
+    } else if (fieldOf[CARTN_X] != NONE || fieldOf[CC_ATOM_X] != NONE) {
       setFractionalCoordinates(false);
       disableField(FRACT_X);
       disableField(FRACT_Y);
@@ -868,38 +860,21 @@ public class CifReader extends AtomSetCollectionReader {
       disableField(CARTN_X);
       disableField(CARTN_Y);
       disableField(CARTN_Z);
-    } else if (fieldOf[ANISO_LABEL] != NONE) {
-      // standard CIF
-      isAnisoData = true;
-    } else if (fieldOf[ANISO_MMCIF_ID] != NONE) {
-      // MMCIF
-      isAnisoData = true;
-    } else if (isMagTag) {
-      // ok
+    } else if (fieldOf[ANISO_LABEL] != NONE || fieldOf[ANISO_MMCIF_ID] != NONE
+        || fieldOf[MOMENT_LABEL] != NONE) {
+      haveCoord = false;
+      // no coordinates, but valuable information
     } else {
-        
       // it is a different kind of _atom_site loop block
       parser.skipLoop();
       return false;
     }
-    int iAtom = -1;
-    int modelField = -1;
+    int modelField = fieldOf[MODEL_NO];
+    if (modelField >= 0)
+      isPDB = true;
     int siteMult = 0;
     while (parser.getData()) {
-      Atom atom = new Atom();
-      assemblyId = null;
-      if (isPDBX) {
-        if (modelField == -1) {
-          int n = parser.getFieldCount();
-          for (int i = 0; i < n; ++i)
-            if (fieldProperty(i) == MODEL_NO) {
-              modelField = i;
-              isPDB = true;
-              break;
-            }
-          if (modelField == -1)
-            modelField = -2;
-        }
+      if (isMMCIF) {
         if (modelField >= 0) {
           fieldProperty(modelField);
           int modelNO = parseIntStr(field);
@@ -920,14 +895,32 @@ public class CifReader extends AtomSetCollectionReader {
             continue;
         }
       }
+      Atom atom = null;
+      if (haveCoord) {
+        atom = new Atom();
+      } else {
+        if (fieldProperty(fieldOf[ANISO_LABEL]) != NONE
+            || fieldProperty(fieldOf[MOMENT_LABEL]) != NONE
+            || fieldProperty(fieldOf[ANISO_MMCIF_ID]) != NONE) {
+          System.out.println("looking for " + field);
+          if ((atom = asc.getAtomFromName(field)) == null)
+            continue; // atom has been filtered out
+        } else {
+          continue;
+        }
+      }
+      String assemblyId = null;
+      String id = null;
       int n = parser.getFieldCount();
       for (int i = 0; i < n; ++i) {
         int tok = fieldProperty(i);
         switch (tok) {
         case NONE:
-        case MODEL_NO:
           break;
-        case CHEM_COMP_AC_SYM:
+        case ATOM_ID:
+          id = field;
+          break;
+        case CC_ATOM_SYM:
         case TYPE_SYMBOL:
           String elementSymbol;
           if (field.length() < 2) {
@@ -951,42 +944,42 @@ public class CifReader extends AtomSetCollectionReader {
               }
           }
           break;
-        case CHEM_COMP_AC_NAME:
+        case CC_ATOM_ID:
         case LABEL:
         case AUTH_ATOM:
           atom.atomName = field;
           break;
-        case CHEM_COMP_AC_X_IDEAL:
+        case CC_ATOM_X_IDEAL:
           float x = parseFloatStr(field);
           if (readIdeal && !Float.isNaN(x))
             atom.x = x;
           break;
-        case CHEM_COMP_AC_Y_IDEAL:
+        case CC_ATOM_Y_IDEAL:
           float y = parseFloatStr(field);
           if (readIdeal && !Float.isNaN(y))
             atom.y = y;
           break;
-        case CHEM_COMP_AC_Z_IDEAL:
+        case CC_ATOM_Z_IDEAL:
           float z = parseFloatStr(field);
           if (readIdeal && !Float.isNaN(z))
             atom.z = z;
           break;
-        case CHEM_COMP_AC_X:
+        case CC_ATOM_X:
         case CARTN_X:
         case FRACT_X:
           atom.x = parseFloatStr(field);
           break;
-        case CHEM_COMP_AC_Y:
+        case CC_ATOM_Y:
         case CARTN_Y:
         case FRACT_Y:
           atom.y = parseFloatStr(field);
           break;
-        case CHEM_COMP_AC_Z:
+        case CC_ATOM_Z:
         case CARTN_Z:
         case FRACT_Z:
           atom.z = parseFloatStr(field);
           break;
-        case CHEM_COMP_AC_CHARGE:
+        case CC_ATOM_CHARGE:
           atom.formalCharge = parseIntStr(field);
           break;
         case OCCUPANCY:
@@ -997,7 +990,7 @@ public class CifReader extends AtomSetCollectionReader {
         case B_ISO:
           atom.bfactor = parseFloatStr(field) * (isPDB ? 1 : 100f);
           break;
-        case CHEM_COMP_AC_ID:
+        case CC_COMP_ID:
         case COMP_ID:
           atom.group3 = field;
           break;
@@ -1041,6 +1034,10 @@ public class CifReader extends AtomSetCollectionReader {
             continue; //skip 
           }
           break;
+        case SITE_MULT:
+          if (modulated)
+            siteMult = parseIntStr(field);
+          break;
         case THERMAL_TYPE:
         case ADP_TYPE:
           if (field.equalsIgnoreCase("Uiso")) {
@@ -1048,16 +1045,6 @@ public class CifReader extends AtomSetCollectionReader {
             if (j != NONE)
               setU(atom, 7, parseFloatStr(parser.getLoopData(j)));
           }
-          break;
-        case ANISO_LABEL:
-        case MOMENT_LABEL:
-          iAtom = asc.getAtomIndexFromName(field);
-          if (iAtom < 0)
-            continue;
-          atom = asc.atoms[iAtom];
-          break;
-        case ANISO_MMCIF_ID:
-          atom = asc.atoms[++iAtom];
           break;
         case ANISO_U11:
         case ANISO_U22:
@@ -1094,42 +1081,37 @@ public class CifReader extends AtomSetCollectionReader {
           setU(atom, 6, 0);
           setU(atom, (propertyOf[i] - ANISO_BETA_11) % 6, parseFloatStr(field));
           break;
-        case SITE_MULT:
-          if (modulated)
-            siteMult = parseIntStr(field);
-          break;
-        case MX:
-        case MY:
-        case MZ:
+        case MOMENT_X:
+        case MOMENT_Y:
+        case MOMENT_Z:
           V3 pt = atom.vib;
           if (pt == null)
             pt = asc.addVibrationVector(atom.index, 0, 0, 0);
           float v = parseFloatStr(field);
           switch (tok) {
-          case MX:
+          case MOMENT_X:
             pt.x = v;
             break;
-          case MY:
+          case MOMENT_Y:
             pt.y = v;
             break;
-          case MZ:
+          case MOMENT_Z:
             pt.z = v;
             break;
           }
           break;
         }
       }
-      if (isAnisoData)
+      if (!haveCoord)
         continue;
       if (Float.isNaN(atom.x) || Float.isNaN(atom.y) || Float.isNaN(atom.z)) {
         Logger.warn("atom " + atom.atomName
             + " has invalid/unknown coordinates");
         continue;
       }
-      if (!filterCIFAtom(atom, iAtom, assemblyId))
+      if (!filterCIFAtom(atom, assemblyId))
         continue;
       setAtomCoord(atom);
-
       if (pr != null && !pr.checkAtom(atom, assemblyId, ac))
         continue;
       if (atom.elementSymbol == null && atom.atomName != null) {
@@ -1140,6 +1122,8 @@ public class CifReader extends AtomSetCollectionReader {
         atom.elementSymbol = (pt == 0 || pt > 2 ? "Xx" : sym.substring(0, pt));
       }
       asc.addAtomWithMappedName(atom);
+      if (id != null)
+        asc.atomSymbolicMap.put(id, atom);
       ac++;
       if (modDim > 0 && siteMult != 0)
         atom.vib = V3.new3(siteMult, 0, Float.NaN);
@@ -1147,13 +1131,13 @@ public class CifReader extends AtomSetCollectionReader {
     if (isPDB)
       setIsPDB();
     asc.setAtomSetAuxiliaryInfo("isCIF", Boolean.TRUE);
-    if (isPDBX && skipping)
+    if (isMMCIF && skipping)
       skipping = false;
     return true;
   }
 
-  protected boolean filterCIFAtom(Atom atom, int iAtom, String assemblyId) {
-    if (!filterAtom(atom, iAtom))
+  protected boolean filterCIFAtom(Atom atom, String assemblyId) {
+    if (!filterAtom(atom, -1))
       return false;
     if (filterAssembly && filterReject(filter, "$", assemblyId))
       return false;
@@ -1327,10 +1311,10 @@ public class CifReader extends AtomSetCollectionReader {
         case NONE:
           break;
         case GEOM_BOND_ATOM_SITE_LABEL_1:
-          atomIndex1 = asc.getAtomIndexFromName(name1 = field);
+          atomIndex1 = asc.getAtomIndex(name1 = field);
           break;
         case GEOM_BOND_ATOM_SITE_LABEL_2:
-          atomIndex2 = asc.getAtomIndexFromName(name2 = field);
+          atomIndex2 = asc.getAtomIndex(name2 = field);
           break;
         case GEOM_BOND_DISTANCE:
           distance = parseFloatStr(field);
@@ -1418,7 +1402,7 @@ public class CifReader extends AtomSetCollectionReader {
     bsSets = new BS[nAtoms];
     symmetry = asc.getSymmetry();
     for (int i = firstAtom; i < ac; i++) {
-      int ipt = asc.getAtomIndexFromName(atoms[i].atomName)
+      int ipt = asc.getAtomFromName(atoms[i].atomName).index
           - firstAtom;
       if (bsSets[ipt] == null)
         bsSets[ipt] = new BS();
@@ -1528,8 +1512,8 @@ public class CifReader extends AtomSetCollectionReader {
       float distance = ((Float) o[2]).floatValue();
       float dx = ((Float) o[3]).floatValue();
       int order = ((Integer) o[4]).intValue();
-      int iatom1 = asc.getAtomIndexFromName((String) o[0]);
-      int iatom2 = asc.getAtomIndexFromName((String) o[1]);
+      int iatom1 = asc.getAtomIndex((String) o[0]);
+      int iatom2 = asc.getAtomIndex((String) o[1]);
       BS bs1 = bsSets[iatom1 - firstAtom];
       BS bs2 = bsSets[iatom2 - firstAtom];
       if (bs1 == null || bs2 == null)
@@ -1596,7 +1580,7 @@ public class CifReader extends AtomSetCollectionReader {
               cart1.setT(atoms[k]);
               symmetry.toCartesian(cart1, true);
               BS bs = bsSets[asc
-                  .getAtomIndexFromName(atoms[k].atomName) - firstAtom];
+                  .getAtomIndex(atoms[k].atomName) - firstAtom];
               if (bs != null)
                 for (int ii = bs.nextSetBit(0); ii >= 0; ii = bs
                     .nextSetBit(ii + 1)) {

@@ -270,14 +270,12 @@ public class XmlCmlReader extends XmlReader {
         if (atts.containsKey("atomRef1")) {
           breakOutBondTokens(atts.get("atomRef1"));
           for (int i = tokenCount; --i >= 0;)
-            bondArray[i].atomIndex1 = asc
-                .getAtomIndexFromName(tokens[i]);
+            bondArray[i].atomIndex1 = asc.getAtomIndex(tokens[i]);
         }
         if (atts.containsKey("atomRef2")) {
           breakOutBondTokens(atts.get("atomRef2"));
           for (int i = tokenCount; --i >= 0;)
-            bondArray[i].atomIndex2 = asc
-                .getAtomIndexFromName(tokens[i]);
+            bondArray[i].atomIndex2 = asc.getAtomIndex(tokens[i]);
         }
       }
       if (name.equalsIgnoreCase("atomArray")) {
@@ -363,17 +361,18 @@ public class XmlCmlReader extends XmlReader {
           // this is important because the atomName may not be unique
           // (as in PDB files)
           // but it causes problems in cif-derived files that involve a1 and a1_1, for instance
-          isSerial = (id != null && id.length() > 1 && id.startsWith("a")
-              && PT.parseInt(id.substring(1)) != Integer.MIN_VALUE);
+          isSerial = (id != null && id.length() > 1 && id.startsWith("a") && PT
+              .parseInt(id.substring(1)) != Integer.MIN_VALUE);
           checkedSerial = true;
-        } 
+        }
         if (isSerial)
           atom.atomSerial = PT.parseInt(id.substring(1));
         if (atts.containsKey("xFract")
             && (parent.iHaveUnitCell || !atts.containsKey("x3"))) {
           parent.setFractionalCoordinates(true);
           atom.set(parseFloatStr(atts.get("xFract")),
-              parseFloatStr(atts.get("yFract")), parseFloatStr(atts.get("zFract")));
+              parseFloatStr(atts.get("yFract")),
+              parseFloatStr(atts.get("zFract")));
         } else if (atts.containsKey("x3")) {
           atom.set(parseFloatStr(atts.get("x3")),
               parseFloatStr(atts.get("y3")), parseFloatStr(atts.get("z3")));
@@ -384,7 +383,8 @@ public class XmlCmlReader extends XmlReader {
         if (atts.containsKey("elementType")) {
           String sym = atts.get("elementType");
           if (atts.containsKey("isotope"))
-            atom.elementNumber = (short) ((parseIntStr(atts.get("isotope")) << 7) + JmolAdapter.getElementNumber(sym));
+            atom.elementNumber = (short) ((parseIntStr(atts.get("isotope")) << 7) + JmolAdapter
+                .getElementNumber(sym));
           atom.elementSymbol = sym;
         }
         if (atts.containsKey("formalCharge"))
@@ -597,12 +597,10 @@ public class XmlCmlReader extends XmlReader {
 
   private void addNewBond(String a1, String a2, int order) {
     parent.applySymmetryToBonds = true;
-    //System.out.println("atomsetcollection addnewbond " + a1 + " " + a2);
     if (isSerial)
-      asc.addNewBondWithMappedSerialNumbers(PT.parseInt(a1.substring(1)),
-          PT.parseInt(a2.substring(1)), order);
-      else
-        asc.addNewBondFromNames(a1, a2, order);
+      asc.addNewBondFromNames(a1.substring(1), a2.substring(1), order);
+    else
+      asc.addNewBondFromNames(a1, a2, order);
   }
 
   private void getDictRefValue() {

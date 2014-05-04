@@ -918,15 +918,21 @@ public class XtalSymmetry {
     return a.addTensor(((Tensor) Interface.getUtil("Tensor"))
         .setFromEigenVectors(
             symmetry.rotateAxes(iSym, t.eigenVectors, ptTemp, mTemp),
-            t.eigenValues, t.isIsotropic ? "iso" : t.type, t.id), null, reset);
+            t.eigenValues, t.isIsotropic ? "iso" : t.type, t.id, t), null, reset);
   }
 
   void setTensors() {
     int n = asc.ac;
     for (int i = asc.getLastAtomSetAtomIndex(); i < n; i++) {
       Atom a = asc.atoms[i];
-       a.addTensor(symmetry.getTensor(a.anisoBorU), null, false); 
-       // getTensor will return correct type
+      if (a.anisoBorU == null)
+        continue;
+      // getTensor will return correct type
+      a.addTensor(symmetry.getTensor(a.anisoBorU), null, false);
+      if (Float.isNaN(a.bfactor))
+        a.bfactor = a.anisoBorU[7] * 100f;
+      // prevent multiple additions
+      a.anisoBorU = null;
     }
   }
 

@@ -26,6 +26,7 @@
 package org.jmol.renderspecial;
 
 
+import org.jmol.api.JmolModulationSet;
 import org.jmol.modelset.Atom;
 import org.jmol.render.ShapeRenderer;
 import org.jmol.script.T;
@@ -40,10 +41,10 @@ import org.jmol.util.Vibration;
 public class VectorsRenderer extends ShapeRenderer {
 
   private final static float arrowHeadOffset = -0.2f;
-  private P3 pointVectorStart;
+  private final P3 pointVectorStart = new P3();
   private final P3 pointVectorEnd = new P3();
   private final P3 pointArrowHead = new P3();
-  private P3i screenVectorStart;
+  private final P3i screenVectorStart = new P3i();
   private final P3i screenVectorEnd = new P3i();
   private final P3i screenArrowHead = new P3i();
   private final V3 headOffsetVector = new V3();
@@ -57,6 +58,9 @@ public class VectorsRenderer extends ShapeRenderer {
   private boolean doShaft;
   private Vibration vibTemp;
   private boolean vectorsCentered;
+  private boolean standardVector = true;
+  private boolean vibrationOn;
+  private boolean drawCap;
 
 
   @Override
@@ -73,12 +77,10 @@ public class VectorsRenderer extends ShapeRenderer {
     vectorScale = vwr.getFloat(T.vectorscale);
     vectorSymmetry = vwr.getBoolean(T.vectorsymmetry);
     vectorsCentered = vwr.getBoolean(T.vectorscentered);
-    if (vectorsCentered) {
-      pointVectorStart = new P3();
-      screenVectorStart = new P3i();
-    } else {
-      pointVectorStart = null;
-    }
+    vibrationOn = vwr.tm.vibrationOn;
+    headScale = arrowHeadOffset;
+    if (vectorScale < 0)
+      headScale = -headScale;
     for (int i = ms.getAtomCount(); --i >= 0;) {
       Atom atom = atoms[i];
       if (!isVisibleForMe(atom))
@@ -105,32 +107,58 @@ public class VectorsRenderer extends ShapeRenderer {
     return needTranslucent;
   }
 
-  private boolean transform(short mad, Atom atom, Vibration vibrationVector) {
-    float len = vibrationVector.length();
-    // to have the vectors move when vibration is turned on
-    if (Math.abs(len * vectorScale) < 0.01)
-      return false;
-    headScale = arrowHeadOffset;
-    if (vectorScale < 0)
-      headScale = -headScale;
-    doShaft = (0.1 + Math.abs(headScale/len) < Math.abs(vectorScale));
-    headOffsetVector.setT(vibrationVector);
-    headOffsetVector.scale(headScale / len);
-    
-    if (vectorsCentered) {
-      pointVectorEnd.scaleAdd2(0.5f * vectorScale, vibrationVector, atom);
-      screenVectorEnd.setT(tm.transformPt(pointVectorEnd));
-      pointVectorStart.scaleAdd2(-0.5f * vectorScale, vibrationVector, atom);
-      screenVectorStart.setT(tm.transformPt(pointVectorStart));
-      pointArrowHead.add2(pointVectorEnd, headOffsetVector);
-      screenArrowHead.setT(tm.transformPt(pointArrowHead));
-    } else {
-      pointVectorEnd.scaleAdd2(vectorScale, vibrationVector, atom);
-      screenVectorEnd.setT(tm.transformPtVib(pointVectorEnd, vibrationVector, vectorScale));
-      pointArrowHead.add2(pointVectorEnd, headOffsetVector);
-      screenArrowHead.setT(tm.transformPtVib(pointArrowHead, vibrationVector, vectorScale));
+  private boolean transform(short mad, Atom atom, Vibration vib) {
+    boolean isMod = (vib instanceof JmolModulationSet);
+    drawCap = true;
+    if (!isMod) {
+      float len = vib.length();
+      // to have the vectors move when vibration is turned on
+      if (Math.abs(len * vectorScale) < 0.01)
+        return false;
+      standardVector = true;
+      doShaft = (0.1 + Math.abs(headScale / len) < Math.abs(vectorScale));
+      headOffsetVector.setT(vib);
+      headOffsetVector.scale(headScale / len);
     }
-    diameter = (int) (mad < 0 ? -mad : mad < 1 ? 1 : vwr.scaleToScreen(screenVectorEnd.z, mad));
+    if (isMod) {
+      JmolModulationSet mod = (JmolModulationSet) vib;
+      standardVector = false;
+      doShaft = true;
+      pointVectorStart.setT(atom);
+      pointVectorEnd.setT(atom);
+      if (!mod.isEnabled()) {
+        mod.addTo(pointVectorEnd, 1);
+      } else {
+        if (vibrationOn)
+          vwr.tm.getVibrationPoint(vib, pointVectorEnd, Float.NaN);
+        mod.addTo(pointVectorStart, -1);
+      }
+      headOffsetVector.sub2(pointVectorEnd, pointVectorStart);
+      float len = headOffsetVector.length();
+      drawCap = (len + arrowHeadOffset > 0.001f);
+      doShaft = (len > 0.01f);
+      headOffsetVector.scale(headScale / headOffsetVector.length());
+    } else if (vectorsCentered) {
+      standardVector = false;
+      pointVectorEnd.scaleAdd2(0.5f * vectorScale, vib, atom);
+      pointVectorStart.scaleAdd2(-0.5f * vectorScale, vib, atom);
+    } else {
+      pointVectorEnd.scaleAdd2(vectorScale, vib, atom);
+      screenVectorEnd.setT(tm.transformPtVib(pointVectorEnd, vib, vectorScale));
+      pointArrowHead.add2(pointVectorEnd, headOffsetVector);
+      screenArrowHead.setT(tm.transformPtVib(pointArrowHead, vib, vectorScale));
+    }
+    if (!standardVector) {
+      screenVectorEnd.setT(tm.transformPt(pointVectorEnd));
+      screenVectorStart.setT(tm.transformPt(pointVectorStart));
+      if (drawCap)
+        pointArrowHead.add2(pointVectorEnd, headOffsetVector);
+      else
+        pointArrowHead.setT(pointVectorEnd);
+      screenArrowHead.setT(tm.transformPt(pointArrowHead));
+    }
+    diameter = (int) (mad < 0 ? -mad : mad < 1 ? 1 : vwr.scaleToScreen(
+        screenVectorEnd.z, mad));
     headWidthPixels = diameter << 1;
     if (headWidthPixels < diameter + 2)
       headWidthPixels = diameter + 2;
@@ -139,7 +167,7 @@ public class VectorsRenderer extends ShapeRenderer {
   
   private void renderVector(Atom atom) {
     if (doShaft) {
-      if (pointVectorStart == null)
+      if (standardVector)
         g3d.fillCylinderScreen(GData.ENDCAPS_OPEN, diameter, atom.sX,
             atom.sY, atom.sZ, screenArrowHead.x, screenArrowHead.y,
             screenArrowHead.z);
@@ -147,8 +175,8 @@ public class VectorsRenderer extends ShapeRenderer {
         g3d.fillCylinderScreen(GData.ENDCAPS_FLAT, diameter, screenVectorStart.x,
             screenVectorStart.y, screenVectorStart.z, screenArrowHead.x, screenArrowHead.y,
             screenArrowHead.z);
-
     }
+    if (drawCap)
       g3d.fillConeScreen(GData.ENDCAPS_FLAT, headWidthPixels, screenArrowHead,
           screenVectorEnd, false);
   }

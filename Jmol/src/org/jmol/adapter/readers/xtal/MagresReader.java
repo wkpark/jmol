@@ -303,17 +303,20 @@ public class MagresReader extends AtomSetCollectionReader {
     for (int i = 0; i < 3; i++)
       for (int j = 0; j < 3; j++)
         a[i][j] = Double.valueOf(tokens[pt++]).doubleValue();
-    int index1 = asc.getAtomIndexFromName(atomName1);
-    int index2;
+    Atom a1 = asc.getAtomFromName(atomName1);
+    if (a1 == null)
+      return true;
+    Atom a2 = null;
     Tensor t = new Tensor().setFromAsymmetricTensor(a, type, id);
     if (atomName2 == null) {
-      index2 = -1;
-      asc.atoms[index1].addTensor(t, null, false);
+      a1.addTensor(t, null, false);
     } else {
-      index2 = asc.getAtomIndexFromName(atomName2);
+      a2 = asc.getAtomFromName(atomName2);
+      if (a2 == null)
+        return true;
       interactionTensors.addLast(t);
     }
-    t.setAtomIndexes(index1, index2);
+    t.setAtomIndexes(a1.index, (a2 == null ? -1 : a2.index));
     return true;
   }
 }

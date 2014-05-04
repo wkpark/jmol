@@ -4,7 +4,7 @@ import javajs.util.T3;
 
 public interface JmolModulationSet {
 
-  Object getModulation(String type, T3 t456);
+  T3 getModulation(String type, T3 t456);
 
   String getState();
 
@@ -15,5 +15,7 @@ public interface JmolModulationSet {
   float getScale();
 
   void addTo(T3 a, float scale);
+
+  T3 getModPoint(boolean asEnabled);
 
 }

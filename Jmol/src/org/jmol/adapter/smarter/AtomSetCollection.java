@@ -111,10 +111,10 @@ public class AtomSetCollection {
   private Lst<P3[]> trajectorySteps;
   private Lst<V3[]> vibrationSteps;
   private Lst<String> trajectoryNames;
- 
+
   public boolean doFixPeriodic;
   public boolean allowMultiple;
- 
+
   private Lst<AtomSetCollectionReader> readerList;
 
   public AtomSetCollection(String fileTypeName, AtomSetCollectionReader reader,
@@ -397,7 +397,7 @@ public class AtomSetCollection {
     ascAuxiliaryInfo = new Hashtable<String, Object>();
     atomSetCount = 0;
     atomSetNumbers = new int[16];
-    atomSymbolicMap = new Hashtable<Object, Integer>();
+    atomSymbolicMap = new Hashtable<String, Atom>();
     bonds = null;
     iSet = -1;
     readerList = null;
@@ -508,8 +508,8 @@ public class AtomSetCollection {
     if (atomIncrement > 0)
       for (int i = 0; i < nBonds; i++) {
         Bond bond = bonds[bondCount - nBonds];
-        addNewBondWithOrder(bond.atomIndex1 + atomIncrement, bond.atomIndex2 + atomIncrement,
-            bond.order);
+        addNewBondWithOrder(bond.atomIndex1 + atomIncrement, bond.atomIndex2
+            + atomIncrement, bond.order);
       }
   }
 
@@ -517,8 +517,7 @@ public class AtomSetCollection {
     return cloneLastAtomSetFromPoints(0, null);
   }
 
-  public int cloneLastAtomSetFromPoints(int ac, P3[] pts)
-      throws Exception {
+  public int cloneLastAtomSetFromPoints(int ac, P3[] pts) throws Exception {
     if (!allowMultiple) // CASTEP reader only
       return 0;
     int count = (ac > 0 ? ac : getLastAtomSetAtomCount());
@@ -568,14 +567,22 @@ public class AtomSetCollection {
   public void addAtomWithMappedName(Atom atom) {
     String atomName = addAtom(atom).atomName;
     if (atomName != null)
-      atomSymbolicMap.put(atomName, Integer.valueOf(atom.index));
+      atomSymbolicMap.put(atomName, atom);
   }
 
   public void addAtomWithMappedSerialNumber(Atom atom) {
     int atomSerial = addAtom(atom).atomSerial;
     if (atomSerial != Integer.MIN_VALUE)
-      atomSymbolicMap.put(Integer.valueOf(atomSerial), Integer.valueOf(atom.index));
-    haveMappedSerials = true;
+      atomSymbolicMap.put("" + atomSerial, atom);
+  }
+
+  public Atom getAtomFromName(String atomName) {
+    return atomSymbolicMap.get(atomName);
+  }
+
+  public int getAtomIndex(String name) {
+    Atom a = atomSymbolicMap.get(name);
+    return (a == null ? -1 : a.index);
   }
 
   public Bond addNewBondWithOrder(int atomIndex1, int atomIndex2, int order) {
@@ -588,14 +595,13 @@ public class AtomSetCollection {
   }
 
   public Bond addNewBondFromNames(String atomName1, String atomName2, int order) {
-    return addNewBondWithOrder(getAtomIndexFromName(atomName1),
-        getAtomIndexFromName(atomName2), order);
+    return addNewBondWithOrderA(getAtomFromName(atomName1),
+        getAtomFromName(atomName2), order);
   }
 
-  public Bond addNewBondWithMappedSerialNumbers(int atomSerial1,
-                                                int atomSerial2, int order) {
-    return addNewBondWithOrder(getAtomIndexFromSerial(atomSerial1),
-        getAtomIndexFromSerial(atomSerial2), order);
+  public Bond addNewBondWithOrderA(Atom atom1, Atom atom2,
+                                    int order) {
+    return (atom1 == null || atom2 == null ? null : addNewBondWithOrder(atom1.index, atom2.index, order));
   }
 
   public void addBond(Bond bond) {
@@ -697,14 +703,15 @@ public class AtomSetCollection {
     return atom.anisoBorU;
   }
 
-  public int baseSymmetryAtomCount;  
+  public int baseSymmetryAtomCount;
   public boolean checkLatticeOnly;
 
   public XtalSymmetry xtalSymmetry;
 
   public XtalSymmetry getXSymmetry() {
     if (xtalSymmetry == null)
-      xtalSymmetry = ((XtalSymmetry) Interface.getOption("adapter.smarter.XtalSymmetry")).set(this);
+      xtalSymmetry = ((XtalSymmetry) Interface
+          .getOption("adapter.smarter.XtalSymmetry")).set(this);
     return xtalSymmetry;
   }
 
@@ -729,40 +736,13 @@ public class AtomSetCollection {
     checkSpecial = TF;
   }
 
-  private Map<Object, Integer> atomSymbolicMap = new Hashtable<Object, Integer>();
+  public Map<String, Atom> atomSymbolicMap = new Hashtable<String, Atom>();
 
   public void clearSymbolicMap() {
     atomSymbolicMap.clear();
-    haveMappedSerials = false;
   }
-
-  private boolean haveMappedSerials;
 
   public boolean haveUnitCell;
-
-  public void createAtomSerialMap() {
-    if (haveMappedSerials || iSet < 0)
-      return;
-    for (int i = getLastAtomSetAtomCount(); i < ac; i++) {
-      int atomSerial = atoms[i].atomSerial;
-      if (atomSerial != Integer.MIN_VALUE)
-        atomSymbolicMap.put(Integer.valueOf(atomSerial), Integer.valueOf(i));
-    }
-    haveMappedSerials = true;
-  }
-
-  public int getAtomIndexFromName(String atomName) {
-    return getMapIndex(atomName);
-  }
-
-  public int getAtomIndexFromSerial(int serialNumber) {
-    return getMapIndex(Integer.valueOf(serialNumber));
-  }
-
-  private int getMapIndex(Object nameOrNum) {
-    Integer value = atomSymbolicMap.get(nameOrNum);
-    return (value == null ? -1 : value.intValue());
-  }
 
   public void setInfo(String key, Object value) {
     if (value == null)
@@ -783,8 +763,7 @@ public class AtomSetCollection {
     if (!ascAuxiliaryInfo.containsKey(auxKey)) {
       return false;
     }
-    Lst<Float> atomData = (Lst<Float>) ascAuxiliaryInfo
-        .get(auxKey);
+    Lst<Float> atomData = (Lst<Float>) ascAuxiliaryInfo.get(auxKey);
     for (int i = atomData.size(); --i >= 0;)
       atoms[i].partialCharge = atomData.get(i).floatValue();
     Logger.info("Setting partial charges type " + auxKey);
@@ -792,7 +771,7 @@ public class AtomSetCollection {
   }
 
   public void mapPartialCharge(String atomName, float charge) {
-    atoms[getAtomIndexFromName(atomName)].partialCharge = charge;
+    getAtomFromName(atomName).partialCharge = charge;
   }
 
   public Object getAtomSetCollectionAuxiliaryInfo(String key) {
@@ -862,8 +841,8 @@ public class AtomSetCollection {
     P3[] trajectory = trajectorySteps.get(0);
     V3[] vibrations = (vibrationSteps == null ? null : vibrationSteps.get(0));
     V3 v = new V3();
-    if (vibrationSteps != null && vibrations != null
-        && vibrations.length < ac || trajectory.length < ac) {
+    if (vibrationSteps != null && vibrations != null && vibrations.length < ac
+        || trajectory.length < ac) {
       errorMessage = "File cannot be loaded as a trajectory";
       return;
     }
@@ -975,8 +954,8 @@ public class AtomSetCollection {
    *        The number for the current AtomSet.
    */
   public void setCurrentAtomSetNumber(int atomSetNumber) {
-    setAtomSetNumber(iSet
-        + (isTrajectory ? trajectoryStepCount : 0), atomSetNumber);
+    setAtomSetNumber(iSet + (isTrajectory ? trajectoryStepCount : 0),
+        atomSetNumber);
   }
 
   public void setAtomSetNumber(int index, int atomSetNumber) {
@@ -1016,7 +995,7 @@ public class AtomSetCollection {
           atomSetIndex);
     p.put(key, value);
     if (key.startsWith(".")) //.PATH will not be usable in Jmol
-      p.put(key.substring(1), value);      
+      p.put(key.substring(1), value);
   }
 
   public void setAtomSetAtomProperty(String key, String data, int atomSetIndex) {
@@ -1044,8 +1023,8 @@ public class AtomSetCollection {
     if (!atomSetAuxiliaryInfo[iSet].containsKey(auxKey)) {
       return false;
     }
-    Lst<Float> atomData = (Lst<Float>) getAtomSetAuxiliaryInfoValue(
-        iSet, auxKey);
+    Lst<Float> atomData = (Lst<Float>) getAtomSetAuxiliaryInfoValue(iSet,
+        auxKey);
     for (int i = atomData.size(); --i >= 0;) {
       atoms[i].partialCharge = atomData.get(i).floatValue();
     }
@@ -1053,8 +1032,7 @@ public class AtomSetCollection {
   }
 
   public Object getAtomSetAuxiliaryInfoValue(int index, String key) {
-    return atomSetAuxiliaryInfo[index >= 0 ? index : iSet]
-        .get(key);
+    return atomSetAuxiliaryInfo[index >= 0 ? index : iSet].get(key);
   }
 
   /**
@@ -1125,8 +1103,7 @@ public class AtomSetCollection {
     Properties p = (Properties) getAtomSetAuxiliaryInfoValue(index,
         "modelProperties");
     if (p != null)
-      setAtomSetAuxiliaryInfoForSet("modelProperties", p.clone(),
-          iSet);
+      setAtomSetAuxiliaryInfoForSet("modelProperties", p.clone(), iSet);
   }
 
   int getAtomSetNumber(int atomSetIndex) {
@@ -1162,8 +1139,7 @@ public class AtomSetCollection {
   public void setAtomSetEnergy(String energyString, float value) {
     if (iSet < 0)
       return;
-    Logger.info("Energy for model " + (iSet + 1) + " = "
-        + energyString);
+    Logger.info("Energy for model " + (iSet + 1) + " = " + energyString);
     setAtomSetAuxiliaryInfo("EnergyString", energyString);
     setAtomSetAuxiliaryInfo("Energy", Float.valueOf(value));
     setAtomSetModelProperty("Energy", "" + value);

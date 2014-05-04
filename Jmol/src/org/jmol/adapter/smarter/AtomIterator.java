@@ -130,8 +130,7 @@ class AtomIterator implements JmolAdapterAtomIterator {
 	
 	@Override
   public float getBfactor() {
-		return Float.isNaN(atom.bfactor) && atom.anisoBorU != null ? atom.anisoBorU[7] * 100f
-				: atom.bfactor;
+		return atom.bfactor;
 	}
 
 	

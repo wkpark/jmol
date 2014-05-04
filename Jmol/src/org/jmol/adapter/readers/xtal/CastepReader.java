@@ -553,8 +553,7 @@ public class CastepReader extends AtomSetCollectionReader {
 
   private int readOutputAtomIndex() {
     tokens = getTokensStr(line);
-    String name = tokens[0] + tokens[1];
-    return asc.getAtomIndexFromName(name);
+    return asc.getAtomIndex(tokens[0] + tokens[1]);
   }
 
   private void getTensor(Atom atom, String line0) throws Exception {

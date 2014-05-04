@@ -1523,7 +1523,7 @@ Z increasing    \       /       it ends up screenWidthPixels wide.
     return applyPerspective(getVibrationPoint(v, ptVibTemp, Float.NaN), ptXYZ);
   }
 
-  public Point3fi getVibrationPoint(Vibration v, Point3fi pt, float scale) {
+  public T3 getVibrationPoint(Vibration v, T3 pt, float scale) {
     v.setTempPoint(pt, vibrationT,
         (Float.isNaN(scale) ? vibrationScale : scale), vwr.g.modulationScale);
     return pt;
@@ -2190,10 +2190,12 @@ Z increasing    \       /       it ends up screenWidthPixels wide.
         vibrationThread = null;
       }
       this.vibrationOn = false;
+      vibrationT.x = 0;
       return;
     }
     if (vwr.getModelCount() < 1) {
       this.vibrationOn = false;
+      vibrationT.x = 0;
       return;
     }
     if (vibrationThread == null) {

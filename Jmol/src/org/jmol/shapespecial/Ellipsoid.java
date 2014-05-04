@@ -199,7 +199,6 @@ public class Ellipsoid {
     coef[7] = -2 * vTemp.y / f; // H = aY
     coef[8] = -2 * vTemp.z / f; // I = aZ
     coef[9] = -1; // J = -1
-
     /*
      * f = Ax^2 + By^2 + Cz^2 + Dxy + Exz + Fyz + Gx + Hy + Iz + J
      * df/dx = 2Ax +  Dy +  Ez + G

@@ -150,8 +150,6 @@ public class PdbReader extends AtomSetCollectionReader {
   private int conformationIndex;
   protected int fileAtomIndex;
   private char lastAltLoc = '\0';
-  private String lastAtomData;
-  private int lastAtomIndex;
   private int lastGroup = Integer.MIN_VALUE;
   private char lastInsertion = '\0';
   private int lastSourceSerial = Integer.MIN_VALUE;
@@ -502,10 +500,10 @@ SEQADV 1BLU GLU      7  SWS  P00208    GLN     7 CONFLICT
        
        // check for equal: 
        
-       System.out.println("TLS-U:  " + Escape.eAF(anisou));
+       Logger.info("TLS-U:  " + Escape.eAF(anisou));
        anisou = (entry.getKey().anisoBorU);
        if (anisou != null)
-         System.out.println("ANISOU: " + Escape.eAF(anisou));       
+         Logger.info("ANISOU: " + Escape.eAF(anisou));       
      }
      tlsU = null;
   }
@@ -1386,81 +1384,80 @@ Polyproline 10
   }
   
   /*
- The ANISOU records present the anisotropic temperature factors.
+  The ANISOU records present the anisotropic temperature factors.
 
 
-Record Format
+  Record Format
 
-COLUMNS        DATA TYPE       FIELD         DEFINITION                  
-----------------------------------------------------------------------
- 1 -  6        Record name     "ANISOU"                                  
+  COLUMNS        DATA TYPE       FIELD         DEFINITION                  
+  ----------------------------------------------------------------------
+  1 -  6        Record name     "ANISOU"                                  
 
- 7 - 11        Integer         serial        Atom serial number.         
+  7 - 11        Integer         serial        Atom serial number.         
 
-13 - 16        Atom            name          Atom name.                  
+  13 - 16        Atom            name          Atom name.                  
 
-17             Character       altLoc        Alternate location indicator.                  
+  17             Character       altLoc        Alternate location indicator.                  
 
-18 - 20        Residue name    resName       Residue name.               
+  18 - 20        Residue name    resName       Residue name.               
 
-22             Character       chainID       Chain identifier.           
+  22             Character       chainID       Chain identifier.           
 
-23 - 26        Integer         resSeq        Residue sequence number.    
+  23 - 26        Integer         resSeq        Residue sequence number.    
 
-27             AChar           iCode         Insertion code.             
+  27             AChar           iCode         Insertion code.             
 
-29 - 35        Integer         u[0][0]       U(1,1)                
+  29 - 35        Integer         u[0][0]       U(1,1)                
 
-36 - 42        Integer         u[1][1]       U(2,2)                
+  36 - 42        Integer         u[1][1]       U(2,2)                
 
-43 - 49        Integer         u[2][2]       U(3,3)                
+  43 - 49        Integer         u[2][2]       U(3,3)                
 
-50 - 56        Integer         u[0][1]       U(1,2)                
+  50 - 56        Integer         u[0][1]       U(1,2)                
 
-57 - 63        Integer         u[0][2]       U(1,3)                
+  57 - 63        Integer         u[0][2]       U(1,3)                
 
-64 - 70        Integer         u[1][2]       U(2,3)                
+  64 - 70        Integer         u[1][2]       U(2,3)                
 
-73 - 76        LString(4)      segID         Segment identifier, left-justified. 
+  73 - 76        LString(4)      segID         Segment identifier, left-justified. 
 
-77 - 78        LString(2)      element       Element symbol, right-justified.
+  77 - 78        LString(2)      element       Element symbol, right-justified.
 
-79 - 80        LString(2)      charge        Charge on the atom.       
+  79 - 80        LString(2)      charge        Charge on the atom.       
 
-Details
+  Details
 
-* Columns 7 - 27 and 73 - 80 are identical to the corresponding ATOM/HETATM record.
+  * Columns 7 - 27 and 73 - 80 are identical to the corresponding ATOM/HETATM record.
 
-* The anisotropic temperature factors (columns 29 - 70) are scaled by a factor of 10**4 (Angstroms**2) and are presented as integers.
+  * The anisotropic temperature factors (columns 29 - 70) are scaled by a factor of 10**4 (Angstroms**2) and are presented as integers.
 
-* The anisotropic temperature factors are stored in the same coordinate frame as the atomic coordinate records. 
+  * The anisotropic temperature factors are stored in the same coordinate frame as the atomic coordinate records. 
    */
-  
+
   private void anisou() {
     float[] data = new float[8];
     data[6] = 1; //U not B
-    int serial = parseIntRange(line, 6, 11);
-    int index;
-    if (line.substring(6, 26).equals(lastAtomData)) {
-      index = lastAtomIndex;
-    } else {
-      if (!haveMappedSerials)
-        asc.createAtomSerialMap();
-      index = asc.getAtomIndexFromSerial(serial);
+    String serial = line.substring(6, 11).trim();
+    if (!haveMappedSerials && asc.ac > 0) {
+      for (int i = asc.getAtomSetAtomIndex(asc.iSet); i < asc.ac; i++) {
+        int atomSerial = asc.atoms[i].atomSerial;
+        if (atomSerial != Integer.MIN_VALUE)
+          asc.atomSymbolicMap.put(""+ atomSerial, asc.atoms[i]);
+      }
       haveMappedSerials = true;
     }
-    if (index < 0) {
+    Atom atom = asc.getAtomFromName(serial);
+    if (atom == null) {
       //normal when filtering
       //System.out.println("ERROR: ANISOU record does not correspond to known atom");
       return;
     }
-    Atom atom = asc.atoms[index];
     for (int i = 28, pt = 0; i < 70; i += 7, pt++)
       data[pt] = parseFloatRange(line, i, i + 7);
     for (int i = 0; i < 6; i++) {
       if (Float.isNaN(data[i])) {
-          Logger.error("Bad ANISOU record: " + line);
-          return;
+        Logger.error("Bad ANISOU record: " + line);
+        return;
       }
       data[i] /= 10000f;
     }
@@ -1470,6 +1467,7 @@ Details
     // Ortep Type 8: D = 2pi^2, C = 2, a*b*
     // Ortep Type 10: D = 2pi^2, C = 2, Cartesian
   }
+  
   /*
    * http://www.wwpdb.org/documentation/format23/sect7.html
    * 

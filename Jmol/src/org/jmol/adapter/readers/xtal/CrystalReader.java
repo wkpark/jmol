@@ -1100,7 +1100,7 @@ public class CrystalReader extends AtomSetCollectionReader {
        atoms[index].addTensor(new Tensor().setFromEigenVectors(directLatticeVectors, 
            new float[] {parseFloatStr(tokens[1]), 
            parseFloatStr(tokens[3]), 
-           parseFloatStr(tokens[5]) }, "quadrupole", atoms[index].atomName), null, false);
+           parseFloatStr(tokens[5]) }, "quadrupole", atoms[index].atomName, null), null, false);
        rd();
      }
      appendLoadNote("Ellipsoids set \"quadrupole\": Quadrupole tensors");

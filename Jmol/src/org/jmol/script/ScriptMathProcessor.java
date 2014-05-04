@@ -1428,7 +1428,7 @@ public class ScriptMathProcessor {
           return addXStr(PT.formatS(s, n, n, false, false));
         return addXStr(PT.formatS(s, n, n - 1, true, false));
       case T.varray:
-        String[] list = SV.listValue(x1);
+        String[] list = SV.strListValue(x1);
         for (int i = 0; i < list.length; i++) {
           if (n == 0)
             list[i] = list[i].trim();

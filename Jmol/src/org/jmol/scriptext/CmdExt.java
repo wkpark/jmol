@@ -2265,7 +2265,7 @@ public class CmdExt implements JmolCmdExtension {
         break;
       case T.varray:
         propertyName = "modelBasedPoints";
-        propertyValue = SV.listValue(eval.theToken);
+        propertyValue = SV.strListValue(eval.theToken);
         havePoints = true;
         break;
       case T.spacebeforesquare:

@@ -289,7 +289,7 @@ public class Txt {
           return f;
         continue;
       case '-':
-        if (i != 1)
+        if (i != 1 && f.charAt(i - 1) != '.')
           return f;
         continue;
       default:

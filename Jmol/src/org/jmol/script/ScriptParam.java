@@ -145,7 +145,7 @@ abstract public class ScriptParam extends ScriptError {
       ++i;
       break;
     case T.varray:
-      return SV.listValue(getToken(i));
+      return SV.strListValue(getToken(i));
     default:
       invArg();
     }

@@ -988,7 +988,7 @@ public class MathExt implements JmolMathExtension {
       } catch (Exception ex) {
         e.evalError(ex.toString(), null);
       }
-      String[] list = SV.listValue(x1);
+      String[] list = SV.strListValue(x1);
       if (Logger.debugging)
         Logger.debug("finding " + sFind);
       BS bs = new BS();
@@ -1164,10 +1164,10 @@ public class MathExt implements JmolMathExtension {
       // [xxxx].add("\t", [...])
       int itab = (args[0].tok == T.string ? 0 : 1);
       String tab = SV.sValue(args[itab]);
-      sList1 = (isArray1 ? SV.listValue(x1) : PT.split(SV.sValue(x1),
+      sList1 = (isArray1 ? SV.strListValue(x1) : PT.split(SV.sValue(x1),
           "\n"));
       x2 = args[1 - itab];
-      sList2 = (x2.tok == T.varray ? SV.listValue(x2) : PT.split(SV.sValue(x2),
+      sList2 = (x2.tok == T.varray ? SV.strListValue(x2) : PT.split(SV.sValue(x2),
           "\n"));
       sList3 = new String[len = Math.max(sList1.length, sList2.length)];
       for (int i = 0; i < len; i++)
@@ -1676,7 +1676,7 @@ public class MathExt implements JmolMathExtension {
       return false;
     String label = SV.sValue(args[0]);
     String[] buttonArray = (args.length > 1 && args[1].tok == T.varray ? SV
-        .listValue(args[1]) : null);
+        .strListValue(args[1]) : null);
     boolean asButtons = (buttonArray != null || args.length == 1 || args.length == 3
         && args[2].asBoolean());
     String input = (buttonArray != null ? null : args.length >= 2 ? SV
@@ -1908,18 +1908,36 @@ public class MathExt implements JmolMathExtension {
 
   private boolean evaluateReplace(ScriptMathProcessor mp, SV[] args)
       throws ScriptException {
-    if (args.length != 2)
+    boolean isAll = false;
+    String sFind, sReplace;
+    switch (args.length) {
+    case 0:
+      isAll = true;
+      sFind = sReplace = null;
+      break;
+    case 3:
+      isAll = SV.bValue(args[2]);
+      //$FALL-THROUGH$
+    case 2:
+      sFind = SV.sValue(args[0]);
+      sReplace = SV.sValue(args[1]);
+      break;
+    default:
       return false;
+    }
     SV x = mp.getX();
-    String sFind = SV.sValue(args[0]);
-    String sReplace = SV.sValue(args[1]);
-    String s = (x.tok == T.varray ? null : SV.sValue(x));
-    if (s != null)
-      return mp.addXStr(PT.rep(s, sFind, sReplace));
-    String[] list = SV.listValue(x);
-    for (int i = list.length; --i >= 0;)
-      list[i] = PT.rep(list[i], sFind, sReplace);
-    return mp.addXAS(list);
+    if (x.tok == T.varray) {
+      String[] list = SV.strListValue(x);
+      String[] l = new String[list.length];
+      for (int i = list.length; --i >= 0;)
+        l[i] = (sFind == null ? PT.clean(list[i]) : isAll ? PT
+            .replaceAllCharacters(list[i], sFind, sReplace) : PT.rep(list[i],
+            sFind, sReplace));
+      return mp.addXAS(l);
+    }
+    String s = SV.sValue(x);
+    return mp.addXStr(sFind == null ? PT.clean(s) : isAll ? PT
+        .replaceAllCharacters(s, sFind, sReplace) : PT.rep(s, sFind, sReplace));
   }
 
   private boolean evaluateScript(ScriptMathProcessor mp, SV[] args, int tok)
@@ -1954,7 +1972,7 @@ public class MathExt implements JmolMathExtension {
    * @param mp
    * @param args
    * @param tok
-   * @return
+   * @return true if no error
    * @throws ScriptException
    */
   private boolean evaluateSort(ScriptMathProcessor mp, SV[] args, int tok)
@@ -2009,7 +2027,6 @@ public class MathExt implements JmolMathExtension {
     if (counts.isEmpty())
       return mp.addXInt(0);
     return mp.addX(counts.get(0).getList().get(1));
-
   }
 
   private boolean evaluateString(ScriptMathProcessor mp, int tok, SV[] args)
@@ -2047,7 +2064,7 @@ public class MathExt implements JmolMathExtension {
     case T.trim:
       if (s != null)
         return mp.addXStr(PT.trim(s, sArg));
-      String[] list = SV.listValue(x);
+      String[] list = SV.strListValue(x);
       for (int i = list.length; --i >= 0;)
         list[i] = PT.trim(list[i], sArg);
       return mp.addXAS(list);

@@ -763,7 +763,6 @@ public class T {
   
   public final static int add          = 1 | 2 << 9 | mathfunc | mathproperty;
   public final static int distance     = 2 | 2 << 9 | mathfunc | mathproperty;
-  public final static int replace      = 3 | 2 << 9 | mathfunc | mathproperty;
 
   // xxx(a,b,c)
   
@@ -775,10 +774,12 @@ public class T {
   // ___.xxx(a,b,c)
   
   public final static int bin          = 1 | 3 << 9 | mathfunc | mathproperty;
-  public final static int symop = 2 | 3 << 9 | mathfunc | mathproperty | intproperty; 
+  public final static int symop        = 2 | 3 << 9 | mathfunc | mathproperty | intproperty; 
   public final static int find         = 3 | 3 << 9 | mathfunc | mathproperty;
 
   // anything beyond 3 are set "unlimited"
+
+  public final static int replace      = 1 | 7 << 9 | mathfunc | mathproperty;
 
   // set parameters 
   

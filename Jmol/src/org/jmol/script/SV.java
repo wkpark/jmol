@@ -528,7 +528,7 @@ public class SV extends T implements JSONEncodable {
   // there are reasons to use Token here rather than ScriptVariable
   // some of these functions, in particular iValue, fValue, and sValue
   
-  private static boolean bValue(T x) {
+  public static boolean bValue(T x) {
     switch (x == null ? nada : x.tok) {
     case on:
     case hash:
@@ -1156,13 +1156,14 @@ public class SV extends T implements JSONEncodable {
       return strFormat;
     int[] vd = (strFormat.indexOf("d") >= 0 || strFormat.indexOf("i") >= 0 ? new int[1]
         : null);
+    boolean isArray = (var.tok == varray);
     float[] vf = (strFormat.indexOf("f") >= 0 ? new float[1] : null);
     double[] ve = (strFormat.indexOf("e") >= 0 ? new double[1] : null);
     boolean getS = (strFormat.indexOf("s") >= 0);
-    boolean getP = (strFormat.indexOf("p") >= 0 && var.tok == point3f);
-    boolean getQ = (strFormat.indexOf("q") >= 0 && var.tok == point4f);
+    boolean getP = (strFormat.indexOf("p") >= 0 && (isArray || var.tok == point3f));
+    boolean getQ = (strFormat.indexOf("q") >= 0 && (isArray || var.tok == point4f));
     Object[] of = new Object[] { vd, vf, ve, null, null, null};
-    if (var.tok != varray)
+    if (!isArray)
       return sprintf(strFormat, var, of, vd, vf, ve, getS, getP, getQ);
     Lst<SV> sv = var.getList();
     String[] list2 = new String[sv.size()];
@@ -1395,7 +1396,7 @@ public class SV extends T implements JSONEncodable {
     return bs;
   }
 
-  public static String[] listValue(T x) {
+  public static String[] strListValue(T x) {
     if (x.tok != varray)
       return new String[] { sValue(x) };
     Lst<SV> sv = ((SV) x).getList();

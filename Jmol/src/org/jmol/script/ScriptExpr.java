@@ -362,6 +362,7 @@ abstract class ScriptExpr extends ScriptParam {
       case T.point4f:
       case T.matrix3f:
       case T.matrix4f:
+      case T.varray:
       case T.bitset:
       case T.hash:
       case T.context:
@@ -2220,7 +2221,7 @@ abstract class ScriptExpr extends ScriptParam {
     switch (tokenValue.tok) {
     case T.varray:
       if (isStrProperty)
-        list = SV.listValue(tokenValue);
+        list = SV.strListValue(tokenValue);
       else
         fvalues = SV.flistValue(tokenValue, nValues);
       break;

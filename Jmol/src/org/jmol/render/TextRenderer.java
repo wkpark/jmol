@@ -37,7 +37,7 @@ class TextRenderer {
   static void render(Text text, Viewer vwr, JmolRendererInterface g3d,
                      float scalePixelsPerMicron, float imageFontScaling,
                      boolean isExact, float[] boxXY, float[] temp) {
-    if (text == null || text.image == null && text.lines == null)
+    if (text == null || text.image == null && !text.doFormatText && text.lines == null)
       return;
     boolean showText = g3d.setC(text.colix);
     if (!showText

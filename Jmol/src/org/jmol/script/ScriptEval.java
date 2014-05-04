@@ -4886,7 +4886,7 @@ public class ScriptEval extends ScriptExpr {
       if (checkLength23() > 0)
         if (!chk)
           vwr.setFrameTitleObj(slen == 2 ? "@{_modelName}"
-              : (tokAt(2) == T.varray ? SV.listValue(st[2])
+              : (tokAt(2) == T.varray ? SV.strListValue(st[2])
                   : paramAsStr(2)));
       return;
     case T.align:

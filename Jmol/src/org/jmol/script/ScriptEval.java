@@ -8017,16 +8017,19 @@ public class ScriptEval extends ScriptExpr {
               max = Float.MAX_VALUE;
             }
           }
-          if (!chk) {
             if (isIsosurface) {
             } else if (data == null) {
+              if (!chk)
               vwr.setCurrentColorRange(name);
               index++;
             } else {
+              if (!chk)
               vwr.cm.setPropertyColorRangeData((float[]) data, bsSelected);
             }
             if (isIsosurface) {
               checkLength(index);
+              if (chk)
+                return;
               isColor = false;
               ColorEncoder ce = vwr.cm.getColorEncoder(scheme);
               if (ce == null)
@@ -8042,7 +8045,6 @@ public class ScriptEval extends ScriptExpr {
             } else if (max != Float.MAX_VALUE) {
               vwr.cm.setPropertyColorRange(min, max);
             }
-          }
         } else {
           index++;
         }

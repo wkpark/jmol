@@ -1099,4 +1099,8 @@ public class PT {
         h2.put(k, e.getValue());
     }
   }
+
+  public static String clean(String s) {
+    return rep(replaceAllCharacters(s, " \t\n\r", " "), "  ", " ").trim();
+  }
 }

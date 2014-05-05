@@ -40,7 +40,7 @@ public class TraceRenderer extends StrandsRenderer {
   protected void renderTrace() {
     getScreenControlPoints();
     for (int i = bsVisible.nextSetBit(0); i >= 0; i = bsVisible.nextSetBit(i + 1))
-      renderHermiteConic(i, false);
+      renderHermiteConic(i, false, 7);
   }
 
 }

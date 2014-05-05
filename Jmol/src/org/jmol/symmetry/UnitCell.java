@@ -299,7 +299,7 @@ class UnitCell extends SimpleUnitCell {
      */
 
     Tensor t = ((Tensor) Interface.getUtil("Tensor"));
-    if (parBorU[0] == 0) { // this is iso
+    if (parBorU[0] == 0 && parBorU[1] == 0 && parBorU[2] == 0) { // this is iso
       float f = parBorU[7];
       float[] eigenValues = new float[] {f, f, f};
       // sqrt will be taken when converted to lengths later

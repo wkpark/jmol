@@ -212,8 +212,6 @@ public class MSCifReader extends MSReader implements MSCifInterface {
     if (!cr.key.startsWith("_cell_wave") && !cr.key.contains("fourier")
         && !cr.key.contains("_special_func"))
       return 0;
-    if (modAverage)
-      return -1;
     if (cr.asc.iSet < 0)
       cr.asc.newAtomSet();
     cr.parseLoopParameters(modulationFields);
@@ -289,9 +287,9 @@ public class MSCifReader extends MSReader implements MSCifInterface {
           atomLabel = field;
           break;
         case FWV_DISP_AXIS:
+          axis = field;
           if (modAxes != null && modAxes.indexOf(axis.toUpperCase()) < 0)
             ignore = true;
-          axis = field;
           break;
         case FWV_U_TENS:
           axis = field.toUpperCase();

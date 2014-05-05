@@ -148,6 +148,11 @@ public class Ellipsoids extends Shape {
     selectedAtoms = null;
     return haveID;
   }
+  
+  @Override
+  public void initShape() {
+    setProperty("thisID", null, null);
+  }
 
   @Override
   public void setProperty(String propertyName, Object value, BS bs) {

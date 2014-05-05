@@ -377,7 +377,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
         screens[iNext], screens[iNext2]);
   }
 
-  protected void renderHermiteConic(int i, boolean thisTypeOnly) {
+  protected void renderHermiteConic(int i, boolean thisTypeOnly, int tension) {
     //cartoons, rockets, trace
     setNeighbors(i);
     colix = getLeadColix(i);
@@ -386,7 +386,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     if (setMads(i, thisTypeOnly) || isExport) {
       try {
         if ((meshes[i] == null || !meshReady[i])
-            && !createMesh(i, madBeg, madMid, madEnd, 1))
+            && !createMesh(i, madBeg, madMid, madEnd, 1, tension))
           return;
         meshes[i].setColix(colix);
         bsRenderMesh.set(i);
@@ -424,7 +424,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
       if (setMads(i, thisTypeOnly) || isExport) {
         try {
           if ((meshes[i] == null || !meshReady[i])
-              && !createMesh(i, madBeg, madMid, madEnd, aspectRatio))
+              && !createMesh(i, madBeg, madMid, madEnd, aspectRatio, isNucleic ? 4 : 7))
             return;
           meshes[i].setColix(colix);
           meshes[i].setColixBack(colixBack);
@@ -465,7 +465,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
         doCap1 = false;
         if ((meshes[i] == null || !meshReady[i])
             && !createMesh(i, (int) Math.floor(madBeg * 1.2), (int) Math.floor(madBeg * 0.6), 0,
-                (aspectRatio == 1 ? aspectRatio : aspectRatio / 2)))
+                (aspectRatio == 1 ? aspectRatio : aspectRatio / 2), 7))
           return;
         meshes[i].setColix(colix);
         bsRenderMesh.set(i);
@@ -536,10 +536,11 @@ abstract class BioShapeRenderer extends MeshRenderer {
    * @param madMid
    * @param madEnd
    * @param aspectRatio
+   * @param tension 
    * @return true if deferred rendering is required due to normals averaging
    */
   private boolean createMesh(int i, int madBeg, int madMid, int madEnd,
-                             float aspectRatio) {
+                             float aspectRatio, int tension) {
     setNeighbors(i);
     if (controlPoints[i].distance(controlPoints[iNext]) == 0)
       return false;
@@ -568,7 +569,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     if (controlHermites == null || controlHermites.length < nHermites + 1) {
       controlHermites = new P3[nHermites + 1];
     }
-    GData.getHermiteList(isNucleic ? 4 : 7, controlPoints[iPrev],
+    GData.getHermiteList(tension, controlPoints[iPrev],
         controlPoints[i], controlPoints[iNext], controlPoints[iNext2],
         controlPoints[iNext3], controlHermites, 0, nHermites, true);
     // wing hermites determine the orientation of the cartoon
@@ -579,7 +580,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     wing.setT(wingVectors[iPrev]);
     if (madEnd == 0)
       wing.scale(2.0f); //adds a flair to an arrow
-    GData.getHermiteList(isNucleic ? 4 : 7, wing, wingVectors[i],
+    GData.getHermiteList(tension, wing, wingVectors[i],
         wingVectors[iNext], wingVectors[iNext2], wingVectors[iNext3],
         wingHermites, 0, nHermites, false);
     //    }

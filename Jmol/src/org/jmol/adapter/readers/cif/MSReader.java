@@ -115,19 +115,16 @@ public class MSReader implements MSInterface {
   }
 
   protected void setModDim(int ndim) {
-    if (modAverage)
-      return;
+    htModulation = new Hashtable<String, double[]>();
     modDim = ndim;
-    if (modDim > 3) {
-      // not ready for dim=2
-      cr.appendLoadNote("Too high modulation dimension (" + modDim
-          + ") -- reading average structure");
-      modDim = 0;
-      modAverage = true;
-    } else {
+//    if (modDim > 3) {
+//      cr.appendLoadNote("Too high modulation dimension (" + modDim
+//          + ") -- reading average structure");
+//      modDim = 0;
+//      modAverage = true;
+//    } else {
       cr.appendLoadNote("Modulation dimension = " + modDim);
-      htModulation = new Hashtable<String, double[]>();
-    }
+//    }
   }
 
   /**
@@ -248,9 +245,10 @@ public class MSReader implements MSInterface {
    * 
    * @param iModel
    * @param isPost
-   * @throws Exception 
+   * @throws Exception
    */
-  private void setModulationForStructure(int iModel, boolean isPost) throws Exception {
+  private void setModulationForStructure(int iModel, boolean isPost)
+      throws Exception {
     atModel = "@" + iModel;
 
     if (htModulation.containsKey("X_" + atModel))
@@ -265,6 +263,7 @@ public class MSReader implements MSInterface {
 
     htModulation.put("X_" + atModel, new double[0]);
 
+    cr.appendLoadNote(modCount + " modulations for " + ac + " modulated atoms");
     if (!haveAtomMods)
       return;
 
@@ -280,7 +279,6 @@ public class MSReader implements MSInterface {
     for (int i = cr.asc.getLastAtomSetAtomIndex(); i < n; i++)
       modulateAtom(atoms[i], sb);
     cr.asc.setAtomSetAtomProperty("modt", sb.toString(), -1);
-    cr.appendLoadNote(modCount + " modulations for " + ac + " atoms");
     htAtomMods = null;
     if (minXYZ0 != null)
       trimAtomSet();
@@ -420,6 +418,8 @@ public class MSReader implements MSInterface {
         //$FALL-THROUGH$
       case 'O':
       case 'D':
+        if (modAverage)
+          break;
         char axis = key.charAt(pt_);
         type = getModType(key);
         if (htAtomMods == null)
@@ -605,7 +605,7 @@ public class MSReader implements MSInterface {
     if (Logger.debuggingHigh)
       Logger.debug("MOD RDR adding " + id + " " + i + " " + val + " to "
           + atom.anisoBorU[i]);
-    cr.setU(atom, i, val + atom.anisoBorU[i]);
+    cr.asc.setU(atom, i, val + atom.anisoBorU[i]);
   }
 
   /**
@@ -693,7 +693,7 @@ public class MSReader implements MSInterface {
       // 49/50 is an important range for cutoffs -- we let this range be void
       a.foccupancy = (occ > 0.49 && occ < 0.50 ? 0.489f : (float) Math.min(1,
           Math.max(0, occ)));
-      Logger.info("atom " + a.atomName + " occupancy = " + a.foccupancy);
+      //Logger.info("atom " + a.atomName + " occupancy = " + a.foccupancy);
     }
     if (ms.htUij != null) {
       // Uiso or Uij. We add the displacements, create the tensor, then rotate it, 
@@ -844,13 +844,13 @@ public class MSReader implements MSInterface {
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       Atom a = atoms[i];
       pt.setT(a);
-      pt.add(a.vib);
+      if (a.vib != null)
+        pt.add(a.vib);
       getSymmetry(a).toCartesian(pt, false);
       sym.toFractional(pt, false);
       if (!asc.xtalSymmetry.isWithinCell(3, pt, minXYZ0.x, maxXYZ0.x,
           minXYZ0.y, maxXYZ0.y, minXYZ0.z, maxXYZ0.z, 0.001f)
-          || isCommensurate
-          && a.foccupancy < 0.5f)
+          || isCommensurate && !modAverage && a.foccupancy < 0.5f)
         bs.clear(i);
     }
   }

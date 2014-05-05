@@ -101,7 +101,7 @@ public class CartoonRenderer extends RocketsRenderer {
         ptConnectScr.setT(controlPointScreens[i + 1]);
         ptConnect.setT(controlPoints[i + 1]);
       }
-      renderHermiteConic(i, false);
+      renderHermiteConic(i, false, 4);
       colix = getLeadColix(i);
       if (setBioColix(colix))
         renderNucleicBaseStep((NucleicMonomer) monomers[i], mads[i], ptConnectScr, ptConnect);
@@ -144,7 +144,7 @@ public class CartoonRenderer extends RocketsRenderer {
             renderHermiteArrowHead(i);
           }
         } else {
-          renderHermiteConic(i, true);
+          renderHermiteConic(i, true, 7);
         }
       }
       lastWasSheet = isSheet;

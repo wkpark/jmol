@@ -74,6 +74,7 @@ public class RocketsRenderer extends StrandsRenderer {
     cordMidPoints = vwr.allocTempPoints(midPointCount);
     ProteinStructure proteinstructurePrev = null;
     P3 point;
+    int ptLastRocket = -10;
     for (int i = 0; i < monomerCount; ++i) {
       point = cordMidPoints[i];
       Monomer residue = monomers[i];
@@ -81,25 +82,29 @@ public class RocketsRenderer extends StrandsRenderer {
         point.setT(controlPoints[i]);
       } else if (isHelix(i) || !isNewStyle && isSheet(i)) {
         ProteinStructure proteinstructure = residue.getProteinStructure();
-        point
-            .setT(i - 1 != proteinstructure.getMonomerIndex() ? proteinstructure
-                .getAxisStartPoint() : proteinstructure.getAxisEndPoint());
-        proteinstructurePrev = proteinstructure;
+        if (proteinstructure == proteinstructurePrev) {
+          pt1f.add(pt2f);
+          ptLastRocket = i;
+        } else {
+          proteinstructurePrev = proteinstructure;
+          pt1f.setT(proteinstructure.getAxisStartPoint());
+          pt2f.sub2(proteinstructure.getAxisEndPoint(), pt1f);
+          pt2f.scale(1f / (proteinstructure.getMonomerCount() - 1));
+          if (ptLastRocket == i - 3) {
+            // too tight! Thank you, Frieda!
+            cordMidPoints[i - 1].ave(cordMidPoints[i - 2], pt1f);
+          }
+        }       
+        point.setT(pt1f);
       } else {
-        if (proteinstructurePrev != null)
-          point.setT(proteinstructurePrev.getAxisEndPoint());
-        else {
-          point.setT(controlPoints[i]);
-        }
+        point.setT(proteinstructurePrev == null ? controlPoints[i]
+            : proteinstructurePrev.getAxisEndPoint());
         proteinstructurePrev = null;
       }
     }
-    point = cordMidPoints[monomerCount];
-    if (proteinstructurePrev != null)
-      point.setT(proteinstructurePrev.getAxisEndPoint());
-    else {
-      point.setT(controlPoints[monomerCount]);
-    }
+    cordMidPoints[monomerCount]
+        .setT(proteinstructurePrev == null ? controlPoints[monomerCount]
+            : proteinstructurePrev.getAxisEndPoint());
   }
 
   protected void renderRockets() {
@@ -111,7 +116,7 @@ public class RocketsRenderer extends StrandsRenderer {
         renderSpecialSegment(monomer, getLeadColix(i), mads[i]);
       } else {
         renderPending();
-        renderHermiteConic(i, true);
+        renderHermiteConic(i, true, 7);
       }
     }
     renderPending();

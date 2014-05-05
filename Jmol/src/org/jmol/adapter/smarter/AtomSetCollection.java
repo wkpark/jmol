@@ -699,8 +699,12 @@ public class AtomSetCollection {
     data[6] = type;
   }
 
-  public float[] getAnisoBorU(Atom atom) {
-    return atom.anisoBorU;
+  public void setU(Atom atom, int i, float val) {
+    // Ortep Type 8: D = 2pi^2, C = 2, a*b*
+    float[] data = atom.anisoBorU;
+    if (data == null)
+      setAnisoBorU(atom, data = new float[8], 8);
+    data[i] = val;
   }
 
   public int baseSymmetryAtomCount;

@@ -5391,6 +5391,10 @@ public class ScriptEval extends ScriptExpr {
     }
     // possibly "all"
     switch (tokAt(1)) {
+    case T.print:
+      if (!chk && outputBuffer != null)
+        outputBuffer.setLength(0);
+      return;
     case T.cache:
       vwr.cacheClear();
       return;

@@ -369,6 +369,7 @@ public class CifReader extends AtomSetCollectionReader {
     SymmetryInterface sym = applySymTrajASCR();
     if (modDim > 0) {
       addLatticeVectors();
+      asc.setTensors();
       getModulationReader().setModulation(true);
       mr.finalizeModulation();
     }
@@ -902,7 +903,6 @@ public class CifReader extends AtomSetCollectionReader {
         if (fieldProperty(fieldOf[ANISO_LABEL]) != NONE
             || fieldProperty(fieldOf[MOMENT_LABEL]) != NONE
             || fieldProperty(fieldOf[ANISO_MMCIF_ID]) != NONE) {
-          System.out.println("looking for " + field);
           if ((atom = asc.getAtomFromName(field)) == null)
             continue; // atom has been filtered out
         } else {
@@ -1043,7 +1043,7 @@ public class CifReader extends AtomSetCollectionReader {
           if (field.equalsIgnoreCase("Uiso")) {
             int j = fieldOf[U_ISO_OR_EQUIV];
             if (j != NONE)
-              setU(atom, 7, parseFloatStr(parser.getLoopData(j)));
+              asc.setU(atom, 7, parseFloatStr(parser.getLoopData(j)));
           }
           break;
         case ANISO_U11:
@@ -1059,7 +1059,7 @@ public class CifReader extends AtomSetCollectionReader {
         case ANISO_MMCIF_U13:
         case ANISO_MMCIF_U23:
           // Ortep Type 8: D = 2pi^2, C = 2, a*b*
-          setU(atom, (propertyOf[i] - ANISO_U11) % 6, parseFloatStr(field));
+          asc.setU(atom, (propertyOf[i] - ANISO_U11) % 6, parseFloatStr(field));
           break;
         case ANISO_B11:
         case ANISO_B22:
@@ -1068,8 +1068,8 @@ public class CifReader extends AtomSetCollectionReader {
         case ANISO_B13:
         case ANISO_B23:
           // Ortep Type 4: D = 1/4, C = 2, a*b*
-          setU(atom, 6, 4);
-          setU(atom, (propertyOf[i] - ANISO_B11) % 6, parseFloatStr(field));
+          asc.setU(atom, 6, 4);
+          asc.setU(atom, (propertyOf[i] - ANISO_B11) % 6, parseFloatStr(field));
           break;
         case ANISO_BETA_11:
         case ANISO_BETA_22:
@@ -1078,8 +1078,8 @@ public class CifReader extends AtomSetCollectionReader {
         case ANISO_BETA_13:
         case ANISO_BETA_23:
           //Ortep Type 0: D = 1, c = 2 -- see org.jmol.symmetry/UnitCell.java
-          setU(atom, 6, 0);
-          setU(atom, (propertyOf[i] - ANISO_BETA_11) % 6, parseFloatStr(field));
+          asc.setU(atom, 6, 0);
+          asc.setU(atom, (propertyOf[i] - ANISO_BETA_11) % 6, parseFloatStr(field));
           break;
         case MOMENT_X:
         case MOMENT_Y:

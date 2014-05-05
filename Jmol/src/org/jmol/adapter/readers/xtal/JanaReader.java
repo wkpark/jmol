@@ -61,14 +61,12 @@ public class JanaReader extends AtomSetCollectionReader {
 
   private Lst<float[]> lattvecs;
   private int thisSub;
-  private boolean modAverage;
   private String modAxes;
   private int modDim;
   private boolean haveM40Data;
   
   @Override
   public void initializeReader() throws Exception {
-    modAverage = checkFilterKey("MODAVE");
     modAxes = getFilter("MODAXES=");
     setFractionalCoordinates(true);
     asc.newAtomSet();
@@ -140,8 +138,7 @@ public class JanaReader extends AtomSetCollectionReader {
         symmetry();        
         break;
       case QI:
-        if (!modAverage)
-          qi();
+        qi();
         break;
       case END:
         // look for appended M40 data from load x.M50 + x.M40
@@ -708,11 +705,11 @@ public class JanaReader extends AtomSetCollectionReader {
     case 2:
     case -1:
       for (int j = 0; j < 6; j++)
-        setU(atom, j, floats[j]);
+        asc.setU(atom, j, floats[j]);
       break;
     case 1:
       if (floats[0] != 0)
-        setU(atom, 7, floats[0]);
+        asc.setU(atom, 7, floats[0]);
       break;
     case 0:
       molHasTLS = true;

@@ -802,10 +802,7 @@ public class GData implements JmolGraphicsInterface {
       float x = (float) (h1 * x1 + h2 * x2 + h3 * xT1 + h4 * xT2);
       float y = (float) (h1 * y1 + h2 * y2 + h3 * yT1 + h4 * yT2);
       float z = (float) (h1 * z1 + h2 * z2 + h3 * zT1 + h4 * zT2);
-      if (isPt)
-        list[index0 + i] = P3.new3(x, y, z);
-      else
-        list[index0 + i] = V3.new3(x, y, z);
+      list[index0 + i] = (isPt ? P3.new3(x, y, z) : V3.new3(x, y, z));
     }
   }
 

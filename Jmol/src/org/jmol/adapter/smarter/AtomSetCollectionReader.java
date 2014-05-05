@@ -1632,14 +1632,6 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
     atom.chainID = vwr.getChainID("" + ch);    
   }
 
-  public void setU(Atom atom, int i, float val) {
-    // Ortep Type 8: D = 2pi^2, C = 2, a*b*
-    float[] data = asc.getAnisoBorU(atom);
-    if (data == null)
-      asc.setAnisoBorU(atom, data = new float[8], 8);
-    data[i] = val;
-  }
-
   @Override
   public String readNextLine() throws Exception {
     // from CifDataReader, DSSRDataReader

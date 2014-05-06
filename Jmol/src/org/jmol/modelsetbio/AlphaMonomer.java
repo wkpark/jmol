@@ -127,7 +127,7 @@ public class AlphaMonomer extends Monomer {
       if (proteinStructure != null) {
         int nAbandoned = proteinStructure.removeMonomer(monomerIndex);
         if (nAbandoned > 0)
-          getBioPolymer().removeProteinStructure(monomerIndex + 1, nAbandoned);
+          bioPolymer.removeProteinStructure(monomerIndex + 1, nAbandoned);
       }
       switch (type) {
       case HELIX:
@@ -146,7 +146,7 @@ public class AlphaMonomer extends Monomer {
         setStructure(null);
       }
     } else {
-      setStructure(getBioPolymer().getProteinStructure(monomerIndexCurrent));
+      setStructure(bioPolymer.getProteinStructure(monomerIndexCurrent));
       if (proteinStructure != null)
         proteinStructure.addMonomer(monomerIndex);
     }

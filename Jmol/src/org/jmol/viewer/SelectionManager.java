@@ -51,12 +51,24 @@ public class SelectionManager {
   BS bsSubset; // set in Eval and only pointed to here
   BS bsDeleted;
 
-  void deleteModelAtoms(BS bsDeleted) {
-    BSUtil.deleteBits(bsHidden, bsDeleted);
-    BSUtil.deleteBits(bsSelection, bsDeleted);
-    BSUtil.deleteBits(bsSubset, bsDeleted);
-    BSUtil.deleteBits(bsFixed, bsDeleted);
-    BSUtil.deleteBits(this.bsDeleted, bsDeleted);
+//  void deleteModelAtoms(BS bsDeleted) {
+//    BSUtil.deleteBits(bsHidden, bsDeleted);
+//    BSUtil.deleteBits(bsSelection, bsDeleted);
+//    BSUtil.deleteBits(bsSubset, bsDeleted);
+//    BSUtil.deleteBits(bsFixed, bsDeleted);
+//    BSUtil.deleteBits(this.bsDeleted, bsDeleted);
+//  }
+
+  void processDeletedModelAtoms(BS bsAtoms) {
+    if (bsDeleted != null)
+      BSUtil.deleteBits(bsDeleted, bsAtoms);
+    if (bsSubset != null)
+      BSUtil.deleteBits(bsSubset, bsAtoms);
+    BSUtil.deleteBits(bsFixed, bsAtoms);
+    BSUtil.deleteBits(bsHidden, bsAtoms);
+    BS bs = BSUtil.copy(bsSelection);
+    BSUtil.deleteBits(bs, bsAtoms);
+    setSelectionSet(bs, 0);
   }
 
 
@@ -321,18 +333,6 @@ public class SelectionManager {
       bs.andNot(bsDeleted);
     if (!ignoreSubset && bsSubset != null)
       bs.and(bsSubset);
-  }
-
-  void processDeletedModelAtoms(BS bsAtoms) {
-    if (bsDeleted != null)
-      BSUtil.deleteBits(bsDeleted, bsAtoms);
-    if (bsSubset != null)
-      BSUtil.deleteBits(bsSubset, bsAtoms);
-    BSUtil.deleteBits(bsFixed, bsAtoms);
-    BSUtil.deleteBits(bsHidden, bsAtoms);
-    BS bs = BSUtil.copy(bsSelection);
-    BSUtil.deleteBits(bs, bsAtoms);
-    setSelectionSet(bs, 0);
   }
 
   void setMotionFixedAtoms(BS bs) {

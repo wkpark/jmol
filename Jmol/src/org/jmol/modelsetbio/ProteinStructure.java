@@ -67,9 +67,8 @@ public abstract class ProteinStructure {
     this.type = type;    
     monomerIndexFirst = monomerIndex;
     addMonomer(monomerIndex + monomerCount - 1);
-    
-    if(Logger.debugging)
-      Logger.debug(
+    if(true || Logger.debugging)
+      Logger.info(
           "Creating ProteinStructure " + strucNo 
           + " " + type.getBioStructureTypeName(false) 
           + " from " + monomerIndexFirst + " through "+ monomerIndexLast
@@ -86,6 +85,7 @@ public abstract class ProteinStructure {
     monomerIndexFirst = Math.min(monomerIndexFirst, index);
     monomerIndexLast = Math.max(monomerIndexLast, index);
     monomerCount = monomerIndexLast - monomerIndexFirst + 1;
+    System.out.println("addMonomer First = " + monomerIndexFirst);
   }
 
   /**
@@ -93,15 +93,16 @@ public abstract class ProteinStructure {
    * monomerCount of 0; but we don't remove monomers that aren't
    * part of this structure.
    * 
-   * @param monomerIndex
+   * @param index
    * @return the number of monomers AFTER this one that have been abandoned
    */
-  int removeMonomer(int monomerIndex) {
-    if (monomerIndex > monomerIndexLast || monomerIndex < monomerIndexFirst)
+  int removeMonomer(int index) {
+    if (index > monomerIndexLast || index < monomerIndexFirst)
       return 0;
-    int ret = monomerIndexLast - monomerIndex;
-    monomerIndexLast = Math.max(monomerIndexFirst, monomerIndex) - 1;
+    int ret = monomerIndexLast - index;
+    monomerIndexLast = Math.max(monomerIndexFirst, index) - 1;
     monomerCount = monomerIndexLast - monomerIndexFirst + 1;
+    System.out.println("remMonomer First = " + monomerIndexFirst + " last=" + monomerIndexLast);
     return ret;
   }
 

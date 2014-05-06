@@ -664,23 +664,23 @@ import java.util.Properties;
       int nAtoms = oldModels[i].ac;
       if (nAtoms == 0)
         continue;
-      BS bs = oldModels[i].bsAtoms;
+      BS bsModelAtoms = oldModels[i].bsAtoms;
       int firstAtomIndex = oldModels[i].firstAtomIndex;
 
       // delete from symmetry set
-      BSUtil.deleteBits(bsSymmetry, bs);
+      BSUtil.deleteBits(bsSymmetry, bsModelAtoms);
 
       // delete from stateScripts, model arrays and bitsets,
       // atom arrays, and atom bitsets
-      deleteModel(mpt, firstAtomIndex, nAtoms, bs, bsBonds);
+      deleteModel(mpt, firstAtomIndex, nAtoms, bsModelAtoms, bsBonds);
 
       // adjust all models after this one
       for (int j = oldModelCount; --j > i;)
-        oldModels[j].fixIndices(mpt, nAtoms, bs);
+        oldModels[j].fixIndices(mpt, nAtoms, bsModelAtoms);
 
       // adjust all shapes
       vwr.shm.deleteShapeAtoms(new Object[] { newModels, at,
-          new int[] { mpt, firstAtomIndex, nAtoms } }, bs);
+          new int[] { mpt, firstAtomIndex, nAtoms } }, bsModelAtoms);
       mc--;
     }
 
@@ -3228,7 +3228,7 @@ import java.util.Properties;
   }
 
   protected void deleteModel(int modelIndex, int firstAtomIndex, int nAtoms,
-                             BS bsAtoms, BS bsBonds) {
+                             BS bsModelAtoms, BS bsBonds) {
     /*
      *   ModelCollection.modelSetAuxiliaryInfo["group3Lists", "group3Counts, "models"]
      * ModelCollection.stateScripts ?????
@@ -3278,14 +3278,12 @@ import java.util.Properties;
 
     // correct stateScripts, particularly CONNECT scripts
     for (int i = stateScripts.size(); --i >= 0;) {
-      if (!stateScripts.get(i).deleteAtoms(modelIndex, bsBonds, bsAtoms)) {
+      if (!stateScripts.get(i).deleteAtoms(modelIndex, bsBonds, bsModelAtoms)) {
         stateScripts.remove(i);
       }
     }
-
-    // set to recreate bounding box
-    deleteModelAtoms(firstAtomIndex, nAtoms, bsAtoms);
-    vwr.deleteModelAtoms(modelIndex, firstAtomIndex, nAtoms, bsAtoms);
+    deleteModelAtoms(firstAtomIndex, nAtoms, bsModelAtoms);
+    vwr.deleteModelAtoms(modelIndex, firstAtomIndex, nAtoms, bsModelAtoms);
   }
 
   @SuppressWarnings("unchecked")

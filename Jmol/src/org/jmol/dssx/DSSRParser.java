@@ -1064,7 +1064,7 @@ Mapping of 76 nucleotide identifiers
     getBsAtoms(vwr, res, null, bs, htChains);
     NucleicMonomer group = (NucleicMonomer) vwr.ms.at[bs.nextSetBit(0)]
         .getGroup();
-    ((NucleicPolymer) group.getBioPolymer()).isDssrSet = true;
+    ((NucleicPolymer) group.bioPolymer).isDssrSet = true;
     return group;
   }
 

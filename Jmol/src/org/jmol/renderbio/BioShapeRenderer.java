@@ -544,6 +544,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     setNeighbors(i);
     if (controlPoints[i].distance(controlPoints[iNext]) == 0)
       return false;
+    System.out.println(monomers[i] + " cp " + controlPoints[i] + controlPoints[iNext]);
 
     // options:
 

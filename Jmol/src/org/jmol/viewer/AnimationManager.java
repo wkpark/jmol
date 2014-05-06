@@ -411,7 +411,7 @@ public class AnimationManager {
     return (isMovie ? animationFrames.length : vwr.getModelCount());
   }
 
-  void setFrame(int i) {
+  public void setFrame(int i) {
     try {
     if (isMovie) {
       int iModel = modelIndexForFrame(i);

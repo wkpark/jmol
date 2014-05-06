@@ -4840,7 +4840,7 @@ public class ScriptEval extends ScriptExpr {
       if (isFrame && slen == 2) {
         // FRAME n
         if (!chk)
-          vwr.setFrame(intParameter(1) - 1);
+          vwr.am.setFrame(intParameter(1) - 1);
         return;
       }
       break;

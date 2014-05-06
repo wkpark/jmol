@@ -75,6 +75,8 @@ public class RocketsRenderer extends StrandsRenderer {
     ProteinStructure proteinstructurePrev = null;
     P3 point;
     int ptLastRocket = -10;
+    P3 pt1 = new P3();
+    P3 pt2 = new P3();
     for (int i = 0; i < monomerCount; ++i) {
       point = cordMidPoints[i];
       Monomer residue = monomers[i];
@@ -83,24 +85,27 @@ public class RocketsRenderer extends StrandsRenderer {
       } else if (isHelix(i) || !isNewStyle && isSheet(i)) {
         ProteinStructure proteinstructure = residue.getProteinStructure();
         if (proteinstructure == proteinstructurePrev) {
-          pt1f.add(pt2f);
+          pt1.add(pt2);
           ptLastRocket = i;
         } else {
           proteinstructurePrev = proteinstructure;
-          pt1f.setT(proteinstructure.getAxisStartPoint());
-          pt2f.sub2(proteinstructure.getAxisEndPoint(), pt1f);
-          pt2f.scale(1f / (proteinstructure.getMonomerCount() - 1));
+          pt1.setT(proteinstructure.getAxisStartPoint());
+          pt2.sub2(proteinstructure.getAxisEndPoint(), pt1);
+          System.out.println("barrel " + pt1 + " " + proteinstructure.getAxisEndPoint());
+          pt2.scale(1f / (proteinstructure.getMonomerCount() - 1));
           if (ptLastRocket == i - 3) {
             // too tight! Thank you, Frieda!
-            cordMidPoints[i - 1].ave(cordMidPoints[i - 2], pt1f);
+            cordMidPoints[i - 1].ave(cordMidPoints[i - 2], pt1);
+            System.out.println(monomers[i-1] + " " + cordMidPoints[i-1]);
           }
         }       
-        point.setT(pt1f);
+        point.setT(pt1);
       } else {
         point.setT(proteinstructurePrev == null ? controlPoints[i]
             : proteinstructurePrev.getAxisEndPoint());
         proteinstructurePrev = null;
       }
+      System.out.println(residue + " " + point);
     }
     cordMidPoints[monomerCount]
         .setT(proteinstructurePrev == null ? controlPoints[monomerCount]

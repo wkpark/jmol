@@ -46,7 +46,7 @@ import java.util.Map;
 
 public abstract class Monomer extends Group {
 
-  BioPolymer bioPolymer;
+  public BioPolymer bioPolymer;
 
   protected byte[] offsets;
 
@@ -84,10 +84,6 @@ public abstract class Monomer extends Group {
   @Override
   public int getSelectedMonomerIndex() {
     return (monomerIndex >= 0 && bioPolymer.isMonomerSelected(monomerIndex) ? monomerIndex : -1);
-  }
-  
-  public BioPolymer getBioPolymer() {
-    return bioPolymer;
   }
   
   @Override

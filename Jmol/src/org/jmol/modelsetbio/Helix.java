@@ -34,6 +34,7 @@ public class Helix extends ProteinStructure {
   Helix(AlphaPolymer apolymer, int monomerIndex, int monomerCount, STR subtype) {
     setupPS(apolymer, STR.HELIX, monomerIndex,
         monomerCount);
+    System.out.println("helix " + apolymer.monomers[monomerIndex].chain.model.modelIndex + " " + apolymer.monomers[monomerIndex] + " " + apolymer.monomers[monomerCount + monomerIndex - 1]);
     this.subtype = subtype;
   }
 
@@ -42,16 +43,15 @@ public class Helix extends ProteinStructure {
     if (axisA != null)
       return;
     P3[] points = new P3[monomerCount + 1];
-    for (int i = 0; i <= monomerCount; i++) {
-      points[i] = new P3();
-      apolymer.getLeadMidPoint(monomerIndexFirst + i, points[i]);
-    }
+    for (int i = 0; i <= monomerCount; i++)
+      apolymer.getLeadMidPoint(monomerIndexFirst + i, points[i] = new P3());
     axisA = new P3();
     axisUnitVector = new V3();
     Measure.calcBestAxisThroughPoints(points, axisA, axisUnitVector,
         vectorProjection, 4);
     axisB = P3.newP(points[monomerCount]);
     Measure.projectOntoAxis(axisB, axisA, axisUnitVector, vectorProjection);
+    System.out.println("draw width 1.0 " + axisA + " " + axisB + " //" + apolymer.monomers[monomerIndexFirst] + " " + apolymer.monomers[monomerIndexFirst + monomerCount - 1]);
   }
 
   /****************************************************************

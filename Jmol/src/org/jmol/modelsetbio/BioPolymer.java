@@ -107,10 +107,12 @@ public abstract class BioPolymer {
 
   protected void removeProteinStructure(int monomerIndex, int count) {
     Monomer m = monomers[monomerIndex];
+    System.out.println("bp removing protein structure " + monomerIndex + " " + count);
     STR type = m.getProteinStructureType();
     int mLast = -1;
     for (int i = 0, pt = monomerIndex; i < count && pt < monomerCount; i++, pt++) {
       monomers[pt].setStructure(null);
+      System.out.println("bp monomer=" + pt + " " + monomers[pt] + " " + type);
       mLast = monomers[pt].setProteinStructureType(type, mLast);
     }
   }
@@ -157,18 +159,15 @@ public abstract class BioPolymer {
     return monomers[monomerCount - 1].getTerminatorAtom();
   }
 
-  /*
-   * public final Atom getLeadAtom(int monomerIndex) { return
-   * monomers[monomerIndex].getLeadAtom(); }
-   */
-  void getLeadMidPoint(int groupIndex, P3 midPoint) {
-    if (groupIndex == monomerCount) {
-      --groupIndex;
-    } else if (groupIndex > 0) {
-      midPoint.ave(getLeadPoint(groupIndex), getLeadPoint(groupIndex - 1));
+  void getLeadMidPoint(int i, P3 midPoint) {
+    if (i == monomerCount) {
+      --i;
+    } else if (i > 0) {
+      midPoint.ave(getLeadPoint(i), getLeadPoint(i - 1));
+      System.out.println("bp leadmidpoint for axis: " + i + " " + monomers[i-1] + " " + monomers[i] + " " + midPoint);
       return;
     }
-    midPoint.setT(getLeadPoint(groupIndex));
+    midPoint.setT(getLeadPoint(i));
   }
 
   // this might change in the future ... if we calculate a wing point

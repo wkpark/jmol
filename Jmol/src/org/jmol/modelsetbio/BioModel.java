@@ -431,7 +431,7 @@ public final class BioModel extends Model{
         Group group = groups[i];
         if (group instanceof Monomer) {
           Monomer monomer = (Monomer) group;
-          if (monomer.getBioPolymer() != null
+          if (monomer.bioPolymer != null
               && (!modelsExcluded.get(monomer.getModelIndex())))
             monomer.setBioPolymer(null, -1);
         }
@@ -443,7 +443,7 @@ public final class BioModel extends Model{
         continue;
       boolean doCheck = checkConnections 
         && !ms.isJmolDataFrameForModel(ms.at[g.firstAtomIndex].mi);
-      BioPolymer bp = (((Monomer) g).getBioPolymer() == null ?
+      BioPolymer bp = (((Monomer) g).bioPolymer == null ?
           Resolver.allocateBioPolymer(groups, i, doCheck) : null);
       if (bp == null || bp.monomerCount == 0)
         continue;

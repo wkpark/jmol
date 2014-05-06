@@ -8404,16 +8404,16 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return getDataManager().getDefaultVdwNameOrData(type, bs);
   }
 
-  public int deleteAtoms(BS bs, boolean fullModels) {
-    int atomIndex = (bs == null ? -1 : bs.nextSetBit(0));
+  public int deleteAtoms(BS bsAtoms, boolean fullModels) {
+    int atomIndex = (bsAtoms == null ? -1 : bsAtoms.nextSetBit(0));
     if (atomIndex < 0)
       return 0;
     clearModelDependentObjects();
     if (!fullModels) {
       sm.modifySend(atomIndex, ms.at[atomIndex].mi,
           4, "deleting atom " + getAtomName(atomIndex));
-      ms.deleteAtoms(bs);
-      int n = slm.deleteAtoms(bs);
+      ms.deleteAtoms(bsAtoms);
+      int n = slm.deleteAtoms(bsAtoms);
       setTainted(true);
       sm.modifySend(atomIndex, ms.at[atomIndex].mi,
           -4, "OK");
@@ -8425,7 +8425,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     setCurrentModelIndexClear(0, false);
     am.setAnimationOn(false);
     BS bsD0 = BSUtil.copy(getDeletedAtoms());
-    BS bsDeleted = ms.deleteModels(bs);
+    BS bsDeleted = ms.deleteModels(bsAtoms);
     slm.processDeletedModelAtoms(bsDeleted);
     setAnimationRange(0, 0);
     if (eval != null)
@@ -8450,13 +8450,12 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     sm.modifySend(-1, modelIndex, -2, "OK");
   }
 
-  public void deleteModelAtoms(int modelIndex, int firstAtomIndex, int nAtoms, BS bsDeleted) {
+  public void deleteModelAtoms(int modelIndex, int firstAtomIndex, int nAtoms, BS bsModelAtoms) {
     // called from ModelCollection.deleteModel
-    sm.modifySend(-1, modelIndex, 1, "delete atoms " + Escape.eBS(bsDeleted));
-    slm.deleteModelAtoms(bsDeleted);
-    BSUtil.deleteBits(getFrameOffsets(), bsDeleted);
+    sm.modifySend(-1, modelIndex, 1, "delete atoms " + Escape.eBS(bsModelAtoms));
+    BSUtil.deleteBits(getFrameOffsets(), bsModelAtoms);
     setFrameOffsets(getFrameOffsets());
-    getDataManager().deleteModelAtoms(firstAtomIndex, nAtoms, bsDeleted);
+    getDataManager().deleteModelAtoms(firstAtomIndex, nAtoms, bsModelAtoms);
     sm.modifySend(-1, modelIndex, -1, "OK");
   }
 
@@ -9493,10 +9492,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public void setCGO(Lst<Object> info) {
     shm.loadShape(JC.SHAPE_CGO);
     shm.setShapePropertyBs(JC.SHAPE_CGO, "setCGO", info, null);
-  }
-
-  public void setFrame(int i) {
-    am.setFrame(i - 1);
   }
 
   public boolean movePyMOL(JmolScriptEvaluator eval, float floatSecondsTotal,

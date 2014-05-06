@@ -24,6 +24,7 @@
 
 package org.jmol.renderbio;
 
+import org.jmol.modelsetbio.AlphaMonomer;
 import org.jmol.modelsetbio.NucleicMonomer;
 import org.jmol.modelsetbio.ProteinStructure;
 import org.jmol.script.T;
@@ -123,7 +124,7 @@ public class CartoonRenderer extends RocketsRenderer {
 
     for (int i = monomerCount; --i >= 0;) {
       // runs backwards, so it can render the heads first
-      thisStructure = monomers[i].getProteinStructure();
+      thisStructure = (ProteinStructure) monomers[i].getStructure();
       if (thisStructure != previousStructure) {
         if (renderAsRockets)
           lastWasHelix = false;
@@ -166,7 +167,7 @@ public class CartoonRenderer extends RocketsRenderer {
     for (int i = bsVisible.nextSetBit(0); i >= 0; i = bsVisible
         .nextSetBit(i + 1))
       if (isHelix(i))
-        renderSpecialSegment(monomers[i], getLeadColix(i), mads[i]);
+        renderSpecialSegment((AlphaMonomer) monomers[i], getLeadColix(i), mads[i]);
     renderPending();
   }
   

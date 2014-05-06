@@ -47,6 +47,12 @@ public class AlphaPolymer extends BioPolymer {
     super(monomers);
   }
 
+  
+  @Override
+  public ProteinStructure getProteinStructure(int monomerIndex) {
+    return (ProteinStructure) monomers[monomerIndex].getStructure();
+  }
+
   @Override
   protected P3 getControlPoint(int i, V3 v) {
     if (!monomers[i].isSheet())
@@ -129,8 +135,14 @@ public class AlphaPolymer extends BioPolymer {
     proteinstructure.serialID = serialID;
     proteinstructure.strandCount = strandCount;
     for (int i = indexStart; i <= indexEnd; ++i) {
-      monomers[i].setStructure(proteinstructure);
+      ((AlphaMonomer)monomers[i]).setStructure(proteinstructure);
     }
+  }
+  
+  @Override
+  public void clearStructures() {
+    for (int i = 0; i < monomerCount; i++)
+      ((AlphaMonomer)monomers[i]).setStructure(null);
   }
 
   ///////////////////////////////////////////////////////////

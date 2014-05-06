@@ -1109,11 +1109,6 @@ public class CifReader extends AtomSetCollectionReader {
             + " has invalid/unknown coordinates");
         continue;
       }
-      if (!filterCIFAtom(atom, assemblyId))
-        continue;
-      setAtomCoord(atom);
-      if (pr != null && !pr.checkAtom(atom, assemblyId, ac))
-        continue;
       if (atom.elementSymbol == null && atom.atomName != null) {
         String sym = atom.atomName;
         int pt = 0;
@@ -1121,6 +1116,11 @@ public class CifReader extends AtomSetCollectionReader {
           pt++;
         atom.elementSymbol = (pt == 0 || pt > 2 ? "Xx" : sym.substring(0, pt));
       }
+      if (!filterCIFAtom(atom, assemblyId))
+        continue;
+      setAtomCoord(atom);
+      if (pr != null && !pr.checkAtom(atom, assemblyId, ac))
+        continue;
       asc.addAtomWithMappedName(atom);
       if (id != null)
         asc.atomSymbolicMap.put(id, atom);

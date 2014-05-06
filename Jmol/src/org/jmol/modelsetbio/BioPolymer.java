@@ -101,20 +101,6 @@ public abstract class BioPolymer {
   }
 
   public void clearStructures() {
-    for (int i = 0; i < monomerCount; i++)
-      monomers[i].setStructure(null);
-  }
-
-  protected void removeProteinStructure(int monomerIndex, int count) {
-    Monomer m = monomers[monomerIndex];
-    System.out.println("bp removing protein structure " + monomerIndex + " " + count);
-    STR type = m.getProteinStructureType();
-    int mLast = -1;
-    for (int i = 0, pt = monomerIndex; i < count && pt < monomerCount; i++, pt++) {
-      monomers[pt].setStructure(null);
-      System.out.println("bp monomer=" + pt + " " + monomers[pt] + " " + type);
-      mLast = monomers[pt].setProteinStructureType(type, mLast);
-    }
   }
 
   public int[] getLeadAtomIndices() {
@@ -164,7 +150,7 @@ public abstract class BioPolymer {
       --i;
     } else if (i > 0) {
       midPoint.ave(getLeadPoint(i), getLeadPoint(i - 1));
-      System.out.println("bp leadmidpoint for axis: " + i + " " + monomers[i-1] + " " + monomers[i] + " " + midPoint);
+      //System.out.println("bp leadmidpoint for axis: " + i + " " + monomers[i-1] + " " + monomers[i] + " " + midPoint);
       return;
     }
     midPoint.setT(getLeadPoint(i));
@@ -450,8 +436,12 @@ public abstract class BioPolymer {
       monomers[i].getMonomerSequenceAtoms(bsInclude, bsResult);
   }
 
+  /**
+   * @param monomerIndex  
+   * @return  "HELIX" "TURN" etc
+   */
   public ProteinStructure getProteinStructure(int monomerIndex) {
-    return monomers[monomerIndex].getProteinStructure();
+    return null;
   }
 
   public boolean haveParameters;

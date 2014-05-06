@@ -23,6 +23,7 @@
  */
 package org.jmol.modelsetbio;
 
+import java.util.Hashtable;
 import java.util.Map;
 
 
@@ -44,7 +45,7 @@ public abstract class ProteinStructure {
 
   protected AlphaPolymer apolymer;
   protected int monomerIndexFirst;
-  protected int monomerCount;
+  protected int nRes;
   protected P3 axisA, axisB;
   protected V3 axisUnitVector;
   protected final V3 vectorProjection = new V3();
@@ -67,7 +68,7 @@ public abstract class ProteinStructure {
     this.type = type;    
     monomerIndexFirst = monomerIndex;
     addMonomer(monomerIndex + monomerCount - 1);
-    if(true || Logger.debugging)
+    if(Logger.debugging)
       Logger.info(
           "Creating ProteinStructure " + strucNo 
           + " " + type.getBioStructureTypeName(false) 
@@ -82,28 +83,45 @@ public abstract class ProteinStructure {
    * @param index
    */
   void addMonomer(int index) {
+    resMap = null;
     monomerIndexFirst = Math.min(monomerIndexFirst, index);
     monomerIndexLast = Math.max(monomerIndexLast, index);
-    monomerCount = monomerIndexLast - monomerIndexFirst + 1;
-    System.out.println("addMonomer First = " + monomerIndexFirst);
+    nRes = monomerIndexLast - monomerIndexFirst + 1;
+    //System.out.println("addMonomer First = " + monomerIndexFirst);
   }
 
   /**
-   * should be OK here to remove the first -- we just get a 
-   * monomerCount of 0; but we don't remove monomers that aren't
-   * part of this structure.
+   * should be OK here to remove the first -- we just get a monomerCount of 0;
+   * but we don't remove monomers that aren't part of this structure.
    * 
    * @param index
-   * @return the number of monomers AFTER this one that have been abandoned
    */
-  int removeMonomer(int index) {
+  void removeMonomer(int index) {
+    resMap = null;
     if (index > monomerIndexLast || index < monomerIndexFirst)
-      return 0;
-    int ret = monomerIndexLast - index;
-    monomerIndexLast = Math.max(monomerIndexFirst, index) - 1;
-    monomerCount = monomerIndexLast - monomerIndexFirst + 1;
-    System.out.println("remMonomer First = " + monomerIndexFirst + " last=" + monomerIndexLast);
-    return ret;
+      return;
+    if (index == monomerIndexFirst) {
+      monomerIndexFirst++;
+      nRes--;
+    } else if (index == monomerIndexLast) {
+      monomerIndexLast--;
+      nRes--;
+    } else {
+      int n = monomerIndexLast - index;
+      monomerIndexLast = index - 1;
+      nRes = index - monomerIndexFirst;
+      Monomer[] monomers = apolymer.monomers;
+      //System.out.println("bp removing protein structure " + index + " " + n);
+      STR type = monomers[++index].getProteinStructureType();
+      int mLast = -1;
+      for (int i = 0, pt = index; i < n; i++, pt++) {
+        ((AlphaMonomer)monomers[pt]).setStructure(null);
+        //System.out.println("bp monomer=" + pt + " " + monomers[pt] + " " + type);
+        mLast = monomers[pt].setProteinStructureType(type, mLast);
+      }
+    }
+    //System.out.println("remMonomer First = " + monomerIndexFirst + " last="
+      //  + monomerIndexLast);
   }
 
   public void calcAxis() {
@@ -113,12 +131,12 @@ public abstract class ProteinStructure {
     if (segments != null)
       return;
     calcAxis();
-    segments = new P3[monomerCount + 1];
-    segments[monomerCount] = axisB;
+    segments = new P3[nRes + 1];
+    segments[nRes] = axisB;
     segments[0] = axisA;
     V3 axis = V3.newV(axisUnitVector);
-    axis.scale(axisB.distance(axisA) / monomerCount);
-    for (int i = 1; i < monomerCount; i++) {
+    axis.scale(axisB.distance(axisA) / nRes);
+    for (int i = 1; i < nRes; i++) {
       P3 point = segments[i] = new P3();
       point.add2(segments[i - 1], axis);
       //now it's just a constant-distance segmentation. 
@@ -139,7 +157,7 @@ public abstract class ProteinStructure {
   }
 
   boolean upperNeighborIsHelixOrSheet() {
-    int upperNeighborIndex = monomerIndexFirst + monomerCount;
+    int upperNeighborIndex = monomerIndexFirst + nRes;
     if (upperNeighborIndex == apolymer.monomerCount)
       return false;
     return apolymer.monomers[upperNeighborIndex].isHelix()
@@ -147,7 +165,7 @@ public abstract class ProteinStructure {
   }
 
   public int getMonomerCount() {
-    return monomerCount;
+    return nRes;
   }
   
   public boolean isWithin(int monomerIndex) {
@@ -159,13 +177,15 @@ public abstract class ProteinStructure {
     return monomerIndexFirst;
   }
 
+  private Map<Monomer, Integer> resMap;
   public int getIndex(Monomer monomer) {
-    Monomer[] monomers = apolymer.monomers;
-    int i;
-    for (i = monomerCount; --i >= 0; )
-      if (monomers[monomerIndexFirst + i] == monomer)
-        break;
-    return i;
+    if (resMap == null) {
+      resMap = new Hashtable<Monomer, Integer>();
+      for (int i = nRes; --i >= 0; )
+        resMap.put(apolymer.monomers[monomerIndexFirst + i], Integer.valueOf(i));
+    }
+    Integer ii = resMap.get(monomer);
+    return (ii == null ? -1 : ii.intValue());
   }
 
   public P3[] getSegments() {
@@ -193,7 +213,7 @@ public abstract class ProteinStructure {
   public void getInfo(Map<String, Object> info) {
     info.put("type", type.getBioStructureTypeName(false));
     int[] leadAtomIndices = apolymer.getLeadAtomIndices();
-    int[] iArray = AU.arrayCopyRangeI(leadAtomIndices, monomerIndexFirst, monomerIndexFirst + monomerCount);
+    int[] iArray = AU.arrayCopyRangeI(leadAtomIndices, monomerIndexFirst, monomerIndexFirst + nRes);
     info.put("leadAtomIndices", iArray);
     calcAxis();
     if (axisA == null)

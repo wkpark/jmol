@@ -62,22 +62,19 @@ public class AlphaMonomer extends Monomer {
   
   boolean isAlphaMonomer() { return true; }
 
-  protected ProteinStructure proteinStructure;
+  public ProteinStructure proteinStructure;
   protected P3 nitrogenHydrogenPoint;
   
   @Override
-  public ProteinStructure getProteinStructure() { return proteinStructure; }
+  public Object getStructure() {
+    return proteinStructure;
+  }
 
-  @Override
-  public Object getStructure() { return getProteinStructure(); }
-
-  @Override
   void setStructure(ProteinStructure proteinStructure) {
-    this.proteinStructure = proteinStructure;
-    if (proteinStructure == null)
+    if ((this.proteinStructure = proteinStructure) == null)
       nitrogenHydrogenPoint = null;
   }
-  
+    
   @Override
   public void setStrucNo(int n) {
     if (proteinStructure != null)
@@ -122,13 +119,10 @@ public class AlphaMonomer extends Monomer {
   @SuppressWarnings("incomplete-switch")
   @Override
   public int setProteinStructureType(STR type, int monomerIndexCurrent) {
+    if (proteinStructure != null)
+      proteinStructure.removeMonomer(monomerIndex);      
     if (monomerIndexCurrent < 0 
         || monomerIndexCurrent > 0 && monomerIndex == 0) {
-      if (proteinStructure != null) {
-        int nAbandoned = proteinStructure.removeMonomer(monomerIndex);
-        if (nAbandoned > 0)
-          bioPolymer.removeProteinStructure(monomerIndex + 1, nAbandoned);
-      }
       switch (type) {
       case HELIX:
       case HELIXALPHA:
@@ -182,8 +176,7 @@ public class AlphaMonomer extends Monomer {
 
   @Override
   public boolean isWithinStructure(STR type) {
-    ProteinStructure s = (ProteinStructure) getStructure();
-    return (s != null && s.type == type && s.isWithin(monomerIndex));
+    return (proteinStructure != null && proteinStructure.type == type && proteinStructure.isWithin(monomerIndex));
   }
   
   protected P3 getQuaternionFrameCenterAlpha(char qType) {

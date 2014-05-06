@@ -172,14 +172,6 @@ public abstract class Monomer extends Group {
 
   ////////////////////////////////////////////////////////////////
 
-
-  /**
-   * @param proteinstructure 
-   * 
-   */
-  void setStructure(ProteinStructure proteinstructure) { }
-
-  public ProteinStructure getProteinStructure() { return null; }
   @Override
   public STR getProteinStructureType() { return STR.NONE; }
   public boolean isHelix() { return false; }
@@ -316,7 +308,7 @@ public abstract class Monomer extends Group {
     f = getGroupParameter(T.theta);
     if (!Float.isNaN(f))
       info.put("theta", Float.valueOf(f));
-    ProteinStructure structure = getProteinStructure();
+    ProteinStructure structure = (ProteinStructure) getStructure();
     if(structure != null) {
       info.put("structureId", Integer.valueOf(structure.strucNo));
       info.put("structureType", structure.type.getBioStructureTypeName(false));
@@ -327,7 +319,7 @@ public abstract class Monomer extends Group {
   
   @Override
   public String getStructureId() {
-    ProteinStructure structure = getProteinStructure();
+    ProteinStructure structure = (ProteinStructure) getStructure();
     return (structure == null ? "" : structure.type.getBioStructureTypeName(false));
   }
 

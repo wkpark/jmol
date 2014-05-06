@@ -44,14 +44,14 @@ public class Sheet extends ProteinStructure {
   public void calcAxis() {
     if (axisA != null)
       return;
-    if (monomerCount == 2) {
+    if (nRes == 2) {
       axisA = alphaPolymer.getLeadPoint(monomerIndexFirst);
       axisB = alphaPolymer.getLeadPoint(monomerIndexFirst + 1);
     } else {
       axisA = new P3();
       alphaPolymer.getLeadMidPoint(monomerIndexFirst + 1, axisA);
       axisB = new P3();
-      alphaPolymer.getLeadMidPoint(monomerIndexFirst + monomerCount - 1, axisB);
+      alphaPolymer.getLeadMidPoint(monomerIndexFirst + nRes - 1, axisB);
     }
 
     axisUnitVector = new V3();
@@ -67,7 +67,7 @@ public class Sheet extends ProteinStructure {
           .projectOntoAxis(tempA, axisA, axisUnitVector, vectorProjection);
     }
     P3 tempB = new P3();
-    alphaPolymer.getLeadMidPoint(monomerIndexFirst + monomerCount, tempB);
+    alphaPolymer.getLeadMidPoint(monomerIndexFirst + nRes, tempB);
     if (upperNeighborIsHelixOrSheet()) {
       //System.out.println("ok");       
     } else {
@@ -90,7 +90,7 @@ public class Sheet extends ProteinStructure {
       AminoMonomer amino = (AminoMonomer) alphaPolymer.monomers[monomerIndexFirst];
       vectorCOSum.sub2(amino.getCarbonylOxygenAtom(), amino
           .getCarbonylCarbonAtom());
-      for (int i = monomerCount; --i > monomerIndexFirst;) {
+      for (int i = nRes; --i > monomerIndexFirst;) {
         amino = (AminoMonomer) alphaPolymer.monomers[i];
         vectorCO.sub2(amino.getCarbonylOxygenAtom(), amino
             .getCarbonylCarbonAtom());

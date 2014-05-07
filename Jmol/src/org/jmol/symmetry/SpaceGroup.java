@@ -1441,7 +1441,7 @@ class SpaceGroup {
         newOp.setFromMatrix(data, false);
         newOp.xyzOriginal = newOp.xyz;
         if (magRev != -2)
-          newOp.timeReversal = magRev;
+          newOp.timeReversal = op.timeReversal * magRev;
         addOp(newOp, newOp.xyz, true);
       }
     }

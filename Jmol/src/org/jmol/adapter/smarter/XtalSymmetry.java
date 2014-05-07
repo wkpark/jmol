@@ -392,6 +392,7 @@ public class XtalSymmetry {
        */
 
       int pt0 = (checkSpecial ? pt : checkRange111 ? baseCount : 0);
+      int timeRev = symmetry.getSpaceGroupOperationTimeRev(iSym);
       for (int i = firstSymmetryAtom; i < atomMax; i++) {
         Atom a = asc.atoms[i];
         if (a.ignoreSymmetry)
@@ -468,6 +469,10 @@ public class XtalSymmetry {
           if (addBonds)
             atomMap[atomSite] = asc.ac;
           Atom atom1 = asc.newCloneAtom(a);
+          if (timeRev != 0 && atom1.vib != null) {
+            symmetry.getSpaceGroupOperation(iSym).rotate(atom1.vib);
+            atom1.vib.scale(timeRev);
+          }
           atom1.setT(ptAtom);
           atom1.atomSite = atomSite;
           if (code != null)
@@ -934,6 +939,10 @@ public class XtalSymmetry {
       // prevent multiple additions
       a.anisoBorU = null;
     }
+  }
+
+  public void setTimeReversal(int op, int timeRev) {
+    symmetry.setTimeReversal(op, timeRev);
   }
 
 }

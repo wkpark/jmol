@@ -172,10 +172,9 @@ class SpaceGroup {
 
   int addSymmetry(String xyz, int opId, boolean allowScaling) {
     xyz = xyz.toLowerCase();
-    if (xyz.indexOf("[[") < 0 && xyz.indexOf("x4") < 0 &&
-        (xyz.indexOf("x") < 0 || xyz.indexOf("y") < 0 || xyz.indexOf("z") < 0))
-      return -1;
-    return addOperation(xyz, opId, allowScaling);
+    return (xyz.indexOf("[[") < 0 && xyz.indexOf("x4") < 0 &&
+        (xyz.indexOf("x") < 0 || xyz.indexOf("y") < 0 || xyz.indexOf("z") < 0) 
+        ? -1 : xyz.startsWith("c=") ? addCentering(xyz.substring(2)) : addOperation(xyz, opId, allowScaling));
   }
    
   void setFinalOperations(P3[] atoms, int atomIndex, int count,
@@ -424,6 +423,12 @@ class SpaceGroup {
     return sg;
   }
   
+  private int addCentering(String xyzm) {
+    // TODO
+    return 0;
+  }
+
+
   private int addOperation(String xyz0, int opId, boolean allowScaling) {
     if (xyz0 == null || xyz0.length() < 3) {
       xyzList = new Hashtable<String, Integer>();
@@ -1421,6 +1426,10 @@ class SpaceGroup {
     int nOps = latticeOp = operationCount;
     for (int j = 0; j < lattvecs.size(); j++) {
       float[] data = lattvecs.get(j);
+      int magRev = (int) (data.length == 5 && Float.isNaN(data[4]) ? data[3]
+          : -2);
+      if (magRev != -2)
+        data = new float[] { data[0], data[1], data[2] };
       if (data.length > modDim + 3)
         return false;
       for (int i = 0; i < nOps; i++) {
@@ -1431,6 +1440,8 @@ class SpaceGroup {
         newOp.linearRotTrans = AU.arrayCopyF(op.linearRotTrans, -1);
         newOp.setFromMatrix(data, false);
         newOp.xyzOriginal = newOp.xyz;
+        if (magRev != -2)
+          newOp.timeReversal = magRev;
         addOp(newOp, newOp.xyz, true);
       }
     }

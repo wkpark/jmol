@@ -578,7 +578,7 @@ abstract public class ScriptParam extends ScriptError {
     int tok = (i < 0 ? T.varray : getToken(i++).tok);
     switch (tok) {
     case T.varray:
-      Lst<SV> v = ((SV) theToken).getList();
+      Lst<SV> v = ((SV) theToken).getList();  
       if (nPoints >= 0 && v.size() != nPoints)
         invArg();
       nPoints = v.size();
@@ -622,6 +622,8 @@ abstract public class ScriptParam extends ScriptError {
       invArg();
     if (points == null)
       points = vp.toArray(new P3[vp.size()]);
+    if (nPoints > 0 && points[nPoints -  1] == null)
+      invArg();
     return points;
   }
 

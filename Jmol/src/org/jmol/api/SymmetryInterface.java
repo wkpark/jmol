@@ -184,4 +184,8 @@ public interface SymmetryInterface {
 
   public String getSpaceGroupOperationCode(int iSym);
 
+  public void setTimeReversal(int op, int val);
+
+  public int getSpaceGroupOperationTimeRev(int op);
+
 }

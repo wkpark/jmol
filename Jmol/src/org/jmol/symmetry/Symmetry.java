@@ -784,4 +784,14 @@ public class Symmetry implements SymmetryInterface {
     return spaceGroup.operations[iOp].subsystemCode;
   }
 
+  @Override
+  public void setTimeReversal(int op, int val) {
+    spaceGroup.operations[op].timeReversal = val;
+  }
+
+  @Override
+  public int getSpaceGroupOperationTimeRev(int op) {
+    return spaceGroup.operations[op].timeReversal;
+  }
+
 }

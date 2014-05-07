@@ -87,6 +87,7 @@ class SymmetryOperation extends M4 {
   private Matrix sigma;
   int index;
   String subsystemCode;
+  public int timeReversal;
   
   void setSigma(String subsystemCode, Matrix sigma) {
     this.subsystemCode = subsystemCode;
@@ -123,6 +124,7 @@ class SymmetryOperation extends M4 {
     linearRotTrans = op.linearRotTrans;
     sigma = op.sigma;
     subsystemCode = op.subsystemCode;
+    timeReversal = op.timeReversal;
     setMatrix(false);
     if (!op.isFinalized)
       doFinalize();

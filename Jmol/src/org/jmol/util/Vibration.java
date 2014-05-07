@@ -19,6 +19,8 @@ public class Vibration extends V3 {
 
   protected final static double twoPI = 2 * Math.PI;
 
+  public int modDim = -1; // -1 is vib, -2 is spin
+  
   /**
    * @param pt 
    * @param t456 

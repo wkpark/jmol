@@ -39,6 +39,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.jmol.util.Logger;
+import org.jmol.util.Spin;
 
 import javajs.util.Rdr;
 import javajs.util.CifDataParser;
@@ -336,13 +337,19 @@ public class CifReader extends AtomSetCollectionReader {
       pr.finalizeReader(nAtoms);
     else
       applySymmetryAndSetTrajectory();
+    int n;
     if (isMagCIF) {
-      asc.setAtomSetAuxiliaryInfo("isMagnetic", Boolean.TRUE);
-      addJmolScript("set vectorsCentered TRUE");
+      n = asc.ac;
+      for (int i = 0; i < n; i++) {
+        if (asc.atoms[i].vib != null) {
+          V3 v = new Spin();
+          v.setT(asc.atoms[i].vib);
+          asc.atoms[i].vib = v;
+        }
+      }
     }
 
-    int n = asc.atomSetCount;
-    if (n > 1)
+    if ((n = asc.atomSetCount) > 1)
       asc.setCollectionName("<collection of " + n + " models>");
     finalizeReaderASCR();
     String header = parser.getFileHeader();

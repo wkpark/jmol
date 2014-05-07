@@ -29,7 +29,6 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
   String id;
   
   private Lst<Modulation> mods;
-  private int modDim;
   private int iop;
   private P3 r0;
   

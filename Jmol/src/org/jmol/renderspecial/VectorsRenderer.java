@@ -33,6 +33,7 @@ import org.jmol.script.T;
 import org.jmol.shape.Shape;
 import org.jmol.shapespecial.Vectors;
 import org.jmol.util.GData;
+
 import javajs.util.P3;
 import javajs.util.P3i;
 import javajs.util.V3;
@@ -108,7 +109,8 @@ public class VectorsRenderer extends ShapeRenderer {
   }
 
   private boolean transform(short mad, Atom atom, Vibration vib) {
-    boolean isMod = (vib instanceof JmolModulationSet);
+    boolean isMod = (vib.modDim >= 0);
+    boolean isSpin = (vib.modDim == -2);
     drawCap = true;
     if (!isMod) {
       float len = vib.length();
@@ -138,7 +140,7 @@ public class VectorsRenderer extends ShapeRenderer {
       drawCap = (len + arrowHeadOffset > 0.001f);
       doShaft = (len > 0.01f);
       headOffsetVector.scale(headScale / headOffsetVector.length());
-    } else if (vectorsCentered) {
+    } else if (vectorsCentered || isSpin) {
       standardVector = false;
       pointVectorEnd.scaleAdd2(0.5f * vectorScale, vib, atom);
       pointVectorStart.scaleAdd2(-0.5f * vectorScale, vib, atom);

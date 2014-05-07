@@ -59,7 +59,7 @@ public final class JC {
     "nmr", "http://www.nmrdb.org/predictor?POST?molfile=",
     "nmrdb", "http://www.nmrdb.org/service/predictor?POST?molfile=",
     "pdb", "http://www.rcsb.org/pdb/files/%FILE.pdb.gz",
-    "pubchem", "http://pubchem.ncbi.nlm.nih.gov/rest/pug/compound /%FILE/SDF?record_type=3d",
+    "pubchem", "http://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/%FILE/SDF?record_type=3d",
   };
 
   

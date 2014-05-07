@@ -28,11 +28,13 @@ public class Vibration extends V3 {
    * @param modulationScale 
    */
   public void setTempPoint(T3 pt, T3 t456, float scale, float modulationScale) {
-    pt.scaleAdd2((float) (Math.cos(t456.x * twoPI) * scale), this, pt); 
+    if (modDim != -2)
+      pt.scaleAdd2((float) (Math.cos(t456.x * twoPI) * scale), this, pt); 
   }
 
   public void getInfo(Map<String, Object> info) {
     info.put("vibVector", V3.newV(this));
+    info.put("vibType", (modDim == -2 ? "spin" : modDim == -1 ? "vib" : "mod"));
   }
 
   public SymmetryInterface getUnitCell() {

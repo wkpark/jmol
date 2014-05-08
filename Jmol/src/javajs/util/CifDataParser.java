@@ -169,17 +169,17 @@ public class CifDataParser implements GenericCifDataParser {
           continue;
         }
         if (key.startsWith("loop_")) {
-          getCifLoopData(data);
+          getAllCifLoopData(data);
           continue;
         }
-        if (key.indexOf("_") != 0) {
+        if (key.charAt(0) != '_') {
           System.out.println("CIF ERROR ? should be an underscore: " + key);
         } else {
           String value = getNextToken();
           if (value == null) {
             System.out.println("CIF ERROR ? end of file; data missing: " + key);
           } else {
-            data.put(key, value);
+            data.put(fixKey(key), value);
           }
         }
       }
@@ -204,13 +204,13 @@ public class CifDataParser implements GenericCifDataParser {
    * @throws Exception
    */
   @SuppressWarnings("unchecked")
-  private void getCifLoopData(Map<String, Object> data) throws Exception {
-    String str;
+  private void getAllCifLoopData(Map<String, Object> data) throws Exception {
+    String key;
     Lst<String> keyWords = new  Lst<String>();
-    while ((str = peekToken()) != null && str.charAt(0) == '_') {
-      str  = getTokenPeeked();
-      keyWords.addLast(str);
-      data.put(str, new  Lst<String>());
+    while ((key = peekToken()) != null && key.charAt(0) == '_') {
+      key = fixKey(getTokenPeeked());
+      keyWords.addLast(key);
+      data.put(key, new  Lst<String>());
     }
     fieldCount = keyWords.size();
     if (fieldCount == 0)
@@ -440,8 +440,9 @@ public class CifDataParser implements GenericCifDataParser {
   }
 
    private String fixKey(String key) {
-     return (key.startsWith("_magnetic") ?
-       key.substring(9) : PT.rep(key, ".", "_").toLowerCase());
+     if (key.startsWith("_magnetic")) // PRELIMINARY -- BilBao ONLY
+       key = key.substring(9);
+     return (PT.rep(key, ".", "_").toLowerCase());
    }
 
   //////////////////// private methods ////////////////////

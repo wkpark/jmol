@@ -53,6 +53,7 @@ import javajs.util.V3;
  * Subclasses of CIF -- mmCIF/PDBx and msCIF -- are initialized from here.
  * 
  * Added nonstandard mCIF (magnetic_ tags) 5/2/2014
+ * note that PRELIM keys can be removed at some later time
  * 
  * <p>
  * <a href='http://www.iucr.org/iucr-top/cif/'>
@@ -230,10 +231,6 @@ public class CifReader extends AtomSetCollectionReader {
         appendLoadNote("TITLE: " + parser.fullTrim(data));
       } else if (key.startsWith("_cell_")) {
         processCellParameter();
-      } else if (key.startsWith("_symmetry_space_group_name_h-m")
-          || key.startsWith("_symmetry_space_group_name_hall")
-          || key.contains("_ssg_name") || key.contains("_magn_name")) {
-        processSymmetrySpaceGroupName();
       } else if (key.startsWith("_atom_sites_fract_tran")) {
         processUnitCellTransformMatrix();
       } else if (key.equals("_audit_block_code")) {
@@ -256,6 +253,14 @@ public class CifReader extends AtomSetCollectionReader {
           setSpaceGroupName(lastSpaceGroupName);
       } else if (key.equals(singleAtomID)) {
         readSingleAtom();
+      } else if (key.startsWith("_symmetry_space_group_name_h-m")
+          || key.startsWith("_symmetry_space_group_name_hall")
+          || key.startsWith("_space_group_name")
+          || key.contains("_ssg_name") 
+          || key.contains("_magn_name")
+          || key.contains("_bns_name") // PRELIM
+          ) {
+        processSymmetrySpaceGroupName();
       } else if (pr != null) {
         pr.processEntry();
       } else if (modDim > 0) {
@@ -302,10 +307,8 @@ public class CifReader extends AtomSetCollectionReader {
     key = PT.rep(key, ".", "_").toLowerCase();
     if (lookingForPDB && !isMMCIF && key.indexOf("_pdb") >= 0)
       initializeMMCIF();
-    else if (key.startsWith("_magnetic")) {
-      isMagCIF = true;
+    else if (key.startsWith("_magnetic")) { // PRELIMINARY Bilbao ONLY 
       key = key.substring(9);
-      key = PT.rep(key, "BNS_", ""); // _magnetic_space_group_BNS_name    "P_C b c a"
     }
     return key;
   }
@@ -471,7 +474,10 @@ public class CifReader extends AtomSetCollectionReader {
     }
     data = parser.toUnicode(data);
     setSpaceGroupName(lastSpaceGroupName = (key.indexOf("h-m") > 0 ? "HM:"
-        : key.indexOf("magn") >= 0 ? "BNS:" : modulated ? "SSG:" : "Hall:") + data);
+        : key.indexOf("bns") >= 0 ? "BNS:" 
+        : modulated ? "SSG:" 
+        : key.indexOf("hall") >= 0 ? "Hall:"
+        : "") + data);
   }
 
   private final static float[] centerOpts = { 0f, 1f, -1f, 0.5f, -0.5f };
@@ -482,7 +488,6 @@ public class CifReader extends AtomSetCollectionReader {
     lattvecs = null;
     if (centerings != null) {
       latticeType = "Magnetic";
-      isMagCIF = true;
       lattvecs = new Lst<float[]>();
       for (int i = 0; i < centerings.size(); i++) {
         String s = centerings.get(i);
@@ -1131,6 +1136,7 @@ public class CifReader extends AtomSetCollectionReader {
         case MOMENT_X:
         case MOMENT_Y:
         case MOMENT_Z:
+          isMagCIF = true;
           V3 pt = atom.vib;
           if (pt == null)
             pt = asc.addVibrationVector(atom.index, 0, 0, 0);

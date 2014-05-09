@@ -305,7 +305,7 @@ public class MSReader implements MSInterface {
         return;
       }
       cr.appendLoadNote("W_" + (i + 1) + " = " + Escape.e(pt));
-
+      cr.appendUunitCellInfo("q" + (i + 1) + "=" + fixPt(pt[0]) + " " + fixPt(pt[1]) + " " + fixPt(pt[2]));
       sigma.getArray()[i] = new double[] { pt[0], pt[1], pt[2] };
     }
     q1 = sigma.getArray()[0];
@@ -435,6 +435,14 @@ public class MSReader implements MSInterface {
         break;
       }
     }
+  }
+
+  private String fixPt(double d) {
+    int i = (int) (d * 100000);
+    return (i == 0 ? "0" 
+        : Math.abs(i) % 100 == 0 ? "" + i / 100000f
+        : Math.abs(i+1) % 100 == 0 ? "" + (i + 1) / 100000f
+        : "" + (float) d);
   }
 
   @Override

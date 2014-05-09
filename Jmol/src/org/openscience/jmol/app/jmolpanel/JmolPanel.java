@@ -367,7 +367,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     //historyFile.repositionWindow(EDITOR_WINDOW_NAME, c, 150, 50);
 
     say(GT._("Setting up Drag-and-Drop..."));
-    new FileDropper(myStatusListener, vwr);
+    new FileDropper(myStatusListener, (Viewer) vwr);
     // it's important to set this up first, even though it consumes some memory
     // otherwise, loading a new model in a script that sets the vibration or vector parameters
     // can appear to skip those -- they aren't skipped, but creating the atomSetChooser

@@ -24,8 +24,8 @@
 package org.jmol.console;
 
 import org.jmol.api.JmolAbstractButton;
-import org.jmol.api.JmolViewer;
 import org.jmol.script.T;
+import org.jmol.viewer.Viewer;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -86,7 +86,7 @@ public class AppletConsole extends JmolConsole {
   
 
   @Override
-  public void start(JmolViewer vwr) {
+  public void start(Viewer vwr) {
     setViewer(vwr);
     Component display = (Component) vwr.getDisplay();
     this.vwrFrame = (display instanceof JFrame ? (JFrame) display : null);

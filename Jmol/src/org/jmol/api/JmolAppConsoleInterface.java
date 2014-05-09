@@ -1,5 +1,7 @@
 package org.jmol.api;
 
+import org.jmol.viewer.Viewer;
+
 public interface JmolAppConsoleInterface {
 
   public void setVisible(boolean b);
@@ -10,7 +12,7 @@ public interface JmolAppConsoleInterface {
 
   public JmolScriptEditorInterface getScriptEditor();
 
-  public void start(JmolViewer vwr);
+  public void start(Viewer vwr);
 
   public void zap();
 

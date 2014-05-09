@@ -2511,7 +2511,7 @@ public class CmdExt implements JmolCmdExtension {
     }
     if (dataType.indexOf("file_") == 0) {
       // ligand structure for pdbAddHydrogen
-      vwr.setLigandModel(dataLabel.substring(5).toUpperCase() + "_file",
+      vwr.setLigandModel(dataLabel.substring(5) + "_file",
           dataString.trim());
       return;
     }
@@ -6577,7 +6577,7 @@ public class CmdExt implements JmolCmdExtension {
         break;
       } else if (tokAt(2) == T.file && (len = slen) == 4) {
         if (!chk)
-          msg = vwr.getEmbeddedFileState(paramAsStr(3));
+          msg = vwr.getEmbeddedFileState(paramAsStr(3), true);
         break;
       }
       len = 3;

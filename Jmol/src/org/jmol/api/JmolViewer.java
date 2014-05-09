@@ -321,7 +321,6 @@ abstract public class JmolViewer implements JSInterface {
   abstract public String getModelSetName();
   abstract public String getModelSetFileName();
   abstract public String getModelSetPathName();
-  abstract public String getEmbeddedFileState(String filename);
   abstract public String getFileAsString(String filename, boolean checkProtected);
   abstract public Properties getModelSetProperties();
   abstract public Map<String, Object> getModelSetAuxiliaryInfo();

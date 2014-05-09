@@ -463,9 +463,9 @@ public class FileManager implements BytePoster {
     }
   }
 
-  public String getEmbeddedFileState(String fileName) {
+  public String getEmbeddedFileState(String fileName, boolean allowCached) {
     String[] dir = null;
-    dir = getZipDirectory(fileName, false);
+    dir = getZipDirectory(fileName, false, allowCached);
     if (dir.length == 0) {
       String state = vwr.getFileAsString4(fileName, -1, false, true, false);
       return (state.indexOf(JC.EMBEDDED_SCRIPT_TAG) < 0 ? ""
@@ -744,11 +744,12 @@ public class FileManager implements BytePoster {
    * 
    * @param fileName
    * @param addManifest
+   * @param allowCached 
    * @return [] if not a zip file;
    */
-  public String[] getZipDirectory(String fileName, boolean addManifest) {
+  public String[] getZipDirectory(String fileName, boolean addManifest, boolean allowCached) {
     Object t = getBufferedInputStreamOrErrorMessageFromName(fileName, fileName,
-        false, false, null, false, true);
+        false, false, null, false, allowCached);
     return Rdr.getZipDirectoryAndClose((BufferedInputStream) t, addManifest ? "JmolManifest" : null);
   }
 

@@ -101,7 +101,7 @@ public class FileReader {
         if (subFileList != null)
           htParams.put("subFileList", subFileList);
         InputStream zis = (InputStream) t;
-        String[] zipDirectory = fm.getZipDirectory(name, true);
+        String[] zipDirectory = fm.getZipDirectory(name, true, true);
         atomSetCollection = t = JmolBinary
             .getAtomSetCollectionOrBufferedReaderFromZip(vwr
                 .getModelAdapter(), zis, name, zipDirectory, htParams, false);

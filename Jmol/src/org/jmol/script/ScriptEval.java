@@ -68,6 +68,7 @@ import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.P4;
 import javajs.util.Quat;
+import javajs.util.T3;
 
 import org.jmol.util.Txt;
 import javajs.util.V3;
@@ -7554,27 +7555,15 @@ public class ScriptEval extends ScriptExpr {
   private void cmdUnitcell(int index) throws ScriptException {
     int icell = Integer.MAX_VALUE;
     int mad = Integer.MAX_VALUE;
-    P3 pt = null;
+    T3 pt = null;
     TickInfo tickInfo = tickParamAsStr(index, true, false, false);
     index = iToken;
     String id = null;
     P3[] points = null;
+    boolean isOffset = false;
     switch (tokAt(index + 1)) {
     case T.string:
       id = objectNameParameter(++index);
-      break;
-    case T.dollarsign:
-      index++;
-      id = objectNameParameter(++index);
-      break;
-    case T.bitset:
-    case T.expressionBegin:
-      int iAtom = atomExpressionAt(1).nextSetBit(0);
-      if (!chk)
-        vwr.am.cai = iAtom;
-      if (iAtom < 0)
-        return;
-      index = iToken;
       break;
     case T.center:
       ++index;
@@ -7596,6 +7585,27 @@ public class ScriptEval extends ScriptExpr {
       pt.x -= 0.5f;
       pt.y -= 0.5f;
       pt.z -= 0.5f;
+      break;
+    case T.dollarsign:
+      index++;
+      id = objectNameParameter(++index);
+      break;
+    case T.bitset:
+    case T.expressionBegin:
+      int iAtom = atomExpressionAt(1).nextSetBit(0);
+      if (!chk)
+        vwr.am.cai = iAtom;
+      if (iAtom < 0)
+        return;
+      index = iToken;
+      break;
+    case T.offset:
+      isOffset = true;
+      //$FALL-THROUGH$
+    case T.range:
+      ++index;
+      pt = (P3) getPointOrPlane(++index, false, true, false, true, 3, 3);
+      pt = P4.new4(pt.x, pt.y, pt.z, (isOffset ? 1 : 0));
       break;
     default:
       if (isArrayParameter(index + 1)) {

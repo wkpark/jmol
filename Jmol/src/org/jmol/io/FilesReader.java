@@ -100,7 +100,7 @@ public class FilesReader implements JmolFilesReaderInterface {
     if (t instanceof ZipInputStream) {
       if (subFileList != null)
         htParams.put("subFileList", subFileList);
-      String[] zipDirectory = fm.getZipDirectory(name, true);
+      String[] zipDirectory = fm.getZipDirectory(name, true, true);
       t = fm.getBufferedInputStreamOrErrorMessageFromName(name,
           fullPathNamesIn[i], false, false, null, false, true);
       t = JmolBinary.getAtomSetCollectionOrBufferedReaderFromZip(vwr.getModelAdapter(),

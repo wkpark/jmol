@@ -392,7 +392,7 @@ public class XtalSymmetry {
        */
 
       int pt0 = (checkSpecial ? pt : checkRange111 ? baseCount : 0);
-      int timeRev = symmetry.getSpaceGroupOperationTimeRev(iSym);
+      int timeRev = symmetry.getTimeReversal(iSym);
       for (int i = firstSymmetryAtom; i < atomMax; i++) {
         Atom a = asc.atoms[i];
         if (a.ignoreSymmetry)

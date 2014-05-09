@@ -108,7 +108,7 @@ public class CifReader extends AtomSetCollectionReader {
 
   private String auditBlockCode;
   private String lastSpaceGroupName;
-
+ 
   private boolean modulated;
   private boolean lookingForPDB = true;
   private boolean isCourseGrained;
@@ -658,7 +658,32 @@ public class CifReader extends AtomSetCollectionReader {
     }
     if (pr != null && pr.processLoopBlock())
       return;
+    if (key.equals("_propagation_vector_seq_id")) {// Bilbao mCIF
+      addMore();
+      return;
+    }
     parser.skipLoop();
+  }
+
+  private void addMore() {
+    String str;
+    int n = 0;
+    try {
+      while ((str = parser.peekToken()) != null && str.charAt(0) == '_') {
+        parser.getTokenPeeked();
+        n++;
+      }
+      int m = 0;
+      String s = "";
+      while ((str = parser.getNextDataToken()) != null) {
+        s += str + (m % n == 0 ? "=" : " ");
+        if (++m % n == 0) {
+          appendUunitCellInfo(s.trim());
+          s = "";
+        }
+      }
+    } catch (Exception e) {
+    }
   }
 
   private int fieldProperty(int i) {

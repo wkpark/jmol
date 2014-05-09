@@ -1106,6 +1106,10 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
       asc.setTensors();
     if (isTrajectory)
       asc.setTrajectory();
+    if (moreUnitCellInfo != null) { 
+      asc.setAtomSetAuxiliaryInfo("moreUnitCellInfo", moreUnitCellInfo);
+      moreUnitCellInfo = null;
+    }
     initializeSymmetry();
     return sym;
   }
@@ -1408,6 +1412,8 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
 
   private String siteScript;
 
+  private Lst<String> moreUnitCellInfo;
+
   protected void addSiteScript(String script) {
     if (siteScript == null)
       siteScript = "";
@@ -1644,6 +1650,13 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
     appendLoadNote(((JmolDSSRParser) Interface.getOption("dssx.DSSRParser")).process(
         asc.getAtomSetAuxiliaryInfo(Integer.MAX_VALUE), reader, line, htGroup1));
     
+  }
+
+  public void appendUunitCellInfo(String info) {
+    if (moreUnitCellInfo == null) 
+      moreUnitCellInfo = new Lst<String>();
+    moreUnitCellInfo.addLast(info);
+    appendLoadNote(info);
   }
 
 }

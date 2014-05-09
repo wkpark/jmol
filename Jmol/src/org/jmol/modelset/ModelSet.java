@@ -3635,7 +3635,7 @@ import java.util.Properties;
     }
   }
 
-  public void setUnitCellOffset(SymmetryInterface unitCell, P3 pt, int ijk) {
+  public void setUnitCellOffset(SymmetryInterface unitCell, T3 pt, int ijk) {
     //    for (int i = modelIndex; i < modelCount; i++) {
     //      if (i < 0 || modelIndex >= 0 && i != modelIndex
     //          && models[i].trajectoryBaseIndex != modelIndex)

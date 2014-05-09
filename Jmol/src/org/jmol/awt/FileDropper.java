@@ -44,8 +44,8 @@ import java.util.List;
 import javajs.util.PT;
 
 import org.jmol.api.JmolStatusListener;
-import org.jmol.api.JmolViewer;
 import org.jmol.util.Logger;
+import org.jmol.viewer.Viewer;
 
 /**
  * A simple Dropping class to allow files to be dragged onto a target. It
@@ -63,11 +63,11 @@ public class FileDropper implements DropTargetListener {
 
   static public final String FD_PROPERTY_INLINE = "inline";
 
-  JmolViewer vwr;
+  Viewer vwr;
   PropertyChangeListener pcl;
   JmolStatusListener statusListener;
 
-  public FileDropper(JmolStatusListener statusListener, JmolViewer vwr) {
+  public FileDropper(JmolStatusListener statusListener, Viewer vwr) {
     this.statusListener = statusListener;
     fd_oldFileName = "";
     fd_propSupport = new PropertyChangeSupport(this);
@@ -96,7 +96,7 @@ public class FileDropper implements DropTargetListener {
       fname = (fname.startsWith("/") ? "file://" : "file:///") + fname;
     if (statusListener != null) {
       try {
-        String data = vwr.getEmbeddedFileState(fname);
+        String data = vwr.getEmbeddedFileState(fname, false);
         if (data.indexOf("preferredWidthHeight") >= 0)
           statusListener.resizeInnerPanel(data);
       } catch (Throwable e) {

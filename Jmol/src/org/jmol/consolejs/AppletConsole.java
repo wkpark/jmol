@@ -25,8 +25,8 @@ package org.jmol.consolejs;
 
 import org.jmol.api.JmolAbstractButton;
 import org.jmol.api.JmolScriptEditorInterface;
-import org.jmol.api.JmolViewer;
 import org.jmol.console.GenericConsole;
+import org.jmol.viewer.Viewer;
 
 
 /**
@@ -54,7 +54,7 @@ public class AppletConsole extends GenericConsole {
   Object jsConsole;
 
   @Override
-  public void start(JmolViewer vwr) {
+  public void start(Viewer vwr) {
     setViewer(vwr);
     setLabels();
     displayConsole(); // will call layoutWindow

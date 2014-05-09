@@ -32,6 +32,7 @@ import org.jmol.util.BoxInfo;
 import org.jmol.util.C;
 
 import javajs.util.DF;
+import javajs.util.Lst;
 import javajs.util.P3;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.viewer.StateManager;
@@ -166,6 +167,12 @@ public class UccageRenderer extends CageRenderer {
       y += lineheight;
       g3d.drawStringNoSlab(spaceGroup, null, x, y, 0, (short) 0);
     }
+    Lst<String> info = symmetry.getMoreInfo();
+    if (info != null)
+      for (int i = 0; i < info.size(); i++) {
+        y += lineheight;
+        g3d.drawStringNoSlab(info.get(i), null, x, y, 0, (short) 0);
+      }
     y += lineheight;
     g3d.drawStringNoSlab("a="
         + nfformat(symmetry.getUnitCellInfoType(SimpleUnitCell.INFO_A)) + "\u00C5",

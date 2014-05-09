@@ -265,7 +265,7 @@ public class CifDataParser implements GenericCifDataParser {
   public void skipLoop() throws Exception {
     String str;
     while ((str = peekToken()) != null && str.charAt(0) == '_')
-      str = getTokenPeeked();
+      getTokenPeeked();
     while (getNextDataToken() != null) {
     }
   }

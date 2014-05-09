@@ -1981,12 +1981,15 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     ligandModelSet.put(id, Boolean.TRUE);
     if (ligandModels == null)
       ligandModels = new Hashtable<String, Object>();
+    boolean isPng = (id.indexOf("|") > 0);
+    if (isPng)
+      id = id.substring(id.indexOf("|") + 1);
     Object model = (terminator == null ? ligandModels.get(id) : null);
     String data;
     String fname = null;
     if (model instanceof Boolean)
       return null;
-    if (model == null && terminator == null)
+    if (model == null && (terminator == null || isPng))
       model = ligandModels.get(id + suffix);
     boolean isError = false;
     if (model == null) {
@@ -2476,9 +2479,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   ////////// File-related methods ////////////
 
-  @Override
-  public String getEmbeddedFileState(String filename) {
-    return fm.getEmbeddedFileState(filename);
+  public String getEmbeddedFileState(String filename, boolean allowCached) {
+    return fm.getEmbeddedFileState(filename, allowCached);
   }
 
   @Override
@@ -3067,7 +3069,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
    * @param asAbsolute
    *        TODO
    */
-  public void toFractional(P3 pt, boolean asAbsolute) {
+  public void toFractional(T3 pt, boolean asAbsolute) {
     SymmetryInterface unitCell = getCurrentUnitCell();
     if (unitCell != null)
       unitCell.toFractional(pt, asAbsolute);

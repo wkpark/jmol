@@ -32,10 +32,12 @@ import javajs.util.P3;
 import org.jmol.util.Tensor;
 import org.jmol.util.SimpleUnitCell;
 
+import javajs.util.Lst;
 import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3i;
 import javajs.util.T3;
+import javajs.util.T4;
 import javajs.util.V3;
 import org.jmol.viewer.JC;
 
@@ -126,22 +128,25 @@ class UnitCell extends SimpleUnitCell {
 
   private boolean allFractionalRelative;
   private P3 unitCellMultiplier;
+  public Lst<String> moreInfo;
   
   void setAllFractionalRelative(boolean TF) {
     allFractionalRelative = TF;
   }  
   
-  void setOffset(P3 pt) {
+  void setOffset(T3 pt) {
     if (pt == null)
       return;
-    if (pt.x >= 100 || pt.y >= 100) {
-      // from "unitcell {aaa bbb scale}"
+    if (pt instanceof T4 ? ((T4) pt).w == 0 : pt.x >= 100 || pt.y >= 100) {
+      // from "unitcell range {aaa bbb scale}"
       unitCellMultiplier = (pt.z == 0 ? null : P3.newP(pt));
       return;
     }
-    // from "unitcell {i j k}"
-    fractionalOffset = new P3();
-    fractionalOffset.setT(pt);
+    // from "unitcell offset {i j k}"
+    if (hasOffset() || pt.lengthSquared() > 0) {
+      fractionalOffset = new P3();
+      fractionalOffset.setT(pt);
+    }
     matrixCartesianToFractional.m03 = -pt.x;
     matrixCartesianToFractional.m13 = -pt.y;
     matrixCartesianToFractional.m23 = -pt.z;
@@ -159,11 +164,12 @@ class UnitCell extends SimpleUnitCell {
     }
   }
 
-  public void setCartesianOffset(T3 origin) {
+  private void setCartesianOffset(T3 origin) {
     cartesianOffset.setT(origin);
     matrixFractionalToCartesian.m03 = cartesianOffset.x;
     matrixFractionalToCartesian.m13 = cartesianOffset.y;
     matrixFractionalToCartesian.m23 = cartesianOffset.z;
+    boolean wasOffset = hasOffset();
     fractionalOffset = new P3();
     fractionalOffset.setT(cartesianOffset);
     matrixCartesianToFractional.m03 = 0;
@@ -177,6 +183,8 @@ class UnitCell extends SimpleUnitCell {
       matrixCtoFAbsolute.setM4(matrixCartesianToFractional);
       matrixFtoCAbsolute.setM4(matrixFractionalToCartesian);
     }
+    if (!wasOffset && fractionalOffset.lengthSquared() == 0)
+      fractionalOffset = null;
   }
 
   void setMinMaxLatticeParameters(P3i minXYZ, P3i maxXYZ) {
@@ -470,21 +478,23 @@ class UnitCell extends SimpleUnitCell {
           && !(Float.isNaN(notionalUnitcell[i]) && Float
               .isNaN(uc.notionalUnitcell[i])))
         return false;
-    if (fractionalOffset == null)
-      return (uc.fractionalOffset == null);
-    if (uc.fractionalOffset == null)
-      return false;
-    if (fractionalOffset.distanceSquared(uc.fractionalOffset) != 0)
-      return false;
-    return true;
+    return (fractionalOffset == null ? !uc.hasOffset()
+        : uc.fractionalOffset == null ? !hasOffset() 
+        : fractionalOffset.distanceSquared(uc.fractionalOffset) == 0);
+  }
+
+  public boolean hasOffset() {
+    return (fractionalOffset != null && fractionalOffset.lengthSquared() != 0);
   }
 
   public String getState() {
     String s = "";
-    if (fractionalOffset != null)
-      s += "  unitcell " + Escape.eP(fractionalOffset) + ";\n";
+    // unitcell offset {1 1 1}
+    if (fractionalOffset != null && fractionalOffset.lengthSquared() != 0)
+      s += "  unitcell offset " + Escape.eP(fractionalOffset) + ";\n";
+    // unitcell range {444 555 1}
     if (unitCellMultiplier != null)
-      s += "  unitcell " + Escape.eP(unitCellMultiplier) + ";\n";
+      s += "  unitcell range " + Escape.eP(unitCellMultiplier) + ";\n";
     return s;
   }
   

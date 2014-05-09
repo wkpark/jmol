@@ -59,6 +59,7 @@ import org.jmol.i18n.GT;
 import org.jmol.util.CommandHistory;
 import org.jmol.util.Logger;
 import org.jmol.viewer.JC;
+import org.jmol.viewer.Viewer;
 
 import org.openscience.jmol.app.jmolpanel.HelpDialog;
 
@@ -77,7 +78,7 @@ public class AppConsole extends JmolConsole implements EnterListener {
   }
 
   @Override
-  public void start(JmolViewer vwr) {
+  public void start(Viewer vwr) {
     setup(vwr, null, null);
   }
   
@@ -90,10 +91,10 @@ public class AppConsole extends JmolConsole implements EnterListener {
    */
   public AppConsole(JmolViewer vwr,
       Container externalContainer, String enabledButtons) {
-    setup(vwr, externalContainer, enabledButtons);
+    setup((Viewer) vwr, externalContainer, enabledButtons);
   }
 
-  private void setup(JmolViewer vwr, Container externalContainer,
+  private void setup(Viewer vwr, Container externalContainer,
                      String enabledButtons) {
     setViewer(vwr);
     Window w = Platform.getWindow((Container) vwr.getDisplay());

@@ -168,6 +168,14 @@ public class Jmol extends GenericApplet implements WrappedApplet {
     appletObject = applet = a;
     this.isSigned = isSigned;
     init(appletObject);
+    if (isSigned) {
+      System.out.println("starting file dropper");
+      try {
+        dropper = new FileDropper(null, viewer);
+      } catch (Exception e) {
+        System.out.println(e);
+      }
+    }
   }
 
   @Override
@@ -286,13 +294,6 @@ public class Jmol extends GenericApplet implements WrappedApplet {
         Logger.debug("jsoWindow:" + jsoWindow + " jsoDocument:" + jsoDocument
             + " mayScript:" + mayScript + " haveDocumentAccess:"
             + haveDocumentAccess);
-      }
-    }
-    if (isSigned) {
-      try {
-        dropper = new FileDropper(null, viewer);
-      } catch (Exception e) {
-        //
       }
     }
     cleanRegistry();    

@@ -104,12 +104,14 @@ public class AppletWrapper extends Applet {
     try {
       String imagePath = "" + (getClass().getClassLoader().getResource(preloadImageName));
       isSigned = (imagePath.indexOf("Signed") >= 0);
+      System.out.println("appletwrapper isSigned = " + isSigned);
     } catch (Exception e) {
       Logger.error("isSigned false: " + e);
     }
   }
 
   public boolean isSigned() {
+    System.out.println("appletwrapper2 isSigned = " + isSigned);
     return isSigned;
   }
   

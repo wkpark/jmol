@@ -395,7 +395,7 @@ public class XtalSymmetry {
        */
 
       int pt0 = (checkSpecial ? pt : checkRange111 ? baseCount : 0);
-      int timeRev = (vibScale == 0 ? symmetry.getTimeReversal(iSym) : vibScale);
+      int spinOp = (vibScale == 0 ? symmetry.getSpinOp(iSym) : vibScale);
       for (int i = firstSymmetryAtom; i < atomMax; i++) {
         Atom a = asc.atoms[i];
         if (a.ignoreSymmetry)
@@ -473,11 +473,11 @@ public class XtalSymmetry {
           if (addBonds)
             atomMap[atomSite] = asc.ac;
           Atom atom1 = asc.newCloneAtom(a);
-          if (timeRev != 0 && atom1.vib != null) {
-            symmetry.getSpaceGroupOperation(iSym).rotate(atom1.vib);
-            atom1.vib.scale(timeRev);
-          }
           atom1.setT(ptAtom);
+          if (spinOp != 0 && atom1.vib != null) {
+            symmetry.getSpaceGroupOperation(iSym).rotate(atom1.vib);
+            atom1.vib.scale(spinOp);
+          }
           atom1.atomSite = atomSite;
           if (code != null)
             atom1.altLoc = subSystemId;

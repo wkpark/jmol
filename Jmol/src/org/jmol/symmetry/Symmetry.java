@@ -234,8 +234,8 @@ public class Symmetry implements SymmetryInterface {
   }
 
   @Override
-  public int getTimeReversal(int op) {
-    return spaceGroup.operations[op].timeReversal;
+  public int getSpinOp(int op) {
+    return spaceGroup.operations[op].getTimeReversal();
   }
 
   @Override

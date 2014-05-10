@@ -99,7 +99,7 @@ public interface SymmetryInterface {
 
   public Tensor getTensor(float[] parBorU);
 
-  public int getTimeReversal(int op);
+  public int getSpinOp(int op);
 
   public SymmetryInterface getUnitCell(T3[] points, boolean setRelative);
 

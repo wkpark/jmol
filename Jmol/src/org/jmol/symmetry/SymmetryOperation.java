@@ -1339,5 +1339,9 @@ class SymmetryOperation extends M4 {
   public String toString() {
     return (rsvs == null ? super.toString() : super.toString() + " " + rsvs.toString());
   }
+
+  public int getTimeReversal() {
+    return (int) (timeReversal * m00 * m11 * m22);
+  }
   
 }

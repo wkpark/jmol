@@ -4216,6 +4216,13 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
     case ':': // PubChem
       format = g.pubChemFormat;
+      if (f.equals("")) {
+        try {
+          f = "smiles:" + getSmiles(bsA());
+        } catch (Exception e) {
+          // oh well.
+        }
+      }
       String fl = f.toLowerCase();
       int fi = Integer.MIN_VALUE;
       try {
@@ -4229,10 +4236,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         if (fl.startsWith("smiles:")) {
           format += "?POST?smiles=" + f.substring(7);
           f = "smiles";
-        } else if (f.startsWith("cid:") 
-            || f.startsWith("inchikey:")
-            || f.startsWith("cas:")
-            ) {
+        } else if (f.startsWith("cid:") || f.startsWith("inchikey:")
+            || f.startsWith("cas:")) {
           f = f.replace(':', '/');
         } else {
           if (fl.startsWith("name:"))
@@ -4245,12 +4250,17 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       if (name.startsWith("$$")) {
         // 2D version
         f = f.substring(1);
-        
+
         //http://cactus.nci.nih.gov/chemical/structure/C%28O%29CCC/file?format=sdf
-        format = PT.rep(g.smilesUrlFormat,
-            "&get3d=True", "");
+        format = PT.rep(g.smilesUrlFormat, "&get3d=True", "");
         return Txt.formatStringS(format, "FILE", PT.escapeUrl(f));
       }
+      if (name.equals("$"))
+        try {
+          f = getSmiles(bsA());
+        } catch (Exception e) {
+          // oh well...
+        }
       //$FALL-THROUGH$
     case 'N':
     case '2':
@@ -4290,8 +4300,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
           + Txt.formatStringS(format, "FILE", f);
     case '_': // isosurface "=...", but we code that type as '_'
       String server = FileManager.fixFileNameVariables(g.edsUrlFormat, f);
-      String strCutoff = FileManager.fixFileNameVariables(g.edsUrlCutoff,
-          f);
+      String strCutoff = FileManager.fixFileNameVariables(g.edsUrlCutoff, f);
       return new String[] { server, strCutoff };
     }
     return f;

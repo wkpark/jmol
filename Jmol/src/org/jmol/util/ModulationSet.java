@@ -130,17 +130,17 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
    * 
    */
 
-  public ModulationSet set(String id, P3 r0, int modDim,
+  public ModulationSet setMod(String id, P3 r0, int modDim,
                            Lst<Modulation> mods, M3 gammaE, Matrix[] factors,
                            int iop, SymmetryInterface symmetry) {
-    this.id = id + "_" + symmetry.getSpaceGroupName();
     this.r0 = P3.newP(r0); 
     //Logger.info("ModulationSet atom " + id + " at " + r0);
-    strop = symmetry.getSpaceGroupXyz(iop, false);
     this.modDim = modDim;
     this.mods = mods;
     this.iop = iop;
     this.symmetry = symmetry;
+    strop = symmetry.getSpaceGroupXyz(iop, false);
+    this.id = id + "_" + symmetry.getSpaceGroupName();
     sigma = factors[0];
     tFactor = factors[1];
     isSubsystem = (tFactor != null);

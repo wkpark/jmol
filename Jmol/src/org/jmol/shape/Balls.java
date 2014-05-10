@@ -34,6 +34,20 @@ import org.jmol.util.C;
 public class Balls extends AtomShape {
 
   @Override
+  protected void setSize(int size, BS bsSelected) {
+    // from {*}.spacefill =... , for state
+    if (size == Integer.MAX_VALUE) {
+      isActive = true;
+      if (bsSizeSet == null)
+        bsSizeSet = new BS();
+      bsSizeSet.or(bsSelected);
+      return;
+    }
+    setSize2(size, bsSelected);
+  }
+
+
+  @Override
   protected void setSizeRD(RadiusData rd, BS bsSelected) {
     isActive = true;
     if (bsSizeSet == null)

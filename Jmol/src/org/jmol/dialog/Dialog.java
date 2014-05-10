@@ -33,8 +33,6 @@ import java.awt.event.ItemListener;
 import java.io.File;
 import java.util.Map;
 
-import javajs.util.PT;
-
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -55,6 +53,7 @@ import org.jmol.api.JmolDialogInterface;
 import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
 import org.jmol.viewer.FileManager;
+import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
 public class Dialog extends JPanel implements JmolDialogInterface {
@@ -149,12 +148,13 @@ public class Dialog extends JPanel implements JmolDialogInterface {
       FileManager.setLocalPath(vwr, file.getParent(), true);
       fileName = file.getAbsolutePath();
     }
-    boolean doAppend = (allowAppend && openPreview != null && openPreview.isAppendSelected());
-    boolean doCartoons = (allowAppend && openPreview != null && openPreview.isCartoonsSelected());
-    closePreview();
     if (fileName.startsWith("/"))
       fileName = "file://" + fileName; // for Macs
-    return (!allowAppend || doCartoons ? "" : "#NOC#;") + (doAppend ? "load append " + PT.esc(fileName) : fileName);
+    boolean doCartoons = (allowAppend && openPreview != null && openPreview.isCartoonsSelected());
+    boolean doAppend = (allowAppend && !JC.isScriptType(fileName) 
+        && openPreview != null && openPreview.isAppendSelected());
+    closePreview();
+    return (doCartoons ? "" : "#NOCARTOONS#;") + (doAppend ? "#APPEND#;" : "") + fileName;
   }
 
   String closePreview() {
@@ -552,6 +552,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
         @Override
         public void run() {
           if (dialogType.equals("Load")) {
+            // may have #NOCARTOONS#; and/or "#APPEND#; prepended
             outputFileName = getOpenFileNameFromDialog(
                 vwr.getViewerOptions(), vwr, inputFileName, null, null, false);
             return; 

@@ -40,7 +40,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 
-import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
 import org.jmol.viewer.Viewer;
 
@@ -163,14 +162,16 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
       if (url != null)
         fileName = url;
       //doesn't update from use input?
+      fileName = fileName.replace('\\', '/');
       script = " \"" + fileName + "\"";
       if (fileName.indexOf(".spt") >= 0) {
         script = "script " + script;
       } else {
         script = PT.rep((String) display.vwr
-            .getParameter("defaultdropscript"), "%FILE", script + " 1");
+            .getParameter("defaultdropscript"), "\"%FILE\"", script + " 1");
         script = PT.rep(script, "%ALLOWCARTOONS", ""
-            + isCartoonsSelected());
+            + (isCartoonsSelected() && !isAppendSelected()));
+        System.out.println(script);
       }
     }
     display.vwr.evalStringQuiet(script);

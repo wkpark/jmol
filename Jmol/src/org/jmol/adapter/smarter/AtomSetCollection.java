@@ -669,6 +669,7 @@ public class AtomSetCollection {
     int atomSite = atoms[iatom].atomSite;
     int atomSetIndex = atoms[iatom].atomSetIndex;
     for (int i = iatom; i < ac && atoms[i].atomSetIndex == atomSetIndex; i++) {
+      //TODO check this: Shouldn't we be symmetrizing here?
       if (atoms[i].atomSite == atomSite)
         addVibrationVector(i, vx, vy, vz);
     }

@@ -669,7 +669,7 @@ public class MSReader implements MSInterface {
 
     // The magic happens here.
 
-    ModulationSet ms = new ModulationSet().set(a.index + " " + a.atomName, a,
+    ModulationSet ms = new ModulationSet().setMod(a.index + " " + a.atomName, a,
         modDim, list, gammaE, getMatrices(a), iop, getSymmetry(a));
     ms.calculate(null, false);
 

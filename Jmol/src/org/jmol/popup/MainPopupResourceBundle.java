@@ -174,7 +174,7 @@ public class MainPopupResourceBundle extends PopupResource {
           "[color_backbone]Menu [color_cartoon]sMenu [color_ribbon]sMenu [color_rockets]Menu [color_strands]Menu [color_trace]Menu" },
 
       {   "schemeMenu",
-          "cpk - formalcharge partialcharge#CHARGE - altloc#PDB amino#PDB chain#PDB group#PDB molecule monomer#PDB shapely#PDB structure#PDB relativeTemperature#BFACTORS fixedTemperature#BFACTORS" },
+          "cpk - formalcharge partialcharge#CHARGE - altloc#PDB amino#PDB chain#PDB group#PDB molecule monomer#PDB shapely#PDB structure#PDB relativeTemperature#BFACTORS fixedTemperature#BFACTORS property_vxyz#VIBRATION" },
 
       {   "zoomMenu",
           "zoom50 zoom100 zoom150 zoom200 zoom400 zoom800 - "
@@ -461,6 +461,7 @@ public class MainPopupResourceBundle extends PopupResource {
         "cpk", GT._("Element (CPK)"),
         "altloc#PDB", GT._("Alternative Location"),
         "molecule", GT._("Molecule"),
+        "property_vxyz#VIBRATION", GT._("Vectors"),
         "formalcharge", GT._("Formal Charge"),
         "partialcharge#CHARGE", GT._("Partial Charge"),
         "relativeTemperature#BFACTORS", GT._("Temperature (Relative)"),

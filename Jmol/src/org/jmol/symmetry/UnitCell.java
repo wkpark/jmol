@@ -108,7 +108,7 @@ class UnitCell extends SimpleUnitCell {
       // use original unit cell
       matrixCtoFAbsolute.rotTrans(pt);
       unitize(pt);
-      pt.add(offset);      
+      pt.add(offset); 
       matrixFtoCAbsolute.rotTrans(pt);
     }
   }
@@ -139,7 +139,7 @@ class UnitCell extends SimpleUnitCell {
       return;
     if (pt instanceof T4 ? ((T4) pt).w == 0 : pt.x >= 100 || pt.y >= 100) {
       // from "unitcell range {aaa bbb scale}"
-      unitCellMultiplier = (pt.z == 0 ? null : P3.newP(pt));
+      unitCellMultiplier = (pt.z == 0 && pt.x == pt.y ? null : P3.newP(pt));
       return;
     }
     // from "unitcell offset {i j k}"
@@ -391,7 +391,7 @@ class UnitCell extends SimpleUnitCell {
     for (int i = 0; i < 8; i++) {
       P3 pt = pts[i] = P3.newP(BoxInfo.unitCubePoints[i]);
       if (cell0 != null) {
-        scale *= unitCellMultiplier.z;
+        scale *= (unitCellMultiplier.z == 0 ? 1 : unitCellMultiplier.z);
         pts[i].add3(cell0.x + cell1.x * pt.x, 
             cell0.y + cell1.y * pt.y,
             cell0.z + cell1.z * pt.z);
@@ -458,7 +458,7 @@ class UnitCell extends SimpleUnitCell {
   }
 
   public P3 getUnitCellMultiplier() {
-    return unitCellMultiplier ;
+    return unitCellMultiplier;
   }
 
   public V3[] getUnitCellVectors() {

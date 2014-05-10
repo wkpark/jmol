@@ -187,6 +187,8 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
   protected P3 ptSupercell;
   protected boolean mustFinalizeModelSet;
   protected boolean forcePacked;
+  public float packingError = 0.02f;
+
 
   // private state variables
 
@@ -197,12 +199,14 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
   float symmetryRange;
   private int[] firstLastStep;
   private int lastModelNumber = Integer.MAX_VALUE;
-  int desiredSpaceGroupIndex = -1;
+  public int desiredSpaceGroupIndex = -1;
   protected P3 fileScaling;
   protected P3 fileOffset;
   private P3 fileOffsetFractional;
   P3 unitCellOffset;
   private boolean unitCellOffsetFractional;
+  private Lst<String> moreUnitCellInfo;
+
 
 //    public void finalize() {
 //      System.out.println(this + " finalized");
@@ -450,6 +454,8 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
       strSupercell = (String) o;
     else
       ptSupercell = (P3) o;
+    if ((o = htParams.get("packingError")) != null)
+      packingError = ((Float) o).floatValue();
     initializeSymmetry();
     vwr = (Viewer) htParams.remove("vwr"); // don't pass this on to user
     if (htParams.containsKey("stateScriptVersionInt"))
@@ -1411,8 +1417,6 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
   }
 
   private String siteScript;
-
-  private Lst<String> moreUnitCellInfo;
 
   protected void addSiteScript(String script) {
     if (siteScript == null)

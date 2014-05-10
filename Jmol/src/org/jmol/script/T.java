@@ -892,7 +892,7 @@ public class T {
   public final static int spinx                          = floatparam | 54;
   public final static int spiny                          = floatparam | 56;
   public final static int spinz                          = floatparam | 58;
-  public final static int starscale                      = floatparam | 59; // Jmol 13.1.15
+  public final static int starwidth                     = floatparam | 59; // Jmol 13.1.15
   public final static int stereodegrees                  = floatparam | 60;
   public final static int strutdefaultradius             = floatparam | 62;
   public final static int strutlengthmaximum             = floatparam | 64;
@@ -2066,6 +2066,7 @@ public class T {
         "specialPosition",
         "sqrt",
         "split",
+        "starWidth",
         "starScale",
         "stddev",
         "straightness",
@@ -3063,7 +3064,8 @@ public class T {
         specialposition,                    // "specialPosition"
         sqrt,                               // "sqrt"
         split,                              // "split"
-        starscale,                          // "starScale"
+        starwidth,                         // "starWidth"
+        -1,                                 // "starScale" // too confusing
         stddev,                             // "stddev"
         straightness,                       // "straightness"
         strucid,                            // "structureId"

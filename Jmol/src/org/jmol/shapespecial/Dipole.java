@@ -24,18 +24,20 @@
 
 package org.jmol.shapespecial;
 
-
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.util.C;
 import org.jmol.util.Escape;
 
+import org.jmol.java.BS;
+
+import javajs.util.Lst;
 import javajs.util.SB;
 import javajs.util.P3;
 import javajs.util.V3;
 
 public class Dipole {
-  
+
   String thisID = "";
   public short mad;
   public short colix = 0;
@@ -47,10 +49,11 @@ public class Dipole {
 
   String dipoleInfo = "";
   public float dipoleValue;
-  
+
   boolean isUserValue;
   public float offsetSide;
   public float offsetAngstroms;
+  public P3 offsetPt;
   int offsetPercent;
   public int visibilityFlags;
   int modelIndex;
@@ -63,6 +66,8 @@ public class Dipole {
   public Atom[] atoms = new Atom[2]; //for reference only
   P3[] coords = new P3[2]; //for reference only
   public Bond bond;
+  public BS bsMolecule;
+  public Lst<Object> lstDipoles;
 
   final static short DIPOLE_TYPE_UNKNOWN = 0;
   final static short DIPOLE_TYPE_POINTS = 1;
@@ -74,8 +79,8 @@ public class Dipole {
   Dipole() {
   }
 
-  Dipole(int modelIndex, String thisID, String dipoleInfo,
-      short colix, short mad, boolean visible) {
+  Dipole(int modelIndex, String thisID, String dipoleInfo, short colix,
+      short mad, boolean visible) {
     this.modelIndex = modelIndex;
     this.thisID = thisID;
     this.dipoleInfo = dipoleInfo;
@@ -89,33 +94,40 @@ public class Dipole {
     colix = C.getColixTranslucent3(colix, isTranslucent, translucentLevel);
   }
 
-  void set(String thisID, String dipoleInfo, Atom[] atoms, float dipoleValue,
-           short mad, float offsetAngstroms, int offsetPercent, float offsetSide, P3 origin, V3 vector) {
-    this.thisID = thisID;
-    this.dipoleInfo = dipoleInfo;
-    this.dipoleValue = dipoleValue;
-    this.mad = mad;
-    this.offsetAngstroms = offsetAngstroms;
-    this.offsetPercent = offsetPercent;
-    this.offsetSide = offsetSide;
-    this.vector = V3.newV(vector);
-    this.origin = P3.newP(origin);
-    this.haveAtoms = (atoms[0] != null);
+  void set(Dipole d) {
+    thisID = d.thisID;
+    dipoleInfo = d.dipoleInfo;
+    dipoleValue = d.dipoleValue;
+    mad = d.mad;
+    lstDipoles = d.lstDipoles;
+    if (lstDipoles != null)
+      isValid = true;
+    offsetAngstroms = d.offsetAngstroms;
+    offsetPercent = d.offsetPercent;
+    offsetSide = d.offsetSide;
+    vector = V3.newV(d.vector);
+    origin = P3.newP(d.origin);
+    if (d.offsetPt != null) {
+      origin.add(d.offsetPt);
+      offsetPt = P3.newP(d.offsetPt);
+    }
+    bsMolecule = d.bsMolecule;
+    haveAtoms = (d.atoms[0] != null);
     if (haveAtoms) {
-      this.atoms[0] = atoms[0];
-      this.atoms[1] = atoms[1];
+      this.atoms[0] = d.atoms[0];
+      this.atoms[1] = d.atoms[1];
       centerDipole();
     } else {
       center = null;
     }
   }
 
-  private void set(P3 pt1, P3 pt2) {
+  private void set2(P3 pt1, P3 pt2) {
     coords[0] = P3.newP(pt1);
     coords[1] = P3.newP(pt2);
     isValid = (coords[0].distance(coords[1]) > 0.1f);
-    
-    if (dipoleValue < 0) { 
+
+    if (dipoleValue < 0) {
       origin = P3.newP(pt2);
       vector = V3.newV(pt1);
       dipoleValue = -dipoleValue;
@@ -132,7 +144,7 @@ public class Dipole {
     this.type = DIPOLE_TYPE_POINTS;
   }
 
-  void set(float value) {
+  void setValue(float value) {
     float d = dipoleValue;
     dipoleValue = value;
     if (value == 0)
@@ -144,24 +156,24 @@ public class Dipole {
       origin.sub(vector);
   }
 
-  void set(P3 pt1, P3 pt2, float value) {
+  void set2Value(P3 pt1, P3 pt2, float value) {
     dipoleValue = value;
     atoms[0] = null;
-    set(pt1, pt2);
+    set2(pt1, pt2);
   }
 
-  void set(P3 pt1, V3 dipole) {
-    set(dipole.length());
+  void setPtVector(P3 pt1, V3 dipole) {
+    setValue(dipole.length());
     P3 pt2 = P3.newP(pt1);
     pt2.add(dipole);
-    set(pt1, pt2);
+    set2(pt1, pt2);
     type = DIPOLE_TYPE_POINTVECTOR;
   }
 
-  void set(Atom atom1, Atom atom2, float value) {
+  void set2AtomValue(Atom atom1, Atom atom2, float value) {
     //also from frame
-    set(value);
-    set(atom1, atom2);
+    setValue(value);
+    set2(atom1, atom2);
     offsetSide = Dipoles.DEFAULT_OFFSETSIDE;
     mad = Dipoles.DEFAULT_MAD;
     atoms[0] = atom1;
@@ -174,32 +186,33 @@ public class Dipole {
     isValid = (atoms[0] != atoms[1] && dipoleValue != 0);
     if (!isValid)
       return;
-    float f = atoms[0].distance(atoms[1]) / (2 * dipoleValue)
-        - 0.5f;
+    float f = atoms[0].distance(atoms[1]) / (2 * dipoleValue) - 0.5f;
     origin.scaleAdd2(f, vector, atoms[0]);
     center = new P3();
     center.scaleAdd2(0.5f, vector, origin);
     bond = atoms[0].getBond(atoms[1]);
     type = (bond == null ? Dipole.DIPOLE_TYPE_ATOMS : Dipole.DIPOLE_TYPE_BOND);
   }
-  
+
   boolean isBondType() {
     return (type == Dipole.DIPOLE_TYPE_ATOMS || type == Dipole.DIPOLE_TYPE_BOND);
   }
-  
- public String getShapeState() {
+
+  public String getShapeState() {
     if (!isValid)
       return "";
     SB s = new SB();
     s.append("dipole ID ").append(thisID);
-    if (haveAtoms)
-      s.append(" ({").appendI(atoms[0].i).append(" ").
-                      appendI(atoms[1].i).append("})");
+    if (lstDipoles != null)
+      s.append(" all ").append(Escape.eBS(bsMolecule));
+    else if (haveAtoms)
+      s.append(" ({").appendI(atoms[0].i).append("}) ({").appendI(atoms[1].i)
+          .append("})");
     else if (coords[0] == null)
       return "";
     else
-      s.append(" ").append(Escape.eP(coords[0])).
-        append(" ").append(Escape.eP(coords[1]));
+      s.append(" ").append(Escape.eP(coords[0])).append(" ")
+          .append(Escape.eP(coords[1]));
     if (isUserValue)
       s.append(" value ").appendF(dipoleValue);
     if (mad != Dipoles.DEFAULT_MAD)
@@ -210,11 +223,20 @@ public class Dipole {
       s.append(" offset ").appendI(offsetPercent);
     if (offsetSide != Dipoles.DEFAULT_OFFSETSIDE)
       s.append(" offsetSide ").appendF(offsetSide);
+    if (offsetPt != null)
+      s.append(" offset ").append(Escape.eP(offsetPt));
     if (noCross)
       s.append(" nocross");
     if (!visible)
       s.append(" off");
     s.append(";\n");
     return s.toString();
+  }
+
+  public void setOffsetPt(P3 pt) {
+    if (offsetPt != null)
+      origin.sub(offsetPt);
+    offsetPt = pt;
+    origin.add(pt);
   }
 }

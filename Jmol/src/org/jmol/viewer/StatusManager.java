@@ -687,7 +687,9 @@ public class StatusManager {
     sd.setupUI(false);
     if (isImage) 
       sd.setImageInfo(qualityJPG, qualityPNG, imageType);
-    String outputFileName = sd.getFileNameFromDialog(vwr, type, fileName);    
+    String outputFileName = sd.getFileNameFromDialog(vwr, type, fileName);             // may have #NOCARTOONS#; and/or "#APPEND#; prepended
+    // may have #NOCARTOONS#; and/or "#APPEND#; prepended
+   
     if (isImage && outputFileName != null) {
       qualityJPG = sd.getQuality("JPG");
       qualityPNG = sd.getQuality("PNG");

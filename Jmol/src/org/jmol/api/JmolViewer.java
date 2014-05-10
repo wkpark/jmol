@@ -474,6 +474,7 @@ abstract public class JmolViewer implements JSInterface {
 
   @Override
   abstract public void openFileAsyncSpecial(String fileName, int flags);
+  
   public void openFileAsync(String fileName) {
     openFileAsyncSpecial(fileName, 0);    
   }

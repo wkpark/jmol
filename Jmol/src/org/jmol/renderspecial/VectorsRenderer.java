@@ -109,8 +109,9 @@ public class VectorsRenderer extends ShapeRenderer {
   }
 
   private boolean transform(short mad, Atom atom, Vibration vib) {
-    boolean isMod = (vib.modDim >= 0);
-    boolean isSpin = (vib.modDim == -2);
+    boolean isMod = (vib.modDim >= Vibration.TYPE_MODULATION);
+    boolean isDisp = (vib.modDim == Vibration.TYPE_DISPLACEMENT);
+    boolean isSpin = (vib.modDim == Vibration.TYPE_SPIN);
     drawCap = true;
     if (!isMod) {
       float len = vib.length();
@@ -123,11 +124,11 @@ public class VectorsRenderer extends ShapeRenderer {
       headOffsetVector.scale(headScale / len);
     }
     if (isMod) {
-      JmolModulationSet mod = (JmolModulationSet) vib;
       standardVector = false;
       doShaft = true;
       pointVectorStart.setT(atom);
       pointVectorEnd.setT(atom);
+      JmolModulationSet mod = (JmolModulationSet) vib;
       if (!mod.isEnabled()) {
         mod.addTo(pointVectorEnd, 1);
       } else {

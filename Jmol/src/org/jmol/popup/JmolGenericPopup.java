@@ -240,6 +240,7 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
       id = id.replace('_', ' ');
       if (script.indexOf("[]") < 0)
         script = "[] " + script;
+      script = script.replace('_', ' ');
       return PT.rep(script, "[]", id);
     } else if (script.indexOf("?FILEROOT?") >= 0) {
       script = PT.rep(script, "FILEROOT?", modelSetRoot);

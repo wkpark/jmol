@@ -41,10 +41,14 @@ import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 import javajs.util.PT;
 
 import org.jmol.api.JmolStatusListener;
+import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
+import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
 /**
@@ -68,7 +72,7 @@ public class FileDropper implements DropTargetListener {
   JmolStatusListener statusListener;
 
   public FileDropper(JmolStatusListener statusListener, Viewer vwr) {
-    this.statusListener = statusListener;
+    this.statusListener = statusListener; // application only
     fd_oldFileName = "";
     fd_propSupport = new PropertyChangeSupport(this);
     this.vwr = vwr;
@@ -103,7 +107,18 @@ public class FileDropper implements DropTargetListener {
         // ignore
       }
     }
-    vwr.openFileAsyncSpecial(fname, 1);
+    int flags = 1; //
+    boolean isScript = JC.isScriptType(fname);
+    switch (vwr.ms.ac > 0 && !isScript ? JOptionPane.showConfirmDialog(null, GT._("Would you like to replace the current model with the selected model?")) : 1) {
+    case JOptionPane.CANCEL_OPTION:
+      return;
+    case JOptionPane.OK_OPTION:
+      break;
+    default:
+      flags += 4;
+      break;
+    }
+    vwr.openFileAsyncSpecial(fname, flags);
   }
 
   private void loadFiles(List<File> fileList) {

@@ -4610,6 +4610,12 @@ public class ScriptEval extends ScriptExpr {
         htParams.put("packed", Boolean.TRUE);
         sOptions.append(" PACKED");
         i++;
+        if (isFloatParameter(i)) {
+          float f = floatParameter(i++);
+          htParams.put("packingError", Float.valueOf(f));
+          sOptions.append(" " + f);
+          i++;
+        }
       }
       if (tokAt(i) == T.centroid) {
         htParams.put("centroid", Boolean.TRUE);
@@ -7606,6 +7612,7 @@ public class ScriptEval extends ScriptExpr {
       ++index;
       pt = (P3) getPointOrPlane(++index, false, true, false, true, 3, 3);
       pt = P4.new4(pt.x, pt.y, pt.z, (isOffset ? 1 : 0));
+      index = iToken;
       break;
     default:
       if (isArrayParameter(index + 1)) {
@@ -7974,8 +7981,7 @@ public class ScriptEval extends ScriptExpr {
             }
           } else {
             boolean isPropertyExplicit = name.equals("property");
-            if (isPropertyExplicit)
-              index++;
+            index++;
             if (isPropertyExplicit
                 && T.tokAttr((tok = getToken(index).tok), T.atomproperty)
                 && !T.tokAttr(tok, T.strproperty)) {
@@ -7984,15 +7990,17 @@ public class ScriptEval extends ScriptExpr {
                     | T.allfloat, Float.NaN, Float.NaN);
               }
             }
+            // index points to item after property
           }
         } else if (pal == PAL.VARIABLE) {
           index++;
           name = paramAsStr(index++);
           data = new float[vwr.getAtomCount()];
-          Parser.parseStringInfestedFloatArray(""
-              + getParameter(name, T.string, true), null, (float[]) data);
+          Parser.parseStringInfestedFloatArray(
+              "" + getParameter(name, T.string, true), null, (float[]) data);
           pal = PAL.PROPERTY;
         }
+        // index here points to NEXT item
         if (pal == PAL.PROPERTY) {
           String scheme = null;
           if (tokAt(index) == T.string) {
@@ -8031,34 +8039,33 @@ public class ScriptEval extends ScriptExpr {
               max = Float.MAX_VALUE;
             }
           }
-            if (isIsosurface) {
-            } else if (data == null) {
-              if (!chk)
+          if (isIsosurface) {
+          } else if (data == null) {
+            if (!chk)
               vwr.setCurrentColorRange(name);
-              index++;
-            } else {
-              if (!chk)
+          } else {
+            if (!chk)
               vwr.cm.setPropertyColorRangeData((float[]) data, bsSelected);
-            }
-            if (isIsosurface) {
-              checkLength(index);
-              if (chk)
-                return;
-              isColor = false;
-              ColorEncoder ce = vwr.cm.getColorEncoder(scheme);
-              if (ce == null)
-                return;
-              ce.isTranslucent = (isTranslucent && translucentLevel == Float.MAX_VALUE);
-              ce.setRange(min, max, min > max);
-              if (max == Float.MAX_VALUE)
-                ce.hi = max;
-              setShapeProperty(shapeType, "remapColor", ce);
-              showString(getIsosurfaceDataRange(shapeType, ""));
-              if (translucentLevel == Float.MAX_VALUE)
-                return;
-            } else if (max != Float.MAX_VALUE) {
-              vwr.cm.setPropertyColorRange(min, max);
-            }
+          }
+          if (isIsosurface) {
+            checkLength(index);
+            if (chk)
+              return;
+            isColor = false;
+            ColorEncoder ce = vwr.cm.getColorEncoder(scheme);
+            if (ce == null)
+              return;
+            ce.isTranslucent = (isTranslucent && translucentLevel == Float.MAX_VALUE);
+            ce.setRange(min, max, min > max);
+            if (max == Float.MAX_VALUE)
+              ce.hi = max;
+            setShapeProperty(shapeType, "remapColor", ce);
+            showString(getIsosurfaceDataRange(shapeType, ""));
+            if (translucentLevel == Float.MAX_VALUE)
+              return;
+          } else if (max != Float.MAX_VALUE) {
+            vwr.cm.setPropertyColorRange(min, max);
+          }
         } else {
           index++;
         }

@@ -387,7 +387,7 @@ public class GlobalSettings {
       setI("specularPercent", specularPercent);
       setI("specularPower", specularPower);
       setB("ssbondsBackbone", ssbondsBackbone);
-      setF("starScale", starScale);
+      setF("starWidth", starWidth);
       setB("statusReporting", statusReporting);
       setI("strandCount", strandCountForStrands);
       setI("strandCountForStrands", strandCountForStrands);
@@ -581,7 +581,7 @@ public class GlobalSettings {
     boolean autoFps = false;
     public AXES axesMode = AXES.BOUNDBOX;
     float axesScale = 2;
-    float starScale = 0.05f;
+    float starWidth = 0.05f;
     boolean bondPicking = false;
     float defaultCameraDepth = 3.0f;
     boolean celShading = false;

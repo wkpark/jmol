@@ -174,7 +174,7 @@ class SpaceGroup {
     xyz = xyz.toLowerCase();
     return (xyz.indexOf("[[") < 0 && xyz.indexOf("x4") < 0 &&
         (xyz.indexOf("x") < 0 || xyz.indexOf("y") < 0 || xyz.indexOf("z") < 0) 
-        ? -1 : xyz.startsWith("c=") ? addCentering(xyz.substring(2)) : addOperation(xyz, opId, allowScaling));
+        ? -1 : addOperation(xyz, opId, allowScaling));
   }
    
   void setFinalOperations(P3[] atoms, int atomIndex, int count,
@@ -423,12 +423,6 @@ class SpaceGroup {
     return sg;
   }
   
-  private int addCentering(String xyzm) {
-    // TODO
-    return 0;
-  }
-
-
   private int addOperation(String xyz0, int opId, boolean allowScaling) {
     if (xyz0 == null || xyz0.length() < 3) {
       xyzList = new Hashtable<String, Integer>();
@@ -548,11 +542,10 @@ class SpaceGroup {
 
   private final static SpaceGroup determineSpaceGroupNA(String name,
                                                      float[] notionalUnitcell) {
-    if (notionalUnitcell == null)
-      return determineSpaceGroup(name, 0f, 0f, 0f, 0f, 0f, 0f, -1);
-    return determineSpaceGroup(name, notionalUnitcell[0], notionalUnitcell[1],
+    return (notionalUnitcell == null ? determineSpaceGroup(name, 0f, 0f, 0f, 0f, 0f, 0f, -1)
+        : determineSpaceGroup(name, notionalUnitcell[0], notionalUnitcell[1],
         notionalUnitcell[2], notionalUnitcell[3], notionalUnitcell[4],
-        notionalUnitcell[5], -1);
+        notionalUnitcell[5], -1));
   }
 
   private final static SpaceGroup determineSpaceGroup(String name, float a, float b,
@@ -714,10 +707,10 @@ class SpaceGroup {
         }
 
     }
-    // inexact just the number; no extension indicated
+    // inexact just the number; no extension indicated -- first in list
 
     if (ext.length() == 0)
-      for (i = lastIndex; --i >= 0;) {
+      for (i = 0; i < lastIndex; i++) {
         s = SG[i];
         if (s.intlTableNumber.equals(nameExt))
           return i;
@@ -749,12 +742,11 @@ class SpaceGroup {
   private static String lastInfo = "";
   
   private void buildSpaceGroup(String cifLine) {
-    String[] terms = PT.split(cifLine.toLowerCase(), ";");
-    String[] parts;
-
+    String[] terms = PT.split(cifLine.toLowerCase(), ";");    
     intlTableNumberFull = terms[0].trim(); // International Table Number :
                                            // options
-    parts = PT.split(intlTableNumberFull, ":");
+    // 4:c*;c2^2;p 1 1 21*;p 21
+    String[]  parts = PT.split(intlTableNumberFull, ":");
     intlTableNumber = parts[0];
     intlTableNumberExt = (parts.length == 1 ? "" : parts[1]);
     ambiguityType = '\0';
@@ -1060,6 +1052,7 @@ class SpaceGroup {
     "38:-cba;c2v^14;c 2 m m;c -2 2",
     "38:bca;c2v^14;c m 2 m;c -2 -2",
     "38:a-cb;c2v^14;a m 2 m;a -2 -2",
+    "39;c2v^15;a e m 2;a 2 -2b", // newer IT name
     "39;c2v^15;a b m 2;a 2 -2b",
     "39:ba-c;c2v^15;b m a 2;b 2 -2a",
     "39:cab;c2v^15;b 2 c m;b -2a 2",
@@ -1072,7 +1065,8 @@ class SpaceGroup {
     "40:-cba;c2v^16;c 2 c m;c -2c 2",
     "40:bca;c2v^16;c c 2 m;c -2c -2c",
     "40:a-cb;c2v^16;a m 2 a;a -2a -2a",
-    "41;c2v^17;a b a 2;a 2 -2ab",
+    "41;c2v^17;a e a 2;a 2 -2ab",  // newer IT name
+    "41;c2v^17;a b a 2;a 2 -2ab;-",
     "41:ba-c;c2v^17;b b a 2;b 2 -2ab",
     "41:cab;c2v^17;b 2 c b;b -2ab 2",
     "41:-cba;c2v^17;c 2 c b;c -2ac 2",
@@ -1173,6 +1167,7 @@ class SpaceGroup {
     "63:-cba;d2h^17;a m a m;-a 2 2a",
     "63:bca;d2h^17;b b m m;-b 2 2b",
     "63:a-cb;d2h^17;b m m b;-b 2b 2",
+    "64;d2h^18;c m c e;-c 2ac 2", // newer IT name
     "64;d2h^18;c m c a;-c 2ac 2",
     "64:ba-c;d2h^18;c c m b;-c 2ac 2ac",
     "64:cab;d2h^18;a b m a;-a 2ab 2ab",
@@ -1185,12 +1180,14 @@ class SpaceGroup {
     "66;d2h^20;c c c m;-c 2 2c",
     "66:cab;d2h^20;a m a a;-a 2a 2",
     "66:bca;d2h^20;b b m b;-b 2b 2b",
+    "67;d2h^21;c m m e;-c 2a 2", // newer IT name
     "67;d2h^21;c m m a;-c 2a 2",
     "67:ba-c;d2h^21;c m m b;-c 2a 2a",
     "67:cab;d2h^21;a b m m;-a 2b 2b",
     "67:-cba;d2h^21;a c m m;-a 2 2b",
     "67:bca;d2h^21;b m c m;-b 2 2a",
     "67:a-cb;d2h^21;b m a m;-b 2a 2",
+    "68:1;d2h^22;c c c e:1;c 2 2 -1ac", // newer IT name
     "68:1;d2h^22;c c c a:1;c 2 2 -1ac",
     "68:2;d2h^22;c c c a:2;-c 2a 2ac",
     "68:1ba-c;d2h^22;c c c b:1;c 2 2 -1ac",
@@ -1323,7 +1320,7 @@ class SpaceGroup {
     "151;d3^3;p 31 1 2;p 31 2 (0 0 4)",
     "152;d3^4;p 31 2 1;p 31 2\"",
     "153;d3^5;p 32 1 2;p 32 2 (0 0 2)",
-    "154;d3^6;p 32 2 1;p 32 2\"", // TODO MSA quartz.cif gives different operators for this -- 
+    "154;d3^6;p 32 2 1;p 32 2\"", //  NOTE: MSA quartz.cif gives different operators for this -- 
     "155:h;d3^7;r 3 2:h;r 3 2\"",
     "155:r;d3^7;r 3 2:r;p 3* 2",
     "156;c3v^1;p 3 m 1;p 3 -2\"",
@@ -2076,6 +2073,241 @@ intl#     H-M full       HM-abbr   HM-short  Hall
 228:2     F d -3 c       Fd-3c     Fd-3c     -F 4ud 2vw
 229       I m -3 m       Im-3m     Im-3m     -I 4 2 3  
 230       I a -3 d       Ia-3d     Ia-3d     -I 4bd 2c 
+
+first settings:
+
+1 p 1
+2  p -1
+3  p 1 2 1
+4  p 1 21 1
+5  c 1 2 1
+6  p 1 m 1
+7  p 1 c 1
+8  c 1 m 1
+9  c 1 c 1
+10   p 1 2/m 1
+11   p 1 21/m 1
+12   c 1 2/m 1
+13   p 1 2/c 1
+14   p 1 21/c 1
+15   c 1 2/c 1
+16   p 2 2 2
+17   p 2 2 21
+18   p 21 21 2
+19   p 21 21 21
+20   c 2 2 21
+21   c 2 2 2
+22   f 2 2 2
+23   i 2 2 2
+24   i 21 21 21
+25   p m m 2
+26   p m c 21
+27   p c c 2
+28   p m a 2
+29   p c a 21
+30   p n c 2
+31   p m n 21
+32   p b a 2
+33   p n a 21
+34   p n n 2
+35   c m m 2
+36   c m c 21
+37   c c c 2
+38   a m m 2
+39   a b m 2
+40   a m a 2
+41   a b a 2
+42   f m m 2
+43   f d d 2
+44   i m m 2
+45   i b a 2
+46   i m a 2
+47   p m m m
+48   p n n n
+49   p c c m
+50   p b a n
+51   p m m a
+52   p n n a
+53   p m n a
+54   p c c a
+55   p b a m
+56   p c c n
+57   p b c m
+58   p n n m
+59   p m m n
+60   p b c n
+61   p b c a
+62   p n m a
+63   c m c m
+64   c m c a
+65   c m m m
+66   c c c m
+67   c m m a
+68   c c c a
+69   f m m m
+70   f d d d
+71   i m m m
+72   i b a m
+73   i b c a
+74   i m m a
+75   p 4
+76   p 41
+77   p 42
+78   p 43
+79   i 4
+80   i 41
+81   p -4
+82   i -4
+83   p 4/m
+84   p 42/m
+85   p 4/n
+86   p 42/n
+87   i 4/m
+88   i 41/a
+89   p 4 2 2
+90   p 4 21 2
+91   p 41 2 2
+92   p 41 21 2
+93   p 42 2 2
+94   p 42 21 2
+95   p 43 2 2
+96   p 43 21 2
+97   i 4 2 2
+98   i 41 2 2
+99   p 4 m m
+100  p 4 b m
+101  p 42 c m
+102  p 42 n m
+103  p 4 c c
+104  p 4 n c
+105  p 42 m c
+106  p 42 b c
+107  i 4 m m
+108  i 4 c m
+109  i 41 m d
+110  i 41 c d
+111  p -4 2 m
+112  p -4 2 c
+113  p -4 21 m
+114  p -4 21 c
+115  p -4 m 2
+116  p -4 c 2
+117  p -4 b 2
+118  p -4 n 2
+119  i -4 m 2
+120  i -4 c 2
+121  i -4 2 m
+122  i -4 2 d
+123  p 4/m m m
+124  p 4/m c c
+125  p 4/n b m
+126  p 4/n n c
+127  p 4/m b m
+128  p 4/m n c
+129  p 4/n m m
+130  p 4/n c c
+131  p 42/m m c
+132  p 42/m c m
+133  p 42/n b c
+134  p 42/n n m
+135  p 42/m b c
+136  p 42/m n m
+137  p 42/n m c
+138  p 42/n c m
+139  i 4/m m m
+140  i 4/m c m
+141  i 41/a m d
+142  i 41/a c d
+143  p 3
+144  p 31
+145  p 32
+146  r 3
+147  p -3
+148  r -3
+149  p 3 1 2
+150  p 3 2 1
+151  p 31 1 2
+152  p 31 2 1
+153  p 32 1 2
+154  p 32 2 1
+155  r 3 2
+156  p 3 m 1
+157  p 3 1 m
+158  p 3 c 1
+159  p 3 1 c
+160  r 3 m
+161  r 3 c
+162  p -3 1 m
+163  p -3 1 c
+164  p -3 m 1
+165  p -3 c 1
+166  r -3 m
+167  r -3 c
+168  p 6
+169  p 61
+170  p 65
+171  p 62
+172  p 64
+173  p 63
+174  p -6
+175  p 6/m
+176  p 63/m
+177  p 6 2 2
+178  p 61 2 2
+179  p 65 2 2
+180  p 62 2 2
+181  p 64 2 2
+182  p 63 2 2
+183  p 6 m m
+184  p 6 c c
+185  p 63 c m
+186  p 63 m c
+187  p -6 m 2
+188  p -6 c 2
+189  p -6 2 m
+190  p -6 2 c
+191  p 6/m m m
+192  p 6/m c c
+193  p 63/m c m
+194  p 63/m m c
+195  p 2 3
+196  f 2 3
+197  i 2 3
+198  p 21 3
+199  i 21 3
+200  p m -3
+201  p n -3
+202  f m -3
+203  f d -3
+204  i m -3
+205  p a -3
+206  i a -3
+207  p 4 3 2
+208  p 42 3 2
+209  f 4 3 2
+210  f 41 3 2
+211  i 4 3 2
+212  p 43 3 2
+213  p 41 3 2
+214  i 41 3 2
+215  p -4 3 m
+216  f -4 3 m
+217  i -4 3 m
+218  p -4 3 n
+219  f -4 3 c
+220  i -4 3 d
+221  p m -3 m
+222  p n -3 n
+223  p m -3 n
+224  p n -3 m
+225  f m -3 m
+226  f m -3 c
+227  f d -3 m
+228  f d -3 c
+229  i m -3 m
+230  i a -3 d
+
+
 
    */
 }

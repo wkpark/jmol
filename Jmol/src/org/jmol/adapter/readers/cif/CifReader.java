@@ -341,15 +341,18 @@ public class CifReader extends AtomSetCollectionReader {
     else
       applySymmetryAndSetTrajectory();
     if (isMagCIF) {
-      // set all 
+      addJmolScript("connect none;vectors on;vectors 0.15");
+      int n = 0;
       for (int i = asc.ac; --i >= 0;) {
         if (asc.atoms[i].vib != null) {
           Vibration v = new Vibration();
           v.setT(asc.atoms[i].vib);
           asc.atoms[i].vib = v;
-          v.modDim = -2; // SPIN          
+          n++;
+          v.modDim = Vibration.TYPE_SPIN;          
         }
       }
+      appendLoadNote(n + " magnetic moments - use VECTORS ON/OFF or VECTOR SCALE x.x or SELECT VXYZ>0");
     }
 
     int n = asc.atomSetCount;

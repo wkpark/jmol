@@ -26,6 +26,7 @@
 package org.jmol.renderspecial;
 
 
+import org.jmol.java.BS;
 import org.jmol.render.ShapeRenderer;
 import org.jmol.script.T;
 import org.jmol.shapespecial.Dipole;
@@ -39,20 +40,6 @@ import javajs.util.V3;
 public class DipolesRenderer extends ShapeRenderer {
 
   private float dipoleVectorScale;
-
-  @Override
-  protected boolean render() {
-    Dipoles dipoles = (Dipoles) shape;
-    dipoleVectorScale = vwr.getFloat(T.dipolescale);
-    boolean needTranslucent = false;
-    for (int i = dipoles.dipoleCount; --i >= 0;) {
-      Dipole dipole = dipoles.dipoles[i];
-      if (dipole.visibilityFlags != 0 && transform(dipole) && renderDipoleVector(dipole))
-        needTranslucent = true;
-    }
-    return needTranslucent;
-  }
-
   private final V3 offset = new V3();
   private final P3i[] screens = new P3i[6];
   private final P3[] points = new P3[6];
@@ -75,72 +62,41 @@ public class DipolesRenderer extends ShapeRenderer {
   private int diameter;
   private int headWidthPixels;
   private int crossWidthPixels;
+  private float offsetSide;
+  private short colixA;
+  private short colixB;
+  private boolean noCross;
 
   private final static float arrowHeadOffset = 0.9f;
   private final static float arrowHeadWidthFactor = 2f;
   private final static float crossOffset = 0.1f;
   private final static float crossWidth = 0.04f;
 
-  private boolean transform(Dipole dipole) {
-    V3 vector = dipole.vector;
-    offset.setT(vector);
-    if (dipole.center == null) {
-      offset.scale(dipole.offsetAngstroms / dipole.dipoleValue);
-      if (dipoleVectorScale < 0)
-        offset.add(vector);
-      points[cylinderBase].add2(dipole.origin, offset);
-    } else {
-      offset.scale(-0.5f * dipoleVectorScale);
-      points[cylinderBase].add2(dipole.center, offset);
-      if (dipole.offsetAngstroms != 0) {
-        offset.setT(vector);
-        offset.scale(dipole.offsetAngstroms / dipole.dipoleValue);
-        points[cylinderBase].add(offset);
-      }
-    }
 
-    points[cross].scaleAdd2(dipoleVectorScale * crossOffset, vector,
-        points[cylinderBase]);
-    points[crossEnd].scaleAdd2(dipoleVectorScale * (crossOffset + crossWidth),
-        vector, points[cylinderBase]);
-    points[center]
-        .scaleAdd2(dipoleVectorScale / 2, vector, points[cylinderBase]);
-    points[arrowHeadBase].scaleAdd2(dipoleVectorScale * arrowHeadOffset, vector,
-        points[cylinderBase]);
-    points[arrowHeadTip].scaleAdd2(dipoleVectorScale, vector,
-        points[cylinderBase]);
-
-    if (dipole.atoms[0] != null
-        && ms.isAtomHidden(dipole.atoms[0].i))
-      return false;
-    offset.setT(points[center]);
-    offset.cross(offset, vector);
-    if (offset.length() == 0) {
-      offset.set(points[center].x + 0.2345f, points[center].y + 0.1234f,
-          points[center].z + 0.4321f);
-      offset.cross(offset, vector);
+  @Override
+  protected boolean render() {
+    Dipoles dipoles = (Dipoles) shape;
+    dipoleVectorScale = vwr.getFloat(T.dipolescale);
+    boolean needTranslucent = false;
+    BS vis = vwr.ms.getVisibleSet();
+    for (int i = dipoles.dipoleCount; --i >= 0;) {
+      Dipole dipole = dipoles.dipoles[i];
+      if (dipole.visibilityFlags != 0 && 
+         (dipole.atoms[0] == null || !ms.isAtomHidden(dipole.atoms[0].i))
+         && (dipole.bsMolecule == null || dipole.bsMolecule.intersects(vis))
+          && renderDipoleVector(dipole, vis))
+        needTranslucent = true;
     }
-    offset.scale(dipole.offsetSide / offset.length());
-    for (int i = 0; i < 6; i++)
-      points[i].add(offset);
-    for (int i = 0; i < 6; i++)
-      tm.transformPtScr(points[i], screens[i]);
-    tm.transformPt3f(points[cross], cross0);
-    tm.transformPt3f(points[crossEnd], cross1);
-    mad = dipole.mad;
-    float d = vwr.scaleToScreen(screens[center].z, mad);
-    diameter = (int) d;
-    headWidthPixels = (int) Math.floor(d * arrowHeadWidthFactor);
-    if (headWidthPixels < diameter + 5)
-      headWidthPixels = diameter + 5;
-    crossWidthPixels = headWidthPixels;
-    return true;
+    return needTranslucent;
   }
 
-  private boolean renderDipoleVector(Dipole dipole) {
-    short colixA = (dipole.bond == null ? dipole.colix : C
-        .getColixInherited(dipole.colix, dipole.bond.colix));
-    short colixB = colixA;
+  private boolean renderDipoleVector(Dipole dipole, BS vis) {
+    mad = dipole.mad;
+    offsetSide = dipole.offsetSide;
+    noCross = dipole.noCross;
+    colixA = (dipole.bond == null ? dipole.colix : C.getColixInherited(
+        dipole.colix, dipole.bond.colix));
+    colixB = colixA;
     if (dipole.atoms[0] != null) {
       colixA = C.getColixInherited(colixA, dipole.atoms[0].getColix());
       colixB = C.getColixInherited(colixB, dipole.atoms[1].getColix());
@@ -154,13 +110,81 @@ public class DipolesRenderer extends ShapeRenderer {
       colixA = colixB;
       colixB = c;
     }
+    float factor = dipole.offsetAngstroms / dipole.dipoleValue;
+    if (dipole.lstDipoles == null)
+      return renderVector(dipole.vector, dipole.origin, dipole.center,
+          factor, false);
+    boolean needTranslucent = false;
+    for (int i = dipole.lstDipoles.size(); --i >= 0;) {
+      Object[] o = (Object[]) dipole.lstDipoles.get(i);
+      V3 v = (V3) o[0];
+      P3 origin = (P3) o[1];
+      BS bsAtoms = (BS) o[2];
+      if (bsAtoms.intersects(vis))
+        needTranslucent = renderVector(v, origin, null, dipole.offsetAngstroms, true);
+    }
+    return needTranslucent;
+  }
+ 
+  private boolean renderVector(V3 vector, P3 origin, P3 dcenter, float factor, boolean isGroup) {
+    offset.setT(vector);
+    if (dcenter == null) {
+      if (isGroup) {
+        offset.normalize();
+        offset.scale(factor);
+      } else {
+        offset.scale(factor);
+        if (dipoleVectorScale < 0)
+          offset.add(vector);
+      }
+      points[cylinderBase].add2(origin, offset);
+    } else {
+      offset.scale(-0.5f * dipoleVectorScale);
+      points[cylinderBase].add2(dcenter, offset);
+      if (factor != 0) {
+        offset.setT(vector);
+        offset.scale(factor);
+        points[cylinderBase].add(offset);
+      }
+    }
+    points[cross].scaleAdd2(dipoleVectorScale * crossOffset, vector,
+        points[cylinderBase]);
+    points[crossEnd].scaleAdd2(dipoleVectorScale * (crossOffset + crossWidth),
+        vector, points[cylinderBase]);
+    points[center]
+        .scaleAdd2(dipoleVectorScale / 2, vector, points[cylinderBase]);
+    points[arrowHeadBase].scaleAdd2(dipoleVectorScale * arrowHeadOffset, vector,
+        points[cylinderBase]);
+    points[arrowHeadTip].scaleAdd2(dipoleVectorScale, vector,
+        points[cylinderBase]);
+
+    offset.setT(points[center]);
+    offset.cross(offset, vector);
+    if (offset.length() == 0) {
+      offset.set(points[center].x + 0.2345f, points[center].y + 0.1234f,
+          points[center].z + 0.4321f);
+      offset.cross(offset, vector);
+    }
+    offset.scale(offsetSide / offset.length());
+    for (int i = 0; i < 6; i++)
+      points[i].add(offset);
+    for (int i = 0; i < 6; i++)
+      tm.transformPtScr(points[i], screens[i]);
+    tm.transformPt3f(points[cross], cross0);
+    tm.transformPt3f(points[crossEnd], cross1);
+    float d = vwr.scaleToScreen(screens[center].z, mad);
+    diameter = (int) d;
+    headWidthPixels = (int) Math.floor(d * arrowHeadWidthFactor);
+    if (headWidthPixels < diameter + 5)
+      headWidthPixels = diameter + 5;
+    crossWidthPixels = headWidthPixels;
     colix = colixA;
     if (colix == colixB) {
       if (!g3d.setC(colix))
         return true;
       g3d.fillCylinder(GData.ENDCAPS_OPEN, diameter,
           screens[cylinderBase], screens[arrowHeadBase]);
-      if (!dipole.noCross)
+      if (!noCross)
         g3d.fillCylinderBits(GData.ENDCAPS_FLAT, crossWidthPixels, cross0,
             cross1);
       g3d.fillConeScreen(GData.ENDCAPS_FLAT, headWidthPixels,
@@ -171,7 +195,7 @@ public class DipolesRenderer extends ShapeRenderer {
     if (g3d.setC(colix)) {
       g3d.fillCylinder(GData.ENDCAPS_OPEN, diameter,
           screens[cylinderBase], screens[center]);
-      if (!dipole.noCross)
+      if (!noCross)
         g3d.fillCylinderBits(GData.ENDCAPS_FLAT, crossWidthPixels, cross0,
             cross1);
     } else {
@@ -188,5 +212,4 @@ public class DipolesRenderer extends ShapeRenderer {
     }
     return needTranslucent;
   }
- 
  }

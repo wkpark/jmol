@@ -1745,7 +1745,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
    * the file
    * 
    * @param fileName
-   * @param flags  1 = check PDBcartoons
+   * @param flags 1=pdbCartoons, 2=no scripting, 4=append 
    * 
    */
   @Override
@@ -2496,10 +2496,10 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       return filename;
     if (filename == "JSNode")
       return "<DOM NODE>";
-    String pathName = mm.getModelSetPathName();
-    if (pathName == null)
-      return null;
-    return getFileAsString4(pathName, -1, true, false, false);
+//    filename = mm.getModelSetPathName();
+//    if (filename == null)
+//      return null;
+    return getFileAsString4(filename, -1, true, false, false);
   }
 
   public String getFullPathName(boolean orPrevious) {
@@ -5132,6 +5132,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
      * 
      */
     {
+      // may have #NOCARTOONS#; and/or "#APPEND#; prepended
       return (isKiosk || !haveAccess(ACCESS.ALL) ? null : sm
           .dialogAsk(type, fileName));
     }
@@ -5524,8 +5525,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       return g.sheetSmoothing;
     case T.solventproberadius:
       return g.solventProbeRadius;
-    case T.starscale:
-      return g.starScale;
+    case T.starwidth:
+      return g.starWidth;
     case T.strutdefaultradius:
       return g.strutDefaultRadius;
     case T.strutlengthmaximum:
@@ -5801,9 +5802,9 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       // 13.1.19
       g.exportScale = value;
       break;
-    case T.starscale:
+    case T.starwidth:
       // 13.1.15
-      g.starScale = value;
+      g.starWidth = value;
       break;
     case T.multiplebondradiusfactor:
       // 12.1.11
@@ -7632,9 +7633,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return ms.getModelDipole(am.cmi);
   }
 
-  public V3 calculateMolecularDipole() {
-    return ms
-        .calculateMolecularDipole(am.cmi);
+  public V3 calculateMolecularDipole(BS bsAtoms) {
+    return ms.calculateMolecularDipole(am.cmi, bsAtoms);
   }
 
   public void getAtomIdentityInfo(int atomIndex, Map<String, Object> info) {

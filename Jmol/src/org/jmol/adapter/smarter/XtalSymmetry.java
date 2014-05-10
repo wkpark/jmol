@@ -83,6 +83,7 @@ public class XtalSymmetry {
 
   private boolean doCentroidUnitCell;
   private boolean centroidPacked;
+  private float packingError;
 
   private void setSymmetryRange(float factor) {
     symmetryRange = factor;
@@ -207,6 +208,7 @@ public class XtalSymmetry {
         if (readerSymmetry != null)
           symmetry.setSpaceGroupFrom(readerSymmetry);
         //parameters are counts of unit cells as [a b c]
+        packingError = acr.packingError;
         applySymmetryLattice(acr.ms);
         if (readerSymmetry != null)
           asc.setAtomSetSpaceGroupName(readerSymmetry.getSpaceGroupName());
@@ -336,8 +338,9 @@ public class XtalSymmetry {
         && pt.z < maxZ + slop));
   }
 
-  private boolean checkAll = false;
+  private boolean checkAll;
   private int bondCount0;
+  public int vibScale;
 
   private int symmetryAddAtoms(int transX, int transY, int transZ,
                                int baseCount, int pt, int iCellOpPt,
@@ -392,7 +395,7 @@ public class XtalSymmetry {
        */
 
       int pt0 = (checkSpecial ? pt : checkRange111 ? baseCount : 0);
-      int timeRev = symmetry.getTimeReversal(iSym);
+      int timeRev = (vibScale == 0 ? symmetry.getTimeReversal(iSym) : vibScale);
       for (int i = firstSymmetryAtom; i < atomMax; i++) {
         Atom a = asc.atoms[i];
         if (a.ignoreSymmetry)
@@ -427,8 +430,9 @@ public class XtalSymmetry {
           ptAtom.setT(cartesian);
           symmetry.toFractional(ptAtom, false);
           if (!isWithinCell(dtype, ptAtom, minXYZ0.x, maxXYZ0.x, minXYZ0.y,
-              maxXYZ0.y, minXYZ0.z, maxXYZ0.z, 0.02f))
+              maxXYZ0.y, minXYZ0.z, maxXYZ0.z, packingError))
             continue;
+          
         }
 
         if (checkSymmetryMinMax)

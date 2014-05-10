@@ -1899,6 +1899,9 @@ public class CmdExt implements JmolCmdExtension {
       propertyName = null;
       propertyValue = null;
       switch (getToken(i).tok) {
+      case T.all:
+        propertyName = "all";
+        break;
       case T.on:
         propertyName = "on";
         break;
@@ -1914,13 +1917,21 @@ public class CmdExt implements JmolCmdExtension {
         propertyValue = Float.valueOf(floatParameter(i));
         break;
       case T.bitset:
-        propertyName = "atomBitset";
+        if (tokAt(i + 1) == T.bitset) {
+          // fix for atomno2 < atomno1
+          setShapeProperty(JC.SHAPE_DIPOLES, "startSet", atomExpressionAt(i++));
+        } else {
+          // early Jmol
+          propertyName = "atomBitset";
+        }
         //$FALL-THROUGH$
       case T.expressionBegin:
         if (propertyName == null)
           propertyName = (iHaveAtoms || iHaveCoord ? "endSet" : "startSet");
         propertyValue = atomExpressionAt(i);
         i = eval.iToken;
+        if (tokAt(i + 1) == T.nada && propertyName == "startSet")
+          propertyName = "atomBitset";
         iHaveAtoms = true;
         break;
       case T.leftbrace:
@@ -1937,6 +1948,10 @@ public class CmdExt implements JmolCmdExtension {
         break;
       case T.calculate:
         propertyName = "calculate";
+        if (tokAt(i+1) == T.bitset || tokAt(i + 1) == T.expressionBegin) {
+          propertyValue = atomExpressionAt(++i);
+          i = eval.iToken;
+        }
         break;
       case T.id:
         setShapeId(JC.SHAPE_DIPOLES, ++i, idSeen);
@@ -1951,6 +1966,7 @@ public class CmdExt implements JmolCmdExtension {
         propertyValue = Boolean.FALSE;
         break;
       case T.offset:
+        if (isFloatParameter(i + 1)) {
         float v = floatParameter(++i);
         if (eval.theTok == T.integer) {
           propertyName = "offsetPercent";
@@ -1959,12 +1975,16 @@ public class CmdExt implements JmolCmdExtension {
           propertyName = "offset";
           propertyValue = Float.valueOf(v);
         }
+        } else {
+          propertyName = "offsetPt";
+          propertyValue = centerParameter(++i);
+          i = eval.iToken;
+        }
         break;
       case T.offsetside:
         propertyName = "offsetSide";
         propertyValue = Float.valueOf(floatParameter(++i));
         break;
-
       case T.val:
         propertyName = "value";
         propertyValue = Float.valueOf(floatParameter(++i));

@@ -1516,13 +1516,16 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
         (Viewer) vwr, null, jmolApp, FILE_OPEN_WINDOW_NAME, true);
     if (fileName == null)
       return;
-    boolean pdbCartoons = !fileName.startsWith("#NOC#;");
-    if (!pdbCartoons)
-      fileName = fileName.substring(6);
-    if (fileName.startsWith("load append"))
-      vwr.scriptWait(fileName);
-    else
-      vwr.openFileAsyncSpecial(fileName, pdbCartoons ? 1 : 0);
+    int flags = 1;
+    if (fileName.startsWith("#NOCARTOONS#;")) {
+      flags = 0;
+      fileName = fileName.substring(13);
+    }
+    if (fileName.startsWith("#APPEND#;")) {
+      fileName = fileName.substring(9);
+      flags += 4;
+    }
+    vwr.openFileAsyncSpecial(fileName, flags);
   }
 
   static final String chemFileProperty = "chemFile";

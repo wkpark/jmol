@@ -51,7 +51,7 @@ public class Resolver {
     "pdb.", ";Pdb;Pqr;P2n;",
     "pymol.", ";PyMOL;",
     "simple.", ";Alchemy;Ampac;Cube;FoldingXyz;GhemicalMM;HyperChem;Jme;JSON;Mopac;MopacArchive;Tinker;ZMatrix;", 
-    "xtal.", ";Abinit;Aims;Castep;Crystal;Dmol;Espresso;Gulp;Jana;Magres;Shelx;Siesta;VaspOutcar;" +
+    "xtal.", ";Abinit;Aims;Bilbao;Castep;Crystal;Dmol;Espresso;Gulp;Jana;Magres;Shelx;Siesta;VaspOutcar;" +
              "VaspPoscar;Wien2k;Xcrysden;",
     "xml.",  ";XmlArgus;XmlCml;XmlChem3d;XmlMolpro;XmlOdyssey;XmlXsd;XmlVasp;XmlQE;",
   };
@@ -456,8 +456,12 @@ public class Resolver {
         return specialTags[SPECIAL_ODYSSEY][0];
       if (checkMol(lines))
         return specialTags[SPECIAL_MOL][0];
-      if (checkXyz(lines))
+      switch(checkXyz(lines)) {
+      case 1:
         return specialTags[SPECIAL_XYZ][0];
+      case 2:
+        return "Bilbao";        
+      }
       if (checkAlchemy(lines[0]))
         return specialTags[SPECIAL_ALCHEMY][0];
       if (checkFoldingXyz(lines))
@@ -683,13 +687,19 @@ public class Resolver {
        || lines[2].startsWith("             NREL"));
  }
  
-  private static boolean checkXyz(String[] lines) {
+  private static int checkXyz(String[] lines) {
+    // first and third lines numerical --> Bilbao format
     try {
       Integer.parseInt(lines[0].trim());
-      return true;
+      try {
+        Integer.parseInt(lines[2].trim());
+      } catch (NumberFormatException nfe) {
+        return 1;
+      }
+      return 2;
     } catch (NumberFormatException nfe) {
     }
-    return false;
+    return 0;
   }
 
 
@@ -825,6 +835,9 @@ public class Resolver {
   private final static String[] gaussianContainsRecords =
   { "Gaussian", "Entering Gaussian System", "Entering Link 1", "1998 Gaussian, Inc." };
 
+  private final static String[] bilbaoContainsRecords =
+  { "Bilbao", ">Bilbao Crystallographic Server<" };
+
   /*
   private final static String[] gaussianWfnRecords =
   { "GaussianWfn", "MO ORBITALS" };
@@ -901,13 +914,14 @@ public class Resolver {
   
   
   private final static String[][] headerContainsRecords =
-  { sptContainsRecords, xmlContainsRecords, gaussianContainsRecords, 
+  { sptContainsRecords, bilbaoContainsRecords, xmlContainsRecords, gaussianContainsRecords, 
     ampacContainsRecords, mopacContainsRecords, qchemContainsRecords, 
     gamessUKContainsRecords, gamessUSContainsRecords,
     spartanBinaryContainsRecords, spartanContainsRecords, mol2Records, adfContainsRecords, psiContainsRecords,
     nwchemContainsRecords, uicrcifContainsRecords, dgridContainsRecords, crystalContainsRecords, 
     dmolContainsRecords, gulpContainsRecords, espressoContainsRecords, siestaContainsRecords,xcrysDenContainsRecords,
     mopacArchiveContainsRecords,abinitContainsRecords,gaussianFchkContainsRecords,
+    
   };
 }
 

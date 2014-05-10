@@ -1997,7 +1997,13 @@ import java.util.Properties;
     return dipole;
   }
 
-  public V3 calculateMolecularDipole(int modelIndex) {
+  public V3 calculateMolecularDipole(int modelIndex, BS bsAtoms) {
+    if (bsAtoms != null) {
+      int ia = bsAtoms.nextSetBit(0);
+      if (ia < 0)
+        return null;
+      modelIndex = at[ia].getModelIndex();
+    }
     if (partialCharges == null || modelIndex < 0)
       return null;
     int nPos = 0;
@@ -2006,9 +2012,12 @@ import java.util.Properties;
     float cNeg = 0;
     V3 pos = new V3();
     V3 neg = new V3();
-    for (int i = 0; i < ac; i++) {
-      if (at[i].mi != modelIndex)
+    if (bsAtoms == null)
+      bsAtoms = getModelAtomBitSetIncludingDeleted(-1, false);
+    for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
+      if (at[i].mi != modelIndex || at[i].isDeleted()) {
         continue;
+      }
       float c = partialCharges[i];
       if (c < 0) {
         nNeg++;
@@ -2020,19 +2029,14 @@ import java.util.Properties;
         pos.scaleAdd2(c, at[i], pos);
       }
     }
+    if (Math.abs(cPos + cNeg) > 0.01f) {
+      Logger.info("Dipole calculation requires balanced charges: " + cPos + " " + cNeg);
+      return null;
+    }
     if (nNeg == 0 || nPos == 0)
       return null;
-    pos.scale(1f / cPos);
-    neg.scale(1f / cNeg);
-    pos.sub(neg);
-    Logger
-        .warn("CalculateMolecularDipole: this is an approximate result -- needs checking");
-    pos.scale(cPos * 4.8f); //1e-10f * 1.6e-19f/ 3.336e-30f;
-
-    // SUM_Q[(SUM_pos Q_iRi) / SUM_Q   -  (SUM_neg Q_iRi) / (-SUM_Q) ]    
-    // this is really just SUM_i (Q_iR_i). Don't know why that would not work. 
-
-    //http://www.chemistry.mcmaster.ca/esam/Chapter_7/section_3.html
+    pos.add(neg);
+    pos.scale(4.8f); //1e-10f * 1.6e-19f/ 3.336e-30f;
     // 1 Debye = 3.336e-30 Coulomb-meter; C_e = 1.6022e-19 C
     return pos;
   }

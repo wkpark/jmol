@@ -666,8 +666,14 @@ abstract public class AtomCollection {
         break;
       }
     }
-    if (tok == T.selected)
+    switch (tok) {
+    case T.selected:
       vwr.slm.setSelectedAtom(-1, false);
+      break;
+    case T.radius:
+    case T.spacefill:
+      vwr.setShapeSize(JC.SHAPE_BALLS, Integer.MAX_VALUE, bs);
+    }
   }
 
   protected void setElement(Atom atom, int atomicNumber) {

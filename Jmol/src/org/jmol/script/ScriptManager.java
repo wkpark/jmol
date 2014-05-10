@@ -527,17 +527,20 @@ public class ScriptManager implements JmolScriptManager {
    * From file dropping.
    * 
    * @param fileName 
-   * @param flags 1=pdbCartoons 
+   * @param flags 1=pdbCartoons, 2=no scripting, 4=append 
    * 
    */
   @Override
   public void openFileAsync(String fileName, int flags) {
-    boolean pdbCartoons = (flags == 1);
+    boolean noScript = ((flags & 2) == 2);
+    boolean isAppend = ((flags & 4) == 4);
+    boolean pdbCartoons = ((flags & 1) == 1 && !isAppend);
     String cmd = null;
     fileName = fileName.trim();
-    boolean allowScript = (!fileName.startsWith("\t"));
-    if (!allowScript)
+    if (fileName.startsWith("\t")) {
+      noScript = true;
       fileName = fileName.substring(1);
+    }
     fileName = fileName.replace('\\', '/');
     boolean isCached = fileName.startsWith("cache://");
     if (vwr.isApplet() && fileName.indexOf("://") < 0)
@@ -572,12 +575,15 @@ public class ScriptManager implements JmolScriptManager {
           cmd = PT.rep(cmd, "%FILE", fileName);
           cmd = PT.rep(cmd, "%ALLOWCARTOONS", ""
               + pdbCartoons);
-          if (cmd.toLowerCase().startsWith("zap") && isCached)
+          if (cmd.toLowerCase().startsWith("zap") && (isCached || isAppend))
             cmd = cmd.substring(3);
+          if (isAppend) {
+            cmd = PT.rep(cmd, "load SYNC", "load append");
+          }
           return;
         }
       }
-      if (allowScript && vwr.scriptEditorVisible && cmd == null)
+      if (!noScript && vwr.scriptEditorVisible && cmd == null)
         vwr.showEditor(new String[] { fileName,
             vwr.getFileAsString(fileName, true) });
       else

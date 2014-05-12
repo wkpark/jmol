@@ -749,6 +749,8 @@ public class AtomSetCollection {
 
   public boolean haveUnitCell;
 
+  public int vibScale;
+
   public void setInfo(String key, Object value) {
     if (value == null)
       ascAuxiliaryInfo.remove(key);

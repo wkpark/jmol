@@ -48,7 +48,6 @@ import javajs.util.V3;
 
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
-import org.jmol.util.ModulationSet;
 import org.jmol.util.Vibration;
 
 /**
@@ -57,7 +56,10 @@ import org.jmol.util.Vibration;
  * see, for example, http://www.cryst.ehu.es/cryst/compstru.html Comparison of
  * Crystal Structures with the same Symmetry
  * 
- * 
+ * Note that this reader scrapes HTML. Keys for Bilbao format data are
+ * a given bit of text such as "High symmetry structure".
+ * Any changes to that (including capitalization) will cause this reader to fail.
+ * The space group number is read immediately after the "pre" tag on that line.
  * 
  * filter options include:
  * 
@@ -79,10 +81,11 @@ public class BilbaoReader extends AtomSetCollectionReader {
       readBilbaoFormat(null, false);
       continuing = false;
     }
+    appendLoadNote("Bilbao Crystallographic Server\ncryst@wm.lc.ehu.es");
     getHigh = checkFilterKey("HIGH");
-    getSym = true || !checkFilterKey("SYM");
+    getSym = true;
 
-    asc.getXSymmetry().vibScale = 1;
+    asc.vibScale = 1;
   }
 
   /*
@@ -157,7 +160,11 @@ public class BilbaoReader extends AtomSetCollectionReader {
 
   @Override
   protected boolean checkLine() throws Exception {
-    if (line.contains("High symmetry structure<")) {
+    if (line.contains(">Bilbao Crystallographic Server<")) {
+      line = line.substring(line.lastIndexOf(">") + 1).trim();
+      if (line.length() > 0)
+        appendLoadNote(line + "\n");
+    } else if (line.contains("High symmetry structure<")) {
       if (getHigh)
         readBilbaoFormat("high symmetry", false);
     } else if (line.contains("Low symmetry structure<")) {

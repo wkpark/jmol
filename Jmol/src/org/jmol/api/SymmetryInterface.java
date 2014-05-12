@@ -99,7 +99,7 @@ public interface SymmetryInterface {
 
   public Tensor getTensor(float[] parBorU);
 
-  public int getSpinOp(int op);
+  public float getSpinOp(int op);
 
   public SymmetryInterface getUnitCell(T3[] points, boolean setRelative);
 
@@ -139,7 +139,7 @@ public interface SymmetryInterface {
 
   public void setFinalOperations(String name, P3[] atoms,
                                           int iAtomFirst,
-                                          int noSymmetryCount, boolean doNormalize);
+                                          int noSymmetryCount, boolean doNormalize, String filterSymop);
 
   /**
    * set symmetry lattice type using Hall rotations

@@ -1324,8 +1324,7 @@ public class StateCreator extends JmolStateCreator {
       s.append("  set echo ").append(JC.vAlignNames[t.valign]).append(" ")
           .append(JC.hAlignNames[t.align]);
     }
-    if (t.valign == JC.VALIGN_XY
-        && t.movableZPercent != Integer.MAX_VALUE)
+    if (t.movableZPercent != Integer.MAX_VALUE)
       s.append(";  ").append(echoCmd).append(" depth ").appendI(
           t.movableZPercent);
     if (isImage)

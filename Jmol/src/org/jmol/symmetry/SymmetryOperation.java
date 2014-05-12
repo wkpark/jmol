@@ -1340,8 +1340,15 @@ class SymmetryOperation extends M4 {
     return (rsvs == null ? super.toString() : super.toString() + " " + rsvs.toString());
   }
 
-  public int getTimeReversal() {
-    return (int) (timeReversal * m00 * m11 * m22);
+  float magOp = Float.MAX_VALUE;
+  public float getSpinOp() {
+    if (magOp == Float.MAX_VALUE)
+      magOp = determinant() * timeReversal;
+    return magOp;
+  }
+
+  public void setTimeReversal(int magRev) {
+    timeReversal = magRev;
   }
   
 }

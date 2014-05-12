@@ -73,6 +73,8 @@ import javajs.util.V3;
  */
 public class CifReader extends AtomSetCollectionReader {
 
+  private static final float MAG_MOMENT_FACTOR = 1f;// approx, prelim
+  private static final String titleRecords = "__citation_title__publ_section_title__active_magnetic_irreps_details__";
   private MSCifInterface mr;
   private MMCifInterface pr;
   
@@ -227,8 +229,6 @@ public class CifReader extends AtomSetCollectionReader {
         processChemicalInfo("formula");
       } else if (key.equals("_cell_modulation_dimension")) {
         modDim = parseIntStr(data);
-      } else if (key.equals("_citation_title")) {
-        appendLoadNote("TITLE: " + parser.fullTrim(data));
       } else if (key.startsWith("_cell_")) {
         processCellParameter();
       } else if (key.startsWith("_atom_sites_fract_tran")) {
@@ -265,6 +265,8 @@ public class CifReader extends AtomSetCollectionReader {
         pr.processEntry();
       } else if (modDim > 0) {
           getModulationReader().processEntry();
+      } else if (titleRecords.contains("_" + key + "__")) {
+        appendLoadNote("TITLE: " + parser.fullTrim(data) + "\n");
       }
     }
     return true;
@@ -340,28 +342,19 @@ public class CifReader extends AtomSetCollectionReader {
       pr.finalizeReader(nAtoms);
     else
       applySymmetryAndSetTrajectory();
-    if (isMagCIF) {
-      addJmolScript("connect none;vectors on;vectors 0.15");
-      int n = 0;
-      for (int i = asc.ac; --i >= 0;) {
-        if (asc.atoms[i].vib != null) {
-          Vibration v = new Vibration();
-          v.setT(asc.atoms[i].vib);
-          asc.atoms[i].vib = v;
-          n++;
-          v.modDim = Vibration.TYPE_SPIN;          
-        }
-      }
-      appendLoadNote(n + " magnetic moments - use VECTORS ON/OFF or VECTOR SCALE x.x or SELECT VXYZ>0");
-    }
-
     int n = asc.atomSetCount;
     if (n > 1)
       asc.setCollectionName("<collection of " + n + " models>");
     finalizeReaderASCR();
     String header = parser.getFileHeader();
-    if (header.length() > 0)
+    if (header.length() > 0) {
+      String s = setLoadNote();
+      appendLoadNote(null);
+      appendLoadNote(header);
+      appendLoadNote(s);
+      setLoadNote();
       asc.setInfo("fileHeader", header);
+    }
     if (haveAromatic)
       addJmolScript("calculate aromatic");
   }
@@ -372,6 +365,13 @@ public class CifReader extends AtomSetCollectionReader {
       addLatticeVectors();
     if (modDim > 0)
       getModulationReader().setModulation(false);
+    if (isMagCIF) {
+      float[] params = asc.xtalSymmetry.symmetry.getNotionalUnitCell();
+      P3 ptScale = P3.new3(1 / params[0], 1 / params[1], 1 / params[2]);
+      for (int i = asc.ac; --i >= nAtoms0;)
+        if (asc.atoms[i].vib != null)
+          asc.atoms[i].vib.scaleT(ptScale);
+    }
   }
 
   @Override
@@ -390,6 +390,23 @@ public class CifReader extends AtomSetCollectionReader {
       getModulationReader().setModulation(true);
       mr.finalizeModulation();
     }
+    if (isMagCIF && sym != null) {
+      addJmolScript("connect none;vectors on;vectors 0.15");
+      int n = 0;
+      for (int i = asc.ac; --i >= nAtoms0;) {
+        if (asc.atoms[i].vib != null) {
+          Vibration v = new Vibration();
+          v.setT(asc.atoms[i].vib);
+          v.scale(MAG_MOMENT_FACTOR);
+          asc.getXSymmetry().symmetry.toCartesian(v, true);
+          asc.atoms[i].vib = v;
+          n++;
+          v.modDim = Vibration.TYPE_SPIN;          
+        }
+      }
+      appendLoadNote(n + " magnetic moments - use VECTORS ON/OFF or VECTOR SCALE x.x or SELECT VXYZ>0");
+    }
+
     if (auditBlockCode != null && auditBlockCode.contains("REFRNCE")
         && sym != null) {
       if (htAudit == null)
@@ -1173,6 +1190,7 @@ public class CifReader extends AtomSetCollectionReader {
           case MOMENT_PRELIM_X:
           case MOMENT_X:
             pt.x = v;
+            appendLoadNote(line);
             break;
           case MOMENT_PRELIM_Y:
           case MOMENT_Y:
@@ -1339,7 +1357,7 @@ public class CifReader extends AtomSetCollectionReader {
               }
               symops.addLast(field);
               int op = setSymmetryOperator(field);
-              if (timeRev != 0)
+              if (op >= 0 && timeRev != 0)
                 asc.getXSymmetry().setTimeReversal(op, timeRev);
             }
           break;

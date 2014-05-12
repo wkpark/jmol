@@ -337,10 +337,13 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
     return (desiredModelNumber > 0 || modelNumber >= lastModelNumber);
   }
 
-  public String appendLoadNote(String info) {
+  public void appendLoadNote(String info) {
+    if (info == null) {
+      loadNote = new SB();
+      return;
+    }
     loadNote.append(info).append("\n");
     Logger.info(info);
-    return info;
   }
 
   @SuppressWarnings("unchecked")
@@ -370,9 +373,11 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
 
   /////////////////////////////////////////////////////////////////////////////////////
 
-  protected void setLoadNote() {
+  protected String setLoadNote() {
+    String s = loadNote.toString();
     if (loadNote.length() > 0)
-      asc.setInfo("modelLoadNote", loadNote.toString());
+      asc.setInfo("modelLoadNote", s);
+    return s;
   }
 
   public void setIsPDB() {
@@ -810,6 +815,7 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
   private boolean filterElement;
   protected boolean filterHetero;
   private boolean filterEveryNth;
+  String filterSymop;
   private int filterN;
   private int nFiltered;
   private boolean doSetOrientation;
@@ -825,9 +831,10 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
 
 
   // ALL:  "CENTER" "REVERSEMODELS"
+  // ALL:  "SYMOP=n"
   // MANY: "NOVIB" "NOMO"
   // CASTEP: "CHARGE=HIRSH q={i,j,k};"
-  // CIF: "ASSEMBLY n"
+  // CIF: "ASSEMBLY n" 
   // CRYSTAL: "CONV" (conventional), "INPUT"
   // CSF, SPARTAN: "NOORIENT"
   // GAMESS-US:  "CHARGE=LOW"
@@ -851,6 +858,7 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
     if (filter0 == null) {
       filter0 = (String) htParams.get("filter");
     } else {
+      // from PDB REMARK350()
       bsFilter = null;
     }
     if (filter0 != null)
@@ -905,6 +913,9 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
       bsFilter = new BS();
       htParams.put("bsFilter", bsFilter);
       filter = (";" + filter + ";").replace(',', ';');
+      String s = getFilter("SYMOP=");
+      if (s != null)
+        filterSymop = " " + s + " ";
       Logger.info("filtering with " + filter);
       if (haveAtomFilter) {
         int ipt;

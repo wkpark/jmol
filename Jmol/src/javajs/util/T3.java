@@ -186,6 +186,18 @@ public abstract class T3 implements JSONEncodable, Serializable {
 
   
   /**
+   * {x*p.x, y*p.y, z*p.z)  used for three-way scaling
+   * 
+   * @param p
+   */
+  public final void scaleT(T3 p) {
+    x *= p.x;
+    y *= p.y;
+    z *= p.z;
+  }
+
+  
+  /**
    * Sets the value of this tuple to the scalar multiplication of tuple t1 and
    * then adds tuple t2 (this = s*t1 + t2).
    * 

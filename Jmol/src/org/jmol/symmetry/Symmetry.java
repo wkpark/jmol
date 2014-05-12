@@ -177,9 +177,17 @@ public class Symmetry implements SymmetryInterface {
 
   @Override
   public void setFinalOperations(String name, P3[] atoms, int iAtomFirst,
-                                 int noSymmetryCount, boolean doNormalize) {
-    if (name != null && name.startsWith("bio"))
+                                 int noSymmetryCount, boolean doNormalize, String filterSymop) {
+    if (name != null && (name.startsWith("bio") || name.indexOf(" *(") >= 0))  // filter SYMOP
       spaceGroup.name = name;
+    if (filterSymop != null) {
+      Lst<SymmetryOperation> lst = new Lst<SymmetryOperation>();
+      lst.addLast(spaceGroup.operations[0]);
+      for (int i = 1; i < spaceGroup.operationCount; i++)
+        if (filterSymop.contains(" " + (i + 1) + " "))
+          lst.addLast(spaceGroup.operations[i]);
+      spaceGroup = SpaceGroup.createSpaceGroup(-1,  name + " *(" + filterSymop.trim() + ")", lst);
+    }
     spaceGroup.setFinalOperations(atoms, iAtomFirst, noSymmetryCount,
         doNormalize);
   }
@@ -230,12 +238,12 @@ public class Symmetry implements SymmetryInterface {
 
   @Override
   public void setTimeReversal(int op, int val) {
-    spaceGroup.operations[op].timeReversal = val;
+    spaceGroup.operations[op].setTimeReversal(val);
   }
 
   @Override
-  public int getSpinOp(int op) {
-    return spaceGroup.operations[op].getTimeReversal();
+  public float getSpinOp(int op) {
+    return spaceGroup.operations[op].getSpinOp();
   }
 
   @Override
@@ -796,6 +804,4 @@ public class Symmetry implements SymmetryInterface {
   public String fcoord(T3 p) {
     return SymmetryOperation.fcoord(p);
   }
-
-
 }

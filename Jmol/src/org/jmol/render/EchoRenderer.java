@@ -52,8 +52,11 @@ public class EchoRenderer extends LabelsRenderer {
       if (t.valign == JC.VALIGN_XYZ) {
         tm.transformPtScr(t.xyz, pt0i);
         t.setXYZs(pt0i.x, pt0i.y, pt0i.z, pt0i.z);
-      } else if (t.movableZPercent != Integer.MAX_VALUE) {
-        int z = vwr.zValueFromPercent(t.movableZPercent);
+      } 
+      if (t.movableZPercent != Integer.MAX_VALUE) {
+        int z = vwr.zValueFromPercent(t.movableZPercent % 1000);
+        if (t.valign == JC.VALIGN_XYZ && Math.abs(t.movableZPercent)>= 1000)
+          z = pt0i.z - vwr.zValueFromPercent(0) + z;
         t.setZs(z, z);
       }
       if (t.pointerPt == null) {

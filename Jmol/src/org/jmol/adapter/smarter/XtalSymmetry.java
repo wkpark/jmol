@@ -66,7 +66,7 @@ public class XtalSymmetry {
     return this;
   }
 
-  private SymmetryInterface symmetry;
+  public SymmetryInterface symmetry;
 
   SymmetryInterface getSymmetry() {
     return (symmetry == null ? (symmetry = Interface.getSymmetry()) : symmetry);
@@ -80,10 +80,11 @@ public class XtalSymmetry {
   // expands to 22 for cartesianToFractional matrix as array (PDB)
 
   private float symmetryRange;
-
   private boolean doCentroidUnitCell;
   private boolean centroidPacked;
   private float packingError;
+  private String filterSymop;
+
 
   private void setSymmetryRange(float factor) {
     symmetryRange = factor;
@@ -120,6 +121,7 @@ public class XtalSymmetry {
     doPackUnitCell = acr.doPackUnitCell;
     doCentroidUnitCell = acr.doCentroidUnitCell;
     centroidPacked = acr.centroidPacked;
+    filterSymop = acr.filterSymop;
     if (acr.strSupercell != null)
       setSuperCell(acr.strSupercell);
     else
@@ -210,7 +212,7 @@ public class XtalSymmetry {
         //parameters are counts of unit cells as [a b c]
         packingError = acr.packingError;
         applySymmetryLattice(acr.ms);
-        if (readerSymmetry != null)
+        if (readerSymmetry != null && filterSymop == null)
           asc.setAtomSetSpaceGroupName(readerSymmetry.getSpaceGroupName());
       }
     }
@@ -340,7 +342,6 @@ public class XtalSymmetry {
 
   private boolean checkAll;
   private int bondCount0;
-  public int vibScale;
 
   private int symmetryAddAtoms(int transX, int transY, int transZ,
                                int baseCount, int pt, int iCellOpPt,
@@ -395,7 +396,7 @@ public class XtalSymmetry {
        */
 
       int pt0 = (checkSpecial ? pt : checkRange111 ? baseCount : 0);
-      int spinOp = (vibScale == 0 ? symmetry.getSpinOp(iSym) : vibScale);
+      float spinOp = (asc.vibScale == 0 ? symmetry.getSpinOp(iSym) : asc.vibScale);
       for (int i = firstSymmetryAtom; i < atomMax; i++) {
         Atom a = asc.atoms[i];
         if (a.ignoreSymmetry)
@@ -735,8 +736,8 @@ public class XtalSymmetry {
   private void finalizeSymmetry(SymmetryInterface symmetry) {
     String name = (String) asc.getAtomSetAuxiliaryInfoValue(-1, "spaceGroup");
     symmetry.setFinalOperations(name, asc.atoms, firstSymmetryAtom,
-        noSymmetryCount, doNormalize);
-    if (name == null || name.equals("unspecified!"))
+        noSymmetryCount, doNormalize, filterSymop);
+    if (filterSymop != null || name == null || name.equals("unspecified!"))
       asc.setAtomSetSpaceGroupName(symmetry.getSpaceGroupName());
   }
 
@@ -759,14 +760,12 @@ public class XtalSymmetry {
   private int noSymmetryCount;
   private int firstSymmetryAtom;
 
-
   private final static int PARTICLE_NONE = 0;
   private final static int PARTICLE_CHAIN = 1;
   private final static int PARTICLE_SYMOP = 2;
 
   @SuppressWarnings("unchecked")
-  public
-  void applySymmetryBio(Map<String, Object> thisBiomolecule,
+  public void applySymmetryBio(Map<String, Object> thisBiomolecule,
                                float[] notionalUnitCell,
                                boolean applySymmetryToBonds, String filter) {
     if (latticeCells != null && latticeCells[0] != 0) {

@@ -113,7 +113,7 @@ class SpaceGroup {
 
   public boolean isBio;
 
-    
+  boolean isIT;
 
   static SpaceGroup getNull(boolean doInit) {
       getSpaceGroups();
@@ -136,7 +136,6 @@ class SpaceGroup {
     return this;
   }
   
-  @SuppressWarnings("unchecked")
   static SpaceGroup createSpaceGroup(int desiredSpaceGroupIndex,
                                                   String name,
                                                   Object data) {
@@ -145,7 +144,7 @@ class SpaceGroup {
       sg = getSpaceGroups()[desiredSpaceGroupIndex];
     } else {
       if (data instanceof Lst<?>)
-        sg = createSGFromList(name, (Lst<M4>) data); 
+        sg = createSGFromList(name, (Lst<?>) data); 
       else
         sg = determineSpaceGroupNA(name, (float[]) data);
       if (sg == null)
@@ -156,17 +155,25 @@ class SpaceGroup {
     return sg;
   }
 
-  private static SpaceGroup createSGFromList(String name, Lst<M4> data) {
+  private static SpaceGroup createSGFromList(String name, Lst<?> data) {
     // try unconventional Hall symbol
     SpaceGroup sg = new SpaceGroup("0;--;--;--", true);
     sg.doNormalize = false;
     sg.name = name;
     int n = data.size();
     for (int i = 0; i < n; i++) {
-      M4 operation = data.get(i);
-      String xyz = "xyz matrix:" + operation;
-      sg.addSymmetrySM(xyz, operation);
+      Object operation = data.get(i);
+      if (operation instanceof SymmetryOperation) {
+        SymmetryOperation op = (SymmetryOperation) operation;
+        int iop = sg.addOp(op, op.xyz, false);
+        sg.operations[iop].timeReversal = op.timeReversal;
+      } else {
+        sg.addSymmetrySM("xyz matrix:" + operation, (M4) operation);
+      }
     }
+    SpaceGroup sgn = sg.getDerivedSpaceGroup();
+    if (sgn != null)
+      sg = sgn;
     return sg;
   }
 
@@ -193,7 +200,7 @@ class SpaceGroup {
       if (sg != null)
         name = sg.getName();
     }
-
+    
     finalOperations = new SymmetryOperation[operationCount];
     if (doNormalize && count > 0 && atoms != null) {
       // we must apply this first to (x,y,z) JUST IN CASE the 
@@ -349,13 +356,16 @@ class SpaceGroup {
     if (finalOperations != null)
       setFinalOperations(null, 0, 0, false);
     String s = getCanonicalSeitzList();
-    return findSpaceGroup(s);
+    return (s == null ? null : findSpaceGroup(s));
   }
 
   private String getCanonicalSeitzList() {
     String[] list = new String[operationCount];
-    for (int i = 0; i < operationCount; i++)
+    for (int i = 0; i < operationCount; i++) {
+      if (operations[i].timeReversal != 0)
+        return null; // can't match any magnetic group
       list[i] = SymmetryOperation.dumpCanonicalSeitz(operations[i]);
+    }
     Arrays.sort(list, 0, operationCount);
     SB sb = new SB().append("\n[");
     for (int i = 0; i < operationCount; i++)
@@ -742,6 +752,7 @@ class SpaceGroup {
   private static String lastInfo = "";
   
   private void buildSpaceGroup(String cifLine) {
+    isIT = true;
     String[] terms = PT.split(cifLine.toLowerCase(), ";");    
     intlTableNumberFull = terms[0].trim(); // International Table Number :
                                            // options
@@ -1438,7 +1449,7 @@ class SpaceGroup {
         newOp.setFromMatrix(data, false);
         newOp.xyzOriginal = newOp.xyz;
         if (magRev != -2)
-          newOp.timeReversal = op.timeReversal * magRev;
+          newOp.setTimeReversal(op.timeReversal * magRev);
         addOp(newOp, newOp.xyz, true);
       }
     }

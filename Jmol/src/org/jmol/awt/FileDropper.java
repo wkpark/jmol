@@ -109,13 +109,13 @@ public class FileDropper implements DropTargetListener {
     }
     int flags = 1; //
     boolean isScript = JC.isScriptType(fname);
-    switch (vwr.ms.ac > 0 && !isScript ? JOptionPane.showConfirmDialog(null, GT._("Would you like to replace the current model with the selected model?")) : 1) {
+    switch (vwr.ms.ac > 0 && !isScript ? JOptionPane.showConfirmDialog(null, GT._("Would you like to replace the current model with the selected model?")) : JOptionPane.OK_OPTION) {
     case JOptionPane.CANCEL_OPTION:
       return;
     case JOptionPane.OK_OPTION:
       break;
     default:
-      flags += 4;
+      flags += 4; // append
       break;
     }
     vwr.openFileAsyncSpecial(fname, flags);

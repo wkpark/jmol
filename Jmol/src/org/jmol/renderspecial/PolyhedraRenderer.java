@@ -31,6 +31,7 @@ import org.jmol.shapespecial.Polyhedra;
 import org.jmol.shapespecial.Polyhedron;
 import org.jmol.util.C;
 import org.jmol.util.GData;
+
 import javajs.util.P3;
 import javajs.util.P3i;
 
@@ -40,6 +41,7 @@ public class PolyhedraRenderer extends ShapeRenderer {
   private boolean isAll;
   private boolean frontOnly;
   private P3i[] screens;
+  private boolean vibs;
 
   @Override
   protected boolean render() {
@@ -47,6 +49,7 @@ public class PolyhedraRenderer extends ShapeRenderer {
     Polyhedron[] polyhedrons = polyhedra.polyhedrons;
     drawEdges = polyhedra.drawEdges;
     g3d.addRenderer(T.triangles);
+    vibs = (ms.vibrations != null && tm.vibrationOn);
     short[] colixes = polyhedra.colixes;
     boolean needTranslucent = false;
     for (int i = polyhedra.polyhedronCount; --i >= 0;) {
@@ -79,10 +82,14 @@ public class PolyhedraRenderer extends ShapeRenderer {
     planes = p.planes;
     for (int i = vertices.length; --i >= 0;) {
       Atom atom = (vertices[i] instanceof Atom ? (Atom) vertices[i] : null);
-      if (atom == null || !atom.isVisible(myVisibilityFlag))
+      if (atom == null) {
         tm.transformPtScr(vertices[i], screens[i]);
-      else
+      } else if (!atom.isVisible(myVisibilityFlag)) {
+        screens[i].setT(vibs && atom.hasVibration() ? tm.transformPtVib(atom,
+            ms.vibrations[atom.i], Float.NaN) : tm.transformPt(atom));
+      } else {
         screens[i].set(atom.sX, atom.sY, atom.sZ);
+      }
     }
 
     isAll = (drawEdges == Polyhedra.EDGES_ALL);

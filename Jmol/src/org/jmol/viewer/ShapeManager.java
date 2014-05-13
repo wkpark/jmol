@@ -430,8 +430,8 @@ public class ShapeManager {
     }
     ms.getRenderable(bs);
     Object[] vibrationVectors = ms.vibrations;
-    Atom[] atoms = ms.at;
     boolean vibs = (vibrationVectors != null && tm.vibrationOn);
+    Atom[] atoms = ms.at;
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       // note that this vibration business is not compatible with
       // PDB objects such as cartoons and traces, which 

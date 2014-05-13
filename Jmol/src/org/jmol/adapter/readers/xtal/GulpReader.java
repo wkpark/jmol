@@ -135,7 +135,7 @@ public class GulpReader extends AtomSetCollectionReader {
   }
   
   private void readSpaceGroup() throws Exception {
-    spaceGroup = line.substring(line.indexOf(":") + 1).trim();
+    sgName = line.substring(line.indexOf(":") + 1).trim();
   }
 
   private float a, b, c, alpha, beta, gamma;
@@ -182,8 +182,8 @@ public class GulpReader extends AtomSetCollectionReader {
   }
 
   private void setModelParameters(boolean isPrimitive) {
-    if (spaceGroup != null)
-      setSpaceGroupName(isPrimitive ? "P1" : spaceGroup);
+    if (sgName != null)
+      setSpaceGroupName(isPrimitive ? "P1" : sgName);
     if (isPrimitive && primitiveData != null) {
       addPrimitiveLatticeVector(0, primitiveData, 0);
       addPrimitiveLatticeVector(1, primitiveData, 3);

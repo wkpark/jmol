@@ -1300,7 +1300,7 @@ Polyproline 10
       a = Float.NaN; // 1 for a means no unit cell
     setUnitCell(a, getFloat(15, 9), getFloat(24, 9), getFloat(33,
         7), getFloat(40, 7), getFloat(47, 7));
-    if (spaceGroup == null)
+    if (sgName == null)
       setSpaceGroupName(parseTrimmedRange(line, 55, 66));
   }
 

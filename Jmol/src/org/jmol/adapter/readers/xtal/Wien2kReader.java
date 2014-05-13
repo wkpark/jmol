@@ -45,7 +45,7 @@ public class Wien2kReader extends AtomSetCollectionReader {
   
   @Override
   public void initializeReader() throws Exception {
-    doSymmetry = !spaceGroup.equals("none");
+    doSymmetry = !sgName.equals("none");
     setFractionalCoordinates(true);
     asc.setCollectionName(rd());
     readUnitCell();

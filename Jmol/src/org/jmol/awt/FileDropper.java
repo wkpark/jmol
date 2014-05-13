@@ -85,13 +85,13 @@ public class FileDropper implements DropTargetListener {
     Component display = (Component) vwr.getDisplay();
     display.setDropTarget(new DropTarget(display, this));
     display.setEnabled(true);
-    System.out.println("File dropper enabled for " + display);
+    //System.out.println("File dropper enabled for " + display);
   }
 
   public void dispose() {
     removePropertyChangeListener(pcl);
     vwr = null;
-    System.out.println("File dropper disposed.");
+    //System.out.println("File dropper disposed.");
   }
 
   private void loadFile(String fname) {

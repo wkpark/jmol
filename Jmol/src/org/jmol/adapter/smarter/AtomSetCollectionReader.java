@@ -174,7 +174,7 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
   protected BS bsModels;
   protected boolean havePartialChargeFilter;
   public String calculationType = "?";
-  protected String spaceGroup;
+  protected String sgName;
   protected boolean ignoreFileUnitCell;
   protected boolean ignoreFileSpaceGroupName;
   public float[] notionalUnitCell; //0-5 a b c alpha beta gamma; 6-21 matrix c->f
@@ -540,7 +540,7 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
       desiredSpaceGroupIndex = ((Integer) htParams.get("spaceGroupIndex"))
           .intValue();
       if (desiredSpaceGroupIndex == -2)
-        spaceGroup = (String) htParams.get("spaceGroupName");
+        sgName = (String) htParams.get("spaceGroupName");
       ignoreFileSpaceGroupName = (desiredSpaceGroupIndex == -2 || desiredSpaceGroupIndex >= 0);
       ignoreFileSymmetryOperators = (desiredSpaceGroupIndex != -1);
     }
@@ -623,7 +623,7 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
   private float[] previousUnitCell;
 
   protected void initializeSymmetry() {
-    previousSpaceGroup = spaceGroup;
+    previousSpaceGroup = sgName;
     previousUnitCell = notionalUnitCell;
     iHaveUnitCell = ignoreFileUnitCell;
     if (!ignoreFileUnitCell) {
@@ -641,7 +641,7 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
       symmetry = null;
     }
     if (!ignoreFileSpaceGroupName)
-      spaceGroup = "unspecified!";
+      sgName = "unspecified!";
     doCheckUnitCell = false;
   }
 
@@ -662,7 +662,7 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
     if (asc.haveUnitCell) {
       iHaveUnitCell = true;
       doCheckUnitCell = true;
-      spaceGroup = previousSpaceGroup;
+      sgName = previousSpaceGroup;
       notionalUnitCell = previousUnitCell;
     }
     return lastAtomCount;
@@ -671,8 +671,8 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
   public void setSpaceGroupName(String name) {
     if (ignoreFileSpaceGroupName)
       return;
-    spaceGroup = name.trim();
-    Logger.info("Setting space group name to " + spaceGroup);
+    sgName = name.trim();
+    Logger.info("Setting space group name to " + sgName);
   }
 
   public int setSymmetryOperator(String xyz) {

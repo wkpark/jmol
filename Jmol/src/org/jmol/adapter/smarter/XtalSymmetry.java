@@ -191,7 +191,7 @@ public class XtalSymmetry {
     asc.setCoordinatesAreFractional(acr.iHaveFractionalCoordinates);
     setNotionalUnitCell(acr.notionalUnitCell, acr.matUnitCellOrientation,
         acr.unitCellOffset);
-    asc.setAtomSetSpaceGroupName(acr.spaceGroup);
+    asc.setAtomSetSpaceGroupName(acr.sgName);
     setSymmetryRange(acr.symmetryRange); //
     if (acr.doConvertToFractional || acr.fileCoordinatesAreFractional) {
       setLatticeCells(acr);
@@ -200,7 +200,7 @@ public class XtalSymmetry {
         if (!acr.merging || readerSymmetry == null)
           readerSymmetry = acr.getNewSymmetry();
         doApplySymmetry = readerSymmetry.createSpaceGroup(acr.desiredSpaceGroupIndex,
-            (acr.spaceGroup.indexOf("!") >= 0 ? "P1" : acr.spaceGroup),
+            (acr.sgName.indexOf("!") >= 0 ? "P1" : acr.sgName),
             acr.notionalUnitCell);
       } else {
         acr.doPreSymmetry();

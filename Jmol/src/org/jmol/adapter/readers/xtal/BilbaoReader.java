@@ -74,15 +74,21 @@ public class BilbaoReader extends AtomSetCollectionReader {
 
   private boolean getHigh;
   private boolean getSym;
+  private boolean normDispl;
+  private boolean doDisplace;
+  private String kvec;
 
   @Override
   public void initializeReader() throws Exception {
+    normDispl = !checkFilterKey("NONORM");
+    doDisplace = isTrajectory;
+
     if (rd().indexOf("<") < 0) {
-      readBilbaoFormat(null, false);
+      readBilbaoFormat(null, Float.NaN);
       continuing = false;
     }
     appendLoadNote("Bilbao Crystallographic Server\ncryst@wm.lc.ehu.es");
-    getHigh = checkFilterKey("HIGH");
+    getHigh = checkFilterKey("HIGH") && !doDisplace;
     getSym = true;
 
     asc.vibScale = 1;
@@ -100,8 +106,7 @@ public class BilbaoReader extends AtomSetCollectionReader {
   O     3   8f    0.6420 0.2800 0.6120
   O     4   8f    0.4910 0.2220 0.4200 
   */
-  private void readBilbaoFormat(String title, boolean getDisplacement)
-      throws Exception {
+  private void readBilbaoFormat(String title, float fAmp) throws Exception {
     setFractionalCoordinates(true);
     if (!doGetModel(++modelNumber, title))
       return;
@@ -126,7 +131,7 @@ public class BilbaoReader extends AtomSetCollectionReader {
         continue;
       addAtomXYZSymName(tokens, 3, tokens[0], tokens[0] + tokens[1]);
     }
-    if (getDisplacement) {
+    if (!Float.isNaN(fAmp)) {
       rd();
       /*
       ##disp-par## Rb1x|x0.000000x|x0.000791x|x-0.001494
@@ -138,22 +143,22 @@ public class BilbaoReader extends AtomSetCollectionReader {
           asc.atoms[i0 + i].vib = V3.new3(parseFloatStr(tokens[1]),
               parseFloatStr(tokens[2]), parseFloatStr(tokens[3]));
       }
-    }
-    applySymmetryAndSetTrajectory();
-
-    // convert the atom vibs to Cartesian displacements
-    if (getDisplacement) {
+      applySymmetryAndSetTrajectory();
+      // convert the atom vibs to Cartesian displacements
       for (int i = asc.ac; --i >= i0;) {
         Atom a = asc.atoms[i];
         if (a.vib != null) {
           Vibration v = new Vibration();
           v.setT(a.vib);
           a.vib = v;
-          v.modDim = Vibration.TYPE_DISPLACEMENT;
+          //v.modDim = Vibration.TYPE_DISPLACEMENT;
           asc.getSymmetry().toCartesian(v, true);
+          v.scale(1 / fAmp);
         }
       }
       appendLoadNote((asc.ac - i0) + " displacements");
+    } else {
+      applySymmetryAndSetTrajectory();
     }
 
   }
@@ -166,15 +171,17 @@ public class BilbaoReader extends AtomSetCollectionReader {
         appendLoadNote(line + "\n");
     } else if (line.contains("High symmetry structure<")) {
       if (getHigh)
-        readBilbaoFormat("high symmetry", false);
+        readBilbaoFormat("high symmetry", Float.NaN);
     } else if (line.contains("Low symmetry structure<")) {
-      readBilbaoFormat("low symmetry", false);
+      if (!doDisplace)
+        readBilbaoFormat("low symmetry", Float.NaN);
     } else if (line.contains("structure in the subgroup basis<")) {
-      readBilbaoFormat("high symmetry in the subgroup basis", false);
+      if (!doDisplace)
+        readBilbaoFormat("high symmetry in the subgroup basis", Float.NaN);
     } else if (line.contains("Low symmetry structure after the origin shift<")) {
-      readBilbaoFormat("low symmetry after origin shift", false);
+      readBilbaoFormat("low symmetry after origin shift", Float.NaN);
     } else if (line.contains("<h3>Irrep:")) {
-      readIrrep();
+      readVirtual();
     }
     return true;
   }
@@ -191,20 +198,24 @@ public class BilbaoReader extends AtomSetCollectionReader {
   15.312000 26.660000 29.121000 90.000000 90.000000 90.000000 
   */
 
-  private void readIrrep() throws Exception {
+  private void readVirtual() throws Exception {
+    // <h3>K-vector:  GM = (0,0,0)</h3><h3>Irrep: GM1+</h3><h4>Direction: (a)</h4><h4>Isotropy Subgroup:  62 Pnma D2h-16</h4>Transformation matrix:...
+    if (line.contains("<h3>K-vector:"))
+      kvec = line.substring(line.indexOf("("), line.indexOf(")") + 1);
     String s = getLinesUntil("\"BCS\"");
     int pt = s.indexOf("The amplitude");
     pt = s.indexOf("=", pt);
     String amp = s.substring(pt + 2, s.indexOf(" ", pt + 2));
+    float fAmp = (normDispl ? parseFloatStr(amp) : 1);
     String irrep = getAttr(s, "irrep");
     if (irrep.indexOf(":") >= 0)
       irrep = irrep.substring(0, irrep.indexOf(":"));
     //String set = getAttr(s, "set");
-    String iso = getAttr(s, "iso");
+    //String iso = getAttr(s, "iso");
     //String what = getAttr(s, "what");
     line = line.substring(line.indexOf("value=") + 7);
-    readBilbaoFormat(irrep + " " + iso + " (" + amp + " Ang.)",
-        true);
+    readBilbaoFormat(kvec + " " + irrep + " (" + amp + " Ang.)",
+        fAmp);
 
   }
 

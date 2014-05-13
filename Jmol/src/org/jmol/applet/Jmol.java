@@ -169,7 +169,7 @@ public class Jmol extends GenericApplet implements WrappedApplet {
     this.isSigned = isSigned;
     init(appletObject);
     if (isSigned) {
-      System.out.println("starting file dropper");
+      //System.out.println("starting file dropper");
       try {
         dropper = new FileDropper(null, viewer);
       } catch (Exception e) {

@@ -118,27 +118,28 @@ public class BilbaoReader extends AtomSetCollectionReader {
     if (line.indexOf("<pre>") >= 0)
       line = line.substring(line.indexOf("<pre>") + 5);
     int intTableNo = parseIntStr(line);
+    while (intTableNo < 0 && rdLine() != null) 
+      intTableNo = parseIntStr(line);
     setSpaceGroupName("" + intTableNo);
     float[] data = new float[6];
     fillFloatArray(null, 0, data);
     for (int i = 0; i < 6; i++)
       setUnitCellItem(i, data[i]);
     int i0 = asc.ac;
-    int n = parseIntStr(rd());
+    int n = parseIntStr(rdLine());
     for (int i = n; --i >= 0;) {
-      String[] tokens = getTokensStr(rd());
+      String[] tokens = getTokensStr(rdLine());
       if (!getSym && tokens[1].contains("_"))
         continue;
       addAtomXYZSymName(tokens, 3, tokens[0], tokens[0] + tokens[1]);
     }
     if (!Float.isNaN(fAmp)) {
-      rd();
       /*
       ##disp-par## Rb1x|x0.000000x|x0.000791x|x-0.001494
       ##disp-par## Rb1_2x|x0.000000x|x0.000791x|x0.001494
        */
       for (int i = 0; i < n; i++) {
-        String[] tokens = PT.split(rd(), "x|x");
+        String[] tokens = PT.split(rdLine(), "x|x");
         if (getSym || !tokens[0].contains("_"))
           asc.atoms[i0 + i].vib = V3.new3(parseFloatStr(tokens[1]),
               parseFloatStr(tokens[2]), parseFloatStr(tokens[3]));
@@ -161,6 +162,14 @@ public class BilbaoReader extends AtomSetCollectionReader {
       applySymmetryAndSetTrajectory();
     }
 
+  }
+
+  private String rdLine() throws Exception {
+    while (rd() != null
+        && (line.length() == 0 || line.startsWith("#")
+            && line.indexOf("disp-par") < 0)) {
+    }
+    return line;
   }
 
   @Override

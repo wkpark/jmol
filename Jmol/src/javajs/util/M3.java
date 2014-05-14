@@ -407,7 +407,7 @@ public class M3 extends M34 implements Serializable {
    * Sets the value of this matrix to its inverse.
    */
   public void invert() {
-    double s = determinant();
+    double s = determinant3();
     if (s == 0.0)
       return;
     s = 1 / s;
@@ -416,17 +416,6 @@ public class M3 extends M34 implements Serializable {
         m12 * m20 - m10 * m22, m00 * m22 - m02 * m20, m02 * m10 - m00 * m12,
         m10 * m21 - m11 * m20, m01 * m20 - m00 * m21, m00 * m11 - m01 * m10);
     scale((float) s);
-  }
-
-  /**
-   * Computes the determinant of this matrix.
-   * 
-   * @return the determinant of the matrix
-   */
-  public float determinant() {
-    // less *,+,- calculation than expanded expression.
-    return m00 * (m11 * m22 - m21 * m12) - m01 * (m10 * m22 - m20 * m12) + m02
-        * (m10 * m21 - m20 * m11);
   }
 
   /**

@@ -35,8 +35,8 @@ class SymmetryInfo {
 
   boolean coordinatesAreFractional;
   boolean isMultiCell;
-  String spaceGroup;
-  String[] symmetryOperations;
+  String sgName;
+  SymmetryOperation[] symmetryOperations;
   String symmetryInfoString;
   int[] cellRange;
   private P3 periodicOriginXyz;
@@ -51,14 +51,14 @@ class SymmetryInfo {
   float[] setSymmetryInfo(Map<String, Object> info) {
     cellRange = (int[]) info.get("unitCellRange");
     periodicOriginXyz = (P3) info.get("periodicOriginXyz");
-    spaceGroup = (String) info.get("spaceGroup");
-    if (spaceGroup == null || spaceGroup == "")
-      spaceGroup = "spacegroup unspecified";
+    sgName = (String) info.get("spaceGroup");
+    if (sgName == null || sgName == "")
+      sgName = "spacegroup unspecified";
     int symmetryCount = info.containsKey("symmetryCount") ? 
         ((Integer) info.get("symmetryCount")).intValue() 
         : 0;
-    symmetryOperations = (String[]) info.get("symmetryOperations");
-    symmetryInfoString = "Spacegroup: " + spaceGroup;
+    symmetryOperations = (SymmetryOperation[]) info.remove("symmetryOps");
+    symmetryInfoString = "Spacegroup: " + sgName;
     if (symmetryOperations == null) {
       symmetryInfoString += "\nNumber of symmetry operations: ?"
           + "\nSymmetry Operations: unspecified\n";
@@ -66,7 +66,7 @@ class SymmetryInfo {
       symmetryInfoString += "\nNumber of symmetry operations: "
           + (symmetryCount == 0 ? 1 : symmetryCount) + "\nSymmetry Operations:";
       for (int i = 0; i < symmetryCount; i++)
-        symmetryInfoString += "\n" + symmetryOperations[i];
+        symmetryInfoString += "\n" + symmetryOperations[i].xyz;
     }
     symmetryInfoString += "\n";
     float[] notionalUnitcell = (float[]) info.get("notionalUnitcell");

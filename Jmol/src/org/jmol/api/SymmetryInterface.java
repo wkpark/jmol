@@ -95,7 +95,7 @@ public interface SymmetryInterface {
 
   public String getSymmetryInfoString(Map<String, Object> sginfo, int symOp, String drawID, boolean labelOnly);
 
-  public String[] getSymmetryOperations();
+  public M4[] getSymmetryOperations();
 
   public Tensor getTensor(float[] parBorU);
 

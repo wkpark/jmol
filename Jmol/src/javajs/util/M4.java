@@ -603,7 +603,7 @@ public class M4 extends M34 {
    * Sets the value of this matrix to its inverse.
    */
   public void invert() {
-    float s = determinant();
+    float s = determinant4();
     if (s == 0.0)
       return;
     s = 1 / s;
@@ -685,7 +685,7 @@ public class M4 extends M34 {
    * 
    * @return the determinant of the matrix
    */
-  public float determinant() {
+  public float determinant4() {
     // less *,+,- calculation than expanded expression.
     return (m00 * m11 - m01 * m10) * (m22 * m33 - m23 * m32)
         - (m00 * m12 - m02 * m10) * (m21 * m33 - m23 * m31)

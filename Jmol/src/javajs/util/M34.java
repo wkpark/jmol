@@ -399,6 +399,14 @@ public abstract class M34 {
     m22 = 1.0f;
   }
   
+  /**
+   * @return 3x3 determinant
+   */
+  public float determinant3() {
+    return m00 * (m11 * m22 - m21 * m12) - m01 * (m10 * m22 - m20 * m12) + m02
+        * (m10 * m21 - m20 * m11);
+  }
+  
   protected void err() {
     throw new ArrayIndexOutOfBoundsException(
         "matrix column/row out of bounds");

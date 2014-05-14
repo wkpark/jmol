@@ -748,6 +748,7 @@ public class XtalSymmetry {
       for (int i = 0; i < operationCount; i++)
         symmetryList[i] = "" + symmetry.getSpaceGroupXyz(i, doNormalize);
       asc.setAtomSetAuxiliaryInfo("symmetryOperations", symmetryList);
+      asc.setAtomSetAuxiliaryInfo("symmetryOps", symmetry.getSymmetryOperations());
     }
     asc.setAtomSetAuxiliaryInfo("symmetryCount", Integer.valueOf(operationCount));
   }

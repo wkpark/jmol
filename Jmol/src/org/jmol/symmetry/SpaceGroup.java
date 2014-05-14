@@ -465,7 +465,7 @@ class SpaceGroup {
       // ! in character 0 indicates we are using the symop() function and want to be explicit
       if (xyzList.containsKey(xyz))
         return xyzList.get(xyz).intValue();
-      if (latticeOp < 0 && xyzList.containsKey(PT.rep(xyz, "+1/2", "")))
+      if (latticeOp < 0 && xyzList.containsKey(PT.replaceAllCharacters(xyz, "+123/", "")))
         latticeOp = operationCount;
       xyzList.put(xyz, Integer.valueOf(operationCount));
     }
@@ -1476,15 +1476,23 @@ class SpaceGroup {
     return n / pts.size();
   }
 
-  private String[] operationList;
-  
-  public String[] getOperationList() {
-    if (operationList == null) {
-      operationList = new String[finalOperations.length];
-      for (int i = 0; i < operationList.length; i++)
-        operationList[i] = finalOperations[i].toString();
+  private int[] latticeOps;
+
+  public int[] getAllLatticeOps() {
+    if (latticeOp < 0 || modDim > 0)
+      return null;
+    if (latticeOps == null) {
+      latticeOps = new int[3];
+      int nOps = 0;
+      for (int i = latticeOp; i < operationCount; i++) {
+        SymmetryOperation o = finalOperations[i];
+        if (o.m00 + o.m01 + o.m02 == 3) {
+          System.out.println("spacegroup " + o);
+          latticeOps[nOps++] = i;
+        }
+      }
     }
-    return operationList;
+    return latticeOps;
   }
 
 

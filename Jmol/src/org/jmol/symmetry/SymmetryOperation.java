@@ -67,6 +67,7 @@ class SymmetryOperation extends M4 {
   private boolean doNormalize = true;
   boolean isFinalized;
   private int opId;
+  private V3 centering;
 
   private P3 atomTest;
 
@@ -609,7 +610,6 @@ class SymmetryOperation extends M4 {
   /**
    * 
    * @param modelSet
-   *        TODO
    * @param uc
    * @param pt00
    * @param ptTarget
@@ -625,6 +625,7 @@ class SymmetryOperation extends M4 {
                                  P3 pt00, P3 ptTarget, String id) {
     if (!isFinalized)
       doFinalize();
+    // remove centering translation
     V3 vtemp = new V3();
     P3 ptemp = new P3();
     P3 pt01 = new P3();
@@ -632,6 +633,13 @@ class SymmetryOperation extends M4 {
     P3 pt03 = new P3();
     V3 ftrans = new V3();
     V3 vtrans = new V3();
+    V3 vcentering = null;
+    if (centering != null) {
+      vcentering = V3.newV(centering);
+      uc.toCartesian(vcentering, false);
+    }
+    boolean havecentering = (vcentering != null);
+    
     String xyz = (isBio ? xyzOriginal : getXYZFromMatrix(this, false, false,
         false));
     boolean typeOnly = (id == null);
@@ -643,6 +651,9 @@ class SymmetryOperation extends M4 {
       // If so, add that difference to the matrix transformation 
       pt01.setT(pt00);
       pt02.setT(ptTarget);
+      // remove centering
+      if (havecentering)
+        pt02.sub(vcentering);
       uc.toUnitCell(pt01, ptemp);
       uc.toUnitCell(pt02, ptemp);
       uc.toFractional(pt01, false);
@@ -664,30 +675,11 @@ class SymmetryOperation extends M4 {
     pt01.add(pt00);
     pt02.add(pt00);
     pt03.add(pt00);
-
-    P3 p0 = P3.newP(pt00);
-    P3 p1 = P3.newP(pt01);
-    P3 p2 = P3.newP(pt02);
-    P3 p3 = P3.newP(pt03);
-
-    uc.toFractional(p0, false);
-    uc.toFractional(p1, false);
-    uc.toFractional(p2, false);
-    uc.toFractional(p3, false);
-    rotTrans2(p0, p0);
-    rotTrans2(p1, p1);
-    rotTrans2(p2, p2);
-    rotTrans2(p3, p3);
-    p0.add(vtrans);
-    p1.add(vtrans);
-    p2.add(vtrans);
-    p3.add(vtrans);
+    P3 p0 = addTrans(pt00, uc, vtrans);
+    P3 p1 = addTrans(pt01, uc, vtrans);
+    P3 p2 = addTrans(pt02, uc, vtrans);
+    P3 p3 = addTrans(pt03, uc, vtrans);
     approx(vtrans);
-    uc.toCartesian(p0, false);
-    uc.toCartesian(p1, false);
-    uc.toCartesian(p2, false);
-    uc.toCartesian(p3, false);
-
     V3 v01 = new V3();
     v01.sub2(p1, p0);
     V3 v02 = new V3();
@@ -1261,6 +1253,15 @@ class SymmetryOperation extends M4 {
         Integer.valueOf(ang1), m2, vtrans };
   }
 
+  private P3 addTrans(P3 pt00, SymmetryInterface uc, V3 vtrans) {
+    P3 p0 = P3.newP(pt00);
+    uc.toFractional(p0, false);
+    rotTrans2(p0, p0);
+    p0.add(vtrans);
+    uc.toCartesian(p0, false);
+    return p0;
+  }
+
   private String coord(T3 p) {
     approx0(p);
     return (isBio ? p.x + " " + p.y + " " + p.z : fcoord(p));
@@ -1343,7 +1344,7 @@ class SymmetryOperation extends M4 {
   float magOp = Float.MAX_VALUE;
   public float getSpinOp() {
     if (magOp == Float.MAX_VALUE)
-      magOp = determinant() * timeReversal;
+      magOp = determinant3() * timeReversal;
     return magOp;
   }
 

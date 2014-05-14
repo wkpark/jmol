@@ -293,7 +293,7 @@ public class Symmetry implements SymmetryInterface {
 
   @Override
   public String getSpaceGroupName() {
-    return (symmetryInfo != null ? symmetryInfo.spaceGroup
+    return (symmetryInfo != null ? symmetryInfo.sgName
         : spaceGroup != null ? spaceGroup.getName() : "");
   }
 
@@ -320,8 +320,8 @@ public class Symmetry implements SymmetryInterface {
   }
 
   @Override
-  public String[] getSymmetryOperations() {
-    return symmetryInfo == null ? spaceGroup.getOperationList()
+  public M4[] getSymmetryOperations() {
+    return symmetryInfo == null ? spaceGroup.finalOperations
         : symmetryInfo.symmetryOperations;
   }
 
@@ -656,24 +656,25 @@ public class Symmetry implements SymmetryInterface {
       if (pt1 == null && drawID == null && symOp == 0)
         modelSet.setInfo(modelIndex, "spaceGroupInfo", info);
       spaceGroup = cellInfo.getSpaceGroupName();
-      String[] list = cellInfo.getSymmetryOperations();
+      M4[] ops = cellInfo.getSymmetryOperations();
       SpaceGroup sg = (isBio ? ((Symmetry) cellInfo).spaceGroup : null);
       String jf = "";
-      if (list == null) {
+      if (ops == null) {
         strOperations = "\n no symmetry operations employed";
       } else {
         if (isBio)
           this.spaceGroup = (SpaceGroup.getNull(false)).set(false);
         else
           setSpaceGroup(false);
-        strOperations = "\n" + list.length + " symmetry operations employed:";
-        infolist = new Object[list.length][];
-        for (int i = 0; i < list.length; i++) {
+        strOperations = "\n" + ops.length + " symmetry operations employed:";
+        infolist = new Object[ops.length][];
+        for (int i = 0; i < ops.length; i++) {
+          String xyz = ((SymmetryOperation)ops[i]).xyz;
           int op = (isBio ? addBioMoleculeOperation(sg.finalOperations[i],
-              false) : addSpaceGroupOperation("=" + list[i], i + 1));
+              false) : addSpaceGroupOperation("=" + xyz, i + 1));
           if (op < 0)
             continue;
-          jf += ";" + list[i];
+          jf += ";" + xyz;
           infolist[i] = (symOp > 0 && symOp - 1 != op ? null
               : getSymmetryOperationDescription(modelSet, op, cellInfo, pt1,
                   pt2, drawID));
@@ -717,13 +718,13 @@ public class Symmetry implements SymmetryInterface {
     Symmetry sym = (Symmetry) uc;
     int iop = op;
     if (xyz == null) {
-      String[] ops = sym.getSymmetryOperations();
+      SymmetryOperation[] ops = (SymmetryOperation[])sym.getSymmetryOperations();
       if (ops == null || op == 0 || Math.abs(op) > ops.length)
         return "";
       if (op > 0) {
-        xyz = ops[iop = op - 1];
+        xyz = ops[iop = op - 1].xyz;
       } else {
-        xyz = ops[iop = -1 - op];
+        xyz = ops[iop = -1 - op].xyz;
       }
     } else {
       iop = op = 0;
@@ -804,4 +805,5 @@ public class Symmetry implements SymmetryInterface {
   public String fcoord(T3 p) {
     return SymmetryOperation.fcoord(p);
   }
+
 }

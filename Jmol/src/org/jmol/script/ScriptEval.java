@@ -4609,12 +4609,10 @@ public class ScriptEval extends ScriptExpr {
       if (tokAt(i) == T.packed) {
         htParams.put("packed", Boolean.TRUE);
         sOptions.append(" PACKED");
-        i++;
-        if (isFloatParameter(i)) {
+        if (isFloatParameter(++i)) {
           float f = floatParameter(i++);
           htParams.put("packingError", Float.valueOf(f));
           sOptions.append(" " + f);
-          i++;
         }
       }
       if (tokAt(i) == T.centroid) {

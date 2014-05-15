@@ -26,7 +26,11 @@
 package org.jmol.symmetry;
 
 
+import javajs.util.Lst;
 import javajs.util.P3;
+import javajs.util.PT;
+import javajs.util.V3;
+
 import org.jmol.util.SimpleUnitCell;
 
 import java.util.Map;
@@ -37,9 +41,10 @@ class SymmetryInfo {
   boolean isMultiCell;
   String sgName;
   SymmetryOperation[] symmetryOperations;
-  String symmetryInfoString;
+  String infoStr;
   int[] cellRange;
   private P3 periodicOriginXyz;
+  Lst<V3> centerings;
 
   boolean isPeriodic() {
     return periodicOriginXyz != null;
@@ -58,17 +63,29 @@ class SymmetryInfo {
         ((Integer) info.get("symmetryCount")).intValue() 
         : 0;
     symmetryOperations = (SymmetryOperation[]) info.remove("symmetryOps");
-    symmetryInfoString = "Spacegroup: " + sgName;
+    infoStr = "Spacegroup: " + sgName;
     if (symmetryOperations == null) {
-      symmetryInfoString += "\nNumber of symmetry operations: ?"
+      infoStr += "\nNumber of symmetry operations: ?"
           + "\nSymmetry Operations: unspecified\n";
     } else {
-      symmetryInfoString += "\nNumber of symmetry operations: "
+      centerings = new Lst<V3>();
+      String c = "";
+      String s = "\nNumber of symmetry operations: "
           + (symmetryCount == 0 ? 1 : symmetryCount) + "\nSymmetry Operations:";
-      for (int i = 0; i < symmetryCount; i++)
-        symmetryInfoString += "\n" + symmetryOperations[i].xyz;
+      for (int i = 0; i < symmetryCount; i++) {
+        SymmetryOperation op = symmetryOperations[i];
+        s += "\n" + op.xyz;
+        if (op.isCenteringOp) {
+          centerings.addLast(op.centering);
+          String oc = PT.replaceAllCharacters(op.xyz, "xyz", "0"); 
+          c += " (" + PT.rep(oc, "0+", "") + ")";
+        }
+      }
+      if (c.length() > 0)
+        infoStr += "\nCentering: " + c;
+      infoStr += s;
     }
-    symmetryInfoString += "\n";
+    infoStr += "\n";
     float[] notionalUnitcell = (float[]) info.get("notionalUnitcell");
     if (!SimpleUnitCell.isValid(notionalUnitcell))
       return null;

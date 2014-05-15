@@ -67,7 +67,7 @@ class SymmetryOperation extends M4 {
   private boolean doNormalize = true;
   boolean isFinalized;
   private int opId;
-  private V3 centering;
+  V3 centering;
 
   private P3 atomTest;
 
@@ -611,26 +611,51 @@ class SymmetryOperation extends M4 {
    * 
    * @param modelSet
    * @param uc
-   * @param pt00
+   * @param pta00
+   *        optional initial atom point
    * @param ptTarget
+   *        optional target atom point
    * @param id
-   * @return Object[] containing: [0] xyz (Jones-Faithful calculated from
-   *         matrix) [1] xyzOriginal (Provided by calling method) [2] info
-   *         ("C2 axis", for example) [3] draw commands [4] translation vector
-   *         (fractional) [5] translation vector (Cartesian) [6] inversion point
-   *         [7] axis point [8] axis vector (defines plane if angle = 0 [9]
-   *         angle of rotation [10] matrix representation
+   * @return Object[] containing:
+   * 
+   *         [0] xyz (Jones-Faithful calculated from matrix)
+   * 
+   *         [1] xyzOriginal (Provided by calling method)
+   * 
+   *         [2] info ("C2 axis", for example)
+   * 
+   *         [3] draw commands
+   * 
+   *         [4] translation vector (fractional)
+   * 
+   *         [5] translation vector (Cartesian)
+   * 
+   *         [6] inversion point
+   * 
+   *         [7] axis point
+   * 
+   *         [8] axis vector (defines plane if angle = 0
+   * 
+   *         [9] angle of rotation
+   * 
+   *         [10] matrix representation
+   * 
+   *         [11] vtrans ?
+   * 
+   *         [12] centering
+   * 
    */
-  Object[] getDescription(ModelSet modelSet, SymmetryInterface uc,
-                                 P3 pt00, P3 ptTarget, String id) {
+  Object[] getDescription(ModelSet modelSet, SymmetryInterface uc, P3 pta00,
+                          P3 ptTarget, String id) {
+
     if (!isFinalized)
       doFinalize();
     // remove centering translation
     V3 vtemp = new V3();
     P3 ptemp = new P3();
-    P3 pt01 = new P3();
-    P3 pt02 = new P3();
-    P3 pt03 = new P3();
+    P3 ptemp2 = new P3();
+    P3 pta01 = new P3();
+    P3 pta02 = new P3();
     V3 ftrans = new V3();
     V3 vtrans = new V3();
     V3 vcentering = null;
@@ -638,68 +663,72 @@ class SymmetryOperation extends M4 {
       vcentering = V3.newV(centering);
       uc.toCartesian(vcentering, false);
     }
-    boolean havecentering = (vcentering != null);
-    
-    String xyz = (isBio ? xyzOriginal : getXYZFromMatrix(this, false, false,
-        false));
-    boolean typeOnly = (id == null);
-    if (pt00 == null || Float.isNaN(pt00.x))
-      pt00 = new P3();
+    boolean haveCentering = (vcentering != null);
+
+    if (pta00 == null || Float.isNaN(pta00.x))
+      pta00 = new P3();
     if (ptTarget != null) {
+
+      // Check to see that this is the correct operator
+      setFractional(uc, pta01, pta00, ptemp);
+      rotTrans(pta01);
+      uc.toCartesian(pta01, false);
+      uc.toUnitCell(pta01, ptemp);
+      pta02.setT(ptTarget);
+      uc.toUnitCell(pta02, ptemp);
+      if (pta01.distance(pta02) > 0.1f)
+        return null;
+
       // Check to see if the two points only differ by
       // a translation after transformation.
       // If so, add that difference to the matrix transformation 
-      pt01.setT(pt00);
-      pt02.setT(ptTarget);
-      // remove centering
-      if (havecentering)
-        pt02.sub(vcentering);
-      uc.toUnitCell(pt01, ptemp);
-      uc.toUnitCell(pt02, ptemp);
-      uc.toFractional(pt01, false);
-      rotTrans(pt01);
-      uc.toCartesian(pt01, false);
-      uc.toUnitCell(pt01, ptemp);
-      if (pt01.distance(pt02) > 0.1f)
-        return null;
-      pt01.setT(pt00);
-      pt02.setT(ptTarget);
-      uc.toFractional(pt01, false);
-      uc.toFractional(pt02, false);
-      rotTrans(pt01);
-      vtrans.sub2(pt02, pt01);
-      pt01.set(0, 0, 0);
-      pt02.set(0, 0, 0);
+      setFractional(uc, pta01, pta00, null);
+      rotTrans(pta01);
+      setFractional(uc, pta02, ptTarget, null);
+      vtrans.sub2(pta02, pta01);
     }
-    pt01.x = pt02.y = pt03.z = 1;
-    pt01.add(pt00);
-    pt02.add(pt00);
-    pt03.add(pt00);
-    P3 p0 = addTrans(pt00, uc, vtrans);
-    P3 p1 = addTrans(pt01, uc, vtrans);
-    P3 p2 = addTrans(pt02, uc, vtrans);
-    P3 p3 = addTrans(pt03, uc, vtrans);
-    approx(vtrans);
-    V3 v01 = new V3();
-    v01.sub2(p1, p0);
-    V3 v02 = new V3();
-    v02.sub2(p2, p0);
-    V3 v03 = new V3();
-    v03.sub2(p3, p0);
 
-    vtemp.cross(v01, v02);
-    boolean haveinversion = (vtemp.dot(v03) < 0);
+    // get the frame vectors and points
+
+    pta01.set(1, 0, 0);
+    pta02.set(0, 1, 0);
+    P3 pta03 = P3.new3(0, 0, 1);
+    pta01.add(pta00);
+    pta02.add(pta00);
+    pta03.add(pta00);
+
+    // we remove centering for now
+
+    if (haveCentering)
+      vtrans.sub(centering);
+
+    // target point, rotated, inverted, and translated, but not centered
+
+    P3 pt0 = rotTransCart(pta00, uc, vtrans);
+    P3 pt1 = rotTransCart(pta01, uc, vtrans);
+    P3 pt2 = rotTransCart(pta02, uc, vtrans);
+    P3 pt3 = rotTransCart(pta03, uc, vtrans);
+
+    V3 vt1 = V3.newVsub(pt1, pt0);
+    V3 vt2 = V3.newVsub(pt2, pt0);
+    V3 vt3 = V3.newVsub(pt3, pt0);
+
+    approx(vtrans);
+
+    // check for inversion
+    vtemp.cross(vt1, vt2);
+    boolean haveInversion = (vtemp.dot(vt3) < 0);
 
     // The first trick is to check cross products to see if we still have a
     // right-hand axis.
 
-    if (haveinversion) {
+    if (haveInversion) {
 
       // undo inversion for quaternion analysis (requires proper rotations only)
 
-      p1.scaleAdd2(-2, v01, p1);
-      p2.scaleAdd2(-2, v02, p2);
-      p3.scaleAdd2(-2, v03, p3);
+      pt1.sub2(pt0, vt1);
+      pt2.sub2(pt0, vt2);
+      pt3.sub2(pt0, vt3);
 
     }
 
@@ -710,25 +739,29 @@ class SymmetryOperation extends M4 {
     // symop(sym,{0 0 0}) function will return the overall translation.
 
     Object[] info;
-    info = (Object[]) Measure.computeHelicalAxis(null, T.array, pt00, p0,
-        Quat.getQuaternionFrame(p0, p1, p2).div(
-            Quat.getQuaternionFrame(pt00, pt01, pt02)));
+    info = (Object[]) Measure.computeHelicalAxis(
+        null,
+        T.array,
+        pta00,
+        pt0,
+        Quat.getQuaternionFrame(pt0, pt1, pt2).div(
+            Quat.getQuaternionFrame(pta00, pta01, pta02)));
     P3 pa1 = (P3) info[0];
     V3 ax1 = (V3) info[1];
     int ang1 = (int) Math.abs(PT.approx(((P3) info[3]).x, 1));
     float pitch1 = approxF(((P3) info[3]).y);
 
-    if (haveinversion) {
+    if (haveInversion) {
 
       // redo inversion
 
-      p1.scaleAdd2(2, v01, p1);
-      p2.scaleAdd2(2, v02, p2);
-      p3.scaleAdd2(2, v03, p3);
+      pt1.add2(pt0, vt1);
+      pt2.add2(pt0, vt2);
+      pt3.add2(pt0, vt3);
 
     }
 
-    V3 trans = V3.newVsub(p0, pt00);
+    V3 trans = V3.newVsub(pt0, pta00);
     if (trans.length() < 0.1f)
       trans = null;
 
@@ -736,28 +769,29 @@ class SymmetryOperation extends M4 {
 
     P3 ptinv = null; // inverted point for translucent frame
     P3 ipt = null; // inversion center
-    P3 pt0 = null; // reflection center
+    P3 ptref = null; // reflection center
 
-    boolean istranslation = (ang1 == 0);
-    boolean isrotation = !istranslation;
-    boolean isinversion = false;
-    boolean ismirrorplane = false;
+    boolean isTranslation = (ang1 == 0);
+    boolean isRotation = !isTranslation;
+    boolean isInversionOnly = false;
+    boolean isMirrorPlane = false;
 
-    if (isrotation || haveinversion)
+    if (isRotation || haveInversion)
       trans = null;
 
     // handle inversion
 
-    if (haveinversion && istranslation) {
+    if (haveInversion && isTranslation) {
 
       // simple inversion operation
 
-      ipt = P3.newP(pt00);
-      ipt.add(p0);
+      ipt = P3.newP(pta00);
+      ipt.add(pt0);
       ipt.scale(0.5f);
-      ptinv = p0;
-      isinversion = true;
-    } else if (haveinversion) {
+      ptinv = pt0;
+      isInversionOnly = true;
+
+    } else if (haveInversion) {
 
       /*
        * 
@@ -836,26 +870,25 @@ class SymmetryOperation extends M4 {
       case 180: // 2_1 to mirror plane
         // C2 with inversion is a mirror plane -- but could have a glide
         // component.
-        pt0 = P3.newP(pt00);
-        pt0.add(d);
-        pa1.scaleAdd2(0.5f, d, pt00);
-        if (pt0.distance(p0) > 0.1f) {
-          trans = V3.newVsub(p0, pt0);
-          ptemp.setT(trans);
-          uc.toFractional(ptemp, false);
+        ptref = P3.newP(pta00);
+        ptref.add(d);
+        pa1.scaleAdd2(0.5f, d, pta00);
+        if (ptref.distance(pt0) > 0.1f) {
+          trans = V3.newVsub(pt0, ptref);
+          setFractional(uc, ptemp, trans, null);
           ftrans.setT(ptemp);
         } else {
           trans = null;
         }
-        isrotation = false;
-        haveinversion = false;
-        ismirrorplane = true;
+        isRotation = false;
+        haveInversion = false;
+        isMirrorPlane = true;
       }
       if (f != 0) {
         // pa1 = pa1 + ((pt00 - pa1) + (p0 - (pa1 + d))) * f
 
-        vtemp.sub2(pt00, pa1);
-        vtemp.add(p0);
+        vtemp.sub2(pta00, pa1);
+        vtemp.add(pt0);
         vtemp.sub(pa1);
         vtemp.sub(d);
         vtemp.scale(f);
@@ -863,7 +896,7 @@ class SymmetryOperation extends M4 {
         ipt = new P3();
         ipt.scaleAdd2(0.5f, d, pa1);
         ptinv = new P3();
-        ptinv.scaleAdd2(-2, ipt, pt00);
+        ptinv.scaleAdd2(-2, ipt, pta00);
         ptinv.scale(-1);
       }
 
@@ -893,33 +926,33 @@ class SymmetryOperation extends M4 {
     int ang = ang1;
     approx0(ax1);
 
-    if (isrotation) {
+    if (isRotation) {
 
-      P3 pt1 = new P3();
+      P3 ptr = new P3();
 
       vtemp.setT(ax1);
 
       // draw the lines associated with a rotation
 
       int ang2 = ang1;
-      if (haveinversion) {
-        pt1.add2(pa1, vtemp);
-        ang2 = Math.round(Measure.computeTorsion(ptinv, pa1, pt1, p0, true));
+      if (haveInversion) {
+        ptr.add2(pa1, vtemp);
+        ang2 = Math.round(Measure.computeTorsion(ptinv, pa1, ptr, pt0, true));
       } else if (pitch1 == 0) {
-        pt1.setT(pa1);
-        ptemp.scaleAdd2(1, pt1, vtemp);
-        ang2 = Math.round(Measure.computeTorsion(pt00, pa1, ptemp, p0, true));
+        ptr.setT(pa1);
+        ptemp.scaleAdd2(1, ptr, vtemp);
+        ang2 = Math.round(Measure.computeTorsion(pta00, pa1, ptemp, pt0, true));
       } else {
         ptemp.add2(pa1, vtemp);
-        pt1.scaleAdd2(0.5f, vtemp, pa1);
-        ang2 = Math.round(Measure.computeTorsion(pt00, pa1, ptemp, p0, true));
+        ptr.scaleAdd2(0.5f, vtemp, pa1);
+        ang2 = Math.round(Measure.computeTorsion(pta00, pa1, ptemp, pt0, true));
       }
 
       if (ang2 != 0)
         ang1 = ang2;
     }
 
-    if (isrotation && !haveinversion && pitch1 == 0) {
+    if (isRotation && !haveInversion && pitch1 == 0) {
       if (ax1.z < 0 || ax1.z == 0 && (ax1.y < 0 || ax1.y == 0 && ax1.x < 0)) {
         ax1.scale(-1);
         ang1 = -ang1;
@@ -929,33 +962,31 @@ class SymmetryOperation extends M4 {
     // time to get the description
 
     String info1 = "identity";
-    SB draw1 = new SB();
-    String drawid;
 
-    if (isinversion) {
+    if (isInversionOnly) {
       ptemp.setT(ipt);
       uc.toFractional(ptemp, false);
-      info1 = "inversion center|" + coord(ptemp);
-    } else if (isrotation) {
-      if (haveinversion) {
+      info1 = "inversion center|" + strCoord(ptemp);
+    } else if (isRotation) {
+      if (haveInversion) {
         info1 = "" + (360 / ang) + "-bar axis";
       } else if (pitch1 != 0) {
         info1 = "" + (360 / ang) + "-fold screw axis";
         ptemp.setT(ax1);
         uc.toFractional(ptemp, false);
-        info1 += "|translation: " + coord(ptemp);
+        info1 += "|translation: " + strCoord(ptemp);
       } else {
         info1 = "C" + (360 / ang) + " axis";
       }
     } else if (trans != null) {
-      String s = " " + coord(ftrans);
-      if (istranslation) {
+      String s = " " + strCoord(ftrans);
+      if (isTranslation) {
         info1 = "translation:" + s;
-      } else if (ismirrorplane) {
+      } else if (isMirrorPlane) {
         float fx = approxF(ftrans.x);
         float fy = approxF(ftrans.y);
         float fz = approxF(ftrans.z);
-        s = " " + coord(ftrans);
+        s = " " + strCoord(ftrans);
         if (fx != 0 && fy != 0 && fz != 0)
           info1 = "d-";
         else if (fx != 0 && fy != 0 || fy != 0 && fz != 0 || fz != 0 && fx != 0)
@@ -968,52 +999,51 @@ class SymmetryOperation extends M4 {
           info1 = "c-";
         info1 += "glide plane |translation:" + s;
       }
-    } else if (ismirrorplane) {
+    } else if (isMirrorPlane) {
       info1 = "mirror plane";
     }
 
-    if (haveinversion && !isinversion) {
+    if (haveInversion && !isInversionOnly) {
       ptemp.setT(ipt);
       uc.toFractional(ptemp, false);
-      info1 += "|inversion center at " + coord(ptemp);
+      info1 += "|inversion center at " + strCoord(ptemp);
     }
+    if (haveCentering)
+      info1 += "|centering " + strCoord(centering);
 
     String cmds = null;
-    if (!typeOnly) {
+    String xyzNew = (isBio ? xyzOriginal : getXYZFromMatrix(this, false, false,
+        false));
+
+    // check for drawing
+
+    SB draw1 = new SB();
+
+    if (id != null) {
+
+      String drawid;
+      String opType = null;
       drawid = "\ndraw ID " + id + "_";
 
       // delete previous elements of this user-settable ID
 
       draw1 = new SB();
-      draw1.append(
-          ("// " + xyzOriginal + "|" + xyz + "|" + info1).replace('\n', ' '))
-          .append("\n");
-      draw1.append(drawid).append("* delete");
+      draw1
+          .append(
+              ("// " + xyzOriginal + "|" + xyzNew + "|" + info1).replace('\n',
+                  ' ')).append("\n").append(drawid).append("* delete");
 
       // draw the initial frame
 
-      drawLine(draw1, drawid + "frame1X", 0.15f, pt00, pt01, "red");
-      drawLine(draw1, drawid + "frame1Y", 0.15f, pt00, pt02, "green");
-      drawLine(draw1, drawid + "frame1Z", 0.15f, pt00, pt03, "blue");
-
-      // draw the final frame just a bit fatter and shorter, in case they
-      // overlap
-
-      ptemp.sub2(p1, p0);
-      ptemp.scaleAdd2(0.9f, ptemp, p0);
-      drawLine(draw1, drawid + "frame2X", 0.2f, p0, ptemp, "red");
-      ptemp.sub2(p2, p0);
-      ptemp.scaleAdd2(0.9f, ptemp, p0);
-      drawLine(draw1, drawid + "frame2Y", 0.2f, p0, ptemp, "green");
-      ptemp.sub2(p3, p0);
-      ptemp.scaleAdd2(0.9f, ptemp, p0);
-      drawLine(draw1, drawid + "frame2Z", 0.2f, p0, ptemp, "purple");
+      drawLine(draw1, drawid + "frame1X", 0.15f, pta00, pta01, "red");
+      drawLine(draw1, drawid + "frame1Y", 0.15f, pta00, pta02, "green");
+      drawLine(draw1, drawid + "frame1Z", 0.15f, pta00, pta03, "blue");
 
       String color;
 
-      if (isrotation) {
+      if (isRotation) {
 
-        P3 pt1 = new P3();
+        P3 ptr = new P3();
 
         color = "red";
 
@@ -1023,95 +1053,94 @@ class SymmetryOperation extends M4 {
 
         // draw the lines associated with a rotation
 
-        if (haveinversion) {
-          pt1.add2(pa1, vtemp);
+        if (haveInversion) {
+          opType = drawid + "rotinv";
+          ptr.add2(pa1, vtemp);
           if (pitch1 == 0) {
-            pt1.setT(ipt);
+            ptr.setT(ipt);
             vtemp.scale(3);
             ptemp.scaleAdd2(-1, vtemp, pa1);
-            draw1.append(drawid).append("rotVector2 diameter 0.1 ").append(
-                Escape.eP(pa1)).append(Escape.eP(ptemp)).append(" color red");
+            draw1.append(drawid).append("rotVector2 diameter 0.1 ")
+                .append(Escape.eP(pa1)).append(Escape.eP(ptemp))
+                .append(" color red");
           }
-          scale = p0.distance(pt1);
-          draw1.append(drawid).append("rotLine1 ").append(Escape.eP(pt1))
+          scale = pt0.distance(ptr);
+          draw1.append(drawid).append("rotLine1 ").append(Escape.eP(ptr))
               .append(Escape.eP(ptinv)).append(" color red");
-          draw1.append(drawid).append("rotLine2 ").append(Escape.eP(pt1))
-              .append(Escape.eP(p0)).append(" color red");
+          draw1.append(drawid).append("rotLine2 ").append(Escape.eP(ptr))
+              .append(Escape.eP(pt0)).append(" color red");
         } else if (pitch1 == 0) {
-          boolean isSpecial = (pt00.distance(p0) < 0.2f);
+          opType = drawid + "rot";
+          boolean isSpecial = (pta00.distance(pt0) < 0.2f);
           if (!isSpecial) {
-            draw1.append(drawid).append("rotLine1 ").append(Escape.eP(pt00))
+            draw1.append(drawid).append("rotLine1 ").append(Escape.eP(pta00))
                 .append(Escape.eP(pa1)).append(" color red");
-            draw1.append(drawid).append("rotLine2 ").append(Escape.eP(p0))
+            draw1.append(drawid).append("rotLine2 ").append(Escape.eP(pt0))
                 .append(Escape.eP(pa1)).append(" color red");
           }
           vtemp.scale(3);
           ptemp.scaleAdd2(-1, vtemp, pa1);
-          draw1.append(drawid).append("rotVector2 diameter 0.1 ").append(
-              Escape.eP(pa1)).append(Escape.eP(ptemp)).append(" color red");
-          pt1.setT(pa1);
-          if (pitch1 == 0 && pt00.distance(p0) < 0.2)
-            pt1.scaleAdd2(0.5f, pt1, vtemp);
+          draw1.append(drawid).append("rotVector2 diameter 0.1 ")
+              .append(Escape.eP(pa1)).append(Escape.eP(ptemp))
+              .append(" color red");
+          ptr.setT(pa1);
+          if (pitch1 == 0 && pta00.distance(pt0) < 0.2)
+            ptr.scaleAdd2(0.5f, ptr, vtemp);
         } else {
-          // screw
+          opType = drawid + "screw";
           color = "orange";
-          draw1.append(drawid).append("rotLine1 ").append(Escape.eP(pt00))
+          draw1.append(drawid).append("rotLine1 ").append(Escape.eP(pta00))
               .append(Escape.eP(pa1)).append(" color red");
           ptemp.add2(pa1, vtemp);
-          draw1.append(drawid).append("rotLine2 ").append(Escape.eP(p0))
+          draw1.append(drawid).append("rotLine2 ").append(Escape.eP(pt0))
               .append(Escape.eP(ptemp)).append(" color red");
-          pt1.scaleAdd2(0.5f, vtemp, pa1);
+          ptr.scaleAdd2(0.5f, vtemp, pa1);
         }
 
         // draw arc arrow
 
-        ptemp.add2(pt1, vtemp);
-        if (haveinversion && pitch1 != 0) {
-          draw1.append(drawid).append("rotRotLine1").append(Escape.eP(pt1))
+        ptemp.add2(ptr, vtemp);
+        if (haveInversion && pitch1 != 0) {
+          draw1.append(drawid).append("rotRotLine1").append(Escape.eP(ptr))
               .append(Escape.eP(ptinv)).append(" color red");
-          draw1.append(drawid).append("rotRotLine2").append(Escape.eP(pt1))
-              .append(Escape.eP(p0)).append(" color red");
+          draw1.append(drawid).append("rotRotLine2").append(Escape.eP(ptr))
+              .append(Escape.eP(pt0)).append(" color red");
         }
-        draw1.append(drawid).append(
-            "rotRotArrow arrow width 0.10 scale " + scale + " arc ").append(
-            Escape.eP(pt1)).append(Escape.eP(ptemp));
-        ptemp.setT(haveinversion ? ptinv : pt00);
-        if (ptemp.distance(p0) < 0.1f)
-          ptemp.set((float) Math.random(), (float) Math.random(), (float) Math
-              .random());
+        draw1.append(drawid)
+            .append("rotRotArrow arrow width 0.10 scale " + scale + " arc ")
+            .append(Escape.eP(ptr)).append(Escape.eP(ptemp));
+        ptemp.setT(haveInversion ? ptinv : pta00);
+        if (ptemp.distance(pt0) < 0.1f)
+          ptemp.set((float) Math.random(), (float) Math.random(),
+              (float) Math.random());
         draw1.append(Escape.eP(ptemp));
         ptemp.set(0, ang, 0);
         draw1.append(Escape.eP(ptemp)).append(" color red");
         // draw the main vector
 
-        draw1.append(drawid).append("rotVector1 vector diameter 0.1 ").append(
-            Escape.eP(pa1)).append(Escape.eP(vtemp)).append("color ").append(
-            color);
+        draw1.append(drawid).append("rotVector1 vector diameter 0.1 ")
+            .append(Escape.eP(pa1)).append(Escape.eP(vtemp)).append("color ")
+            .append(color);
+
       }
 
-      if (ismirrorplane) {
+      if (isMirrorPlane) {
 
         // indigo arrow across plane from pt00 to pt0
 
-        if (pt00.distance(pt0) > 0.2)
-          draw1.append(drawid).append("planeVector arrow ").append(
-              Escape.eP(pt00)).append(Escape.eP(pt0)).append(" color indigo");
+        if (pta00.distance(ptref) > 0.2)
+          draw1.append(drawid).append("planeVector arrow ")
+              .append(Escape.eP(pta00)).append(Escape.eP(ptref))
+              .append(" color indigo");
 
-        // faint inverted frame if trans is not null
+        // faint inverted frame if mirror trans is not null
 
+        opType = drawid + "plane";
         if (trans != null) {
-          ptemp.scaleAdd2(-1, p0, p1);
-          ptemp.add(pt0);
-          drawLine(draw1, drawid + "planeFrameX", 0.15f, pt0, ptemp,
-              "translucent red");
-          ptemp.scaleAdd2(-1, p0, p2);
-          ptemp.add(pt0);
-          drawLine(draw1, drawid + "planeFrameY", 0.15f, pt0, ptemp,
-              "translucent green");
-          ptemp.scaleAdd2(-1, p0, p3);
-          ptemp.add(pt0);
-          drawLine(draw1, drawid + "planeFrameZ", 0.15f, pt0, ptemp,
-              "translucent blue");
+          drawFrameLine("X", ptref, vt1, 0.15f, ptemp, draw1, opType, "red");
+          drawFrameLine("Y", ptref, vt2, 0.15f, ptemp, draw1, opType, "green");
+          drawFrameLine("Z", ptref, vt3, 0.15f, ptemp, draw1, opType, "blue");
+          opType = drawid + "glide";
         }
 
         color = (trans == null ? "green" : "blue");
@@ -1135,8 +1164,8 @@ class SymmetryOperation extends M4 {
         // returns triangles and lines
         for (int i = v.size(); --i >= 0;) {
           P3[] pts = (P3[]) v.get(i);
-          draw1.append(drawid).append("planep").appendI(i).append(" ").append(
-              Escape.eP(pts[0])).append(Escape.eP(pts[1]));
+          draw1.append(drawid).append("planep").appendI(i).append(" ")
+              .append(Escape.eP(pts[0])).append(Escape.eP(pts[1]));
           if (pts.length == 3)
             draw1.append(Escape.eP(pts[2]));
           draw1.append(" color translucent ").append(color);
@@ -1146,63 +1175,91 @@ class SymmetryOperation extends M4 {
 
         if (v.size() == 0) {
           ptemp.add2(pa1, ax1);
-          draw1.append(drawid).append("planeCircle scale 2.0 circle ").append(
-              Escape.eP(pa1)).append(Escape.eP(ptemp)).append(
-              " color translucent ").append(color).append(" mesh fill");
+          draw1.append(drawid).append("planeCircle scale 2.0 circle ")
+              .append(Escape.eP(pa1)).append(Escape.eP(ptemp))
+              .append(" color translucent ").append(color).append(" mesh fill");
         }
       }
 
-      if (haveinversion) {
+      if (haveInversion) {
+
+        opType = drawid + "inv";
 
         // draw a faint frame showing the inversion
 
-        draw1.append(drawid).append("invPoint diameter 0.4 ").append(
-            Escape.eP(ipt));
-        draw1.append(drawid).append("invArrow arrow ").append(Escape.eP(pt00))
+        draw1.append(drawid).append("invPoint diameter 0.4 ")
+            .append(Escape.eP(ipt));
+        draw1.append(drawid).append("invArrow arrow ").append(Escape.eP(pta00))
             .append(Escape.eP(ptinv)).append(" color indigo");
-        if (!isinversion) {
-          ptemp.add2(ptinv, pt00);
-          ptemp.sub(pt01);
-          drawLine(draw1, drawid + "invFrameX", 0.15f, ptinv, ptemp,
-              "translucent red");
-          ptemp.add2(ptinv, pt00);
-          ptemp.sub(pt02);
-          drawLine(draw1, drawid + "invFrameY", 0.15f, ptinv, ptemp,
-              "translucent green");
-          ptemp.add2(ptinv, pt00);
-          ptemp.sub(pt03);
-          drawLine(draw1, drawid + "invFrameZ", 0.15f, ptinv, ptemp,
-              "translucent blue");
+        if (!isInversionOnly && !haveCentering) {
+          drawFrameLine("X", ptinv, vt1, 0.15f, ptemp, draw1, opType, "red");
+          drawFrameLine("Y", ptinv, vt2, 0.15f, ptemp, draw1, opType, "green");
+          drawFrameLine("Z", ptinv, vt3, 0.15f, ptemp, draw1, opType, "blue");
         }
       }
 
       // and display translation if still not {0 0 0}
 
       if (trans != null) {
-        if (pt0 == null)
-          pt0 = P3.newP(pt00);
-        draw1.append(drawid).append("transVector vector ").append(
-            Escape.eP(pt0)).append(Escape.eP(trans));
+        if (ptref == null)
+          ptref = P3.newP(pta00);
+        draw1.append(drawid).append("transVector vector ")
+            .append(Escape.eP(ptref)).append(Escape.eP(trans));
       }
+
+      // draw the centering frame and arrow
+
+      if (haveCentering) {
+        if (opType != null) {
+          drawFrameLine("X", pt0, vt1, 0.15f, ptemp, draw1, opType, "red");
+          drawFrameLine("Y", pt0, vt2, 0.15f, ptemp, draw1, opType, "green");
+          drawFrameLine("Z", pt0, vt3, 0.15f, ptemp, draw1, opType, "blue");
+        }
+        if (ptTarget == null) {
+          ptTarget = ptemp;
+          ptemp.add2(pt0, vcentering);
+        }
+        draw1.append(drawid).append("centeringVector arrow ")
+        .append(Escape.eP(pt0)).append(Escape.eP(ptTarget))
+        .append(" color cyan");
+
+      }
+
+      // draw the final frame just a bit fatter and shorter, in case they
+      // overlap
+
+      ptemp2.setT(pt0);
+      if (haveCentering)
+        ptemp2.add(vcentering);
+      ptemp.sub2(pt1, pt0);
+      ptemp.scaleAdd2(0.9f, ptemp, ptemp2);
+      drawLine(draw1, drawid + "frame2X", 0.2f, ptemp2, ptemp, "red");
+      ptemp.sub2(pt2, pt0);
+      ptemp.scaleAdd2(0.9f, ptemp, ptemp2);
+      drawLine(draw1, drawid + "frame2Y", 0.2f, ptemp2, ptemp, "green");
+      ptemp.sub2(pt3, pt0);
+      ptemp.scaleAdd2(0.9f, ptemp, ptemp2);
+      drawLine(draw1, drawid + "frame2Z", 0.2f, ptemp2, ptemp, "purple");
 
       // color the targeted atoms opaque and add another frame if necessary
 
-      draw1.append("\nvar pt00 = " + Escape.eP(pt00));
-      draw1.append("\nvar p0 = " + Escape.eP(p0));
+      draw1.append("\nvar pt00 = " + Escape.eP(pta00));
+      draw1.append("\nvar p0 = " + Escape.eP(ptemp2));
       draw1.append("\nif (within(0.2,p0).length == 0) {");
       draw1.append("\nvar set2 = within(0.2,p0.uxyz.xyz)");
       draw1.append("\nif (set2) {");
+//      if (haveCentering)
+  //      draw1.append(drawid).append(
+    //        "cellOffsetVector arrow @p0 @set2 color grey");
       draw1.append(drawid)
-          .append("cellOffsetVector arrow @p0 @set2 color grey");
-      draw1.append(drawid).append(
-          "offsetFrameX diameter 0.20 @{set2.xyz} @{set2.xyz + ").append(
-          Escape.eP(v01)).append("*0.9} color red");
-      draw1.append(drawid).append(
-          "offsetFrameY diameter 0.20 @{set2.xyz} @{set2.xyz + ").append(
-          Escape.eP(v02)).append("*0.9} color green");
-      draw1.append(drawid).append(
-          "offsetFrameZ diameter 0.20 @{set2.xyz} @{set2.xyz + ").append(
-          Escape.eP(v03)).append("*0.9} color purple");
+          .append("offsetFrameX diameter 0.20 @{set2.xyz} @{set2.xyz + ")
+          .append(Escape.eP(vt1)).append("*0.9} color red");
+      draw1.append(drawid)
+          .append("offsetFrameY diameter 0.20 @{set2.xyz} @{set2.xyz + ")
+          .append(Escape.eP(vt2)).append("*0.9} color green");
+      draw1.append(drawid)
+          .append("offsetFrameZ diameter 0.20 @{set2.xyz} @{set2.xyz + ")
+          .append(Escape.eP(vt3)).append("*0.9} color purple");
       draw1.append("\n}}\n");
 
       cmds = draw1.toString();
@@ -1211,8 +1268,8 @@ class SymmetryOperation extends M4 {
     }
     if (trans == null)
       ftrans = null;
-    if (isrotation) {
-      if (haveinversion) {
+    if (isRotation) {
+      if (haveInversion) {
       } else if (pitch1 == 0) {
       } else {
         // screw
@@ -1222,17 +1279,17 @@ class SymmetryOperation extends M4 {
         ftrans = V3.newV(ptemp);
       }
     }
-    if (ismirrorplane) {
+    if (isMirrorPlane) {
       ang1 = 0;
     }
-    if (haveinversion) {
-      if (isinversion) {
+    if (haveInversion) {
+      if (isInversionOnly) {
         pa1 = null;
         ax1 = null;
         trans = null;
         ftrans = null;
       }
-    } else if (istranslation) {
+    } else if (isTranslation) {
       pa1 = null;
       ax1 = null;
     }
@@ -1242,18 +1299,42 @@ class SymmetryOperation extends M4 {
       ax1.normalize();
     M4 m2 = null;
     m2 = M4.newM4(this);
+    if (haveCentering)
+      vtrans.add(centering);
     if (vtrans.length() != 0) {
       m2.m03 += vtrans.x;
       m2.m13 += vtrans.y;
       m2.m23 += vtrans.z;
     }
-    xyz = (isBio ? m2.toString() : getXYZFromMatrix(m2, false, false, false));
-    return new Object[] { xyz, xyzOriginal, info1, cmds, approx0(ftrans),
+    xyzNew = (isBio ? m2.toString() : getXYZFromMatrix(m2, false, false, false));
+    return new Object[] { xyzNew, xyzOriginal, info1, cmds, approx0(ftrans),
         approx0(trans), approx0(ipt), approx0(pa1), approx0(ax1),
-        Integer.valueOf(ang1), m2, vtrans };
+        Integer.valueOf(ang1), m2, vtrans, centering };
   }
 
-  private P3 addTrans(P3 pt00, SymmetryInterface uc, V3 vtrans) {
+  /**
+   * Set pt01 to pt00, possibly adding offset into unit cell 
+   * @param uc
+   * @param pt01
+   * @param pt00
+   * @param offset
+   */
+  private static void setFractional(SymmetryInterface uc, P3 pt01, T3 pt00, P3 offset) {
+    pt01.setT(pt00);
+    if (offset != null)
+      uc.toUnitCell(pt01, offset);
+    uc.toFractional(pt01, false);
+  }
+
+  private void drawFrameLine(String xyz, P3 pt, V3 v,
+                           float width, P3 ptemp, SB draw1,
+                           String key, String color) {
+    ptemp.setT(pt);
+    ptemp.add(v);
+    drawLine(draw1, key + "Frame" + xyz, width, pt, ptemp, "translucent " + color);
+  }
+
+  private P3 rotTransCart(P3 pt00, SymmetryInterface uc, V3 vtrans) {
     P3 p0 = P3.newP(pt00);
     uc.toFractional(p0, false);
     rotTrans2(p0, p0);
@@ -1262,7 +1343,7 @@ class SymmetryOperation extends M4 {
     return p0;
   }
 
-  private String coord(T3 p) {
+  private String strCoord(T3 p) {
     approx0(p);
     return (isBio ? p.x + " " + p.y + " " + p.z : fcoord(p));
   }
@@ -1342,6 +1423,8 @@ class SymmetryOperation extends M4 {
   }
 
   float magOp = Float.MAX_VALUE;
+  boolean isCenteringOp;
+  private boolean unCentered;
   public float getSpinOp() {
     if (magOp == Float.MAX_VALUE)
       magOp = determinant3() * timeReversal;
@@ -1350,6 +1433,49 @@ class SymmetryOperation extends M4 {
 
   public void setTimeReversal(int magRev) {
     timeReversal = magRev;
+  }
+
+  public static String cleanMatrix(M4 m4) {
+    SB sb = new SB();
+    sb.append("[ ");
+    float[] row = new float[4];
+    for (int i = 0; i < 3; i++) {
+      m4.getRow(i, row);
+      sb.append("[ ")
+        .appendI((int)row[0]).append(" ")
+        .appendI((int)row[1]).append(" ")
+        .appendI((int)row[2]).append(" ");      
+      sb.append(twelfthsOf(row[3]*12)).append(" ]");
+    }
+    return sb.append(" ]").toString();
+  }
+
+  /**
+   * assumption here is that these are in order of sets, as in ITA
+   * 
+   * @param c
+   * @param isFinal
+   *        TODO
+   * @return centering
+   */
+  public V3 setCentering(V3 c, boolean isFinal) {
+    if (centering == null && !unCentered) {
+      if (modDim == 0 && index > 1 && m00 == 1 && m11 == 1 && m22 == 1
+          && m01 == 0 && m02 == 0 && m10 == 0 && m12 == 0 && m20 == 0
+          && m21 == 0) {
+        centering = V3.new3(m03, m13, m23);
+        if (centering.lengthSquared() == 0) {
+          unCentered = true;
+          centering = null;
+        }
+        if (!isFinal)
+          centering.scale(1 / 12f);
+        isCenteringOp = true;
+      } else {
+        centering = c;
+      }
+    }
+    return centering;
   }
   
 }

@@ -2815,9 +2815,15 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return (symmetry == null ?Float.NaN : symmetry.getUnitCellInfoType(infoType));
   }
 
+  public String getSymmetryOperation(int symop, P3 pt1,
+                                     P3 pt2, String type) {
+    return ms.getSymTemp(true).getSymmetryInfoString(ms, am.cmi,
+        symop, pt1, pt2, null, type);
+  }
+
   public Map<String, Object> getSpaceGroupInfo(String spaceGroup) {
     return ms.getSymTemp(true).getSpaceGroupInfo(ms, -1,
-        spaceGroup, 0, null, null, null);
+        spaceGroup, 0, null, null, null, null);
   }
 
   public void getPolymerPointsAndVectors(BS bs, Lst<P3[]> vList) {
@@ -2898,12 +2904,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   @Override
   public int getModelCount() {
     return (ms == null ? 0 : ms.mc);
-  }
-
-  public String getSymmetryOperation(String spaceGroup, int symop, P3 pt1,
-                                     P3 pt2, boolean labelOnly) {
-    return ms.getSymmetryInfoString(am.cmi,
-        spaceGroup, symop, pt1, pt2, null, labelOnly);
   }
 
   @Override

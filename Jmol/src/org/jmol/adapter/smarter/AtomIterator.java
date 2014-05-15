@@ -124,7 +124,8 @@ class AtomIterator implements JmolAdapterAtomIterator {
 	
 	@Override
   public V3 getVib() {
-	  return (atom.vib == null || Float.isNaN(atom.vib.z) ? null : atom.vib);
+	  return (atom.vib == null || Float.isNaN(atom.vib.z) ? null : 
+	    atom.vib);
 	}
 
 	

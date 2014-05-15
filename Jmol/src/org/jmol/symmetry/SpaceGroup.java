@@ -36,6 +36,7 @@ import javajs.util.AU;
 import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.SB;
+import javajs.util.V3;
 
 import org.jmol.util.Logger;
 
@@ -219,9 +220,11 @@ class SpaceGroup {
           atom.setT(c);
         }
     }
+    V3 centering = null;
     for (int i = 0; i < operationCount; i++) {
       finalOperations[i] = new SymmetryOperation(operations[i], atoms,
           atomIndex, count, doNormalize);
+      centering = finalOperations[i].setCentering(centering, true);
     }
   }
 

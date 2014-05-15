@@ -2211,9 +2211,11 @@ public class CmdExt implements JmolCmdExtension {
           i = eval.iToken + 1;
         }
         eval.checkLast(eval.iToken);
-        if (!chk)
-          eval.runScript((String) vwr.getSymmetryInfo(bsAtoms, xyz, iSym,
-              center, target, thisId, T.draw));
+        if (!chk) {
+          String s = (String) vwr.getSymmetryInfo(bsAtoms, xyz, iSym,
+              center, target, thisId, T.draw);
+          eval.runScript(s.length() > 0 ? s : "draw ID \"sym_" + thisId + "*\" delete");
+        }
         return false;
       case T.frame:
         isFrame = true;
@@ -6393,18 +6395,20 @@ public class CmdExt implements JmolCmdExtension {
       }
       break;
     case T.symop:
-      if (slen > 3) {
-        P3 pt1 = centerParameter(2);
-        P3 pt2 = centerParameter(++e.iToken);
-        if (!chk)
-          msg = vwr.getSymmetryOperation(null, 0, pt1, pt2, false);
-        len = ++e.iToken;
+      String type;
+      int iop = 0;
+      P3 pt1 = null, pt2 = null;
+      if (slen > 3 && tokAt(3) != T.string) {
+        pt1 = centerParameter(2);
+        pt2 = centerParameter(++e.iToken);
       } else {
-        int iop = (e.checkLength23() == 2 ? 0 : intParameter(2));
-        if (!chk)
-          msg = vwr.getSymmetryOperation(null, iop, null, null, false);
-        len = -3;
+        // show symop 3 "fmatrix"
+       iop = (tokAt(2) == T.integer ? intParameter(2) : 0);
       }
+      type = (tokAt(e.iToken + 1) == T.string ? stringParameter(++e.iToken) : null);
+      checkLength(len = ++e.iToken);
+      if (!chk)
+        msg = vwr.getSymmetryOperation(iop, pt1, pt2, type);
       break;
     case T.vanderwaals:
       VDW vdwType = null;
@@ -6615,7 +6619,7 @@ public class CmdExt implements JmolCmdExtension {
         msg = vwr.stm.getSavedStructure(shape);
       break;
     case T.data:
-      String type = ((len = slen) == 3 ? paramAsStr(2) : null);
+      type = ((len = slen) == 3 ? paramAsStr(2) : null);
       if (!chk) {
         Object[] data = (type == null ? this.lastData : vwr.getData(type));
         msg = (data == null ? "no data" : Escape.encapsulateData(

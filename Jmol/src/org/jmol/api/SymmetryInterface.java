@@ -74,9 +74,9 @@ public interface SymmetryInterface {
   public Map<String, Object> getSpaceGroupInfo(ModelSet modelSet, int modelIndex,
                                                String spaceGroup, int symOp,
                                                P3 pt1, P3 pt2,
-                                               String drawID);
+                                               String drawID, String type);
 
-  public String getSpaceGroupInfo(String name, SymmetryInterface cellInfo);
+  public String getSpaceGroupInfoStr(String name, SymmetryInterface cellInfo);
 
   public String getSpaceGroupName();
 
@@ -91,9 +91,10 @@ public interface SymmetryInterface {
   public Object getSymmetryInfo(ModelSet modelSet, int iModel, int iAtom, SymmetryInterface uc, String xyz, int op,
                                 P3 pt, P3 pt2, String id, int type);
 
-  public String getSymmetryInfoString();
+  String getSymmetryInfoString(ModelSet modelSet, int modelIndex, int symOp, P3 pt1,
+                               P3 pt2, String drawID, String type);
 
-  public String getSymmetryInfoString(Map<String, Object> sginfo, int symOp, String drawID, boolean labelOnly);
+  public String getSymmetryInfoStr();
 
   public M4[] getSymmetryOperations();
 

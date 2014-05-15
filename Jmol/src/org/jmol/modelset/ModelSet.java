@@ -1890,16 +1890,6 @@ import java.util.Properties;
             : unitCells[modelIndex].getSpaceGroupOperationCount());
   }
 
-  public String getSymmetryInfoString(int modelIndex, String spaceGroup,
-                                      int symOp, P3 pt1, P3 pt2, String drawID,
-                                      boolean labelOnly) {
-    Map<String, Object> sginfo = getSymTemp(true).getSpaceGroupInfo(
-        this, modelIndex, spaceGroup, symOp, pt1, pt2, drawID);
-    if (sginfo == null)
-      return "";
-    return symTemp.getSymmetryInfoString(sginfo, symOp, drawID, labelOnly);
-  }
-
   public int[] getModelCellRange(int modelIndex) {
     if (unitCells == null)
       return null;
@@ -1936,12 +1926,6 @@ import java.util.Properties;
     for (int i = 0; i < mc; i++)
       bs.or(elementsPresent[i]);
     return bs;
-  }
-
-  private String getSymmetryInfoAsStringForModel(int modelIndex) {
-    SymmetryInterface unitCell = getUnitCell(modelIndex);
-    return (unitCell == null ? "no symmetry information" : unitCell
-        .getSymmetryInfoString());
   }
 
   ///////// molecules /////////
@@ -3144,10 +3128,13 @@ import java.util.Properties;
 
   public String getSymmetryInfoAsString() {
     SB sb = new SB().append("Symmetry Information:");
-    for (int i = 0; i < mc; ++i)
+    for (int i = 0; i < mc; ++i) {
       sb.append("\nmodel #").append(getModelNumberDotted(i)).append("; name=")
-          .append(getModelName(i)).append("\n")
-          .append(getSymmetryInfoAsStringForModel(i));
+          .append(getModelName(i)).append("\n");
+      SymmetryInterface unitCell = getUnitCell(i);
+      sb.append(unitCell == null ? "no symmetry information" : unitCell
+          .getSymmetryInfoStr());
+    }
     return sb.toString();
   }
 
@@ -3188,7 +3175,7 @@ import java.util.Properties;
     return bsResult;
   }
 
-  private SymmetryInterface symTemp;
+  public SymmetryInterface symTemp;
 
   public Hashtable<String, BS> htPeaks;
 

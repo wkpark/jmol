@@ -166,7 +166,7 @@ public class Symmetry implements SymmetryInterface {
   }
 
   @Override
-  public String getSpaceGroupInfo(String name, SymmetryInterface cellInfo) {
+  public String getSpaceGroupInfoStr(String name, SymmetryInterface cellInfo) {
     return SpaceGroup.getInfo(name, cellInfo);
   }
 
@@ -222,13 +222,6 @@ public class Symmetry implements SymmetryInterface {
   public V3[] rotateAxes(int iop, V3[] axes, P3 ptTemp, M3 mTemp) {
     return (iop == 0 ? axes : spaceGroup.finalOperations[iop].rotateAxes(axes,
         unitCell, ptTemp, mTemp));
-  }
-
-  private Object[] getSymmetryOperationDescription(ModelSet modelSet, int op,
-                                                  SymmetryInterface cellInfo,
-                                                  P3 pt1, P3 pt2, String id) {
-    return spaceGroup.operations[op].getDescription(modelSet, cellInfo, pt1,
-        pt2, id);
   }
 
   @Override
@@ -315,8 +308,8 @@ public class Symmetry implements SymmetryInterface {
   }
 
   @Override
-  public String getSymmetryInfoString() {
-    return symmetryInfo.symmetryInfoString;
+  public String getSymmetryInfoStr() {
+    return symmetryInfo.infoStr;
   }
 
   @Override
@@ -594,40 +587,14 @@ public class Symmetry implements SymmetryInterface {
   }
 
   // info
-  
-  @Override
-  public String getSymmetryInfoString(Map<String, Object> sginfo, int symOp,
-                                      String drawID, boolean labelOnly) {
-    Object[][] infolist = (Object[][]) sginfo.get("operations");
-    if (infolist == null)
-      return "";
-    SB sb = new SB();
-    symOp--;
-    for (int i = 0; i < infolist.length; i++) {
-      if (infolist[i] == null || symOp >= 0 && symOp != i)
-        continue;
-      if (drawID != null)
-        return (String) infolist[i][3];
-      if (sb.length() > 0)
-        sb.appendC('\n');
-      if (!labelOnly) {
-        if (symOp < 0)
-          sb.appendI(i + 1).append("\t");
-        sb.append((String) infolist[i][0]).append("\t"); //xyz
-      }
-      sb.append((String) infolist[i][2]); //desc
-    }
-    if (sb.length() == 0 && drawID != null)
-      sb.append("draw " + drawID + "* delete");
-    return sb.toString();
-  }
 
   @Override
   @SuppressWarnings("unchecked")
   public Map<String, Object> getSpaceGroupInfo(ModelSet modelSet,
                                                int modelIndex,
                                                String spaceGroup, int symOp,
-                                               P3 pt1, P3 pt2, String drawID) {
+                                               P3 pt1, P3 pt2, String drawID,
+                                               String type) {
     String strOperations = null;
     Map<String, Object> info = null;
     SymmetryInterface cellInfo = null;
@@ -647,8 +614,8 @@ public class Symmetry implements SymmetryInterface {
         info.put("spaceGroupInfo", strOperations);
         info.put("symmetryInfo", "");
       } else if (pt1 == null && drawID == null && symOp != 0) {
-        info = (Map<String, Object>) modelSet.getInfo(
-            modelIndex, "spaceGroupInfo");
+        info = (Map<String, Object>) modelSet.getInfo(modelIndex,
+            "spaceGroupInfo");
       }
       if (info != null)
         return info;
@@ -668,16 +635,18 @@ public class Symmetry implements SymmetryInterface {
           setSpaceGroup(false);
         strOperations = "\n" + ops.length + " symmetry operations employed:";
         infolist = new Object[ops.length][];
+        V3 centering = null;
         for (int i = 0; i < ops.length; i++) {
-          String xyz = ((SymmetryOperation)ops[i]).xyz;
-          int op = (isBio ? addBioMoleculeOperation(sg.finalOperations[i],
+          String xyz = ((SymmetryOperation) ops[i]).xyz;
+          int iop = (isBio ? addBioMoleculeOperation(sg.finalOperations[i],
               false) : addSpaceGroupOperation("=" + xyz, i + 1));
-          if (op < 0)
+          if (iop < 0)
             continue;
+          SymmetryOperation op = (SymmetryOperation) getSpaceGroupOperation(i);
+          centering = op.setCentering(centering, false);
           jf += ";" + xyz;
-          infolist[i] = (symOp > 0 && symOp - 1 != op ? null
-              : getSymmetryOperationDescription(modelSet, op, cellInfo, pt1,
-                  pt2, drawID));
+          infolist[i] = (symOp > 0 && symOp - 1 != iop ? null : op
+              .getDescription(modelSet, cellInfo, pt1, pt2, drawID));
           if (infolist[i] != null)
             strOperations += "\n" + (i + 1) + "\t" + infolist[i][0] + "\t"
                 + infolist[i][2];
@@ -695,7 +664,7 @@ public class Symmetry implements SymmetryInterface {
       info.put("symmetryInfo", strOperations);
     }
     if (!spaceGroup.startsWith("bio")) {
-      String data = getSpaceGroupInfo(spaceGroup, cellInfo);
+      String data = getSpaceGroupInfoStr(spaceGroup, cellInfo);
       if (data == null || data.equals("?"))
         data = "could not identify space group from name: " + spaceGroup
             + "\nformat: show spacegroup \"2\" or \"P 2c\" "
@@ -706,35 +675,78 @@ public class Symmetry implements SymmetryInterface {
   }
 
   @Override
+  public String getSymmetryInfoString(ModelSet modelSet, int modelIndex, int symOp,
+                                      P3 pt1, P3 pt2, String drawID, String type) {
+    Map<String, Object> sginfo = getSpaceGroupInfo(
+        modelSet, modelIndex, null, symOp, pt1, pt2, drawID, type);
+    if (sginfo == null)
+      return "";
+    boolean labelOnly = "label".equals(type);
+    boolean prettyMat = "fmatrix".equals(type); 
+    Object[][] infolist = (Object[][]) sginfo.get("operations");
+    if (infolist == null)
+      return "";
+    SB sb = new SB();
+    symOp--;
+    for (int i = 0; i < infolist.length; i++) {
+      if (infolist[i] == null || symOp >= 0 && symOp != i)
+        continue;
+      if (drawID != null)
+        return (String) infolist[i][3];
+      if (sb.length() > 0)
+        sb.appendC('\n');
+      if (prettyMat) {
+        sb.append(SymmetryOperation.cleanMatrix((M4)infolist[i][10])).append("\t");
+      } else if (!labelOnly) {
+        if (symOp < 0)
+          sb.appendI(i + 1).append("\t");
+        sb.append((String) infolist[i][0]).append("\t"); //xyz
+      }
+      sb.append((String) infolist[i][2]); //desc
+    }
+    if (sb.length() == 0 && drawID != null)
+      sb.append("draw " + drawID + "* delete");
+    return sb.toString();
+  }
+
+  @Override
   public Object getSymmetryInfo(ModelSet modelSet, int iModel, int iAtom,
                                 SymmetryInterface uc, String xyz, int op,
                                 P3 pt, P3 pt2, String id, int type) {
     if (pt2 != null)
-      return modelSet.getSymmetryInfoString(iModel, null, op, pt, pt2,
-          (id == null ? "sym" : id), type == T.label);
-    SymmetryInterface symTemp = modelSet.getSymTemp(false);
-
+      return getSymmetryInfoString(modelSet, iModel, op, pt, pt2,
+          (id == null ? "sym" : id), type == T.label ? "label" : null);
     boolean isBio = uc.isBio();
     Symmetry sym = (Symmetry) uc;
     int iop = op;
+    V3 centering = null;
     if (xyz == null) {
-      SymmetryOperation[] ops = (SymmetryOperation[])sym.getSymmetryOperations();
-      if (ops == null || op == 0 || Math.abs(op) > ops.length)
-        return "";
+      SymmetryOperation[] ops = (SymmetryOperation[]) sym
+          .getSymmetryOperations();
+      if (ops == null || op == 0 || Math.abs(op) > ops.length) {
+        return (type == T.draw ? "draw ID sym_* delete": "");
+      }
       if (op > 0) {
         xyz = ops[iop = op - 1].xyz;
       } else {
         xyz = ops[iop = -1 - op].xyz;
       }
+      centering = ops[iop].centering;
     } else {
       iop = op = 0;
     }
+    SymmetryInterface symTemp = modelSet.getSymTemp(true);
     symTemp.setSpaceGroup(false);
     int i = (isBio ? symTemp.addBioMoleculeOperation(
         sym.spaceGroup.finalOperations[iop], op < 0) : symTemp
         .addSpaceGroupOperation((op < 0 ? "!" : "=") + xyz, Math.abs(op)));
+
     if (i < 0)
       return "";
+    SymmetryOperation opTemp = (SymmetryOperation) symTemp
+        .getSpaceGroupOperation(i);
+    if (!isBio)
+      opTemp.centering = centering;
     Object[] info;
     pt = P3.newP(pt == null ? modelSet.at[iAtom] : pt);
     if (type == T.point) {
@@ -750,8 +762,8 @@ public class Symmetry implements SymmetryInterface {
       return sympt;
     }
     // null id means "array info only" but here we want the draw commands
-    info = ((Symmetry) symTemp).getSymmetryOperationDescription(modelSet, i,
-        uc, pt, pt2, (id == null ? "sym" : id));
+    info = opTemp.getDescription(modelSet, uc, pt, pt2, (id == null ? "sym"
+        : id));
     int ang = ((Integer) info[9]).intValue();
     /*
      *  xyz (Jones-Faithful calculated from matrix)

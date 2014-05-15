@@ -82,6 +82,7 @@ public class BilbaoReader extends AtomSetCollectionReader {
   public void initializeReader() throws Exception {
     normDispl = !checkFilterKey("NONORM");
     doDisplace = isTrajectory;
+    getSym = true;
 
     if (rd().indexOf("<") < 0) {
       readBilbaoFormat(null, Float.NaN);
@@ -89,7 +90,6 @@ public class BilbaoReader extends AtomSetCollectionReader {
     }
     appendLoadNote("Bilbao Crystallographic Server\ncryst@wm.lc.ehu.es");
     getHigh = checkFilterKey("HIGH") && !doDisplace;
-    getSym = true;
 
     asc.vibScale = 1;
   }
@@ -120,7 +120,7 @@ public class BilbaoReader extends AtomSetCollectionReader {
     int intTableNo = parseIntStr(line);
     while (intTableNo < 0 && rdLine() != null) 
       intTableNo = parseIntStr(line);
-    setSpaceGroupName("" + intTableNo);
+    setSpaceGroupName("bilbao:" + intTableNo);
     float[] data = new float[6];
     fillFloatArray(null, 0, data);
     for (int i = 0; i < 6; i++)

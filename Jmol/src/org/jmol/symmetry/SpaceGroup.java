@@ -114,7 +114,7 @@ class SpaceGroup {
 
   public boolean isBio;
 
-  boolean isIT;
+  boolean isBilbao;
 
   static SpaceGroup getNull(boolean doInit) {
       getSpaceGroups();
@@ -583,6 +583,11 @@ class SpaceGroup {
     if (lastIndex < 0)
       lastIndex = SG.length;
     name = name.trim().toLowerCase();
+    boolean checkBilbao = false;
+    if (name.startsWith("bilbao:")) {
+      checkBilbao = true;
+      name = name.substring(7); 
+    }
     int nameType = (name.startsWith("hall:") ? NAME_HALL : name
         .startsWith("hm:") ? NAME_HM : 0);
     if (nameType > 0)
@@ -725,7 +730,7 @@ class SpaceGroup {
     if (ext.length() == 0)
       for (i = 0; i < lastIndex; i++) {
         s = SG[i];
-        if (s.intlTableNumber.equals(nameExt))
+        if (s.intlTableNumber.equals(nameExt)&& (!checkBilbao || s.isBilbao))
           return i;
       }
     return -1;
@@ -755,8 +760,8 @@ class SpaceGroup {
   private static String lastInfo = "";
   
   private void buildSpaceGroup(String cifLine) {
-    isIT = true;
     String[] terms = PT.split(cifLine.toLowerCase(), ";");    
+    isBilbao = (terms.length < 5);
     intlTableNumberFull = terms[0].trim(); // International Table Number :
                                            // options
     // 4:c*;c2^2;p 1 1 21*;p 21
@@ -1080,7 +1085,7 @@ class SpaceGroup {
     "40:bca;c2v^16;c c 2 m;c -2c -2c",
     "40:a-cb;c2v^16;a m 2 a;a -2a -2a",
     "41;c2v^17;a e a 2;a 2 -2ab",  // newer IT name
-    "41;c2v^17;a b a 2;a 2 -2ab;-",
+    "41;c2v^17;a b a 2;a 2 -2ab;-b",
     "41:ba-c;c2v^17;b b a 2;b 2 -2ab",
     "41:cab;c2v^17;b 2 c b;b -2ab 2",
     "41:-cba;c2v^17;c 2 c b;c -2ac 2",
@@ -1105,12 +1110,12 @@ class SpaceGroup {
     "46:bca;c2v^22;i c 2 m;i -2c -2c",
     "46:a-cb;c2v^22;i m 2 a;i -2a -2a",
     "47;d2h^1;p m m m;-p 2 2",
-    "48:1;d2h^2;p n n n:1;p 2 2 -1n",
+    "48:1;d2h^2;p n n n:1;p 2 2 -1n;-b",
     "48:2;d2h^2;p n n n:2;-p 2ab 2bc",
     "49;d2h^3;p c c m;-p 2 2c",
     "49:cab;d2h^3;p m a a;-p 2a 2",
     "49:bca;d2h^3;p b m b;-p 2b 2b",
-    "50:1;d2h^4;p b a n:1;p 2 2 -1ab",
+    "50:1;d2h^4;p b a n:1;p 2 2 -1ab;-b",
     "50:2;d2h^4;p b a n:2;-p 2ab 2b",
     "50:1cab;d2h^4;p n c b:1;p 2 2 -1bc",
     "50:2cab;d2h^4;p n c b:2;-p 2b 2bc",
@@ -1155,7 +1160,7 @@ class SpaceGroup {
     "58;d2h^12;p n n m;-p 2 2n",
     "58:cab;d2h^12;p m n n;-p 2n 2",
     "58:bca;d2h^12;p n m n;-p 2n 2n",
-    "59:1;d2h^13;p m m n:1;p 2 2ab -1ab",
+    "59:1;d2h^13;p m m n:1;p 2 2ab -1ab;-b",
     "59:2;d2h^13;p m m n:2;-p 2ab 2a",
     "59:1cab;d2h^13;p n m m:1;p 2bc 2 -1bc",
     "59:2cab;d2h^13;p n m m:2;-p 2c 2bc",
@@ -1201,8 +1206,9 @@ class SpaceGroup {
     "67:-cba;d2h^21;a c m m;-a 2 2b",
     "67:bca;d2h^21;b m c m;-b 2 2a",
     "67:a-cb;d2h^21;b m a m;-b 2a 2",
-    "68:1;d2h^22;c c c e:1;c 2 2 -1ac", // newer IT name
-    "68:1;d2h^22;c c c a:1;c 2 2 -1ac",
+    "68:1;d2h^22;c c c e:1;c 2 2 -1ac;-b", // newer IT name
+    "68:1;d2h^22;c c c a:1;c 2 2 -1ac;-b",
+    "68:2;d2h^22;c c c e:2;-c 2a 2ac",
     "68:2;d2h^22;c c c a:2;-c 2a 2ac",
     "68:1ba-c;d2h^22;c c c b:1;c 2 2 -1ac",
     "68:2ba-c;d2h^22;c c c b:2;-c 2a 2c",
@@ -1215,7 +1221,7 @@ class SpaceGroup {
     "68:1a-cb;d2h^22;b b a b:1;b 2 2 -1ab",
     "68:2a-cb;d2h^22;b b a b:2;-b 2b 2ab",
     "69;d2h^23;f m m m;-f 2 2",
-    "70:1;d2h^24;f d d d:1;f 2 2 -1d",
+    "70:1;d2h^24;f d d d:1;f 2 2 -1d;-b",
     "70:2;d2h^24;f d d d:2;-f 2uv 2vw",
     "71;d2h^25;i m m m;-i 2 2",
     "72;d2h^26;i b a m;-i 2 2c",
@@ -1243,12 +1249,12 @@ class SpaceGroup {
     "83;c4h^1;p 4/m;-p 4",
     "84;c4h^2;p 42/m;-p 4c",
     "84*;c4h^2;p 42/m*;-p 42", //nonstandard
-    "85:1;c4h^3;p 4/n:1;p 4ab -1ab",
+    "85:1;c4h^3;p 4/n:1;p 4ab -1ab;-b",
     "85:2;c4h^3;p 4/n:2;-p 4a",
-    "86:1;c4h^4;p 42/n:1;p 4n -1n",
+    "86:1;c4h^4;p 42/n:1;p 4n -1n;-b",
     "86:2;c4h^4;p 42/n:2;-p 4bc",
     "87;c4h^5;i 4/m;-i 4",
-    "88:1;c4h^6;i 41/a:1;i 4bw -1bw",
+    "88:1;c4h^6;i 41/a:1;i 4bw -1bw;-b",
     "88:2;c4h^6;i 41/a:2;-i 4ad",
     "89;d4^1;p 4 2 2;p 4 2",
     "90;d4^2;p 4 21 2;p 4ab 2ab",
@@ -1292,34 +1298,34 @@ class SpaceGroup {
     "122;d2d^12;i -4 2 d;i -4 2bw",
     "123;d4h^1;p 4/m m m;-p 4 2",
     "124;d4h^2;p 4/m c c;-p 4 2c",
-    "125:1;d4h^3;p 4/n b m:1;p 4 2 -1ab",
+    "125:1;d4h^3;p 4/n b m:1;p 4 2 -1ab;-b",
     "125:2;d4h^3;p 4/n b m:2;-p 4a 2b",
-    "126:1;d4h^4;p 4/n n c:1;p 4 2 -1n",
+    "126:1;d4h^4;p 4/n n c:1;p 4 2 -1n;-b",
     "126:2;d4h^4;p 4/n n c:2;-p 4a 2bc",
     "127;d4h^5;p 4/m b m;-p 4 2ab",
     "128;d4h^6;p 4/m n c;-p 4 2n",
-    "129:1;d4h^7;p 4/n m m:1;p 4ab 2ab -1ab",
+    "129:1;d4h^7;p 4/n m m:1;p 4ab 2ab -1ab;-b",
     "129:2;d4h^7;p 4/n m m:2;-p 4a 2a",
-    "130:1;d4h^8;p 4/n c c:1;p 4ab 2n -1ab",
+    "130:1;d4h^8;p 4/n c c:1;p 4ab 2n -1ab;-b",
     "130:2;d4h^8;p 4/n c c:2;-p 4a 2ac",
     "131;d4h^9;p 42/m m c;-p 4c 2",
     "132;d4h^10;p 42/m c m;-p 4c 2c",
-    "133:1;d4h^11;p 42/n b c:1;p 4n 2c -1n",
+    "133:1;d4h^11;p 42/n b c:1;p 4n 2c -1n;-b",
     "133:2;d4h^11;p 42/n b c:2;-p 4ac 2b",
-    "134:1;d4h^12;p 42/n n m:1;p 4n 2 -1n",
+    "134:1;d4h^12;p 42/n n m:1;p 4n 2 -1n;-b",
     "134:2;d4h^12;p 42/n n m:2;-p 4ac 2bc",
     "135;d4h^13;p 42/m b c;-p 4c 2ab",
     "135*;d4h^13;p 42/m b c*;-p 42 2ab", //nonstandard
     "136;d4h^14;p 42/m n m;-p 4n 2n",
-    "137:1;d4h^15;p 42/n m c:1;p 4n 2n -1n",
+    "137:1;d4h^15;p 42/n m c:1;p 4n 2n -1n;-b",
     "137:2;d4h^15;p 42/n m c:2;-p 4ac 2a",
-    "138:1;d4h^16;p 42/n c m:1;p 4n 2ab -1n",
+    "138:1;d4h^16;p 42/n c m:1;p 4n 2ab -1n;-b",
     "138:2;d4h^16;p 42/n c m:2;-p 4ac 2ac",
     "139;d4h^17;i 4/m m m;-i 4 2",
     "140;d4h^18;i 4/m c m;-i 4 2c",
-    "141:1;d4h^19;i 41/a m d:1;i 4bw 2bw -1bw",
+    "141:1;d4h^19;i 41/a m d:1;i 4bw 2bw -1bw;-b",
     "141:2;d4h^19;i 41/a m d:2;-i 4bd 2",
-    "142:1;d4h^20;i 41/a c d:1;i 4bw 2aw -1bw",
+    "142:1;d4h^20;i 41/a c d:1;i 4bw 2aw -1bw;-b",
     "142:2;d4h^20;i 41/a c d:2;-i 4bd 2c",
     "143;c3^1;p 3;p 3",
     "144;c3^2;p 31;p 31",
@@ -1393,10 +1399,10 @@ class SpaceGroup {
     "198;t^4;p 21 3;p 2ac 2ab 3",
     "199;t^5;i 21 3;i 2b 2c 3",
     "200;th^1;p m -3;-p 2 2 3",
-    "201:1;th^2;p n -3:1;p 2 2 3 -1n",
+    "201:1;th^2;p n -3:1;p 2 2 3 -1n;-b",
     "201:2;th^2;p n -3:2;-p 2ab 2bc 3",
     "202;th^3;f m -3;-f 2 2 3",
-    "203:1;th^4;f d -3:1;f 2 2 3 -1d",
+    "203:1;th^4;f d -3:1;f 2 2 3 -1d;-b",
     "203:2;th^4;f d -3:2;-f 2uv 2vw 3",
     "204;th^5;i m -3;-i 2 2 3",
     "205;th^6;p a -3;-p 2ac 2ab 3",
@@ -1416,16 +1422,16 @@ class SpaceGroup {
     "219;td^5;f -4 3 c;f -4a 2 3",
     "220;td^6;i -4 3 d;i -4bd 2c 3",
     "221;oh^1;p m -3 m;-p 4 2 3",
-    "222:1;oh^2;p n -3 n:1;p 4 2 3 -1n",
+    "222:1;oh^2;p n -3 n:1;p 4 2 3 -1n;-b",
     "222:2;oh^2;p n -3 n:2;-p 4a 2bc 3",
     "223;oh^3;p m -3 n;-p 4n 2 3",
-    "224:1;oh^4;p n -3 m:1;p 4n 2 3 -1n",
+    "224:1;oh^4;p n -3 m:1;p 4n 2 3 -1n;-b",
     "224:2;oh^4;p n -3 m:2;-p 4bc 2bc 3",
     "225;oh^5;f m -3 m;-f 4 2 3",
     "226;oh^6;f m -3 c;-f 4a 2 3",
-    "227:1;oh^7;f d -3 m:1;f 4d 2 3 -1d",
+    "227:1;oh^7;f d -3 m:1;f 4d 2 3 -1d;-b",
     "227:2;oh^7;f d -3 m:2;-f 4vw 2vw 3",
-    "228:1;oh^8;f d -3 c:1;f 4d 2 3 -1ad",
+    "228:1;oh^8;f d -3 c:1;f 4d 2 3 -1ad;-b",
     "228:2;oh^8;f d -3 c:2;-f 4ud 2vw 3",
     "229;oh^9;i m -3 m;-i 4 2 3",
     "230;oh^10;i a -3 d;-i 4bd 2c 3",  

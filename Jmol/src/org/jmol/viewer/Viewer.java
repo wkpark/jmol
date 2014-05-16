@@ -5705,6 +5705,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       break;
     case T.hoverlabel:
       // a special label for selected atoms
+      shm.loadShape(JC.SHAPE_HOVER);
       setShapeProperty(JC.SHAPE_HOVER, "atomLabel", value);
       break;
     case T.defaultdistancelabel:

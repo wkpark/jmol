@@ -3905,7 +3905,7 @@ import java.util.Properties;
       return null;
     if (bsModulated != null) {
       Vibration v = getVibration(index, false);
-      SymmetryInterface uc = v.getUnitCell();
+      SymmetryInterface uc = (v == null ? null : v.getUnitCell());
       if (uc != null)
         return uc;  // subsystems
     }

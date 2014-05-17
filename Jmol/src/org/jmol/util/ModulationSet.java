@@ -50,6 +50,7 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
   private ModulationSet modTemp;
   private String strop;
   private boolean isSubsystem;
+  
   private Matrix tFactor;
 
   @Override
@@ -170,7 +171,7 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
 
   @Override
   public SymmetryInterface getUnitCell() {
-    return symmetry;
+    return (isSubsystem ? symmetry : null);
   }
   /**
    * In general, we have, for Fourier:

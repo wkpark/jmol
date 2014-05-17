@@ -663,7 +663,7 @@ class SymmetryOperation extends M4 {
       vcentering = V3.newV(centering);
       uc.toCartesian(vcentering, false);
     }
-    boolean haveCentering = (vcentering != null);
+    boolean haveCentering = false;// better without this. (vcentering != null);
 
     if (pta00 == null || Float.isNaN(pta00.x))
       pta00 = new P3();
@@ -987,9 +987,14 @@ class SymmetryOperation extends M4 {
         float fy = approxF(ftrans.y);
         float fz = approxF(ftrans.z);
         s = " " + strCoord(ftrans);
-        if (fx != 0 && fy != 0 && fz != 0)
-          info1 = "d-";
-        else if (fx != 0 && fy != 0 || fy != 0 && fz != 0 || fz != 0 && fx != 0)
+        if (fx != 0 && fy != 0 && fz != 0) {
+          if (Math.abs(fx) == Math.abs(fy)
+              && Math.abs(fy) == Math.abs(fz))
+            info1 = "d-";
+          else
+            info1 = "g-"; // see group 167
+        } else if (fx != 0 && fy != 0 || fy != 0 && fz != 0 || fz != 0
+            && fx != 0)
           info1 = "n-";
         else if (fx != 0)
           info1 = "a-";
@@ -1220,8 +1225,8 @@ class SymmetryOperation extends M4 {
           ptemp.add2(pt0, vcentering);
         }
         draw1.append(drawid).append("centeringVector arrow ")
-        .append(Escape.eP(pt0)).append(Escape.eP(ptTarget))
-        .append(" color cyan");
+            .append(Escape.eP(pt0)).append(Escape.eP(ptTarget))
+            .append(" color cyan");
 
       }
 
@@ -1248,9 +1253,9 @@ class SymmetryOperation extends M4 {
       draw1.append("\nif (within(0.2,p0).length == 0) {");
       draw1.append("\nvar set2 = within(0.2,p0.uxyz.xyz)");
       draw1.append("\nif (set2) {");
-//      if (haveCentering)
-  //      draw1.append(drawid).append(
-    //        "cellOffsetVector arrow @p0 @set2 color grey");
+      //      if (haveCentering)
+      //      draw1.append(drawid).append(
+      //        "cellOffsetVector arrow @p0 @set2 color grey");
       draw1.append(drawid)
           .append("offsetFrameX diameter 0.20 @{set2.xyz} @{set2.xyz + ")
           .append(Escape.eP(vt1)).append("*0.9} color red");

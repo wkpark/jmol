@@ -476,10 +476,8 @@ import java.util.Properties;
       return pointGroup.getPointGroupName();
     Object ret = pointGroup.getPointGroupInfo(modelIndex, asDraw, asInfo, type,
         index, scale);
-    if (asInfo)
-      return ret;
-    return (mc > 1 ? "frame " + getModelNumberDotted(modelIndex) + "; "
-        : "") + ret;
+    return (asInfo ? ret : (mc > 1 ? "frame " + getModelNumberDotted(modelIndex) + "; "
+        : "") + ret);
   }
   
   private BS modelsOf(BS bsAtoms, BS bsAllAtoms) {
@@ -3788,6 +3786,7 @@ import java.util.Properties;
     if (bs == null)
       bs = getModelAtomBitSetIncludingDeleted(-1, false);
     float scale = vwr.getFloat(T.modulation);
+    boolean haveMods = false;
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       Vibration v = getVibration(i, false);
       if (!(v instanceof JmolModulationSet))
@@ -3795,7 +3794,10 @@ import java.util.Properties;
       ((JmolModulationSet) v).setModTQ(at[i], isOn, qtOffset, isQ, scale);
       if (bsModulated != null)
         bsModulated.setBitTo(i, isOn);
+      haveMods = true;
     }
+    if (!haveMods)
+      bsModulated = null;
   }
 
   private Quat[] vOrientations;
@@ -3903,8 +3905,9 @@ import java.util.Properties;
       return null;
     if (bsModulated != null) {
       Vibration v = getVibration(index, false);
-      if (v != null)
-        return v.getUnitCell();
+      SymmetryInterface uc = v.getUnitCell();
+      if (uc != null)
+        return uc;  // subsystems
     }
     return getUnitCell(at[index].mi);
   }
@@ -3921,7 +3924,7 @@ import java.util.Properties;
     M4[] ops = new M4[n];
     SymmetryInterface unitcell = am[modelIndex].biosymmetry;
     if (unitcell == null)
-      unitcell = vwr.getModelUnitCell(modelIndex);
+      unitcell = getUnitCell(modelIndex);
     for (int i = n; --i >= 0;)
       ops[i] = unitcell.getSpaceGroupOperation(i);
     return ops;

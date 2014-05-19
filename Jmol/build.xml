@@ -465,9 +465,9 @@ all support for previous versions removed
     <delete file="build/libjars.timestamp"/>
     <mkdir dir="${appjars.dir}"/>
     <!-- unjar dest="${appjars.dir}" src="${lib.dir}/${vecmath.jar}"/ -->
-    <unjar dest="${appjars.dir}" src="${lib.dir}/${naga.jar}"/>
     <!-- unjar dest="${appjars.dir}" src="${lib.dir}/Acme.jar"/ -->
     <!-- unjar dest="${appjars.dir}" src="${lib.dir}/${itext.jar}"/ -->
+    <unjar dest="${appjars.dir}" src="${lib.dir}/${naga.jar}"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/${commons-cli.jar}"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/JSpecView.jar"/>
   	<delete dir="${appjars.dir}/javajs" />

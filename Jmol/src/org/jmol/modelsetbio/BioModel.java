@@ -264,9 +264,10 @@ public final class BioModel extends Model{
   @Override
   public void calculateStraightness(Viewer vwr, char ctype, char qtype,
                                     int mStep) {
+    P3 ptTemp = new P3();
     for (int p = 0; p < bioPolymerCount; p++)
       bioPolymers[p].getPdbData(vwr, ctype, qtype, mStep, 2, null, 
-          null, false, false, false, null, null, null, new BS());
+          null, false, false, false, null, null, null, new BS(), ptTemp);
   }
   
   
@@ -774,10 +775,11 @@ public final class BioModel extends Model{
                 + "unScaledXyz = xyz * {0.1 0.1 0.1} + {0 0 0} plotScale = {100 100 100}\n");
     }
     
+    P3 ptTemp = new P3();
     for (int p = 0; p < bioPolymerCount; p++)
       bioPolymers[p].getPdbData(vwr, ctype, qtype, mStep, derivType,
           bsAtoms, bsSelected, bothEnds, isDraw, p == 0, tokens, out, 
-          pdbCONECT, bsWritten);
+          pdbCONECT, bsWritten, ptTemp);
   }
 
 }

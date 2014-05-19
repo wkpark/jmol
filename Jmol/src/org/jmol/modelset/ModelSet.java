@@ -2317,15 +2317,15 @@ import java.util.Properties;
           bs.clear(i);
       return bs;
     case T.cell:
-      // select cell=555 (an absolute quantity)
+      // select cell=555 (NO NOT an absolute quantity)
       // select cell=1505050
       // select cell=1500500500
       bs = new BS();
       info = (int[]) specInfo;
       ptTemp1.set(info[0] / 1000f, info[1] / 1000f, info[2] / 1000f);
-      boolean isAbsolute = !vwr.getBoolean(T.fractionalrelative);
+      boolean ignoreOffset = false;//!vwr.getBoolean(T.fractionalrelative);
       for (int i = ac; --i >= 0;)
-        if (isInLatticeCell(i, ptTemp1, ptTemp2, isAbsolute))
+        if (isInLatticeCell(i, ptTemp1, ptTemp2, ignoreOffset))
           bs.set(i);
       return bs;
     case T.centroid:
@@ -2429,21 +2429,22 @@ import java.util.Properties;
    * @param rd
    * @return the set of atoms
    */
-  public BS getAtomsWithinRadius(float distance, BS bs, boolean withinAllModels,
-                             RadiusData rd) {
+  public BS getAtomsWithinRadius(float distance, BS bs,
+                                 boolean withinAllModels, RadiusData rd) {
     BS bsResult = new BS();
     BS bsCheck = getIterativeModels(false);
     bs = BSUtil.andNot(bs, vwr.getDeletedAtoms());
     AtomIndexIterator iter = getSelectedAtomIterator(null, false, false, false,
         false);
     if (withinAllModels) {
+      P3 ptTemp = new P3();
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
         for (int iModel = mc; --iModel >= 0;) {
           if (!bsCheck.get(iModel))
             continue;
           if (distance < 0) {
-            getAtomsWithin(distance, at[i].getFractionalUnitCoordPt(true),
-                bsResult, -1);
+            getAtomsWithin(distance,
+                at[i].getFractionalUnitCoordPt(true, ptTemp), bsResult, -1);
             continue;
           }
           setIteratorForAtom(iter, iModel, i, distance, rd);

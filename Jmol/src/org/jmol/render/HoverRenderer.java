@@ -23,6 +23,8 @@
  */
 package org.jmol.render;
 
+import javajs.util.P3;
+
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Text;
 import org.jmol.shape.Hover;
@@ -30,12 +32,15 @@ import org.jmol.shape.Hover;
 public class HoverRenderer extends ShapeRenderer {
   
   private float[] tempXY = new float[3];
+  private P3 ptTemp;
 
   @Override
   protected boolean render() {
     // hover rendering always involves translucent pass
     if (tm.isNavigating())
       return false;
+    if (ptTemp == null)
+      ptTemp = new P3();
     Hover hover = (Hover) shape;
     boolean antialias = g3d.isAntialiased();
     Text text = hover.hoverText;
@@ -44,8 +49,8 @@ public class HoverRenderer extends ShapeRenderer {
       String label = (hover.specialLabel != null ? hover.specialLabel 
           : hover.atomFormats != null
           && hover.atomFormats[hover.atomIndex] != null ? 
-              vwr.ms.getLabeler().formatLabel(vwr, atom, hover.atomFormats[hover.atomIndex])
-          : hover.labelFormat != null ? vwr.ms.getLabeler().formatLabel(vwr, atom, fixLabel(atom, hover.labelFormat))
+              vwr.ms.getLabeler().formatLabel(vwr, atom, hover.atomFormats[hover.atomIndex], ptTemp)
+          : hover.labelFormat != null ? vwr.ms.getLabeler().formatLabel(vwr, atom, fixLabel(atom, hover.labelFormat), ptTemp)
               : null);
       if (label == null)
         return false;

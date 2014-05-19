@@ -1464,7 +1464,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public P3 getColorPointForPropertyValue(float val) {
     // x = {atomno=3}.partialcharge.color
     return CU.colorPtFromInt(gdata.getColorArgbOrGray(cm
-        .getColixForPropertyValue(val)));
+        .getColixForPropertyValue(val)), null);
   }
 
   // ///////////////////////////////////////////////////////////////
@@ -3053,13 +3053,13 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
    * absolute or relative to origin of UNITCELL {x y z}
    * 
    * @param pt
-   * @param asAbsolute
+   * @param ignoreOffset
    *        TODO
    */
-  public void toCartesian(P3 pt, boolean asAbsolute) {
+  public void toCartesian(P3 pt, boolean ignoreOffset) {
     SymmetryInterface unitCell = getCurrentUnitCell();
     if (unitCell != null)
-      unitCell.toCartesian(pt, asAbsolute);
+      unitCell.toCartesian(pt, ignoreOffset);
   }
 
   /**
@@ -3095,7 +3095,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public void setCurrentCagePts(P3[] points) {
     ms.setModelCage(am.cmi,
-        Interface.getSymmetry().getUnitCell(points, true));
+        points == null ? null : Interface.getSymmetry().getUnitCell(points, false));
   }
 
   public void addUnitCellOffset(P3 pt) {
@@ -4501,17 +4501,22 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return haveDisplay && g.drawHover;
   }
 
+  private P3 ptTemp;
   @Override
   public String getAtomInfo(int atomOrPointIndex) {
+    if (ptTemp == null)
+      ptTemp = new P3();
     // only for MeasurementTable and actionManager
     return (atomOrPointIndex >= 0 ? ms
-        .getAtomInfo(atomOrPointIndex, null) : (String) shm
+        .getAtomInfo(atomOrPointIndex, null, ptTemp) : (String) shm
         .getShapePropertyIndex(JC.SHAPE_MEASURES, "pointInfo",
             -atomOrPointIndex));
   }
 
   public String getAtomInfoXYZ(int atomIndex, boolean useChimeFormat) {
-    return ms.getAtomInfoXYZ(atomIndex, useChimeFormat);
+    if (ptTemp == null)
+      ptTemp = new P3();
+    return ms.getAtomInfoXYZ(atomIndex, useChimeFormat, ptTemp);
   }
 
   // //////////////status manager dispatch//////////////
@@ -5038,7 +5043,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     if (info == null) {
       info = g.pickLabel;
       info = (info.length() == 0 ? getAtomInfoXYZ(atomIndex,
-          g.messageStyleChime) : ms.getAtomInfo(atomIndex, info));
+          g.messageStyleChime) : ms.getAtomInfo(atomIndex, info, ptTemp));
     }
     g.setPicked(atomIndex);
     g.setS("_pickinfo", info);
@@ -5374,7 +5379,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     case T.forceautobond:
       return g.forceAutoBond;
     case T.fractionalrelative:
-      return g.fractionalRelative;
+      return false;//g.fractionalRelative;
     case T.greyscalerendering:
       return g.greyscaleRendering;
     case T.hbondsbackbone:
@@ -6221,6 +6226,19 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   private void setBooleanPropertyTok(String key, int tok, boolean value) {
     boolean doRepaint = true;
     switch (tok) {
+    case T.fractionalrelative:
+      // REMOVED in 14.1.16
+      // an odd quantity -- relates specifically to scripts commands
+      // using fx, fy, fz, fxyz, ux, uy, uz, uxyz, and cell=
+      // It should never have been set in state, as it has nothing to do with the state 
+      // Its use with cell= was never documented.
+      // It makes no sense to change the unit cell and not change the 
+      // meaning of fx, fy, fz, fxyz, ux, uy, uz, uxyz, and cell=
+      // Its presence caused unitcell [{origin} {a} {b} {c}] to fail.
+      
+      //g.fractionalRelative = value;
+      doRepaint = false;
+      break;
     case T.vectorscentered:
       // 14.1.15
       g.vectorsCentered = value;
@@ -6737,10 +6755,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     case T.forceautobond:
       doRepaint = false;
       g.forceAutoBond = value;
-      break;
-    case T.fractionalrelative:
-      doRepaint = false;
-      g.fractionalRelative = value;
       break;
     default:
       if (!g.htBooleanParameterFlags.containsKey(key.toLowerCase())) {
@@ -7647,8 +7661,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return ms.calculateMolecularDipole(am.cmi, bsAtoms);
   }
 
-  public void getAtomIdentityInfo(int atomIndex, Map<String, Object> info) {
-    ms.getAtomIdentityInfo(atomIndex, info);
+  public void getAtomIdentityInfo(int atomIndex, Map<String, Object> info, P3 ptTemp) {
+    ms.getAtomIdentityInfo(atomIndex, info, ptTemp);
   }
 
   public void setDefaultLattice(P3 p) {

@@ -484,7 +484,7 @@ public class Group {
       BSUtil.deleteBits(bsAdded, bsDeleted);
   }
 
-  public Map<String, Object> getGroupInfo(int igroup) {
+  public Map<String, Object> getGroupInfo(int igroup, P3 ptTemp) {
     Map<String, Object> infoGroup = new Hashtable<String, Object>();
     infoGroup.put("groupIndex", Integer.valueOf(igroup));
     infoGroup.put("groupID", Short.valueOf(groupID));
@@ -495,8 +495,8 @@ public class Group {
     infoGroup.put("_apt2", Integer.valueOf(lastAtomIndex));
     if (bsAdded != null)
     infoGroup.put("addedAtoms", bsAdded);
-    infoGroup.put("atomInfo1", chain.model.ms.getAtomInfo(firstAtomIndex, null));
-    infoGroup.put("atomInfo2", chain.model.ms.getAtomInfo(lastAtomIndex, null));
+    infoGroup.put("atomInfo1", chain.model.ms.getAtomInfo(firstAtomIndex, null, ptTemp));
+    infoGroup.put("atomInfo2", chain.model.ms.getAtomInfo(lastAtomIndex, null, ptTemp));
     infoGroup.put("visibilityFlags", Integer.valueOf(shapeVisibilityFlags));
     return infoGroup;
   }

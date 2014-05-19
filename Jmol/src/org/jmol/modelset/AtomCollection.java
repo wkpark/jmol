@@ -213,13 +213,13 @@ abstract public class AtomCollection {
     return (labeler == null ? labeler = (LabelToken) Interface.getInterface("org.jmol.modelset.LabelToken") : labeler);
   }
 
-  public String getAtomInfo(int i, String format) {
+  public String getAtomInfo(int i, String format, P3 ptTemp) {
     return (format == null ? at[i].getInfo() 
-        : getLabeler().formatLabel(vwr, at[i], format));
+        : getLabeler().formatLabel(vwr, at[i], format, ptTemp));
   }
 
-  public String getAtomInfoXYZ(int i, boolean useChimeFormat) {
-    return at[i].getInfoXYZ(useChimeFormat);
+  public String getAtomInfoXYZ(int i, boolean useChimeFormat, P3 ptTemp) {
+    return at[i].getInfoXYZ(useChimeFormat, ptTemp);
   }
 
   public String getElementSymbol(int i) {
@@ -2641,11 +2641,11 @@ abstract public class AtomCollection {
     // what about data?
   }
 
-  public void getAtomIdentityInfo(int i, Map<String, Object> info) {
+  public void getAtomIdentityInfo(int i, Map<String, Object> info, P3 ptTemp) {
     info.put("_ipt", Integer.valueOf(i));
     info.put("atomIndex", Integer.valueOf(i));
     info.put("atomno", Integer.valueOf(getAtomNumber(i)));
-    info.put("info", getAtomInfo(i, null));
+    info.put("info", getAtomInfo(i, null, ptTemp));
     info.put("sym", getElementSymbol(i));
   }
 

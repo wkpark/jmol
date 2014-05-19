@@ -75,7 +75,7 @@ public class Trace extends BioShapeCollection {
     float min = Float.MAX_VALUE;
     float max = 0;
     for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
-      float value = Atom.atomPropertyFloat(null, atoms[i], T.temperature);
+      float value = Atom.atomPropertyFloat(null, atoms[i], T.temperature, null);
       sum += value;
       sumsq += (value * value);
       if (value < min)
@@ -105,7 +105,7 @@ public class Trace extends BioShapeCollection {
     }
     for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms
         .nextSetBit(i + 1)) {
-      float scale = Atom.atomPropertyFloat(null, atoms[i], T.temperature);
+      float scale = Atom.atomPropertyFloat(null, atoms[i], T.temperature, null);
       switch (transform) {
       case PUTTY_AbsoluteNonlinear:
       case PUTTY_AbsoluteLinear:

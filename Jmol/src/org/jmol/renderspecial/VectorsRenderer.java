@@ -110,7 +110,7 @@ public class VectorsRenderer extends ShapeRenderer {
 
   private boolean transform(short mad, Atom atom, Vibration vib) {
     boolean isMod = (vib.modDim >= Vibration.TYPE_MODULATION);
-    boolean isDisp = (vib.modDim == Vibration.TYPE_DISPLACEMENT);
+    //boolean isDisp = (vib.modDim == Vibration.TYPE_DISPLACEMENT);
     boolean isSpin = (vib.modDim == Vibration.TYPE_SPIN);
     drawCap = true;
     if (!isMod) {

@@ -83,6 +83,7 @@ public interface VertexDataServer {
    * @param vertexXYZ
    * @param value
    * @param assocVertex       unique association vertex or -1
+   * @param asCopy 
    * @return                  new vertex index
    * 
    */

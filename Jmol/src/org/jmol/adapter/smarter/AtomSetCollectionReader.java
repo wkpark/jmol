@@ -774,7 +774,7 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
     if (!iHaveUnitCell)
       return null;
     if (symmetry == null) {
-      getNewSymmetry().setUnitCell(notionalUnitCell);
+      getNewSymmetry().setUnitCell(notionalUnitCell, false);
       checkUnitCellOffset();
     }
     return symmetry;
@@ -1079,7 +1079,7 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
     }
     if (doConvertToFractional && !fileCoordinatesAreFractional && getSymmetry() != null) {
       if (!symmetry.haveUnitCell())
-        symmetry.setUnitCell(notionalUnitCell);
+        symmetry.setUnitCell(notionalUnitCell, false);
       symmetry.toFractional(atom, false);
       iHaveFractionalCoordinates = true;
     }

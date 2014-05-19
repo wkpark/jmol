@@ -123,7 +123,6 @@ import org.jmol.java.BS;
 import org.jmol.util.MeshSurface;
 
 import javajs.util.AU;
-import javajs.util.P3;
 import javajs.util.T3;
 import javajs.util.V3;
 

@@ -47,7 +47,7 @@ class PickleReader {
   private Object thisSection;
   private boolean inMovie;
   private boolean inNames;
-  private String thisName;
+//  private String thisName;
   private int lastMark;
   private int retrieveCount;
 
@@ -187,7 +187,7 @@ class PickleReader {
         binaryDoc.readByteArray(a, 0, i);
         s = new String(a, "UTF-8");
         if (inNames && markCount == 3 && lastMark == stack.size()) {
-          thisName = s;
+          //thisName = s;
           filePt = emptyListPt;
         }
         push(s);

@@ -964,6 +964,7 @@ public class PropertyManager implements JmolPropertyManager {
       LabelToken[] tokens2 = LabelToken.compile(vwr,
           "%-2e %10.5x %10.5y %10.5z\n", '\0', null);
       BS bsModels = vwr.ms.getModelBS(bsAtoms, true);
+      P3 ptTemp = new P3();
       for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels
           .nextSetBit(i + 1)) {
         BS bsTemp = BSUtil.copy(bsAtoms);
@@ -998,7 +999,7 @@ public class PropertyManager implements JmolPropertyManager {
         for (int j = bsTemp.nextSetBit(0); j >= 0; j = bsTemp.nextSetBit(j + 1))
           mol.append(LabelToken.formatLabelAtomArray(vwr, atoms[j],
               (ms.getVibration(j, false) == null ? tokens2 : tokens1), '\0',
-              null));
+              null, ptTemp));
       }
     } else {
       isOK = addMolFile(mol, bsAtoms, bsBonds, asV3000, asJSON, q);
@@ -1314,17 +1315,18 @@ public class PropertyManager implements JmolPropertyManager {
 
   public Lst<Map<String, Object>> getAllAtomInfo(BS bs) {
     Lst<Map<String, Object>> V = new  Lst<Map<String, Object>>();
+    P3 ptTemp = new P3();
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-      V.addLast(getAtomInfoLong(i));
+      V.addLast(getAtomInfoLong(i, ptTemp));
     }
     return V;
   }
 
-  private Map<String, Object> getAtomInfoLong(int i) {
+  private Map<String, Object> getAtomInfoLong(int i, P3 ptTemp) {
     ModelSet ms = vwr.ms;
     Atom atom = ms.at[i];
     Map<String, Object> info = new Hashtable<String, Object>();
-    vwr.getAtomIdentityInfo(i, info);
+    vwr.getAtomIdentityInfo(i, info, ptTemp);
     info.put("element", ms.getElementName(i));
     info.put("elemno", Integer.valueOf(ms.getElementNumber(i)));
     info.put("x", Float.valueOf(atom.x));
@@ -1389,6 +1391,7 @@ public class PropertyManager implements JmolPropertyManager {
     if (bsOrArray instanceof String) {
       bsOrArray = vwr.getAtomBitSet(bsOrArray);
     }
+    P3 ptTemp = new P3();
     if (bsOrArray instanceof BS[]) {
       bs1 = ((BS[]) bsOrArray)[0];
       BS bs2 = ((BS[]) bsOrArray)[1];
@@ -1396,35 +1399,35 @@ public class PropertyManager implements JmolPropertyManager {
         int ia = bonds[i].atom1.i;
         int ib = bonds[i].atom2.i;
         if (bs1.get(ia) && bs2.get(ib) || bs2.get(ia) && bs1.get(ib))
-          v.addLast(getBondInfo(i));
+          v.addLast(getBondInfo(i, ptTemp));
       }
     } else if (bsOrArray instanceof BondSet) {
       bs1 = (BS) bsOrArray;
       for (int i = bs1.nextSetBit(0); i >= 0 && i < bondCount; i = bs1
           .nextSetBit(i + 1))
-        v.addLast(getBondInfo(i));
-    } else if (bsOrArray instanceof BS){
+        v.addLast(getBondInfo(i, ptTemp));
+    } else if (bsOrArray instanceof BS) {
       bs1 = (BS) bsOrArray;
       int thisAtom = (bs1.cardinality() == 1 ? bs1.nextSetBit(0) : -1);
       for (int i = 0; i < bondCount; i++) {
         if (thisAtom >= 0 ? (bonds[i].atom1.i == thisAtom || bonds[i].atom2.i == thisAtom)
             : bs1.get(bonds[i].atom1.i) && bs1.get(bonds[i].atom2.i))
-          v.addLast(getBondInfo(i));
+          v.addLast(getBondInfo(i, ptTemp));
       }
     }
     return v;
   }
 
-  private Map<String, Object> getBondInfo(int i) {
+  private Map<String, Object> getBondInfo(int i, P3 ptTemp) {
     Bond bond = vwr.ms.bo[i];
     Atom atom1 = bond.atom1;
     Atom atom2 = bond.atom2;
     Map<String, Object> info = new Hashtable<String, Object>();
     info.put("_bpt", Integer.valueOf(i));
     Map<String, Object> infoA = new Hashtable<String, Object>();
-    vwr.getAtomIdentityInfo(atom1.i, infoA);
+    vwr.getAtomIdentityInfo(atom1.i, infoA, ptTemp);
     Map<String, Object> infoB = new Hashtable<String, Object>();
-    vwr.getAtomIdentityInfo(atom2.i, infoB);
+    vwr.getAtomIdentityInfo(atom2.i, infoB, ptTemp);
     info.put("atom1", infoA);
     info.put("atom2", infoB);
     info.put("order", Float.valueOf(PT.fVal(Edge
@@ -1465,7 +1468,8 @@ public class PropertyManager implements JmolPropertyManager {
     Model model = vwr.ms.am[modelIndex];
     int nChains = model.getChainCount(true);
     Lst<Map<String, Lst<Map<String, Object>>>> infoChains = new  Lst<Map<String, Lst<Map<String, Object>>>>();
-    for (int i = 0; i < nChains; i++) {
+    P3 ptTemp = new P3();
+        for (int i = 0; i < nChains; i++) {
       Chain chain = model.getChainAt(i);
       Lst<Map<String, Object>> infoChain = new  Lst<Map<String, Object>>();
       int nGroups = chain.getGroupCount();
@@ -1473,7 +1477,7 @@ public class PropertyManager implements JmolPropertyManager {
       for (int igroup = 0; igroup < nGroups; igroup++) {
         Group group = chain.getGroup(igroup);
         if (bs.get(group.firstAtomIndex))
-          infoChain.addLast(group.getGroupInfo(igroup));
+          infoChain.addLast(group.getGroupInfo(igroup, ptTemp));
       }
       if (!infoChain.isEmpty()) {
         arrayName.put("residues", infoChain);
@@ -1664,6 +1668,7 @@ public class PropertyManager implements JmolPropertyManager {
     SB sbCONECT = (showModels ? null : new SB());
     boolean isMultipleBondPDB = models[iModel].isPdbWithMultipleBonds;
     LabelToken[] tokens;
+    P3 ptTemp = new P3();
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       Atom a = atoms[i];
       if (showModels && a.mi != iModelLast) {
@@ -1699,7 +1704,7 @@ public class PropertyManager implements JmolPropertyManager {
             "ATOM  %5.-5i  %-3.3a%1A%3.-3n %1c%4.-4R%1E   %8.3x%8.3y%8.3z"
                 + occTemp, '\0', null));
       String XX = a.getElementSymbolIso(false).toUpperCase();
-      out.append(LabelToken.formatLabelAtomArray(vwr, a, tokens, '\0', null))
+      out.append(LabelToken.formatLabelAtomArray(vwr, a, tokens, '\0', null, ptTemp))
           .append(XX.length() == 1 ? " " + XX : XX.substring(0, 2))
           .append("  \n");
       if (!showModels && (!isBiomodel || isHetero || isMultipleBondPDB)) {
@@ -1792,6 +1797,7 @@ public class PropertyManager implements JmolPropertyManager {
       String strExtra = "";
       Atom atomLast = null;
       Atom[] atoms = vwr.ms.at;
+      P3 ptTemp = new P3();
       for (int i = bsAtoms.nextSetBit(0), n = 0; i >= 0; i = bsAtoms
           .nextSetBit(i + 1), n++) {
         float x = dataX[n];
@@ -1801,7 +1807,7 @@ public class PropertyManager implements JmolPropertyManager {
           continue;
         Atom a = atoms[i];
         out.append(LabelToken.formatLabelAtomArray(vwr, a, tokens, '\0',
-            null));
+            null, ptTemp));
         if (isPDB)
           bsWritten.set(i);
         out.append(Txt.sprintf(

@@ -30,6 +30,7 @@ import java.util.Map;
 
 
 
+import javajs.util.P3;
 import javajs.util.PT;
 import javajs.util.SB;
 import javajs.util.T3;
@@ -220,10 +221,10 @@ public class LabelToken {
 
   //////////// label formatting for atoms, bonds, and measurements ///////////
 
-  public String formatLabel(Viewer vwr, Atom atom, String strFormat) {
+  public String formatLabel(Viewer vwr, Atom atom, String strFormat, P3 ptTemp) {
     return (strFormat == null || strFormat.length() == 0 ? null
         : formatLabelAtomArray(vwr, atom, compile(vwr, strFormat, '\0', null),
-            '\0', null));
+            '\0', null, ptTemp));
   }
 
   /**
@@ -234,11 +235,12 @@ public class LabelToken {
    * @param tokens
    * @param chAtom
    * @param indices
+   * @param ptTemp 
    * @return   formatted string
    */
   public static String formatLabelAtomArray(Viewer vwr, Atom atom,
                                    LabelToken[] tokens, char chAtom,
-                                   int[] indices) {
+                                   int[] indices, P3 ptTemp) {
     if (atom == null)
       return null;
     SB strLabel = (chAtom > '0' ? null : new SB());
@@ -256,7 +258,7 @@ public class LabelToken {
               strLabel.appendC(t.ch1);
           }
         } else {
-          appendAtomTokenValue(vwr, atom, t, strLabel, indices);
+          appendAtomTokenValue(vwr, atom, t, strLabel, indices, ptTemp);
         }
       }
     return (strLabel == null ? null : strLabel.toString().intern());
@@ -274,15 +276,15 @@ public class LabelToken {
 
   public static String formatLabelBond(Viewer vwr, Bond bond,
                                    LabelToken[] tokens,
-                                   Map<String, Object> values, int[] indices) {
+                                   Map<String, Object> values, int[] indices, P3 ptTemp) {
     values.put("#", "" + (bond.index + 1));
     values.put("ORDER", "" + bond.getOrderNumberAsString());
     values.put("TYPE", bond.getOrderName());
     values.put("LENGTH", Float.valueOf(bond.atom1.distance(bond.atom2)));
     values.put("ENERGY", Float.valueOf(bond.getEnergy()));
     setValues(tokens, values);
-    formatLabelAtomArray(vwr, bond.atom1, tokens, '1', indices);
-    formatLabelAtomArray(vwr, bond.atom2, tokens, '2', indices);
+    formatLabelAtomArray(vwr, bond.atom1, tokens, '1', indices, ptTemp);
+    formatLabelAtomArray(vwr, bond.atom2, tokens, '2', indices, ptTemp);
     return getLabel(tokens);
   }
 
@@ -300,7 +302,7 @@ public class LabelToken {
     int[] indices = m.countPlusIndices;
     for (int i = indices[0]; i >= 1; --i)
       if (indices[i] >= 0)
-        formatLabelAtomArray(vwr, atoms[indices[i]], tokens, (char) ('0' + i), null);
+        formatLabelAtomArray(vwr, atoms[indices[i]], tokens, (char) ('0' + i), null, null);
     label = getLabel(tokens);
     return (label == null ? "" : label);
   }
@@ -455,7 +457,7 @@ public class LabelToken {
 
   private static void appendAtomTokenValue(Viewer vwr, Atom atom,
                                            LabelToken t, SB strLabel,
-                                           int[] indices) {
+                                           int[] indices, P3 ptTemp) {
     String strT = null;
     float floatT = Float.NaN;
     T3 ptT = null;
@@ -468,7 +470,7 @@ public class LabelToken {
         strT = "" + (indices == null ? atom.i : indices[atom.i]);
         break;
       case T.color:
-        ptT = Atom.atomPropertyTuple(atom, t.tok);
+        ptT = Atom.atomPropertyTuple(atom, t.tok, ptTemp);
         break;
       case T.data:
         if (t.data != null) {
@@ -503,7 +505,7 @@ public class LabelToken {
         floatT = atom.getOccupancy100() / 100f;
         break;
       case T.radius:
-        floatT = Atom.atomPropertyFloat(vwr, atom, t.tok);
+        floatT = Atom.atomPropertyFloat(vwr, atom, t.tok, ptTemp);
         break;
       case 'r':
         strT = atom.getSeqcodeString();
@@ -530,7 +532,7 @@ public class LabelToken {
         strT = Atom.atomPropertyString(vwr, atom, t.tok);
         break;
       case 'W':
-        strT = atom.getIdentityXYZ(false);
+        strT = atom.getIdentityXYZ(false, ptTemp);
         break;
 
       // standard 
@@ -544,13 +546,13 @@ public class LabelToken {
             strT = "" + Atom.atomPropertyInt(atom, t.tok);
           break;
         case T.floatproperty:
-          floatT = Atom.atomPropertyFloat(vwr, atom, t.tok);
+          floatT = Atom.atomPropertyFloat(vwr, atom, t.tok, ptTemp);
           break;
         case T.strproperty:
           strT = Atom.atomPropertyString(vwr, atom, t.tok);
           break;
         case T.atomproperty:
-          ptT = Atom.atomPropertyTuple(atom, t.tok);
+          ptT = Atom.atomPropertyTuple(atom, t.tok, ptTemp);
           break;
         default:
           // any dual case would be here -- must handle specially

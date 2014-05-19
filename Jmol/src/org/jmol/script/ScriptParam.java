@@ -460,7 +460,7 @@ abstract public class ScriptParam extends ScriptError {
       if (coordinatesAreFractional && doConvert) {
         fractionalPoint = P3.newP(pt);
         if (!chk)
-          vwr.toCartesian(pt, !vwr.getBoolean(T.fractionalrelative));
+          vwr.toCartesian(pt, false);//!vwr.getBoolean(T.fractionalrelative));
       }
       return pt;
     }

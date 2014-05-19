@@ -171,11 +171,9 @@ public interface SymmetryInterface {
 
   public void setTimeReversal(int op, int val);
 
-  public void setUnitCell(float[] notionalUnitCell);
+  public void setUnitCell(float[] notionalUnitCell, boolean setRelative);
 
-  public void setUnitCellAllFractionalRelative(boolean TF);
-
-  public void setUnitCellOrientation(M3 matUnitCellOrientation);
+  public void initializeOrientation(M3 matUnitCellOrientation);
 
   public void toCartesian(T3 pt, boolean asAbsolue);
 

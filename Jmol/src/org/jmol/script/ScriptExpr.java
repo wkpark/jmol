@@ -1166,6 +1166,8 @@ abstract class ScriptExpr extends ScriptParam {
     return l;
   }
 
+  private P3 ptTemp;
+
   /**
    * 
    * @param tokWhat
@@ -1175,24 +1177,25 @@ abstract class ScriptExpr extends ScriptParam {
    * @return BitSet
    */
   protected BS compareFloatData(int tokWhat, float[] data, int tokOperator,
-                              float comparisonFloat) {
+                                float comparisonFloat) {
     BS bs = new BS();
     int ac = vwr.getAtomCount();
     ModelSet modelSet = vwr.ms;
     Atom[] atoms = modelSet.at;
     float propertyFloat = 0;
     vwr.autoCalculate(tokWhat);
+    boolean isProp = (tokWhat == T.property);
+    if (!isProp && ptTemp == null)
+      ptTemp = new P3();
     for (int i = ac; --i >= 0;) {
       boolean match = false;
       Atom atom = atoms[i];
-      switch (tokWhat) {
-      default:
-        propertyFloat = Atom.atomPropertyFloat(vwr, atom, tokWhat);
-        break;
-      case T.property:
+      if (isProp) {
         if (data == null || data.length <= i)
           continue;
         propertyFloat = data[i];
+      } else {
+        propertyFloat = Atom.atomPropertyFloat(vwr, atom, tokWhat, ptTemp);
       }
       match = compareFloat(tokOperator, propertyFloat, comparisonFloat);
       if (match)
@@ -1659,7 +1662,7 @@ abstract class ScriptExpr extends ScriptParam {
               fv = atom.distance(ptRef);
             break;
           default:
-            fv = Atom.atomPropertyFloat(vwr, atom, tok);
+            fv = Atom.atomPropertyFloat(vwr, atom, tok, ptTemp);
           }
           if (fv == Float.MAX_VALUE || Float.isNaN(fv) && minmaxtype != T.all) {
             n--; // don't count this one
@@ -1736,7 +1739,7 @@ abstract class ScriptExpr extends ScriptParam {
           }
           break;
         case 3: // isPt
-          T3 t = Atom.atomPropertyTuple(atom, tok);
+          T3 t = Atom.atomPropertyTuple(atom, tok, ptTemp);
           if (t == null)
             errorStr(ERROR_unrecognizedAtomProperty, T.nameOf(tok));
           switch (minmaxtype) {

@@ -618,6 +618,7 @@ public class Dipoles extends Shape {
   public Lst<Map<String, Object>> getShapeDetail() {
     Lst<Map<String, Object>> V = new  Lst<Map<String,Object>>();
     Map<String, Object> atomInfo;
+    P3 ptTemp = new P3();
     for (int i = 0; i < dipoleCount; i++) {
       Map<String, Object> info = new Hashtable<String, Object>();
       Dipole dipole = dipoles[i];
@@ -628,11 +629,11 @@ public class Dipoles extends Shape {
         info.put("bsMolecule", dipole.bsMolecule);
       } else if (dipole.atoms[0] != null) {
         atomInfo = new Hashtable<String, Object>();
-        vwr.getAtomIdentityInfo(dipole.atoms[0].i, atomInfo);
+        vwr.getAtomIdentityInfo(dipole.atoms[0].i, atomInfo, ptTemp);
         Lst<Map<String, Object>> atoms = new  Lst<Map<String,Object>>();
         atoms.addLast(atomInfo);
         atomInfo = new Hashtable<String, Object>();
-        vwr.getAtomIdentityInfo(dipole.atoms[1].i, atomInfo);
+        vwr.getAtomIdentityInfo(dipole.atoms[1].i, atomInfo, ptTemp);
         atoms.addLast(atomInfo);
         info.put("atoms", atoms);
         info.put("magnitude", Float.valueOf(dipole.vector.length()));

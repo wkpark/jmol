@@ -121,6 +121,7 @@ public class Axes extends FontLineShape {
         P3[] vertices = unitcell.getUnitCellVertices();
         P3 offset = unitcell.getCartesianOffset();
         if (fixedOrigin == null) {
+          //offset = new P3();
           originPoint.add2(offset, vertices[0]);
         } else {
           offset = fixedOrigin;

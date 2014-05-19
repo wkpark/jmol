@@ -74,11 +74,11 @@ public class SimpleUnitCell {
   
   public static SimpleUnitCell newA(float[] parameters) {
     SimpleUnitCell c = new SimpleUnitCell();
-    c.set(parameters);
+    c.init(parameters);
     return c;
   }
   
-  protected void set(float[] parameters) {
+  protected void init(float[] parameters) {
     if (parameters == null)
       parameters = new float[] {1, 1, 1, 90, 90, 90};
     if (!isValid(parameters))
@@ -219,12 +219,12 @@ public class SimpleUnitCell {
       matrixCartesianToFractional = new M4();
       matrixCartesianToFractional.invertM(matrixFractionalToCartesian);
     }
-    matrixCtoFAbsolute = matrixCartesianToFractional;
-    matrixFtoCAbsolute = matrixFractionalToCartesian;
+    matrixCtoFANoOffset = matrixCartesianToFractional;
+    matrixFtoCNoOffset = matrixFractionalToCartesian;
   }
 
-  protected M4 matrixCtoFAbsolute;
-  protected M4 matrixFtoCAbsolute;
+  protected M4 matrixCtoFANoOffset;
+  protected M4 matrixFtoCNoOffset;
   public final static int INFO_DIMENSIONS = 6;
   public final static int INFO_GAMMA = 5;
   public final static int INFO_BETA = 4;
@@ -246,16 +246,16 @@ public class SimpleUnitCell {
     return fpt;
   }
 
-  public final void toCartesian(T3 pt, boolean isAbsolute) {
+  public final void toCartesian(T3 pt, boolean ignoreOffset) {
     if (matrixFractionalToCartesian != null)
-      (isAbsolute ? matrixFtoCAbsolute : matrixFractionalToCartesian)
+      (ignoreOffset ? matrixFtoCNoOffset : matrixFractionalToCartesian)
           .rotTrans(pt);
   }
 
   public final void toFractional(T3 pt, boolean isAbsolute) {
     if (matrixCartesianToFractional == null)
       return;
-    (isAbsolute ? matrixCtoFAbsolute : matrixCartesianToFractional)
+    (isAbsolute ? matrixCtoFANoOffset : matrixCartesianToFractional)
         .rotTrans(pt);
   }
 

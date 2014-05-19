@@ -23,15 +23,10 @@
  */
 package org.jmol.modelsetbio;
 
-import javajs.util.OC;
 import javajs.util.Lst;
-import javajs.util.SB;
-
-
 
 import org.jmol.c.STR;
 import org.jmol.modelset.Atom;
-import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.ModelSet;
 
 import org.jmol.java.BS;
@@ -39,12 +34,12 @@ import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import javajs.util.P3;
 import javajs.util.V3;
-import org.jmol.viewer.Viewer;
 
 public class AlphaPolymer extends BioPolymer {
 
   AlphaPolymer(Monomer[] monomers) {
     super(monomers);
+    hasStructure = true;
   }
 
   
@@ -62,16 +57,6 @@ public class AlphaPolymer extends BioPolymer {
     P3 pt = P3.newP(leadPoints[i]);
     pt.add(v);
     return pt;
-  }
-
-  @Override
-  public void getPdbData(Viewer vwr, char ctype, char qtype, int mStep, int derivType,
-                         BS bsAtoms, BS bsSelected, 
-                         boolean bothEnds, boolean isDraw, boolean addHeader, 
-                         LabelToken[] tokens, OC pdbATOM, 
-                         SB pdbCONECT, BS bsWritten) {
-    getPdbData(vwr, this, ctype, qtype, mStep, derivType, bsAtoms, bsSelected, bothEnds, 
-        isDraw, addHeader, tokens, pdbATOM, pdbCONECT, bsWritten);
   }
 
   public void addStructure(STR type, String structureID,

@@ -37,6 +37,8 @@ import org.jmol.util.C;
 import javajs.awt.Font;
 import javajs.util.AU;
 import javajs.util.Lst;
+import javajs.util.P3;
+
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.JC;
 
@@ -358,7 +360,7 @@ public class Labels extends AtomShape {
             tokens = tokensPDB;
           }
           strings[i] = LabelToken.formatLabelAtomArray(vwr, atom, tokens,
-              '\0', null);
+              '\0', null, ptTemp);
           formats[i] = strLabel;
           bsSizeSet.set(i);
           if ((bsBgColixSet == null || !bsBgColixSet.get(i))
@@ -422,6 +424,7 @@ public class Labels extends AtomShape {
   private final static LabelToken[][] nullToken = new LabelToken[][] { null };
   private boolean isScaled;
   private float scalePixelsPerMicron;
+  private P3 ptTemp = new P3();
   
   private void setScaling() {
     isActive = true;
@@ -451,7 +454,7 @@ public class Labels extends AtomShape {
     if (tokens == null)
       tokens = temp[0] = LabelToken.compile(vwr, strLabel, '\0', null);
     String label = (tokens == null ? null : LabelToken.formatLabelAtomArray(
-        vwr, atom, tokens, '\0', null));
+        vwr, atom, tokens, '\0', null, ptTemp ));
     addString(atom, i, label, strLabel);
     text = getLabel(i);
     if (isScaled) {

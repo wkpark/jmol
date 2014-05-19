@@ -331,16 +331,14 @@ public class Symmetry implements SymmetryInterface {
     float[] notionalUnitcell = symmetryInfo.setSymmetryInfo(modelAuxiliaryInfo);
     if (notionalUnitcell == null)
       return;
-    setUnitCell(notionalUnitcell);
+    setUnitCell(notionalUnitcell, modelAuxiliaryInfo.containsKey("jmolData"));
     unitCell.moreInfo = (Lst<String>) modelAuxiliaryInfo.get("moreUnitCellInfo");
     modelAuxiliaryInfo.put("infoUnitCell", getUnitCellAsArray(false));
     setOffsetPt((P3) modelAuxiliaryInfo.get("unitCellOffset"));
-    if (modelAuxiliaryInfo.containsKey("jmolData"))
-      setUnitCellAllFractionalRelative(true);
     M3 matUnitCellOrientation = (M3) modelAuxiliaryInfo
         .get("matUnitCellOrientation");
     if (matUnitCellOrientation != null)
-      setUnitCellOrientation(matUnitCellOrientation);
+      initializeOrientation(matUnitCellOrientation);
     if (Logger.debugging)
       Logger.debug("symmetryInfos[" + modelIndex + "]:\n"
           + unitCell.dumpInfo(true));
@@ -365,8 +363,8 @@ public class Symmetry implements SymmetryInterface {
   }
 
   @Override
-  public void setUnitCell(float[] notionalUnitCell) {
-    unitCell = UnitCell.newA(notionalUnitCell);
+  public void setUnitCell(float[] notionalUnitCell, boolean setRelative) {
+    unitCell = UnitCell.newA(notionalUnitCell, setRelative);
   }
 
   @Override
@@ -389,8 +387,8 @@ public class Symmetry implements SymmetryInterface {
   }
 
   @Override
-  public void setUnitCellOrientation(M3 matUnitCellOrientation) {
-    unitCell.setOrientation(matUnitCellOrientation);
+  public void initializeOrientation(M3 mat) {
+    unitCell.initOrientation(mat);
   }
 
   @Override
@@ -404,9 +402,9 @@ public class Symmetry implements SymmetryInterface {
   }
 
   @Override
-  public void toCartesian(T3 fpt, boolean isAbsolute) {
+  public void toCartesian(T3 fpt, boolean ignoreOffset) {
     if (!isBio)
-      unitCell.toCartesian(fpt, isAbsolute);
+      unitCell.toCartesian(fpt, ignoreOffset);
   }
 
   @Override
@@ -435,7 +433,7 @@ public class Symmetry implements SymmetryInterface {
     if (parBorU == null)
       return null;
     if (unitCell == null)
-      unitCell = UnitCell.newA(new float[] { 1, 1, 1, 90, 90, 90 });
+      unitCell = UnitCell.newA(new float[] { 1, 1, 1, 90, 90, 90 }, true);
     return unitCell.getTensor(parBorU);
   }
 
@@ -499,11 +497,6 @@ public class Symmetry implements SymmetryInterface {
   @Override
   public void setMinMaxLatticeParameters(P3i minXYZ, P3i maxXYZ) {
     unitCell.setMinMaxLatticeParameters(minXYZ, maxXYZ);
-  }
-
-  @Override
-  public void setUnitCellAllFractionalRelative(boolean TF) {
-    unitCell.setAllFractionalRelative(TF);
   }
 
   @Override
@@ -752,7 +745,7 @@ public class Symmetry implements SymmetryInterface {
     if (type == T.point) {
       if (isBio)
         return "";
-      symTemp.setUnitCell(uc.getNotionalUnitCell());
+      symTemp.setUnitCell(uc.getNotionalUnitCell(), false);
       uc.toFractional(pt, false);
       if (Float.isNaN(pt.x))
         return "";

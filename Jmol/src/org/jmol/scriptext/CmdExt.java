@@ -3124,10 +3124,12 @@ public class CmdExt implements JmolCmdExtension {
             sbCommand.append(" " + eval.theToken.value);
             Atom[] atoms = vwr.ms.at;
             vwr.autoCalculate(tokProperty);
-            if (tokProperty != T.color)
+            if (tokProperty != T.color) {
+              pt = new P3();
               for (int iAtom = ac; --iAtom >= 0;)
                 data[iAtom] = Atom.atomPropertyFloat(vwr, atoms[iAtom],
-                    tokProperty);
+                    tokProperty, pt);
+            }
           }
           if (tokProperty == T.color)
             colorScheme = "inherit";
@@ -7740,6 +7742,7 @@ public class CmdExt implements JmolCmdExtension {
         htValues));
     int nmax = (haveIndex ? 1 : BSUtil.cardinalityOf(bs));
     String[] sout = new String[nmax];
+    P3 ptTemp = new P3();
     for (int j = (haveIndex ? index : bs.nextSetBit(0)); j >= 0; j = bs
         .nextSetBit(j + 1)) {
       String str;
@@ -7748,14 +7751,14 @@ public class CmdExt implements JmolCmdExtension {
           str = modelSet.at[j].getInfo();
         else
           str = labeler.formatLabelAtomArray(vwr, modelSet.at[j], tokens,
-              '\0', indices);
+              '\0', indices, ptTemp);
       } else {
         Bond bond = modelSet.getBondAt(j);
         if (asIdentity)
           str = bond.getIdentity();
         else
           str = labeler
-              .formatLabelBond(vwr, bond, tokens, htValues, indices);
+              .formatLabelBond(vwr, bond, tokens, htValues, indices, ptTemp);
       }
       str = Txt.formatStringI(str, "#", (n + 1));
       sout[n++] = str;

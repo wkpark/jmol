@@ -123,29 +123,37 @@ public class XtalSymmetry {
     centroidPacked = acr.centroidPacked;
     filterSymop = acr.filterSymop;
     if (acr.strSupercell != null)
-      setSuperCell(acr.strSupercell);
+      setSuperCellFromString(acr.strSupercell);
     else
-      ptSupercell = acr.ptSupercell;
+      setSupercellFromPoint(acr.ptSupercell);
   }
 
   private P3 ptSupercell;
+  private float[] fmatSupercell;
+  private M4 matSupercell;
+
 
   public void setSupercellFromPoint(P3 pt) {
     ptSupercell = pt;
-    Logger.info("Using supercell " + Escape.eP(pt));
+    matSupercell = new M4();
+    matSupercell.m00 = pt.x;
+    matSupercell.m11 = pt.y;
+    matSupercell.m22 = pt.z;
+    matSupercell.m33 = 1;
+    Logger.info("Using supercell \n" + matSupercell);
   }
 
-  private float[] fmatSupercell;
-
-  private void setSuperCell(String supercell) {
+  private void setSuperCellFromString(String supercell) {
     if (fmatSupercell != null)
       return;
     fmatSupercell = new float[16];
     if (symmetry.getMatrixFromString(supercell, fmatSupercell, true, 0) == null) {
       fmatSupercell = null;
+      matSupercell = null;
       return;
     }
-    Logger.info("Using supercell \n" + M4.newA16(fmatSupercell));
+    matSupercell = M4.newA16(fmatSupercell);
+    Logger.info("Using supercell \n" + matSupercell);
   }
 
   private void setNotionalUnitCell(float[] info, M3 matUnitCellOrientation,
@@ -157,7 +165,7 @@ public class XtalSymmetry {
     asc.haveUnitCell = true;
     asc.setAtomSetAuxiliaryInfo("notionalUnitcell", notionalUnitCell);
     asc.setGlobalBoolean(AtomSetCollection.GLOBAL_UNITCELLS);
-    getSymmetry().setUnitCell(notionalUnitCell);
+    getSymmetry().setUnitCell(notionalUnitCell, false);
     // we need to set the auxiliary info as well, because 
     // ModelLoader creates a new symmetry object.
     if (unitCellOffset != null) {
@@ -165,7 +173,7 @@ public class XtalSymmetry {
       asc.setAtomSetAuxiliaryInfo("unitCellOffset", unitCellOffset);
     }
     if (matUnitCellOrientation != null) {
-      symmetry.setUnitCellOrientation(matUnitCellOrientation);
+      symmetry.initializeOrientation(matUnitCellOrientation);
       asc.setAtomSetAuxiliaryInfo("matUnitCellOrientation", matUnitCellOrientation);
     }
   }
@@ -238,7 +246,7 @@ public class XtalSymmetry {
 
     if (fmatSupercell != null) {
 
-      // supercell of the form nx + ny + nz
+      // supercell of the form (nx,ny,nz) or "x-y,x+y,..."
 
       // 1) get all atoms for cells necessary
 
@@ -285,13 +293,14 @@ public class XtalSymmetry {
 
       // ?? TODO
       asc.setAtomSetAuxiliaryInfo("matUnitCellOrientation", null);
-      doPackUnitCell = false; // already done that.
+      //doPackUnitCell = false; // already done that.
     }
 
     minXYZ = new P3i();
     maxXYZ = P3i.new3(maxX, maxY, maxZ);
     applyAllSymmetry(ms);
     fmatSupercell = null;
+    // but we leave matSupercell, because we might need it for vibrations in CASTEP
   }
 
   private P3 setSym(int i, int j, int k) {
@@ -947,6 +956,11 @@ public class XtalSymmetry {
 
   public void setTimeReversal(int op, int timeRev) {
     symmetry.setTimeReversal(op, timeRev);
+  }
+
+  public void rotateToSuperCell(V3 t) {
+    if (matSupercell != null)
+      matSupercell.rotate(t);
   }
 
 }

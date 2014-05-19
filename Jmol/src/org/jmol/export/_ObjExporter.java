@@ -937,7 +937,7 @@ public class _ObjExporter extends __CartesianExporter {
     int h = height * 3;
     byte[][] bytes = (textureType.equals("tga") ? new byte[h][w * 3] : null);
     int[] rgbbuf = (bytes == null ? new int[h * w] : null);
-
+    P3 ptTemp = new P3();
     for (int i = 0; i < data.pis.length; i++) {
       int rgb;
       if (data.pcs == null) {
@@ -945,7 +945,7 @@ public class _ObjExporter extends __CartesianExporter {
         // Get the vertex colors and average them
         sum.set(0, 0, 0);
         for (int iVertex : face)
-          sum.add(CU.colorPtFromInt(g3d.getColorArgbOrGray(colixes[iVertex])));
+          sum.add(CU.colorPtFromInt(g3d.getColorArgbOrGray(colixes[iVertex]), ptTemp));
         sum.scale(1.0f / face.length);
         rgb = CU.colorPtToFFRGB(sum);
       } else {

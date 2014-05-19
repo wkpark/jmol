@@ -461,7 +461,7 @@ public class GlobalSettings {
 //    boolean _fileCaching = false;
 //    String _fileCache = "";
     boolean forceAutoBond = false;
-    boolean fractionalRelative = false; // true: UNITCELL offset will change meaning of {1/2 1/2 1/2} 
+    boolean fractionalRelative = true;// true: {1/2 1/2 1/2} relative to current (possibly offset) unit cell 
     char inlineNewlineChar = '|'; //pseudo static
     String loadFormat, loadLigandFormat, nmrUrlFormat, nmrPredictFormat, smilesUrlFormat, nihResolverFormat, pubChemFormat;
 
@@ -998,7 +998,7 @@ public class GlobalSettings {
           + ";scriptqueue;scriptreportinglevel;syncscript;syncmouse;syncstereo;" 
           + ";defaultdirectory;currentlocalpath;defaultdirectorylocal"
           //    more settable Jmol variables    
-          + ";ambient;bonds;colorrasmol;diffuse;frank;hetero;hidenotselected"
+          + ";ambient;bonds;colorrasmol;diffuse;fractionalrelative;frank;hetero;hidenotselected"
           + ";hoverlabel;hydrogen;languagetranslation;measurementunits;navigationdepth;navigationslab"
           + ";picking;pickingstyle;propertycolorschemeoverload;radius;rgbblue;rgbgreen;rgbred"
           + ";scaleangstromsperinch;selectionhalos;showscript;showselections;solvent;strandcount"

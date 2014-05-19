@@ -57,6 +57,7 @@ import java.util.Map;
 public abstract class BioPolymer {
 
   public Monomer[] monomers;
+  protected boolean hasStructure;
 
   // these arrays will be one longer than the polymerCount
   // we probably should have better names for these things
@@ -405,9 +406,10 @@ public abstract class BioPolymer {
     ProteinStructure ps;
     ProteinStructure psLast = null;
     int n = 0;
+    P3 ptTemp = new P3();
     for (int i = 0; i < monomerCount; i++) {
       if (bs.get(monomers[i].leadAtomIndex)) {
-        Map<String, Object> monomerInfo = monomers[i].getMyInfo();
+        Map<String, Object> monomerInfo = monomers[i].getMyInfo(ptTemp);
         monomerInfo.put("monomerIndex", Integer.valueOf(i));
         info.addLast(monomerInfo);
         if ((ps = getProteinStructure(i)) != null && ps != psLast) {
@@ -461,17 +463,17 @@ public abstract class BioPolymer {
 
   final private static String[] qColor = { "yellow", "orange", "purple" };
 
-  final public static void getPdbData(Viewer vwr, BioPolymer p, char ctype,
+  final public void getPdbData(Viewer vwr, char ctype,
                                       char qtype, int mStep, int derivType,
                                       BS bsAtoms, BS bsSelected,
                                       boolean bothEnds, boolean isDraw,
                                       boolean addHeader, LabelToken[] tokens,
                                       OC pdbATOM,
-                                      SB pdbCONECT, BS bsWritten) {
+                                      SB pdbCONECT, BS bsWritten, P3 ptTemp) {
     boolean calcRamachandranStraightness = (qtype == 'C' || qtype == 'P');
     boolean isRamachandran = (ctype == 'R' || ctype == 'S'
         && calcRamachandranStraightness);
-    if (isRamachandran && !p.calcPhiPsiAngles())
+    if (isRamachandran && !calcPhiPsiAngles())
       return;
     /*
      * A quaternion visualization involves assigning a frame to each amino acid
@@ -502,7 +504,7 @@ public abstract class BioPolymer {
      * same as w but for calculating straightness
      */
 
-    boolean isAmino = (p instanceof AminoPolymer);
+    boolean isAmino = (type == TYPE_AMINO);
     boolean isRelativeAlias = (ctype == 'r');
     boolean quaternionStraightness = (!isRamachandran && ctype == 'S');
     if (derivType == 2 && isRelativeAlias)
@@ -551,11 +553,11 @@ public abstract class BioPolymer {
     bothEnds = false;//&= !isDraw && !isRamachandran;
     for (int j = 0; j < (bothEnds ? 2 : 1); j++, factor *= -1)
       for (int i = 0; i < (mStep < 1 ? 1 : mStep); i++)
-        getData(vwr, i, mStep, p, ctype, qtype, derivType, bsAtoms,
+        getData(vwr, i, mStep, this, ctype, qtype, derivType, bsAtoms,
             bsSelected, isDraw, isRamachandran, calcRamachandranStraightness,
             useQuaternionStraightness, writeRamachandranStraightness,
             quaternionStraightness, factor, isAmino, isRelativeAlias, tokens,
-            pdbATOM, pdbCONECT, bsWritten);
+            pdbATOM, pdbCONECT, bsWritten, ptTemp);
   }
 
   /**
@@ -583,9 +585,10 @@ public abstract class BioPolymer {
    * @param pdbATOM
    * @param pdbCONECT
    * @param bsWritten
+   * @param ptTemp 
    */
   @SuppressWarnings("static-access")
-  private static void getData(Viewer vwr, int m0, int mStep, BioPolymer p,
+  private void getData(Viewer vwr, int m0, int mStep, BioPolymer p,
                               char ctype, char qtype, int derivType,
                               BS bsAtoms, BS bsSelected,
                               boolean isDraw, boolean isRamachandran,
@@ -595,7 +598,9 @@ public abstract class BioPolymer {
                               boolean quaternionStraightness, float factor,
                               boolean isAmino, boolean isRelativeAlias,
                               LabelToken[] tokens, OC pdbATOM,
-                              SB pdbCONECT, BS bsWritten) {
+                              SB pdbCONECT, BS bsWritten, P3 ptTemp) {
+    if (!hasStructure)
+      return;
     String prefix = (derivType > 0 ? "dq" + (derivType == 2 ? "2" : "") : "q");
     Quat q;
     Atom aprev = null;
@@ -888,7 +893,7 @@ public abstract class BioPolymer {
           continue;
         bsWritten.set(((Monomer) a.getGroup()).leadAtomIndex);
         pdbATOM.append(vwr.ms.getLabeler().formatLabelAtomArray(vwr, a, tokens, '\0',
-            null));
+            null, ptTemp));
         pdbATOM.append(Txt
             .sprintf("%8.2f%8.2f%8.2f      %6.3f          %2s    %s\n",
                 "ssF", new Object[] {
@@ -1024,31 +1029,6 @@ public abstract class BioPolymer {
    *        protein only -- helix, sheet, turn definitions
    */
   public void setStructureList(Map<STR, float[]> structureList) {
-  }
-
-  /**
-   * 
-   * @param vwr
-   * @param ctype
-   * @param qtype
-   * @param mStep
-   * @param derivType
-   * @param bsAtoms
-   * @param bsSelected
-   * @param bothEnds
-   * @param isDraw
-   * @param addHeader
-   * @param tokens
-   * @param pdbATOM
-   * @param pdbCONECT
-   * @param bsWritten
-   */
-  public void getPdbData(Viewer vwr, char ctype, char qtype, int mStep,
-                         int derivType, BS bsAtoms, BS bsSelected,
-                         boolean bothEnds, boolean isDraw, boolean addHeader,
-                         LabelToken[] tokens, OC pdbATOM,
-                         SB pdbCONECT, BS bsWritten) {
-    return;
   }
 
   public int getType() {

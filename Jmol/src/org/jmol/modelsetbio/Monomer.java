@@ -287,8 +287,8 @@ public abstract class Monomer extends Group {
     return bioPolymer.haveParameters;
   }
   
-  public Map<String, Object> getMyInfo() {
-    Map<String, Object> info = getGroupInfo(groupIndex);
+  public Map<String, Object> getMyInfo(P3 ptTemp) {
+    Map<String, Object> info = getGroupInfo(groupIndex, ptTemp);
     info.put("chain", chain.getIDStr());
     int seqNum = getResno();
     if (seqNum > 0)      

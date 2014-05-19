@@ -57,6 +57,10 @@ class UnitCell extends SimpleUnitCell {
   private P3[] vertices; // eight corners
   private final P3 cartesianOffset = new P3();
   private P3 fractionalOffset;
+  private boolean allFractionalRelative; // specifically used for JmolData
+  private P3 unitCellMultiplier;
+  public Lst<String> moreInfo;
+  
   
   UnitCell() {
     
@@ -67,28 +71,29 @@ class UnitCell extends SimpleUnitCell {
     float[] parameters = new float[] { -1, 0, 0, 0, 0, 0, points[1].x,
         points[1].y, points[1].z, points[2].x, points[2].y, points[2].z,
         points[3].x, points[3].y, points[3].z };
-    c.set(parameters);
+    c.init(parameters);
     c.allFractionalRelative = setRelative;
-    c.calcUnitcellVertices();
+    c.initUnitcellVertices();
     c.setCartesianOffset(points[0]);
     return c;
   }
   
-  public static UnitCell newA(float[] notionalUnitcell) {
+  public static UnitCell newA(float[] notionalUnitcell, boolean setRelative) {
     UnitCell c = new UnitCell();
-    c.set(notionalUnitcell);
-    c.calcUnitcellVertices();
+    c.init(notionalUnitcell);
+    c.initUnitcellVertices();
+    c.allFractionalRelative = setRelative;
     return  c;
   }
 
-  void setOrientation(M3 mat) {
+  void initOrientation(M3 mat) {
     if (mat == null)
       return;
     M4 m = new M4();
     m.setToM3(mat);
     matrixFractionalToCartesian.mul2(m, matrixFractionalToCartesian);
     matrixCartesianToFractional.invertM(matrixFractionalToCartesian);
-    calcUnitcellVertices();
+    initUnitcellVertices();
   }
 
   /**
@@ -106,10 +111,10 @@ class UnitCell extends SimpleUnitCell {
       matrixFractionalToCartesian.rotTrans(pt);
     } else {
       // use original unit cell
-      matrixCtoFAbsolute.rotTrans(pt);
+      matrixCtoFANoOffset.rotTrans(pt);
       unitize(pt);
       pt.add(offset); 
-      matrixFtoCAbsolute.rotTrans(pt);
+      matrixFtoCNoOffset.rotTrans(pt);
     }
   }
   
@@ -126,21 +131,22 @@ class UnitCell extends SimpleUnitCell {
     }
   }
 
-  private boolean allFractionalRelative;
-  private P3 unitCellMultiplier;
-  public Lst<String> moreInfo;
-  
-  void setAllFractionalRelative(boolean TF) {
-    allFractionalRelative = TF;
-  }  
+  public void reset() {
+    unitCellMultiplier = null;
+    setOffset(P3.new3(0, 0, 0));
+  }
   
   void setOffset(T3 pt) {
     if (pt == null)
       return;
-    if (pt instanceof T4 ? ((T4) pt).w == 0 : pt.x >= 100 || pt.y >= 100) {
+    T4 pt4 = (pt instanceof T4 ? (T4) pt : null);
+    if (pt4 != null ? pt4.w <= 0 : pt.x >= 100 || pt.y >= 100) {
       // from "unitcell range {aaa bbb scale}"
+      //   or "unitcell reset"
       unitCellMultiplier = (pt.z == 0 && pt.x == pt.y ? null : P3.newP(pt));
-      return;
+      if (pt4 == null || pt4.w == 0)
+        return;
+      // from reset, continuing 
     }
     // from "unitcell offset {i j k}"
     if (hasOffset() || pt.lengthSquared() > 0) {
@@ -159,8 +165,8 @@ class UnitCell extends SimpleUnitCell {
     matrixFractionalToCartesian.m13 = cartesianOffset.y;
     matrixFractionalToCartesian.m23 = cartesianOffset.z;
     if (allFractionalRelative) {
-      matrixCtoFAbsolute.setM4(matrixCartesianToFractional);
-      matrixFtoCAbsolute.setM4(matrixFractionalToCartesian);
+      matrixCtoFANoOffset.setM4(matrixCartesianToFractional);
+      matrixFtoCNoOffset.setM4(matrixFractionalToCartesian);
     }
   }
 
@@ -180,8 +186,8 @@ class UnitCell extends SimpleUnitCell {
     matrixCartesianToFractional.m13 = -fractionalOffset.y;
     matrixCartesianToFractional.m23 = -fractionalOffset.z;
     if (allFractionalRelative) {
-      matrixCtoFAbsolute.setM4(matrixCartesianToFractional);
-      matrixFtoCAbsolute.setM4(matrixFractionalToCartesian);
+      matrixCtoFANoOffset.setM4(matrixCartesianToFractional);
+      matrixFtoCNoOffset.setM4(matrixFractionalToCartesian);
     }
     if (!wasOffset && fractionalOffset.lengthSquared() == 0)
       fractionalOffset = null;
@@ -414,11 +420,11 @@ class UnitCell extends SimpleUnitCell {
     return x;
   }
   
-  private void calcUnitcellVertices() {
+  private void initUnitcellVertices() {
     if (matrixFractionalToCartesian == null)
       return;
-    matrixCtoFAbsolute = M4.newM4(matrixCartesianToFractional);
-    matrixFtoCAbsolute = M4.newM4(matrixFractionalToCartesian);
+    matrixCtoFANoOffset = M4.newM4(matrixCartesianToFractional);
+    matrixFtoCNoOffset = M4.newM4(matrixFractionalToCartesian);
     vertices = new P3[8];
     for (int i = 8; --i >= 0;) {
       vertices[i] = new P3(); 
@@ -497,6 +503,5 @@ class UnitCell extends SimpleUnitCell {
       s += "  unitcell range " + Escape.eP(unitCellMultiplier) + ";\n";
     return s;
   }
-  
 
 }

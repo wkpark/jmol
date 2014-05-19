@@ -2709,14 +2709,14 @@ public class ScriptEval extends ScriptExpr {
       return;
     case T.frame:
       if (isArrayParameter(2)) {
-        int[] frames = expandFloatArray(floatParameterSet(2, 0, Integer.MAX_VALUE));
-        if (frames == null)
-          invArg();
+        int[] frames = expandFloatArray(
+            floatParameterSet(2, 0, Integer.MAX_VALUE), 1);
         checkLength(iToken + 1);
         if (chk)
           return;
         Map<String, Object> movie = new Hashtable<String, Object>();
-        movie.put("frames", frames);
+        if (frames.length > 0)
+          movie.put("frames", frames);
         movie.put("currentFrame", Integer.valueOf(0));
         vwr.am.setMovie(movie);
       } else {
@@ -4829,6 +4829,13 @@ public class ScriptEval extends ScriptExpr {
       report(s);
   }
 
+  /**
+   * ONE difference between FRAME and MODEL:
+   *   model 1  sets model NAMED one in the case of PDB
+   *   frame 1  always sets the first model
+   * @param offset
+   * @throws ScriptException
+   */
   private void cmdModel(int offset) throws ScriptException {
     boolean isFrame = (theTok == T.frame);
     boolean useModelNumber = true;
@@ -5920,6 +5927,10 @@ public class ScriptEval extends ScriptExpr {
       String saveName = optParameterAsString(2);
       int tok = tokAt(1);
       switch (tok) {
+      case T.unitcell:
+        if (!chk)
+          vwr.setCurrentCagePts(null);
+        return;
       case T.orientation:
       case T.rotation:
       case T.scene:
@@ -6238,11 +6249,10 @@ public class ScriptEval extends ScriptExpr {
         bs = new BS();
         // 0-based here, to conform with getProperty measurementInfo.index
         int[] a = expandFloatArray(floatParameterSet(4, 0,
-            Integer.MAX_VALUE));
-        if (a == null)
-          invArg();
-        for (int ii = 0; ii < a.length; ii++)
-          bs.set(a[ii]);
+            Integer.MAX_VALUE), 0);
+        for (int ii = a.length; --ii >= 0;)
+          if (a[ii] >= 0)
+            bs.set(a[ii]);
       }
       checkLast(iToken);
       if (chk)
@@ -7565,7 +7575,15 @@ public class ScriptEval extends ScriptExpr {
     String id = null;
     P3[] points = null;
     boolean isOffset = false;
+    boolean isReset = false;
     switch (tokAt(index + 1)) {
+    case T.restore:
+    case T.reset:
+      isReset = true;
+      pt = P4.new4(0,  0,  0,  -1); // reset offset and range
+      index++;
+      iToken++;
+      break;
     case T.string:
       id = objectNameParameter(++index);
       break;
@@ -7635,7 +7653,7 @@ public class ScriptEval extends ScriptExpr {
       vwr.ms.setUnitCellOffset(vwr.getCurrentUnitCell(), null, icell);
     else if (id != null)
       vwr.setCurrentCage(id);
-    else if (points != null)
+    else if (isReset ||points != null)
       vwr.setCurrentCagePts(points);
     setObjectMad(JC.SHAPE_UCCAGE, "unitCell", mad);
     if (pt != null)
@@ -8263,9 +8281,11 @@ public class ScriptEval extends ScriptExpr {
    * Accepts a float array and expands [1 -3] to [1 2 3], for example.
    * 
    * @param a
+   * @param min 
    * @return int array
+   * @throws ScriptException 
    */
-  private static int[] expandFloatArray(float[] a) {
+  private int[] expandFloatArray(float[] a, int min) throws ScriptException {
     int n = a.length;
     boolean haveNeg = false;
     try {
@@ -8279,6 +8299,8 @@ public class ScriptEval extends ScriptExpr {
         for (int pt = 0, i = 0; i < a.length; i++) {
           n = (int) a[i];
           if (n >= 0) {
+            if (n < min)
+              invArg();
             b[pt++] = n;
           } else {
             int dif = (int) (a[i - 1] + n);
@@ -8295,6 +8317,7 @@ public class ScriptEval extends ScriptExpr {
         ia[i] = (int) a[i];
       return ia;
     } catch (Exception e) {
+      invArg();
       return null;
     }
   }

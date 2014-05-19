@@ -49,6 +49,7 @@ import javajs.util.PT;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
+import org.jmol.adapter.smarter.XtalSymmetry;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import javajs.util.P3;
@@ -718,8 +719,9 @@ Species   Ion     s      p      d      f     Total  Charge (e)
     }
     boolean isGammaPoint = (qvec.length() == 0);
     float nx = 1, ny = 1, nz = 1;
+    XtalSymmetry xSym = asc.getXSymmetry();
     if (ptSupercell != null && !isOK && !isSecond) {
-      asc.getXSymmetry().setSupercellFromPoint(ptSupercell);
+      xSym.setSupercellFromPoint(ptSupercell);
       nx = ptSupercell.x;
       ny = ptSupercell.y;
       nz = ptSupercell.z;
@@ -779,11 +781,8 @@ Species   Ion     s      p      d      f     Total  Charge (e)
           if (atoms[k].atomSite == j) {
             t.sub2(atoms[k], atoms[atoms[k].atomSite]);
             // for supercells, fractional coordinates end up
-            // in terms of the SUPERCELL and need to be 
-            // multiplied by the supercell scaling factors
-            t.x *= nx;
-            t.y *= ny;
-            t.z *= nz;
+            // in terms of the SUPERCELL and need to be transformed.
+            xSym.rotateToSuperCell(t); 
             setPhononVector(data, atoms[k], t, qvec, v);
             asc.addVibrationVectorWithSymmetry(k, v.x, v.y, v.z, true);
           }

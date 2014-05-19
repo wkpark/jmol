@@ -23,34 +23,25 @@
  */
 package org.jmol.modelsetbio;
 
-
-
-
-
-
 import java.util.Map;
 
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.HBond;
-import org.jmol.modelset.LabelToken;
 import org.jmol.script.T;
 import org.jmol.util.C;
 import org.jmol.util.Edge;
 import javajs.util.Lst;
-import javajs.util.SB;
 
 import org.jmol.util.Measure;
 
-import javajs.util.OC;
 import javajs.util.P3;
 import javajs.util.P4;
 import javajs.util.V3;
-import org.jmol.viewer.Viewer;
 
 
-public class NucleicPolymer extends BioPolymer {
+public class NucleicPolymer extends PhosphorusPolymer {
 
   public boolean isDssrSet;
   public static Map<String, String> htGroup1;
@@ -170,14 +161,4 @@ public class NucleicPolymer extends BioPolymer {
     return 1;
   }
 
-
-  @Override
-  public void getPdbData(Viewer vwr, char ctype, char qtype, int mStep, int derivType,
-                         BS bsAtoms, BS bsSelected, 
-                         boolean bothEnds, boolean isDraw, 
-                         boolean addHeader, LabelToken[] tokens, OC pdbATOM, SB pdbCONECT, BS bsWritten) {
-    getPdbData(vwr, this, ctype, qtype, mStep, derivType, bsAtoms, bsSelected, bothEnds, 
-        isDraw, addHeader, tokens, pdbATOM, pdbCONECT, bsWritten);
-  }
-  
 }

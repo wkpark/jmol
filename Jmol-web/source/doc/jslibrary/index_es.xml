@@ -8,8 +8,16 @@
 		<title>Biblioteca javascript Jmol.js</title>
 		<header>
 			<p>
+				Jmol.js was a JavaScript library that was used to simplify
+	development of web pages that include the JmolApplet prior to the development 
+	of <a href="http://jsmol.sourceforge.net/">JSmol</a>. 
+	The description below is for historical reference only.
+	Please refer to the <a href="http://wiki.jmol.org/index.php/Jmol_JavaScript_Object#setCheckboxGroup">JSmol applet JavaScript scripting information</a> 
+	for more up-to-date information.
+	<!--
 	Jmol.js es una biblioteca javascript que puede usarse para simplificar
 	el desarrollo de páginas web que incluyan la miniaplicación JmolApplet.
+	-->
       </p>
 		</header>
 		<section title="¿Qué hace Jmol.js?">

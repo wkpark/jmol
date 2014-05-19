@@ -1,11 +1,15 @@
 <?xml version="1.0"?>
 <document>
 	<body>
-		<title>Jmol.js JavaScript Library</title>
+		<title>Jmol.js JavaScript Library (deprecated)</title>
 		<header>
 			<p>
-	Jmol.js is a JavaScript library that can be used to simplify
-	development of web pages that include the JmolApplet.
+	Jmol.js was a JavaScript library that was used to simplify
+	development of web pages that include the JmolApplet prior to the development 
+	of <a href="http://jsmol.sourceforge.net/">JSmol</a>. 
+	The description below is for historical reference only.
+	Please refer to the <a href="http://wiki.jmol.org/index.php/Jmol_JavaScript_Object#setCheckboxGroup">JSmol applet JavaScript scripting information</a> 
+	for more up-to-date information. 
       </p>
 		</header>
 		<section title="What does Jmol.js do?">

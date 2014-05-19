@@ -135,6 +135,10 @@ public class XtalSymmetry {
 
   public void setSupercellFromPoint(P3 pt) {
     ptSupercell = pt;
+    if (pt == null) {
+      matSupercell = null;
+      return;
+    }
     matSupercell = new M4();
     matSupercell.m00 = pt.x;
     matSupercell.m11 = pt.y;
@@ -243,7 +247,8 @@ public class XtalSymmetry {
     int maxX = latticeCells[0];
     int maxY = latticeCells[1];
     int maxZ = Math.abs(latticeCells[2]);
-
+    firstSymmetryAtom = asc.getLastAtomSetAtomIndex();
+    BS bsAtoms = null;
     if (fmatSupercell != null) {
 
       // supercell of the form (nx,ny,nz) or "x-y,x+y,..."
@@ -257,13 +262,27 @@ public class XtalSymmetry {
       rmaxy = -Float.MAX_VALUE;
       rmaxz = -Float.MAX_VALUE;
 
-      P3 ptx = setSym(0, 1, 2);
-      P3 pty = setSym(4, 5, 6);
-      P3 ptz = setSym(8, 9, 10);
+      P3 ptx = setSym(P3.new3(1, 0, 0));
+      P3 pty = setSym(P3.new3(0, 1, 0));
+      P3 ptz = setSym(P3.new3(0, 0, 1));
+      P3 pt = new P3();
+      for (int i = 0; i <= 1; i++)
+        for (int j = 0; j <= 1; j++)
+          for (int k = 0; k <= 1; k++) {
+            pt.set(i, j, k);
+            setSym(pt);
+          }
 
       minXYZ = P3i.new3((int) rminx, (int) rminy, (int) rminz);
       maxXYZ = P3i.new3((int) rmaxx, (int) rmaxy, (int) rmaxz);
-      applyAllSymmetry(ms);
+      Logger.info("setting min/max for original lattice to " + minXYZ + " and " + maxXYZ);
+      boolean doPack0 = doPackUnitCell;
+      doPackUnitCell = false;
+      if (asc.bsAtoms == null)
+        asc.bsAtoms = BSUtil.setAll(asc.ac);
+      bsAtoms = asc.bsAtoms;
+      applyAllSymmetry(ms, null, false);
+      doPackUnitCell = doPack0;
 
       // 2) set all atom coordinates to Cartesians
 
@@ -298,14 +317,13 @@ public class XtalSymmetry {
 
     minXYZ = new P3i();
     maxXYZ = P3i.new3(maxX, maxY, maxZ);
-    applyAllSymmetry(ms);
+    applyAllSymmetry(ms, bsAtoms, fmatSupercell != null);
     fmatSupercell = null;
     // but we leave matSupercell, because we might need it for vibrations in CASTEP
   }
 
-  private P3 setSym(int i, int j, int k) {
-    P3 pt = new P3();
-    pt.set(fmatSupercell[i], fmatSupercell[j], fmatSupercell[k]);
+  private P3 setSym(P3 pt) {
+    matSupercell.rotate(pt);
     setSymmetryMinMax(pt);
     symmetry.toCartesian(pt, false);
     return pt;
@@ -349,198 +367,17 @@ public class XtalSymmetry {
         && pt.z < maxZ + slop));
   }
 
-  private boolean checkAll;
-  private int bondCount0;
-
-  private int symmetryAddAtoms(int transX, int transY, int transZ,
-                               int baseCount, int pt, int iCellOpPt,
-                               P3[] cartesians, MSInterface ms)
-      throws Exception {
-    boolean isBaseCell = (baseCount == 0);
-    boolean addBonds = (bondCount0 > asc.bondIndex0 && applySymmetryToBonds);
-    int[] atomMap = (addBonds ? new int[noSymmetryCount] : null);
-    if (doPackUnitCell)
-      ptOffset.set(transX, transY, transZ);
-
-    //symmetryRange < 0 : just check symop=1 set
-    //symmetryRange > 0 : check against {1 1 1}
-
-    // if we are not checking special atoms, then this is a PDB file
-    // and we return all atoms within a cubical volume around the 
-    // target set. The user can later use select within() to narrow that down
-    // This saves immensely on time.
-
-    float range2 = symmetryRange * symmetryRange;
-    boolean checkRangeNoSymmetry = (symmetryRange < 0);
-    boolean checkRange111 = (symmetryRange > 0);
-    boolean checkSymmetryMinMax = (isBaseCell && checkRange111);
-    checkRange111 &= !isBaseCell;
-    int nOperations = symmetry.getSpaceGroupOperationCount();
-    if (nOperations == 1)
-      asc.checkSpecial = false;
-    boolean checkSpecial = asc.checkSpecial;
-    boolean checkSymmetryRange = (checkRangeNoSymmetry || checkRange111);
-    boolean checkDistances = (checkSpecial || checkSymmetryRange);
-    boolean addCartesian = (checkSpecial || checkSymmetryMinMax);
-    SymmetryInterface symmetry = this.symmetry;
-    if (checkRangeNoSymmetry)
-      baseCount = noSymmetryCount;
-    int atomMax = firstSymmetryAtom + noSymmetryCount;
-    P3 ptAtom = new P3();
-    String code = null;
-    char subSystemId = '\0';
-    for (int iSym = 0; iSym < nOperations; iSym++) {
-      if (isBaseCell && iSym == 0 || latticeOnly && iSym > 0
-          && iSym != latticeOp)
-        continue;
-
-      /* pt0 sets the range of points cross-checked. 
-       * If we are checking special positions, then we have to check
-       *   all previous atoms. 
-       * If we are doing a symmetry range check relative to {1 1 1}, then
-       *   we have to check only the base set. (checkRange111 true)
-       * If we are doing a symmetry range check on symop=1555 (checkRangeNoSymmetry true), 
-       *   then we don't check any atoms and just use the box.
-       *    
-       */
-
-      int pt0 = (checkSpecial ? pt : checkRange111 ? baseCount : 0);
-      float spinOp = (asc.vibScale == 0 ? symmetry.getSpinOp(iSym) : asc.vibScale);
-      for (int i = firstSymmetryAtom; i < atomMax; i++) {
-        Atom a = asc.atoms[i];
-        if (a.ignoreSymmetry)
-          continue;
-        if (asc.bsAtoms != null && !asc.bsAtoms.get(i))
-          continue;
-
-        if (ms == null) {
-          symmetry.newSpaceGroupPoint(iSym, a, ptAtom, transX, transY,
-              transZ);
-        } else {
-          symmetry = ms.getAtomSymmetry(a, this.symmetry);
-          symmetry.newSpaceGroupPoint(iSym, a, ptAtom, transX, transY,
-              transZ);
-          // COmmensurate structures may use a symmetry operator
-          // to changes space groups.
-          code = symmetry.getSpaceGroupOperationCode(iSym);
-          if (code != null) {
-            subSystemId = code.charAt(0);
-            symmetry = ms.getSymmetryFromCode(code);
-            if (symmetry.getSpaceGroupOperationCount() == 0)
-              finalizeSymmetry(symmetry);
-          }
-        }
-        Atom special = null;
-        P3 cartesian = P3.newP(ptAtom);
-        symmetry.toCartesian(cartesian, false);
-        if (doPackUnitCell) {
-          // note that COmmensurate structures may need 
-          // modulation at this point.
-          symmetry.toUnitCell(cartesian, ptOffset);
-          ptAtom.setT(cartesian);
-          symmetry.toFractional(ptAtom, false);
-          if (!isWithinCell(dtype, ptAtom, minXYZ0.x, maxXYZ0.x, minXYZ0.y,
-              maxXYZ0.y, minXYZ0.z, maxXYZ0.z, packingError))
-            continue;
-          
-        }
-
-        if (checkSymmetryMinMax)
-          setSymmetryMinMax(cartesian);
-        if (checkDistances) {
-
-          /* checkSpecial indicates that we are looking for atoms with (nearly) the
-           * same cartesian position.  
-           */
-          float minDist2 = Float.MAX_VALUE;
-          if (checkSymmetryRange && !isInSymmetryRange(cartesian))
-            continue;
-          int j0 = (checkAll ? asc.ac : pt0);
-          String name = a.atomName;
-          char id = (code == null ? a.altLoc : subSystemId);
-          for (int j = j0; --j >= 0;) {
-            float d2 = cartesian.distanceSquared(cartesians[j]);
-            if (checkSpecial && d2 < 0.0001) {
-              special = asc.atoms[firstSymmetryAtom + j];
-              if ((special.atomName == null || special.atomName.equals(name))
-                  && special.altLoc == id)
-                break;
-              special = null;
-            }
-            if (checkRange111 && j < baseCount && d2 < minDist2)
-              minDist2 = d2;
-          }
-          if (checkRange111 && minDist2 > range2)
-            continue;
-        }
-        int atomSite = a.atomSite;
-        if (special != null) {
-          if (addBonds)
-            atomMap[atomSite] = special.index;
-          special.bsSymmetry.set(iCellOpPt + iSym);
-          special.bsSymmetry.set(iSym);
-        } else {
-          if (addBonds)
-            atomMap[atomSite] = asc.ac;
-          Atom atom1 = asc.newCloneAtom(a);
-          atom1.setT(ptAtom);
-          if (spinOp != 0 && atom1.vib != null) {
-            symmetry.getSpaceGroupOperation(iSym).rotate(atom1.vib);
-            atom1.vib.scale(spinOp);
-          }
-          atom1.atomSite = atomSite;
-          if (code != null)
-            atom1.altLoc = subSystemId;
-          atom1.bsSymmetry = BSUtil.newAndSetBit(iCellOpPt + iSym);
-          atom1.bsSymmetry.set(iSym);
-          if (addCartesian)
-            cartesians[pt++] = cartesian;
-          Lst<Object> tensors = a.tensors;
-          if (tensors != null) {
-            atom1.tensors = null;
-            for (int j = tensors.size(); --j >= 0;) {
-              Tensor t = (Tensor) tensors.get(j);
-              if (t == null)
-                continue;
-              if (nOperations == 1)
-                atom1.addTensor(t.copyTensor(), null, false);
-              else
-                addRotatedTensor(atom1, t, iSym, false, symmetry);
-            }
-          }
-        }
-      }
-      if (addBonds) {
-        // Clone bonds
-        Bond[] bonds = asc.bonds;
-        Atom[] atoms = asc.atoms;
-        for (int bondNum = asc.bondIndex0; bondNum < bondCount0; bondNum++) {
-          Bond bond = bonds[bondNum];
-          Atom atom1 = atoms[bond.atomIndex1];
-          Atom atom2 = atoms[bond.atomIndex2];
-          if (atom1 == null || atom2 == null)
-            continue;
-          int iAtom1 = atomMap[atom1.atomSite];
-          int iAtom2 = atomMap[atom2.atomSite];
-          if (iAtom1 >= atomMax || iAtom2 >= atomMax)
-            asc.addNewBondWithOrder(iAtom1, iAtom2, bond.order);
-        }
-      }
-    }
-    return pt;
-  }
-
   /**
    * @param ms
    *        modulated structure interface
+   * @param forceCheckSpecial TODO
    * @throws Exception
    */
-  private void applyAllSymmetry(MSInterface ms) throws Exception {
+  private void applyAllSymmetry(MSInterface ms, BS bsAtoms, boolean forceCheckSpecial) throws Exception {
     if (asc.ac == 0)
       return;
     noSymmetryCount = (asc.baseSymmetryAtomCount == 0 ? asc.getLastAtomSetAtomCount()
         : asc.baseSymmetryAtomCount);
-    firstSymmetryAtom = asc.getLastAtomSetAtomIndex();
     asc.setTensors();
     bondCount0 = asc.bondCount;
     finalizeSymmetry(symmetry);
@@ -637,7 +474,7 @@ public class XtalSymmetry {
     SymmetryInterface symmetry = this.symmetry;
     SymmetryInterface lastSymmetry = symmetry;
     latticeOp = symmetry.getLatticeOp();
-    checkAll = (asc.atomSetCount == 1 && asc.checkSpecial && latticeOp >= 0);
+    checkAll = (forceCheckSpecial || asc.atomSetCount == 1 && asc.checkSpecial && latticeOp >= 0);
     latticeOnly = (asc.checkLatticeOnly && latticeOp >= 0); // CrystalReader
 
     M4 op = symmetry.getSpaceGroupOperation(0);
@@ -655,7 +492,6 @@ public class XtalSymmetry {
 
           for (pt = 0; pt < noSymmetryCount; pt++) {
             Atom atom = asc.atoms[firstSymmetryAtom + pt];
-
             if (ms != null) {
               symmetry = ms.getAtomSymmetry(atom, this.symmetry);
               if (symmetry != lastSymmetry) {
@@ -664,15 +500,26 @@ public class XtalSymmetry {
                 op = symmetry.getSpaceGroupOperation(0);
               }
             }
-
             P3 c = P3.newP(atom);
             op.rotTrans(c);
             symmetry.toCartesian(c, false);
             if (doPackUnitCell) {
               symmetry.toUnitCell(c, ptOffset);
-              atom.setT(c);
-              symmetry.toFractional(atom, false);
+              symmetry.toFractional(c, false);
+              // when bsAtoms != null, we are
+              // setting it to be correct for a 
+              // second unit cell -- the supercell
+              if (bsAtoms == null)
+                atom.setT(c);
+              else if (atom.distance(c) < 0.0001f)
+                bsAtoms.set(atom.index);
+              else {// not in THIS unit cell
+                bsAtoms.clear(atom.index);
+                continue;
+              }
             }
+            if (bsAtoms != null)
+              atom.bsSymmetry.clearAll();
             atom.bsSymmetry.set(iCell * operationCount);
             atom.bsSymmetry.set(0);
             if (checkSymmetryRange)
@@ -689,7 +536,7 @@ public class XtalSymmetry {
             rmaxz += absRange;
           }
           cell555Count = pt = symmetryAddAtoms(0, 0, 0, 0, pt, iCell
-              * operationCount, cartesians, ms);
+              * operationCount, cartesians, ms, false);
         }
     if (checkRange111) {
       rminx -= absRange;
@@ -708,7 +555,7 @@ public class XtalSymmetry {
           iCell++;
           if (tx != 0 || ty != 0 || tz != 0)
             pt = symmetryAddAtoms(tx, ty, tz, cell555Count, pt, iCell
-                * operationCount, cartesians, ms);
+                * operationCount, cartesians, ms, forceCheckSpecial);
         }
     if (iCell * noSymmetryCount == asc.ac - firstSymmetryAtom)
       appendAtomProperties(iCell);
@@ -723,6 +570,190 @@ public class XtalSymmetry {
     asc.setAtomSetAuxiliaryInfo("unitCellTranslations", unitCellTranslations);
     notionalUnitCell = new float[6];
     reset();
+  }
+
+  private boolean checkAll;
+  private int bondCount0;
+
+  private int symmetryAddAtoms(int transX, int transY, int transZ,
+                               int baseCount, int pt, int iCellOpPt,
+                               P3[] cartesians, MSInterface ms, boolean forceCheckSpecial)
+      throws Exception {
+    boolean isBaseCell = (baseCount == 0);
+    boolean addBonds = (bondCount0 > asc.bondIndex0 && applySymmetryToBonds);
+    int[] atomMap = (addBonds ? new int[noSymmetryCount] : null);
+    if (doPackUnitCell)
+      ptOffset.set(transX, transY, transZ);
+
+    //symmetryRange < 0 : just check symop=1 set
+    //symmetryRange > 0 : check against {1 1 1}
+
+    // if we are not checking special atoms, then this is a PDB file
+    // and we return all atoms within a cubical volume around the 
+    // target set. The user can later use select within() to narrow that down
+    // This saves immensely on time.
+
+    float range2 = symmetryRange * symmetryRange;
+    boolean checkRangeNoSymmetry = (symmetryRange < 0);
+    boolean checkRange111 = (symmetryRange > 0);
+    boolean checkSymmetryMinMax = (isBaseCell && checkRange111);
+    checkRange111 &= !isBaseCell;
+    int nOperations = symmetry.getSpaceGroupOperationCount();
+    boolean checkSpecial = (nOperations == 1 && !doPackUnitCell ? false : asc.checkSpecial);
+    boolean checkSymmetryRange = (checkRangeNoSymmetry || checkRange111);
+    boolean checkDistances = (checkSpecial || checkSymmetryRange);
+    boolean addCartesian = (checkSpecial || checkSymmetryMinMax);
+    SymmetryInterface symmetry = this.symmetry;
+    if (checkRangeNoSymmetry)
+      baseCount = noSymmetryCount;
+    int atomMax = firstSymmetryAtom + noSymmetryCount;
+    P3 ptAtom = new P3();
+    String code = null;
+    char subSystemId = '\0';
+    for (int iSym = 0; iSym < nOperations; iSym++) {
+      if (isBaseCell && iSym == 0 || latticeOnly && iSym > 0
+          && iSym != latticeOp)
+        continue;
+
+      /* pt0 sets the range of points cross-checked. 
+       * If we are checking special positions, then we have to check
+       *   all previous atoms. 
+       * If we are doing a symmetry range check relative to {1 1 1}, then
+       *   we have to check only the base set. (checkRange111 true)
+       * If we are doing a symmetry range check on symop=1555 (checkRangeNoSymmetry true), 
+       *   then we don't check any atoms and just use the box.
+       *    
+       */
+
+      int pt0 = (forceCheckSpecial ? 0 : checkSpecial ? pt : checkRange111 ? baseCount : 0);
+      float spinOp = (asc.vibScale == 0 ? symmetry.getSpinOp(iSym) : asc.vibScale);
+      for (int i = firstSymmetryAtom; i < atomMax; i++) {
+        Atom a = asc.atoms[i];
+        if (a.ignoreSymmetry)
+          continue;
+        if (asc.bsAtoms != null && !asc.bsAtoms.get(i))
+          continue;
+
+        if (ms == null) {
+          symmetry.newSpaceGroupPoint(iSym, a, ptAtom, transX, transY,
+              transZ);
+        } else {
+          symmetry = ms.getAtomSymmetry(a, this.symmetry);
+          symmetry.newSpaceGroupPoint(iSym, a, ptAtom, transX, transY,
+              transZ);
+          // COmmensurate structures may use a symmetry operator
+          // to changes space groups.
+          code = symmetry.getSpaceGroupOperationCode(iSym);
+          if (code != null) {
+            subSystemId = code.charAt(0);
+            symmetry = ms.getSymmetryFromCode(code);
+            if (symmetry.getSpaceGroupOperationCount() == 0)
+              finalizeSymmetry(symmetry);
+          }
+        }
+        P3 cartesian = P3.newP(ptAtom);
+        symmetry.toCartesian(cartesian, false);
+        if (doPackUnitCell) {
+          // note that COmmensurate structures may need 
+          // modulation at this point.
+          symmetry.toUnitCell(cartesian, ptOffset);
+          ptAtom.setT(cartesian);
+          symmetry.toFractional(ptAtom, false);
+          if (!isWithinCell(dtype, ptAtom, minXYZ0.x, maxXYZ0.x, minXYZ0.y,
+              maxXYZ0.y, minXYZ0.z, maxXYZ0.z, packingError))
+            continue;
+          
+        }
+
+        if (checkSymmetryMinMax)
+          setSymmetryMinMax(cartesian);
+        Atom special = null;
+        if (checkDistances) {
+
+          /* checkSpecial indicates that we are looking for atoms with (nearly) the
+           * same cartesian position.  
+           */
+          float minDist2 = Float.MAX_VALUE;
+          if (checkSymmetryRange && !isInSymmetryRange(cartesian))
+            continue;
+          int j0 = (checkAll ? asc.ac : pt0);
+          String name = a.atomName;
+          char id = (code == null ? a.altLoc : subSystemId);
+          for (int j = j0; --j >= 0;) {
+            P3 pc = cartesians[j];
+            if (pc == null)
+              continue;
+            float d2 = cartesian.distanceSquared(pc);
+            if (checkSpecial && d2 < 0.0001) {
+              special = asc.atoms[firstSymmetryAtom + j];
+              if ((special.atomName == null || special.atomName.equals(name))
+                  && special.altLoc == id)
+                break;
+              special = null;
+            }
+            if (checkRange111 && j < baseCount && d2 < minDist2)
+              minDist2 = d2;
+          }
+          if (checkRange111 && minDist2 > range2)
+            continue;
+        }
+        int atomSite = a.atomSite;
+        if (special != null) {
+          if (addBonds)
+            atomMap[atomSite] = special.index;
+          special.bsSymmetry.set(iCellOpPt + iSym);
+          special.bsSymmetry.set(iSym);
+        } else {
+          if (addBonds)
+            atomMap[atomSite] = asc.ac;
+          Atom atom1 = asc.newCloneAtom(a);
+          if (asc.bsAtoms != null)
+            asc.bsAtoms.set(atom1.index);
+          atom1.setT(ptAtom);
+          if (spinOp != 0 && atom1.vib != null) {
+            symmetry.getSpaceGroupOperation(iSym).rotate(atom1.vib);
+            atom1.vib.scale(spinOp);
+          }
+          atom1.atomSite = atomSite;
+          if (code != null)
+            atom1.altLoc = subSystemId;
+          atom1.bsSymmetry = BSUtil.newAndSetBit(iCellOpPt + iSym);
+          atom1.bsSymmetry.set(iSym);
+          if (addCartesian)
+            cartesians[pt++] = cartesian;
+          Lst<Object> tensors = a.tensors;
+          if (tensors != null) {
+            atom1.tensors = null;
+            for (int j = tensors.size(); --j >= 0;) {
+              Tensor t = (Tensor) tensors.get(j);
+              if (t == null)
+                continue;
+              if (nOperations == 1)
+                atom1.addTensor(t.copyTensor(), null, false);
+              else
+                addRotatedTensor(atom1, t, iSym, false, symmetry);
+            }
+          }
+        }
+      }
+      if (addBonds) {
+        // Clone bonds
+        Bond[] bonds = asc.bonds;
+        Atom[] atoms = asc.atoms;
+        for (int bondNum = asc.bondIndex0; bondNum < bondCount0; bondNum++) {
+          Bond bond = bonds[bondNum];
+          Atom atom1 = atoms[bond.atomIndex1];
+          Atom atom2 = atoms[bond.atomIndex2];
+          if (atom1 == null || atom2 == null)
+            continue;
+          int iAtom1 = atomMap[atom1.atomSite];
+          int iAtom2 = atomMap[atom2.atomSite];
+          if (iAtom1 >= atomMax || iAtom2 >= atomMax)
+            asc.addNewBondWithOrder(iAtom1, iAtom2, bond.order);
+        }
+      }
+    }
+    return pt;
   }
 
   @SuppressWarnings("unchecked")

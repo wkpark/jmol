@@ -2757,7 +2757,6 @@ import java.util.Properties;
         if (atomNear.isDeleted())
           continue;
         int j = atomNear.i;
-        System.out.println(i + " msconnect " + j);
         boolean isNearInSetA = (isAll || bsA.get(j));
         boolean isNearInSetB = (isAll || bsB.get(j));
         // BOTH must be excluded in order to ignore bonding

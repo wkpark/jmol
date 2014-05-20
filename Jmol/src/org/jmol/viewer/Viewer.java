@@ -5445,6 +5445,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       return g.showMultipleBonds;
     case T.showtiming:
       return g.showTiming;
+    case T.showunitcelldetails:
+      return g.showUnitCellDetails;
     case T.slabbyatom:
       return g.slabByAtom;
     case T.slabbymolecule:
@@ -6226,6 +6228,9 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   private void setBooleanPropertyTok(String key, int tok, boolean value) {
     boolean doRepaint = true;
     switch (tok) {
+    case T.showunitcelldetails:
+      g.showUnitCellDetails = value;
+      break;
     case T.fractionalrelative:
       // REMOVED in 14.1.16
       // an odd quantity -- relates specifically to scripts commands

@@ -4630,6 +4630,7 @@ public class ScriptEval extends ScriptExpr {
 
       if (tokAt(i) == T.supercell) {
         Object supercell;
+        sOptions.append(" SUPERCELL ");
         if (isPoint3f(++i)) {
           P3 pt = getPoint3f(i, false);
           if (pt.x != (int) pt.x || pt.y != (int) pt.y || pt.z != (int) pt.z
@@ -4642,6 +4643,7 @@ public class ScriptEval extends ScriptExpr {
         } else {
           supercell = stringParameter(i++);
         }
+        sOptions.append(Escape.e(supercell));
         htParams.put("supercell", supercell);
       }
 

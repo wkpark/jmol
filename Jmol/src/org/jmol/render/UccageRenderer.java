@@ -188,6 +188,8 @@ public class UccageRenderer extends CageRenderer {
         y += lineheight;
         g3d.drawStringNoSlab(info.get(i), null, x, y, 0, (short) 0);
       }
+    if (!vwr.getBoolean(T.showunitcelldetails))
+      return;
     y += lineheight;
     g3d.drawStringNoSlab("a="
         + nfformat(symmetry.getUnitCellInfoType(SimpleUnitCell.INFO_A)) + "\u00C5",

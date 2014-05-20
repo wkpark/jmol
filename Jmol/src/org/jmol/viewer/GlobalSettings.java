@@ -380,6 +380,7 @@ public class GlobalSettings {
       setS("smilesUrlFormat", smilesUrlFormat);
       setS("nihResolverFormat", nihResolverFormat);
       setS("pubChemFormat", pubChemFormat);
+      setB("showUnitCellDetails", showUnitCellDetails);
       setB("solventProbe", solventOn);
       setF("solventProbeRadius", solventProbeRadius);
       setB("specular", specular);
@@ -627,6 +628,7 @@ public class GlobalSettings {
     String propertyColorScheme = "roygb";
     String quaternionFrame = "p"; // was c prior to Jmol 11.7.47
     boolean saveProteinStructureState = true;
+    boolean showUnitCellDetails = true;
     float solventProbeRadius = 1.2f;
     int scriptDelay = 0;
     boolean selectAllModels = true;
@@ -905,7 +907,7 @@ public class GlobalSettings {
     private String[] userDatabases;
 
     public int bondingVersion = Elements.RAD_COV_IONIC_OB1_100_1;
-    
+
     public void setStructureList(float[] list, STR type) {
       haveSetStructureList = true;
       structureList.put(type, list);

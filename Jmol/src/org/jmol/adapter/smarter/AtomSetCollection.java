@@ -790,19 +790,23 @@ public class AtomSetCollection {
   ////////////////////////////////////////////////////////////////
 
   private void addTrajectoryStep() {
-    P3[] trajectoryStep = new P3[ac];
-    boolean haveVibrations = (ac > 0 && atoms[0].vib != null && !Float
+    int n = (bsAtoms == null ? ac : bsAtoms.cardinality());
+    P3[] trajectoryStep = new P3[n];
+    boolean haveVibrations = (n > 0 && atoms[0].vib != null && !Float
         .isNaN(atoms[0].vib.z));
-    V3[] vibrationStep = (haveVibrations ? new V3[ac] : null);
+    V3[] vibrationStep = (haveVibrations ? new V3[n] : null);
     P3[] prevSteps = (trajectoryStepCount == 0 ? null : (P3[]) trajectorySteps
         .get(trajectoryStepCount - 1));
-    for (int i = 0; i < ac; i++) {
+    for (int i = 0, ii = 0; i < ac; i++) {
+      if (bsAtoms != null && !bsAtoms.get(i))
+        continue;
       P3 pt = P3.newP(atoms[i]);
       if (doFixPeriodic && prevSteps != null)
         pt = fixPeriodic(pt, prevSteps[i]);
-      trajectoryStep[i] = pt;
+      trajectoryStep[ii] = pt;
       if (haveVibrations)
-        vibrationStep[i] = atoms[i].vib;
+        vibrationStep[ii] = atoms[i].vib;
+      ii++;
     }
     if (haveVibrations) {
       if (vibrationSteps == null) {
@@ -847,17 +851,21 @@ public class AtomSetCollection {
     //reset atom positions to original trajectory
     P3[] trajectory = trajectorySteps.get(0);
     V3[] vibrations = (vibrationSteps == null ? null : vibrationSteps.get(0));
-    V3 v = new V3();
-    if (vibrationSteps != null && vibrations != null && vibrations.length < ac
-        || trajectory.length < ac) {
+    int n = (bsAtoms == null ? ac : bsAtoms.cardinality());
+    if (vibrationSteps != null && vibrations != null && vibrations.length < n
+        || trajectory.length < n) {
       errorMessage = "File cannot be loaded as a trajectory";
       return;
     }
-    for (int i = 0; i < ac; i++) {
+    V3 v = new V3();
+    for (int i = 0, ii = 0; i < ac; i++) {
+      if (bsAtoms != null && !bsAtoms.get(i))
+        continue;
       if (vibrationSteps != null)
-        atoms[i].vib = (vibrations == null ? v : vibrations[i]);
-      if (trajectory[i] != null)
-        atoms[i].setT(trajectory[i]);
+        atoms[i].vib = (vibrations == null ? v : vibrations[ii]);
+      if (trajectory[ii] != null)
+        atoms[i].setT(trajectory[ii]);
+      ii++;
     }
     setInfo("trajectorySteps", trajectorySteps);
     if (vibrationSteps != null)

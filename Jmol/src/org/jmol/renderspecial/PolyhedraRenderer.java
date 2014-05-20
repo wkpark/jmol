@@ -86,7 +86,7 @@ public class PolyhedraRenderer extends ShapeRenderer {
         tm.transformPtScr(vertices[i], screens[i]);
       } else if (!atom.isVisible(myVisibilityFlag)) {
         screens[i].setT(vibs && atom.hasVibration() ? tm.transformPtVib(atom,
-            ms.vibrations[atom.i], Float.NaN) : tm.transformPt(atom));
+            ms.vibrations[atom.i]) : tm.transformPt(atom));
       } else {
         screens[i].set(atom.sX, atom.sY, atom.sZ);
       }

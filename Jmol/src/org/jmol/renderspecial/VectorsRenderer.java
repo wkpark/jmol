@@ -147,9 +147,11 @@ public class VectorsRenderer extends ShapeRenderer {
       pointVectorStart.scaleAdd2(-0.5f * vectorScale, vib, atom);
     } else {
       pointVectorEnd.scaleAdd2(vectorScale, vib, atom);
-      screenVectorEnd.setT(tm.transformPtVib(pointVectorEnd, vib, vectorScale));
+      screenVectorEnd.setT(vibrationOn? tm.transformPtVib(pointVectorEnd, vib) : tm.transformPt(pointVectorEnd));
       pointArrowHead.add2(pointVectorEnd, headOffsetVector);
-      screenArrowHead.setT(tm.transformPtVib(pointArrowHead, vib, vectorScale));
+      if (atom.getAtomNumber() == 16)
+        System.out.println("vecrend " + vib + atom.x + " " + atom.y + " " + atom.z + " ptH=" + pointVectorEnd);
+      screenArrowHead.setT(vibrationOn ? tm.transformPtVib(pointArrowHead, vib) : tm.transformPt(pointArrowHead));
     }
     if (!standardVector) {
       screenVectorEnd.setT(tm.transformPt(pointVectorEnd));

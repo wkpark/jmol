@@ -1163,7 +1163,8 @@ class SymmetryOperation extends M4 {
         float w = -vtemp.x * pa1.x - vtemp.y * pa1.y - vtemp.z * pa1.z;
         P4 plane = P4.new4(vtemp.x, vtemp.y, vtemp.z, w);
         Lst<Object> v = new Lst<Object>();
-        v.addLast(uc.getCanonicalCopy(1.05f, false));
+        float margin = 1.05f;//(Math.abs(w) < 0.01f && vtemp.x * vtemp.y < 0 ? 1.30f : 1.05f);
+        v.addLast(uc.getCanonicalCopy(margin, false));
         modelSet.intersectPlane(plane, v, 3);
 
         // returns triangles and lines

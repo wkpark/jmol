@@ -6032,7 +6032,7 @@ public class CmdExt implements JmolCmdExtension {
       } else if (type.equals("HIS")) {
         type = "HISTORY";
       }
-      if (type.equals("COORD"))
+      if (type.equals("COORD") || type.equals("COORDS"))
         type = (fileName != null && fileName.indexOf(".") >= 0 ? fileName
             .substring(fileName.lastIndexOf(".") + 1).toUpperCase() : "XYZ");
       isImage = PT.isOneOf(type.toLowerCase(), JC.IMAGE_OR_SCENE);

@@ -1515,10 +1515,9 @@ Z increasing    \       /       it ends up screenWidthPixels wide.
   /**
    * @param ptXYZ
    * @param v
-   * @param scale TODO
    * @return POINTER TO TEMPORARY VARIABLE (caution!) point3iScreenTemp
    */
-  public P3i transformPtVib(P3 ptXYZ, Vibration v, float scale) {
+  public P3i transformPtVib(P3 ptXYZ, Vibration v) {
     ptVibTemp.setT(ptXYZ);
     return applyPerspective(getVibrationPoint(v, ptVibTemp, Float.NaN), ptXYZ);
   }

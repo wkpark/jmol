@@ -354,7 +354,7 @@ public class T {
   public final static int save  = scriptCommand | 50;
 //public final static int script   see mathfunc
   public final static int selectionhalos = scriptCommand | 51 | deprecatedparam | defaultON;
-  public final static int show         = scriptCommand | 52;
+// public final static int show     see mathfunc
   public final static int slab  = scriptCommand | 53 | intparam | defaultON;
   public final static int spin         = scriptCommand | 55 | deprecatedparam | defaultON;
   public final static int ssbond = scriptCommand | 56 | deprecatedparam | defaultON;
@@ -722,7 +722,8 @@ public class T {
   public final static int ifcmd        = 9 | 1 << 9 | mathfunc | flowCommand;
   public final static int abs          = 10 | 1 << 9 | mathfunc;
   public final static int javascript   = 12 /* must be even */| 1 << 9 | mathfunc | implicitStringCommand;
-
+  public final static int show         = 14 | 1 << 9 | mathfunc | scriptCommand;
+  
   // ___.xxx(a)
   
   // a.distance(b) is in a different set -- distance(b,c) -- because it CAN take

@@ -1250,10 +1250,10 @@ class SymmetryOperation extends M4 {
       // color the targeted atoms opaque and add another frame if necessary
 
       draw1.append("\nvar pt00 = " + Escape.eP(pta00));
+      draw1.append("\nsym_point = pt00");
       draw1.append("\nvar p0 = " + Escape.eP(ptemp2));
-      draw1.append("\nif (within(0.2,p0).length == 0) {");
-      draw1.append("\nvar set2 = within(0.2,p0.uxyz.xyz)");
-      draw1.append("\nif (set2) {");
+      draw1.append("\nvar set2 = within(0.2,p0);if(!set2){set2 = within(0.2,p0.uxyz.xyz)}");
+      draw1.append("\nsym_target = set2;if (set2) {");
       //      if (haveCentering)
       //      draw1.append(drawid).append(
       //        "cellOffsetVector arrow @p0 @set2 color grey");
@@ -1267,7 +1267,6 @@ class SymmetryOperation extends M4 {
           .append("offsetFrameZ diameter 0.20 @{set2.xyz} @{set2.xyz + ")
           .append(Escape.eP(vt3)).append("*0.9} color purple");
       draw1.append("\n}}\n");
-
       cmds = draw1.toString();
       draw1 = null;
       drawid = null;

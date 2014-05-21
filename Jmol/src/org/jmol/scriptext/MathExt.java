@@ -168,6 +168,7 @@ public class MathExt implements JmolMathExtension {
       return evaluatePlane(mp, args, tok);
     case T.javascript:
     case T.script:
+    case T.show:
       return evaluateScript(mp, args, tok);
     case T.join:
     case T.split:
@@ -1942,7 +1943,12 @@ public class MathExt implements JmolMathExtension {
 
   private boolean evaluateScript(ScriptMathProcessor mp, SV[] args, int tok)
       throws ScriptException {
-    if (tok == T.javascript && args.length != 1 || args.length == 0
+    // javascript(cmd)
+    // script(cmd)
+    // script(cmd, syncTarget)
+    // show(showCmd)
+    if ((tok == T.show || tok == T.javascript) && args.length != 1 
+        || args.length == 0
         || args.length > 2)
       return false;
     String s = SV.sValue(args[0]);
@@ -1955,6 +1961,9 @@ public class MathExt implements JmolMathExtension {
         sb.append(vwr.jsEval(appID + "\1" + s));
       if (appID.equals(".") || appID.equals("*"))
         e.runScriptBuffer(s, sb);
+      break;
+    case T.show:
+      e.runScriptBuffer("show " + s, sb);
       break;
     case T.javascript:
       sb.append(vwr.jsEval(s));

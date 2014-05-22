@@ -7999,9 +7999,9 @@ public class ScriptEval extends ScriptExpr {
             }
           } else {
             boolean isPropertyExplicit = name.equals("property");
-            index++;
+            // problem here with   color $isosurface1 "rwb"
             if (isPropertyExplicit
-                && T.tokAttr((tok = getToken(index).tok), T.atomproperty)
+                && T.tokAttr((tok = getToken(++index).tok), T.atomproperty)
                 && !T.tokAttr(tok, T.strproperty)) {
               if (!chk) {
                 data = getBitsetPropertyFloat(bsSelected, getToken(index++).tok

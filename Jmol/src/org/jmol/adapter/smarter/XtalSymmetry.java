@@ -41,7 +41,6 @@ import org.jmol.api.Interface;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.java.BS;
 import org.jmol.util.BSUtil;
-import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.Tensor;
@@ -370,7 +369,8 @@ public class XtalSymmetry {
   /**
    * @param ms
    *        modulated structure interface
-   * @param forceCheckSpecial TODO
+   * @param bsAtoms   relating to supercells
+   * @param forceCheckSpecial  relating to supercells
    * @throws Exception
    */
   private void applyAllSymmetry(MSInterface ms, BS bsAtoms, boolean forceCheckSpecial) throws Exception {

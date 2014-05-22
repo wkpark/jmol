@@ -125,7 +125,7 @@ public class JSpecView implements JmolJSpecView {
       return null;
     case JC.JSV_SEND_JDXMOL:
     case JC.JSV_SEND_H1SIMULATE:
-      vwr.sm.syncSend(vwr.fullName + "JSpecView" + script.substring(9), ">", 0);
+      vwr.sm.syncSend(vwr.fullName + "JSpecView" + script.substring(11), ">", 0);
       return null;
     case JC.JSV_STRUCTURE:
       // application only -- NO! This is 2D -- does no good. We need
@@ -148,6 +148,8 @@ public class JSpecView implements JmolJSpecView {
       // model if a simulation.
       boolean isSimulation = filename
           .startsWith(FileManager.SIMULATION_PROTOCOL);
+      // id='~1.1' is getting tucked into file="...." now
+      String id = (!isSimulation || vwr.isApplet() ? "" : PT.getQuotedAttribute(filename.replace('\'', '"'), "id"));
       if (isSimulation && !vwr.isApplet() && filename.startsWith(FileManager.SIMULATION_PROTOCOL + "MOL="))
         filename = null; // from our sending; don't reload
       else
@@ -158,7 +160,8 @@ public class JSpecView implements JmolJSpecView {
       String atoms = PT.getQuotedAttribute(script, "atoms");
       String select = PT.getQuotedAttribute(script, "select");
       String script2 = PT.getQuotedAttribute(script, "script");
-      String id = (modelID == null ? null : (filename == null ? "" : filename
+      if (id.length() == 0)
+        id = (modelID == null ? null : (filename == null ? "" : filename
           + "#")
           + modelID);
       if ("".equals(baseModel))

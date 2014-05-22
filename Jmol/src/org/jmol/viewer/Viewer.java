@@ -8089,7 +8089,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         showUrl(g.nmrUrlFormat + molFile);
       } else {
         syncScript("true", "*", 0);
-        syncScript("JSpecView:", ".", 0);
+        syncScript("H1Simulate:", ".", 0);
       }
       return null;
     }

@@ -445,6 +445,7 @@ System.out.println("StatusListener notifyFileLoaded: " + fileName);
         String data = vwr.extractMolData(null);
         if (data == null)
           return;
+        data = PT.replaceAllCharacters(data, "&", "_");
         peaks = "hidden true; load CHECK MOL "
             + PT.esc("id='~" + model + "';" + data) + ";hidden false #SYNC_PEAKS";
       }

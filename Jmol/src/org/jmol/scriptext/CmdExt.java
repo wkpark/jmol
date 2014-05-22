@@ -6174,16 +6174,15 @@ public class CmdExt implements JmolCmdExtension {
                   }
                 }
             }
-          } else {
+          } 
+          if (v == null) {
             data = tVar.asString();
             type = "TXT";
-          }
-          if (v != null) {
+          } else {
             if (fileName != null
                 && (bytes = data = vwr.createZip(fileName, "ZIPDATA", v)) == null)
               e.evalError("#CANCELED#", null);
           }
-
         } else if (data == "SPT") {
           if (isCoord) {
             BS tainted = vwr.getTaintedAtoms(AtomCollection.TAINT_COORD);

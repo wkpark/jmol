@@ -1392,11 +1392,13 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
             / (maxXYZ.z == minXYZ.z ? 1 : maxXYZ.z - minXYZ.z), 90, 90, 90);
         unitCellOffset = P3.newP(plotScale);
         unitCellOffset.scale(-1);
+        getSymmetry();
         symmetry.toFractional(unitCellOffset, false);
         unitCellOffset.scaleAdd2(-1f, minXYZ, unitCellOffset);
         symmetry.setOffsetPt(unitCellOffset);
         asc.setInfo("jmolDataScaling",
             new P3[] { minXYZ, maxXYZ, plotScale });
+        doApplySymmetry = true;
       }
     }
     if (line.endsWith("#noautobond")) {

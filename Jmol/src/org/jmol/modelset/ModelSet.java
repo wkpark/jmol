@@ -702,8 +702,12 @@ import java.util.Properties;
       if (values != null) {
         // convert to atom indices
         float[] newValues = new float[ac];
+        try {
         for (int i = bs.nextSetBit(0), ii = 0; i >= 0; i = bs.nextSetBit(i + 1))
           newValues[i] = values[ii++];
+        } catch (Exception e) {
+          return;
+        }
         values = newValues;
       }
       //$FALL-THROUGH$
@@ -720,8 +724,7 @@ import java.util.Properties;
       } else {
         rd = new RadiusData(values, 0, null, null);
       }
-      sm
-          .setShapeSizeBs(JC.shapeTokenIndex(tok), mar, rd, bs);
+      sm.setShapeSizeBs(JC.shapeTokenIndex(tok), mar, rd, bs);
       return;
     }
     setAPm(bs, tok, iValue, fValue, sValue, values, list);

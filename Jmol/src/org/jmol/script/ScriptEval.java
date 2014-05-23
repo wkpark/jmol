@@ -8004,9 +8004,12 @@ public class ScriptEval extends ScriptExpr {
                 && T.tokAttr((tok = getToken(++index).tok), T.atomproperty)
                 && !T.tokAttr(tok, T.strproperty)) {
               if (!chk) {
-                data = getBitsetPropertyFloat(bsSelected, getToken(index++).tok
+                data = getBitsetPropertyFloat(bsSelected, getToken(index).tok
                     | T.allfloat, Float.NaN, Float.NaN);
               }
+              index++;
+            } else if (!isPropertyExplicit && !isIsosurface) {
+              index++;
             }
             // index points to item after property
           }

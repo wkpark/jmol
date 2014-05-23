@@ -53,7 +53,6 @@ import org.jmol.java.BS;
 import org.jmol.script.T;
 import org.jmol.shape.Mesh;
 import org.jmol.shape.MeshCollection;
-import org.jmol.shapecgo.CGOMesh;
 
 
 public class Draw extends MeshCollection {
@@ -433,7 +432,7 @@ public void initShape() {
  protected void deleteMeshElement(int i) {
    if (meshes[i] == currentMesh)
      currentMesh = thisMesh = null;
-   meshes = dmeshes = (CGOMesh[]) AU
+   meshes = dmeshes = (DrawMesh[]) AU
        .deleteElements(meshes, i, 1);
 }
 

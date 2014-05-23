@@ -1307,18 +1307,15 @@ protected void resetObjects() {
   protected String getCommand(Mesh mesh) {
     if (mesh != null)
       return getCommand2(mesh, mesh.modelIndex);
-    
+
     SB sb = new SB();
     String key = (explicitID && previousMeshID != null
-        && Txt.isWild(previousMeshID) ? previousMeshID.toUpperCase()
-        : null);
-    if (key != null && key.length() == 0)
-      key = null;
-    for (int i = 0; i < meshCount; i++) {
-      Mesh m = meshes[i];
-      if (key == null
-          || Txt.isMatch(m.thisID.toUpperCase(), key, true, true))
-        sb.append(getCommand2(m, m.modelIndex));
+        && Txt.isWild(previousMeshID) ? previousMeshID : null);
+    Lst<Mesh> list = getMeshList(key, false);
+    // counting down on list will be up in order
+    for (int i = list.size(); --i >= 0;) {
+      Mesh m = list.get(i);
+      sb.append(getCommand2(m, m.modelIndex));
     }
     return sb.toString();
   }

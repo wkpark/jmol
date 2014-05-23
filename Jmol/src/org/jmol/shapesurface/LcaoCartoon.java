@@ -27,11 +27,13 @@ package org.jmol.shapesurface;
 
 
 import org.jmol.java.BS;
+import org.jmol.shape.Mesh;
 import org.jmol.shape.Shape;
 import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.Txt;
 
+import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.SB;
 import javajs.util.V3;
@@ -215,11 +217,9 @@ public class LcaoCartoon extends Isosurface {
 
   private void setLcaoOn(boolean TF) {
     if (Txt.isWild(lcaoID)) {
-      String key = lcaoID.toLowerCase();
-      for (int i = meshCount; --i >= 0; ) {
-        if (Txt.isMatch(meshes[i].thisID.toLowerCase(), key, true, true))
-          meshes[i].visible = TF;
-      }
+      Lst<Mesh> list = getMeshList(lcaoID, false);
+      for (int i = list.size(); --i >= 0;)
+        list.get(i).visible = TF;
       return;
     }
     // older method

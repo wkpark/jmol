@@ -337,17 +337,12 @@ public abstract class MeshCollection extends Shape {
       previousMeshID = id;
   } 
   
-  private void setTokenProperty(int tokProp, boolean bProp, boolean testD) {
+  protected void setTokenProperty(int tokProp, boolean bProp, boolean testD) {
     if (currentMesh == null) {
-      String key = (explicitID && previousMeshID != null
-          && Txt.isWild(previousMeshID) ? previousMeshID.toUpperCase()
-          : null);
-      if (key != null && key.length() == 0)
-        key = null;
-      for (int i = 0; i < meshCount; i++)
-        if (key == null
-            || Txt.isMatch(meshes[i].thisID.toUpperCase(), key, true, true))
-          setMeshTokenProperty(meshes[i], tokProp, bProp, testD);
+      String key = (explicitID && Txt.isWild(previousMeshID) ? previousMeshID : null);
+      Lst<Mesh> list = getMeshList(key, false);
+      for (int i = list.size(); --i >= 0;)
+        setMeshTokenProperty(list.get(i), tokProp, bProp, testD);
     } else {
       setMeshTokenProperty(currentMesh, tokProp, bProp, testD);
       if (linkedMesh != null)
@@ -404,17 +399,12 @@ public abstract class MeshCollection extends Shape {
 
     }
     if (property == "checkID") {
-      String key = ((String) data[0]).toUpperCase();
-      boolean isWild = Txt.isWild(key);
-      for (int i = meshCount; --i >= 0;) {
-        String id = meshes[i].thisID;
-        if (id.equalsIgnoreCase(key) || isWild
-            && Txt.isMatch(id.toUpperCase(), key, true, true)) {
-          data[1] = id;
-          return true;
-        }
-      }
-      return false;
+      String key = (String) data[0];
+      Lst<Mesh> list = getMeshList(key, true);
+      if (list.size() == 0)
+        return false;
+      data[1] = list.get(0).thisID;
+      return true;
     }
     if (property == "getCenter") {
       String id = (String) data[0];
@@ -429,6 +419,32 @@ public abstract class MeshCollection extends Shape {
       return true;
     }
     return false;
+  }
+
+  /**
+   * Get matching list of meshes, order reversed
+   * 
+   * @param key
+   * @param justOne
+   * @return list in reverse order, highest index first
+   */
+  protected Lst<Mesh> getMeshList(String key, boolean justOne) {
+    Lst<Mesh> list = new Lst<Mesh>();
+    if (key != null)
+      key = (key.length() == 0 ? null : key.toUpperCase());
+    boolean isWild = Txt.isWild(key);
+    String id;
+    // important that this counts down because sometimes
+    // we want just the MOST RECENT mesh.
+    for (int i = meshCount; --i >= 0;)
+      if (key == null
+          || (id = meshes[i].thisID.toUpperCase()).equals(key) 
+          || isWild && Txt.isMatch(id, key, true, true)) {
+        list.addLast(meshes[i]);
+        if (justOne)
+          break;
+      }
+    return list;
   }
 
   protected Object getPropMC(String property) {
@@ -517,11 +533,11 @@ public abstract class MeshCollection extends Shape {
       if (htObjects != null)
         htObjects.clear();
     } else {
-      key = key.toLowerCase();
-      for (int i = meshCount; --i >= 0; ) {
-        if (Txt.isMatch(meshes[i].thisID.toLowerCase(), key, true, true))
-          deleteMeshI(i);
-      }
+      Lst<Mesh> list = getMeshList(key, false);
+      int n = list.size();
+      // this will count DOWN since list is reverse order
+      for (int i = 0; i < n; i++) 
+        deleteMeshI(list.get(i).index);
     }
   }
 
@@ -539,26 +555,22 @@ public abstract class MeshCollection extends Shape {
   }
   
   @Override
-  public int getIndexFromName(String thisID) {
-    if (MeshCollection.PREVIOUS_MESH_ID.equals(thisID))
+  public int getIndexFromName(String id) {
+    if (MeshCollection.PREVIOUS_MESH_ID.equals(id))
       return (previousMeshID == null ? meshCount - 1
           : getIndexFromName(previousMeshID));
-    if (Txt.isWild(thisID)) {
-      thisID = thisID.toLowerCase();
-      for (int i = meshCount; --i >= 0;) {
-        if (meshes[i] != null
-            && Txt.isMatch(meshes[i].thisID, thisID, true, true))
-          return i;
-      }
-    } else {
-      if (htObjects != null) {
-        Mesh m = htObjects.get(thisID.toUpperCase());
-        return (m == null ? -1 : m.index);
-      }
-      for (int i = meshCount; --i >= 0;) {
-        if (meshes[i] != null && meshes[i].vc != 0 && thisID.equalsIgnoreCase(meshes[i].thisID))
-          return i;
-      }
+    if (Txt.isWild(id)) {
+      Lst<Mesh> list = getMeshList(id, true);
+      return (list.size() == 0 ? -1 : list.get(0).index);
+    }
+    if (htObjects != null) {
+      Mesh m = htObjects.get(id.toUpperCase());
+      return (m == null ? -1 : m.index);
+    }
+    for (int i = meshCount; --i >= 0;) {
+      if (meshes[i] != null && meshes[i].vc != 0
+          && id.equalsIgnoreCase(meshes[i].thisID))
+        return i;
     }
     return -1;
   }

@@ -229,9 +229,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       setPropI("modelIndex", Integer.valueOf(imodel), null);
       setPropI("fileName", "cache://isosurface_" + id, null);
       setPropI("readFile", null, null);
-      setPropI("finalize", "isosurface ID " + PT.esc(id)
-          + (imodel >= 0 ? " modelIndex " + imodel : "") + " /*file*/"
-          + PT.esc("cache://isosurface_" + id), null);
+      setPropI(
+          "finalize",
+          "isosurface ID " + PT.esc(id)
+              + (imodel >= 0 ? " modelIndex " + imodel : "") + " /*file*/"
+              + PT.esc("cache://isosurface_" + id), null);
       setPropI("clear", null, null);
       return;
     }
@@ -282,7 +284,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
             colixes[i] = colix;
           }
           atomMap = new int[bs.length()];
-          for (int pt = 0, i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1), pt++)
+          for (int pt = 0, i = bs.nextSetBit(0); i >= 0; i = bs
+              .nextSetBit(i + 1), pt++)
             atomMap[i] = pt;
         }
         thisMesh.setVertexColixesForAtoms(vwr, colixes, atomMap, bs);
@@ -317,37 +320,23 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if ("colorPhase" == propertyName) {
       // from color isosurface phase color1 color2  Jmol 12.3.5
       Object[] colors = (Object[]) value;
-      if (thisMesh != null) {
-        thisMesh.colorPhased = true;
-        thisMesh.colix = thisMesh.jvxlData.minColorIndex = C
-            .getColix(((Integer) colors[0]).intValue());
-        thisMesh.jvxlData.maxColorIndex = C.getColix(((Integer) colors[1])
-            .intValue());
-        thisMesh.jvxlData.isBicolorMap = true;
-        thisMesh.jvxlData.colorDensity = false;
-        thisMesh.isColorSolid = false;
-        thisMesh.remapColors(vwr, null, translucentLevel);
-      }
+      short colix0 = C.getColix(((Integer) colors[0]).intValue());
+      short colix1 = C.getColix(((Integer) colors[1]).intValue());
+      String id = (thisMesh != null ? thisMesh.thisID : Txt
+          .isWild(previousMeshID) ? previousMeshID : null);
+      Lst<Mesh> list = getMeshList(id, false);
+      for (int i = list.size(); --i >= 0;)
+        setColorPhase((IsosurfaceMesh) list.get(i), colix0, colix1);
       return;
     }
     if ("color" == propertyName) {
       String color = C.getHexCode(C.getColixO(value));
       if (thisMesh != null) {
-        // thisMesh.vertexColixes = null;
-        thisMesh.jvxlData.baseColor = color;
-        thisMesh.isColorSolid = true;
-        thisMesh.pcs = null;
-        thisMesh.colorEncoder = null;
-        thisMesh.vertexColorMap = null;
-      } else if (!Txt.isWild(previousMeshID)) {
-        for (int i = meshCount; --i >= 0;) {
-          // isomeshes[i].vertexColixes = null;
-          isomeshes[i].jvxlData.baseColor = color;
-          isomeshes[i].isColorSolid = true;
-          isomeshes[i].pcs = null;
-          isomeshes[i].colorEncoder = null;
-          isomeshes[i].vertexColorMap = null;
-        }
+        setIsoMeshColor(thisMesh, color);
+      } else {
+        Lst<Mesh> list = getMeshList(Txt.isWild(previousMeshID) ? previousMeshID : null, false);
+        for (int i = list.size(); --i >= 0;)
+          setIsoMeshColor((IsosurfaceMesh) list.get(i), color);
       }
       setPropertySuper(propertyName, value, bs);
       return;
@@ -473,8 +462,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       if (thisMesh != null) {
         String cmd = (String) value;
         if (cmd != null && !cmd.startsWith("; isosurface map")) {
-          thisMesh.setDiscreteColixes(sg.getParams().contoursDiscrete, sg
-              .getParams().contourColixes);
+          thisMesh.setDiscreteColixes(sg.getParams().contoursDiscrete,
+              sg.getParams().contourColixes);
           setJvxlInfo();
         }
         setScriptInfo(cmd);
@@ -554,8 +543,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         // "fileName" property. We retrieve that from the surfaceGenerator
         // and open a BufferedReader for it. Or not. But that would be
         // unlikely since we have just checked it in ScriptEvaluator
-        value = vwr.getBufferedReaderOrErrorMessageFromName(
-            sg.getFileName(), null, true);
+        value = vwr.getBufferedReaderOrErrorMessageFromName(sg.getFileName(),
+            null, true);
         if (value instanceof String) {
           Logger.error("Isosurface: could not open file " + sg.getFileName()
               + " -- " + value);
@@ -703,8 +692,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
           meshCount--;
           if (m == currentMesh)
             currentMesh = thisMesh = null;
-          meshes = isomeshes = (IsosurfaceMesh[]) AU.deleteElements(
-              meshes, i, 1);
+          meshes = isomeshes = (IsosurfaceMesh[]) AU.deleteElements(meshes, i,
+              1);
         } else if (m.modelIndex > modelIndex) {
           m.modelIndex--;
           if (m.atomIndex >= firstAtomDeleted)
@@ -716,6 +705,26 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     // processing by meshCollection:
     setPropertySuper(propertyName, value, bs);
+  }
+
+  private void setIsoMeshColor(IsosurfaceMesh m, String color) {
+    // thisMesh.vertexColixes = null;
+    m.jvxlData.baseColor = color;
+    m.isColorSolid = true;
+    m.pcs = null;
+    m.colorEncoder = null;
+    m.vertexColorMap = null;
+  }
+
+  private void setColorPhase(IsosurfaceMesh m, short colix0,
+                             short colix1) {
+    m.colorPhased = true;
+    m.colix = m.jvxlData.minColorIndex = colix0;
+    m.jvxlData.maxColorIndex = colix1;
+    m.jvxlData.isBicolorMap = true;
+    m.jvxlData.colorDensity = false;
+    m.isColorSolid = false;
+    m.remapColors(vwr, null, translucentLevel);
   }
 
   private void ensureMeshSource() {
@@ -887,14 +896,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return JvxlCoder.jvxlGetInfo(jvxlData);
     }
     if (property == "command") {
-      String key = previousMeshID.toUpperCase();
-      boolean isWild = Txt.isWild(key);
       SB sb = new SB();
-      for (int i = meshCount; --i >= 0;) {
-        String id = meshes[i].thisID.toUpperCase();
-        if (id.equals(key) || isWild && Txt.isMatch(id, key, true, true))
-            getMeshCommand(sb, i);
-      }
+      Lst<Mesh> list = getMeshList(previousMeshID, false);
+      for (int i = list.size(); --i >= 0;)
+         getMeshCommand(sb, i);
       return sb.toString();
     }
     return null;

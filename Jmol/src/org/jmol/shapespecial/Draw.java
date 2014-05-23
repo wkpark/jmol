@@ -979,7 +979,7 @@ protected void resetObjects() {
         if (length == 0)
           center.setT(ptList[0]);
         ptList[0].sub2(center, normal);
-        ptList[1].add2(ptList[0], normal);
+        ptList[1].add2(center, normal);
       }
       if (nVertices > 4)
         nVertices = 4; // for now

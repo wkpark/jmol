@@ -261,8 +261,6 @@ public class CifReader extends AtomSetCollectionReader {
           || key.contains("_bns_name") // PRELIM
           ) {
         processSymmetrySpaceGroupName();
-      } else if (key.equals("_space_group_transform_from_parent_pp_abc")) {
-        processUnitCellFromParent();
       } else if (pr != null) {
         pr.processEntry();
       } else if (modDim > 0) {
@@ -272,14 +270,6 @@ public class CifReader extends AtomSetCollectionReader {
       }
     }
     return true;
-  }
-
-  private void processUnitCellFromParent() {
-    //  'a-b,-5a-5b,-c;0,0,0'
-    // a = {1
-    
-    // TODO
-    
   }
 
   /**

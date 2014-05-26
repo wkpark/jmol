@@ -404,14 +404,16 @@ class SymmetryOperation extends M4 {
       case 'f':
       case 'g':
       case 'h':
-        int val = (isNegative ? -1 : 1);
-        if (allowScaling && iValue != 0) {
-          val = (int) iValue;
-          iValue = 0;
-        }
         tpt0 = rowPt * nRows;
         int ipt = (ch >= 'x' ? ch - 'x' :ch - 'a' + dimOffset);
-        linearRotTrans[tpt0 + ipt] = val; 
+        int val = (isNegative ? -1 : 1);
+        if (allowScaling && iValue != 0) {
+          linearRotTrans[tpt0 + ipt] = iValue; 
+          val = (int) iValue;
+          iValue = 0;
+        } else {
+          linearRotTrans[tpt0 + ipt] = val; 
+        }
         strT += plusMinus(strT, val, myLabels[ipt]);
         break;
       case ',':

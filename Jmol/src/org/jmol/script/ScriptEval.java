@@ -7576,6 +7576,7 @@ public class ScriptEval extends ScriptExpr {
     index = iToken;
     String id = null;
     P3[] points = null;
+    Object newUC = null;
     boolean isOffset = false;
     boolean isReset = false;
     switch (tokAt(index + 1)) {
@@ -7587,7 +7588,15 @@ public class ScriptEval extends ScriptExpr {
       iToken++;
       break;
     case T.string:
-      id = objectNameParameter(++index);
+      String s = stringParameter(++index);
+      if (s.indexOf(";") >= 0)
+        newUC = s;
+      else
+        id = s;
+      break;
+    case T.matrix3f:
+    case T.matrix4f:
+      newUC = getToken(++index).value;
       break;
     case T.center:
       ++index;
@@ -7632,9 +7641,12 @@ public class ScriptEval extends ScriptExpr {
       pt = P4.new4(pt.x, pt.y, pt.z, (isOffset ? 1 : 0));
       index = iToken;
       break;
+    case T.spacebeforesquare:
+      index++;
+      //$FALL-THROUGH$
     default:
       if (isArrayParameter(index + 1)) {
-        points = getPointArray(++index, 4);
+        points = getPointArray(index, 4);
         index = iToken;
       } else if (slen == index + 2) {
         if (getToken(index + 1).tok == T.integer
@@ -7651,6 +7663,8 @@ public class ScriptEval extends ScriptExpr {
       return;
     if (mad == Integer.MAX_VALUE)
       vwr.am.cai = -1;
+    if (newUC != null)
+      points = vwr.getPts0xyz(newUC);
     if (icell != Integer.MAX_VALUE)
       vwr.ms.setUnitCellOffset(vwr.getCurrentUnitCell(), null, icell);
     else if (id != null)

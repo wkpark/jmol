@@ -2815,6 +2815,15 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return (symmetry == null ?Float.NaN : symmetry.getUnitCellInfoType(infoType));
   }
 
+  /**
+   * @param def a transformation string such as "a-b,-5a-5b,-c;0,0,0" or an M3 or M4
+   * @return [0 a b c]
+   */
+  public P3[] getPts0xyz(Object def) {
+    SymmetryInterface uc = getCurrentUnitCell();
+    return (uc == null ? null : uc.getPts0xyz(ms, getCurrentUnitCell(), def));
+  }
+
   public String getSymmetryOperation(int symop, P3 pt1,
                                      P3 pt2, String type) {
     return ms.getSymTemp(true).getSymmetryInfoString(ms, am.cmi,
@@ -3093,9 +3102,9 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     ms.setModelCage(am.cmi, (SymmetryInterface) data[1]);
   }
 
-  public void setCurrentCagePts(P3[] points) {
+  public void setCurrentCagePts(P3[] ptsOrMat4) {
     ms.setModelCage(am.cmi,
-        points == null ? null : Interface.getSymmetry().getUnitCell(points, false));
+        ptsOrMat4 == null ? null : Interface.getSymmetry().getUnitCell(ptsOrMat4, false));
   }
 
   public void addUnitCellOffset(P3 pt) {

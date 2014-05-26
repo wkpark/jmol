@@ -180,7 +180,7 @@ class SpaceGroup {
 
   int addSymmetry(String xyz, int opId, boolean allowScaling) {
     xyz = xyz.toLowerCase();
-    return (xyz.indexOf("[[") < 0 && xyz.indexOf("x4") < 0 &&
+    return (xyz.indexOf("[[") < 0 && xyz.indexOf("x4") < 0 && xyz.indexOf(";") < 0 &&
         (xyz.indexOf("x") < 0 || xyz.indexOf("y") < 0 || xyz.indexOf("z") < 0) 
         ? -1 : addOperation(xyz, opId, allowScaling));
   }

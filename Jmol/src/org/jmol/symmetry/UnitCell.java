@@ -66,6 +66,12 @@ class UnitCell extends SimpleUnitCell {
     
   }
   
+  /**
+   * 
+   * @param points [origin, a, b, c]
+   * @param setRelative
+   * @return new unit cell
+   */
   static UnitCell newP(T3[] points, boolean setRelative) {
     UnitCell c = new UnitCell();
     float[] parameters = new float[] { -1, 0, 0, 0, 0, 0, points[1].x,

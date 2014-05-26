@@ -1398,7 +1398,7 @@ public class ScriptMathProcessor {
       // bitset % n
       // Point3f * Point3f does dot product
       // Point3f / Point3f divides by magnitude
-      // float * Point3f gets m agnitude
+      // float * Point3f gets magnitude
       // Point4f % n returns q0, q1, q2, q3, or theta
       // Point4f % Point4f
       s = null;
@@ -1712,7 +1712,7 @@ public class ScriptMathProcessor {
       case T.fuxyz:
         P3 ptfu = P3.newP((P3) x2.value);
         vwr.toFractional(ptfu, false);
-        return (op.intValue == T.fracxyz ? addXPt(ptfu)
+        return (op.intValue == T.fuxyz ? addXPt(ptfu)
             : addXFloat(op.intValue == T.fux ? ptfu.x
                 : op.intValue == T.fuy ? ptfu.y : ptfu.z));
       case T.unitx:

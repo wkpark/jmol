@@ -1488,6 +1488,7 @@ protected void resetObjects() {
       if (mesh.vc == 0)
         continue;
       Map<String, Object> info = new Hashtable<String, Object>();
+      info.put("visible", mesh.visible ? Boolean.TRUE : Boolean.FALSE);
       info.put("fixed", mesh.ptCenters == null ? Boolean.TRUE : Boolean.FALSE);
       info.put("ID", (mesh.thisID == null ? "<noid>" : mesh.thisID));
       info.put("drawType", mesh.drawType.name);

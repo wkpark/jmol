@@ -807,9 +807,10 @@ public class M4 extends M34 {
    *        the transformed point
    */
   public void rotTrans2(T3 point, T3 pointOut) {
-      pointOut.set(m00 * point.x + m01 * point.y + m02 * point.z + m03, m10
-          * point.x + m11 * point.y + m12 * point.z + m13, m20 * point.x + m21
-          * point.y + m22 * point.z + m23);
+      pointOut.set(
+          m00 * point.x + m01 * point.y + m02 * point.z + m03, 
+          m10 * point.x + m11 * point.y + m12 * point.z + m13, 
+          m20 * point.x + m21 * point.y + m22 * point.z + m23);
   }
 
   /**

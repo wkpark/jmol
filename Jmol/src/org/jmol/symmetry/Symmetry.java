@@ -271,7 +271,6 @@ public class Symmetry implements SymmetryInterface {
     String s = SymmetryOperation.getXYZFromRsVs(rs, vs, false);
     int i = spaceGroup.addSymmetry(s, -1, true);
     spaceGroup.operations[i].setSigma(code, sigma);
-    //System.out.println(spaceGroup.operations[i]);
     return s;
   }
   
@@ -741,7 +740,8 @@ public class Symmetry implements SymmetryInterface {
     if (!isBio)
       opTemp.centering = centering;
     Object[] info;
-    pt = P3.newP(pt == null ? modelSet.at[iAtom] : pt);
+    if (pt != null || iAtom >= 0)
+      pt = P3.newP(pt == null ? modelSet.at[iAtom] : pt);
     if (type == T.point) {
       if (isBio)
         return "";
@@ -809,6 +809,60 @@ public class Symmetry implements SymmetryInterface {
   @Override
   public String fcoord(T3 p) {
     return SymmetryOperation.fcoord(p);
+  }
+
+  @Override
+  public P3[] getPts0xyz(ModelSet ms, SymmetryInterface uc, Object def) {
+    if (unitCell == null)
+      return null;
+    M4 m;
+    boolean isRev = false;
+    if (def instanceof String) {
+      isRev = ((String) def).startsWith("!");
+      if (isRev)
+        def = ((String) def).substring(1);
+      SymmetryInterface symTemp = ms.getSymTemp(true);
+      symTemp.setSpaceGroup(false);
+      int i = symTemp
+          .addSpaceGroupOperation("=" + def, 0);
+      if (i < 0)
+        return null;
+      m = symTemp.getSpaceGroupOperation(i);
+      ((SymmetryOperation) m).doFinalize();
+    } else {
+      m = (def instanceof M3 ? M4.newMV((M3) def, new P3()) : (M4) def);
+    }
+    P3[] pts = new P3[4];
+    P3 pt = new P3();
+    M3 m3 = new M3();
+
+    m.getRotationScale(m3);
+    m.getTranslation(pt);
+    if (isRev) {
+      pts[0] = P3.new3(0, 0, 0);
+      pts[1] = P3.new3(1, 0, 0);
+      pts[2] = P3.new3(0, 1, 0);
+      pts[3] = P3.new3(0, 0, 1);
+      m3.invert();
+      m3.transpose();
+      m3.rotate(pt);
+      for (int i = 0; i < 4; i++) {
+        m3.rotate(pts[i]);
+        pts[i].sub(pt);
+        uc.toCartesian(pts[i], false);
+      }
+    } else {
+      uc.toCartesian(pt, false);
+      M3 m3b = new M3();
+      ((Symmetry)uc).unitCell.matrixFractionalToCartesian.getRotationScale(m3b);
+      m3.mul2(m3b, m3);
+      m3.transpose();
+      pts[0] = P3.newP(pt);
+      pts[1] = P3.new3(m3.m00, m3.m01, m3.m02);
+      pts[2] = P3.new3(m3.m10, m3.m11, m3.m12);
+      pts[3] = P3.new3(m3.m20, m3.m21, m3.m22);
+    }    
+    return pts;
   }
 
 }

@@ -289,8 +289,13 @@ class SymmetryOperation extends M4 {
       setGamma(isReverse);
     } else {
       setA(linearRotTrans);
-      if (isReverse)
+      if (isReverse) {
+        P3 p3 = P3.new3(m03,  m13,  m23);
         invertM(this);
+        rotate(p3);
+        p3.scale(-1);
+        setTranslation(p3);
+      }
     }
   }
 
@@ -332,6 +337,8 @@ class SymmetryOperation extends M4 {
    *   "x, -z+1/2, y"  or "x1, x3-1/2, x2, x5+1/2, -x6+1/2, x7..."
    * to a linear array
    * 
+   * Also allows a-b,-5a-5b,-c;0,0,0  format
+   * 
    * @param op
    * @param xyz
    * @param linearRotTrans
@@ -346,12 +353,17 @@ class SymmetryOperation extends M4 {
     int modDim = (op == null ? 0 : op.modDim);
     int nRows = 4 + modDim;
     boolean doNormalize = (op != null && op.doNormalize);
+    int dimOffset = (modDim > 0 ? 3 : 0); // allow a b c to represent x y z
     linearRotTrans[linearRotTrans.length - 1] = 1;
+    // may be a-b,-5a-5b,-c;0,0,0 form
+    int transPt = xyz.indexOf(';') + 1;
+    if (transPt != 0)
+      allowScaling = true;
+    int rotPt = -1;
     String[] myLabels = (op == null || modDim == 0 ? null : op.myLabels);
     if (myLabels == null)
       myLabels = labelsXYZ;
-    xyz = xyz.toLowerCase();
-    xyz += ",";
+    xyz = xyz.toLowerCase() + ",";
     if (modDim > 0)
       for (int i = modDim + 3; --i >= 0;)
         xyz = PT.rep(xyz, labelsXn[i], labelsXnSub[i]);
@@ -364,6 +376,8 @@ class SymmetryOperation extends M4 {
     String strOut = "";
     for (int i = 0; i < xyz.length(); i++) {
       switch (ch = xyz.charAt(i)) {
+      case ';':
+        break;
       case '\'':
       case ' ':
       case '{':
@@ -396,11 +410,23 @@ class SymmetryOperation extends M4 {
           iValue = 0;
         }
         tpt0 = rowPt * nRows;
-        int ipt = (ch >= 'x' ? ch - 'x' :ch - 'a' + 3);
+        int ipt = (ch >= 'x' ? ch - 'x' :ch - 'a' + dimOffset);
         linearRotTrans[tpt0 + ipt] = val; 
         strT += plusMinus(strT, val, myLabels[ipt]);
         break;
       case ',':
+        if (transPt != 0) {
+          if (transPt > 0) {
+            // now read translation
+            rotPt = i;
+            i = transPt - 1;
+            transPt = -i;
+            iValue = 0;
+            continue;
+          }
+          transPt = i + 1;
+          i = rotPt;
+        }
         // add translation in 12ths
         iValue = normalizeTwelfths(iValue, doNormalize);
         linearRotTrans[tpt0 + nRows - 1] = iValue;

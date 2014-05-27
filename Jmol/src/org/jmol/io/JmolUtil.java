@@ -721,8 +721,7 @@ public class JmolUtil implements JmolZipUtilities {
        * 
        * @j2sNative
        * 
-       *            fullPathName = null;
-       *            return image;
+       *            return null;
        */
       {
         if (apiPlatform.getImageWidth(image) < 1)

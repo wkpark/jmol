@@ -884,7 +884,7 @@ public class FileManager implements BytePoster {
     }
     if (!vwr.isJS)
       vwr.loadImageData(image, nameOrError, echoName, null);
-    // JSmol will call that from awtjs2d.Platform.java
+    // JSmol will call that from awtjs2d.Platform.java asynchronously
   }
 
   public final static int URL_LOCAL = 4;

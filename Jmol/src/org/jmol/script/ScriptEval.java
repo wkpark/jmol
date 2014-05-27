@@ -7587,20 +7587,23 @@ public class ScriptEval extends ScriptExpr {
       index++;
       iToken++;
       break;
-    case T.type:
-      // parent, standard, conventional (TODO)
-      index += 2;
-      if (!chk)
-        vwr.setCurrentCagePts(null);
-      String type = stringParameter(index).toLowerCase();
-      newUC = vwr.getModelAuxiliaryInfoValue(vwr.am.cmi, "unitcell_" + type);
-      break;
     case T.string:
-      String s = stringParameter(++index);
-      if (s.indexOf(";") >= 0)
+      String s = stringParameter(++index).toLowerCase();
+      if (s.indexOf(",") >= 0) {
+        // a,b,c;0,0,0
+        if (s.indexOf(";") < 0)
+          s += ";0,0,0";
         newUC = s;
-      else
-        id = s;
+      } else if (!chk) {
+        // parent, standard, conventional (TODO)
+        vwr.setCurrentCagePts(null);
+        newUC = vwr.getModelAuxiliaryInfoValue(vwr.am.cmi, "unitcell_" + s);
+      }
+      break;
+    case T.isosurface:
+    case T.dollarsign:
+      index++;
+      id = objectNameParameter(++index);
       break;
     case T.matrix3f:
     case T.matrix4f:
@@ -7626,10 +7629,6 @@ public class ScriptEval extends ScriptExpr {
       pt.x -= 0.5f;
       pt.y -= 0.5f;
       pt.z -= 0.5f;
-      break;
-    case T.dollarsign:
-      index++;
-      id = objectNameParameter(++index);
       break;
     case T.bitset:
     case T.expressionBegin:

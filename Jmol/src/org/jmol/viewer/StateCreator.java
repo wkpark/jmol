@@ -987,12 +987,14 @@ public class StateCreator extends JmolStateCreator {
       if (as.bsSizeSet != null
           && (as.bsSizeSet.get(i) || as.bsColixSet != null
               && as.bsColixSet.get(i))) {//shapes MUST have been set with a size
-        if (bsSizeDefault.get(i))
+        if (bsSizeDefault.get(i)) {
           BSUtil.setMapBitSet(temp, atomIndex1, atomIndex2, type
               + (as.bsSizeSet.get(i) ? " on" : " off"));
-        else
+        } else {
+          
           BSUtil.setMapBitSet(temp, atomIndex1, atomIndex2, type + " "
-              + (as.mads[i] / 2000f));
+              + PT.escF(as.mads[i] / 2000f));
+        }
       }
       if (as.bsColixSet != null && as.bsColixSet.get(i))
         BSUtil.setMapBitSet(temp2, atomIndex1, atomIndex2, Shape
@@ -1444,7 +1446,7 @@ public class StateCreator extends JmolStateCreator {
       for (int i = shape.bsSizeSet.nextSetBit(0); i >= 0; i = shape.bsSizeSet
           .nextSetBit(i + 1))
         BSUtil.setMapBitSet(temp, i, i, type
-            + ((mad = shape.mads[i]) < 0 ? (isVector && mad < -1 ? " " + -mad :  " on") : " " + mad / 2000f));
+            + ((mad = shape.mads[i]) < 0 ? (isVector && mad < -1 ? " " + -mad :  " on") : PT.escF(mad / 2000f)));
     if (shape.bsColixSet != null)
       for (int i = shape.bsColixSet.nextSetBit(0); i >= 0; i = shape.bsColixSet
           .nextSetBit(i + 1))

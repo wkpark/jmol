@@ -1042,6 +1042,24 @@ public class PT {
     return "\"" + str + "\"";
   }
 
+  /**
+   * ensures that a float turned to string has a decimal point
+   * 
+   * @param f
+   * @return string version of float
+   */
+  public static String escF(float f) {
+    String sf = "" + f;
+    /**
+     * @j2sNative
+     * 
+     * if (sf.indexOf(".") < 0 && sf.indexOf("e") < 0)
+     *   sf += ".0";
+     */
+    {
+    }
+    return sf;
+  }
   public static String join(String[] s, char c, int i0) {
     if (s.length < i0)
       return null;
@@ -1103,4 +1121,5 @@ public class PT {
   public static String clean(String s) {
     return rep(replaceAllCharacters(s, " \t\n\r", " "), "  ", " ").trim();
   }
+
 }

@@ -116,7 +116,7 @@ public class TransformManager {
     M3 m = (M3) vwr
         .ms.getInfoM("defaultOrientationMatrix");
     if (m != null)
-      matrixRotate.setM3(m);
+      setRotation(m);
     //}
     setZoomEnabled(true);
     zoomToPercent(vwr.g.modelKitMode ? 50 : 100);
@@ -134,7 +134,14 @@ public class TransformManager {
       setNavigationMode(true);
   }
 
-  protected void resetRotation() {
+  public void setRotation(M3 m) {
+    if (m.isRotation())
+      matrixRotate.setM3(m);
+    else
+      resetRotation();
+  }
+
+  public void resetRotation() {
     matrixRotate.setScale(1); // no rotations
   }
 
@@ -267,7 +274,7 @@ public class TransformManager {
     arcBallAxis.cross(arcBall0, arcBall1);
     axisangleT.setVA(arcBallAxis, factor
         * (float) Math.acos(arcBall0.dot(arcBall1)));
-    matrixRotate.setM3(arcBall0Rotation);
+    setRotation(arcBall0Rotation);
     rotateAxisAngle2(axisangleT, null);
   }
 
@@ -285,11 +292,6 @@ public class TransformManager {
     if (x != Integer.MAX_VALUE && y != Integer.MAX_VALUE)
       resetXYCenter(x, y);
     rotateZRadians((float) (zDelta / degreesPerRadian));
-  }
-
-  void rotateFront() {
-    // set Identity
-    matrixRotate.setScale(1);
   }
 
   private void applyRotation(M3 mNew, boolean isInternal, BS bsAtoms,
@@ -681,27 +683,22 @@ public class TransformManager {
     return info;
   }
 
-  void getAxisAngle(A4 axisAngle) {
+  public void getAxisAngle(A4 axisAngle) {
     axisAngle.setM(matrixRotate);
   }
 
-  String getTransformText() {
+  public String getTransformText() {
     return matrixRotate.toString();
   }
 
   public M3 getMatrixRotate() {
-    return matrixRotate;
+    return M3.newM3(matrixRotate);
   }
 
-  public void setRotation(M3 matrixRotation) {
-    if (!Float.isNaN(matrixRotation.m00))
-      matrixRotate.setM3(matrixRotation);
-  }
-
-  public void getRotation(M3 matrixRotation) {
+  public void getRotation(M3 m) {
     // hmm ... I suppose that there could be a race condiditon here
     // if matrixRotate is being modified while this is called
-    matrixRotation.setM3(matrixRotate);
+    m.setM3(matrixRotate);
   }
 
   /* ***************************************************************
@@ -898,7 +895,7 @@ public class TransformManager {
     slabDepthChanged();
   }
 
-  void depthToPercent(int percentDepth) {
+  public void depthToPercent(int percentDepth) {
     vwr.g.setI("depth", percentDepth);
     depthPercentSetting = percentDepth;
     if (slabPercentSetting <= depthPercentSetting)
@@ -918,7 +915,7 @@ public class TransformManager {
       zSlabPercentSetting = percentDepth;
   }
 
-  void slabInternal(P4 plane, boolean isDepth) {
+  public void slabInternal(P4 plane, boolean isDepth) {
     //also from vwr
     if (isDepth) {
       depthPlane = plane;
@@ -934,7 +931,7 @@ public class TransformManager {
    * 
    * @param isDepth
    */
-  void setSlabDepthInternal(boolean isDepth) {
+  public void setSlabDepthInternal(boolean isDepth) {
     finalizeTransformParameters();
     if (isDepth)
       depthPlane = null;
@@ -1129,7 +1126,7 @@ Z increasing    \       /       it ends up screenWidthPixels wide.
    * 
    * @return a set of camera data
    */
-  P3[] getCameraFactors() {
+  public P3[] getCameraFactors() {
     aperatureAngle = (float) (Math.atan2(screenPixelCount / 2f,
         referencePlaneOffset) * 2 * 180 / Math.PI);
     cameraDistanceFromCenter = referencePlaneOffset / scalePixelsPerAngstrom;
@@ -1211,17 +1208,17 @@ Z increasing    \       /       it ends up screenWidthPixels wide.
     visualRange = angstroms;
   }
 
-  M4 getUnscaledTransformMatrix() {
-    //for povray only
-    M4 unscaled = M4.newM4(null);
-    vectorTemp.setT(fixedRotationCenter);
-    matrixTemp.setZero();
-    matrixTemp.setTranslation(vectorTemp);
-    unscaled.sub(matrixTemp);
-    matrixTemp.setToM3(matrixRotate);
-    unscaled.mul2(matrixTemp, unscaled);
-    return unscaled;
-  }
+//  M4 getUnscaledTransformMatrix() {
+//    //for povray only
+//    M4 unscaled = M4.newM4(null);
+//    vectorTemp.setT(fixedRotationCenter);
+//    matrixTemp.setZero();
+//    matrixTemp.setTranslation(vectorTemp);
+//    unscaled.sub(matrixTemp);
+//    matrixTemp.setToM3(matrixRotate);
+//    unscaled.mul2(matrixTemp, unscaled);
+//    return unscaled;
+//  }
 
   /* ***************************************************************
    * SCREEN SCALING
@@ -1313,7 +1310,7 @@ Z increasing    \       /       it ends up screenWidthPixels wide.
     scaleDefaultPixelsPerAngstrom = defaultScaleToScreen(modelRadius);
   }
 
-  float scaleToScreen(int z, int milliAngstroms) {
+  public float scaleToScreen(int z, int milliAngstroms) {
     if (milliAngstroms == 0 || z < 2)
       return 0;
     float pixelSize = scaleToPerspective(z, milliAngstroms
@@ -1321,12 +1318,12 @@ Z increasing    \       /       it ends up screenWidthPixels wide.
     return (pixelSize > 0 ? pixelSize : 1);
   }
 
-  float unscaleToScreen(float z, float screenDistance) {
+  public float unscaleToScreen(float z, float screenDistance) {
     float d = screenDistance / scalePixelsPerAngstrom;
     return (perspectiveDepth ? d / getPerspectiveFactor(z) : d);
   }
 
-  float scaleToPerspective(int z, float sizeAngstroms) {
+  public float scaleToPerspective(int z, float sizeAngstroms) {
     //DotsRenderer only
     //old: return (perspectiveDepth ? sizeAngstroms * perspectiveFactor(z)
     //: sizeAngstroms);
@@ -1442,7 +1439,7 @@ Z increasing    \       /       it ends up screenWidthPixels wide.
     depthValue = Integer.MAX_VALUE;
   }
 
-  int zValueFromPercent(int zPercent) {
+  public int zValueFromPercent(int zPercent) {
     return (int) Math.floor((1 - zPercent / 50f) * modelRadiusPixels
         + modelCenterOffset);
   }
@@ -1681,7 +1678,7 @@ Z increasing    \       /       it ends up screenWidthPixels wide.
     return (ptTest3.distance(ptTest2) < 0.1);
   }
 
-  public void moveToPyMOL(JmolScriptEvaluator eval, float floatSecondsTotal,
+  public boolean moveToPyMOL(JmolScriptEvaluator eval, float floatSecondsTotal,
                         float[] pymolView) {
     // PyMOL matrices are inverted (row-based)
     M3 m3 = M3.newA9(pymolView);
@@ -1753,6 +1750,7 @@ Z increasing    \       /       it ends up screenWidthPixels wide.
     }
     moveTo(eval, floatSecondsTotal, center, null, 0, m3, 100, Float.NaN, Float.NaN,
         rotationRadius, null, Float.NaN, Float.NaN, Float.NaN, cameraDepth, cameraX, cameraY);
+    return true;
   }
 
   // from Viewer
@@ -2036,7 +2034,7 @@ Z increasing    \       /       it ends up screenWidthPixels wide.
     spinFps = value;
   }
 
-  void setNavXYZ(float x, float y, float z) {
+  public void setNavXYZ(float x, float y, float z) {
     if (!Float.isNaN(x))
       navX = x;
     if (!Float.isNaN(y))
@@ -2055,15 +2053,7 @@ Z increasing    \       /       it ends up screenWidthPixels wide.
 
   public boolean spinOn;
 
-  boolean getSpinOn() {
-    return spinOn;
-  }
-
   public boolean navOn;
-
-  boolean getNavOn() {
-    return navOn;
-  }
 
   private boolean spinIsGesture;
 

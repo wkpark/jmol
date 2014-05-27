@@ -165,7 +165,7 @@ public class StateCreator extends JmolStateCreator {
       app(sfunc, "set antialiasTranslucent "
           + global.antialiasTranslucent);
       app(sfunc, "set antialiasImages " + global.antialiasImages);
-      if (vwr.getSpinOn())
+      if (vwr.tm.spinOn)
         app(sfunc, "spin on");
       sfunc.append("}\n\n_setState;\n");
     }

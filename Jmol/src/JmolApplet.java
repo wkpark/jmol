@@ -34,6 +34,8 @@
 
 import java.util.Map;
 
+import javajs.util.SB;
+
 import org.jmol.api.JmolAppletInterface;
 import org.jmol.api.JmolSyncInterface;
 import org.jmol.applet.AppletWrapper;
@@ -114,9 +116,9 @@ public class JmolApplet extends AppletWrapper implements
           converted[i] = "" + strModels[i];
         return ((GenericApplet) wrappedApplet).loadInlineArray(converted, "" + script, isAppend);
       }
-      StringBuilder sb = new StringBuilder();
+      SB sb = new SB();
       for (int i = 0; i < strModels.length; ++i)
-        sb.append(strModels[i]).append('\n');
+        sb.append(strModels[i]).appendC('\n');
       return ((GenericApplet) wrappedApplet).loadInlineString(sb.toString(), "" + script, isAppend);
   }
 

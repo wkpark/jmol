@@ -123,7 +123,7 @@ public class AnimationThread extends JmolThread {
           if (!runSleep(10, CHECK3))
             return;
         }
-        if (!vwr.getSpinOn())
+        if (!vwr.tm.spinOn)
           vwr.refresh(1, "animationThread");
         sleepTime = (int) (targetTime - (System.currentTimeMillis() - startTime));
         if (!runSleep(sleepTime, MAIN))

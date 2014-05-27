@@ -154,11 +154,11 @@ abstract class __RayTracerExporter extends ___Exporter {
     if (endcaps != GData.ENDCAPS_SPHERICAL)
       return;
     
-    float radius = vwr.scaleToScreen((int) screenA.z, madBond) / 2f;
+    float radius = vwr.tm.scaleToScreen((int) screenA.z, madBond) / 2f;
     if (radius <= 1)
       return;
     outputSphere(screenA.x, screenA.y, screenA.z, radius, colix1);
-    radius = vwr.scaleToScreen((int) screenB.z, madBond) / 2f;
+    radius = vwr.tm.scaleToScreen((int) screenB.z, madBond) / 2f;
     if (radius <= 1)
       return;
     outputSphere(screenB.x, screenB.y, screenB.z, radius, colix2);
@@ -176,7 +176,7 @@ abstract class __RayTracerExporter extends ___Exporter {
   protected void fillConicalCylinder(P3 screenA, P3 screenB,
                                     int madBond, short colix, 
                                     byte endcaps) {
-    float radius1 = vwr.scaleToScreen((int) screenA.z, madBond) / 2f;
+    float radius1 = vwr.tm.scaleToScreen((int) screenA.z, madBond) / 2f;
     if (radius1 == 0)
       return;
     if (radius1 < 1)
@@ -185,7 +185,7 @@ abstract class __RayTracerExporter extends ___Exporter {
       outputSphere(screenA.x, screenA.y, screenA.z, radius1, colix);
       return;
     }
-    float radius2 = vwr.scaleToScreen((int) screenB.z, madBond) / 2f;
+    float radius2 = vwr.tm.scaleToScreen((int) screenB.z, madBond) / 2f;
     if (radius2 == 0)
       return;
     if (radius2 < 1)

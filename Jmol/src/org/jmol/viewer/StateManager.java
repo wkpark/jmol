@@ -340,7 +340,7 @@ public class StateManager {
       if (gen != null)
         gen.generateScene(scene);
       float[] pv = (float[]) scene.get("pymolView");
-      return (pv != null && vwr.movePyMOL(vwr.eval, timeSeconds, pv));
+      return (pv != null && vwr.tm.moveToPyMOL(vwr.eval, timeSeconds, pv));
     }
   }
 

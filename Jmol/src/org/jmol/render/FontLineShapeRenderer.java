@@ -76,12 +76,12 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
     switch (exportType) {
     case GData.EXPORT_CARTESIAN:
       diameter = (isMad ? madOrPixels 
-          : (int) Math.floor(vwr.unscaleToScreen(z, madOrPixels * 2) * 1000));
+          : (int) Math.floor(vwr.tm.unscaleToScreen(z, madOrPixels * 2) * 1000));
       break;
     default:
       if (isMad) {
         // mad
-        diameter = (int) vwr.scaleToScreen(z, madOrPixels); 
+        diameter = (int) vwr.tm.scaleToScreen(z, madOrPixels); 
       } else {
         // pixels, and that's what we want
         if (g3d.isAntialiased())

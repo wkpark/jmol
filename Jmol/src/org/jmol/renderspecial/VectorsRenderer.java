@@ -162,7 +162,7 @@ public class VectorsRenderer extends ShapeRenderer {
         pointArrowHead.setT(pointVectorEnd);
       screenArrowHead.setT(tm.transformPt(pointArrowHead));
     }
-    diameter = (int) (mad < 0 ? -mad : mad < 1 ? 1 : vwr.scaleToScreen(
+    diameter = (int) (mad < 0 ? -mad : mad < 1 ? 1 : vwr.tm.scaleToScreen(
         screenVectorEnd.z, mad));
     headWidthPixels = diameter << 1;
     if (headWidthPixels < diameter + 2)

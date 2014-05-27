@@ -116,7 +116,7 @@ public class DotsRenderer extends ShapeRenderer {
   private int calcScreenPoints(BS visibilityMap, float radius, int x, int y, int z) {
     int nPoints = 0;
     int i = 0;
-    float scaledRadius = vwr.scaleToPerspective(z, radius);
+    float scaledRadius = vwr.tm.scaleToPerspective(z, radius);
     int iDot = Math.min(visibilityMap.size(), screenDotCount); 
     while (--iDot >= 0) {
       if (!visibilityMap.get(iDot))

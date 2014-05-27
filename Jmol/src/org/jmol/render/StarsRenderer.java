@@ -63,13 +63,13 @@ public class StarsRenderer extends ShapeRenderer {
     int x = atom.sX;
     int y = atom.sY;
     int z = atom.sZ;
-    int d = (int) vwr.scaleToScreen(z, mad);
+    int d = (int) vwr.tm.scaleToScreen(z, mad);
     d -= (d & 1) ^ 1; // round down to odd value
     int r = d / 2;
     if (r < 1)
       r = 1;
     if (mar > 0) {
-      width = (int) vwr.scaleToScreen(z, mar);
+      width = (int) vwr.tm.scaleToScreen(z, mar);
       if (width == 0)
         width = 1;
       if (width == 1 && g3d.isAntialiased())

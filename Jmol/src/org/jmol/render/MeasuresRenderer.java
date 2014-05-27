@@ -352,7 +352,7 @@ public class MeasuresRenderer extends LabelsRenderer {
                          int mad) {
     // small numbers refer to pixels already? 
     int diameter = (int) (mad >= 20 && exportType != GData.EXPORT_CARTESIAN ?
-      vwr.scaleToScreen((z1 + z2) / 2, mad) : mad);
+      vwr.tm.scaleToScreen((z1 + z2) / 2, mad) : mad);
     if (dotsOrDashes && (dashDots == null || dashDots == ndots))
       width = diameter;
     return drawLine2(x1, y1, z1, x2, y2, z2, diameter);

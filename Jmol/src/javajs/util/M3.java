@@ -626,4 +626,16 @@ public class M3 extends M34 implements Serializable {
     m22 = c;
   }
 
+  public boolean isRotation() {
+    return (Math.abs(m01 - m10) < 0.001f 
+        && Math.abs(m02 - m20) < 0.001f 
+        && Math.abs(m12 - m21) < 0.001f
+        && !Float.isNaN(m00)
+        && !Float.isNaN(m11)
+        && !Float.isNaN(m22)
+        && (m00 != 0 || m11 != 0 || m22 != 0
+           || m01 != 0 || m02 != 0 || m21 != 0)
+        );
+  }
+
 }

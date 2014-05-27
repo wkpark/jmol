@@ -38,7 +38,6 @@ import javajs.api.GenericPlatform;
 import javajs.api.JSInterface;
 import javajs.awt.Dimension;
 import javajs.util.OC;
-import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.V3;
 import org.jmol.viewer.Viewer;
@@ -374,7 +373,6 @@ abstract public class JmolViewer implements JSInterface {
 
   abstract public int getZoomPercent(); //deprecated
   abstract public float getZoomPercentFloat();
-  abstract public M4 getUnscaledTransformMatrix();
 
   abstract public int getBackgroundArgb();
   

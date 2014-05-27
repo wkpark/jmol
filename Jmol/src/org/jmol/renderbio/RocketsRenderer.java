@@ -186,7 +186,7 @@ public class RocketsRenderer extends StrandsRenderer {
     tm.transformPt3f(pointStart, screenA);
     tm.transformPt3f(pointEnd, screenB);
     int zMid = (int) Math.floor((screenA.z + screenB.z) / 2f);
-    int diameter = (int) vwr.scaleToScreen(zMid, mad);
+    int diameter = (int) vwr.tm.scaleToScreen(zMid, mad);
     if (g3d.setC(colix)) {
       g3d.fillCylinderBits(GData.ENDCAPS_FLAT, diameter, screenA, screenB);
       if (tEnd && renderArrowHeads) {
@@ -219,7 +219,7 @@ public class RocketsRenderer extends StrandsRenderer {
   protected void renderCone(int i, P3 pointBegin, P3 pointEnd,
                             P3 screenPtBegin, P3 screenPtEnd) {
     int coneDiameter = (mad << 1) - (mad >> 1);
-    coneDiameter = (int) vwr.scaleToScreen(
+    coneDiameter = (int) vwr.tm.scaleToScreen(
         (int) Math.floor(screenPtBegin.z), coneDiameter);
     g3d.fillConeSceen3f(GData.ENDCAPS_FLAT, coneDiameter, screenPtBegin,
         screenPtEnd);

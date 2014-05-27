@@ -235,11 +235,11 @@ public class Text extends Object2d {
       boxXY[0] = movableX;
       boxXY[1] = movableY;
       if (pymolOffset != null) {
-        float pixelsPerAngstrom = vwr.scaleToScreen(z, 1000);
+        float pixelsPerAngstrom = vwr.tm.scaleToScreen(z, 1000);
         float pz = pymolOffset[3];
         float dz = (pz < 0 ? -1 : 1) * Math.max(0, Math.abs(pz) - 1) * pixelsPerAngstrom;
         z -= (int) dz;
-        pixelsPerAngstrom = vwr.scaleToScreen(z, 1000);
+        pixelsPerAngstrom = vwr.tm.scaleToScreen(z, 1000);
         
         /* for whatever reason, Java returns an 
          * ascent that is considerably higher than a capital X

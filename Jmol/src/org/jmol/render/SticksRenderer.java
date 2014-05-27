@@ -259,7 +259,7 @@ public class SticksRenderer extends FontLineShapeRenderer {
       mad *= multipleBondRadiusFactor;
     dx = xB - xA;
     dy = yB - yA;
-    width = (int) vwr.scaleToScreen((zA + zB) / 2, mad);
+    width = (int) vwr.tm.scaleToScreen((zA + zB) / 2, mad);
     if (wireframeOnly && width > 0)
       width = 1;
     if (!isCartesianExport) {

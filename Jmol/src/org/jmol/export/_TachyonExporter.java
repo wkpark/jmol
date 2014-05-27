@@ -203,7 +203,7 @@ public class _TachyonExporter extends __RayTracerExporter {
     
     tm.unTransformPoint(screenBase, tempP1);
     tm.unTransformPoint(screenTip, tempP2);
-    radius = vwr.unscaleToScreen(screenBase.z, radius);
+    radius = vwr.tm.unscaleToScreen(screenBase.z, radius);
     M3 matRotateScale = getRotationMatrix(tempP1, tempP2, radius);
     jmolRenderer.drawSurface(getConeMesh(tempP1, matRotateScale, colix), colix);
   }
@@ -230,7 +230,7 @@ public class _TachyonExporter extends __RayTracerExporter {
   protected void fillConicalCylinder(P3 screenA, P3 screenB,
                                      int madBond, short colix, byte endcaps) {
     // conic sections not implemented in Tachyon
-    int diameter = (int) vwr.scaleToScreen((int) ((screenA.z + screenB.z)/2f), madBond);
+    int diameter = (int) vwr.tm.scaleToScreen((int) ((screenA.z + screenB.z)/2f), madBond);
     fillCylinderScreenMad(colix, endcaps, diameter, screenA, screenB);
    }
 

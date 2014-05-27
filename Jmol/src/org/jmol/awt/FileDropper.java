@@ -44,6 +44,7 @@ import java.util.List;
 import javax.swing.JOptionPane;
 
 import javajs.util.PT;
+import javajs.util.SB;
 
 import org.jmol.api.JmolStatusListener;
 import org.jmol.i18n.GT;
@@ -65,11 +66,9 @@ public class FileDropper implements DropTargetListener {
   private String fd_oldFileName;
   private PropertyChangeSupport fd_propSupport;
 
-  static public final String FD_PROPERTY_INLINE = "inline";
-
-  Viewer vwr;
-  PropertyChangeListener pcl;
-  JmolStatusListener statusListener;
+  private Viewer vwr;
+  private PropertyChangeListener pcl;
+  private JmolStatusListener statusListener;
 
   public FileDropper(JmolStatusListener statusListener, Viewer vwr) {
     this.statusListener = statusListener; // application only
@@ -122,7 +121,7 @@ public class FileDropper implements DropTargetListener {
   }
 
   private void loadFiles(List<File> fileList) {
-    StringBuilder sb = new StringBuilder();
+    SB sb = new SB();
     for (int i = 0; i < fileList.size(); ++i) {
       File f = fileList.get(i);
       String fname = f.getAbsolutePath();
@@ -137,7 +136,7 @@ public class FileDropper implements DropTargetListener {
 
   protected void doDrop(PropertyChangeEvent evt) {
     // new event, because we open the file directly. Not sure this has been tested
-    if (evt.getPropertyName() == FD_PROPERTY_INLINE) {
+    if ("inline".equals(evt.getPropertyName())) {
       vwr.openStringInline((String) evt.getNewValue());
     }
   }
@@ -300,7 +299,7 @@ public class FileDropper implements DropTargetListener {
             loadFile(content);
           } else {
             PropertyChangeEvent pce = new PropertyChangeEvent(this,
-                FD_PROPERTY_INLINE, fd_oldFileName, content);
+                "inline", fd_oldFileName, content);
             fd_propSupport.firePropertyChange(pce);
           }
           dtde.getDropTargetContext().dropComplete(true);

@@ -5040,11 +5040,11 @@ public class CmdExt implements JmolCmdExtension {
         setShapeProperty(JC.SHAPE_AXES, "position",
             P3.new3(50, 50, Float.MAX_VALUE));
         eval.setBooleanProperty("navigationMode", true);
-        vwr.setNavOn(eval.theTok == T.on);
+        vwr.tm.setNavOn(eval.theTok == T.on);
         return;
       case T.stop:
         if (!chk)
-          vwr.setNavXYZ(0, 0, 0);
+          vwr.tm.setNavXYZ(0, 0, 0);
         return;
       case T.point3f:
       case T.trace:
@@ -5070,7 +5070,7 @@ public class CmdExt implements JmolCmdExtension {
         if (eval.iToken != slen)
           invArg();
         if (!chk)
-          vwr.setNavXYZ(pt.x, pt.y, pt.z);
+          vwr.tm.setNavXYZ(pt.x, pt.y, pt.z);
         return;
       case T.depth:
         float depth = floatParameter(++i);
@@ -6762,7 +6762,7 @@ public class CmdExt implements JmolCmdExtension {
       break;
     case T.transform:
       if (!chk)
-        msg = "transform:\n" + vwr.getTransformText();
+        msg = "transform:\n" + vwr.tm.getTransformText();
       break;
     case T.zoom:
       msg = "zoom "

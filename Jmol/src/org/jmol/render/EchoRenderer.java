@@ -54,9 +54,9 @@ public class EchoRenderer extends LabelsRenderer {
         t.setXYZs(pt0i.x, pt0i.y, pt0i.z, pt0i.z);
       } 
       if (t.movableZPercent != Integer.MAX_VALUE) {
-        int z = vwr.zValueFromPercent(t.movableZPercent % 1000);
+        int z = vwr.tm.zValueFromPercent(t.movableZPercent % 1000);
         if (t.valign == JC.VALIGN_XYZ && Math.abs(t.movableZPercent)>= 1000)
-          z = pt0i.z - vwr.zValueFromPercent(0) + z;
+          z = pt0i.z - vwr.tm.zValueFromPercent(0) + z;
         t.setZs(z, z);
       }
       if (t.pointerPt == null) {

@@ -38,17 +38,16 @@ public class Orientation {
       this.pymolView = pymolView;
       moveToText = "moveTo -1.0 PyMOL " + Escape.eAF(pymolView);
       return;
-    } 
+    }
     vwr.finalizeTransformParameters();
     if (asDefault) {
-      M3 rotationMatrix = (M3) vwr
-          .ms.getInfoM("defaultOrientationMatrix");
-      if (rotationMatrix == null)
-        this.rotationMatrix.setScale(1);
+      M3 rot = (M3) vwr.ms.getInfoM("defaultOrientationMatrix");
+      if (rot == null)
+        rotationMatrix.setScale(1);
       else
-        this.rotationMatrix.setM3(rotationMatrix);
+        rotationMatrix.setM3(rot);
     } else {
-      vwr.getRotation(this.rotationMatrix);
+      vwr.tm.getRotation(rotationMatrix);
     }
     xTrans = vwr.tm.getTranslationXPercent();
     yTrans = vwr.tm.getTranslationYPercent();
@@ -66,7 +65,7 @@ public class Orientation {
       navCenter = P3.newP(vwr.tm.getNavigationCenter());
     }
     if (vwr.tm.camera.z != 0) { // PyMOL mode
-      cameraDepth = vwr.getCameraDepth();
+      cameraDepth = vwr.tm.getCameraDepth();
       cameraX = vwr.tm.camera.x;
       cameraY = vwr.tm.camera.y;
     }
@@ -86,7 +85,7 @@ public class Orientation {
         vwr.moveTo(vwr.eval, timeSeconds, center, null, Float.NaN, rotationMatrix, zoom, xTrans,
             yTrans, rotationRadius, navCenter, xNav, yNav, navDepth, cameraDepth, cameraX, cameraY);
       else
-        vwr.movePyMOL(vwr.eval, timeSeconds, pymolView);
+        vwr.tm.moveToPyMOL(vwr.eval, timeSeconds, pymolView);
     } else {
       vwr.tm.setRotation(rotationMatrix);
     }

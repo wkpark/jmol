@@ -102,13 +102,13 @@ public class HalosRenderer extends ShapeRenderer {
       if (d == 0) {
         float ellipsemax = (atom.isVisible(JC.SHAPE_ELLIPSOIDS) ? atom.getADPMinMax(true) : 0);
         if (ellipsemax > 0)
-          d = vwr.scaleToScreen(z, (int) Math.floor(ellipsemax * 2000));
+          d = vwr.tm.scaleToScreen(z, (int) Math.floor(ellipsemax * 2000));
         if (d == 0) {
-          d = (int) vwr.scaleToScreen(z, mad == -2 ? 250 : 500);
+          d = (int) vwr.tm.scaleToScreen(z, mad == -2 ? 250 : 500);
         }
       }
     } else {
-      d = vwr.scaleToScreen(z, mad);
+      d = vwr.tm.scaleToScreen(z, mad);
     }
 //    System.out.println(atom + "scaleToScreen(" + z + "," + mad +")=" + d);
     if (isAntialiased)

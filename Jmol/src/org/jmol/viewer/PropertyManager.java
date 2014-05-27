@@ -598,7 +598,7 @@ public class PropertyManager implements JmolPropertyManager {
     case PROP_MOUSE_INFO:
       return getMouseInfo();
     case PROP_ORIENTATION_INFO:
-      return vwr.getOrientationInfo();
+      return vwr.tm.getOrientationInfo();
     case PROP_POINTGROUP_INFO:
       return vwr.getPointGroupInfo(myParam);
     case PROP_POLYMER_INFO:
@@ -610,7 +610,7 @@ public class PropertyManager implements JmolPropertyManager {
     case PROP_STATE_INFO:
       return vwr.getStateInfo3(myParam.toString(), 0, 0);
     case PROP_TRANSFORM_INFO:
-      return vwr.getMatrixRotate();
+      return vwr.tm.getMatrixRotate();
     }
     String[] data = new String[PROP_COUNT];
     for (int i = 0; i < PROP_COUNT; i++) {

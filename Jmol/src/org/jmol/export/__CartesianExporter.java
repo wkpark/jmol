@@ -236,7 +236,7 @@ abstract public class __CartesianExporter extends ___Exporter {
     // draw circle
     tempP3.set(x, y, z);
     tm.unTransformPoint(tempP3, tempP1);
-    float radius = vwr.unscaleToScreen(z, diameter) / 2;
+    float radius = vwr.tm.unscaleToScreen(z, diameter) / 2;
     tempP3.set(x, y, z + 1);
     tm.unTransformPoint(tempP3, tempP3);
     outputCircle(tempP1, tempP3, radius, colix, doFill);
@@ -278,7 +278,7 @@ abstract public class __CartesianExporter extends ___Exporter {
                       P3 screenBase, P3 screenTip, boolean isBarb) {
     tm.unTransformPoint(screenBase, tempP1);
     tm.unTransformPoint(screenTip, tempP2);
-    float radius = vwr.unscaleToScreen(screenBase.z, screenDiameter) / 2;
+    float radius = vwr.tm.unscaleToScreen(screenBase.z, screenDiameter) / 2;
     if (radius < 0.05f)
       radius = 0.05f;
     outputCone(tempP1, tempP2, radius, colix);
@@ -328,7 +328,7 @@ abstract public class __CartesianExporter extends ___Exporter {
     }    
     // vectors, polyhedra
     // was (int) in older version
-    int mad = Math.round(vwr.unscaleToScreen((screenA.z + screenB.z) / 2,
+    int mad = Math.round(vwr.tm.unscaleToScreen((screenA.z + screenB.z) / 2,
         screenDiameter) * 1000);
     fillCylinderScreenMad(colix, endcaps, mad, screenA, screenB);
   }
@@ -343,7 +343,7 @@ abstract public class __CartesianExporter extends ___Exporter {
   @Override
   void fillSphere(short colix, int diameter, P3 pt) {
     tm.unTransformPoint(pt, tempP1);
-    outputSphere(tempP1, vwr.unscaleToScreen(pt.z, diameter) / 2, colix, true);
+    outputSphere(tempP1, vwr.tm.unscaleToScreen(pt.z, diameter) / 2, colix, true);
   }
 
   @Override

@@ -445,7 +445,7 @@ public class ShapeManager {
       int d = Math.abs(atom.madAtom);
       if (d == Atom.MAD_GLOBAL)
         d = (int) (vwr.getFloat(T.atoms) * 2000);
-      atom.sD = (short) vwr.scaleToScreen(screen.z, d);
+      atom.sD = (short) vwr.tm.scaleToScreen(screen.z, d);
     }
     if (tm.slabEnabled) {
       boolean slabByMolecule = vwr.getBoolean(T.slabbymolecule);

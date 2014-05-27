@@ -5313,7 +5313,7 @@ public class ScriptEval extends ScriptExpr {
         if (i != slen) {
           cameraDepth = floatParameter(i++);
           if (!isChange
-              && Math.abs(cameraDepth - vwr.getCameraDepth()) >= 0.01f)
+              && Math.abs(cameraDepth - vwr.tm.getCameraDepth()) >= 0.01f)
             isChange = true;
         }
         if (i + 1 < slen) {
@@ -5339,7 +5339,7 @@ public class ScriptEval extends ScriptExpr {
       cameraDepth = cameraX = cameraY = Float.NaN;
     }
     if (pymolView != null)
-      vwr.movePyMOL(this, floatSecondsTotal, pymolView);
+      vwr.tm.moveToPyMOL(this, floatSecondsTotal, pymolView);
     else
       vwr.moveTo(this, floatSecondsTotal, center, axis, degrees, null, zoom,
           xTrans, yTrans, rotationRadius, navCenter, xNav, yNav, navDepth,
@@ -5528,11 +5528,11 @@ public class ScriptEval extends ScriptExpr {
       switch (getToken(1).tok) {
       case T.on:
         if (!chk)
-          vwr.setSpinOn(true);
+          vwr.tm.setSpinOn();
         return;
       case T.off:
         if (!chk)
-          vwr.setSpinOn(false);
+          vwr.tm.setSpinOff();
         return;
       }
 
@@ -7221,9 +7221,9 @@ public class ScriptEval extends ScriptExpr {
         int percent = intParameter(checkLast(1));
         if (!chk)
           if (isDepth)
-            vwr.depthToPercent(percent);
+            vwr.tm.depthToPercent(percent);
           else
-            vwr.slabToPercent(percent);
+            vwr.tm.slabToPercent(percent);
         return;
       case T.on:
         checkLength(2);
@@ -7244,7 +7244,7 @@ public class ScriptEval extends ScriptExpr {
         checkLength(2);
         if (chk)
           return;
-        vwr.setSlabDepthInternal(isDepth);
+        vwr.tm.setSlabDepthInternal(isDepth);
         setBooleanProperty("slabEnabled", true);
         return;
       case T.minus:
@@ -7275,7 +7275,7 @@ public class ScriptEval extends ScriptExpr {
         invArg();
       }
     if (!chk)
-      vwr.slabInternal(plane, isDepth);
+      vwr.tm.slabInternal(plane, isDepth);
   }
 
   /*

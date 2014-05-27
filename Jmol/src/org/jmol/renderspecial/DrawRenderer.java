@@ -126,7 +126,7 @@ public class DrawRenderer extends MeshRenderer {
         pt1f.add(vertices[i]);
       pt1f.scale(1f / n);
       tm.transformPtScr(pt1f, pt1i);
-      diameter = (int) vwr.scaleToScreen(pt1i.z, (int) Math.floor(width * 1000));
+      diameter = (int) vwr.tm.scaleToScreen(pt1i.z, (int) Math.floor(width * 1000));
       if (diameter == 0)
         diameter = 1;
     }
@@ -163,7 +163,7 @@ public class DrawRenderer extends MeshRenderer {
       if (dmesh.scale > 0)
         width *= dmesh.scale;
       if (width > 0)
-        diameter = (int) vwr.scaleToScreen(pt1i.z, (int) Math.floor(width * 1000));
+        diameter = (int) vwr.tm.scaleToScreen(pt1i.z, (int) Math.floor(width * 1000));
       if (diameter > 0 && (mesh.drawTriangles || mesh.fillTriangles)) {
         g3d.addRenderer(T.circle);
         g3d.drawFilledCircle(colix, mesh.fillTriangles ? colix : 0, diameter,

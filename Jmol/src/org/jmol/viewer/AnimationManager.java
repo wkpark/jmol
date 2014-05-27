@@ -59,7 +59,7 @@ public class AnimationManager {
       stopThread(false);
       return;
     }
-    if (!vwr.getSpinOn())
+    if (!vwr.tm.spinOn)
       vwr.refresh(3, "Anim:setAnimationOn");
     setAnimationRange(-1, -1);
     resumeAnimation();
@@ -73,7 +73,7 @@ public class AnimationManager {
       stopped = true;
     }
     animationPaused = isPaused;
-    if (stopped && !vwr.getSpinOn())
+    if (stopped && !vwr.tm.spinOn)
       vwr.refresh(3, "Viewer:setAnimationOff");
     animation(false);
     //stopModulationThread();
@@ -434,7 +434,7 @@ public class AnimationManager {
   public int cai = -1;
   private void setViewer(boolean clearBackgroundModel) {
     vwr.ms.setTrajectory(cmi);
-    vwr.setFrameOffset(cmi);
+    vwr.tm.setFrameOffset(cmi);
     if (cmi == -1 && clearBackgroundModel)
       setBackgroundModelIndex(-1);  
     vwr.setTainted(true);

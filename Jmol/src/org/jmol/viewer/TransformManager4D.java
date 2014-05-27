@@ -53,7 +53,7 @@ public class TransformManager4D extends TransformManager {
   private final V3 zero = new V3();
     
   @Override
-  protected void resetRotation() {
+  public void resetRotation() {
     if (m2_rotate != null)
       m2_rotate.setIdentity();
     matrixRotate.setScale(1); // no rotations

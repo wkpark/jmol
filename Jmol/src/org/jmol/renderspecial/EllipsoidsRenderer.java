@@ -244,7 +244,7 @@ final public class EllipsoidsRenderer extends ShapeRenderer {
       return;
     eigenSignMask = e.tensor.eigenSignMask;
     setOptions(e.options);
-    diameter = (int) vwr.scaleToScreen(s0.z, bOptions[OPT_WIREFRAME] ? 1 : diameter0);
+    diameter = (int) vwr.tm.scaleToScreen(s0.z, bOptions[OPT_WIREFRAME] ? 1 : diameter0);
     if (e.tensor.isIsotropic) {
       renderBall();
       return;
@@ -287,7 +287,7 @@ final public class EllipsoidsRenderer extends ShapeRenderer {
     // make this screen coordinates to ellisoidal coordinates
     matScreenToEllipsoid.mul2(mat, matScreenToCartesian);
     matEllipsoidToScreen.invertM(matScreenToEllipsoid);
-    perspectiveFactor = vwr.scaleToPerspective(s0.z, 1.0f);
+    perspectiveFactor = vwr.tm.scaleToPerspective(s0.z, 1.0f);
     matScreenToEllipsoid.scale(1f/perspectiveFactor);
   }
   
@@ -337,7 +337,7 @@ final public class EllipsoidsRenderer extends ShapeRenderer {
           Math.round(s0.y + pt1.y * perspectiveFactor * 1.05f), Math
               .round(pt1.z * 1.05f + s0.z));
     }
-    dx = 2 + (int) vwr.scaleToScreen(s0.z, Math
+    dx = 2 + (int) vwr.tm.scaleToScreen(s0.z, Math
         .round((Float.isNaN(factoredLengths[maxPt]) ? 1.0f
             : factoredLengths[maxPt]) * 1000));
   }

@@ -79,7 +79,7 @@ public class ActionManager implements EventManager {
   protected Thread hoverWatcherThread;
 
   public void checkHover() {
-    if (!vwr.getInMotion(true) && !vwr.getSpinOn() && !vwr.getNavOn()
+    if (!vwr.getInMotion(true) && !vwr.tm.spinOn && !vwr.tm.navOn
         && !vwr.checkObjectHovered(current.x, current.y)) {
       int atomIndex = vwr.findNearestAtomIndex(current.x, current.y);
       if (atomIndex < 0)
@@ -2050,10 +2050,10 @@ public class ActionManager implements EventManager {
 
   private void checkTwoAtomAction(Point3fi ptClicked, int atomIndex) {
     boolean isSpin = (apm == PICKING_SPIN);
-    if (vwr.getSpinOn() || vwr.getNavOn()
+    if (vwr.tm.spinOn || vwr.tm.navOn
         || vwr.getPendingMeasurement() != null) {
       resetMeasurement();
-      if (vwr.getSpinOn())
+      if (vwr.tm.spinOn)
         runScript("spin off");
       return;
     }

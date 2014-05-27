@@ -1,7 +1,7 @@
 
 package javajs.util;
 
-import javajs.J2SRequireImport;
+import javajs.J2SIgnoreImport;
 
 /**
  * Interesting thing here is that JavaScript is 3x faster than Java in handling strings.
@@ -12,10 +12,10 @@ import javajs.J2SRequireImport;
  * 
  */
 
-@J2SRequireImport({javajs.util.PT.class})
+@J2SIgnoreImport({java.lang.StringBuilder.class})
 public class SB {
   
-  private StringBuilder sb;
+  private java.lang.StringBuilder sb;
   String s; // used by JavaScript only; no Java references
   
   //TODO: JS experiment with using array and .push() here
@@ -28,7 +28,7 @@ public class SB {
      * 
      */
     {
-      sb = new StringBuilder();
+      sb = new java.lang.StringBuilder();
     }
   }
 
@@ -41,7 +41,7 @@ public class SB {
       // not perfect, because it requires defining sb twice. 
       // We can do better...
       SB sb = new SB();
-      sb.sb = new StringBuilder(n);
+      sb.sb = new java.lang.StringBuilder(n);
       return sb;
     }
   }
@@ -57,7 +57,7 @@ public class SB {
      */
     {
     SB sb = new SB();
-    sb.sb = new StringBuilder(s);
+    sb.sb = new java.lang.StringBuilder(s);
     return sb;
     }
   }
@@ -123,7 +123,10 @@ public class SB {
     /**
      * @j2sNative
      * 
-     * this.s += javajs.util.PT.eF(f);
+     * var sf = "" + f;
+     * if (sf.indexOf(".") < 0 && sf.indexOf("e") < 0)
+     *   sf += ".0" ;
+     *            this.s += sf;
      * 
      */
     {
@@ -136,7 +139,10 @@ public class SB {
     /**
      * @j2sNative
      * 
-     * this.s += javajs.util.PT.eF(d);
+     * var sf = "" + d;
+     * if (sf.indexOf(".") < 0 && sf.indexOf("e") < 0)
+     *   sf += ".0" ;
+     *            this.s += sf;
      * 
      */
     {
@@ -166,9 +172,9 @@ public class SB {
        *            this.s += data.toString();
        * 
        */
-    {
-      sb.append(data);
-    }
+      {
+        sb.append(data);
+      }
     }
     return this;
   }

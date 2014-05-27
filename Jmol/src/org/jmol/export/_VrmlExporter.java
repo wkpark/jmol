@@ -98,7 +98,7 @@ public class _VrmlExporter extends __CartesianExporter {
   }
 
   protected float getViewpoint() {
-    vwr.getAxisAngle(viewpoint);
+    vwr.tm.getAxisAngle(viewpoint);
     tempP1.set(viewpoint.x, viewpoint.y, (viewpoint.angle == 0 ? 1
         : viewpoint.z));
     return (float) (aperatureAngle * Math.PI / 180);

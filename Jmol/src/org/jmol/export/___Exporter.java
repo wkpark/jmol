@@ -219,7 +219,7 @@ public abstract class ___Exporter {
     slabZ = g3d.getSlab();
     depthZ = g3d.getDepth();
     lightSource = g3d.getLightSource();
-    P3[] cameraFactors = vwr.getCameraFactors();
+    P3[] cameraFactors = vwr.tm.getCameraFactors();
     referenceCenter = cameraFactors[0];
     cameraPosition = cameraFactors[1];
     fixedRotationCenter = cameraFactors[2];

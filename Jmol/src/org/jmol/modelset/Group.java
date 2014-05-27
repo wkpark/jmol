@@ -324,7 +324,7 @@ public class Group {
   }
 
   protected float scaleToScreen(int Z, int mar) {
-    return chain.model.ms.vwr.scaleToScreen(Z, mar);
+    return chain.model.ms.vwr.tm.scaleToScreen(Z, mar);
   }
   
   protected boolean isCursorOnTopOf(Atom atom, int x, int y, int radius, Atom champ) {

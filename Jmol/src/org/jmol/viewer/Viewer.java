@@ -105,13 +105,11 @@ import org.jmol.util.Parser;
 import javajs.util.P3;
 import javajs.util.P4;
 import org.jmol.util.Rectangle;
-import javajs.util.A4;
 import javajs.util.Rdr;
 import javajs.util.CU;
 import javajs.util.DF;
 import javajs.util.OC;
 import javajs.util.M3;
-import javajs.util.M4;
 import javajs.util.P3i;
 import javajs.util.Quat;
 import javajs.util.T3;
@@ -755,7 +753,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     else
       setAxesModeMolecular(false);
     prevFrame = Integer.MIN_VALUE;
-    if (!getSpinOn())
+    if (!tm.spinOn)
       refresh(-1, "Viewer:homePosition()"); // from 1 - was repainting
   }
 
@@ -1035,7 +1033,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   @Override
   public void rotateFront() {
     // deprecated
-    tm.rotateFront();
+    tm.resetRotation();
     refresh(1, "Viewer:rotateFront()");
   }
 
@@ -1109,32 +1107,11 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     refresh(3, "slabDepthByPixels");
   }
 
-  public void slabInternal(P4 plane, boolean isDepth) {
-    tm.slabInternal(plane, isDepth);
-  }
-
-  public void slabToPercent(int percentSlab) {
-    // Eval.slab
-    tm.slabToPercent(percentSlab);
-  }
-
-  public void depthToPercent(int percentDepth) {
-    // Eval.depth
-    tm.depthToPercent(percentDepth);
-  }
-
-  public void setSlabDepthInternal(boolean isDepth) {
-    tm.setSlabDepthInternal(isDepth);
-  }
-
-  public int zValueFromPercent(int zPercent) {
-    return tm.zValueFromPercent(zPercent);
-  }
-
-  @Override
-  public M4 getUnscaledTransformMatrix() {
-    return tm.getUnscaledTransformMatrix();
-  }
+//  @Override
+//  public M4 getUnscaledTransformMatrix() {
+//    // unused
+//    return tm.getUnscaledTransformMatrix();
+//  }
 
   public void finalizeTransformParameters() {
     // FrameRenderer
@@ -1151,29 +1128,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public float getScalePixelsPerAngstrom(boolean asAntialiased) {
     return tm.scalePixelsPerAngstrom
         * (asAntialiased || !antialiased ? 1f : 0.5f);
-  }
-
-  public float scaleToScreen(int z, int milliAngstroms) {
-    // all shapes
-    return tm.scaleToScreen(z, milliAngstroms);
-  }
-
-  public float unscaleToScreen(float z, float screenDistance) {
-    // FontLineShape
-    // MeshRenderer -- Draw ARROW, Draw lineData
-    // __CartesianExporter drawCircle -- Draw circle, halos
-    //                     fillConeScreen -- dipole, vector, draw arrow/vector, cartoons, rockets
-    //                     fillCylinderScreen -- vectors, polyhedra
-    //                     fillSphere -- Isosurface lone pair, Points, 
-    //                               triangles, Mesh points, drawLine, Sticks drawDashed
-    //                               axes, cage
-    // _TachyonExporter outputCone
-    return tm.unscaleToScreen(z, screenDistance);
-  }
-
-  public float scaleToPerspective(int z, float sizeAngstroms) {
-    // DotsRenderer
-    return tm.scaleToPerspective(z, sizeAngstroms);
   }
 
   public void setSpin(String key, int value) {
@@ -1215,33 +1169,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return getStateCreator().getSpinState(false);
   }
 
-  public void setSpinOn(boolean spinOn) {
-    // Eval
-    // startSpinningAxis
-    if (spinOn)
-      tm.setSpinOn();
-    else
-      tm.setSpinOff();
-  }
-
-  public boolean getSpinOn() {
-    return tm.getSpinOn();
-  }
-
-  public void setNavOn(boolean navOn) {
-    // Eval
-    // startSpinningAxis
-    tm.setNavOn(navOn);
-  }
-
-  public boolean getNavOn() {
-    return tm.getNavOn();
-  }
-
-  public void setNavXYZ(float x, float y, float z) {
-    tm.setNavXYZ((int) x, (int) y, (int) z);
-  }
-
   public String getOrientationText(int type, String name) {
     switch (type) {
     case T.volume:
@@ -1256,26 +1183,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     default:
       return tm.getOrientationText(type);
     }
-  }
-
-  Map<String, Object> getOrientationInfo() {
-    return tm.getOrientationInfo();
-  }
-
-  M3 getMatrixRotate() {
-    return tm.getMatrixRotate();
-  }
-
-  public void getAxisAngle(A4 axisAngle) {
-    tm.getAxisAngle(axisAngle);
-  }
-
-  public String getTransformText() {
-    return tm.getTransformText();
-  }
-
-  public void getRotation(M3 matrixRotation) {
-    tm.getRotation(matrixRotation);
   }
 
   // ///////////////////////////////////////////////////////////////
@@ -3484,10 +3391,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return getStateCreator().getTrajectoryState();
   }
 
-  void setFrameOffset(int modelIndex) {
-    tm.setFrameOffset(modelIndex);
-  }
-
   BS bsFrameOffsets;
   P3[] frameOffsets;
 
@@ -5275,7 +5178,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     if (key.equalsIgnoreCase("frank"))
       return getShowFrank();
     if (key.equalsIgnoreCase("spinOn"))
-      return getSpinOn();
+      return tm.spinOn;
     if (key.equalsIgnoreCase("isNavigating"))
       return tm.isNavigating();
     if (key.equalsIgnoreCase("showSelections"))
@@ -5330,7 +5233,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public int getHermiteLevel() {
-    return (getSpinOn() ? 0 : g.hermiteLevel);
+    return (tm.spinOn ? 0 : g.hermiteLevel);
   }
 
   public int getHoverDelay() {
@@ -7070,14 +6973,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     tm.setFrameOffsets(frameOffsets);
   }
 
-  public P3[] getCameraFactors() {
-    return tm.getCameraFactors();
-  }
-
-  public float getCameraDepth() {
-    return tm.getCameraDepth();
-  }
-
   @Override
   public void setAutoBond(boolean TF) {
     // setBooleanProperties
@@ -7667,9 +7562,9 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public void startSpinningAxis(T3 pt1, T3 pt2, boolean isClockwise) {
     // Draw.checkObjectClicked ** could be difficult
     // from draw object click
-    if (getSpinOn() || getNavOn()) {
-      setSpinOn(false);
-      setNavOn(false);
+    if (tm.spinOn || tm.navOn) {
+      tm.setSpinOff();
+      tm.setNavOn(false);
       return;
     }
     tm.rotateAboutPointsInternal(null, pt1, pt2,
@@ -9542,12 +9437,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public void setCGO(Lst<Object> info) {
     shm.loadShape(JC.SHAPE_CGO);
     shm.setShapePropertyBs(JC.SHAPE_CGO, "setCGO", info, null);
-  }
-
-  public boolean movePyMOL(JmolScriptEvaluator eval, float floatSecondsTotal,
-                           float[] pymolView) {
-    tm.moveToPyMOL(eval, floatSecondsTotal, pymolView);
-    return true;
   }
 
   public void setModelSet(ModelSet modelSet) {

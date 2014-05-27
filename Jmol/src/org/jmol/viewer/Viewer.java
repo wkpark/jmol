@@ -3102,10 +3102,10 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     ms.setModelCage(am.cmi, (SymmetryInterface) data[1]);
   }
 
-  public void setCurrentCagePts(P3[] ptsOrMat4) {
+  public void setCurrentCagePts(T3[] originABC) {
     try {
     ms.setModelCage(am.cmi,
-        ptsOrMat4 == null ? null : Interface.getSymmetry().getUnitCell(ptsOrMat4, false));
+        originABC == null ? null : Interface.getSymmetry().getUnitCell(originABC, false));
     } catch (Exception e) {
       //
     }

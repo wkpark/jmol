@@ -357,8 +357,11 @@ class SymmetryOperation extends M4 {
     linearRotTrans[linearRotTrans.length - 1] = 1;
     // may be a-b,-5a-5b,-c;0,0,0 form
     int transPt = xyz.indexOf(';') + 1;
-    if (transPt != 0)
+    if (transPt != 0) {
       allowScaling = true;
+      if (transPt == xyz.length())
+        xyz += "0,0,0";
+    }
     int rotPt = -1;
     String[] myLabels = (op == null || modDim == 0 ? null : op.myLabels);
     if (myLabels == null)
@@ -367,6 +370,7 @@ class SymmetryOperation extends M4 {
     if (modDim > 0)
       for (int i = modDim + 3; --i >= 0;)
         xyz = PT.rep(xyz, labelsXn[i], labelsXnSub[i]);
+    int xpt = 0;
     int tpt0 = 0;
     int rowPt = 0;
     char ch;
@@ -406,13 +410,14 @@ class SymmetryOperation extends M4 {
       case 'h':
         tpt0 = rowPt * nRows;
         int ipt = (ch >= 'x' ? ch - 'x' :ch - 'a' + dimOffset);
+        xpt = tpt0 + ipt;
         int val = (isNegative ? -1 : 1);
         if (allowScaling && iValue != 0) {
-          linearRotTrans[tpt0 + ipt] = iValue; 
+          linearRotTrans[xpt] = iValue; 
           val = (int) iValue;
           iValue = 0;
         } else {
-          linearRotTrans[tpt0 + ipt] = val; 
+          linearRotTrans[xpt] = val; 
         }
         strT += plusMinus(strT, val, myLabels[ipt]);
         break;
@@ -463,7 +468,12 @@ class SymmetryOperation extends M4 {
         }
         if (ich >= 0 && ich <= 9) {
           if (isDenominator) {
-            iValue /= ich;
+            if (iValue == 0) {
+              // a/2,....
+              linearRotTrans[xpt] /= ich;
+            } else {
+              iValue /= ich;
+            }
           } else {
             iValue = iValue * 10 + (isNegative ? -1 : 1) * ich;
             isNegative = false;

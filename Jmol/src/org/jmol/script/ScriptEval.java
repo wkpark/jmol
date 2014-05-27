@@ -7575,7 +7575,7 @@ public class ScriptEval extends ScriptExpr {
     TickInfo tickInfo = tickParamAsStr(index, true, false, false);
     index = iToken;
     String id = null;
-    P3[] points = null;
+    P3[] oabc = null;
     Object newUC = null;
     boolean isOffset = false;
     boolean isReset = false;
@@ -7646,7 +7646,9 @@ public class ScriptEval extends ScriptExpr {
       //$FALL-THROUGH$
     default:
       if (isArrayParameter(index + 1)) {
-        points = getPointArray(index, 4);
+        // Origin vA vB vC
+        // these are VECTORS, though
+        oabc = getPointArray(index, 4);
         index = iToken;
       } else if (slen == index + 2) {
         if (getToken(index + 1).tok == T.integer
@@ -7664,13 +7666,13 @@ public class ScriptEval extends ScriptExpr {
     if (mad == Integer.MAX_VALUE)
       vwr.am.cai = -1;
     if (newUC != null)
-      points = vwr.getPts0xyz(newUC);
+      oabc = vwr.getPts0xyz(newUC);
     if (icell != Integer.MAX_VALUE)
       vwr.ms.setUnitCellOffset(vwr.getCurrentUnitCell(), null, icell);
     else if (id != null)
       vwr.setCurrentCage(id);
-    else if (isReset ||points != null)
-      vwr.setCurrentCagePts(points);
+    else if (isReset ||oabc != null)
+      vwr.setCurrentCagePts(oabc);
     setObjectMad(JC.SHAPE_UCCAGE, "unitCell", mad);
     if (pt != null)
       vwr.ms.setUnitCellOffset(vwr.getCurrentUnitCell(), pt, 0);

@@ -835,33 +835,23 @@ public class Symmetry implements SymmetryInterface {
     P3[] pts = new P3[4];
     P3 pt = new P3();
     M3 m3 = new M3();
-
     m.getRotationScale(m3);
     m.getTranslation(pt);
     if (isRev) {
-      pts[0] = P3.new3(0, 0, 0);
-      pts[1] = P3.new3(1, 0, 0);
-      pts[2] = P3.new3(0, 1, 0);
-      pts[3] = P3.new3(0, 0, 1);
       m3.invert();
       m3.transpose();
       m3.rotate(pt);
-      for (int i = 0; i < 4; i++) {
-        m3.rotate(pts[i]);
-        pts[i].sub(pt);
-        uc.toCartesian(pts[i], false);
-      }
-    } else {
-      uc.toCartesian(pt, false);
-      M3 m3b = new M3();
-      ((Symmetry)uc).unitCell.matrixFractionalToCartesian.getRotationScale(m3b);
-      m3.mul2(m3b, m3);
-      m3.transpose();
-      pts[0] = P3.newP(pt);
-      pts[1] = P3.new3(m3.m00, m3.m01, m3.m02);
-      pts[2] = P3.new3(m3.m10, m3.m11, m3.m12);
-      pts[3] = P3.new3(m3.m20, m3.m21, m3.m22);
-    }    
+      pt.scale(-1);
+    }
+    pts[0] = P3.newP(pt);
+    pts[1] = P3.new3(1, 0, 0);
+    pts[2] = P3.new3(0, 1, 0);
+    pts[3] = P3.new3(0, 0, 1);
+    for (int i = 1; i < 4; i++) {
+      m3.rotate(pts[i]);
+      uc.toCartesian(pts[i], false);
+      System.out.println(pts[i]);
+    }
     return pts;
   }
 

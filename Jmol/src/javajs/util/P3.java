@@ -33,6 +33,10 @@ package javajs.util;
  */
 public class P3 extends T3 {
 
+  public P3() {
+    // ignore T3
+  }
+  
   public static P3 newP(T3 t) {
     P3 p = new P3();
     p.x = t.x;

@@ -32,6 +32,9 @@ package javajs.util;
  */
 public class V3 extends T3 {
 
+  public V3() {
+    // ignore T3
+  }
   public static V3 newV(T3 t) {
     return V3.new3(t.x, t.y, t.z);
   }

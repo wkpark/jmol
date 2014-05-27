@@ -216,5 +216,9 @@ public class JmolBinary {
          resourceName, new String[] { null, null }, false);
    }
 
+  public Object getImage(Viewer vwr, String fullPathName) {
+    return getJzu().getImage(vwr, fullPathName);
+  }
+
 }
 

@@ -220,7 +220,7 @@ public class Dipoles extends Shape {
     if ("startSet" == propertyName) {
       BS bsAtoms = (BS) value;
       endCoord = null;
-      startCoord = vwr.ms.getAtomSetCenter(bsAtoms);
+      startCoord = ms.getAtomSetCenter(bsAtoms);
       tempDipole.set2Value(startCoord, P3.new3(0, 0, 0), dipoleValue);
       if (BSUtil.cardinalityOf(bsAtoms) == 1)
         atomIndex1 = bsAtoms.nextSetBit(0);
@@ -254,7 +254,7 @@ public class Dipoles extends Shape {
             tempDipole.dipoleValue = dipoleValue;
         }
       } else {
-        tempDipole.set2Value(startCoord, vwr.ms.getAtomSetCenter(atomset),
+        tempDipole.set2Value(startCoord, ms.getAtomSetCenter(atomset),
             dipoleValue);
       }
       //NOTTTTTT!!!! currentDipole = tempDipole;
@@ -336,14 +336,14 @@ public class Dipoles extends Shape {
   }
 
   private void getAllMolecularDipoles(BS bsAtoms) {
-    JmolMolecule[] mols = vwr.ms.getMolecules();
+    JmolMolecule[] mols = ms.getMolecules();
     for (int i = mols.length; --i >= 0;) {
       JmolMolecule m = mols[i];
       if (m.atomList.intersects(bsAtoms)) {
-        V3 v = vwr.ms.calculateMolecularDipole(0, m.atomList);
+        V3 v = ms.calculateMolecularDipole(0, m.atomList);
         if (v == null)
           continue;
-        P3 center = vwr.ms.getAtomSetCenter(m.atomList);
+        P3 center = ms.getAtomSetCenter(m.atomList);
         tempDipole.lstDipoles.addLast(new Object[] {v, center, m.atomList});        
       }
     }
@@ -629,11 +629,11 @@ public class Dipoles extends Shape {
         info.put("bsMolecule", dipole.bsMolecule);
       } else if (dipole.atoms[0] != null) {
         atomInfo = new Hashtable<String, Object>();
-        vwr.getAtomIdentityInfo(dipole.atoms[0].i, atomInfo, ptTemp);
+        ms.getAtomIdentityInfo(dipole.atoms[0].i, atomInfo, ptTemp);
         Lst<Map<String, Object>> atoms = new  Lst<Map<String,Object>>();
         atoms.addLast(atomInfo);
         atomInfo = new Hashtable<String, Object>();
-        vwr.getAtomIdentityInfo(dipole.atoms[1].i, atomInfo, ptTemp);
+        ms.getAtomIdentityInfo(dipole.atoms[1].i, atomInfo, ptTemp);
         atoms.addLast(atomInfo);
         info.put("atoms", atoms);
         info.put("magnitude", Float.valueOf(dipole.vector.length()));

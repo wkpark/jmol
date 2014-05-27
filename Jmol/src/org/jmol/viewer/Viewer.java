@@ -114,7 +114,6 @@ import javajs.util.P3i;
 import javajs.util.Quat;
 import javajs.util.T3;
 import javajs.util.V3;
-import org.jmol.util.Vibration;
 
 import org.jmol.util.Measure;
 import org.jmol.util.TempArray;
@@ -7580,10 +7579,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return ms.calculateMolecularDipole(am.cmi, bsAtoms);
   }
 
-  public void getAtomIdentityInfo(int atomIndex, Map<String, Object> info, P3 ptTemp) {
-    ms.getAtomIdentityInfo(atomIndex, info, ptTemp);
-  }
-
   public void setDefaultLattice(P3 p) {
     // Eval -- handled separately
       if (!Float.isNaN(p.x + p.y + p.z))
@@ -7593,14 +7588,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public P3 getDefaultLattice() {
     return g.ptDefaultLattice;
-  }
-
-  public BS getTaintedAtoms(byte type) {
-    return ms.getTaintedAtoms(type);
-  }
-
-  public void setTaintedAtoms(BS bs, byte type) {
-    ms.setTaintedAtoms(bs, type);
   }
 
   @Override
@@ -7681,20 +7668,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     // track connected objects
     ms.recalculatePositionDependentQuantities(null, null);
     refreshMeasures(true);
-  }
-
-  public void setAtomCoord(int atomIndex, float x, float y, float z) {
-    // not used in Jmol
-    ms.setAtomCoord(atomIndex, x, y, z);
-    // no measure refresh here -- because it may involve hundreds of calls
-    // not included in setStatusAtomMoved
-  }
-
-  public void setAtomCoordRelative(int atomIndex, float x, float y, float z) {
-    // not used in Jmol
-    ms.setAtomCoordRelative(atomIndex, x, y, z);
-    // no measure refresh here -- because it may involve hundreds of calls
-    // not included in setStatusAtomMoved
   }
 
   public void setAtomCoords(BS bs, int tokType, Object xyzValues) {
@@ -8259,10 +8232,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return ms.getBondAtom2(i);
   }
 
-  public Vibration getVibration(int atomIndex) {
-    return ms.getVibration(atomIndex, false);
-  }
-
   public int getVanderwaalsMar(int i) {
     return (defaultVdw == VDW.USER ? userVdwMars[i]
         : Elements.getVanderwaalsMar(i, defaultVdw));
@@ -8427,16 +8396,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         index, scale);
   }
 
-  public void loadImage(String pathName, String echoName) {
-    fm.loadImage(pathName, echoName);
-  }
-
-  void loadImageData(Object image, String nameOrError, String echoName,
-                     ScriptContext sc) {
-    if (nameOrError == null)
-      return;
-    if (image == null)
-      Logger.info(nameOrError);
+  void loadImageData(Object image, String nameOrError, String echoName) {
     if (echoName == null) {
       setBackgroundImage((image == null ? null : nameOrError), image);
     } else {
@@ -8445,12 +8405,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       if (image != null)
         setShapeProperty(JC.SHAPE_ECHO, "image", image);
     }
-    if (isJS && sc != null) {
-      // actually, not implemented
-      // JavaScript single-threaded resuming of eval.
-      sc.mustResumeEval = true;
-      eval.resumeEval(sc);
-    }
+    if (image == null)
+      scriptEcho(nameOrError);
   }
 
   VDW defaultVdw = VDW.JMOL;
@@ -8591,7 +8547,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return getStateCreator().getFunctionCalls(selectedFunction);
   }
 
-  public void showMessage(String s) {
+  public void warn(String s) {
     if (!isPrintOnly)
       Logger.warn(s);
   }

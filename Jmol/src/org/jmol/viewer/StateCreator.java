@@ -375,7 +375,7 @@ public class StateCreator extends JmolStateCreator {
           for (int i = modelCount; --i >= 0;) {
             if ((ivib = vwr.modelGetLastVibrationIndex(i, T.modulation)) >= 0)
               for (int j = models[i].firstAtomIndex; j <= ivib; j++) {
-                JmolModulationSet mset = (JmolModulationSet) vwr.getVibration(j);
+                JmolModulationSet mset = (JmolModulationSet) ms.getVibration(j, false);
                 if (mset != null)
                   BSUtil.setMapBitSet(temp, j, j, mset.getState());
               }
@@ -1510,7 +1510,7 @@ public class StateCreator extends JmolStateCreator {
     for (byte type = 0; type < AtomCollection.TAINT_MAX; type++)
       if (taintWhat < 0 || type == taintWhat)
         if ((bs = (bsSelected != null ? bsSelected : vwr
-            .getTaintedAtoms(type))) != null)
+            .ms.getTaintedAtoms(type))) != null)
           getAtomicPropertyStateBuffer(commands, type, bs, null, null);
     return commands.toString();
   }

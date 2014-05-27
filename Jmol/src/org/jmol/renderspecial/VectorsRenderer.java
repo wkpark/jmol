@@ -86,7 +86,7 @@ public class VectorsRenderer extends ShapeRenderer {
       Atom atom = atoms[i];
       if (!isVisibleForMe(atom))
         continue;
-      Vibration vibrationVector = vwr.getVibration(i);
+      Vibration vibrationVector = ms.getVibration(i, false);
       if (vibrationVector == null)
         continue;
       if (!transform(mads[i], atom, vibrationVector))

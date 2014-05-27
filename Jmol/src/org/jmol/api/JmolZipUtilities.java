@@ -8,6 +8,7 @@ import java.util.Map;
 import javajs.api.GenericZipTools;
 
 import org.jmol.io.JmolBinary;
+import org.jmol.viewer.Viewer;
 
 public interface JmolZipUtilities {
 
@@ -25,6 +26,8 @@ public interface JmolZipUtilities {
 
   public byte[] getCachedPngjBytes(JmolBinary jmb, String pathName);
 
-  public String[] spartanFileList(GenericZipTools zpt, String name, String zipDirectory);  
+  public String[] spartanFileList(GenericZipTools zpt, String name, String zipDirectory);
+
+  public Object getImage(Viewer vwr, String fullPathName);
 
 }

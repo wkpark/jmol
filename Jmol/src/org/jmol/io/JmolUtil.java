@@ -28,7 +28,9 @@ package org.jmol.io;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.InputStream;
+import java.net.URL;
 
+import javajs.api.GenericPlatform;
 import javajs.api.GenericZipTools;
 import javajs.api.GenericBinaryDocument;
 import javajs.util.LimitedLineReader;
@@ -51,6 +53,8 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolZipUtilities;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.viewer.FileManager;
+import org.jmol.viewer.Viewer;
 
 public class JmolUtil implements JmolZipUtilities {
 
@@ -673,6 +677,61 @@ public class JmolUtil implements JmolZipUtilities {
       return new String[] { "SpartanSmol", sname, sname + "/output" };
     }
     return getSpartanFileList(name, dirNums);
+  }
+
+  @Override
+  public Object getImage(Viewer vwr, String fullPathName) {
+    Object image = null;
+    Object info = null;
+    GenericPlatform apiPlatform = vwr.apiPlatform;
+
+    if (fullPathName.indexOf("|") > 0) {
+      Object ret = vwr.fm.getFileAsBytes(fullPathName, null, true);
+      if (!PT.isAB(ret))
+        return "" + ret;
+      image = (vwr.isJS ? ret : apiPlatform.createImage(ret));
+    } else if (vwr.isJS) {
+    } else if (FileManager.urlTypeIndex(fullPathName) >= 0) {
+      try {
+        image = apiPlatform
+            .createImage(new URL((URL) null, fullPathName, null));
+      } catch (Exception e) {
+        return "bad URL: " + fullPathName;
+      }
+    } else {
+      image = apiPlatform.createImage(fullPathName);
+    }
+    /**
+     * @j2sNative
+     * 
+     *            info = [echoName, fullPathName];
+     * 
+     */
+    {
+      if (image == null)
+        return null;
+    }
+    try {
+      if (!apiPlatform.waitForDisplay(info, image))
+        return null;
+      /**
+       * 
+       * note -- JavaScript just returns immediately, because we must wait for
+       * the image to load, and it is single-threaded
+       * 
+       * @j2sNative
+       * 
+       *            fullPathName = null;
+       *            return image;
+       */
+      {
+        if (apiPlatform.getImageWidth(image) < 1)
+          return "invalid or missing image " + fullPathName;
+      }
+    } catch (Exception e) {
+      return e.toString() + " opening " + fullPathName;
+    }
+    return image;
   }
 
 }

@@ -249,7 +249,7 @@ public class Minimizer implements MinimizerInterface {
     if (steps > 0) {
       bsTaint = BSUtil.copy(bsAtoms);
       BSUtil.andNot(bsTaint, bsFixed);
-      vwr.setTaintedAtoms(bsTaint, AtomCollection.TAINT_COORD);
+      vwr.ms.setTaintedAtoms(bsTaint, AtomCollection.TAINT_COORD);
     }
     if (bsFixed != null)
       this.bsFixed = bsFixed;

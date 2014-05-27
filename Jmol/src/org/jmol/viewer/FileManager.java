@@ -40,7 +40,6 @@ import org.jmol.io.FileReader;
 import org.jmol.io.JmolBinary;
 import org.jmol.script.T;
 
-import javajs.api.GenericPlatform;
 import javajs.api.BytePoster;
 import javajs.api.GenericFileInterface;
 import javajs.api.GenericBinaryDocument;
@@ -874,78 +873,18 @@ public class FileManager implements BytePoster {
     return true;
   }
 
-  void loadImage(String name, String echoName) {
-    Object image = null;
-    Object info = null;
-    String fullPathName = "";
-    while (true) {
-      if (name == null)
-        break;
-      String[] names = getClassifiedName(name, true);
-      if (names == null) {
-        fullPathName = "cannot read file name: " + name;
-        break;
-      }
-      GenericPlatform apiPlatform = vwr.apiPlatform;
-      fullPathName = names[0].replace('\\', '/');
-      if (fullPathName.indexOf("|") > 0) {
-        Object ret = getFileAsBytes(fullPathName, null, true);
-        if (!PT.isAB(ret)) {
-          fullPathName = "" + ret;
-          break;
-        }
-        image = (vwr.isJS ? ret : apiPlatform.createImage(ret));
-      } else if (vwr.isJS) {
-      } else if (urlTypeIndex(fullPathName) >= 0) {
-        try {
-          image = apiPlatform.createImage(new URL((URL) null, fullPathName,
-              null));
-        } catch (Exception e) {
-          fullPathName = "bad URL: " + fullPathName;
-          break;
-        }
-      } else {
-        image = apiPlatform.createImage(fullPathName);
-      }
-      /**
-       * @j2sNative
-       * 
-       *            info = [echoName, fullPathName];
-       * 
-       */
-      {
-        if (image == null)
-          break;
-      }
-      try {
-        if (!apiPlatform.waitForDisplay(info, image)) {
-          image = null;
-          break;
-        }
-        /**
-         * 
-         * note -- JavaScript just returns immediately, because we must wait
-         * for the image to load, and it is single-threaded
-         * 
-         * @j2sNative
-         *   
-         *   fullPathName = null; break;
-         */
-        {
-          if (apiPlatform.getImageWidth(image) < 1) {
-            fullPathName = "invalid or missing image " + fullPathName;
-            image = null;
-          }
-          break;
-        }
-      } catch (Exception e) {
-        System.out.println(e.toString());
-        fullPathName = e.toString() + " opening 4 " + fullPathName;
-        image = null;
-        break;
-      }
+  public void loadImage(String name, String echoName) {
+    String[] names = getClassifiedName(name, true);
+    String nameOrError = (names == null ? "cannot read file name: " + name
+        : names[0].replace('\\', '/'));
+    Object image = (names == null ? null : jmb.getImage(vwr, nameOrError));
+    if (image instanceof String) {
+      nameOrError = (String) image;
+      image = null;
     }
-    vwr.loadImageData(image, fullPathName, echoName, null);
+    if (image == null)
+      Logger.info(nameOrError);
+    vwr.loadImageData(image, nameOrError, echoName);
   }
 
   public final static int URL_LOCAL = 4;

@@ -2227,7 +2227,7 @@ public class ScriptEval extends ScriptExpr {
       if (s == null)
         break;
       if (outputBuffer == null)
-        vwr.showMessage(s);
+        vwr.warn(s);
       report(s);
       break;
     case T.push:
@@ -2861,7 +2861,7 @@ public class ScriptEval extends ScriptExpr {
       // background IMAGE "xxxx.jpg"
       String file = paramAsStr(checkLast(++i));
       if (!chk && !file.equalsIgnoreCase("none") && file.length() > 0)
-        vwr.loadImage(file, null);
+        vwr.fm.loadImage(file, null);
       return;
     }
     if (isColorParam(i) || theTok == T.none) {
@@ -3308,7 +3308,7 @@ public class ScriptEval extends ScriptExpr {
     String text = optParameterAsString(index);
     if (vwr.ms.getEchoStateActive()) {
       if (isImage) {
-        vwr.loadImage(text, id);
+        vwr.fm.loadImage(text, id);
         return;
       } else if (text.startsWith("\1")) {
         // no reporting, just screen echo, from mouseManager key press
@@ -4826,7 +4826,7 @@ public class ScriptEval extends ScriptExpr {
       return;
     String s = vwr.formatText(text);
     if (outputBuffer == null)
-      vwr.showMessage(s);
+      vwr.warn(s);
     if (!s.startsWith("_"))
       report(s);
   }

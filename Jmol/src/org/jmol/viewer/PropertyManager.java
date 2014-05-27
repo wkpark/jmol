@@ -1326,7 +1326,7 @@ public class PropertyManager implements JmolPropertyManager {
     ModelSet ms = vwr.ms;
     Atom atom = ms.at[i];
     Map<String, Object> info = new Hashtable<String, Object>();
-    vwr.getAtomIdentityInfo(i, info, ptTemp);
+    ms.getAtomIdentityInfo(i, info, ptTemp);
     info.put("element", ms.getElementName(i));
     info.put("elemno", Integer.valueOf(ms.getElementNumber(i)));
     info.put("x", Float.valueOf(atom.x));
@@ -1425,9 +1425,9 @@ public class PropertyManager implements JmolPropertyManager {
     Map<String, Object> info = new Hashtable<String, Object>();
     info.put("_bpt", Integer.valueOf(i));
     Map<String, Object> infoA = new Hashtable<String, Object>();
-    vwr.getAtomIdentityInfo(atom1.i, infoA, ptTemp);
+    vwr.ms.getAtomIdentityInfo(atom1.i, infoA, ptTemp);
     Map<String, Object> infoB = new Hashtable<String, Object>();
-    vwr.getAtomIdentityInfo(atom2.i, infoB, ptTemp);
+    vwr.ms.getAtomIdentityInfo(atom2.i, infoB, ptTemp);
     info.put("atom1", infoA);
     info.put("atom2", infoB);
     info.put("order", Float.valueOf(PT.fVal(Edge

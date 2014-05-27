@@ -6185,10 +6185,10 @@ public class CmdExt implements JmolCmdExtension {
           }
         } else if (data == "SPT") {
           if (isCoord) {
-            BS tainted = vwr.getTaintedAtoms(AtomCollection.TAINT_COORD);
+            BS tainted = vwr.ms.getTaintedAtoms(AtomCollection.TAINT_COORD);
             vwr.setAtomCoordsRelative(P3.new3(0, 0, 0), null);
             data = vwr.getStateInfo();
-            vwr.setTaintedAtoms(tainted, AtomCollection.TAINT_COORD);
+            vwr.ms.setTaintedAtoms(tainted, AtomCollection.TAINT_COORD);
           } else {
             data = vwr.getStateInfo();
             if (localPath != null || remotePath != null)
@@ -6987,12 +6987,11 @@ public class CmdExt implements JmolCmdExtension {
   private void assignBond(int bondIndex, char type) {
     int modelIndex = -1;
     try {
-      ModelSet modelSet = vwr.ms;
-      modelIndex = vwr.getAtomModelIndex(modelSet.bo[bondIndex]
+      modelIndex = vwr.getAtomModelIndex(vwr.ms.bo[bondIndex]
           .getAtomIndex1());
       vwr.sm.modifySend(bondIndex, modelIndex, 2,
           e.fullCommand);
-      BS bsAtoms = modelSet.setBondOrder(bondIndex, type);
+      BS bsAtoms = vwr.ms.setBondOrder(bondIndex, type);
       if (bsAtoms == null || type == '0')
         vwr.refresh(3, "setBondOrder");
       else
@@ -7006,14 +7005,14 @@ public class CmdExt implements JmolCmdExtension {
 
   private void assignConnect(int index, int index2) {
     vwr.clearModelDependentObjects();
-    ModelSet modelSet = vwr.ms;
     float[][] connections = AU.newFloat2(1);
     connections[0] = new float[] { index, index2 };
-    int modelIndex = modelSet.at[index].mi;
+    int modelIndex = vwr.ms.at[index].mi;
     vwr.sm.modifySend(index, modelIndex, 2, e.fullCommand);
-    modelSet.connect(connections);
-    modelSet.assignAtom(index, ".", true);
-    modelSet.assignAtom(index2, ".", true);
+    vwr.ms.connect(connections);
+    // note that vwr.ms changes during the assignAtom command 
+    vwr.ms.assignAtom(index, ".", true);
+    vwr.ms.assignAtom(index2, ".", true);
     vwr.sm.modifySend(index, modelIndex, -2, "OK");
     vwr.refresh(3, "assignConnect");
   }

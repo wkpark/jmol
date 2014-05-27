@@ -8396,7 +8396,19 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         index, scale);
   }
 
-  void loadImageData(Object image, String nameOrError, String echoName) {
+  /**
+   * 
+   * NOTE: This method is called from within a 
+   * j2sNative block in awtjs2d.Platform.java.
+   * 
+   * @param image
+   * @param nameOrError 
+   * @param echoName if this is an echo rather than the background
+   * @param sc   delivered in JavaScript from Platform.java
+   */
+  void loadImageData(Object image, String nameOrError, String echoName, ScriptContext sc) {
+    if (image == null)
+      scriptEcho(nameOrError);
     if (echoName == null) {
       setBackgroundImage((image == null ? null : nameOrError), image);
     } else {
@@ -8405,8 +8417,11 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       if (image != null)
         setShapeProperty(JC.SHAPE_ECHO, "image", image);
     }
-    if (image == null)
-      scriptEcho(nameOrError);
+    if (isJS && sc != null) {
+      sc.mustResumeEval = true;
+      eval.resumeEval(sc);
+    }
+
   }
 
   VDW defaultVdw = VDW.JMOL;

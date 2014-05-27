@@ -680,7 +680,7 @@ public class JmolUtil implements JmolZipUtilities {
   }
 
   @Override
-  public Object getImage(Viewer vwr, String fullPathName) {
+  public Object getImage(Viewer vwr, String fullPathName, String echoName) {
     Object image = null;
     Object info = null;
     GenericPlatform apiPlatform = vwr.apiPlatform;

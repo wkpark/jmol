@@ -877,14 +877,14 @@ public class FileManager implements BytePoster {
     String[] names = getClassifiedName(name, true);
     String nameOrError = (names == null ? "cannot read file name: " + name
         : names[0].replace('\\', '/'));
-    Object image = (names == null ? null : jmb.getImage(vwr, nameOrError));
+    Object image = (names == null ? null : jmb.getImage(vwr, nameOrError, echoName));
     if (image instanceof String) {
       nameOrError = (String) image;
       image = null;
     }
-    if (image == null)
-      Logger.info(nameOrError);
-    vwr.loadImageData(image, nameOrError, echoName);
+    if (!vwr.isJS)
+      vwr.loadImageData(image, nameOrError, echoName, null);
+    // JSmol will call that from awtjs2d.Platform.java
   }
 
   public final static int URL_LOCAL = 4;

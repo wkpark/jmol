@@ -154,6 +154,10 @@ public class JmolBinary {
     return getJzu().determineSurfaceFileType(br);
   }
 
+  public Object getImage(Viewer vwr, String fullPathName, String echoName) {
+    return getJzu().getImage(vwr, fullPathName, echoName);
+  }
+
   public static void getFileReferences(String script, Lst<String> fileList) {
     for (int ipt = 0; ipt < FileManager.scriptFilePrefixes.length; ipt++) {
       String tag = FileManager.scriptFilePrefixes[ipt];
@@ -216,9 +220,6 @@ public class JmolBinary {
          resourceName, new String[] { null, null }, false);
    }
 
-  public Object getImage(Viewer vwr, String fullPathName) {
-    return getJzu().getImage(vwr, fullPathName);
-  }
 
 }
 

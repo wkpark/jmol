@@ -1288,12 +1288,10 @@ public class ActionManager implements EventManager {
       return;
     }
     if (bnd(dragWheelAction, ACTION_rotate)) {
-      float degX = getDegrees(deltaX, true);
-      float degY = getDegrees(deltaY, false);
 //      if (vwr.g.useArcBall)
 //        vwr.rotateArcBall(x, y, mouseDragFactor);
 //      else
-        vwr.rotateXYBy(degX, degY);
+        vwr.rotateXYBy(getDegrees(deltaX, true), getDegrees(deltaY, false));
       return;
     }
     if (bnd(dragWheelAction, ACTION_rotateZorZoom)) {

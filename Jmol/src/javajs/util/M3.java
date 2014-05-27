@@ -607,12 +607,15 @@ public class M3 extends M34 implements Serializable {
    * @param responseFactor Jmol uses 0.02 here
    * @param dx
    * @param dy
+   * @return true if successful; false if not;
    */
-  public void setAsBallRotation(float responseFactor, float dx, float dy) {
+  public boolean setAsBallRotation(float responseFactor, float dx, float dy) {
     float r = (float) Math.sqrt(dx * dx + dy * dy);
     float th =  r * responseFactor;
-    if (th == 0)
-      return;
+    if (th == 0) {
+      setScale(1);
+      return false;
+    }
     float c = (float) Math.cos(th);
     float s = (float) Math.sin(th);
     float nx = -dy / r;
@@ -624,6 +627,7 @@ public class M3 extends M34 implements Serializable {
     m11 = 1 + c1 * ny * ny;
     m21 = -(m12 = s * ny);
     m22 = c;
+    return true;
   }
 
   public boolean isRotation() {

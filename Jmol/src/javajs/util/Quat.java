@@ -64,7 +64,7 @@ public class Quat {
 
   public static Quat newM(M3 mat) {
     Quat q = new Quat();
-    q.setM(mat);
+    q.setM(M3.newM3(mat));
     return q;
   }
 
@@ -148,7 +148,7 @@ public class Quat {
     setM(new M3().setAA(aa));
   }
 
-  public void setM(M3 mat) {
+  private void setM(M3 mat) {
 
     /*
      * Changed 7/16/2008 to double precision for 11.5.48.

@@ -3988,16 +3988,16 @@ import java.util.Properties;
   }
 
 
-  public void moveAtoms(M3 mNew, M3 matrixRotate, V3 translation, BS bs,
+  public void moveAtoms(M3 mNew, M3 rotation, V3 translation, BS bs,
                         P3 center, boolean isInternal, boolean translationOnly) {
     if (!translationOnly) {
       if (mNew == null) {
-        matTemp.setM3(matrixRotate);
+        matTemp.setM3(rotation);
       } else {
-        matInv.setM3(matrixRotate);
+        matInv.setM3(rotation);
         matInv.invert();
         ptTemp.set(0, 0, 0);
-        matTemp.mul2(mNew, matrixRotate);
+        matTemp.mul2(mNew, rotation);
         matTemp.mul2(matInv, matTemp);
       }
       if (isInternal) {

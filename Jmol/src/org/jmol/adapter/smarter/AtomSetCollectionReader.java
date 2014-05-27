@@ -1009,32 +1009,32 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
         && (desiredVibrationNumber <= 0 || vibrationNumber == desiredVibrationNumber);
   }
 
-  private M3 matrixRotate;
+  private M3 matRot;
 
   public MSInterface ms;
 
   public void setTransform(float x1, float y1, float z1, float x2, float y2,
                            float z2, float x3, float y3, float z3) {
-    if (matrixRotate != null || !doSetOrientation)
+    if (matRot != null || !doSetOrientation)
       return;
-    matrixRotate = new M3();
+    matRot = new M3();
     V3 v = V3.new3(x1, y1, z1);
     // rows in Sygress/CAChe and Spartan become columns here
     v.normalize();
-    matrixRotate.setColumnV(0, v);
+    matRot.setColumnV(0, v);
     v.set(x2, y2, z2);
     v.normalize();
-    matrixRotate.setColumnV(1, v);
+    matRot.setColumnV(1, v);
     v.set(x3, y3, z3);
     v.normalize();
-    matrixRotate.setColumnV(2, v);
+    matRot.setColumnV(2, v);
     asc.setInfo(
-        "defaultOrientationMatrix", M3.newM3(matrixRotate));
+        "defaultOrientationMatrix", M3.newM3(matRot));
     // first two matrix column vectors define quaternion X and XY plane
-    Quat q = Quat.newM(matrixRotate);
+    Quat q = Quat.newM(matRot);
     asc.setInfo(
         "defaultOrientationQuaternion", q);
-    Logger.info("defaultOrientationMatrix = " + matrixRotate);
+    Logger.info("defaultOrientationMatrix = " + matRot);
 
   }
 

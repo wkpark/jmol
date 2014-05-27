@@ -318,8 +318,8 @@ public class TransformManager {
     // probably has to do with the fact that we are changing
     // the signs of both screen Y and screen Z in the end.
 
-    matrixTemp3.setAsBallRotation(JC.radiansPerDegree, -yDeg, -xDeg);
-    applyRotation(matrixTemp3, false, bsAtoms, null, false);
+    if (matrixTemp3.setAsBallRotation(JC.radiansPerDegree, -yDeg, -xDeg))
+      applyRotation(matrixTemp3, false, bsAtoms, null, false);
   }
 
 

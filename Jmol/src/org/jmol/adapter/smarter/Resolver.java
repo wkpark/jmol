@@ -698,6 +698,8 @@ public class Resolver {
       }
       return 2;
     } catch (NumberFormatException nfe) {
+      if (lines[0].indexOf("Bilbao Crys") >= 0)
+        return 2;
     }
     return 0;
   }

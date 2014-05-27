@@ -97,6 +97,7 @@ public class BilbaoReader extends AtomSetCollectionReader {
 
   private void readBilbaoDataFile() throws Exception {
     isBCSfile = true;
+    checkComment();
     while (line != null) {
       readBilbaoFormat(null, Float.NaN);
       if (rdLine() == null || line.indexOf("##disp-par##") < 0) {
@@ -106,6 +107,17 @@ public class BilbaoReader extends AtomSetCollectionReader {
         rdLine();
       }
     }
+  }
+
+  private boolean checkComment() {
+    if (!line.startsWith("#") || line.indexOf("disp-par") >= 0)
+      return false;
+    if (isBCSfile) {
+      appendLoadNote(line);
+      if (line.startsWith("# Title:"))
+        asc.setAtomSetName(line.substring(8).trim());
+    }
+    return true;
   }
 
   /*
@@ -189,16 +201,7 @@ public class BilbaoReader extends AtomSetCollectionReader {
   }
 
   private String rdLine() throws Exception {
-    boolean isComment = false;
-    while (rd() != null
-        && (line.length() == 0 || (isComment = line.startsWith("#"))
-            && line.indexOf("disp-par") < 0)) {
-      if (isComment && isBCSfile) {
-        appendLoadNote(line);
-        if (line.startsWith("# Title:"))
-          asc.setAtomSetName(line.substring(8).trim());
-        isComment = false;
-      }
+    while (rd() != null && (line.length() == 0 || checkComment())) {
     }
     return line;
   }

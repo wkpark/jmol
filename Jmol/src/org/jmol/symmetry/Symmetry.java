@@ -859,7 +859,6 @@ public class Symmetry implements SymmetryInterface {
     
     uc.toCartesian(pt, false);
     pts[0] = V3.newV(pt);
-    System.out.println(m3);
     pts[1] = V3.new3(1, 0, 0);
     pts[2] = V3.new3(0, 1, 0);
     pts[3] = V3.new3(0, 0, 1);

@@ -1884,8 +1884,8 @@ public class StateCreator extends JmolStateCreator {
             PT.parseFloat(tokens[4]));
         return;
       case 105: // rotatearcball
-        vwr.rotateArcBall(PT.parseInt(tokens[2]), javajs.util.PT
-            .parseInt(tokens[3]), PT.parseFloat(tokens[4]));
+        vwr.rotateXYBy(PT.parseInt(tokens[2]), javajs.util.PT
+            .parseInt(tokens[3]));//, PT.parseFloat(tokens[4]));
         return;
       }
     } catch (Exception e) {

@@ -89,7 +89,7 @@ public class GlobalSettings {
         bondingVersion = g.bondingVersion;
         platformSpeed = g.platformSpeed;
         useScriptQueue = g.useScriptQueue;
-        useArcBall = g.useArcBall;
+        //useArcBall = g.useArcBall;
         databases = g.databases;
         showTiming = g.showTiming;
         wireframeRotation = g.wireframeRotation;
@@ -404,7 +404,7 @@ public class GlobalSettings {
       setB("traceAlpha", traceAlpha);
       setB("translucent", translucent);
       setB("twistedSheets", twistedSheets);
-      setB("useArcBall", useArcBall);
+      //setB("useArcBall", useArcBall);
       setB("useMinimizationThread", useMinimizationThread);
       setB("useNumberLocalization", useNumberLocalization);
       setB("vectorsCentered", vectorsCentered);
@@ -639,7 +639,7 @@ public class GlobalSettings {
     float strutLengthMaximum = 7.0f;
     float strutDefaultRadius = JC.DEFAULT_STRUT_RADIUS;
     boolean strutsMultiple = false; //on a single position    
-    boolean useArcBall = false;
+    //boolean useArcBall = false;
     boolean useMinimizationThread = true;
     boolean useNumberLocalization = true;
     public boolean useScriptQueue = true;

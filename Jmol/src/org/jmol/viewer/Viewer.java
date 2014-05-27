@@ -6260,9 +6260,9 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       // 12.0.RC5
       g.minimizationSilent = value;
       break;
-    case T.usearcball:
-      g.useArcBall = value;
-      break;
+    //case T.usearcball:
+      //g.useArcBall = value;
+      //break;
     case T.iskiosk:
       // 11.9.29
       // 12.2.9, 12.3.9: no false here, because it's a one-time setting
@@ -8751,11 +8751,11 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return slm.getMotionFixedAtoms();
   }
 
-  void rotateArcBall(int x, int y, float factor) {
-    tm.rotateArcBall(x, y, factor);
-    refresh(2, sm.syncingMouse ? "Mouse: rotateArcBall " + x + " "
-        + y + " " + factor : "");
-  }
+//  void rotateArcBall(int x, int y, float factor) {
+//    tm.rotateArcBall(x, y, factor);
+//    refresh(2, sm.syncingMouse ? "Mouse: rotateArcBall " + x + " "
+//        + y + " " + factor : "");
+//  }
 
   void getAtomicPropertyState(SB commands, byte type, BS bs, String name,
                               float[] data) {

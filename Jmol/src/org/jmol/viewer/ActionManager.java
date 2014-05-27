@@ -1137,8 +1137,8 @@ public class ActionManager implements EventManager {
             Integer.MIN_VALUE, Integer.MIN_VALUE, null, false, false);
       return;
     }
-    if (vwr.g.useArcBall)
-      vwr.rotateArcBall(x, y, 0);
+ //   if (vwr.g.useArcBall)
+//      vwr.rotateArcBall(x, y, 0);
     checkMotionRotateZoom(dragAction, x, 0, 0, true);
   }
 
@@ -1290,9 +1290,9 @@ public class ActionManager implements EventManager {
     if (bnd(dragWheelAction, ACTION_rotate)) {
       float degX = getDegrees(deltaX, true);
       float degY = getDegrees(deltaY, false);
-      if (vwr.g.useArcBall)
-        vwr.rotateArcBall(x, y, mouseDragFactor);
-      else
+//      if (vwr.g.useArcBall)
+//        vwr.rotateArcBall(x, y, mouseDragFactor);
+//      else
         vwr.rotateXYBy(degX, degY);
       return;
     }

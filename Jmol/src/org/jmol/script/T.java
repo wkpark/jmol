@@ -1078,7 +1078,7 @@ public class T {
   public final static int tracealpha                     = booleanparam | 190;
   public final static int translucent                    = booleanparam | 191;
   public final static int twistedsheets                  = booleanparam | 192;
-  public final static int usearcball                     = booleanparam | 193;
+  //public final static int usearcball                     = booleanparam | 193;
   public final static int useminimizationthread          = booleanparam | 194;
   public final static int usenumberlocalization          = booleanparam | 195;
   public final static int vectorscentered                = booleanparam | 196;
@@ -2574,7 +2574,7 @@ public class T {
        "twistedSheets",
        "undo",
        "undoMove",
-       "useArcBall",
+//       "useArcBall",
        "useMinimizationThread",
        "useNumberLocalization",
        "waitForMoveTo",
@@ -3573,7 +3573,7 @@ public class T {
         twistedsheets,                      //        "twistedSheets"
         undo,                               //        "undo"
         undomove,                           //        "undoMove"
-        usearcball,                         //        "useArcBall"
+//        usearcball,                         //        "useArcBall"
         useminimizationthread,              //        "useMinimizationThread"
         usenumberlocalization,              //        "useNumberLocalization"
         waitformoveto,                      //        "waitForMoveTo"

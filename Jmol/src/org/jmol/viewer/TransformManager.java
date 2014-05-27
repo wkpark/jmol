@@ -247,45 +247,45 @@ public class TransformManager {
         true, null, true, null, null, null);
   }
 
-  final V3 arcBall0 = new V3();
-  final V3 arcBall1 = new V3();
-  final V3 arcBallAxis = new V3();
-  final M3 arcBall0Rotation = new M3();
+//  final V3 arcBall0 = new V3();
+//  final V3 arcBall1 = new V3();
+//  final V3 arcBallAxis = new V3();
+//  final M3 arcBall0Rotation = new M3();
 
-  void rotateArcBall(float x, float y, float factor) {
-    // radius is half the screen pixel count. 
-    float radius2 = (screenPixelCount >> 2) * screenPixelCount;
-    x -= fixedTranslation.x;
-    y -= fixedTranslation.y;
-    float z = radius2 - x * x - y * y;
-    z = (z < 0 ? -1 : 1) * (float) Math.sqrt(Math.abs(z));
-    if (factor == 0) {
-      // mouse down sets the initial rotation and point on the sphere
-      arcBall0Rotation.setM3(matrixRotate);
-      arcBall0.set(x, -y, z);
-      if (!Float.isNaN(z))
-        arcBall0.normalize();
-      return;
-    }
-    if (Float.isNaN(arcBall0.z) || Float.isNaN(z))
-      return;
-    arcBall1.set(x, -y, z);
-    arcBall1.normalize();
-    arcBallAxis.cross(arcBall0, arcBall1);
-    axisangleT.setVA(arcBallAxis, factor
-        * (float) Math.acos(arcBall0.dot(arcBall1)));
-    setRotation(arcBall0Rotation);
-    rotateAxisAngle2(axisangleT, null);
-  }
+//  void rotateArcBall(float x, float y, float factor) {
+//    // radius is half the screen pixel count. 
+//    float radius2 = (screenPixelCount >> 2) * screenPixelCount;
+//    x -= fixedTranslation.x;
+//    y -= fixedTranslation.y;
+//    float z = radius2 - x * x - y * y;
+//    z = (z < 0 ? -1 : 1) * (float) Math.sqrt(Math.abs(z));
+//    if (factor == 0) {
+//      // mouse down sets the initial rotation and point on the sphere
+//      arcBall0Rotation.setM3(matrixRotate);
+//      arcBall0.set(x, -y, z);
+//      if (!Float.isNaN(z))
+//        arcBall0.normalize();
+//      return;
+//    }
+//    if (Float.isNaN(arcBall0.z) || Float.isNaN(z))
+//      return;
+//    arcBall1.set(x, -y, z);
+//    arcBall1.normalize();
+//    arcBallAxis.cross(arcBall0, arcBall1);
+//    axisangleT.setVA(arcBallAxis, factor
+//        * (float) Math.acos(arcBall0.dot(arcBall1)));
+//    setRotation(arcBall0Rotation);
+//    rotateAxisAngle2(axisangleT, null);
+//  }
 
   protected void rotateXYBy(float degX, float degY, BS bsAtoms) {
     // from mouse action
-    if (vwr.getTestFlag(2)) {
-      rotateXRadians(degY * JC.radiansPerDegree, bsAtoms);
-      rotateYRadians(degX * JC.radiansPerDegree, bsAtoms);
-    } else {
+    //if (vwr.getTestFlag(2)) {
+    //  rotateXRadians(degY * JC.radiansPerDegree, bsAtoms);
+    //  rotateYRadians(degX * JC.radiansPerDegree, bsAtoms);
+    //} else {
       rotate3DBall(degX, degY, bsAtoms);
-    }
+    //}
   }
 
   void rotateZBy(int zDelta, int x, int y) {

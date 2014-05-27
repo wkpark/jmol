@@ -28,6 +28,7 @@ public class JmolBinding extends Binding {
     bindAction(DOUBLE|MIDDLE|DRAG, ActionManager.ACTION_translate);
 
     bindAction(SINGLE|LEFT|DRAG, ActionManager.ACTION_rotate);
+    bindAction(DOUBLE|LEFT|DRAG, ActionManager.ACTION_rotate);
     bindAction(SINGLE|ALT|LEFT|DRAG, ActionManager.ACTION_rotateZ);
     bindAction(SINGLE|SHIFT|RIGHT|DRAG, ActionManager.ACTION_rotateZ);
     bindAction(SINGLE|SHIFT|LEFT|DRAG, ActionManager.ACTION_rotateZorZoom);

@@ -990,7 +990,7 @@ public class ActionManager implements EventManager {
       return;
     case Event.PRESSED:
       setMouseMode();
-      pressedCount = (pressed.check(0, 0, 0, buttonMods, time,
+      pressedCount = (pressed.check(20, x, y, buttonMods, time,
           MAX_DOUBLE_CLICK_MILLIS) ? pressedCount + 1 : 1);
       if (pressedCount == 1) {
         vwr.checkInMotion(1);

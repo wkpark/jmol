@@ -811,9 +811,14 @@ public class Symmetry implements SymmetryInterface {
     return SymmetryOperation.fcoord(p);
   }
 
+  /**
+   * returns a set of four values as a P3 array consisting
+   * of an origin and three unitcell vectors a, b, and c. 
+   * Set as 
+   */
   @Override
-  public P3[] getPts0xyz(ModelSet ms, SymmetryInterface uc, Object def) {
-    if (unitCell == null)
+  public T3[] getV0abc(ModelSet ms, SymmetryInterface uc, Object def) {
+     if (unitCell == null)
       return null;
     M4 m;
     boolean isRev = false;
@@ -832,7 +837,7 @@ public class Symmetry implements SymmetryInterface {
     } else {
       m = (def instanceof M3 ? M4.newMV((M3) def, new P3()) : (M4) def);
     }
-    P3[] pts = new P3[4];
+    V3[] pts = new V3[4];
     P3 pt = new P3();
     M3 m3 = new M3();
     m.getRotationScale(m3);
@@ -843,10 +848,11 @@ public class Symmetry implements SymmetryInterface {
       m3.rotate(pt);
       pt.scale(-1);
     }
-    pts[0] = P3.newP(pt);
-    pts[1] = P3.new3(1, 0, 0);
-    pts[2] = P3.new3(0, 1, 0);
-    pts[3] = P3.new3(0, 0, 1);
+    uc.toCartesian(pt, false);
+    pts[0] = V3.newV(pt);
+    pts[1] = V3.new3(1, 0, 0);
+    pts[2] = V3.new3(0, 1, 0);
+    pts[3] = V3.new3(0, 0, 1);
     for (int i = 1; i < 4; i++) {
       m3.rotate(pts[i]);
       uc.toCartesian(pts[i], false);

@@ -187,6 +187,6 @@ public interface SymmetryInterface {
 
   public void unitize(P3 ptFrac);
 
-  public P3[] getPts0xyz(ModelSet ms, SymmetryInterface uc, Object def);
+  public T3[] getV0abc(ModelSet ms, SymmetryInterface uc, Object def);
 
 }

@@ -7575,7 +7575,7 @@ public class ScriptEval extends ScriptExpr {
     TickInfo tickInfo = tickParamAsStr(index, true, false, false);
     index = iToken;
     String id = null;
-    P3[] oabc = null;
+    T3[] oabc = null;
     Object newUC = null;
     boolean isOffset = false;
     boolean isReset = false;
@@ -7666,7 +7666,7 @@ public class ScriptEval extends ScriptExpr {
     if (mad == Integer.MAX_VALUE)
       vwr.am.cai = -1;
     if (newUC != null)
-      oabc = vwr.getPts0xyz(newUC);
+      oabc = vwr.getV0abc(newUC);
     if (icell != Integer.MAX_VALUE)
       vwr.ms.setUnitCellOffset(vwr.getCurrentUnitCell(), null, icell);
     else if (id != null)

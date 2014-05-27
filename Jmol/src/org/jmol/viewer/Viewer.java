@@ -2820,7 +2820,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
    * convert string abc;offset or M3 or M4 to origin and three vectors -- a, b, c.
    * The string can be preceded by ! for "reverse of". 
    * For example, "!a-b,-5a-5b,-c;7/8,0,1/8"
-   * offset is optional, but it still needs a semicolon: "a,-b,c;"
+   * offset is optional, but it still needs a semicolon: "a/2,b/2,c;"
    * 
    * @param def      a string or an M3 or M4
    * @return vectors [origin a b c]

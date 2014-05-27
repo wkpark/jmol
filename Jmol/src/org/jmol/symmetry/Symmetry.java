@@ -812,13 +812,14 @@ public class Symmetry implements SymmetryInterface {
   }
 
   /**
-   * returns a set of four values as a P3 array consisting
-   * of an origin and three unitcell vectors a, b, and c. 
-   * Set as 
+   * Accepts a string, a 3x3 matrix, or a 4x4 matrix.
+   * 
+   * Returns a set of four values as a P3 array consisting of an origin and
+   * three unit cell vectors a, b, and c. 
    */
   @Override
   public T3[] getV0abc(ModelSet ms, SymmetryInterface uc, Object def) {
-     if (unitCell == null)
+    if (unitCell == null)
       return null;
     M4 m;
     boolean isRev = false;
@@ -828,8 +829,7 @@ public class Symmetry implements SymmetryInterface {
         def = ((String) def).substring(1);
       SymmetryInterface symTemp = ms.getSymTemp(true);
       symTemp.setSpaceGroup(false);
-      int i = symTemp
-          .addSpaceGroupOperation("=" + def, 0);
+      int i = symTemp.addSpaceGroupOperation("=" + def, 0);
       if (i < 0)
         return null;
       m = symTemp.getSpaceGroupOperation(i);
@@ -837,6 +837,9 @@ public class Symmetry implements SymmetryInterface {
     } else {
       m = (def instanceof M3 ? M4.newMV((M3) def, new P3()) : (M4) def);
     }
+    // We have an operator that may need reversing.
+    // Note that translations are limited to 1/2, 1/3, 1/4, 1/6, 1/8.
+    
     V3[] pts = new V3[4];
     P3 pt = new P3();
     M3 m3 = new M3();
@@ -847,16 +850,22 @@ public class Symmetry implements SymmetryInterface {
       m3.transpose();
       m3.rotate(pt);
       pt.scale(-1);
+    } else {
+      m3.transpose();
     }
+    
+    // Note that only the origin is translated;
+    // the others are vectors from the origin.
+    
     uc.toCartesian(pt, false);
     pts[0] = V3.newV(pt);
+    System.out.println(m3);
     pts[1] = V3.new3(1, 0, 0);
     pts[2] = V3.new3(0, 1, 0);
     pts[3] = V3.new3(0, 0, 1);
     for (int i = 1; i < 4; i++) {
       m3.rotate(pts[i]);
       uc.toCartesian(pts[i], false);
-      System.out.println(pts[i]);
     }
     return pts;
   }

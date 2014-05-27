@@ -261,6 +261,8 @@ public class CifReader extends AtomSetCollectionReader {
           || key.contains("_bns_name") // PRELIM
           ) {
         processSymmetrySpaceGroupName();
+      } else if (key.startsWith("_space_group_transform")) {
+        processUnitCellTransform();
       } else if (pr != null) {
         pr.processEntry();
       } else if (modDim > 0) {
@@ -270,6 +272,17 @@ public class CifReader extends AtomSetCollectionReader {
       }
     }
     return true;
+  }
+
+  private String parentCell;
+  private String standardCell;
+  
+  private void processUnitCellTransform() {
+    if (key.contains("_from_parent"))
+      parentCell = "!" + data;
+    else if (key.contains("_to_standard"))
+      standardCell = data; 
+    appendLoadNote(key + ": " + data);
   }
 
   /**
@@ -383,6 +396,11 @@ public class CifReader extends AtomSetCollectionReader {
     if (isPDB)
       asc.setCheckSpecial(false);
     boolean doCheckBonding = doCheckUnitCell && !isPDB;
+    if (parentCell != null)
+      asc.setAtomSetAuxiliaryInfo("unitcell_parent", parentCell);
+    if (standardCell != null)
+    asc.setAtomSetAuxiliaryInfo("unitcell_standard", standardCell);
+    parentCell = standardCell = null;
     SymmetryInterface sym = applySymTrajASCR();
     if (modDim > 0) {
       addLatticeVectors();

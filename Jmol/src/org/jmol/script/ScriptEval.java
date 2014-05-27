@@ -7587,6 +7587,14 @@ public class ScriptEval extends ScriptExpr {
       index++;
       iToken++;
       break;
+    case T.type:
+      // parent, standard, conventional (TODO)
+      index += 2;
+      if (!chk)
+        vwr.setCurrentCagePts(null);
+      String type = stringParameter(index).toLowerCase();
+      newUC = vwr.getModelAuxiliaryInfoValue(vwr.am.cmi, "unitcell_" + type);
+      break;
     case T.string:
       String s = stringParameter(++index);
       if (s.indexOf(";") >= 0)

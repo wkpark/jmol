@@ -77,21 +77,35 @@ public class BilbaoReader extends AtomSetCollectionReader {
   private boolean normDispl;
   private boolean doDisplace;
   private String kvec;
+  private int i0;
+  private int nAtoms;
+  private boolean isBCSfile;
 
   @Override
   public void initializeReader() throws Exception {
     normDispl = !checkFilterKey("NONORM");
     doDisplace = isTrajectory;
     getSym = true;
-
+    getHigh = checkFilterKey("HIGH") && !doDisplace;
+    asc.vibScale = 1;
+    appendLoadNote("Bilbao Crystallographic Server\ncryst@wm.lc.ehu.es");
     if (rd().indexOf("<") < 0) {
-      readBilbaoFormat(null, Float.NaN);
+      readBilbaoDataFile();
       continuing = false;
     }
-    appendLoadNote("Bilbao Crystallographic Server\ncryst@wm.lc.ehu.es");
-    getHigh = checkFilterKey("HIGH") && !doDisplace;
+  }
 
-    asc.vibScale = 1;
+  private void readBilbaoDataFile() throws Exception {
+    isBCSfile = true;
+    while (line != null) {
+      readBilbaoFormat(null, Float.NaN);
+      if (rdLine() == null || line.indexOf("##disp-par##") < 0) {
+        applySymmetryAndSetTrajectory();
+      } else {
+        readDisplacements(1);
+        rdLine();
+      }
+    }
   }
 
   /*
@@ -111,63 +125,80 @@ public class BilbaoReader extends AtomSetCollectionReader {
     if (!doGetModel(++modelNumber, title))
       return;
     asc.newAtomSet();
-    if (title != null) {
-      asc.setAtomSetName(title);
-      appendLoadNote(title);
-    }
+    setTitle(title);
     if (line.indexOf("<pre>") >= 0)
       line = line.substring(line.indexOf("<pre>") + 5);
     int intTableNo = parseIntStr(line);
-    while (intTableNo < 0 && rdLine() != null) 
+    while (intTableNo < 0 && rdLine() != null)
       intTableNo = parseIntStr(line);
     setSpaceGroupName("bilbao:" + intTableNo);
     float[] data = new float[6];
     fillFloatArray(null, 0, data);
     for (int i = 0; i < 6; i++)
       setUnitCellItem(i, data[i]);
-    int i0 = asc.ac;
-    int n = parseIntStr(rdLine());
-    for (int i = n; --i >= 0;) {
+    i0 = asc.ac;
+    nAtoms = parseIntStr(rdLine());
+    for (int i = nAtoms; --i >= 0;) {
       String[] tokens = getTokensStr(rdLine());
       if (!getSym && tokens[1].contains("_"))
         continue;
       addAtomXYZSymName(tokens, 3, tokens[0], tokens[0] + tokens[1]);
     }
-    if (!Float.isNaN(fAmp)) {
-      /*
-      ##disp-par## Rb1x|x0.000000x|x0.000791x|x-0.001494
-      ##disp-par## Rb1_2x|x0.000000x|x0.000791x|x0.001494
-       */
-      for (int i = 0; i < n; i++) {
-        String[] tokens = PT.split(rdLine(), "x|x");
-        if (getSym || !tokens[0].contains("_"))
-          asc.atoms[i0 + i].vib = V3.new3(parseFloatStr(tokens[1]),
-              parseFloatStr(tokens[2]), parseFloatStr(tokens[3]));
-      }
-      applySymmetryAndSetTrajectory();
-      // convert the atom vibs to Cartesian displacements
-      for (int i = asc.ac; --i >= i0;) {
-        Atom a = asc.atoms[i];
-        if (a.vib != null) {
-          Vibration v = new Vibration();
-          v.setT(a.vib);
-          a.vib = v;
-          //v.modDim = Vibration.TYPE_DISPLACEMENT;
-          asc.getSymmetry().toCartesian(v, true);
-          v.scale(1 / fAmp);
-        }
-      }
-      appendLoadNote((asc.ac - i0) + " displacements");
-    } else {
-      applySymmetryAndSetTrajectory();
+    if (Float.isNaN(fAmp))
+      return;
+    line = null;
+    readDisplacements(fAmp);
+  }
+
+  private void readDisplacements(float fAmp) throws Exception {
+    /*
+    ##disp-par## Rb1x|x0.000000x|x0.000791x|x-0.001494
+    ##disp-par## Rb1_2x|x0.000000x|x0.000791x|x0.001494
+     */
+    for (int i = 0; i < nAtoms; i++) {
+      if (line == null)
+        rdLine();
+      String[] tokens = PT.split(line, "x|x");
+      if (getSym || !tokens[0].contains("_"))
+        asc.atoms[i0 + i].vib = V3.new3(parseFloatStr(tokens[1]),
+            parseFloatStr(tokens[2]), parseFloatStr(tokens[3]));
+      line = null;
     }
+    applySymmetryAndSetTrajectory();
+    // convert the atom vibs to Cartesian displacements
+    for (int i = asc.ac; --i >= i0;) {
+      Atom a = asc.atoms[i];
+      if (a.vib != null) {
+        Vibration v = new Vibration();
+        v.setT(a.vib);
+        a.vib = v;
+        //v.modDim = Vibration.TYPE_DISPLACEMENT;
+        asc.getSymmetry().toCartesian(v, true);
+        v.scale(1 / fAmp);
+      }
+    }
+    appendLoadNote((asc.ac - i0) + " displacements");
 
   }
 
+  private void setTitle(String title) {
+    if (title != null) {
+      asc.setAtomSetName(title);
+      appendLoadNote(title);
+    }
+  }
+
   private String rdLine() throws Exception {
+    boolean isComment = false;
     while (rd() != null
-        && (line.length() == 0 || line.startsWith("#")
+        && (line.length() == 0 || (isComment = line.startsWith("#"))
             && line.indexOf("disp-par") < 0)) {
+      if (isComment && isBCSfile) {
+        appendLoadNote(line);
+        if (line.startsWith("# Title:"))
+          asc.setAtomSetName(line.substring(8).trim());
+        isComment = false;
+      }
     }
     return line;
   }

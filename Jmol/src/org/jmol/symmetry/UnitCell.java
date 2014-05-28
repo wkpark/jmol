@@ -36,6 +36,7 @@ import javajs.util.Lst;
 import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3i;
+import javajs.util.Quat;
 import javajs.util.T3;
 import javajs.util.T4;
 import javajs.util.V3;
@@ -508,6 +509,44 @@ class UnitCell extends SimpleUnitCell {
     if (unitCellMultiplier != null)
       s += "  unitcell range " + Escape.eP(unitCellMultiplier) + ";\n";
     return s;
+  }
+
+  /**
+   * Returns a quaternion that will take the standard frame
+   * to a view down a particular axis, expressed as its counterparts.
+   * 
+   * @param abc  ab  bc  ca
+   * @return quaternion
+   */
+  public Quat getQuaternionRotation(String abc) {
+    T3 a = vertices[4];
+    T3 b = vertices[2];
+    T3 c = vertices[1];
+    T3 x = new V3();
+    T3 v = new V3();
+  
+//  qab = !quaternion({0 0 0}, cross(cxb,c), cxb);
+//  qbc = !quaternion({0 0 0}, cross(axc,a), axc)
+//  qca = !quaternion({0 0 0}, cross(bxa,b), bxa);
+//      
+      
+  switch ("abc".indexOf(abc)) {
+  case 0: // bc
+    x.cross(a, c);
+    v.cross(x, a);
+    break;
+  case 1: // ca
+    x.cross(b, a);
+    v.cross(x, b);
+    break;
+  case 2: // ab
+    x.cross(c, b);
+    v.cross(x, c);
+    break;
+  default:
+    return null;
+  }
+  return Quat.getQuaternionFrame(null, v, x).inv();
   }
 
 }

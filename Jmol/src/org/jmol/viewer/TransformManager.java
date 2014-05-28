@@ -696,7 +696,7 @@ public class TransformManager {
   }
 
   public void getRotation(M3 m) {
-    // hmm ... I suppose that there could be a race condiditon here
+    // hmm ... I suppose that there could be a race condition here
     // if matrixRotate is being modified while this is called
     m.setM3(matrixRotate);
   }

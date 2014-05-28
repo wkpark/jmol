@@ -15,6 +15,7 @@ import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.Matrix;
 import javajs.util.P3i;
+import javajs.util.Quat;
 import javajs.util.T3;
 import javajs.util.V3;
 
@@ -188,5 +189,7 @@ public interface SymmetryInterface {
   public void unitize(P3 ptFrac);
 
   public T3[] getV0abc(ModelSet ms, SymmetryInterface uc, Object def);
+
+  public Quat getQuaternionRotation(String abc);
 
 }

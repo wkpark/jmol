@@ -5117,8 +5117,8 @@ public class ScriptEval extends ScriptExpr {
         floatSecondsTotal = 0;
       if (floatSecondsTotal > 0)
         refresh(false);
-      vwr.moveTo(this, floatSecondsTotal, null, JC.axisZ, 0, null, 100, 0,
-          0, 0, null, Float.NaN, Float.NaN, Float.NaN, Float.NaN, Float.NaN,
+      vwr.moveTo(this, floatSecondsTotal, null, JC.axisZ, 0, null, 100, 0, 0,
+          0, null, Float.NaN, Float.NaN, Float.NaN, Float.NaN, Float.NaN,
           Float.NaN);
       if (isJS && floatSecondsTotal > 0 && vwr.g.waitForMoveTo)
         throw new ScriptInterruption(this, "moveTo", 1);
@@ -5131,6 +5131,7 @@ public class ScriptEval extends ScriptExpr {
     float degrees = 90;
     BS bsCenter = null;
     boolean isChange = true;
+    boolean isMolecular = false;
     float xTrans = 0;
     float yTrans = 0;
     float zoom = Float.NaN;
@@ -5144,6 +5145,7 @@ public class ScriptEval extends ScriptExpr {
     float cameraX = Float.NaN;
     float cameraY = Float.NaN;
     float[] pymolView = null;
+    Quat q = null;
     switch (getToken(i).tok) {
     case T.pymol:
       // 18-element standard PyMOL view matrix 
@@ -5162,8 +5164,6 @@ public class ScriptEval extends ScriptExpr {
         return;
       break;
     case T.quaternion:
-      Quat q;
-      boolean isMolecular = false;
       if (tokAt(++i) == T.molecular) {
         // see comment below
         isMolecular = true;
@@ -5175,31 +5175,14 @@ public class ScriptEval extends ScriptExpr {
         if (!(expressionResult instanceof BS))
           invArg();
         bsCenter = (BS) expressionResult;
-        q = (chk ? new Quat() : vwr.ms.getQuaternion(bsCenter
-            .nextSetBit(0), vwr.getQuaternionFrame()));
+        q = (chk ? new Quat() : vwr.ms.getQuaternion(bsCenter.nextSetBit(0),
+            vwr.getQuaternionFrame()));
       } else {
         q = getQuaternionParameter(i);
       }
       i = iToken + 1;
       if (q == null)
         invArg();
-      A4 aa = q.toAxisAngle4f();
-      axis.set(aa.x, aa.y, aa.z);
-      /*
-       * The quaternion angle for an atom represents the angle by which the
-       * reference frame must be rotated to match the frame defined for the
-       * residue.
-       * 
-       * However, to "moveTo" this frame as the REFERENCE frame, what we have to
-       * do is take that quaternion frame and rotate it BACKWARD by that many
-       * degrees. Then it will match the reference frame, which is ultimately
-       * our window frame.
-       * 
-       * We only apply this for molecular-type quaternions, because in general
-       * the orientation quaternion refers to how the reference plane has been
-       * changed (the orientation matrix)
-       */
-      degrees = (isMolecular ? -1 : 1) * (float) (aa.angle * 180.0 / Math.PI);
       break;
     case T.point4f:
     case T.point3f:
@@ -5242,11 +5225,57 @@ public class ScriptEval extends ScriptExpr {
       axis.set(-1, 0, 0);
       checkLength(++i);
       break;
+    case T.axis:
+      String abc = paramAsStr(++i);
+      checkLength(++i);
+      switch ("xyz".indexOf(abc)) {
+      case 0:
+        q = Quat.new4(-0.5f,0.5f,0.5f,0.5f);
+        break;
+      case 1:
+        q = Quat.new4(0.5f,0.5f,0.5f,0.5f);
+        break;
+      case 2:
+        q = Quat.new4(1, 0, 0, 0);
+        break;
+      default:
+         // a b c x y z
+        SymmetryInterface uc;
+        uc = vwr.getCurrentUnitCell();
+        if (uc == null) {
+          uc = vwr.ms.getSymTemp(true);
+          uc.setUnitCell(new float[] { 1, 1, 1, 90, 90, 90 }, false);
+        }
+        q = uc.getQuaternionRotation(abc);
+        if (q == null)
+          invArg();
+      }
+      break;
     default:
       // X Y Z deg
       axis = V3.new3(floatParameter(i++), floatParameter(i++),
           floatParameter(i++));
       degrees = floatParameter(i++);
+    }
+    if (q != null) {
+      A4 aa;
+      aa = q.toAxisAngle4f();
+      axis.set(aa.x, aa.y, aa.z);
+      /*
+       * The quaternion angle for an atom represents the angle by which the
+       * reference frame must be rotated to match the frame defined for the
+       * residue.
+       * 
+       * However, to "moveTo" this frame as the REFERENCE frame, what we have to
+       * do is take that quaternion frame and rotate it BACKWARD by that many
+       * degrees. Then it will match the reference frame, which is ultimately
+       * our window frame.
+       * 
+       * We only apply this for molecular-type quaternions, because in general
+       * the orientation quaternion refers to how the reference plane has been
+       * changed (the orientation matrix)
+       */
+      degrees = (isMolecular ? -1 : 1) * (float) (aa.angle * 180.0 / Math.PI);
     }
     if (Float.isNaN(axis.x) || Float.isNaN(axis.y) || Float.isNaN(axis.z))
       axis.set(0, 0, 0);

@@ -328,7 +328,15 @@ public class Quat {
     }
     return getQuaternionFrameV(vA, vB, null, false);
   }
-  
+
+  /**
+   * Create a quaternion based on a frame
+   * @param vA
+   * @param vB
+   * @param vC
+   * @param yBased
+   * @return quaternion
+   */
   public static final Quat getQuaternionFrameV(V3 vA, V3 vB,
                                                     V3 vC, boolean yBased) {
     if (vC == null) {

@@ -45,6 +45,7 @@ import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.Matrix;
 import javajs.util.P3i;
+import javajs.util.Quat;
 import javajs.util.T3;
 import javajs.util.V3;
 
@@ -867,6 +868,11 @@ public class Symmetry implements SymmetryInterface {
       uc.toCartesian(pts[i], false);
     }
     return pts;
+  }
+
+  @Override
+  public Quat getQuaternionRotation(String abc) {
+    return (unitCell == null ? null : unitCell.getQuaternionRotation(abc));
   }
 
 }

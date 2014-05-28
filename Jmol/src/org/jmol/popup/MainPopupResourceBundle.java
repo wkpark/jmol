@@ -101,7 +101,7 @@ public class MainPopupResourceBundle extends PopupResource {
               + "Ligand exceptWater nonWaterSolvent" },
 
       {   "viewMenu",
-          "best front left right top bottom back" },
+          "best front left right top bottom back - axisX axisY axisZ - axisA axisB axisC" },
 
       {   "renderMenu",
           "perspectiveDepthCB showBoundBoxCB showUNITCELLCB showAxesCB stereoMenu - renderSchemeMenu - atomMenu labelMenu bondMenu hbondMenu ssbondMenu - "
@@ -318,6 +318,12 @@ public class MainPopupResourceBundle extends PopupResource {
         "top", PT.split(GT._("Top[as in \"view from the top, from above\" - (translators: remove this bracketed part]"), "[")[0],
         "bottom", GT._("Bottom"),
         "back", GT._("Back"),
+        "axisX", GT._("Axis x"),
+        "axisY", GT._("Axis y"),
+        "axisZ", GT._("Axis z"),
+        "axisA", GT._("Axis a"),
+        "axisB", GT._("Axis b"),
+        "axisC", GT._("Axis c"),
 
         "sceneComputedMenu" , GT._("Scenes"),
         
@@ -771,6 +777,12 @@ public class MainPopupResourceBundle extends PopupResource {
       { "top", Box( "moveto 1.0 front;moveto 2.0 top;delay 1"  ) },
       { "bottom", Box( "moveto 1.0 front;moveto 2.0 bottom;delay 1"  ) },
       { "back", Box( "moveto 1.0 front;moveto 2.0 back;delay 1"  ) },
+      { "axisA", "moveto axis a"},
+      { "axisB", "moveto axis b"},
+      { "axisC", "moveto axis c"},
+      { "axisX", "moveto axis x"},
+      { "axisY", "moveto axis y"},
+      { "axisZ", "moveto axis z"},
 
       { "renderCpkSpacefill", "restrict bonds not selected;select not selected;spacefill 100%;color cpk" },
       { "renderBallAndStick", "restrict bonds not selected;select not selected;spacefill 23%AUTO;wireframe 0.15;color cpk" },

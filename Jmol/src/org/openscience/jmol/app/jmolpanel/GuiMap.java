@@ -173,6 +173,12 @@ public class GuiMap {
     labels.put("bottom", GT._("&Bottom"));
     labels.put("right", GT._("&Right"));
     labels.put("left", GT._("&Left"));
+    labels.put("axisaScript", GT._("Axis a"));
+    labels.put("axisbScript", GT._("Axis b"));
+    labels.put("axiscScript", GT._("Axis c"));
+    labels.put("axisxScript", GT._("Axis x"));
+    labels.put("axisyScript", GT._("Axis y"));
+    labels.put("axiszScript", GT._("Axis z"));
     labels.put("transform", GT._("Tr&ansform..."));
     labels.put("definecenter", GT._("Define &Center"));
     labels.put("tools", GT._("&Tools"));

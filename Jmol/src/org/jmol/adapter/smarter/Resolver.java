@@ -310,114 +310,35 @@ public class Resolver {
 
   private static String getXmlType(String header) throws Exception  {
     if (header.indexOf("http://www.molpro.net/") >= 0) {
-      return specialTags[SPECIAL_MOLPRO_XML][0];
+      return "XmlMolpro";
     }
     if (header.indexOf("odyssey") >= 0) {
-      return specialTags[SPECIAL_ODYSSEY_XML][0];
+      return "XmlOdyssey";
     }
     if (header.indexOf("C3XML") >= 0) {
-      return specialTags[SPECIAL_CHEM3D_XML][0];
+      return "XmlChem3d";
     }
     if (header.indexOf("arguslab") >= 0) {
-      return specialTags[SPECIAL_ARGUS_XML][0];
+      return "XmlArgus";
     }
-    if (header.indexOf("jvxl") >= 0) {
-      return specialTags[SPECIAL_CML_XML][0];
-    }
-    if (header.indexOf(CML_NAMESPACE_URI) >= 0
+    if (header.indexOf("jvxl") >= 0 
+        || header.indexOf(CML_NAMESPACE_URI) >= 0
         || header.indexOf("cml:") >= 0) {
-      return specialTags[SPECIAL_CML_XML][0];
+      return "XmlCml";
     }
     if (header.indexOf("XSD") >= 0) {
-      return specialTags[SPECIAL_XSD_XML][0];
+      return "XmlXsd";
     }
     if (header.indexOf(">vasp") >= 0) {
-      return specialTags[SPECIAL_VASP_XML][0];
+      return "XmlVasp";
     }
     if (header.indexOf("<GEOMETRY_INFO>") >= 0) {
-      return specialTags[SPECIAL_QE_XML][0];
+      return "XmlQE";
     }
     
-    return specialTags[SPECIAL_CML_XML][0] + "(unidentified)";
+    return "XmlCml(unidentified)";
   }
 
-  private final static int SPECIAL_JME                = 0;
-  private final static int SPECIAL_MOPACGRAPHF        = 1;
-  //private final static int SPECIAL_MOL3D              = 2; // only by MOL3D::
-  private final static int SPECIAL_ODYSSEY            = 3;
-  private final static int SPECIAL_MOL                = 4;
-  private final static int SPECIAL_XYZ                = 5;
-  private final static int SPECIAL_FOLDINGXYZ         = 6;
-  private final static int SPECIAL_CUBE               = 7;
-  private final static int SPECIAL_ALCHEMY            = 8;
-  private final static int SPECIAL_WIEN               = 9;
-  private final static int SPECIAL_CASTEP             = 10;
-  private final static int SPECIAL_AIMS               = 11;
-  private final static int SPECIAL_CRYSTAL            = 12;
-  private final static int SPECIAL_VASPPOSCAR         = 13;
-  private final static int SPECIAL_GROMACS            = 14;
-  private final static int SPECIAL_GENNBO             = 15;
-  
-  // these next are needed by the XML reader
-  
-  public final static int SPECIAL_ARGUS_XML   = 16;
-  public final static int SPECIAL_CML_XML     = 17;
-  public final static int SPECIAL_CHEM3D_XML  = 18;
-  public final static int SPECIAL_MOLPRO_XML  = 19;
-  public final static int SPECIAL_ODYSSEY_XML = 20;
-  public final static int SPECIAL_XSD_XML     = 21;
-  public final static int SPECIAL_VASP_XML    = 22; 
-  public final static int SPECIAL_QE_XML      = 23; 
- 
-  public final static int SPECIAL_ARGUS_DOM   = 24;
-  public final static int SPECIAL_CML_DOM     = 25;
-  public final static int SPECIAL_CHEM3D_DOM  = 26;
-  public final static int SPECIAL_MOLPRO_DOM  = 27;
-  public final static int SPECIAL_ODYSSEY_DOM = 28;
-  public final static int SPECIAL_XSD_DOM     = 29; // not implemented
-  public final static int SPECIAL_VASP_DOM    = 30; 
-  
-  public final static String[][] specialTags = {
-    { "Jme" },
-    { "MopacGraphf" },
-    { "Mol3D" },
-    { "Odyssey" },
-    { "Mol" },
-    
-    { "Xyz" },
-    { "FoldingXyz" },
-    { "Cube" },
-    { "Alchemy" },
-    { "Wien2k" },
-    
-    { "Castep" },
-    { "Aims" },  
-    { "Crystal" },  
-    { "VaspPoscar"}, 
-
-    { "Gromacs" },
-    { "GenNBO" },
-    
-    { "XmlArgus" }, 
-    { "XmlCml" },
-    { "XmlChem3d" },
-    { "XmlMolpro" },
-    { "XmlOdyssey" },
-    { "XmlXsd" },
-    { "XmlVasp" },
-    { "XmlQE" },
-
-    { "XmlArgus(DOM)" }, //19
-    { "XmlCml(DOM)" },
-    { "XmlChem3d(DOM)" },
-    { "XmlMolpro(DOM)" },
-    { "XmlOdyssey(DOM)" },
-    { "XmlXsd(DOM)" },
-    { "XmlVasp(DOM)" },
-
-    { "MdCrd" }
-
-  };
 
 //  
 //  private final static String checkType(String[][] typeTags, String type) {
@@ -428,52 +349,54 @@ public class Resolver {
 //  }
 //
   
-  ////////////////////////////////////////////////////////////////
-  // file types that need special treatment
-  ////////////////////////////////////////////////////////////////
-
+  
   private final static String checkSpecial(int nLines, String[] lines,
                                            boolean isEnd) {
     // the order here is CRITICAL
     
     if (isEnd) {
       if (checkGromacs(lines))
-        return specialTags[SPECIAL_GROMACS][0];
+        return "Gromacs";
       if (checkCrystal(lines))
-        return specialTags[SPECIAL_CRYSTAL][0];
+        return "Crystal";
       if (checkCastep(lines))
-        return specialTags[SPECIAL_CASTEP][0];
+        return "Castep";
       if (checkVaspposcar(lines))
-        return specialTags[SPECIAL_VASPPOSCAR][0];
+        return "VaspPoscar";
     } else {
       if (nLines == 1 && lines[0].length() > 0
           && Character.isDigit(lines[0].charAt(0)))
-        return specialTags[SPECIAL_JME][0]; //only one line, and that line starts with a number 
+        return "Jme"; //only one line, and that line starts with a number 
       
       if (checkMopacGraphf(lines))
-        return specialTags[SPECIAL_MOPACGRAPHF][0]; //must be prior to checkFoldingXyz and checkMol
+        return "MopacGraphf"; //must be prior to checkFoldingXyz and checkMol
       if (checkOdyssey(lines))
-        return specialTags[SPECIAL_ODYSSEY][0];
-      if (checkMol(lines))
-        return specialTags[SPECIAL_MOL][0];
+        return "Odyssey";
+      switch (checkMol(lines)) {
+      case 1:
+      case 3:
+      case 2000:
+      case 3000:
+        return "Mol";
+      }
       switch(checkXyz(lines)) {
       case 1:
-        return specialTags[SPECIAL_XYZ][0];
+        return "Xyz";
       case 2:
         return "Bilbao";        
       }
       if (checkAlchemy(lines[0]))
-        return specialTags[SPECIAL_ALCHEMY][0];
+        return "Alchemy";
       if (checkFoldingXyz(lines))
-        return specialTags[SPECIAL_FOLDINGXYZ][0];
+        return "FoldingXyz";
       if (checkCube(lines))
-        return specialTags[SPECIAL_CUBE][0];
+        return "Cube";
       if (checkWien2k(lines))
-        return specialTags[SPECIAL_WIEN][0];
+        return "Wien2k";
       if (checkAims(lines))
-        return specialTags[SPECIAL_AIMS][0];
+        return "Aims";
       if (checkGenNBO(lines))
-        return specialTags[SPECIAL_GENNBO][0];
+        return "GenNBO";
     }
     return null;
   }
@@ -627,21 +550,23 @@ public class Resolver {
     return true;
   }
 
-  private static boolean checkMol(String[] lines) {
+  private static int checkMol(String[] lines) {
     String line4trimmed = ("X" + lines[3]).trim().toUpperCase();
     if (line4trimmed.length() < 7 || line4trimmed.indexOf(".") >= 0)
-      return false;
-    if (line4trimmed.endsWith("V2000") || line4trimmed.endsWith("V3000"))
-      return true;
+      return 0;
+    if (line4trimmed.endsWith("V2000"))
+      return 2000;
+    if (line4trimmed.endsWith("V3000"))
+      return 3000;
     try {
       int n1 = Integer.parseInt(lines[3].substring(0, 3).trim());
       int n2 = Integer.parseInt(lines[3].substring(3, 6).trim());
       return (n1 > 0 && n2 >= 0 && lines[0].indexOf("@<TRIPOS>") != 0
           && lines[1].indexOf("@<TRIPOS>") != 0 
-          && lines[2].indexOf("@<TRIPOS>") != 0);
+          && lines[2].indexOf("@<TRIPOS>") != 0 ? 3 : 0);
     } catch (NumberFormatException nfe) {
     }
-    return false;
+    return 0;
   }
 
   /**

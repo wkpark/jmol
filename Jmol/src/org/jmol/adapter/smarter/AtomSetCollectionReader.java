@@ -1466,7 +1466,7 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
 
   // parser functions are static, so they need notstatic counterparts
 
-  protected String[] getTokens() {
+  public String[] getTokens() {
     return PT.getTokens(line);
   }
 
@@ -1485,7 +1485,7 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
     return PT.getTokens(s);
   }
 
-  protected static String[] getTokensAt(String s, int iStart) {
+  public static String[] getTokensAt(String s, int iStart) {
     return PT.getTokensAt(s, iStart);
   }
 

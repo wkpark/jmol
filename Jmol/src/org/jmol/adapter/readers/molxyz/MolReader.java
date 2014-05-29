@@ -28,29 +28,27 @@ import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
 
 
+import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
 
 /**
  * A reader for MDLI mol and sdf files.
- *<p>
+ * <p>
  * <a href='http://www.mdli.com/downloads/public/ctfile/ctfile.jsp'>
- * http://www.mdli.com/downloads/public/ctfile/ctfile.jsp
- * </a>
- *<p>
- *
- * also: http://www.mdl.com/downloads/public/ctfile/ctfile.pdf
- *
- * simple symmetry extension via load command:
- * 9/2006 hansonr@stolaf.edu
+ * http://www.mdli.com/downloads/public/ctfile/ctfile.jsp </a>
+ * <p>
  * 
- *  setAtomCoord(atom, x, y, z)
- *  applySymmetryAndSetTrajectory()
- *  
- *  simple 2D-->3D conversion using
- *  
- *  load "xxx.mol" FILTER "2D"
- *  
+ * also: http://www.mdl.com/downloads/public/ctfile/ctfile.pdf
+ * 
+ * simple symmetry extension via load command: 9/2006 hansonr@stolaf.edu
+ * 
+ * setAtomCoord(atom, x, y, z) applySymmetryAndSetTrajectory()
+ * 
+ * simple 2D-->3D conversion using
+ * 
+ * load "xxx.mol" FILTER "2D"
+ * 
  */
 public class MolReader extends AtomSetCollectionReader {
 
@@ -75,12 +73,12 @@ public class MolReader extends AtomSetCollectionReader {
    */
 
   private boolean is2D;
-  private boolean isV3000;
   private boolean haveAtomSerials;
   protected String dimension;
   protected boolean allow2D = true;
   private int iatom0;
-  
+  private IntV3000 vr;
+
   @Override
   public void initializeReader() throws Exception {
     is2D = checkFilterKey("2D");
@@ -88,7 +86,6 @@ public class MolReader extends AtomSetCollectionReader {
 
   @Override
   protected boolean checkLine() throws Exception {
-    // reader-dependent
     boolean isMDL = (line.startsWith("$MDL"));
     if (isMDL) {
       discardLinesUntilStartsWith("$HDR");
@@ -98,12 +95,13 @@ public class MolReader extends AtomSetCollectionReader {
         continuing = false;
         return false;
       }
-    }
+    } else if (line.equals("M  END"))
+      return true;
     if (doGetModel(++modelNumber, null)) {
+      iatom0 = asc.ac;
       processMolSdHeader();
       processCtab(isMDL);
-      iatom0 = asc.ac;
-      isV3000 = false;
+      vr = null;
       if (isLastModel(modelNumber)) {
         continuing = false;
         return false;
@@ -113,33 +111,12 @@ public class MolReader extends AtomSetCollectionReader {
     discardLinesUntilStartsWith("$$$$");
     return true;
   }
-  
-  private void readUserData(int atom0) throws Exception {
-    if (isV3000)
-      return;
-    while (rd() != null && line.indexOf("$$$$") != 0) {
-      if (line.toUpperCase().contains("_PARTIAL_CHARGES")) {
-        try {
-          Atom[] atoms = asc.atoms;
-          for (int i = parseIntStr(rd()); --i >= 0;) {
-            String[] tokens = getTokensStr(rd());
-            int atomIndex = parseIntStr(tokens[0]) + atom0 - 1;
-            float partialCharge = parseFloatStr(tokens[1]);
-            if (!Float.isNaN(partialCharge))
-              atoms[atomIndex].partialCharge = partialCharge; 
-          }
-        } catch (Exception e) {
-          return;
-        }
-      }
-    }
-  }
 
   @Override
   public void finalizeReader() throws Exception {
     finalizeReaderMR();
   }
-  
+
   protected void finalizeReaderMR() throws Exception {
     if (is2D)
       set2D();
@@ -183,7 +160,7 @@ public class MolReader extends AtomSetCollectionReader {
     if (line == null)
       return;
     header += line + "\n";
-    dimension = (line.length() < 22 ? "3D" : line.substring(20,22));
+    dimension = (line.length() < 22 ? "3D" : line.substring(20, 22));
     if (!allow2D && dimension.equals("2D"))
       throw new Exception("File is 2D, not 3D");
     asc.setInfo("dimension", dimension);
@@ -199,36 +176,26 @@ public class MolReader extends AtomSetCollectionReader {
   }
 
   private void processCtab(boolean isMDL) throws Exception {
-    String[] tokens = null;
     if (isMDL)
       discardLinesUntilStartsWith("$CTAB");
-    isV3000 = (rd() != null && line.indexOf("V3000") >= 0);
-    if (isV3000) {
-      is2D = (dimension.equals("2D"));
-      discardLinesUntilContains("COUNTS");
-      tokens = getTokens();
-    }
-    if (line == null)
+    if (rd() == null)
       return;
-    int ac = (isV3000 ? parseIntStr(tokens[3]) : parseIntRange(line, 0, 3));
-    int bondCount = (isV3000 ? parseIntStr(tokens[4]) : parseIntRange(line, 3, 6));
-    int atom0 = asc.ac;
-    readAtoms(ac);
-    readBonds(bondCount);
-    readUserData(atom0);
-    if (isV3000)
-      discardLinesUntilContains("END CTAB");
-
+    if (line.indexOf("V3000") >= 0) {
+      is2D = (dimension.equals("2D"));
+      vr = ((IntV3000) Interface.getInterface("org.jmol.adapter.readers.molxyz.V3000Rdr")).set(this);
+      discardLinesUntilContains("COUNTS");
+      vr.readAtomsAndBonds(getTokens());
+    } else {
+      readAtomsAndBonds(parseIntRange(line, 0, 3), parseIntRange(line, 3, 6));
+    }
     applySymmetryAndSetTrajectory();
   }
 
   // 0         1         2         3         4         5         6         7
   // 01234567890123456789012345678901234567890123456789012345678901234567890
   // xxxxx.xxxxyyyyy.yyyyzzzzz.zzzz aaaddcccssshhhbbbvvvHHHrrriiimmmnnneee
-  
-  private void readAtoms(int ac) throws Exception {
-    if (isV3000)
-      discardLinesUntilContains("BEGIN ATOM");
+
+  private void readAtomsAndBonds(int ac, int bc) throws Exception {
     for (int i = 0; i < ac; ++i) {
       rd();
       int len = line.length();
@@ -237,152 +204,114 @@ public class MolReader extends AtomSetCollectionReader {
       int charge = 0;
       int isotope = 0;
       int iAtom = Integer.MIN_VALUE;
-      if (isV3000) {
-        checkLineContinuation();
-        String[] tokens = getTokens();
-        iAtom = parseIntStr(tokens[2]);
-        elementSymbol = tokens[3];
-        if (elementSymbol.equals("*"))
-          continue;
-        x = parseFloatStr(tokens[4]);
-        y = parseFloatStr(tokens[5]);
-        z = parseFloatStr(tokens[6]);
-        for (int j = 7; j < tokens.length; j++) {
-          String s = tokens[j].toUpperCase();
-          if (s.startsWith("CHG="))
-            charge = parseIntStr(tokens[j].substring(4));
-          else if (s.startsWith("MASS="))
-            isotope = parseIntStr(tokens[j].substring(5));
-        }
-        if (isotope > 1 && elementSymbol.equals("H"))
-          isotope = 1 - isotope;
+      x = parseFloatRange(line, 0, 10);
+      y = parseFloatRange(line, 10, 20);
+      z = parseFloatRange(line, 20, 30);
+      if (len < 34) {
+        // deal with older Mol format where nothing after the symbol is used
+        elementSymbol = line.substring(31).trim();
       } else {
-        x = parseFloatRange(line, 0, 10);
-        y = parseFloatRange(line, 10, 20);
-        z = parseFloatRange(line, 20, 30);
-        if (len < 34) {
-          // deal with older Mol format where nothing after the symbol is used
-          elementSymbol = line.substring(31).trim();
-        } else {
-          elementSymbol = line.substring(31, 34).trim();
-          if (len >= 39) {
-            int code = parseIntRange(line, 36, 39);
-            if (code >= 1 && code <= 7)
-              charge = 4 - code;
-            code = parseIntRange(line, 34, 36);
-            if (code != 0 && code >= -3 && code <= 4) {
-              isotope = JmolAdapter.getNaturalIsotope(JmolAdapter
-                  .getElementNumber(elementSymbol));
-              switch (isotope) {
-              case 0:
-                break;
-              case 1:
-                isotope = -code;
-                break;
-              default:
-                isotope += code;
-              }
+        elementSymbol = line.substring(31, 34).trim();
+        if (len >= 39) {
+          int code = parseIntRange(line, 36, 39);
+          if (code >= 1 && code <= 7)
+            charge = 4 - code;
+          code = parseIntRange(line, 34, 36);
+          if (code != 0 && code >= -3 && code <= 4) {
+            isotope = JmolAdapter.getNaturalIsotope(JmolAdapter
+                .getElementNumber(elementSymbol));
+            switch (isotope) {
+            case 0:
+              break;
+            case 1:
+              isotope = -code;
+              break;
+            default:
+              isotope += code;
             }
-            //if (len >= 63) {  this field is not really an atom number. It's for atom-atom mapping in reaction files
-            //  iAtom = parseIntRange(line, 60, 63);
-            //  if (iAtom == 0)
-            //    iAtom = Integer.MIN_VALUE;
-            //}
-            // previous model in series may have atom numbers indicated
-            if (iAtom == Integer.MIN_VALUE && haveAtomSerials)
-              iAtom = i + 1;
           }
+          //if (len >= 63) {  this field is not really an atom number. It's for atom-atom mapping in reaction files
+          //  iAtom = parseIntRange(line, 60, 63);
+          //  if (iAtom == 0)
+          //    iAtom = Integer.MIN_VALUE;
+          //}
+          // previous model in series may have atom numbers indicated
+          if (iAtom == Integer.MIN_VALUE && haveAtomSerials)
+            iAtom = i + 1;
         }
       }
-      switch (isotope) {
-      case 0:
-        break;
-      case -1:
-        elementSymbol = "D";
-        break;
-      case -2:
-        elementSymbol = "T";
-        break;
-      default:
-        elementSymbol = isotope + elementSymbol;
-      }
-      if (is2D && z != 0)
-        is2D = false;
-      Atom atom = new Atom();
-      atom.elementSymbol = elementSymbol;
-      atom.formalCharge = charge;
-      setAtomCoordXYZ(atom, x, y, z);
-      if (iAtom == Integer.MIN_VALUE) {
-        asc.addAtom(atom); 
-      } else {
-        haveAtomSerials = true;
-        atom.atomSerial = iAtom;
-        asc.addAtomWithMappedSerialNumber(atom);
-      }
+      addMolAtom(iAtom, isotope, elementSymbol, charge, x, y, z);
     }
-    if (isV3000)
-      discardLinesUntilContains("END ATOM");
-  }
-
-  private void checkLineContinuation() throws Exception {
-    while (line.endsWith("-")) {
-      String s = line;
-      rd();
-      line = s + line;
-    }
-  }
-
-  private void readBonds(int bondCount) throws Exception {
-    if (isV3000)
-      discardLinesUntilContains("BEGIN BOND");
-    for (int i = 0; i < bondCount; ++i) {
+    
+    // read bonds
+    
+    for (int i = 0; i < bc; ++i) {
       rd();
       String iAtom1, iAtom2;
-      int order;
       int stereo = 0;
-      if (isV3000) {
-        checkLineContinuation();
-        String[] tokens = getTokens();
-        order = parseIntStr(tokens[3]);
-        iAtom1 = tokens[4];
-        iAtom2 = tokens[5];
-        for (int j = 6; j < tokens.length; j++) {
-          String s = tokens[j].toUpperCase();
-          if (s.startsWith("CFG=")) {
-            stereo = parseIntStr(tokens[j].substring(4));
-            break;
-          } else if (s.startsWith("ENDPTS=")) {
-            if (line.indexOf("ATTACH=ALL") < 0)
-              continue; // probably "ATTACH=ANY"
-            tokens = getTokensAt(line, line.indexOf("ENDPTS=") + 8);
-            int n = parseIntStr(tokens[0]);
-            order = fixOrder(order, 0);
-            for (int k = 1; k <= n; k++) {
-              iAtom2 = tokens[k];
-              asc.addNewBondFromNames(iAtom1, iAtom2, order);
-            }
-            break;
-          }
-        }
-      } else {
-        iAtom1 = line.substring(0, 3).trim();
-        iAtom2 = line.substring(3, 6).trim();
-        order = parseIntRange(line, 6, 9);
-        if (is2D && order == 1 && line.length() >= 12)
-          stereo = parseIntRange(line, 9, 12);
-      }
+      iAtom1 = line.substring(0, 3).trim();
+      iAtom2 = line.substring(3, 6).trim();
+      int order = parseIntRange(line, 6, 9);
+      if (is2D && order == 1 && line.length() >= 12)
+        stereo = parseIntRange(line, 9, 12);
       order = fixOrder(order, stereo);
       if (haveAtomSerials)
         asc.addNewBondFromNames(iAtom1, iAtom2, order);
       else
-        asc.addNewBondWithOrder(iatom0 + parseIntStr(iAtom1) - 1, 
-            iatom0 + parseIntStr(iAtom2) - 1, order);        
+        asc.addNewBondWithOrder(iatom0 + parseIntStr(iAtom1) - 1, iatom0
+            + parseIntStr(iAtom2) - 1, order);
     }
-    if (isV3000)
-      discardLinesUntilContains("END BOND");
+    
+    // read user data
+    
+    while (rd() != null && line.indexOf("$$$$") != 0) {
+      if (line.toUpperCase().contains("_PARTIAL_CHARGES")) {
+        try {
+          Atom[] atoms = asc.atoms;
+          for (int i = parseIntStr(rd()); --i >= 0;) {
+            String[] tokens = getTokensStr(rd());
+            int atomIndex = parseIntStr(tokens[0]) + iatom0 - 1;
+            float partialCharge = parseFloatStr(tokens[1]);
+            if (!Float.isNaN(partialCharge))
+              atoms[atomIndex].partialCharge = partialCharge;
+          }
+        } catch (Exception e) {
+          return;
+        }
+      }
+    }
   }
 
-  private int fixOrder(int order, int stereo) {
+  public void addMolAtom(int iAtom, int isotope, String elementSymbol,
+                         int charge, float x, float y, float z) {
+    switch (isotope) {
+    case 0:
+      break;
+    case -1:
+      elementSymbol = "D";
+      break;
+    case -2:
+      elementSymbol = "T";
+      break;
+    default:
+      elementSymbol = isotope + elementSymbol;
+    }
+    if (is2D && z != 0)
+      is2D = false;
+    Atom atom = new Atom();
+    atom.elementSymbol = elementSymbol;
+    atom.formalCharge = charge;
+    setAtomCoordXYZ(atom, x, y, z);
+    if (iAtom == Integer.MIN_VALUE) {
+      asc.addAtom(atom);
+    } else {
+      haveAtomSerials = true;
+      atom.atomSerial = iAtom;
+      asc.addAtomWithMappedSerialNumber(atom);
+    }
+  }
+
+  public int fixOrder(int order, int stereo) {
     switch (order) {
     default:
     case 0:
@@ -414,4 +343,14 @@ public class MolReader extends AtomSetCollectionReader {
     }
     return order;
   }
+
+  public void addMolBond(String iAtom1, String iAtom2, int order, int stereo) {
+    order = fixOrder(order, stereo);
+    if (haveAtomSerials)
+     asc.addNewBondFromNames(iAtom1, iAtom2, order);
+    else
+      asc.addNewBondWithOrder(iatom0 + parseIntStr(iAtom1) - 1, iatom0
+          + parseIntStr(iAtom2) - 1, order);
+  }
+
 }

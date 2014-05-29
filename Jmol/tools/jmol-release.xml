@@ -12,6 +12,7 @@
     </classpath>
   </taskdef>
 
+  <property name="zipOnly"         value="false" />
   <property name="dist.dir"        value="build/dist" />
   <property name="src.dir"         value="src" />
   <property name="temp.dir"        value="build/release" />
@@ -61,13 +62,19 @@
     <mkdir dir="${temp.dir}" />
     <mkdir dir="${temp.dir}/${path.release}/${prefix.release}${version}" />
     <copy todir="${temp.dir}/${path.release}/${prefix.release}${version}"
-          file="${dist.dir}/Jmol-${version}-binary.tar.gz" />
-    <copy todir="${temp.dir}/${path.release}/${prefix.release}${version}"
           file="${dist.dir}/Jmol-${version}-binary.zip" />
-    <copy todir="${temp.dir}/${path.release}/${prefix.release}${version}"
-          file="${dist.dir}/Jmol-${version}-full.tar.gz" />
     <copy tofile="${temp.dir}/${path.release}/${prefix.release}${version}/README-${version}.properties"
           file="${dist.dir}/Jmol.properties" />
+
+  	<if>
+     <equals arg1="${zipOnly}" arg2="false" />
+  	 <then>
+	    <copy todir="${temp.dir}/${path.release}/${prefix.release}${version}"
+	          file="${dist.dir}/Jmol-${version}-binary.tar.gz" />
+	    <copy todir="${temp.dir}/${path.release}/${prefix.release}${version}"
+	          file="${dist.dir}/Jmol-${version}-full.tar.gz" />
+  	 </then>
+  	</if>
 
     <!-- Do the copy using scp -->
     <echo message="Copying release files to Jmol website" level="info"/>

@@ -2034,7 +2034,7 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 	}
 
 	public String getSolutionColorStr(boolean asFit) {
-		P3 pt = CU.colorPtFromInt(getSolutionColor(asFit));
+		P3 pt = CU.colorPtFromInt(getSolutionColor(asFit), null);
 		return (int) pt.x + "," + (int) pt.y + "," + (int) pt.z;
 	}
 

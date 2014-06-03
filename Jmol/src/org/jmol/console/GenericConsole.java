@@ -109,20 +109,7 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
     loadButton = setButton("Load");
     defaultMessage = getLabel("default");
     setTitle();
-    GT.setDoTranslate(false);
-    /**
-    *
-    * no help menu yet
-    * 
-    * @j2sNative 
-    * 
-    * this.defaultMessage = this.getLabel("default").split("Click")[0];
-    * 
-    */
-    {
-    }
     GT.setDoTranslate(doTranslate);
-    defaultMessage = getLabel("default");
   }
 
   protected String getLabel(String key) {
@@ -417,9 +404,12 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
     case KeyEvent.KEY_PRESSED:
       switch (kcode) {
       case KeyEvent.VK_TAB:
+        String s = input.getText();
+        if (s.endsWith("\n") || s.endsWith("\t"))
+          return 0;
         mode = 1;
-        if (input.getCaretPosition() == input.getText().length()) {
-          String cmd = completeCommand(getText());
+        if (input.getCaretPosition() == s.length()) {
+          String cmd = completeCommand(s);
           if (cmd != null)
             input.setText(cmd.replace('\t',' '));
           nTab++;

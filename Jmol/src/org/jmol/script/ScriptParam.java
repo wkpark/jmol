@@ -253,6 +253,8 @@ abstract public class ScriptParam extends ScriptError {
     V3 vAB = new V3();
     V3 vAC = new V3();
     P4 plane = null;
+    if (tokAt(i) == T.plane)
+      i++;
     boolean isNegated = (tokAt(i) == T.minus);
     if (isNegated)
       i++;
@@ -294,6 +296,7 @@ abstract public class ScriptParam extends ScriptError {
         iToken += 2;
         break;
       case T.leftbrace:
+      case T.point3f:
         if (!isPoint3f(i)) {
           plane = getPoint4f(i);
           break;

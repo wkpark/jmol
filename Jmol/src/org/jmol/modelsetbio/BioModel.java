@@ -207,7 +207,7 @@ public final class BioModel extends Model{
       bs2.or(bsAtoms);
       bs2.andNot(bs);
       if (bs2.nextSetBit(0) >= 0)
-        sb.append("select " + Escape.eBS(bs2) + " & !connected;stars 0.5;");
+        sb.append("select " + Escape.eBS(bs2) + " & !connected;stars 0.5;spacefill off;");
     }
   }
   

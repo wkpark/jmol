@@ -3936,7 +3936,7 @@ public class ScriptEval extends ScriptExpr {
       pt = centerParameter(2);
       break;
     case T.plane:
-      plane = planeParameter(2);
+      plane = planeParameter(1);
       break;
     case T.hkl:
       plane = hklParameter(2);
@@ -7281,7 +7281,7 @@ public class ScriptEval extends ScriptExpr {
         if (str.equalsIgnoreCase("hkl"))
           plane = hklParameter(3);
         else if (str.equalsIgnoreCase("plane"))
-          plane = planeParameter(3);
+          plane = planeParameter(2);
         if (plane == null)
           invArg();
         plane.scale4(-1);
@@ -7291,7 +7291,7 @@ public class ScriptEval extends ScriptExpr {
         case T.none:
           break;
         default:
-          plane = planeParameter(2);
+          plane = planeParameter(1);
         }
         break;
       case T.hkl:
@@ -7619,9 +7619,6 @@ public class ScriptEval extends ScriptExpr {
     case T.string:
       String s = stringParameter(++index).toLowerCase();
       if (s.indexOf(",") >= 0) {
-        // a,b,c;0,0,0
-        if (s.indexOf(";") < 0)
-          s += ";0,0,0";
         newUC = s;
       } else if (!chk) {
         // parent, standard, conventional (TODO)

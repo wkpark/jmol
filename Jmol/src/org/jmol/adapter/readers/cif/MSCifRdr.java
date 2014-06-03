@@ -28,9 +28,9 @@ import javajs.util.Matrix;
 import javajs.util.PT;
 
 
-public class MSCifReader extends MSReader implements MSCifInterface {
+public class MSCifRdr extends MSReader {
 
-  public MSCifReader() {
+  public MSCifRdr() {
     // for reflection
   }
   
@@ -180,7 +180,6 @@ public class MSCifReader extends MSReader implements MSCifInterface {
   };
   private static final int NONE = -1;
 
-  @Override
   public void processEntry() throws Exception {
     CifReader cr = (CifReader) this.cr;
     if (cr.key.equals("_jana_cell_commen_t_section_1")) {
@@ -202,7 +201,6 @@ public class MSCifReader extends MSReader implements MSCifInterface {
    * @return 1:handled; -1: skip; 0: unrelated
    * @throws Exception
    */
-  @Override
   public int processLoopBlock() throws Exception {
     CifReader cr = (CifReader) this.cr;
     if (cr.key.equals("_cell_subsystem_code")) {

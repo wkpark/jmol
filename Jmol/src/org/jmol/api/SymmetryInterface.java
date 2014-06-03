@@ -188,7 +188,7 @@ public interface SymmetryInterface {
 
   public void unitize(P3 ptFrac);
 
-  public T3[] getV0abc(ModelSet ms, SymmetryInterface uc, Object def);
+  public T3[] getV0abc(Object def);
 
   public Quat getQuaternionRotation(String abc);
 

@@ -780,7 +780,7 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
     return symmetry;
   }
   private void checkUnitCellOffset() {
-    if (fileOffsetFractional == null)
+    if (fileOffsetFractional == null || symmetry == null)
       return;
     fileOffset.setT(fileOffsetFractional);
     if (unitCellOffsetFractional != fileCoordinatesAreFractional) {
@@ -828,6 +828,7 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
   private String nameRequired;
   boolean doCentroidUnitCell;
   boolean centroidPacked;
+  public String altCell;
 
 
   // ALL:  "CENTER" "REVERSEMODELS"
@@ -886,6 +887,9 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
         nameRequired = PT.split(nameRequired, "\"")[1];
       filter0 = filter = PT.rep(filter, nameRequired, "");
       filter0 = filter = PT.rep(filter, "NAME=", "");
+    }
+    if (checkFilterKey("CELL=")) {
+      altCell = filter0.substring(filter.indexOf("CELL=") + 5).toLowerCase();
     }
     if (filter == null)
       return;
@@ -1114,6 +1118,7 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
     applySymTrajASCR();
   }
   
+  public boolean vibsFractional = false;
   public SymmetryInterface applySymTrajASCR() throws Exception {
     if (forcePacked)
       initializeSymmetryOptions();

@@ -819,18 +819,22 @@ public class Symmetry implements SymmetryInterface {
    * three unit cell vectors a, b, and c. 
    */
   @Override
-  public T3[] getV0abc(ModelSet ms, SymmetryInterface uc, Object def) {
+  public T3[] getV0abc(Object def) {
     if (unitCell == null)
       return null;
     M4 m;
     boolean isRev = false;
     if (def instanceof String) {
-      isRev = ((String) def).startsWith("!");
+      String sdef = (String) def;
+      // a,b,c;0,0,0
+      if (sdef.indexOf(";") < 0)
+        sdef += ";0,0,0";
+      isRev = sdef.startsWith("!");
       if (isRev)
-        def = ((String) def).substring(1);
-      SymmetryInterface symTemp = ms.getSymTemp(true);
+        sdef = sdef.substring(1);
+      Symmetry symTemp = new Symmetry();
       symTemp.setSpaceGroup(false);
-      int i = symTemp.addSpaceGroupOperation("=" + def, 0);
+      int i = symTemp.addSpaceGroupOperation("=" + sdef, 0);
       if (i < 0)
         return null;
       m = symTemp.getSpaceGroupOperation(i);
@@ -858,14 +862,16 @@ public class Symmetry implements SymmetryInterface {
     // Note that only the origin is translated;
     // the others are vectors from the origin.
     
-    uc.toCartesian(pt, false);
+    // this is a point, so we do not ignore offset
+    unitCell.toCartesian(pt, false);
     pts[0] = V3.newV(pt);
     pts[1] = V3.new3(1, 0, 0);
     pts[2] = V3.new3(0, 1, 0);
     pts[3] = V3.new3(0, 0, 1);
     for (int i = 1; i < 4; i++) {
       m3.rotate(pts[i]);
-      uc.toCartesian(pts[i], false);
+      // these are vectors, so we ignore offset
+      unitCell.toCartesian(pts[i], true);
     }
     return pts;
   }

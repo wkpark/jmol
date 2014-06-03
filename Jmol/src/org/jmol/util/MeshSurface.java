@@ -560,12 +560,14 @@ public class MeshSurface {
     P3[] pts = null;
     if (fData == null) {
       if (tokType == T.decimal && bsSource != null) {
+        if (vertexSource == null)
+          return;
         fData = new float[vc];
         for (int i = 0; i < vc; i++)
           if ((fData[i] = vertexSource[i]) == -1)
             System.out.println("meshsurface hmm");
       } else {
-        fData = vvs;
+        fData = vvs;  
       }
     }
     Map<String, Integer> mapEdge = new Hashtable<String, Integer>();

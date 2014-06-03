@@ -38,18 +38,20 @@ import org.jmol.adapter.smarter.AtomSetCollectionReader;
  * http://www.mdli.com/downloads/public/ctfile/ctfile.jsp </a>
  * <p>
  */
-public class V3000Rdr implements IntV3000 {
+public class V3000Rdr {
   private MolReader mr;
   private String line;
 
-  @Override
-  public V3000Rdr set(AtomSetCollectionReader mr) {
+  public V3000Rdr() {
+    // for reflection
+  }
+  
+  V3000Rdr set(AtomSetCollectionReader mr) {
     this.mr = (MolReader) mr;
     return this;
   }
 
-  @Override
-  public void readAtomsAndBonds(String[] tokens) throws Exception {
+  void readAtomsAndBonds(String[] tokens) throws Exception {
     int ac = mr.parseIntStr(tokens[3]);
     readAtoms(ac);
     readBonds(mr.parseIntStr(tokens[4]));

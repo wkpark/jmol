@@ -187,10 +187,14 @@ public class NucleicMonomer extends PhosphorusMonomer {
   public boolean isNucleicMonomer() { return true; }
 
   @Override
-  public boolean isDna() { return !hasRnaO2Prime; }
+  public boolean isDna() { 
+    return !hasRnaO2Prime; 
+    }
 
   @Override
-  public boolean isRna() { return hasRnaO2Prime; }
+  public boolean isRna() { 
+    return hasRnaO2Prime; 
+    }
 
   @Override
   public boolean isPurine() { return isPurine; }

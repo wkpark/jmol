@@ -76,7 +76,7 @@ public abstract class AtomShape extends Shape {
   }
   
   @Override
-  protected void setSize(int size, BS bsSelected) {
+  protected void setSize(int   size, BS bsSelected) {
     setSize2(size, bsSelected);
   }
 

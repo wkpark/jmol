@@ -716,7 +716,7 @@ abstract class ScriptExpr extends ScriptParam {
         break;
       case T.plane:
         rpn.addX(SV.newT(instruction));
-        rpn.addX(SV.newV(T.point4f, planeParameter(pc + 2)));
+        rpn.addX(SV.newV(T.point4f, planeParameter(pc + 1)));
         pc = iToken;
         break;
       case T.coord:

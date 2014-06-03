@@ -45,10 +45,10 @@ import org.jmol.util.SimpleUnitCell;
  * @author Bob Hanson (hansonr@stolaf.edu)
  *  
  */
-public class MMCifReader implements MMCifInterface {
+public class MMCifRdr {
 
 
-  public MMCifReader() {
+  public MMCifRdr() {
     // for reflection
   }
   
@@ -73,7 +73,6 @@ public class MMCifReader implements MMCifInterface {
   private int[] chainAtomCount;
 
 
-  @Override
   public boolean initialize(CifReader r) {
     cr = r;
     byChain = r.checkFilterKey("BYCHAIN");
@@ -89,7 +88,6 @@ public class MMCifReader implements MMCifInterface {
     return isCourseGrained;
   }
   
-  @Override
   public void finalizeReader(int nAtoms) throws Exception {
     if (byChain && !isBiomolecule)
       for (String id: chainAtomMap.keySet())
@@ -184,7 +182,6 @@ _pdbx_struct_oper_list.vector[3]
   //private String data;
   //private String key;
   
-  @Override
   public void processEntry() throws Exception {
     if (cr.key.startsWith("_pdbx_entity_nonpoly"))
       processDataNonpoly();
@@ -925,7 +922,6 @@ _pdbx_struct_oper_list.vector[3]
     return true;
   }
 
-  @Override
   public boolean checkAtom(Atom atom, String assemblyId, int index) {
     if (byChain && !isBiomolecule) {
       if (thisChain != atom.chainID) {
@@ -968,7 +964,6 @@ _pdbx_struct_oper_list.vector[3]
     return true;
   }
 
-  @Override
   public boolean processLoopBlock() throws Exception {
     String key = cr.key;
     if (key.startsWith("_pdbx_struct_oper_list"))

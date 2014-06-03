@@ -77,7 +77,7 @@ public class MolReader extends AtomSetCollectionReader {
   protected String dimension;
   protected boolean allow2D = true;
   private int iatom0;
-  private IntV3000 vr;
+  private V3000Rdr vr;
 
   @Override
   public void initializeReader() throws Exception {
@@ -106,9 +106,9 @@ public class MolReader extends AtomSetCollectionReader {
         continuing = false;
         return false;
       }
-      return true;
     }
-    discardLinesUntilStartsWith("$$$$");
+    if (line != null && line.indexOf("$$$$") < 0)
+      discardLinesUntilStartsWith("$$$$");
     return true;
   }
 
@@ -182,7 +182,7 @@ public class MolReader extends AtomSetCollectionReader {
       return;
     if (line.indexOf("V3000") >= 0) {
       is2D = (dimension.equals("2D"));
-      vr = ((IntV3000) Interface.getInterface("org.jmol.adapter.readers.molxyz.V3000Rdr")).set(this);
+      vr = ((V3000Rdr) Interface.getInterface("org.jmol.adapter.readers.molxyz.V3000Rdr")).set(this);
       discardLinesUntilContains("COUNTS");
       vr.readAtomsAndBonds(getTokens());
     } else {
@@ -262,7 +262,7 @@ public class MolReader extends AtomSetCollectionReader {
             + parseIntStr(iAtom2) - 1, order);
     }
     
-    // read user data
+    // read V2000 user data
     
     while (rd() != null && line.indexOf("$$$$") != 0) {
       if (line.toUpperCase().contains("_PARTIAL_CHARGES")) {

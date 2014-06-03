@@ -2733,7 +2733,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
    */
   public T3[] getV0abc(Object def) {
     SymmetryInterface uc = getCurrentUnitCell();
-    return (uc == null ? null : uc.getV0abc(ms, getCurrentUnitCell(), def));
+    return (uc == null ? null : uc.getV0abc(def));
   }
 
   public String getSymmetryOperation(int symop, P3 pt1,

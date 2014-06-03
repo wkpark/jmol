@@ -39,7 +39,6 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.jmol.util.Logger;
-import org.jmol.util.Vibration;
 
 import javajs.util.Rdr;
 import javajs.util.CifDataParser;
@@ -73,10 +72,9 @@ import javajs.util.V3;
  */
 public class CifReader extends AtomSetCollectionReader {
 
-  private static final float MAG_MOMENT_FACTOR = 1f;// approx, prelim
   private static final String titleRecords = "__citation_title__publ_section_title__active_magnetic_irreps_details__";
-  private MSCifInterface mr;
-  private MMCifInterface pr;
+  private MSCifRdr mr;
+  private MMCifRdr pr;
   
 
   // no need for reflection here -- the CIF reader is already
@@ -130,7 +128,6 @@ public class CifReader extends AtomSetCollectionReader {
     isMolecular = checkFilterKey("MOLECUL") && !checkFilterKey("BIOMOLECULE"); // molecular; molecule
     readIdeal = !checkFilterKey("NOIDEAL");
     filterAssembly = checkFilterKey("$");
-
     if (isMolecular) {
       if (!doApplySymmetry) {
         doApplySymmetry = true;
@@ -278,10 +275,16 @@ public class CifReader extends AtomSetCollectionReader {
   private String standardCell;
   
   private void processUnitCellTransform() {
-    if (key.contains("_from_parent"))
+    data = PT.replaceAllCharacters(data,  " ", "");
+    if (key.contains("_from_parent")) {
       parentCell = "!" + data;
-    else if (key.contains("_to_standard"))
-      standardCell = data; 
+      if ("parent".equalsIgnoreCase(altCell))
+        altCell = parentCell;
+    } else if (key.contains("_to_standard")) {
+      standardCell = data;
+      if ("standard".equalsIgnoreCase(altCell))
+        altCell = standardCell;
+    }
     appendLoadNote(key + ": " + data);
   }
 
@@ -297,7 +300,7 @@ public class CifReader extends AtomSetCollectionReader {
     asc.addAtom(atom);
   }
 
-  private MSCifInterface getModulationReader() throws Exception {
+  private MSCifRdr getModulationReader() throws Exception {
     return (mr == null ? initializeMSCIF() : mr);
   }
 
@@ -305,15 +308,15 @@ public class CifReader extends AtomSetCollectionReader {
     isMMCIF = true;
     lookingForPDB = false;
     if (pr == null)
-      pr = (MMCifInterface) Interface
-          .getOption("adapter.readers.cif.MMCifReader");
+      pr = (MMCifRdr) Interface
+          .getOption("adapter.readers.cif.MMCifRdr");
     isCourseGrained = pr.initialize(this);
   }
 
-  private MSCifInterface initializeMSCIF() throws Exception {
+  private MSCifRdr initializeMSCIF() throws Exception {
     if (mr == null)
-      ms = mr = (MSCifInterface) Interface
-          .getOption("adapter.readers.cif.MSCifReader");
+      ms = mr = (MSCifRdr) Interface
+          .getOption("adapter.readers.cif.MSCifRdr");
     modulated = (mr.initialize(this, modDim) > 0);
     return mr;
   }
@@ -379,6 +382,7 @@ public class CifReader extends AtomSetCollectionReader {
     if (modDim > 0)
       getModulationReader().setModulation(false);
     if (isMagCIF) {
+      vibsFractional = true;
       float[] params = asc.xtalSymmetry.symmetry.getNotionalUnitCell();
       P3 ptScale = P3.new3(1 / params[0], 1 / params[1], 1 / params[2]);
       for (int i = asc.ac; --i >= nAtoms0;)
@@ -396,10 +400,12 @@ public class CifReader extends AtomSetCollectionReader {
     if (isPDB)
       asc.setCheckSpecial(false);
     boolean doCheckBonding = doCheckUnitCell && !isPDB;
-    if (parentCell != null)
-      asc.setAtomSetAuxiliaryInfo("unitcell_parent", parentCell);
-    if (standardCell != null)
-    asc.setAtomSetAuxiliaryInfo("unitcell_standard", standardCell);
+    if (altCell == null) {
+      if (parentCell != null)
+        asc.setAtomSetAuxiliaryInfo("unitcell_parent", parentCell);
+      if (standardCell != null)
+        asc.setAtomSetAuxiliaryInfo("unitcell_standard", standardCell);
+    }
     parentCell = standardCell = null;
     SymmetryInterface sym = applySymTrajASCR();
     if (modDim > 0) {
@@ -410,19 +416,9 @@ public class CifReader extends AtomSetCollectionReader {
     }
     if (isMagCIF && sym != null) {
       addJmolScript("connect none;vectors on;vectors 0.15");
-      int n = 0;
-      for (int i = asc.ac; --i >= nAtoms0;) {
-        if (asc.atoms[i].vib != null) {
-          Vibration v = new Vibration();
-          v.setT(asc.atoms[i].vib);
-          v.scale(MAG_MOMENT_FACTOR);
-          asc.getXSymmetry().symmetry.toCartesian(v, true);
-          asc.atoms[i].vib = v;
-          n++;
-          v.modDim = Vibration.TYPE_SPIN;          
-        }
-      }
-      appendLoadNote(n + " magnetic moments - use VECTORS ON/OFF or VECTOR SCALE x.x or SELECT VXYZ>0");
+      int n = asc.getXSymmetry().setVibVectors();
+      appendLoadNote(n
+          + " magnetic moments - use VECTORS ON/OFF or VECTOR SCALE x.x or SELECT VXYZ>0");
     }
 
     if (auditBlockCode != null && auditBlockCode.contains("REFRNCE")
@@ -1208,7 +1204,7 @@ public class CifReader extends AtomSetCollectionReader {
           case MOMENT_PRELIM_X:
           case MOMENT_X:
             pt.x = v;
-            appendLoadNote(line);
+            appendLoadNote("magnetic moment: " + line);
             break;
           case MOMENT_PRELIM_Y:
           case MOMENT_Y:

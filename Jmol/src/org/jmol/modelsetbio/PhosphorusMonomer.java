@@ -86,10 +86,13 @@ public class PhosphorusMonomer extends Monomer {
   boolean isPhosphorusMonomer() { return true; }
 
   @Override
-  public boolean isDna() { return chain.isDna; }
+  public boolean isDna() { 
+    return chain.isDna; }
 
   @Override
-  public boolean isRna() { return chain.isRna; }
+  public boolean isRna() { 
+    return chain.isRna; 
+    }
 
   @Override
   public boolean isPurine() { return isPurine; }

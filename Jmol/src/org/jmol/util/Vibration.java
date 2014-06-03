@@ -48,4 +48,12 @@ public class Vibration extends V3 {
     return null;
   }
 
+  @Override
+  public Object clone() {
+    Vibration v = new Vibration();
+    v.setT(this);
+    v.modDim = modDim;
+    return v;
+  }
+
 }

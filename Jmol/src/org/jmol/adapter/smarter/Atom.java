@@ -32,6 +32,8 @@ import javajs.util.Lst;
 import javajs.util.P3;
 
 import org.jmol.util.Tensor;
+import org.jmol.util.Vibration;
+
 import javajs.util.V3;
 
 public class Atom extends P3 implements Cloneable {
@@ -84,8 +86,13 @@ public class Atom extends P3 implements Cloneable {
 
   public Atom getClone() throws CloneNotSupportedException {
     Atom a = (Atom)clone();
-    if (vib != null)
-      a.vib = V3.newV(a.vib);
+    if (vib != null) {
+      if (vib instanceof Vibration) {
+        a.vib = (Vibration) ((Vibration) vib).clone();
+      } else {
+        a.vib = V3.newV(a.vib);
+      }
+    }
     if (anisoBorU != null)
       a.anisoBorU = AU.arrayCopyF(anisoBorU, -1);
     if (tensors != null) {

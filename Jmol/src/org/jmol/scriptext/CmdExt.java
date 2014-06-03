@@ -2251,7 +2251,7 @@ public class CmdExt implements JmolCmdExtension {
           break;
         }
         if (eval.theTok == T.plane) {
-          plane = eval.planeParameter(++i);
+          plane = eval.planeParameter(i);
         } else {
           plane = eval.hklParameter(++i);
         }
@@ -3320,7 +3320,7 @@ public class CmdExt implements JmolCmdExtension {
         // plane {X, Y, Z, W}
         planeSeen = true;
         propertyName = "plane";
-        propertyValue = eval.planeParameter(++i);
+        propertyValue = eval.planeParameter(i);
         i = eval.iToken;
         //if (surfaceObjectSeen)
         sbCommand.append(" plane ").append(Escape.eP4((P4) propertyValue));
@@ -4852,7 +4852,7 @@ public class CmdExt implements JmolCmdExtension {
       case T.plane:
         // plane {X, Y, Z, W}
         propertyName = "plane";
-        propertyValue = eval.planeParameter(i + 1);
+        propertyValue = eval.planeParameter(i);
         break;
       case T.point:
         addShapeProperty(propertyList, "randomSeed",
@@ -7151,12 +7151,6 @@ public class CmdExt implements JmolCmdExtension {
     }
     //TODO: check for compatibility with LCAOCARTOONS
     switch (tok) {
-    case T.bitset:
-    case T.expressionBegin:
-      data = atomExpressionAt(i + 1);
-      tok = T.decimal;
-      eval.iToken++;
-      break;
     case T.off:
       eval.iToken = i + 1;
       return Integer.valueOf(Integer.MIN_VALUE);
@@ -7249,6 +7243,14 @@ public class CmdExt implements JmolCmdExtension {
         data = pts;
       }
       break;
+    case T.bitset:
+    case T.expressionBegin:
+      data = atomExpressionAt(i + 1);
+      tok = T.decimal;
+      if (!eval.isCenterParameter(++eval.iToken))
+        break;
+      data = null;
+      //$FALL-THROUGH$
     default:
       // isosurface SLAB n
       // isosurface SLAB -100. 0.  as "within range" 

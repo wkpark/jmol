@@ -975,7 +975,7 @@ public class MainPopupResourceBundle extends PopupResource {
       { "writeFileTextVARIABLE", "if (_applet && !_signedApplet) { console;show file } else { write file \"?FILE?\"}" },      
       { "writeState", "if (_applet && !_signedApplet) { console;show state } else { write state \"?FILEROOT?.spt\"}" },      
       { "writeHistory", "if (_applet && !_signedApplet) { console;show history } else { write history \"?FILEROOT?.his\"}" },     
-      { "SIGNEDwriteJmol", "write \"?FILEROOT?.jmol\"" },      
+      { "SIGNEDwriteJmol", "write PNGJ \"?FILEROOT?.png\"" },      
       { "SIGNEDwriteIsosurface", "write isosurface \"?FILEROOT?.jvxl\"" },      
       { "SIGNEDNOGLwriteGif", "write image \"?FILEROOT?.gif\"" },      
       { "SIGNEDNOGLwriteJpg", "write image \"?FILEROOT?.jpg\"" },      

@@ -95,6 +95,29 @@ public class BilbaoReader extends AtomSetCollectionReader {
     }
   }
 
+  @Override
+  protected boolean checkLine() throws Exception {
+    if (line.contains(">Bilbao Crystallographic Server<")) {
+      line = line.substring(line.lastIndexOf(">") + 1).trim();
+      if (line.length() > 0)
+        appendLoadNote(line + "\n");
+    } else if (line.contains("High symmetry structure<")) {
+      if (getHigh)
+        readBilbaoFormat("high symmetry", Float.NaN);
+    } else if (line.contains("Low symmetry structure<")) {
+      if (!doDisplace)
+        readBilbaoFormat("low symmetry", Float.NaN);
+    } else if (line.contains("structure in the subgroup basis<")) {
+      if (!doDisplace)
+        readBilbaoFormat("high symmetry in the subgroup basis", Float.NaN);
+    } else if (line.contains("Low symmetry structure after the origin shift<")) {
+      readBilbaoFormat("low symmetry after origin shift", Float.NaN);
+    } else if (line.contains("<h3>Irrep:")) {
+      readVirtual();
+    }
+    return true;
+  }
+
   private void readBilbaoDataFile() throws Exception {
     isBCSfile = true;
     checkComment();
@@ -138,8 +161,9 @@ public class BilbaoReader extends AtomSetCollectionReader {
       return;
     asc.newAtomSet();
     setTitle(title);
-    if (line.indexOf("<pre>") >= 0)
-      line = line.substring(line.indexOf("<pre>") + 5);
+    int ptPre = line.indexOf("<pre>");
+    if (ptPre >= 0)
+      line = line.substring(ptPre + 5);
     int intTableNo = parseIntStr(line);
     while (intTableNo < 0 && rdLine() != null)
       intTableNo = parseIntStr(line);
@@ -156,8 +180,11 @@ public class BilbaoReader extends AtomSetCollectionReader {
         continue;
       addAtomXYZSymName(tokens, 3, tokens[0], tokens[0] + tokens[1]);
     }
-    if (Float.isNaN(fAmp))
+    if (Float.isNaN(fAmp)) {
+      if (ptPre >= 0)
+        applySymmetryAndSetTrajectory();
       return;
+    }
     line = null;
     readDisplacements(fAmp);
   }
@@ -204,29 +231,6 @@ public class BilbaoReader extends AtomSetCollectionReader {
     while (rd() != null && (line.length() == 0 || checkComment())) {
     }
     return line;
-  }
-
-  @Override
-  protected boolean checkLine() throws Exception {
-    if (line.contains(">Bilbao Crystallographic Server<")) {
-      line = line.substring(line.lastIndexOf(">") + 1).trim();
-      if (line.length() > 0)
-        appendLoadNote(line + "\n");
-    } else if (line.contains("High symmetry structure<")) {
-      if (getHigh)
-        readBilbaoFormat("high symmetry", Float.NaN);
-    } else if (line.contains("Low symmetry structure<")) {
-      if (!doDisplace)
-        readBilbaoFormat("low symmetry", Float.NaN);
-    } else if (line.contains("structure in the subgroup basis<")) {
-      if (!doDisplace)
-        readBilbaoFormat("high symmetry in the subgroup basis", Float.NaN);
-    } else if (line.contains("Low symmetry structure after the origin shift<")) {
-      readBilbaoFormat("low symmetry after origin shift", Float.NaN);
-    } else if (line.contains("<h3>Irrep:")) {
-      readVirtual();
-    }
-    return true;
   }
 
   /*

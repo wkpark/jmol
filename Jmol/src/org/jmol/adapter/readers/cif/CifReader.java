@@ -273,17 +273,22 @@ public class CifReader extends AtomSetCollectionReader {
 
   private String parentCell;
   private String standardCell;
+  private String convCell;
   
   private void processUnitCellTransform() {
     data = PT.replaceAllCharacters(data,  " ", "");
     if (key.contains("_from_parent")) {
       parentCell = "!" + data;
-      if ("parent".equalsIgnoreCase(altCell))
+      if ("parent".equalsIgnoreCase(altCell)) {
         altCell = parentCell;
+        convCell = data;
+      }
     } else if (key.contains("_to_standard")) {
       standardCell = data;
-      if ("standard".equalsIgnoreCase(altCell))
+      if ("standard".equalsIgnoreCase(altCell)) {
         altCell = standardCell;
+        convCell = "!" + data;
+      }
     }
     appendLoadNote(key + ": " + data);
   }
@@ -405,6 +410,8 @@ public class CifReader extends AtomSetCollectionReader {
         asc.setAtomSetAuxiliaryInfo("unitcell_parent", parentCell);
       if (standardCell != null)
         asc.setAtomSetAuxiliaryInfo("unitcell_standard", standardCell);
+    } else if (convCell != null) {
+      asc.setAtomSetAuxiliaryInfo("unitcell_conventional", convCell);      
     }
     parentCell = standardCell = null;
     SymmetryInterface sym = applySymTrajASCR();

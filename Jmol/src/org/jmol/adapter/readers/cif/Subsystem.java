@@ -14,7 +14,7 @@ import org.jmol.util.Logger;
 
 class Subsystem {
 
-  private MSRdr msReader;
+  private MSRdr msRdr;
   private String code;
   private int d;
   private Matrix w;
@@ -23,8 +23,8 @@ class Subsystem {
   private Matrix[] modMatrices;
   private boolean isFinalized;
 
-  Subsystem(MSRdr msReader, String code, Matrix w) {
-    this.msReader = msReader;
+  Subsystem(MSRdr msRdr, String code, Matrix w) {
+    this.msRdr = msRdr;
     this.code = code;
     this.w = w;
     d = w.getArray().length - 3;
@@ -58,7 +58,7 @@ class Subsystem {
     Matrix wd3 = w.getSubmatrix(3, 0, d, 3);
     Matrix w3d = w.getSubmatrix(0, 3, 3, d);
     Matrix wdd = w.getSubmatrix(3, 3, d, d);
-    Matrix sigma = msReader.getSigma();
+    Matrix sigma = msRdr.getSigma();
     Matrix sigma_nu = wdd.mul(sigma).add(wd3).mul(w3d.mul(sigma).add(w33).inverse());
     Matrix tFactor = wdd.sub(sigma_nu.mul(w3d)); 
     
@@ -66,7 +66,7 @@ class Subsystem {
     
     // Part 2: Get the new unit cell and symmetry operators
 
-    SymmetryInterface s0 = msReader.cr.asc.getSymmetry();
+    SymmetryInterface s0 = msRdr.cr.asc.getSymmetry();
     V3[] vu43 = s0.getUnitCellVectors();
     V3[] vr43 = reciprocalsOf(vu43);
 
@@ -123,7 +123,7 @@ class Subsystem {
         //
         // (Wj R Wi_inv).submatrix(0,3,3,d) == all_zeros
         //
-        for (Entry<String, Subsystem> e: msReader.htSubsystems.entrySet()){
+        for (Entry<String, Subsystem> e: msRdr.htSubsystems.entrySet()){
           Subsystem ss = e.getValue();
           if (ss == this)
             continue;

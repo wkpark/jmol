@@ -39,7 +39,7 @@ import org.jmol.util.Tensor;
  * 
  */
 
-public class MSReader implements MSInterface {
+public class MSRdr implements MSInterface {
 
   protected AtomSetCollectionReader cr; // Cif or Jana
 
@@ -80,7 +80,7 @@ public class MSReader implements MSInterface {
 
   private boolean finalized;
 
-  public MSReader() {
+  public MSRdr() {
     // for reflection from Jana
   }
 

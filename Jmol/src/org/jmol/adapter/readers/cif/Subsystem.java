@@ -14,7 +14,7 @@ import org.jmol.util.Logger;
 
 class Subsystem {
 
-  private MSReader msReader;
+  private MSRdr msReader;
   private String code;
   private int d;
   private Matrix w;
@@ -23,7 +23,7 @@ class Subsystem {
   private Matrix[] modMatrices;
   private boolean isFinalized;
 
-  Subsystem(MSReader msReader, String code, Matrix w) {
+  Subsystem(MSRdr msReader, String code, Matrix w) {
     this.msReader = msReader;
     this.code = code;
     this.w = w;

@@ -28,7 +28,7 @@ import javajs.util.Matrix;
 import javajs.util.PT;
 
 
-public class MSCifRdr extends MSReader {
+public class MSCifRdr extends MSRdr {
 
   public MSCifRdr() {
     // for reflection

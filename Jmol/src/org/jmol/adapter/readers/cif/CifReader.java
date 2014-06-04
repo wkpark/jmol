@@ -391,8 +391,9 @@ public class CifReader extends AtomSetCollectionReader {
       float[] params = asc.xtalSymmetry.symmetry.getNotionalUnitCell();
       P3 ptScale = P3.new3(1 / params[0], 1 / params[1], 1 / params[2]);
       for (int i = asc.ac; --i >= nAtoms0;)
-        if (asc.atoms[i].vib != null)
+        if (asc.atoms[i].vib != null) {
           asc.atoms[i].vib.scaleT(ptScale);
+        }
     }
   }
 
@@ -414,6 +415,7 @@ public class CifReader extends AtomSetCollectionReader {
       asc.setAtomSetAuxiliaryInfo("unitcell_conventional", convCell);      
     }
     parentCell = standardCell = null;
+
     SymmetryInterface sym = applySymTrajASCR();
     if (modDim > 0) {
       addLatticeVectors();

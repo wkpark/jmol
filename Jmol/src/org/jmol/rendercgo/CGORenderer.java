@@ -73,6 +73,7 @@ public class CGORenderer extends DrawRenderer {
     doColor = !mesh.useColix;
     P3 pt;
     P3i spt;
+    g3d.addRenderer(T.triangles);
     for (int i = 0; i < n; i++) {
       int type = cgoMesh.getInt(i);
       if (type == CGOMesh.STOP)
@@ -264,7 +265,6 @@ public class CGORenderer extends DrawRenderer {
 
 
   private void fillTriangle() {
-    g3d.addRenderer(T.triangles);
     g3d.fillTriangle3CN(pt0i, colix0, normix0, pt1i, colix1, normix1, pt2i,
         colix2, normix2);
   }

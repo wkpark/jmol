@@ -29,6 +29,7 @@ import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javajs.util.AU;
 import javajs.util.M3;
 import javajs.util.P3;
 import javajs.util.PT;
@@ -109,6 +110,7 @@ public class Tensor {
   public double[][] symMatrix;    
   public V3[] eigenVectors;
   public float[] eigenValues;
+  public float[] parBorU;  // unmodulated
 
   // derived type-based information, Jmol-centric, for rendering:
   
@@ -135,7 +137,6 @@ public class Tensor {
   
   public boolean isModulated;
   public boolean isUnmodulated;
-  public float[] parBorU;  // unmodulated
 
   private static final String infoList = 
     ";............." + ";eigenvalues.." + ";eigenvectors."
@@ -375,6 +376,7 @@ public class Tensor {
     t.modelIndex = modelIndex;
     t.atomIndex1 = atomIndex1;
     t.atomIndex2 = atomIndex2;
+    t.parBorU = parBorU;
     t.id = id;
     return t;
   }

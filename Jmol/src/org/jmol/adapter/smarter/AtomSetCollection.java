@@ -558,8 +558,7 @@ public class AtomSetCollection {
     if (atomSetCount == 0)
       newAtomSet();
     atom.index = ac;
-    atoms[ac++] = atom;
-    
+    atoms[ac++] = atom;    
     atom.atomSetIndex = iSet;
     atom.atomSite = atomSetAtomCounts[iSet]++;
     return atom;

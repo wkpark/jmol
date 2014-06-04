@@ -768,6 +768,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
       saveDiffuse = shader.diffusePercent;
       setAmbientPercent(100);
       setDiffusePercent(0);
+      addRenderer(T.circle);
     } else {
       setAmbientPercent(saveAmbient);
       setDiffusePercent(saveDiffuse);

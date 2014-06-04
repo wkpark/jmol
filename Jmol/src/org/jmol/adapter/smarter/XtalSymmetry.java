@@ -282,10 +282,11 @@ public class XtalSymmetry {
         pt.add(oabc[1]);
         symmetry.toFractional(pt, false);
         setSymmetryMinMax(pt);
-        minXYZ = P3i.new3((int) Math.floor(rminx), (int) Math.floor(rminy),
-            (int) Math.floor(rminz));
-        maxXYZ = P3i.new3((int) Math.ceil(rmaxx), (int) Math.ceil(rmaxy),
-            (int) Math.ceil(rmaxz));
+        // allow for some imprecision
+        minXYZ = P3i.new3((int) Math.floor(rminx + 0.001f), (int) Math.floor(rminy + 0.001f),
+            (int) Math.floor(rminz + 0.001f));
+        maxXYZ = P3i.new3((int) Math.ceil(rmaxx - 0.001f), (int) Math.ceil(rmaxy - 0.001f),
+            (int) Math.ceil(rmaxz - 0.001f));
       }
     } else if (fmatSupercell != null) {
 
@@ -310,11 +311,11 @@ public class XtalSymmetry {
       Logger.info("setting min/max for original lattice to " + minXYZ + " and "
           + maxXYZ);
       boolean doPack0 = doPackUnitCell;
-      doPackUnitCell = false;
+      doPackUnitCell = (oabc != null);
       if (asc.bsAtoms == null)
         asc.bsAtoms = BSUtil.setAll(asc.ac);
       bsAtoms = asc.bsAtoms;
-      applyAllSymmetry(ms, null, false);
+      applyAllSymmetry(ms, null, false, false);
       doPackUnitCell = doPack0;
       setVibVectors();
 
@@ -365,8 +366,9 @@ public class XtalSymmetry {
 
     minXYZ = new P3i();
     maxXYZ = P3i.new3(maxX, maxY, maxZ);
-    applyAllSymmetry(ms, bsAtoms, fmatSupercell != null || oabc != null);
+    applyAllSymmetry(ms, bsAtoms, fmatSupercell != null || oabc != null, oabc != null);
     fmatSupercell = null;
+    
     // but we leave matSupercell, because we might need it for vibrations in CASTEP
   }
 
@@ -419,13 +421,15 @@ public class XtalSymmetry {
    * @param ms
    *        modulated structure interface
    * @param bsAtoms
-   *        relating to supercells
+   *        relating to supercells or altCells
    * @param disableSymmetry
-   *        relating to supercells
+   *        supercells or altCells
+   * @param isOffset 
+   *        relating to altCells
    * @throws Exception
    */
   private void applyAllSymmetry(MSInterface ms, BS bsAtoms,
-                                boolean disableSymmetry) throws Exception {
+                                boolean disableSymmetry, boolean isOffset) throws Exception {
     if (asc.ac == 0)
       return;
     noSymmetryCount = (asc.baseSymmetryAtomCount == 0 ? asc
@@ -506,11 +510,17 @@ public class XtalSymmetry {
     int iCell = 0;
     int cell555Count = 0;
     float absRange = Math.abs(symmetryRange);
-    boolean checkSymmetryRange = (symmetryRange != 0);
+    boolean checkCartesianRange = (symmetryRange != 0);
     boolean checkRangeNoSymmetry = (symmetryRange < 0);
     boolean checkRange111 = (symmetryRange > 0);
-    if (checkSymmetryRange)
-      rminx = rminy = rminz = rmaxx = rmaxy = rmaxz = 0;
+    if (checkCartesianRange) {
+      rminx = Float.MAX_VALUE;
+      rminy = Float.MAX_VALUE;
+      rminz = Float.MAX_VALUE;
+      rmaxx = -Float.MAX_VALUE;
+      rmaxy = -Float.MAX_VALUE;
+      rmaxz = -Float.MAX_VALUE;
+    }
     // always do the 555 cell first
 
     // incommensurate symmetry can have lattice centering, resulting in 
@@ -522,15 +532,18 @@ public class XtalSymmetry {
     checkAll = (disableSymmetry || asc.atomSetCount == 1 && asc.checkSpecial
         && latticeOp >= 0);
     latticeOnly = (asc.checkLatticeOnly && latticeOp >= 0); // CrystalReader
-    if (disableSymmetry) {
+    if (isOffset) {
       // disable all symmetry
       latticeOnly = true;
       latticeOp = -1;
     }
-
+    P3 pttemp = null;
     M4 op = symmetry.getSpaceGroupOperation(0);
-    if (doPackUnitCell)
+    if (doPackUnitCell){
+      pttemp = new P3();
       ptOffset.set(0, 0, 0);
+    }
+    
     for (int tx = minXYZ.x; tx < maxXYZ.x; tx++)
       for (int ty = minXYZ.y; ty < maxXYZ.y; ty++)
         for (int tz = minXYZ.z; tz < maxXYZ.z; tz++) {
@@ -556,13 +569,14 @@ public class XtalSymmetry {
             symmetry.toCartesian(c, false);
             if (doPackUnitCell) {
               symmetry.toUnitCell(c, ptOffset);
-              symmetry.toFractional(c, false);
+              pttemp.setT(c);
+              symmetry.toFractional(pttemp, false);
               // when bsAtoms != null, we are
               // setting it to be correct for a 
               // second unit cell -- the supercell
               if (bsAtoms == null)
-                atom.setT(c);
-              else if (atom.distance(c) < 0.0001f)
+                atom.setT(pttemp);
+              else if (atom.distance(pttemp) < 0.0001f)
                 bsAtoms.set(atom.index);
               else {// not in THIS unit cell
                 bsAtoms.clear(atom.index);
@@ -573,7 +587,7 @@ public class XtalSymmetry {
               atom.bsSymmetry.clearAll();
             atom.bsSymmetry.set(iCell * operationCount);
             atom.bsSymmetry.set(0);
-            if (checkSymmetryRange)
+            if (checkCartesianRange)
               setSymmetryMinMax(c);
             if (pt < cartesianCount)
               cartesians[pt] = c;
@@ -587,7 +601,7 @@ public class XtalSymmetry {
             rmaxz += absRange;
           }
           cell555Count = pt = symmetryAddAtoms(0, 0, 0, 0, pt, iCell
-              * operationCount, cartesians, ms, false);
+              * operationCount, cartesians, ms, false, isOffset);
         }
     if (checkRange111) {
       rminx -= absRange;
@@ -606,7 +620,7 @@ public class XtalSymmetry {
           iCell++;
           if (tx != 0 || ty != 0 || tz != 0)
             pt = symmetryAddAtoms(tx, ty, tz, cell555Count, pt, iCell
-                * operationCount, cartesians, ms, disableSymmetry);
+                * operationCount, cartesians, ms, disableSymmetry, isOffset);
         }
     if (iCell * noSymmetryCount == asc.ac - firstSymmetryAtom)
       appendAtomProperties(iCell);
@@ -629,7 +643,7 @@ public class XtalSymmetry {
   private int symmetryAddAtoms(int transX, int transY, int transZ,
                                int baseCount, int pt, int iCellOpPt,
                                P3[] cartesians, MSInterface ms,
-                               boolean disableSymmetry) throws Exception {
+                               boolean disableSymmetry, boolean isOffset) throws Exception {
     boolean isBaseCell = (baseCount == 0);
     boolean addBonds = (bondCount0 > asc.bondIndex0 && applySymmetryToBonds);
     int[] atomMap = (addBonds ? new int[noSymmetryCount] : null);

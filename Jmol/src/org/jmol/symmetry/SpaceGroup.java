@@ -464,13 +464,19 @@ class SpaceGroup {
 
   private int addOp(SymmetryOperation op, String xyz0, boolean isSpecial) {
     String xyz = op.xyz;
+    String xxx = PT.replaceAllCharacters(xyz, "+123/", "");
     if (!isSpecial) {
       // ! in character 0 indicates we are using the symop() function and want to be explicit
       if (xyzList.containsKey(xyz))
         return xyzList.get(xyz).intValue();
-      if (latticeOp < 0 && xyzList.containsKey(PT.replaceAllCharacters(xyz, "+123/", "")))
-        latticeOp = operationCount;
-      xyzList.put(xyz, Integer.valueOf(operationCount));
+      if (latticeOp < 0) {
+        if (xyzList.containsKey(xxx))
+          latticeOp = operationCount;
+        else
+          xyzList.put(xxx, Integer.valueOf(operationCount));
+      }
+      if (xyz != null)
+        xyzList.put(xyz, Integer.valueOf(operationCount));
     }
     if (xyz != null && !xyz.equals(xyz0))
       xyzList.put(xyz0, Integer.valueOf(operationCount));
@@ -482,8 +488,7 @@ class SpaceGroup {
     operations[operationCount++] = op;
     op.index = operationCount;
     if (Logger.debugging)
-        Logger.debug("\naddOperation " + operationCount
-        + op.dumpInfo());
+      Logger.debug("\naddOperation " + operationCount + op.dumpInfo());
     return operationCount - 1;
   }
 

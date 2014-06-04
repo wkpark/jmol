@@ -394,6 +394,7 @@ public class MSRdr implements MSInterface {
     if (htSubsystems == null) {
       haveAtomMods = false;
     } else {
+      cr.altCell = null; // disallow setting unit cell
       haveAtomMods = true;
       htAtomMods = new Hashtable<String, Lst<Modulation>>();
     }
@@ -858,8 +859,10 @@ public class MSRdr implements MSInterface {
       sym.toFractional(pt, false);
       if (!asc.xtalSymmetry.isWithinCell(3, pt, minXYZ0.x, maxXYZ0.x,
           minXYZ0.y, maxXYZ0.y, minXYZ0.z, maxXYZ0.z, 0.001f)
-          || isCommensurate && !modAverage && a.foccupancy < 0.5f)
+          || isCommensurate && !modAverage && a.foccupancy < 0.5f) {
+        System.out.println(a.atomName + " " + a + " " + pt);
         bs.clear(i);
+      }
     }
   }
 

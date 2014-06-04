@@ -463,7 +463,7 @@ class SpaceGroup {
   }
 
   private int addOp(SymmetryOperation op, String xyz0, boolean isSpecial) {
-    String xyz = op.xyz;
+    String xyz = op.xyz + op.timeReversal;
     String xxx = PT.replaceAllCharacters(xyz, "+123/", "");
     if (!isSpecial) {
       // ! in character 0 indicates we are using the symop() function and want to be explicit
@@ -475,11 +475,10 @@ class SpaceGroup {
         else
           xyzList.put(xxx, Integer.valueOf(operationCount));
       }
-      if (xyz != null)
         xyzList.put(xyz, Integer.valueOf(operationCount));
     }
-    if (xyz != null && !xyz.equals(xyz0))
-      xyzList.put(xyz0, Integer.valueOf(operationCount));
+    if (!xyz.equals(xyz0 + op.timeReversal))
+      xyzList.put(xyz0 + op.timeReversal, Integer.valueOf(operationCount));
     if (operations == null)
       operations = new SymmetryOperation[4];
     if (operationCount == operations.length)

@@ -424,7 +424,7 @@ public class CifReader extends AtomSetCollectionReader {
       mr.finalizeModulation();
     }
     if (isMagCIF && sym != null) {
-      addJmolScript("connect none;vectors on;vectors 0.15");
+      addJmolScript("connect none;vectors on;vectors 0.15;");
       int n = asc.getXSymmetry().setVibVectors();
       appendLoadNote(n
           + " magnetic moments - use VECTORS ON/OFF or VECTOR SCALE x.x or SELECT VXYZ>0");
@@ -1378,10 +1378,10 @@ public class CifReader extends AtomSetCollectionReader {
                 if (timeRev != 0)
                   field = field.substring(0, field.length() - 3);
               }
+              if (timeRev != 0 && !field.equals("x,y,z"))
+                field += ",m" + timeRev;
               symops.addLast(field);
-              int op = setSymmetryOperator(field);
-              if (op >= 0 && timeRev != 0)
-                asc.getXSymmetry().setTimeReversal(op, timeRev);
+              setSymmetryOperator(field);
             }
           break;
         }

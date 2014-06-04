@@ -272,6 +272,8 @@ class SymmetryOperation extends M4 {
       this.xyz = (isBio ? toString() : getXYZFromMatrix(this, false, false, false));
       return true;
     }
+    if (xyz.indexOf(",m") >= 0)
+      timeReversal = (xyz.indexOf(",m-1") >= 0 ? -1 : 1);
     String strOut = getMatrixFromString(this, xyz, linearRotTrans, allowScaling);
     if (strOut == null)
       return false;
@@ -1471,10 +1473,12 @@ class SymmetryOperation extends M4 {
   public float getSpinOp() {
     if (magOp == Float.MAX_VALUE)
       magOp = determinant3() * timeReversal;
+    //System.out.println("sym op " + index + " " + xyz + " has tr " + timeReversal + " and magop " + magOp);
     return magOp;
   }
 
   public void setTimeReversal(int magRev) {
+    System.out.println("sym op " + index + " " + xyz + " has tr " + magRev);
     timeReversal = magRev;
   }
 

@@ -584,8 +584,10 @@ public class JmolUtil implements JmolZipUtilities {
       }
       if (!doCombine)
         return vCollections;
-      AtomSetCollection result = new AtomSetCollection("Array", null, null,
-          vCollections);
+      
+      AtomSetCollection result = (vCollections.size() == 1 && vCollections.get(0) instanceof AtomSetCollection 
+            ? (AtomSetCollection) vCollections.get(0) : new AtomSetCollection("Array", null, null,
+          vCollections));
       if (result.errorMessage != null) {
         if (ignoreErrors)
           return null;

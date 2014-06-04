@@ -98,7 +98,7 @@ public class SimpleUnitCell {
     nc = Math.max(1, parameters.length >= 25 && !Float.isNaN(parameters[24]) ? (int) parameters[24] : 1);
 
     if (a <= 0) {
-      // must calculate a, b, c alpha beta gamma from vectors;
+      // must calculate a, b, c alpha beta gamma from Cartesian vectors;
       V3 va = V3.new3(parameters[6], parameters[7], parameters[8]);
       V3 vb = V3.new3(parameters[9], parameters[10], parameters[11]);
       V3 vc = V3.new3(parameters[12], parameters[13], parameters[14]);

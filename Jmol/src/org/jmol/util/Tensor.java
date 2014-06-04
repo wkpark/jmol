@@ -29,7 +29,6 @@ import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javajs.util.AU;
 import javajs.util.M3;
 import javajs.util.P3;
 import javajs.util.PT;

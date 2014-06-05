@@ -3985,9 +3985,10 @@ public class ScriptEval extends ScriptExpr {
     boolean isData = false;
     boolean isAsync = false;
     boolean isConcat = false;
+    boolean doOrient = false;
+    boolean appendNew = vwr.getBoolean(T.appendnew);
     BS bsModels;
     int i = (tokAt(0) == T.data ? 0 : 1);
-    boolean appendNew = vwr.getBoolean(T.appendnew);
     String filter = null;
     int modelCount0 = vwr.getModelCount()
         - (vwr.getFileName().equals("zapped") ? 1 : 0);
@@ -4029,9 +4030,10 @@ public class ScriptEval extends ScriptExpr {
         }
       }
 
+      tok = tokAt(i);
       // load MENU
       // load DATA "xxx" ...(data here)...END "xxx"
-      // load DATA "append xxx" ...(data here)...END "append xxx"
+      // load DATA "append_and/or_orientation xxx" ...(data here)...END "append_and/or_orientation xxx"
       // load DATA "@varName"
       // load APPEND (moves pointer forward)
       // load XYZ
@@ -4040,7 +4042,7 @@ public class ScriptEval extends ScriptExpr {
       // load TEMPERATURE
       // load OCCUPANCY
       // load PARTIALCHARGE
-      switch (tok = tokAt(i)) {
+      switch (tok) {
       case T.menu:
         String m = paramAsStr(checkLast(2));
         if (!chk)
@@ -4052,6 +4054,7 @@ public class ScriptEval extends ScriptExpr {
         String key = stringParameter(++i).toLowerCase();
         loadScript.append(" ").append(PT.esc(key));
         isAppend = key.startsWith("append");
+        doOrient = (key.indexOf("orientation") >= 0);
         String strModel = (key.indexOf("@") >= 0 ? ""
             + getParameter(key.substring(key.indexOf("@") + 1), T.string, true)
             : paramAsStr(++i));
@@ -4069,6 +4072,13 @@ public class ScriptEval extends ScriptExpr {
       case T.append:
         isAppend = true;
         loadScript.append(" append");
+        modelName = optParameterAsString(++i);
+        tok = T.getTokFromName(modelName);
+        break;
+      case T.orientation:
+        doOrient = true;
+        loadScript.append(" orientation");
+        vwr.stm.saveOrientation("preload", null);
         modelName = optParameterAsString(++i);
         tok = T.getTokFromName(modelName);
         break;
@@ -4367,17 +4377,17 @@ public class ScriptEval extends ScriptExpr {
         if (localName != null)
           localName = vwr.getFilePath(localName, false);
         if (!filename.equals("string") && !filename.equals("string[]"))
-          loadScript.append("/*file*/").append((localName != null ? PT.esc(localName) : "$FILENAME$"));
+          loadScript.append("/*file*/").append(
+              (localName != null ? PT.esc(localName) : "$FILENAME$"));
       }
       if (!isConcat && filename.startsWith("=") && filename.endsWith("/dssr")) {
-        
+
         // load =1mys/dssr  -->  load =1mys + =dssr/1mys
 
         isConcat = true;
         filenames = new String[] {
             filename.substring(0, filename.length() - 5),
-            "=dssr/" + filename.substring(1, 5) 
-            };
+            "=dssr/" + filename.substring(1, 5) };
         filename = "fileSet";
         loadScript = null;
       } else {
@@ -4435,7 +4445,8 @@ public class ScriptEval extends ScriptExpr {
       report("Successfully loaded:"
           + (filenames == null ? htParams.get("fullPathName") : modelName));
 
-    finalizeLoad(isAppend, appendNew, isConcat, nFiles, ac0, modelCount0);
+    finalizeLoad(isAppend, appendNew, isConcat, doOrient, nFiles, ac0,
+        modelCount0);
 
   }
 
@@ -4758,41 +4769,43 @@ public class ScriptEval extends ScriptExpr {
   }
 
   private void finalizeLoad(boolean isAppend, boolean appendNew,
-                            boolean isConcat, int nFiles, int ac0, int modelCount0) throws ScriptException {
+                            boolean isConcat, boolean doOrient,
+                            int nFiles, int ac0, int modelCount0) throws ScriptException {
     if (isAppend && (appendNew || nFiles > 1)) {
       vwr.setAnimationRange(-1, -1);
       vwr.setCurrentModelIndex(modelCount0);
     }    
     if (scriptLevel == 0 && !isAppend && (isConcat || nFiles < 2))
       showString((String) vwr.ms.getInfoM("modelLoadNote"));
-    Map<String, Object> info = vwr.getModelSetAuxiliaryInfo();
-    if (info != null && info.containsKey("centroidMinMax")
-        && vwr.getAtomCount() > 0) {
+    Object centroid = vwr.ms.getInfoM("centroidMinMax");
+    if (PT.isAI(centroid) && vwr.getAtomCount() > 0) {
       BS bs = BSUtil.newBitSet2(isAppend ? ac0 : 0, vwr.getAtomCount());
-      vwr.setCentroid(bs, (int[]) info.get("centroidMinMax"));
+      vwr.setCentroid(bs, (int[]) centroid);
     }
     String script = vwr.g.defaultLoadScript;
     String msg = "";
     if (script.length() > 0)
       msg += "\nUsing defaultLoadScript: " + script;
-    if (info != null && vwr.allowEmbeddedScripts()) {
-      String embeddedScript = (String) info.remove("jmolscript");
-      if (embeddedScript != null && embeddedScript.length() > 0) {
+    String embeddedScript;
+    Map<String, Object> info = vwr.ms.getMSInfo();
+    if (info != null && vwr.allowEmbeddedScripts() 
+        && (embeddedScript = (String) info.remove("jmolscript")) != null 
+        && embeddedScript.length() > 0) {
         msg += "\nAdding embedded #jmolscript: " + embeddedScript;
         script += ";" + embeddedScript;
         setStringProperty("_loadScript", script);
         script = "allowEmbeddedScripts = false;try{" + script
             + "} allowEmbeddedScripts = true;";
-      }
     } else {
       setStringProperty("_loadScript", "");
     }
     logLoadInfo(msg);
 
-    String siteScript = (info == null ? null : (String) info
-        .remove("sitescript"));
+    String siteScript = (info == null ? null : (String) info.remove("sitescript"));
     if (siteScript != null)
       script = siteScript + ";" + script;
+    if (doOrient)
+      script += ";restore orientation preload";
     if (script.length() > 0 && !isCmdLine_c_or_C_Option)
       // NOT checking embedded scripts in some cases
       runScript(script);
@@ -7608,35 +7621,41 @@ public class ScriptEval extends ScriptExpr {
     Object newUC = null;
     boolean isOffset = false;
     boolean isReset = false;
-    switch (tokAt(index + 1)) {
+    int tok = tokAt(++index);
+    switch (tok) {
     case T.restore:
     case T.reset:
       isReset = true;
-      pt = P4.new4(0,  0,  0,  -1); // reset offset and range
-      index++;
+      pt = P4.new4(0, 0, 0, -1); // reset offset and range
       iToken++;
       break;
     case T.string:
-      String s = stringParameter(++index).toLowerCase();
+    case T.identifier:
+      String s = paramAsStr(index).toLowerCase();
       if (s.indexOf(",") >= 0) {
         newUC = s;
       } else if (!chk) {
-        // parent, standard, conventional (TODO)
+        // parent, standard, conventional
         vwr.setCurrentCagePts(null);
-        newUC = vwr.getModelAuxiliaryInfoValue(vwr.am.cmi, "unitcell_" + s);
+        if (PT.isOneOf(s, ";parent;standard;primitive;")) {
+          newUC = vwr.getModelAuxiliaryInfoValue(vwr.am.cmi, "unitcell_conventional");
+          if (newUC != null)
+            vwr.setCurrentCagePts(vwr.getV0abc(newUC));
+        }
+        s = (String) vwr.getModelAuxiliaryInfoValue(vwr.am.cmi, "unitcell_" + s);
+        showString(s);
+        newUC = s;
       }
       break;
     case T.isosurface:
     case T.dollarsign:
-      index++;
       id = objectNameParameter(++index);
       break;
     case T.matrix3f:
     case T.matrix4f:
-      newUC = getToken(++index).value;
+      newUC = getToken(index).value;
       break;
     case T.center:
-      ++index;
       switch (tokAt(++index)) {
       case T.bitset:
       case T.expressionBegin:
@@ -7658,7 +7677,7 @@ public class ScriptEval extends ScriptExpr {
       break;
     case T.bitset:
     case T.expressionBegin:
-      int iAtom = atomExpressionAt(1).nextSetBit(0);
+      int iAtom = atomExpressionAt(index).nextSetBit(0);
       if (!chk)
         vwr.am.cai = iAtom;
       if (iAtom < 0)
@@ -7669,27 +7688,32 @@ public class ScriptEval extends ScriptExpr {
       isOffset = true;
       //$FALL-THROUGH$
     case T.range:
-      ++index;
       pt = (P3) getPointOrPlane(++index, false, true, false, true, 3, 3);
       pt = P4.new4(pt.x, pt.y, pt.z, (isOffset ? 1 : 0));
       index = iToken;
       break;
-    case T.spacebeforesquare:
-      index++;
-      //$FALL-THROUGH$
+    case T.decimal:
+    case T.integer:
+      float f = floatParameter(index);
+      if (f < 111) {
+        // diameter
+        index--;
+        break;
+      }
+      icell = intParameter(index);
+      break;
     default:
-      if (isArrayParameter(index + 1)) {
+      if (isArrayParameter(index)) {
         // Origin vA vB vC
         // these are VECTORS, though
         oabc = getPointArray(index, 4);
         index = iToken;
-      } else if (slen == index + 2) {
-        if (getToken(index + 1).tok == T.integer
-            && intParameter(index + 1) >= 111)
-          icell = intParameter(++index);
       } else if (slen > index + 1) {
-        pt = (P3) getPointOrPlane(++index, false, true, false, true, 3, 3);
+        pt = (P3) getPointOrPlane(index, false, true, false, true, 3, 3);
         index = iToken;
+      } else {
+        // backup for diameter
+        index--;
       }
     }
     mad = getSetAxesTypeMad(++index);
@@ -7704,7 +7728,7 @@ public class ScriptEval extends ScriptExpr {
       vwr.ms.setUnitCellOffset(vwr.getCurrentUnitCell(), null, icell);
     else if (id != null)
       vwr.setCurrentCage(id);
-    else if (isReset ||oabc != null)
+    else if (isReset || oabc != null)
       vwr.setCurrentCagePts(oabc);
     setObjectMad(JC.SHAPE_UCCAGE, "unitCell", mad);
     if (pt != null)

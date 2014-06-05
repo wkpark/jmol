@@ -37,6 +37,7 @@ import javajs.api.GenericCifDataParser;
 import javajs.util.Lst;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.jmol.util.Logger;
 
@@ -271,26 +272,26 @@ public class CifReader extends AtomSetCollectionReader {
     return true;
   }
 
-  private String parentCell;
-  private String standardCell;
-  private String convCell;
-  
   private void processUnitCellTransform() {
     data = PT.replaceAllCharacters(data,  " ", "");
-    if (key.contains("_from_parent")) {
-      parentCell = "!" + data;
-      if ("parent".equalsIgnoreCase(altCell)) {
-        altCell = parentCell;
-        convCell = data;
-      }
-    } else if (key.contains("_to_standard")) {
-      standardCell = data;
-      if ("standard".equalsIgnoreCase(altCell)) {
-        altCell = standardCell;
-        convCell = "!" + data;
-      }
-    }
+    if (key.contains("_from_parent"))
+      addCellType("parent", true);
+    else if (key.contains("_to_standard"))
+      addCellType("standard", false);
     appendLoadNote(key + ": " + data);
+  }
+
+  private Map<String, String> htCellTypes;
+  
+  private void addCellType(String type, boolean isFrom) {
+    if (htCellTypes == null)
+      htCellTypes = new Hashtable<String, String>();
+    String cell = (isFrom ? "!" : "") + data;
+    htCellTypes.put(type, cell);
+    if (type.equalsIgnoreCase(altCell)) {
+      altCell = cell;
+      htCellTypes.put("conventional", (isFrom ? "" : "!") + data);
+    }
   }
 
   /**
@@ -406,16 +407,11 @@ public class CifReader extends AtomSetCollectionReader {
     if (isPDB)
       asc.setCheckSpecial(false);
     boolean doCheckBonding = doCheckUnitCell && !isPDB;
-    if (altCell == null) {
-      if (parentCell != null)
-        asc.setAtomSetAuxiliaryInfo("unitcell_parent", parentCell);
-      if (standardCell != null)
-        asc.setAtomSetAuxiliaryInfo("unitcell_standard", standardCell);
-    } else if (convCell != null) {
-      asc.setAtomSetAuxiliaryInfo("unitcell_conventional", convCell);      
+    if (htCellTypes != null) {
+      for (Entry<String, String> e : htCellTypes.entrySet())
+        asc.setAtomSetAuxiliaryInfo("unitcell_" + e.getKey(), e.getValue());
+      htCellTypes = null;
     }
-    parentCell = standardCell = null;
-
     SymmetryInterface sym = applySymTrajASCR();
     if (modDim > 0) {
       addLatticeVectors();

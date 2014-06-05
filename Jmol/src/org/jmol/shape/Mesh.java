@@ -308,23 +308,25 @@ public class Mesh extends MeshSurface {
   public String getState(String type) {
     //String sxml = null; // problem here is that it can be WAY to large. Shape.getXmlPropertyString(xmlProperties, type);
     SB s = new SB();
-    //if (sxml != null)
+    if (isValid) {
+      //if (sxml != null)
       //s.append("/** XML ** ").append(sxml).append(" ** XML **/\n");
-    s.append(type);
-    if (!type.equals("mo"))
-      s.append(" ID ").append(PT.esc(thisID));
-    if (lattice != null)
-      s.append(" lattice ").append(Escape.eP(lattice));
-    if (meshColix != 0)
-      s.append(" color mesh ").append(C.getHexCode(meshColix));
-    s.append(getRendering());
-    if (!visible)
-      s.append(" hidden");
-    if (bsDisplay != null) {
-      s.append(";\n  ").append(type);
+      s.append(type);
       if (!type.equals("mo"))
         s.append(" ID ").append(PT.esc(thisID));
-      s.append(" display " + Escape.eBS(bsDisplay));
+      if (lattice != null)
+        s.append(" lattice ").append(Escape.eP(lattice));
+      if (meshColix != 0)
+        s.append(" color mesh ").append(C.getHexCode(meshColix));
+      s.append(getRendering());
+      if (!visible)
+        s.append(" hidden");
+      if (bsDisplay != null) {
+        s.append(";\n  ").append(type);
+        if (!type.equals("mo"))
+          s.append(" ID ").append(PT.esc(thisID));
+        s.append(" display " + Escape.eBS(bsDisplay));
+      }
     }
     return s.toString();
   }

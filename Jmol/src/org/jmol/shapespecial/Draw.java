@@ -1027,7 +1027,8 @@ protected void resetObjects() {
      * have to watch out for double-listed vertices
      * 
      */
-    if (newScale == 0 || dmesh.vc == 0 && dmesh.connections == null || dmesh.scale == newScale)
+    if (newScale == 0 || dmesh.vc == 0 && dmesh.connections == null
+        || dmesh.scale == newScale)
       return;
     float f = newScale / dmesh.scale;
     dmesh.scale = newScale;
@@ -1037,25 +1038,29 @@ protected void resetObjects() {
     V3 diff = new V3();
     int iptlast = -1;
     int ipt = 0;
-    for (int i = dmesh.pc; --i >= 0;) {
-      T3 center = (dmesh.isVector ? dmesh.vs[0] 
-          : dmesh.ptCenters == null ? dmesh.ptCenter
-          : dmesh.ptCenters[i]);
-      if (center == null)
-        return;
-      if (dmesh.pis[i] == null)
-        continue;
-      iptlast = -1;
-      for (int iV = dmesh.pis[i].length; --iV >= 0;) {
-        ipt = dmesh.pis[i][iV];
-        if (ipt == iptlast)
+    try {
+      for (int i = dmesh.pc; --i >= 0;) {
+        T3 center = (dmesh.isVector ? dmesh.vs[0]
+            : dmesh.ptCenters == null ? dmesh.ptCenter : dmesh.ptCenters[i]);
+        if (center == null)
+          return;
+        if (dmesh.pis[i] == null)
           continue;
-        iptlast = ipt;
-        diff.sub2(dmesh.vs[ipt], center);
-        diff.scale(f);
-        diff.add(center);
-        dmesh.vs[ipt].setT(diff);
+        iptlast = -1;
+        for (int iV = dmesh.pis[i].length; --iV >= 0;) {
+          ipt = dmesh.pis[i][iV];
+          if (ipt == iptlast)
+            continue;
+          iptlast = ipt;
+          diff.sub2(dmesh.vs[ipt], center);
+          diff.scale(f);
+          diff.add(center);
+          dmesh.vs[ipt].setT(diff);
+        }
       }
+    } catch (Exception e) {
+      Logger.info("Error executing DRAW command: " + e);
+      dmesh.isValid = false;
     }
   }
 
@@ -1322,9 +1327,11 @@ protected void resetObjects() {
 
   protected String getCommand2(Mesh mesh, int iModel) {
     DrawMesh dmesh = (DrawMesh) mesh;
-    if (dmesh.drawType == EnumDrawType.NONE  
-        && dmesh.lineData == null
-        && dmesh.drawVertexCount == 0 && dmesh.drawVertexCounts == null)
+    if (!dmesh.isValid || 
+        dmesh.drawType == EnumDrawType.NONE  
+        && dmesh.lineData == null 
+        && dmesh.drawVertexCount == 0 && dmesh.drawVertexCounts == null
+        )
       return "";
     SB str = new SB();
     int modelCount = vwr.getModelCount();

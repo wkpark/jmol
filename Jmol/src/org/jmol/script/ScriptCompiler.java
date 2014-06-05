@@ -1059,6 +1059,7 @@ public class ScriptCompiler extends ScriptTokenParser {
           T token = T.getTokenFromName(strFormat.toLowerCase());
           switch (token == null ? T.nada : token.tok) {
           case T.menu:
+          case T.orientation:
           case T.append:
             if (nTokens != 1)
               return ERROR;
@@ -1156,7 +1157,7 @@ public class ScriptCompiler extends ScriptTokenParser {
         && lookingAtImpliedString(true, true, true)) {
       String str = script.substring(ichToken, ichToken + cchToken);
       if (tokCommand == T.label
-          && PT.isOneOf(str.toLowerCase(), "on;off;hide;display"))
+          && PT.isOneOf(str.toLowerCase(), ";on;off;hide;display;"))
         addTokenToPrefix(T.getTokenFromName(str.toLowerCase()));
       else
         addTokenToPrefix(T.o(T.string, str));

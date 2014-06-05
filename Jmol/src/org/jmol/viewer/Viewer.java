@@ -1131,7 +1131,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public void setSpin(String key, int value) {
     // Eval
-    if (!PT.isOneOf(key, "x;y;z;fps;X;Y;Z;FPS"))
+    if (!PT.isOneOf(key, ";x;y;z;fps;X;Y;Z;FPS;"))
       return;
     int i = "x;y;z;fps;X;Y;Z;FPS".indexOf(key);
     switch (i) {

@@ -1615,7 +1615,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public static final String IMAGE_OR_SCENE = IMAGE_TYPES + "scene;";
 
   public static boolean isScriptType(String fname) {
-    return PT.isOneOf(fname.substring(fname.lastIndexOf(".")+1), "pse;spt;png;pngj;jmol;zip");
+    return PT.isOneOf(fname.substring(fname.lastIndexOf(".")+1), ";pse;spt;png;pngj;jmol;zip;");
   }
   
 

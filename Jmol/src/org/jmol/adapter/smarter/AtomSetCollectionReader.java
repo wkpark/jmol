@@ -881,8 +881,11 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
       filterHetero = true;
       filter = PT.rep(filter, "ATOM", "HETATM-N");
     }
-    if (filter.indexOf("CELL=") >= 0)
-      altCell = filter.substring(filter.indexOf("CELL=") + 5); // must be last filter option
+    
+    // can't use getFilter() here because form includes a semicolon:
+    // cell=a+b,a-b,c;0,1/2,1/2 
+    if (checkFilterKey("CELL="))  
+      altCell = filter.substring(filter.indexOf("CELL=") + 5).toLowerCase(); // must be last filter option
     nameRequired = PT.getQuotedAttribute(filter, "NAME");
     if (nameRequired != null) {
       if (nameRequired.startsWith("'"))

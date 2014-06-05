@@ -871,6 +871,8 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
     doReadMolecularOrbitals = !checkFilterKey("NOMO");
     useAltNames = checkFilterKey("ALTNAME");
     reverseModels = checkFilterKey("REVERSEMODELS");
+    if (filter == null)
+      return;
     if (checkFilterKey("HETATM")) {
       filterHetero = true;
       filter = PT.rep(filter, "HETATM", "HETATM-Y");
@@ -879,8 +881,10 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
       filterHetero = true;
       filter = PT.rep(filter, "ATOM", "HETATM-N");
     }
-    if (checkFilterKey("NAME=")) {
-      nameRequired = filter.substring(filter.indexOf("NAME=") + 5);
+    if (filter.indexOf("CELL=") >= 0)
+      altCell = filter.substring(filter.indexOf("CELL=") + 5); // must be last filter option
+    nameRequired = PT.getQuotedAttribute(filter, "NAME");
+    if (nameRequired != null) {
       if (nameRequired.startsWith("'"))
         nameRequired = PT.split(nameRequired, "'")[1];
       else if (nameRequired.startsWith("\""))
@@ -888,11 +892,6 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
       filter0 = filter = PT.rep(filter, nameRequired, "");
       filter0 = filter = PT.rep(filter, "NAME=", "");
     }
-    if (checkFilterKey("CELL=")) {
-      altCell = filter0.substring(filter.indexOf("CELL=") + 5).toLowerCase();
-    }
-    if (filter == null)
-      return;
     filterAtomName = checkFilterKey("*.") || checkFilterKey("!.");
     filterElement = checkFilterKey("_");
 

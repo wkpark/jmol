@@ -481,8 +481,10 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
     applySymmetryToBonds = htParams.containsKey("applySymmetryToBonds");
     bsFilter = (BS) htParams.get("bsFilter");
     setFilter(null);
-    if (altCell != null)
-      forcePacked = true;
+    if (altCell != null) {
+      if (!checkFilterKey("NOPACK"))
+        forcePacked = true;
+    }
     // ptFile < 0 indicates just one file being read
     // ptFile >= 0 indicates multiple files are being loaded
     // if the file is not the first read in the LOAD command, then

@@ -287,7 +287,7 @@ public class Symmetry implements SymmetryInterface {
   @Override
   public String getSpaceGroupName() {
     return (symmetryInfo != null ? symmetryInfo.sgName
-        : spaceGroup != null ? spaceGroup.getName() : "");
+        : spaceGroup != null ? spaceGroup.getName() : unitCell != null ? "cell=" + unitCell.name : "");
   }
 
   @Override
@@ -512,8 +512,10 @@ public class Symmetry implements SymmetryInterface {
   }
 
   @Override
-  public SymmetryInterface getUnitCell(T3[] points, boolean setRelative) {
+  public SymmetryInterface getUnitCell(T3[] points, boolean setRelative, String name) {
     unitCell = UnitCell.newP(points, setRelative);
+    if (name != null)
+      unitCell.name = name;
     return this;
   }
 

@@ -96,7 +96,7 @@ class Subsystem {
     for (int i = 0; i < 3; i++)
       uc_nu[i + 1] = V3.new3((float) a[i][0], (float) a[i][1], (float) a[i][2]);    
     uc_nu = reciprocalsOf(uc_nu);
-    symmetry = Interface.getSymmetry().getUnitCell(uc_nu, false);
+    symmetry = Interface.getSymmetry().getUnitCell(uc_nu, false, null);
     modMatrices = new Matrix[] { sigma_nu, tFactor };
     if (!setOperators)
       return;

@@ -34,6 +34,8 @@ import org.jmol.util.C;
 import javajs.util.DF;
 import javajs.util.Lst;
 import javajs.util.P3;
+import javajs.util.PT;
+
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.viewer.StateManager;
 
@@ -181,6 +183,7 @@ public class UccageRenderer extends CageRenderer {
       sgName = "slab";
     else if (sgName != null && sgName.startsWith("cell=!"))
       sgName = "cell=inverse[" + sgName.substring(6) + "]";
+    sgName = PT.rep(sgName, ";0,0,0", "");
     if (sgName != null & !sgName.equals("-- [--]")) {
       y += lineheight;
       g3d.drawStringNoSlab(sgName, null, x, y, 0, (short) 0);

@@ -5973,7 +5973,7 @@ public class ScriptEval extends ScriptExpr {
       switch (tok) {
       case T.unitcell:
         if (!chk)
-          vwr.setCurrentCagePts(null);
+          vwr.setCurrentCagePts(null, null);
         return;
       case T.orientation:
       case T.rotation:
@@ -7619,6 +7619,7 @@ public class ScriptEval extends ScriptExpr {
     String id = null;
     T3[] oabc = null;
     Object newUC = null;
+    String ucname = null;
     boolean isOffset = false;
     boolean isReset = false;
     int tok = tokAt(++index);
@@ -7632,20 +7633,19 @@ public class ScriptEval extends ScriptExpr {
     case T.string:
     case T.identifier:
       String s = paramAsStr(index).toLowerCase();
-      if (s.indexOf(",") >= 0) {
-        newUC = s;
-      } else if (!chk) {
+      ucname = s;
+      if (s.indexOf(",") < 0 && !chk) {
         // parent, standard, conventional
-        vwr.setCurrentCagePts(null);
+        vwr.setCurrentCagePts(null, null);
         if (PT.isOneOf(s, ";parent;standard;primitive;")) {
           newUC = vwr.getModelAuxiliaryInfoValue(vwr.am.cmi, "unitcell_conventional");
           if (newUC != null)
-            vwr.setCurrentCagePts(vwr.getV0abc(newUC));
+            vwr.setCurrentCagePts(vwr.getV0abc(newUC), "" + newUC);
         }
         s = (String) vwr.getModelAuxiliaryInfoValue(vwr.am.cmi, "unitcell_" + s);
         showString(s);
-        newUC = s;
       }
+      newUC = s;
       break;
     case T.isosurface:
     case T.dollarsign:
@@ -7729,7 +7729,7 @@ public class ScriptEval extends ScriptExpr {
     else if (id != null)
       vwr.setCurrentCage(id);
     else if (isReset || oabc != null)
-      vwr.setCurrentCagePts(oabc);
+      vwr.setCurrentCagePts(oabc, ucname);
     setObjectMad(JC.SHAPE_UCCAGE, "unitCell", mad);
     if (pt != null)
       vwr.ms.setUnitCellOffset(vwr.getCurrentUnitCell(), pt, 0);

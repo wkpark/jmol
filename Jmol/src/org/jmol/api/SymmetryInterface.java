@@ -103,7 +103,7 @@ public interface SymmetryInterface {
 
   public float getSpinOp(int op);
 
-  public SymmetryInterface getUnitCell(T3[] points, boolean setRelative);
+  public SymmetryInterface getUnitCell(T3[] points, boolean setRelative, String name);
 
   public float[] getUnitCellAsArray(boolean vectorsOnly);
 

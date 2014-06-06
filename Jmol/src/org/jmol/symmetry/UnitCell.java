@@ -61,7 +61,7 @@ class UnitCell extends SimpleUnitCell {
   private boolean allFractionalRelative; // specifically used for JmolData
   private P3 unitCellMultiplier;
   public Lst<String> moreInfo;
-  
+  public String name = "";
   
   UnitCell() {
     
@@ -229,6 +229,8 @@ class UnitCell extends SimpleUnitCell {
 
   final String dumpInfo(boolean isFull) {
     return "a=" + a + ", b=" + b + ", c=" + c + ", alpha=" + alpha + ", beta=" + beta + ", gamma=" + gamma
+       + "\n" + Escape.eAP(getUnitCellVectors())
+       + "\nvolume=" + volume
        + (isFull ? "\nfractional to cartesian: " + matrixFractionalToCartesian 
        + "\ncartesian to fractional: " + matrixCartesianToFractional : "");
   }
@@ -478,9 +480,13 @@ class UnitCell extends SimpleUnitCell {
     M4 m = matrixFractionalToCartesian;
     return new V3[] { 
         V3.newV(cartesianOffset),
-        V3.new3(m.m00, m.m10, m.m20), 
-        V3.new3(m.m01, m.m11, m.m21), 
-        V3.new3(m.m02, m.m12, m.m22) };
+        V3.new3(fix(m.m00), fix(m.m10), fix(m.m20)), 
+        V3.new3(fix(m.m01), fix(m.m11), fix(m.m21)), 
+        V3.new3(fix(m.m02), fix(m.m12), fix(m.m22)) };
+  }
+
+  private float fix(float x) {
+    return (Math.abs(x) < 0.001f ? 0 : x);
   }
 
   public boolean isSameAs(UnitCell uc) {

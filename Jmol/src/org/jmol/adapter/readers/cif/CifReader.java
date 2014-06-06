@@ -141,6 +141,8 @@ public class CifReader extends AtomSetCollectionReader {
     checkSpecial = !checkFilterKey("NOSPECIAL");
     asc.setCheckSpecial(checkSpecial);
     allowRotations = !checkFilterKey("NOSYM");
+    if (altCell != null && altCell.indexOf(",") >= 0)
+      addCellType("conventional", altCell, true);
     readCifData();
     continuing = false;
   }
@@ -275,17 +277,21 @@ public class CifReader extends AtomSetCollectionReader {
   private void processUnitCellTransform() {
     data = PT.replaceAllCharacters(data,  " ", "");
     if (key.contains("_from_parent"))
-      addCellType("parent", true);
+      addCellType("parent", data, true);
     else if (key.contains("_to_standard"))
-      addCellType("standard", false);
+      addCellType("standard", data, false);
     appendLoadNote(key + ": " + data);
   }
 
   private Map<String, String> htCellTypes;
   
-  private void addCellType(String type, boolean isFrom) {
+  private void addCellType(String type, String data, boolean isFrom) {
     if (htCellTypes == null)
       htCellTypes = new Hashtable<String, String>();
+    if (data.startsWith("!")) {
+      data = data.substring(1);
+      isFrom = !isFrom;
+    }
     String cell = (isFrom ? "!" : "") + data;
     htCellTypes.put(type, cell);
     if (type.equalsIgnoreCase(altCell)) {

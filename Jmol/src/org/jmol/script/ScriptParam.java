@@ -612,7 +612,7 @@ abstract public class ScriptParam extends ScriptError {
           tok = T.nada;
           break;
         }
-        P3 pt = getPoint3f(i, true);
+        P3 pt = centerParameter(i);//getPoint3f(i, true);
         if (points == null)
           vp.addLast(pt);
         else

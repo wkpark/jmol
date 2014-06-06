@@ -1464,7 +1464,7 @@ public class SV extends T implements JSONEncodable {
         m4.getRow(i, a);
       else
         m3.getRow(i, a);
-      o2.set(i,getVariableAF(a));
+      o2.addLast(getVariableAF(a));
     }
     value = o2;
   }

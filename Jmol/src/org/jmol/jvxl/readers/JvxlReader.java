@@ -284,17 +284,20 @@ public class JvxlReader extends JvxlXmlReader {
   }
 
   private void jvxlSkipDataBlock(int nPoints, boolean isInt) throws Exception {
-    if (isInt) {
-      int n;
-      while (nPoints > 0) {
-        next[0] = 0;
-        while ((n = parseIntNext(readLine())) >= 0)
-          nPoints -= n;
-      }
-    } else {
-      while (nPoints > 0)
-        nPoints -= JvxlCoder.jvxlDecompressString(readLine()).length();
+    int n = 0;
+    while (n < nPoints) {
+      readLine();
+      n += (isInt ? countData(line) : JvxlCoder.jvxlDecompressString(line).length());
     }
   }
 
+  private int countData(String str) {
+    int count = 0;
+    int n = parseIntStr(str);
+    while (n != Integer.MIN_VALUE) {
+      count += n;
+      n = parseIntNext(str);
+    }
+    return count;
+  }
 }

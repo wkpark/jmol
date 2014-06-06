@@ -354,7 +354,8 @@ class SpaceGroup {
    * @return valid space group or null
    */
   SpaceGroup getDerivedSpaceGroup() {
-    if (index >= 0 && index < SG.length || modDim > 0)
+    if (index >= 0 && index < SG.length 
+        || modDim > 0 || operations[0].timeReversal != 0)
       return this;
     if (finalOperations != null)
       setFinalOperations(null, 0, 0, false);
@@ -364,11 +365,8 @@ class SpaceGroup {
 
   private String getCanonicalSeitzList() {
     String[] list = new String[operationCount];
-    for (int i = 0; i < operationCount; i++) {
-      if (operations[i].timeReversal != 0)
-        return null; // can't match any magnetic group
-      list[i] = SymmetryOperation.dumpCanonicalSeitz(operations[i]);
-    }
+    for (int i = 0; i < operationCount; i++)
+      list[i] = SymmetryOperation.dumpSeitz(operations[i], true);
     Arrays.sort(list, 0, operationCount);
     SB sb = new SB().append("\n[");
     for (int i = 0; i < operationCount; i++)
@@ -451,6 +449,9 @@ class SpaceGroup {
       operationCount = 0;
       modDim = PT.parseInt(xyz0.substring(xyz0
           .lastIndexOf("x") + 1)) - 3;
+    } else if (xyz0.equals("x,y,z,m+1")) {
+      xyzList.clear();
+      operationCount = 0;
     }
 
     SymmetryOperation op = new SymmetryOperation(null, null, 0, opId,
@@ -463,7 +464,8 @@ class SpaceGroup {
   }
 
   private int addOp(SymmetryOperation op, String xyz0, boolean isSpecial) {
-    String xyz = op.xyz + op.timeReversal;
+    String ext = "";//(op.timeReversal == 0 ? "" : op.timeReversal == 1 ? ",m+1" : ",m-1");
+    String xyz = op.xyz + ext;
     String xxx = PT.replaceAllCharacters(xyz, "+123/", "");
     if (!isSpecial) {
       // ! in character 0 indicates we are using the symop() function and want to be explicit
@@ -477,8 +479,8 @@ class SpaceGroup {
       }
         xyzList.put(xyz, Integer.valueOf(operationCount));
     }
-    if (!xyz.equals(xyz0 + op.timeReversal))
-      xyzList.put(xyz0 + op.timeReversal, Integer.valueOf(operationCount));
+    if (!xyz.equals(xyz0 + ext))
+      xyzList.put(xyz0 + ext, Integer.valueOf(operationCount));
     if (operations == null)
       operations = new SymmetryOperation[4];
     if (operationCount == operations.length)

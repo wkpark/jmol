@@ -1374,8 +1374,8 @@ public class CifReader extends AtomSetCollectionReader {
                 if (timeRev != 0)
                   field = field.substring(0, field.length() - 3);
               }
-              if (timeRev != 0 && !field.equals("x,y,z"))
-                field += ",m" + timeRev;
+              if (timeRev != 0)
+                field += ",m" + (timeRev == 1 ? "+1" : "-1");
               symops.addLast(field);
               setSymmetryOperator(field);
             }

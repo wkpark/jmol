@@ -193,7 +193,7 @@ class HallRotationTerm {
       sb.append("; vector offset: ").append(vectorCode);
     if (rotation != null)
       sb.append("\noperator: ").append(getXYZ(allPositive)).append("\nSeitz matrix:\n")
-          .append(SymmetryOperation.dumpSeitz(seitzMatrix12ths));
+          .append(SymmetryOperation.dumpSeitz(seitzMatrix12ths, false));
     return sb.toString();
   }
   

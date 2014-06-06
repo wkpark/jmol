@@ -201,23 +201,17 @@ class SymmetryOperation extends M4 {
         + toString();
   }
 
-  final static String dumpSeitz(M4 s) {
-    return new SB().append("{\t").appendI((int) s.m00).append("\t").appendI((int) s.m01)
-        .append("\t").appendI((int) s.m02).append("\t").append(twelfthsOf(s.m03)).append("\t}\n")
-        .append("{\t").appendI((int) s.m10).append("\t").appendI((int) s.m11).append("\t").appendI((int) s.m12)
-        .append("\t").append(twelfthsOf(s.m13)).append("\t}\n")
-        .append("{\t").appendI((int) s.m20).append("\t").appendI((int) s.m21).append("\t").appendI((int) s.m22)
-        .append("\t").append(twelfthsOf(s.m23)).append("\t}\n").append("{\t0\t0\t0\t1\t}\n").toString();
-  }
-  
-  final static String dumpCanonicalSeitz(M4 s) {
-    return new SB().append("{\t").appendI((int) s.m00).append("\t").appendI((int) s.m01)
-        .append("\t").appendI((int) s.m02).append("\t").append(twelfthsOf((s.m03+12)%12)).append("\t}\n")
-        .append("{\t").appendI((int) s.m10).append("\t").appendI((int) s.m11).append("\t").appendI((int) s.m12)
-        .append("\t").append(twelfthsOf((s.m13+12)%12)).append("\t}\n").append("{\t").appendI((int) s.m20)
-        .append("\t").appendI((int) s.m21).append("\t")
-        .appendI((int) s.m22).append("\t").append(twelfthsOf((s.m23+12)%12)).append("\t}\n")
-        .append("{\t0\t0\t0\t1\t}\n").toString();
+  final static String dumpSeitz(M4 s, boolean isCanonical) {
+    SB sb = new SB();
+    float[] r = new float[4];
+    for (int i = 0; i < 3; i++) {
+      s.getRow(i,r);
+      sb.append("[\t");
+      for (int j = 0; j < 3; j++)
+        sb.appendI((int) r[j]).append("\t");
+      sb.append(twelfthsOf(isCanonical ? ((int)r[3] + 12)%12 : (int) r[3])).append("\t]\n");
+    }
+    return sb.toString();
   }
   
   boolean setMatrixFromXYZ(String xyz, int modDim, boolean allowScaling) {
@@ -279,6 +273,8 @@ class SymmetryOperation extends M4 {
       return false;
     setMatrix(isReverse);
     this.xyz = (isReverse ? getXYZFromMatrix(this, true, false, false) : strOut);
+    if (timeReversal != 0)
+      this.xyz += (timeReversal == 1 ? ",m+1" : ",m-1");
     //System.out.println("testing " + xyz +  " == " + this.xyz + " " + this + "\n" + Escape.eAF(linearRotTrans));
     if (Logger.debugging)
       Logger.debug("" + this);
@@ -1006,7 +1002,7 @@ class SymmetryOperation extends M4 {
     if (isInversionOnly) {
       ptemp.setT(ipt);
       uc.toFractional(ptemp, false);
-      info1 = "inversion center|" + strCoord(ptemp);
+      info1 = "Ci: " + strCoord(ptemp);
     } else if (isRotation) {
       if (haveInversion) {
         info1 = "" + (360 / ang) + "-bar axis";
@@ -1042,7 +1038,7 @@ class SymmetryOperation extends M4 {
           info1 = "b-";
         else
           info1 = "c-";
-        info1 += "glide plane |translation:" + s;
+        info1 += "glide plane|translation:" + s;
       }
     } else if (isMirrorPlane) {
       info1 = "mirror plane";
@@ -1056,6 +1052,9 @@ class SymmetryOperation extends M4 {
     if (haveCentering)
       info1 += "|centering " + strCoord(centering);
 
+    if (timeReversal != 0)
+      info1 += "|spin timeReversal " + (timeReversal == 1 ? "+1" : "-1");
+    
     String cmds = null;
     String xyzNew = (isBio ? xyzOriginal : getXYZFromMatrix(this, false, false,
         false));
@@ -1351,7 +1350,9 @@ class SymmetryOperation extends M4 {
       m2.m13 += vtrans.y;
       m2.m23 += vtrans.z;
     }
-    xyzNew = (isBio ? m2.toString() : getXYZFromMatrix(m2, false, false, false));
+    xyzNew = (isBio ? m2.toString() : modDim > 0 ? xyzOriginal : getXYZFromMatrix(m2, false, false, false));
+    if (timeReversal != 0)
+      xyzNew  += (timeReversal == 1 ? ",m+1" : ",m-1");
     return new Object[] { xyzNew, xyzOriginal, info1, cmds, approx0(ftrans),
         approx0(trans), approx0(ipt), approx0(pa1), approx0(ax1),
         Integer.valueOf(ang1), m2, vtrans, centering };
@@ -1478,8 +1479,10 @@ class SymmetryOperation extends M4 {
   }
 
   public void setTimeReversal(int magRev) {
-    System.out.println("sym op " + index + " " + xyz + " has tr " + magRev);
     timeReversal = magRev;
+    if (xyz.indexOf(",m") >= 0)
+      xyz = xyz.substring(0, xyz.indexOf(",m"));
+    xyz += (magRev == 1 ? ",m+1" : ",m-1");
   }
 
   public static String cleanMatrix(M4 m4) {
@@ -1514,8 +1517,7 @@ class SymmetryOperation extends M4 {
         if (centering.lengthSquared() == 0) {
           unCentered = true;
           centering = null;
-        }
-        if (!isFinal)
+        } else if (!isFinal)
           centering.scale(1 / 12f);
         isCenteringOp = true;
       } else {

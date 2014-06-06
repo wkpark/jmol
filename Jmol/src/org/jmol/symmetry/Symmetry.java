@@ -585,14 +585,15 @@ public class Symmetry implements SymmetryInterface {
   @SuppressWarnings("unchecked")
   public Map<String, Object> getSpaceGroupInfo(ModelSet modelSet,
                                                int modelIndex,
-                                               String spaceGroup, int symOp,
+                                               String sgName, int symOp,
                                                P3 pt1, P3 pt2, String drawID,
                                                String type) {
     String strOperations = null;
     Map<String, Object> info = null;
     SymmetryInterface cellInfo = null;
     Object[][] infolist = null;
-    if (spaceGroup == null) {
+    boolean isStandard = true;
+    if (sgName == null) {
       if (modelIndex <= 0)
         modelIndex = (pt1 instanceof Atom ? ((Atom) pt1).mi
             : modelSet.vwr.am.cmi);
@@ -615,27 +616,31 @@ public class Symmetry implements SymmetryInterface {
       info = new Hashtable<String, Object>();
       if (pt1 == null && drawID == null && symOp == 0)
         modelSet.setInfo(modelIndex, "spaceGroupInfo", info);
-      spaceGroup = cellInfo.getSpaceGroupName();
+      sgName = cellInfo.getSpaceGroupName();
       M4[] ops = cellInfo.getSymmetryOperations();
       SpaceGroup sg = (isBio ? ((Symmetry) cellInfo).spaceGroup : null);
       String jf = "";
       if (ops == null) {
-        strOperations = "\n no symmetry operations employed";
+        strOperations = "\n no symmetry operations";
       } else {
+        isStandard = !isBio;
         if (isBio)
           this.spaceGroup = (SpaceGroup.getNull(false)).set(false);
         else
           setSpaceGroup(false);
-        strOperations = "\n" + ops.length + " symmetry operations employed:";
+        strOperations = "\n" + ops.length + " symmetry operations:";
         infolist = new Object[ops.length][];
         V3 centering = null;
         for (int i = 0; i < ops.length; i++) {
-          String xyz = ((SymmetryOperation) ops[i]).xyz;
+          SymmetryOperation op = ((SymmetryOperation) ops[i]);
+          String xyz = op.xyz;
           int iop = (isBio ? addBioMoleculeOperation(sg.finalOperations[i],
               false) : addSpaceGroupOperation("=" + xyz, i + 1));
           if (iop < 0)
             continue;
-          SymmetryOperation op = (SymmetryOperation) getSpaceGroupOperation(i);
+          op = (SymmetryOperation) getSpaceGroupOperation(i);
+          if (op.timeReversal != 0 || op.modDim > 0)
+            isStandard = false;
           centering = op.setCentering(centering, false);
           jf += ";" + xyz;
           infolist[i] = (symOp > 0 && symOp - 1 != iop ? null : op
@@ -646,24 +651,27 @@ public class Symmetry implements SymmetryInterface {
         }
       }
       jf = jf.substring(jf.indexOf(";") + 1);
-      if (spaceGroup.indexOf("[--]") >= 0)
-        spaceGroup = jf;
+      if (sgName.indexOf("[--]") >= 0)
+        sgName = jf;
     } else {
       info = new Hashtable<String, Object>();
     }
-    info.put("spaceGroupName", spaceGroup);
+    info.put("spaceGroupName", sgName);
     if (infolist != null) {
       info.put("operations", infolist);
       info.put("symmetryInfo", strOperations);
     }
-    if (!spaceGroup.startsWith("bio")) {
-      String data = getSpaceGroupInfoStr(spaceGroup, cellInfo);
+    String data;
+    if (isStandard) {
+      data = getSpaceGroupInfoStr(sgName, cellInfo);
       if (data == null || data.equals("?"))
-        data = "could not identify space group from name: " + spaceGroup
+        data = "could not identify space group from name: " + sgName
             + "\nformat: show spacegroup \"2\" or \"P 2c\" "
             + "or \"C m m m\" or \"x, y, z;-x ,-y, -z\"";
-      info.put("spaceGroupInfo", data);
+    } else {
+      data = sgName;
     }
+    info.put("spaceGroupInfo", data);
     return info;
   }
 

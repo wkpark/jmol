@@ -1058,8 +1058,9 @@ public class T {
 // see intparam  public final static int showscript                     = booleanparam | 156;
   public final static int showtiming                     = booleanparam | 158;
   public final static int showunitcell                   = booleanparam | 160;
-  public final static int showunitcelldetails                   = booleanparam | 161;
-  public final static int slabbyatom                     = booleanparam | 162;
+  public final static int showunitcelldetails            = booleanparam | 161;
+  public final static int showunitcellinfo               = booleanparam | 162;
+  public final static int slabbyatom                     = booleanparam | 163;
   public final static int slabbymolecule                 = booleanparam | 164;
   public final static int slabenabled                    = booleanparam | 166;
   public final static int smartaromatic                  = booleanparam | 168;
@@ -2554,6 +2555,7 @@ public class T {
        "showTiming",
        "showUnitcell",
        "showUnitcellDetails",
+       "showUnitcellInfo",
        "slabByAtom",
        "slabByMolecule",
        "slabEnabled",
@@ -3553,6 +3555,7 @@ public class T {
         showtiming,                         //        "showTiming"
         showunitcell,                       //        "showUnitcell"
         showunitcelldetails,                //        "showUnitcellDetails"
+        showunitcellinfo,                   //        "showUnitcellInfo"
         slabbyatom,                         //        "slabByAtom"
         slabbymolecule,                     //        "slabByMolecule"
         slabenabled,                        //        "slabEnabled"

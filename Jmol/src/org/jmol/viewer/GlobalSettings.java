@@ -381,6 +381,7 @@ public class GlobalSettings {
       setS("nihResolverFormat", nihResolverFormat);
       setS("pubChemFormat", pubChemFormat);
       setB("showUnitCellDetails", showUnitCellDetails);
+      setB("showUnitCellInfo", showUnitCellInfo);
       setB("solventProbe", solventOn);
       setF("solventProbeRadius", solventProbeRadius);
       setB("specular", specular);
@@ -629,6 +630,7 @@ public class GlobalSettings {
     String quaternionFrame = "p"; // was c prior to Jmol 11.7.47
     boolean saveProteinStructureState = true;
     boolean showUnitCellDetails = true;
+    boolean showUnitCellInfo = true;
     float solventProbeRadius = 1.2f;
     int scriptDelay = 0;
     boolean selectAllModels = true;

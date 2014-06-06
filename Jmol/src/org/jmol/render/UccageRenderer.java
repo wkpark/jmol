@@ -156,7 +156,8 @@ public class UccageRenderer extends CageRenderer {
 
   private void renderInfo(SymmetryInterface symmetry) {
     if (isExport
-        || !g3d.setC(vwr.getColixBackgroundContrast()))
+        || !g3d.setC(vwr.getColixBackgroundContrast())
+        || !vwr.getBoolean(T.showunitcellinfo))
       return;
     fid = g3d.getFontFidFS("Monospaced", 14 * imageFontScaling);
 
@@ -173,14 +174,16 @@ public class UccageRenderer extends CageRenderer {
     int x = (int) Math.floor(5 * imageFontScaling);
     int y = lineheight;
 
-    String spaceGroup = symmetry.getSpaceGroupName();
+    String sgName = symmetry.getSpaceGroupName();
     if (isPolymer)
-      spaceGroup = "polymer";
+      sgName = "polymer";
     else if (isSlab)
-      spaceGroup = "slab";
-    if (spaceGroup != null & !spaceGroup.equals("-- [--]")) {
+      sgName = "slab";
+    else if (sgName != null && sgName.startsWith("cell=!"))
+      sgName = "cell=inverse[" + sgName.substring(6) + "]";
+    if (sgName != null & !sgName.equals("-- [--]")) {
       y += lineheight;
-      g3d.drawStringNoSlab(spaceGroup, null, x, y, 0, (short) 0);
+      g3d.drawStringNoSlab(sgName, null, x, y, 0, (short) 0);
     }
     Lst<String> info = symmetry.getMoreInfo();
     if (info != null)

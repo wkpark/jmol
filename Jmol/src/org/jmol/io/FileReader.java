@@ -140,7 +140,7 @@ public class FileReader {
     if (!isAppend && !vwr.displayLoadErrors)
       vwr.zap(false, true, false);
 
-    fm.setFileInfo(new String[] { fullPathNameIn, nameAsGivenIn, fileNameIn });
+    fm.setFileInfo(new String[] { fullPathNameIn, fileNameIn, nameAsGivenIn });
   }
   
   public Object getAtomSetCollection() {

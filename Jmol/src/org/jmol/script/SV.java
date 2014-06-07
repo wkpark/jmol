@@ -1361,15 +1361,27 @@ public class SV extends T implements JSONEncodable {
    * they are not mutable anyway. We do want to have actual
    * references to points, lists, and associative arrays
    * 
-   * @param o
+   * @param value
    *        null to pop
+   * @param mapKey
    * @return array
    */
-  public SV pushPop(SV o) {
-    Lst<SV> x = getList();
-    if (o == null || x == null)
-      return (x == null || x.size() == 0 ? newS("") : x.remove(x.size() - 1));
-      x.addLast(newI(0).setv(o));
+  public SV pushPop(SV value, SV mapKey) {
+    if (mapKey != null) {
+      Map<String, SV> m = getMap();
+      if (value == null) {
+        SV v;
+        return (m == null || (v = m.remove(mapKey.asString())) == null ? 
+            newS("") : v);
+      }
+      if (m != null)
+        m.put(mapKey.asString(), newI(0).setv(value));
+    } else {
+      Lst<SV> x = getList();
+      if (value == null || x == null)
+        return (x == null || x.size() == 0 ? newS("") : x.remove(x.size() - 1));
+      x.addLast(newI(0).setv(value));
+    }
     return this;
   }
 

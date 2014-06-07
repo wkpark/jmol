@@ -94,7 +94,7 @@ public class LabelToken {
   // and then also added in appendTokenValue()
   // and also in Eval, to atomProperty()
 
-  final private static String labelTokenParams = "AaBbCcDEefGgIiLlMmNnoPpQqRrSsTtUuVvWXxYyZz%%%gqW";
+  final private static String labelTokenParams = "AaBbCcDEefGgIiLlMmNnoPpQqRrSsTtUuVvWXxxYyyZzz%%%gqW";
   final private static int[] labelTokenIds = {
       /* 'A' */T.altloc,
       /* 'a' */T.atomname,
@@ -134,10 +134,13 @@ public class LabelToken {
       /* 'W' */'W', // identifier and XYZ coord
       /* 'X' */T.fracx,
       /* 'x' */T.atomx,
+      /* 'x' */T.x,
       /* 'Y' */T.fracy,
       /* 'y' */T.atomy,
+      /* 'y' */T.y,
       /* 'Z' */T.fracz,
       /* 'z' */T.atomz,
+      /* 'z' */T.z,
 
       // not having letter equivalents:
 

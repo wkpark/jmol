@@ -287,7 +287,7 @@ public class Symmetry implements SymmetryInterface {
   @Override
   public String getSpaceGroupName() {
     return (symmetryInfo != null ? symmetryInfo.sgName
-        : spaceGroup != null ? spaceGroup.getName() : unitCell != null ? "cell=" + unitCell.name : "");
+        : spaceGroup != null ? spaceGroup.getName() : unitCell != null && unitCell.name.length() > 0 ? "cell=" + unitCell.name : "");
   }
 
   @Override

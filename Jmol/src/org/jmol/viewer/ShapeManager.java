@@ -96,6 +96,7 @@ public class ShapeManager {
     if (shapes == null || shapes[shapeID] == null)
       return false;
     vwr.setShapeErrorState(shapeID, "get " + propertyName);
+    // echo, dipoles, draw, ellipsoids, isosurface
     boolean result = shapes[shapeID].getPropertyData(propertyName, data);
     vwr.setShapeErrorState(-1, null);
     return result;

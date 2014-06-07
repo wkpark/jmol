@@ -1146,9 +1146,9 @@ public class MathExt implements JmolMathExtension {
     SV x2;
     switch (tok) {
     case T.push:
-      return (len == 1 && mp.addX(x1.pushPop(args[0])));
+      return (len == 2 && mp.addX(x1.pushPop(args[1], args[0])) || len == 1 && mp.addX(x1.pushPop(args[0], null)));
     case T.pop:
-      return (len == 0 && mp.addX(x1.pushPop(null)));
+      return (len == 1 && mp.addX(x1.pushPop(null, args[0])) || len == 0 && mp.addX(x1.pushPop(null, null)));
     case T.add:
       if (len != 1 && len != 2)
         return false;

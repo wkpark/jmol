@@ -607,10 +607,9 @@ import java.util.Properties;
     }
   }
   
-  public BS deleteModels(BS bsAtoms) {
+  public BS deleteModels(BS bsModels) {
     // full models are deleted for any model containing the specified atoms
     moleculeCount = 0;
-    BS bsModels = getModelBS(bsAtoms, false);
     includeAllRelatedFrames(bsModels);
 
     int nModelsDeleted = BSUtil.cardinalityOf(bsModels);

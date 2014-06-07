@@ -1665,7 +1665,7 @@ public class ScriptMathProcessor {
       case T.sum2:
         return addXObj(getMathExt().getMinMax(x2.getList(), op.intValue));
       case T.pop:
-        return addX(x2.pushPop(null));
+        return addX(x2.pushPop(null, null));
       case T.sort:
       case T.reverse:
         return addX(x2

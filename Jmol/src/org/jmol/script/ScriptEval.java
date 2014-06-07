@@ -7610,19 +7610,19 @@ public class ScriptEval extends ScriptExpr {
       vwr.undoMoveAction(tokAt(0), n);
   }
 
-  private void cmdUnitcell(int index) throws ScriptException {
+  private void cmdUnitcell(int i) throws ScriptException {
     int icell = Integer.MAX_VALUE;
     int mad = Integer.MAX_VALUE;
     T3 pt = null;
-    TickInfo tickInfo = tickParamAsStr(index, true, false, false);
-    index = iToken;
+    TickInfo tickInfo = tickParamAsStr(i, true, false, false);
+    i = iToken;
     String id = null;
     T3[] oabc = null;
     Object newUC = null;
     String ucname = null;
     boolean isOffset = false;
     boolean isReset = false;
-    int tok = tokAt(++index);
+    int tok = tokAt(++i);
     switch (tok) {
     case T.restore:
     case T.reset:
@@ -7632,7 +7632,7 @@ public class ScriptEval extends ScriptExpr {
       break;
     case T.string:
     case T.identifier:
-      String s = paramAsStr(index).toLowerCase();
+      String s = paramAsStr(i).toLowerCase();
       ucname = s;
       if (s.indexOf(",") < 0 && !chk) {
         // parent, standard, conventional
@@ -7649,24 +7649,32 @@ public class ScriptEval extends ScriptExpr {
       break;
     case T.isosurface:
     case T.dollarsign:
-      id = objectNameParameter(++index);
+      id = objectNameParameter(++i);
+      break;
+    case T.boundbox:
+      P3 o = P3.newP(vwr.getBoundBoxCenter());
+      pt = vwr.getBoundBoxCornerVector();
+      o.sub(pt);
+      oabc = new P3[] {o, P3.new3(pt.x * 2, 0, 0), P3.new3(0, pt.y * 2, 0), P3.new3(0, 0, pt.z * 2) };
+      pt = null;
+      iToken = i;
       break;
     case T.matrix3f:
     case T.matrix4f:
-      newUC = getToken(index).value;
+      newUC = getToken(i).value;
       break;
     case T.center:
-      switch (tokAt(++index)) {
+      switch (tokAt(++i)) {
       case T.bitset:
       case T.expressionBegin:
-        pt = P3.newP(vwr.ms.getAtomSetCenter(atomExpressionAt(index)));
+        pt = P3.newP(vwr.ms.getAtomSetCenter(atomExpressionAt(i)));
         vwr.toFractional(pt, true);
-        index = iToken;
+        i = iToken;
         break;
       default:
-        if (isCenterParameter(index)) {
-          pt = centerParameter(index);
-          index = iToken;
+        if (isCenterParameter(i)) {
+          pt = centerParameter(i);
+          i = iToken;
           break;
         }
         invArg();
@@ -7677,46 +7685,46 @@ public class ScriptEval extends ScriptExpr {
       break;
     case T.bitset:
     case T.expressionBegin:
-      int iAtom = atomExpressionAt(index).nextSetBit(0);
+      int iAtom = atomExpressionAt(i).nextSetBit(0);
       if (!chk)
         vwr.am.cai = iAtom;
       if (iAtom < 0)
         return;
-      index = iToken;
+      i = iToken;
       break;
     case T.offset:
       isOffset = true;
       //$FALL-THROUGH$
     case T.range:
-      pt = (P3) getPointOrPlane(++index, false, true, false, true, 3, 3);
+      pt = (P3) getPointOrPlane(++i, false, true, false, true, 3, 3);
       pt = P4.new4(pt.x, pt.y, pt.z, (isOffset ? 1 : 0));
-      index = iToken;
+      i = iToken;
       break;
     case T.decimal:
     case T.integer:
-      float f = floatParameter(index);
+      float f = floatParameter(i);
       if (f < 111) {
         // diameter
-        index--;
+        i--;
         break;
       }
-      icell = intParameter(index);
+      icell = intParameter(i);
       break;
     default:
-      if (isArrayParameter(index)) {
+      if (isArrayParameter(i)) {
         // Origin vA vB vC
         // these are VECTORS, though
-        oabc = getPointArray(index, 4);
-        index = iToken;
-      } else if (slen > index + 1) {
-        pt = (P3) getPointOrPlane(index, false, true, false, true, 3, 3);
-        index = iToken;
+        oabc = getPointArray(i, 4);
+        i = iToken;
+      } else if (slen > i + 1) {
+        pt = (P3) getPointOrPlane(i, false, true, false, true, 3, 3);
+        i = iToken;
       } else {
         // backup for diameter
-        index--;
+        i--;
       }
     }
-    mad = getSetAxesTypeMad(++index);
+    mad = getSetAxesTypeMad(++i);
     checkLast(iToken);
     if (chk || mad == Integer.MAX_VALUE)
       return;
@@ -7846,6 +7854,12 @@ public class ScriptEval extends ScriptExpr {
     BS bs = atomExpressionAt(1);
     if (chk)
       return;
+    if (bs.nextSetBit(0) < 0 && slen == 4 && tokAt(2) == T.spec_model2) {
+      int iModel = vwr.ms.getModelNumberIndex(getToken(2).intValue, false, true);
+      if (iModel >= 0)
+        vwr.deleteModels(iModel, null);
+      return;
+    }
     int nDeleted = vwr.deleteAtoms(bs, true);
     boolean isQuiet = !doReport();
     if (!isQuiet)

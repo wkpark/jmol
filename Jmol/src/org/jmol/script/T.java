@@ -423,7 +423,7 @@ public class T {
   public final static int spec_atom            = expression | 32;
   public final static int spec_chain           = expression | 33;
   public final static int spec_model           = expression | 34;  // /3, /4
-  public final static int spec_model2                 = expression | 35;  // 1.2, 1.3
+  public final static int spec_model2          = expression | 35;  // 1.2, 1.3
   public final static int spec_name_pattern    = expression | 36;
   public final static int spec_resid           = expression | 37;
   public final static int spec_seqcode         = expression | 38;
@@ -734,7 +734,6 @@ public class T {
   public final static int join         = 2 | 1 << 9 | mathfunc | mathproperty;
   public final static int mul          = 3 | 1 << 9 | mathfunc | mathproperty;
   public final static int mul3         = 4 | 1 << 9 | mathfunc | mathproperty;
-  public final static int push         = 5 | 1 << 9 | mathfunc | mathproperty | scriptCommand | noArgs; //internal only;
   public final static int split        = 6 | 1 << 9 | mathfunc | mathproperty;
   public final static int sub          = 7 | 1 << 9 | mathfunc | mathproperty;
   public final static int trim         = 8 | 1 << 9 | mathfunc | mathproperty;  
@@ -764,6 +763,7 @@ public class T {
   
   public final static int add          = 1 | 2 << 9 | mathfunc | mathproperty;
   public final static int distance     = 2 | 2 << 9 | mathfunc | mathproperty;
+  public final static int push         = 3 | 2 << 9 | mathfunc | mathproperty | scriptCommand | noArgs; //internal only;
 
   // xxx(a,b,c)
   

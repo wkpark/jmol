@@ -936,12 +936,12 @@ public class GlobalSettings {
       if (atomIndex < 0)
         return;
        SV.getBitSet(pickedSet, false).set(atomIndex);
-       SV p = pickedList.pushPop(null);
+       SV p = pickedList.pushPop(null, null);
        // don't allow double click
        if (p.tok == T.bitset)
-         pickedList.pushPop(p);
+         pickedList.pushPop(p, null);
        if (p.tok != T.bitset || !((BS) p.value).get(atomIndex))
-         pickedList.pushPop(SV.newV(T.bitset, BSUtil.newAndSetBit(atomIndex)));
+         pickedList.pushPop(SV.newV(T.bitset, BSUtil.newAndSetBit(atomIndex)), null);
     }
 
     String resolveDataBase(String database, String id) {

@@ -4078,7 +4078,7 @@ public class CmdExt implements JmolCmdExtension {
             Logger.info(sfdat);
             sfdat = PT.split(sfdat,  "MAP_SIGMA_DENS")[1];
             cutoff = PT.parseFloat(sfdat);
-            Logger.info("using cutoff = " + cutoff);
+            showString("using cutoff = " + cutoff);
             } catch (Exception e) {
               Logger.error("MAP_SIGMA_DENS -- could  not read " + info[1]);
             }
@@ -4097,8 +4097,10 @@ public class CmdExt implements JmolCmdExtension {
             if (modelIndex < 0)
               modelIndex = vwr.am.cmi;
             bs = vwr.getModelUndeletedAtomsBitSet(modelIndex);
-            getWithinDistanceVector(propertyList, 2.0f, null, bs, false);
-            sbCommand.append(" within 2.0 ").append(Escape.eBS(bs));
+            if (bs.nextSetBit(0) >= 0) {
+              getWithinDistanceVector(propertyList, 2.0f, null, bs, false);
+              sbCommand.append(" within 2.0 ").append(Escape.eBS(bs));
+            } 
           }
           if (firstPass)
             defaultMesh = true;
@@ -4157,7 +4159,7 @@ public class CmdExt implements JmolCmdExtension {
             eval.errorStr(ScriptError.ERROR_fileNotFoundException, filename
                 + ":" + fullPathNameOrError[1]);
         }
-        Logger.info("reading isosurface data from " + filename);
+        showString("reading isosurface data from " + filename);
 
         if (stype != null) {
           propertyValue = vwr.cacheGet(filename);
@@ -4284,7 +4286,7 @@ public class CmdExt implements JmolCmdExtension {
         bsSelect.and(vwr.getModelUndeletedAtomsBitSet(modelIndex));
         if (onlyOneModel != null) {
           BS bsModels = vwr.ms.getModelBS(bsSelect, false);
-          if (bsModels.cardinality() != 1)
+          if (bsModels.cardinality() > 1)
             eval.errorStr(ScriptError.ERROR_multipleModelsDisplayedNotOK,
                 "ISOSURFACE " + onlyOneModel);
           if (needSelect) {

@@ -8340,17 +8340,31 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
           -4, "OK");
       return n;
     }
+    return deleteModels(ms.at[atomIndex].mi, bsAtoms);
+  }
+
+  /**
+   * called by ZAP {atomExpression} when atoms are present 
+   * or the command is specific for a model, such as ZAP 2.1
+   * @param modelIndex
+   * @param bsAtoms
+   * @return number of atoms deleted
+   */
+  public int deleteModels(int modelIndex, BS bsAtoms) {
+    clearModelDependentObjects();
     // fileManager.addLoadScript("zap " + Escape.escape(bs));
-    int modelIndex = ms.at[atomIndex].mi;
-    sm.modifySend(-1, modelIndex, 5, "deleting model " + getModelNumberDotted(modelIndex));
+    sm.modifySend(-1, modelIndex, 5, "deleting model "
+        + getModelNumberDotted(modelIndex));
     setCurrentModelIndexClear(0, false);
     am.setAnimationOn(false);
     BS bsD0 = BSUtil.copy(getDeletedAtoms());
-    BS bsDeleted = ms.deleteModels(bsAtoms);
+    BS bsModels = (bsAtoms == null ? BSUtil.newAndSetBit(modelIndex) : ms
+        .getModelBS(bsAtoms, false));
+    BS bsDeleted = ms.deleteModels(bsModels);
     slm.processDeletedModelAtoms(bsDeleted);
-    setAnimationRange(0, 0);
     if (eval != null)
       eval.deleteAtomsInVariables(bsDeleted);
+    setAnimationRange(0, 0);
     clearRepaintManager(-1);
     am.clear();
     am.initializePointers(1);

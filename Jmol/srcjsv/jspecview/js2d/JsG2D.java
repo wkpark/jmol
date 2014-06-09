@@ -37,8 +37,6 @@
 
 package jspecview.js2d;
 
-import java.net.URL;
-
 import javajs.api.GenericColor;
 import javajs.awt.Color;
 import javajs.awt.Font;

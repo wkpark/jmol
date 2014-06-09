@@ -24,6 +24,7 @@
 package org.jmol.adapter.readers.cif;
 
 
+import javajs.util.M3;
 import javajs.util.Matrix;
 import javajs.util.PT;
 
@@ -180,11 +181,22 @@ public class MSCifRdr extends MSRdr {
   };
   private static final int NONE = -1;
 
+  private M3 comSSMat;
   public void processEntry() throws Exception {
     CifReader cr = (CifReader) this.cr;
     if (cr.key.equals("_jana_cell_commen_t_section_1")) {
       isCommensurate = true;
       commensurateSection1 = cr.parseIntStr(cr.data);
+    }
+    if (cr.key.startsWith("_jana_cell_commen_supercell_matrix")) {
+      isCommensurate = true;
+      if (comSSMat == null)
+        comSSMat = M3.newM3(null);
+      String[] tokens = PT.split(cr.key, "_");
+      int r = cr.parseIntStr(tokens[tokens.length - 2]);
+      int c = cr.parseIntStr(tokens[tokens.length - 1]);
+      if (r > 0 && c > 0)
+        comSSMat.setElement(r - 1, c - 1, cr.parseFloatStr(cr.data)); 
     }
   }
 

@@ -207,6 +207,9 @@ public class MSCifRdr extends MSRdr {
       processSubsystemLoopBlock();
       return 1;
     }
+    if (cr.key.equals("_jana_cell_twin_matrix_id")) {
+      processTwinMatrixLoopBlock();
+    }
     if (!cr.key.startsWith("_cell_wave") && !cr.key.contains("fourier")
         && !cr.key.contains("_special_func"))
       return 0;
@@ -226,10 +229,12 @@ public class MSCifRdr extends MSRdr {
       int n = cr.parser.getFieldCount();
       for (int i = 0; i < n; ++i) {
         switch (tok = fieldProperty(cr, i)) {
+        case WV_ID:
+          cr.haveCellWaveVector = true;
+          //$FALL-THROUGH$
         case FD_ID:
         case FO_ID:
         case FU_ID:
-        case WV_ID:
         case FWV_ID:
           pt[0] = pt[1] = pt[2] = 0;
           //$FALL-THROUGH$
@@ -426,24 +431,40 @@ public class MSCifRdr extends MSRdr {
     while (cr.parser.getData()) {
       fieldProperty(cr, 0);
       String id = field;
-      addSubsystem(id, getSubSystemMatrix(cr, 1));
+      addSubsystem(id, getSparseMatrix(cr, "_w_", 1, 3 + modDim));
     }
   }
 
-  private Matrix getSubSystemMatrix(CifReader cr, int i) {
-    Matrix m = new Matrix(null, 3 + modDim, 3 + modDim);
+  private void processTwinMatrixLoopBlock() throws Exception {
+    CifReader cr = (CifReader) this.cr;
+    cr.parseLoopParameters(null);
+    while (cr.parser.getData()) {
+      fieldProperty(cr, 0);
+      String id = field;
+      addTwin(id, getSparseMatrix(cr, "_matrix_", 1, 3));
+    }
+  }
+
+  private void addTwin(String id, Matrix m) {
+    //TODO implement twinning
+    System.out.println("twin " + id + " = " + m);    
+  }
+
+  private Matrix getSparseMatrix(CifReader cr, String term, int i, int dim) {
+    Matrix m = new Matrix(null, dim, dim);
     double[][] a = m.getArray();
     String key;
     int p;
     int n = cr.parser.getFieldCount();
     for (; i < n; ++i) {
       if ((p = fieldProperty(cr, i)) < 0 
-          || !(key = cr.parser.getField(p)).contains("_w_"))
+          || !(key = cr.parser.getField(p)).contains(term))
         continue;
       String[] tokens = PT.split(key, "_");
-      int r = cr.parseIntStr(tokens[tokens.length - 2]) - 1;
-      int c = cr.parseIntStr(tokens[tokens.length - 1]) - 1;
-      a[r][c] = cr.parseFloatStr(field);
+      int r = cr.parseIntStr(tokens[tokens.length - 2]);
+      int c = cr.parseIntStr(tokens[tokens.length - 1]);
+      if (r > 0 && c > 0)
+        a[r - 1][c - 1] = cr.parseFloatStr(field);
     }
     return m;
   }

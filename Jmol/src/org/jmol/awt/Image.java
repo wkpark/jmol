@@ -43,6 +43,7 @@ import java.awt.image.SinglePixelPackedSampleModel;
 import java.net.URL;
 
 import javajs.api.PlatformViewer;
+import javajs.util.AU;
 import javajs.util.PT;
 
 import javax.swing.JPanel;
@@ -62,8 +63,16 @@ class Image {
       return Toolkit.getDefaultToolkit().createImage((URL) data);
     if (data instanceof String)
       return Toolkit.getDefaultToolkit().createImage((String) data);
-    if (PT.isAB(data))
-      return Toolkit.getDefaultToolkit().createImage((byte[]) data);
+    if (PT.isAB(data)) {
+      // for the SUN processor, we need to fix the CRC
+      byte[] b = (byte[]) data;
+      if (b.length > 53 && b[51] == 32 && b[52] == 78 && b[53] == 71) { //<space>NG
+        b = AU.arrayCopyByte(b, -1);
+        b[51] = 80; // P
+      }
+      return Toolkit.getDefaultToolkit().createImage(b);
+      
+    }
     return null;
   }
 

@@ -235,7 +235,7 @@ public class JmolUtil implements JmolZipUtilities {
     data[0] = Rdr.getZipRoot(data[0]);
     String shortName = shortSceneFilename(data[0]);
     try {
-      data[1] = ZipTools.cacheZipContents( 
+      data[1] = Rdr.getJzt().cacheZipContents( 
           Rdr.getPngZipStream((BufferedInputStream) jmb.fm
               .getBufferedInputStreamOrErrorMessageFromName(data[0], null,
                   false, false, null, false, true), true), shortName, jmb.pngjCache, false);
@@ -682,31 +682,41 @@ public class JmolUtil implements JmolZipUtilities {
   }
 
   @Override
-  public Object getImage(Viewer vwr, String fullPathName, String echoName) {
+  public Object getImage(Viewer vwr, Object fullPathNameOrBytes, String echoName) {
     Object image = null;
     Object info = null;
     GenericPlatform apiPlatform = vwr.apiPlatform;
-
-    if (fullPathName.indexOf("|") > 0) {
-      Object ret = vwr.fm.getFileAsBytes(fullPathName, null, true);
-      if (!PT.isAB(ret))
-        return "" + ret;
-      image = (vwr.isJS ? ret : apiPlatform.createImage(ret));
-    } else if (vwr.isJS) {
-    } else if (FileManager.urlTypeIndex(fullPathName) >= 0) {
-      try {
-        image = apiPlatform
-            .createImage(new URL((URL) null, fullPathName, null));
-      } catch (Exception e) {
-        return "bad URL: " + fullPathName;
+    boolean createImage = false;
+    String fullPathName = "" + fullPathNameOrBytes;
+    if (fullPathNameOrBytes instanceof String) {
+      if (fullPathName.indexOf("|") > 0) {
+        Object ret = vwr.fm.getFileAsBytes(fullPathName, null, true);
+        if (!PT.isAB(ret))
+          return "" + ret;
+        image = (vwr.isJS ? ret : apiPlatform.createImage(ret));
+      } else if (vwr.isJS) {
+      } else if (FileManager.urlTypeIndex(fullPathName) >= 0) {
+        try {
+          image = apiPlatform.createImage(new URL((URL) null, fullPathName,
+              null));
+        } catch (Exception e) {
+          return "bad URL: " + fullPathName;
+        }
+      } else {
+        createImage = true;
       }
+    } else if (vwr.isJS) {
+      image = fullPathNameOrBytes;
     } else {
-      image = apiPlatform.createImage(fullPathName);
+      createImage = true;
     }
+    if (createImage)
+      image = apiPlatform.createImage(fullPathNameOrBytes);
+
     /**
      * @j2sNative
      * 
-     *            info = [echoName, fullPathName];
+     *            info = [echoName, fullPathNameOrBytes];
      * 
      */
     {

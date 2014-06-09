@@ -962,8 +962,10 @@ public class ScriptCompiler extends ScriptTokenParser {
           && !iHaveQuotedString
           && lastToken.tok != T.inline
           && (tokCommand == T.set && nTokens == 2
-              && lastToken.tok == T.defaultdirectory || tokCommand == T.load
-              || tokCommand == T.background || tokCommand == T.script));
+              && lastToken.tok == T.defaultdirectory 
+              || tokCommand == T.load
+              || tokCommand == T.background 
+              || tokCommand == T.script));
       iHaveQuotedString = true;
       if (tokCommand == T.load && lastToken.tok == T.data
           || tokCommand == T.data && str.indexOf("@") < 0) {
@@ -2309,7 +2311,8 @@ public class ScriptCompiler extends ScriptTokenParser {
       String s = script.substring(ichToken + 1, ichToken + cchToken - 1);
       if (s.indexOf("\\u") >= 0)
         s = Escape.unescapeUnicode(s);
-      return s;
+      if (s.indexOf(";base64,") != 0)
+        return s;
     }
     SB sb = SB.newN(cchToken - 2);
     int ichMax = ichToken + cchToken - 1;

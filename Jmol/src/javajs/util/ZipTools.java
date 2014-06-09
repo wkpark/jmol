@@ -278,39 +278,6 @@ public class ZipTools implements GenericZipTools {
     return Rdr.fixUTF(Rdr.getLimitedStreamBytes(is, -1));
   }
 
-  public static String cacheZipContents(BufferedInputStream bis,
-                                        String fileName,
-                                        Map<String, Object> cache, boolean asByteArray) {
-    ZipInputStream zis = (ZipInputStream) newZIS(bis);
-    ZipEntry ze;
-    SB listing = new SB();
-    long n = 0;
-    try {
-      while ((ze = zis.getNextEntry()) != null) {
-        String name = ze.getName();
-        if (fileName != null)
-          listing.append(name).appendC('\n');
-        long nBytes = ze.getSize();
-        byte[] bytes = Rdr.getLimitedStreamBytes(zis, nBytes);
-        n += bytes.length;
-        Object o = (asByteArray ? new BArray(bytes) : bytes);        
-        cache.put((fileName == null ? "" : fileName + "|") + name, o);
-      }
-      zis.close();
-    } catch (Exception e) {
-      try {
-        zis.close();
-      } catch (IOException e1) {
-      }
-      return null;
-    }
-    if (n == 0 || fileName == null)
-      return null;
-    System.out.println("ZipTools cached " + n + " bytes from " + fileName);
-    return listing.toString();
-  }
-
-
   @Override
   public InputStream newGZIPInputStream(InputStream is) throws IOException {
     return new BufferedInputStream(new GZIPInputStream(is, 512));
@@ -357,21 +324,79 @@ public class ZipTools implements GenericZipTools {
   }
 
   @Override
-  public void readFileAsMap(BufferedInputStream bis, Map<String, Object> bdata) {
+  public void readFileAsMap(BufferedInputStream bis, Map<String, Object> bdata, String name) {
+    int pt = name.indexOf("|");
+    name = (pt >= 0 ? name.substring(pt + 1) : null);
     try {
       if (Rdr.isPngZipStream(bis)) {
-        bdata.put("_IMAGE_", new BArray(getPngImageBytes(bis)));
-        cacheZipContents(bis, null, bdata, true);
+        boolean isImage = "_IMAGE_".equals(name);
+        if (name == null || isImage)
+          bdata.put((isImage ? "_DATA_" : "_IMAGE_"), new BArray(getPngImageBytes(bis)));
+        if (!isImage)
+          cacheZipContents(bis, name, bdata, true);
       } else if (Rdr.isZipS(bis)) {
-        cacheZipContents(bis, null, bdata, true);
-      } else {
+        cacheZipContents(bis, name, bdata, true);
+      } else if (name == null){
         bdata.put("_DATA_", new BArray(Rdr.getLimitedStreamBytes(bis, -1)));
+      } else {
+        throw new IOException("ZIP file " + name + " not found");
       }
       bdata.put("$_BINARY_$", Boolean.TRUE);
     } catch (IOException e) {
       bdata.clear();
       bdata.put("_ERROR_", e.getMessage());
     }
+  }
+
+  @Override
+  public String cacheZipContents(BufferedInputStream bis,
+                                        String fileName,
+                                        Map<String, Object> cache, 
+                                        boolean asByteArray) {
+    ZipInputStream zis = (ZipInputStream) newZIS(bis);
+    ZipEntry ze;
+    SB listing = new SB();
+    long n = 0;
+    boolean oneFile = (asByteArray && fileName != null);
+    int pt = (oneFile ? fileName.indexOf("|") : -1);
+    String file0 = (pt >= 0 ? fileName : null);
+    if (pt >= 0)
+      fileName = fileName.substring(0,  pt);
+    try {
+      while ((ze = zis.getNextEntry()) != null) {
+        String name = ze.getName();
+        if (fileName != null) {
+          if (oneFile) {
+            if (!name.equalsIgnoreCase(fileName))
+              continue;
+          } else {
+            listing.append(name).appendC('\n');
+          }
+        }
+        long nBytes = ze.getSize();
+        byte[] bytes = Rdr.getLimitedStreamBytes(zis, nBytes);
+        if (file0 != null) {
+          readFileAsMap(Rdr.getBIS(bytes), cache, file0);
+          return null;
+        }
+        n += bytes.length;
+        Object o = (asByteArray ? new BArray(bytes) : bytes);        
+        cache.put((oneFile ? "_DATA_" : (fileName == null ? "" : fileName + "|") + name), o);
+        if (oneFile)
+          break;
+      }
+      zis.close();
+    } catch (Exception e) {
+      try {
+        zis.close();
+      } catch (IOException e1) {
+      }
+      return null;
+    }
+    if (n == 0 || fileName == null)
+      return null;
+    System.out.println("ZipTools cached " + n + " bytes from " + fileName);
+    return listing.toString();
   }
 
   private static byte[] getPngImageBytes(BufferedInputStream bis) {

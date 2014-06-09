@@ -154,8 +154,8 @@ public class JmolBinary {
     return getJzu().determineSurfaceFileType(br);
   }
 
-  public Object getImage(Viewer vwr, String fullPathName, String echoName) {
-    return getJzu().getImage(vwr, fullPathName, echoName);
+  public Object getImage(Viewer vwr, Object fullPathNameOrBytes, String echoName) {
+    return getJzu().getImage(vwr, fullPathNameOrBytes, echoName);
   }
 
   public static void getFileReferences(String script, Lst<String> fileList) {

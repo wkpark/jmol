@@ -62,6 +62,8 @@ import javajs.util.PT;
 import org.jmol.util.Parser;
 
 import javajs.util.A4;
+import javajs.util.BArray;
+import javajs.util.Base64;
 import javajs.util.OC;
 import javajs.util.M3;
 import javajs.util.M4;
@@ -2658,7 +2660,7 @@ public class ScriptEval extends ScriptExpr {
       cmdBoundbox(1);
       return;
     case T.echo:
-      cmdEcho(1, null, false);
+      cmdEcho(1);
       return;
     case T.frank:
       cmdFrank(1);
@@ -2859,12 +2861,28 @@ public class ScriptEval extends ScriptExpr {
     int argb;
     if (theTok == T.image) {
       // background IMAGE "xxxx.jpg"
-      String file = paramAsStr(checkLast(++i));
-      if (!chk && !file.equalsIgnoreCase("none") && file.length() > 0)
-        vwr.fm.loadImage(file, null);
+      Object o = null;
+      switch (tokAt(++i)) {
+      case T.barray:
+      case T.hash:
+        o = getToken(i).value;
+        break;
+      default:
+        String file = paramAsStr(checkLast(i));
+        if (file.equalsIgnoreCase("none") || file.length() == 0) {
+          vwr.setBackgroundImage(null, null);
+          return;
+        }
+        if (file.startsWith(";base64,"))
+          o = new BArray(Base64.decodeBase64(file));
+        else 
+          o = file;
+      }
+      if (!chk)
+        vwr.fm.loadImage(o, null);
       return;
     }
-    if (isColorParam(i) || theTok == T.none) {
+    if (theTok == T.none || isColorParam(i)) {
       argb = getArgbParamLast(i, true);
       if (chk)
         return;
@@ -3301,24 +3319,22 @@ public class ScriptEval extends ScriptExpr {
     setShapeSize(iShape, rd);
   }
 
-  private void cmdEcho(int index, String id, boolean isImage)
+  private void cmdEcho(int index)
       throws ScriptException {
     if (chk)
       return;
     String text = optParameterAsString(index);
+    boolean doRefresh = true;
     if (vwr.ms.getEchoStateActive()) {
-      if (isImage) {
-        vwr.fm.loadImage(text, id);
-        return;
-      } else if (text.startsWith("\1")) {
+      if (text.startsWith("\1")) {
         // no reporting, just screen echo, from mouseManager key press
         text = text.substring(1);
-        isImage = true;
+        doRefresh = false;
       }
       if (text != null)
         setShapeProperty(JC.SHAPE_ECHO, "text", text);
     }
-    if (!isImage && vwr.getRefreshing())
+    if (doRefresh && vwr.getRefreshing())
       showString(vwr.formatText(text));
   }
 
@@ -7006,18 +7022,23 @@ public class ScriptEval extends ScriptExpr {
         propertyName = "script";
         propertyValue = paramAsStr(pt++);
         break;
-      case T.string:
       case T.image:
-        boolean isImage = (theTok == T.image);
-        if (isImage)
-          pt++;
-        checkLength(pt);
-        if (id == null && isImage) {
-          String[] data = new String[1];
-          getShapePropertyData(JC.SHAPE_ECHO, "currentTarget", data);
-          id = data[0];
+        pt++;
+        //$FALL-THROUGH$
+      case T.string:
+        boolean isImage = (theTok != T.string);
+        checkLength(pt--);
+        if (isImage) {
+          if (id == null) {
+            String[] data = new String[1];
+            getShapePropertyData(JC.SHAPE_ECHO, "currentTarget", data);
+            id = data[0];
+          }
+          if (!chk && vwr.ms.getEchoStateActive())
+            vwr.fm.loadImage(getToken(pt).value, id);
+          return;
         }
-        cmdEcho(pt - 1, id, isImage);
+        cmdEcho(pt - 1);
         return;
       case T.point:
         propertyName = "point";

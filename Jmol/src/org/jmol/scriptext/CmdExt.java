@@ -5741,8 +5741,7 @@ public class CmdExt implements JmolCmdExtension {
       pt = pt0 = 1;
       isCommand = true;
       isShow = (vwr.isApplet() && !vwr.isSignedApplet()
-          || !vwr.haveAccess(ACCESS.ALL) || vwr.getPathForAllFiles()
-          .length() > 0);
+          || !vwr.haveAccess(ACCESS.ALL) || vwr.getPathForAllFiles().length() > 0);
     } else {
       isCommand = false;
       isShow = true;
@@ -6105,8 +6104,7 @@ public class CmdExt implements JmolCmdExtension {
         } else if (data == "MENU") {
           data = vwr.getMenu("");
         } else if (data == "PGRP") {
-          data = vwr.getPointGroupAsString(type2.equals("draw"), null, 0,
-              1.0f);
+          data = vwr.getPointGroupAsString(type2.equals("draw"), null, 0, 1.0f);
         } else if (data == "PDB" || data == "PQR") {
           if (isShow) {
             data = vwr.getPdbAtomData(null, null);
@@ -6150,7 +6148,7 @@ public class CmdExt implements JmolCmdExtension {
           Lst<Object> v = null;
           if (tVar.tok == T.barray) {
             v = new Lst<Object>();
-            v.addLast(((BArray)tVar.value).data);
+            v.addLast(((BArray) tVar.value).data);
           } else if (tVar.tok == T.hash) {
             @SuppressWarnings("unchecked")
             Map<String, SV> m = (Map<String, SV>) tVar.value;
@@ -6159,6 +6157,8 @@ public class CmdExt implements JmolCmdExtension {
               if (fileName != null)
                 for (Entry<String, SV> e : m.entrySet()) {
                   String key = e.getKey();
+                  if (key.equals("$_BINARY_$"))
+                    continue;
                   SV o = e.getValue();
                   bytes = (o.tok == T.barray ? ((BArray) o.value).data : null);
                   if (bytes == null) {
@@ -6166,23 +6166,30 @@ public class CmdExt implements JmolCmdExtension {
                     bytes = (s.startsWith(";base64,") ? Base64.decodeBase64(s)
                         : s.getBytes());
                   }
-                  if (key.equals("_IMAGE_")) {
+                  if (key.equals("_DATA_")) {
+                    v = null;
+                    if (bytes == null)
+                      bytes = ((BArray) o.value).data;
+                    break;
+                  } else if (key.equals("_IMAGE_")) {
                     v.add(0, key);
                     v.add(1, bytes);
-                  } else if (!key.equals("$_BINARY_$")) {
+                  } else {
                     v.addLast(key);
                     v.addLast(null);
                     v.addLast(bytes);
                   }
                 }
             }
-          } 
+          }
           if (v == null) {
-            data = tVar.asString();
-            type = "TXT";
+            if (bytes == null) {
+              data = tVar.asString();
+              type = "TXT";
+            }
           } else {
             if (fileName != null
-                && (bytes = data = vwr.createZip(fileName, "ZIPDATA", v)) == null)
+                && (bytes = data = vwr.createZip(fileName, v.size() == 1 ? "BINARY" : "ZIPDATA", v)) == null)
               e.evalError("#CANCELED#", null);
           }
         } else if (data == "SPT") {

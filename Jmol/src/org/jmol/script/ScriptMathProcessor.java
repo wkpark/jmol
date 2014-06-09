@@ -147,7 +147,9 @@ public class ScriptMathProcessor {
             return SV.newV(T.bitset, new BS());
           return x;
         }
-        if (x.tok == T.bitset || x.tok == T.varray || x.tok == T.string
+        if (x.tok == T.bitset 
+            || x.tok == T.varray || x.tok == T.barray 
+            || x.tok == T.string
             || x.tok == T.matrix3f || x.tok == T.matrix4f)
           x = SV.selectItemVar(x);
         if (asBitSet && x.tok == T.varray)
@@ -731,7 +733,7 @@ public class ScriptMathProcessor {
     }
     SV var1 = xStack[xPt--];
     SV var = xStack[xPt];
-    if (var.tok == T.varray && var.intValue != Integer.MAX_VALUE)
+    if ((var.tok == T.varray || var.tok == T.barray) && var.intValue != Integer.MAX_VALUE)
 
       if (var1.tok == T.string || assignLeft && squareCount == 1) {
         // immediate drill-down
@@ -758,6 +760,7 @@ public class ScriptMathProcessor {
       var = SV.newS(SV.sValue(var));
       //$FALL-THROUGH$
     case T.bitset:
+    case T.barray:
     case T.varray:
     case T.string:
     case T.matrix3f:

@@ -113,6 +113,7 @@ public class CifReader extends AtomSetCollectionReader {
   private boolean modulated;
   private boolean lookingForPDB = true;
   private boolean isCourseGrained;
+  boolean haveCellWaveVector;
   private String latticeType = null;
   private int modDim;
 
@@ -174,9 +175,12 @@ public class CifReader extends AtomSetCollectionReader {
 
   private boolean readAllData() throws Exception {
     if (key.startsWith("data_")) {
+      newModel(++modelNumber);
       if (iHaveDesiredModel)
         return false;
-      newModel(++modelNumber);
+      haveCellWaveVector = false;
+      if (auditBlockCode == null)
+        modulated = false;
       if (!skipping) {
         nAtoms0 = asc.ac;
         processDataParameter();
@@ -356,12 +360,15 @@ public class CifReader extends AtomSetCollectionReader {
     thisFormula = "";
     if (isCourseGrained)
       asc.setAtomSetAuxiliaryInfo("courseGrained", Boolean.TRUE);
-    if (nAtoms0 == asc.ac)
+    if (nAtoms0 == asc.ac) {
       // we found no atoms -- must revert
+      modelNumber--;
+      haveModel = false;
       asc.removeCurrentAtomSet();
-    else
+    } else {
       applySymmetryAndSetTrajectory();
-    iHaveDesiredModel = isLastModel(modelNumber);
+      iHaveDesiredModel = isLastModel(modelNumber);
+    }
   }
 
   @Override
@@ -418,6 +425,8 @@ public class CifReader extends AtomSetCollectionReader {
         asc.setAtomSetAuxiliaryInfo("unitcell_" + e.getKey(), e.getValue());
       htCellTypes = null;
     }
+    if (!haveCellWaveVector)
+      modDim = 0;
     SymmetryInterface sym = applySymTrajASCR();
     if (modDim > 0) {
       addLatticeVectors();
@@ -513,16 +522,14 @@ public class CifReader extends AtomSetCollectionReader {
     if (key.indexOf("_ssg_name") >= 0) {
       modulated = true;
       latticeType = data.substring(0, 1);
-    } 
-    else if (modulated) {
+    } else if (modulated) {
       return;
     }
     data = parser.toUnicode(data);
     setSpaceGroupName(lastSpaceGroupName = (key.indexOf("h-m") > 0 ? "HM:"
-        : key.indexOf("bns") >= 0 ? "BNS:" 
-        : modulated ? "SSG:" 
-        : key.indexOf("hall") >= 0 ? "Hall:"
-        : "") + data);
+        : key.indexOf("bns") >= 0 ? "BNS:" : modulated ? "SSG:" : key
+            .indexOf("hall") >= 0 ? "Hall:" : "")
+        + data);
   }
 
   private final static float[] centerOpts = { 0f, 1f, -1f, 0.5f, -0.5f };
@@ -1382,6 +1389,7 @@ public class CifReader extends AtomSetCollectionReader {
               }
               if (timeRev != 0)
                 field += ",m" + (timeRev == 1 ? "+1" : "-1");
+              field = field.replace(';',' ');
               symops.addLast(field);
               setSymmetryOperator(field);
             }

@@ -436,9 +436,11 @@ public class StateCreator extends JmolStateCreator {
       if (global.objColors[i] != 0)
         app(str, StateManager.getObjectNameFromId(i) + "Color = \""
             + Escape.escapeColor(global.objColors[i]) + '"');
-    if (global.backgroundImageFileName != null)
-      app(str, "background IMAGE /*file*/"
+    if (global.backgroundImageFileName != null) {
+      app(str, "background IMAGE "
+          + (global.backgroundImageFileName.startsWith(";base64,") ? "" : "/*file*/")
           + PT.esc(global.backgroundImageFileName));
+    }
     str.append(getSpecularState());
     app(str, "statusReporting  = " + global.statusReporting);
     if (sfunc != null)

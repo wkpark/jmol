@@ -62,7 +62,6 @@ import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 
-import javajs.util.Base64;
 import javajs.util.CU;
 import javajs.util.M3;
 import javajs.util.M4;
@@ -154,7 +153,7 @@ public class MathExt implements JmolMathExtension {
       return evaluateFind(mp, args);
     case T.format:
     case T.label:
-      return evaluateLabel(mp, op.intValue, args);
+      return evaluateFormat(mp, op.intValue, args, tok == T.format);
     case T.function:
       return evaluateUserFunction(mp, (String) op.value, args, op.intValue,
           op.tok == T.propselector);
@@ -231,10 +230,6 @@ public class MathExt implements JmolMathExtension {
       }
     }
     SV[] a = new SV[args.length];
-    if (!allowMatrix && args.length == 1 && args[0].tok == T.string
-        && args[0].asString().startsWith(";base64,"))
-      return mp.addXObj(SV.newV(T.barray,
-          Base64.decodeBase64(args[0].asString())));
     for (int i = a.length; --i >= 0;)
       a[i] = SV.newT(args[i]);
     return mp.addXAV(a);
@@ -1037,7 +1032,6 @@ public class MathExt implements JmolMathExtension {
     int tok = (args.length == 0 ? T.nada : args[0].tok);
     if (args.length == 2 && (tok == T.varray || tok == T.hash || tok == T.context)) {
       return mp.addXObj(vwr.extractProperty(args[0].value, args[1].value.toString(), -1));
-
     }
     String propertyName = (args.length > 0 ? SV.sValue(args[pt++]) : "");
     String lc = propertyName.toLowerCase();
@@ -1096,7 +1090,8 @@ public class MathExt implements JmolMathExtension {
         property));
   }
 
-  private boolean evaluateLabel(ScriptMathProcessor mp, int intValue, SV[] args)
+  private boolean evaluateFormat(ScriptMathProcessor mp, int intValue,
+                                 SV[] args, boolean isLabel)
       throws ScriptException {
     // NOT {xxx}.label
     // {xxx}.label("....")
@@ -1106,26 +1101,31 @@ public class MathExt implements JmolMathExtension {
     // format("....",[a1, a2, a3, a3....])
     // format("base64", x)
     // format("JSON", x)
+    // format("byteArray", x)
+    // format("array", x)
     SV x1 = (args.length < 2 ? mp.getX() : null);
     String format = (args.length == 0 ? "%U" : SV.sValue(args[0]));
-    boolean asArray = T.tokAttr(intValue, T.minmaxmask);
     if (x1 == null) {
-      if (args.length < 2 || args[1].tok != T.varray)
-        return mp.addXStr(SV.sprintfArray(args));
+      int pt = (isLabel ? -1 : SV.getFormatType(format));
+      if (pt >= 0 && args.length != 2)
+        return false;
+      if (pt >= 0 || args.length < 2 || args[1].tok != T.varray)
+        return mp.addXObj(SV.format(args, pt));
+      // fill an array with applied formats
       Lst<SV> a = args[1].getList();
       SV[] args2 = new SV[] { args[0], null };
       String[] sa = new String[a.size()];
       for (int i = sa.length; --i >= 0;) {
         args2[1] = a.get(i);
-        sa[i] = SV.sprintfArray(args2);
+        sa[i] = SV.format(args2, pt).toString();
       }
       return mp.addXAS(sa);
     }
     BS bs = SV.getBitSet(x1, true);
-    if (bs == null)
-      return mp.addXObj(SV.sprintf(Txt.formatCheck(format), x1));
-    return mp.addXObj(e.getCmdExt().getBitsetIdent(bs, format, x1.value, true, x1.index,
-        asArray));
+    boolean asArray = T.tokAttr(intValue, T.minmaxmask); // "all"
+    return mp.addXObj(bs == null ? SV.sprintf(Txt.formatCheck(format), x1) : e
+        .getCmdExt().getBitsetIdent(bs, format, x1.value, true, x1.index,
+            asArray));
   }
 
   /**

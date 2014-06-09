@@ -44,7 +44,9 @@ import javajs.util.SB;
 
 import org.jmol.util.Measure;
 
+import javajs.util.AU;
 import javajs.util.BArray;
+import javajs.util.Base64;
 import javajs.util.M3;
 import javajs.util.M34;
 import javajs.util.M4;
@@ -158,7 +160,7 @@ public class SV extends T implements JSONEncodable {
     case matrix4f:
       return -64;
     case barray:
-      return -256;
+      return ((BArray) x.value).data.length;
     case string:
       return ((String) x.value).length();
     case varray:
@@ -840,7 +842,7 @@ public class SV extends T implements JSONEncodable {
     // pass bitsets created by the select() or for() commands
     // and all arrays by reference
     if (var.index != Integer.MAX_VALUE || 
-        var.tok == varray && var.intValue == Integer.MAX_VALUE)
+        (var.tok == varray || var.tok == barray) && var.intValue == Integer.MAX_VALUE)
       return var;
     return (SV) selectItemTok(var, Integer.MIN_VALUE);
   }
@@ -851,6 +853,7 @@ public class SV extends T implements JSONEncodable {
     case matrix4f:
     case bitset:
     case varray:
+    case barray:
     case string:
       break;
     default:
@@ -885,6 +888,9 @@ public class SV extends T implements JSONEncodable {
         bs = BSUtil.copy((BS) tokenIn.value);
         len = (isInputSelected ? 1 : BSUtil.cardinalityOf(bs));
       }
+      break;
+    case barray:
+      len = ((BArray)(((SV) tokenIn).value)).data.length;
       break;
     case varray:
       len = ((SV) tokenIn).getList().size();
@@ -1003,6 +1009,17 @@ public class SV extends T implements JSONEncodable {
       for (int i = 0; i < nn; i++)
         o2.addLast(newT(o1.get(i + i1)));
       tokenOut.value = o2;
+      break;
+    case barray:
+      if (--i1 < 0 || i1 >= len)
+        return newV(string, "");
+      byte[] data = ((BArray)(((SV) tokenIn).value)).data;
+      if (isOne)
+        return newI(data[i1]);
+      byte[] b = new byte[Math.min(i2, len) - i1];
+      for (int i = b.length; --i >= 0;)
+        b[i] = data[i1 + i];
+      tokenOut.value = new BArray(b);
       break;
     }
     return tokenOut;
@@ -1190,27 +1207,72 @@ public class SV extends T implements JSONEncodable {
   }
 
   /**
-   * sprintf accepts arguments from the format() function First argument is a
+   * 
+   * @param format
+   * @return 0: JSON, 5: base64, 12: bytearray, 22: array
+   */
+  public static int getFormatType(String format) {
+    return (format.indexOf(";") >= 0 ? -1 :
+        ";json;base64;bytearray;array;"
+    //   0    5      12        22
+        .indexOf(";" + format.toLowerCase() + ";"));
+  }
+
+ /**
+   * Accepts arguments from the format() function First argument is a
    * format string.
    * 
    * @param args
+   * @param pt 0: to JSON, 5: to base64, 12: to bytearray, 22: to array
    * @return formatted string
    */
-  public static String sprintfArray(SV[] args) {
+  public static Object format(SV[] args, int pt) {
     switch (args.length) {
     case 0:
       return "";
     case 1:
       return sValue(args[0]);
     case 2:
-      if (args[0].value.toString().equalsIgnoreCase("base64"))
-        return ";base64,"
-            + javajs.util.Base64.getBase64(
-                args[1].tok == barray ? ((BArray) args[1].value).data : args[1]
-                    .asString().getBytes()).toString();
-      if (args[0].value.toString().equalsIgnoreCase("json"))
+      if (pt == Integer.MAX_VALUE)
+        pt = getFormatType(args[0].asString());
+      switch (pt) {
+      case 0:
         return args[1].toJSON();
+      case 5:
+      case 12:
+      case 22:
+        byte[] bytes;
+        switch (args[1].tok) {
+        case barray:
+          bytes = AU.arrayCopyByte(((BArray) args[1].value).data, -1);
+          break;
+        case varray:
+          Lst<SV> l = args[1].getList();
+          if (pt == 22) {
+            Lst<SV> l1 = new Lst<SV>();
+            for (int i = l.size(); --i >= 0;)
+              l1.addLast(l.get(i));
+            return l1;
+          }
+          bytes = new byte[l.size()];
+          for (int i = bytes.length; --i >= 0;)
+            bytes[i] = (byte) l.get(i).asInt();
+          break;
+        default:
+          String s = args[1].asString();
+          if (s.startsWith(";base64,")){
+            if (pt == 5)
+              return s;
+            bytes = Base64.decodeBase64(s);
+          } else {
+            bytes = s.getBytes();
+          }
+        }
+        return (pt == 22 ? getVariable(bytes) : pt == 12 ? new BArray(bytes) : ";base64,"
+            + javajs.util.Base64.getBase64(bytes).toString());
+      }
     }
+    // use values to replace codes in format string
     SB sb = new SB();
     String[] format = PT.split(PT.rep(sValue(args[0]), "%%", "\1"), "%");
     sb.append(format[0]);

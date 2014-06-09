@@ -36,6 +36,8 @@ public interface GenericZipTools {
 
   public int getCrcValue(byte[] bytes);
 
-  public void readFileAsMap(BufferedInputStream is, Map<String, Object> bdata);
+  public void readFileAsMap(BufferedInputStream is, Map<String, Object> bdata, String name);
 
+  public String cacheZipContents(BufferedInputStream bis, String shortName,
+                                 Map<String, Object> cache, boolean asByteArray);
 }

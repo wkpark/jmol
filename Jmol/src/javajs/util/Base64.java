@@ -52,6 +52,11 @@ public class Base64 {
     return getBase64(bytes).toBytes(0, -1);
   }
 
+  /**
+   * 
+   * @param bytes
+   * @return BASE64-encoded string, without ";base64,"
+   */
   public static SB getBase64(byte[] bytes) {
     long nBytes = bytes.length;
     SB sout = new SB();

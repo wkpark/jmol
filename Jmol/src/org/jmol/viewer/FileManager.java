@@ -23,35 +23,36 @@
  */
 package org.jmol.viewer;
 
-import java.net.URL;
-import java.net.MalformedURLException;
-import java.net.URLEncoder;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Hashtable;
 import java.util.Map;
+
+import javajs.api.BytePoster;
+import javajs.api.GenericBinaryDocument;
+import javajs.api.GenericFileInterface;
+import javajs.util.AU;
+import javajs.util.BArray;
+import javajs.util.Base64;
+import javajs.util.DataReader;
+import javajs.util.Lst;
+import javajs.util.OC;
+import javajs.util.PT;
+import javajs.util.Rdr;
+import javajs.util.SB;
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolDomReaderInterface;
 import org.jmol.api.JmolFilesReaderInterface;
 import org.jmol.io.FileReader;
 import org.jmol.io.JmolBinary;
+import org.jmol.script.SV;
 import org.jmol.script.T;
-
-import javajs.api.BytePoster;
-import javajs.api.GenericFileInterface;
-import javajs.api.GenericBinaryDocument;
-import javajs.util.AU;
-import javajs.util.Base64;
-import javajs.util.Rdr;
-import javajs.util.DataReader;
-import javajs.util.OC;
-import javajs.util.Lst;
-import javajs.util.PT;
-import javajs.util.SB;
-
 import org.jmol.util.Logger;
 import org.jmol.util.Txt;
 import org.jmol.viewer.Viewer.ACCESS;
@@ -811,7 +812,8 @@ public class FileManager implements BytePoster {
       }
     }
     try {
-      Rdr.readFileAsMap((BufferedInputStream) t, bdata);
+      Rdr.readFileAsMap((BufferedInputStream) t, bdata, name);
+      
     } catch (Exception e) {
       bdata.clear();
       bdata.put("_ERROR_", "" + e);
@@ -873,17 +875,41 @@ public class FileManager implements BytePoster {
     return true;
   }
 
-  public void loadImage(String name, String echoName) {
-    String[] names = getClassifiedName(name, true);
-    String nameOrError = (names == null ? "cannot read file name: " + name
-        : names[0].replace('\\', '/'));
-    Object image = (names == null ? null : jmb.getImage(vwr, nameOrError, echoName));
+  @SuppressWarnings("unchecked")
+  public void loadImage(Object nameOrBytes, String echoName) {
+    Object image = null;
+    String nameOrError = null;
+    byte[] bytes = null;
+    if (nameOrBytes instanceof Map) {
+     if (((Map<String, Object>) nameOrBytes).containsKey("_DATA_"))
+      nameOrBytes = ((Map<String, Object>) nameOrBytes).get("_DATA_");
+    else
+      nameOrBytes = ((Map<String, Object>) nameOrBytes).get("_IMAGE_");
+    } if (nameOrBytes instanceof SV)
+      nameOrBytes = ((SV) nameOrBytes).value;
+    String name = (nameOrBytes instanceof String ? (String) nameOrBytes : null);
+    if (name != null && name.startsWith(";base64,")) {
+      bytes = Base64.decodeBase64(name);
+    } else if (nameOrBytes instanceof BArray) {
+      bytes = ((BArray) nameOrBytes).data;
+    } else {
+      String[] names = getClassifiedName((String) nameOrBytes, true);
+      nameOrError = (names == null ? "cannot read file name: " + nameOrBytes
+          : names[0].replace('\\', '/'));
+      if (names != null)
+        image = jmb.getImage(vwr, nameOrError, echoName);
+    }
+    if (bytes != null)
+      image = jmb.getImage(vwr, bytes, echoName);
     if (image instanceof String) {
       nameOrError = (String) image;
       image = null;
     }
-    if (!vwr.isJS)
+    if (!vwr.isJS) {
+      if (image != null && bytes != null)
+        nameOrError = ";base64," + Base64.getBase64(bytes).toString();
       vwr.loadImageData(image, nameOrError, echoName, null);
+    }
     // JSmol will call that from awtjs2d.Platform.java asynchronously
   }
 

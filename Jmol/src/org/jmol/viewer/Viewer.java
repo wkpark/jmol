@@ -3664,7 +3664,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       if (!isImageWrite) {
         g.setI("_width", width);
         g.setI("_height", height);
-        setStatusResized(width, height);
+//        setStatusResized(width, height);
       }
     } else {
       width = (dimScreen.width == 0 ? dimScreen.width = 500 : dimScreen.width);
@@ -3675,6 +3675,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         isImageWrite || isReset ? g.zoomLarge : false, antialiased,
         false, false);
     gdata.setWindowParameters(width, height, antialiased);
+    if (width > 0 && !isImageWrite)
+      setStatusResized(width, height);
   }
 
   @Override
@@ -8422,7 +8424,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
    * NOTE: This method is called from within a 
    * j2sNative block in awtjs2d.Platform.java.
    * 
-   * @param image
+   * @param image could be a byte array
    * @param nameOrError 
    * @param echoName if this is an echo rather than the background
    * @param sc   delivered in JavaScript from Platform.java

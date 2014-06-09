@@ -2015,21 +2015,21 @@ intl#     H-M full       HM-abbr   HM-short  Hall
 154       P 32 2 1       P3221     P322      P 32 2    
 155:h     R 3 2          R32       R32       R 3 2     
 155:r     R 3 2          R32       R32       P 3* 2    
-156       P 3 m 1        P3m1      P3m       P 3 -2    
+156       P 3 m 1        P3m1      P3m       P 3 -2"   
 157       P 3 1 m        P31m      P3m       P 3 -2    
-158       P 3 c 1        P3c1      P3c       P 3 -2    c
+158       P 3 c 1        P3c1      P3c       P 3 -2"c
 159       P 3 1 c        P31c      P3c       P 3 -2c   
 160:h     R 3 m          R3m       R3m       R 3 -2    
 160:r     R 3 m          R3m       R3m       P 3* -2   
-161:h     R 3 c          R3c       R3c       R 3 -2    c
+161:h     R 3 c          R3c       R3c       R 3 -2"c
 161:r     R 3 c          R3c       R3c       P 3* -2n  
 162       P -3 1 m       P-31m     P-3m      -P 3 2    
 163       P -3 1 c       P-31c     P-3c      -P 3 2c   
-164       P -3 m 1       P-3m1     P-3m      -P 3 2    
-165       P -3 c 1       P-3c1     P-3c      -P 3 2    c
-166:h     R -3 m         R-3m      R-3m      -R 3 2    
+164       P -3 m 1       P-3m1     P-3m      -P 3 2"   
+165       P -3 c 1       P-3c1     P-3c      -P 3 2"c
+166:h     R -3 m         R-3m      R-3m      -R 3 2"    
 166:r     R -3 m         R-3m      R-3m      -P 3* 2   
-167:h     R -3 c         R-3c      R-3c      -R 3 2    c
+167:h     R -3 c         R-3c      R-3c      -R 3 2"c
 167:r     R -3 c         R-3c      R-3c      -P 3* 2n  
 168       P 6            P6        P6        P 6       
 169       P 61           P61       P61       P 61      
@@ -2043,10 +2043,10 @@ intl#     H-M full       HM-abbr   HM-short  Hall
 176       P 63/m         P63/m     P63/m     -P 6c     
 176*      P 63/m*        P63/m*    P63/m*    -P 63     
 177       P 6 2 2        P622      P622      P 6 2     
-178       P 61 2 2       P6122     P6122     P 61 2 (0 
-179       P 65 2 2       P6522     P6522     P 65 2 (0 
-180       P 62 2 2       P6222     P6222     P 62 2 (0 
-181       P 64 2 2       P6422     P6422     P 64 2 (0 
+178       P 61 2 2       P6122     P6122     P 61 2 (0 0 5)
+179       P 65 2 2       P6522     P6522     P 65 2 (0 0 1)
+180       P 62 2 2       P6222     P6222     P 62 2 (0 0 4)
+181       P 64 2 2       P6422     P6422     P 64 2 (0 0 2)
 182       P 63 2 2       P6322     P6322     P 6c 2c   
 182*      P 63 2 2*      P6322*    P6322*    P 63 2c   
 183       P 6 m m        P6mm      P6mm      P 6 -2    
@@ -2068,45 +2068,45 @@ intl#     H-M full       HM-abbr   HM-short  Hall
 195       P 2 3          P23       P23       P 2 2 3   
 196       F 2 3          F23       F23       F 2 2 3   
 197       I 2 3          I23       I23       I 2 2 3   
-198       P 21 3         P213      P213      P 2ac 2ab 
+198       P 21 3         P213      P213      P 2ac 2ab 3
 199       I 21 3         I213      I213      I 2b 2c 3 
 200       P m -3         Pm-3      Pm-3      -P 2 2 3  
-201:1     P n -3         Pn-3      Pn-3      P 2 2 3 -1
-201:2     P n -3         Pn-3      Pn-3      -P 2ab 2bc
+201:1     P n -3         Pn-3      Pn-3      P 2 2 3 -1n
+201:2     P n -3         Pn-3      Pn-3      -P 2ab 2bc 3
 202       F m -3         Fm-3      Fm-3      -F 2 2 3  
-203:1     F d -3         Fd-3      Fd-3      F 2 2 3 -1
-203:2     F d -3         Fd-3      Fd-3      -F 2uv 2vw
+203:1     F d -3         Fd-3      Fd-3      F 2 2 3 -1d
+203:2     F d -3         Fd-3      Fd-3      -F 2uv 2vw 3
 204       I m -3         Im-3      Im-3      -I 2 2 3  
-205       P a -3         Pa-3      Pa-3      -P 2ac 2ab
+205       P a -3         Pa-3      Pa-3      -P 2ac 2ab 3
 206       I a -3         Ia-3      Ia-3      -I 2b 2c 3
 207       P 4 3 2        P432      P432      P 4 2 3   
 208       P 42 3 2       P4232     P4232     P 4n 2 3  
 209       F 4 3 2        F432      F432      F 4 2 3   
 210       F 41 3 2       F4132     F4132     F 4d 2 3  
 211       I 4 3 2        I432      I432      I 4 2 3   
-212       P 43 3 2       P4332     P4332     P 4acd 2ab
-213       P 41 3 2       P4132     P4132     P 4bd 2ab 
+212       P 43 3 2       P4332     P4332     P 4acd 2ab 3
+213       P 41 3 2       P4132     P4132     P 4bd 2ab 3
 214       I 41 3 2       I4132     I4132     I 4bd 2c 3
 215       P -4 3 m       P-43m     P-43m     P -4 2 3  
 216       F -4 3 m       F-43m     F-43m     F -4 2 3  
 217       I -4 3 m       I-43m     I-43m     I -4 2 3  
 218       P -4 3 n       P-43n     P-43n     P -4n 2 3 
 219       F -4 3 c       F-43c     F-43c     F -4a 2 3 
-220       I -4 3 d       I-43d     I-43d     I -4bd 2c 
+220       I -4 3 d       I-43d     I-43d     I -4bd 2c 3
 221       P m -3 m       Pm-3m     Pm-3m     -P 4 2 3  
-222:1     P n -3 n       Pn-3n     Pn-3n     P 4 2 3 -1
-222:2     P n -3 n       Pn-3n     Pn-3n     -P 4a 2bc 
+222:1     P n -3 n       Pn-3n     Pn-3n     P 4 2 3 -1n
+222:2     P n -3 n       Pn-3n     Pn-3n     -P 4a 2bc 3
 223       P m -3 n       Pm-3n     Pm-3n     -P 4n 2 3 
-224:1     P n -3 m       Pn-3m     Pn-3m     P 4n 2 3 -
-224:2     P n -3 m       Pn-3m     Pn-3m     -P 4bc 2bc
+224:1     P n -3 m       Pn-3m     Pn-3m     P 4n 2 3 -1n
+224:2     P n -3 m       Pn-3m     Pn-3m     -P 4bc 2bc 3
 225       F m -3 m       Fm-3m     Fm-3m     -F 4 2 3  
 226       F m -3 c       Fm-3c     Fm-3c     -F 4a 2 3 
-227:1     F d -3 m       Fd-3m     Fd-3m     F 4d 2 3 -
-227:2     F d -3 m       Fd-3m     Fd-3m     -F 4vw 2vw
-228:1     F d -3 c       Fd-3c     Fd-3c     F 4d 2 3 -
-228:2     F d -3 c       Fd-3c     Fd-3c     -F 4ud 2vw
+227:1     F d -3 m       Fd-3m     Fd-3m     F 4d 2 3 -1d
+227:2     F d -3 m       Fd-3m     Fd-3m     -F 4vw 2vw 3
+228:1     F d -3 c       Fd-3c     Fd-3c     F 4d 2 3 -1ad
+228:2     F d -3 c       Fd-3c     Fd-3c     -F 4ud 2vw 3
 229       I m -3 m       Im-3m     Im-3m     -I 4 2 3  
-230       I a -3 d       Ia-3d     Ia-3d     -I 4bd 2c 
+230       I a -3 d       Ia-3d     Ia-3d     -I 4bd 2c 3
 
 first settings:
 

@@ -76,7 +76,7 @@ abstract class OutputManager {
         if (out == null)
           out = openOutputChannel(privateKey, fileName, false, false);
         out.write(bytes, 0, bytes.length);
-      } else if (text != null && !type.equals("ZIPDATA")) {
+      } else if (text != null && !type.equals("ZIPDATA") && !type.equals("BINARY")) {
         if (out == null)
           out = openOutputChannel(privateKey, fileName, true, false);
         out.append(text);
@@ -136,7 +136,7 @@ abstract class OutputManager {
     boolean asBytes = (out == null && fileName == null);
     boolean closeChannel = (out == null && fileName != null);
     boolean releaseImage = (objImage == null);
-    Object image = (type.equals("ZIPDATA") ? "" : rgbbuf != null ? rgbbuf
+    Object image = (type.equals("BINARY") || type.equals("ZIPDATA") ? "" : rgbbuf != null ? rgbbuf
         : objImage != null ? objImage : vwr.getScreenImageBuffer(null, true));
     boolean isOK = false;
     try {
@@ -262,7 +262,7 @@ abstract class OutputManager {
   private boolean createTheImage(Object objImage, String type, OC out,
                                  Map<String, Object> params, String[] errRet) {
     type = type.substring(0, 1) + type.substring(1).toLowerCase();
-    if (type.equals("Zipdata")) {
+    if (type.equals("Zipdata") || type.equals("Binary")) {
       @SuppressWarnings("unchecked")
       Lst<Object> v = (Lst<Object>) params.get("imageData");
       if (v.size() >= 2 && v.get(0).equals("_IMAGE_")) {

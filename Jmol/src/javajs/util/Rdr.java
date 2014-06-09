@@ -489,8 +489,8 @@ public class Rdr implements GenericLineReader {
   }
 
   public static void readFileAsMap(BufferedInputStream is,
-                                   Map<String, Object> bdata) {
-    getJzt().readFileAsMap(is, bdata);
+                                   Map<String, Object> bdata, String name) {
+    getJzt().readFileAsMap(is, bdata, name);
   }
 
   public static String getZipDirectoryAsStringAndClose(BufferedInputStream t) {

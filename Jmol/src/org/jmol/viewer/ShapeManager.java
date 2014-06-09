@@ -370,22 +370,23 @@ public class ShapeManager {
 
     BS bs = vwr.getVisibleFramesBitSet();
     
-    // i=1 skips balls (0)
+    // i=2 skips balls and sticks
+    // as these are handled differently.
 
-    for (int i = 1; i < JC.SHAPE_MAX; i++)
+    // Bbcage, Halos, Dipoles, Draw, Ellipsoids, Polyhedra
+    // bioshapes, Echo, Hover, 
+    for (int i = JC.SHAPE_MIN_HAS_SETVIS; i < JC.SHAPE_MAX_HAS_SETVIS; i++)
       if (shapes[i] != null)
         shapes[i].setVisibilityFlags(bs);
     
-    // now set the JC.ATOM_IN_FRAME and JC.ATOM_NOTHIDDEN flags
-    // along with the bonds flag.
+    // now check ATOM_IN_FRAME, and ATOM_NOTHIDDEN, VIS_BALLS_FLAG 
     
     boolean showHydrogens = vwr.getBoolean(T.showhydrogens);
     BS bsDeleted = vwr.getDeletedAtoms();
     Atom[] atoms = ms.at;
-    int flag0 = JC.ATOM_NOFLAGS & ~JC.VIS_BOND_FLAG;
     for (int i = ms.ac; --i >= 0;) {
       Atom atom = atoms[i];
-      atom.shapeVisibilityFlags &= flag0;
+      atom.shapeVisibilityFlags &= JC.ATOM_NOFLAGS;
       if (bsDeleted != null && bsDeleted.get(i) || !showHydrogens
           && atom.getElementNumber() == 1)
         continue;
@@ -400,8 +401,6 @@ public class ShapeManager {
         }
       }
     }
-
-    shapes[JC.SHAPE_BALLS].setVisibilityFlags(bs);
 
     //set clickability -- this enables measures and such
     for (int i = 0; i < JC.SHAPE_MAX; ++i) {

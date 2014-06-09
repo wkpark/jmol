@@ -1405,6 +1405,9 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int SHAPE_LABELS     = 5;
   public final static int SHAPE_MEASURES   = 6;
   public final static int SHAPE_STARS      = 7;
+
+  public final static int SHAPE_MIN_HAS_SETVIS = 8;
+  
   public final static int SHAPE_HALOS      = 8;
 
   public final static int SHAPE_MIN_SECONDARY = 9; //////////
@@ -1459,12 +1462,13 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   
   public final static int SHAPE_MAX_HAS_ID = 31;
   
-  public final static int SHAPE_AXES       = 31;
-  public final static int SHAPE_BBCAGE     = 32;
-  public final static int SHAPE_UCCAGE     = 33;
+  public final static int SHAPE_BBCAGE     = 31;
+
+  public final static int SHAPE_MAX_HAS_SETVIS = 32;
+
+  public final static int SHAPE_UCCAGE     = 32;
+  public final static int SHAPE_AXES       = 33;
   public final static int SHAPE_HOVER      = 34;
-  
-  // last should be frank:
   public final static int SHAPE_FRANK      = 35;
   public final static int SHAPE_MAX        = SHAPE_FRANK + 1;
 
@@ -1480,7 +1484,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int ATOM_VISSET      = 2;
   public final static int ATOM_VISIBLE     = 4;
   public final static int ATOM_NOTHIDDEN   = 8;
-  public final static int ATOM_NOFLAGS     = ~15;
+  public final static int ATOM_NOFLAGS     = ~63; // all of the above, plus balls and sticks
   public final static int ATOM_INFRAME_NOTHIDDEN = ATOM_INFRAME | ATOM_NOTHIDDEN;
   public final static int ATOM_SHAPE_VIS_MASK = ~ATOM_INFRAME_NOTHIDDEN;
     
@@ -1503,7 +1507,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "Backbone", "Trace", "Cartoon", "Strands", "MeshRibbon", "Ribbons", "Rockets", 
     "Dots", "Dipoles", "Vectors", "GeoSurface", "Ellipsoids", "Polyhedra", 
     "Draw", "CGO", "Isosurface", "Contact", "LcaoCartoon", "MolecularOrbital", "Pmesh", "Plot3D", 
-    "Echo", "Axes", "Bbcage", "Uccage", "Hover", 
+    "Echo", "Bbcage", "Uccage", "Axes", "Hover", 
     "Frank"
      };
   // .hbond and .ssbonds will return a class,

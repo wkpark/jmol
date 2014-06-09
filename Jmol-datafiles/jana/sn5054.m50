@@ -1,0 +1,180 @@
+title try1
+lambda 0.71069 radtype 1 lpfactor 1 monangle 0
+nalpha 2 kalpha1 0.70926 kalpha2 0.713543 kalphar 0.499
+datcolltemp 293
+cell 5.88 5.88 4.8 90 90 120
+esdcell 0 0 0 0 0 0
+ndim 4 ncomp 1
+qi 0 0 0.444444
+qr 0 0 0
+spgroup X-3m1(00g)000 0 5
+sgshift 0 0 -0.25 -0.333333
+lattice X
+lattvec 0 0 0 0
+lattvec 0.333333 0.666667 0 0.333333
+lattvec 0.666667 0.333333 0 0.666667
+symmetry x1 x2 x3 x4
+symmetry -x2 x1-x2 x3 x4
+symmetry -x2 -x1 x3 x4
+symmetry -x1+x2 -x1 x3 x4
+symmetry x1 x1-x2 x3 x4
+symmetry -x1+x2 x2 x3 x4
+symmetry -x1 -x2 1/2-x3 2/3-x4
+symmetry x2 -x1+x2 1/2-x3 2/3-x4
+symmetry x2 x1 1/2-x3 2/3-x4
+symmetry x1-x2 x1 1/2-x3 2/3-x4
+symmetry -x1 -x1+x2 1/2-x3 2/3-x4
+symmetry x1-x2 -x2 1/2-x3 2/3-x4
+unitsnumb 1
+chemform Ba4 Zn2 Fe20 O36
+atom Ba
+atweight 137.34 atradius 3 color LightGray
+f' -0.3244 f" 2.2819
+formtab -56
+  56.0000  55.9250  55.7030  55.3500  54.8880  54.3450  53.7430  53.1060
+  52.4500  51.7860  51.1220  50.4600  49.8020  49.1460  48.4920  47.8390
+  47.1860  46.5330  45.8820  45.2320  44.5860  43.3090  42.0640  41.4560
+  40.8590  39.7020  38.5980  37.5460  36.5450  36.0630  35.5930  34.6850
+  33.8180  32.9860  32.1870  31.7980  31.4150  30.6700  29.9480  28.2380
+  26.6520  25.1890  23.8510  21.5470  19.7010  18.2240  17.0080  15.9530
+  14.9880  14.0670  13.1750  12.3050  11.4610  10.6610   9.9070   9.2130
+atom Zn
+atweight 65.38 atradius 3 color Cyan
+f' 0.2839 f" 1.4301
+formtab -56
+  30.0000  29.9750  29.9000  29.7770  29.6090  29.4010  29.1570  28.8830
+  28.5830  28.2630  27.9270  27.5790  27.2220  26.8590  26.4920  26.1240
+  25.7540  25.3850  25.0170  24.6490  24.2830  23.5560  22.8360  22.4780
+  22.1220  21.4170  20.7200  20.0340  19.3590  19.0270  18.6980  18.0510
+  17.4210  16.8090  16.2160  15.9260  15.6420  15.0900  14.5590  13.3280
+  12.2350  11.2760  10.4420   9.1080   8.1320   7.4170   6.8790   6.4530
+   6.0960   5.7750   5.4730   5.1800   4.8920   4.6100   4.3320   4.0630
+atom Fe
+atweight 55.847 atradius 3 color Khaki
+f' 0.3463 f" 0.8444
+formtab -56
+  26.0000  25.9700  25.8820  25.7380  25.5430  25.3040  25.0260  24.7190
+  24.3870  24.0380  23.6780  23.3100  22.9390  22.5680  22.1970  21.8290
+  21.4650  21.1040  20.7480  20.3950  20.0460  19.3590  18.6850  18.3540
+  18.0250  17.3780  16.7440  16.1270  15.5270  15.2330  14.9450  14.3840
+  13.8450  13.3280  12.8350  12.5980  12.3670  11.9220  11.5020  10.5570
+   9.7530   9.0770   8.5120   7.6450   7.0230   6.5450   6.1430   5.7750
+   5.4200   5.0700   4.7250   4.3880   4.0620   3.7530   3.4630   3.1950
+atom O
+atweight 15.999 atradius 3 color Red
+f' 0.0106 f" 0.006
+formtab -56
+   8.0000   7.9920   7.9670   7.9260   7.8690   7.7980   7.7120   7.6120
+   7.5010   7.3780   7.2450   7.1030   6.9540   6.7980   6.6370   6.4720
+   6.3040   6.1340   5.9640   5.7930   5.6230   5.2890   4.9650   4.8080
+   4.6550   4.3630   4.0890   3.8340   3.5990   3.4890   3.3830   3.1860
+   3.0060   2.8440   2.6970   2.6290   2.5640   2.4450   2.3380   2.1150
+   1.9460   1.8160   1.7140   1.5680   1.4630   1.3770   1.2980   1.2210
+   1.1450   1.0700   0.9970   0.9260   0.8570   0.7920   0.7310   0.6740
+commen 1 1 9
+tzero 0.055556
+noofref 545
+slimits 0.187489 0.229132 0.268905 0.306127 0.367132 0.434759 0.52003 0.689564
+flimits 6.5 13 25.8 60.2 167.9 531.3 3015.7 999998.3
+end
+*******************************************************************************
+contour
+
+##draw
+
+##draw
+drawatom Zn1_l1 White 2
+drawatom Ba1_l2 Purple 2
+drawatom O1_l1 Red 2
+drawatom O2_l1 Red 2
+drawatom Fe1_l1 Yellow 2
+drawatom O3_l2 Red 2
+drawatom Fe2_l2 Yellow 2
+drawatom Fe4_l4 Yellow 2
+drawatom Fe1_s1 Yellow 2
+
+drawatom Zn1_l1#c2 White 2
+drawatom Ba1_l2#c2 Purple 2
+drawatom O1_l1#c2 Red 2
+drawatom O2_l1#c2 Red 2
+drawatom Fe1_l1#c2 Yellow 2
+drawatom O3_l2#c2 Red 2
+drawatom Fe2_l2#c2 Yellow 2
+drawatom Fe4_l4#c2 Yellow 2
+drawatom Fe1_s1#c2 Yellow 2
+
+drawatom Zn1_l1#c3 White 2
+drawatom Ba1_l2#c3 Purple 2
+drawatom O1_l1#c3 Red 2
+drawatom O2_l1#c3 Red 2
+drawatom Fe1_l1#c3 Yellow 2
+drawatom O3_l2#c3 Red 2
+drawatom Fe2_l2#c3 Yellow 2
+drawatom Fe4_l4#c3 Yellow 2
+drawatom Fe1_s1#c3 Yellow 2
+
+drawatom Zn1_l1#s7 White 2
+drawatom Ba1_l2#s7 Purple 2
+drawatom O1_l1#s7 Red 2
+drawatom O2_l1#s7 Red 2
+drawatom Fe1_l1#s7 Yellow 2
+drawatom O3_l2#s7 Red 2
+drawatom Fe2_l2#s7 Yellow 2
+drawatom Fe4_l4#s7 Yellow 2
+drawatom Fe1_s1#s7 Yellow 2
+
+drawatom Zn1_l1#s7c2 White 2
+drawatom Ba1_l2#s7c2 Purple 2
+drawatom O2_l1#s7c2 Red 2
+drawatom Fe1_l1#s7c2 Yellow 2
+drawatom O3_l2#s7c2 Red 2
+drawatom Fe2_l2#s7c2 Yellow 2
+drawatom Fe4_l4#s7c2 Yellow 2
+drawatom Fe1_s1#s7c2 Yellow 2
+
+drawatom Zn1_l1#s7c3 White 2
+drawatom Ba1_l2#s7c3 Purple 2
+drawatom O1_l1#s7c3 Red 2
+drawatom O2_l1#s7c3 Red 2
+drawatom Fe1_l1#s7c3 Yellow 2
+drawatom O3_l2#s7c3 Red 2
+drawatom Fe2_l2#s7c3 Yellow 2
+drawatom Fe4_l4#s7c3 Yellow 2
+drawatom Fe1_s1#s7c3 Yellow 2
+
+
+
+##end draw
+end
+dist
+
+end
+fourier
+
+end
+refine
+
+cycles 100 damp 0.01
+equation : t40[O2_l1]=0.33333-cq3*0.5
+equation : t40[O1_l1]=0.33333-cq3*0.5
+equation : t40[Zn1_l1]=0.33333-cq3*0.5
+equation : t40[Ba1_l2]=0.83333-cq3*1.5
+equation : t40[Fe1_l1]=0.833333-cq3*1.5
+equation : t40[O3_l2]=0.83333-cq3*1.5
+equation : t40[Fe2_l2]=0.83333-cq3*1.5
+equation : t40[Fe4_l4]=1-cq3*1.5
+equation : t40[Fe1_s1]=0.5-cq3
+equation : o[O2_l1]=0.66667-cq3
+equation : o[O1_l1]=0.66667-cq3
+equation : o[Zn1_l1]=0.66667-cq3
+equation : o[Ba1_l2]=cq3-0.333333
+equation : o[Fe1_l1]=cq3-0.333333
+equation : o[O3_l2]=cq3-0.333333
+equation : o[Fe2_l2]=cq3-0.333333
+equation : o[Fe4_l4]=0.666666-cq3
+equation : o[Fe1_s1]=1-2*cq3
+fixed value 0 *cos1[Fe4_l4]
+fixed value 0 *sin1[O1_l1]
+fixed value 0 *sin1[O2_l1]
+fixed value 0 *sin1[Zn1_l1]
+end

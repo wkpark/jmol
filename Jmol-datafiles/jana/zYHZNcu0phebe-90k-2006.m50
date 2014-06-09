@@ -1,0 +1,33 @@
+Version Jana2006
+title
+cell 17.579 8.97 13.842 90 104.94 90
+esdcell 0.008 0.02 0.003 0 0.1 0
+ndim 4 ncomp 1
+qi 0 0.368 0
+qr 0 0 0
+spgroup C2/c(0b0)s0 15 22
+lattice C
+symmetry x1 x2 x3 x4
+symmetry -x1 x2 -x3+1/2 x4+1/2
+symmetry -x1 -x2 -x3 -x4
+symmetry x1 -x2 x3+1/2 -x4+1/2
+unitsnumb 8
+chemform C13 H10 N2
+formtab -62
+atom C atradius 0.77 color 128073041
+atom H atradius 0.46 color 255204204
+atom N atradius 0.74 color 176185230
+lambda 0.71069 radtype 1 lpfactor 1
+monangle 6.0818 perfmono 0
+nalpha 2 kalpha1 0.70926 kalpha2 0.713543 kalphar 0.499
+roundmethod 1
+end
+*******************************************************************************
+contour
+end contour
+dist
+end dist
+fourier
+end fourier
+refine
+end refine

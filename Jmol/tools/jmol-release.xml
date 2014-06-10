@@ -35,13 +35,23 @@
   <!-- Copying files to website -->
   <target name="deploy" >
 
+  	
     <!-- Ask user for confirmation -->
+
     <input
-      message="Do you really want to copy files to ${path.release}/${prefix.release}${version} (y/n) ?"
+      message="Destination Path: (clear to exit)"
+      defaultvalue="${path.release}/${prefix.release}${version}"
+      addproperty="uploadPath"
+    />
+
+<!-- 	
+  	<input
+      message="Filepath  ${uploadPath0} ?"
       validargs="y,n"
       defaultvalue="y"
       addproperty="do.scp"
     />
+-->  	
     <condition property="do.abort">
       <equals arg1="n" arg2="${do.scp}"/>
     </condition>
@@ -49,29 +59,29 @@
 
     <!-- Ask user for username and password -->
     <input
-      message="Please enter username:"
+      message="${uploadPath} - Please enter username:"
       addproperty="ssh.user"
     />
     <input
-      message="Please enter password:"
+      message="${uploadPath} - Please enter password:"
       addproperty="ssh.password"
     />
 
     <!-- Prepare temporary image -->
     <delete dir="${temp.dir}" />
     <mkdir dir="${temp.dir}" />
-    <mkdir dir="${temp.dir}/${path.release}/${prefix.release}${version}" />
-    <copy todir="${temp.dir}/${path.release}/${prefix.release}${version}"
+    <mkdir dir="${temp.dir}/${uploadPath}" />
+    <copy todir="${temp.dir}/${uploadPath}"
           file="${dist.dir}/Jmol-${version}-binary.zip" />
-    <copy tofile="${temp.dir}/${path.release}/${prefix.release}${version}/README-${version}.properties"
+    <copy tofile="${temp.dir}/${uploadPath}/README-${version}.properties"
           file="${dist.dir}/Jmol.properties" />
 
   	<if>
      <equals arg1="${zipOnly}" arg2="false" />
   	 <then>
-	    <copy todir="${temp.dir}/${path.release}/${prefix.release}${version}"
+	    <copy todir="${temp.dir}/${uploadPath}"
 	          file="${dist.dir}/Jmol-${version}-binary.tar.gz" />
-	    <copy todir="${temp.dir}/${path.release}/${prefix.release}${version}"
+	    <copy todir="${temp.dir}/${uploadPath}"
 	          file="${dist.dir}/Jmol-${version}-full.tar.gz" />
   	 </then>
   	</if>

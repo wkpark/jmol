@@ -2744,7 +2744,8 @@ Z increasing    \       /       it ends up screenWidthPixels wide.
                      float yTrans, float rotationRadius, float pixelScale,
                      float navDepth, float xNav, float yNav, float cameraDepth,
                      float cameraX, float cameraY) {
-    setRotation(m);
+    if (!Float.isNaN(m.m00))
+      setRotation(m);
     if (center != null)
       moveRotationCenter(center, !windowCentered);
     if (navCenter != null && mode == MODE_NAVIGATION)

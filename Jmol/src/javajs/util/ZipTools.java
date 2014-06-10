@@ -325,7 +325,7 @@ public class ZipTools implements GenericZipTools {
 
   @Override
   public void readFileAsMap(BufferedInputStream bis, Map<String, Object> bdata, String name) {
-    int pt = name.indexOf("|");
+    int pt = (name == null ? -1 : name.indexOf("|"));
     name = (pt >= 0 ? name.substring(pt + 1) : null);
     try {
       if (Rdr.isPngZipStream(bis)) {

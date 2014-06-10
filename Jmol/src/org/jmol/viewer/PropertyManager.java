@@ -26,6 +26,7 @@ package org.jmol.viewer;
 import javajs.J2SIgnoreImport;
 
 import javajs.util.AU;
+import javajs.util.BArray;
 import javajs.util.Base64;
 import javajs.util.Lst;
 import javajs.util.M3;
@@ -652,7 +653,7 @@ public class PropertyManager implements JmolPropertyManager {
       type = PT.getTokens(PT.replaceWithCharacter(params.substring(params.indexOf("type=") + 5), ";,", ' '))[0];
     String[] errMsg = new String[1];
     byte[] bytes = vwr.getImageAsBytes(type.toUpperCase(), width,  height, -1, errMsg);
-    return (errMsg[0] != null ? errMsg[0] : asBytes ? bytes : Base64
+    return (errMsg[0] != null ? errMsg[0] : asBytes ? new BArray(bytes) : Base64
         .getBase64(bytes).toString());
   }
 

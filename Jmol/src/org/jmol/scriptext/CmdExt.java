@@ -6590,7 +6590,7 @@ public class CmdExt implements JmolCmdExtension {
         msg = vwr.stm.getSavedCoordinates(nameC);
       break;
     case T.state:
-      if (!chk)
+      if (!chk && e.outputBuffer == null)
         vwr.sm.clearConsole();
       if ((len = slen) == 2) {
         if (!chk)

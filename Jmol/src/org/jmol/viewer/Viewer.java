@@ -6885,6 +6885,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public P3[] getAxisPoints() {
     // for uccage renderer
+    shm.loadShape(JC.SHAPE_AXES);
     return (getObjectMad(StateManager.OBJ_AXIS1) == 0
         || g.axesMode != AXES.UNITCELL
         || ((Boolean) getShapeProperty(JC.SHAPE_AXES, "axesTypeXY"))

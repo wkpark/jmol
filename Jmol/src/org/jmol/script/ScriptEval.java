@@ -290,7 +290,7 @@ public class ScriptEval extends ScriptExpr {
     return definedAtomSets;
   }
 
-  private SB outputBuffer;
+  public SB outputBuffer;
 
   private String contextPath = "";
   public String scriptFileName;

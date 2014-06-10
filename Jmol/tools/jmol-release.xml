@@ -12,7 +12,7 @@
     </classpath>
   </taskdef>
 
-  <property name="zipOnly"         value="false" />
+  <property name="zipOnly"         value="true" />
   <property name="dist.dir"        value="build/dist" />
   <property name="src.dir"         value="src" />
   <property name="temp.dir"        value="build/release" />
@@ -61,7 +61,9 @@
     <input
       message="${uploadPath} - Please enter username:"
       addproperty="ssh.user"
-    />
+    >
+    	<!-- handler type="secure"/ -->
+    </input>
     <input
       message="${uploadPath} - Please enter password:"
       addproperty="ssh.password"

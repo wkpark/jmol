@@ -41,7 +41,7 @@ class ScriptButtons extends WebPanel {
   ScriptButtons(JmolViewer vwr, JFileChooser fc, WebPanel[] webPanels,
       int panelIndex) {
     super(vwr, fc, webPanels, panelIndex);
-    panelName = "script_button";
+    panelName = "script_btn";
     listLabel = GT._("These names will be used for button labels");
     //description = "Create a web page containing a text and button pane that scrolls next to a resizable Jmol applet";
   }

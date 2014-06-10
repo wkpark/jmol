@@ -394,23 +394,23 @@ public class GuiMap {
             GT._("Insert additional explanatory text here. Long text will wrap around Jmol model {0}."),
             "@NAME@")),
 
-        "GT_script_button_template.html_INSERT",
+        "GT_script_btn_template.html_INSERT",
         GT.escapeHTML(GT._("Insert your TITLE and INTRODUCTION here.")),
-        "GT_script_button_template.html_LOADING",
+        "GT_script_btn_template.html_LOADING",
         GT.escapeHTML(GT.o(
             GT._("Once the molecule file is fully loaded, the image at right will become live.  At that time the \"activate 3-D\" icon {0} will disappear."),
             new String[] { "<img id=\"make_live_icon\" src=\"\" height=\"15px\" />" })),
-        "GT_script_button_template.html_VIEWAGAIN",
+        "GT_script_btn_template.html_VIEWAGAIN",
         GT.escapeHTML(GT
             ._("You may look at any of these intermediate views again by clicking on the appropriate button.")),
-        "GT_script_button_template.html_JAVACAPABLE",
+        "GT_script_btn_template.html_JAVACAPABLE",
         GT.escapeHTML(GT
             ._("If your browser/OS combination is Java capable, you will get snappier performance if you <a href=\"?use=JAVA\">use Java</a>")),
-        "GT_script_button_template2.html_BUTTONINFO",
+        "GT_script_btn_template2.html_BUTTONINFO",
         GT.escapeHTML(GT.o(
             GT._("The button {0} will appear below.  Insert information for {0} here and below."),
             "@NAME@")),
-        "GT_script_button_template2.html_MORE",
+        "GT_script_btn_template2.html_MORE",
         GT.escapeHTML(GT.o(GT._("Insert more information for {0} here."),
             "@NAME@")),
 

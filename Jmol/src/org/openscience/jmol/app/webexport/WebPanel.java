@@ -97,7 +97,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
   abstract JPanel appletParamPanel(); // should be defined in the code for the
                                       // specific case e.g. ScriptButtons.java
 
-  protected String panelName; // pop_in or script_button
+  protected String panelName; // pop_in or script_btn
 
   // infoFile = "pop_in_instructions";
   // infoFileLocalized = "pop_in_instructions_" + lang + ".html";
@@ -119,7 +119,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
   protected JSpinner appletSizeSpinnerP;
 
   private JScrollPane editorScrollPane;
-  private JButton saveButton, helpButton, addInstanceButton;
+  private JButton saveButton, viewButton, helpButton, addInstanceButton;
   private JButton deleteInstanceButton, showInstanceButton;
   private JTextField remoteAppletPath, localAppletPath, pageAuthorName,
       webPageTitle;
@@ -132,6 +132,8 @@ abstract class WebPanel extends JPanel implements ActionListener,
   private int panelIndex;
   private WebPanel[] webPanels;
   private int errCount;
+
+  private String htmlPath;
 
   protected WebPanel(JmolViewer vwr, JFileChooser fc, WebPanel[] webPanels,
       int panelIndex) {
@@ -292,8 +294,11 @@ abstract class WebPanel extends JPanel implements ActionListener,
     // Create the save button.
     saveButton = new JButton(GT._("Save HTML as..."));
     saveButton.addActionListener(this);
+    viewButton = new JButton(GT._("View HTML"));
+    viewButton.addActionListener(this);
     JPanel savePanel = new JPanel();
     savePanel.add(saveButton);
+    savePanel.add(viewButton);
 
     // Path to applet panel
 
@@ -473,13 +478,16 @@ abstract class WebPanel extends JPanel implements ActionListener,
       return;
     }
 
-    if (e.getSource() == saveButton) {
+    if (e.getSource() == viewButton) {
+      vwr.showUrl(htmlPath);
+    } else if (e.getSource() == saveButton) {
       fc.setDialogTitle(GT
           ._("Select a directory to create or an HTML file to save"));
       int returnVal = fc.showSaveDialog(this);
       if (returnVal != JFileChooser.APPROVE_OPTION)
         return;
       File file = fc.getSelectedFile();
+      htmlPath = "file:///" + file.getAbsolutePath().replace('\\', '/');
       String retVal = null;
       errCount = 0;
       try {
@@ -490,6 +498,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
         String authorName = pageAuthorName.getText();
         WebExport.setWebPageAuthor(authorName);
         retVal = fileWriter(file, instanceList);
+        viewButton.setEnabled(true);
       } catch (IOException IOe) {
         LogPanel.log(IOe.getMessage());
         errCount+=1;
@@ -816,70 +825,76 @@ abstract class WebPanel extends JPanel implements ActionListener,
     }
     return err;
   }
-/******
-*  Based on code available at Java2s.com
-*  @param fullPathName String containing path to the zip file being copied and expanded
-*  @param dataPath String containing path to the directory into which the file will be unzipped
-*  @param name String containing name of the zipfile without the path (e.g. xxx.zip)
-*  @return string containing path to where file copied.
-*/
-  private String copyandUnzip(String fullPathName,String dataPath, String name){
+
+  /******
+   * Based on code available at Java2s.com
+   * 
+   * @param fullPathName
+   *        String containing path to the zip file being copied and expanded
+   * @param dataPath
+   *        String containing path to the directory into which the file will be
+   *        unzipped
+   * @param name
+   *        String containing name of the zipfile without the path (e.g.
+   *        xxx.zip)
+   * @return string containing path to where file copied.
+   */
+  private String copyandUnzip(String fullPathName, String dataPath, String name) {
     ZipFile zipFile = null;
-    try{
+    try {
       zipFile = new ZipFile(fullPathName);
-      Enumeration<? extends ZipEntry>  files = zipFile.entries();
+      Enumeration<? extends ZipEntry> files = zipFile.entries();
       File f = null;
       FileOutputStream fos = null;
-      
+      byte[] buffer = new byte[1024];
       while (files.hasMoreElements()) {
         try {
+          fos = null;
           ZipEntry entry = files.nextElement();
-          if (!entry.getName().endsWith(".htm")&&!entry.getName().contains("data"+
-          File.separator)&&!entry.getName().contains(".html")){//don't need testing files
+          if (!entry.getName().endsWith(".htm")
+              && !entry.getName().contains("data" + File.separator)
+              && !entry.getName().contains(".html")) {//don't need testing files
             InputStream eis = zipFile.getInputStream(entry);
-            byte[] buffer = new byte[1024];
-            int bytesRead = 0;
-      
             f = new File(dataPath + File.separator + entry.getName());
-
             if (entry.isDirectory()) {
+              Logger.info("creating directory " + f);
               f.mkdirs();
             } else {
               f.getParentFile().mkdirs();
               f.createNewFile();
+              fos = new FileOutputStream(f);
+              int bytesRead = 0;
+              while ((bytesRead = eis.read(buffer)) != -1) {
+                fos.write(buffer, 0, bytesRead);
+              }
             }
-            
-            fos = new FileOutputStream(f);
-      
-            while ((bytesRead = eis.read(buffer)) != -1) {
-              fos.write(buffer, 0, bytesRead);
-            } 
           }
-          
-
         } catch (IOException e) {
-          e.printStackTrace();
-          continue;
-        } finally {
-          if (fos != null) {
-            try {
-              fos.close();
-            } catch (IOException e) {
-              // ignore
-            }
+          Logger.error(e.getMessage());
+          break;
+        }
+        if (fos != null) {
+          try {
+            fos.close();
+          } catch (IOException e) {
+            // ignore
           }
         }
       }
-    }catch(IOException e){
-      LogPanel.log(GT._("Error encountered while openning zip file. You may not have\n"
-          + "a complete copy of the Jmol distribution.  Check for the file jsmol.zip.\n"
-          +e.getMessage()));
-      errCount+=1; 
-      }
-    try{zipFile.close();}catch (IOException e){
+    } catch (IOException e) {
+      LogPanel
+          .log(GT
+              ._("Error encountered while openning zip file. You may not have\n"
+                  + "a complete copy of the Jmol distribution.  Check for the file jsmol.zip.\n"
+                  + e.getMessage()));
+      errCount += 1;
+    }
+    try {
+      zipFile.close();
+    } catch (IOException e) {
       //ignore
-      }
-    return(dataPath);
+    }
+    return (dataPath);
   }
   
   /*****
@@ -926,6 +941,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
     int nSelected = list.getSelectedIndices().length;
     int nListed = list.getModel().getSize();
     saveButton.setEnabled(nListed > 0);
+    viewButton.setEnabled(false);
     deleteInstanceButton.setEnabled(nSelected > 0);
 //    showInstanceButton.setEnabled(nSelected == 1);
   }

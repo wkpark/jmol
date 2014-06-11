@@ -25,6 +25,14 @@
 
 package org.jmol.modelset;
 
+import javajs.util.CU;
+import javajs.util.Lst;
+import javajs.util.PT;
+import javajs.util.SB;
+import javajs.util.P3;
+import javajs.util.T3;
+import javajs.util.V3;
+
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
@@ -36,17 +44,9 @@ import org.jmol.script.T;
 import org.jmol.util.C;
 import org.jmol.util.Elements;
 import org.jmol.util.Point3fi;
-
-import javajs.util.CU;
-import javajs.util.Lst;
-import javajs.util.PT;
-import javajs.util.SB;
-import javajs.util.P3;
 import org.jmol.util.Tensor;
 import org.jmol.util.Edge;
 import org.jmol.util.BNode;
-import javajs.util.T3;
-import javajs.util.V3;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
@@ -343,7 +343,7 @@ public class Atom extends Point3fi implements BNode {
 
   @Override
   public Edge[] getEdges() {
-    return bonds;
+    return (bonds == null ? new Edge[0] : bonds);
   }
   
   public void setColixAtom(short colixAtom) {

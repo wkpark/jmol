@@ -908,13 +908,9 @@ abstract class ScriptExpr extends ScriptParam {
           if (!chk)
             data = vwr.getDataFloat((String) code[++pc].value);
         }
-        if (chk) {
-          rpn.addXBs(new BS());
-          break;
-        }
-        if (pc + 1 == code.length)
-          invArg();
-        rpn.addXBs(getComparison(code[++pc], tokWhat, tok, (String) value, data));
+        if (++pc == code.length)
+          invArg(); // compiler would not let this happen, actually
+        rpn.addXBs(chk ? new BS() : getComparison(code[pc], tokWhat, tok, (String) value, data));
         break;
       case T.decimal:
       case T.integer:

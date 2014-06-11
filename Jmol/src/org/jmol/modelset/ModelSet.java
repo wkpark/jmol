@@ -3451,11 +3451,13 @@ import java.util.Properties;
     if (atomTensorList != null) {
       for (int i = i0; i < ac; i++) {
         Object[] list = atomTensorList[i] = atomTensorList[map[i]];
-        for (int j = list.length; --j >= 0;) {
-          Tensor t = (Tensor) list[j];
-          if (t != null)
-            t.atomIndex1 = map[t.atomIndex1];
-        }
+        if (list != null)
+          for (int j = list.length; --j >= 0;) {
+            Tensor t = (Tensor) list[j];
+            if (t != null) {
+              t.atomIndex1 = i;
+            }
+          }
       }
     }
     if (atomNames != null)

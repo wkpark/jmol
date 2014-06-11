@@ -910,4 +910,241 @@ public class MSRdr implements MSInterface {
     return true;
   }
 
+//  //  program GetOrthoWaves
+//  //  real, allocatable :: OrthoMat(:,:),OrthoMatI(:,:)
+//  //  integer, allocatable :: isel(:)
+//  //  character*80 FormO,Veta,t80
+//  //  open(40,file='GetOrthoWaves.infile')
+//  //  read(40,*,err=9999,end=9999) n,delta,x40,eps
+//  //  close(40)
+//  //  if(n.le.0) go to 9999
+//  //  allocate(OrthoMat(n,n),OrthoMatI(n,n),isel(n))
+//  //  call SelectWaves(x40,delta,eps,isel,n)
+//  //  call SetOrthoMatSelected(X40,Delta,isel,n,OrthoMat,OrthoMatI)
+//  //  open(40,file='GetOrthoWaves.outfile')
+//  //  write(40,'(''Used harmonics:''/''#1:  1'')')
+//  //  do i=2,n
+//  //    if(mod(isel(i)+1,2).eq.0) then
+//  //      Veta='sin'
+//  //    else
+//  //      Veta='cos'
+//  //    endif
+//  //    write(Veta(4:),'(i5)') (isel(i)+1)/2
+//  //    call Zhusti(Veta)
+//  //    write(t80,'(''#'',i5)') i
+//  //    call Zhusti(t80)
+//  //    write(40,'(2a5)') t80,Veta
+//  //  enddo
+//  //  FormO='(...e15.6)'
+//  //  write(FormO(2:4),'(i3)') n
+//  //  do i=1,n
+//  //    write(Veta,'(i5)') i
+//  //    call Zhusti(Veta)
+//  //    write(40,'(''Ortho function #'',a)') Veta(:idel(Veta))
+//  //    write(40,FormO) (OrthoMat(i,j),j=1,n)
+//  //  enddo
+//  //9999  stop
+//  //  end
+//
+//  /**
+//   * 
+//   * @param x40
+//   *        center
+//   * @param delta
+//   *        width
+//   * @param eps
+//   *        cutoff (lambda)
+//   * @param isel
+//   *        dimension n
+//   */
+//  public void selectWaves(double x40, double delta, double eps, int[] isel) {
+//
+//    int nn = isel.length;
+//    Matrix gor = new Matrix(null, nn, nn);
+//    Matrix p = new Matrix(null, nn, 1);    
+//    Matrix gd = new Matrix(null, nn + 1, nn);
+//    int[] iselp = new int[nn + 1];
+//    if (eps < 999) {
+//
+//      setOrthoMat(x40, delta, gor, nn);
+//      for (int i = 0; i < nn; i++)
+//        p.a[i][1] = Math.sqrt(gor.a[i][i]);
+//      for (int i = 0; i < nn; i++)
+//        for (int j = 0; j < nn; j++)
+//          gor.a[i][j] /= p.a[i][1] * p.a[j][1];
+//      gd.a[0][0] = 1;
+//      int ngd = 0;
+//      iselp[0] = 1;
+//      for (int i = 0, j = 0; j < nn; j++) {
+//        for (int n = 0, k = 0; k < i; k++)
+//          if (iselp[k] != 0)
+//            p.a[n++][0] = gor.a[j][k];
+//        Matrix hh = gd.mul(p).mul(p);
+//        if (hh.a[0][0] <= eps * eps) {
+//          iselp[j] = 1;
+//          ngd++;
+//          i = j;
+//          for (int n = 0, ii = 0; ii < i; ii++)
+//            if (iselp[ii] != 0)
+//              for (int jj = 0; jj < ii; jj++)
+//                if (iselp[jj] != 0)
+//                  gd.a[ii][jj] = gor.a[ii][jj];
+//          smi(gd, ngd, ising);
+//        }
+//      }
+//
+//    }
+//  }
+//
+//  private void setOrthoMat(double x40, double delta, Matrix gor, int n) {
+//    double x1=x40-.5*delta;
+//    double x2=x40+.5*delta;
+//    jip=1
+//    do i=1,n
+//      if(i.eq.1) then
+//        ii=1
+//      else
+//        ni=mod(i,2)
+//        nj=i/2
+//        ii=nj*2+ni
+//      endif
+//      ij=i
+//      ji=jip
+//      do j=1,i
+//        if(j.eq.1) then
+//          jj=1
+//        else
+//          ni=mod(j,2)
+//          nj=j/2
+//          jj=nj*2+ni
+//        endif
+//        pom=CosSinProd(ii,jj,x1,x2)/delta
+//        if(i.ne.j) gor(ij)=pom
+//        gor(ji)=pom
+//        ji=ji+1
+//        ij=ij+n
+//      enddo
+//      jip=jip+n
+//    enddo
+//    return
+//    end
+//
+//    // TODO
+//    
+//  }
+//
+//  double PI2 = 6.283185308;
+//
+//  private double CosSinProd(int n,int m,double x1,double x2) {
+//    double[] fc = new double[3];
+//    double[] xs = new double[6];
+//    int nl = Math.min(n, m);
+//    int ml = Math.max(n, m);
+//    int i;
+//    double a, b;
+//    if (n > 1) {
+//      int i=Math.signum(nl) * Math.abs(nl)/2;
+//    
+//    a=pi2*i;
+//  endif
+//  if(ml.gt.1) then
+//    i=isign(iabs(ml)/2,nl)
+//    b=pi2*float(i)
+//  endif
+//  i=isign(iabs(nl)/2,nl)
+//  knl=mod(nl,2)
+//  kml=mod(ml,2)
+//  if(nl.eq.1) then
+//    if(ml.eq.1) then
+//      CosSinProd=x2-x1
+//    else if(kml.eq.0) then
+//      CosSinProd=-1./b*(cosnas(b*x2)-cosnas(b*x1))
+//    else
+//      CosSinProd=1./b*(sinnas(b*x2)-sinnas(b*x1))
+//    endif
+//  else if(knl.eq.0.and.kml.eq.0) then
+//    if(a.eq.b) then
+//      CosSinProd=.5*(x2-x1)-.25/a*(sinnas(2.*a*x2)-sinnas(2.*a*x1))
+//    else if(a.eq.-b) then
+//      CosSinProd=.5*(x1-x2)+.25/a*(sinnas(2.*a*x2)-sinnas(2.*a*x1))
+//    else
+//      amb=a-b
+//      apb=a+b
+//      CosSinProd=.5/amb*(sinnas(amb*x2)-sinnas(amb*x1))-
+// 1               .5/apb*(sinnas(apb*x2)-sinnas(apb*x1))
+//    endif
+//  else if(knl.eq.1.and.kml.eq.1) then
+//    if(abs(a).eq.abs(b)) then
+//      CosSinProd=.5*(x2-x1)+.25/a*(sinnas(2.*a*x2)-sinnas(2.*a*x1))
+//    else
+//      amb=a-b
+//      apb=a+b
+//      CosSinProd=.5/amb*(sinnas(amb*x2)-sinnas(amb*x1))+
+// 1               .5/apb*(sinnas(apb*x2)-sinnas(apb*x1))
+//    endif
+//  else
+//    if(knl.eq.1) then
+//      pom=a
+//      a=b
+//      b=pom
+//    endif
+//    if(abs(a).eq.abs(b)) then
+//      CosSinProd=.5/a*(sinnas(a*x2)**2-sinnas(a*x1)**2)
+//    else
+//      amb=a-b
+//      apb=a+b
+//      CosSinProd=-.5/amb*(cosnas(amb*x2)-cosnas(amb*x1))-
+// 1                .5/apb*(cosnas(apb*x2)-cosnas(apb*x1))
+//    endif
+//  endif
+//  return
+//
+//  private void nasob(double[] a, double[] p, double[] x, int n) {
+//    for (int ijp = 0, i = 0; i < n; i++) {
+//      double xi = 0;
+//      int ij = ijp;
+//      for (int id = 0, j = 0; j < n; j++) {
+//        ij += id;
+//        xi += a[ij] * p[j];
+//        if (j == i)
+//          id = j;
+//      }
+//      x[i] = xi;
+//      
+//          ijp=ijp+i;
+//    }
+//  }
+//  
+//  private void multm(double[] a,double[] b,double[] c, int n1, int n2, int n3) {
+//    for (int i = 0; i < )
+//  }
+//  dimension a(*),b(*),c(*)
+//  do i=1,n1
+//    jkp=1
+//    ik=i
+//    do k=1,n3
+//      ij=i
+//      jk=jkp
+//      p=0.
+//      do j=1,n2
+//        p=p+a(ij)*b(jk)
+//        ij=ij+n1
+//        jk=jk+1
+//      enddo
+//      c(ik)=p
+//      ik=ik+n1
+//      jkp=jkp+n2
+//    enddo
+//  enddo
+//  return
+//  end
+//  function cosnas(x)
+//  cosnas=dcos(dble(od0doPi2(x)))
+//  return
+//  end
+//  function sinnas(x)
+//  sinnas=dsin(dble(od0doPi2(x)))
+//  return
+//  end
+//
 }

@@ -2677,7 +2677,7 @@ abstract public class AtomCollection {
     if (list == null || list.size() == 0)
       return;
     if (atomTensors == null)
-     atomTensors = new Hashtable<String, Lst<Object>>();
+      atomTensors = new Hashtable<String, Lst<Object>>();
     if (atomTensorList == null)
       atomTensorList = new Object[at.length][];
     atomTensorList = (Object[][]) AU.ensureLength(atomTensorList, at.length);
@@ -2689,7 +2689,7 @@ abstract public class AtomCollection {
       t.modelIndex = at[atomIndex].mi;
       addTensor(t, t.type);
       if (t.altType != null)
-        addTensor(t, t.altType); 
+        addTensor(t, t.altType);
     }
   }
 

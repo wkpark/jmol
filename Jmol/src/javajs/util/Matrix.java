@@ -15,7 +15,7 @@ package javajs.util;
 
 public class Matrix implements Cloneable {
 
-  protected double[][] a;
+  public double[][] a;
   protected int m, n;
 
   /**

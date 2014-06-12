@@ -20,6 +20,8 @@ public interface JSInterface {
 
 	void updateJS(int width, int height);
 
+  boolean setStatusDragDropped(int mode, int x, int y, String fileName);
+
 	
 }
 

@@ -24,6 +24,7 @@
 package org.jmol.awt;
 
 import java.awt.Component;
+import java.awt.Point;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetListener;
@@ -93,19 +94,13 @@ public class FileDropper implements DropTargetListener {
     //System.out.println("File dropper disposed.");
   }
 
-  private void loadFile(String fname) {
+  private void loadFile(String fname, int x, int y) {
     fname = fname.replace('\\', '/').trim();
     if (fname.indexOf("://") < 0)
       fname = (fname.startsWith("/") ? "file://" : "file:///") + fname;
-    if (statusListener != null) {
-      try {
-        String data = vwr.getEmbeddedFileState(fname, false);
-        if (data.indexOf("preferredWidthHeight") >= 0)
-          statusListener.resizeInnerPanel(data);
-      } catch (Throwable e) {
-        // ignore
-      }
-    }
+    if (!vwr.setStatusDragDropped(0, x, y, fname))
+      return;
+    
     int flags = 1; //
     boolean isScript = JC.isScriptType(fname);
     switch (vwr.ms.ac > 0 && !isScript ? JOptionPane.showConfirmDialog(null, GT._("Would you like to replace the current model with the selected model?")) : JOptionPane.OK_OPTION) {
@@ -116,6 +111,15 @@ public class FileDropper implements DropTargetListener {
     default:
       flags += 4; // append
       break;
+    }
+    if (statusListener != null) {
+      try {
+        String data = vwr.getEmbeddedFileState(fname, false);
+        if (data.indexOf("preferredWidthHeight") >= 0)
+          statusListener.resizeInnerPanel(data);
+      } catch (Throwable e) {
+        // ignore
+      }
     }
     vwr.openFileAsyncSpecial(fname, flags);
   }
@@ -199,7 +203,8 @@ public class FileDropper implements DropTargetListener {
             if (fileName.endsWith(".bmp"))
               break; // try another flavor -- Mozilla bug
             dtde.getDropTargetContext().dropComplete(true);
-            loadFile(fileName);
+            Point loc = dtde.getLocation();
+            loadFile(fileName, loc.x, loc.y);
             return;
           }
           dtde.getDropTargetContext().dropComplete(true);
@@ -257,7 +262,7 @@ public class FileDropper implements DropTargetListener {
           if (Logger.debugging) {
             Logger.debug("  String: " + o.toString());
           }
-          loadFile(o.toString());
+          loadFile(o.toString(), 0, 0);
           dtde.getDropTargetContext().dropComplete(true);
           return;
         }
@@ -296,7 +301,7 @@ public class FileDropper implements DropTargetListener {
             Logger.debug("  String: " + content);
           }
           if (content.startsWith("file:/")) {
-            loadFile(content);
+            loadFile(content, 0, 0);
           } else {
             PropertyChangeEvent pce = new PropertyChangeEvent(this,
                 "inline", fd_oldFileName, content);

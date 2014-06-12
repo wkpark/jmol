@@ -1190,7 +1190,7 @@ public class ActionManager implements EventManager {
       case PICKING_DRAG_LIGAND:
       case PICKING_DRAG_MOLECULE:
       case PICKING_DRAG_MINIMIZE_MOLECULE:
-        bs = vwr.ms.getAtoms(T.molecule, BSUtil.newAndSetBit(dragAtomIndex));
+        bs = vwr.ms.getAtoms(T.sidechain, BSUtil.newAndSetBit(dragAtomIndex));
         if (apm == PICKING_DRAG_LIGAND)
           bs.and(vwr.getAtomBitSet("ligand"));
         //$FALL-THROUGH$

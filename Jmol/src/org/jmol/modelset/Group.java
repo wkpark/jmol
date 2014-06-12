@@ -535,5 +535,10 @@ public class Group {
     return -1;
   }
 
+  public BS getBSSideChain() {
+    // for now, AlphaMonomer only
+    return new BS();
+  }
+
 
 }

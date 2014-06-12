@@ -1335,9 +1335,9 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       if (selection == null || selection.length() == 0)
         return;
       if (selection.endsWith(" (*)"))
-        vwr.openFileAsyncSpecial(selection.substring(0, selection.length() - 4), 1);
+        vwr.openFileAsyncSpecial(selection.substring(0, selection.length() - 4), 1+8);
       else
-        vwr.openFileAsyncSpecial(selection, 0);
+        vwr.openFileAsyncSpecial(selection, 8);
     }
   }
 
@@ -1516,9 +1516,9 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
         (Viewer) vwr, null, jmolApp, FILE_OPEN_WINDOW_NAME, true);
     if (fileName == null)
       return;
-    int flags = 1;
+    int flags = 1+8; // cartoons+fileOpen
     if (fileName.startsWith("#NOCARTOONS#;")) {
-      flags = 0;
+      flags -= 1;
       fileName = fileName.substring(13);
     }
     if (fileName.startsWith("#APPEND#;")) {

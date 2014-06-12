@@ -1651,7 +1651,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
    * the file
    * 
    * @param fileName
-   * @param flags 1=pdbCartoons, 2=no scripting, 4=append 
+   * @param flags 1=pdbCartoons, 2=no scripting, 4=append, 8=fileOpen
    * 
    */
   @Override
@@ -4978,6 +4978,16 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       getJSV().atomPicked(atomIndex);
     if (isJS)
       updateJSView(getAtomModelIndex(atomIndex), atomIndex);
+  }
+  
+  @Override
+  public boolean setStatusDragDropped(int mode, int x, int y, String fileName) {
+    if (mode == 0) {
+      g.setS("_fileDropped", fileName);
+      g.setB("doDrop", true);
+    }
+    boolean handled = sm.setStatusDragDropped(mode, x, y, fileName);
+    return (!handled || getP("doDrop").toString().equals("true"));
   }
 
   /*

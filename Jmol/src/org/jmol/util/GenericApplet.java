@@ -566,6 +566,7 @@ public abstract class GenericApplet implements JmolAppletInterface,
     case SYNC:
       return true;
     case ANIMFRAME:
+    case DRAGDROP:
     case ERROR:
     case EVAL:
     case LOADSTRUCT:
@@ -604,6 +605,7 @@ public abstract class GenericApplet implements JmolAppletInterface,
     case HOVER:
     case MINIMIZATION:
     case RESIZE:
+    case DRAGDROP:
       // just send it
       break;
     case CLICK:

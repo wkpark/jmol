@@ -406,6 +406,18 @@ public class StatusManager {
       vwr.jmolpopup.jpiUpdateComputedMenus();
   }
 
+  synchronized boolean setStatusDragDropped(int mode, int x, int y,
+                                            String fileName) {
+    setStatusChanged("dragDrop", 0, "", false);
+    String sJmol = jmolScriptCallback(CBK.DRAGDROP);
+    if (!notifyEnabled(CBK.DRAGDROP))
+      return false;
+    cbl.notifyCallback(CBK.DRAGDROP,
+        new Object[] { sJmol, Integer.valueOf(mode), Integer.valueOf(x),
+            Integer.valueOf(y), fileName });
+    return true;
+  }
+
   synchronized void setScriptEcho(String strEcho,
                                   boolean isScriptQueued) {
     if (strEcho == null)

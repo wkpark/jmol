@@ -2346,6 +2346,14 @@ import java.util.Properties;
         bs.andNot(uc.notInCentroid(this, am[i].bsAtoms, minmax));
       }
       return bs;
+    case T.sidechain:
+      int ia = ((BS) specInfo).nextSetBit(0);
+      if (ia < 0)
+        return new BS();
+      if (at[ia].getGroup3(true) != null)
+        return at[ia].group.getBSSideChain();
+      // treat as molecule if not PDB residue;
+      //$FALL-THROUGH$
     case T.molecule:
       return getMoleculeBitSet((BS) specInfo);
     case T.sequence:

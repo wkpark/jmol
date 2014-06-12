@@ -25,6 +25,7 @@ package org.jmol.modelsetbio;
 
 
 import org.jmol.c.STR;
+import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Chain;
@@ -397,5 +398,29 @@ public class AminoMonomer extends AlphaMonomer {
       tag += Txt.formatStringI("%2SC", "SC", proteinStructure.strandCount);
     return tag;
   }
-  
+
+  @Override
+  public BS getBSSideChain() {
+    BS bs = new BS();
+    selectAtoms(bs);
+    clear(bs, getLeadAtom(), true);
+    clear(bs, getCarbonylCarbonAtom(), false);
+    clear(bs, getCarbonylOxygenAtom(), false);
+    clear(bs, getNitrogenAtom(), true);
+    return bs;
+  }
+
+  private void clear(BS bs, Atom a, boolean andH) {
+    if (a == null)
+      return;
+    bs.clear(a.i);
+    if (!andH)
+      return;
+    Bond[] b = a.getBonds();
+    Atom h;
+    for (int j = b.length; --j >= 0;)
+      if ((h = b[j].getOtherAtom(a)).getElementNumber() == 1)
+        bs.clear(h.i);        
+  }
+
 }

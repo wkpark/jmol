@@ -103,6 +103,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
     case EVAL:
     case ATOMMOVED:
     case CLICK:
+    case DRAGDROP:
     case ERROR:
     case HOVER:
     case MINIMIZATION:
@@ -185,6 +186,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
       }
       jmol.sendNioMessage(((Integer) data[3]).intValue(), strInfo);
       return;
+    case DRAGDROP:
     case ERROR:
     case HOVER:
     case MINIMIZATION:

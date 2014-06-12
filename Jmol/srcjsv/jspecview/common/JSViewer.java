@@ -2038,4 +2038,10 @@ public class JSViewer implements PlatformViewer, JSInterface, BytePoster  {
 		return (int) pt.x + "," + (int) pt.y + "," + (int) pt.z;
 	}
 
+	@Override
+	public boolean setStatusDragDropped(int mode, int x, int y, String fileName) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

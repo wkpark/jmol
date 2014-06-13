@@ -300,6 +300,7 @@ public class CastepReader extends AtomSetCollectionReader {
 
   private void readOutputUnitCell() throws Exception {
     applySymmetryAndSetTrajectory();
+    asc.newAtomSetClear(false);
     setFractionalCoordinates(true);
     abc = read3Vectors(false);
     setLatticeVectors();

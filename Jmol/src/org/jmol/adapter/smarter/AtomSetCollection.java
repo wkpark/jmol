@@ -902,7 +902,7 @@ public class AtomSetCollection {
     } else {
       atomSetNumbers[iSet] = atomSetCount;
     }
-    if (doClearMap)
+    if (doClearMap) // false for CASTEP reader
       atomSymbolicMap.clear();
     setAtomSetAuxiliaryInfo("title", collectionName);
   }

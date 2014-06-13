@@ -90,6 +90,7 @@ class MyStatusListener implements JmolStatusListener {
     case STRUCTUREMODIFIED:
     case SCRIPT:
     case CLICK:
+    case DRAGDROP:
     case EVAL:
       break;
     }

@@ -4,7 +4,7 @@
  *
  * @file
  * @ingroup Extensions
- * @version 4.0_dev
+ * @version 4.2_dev
  * @author Nicolas Vervelle
  * @author Angel Herraez
  * @author Jaime Prilusky
@@ -34,6 +34,7 @@
 	Removes the dependency on StubManager
  * Oct. 2013 - version 4.0 - by JP
     Adds support for JSmol
+ * June 2014 - version 4.2 - by JP
  */
 
 //<source lang=php>
@@ -53,10 +54,10 @@ $dir = dirname(__FILE__) . '/';
 $wgExtensionMessagesFiles['Jmol'] = $dir  . 'Jmol.i18n.php';
 $wgAutoloadClasses['Jmol'] = $dir  . 'Jmol.body.php';
 
-$wgJmolVersion = '4.0_dev';
+$wgJmolVersion = '4.2';
 
-// Bump this when updating Jmol.js or JmolMediaWiki.js to help update caches
-$wgJmolScriptVersion = $wgJmolVersion . '_1';
+// Bump this when updating JSmolPopup.js to help update caches
+$wgJmolScriptVersion = $wgJmolVersion . '_2.0';
 
 // Extension credits that will show up on Special:Version
 $wgExtensionCredits['parserhook'][] = array(
@@ -69,6 +70,7 @@ $wgExtensionCredits['parserhook'][] = array(
 );
 
 // Global configuration parameters
+global $wgJmolAppletID;
 global $wgJmolAuthorizeChoosingSignedApplet;
 global $wgJmolAuthorizeJmolFileTag;
 global $wgJmolAuthorizeJmolPdbTag;
@@ -76,17 +78,21 @@ global $wgJmolAuthorizeJmolSmilesTag;
 global $wgJmolAuthorizeJmolTag;
 global $wgJmolAuthorizeUploadedFile;
 global $wgJmolAuthorizeUrl;
+global $wgJmolCoverImageGenerator;
+global $wgJmolDefaultAppletColor;
 global $wgJmolDefaultAppletSize;
+global $wgJmolDefaultCaptionCSS;
 global $wgJmolDefaultScript;
+global $wgJmolDefaultTitleCSS;
 global $wgJmolExtensionPath;
-global $wgJmolForceNameSpace;
-global $wgJmolDrawControls;
 global $wgJmolForceHTML5;
+global $wgJmolForceNameSpace;
+global $wgJmolMaxAppletSize;
+global $wgJmolNumID;
+global $wgJmolPageHasApplet;
+global $wgJmolPlatformSpeed;
 global $wgJmolShowWarnings;
 global $wgJmolUsingSignedAppletByDefault;
-global $wgJmolMaxAppletSize;
-global $wgJmolPlatformSpeed;
-global $wgJmolCoverImageGenerator;
 
 // These are the default (recommended) values.
 // They can be changed here, but it is advisable to change them in LocalSettings.php
@@ -97,16 +103,18 @@ $wgJmolAuthorizeJmolSmilesTag = true;
 $wgJmolAuthorizeJmolTag = true;
 $wgJmolAuthorizeUploadedFile = true;
 $wgJmolAuthorizeUrl = false;
-$wgJmolDefaultScript = "";
+$wgJmolCoverImageGenerator = false;
+$wgJmolDefaultAppletColor = "white";
+$wgJmolDefaultAppletSize = "400";
+$wgJmolDefaultCaptionCSS = "background-color: #ffffff; text-align: left; font-style:italic; padding: 5px;"; // border: 1px solid black; 
+$wgJmolDefaultScript = null;
+$wgJmolDefaultTitleCSS = "background-color: #ffffff; text-align: center;"; 
 $wgJmolExtensionPath = $wgScriptPath."/extensions/jsmol/wiki"; // Jmol";
-$wgJmolForceNameSpace = "";
+$wgJmolForceNameSpace = null;
+$wgJmolMaxAppletSize = "600";
+$wgJmolPlatformSpeed = 8;
 $wgJmolShowWarnings = true;
 $wgJmolUsingSignedAppletByDefault = true;
-$wgJmolDefaultAppletSize = "400";
-$wgJmolMaxAppletSize = "600";
-$wgJmolDrawControls = false;
-$wgJmolPlatformSpeed = 8;
-$wgJmolCoverImageGenerator = false;
 
 global $wgHooks;
 if ( defined( 'MW_SUPPORTS_PARSERFIRSTCALLINIT' ) ) {

@@ -14,12 +14,11 @@
  * @package Jmol
  */
 
-//<source lang=php>
+// Set 1 2014 J Prilusky
+
 if (!defined('MEDIAWIKI')) {
   die('This file is a MediaWiki extension, it is not a valid entry point');
 }
-
-// require_once("Title.php");
 
 /* Global configuration parameters */
 global $wgJmolAuthorizeChoosingSignedApplet;
@@ -35,27 +34,22 @@ global $wgJmolShowWarnings;
 global $wgJmolUsingSignedAppletByDefault;
 
 class Jmol {
-	/**#@+
-	 * @access private
-	 */
-
-	/**
-	 * True when a <jmol> tag is being processed.
-	 * Used to avoid infinite recursion
-	 * 
-	 * @var boolean
-	 */
 	var $mInJmol = false;
-
 	var $mOutput, $mDepth;
 	var $mCurrentObject, $mCurrentTag, $mCurrentSubTag;
 
+	var $mValCaption;
 	var $mValChecked;
 	var $mValColor;
+	var $mValControls;
+	var $mValHeader;
+	var $mValFloat;
+	var $mValFrame;
 	var $mValInlineContents;
 	var $mValItems;
 	var $mValMenuHeight;
 	var $mValName;
+	var $mValPlatformSpeed;
 	var $mValPositionX;
 	var $mValPositionY;
 	var $mValScript;
@@ -66,327 +60,341 @@ class Jmol {
 	var $mValTarget;
 	var $mValText;
 	var $mValTitle;
-	var $mValHeader;
-	var $mValCaption;
 	var $mValUploadedFileContents;
 	var $mValUrlContents;
 	var $mValVertical;
 	var $mValWikiPageContents;
 
-	/**#@-*/
+  function __construct() {
+    $this->mOutput = "";
+    $this->mDepth = 0;
+    $this->resetValues();
+    $this->setHooks();
+  }
 
-	/**
-	 * Constructor
-	 */
-	function __construct() {
-		$this->mOutput = "";
-		$this->mDepth = 0;
-		$this->resetValues();
-		$this->setHooks();
-	}
+  private function renderJmol( $input ) { // Render Jmol tag
+    $this->mOutput = "<!-- Jmol -->";
+    $this->mDepth = 0;
+    $xmlParser = xml_parser_create();
+    xml_set_object( $xmlParser, $this );
+    xml_set_element_handler( $xmlParser, "startElement", "endElement" );
+    xml_set_character_data_handler( $xmlParser, "characterData" );
+    $input = "<jmol>$input</jmol>";
+    if ( !xml_parse( $xmlParser, $input ) ) {
+      die(sprintf(
+        "XML error: %s at line %d",
+        xml_error_string( xml_get_error_code( $xmlParser ) ),
+        xml_get_current_line_number( $xmlParser ) ) );
+      }
+    xml_parser_free( $xmlParser );
+    return $this->mOutput;
+  }
 
-	/**#@+ @access private */
+  private function renderJmolApplet() { // Renders a Jmol applet directly in the Wiki page
+    global $wgJmolAppletID;
+    $canvas = $this->appletCanvasRow(); // sets $wgJmolAppletID
+    $class = ($this->mValFrame) ? "class='lightborder'" : "";
+    $float = ($this->mValFloat) ? "style='float:" . $this->mValFloat . ";margin:8px;'" : ""; 
+    $this->mOutput .= "<table $float $class border='0' cellspacing='0' cellpadding='0' width='" . $this->mValSize . "'>"
+      . $this->appletTitleRow()
+      . $canvas
+      . $this->appletControlsRow()
+      . $this->appleCaptionRow()
+      . "</table>";
+    return;
+  }
 
-	// *** //
-	// XML //
-	// *** //
+  private function appletCanvasRow() {
+    $prefix = "<script>"; $postfix = "</script>";
+    return "<tr><td>" . $this->renderInternalJmolApplet( $prefix, $postfix, "'" ) . "</td></tr>";
+    // "<div id='colorKeyDiv" . appletSuffix . "' name='colorKeyDiv'></div>"
+  }
 
-	// Render Jmol tag
-	private function renderJmol( $input ) {
-		$this->mOutput = "<!-- Jmol -->";
-		$this->mDepth = 0;
-		$xmlParser = xml_parser_create();
-		xml_set_object( $xmlParser, $this );
-		xml_set_element_handler( $xmlParser, "startElement", "endElement" );
-		xml_set_character_data_handler( $xmlParser, "characterData" );
-		$input = "<jmol>$input</jmol>";
-		if ( !xml_parse( $xmlParser, $input ) ) {
-			die(sprintf(
-				"XML error: %s at line %d",
-				xml_error_string( xml_get_error_code( $xmlParser ) ),
-				xml_get_current_line_number( $xmlParser ) ) );
-		}
-		xml_parser_free( $xmlParser );
-		return $this->mOutput;
-	}
+  private function appletTitleRow() {
+    global $wgJmolAppletID;
+    $titleRow = null;
+    if ($this->mValTitle and !$this->mValInlineContents) {  // TEMPORARY can't display <title> with <inlineContents>
+      $content = $this->renderWikiTextString($this->mValTitle);
+      $titleRow = '<tr><td><div style="' .  $this->escapeAttribute($this->mValTitleCSS) . '" name="title' . $wgJmolAppletID . '" id="title' . $wgJmolAppletID . '">' . $content . '</div></td></tr>'; 
+    }
+    return $titleRow;
+  }
 
-	// Renders a Jmol applet directly in the Wiki page
-	private function renderJmolApplet() {
-		global $wgJmolExtensionPath;
-		$prefix = "";
-		$postfix = "";
+  private function appletControlsRow() {
+    global $wgJmolAppletID;
+    $controlsRow = null; $content = null;
+    if ($this->mValControls) {
+      $jmolApplet = "jmolApplet" . $wgJmolAppletID;
+      $popupTitle = $this->mValTitle; 
+      if (empty($popupTitle)) { $popupTitle = $this->mValName; }
+      if (empty($popupTitle)) { $popupTitle = $jmolApplet; }
+      if (strpos($this->mValControls,'all') !== false) { $this->mValControls = 'spin quality popup full'; }
+      $this->mValControls = preg_replace('/\s+/',' ',$this->mValControls);
+      $controls = explode(' ',$this->mValControls);
+      foreach ($controls as $request) {
+        switch($request) {
+          case "spin":
+            $content .= '<script>Jmol.jmolButton(' . $jmolApplet . ',"if(_spinning);spin off;spinflag = false;else;spin on;spinflag = true;endif","toggle spin");</script>' ;
+            break;
+          case "popup":
+            $content .= '<input type="button" value="popup" onclick="cloneJSmol(' . $jmolApplet . ',\'' . $popupTitle . '\')">' ;
+            break;
+          case "quality":
+            $content .= '<script>Jmol.jmolButton(' . $jmolApplet . ',"set refreshing off;if(antialiasDisplay);antialiasDisplay = false;antialiasDisplayFlag = false;else;antialiasDisplay = true;antialiasDisplayFlag = true;endif;set refreshing on;refresh;","toggle quality");</script>';
+            break;
+          case "full":
+            $content .= '<input type="button" value="load full" id="fullloadbutton" style="background:#FBBC40;background:linear-gradient(#FDDEA0,#FBBC40);padding:2px;border-radius:4px; border:1px solid #666;display:none;" onclick="this.style.display=\'none\';Jmol.script(' . $jmolApplet . ',\'set echo off; set echo loading 50% 50%; set echo loading center; color echo [xffa500]; background echo translucent 0.7 gray; echo Loading full model ...; refresh; load;script /wiki/extensions/Proteopedia/spt/initialview01.spt;\');">';
+            break;
+        }
+      }
+      $controlsRow = "<tr><td>" . $content  . "</td></tr>";
+    }
+    return $controlsRow;
+  }
+  
+  private function appleCaptionRow() {
+    global $wgParser,$wgTitle,$wgUser,$wgJmolAppletID;
+    $captionRow = null;
+    if ($this->mValCaption) {  
+      $content = $this->renderWikiTextString($this->mValCaption);
+      $captionRow = '<tr><td><div style="' . $this->escapeAttribute($this->mValCaptionCSS) . '" name="caption' . $wgJmolAppletID . '" id="caption' . $wgJmolAppletID . '">' . $content . '</div></td></tr>'; 
+    }
+    return $captionRow;
+  }
+  
+  private function appletSetJmolAppletID() {
+    global $wgJmolAppletID,$wgJmolNumID,$wgJmolPageHasApplet;
+    if (!empty($this->mValName)) {
+      $wgJmolAppletID = $this->mValName;
+    } else {
+      if (empty($wgJmolNumID)) {  
+         $wgJmolNumID++; 
+         $wgJmolAppletID = $wgJmolNumID; $wgJmolPageHasApplet = true;
+      } else {
+        if ($wgJmolPageHasApplet == false) { 
+          $wgJmolPageHasApplet = true;
+        } else { 
+          $wgJmolNumID++; 
+          $wgJmolAppletID = $wgJmolNumID;
+        }
+      }
+    }
+//     $callers=debug_backtrace();
+//     print "DEB APPL " . $callers[1]['function'] . " $wgJmolAppletID<br>\n";
+    return;
+  }
+  
+  private function linkSetJmolAppletID() {
+    global $wgJmolAppletID,$wgJmolNumID,$wgJmolPageHasApplet;
+    if (!empty($this->mValTarget)) {
+      $wgJmolAppletID = $this->mValTarget;
+      $this->mValTarget = null;
+    } else {
+      if ($wgJmolPageHasApplet == false) {
+        if (empty($wgJmolNumID)) { $wgJmolNumID++; }
+      }
+      $wgJmolAppletID = $wgJmolNumID;
+    }
+//     $callers=debug_backtrace();
+//     print "DEB LINK " . $callers[1]['function'] . " $wgJmolAppletID<br>\n";
+    return;
+  }
 
-//		$this->mValInlineContents = trim( $this->mValInlineContents );
-//		$this->mValInlineContents = preg_replace( "/\t/", " ", $this->mValInlineContents );
-		// $this->mValInlineContents = preg_replace( "/\n/", "\\n'+\n'", $this->mValInlineContents );
-		$prefix .= "<script>";
-		$postfix .= "</script>";
-		$this->mOutput .= $this->renderInternalJmolApplet( $prefix, $postfix, "'" );
-	}
+  private function renderJmolAppletButton() { // Renders a button in the Wiki page that will open a new window containing a Jmol applet
+    $this->setValUrlContents(); 
+    $postfix = "";
+    $prefix  = "<input type='button'";
+    if ( !empty($this->mValName) ) {
+      $prefix .= " name='" . $this->escapeAttribute( $this->mValName ) . "'" .
+      " id='" . $this->escapeAttribute( $this->mValName ) . "'";
+    }
+    if ( empty($this->mValText) ) { $this->mValText = $this->mValTitle; }
+    if ( !empty($this->mValText) ) { $prefix .= " value='" . $this->escapeAttribute( $this->mValText ) . "'"; }
+    $prefix .= " href=\"javascript:void(0)\"" .
+    " onclick=\"popupJSmol('Info0','" . $this->escapeScript( $this->mValUrlContents ) . $this->escapeScript( $this->mValName ) . "')\"";
+    $postfix = "');return true\" />";
+    $this->mOutput .= $this->renderInternalJmolApplet( $prefix, $postfix, "\\'" );
+  }
 
-	// Renders a button in the Wiki page that will open a new window containing a Jmol applet
-	private function renderJmolAppletButton() {
-		global $wgJmolExtensionPath;
-		$prefix = "";
-		$postfix = "";
+  private function renderJmolAppletLink() { // Renders a link in the Wiki page that will open a new window containing a Jmol applet
+    global $wgJmolExtensionPath;
+    $this->setValUrlContents(); 
+    $prefix .= "<a";
+    $postfix = "";
+    if ( !empty($this->mValName) ) {
+      $prefix .= " name='" . $this->escapeAttribute( $this->mValName ) . "'" .
+      " id='" . $this->escapeAttribute( $this->mValName ) . "'";
+    }
+    $prefix .= " href=\"javascript:void(0)\"" .
+    " onclick=\"popupJSmol('Info0','" . $this->escapeScript( $this->mValUrlContents ) . "')\"";
+    $postfix .= "');\">";
+    if ( empty($this->mValText) ) { $this->mValText = $this->mValTitle; }
+    if ( !empty($this->mValText)) { $postfix .= $this->mValText; }
+    $postfix .= "</a>";
+    $this->mOutput .= $prefix . $postfix;
+  }
 
-		$prefix .= "<input type='button'";
-		if ( $this->mValName != "" ) {
-			$prefix .= " name='" . $this->escapeAttribute( $this->mValName ) . "'" .
-			           " id='" . $this->escapeAttribute( $this->mValName ) . "'";
-		}
-		if ( $this->mValText == "" ) {
-			$this->mValText = $this->mValTitle;
-		}
-		if ( $this->mValText != "" ) {
-			$prefix .= " value='" . $this->escapeAttribute( $this->mValText ) . "'";
-		}
-		$prefix .= " onclick=\"jmolWikiPopupWindow(" .
-		               "'" . $this->escapeScript( $this->mValTitle ) . "'," .
-		               "'" . $this->escapeScript( $this->mValSize ) . "'," .
-		               "'" . $this->escapeScript( $this->mValPositionX ) . "'," .
-		               "'" . $this->escapeScript( $this->mValPositionY ) . "'," .
-		               "'";
-		$postfix = "');return true\" />";
-		$this->mOutput .= $this->renderInternalJmolApplet( $prefix, $postfix, "\\'" );
-	}
+// 	private function renderJmolAppletInlineLink() { // Renders a link in the Wiki page that will insert a div containing a Jmol applet
+// 		global $wgJmolExtensionPath;
+// 		$prefix = "";
+// 		$postfix = "";
+// 		$uniqueID = rand(10000,99999);
+// 		$hidelink = "[<a href='javascript:void(0)' " .
+// 		            " title='hide the Jmol applet'" .
+// 		            " style='font-family:Verdana, Arial, Helvetica, sans-serif;'" .
+// 		            " onclick='jmolWikiPopInlineHide(\"" . $uniqueID . "\")'>x</a>]";
+// 		$prefix .= "<div style='width:".$this->mValSize."px; text-align:center;'>";
+// 
+// 		if ( $this->mValHeader != "" ) {	
+// 			$prefix .= "<div style='font-weight:bold; position:relative; padding-right:2ex;'>" .
+// 			           $this->mValHeader .
+// 			           "<span id='JmolInlineHide" . $uniqueID . "'" .
+// 			           " style='display:none; position:absolute; right:0; bottom:0; font-weight:normal;'>" .
+// 			           $hidelink .
+// 			           "</span>" .
+// 			           "</div>";
+// 		} else {
+// 			$prefix .= "<div>" .
+// 			           "<span id='JmolInlineHide" . $uniqueID . "'" .
+// 			           " style='display:none; float:right;'>" .
+// 			           $hidelink .
+// 			           "</span>" .
+// 			           "</div>";
+// 		}
+// 
+// 		$prefix .= "<a id='JmolInlineLink" . $uniqueID . "'";
+// 		if ( $this->mValName != "" ) {
+// 			$prefix .= " name='" . $this->escapeAttribute( $this->mValName ) . "'" .
+// 			           " id='" . $this->escapeAttribute( $this->mValName ) . "'";
+// 		}
+// 		$prefix .= " href='javascript:void(0)' " .
+// 		           " title='" . wfMsg( 'jmol-loadwarning' ) ."'" .
+// 		           " onclick=\"jmolWikiPopInline('" . $uniqueID . "','";
+// 
+// 		$postfix .= "');\"";
+// 		$postfix .= ">";
+// 
+// 		if ( $this->mValText == "" ) {
+// 			$this->mValText = "Jmol";
+// 		}
+// 		$postfix .= $this->mValText;
+// 
+// 		$postfix .= "</a>";
+// 		$postfix .= "<div id='JmolInlineEnv" . $uniqueID . "'></div>";
+// 		/*  style='z-index:5;position:absolute;vertical-align:top;' */
+// 		$postfix .= "<div style='font-size:0.85em; line-height:1.2; text-align:left; margin:0.3em 1ex;'>" .
+// 		            $this->mValCaption . "</div></div>";
+// 
+// 		$this->mOutput .= $this->renderInternalJmolApplet( $prefix, $postfix, "\\'" );
+// 	}
 
-	// Renders a link in the Wiki page that will open a new window containing a Jmol applet
-	private function renderJmolAppletLink() {
-		global $wgJmolExtensionPath;
-		$prefix = "";
-		$postfix = "";
+  private function renderJmolButton() { // Renders a button to control a Jmol applet
+    global $wgJmolAppletID;
+    $this->linkSetJmolAppletID();
+    $this->mOutput .= "<script>";
+    $this->mOutput .= "jmolSetTarget('" . $this->escapeScript( $wgJmolAppletID ) . "');";
+    $this->mOutput .= "jmolButton(" .
+    "'" . $this->escapeScript( $this->mValScript ) . "'," .
+    "'" . $this->escapeScript( $this->mValText ) . "'";
+    if ( !empty($this->mValName) ) { $this->mOutput .= ",'" . $this->escapeScript( $this->mValName ) . "'"; }
+    $this->mOutput .= ");</script>";
+  }
 
-		$prefix .= "<a";
-		if ( $this->mValName != "" ) {
-			$prefix .= " name='" . $this->escapeAttribute( $this->mValName ) . "'" .
-			           " id='" . $this->escapeAttribute( $this->mValName ) . "'";
-		}
-		$prefix .= " href=\"javascript:void(0)\"" .
-		           " onclick=\"jmolWikiPopupWindow(" .
-		               "'" . $this->escapeScript( $this->mValTitle ) . "'," .
-		               "'" . $this->escapeScript( $this->mValSize ) . "'," .
-		               "'" . $this->escapeScript( $this->mValPositionX ) . "'," .
-					   "'" . $this->escapeScript( $this->mValPositionY ) . "'," .
-		               "'";
-		$postfix .= "');\"";
-		$postfix .= ">";
-		if ( $this->mValText == "" ) {
-			$this->mValText = $this->mValTitle;
-		}
-		if ( $this->mValText != "" ) {
-			$postfix .= $this->mValText;
-		}
-		$postfix .= "</a>";
-		$this->mOutput .= $this->renderInternalJmolApplet( $prefix, $postfix, "\\'" );
-	}
+  private function renderJmolCheckbox() { // Renders a checkbox to control a Jmol applet
+    global $wgJmolAppletID;
+    $this->linkSetJmolAppletID();
+    $this->mOutput .= "<script>";
+    $this->mOutput .= "jmolSetTarget('" . $this->escapeScript( $wgJmolAppletID ) . "');";
+    $this->mOutput .= "jmolCheckbox(" .
+    "'" . $this->escapeScript( $this->mValScriptWhenChecked ) . "'," .
+    "'" . $this->escapeScript( $this->mValScriptWhenUnchecked ) . "'," .
+    "'" . $this->escapeScript( $this->mValText ) . "'";
+    if ( $this->mValChecked == "true" ) {
+      $this->mOutput .= ",true";
+    } else {
+      $this->mOutput .= ",false";
+    }
+    if ( $this->mValName != "" ) { $this->mOutput .= ",'" . $this->escapeScript( $this->mValName ) . "'"; }
+    $this->mOutput .= ");</script>";
+  }
 
-	// Renders a link in the Wiki page that will insert a div containing a Jmol applet
-	private function renderJmolAppletInlineLink() {
-		global $wgJmolExtensionPath;
-		$prefix = "";
-		$postfix = "";
+  private function renderJmolLink() { // Renders a link to control a Jmol applet
+    global $wgJmolAppletID;
+    $this->linkSetJmolAppletID();
+    $this->mOutput .= "<script>";
+    $this->mOutput .= "jmolSetTarget('" . $this->escapeScript( $wgJmolAppletID ) . "');";
+    $this->mOutput .= "jmolLink(" .
+    "'" . $this->escapeScript( $this->mValScript ) . "'," .
+    "'" . $this->escapeScript( $this->mValText ) . "'";
+    if ( $this->mValName != "" ) {
+      $this->mOutput .= ",'" . $this->escapeScript( $this->mValName ) . "'";
+    }
+    $this->mOutput .= ");</script>";
+  }
 
-		$uniqueID = rand(10000,99999);
-		$hidelink = "[<a href='javascript:void(0)' " .
-		            " title='hide the Jmol applet'" .
-		            " style='font-family:Verdana, Arial, Helvetica, sans-serif;'" .
-		            " onclick='jmolWikiPopInlineHide(\"" . $uniqueID . "\")'>x</a>]";
-		$prefix .= "<div style='width:".$this->mValSize."px; text-align:center;'>";
+  private function renderJmolMenu() { // Renders a menu to control a Jmol applet
+    global $wgJmolAppletID;
+    $this->linkSetJmolAppletID();
+    $this->mOutput .= "<script>";
+    $this->mOutput .= "jmolSetTarget('" . $this->escapeScript( $wgJmolAppletID ) . "');";
+    $this->mOutput .= "jmolMenu(" .
+    "[" . $this->mValItems . "]," .
+    $this->escapeScript( $this->mValMenuHeight );
+    if ( $this->mValName != "" ) { $this->mOutput .= ",'" . $this->escapeScript( $this->mValName ) . "'"; }
+    $this->mOutput .= ");</script>";
+  }
 
-		if ( $this->mValHeader != "" ) {	
-			$prefix .= "<div style='font-weight:bold; position:relative; padding-right:2ex;'>" .
-			           $this->mValHeader .
-			           "<span id='JmolInlineHide" . $uniqueID . "'" .
-			           " style='display:none; position:absolute; right:0; bottom:0; font-weight:normal;'>" .
-			           $hidelink .
-			           "</span>" .
-			           "</div>";
-		} else {
-			$prefix .= "<div>" .
-			           "<span id='JmolInlineHide" . $uniqueID . "'" .
-			           " style='display:none; float:right;'>" .
-			           $hidelink .
-			           "</span>" .
-			           "</div>";
-		}
+  private function renderJmolRadioGroup() { // Renders a radio group to control a Jmol applet
+    global $wgJmolAppletID;
+    $this->linkSetJmolAppletID();
+    $this->mOutput .= "<script>";
+    $this->mOutput .= "jmolSetTarget('" . $this->escapeScript( $wgJmolAppletID ) . "');";
+    $this->mOutput .= "jmolRadioGroup([" . $this->mValItems . "]";
+    if ( $this->mValVertical == "true" ) {
+      $this->mOutput .= ",jmolBr()";
+    } else {
+      $this->mOutput .= ",'&nbsp;'";
+    }
+    if ( $this->mValName != "" ) {
+      $this->mOutput .= ",'" . $this->escapeScript( $this->mValName ) . "'";
+    }
+    $this->mOutput .= ");</script>";
+  }
 
-		$prefix .= "<a id='JmolInlineLink" . $uniqueID . "'";
-		if ( $this->mValName != "" ) {
-			$prefix .= " name='" . $this->escapeAttribute( $this->mValName ) . "'" .
-			           " id='" . $this->escapeAttribute( $this->mValName ) . "'";
-		}
-		$prefix .= " href='javascript:void(0)' " .
-		           " title='" . wfMsg( 'jmol-loadwarning' ) ."'" .
-		           " onclick=\"jmolWikiPopInline('" . $uniqueID . "','";
-
-		$postfix .= "');\"";
-		$postfix .= ">";
-
-		if ( $this->mValText == "" ) {
-			$this->mValText = "Jmol";
-		}
-		$postfix .= $this->mValText;
-
-		$postfix .= "</a>";
-		$postfix .= "<div id='JmolInlineEnv" . $uniqueID . "'></div>";
-		/*  style='z-index:5;position:absolute;vertical-align:top;' */
-		$postfix .= "<div style='font-size:0.85em; line-height:1.2; text-align:left; margin:0.3em 1ex;'>" .
-		            $this->mValCaption . "</div></div>";
-
-		$this->mOutput .= $this->renderInternalJmolApplet( $prefix, $postfix, "\\'" );
-	}
-
-	// Renders a button to control a Jmol applet
-	private function renderJmolButton() {
-		$this->mOutput .= "<script>";
-		if ( $this->mValTarget != "" ) {
-			$this->mOutput .= "jmolSetTarget('" . $this->escapeScript( $this->mValTarget ) . "');\n";
-		}
-		$this->mOutput .= "jmolButton(" .
-		                      "'" . $this->escapeScript( $this->mValScript ) . "'," .
-		                      "'" . $this->escapeScript( $this->mValText ) . "'";
-		if ( $this->mValName != "" ) {
-			$this->mOutput .= ",'" . $this->escapeScript( $this->mValName ) . "'";
-		}
-		$this->mOutput .= ");</script>";
-	}
-
-	// Renders a checkbox to control a Jmol applet
-	private function renderJmolCheckbox() {
-		$this->mOutput .= "<script>";
-		if ( $this->mValTarget != "" ) {
-			$this->mOutput .= "jmolSetTarget('" . $this->escapeScript( $this->mValTarget ) . "');\n";
-		}
-		$this->mOutput .= "jmolCheckbox(" .
-		                      "'" . $this->escapeScript( $this->mValScriptWhenChecked ) . "'," .
-		                      "'" . $this->escapeScript( $this->mValScriptWhenUnchecked ) . "'," .
-		                      "'" . $this->escapeScript( $this->mValText ) . "'";
-		if ( $this->mValChecked == "true" ) {
-			$this->mOutput .= ",true";
-		} else {
-			$this->mOutput .= ",false";
-		}
-		if ( $this->mValName != "" ) {
-			$this->mOutput .= ",'" . $this->escapeScript( $this->mValName ) . "'";
-		}
-		$this->mOutput .= ");</script>";
-	}
-
-	// Renders a link to control a Jmol applet
-	private function renderJmolLink() {
-		$this->mOutput .= "<script>";
-		if ( $this->mValTarget != "" ) {
-			$this->mOutput .= "jmolSetTarget('" . $this->escapeScript( $this->mValTarget ) . "');\n";
-		}
-		$this->mOutput .= "jmolLink(" .
-		                  "'" . $this->escapeScript( $this->mValScript ) . "'," .
-		                  "'" . $this->escapeScript( $this->mValText ) . "'";
-		if ( $this->mValName != "" ) {
-			$this->mOutput .= ",'" . $this->escapeScript( $this->mValName ) . "'";
-		}
-		$this->mOutput .= ");</script>";
-	}
-
-	// Renders a menu to control a Jmol applet
-	private function renderJmolMenu() {
-		$this->mOutput .= "<script>";
-		if ( $this->mValTarget != "" ) {
-			$this->mOutput .= "jmolSetTarget('" . $this->escapeScript( $this->mValTarget ) . "');\n";
-		}
-		$this->mOutput .= "jmolMenu(" .
-		                      "[" . $this->mValItems . "]," .
-		                      $this->escapeScript( $this->mValMenuHeight );
-		if ( $this->mValName != "" ) {
-			$this->mOutput .= ",'" . $this->escapeScript( $this->mValName ) . "'";
-		}
-		$this->mOutput .= ");</script>";
-	}
-
-	// Renders a radio group to control a Jmol applet
-	private function renderJmolRadioGroup() {
-		$this->mOutput .= "<script>";
-		if ( $this->mValTarget != "" ) {
-			$this->mOutput .= "jmolSetTarget('" . $this->escapeScript( $this->mValTarget ) . "');\n";
-		}
-		$this->mOutput .= "jmolRadioGroup([" . $this->mValItems . "]";
-		if ( $this->mValVertical == "true" ) {
-			$this->mOutput .= ",jmolBr()";
-		} else {
-			$this->mOutput .= ",'&nbsp;'";
-		}
-		if ( $this->mValName != "" ) {
-			$this->mOutput .= ",'" . $this->escapeScript( $this->mValName ) . "'";
-		}
-		$this->mOutput .= ");</script>";
-	}
-
-	// Internal function to make a Jmol applet
-	private function renderInternalJmolApplet( $prefix, $postfix, $sep ) {
-      global $wgJmolAuthorizeUrl, $wgJmolAuthorizeUploadedFile, $wgJmolDrawControls, $wgJmolCoverImageGenerator;
+  private function renderInternalJmolApplet( $prefix, $postfix, $sep ) { // Internal function to make a Jmol applet
+      global $wgJmolAuthorizeUrl, $wgJmolAuthorizeUploadedFile, $wgJmolCoverImageGenerator;
       global $wgJmolForceNameSpace, $wgJmolExtensionPath, $wgScriptPath, $wgJmolPlatformSpeed;
+      global $wgJmolAppletID,$wgJmolNumID,$wgJmolPageHasApplet;
+
+      $this->appletSetJmolAppletID(); $wgJmolPageHasApplet = true;
+      $jmolApplet = "jmolApplet" . $wgJmolAppletID;
       
+      if ($this->mValPlatformSpeed) { // user requested platformSpeed
+        $wgJmolPlatformSpeed = $this->mValPlatformSpeed;
+      }
       $output = $prefix;
       $output .= 'Info0.width = ' . $this->mValSize . ';Info0.height = ' . $this->mValSize . ';';
       $output .= 'Info0.color = "' . $this->mValColor . '";';
-//       if ( $this->mValSigned == "true" ) {
-//         $output .= 'Info0.jarFile = "JmolAppletSigned.jar"; Info0.isSigned = true;'; 
-//       } else {
-//         $output .= 'Info0.jarFile = "JmolApplet.jar"; Info0.isSigned = false;'; 
-//       }
+      $output .= 'Jmol.getApplet("' . $jmolApplet . '",Info0);Jmol.script(' . $jmolApplet . ',"set platformSpeed ' . $wgJmolPlatformSpeed . '; DEFAULTPSPEED = ' . $wgJmolPlatformSpeed . '; ");';
+
+      $this->setValUrlContents();
       
-// 		if ( $this->mValName != "" ) {
-// 			$output .= "," . $sep . $this->escapeScript( $this->mValName ) . $sep;
-// 		}
-
-      $output .= 'jmolApplet0 = Jmol.getApplet("jmolApplet0",Info0);Jmol.script(jmolApplet0,"set platformSpeed ' . $wgJmolPlatformSpeed . ' ");';
-      
-      if ($wgJmolDrawControls != '') {
-        $output .= 
-'Jmol.jmolButton(jmolApplet0,"if(_spinning);spin off;spinflag = false;else;spin on;spinflag = true;endif","toggle spin");' .
-'Jmol.jmolButton(jmolApplet0,"set refreshing off;if(antialiasDisplay);antialiasDisplay = false;antialiasDisplayFlag = false;else;antialiasDisplay = true;antialiasDisplayFlag = true;endif;set refreshing on;refresh;","toggle quality");' .
-'</script><input type="button" value="popup" onClick="cloneJSmol(jmolApplet0)"><script>' .
-'</script><input type="button" value="load full" id="fullloadbutton" style="background:#FBBC40;background:linear-gradient(#FDDEA0,#FBBC40);padding:2px;border-radius:4px; border:1px solid #666;display:none;" onClick="this.style.display=\'none\';Jmol.script(jmolApplet0,\'set echo off; set echo loading 50% 50%; set echo loading center; color echo [xffa500]; background echo translucent 0.7 gray; echo Loading full model ...; refresh; load;script /wiki/extensions/Proteopedia/spt/initialview01.spt;\');"><script>'
-;
-
- }
-
-      if ( $this->mValUploadedFileContents != "" ) {
-			if ( $wgJmolAuthorizeUploadedFile == true ) {
-				$file = wfLocalFile( $this->mValUploadedFileContents );
-				if (!is_null($file)) {
-				  $this->mValUrlContents = $file->getURL();
-				}
-			} else {
-              return $this->showWarning( wfMsg( 'jmol-nouploadedfilecontents' ) );
-            }
-      } elseif ( $this->mValWikiPageContents != "" ) {
-        if ( $wgJmolAuthorizeUrl == true ) {
-          $this->mValUrlContents = $wgScriptPath."/index.php?title=";	// AH - fix for non-root wikis
-          if ( $wgJmolForceNameSpace != "" ) {
-            $this->mValUrlContents .= $wgJmolForceNameSpace . ":";
-          }
-          $this->mValUrlContents .= $this->mValWikiPageContents . "&action=raw";
-		} else {
-		  return $this->showWarning( wfMsg( 'jmol-nowikipagecontents' ) );
-		}
-      } 
       if ( $this->mValUrlContents != "" ) {
-        $output .= 'Jmol.script(jmolApplet0,"set echo p 50% 50%;set echo p center;echo ' 
+        $output .= 'Jmol.script(' . $jmolApplet . ',"set echo p 50% 50%;set echo p center;echo ' 
                    . wfMsg( 'jmol-loading' ) . ';refresh;load ' . $this->escapeScript( $this->mValUrlContents ) . ';' 
                    . $this->escapeScript( $this->mValScript ) . '"); ';
       } elseif ( $this->mValInlineContents != "" ) { // mValInlineContents
-              
+ //       return $this->showWarning( "inline contents are not implemenmented" );
         $this->mValInlineContents = preg_replace( "/\n/", "\\n\"+\n\"", $this->mValInlineContents );
         $output .= "\nvar s = \"" . $this->mValInlineContents . "\";\n"
                 . "function loadInline(d) { return 'data \"model\"' + d + '\\nend \"model\";'}\n"
  //               . "Jmol.script(jmolApplet0,loadInline(s).replace(/\\n/g,'|')) + " 
-                . "Jmol.script(jmolApplet0,loadInline(s) + " 
+                . "Jmol.script(" . $jmolApplet . ",loadInline(s) + " 
                 . "'" . $this->escapeScript( $this->mValScript ) . "'" 
                . '); ';
                 
       } else {
-        $output .= 'Jmol.script(jmolApplet0,"' . $this->escapeScript( $this->mValScript ) . '"); ';
+        $output .= 'Jmol.script(' . $jmolApplet . ',"' . $this->escapeScript( $this->mValScript ) . '"); ';
       }
       
 //       if ($wgJmolCoverImageGenerator) {
@@ -394,11 +402,10 @@ class Jmol {
 //         $output .= "Info0.coverImage = \"$cmd\";\n";
 //       }
 
-      return $output . $postfix;
-	}
+    return $output . $postfix;
+  }
 
-	// Function called for outputing a warning
-	private function showWarning( $message ) {
+	private function showWarning( $message ) { // Function called for outputing a warning
 		global $wgJmolShowWarnings;
 
 		$output = "";
@@ -408,12 +415,7 @@ class Jmol {
 		return $output;
 	}
 
-	// ************* //
-	// XML CALLBACKS //
-	// ************* //
-
-	// Function called when an opening XML tag is found
-	function startElement( $parser, $name, $attrs ) {
+	function startElement( $parser, $name, $attrs ) { // Function called when an opening XML tag is found
 		$this->mDepth += 1;
 		switch ( $this->mDepth ) {
 		case 1:
@@ -436,8 +438,7 @@ class Jmol {
 		}
 	}
 
-	// Function called when a closing XML tag is found
-	function endElement( $parser, $name ) {
+	function endElement( $parser, $name ) { // Function called when a closing XML tag is found
 		switch ( $this->mDepth ) {
 		case 1:
 			// JMOL tag itself
@@ -456,7 +457,7 @@ class Jmol {
 				$this->renderJmolAppletLink();
 				break;
 			case "JMOLAPPLETINLINELINK":
-				$this->renderJmolAppletInlineLink();
+// 				$this->renderJmolAppletInlineLink();
 				break;
 			case "JMOLBUTTON":
 				$this->renderJmolButton();
@@ -502,19 +503,36 @@ class Jmol {
 		$this->mDepth -= 1;
 	}
 
-	// Function called for the content of a XML tag
-	function characterData( $parser, $data ) {
+	function characterData( $parser, $data ) { // Function called for the content of a XML tag
 		global $wgJmolAuthorizeChoosingSignedApplet,$wgJmolMaxAppletSize;
 
 		switch ( $this->mDepth ) {
 		case 3:
 			// Details of the interesting tags
 			switch ( $this->mCurrentTag ) {
+			case "CAPTION":
+				$this->mValCaption .= $data;
+				break;
+			case "CAPTIONCSS":
+				$this->mValCaptionCSS = $data;
+				break;
 			case "CHECKED":
 				$this->mValChecked = $data;
 				break;
 			case "COLOR":
 				$this->mValColor = $data;
+				break;
+			case "CONTROLS":
+				$this->mValControls = trim($data);
+				break;
+			case "FLOAT":
+				$this->mValFloat = trim($data);
+				break;
+			case "FRAME":
+				$this->mValFrame = $data; 
+				break;
+			case "HEADER":
+				$this->mValHeader = $data;
 				break;
 			case "INLINECONTENTS":
 			case "ONLINECONTENTS":
@@ -527,8 +545,10 @@ class Jmol {
 				$this->mValMenuHeight = $data;
 				break;
 			case "NAME":
-// TEMPORARY needs implementation of global management
-// 				$this->mValName = $data;
+				$this->mValName = $data;
+				break;
+			case "PSPEED":
+				$this->mValPlatformSpeed = intval($data);
 				break;
 			case "SCRIPT":
 				$this->mValScript = str_replace( "%26", "&", $data );
@@ -557,11 +577,8 @@ class Jmol {
 			case "TITLE":
 				$this->mValTitle = $data;
 				break;
-			case "HEADER":
-				$this->mValHeader = $data;
-				break;
-			case "CAPTION":
-				$this->mValCaption = $data;
+			case "TITLECSS":
+				$this->mValTitleCSS = $data;
 				break;
 			case "UPLOADEDFILECONTENTS":
 				$this->mValUploadedFileContents = $data;
@@ -602,26 +619,67 @@ class Jmol {
 		}
 	}
 
-	// ********* //
-	// UTILITIES //
-	// ********* //
+    function setValUrlContents ($text = null,$type = null) {
+      global $wgJmolAuthorizeUrl, $wgJmolAuthorizeUploadedFile,$wgJmolForceNameSpace;
+        
+      if ($text) {
+        if ($type === 'pdb') {
+          $this->mValUrlContents = "http://proteopedia.org/cgi-bin/getlateststructure?" . $text . ".gz"; return;
+        } elseif ($type === 'smiles') {
+          $this->mValUrlContents = "\$" . $text; return;
+        } else {
+          $this->mValUploadedFileContents = $text;
+        }
+      }
+      
+      if ( $this->mValUploadedFileContents != "" ) {
+        if ( $wgJmolAuthorizeUploadedFile == true ) {
+          $file = wfLocalFile( $this->mValUploadedFileContents );
+          if (!is_null($file) and $file->exists()) {
+            $this->mValUrlContents = $file->getURL();
+          } else {
+            $this->mValUrlContents = "MSG " . wfMsg( 'jmol-requesteddatanotfound' );
+          }
+        } else {
+          $this->mValUrlContents = "MSG " . wfMsg( 'jmol-nouploadedfilecontents' );
+        }
+      } elseif ( $this->mValWikiPageContents != "" ) {
+        if ( $wgJmolAuthorizeUrl == true ) {
+          $this->mValUrlContents = $wgScriptPath."/index.php?title=";	// AH - fix for non-root wikis
+          if ( $wgJmolForceNameSpace != "" ) {
+            $this->mValUrlContents .= $wgJmolForceNameSpace . ":";
+          }
+          $this->mValUrlContents .= $this->mValWikiPageContents . "&action=raw";
+        } else {
+          $this->mValUrlContents = "MSG " . wfMsg( 'jmol-nowikipagecontents' );
+        }
+      } 
+      return;
+    }
 
-	// Resets internal variables to their default values
-	private function resetValues() {
+	private function resetValues() { // Resets internal variables to their default values
 		global $wgJmolDefaultAppletSize;
 		global $wgJmolDefaultScript;
 		global $wgJmolUsingSignedAppletByDefault;
+		global $wgJmolDefaultCaptionCSS;
+		global $wgJmolDefaultTitleCSS;
 
 		$this->mCurrentObject = "";
 		$this->mCurrentTag = "";
 		$this->mCurrentSubTag = "";
 
+		$this->mValCaption = "";
+		$this->mValCaptionCSS = $wgJmolDefaultCaptionCSS; 
 		$this->mValChecked = false;
 		$this->mValColor = "black";
+		$this->mValFloat = "";
+		$this->mValFrame = "";
+		$this->mValHeader = "";
 		$this->mValInlineContents = "";
 		$this->mValItems = "";
 		$this->mValMenuHeight = "1";
 		$this->mValName = "";
+		$this->mValPlatformSpeed = null;
 		$this->mValPositionX = "100";
 		$this->mValPositionY = "100";
 		$this->mValScript = $wgJmolDefaultScript;
@@ -631,26 +689,34 @@ class Jmol {
 		$this->mValSize = $wgJmolDefaultAppletSize;
 		$this->mValTarget = "";
 		$this->mValText = "";
-		$this->mValTitle = "Jmol";
-		$this->mValHeader = "";
-		$this->mValCaption = "";
+		$this->mValTitle = "";
+		$this->mValTitleCSS = $wgJmolDefaultTitleCSS; 
 		$this->mValUploadedFileContents = "";
 		$this->mValUrlContents = "";
 		$this->mValVertical = false;
 		$this->mValWikiPageContents = "";
+        $this->mValControls = null;
 	}
 
-	// Functions to escape characters
-	private function escapeAttribute( $value ) {
+  function renderWikiTextString( $value ) {
+    global $wgParser;
+//    global $wgTitle, $wgUser;
+//    $value = $this->escapeAttribute( $value );
+    $wgParser->disableCache(); 
+    $lparse = clone $wgParser;
+//    $opt = ParserOptions::newFromUser($wgUser);  
+//    $value = $lparse->parse($value,$wgTitle, $opt, true, false)->getText();
+    $value = $lparse->parse($value,$wgParser->mTitle,$wgParser->mOptions)->getText();
+    return $value;
+  }
+
+	private function escapeAttribute( $value ) { // Functions to escape characters
 		return Xml::escapeJsString( $value );
 	}
+	
 	private function escapeScript( $value ) {
 		return Xml::escapeJsString( $value );
 	}
-
-	// *********************** //
-	// DIRECTING THE EXTENSION //
-	// *********************** //
 
 	private function parseJmolTag( $text, $params, $parser ) {
 		global $wgJmolExtensionPath, $wgJmolScriptVersion;
@@ -660,113 +726,52 @@ class Jmol {
 		return $this->renderJmol( $text );
 	}
 
-	private function parseJmolFileTag( $text, $params, $parser ) {
-		global $wgJmolExtensionPath, $wgJmolScriptVersion, $wgJmolAuthorizeUploadedFile;
-        $this->initializeJSmol($parser);
-		// Add element to display file
-		$result =
-			"<a href=\"javascript:void(0)\"" .
-			  " onclick=\"jmolWikiPopupWindow(" .
-				"'" . $this->escapeScript( $text ) . "'," .
-				"'" . $this->escapeScript( "800" ) . "'," .
-				"'" . $this->escapeScript( "50" ) . "'," .
-				"'" . $this->escapeScript( "50" ) . "'," .
-				"'";
-		$result .= "jmolInitialize(\\'" . $wgJmolExtensionPath . "\\', false); ";
-		$result .= "_jmol.noEval = true; ";
-		$result .= "jmolCheckBrowser(\\'popup\\', \\'" . $wgJmolExtensionPath . "/browsercheck\\', \\'onclick\\'); ";
-		if ( $wgJmolAuthorizeUploadedFile != true ) {
-			return $this->showWarning( wfMsg( 'jmol-nouploadedfilecontents' ) );
-		}
-		$file = wfLocalFile( $this->mValUploadedFileContents );
-		if ( !is_null( $file )) {
-			$file = new Image($title);
-			$result .= "jmolApplet( 500, \\'" .
-				"set echo p 50% 50%;" .
-				"set echo p center;" .
-				"echo " . wfMsg( 'jmol-loading' ) . ";" .
-				"refresh;" .
-				"load " . $file->getURL() . ";\\' ); ";
-		}
-		$result .= "');\">";
+    private function parseJmolFileTag( $text, $params, $parser ) {
+      global $wgJmolExtensionPath, $wgJmolScriptVersion, $wgJmolAuthorizeUploadedFile;
+      $this->initializeJSmol($parser);
+      $this->setValUrlContents($text);
+      $result = "<a href=\"javascript:void(0)\"" .
+                " onclick=\"popupJSmol('Info0','" . $this->escapeScript( $this->mValUrlContents ) . "');\">";
 		if ( isset( $params[ "text" ] ) ) {
 			$result .= $params[ "text" ];
 		} else {
 			$result .= $text;
 		}
 		$result .= "</a>";
-
 		return $result;
 	}
 
 	private function parseJmolPdbTag( $text, $params, $parser ) {
-		global $wgJmolExtensionPath, $wgJmolScriptVersion;
-        $this->initializeJSmol($parser);
-		// Add element to display file
-		$result =
-			"<a href=\"javascript:void(0)\"" .
-			  " onclick=\"jmolWikiPopupWindow(" .
-				"'" . $this->escapeScript( $text ) . "'," .
-				"'" . $this->escapeScript( "800" ) . "'," .
-				"'" . $this->escapeScript( "50" ) . "'," .
-				"'" . $this->escapeScript( "50" ) . "'," .
-				"'";
-		$result .= "jmolInitialize(\\'" . $wgJmolExtensionPath . "\\', true); ";
-		$result .= "_jmol.noEval = true; ";
-		$result .= "jmolCheckBrowser(\\'popup\\', \\'" . $wgJmolExtensionPath . "/browsercheck\\', \\'onclick\\'); ";
-		$result .= "jmolApplet( 500, \\'" .
-			"set echo p 50% 50%;" .
-			"set echo p center;" .
-			"echo " . wfMsg( 'jmol-loading' ) . ";" .
-			"refresh;" .
-			"load =" . $text . ";\\' ); ";
-		$result .= "');\">";
+      global $wgJmolExtensionPath, $wgJmolScriptVersion, $wgJmolAuthorizeUploadedFile;
+      $this->initializeJSmol($parser);
+      $this->setValUrlContents($text,'pdb');
+      $result = "<a href=\"javascript:void(0)\"" .
+                " onclick=\"popupJSmol('Info0','" . $this->escapeScript( $this->mValUrlContents ) . "');\">";
 		if ( isset( $params[ "text" ] ) ) {
 			$result .= $params[ "text" ];
 		} else {
 			$result .= $text;
 		}
 		$result .= "</a>";
-
 		return $result;
 	}
 
 	private function parseJmolSmilesTag( $text, $params, $parser ) {
-		global $wgJmolExtensionPath, $wgJmolScriptVersion;
-        $this->initializeJSmol($parser);
-		// Add element to display file
-		$result =
-			"<a href=\"javascript:void(0)\"" .
-			  " onclick=\"jmolWikiPopupWindow(" .
-				"'" . $this->escapeScript( $text ) . "'," .
-				"'" . $this->escapeScript( "800" ) . "'," .
-				"'" . $this->escapeScript( "50" ) . "'," .
-				"'" . $this->escapeScript( "50" ) . "'," .
-				"'";
-		$result .= "jmolInitialize(\\'" . $wgJmolExtensionPath . "\\', true); ";
-		$result .= "_jmol.noEval = true; ";
-		$result .= "jmolCheckBrowser(\\'popup\\', \\'" . $wgJmolExtensionPath . "/browsercheck\\', \\'onclick\\'); ";
-		$result .= "jmolApplet( 500, \\'" .
-			"set echo p 50% 50%;" .
-			"set echo p center;" .
-			"echo " . wfMsg( 'jmol-loading' ) . ";" .
-			"refresh;" .
-			"load \$" . $text . ";\\' ); ";
-		$result .= "');\">";
+      global $wgJmolExtensionPath, $wgJmolScriptVersion, $wgJmolAuthorizeUploadedFile;
+      $this->initializeJSmol($parser);
+      $this->setValUrlContents($text,'smiles');
+      $result = "<a href=\"javascript:void(0)\"" .
+                " onclick=\"popupJSmol('Info0','" . $this->escapeScript( $this->mValUrlContents ) . "');\">";
 		if ( isset( $params[ "text" ] ) ) {
 			$result .= $params[ "text" ];
 		} else {
 			$result .= $text;
 		}
 		$result .= "</a>";
-
 		return $result;
 	}
 
- 	/**
-	 * Initialize the parser hooks
-	 */
-	function setHooks() {
+	function setHooks() { // Initialize the parser hooks
 		global $wgParser, $wgHooks;
 		global $wgJmolAuthorizeJmolFileTag,
 			   $wgJmolAuthorizeJmolPdbTag,
@@ -787,19 +792,7 @@ class Jmol {
 		}
 	}
 
-	// ******************* //
-	// MEDIAWIKI CALLBACKS //
-	// ******************* //
-
-	/**
-	 * Callback function for <jmol>
-	 *
-	 * @param string $text Text inside <jmol> tag
-	 * @param array $param Arguments inside <jmol> tag
-	 * @param Parser &$parser Parser
-	 * @return string
-	 */
-	public function jmolTag( $text, $params, $parser ) {
+	public function jmolTag( $text, $params, $parser ) { // <jmol>
 		if ( $this->mInJmol ) {
 			return htmlspecialchars( "<jmol>$text</jmol>" );
 		} else {
@@ -810,15 +803,7 @@ class Jmol {
 		}
 	}
 
-	/**
-	 * Callback function for <jmolFile>
-	 *
-	 * @param string $text Text inside <jmolFile> tag
-	 * @param array $param Arguments inside <jmolFile> tag
-	 * @param Parser &$parser Parser
-	 * @return string
-	 */
-	public function jmolFileTag( $text, $params, $parser ) {
+	public function jmolFileTag( $text, $params, $parser ) { // <jmolFile>
 		if ( $this->mInJmol ) {
 			return htmlspecialchars( "<jmolFile>$text</jmolFile>" );
 		} else {
@@ -829,15 +814,7 @@ class Jmol {
 		}
 	}
 
-	/**
-	 * Callback function for <jmolPdb>
-	 *
-	 * @param string $text Text inside <jmolPdb> tag
-	 * @param array $param Arguments inside <jmolPdb> tag
-	 * @param Parser &$parser Parser
-	 * @return string
-	 */
-	public function jmolPdbTag( $text, $params, $parser ) {
+	public function jmolPdbTag( $text, $params, $parser ) { // <jmolPdb>
 		if ( $this->mInJmol ) {
 			return htmlspecialchars( "<jmolPdb>$text</jmolPdb>" );
 		} else {
@@ -848,15 +825,7 @@ class Jmol {
 		}
 	}
 
-	/**
-	 * Callback function for <jmolSmiles>
-	 *
-	 * @param string $text Text inside <jmolSmiles> tag
-	 * @param array $param Arguments inside <jmolSmiles> tag
-	 * @param Parser &$parser Parser
-	 * @return string
-	 */
-	public function jmolSmilesTag( $text, $params, $parser ) {
+	public function jmolSmilesTag( $text, $params, $parser ) { // <jmolSmiles>
 		if ( $this->mInJmol ) {
 			return htmlspecialchars( "<jmolSmiles>$text</jmolSmiles>" );
 		} else {
@@ -867,9 +836,10 @@ class Jmol {
 		}
 	}
 
-function initializeJSmol($parser) {
-  global $wgOut,$wgRequest,$wgUser,$wgScriptPath,$initializeJSmolDone,$reqUse;
+  function initializeJSmol($parser) {
+  global $wgOut,$wgRequest,$wgUser,$wgScriptPath,$initializeJSmolDone,$reqUse,$wgJmolAppletID,$wgJmolPageHasApplet;
   global $wgJmolDefaultAppletSize,$wgJmolForceHTML5,$wgJmolMaxAppletSize,$wgJmolPlatformSpeed;
+  global $wgJmolScriptVersion;
   if ($initializeJSmolDone == false) {
     $wikiDir = dirname(__FILE__);
     $jsmolDir = dirname($wikiDir);
@@ -884,6 +854,10 @@ function initializeJSmol($parser) {
     $detect = new Mobile_Detect;
     if (($wgUser->getOption('jmolusejava') == 1) and !$detect->isMobile()) { $reqUse = 'SIGNED'; } // instead of JAVA
     $reqUse = ($detect->isMobile()) ? 'HTML5' : $reqUse;
+    $wgJmolNumID = nul;
+    $wgJmolAppletID = null;
+    $wgJmolPageHasApplet = false;
+    
 // set $wgJmolPlatformSpeed based on platform and rendering engine
     if ($detect->isMobile()) {
       if ($detect->isTablet()) {
@@ -897,15 +871,17 @@ function initializeJSmol($parser) {
       } else {
         $wgJmolPlatformSpeed = 8;      // full rendering
       }
-    }    
+    }   
+     
     $deferApplet = 'false'; // ($detect->isMobile() ? ($detect->isTablet() ? 'false' : 'true') : 'false');
     if( $detect->isMobile() && !$detect->isTablet() ) { $wgJmolMaxAppletSize = 300; }
     $jsmolPath = $wgScriptPath . '/extensions/jsmol';
     $isSigned = ($this->mValSigned == "true") ? "true" : "false";
     if (($reqUse == "JAVA") or ($reqUse == "SIGNED")) {$isSigned = "true"; $reqUse = "SIGNED";} 
+    $parser->mOutput->addHeadItem('<link href="' . $jsmolPath . '/wiki/Jmol.css" rel="stylesheet" type="text/css">');
     $parser->mOutput->addHeadItem('<script src=' . $jsmolPath . '/JSmol.min.js></script>');
     $parser->mOutput->addHeadItem('<script src=' . $jsmolPath . '/js/Jmol2.js></script>');
-    $parser->mOutput->addHeadItem('<script src=' . $jsmolPath . '/wiki/JSmolPopup.js></script>');
+    $parser->mOutput->addHeadItem('<script src=' . $jsmolPath . '/wiki/JSmolPopup.js?' . $wgJmolScriptVersion . '></script>');
     if ($reqUse == "WEBGL") {
       $isSigned = "false";
       $parser->mOutput->addHeadItem('<script src=' . $jsmolPath . '/js/JSmolThree.js></script>');
@@ -942,25 +918,10 @@ Jmol._alertNoBinary = false;
   return true;
 }
 
-	// *************** //
-	// MEDIAWIKI HOOKS //
-	// *************** //
-
-	/**
-	 * Gets run when Parser::clearState() gets run
-	 */
-	function hClearState() {
-		# Don't clear state when we're in the middle of parsing
-		# a <jmol> tag
-		if ( $this->mInJmol ) {
-			return true;
-		}
-		resetValues();
- 
-		return true;
-	}
-
-	/**#@-*/
+  function hClearState() { // Gets run when Parser::clearState() gets run
+    # Don't clear state when we're in the middle of parsing a <jmol> tag
+    if ($this->mInJmol === false ) { resetValues(); }
+    return true;
+  }
 
 } // END CLASS DEFINITION
-//</source>

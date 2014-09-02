@@ -1,0 +1,15 @@
+/* style for tables with only outside border (called class 'infoblock') */
+table.infoblock {   /* J Prilusky 2008 */
+  border-collapse: collapse;
+  border: 2px solid #dddddd; 
+  clear: right;
+  float: right;
+  position: relative;
+  margin: 0 0 .5em .5em;
+}
+
+table.lightborder { /* J Prilusky 2014 */
+  border-collapse: collapse;
+  border: 2px solid #dddddd; 
+}
+

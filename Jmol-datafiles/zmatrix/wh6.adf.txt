@@ -1,0 +1,49 @@
+ TITLE WH6                                                                   
+
+ COMMENTS
+ ADF input from NBOPro6
+ END
+
+ UNITS
+ length angstrom
+ END
+ ATOMS cartesian
+     H       0.787788     1.364432    -0.337400
+     W      -0.000001     0.000001    -0.036515
+     H       0.787727    -1.364456    -0.337447
+     H      -1.575529     0.000041    -0.337392
+     H       0.486900     0.843240     1.238119
+     H       0.486862    -0.843306     1.238089
+     H      -0.973710     0.000000     1.238124
+ END
+
+ SYMMETRY NOSYMM
+ CHARGE 0 0
+ UNRESTRICTED
+ INTEGRATION 6.0
+
+ GEOMETRY
+ Iterations 100
+ converge E=0.001 Grad=0.001 Rad 0.01 Angle 0.5
+ END
+ SCF
+ Iterations 1000
+ converge 0.000001
+ END
+
+ BASIS
+ Type TZ2P
+ Core small
+ END
+
+ XC
+ GGA PW91
+ END
+
+ NOPRINT frag sfo
+
+ NBO
+   archive file=wh6
+ END
+
+ ENDINPUT

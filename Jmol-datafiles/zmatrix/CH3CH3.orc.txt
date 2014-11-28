@@ -1,0 +1,39 @@
+ #
+ # ORCA input from NBOPro6
+ #
+ # CH3CH3                                                                     
+ #
+ %method
+   method hf
+ end
+
+ %scf
+   hftyp uhf
+ end
+
+ %basis
+   basis 6-31G*
+ end
+
+ %maxcore 1000
+
+ %coords
+   Ctyp XYZ
+   Charge 0
+   Mult 1
+   Units Angs
+   coords
+     H       0.000000     1.027662    -1.133333
+     C       0.000000     0.000000    -0.770000
+     C       0.000000     0.000000     0.770000
+     H       0.000000    -1.027662     1.133333
+     H       0.889981    -0.513831    -1.133333
+     H      -0.889981    -0.513831    -1.133333
+     H       0.889981     0.513831     1.133333
+     H      -0.889981     0.513831     1.133334
+   end
+ end
+
+ %nbo
+   archive file=CH3CH3
+ end

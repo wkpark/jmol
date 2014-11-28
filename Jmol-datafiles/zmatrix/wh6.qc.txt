@@ -1,0 +1,25 @@
+ $comment
+   Q-CHEM input from NBOPro6: WH6                                     
+ $end
+
+ $molecule
+ 0  1
+  H       0.787788     1.364432    -0.337400
+  W      -0.000001     0.000001    -0.036515
+  H       0.787727    -1.364456    -0.337447
+  H      -1.575529     0.000041    -0.337392
+  H       0.486900     0.843240     1.238119
+  H       0.486862    -0.843306     1.238089
+  H      -0.973710     0.000000     1.238124
+ $end
+
+ $rem
+   EXCHANGE    HF
+   CORRELATION NONE
+   BASIS       6-31G*
+   NBO
+ $end
+
+ $nbo
+   archive file=wh6
+ $end

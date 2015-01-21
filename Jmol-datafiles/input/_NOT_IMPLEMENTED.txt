@@ -1,0 +1,1 @@
+A Jmol reader for the CASTEP? input files in this directory has not been implemented.

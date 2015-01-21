@@ -1,0 +1,170 @@
+<html>
+<head>
+<script type="text/javascript" src=Jmol.js></script>
+<script type="text/javascript">
+
+jmolInitialize("../..",true)
+
+function doLoad() {
+ document.getElementById("info").reset()
+}
+
+var synced = false;
+
+function sync() {
+ var syncing = document.getElementById("drive").checked
+ var s = (syncing ? "sync * on;sync * \"set syncMouse TRUE\"": "sync * off")
+ s += ";set syncCallback 'mysynccallback'"
+ jmolScript(s, "A");
+}
+
+function ready() {
+ sync();
+}
+function mysynccallback(app, script) {
+if (script.indexOf("Mouse: rotateXYBy") == 0) {
+	var S = script.split(" ");
+	S[2] = -parseFloat(S[2]);
+	S[3] = parseFloat(S[3]);
+	script = S.join(" ")
+}
+return script
+}
+
+model = "adrenaline"
+function jsload() {
+	var x = prompt("model?", model)
+	if (!x)return
+	model = x
+	jmolScript("load \"$" + x + "\";axes on;axes position [50 50];set zshade;set zshadepower 1;center *", "A"); 
+	jmolScript("load \"$" + x + "\";invertselected;axes on;axes position [50 50];rotateselected x 180;center *;set zshade;set zshadepower 1", "B"); 
+	document.getElementById("A").innerHTML = x;
+	document.getElementById("B").innerHTML = "enantiomer of " + x;
+}
+
+</script>
+</head>
+<body onload = doLoad()>
+
+<table border = 1 cellpadding=10 width=900>
+<tr>
+
+<td>
+<form id=info>
+<input type=checkbox checked=true id=drive onClick=sync() accessKey="1">Synchronize and rotate in opposite directions
+<script>jmolButton([jsload],"load")</script>
+</form>
+<table><tr><td>
+<script>jmolApplet(400,"set loadStructCallback 'ready';load data/asp.mol2;axes on;axes position [50 50];set zshade;set zshadepower 1;center *", "A")</script>
+<br/><div id=A>A: L-aspartate</div>
+
+</td><td>
+<script>
+jmolApplet(400,"set loadStructCallback 'ready';load data/asp.mol2;select *;invertselected;axes on;axes position [50 50];rotateselected x 180;center *;set zshade;set zshadepower 1;javascript 'ready()'", "B");
+</script>
+<br/><div id=B>B: D-aspartate</div>
+</td></tr></table></td></tr><tr>
+<td>
+This page demonstrates how to synchronize applets in Jmol, making one rotate oppositely the other. 
+The two applets are jmolAppletA and jmolAppletB. Once the checkbox is checked, going to either one controls the other.
+Rotate the LEFT model to have them rotate oppositely; rotate the RIGHT model to have them rotate in the same direction. 
+
+The command used here is simply:
+<pre>
+<code>
+function sync() {
+ var syncing = document.getElementById("drive").checked
+ var s = (syncing ? 'sync * on; sync * "set syncMouse true"': 'sync * off')
+ jmolScript(s, "A");
+}
+</pre>
+
+Alternatively, we could have used:
+<br /><br />
+<code><a href='javascript:jmolScript("sync . ON;sync > SLAVE", "A")'>jmolScript("sync . ON;sync > SLAVE", "A")</a></code>
+<br /><br />
+which would cause only the applet on the top to do the controlling, but allowed the bottom applet to be moved independently of that control.
+Also, if you open a <a href='javascript:jmolScript("console","A")'>console</a> on one, you can give commands to the other using something like:
+
+<pre>
+<code>
+<a href='javascript:jmolScript("sync > \"background white\"","A")'>sync > "background white"</a>
+</code>
+</pre>
+
+The ">" means "all other synchronized applets". 
+Other options include "*" (all synchronized applets) 
+and "." (only this applet, if it is synchronized).
+In addition, you can specify the applet by its extension, "A" or "B", or by its full name, "jmolAppletA" or "jmolAppletB" in this case.
+
+<br /><br />
+Starting with Jmol 11.6, you can also use the <b>script</b> command with the APPLET option to send scripts to one or more applets. This operation is independent of the state of sync being ON or OFF.
+<pre>
+<code>
+<a href='javascript:jmolScript("script APPLET * \"background yellow\"","A")'>script APPLET * "background yellow"</a>
+</code>
+</pre>
+<br /><br />
+Also new in Jmol 11.6, you can use the Jmol math script() function to get information from another applet. Simply indicate the target applet as a second parameter to the script command. For example, from Applet A's <a href='javascript:jmolScript("console","A")'>console</a>, type:
+<pre>
+<code>
+print script("show orientation","B")
+</code>
+</pre>
+
+</td>
+</tr>
+<tr>
+<td colspan=3>
+<pre>
+Jmol version=11.3.9
+
+# new feature: synchronization of applets using Jmol scripts:
+#
+# sync .|>|*|appletId[syncId] ON|OFF|SLAVE|command
+#
+# The sync command allows two or more applets to be synchronized in
+# terms of orientation. Move one with the mouse, and the other moves as well.
+# In addition, the sync command allows ANY command to be sent to one or more
+# other applets directly, without the intervention of JavaScript.
+#
+# Applets are identified by appletId (jmolApplet0, for instance)
+# along with an optional bracketed sync group identifier -- generally a random 
+# number that identifies the page containing the controlling applet. If the 
+# syncId is not given, then the ID for the page containing the controlling applet
+# is used. This feature is important for cross-frame synchronization only. 
+#
+#
+# .          this applet only
+# >          all applets except this one
+# *          all applets
+# appletId   id of a specific applet
+# [syncId]   (optional) a unique string of digits -- brackets included
+#
+# ON         sync as driver (default)
+# OFF        turn sync off
+# SLAVE      turn sync on, but not as driver
+# command    command to send
+#
+# for example:
+#
+# sync *   # synchronize all applets as drivers
+# sync jmolApplet1  #syncs this applet with jmolApplet1 both as drivers
+# sync > "set echo top left;echo OK"  # sends OK to top left of all OTHER applets
+# sync jmolApplet2[254678942] OFF  # turns sync off for an applet ON A DIFFERENT PAGE
+#                                  # or in a different FRAME
+# sync . OFF # turns sync off for this applet
+#
+# new Jmol.js feature: jmolGetSyncId(); jmolSetSyncId(id);
+# allows control over the sync ID via javascript. jmolSetSyncId(id)
+# should be called prior to jmolApplet() and should incorporate some sort of
+# random digits and no space characters. (A number is good.)
+# This should only be necessary for multi-frame pages. 
+# -----------------------------------------------------------------------------
+</pre>
+</td></tr>
+</table>
+
+
+</body>
+</html>

@@ -1,0 +1,4 @@
+#ZMATRIX -- CO2 example with atom names and bond orders
+C1
+O1   C1 1.3000                2     
+O2   C1 1.3000    O1  180     2      

@@ -1,0 +1,5 @@
+#ZMATRIX -- with Jmol-type alternative dual-angle method
+N1 
+H1 N1 1.0
+H2 N1 1.0 H1 107	
+H3 N1 -1.0 H1 107 H2 107

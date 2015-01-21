@@ -1,0 +1,22 @@
+<html>
+<head>
+<title>Jmol Popup Model</title>
+<script type="text/javascript" src="Jmol.js"></script>
+<script type="text/javascript">
+theScript = document.location.search
+isSIGNED = true
+if (theScript.indexOf("script=") > 0)
+	 theScript = unescape(theScript.split("script=")[1].split("&")[0])
+
+jmolInitialize("../..","JmolAppletSigned.jar")
+
+</script>
+
+</head>
+<body>
+<script type="text/javascript">
+jmolApplet([500,500],theScript)
+</script>
+<br />
+</body>
+</html>

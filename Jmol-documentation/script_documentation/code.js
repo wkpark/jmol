@@ -19,9 +19,9 @@ showrecent = !dowritexml && !dowritedocbook
 
 lastupdate = ""
 startmessage ="See an error? Something missing? Please <a href=\"mailto:hansonr@stolaf.edu?subject=Jmol applet documentation\">let us know</a>. For a wide variety of interactive examples, see <a href=examples-12/new.htm>new.htm</a> and <a href=../jsmol/jsmol.htm>jsmol.htm</a>."
-defaultversion = "14.0"
-removelist = ";14.2;14.0;13.4;13.2;13.0;12.4;12.2;12.0;11.8;11.6;11.4;11.2;11.0;10.2" //semis on LEFT ONLY
-versionlist = ";14.2;14.0;13.4;13.2;13.0;12.4;12.2;12.0;" //semis on BOTH SIDES
+defaultversion = "14.2"
+removelist = ";14.4;14.2;14.0;13.4;13.2;13.0;12.4;12.2;12.0;11.8;11.6;11.4;11.2;11.0;10.2" //semis on LEFT ONLY
+versionlist = ";14.4;14.2;14.0;13.4;13.2;13.0;12.4;12.2;12.0;" //semis on BOTH SIDES
 exampledir = "examples/" //will be ignored if the example has a / in the name
 datadir = "examples/"
 jmoljs = "Jmol.js"
@@ -29,6 +29,9 @@ jmolSite = "http://chemapps.stolaf.edu/jmol"
 jsmolSite = "http://jsmol.sourceforge.net"
 popupscript = "popupscript.js"
 //popup-example display did not work with the multi-file archive path
+
+
+atomExpressions = "center define delete display fixed hide restrict select zap";
 
 
 /* startup URL options:
@@ -392,7 +395,6 @@ function newCmd(command,version0,examples,xref,description,nparams,param1,param2
 	Cmd.isimplemented=!notimplemented
 	Cmd.description=descr
 	Cmd.version0 = version0
-	Cmd.chimenote=chimenote
 	Cmd.isnewer = isnewer
 	Cmd.enabled=foundsearch(description)
 	Cmd.version=""
@@ -404,9 +406,11 @@ function newCmd(command,version0,examples,xref,description,nparams,param1,param2
 	Cmd.key = ""
 	description=""
 	descr=""
+
 	Cmdlist[Cmdlist.length]=Cmd.name=command
 	Cmd.keyname = keyof(Cmd.name,0,1)
- 	Cmd.keynote = (Cmd.keyname == Cmd.keyname.toUpperCase() ? "The " + Cmd.keyname + " command does not require @{ ... } around Jmol math expressions." : "")
+ 	Cmd.keynote = (Cmd.keyname == Cmd.keyname.toUpperCase() ? "The " + Cmd.keyname + " command does not require @{ ... } around Jmol math expressions." : "");
+	Cmd.chimenote=(atomExpressions.indexOf(Cmd.keyname) >= 0 ? "The " + Cmd.keyname + " command does not require { ... } around Jmol atom expressions." : "")
 	Cmd.idof=thisid
 	CmdFromId[thisid]=Cmd
  }
@@ -566,7 +570,7 @@ function TABLE1(isReservedOnly,isNotVariableX, isDeprecatedOnly, caption) {
 	  } else if(isDeprecated) {
             nTotal++
 	    data = "set " + data + "</td><td class=\"tbl\">"
-	    if (vtype.indexOf("_see ")==0)
+	    if (vtype.indexOf("_see ")==0 || vtype.indexOf("_removed")==0)
 	      data += marksearch(vtype.substring(1),true)+"</a>"
 	    else
 	      data += "see <a href=\"#set"+vtype.toLowerCase()+"\">set "+vtype.substring(1)+"</a>"
@@ -865,6 +869,7 @@ function keyof(sname,isfull, addEquivalents){
  if(!isfull && subset)s=s.split(" ")[0]
  s=s.replace(/\./,"")+subset
  var isunimplemented=(!C.isimplemented || s.indexOf("not implemented")>0)
+
  if(!isunimplemented)return s
  if(dowritexml||dowritedocbook)return ""
  return "<fC=\"#C0C0C0\">"+s+"</f>"
@@ -909,6 +914,8 @@ function getcmdhtml(C){
 	shead="<h3 " + sclass + ">"+shead+C.key
 		+(C.version!="" && C.isnew?" <br /><span class=" + (C.isnewer ? "newer" : "new") + ">(v. "+C.version+")</span>":"")
 		+"</h3>"
+	if(C.chimenote)shead+=getchimenote(tr, C.chimenote, "Note:")
+	if(C.keynote)shead+=getchimenote(tr, C.keynote, "Note:")
 	shead= tr +"<td colspan=\"5\">"
 		+shead+(C.isimplemented?"":"<p><i>not implemented</i></p>")
 		+"</td></tr>"
@@ -957,13 +964,15 @@ function getcmdhtml(C){
 				}
 				if(Defs[sp]){
 					ihavedesc=(Defs[sp].label.charAt(0)=="["&&Defs[sp].description)
+
+var def = defhtml(sp)
 					if(ihavedesc&&deflist.indexOf(sp)<0&&newdefs.indexOf(sp)<0){
 						newdefs+="|"+sp
 						definfo+=defhtml(sp)
 					}
 					sp=Defs[sp].label
 					spreal=sp
-					if(ihavedesc && !asdivs)sp=(dowritedocbook?"<xref linkend=''d"+getIndexKey(sp+ikey)+"''/>":"<a href='#d"+getIndexKey(sp+ikey)+"'>"+sp+"</a>")
+					if(ihavedesc && !asdivs)sp=(dowritedocbook?"<xref linkend=''d"+getIndexKey(sp+ikey)+"''/>":"<a class='def' href='#d"+getIndexKey(sp+ikey)+"' title='"+def.replace(/\'/g,'"')+"'>"+sp+"</a>")
 				}else{
 					if (sp.charAt(0) == '.')sp = sp.substring(1)
 					spreal=sp
@@ -1005,7 +1014,7 @@ function getcmdhtml(C){
 			if(dowritexml)sline+="</cmdexample>"
 
 		}
-		if(foundsearch(shead+sline+definfo+" "+cmdoption+" "+(C.chimenote?"chime note: "+C.chimenote:"")+C.keynote+getexamples(tr, C.examples))){
+		if(foundsearch(shead+sline+definfo+" "+cmdoption+" "+(C.chimenote?"Note: "+C.chimenote:"")+C.keynote+getexamples(tr, C.examples))){
 			LineList[LineList.length]=skey+"|:|"+sline
 			deflist+=newdefs
 			includethis=true
@@ -1041,7 +1050,7 @@ function getcmdhtml(C){
 			if(dowritedocbook){
 				s+="\n<variablelist><title>Definitions</title>"
 			}else{
-				if(!dowritexml)s+=tr +"<td><p><br /><i>where</i><br /></p>"
+				if(!dowritexml)s+=tr +"<td><p><br />"//<i>where</i><br /></p>"
 				s+="<table xml=cmddefinitions=xml>"
 			}
 			LineList=deflist.substring(1,deflist.length).split("|")
@@ -1052,7 +1061,8 @@ function getcmdhtml(C){
 				}else if (dowritexml) {
 					sp="<tr xml=cmddef=xml><td valign=\"top\">&nbsp;&nbsp;<b xml=defkey=xml><a id=\"d"+getIndexKey(sp+ikey)+"\">"+marksearch(sp)+"</a></b xml=/defkey=xml></td><td xml=defdata=xml>is "+defhtml(LineList[i])+"</td xml=/defdata=xml></tr xml=/cmddef=xml>"
 				} else {
-					sp=tr+"<td valign=\"top\">&nbsp;&nbsp;<b><a id=\"d"+getIndexKey(sp+ikey)+"\">"+marksearch(sp)+"</a></b></td><td>is "+defhtml(LineList[i])+"</td></tr>"
+sp = ""
+				//	sp=tr+"<td valign=\"top\">&nbsp;&nbsp;<b><a id=\"d"+getIndexKey(sp+ikey)+"\">"+marksearch(sp)+"</a></b></td><td>is "+defhtml(LineList[i])+"</td></tr>"
 				}
 				s+=cleanconstants(sp).replace(/ \./g," ").replace(/\>is is /,">is ")
 			}
@@ -1277,13 +1287,13 @@ function showModel(swhat_ext,smodel){
 
 function getchimenote(tr, swhat, label){
  var s=""
- if(!dowritexml && !dowritedocbook)s+=tr + "<td class=\"chimenote\"><p><br /><i>" + label + "</i></p></td></tr>"
+ if(!dowritexml && !dowritedocbook)s+="<div class=\"chimenote\"><i>" + label + "</i> "
  if(dowritedocbook){
 	swhat="<para>"+swhat+"</para>"
  }else if(dowritexml){
 	swhat="<cmdchimenote>"+swhat+"</cmdchimenote>"
  }else{
-	swhat=tr + "<td class=\"chimenote\"><table cellpadding=\"10\"><tr><td class=\"chimenote\"><p>"+swhat+"</p></td></tr></table></td></tr>"
+	swhat=swhat+"<br /><br /></div>"
  }
  return s+swhat
 }
@@ -1303,12 +1313,6 @@ function getlinkhtml(tr, C){
  var s=""
  var S=[]
  var L=[]
- if(C.chimenote){
-	sout+=getchimenote(tr, C.chimenote, "Chime Note:")
- }
- if(C.keynote){
-	sout+=getchimenote(tr, C.keynote, "Note:")
- }
 
  if(!C.xrefs)return sout
  L=C.xrefs.replace(/ /g,"").split(",")

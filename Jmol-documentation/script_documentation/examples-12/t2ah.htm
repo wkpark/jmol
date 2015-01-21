@@ -1,0 +1,85 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Jmol JSO example 3</title>
+<script src="JmolCore.js" type="text/javascript"></script>
+<script src="JmolApplet.js" type="text/javascript"></script>
+<script src="JmolControls.js" type="text/javascript"></script>
+<script src="JmolApi.js" type="text/javascript"></script>
+<script type="text/javascript">
+/*	Every page will need one variable and one Info object for each JmolApplet object.
+	By defining the variable as a string with the same name as the variable 
+	we may define controls either before or after the applet is created.
+*/
+var myJmol = 'myJmol', myJmol2 = 'myJmol2' , myJmol3 = 'myJmol3'; 
+var myJmolInfo = {
+	width: '50%',	
+	height: '100%',
+	jarPath: 'files',
+	color: '#DDFFDD'
+}
+var myJmolInfo2 = {
+	width: '400',	
+	height: '300',
+	jarPath: 'files',
+	color: '#FFFFDD'
+}
+</script>
+<style type="text/css">
+table { }
+td { }
+#myJmol_appletinfotablediv { }
+#myJmol_appletdiv {  }
+</style>
+</head>
+
+<body>
+<h1>Jmol example using the new Javascript object method</h1>
+<h2>Percent size vs. pixel size</h2>
+<table width="100%">
+<tr valign="top">
+  <td>in percent (of an outer div) </td>
+  <td>in pixels</td>
+</tr>
+<tr valign="top">
+<td>
+<script type="text/javascript">
+Jmol.jmolLink(myJmol, 'load ado.pdb; spacefill off;', 'adenosine in sticks');
+Jmol.jmolHtml(' ');
+Jmol.jmolLink(myJmol, 'load AMP.mol; spacefill on;', 'AMP in vdW');
+</script>
+<div style="width:500px; height:350px; border:1px solid green;">
+<script type="text/javascript">
+myJmol = Jmol.getApplet(myJmol, myJmolInfo);
+</script>
+</div>
+<input type="button" value="ball & stick" onClick="Jmol.script(myJmol, 'wireframe -0.15; spacefill 23%;')">
+</td>
+<td>
+<script type="text/javascript">
+Jmol.jmolLink(myJmol2, 'load ado.pdb; spacefill off;', 'adenosine in sticks');
+Jmol.jmolHtml(' ');
+Jmol.jmolLink(myJmol2, 'load AMP.mol; spacefill on;', 'AMP in vdW');
+myJmol2 = Jmol.getApplet(myJmol2, myJmolInfo2);
+</script>
+<input type="button" value="ball & stick" onClick="Jmol.script(myJmol2, 'wireframe -0.15; spacefill 23%;')">
+</td>
+</tr>
+</table>
+
+<p>Mixed: percent of browser width, pixels height </p>
+<script type="text/javascript">
+Jmol.jmolLink(myJmol3, 'load ado.pdb; spacefill off;', 'adenosine in sticks');
+Jmol.jmolHtml(' ');
+Jmol.jmolLink(myJmol3, 'load AMP.mol; spacefill on;', 'AMP in vdW');
+</script>
+<div style="width:30%; height:350px; border:1px solid green;">
+<script type="text/javascript">
+myJmol3 = Jmol.getApplet(myJmol3, myJmolInfo);
+</script>
+</div>
+<input type="button" value="ball & stick" onClick="Jmol.script(myJmol3, 'wireframe -0.15; spacefill 23%;')">
+
+</body>
+</html>

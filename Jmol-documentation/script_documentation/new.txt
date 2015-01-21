@@ -1,0 +1,752 @@
+JmolVersion="14.3.7_2014.09.28"
+
+new feature: Molden reader adds [CellAxes] block
+  -- three vectors -- a, b, c
+  -- Angstroms assumed; no other option, actually
+  -- Use 0 0 0 for c to indicate slab
+  -- example 
+  [CellAxes] (Angs)
+	2.963407 0.0 0.0
+	0.0 6.513587 0.0
+	0.0 0.0 0.0
+ 
+
+JmolVersion="14.3.7_2014.09.26"
+
+new feature: TOPOS Crystal Graph Data (CGD) file reader
+
+JmolVersion="14.3.7_2014.09.24"
+
+new feature: {xxx}.find("MF","CH2O")
+ -- returns subset of {xxx}
+ -- first atoms that match formula; not necessarily sequential
+   
+new feature: {*}.find("MF", TRUE)
+ -- calculates EMPIRICAL formula
+ -- example:
+	$ load $glucose
+	$ print {*}.find("MF")
+	H 12 C 6 O 6
+	$ print {*}.find("MF",true)
+	H 2 C 1 O 1
+ 
+new feature: {cell=555}.find("CellFormula");
+ -- calculates cell formula for specified unit cell
+ -- weights interior 1, face 1/2, edge 1/4, vertex 1/8
+ -- selection should be a single packed unit cell
+ -- fails with "?" if end result is not integral
+ -- example:
+	$ load quartz.cif packed
+	$ print {*}.find("cellFormula");		
+	O 6 Si 3 
+
+new feature: {cell=555}.find("CellFormula", TRUE);
+ -- calculates empirical cell formula for specified unit cell
+ -- weights interior 1, face 1/2, edge 1/4, vertex 1/8
+ -- selection should be a single packed unit cell
+ -- fails with "?" if end result is not integral
+ -- example:
+	$ load quartz.cif packed
+	$ print {*}.find("cellFormula", true);		
+	O 2 Si 1 
+
+new feature: label %O
+ -- lists all symmetry operators leading to this position (as a string)
+ -- if more than one operator (contains a comma), this is a special position
+ -- same as %[symmetry] but just a simple list of operators
+
+JmolVersion="14.3.7_2014.09.22"
+
+FEATURE CHANGE: atoms without vibration will no longer report out as vxyz = {0 0 0} or vx = 0
+ -- print {atomno=3}.vxyz and {*}.vxyz.all will report -1
+	instead of {vx vy vz} when atom does not have a vibration
+ -- print {atomno=3}.vx  will report "NaN" (also vy and vz)
+ -- label %[vxyz] will be blank
+ -- label %[vx] will be blank (also vy and vz)
+ -- select vxyz >= 0 will select for atoms with vibrations of any magnitude
+ -- select vxyz < 0 will select for atoms without vibrations of any magnitude
+ -- select vx = 0 will NOT select atoms with no vibration vector 
+ -- select vx != 0 will NOT select atoms with no vibration vector 
+ -- select vx = 0 || vx != 0 will select for atoms with vibrations of any magnitude
+ -- same with modulations and modxyz, modx, mody, modz
+ 
+FEATURE CHANGE: {xxx}.vxyz = a,  where a is an array
+ -- no longer throws an exception if a[i] is not a point
+ -- simply does not set that value. 
+ -- allows for  v = {*}.vxyz.all; {*}.vxyz = v;
+  
+	
+JmolVersion="14.3.7_2014.09.14"
+
+new feature: load =xxxx/rna3d
+  -- mmCIF only
+  -- fetches http://rna.bgsu.edu/rna3dhub/loops/download/xxxx
+  -- hairpinLoops, internalLoops, junctions
+  -- allows for such constructs as:
+       select within(rna3d,"hairpinLoops")
+       select within(rna3d,"hairpinLoops where index=5")
+       x = getproperty("auxiliaryInfo.models[1].rna3d.internalLoops.5")
+       x = getproperty("auxiliaryInfo.models[1].rna3d.internalLoops")[5]
+	   print x
+		{
+		  _atoms  :  ({3023:3062 3639:3706})
+		  _isres  :  true
+		  _path  :  "internalLoops"
+		  index  :  5
+		  units  :  "1S72|1|0|C|153,1S72|1|0|C|154,1S72|1|0|G|182,1S72|1|0|A|183,1S72|1|0|G|184"
+		}
+	   y = x._atoms
+       select y
+       
+JmolVersion="14.3.7_2014.09.07"
+
+new feature: Legendre polynomials for MSCIF file reading
+
+JmolVersion="14.3.7_2014.08.22"
+
+new feature: AXES TYPE "a"|"b"|"c"|"ab"|"ac"|"bc"|"abc"
+  -- for axes position [x y] only shows specified axes
+
+new feature: load quartz.cif supercell "2a,2b+a,c;1/2,0,0"
+  -- allows adjusting origin without changing symmetry operations
+  -- same as load quartz.cif filter "cell=2a,2b+a,c;1/2,0,0"
+  -- default lattice set to {555 555 -1} (i.e., PACKED)
+  -- sets packing range based on the supercell
+  -- packing can be avoided by specifying the lattice:
+     load quartz.cif {1 1 1} supercell "2a,2b+a,c;1/2,0,0"
+
+doc note: load ... SUPERCELL "2a,2b,2c" is the same as load ... SUPERCELL {2 2 2}
+          except that the packing will be based on the supercell dimensions, not the
+          original cell dimensions, with range 0.02. 
+          This can be adjusted using PACKED x.x, which is still a fraction of the supercell dimensions.
+          load quartz.cif supercell "10a, 10b+10a,c" PACKED 0.002
+          
+doc note: load ... SUPERCELL ... defaults to PACKED, but simply adding a lattice overrides this:
+          load ... {1 1 1} SUPERCELL ...
+
+new feature: load(filename, asbinary, async)
+  -- 3rd parameter loads file asynchronously in HTML5
+
+JmolVersion="14.3.6_2014.08.15"
+
+new feature: upgrade of application file...export...Gaussian Input File...
+ 
+new feature: pmesh files can contain triangle colors
+
+JmolVersion="14.3.6_2014.08.14"
+
+IMPORTANT NOTE: The problem described here only affects the reading of states that 
+	have been created for crystallographic files, and then only if the 
+	state was created in Java and then displayed in JavaScript, 
+	or vice-versa.
+    
+	The problem is due to the fact that the Java implementation 
+	of Jmol uses float values for atom coordinates, while JavaScript 
+	is restricted to using only double values. The problem arises when
+    a comparison must be made between two decimal values. After symmetry
+    has been applied, it is possible for atom coordinates to be off in the
+    4th-7th decimal digit for floats and 14th-17th for doubles in the
+    range -256 to 256.
+     
+    The problem is most acute for inorganic crystal systems where 
+    symmetry has been applied and especially after the CONNECT NONE command
+    has been issued.
+    
+    Aspects where a problem might arise include:
+      -- packing of unit cells, where atoms are discarded
+      -- iterating over atoms, where atom order is important
+      -- autobonding, where distances and order are critical
+      -- comparing Cartesian or fractional coordinate values
+      
+    Solution to the problem is to automatically round all fractional 
+    atom coordinates to a precision of 0.00001 and all Cartesian
+    atom coordinates to a precision of 0.0001. This forces both
+    double and float implementations to the same value and
+    results in no practical error, since these ranges are
+    well beyond the precision of atom coordinates in crystals.
+    Coincidence is assured for fractional coordinates up to 
+    about 126 and for Cartesian coordinates up to about 838.
+    
+    This rounding is not implemented for state or PNGJ file
+    with state version v where
+       
+        v < 140206 || v >= 140300 && v < 140306
+        
+    and in general only in the case where the file coordinates are 
+    fractional. Thus, those files will be read exactly as in the 
+    version they were created by. And they will have have the same
+    issues as well.
+    
+    The result is also much cleaner-looking atom coordinates. 
+    For example, in JavaScript:
+    
+    print {*}.fxyz
+    
+	    {0.33333328149215147 0.999999891271352 1.0000000000000024}
+		{0.6666666148254848 0.999999891271352 1.0000000000000024}
+		{0.9999999844017011 1.000000000000001 0}
+		{0.9999999616049127 0.9999999316096356 0.6290004156275991}
+		{0.9999999709556066 0.9999999596617175 0.3709995843724032}
+		{0.9999999481588181 0.999999891271352 1.0000000000000024}
+
+    becomes:
+    	
+		{0.33333 1 1}
+		{0.66667 1 1}
+		{1 1 0}
+		{1 1 0.629}
+		{1 1 0.371}
+		{1 1 1}
+
+                
+new feature: set legacyJavaFloat
+  -- set by Jmol when a state is read that is before 14.2.6 or in the range 14.3.0 - 14.3.5; 
+  -- prevents fractional and cartesian coordinate rounding.
+  -- cleared by ZAP or LOAD or loading of any later state script
+                  
+new feature: MOLDEN extensions [SpaceGroup] [Operators] [Cell]
+
+JmolVersion="14.3.5_2014.08.10"
+
+new feature: SHOW/WRITE PROPERTIES ... format "%s %i %f %f %f"
+  -- allows specifying the format for a set of up to three properties.
+  -- %s is atom name; %i is atom number
+   
+JmolVersion="14.3.5_2014.08.09"
+
+new feature: magCIF file reading for incommensurately modulated magnetic structures
+  -- very preliminary only; not tested 
+
+new feature: set showModulationVectors true/false
+  -- required now for showing modulation vectors rather than vibration vectors
+
+new feature: vibration max x.x
+new feature: vector max x.x  // alternative; the same
+ -- renormalizes all vibrations and vibration/spin vectors to have a maximum value of x.x
+
+JmolVersion="14.3.3_2014.08.02"
+note: Sourceforge release of 14.3.3 and 14.2.3
+
+new feature: point({x,y,z}, true)
+  -- TO screen coordinates
+
+new feature: point({sx,sy,sz}, false)
+  -- FROM screen coordinates
+
+JmolVersion="14.3.3_2014.08.01"
+
+new feature: load *1cbs/dom
+  -- loads mmCIF file from EBI along with sequence domain data
+  -- uses URL http://wwwdev.ebi.ac.uk/pdbe/api/mappings/sequence_domains/1cbs?metadata=true&pretty=false
+  -- use example:
+
+	load *1cbs/dom
+		
+		Domains loaded:
+		   CATH  2.40.128.20 
+		   GO  GO:0001972 GO:0005215 GO:0005501 GO:0005634 GO:0005730 GO:0005737 GO:0005783 GO:0006355 GO:0006810 GO:0007165 GO:0008289 GO:0008544 GO:0016918 GO:0019841 GO:0035115 GO:0042573 GO:0070062 
+		   InterPro  IPR000463 IPR000566 IPR011038 IPR012674 
+		   Pfam  PF00061 
+		   SCOP  50847 
+		   UniProt  P29373
+		   
+		Use SHOW DOMAINS for details.
+		
+	$ show domains
+
+		metadata	restapi_version=0.8
+		metadata	date=20140801
+		metadata	url=http://wwwdev.ebi.ac.uk/pdbe/api/mappings/1cbs?pretty=false&metadata=true
+		1cbs	SCOP	50847	identifier=Fatty acid binding protein-like
+		1cbs	SCOP	50847	fold	description=Lipocalins
+		1cbs	SCOP	50847	fold	sunid=50813
+		1cbs	SCOP	50847	description=Fatty acid binding protein-like
+		1cbs	SCOP	50847	class	description=All beta proteins
+		1cbs	SCOP	50847	class	sunid=48724
+		1cbs	SCOP	50847	superfamily	description=Lipocalins
+		1cbs	SCOP	50847	superfamily	sunid=50814
+		1cbs	UniProt	P29373	name=RABP2_HUMAN
+		1cbs	UniProt	P29373	identifier=RABP2_HUMAN
+		1cbs	GO	GO:0005215	name=transporter activity
+		1cbs	GO	GO:0005215	identifier=transporter activity
+		1cbs	GO	GO:0005215	definition=Enables the directed movement of substances (such as macromolecules, small molecules, ions) into, out of or within a cell, or between cells.
+		1cbs	GO	GO:0005215	category=Molecular_function
+		...
+		1cbs	CATH	2.40.128.20	architecture=Beta Barrel
+		1cbs	CATH	2.40.128.20	identifier=Lipocalin
+		1cbs	CATH	2.40.128.20	name=Cellular retinoic acid binding protein type ii. Chain: a. Engineered:yes
+		1cbs	CATH	2.40.128.20	homology=Lipocalin
+		1cbs	CATH	2.40.128.20	class=Mainly Beta
+		1cbs	CATH	2.40.128.20	topology=Lipocalin
+		1cbs	Pfam	PF00061	identifier=Lipocalin / cytosolic fatty-acid binding protein family
+		1cbs	Pfam	PF00061	description=Lipocalin / cytosolic fatty-acid binding protein family
+		1cbs	InterPro	IPR012674	name=Calycin
+		1cbs	InterPro	IPR012674	identifier=Calycin
+		1cbs	InterPro	IPR000566	name=Lipocalin/cytosolic fatty-acid binding domain
+		1cbs	InterPro	IPR000566	identifier=Lipocalin/cytosolic fatty-acid binding domain
+		1cbs	InterPro	IPR011038	name=Calycin-like
+		1cbs	InterPro	IPR011038	identifier=Calycin-like
+		1cbs	InterPro	IPR000463	name=Cytosolic fatty-acid binding
+		1cbs	InterPro	IPR000463	identifier=Cytosolic fatty-acid binding	
+
+	select within(domains,"InterPro where domain.identifier='calycin'")
+	
+new feature: load *1cbs/val
+  -- loads mmCIF file from EBI along with validation data
+  -- use URL http://wwwdev.ebi.ac.uk/pdbe/api/validation/outliers/all/1cbs?metadata=true&pretty=false
+  -- places that data into property_xxxx arrays
+  -- use examples:
+  
+	  load *2x9t/val
+	  color property_rsrz "bwr"  
+	  display group within(5, property_rsrz > 0)
+
+		found biomolecule 1: A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y
+		
+		Validations loaded:
+		  property_sidechains (residues: 181)
+		  property_rama (residues: 262)
+		  property_rsrz (residues: 87, max: 10.6)
+		  property_chirals (atoms: 1)
+		  property_planes (residues: 21, max: 0.08)
+		  property_RNA_suite (residues: 241)
+		  property_RNA_pucker (residues: 33)
+		  property_bond_angles (atoms: 31, max: 14.12)
+		  property_clashes (atoms: 2655, max: 3.42)
+		  
+	  load *1d66/val
+	  select on within(validation,"clashes")
+
+
+new feature: label %[validation.xxxx]
+  -- retrieves comma-separated validation values after load *yyyy/val
+  -- xxxx is an entry in the validation API return, such as clashes or rsrz
+  -- NOT a sum of absolute values, as %[property_xxxx] is for validation data
+  -- example:
+		load *1d66/val
+		select within(validation,"bond_angles")
+		label val=%[validation.bond_angles]
+
+new feature: set hoverlabel "%[validation.xxxx]"
+  -- allows customized hover based on validation data
+  -- example:
+    	set hoverlabel "%[validation.bond_angles]"
+
+new feature: select within(validation, "clashes where value>3")
+  -- selects atoms from "outliers" array
+  -- similar to select within(domains, "....")
+  -- uses sum of absolute values for each atom
+ 
+new feature: print getProperty("validationInfo[select * where _type='clashes']", atomset) 
+  -- WHERE close can contain any validation type (see SHOW VALIDATION)
+  -- second parameter can be atom set -- {2.1} for instance -- defaults to current model 
+  -- allows uses SQL-like select phrases
+  -- example:
+  
+   set hoverlabel "@{getProperty(\"validationInfo[select value where _type='bond_angles' and (_atoms and {hovered})]\").join(',')}"
+  
+new feature: print getProperty("domainInfo[select * where _type='SCOP']") 
+  -- subset of auxiliaryInfo
+  -- assumes model of visible
+  -- second parameter can be atom set: {2.1} for instance 
+  -- uses sum of absolute values for each atom
+  -- allows uses SQL-like select phrase: 
+ 
+   print getProperty("domainInfo[select * where _type='SCOP' and _domain like '508']")
+
+
+new feature: SQL NOCACHE flag
+  -- prevents caching when using outside variables or functions
+  -- can be anywhere in the clause
+  -- example:
+       select within(domains,"NOCACHE SCOP where myFunc(domain, _atoms)")
+
+new feature: SHOW DOMAINS "some info"
+  -- selects specific records
+  -- text-based matching in all fields and key names
+  -- dot-notation allowed
+  -- examples:
+	   show domains name
+	   show domains CATH
+	   show domains InterPro.IPR002409
+	   show domains Gal4	   
+
+new feature: SHOW DOMAINS "<annotationRecordIinfo> all"
+  -- shows JSON-like array data
+  -- will involve a circular reference because the domain key
+     points to the parent.parent entry in the main array
+  -- example:
+		load *1cbs/dom
+  	   	show domains InterPro.IPR002409 all  
+
+		  {
+		    _atoms  :  ({15:204})
+		    _path  :  "InterPro.IPR000463"
+		    chain_id  :  "A"
+		    domain  :
+		    {
+		      identifier  :  "Cytosolic fatty-acid binding"
+		      mappings  : "<circular reference>"
+		      name  :  "Cytosolic fatty-acid binding"
+		     }
+		    end  :
+		    {
+		      author_insertion_code  :  ""
+		      author_residue_number  :  25
+		      residue_number  :  25
+		     }
+		    entity_id  :  1
+		    start  :
+		    {
+		      author_insertion_code  :  ""
+		      author_residue_number  :  3
+		      residue_number  :  3
+		     }
+		    struct_asym_id  :  "A"
+		   }
+		  {
+		    _atoms  :  ({32:185})
+		    _path  :  "InterPro.IPR000463"
+		    chain_id  :  "A"
+		    domain  :
+		    {
+		      identifier  :  "Cytosolic fatty-acid binding"
+		      mappings  : "<circular reference>"
+		      name  :  "Cytosolic fatty-acid binding"
+		     }
+	     ...
+	
+	
+
+JmolVersion="14.3.3_2014.07.27"
+
+new feature: select within(validation, "clashes where value>3")
+  -- selects atoms from "outliers" array
+  -- similar to select within(domains, "....")
+  -- uses sum of absolute values for each atom
+ 
+new feature: print getProperty("validationInfo[select * where _type='clashes']") 
+  -- subset of auxiliaryInfo
+  -- WHERE close can contain any validation type, currently including:  
+  -- assumes model of visible
+  -- second parameter can be atom set: {2.1} for instance 
+  -- allows uses SQL-like select phrase: 
+ 
+   print getProperty("domainInfo[select * where _type='SCOP' and _domain like '508']")
+
+  -- does NOT use abolute value; report is as an array when select value is used:
+
+   set hoverlabel "@{getProperty(\\"validationInfo[select value where _type='bond_angles' and (_atoms and {hovered})]\\").join(',')}"
+
+
+new feature: print getProperty("domainInfo[select * where _type='SCOP']") 
+  -- subset of auxiliaryInfo
+  -- assumes model of visible
+  -- second parameter can be atom set: {2.1} for instance 
+  -- uses sum of absolute values for each atom
+  -- allows uses SQL-like select phrase: 
+ 
+   print getProperty("domainInfo[select * where _type='SCOP' and _domain like '508']")
+
+
+JmolVersion="14.3.3_2014.07.22"
+
+new feature:  getProperty(x,"[select a,b,c ....
+    - selection of specific keys to report in getProperty command 
+    - does not require star-slash, which could mark end-of-comment
+    
+new feature:  x.in(a,b,c,d...)   # suggestion of Sameer Velankar
+new feature:  x.in([a,b,c,d])
+    - returns 0 (x not in group) or position 1-n
+
+new feature: SQL NOCACHE flag
+    - prevents caching when using outside variables or functions
+    - can be anywhere in the clause
+    - example:
+       select within(domains,"NOCACHE ...")
+
+JmolVersion="14.3.3_2014.07.20"
+
+new feature: load *1cbs/dom
+	- loads domain info from EBI along with mmCIF file
+	- enables seqid (_atom_site.label_seq_id) required for animation
+	- ` information is in the JSON form (in all cases below, 
+		additional key/value pairs are allowed):
+	
+	 { "<pdbID>" : { <databaseInformation> } }
+	 
+	 where <PdbID> is a lower-case PDB id such as 1crs or 1d66
+	 and <databaseInformation> is one or more records:
+	 
+	       "<databaseID>" : { <entryInfo> }
+	      
+	  <dataBaseID> is a database identifier such as: 
+	       "CATH", "SCOP", "InterPro", "UniProt", "GO", "EC"
+	       
+	  <entryInfo> is one or more records of the form:
+	     
+	     "<entryID>" : { <entry> }
+	     
+	 <entry> must at the very least contain:
+	 
+	    "identifier" : "<some identifier>"
+	    "mappings" : [ array of <mapping> ]
+	    	    
+	 <mapping> must minimally be
+	    
+	    { "chain_id" : "<author chainIdentifier>" }
+	    
+	 but is more likely to contain start/end records:
+	    
+	    { "chain_id" : "<author chainIdentifier>", 
+		  "start" : <residueRecord>,	    
+		  "end" : <residueRecord>	    
+	    }
+	      
+	 <residueRecord> must minimally be:
+	 
+	 	{ "residue_number" : <mmCIF _atom_site.label_seq_id> }
+	 	
+	 but usually also contains "author_residue_number" and "author_insertion_code".
+	 
+	- reports to console:
+	
+	Domains loaded:
+	   CATH  2.40.128.20 
+	   EC  
+	   GO  GO:0001972 GO:0005215 GO:0005501 GO:0005634 GO:0005730 GO:0005737 GO:0005783 GO:0006355 GO:0006810 GO:0007165 GO:0008289 GO:0008544 GO:0016918 GO:0019841 GO:0035115 GO:0042573 GO:0070062 
+	   InterPro  IPR000463 IPR000566 IPR011038 IPR012674 
+	   Pfam  PF00061 
+	   SCOP  50847 
+	   UniProt  P29373
+	Use SHOW DOMAINS for details.
+	
+new feature: SHOW DOMAINS
+    - displays tab-separated annotation information
+    
+		1cbs	CATH	2.40.128.20	topology=Lipocalin
+		1cbs	Pfam	PF00061	identifier=Lipocalin / cytosolic fatty-acid binding protein family
+		1cbs	Pfam	PF00061	description=Lipocalin / cytosolic fatty-acid binding protein family
+		1cbs	InterPro	IPR012674	name=Calycin
+		1cbs	InterPro	IPR012674	identifier=Calycin
+	
+new feature: SHOW DOMAINS "<annotationRecordIinfo>"
+	- selects specific records
+	- text-based matching in all fields
+
+new feature: SHOW DOMAINS "<annotationRecordIinfo> mappings"
+	- adds information about mapping
+	
+new feature: select within(annotation, "<query>")
+
+	- allows selection of atoms based on annotations. 
+	- <query> can be:
+		- a databaseID:
+		
+			select within(domains,"InterPro")
+		
+		- a specific databaseID.entryID:
+		
+			select within(domains,"InterPro.IPR012674")
+		
+		- a specific databaseID, with WHERE clause:
+		
+			select within(domains,"InterPro where domain.identifier='calycin'")		
+			select within(domains,"InterPro where identifier='calycin'")
+			select within(domains,"InterPro where identifier like '*-like*'")
+			
+			
+		
+	 
+note: "annotations" references changed to "domains"
+bug fix: Jmol application starts in English regardless of language
+
+JmolVersion="14.3.3_2014.07.29"
+
+new feature: label %[validation.xxxx]
+  -- retrieves comma-separated validation values after load *yyyy/val
+  -- xxxx is an entry in the validation API return, such as clashes or rsrz
+  -- NOT a sum of absolute values, as %[property_xxxx] is for validation data
+  -- example:
+		load *1d66/val
+		select within(validation,"bond_angles")
+		label val=%[validation.bond_angles]
+
+new feature: set hoverlabel "%[validation.xxxx]"
+  -- allows customized hover based on validation data
+  -- example:
+    	set hoverlabel "%[validation.bond_angles]"
+
+JmolVersion="14.3.3_2014.07.27"
+
+new feature: select within(validation, "clashes where value>3")
+  -- selects atoms from "outliers" array
+  -- similar to select within(domains, "....")
+  -- uses sum of absolute values for each atom
+ 
+new feature: print getProperty("validationInfo[select * where _type='clashes']") 
+  -- subset of auxiliaryInfo
+  -- WHERE close can contain any validation type, currently including:  
+  -- assumes model of visible
+  -- second parameter can be atom set: {2.1} for instance 
+  -- allows uses SQL-like select phrase: 
+ 
+   print getProperty("domainInfo[select * where _type='SCOP' and _domain like '508']")
+
+  -- does NOT use abolute value; report is as an array when select value is used:
+
+   set hoverlabel "@{getProperty(\"validationInfo[select value where _type='bond_angles' and (_atoms and {hovered})]\").join(',')}"
+
+
+new feature: print getProperty("domainInfo[select * where _type='SCOP']") 
+  -- subset of auxiliaryInfo
+  -- assumes model of visible
+  -- second parameter can be atom set: {2.1} for instance 
+  -- uses sum of absolute values for each atom
+  -- allows uses SQL-like select phrase: 
+ 
+   print getProperty("domainInfo[select * where _type='SCOP' and _domain like '508']")
+
+
+JmolVersion="14.3.3_2014.07.26"
+
+new feature: load *1crs/val
+  -- loads PDBe file with validation data
+  -- places that data into property_xxxx arrays
+  -- use examples:
+  
+	  load *2x9t/val
+	  color property_rsrz "bwr"  
+	  display group within(5, property_rsrz > 0)
+
+found biomolecule 1: A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y
+
+Validations loaded:
+  property_sidechains (residues: 181)
+  property_rama (residues: 262)
+  property_rsrz (residues: 87, max: 10.6)
+  property_chirals (atoms: 1)
+  property_planes (residues: 21, max: 0.08)
+  property_RNA_suite (residues: 241)
+  property_RNA_pucker (residues: 33)
+  property_bond_angles (atoms: 31, max: 14.12)
+  property_clashes (atoms: 2655, max: 3.42)
+  
+
+	  load *1d66/val
+	  select on within(validation,"clashes")
+
+    
+JmolVersion="14.3.3_2014.07.22"
+
+new feature:  getProperty(x,"[select a,b,c ....
+    - selection of specific keys to report in getProperty command 
+    - does not require star-slash, which could mark end-of-comment
+    
+new feature:  x.in(a,b,c,d...)   # suggestion of Sameer Velankar
+new feature:  x.in([a,b,c,d])
+    - returns 0 (x not in group) or position 1-n
+
+new feature: SQL NOCACHE flag
+    - prevents caching when using outside variables or functions
+    - can be anywhere in the clause
+    - example:
+       select within(domains,"NOCACHE ...")
+
+JmolVersion="14.3.3_2014.07.20"
+
+new feature: load *1cbs/dom
+	- loads domain info from EBI along with mmCIF file
+	- enables seqid (_atom_site.label_seq_id) required for animation
+	- ` information is in the JSON form (in all cases below, 
+		additional key/value pairs are allowed):
+	
+	 { "<pdbID>" : { <databaseInformation> } }
+	 
+	 where <PdbID> is a lower-case PDB id such as 1crs or 1d66
+	 and <databaseInformation> is one or more records:
+	 
+	       "<databaseID>" : { <entryInfo> }
+	      
+	  <dataBaseID> is a database identifier such as: 
+	       "CATH", "SCOP", "InterPro", "UniProt", "GO", "EC"
+	       
+	  <entryInfo> is one or more records of the form:
+	     
+	     "<entryID>" : { <entry> }
+	     
+	 <entry> must at the very least contain:
+	 
+	    "identifier" : "<some identifier>"
+	    "mappings" : [ array of <mapping> ]
+	    	    
+	 <mapping> must minimally be
+	    
+	    { "chain_id" : "<author chainIdentifier>" }
+	    
+	 but is more likely to contain start/end records:
+	    
+	    { "chain_id" : "<author chainIdentifier>", 
+		  "start" : <residueRecord>,	    
+		  "end" : <residueRecord>	    
+	    }
+	      
+	 <residueRecord> must minimally be:
+	 
+	 	{ "residue_number" : <mmCIF _atom_site.label_seq_id> }
+	 	
+	 but usually also contains "author_residue_number" and "author_insertion_code".
+	 
+	- reports to console:
+	
+	Domains loaded:
+	   CATH  2.40.128.20 
+	   EC  
+	   GO  GO:0001972 GO:0005215 GO:0005501 GO:0005634 GO:0005730 GO:0005737 GO:0005783 GO:0006355 GO:0006810 GO:0007165 GO:0008289 GO:0008544 GO:0016918 GO:0019841 GO:0035115 GO:0042573 GO:0070062 
+	   InterPro  IPR000463 IPR000566 IPR011038 IPR012674 
+	   Pfam  PF00061 
+	   SCOP  50847 
+	   UniProt  P29373
+	Use SHOW DOMAINS for details.
+	
+new feature: SHOW DOMAINS
+    - displays tab-separated annotation information
+    
+		1cbs	CATH	2.40.128.20	topology=Lipocalin
+		1cbs	Pfam	PF00061	identifier=Lipocalin / cytosolic fatty-acid binding protein family
+		1cbs	Pfam	PF00061	description=Lipocalin / cytosolic fatty-acid binding protein family
+		1cbs	InterPro	IPR012674	name=Calycin
+		1cbs	InterPro	IPR012674	identifier=Calycin
+	
+new feature: SHOW DOMAINS "<annotationRecordIinfo>"
+	- selects specific records
+	- text-based matching in all fields
+
+new feature: SHOW DOMAINS "<annotationRecordIinfo> mappings"
+	- adds information about mapping
+	
+new feature: select within(annotation, "<query>")
+
+	- allows selection of atoms based on annotations. 
+	- <query> can be:
+		- a databaseID:
+		
+			select within(annotations,"InterPro")
+		
+		- a specific databaseID.entryID:
+		
+			select within(annotations,"InterPro.IPR012674 where identifier='calycin'")
+		
+		- a databaseID followed by a WHERE clause:
+		
+			select within(annotations,"InterPro where identifier='calycin'")
+			select within(annotations,"InterPro where identifier like '*-like*'")
+			
+			
+		
+	 
+	any text information in the
+	  SHOW ANNOTATION report. 
+	
+new feature: show annotation
+

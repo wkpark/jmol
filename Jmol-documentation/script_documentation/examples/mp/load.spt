@@ -1,0 +1,15 @@
+maxDelay = 5
+function loadModel(f,s,b) {
+ if (!f) {return}
+ load @f
+ script inline @s
+ set echo top left
+ echo @{f + "|" + b}
+ var d = (_animating ? [maxDelay,_animTimeSec * 2].max : maxDelay)
+ print "delay=" + d
+ delay @d
+}
+
+function runScript(s) {
+ script @{s + ".spt"}
+}

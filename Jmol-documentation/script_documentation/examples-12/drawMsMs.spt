@@ -1,0 +1,72 @@
+// draws MsMs .vert/.face surface with red/white/blue coloration
+// mainly for testing
+// Bob Hanson, 5:57 AM 12/26/2010
+
+function writeXyzRn(fileroot) {
+	if (!fileroot) fileroot = "jmol"
+	var prev = {selected}.spacefill
+	set defaultVDW babel
+	spacefill
+	var x = {selected}.label("%8.3x %8.3y %8.3z %4.2[spacefill] 1 [%n]%r.%a#%i")
+	write var x @{fileroot + ".xyzrn"}
+	{selected}.spacefill = prev
+}
+
+function drawMsMs(fileroot, doShowPoints) {
+
+	draw $msp* delete
+	draw $msf* delete
+	var colors = ["red","white","blue"]
+
+	var fname = fileroot + ".vert"
+	var t = load(fname).lines
+	print "vertices: " + fname
+ 	var nv = 0
+	var len = t.length
+	for (var i = 1; i <= len; i++) {
+		var line = t[i]
+		if (line[1] == "#" || line.length < 30) {
+			print line
+			continue
+		}
+		var x = 0.0 + line[1][10]
+		var y = 0.0 + line[11][20]
+		var z = 0.0 + line[21][30]
+		var pt = point(x, y, z)
+		nv++
+		if (doShowPoints) {
+			draw ID @{"msp" + nv} @pt 
+		} else {
+			draw ID @{"msp" + nv} @pt off 
+		}
+	}
+	refresh
+	var fname = fileroot + ".face"
+	var t = load(fname).lines
+	print "faces: " + fname
+	var nf = 0
+	var len = t.length
+	for (var i = 1; i <= len; i++) {
+		var line = t[i]
+		var code = 0 + line[23]
+		if (line[1] == "#" || code == 0) {
+			print line
+			continue
+		}
+		var a = "msp" + line[1][7].trim()
+		var b = "msp" + line[8][14].trim()
+		var c = "msp" + line[15][21].trim()
+		var color = colors[code]
+		nf++
+		if (i % 100 == 0) {
+//			print "" + i + ": " + 	line
+			refresh
+		}
+		draw ID @{"msf" + nf} $@a $@b $@c color @color
+	}
+	print "done -- " + nv + " vertices and " + nf + " faces"
+	
+}
+
+message writeXyzRn(fileroot) is loaded
+message drawMsMs(fileroot,doShowPoints) is loaded

@@ -1,0 +1,871 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<FileZilla3>
+    <Queue>
+        <Server>
+            <Host>chemapps.cs.stolaf.edu</Host>
+            <Port>22</Port>
+            <Protocol>1</Protocol>
+            <Type>0</Type>
+            <User>hansonr</User>
+            <Logontype>2</Logontype>
+            <TimezoneOffset>0</TimezoneOffset>
+            <PasvMode>MODE_DEFAULT</PasvMode>
+            <MaximumMultipleConnections>0</MaximumMultipleConnections>
+            <EncodingType>Auto</EncodingType>
+            <BypassProxy>0</BypassProxy>
+            <Name>Jmol</Name>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\Jmol-11.zip</LocalFile>
+                <RemoteFile>Jmol-11.zip</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>10732753</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>804313</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_Console.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_Console.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_Symmetry.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_Symmetry.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>44605</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_Smiles.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_Smiles.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>9676</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_ShapeSurface.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_ShapeSurface.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>127915</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_ShapeSpecial.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_ShapeSpecial.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>48749</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_ShapeBio.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_ShapeBio.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>57087</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_ReadersXml.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_ReadersXml.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>25283</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_ReadersMore.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_ReadersMore.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>88794</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_ReadersSimple.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_ReadersSimple.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>88794</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_ReadersXtal.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_ReadersXtal.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>88794</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_ReadersMolXyz.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_ReadersMolXyz.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>6020</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_ReadersCifPdb.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_ReadersCifPdb.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>19438</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_ReadersQuantum.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_ReadersQuantum.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>19438</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_Popup.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_Popup.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>35364</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_Minimize.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_Minimize.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>43076</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_MultiTouch.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_MultiTouch.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>43076</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1299887</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0.jar</LocalFile>
+                <RemoteFile>JmolApplet0.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>719157</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_Symmetry.jar</LocalFile>
+                <RemoteFile>JmolApplet0_Symmetry.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>42446</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_Smiles.jar</LocalFile>
+                <RemoteFile>JmolApplet0_Smiles.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>7957</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_ShapeSurface.jar</LocalFile>
+                <RemoteFile>JmolApplet0_ShapeSurface.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>123223</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_ShapeSpecial.jar</LocalFile>
+                <RemoteFile>JmolApplet0_ShapeSpecial.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>46307</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_ShapeBio.jar</LocalFile>
+                <RemoteFile>JmolApplet0_ShapeBio.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>53269</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_ReadersXml.jar</LocalFile>
+                <RemoteFile>JmolApplet0_ReadersXml.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>23013</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_ReadersMore.jar</LocalFile>
+                <RemoteFile>JmolApplet0_ReadersMore.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>84787</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_ReadersSimple.jar</LocalFile>
+                <RemoteFile>JmolApplet0_ReadersSimple.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>84787</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_ReadersXtal.jar</LocalFile>
+                <RemoteFile>JmolApplet0_ReadersXtal.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>84787</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_ReadersCifPdb.jar</LocalFile>
+                <RemoteFile>JmolApplet0_ReadersCifPdb.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>17911</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_ReadersQuantum.jar</LocalFile>
+                <RemoteFile>JmolApplet0_ReadersQuantum.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>17911</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_ReadersMolXyz.jar</LocalFile>
+                <RemoteFile>JmolApplet0_ReadersMolXyz.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>4625</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_Popup.jar</LocalFile>
+                <RemoteFile>JmolApplet0_Popup.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>33643</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_Console.jar</LocalFile>
+                <RemoteFile>JmolApplet0_Console.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_Minimize.jar</LocalFile>
+                <RemoteFile>JmolApplet0_Minimize.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>40365</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_i18n_zh_TW.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_i18n_zh_TW.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_i18n_zh_CN.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_i18n_zh_CN.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_i18n_uk.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_i18n_uk.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_i18n_tr.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_i18n_tr.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_i18n_sv.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_i18n_sv.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_i18n_sl.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_i18n_sl.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_i18n_pt_BR.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_i18n_pt_BR.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_i18n_pt.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_i18n_pt.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_i18n_pl.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_i18n_pl.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_i18n_nl.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_i18n_nl.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_i18n_nb.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_i18n_nb.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_i18n_ko.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_i18n_ko.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_i18n_it.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_i18n_it.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_i18n_hu.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_i18n_hu.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_i18n_fr.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_i18n_fr.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_i18n_et.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_i18n_et.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_i18n_es.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_i18n_es.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_i18n_en_GB.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_i18n_en_GB.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_i18n_el.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_i18n_el.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_i18n_de.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_i18n_de.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_i18n_da.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_i18n_da.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_i18n_cs.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_i18n_cs.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_i18n_ca.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_i18n_ca.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolAppletSigned0_i18n_ar.jar</LocalFile>
+                <RemoteFile>JmolAppletSigned0_i18n_ar.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+
+
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_i18n_zh_TW.jar</LocalFile>
+                <RemoteFile>JmolApplet0_i18n_zh_TW.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_i18n_zh_CN.jar</LocalFile>
+                <RemoteFile>JmolApplet0_i18n_zh_CN.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_i18n_uk.jar</LocalFile>
+                <RemoteFile>JmolApplet0_i18n_uk.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_i18n_tr.jar</LocalFile>
+                <RemoteFile>JmolApplet0_i18n_tr.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_i18n_sv.jar</LocalFile>
+                <RemoteFile>JmolApplet0_i18n_sv.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_i18n_sl.jar</LocalFile>
+                <RemoteFile>JmolApplet0_i18n_sl.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_i18n_pt_BR.jar</LocalFile>
+                <RemoteFile>JmolApplet0_i18n_pt_BR.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_i18n_pt.jar</LocalFile>
+                <RemoteFile>JmolApplet0_i18n_pt.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_i18n_pl.jar</LocalFile>
+                <RemoteFile>JmolApplet0_i18n_pl.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_i18n_nl.jar</LocalFile>
+                <RemoteFile>JmolApplet0_i18n_nl.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_i18n_nb.jar</LocalFile>
+                <RemoteFile>JmolApplet0_i18n_nb.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_i18n_ko.jar</LocalFile>
+                <RemoteFile>JmolApplet0_i18n_ko.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_i18n_it.jar</LocalFile>
+                <RemoteFile>JmolApplet0_i18n_it.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_i18n_hu.jar</LocalFile>
+                <RemoteFile>JmolApplet0_i18n_hu.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_i18n_fr.jar</LocalFile>
+                <RemoteFile>JmolApplet0_i18n_fr.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_i18n_et.jar</LocalFile>
+                <RemoteFile>JmolApplet0_i18n_et.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_i18n_es.jar</LocalFile>
+                <RemoteFile>JmolApplet0_i18n_es.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_i18n_en_GB.jar</LocalFile>
+                <RemoteFile>JmolApplet0_i18n_en_GB.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_i18n_el.jar</LocalFile>
+                <RemoteFile>JmolApplet0_i18n_el.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_i18n_de.jar</LocalFile>
+                <RemoteFile>JmolApplet0_i18n_de.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_i18n_da.jar</LocalFile>
+                <RemoteFile>JmolApplet0_i18n_da.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_i18n_cs.jar</LocalFile>
+                <RemoteFile>JmolApplet0_i18n_cs.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_i18n_ca.jar</LocalFile>
+                <RemoteFile>JmolApplet0_i18n_ca.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet0_i18n_ar.jar</LocalFile>
+                <RemoteFile>JmolApplet0_i18n_ar.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1554</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+
+
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet.jar</LocalFile>
+                <RemoteFile>JmolApplet.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>1199305</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolSmilesApplet.jar</LocalFile>
+                <RemoteFile>JmolSmilesApplet.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>100305</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\Jmol.jar</LocalFile>
+                <RemoteFile>Jmol.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>3901238</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolData.jar</LocalFile>
+                <RemoteFile>JmolData.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>3901238</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\new.htm</LocalFile>
+                <RemoteFile>new.htm</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>30994</Size>
+                <TransferMode>0</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\new.js</LocalFile>
+                <RemoteFile>new.js</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>17007</Size>
+                <TransferMode>0</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\Jmol.js</LocalFile>
+                <RemoteFile>Jmol.js</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>51698</Size>
+                <TransferMode>0</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\styles.css</LocalFile>
+                <RemoteFile>styles.css</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs 11 examples-11</RemotePath>
+                <Download>0</Download>
+                <Size>411</Size>
+                <TransferMode>0</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\JmolApplet.jar</LocalFile>
+                <RemoteFile>JmolApplet.jar</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs</RemotePath>
+                <Download>0</Download>
+                <Size>1199305</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\scripts.xls</LocalFile>
+                <RemoteFile>scripts.xls</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs</RemotePath>
+                <Download>0</Download>
+                <Size>1196032</Size>
+                <TransferMode>1</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\toks.js</LocalFile>
+                <RemoteFile>toks.js</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs</RemotePath>
+                <Download>0</Download>
+                <Size>1166</Size>
+                <TransferMode>0</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\set.js</LocalFile>
+                <RemoteFile>set.js</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs</RemotePath>
+                <Download>0</Download>
+                <Size>9346</Size>
+                <TransferMode>0</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\popupscript.js</LocalFile>
+                <RemoteFile>popupscript.js</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs</RemotePath>
+                <Download>0</Download>
+                <Size>7107</Size>
+                <TransferMode>0</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\loaddata.js</LocalFile>
+                <RemoteFile>loaddata.js</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs</RemotePath>
+                <Download>0</Download>
+                <Size>4830</Size>
+                <TransferMode>0</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\Jmol.js</LocalFile>
+                <RemoteFile>Jmol.js</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs</RemotePath>
+                <Download>0</Download>
+                <Size>51698</Size>
+                <TransferMode>0</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\exam.js</LocalFile>
+                <RemoteFile>exam.js</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs</RemotePath>
+                <Download>0</Download>
+                <Size>9078</Size>
+                <TransferMode>0</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\defs.js</LocalFile>
+                <RemoteFile>defs.js</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs</RemotePath>
+                <Download>0</Download>
+                <Size>10233</Size>
+                <TransferMode>0</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\code.js</LocalFile>
+                <RemoteFile>code.js</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs</RemotePath>
+                <Download>0</Download>
+                <Size>44362</Size>
+                <TransferMode>0</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\cmds.js</LocalFile>
+                <RemoteFile>cmds.js</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs</RemotePath>
+                <Download>0</Download>
+                <Size>446337</Size>
+                <TransferMode>0</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\popupTemplate.htm</LocalFile>
+                <RemoteFile>popupTemplate.htm</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs</RemotePath>
+                <Download>0</Download>
+                <Size>1690</Size>
+                <TransferMode>0</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\examples-11\_index.htm</LocalFile>
+                <RemoteFile>index.htm</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol </RemotePath>
+                <Download>0</Download>
+                <Size>627</Size>
+                <TransferMode>0</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\index.htm</LocalFile>
+                <RemoteFile>index.htm</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs</RemotePath>
+                <Download>0</Download>
+                <Size>627</Size>
+                <TransferMode>0</TransferMode>
+            </File>
+            <File>
+                <LocalFile>C:\jmol-dev\workspace\Jmol-documentation\script_documentation\styles.css</LocalFile>
+                <RemoteFile>styles.css</RemoteFile>
+                <RemotePath>1 0 4 mscs 8 chemapps 4 jmol 4 docs</RemotePath>
+                <Download>0</Download>
+                <Size>875</Size>
+                <TransferMode>0</TransferMode>
+            </File>
+        </Server>
+    </Queue>
+</FileZilla3>

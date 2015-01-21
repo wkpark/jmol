@@ -1,0 +1,6 @@
+#ZMATRIX -- with dummy atoms and atom names
+X1
+X2   X1 1.0
+C1   X1 1.0       X2 90
+O1   C1 1.3000    X2 90   X1 0  2     
+O2   C1 1.3000    O1 180  X2 0  2      

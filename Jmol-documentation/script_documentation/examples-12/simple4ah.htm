@@ -1,0 +1,32 @@
+<html>
+<head>
+<script type="text/javascript" src="jQuery.min.js"></script>
+<script type="text/javascript" src="jQuery.iecors.js"></script>
+<script type="text/javascript" src="JmolCore.AH.js"></script>
+<script type="text/javascript" src="JmolApplet.AH.js"></script>
+<script type="text/javascript" src="JmolControls.js"></script>
+<script type="text/javascript" src="JmolApi.js"></script>
+</head>
+<body>
+<div style="position:absolute;left:100px;top:100px;width:400px;height:300px">
+<script type="text/javascript">
+var jmol = "jmol"; 
+
+var Info = {
+	width: "100%",
+	height: "100%",
+	jarPath: ".",
+	jarFile: "JmolApplet.jar",
+	addSelectionOptions: true,
+	defaultModel: "=caffeine?",
+	serverURL: "http://chemapps.stolaf.edu/jmol/jmolcd2.php",
+	isSigned: false
+}
+
+Jmol.jmolButton(jmol,"background blue")
+jmol = Jmol.getApplet(jmol, Info)
+
+</script>
+</div>
+</body>
+</html>

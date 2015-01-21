@@ -3,7 +3,7 @@ isxhtmltest=0/1
 
 isinitialized=0
 
-//isinitialized=1;jmolInitialize(".","JmolApplet.jar")
+isinitialized=1;jmolInitialize("..",true)
 
 MAXMSG=100000
 msglog=""
@@ -12,14 +12,60 @@ width=350
 
 //height=width=1600
 
-loadstructcallback="loadStructCallback"
-animcallback="animFrameCallback"
-pickcallback="showpick"
-hovercallback="showmsg"
-msgcallback="showmsg"
-//msgcallback="ignoreit"
-errorcallback = "errorCallback"
-measurecallback = "measureCallback"
+// see callback function name will be the same
+// 
+
+Callbacks = [
+ "animFrameCallback",
+ "appletReadyCallback",
+ "atomMovedCallback",
+ "errorCallback",
+ "hoverCallback",
+ "loadStructCallback",
+ "messageCallback",
+ "measureCallback",
+ "pickCallback",
+ "scriptCallback"
+ ]
+
+function showmsg(n,objwhat,moreinfo,moreinfo2){
+ var d = document.getElementById("msg");
+ if (!d)return
+ var nmore = parseInt(moreinfo);
+ var what="" + objwhat//+(moreinfo?"\n"+moreinfo:"")+(moreinfo2?"\n"+moreinfo2:"")
+ if (what.indexOf("{") == 0) {
+   WHAT = what.replace(/\\\"/g,"~")
+   //need a new thread here in case of an error
+   setTimeout("showjsoninfo()",100)
+ }
+ msglog+="\n"+what
+ var s=d.value
+ if(s.length>MAXMSG) s=s.substring(0,MAXMSG/2)
+ d.value=what
+}
+
+hoverCallback = showmsg
+messageCallback = showmsg
+
+function pickCallback(n,objwhat,moreinfo){
+ showmsg(n,objwhat,moreinfo)
+ return
+ var nmore = parseInt(moreinfo);
+ if (nmore == 1)moreinfo="";
+ var what=objwhat+(moreinfo?"\n"+moreinfo:"")
+ alert(what);
+}
+
+function atomMovedCallback(app, bsAtoms) {
+  //document.title = "" + bsAtoms
+}
+
+isReady = false
+
+function appletReadyCallback(app, name, isOK) {
+  isReady = isOK
+  if (isOK)document.title = document.title + " READY - " + name
+}
 
 function animFrameCallback(app, frameNo, fileNo, modelNo, firstNo, lastNo, 
 isAnimationRunning, animationDirection, currentDirection) {
@@ -40,7 +86,7 @@ function scriptCallback(app, status, message, millisec, errorUntranslated) {
   if (millisec == 0) showmsg(app, status, message, 0)
 }
 
-function measureCallback(app, strMeasure,intInfo, strStatus) {
+function measureCallback(app, strMeasure,intInfo, strStatus, a, b) {
 showmsg(app, strStatus + ":" + strMeasure, "", 0)
 }
 
@@ -117,6 +163,7 @@ function jmolGetLogLevelRadios() {
 
 
 addRCSBlink=true
+addNIHlink=true
 
 force_useHtml4Object=0
 force_useIEObject=0
@@ -173,7 +220,7 @@ docsearch = document.location.search.substring(1)
 iscript = (docsearch.indexOf("scriptno=")>=0 ? parseInt(docsearch.split("scriptno=")[1].split("&")[0]) : 0)
 listScripts = (docsearch.indexOf("LISTONLY")>=0)
 listHeadings = (docsearch.indexOf("HEADINGSONLY")>=0)
-useSigned = (docsearch.indexOf("SIGNED")>=0)
+useSigned = (docsearch.indexOf("UNSIGNED")<0)
 language = (docsearch.indexOf("language=")>=0 ? docsearch.split("language=")[1].split("&")[0] : 0)
 thistopic = (docsearch.indexOf("topic=")>=0 ? docsearch.split("topic=")[1].split("&")[0] : 0)
 
@@ -213,9 +260,12 @@ function getapplet(name, model, codebase, height, width, script) {
   }
 
 
-//   jmolSetCallback("menuFile", "data/myfix.mnu")
-
-//   jmolSetCallback("useCommandThread", "true")
+  //  jmolSetParameter("menuFile", "data/myfix.mnu")
+  jmolSetParameter("useCommandThread", "true")
+  //  jmolSetTranslation(true)
+  //  jmolSetParameter("loglevel", "6")
+  //  jmolSetParameter("debug", true)
+  //  jmolSetLogLevel(logLevel);
 
   if(force_useHtml4Object)_jmol.useHtml4Object=1
   if(force_useIEObject)_jmol.useIEObject=1
@@ -223,36 +273,22 @@ function getapplet(name, model, codebase, height, width, script) {
   isinitialized = 1
   jmolSetDocument(0)
 
-	       jmolSetAppletColor("#000033")
+  jmolSetAppletColor("#000033")
 
-//  jmolSetTranslation(true)
-
- // jmolSetLogLevel(logLevel);
 
   var s = "set defaultDirectory \""+datadir+"\";" 
   if (model)s += (model.indexOf("load") == 0 ? "" : "load ") + model + ";"
   script = s + script;
-//script = "load " + model;
+  //script = "load " + model;
   script = script.replace(/load \;/,";")
   if (defaultloadscript != "")script = "set defaultLoadScript \""+defaultloadscript+"\";"+script
-  jmolSetCallback("ScriptCallback","scriptCallback")
-  if (msgcallback)jmolSetCallback("MessageCallback",msgcallback)
-  if (measurecallback)jmolSetCallback("MeasureCallback",measurecallback)
-  if (errorcallback)jmolSetCallback("ErrorCallback",errorcallback)
-  if (animcallback)jmolSetCallback("AnimFrameCallback",animcallback)
-  if (pickcallback)jmolSetCallback("PickCallback",pickcallback)
-  if (hovercallback)jmolSetCallback("HoverCallback",hovercallback)
-  if (loadstructcallback)jmolSetCallback("LoadStructCallback",loadstructcallback)
+  for (var i = 0; i < Callbacks.length; i++) 
+    jmolSetCallback(Callbacks[i], Callbacks[i])
 
-//jmolSetCallback("loglevel", "6")
-
-  //jmolSetCallback("debug", true)
   if (language)jmolSetCallback("language",language)
-
-
-  var s = jmolApplet([width,height], script)
-// alert("not allowing scripting");s=s.replace(/mayscript/,"maynotscript")
- //alert(s)
+  var s = jmolApplet([width,height], script, 0)
+  // alert("not allowing scripting");s=s.replace(/mayscript/,"maynotscript")
+  //alert(s)
   return s
 }
 
@@ -260,8 +296,8 @@ function getinfo(){
  var script=getscriptlink(0,false)
  var s="Click on a link below to see what it does. You can also type a command in the box below the model to see its effect."
 
-theref = (model.length==8 && model.indexOf(".pdb")==4?"<a target=_blank href=http://www.rcsb.org/pdb/files/"+model+">["+model.substring(0,4)+"]</a>":
-model.indexOf('"')<0?"<a target=_blank href="+model.split(";")[0]+">"+model+"</a>":model)
+ theref = (model.length==8 && model.indexOf(".pdb")==4?"<a target=_blank href=http://www.rcsb.org/pdb/files/"+model+">["+model.substring(0,4)+"]</a>":
+ model.indexOf('"')<0?"<a target=_blank href="+model.split(";")[0]+">"+model+"</a>":model)
 
  if(model)s+=" The script run in this case was <b>"+ model+"</b>."
  if(defaultloadscript != "")s+=" The default load script used here is \""+defaultloadscript+"\"."
@@ -281,7 +317,7 @@ function getscriptlink(i,isul,addNumber){
 	if(S.length>1)s+="\n<td"+(td2width && S.length<=ntd?" width='"+td2width+"'":"")+" valign='top'"+(isNaN(parseInt(S[j]))?">":" colspan='"+parseInt(S[j])+"'")+(isul?"<ul>":"")
 	if(S[j].indexOf("###")>=0){
 		nTopics--;
-		S[j]=S[j].replace(/\#\#\#/,"<h3><span>" + (nTopics <= nFirst ? "<a name=\"topic"+nTopics+"\" id=\"topic"+nTopics+"\">"+ nTopics + ".</a> " : "")).replace(/\#\#\#/,"</span></h3>")
+		S[j]=S[j].replace(/\#\#\#/,"</ul><h3><span>" + (nTopics <= nFirst ? "<a name=\"topic"+nTopics+"\" id=\"topic"+nTopics+"\"><br /><a href='" + document.location.href.split("#")[0].split("?")[0] + "?topic=" + nTopics + "'>"   + nTopics + ".</a></a> " : "")).replace(/\#\#\#/,"</span></h3>")
 		if(S[j].indexOf("<br>")>=0)
 			S[j]="<table width=450><tr><td>"+S[j].split("<br>")[0]+"</td><td width=210 align=right>"+S[j].split("<br>")[1]+"</td></tr></table>"
 		s+="<br>"
@@ -347,10 +383,10 @@ function getscripts(addNumber){
 	}else{
 		if(sc.indexOf("###")>=0)iCount = -1
 	  	if (++iCount == 2) {
-			if (sc.indexOf("load") == 0)
+			if (sc.indexOf("load ")>=0 || sc.indexOf("zap") >= 0)
 				TopicScripts["" + (nTopics)] = sc
 		}
-		s+=getscriptlink(i,isul,addNumber)
+		s+= getscriptlink(i,isul,addNumber)
 	}
  }
  s=s.replace(/\<\/tbody\>\<\/table\>\<\/ul\>\<ul\>\<table\>\<tbody\>/g,"")
@@ -409,35 +445,6 @@ function showjsoninfo(){
  showmsg("",what,"")
 }
 
-ttest2=""
-function showmsg(n,objwhat,moreinfo,moreinfo2){
-
-ttest2 += "<br>showmsg:" + objwhat
-//alert("showmsg" + objwhat)
- var d = document.getElementById("msg");
- if (!d)return
- var nmore = parseInt(moreinfo);
- var what="" + objwhat//+(moreinfo?"\n"+moreinfo:"")+(moreinfo2?"\n"+moreinfo2:"")
- if (what.indexOf("{") == 0) {
-   WHAT = what.replace(/\\\"/g,"~")
-   //need a new thread here in case of an error
-   setTimeout("showjsoninfo()",100)
- }
- msglog+="\n"+what
- var s=d.value
- if(s.length>MAXMSG) s=s.substring(0,MAXMSG/2)
- d.value=what
-}
-
-function showpick(n,objwhat,moreinfo){
- showmsg(n,objwhat,moreinfo)
- return
- var nmore = parseInt(moreinfo);
- if (nmore == 1)moreinfo="";
- var what=objwhat+(moreinfo?"\n"+moreinfo:"")
- alert(what);
-}
-
 function showfile(s){
  if(s.length<100)return
  thiscommand=""
@@ -469,6 +476,10 @@ function showpage(){
 function getRCSBfile(){
   _jmol.RCSBserver = serverURL = "http://pdb202.sdsc.edu" //temporarily only 4/17/06
  jmolLoadAjax_STOLAF_RCSB("CIF",0,defaultloadscript)
+}
+
+function getNIHfile(){
+ jmolLoadAjax_STOLAF_NIH("",0,defaultloadscript)
 }
 
 function getMSAfile(){
@@ -522,7 +533,8 @@ function getpage(){
 	+getapplet("jmol",model,codebase,height,width,(iscript>0?Scripts[iscript]:loadscript+";"+Scripts[0]))
 	+'\n</span>'
 	+'\n<p><a target=_blank href=http://en.wikipedia.org/wiki/Ajax_%28programming%29>AJAX</a>: '
-	+'<a href=javascript:getRCSBfile() title="any CIF from RCSB via St. Olaf AJAX server"><u>STOLAF-RCSB/CIF</u></a> &nbsp;&nbsp;&nbsp; '
+	+'<a href=javascript:getRCSBfile() title="any CIF from the PDB via St. Olaf AJAX server"><u>PDB</u></a> &nbsp;&nbsp;&nbsp; '
+	+'<a href=javascript:getNIHfile() title="any file from PubCHEM by name or SMILES string via St. Olaf AJAX server"><u>NIH</u></a> &nbsp;&nbsp;&nbsp; '
 	+'<a href=javascript:getMSAfile() title="a mineral from the Mineralogical Society of America via MSA AJAX server"><u>MSA/CIF</u></a> &nbsp;&nbsp;&nbsp; '
 	+'<a href=javascript:getANYfile() title="any URL on the WEB via St. Olaf AJAX server"><u>STOLAF-ANY</u></a> &nbsp;&nbsp;&nbsp; '
 	+'<br />show <a href=javascript:showOrientation()>orientation</a> '
@@ -557,10 +569,15 @@ function getpage(){
 function usercallback(s){}
 
 function showscript(i,j,script){
+	if (!isReady) {
+		alert("The applet is not ready yet. Please stand by.")
+		return
+	}
 	if(!j)j=0
 	var s=(script?script:i>=0?Scripts[i].split(" ~~ ")[j]:document.getElementById("cmd").value)
 	if(s.indexOf("javascript:") == 0) {
-		alert(eval(s.substring(11)))
+		s = s.substring(11)
+		alert(eval(s))
 		return
 	}
 	showmsg("user",s+"\n")
@@ -571,4 +588,108 @@ function showscript(i,j,script){
 	jmolScript(s)
 }
 
+atomExpression = "atomExpression";
 
+TestLinks = [    
+    "animationInfo"   , "", "",
+    "appletInfo"      , "", "",
+    "atomInfo"        , atomExpression, "(visible)",
+    "atomList"        , atomExpression, "(visible)",
+    "auxiliaryInfo"   , atomExpression, "{*}",
+    "bondInfo"        , atomExpression, "(visible)",
+    "boundBoxInfo"    , "", "",  
+    "centerInfo"      , "", "",
+    "chainInfo"       , atomExpression, "(visible)",
+    "consoleText"     , "", "",
+    "dataInfo"        , "<data type>", "types",
+    "errorMessage"    , "", "",
+    "evaluate"        , "<expression>", "",
+    "extractModel"    , atomExpression, "(visible)",
+    "fileContents"    , "", "",
+    "fileContents"    , "<pathname>", "",
+    "fileHeader"      , "", "",
+    "fileInfo"        , "<type>", "",
+    "fileName"        , "", "",
+    "image"           , "", "",
+    "isosurfaceInfo"  , "", "",
+    "jmolStatus"      , "statusNameList", "",
+    "jmolViewer"      , "", "",
+// only when synced with JSpecView    "jspecView"       , "<key>", "",
+    "ligandInfo"      , atomExpression, "{*}",
+    "measurementInfo" , "", "",
+    "menu"            , "<type>", "current",
+    "messageQueue"    , "", "",
+    "minimizationInfo", "", "",
+    "modelInfo"       , atomExpression, "{*}",
+    "moleculeInfo"    , atomExpression, "(visible)",
+    "mouseInfo"       , "", "",
+    "orientationInfo" , "", "",
+    "pointGroupInfo"  , atomExpression, "(visible)",
+    "polymerInfo"     , atomExpression, "(visible)",
+    "shapeInfo"       , "", "",
+    "stateInfo"       , "<state type>", "all",
+    "transformInfo"   , "", "",
+]
+
+PromptSet = {}
+
+function getTestLinks() {
+  var s = ""
+  for (var i = 0; i < TestLinks.length; i+=3) {
+    if (i%15 == 0) s += "<br>"
+    s += "<a href=\"javascript:dotest('" + TestLinks[i] +"')\">[" + TestLinks[i] + "]</a> "
+    if (TestLinks[i + 1] == atomExpression)
+    	PromptSet[TestLinks[i]] = true
+  }
+  s += "<a href=javascript:dotest(10)>[extractModel]</a> <a href=javascript:dotest(9)>[reload THIS orientation]</a>"
+  return s
+}
+ 
+function dotest(iwhat){
+ if(iwhat!=3)monitoron=false
+ var s=""
+ var info=""
+ var sinfo=iwhat
+ var sparam=(PromptSet[iwhat] ? "PROMPT" : "") 
+ switch (iwhat) {
+ case 9:
+   s="save orientation o1;load '';restore orientation o1"
+   document.getElementById("cmd").value=s
+   jmolScript(s)
+   sinfo = ""
+   break;
+ case 10:
+   s=prompt("enter an atom expression",what)
+   if(!s)return
+   what=s
+   s = jmolGetPropertyAsString("extractModel",what)
+   var A=jmolGetPropertyAsArray("orientationInfo")
+   showoutput(s);
+	 jmolLoadInlineScript(s,A.moveTo)
+   sinfo = ""
+   break;
+ }
+ var cmd=""
+ if(sinfo!=""){
+   if(sparam == "PROMPT"){
+     s=prompt("enter an atom expression",what)
+     if(!s)return
+     what=s
+     sparam=what
+   }
+   if(document.getElementById("idecodeArray").checked){
+	cmd = "jmolGetPropertyAsArray(\"" + sinfo + "\",\"" + sparam + "\")"
+	s=jmolGetPropertyAsArray(sinfo,sparam)
+	s=_jmolEnumerateObject(s,sinfo)
+   }else if(document.getElementById("idecodeJSON").checked){
+	cmd = "jmolGetPropertyAsJSON(\"" + sinfo + "\",\"" + sparam + "\")"
+	s=jmolGetPropertyAsJSON(sinfo,sparam)
+   }else{
+	cmd = "jmolGetPropertyAsString(\"" + sinfo + "\",\"" + sparam + "\")"
+	s=jmolGetPropertyAsString(sinfo,sparam)
+   }
+ }
+ if(s!="")document.getElementById("output").value=cmd + "\n\n" + s
+}
+
+ 

@@ -1,0 +1,12 @@
+#ZMATRIX -- with Jmol dual angle and variables
+
+dist 1.0
+angle 107
+
+N1 
+H1 N1 dist
+H2 N1 dist H1 angle	
+H3 N1 -dist H1 angle H2 angle
+
+
+

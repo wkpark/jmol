@@ -1,6 +1,7 @@
 .example{color:darkred;font-family:Currier}
 .chimenote{color:darkgreen}
 .xref{color:red}
+.def{color:brown;font-weight:bold;text-decoration:none}
 .deprecated{color:#808080}
 .newv{color:blue;font-weight:bold}
 .new{color:darkgreen;font-size:11pt}

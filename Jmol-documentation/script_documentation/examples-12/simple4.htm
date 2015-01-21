@@ -1,0 +1,37 @@
+<html>
+<head>
+<script type="text/javascript" src="jQuery.min.js"></script>
+<script type="text/javascript" src="jQuery.iecors.js"></script>
+<script type="text/javascript" src="JmolCore.js"></script>
+<script type="text/javascript" src="JmolApplet.js"></script>
+<script type="text/javascript" src="JmolControls.js"></script>
+<script type="text/javascript" src="JmolApi.js"></script>
+</head>
+<body>
+<div style="width:50%;height:50%">
+<script type="text/javascript">
+//<div style="position:absolute;left:100px;top:100px;width:400px;height:300px">
+var jmol = "jmol"; 
+
+var Info = {
+	width: "100%",
+	height: "100%",
+	jarPath: ".",
+	jarFile: "JmolAppletSigned.jar",
+	isSigned: true,
+	addSelectionOptions: true,
+	defaultModel: "=caffeine?",
+	serverURL: "http://chemapps.stolaf.edu/jmol/jmolcd2.php"
+}
+
+Jmol.jmolButton(jmol,"background blue")
+jmol = Jmol.getApplet(jmol, Info)
+
+Jmol.setInfo(jmol," adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd adflka dfdafadfsd")
+
+</script>
+<a href="javascript:Jmol.showInfo(jmol, true)">info</a>
+<a href="javascript:Jmol.showInfo(jmol, false)">no info</a>
+</div>
+</body>
+</html>

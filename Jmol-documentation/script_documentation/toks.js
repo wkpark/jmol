@@ -1,6 +1,6 @@
-//lastupdate='Jul 24, 2010'
+//lastupdate='Feb 26, 2014'
 
-doCapitalize = "CASE CATCH ELSEIF FOR IF LOG PRINT PROMPT RETURN SWITCH VAR WHILE"
+doCapitalize = "CASE CATCH ELSEIF FOR IF LOG PRINT PROMPT RETURN SWITCH THROW VAR WHILE"
 newToken()
 
 newToken('animation',1)

@@ -1,0 +1,13 @@
+#ZMATRIX
+# from pubs.acs.org/doi/full/10.1021/ct9001762  	
+# jmolscript: measure {Cl1} {_N} {_O};measure {Cl1} {_N} {Cl2};wireframe -0.1;rotate z 177.1; rotate y 40.62; rotate z 68.35;background image "data/Cl2NO.png";color measurements black
+
+N1
+Cl1 N1 1.9866	
+O1  N1 1.1495	Cl1 117.65
+Cl2 N1 1.9866 O1  117.65 Cl1 -133.94
+
+#N     0.12697   -0.19463    0.15697
+#Cl   -0.74248   -1.45031    1.34844
+#O     0.67428   -0.62030   -0.75739
+#Cl   -1.06827    1.30243   -0.12700

@@ -1,0 +1,29 @@
+<html>
+<head>
+<script type="text/javascript" src="JmolCore.js"></script>
+<script type="text/javascript" src="JmolApplet.js"></script>
+<script type="text/javascript" src="JmolControls.js"></script>
+<script type="text/javascript" src="JmolApi.js"></script>
+</head>
+<body>
+
+<script type="text/javascript">
+var jmol = "jmol"; 
+
+var Info = {
+	width: 450,
+	height: 450,
+	jarPath: ".",
+	jarFile: "JmolApplet.jar",
+	isSigned: false
+}
+
+Jmol.jmolButton(jmol,"background blue")
+jmol = Jmol.getApplet(jmol, Info)
+
+Jmol.script(jmol, "load data/caffeine.xyz")
+
+</script>
+
+</body>
+</html>

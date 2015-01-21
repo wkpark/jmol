@@ -1,0 +1,21 @@
+<script src=JmolCore.js></script>
+<script src=JmolApplet.js></script>
+<script src=JmolApi.js></script>
+<script>
+jmol = Jmol.getApplet("jmol")
+Jmol.script(jmol, "load data/caffeine.mol;calculate partialcharge")
+  var s = ""
+setTimeout("dotest(1)", 1000)
+setTimeout("dotest(2)", 1001)
+setTimeout("dotest(3)", 1002)
+var i = 0;
+function dotest(j) {
+	s += "\n" + j + " " + Jmol.evaluate(jmol, "{*}.partialcharge.sum")
+  if (++i < 10000)
+	setTimeout("dotest(" + j + ")", 1)
+  else
+	alert(s)
+
+}
+
+</script>

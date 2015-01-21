@@ -1,0 +1,268 @@
+<html>
+<head>
+<title>Jmol Stereoisomer Challenge</title>
+<script type="text/javascript">
+// Bob Hanson 9:45 PM 5/12/2010
+// requires JME.jar and JmolSmilesApplet.jar.
+
+
+webroot = "http://chemapps.stolaf.edu/jmol/docs/examples-12/isomers.htm"
+
+defaults = "8%208%20C%209.72%20-9.88%20C%209.72%20-8.48%20C%208.51%20-7.78%20C%207.29%20-8.48%20C%207.29%20-9.88%20C%208.51%20-10.58%20C%208.51%20-6.38%20C%2010.93%20-7.78%201%202%201%202%203%201%203%204%201%204%205%201%205%206%201%206%201%201%203%207%20-1%202%208%20-1%7C8%208%20C%209.72%20-9.88%20C%209.72%20-8.48%20C%208.51%20-7.78%20C%207.29%20-8.48%20C%207.29%20-9.88%20C%208.51%20-10.58%20C%208.51%20-6.38%20C%2010.93%20-7.78%201%202%201%202%203%201%203%204%201%204%205%201%205%206%201%206%201%201%203%207%20-2%202%208%20-1"
+
+Examples = [[]
+	,["chains"]
+	,["#1a", "6%205%20O%208.99%20-9.15%20Cl%207.78%20-5.65%20C%2010.21%20-7.05%20C%206.57%20-7.75%20C%208.99%20-7.75%20C%207.78%20-7.05%205%201%20-1%206%202%20-1%203%205%201%204%206%201%205%206%201%7C6%205%20O%209.71%20-10.21%20Cl%208.51%20-6.71%20C%2010.93%20-8.11%20C%207.30%20-8.81%20C%209.71%20-8.81%20C%208.51%20-8.11%205%201%20-2%206%202%20-2%203%205%201%204%206%201%205%206%201"]
+	,["#1b", "6%205%20O%209.72%20-10.22%20Cl%208.52%20-6.72%20C%2010.94%20-8.12%20C%207.31%20-8.82%20C%209.72%20-8.82%20C%208.52%20-8.12%205%201%20-1%206%202%20-2%203%205%201%204%206%201%205%206%201%7C6%205%20Cl%209.71%20-10.21%20O%208.51%20-6.71%20C%2010.93%20-8.11%20C%207.30%20-8.81%20C%209.71%20-8.81%20C%208.51%20-8.11%205%201%20-2%206%202%20-1%203%205%201%204%206%201%205%206%201"]
+	,["#2a", "8%207%20Br%209.72%20-10.22%20Br%208.52%20-6.72%20C%2010.94%20-8.12%20C%207.31%20-8.82%20C%209.72%20-8.82%20C%208.52%20-8.12%20C%2012.15%20-8.82%20C%206.09%20-8.12%205%201%20-1%206%202%20-2%203%205%201%204%206%201%205%206%201%203%207%201%204%208%201%7C8%207%20Br%209.71%20-10.21%20Br%208.51%20-6.71%20C%2010.93%20-8.11%20C%207.30%20-8.81%20C%209.71%20-8.81%20C%208.51%20-8.11%20C%206.08%20-8.11%20C%2012.15%20-8.81%205%201%20-2%206%202%20-1%203%205%201%204%206%201%205%206%201%204%207%201%203%208%201"]
+	,["#2b", "8%207%20Br%209.72%20-10.22%20Br%208.52%20-6.72%20C%2010.94%20-8.12%20C%207.31%20-8.82%20C%209.72%20-8.82%20C%208.52%20-8.12%20C%2012.15%20-8.82%20C%206.09%20-8.12%205%201%20-1%206%202%20-2%203%205%201%204%206%201%205%206%201%203%207%201%204%208%201%7C8%207%20Br%208.51%20-6.60%20Br%2010.93%20-8.00%20C%207.30%20-8.70%20C%209.71%20-8.70%20C%208.51%20-8.00%20C%206.08%20-8.00%20C%208.50%20-10.80%20C%209.70%20-10.10%205%201%20-1%204%202%20-1%203%205%201%204%205%201%203%206%201%204%208%201%208%207%201"]
+	,["#3", "10%209%20C%2012.63%20-7.05%20C%204.14%20-7.74%20C%208.99%20-9.15%20C%207.78%20-5.65%20C%2011.42%20-7.75%20C%205.35%20-7.05%20C%2010.21%20-7.05%20C%206.57%20-7.75%20C%208.99%20-7.75%20C%207.78%20-7.05%201%205%201%202%206%201%209%203%20-1%2010%204%20-1%205%207%201%206%208%201%207%209%201%208%2010%201%209%2010%201%7C10%209%20C%2013.36%20-8.12%20C%204.87%20-8.81%20C%209.72%20-10.22%20C%208.51%20-6.72%20C%2012.15%20-8.82%20C%206.08%20-8.12%20C%2010.94%20-8.12%20C%207.30%20-8.82%20C%209.72%20-8.82%20C%208.51%20-8.12%201%205%201%202%206%201%209%203%20-1%2010%204%20-2%205%207%201%206%208%201%207%209%201%208%2010%201%209%2010%201"]
+	,["#4", "13%2012%20C%2012.77%20-9.87%20C%207.88%20-9.87%20C%205.45%20-9.82%20C%2010.30%20-11.25%20C%207.90%20-5.65%20C%2010.32%20-7.05%20C%2011.55%20-9.18%20C%206.68%20-7.75%20C%209.11%20-9.15%20C%206.68%20-9.15%20C%2010.32%20-9.85%20C%207.90%20-7.05%20C%209.11%20-7.75%201%207%201%2010%202%20-1%203%2010%201%2011%204%20-1%2012%205%20-1%2013%206%20-1%207%2011%201%208%2010%201%208%2012%201%209%2011%201%209%2013%201%2012%2013%201%7C14%2013%20C%206.09%20-5.30%20C%207.31%20-10.19%20C%206.10%20-8.10%20C%209.75%20-11.59%20C%209.74%20-5.99%20C%2012.16%20-7.39%20C%207.30%20-5.99%20C%208.52%20-9.49%20C%208.52%20-8.09%20C%2010.95%20-9.49%20C%207.31%20-7.39%20C%209.74%20-10.19%20C%209.74%20-7.39%20C%2010.95%20-8.09%201%207%201%202%208%201%2011%203%20-1%2012%204%20-1%2013%205%20-1%2014%206%20-1%207%2011%201%208%2012%201%209%2011%201%209%2013%201%2010%2012%201%2010%2014%201%2013%2014%201"]
+	,["rings"]
+	,["#5", "8%208%20C%209.72%20-6.64%20C%209.72%20-5.24%20C%208.51%20-4.54%20C%207.30%20-5.24%20C%207.30%20-6.64%20C%208.51%20-7.34%20C%206.09%20-4.54%20C%208.51%20-8.74%201%202%201%202%203%201%203%204%201%204%205%201%205%206%201%206%201%201%204%207%20-1%206%208%20-1%7C8%208%20C%2010.96%20-8.38%20C%2010.96%20-6.98%20C%209.75%20-6.28%20C%208.54%20-6.98%20C%208.54%20-8.38%20C%209.75%20-9.08%20C%207.33%20-6.28%20C%2012.17%20-6.28%201%202%201%202%203%201%203%204%201%204%205%201%205%206%201%206%201%201%204%207%20-2%202%208%20-2"]
+	]
+
+
+function getExamples() {
+ var s = "<select id=examples onchange='getExample()' onselect='getExample()' onkeyup='getExample()'><option value=''>Select an example</option>"
+ for (var i = 1; i < Examples.length; i++) {
+   var S = Examples[i]
+   if (S.length < 2)
+	s += "<option value=''>" + S[0] + "</option>"
+   else
+	s += "<option value='" + S[1] + "'>" + S[0] + "</option>"
+ }
+ document.write(s + "</select>")
+}
+
+function getExample(trigger) {
+  if (!trigger) return setTimeout("getExample(1)",100)
+  var s = document.getElementById("examples")
+  s = unescape(s[s.selectedIndex].value)
+  if (s == "")return
+  var S = s.split("|")
+  inputJME(S[0], "JME_LEFT")
+  inputJME(S[1] || S[0], "JME_RIGHT")
+}
+
+function JmeToJmol(name,w,h) {
+	name = (name || "JME_LEFT")
+	w = "" + (w || "350") 
+	h = "" + (h || "375")
+	if (w.indexOf("%") < 0)w += "px"
+	if (h.indexOf("%") < 0)h += "px"
+	var s = '<applet code="JME.class" id="' + name + '" name="' + name + '" archive="JME.jar" width="'+w+'" height="'+h+'">'
+	var file = (document.location.search.indexOf("load=") >= 0 ?
+		unescape(document.location.search.split("load=")[1].split("&")[0]) : unescape(defaults))
+	var S = file.split("|")
+        if (name == "JME_LEFT" || S.length == 1)
+		file = S[0]
+	else
+		file = S[1]
+
+	s += '<param name="JME" value="' + file + '"/>'
+	s+='<param name="options" value="autoez" />'	
+	s+='</applet>'
+	document.write(s)
+}
+
+function getStateJME() {
+	// also saves a variable "jmeString" in Jmol for later reference
+	var jmeString = document.getElementById("JME_LEFT").jmeFile()
+	var smilesString = document.getElementById("JME_LEFT").smiles()
+	var smilesString2 = document.getElementById("JME_LEFT").nonisomericSmiles()
+	return "jmeString = '" + jmeString 
+		+ "';smilesString = '" + smilesString 
+		+ "';smilesStringNonisomeric = '" + smilesString2 
+		+ "';load INLINE '" + jmeString + "'"
+}
+
+function sendToJmol(){
+	try {
+		opener.jmolScript(getStateJME());
+	} catch (e) {
+		newAppletWindow()
+	}
+}
+
+function inputJME(what,where) {
+ what = what || prompt("Enter a JME string", document.getElementById("JME_LEFT").jmeFile())
+ if (!what)return
+ where = where || "JME_LEFT"
+ document.getElementById(where).readMolecule(what)
+}
+
+woptions="menubar=yes,resizable=1,scrollbars,alwaysRaised,width=600,height=600,left=50"
+woptions2="menubar=yes,resizable=1,scrollbars,alwaysRaised,width=400,height=450,left=270"
+woptions3="menubar=yes,resizable=1,scrollbars,alwaysRaised,width=6500,height=450,left=270"
+
+function newAppletWindow() {
+ newWindow("JmolPopup.htm?JME_LEFT", woptions)
+}
+
+function newWindow(file, options) {
+ var sm=""+Math.random()
+ sm=sm.substring(2,10)
+ var newwin=open(file,"jmol_"+sm, options)
+}
+
+function getLink() {
+
+ var file = document.getElementById("JME_LEFT").jmeFile() + "|" + document.getElementById("JME_RIGHT").jmeFile();
+ var ref = document.location.href.split("?")[0]
+ if (ref.toLowerCase().indexOf("file:") == 0)ref = webroot
+ var model = ref + "?load=" + escape(file).replace(/ /g,"%20")
+ var s = prompt("The link below will go to a page with this molecule loaded. Press OK to load this page. ",model)
+ if (!s)return
+ newWindow(s, woptions2) 
+}
+
+function doTestSmiles(mode) {
+  switch(mode) {
+  case 1: // self test
+    var xfind = document.getElementById("JME_LEFT").smiles();
+    var xin = document.getElementById("JME_LEFT").nonisomericSmiles();
+    break;
+  case 0: // isomeric relationship
+  case 2: // do they match?
+  case 3: // print
+    var xin = document.getElementById("JME_LEFT").smiles();
+    var xfind = document.getElementById("JME_RIGHT").smiles();
+    break;
+  }
+  if (mode == 3) {
+    prompt("",'print "' + xin.replace(/\\/g,'\\\\') + '".find("smiles","' + xfind.replace(/\\/g,'\\\\') + '")') 
+    return;
+  }
+  var ret = document.getElementById("jmolSmiles1").find(xfind, xin, false, false)
+  var code = 'var xjs = document.getElementById("jmolSmiles1").find("'+ xfind + '", "' + xin + '", false, false)<br/><br/>\
+	<i>or</i><br/><br/>Var xjmol = "' + xin + '".find("SMILES","'+xfind+'")'
+  if (ret < 0)
+    alert(document.getElementById("jmolSmiles1").getLastError())
+  else if (ret == 0 && mode == 1)
+    alert("please report that the self-test failed")
+  else if (mode == 0)  {
+    ret = document.getElementById("jmolSmiles1").getRelationship(xfind, xin)
+    document.getElementById("ans").innerHTML = ret
+    code = 'var xjs = document.getElementById("jmolSmiles1").getRelationship("'+ xfind + '", "' + xin + '")<br/><br/>\
+	<i>or</i><br/><br/>Var xjmol = compare("' + xfind + '", "'+xin+'", "ISOMER")'
+  } else {
+    ret = (ret == 0 ? "No." : mode == 2 ? "Yes!" : "Self-Test OK")
+    document.getElementById("ans2").innerHTML = ret
+  }
+  document.getElementById("code").innerHTML = code;
+}
+
+function doCopy() {
+  var a = document.getElementById("JME_LEFT").jmeFile()
+  document.getElementById("JME_RIGHT").readMolecule(a)
+}
+function doSwap() {
+  var a = document.getElementById("JME_LEFT").jmeFile()
+  var b = document.getElementById("JME_RIGHT").jmeFile()
+  document.getElementById("JME_LEFT").readMolecule(b)
+  document.getElementById("JME_RIGHT").readMolecule(a)
+}
+
+function doInvert() {
+  var b = document.getElementById("JME_RIGHT").jmeFile() + " "
+  b = b.replace(/ -2 /g, " _ ").replace(/ -1 /g, " -2 ").replace(/ \_ /g," -1 ")
+  document.getElementById("JME_RIGHT").readMolecule(b)
+}
+
+</script>
+</head>
+<table width=900>
+
+<tr>
+<td colspan=3 align=center><h3>Jmol Stereoisomer Challenge</h3>
+Try your hand at answering the questions! Quiz your teacher or a friend! Some are harder than others...<br>They are interactive -- you can change the structures and then check the answers as well.<br> Can you get the one on the left to be identical to the one on the right? To be its enantiomer?
+<br><br>
+<script type=text/javascript>getExamples()</script><br>
+
+</td></tr>
+<tr>
+<td align=center>
+<script type="text/javascript">
+JmeToJmol("JME_LEFT")
+</script>
+</td>
+<td width=130 valign=top><br /> <br /> <br /> <br /> <br /> <br /> <center> <a href="javascript:doTestSmiles(2)"> Do they match? </a>
+<br /> <br /><font color=red><b>&nbsp;<span id=ans2>?</span>&nbsp;</b></font><br />
+<br /> <br /> <a href="javascript:doTestSmiles(0)"> What is their relationship? </a>
+<br /> <br /><font color=red><b>&nbsp;<span id=ans>?</span>&nbsp;</b></font><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</center>
+</td>
+<td align=center>
+<script type="text/javascript">
+JmeToJmol("JME_RIGHT")
+</script>
+</td>
+
+</tr>
+</tr>
+<td align=center>
+<a href="javascript:sendToJmol()">Load into Jmol</a>
+ <a target="_blank" href="JmeShow.htm">JME</a>
+ <a target="_blank" href="JmeShow.htm?SMILES">SMILES</a>
+ <a href="javascript:inputJME()">input JME</a>
+ <a href="javascript:getLink()">save</a>
+ <a href="javascript:doTestSmiles(1)">self-test</a>
+<br/> <a href="javascript:window.close()">close this window</a>
+<a target="_blank" href=http://www.molinspiration.com/jme>http://www.molinspiration.com/jme</a>
+</td>
+<td></td>
+<td align=center>
+ <a href="javascript:doCopy()">copy</a>
+ <a href="javascript:doSwap()">swap</a>
+ <a href="javascript:doInvert()">invert</a>
+ <a href="javascript:doTestSmiles(3)">printCommand</a>
+<br/> <a href="javascript:window.close()">close this window</a>
+<a target="_blank" href=http://www.molinspiration.com/jme>http://www.molinspiration.com/jme</a>
+</td>
+
+</tr>
+<tr>
+<td colspan=3><br><br><b><span id=code></span></b><br><br>
+Note that the test is set up such that ambiguous stereochemistry on the RIGHT matches defined stereochemistry on the left, but ambiguous stereochemistry on the LEFT does not match defined stereochemistry on the right --- as you would want if the student were drawing on the left and we were checking a key on the right. That is, we test <b>"studentResponse".find("SMILES","answerKey")</b> [Jmol] or <b>find("answerKey", "studentResponse", false, false)</b> [JmolSmiles], not the other way around. We want to find the correct answer IN the student response.  
+Or if we were searching a database, we would want LEFT to represent "a molecule in the database" and RIGHT to represent "our search". If our search were for a specific stereochemistry, we would want to skip ill-matched database structures; if our search were for a general (unspecified) stereochemistry, we would want it to match any constitutionally correct isomer in the database. That is, we would use <b>"databaseMolecule".find("searchMolecule")</b>, which if you think about it, makes sense. 
+<br><br>
+In general, we want <b>"targetString".find("SMILES","searchString")</b> in JmolApplet or <b>find("searchString", "targetString", false, false)</b> in JmolSmilesApplet.
+
+</td></tr>
+<tr><td colspan=3 align=center>
+<span style="background-color:blue;font-size:5px">&nbsp;
+<object name='jmolSmiles1' id='jmolSmiles1' 
+  type='application/x-java-applet'
+  classid='java:JmolSmilesApplet'
+  width='10'   
+  height='10'
+ > 
+<param name='name' value='jmolSmilesApplet' /> 
+<param name='archive' value='JmolSmilesApplet.jar' /> 
+<param name='mayscript' value='true' /> 
+<param name='codebase' value='.' /> 
+<param name='code' value='JmolSmilesApplet' />
+</object>&nbsp;
+</span>
+</td></tr>
+<tr>
+<td colspan=3><h3>How it works</h3>
+The idea is really pretty straightforward. The JME applet is used to generate a SMILES string with stereochemistry. The JmolSmilesApplet (the little white dot in the blue square, above) creates two molecular graphs: One from the target SMILES string (from the left panel, the <b>target model</b>), and one from the search SMILES string (from the right panel, the <b>search pattern</b>).
+Notably, though, there are no spacial relationships, just topology. First, the algorithm checks for a constitutional match. This is a standard iterative connectivity search, following the bonding of the structure to see if it matches the topology inherent in the target. 
+<br><br>
+So how then does JmolSmilesApplet
+check stereochemistry -- and why does it do such an amazing job of matching? The stereocenters are checked
+one by one using a very fast and relatively simple strategy. Now, we don't have any 3D information, but we do know the "local winding" that is needed based on the target SMILES string. This involves two aspects: <ol><li>We have to 
+order the atoms in the SEARCH model around the stereocenter based on the winding in the TARGET string, because it is the order <i>in that string</i> that defines the desired stereochemistry. Of course, there are several orders that
+are the same, because in most stereochemical situations, you can twice switch any two pairs of groups and have an equivalent structure.
+</li><li> Rather than checking strings, 
+we temporarily assign 3D coordinates to the atoms connected to the stereocenter. Just simple coordinates, like (1,0,0) and (0,1,0). Then we carry out a quick geometry winding match,
+checking to see how various vectors based on two sets of atoms around the stereocenter line up. This works with both double-bond and chirality-center stereochemistry. It is an extraordinarily fast test. 
+</li></ol>
+And there you have it! A univeral SMILES string comparator! 
+ 
+</td></tr>
+</table>
+</body>
+</html>

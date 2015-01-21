@@ -1,0 +1,169 @@
+<html>
+<head>
+<title>Jmol Crystal Symmetry Explorer -- JavaScript version</title>
+<script type="text/javascript" src="jsmol/JSmol.min.js"></script>
+<script type="text/javascript" src="jcse/jcse.js"></script>
+<script type="text/javascript">
+
+var datadir = "data"
+var Models = "=1blu {1 1 1}|P31 2 1,\
+nepheline.cif|P 61,\
+troilite.cif|P -6 2 c,\
+quartz.cif|P 32 2 1,\
+-00=---------------------------,\
+-99=---------------------------,\
+-01=04369a.cif |P n m a,\
+-02=AgFUPMOS.cif filter \"molecular\"|P 21/n,\
+diamond.cif|F d -3 m:2,\
+dickite.cif|C 1 c 1,\
+gold.cif|F m -3 m,\
+-03=kuds0105a.ccdc.cif |P 21 21 21,\
+calcite.cif 1 packed|R -3 c:h,\
+Ti2O3.cif|R -3 c:h,\
+icsd_200866.cif 1 packed|P 63/m m c,\
+icsd_250072.cif|P -6,\
+icsd_26520.cif|P 63 m c,\
+maleic.cif 5 {1 1 1}|P 21/c,\
+nacl.cif|F m -3 m,\
+-04=nank0104a.ccdc.cif |F d d 2,\
+-05=sebi0105c.ccdc.cif |P 21 21 21\
+".split(",")
+
+var defaultScript = ""
+var selectedModel = ""
+var isDefault = true
+var xxxx = document.location.search
+if (xxxx.indexOf("?load") == 0) {
+	defaultScript = unescape(xxxx.substring(1))
+	isDefault = false
+} else if (xxxx.length > 1) {
+	selectedModel = xxxx
+	if (xxxx.indexOf(" ") < 0)xxxx += " packed"
+	isDefault = false
+	defaultScript = 'set echo top left;echo loading ' + selectedModel + '...;refresh;load ' + xxxx + ';echo "";'
+}
+var modelSelectHtml = ""
+getModelSelectHtml(isDefault);
+
+defaultScript = ';background white;set errorCallback "errorCallback";set loadstructcallback "loadstructCallback";set pickCallback "pickCallback";set zoomlarge false;' + defaultScript
+
+use = "HTML5"
+
+
+var Info = {
+	width: 500,
+	height: 500,
+	script: defaultScript,
+	use: use,
+	jarPath: ".",
+	j2sPath: "jsmol/j2s",
+	jarFile: "JmolAppletSigned0.jar",
+	isSigned: true,
+	addSelectionOptions: false,
+	serverURL: "http://chemapps.stolaf.edu/jmol/jsmol/jsmol.php",
+	readyFunction: null,
+	console: "jmol_infodiv",
+	//disableInitialConsole: true,
+	defaultModel: null,
+	debug: false
+}
+
+var jmolApplet0 = "jmolApplet0";
+
+jmolButtons = function(w, a) {
+  Jmol.setButtonCss(null,"style='width:"+w+"px'");
+  s = "";
+  for (var i = 0; i < a.length; i++) {
+    if (i > 0) s+= "<br />"
+    s += Jmol.jmolButton(jmolApplet0,a[i], a[++i]);    
+  }
+  return s;
+}
+
+$(document).ready(function(){	
+	
+	// set Jmol to simply create the code and not use document.write
+	
+	Jmol.setDocument(0);
+  
+  var s = "<br/>" + jmolButtons(160, [
+    "load \"\" 1 FILTER 'MOLECULAR'","molecular units",
+    "load \"\" {1 1 1}", "unpacked cell",
+    "load \"\" 1 packed","packed cell",
+    "load \"\" 1 {455 655 1}","3x1x1 set",
+    "load \"\" 1 {545 565 1}","1x3x1 set",
+    "load \"\" 1 {554 556 1}","1x1x3 set",
+    "load \"\" 1 {445 665 1}","3x3x1 plane",
+    "load \"\" 1 {454 656 1}","3x1x3 plane",
+    "load \"\" 1 {544 566 1}","1x3x3 plane",
+    "load \"\" 1 {444 666 1}","3x3x3 cube",
+    "backgroundcolor = (backgroundcolor = '[x000000]' ? 'white' : 'black')","switch background"
+    ])
+  $("#loading").html(s);
+
+  Jmol.setButtonCss(null,"style='width:100px'");
+  s = "<br />" + Jmol.jmolButton(jmolApplet0,"console")
+    + Jmol.jmolCommandInput(jmolApplet0)
+  $("#center").html(s);
+  $("#select").html(modelSelectHtml);
+
+/* for now...
+
+  s = jmolButtons(160, [
+  "load file \"?\" 1 packed","Load URL or FILE",
+  "script ?.spt","Load SCRIPT",
+  "write FILE ?","Save FILE",
+  "write STATE ?.spt","Save STATE",
+  "write IMAGE ?.jpg","Save JPG",
+  "write IMAGE ?.png","Save PNG",
+  "write ?.jmol","Save JMOL"
+  ])
+
+  $("#options").html(s);
+*/
+
+})
+
+
+</script>
+</head>
+<body>
+
+<table><tr>
+<td align=center valign=top style="width:170px">
+<h3>Jmol Crystal Symmetry Explorer</h3>
+
+
+<div id=loading style="display:none">
+
+</div>
+<br>
+The Java version of this page is <a href=jcse/explore.htm>here</a>.
+
+
+</td>
+<td align=center  valign=top>
+		<script type="text/javascript">
+			jmolApplet0 = Jmol.getApplet("jmolApplet0", Info);
+		</script>
+    <div id=center></div>
+
+</td>
+<td  valign=top>
+<div id="select"></div>
+<div id='syminfo'></div>
+
+<br>
+<br>
+<div id=note style="display:none;width:250px">
+Note that all symmetry operations relating to this model are also accessible from the <a href=jcse/sympop.png target=_blank>pop-up menu</a> (click on the "Jmol_S" logo).
+</div>
+<br>
+<br>
+<div id=options></div>
+</td></tr>
+</table>
+
+
+</body>
+</html>

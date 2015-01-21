@@ -1,0 +1,61 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>test page</title>
+<script type="text/javascript" src="jQuery.min.js"></script>
+<script type="text/javascript" src="jQuery.iecors.js"></script>
+<script type="text/javascript" src="JmolCore.js"></script>
+<script type="text/javascript" src="JmolApplet.js"></script>
+<script type="text/javascript" src="JmolControls.js"></script>
+<script type="text/javascript" src="JmolApi.js"></script>
+</head>
+
+<p>placeholder</p>
+<script type="text/javascript">
+    var jmolInfo5 = {
+       color:               "#F0F0F0", 
+       width:               160,
+       height:              160,
+       useChemDoodleOnly:   false,
+       useJmolOnly:         true,
+       useWebGlIfAvailable: false,
+       useImageOnly:        false,
+       jarPath:             ".",
+       jarFile:             "JmolApplet.jar",
+       isSigned:            false,
+       addSelectionOptions: false,
+       serverURL:           null,
+       readyFunction:      jmolLoaded5,
+       defaultModel:        null,
+       debug:               false
+    }
+
+function jmolLoaded5() {
+   Jmol.script(jmol5, "frank off; load  '/drupal6/sites/edu.courses.chem110_master/files/molecules/dna-pwz.pdb' ;set spiny 90; spin on;");
+}
+</script>
+<script type="text/javascript">
+   jmol5 = Jmol.getApplet("jmol5", jmolInfo5);</script>
+<script type="text/javascript">
+var radios = [
+                   ["set background white", "light", true],
+                   ["set background black", "black"]
+                   ];
+Jmol.jmolRadioGroup(jmol5, radios);
+</script><br />
+					&nbsp;&nbsp;background<br/>
+
+<script type="text/javascript">
+Jmol.jmolButton(jmol5, "script '/drupal6/sites/edu.courses.chem110_master/files/jmol-scripts/DNA-script.spt'", "DNA Tour");
+Jmol.jmolHtml("<br />&nbsp;&nbsp;&nbsp;");
+Jmol.jmolCheckbox(jmol5, "set spiny 90; spin on", "spin off", "spin", "checked");
+</script>
+
+
+
+<body>
+
+</body>
+
+</html>

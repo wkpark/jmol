@@ -1,0 +1,88 @@
+<html>
+<head>
+<title>Jmol Reciprocal Lattice Demo</title>
+<script type="text/javascript" src="Jmol.js"></script>
+<script type="text/javascript">
+function myCallback(a, b, c, d) {
+alert("myCallback a="+a+" b="+b+" c="+c+" d="+d)
+}
+</script>
+</head>
+<body>
+
+<center>
+
+
+<table><tr>
+<td>
+<div style="width:300px">
+
+<h3>Jmol Reciprocal Lattice Demo</h3>
+
+This page demonstrates the relationship between the "reciprocal lattice" (the large scale with tiny dots marked, axes <b>h</b>, <b>k</b>, and <b>l</b>.)
+and families of crystallographic planes (displayed when one of the reciprocal lattice points is clicked). 
+<br /><br />
+In making this visualization, the reciprocal lattice has been enlarged 
+just to make the lattice points more easily clickable. Its scale is actually much smaller (by a factor here of 
+2&pi; / |a|<sup>2</sup>).
+<br /><br />
+Click a lattice point to see the family of planes associated with that combination of h, k, and l. 
+<br /><br />
+Click and drag to manipulate the model. Click and drag near the right side of the applet to adjust scaling. 
+<br /><br />
+Click the Jmol logo for a pop-up menu that lets you export PNG images (under menu item "File").
+</div>
+
+</td>
+<td align=center>
+
+<script type="text/javascript">
+jmolInitialize("../..","JmolAppletSigned0.jar")
+
+
+var xxxx = document.location.search
+script = "script data/hkl.spt"
+jmolApplet(["450","450"],script)
+
+</script>
+</td><td>
+<script type="text/javascript">
+_jmol.buttonCssText="style='width:160'"
+jmolButton("load ? {1 1 1}","Load URL")
+jmolBr()
+jmolButton("load ? {1 1 1}","Load FILE")
+jmolBr()
+jmolButton("write STATE ?.spt","Save STATE")
+jmolBr()
+jmolButton("write IMAGE ?.jpg","Save JPG")
+jmolBr()
+jmolButton("write IMAGE ?.png","Save PNG")
+jmolBr()
+
+
+</script>
+
+</td></tr>
+
+<tr><td></td><td align=center>
+
+
+
+
+<script type="text/javascript">
+jmolBr()
+_jmol.buttonCssText="style='width:120'"
+jmolButton("reset; zoom 40.0; translate x -28.2; translate y 23.69;showHKL","reset")
+jmolButton("zoomto 3 {*} 0","zoom in")
+jmolButton("zoom 40.0;translate x -20;translate y 20","zoom out")
+jmolButton("pickHKL","pick HKL")
+jmolBr()
+_jmol.buttonCssText="style='width:100'"
+jmolButton("console")
+jmolCommandInput()
+</script>
+
+</td></tr></table>
+
+</body>
+</html>

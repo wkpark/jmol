@@ -1,0 +1,130 @@
+rxn = ""
+fname = ""
+a0 = ""
+n = 0
+nanim = 0
+mapdata = []
+scripts = []
+fdelay = 2
+
+function extractPage(p, list) {
+  // p is a web page from chemtube3d.com
+  // optional list is a string showing the order: "4,3,2,1" for example
+  if (list != "") { list = "," + list + "," }
+  ZAP
+  mapdata = []
+  scripts = []
+  print "extracting " + p
+  var dir = p.split("/")[1][-1].join("/")
+  print dir
+  var maplines = load(p).lines.find('"rect"')
+  var animlines = maplines.find("anim")
+  nanim = animlines.length
+  if (nanim) { 
+    maplines = animlines 
+  } else { 
+    fdelay = 10
+    print "no animations -- extracting all models and setting frame delay to 10 seconds" 
+  }
+  maplines = maplines.join("").split('"rect"')
+  var i = 0
+  for (line in maplines) {
+    if (!line.find("coords")) { continue }
+    var info = {}
+    var data = line.split('"')
+    var last = ""
+    var minfo = [0.0, info]
+    for (d in data) {
+      if (d.find("coords=")) {
+        last = "coord" 
+      } else if (d.find("href=")) {
+        last = "href"
+      } else {
+        switch (last) {
+        case "coord":
+          // this was an idea, but it's better just to do it with a list
+          var x = d.split(",")
+          info["coords"] = x
+          //minfo[1] = (0 + x[1]) + (0 + x[2])/1000.0
+          break
+        case "href":
+          if (d.find("script ")) {
+            d = load(dir + "/" + d.split("script ")[2].split("'")[1])            
+          }
+          d = d.replace("anim fps","#anim fps")
+          var f = d.split(".xyz;")
+          var s = f[2].split("anim ")[1].split("delay ")[1]
+          if (f.length == 1) {continue}
+          info["file"] = dir + "/" + f[1].split("load ")[2] + ".xyz"
+          if (s[-1][0] == "')") { s = s[1][-2] }
+          while (s.find('â€')) {
+            var pt = s.find('â€')
+            s = s[1][pt-1] + "–" + s[pt+3][0]
+          }
+          info["script"] = s
+          i++
+          break
+        }
+        last = ""
+      }
+    }
+    var pt = list.find(","+i+",")
+    if (list == "" || pt) {
+      if (pt) { minfo[1] = pt } else { minfo[1] = i }
+      mapdata += [minfo]
+    }
+  }
+  mapdata.sort(1)
+  var n = 0
+  for (var d in mapdata) {
+    var info = d[2]
+    if (n++ == 0) {
+      LOAD @{info["file"]}
+    } else {
+      LOAD append @{info["file"]}
+    }
+    scripts += [info["script"]]
+    //doAlign()
+  }
+  print mapdata
+}
+
+
+function doAlign(a, title) {
+
+  ++n
+
+  if (a) {
+    if (n == 1) {
+      SCRIPT inline @{"compare {file=" + n + "} {1.1} frames " + a[1] + " " + a[2] + " " + a[3]}
+    } else {
+      SCRIPT inline @{"compare {file=" + n + "} {" + (n-1) + ".1} frames " + a[1] + " " + a0[1] + " " + a[2] + " " + a0[2] + " " + a[3] + " " + a0[3]}
+    }
+    a0 = a
+  }
+
+  var s = (scripts ? scripts[n] : @{"script" + n})
+
+  if (title != "") {
+    SCRIPT inline @{'frame ' + n + '.0;frame title "' + title + '"'}
+  }
+  if (n != 1) {
+    s = s.replace("model=1.", "model=" + n + ".")
+    SCRIPT inline @{"frame " + n + ".1"}
+    FRAME delay @fdelay
+    FRAME prev
+    FRAME delay @fdelay
+    if (rxn) {
+      if (n == 2) {
+        SCRIPT inline @{'frame 1.0;frame title "' + rxn + ' - step 1"'}
+      }
+      SCRIPT inline @{'frame ' + n + '.0;frame title "' + rxn + ' - step ' + n + '"'}
+    }
+  }
+  s = "subset file=" + n + ";select *;" + s +";subset all"
+  //print ""
+  //print s
+  SCRIPT inline @s
+  FRAME 1.1
+}
+

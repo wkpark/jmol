@@ -10,8 +10,10 @@
 function callback(a, b, c, d, e, f, g, h, i, j){
 alert("a = " + a + " b = " + b + " c = " + c + " d = " + d + " e =" + e + " f = " + f + " g = " + g + " h = " + h + " i = " + i + " j = " + j)
 }
-animcallback=""
-loadstructcallback=""//"callback"
+
+animFrameCallback = null
+loadStructCallback = null
+//atomMovedCallback = null
 
 delayms = 100; delayms0 = 1000
 polling = false;
@@ -26,7 +28,7 @@ testflag = false
 
 title="ATOMS";
 
-model='load caffeine.xyz'
+model='load caffeine.mol'
 
 //'x = "caffeine.xyz|1crn.pdb|1d66.pdb";load @{x.split(\'|\')[prompt(\'Which file would you like to load?\',x,true)]}'//;set minimizationSteps 25;load ketone.jme'
 //load 1crn.pdb;color straightness;cartoons only;draw helix axis;'
@@ -37,7 +39,8 @@ model='load caffeine.xyz'
 docsearch = document.location.search.substring(1)
 if(docsearch.indexOf("model=")>=0)model=unescape(docsearch.split("model=")[1].split("&")[0])
 
-header = 'This page lists all new features in Jmol 12.1 (which, when released, will be 12.2). Features new to Jmol 12.0 (with links there to previous versions) are described in <a href=../examples-11/new.htm>../examples-11/new.htm</a> Documentation for all commands can be found in the <a href=../index.htm?ver=12.2>Interactive Documentation for Jmol 12.2</a>. For the complete change log development summary, see <a href=http://jmol.svn.sourceforge.net/viewvc/jmol/trunk/Jmol/src/org/jmol/viewer/Jmol.properties?view=markup>Jmol.properties</a>. Comments? Suggestions? <a href=mailto:hansonr@stolaf.edu>Bob Hanson</a>'
+header = 'This page lists all new features in Jmol 12.3 (which, when released, will be 12.4). \
+Features new to Jmol 12.2 (with links there to previous versions) are described in <a href=new2.htm>new2.htm</a> Documentation for all commands can be found in the <a href=../index.htm?ver=12.4>Interactive Documentation for Jmol 12.4</a>. For the complete change log development summary, see <a href=http://jmol.svn.sourceforge.net/viewvc/jmol/trunk/Jmol/src/org/jmol/viewer/Jmol.properties?view=markup>Jmol.properties</a>. Comments? Suggestions? <a href=mailto:hansonr@stolaf.edu>Bob Hanson</a>'
 
 
 latestVersion = '### Be sure you have the <a href=http://jmol.sourceforge.net/files>Latest version</a>. Very latest may appear as <a href=http://chemapps.stolaf.edu/jmol/docs/examples-12/Jmol-12.zip>Jmol-12.zip</a> prior to release at SourceForge. <br /><br /><a href=../index.htm?ver=12.0>documentation</a>&nbsp;&nbsp;&nbsp;<a href=http://jmol.svn.sourceforge.net/viewvc/jmol/trunk/Jmol-datafiles/>sample model files</a>&nbsp;&nbsp;&nbsp; <a href=https://sourceforge.net/tracker/?func=add&group_id=23629&atid=379136>feature request</a>&nbsp;&nbsp;&nbsp; <a href=https://sourceforge.net/tracker/?func=add&group_id=23629&atid=379133>bug report</a> ###'
@@ -52,92 +55,525 @@ pageTitle = ""
 
 
 Scripts=new Array(" ",header,latestVersion
-,'### new color() function  and getProperty shapeInfo.isosurface[n].colorKey ###'
-,'# Jmol 12.1.5 adds the capability to check and work with color schemes, including standard Jmol color schemes such as "roygb" or "Jmol", custom color schemes such as "myScheme", the propertyColorScheme value, or -- especially -- the color scheme associated with an isosurface. The capability should make it easy to write a visual color key for any isosurface. The function has several forms that allow getting all the details or getting a specific color associated with a value. In addition, getProperty shapeInfo is expanded to include the color key for each mapped isosurface. This could be of interest for building JavaScript widgets that graphically display an isosurface color key next to or within the applet.'
-,'load 1crn.pdb;color property temperature'
-,'prompt color("roygb").keys'
-,'prompt color("")["colors"]'
-,'prompt color("")["values"]'
-,'prompt color("rwb",0.0,10.0,5.0) # the color for the value 5 in the range 0 to 10'
-,'prompt color("rwb",5) # the fifth color'
-,'load 1crn.pdb;isosurface ID "iso1" vdw map property temperature'
-,'prompt getProperty("shapeInfo.isosurface[1].colorkey")'
-,'prompt "isosurface min/max: " + color("$iso1")["min"] + " " + color("$iso1")["max"]'
-,'prompt "isosurface color for temperature 10.0: " + color("$iso1", 10.0)'
+
+,'### set MESHSCALE ###'
+,'# Jmol 12.3.29 adds <b>set MESHSCALE</b> to allow changing the diameter of isosurface and MO mesh lines.'
 
 
+/*
 
-,'### isosurface display within 2.0 {...} ###'
-,'# Jmol 12.1.4 adds a new option for isosurface that allows you to select parts of the isosurface for viewing AFTER isosurface creation. <b>isosurface display all</b> redisplays all points. The setting does NOT apply to contour lines.'
-,'load 1crn.pdb;isosurface sasurface 0'
-,'isosurface display within 2.0 {aromatic}'
-,'isosurface display within 2.0 {helix}'
-,'isosurface display all'
+version=12.3.29_dev
 
-,'### {*}.find("SMILES", SMILESstring) ###'
-,'# Just a note: In this context we are checking a 3D model to see if it matches the designated SMILES string. The match will be good as long as the SMILES string matches the structure in all respects, including connections and stereochemistry. You can check only connections by prepending "/nostereo/" on to the beginning of the SMILES string.'
+# new feature: Mopac archive reader
+# new feature: set pathForAllFiles "..."
+#  -- all files, local or remote, will be taken from the indicated path
+#  -- the indicated path may be a zip file entry (ending with "|")
+#  -- automatically reset to '' in case of an unrecoverable error in execution
+#  -- used for creating JMOL files containing user scripts instead of a state
+#  -- disallows all writing and image creation
+#  -- scripts including prompts to read wildcard files (for example, "load ?")
+#     will still prompt for those and read them properly
+
+# new feature: write SCRIPT ["scriptFileName", "filename2","filename3",...] PNGJ|JMOL...
+#  -- syntax is WRITE SCRIPT followed by an array of file names
+#     then whatever else is necessary to create the PNGJ or JMOL file
+#  -- for example:  write script ["wind.spt"] test.jmol
+#  -- Creates a single PNGJ or JMOL file that instead of containing the state 
+#     contains the script and additional files listed by the user. 
+#     The first script is run, and it is presumed that the other files are
+#     needed for full execution of that script. 
+#  -- Allows for creating PNGJ and JMOL files that run as animations, not just final states.
+#  -- Jmol will automatically add any files current to the state,
+#     but other files not indicated by the state (script files especially)
+#     required for the script to run need to be indicated by the user.
+#  -- When the script is executed, pathForAllFiles is set to the zip file
+#     itself. Thus, even scripts containing references such as "script2.spt" or "=xxxx" 
+#     can be run, provided the user supplies script2.spt xxxx.pdb.gz as one of the required filenames. 
+#  -- Note that if a file is saved locally using LOAD =xxxx AS t.pdb, Jmol will automatically use
+#     the local file reference to t.pdb, not the RCSB reference.
+#  -- If the file is loaded using only LOAD =xxxx, then Jmol will reload the
+#     remote file and store it in the PNGJ/JMOL file as xxxx.pdb.gz.  
+
+#version=12.3.28
+
+# new feature: isosurface ... map PERIODIC ...
+#  -- allows mapping grid-based data beyond the unit cell defining its grid
+# new feature: write VIBRATION n
+#  -- writes 20 * n frames
+#  -- n periods
+#  -- some issues with first frame and value of n
+# new feature: load PACKED CENTROID 
+#  -- only complete molecules having centroid within or on the face of the unit cell
+#  -- may not preserve # of atoms of unit cell
+# new feature: unitcell $isosurfaceID
+# new feature: unitcell [{center}, {a}, {b}, {c}]
+#  -- sets unit cell for current model only
+# new feature: "plot data" command by itself opens a new frame with just one atom in it, at (0,0,0)
+# new feature: isosurface SLAB BRILLOUIN (or WIGNERSEITZ)
+#  -- transposes an isosurface into the Brillouin-zone/Wigner-Seitz unit cell
+#  -- based on the isosurface's vectors if there is no unit cell for this model. 
+#  -- for creating isosurfaces of Fermi surfaces
+#
+
+#version=12.3.27
+
+# new feature: [menu] vibration [*,/] 2 
+# new feature: XSF isosurface reader
+# new feature: load CENTROID 
+#  -- only complete molecules having centroid in unit cell
+#  -- preserves # of atoms of unit cell
+
+
+*/
+
+,'### MMFF94 minimization ###'
+,'# Jmol 12.3.26 adds fully validated MMFF94 molecular mechanics minimization. If no atoms are selected, the minimization\
+ is carried out on the current model; otherwise only specific atoms are minimized. (This is unchanged; see the minimization command for full details.)\
+ Any time the MMFF94 atom types cannot be found, for example if the model does not have multiple bonding indicated, the minimization \
+  reverts to UFF (Universal Force Field). The default maximum minimization steps is 100, but the minimization can be continued by using MINIMIZE again.'
+,'load caffeine.mol'
+,'minimize'
+,'load caffeine.xyz'
+,'minimize'
+
+,'### script functions ###'
+,'# Jmol 12.3.26 adds the capability to run a script with parameters. One simply adds a set of variables in parentheses after the script file name\
+ and then within the script those values will be found in the <b>_arguments</b> array. On this site, the file testsf.spt simply reads <b>prompt _arguments</b>. \
+ the command name SCRIPT is optional if the file name is in quotations or ends with ".spt".'
+ ,'testsf.spt("param1","param2",3+5)'
+ ,'testsf.spt("testsf.spt",load("testsf.spt"))'
  
-,'### compare(a,b,"ISOMER") ###'
-,'# Jmol 12.1.3 adds the capability to check both 3D models and SMILES strings for isomeric relationships -- that is, for configurational isomers, enantiomers, diastereomers, identical compounds, or conformational isomers. Conformational testing depends upon a standard deviation match and so is not available with SMILES matching. Order in the comparison is important. When comparing two SMILES strings, always show the DESIRED stereochemistry as the second parameter if you are specifically checking to see if someone has created a structure with exactly that stereochemistry. However, note that Jmol over-expresses chirality centers in some cases -- for example, although the isopropyl group, -CH(CH3)2, will get translated to -C(C)C without stereochemistry indicated, the group -CH(CH2CH3)2 will be translated to -[C@H](CC)CC despite the fact that it is not a "real" stereocenter. THIS IS INTENTIONAL. The SMILES schema is designed to be local. The algorithm should not have to follow two paths to see if somewhere along those paths the groups are different. In addition, while it is possible with drawn 2D structures to ignore stereochemistry, it is not generally possible to do the same when constructing a SMILES string from a 3D structure. Thus, the model atoms (or, less optimally) Jmol SMILES string) should always be the first parameter, not the second, if you are just answering the question, "Does this Jmol structure agree with this SMILES string.'
-,'load files "isomer3.mol" "isomer4.mol";translate {5 0 0} {2.1};center *;frame *;'
-,'prompt compare({1.1}, {2.1}, "ISOMER")'
-,'set picking invertStereo;prompt "Now pick stereocenters and check again."'
-,'load files "isomer3.mol" "isomer5.mol";translate {5 0 0} {2.1};center *;frame *;'
-,'prompt compare({1.1}, {2.1}, "ISOMER")'
-,'load files "isomer3.mol" "isomer6.mol";translate {8 0 0} {2.1};center *;frame *;'
-,'prompt compare({1.1}, {2.1}, "ISOMER")'
+,'### model ID "..." ###'
+,'# Jmol 12.3.26 adds an ID for models. This allows going to a specific model by name and is used as part of the syncronization between\
+ the Jmol and JSpecView applets. IDs are not case-sensitive.'
+,'load cyclohexane_movie.xyz;model 1.1;model ID "chair1";model 1.35;model ID "chair2";frame 10'
+,'frame "chair1"'
+,'frame "chair2"'
+ 
+,'### measures "2:%VALUE %UNITS//xx and set defaultDistanceLabel "%UNITS//xx" ###'
+,'# Jmol 12.3.26 adds the capability to specify units for a given \
+distance measurement, a set of selected distance measurements, or all future \
+distance measurements to a specific unit such as angstroms or nanometers'
+,'load caffeine.mol; set defaultDistanceLabel "%VALUE %UNITS//A";measure {_O}[1] {_O}[2]'
+,'measure {_O}[1] {_O}[2] "%VALUE//nm"'
 
-,'load isomer1.mol'
-,'prompt compare(all,"C[C@@H](F)I", "ISOMER")'
-,'prompt compare(all,"C[C@H](F)I", "ISOMER")'
-,'prompt compare(all,"C[C@H](I)F", "ISOMER")'
-,'prompt compare("C[C@@H](I)F","C[C@H](I)F", "ISOMER")'
-,'prompt compare("C[C@@H](I)F","C[C@H](F)I", "ISOMER")'
-,'prompt compare("C[C@@H](I)F","CC(F)I", "ISOMER") # CC(F)I does not indicate stereochemistry, so this comparison works.'
-,'prompt compare("CC(I)F","C[C@H](F)I", "ISOMER") # C[C@H](F)I has stereochemistry indicated, so this one does not work'
 
-,'load "cholesterol.mol"'
-,'prompt compare({1.1}, "C1[C@@](C)2[C@@H]3[C@@H]4[C@H]5[C@](C)6[C@H]7[C@H](C)CCCC(C)C.C6C3.C4C=C2C[C@@H](O)C1.C5C7", "ISOMER") # structure vs. Jmol SMILES'
-,'prompt compare({1.1}, "O[C@@H]4C/C3=C/C[C@@H]1[C@H](CC[C@]2([C@H]1CC[C@@H]2[C@H](C)CCCC(C)C)C)[C@@]3(C)CC4", "ISOMER") # structure vs. ChemSpider'
-,'prompt compare("C1[C@@](C)2[C@@H]3[C@@H]4[C@H]5[C@](C)6[C@H]7[C@H](C)CCCC(C)C.C6C3.C4C=C2C[C@@H](O)C1.C5C7", "O[C@@H]4C/C3=C/C[C@@H]1[C@H](CC[C@]2([C@H]1CC[C@@H]2[C@H](C)CCCC(C)C)C)[C@@]3(C)CC4", "ISOMER") # Compare(Jmol, ChemSpider)'
-,'prompt compare("O[C@@H]4C/C3=C/C[C@@H]1[C@H](CC[C@]2([C@H]1CC[C@@H]2[C@H](C)CCCC(C)C)C)[C@@]3(C)CC4", "C1[C@@](C)2[C@@H]3[C@@H]4[C@H]5[C@](C)6[C@H]7[C@H](C)CCCC(C)C.C6C3.C4C=C2C[C@@H](O)C1.C5C7", "ISOMER") # Compare(ChemSpider, Jmol) -- but in some cases this will not work, because Jmol may over-express chirality centers, or the ChemSpider SMILES may be ambiguous in terms of stereochemistry.'
+/*
+version=12.3.26
 
+# new feature: Jmol SMARTS searching can include full Jmol selection syntax within
+#     an atom primitive using the "atomType" option and "select:":
+#     
+#     load caffeine.xyz
+#     print {*}.find('{c}$(select:_N and connected(2, _C)"]')
+#
+# 
+# new feature: set forcefield "UFF" or "MMFF"
+#  -- default is MMFF
+#  -- automatically switches to UFF if atom types cannot be set
+#  -- minimizationCallback reports actual force field used
+# 
+# new feature: set energyUnits kJ|kcal
+# new feature: set MESHSCALE (default 1) 	
+# new feature: antialiased display and image creation uses larger mesh scaling for cleaner look
+#
+*/
+
+,'### Jmol selection extension to SMARTS searching ###'
+,'# Jmol 12.3.26 expands Jmol SMARTS searching to include full Jmol selection syntax within an atom primitive using the recursive option and "select ".'
+,'load caffeine.xyz'
+,'print {*}.find("{c}$(select _N and connected(2, _C))")'
+
+
+,'### set forcefield "MMFF" or "UFF"###'
+,'# Jmol 12.3.26 allows setting the minimization force field to either MMFF94 or UFF. \
+ The default is MMFF, but Jmol automatically switches to UFF if atom types cannot be set. \
+ Any minimizationCallback and the variable _minimizationForceField both report the actual force field used.'
+
+,'### set energyUnits kJ|kcal ###'
+,'# Jmol 12.3.26 allows setting the units of energy for minimization reports in kJ/mol or kcal/mol.'
+
+
+/*
+
+#version=12.3.24
+
+# new feature: SMARTS search for atom type using quotes: ["37"]-["58"]
+# new feature: SMARTS option /aromaticdouble/  allows distinguishing between aromatic single and double bonds
+# new feature; SMARTS option /aromaticstrict/  checks 6-electron rule for aromatics
+# new feature: CALCULATE partialCharge   does MMFF94 charge calculation
+#   -- all atom types validated
+#   -- charge values validated to +- 0.001001 over the 761-atom dative validation set
+# new feature: isosurface CACHE
+#   -- creates a JVXL version of the surface (possibly outside of Jmol, but that's not implemented yet)
+#   -- saved by   write JMOL   as a JVXL file "isosurface_ID" 
+#      (where ID is the original isosurface ID) within the JMOL zip collection
+#   -- Warning! not saved using   write SPT  
+#      ***ALWAYS*** use write JMOL or write PNGJ after using the CACHE option, not write SPT
+#   -- invoked by   isosurface file "cache://isosurface_ID"  
+#   -- cleared by   reset CACHE
+#   -- allows rapid recreation of an isosurface across file loads
+#   -- possibly limited to a subset of surface types
+#   -- not fully tested
+#
+
+*/
+
+,'### calculate partialCharge ###'
+,'# Jmol 12.3.24 adds the capability to calculate relatively reasonable partial charges using the MMFF94 charge model. Multiple bonding is required.'
+,'load caffeine.mol'
+,'calculate partialCharge; wireframe only;label %3.2[partialCharge]'
+,'calculate partialCharge; isosurface vdw map mep translucent'
+
+,'### write "http://..."  ###'
+,'# Jmol 12.3.24 allows posting information to a server using the write command. The information is sent as application/octet-stream  and can be an image or JMOL zip file or a Jmol variable. The return from the server can be used as an internal Jmol AJAX communication (but better!).'
   
-,'### load ... unitcell [ax, ay, az, bx, by, bz, cx, cy, cz] ###'
-,'# Jmol allows setting the unit cell with the LOAD command using values for a, b, c, alpha, beta, and gamma. Jmol 12.1.3 adds to this capability by letting you specify the unit cell vectors directly. The format is rather loose -- the values themselves can be expressed as integers, decimals, points, using brackets or braces, and with or without commas. Array format brackets are recommended. If the b vector is {0 0 0}, then polymer (1D) periodicity is implied; otherwise, if the c vector is {0 0 0}, then slab (2D) periodicity is implied. Note that slab and polymer periodicity can also be indicated using the older notation as well using 0 for b and/or c'
-,'load caffeine.xyz {1 1 1} spacegroup "P-1" unitcell [10 10 10 90 90 90];unitcell # Jmol 12.0 way'
-,'load caffeine.xyz {1 1 1} spacegroup "P-1" unitcell [{8 0 0},{0 8 0},{0 0 8}];unitcell # new way'
-,'load caffeine.xyz {1 1 1} spacegroup "P-1" unitcell [10 0 0 90 90 90];unitcell # Jmol 12.0 way, polymer'
-,'load caffeine.xyz {1 1 1} spacegroup "P-1" unitcell [{8 0 0},{0 0 0},{0 0 0}];unitcell # polymer, new way'
-,'load caffeine.xyz {1 1 1} spacegroup "P-1" unitcell [10 10 0 90 90 90];unitcell # Jmol 12.0 way, slab'
-,'load caffeine.xyz {1 1 1} spacegroup "P-1" unitcell [{8 0 0},{0 8 0},{0 0 0}];unitcell # slab, new way'
 
-,' See textarea below for results:<br> <a href=javascript:dotest(-1)>[appletInfo]</a>'
- +' <a href=javascript:dotest(-2)>[animationInfo]</a>'
- +' <a href=javascript:dotest(0)>[fileName]</a>'
- +' <a href=javascript:dotest(1)>[fileHeader]</a>'
- +' <a href=javascript:dotest(2)>[fileContents]</a>'
- +'<br><a href=javascript:dotest(8.1)>[atomList]</a>'
- +' <a href=javascript:dotest(8)>[atomInfo]</a>'
- +' <a href=javascript:dotest(7)>[bondInfo]</a>'
- +' <a href=javascript:dotest(7.5)>[moleculeInfo]</a>'
- +" <a href=javascript:dotest(10)>[extractModel]</a>"
- +'<br><a href=javascript:dotest(3)>[orientationInfo]</a>'
- +' <a href=javascript:dotest(3.1)>[auxiliaryInfo]</a>'
- +' <a href=javascript:dotest(3.2)>[transformInfo]</a>'
-	 +' <a href=javascript:dotest(3.3)>[centerInfo]</a>'
- +' <a href=javascript:dotest(3.4)>[boundboxInfo]</a>'
- +"<br><a href=javascript:dotest(4)>[modelInfo]</a>"
- +" <a href=javascript:dotest(4.2)>[polymerInfo]</a>"
- +" <a href=javascript:dotest(4.3)>[chainInfo]</a>"
- +" <a href=javascript:dotest(4.4)>[shapeInfo]</a>"
- +" <a href=javascript:dotest(4.5)>[stateInfo]</a>"
- +" <a href=javascript:dotest(9)>[reload THIS orientation]</a>"
- +"<br><br>"
+,'### load filter "CENTER" ###'
+,'# Jmol 12.3.24 adds a loading option that centers all models in a file based on the first model\'s position.'
+
+,'### load filter "NAME=..." ###'
+,'# Jmol 12.3.24 adds the load option NAME, which loads only those models with a name that contains a specified set of characters.'
+
+/*
+
+#version=12.3.23
+
+# new feature: (applet) new interface for Jmol as an HTML object as well as full support on all platforms
+#              using a ChemDoodle fall-back option for Java/Applet-challenged platforms (iPad,iPhone,Android)
+#
+#  Note that Jmol.js is no longer required, but not all of the features of Jmol.js are in place yet
+#
+#  allows Jmol applets to be created on a page with more flexibility and extendability
+#  possibly using infrastructure of ChemDoodle for multiplatform doodlable structures
+#
+#  required/optional libraries (preferably in the following order):
+#
+# 		jQuery.min.js    -- required for ChemDoodle or any server-based options
+# 		gl-matrix-min.js -- required for ChemDoodle option
+# 		mousewheel.js    -- required for ChemDoodle option
+# 		ChemDoodleWeb.js -- required for ChemDoodle option
+# 		JmolCore.js      -- required
+# 		JmolApplet.js    -- required
+# 		JmolCD.js        -- required for ChemDoodle option
+# 		JmolApi.js       -- required
+#
+#  Allows Jmol-like objects to be displayed on Java-challenged (iPad/iPhone)
+#  or applet-challenged (Android/iPhone) platforms, with automatic switching to 
+#  whatever is appropriate. You can specify "ChemDoodle-only", "Jmol-only", "Image-only"
+#  or some combination of those -- and of course, you are free to rewrite the logic below! 
+#
+#  Allows ChemDoodle-like 3D and 3D-faked 2D canvases that can load files via a privately hosted 
+#  server that delivers raw data files rather than specialized JSON mol data.
+#  Access to iChemLabs server is not required for simple file-reading operations and 
+	#  database access. PubChem and image services are provided by a server-side PHP program
+#  running JmolData.jar with flags -iR (at St. Olaf College). 
+#  For your installation, you should consider putting JmolData.jar and jmolcd.php 
+#  on your own server. Nothing more than these two files is needed on the server.
+#
+#  The NCI and RCSB databases are accessed via direct AJAX if available (xhr2).
+
+# new feature: PubChem search for name (which can be a CAS number), cid, or SMILES using ":"
+#   from pubChemFormat = "http://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/%FILE/SDF?record_type=3d";
+#   (many thanks to Evan Bolton and Paul Thiessen (NIH) for their assistance on this. 
+#   load :name:tylenol   #  or  load :tylenol
+#   load :cas:103-90-2   #  or  load :103-90-2
+#   load :cid:1983       #  or  load :1983
+#   load :smiles:C/C=C/C
+
+*/
+
+,'### PubChem search with ":" ###'
+,'# Jmol 12.3.24 adds easy PubChem searching using compound names, CAS numbers, PubChem CID numbers, or smiles strings. \
+ This capability requires the signed applet. <a href=new.htm?USESIGNED&topic=23><b>click here</b></a> to load the signed applet. Please be patient for this server to respond.' 
+,'load ":name:tylenol"   #  or  just load :tylenol'
+,'zap;set echo top left;echo loading...;refresh;load ":cas:103-90-2"   #  or  just load :103-90-2'
+,'zap;set echo top left;echo loading...;refresh;load ":cid:1983"       #  or  just load :1983'
+,'zap;set echo top left;echo loading...;refresh;load ":smiles:C/C=C/C"'
+
+
+/*
+
+#version=12.3.22
+
+# new feature: Jmol extensions to ChemDoodle allow display of Jmol, ChemDoodle-equivalent (simple model only), 
+#              or just an image with server-side JmolData.jar support. 
+#
+#     JmolCD.js -- Jmol ChemDoodle extension   author: Bob Hanson, hansonr@stolaf.edu  4/16/2012
+#
+#     requires ChemDoodleWeb.js and ChemDoodleWeb-libs.js
+#     prior to JmolCD.js
+#
+#     allows Jmol applets to be created on a page with more flexibility and extendability
+#     using much of the infrastructure of ChemDoodle.
+#
+#     allows Jmol-like objects to be displayed on Java-challenged (iPad/iPhone)
+#     or applet-challenged (Android/iPhone) platforms, with automatic switching to 
+#     whatever is appropriate. You can specify "ChemDoodle-only", "Jmol-only", "Image-only"
+#     or some combination of those -- and of course, you are free to rewrite the logic below! 
+#
+#     allows ChemDoodle-like 2D and 3D canvases that can load files via a privately hosted 
+#     server that delivers raw data files rather than specialized JSON mol data.
+#     access to iChemLabs server is not required for simple file-reading operations and 
+#     database access. Database and image services are provided by a server-side PHP program
+#     running JmolData.jar with flags -iR. 
+#
+#     In this case, the NCI and RCSB databases are accessed via a St. Olaf College server, 
+#     but for your installation, you should consider putting JmolData.jar and jmolcd.php 
+#     on your own server. Nothing more than these two files is needed on the server.
+#
+# new feature: write CD  (simple ChemDoodle JSON format -- atoms and bonds only)
+#              For example: java -jar JmolData.jar -iRJ "load $tylenol;print write('cd')"
+#              generates:  {"mol":{"a":[{"x":0.20549999,"y":0.8303,"z":0.3823},{"x":0.6906,"y":-1.4656999,"z":-0.14220001},{"x":1.5485,"y":1.1359,"z":0.2829},{"x":2.0332,"y":-1.1585,"z":-0.24180001},{"x":-3.9799001,"y":-0.1617,"z":0.1295},{"l":"H","x":4.2731,"y":0.35680005,"z":0.7047},{"l":"H","x":-1.8655999,"y":-1.6522,"z":0.6012},{"x":-0.2273,"y":-0.4718,"z":0.17},{"x":2.4650002,"y":0.1425,"z":-0.029099999},{"l":"O","x":-2.1741998,"y":1.1759001,"z":-0.59169996},{"l":"O","x":3.7872,"y":0.4441,"z":-0.1268},{"x":-2.5170999,"y":0.1262,"z":-0.089999996},{"l":"N","x":-1.5898,"y":-0.78279996,"z":0.2712},{"l":"H","x":-0.50740004,"y":1.6029,"z":0.6296},{"l":"H","x":0.35450003,"y":-2.4786,"z":-0.3079},{"l":"H","x":1.8853,"y":2.1487997,"z":0.4477},{"l":"H","x":2.7472,"y":-1.9314001,"z":-0.485},{"l":"H","x":-4.3884,"y":-0.65880007,"z":-0.7504},{"l":"H","x":-4.0964003,"y":-0.8086,"z":0.9991},{"l":"H","x":-4.513,"y":0.7739,"z":0.2986}],"b":[{"b":8,"e":10},{"b":9,"e":11,"o":2},{"b":7,"e":12},{"b":11,"e":12},{"b":0,"e":7,"o":2},{"b":1,"e":7},{"b":0,"e":2},{"b":2,"e":8,"o":2},{"b":3,"e":8},{"b":1,"e":3,"o":2},{"b":4,"e":11},{"b":5,"e":10},{"b":6,"e":12},{"b":0,"e":13},{"b":1,"e":14},{"b":2,"e":15},{"b":3,"e":16},{"b":4,"e":17},{"b":4,"e":18},{"b":4,"e":19}]}}
+#              (this ended up NOT being used in the Jmol extension to ChemDoodle)
+# new feature: (JmolData) -iR (silent, restricted) mode sends output from PRINT and ECHO commands to SYSOUT
+#              and also restricts the application to no local file read/writing
+#
+
+*/
+
+,'### Jmol/ChemDoodle collaboration ###'
+,'# Jmol 12.3.22 adds a completely new API that allows pages showing Jmol applets to show either images or \
+ ChemDoodle canvases instead, depending upon the capabilities of the device showing the page. Demonstration pages \
+ include <a href="http://chemapps.stolaf.edu/jmol/chemdoodle/test2.htm>test2.htm</a> and \
+ <a href="http://chemapps.stolaf.edu/jmol/chemdoodle/simple2.htm</a>simple2.htm</a>. The new API also provides \
+ considerably more flexibility for the Jmol applet itself, irrespective of ChemDoodle. The JavaScript is object-based \
+ and deprecates Jmol.js.'
+  
+,'### write CD ###'
+,'# Jmol 12.3.22 adds the capability to write a model to ChemDoodle JSON format. For example: \
+ <b>java -jar JmolData.jar -iRJ "load $tylenol;print write(\'cd\')"</b>\
+ generates:  <b>{"mol":{"a":[{"x":0.20549999,"y":0.8303,"z":0.3823},{"x":0.6906,"y":-1.4656999,"z":-0.14220001},...]}}</b>'
+ 
+/*
+
+
+#version=12.3.21
+
+# new feature: app flag -R restricts file access -- no local file reading; no writing, no logging
+#    // disables WRITE, LOAD file:/, set logFile 
+#    // command line -g and -w options ARE available for final writing of image
+#    // for use with headless operation
+# new feature: app flag -T <seconds> headless timeout delay for "exitJmol"
+# note: Headless operation with image creation works perfectly using JmolData.jar
+#     java -Djava.awt.headless=true -Xmx512m -jar "JmolData.jar" -RJ "load $tylenol;" -g1000x1000 -wJPG:t.jpg
+#     see also: http://leshazlewood.com/2009/08/26/linux-javaawtheadless-and-the-display-environment-variable/
+#    // determined by GraphicsEnvironment.isHeadless()
+#    //   from java -Djava.awt.headless=true
+#    // disables command threading
+#    // disables DELAY, TIMEOUT, PAUSE, LOOP, GOTO, SPIN <rate>, ANIMATION ON
+#    // turns SPIN <rate> <end> into just ROTATE <end>
+# new feature: JSpecView JCamp-MOL files can reference model="$xxxx" -- model retrieved from NCI
+
+*/
+
+,'### "headless" application and -R, -T flags ###'
+,'# Jmol 12.3.21 fully implements <a href="http://leshazlewood.com/2009/08/26/linux-javaawtheadless-and-the-display-environment-variable">headless Java</a> operation \
+ specifically designed for server-side operation. The -R (restricted) flag allows the server to restrict operation to no \
+ reading or writing of local (server-side) files (other than a final image file using the -g and -w flags). \
+ The -T (timeout) flag sets the number of seconds to allow before the operation is canceled. \
+ The best file to use on the server is JmolData.jar, which has no graphics, and the preferred call looks something like this: \
+ <b>java -Djava.awt.headless=true -Xmx512m -jar "JmolData.jar" -RJ "load $tylenol;" -g1000x1000 -wJPG:t.jpg</b>. Headless operation \
+ disables command threading and the DELAY, TIMEOUT, PAUSE, LOOP, GOTO, SPIN [rate], and ANIMATION ON commands, and \
+ turns SPIN [rate] [degrees] into just ROTATE [degrees].   '
+
+/*
+
+#version=12.3.19
+
+# new feature: select baseModel for JSpecView
+
+*/
+
+
+,'### model {atomset} ###'
+,'# Jmol 12.3.19 allows setting of a model by an atom set. The first atom in the set determines which model is displayed.\
+ For example, <b>model {within(smarts,"[r3]")}</b> would bring into frame the first model with a 3-membered ring.'
+
+/*
+# new feature; model {atomset} -- model of first atom in this set
+
+#version=12.3.18
+
+# new feature: JSpecView reads and displays 2D spectra very quickly -- all
+#              tested JCamp-DX 6.0 files readable.  -- JSpecView 2.0.10176
+
+#version=12.3.17
+
+# new feature: (JspecView 2.0.10033) new script commands (indicated with *)
+#  UNKNOWN("?"),
+#  APPLETID("APPLETID"),
+#  APPLETREADYCALLBACKFUNCTIONNAME("APPLETREADYCALLBACKFUNCTIONNAME"),
+#  AUTOINTEGRATE("AUTOINTEGRATE", "TF"),
+#  BACKGROUNDCOLOR("BACKGROUNDCOLOR", "C"),
+# *CLOSE("CLOSE", "spectrumId or fileName or ALL"),
+#  COMPOUNDMENUON("COMPOUNDMENUON", "TF"),
+#  COORDCALLBACKFUNCTIONNAME("COORDCALLBACKFUNCTIONNAME"),
+#  COORDINATESCOLOR("COORDINATESCOLOR", "C"),
+#  COORDINATESON("COORDINATESON", "TF"),
+# *DEBUG("DEBUG", "TF"),
+#  DISPLAYFONTNAME("DISPLAYFONTNAME", "fontName"),
+#  ENABLEZOOM("ENABLEZOOM", "TF"),
+#  ENDINDEX("ENDINDEX"),
+# *EXPORT("EXPORT", "[JPG,PNG,XY,...] \"filename\""), 
+#  GETSOLUTIONCOLOR("GETSOLUTIONCOLOR", ""),
+#  GRIDCOLOR("GRIDCOLOR", "C"),
+#  GRIDON("GRIDON", "TF"),
+# *INTEGRATE("INTEGRATE", ""),
+#  INTEGRALPLOTCOLOR("INTEGRALPLOTCOLOR"),
+#  INTEGRATIONRATIOS("INTEGRATIONRATIOS"),
+#  INTERFACE("INTERFACE"),
+# *IRMODE("IRMODE", "A or T or ?"),
+# *LABEL("LABEL", "x y [color and/or \"text\"]"),
+# *LOAD("LOAD", "[APPEND] \"fileName\""),
+#  MENUON("MENUON"),
+#  OBSCURE("OBSCURE"),
+# *OVERLAY("OVERLAY", "spectrumID, spectrumID, ..."),
+#  PEAKCALLBACKFUNCTIONNAME("PEAKCALLBACKFUNCTIONNAME"),
+#  PLOTAREACOLOR("PLOTAREACOLOR", "C"),
+#  PLOTCOLOR("PLOTCOLOR", "C"),
+#  PLOTCOLORS("PLOTCOLORS"),
+#  REVERSEPLOT("REVERSEPLOT", "TF"),
+#  SCALECOLOR("SCALECOLOR", "C"),
+#  SPECTRUM("SPECTRUM", "spectrumID"),
+#  SPECTRUMNUMBER("SPECTRUMNUMBER"),
+#  STARTINDEX("STARTINDEX"),
+#  SYNCCALLBACKFUNCTIONNAME("SYNCCALLBACKFUNCTIONNAME"),
+#  SYNCID("SYNCID"),
+#  TITLEBOLDON("TITLEBOLDON", "TF"),
+#  TITLECOLOR("TITLECOLOR", "C"),
+#  TITLEFONTNAME("TITLEFONTNAME", "fontName"),
+#  UNITSCOLOR("UNITSCOLOR", "C"),
+#  VERSION("VERSION"),
+#  XSCALEON("XSCALEON", "TF"),
+#  XUNITSON("XUNITSON", "TF"),
+#  YSCALEON("YSCALEON", "TF"),
+#  YUNITSON("YUNITSON", "TF"),
+# *ZOOM("ZOOM", "OUT or x1,x2");
+
+# new feature: all
+
+*/
+
+,'### simpler color scheme definition ###'
+,'# Jmol 12.3.29 allows simpler color scheme definition using color names or arrays.'
+,'load 1crn.pdb'
+,'color property temperature "myscheme=red green blue"'
+,'Var x = ["red","white","blue"]; color property temperature "myscheme" @x'
+
+
+,'### JSpecView integration into Jmol ###'
+,'# Jmol 12.3.16 <image src="data/Jmol-JspecView.png" width="200" height="125" align="right" />marks a new \
+ collaboration with Robert Lancashire and the <a href="jspecview.sourceforge.net">JSpecView project</a>.\
+ with the incorporation of JSpecView into the Jmol application. This is most evident in that there is a new menu \
+ item Tools...JSpecView, which opens a new JSpecView frame that includes the current model. Work is in progress to bring this \
+ interface to fruition, involving the design and implementation of a new JCAMP-DX format that incorporates models and assignments \
+ into JDX files using custom ##$MODELS and ##$PEAKS records. Progress can be monitored <a href="http://chemapps.stolaf.edu/jmol/jspecview">here</a>. \
+ the Jmol application command <b>SYNC ON; sync * "JSpecView:..."</b> sends commands to JSpecView.' 
+
+,'### sync ~ \'Select: [attributes]\' ###'
+,'# Jmol 12.3.15 adds an additional method of interaction between applets. The <b>sync</b> command option <b>Select:</b>\
+ was specifically designed for interaction with the JSpecView applet, and has attributes much like an XML tag\
+ including <b>file</b>, <b>model</b>, <b>atoms</b>, <b>select</b>, and <b>script</b>. If Jmol does not find a model\
+ with ID <b>file#model</b>, it will load that model. <b>atoms</b> is a list of atom numbers separated by commas: 1,2,3\
+ that will be translated into the selection <b>@1 or @2 or @3</b>. <b>select</b> can be any valid Jmol selection such as <b>THR</b> or <b>1-30</b>.\
+ Jmol automatically adds <b>visible and</b> to the selection created from <b>atom</b> or <b>select</b>. Requires <b>SYNC ON</b>. '
+
+,'### NFF neutral file format reader ###'
+,'# Jmol 12.3.15 adds the capability to read NFF files (see <a href="http://paulbourke.net/dataformats/nff/nff1.html">http://paulbourke.net/dataformats/nff/nff1.html</a>)\
+      for electron microscopy data exported from IMOD using the ISOSURFACE command'
+
+,'### isosurface SCALE expanded ###'
+,'# Jmol 12.3.13 expands the use of isosurface SCALE to the reading of isosurface data from CUBE files and other volume-data files.' 
+
+,'### zoom $isosurfaceID 0 ###'
+,'# Jmol 12.3.13 allows zooming to match the size of a specific isosurface.' 
+
+,'### plot RAMACHANDRAN and {xxx}.psi/phi ###'
+,'# Jmol 12.3.11 lets you get PSI and PHI values from Ramachandran plots directly from the points involved.'
+,'load 1crn.pdb;plot ramachandran;'
+,'prompt "the average psi for helix residues is " + format("%5.1f",{helix and 2.1}.psi)'
+
+,'### LOAD .... filter "reverseModels" ###'
+,'# Jmol 12.3.11 allows loading of models in reverse order. This is particularly \
+ useful for developing animations of IRC calculation where the second part of the \
+ pathway may need to be reversed when combined with the first.'
+
+,'### set echo SCALE x.x ###'
+,'# Jmol 12.3.10 allows scaling of an image loaded with the SET ECHO command.'
+,'background white;set echo myecho off;	set echo myecho [0 100%];set echo image "Caffeineredraw.png"'
+,'set echo myecho depth 0 # behind the model'
+,'set echo myecho scale 0.5 # half size'
+
+,'### write PDB adds CONECT records ###'
+,'# Jmol 12.3.10 adds CONECT records for heteroatoms and all multiple bonding. It uses the nonstandard <b>CONECT i j j</b> format for indicating multiple bonds.'
+,'load caffeine.mol'
+,'prompt script("write PDB")'
+
+,'### COMPARE ... ... FRAMES ###'
+,'# Jmol 12.3.10 adds a powerful new frame alignment option that is particularly useful for multimodel files where you want to align several models with one reference model. This is \
+  useful for IRC (intrinsic reaction coordinate) calculations and particularly helpful in patching together reaction mechanism sequences from different files. The default syntax is simply <b>COMPARE {from} {to} FRAMES</b> where {from} is a set of frames and {to} is the reference frame. \
+  All of the options of the COMPARE command, such as SUBSET, ATOMS, ROTATE, and TRANSLATE are still available. (ROTATE and TRANSLATE are implied by the FRAME keyword if neither is given.) If {to} is a subset of {from} -- for example, <b>COMPARE {*} {1.1}</b>, then the FRAMES keyword is unnecessary. \
+  See <a href=http://chemapps.stolaf.edu/jmol/docs/examples-12/mp>the mp directory</a> for more examples.'
+
+,'load files "alkeneregioselectivity.xyz" "alkeneregioselectivity2.xyz";rotate x -60 # partial bonding would also be indicated using CONNECT commands, but those are not given here.'
+,'animation on # note the poor alignment between the two files.'
+,'compare {file=2} {1.1} FRAMES ATOMS @7@3 @4@2 @8@4 #pairs of atoms to correlate. "@n" was added in 12.1.51 and is the same as "{atomno=n}"'
+,'animation on'
+
+,'### application animation play ###'
+,'# <image align=right src=appanim.png>The Jmol 12.3.10 application animation play forward/reverse buttons now allow continuous animation by holding the button down.'
+
+,'### _animTimeSec ###'
+,'# Jmol 12.3.10 adds a way of finding out (approximately) how long it will take for an animation to run once through. This allows a script to wait for an animation to run a specific number of times and then continue. It was needed for the St. Olaf installation of its <a href=http://www.youtube.com/watch?v=FTTIVWGtFD0>Molecular Playground</a>.'
+,'load mp-alkeneregioselectivity.png;zoom {*} 0;animation mode loop;animation on;delay @{2 * _animtimesec};animation off # twice through'
+
+,'### frame DELAY x.x ###'
+,'# Jmol 12.3.9 adds a way of pausing a running animation at any specific frame. The delay applies to all models specified in the most recent FRAME command.'
+,'load cyclohexaneFlip.jmol;frame 1.12;frame delay 2;draw pointgroup;frame title "half chair";frame 1.18;frame delay 2;frame title "twist boat";draw pointgroup;frame 1.25;frame delay 2;draw pointgroup;frame title "half chair";frame 1.1'
+,'select within(smarts,"{H}(.t : !-170,170)CC{H}");color green;select within(smarts,"{H}(.t :-10,10)CC{H}");color red # coloring trans-diaxial H atoms green and eclipsed H atoms red.'
+,'# (.t indicates a torsional angle range <a href=http://jmol.svn.sourceforge.net/viewvc/jmol/trunk/Jmol/src/org/jmol/smiles/package.html>3D-SMARTS</a> search; {..} indicates which specific atoms to select)'
+,'animation mode palindrome;animation on'
+,'### write PNGJ == PNG + JMOL <img src=data/1crn.png width=255 height=186 style="float:right; margin: 0 0 15px 15px;">###'
+,'# Jmol 12.3.8 adds the capability to write a single file that can be displayed (and placed into Google documents, for example) as a PNG file but also contains all the files necessary to load the state back into Jmol. Use <b>write PNGJ "filename"</b> to create these files. Go ahead and copy the image on the right to your hard drive and then open it with Jmol.'
+,'load 1crn.png'
+
+,'### load Z-matrix files ###'
+,'# The Z-Matrix format allows for molecules to be described by internal coordinates (distances, angles, and dihedrals) rather than in terms of actual Cartesian coordinates. Jmol 12.3.8 can read several forms of Z-matrix data, including Gaussan/MOPAC format as well as a format designed for Jmol that allows also the simple introduction of bond order. Details are given in the <a href=http://jmol.svn.sourceforge.net/viewvc/jmol/trunk/Jmol/src/org/jmol/adapter/readers/simple/ZMatrixReader.java?view=markup>Z-Matrix reader code</a> itself. Examples can be found in <a href=data>the data directory</a> under "zmat".'
+,'load zmat0.txt # methane'
+,'load zmat2.txt # CO2, with bonding designated'
+,'load zmat3.txt # CO2 with dummy atoms for repositioning'
+,'load zmat4.txt # NH3 using angles only, no dihedrals'
+,'load zmat5.txt # NH3 with variables'
+,'load zmat6.txt;frame title @{load("zmat6.txt").lines[1]}'
+,'load zmat7.txt;frame title @{load("zmat7.txt").lines[1]}'
+,'load zmat8.txt;frame title @{load("zmat8.txt").lines[1]}'
+,'load zmat9.txt;frame title @{load("zmat9.txt").lines[1]}'
+,'load zmat10.txt;frame title @{load("zmat10.txt").lines[1]}'
+,'load zmat11.txt;frame title @{load("zmat11.txt").lines[1]}'
+,'load zmat12.txt;frame title @{load("zmat12.txt").lines[1]}'
+,'load zmat13.txt;frame title @{load("zmat13.txt").lines[1]}'
+,'load zmat14.txt;frame title @{load("zmat14.txt").lines[1]}'
+,'load ZMATRIX::zmat6.txt # forcing ZMATRIX -- Ethane from the MOPAC example site'
+
+
+,'### color isosurface PHASE color1 color2 ###'
+,'# Jmol 12.3.5 allows coloring atomic orbitals and molecular orbitals by phase after they have been created.'
+
+,'### show NMR ###'
+,'# Jmol 12.3.3 adds the capability to display a predicted 1H NMR spectrum. This uses the service at <a href=http://www.nmrdb.org/predictor?smiles=N1%28C%29C%28N%28C2=C%28C1=O%29[N]%28C%29C=N2%29C%29=O>http://www.nmrdb.org/predictor</a>\
+ and requires the signed applet.  <a href=new.htm?USESIGNED&topic=1><b>click here</b></a> to load the signed applet.'
+,'load $acetaminophen'
+,'show nmr'
+
+
+
+
+,' See textarea below for results:<br>' + getTestLinks() +"<br><br>"
 
 
 //," JSON data returned:<br><textarea name=outputJSON id=outputJSON rows=5 cols=50></textarea>"
-," <input  type=checkbox name=idecode id=idecode checked=1>Decoded: <a href=javascript:showoutput()>new window</a><br><textarea name=output id=output rows=5 cols=50 wrap=off></textarea>"
+," <input  type=radio name=idecode id=idecodeArray checked=1>Array <input type=radio name=idecode id=idecodeJSON>JSON  <input  type=radio name=idecode id=idecodeString>String<br><textarea name=output id=output rows=5 cols=50 wrap=off></textarea><br> <a href=javascript:showoutput()>new window</a>"
 )
 remarks=""
 //]]>
@@ -185,97 +621,6 @@ whatm=""
 
 function xshowoutput(s){ if(!s) s=document.getElementById("output").value; dowritenew("<pre>"+s+"</pre>") };function oldshowoutput(){
  dowritenew("<pre>"+document.getElementById("output").value+"</pre>")
-}
-
-function dotest(iwhat){
- if(iwhat!=3)monitoron=false
- var s=""
- var sJSON=""
- var info=""
- var sinfo=""
- var sparam=""
- var str=""
- if(iwhat==-1){
-   sinfo="appletInfo"
- }else if(iwhat==-2){
-   sinfo="animationInfo"
- }else if(iwhat==0){
-   str="fileName"
- }else if(iwhat==1){
-   str="fileHeader"
-   info = jmolGetPropertyAsString(sinfo)
- }else if(iwhat==2){
-   str="fileContents"
- }else if(iwhat==3){
-   sinfo="orientationInfo"
- }else if(iwhat==3.1){
-   sinfo="auxiliaryInfo"
- }else if(iwhat==3.2){
-   sinfo="transformInfo"
- }else if(iwhat==3.3){
-   sinfo="centerInfo"
- }else if(iwhat==3.4){
-   sinfo="boundboxInfo"
- }else if(iwhat==3.5){
-   sinfo="zoomInfo"
- }else if(iwhat==4){
-   sinfo="modelInfo"
- }else if(iwhat==4.2){
-   sparam="PROMPT"
-   sinfo="polymerInfo"
- }else if(iwhat==4.3){
-   sparam="PROMPT"
-   sinfo="chainInfo"
- }else if(iwhat==4.4){
-   sinfo="shapeInfo"
- }else if(iwhat==4.5){
-   str="stateInfo"
- }else if(iwhat==7){
-   sparam="PROMPT"
-   sinfo="bondInfo"
- }else if(iwhat==7.5){
-   sparam="PROMPT"
-   sinfo="moleculeInfo"
- }else if(iwhat==8){
-   sparam="PROMPT"
-   sinfo="atomInfo"
- }else if(iwhat==8.1){
-   sparam="PROMPT"
-   sinfo="atomList"
- }else if(iwhat==9){
-   info = jmolGetPropertyAsArray("orientationInfo")
-   s="load "+jmolGetPropertyAsString("fileName")+";"+info.moveTo
-   document.getElementById("cmd").value=s
-   jmolScript(s)
- }else if(iwhat==10){
-   s=prompt("enter an atom expression",what)
-   if(!s)return
-   what=s
-   s = jmolGetPropertyAsString("extractModel",what)
-   var A=jmolGetPropertyAsArray("orientationInfo")
-   showoutput(s);   jmolLoadInlineScript(s,A.moveTo)
- }
- var cmd=""
- if(str!=""){
-   cmd = "jmolGetPropertyAsString(\"" + str + "\")"
-   s=jmolGetPropertyAsString(str)
- }else if(sinfo!=""){
-   if(sparam == "PROMPT"){
-     s=prompt("enter an atom expression",what)
-     if(!s)return
-     what=s
-     sparam=what
-   }
-   if(document.getElementById("idecode").checked){
-   cmd = "jmolGetPropertyAsArray(\"" + sinfo + "\",\"" + sparam + "\")"
-	s=jmolGetPropertyAsArray(sinfo,sparam)
-	s=_jmolEnumerateObject(s,sinfo)
-   }else{
-   cmd = "jmolGetPropertyAsJSON(\"" + sinfo + "\",\"" + sparam + "\")"
-	s=jmolGetPropertyAsJSON(sinfo,sparam)
-   }
- }
- if(s!="")document.getElementById("output").value=cmd + "\n\n" + s
 }
 
 function parseMessages(A){

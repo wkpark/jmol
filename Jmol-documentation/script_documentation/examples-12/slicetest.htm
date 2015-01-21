@@ -1,0 +1,110 @@
+<html>
+<head>
+<script type="text/javascript" src="Jmol.js"></script>
+<script type="text/javascript">
+function myCallback(a, b, c, d) {
+alert("myCallback a="+a+" b="+b+" c="+c+" d="+d)
+}
+
+
+var clicking = false
+
+function clickCallback(app, x, y, z, mode, e, f, g) {
+ if (clicking || mode < 0)return
+ clicking = true
+ var s = "m = {*}.x.min;d = ({*}.x.max - m);sc = 'isosurface s1 slab none slab x = ' + (m + " + x + ".0/_width *d);script inline @sc" 
+// document.title = mode + " " + e + " "+ f + " g="+ g + " s=" + s
+ jmolScript(s)
+ clicking = false
+}
+
+
+</script>
+</head>
+<body>
+
+<center>
+
+
+<table><tr>
+<td width=200>
+When the model is finished loading, click on the isosurface button, then click on the model to change the isosurface slab (controlled by the horizontal position of the click).
+
+</td>
+<td align=center>
+
+<script type="text/javascript">
+
+
+//jmolInitialize("../..","http://chemapps.stolaf.edu/pe/protexpl/molview/JmolAppletSigned.jar")
+jmolInitialize("../..","JmolAppletSigned0.jar")
+
+
+var xxxx = document.location.search
+if (xxxx.length == 0) {
+	xxxx = "tylenol"
+	script = 'set errorCallback "myCallback";'
+	+'set zoomlarge false;set echo top left;echo loading XXXX...;refresh;'
+	+'load "$XXXX";set echo top center;echo XXXX;'
+	+''
+	script = script.replace(/XXXX/g, xxxx)
+} else {
+	script = unescape(xxxx.substring(1))
+}
+
+//script = "set defaultLoadScript \"isosurface s1 vdw opaque;isosurface s2 vdw translucent;set clickCallback 'clickCallback'\";" + script 
+
+
+jmolApplet(["400","400"],script)
+
+</script>
+</td>
+
+<td>
+<script type="text/javascript">
+_jmol.buttonCssText="style='width:160'"
+jmolButton("if (!molname) { molname = 'tylenol'};var x = prompt('Enter the name or identifier (SMILES, InChI, CAS) of a molecule',molname);if (!x) { quit }; molname = x; load @{'$' + molname}","Load MOL by NAME")
+jmolBr()
+jmolButton("load ?","Load URL")
+jmolBr()
+jmolButton("load ?","Load FILE")
+jmolBr()
+jmolButton("script ?.spt","Load SCRIPT")
+jmolBr()
+jmolBr()
+jmolBr()
+jmolButton("write FILE ?","Save FILE")
+jmolBr()
+jmolButton("write STATE ?.spt","Save STATE")
+jmolBr()
+jmolButton("write IMAGE ?.jpg","Save JPG")
+jmolBr()
+jmolButton("write IMAGE ?.png","Save PNG")
+jmolBr()
+
+
+</script>
+
+</td></tr>
+
+<tr><td></td><td align=center>
+
+
+
+
+<script type="text/javascript">
+jmolBr()
+_jmol.buttonCssText="style='width:120'"
+jmolButton("wireframe 0.1", "wireframe")
+jmolButton("spacefill only;spacefill 23%;wireframe 0.15","ball&stick")
+jmolButton("isosurface s1 vdw opaque;isosurface s2 vdw translucent;set clickCallback 'clickCallback'", "isosurface")
+jmolBr()
+_jmol.buttonCssText="style='width:100'"
+jmolButton("console")
+jmolCommandInput()
+</script>
+
+</td></tr></table>
+
+</body>
+</html>

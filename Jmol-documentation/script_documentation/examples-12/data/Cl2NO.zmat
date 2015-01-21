@@ -1,0 +1,9 @@
+#ZMATRIX
+# from pubs.acs.org/doi/full/10.1021/ct9001762  	
+# jmolscript: measure {Cl1} {_N} {_O};measure {Cl1} {_N} {Cl2};wireframe -0.1;rotate z 177.1; rotate y 40.62; rotate z 68.35
+
+N1
+Cl1 N1 1.9866	
+O1  N1 1.1495	Cl1 117.65
+Cl2 N1 1.9866 O1  117.65 Cl1 -133.94
+

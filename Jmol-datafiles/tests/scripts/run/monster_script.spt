@@ -1,5 +1,11 @@
 defaultdirectory="http://chemapps.stolaf.edu/jmol/docs/examples-11/data"
-load cyclohexane_movie.xyz;pts = {C5}.split();print pts;draw @{pts.xyz.sub({1 0 0})} "X"
+//load cyclohexane_movie.xyz;pts = {C5}.split();print pts;draw @{pts.xyz.sub({1 0 0})} "X"
+
+  load cyclohexane_movie.xyz;pts = {C5}.split();
+  print pts.xyz;
+  print pts.xyz.type;
+  draw @{pts.xyz.sub({1 0 0})} "X"
+
 #defaultdirectory="c:/jmol-dev/workspace/jmol-documentation/script_documentation/examples-11/data"
 message 2
 #set showscript  # for slow operation
@@ -62,7 +68,6 @@ navigate 3 center (1-5);
 navigate 2 trace (1-5);
 set navigationMode off; set perspectiveModel 10
 show set
-
 
 
 #new0.htm
@@ -1382,13 +1387,11 @@ set perspectiveDepth on
 
 
 # operation.txt
-
 if (_version < 1103041);quit;endif
-
 load =1crn
 
 ###TESTBLOCKSTART###
-
+/**
 function checkop(op)
  ilist=array(true,3,4.5,"test1",{1 0 0},{0 0 1 0}, ({0 1 2 3}))
  jlist=array(false,5,8.5,"test2",{0 1 0},{0 1 0 0}, ({3 4 5}))

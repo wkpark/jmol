@@ -1,0 +1,126 @@
+The CGO (Compiled Graphical Object) command, introduced in Jmol 14.4, allows the creation 
+of relatively simple graphical objects similar to those used in PyMOL.  
+
+[
+
+||
+<b>
+cgo test1a [
+<br> BEGIN LINES
+<br> VERTEX 0 0 0 VERTEX 2 2 2
+<br> VERTEX 2 2 2 VERTEX 3 2 0  
+<br> END
+<br>]</b>
+
+| The basic syntax consists of an ID name (test1a here) followed by an array of keywords and data bounded by  
+BEGIN and END statements. In this case we are simply drawing two lines.
+
+||
+<b>cgo test1c [
+<br> BEGIN LINE_STRIP
+<br> VERTEX 4 0 0  
+<br> VERTEX 6 2 2  
+<br> VERTEX 5 2 0  
+<br> END
+<br>]</b>
+| LINE_STRIP allows drawing of connected lines.
+
+||
+<b>cgo test1b [
+<br> BEGIN LINE_LOOP
+<br> VERTEX 4 0 0  
+<br> VERTEX 6 2 2
+<br> VERTEX 5 2 0  
+<br> END
+<br>]</b>
+
+| LINE_LOOP allows drawing of a polygon.
+
+||
+<b>cgo test2 [
+<br> BEGIN POINTS
+<br> COLOR 255 0 0  
+<br> LINE 0 0  3 0 0 3 2 2 
+<br> COLOR 0 255 0  
+<br> LINE 0 0  3 2 2 4 2 0 
+<br> END
+<br>]</b>
+| COLOR acts on the next line. Only the last six numbers are used in the LINE commands. COLOR can also be used between vertices in LINE_STRIP and LINE_LOOP blocks.
+||
+<b>
+<br>cgo test2b [
+<br> BEGIN LINE_LOOP
+<br> DIAMETER 0.3
+<br> VERTEX 4 0 0 
+<br> VERTEX 6 2 2  
+<br> VERTEX 5 2 0  
+<br> END
+<br>]</b>
+|The diameter of the lines can be set.
+||
+<b>
+<br>cgo test2 [ SCREEN 20
+<br> BEGIN LINE_LOOP
+<br> VERTEX 10 10 
+<br> VERTEX 90 10
+<br> VERTEX 90 90
+<br> VERTEX 10 90
+<br> END
+<br>]</b>
+|Screen coordinates can also be used. [0 0] is in the top left corner.
+
+The syntax is <b>CGO [SCREEN z ...]</b>. CGO 2D VERTEX records are read as screen coordinates, with depth of z.
+ z > 0 indicates a percent (0.01 far back; 100 front);  z < 0 indicates an absolute screen z value as -z. 
+ Note that the VERTEX and other CGO point elements are 2D, not 3D.
+ 
+||
+<b>load $caffeine
+cgo test1a [ UVMAP @1 @6 @11 0 0 80 80 1 1
+<br> BEGIN LINE_LOOP
+<br> VERTEX 0 0 
+<br> VERTEX 80 0
+<br> VERTEX 80 80
+<br> VERTEX 0 80
+<br> END
+<br>]</b>
+| The  UVMAP specifies origin and two 3D vectors, two 2D ranges, and two scaling factors: <b>CGO [UVMAP @origin @x @y x0 y0 x1 y1 scaleX scaleY ...]</b>
+2D VERTEX records are scaled and mapped to a plane defined by @origin @x @y. Here we have a parallelogram based on atoms 1, 6, and 11.
+ 
+||
+<br><b>
+CGO[ PS @{point(-5,-5,0)} @{point(5,-5,0)} @{point(-5,5,0)] data "PS"
+<br>%!PS-Adobe-2.0 EPSF-1.2
+<br>%%Creator: Bob Hanson (from NBO)
+<br>%%Title: nbo orbital slice
+<br>%%CreationDate: 1/26/2015 5:36 AM
+<br>%%DocumentFonts: Helvetica
+<br>%%BoundingBox: 211 300 428 518
+<br>%% note: above numbers are from 0.24*881 0.24*1781 0.24*1256 0.24*2156
+<br>%%EndComments
+<br>%%EndProlog
+<br> 0.2400 0.2400 scale
+<br> newpath                    
+<br>  3 setlinewidth
+<br> newpath
+<br>  881 1256 moveto
+<br> 1781 1256 lineto
+<br> 1781 2156 lineto
+<br>  881 2156 lineto
+<br> closepath
+<br> stroke
+<br> 1241 1717 moveto
+<br> 1250 1713 lineto
+<br>...
+<br> stroke
+<br>%%Trailer
+<br>showpage
+<br>end "PS"
+</b>
+|
+TThe CGO PostScript option has the syntax <b>CGO [ PS @origin @x @y ] data "PS" [primitive encapsulated postscript data] end "PS"</b>
+It maps 2D EPS data onto a plane defined by an origin point, an x-axis point, and a y-axis point.
+This makes it somewhat similar to standard UV mapping of textures. It allows 2D data to be superimposed on a model.
+Only simple PS commands are available for drawing lines. (For example, it doesn not properly implement stroke. Allowed PS commands include  moveto, lineto, newpath, closepath, setlinewidth, and scale. It does not implement PS fill, gsave, or grestore). 
+The EPS  %%BoundingBox x0 y0 x1 y1 prolog record is used to map [x0 y0] to @origin, [x1 0] to @x, and [0 y1] to @y. 
+It is being used for NBO contour mapping.
+    

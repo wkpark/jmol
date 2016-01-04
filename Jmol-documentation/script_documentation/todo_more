@@ -1,0 +1,27 @@
+ 
+
+
+JmolVersion="14.3.12_2015.02.04"
+released
+
+new feature: print data({*},"xyz") 
+  -- (lower case) writes only atom data lines
+   
+new feature: print data({*},"XYZ", true) 
+  -- third parameter TRUE writes all trajectories
+
+
+JmolVersion="14.3.11_2015.01.15"
+
+new feature: modulation T x.x     
+new feature: modulation Q n     
+new feature: modulation T {t1 t2 t3}
+new feature: modulation Q {q1 q2 q3}
+JmolVersion="14.3.11_2014.12.21"
+
+
+	  
+
+    
+             
+    

@@ -1,0 +1,37 @@
+  
+
+JmolVersion="14.3.14_2015.06.01"
+ 
+new feature: NBO cfi file writer 
+ - print data({*}, "cfi")
+
+
+
+JmolVersion="14.3.13_2015.03.07"
+
+new feature: NBO command with no arguments starts NBO panel (Java application only)
+
+new feature: (JavaScript/HTML5; see JSmol_Console.java) 
+  // page designer may indicate one of three divs for images on the page:  
+  // <appletID>_Image_app_holder for IMAGE command by itself (current app image)
+  // <appletID>_Image_<cleaned id or filename>_holder  for IMAGE ID "xxx" ... or IMAGE "xxx"
+  //   where cleaning is with .replace(/\W/g,"_")
+  // <appletID>_Image_holder for all images not identified as above
+  // if a page div is not identified, then the image will be placed in a new floating div
+  
+
+JmolVersion="14.3.12_2015.01.24"
+
+new feature: load NBO CH3CH2CH3
+ -- retrieves the stucture of propane (in this case) from a local NBO server. 
+ -- including inorganics. For example:
+
+	 load nbo "Cr 3::acac"
+	 load nbo "Cr 2:::Bz"
+	 
+
+
+
+new feature: NBO command
+
+

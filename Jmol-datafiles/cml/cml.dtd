@@ -1,0 +1,76 @@
+<!--CML.DTD (Chemical Markup Language).                                -->
+
+<!-- ====================COPYRIGHT and DISCLAIMER====================  -->
+<!--
+ This file and accompanying files in the distribution are copyright
+ Peter Murray-Rust, 1996, 1997.  There is no charge for their use 
+ but they are not in the public domain and may not be modified.  The
+ phrases Chemical Markup Language anf Technical Markup Language and
+ the corresponding abbreviations CML and TecML are also copyright.
+
+ These files may be freely used for private study or research but may not 
+ be redistributed either in whole or part.
+
+ The author makes no representation of the suitability of these files for 
+ any purpose and disclaims any responsibility for their use for whatever
+ purpose.
+                                                                       -->
+<!-- ================================================================  -->
+
+<!-- if you are running dtd2html, comment out the IGNORE line.  Make sure
+    you put it back again before using the DTDs :-) -->
+<!ENTITY % dtd2html "IGNORE">
+<!ENTITY % dtd2html "INCLUDE">
+<![%dtd2html [
+<!ENTITY % dtd2html.kludge SYSTEM "dtd2html.kludge">
+%dtd2html.kludge;
+]]>
+
+<!-- IF YOU ARE EXTENDING THESE DTDS IT MUST BE AT THIS LEVEL          -->
+<!-- =========================TecML.DTD==============================  -->
+<!-- We add specific instances to generic types                        -->
+<!-- problem with these entities - dtd2html doesn't resolve them       -->
+
+<!-- the abc.def.inh parameter entities are concatenated to the parameter
+    entities in the TecML DTD ('inheritance')                          -->
+
+<!-- .................. BUILTIN values for X.ARR  ..................   -->
+
+<!-- builtin values for X.ARR in MOL -->
+<!ENTITY % mol.arr.bui PUBLIC "-//CML//ENTITIES MOL ARR.BUI//EN">
+<!ENTITY % tecml.arr.inh '%mol.arr.bui;'>
+
+<!-- .................. BUILTIN values for XLIST ..................    -->
+
+<!-- builtin values for XLIST in MOL                                   -->
+<!ENTITY % mol.lis.bui PUBLIC "-//CML//ENTITIES MOL LIS.BUI//EN">
+<!ENTITY % tecml.lis.inh '%mol.lis.bui;'                                 >
+
+<!-- .................. BUILTIN values for X.VAR  ..................   -->
+
+<!-- builtin values for X.VAR in MOL                                   -->
+<!ENTITY % mol.var.bui PUBLIC "-//CML//ENTITIES MOL VAR.BUI//EN">
+<!ENTITY % tecml.var.inh '%mol.var.bui;'                                 >
+
+<!-- ===========This is where other DTDs are included================  -->
+
+<!-- =========================TecML.DTD==============================  -->
+<!ENTITY % tecml PUBLIC "-//CML//DTD TecML//EN"                          >
+%tecml;
+<!ENTITY % tecml.dtd "IGNORE"                                            >
+
+<!-- =========================MOL.DTD==============================    -->
+<!ENTITY % mol PUBLIC "-//CML//DTD MOL//EN">
+%mol;
+
+<!-- =========================CML.DTD==============================    -->
+<!ELEMENT cml         O O   
+( head?, 
+( cml | tecml | xhtml | mol | atoms | xlist | xnotation | figure | bib |
+ admin )*)
+                                                                    -- -->
+<!ATTLIST cml
+          %name;
+          %href;
+          section     CDATA                             #IMPLIED
+                                                                    -- -->

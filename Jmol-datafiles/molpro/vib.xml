@@ -59,7 +59,7 @@
       <n>0.0</n>
       <n>1.0</n>
     </basisContraction>
-   </basisGroup>
+   </basisGroup>   
    <basisGroup id="2" minL="1" maxL="1" primitives="4" angular="spherical" contractions="2">
     <basisExponents>
       <n>17.7</n>

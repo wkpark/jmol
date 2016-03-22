@@ -1,0 +1,109 @@
+// smilescheck.spt
+// 
+// author: Bob Hanson 3/21/2016 9:22:26 AM
+
+
+function check(a,b) {
+  print "\n\n-------------------------------------"
+  if (b=="") b = a.replace("C","c")
+  print "loading " + a
+  load @{"$"+a} 
+  print "appending " + b
+  set appendnew true
+  load append @{"$"+b}
+  select {2.1}
+  translateselected {10 0 0}
+  zoom {*} 0
+  frame *
+  refresh
+  print "check " + "\""+a + "\" \""+b + "\""
+  print "\n-- 3D results for " + a
+  select {1.1}
+  print "NCI chemical name: " + show("chemical name").trim()
+  print "output SMILES/Jmol       \t" + {1.1}.find("SMILES")
+  print "output SMILES/CACTVS     \t" + {1.1}.find("SMILES/canonical")
+  print "output SMILES/open       \t" + {1.1}.find("SMILES/open")
+  print "output SMILES/openstrict \t" + {1.1}.find("SMILES/open strict")
+  var x = compare({2.1},{1.1},"ISOMER")
+  print "3D compare({2.1},{1.1},'ISOMER')\t" + x
+  set echo bottom center
+  echo @x
+  print "\n-- SMILES pattern comparison:"
+  print "NCI chemical name: " + a.find("CHEMICAL","NAME")
+  print "a = '" + a + "'"
+  print "b = '" + b + "'"
+  var anci = a.find("SMILES/nci")
+  var bnci = b.find("SMILES/nci")
+  print "print a.find('SMILES/nci')\t" + anci 
+  print "print b.find('SMILES/nci')\t" + bnci
+  print "print a.find('SMILES/nci') == b.find('SMILES/nci')        \t// " + (anci == bnci ? "OK" : "FAILED")
+  print "print a.find('SMILES/open',b)        \t// " + (a.find("SMILES/open",b) ? "OK" : "FAILED")
+  print "print b.find('SMILES/open',a)        \t// " + (b.find("SMILES/open",a) ? "OK" : "FAILED")
+  print "print a.find('SMILES/openstrict',b)  \t// " + (a.find("SMILES/openstrict",b) ? "OK" : "FAILED")
+  print "print b.find('SMILES/openstrict',a)  \t// " + (b.find("SMILES/openstrict",a) ? "OK" : "FAILED")
+
+//  select !_H
+//  background labels white
+//  label %a
+//  color labels black
+
+  select on search("/open/a")
+  delay 1
+  select on search("/open strict/a")
+  delay 1  
+}
+
+
+  
+print "\n\n=========================================="
+print "Non-aromatic Kekule check (all should pass)"
+print "=========================================="
+delay 3
+
+check("C=C1OC=CC=C1", "C=C1OC=CC=C1")
+check("C1=CC=CC=CC=C1", "C1=CC=CC=CC=C1")
+
+
+print "\n\n=========================================="
+print "OpenSMILES standard Kekule/aromatic Chemical Hueckel tests (all should pass)"
+print "=========================================="
+delay 3
+
+check "NC1=C2C3=CC=CC=C3C3=CC=CC(C=C1)=C23" "Nc1ccc2cccc3-c4ccccc4-c1c32"
+check "C1=CC=C2C(=C1)C1=CC=CC=C21" "c1ccc-2c(c1)-c3ccccc23"
+check "C1=CC2=CC=CC=CC2=C1" "c1cc2cccccc2c1"
+
+
+print "\n\n=========================================="
+print "OpenSMILES standard Kekule/aromatic biphenylene test (both should fail)"
+print "=========================================="
+delay 3
+
+check("C1=CC2=C3C4=C2C=C1.C4=CC=C3","c1cc2c3c4c2cc1.c4ccc3")
+check("C1=CC2=C3C4=C2C=C1.C4=CC=C3","C=1C=C2C=3C=4C2=CC=1.C=4C=CC=3")
+
+
+print "\n\n=========================================="
+print "Bridged Non-aromatic Kekule/aromatic check (strict should fail; NCI is OK)"
+print "=========================================="
+delay 3
+
+check("O1C2=CC=CC1=CC=C2", "c1cc2cccc(c1)o2")
+
+print "\n\n=========================================="
+print "Lactone strict/non-strict Kekule/aromatic tests (strict fails; NCI is OK)"
+print "=========================================="
+delay 3
+
+check("O=C1OC=CC=C1", "O=c1oc=cc=c1")
+
+print "\n\n=========================================="
+print "OpenSMILES strict/non-strict Kekule/aromatic tests (strict and NCI should both fail)"
+print "=========================================="
+delay 3
+
+check("O=C1C(=O)C2=C3C1=CC=CC3=CC=C2", "O=c1c(=O)c2cccc3cccc1c23")
+check("O=C1C=CC2=C3C1=CC=C1C=CC(=O)C(C=C2)=C31", "O=c1ccc2ccc3c(=O)ccc4ccc1c2c43")
+
+
+

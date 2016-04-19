@@ -323,5 +323,10 @@ public class Platform implements GenericPlatform {
     return Image.getImageDialog(vwr, title, imageMap);
   }
 
+  @Override
+  public boolean forceAsyncLoad(String filename) {
+    return false;
+  }
+
     
 }

@@ -66,6 +66,7 @@ public class BinaryDocument extends BC implements GenericBinaryDocument {
   protected boolean isRandom = false;
   public boolean isBigEndian = true;
   protected GenericZipTools jzt;
+  private byte[] magic4;
 
   @Override
   public void close() {
@@ -83,9 +84,16 @@ public class BinaryDocument extends BC implements GenericBinaryDocument {
   public void setStream(GenericZipTools jzt, BufferedInputStream bis, boolean isBigEndian) {
     if (jzt != null)
       this.jzt = jzt;
-    if (bis != null)
+    if (bis != null) {
+      magic4 = Rdr.getMagic(bis, 4);
       stream = new DataInputStream(bis);
+    }
     this.isBigEndian = isBigEndian;
+  }
+  
+  @Override
+  public byte[] getMagic() {
+    return  magic4;
   }
   
   @Override
@@ -106,10 +114,26 @@ public class BinaryDocument extends BC implements GenericBinaryDocument {
     return ioReadByte();
   }
 
+  @Override
+  public int readUInt8() throws Exception {
+    nBytes++;
+    int b = stream.readUnsignedByte();
+    if (out != null)
+      out.writeByteAsInt(b);
+    return b;
+  }
+
   private byte ioReadByte() throws Exception {
     byte b = stream.readByte();
     if (out != null)
       out.writeByteAsInt(b);
+    return b;
+  }
+
+  @Override
+  public byte[] readBytes(int n) throws Exception {
+    byte[] b = new byte[n];
+    readByteArray(b, 0, n);
     return b;
   }
 

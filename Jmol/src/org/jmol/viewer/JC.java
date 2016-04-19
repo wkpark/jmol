@@ -64,6 +64,7 @@ public final class JC {
     "nmr", "http://www.nmrdb.org/new_predictor?POST?molfile=",
     "nmrdb", "http://www.nmrdb.org/service/predictor?POST?molfile=",
     //"pdb", "http://ftp.wwpdb.org/pub/pdb/data/structures/divided/pdb/%c2%c3/pdb%file.ent.gz", // new Jmol 14.5.0 10/28/2015
+    "mmtf", "http://mmtf.rcsb.org/full/%FILE", // new Jmol 14.5.4 4/2016
     "pdb", "http://files.rcsb.org/view/%FILE.pdb", // new Jmol 14.4.4 3/2016
     "pdb0", "http://files.rcsb.org/view/%FILE.pdb", // used in JSmol
     "pdbe", "http://www.ebi.ac.uk/pdbe/entry-files/download/%FILE.cif",

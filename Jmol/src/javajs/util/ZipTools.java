@@ -327,20 +327,26 @@ public class ZipTools implements GenericZipTools {
   public void readFileAsMap(BufferedInputStream bis, Map<String, Object> bdata, String name) {
     int pt = (name == null ? -1 : name.indexOf("|"));
     name = (pt >= 0 ? name.substring(pt + 1) : null);
+    byte[] bytes = null;
     try {
       if (Rdr.isPngZipStream(bis)) {
         boolean isImage = "_IMAGE_".equals(name);
-        if (name == null || isImage)
-          bdata.put((isImage ? "_DATA_" : "_IMAGE_"), new BArray(getPngImageBytes(bis)));
+        if (name == null || isImage) {
+          bytes = getPngImageBytes(bis);
+          bdata.put((isImage ? "_DATA_" : "_IMAGE_"), new BArray(bytes));
+        }
         if (!isImage)
           cacheZipContents(bis, name, bdata, true);
       } else if (Rdr.isZipS(bis)) {
         cacheZipContents(bis, name, bdata, true);
       } else if (name == null){
-        bdata.put("_DATA_", new BArray(Rdr.getLimitedStreamBytes(bis, -1)));
+        bytes = Rdr.getLimitedStreamBytes(Rdr.getUnzippedInputStream(this, bis), -1);
+        bdata.put("_DATA_", new BArray(bytes));
       } else {
         throw new IOException("ZIP file " + name + " not found");
       }
+      if (bytes != null)
+        bdata.put("_LEN_", Integer.valueOf(bytes.length));
       bdata.put("$_BINARY_$", Boolean.TRUE);
     } catch (IOException e) {
       bdata.clear();

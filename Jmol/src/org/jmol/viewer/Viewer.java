@@ -2180,6 +2180,9 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   private String createModelSetAndReturnError(Object atomSetCollection,
                                               boolean isAppend, SB loadScript,
                                               Map<String, Object> htParams) {
+    
+    Logger.startTimer("creating model");
+
     String fullPathName = fm.getFullPathName(false);
     String fileName = fm.getFileName();
     String errMsg;
@@ -2250,6 +2253,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       axesAreTainted = true;
     }
     atomSetCollection = null;
+    Logger.checkTimer("creating model", false);
     System.gc();
     return errMsg;
   }
@@ -3920,6 +3924,10 @@ public class Viewer extends JmolViewer implements AtomDataServer,
           return name;
         }
       } else {
+        if (id.endsWith(".mmtf")) {
+          id = id.substring(0, id.indexOf(".mmtf"));
+          return g.resolveDataBase("mmtf", id.toUpperCase(), null);
+        }
         format = (
         // following is temporary, until issues are resolved for AJAX asych
         isJS && g.loadFormat.equals(g.pdbLoadFormat) ? g.pdbLoadFormat0
@@ -3929,8 +3937,9 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     case '#': // ligand
       if (format == null)
         format = g.pdbLoadLigandFormat;
-      if (id.indexOf(".") >= 0 && format.equals(g.pdbLoadFormat))
-        format = g.pdbLoadFormat0; // older version for =1crn.cif or  =1crn.pdb
+      if (id.indexOf(".") >= 0 && format.equals(g.pdbLoadFormat)) {
+          format = g.pdbLoadFormat0; // older version for =1crn.cif or  =1crn.pdb
+      }
       return g.resolveDataBase(null, id, format);
     case '*':
       // European Bioinformatics Institute

@@ -76,10 +76,6 @@ import java.util.Properties;
 
 public final class ModelLoader {
   
-  //public void finalize() {
-  //  System.out.println("ModelLoader " + this + " finalized");
-  //}
-  
   private Viewer vwr;
   public ModelSet ms;
   private ModelSet modelSet0;

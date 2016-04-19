@@ -28,6 +28,8 @@ public interface GenericBinaryDocument {
 
   byte readByte() throws Exception;
 
+  int readUInt8() throws Exception;
+
   int readInt() throws Exception;
 
   int readIntLE() throws Exception;
@@ -46,8 +48,12 @@ public interface GenericBinaryDocument {
 
   int readByteArray(byte[] b, int off, int len) throws Exception;
 
+  byte[] readBytes(int n) throws Exception;
+
   void close();
 
   void setOutputChannel(OC out);
+
+  byte[] getMagic();
 
 }

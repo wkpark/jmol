@@ -31,6 +31,7 @@ import java.util.StringTokenizer;
 import javajs.api.GenericBinaryDocument;
 import javajs.util.LimitedLineReader;
 import javajs.util.PT;
+import javajs.util.Rdr;
 
 
 import org.jmol.api.Interface;
@@ -45,7 +46,7 @@ public class Resolver {
   private final static String classBase = "org.jmol.adapter.readers.";
   private final static String[] readerSets = new String[] {
     "aflow.", ";AFLOW;",
-    "cif.", ";Cif;MMCif;",
+    "cif.", ";Cif;MMCif;MMTF;",
     "molxyz.", ";Mol3D;Mol;Xyz;",
     "more.", ";BinaryDcd;Gromacs;Jcampdx;MdCrd;MdTop;Mol2;TlsDataOnly;",
     "quantum.", ";Adf;Csf;Dgrid;GamessUK;GamessUS;Gaussian;GaussianFchk;GaussianWfn;Jaguar;" +
@@ -229,8 +230,10 @@ public class Resolver {
     // We must do this in a very specific order. DON'T MESS WITH THIS!
     
     if (readerOrDocument instanceof GenericBinaryDocument) {
-      // only binary type to date;      
-      return "PyMOL";
+      GenericBinaryDocument doc = (GenericBinaryDocument) readerOrDocument;
+      return (Rdr.isPickleB(doc.getMagic()) ? "PyMOL" 
+          : Rdr.isMessagePackB(doc.getMagic()) ? "MMTF"
+          : "binary file type not recognized");
     }
     
     String readerName;

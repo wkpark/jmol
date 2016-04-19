@@ -40,7 +40,9 @@ public interface JmolToJSmolInterface extends JmolObjectInterface {
   // JSmolApi.js
   void resizeApplet(Object html5Applet, int[] dims);
 
-  /// more ///
+  // JmolCore.js
+  boolean _isBinaryUrl(String filename);
+
   
 
 }

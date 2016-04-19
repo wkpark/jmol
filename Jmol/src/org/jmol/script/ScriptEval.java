@@ -4555,7 +4555,8 @@ public class ScriptEval extends ScriptExpr {
             .append(PT.esc((String) o)).append(";\n    ").appendSB(loadScript);
         htParams.put("fileData", o);
       } else if ((vwr.testAsync || vwr.isJS)
-          && (isAsync || filename.startsWith("?"))) {
+          && (isAsync || filename.startsWith("?")) 
+          || vwr.apiPlatform.forceAsyncLoad(filename)) {
         localName = null;
         filename = loadFileAsync("LOAD" + (isAppend ? "_APPEND_" : "_"),
             filename, i, !isAppend && pc != pcResume);
@@ -4620,10 +4621,7 @@ public class ScriptEval extends ScriptExpr {
         } else {
           id = filename.substring(1, pt);
         }
-        String fullext = filename.substring(pt + 1);
-        // allow for defined file =1
-        pt = fullext.indexOf("=");
-        String ext = (pt < 0 ? fullext : fullext.substring(0, pt));
+        String ext = filename.substring(pt + 1);
         filename = filename.substring(0, pt);
         if ((pt = filename.indexOf(".")) >= 0)
           filename = filename.substring(0, pt);

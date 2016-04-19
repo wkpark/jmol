@@ -938,11 +938,11 @@ public class ScriptMathProcessor {
         return addXPt4(pt4);
       case T.matrix3f:
         m = M3.newM3((M3) x2.value);
-        m.transpose();
+        m.invert();
         return addXM3(m);
       case T.matrix4f:
         m4 = M4.newM4((M4) x2.value);
-        m4.transpose();
+        m4.invert();
         return addXM4(m4);
       case T.bitset:
         return addXBs(BSUtil.copyInvert((BS) x2.value,

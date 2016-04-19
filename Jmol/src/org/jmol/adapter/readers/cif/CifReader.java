@@ -88,7 +88,7 @@ public class CifReader extends AtomSetCollectionReader {
   private boolean allowRotations = true;
   private boolean readIdeal = true;
   private int configurationPtr = Integer.MIN_VALUE;
-  private boolean useAuthorChainID = true;
+  protected boolean useAuthorChainID = true;
 
   protected String thisDataSetName = "", lastDataSetName;
   private String chemicalName = "";
@@ -119,13 +119,12 @@ public class CifReader extends AtomSetCollectionReader {
   private int modDim;
 
   protected Map<String, String> htGroup1;
-  private int nAtoms0;
+  protected int nAtoms0;
   private int titleAtomSet = 1;
 
   @Override
   public void initializeReader() throws Exception {
     initSubclass();
-    parser = new CifDataParser().set(this, null);
     allowPDBFilter = true;
     appendedData = (String) htParams.get("appendedData");
     String conf = getFilter("CONF ");
@@ -143,10 +142,14 @@ public class CifReader extends AtomSetCollectionReader {
     allowRotations = !checkFilterKey("NOSYM");
     if (strSupercell != null && strSupercell.indexOf(",") >= 0)
       addCellType("conventional", strSupercell, true);
+    if (binaryDoc != null)
+      return; // mmtf
     readCifData();
     continuing = false;
   }
 
+  
+ 
   protected void initSubclass() {
     // for MMCifReader
   }
@@ -164,6 +167,7 @@ public class CifReader extends AtomSetCollectionReader {
      * than that, we are checking here for proper CIF syntax, and Jmol will
      * report if it finds data where a key is supposed to be.
      */
+    parser = new CifDataParser().set(this, null);
     line = "";
     while ((key = parser.peekToken()) != null)
       if (!readAllData())
@@ -381,6 +385,12 @@ public class CifReader extends AtomSetCollectionReader {
     if (n > 1)
       asc.setCollectionName("<collection of " + n + " models>");
     finalizeReaderASCR();
+    addHeader();
+    if (haveAromatic)
+      addJmolScript("calculate aromatic");
+  }
+
+  protected void addHeader() {
     String header = parser.getFileHeader();
     if (header.length() > 0) {
       String s = setLoadNote();
@@ -390,9 +400,9 @@ public class CifReader extends AtomSetCollectionReader {
       setLoadNote();
       asc.setInfo("fileHeader", header);
     }
-    if (haveAromatic)
-      addJmolScript("calculate aromatic");
   }
+
+
 
   protected boolean finalizeSubclass() throws Exception {
     // MMCifReader only    

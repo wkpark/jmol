@@ -1035,13 +1035,12 @@ public class XtalSymmetry {
     int len = biomts.size();
     this.applySymmetryToBonds = applySymmetryToBonds;
     bondCount0 = asc.bondCount;
-    boolean addBonds = (bondCount0 > asc.bondIndex0 && applySymmetryToBonds);
-    int[] atomMap = (addBonds ? new int[asc.ac] : null);
     firstSymmetryAtom = asc.getLastAtomSetAtomIndex();
     int atomMax = asc.ac;
     Map<Integer, BS> ht = new Hashtable<Integer, BS>();
     int nChain = 0;
     Atom[] atoms = asc.atoms;
+    boolean addBonds = (bondCount0 > asc.bondIndex0 && applySymmetryToBonds);
     switch (particleMode) {
     case PARTICLE_CHAIN:
       for (int i = atomMax; --i >= firstSymmetryAtom;) {
@@ -1073,6 +1072,7 @@ public class XtalSymmetry {
       }
       firstSymmetryAtom = atomMax;
       atomMax += nChain;
+      addBonds = false;
       break;
     case PARTICLE_SYMOP:
       asc.bsAtoms = new BS();
@@ -1086,6 +1086,7 @@ public class XtalSymmetry {
       a.radius = 16;
       asc.addAtom(a);
       firstSymmetryAtom = atomMax++;
+      addBonds = false;
       break;
     }
     Map<String, BS> assemblyIdAtoms = (Map<String, BS>) thisBiomolecule
@@ -1098,6 +1099,7 @@ public class XtalSymmetry {
     for (int iAtom = firstSymmetryAtom; iAtom < atomMax; iAtom++)
       atoms[iAtom].bsSymmetry = BSUtil.newAndSetBit(0);
     BS bsAtoms = asc.bsAtoms;
+    int[] atomMap = (addBonds ? new int[asc.ac] : null);
     for (int i = (biomtchains == null ? 1 : 0); i < len; i++) {
       if (filter.indexOf("!#") >= 0) {
         if (filter.indexOf("!#" + (i + 1) + ";") >= 0)
@@ -1126,7 +1128,7 @@ public class XtalSymmetry {
                 + ";") < 0)
           continue;
         try {
-          int atomSite = atoms[iAtom].atomSite; 
+          int atomSite = atoms[iAtom].atomSite;
           Atom atom1;
           if (addBonds)
             atomMap[atomSite] = asc.ac;
@@ -1136,22 +1138,23 @@ public class XtalSymmetry {
           atom1.atomSite = atomSite;
           mat.rotTrans(atom1);
           atom1.bsSymmetry = BSUtil.newAndSetBit(i);
-          if (addBonds) {
-            // Clone bonds
-            for (int bondNum = asc.bondIndex0; bondNum < bondCount0; bondNum++) {
-              Bond bond = asc.bonds[bondNum];
-              int iAtom1 = atomMap[atoms[bond.atomIndex1].atomSite];
-              int iAtom2 = atomMap[atoms[bond.atomIndex2].atomSite];
-              if (iAtom1 >= atomMax || iAtom2 >= atomMax)
-                asc.addNewBondWithOrder(iAtom1, iAtom2, bond.order);
-            }
-          }
         } catch (Exception e) {
           asc.errorMessage = "appendAtomCollection error: " + e;
         }
       }
-      if (i > 0)
+      if (i > 0) {
         symmetry.addBioMoleculeOperation(mat, false);
+        if (addBonds) {
+          // Clone bonds
+          for (int bondNum = asc.bondIndex0; bondNum < bondCount0; bondNum++) {
+            Bond bond = asc.bonds[bondNum];
+            int iAtom1 = atomMap[atoms[bond.atomIndex1].atomSite];
+            int iAtom2 = atomMap[atoms[bond.atomIndex2].atomSite];
+//            if (iAtom1 >= atomMax || iAtom2 >= atomMax)
+            asc.addNewBondWithOrder(iAtom1, iAtom2, bond.order);
+          }
+        }
+      }
     }
     if (biomtchains != null) {
       if (asc.bsAtoms == null)

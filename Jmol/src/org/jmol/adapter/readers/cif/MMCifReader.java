@@ -60,16 +60,16 @@ import org.jmol.util.SimpleUnitCell;
  */
 public class MMCifReader extends CifReader {
 
-  private boolean isBiomolecule;
+  protected boolean isBiomolecule;
   private boolean byChain, bySymop;
   private Map<String, P3> chainAtomMap;
   private Map<String, int[]> chainAtomCounts;
 
-  private Lst<Map<String, Object>> vBiomolecules;
-  private Map<String, Object> thisBiomolecule;
+  protected Lst<Map<String, Object>> vBiomolecules;
+  protected Map<String, Object> thisBiomolecule;
   private Map<String, M4> htBiomts;
-  private Map<String, Map<String, Object>> htSites;
-  private Map<String, String> htHetero;
+  protected Map<String, Map<String, Object>> htSites;
+  protected Map<String, String> htHetero;
   private Map<String, Lst<Object[]>> htBondMap;
   private Map<String, BS> assemblyIdAtoms;
 
@@ -459,7 +459,7 @@ public class MMCifReader extends CifReader {
   }
 
   @SuppressWarnings("unchecked")
-  private void addAssembly(String[] assem) throws Exception {
+  protected void addAssembly(String[] assem) throws Exception {
     String id = assem[ASSEM_ID];
     String list = assem[ASSEM_LIST];
     String operators = assem[ASSEM_OPERS];
@@ -489,6 +489,10 @@ public class MMCifReader extends CifReader {
     }
     ((Lst<String>) info.get("assemblies")).addLast("$" + list.replace(',', '$'));
     ((Lst<String>) info.get("operators")).addLast(decodeAssemblyOperators(operators));
+    checkFilterAssembly(id, info);
+  }
+
+  protected void checkFilterAssembly(String id, Map<String, Object> info) {
     if (checkFilterKey("ASSEMBLY " + id + ";") || checkFilterKey("ASSEMBLY=" + id + ";"))
       thisBiomolecule = info;
   }
@@ -514,7 +518,7 @@ public class MMCifReader extends CifReader {
     if (ops.startsWith("(")) {
       if (ops.indexOf("-") >= 0)
         ops = BS.unescape(
-            "({" + ops.substring(1, ops.length() - 1).replace('-', ':') + "})")
+            "({" + ops.substring(1, ops.length() - 1).replace('-', ':').replace(',', ' ') + "})")
             .toJSON();
       ops = PT.rep(ops, " ", "");
       ops = ops.substring(1, ops.length() - 1);
@@ -529,7 +533,6 @@ public class MMCifReader extends CifReader {
     for (int i = 0; i < opsLeft.length; i++)
       for (int j = 0; j < opsRight.length; j++)
         sb.append(",").append(opsLeft[i]).append("|").append(opsRight[j]);
-    //System.out.println((ops1 + "\n" + ops2 + "\n" + sb.toString()).length());
     return sb.toString().substring(1);
   }
 
@@ -568,12 +571,16 @@ public class MMCifReader extends CifReader {
           m[11] *= symmetry.getUnitCellInfoType(SimpleUnitCell.INFO_C) / 12;
         }
         m4.setA(m);
-        if (htBiomts == null)
-          htBiomts = new Hashtable<String, M4>();
-        htBiomts.put(id, m4);
+        addBiomt(id, m4);
       }
     }
     return true;
+  }
+
+  protected void addBiomt(String id, M4 m4) {
+    if (htBiomts == null)
+      htBiomts = new Hashtable<String, M4>();
+    htBiomts.put(id, m4);
   }
 
   ////////////////////////////////////////////////////////////////
@@ -638,7 +645,7 @@ public class MMCifReader extends CifReader {
 //    return true;
 //  }
 
-  private void addHetero(String groupName, String hetName, boolean addNote) {
+  protected void addHetero(String groupName, String hetName, boolean addNote) {
     if (!vwr.getJBR().isHetero(groupName))
       return;
     if (htHetero == null)
@@ -1055,7 +1062,6 @@ public class MMCifReader extends CifReader {
       String key2 = vwr.getChainID(getField(STRUCT_CONN_ASYM2), true) + getField(STRUCT_CONN_COMP2)
           + parseFloatStr(getField(STRUCT_CONN_SEQ2))
           + getField(STRUCT_CONN_ATOM2) + getField(STRUCT_CONN_ALT2);
-      //System.out.println(type + "\t" + key1 + " " + key2);
       int order = getBondOrder(getField(STRUCT_CONN_ORDER));
       if (structConnMap == null)
         structConnMap = new Lst<Object[]>();
@@ -1166,40 +1172,42 @@ public class MMCifReader extends CifReader {
     
     fieldProperty(modelField);
     int modelNo = parseIntStr(field);
-    if (modelNo != currentModelNo) {
-      boolean isAssembly = (thisDataSetName != null && thisDataSetName.indexOf("-assembly-") >= 0);
-      if (isAssembly) {
-        // Files such as http://www.ebi.ac.uk/pdbe/static/entry/download/2lev-assembly-1.cif.gz
-        // may require sorting if there are multiple models, since the models are by chain, not by model.
+    return (modelNo == currentModelNo ? modelNo : incrementModel(modelNo));
+  }
 
-        useFileModelNumbers = true;
-        String key = "," + modelNo + ",";
-        if (modelStrings.indexOf(key) >= 0) {
-          requiresSorting = true;
-        } else {
-          modelStrings += key;
-        }
-      }      
-      if (iHaveDesiredModel && asc.atomSetCount > 0 && !isAssembly) {
-        parser.skipLoop(false);
-        // but only this atom loop
-        skipping = false;
-        continuing = true;
-        return Integer.MIN_VALUE;
+  protected int incrementModel(int modelNo) throws Exception {
+    boolean isAssembly = (thisDataSetName != null && thisDataSetName.indexOf("-assembly-") >= 0);
+    if (isAssembly) {
+      // Files such as http://www.ebi.ac.uk/pdbe/static/entry/download/2lev-assembly-1.cif.gz
+      // may require sorting if there are multiple models, since the models are by chain, not by model.
+
+      useFileModelNumbers = true;
+      String key = "," + modelNo + ",";
+      if (modelStrings.indexOf(key) >= 0) {
+        requiresSorting = true;
+      } else {
+        modelStrings += key;
       }
-      int modelNumberToUse = (useFileModelNumbers ? modelNo : ++modelIndex);
-      setHetero();
-      newModel(modelNumberToUse);
-      if (!skipping) {
-        nextAtomSet();
-        if (modelMap == null || asc.ac == 0)
-          modelMap = new Hashtable<String, Integer>();
-        modelMap.put("" + modelNo, Integer.valueOf(Math.max(0, asc.iSet)));
-        modelMap
-            .put("_" + Math.max(0, asc.iSet), Integer.valueOf(modelNo));
-      }
+    }      
+    if (iHaveDesiredModel && asc.atomSetCount > 0 && !isAssembly) {
+      parser.skipLoop(false);
+      // but only this atom loop
+      skipping = false;
+      continuing = true;
+      return Integer.MIN_VALUE;
     }
-    return modelNo;
+    int modelNumberToUse = (useFileModelNumbers ? modelNo : ++modelIndex);
+    setHetero();
+    newModel(modelNumberToUse);
+    if (!skipping) {
+      nextAtomSet();
+      if (modelMap == null || asc.ac == 0)
+        modelMap = new Hashtable<String, Integer>();
+      modelMap.put("" + modelNo, Integer.valueOf(Math.max(0, asc.iSet)));
+      modelMap
+          .put("_" + Math.max(0, asc.iSet), Integer.valueOf(modelNo));
+    }
+  return modelNo;
   }
 
   private void setHetero() {

@@ -138,4 +138,6 @@ public interface GenericPlatform extends FontManager {
   GenericImageDialog getImageDialog(String title,
                                  Map<String, GenericImageDialog> imageMap);
 
+  boolean forceAsyncLoad(String filename);
+
 }

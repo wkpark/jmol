@@ -660,7 +660,7 @@ public class FileManager implements BytePoster {
         String s = doc.getAllDataFiles("Molecule", "Input").toString();
         return (forceInputStream ? Rdr.getBIS(s.getBytes()) : Rdr.getBR(s));
       }
-      if (Rdr.isPickleS(bis))
+      if (Rdr.isPickleS(bis) || Rdr.isMessagePackS(bis))
         return bis;
       bis = Rdr.getPngZipStream(bis, true);
       if (Rdr.isZipS(bis)) {

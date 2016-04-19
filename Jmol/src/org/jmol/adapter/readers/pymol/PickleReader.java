@@ -20,7 +20,7 @@ import org.jmol.viewer.Viewer;
  * This results in a huge unnecessary memory overhead. My only solution is to only
  * cache Strings in memo, and then only selectively -- not parts of movie; not when 
  * markCount > 5 (residues). This seems to work, but it is still way overkill, since each 
- * atom generates several items. My only   
+ * atom generates several items.  
  * 
  * see http://www.picklingtools.com/
  * 

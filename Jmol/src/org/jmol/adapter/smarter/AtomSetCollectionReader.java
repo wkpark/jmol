@@ -751,7 +751,7 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
   }
 
   public void setSpaceGroupName(String name) {
-    if (ignoreFileSpaceGroupName)
+    if (ignoreFileSpaceGroupName || name == null)
       return;
     String s = name.trim();
     if (s.equals(sgName))
@@ -907,7 +907,7 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
 
   protected BS bsFilter;
   public String filter;
-  private boolean haveAtomFilter;
+  public boolean haveAtomFilter;
   private boolean filterAltLoc;
   private boolean filterGroup3;
   private boolean filterChain;

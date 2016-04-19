@@ -213,6 +213,7 @@ public class MMCifReader extends CifReader {
     if (byChain && !isBiomolecule)
       for (String id : chainAtomMap.keySet())
         createParticle(id);
+    boolean haveBiomolecule = (vBiomolecules != null && vBiomolecules.size() > 0);
     if (!isCourseGrained && asc.ac == nAtoms) {
       asc.removeCurrentAtomSet();
     } else {
@@ -232,24 +233,27 @@ public class MMCifReader extends CifReader {
       setHetero();
       if (doSetBonds)
         setBonds();
-      if (!isCourseGrained)
-        applySymmetryAndSetTrajectory();
     }
-
+    if (asc.ac == 0)
+      return false;
+    String spaceGroup = sgName;
+    float[] ucParams = unitCellParams;
+    int[] lattice = latticeCells;
     if (htSites != null)
       addSites(htSites);
-    if (vBiomolecules != null && vBiomolecules.size() > 0
-        && (isCourseGrained || asc.ac > 0)) {
+    
+    if (haveBiomolecule) {
       asc.setCurrentModelInfo("biomolecules", vBiomolecules);
       setBiomolecules();
       if (thisBiomolecule != null) {
-        asc.getXSymmetry().applySymmetryBio(thisBiomolecule, unitCellParams,
+        asc.getXSymmetry().applySymmetryBio(thisBiomolecule,
             applySymmetryToBonds, filter);
         asc.xtalSymmetry = null;
       }
     }
     if (requiresSorting)
       sortAssemblyModels();
+    
     return true;
   }
 
@@ -700,7 +704,7 @@ public class MMCifReader extends CifReader {
       return false;
     }
     while (parser.getData()) {
-      Structure structure = new Structure(-1, STR.HELIX, STR.HELIX, null, 0, 0);
+      Structure structure = new Structure(-1, STR.HELIX, STR.HELIX, null, 0, 0, null);
       int n = parser.getColumnCount();
       for (int i = 0; i < n; ++i) {
         switch (fieldProperty(i)) {
@@ -785,7 +789,7 @@ public class MMCifReader extends CifReader {
     }
     while (parser.getData()) {
       Structure structure = new Structure(-1, STR.SHEET, STR.SHEET, getField(SHEET_ID), 
-          parseIntStr(getField(STRAND_ID)), 1);
+          parseIntStr(getField(STRAND_ID)), 1, null);
       structure.startChainID = vwr.getChainID(getField(BEG_ASYM_ID), true);
       structure.startSequenceNumber = parseIntStr(getField(BEG_SEQ_ID));
       structure.startInsertionCode = getField(BEG_INS_CODE).charAt(0);

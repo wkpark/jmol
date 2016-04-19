@@ -57,4 +57,6 @@ public abstract class JmolAdapterStructureIterator {
   public abstract int[] getAtomIndices();
 
   public abstract int[] getModelIndices();
+
+  public abstract BS[] getBSAll();
 }

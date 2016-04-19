@@ -58,8 +58,8 @@ public class AminoPolymer extends AlphaPolymer {
    */
   
   
-  AminoPolymer(Monomer[] monomers) {
-    super(monomers);
+  AminoPolymer(Monomer[] monomers, int pt0) {
+    super(monomers, pt0);
     type = TYPE_AMINO;
     for (int i = 0; i < monomerCount; ++i)
       if (!((AminoMonomer) monomers[i]).hasOAtom())
@@ -507,6 +507,5 @@ public class AminoPolymer extends AlphaPolymer {
   public void setStructureList(Map<STR, float[]> structureList) {
     this.structureList = structureList;
   }
-
 
 }

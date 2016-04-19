@@ -570,7 +570,7 @@ public class DSSP implements DSSPInterface {
         setTag(labels[i], bsSheet, 'E');
       }
       if (setStructure) {
-        setStructure(ap, bsSheet, STR.SHEET);
+        ap.setStructureBS(STR.SHEET, bsSheet, false);
       }
       done[i].or(bsSheet);
       done[i].or(bsBridge);
@@ -739,17 +739,30 @@ public class DSSP implements DSSPInterface {
 
     BS bsTurn = new BS();
 
+// The DSSP site does something odd here and seems to put helix-5 first
+// Looks like despite what is said in the paper, we need to do the >>55555<< marks first
+//    String line5 = findHelixes2(iPolymer, 5, min, STR.HELIXPI,
+//        Edge.BOND_H_PLUS_5, bsTurn, true);
+//    String line4 = findHelixes2(iPolymer, 4, min, STR.HELIXALPHA,
+//        Edge.BOND_H_PLUS_4, bsTurn, false);
+//    String line3 = findHelixes2(iPolymer, 3, min, STR.HELIX310,
+//        Edge.BOND_H_PLUS_3, bsTurn, false);
+
     String line4 = findHelixes2(iPolymer, 4, min, STR.HELIXALPHA,
-        Edge.BOND_H_PLUS_4, bsTurn);
+        Edge.BOND_H_PLUS_4, bsTurn, true);
     String line3 = findHelixes2(iPolymer, 3, min, STR.HELIX310,
-        Edge.BOND_H_PLUS_3, bsTurn);
+        Edge.BOND_H_PLUS_3, bsTurn, false);
     String line5 = findHelixes2(iPolymer, 5, min, STR.HELIXPI,
-        Edge.BOND_H_PLUS_5, bsTurn);
+        Edge.BOND_H_PLUS_5, bsTurn, false);
+
+    
+    //   String line5 = findHelixes2(iPolymer, 5, min, STR.HELIXPI,
+ //       Edge.BOND_H_PLUS_5, bsTurn);
 
     // G, H, and I have been set; now set what is left over as turn
 
     if (setStructure)
-      setStructure(ap, bsTurn, STR.TURN);
+      ap.setStructureBS(STR.TURN, bsTurn, false);
 
     if (doReport) {
       setTag(labels[iPolymer], bsTurn, 'T');
@@ -762,7 +775,7 @@ public class DSSP implements DSSPInterface {
 
   private String findHelixes2(int iPolymer, int pitch, int[][][] min,
                               STR subtype, int type,
-                              BS bsTurn) {
+                              BS bsTurn, boolean isFirst) {
 
     // The idea here is to run down the polymer setting bit sets
     // that identify start, stop, N, and X codes: >, <, 3, 4, 5, and X
@@ -819,7 +832,7 @@ public class DSSP implements DSSPInterface {
         ipt = bsDone.nextSetBit(i0);
         boolean isClear = (ipt < 0 || ipt >= i);
         boolean addH = false;
-        if (i0 > 0 && bsStart.get(i0 - 1) && (pitch == 4 || isClear)) {
+        if (i0 > 0 && bsStart.get(i0 - 1) && (isFirst || isClear)) {
           bsHelix.setBits(i0, i);
           if (!isClear)
             warning += "  WARNING! Bridge to helix at " + ap.monomers[ipt];
@@ -856,7 +869,7 @@ public class DSSP implements DSSPInterface {
     // create the Jmol helix structures of the given subtype
 
     if (setStructure)
-      setStructure(ap, bsHelix, subtype); // GHI;
+      ap.setStructureBS(subtype, bsHelix, false); // GHI;
 
     if (doReport) {
       setTag(labels[iPolymer], bsHelix, (char) ('D' + pitch));
@@ -870,13 +883,4 @@ public class DSSP implements DSSPInterface {
       tags[i] = ch;
   }
 
-  private void setStructure(AminoPolymer ap, BS bs, STR type) {
-    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-      int i2 = bs.nextClearBit(i);
-      if (i2 < 0)
-        i2 = ap.monomerCount;
-      ap.addStructureProtected(type, null, 0, 0, i, i2 - 1);
-      i = i2;
-    }
-  }
 }

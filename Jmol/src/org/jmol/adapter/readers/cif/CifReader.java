@@ -456,7 +456,8 @@ public class CifReader extends AtomSetCollectionReader {
   @Override
   protected void finalizeSubclassSymmetry(boolean haveSymmetry)
       throws Exception {
-    // called by applySymTrajASCR();
+    // called by applySymTrajASCR
+    // just for modulated, audit block, and magnetic structures
     SymmetryInterface sym = (haveSymmetry ? asc.getXSymmetry()
         .getBaseSymmetry() : null);
     if (modDim > 0 && sym != null) {

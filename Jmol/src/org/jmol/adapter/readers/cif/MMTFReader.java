@@ -30,10 +30,13 @@ import java.util.Map;
 import javajs.util.BC;
 import javajs.util.Lst;
 import javajs.util.M4;
+import javajs.util.PT;
 import javajs.util.SB;
 
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.Bond;
+import org.jmol.adapter.smarter.Structure;
+import org.jmol.java.BS;
 import org.jmol.util.Logger;
 
 /**
@@ -56,8 +59,7 @@ public class MMTFReader extends MMCifReader {
   }
 
   private Map<String, Object> map;
-  private int nBonds;
-  private int atomCount;
+  private int fileAtomCount;
   
   @Override
   protected void processBinaryDocument() throws Exception {
@@ -70,12 +72,14 @@ public class MMTFReader extends MMCifReader {
     String id = (String) map.get("pdbId");
     if (id == null)
       id = (String) map.get("structureId"); // 1JGQ
-    atomCount = ((Integer)map.get("numAtoms")).intValue();
-    nBonds = ((Integer)map.get("numBonds")).intValue();
-    Logger.info("id atoms bonds " + id + " " + atomCount + " " + nBonds);
+    fileAtomCount = ((Integer)map.get("numAtoms")).intValue();
+    int nBonds = ((Integer)map.get("numBonds")).intValue();
+    Logger.info("id atoms bonds " + id + " " + fileAtomCount + " " + nBonds);
     getAtoms(doMulti);
-    if (!isCourseGrained)
+    if (!isCourseGrained) {
       getBonds(doMulti);
+      getStructure((byte[]) map.get("secStructList"));
+    }
     setSymmetry();
     getBioAssembly();
     setModelPDB(true);
@@ -160,16 +164,24 @@ public class MMTFReader extends MMCifReader {
 
   private String[] labelAsymList;
   private int[] atomMap;
+  private int[] groupIdList;
   
   @SuppressWarnings("unchecked")
   private void getAtoms(boolean doMulti) throws Exception {
-    int[] groupTypeList = getInts((byte[]) map.get("groupTypeList"), 4);
-    int groupCount = groupTypeList.length;
+    
+    // chains
+    int[] chainsPerModel = (int[]) map.get("chainsPerModel");
+    int[] groupsPerChain = (int[]) map.get("groupsPerChain"); // note that this is label_asym, not auth_asym
     labelAsymList = getAsymList("chainIdList"); // label_asym
     String[] authAsymList = getAsymList("chainNameList"); // Auth_asym
+
+    // group info
+    int[] groupTypeList = getInts((byte[]) map.get("groupTypeList"), 4);
+    int groupCount = groupTypeList.length;
+    groupIdList = rldecode32Delta((byte[]) map.get("groupIdList"),
+        groupCount);
     Object[] groupList = (Object[]) map.get("groupList");
-    int[] groupsPerChain = (int[]) map.get("groupsPerChain"); // note that this is label_asym, not auth_asym
-    int[] chainsPerModel = (int[]) map.get("chainsPerModel");
+
     Object o = map.get("insCodeList");
     /**
      * @j2sNative
@@ -182,19 +194,15 @@ public class MMTFReader extends MMCifReader {
     int[] insCodes = (o == null || o instanceof Object[] ? null : rldecode32(
         (byte[]) o, groupCount));
 
-    o = map.get("secStructList");
     o = map.get("entityList");
     //o = map.get("altLabelList");
     // 1crn: [7, 3, 3, 7, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 6, 6, 6, 7, 7, 2, 2, 2, 2, 2, 2, 2, 2, 1, 7, 3, 3, 7, 1, 1, 1, 7, 7, 7, 4, 4, 4, 7, 7]
 
-    int[] atomId = rldecode32Delta((byte[]) map.get("atomIdList"), atomCount);
+    int[] atomId = rldecode32Delta((byte[]) map.get("atomIdList"), fileAtomCount);
     boolean haveSerial = (atomId != null);
 
-    int[] altloc = rldecode32((byte[]) map.get("altLocList"), atomCount);
-    int[] occ = rldecode32((byte[]) map.get("occupancyList"), atomCount);
-
-    int[] seqList = rldecode32Delta((byte[]) map.get("sequenceIndexList"),
-        groupCount);
+    int[] altloc = rldecode32((byte[]) map.get("altLocList"), fileAtomCount);
+    int[] occ = rldecode32((byte[]) map.get("occupancyList"), fileAtomCount);
 
     float[] x = getFloatsSplit("xCoord", 1000f);
     float[] y = getFloatsSplit("yCoord", 1000f);
@@ -212,16 +220,16 @@ public class MMTFReader extends MMCifReader {
     String chainID = "";
     String authAsym = "", labelAsym = "";
     int insCode = 0;
-    atomMap = new int[atomCount];
+    atomMap = new int[fileAtomCount];
     for (int j = 0; j < groupCount; j++) {
       int a0 = iatom;
       if (insCodes != null)
         insCode = insCodes[j];
-      seqNo = seqList[j];
+      seqNo = groupIdList[j];
       if (++iGroup >= nGroup) {
-        chainID = nameList[iChain];
-        authAsym = authAsymList[iChain];
-        labelAsym = labelAsymList[iChain];
+        chainID = nameList[chainpt];
+        authAsym = authAsymList[chainpt];
+        labelAsym = labelAsymList[chainpt];
         nGroup = groupsPerChain[chainpt++];
         iGroup = 0;
         if (++iChain >= nChain) {
@@ -328,7 +336,7 @@ public class MMTFReader extends MMCifReader {
     if (big == null)
       return null;
     byte[] small = (byte[]) map.get(xyz + "Small");
-    return splitDelta(big, small, atomCount, factor);
+    return splitDelta(big, small, fileAtomCount, factor);
   }
 
   private float[] splitDelta(byte[] big, byte[] small, int n, float factor) {
@@ -370,6 +378,38 @@ public class MMTFReader extends MMCifReader {
   @Override
   protected void addHeader() {
     // no header for this type
+  }
+
+  //  Code  Name
+  //  0*   pi helix
+  //  1   bend   (ignored)
+  //  2*   alpha helix
+  //  3*   extended (sheet)
+  //  4*   3-10 helix
+  //  5   bridge (ignored)
+  //  6*   turn 
+  //  7   coil (ignored)
+  //  -1  undefined
+
+  // 1F88: "secStructList": [7713371173311776617777666177444172222222222222222222222222222222166771222222222222222222262222222222617662222222222222222222222222222222222177111777722222222222222222221222261173333666633337717776666222222222226622222222222226611771777
+  // DSSP (Jmol):            ...EE....EE....TT.....TTT...GGG..HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH.TT...HHHHHHHHHHHHHHHHHHHTHHHHHHHHHHT..TTHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH..........HHHHHHHHHHHHHHHHHHH.HHHHT...EEEETTTTEEEE......TTTTHHHHHHHHHHHTTHHHHHHHHHHHHHTT........
+  private void getStructure(byte[] a) {    
+    BS[] bsStructures = new BS[] { new BS(), null, new BS(), new BS(), new BS(), null, new BS() };
+    if (Logger.debugging)
+      Logger.info(PT.toJSON("secStructList", a));
+    for (int i = 0; i < a.length; i++) {
+      int type = a[i];
+      switch (type) {
+      case 0: // PI
+      case 2: // alpha
+      case 3: // sheet
+      case 4: // 3-10
+      case 6: // turn
+        bsStructures[type].set(i);
+      }
+    }
+    // only the first model gets this
+    asc.addStructure(new Structure(asc.iSet, null, null, null, 0, 0, bsStructures));
   }
 
 }

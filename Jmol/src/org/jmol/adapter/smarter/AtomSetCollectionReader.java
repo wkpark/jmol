@@ -200,7 +200,7 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
   // private state variables
 
   private SB loadNote = new SB();
-  boolean doConvertToFractional;
+  public boolean doConvertToFractional;
   boolean fileCoordinatesAreFractional;
   boolean merging;
   float symmetryRange;
@@ -894,6 +894,14 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
     }
   }
 
+  protected void fractionalizeCoordinates() {
+    if (!symmetry.haveUnitCell())
+      symmetry.setUnitCell(unitCellParams, false);
+    Atom[] a = asc.atoms;
+    for (int i = asc.ac; --i >= 0;)
+      symmetry.toFractional(a[i], false);
+    setFractionalCoordinates(true);
+  }
   protected SymmetryInterface getNewSymmetry() {
     return symmetry = (Symmetry) getInterface("org.jmol.symmetry.Symmetry");
   }

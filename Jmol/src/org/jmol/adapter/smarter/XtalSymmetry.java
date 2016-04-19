@@ -809,7 +809,8 @@ public class XtalSymmetry {
       int pt0 = (checkSpecial ? pt : checkRange111 ? baseCount : 0);
       float spinOp = (asc.vibScale == 0 ? symmetry.getSpinOp(iSym)
           : asc.vibScale);
-      for (int i = firstSymmetryAtom; i < atomMax; i++) {
+      int i0 = Math.max(firstSymmetryAtom, (bsAtoms == null ? 0 : bsAtoms.nextSetBit(0)));
+      for (int i = i0; i < atomMax; i++) {
         Atom a = asc.atoms[i];
         if (a.ignoreSymmetry)
           continue;
@@ -1008,25 +1009,25 @@ public class XtalSymmetry {
 
   @SuppressWarnings("unchecked")
   public void applySymmetryBio(Map<String, Object> thisBiomolecule,
-                               float[] unitCellParams,
                                boolean applySymmetryToBonds, String filter) {
-    if (latticeCells != null && latticeCells[0] != 0) {
-      Logger.error("Cannot apply biomolecule when lattice cells are indicated");
+    Lst<M4> biomts = (Lst<M4>) thisBiomolecule.get("biomts");
+    if (biomts.size() < 2)
       return;
-    }
+    int[] lc = (latticeCells != null && latticeCells[0] != 0 ? new int[3] : null);
+    if (lc != null)
+      for (int i = 0; i < 3; i++)
+        lc[i] = latticeCells[i];
+    latticeCells = null;
     int particleMode = (filter.indexOf("BYCHAIN") >= 0 ? PARTICLE_CHAIN
         : filter.indexOf("BYSYMOP") >= 0 ? PARTICLE_SYMOP : PARTICLE_NONE);
     doNormalize = false;
-    Lst<M4> biomts = (Lst<M4>) thisBiomolecule.get("biomts");
     Lst<String> biomtchains = (Lst<String>) thisBiomolecule.get("chains");
-    if (biomts.size() < 2)
-      return;
     if (biomtchains.get(0).equals(biomtchains.get(1)))
       biomtchains = null;
     symmetry = null;
     // it's not clear to me why you would do this:
-    if (!Float.isNaN(unitCellParams[0])) // PDB can do this; 
-      setUnitCell(unitCellParams, null, unitCellOffset);
+    //if (!Float.isNaN(unitCellParams[0])) // PDB can do this; 
+      //setUnitCell(unitCellParams, null, unitCellOffset);
     getSymmetry().setSpaceGroup(doNormalize);
     //symmetry.setUnitCell(null);
     addSpaceGroupOperation("x,y,z", false);

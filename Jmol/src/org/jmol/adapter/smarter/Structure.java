@@ -25,6 +25,7 @@
 package org.jmol.adapter.smarter;
 
 import org.jmol.c.STR;
+import org.jmol.java.BS;
 
 public class Structure {
   public STR structureType;
@@ -45,6 +46,7 @@ public class Structure {
   
   public int[] atomStartEnd = new int[2];
   public int[] modelStartEnd = new int[] {-1, -1};
+  public BS[] bsAll;
   
 
   public static STR getHelixType(int type) {
@@ -61,7 +63,12 @@ public class Structure {
 
   public Structure(int modelIndex, STR structureType,
       STR substructureType, String structureID, int serialID,
-      int strandCount) {
+      int strandCount, BS[] bsAll) {
+    if (bsAll != null) {
+      this.modelStartEnd = new int[] {0, modelIndex};
+      this.bsAll = bsAll;
+      return;
+    }
     this.structureType = structureType;
     this.substructureType = substructureType;
     if (structureID == null)

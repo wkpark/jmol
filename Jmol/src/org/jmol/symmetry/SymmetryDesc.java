@@ -135,10 +135,8 @@ public class SymmetryDesc {
                                         String sgName, int symOp, P3 pt1,
                                         P3 pt2, String drawID,
                                         float scaleFactor, int nth) {
-    String sops = null;
     Map<String, Object> info = null;
     SymmetryInterface cellInfo = null;
-    Object[][] infolist = null;
     boolean isStandard = (pt1 == null && drawID == null && nth <= 0);
     boolean isBio = false;
     String sgNote = null;
@@ -174,6 +172,7 @@ public class SymmetryDesc {
       String slist = (sgName.indexOf("[--]") >= 0 ? "" : null);
       int opCount = 0;
       if (ops != null) {
+        Object[][] infolist = null;
         if (isBio)
           sym.spaceGroup = SpaceGroup.getNull(false, false, false);
         else
@@ -182,7 +181,7 @@ public class SymmetryDesc {
         if (ops[0].timeReversal != 0)
           ((SymmetryOperation) sym.getSpaceGroupOperation(0)).timeReversal = 1;
         infolist = new Object[ops.length][];
-        sops = "";
+        String sops = "";
         for (int i = 0, nop = 0; i < ops.length && nop != nth; i++) {
           SymmetryOperation op = ops[i];
           int iop = (sym.getSpaceGroupOperation(i) != null ? i : isBio ? sym
@@ -204,9 +203,10 @@ public class SymmetryDesc {
             sops += "\n" + (i + 1) + "\t" + ret[0] + "\t" + ret[2];
             opCount++;
           }
+          info.put("operations", infolist);
         }
+        info.put("symmetryInfo", (sops.length() == 0 ? "" : sops.substring(1)));
       }
-      info.put("operations", infolist);
       sgNote = (opCount == 0 ? "\n no symmetry operations"
           : nth <= 0 && symOp <= 0 ? "\n" + opCount
             + " symmetry operation" + (opCount == 1 ? ":\n" : "s:\n") : "");
@@ -219,7 +219,6 @@ public class SymmetryDesc {
     }
     info.put("spaceGroupName", sgName);
     info.put("spaceGroupNote", sgNote);
-    info.put("symmetryInfo", (sops.length() == 0 ? "" : sops.substring(1)));
     String data;
     if (isBio) {
       data = sgName;

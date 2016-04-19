@@ -329,7 +329,7 @@ public final class BioModel extends Model implements JmolBioModelSet, JmolBioMod
     for (int i = 0, mc = ms.mc; i < mc; i++)
       if ((modelsExcluded == null || !modelsExcluded.get(i))
           && ms.am[i].isBioModel) {
-        for (int j = baseGroupIndex; j < groupCount; ++j) {
+        for (int pt = 0, j = baseGroupIndex; j < groupCount; ++j, pt++) {
           Group g = groups[j];
           Model model = g.getModel();
           if (!model.isBioModel || !(g instanceof Monomer))
@@ -337,7 +337,7 @@ public final class BioModel extends Model implements JmolBioModelSet, JmolBioMod
           boolean doCheck = checkConnections
               && !ms.isJmolDataFrameForModel(ms.at[g.firstAtomIndex].mi);
           BioPolymer bp = (((Monomer) g).bioPolymer == null ? Resolver
-              .allocateBioPolymer(groups, j, doCheck) : null);
+              .allocateBioPolymer(groups, j, doCheck, pt) : null);
           if (bp == null || bp.monomerCount == 0)
             continue;
           ((BioModel) model).addBioPolymer(bp);
@@ -951,6 +951,14 @@ public final class BioModel extends Model implements JmolBioModelSet, JmolBioMod
     freezeM();
     bioPolymers = (BioPolymer[])AU.arrayCopyObject(bioPolymers, bioPolymerCount);
     return true;
+  }
+  
+  public void addStructureByBS(STR type, BS bs) {
+    for (int i = bioPolymerCount; --i >= 0;) {
+      BioPolymer b = bioPolymers[i];
+      if (b instanceof AlphaPolymer)
+        ((AlphaPolymer) bioPolymers[i]).setStructureBS(type, bs, true);
+    }
   }
   
   public void addSecondaryStructure(STR type, String structureID,

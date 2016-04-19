@@ -423,7 +423,7 @@ SEQADV 1BLU GLU      7  SWS  P00208    GLN     7 CONFLICT
       asc.setCurrentModelInfo("biomolecules", vBiomolecules);
       setBiomoleculeAtomCounts();
       if (thisBiomolecule != null && applySymmetry) {
-        asc.getXSymmetry().applySymmetryBio(thisBiomolecule, unitCellParams, applySymmetryToBonds, filter);
+        asc.getXSymmetry().applySymmetryBio(thisBiomolecule, applySymmetryToBonds, filter);
         vTlsModels = null; // for now, no TLS groups for biomolecules
         asc.xtalSymmetry = null;
       }
@@ -448,7 +448,14 @@ SEQADV 1BLU GLU      7  SWS  P00208    GLN     7 CONFLICT
       asc.setInfo("tlsErrors", sbTlsErrors.toString());
       appendLoadNote(sbTlsErrors.toString());
     }
-    doCheckUnitCell &= (iHaveUnitCell && (doApplySymmetry || isbiomol));
+    doCheckUnitCell &= iHaveUnitCell && doApplySymmetry;
+    if (doCheckUnitCell && isbiomol) {
+      ignoreFileSpaceGroupName = true;
+      sgName = fileSgName;
+      fractionalizeCoordinates();
+      asc.setModelInfoForSet("biosymmetry", null, asc.iSet);
+      asc.checkSpecial = false;
+    }
     finalizeReaderASCR();
     if (vCompnds != null) {
       asc.setInfo("compoundSource", vCompnds);
@@ -1273,7 +1280,7 @@ REMARK 290 REMARK: NULL
     if (substructureType == STR.NONE)
       substructureType = structureType;
     Structure structure = new Structure(-1, structureType, substructureType,
-        structureID, serialID, strandCount);
+        structureID, serialID, strandCount, null);
     structure.set(startChainID, startSequenceNumber,
         startInsertionCode, endChainID, endSequenceNumber, endInsertionCode, Integer.MIN_VALUE, Integer.MAX_VALUE);
     asc.addStructure(structure);
@@ -1327,14 +1334,18 @@ REMARK 290 REMARK: NULL
   }
 
   private float cryst1;
+  private String fileSgName;
   private void cryst1() throws Exception {
     float a = cryst1 = getFloat(6, 9);
     if (a == 1)
       a = Float.NaN; // 1 for a means no unit cell
     setUnitCell(a, getFloat(15, 9), getFloat(24, 9), getFloat(33,
         7), getFloat(40, 7), getFloat(47, 7));
+    if (isbiomol)
+      doConvertToFractional = false;
     if (sgName == null || sgName.equals("unspecified!"))
       setSpaceGroupName(PT.parseTrimmedRange(line, 55, 66));
+    fileSgName = sgName;
   }
 
   private float getFloat(int ich, int cch) throws Exception {
@@ -1354,6 +1365,8 @@ REMARK 290 REMARK: NULL
     setUnitCellItem(pt++,getFloat(20, 10));
     setUnitCellItem(pt++,getFloat(30, 10));
     setUnitCellItem(pt++,getFloat(45, 10));
+    if (isbiomol)
+      doConvertToFractional = false;
   }
 
   private void expdta() {

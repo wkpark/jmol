@@ -33,7 +33,10 @@ import javajs.util.V3;
 
 public class AlphaPolymer extends BioPolymer {
 
-  AlphaPolymer(Monomer[] monomers) {
+  public int pt0;
+
+  AlphaPolymer(Monomer[] monomers, int pt0) {
+    this.pt0 = pt0;
     set(monomers);
     hasStructure = true;
   }
@@ -277,5 +280,23 @@ public class AlphaPolymer extends BioPolymer {
       i = iMax;
     }
   }
+
+  /**
+   * bits in the bitset determines the type
+   * @param type
+   * @param bs
+   * @param doOffset
+   *        allows us to examine just a portion of the
+   */
+  public void setStructureBS(STR type, BS bs, boolean doOffset) {
+    int offset = (doOffset ? pt0 : 0);
+    for (int i = bs.nextSetBit(offset), i2 = 0, n = monomerCount + offset; i >= 0
+        && i < n; i = bs.nextSetBit(i2 + 1)) {
+      if ((i2 = bs.nextClearBit(i)) < 0)
+        i2 = n;
+      addStructureProtected(type, null, 0, 0, i - offset, i2 - 1 - offset);
+    }
+  }
+  
 
 }

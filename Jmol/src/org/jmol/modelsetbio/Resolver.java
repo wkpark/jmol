@@ -736,7 +736,7 @@ public final class Resolver implements JmolBioResolver, Comparator<String[]> {
   }
 
   static BioPolymer allocateBioPolymer(Group[] groups, int firstGroupIndex,
-                                       boolean checkConnections) {
+                                       boolean checkConnections, int pt0) {
     Monomer previous = null;
     int count = 0;
     for (int i = firstGroupIndex; i < groups.length; ++i) {
@@ -756,9 +756,9 @@ public final class Resolver implements JmolBioResolver, Comparator<String[]> {
     for (int j = 0; j < count; ++j)
       monomers[j] = (Monomer) groups[firstGroupIndex + j];
     if (previous instanceof AminoMonomer)
-      return new AminoPolymer(monomers);
+      return new AminoPolymer(monomers, pt0);
     if (previous instanceof AlphaMonomer)
-      return new AlphaPolymer(monomers);
+      return new AlphaPolymer(monomers, pt0);
     if (previous instanceof NucleicMonomer)
       return new NucleicPolymer(monomers);
     if (previous instanceof PhosphorusMonomer)
@@ -780,7 +780,7 @@ public final class Resolver implements JmolBioResolver, Comparator<String[]> {
    * it gets marked as helix or sheet if it is both one of those and turn.
    * 
    * Jmol 14.3 - adds sequence ANNOTATION
-   *  
+   * 
    * @param adapter
    * @param atomSetCollection
    */
@@ -809,7 +809,7 @@ public final class Resolver implements JmolBioResolver, Comparator<String[]> {
   }
 
   /**
-   * note that istart and iend will be adjusted. 
+   * note that istart and iend will be adjusted.
    * 
    * @param iterStructure
    */
@@ -820,41 +820,68 @@ public final class Resolver implements JmolBioResolver, Comparator<String[]> {
     int count = iterStructure.getStrandCount();
     int[] atomRange = iterStructure.getAtomIndices();
     int[] modelRange = iterStructure.getModelIndices();
+    BS[] bsAll = iterStructure.getBSAll();
     if (bsAssigned == null)
       bsAssigned = new BS();
-    defineStructure(t, id, serID, count, iterStructure.getStartChainID(),
-          iterStructure.getStartSequenceNumber(), iterStructure
-              .getStartInsertionCode(), iterStructure.getEndChainID(),
-          iterStructure.getEndSequenceNumber(), iterStructure
-              .getEndInsertionCode(), atomRange, modelRange, bsAssigned);
-  }
+    int m0, m1;
+    Model[] models = ms.am;
+    if (ml.isTrajectory) { //from PDB file
+      m0 = m1 = modelRange[0];
+    } else {
+      m0 = modelRange[0] + ml.baseModelIndex;
+      m1 = modelRange[1] + ml.baseModelIndex;
+    }
+    ml.structuresDefinedInFile.setBits(m0, m1 + 1);
 
-  private void defineStructure(STR subType, String structureID,
-                               int serialID, int strandCount, int startChainID,
-                               int startSequenceNumber,
-                               char startInsertionCode, int endChainID,
-                               int endSequenceNumber, char endInsertionCode,
-                               int[] atomRange, int[] modelRange, BS bsAssigned) {
-    STR type = (subType == STR.NOT ? STR.NONE
-        : subType);
+    if (bsAll != null) {
+      for (int i = m0; i <= m1; i++) {
+        Model m = models[i];
+        if (m instanceof BioModel) {
+          for (int j = 0; j < 7; j++) {
+            switch (j) {
+            case 0:
+              t = STR.HELIXPI;
+              break;
+            case 2:
+              t = STR.HELIXALPHA;
+              break;
+            case 3:
+              t = STR.SHEET;
+              break;
+            case 4:
+              t = STR.HELIX310;
+              break;
+            case 6:
+              t = STR.TURN;
+              break;
+            default:
+              continue;
+            }
+            if (bsAll[j] != null)
+              ((BioModel) m).addStructureByBS(t, bsAll[j]);
+          }
+        }
+      }
+      return;
+    }
+
+    int startChainID = iterStructure.getStartChainID();
+    int startSequenceNumber = iterStructure.getStartSequenceNumber();
+    char startInsertionCode = iterStructure.getStartInsertionCode();
+    int endSequenceNumber = iterStructure.getEndSequenceNumber();
+    int endChainID = iterStructure.getEndChainID();
+    char endInsertionCode = iterStructure.getEndInsertionCode();
+    STR type = (t == STR.NOT ? STR.NONE : t);
     int startSeqCode = Group.getSeqcodeFor(startSequenceNumber,
         startInsertionCode);
     int endSeqCode = Group.getSeqcodeFor(endSequenceNumber, endInsertionCode);
-    Model[] models = ms.am;
-    if (ml.isTrajectory) { //from PDB file
-      modelRange[1] = modelRange[0];
-    } else {
-      modelRange[0] += ml.baseModelIndex;
-      modelRange[1] += ml.baseModelIndex;
-    }
-    ml.structuresDefinedInFile.setBits(modelRange[0],
-        modelRange[1] + 1);
-    for (int i = modelRange[0]; i <= modelRange[1]; i++) {
-      int i0 = models[i].firstAtomIndex;
-      if (models[i] instanceof BioModel)
-        ((BioModel) models[i]).addSecondaryStructure(type, structureID,
-            serialID, strandCount, startChainID, startSeqCode, endChainID,
-            endSeqCode, i0 + atomRange[0], i0 + atomRange[1], bsAssigned);
+    for (int i = m0; i <= m1; i++) {
+      Model m = models[i];
+      int i0 = m.firstAtomIndex;
+      if (m instanceof BioModel)
+        ((BioModel) m).addSecondaryStructure(type, id, serID, count,
+            startChainID, startSeqCode, endChainID, endSeqCode, i0
+                + atomRange[0], i0 + atomRange[1], bsAssigned);
     }
   }
 

@@ -126,4 +126,9 @@ public class StructureIterator extends JmolAdapterStructureIterator {
     return structure.modelStartEnd;
   }
 
+  @Override
+  public BS[] getBSAll() {
+    return structure.bsAll;
+  }
+
 }

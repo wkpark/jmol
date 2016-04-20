@@ -3,8 +3,6 @@ package org.jmol.adapter.readers.cif;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.jmol.util.Logger;
-
 import javajs.api.GenericBinaryDocument;
 import javajs.util.BC;
 

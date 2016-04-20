@@ -468,7 +468,7 @@ public class MMTFReader extends MMCifReader {
    */
   private void getStructure(byte[] a) {    
     BS[] bsStructures = new BS[] { new BS(), null, new BS(), new BS(), new BS(), null, new BS() };
-    //if (Logger.debugging)
+    if (Logger.debugging)
       Logger.info(PT.toJSON("secStructList", a));
     for (int i = 0; i < a.length; i++) {
       int type = a[i];

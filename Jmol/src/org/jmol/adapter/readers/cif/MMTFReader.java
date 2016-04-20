@@ -67,7 +67,144 @@ import org.jmol.util.Logger;
 
 public class MMTFReader extends MMCifReader {
 
+/////////////// MessagePack decoding ///////////////
   
+  /**
+   * Decode an array of int32 using run-length decoding
+   * 
+   * @param b
+   * @param n
+   * @return array of integers
+   */
+  private int[] rldecode32(byte[] b, int n) {
+    if (b == null)
+      return null;
+    int[] ret = new int[n];
+    for (int i = 0, pt = -1; i < n;) {
+      int val = BC.bytesToInt(b, (++pt) << 2, true);
+      for (int j = BC.bytesToInt(b, (++pt) << 2, true); --j >= 0;)
+         ret[i++] = val;
+    }
+    return ret;
+  }
+
+  /**
+   * Decode an array of int32 using run-length decoding
+   * of a difference array.
+   * 
+   * @param b
+   * @param n
+   * @return array of integers
+   */
+  private int[] rldecode32Delta(byte[] b, int n) {
+    if (b == null)
+      return null;
+    int[] ret = new int[n];
+    for (int i = 0, pt = 0, val = 0; i < n;) {
+      int diff = BC.bytesToInt(b, (pt++) << 2, true);
+      for (int j = BC.bytesToInt(b, (pt++) << 2, true); --j >= 0;)
+         ret[i++] = (val = val + diff);
+    }
+    return ret;
+  }
+  /**
+   * Do a split delta to a float[] array
+   * @param xyz label "x", "y", "z", or "bFactor"
+   * @param factor for dividing in the end -- 1000f or 100f 
+   * @return float[]
+   * 
+   */ 
+
+  private float[] getFloatsSplit(String xyz, float factor) {
+    byte[] big = (byte[]) map.get(xyz + "Big");
+    return (big == null ? null : splitDelta(big,
+        (byte[]) map.get(xyz + "Small"), fileAtomCount, factor));
+  }
+
+  /**
+   * Do a split delta to a float[] array
+   * 
+   * @param big
+   *        [n m n m n m...] where n is a "big delta" and m is a number of
+   *        "small deltas
+   * @param small
+   *        array containing the small deltas
+   * @param n
+   *        the size of the final array
+   * @param factor
+   *        to divide the final result by -- 1000f or 100f here
+   * @return float[]
+   */
+  private float[] splitDelta(byte[] big, byte[] small, int n, float factor) {
+    float[] ret = new float[n];
+    for (int i = 0, smallpt = 0, val = 0, datapt = 0, len = big.length >> 2; i < len; i++) {
+      ret[datapt++] = (val = val + BC.bytesToInt(big, i << 2, true)) / factor;
+      if (++i < len)
+        for (int j = BC.bytesToInt(big, i << 2, true); --j >= 0; smallpt++)
+          ret[datapt++] = (val = val + BC.bytesToShort(small, smallpt << 1, true))
+              / factor;
+    }
+    return ret;
+  }
+
+  /**
+   * decode a byte array into an int array
+   *   
+   * @param b
+   * @param nbytes  2 (int16) or 4 (int32)
+   * @return int array
+   */
+  private int[] getInts(byte[] b, int nbytes) {
+    if (b == null)
+      return null;
+    int len = b.length / nbytes;
+    int[] a = new int[len];
+    switch (nbytes) {
+    case 2:
+      for (int i = 0, j = 0; i < len; i++, j += nbytes)
+        a[i] = BC.bytesToShort(b, j, true);
+      break;
+    case 4:
+      for (int i = 0, j = 0; i < len; i++, j += nbytes)
+        a[i] = BC.bytesToInt(b, j, true);
+      break;
+    }
+    return a;
+  }
+  
+  /**
+   * Decode each four bytes as a 1- to 4-character string label 
+   * @param b a byte array
+   * @return String[]
+   */
+  private String[] bytesTo4CharArray(byte[] b) {
+    String[] id = new String[b.length / 4];
+    out: for (int i = 0, len = id.length, pt = 0; i < len; i++) {
+      SB sb = new SB();
+      for (int j = 0; j < 4; j++) {
+        switch (b[pt]) {
+        case 0:
+          id[i] = sb.toString();
+          pt += 4 - j;
+          continue out;
+        default:
+          sb.appendC((char) b[pt++]);
+          continue;
+        }
+      }        
+    }    
+    return id;
+  }
+
+//////////////////////////////// Jmol-Specific /////////////////////////  
+  
+  private Map<String, Object> map;
+  private int fileAtomCount;
+  private int opCount = 0;
+  
+  private String[] labelAsymList;
+  private int[] atomMap;
+
   @Override
   protected void setup(String fullPath, Map<String, Object> htParams, Object reader) {
     isBinary = true;
@@ -75,9 +212,6 @@ public class MMTFReader extends MMCifReader {
     setupASCR(fullPath, htParams, reader);
   }
 
-  private Map<String, Object> map;
-  private int fileAtomCount;
-  
   @Override
   protected void processBinaryDocument() throws Exception {
     boolean doMulti = (!isCourseGrained && !checkFilterKey("NODOUBLE"));
@@ -103,27 +237,6 @@ public class MMTFReader extends MMCifReader {
     //System.out.println(Escape.e(map));
   }
 
-  private String[] getAsymList(String name) {
-    byte[] b = (byte[]) map.get(name);
-    String[] id = new String[b.length / 4];
-    out: for (int i = 0, len = id.length, pt = 0; i < len; i++) {
-      SB sb = new SB();
-      for (int j = 0; j < 4; j++) {
-        switch (b[pt]) {
-        case 0:
-          id[i] = sb.toString();
-          pt += 4 - j;
-          continue out;
-        default:
-          sb.appendC((char) b[pt++]);
-          continue;
-        }
-      }        
-    }
-    
-    return id;
-  }
-
   private void getBonds(boolean doMulti) {
     byte[] b = (byte[]) map.get("bondOrderList");
     int[] bi = getInts((byte[]) map.get("bondAtomList"), 4);
@@ -143,8 +256,6 @@ public class MMTFReader extends MMCifReader {
         setUnitCellItem(i, o[i]);
   }
 
-  private int opCount = 0;
-  
   @SuppressWarnings("unchecked")
   private void getBioAssembly() {
     Object[] o = (Object[]) map.get("bioAssemblyList");
@@ -178,10 +289,6 @@ public class MMTFReader extends MMCifReader {
       vBiomolecules.addLast(info);
     }
   }
-
-  private String[] labelAsymList;
-  private int[] atomMap;
-  private int[] groupIdList;
   
   @SuppressWarnings("unchecked")
   private void getAtoms(boolean doMulti) throws Exception {
@@ -189,13 +296,13 @@ public class MMTFReader extends MMCifReader {
     // chains
     int[] chainsPerModel = (int[]) map.get("chainsPerModel");
     int[] groupsPerChain = (int[]) map.get("groupsPerChain"); // note that this is label_asym, not auth_asym
-    labelAsymList = getAsymList("chainIdList"); // label_asym
-    String[] authAsymList = getAsymList("chainNameList"); // Auth_asym
+    labelAsymList = bytesTo4CharArray((byte[]) map.get("chainIdList")); // label_asym
+    String[] authAsymList = bytesTo4CharArray((byte[]) map.get("chainNameList")); // Auth_asym
 
-    // group info
+    // groups
     int[] groupTypeList = getInts((byte[]) map.get("groupTypeList"), 4);
     int groupCount = groupTypeList.length;
-    groupIdList = rldecode32Delta((byte[]) map.get("groupIdList"),
+    int[] groupIdList = rldecode32Delta((byte[]) map.get("groupIdList"),
         groupCount);
     Object[] groupList = (Object[]) map.get("groupList");
 
@@ -211,7 +318,7 @@ public class MMTFReader extends MMCifReader {
     int[] insCodes = (o == null || o instanceof Object[] ? null : rldecode32(
         (byte[]) o, groupCount));
 
-    o = map.get("entityList");
+    //o = map.get("entityList");
     //o = map.get("altLabelList");
     // 1crn: [7, 3, 3, 7, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 6, 6, 6, 7, 7, 2, 2, 2, 2, 2, 2, 2, 2, 1, 7, 3, 3, 7, 1, 1, 1, 7, 7, 7, 4, 4, 4, 7, 7]
 
@@ -309,89 +416,6 @@ public class MMTFReader extends MMCifReader {
     }
   }
 
-  /**
-   * decode an array of int32 using run-length decoding
-   * 
-   * @param b
-   * @param n
-   * @return array of integers
-   */
-  private int[] rldecode32(byte[] b, int n) {
-    if (b == null)
-      return null;
-    int[] ret = new int[n];
-    for (int i = 0, pt = -1; i < n;) {
-      int val = BC.bytesToInt(b, (++pt) << 2, true);
-      for (int j = BC.bytesToInt(b, (++pt) << 2, true); --j >= 0;)
-         ret[i++] = val;
-    }
-    return ret;
-  }
-
-  /**
-   * decode an array of int32 using run-length decoding
-   * of a difference array.
-   * 
-   * @param b
-   * @param n
-   * @return array of integers
-   */
-  private int[] rldecode32Delta(byte[] b, int n) {
-    if (b == null)
-      return null;
-    int[] ret = new int[n];
-    for (int i = 0, pt = 0, val = 0; i < n;) {
-      int diff = BC.bytesToInt(b, (pt++) << 2, true);
-      for (int j = BC.bytesToInt(b, (pt++) << 2, true); --j >= 0;)
-         ret[i++] = (val = val + diff);
-    }
-    return ret;
-  }
-
-  private float[] getFloatsSplit(String xyz, float factor) {
-    byte[] big = (byte[]) map.get(xyz + "Big");
-    if (big == null)
-      return null;
-    byte[] small = (byte[]) map.get(xyz + "Small");
-    return splitDelta(big, small, fileAtomCount, factor);
-  }
-
-  private float[] splitDelta(byte[] big, byte[] small, int n, float factor) {
-    float[] ret = new float[n];
-    for (int i = 0, smallpt = 0, val = 0, datapt = 0, len = big.length >> 2; i < len; i++) {
-      ret[datapt++] = (val = val + BC.bytesToInt(big, i << 2, true)) / factor;
-      if (++i < len)
-        for (int j = BC.bytesToInt(big, i << 2, true); --j >= 0; smallpt++)
-          ret[datapt++] = (val = val + BC.bytesToShort(small, smallpt << 1, true))
-              / factor;
-    }
-    return ret;
-  }
-
-  /**
-   * 
-   * @param b
-   * @param nbytes  2 (int16) or 4 (int32)
-   * @return int array
-   */
-  private int[] getInts(byte[] b, int nbytes) {
-    if (b == null)
-      return null;
-    int len = b.length / nbytes;
-    int[] a = new int[len];
-    switch (nbytes) {
-    case 2:
-      for (int i = 0, j = 0; i < len; i++, j += nbytes)
-        a[i] = BC.bytesToShort(b, j, true);
-      break;
-    case 4:
-      for (int i = 0, j = 0; i < len; i++, j += nbytes)
-        a[i] = BC.bytesToInt(b, j, true);
-      break;
-    }
-    return a;
-  }
-
   @Override
   protected void addHeader() {
     // no header for this type
@@ -410,6 +434,12 @@ public class MMTFReader extends MMCifReader {
 
   // 1F88: "secStructList": [7713371173311776617777666177444172222222222222222222222222222222166771222222222222222222262222222222617662222222222222222222222222222222222177111777722222222222222222221222261173333666633337717776666222222222226622222222222226611771777
   // DSSP (Jmol):            ...EE....EE....TT.....TTT...GGG..HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH.TT...HHHHHHHHHHHHHHHHHHHTHHHHHHHHHHT..TTHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH..........HHHHHHHHHHHHHHHHHHH.HHHHT...EEEETTTTEEEE......TTTTHHHHHHHHHHHTTHHHHHHHHHHHHHTT........
+  
+  /**
+   * Get and translate the DSSP string from digit format
+   *  
+   * @param a input data
+   */
   private void getStructure(byte[] a) {    
     BS[] bsStructures = new BS[] { new BS(), null, new BS(), new BS(), new BS(), null, new BS() };
     //if (Logger.debugging)

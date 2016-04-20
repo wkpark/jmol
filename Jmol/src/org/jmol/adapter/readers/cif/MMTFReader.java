@@ -67,6 +67,47 @@ import org.jmol.util.Logger;
 
 public class MMTFReader extends MMCifReader {
 
+  @Override
+  protected void addHeader() {
+    // no header for this type
+  }
+
+  /**
+   * standard set up
+   * @param fullPath
+   * @param htParams
+   * @param reader
+   */
+  @Override
+  protected void setup(String fullPath, Map<String, Object> htParams, Object reader) {
+    isBinary = true;
+    isMMCIF = true;
+    setupASCR(fullPath, htParams, reader);
+  }
+
+  @Override
+  protected void processBinaryDocument() throws Exception {
+    boolean doDoubleBonds = (!isCourseGrained && !checkFilterKey("NODOUBLE"));
+    applySymmetryToBonds = true;
+    map = (new MessagePackReader(binaryDoc, true)).readMap();
+    Logger.info("MMTF version " + map.get("mmtfVersion"));
+    Logger.info("MMTF Producer " + map.get("mmtfProducer"));
+    appendLoadNote((String) map.get("title"));
+    String id = (String) map.get("structureId");
+    fileAtomCount = ((Integer)map.get("numAtoms")).intValue();
+    int nBonds = ((Integer)map.get("numBonds")).intValue();
+    Logger.info("id atoms bonds " + id + " " + fileAtomCount + " " + nBonds);
+    getAtoms(doDoubleBonds);
+    if (!isCourseGrained) {
+      getBonds(doDoubleBonds);
+      getStructure((byte[]) map.get("secStructList"));
+    }
+    setSymmetry();
+    getBioAssembly();
+    setModelPDB(true);
+    //System.out.println(Escape.e(map));
+  }
+
 /////////////// MessagePack decoding ///////////////
   
   /**
@@ -107,6 +148,7 @@ public class MMTFReader extends MMCifReader {
     }
     return ret;
   }
+  
   /**
    * Do a split delta to a float[] array
    * @param xyz label "x", "y", "z", or "bFactor"
@@ -114,7 +156,6 @@ public class MMTFReader extends MMCifReader {
    * @return float[]
    * 
    */ 
-
   private float[] getFloatsSplit(String xyz, float factor) {
     byte[] big = (byte[]) map.get(xyz + "Big");
     return (big == null ? null : splitDelta(big,
@@ -196,46 +237,15 @@ public class MMTFReader extends MMCifReader {
     return id;
   }
 
-//////////////////////////////// Jmol-Specific /////////////////////////  
+//////////////////////////////// MMTF-Specific /////////////////////////  
   
-  private Map<String, Object> map;
+  private Map<String, Object> map; // input JSON-like map from MessagePack binary file  
   private int fileAtomCount;
   private int opCount = 0;
   
-  private String[] labelAsymList;
-  private int[] atomMap;
-
-  @Override
-  protected void setup(String fullPath, Map<String, Object> htParams, Object reader) {
-    isBinary = true;
-    isMMCIF = true;
-    setupASCR(fullPath, htParams, reader);
-  }
-
-  @Override
-  protected void processBinaryDocument() throws Exception {
-    boolean doMulti = (!isCourseGrained && !checkFilterKey("NODOUBLE"));
-    applySymmetryToBonds = true;
-    map = (new MessagePackReader(binaryDoc, true)).readMap();
-    Logger.info("MMTF version " + map.get("mmtfVersion"));
-    Logger.info("MMTF Producer " + map.get("mmtfProducer"));
-    appendLoadNote((String) map.get("title"));
-    String id = (String) map.get("pdbId");
-    if (id == null)
-      id = (String) map.get("structureId"); // 1JGQ
-    fileAtomCount = ((Integer)map.get("numAtoms")).intValue();
-    int nBonds = ((Integer)map.get("numBonds")).intValue();
-    Logger.info("id atoms bonds " + id + " " + fileAtomCount + " " + nBonds);
-    getAtoms(doMulti);
-    if (!isCourseGrained) {
-      getBonds(doMulti);
-      getStructure((byte[]) map.get("secStructList"));
-    }
-    setSymmetry();
-    getBioAssembly();
-    setModelPDB(true);
-    //System.out.println(Escape.e(map));
-  }
+  private String[] labelAsymList; // created in getAtoms; used in getBioAssembly
+  private int[] atomMap; // necessary because some atoms may be delete. 
+    // TODO  - also consider mapping group indices
 
   private void getBonds(boolean doMulti) {
     byte[] b = (byte[]) map.get("bondOrderList");
@@ -259,8 +269,12 @@ public class MMTFReader extends MMCifReader {
   @SuppressWarnings("unchecked")
   private void getBioAssembly() {
     Object[] o = (Object[]) map.get("bioAssemblyList");
-    for (int i = o.length; --i >= 0;) {
+    if (vBiomolecules == null)
+      vBiomolecules = new Lst<Map<String, Object>>();      
+
+    for (int i = o.length; --i >= 0;) {      
       Map<String, Object> info = new Hashtable<String, Object>();
+      vBiomolecules.addLast(info);
       int iMolecule = i + 1;
       checkFilterAssembly("" + iMolecule, info);
       info.put("name", "biomolecule " + iMolecule);
@@ -273,23 +287,40 @@ public class MMTFReader extends MMCifReader {
       info.put("operators", ops);
       Map<String, Object> m = (Map<String, Object>) o[i];
       Object[] tlist = (Object[]) m.get("transformList");
+      SB chlist = new SB();
+      
       for (int j = 0, n = tlist.length; j < n; j++) {
-        SB chlist = new SB();
-        Map<String, Object> t = (Map<String, Object>) tlist[j];
+
+        Map<String, Object> t = (Map<String, Object>) tlist[j];        
+        
+        // for every transformation...
+
+        chlist.setLength(0);
+        
+        // for compatibility with the mmCIF reader, we create
+        // string lists of the chains in the form $A$B$C...
+     
         int[] chainList = (int[]) t.get("chainIndexList");
         for (int k = 0, kn  = chainList.length; k < kn; k++)
           chlist.append("$").append(labelAsymList[chainList[k]]);
+        assemb.addLast(chlist.append("$").toString());
+        
+        // now save the 4x4 matrix transform for this operation
+        
         String id = "" + (++opCount);
         addBiomt(id, M4.newA16((float[]) t.get("matrix")));
         ops.addLast(id);
-        assemb.addLast(chlist.append("$").toString());
       }
-      if (vBiomolecules == null)
-        vBiomolecules = new Lst<Map<String, Object>>();      
-      vBiomolecules.addLast(info);
     }
   }
-  
+
+  /**
+   * set up all atoms, including bonding within a group
+   * 
+   * @param doMulti true to add double bonds
+   * 
+   * @throws Exception
+   */
   @SuppressWarnings("unchecked")
   private void getAtoms(boolean doMulti) throws Exception {
     
@@ -414,11 +445,6 @@ public class MMTFReader extends MMCifReader {
         }
       }
     }
-  }
-
-  @Override
-  protected void addHeader() {
-    // no header for this type
   }
 
   //  Code  Name

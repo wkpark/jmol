@@ -452,7 +452,7 @@ SEQADV 1BLU GLU      7  SWS  P00208    GLN     7 CONFLICT
     if (doCheckUnitCell && isbiomol) {
       ignoreFileSpaceGroupName = true;
       sgName = fileSgName;
-      fractionalizeCoordinates();
+      fractionalizeCoordinates(true);
       asc.setModelInfoForSet("biosymmetry", null, asc.iSet);
       asc.checkSpecial = false;
     }

@@ -835,7 +835,12 @@ public class CmdExt extends ScriptExt {
           if (i < slen && tokAt(i) != T.integer)
             axis = e.optParameterAsString(i++).toLowerCase();
           s = "rotate Y 10 10;rotate Y -10 -10;rotate Y -10 -10;rotate Y 10 10";
-          s = PT.rep(s, "10", "" + (i < slen ? intParameter(i++) : 5));
+          int n = (i < slen ? intParameter(i++) : 5);
+          if (n < 0) {
+            s = PT.rep(s, "10;", "" + (-n) + ";");
+          } else {
+            s = PT.rep(s, "10", "" + n);
+          }
         } else {
           if (i < slen)
             axis = e.optParameterAsString(i++).toLowerCase();

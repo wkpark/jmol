@@ -41,7 +41,7 @@ public abstract class ProteinStructure implements Structure {
   String structureID;
   int strucNo;
   int serialID;
-  int strandCount;
+  int strandCount = 1;
 
   public int nRes;
   protected AlphaPolymer apolymer;

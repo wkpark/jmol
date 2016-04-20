@@ -213,7 +213,7 @@ public class MMCifReader extends CifReader {
     if (byChain && !isBiomolecule)
       for (String id : chainAtomMap.keySet())
         createParticle(id);
-    boolean haveBiomolecule = (vBiomolecules != null && vBiomolecules.size() > 0);
+    boolean haveBiomolecule = (isBiomolecule && vBiomolecules != null && vBiomolecules.size() > 0);
     if (!isCourseGrained && asc.ac == nAtoms) {
       asc.removeCurrentAtomSet();
     } else {
@@ -234,11 +234,9 @@ public class MMCifReader extends CifReader {
       if (doSetBonds)
         setBonds();
     }
-    if (asc.ac == 0)
+    if (asc.ac == 0 && !isCourseGrained)
       return false;
     String spaceGroup = sgName;
-    float[] ucParams = unitCellParams;
-    int[] lattice = latticeCells;
     if (htSites != null)
       addSites(htSites);
     
@@ -246,15 +244,27 @@ public class MMCifReader extends CifReader {
       asc.setCurrentModelInfo("biomolecules", vBiomolecules);
       setBiomolecules();
       if (thisBiomolecule != null) {
+        if (iHaveFractionalCoordinates)
+          fractionalizeCoordinates(false);
         asc.getXSymmetry().applySymmetryBio(thisBiomolecule,
             applySymmetryToBonds, filter);
         asc.xtalSymmetry = null;
+      }
+      doCheckUnitCell &= iHaveUnitCell && doApplySymmetry;
+      if (doCheckUnitCell) {
+        ignoreFileSpaceGroupName = true;
+        sgName = spaceGroup;
+        fractionalizeCoordinates(true);
+        asc.setModelInfoForSet("biosymmetry", null, asc.iSet);
+        asc.checkSpecial = false;
+        if (byChain)
+          return true;
       }
     }
     if (requiresSorting)
       sortAssemblyModels();
     
-    return true;
+    return true;//false;
   }
 
   ////////////////////////////////////////////////////////////////

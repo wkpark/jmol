@@ -808,6 +808,11 @@ public final class Resolver implements JmolBioResolver, Comparator<String[]> {
         setStructure(iterStructure);
   }
 
+  private static STR[] types = { STR.HELIXPI, STR.HELIXALPHA,
+    STR.SHEET, STR.HELIX310, STR.TURN };
+
+  private static int[] mytypes = {0, 2, 3, 4, 6};
+
   /**
    * note that istart and iend will be adjusted.
    * 
@@ -821,8 +826,6 @@ public final class Resolver implements JmolBioResolver, Comparator<String[]> {
     int[] atomRange = iterStructure.getAtomIndices();
     int[] modelRange = iterStructure.getModelIndices();
     BS[] bsAll = iterStructure.getBSAll();
-    if (bsAssigned == null)
-      bsAssigned = new BS();
     int m0, m1;
     Model[] models = ms.am;
     if (ml.isTrajectory) { //from PDB file
@@ -833,35 +836,14 @@ public final class Resolver implements JmolBioResolver, Comparator<String[]> {
     }
     ml.structuresDefinedInFile.setBits(m0, m1 + 1);
 
+    BS bs;
+    Model m;
     if (bsAll != null) {
-      for (int i = m0; i <= m1; i++) {
-        Model m = models[i];
-        if (m instanceof BioModel) {
-          for (int j = 0; j < 7; j++) {
-            switch (j) {
-            case 0:
-              t = STR.HELIXPI;
-              break;
-            case 2:
-              t = STR.HELIXALPHA;
-              break;
-            case 3:
-              t = STR.SHEET;
-              break;
-            case 4:
-              t = STR.HELIX310;
-              break;
-            case 6:
-              t = STR.TURN;
-              break;
-            default:
-              continue;
-            }
-            if (bsAll[j] != null)
-              ((BioModel) m).addStructureByBS(t, bsAll[j]);
-          }
-        }
-      }
+      for (int i = m0, t0; i <= m1; i++)
+        if ((m = models[i]) instanceof BioModel)
+          for (int j = 0; j < 5; j++)
+            if ((bs = bsAll[t0 = mytypes[j]]) != null)
+              ((BioModel) m).addStructureByBS(0, t0, types[j], bs);
       return;
     }
 
@@ -875,14 +857,14 @@ public final class Resolver implements JmolBioResolver, Comparator<String[]> {
     int startSeqCode = Group.getSeqcodeFor(startSequenceNumber,
         startInsertionCode);
     int endSeqCode = Group.getSeqcodeFor(endSequenceNumber, endInsertionCode);
-    for (int i = m0; i <= m1; i++) {
-      Model m = models[i];
-      int i0 = m.firstAtomIndex;
-      if (m instanceof BioModel)
+    if (bsAssigned == null)
+      bsAssigned = new BS();
+    for (int i = m0, i0 = 0; i <= m1; i++)
+      if ((m = models[i]) instanceof BioModel)
         ((BioModel) m).addSecondaryStructure(type, id, serID, count,
-            startChainID, startSeqCode, endChainID, endSeqCode, i0
-                + atomRange[0], i0 + atomRange[1], bsAssigned);
-    }
+            startChainID, startSeqCode, endChainID, endSeqCode,
+            (i0 = m.firstAtomIndex) + atomRange[0], i0 + atomRange[1],
+            bsAssigned);
   }
 
   @Override

@@ -1013,6 +1013,7 @@ public class XtalSymmetry {
     Lst<M4> biomts = (Lst<M4>) thisBiomolecule.get("biomts");
     if (biomts.size() < 2)
       return;
+    setLatticeCells();
     int[] lc = (latticeCells != null && latticeCells[0] != 0 ? new int[3] : null);
     if (lc != null)
       for (int i = 0; i < 3; i++)

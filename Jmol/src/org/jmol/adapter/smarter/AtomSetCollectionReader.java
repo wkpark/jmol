@@ -894,13 +894,16 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
     }
   }
 
-  protected void fractionalizeCoordinates() {
-    if (!symmetry.haveUnitCell())
-      symmetry.setUnitCell(unitCellParams, false);
+  protected void fractionalizeCoordinates(boolean toFrac) {
+    getSymmetry();
     Atom[] a = asc.atoms;
-    for (int i = asc.ac; --i >= 0;)
-      symmetry.toFractional(a[i], false);
-    setFractionalCoordinates(true);
+    if (toFrac)
+      for (int i = asc.ac; --i >= 0;)
+        symmetry.toFractional(a[i], false);
+    else
+      for (int i = asc.ac; --i >= 0;)
+        symmetry.toCartesian(a[i], false);
+    setFractionalCoordinates(toFrac);
   }
   protected SymmetryInterface getNewSymmetry() {
     return symmetry = (Symmetry) getInterface("org.jmol.symmetry.Symmetry");

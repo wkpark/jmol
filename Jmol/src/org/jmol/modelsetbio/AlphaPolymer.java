@@ -84,25 +84,24 @@ public class AlphaPolymer extends BioPolymer {
       bsAssigned.setBits(istart, iend + 1);
   }
 
-  public boolean addStructureProtected(STR type, 
-                             String structureID, int serialID, int strandCount,
-                             int indexStart, int indexEnd) {
+  public boolean addStructureProtected(STR type, String structureID,
+                                       int serialID, int strandCount,
+                                       int indexStart, int indexEnd) {
 
     //these two can be the same if this is a carbon-only polymer
     if (indexEnd < indexStart) {
-      Logger.error("AlphaPolymer:addSecondaryStructure error: " +
-                         " indexStart:" + indexStart +
-                         " indexEnd:" + indexEnd);
+      Logger.error("AlphaPolymer:addSecondaryStructure error: "
+          + " indexStart:" + indexStart + " indexEnd:" + indexEnd);
       return false;
     }
     int structureCount = indexEnd - indexStart + 1;
     ProteinStructure ps = null;
-//    boolean isAnnotation = false;
-    switch(type) {
-//    case ANNOTATION:
-//      ps = new Annotation(this, indexStart, structureCount, structureID);
-//      isAnnotation = true;
-//      break;
+    //    boolean isAnnotation = false;
+    switch (type) {
+    //    case ANNOTATION:
+    //      ps = new Annotation(this, indexStart, structureCount, structureID);
+    //      isAnnotation = true;
+    //      break;
     case HELIX:
     case HELIXALPHA:
     case HELIX310:
@@ -122,9 +121,8 @@ public class AlphaPolymer extends BioPolymer {
     ps.structureID = structureID;
     ps.serialID = serialID;
     ps.strandCount = strandCount;
-      for (int i = indexStart; i <= indexEnd; ++i) {
-        ((AlphaMonomer)monomers[i]).setStructure(ps);//, isAnnotation);
-    }
+    for (int i = indexStart; i <= indexEnd; ++i)
+      ((AlphaMonomer) monomers[i]).setStructure(ps);//, isAnnotation);
     return true;
   }
   
@@ -281,21 +279,26 @@ public class AlphaPolymer extends BioPolymer {
     }
   }
 
+  private final static String[] dsspTypes = {"H", null, "H", "S", "H", null, "T"}; 
   /**
    * bits in the bitset determines the type
+   * @param count 
+   * @param dsspType 
    * @param type
    * @param bs
    * @param doOffset
    *        allows us to examine just a portion of the
+   * @return updated count
    */
-  public void setStructureBS(STR type, BS bs, boolean doOffset) {
+  public int setStructureBS(int count, int dsspType, STR type, BS bs, boolean doOffset) {
     int offset = (doOffset ? pt0 : 0);
-    for (int i = bs.nextSetBit(offset), i2 = 0, n = monomerCount + offset; i >= 0
+    for (int pt = 0, i = bs.nextSetBit(offset), i2 = 0, n = monomerCount + offset; i >= 0
         && i < n; i = bs.nextSetBit(i2 + 1)) {
-      if ((i2 = bs.nextClearBit(i)) < 0)
+      if ((i2 = bs.nextClearBit(i)) < 0 || i2 > n)
         i2 = n;
-      addStructureProtected(type, null, 0, 0, i - offset, i2 - 1 - offset);
+      addStructureProtected(type, dsspTypes[dsspType] + (++pt), count++, (dsspType == 3 ? 1 : 0), i - offset, i2 - 1 - offset);
     }
+    return count;
   }
   
 

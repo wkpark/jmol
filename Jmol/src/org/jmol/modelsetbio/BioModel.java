@@ -340,8 +340,9 @@ public final class BioModel extends Model implements JmolBioModelSet, JmolBioMod
               .allocateBioPolymer(groups, j, doCheck, pt) : null);
           if (bp == null || bp.monomerCount == 0)
             continue;
-          ((BioModel) model).addBioPolymer(bp);
-          j += bp.monomerCount - 1;
+          int n = ((BioModel) model).addBioPolymer(bp);
+          j += n - 1;
+          pt += n - 1;
         }
       }
   }
@@ -953,11 +954,11 @@ public final class BioModel extends Model implements JmolBioModelSet, JmolBioMod
     return true;
   }
   
-  public void addStructureByBS(STR type, BS bs) {
+  public void addStructureByBS(int count, int dsspType, STR type, BS bs) {
     for (int i = bioPolymerCount; --i >= 0;) {
       BioPolymer b = bioPolymers[i];
       if (b instanceof AlphaPolymer)
-        ((AlphaPolymer) bioPolymers[i]).setStructureBS(type, bs, true);
+        count = ((AlphaPolymer) bioPolymers[i]).setStructureBS(++count, dsspType, type, bs, true);
     }
   }
   
@@ -1058,13 +1059,14 @@ public final class BioModel extends Model implements JmolBioModelSet, JmolBioMod
     return true;
   }
 
-  private void addBioPolymer(BioPolymer polymer) {
+  private int addBioPolymer(BioPolymer polymer) {
     if (bioPolymers.length == 0)
       clearBioPolymers();
     if (bioPolymerCount == bioPolymers.length)
       bioPolymers = (BioPolymer[])AU.doubleLength(bioPolymers);
     polymer.bioPolymerIndexInModel = bioPolymerCount;
     bioPolymers[bioPolymerCount++] = polymer;
+    return polymer.monomerCount;
   }
 
   @Override

@@ -570,7 +570,7 @@ public class DSSP implements DSSPInterface {
         setTag(labels[i], bsSheet, 'E');
       }
       if (setStructure) {
-        ap.setStructureBS(STR.SHEET, bsSheet, false);
+        ap.setStructureBS(0, 3, STR.SHEET, bsSheet, false);
       }
       done[i].or(bsSheet);
       done[i].or(bsBridge);
@@ -748,11 +748,11 @@ public class DSSP implements DSSPInterface {
 //    String line3 = findHelixes2(iPolymer, 3, min, STR.HELIX310,
 //        Edge.BOND_H_PLUS_3, bsTurn, false);
 
-    String line4 = findHelixes2(iPolymer, 4, min, STR.HELIXALPHA,
+    String line4 = findHelixes2(2, iPolymer, 4, min, STR.HELIXALPHA,
         Edge.BOND_H_PLUS_4, bsTurn, true);
-    String line3 = findHelixes2(iPolymer, 3, min, STR.HELIX310,
+    String line3 = findHelixes2(4, iPolymer, 3, min, STR.HELIX310,
         Edge.BOND_H_PLUS_3, bsTurn, false);
-    String line5 = findHelixes2(iPolymer, 5, min, STR.HELIXPI,
+    String line5 = findHelixes2(0, iPolymer, 5, min, STR.HELIXPI,
         Edge.BOND_H_PLUS_5, bsTurn, false);
 
     
@@ -762,7 +762,7 @@ public class DSSP implements DSSPInterface {
     // G, H, and I have been set; now set what is left over as turn
 
     if (setStructure)
-      ap.setStructureBS(STR.TURN, bsTurn, false);
+      ap.setStructureBS(0, 6, STR.TURN, bsTurn, false);
 
     if (doReport) {
       setTag(labels[iPolymer], bsTurn, 'T');
@@ -773,7 +773,7 @@ public class DSSP implements DSSPInterface {
     return "";
   }
 
-  private String findHelixes2(int iPolymer, int pitch, int[][][] min,
+  private String findHelixes2(int dsspType, int iPolymer, int pitch, int[][][] min,
                               STR subtype, int type,
                               BS bsTurn, boolean isFirst) {
 
@@ -869,7 +869,7 @@ public class DSSP implements DSSPInterface {
     // create the Jmol helix structures of the given subtype
 
     if (setStructure)
-      ap.setStructureBS(subtype, bsHelix, false); // GHI;
+      ap.setStructureBS(0, dsspType, subtype, bsHelix, false); // GHI;
 
     if (doReport) {
       setTag(labels[iPolymer], bsHelix, (char) ('D' + pitch));

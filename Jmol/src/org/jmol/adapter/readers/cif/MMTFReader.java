@@ -40,11 +40,28 @@ import org.jmol.java.BS;
 import org.jmol.util.Logger;
 
 /**
- * JmolData RCSB MMTF (macromolecular transmission format) file
+ * JmolData RCSB MMTF (macromolecular transmission format) file reader
+ * 
  * see https://github.com/rcsb/mmtf/blob/master/spec.md
  * 
+ * /full/ specification as of 2016.4.18 is implemented,including:
  * 
+ * reading atoms, bonds, and DSSR secondary structure
  * 
+ *   load =1f88.mmtf 
+ *   
+ * 
+ * reading space groups and unit cells, and using those as per other readers
+ * 
+ *   load =1crn.mmtf {1 1 1} 
+ * 
+ * reading bioassemblies (biomolecules) and applying those transformations
+ * 
+ *   load =1auy.mmtf FILTER "biomolecule 1;*.CA,*.P"
+ * 
+ * reading biomolecules and lattices, and loading course-grained
+ * 
+ *   load =1auy.mmtf {2 2 1} filter "biomolecule 1;bychain";spacefill 30.0; color property symop
  * 
  */
 
@@ -251,8 +268,8 @@ public class MMTFReader extends MMCifReader {
       for (int ia = 0, pt = 0; ia < len; ia++, iatom++) {
         Atom a = new Atom();
         if (insCode != 0)
-          a.insertionCode = (char) insCode;
-        a.set(x[iatom], y[iatom], z[iatom]);
+          a.insertionCode = (char) insCode;        
+        setAtomCoordXYZ(a, x[iatom], y[iatom], z[iatom]);
         a.elementSymbol = elementList[pt];
         a.atomName = atomNameList[pt++];
         if (seqNo >= 0)
@@ -395,7 +412,7 @@ public class MMTFReader extends MMCifReader {
   // DSSP (Jmol):            ...EE....EE....TT.....TTT...GGG..HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH.TT...HHHHHHHHHHHHHHHHHHHTHHHHHHHHHHT..TTHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH..........HHHHHHHHHHHHHHHHHHH.HHHHT...EEEETTTTEEEE......TTTTHHHHHHHHHHHTTHHHHHHHHHHHHHTT........
   private void getStructure(byte[] a) {    
     BS[] bsStructures = new BS[] { new BS(), null, new BS(), new BS(), new BS(), null, new BS() };
-    if (Logger.debugging)
+    //if (Logger.debugging)
       Logger.info(PT.toJSON("secStructList", a));
     for (int i = 0; i < a.length; i++) {
       int type = a[i];

@@ -260,7 +260,7 @@ public class MMCifReader extends CifReader {
           return true;
       }
     }
-    if (latticeCells != null)
+    if (latticeCells != null && latticeCells[0] != 0)
       addJmolScript("unitcell;");
     if (requiresSorting)
       sortAssemblyModels();

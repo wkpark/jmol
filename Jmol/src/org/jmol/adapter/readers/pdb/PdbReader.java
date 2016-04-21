@@ -457,7 +457,7 @@ SEQADV 1BLU GLU      7  SWS  P00208    GLN     7 CONFLICT
       asc.setModelInfoForSet("biosymmetry", null, asc.iSet);
       asc.checkSpecial = false;
     }
-    if (latticeCells != null)
+    if (latticeCells != null && latticeCells[0] != 0)
       addJmolScript("unitcell;");
     finalizeReaderASCR();
     if (vCompnds != null) {

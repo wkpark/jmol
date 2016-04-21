@@ -242,6 +242,7 @@ public class MMTFReader extends MMCifReader {
   private Map<String, Object> map; // input JSON-like map from MessagePack binary file  
   private int fileAtomCount;
   private int opCount = 0;
+  private int[] groupModels;
   
   private String[] labelAsymList; // created in getAtoms; used in getBioAssembly
   private int[] atomMap; // necessary because some atoms may be delete. 
@@ -333,6 +334,7 @@ public class MMTFReader extends MMCifReader {
     // groups
     int[] groupTypeList = getInts((byte[]) map.get("groupTypeList"), 4);
     int groupCount = groupTypeList.length;
+    groupModels = new int[groupCount];
     int[] groupIdList = rldecode32Delta((byte[]) map.get("groupIdList"),
         groupCount);
     Object[] groupList = (Object[]) map.get("groupList");
@@ -377,11 +379,12 @@ public class MMTFReader extends MMCifReader {
         nGroup = groupsPerChain[chainpt++];
         iGroup = 0;
         if (++iChain >= nChain) {
-          iModel++;
+          groupModels[j] = ++iModel;
           nChain = chainsPerModel[iModel];
           iChain = 0;
           setModelPDB(true);
           incrementModel(iModel + 1);
+          
           nAtoms0 = asc.ac;
         }
       }
@@ -459,6 +462,7 @@ public class MMTFReader extends MMCifReader {
     BS[] bsStructures = new BS[] { new BS(), null, new BS(), new BS(), new BS(), null, new BS() };
     if (Logger.debugging)
       Logger.info(PT.toJSON("secStructList", a));
+    int lastGroup = -1;
     for (int i = 0; i < a.length; i++) {
       int type = a[i];
       switch (type) {
@@ -468,10 +472,11 @@ public class MMTFReader extends MMCifReader {
       case 4: // 3-10
       case 6: // turn
         bsStructures[type].set(i);
+        lastGroup = i;
       }
     }
-    // only the first model gets this
-    asc.addStructure(new Structure(asc.iSet, null, null, null, 0, 0, bsStructures));
+    if (lastGroup >= 0)
+      asc.addStructure(new Structure(groupModels[lastGroup], null, null, null, 0, 0, bsStructures));
   }
 
 }

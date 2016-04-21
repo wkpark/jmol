@@ -552,12 +552,16 @@ public class XtalSymmetry {
   private void applyAllSymmetry(MSInterface ms, BS bsAtoms) throws Exception {
     if (asc.ac == 0)
       return;
+    Atom[] atoms = asc.atoms;
     noSymmetryCount = (asc.baseSymmetryAtomCount == 0 ? asc
         .getLastAtomSetAtomCount() : asc.baseSymmetryAtomCount);
     asc.setTensors();
     bondCount0 = asc.bondCount;
     finalizeSymmetry(symmetry);
     int operationCount = symmetry.getSpaceGroupOperationCount();
+    BS excludedOps = (acr.thisBiomolecule == null ? null : new BS());
+    if (excludedOps != null)
+      asc.checkSpecial = true;
     dtype = (int) symmetry.getUnitCellInfoType(SimpleUnitCell.INFO_DIMENSIONS);
     symmetry.setMinMaxLatticeParameters(minXYZ, maxXYZ);
     if (doCentroidUnitCell)
@@ -612,17 +616,14 @@ public class XtalSymmetry {
     }
     int nCells = (maxXYZ.x - minXYZ.x) * (maxXYZ.y - minXYZ.y)
         * (maxXYZ.z - minXYZ.z);
-    int cartesianCount = (asc.checkSpecial ? noSymmetryCount * operationCount
-        * nCells : symmetryRange > 0 ? noSymmetryCount * operationCount // checking
-    // against
-    // {1 1
-    // 1}
-        : symmetryRange < 0 ? 1 // checking against symop=1555 set; just a box
+    int cartesianCount = (asc.checkSpecial || acr.thisBiomolecule != null ? noSymmetryCount * operationCount
+        * nCells : symmetryRange > 0 ? noSymmetryCount * operationCount // checking against {1 1 1}
+//        : symmetryRange < 0 ? 1 // checking against symop=1555 set; just a box
             : 1 // not checking
     );
     P3[] cartesians = new P3[cartesianCount];
     for (int i = 0; i < noSymmetryCount; i++)
-      asc.atoms[i + firstSymmetryAtom].bsSymmetry = BS.newN(operationCount
+      atoms[i + firstSymmetryAtom].bsSymmetry = BS.newN(operationCount
           * (nCells + 1));
     int pt = 0;
     int[] unitCells = new int[nCells];
@@ -666,7 +667,7 @@ public class XtalSymmetry {
           // base cell only
 
           for (pt = 0; pt < noSymmetryCount; pt++) {
-            Atom atom = asc.atoms[firstSymmetryAtom + pt];
+            Atom atom = atoms[firstSymmetryAtom + pt];
             if (ms != null) {
               symmetry = ms.getAtomSymmetry(atom, this.symmetry);
               if (symmetry != lastSymmetry) {
@@ -714,7 +715,7 @@ public class XtalSymmetry {
             rmaxz += absRange;
           }
           cell555Count = pt = symmetryAddAtoms(0, 0, 0, 0, pt, iCell
-              * operationCount, cartesians, ms);
+              * operationCount, cartesians, ms, excludedOps, atoms);
         }
     if (checkRange111) {
       rminx -= absRange;
@@ -733,7 +734,7 @@ public class XtalSymmetry {
           iCell++;
           if (tx != 0 || ty != 0 || tz != 0)
             pt = symmetryAddAtoms(tx, ty, tz, cell555Count, pt, iCell
-                * operationCount, cartesians, ms);
+                * operationCount, cartesians, ms, excludedOps, atoms);
         }
     if (iCell * noSymmetryCount == asc.ac - firstSymmetryAtom)
       duplicateAtomProperties(iCell);
@@ -756,7 +757,7 @@ public class XtalSymmetry {
 
   private int symmetryAddAtoms(int transX, int transY, int transZ,
                                int baseCount, int pt, int iCellOpPt,
-                               P3[] cartesians, MSInterface ms)
+                               P3[] cartesians, MSInterface ms, BS excludedOps, Atom[] atoms)
       throws Exception {
     boolean isBaseCell = (baseCount == 0);
     boolean addBonds = (bondCount0 > asc.bondIndex0 && applySymmetryToBonds);
@@ -782,6 +783,7 @@ public class XtalSymmetry {
         : asc.checkSpecial);
     boolean checkSymmetryRange = (checkRangeNoSymmetry || checkRange111);
     boolean checkDistances = (checkSpecial || checkSymmetryRange);
+    boolean checkOps = (excludedOps != null);
     boolean addCartesian = (checkSpecial || checkSymmetryMinMax);
     BS bsAtoms = (acr.isMolecular ? null : asc.bsAtoms);
     SymmetryInterface symmetry = this.symmetry;
@@ -791,9 +793,9 @@ public class XtalSymmetry {
     P3 ptAtom = new P3();
     String code = null;
     char subSystemId = '\0';
-    for (int iSym = 0; iSym < nOperations; iSym++) {
+    out: for (int iSym = 0; iSym < nOperations; iSym++) {
       if (isBaseCell && iSym == 0 || latticeOnly && iSym > 0
-          && iSym != latticeOp)
+          && iSym != latticeOp || excludedOps != null && excludedOps.get(iSym))
         continue;
 
       /* pt0 sets the range of points cross-checked. 
@@ -810,11 +812,10 @@ public class XtalSymmetry {
       float spinOp = (asc.vibScale == 0 ? symmetry.getSpinOp(iSym)
           : asc.vibScale);
       int i0 = Math.max(firstSymmetryAtom, (bsAtoms == null ? 0 : bsAtoms.nextSetBit(0)));
+      boolean checkDistance = checkDistances;
       for (int i = i0; i < atomMax; i++) {
-        Atom a = asc.atoms[i];
-        if (a.ignoreSymmetry)
-          continue;
-        if (bsAtoms != null && !bsAtoms.get(i))
+        Atom a = atoms[i];
+        if (a.ignoreSymmetry ||bsAtoms != null && !bsAtoms.get(i))
           continue;
 
         if (ms == null) {
@@ -851,16 +852,14 @@ public class XtalSymmetry {
         if (checkSymmetryMinMax)
           setSymmetryMinMax(c);
         Atom special = null;
-        if (checkDistances) {
-
-          /* checkSpecial indicates that we are looking for atoms with (nearly) the
-           * same cartesian position.  
-           */
-          float minDist2 = Float.MAX_VALUE;
+        if (checkDistance) {
+          // for range checking, we first make sure we are not out of range
+          // for the cartesian
           if (checkSymmetryRange
               && (c.x < rminx || c.y < rminy || c.z < rminz || c.x > rmaxx
                   || c.y > rmaxy || c.z > rmaxz))
             continue;
+          float minDist2 = Float.MAX_VALUE;
           int j0 = (checkAll ? asc.ac : pt0);
           String name = a.atomName;
           char id = (code == null ? a.altLoc : subSystemId);
@@ -870,7 +869,17 @@ public class XtalSymmetry {
               continue;
             float d2 = c.distanceSquared(pc);
             if (checkSpecial && d2 < 0.0001) {
-              special = asc.atoms[firstSymmetryAtom + j];
+              /* checkSpecial indicates that we are looking for atoms with (nearly) the
+               * same cartesian position.  
+               */
+              if (checkOps) {
+                // if a matching atom is found for a model built
+                // from a mix of crystallographic and noncrystallographic 
+                // operators, we throw out the entire operation, not just this atom
+                excludedOps.set(iSym);
+                continue out;
+              }
+              special = atoms[firstSymmetryAtom + j];
               if ((special.atomName == null || special.atomName.equals(name))
                   && special.altLoc == id)
                 break;
@@ -881,6 +890,11 @@ public class XtalSymmetry {
           }
           if (checkRange111 && minDist2 > range2)
             continue;
+        }
+        if (checkOps) {
+          // if we did not find a common atom for the first atom when checking operators,
+          // we do not have to check again for any other atom.
+          checkDistance = false; 
         }
         int atomSite = a.atomSite;
         if (special != null) {
@@ -925,7 +939,6 @@ public class XtalSymmetry {
       if (addBonds) {
         // Clone bonds
         Bond[] bonds = asc.bonds;
-        Atom[] atoms = asc.atoms;
         for (int bondNum = asc.bondIndex0; bondNum < bondCount0; bondNum++) {
           Bond bond = bonds[bondNum];
           Atom atom1 = atoms[bond.atomIndex1];

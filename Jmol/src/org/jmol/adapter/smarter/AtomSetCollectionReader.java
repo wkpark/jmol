@@ -148,6 +148,7 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
   protected boolean isConcatenated;
   public String addedData, addedDataKey;
   public boolean fixJavaFloat = true;
+  public Map<String, Object> thisBiomolecule;
 
   //protected String parameterData;
 

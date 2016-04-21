@@ -66,7 +66,6 @@ public class MMCifReader extends CifReader {
   private Map<String, int[]> chainAtomCounts;
 
   protected Lst<Map<String, Object>> vBiomolecules;
-  protected Map<String, Object> thisBiomolecule;
   private Map<String, M4> htBiomts;
   protected Map<String, Map<String, Object>> htSites;
   protected Map<String, String> htHetero;
@@ -261,6 +260,8 @@ public class MMCifReader extends CifReader {
           return true;
       }
     }
+    if (latticeCells != null)
+      addJmolScript("unitcell;");
     if (requiresSorting)
       sortAssemblyModels();
     

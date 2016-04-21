@@ -125,7 +125,6 @@ public class PdbReader extends AtomSetCollectionReader {
   private Map<String, Map<String, String>> htMolIds;
   
   private  Lst<Map<String, String>> vCompnds;
-  private  Map<String, Object> thisBiomolecule;
   private  Lst<Map<String, Object>> vBiomolecules;
   private  Lst<Map<String, Object>> vTlsModels;
   private SB sbTlsErrors;
@@ -411,19 +410,19 @@ SEQADV 1BLU GLU      7  SWS  P00208    GLN     7 CONFLICT
   protected void finalizeSubclassReader() throws Exception {
     finalizeReaderPDB();
   }
-  
+ 
   protected void finalizeReaderPDB() throws Exception {
     checkNotPDB();
     checkUnitCellParams();
     if (!isCourseGrained)
       connectAll(maxSerial, isConnectStateBug);
     SymmetryInterface symmetry;
-    if (vBiomolecules != null && vBiomolecules.size() > 0
-        && asc.ac > 0) {
+    if (vBiomolecules != null && vBiomolecules.size() > 0 && asc.ac > 0) {
       asc.setCurrentModelInfo("biomolecules", vBiomolecules);
       setBiomoleculeAtomCounts();
-      if (thisBiomolecule != null && applySymmetry) {
-        asc.getXSymmetry().applySymmetryBio(thisBiomolecule, applySymmetryToBonds, filter);
+     if (thisBiomolecule != null && applySymmetry) {
+        asc.getXSymmetry().applySymmetryBio(thisBiomolecule, applySymmetryToBonds,
+            filter);
         vTlsModels = null; // for now, no TLS groups for biomolecules
         asc.xtalSymmetry = null;
       }
@@ -435,9 +434,11 @@ SEQADV 1BLU GLU      7  SWS  P00208    GLN     7 CONFLICT
         for (int i = n; --i >= 0;)
           setTlsGroups(i, i, symmetry);
       } else {
-        Logger.info(n + " models but " + vTlsModels.size() + " TLS descriptions");
+        Logger.info(n + " models but " + vTlsModels.size()
+            + " TLS descriptions");
         if (vTlsModels.size() == 1) {
-          Logger.info(" -- assuming all models have the same TLS description -- check REMARK 3 for details.");
+          Logger
+              .info(" -- assuming all models have the same TLS description -- check REMARK 3 for details.");
           for (int i = n; --i >= 0;)
             setTlsGroups(0, i, symmetry);
         }
@@ -456,18 +457,19 @@ SEQADV 1BLU GLU      7  SWS  P00208    GLN     7 CONFLICT
       asc.setModelInfoForSet("biosymmetry", null, asc.iSet);
       asc.checkSpecial = false;
     }
+    if (latticeCells != null)
+      addJmolScript("unitcell;");
     finalizeReaderASCR();
     if (vCompnds != null) {
       asc.setInfo("compoundSource", vCompnds);
-      for (int i = asc.iSet + 1; --i >= 0;) 
-        asc.setModelInfoForSet("compoundSource", vCompnds, i);  
+      for (int i = asc.iSet + 1; --i >= 0;)
+        asc.setModelInfoForSet("compoundSource", vCompnds, i);
     }
     if (htSites != null) {
       addSites(htSites);
     }
     if (pdbHeader != null)
-      asc.setInfo("fileHeader",
-          pdbHeader.toString());
+      asc.setInfo("fileHeader", pdbHeader.toString());
     if (configurationPtr > 0) {
       Logger.info(sbSelected.toString());
       Logger.info(sbIgnored.toString());

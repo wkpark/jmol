@@ -336,18 +336,7 @@ public class MMTFReader extends MMCifReader {
     int[] groupIdList = rldecode32Delta((byte[]) map.get("groupIdList"),
         groupCount);
     Object[] groupList = (Object[]) map.get("groupList");
-
-    Object o = map.get("insCodeList");
-    /**
-     * @j2sNative
-     * 
-     *            if (o[0] == null) o = null;
-     * 
-     */
-    {
-    }
-    int[] insCodes = (o == null || o instanceof Object[] ? null : rldecode32(
-        (byte[]) o, groupCount));
+    int[] insCodes = rldecode32((byte[]) map.get("insCodeList"), groupCount);
 
     //o = map.get("entityList");
     //o = map.get("altLabelList");

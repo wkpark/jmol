@@ -209,6 +209,8 @@ public class Symmetry implements SymmetryInterface {
 
   @Override
   public M4 getSpaceGroupOperation(int i) {
+    if (spaceGroup == null || spaceGroup.operations == null)
+      System.out.println("symmetry.getSpaceGroupOperation");
     return (i >= spaceGroup.operations.length ? null
         : spaceGroup.finalOperations == null ? spaceGroup.operations[i]
             : spaceGroup.finalOperations[i]);

@@ -446,6 +446,8 @@ public class CifReader extends AtomSetCollectionReader {
     }
     if (!haveCellWaveVector)
       modDim = 0;
+    if (doApplySymmetry && !iHaveFractionalCoordinates)
+      fractionalizeCoordinates(true);
     applySymTrajASCR();
     if (doCheckBonding && (bondTypes.size() > 0 || isMolecular))
       setBondingAndMolecules();

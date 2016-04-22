@@ -218,7 +218,7 @@ public class SymmetryDesc {
       info = new Hashtable<String, Object>();
     }
     info.put("spaceGroupName", sgName);
-    info.put("spaceGroupNote", sgNote);
+    info.put("spaceGroupNote", sgNote == null ? "" : sgNote);
     String data;
     if (isBio) {
       data = sgName;

@@ -456,10 +456,10 @@ class SpaceGroup {
       // try unconventional Hall symbol
       hallInfo = new HallInfo(name);
       if (hallInfo.nRotations > 0) {
-        sg = new SpaceGroup(-1, "0;--;--;" + name, true);
+        sg = new SpaceGroup(-1, "0;0;--;--;" + name, true);
         sg.hallInfo = hallInfo;
       } else if (name.indexOf(",") >= 0) {
-        sg = new SpaceGroup(-1, "0;--;--;--", true);
+        sg = new SpaceGroup(-1, "0;0;--;--;--", true);
         sg.doNormalize = false;
         sg.generateOperatorsFromXyzInfo(name);
       }
@@ -607,7 +607,7 @@ class SpaceGroup {
         }
       }
     }
-    if (operationCount != nHallOperators.intValue())
+    if (nHallOperators != null && operationCount != nHallOperators.intValue())
       Logger.error("Operator mismatch " + operationCount + " for " + this);
   }
 
@@ -825,27 +825,25 @@ class SpaceGroup {
   private static String lastInfo = "";
  
   private void buildSpaceGroup(String cifLine) {
-    String[] terms = PT.split(cifLine.toLowerCase(), ";");    
+    String[] terms = PT.split(cifLine.toLowerCase(), ";");
     intlTableNumberFull = terms[0].trim(); // International Table Number :
                                            // options
     isBilbao = (terms.length < 6 && !intlTableNumberFull.equals("0"));
     // intlNo:options;nOps;schoenflies;hermannMauguin;Hall;BilbaoFlag
     //   0             1        2            3         4        5
-    
+
     // the 5th term is not actually checked; we have ";-b" as 5th term right now for "not Bilbao"
     // "48:1;8;d2h^2;p n n n:1;p 2 2 -1n;-b",
     // and is probably origin choice 1.    
     // 4:c*;2;c2^2;p 1 1 21*;p 21
-    
-    // added # of operators to help in search phase
-    
-    // "4:b;2;c2^2;p 1 21 1;p 2yb",   //full name
-    
-    
-    ////  terms[0] -- International Table Number and setting ////
-    
 
-    String[]  parts = PT.split(intlTableNumberFull, ":");
+    // added # of operators to help in search phase
+
+    // "4:b;2;c2^2;p 1 21 1;p 2yb",   //full name
+
+    ////  terms[0] -- International Table Number and setting ////
+
+    String[] parts = PT.split(intlTableNumberFull, ":");
     intlTableNumber = parts[0];
     intlTableNumberExt = (parts.length == 1 ? "" : parts[1]);
     ambiguityType = '\0';
@@ -863,31 +861,29 @@ class SpaceGroup {
         // Q: should we include :-a1 here?
         // if (intlTableNumberExt.length() == 2)
         // cellChoice = intlTableNumberExt.charAt(1);
-      } else if (intlTableNumberExt.contains("-")){
+      } else if (intlTableNumberExt.contains("-")) {
         ambiguityType = '-';
         // skip when searching for a group by name
         // added 9/28/14 Jmol 14.3.7
       }
     }
-    
+
     ////  terms[1] -- number of operators ////
-    
-    nHallOperators = Integer.valueOf(terms[1]);
-    
-    Lst<SpaceGroup> lst = htByOpCount.get(nHallOperators);
-    if (lst == null)
-      htByOpCount.put(nHallOperators, lst = new Lst<SpaceGroup>());
-    lst.addLast(this);
-    
+
+    if (!terms[1].equals("0")) {
+      nHallOperators = Integer.valueOf(terms[1]);
+      Lst<SpaceGroup> lst = htByOpCount.get(nHallOperators);
+      if (lst == null)
+        htByOpCount.put(nHallOperators, lst = new Lst<SpaceGroup>());
+      lst.addLast(this);
+    }
     ////  terms[2] -- Schoenflies ////
-    
+
     crystalClass = toCap(PT.split(terms[2], "^")[0], 1);
-    
+
     /* schoenfliesSymbol = terms[2] */
 
-    
     ////  terms[3] -- Hermann-Mauguin ////
-    
 
     hmSymbolFull = toCap(terms[3], 1);
     parts = PT.split(hmSymbolFull, ":");
@@ -897,20 +893,17 @@ class SpaceGroup {
     int pt = hmSymbol.indexOf(" -3");
     if (pt >= 1)
       if ("admn".indexOf(hmSymbol.charAt(pt - 1)) >= 0) {
-        hmSymbolAlternative = (hmSymbol.substring(0, pt) + " 3"
-            + hmSymbol.substring(pt + 3)).toLowerCase();
+        hmSymbolAlternative = (hmSymbol.substring(0, pt) + " 3" + hmSymbol
+            .substring(pt + 3)).toLowerCase();
       }
     hmSymbolAbbr = PT.rep(hmSymbol, " ", "");
     hmSymbolAbbrShort = PT.rep(hmSymbol, " 1", "");
     hmSymbolAbbrShort = PT.rep(hmSymbolAbbrShort, " ", "");
 
-    
-    
     ////  term 4 -- Hall ////
-    
 
     hallSymbol = terms[4];
-    
+
     if (hallSymbol.length() > 1)
       hallSymbol = toCap(hallSymbol, 2);
     String info = intlTableNumber + hallSymbol;
@@ -919,8 +912,8 @@ class SpaceGroup {
     lastInfo = info;
     name = hallSymbol + " [" + hmSymbolFull + "] #" + intlTableNumber;
 
-//    System.out.println(intlTableNumber + (intlTableNumberExt.equals("") ? "" : ":" + intlTableNumberExt) + "\t"
-  //      + hmSymbol + "\t" + hmSymbolAbbr + "\t" + hmSymbolAbbrShort + "\t"
+    //    System.out.println(intlTableNumber + (intlTableNumberExt.equals("") ? "" : ":" + intlTableNumberExt) + "\t"
+    //      + hmSymbol + "\t" + hmSymbolAbbr + "\t" + hmSymbolAbbrShort + "\t"
     //    + hallSymbol);
   }
 

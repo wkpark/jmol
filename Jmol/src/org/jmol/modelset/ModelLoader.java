@@ -1187,7 +1187,7 @@ public final class ModelLoader {
       Logger
           .info("ModelSet: autobonding; use  autobond=false  to not generate bonds automatically");
     } else {
-      ms.initializeBspf();
+      //ms.initializeBspf();
       Logger
           .info("ModelSet: not autobonding; use  forceAutobond=true  to force automatic bond creation");
     }

@@ -1620,6 +1620,7 @@ public class CifReader extends AtomSetCollectionReader {
   private int firstAtom;
 
   private Atom[] atoms;
+  private BS bsBondDuplicates;
 
   /**
    * (1) If GEOM_BOND records are present, we (a) use them to generate bonds (b)
@@ -1679,12 +1680,13 @@ public class CifReader extends AtomSetCollectionReader {
     }
 
     boolean isFirst = true;
+    bsBondDuplicates = new BS();
     while (createBonds(isFirst)) {
       isFirst = false;
       // main loop continues until no new atoms are found
     }
 
-    if (isMolecular && iHaveFractionalCoordinates) {
+    if (isMolecular && iHaveFractionalCoordinates && !bsMolecule.isEmpty()) {
 
       // Set bsAtoms to control which atoms and 
       // bonds are delivered by the iterators.
@@ -1730,7 +1732,7 @@ public class CifReader extends AtomSetCollectionReader {
   }
 
   private void fixAtomForBonding(P3 pt, int i) {
-    pt = (pt == null ? atoms[i] : P3.newP(atoms[i]));
+    pt.setT(atoms[i]);//pt = (pt == null ? atoms[i] : P3.newP(atoms[i]));
     if (iHaveFractionalCoordinates)
       symmetry.toCartesian(pt, true);
   }
@@ -1750,25 +1752,39 @@ public class CifReader extends AtomSetCollectionReader {
    * @return TRUE if need to continue
    */
   private boolean createBonds(boolean doInit) {
-
     // process GEOM_BOND records
+    String list = "";
+    boolean haveH = false;
     for (int i = bondTypes.size(); --i >= 0;) {
+      if (bsBondDuplicates.get(i))
+        continue;
       Object[] o = bondTypes.get(i);
       float distance = ((Float) o[2]).floatValue();
       float dx = ((Float) o[3]).floatValue();
       int order = ((Integer) o[4]).intValue();
       int iatom1 = asc.getAtomIndex((String) o[0]);
       int iatom2 = asc.getAtomIndex((String) o[1]);
+      if (doInit) {
+        String key = ";" + iatom1 + ";" +  iatom2 + ";" + distance;
+        if (list.indexOf(key) >= 0) {
+          bsBondDuplicates.set(i);
+          continue;
+        }
+        list += key;
+      }
       BS bs1 = bsSets[iatom1 - firstAtom];
       BS bs2 = bsSets[iatom2 - firstAtom];
       if (bs1 == null || bs2 == null)
         continue;
-      for (int j = bs1.nextSetBit(0); j >= 0; j = bs1.nextSetBit(j + 1))
+      if (atoms[iatom1].elementNumber == 1 || atoms[iatom2].elementNumber == 1)
+        haveH = true;
+      for (int j = bs1.nextSetBit(0); j >= 0; j = bs1.nextSetBit(j + 1)) {
         for (int k = bs2.nextSetBit(0); k >= 0; k = bs2.nextSetBit(k + 1)) {
           if ((!isMolecular || !bsConnected[j + firstAtom].get(k))
               && checkBondDistance(atoms[j + firstAtom], atoms[k + firstAtom], distance, dx))
             addNewBond(j + firstAtom, k + firstAtom, order);
         }
+      }
     }
 
     if (!iHaveFractionalCoordinates)
@@ -1777,7 +1793,7 @@ public class CifReader extends AtomSetCollectionReader {
     
     // do a quick check for H-X bonds if we have GEOM_BOND
 
-    if (bondTypes.size() > 0)
+    if (bondTypes.size() > 0 && !haveH)
       for (int i = firstAtom; i < ac; i++)
         if (atoms[i].elementNumber == 1) {
           boolean checkAltLoc = (atoms[i].altLoc != '\0');
@@ -1800,7 +1816,7 @@ public class CifReader extends AtomSetCollectionReader {
         if (atoms[i].atomSite + firstAtom == i && !bsMolecule.get(i))
           setBs(atoms, i, bsConnected, bsMolecule);
 
-    // Now look through unchecked atoms for ones that
+     // Now look through unchecked atoms for ones that
     // are within bonding distance of the "molecular" set
     // in any one of the 27 adjacent cells in 444 - 666.
     // If an atom is found, move it along with its "branch"
@@ -1839,6 +1855,7 @@ public class CifReader extends AtomSetCollectionReader {
                 }
               bsMolecule.set(k);
             }
+            //System.out.println("returning true\n" + bsMolecule);
             return true;
           }
     return false;
@@ -1862,6 +1879,7 @@ public class CifReader extends AtomSetCollectionReader {
     asc.addNewBondWithOrder(i, j, order);
     if (!isMolecular)
       return;
+    //System.out.println("bonding " + i + " " + j);
     bsConnected[i].set(j);
     bsConnected[j].set(i);
   }

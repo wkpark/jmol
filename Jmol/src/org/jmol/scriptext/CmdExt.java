@@ -608,6 +608,7 @@ public class CmdExt extends ScriptExt {
     BS bs2 = null;
     ScriptEval eval = this.e;
     int n = Integer.MIN_VALUE;
+    int version = 2;
     if ((eval.iToken = eval.slen) >= 2) {
       eval.clearDefinedVariableAtomSets();
       switch (getToken(1).tok) {
@@ -693,7 +694,8 @@ public class CmdExt extends ScriptExt {
         }
         return;
       case T.structure:
-        bs1 = (slen < 4 ? null : atomExpressionAt(2));
+        // calculate structure {.....} ...
+        bs1 = (slen < 4 || isFloatParameter(3) ? null : atomExpressionAt(2));
         switch (tokAt(++eval.iToken)) {
         case T.ramachandran:
           break;
@@ -704,6 +706,10 @@ public class CmdExt extends ScriptExt {
           return;
         case T.dssp:
           asDSSP = true;
+          // calculate structure DSSP
+          // calculate structure DSSP 1.0
+          // calculate structure DSSP 2.0
+          version = (slen == eval.iToken + 1 ? 2 : (int) floatParameter(++eval.iToken));
           break;
         case T.nada:
           asDSSP = vwr.getBoolean(T.defaultstructuredssp);
@@ -712,7 +718,7 @@ public class CmdExt extends ScriptExt {
           invArg();
         }
         if (!chk)
-          showString(vwr.calculateStructures(bs1, asDSSP, true));
+          showString(vwr.calculateStructures(bs1, asDSSP, true, version));
         return;
       case T.struts:
         bs1 = (eval.iToken + 1 < slen ? atomExpressionAt(++eval.iToken) : null);
@@ -4178,9 +4184,13 @@ public class CmdExt extends ScriptExt {
       }
       break;
     case T.dssp:
-      checkLength(2 + filterLen);
+      int version = 2;
+      if (slen == 3)
+        version = ((int) floatParameter((len = 3) - 1));
+      else
+        checkLength(2 + filterLen);
       if (!chk)
-        msg = vwr.calculateStructures(null, true, false);
+        msg = vwr.calculateStructures(null, true, false, version);
       break;
     case T.pathforallfiles:
       checkLength(2 + filterLen);

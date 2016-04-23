@@ -86,6 +86,8 @@ public class MMCifReader extends CifReader {
   protected void initSubclass() {
     setIsPDB();
     isMMCIF = true;
+    if (isDSSP1)
+      asc.setInfo("isDSSP1",Boolean.TRUE);      
     if (htParams.containsKey("isMutate"))
       asc.setInfo("isMutate",Boolean.TRUE);      
     doSetBonds = checkFilterKey("ADDBONDS");
@@ -116,6 +118,9 @@ public class MMCifReader extends CifReader {
     if (key0.startsWith(FAMILY_ASSEM_CAT) 
         || key0.startsWith(FAMILY_STRUCTCONN_CAT)
         || key0.startsWith(FAMILY_SEQUENCEDIF_CAT)
+        || key0.startsWith(FAMILY_STRUCTCONF_CAT)
+        || key0.startsWith(FAMILY_SHEET_CAT)
+        
 //        || key0.startsWith(FAMILY_PDBX_NONPOLY_CAT)
         )
       processSubclassLoopBlock();
@@ -709,6 +714,10 @@ public class MMCifReader extends CifReader {
    * @throws Exception
    */
   private boolean processStructConfLoopBlock() throws Exception {
+    if (ignoreStructure) {
+      parser.skipLoop(false);
+      return false;
+    }
     parseLoopParametersFor(FAMILY_STRUCTCONF, structConfFields);
     if (!checkAllFieldsPresent(structConfFields, -1, true)) {
       parser.skipLoop(true);
@@ -716,49 +725,18 @@ public class MMCifReader extends CifReader {
     }
     while (parser.getData()) {
       Structure structure = new Structure(-1, STR.HELIX, STR.HELIX, null, 0, 0, null);
-      int n = parser.getColumnCount();
-      for (int i = 0; i < n; ++i) {
-        switch (fieldProperty(i)) {
-        case NONE:
-          break;
-        case CONF_TYPE_ID:
-          if (field.startsWith("TURN"))
-            structure.structureType = structure.substructureType = STR.TURN;
-          else if (!field.startsWith("HELX"))
-            structure.structureType = structure.substructureType = STR.NONE;
-          break;
-        case BEG_ASYM_ID:
-          structure.startChainStr = field;
-          structure.startChainID = vwr.getChainID(field, true);
-          break;
-        case BEG_SEQ_ID:
-          structure.startSequenceNumber = parseIntStr(field);
-          break;
-        case BEG_INS_CODE:
-          structure.startInsertionCode = firstChar;
-          break;
-        case END_ASYM_ID:
-          structure.endChainStr = field;
-          structure.endChainID = vwr.getChainID(field, true);
-          break;
-        case END_SEQ_ID:
-          structure.endSequenceNumber = parseIntStr(field);
-          break;
-        case HELIX_CLASS:
-          structure.substructureType = Structure.getHelixType(parseIntStr(field));
-          break;
-        case END_INS_CODE:
-          structure.endInsertionCode = firstChar;
-          break;
-        case STRUCT_ID:
-          structure.structureID = field;
-          break;
-        case SERIAL_NO:
-          structure.serialID = parseIntStr(field);
-          break;
-        }
-      }
-      asc.addStructure(structure);
+      
+      String type = getField(CONF_TYPE_ID);
+      if (type.startsWith("TURN"))
+        structure.structureType = structure.substructureType = STR.TURN;
+      else if (!type.startsWith("HELX"))
+        structure.structureType = structure.substructureType = STR.NONE; 
+      else
+        structure.substructureType = Structure.getHelixType(parseIntStr(getField(HELIX_CLASS)));
+      structure.serialID = parseIntStr(getField(SERIAL_NO));
+      structure.structureID = getField(STRUCT_ID);
+
+      addStructure(structure);
     }
     return true;
   }
@@ -766,6 +744,16 @@ public class MMCifReader extends CifReader {
   ////////////////////////////////////////////////////////////////
   // sheet structure data
   ////////////////////////////////////////////////////////////////
+
+  private void addStructure(Structure structure) {    
+    structure.startChainID = vwr.getChainID(structure.startChainStr = getField(BEG_ASYM_ID), true);
+    structure.startSequenceNumber = parseIntStr(getField(BEG_SEQ_ID));
+    structure.startInsertionCode = getField(BEG_INS_CODE).charAt(0);
+    structure.endChainID = vwr.getChainID(structure.endChainStr = getField(END_ASYM_ID), true);
+    structure.endSequenceNumber = parseIntStr(getField(END_SEQ_ID));
+    structure.endInsertionCode = getField(END_INS_CODE).charAt(0);
+    asc.addStructure(structure);
+  }
 
   final private static byte SHEET_ID = 0;
   final private static byte STRAND_ID = 7;
@@ -793,22 +781,18 @@ public class MMCifReader extends CifReader {
    * @throws Exception
    */
   private boolean processStructSheetRangeLoopBlock() throws Exception {
+    if (ignoreStructure) {
+      parser.skipLoop(false);
+      return false;
+    }
     parseLoopParametersFor(FAMILY_SHEET, structSheetRangeFields);
     if (!checkAllFieldsPresent(structSheetRangeFields, -1, true)) {
       parser.skipLoop(true);
       return false;
     }
-    while (parser.getData()) {
-      Structure structure = new Structure(-1, STR.SHEET, STR.SHEET, getField(SHEET_ID), 
-          parseIntStr(getField(STRAND_ID)), 1, null);
-      structure.startChainID = vwr.getChainID(getField(BEG_ASYM_ID), true);
-      structure.startSequenceNumber = parseIntStr(getField(BEG_SEQ_ID));
-      structure.startInsertionCode = getField(BEG_INS_CODE).charAt(0);
-      structure.endChainID = vwr.getChainID(getField(END_ASYM_ID), true);
-      structure.endSequenceNumber = parseIntStr(getField(END_SEQ_ID));
-      structure.endInsertionCode = getField(END_INS_CODE).charAt(0);
-      asc.addStructure(structure);      
-    }
+    while (parser.getData())
+      addStructure(new Structure(-1, STR.SHEET, STR.SHEET, getField(SHEET_ID), 
+          parseIntStr(getField(STRAND_ID)), 1, null));
     return true;
   }
 

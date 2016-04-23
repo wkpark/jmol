@@ -23,7 +23,14 @@
  */
 package org.jmol.dssx;
 
-import org.jmol.api.DSSPInterface;
+import java.util.Hashtable;
+import java.util.Map;
+
+import javajs.util.AU;
+import javajs.util.Lst;
+import javajs.util.PT;
+import javajs.util.SB;
+
 import org.jmol.c.STR;
 import org.jmol.i18n.GT;
 import org.jmol.java.BS;
@@ -36,27 +43,19 @@ import org.jmol.modelsetbio.AminoPolymer;
 import org.jmol.modelsetbio.BioPolymer;
 import org.jmol.modelsetbio.Monomer;
 import org.jmol.util.C;
-import org.jmol.util.Escape;
 import org.jmol.util.Edge;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
-
 //import javajs.util.List;
-import javajs.util.AU;
-import javajs.util.Lst;
-import javajs.util.PT;
-import javajs.util.SB;
 
-import java.util.Hashtable;
-
-import java.util.Map;
-
-public class DSSP implements DSSPInterface {
+public class DSSP {
 
   ////////////////////// DSSP /////////////////////
   //
   //    W. Kabsch and C. Sander, Biopolymers, vol 22, 1983, pp 2577-2637
-  // 
+  //
+  // DSSP 2.0 as described in Int. J. Mol. Sci. 2014, 15, 7841-7864; doi:10.3390/ijms15057841
   //
   //   ------------------license permission-----------------
   //
@@ -210,6 +209,7 @@ public class DSSP implements DSSPInterface {
   private Map<int[][], Boolean> htLadders;
   private Lst<Bridge> bridgesA;
   private Lst<Bridge> bridgesP;
+  private boolean isDSSP2;
 
   /**
    * 
@@ -219,21 +219,22 @@ public class DSSP implements DSSPInterface {
    * @param doReport
    * @param dsspIgnoreHydrogens
    * @param setStructure
+   * @param version  can be 2.0 to reverse order of helix calculation and emphasize pi-helices 
    * @return helix-5, helix-4, helix-3, and SUMMARY lines
    */
 
   
-  @Override
   @SuppressWarnings("unchecked")
   public String calculateDssp(Object[] objBioPolymers, int bioPolymerCount,
                               Object objVHBonds, boolean doReport,
-                              boolean dsspIgnoreHydrogens, boolean setStructure) {
+                              boolean dsspIgnoreHydrogens, boolean setStructure, int version) {
     bioPolymers = (BioPolymer[]) objBioPolymers;
     this.bioPolymerCount = bioPolymerCount;
     vHBonds = (Lst<Bond>) objVHBonds;
     this.doReport = doReport;
     this.dsspIgnoreHydrogens = dsspIgnoreHydrogens;
     this.setStructure = setStructure;
+    isDSSP2 = (version > 1);
     BS bsAmino = new BS();
     for (int i = 0; i < bioPolymerCount; i++)
       if (bioPolymers[i] instanceof AminoPolymer)
@@ -247,19 +248,10 @@ public class DSSP implements DSSPInterface {
         " DSSP analysis for model ").append(m.ms.getModelNumberDotted(m.modelIndex)).append(
         " - ").append(m.ms.getModelTitle(m.modelIndex)).append("\n");
     if (m.modelIndex == 0)
-      sb
-          .append(
-              "\nW. Kabsch and C. Sander, Biopolymers, vol 22, 1983, pp 2577-2637\n")
-          .append(
-              "\nWe thank Wolfgang Kabsch and Chris Sander for writing the DSSP software,\n")
-          .append(
-              "and we thank the CMBI for maintaining it to the extent that it was easy to\n")
-          .append(
-              "re-engineer for our purposes. At this point in time, we make no guarantee\n")
-          .append(
-              "that this code gives precisely the same analysis as the code available via license\n")
-          .append("from CMBI at http://swift.cmbi.ru.nl/gv/dssp\n");
-
+      sb.append(
+              "\nW. Kabsch and C. Sander, Biopolymers, vol 22, 1983, pp 2577-2637\n\nWe thank Wolfgang Kabsch and Chris Sander for writing the DSSP software,\nand we thank the CMBI for maintaining it to the extent that it was easy to\nre-engineer in Java for our purposes. \n\nSecond generation DSSP 2.0 is ")
+              .append(isDSSP2 ? "" : "NOT ")
+              .append("used in this analysis. See Int. J. Mol. Sci. 2014, 15, 7841-7864; doi:10.3390/ijms15057841.\n");
     if (setStructure && m.modelIndex == 0)
       sb.append("\nAll bioshapes have been deleted and must be regenerated.\n");
 
@@ -576,7 +568,6 @@ public class DSSP implements DSSPInterface {
       done[i].or(bsBridge);
     }
   }
-
   /**
    * "ladder =: one or more consecutive bridges of identical type" (p. 2582)
    * 
@@ -739,25 +730,27 @@ public class DSSP implements DSSPInterface {
 
     BS bsTurn = new BS();
 
-// The DSSP site does something odd here and seems to put helix-5 first
-// Looks like despite what is said in the paper, we need to do the >>55555<< marks first
-//    String line5 = findHelixes2(iPolymer, 5, min, STR.HELIXPI,
-//        Edge.BOND_H_PLUS_5, bsTurn, true);
-//    String line4 = findHelixes2(iPolymer, 4, min, STR.HELIXALPHA,
-//        Edge.BOND_H_PLUS_4, bsTurn, false);
-//    String line3 = findHelixes2(iPolymer, 3, min, STR.HELIX310,
-//        Edge.BOND_H_PLUS_3, bsTurn, false);
+    String line3, line4, line5;
 
-    String line4 = findHelixes2(2, iPolymer, 4, min, STR.HELIXALPHA,
-        Edge.BOND_H_PLUS_4, bsTurn, true);
-    String line3 = findHelixes2(4, iPolymer, 3, min, STR.HELIX310,
-        Edge.BOND_H_PLUS_3, bsTurn, false);
-    String line5 = findHelixes2(0, iPolymer, 5, min, STR.HELIXPI,
-        Edge.BOND_H_PLUS_5, bsTurn, false);
+    if (isDSSP2) {
+      line5 = findHelixes2(0, iPolymer, 5, min, STR.HELIXPI,
+          Edge.BOND_H_PLUS_5, bsTurn, true);
+      line4 = findHelixes2(2, iPolymer, 4, min, STR.HELIXALPHA,
+          Edge.BOND_H_PLUS_4, bsTurn, false);
+      line3 = findHelixes2(4, iPolymer, 3, min, STR.HELIX310,
+          Edge.BOND_H_PLUS_3, bsTurn, false);
 
-    
+    } else {
+      line4 = findHelixes2(2, iPolymer, 4, min, STR.HELIXALPHA,
+          Edge.BOND_H_PLUS_4, bsTurn, true);
+      line3 = findHelixes2(4, iPolymer, 3, min, STR.HELIX310,
+          Edge.BOND_H_PLUS_3, bsTurn, false);
+      line5 = findHelixes2(0, iPolymer, 5, min, STR.HELIXPI,
+          Edge.BOND_H_PLUS_5, bsTurn, false);
+    }
+
     //   String line5 = findHelixes2(iPolymer, 5, min, STR.HELIXPI,
- //       Edge.BOND_H_PLUS_5, bsTurn);
+    //       Edge.BOND_H_PLUS_5, bsTurn);
 
     // G, H, and I have been set; now set what is left over as turn
 
@@ -773,7 +766,7 @@ public class DSSP implements DSSPInterface {
     return "";
   }
 
-  private String findHelixes2(int dsspType, int iPolymer, int pitch, int[][][] min,
+  private String findHelixes2(int mmtfType, int iPolymer, int pitch, int[][][] min,
                               STR subtype, int type,
                               BS bsTurn, boolean isFirst) {
 
@@ -869,7 +862,7 @@ public class DSSP implements DSSPInterface {
     // create the Jmol helix structures of the given subtype
 
     if (setStructure)
-      ap.setStructureBS(0, dsspType, subtype, bsHelix, false); // GHI;
+      ap.setStructureBS(0, mmtfType, subtype, bsHelix, false); // GHI;
 
     if (doReport) {
       setTag(labels[iPolymer], bsHelix, (char) ('D' + pitch));

@@ -48,6 +48,7 @@ import org.jmol.atomdata.RadiusData;
 import org.jmol.c.VDW;
 import org.jmol.java.BS;
 
+import org.jmol.modelsetbio.BioModel;
 
 import javajs.util.AU;
 import javajs.util.Lst;
@@ -417,7 +418,7 @@ public final class ModelLoader {
     Model[] models = ms.am;
     for (int i = baseModelIndex; i < modelCount; i++)
       if (models[i].isBioModel)
-        ((JmolBioModel) models[i]).getDefaultLargePDBRendering(sb, maxAtoms);
+        ((BioModel) models[i]).getDefaultLargePDBRendering(sb, maxAtoms);
     if (sb.length() == 0)
       return;
     sb.append("select *;");
@@ -1331,9 +1332,10 @@ public final class ModelLoader {
       return;
     }
     boolean asDSSP = vwr.getBoolean(T.defaultstructuredssp);
+    // code in 14.4 but will require 14.5 for this implementation
     String ret = ms.calculateStructuresAllExcept(structuresDefinedInFile, 
           asDSSP, 
-          false, true, true, asDSSP); // now DSSP
+          false, true, true, asDSSP, JC.versionInt >= 1405000 && ms.getInfoM("DSSP1") == null ? 2 : 1); // now DSSP 2.0
     if (ret.length() > 0)
       Logger.info(ret);
   }

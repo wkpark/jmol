@@ -16,7 +16,7 @@ public interface JmolBioModelSet {
   void calcAllRasmolHydrogenBonds(BS bsA, BS bsB, Lst<Bond> vHBonds,
                                          boolean nucleicOnly, int nMax,
                                          boolean dsspIgnoreHydrogens,
-                                         BS bsHBonds);
+                                         BS bsHBonds, Object newParam, int dsspVersion);
 
   void calcSelectedMonomersCount();
 
@@ -26,13 +26,13 @@ public interface JmolBioModelSet {
   String calculateAllStuctures(BS bsAtoms, boolean asDSSP,
                                       boolean doReport,
                                       boolean dsspIgnoreHydrogen,
-                                      boolean setStructure);
+                                      boolean setStructure, int version);
 
   String calculateAllStructuresExcept(BS alreadyDefined, boolean asDSSP,
                                              boolean doReport,
                                              boolean dsspIgnoreHydrogen,
                                              boolean setStructure,
-                                             boolean includeAlpha);
+                                             boolean includeAlpha, int version);
 
   void calculateStraightnessAll();
 

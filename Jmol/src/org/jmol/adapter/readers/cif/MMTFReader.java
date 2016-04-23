@@ -63,6 +63,9 @@ import org.jmol.util.Logger;
  * 
  *   load =1auy.mmtf {2 2 1} filter "biomolecule 1;bychain";spacefill 30.0; color property symop
  * 
+ * Note that the filter "DSSP1" indicates that mmtf included DSSP 1.0 calculation should be used. 
+ * Otherwise Jmol will use DSSP 2.0 itself.
+ * 
  */
 
 public class MMTFReader extends MMCifReader {
@@ -88,6 +91,8 @@ public class MMTFReader extends MMCifReader {
   @Override
   protected void processBinaryDocument() throws Exception {
     boolean doDoubleBonds = (!isCourseGrained && !checkFilterKey("NODOUBLE"));
+    isDSSP1 = checkFilterKey("DSSP1");
+    boolean mmtfImplementsDSSP2 = false; // so far!
     applySymmetryToBonds = true;
     map = (new MessagePackReader(binaryDoc, true)).readMap();
     Logger.info("MMTF version " + map.get("mmtfVersion"));
@@ -100,7 +105,8 @@ public class MMTFReader extends MMCifReader {
     getAtoms(doDoubleBonds);
     if (!isCourseGrained) {
       getBonds(doDoubleBonds);
-      getStructure((byte[]) map.get("secStructList"));
+      if (isDSSP1 || mmtfImplementsDSSP2) 
+        getStructure((byte[]) map.get("secStructList"));
     }
     setSymmetry();
     getBioAssembly();
@@ -475,8 +481,10 @@ public class MMTFReader extends MMCifReader {
         lastGroup = i;
       }
     }
+    
+    int n = (isDSSP1 ? asc.iSet : groupModels[lastGroup]);
     if (lastGroup >= 0)
-      asc.addStructure(new Structure(groupModels[lastGroup], null, null, null, 0, 0, bsStructures));
+      asc.addStructure(new Structure(n, null, null, null, 0, 0, bsStructures));
   }
 
 }

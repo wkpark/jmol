@@ -57,7 +57,7 @@ import org.jmol.modelset.Bond;
 import org.jmol.modelset.BondSet;
 import org.jmol.modelset.Chain;
 import org.jmol.modelset.Group;
-import org.jmol.modelset.JmolBioModel;
+import org.jmol.modelsetbio.BioModel;
 import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.Model;
 import org.jmol.modelset.ModelSet;
@@ -1003,7 +1003,7 @@ public class PropertyManager implements JmolPropertyManager {
       model.put("groupCount", Integer.valueOf(mi.getGroupCount()));
       model.put("moleculeCount", Integer.valueOf(mi.moleculeCount));
       if (mi.isBioModel)
-        model.put("polymerCount", Integer.valueOf(((JmolBioModel) mi).getBioPolymerCount()));
+        model.put("polymerCount", Integer.valueOf(((BioModel) mi).getBioPolymerCount()));
       model.put("chainCount", Integer.valueOf(m.getChainCountInModelWater(i, true)));
       if (mi.properties != null) {
         model.put("modelProperties", mi.properties);
@@ -2142,7 +2142,7 @@ public class PropertyManager implements JmolPropertyManager {
     if (parameters == null) {
       ctype = (type.length() > 11 && type.indexOf("quaternion ") >= 0 ? type
           .charAt(11) : 'R');
-      ((JmolBioModel) model).getPdbData(type, ctype, isDraw, bsSelected, out, tokens, pdbCONECT,
+      ((BioModel) model).getPdbData(type, ctype, isDraw, bsSelected, out, tokens, pdbCONECT,
           bsWritten);
       bsAtoms = vwr.getModelUndeletedAtomsBitSet(modelIndex);
     } else {

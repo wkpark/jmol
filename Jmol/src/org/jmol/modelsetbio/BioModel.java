@@ -23,28 +23,26 @@
  */
 package org.jmol.modelsetbio;
 
-import javajs.util.AU;
-import javajs.util.OC;
-import javajs.util.Lst;
-import javajs.util.PT;
-import javajs.util.SB;
-
 import java.util.Hashtable;
-
 import java.util.Map;
 import java.util.Properties;
 
+import javajs.util.AU;
+import javajs.util.Lst;
+import javajs.util.OC;
+import javajs.util.P3;
+import javajs.util.PT;
+import javajs.util.SB;
 
-import org.jmol.api.DSSPInterface;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAnnotationParser;
 import org.jmol.c.STR;
+import org.jmol.dssx.DSSP;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.HBond;
-import org.jmol.modelset.JmolBioModel;
 import org.jmol.modelset.JmolBioModelSet;
 import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.Model;
@@ -53,18 +51,14 @@ import org.jmol.modelset.Structure;
 import org.jmol.script.SV;
 import org.jmol.script.T;
 import org.jmol.util.BSUtil;
-import org.jmol.util.Escape;
 import org.jmol.util.Edge;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-
-import javajs.util.P3;
-
-
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
 
-public final class BioModel extends Model implements JmolBioModelSet, JmolBioModel {
+public final class BioModel extends Model implements JmolBioModelSet {
 
   /*
    *   
@@ -194,16 +188,16 @@ public final class BioModel extends Model implements JmolBioModelSet, JmolBioMod
   public String calculateAllStuctures(BS bsAtoms, boolean asDSSP,
                                         boolean doReport,
                                         boolean dsspIgnoreHydrogen,
-                                        boolean setStructure) {
+                                        boolean setStructure, int version) {
     BS bsAllAtoms = new BS();
     BS bsModelsExcluded = BSUtil.copyInvert(modelsOf(bsAtoms, bsAllAtoms),
         ms.mc);
     if (!setStructure)
       return ms.calculateStructuresAllExcept(bsModelsExcluded, asDSSP, doReport,
-          dsspIgnoreHydrogen, false, false);
+          dsspIgnoreHydrogen, false, false, version);
     ms.recalculatePolymers(bsModelsExcluded);
     String ret = ms.calculateStructuresAllExcept(bsModelsExcluded, asDSSP, doReport,
-        dsspIgnoreHydrogen, true, false);
+        dsspIgnoreHydrogen, true, false, version);
     vwr.shm.resetBioshapes(bsAllAtoms);
     ms.setStructureIndexes();
     return ret;
@@ -214,7 +208,7 @@ public final class BioModel extends Model implements JmolBioModelSet, JmolBioMod
                                        boolean doReport,
                                        boolean dsspIgnoreHydrogen,
                                        boolean setStructure,
-                                       boolean includeAlpha) {
+                                       boolean includeAlpha, int version) {
     String ret = "";
     BS bsModels = BSUtil.copyInvert(alreadyDefined, ms.mc);
     //working here -- testing reset
@@ -224,7 +218,7 @@ public final class BioModel extends Model implements JmolBioModelSet, JmolBioMod
     for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1))
       if (ms.am[i].isBioModel)
         ret += ((BioModel) ms.am[i]).calculateStructures(asDSSP, doReport,
-            dsspIgnoreHydrogen, setStructure, includeAlpha);
+            dsspIgnoreHydrogen, setStructure, includeAlpha, version);
     if (setStructure)
       ms.setStructureIndexes();
     return ret;
@@ -771,9 +765,10 @@ public final class BioModel extends Model implements JmolBioModelSet, JmolBioMod
     BS bsA = null;
     BS bsB = null;
     Lst<Bond> vHBonds = new Lst<Bond>();
+    // this will not use DSSP and will not set structure but will it recalc hbonds for non-nucleics?
     if (specInfo.length() == 0) {
       bsA = bsB = vwr.getAllAtoms();
-      calcAllRasmolHydrogenBonds(bsA, bsB, vHBonds, true, 1, false, null);
+      calcAllRasmolHydrogenBonds(bsA, bsB, vHBonds, true, 1, false, null, null, 0);
     } else {
       for (int i = 0; i < specInfo.length();) {
         bsA = ms.getSequenceBits(specInfo.substring(i, ++i), null, new BS());
@@ -782,7 +777,7 @@ public final class BioModel extends Model implements JmolBioModelSet, JmolBioMod
         bsB = ms.getSequenceBits(specInfo.substring(i, ++i), null, new BS());
         if (bsB.nextSetBit(0) < 0)
           continue;
-        calcAllRasmolHydrogenBonds(bsA, bsB, vHBonds, true, 1, false, null);
+        calcAllRasmolHydrogenBonds(bsA, bsB, vHBonds, true, 1, false, null, null, 0);
       }
     }
     BS bsAtoms = new BS();
@@ -807,7 +802,7 @@ public final class BioModel extends Model implements JmolBioModelSet, JmolBioMod
   @Override
   public void calcAllRasmolHydrogenBonds(BS bsA, BS bsB, Lst<Bond> vHBonds,
                                       boolean nucleicOnly, int nMax,
-                                      boolean dsspIgnoreHydrogens, BS bsHBonds) {
+                                      boolean dsspIgnoreHydrogens, BS bsHBonds, Object newParam, int dsspVersion) {
     Model[] am = ms.am;
     if (vHBonds == null) {
       // autobond -- clear all hydrogen bonds
@@ -838,12 +833,12 @@ public final class BioModel extends Model implements JmolBioModelSet, JmolBioMod
     for (int i = ms.mc; --i >= 0;)
       if (am[i].isBioModel && !ms.isTrajectorySubFrame(i))
         ((BioModel) am[i]).getRasmolHydrogenBonds(bsA, bsB, vHBonds, nucleicOnly, nMax,
-            dsspIgnoreHydrogens, bsHBonds);
+            dsspIgnoreHydrogens, bsHBonds, dsspVersion);
   }
 
   private void getRasmolHydrogenBonds(BS bsA, BS bsB, Lst<Bond> vHBonds,
                                       boolean nucleicOnly, int nMax,
-                                      boolean dsspIgnoreHydrogens, BS bsHBonds) {
+                                      boolean dsspIgnoreHydrogens, BS bsHBonds, int version) {
     boolean doAdd = (vHBonds == null);
     if (doAdd)
       vHBonds = new Lst<Bond>();
@@ -852,9 +847,7 @@ public final class BioModel extends Model implements JmolBioModelSet, JmolBioMod
     boolean asDSSX = (bsB == null);
     BioPolymer bp, bp1;
     if (asDSSX && bioPolymerCount > 0) {
-
-      calculateDssx(vHBonds, false, dsspIgnoreHydrogens, false);
-
+      calculateDssx(vHBonds, false, dsspIgnoreHydrogens, false, version);
     } else {
       for (int i = bioPolymerCount; --i >= 0;) {
         bp = bioPolymers[i];
@@ -900,6 +893,31 @@ public final class BioModel extends Model implements JmolBioModelSet, JmolBioMod
     }
   }
 
+  /**
+   * from ModelSet.setAtomPositions
+   * 
+   * base models only; not trajectories
+   * @param bs 
+   * @param dsspVersion 
+   */
+  public void resetRasmolBonds(BS bs, int dsspVersion) {
+    BS bsDelete = new BS();
+    hasRasmolHBonds = false;
+    Model[] am = ms.am;
+    Bond[] bo = ms.bo;
+    for (int i = ms.bondCount; --i >= 0;) {
+      Bond bond = bo[i];
+      // trajectory atom .mi will be pointing to the trajectory;
+      // here we check to see if their base model is this model
+      if ((bond.order & Edge.BOND_H_CALC_MASK) != 0
+          && am[bond.atom1.mi].trajectoryBaseIndex == modelIndex)
+        bsDelete.set(i);
+    }
+    if (bsDelete.nextSetBit(0) >= 0)
+      ms.deleteBonds(bsDelete, false);
+    getRasmolHydrogenBonds(bs, bs, null, false, Integer.MAX_VALUE, false, null, dsspVersion);
+  }
+
   @Override
   public void calculateStraightnessAll() {
     getBioExt().calculateStraightnessAll(vwr, ms);
@@ -929,7 +947,6 @@ public final class BioModel extends Model implements JmolBioModelSet, JmolBioMod
     bioPolymerCount = 0;
   }
 
-  @Override
   public int getBioPolymerCount() {
     return bioPolymerCount;
   }
@@ -976,7 +993,7 @@ public final class BioModel extends Model implements JmolBioModelSet, JmolBioMod
 
   private String calculateStructures(boolean asDSSP, boolean doReport,
                                     boolean dsspIgnoreHydrogen,
-                                    boolean setStructure, boolean includeAlpha) {
+                                    boolean setStructure, boolean includeAlpha, int version) {
     if (bioPolymerCount == 0 || !setStructure && !asDSSP)
       return "";
     ms.proteinStructureTainted = structureTainted = true;
@@ -988,11 +1005,11 @@ public final class BioModel extends Model implements JmolBioModelSet, JmolBioMod
       for (int i = bioPolymerCount; --i >= 0;)
         if (bioPolymers[i] instanceof AlphaPolymer)
           ((AlphaPolymer) bioPolymers[i]).calculateStructures(includeAlpha);
-    return (asDSSP ? calculateDssx(null, doReport, dsspIgnoreHydrogen, setStructure) : "");
+    return (asDSSP ? calculateDssx(null, doReport, dsspIgnoreHydrogen, setStructure, version) : "");
   }
   
   private String calculateDssx(Lst<Bond> vHBonds, boolean doReport,
-                               boolean dsspIgnoreHydrogen, boolean setStructure) {
+                               boolean dsspIgnoreHydrogen, boolean setStructure, int version) {
     boolean haveProt = false;
     boolean haveNucl = false;
     for (int i = 0; i < bioPolymerCount && !(haveProt && haveNucl); i++) {
@@ -1003,9 +1020,9 @@ public final class BioModel extends Model implements JmolBioModelSet, JmolBioMod
     }
     String s = "";
     if (haveProt)
-      s += ((DSSPInterface) Interface.getOption("dssx.DSSP", vwr, "ms"))
+      s += ((DSSP) Interface.getOption("dssx.DSSP", vwr, "ms"))
         .calculateDssp(bioPolymers, bioPolymerCount, vHBonds, doReport,
-            dsspIgnoreHydrogen, setStructure);
+            dsspIgnoreHydrogen, setStructure, version);
     if (haveNucl && auxiliaryInfo.containsKey("dssr") && vHBonds != null)
       s += vwr.getAnnotationParser(true).getHBonds(ms, modelIndex, vHBonds, doReport);
     return s;
@@ -1069,7 +1086,6 @@ public final class BioModel extends Model implements JmolBioModelSet, JmolBioMod
     return polymer.monomerCount;
   }
 
-  @Override
   public Lst<BS> getBioBranches(Lst<BS> biobranches) {
     // scan through biopolymers quickly -- 
     BS bsBranch;
@@ -1098,7 +1114,6 @@ public final class BioModel extends Model implements JmolBioModelSet, JmolBioMod
 
   private final static String[] pdbRecords = { "ATOM  ", "MODEL ", "HETATM" };
 
-  @Override
   public String getFullPDBHeader() {
     if (modelIndex < 0)
       return "";
@@ -1127,38 +1142,12 @@ public final class BioModel extends Model implements JmolBioModelSet, JmolBioMod
     return info;
   }
 
-  @Override
   public void getPdbData(String type, char ctype, boolean isDraw,
                          BS bsSelected, OC out,
                          LabelToken[] tokens, SB pdbCONECT, BS bsWritten) {
     getBioExt().getPdbDataM(this, vwr, type, ctype, isDraw, bsSelected, out, tokens, pdbCONECT, bsWritten);
   }
   
-  /**
-   * from ModelSet.setAtomPositions
-   * 
-   * base models only; not trajectories
-   */
-  @Override
-  public void resetRasmolBonds(BS bs) {
-    BS bsDelete = new BS();
-    hasRasmolHBonds = false;
-    Model[] am = ms.am;
-    Bond[] bo = ms.bo;
-    for (int i = ms.bondCount; --i >= 0;) {
-      Bond bond = bo[i];
-      // trajectory atom .mi will be pointing to the trajectory;
-      // here we check to see if their base model is this model
-      if ((bond.order & Edge.BOND_H_CALC_MASK) != 0
-          && am[bond.atom1.mi].trajectoryBaseIndex == modelIndex)
-        bsDelete.set(i);
-    }
-    if (bsDelete.nextSetBit(0) >= 0)
-      ms.deleteBonds(bsDelete, false);
-    getRasmolHydrogenBonds(bs, bs, null, false, Integer.MAX_VALUE, false, null);
-  }
-
-  @Override
   public void getDefaultLargePDBRendering(SB sb, int maxAtoms) {
     BS bs = new BS();
     if (getBondCount() == 0)

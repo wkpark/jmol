@@ -1624,7 +1624,7 @@ public class ModelSet extends BondCollection {
    */
 
   public String getPDBHeader(int modelIndex) {
-    return (am[modelIndex].isBioModel ? ((JmolBioModel) am[modelIndex])
+    return (am[modelIndex].isBioModel ? ((BioModel) am[modelIndex])
         .getFullPDBHeader() : getFileHeader(modelIndex));
   }
 
@@ -1891,7 +1891,7 @@ public class ModelSet extends BondCollection {
       bsModelAtoms[i] = vwr.getModelUndeletedAtomsBitSet(i);
       m = am[i];
       m.moleculeCount = 0;
-      biobranches = (m.isBioModel ? ((JmolBioModel) m)
+      biobranches = (m.isBioModel ? ((BioModel) m)
           .getBioBranches(biobranches) : null);
     }
     // problem, as with 1gzx, is that this does not include non-protein cofactors that are 
@@ -3931,7 +3931,7 @@ public class ModelSet extends BondCollection {
                                       boolean dsspIgnoreHydrogens, BS bsHBonds) {
     if (haveBioModels)
       bioModelset.calcAllRasmolHydrogenBonds(bsA, bsB, vHBonds, nucleicOnly,
-          nMax, dsspIgnoreHydrogens, bsHBonds);
+          nMax, dsspIgnoreHydrogens, bsHBonds, null, 2); // DSSP version 2 here
   }
 
   public void calculateStraightnessAll() {
@@ -3966,9 +3966,9 @@ public class ModelSet extends BondCollection {
   public String calculateStructures(BS bsAtoms, boolean asDSSP,
                                     boolean doReport,
                                     boolean dsspIgnoreHydrogen,
-                                    boolean setStructure) {
+                                    boolean setStructure, int version) {
     return (haveBioModels ? bioModelset.calculateAllStuctures(bsAtoms, asDSSP,
-        doReport, dsspIgnoreHydrogen, setStructure) : "");
+        doReport, dsspIgnoreHydrogen, setStructure, version) : "");
   }
 
   /**
@@ -3982,6 +3982,7 @@ public class ModelSet extends BondCollection {
    * @param dsspIgnoreHydrogen
    * @param setStructure
    * @param includeAlpha
+   * @param version TODO
    * @return report
    * 
    */
@@ -3989,11 +3990,11 @@ public class ModelSet extends BondCollection {
                                              boolean doReport,
                                              boolean dsspIgnoreHydrogen,
                                              boolean setStructure,
-                                             boolean includeAlpha) {
+                                             boolean includeAlpha, int version) {
     freezeModels();
     return (haveBioModels ? bioModelset.calculateAllStructuresExcept(
         alreadyDefined, asDSSP, doReport, dsspIgnoreHydrogen, setStructure,
-        includeAlpha) : "");
+        includeAlpha, version) : "");
   }
 
   public void recalculatePolymers(BS bsModelsExcluded) {

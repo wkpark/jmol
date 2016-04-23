@@ -33,6 +33,9 @@ import org.jmol.api.SymmetryInterface;
 import org.jmol.java.BS;
 import org.jmol.viewer.Viewer;
 
+import org.jmol.modelsetbio.BioModel;
+
+
 public class Trajectory {
   private Viewer vwr;
   ModelSet ms;
@@ -150,7 +153,7 @@ public class Trajectory {
     ms.sm.notifyAtomPositionsChanged(baseModelIndex, bs, null);
 
     if (am[baseModelIndex].hasRasmolHBonds)
-      ((JmolBioModel) am[baseModelIndex]).resetRasmolBonds(bs);
+      ((BioModel) am[baseModelIndex]).resetRasmolBonds(bs, 2); // setting DSSP version to 2 here
   }
 
   BS getModelsSelected() {

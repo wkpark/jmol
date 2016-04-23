@@ -937,6 +937,8 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
   protected boolean doCentralize;
   protected boolean addVibrations;
   protected boolean useAltNames;
+  protected boolean ignoreStructure;
+  protected boolean isDSSP1;
   protected boolean allowPDBFilter;
   public boolean doReadMolecularOrbitals;
   protected boolean reverseModels;
@@ -983,6 +985,8 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
     doSetOrientation = !checkFilterKey("NOORIENT");
     doCentralize = (!checkFilterKey("NOCENTER") && checkFilterKey("CENTER"));
     addVibrations = !checkFilterKey("NOVIB");
+    ignoreStructure = checkFilterKey("DSSP");
+    isDSSP1 = checkFilterKey("DSSP1");
     doReadMolecularOrbitals = !checkFilterKey("NOMO");
     useAltNames = checkFilterKey("ALTNAME");
     reverseModels = checkFilterKey("REVERSEMODELS");

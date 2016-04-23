@@ -190,6 +190,8 @@ public class PdbReader extends AtomSetCollectionReader {
    allowPDBFilter = true;
    pdbHeader = (getHeader ? new SB() : null);
    applySymmetry = !checkFilterKey("NOSYMMETRY");
+   if (isDSSP1)
+     asc.setInfo("isDSSP1",Boolean.TRUE);      
    getTlsGroups = checkFilterKey("TLS");
    if (checkFilterKey("ASSEMBLY")) // CIF syntax
      filter = PT.rep(filter, "ASSEMBLY", "BIOMOLECULE");
@@ -289,9 +291,9 @@ public class PdbReader extends AtomSetCollectionReader {
     case 4:
     case 5:
     case 6:
-      // if (line.startsWith("HELIX ") || line.startsWith("SHEET ")
-      // || line.startsWith("TURN  ")) {
-      structure();
+      // HELIX, SHEET, TURN
+      if (!ignoreStructure)
+        structure();
       return true;
     case 7:
       het();
@@ -413,6 +415,8 @@ SEQADV 1BLU GLU      7  SWS  P00208    GLN     7 CONFLICT
  
   protected void finalizeReaderPDB() throws Exception {
     checkNotPDB();
+    if (pdbID != null)
+      asc.setAtomSetName(pdbID);
     checkUnitCellParams();
     if (!isCourseGrained)
       connectAll(maxSerial, isConnectStateBug);
@@ -1299,20 +1303,23 @@ REMARK 290 REMARK: NULL
   
   protected void model(int modelNumber) {
     /****************************************************************
-     * mth 2004 02 28
-     * note that the pdb spec says:
-     * COLUMNS       DATA TYPE      FIELD         DEFINITION
-     * ----------------------------------------------------------------------
-     *  1 -  6       Record name    "MODEL "
-     * 11 - 14       Integer        serial        Model serial number.
-     *
-     * but I received a file with the serial
-     * number right after the word MODEL :-(
+     * mth 2004 02 28 note that the pdb spec says: COLUMNS DATA TYPE FIELD
+     * DEFINITION
+     * ---------------------------------------------------------------------- 1
+     * - 6 Record name "MODEL " 11 - 14 Integer serial Model serial number.
+     * 
+     * but I received a file with the serial number right after the word MODEL
+     * :-(
      ****************************************************************/
     checkNotPDB();
+    //not cleaer that this shoudl come irset...    
     haveMappedSerials = false;
     sbConect = null;
     asc.newAtomSet();
+    if (asc.iSet == 0 || isTrajectory)
+      asc.setAtomSetName(pdbID);
+    else
+      asc.setModelInfoForSet("name", pdbID, asc.iSet);
     checkUnitCellParams();
     if (!isCourseGrained)
       setModelPDB(true);
@@ -1331,8 +1338,6 @@ REMARK 290 REMARK: NULL
     setModelPDB(isPDB);
     nUNK = nRes = 0;
     currentGroup3 = null;
-    if (pdbID != null)
-      asc.setAtomSetName(pdbID);
   }
 
   private float cryst1;

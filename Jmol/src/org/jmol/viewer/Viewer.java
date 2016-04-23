@@ -2396,13 +2396,21 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     ms.setStructureList(getStructureList());
   }
 
+  /**
+   * 
+   * @param bsAtoms
+   * @param asDSSP
+   * @param setStructure to actually change structures
+   * @param version
+   * @return structure string from DSSP
+   */
   public String calculateStructures(BS bsAtoms, boolean asDSSP,
-                                    boolean setStructure) {
+                                    boolean setStructure, int version) {
     // Eval
     if (bsAtoms == null)
       bsAtoms = bsA();
     return ms.calculateStructures(bsAtoms, asDSSP, !am.animationOn,
-        g.dsspCalcHydrogen, setStructure);
+        g.dsspCalcHydrogen, setStructure, version);
   }
 
   private JmolAnnotationParser annotationParser, dssrParser;

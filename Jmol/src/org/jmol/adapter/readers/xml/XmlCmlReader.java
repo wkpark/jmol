@@ -125,6 +125,7 @@ public class XmlCmlReader extends XmlReader {
   protected String moleculeID;
   
   protected Map<String, Object> htModelAtomMap;
+  private boolean is2d;
 
   /**
    * state constants
@@ -166,6 +167,13 @@ public class XmlCmlReader extends XmlReader {
    */
 
   @Override
+  protected void processXml(XmlReader parent,
+                            Object saxReader) throws Exception {
+    is2d = parent.checkFilterKey("2D");
+    processXml2(parent, saxReader);
+  }
+
+  @Override
   public void processStartElement(String name, String nodeName) {
     if (!processing)
       return;
@@ -201,7 +209,6 @@ public class XmlCmlReader extends XmlReader {
         state = LATTICE_VECTOR;
         setKeepChars(true);
       }
-
 
       break;
     case CRYSTAL:
@@ -299,31 +306,34 @@ public class XmlCmlReader extends XmlReader {
           for (int i = tokenCount; --i >= 0;)
             atomArray[i].atomName = tokens[i];
         }
-        if ((val = atts.get("x3")) != null) {
+        boolean is3d = (!is2d && (val = atts.get("x3")) != null);
+        if (is3d) {
+          is3d = true;
           coords3D = true;
           breakOutAtomTokens(val);
           for (int i = tokenCount; --i >= 0;)
             atomArray[i].x = parseFloatStr(tokens[i]);
-        }
-        if ((val = atts.get("y3")) != null) {
-          breakOutAtomTokens(val);
-          for (int i = tokenCount; --i >= 0;)
-            atomArray[i].y = parseFloatStr(tokens[i]);
-        }
-        if ((val = atts.get("z3")) != null) {
-          breakOutAtomTokens(val);
-          for (int i = tokenCount; --i >= 0;)
-            atomArray[i].z = parseFloatStr(tokens[i]);
-        }
-        if ((val = atts.get("x2")) != null) {
-          breakOutAtomTokens(val);
-          for (int i = tokenCount; --i >= 0;)
-            atomArray[i].x = parseFloatStr(tokens[i]);
-        }
-        if ((val = atts.get("y2")) != null) {
-          breakOutAtomTokens(val);
-          for (int i = tokenCount; --i >= 0;)
-            atomArray[i].y = parseFloatStr(tokens[i]);
+          if ((val = atts.get("y3")) != null) {
+            breakOutAtomTokens(val);
+            for (int i = tokenCount; --i >= 0;)
+              atomArray[i].y = parseFloatStr(tokens[i]);
+          }
+          if ((val = atts.get("z3")) != null) {
+            breakOutAtomTokens(val);
+            for (int i = tokenCount; --i >= 0;)
+              atomArray[i].z = parseFloatStr(tokens[i]);
+          }
+        } else {
+          if ((val = atts.get("x2")) != null) {
+            breakOutAtomTokens(val);
+            for (int i = tokenCount; --i >= 0;)
+              atomArray[i].x = parseFloatStr(tokens[i]);
+          }
+          if ((val = atts.get("y2")) != null) {
+            breakOutAtomTokens(val);
+            for (int i = tokenCount; --i >= 0;)
+              atomArray[i].y = parseFloatStr(tokens[i]);
+          }
         }
         if ((val = atts.get("elementtype")) != null) {
           breakOutAtomTokens(val);
@@ -383,15 +393,13 @@ public class XmlCmlReader extends XmlReader {
         if ((val = atts.get("xfract")) != null
             && (parent.iHaveUnitCell || !atts.containsKey("x3"))) {
           parent.setFractionalCoordinates(true);
-          atom.set(parseFloatStr(val),
-              parseFloatStr(atts.get("yfract")),
+          atom.set(parseFloatStr(val), parseFloatStr(atts.get("yfract")),
               parseFloatStr(atts.get("zfract")));
         } else if ((val = atts.get("x3")) != null) {
-          atom.set(parseFloatStr(val),
-              parseFloatStr(atts.get("y3")), parseFloatStr(atts.get("z3")));
+          atom.set(parseFloatStr(val), parseFloatStr(atts.get("y3")),
+              parseFloatStr(atts.get("z3")));
         } else if ((val = atts.get("x2")) != null) {
-          atom.set(parseFloatStr(val),
-              parseFloatStr(atts.get("y2")), 0);
+          atom.set(parseFloatStr(val), parseFloatStr(atts.get("y2")), 0);
         }
         if ((val = atts.get("elementtype")) != null) {
           String sym = val;
@@ -570,8 +578,8 @@ public class XmlCmlReader extends XmlReader {
     case MOLECULE_ATOM_ARRAY:
       if (name.equals("atomarray")) {
         state = MOLECULE;
-        for (int i = 0; i < aaLen; ++i)
-          addAtom(atomArray[i]);
+//        for (int i = 0; i < aaLen; ++i)
+  //        addAtom(atomArray[i]);
       }
       break;
     case MOLECULE_BOND:

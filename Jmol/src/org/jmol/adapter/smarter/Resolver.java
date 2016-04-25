@@ -108,6 +108,11 @@ public class Resolver {
     String readerName;
     fullName = FileManager.fixDOSName(fullName);
     String errMsg = null;
+    if (type == null) {
+      type = (String) htParams.get("filter");
+      int pt = (type == null ? -1 : type.toLowerCase().indexOf("filetype"));
+      type = (pt < 0 ? null : type.substring(pt + 8, (type+ ";").indexOf(";", pt)).replace('=', ' ').trim());
+    }      
     if (type != null) {
       readerName = getReaderFromType(type);
       if (readerName == null)
@@ -209,37 +214,38 @@ public class Resolver {
   private static final String CML_NAMESPACE_URI = "http://www.xml-cml.org/schema";
 
   /**
-   * the main resolver method. One of the great advantages of Jmol is that it can
-   * smartly determine a file type from its contents. In cases where this is not possible,
-   * one can force a file type using a prefix to a filename. For example:
+   * the main resolver method. One of the great advantages of Jmol is that it
+   * can smartly determine a file type from its contents. In cases where this is
+   * not possible, one can force a file type using a prefix to a filename. For
+   * example:
    * 
    * load mol2::xxxx.whatever
    * 
-   * This is only necessary for a few file types, where only numbers are involved --
-   * molecular dynamics coordinate files, for instance (mdcrd).
+   * This is only necessary for a few file types, where only numbers are
+   * involved -- molecular dynamics coordinate files, for instance (mdcrd).
    * 
    * @param readerOrDocument
    * @param returnLines
    * @return readerName or a few lines, if requested, or null
    * @throws Exception
    */
-  private static String determineAtomSetCollectionReader(Object readerOrDocument, boolean returnLines)
+  private static String determineAtomSetCollectionReader(Object readerOrDocument,
+                                                         boolean returnLines)
       throws Exception {
-    
-    
+
     // We must do this in a very specific order. DON'T MESS WITH THIS!
-    
+
     if (readerOrDocument instanceof GenericBinaryDocument) {
       GenericBinaryDocument doc = (GenericBinaryDocument) readerOrDocument;
-      return (Rdr.isPickleB(doc.getMagic()) ? "PyMOL" 
-          : Rdr.isMessagePackB(doc.getMagic()) ? "MMTF"
-          : "binary file type not recognized");
+      return (Rdr.isPickleB(doc.getMagic()) ? "PyMOL" : Rdr.isMessagePackB(doc
+          .getMagic()) ? "MMTF" : "binary file type not recognized");
     }
-    
+
     String readerName;
-    
-    LimitedLineReader llr = new LimitedLineReader((BufferedReader) readerOrDocument, 16384);
-    
+
+    LimitedLineReader llr = new LimitedLineReader(
+        (BufferedReader) readerOrDocument, 16384);
+
     String leader = llr.getHeader(LEADER_CHAR_MAX).trim();
 
     // Test 1. check magic number for embedded Jmol script or PNGJ
@@ -253,12 +259,14 @@ public class Resolver {
 
     // Test 2. check starting 64 bytes of file
 
-    if ((readerName = checkFileStart(leader)) != null)
-      return readerName;
+    if ((readerName = checkFileStart(leader)) != null) {
+      return (readerName.equals("Xml") ? getXmlType(llr.getHeader(0))
+          : readerName);
+    }
 
     // now allow identification in first 16 lines
     // excluding those starting with "#"
-    
+
     String[] lines = new String[16];
     int nLines = 0;
     for (int i = 0; i < lines.length; ++i) {
@@ -268,28 +276,29 @@ public class Resolver {
     }
 
     // Test 3. check special file formats (pass 1) 
-    
+
     if ((readerName = checkSpecial1(nLines, lines, leader)) != null)
       return readerName;
 
     // Test 4. check line starts 
-    
+
     if ((readerName = checkLineStarts(lines)) != null)
       return readerName;
 
     // Test 5. check content of initial 16K bytes of file 
-    
+
     if ((readerName = checkHeaderContains(llr.getHeader(0))) != null)
       return readerName;
 
     // Test 6. check special file formats (pass 2) 
-    
+
     if ((readerName = checkSpecial2(lines)) != null)
       return readerName;
-    
+
     // Failed to identify file type
-    
-    return (returnLines ? "\n" + lines[0] + "\n" + lines[1] + "\n" + lines[2] + "\n" : null);
+
+    return (returnLines ? "\n" + lines[0] + "\n" + lines[1] + "\n" + lines[2]
+        + "\n" : null);
   }
 
   ////////////////////////////////////////////////////////////////
@@ -335,7 +344,7 @@ public class Resolver {
   {"TlsDataOnly", "REFMAC\n\nTL", "REFMAC\r\n\r\n", "REFMAC\r\rTL"};
   
   private final static String[] inputFileStartRecords =
-  {"Input", "#ZMATRIX", "%mem=", "AM1"};
+  {"Input", "#ZMATRIX", "%mem=", "AM1", "$rungauss"};
   
   private final static String[] magresFileStartRecords =
   {"Magres", "#$magres", "# magres"};
@@ -361,8 +370,11 @@ public class Resolver {
   private final static String[] p2nStartRecords = 
   { "P2n", "REMARK   1 P2N" };
 
+  private final static String[] xmlStartRecords = 
+  { "Xml", "<?xml" };
+
   private final static String[][] fileStartsWithRecords =
-  { sptRecords, m3dStartRecords, cubeFileStartRecords, 
+  { xmlStartRecords, sptRecords, m3dStartRecords, cubeFileStartRecords, 
     mol2Records, webmoFileStartRecords, 
     moldenFileStartRecords, dcdFileStartRecords, tlsDataOnlyFileStartRecords,
     inputFileStartRecords, magresFileStartRecords, pymolStartRecords, 
@@ -702,7 +714,8 @@ public class Resolver {
     }
     if (header.indexOf("jvxl") >= 0 
         || header.indexOf(CML_NAMESPACE_URI) >= 0
-        || header.indexOf("cml:") >= 0) {
+        || header.indexOf("cml:") >= 0
+        || header.indexOf("<cml>") >= 0) {
       return "XmlCml";
     }
     if (header.indexOf("XSD") >= 0) {

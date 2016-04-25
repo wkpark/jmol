@@ -50,6 +50,8 @@ public final class JC {
   
   public static final String PDB_ANNOTATIONS = ";dssr;rna3d;dom;val;";
 
+  public static final String CACTUS_FILE_TYPES = ";alc;cdxml;cerius;charmm;cif;cml;ctx;gjf;gromacs;hyperchem;jme;maestro;mol;mol2;sybyl2;mrv;pdb;sdf;sdf3000;sln;smiles;xyz;";
+
   // note list of RCSB access points: http://www.rcsb.org/pdb/static.do?p=download/http/index.html
   
   public static String[] databases = { 
@@ -586,7 +588,6 @@ public final class JC {
     "@multiplets within(dssr,'multiplets')",
     "@nonStack within(dssr,'nonStack')",
     "@nts within(dssr,'nts')",
-    "@naChains within(dssr,'naChains')",
     "@pairs within(dssr,'pairs')",
     "@ssSegments within(dssr,'ssSegments')",
     "@stacks within(dssr,'stacks')",
@@ -1152,6 +1153,7 @@ public final class JC {
   public final static int UNITID_ATOM = 4;
   public final static int UNITID_INSCODE = 8;
   public final static int UNITID_TRIM = 16;
+
 
   /**
    * Get a unitID type

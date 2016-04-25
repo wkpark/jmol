@@ -529,8 +529,8 @@ public abstract class Monomer extends Group {
 
   @Override
   public char getGroup1() {    
-    return (groupID < Resolver.predefinedGroup1Names.length 
-        ? Resolver.predefinedGroup1Names[groupID] : 
+    return (groupID < BioResolver.predefinedGroup1Names.length 
+        ? BioResolver.predefinedGroup1Names[groupID] : 
           group1 > 1 ? group1 
               : group1 == 1 ? '?' 
                   : (group1 = getGroup1b()));
@@ -543,7 +543,7 @@ public abstract class Monomer extends Group {
 
   @Override
   public void setGroupID(String group3) {
-    groupID = Resolver.getGroupIdFor(group3);
+    groupID = BioResolver.getGroupIdFor(group3);
   }
 }
   

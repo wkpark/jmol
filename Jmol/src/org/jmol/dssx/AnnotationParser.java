@@ -39,7 +39,7 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.ModelSet;
-import org.jmol.modelsetbio.Resolver;
+import org.jmol.modelsetbio.BioResolver;
 import org.jmol.script.SV;
 import org.jmol.script.T;
 import org.jmol.util.BSUtil;
@@ -821,8 +821,8 @@ public class AnnotationParser implements JmolAnnotationParser {
             "",
             "N H H1 H2 H3 CB HB2 HB3 CD HD2 HD3 CG HG2 HG3 C2' H2'' H2' C5' H5'' H5' OXT HXT");
         
-        for (int i = Resolver.pdbBondInfo.length; --i >= 1;) {
-          assignPDBH(Group.group3Names[i], Resolver.pdbBondInfo[i]);
+        for (int i = BioResolver.pdbBondInfo.length; --i >= 1;) {
+          assignPDBH(Group.group3Names[i], BioResolver.pdbBondInfo[i]);
         }
       }
       String a = pdbAtomForH.get(name);

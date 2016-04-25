@@ -68,7 +68,6 @@ import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolAnnotationParser;
 import org.jmol.api.JmolAppConsoleInterface;
-import org.jmol.api.JmolBioResolver;
 import org.jmol.api.JmolCallbackListener;
 import org.jmol.api.JmolDataManager;
 import org.jmol.api.JmolJSpecView;
@@ -107,6 +106,7 @@ import org.jmol.modelset.ModelSet;
 import org.jmol.modelset.Orientation;
 import org.jmol.modelset.StateScript;
 import org.jmol.modelset.TickInfo;
+import org.jmol.modelsetbio.BioResolver;
 import org.jmol.script.SV;
 import org.jmol.script.ScriptContext;
 import org.jmol.script.T;
@@ -7821,8 +7821,12 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       fm.loadImage(s, "\1" + smiles, false);
       return  s;
     }
-    if (type == '/')
-      s += PT.rep(info, " ", "%20");
+    if (type == '/') {
+      if (PT.isOneOf(info, JC.CACTUS_FILE_TYPES))
+        s += "file?format=" + info;
+      else
+        s += PT.rep(info, " ", "%20");
+    }      
     s = getFileAsString4(s, -1, false, false, false, "file");
     if (type == 'M' && s.indexOf("\n") > 0)
       s = s.substring(0, s.indexOf("\n"));
@@ -8694,10 +8698,6 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     setShapeProperty(JC.SHAPE_MEASURES, "delete", Integer.valueOf(i));
   }
 
-  public String getDataBaseName(BS bs) throws Exception {
-    return ms.getModelDataBaseName(bs == null ? bsA() : bs);
-  }
-
   @Override
   public String getSmiles(BS bs) throws Exception {
     return getSmilesOpt(bs, -1, -1, bs == null && Logger.debugging ? JC.SMILES_GEN_ATOM_COMMENT :0, null);  
@@ -9144,16 +9144,18 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   }
 
   public String getAtomDefs(Map<String, Object> names) {
-    SB sb = new SB();
-    String[] keys = new String[names.size()];
-    int n = 0;
+    Lst<String> keys = new Lst<String>();
     for (Map.Entry<String, ?> e : names.entrySet())
       if (e.getValue() instanceof BS)
-        keys[n++] = "{" + e.getKey() + "} <" + ((BS) e.getValue()).cardinality()
-            + " atoms>\n";
-    Arrays.sort(keys);
+        keys.addLast("{" + e.getKey() + "} <" + ((BS) e.getValue()).cardinality()
+            + " atoms>\n");
+    int n = keys.size();
+    String[] k = new String[n];
+    keys.toArray(k);
+    Arrays.sort(k);
+    SB sb = new SB();
     for (int i = 0; i < n; i++)
-      sb.append(keys[i]);
+      sb.append(k[i]);
     return sb.append("\n").toString();
   }
 
@@ -9403,11 +9405,11 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     }
   }
 
-  JmolBioResolver jbr;
+  BioResolver jbr;
 
-  public JmolBioResolver getJBR() {
-    return (jbr == null ? jbr = ((JmolBioResolver) Interface.getInterface(
-        "org.jmol.modelsetbio.Resolver", this, "file")).setViewer(this) : jbr);
+  public BioResolver getJBR() {
+    return (jbr == null ? jbr = ((BioResolver) Interface.getInterface(
+        "org.jmol.modelsetbio.BioResolver", this, "file")).setViewer(this) : jbr);
   }
 
   public void checkMenuUpdate() {

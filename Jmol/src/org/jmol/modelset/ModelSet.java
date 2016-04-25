@@ -59,6 +59,7 @@ import org.jmol.viewer.TransformManager;
 import org.jmol.viewer.Viewer;
 import org.jmol.java.BS;
 import org.jmol.modelsetbio.BioModel;
+import org.jmol.modelsetbio.BioModelSet;
 import org.jmol.script.T;
 import org.jmol.api.AtomIndexIterator;
 import org.jmol.api.Interface;
@@ -105,6 +106,14 @@ import java.util.Properties;
  */
 public class ModelSet extends BondCollection {
 
+  /**
+   * If any model in the collection is a BioModel, then
+   * it is also indicated here as a "bioModelset", meaning
+   * 
+   */
+  public BioModelSet bioModelset;
+  public boolean haveBioModels;
+  
   protected BS bsSymmetry;
 
   public String modelSetName;
@@ -757,7 +766,7 @@ public class ModelSet extends BondCollection {
     for (int i = mc; --i >= 0;)
       if (am[i].isBioModel) {
         haveBioModels = true;
-        bioModelset = (JmolBioModelSet) am[i];
+        bioModelset.set(vwr, this);
       }
     validateBspf(false);
     bsAll = null;
@@ -2962,7 +2971,7 @@ public class ModelSet extends BondCollection {
   }
 
   public void assignAtom(int atomIndex, String type, boolean autoBond) {
-
+    clearDB(atomIndex);
     if (type == null)
       type = "C";
 
@@ -3054,6 +3063,11 @@ public class ModelSet extends BondCollection {
     deleteBonds(bsBonds, false);
     validateBspf(false);
   }
+
+  public void clearDB(int atomIndex) {
+    getModelAuxiliaryInfo(at[atomIndex].mi).remove("dbName");
+  }
+
 
   // atom addition //
 
@@ -3931,7 +3945,7 @@ public class ModelSet extends BondCollection {
                                       boolean dsspIgnoreHydrogens, BS bsHBonds) {
     if (haveBioModels)
       bioModelset.calcAllRasmolHydrogenBonds(bsA, bsB, vHBonds, nucleicOnly,
-          nMax, dsspIgnoreHydrogens, bsHBonds, null, 2); // DSSP version 2 here
+          nMax, dsspIgnoreHydrogens, bsHBonds, 2); // DSSP version 2 here
   }
 
   public void calculateStraightnessAll() {

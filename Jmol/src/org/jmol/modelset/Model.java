@@ -111,7 +111,7 @@ public class Model {
   public String loadState = "";
   public SB loadScript = new SB();
 
-  protected boolean hasRasmolHBonds;
+  public boolean hasRasmolHBonds;
   public boolean structureTainted;
   public boolean isJmolDataFrame;
   boolean isTrajectory;

@@ -32,6 +32,7 @@ import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.HBond;
+import org.jmol.modelset.Model;
 import org.jmol.modelset.ModelSet;
 import org.jmol.modelsetbio.BasePair;
 import org.jmol.modelsetbio.BioModel;
@@ -321,6 +322,8 @@ public class DSSR1 extends AnnotationParser {
         key = key.toLowerCase();
         pt = DSSR_PATHS.indexOf(".." + key) + 2;
         int len = key.length();
+        if (pt < 2)
+          return bs;
         while (pt >= 2 && len > 0) {
           if (DSSR_PATHS.substring(pt + len, pt + len + 2).equals(".."))
             key = "[select (" + key + ")]";
@@ -392,7 +395,7 @@ public class DSSR1 extends AnnotationParser {
     if (info == null
         || (list = (Lst<Map<String, Object>>) info.get("nts")) == null)
       return;
-    BioModel m = (BioModel) ms.am[modelIndex];
+    Model m = ms.am[modelIndex];
     BS bsAtoms = m.bsAtoms;
     Atom[] atoms = ms.at;
     BS bs = new BS();
@@ -402,7 +405,7 @@ public class DSSR1 extends AnnotationParser {
       if (!Character.isLowerCase(ch))
         continue;
       String unit1 = (String) map.get("nt_id");
-      m.getAllSequenceBits(unit1, bsAtoms, bs);
+      ms.bioModelset.getAllSequenceBits(unit1, bsAtoms, bs);
       Logger.info("" + ch + " " + unit1 + " " + bs);
       atoms[bsAtoms.nextSetBit(0)].group.group1 = ch;
       bs.clearAll();

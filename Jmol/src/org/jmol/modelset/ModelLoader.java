@@ -41,7 +41,6 @@ import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolAdapterAtomIterator;
 import org.jmol.api.JmolAdapterBondIterator;
-import org.jmol.api.JmolBioResolver;
 import org.jmol.api.JmolDataManager;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
@@ -49,6 +48,7 @@ import org.jmol.c.VDW;
 import org.jmol.java.BS;
 
 import org.jmol.modelsetbio.BioModel;
+import org.jmol.modelsetbio.BioResolver;
 
 import javajs.util.AU;
 import javajs.util.Lst;
@@ -149,7 +149,7 @@ public final class ModelLoader {
   private boolean doAddHydrogens;
 
   private String fileHeader;
-  private JmolBioResolver jbr;
+  private BioResolver jbr;
   public Group[] groups;
   private int groupCount;
   private P3 modulationTUV;
@@ -208,6 +208,8 @@ public final class ModelLoader {
     if (merging) {
       ms.haveBioModels |= modelSet0.haveBioModels;
       ms.bioModelset = modelSet0.bioModelset;
+      if (ms.bioModelset != null)
+        ms.bioModelset.set(vwr, ms);
       ms.someModelsHaveSymmetry |= modelSet0
           .getMSInfoB("someModelsHaveSymmetry");
       someModelsHaveUnitcells |= modelSet0
@@ -1236,11 +1238,9 @@ public final class ModelLoader {
     if (lastAtomIndex < firstAtomIndex)
       throw new NullPointerException();
     
-   int modelIndex = ms.at[firstAtomIndex].mi;
-
     Group group = (group3 == null || jbr == null ? null : jbr
         .distinguishAndPropagateGroup(chain, group3, seqcode, firstAtomIndex,
-            lastAtomIndex, modelIndex, specialAtomIndexes, ms.at));
+            lastAtomIndex, specialAtomIndexes, ms.at));
     String key;
     if (group == null) {
       group = new Group().setGroup(chain, group3, seqcode, firstAtomIndex,
@@ -1253,7 +1253,7 @@ public final class ModelLoader {
           .isCarbohydrate() ? "c>" : "o>");
     }
     if (group3 != null) {
-      countGroup(modelIndex, key, group3);
+      countGroup(ms.at[firstAtomIndex].mi, key, group3);
       if (group.isNucleic()) {
         String g1 = (htGroup1 == null ? null : htGroup1.get(group3));
         if (g1 != null) // from SEQADV or _struct_ref_seq_dif.db_mon_id

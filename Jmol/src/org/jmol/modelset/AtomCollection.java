@@ -76,10 +76,6 @@ abstract public class AtomCollection {
   public Viewer vwr;
   protected GData g3d;
 
-  public JmolBioModelSet bioModelset; // Model also holds modelset methods relating only to biomodels
-  public boolean haveBioModels;
-  
-  
   public Atom[] at;
   public int ac;
 
@@ -2117,7 +2113,7 @@ abstract public class AtomCollection {
     case T.pyrimidine:
     case T.rna:
     case T.sheet: // WITHIN -- not ends
-      return (haveBioModels ? bioModelset.getAtomBitsBS(tokType, null, bs) : bs);
+      return (((ModelSet)this).haveBioModels ? ((ModelSet)this).bioModelset.getAtomBitsBS(tokType, null, bs) : bs);
     case T.hydrogen:
       iSpec = 1;
       //$FALL-THROUGH$
@@ -2140,7 +2136,7 @@ abstract public class AtomCollection {
       return bs;
     case T.polymer:
     case T.structure:
-      return (haveBioModels ? bioModelset.getAtomBitsBS(tokType, (BS) specInfo, bs)
+      return (((ModelSet)this).haveBioModels ? ((ModelSet)this).bioModelset.getAtomBitsBS(tokType, (BS) specInfo, bs)
           : bs);
     case T.resno:
       // could be PDB type file with UNK
@@ -2379,7 +2375,7 @@ abstract public class AtomCollection {
       identifier = PT.rep(identifier, "\\?","\1");
     return (bs != null || identifier.indexOf("?") > 0 ? bs
         : identifier.indexOf("*") > 0 ? getSpecNameOrNull(identifier, true)
-        : haveBioModels ? bioModelset.getIdentifierOrNull(identifier) 
+        : ((ModelSet)this).haveBioModels ? ((ModelSet)this).bioModelset.getIdentifierOrNull(identifier) 
         : null);
   }
 

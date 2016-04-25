@@ -58,7 +58,6 @@ import org.jmol.viewer.Viewer;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolAdapterAtomIterator;
 import org.jmol.api.JmolAdapterStructureIterator;
-import org.jmol.api.JmolBioResolver;
 import org.jmol.c.STR;
 
 /**
@@ -71,13 +70,13 @@ import org.jmol.c.STR;
  *
  * 
  */
-public final class Resolver implements JmolBioResolver, Comparator<String[]> {
+public final class BioResolver implements Comparator<String[]> {
 
   public final static Map<String, Short> htGroup = new Hashtable<String, Short>();
 
   private Viewer vwr;
 
-  public Resolver() {
+  public BioResolver() {
     // only implemented via reflection, and only for PDB/mmCIF files
   }
 
@@ -93,8 +92,7 @@ public final class Resolver implements JmolBioResolver, Comparator<String[]> {
   private int maxSerial = 0;
   private boolean haveHsAlready;
 
-  @Override
-  public JmolBioResolver setLoader(ModelLoader modelLoader) {
+  public BioResolver setLoader(ModelLoader modelLoader) {
     ml = modelLoader;
     bsAddedMask = null;
     lastSetH = Integer.MIN_VALUE;
@@ -115,8 +113,7 @@ public final class Resolver implements JmolBioResolver, Comparator<String[]> {
     return this;
   }
   
-  @Override
-  public Resolver setViewer(Viewer vwr) {
+  public BioResolver setViewer(Viewer vwr) {
     this.vwr = vwr;
     if (Group.standardGroupList == null) {
       //generate a static list of common amino acids, nucleic acid bases, and solvent components
@@ -133,7 +130,6 @@ public final class Resolver implements JmolBioResolver, Comparator<String[]> {
     return this;
   }
   
-  @Override
   public Model getBioModel(int modelIndex,
                         int trajectoryBaseIndex, String jmolData,
                         Properties modelProperties,
@@ -142,10 +138,9 @@ public final class Resolver implements JmolBioResolver, Comparator<String[]> {
         jmolData, modelProperties, modelAuxiliaryInfo);
   }
 
-  @Override
   public Group distinguishAndPropagateGroup(Chain chain, String group3,
                                             int seqcode, int firstAtomIndex,
-                                            int lastAtomIndex, int modelIndex,
+                                            int lastAtomIndex,
                                             int[] specialAtomIndexes,
                                             Atom[] atoms) {
     /*
@@ -228,7 +223,6 @@ public final class Resolver implements JmolBioResolver, Comparator<String[]> {
    * 
    */
   
-  @Override
   public void setHaveHsAlready(boolean b) {
     haveHsAlready = b;
   }
@@ -240,7 +234,6 @@ public final class Resolver implements JmolBioResolver, Comparator<String[]> {
   private String[] hNames;
   private int baseBondIndex = 0;
 
-  @Override
   public void initializeHydrogenAddition() {
     baseBondIndex = ms.bondCount;
     bsAddedHydrogens = new BS();
@@ -253,7 +246,6 @@ public final class Resolver implements JmolBioResolver, Comparator<String[]> {
     plane = new P4();
   }
   
-  @Override
   public void addImplicitHydrogenAtoms(JmolAdapter adapter, int iGroup, int nH) {
     String group3 = ml.getGroup3(iGroup);
     int nH1;
@@ -392,7 +384,6 @@ public final class Resolver implements JmolBioResolver, Comparator<String[]> {
         .compareTo(b[1]) < 0 ? -1 : a[1].compareTo(b[1]) > 0 ? 1 : 0);
   }
   
-  @Override
   public void finalizeHydrogens() {
     vwr.getLigandModel(null, null, null, null);
     finalizePdbMultipleBonds();
@@ -600,7 +591,7 @@ public final class Resolver implements JmolBioResolver, Comparator<String[]> {
   private void fixAnnotations(int i, String name, int type) {
     Object o = ml.ms.getInfo(i, name);
     if (o != null) {
-      Object dbObj = ((BioModel)ml.ms.bioModelset).getCachedAnnotationMap(name, o);
+      Object dbObj = ((BioModel) ms.am[i]).getCachedAnnotationMap(name, o);
       if (dbObj != null)
         vwr.getAnnotationParser(false).fixAtoms(i, (SV) dbObj, bsAddedMask, type, 20);
     }
@@ -697,7 +688,6 @@ public final class Resolver implements JmolBioResolver, Comparator<String[]> {
         ms.getDefaultMadFromOrder(Edge.BOND_COVALENT_SINGLE), null, 0, true, false);
   }
 
-  @Override
   public Object fixPropertyValue(BS bsAtoms, Object data, boolean toHydrogens) {
     Atom[] atoms = ms.at;
     // we aren't doing this anymore
@@ -784,7 +774,6 @@ public final class Resolver implements JmolBioResolver, Comparator<String[]> {
    * @param adapter
    * @param atomSetCollection
    */
-  @Override
   public void iterateOverAllNewStructures(JmolAdapter adapter,
                                           Object atomSetCollection) {
     JmolAdapterStructureIterator iterStructure = adapter
@@ -867,7 +856,6 @@ public final class Resolver implements JmolBioResolver, Comparator<String[]> {
             bsAssigned);
   }
 
-  @Override
   public void setGroupLists(int ipt) {
     ml.group3Lists[ipt + 1] = Group.standardGroupList;
     ml.group3Counts[ipt + 1] = new int[group3Count + 10];
@@ -882,13 +870,11 @@ public final class Resolver implements JmolBioResolver, Comparator<String[]> {
    * @param max max ID (e.g. 20); can be Integer.MAX_VALUE to allow carbohydrate
    * @return true if found
    */
-  @Override
   public boolean isKnownPDBGroup(String g3, int max) {
     int pt = knownGroupID(g3);
     return (pt > 0 ? pt < max : max == Integer.MAX_VALUE && checkCarbohydrate(g3));
   }
 
-  @Override
   public byte lookupSpecialAtomID(String name) {
     if (htSpecialAtoms == null) {
       htSpecialAtoms = new Hashtable<String, Byte>();
@@ -1142,9 +1128,10 @@ public final class Resolver implements JmolBioResolver, Comparator<String[]> {
 
   /**
    * MMCif, Gromacs, MdTop, Mol2 readers only
+   * @param group3 
+   * @return true if an identified hetero group
    * 
    */
-  @Override
   public boolean isHetero(String group3) {
     switch (group3.length()) {
     case 1:
@@ -1234,7 +1221,6 @@ public final class Resolver implements JmolBioResolver, Comparator<String[]> {
    * Convert "AVG" to "ALA VAL GLY"; unknowns to UNK
    * 
    */
-  @Override
   public String toStdAmino3(String g1) {
     if (g1.length() == 0)
       return "";
@@ -1257,7 +1243,6 @@ public final class Resolver implements JmolBioResolver, Comparator<String[]> {
     return s.toString().substring(1);
   }
   
-  @Override
   public short getGroupID(String g3) {
     return getGroupIdFor(g3);
   }
@@ -1300,7 +1285,6 @@ public final class Resolver implements JmolBioResolver, Comparator<String[]> {
    *        [3] is supplied covalent bond count
    * @return true for special; false if not
    */
-  @Override
   public boolean getAminoAcidValenceAndCharge(String res, String name,
                                                      int[] ret) {
     if (res == null || res.length() == 0 || res.length() > 3 || name.equals("CA")
@@ -1763,7 +1747,6 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   }
 
-  @Override
   public int[] getArgbs(int tok) {
     switch (tok) {
     case T.amino:

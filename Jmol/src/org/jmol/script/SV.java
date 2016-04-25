@@ -212,7 +212,8 @@ public class SV extends T implements JSONEncodable {
            || x instanceof float[][] 
            || x instanceof String[][] 
            || x instanceof double[][] 
-           || x instanceof Float[];
+           || x instanceof Float[]
+           || x instanceof Object[];
     }
   }
 
@@ -342,6 +343,9 @@ public class SV extends T implements JSONEncodable {
         getVariableList(new Lst<SV>());
         getVariableMap(new Hashtable<String, Object>());
       }
+      if (x instanceof Object[])
+        return getVariableAO((Object[]) x);
+      
     }
     return newS(x.toString());    
   }
@@ -384,6 +388,13 @@ public class SV extends T implements JSONEncodable {
     Lst<SV> objects = new  Lst<SV>();
     for (int i = 0; i < f.length; i++)
       objects.addLast(newV(decimal, Float.valueOf((float) f[i])));
+    return newV(varray, objects);
+  }
+
+  static SV getVariableAO(Object[] o) {
+    Lst<SV> objects = new  Lst<SV>();
+    for (int i = 0; i < o.length; i++)
+      objects.addLast(getVariable(o[i]));
     return newV(varray, objects);
   }
 

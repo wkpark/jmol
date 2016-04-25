@@ -2594,12 +2594,13 @@ public class CmdExt extends ScriptExt {
     // check for last model 
     bs.and(vwr.getModelUndeletedAtomsBitSet(vwr.ms.mc - 1));
     int iatom = bs.length() - 1;
-    if (iatom < 0 || vwr.ms.at[iatom].mi + 1 != vwr.ms.mc
-        || vwr.ms.isTrajectory(vwr.ms.at[iatom].mi))
+    int imodel = 0;
+    if (iatom < 0 || (imodel = vwr.ms.at[iatom].mi) != vwr.ms.mc - 1
+        || vwr.ms.isTrajectory(imodel))
       return;
     String group = e.optParameterAsString(i);
     e.checkLast(i);
-    if (chk || !vwr.ms.am[vwr.ms.mc - 1].isBioModel)
+    if (chk || !vwr.ms.am[imodel].isBioModel)
       return;
     boolean isFile = (tokAt(i) == T.string && !group.startsWith("~"));
     String[] list = null;
@@ -4217,6 +4218,7 @@ public class CmdExt extends ScriptExt {
     case T.drawing:
     case T.chemical:
     case T.smiles:
+      
       checkLength((tok == T.chemical || tok == T.smiles && tokAt(2) != T.nada ? len = 3
           : 2)
           + filterLen);
@@ -4224,7 +4226,7 @@ public class CmdExt extends ScriptExt {
         return;
       try {
         if (tok != T.smiles) {
-          msg = vwr.getDataBaseName(null);
+          msg = vwr.ms.getModelDataBaseName(vwr.bsA());
           // this does not work for NCI, because, for example, "$menthol" returns an enantiomer, but menthol/smiles uses nonstereo option
           // but we don't want to be generating our own SMILES here, do we?
           // what is the solution?
@@ -5067,7 +5069,7 @@ public class CmdExt extends ScriptExt {
       modelIndex = vwr.ms.bo[bondIndex].atom1.mi;
       vwr.sm.modifySend(bondIndex, modelIndex, 2,
           e.fullCommand);
-      BS bsAtoms = vwr.ms.setBondOrder(bondIndex, type);
+      BS bsAtoms = vwr.ms.assignBond(bondIndex, type);
       if (bsAtoms == null || type == '0')
         vwr.refresh(3, "setBondOrder");
       else

@@ -37,6 +37,8 @@ import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.Bond;
 import org.jmol.adapter.smarter.Structure;
 import org.jmol.java.BS;
+import org.jmol.script.SV;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
 /**
@@ -111,7 +113,8 @@ public class MMTFReader extends MMCifReader {
     setSymmetry();
     getBioAssembly();
     setModelPDB(true);
-    //System.out.println(Escape.e(map));
+    if (Logger.debuggingHigh)
+      Logger.info(SV.getVariable(map).asString());
   }
 
 /////////////// MessagePack decoding ///////////////
@@ -261,7 +264,7 @@ public class MMTFReader extends MMCifReader {
       int a1 = atomMap[bi[pt++]] - 1;
       int a2 = atomMap[bi[pt++]] - 1;
       if (a1 >= 0 && a2 >= 0)
-        asc.addBond(new Bond(a1, a2, doMulti ? b[i] : 1));
+        addBond(new Bond(a1, a2, doMulti ? b[i] : 1), true);
     }
   }
 
@@ -438,11 +441,18 @@ public class MMTFReader extends MMCifReader {
             int a1 = atomMap[bi[pt++] + a0] - 1;
             int a2 = atomMap[bi[pt++] + a0] - 1;
             if (a1 >= 0 && a2 >= 0)
-              asc.addBond(new Bond(a1, a2, doMulti ? bo[bj] : 1));
+              addBond(new Bond(a1, a2, doMulti ? bo[bj] : 1), false);
           }
         }
       }
     }
+  }
+
+  private void addBond(Bond bond, boolean isInter) {
+    asc.addBond(bond);
+    if (Logger.debugging && isInter)
+      Logger.info("bond " + asc.atoms[bond.atomIndex1].group3 + "." + asc.atoms[bond.atomIndex1].atomName 
+          + " " + asc.atoms[bond.atomIndex2].atomName + " " + bond.order);
   }
 
   //  Code  Name

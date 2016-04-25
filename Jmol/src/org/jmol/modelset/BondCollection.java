@@ -464,8 +464,12 @@ abstract public class BondCollection extends AtomCollection {
           bond.setOrder(Edge.BOND_AROMATIC);
         switch (bond.order & ~Edge.BOND_NEW) {
         case Edge.BOND_AROMATIC:
-          bsAromatic.set(i);
-          break;
+          if (!assignAromaticMustBeSingle(bond.atom1) && !assignAromaticMustBeSingle(bond.atom2)) {
+            bsAromatic.set(i);
+            break;
+          }
+            bond.order = Edge.BOND_AROMATIC_SINGLE;
+          //$FALL-THROUGH$
         case Edge.BOND_AROMATIC_SINGLE:
           bsAromaticSingle.set(i);
           break;
@@ -746,9 +750,10 @@ abstract public class BondCollection extends AtomCollection {
     }
   }
  
-  public BS setBondOrder(int bondIndex, char type) {
+  public BS assignBond(int bondIndex, char type) {
     int bondOrder = type - '0';
     Bond bond = bo[bondIndex];
+    ((ModelSet) this).clearDB(bond.atom1.i);
     switch (type) {
     case '0':
     case '1':

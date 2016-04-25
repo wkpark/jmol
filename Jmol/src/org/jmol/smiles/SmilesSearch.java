@@ -119,6 +119,8 @@ public class SmilesSearch extends JmolMolecule {
       flags |= JC.SMILES_TYPE_OPENSMILES;
     if (strFlags.indexOf("BIO") >= 0)
       flags |= JC.SMILES_GEN_BIO;
+    if (strFlags.indexOf("HYDROGEN") >= 0)
+      flags |= JC.SMILES_GEN_EXPLICIT_H;
     if (strFlags.indexOf("NONCANONICAL") >= 0)
       flags |= AROMATIC_JSME_NONCANONICAL;
     if (strFlags.indexOf("STRICT") >= 0) // MMFF94

@@ -28,7 +28,20 @@ import javajs.util.SB;
 
 public class BioExt {
 
-  public void getAllPolymerInfo(ModelSet ms, BS bs, Map<String, Lst<Map<String, Object>>> fullInfo) {    
+  private Viewer vwr;
+  private ModelSet ms;
+
+  public BioExt()  {
+    // for reflection
+  }
+  
+  BioExt set(Viewer vwr, ModelSet ms) {
+    this.vwr = vwr;
+    this.ms = ms;
+    return this;
+  }
+
+  void getAllPolymerInfo(BS bs, Map<String, Lst<Map<String, Object>>> fullInfo) {    
     Lst<Map<String, Object>> modelVector = new  Lst<Map<String, Object>>();
     int modelCount = ms.mc;
     Model[] models = ms.am;
@@ -91,7 +104,7 @@ public class BioExt {
   }
 
   
-  void calculateStraightnessAll(Viewer vwr, ModelSet ms) {
+  void calculateStraightnessAll() {
     char qtype = vwr.getQuaternionFrame();
     int mStep = vwr.getInt(T.helixstep);
     // testflag3 ON  --> preliminary: Hanson's original normal-based straightness
@@ -101,7 +114,7 @@ public class BioExt {
         BioModel m = (BioModel)ms.am[i];
         P3 ptTemp = new P3();
         for (int p = 0; p < m.bioPolymerCount; p++)
-          getPdbData(m.bioPolymers[p], vwr, 'S', qtype, mStep, 2, null, 
+          getPdbData(m.bioPolymers[p], 'S', qtype, mStep, 2, null, 
               null, false, false, false, null, null, null, new BS(), ptTemp);        
       }
     ms.haveStraightness = true;
@@ -109,7 +122,7 @@ public class BioExt {
 
   final private static String[] qColor = { "yellow", "orange", "purple" };
 
-  private static void getPdbData(BioPolymer bp, Viewer vwr, char ctype,
+  private void getPdbData(BioPolymer bp, char ctype,
                                       char qtype, int mStep, int derivType,
                                       BS bsAtoms, BS bsSelected,
                                       boolean bothEnds, boolean isDraw,
@@ -200,7 +213,7 @@ public class BioExt {
     for (int j = 0; j < (bothEnds ? 2 : 1); j++, factor *= -1)
       for (int i = 0; i < (mStep < 1 ? 1 : mStep); i++)
         if (bp.hasStructure)
-          getData(vwr, i, mStep, bp, ctype, qtype, derivType, bsAtoms,
+          getData(i, mStep, bp, ctype, qtype, derivType, bsAtoms,
               bsSelected, isDraw, isRamachandran, calcRamachandranStraightness,
               useQuaternionStraightness, writeRamachandranStraightness,
               quaternionStraightness, factor, isAmino, isRelativeAlias, tokens,
@@ -209,7 +222,6 @@ public class BioExt {
 
   /**
    * 
-   * @param vwr
    * @param m0
    * @param mStep
    * @param p
@@ -235,7 +247,7 @@ public class BioExt {
    * @param ptTemp 
    */
   @SuppressWarnings("static-access")
-  private static void getData(Viewer vwr, int m0, int mStep, BioPolymer p,
+  private void getData(int m0, int mStep, BioPolymer p,
                               char ctype, char qtype, int derivType,
                               BS bsAtoms, BS bsSelected,
                               boolean isDraw, boolean isRamachandran,
@@ -537,7 +549,7 @@ public class BioExt {
         if (pdbATOM == null)// || bsSelected != null && !bsSelected.get(a.getIndex()))
           continue;
         bsWritten.set(((Monomer) a.group).leadAtomIndex);
-        pdbATOM.append(vwr.ms.getLabeler().formatLabelAtomArray(vwr, a, tokens, '\0',
+        pdbATOM.append(ms.getLabeler().formatLabelAtomArray(vwr, a, tokens, '\0',
             null, ptTemp));
         pdbATOM.append(PT
             .sprintf("%8.2f%8.2f%8.2f      %6.3f          %2s    %s\n",
@@ -565,7 +577,7 @@ public class BioExt {
             (float) (axis.angle * 180 / Math.PI), axis.x, axis.y, axis.z } });
   }
 
-  public static String drawQuat(Quat q, String prefix, String id, P3 ptCenter, 
+  static String drawQuat(Quat q, String prefix, String id, P3 ptCenter, 
                      float scale) {
     String strV = " VECTOR " + Escape.eP(ptCenter) + " ";
     if (scale == 0)
@@ -651,7 +663,7 @@ public class BioExt {
     
     P3 ptTemp = new P3();
     for (int p = 0; p < m.bioPolymerCount; p++)
-      getPdbData(m.bioPolymers[p], vwr, ctype, qtype, mStep, derivType,
+      getPdbData(m.bioPolymers[p], ctype, qtype, mStep, derivType,
           m.bsAtoms, bsSelected, bothEnds, isDraw, p == 0, tokens, out, 
           pdbCONECT, bsWritten, ptTemp);
   }
@@ -1115,6 +1127,31 @@ public class BioExt {
     return b;
   }
 
+
+  private final static String[] pdbRecords = { "ATOM  ", "MODEL ", "HETATM" };
+
+  String getFullPDBHeader(Map<String, Object> auxiliaryInfo) {
+    String info = vwr.getCurrentFileAsString("biomodel");
+    int ichMin = info.length();
+    for (int i = pdbRecords.length; --i >= 0;) {
+      int ichFound;
+      String strRecord = pdbRecords[i];
+      switch (ichFound = (info.startsWith(strRecord) ? 0 : info.indexOf("\n"
+          + strRecord))) {
+      case -1:
+        continue;
+      case 0:
+        auxiliaryInfo.put("fileHeader", "");
+        return "";
+      default:
+        if (ichFound < ichMin)
+          ichMin = ++ichFound;
+      }
+    }
+    info = info.substring(0, ichMin);
+    auxiliaryInfo.put("fileHeader", info);
+    return info;
+  }
 
   
 

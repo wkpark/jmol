@@ -538,11 +538,12 @@ public class ScriptManager implements JmolScriptManager {
     if (vwr.isApplet && fileName.indexOf("://") < 0)
       fileName = "file://" + (fileName.startsWith("/") ? "" : "/") + fileName;
     try {
+      // using finally... here on return
       if (fileName.endsWith(".pse")) {
         cmd = (isCached ? "" : "zap;") + "load SYNC " + PT.esc(fileName)
             + (vwr.isApplet ? "" : " filter 'DORESIZE'");
         return;
-      }
+      } 
       if (fileName.endsWith("jvxl")) {
         cmd = "isosurface ";
       } else if (!fileName.toLowerCase().endsWith(".spt")) {
@@ -556,6 +557,10 @@ public class ScriptManager implements JmolScriptManager {
                 + " mesh nofill }; else; { isosurface "
                 + PT.esc(fileName) + "}";
           return;
+        }
+        // these next will end with the escaped file name
+        if (type.equals("dssr")) {
+          cmd = "model {visible} property dssr ";
         } else if (type.equals("Jmol")) {
           cmd = "script ";
         } else if (type.equals("Cube")) {
@@ -572,7 +577,7 @@ public class ScriptManager implements JmolScriptManager {
           return;
         }
       }
-      if (!noScript && vwr.scriptEditorVisible && cmd == null)
+      if (cmd == null && !noScript && vwr.scriptEditorVisible)
         vwr.showEditor(new String[] { fileName,
             vwr.getFileAsString3(fileName, true, null) });
       else
@@ -589,6 +594,8 @@ public class ScriptManager implements JmolScriptManager {
       return fileName.substring(0, pt);
     if (fileName.startsWith("="))
       return "pdb";
+    if (fileName.endsWith(".dssr"))
+      return "dssr";
     Object br = vwr.fm.getUnzippedReaderOrStreamFromName(fileName, null,
         true, false, true, true, null);
     if (br instanceof BufferedReader)

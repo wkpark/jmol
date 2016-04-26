@@ -1161,7 +1161,7 @@ public class SymmetryDesc {
         if (Float.isNaN(pt.x))
           return ret;
         P3 sympt = new P3();
-        symTemp.newSpaceGroupPoint(i, pt, sympt, 0, 0, 0);
+        symTemp.newSpaceGroupPoint(i, pt, sympt, 0, 0, 0, null);
         symTemp.toCartesian(sympt, false);
         return (type == T.atoms ? getAtom(uc, iModel, iatom, sympt) : sympt);
       }

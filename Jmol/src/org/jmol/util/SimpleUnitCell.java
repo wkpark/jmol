@@ -296,6 +296,13 @@ public class SimpleUnitCell {
           .rotTrans(pt);
   }
 
+  public void toFractionalM(M4 m) {
+    if (matrixCartesianToFractional == null)
+      return;
+    m.mul(matrixFractionalToCartesian);
+    m.mul2(matrixCartesianToFractional, m);
+  }
+  
   public final void toFractional(T3 pt, boolean isAbsolute) {
     if (matrixCartesianToFractional == null)
       return;

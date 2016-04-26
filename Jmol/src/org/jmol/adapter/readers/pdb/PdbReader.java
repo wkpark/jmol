@@ -325,14 +325,12 @@ public class PdbReader extends AtomSetCollectionReader {
       formul();
       return true;
     case 17:
-      if (line.startsWith("REMARK 350")) {
-        remark350();
-        return false;
-      }
-      if (line.startsWith("REMARK 290")) {
-        remark290();
-        return false;
-      }
+      if (line.startsWith("REMARK 285")) 
+        return remark285();
+      if (line.startsWith("REMARK 350"))
+        return remark350();
+      if (line.startsWith("REMARK 290"))
+        return remark290();
       if (line.contains("This file does not adhere to the PDB standard")) {
         gromacsWideFormat = true;
       }
@@ -364,23 +362,22 @@ public class PdbReader extends AtomSetCollectionReader {
   }
 
 
-  /*
-SEQADV 1EHZ 2MG A   10  GB   M10263      G    10 TRNA                           
-SEQADV 1EHZ H2U A   16  GB   M10263      U    16 TRNA                           
-SEQADV 1EHZ H2U A   17  GB   M10263      U    17 TRNA                           
-SEQADV 1EHZ M2G A   26  GB   M10263      G    26 TRNA                           
-SEQADV 1EHZ OMC A   32  GB   M10263      C    32 TRNA                           
-SEQADV 1EHZ OMG A   34  GB   M10263      G    34 TRNA                           
-SEQADV 1EHZ YYG A   37  GB   M10263      G    37 TRNA                           
-SEQADV 1EHZ PSU A   39  GB   M10263      U    39 TRNA                           
-SEQADV 1EHZ 5MC A   40  GB   M10263      C    40 TRNA                           
-SEQADV 1EHZ 7MG A   46  GB   M10263      G    46 TRNA                           
-SEQADV 1EHZ 5MC A   49  GB   M10263      C    49 TRNA                           
-SEQADV 1EHZ 5MU A   54  GB   M10263      U    54 TRNA                           
-SEQADV 1EHZ PSU A   55  GB   M10263      U    55 TRNA                           
-SEQADV 1EHZ 1MA A   58  GB   M10263      A    58 TRNA                           
-SEQADV 1BLU GLU      7  SWS  P00208    GLN     7 CONFLICT                       
-   */
+//SEQADV 1EHZ 2MG A   10  GB   M10263      G    10 TRNA                           
+//SEQADV 1EHZ H2U A   16  GB   M10263      U    16 TRNA                           
+//SEQADV 1EHZ H2U A   17  GB   M10263      U    17 TRNA                           
+//SEQADV 1EHZ M2G A   26  GB   M10263      G    26 TRNA                           
+//SEQADV 1EHZ OMC A   32  GB   M10263      C    32 TRNA                           
+//SEQADV 1EHZ OMG A   34  GB   M10263      G    34 TRNA                           
+//SEQADV 1EHZ YYG A   37  GB   M10263      G    37 TRNA                           
+//SEQADV 1EHZ PSU A   39  GB   M10263      U    39 TRNA                           
+//SEQADV 1EHZ 5MC A   40  GB   M10263      C    40 TRNA                           
+//SEQADV 1EHZ 7MG A   46  GB   M10263      G    46 TRNA                           
+//SEQADV 1EHZ 5MC A   49  GB   M10263      C    49 TRNA                           
+//SEQADV 1EHZ 5MU A   54  GB   M10263      U    54 TRNA                           
+//SEQADV 1EHZ PSU A   55  GB   M10263      U    55 TRNA                           
+//SEQADV 1EHZ 1MA A   58  GB   M10263      A    58 TRNA                           
+//SEQADV 1BLU GLU      7  SWS  P00208    GLN     7 CONFLICT                       
+
   private void seqAdv() {
     
     // Note: this will be overridden by DSSR if present
@@ -462,7 +459,7 @@ SEQADV 1BLU GLU      7  SWS  P00208    GLN     7 CONFLICT
       asc.checkSpecial = false;
     }
     if (latticeCells != null && latticeCells[0] != 0)
-      addJmolScript("unitcell;");
+      addJmolScript("unitcell;axes on;axes unitcell;");
     finalizeReaderASCR();
     if (vCompnds != null) {
       asc.setInfo("compoundSource", vCompnds);
@@ -630,40 +627,38 @@ SEQADV 1BLU GLU      7  SWS  P00208    GLN     7 CONFLICT
     }
   }
 
-  /* 
-   REMARK 350 BIOMOLECULE: 1                                                       
-   REMARK 350 APPLY THE FOLLOWING TO CHAINS: 1, 2, 3, 4, 5, 6,  
-   REMARK 350 A, B, C
-   REMARK 350   BIOMT1   1  1.000000  0.000000  0.000000        0.00000            
-   REMARK 350   BIOMT2   1  0.000000  1.000000  0.000000        0.00000            
-   REMARK 350   BIOMT3   1  0.000000  0.000000  1.000000        0.00000            
-   REMARK 350   BIOMT1   2  0.309017 -0.809017  0.500000        0.00000            
-   REMARK 350   BIOMT2   2  0.809017  0.500000  0.309017        0.00000            
-   REMARK 350   BIOMT3   2 -0.500000  0.309017  0.809017        0.00000
-   
-               
-               or, as fount in http://www.ebi.ac.uk/msd-srv/pqs/pqs-doc/macmol/1k28.mmol
-               
-  REMARK 350 AN OLIGOMER OF TYPE :HEXAMERIC : CAN BE ASSEMBLED BY
-  REMARK 350 APPLYING THE FOLLOWING TO CHAINS:
-  REMARK 350 A, D
-  REMARK 350   BIOMT1   1  1.000000  0.000000  0.000000        0.00000
-  REMARK 350   BIOMT2   1  0.000000  1.000000  0.000000        0.00000
-  REMARK 350   BIOMT3   1  0.000000  0.000000  1.000000        0.00000
-  REMARK 350 IN ADDITION APPLY THE FOLLOWING TO CHAINS:
-  REMARK 350 A, D
-  REMARK 350   BIOMT1   2  0.000000 -1.000000  0.000000        0.00000
-  REMARK 350   BIOMT2   2  1.000000 -1.000000  0.000000        0.00000
-  REMARK 350   BIOMT3   2  0.000000  0.000000  1.000000        0.00000
-  REMARK 350 IN ADDITION APPLY THE FOLLOWING TO CHAINS:
-  REMARK 350 A, D
-  REMARK 350   BIOMT1   3 -1.000000  1.000000  0.000000        0.00000
-  REMARK 350   BIOMT2   3 -1.000000  0.000000  0.000000        0.00000
-  REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
+//  REMARK 350 BIOMOLECULE: 1                                                       
+//  REMARK 350 APPLY THE FOLLOWING TO CHAINS: 1, 2, 3, 4, 5, 6,  
+//  REMARK 350 A, B, C
+//  REMARK 350   BIOMT1   1  1.000000  0.000000  0.000000        0.00000            
+//  REMARK 350   BIOMT2   1  0.000000  1.000000  0.000000        0.00000            
+//  REMARK 350   BIOMT3   1  0.000000  0.000000  1.000000        0.00000            
+//  REMARK 350   BIOMT1   2  0.309017 -0.809017  0.500000        0.00000            
+//  REMARK 350   BIOMT2   2  0.809017  0.500000  0.309017        0.00000            
+//  REMARK 350   BIOMT3   2 -0.500000  0.309017  0.809017        0.00000
+//   
+//               
+//               or, as fount in http://www.ebi.ac.uk/msd-srv/pqs/pqs-doc/macmol/1k28.mmol
+//               
+//  REMARK 350 AN OLIGOMER OF TYPE :HEXAMERIC : CAN BE ASSEMBLED BY
+//  REMARK 350 APPLYING THE FOLLOWING TO CHAINS:
+//  REMARK 350 A, D
+//  REMARK 350   BIOMT1   1  1.000000  0.000000  0.000000        0.00000
+//  REMARK 350   BIOMT2   1  0.000000  1.000000  0.000000        0.00000
+//  REMARK 350   BIOMT3   1  0.000000  0.000000  1.000000        0.00000
+//  REMARK 350 IN ADDITION APPLY THE FOLLOWING TO CHAINS:
+//  REMARK 350 A, D
+//  REMARK 350   BIOMT1   2  0.000000 -1.000000  0.000000        0.00000
+//  REMARK 350   BIOMT2   2  1.000000 -1.000000  0.000000        0.00000
+//  REMARK 350   BIOMT3   2  0.000000  0.000000  1.000000        0.00000
+//  REMARK 350 IN ADDITION APPLY THE FOLLOWING TO CHAINS:
+//  REMARK 350 A, D
+//  REMARK 350   BIOMT1   3 -1.000000  1.000000  0.000000        0.00000
+//  REMARK 350   BIOMT2   3 -1.000000  0.000000  0.000000        0.00000
+//  REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
 
-  */
 
- private void remark350() throws Exception {
+ private boolean remark350() throws Exception {
     Lst<M4> biomts = null;
     Lst<String> biomtchains = null;
     vBiomolecules = new Lst<Map<String, Object>>();
@@ -724,11 +719,10 @@ SEQADV 1BLU GLU      7  SWS  P00208    GLN     7 CONFLICT
           }
           continue;
         }
-        /*
-         0         1         2         3         4         5         6         7
-         0123456789012345678901234567890123456789012345678901234567890123456789
-         REMARK 350   BIOMT2   1  0.000000  1.000000  0.000000        0.00000
-         */
+//         0         1         2         3         4         5         6         7
+//         0123456789012345678901234567890123456789012345678901234567890123456789
+//         REMARK 350   BIOMT2   1  0.000000  1.000000  0.000000        0.00000
+
         if (line.startsWith("REMARK 350   BIOMT1 ")) {
           nBiomt++;
           float[] mat = new float[16];
@@ -757,41 +751,77 @@ SEQADV 1BLU GLU      7  SWS  P00208    GLN     7 CONFLICT
         // probably just 
         thisBiomolecule = null;
         vBiomolecules = null;
-        return;
+        return false;
       }
     }
     if (nBiomt > 0)
       Logger.info("biomolecule " + id + ": number of transforms: " + nBiomt);
+    return false;
   }
 
-  /*
-REMARK 290                                                                      
-REMARK 290 CRYSTALLOGRAPHIC SYMMETRY                                            
-REMARK 290 SYMMETRY OPERATORS FOR SPACE GROUP: P 1 21 1                         
-REMARK 290                                                                      
-REMARK 290      SYMOP   SYMMETRY                                                
-REMARK 290     NNNMMM   OPERATOR                                                
-REMARK 290       1555   X,Y,Z                                                   
-REMARK 290       2555   -X,Y+1/2,-Z                                             
-REMARK 290                                                                      
-REMARK 290     WHERE NNN -> OPERATOR NUMBER                                     
-REMARK 290           MMM -> TRANSLATION VECTOR                                  
-REMARK 290                                                                      
-REMARK 290 CRYSTALLOGRAPHIC SYMMETRY TRANSFORMATIONS                            
-REMARK 290 THE FOLLOWING TRANSFORMATIONS OPERATE ON THE ATOM/HETATM             
-REMARK 290 RECORDS IN THIS ENTRY TO PRODUCE CRYSTALLOGRAPHICALLY                
-REMARK 290 RELATED MOLECULES.                                                   
-REMARK 290   SMTRY1   1  1.000000  0.000000  0.000000        0.00000            
-REMARK 290   SMTRY2   1  0.000000  1.000000  0.000000        0.00000            
-REMARK 290   SMTRY3   1  0.000000  0.000000  1.000000        0.00000            
-REMARK 290   SMTRY1   2 -1.000000  0.000000  0.000000        0.00000            
-REMARK 290   SMTRY2   2  0.000000  1.000000  0.000000        9.32505            
-REMARK 290   SMTRY3   2  0.000000  0.000000 -1.000000        0.00000            
-REMARK 290                                                                      
-REMARK 290 REMARK: NULL                                                         
+ 
+// REMARK 285           (1QL2)                                                           
+// REMARK 285 CRYST1                                                               
+// REMARK 285  THE ANALOGUE OF THE CRYSTALLOGRAPHIC SPACE GROUP FOR                
+// REMARK 285  HELICAL STRUCTURES IS THE LINE GROUP (A.KLUG, F.H.C.CRICK,          
+// REMARK 285  H.W.WYCKOFF, ACTA CRYSTALLOG. V.11, 199, 1958).  THE                
+// REMARK 285  LINE GROUP OF PF1 IS S.  THE UNIT CELL DIMENSIONS ARE THE           
+// REMARK 285  HELIX PARAMETERS (UNIT TWIST TAU, UNIT HEIGHT P).                   
+// REMARK 285                                                                      
+// REMARK 285  FOR THE PERTURBED MODEL OF PF1,                                     
+// REMARK 285    TAU = 200. DEGREES, P = 8.70 ANGSTROMS.                           
+// REMARK 285                                                                      
+// REMARK 285  THE INDEXING OF UNITS ALONG THE BASIC HELIX IS ILLUSTRATED          
+// REMARK 285  IN REFERENCE 4.  TO GENERATE COORDINATES X(K), Y(K), Z(K)           
+// REMARK 285  OF UNIT K FROM THE GIVEN COORDINATES X(0), Y(0), Z(0) OF            
+// REMARK 285  UNIT 0 IN A UNIT CELL WITH HELIX PARAMETERS                         
+// REMARK 285         (TAU, P) = (66.667, 2.90),                                   
+// REMARK 285  APPLY THE MATRIX AND VECTOR:                                        
+// REMARK 285                                                                      
+// REMARK 285     |    COS(TAU*K)   -SIN(TAU*K)   0 |    |   0         |           
+// REMARK 285     |    SIN(TAU*K)   COS(TAU*K)    0 | +  |   0         |           
+// REMARK 285     |    0            0             1 |    |   P*K       |           
+// REMARK 285                                                                      
+// REMARK 285  THE NEIGHBORS IN CONTACT WITH UNIT 0 ARE UNITS                      
+// REMARK 285         K = +/-1, +/-5, +/-6, +/-11 AND +/-17.                       
+// REMARK 285  THESE SYMMETRY-RELATED COPIES ARE USED TO DETERMINE INTERCHAIN      
+// REMARK 285  NON-BONDED CONTACTS DURING THE REFINEMENT.                          
+// REMARK 285                                                                      
+// REMARK 285  [ THE LOWER-TEMPERATURE FORM OF PF1 HAS HELIX PARAMETERS,           
+// REMARK 285     TAU = 65.915 DEGREES,                                            
+// REMARK 285      P = 3.05 ANGSTROMS. ]
+ 
+ private boolean remark285() {
+   // helical data could be here
+   return true; // haven't read anything;
+ }
 
-   */
-  private void remark290() throws Exception {
+//REMARK 290                                                                      
+//REMARK 290 CRYSTALLOGRAPHIC SYMMETRY                                            
+//REMARK 290 SYMMETRY OPERATORS FOR SPACE GROUP: P 1 21 1                         
+//REMARK 290                                                                      
+//REMARK 290      SYMOP   SYMMETRY                                                
+//REMARK 290     NNNMMM   OPERATOR                                                
+//REMARK 290       1555   X,Y,Z                                                   
+//REMARK 290       2555   -X,Y+1/2,-Z                                             
+//REMARK 290                                                                      
+//REMARK 290     WHERE NNN -> OPERATOR NUMBER                                     
+//REMARK 290           MMM -> TRANSLATION VECTOR                                  
+//REMARK 290                                                                      
+//REMARK 290 CRYSTALLOGRAPHIC SYMMETRY TRANSFORMATIONS                            
+//REMARK 290 THE FOLLOWING TRANSFORMATIONS OPERATE ON THE ATOM/HETATM             
+//REMARK 290 RECORDS IN THIS ENTRY TO PRODUCE CRYSTALLOGRAPHICALLY                
+//REMARK 290 RELATED MOLECULES.                                                   
+//REMARK 290   SMTRY1   1  1.000000  0.000000  0.000000        0.00000            
+//REMARK 290   SMTRY2   1  0.000000  1.000000  0.000000        0.00000            
+//REMARK 290   SMTRY3   1  0.000000  0.000000  1.000000        0.00000            
+//REMARK 290   SMTRY1   2 -1.000000  0.000000  0.000000        0.00000            
+//REMARK 290   SMTRY2   2  0.000000  1.000000  0.000000        9.32505            
+//REMARK 290   SMTRY3   2  0.000000  0.000000 -1.000000        0.00000            
+//REMARK 290                                                                      
+//REMARK 290 REMARK: NULL                                                         
+
+  private boolean remark290() throws Exception {
     while (readHeader(true) != null && line.startsWith("REMARK 290")) {
       if (line.indexOf("NNNMMM   OPERATOR") >= 0) {
         while (readHeader(true) != null) {
@@ -803,6 +833,7 @@ REMARK 290 REMARK: NULL
         }
       }
     }
+    return false;
   } 
   
   private int getSerial(int i, int j) {
@@ -1443,56 +1474,54 @@ REMARK 290 REMARK: NULL
     //Logger.debug("hetero: "+groupName+" "+hetName);
   }
   
-  /*
-  The ANISOU records present the anisotropic temperature factors.
-
-
-  Record Format
-
-  COLUMNS        DATA TYPE       FIELD         DEFINITION                  
-  ----------------------------------------------------------------------
-  1 -  6        Record name     "ANISOU"                                  
-
-  7 - 11        Integer         serial        Atom serial number.         
-
-  13 - 16        Atom            name          Atom name.                  
-
-  17             Character       altLoc        Alternate location indicator.                  
-
-  18 - 20        Residue name    resName       Residue name.               
-
-  22             Character       chainID       Chain identifier.           
-
-  23 - 26        Integer         resSeq        Residue sequence number.    
-
-  27             AChar           iCode         Insertion code.             
-
-  29 - 35        Integer         u[0][0]       U(1,1)                
-
-  36 - 42        Integer         u[1][1]       U(2,2)                
-
-  43 - 49        Integer         u[2][2]       U(3,3)                
-
-  50 - 56        Integer         u[0][1]       U(1,2)                
-
-  57 - 63        Integer         u[0][2]       U(1,3)                
-
-  64 - 70        Integer         u[1][2]       U(2,3)                
-
-  73 - 76        LString(4)      segID         Segment identifier, left-justified. 
-
-  77 - 78        LString(2)      element       Element symbol, right-justified.
-
-  79 - 80        LString(2)      charge        Charge on the atom.       
-
-  Details
-
-  * Columns 7 - 27 and 73 - 80 are identical to the corresponding ATOM/HETATM record.
-
-  * The anisotropic temperature factors (columns 29 - 70) are scaled by a factor of 10**4 (Angstroms**2) and are presented as integers.
-
-  * The anisotropic temperature factors are stored in the same coordinate frame as the atomic coordinate records. 
-   */
+//  The ANISOU records present the anisotropic temperature factors.
+//
+//
+//  Record Format
+//
+//  COLUMNS        DATA TYPE       FIELD         DEFINITION                  
+//  ----------------------------------------------------------------------
+//  1 -  6        Record name     "ANISOU"                                  
+//
+//  7 - 11        Integer         serial        Atom serial number.         
+//
+//  13 - 16        Atom            name          Atom name.                  
+//
+//  17             Character       altLoc        Alternate location indicator.                  
+//
+//  18 - 20        Residue name    resName       Residue name.               
+//
+//  22             Character       chainID       Chain identifier.           
+//
+//  23 - 26        Integer         resSeq        Residue sequence number.    
+//
+//  27             AChar           iCode         Insertion code.             
+//
+//  29 - 35        Integer         u[0][0]       U(1,1)                
+//
+//  36 - 42        Integer         u[1][1]       U(2,2)                
+//
+//  43 - 49        Integer         u[2][2]       U(3,3)                
+//
+//  50 - 56        Integer         u[0][1]       U(1,2)                
+//
+//  57 - 63        Integer         u[0][2]       U(1,3)                
+//
+//  64 - 70        Integer         u[1][2]       U(2,3)                
+//
+//  73 - 76        LString(4)      segID         Segment identifier, left-justified. 
+//
+//  77 - 78        LString(2)      element       Element symbol, right-justified.
+//
+//  79 - 80        LString(2)      charge        Charge on the atom.       
+//
+//  Details
+//
+//  * Columns 7 - 27 and 73 - 80 are identical to the corresponding ATOM/HETATM record.
+//
+//  * The anisotropic temperature factors (columns 29 - 70) are scaled by a factor of 10**4 (Angstroms**2) and are presented as integers.
+//
+//  * The anisotropic temperature factors are stored in the same coordinate frame as the atomic coordinate records. 
 
   private void anisou() {
     float[] data = new float[8];
@@ -1528,34 +1557,33 @@ REMARK 290 REMARK: NULL
     // Ortep Type 10: D = 2pi^2, C = 2, Cartesian
   }
   
-  /*
-   * http://www.wwpdb.org/documentation/format23/sect7.html
-   * 
- Record Format
-
-COLUMNS       DATA TYPE         FIELD            DEFINITION
-------------------------------------------------------------------------
- 1 -  6       Record name       "SITE    "
- 8 - 10       Integer           seqNum      Sequence number.
-12 - 14       LString(3)        siteID      Site name.
-16 - 17       Integer           numRes      Number of residues comprising 
-                                            site.
-
-19 - 21       Residue name      resName1    Residue name for first residue
-                                            comprising site.
-23            Character         chainID1    Chain identifier for first residue
-                                            comprising site.
-24 - 27       Integer           seq1        Residue sequence number for first
-                                            residue comprising site.
-28            AChar             iCode1      Insertion code for first residue
-                                            comprising site.
-30 - 32       Residue name      resName2    Residue name for second residue
-...
-41 - 43       Residue name      resName3    Residue name for third residue
-...
-52 - 54       Residue name      resName4    Residue name for fourth residue
+//
+//   * http://www.wwpdb.org/documentation/format23/sect7.html
+//   * 
+// Record Format
+//
+//COLUMNS       DATA TYPE         FIELD            DEFINITION
+//------------------------------------------------------------------------
+// 1 -  6       Record name       "SITE    "
+// 8 - 10       Integer           seqNum      Sequence number.
+//12 - 14       LString(3)        siteID      Site name.
+//16 - 17       Integer           numRes      Number of residues comprising 
+//                                            site.
+//
+//19 - 21       Residue name      resName1    Residue name for first residue
+//                                            comprising site.
+//23            Character         chainID1    Chain identifier for first residue
+//                                            comprising site.
+//24 - 27       Integer           seq1        Residue sequence number for first
+//                                            residue comprising site.
+//28            AChar             iCode1      Insertion code for first residue
+//                                            comprising site.
+//30 - 32       Residue name      resName2    Residue name for second residue
+//...
+//41 - 43       Residue name      resName3    Residue name for third residue
+//...
+//52 - 54       Residue name      resName4    Residue name for fourth residue
  
-   */
   
   private void site() {
     if (htSites == null) {
@@ -1590,40 +1618,38 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     }
   }
 
-  /*
-  REMARK   3  TLS DETAILS                                                         
-  REMARK   3   NUMBER OF TLS GROUPS  : NULL
-   or 
-  REMARK   3  TLS DETAILS                                                         
-  REMARK   3   NUMBER OF TLS GROUPS  : 20                                         
-  REMARK   3                                                                      
-  REMARK   3   TLS GROUP : 1                                                      
-  REMARK   3    NUMBER OF COMPONENTS GROUP : 1                                    
-  REMARK   3    COMPONENTS        C SSSEQI   TO  C SSSEQI                         
-  REMARK   3    RESIDUE RANGE :   A     2        A     8                          
-  REMARK   3    ORIGIN FOR THE GROUP (A):  17.3300  62.7550  29.2560              
-  REMARK   3    T TENSOR                                                          
-  REMARK   3      T11:   0.0798 T22:   0.0357                                     
-  REMARK   3      T33:   0.0678 T12:   0.0530                                     
-  REMARK   3      T13:  -0.0070 T23:   0.0011                                     
-  REMARK   3    L TENSOR                                                          
-  REMARK   3      L11:  13.1074 L22:   7.9735                                     
-  REMARK   3      L33:   2.5703 L12:  -6.5507                                     
-  REMARK   3      L13:  -1.5297 L23:   4.1172                                     
-  REMARK   3    S TENSOR                                                          
-  REMARK   3      S11:  -0.4246 S12:  -0.4216 S13:   0.1672                       
-  REMARK   3      S21:   0.5307 S22:   0.3071 S23:   0.0385                       
-  REMARK   3      S31:   0.0200 S32:  -0.2454 S33:   0.1174                       
-  REMARK   3                                                                      
-  REMARK   3   TLS GROUP : 2
-   ...                                                      
-   or (1zy8)
-  REMARK   7                                                                      
-  REMARK   7 TLS DEFINITIONS USED IN A FEW FINAL ROUNDS                           
-  REMARK   7 OF REFINEMENT:                                                       
-  REMARK   7 TLS DETAILS                                                          
+//  REMARK   3  TLS DETAILS                                                         
+//  REMARK   3   NUMBER OF TLS GROUPS  : NULL
+//   or 
+//  REMARK   3  TLS DETAILS                                                         
+//  REMARK   3   NUMBER OF TLS GROUPS  : 20                                         
+//  REMARK   3                                                                      
+//  REMARK   3   TLS GROUP : 1                                                      
+//  REMARK   3    NUMBER OF COMPONENTS GROUP : 1                                    
+//  REMARK   3    COMPONENTS        C SSSEQI   TO  C SSSEQI                         
+//  REMARK   3    RESIDUE RANGE :   A     2        A     8                          
+//  REMARK   3    ORIGIN FOR THE GROUP (A):  17.3300  62.7550  29.2560              
+//  REMARK   3    T TENSOR                                                          
+//  REMARK   3      T11:   0.0798 T22:   0.0357                                     
+//  REMARK   3      T33:   0.0678 T12:   0.0530                                     
+//  REMARK   3      T13:  -0.0070 T23:   0.0011                                     
+//  REMARK   3    L TENSOR                                                          
+//  REMARK   3      L11:  13.1074 L22:   7.9735                                     
+//  REMARK   3      L33:   2.5703 L12:  -6.5507                                     
+//  REMARK   3      L13:  -1.5297 L23:   4.1172                                     
+//  REMARK   3    S TENSOR                                                          
+//  REMARK   3      S11:  -0.4246 S12:  -0.4216 S13:   0.1672                       
+//  REMARK   3      S21:   0.5307 S22:   0.3071 S23:   0.0385                       
+//  REMARK   3      S31:   0.0200 S32:  -0.2454 S33:   0.1174                       
+//  REMARK   3                                                                      
+//  REMARK   3   TLS GROUP : 2
+//   ...                                                      
+//   or (1zy8)
+//  REMARK   7                                                                      
+//  REMARK   7 TLS DEFINITIONS USED IN A FEW FINAL ROUNDS                           
+//  REMARK   7 OF REFINEMENT:                                                       
+//  REMARK   7 TLS DETAILS                                                          
 
-   */
   private boolean remarkTls() throws Exception {
     int nGroups = 0;
     int iGroup = 0;

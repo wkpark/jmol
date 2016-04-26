@@ -82,9 +82,12 @@ public class MMCifReader extends CifReader {
   // Jmol-14.3.3_2014.07.27 broke mmCIF bond reading for ligands
   // Jmol-14.3.9_2014.11.11 fixes this. 
 
+  M4 mident;
+
   @Override
   protected void initSubclass() {
     setIsPDB();
+    mident = M4.newM4(null);
     isMMCIF = true;
     if (isDSSP1)
       asc.setInfo("isDSSP1",Boolean.TRUE);      
@@ -124,16 +127,21 @@ public class MMCifReader extends CifReader {
 //        || key0.startsWith(FAMILY_PDBX_NONPOLY_CAT)
         )
       processSubclassLoopBlock();
-    else if (key.equals("_rna3d") || key.equals("_dssr")) {
+    else if (key.equals("_rna3d")) {
       addedData = data;
       addedDataKey = key;
+    } else if (key.equals("_dssr")) {
+      dssr = vwr.parseJSON(reader.readLine());
+      reader.readLine(); // sometimes there is a null character here
     }
   }
   
   @Override
   protected boolean processSubclassLoopBlock() throws Exception {
+    if (key0.startsWith(FAMILY_NCS_CAT))
+      return processStructOperListBlock(true);
     if (key0.startsWith(FAMILY_OPER_CAT))
-      return processStructOperListBlock();
+      return processStructOperListBlock(false);
     if (key0.startsWith(FAMILY_ASSEM_CAT))
       return processAssemblyGenBlock();
     if (key0.startsWith(FAMILY_SEQUENCEDIF_CAT))
@@ -260,17 +268,17 @@ public class MMCifReader extends CifReader {
         sgName = spaceGroup;
         fractionalizeCoordinates(true);
         asc.setModelInfoForSet("biosymmetry", null, asc.iSet);
+        asc.setModelInfoForSet("biosymmetryCount", null, asc.iSet);
         asc.checkSpecial = false;
         if (byChain)
           return true;
       }
     }
     if (latticeCells != null && latticeCells[0] != 0)
-      addJmolScript("unitcell;");
+      addJmolScript("unitcell;axes on;axes unitcell;");
     if (requiresSorting)
       sortAssemblyModels();
-    
-    return true;//false;
+    return true;
   }
 
   ////////////////////////////////////////////////////////////////
@@ -362,8 +370,26 @@ public class MMCifReader extends CifReader {
   final private static byte OPER_ID = 12;
   final private static byte OPER_XYZ = 13;
   
+  final private static String FAMILY_NCS_CAT = "_struct_ncs_oper.";
+  final private static String FAMILY_NCS = "_struct_ncs_oper";
+  final private static String[] ncsoperFields = {
+    "*_matrix[1][1]",
+    "*_matrix[1][2]",
+    "*_matrix[1][3]",
+    "*_vector[1]",
+    "*_matrix[2][1]",
+    "*_matrix[2][2]",
+    "*_matrix[2][3]",
+    "*_vector[2]",
+    "*_matrix[3][1]",
+    "*_matrix[3][2]",
+    "*_matrix[3][3]",
+    "*_vector[3]", 
+    "*_id",
+    "*_symmetry_operation" 
+  };
+
   final private static String FAMILY_OPER_CAT = "_pdbx_struct_oper_list.";
-  
   final private static String FAMILY_OPER = "_pdbx_struct_oper_list";
   final private static String[] operFields = {
     "*_matrix[1][1]",
@@ -556,8 +582,8 @@ public class MMCifReader extends CifReader {
     return sb.toString().substring(1);
   }
 
-  private boolean processStructOperListBlock() throws Exception {
-    parseLoopParametersFor(FAMILY_OPER, operFields);
+  private boolean processStructOperListBlock(boolean isNCS) throws Exception {
+    parseLoopParametersFor((isNCS ? FAMILY_NCS : FAMILY_OPER), isNCS ? ncsoperFields : operFields);
     float[] m = new float[16];
     m[15] = 1;
     while (parser.getData()) {
@@ -582,7 +608,7 @@ public class MMCifReader extends CifReader {
         }
       }
       if (id != null && (count == 12 || xyz != null && symmetry != null)) {
-        Logger.info("assembly operator " + id + " " + xyz);
+        Logger.info((isNCS ? "noncrystallographic symmetry operator " : "assembly operator ") + id + " " + xyz);
         M4 m4 = new M4();
         if (count != 12) {
           symmetry.getMatrixFromString(xyz, m, false, 0);
@@ -591,16 +617,25 @@ public class MMCifReader extends CifReader {
           m[11] *= symmetry.getUnitCellInfoType(SimpleUnitCell.INFO_C) / 12;
         }
         m4.setA(m);
-        addBiomt(id, m4);
+        addMatrix(id, m4, isNCS);
       }
     }
     return true;
   }
 
-  protected void addBiomt(String id, M4 m4) {
-    if (htBiomts == null)
-      htBiomts = new Hashtable<String, M4>();
-    htBiomts.put(id, m4);
+  protected void addMatrix(String id, M4 m4, boolean isNCS) {
+    if (isNCS) {
+      if (m4.equals(mident))
+        return;
+      m4.m33 = 0; // flag for normalization
+      if (lstNCS == null)
+        lstNCS = new Lst<M4>();
+      lstNCS.addLast(m4);
+    } else {
+      if (htBiomts == null)
+        htBiomts = new Hashtable<String, M4>();
+      htBiomts.put(id, m4);
+    }
   }
 
   ////////////////////////////////////////////////////////////////
@@ -896,7 +931,6 @@ public class MMCifReader extends CifReader {
     int count = 0;
     BS bsAtoms = new BS();
     int nAtomsTotal = 0;
-    M4 mident = M4.newM4(null);
     boolean isBioCourse = (isBiomolecule && isCourseGrained);
     for (int i = operators.size(); --i >= 0;) {
       String[] ops = PT.split(operators.get(i), ",");

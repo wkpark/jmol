@@ -42,6 +42,7 @@ import org.jmol.api.JmolModulationSet;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.java.BS;
 import org.jmol.symmetry.Symmetry;
+import org.jmol.symmetry.SymmetryOperation;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.SimpleUnitCell;
@@ -261,14 +262,15 @@ public class XtalSymmetry {
     int maxY = latticeCells[1];
     int maxZ = Math.abs(latticeCells[2]);
     firstSymmetryAtom = asc.getLastAtomSetAtomIndex();
-    BS bsAtoms = null;
+    BS bsAtoms = asc.bsAtoms;
+    if (bsAtoms != null)
+      firstSymmetryAtom = bsAtoms.nextSetBit(firstSymmetryAtom);
     rminx = rminy = rminz = Float.MAX_VALUE;
     rmaxx = rmaxy = rmaxz = -Float.MAX_VALUE;
     P3 pt0 = null;
     if (acr.fillRange != null) {
-      if (asc.bsAtoms == null)
-        asc.bsAtoms = new BS();
-      bsAtoms = asc.bsAtoms;
+      if (bsAtoms == null)
+        asc.bsAtoms = bsAtoms = new BS();
       bsAtoms.setBits(firstSymmetryAtom, asc.ac);
       doPackUnitCell = false;
       minXYZ = new P3i();
@@ -328,6 +330,8 @@ public class XtalSymmetry {
       }
     }
     int iAtomFirst = asc.getLastAtomSetAtomIndex();
+    if (bsAtoms != null)
+      iAtomFirst = bsAtoms.nextSetBit(iAtomFirst);
     if (rminx == Float.MAX_VALUE) {
       matSupercell = null;
       supercell = null;
@@ -500,47 +504,45 @@ public class XtalSymmetry {
     return (pt.x > minX - slop && pt.x < maxX + slop
         && (dtype < 2 || pt.y > minY - slop && pt.y < maxY + slop) 
         && (dtype < 3 || pt.z > minZ - slop && pt.z < maxZ + slop));
-    //    System.out.println(pt + " " + minX + " " + maxX + " " + slop + " " + xxx);
-    //    return xxx;
   }
   
-//  /**
-//   * A problem arises when converting to JavaScript, because JavaScript numbers are all
-//   * doubles, while here we have floats. So what we do is to multiply by a number that
-//   * is beyond the precision of our data but within the range of floats -- namely, 100000,
-//   * and then integerize. This ensures that both doubles and floats compare the same number.
-//   * Unfortunately, it will break Java reading of older files, so we check for legacy versions. 
-//   * 
-//   * @param dtype
-//   * @param pt
-//   * @param minX
-//   * @param maxX
-//   * @param minY
-//   * @param maxY
-//   * @param minZ
-//   * @param maxZ
-//   * @param slop
-//   * @return  true if within range
-//   */
-//  private boolean xxxisWithinCellInt(int dtype, P3 pt, float minX, float maxX,
-//                              float minY, float maxY, float minZ, float maxZ,
-//                              int slop) {
-//    switch (dtype) {
-//    case 3:
-//      if (Math.round((minZ - pt.z) * 100000) >= slop || Math.round((pt.z - maxZ) * 100000) >= slop)
-//        return false;
-//      //$FALL-THROUGH$
-//    case 2:
-//      if (Math.round((minY - pt.y) * 100000) >= slop || Math.round((pt.y - maxY) * 100000) >= slop)
-//        return false;
-//      //$FALL-THROUGH$
-//    case 1:
-//      if (Math.round((minX - pt.x) * 100000) >= slop || Math.round((pt.x - maxX) * 100000) >= slop)
-//        return false;
-//      break;
-//    }
-//    return true;
-//  }
+  //  /**
+  //   * A problem arises when converting to JavaScript, because JavaScript numbers are all
+  //   * doubles, while here we have floats. So what we do is to multiply by a number that
+  //   * is beyond the precision of our data but within the range of floats -- namely, 100000,
+  //   * and then integerize. This ensures that both doubles and floats compare the same number.
+  //   * Unfortunately, it will break Java reading of older files, so we check for legacy versions. 
+  //   * 
+  //   * @param dtype
+  //   * @param pt
+  //   * @param minX
+  //   * @param maxX
+  //   * @param minY
+  //   * @param maxY
+  //   * @param minZ
+  //   * @param maxZ
+  //   * @param slop
+  //   * @return  true if within range
+  //   */
+  //  private boolean xxxisWithinCellInt(int dtype, P3 pt, float minX, float maxX,
+  //                              float minY, float maxY, float minZ, float maxZ,
+  //                              int slop) {
+  //    switch (dtype) {
+  //    case 3:
+  //      if (Math.round((minZ - pt.z) * 100000) >= slop || Math.round((pt.z - maxZ) * 100000) >= slop)
+  //        return false;
+  //      //$FALL-THROUGH$
+  //    case 2:
+  //      if (Math.round((minY - pt.y) * 100000) >= slop || Math.round((pt.y - maxY) * 100000) >= slop)
+  //        return false;
+  //      //$FALL-THROUGH$
+  //    case 1:
+  //      if (Math.round((minX - pt.x) * 100000) >= slop || Math.round((pt.x - maxX) * 100000) >= slop)
+  //        return false;
+  //      break;
+  //    }
+  //    return true;
+  //  }
 
   /**
    * @param ms
@@ -550,10 +552,11 @@ public class XtalSymmetry {
    * @throws Exception
    */
   private void applyAllSymmetry(MSInterface ms, BS bsAtoms) throws Exception {
-    if (asc.ac == 0)
+    if (asc.ac == 0 || bsAtoms != null && bsAtoms.isEmpty())
       return;
-    int n = noSymmetryCount = (asc.baseSymmetryAtomCount == 0 ? asc
-        .getLastAtomSetAtomCount() : asc.baseSymmetryAtomCount);
+    int n = noSymmetryCount = asc.baseSymmetryAtomCount > 0 ? n = asc.baseSymmetryAtomCount
+        : bsAtoms == null ? asc.getLastAtomSetAtomCount() : asc.ac
+            - bsAtoms.nextSetBit(asc.getLastAtomSetAtomIndex());
     asc.setTensors();
     bondCount0 = asc.bondCount;
     finalizeSymmetry(symmetry);
@@ -615,10 +618,10 @@ public class XtalSymmetry {
     }
     int nCells = (maxXYZ.x - minXYZ.x) * (maxXYZ.y - minXYZ.y)
         * (maxXYZ.z - minXYZ.z);
-    int cartesianCount = (asc.checkSpecial || acr.thisBiomolecule != null ? n * operationCount
-        * nCells : symmetryRange > 0 ? n * operationCount // checking against {1 1 1}
-//        : symmetryRange < 0 ? 1 // checking against symop=1555 set; just a box
-            : 1 // not checking
+    int cartesianCount = (asc.checkSpecial || acr.thisBiomolecule != null ? n
+        * operationCount * nCells : symmetryRange > 0 ? n * operationCount // checking against {1 1 1}
+    //        : symmetryRange < 0 ? 1 // checking against symop=1555 set; just a box
+        : 1 // not checking
     );
     P3[] cartesians = new P3[cartesianCount];
     Atom[] atoms = asc.atoms;
@@ -646,16 +649,39 @@ public class XtalSymmetry {
     SymmetryInterface symmetry = this.symmetry;
     SymmetryInterface lastSymmetry = symmetry;
     latticeOp = symmetry.getLatticeOp();
-    checkAll = (asc.atomSetCount == 1 && asc.checkSpecial
-        && latticeOp >= 0);
+    checkAll = (asc.atomSetCount == 1 && asc.checkSpecial && latticeOp >= 0);
     latticeOnly = (asc.checkLatticeOnly && latticeOp >= 0); // CrystalReader
     P3 pttemp = null;
     M4 op = symmetry.getSpaceGroupOperation(0);
-    if (doPackUnitCell){
+    if (doPackUnitCell) {
       pttemp = new P3();
       ptOffset.set(0, 0, 0);
     }
-    int[] atomMap = (bondCount0 > asc.bondIndex0 && applySymmetryToBonds ? new int[n] : null);
+    int[] atomMap = (bondCount0 > asc.bondIndex0 && applySymmetryToBonds ? new int[n]
+        : null);
+    Lst<M4> lstNCS = acr.lstNCS;
+
+    if (lstNCS != null && lstNCS.get(0).m33 == 0) {
+      int nOp = symmetry.getSpaceGroupOperationCount();
+      int nn = lstNCS.size();
+      for (int i = nn; --i >= 0;) {
+        M4 m = lstNCS.get(i);
+        m.m33 = 1;
+        symmetry.toFractionalM(m);
+      }
+      for (int i = 1; i < nOp; i++) {
+        M4 m1 = symmetry.getSpaceGroupOperation(i);
+        for (int j = 0; j < nn; j++) {
+          M4 m = M4.newM4(lstNCS.get(j));
+          m.mul2(m1, m);
+          if (doNormalize)
+            SymmetryOperation.setOffset(m, atoms, firstSymmetryAtom,
+                noSymmetryCount);
+          lstNCS.addLast(m);
+        }
+      }
+    }
+
     for (int tx = minXYZ.x; tx < maxXYZ.x; tx++)
       for (int ty = minXYZ.y; ty < maxXYZ.y; ty++)
         for (int tz = minXYZ.z; tz < maxXYZ.z; tz++) {
@@ -741,8 +767,7 @@ public class XtalSymmetry {
     setSymmetryOps();
     asc.setCurrentModelInfo("presymmetryAtomIndex",
         Integer.valueOf(firstSymmetryAtom));
-    asc.setCurrentModelInfo("presymmetryAtomCount",
-        Integer.valueOf(n));
+    asc.setCurrentModelInfo("presymmetryAtomCount", Integer.valueOf(n));
     asc.setCurrentModelInfo("latticeDesignation",
         symmetry.getLatticeDesignation());
     asc.setCurrentModelInfo("unitCellRange", unitCells);
@@ -757,8 +782,8 @@ public class XtalSymmetry {
 
   private int symmetryAddAtoms(int transX, int transY, int transZ,
                                int baseCount, int pt, int iCellOpPt,
-                               P3[] cartesians, MSInterface ms, BS excludedOps, int[] atomMap)
-      throws Exception {
+                               P3[] cartesians, MSInterface ms, BS excludedOps,
+                               int[] atomMap) throws Exception {
     boolean isBaseCell = (baseCount == 0);
     boolean addBonds = (atomMap != null);
     if (doPackUnitCell)
@@ -777,7 +802,11 @@ public class XtalSymmetry {
     boolean checkRange111 = (symmetryRange > 0);
     boolean checkSymmetryMinMax = (isBaseCell && checkRange111);
     checkRange111 &= !isBaseCell;
-    int nOperations = symmetry.getSpaceGroupOperationCount();
+    int nOp = symmetry.getSpaceGroupOperationCount();
+    Lst<M4> lstNCS = acr.lstNCS;
+    int nNCS = (lstNCS == null ? 0 : lstNCS.size());
+    int nOperations = nOp + nNCS;
+    nNCS = nNCS / nOp;
     boolean checkSpecial = (nOperations == 1 && !doPackUnitCell ? false
         : asc.checkSpecial);
     boolean checkSymmetryRange = (checkRangeNoSymmetry || checkRange111);
@@ -791,8 +820,11 @@ public class XtalSymmetry {
     int atomMax = firstSymmetryAtom + noSymmetryCount;
     P3 ptAtom = new P3();
     String code = null;
+    float d0 = (checkOps ? 0.01f : 0.0001f);
     char subSystemId = '\0';
+    int j00 = (bsAtoms == null ? firstSymmetryAtom : bsAtoms.nextSetBit(0));
     out: for (int iSym = 0; iSym < nOperations; iSym++) {
+
       if (isBaseCell && iSym == 0 || latticeOnly && iSym > 0
           && iSym != latticeOp || excludedOps != null && excludedOps.get(iSym))
         continue;
@@ -807,21 +839,27 @@ public class XtalSymmetry {
        *    
        */
 
-      int pt0 = (checkSpecial ? pt : checkRange111 ? baseCount : 0);
-      float spinOp = (asc.vibScale == 0 ? symmetry.getSpinOp(iSym)
-          : asc.vibScale);
-      int i0 = Math.max(firstSymmetryAtom, (bsAtoms == null ? 0 : bsAtoms.nextSetBit(0)));
+      int pt0 = (checkSpecial || excludedOps != null ? pt
+          : checkRange111 ? baseCount : 0);
+      float spinOp = (iSym >= nOp ? 0 : asc.vibScale == 0 ? symmetry
+          .getSpinOp(iSym) : asc.vibScale);
+      int i0 = Math.max(firstSymmetryAtom,
+          (bsAtoms == null ? 0 : bsAtoms.nextSetBit(0)));
       boolean checkDistance = checkDistances;
+      int spt = (iSym >= nOp ? (iSym - nOp) / nNCS : iSym);
+      int cpt = spt + iCellOpPt;
       for (int i = i0; i < atomMax; i++) {
         Atom a = asc.atoms[i];
-        if (a.ignoreSymmetry ||bsAtoms != null && !bsAtoms.get(i))
+        if (a.ignoreSymmetry || bsAtoms != null && !bsAtoms.get(i))
           continue;
 
         if (ms == null) {
-          symmetry.newSpaceGroupPoint(iSym, a, ptAtom, transX, transY, transZ);
+          symmetry.newSpaceGroupPoint(iSym, a, ptAtom, transX, transY, transZ,
+              (iSym >= nOp ? lstNCS.get(iSym - nOp) : null));
         } else {
           symmetry = ms.getAtomSymmetry(a, this.symmetry);
-          symmetry.newSpaceGroupPoint(iSym, a, ptAtom, transX, transY, transZ);
+          symmetry.newSpaceGroupPoint(iSym, a, ptAtom, transX, transY, transZ,
+              null);
           // COmmensurate structures may use a symmetry operator
           // to changes space groups.
           code = symmetry.getSpaceGroupOperationCode(iSym);
@@ -862,12 +900,15 @@ public class XtalSymmetry {
           int j0 = (checkAll ? asc.ac : pt0);
           String name = a.atomName;
           char id = (code == null ? a.altLoc : subSystemId);
-          for (int j = j0; --j >= 0;) {
+          for (int j = j00; j < j0; j++) {
+            if (bsAtoms != null && !bsAtoms.get(j))
+              continue;
             P3 pc = cartesians[j];
             if (pc == null)
               continue;
             float d2 = c.distanceSquared(pc);
-            if (checkSpecial && d2 < 0.0001) {
+            //System.out.println(iSym + " " +  i + " " + j + " " + pc + " " + c + " " + d2);
+            if (checkSpecial && d2 < d0) {
               /* checkSpecial indicates that we are looking for atoms with (nearly) the
                * same cartesian position.  
                */
@@ -893,14 +934,14 @@ public class XtalSymmetry {
         if (checkOps) {
           // if we did not find a common atom for the first atom when checking operators,
           // we do not have to check again for any other atom.
-          checkDistance = false; 
+          checkDistance = false;
         }
         int atomSite = a.atomSite;
         if (special != null) {
           if (addBonds)
             atomMap[atomSite] = special.index;
-          special.bsSymmetry.set(iCellOpPt + iSym);
-          special.bsSymmetry.set(iSym);
+          special.bsSymmetry.set(cpt);
+          special.bsSymmetry.set(spt);
         } else {
           if (addBonds)
             atomMap[atomSite] = asc.ac;
@@ -916,8 +957,8 @@ public class XtalSymmetry {
           atom1.atomSite = atomSite;
           if (code != null)
             atom1.altLoc = subSystemId;
-          atom1.bsSymmetry = BSUtil.newAndSetBit(iCellOpPt + iSym);
-          atom1.bsSymmetry.set(iSym);
+          atom1.bsSymmetry = BSUtil.newAndSetBit(cpt);
+          atom1.bsSymmetry.set(spt);
           if (addCartesian)
             cartesians[pt++] = c;
           Lst<Object> tensors = a.tensors;
@@ -927,7 +968,7 @@ public class XtalSymmetry {
               Tensor t = (Tensor) tensors.get(j);
               if (t == null)
                 continue;
-              if (nOperations == 1)
+              if (nOp == 1)
                 atom1.addTensor(t.copyTensor(), null, false);
               else
                 addRotatedTensor(atom1, t, iSym, false, symmetry);
@@ -1026,6 +1067,7 @@ public class XtalSymmetry {
     Lst<M4> biomts = (Lst<M4>) thisBiomolecule.get("biomts");
     if (biomts.size() < 2)
       return;
+    acr.lstNCS = null; // disable NCS
     setLatticeCells();
     int[] lc = (latticeCells != null && latticeCells[0] != 0 ? new int[3] : null);
     if (lc != null)

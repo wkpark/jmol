@@ -38,7 +38,6 @@ import org.jmol.adapter.smarter.Bond;
 import org.jmol.adapter.smarter.Structure;
 import org.jmol.java.BS;
 import org.jmol.script.SV;
-import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
 /**
@@ -97,6 +96,7 @@ public class MMTFReader extends MMCifReader {
     boolean mmtfImplementsDSSP2 = false; // so far!
     applySymmetryToBonds = true;
     map = (new MessagePackReader(binaryDoc, true)).readMap();
+    asc.setInfo("noAutoBond", Boolean.TRUE);
     Logger.info("MMTF version " + map.get("mmtfVersion"));
     Logger.info("MMTF Producer " + map.get("mmtfProducer"));
     appendLoadNote((String) map.get("title"));
@@ -295,6 +295,7 @@ public class MMTFReader extends MMCifReader {
       info.put("chains", new Lst<String>());
       info.put("assemblies", assemb); 
       info.put("operators", ops);
+      // need to add NCS here.
       Map<String, Object> m = (Map<String, Object>) o[i];
       Object[] tlist = (Object[]) m.get("transformList");
       SB chlist = new SB();
@@ -318,7 +319,7 @@ public class MMTFReader extends MMCifReader {
         // now save the 4x4 matrix transform for this operation
         
         String id = "" + (++opCount);
-        addBiomt(id, M4.newA16((float[]) t.get("matrix")));
+        addMatrix(id, M4.newA16((float[]) t.get("matrix")), true);
         ops.addLast(id);
       }
     }

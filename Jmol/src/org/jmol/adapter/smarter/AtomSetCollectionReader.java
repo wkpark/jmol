@@ -32,6 +32,7 @@ import javajs.api.GenericBinaryDocument;
 import javajs.api.GenericLineReader;
 import javajs.util.Lst;
 import javajs.util.M3;
+import javajs.util.M4;
 import javajs.util.OC;
 import javajs.util.P3;
 import javajs.util.PT;
@@ -149,6 +150,7 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
   public String addedData, addedDataKey;
   public boolean fixJavaFloat = true;
   public Map<String, Object> thisBiomolecule;
+  public Lst<M4> lstNCS;
 
   //protected String parameterData;
 

@@ -1131,7 +1131,7 @@ public class FileManager implements BytePoster {
   }
 
   public static boolean isSurfaceType(String fname) {
-    return PT.isOneOf(fname.toLowerCase().substring(fname.lastIndexOf(".")+1), ";jvxl;kin;o;msms;map;pmesh;mrc;efvet;cube;obj;");
+    return PT.isOneOf(fname.toLowerCase().substring(fname.lastIndexOf(".")+1), ";jvxl;kin;o;msms;map;pmesh;mrc;efvet;cube;obj;dssr;");
   }
   
   public static String determineSurfaceFileType(BufferedReader bufferedReader) {

@@ -209,9 +209,8 @@ public class Symmetry implements SymmetryInterface {
 
   @Override
   public M4 getSpaceGroupOperation(int i) {
-    if (spaceGroup == null || spaceGroup.operations == null)
-      System.out.println("symmetry.getSpaceGroupOperation");
-    return (i >= spaceGroup.operations.length ? null
+    return (spaceGroup == null || spaceGroup.operations == null // bio 
+        || i >= spaceGroup.operations.length ? null
         : spaceGroup.finalOperations == null ? spaceGroup.operations[i]
             : spaceGroup.finalOperations[i]);
   }
@@ -223,16 +222,16 @@ public class Symmetry implements SymmetryInterface {
 
   @Override
   public void newSpaceGroupPoint(int i, P3 atom1, P3 atom2, int transX,
-                                 int transY, int transZ) {
-    if (spaceGroup.finalOperations == null) {
+                                 int transY, int transZ, M4 o) {
+    if (o == null && spaceGroup.finalOperations == null) {
+      SymmetryOperation op = spaceGroup.operations[i]; 
       // temporary spacegroups don't have to have finalOperations
-      if (!spaceGroup.operations[i].isFinalized)
-        spaceGroup.operations[i].doFinalize();
-      spaceGroup.operations[i].newPoint(atom1, atom2, transX, transY, transZ);
+      if (!op.isFinalized)
+        op.doFinalize();
+      SymmetryOperation.newPoint(op, atom1, atom2, transX, transY, transZ);
       return;
     }
-    spaceGroup.finalOperations[i]
-        .newPoint(atom1, atom2, transX, transY, transZ);
+    SymmetryOperation.newPoint((o == null ? spaceGroup.finalOperations[i] : o), atom1, atom2, transX, transY, transZ);
   }
 
   @Override
@@ -458,6 +457,12 @@ public class Symmetry implements SymmetryInterface {
   public void toFractional(T3 pt, boolean isAbsolute) {
     if (!isBio)
       unitCell.toFractional(pt, isAbsolute);
+  }
+  
+  @Override
+  public void toFractionalM(M4 m) {
+    if (!isBio)
+      unitCell.toFractionalM(m);
   }
 
   @Override

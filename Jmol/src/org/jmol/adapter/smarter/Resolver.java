@@ -256,7 +256,9 @@ public class Resolver {
     if (leader.indexOf("PNG") == 1 || leader.indexOf("JPG") == 1
         || leader.indexOf("JFIF") == 6)
       return "spt"; // presume embedded script --- allows dragging into Jmol
-
+    if (leader.indexOf("\"num_pairs\"") >= 0)
+      return "dssr";
+    
     // Test 2. check starting 64 bytes of file
 
     if ((readerName = checkFileStart(leader)) != null) {

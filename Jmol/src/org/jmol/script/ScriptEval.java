@@ -4685,11 +4685,12 @@ public class ScriptEval extends ScriptExpr {
     // check for an error
 
     if (errMsg != null && !isCmdLine_c_or_C_Option) {
+      // note that as ZAP will already have been issued here.
       if (errMsg.indexOf(JC.NOTE_SCRIPT_FILE) == 0) {
         filename = errMsg.substring(JC.NOTE_SCRIPT_FILE.length()).trim();
         cmdScript(0, filename, null);
         return;
-      }
+      } 
       if (vwr.async && errMsg.startsWith(JC.READER_NOT_FOUND)) {
         //TODO: other errors can occur due to missing files 
         //String rdrName = errMsg.substring(JC.READER_NOT_FOUND.length());
@@ -4967,13 +4968,17 @@ public class ScriptEval extends ScriptExpr {
    * case of PDB frame 1 always sets the first model
    * 
    * @param offset
+   *        will be 2 for "anim frame ..."
    * @throws ScriptException
    */
   private void cmdModel(int offset) throws ScriptException {
     boolean isFrame = (theTok == T.frame || vwr.ms.mc > 1);
+    int[] frameList = new int[] { -1, -1 };
+    int nFrames = 0;
     boolean useModelNumber = true;
+    int modelIndex = -1;
     if (slen == 1 && offset == 1) {
-      int modelIndex = vwr.am.cmi;
+      modelIndex = vwr.am.cmi;
       int m;
       if (!chk && modelIndex >= 0
           && (m = vwr.ms.getJmolDataSourceFrame(modelIndex)) >= 0)
@@ -4991,14 +4996,18 @@ public class ScriptEval extends ScriptExpr {
       break;
     case T.expressionBegin:
     case T.bitset:
-      int i = atomExpressionAt(1).nextSetBit(0);
-      checkLength(iToken + 1);
-      if (chk || i < 0)
+      modelIndex = atomExpressionAt(1).nextSetBit(0);
+      if (chk || modelIndex < 0 || modelIndex >= vwr.ms.ac)
         return;
-      BS bsa = new BS();
-      bsa.set(i);
-      vwr.setCurrentModelIndex(vwr.ms.getModelBS(bsa, false).nextSetBit(0));
-      return;
+      modelIndex = vwr.ms.at[modelIndex].mi;
+      if (iToken + 1 == slen) {
+        vwr.setCurrentModelIndex(modelIndex);
+        return;
+      }
+      frameList[nFrames++] = modelIndex;
+      offset = iToken + 1;
+      useModelNumber = false;
+      break;
     case T.create:
       iToken = 1;
       int n = (tokAt(2) == T.integer ? intParameter(++iToken) : 1);
@@ -5034,8 +5043,8 @@ public class ScriptEval extends ScriptExpr {
       return;
     case T.orientation:
       if (tokAt(2) == T.decimal && tokAt(3) == T.matrix4f) {
-        int modelIndex = vwr.ms.getModelNumberIndex(getToken(2).intValue,
-            false, false);
+        modelIndex = vwr.ms.getModelNumberIndex(getToken(2).intValue, false,
+            false);
         M4 mat4 = (M4) getToken(3).value;
         if (modelIndex >= 0)
           vwr.ms.am[modelIndex].mat4 = mat4;
@@ -5068,8 +5077,6 @@ public class ScriptEval extends ScriptExpr {
     Object prop = null;
     boolean isAll = false;
     boolean isHyphen = false;
-    int[] frameList = new int[] { -1, -1 };
-    int nFrames = 0;
     float fFrame = 0;
     P3 frameAlign = null;
     boolean haveFileSet = vwr.haveFileSet();
@@ -5149,10 +5156,15 @@ public class ScriptEval extends ScriptExpr {
           isRange = true;
           break;
         case T.property:
-          propName = stringParameter(3);
-          SV sv = setVariable(4, -1, "", false);
-          if (sv != null)
+          propName = paramAsStr(++i);
+          SV sv = setVariable(++i, -1, "", false);
+          if (sv != null && !chk) {
+            if (propName.equalsIgnoreCase("DSSR")) {
+              loadDssr(modelIndex, (String) sv.value);
+              return;
+            }
             prop = SV.oValue(sv);
+          }
           i = slen;
           break;
         default:
@@ -5180,8 +5192,8 @@ public class ScriptEval extends ScriptExpr {
       for (int i = 0; i < nFrames; i++)
         if (frameList[i] >= 0)
           frameList[i] %= 1000000;
-    int modelIndex = vwr.ms.getModelNumberIndex(frameList[0], useModelNumber,
-        false);
+    modelIndex = vwr.ms
+        .getModelNumberIndex(frameList[0], useModelNumber, false);
     if (frameAlign != null) {
       if (modelIndex >= 0) {
         vwr.ms.translateModel(modelIndex, null);
@@ -5243,6 +5255,17 @@ public class ScriptEval extends ScriptExpr {
     }
     if (isPlay)
       vwr.setAnimation(T.resume);
+  }
+
+  private void loadDssr(int modelIndex, String data) throws ScriptException {
+    if (modelIndex < 0 && (modelIndex = vwr.am.cmi) < 0)
+      errorStr(ScriptError.ERROR_multipleModelsDisplayedNotOK, "load <dssr file>");
+    if (!data.startsWith("{"))
+      data = vwr.getFileAsString3(data, true, "script");
+    clearDefinedVariableAtomSets();
+    Map<String, Object> map = vwr.parseJSON(data);
+    showString(vwr.getAnnotationParser(true).fixDSSRJSONMap(map));
+    vwr.ms.setInfo(modelIndex, "dssr", map);
   }
 
   private void cmdMove() throws ScriptException {

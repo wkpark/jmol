@@ -123,7 +123,7 @@ public interface SymmetryInterface {
   public boolean isSupercell();
 
   public void newSpaceGroupPoint(int i, P3 atom1, P3 atom2,
-                                          int transX, int transY, int transZ);
+                                          int transX, int transY, int transZ, M4 o);
 
   public BS notInCentroid(ModelSet modelSet, BS bsAtoms,
                           int[] minmax);
@@ -215,5 +215,7 @@ public interface SymmetryInterface {
   public String getIntTableNumber();
 
   Lst<P3> generateCrystalClass(P3 pt0);
+
+  void toFractionalM(M4 m);
 
 }

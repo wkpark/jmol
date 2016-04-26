@@ -224,7 +224,7 @@ class SpaceGroup {
       P3 atom = atoms[atomIndex];
       P3 c = P3.newP(atom);
       finalOperations[0].rotTrans(c);
-      if (c.distance(atom) > 0.0001) // not cartesian, but this is OK here
+      if (c.distance(atom) > 0.0001f) // not cartesian, but this is OK here
         for (int i = 0; i < count; i++) {
           atom = atoms[atomIndex + i];
           c.setT(atom);
@@ -254,7 +254,7 @@ class SpaceGroup {
 
   void newPoint(int i, P3 atom1, P3 atom2,
                        int transX, int transY, int transZ) {
-    finalOperations[i].newPoint(atom1, atom2, transX, transY, transZ);
+    SymmetryOperation.newPoint(finalOperations[i], atom1, atom2, transX, transY, transZ);
   }
     
   static String getInfo(SpaceGroup sg, String spaceGroup,

@@ -50,15 +50,21 @@ import org.jmol.util.Parser;
  */
 
 
-class SymmetryOperation extends M4 {
+public class SymmetryOperation extends M4 {
   String xyzOriginal;
   String xyz;
+  /**
+   * "normalization" is the process of adjusting symmetry operator definitions
+   * such that the center of geometry of a molecule is within the 555 unit cell
+   * for each operation. It is carried out when "packed" is NOT issued and the
+   * lattice is given as {i j k} or when the lattice is given as {nnn mmm 1}
+   */
   private boolean doNormalize = true;
   boolean isFinalized;
   private int opId;
   private V3 centering;
 
-  private P3 atomTest;
+  private static P3 atomTest;
 
   private String[] myLabels;
   int modDim;
@@ -119,7 +125,7 @@ class SymmetryOperation extends M4 {
     if (!op.isFinalized)
       doFinalize();
     if (doNormalize && sigma == null)
-      setOffset(atoms, atomIndex, countOrId);
+      setOffset(this, atoms, atomIndex, countOrId);
   }
 
   
@@ -185,8 +191,8 @@ class SymmetryOperation extends M4 {
     return (normalized && modDim == 0 || xyzOriginal == null ? xyz : xyzOriginal);
   }
 
-  void newPoint(P3 atom1, P3 atom2, int x, int y, int z) {
-    rotTrans2(atom1, atom2);
+  static void newPoint(M4 m, P3 atom1, P3 atom2, int x, int y, int z) {
+    m.rotTrans2(atom1, atom2);
     atom2.add3(x,  y,  z);
   }
 
@@ -625,36 +631,38 @@ class SymmetryOperation extends M4 {
     return str.substring(1);
   }
 
-  private void setOffset(P3[] atoms, int atomIndex, int count) {
+  public static void setOffset(M4 m, P3[] atoms, int atomIndex, int count) {
+    if (count == 0)
+      return;
     /*
      * the center of mass of the full set of atoms is moved into the cell with this
      *  
      */
-    int i1 = atomIndex;
-    int i2 = i1 + count;
     float x = 0;
     float y = 0;
     float z = 0;
     if (atomTest == null)
       atomTest = new P3();
-    for (int i = i1; i < i2; i++) {
-      newPoint(atoms[i], atomTest, 0, 0, 0);
+    for (int i = atomIndex, i2 = i + count; i < i2; i++) {
+      newPoint(m, atoms[i], atomTest, 0, 0, 0);
       x += atomTest.x;
       y += atomTest.y;
       z += atomTest.z;
     }
-    
-    while (x < -0.001 || x >= count + 0.001) {
-      m03 += (x < 0 ? 1 : -1);
-      x += (x < 0 ? count : -count);
+    x /= count;
+    y /= count;
+    z /= count;
+    while (x < -0.001 || x >= 1.001) {
+      m.m03 += (x < 0 ? 1 : -1);
+      x += (x < 0 ? 1 : -1);
     }
-    while (y < -0.001 || y >= count + 0.001) {
-      m13 += (y < 0 ? 1 : -1);
-      y += (y < 0 ? count : -count);
+    while (y < -0.001 || y >= 1.001) {
+      m.m13 += (y < 0 ? 1 : -1);
+      y += (y < 0 ? 1 : -1);
     }
-    while (z < -0.001 || z >= count + 0.001) {
-      m23 += (z < 0 ? 1 : -1);
-      z += (z < 0 ? count : -count);
+    while (z < -0.001 || z >= 1.001) {
+      m.m23 += (z < 0 ? 1 : -1);
+      z += (z < 0 ? 1 : -1);
     }
   }
 

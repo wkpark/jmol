@@ -71,8 +71,9 @@ import java.util.Map;
 
 public class QchemReader extends MOReader {
  
-/** The number of the calculation being interpreted. */
+/** The number of the job being interpreted. */
   private int calculationNumber = 1;
+  private boolean isFirstJob = true;
 
   private MOInfo[] alphas = null;
   private MOInfo[] betas = null;
@@ -96,6 +97,11 @@ public class QchemReader extends MOReader {
       moData = null; // no MO data for this structure
       return true;
     }
+    if (line.indexOf("Total energy")>=0 
+        || line.indexOf("total energy")>= 0 
+        || line.indexOf("Energy is") >=0 ){
+      readEnergy();
+    }
     if (line.indexOf("Requested basis set is") >= 0) {
       readCalculationType();
       return true;
@@ -108,8 +114,11 @@ public class QchemReader extends MOReader {
       readPartialCharges();
       return true;
     }
-    if (line.startsWith("Job ")) {
+    if (line.startsWith("Job ") || line.startsWith("Running Job")) {
+      if (isFirstJob && line.startsWith("Running"))
+        calculationNumber = 0; // qchem 4 always has Running.. also for first job
       calculationNumber++;
+      isFirstJob = false;
       moData = null; // start 'fresh'
       return true;
     }
@@ -165,7 +174,7 @@ public class QchemReader extends MOReader {
         addAtomXYZSymName(tokens, 2, symbol, null);
     }
     asc.setAtomSetModelProperty(SmarterJmolAdapter.PATH_KEY,
-        "Calculation " + calculationNumber);
+        "Job " + calculationNumber);
   }
   
   /**
@@ -195,7 +204,7 @@ public class QchemReader extends MOReader {
         if (ignore[i])
           continue;
         asc.cloneLastAtomSet();
-        asc.setAtomSetFrequency("Calculation " + calculationNumber, 
+        asc.setAtomSetFrequency("Job " + calculationNumber, 
             null, frequencies[i + 1], null);
       }
 
@@ -212,6 +221,16 @@ public class QchemReader extends MOReader {
     int ac = asc.getLastAtomSetAtomCount();
     for (int i = 0; i < ac && rd() != null; ++i)
       atoms[i].partialCharge = parseFloatStr(getTokens()[2]);
+  }
+  
+  private void readEnergy() {
+    int ac = asc.getLastAtomSetAtomCount();
+    String tokens[] = getTokens();
+    String energyKey = "E("+tokens[0]+")";
+    String energyString = tokens[tokens.length-1]; // value is last one
+    asc.setAtomSetEnergy(energyString, parseFloatStr(energyString));
+    asc.setAtomSetName(energyKey + " = " + energyString);
+    asc.setModelInfoForSet("name", energyKey+" "+energyString, ac);
   }
 
 

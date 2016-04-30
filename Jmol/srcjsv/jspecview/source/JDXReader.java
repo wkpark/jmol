@@ -103,6 +103,7 @@ public class JDXReader implements JmolJDXMOLReader {
   	filePath = PT.trimQuotes(filePath);
   	isSimulation = (filePath != null && filePath.startsWith(JSVFileManager.SIMULATION_PROTOCOL)); 
   	if (isSimulation) {
+  		//TODO: H1 vs. C13 here?
   	  nmrMaxY = (Float.isNaN(nmrNormalization) ? 10000 : nmrNormalization);
     	//filePath = JSVFileManager.getAbbrSimulationFileName(filePath);
   	}
@@ -301,7 +302,7 @@ public class JDXReader implements JmolJDXMOLReader {
 				}
 			}
 			if (acdMolFile != null)
-				JSVFileManager.htCorrelationCache.put("mol", acdMolFile);
+				JSVFileManager.cachePut("mol", acdMolFile);
 		}
     if (!Float.isNaN(nmrMaxY))
 			spectrum.doNormalize(nmrMaxY);

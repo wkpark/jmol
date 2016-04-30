@@ -75,8 +75,7 @@ public class JsPlatform implements GenericPlatform {
      * we must use Object[] here to hide [HTMLUnknownElement] and [Attribute] from Java2Script
      * @j2sNative
      * 
-     * if (method == "localName")return jsObject[0]["nodeName"];
-     * return (args == null ? jsObject[0][method] : jsObject[0][method](args[0]));
+     * return (method == null ? null : method == "localName" ? jsObject[0]["nodeName"] : args == null ? jsObject[0][method] : jsObject[0][method](args[0]));
      * 
      * 
      */
@@ -385,5 +384,11 @@ public class JsPlatform implements GenericPlatform {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+  @Override
+  public boolean forceAsyncLoad(String filename) {
+    // TODO Auto-generated method stub
+    return false;
+  }
 
 }

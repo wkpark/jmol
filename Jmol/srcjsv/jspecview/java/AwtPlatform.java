@@ -313,5 +313,10 @@ public class AwtPlatform implements GenericPlatform {
 		return null;
 	}
 
+	@Override
+	public boolean forceAsyncLoad(String filename) {
+		return false;
+	}
+
 
 }

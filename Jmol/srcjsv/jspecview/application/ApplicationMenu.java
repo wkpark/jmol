@@ -125,21 +125,28 @@ public class ApplicationMenu extends JMenuBar {
         InputEvent.CTRL_MASK, new ActionListener() {
           @Override
 					public void actionPerformed(ActionEvent e) {
-            viewer.openFileFromDialog(true, false, false, null);
+            viewer.openFileFromDialog(true, false, null, null);
           }
         });
-    JMenuItem openSimulationMenuItem = setMenuItem(null, 'I', "Add Simulation...", 73,
+    JMenuItem openSimulationH1MenuItem = setMenuItem(null, 'H', "Add H1 Simulation...", 72,
         InputEvent.CTRL_MASK, new ActionListener() {
           @Override
 					public void actionPerformed(ActionEvent e) {
-            viewer.openFileFromDialog(true, false, true, null);
+            viewer.openFileFromDialog(true, false, "H1", null);
+          }
+        });
+    JMenuItem openSimulationC13MenuItem = setMenuItem(null, 'C', "Add C13 Simulation...", 67,
+        InputEvent.CTRL_MASK, new ActionListener() {
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            viewer.openFileFromDialog(true, false, "C13", null);
           }
         });
     JMenuItem openURLMenuItem = setMenuItem(null, 'U', "Add URL...", 85,
         InputEvent.CTRL_MASK, new ActionListener() {
           @Override
 					public void actionPerformed(ActionEvent e) {
-            viewer.openFileFromDialog(true, true, false, null);
+            viewer.openFileFromDialog(true, true, null, null);
           }
         });
     
@@ -408,7 +415,8 @@ public class ApplicationMenu extends JMenuBar {
     setProcessingMenu(processingMenu);
 
     fileMenu.add(openFileMenuItem);
-    fileMenu.add(openSimulationMenuItem);
+    fileMenu.add(openSimulationH1MenuItem);
+    fileMenu.add(openSimulationC13MenuItem);
     fileMenu.add(openURLMenuItem);
     fileMenu.add(openRecentMenu);
     // application does not need append

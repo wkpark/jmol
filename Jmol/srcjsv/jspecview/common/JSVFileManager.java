@@ -46,7 +46,7 @@ public class JSVFileManager {
 	// ALL STATIC METHODS
 
 	public final static String SIMULATION_PROTOCOL = "http://SIMULATION/";
-	// possibly http://SIMULATION/MOL=...\n....\n....\n....
+	// possibly http://SIMULATION/H1/MOL=...\n....\n....\n....
 
 	public static URL appletDocumentBase;
 
@@ -57,7 +57,6 @@ public class JSVFileManager {
 	}
 
 	public static String jsDocumentBase = "";
-	public static Map<String, String> htCorrelationCache = new Hashtable<String, String>();
 
 	
 	/**
@@ -206,39 +205,55 @@ public class JSVFileManager {
 	 * involve mol=..., we want to abbreviate those names for display
 	 * 
 	 * @param name  actual path name to simulation
+	 * @param type "H1" or "C13"
 	 * @return actual name or hashed name
 	 */
-	public static String getAbbrSimulationFileName(String name) {
-		String filename = getAbbreviatedSimulationName(name, true);
-		if (name.indexOf("MOL=") >= 0) {
-			String data = htCorrelationCache.get(name);
-			if (data != null)
-				htCorrelationCache.put(filename, data);
-		}
+	public static String getAbbrSimulationFileName(String name, String type) {
+		if (type == null)
+			type = getSimulationType(name);
+		String filename = getAbbreviatedSimulationName(name, type, true);
+		if (name.indexOf("MOL=") >= 0)
+			cachePut(name, cacheGet(type + name));
 		return filename;
 	}
 	
-	static String getAbbreviatedSimulationName(String name, boolean addProtocol) {
+	static String getAbbreviatedSimulationName(String name, String type, boolean addProtocol) {
 		return (name.indexOf("MOL=") >= 0 ? (addProtocol ? SIMULATION_PROTOCOL : "") + "MOL=" 
 				+ getSimulationHash(name) : name);
 	}
 
 	private static String getSimulationHash(String name) {
-		return "" + Math.abs(name.substring(name.indexOf("V2000") + 1).hashCode());
+		String code = "" + Math.abs(name.substring(name.indexOf("V2000") + 1).hashCode());
+		if (Logger.debugging)
+			System.out.println("JSVFileManager hash for " + name + " = " + code);
+		return code;
 	}
 	
-	public static String getSimulationFileData(String name) {
-    return htCorrelationCache.get(name.startsWith("MOL=") ? name.substring(4) : 
-    	  getAbbreviatedSimulationName(name, false));
+	public static String getSimulationFileData(String name, String type) {
+    return cacheGet(name.startsWith("MOL=") ? name.substring(4) : 
+    	  getAbbreviatedSimulationName(name, type, false));
 	}
 
-	private static BufferedReader getSimulationReader(String name) {
-		String data = htCorrelationCache.get(name);
-		if (data == null) {
-			data = getNMRSimulationJCampDX(name.substring(SIMULATION_PROTOCOL.length()));
-			if (data != null)
-				htCorrelationCache.put(name, data);
-		}
+	private static Map<String, String> htCorrelationCache = new Hashtable<String, String>();
+	
+	public static void cachePut(String name, String data) {
+		if (Logger.debugging)
+			Logger.debug("JSVFileManager cachePut " + data + " for " + name);
+		if (data != null)
+			htCorrelationCache.put(name,  data);
+	}
+
+	public static String cacheGet(String key) {
+		String data = htCorrelationCache.get(key);
+		if (Logger.debugging)
+			Logger.info("JSVFileManager cacheGet " + data +  " for " + key);
+		return data;
+	}
+
+  private static BufferedReader getSimulationReader(String name) {
+		String data = cacheGet(name);
+		if (data == null)
+			cachePut(name, data = getNMRSimulationJCampDX(name.substring(SIMULATION_PROTOCOL.length())));
 		return getBufferedReaderForData(data);
 	}
 
@@ -399,8 +414,9 @@ public class JSVFileManager {
 
 	}
 
-	private static String nciResolver = "http://cactus.nci.nih.gov/chemical/structure/%FILE/file?format=sdf&get3d=True";
-	private static String nmrdbServer = "http://www.nmrdb.org/tools/jmol/predict.php?POST?molfile=";
+	private static String nciResolver = "https://cactus.nci.nih.gov/chemical/structure/%FILE/file?format=sdf&get3d=True";
+	private static String nmrdbServerH1 = "http://www.nmrdb.org/tools/jmol/predict.php?POST?molfile=";
+  private static String nmrdbServerC13 = "http://www.nmrdb.org/service/jsmol13c?POST?molfile=";
 
 	/**
 	 * Accepts either $chemicalname or MOL=molfiledata Queries NMRDB or NIH+NMRDB
@@ -413,8 +429,12 @@ public class JSVFileManager {
 	 * @return jcamp data
 	 */
 	private static String getNMRSimulationJCampDX(String name) {
+		System.out.println("JSVFileManager getNMRSimulationJCampDX for " + name);
 		String key = "" + getSimulationHash(name);
-		String jcamp = htCorrelationCache.get(key);
+		String type = getSimulationType(name);
+		if (name.startsWith(type))
+			name = name.substring(type.length() + 1);
+		String jcamp = cacheGet(key);
 		if (jcamp != null)
 			return jcamp;
 		boolean isInline = name.startsWith("MOL=");
@@ -422,38 +442,48 @@ public class JSVFileManager {
 		String src = (isInline ? null : PT.rep(nciResolver, "%FILE",
 				PT.escapeUrl(name)));
 		if ((molFile = (isInline ? PT.rep(name.substring(4), "\\n", "\n")
-				: getFileAsString(src))) == null)
-			Logger.info("no data returned");
-		String json = getFileAsString(nmrdbServer + molFile);
-		htCorrelationCache.put("json", json);
-		Logger.debug(json);
+				: getFileAsString(src))) == null || molFile.indexOf("<html") >= 0) {
+			Logger.error("no MOL data returned by NCI");
+			return null;
+		}
+		String url = (type.equals("H1") ? nmrdbServerH1 : nmrdbServerC13);
+		String json = getFileAsString(url + molFile);
+		cachePut("json", json);
 		if (json.indexOf("\"error\":") >= 0)
 			return null;
 		json = PT.rep(json, "\\r\\n", "\n");
 		json = PT.rep(json, "\\t", "\t");
 		json = PT.rep(json, "\\n", "\n");
 		String jsonMolFile = getQuotedJSONAttribute(json, "molfile", null);
-		htCorrelationCache.put("mol", jsonMolFile);
+		if (jsonMolFile == null) {
+			System.out.println("JSVFileManager: no MOL file returned from EPFL");
+			jsonMolFile = molFile;
+		}
+		cachePut("mol", jsonMolFile);
 		/**
 		 * @j2sNative
 		 * 
-		 * 		if (!isInline) Jmol.Cache.put("http://SIMULATION/" + name + "#molfile", jsonMolFile.getBytes());
+		 * 		if (!isInline) Jmol.Cache.put("http://SIMULATION/" + type + "/" + name + "#molfile", jsonMolFile.getBytes());
 	   *
 		 */
 		{
 			// JAVA only
+			System.out.println("type/name: " + type + "/" + name);
 			System.out.println("molFile is \n" + molFile);
 			System.out.println("jsonMolFile is \n" + jsonMolFile);
 			viewer.syncScript("JSVSTR:" + jsonMolFile);
 		}
 		String xml = getQuotedJSONAttribute(json, "xml", null);
-		xml = PT.rep(xml, "<Signals>",  "<Signals src=" + PT.esc(PT.rep(nmrdbServer,"?POST?molfile=","")) + ">");
+		xml = PT.rep(xml, "<Signals>",  "<Signals src=" + PT.esc(PT.rep(nmrdbServerH1,"?POST?molfile=","")) + ">");
 		xml = PT.rep(xml, "</", "\n</");
 		xml = PT.rep(xml, "><", ">\n<");
 		xml = PT.rep(xml, "\\\"", "\"");
-		htCorrelationCache.put("xml", xml);
+		cachePut("xml", xml);
 		jcamp = getQuotedJSONAttribute(json, "jcamp", null);
-		jcamp = "##TITLE=" + (isInline ? "JMOL SIMULATION" : name) + "\n"
+		if (jcamp.equals("value"))
+			jcamp = getQuotedJSONAttribute(json.substring(json.indexOf("jcamp") + 4), "value", null);
+			
+		jcamp = "##TITLE=" + (isInline ? "JMOL SIMULATION/" + type : name) + "\n"
 				+ jcamp.substring(jcamp.indexOf("\n##") + 1);
 		int pt = molFile.indexOf("\n");
 		pt = molFile.indexOf("\n", pt + 1);
@@ -462,7 +492,7 @@ public class JSVFileManager {
 					+ molFile.substring(pt + 1);
 		pt = 0;
 		pt = jcamp.indexOf("##.");
-		String id = getAbbreviatedSimulationName(name, false);
+		String id = getAbbreviatedSimulationName(name, type, false);
 		int pt1 = id.indexOf("id='");
 		if (isInline && pt1 > 0)
 			id = id.substring(pt1 + 4, (id + "'").indexOf("'", pt1 + 4));
@@ -470,8 +500,8 @@ public class JSVFileManager {
 				+ "<ModelData id=" + PT.esc(id) + " type=\"MOL\" src=" + PT.esc(src)
 				+ ">\n" + molFile + "</ModelData>\n</Models>\n" + "##$SIGNALS=\n" + xml
 				+ "\n" + jcamp.substring(pt);
-		htCorrelationCache.put("jcamp", jcamp);
-		htCorrelationCache.put(key, jcamp);
+		cachePut("jcamp", jcamp);
+		cachePut(key, jcamp);
 		return jcamp;
 	}
 
@@ -537,7 +567,7 @@ public class JSVFileManager {
 		if (isURL(fileName)) {
 			try {
 				if (fileName.startsWith(SIMULATION_PROTOCOL))
-					return getAbbrSimulationFileName(fileName);
+					return getAbbrSimulationFileName(fileName, null);
 				String name = (new URL((URL) null, fileName, null)).getFile();
 				return name.substring(name.lastIndexOf('/') + 1);
 			} catch (IOException e) {
@@ -562,6 +592,10 @@ public class JSVFileManager {
 	public static void setDocumentBase(JSViewer v, URL documentBase) {
 		viewer = v;
 		appletDocumentBase = documentBase;
+	}
+
+	public static String getSimulationType(String filePath) {
+	  return (filePath.indexOf("C13/") >= 0 ? "C13" : "H1");
 	}
 
 }

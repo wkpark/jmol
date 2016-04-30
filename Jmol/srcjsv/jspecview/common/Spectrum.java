@@ -242,6 +242,14 @@ public class Spectrum extends JDXDataObject {
     String type = (peakList == null || peakList.size() == 0 ? 
     		getQualifiedDataType() : 
     			peakList.get(0).getType());
+    if (type != null && type.startsWith("NMR")) {
+    	if (nucleusY != null && !nucleusY.equals("?")) {
+    		type = "2D" + type;
+    	} else {
+    		type = nucleusX + type;
+    	}
+    	
+    }
     return (type != null && type.length() > 0 ? type + " " : "") 
     + getTitle();
   }

@@ -972,7 +972,7 @@ public class JSViewer implements PlatformViewer, BytePoster  {
 		}
 		if (key != null && key.startsWith("DATA_")) {
 		  // mol, json, xml, jcamp -- most recent only
-			map.put(key, "" + JSVFileManager.htCorrelationCache.get(key.substring(5)));
+			map.put(key, "" + JSVFileManager.cacheGet(key.substring(5)));
 			return map;
 		}
 
@@ -1361,20 +1361,25 @@ public class JSViewer implements PlatformViewer, BytePoster  {
 		if (script == null)
 			script = defaultLoadScript;
 		if (filename.equals("?")) {
-			openFileFromDialog(isAppend, false, false, script);
+			openFileFromDialog(isAppend, false, null, script);
 			return;
 		}
 		if (filename.equals("http://?")) {
-			openFileFromDialog(isAppend, true, false, null);
+			openFileFromDialog(isAppend, true, null, null);
 			return;
 		}
-		if (filename.equals("$?")) {
-			openFileFromDialog(isAppend, true, true, null);
+		if (filename.equals("$?") || filename.equals("$H1?")) {
+			openFileFromDialog(isAppend, true, "H1", null);
 			return;
 		}
-		boolean isMOL = filename.equalsIgnoreCase("MOL");
-		if (isMOL)
-			filename = JSVFileManager.SIMULATION_PROTOCOL + "MOL="
+		if (filename.equals("$C13?")) {
+			openFileFromDialog(isAppend, true, "C13", null);
+			return;
+		}
+		boolean isH1 = filename.equalsIgnoreCase("MOL") || filename.equalsIgnoreCase("H1");
+		boolean isC13 = filename.equalsIgnoreCase("C13");
+		if (isH1 || isC13)
+			filename = JSVFileManager.SIMULATION_PROTOCOL + (isH1 ? "H1/" : "C13/") + "MOL="
 					+ PT.trimQuotes(tokens.get(++pt));
 		if (!isCheck && !isAppend) {
 			if (filename.equals("\"\"") && currentSource != null)
@@ -1383,7 +1388,8 @@ public class JSViewer implements PlatformViewer, BytePoster  {
 		}
 		filename = PT.trimQuotes(filename);
 		if (filename.startsWith("$")) {
-			isMOL = true;
+			if (!filename.startsWith("$H1") && !filename.startsWith("$C13"))
+				filename = "$H1/" + filename.substring(3);
 			filename = JSVFileManager.SIMULATION_PROTOCOL + filename.substring(1);
 		}
 		int firstSpec = (pt + 1 < tokens.size() ? Integer.valueOf(tokens.get(++pt))
@@ -1867,15 +1873,15 @@ public class JSViewer implements PlatformViewer, BytePoster  {
 	}
 
 	public void openFileFromDialog(boolean isAppend, boolean isURL,
-			boolean isSimulation, String script) {
+			String simulationType, String script) {
 		String url = null;
-		if (isSimulation) {
+		if (simulationType != null) {
 			url = fileHelper.getUrlFromDialog(
 					"Enter the name or identifier of a compound", recentSimulation);
 			if (url == null)
 				return;
 			recentSimulation = url;
-			load((isAppend ? "APPEND " : "") + "\"$" + url + "\"", script);
+			load((isAppend ? "APPEND " : "") + "\"$" + simulationType + "/" + url + "\"", script);
 		} else if (isURL) {
 			url = fileHelper.getUrlFromDialog("Enter the URL of a JCAMP-DX File",
 					recentURL == null ? recentOpenURL : recentURL);

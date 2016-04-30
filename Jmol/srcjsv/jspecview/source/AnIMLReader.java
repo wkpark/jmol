@@ -220,7 +220,6 @@ public class AnIMLReader extends XMLReader {
   }
 
   private void getYValues() throws Exception {
-  	BC bc = new BC();
     String vectorType = parser.getAttrValueLC("type");
     if (vectorType.length() == 0)
       vectorType = parser.getAttrValueLC("vectorType");

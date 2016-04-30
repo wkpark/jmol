@@ -1051,7 +1051,7 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 	@Override
 	public void siSetLoaded(String fileName, String filePath) {
 		appMenu.setCloseMenuItem(fileName);
-		setTitle("JSpecView - " + (filePath.startsWith(JSVFileManager.SIMULATION_PROTOCOL) ? "SIMULATION" : filePath));
+		setTitle("JSpecView - " + (filePath.startsWith(JSVFileManager.SIMULATION_PROTOCOL) ? JSVFileManager.getSimulationType(filePath) + " SIMULATION" : filePath));
 		appMenu.setSourceEnabled(true);
 	}
 

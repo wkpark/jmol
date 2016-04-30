@@ -81,6 +81,7 @@ public class GuiMap {
     
     labels.put("openJSpecViewScript", "JSpecView");
     labels.put("simulate1HSpectrumScript", "Simulated 1H Spectrum");
+    labels.put("simulate13CSpectrumScript", "Simulated 13C Spectrum");
     
     labels.put("editor", GT._("Scrip&t Editor..."));  // new %t 11.7.45
     labels.put("console", GT._("Conso&le..."));

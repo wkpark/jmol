@@ -2186,6 +2186,7 @@ public class T {
        "arrow",
        "async",
        "auto",
+       "axis",
        "barb",
        "binary",
        "blockData",
@@ -3225,6 +3226,7 @@ public class T {
         arrow,                              //        "arrow"
         async,                              //        "async"
         auto,                               //        "auto"
+        axis,                               //        "axis"
         barb,                               //        "barb"
         binary,                             //        "binary"
         blockdata,                          //        "blockData"

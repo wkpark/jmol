@@ -4205,16 +4205,16 @@ public class CmdExt extends ScriptExt {
         msg = SV.getVariable(info[1]).asString();
       }
       break;
-    case T.nmr:
-      if (eval.optParameterAsString(2).equalsIgnoreCase("1H")) {
-        len = 3;
-        if (!chk)
-          msg = vwr.getNMRPredict(false);
-        break;
-      }
+    case T.nmr: {
+      String type = eval.optParameterAsString(2);
+      // switch to "H1" and "C13"
+      if (type.equals("1H") || type.equals("13C"))
+        type = type.substring(type.length() - 1) + type.substring(0, type.length() - 1);
+      else if (type.equals("H"))
       if (!chk)
-        vwr.getNMRPredict(true);
+        vwr.getNMRPredict(type);
       return;
+    }
     case T.drawing:
     case T.chemical:
     case T.smiles:

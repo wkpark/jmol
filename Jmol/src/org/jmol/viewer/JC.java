@@ -56,8 +56,7 @@ public final class JC {
   
   public static String[] databases = { 
     "dssr", "http://dssr-jmol.x3dna.org/report.php?id=%FILE&opts=--json=ebi",
-    //"dssr", "http://x3dna.bio.columbia.edu/dssr/report.php?id=%FILE&opts=--jmol%20--more",
-    "dssrModel", "http://x3dna.bio.columbia.edu/dssr/report.php?POST?opts=--json=ebi&model=", // called in DSSR1.java
+    "dssrModel", "http://dssr-jmol.x3dna.org/report.php?POST?opts=--json=ebi&model=", // called in DSSR1.java
     "iucr", "http://scripts.iucr.org/cgi-bin/sendcif_yard?%FILE", // e.g. wf5113sup1
     "ligand", "http://www.rcsb.org/pdb/files/ligand/%FILE.cif",
     "mp", "https://www.materialsproject.org/materials/mp-%FILE/cif#_DOCACHE_", // e.g. https://materialsproject.org/rest/v1/materials/mp-24972/cif 
@@ -65,6 +64,7 @@ public final class JC {
     "cod", "http://www.crystallography.net/cod/cif/%c1/%c2%c3/%c4%c5/%FILE.cif",
     "nmr", "http://www.nmrdb.org/new_predictor?POST?molfile=",
     "nmrdb", "http://www.nmrdb.org/service/predictor?POST?molfile=",
+    "nmrdb13", "http://www.nmrdb.org/service/jsmol13c?POST?molfile=",
     //"pdb", "http://ftp.wwpdb.org/pub/pdb/data/structures/divided/pdb/%c2%c3/pdb%file.ent.gz", // new Jmol 14.5.0 10/28/2015
     "mmtf", "http://mmtf.rcsb.org/full/%FILE", // new Jmol 14.5.4 4/2016
     "pdb", "http://files.rcsb.org/view/%FILE.pdb", // new Jmol 14.4.4 3/2016
@@ -1123,11 +1123,12 @@ public final class JC {
   public static final int JSV_SELECT = 14;
   public static final int JSV_STRUCTURE = 21;
   public static final int JSV_SEND_H1SIMULATE = 28;
-  public static final int NBO_MODEL = 35;
-  public static final int NBO_RUN = 42;
-  public static final int NBO_VIEW = 49;
-  public static final int NBO_SEARCH = 56;
-  public static final int NBO_CONFIG = 63;
+  public static final int JSV_SEND_C13SIMULATE = 35;
+  public static final int NBO_MODEL = 42;
+  public static final int NBO_RUN = 49;
+  public static final int NBO_VIEW = 56;
+  public static final int NBO_SEARCH = 63;
+  public static final int NBO_CONFIG = 70;
 
  
   public static int getServiceCommand(String script) {
@@ -1137,6 +1138,7 @@ public final class JC {
         "SELECT:" +
         "JSVSTR:" +
         "H1SIMUL" +
+        "C13SIMU" +
         "NBO:MOD" +
         "NBO:RUN" +
         "NBO:VIE" +

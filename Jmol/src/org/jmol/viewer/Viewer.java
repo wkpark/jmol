@@ -7757,22 +7757,33 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     return getModelExtract(what, true, false, "V2000");
   }
 
-  public String getNMRPredict(boolean openURL) {
+  /**
+   * 
+   * @param type
+   *        C13 or H1
+   * @return null
+   */
+  public String getNMRPredict(String type) {
+    if (type.equals("1H") || type.equals("13C"))
+      type = type.substring(type.length() - 1)
+          + type.substring(0, type.length() - 1);
+    else if (type.equals("H") || type.equals(""))
+      type = "H1";
+    else if (type.equals("C"))
+      type = "C13";
+    if (!type.equals("C13") && !type.equals("H1"))
+      return "Type must be H1 or C13";
     String molFile = getModelExtract("selected", true, false, "V2000");
     int pt = molFile.indexOf("\n");
     molFile = "Jmol " + version_date + molFile.substring(pt);
-    if (openURL) {
-      if (isApplet) {
-        //TODO -- can do this if connected
-        showUrl(g.nmrUrlFormat + molFile);
-      } else {
-        syncScript("true", "*", 0);
-        syncScript("H1Simulate:", ".", 0);
-      }
-      return null;
+    if (isApplet) {
+      //TODO -- can do this if connected
+      showUrl(g.nmrUrlFormat + molFile);
+      return "opening " + g.nmrUrlFormat;
     }
-    String url = g.nmrPredictFormat + molFile;
-    return getFileAsString3(url, false, null);
+    syncScript("true", "*", 0);
+    syncScript(type.toUpperCase() + "Simulate:", ".", 0);
+    return "sending request to JSpecView";
   }
 
   public void getHelp(String what) {

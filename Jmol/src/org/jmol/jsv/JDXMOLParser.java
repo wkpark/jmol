@@ -412,7 +412,7 @@ public class JDXMOLParser implements JmolJDXMOLParser {
       readLine();
     if (line.indexOf("<" + tag) < 0)
       line = loader.discardLinesUntilContains2("<" + tag, "##");
-    return (line.indexOf("<" + tag) >= 0);
+    return (line != null && line.indexOf("<" + tag) >= 0);
   }
 
   private String readLine() throws Exception {

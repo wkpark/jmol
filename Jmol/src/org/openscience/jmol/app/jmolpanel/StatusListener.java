@@ -464,6 +464,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
       //return;
     if (peaks.startsWith(":"))
       peaks = peaks.substring(1);
+    boolean isStartup = (peaks.length() == 0 || peaks.equals("H1Simulate:") || peaks.equals("C13Simulate:"));
     if (jSpecViewFrame == null) {
       jSpecViewFrame = new MainFrame((Component) vwr.display, this);
       jSpecViewFrame.setSize(800, 500);
@@ -471,7 +472,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
           .getLocation().y + 100);
       jSpecViewFrame.register("Jmol", this);
       vwr.setBooleanProperty("_jspecview", true);
-      if (peaks.length() == 0) {
+      if (isStartup) {
         doLoadCheck = true;
       }
     }
@@ -492,8 +493,9 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
         if (data == null)
           return;
         data = PT.replaceAllCharacters(data, "&", "_");
-        peaks = "hidden true; load CHECK MOL "
+        peaks = "hidden true; load CHECK " + (peaks.equals("H1Simulate:") ? "H1 " : "C13 ")
             + PT.esc("id='~" + model + "';" + data) + ";hidden false #SYNC_PEAKS";
+        isStartup = false;
       }
     }
     if (!jSpecViewFrame.isVisible() && peaks.contains("<PeakData"))
@@ -504,7 +506,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
       jSpecViewFrame.awaken(true);
       display.setViewer(vwr);
     }
-    if (peaks.length() == 0)
+    if (isStartup)
       peaks = "HIDDEN false";
     jSpecViewFrame.syncScript(peaks);
   }

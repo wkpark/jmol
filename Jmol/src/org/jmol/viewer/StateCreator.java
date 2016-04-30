@@ -1760,6 +1760,7 @@ public class StateCreator extends JmolStateCreator {
         break;
       case JC.JSV_SEND_JDXMOL:
       case JC.JSV_SEND_H1SIMULATE:
+      case JC.JSV_SEND_C13SIMULATE:
         if (disableSend)
           return;
         //$FALL-THROUGH$

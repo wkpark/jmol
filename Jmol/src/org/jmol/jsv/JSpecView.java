@@ -124,8 +124,11 @@ public class JSpecView implements JmolJSpecView {
     default:
       return null;
     case JC.JSV_SEND_JDXMOL:
-    case JC.JSV_SEND_H1SIMULATE:
       vwr.sm.syncSend(vwr.fullName + "JSpecView" + script.substring(10), ">", 0);
+      return null;
+    case JC.JSV_SEND_H1SIMULATE:
+    case JC.JSV_SEND_C13SIMULATE:
+      vwr.sm.syncSend(vwr.fullName + "JSpecView:" + script, ">", 0);
       return null;
     case JC.JSV_STRUCTURE:
       // application only -- NO! This is 2D -- does no good. We need
@@ -146,8 +149,8 @@ public class JSpecView implements JmolJSpecView {
       String filename = PT.getQuotedAttribute(script, "file");
       // this is a real problem -- JSpecView will have unmatched
       // model if a simulation.
-      boolean isSimulation = filename
-          .startsWith(FileManager.SIMULATION_PROTOCOL);
+      boolean isSimulation = (filename != null && filename
+          .startsWith(FileManager.SIMULATION_PROTOCOL));
       // id='~1.1' is getting tucked into file="...." now
       String id = (!isSimulation || vwr.isApplet ? "" : PT.getQuotedAttribute(filename.replace('\'', '"'), "id"));
       if (isSimulation && !vwr.isApplet && filename.startsWith(FileManager.SIMULATION_PROTOCOL + "MOL="))

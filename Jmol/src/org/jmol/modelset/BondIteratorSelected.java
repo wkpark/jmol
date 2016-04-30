@@ -60,7 +60,7 @@ class BondIteratorSelected implements BondIterator {
           && (bond.order & bondType) == 0) {
         continue;
       } else if (bondType == Edge.BOND_ORDER_ANY
-          && bond.order != Edge.BOND_STRUT)
+          && bond.order == Edge.BOND_STRUT)
         continue;
       boolean isSelected1 = bsSelected.get(bond.atom1.i);
       boolean isSelected2 = bsSelected.get(bond.atom2.i);

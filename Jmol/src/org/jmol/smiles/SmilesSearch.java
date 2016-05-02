@@ -142,13 +142,13 @@ public class SmilesSearch extends JmolMolecule {
       else
         flags |= INVERT_STEREOCHEMISTRY;
     }
+    if (strFlags.indexOf("ATOMCOMMENT") >= 0)
+      flags |= JC.SMILES_GEN_ATOM_COMMENT;
 
     
     if ((flags & JC.SMILES_GEN_BIO) == JC.SMILES_GEN_BIO) {
       if (strFlags.indexOf("NOCOMMENT") >= 0)
         flags |= JC.SMILES_GEN_BIO_NOCOMMENTS;
-      if (strFlags.indexOf("ATOMCOMMENT") >= 0)
-        flags |= JC.SMILES_GEN_ATOM_COMMENT;
       if (strFlags.indexOf("UNMATCHED") >= 0)
         flags |= JC.SMILES_GEN_BIO_ALLOW_UNMATCHED_RINGS;
       if (strFlags.indexOf("COVALENT") >= 0)
@@ -1191,8 +1191,9 @@ public class SmilesSearch extends JmolMolecule {
     boolean isAromatic1 = (!noAromatic && bsAromatic.get(iAtom1));
     boolean isAromatic2 = (!noAromatic && bsAromatic.get(iAtom2));
     int order = bond.getCovalentOrder();
+    int patternOrder = patternBond.order;
     if (isAromatic1 && isAromatic2) {
-      switch (patternBond.order) {
+      switch (patternOrder) {
       case SmilesBond.TYPE_AROMATIC: // :
       case SmilesBond.TYPE_RING:
         bondFound = isRingBond(ringSets, iAtom1, iAtom2);
@@ -1214,7 +1215,7 @@ public class SmilesSearch extends JmolMolecule {
         // distinction between single and double, as for example is necessary to distinguish
         // between n=cNH2 and ncNH2 (necessary for MMFF94 atom typing
         //
-        bondFound = !isSmarts || aromaticDouble &&
+        bondFound = aromaticDouble &&
           (order == Edge.BOND_COVALENT_DOUBLE || order == Edge.BOND_AROMATIC_DOUBLE);
         break;
       case SmilesBond.TYPE_ATROPISOMER_1:
@@ -1225,7 +1226,11 @@ public class SmilesSearch extends JmolMolecule {
         break;
       }
     } else {
-      switch (patternBond.order) {
+      switch (patternOrder) {
+      case SmilesBond.TYPE_AROMATIC: // :
+        if (!noAromatic)
+          break;
+        //$FALL-THROUGH$
       case SmilesBond.TYPE_ANY:
       case SmilesBond.TYPE_UNKNOWN:
         bondFound = true;
@@ -1253,7 +1258,7 @@ public class SmilesSearch extends JmolMolecule {
       case SmilesBond.TYPE_RING:
         bondFound = isRingBond(ringSets, iAtom1, iAtom2);
         break;
-      }
+     }
     }
     return bondFound != patternBond.isNot;
   }

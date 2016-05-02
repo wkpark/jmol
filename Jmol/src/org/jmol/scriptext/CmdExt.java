@@ -1217,7 +1217,7 @@ public class CmdExt extends ScriptExt {
         float stddev = eval.getSmilesExt().getSmilesCorrelation(bsFrom, bsTo,
             strSmiles, null, null, m4, null, false, null, center,
             false, isSmiles ? JC.SMILES_TYPE_SMILES : JC.SMILES_TYPE_SMARTS);
-        System.out.println("compare:\n" + m4);
+//        System.out.println("compare:\n" + m4);
         if (Float.isNaN(stddev)) {
           showString("structures do not match");
           return;
@@ -4218,8 +4218,7 @@ public class CmdExt extends ScriptExt {
     case T.drawing:
     case T.chemical:
     case T.smiles:
-      
-      checkLength((tok == T.chemical || tok == T.smiles && tokAt(2) != T.nada ? len = 3
+      checkLength((tok == T.chemical || tok == T.smiles && tokAt(2) == T.on ? len = 3
           : 2)
           + filterLen);
       if (chk)
@@ -4237,9 +4236,11 @@ public class CmdExt extends ScriptExt {
           }
         } else if (eval.optParameterAsString(2).equalsIgnoreCase("true")) {
           msg = vwr.getBioSmiles(null);
+          filter = null;
         } else if (filter != null) {
           msg = vwr.getSmilesOpt(null, -1, -1, JC.SMILES_TYPE_SMILES, filter
               + "///");
+          filter = null;
         }
         if (msg == null)
           msg = (tok == T.smiles ? vwr.getSmiles(null) : vwr

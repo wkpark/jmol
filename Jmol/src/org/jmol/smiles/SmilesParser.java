@@ -403,7 +403,8 @@ public class SmilesParser {
     int pt = 0;
     char ch;
     SmilesBond bond = null;    
-
+    boolean wasMeasure = false;
+    boolean wasBranch  = false;
     while (pattern != null && pattern.length() != 0) {
       int index = 0;
       if (currentAtom == null || bond != null
@@ -446,13 +447,17 @@ public class SmilesParser {
           if (currentAtom == null)
             throw new InvalidSmilesException("No previous atom for "
                 + (isMeasure ? "measure" : "branch"));
+          wasMeasure = wasBranch = false;
           if (subString.startsWith(".")) {
             parseMeasure(molecule, subString.substring(1), currentAtom);
+            wasMeasure = true;
           } else if (subString.length() == 0 && isBioSequence) {
+            // () can mean NOT crosslinked
             currentAtom.notCrossLinked = true;
           } else {
             branchLevel++;
             parseSmiles(molecule, subString, currentAtom, true);
+            wasBranch = true;
             branchLevel--;
           }
         }
@@ -469,7 +474,6 @@ public class SmilesParser {
 
         bond = parseBond(molecule, null, pattern.substring(pt, index), null,
             currentAtom, false, isBranchAtom);
-
         if (haveOpen && bond.order != SmilesBond.TYPE_UNKNOWN)
           index = pt;
         ch = getChar(pattern, index);
@@ -486,11 +490,14 @@ public class SmilesParser {
         boolean isAtom = (!isRing && (ch == '_' || ch == '[' || ch == '*' || PT
             .isLetter(ch)));
         if (isRing) {
+          if (wasMeasure || wasBranch)
+            throw new InvalidSmilesException("connection number must immediately follow its connecting atom");
           index = getRingNumber(pattern, index, ch, ret);
           int ringNumber = ret[0];
           parseRing(molecule, ringNumber, currentAtom, bond);
           bond = null;
         } else if (isAtom) {
+          wasMeasure = wasBranch = false;
           switch (ch) {
           case '[':
           case '_':
@@ -632,7 +639,7 @@ public class SmilesParser {
           if (isNegative)
             strMeasure = "-" + strMeasure;
           String[] tokens = PT.split(strMeasure, ",");
-          if(tokens.length % 2 == 1)
+          if(tokens.length % 2 == 1 || isNot && tokens.length != 2)
             break;
           float[] vals = new float[tokens.length];
           int i = tokens.length;
@@ -803,10 +810,8 @@ public class SmilesParser {
           throw new InvalidSmilesException("invalid '!'");
         newAtom.not = isNot = true;
       }
-
       int biopt = pattern.indexOf('.');
-      int chiralpt = pattern.indexOf('@');
-      if (biopt >= 0 && (chiralpt < 0 || biopt < chiralpt)) {
+      if (biopt >= 0) {
         newAtom.isBioResidue = true;
         String name = pattern.substring(index, biopt);
         pattern = pattern.substring(biopt + 1).toUpperCase();
@@ -880,19 +885,19 @@ public class SmilesParser {
             else
               newAtom.elementNumber = ret[0];
             break;
-// does not work
-//          case '(':
-//            // JmolSMARTS, JmolSMILES reference to atom
-//            String name = getSubPattern(pattern, index, '(');
-//            index += 2 + name.length();
-//            newAtom = checkReference(newAtom, name, ret);
-//            isNewAtom = (ret[0] == 1); // we are done here
-//            if (!isNewAtom) {
-//              if (isNot)
-//                index = 0; // triggers an error
-//              isNot = true; // flags that this must be the end
-//            }
-//            break;
+          // does not work
+          //          case '(':
+          //            // JmolSMARTS, JmolSMILES reference to atom
+          //            String name = getSubPattern(pattern, index, '(');
+          //            index += 2 + name.length();
+          //            newAtom = checkReference(newAtom, name, ret);
+          //            isNewAtom = (ret[0] == 1); // we are done here
+          //            if (!isNewAtom) {
+          //              if (isNot)
+          //                index = 0; // triggers an error
+          //              isNot = true; // flags that this must be the end
+          //            }
+          //            break;
           case '-':
           case '+':
             index = checkCharge(pattern, index, newAtom);
@@ -913,6 +918,8 @@ public class SmilesParser {
             // "!H" is "not hydrogen" but "!H2" is "not two attached hydrogens"
             // [Rh] could be rhodium or "Any ring atom with at least one implicit H atom"
             // [Ar] could be argon or "Any aliphatic ring atom"
+            // however it has been pointed out by a reviewer that [Cr3] must be 
+            // interpreted as chromium-3.
             // There is no ambiguity, though, with [Rh3] or [Ar6] because
             // in those cases the number forces the single-character property
             // "h3" or "r6", thus forcing "R" or "A"
@@ -921,12 +928,12 @@ public class SmilesParser {
             // the first two-letters of the expression could be interpreted
             // as a symbol, AND the next character is not a digit, then it WILL be interpreted as a symbol
             char nextChar = getChar(pattern, index + 1);
-            String sym2 = pattern.substring(
-                index + 1,
-                index
-                    + (PT.isLowerCase(nextChar)
-                        && (!isBracketed || !PT.isDigit(getChar(pattern,
-                            index + 2))) ? 2 : 1));
+            String sym2 = pattern.substring(index + 1,
+                index + (PT.isLowerCase(nextChar)
+                // 14.4.5: removed to require [C;r3] not [Cr3] for C in a 3-membered ring
+                //                        && (!isBracketed || !PT.isDigit(getChar(pattern, index + 2))) 
+                ? 2
+                    : 1));
             String symbol = Character.toUpperCase(ch) + sym2;
             boolean mustBeSymbol = true;
             boolean checkForPrimitive = (isBracketed && PT.isLetter(ch));
@@ -1084,7 +1091,7 @@ public class SmilesParser {
     return newAtom;
   }
 
-  private Map<String, SmilesAtom> atomRefs;
+//  private Map<String, SmilesAtom> atomRefs;
   
 //  /**
 //   * allow for [(...)] to indicate a specific pattern atom

@@ -97,10 +97,11 @@ public class QchemReader extends MOReader {
       moData = null; // no MO data for this structure
       return true;
     }
-    if (line.indexOf("Total energy")>=0 
-        || line.indexOf("total energy")>= 0 
+    if (line.indexOf("Total energy") >= 0 
+        || line.indexOf("total energy") >= 0 
         || line.indexOf("Energy is") >=0 ){
-      readEnergy();
+      if (line.indexOf("Excitation") == -1) readEnergy(); // Don't do excitation energies
+      return true;
     }
     if (line.indexOf("Requested basis set is") >= 0) {
       readCalculationType();

@@ -246,11 +246,11 @@ public class Echo extends TextShape {
     return getPropShape(property, data);
   }
 
-  @Override
-  public String getShapeState() {
-    // not implemented -- see org.jmol.viewer.StateCreator
-    return null;
-  }
+//  @Override
+//  public String getShapeState() {
+//    // not implemented -- see org.jmol.viewer.StateCreator
+//    return null;
+//  }
   
   @Override
   public Lst<Map<String, Object>> getShapeDetail() {

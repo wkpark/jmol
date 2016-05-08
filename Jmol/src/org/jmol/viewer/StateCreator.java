@@ -1168,7 +1168,7 @@ public class StateCreator extends JmolStateCreator {
       break;
     case JC.SHAPE_LABELS:
       Labels l = (Labels) shape;
-      if (l.isActive && l.bsSizeSet != null)
+      if (!l.isActive || l.bsSizeSet == null)
         return "";
       clearTemp();
       for (int i = l.bsSizeSet.nextSetBit(0); i >= 0; i = l.bsSizeSet

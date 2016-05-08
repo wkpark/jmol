@@ -33,22 +33,19 @@ import org.jmol.util.Node;
 public class SmilesBond extends Edge {
 
   // Bond orders
+  // See also Edge
   public final static int TYPE_UNKNOWN = -1;
   public final static int TYPE_NONE = 0;
-  public final static int TYPE_SINGLE = 1;
-  public final static int TYPE_DOUBLE = 2;
-  public final static int TYPE_TRIPLE = 3;
   public final static int TYPE_AROMATIC = 0x11;
-  public final static int TYPE_DIRECTIONAL_1 = 0x101;
-  public final static int TYPE_DIRECTIONAL_2 = 0x201;
-  public final static int TYPE_ATROPISOMER_1 = 0x301;
-  public final static int TYPE_ATROPISOMER_2 = 0x401;
   public final static int TYPE_RING = 0x41;
   public final static int TYPE_ANY = 0x51;
   public final static int TYPE_BIO_SEQUENCE = 0x60;
   public final static int TYPE_BIO_CROSSLINK = 0x70;
-  public final static int TYPE_MULTIPLE = 999;
-
+  
+  // NOTE: ` is reserved for atropisomer ^^ conversion; ~ is for Jmol bioSMARTS
+  
+  private static final String ALL_BONDS =    "-=#$:/\\.~^`+!,&;@";  
+  private static final String SMILES_BONDS = "-=#$:/\\.~^`";  
 
   static String getBondOrderString(int order) {
     switch (order) {
@@ -56,9 +53,47 @@ public class SmilesBond extends Edge {
       return "=";
     case 3:
       return "#";
+    case 4:
+      return "$";
     default:
       return "";
     }
+  }
+
+  /**
+   * @param code Bond code
+   * @return Bond type
+   */
+  static int getBondTypeFromCode(char code) {
+    switch (code) {
+    case '.':
+      return TYPE_NONE;
+    case '-':
+      return BOND_COVALENT_SINGLE;
+    case '=':
+      return BOND_COVALENT_DOUBLE;
+    case '#':
+      return BOND_COVALENT_TRIPLE;
+    case '$':
+      return BOND_COVALENT_QUADRUPLE;
+    case ':':
+      return TYPE_AROMATIC;
+    case '/':
+      return BOND_STEREO_NEAR;
+    case '\\':
+      return BOND_STEREO_FAR;
+    case '^':
+      return TYPE_ATROPISOMER;
+    case '`': // replacement for ^^
+      return TYPE_ATROPISOMER_REV;
+    case '@':
+      return TYPE_RING;
+    case '~':
+      return TYPE_ANY;
+    case '+':
+      return TYPE_BIO_SEQUENCE;
+    }
+    return TYPE_UNKNOWN;
   }
 
   SmilesAtom atom1;
@@ -67,11 +102,12 @@ public class SmilesBond extends Edge {
   boolean isNot;
   Edge matchingBond;
 
-  SmilesBond[] primitives;
+  private SmilesBond[] primitives;
   int nPrimitives;
   SmilesBond[] bondsOr;
   int nBondsOr;
   boolean isRingBond;
+  int[] atropType; // 1 1,1 2,1 3,2 1,2 2,2 3
 
   void set(SmilesBond bond) {
     // not the atoms.
@@ -83,6 +119,18 @@ public class SmilesBond extends Edge {
     nBondsOr = bond.nBondsOr;
   }
 
+  void setAtropType(int nn) {
+    atropType = new int[] {nn/10 -1, nn %10 - 1};
+  }
+
+  public SmilesBond setPrimitive(int i) {
+    SmilesBond p = primitives[i];
+    order = p.order;
+    isNot = p.isNot;
+    atropType = p.atropType;
+    return p;
+  }
+  
   SmilesBond addBondOr() {
     if (bondsOr == null)
       bondsOr = new SmilesBond[2];
@@ -131,28 +179,31 @@ public class SmilesBond extends Edge {
   }
 
   void set2(int bondType, boolean isNot) {
-    this.order = bondType;
+    order = bondType;
     this.isNot = isNot;
   }
 
-  void set2a(SmilesAtom atom1, SmilesAtom atom2) {
-    if (atom1 != null) {
-      this.atom1 = atom1;
-      atom1.addBond(this);
+  void set2a(SmilesAtom a1, SmilesAtom a2) {
+    if (a1 != null) {
+      atom1 = a1;
+      a1.addBond(this);
     }
-    if (atom2 != null) {
-      this.atom2 = atom2;
-      atom2.isFirst = false;
-      atom2.addBond(this);
+    if (a2 != null) {
+      atom2 = a2;
+      if (a2.isBioAtomWild && atom1.isBioAtomWild)
+        order = TYPE_BIO_SEQUENCE;
+      a2.isFirst = false;
+      a2.addBond(this);
     }
   }
 
   /**
    * from parse ring
    * @param atom
+   * @param molecule 
    */
-  void setAtom2(SmilesAtom atom) {
-    this.atom2 = atom;
+  void setAtom2(SmilesAtom atom, SmilesSearch molecule) {
+    atom2 = atom;
     if (atom2 != null) {
       // NO! could be after . as in .[C@H]12      atom2.isFirst = false;
       atom.addBond(this);
@@ -160,51 +211,24 @@ public class SmilesBond extends Edge {
     }
   }
 
-  static boolean isBondType(char ch, boolean isSearch, boolean isBioSequence)
+  static int isBondType(char ch, boolean isSearch, boolean isBioSequence)
       throws InvalidSmilesException {
-    if ("-=#:/\\.+!,&;@~^'".indexOf(ch) < 0)
-      return false;
-    if (!isSearch && "-=#:/\\.~^'".indexOf(ch) < 0) // ~ here for BIOSMARTS
+    if (ALL_BONDS.indexOf(ch) < 0)
+      return 0;
+    if (!isSearch && SMILES_BONDS.indexOf(ch) < 0)
       throw new InvalidSmilesException("SMARTS bond type " + ch
           + " not allowed in SMILES");
-    if(isBioSequence && ch == '~')
-      return false;
-    return true;
+    switch (ch) {
+    case '~':
+      return(isBioSequence? 0 : 1);
+    case '^':
+    case '`':
+      return -1;
+    default:
+      return 1;
+    }
   }
 
-  /**
-   * @param code Bond code
-   * @return Bond type
-   */
-  static int getBondTypeFromCode(char code) {
-    switch (code) {
-    case '.':
-      return TYPE_NONE;
-    case '-':
-      return TYPE_SINGLE;
-    case '=':
-      return TYPE_DOUBLE;
-    case '#':
-      return TYPE_TRIPLE;
-    case ':':
-      return TYPE_AROMATIC;
-    case '/':
-      return TYPE_DIRECTIONAL_1;
-    case '\\':
-      return TYPE_DIRECTIONAL_2;
-    case '^':
-      return TYPE_ATROPISOMER_1;
-    case '\'':
-      return TYPE_ATROPISOMER_2;
-    case '@':
-      return TYPE_RING;
-    case '~':
-      return TYPE_ANY;
-    case '+':
-      return TYPE_BIO_SEQUENCE;
-    }
-    return TYPE_UNKNOWN;
-  }
 
   int getBondType() {
     return order;
@@ -248,22 +272,28 @@ public class SmilesBond extends Edge {
     return order == TYPE_BIO_CROSSLINK;
   }
 
+  /**
+   * Ensure that atom ordering is proper.
+   * 
+   * possibly not fully tested
+   * 
+   */
   void switchAtoms() {
     SmilesAtom a = atom1;
     atom1 = atom2;
     atom2 = a;
     switch (order) {
-    case TYPE_ATROPISOMER_1:
-      order = TYPE_ATROPISOMER_2;
+    case TYPE_ATROPISOMER:
+      order = TYPE_ATROPISOMER_REV;
       break;
-    case TYPE_ATROPISOMER_2:
-      order = TYPE_ATROPISOMER_1;
+    case TYPE_ATROPISOMER_REV:
+      order = TYPE_ATROPISOMER;
       break;
-    case TYPE_DIRECTIONAL_1:
-      order = TYPE_DIRECTIONAL_2;
+    case BOND_STEREO_NEAR:
+      order = BOND_STEREO_FAR;
       break;
-    case TYPE_DIRECTIONAL_2:
-      order = TYPE_DIRECTIONAL_1;
+    case BOND_STEREO_FAR:
+      order = BOND_STEREO_NEAR;
       break;
     }
   }

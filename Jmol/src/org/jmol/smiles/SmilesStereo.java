@@ -52,17 +52,19 @@ public class SmilesStereo {
   private SmilesSearch search;
   private Node[] jmolAtoms;
   private String directives;
-  final static int STEREOCHEMISTRY_SQUARE_PLANAR = 8;
-  final static int STEREOCHEMISTRY_OCTAHEDRAL = 6;
-  final static int STEREOCHEMISTRY_TRIGONAL_BIPYRAMIDAL = 5;
-  final static int STEREOCHEMISTRY_TETRAHEDRAL = 4;
-  final static int STEREOCHEMISTRY_TRIGONAL_PYRAMIDAL = 3;
-  final static int STEREOCHEMISTRY_ALLENE = 2;
-  final static int STEREOCHEMISTRY_POLYHEDRAL = 1; // Jmol idea
-  final static int STEREOCHEMISTRY_DEFAULT = 0;
+  final public static int DEFAULT = 0;
+  final public static int POLYHEDRAL = 1; // Jmol polySMILES
+  final public static int ALLENE = 2;
+  final public static int TRIGONAL_PYRAMIDAL = 3;
+  final public static int TETRAHEDRAL = 4;
+  final public static int TRIGONAL_BIPYRAMIDAL = 5;
+  final public static int OCTAHEDRAL = 6;
+  final public static int SQUARE_PLANAR = 7;
+  final public static int T_SHAPED = 8;  // Jmol SMILES
+  final public static int SEESAW = 9;    // Jmol SMILES
 
   private static int getChiralityClass(String xx) {
-    return ("0;PH;AL;33;TH;TB;OH;77;SP;".indexOf(xx) + 1) / 3;
+    return ("0;PH;AL;TP;TH;TB;OH;SP;TS;SS;".indexOf(xx) + 1) / 3;
   }
 
   public static SmilesStereo newStereo(SmilesStereo stereo)
@@ -79,67 +81,8 @@ public class SmilesStereo {
     this.atomCount = atomCount;
     this.details = details;
     this.directives = directives;
-    if (chiralClass == STEREOCHEMISTRY_POLYHEDRAL)
+    if (chiralClass == POLYHEDRAL)
       getPolyhedralOrders();
-  }
-
-  private int[][] polyhedralOrders;
-  private boolean isNot;
-  private PolyhedronStereoSorter sorter;
-
-  private void getPolyhedralOrders() throws InvalidSmilesException {
-    int[][] po = polyhedralOrders = AU.newInt2(atomCount);
-    if (details == null)
-      return;
-    int[] temp = new int[details.length()];
-    int[] ret = new int[1];
-    String msg = null;
-    int pt = 0;
-    String s = details + "/";
-    int n = 0;
-    int len = s.length();
-    int index = 0;
-    int atomPt = 0;
-    do {
-      char ch = s.charAt(index);
-      switch (ch) {
-      case '!':
-        isNot = true;
-        index++;
-        break;
-      case '/':
-      case '.':
-        if ((pt = atomPt) >= atomCount) {
-          msg = "Too many descriptors";
-          break;
-        }
-        int[] a = po[atomPt] = new int[n];
-        for (; --n >= 0;)
-          a[n] = temp[n];
-        n = 0;
-        if (Logger.debugging)
-          Logger.info(PT.toJSON("@PH" + atomCount + "[" + atomPt + "]", a));
-        if (ch == '/')
-          index = Integer.MAX_VALUE;
-        else
-          index++;
-        atomPt++;
-        break;
-      default:
-        index = SmilesParser.getRingNumber(s, index, ch, ret);
-        pt = temp[n++] = ret[0] - 1;
-        if (pt == atomPt)
-          msg = "Atom cannot connect to itself";
-        else if (pt < 0 || pt >= atomCount)
-          msg = "Connection number outside of range (1-" + atomCount + ")";
-        else if (n >= atomCount)
-          msg = "Too many connections indicated";
-      }
-      if (msg != null) {
-        msg += ": " + s.substring(0, index) + "<<";
-        throw new InvalidSmilesException(msg);
-      }
-    } while (index < len);
   }
 
   /**
@@ -182,16 +125,23 @@ public class SmilesStereo {
     this.chiralOrder = chiralOrder;
   }
 
+  /**
+   * Check number of connections and permute them to match a canonical version
+   * 
+   * @param sAtom
+   * @throws InvalidSmilesException
+   */
   public void fixStereo(SmilesAtom sAtom) throws InvalidSmilesException {
-    int nBonds = Math.max(sAtom.explicitHydrogenCount, 0) + sAtom.getBondCount();
-    switch (chiralClass) {
-    case STEREOCHEMISTRY_DEFAULT:
+    int nBonds = Math.max(sAtom.explicitHydrogenCount, 0)
+        + sAtom.getBondCount();
+    int nH = Math.max(sAtom.explicitHydrogenCount, 0);
+    if (chiralClass == DEFAULT) {
       switch (nBonds) {
       case 2:
-        chiralClass = STEREOCHEMISTRY_ALLENE;
+        chiralClass = ALLENE;
         break;
       case 3:
-        chiralClass = STEREOCHEMISTRY_TRIGONAL_PYRAMIDAL;
+        chiralClass = TRIGONAL_PYRAMIDAL;
         break;
       case 4:
       case 5:
@@ -199,39 +149,53 @@ public class SmilesStereo {
         chiralClass = nBonds;
         break;
       }
-      break;
-    case STEREOCHEMISTRY_SQUARE_PLANAR:
-      if (nBonds != 4)
+    }
+    switch (chiralClass) {
+    case SQUARE_PLANAR:
+      if (nBonds != 4 || nH > 0)
         sAtom.stereo = null;
       break;
-    case STEREOCHEMISTRY_POLYHEDRAL:
+    case POLYHEDRAL:
       // we allow no bonds here, indicating that the next N atoms are associated (but not connected)
       // with this atom
       if (nBonds != 0 && nBonds != atomCount)
         sAtom.stereo = null;
       break;
-    case STEREOCHEMISTRY_ALLENE:
-    case STEREOCHEMISTRY_TETRAHEDRAL:
-      if (nBonds != chiralClass)
+    case ALLENE:
+      if (nBonds != 2 || nH > 0)
         sAtom.stereo = null;
       break;
-    case STEREOCHEMISTRY_OCTAHEDRAL:
-    case STEREOCHEMISTRY_TRIGONAL_BIPYRAMIDAL:
-      if (nBonds != chiralClass || !normalizeClass(sAtom.bonds)) 
+    case TETRAHEDRAL:
+      if (nBonds != 4 || nH > 1)
         sAtom.stereo = null;
       break;
+    case OCTAHEDRAL:
+    case TRIGONAL_BIPYRAMIDAL:
+      if (nBonds != chiralClass || nH > 0 || !normalizeClass(sAtom.bonds))
+        sAtom.stereo = null;
+      break;
+    case T_SHAPED:
+      if (nBonds != 3 || nH > 0)
+        sAtom.stereo = null;
+      break;
+    case SEESAW:
+      if (nBonds != 4 || nH > 0 || !normalizeClass(sAtom.bonds))
+        sAtom.stereo = null;
+      break;
+    default:
+      sAtom.stereo = null;
     }
     if (sAtom.stereo == null)
       throw new InvalidSmilesException(
           "Incorrect number of bonds for stereochemistry descriptor");
   }
 
-  // permutation tables courtesy of http://www.opensmiles.org/opensmiles.html
+  // assignments from http://www.opensmiles.org/opensmiles.html
   private static final int[] PERM_TB = new int[] {
     // a,p,z, where:
-    // a = first axial
-    // z = last axial
-    // p = 1 @, -1 for @@
+    // a = first axial -- shift to first position
+    // p = 1 @, -1 for @@ -- once shifted, this flag sets chirality
+    // z = last axial  -- shift to last position
     0, 1,4, //TB1 @
     0,-1,4, //TB2 @@
     0, 1,3, //TB3 @
@@ -256,41 +220,66 @@ public class SmilesStereo {
   
   private static final int[] PERM_OCT = new int[] {
     // a,p,z, where:
-    // a = first axial
-    // z = last axial
+    // a = first axial -- shift to first position (0)
     // p = 1 @, -1 @@, or position to permute with p+1 after setting a and z (< 0 for @@)
-    0, 1,5, //OH1 a U f @ 
-    0,-1,5, //OH2 a U f @@  
-    0, 1,4, //OH3 a U e @ 
-    0, 3,5, //OH4 a Z f @ 
-    0, 3,4, //OH5 a Z e @ 
-    0, 1,3, //OH6 a U d @ 
-    0, 3,3, //OH7 a Z d @ 
-    0,-4,5, //OH8 a 4 f @@  
-    0,-4,4, //OH9 a 4 e @@  
-    0, 4,5, //OH10 a 4 f @  
-    0, 4,4, //OH11 a 4 e @  
-    0,-4,3, //OH12 a 4 d @@ 
-    0, 4,3, //OH13 a 4 d @  
-    0,-3,5, //OH14 a Z f @@ 
-    0,-3,4, //OH15 a Z e @@ 
-    0,-1,4, //OH16 a U e @@ 
-    0,-3,3, //OH17 a Z d @@ 
-    0,-1,3, //OH18 a U d @@ 
-    0, 1,2, //OH19 a U c @  
-    0, 3,2, //OH20 a Z c @  
-    0,-4,2, //OH21 a 4 c @@ 
-    0, 4,2, //OH22 a 4 c @  
-    0,-3,2, //OH23 a Z c @@ 
-    0,-1,2, //OH24 a U c @@ 
-    0, 1,1, //OH25 a U b @  
-    0, 3,1, //OH26 a Z b @  
-    0,-4,1, //OH27 a 4 b @@ 
-    0, 4,1, //OH28 a 4 b @  
-    0,-3,1, //OH29 a Z b @@ 
-    0,-1,1, //OH30 a U b @@ 
+    // z = last axial  -- shift to last position (5)
+    // so:
+    // for "U" we have 1/-1 -- standard chirality check
+    // for "Z" we permute groups 3 and 4
+    // for "4" we permute groups 4 and 1
+      0, 1,5, //OH1 a U f @ 
+      0,-1,5, //OH2 a U f @@  
+      0, 1,4, //OH3 a U e @ 
+      0, 3,5, //OH4 a Z f @ 
+      0, 3,4, //OH5 a Z e @ 
+      0, 1,3, //OH6 a U d @ 
+      0, 3,3, //OH7 a Z d @ 
+      0, 2,5, //OH8 a 4 f @@  
+      0, 2,4, //OH9 a 4 e @@  
+      0,-2,5, //OH10 a 4 f @  
+      0,-2,4, //OH11 a 4 e @  
+      0, 2,3, //OH12 a 4 d @@ 
+      0,-2,3, //OH13 a 4 d @  
+      0,-3,5, //OH14 a Z f @@ 
+      0,-3,4, //OH15 a Z e @@ 
+      0,-1,4, //OH16 a U e @@ 
+      0,-3,3, //OH17 a Z d @@ 
+      0,-1,3, //OH18 a U d @@ 
+      0, 1,2, //OH19 a U c @  
+      0, 3,2, //OH20 a Z c @  
+      0, 2,2, //OH21 a 4 c @@ 
+      0,-2,2, //OH22 a 4 c @  
+      0,-3,2, //OH23 a Z c @@ 
+      0,-1,2, //OH24 a U c @@ 
+      0, 1,1, //OH25 a U b @  
+      0, 3,1, //OH26 a Z b @  
+      0, 2,1, //OH27 a 4 b @@ 
+      0,-2,1, //OH28 a 4 b @  
+      0,-3,1, //OH29 a Z b @@ 
+      0,-1,1, //OH30 a U b @@ 
   };
- 
+
+  // TS - like square planar, we are just looking for axial groups
+  //      no @/@@ here. 
+
+
+  // SS - See-Saw - what we are reading is the rotation of the first three groups after permutation
+  //      no @/@@ here because there are four atoms, like tetrahedral
+  private static final int[] PERM_SS = new int[] {
+   0,  1, 3,  //SS1
+   0, -1, 3,  //SS2
+   0,  1, 2,  //SS3
+   0, -1, 2,  //SS4
+   0,  1, 1,  //SS5
+   0, -1, 1,  //SS6
+   1,  1, 3,  //SS7
+   1, -1, 3,  //SS8
+   1,  1, 2,  //SS9
+   1, -1, 2,  //SS10
+   2,  1, 3,  //SS11
+   2, -1, 3,  //SS12
+  };
+
   /**
    * re-order bonds to match standard @ and @@ types
    * 
@@ -304,25 +293,27 @@ public class SmilesStereo {
     int[] perm;
     int ilast;
     switch (chiralClass) {
-    case STEREOCHEMISTRY_TRIGONAL_BIPYRAMIDAL:
-      if (chiralOrder > 20)
-        return false;
+    case SEESAW:
+      perm = PERM_SS;
+      ilast = 3;
+      break;
+    case TRIGONAL_BIPYRAMIDAL:
       perm = PERM_TB;
       ilast = 4;
       break;
-    case STEREOCHEMISTRY_OCTAHEDRAL:
-      if (chiralOrder > 30)
-        return false;
+    case OCTAHEDRAL:
       perm = PERM_OCT;
       ilast = 5;
       break;
     default:
       return true;
     }
-    int a = perm[pt];
-    int p = Math.abs(perm[pt + 1]);
-    boolean isAtAt = (perm[pt + 1] < 0);
-    int z = perm[pt + 2];
+    if (chiralOrder > perm.length)
+      return false;
+    int a = perm[pt]; // shifted to first position
+    int z = perm[pt + 2]; // shifted to last position
+    int p = Math.abs(perm[pt + 1]); // to be permuted with its next position
+    boolean isAtAt = (perm[pt + 1] < 0); // negative indicates NOT
     SmilesBond b;
     if (a != 0) {
       b = bonds[a];
@@ -340,9 +331,8 @@ public class SmilesStereo {
     case 1:
       break;
     default:
-      int q = p % (ilast - 1) + 1;
-      b = bonds[q];
-      bonds[q] = bonds[p];
+      b = bonds[p + 1];
+      bonds[p + 1] = bonds[p];
       bonds[p] = b;
     }
     chiralOrder = (isAtAt ? 2 : 1);
@@ -363,7 +353,7 @@ public class SmilesStereo {
       return false;
     int chiralClass = atom.stereo.chiralClass;
     int chiralOrder = atom.stereo.chiralOrder;
-    Node a2 = (chiralClass == STEREOCHEMISTRY_ALLENE || chiralClass == 3 ? a2 = jmolAtoms[sAtom2
+    Node a2 = (chiralClass == ALLENE || chiralClass == 3 ? a2 = jmolAtoms[sAtom2
         .getMatchingAtomIndex()] : null);
 
     // set the chirality center at the origin
@@ -372,16 +362,17 @@ public class SmilesStereo {
     atom.set(0, 0, 0);
 
     int[] map = search.getMappedAtoms(atom, a2, cAtoms);
+    int pt;
     switch (chiralClass) {
-    case STEREOCHEMISTRY_POLYHEDRAL:
+    case POLYHEDRAL:
       // todo
       break;
-    case STEREOCHEMISTRY_ALLENE:
-    case STEREOCHEMISTRY_TETRAHEDRAL:
+    case ALLENE:
+    case TETRAHEDRAL:
       if (chiralOrder == 2) {
-        int i = map[0];
+        pt = map[0];
         map[0] = map[1];
-        map[1] = i;
+        map[1] = pt;
       }
       cAtoms[map[0]].set(0, 0, 1);
       cAtoms[map[1]].set(1, 0, -1);
@@ -395,7 +386,6 @@ public class SmilesStereo {
             cAtoms[map[0]].set(1, 0, 0);
             cAtoms[map[1]].set(0, 1, 0);
             cAtoms[map[2]].set(-1, 0, 0);
-            cAtoms[map[3]].set(0, -1, 0);
             break;
           case 2: // 4-shaped
             cAtoms[map[0]].set(1, 0, 0);
@@ -406,7 +396,7 @@ public class SmilesStereo {
           }
           break;
     */
-    case STEREOCHEMISTRY_SQUARE_PLANAR:
+    case SQUARE_PLANAR:
       switch (chiralOrder) {
       case 1: // U-shaped
         cAtoms[map[0]].set(1, 0, 0);
@@ -428,13 +418,43 @@ public class SmilesStereo {
         break;
       }
       break;
-    case STEREOCHEMISTRY_TRIGONAL_BIPYRAMIDAL:
-    case STEREOCHEMISTRY_OCTAHEDRAL:
+    case T_SHAPED:
+      switch (chiralOrder) {
+      case 1:        
+        break;
+      case 2:
+        pt = map[2];
+        map[2] = map[1];
+        map[1] = pt;
+        break;
+      case 3:
+        pt = map[0];
+        map[0] = map[1];
+        map[1] = pt;
+        break;
+      }
+      cAtoms[map[0]].set(0, 0, -1);
+      cAtoms[map[1]].set(0, 1, 0);
+      cAtoms[map[2]].set(0, 0, 1);
+      break;
+    case SEESAW:
+      if (chiralOrder == 2) {
+        pt = map[0];
+        map[0] = map[3];
+        map[3] = pt;
+      }
+      cAtoms[map[0]].set(0, 0, 1);
+      cAtoms[map[1]].set(0, 1, 0);
+      cAtoms[map[1]].set(1, 1, 0);
+      cAtoms[map[2]].set(0, 0, -1);
+      break;
+    case TRIGONAL_BIPYRAMIDAL:
+    case OCTAHEDRAL:
       int n = map.length;
       if (chiralOrder == 2) {
-        int i = map[0];
+        pt = map[0];
         map[0] = map[n - 1];
-        map[n - 1] = i;
+        map[n - 1] = pt;
       }
       cAtoms[map[0]].set(0, 0, 1);
       cAtoms[map[n - 1]].set(0, 0, -1);
@@ -444,6 +464,8 @@ public class SmilesStereo {
       if (n == 6)
         cAtoms[map[4]].set(0, -1, 0);
       break;
+      default:
+       return false;
     }
     return true;
   }
@@ -481,7 +503,7 @@ public class SmilesStereo {
           doSwitch = false;
         } else {
           v.scaleAdd2(n + 1, (P3) getJmolAtom(sAtom.getMatchingAtomIndex()), v);
-          doSwitch = search.isSmilesFind || doSwitch;
+          doSwitch = search.haveTopo || doSwitch;
         }
         jn[pt] = new SmilesAtom().setIndex(-1);
         ((P3) jn[pt]).setT(v);
@@ -556,7 +578,7 @@ public class SmilesStereo {
   public boolean checkStereoChemistry(SmilesSearch smilesSearch, VTemp v) {
     search = smilesSearch;
     jmolAtoms = search.jmolAtoms;
-    boolean isSmilesFind = smilesSearch.isSmilesFind;
+    boolean isSmilesFind = smilesSearch.haveTopo;
     boolean invertStereochemistry = smilesSearch.invertStereochemistry;
 
     if (Logger.debugging)
@@ -598,7 +620,7 @@ public class SmilesStereo {
         Logger.debug("...type " + chiralClass + " for pattern atom " + sAtom
             + " " + atom0);
       switch (chiralClass) {
-      case STEREOCHEMISTRY_POLYHEDRAL:
+      case POLYHEDRAL:
         if (sAtom.stereo.isNot)
           isNot = !isNot;
         if (nH > 1 || sAtom.bondCount == 0)
@@ -660,7 +682,7 @@ public class SmilesStereo {
           }
         }
         continue;
-      case STEREOCHEMISTRY_ALLENE:
+      case ALLENE:
         boolean isAllene = true;//(chiralClass == STEREOCHEMISTRY_ALLENE);
         if (isAllene) {
           sAtom1 = sAtom.getBond(0).getOtherAtom(sAtom);
@@ -726,17 +748,20 @@ public class SmilesStereo {
             chiralClass, order, jn[0], jn[1], jn[2], jn[3], null, null, v))
           return false;
         continue;
-      case STEREOCHEMISTRY_TRIGONAL_PYRAMIDAL:
-      case STEREOCHEMISTRY_TETRAHEDRAL:
-      case STEREOCHEMISTRY_SQUARE_PLANAR:
-      case STEREOCHEMISTRY_TRIGONAL_BIPYRAMIDAL:
-      case STEREOCHEMISTRY_OCTAHEDRAL:
+      case T_SHAPED:
+      case SEESAW:
+      case TRIGONAL_PYRAMIDAL:
+      case TETRAHEDRAL:
+      case SQUARE_PLANAR:
+      case TRIGONAL_BIPYRAMIDAL:
+      case OCTAHEDRAL:
         atom1 = getJmolAtom(sAtom.getMatchingBondedAtom(0));
         switch (nH) {
         case 0:
           atom2 = getJmolAtom(sAtom.getMatchingBondedAtom(1));
           break;
         case 1:
+          // have to correct for implicit H atom in  [@XXnH]
           atom2 = smilesSearch.getHydrogens(sAtom.getMatchingAtom(), null);
           if (sAtom.isFirst) {
             Node a = atom2;
@@ -768,13 +793,9 @@ public class SmilesStereo {
             atom2, atom3, atom4, atom5, atom6, v))
           return false;
         continue;
-
       }
-
     }
-
     return true;
-
   }
 
   /**
@@ -792,7 +813,7 @@ public class SmilesStereo {
     Node atom4 = atoms[3];
     Node atom5 = atoms[4];
     Node atom6 = atoms[5];
-    int chiralClass = STEREOCHEMISTRY_TETRAHEDRAL;
+    int chiralClass = TETRAHEDRAL;
     // what about POLYHEDRAL?
     switch (nAtoms) {
     default:
@@ -808,7 +829,7 @@ public class SmilesStereo {
       float d = SmilesSearch.getNormalThroughPoints(atom1, atom2, atom3,
           v.vTemp, v.vA, v.vB);
       if (Math.abs(distanceToPlane(v.vTemp, d, (P3) atom4)) < 0.2f) {
-        chiralClass = STEREOCHEMISTRY_SQUARE_PLANAR;
+        chiralClass = SQUARE_PLANAR;
         if (checkStereochemistryAll(false, atom0, chiralClass, 1, atom1, atom2,
             atom3, atom4, atom5, atom6, v))
           return "@SP1";
@@ -835,19 +856,48 @@ public class SmilesStereo {
     switch (chiralClass) {
     default:
       return true;
-    case STEREOCHEMISTRY_POLYHEDRAL:
+    case POLYHEDRAL:
       return true;
-    case STEREOCHEMISTRY_TRIGONAL_PYRAMIDAL:
+    case TRIGONAL_PYRAMIDAL:
       return (isNot == (getHandedness(atom2, atom3, atom0, atom1, v) != order));
-    case STEREOCHEMISTRY_ALLENE:
-    case STEREOCHEMISTRY_TETRAHEDRAL:
+    case ALLENE:
+    case TETRAHEDRAL:
       return (isNot == (getHandedness(atom2, atom3, atom4, atom1, v) != order));
-    case STEREOCHEMISTRY_TRIGONAL_BIPYRAMIDAL:
+    case TRIGONAL_BIPYRAMIDAL:
       // check for axial-axial'
       if (!isDiaxial(atom0, atom0, atom5, atom1, v, -0.95f))
         return false;
       return (isNot == (getHandedness(atom2, atom3, atom4, atom1, v) != order));
-    case STEREOCHEMISTRY_OCTAHEDRAL:
+    case T_SHAPED:
+      // just checking linearity here; could do better.
+      switch (order) {
+      case 1:
+        // @TS1
+        // 1----0----3
+        //      |
+        //      2
+        break;
+      case 2:
+        // @TS2
+        // 1----0----2
+        //      |
+        //      3
+        atom3 = atom2;
+        break;
+      case 3:
+        // @TS3
+        // 2----0----3
+        //      |
+        //      1
+        atom1 = atom2;
+        break;
+      }
+      return (isNot == !isDiaxial(atom0, atom0, atom1, atom3, v, -0.95f));
+    case SEESAW:
+      if (!isDiaxial(atom0, atom0, atom4, atom1, v, -0.95f))
+        return false;
+      return (isNot == (getHandedness(atom2, atom3, atom4, atom1, v) != order));
+    case OCTAHEDRAL:
       if (!isDiaxial(atom0, atom0, atom6, atom1, v, -0.95f)
           || !isDiaxial(atom0, atom0, atom2, atom4, v, -0.95f)
           || !isDiaxial(atom0, atom0, atom3, atom5, v, -0.95f))
@@ -869,7 +919,7 @@ public class SmilesStereo {
       //getPlaneNormals(atom1, atom2, atom3, atom4, v);
       //System.out.println(order + " "+ atom1.getAtomName() + "-" + atom2.getAtomName() + "-"  + atom3.getAtomName() + "-" + atom4.getAtomName());
       //return (isNot == ((v.vNorm1.dot(v.vNorm2) < 0 ? 2 : 1) == order));
-    case STEREOCHEMISTRY_SQUARE_PLANAR:
+    case SQUARE_PLANAR:
       getPlaneNormals(atom1, atom2, atom3, atom4, v);
       // vNorm1 vNorm2 vNorm3 are right-hand normals for the given
       // triangles
@@ -941,7 +991,7 @@ public class SmilesStereo {
     String directives = null;
     int atomCount = 0;
     char ch;
-    stereoClass = STEREOCHEMISTRY_DEFAULT;
+    stereoClass = DEFAULT;
     order = 1;
     boolean isPoly = false;
     if (++index < len) {
@@ -1003,6 +1053,72 @@ public class SmilesStereo {
     }
     return index;
   }
+  
+  private int[][] polyhedralOrders;
+  private boolean isNot;
+  private PolyhedronStereoSorter sorter;
+
+  /**
+   * experimental Jmol polySMILES 
+   *  
+   * @throws InvalidSmilesException
+   */
+  private void getPolyhedralOrders() throws InvalidSmilesException {
+    int[][] po = polyhedralOrders = AU.newInt2(atomCount);
+    if (details == null)
+      return;
+    int[] temp = new int[details.length()];
+    int[] ret = new int[1];
+    String msg = null;
+    int pt = 0;
+    String s = details + "/";
+    int n = 0;
+    int len = s.length();
+    int index = 0;
+    int atomPt = 0;
+    do {
+      char ch = s.charAt(index);
+      switch (ch) {
+      case '!':
+        isNot = true;
+        index++;
+        break;
+      case '/':
+      case '.':
+        if ((pt = atomPt) >= atomCount) {
+          msg = "Too many descriptors";
+          break;
+        }
+        int[] a = po[atomPt] = new int[n];
+        for (; --n >= 0;)
+          a[n] = temp[n];
+        n = 0;
+        if (Logger.debugging)
+          Logger.info(PT.toJSON("@PH" + atomCount + "[" + atomPt + "]", a));
+        if (ch == '/')
+          index = Integer.MAX_VALUE;
+        else
+          index++;
+        atomPt++;
+        break;
+      default:
+        index = SmilesParser.getRingNumber(s, index, ch, ret);
+        pt = temp[n++] = ret[0] - 1;
+        if (pt == atomPt)
+          msg = "Atom cannot connect to itself";
+        else if (pt < 0 || pt >= atomCount)
+          msg = "Connection number outside of range (1-" + atomCount + ")";
+        else if (n >= atomCount)
+          msg = "Too many connections indicated";
+      }
+      if (msg != null) {
+        msg += ": " + s.substring(0, index) + "<<";
+        throw new InvalidSmilesException(msg);
+      }
+    } while (index < len);
+  }
+
+
 
 }
  

@@ -45,6 +45,7 @@ import org.jmol.bspt.Bspf;
 import org.jmol.c.PAL;
 import org.jmol.c.VDW;
 import org.jmol.java.BS;
+import org.jmol.modelsetbio.BioModelSet;
 
 import org.jmol.util.Elements;
 import org.jmol.util.GData;
@@ -75,6 +76,12 @@ abstract public class AtomCollection {
   
   public Viewer vwr;
   protected GData g3d;
+  /**
+   * If any model in the collection is a BioModel, then
+   * it is also indicated here as a "bioModelset", meaning
+   * 
+   */
+  public BioModelSet bioModelset;
 
   public Atom[] at;
   public int ac;
@@ -1228,7 +1235,7 @@ abstract public class AtomCollection {
         }
         if (doAll && atom.getCovalentHydrogenCount() > 0)
           continue;
-        int n = getImplicitHydrogenCount(atom, false);
+        int n = getMissingHydrogenCount(atom, false);
         if (n == 0)
           continue;
         int targetValence = aaRet[0];
@@ -1392,33 +1399,35 @@ abstract public class AtomCollection {
     return false;
   }
 
-  private int[] aaRet;
+  int[] aaRet;
   
-  int getImplicitHydrogenCount(Atom atom, boolean allowNegative) {
-    int targetValence = atom.getTargetValence();
-    if (targetValence < 0)
+  int getMissingHydrogenCount(Atom atom, boolean allowNegative) {
+    int targetCount = atom.getTargetValence();
+    if (targetCount < 0)
       return 0;
     int charge = atom.getFormalCharge();
-    if (aaRet == null)
-      aaRet = new int[4];
-    aaRet[0] = targetValence;
-    aaRet[1] = charge;
-    aaRet[2] = 0;
-    aaRet[3] = atom.getCovalentBondCount();
+    int valence = atom.getValence();
     Model model = ((ModelSet) this).am[atom.mi];
     String s = (model.isBioModel && !model.isPdbWithMultipleBonds ? atom.group.getGroup3() : null);
+    if (aaRet == null)
+      aaRet = new int[5];
+    aaRet[0] = targetCount;
+    aaRet[1] = charge;
+    aaRet[2] = 0; // hybridization
+    aaRet[3] = atom.getCovalentBondCount();
+    aaRet[4] = (s == null ? 0 : valence);
     if (s != null && charge == 0) {
-      if (vwr.getJBR().getAminoAcidValenceAndCharge(s, atom.getAtomName(),
+      if (bioModelset.getAminoAcidValenceAndCharge(s, atom.getAtomName(),
           aaRet)) {
-        targetValence = aaRet[0];
+        targetCount = aaRet[0];
         charge = aaRet[1];
       }
     }
     if (charge != 0) {
-      targetValence += (targetValence == 4 ? -Math.abs(charge) : charge);
-      aaRet[0] = targetValence;
+      targetCount += (targetCount == 4 ? -Math.abs(charge) : charge);
+      aaRet[0] = targetCount;
     }
-    int n = targetValence - atom.getValence();
+    int n = targetCount - valence;
     return (n < 0 && !allowNegative ? 0 : n);
   }
 
@@ -1426,7 +1435,7 @@ abstract public class AtomCollection {
     int n = 0;
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       Atom a = at[i];
-      int nH = getImplicitHydrogenCount(a, true);
+      int nH = getMissingHydrogenCount(a, true);
       if (nH != 0) {
 
           int c0 = a.getFormalCharge();

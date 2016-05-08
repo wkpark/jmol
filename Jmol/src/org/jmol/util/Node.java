@@ -56,9 +56,21 @@ public interface Node {
   public BS findAtomsLike(String substring);
   public String getAtomType();
   public int getModelIndex();
-  public int getImplicitHydrogenCount();
+  // could include hydrogen bonds
   public int getBondCount();
   public int getAtomNumber();
-  public int getMissingHydrogenCount();
+  /**
+   * can be > 0 for PDB model with no H atoms or for SMILES string CCC
+   * 
+   * @return number of missing H atoms
+   */
+  public int getImplicitHydrogenCount();
+  /**
+   *  includes actual + missing
+   * @return actual + missing
+   */
+  public int getCovalentBondCountPlusMissingH();
+  int getTotalHydrogenCount();
+  public int getTotalValence();
 
 }

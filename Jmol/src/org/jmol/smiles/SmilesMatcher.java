@@ -33,6 +33,7 @@ import org.jmol.api.SmilesMatcherInterface;
 import org.jmol.java.BS;
 import org.jmol.util.BNode;
 import org.jmol.util.BSUtil;
+import org.jmol.util.Edge;
 import org.jmol.util.Elements;
 import org.jmol.util.Logger;
 import org.jmol.util.Node;
@@ -106,6 +107,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   private final static int MODE_BITSET       = 0x01;
   private final static int MODE_ARRAY        = 0x02;
   private final static int MODE_MAP          = 0x03;
+  private static final int MODE_ATROP        = 0x04;
 
 
   @Override
@@ -146,7 +148,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   public String getSmiles(Node[] atoms, int ac, BS bsSelected,
                           String bioComment, int flags) throws Exception {
     InvalidSmilesException.clear();
-    return (new SmilesGenerator()).getSmiles(atoms, ac, bsSelected, bioComment, flags);
+    return (new SmilesGenerator()).getSmiles(this, atoms, ac, bsSelected, bioComment, flags);
   }
 
   @Override
@@ -341,6 +343,24 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   }
   
   /**
+   * called by SmilesParser to get nn in ^nn- base on match to actual structure
+   * @param pattern
+   * @param atoms
+   * @param ac
+   * @param bsSelected
+   * @param bsAromatic
+   * @param flags
+   * @return string of nn,nn,nn,nn
+   * @throws Exception
+   */
+  public String getAtropisomerKeys(String pattern, Node[] atoms, int ac,
+                                      BS bsSelected, BS bsAromatic, int flags)
+      throws Exception {
+    return (String) matchPriv(pattern, atoms, ac, bsSelected, bsAromatic, false, 
+        flags, MODE_ATROP);
+  }
+
+  /**
    * Generate a topological SMILES string from a set of faces
    * 
    * @param faces
@@ -359,7 +379,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
       P3 pt = (points == null ? null : points[i]);
       if (pt instanceof Node) {
         atoms[i].elementNumber = ((Node) pt).getElementNumber();
-        atoms[i].atomName = ((Node) pt).getAtomName();
+        atoms[i].bioAtomName = ((Node) pt).getAtomName();
         atoms[i].atomNumber = ((Node) pt).getAtomNumber();
         atoms[i].setT(pt);
       } else {
@@ -379,7 +399,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
           continue;
         if (atoms[iatom].getBondTo(atoms[iatom2]) == null) {
           SmilesBond b = new SmilesBond(atoms[iatom], atoms[iatom2],
-              SmilesBond.TYPE_SINGLE, false);
+              Edge.BOND_COVALENT_SINGLE, false);
           b.index = nBonds++;
         }
       }
@@ -394,7 +414,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     if (points != null)
       g.stereoReference = (P3) center;
     InvalidSmilesException.clear();
-    s = g.getSmiles(atoms, atomCount, BSUtil.newBitSet2(0, atomCount),
+    s = g.getSmiles(this, atoms, atomCount, BSUtil.newBitSet2(0, atomCount),
         null, flags | JC.SMILES_GEN_EXPLICIT_H | JC.SMILES_GEN_NOAROMATIC
             | JC.SMILES_GEN_NOSTEREO);
     if ((flags & JC.SMILES_GEN_POLYHEDRAL) == JC.SMILES_GEN_POLYHEDRAL) {
@@ -441,28 +461,35 @@ public class SmilesMatcher implements SmilesMatcherInterface {
 
   @SuppressWarnings({ "unchecked" })
   private Object matchPriv(String pattern, Node[] atoms, int ac, BS bsSelected,
-                       BS bsAromatic, boolean doTestAromatic, int flags, int mode) throws Exception {
+                           BS bsAromatic, boolean doTestAromatic, int flags,
+                           int mode) throws Exception {
     InvalidSmilesException.clear();
     try {
-      boolean isSmarts = ((flags & JC.SMILES_TYPE_SMARTS) ==  JC.SMILES_TYPE_SMARTS);
+      boolean isSmarts = ((flags & JC.SMILES_TYPE_SMARTS) == JC.SMILES_TYPE_SMARTS);
       SmilesSearch search = SmilesParser.getMolecule(pattern, isSmarts);
-      if (search.openSMILES && !isSmarts && !search.patternAromatic)
-        SmilesSearch.normalizeAromaticity(search.patternAtoms, bsAromatic, search.flags);
-      
+      if (!isSmarts && !search.patternAromatic) {
+        if (bsAromatic == null)
+          bsAromatic = new BS();
+        SmilesSearch.normalizeAromaticity(search.patternAtoms, bsAromatic,
+            search.flags);
+        search.isNormalized = true;
+      }
       search.jmolAtoms = atoms;
       search.jmolAtomCount = Math.abs(ac);
       if (ac < 0)
-        search.isSmilesFind = true;
-      boolean is3D = !(atoms[0] instanceof SmilesAtom); 
-      if (atoms[0] instanceof BNode)
-        search.bioAtoms = (BNode[]) atoms;
-      search.setSelected(bsSelected);
-      search.getSelections();
-      search.bsRequired = null;
-      if (!doTestAromatic)
-        search.bsAromatic = bsAromatic;
-      search.setRingData(null, null, is3D || doTestAromatic);
-      search.exitFirstMatch = ((flags & JC.SMILES_MATCH_ONCE_ONLY) == JC.SMILES_MATCH_ONCE_ONLY);
+        search.haveTopo = true;
+      if (ac != 0 && (bsSelected == null || !bsSelected.isEmpty())) {
+        boolean is3D = !(atoms[0] instanceof SmilesAtom);
+        if (atoms[0] instanceof BNode)
+          search.bioAtoms = (BNode[]) atoms;
+        search.setSelected(bsSelected);
+        search.getSelections();
+        search.bsRequired = null;
+        if (!doTestAromatic)
+          search.bsAromatic = bsAromatic;
+        search.setRingData(null, null, is3D || doTestAromatic);
+        search.exitFirstMatch = ((flags & JC.SMILES_MATCH_ONCE_ONLY) == JC.SMILES_MATCH_ONCE_ONLY);
+      }
       switch (mode) {
       case MODE_BITSET:
         search.asVector = false;
@@ -471,6 +498,11 @@ public class SmilesMatcher implements SmilesMatcherInterface {
         search.asVector = true;
         Lst<BS> vb = (Lst<BS>) search.search();
         return vb.toArray(new BS[vb.size()]);
+      case MODE_ATROP:
+        search.exitFirstMatch = true;
+        search.flags |= SmilesSearch.SET_ATROPICITY;
+        search.search();
+        return search.atropKeys;
       case MODE_MAP:
         search.getMaps = true;
         Lst<int[]> vl = (Lst<int[]>) search.search();

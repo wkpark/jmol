@@ -214,7 +214,7 @@ public class SticksRenderer extends FontLineShapeRenderer {
       if ((bondOrder & Edge.BOND_COVALENT_MASK) != 0) {
         if (!showMultipleBonds
             || (modeMultipleBond == JC.MULTIBOND_NOTSMALL && mad > JC.madMultipleBondSmallMaximum)
-            || (bondOrder & Edge.BOND_PYMOL_MULT) == Edge.BOND_PYMOL_SINGLE) {
+            || (bondOrder & Edge.BOND_PYMOL_MULT) == Edge.BOND_RENDER_SINGLE) {
           bondOrder = 1;
         }
       }

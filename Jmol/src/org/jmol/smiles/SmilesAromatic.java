@@ -30,6 +30,7 @@ import javajs.util.Lst;
 import javajs.util.V3;
 
 import org.jmol.java.BS;
+import org.jmol.util.BNode;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Edge;
 import org.jmol.util.Logger;
@@ -228,9 +229,8 @@ public class SmilesAromatic {
     //      
 
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-      Node ringAtom = atoms[i];
-      Edge[] bonds = ringAtom.getEdges();
-      if (bonds.length > 3)
+      BNode atom = (BNode) atoms[i];  
+      if (atom.getCovalentBondCountPlusMissingH() > 3)
         return false;
     }
     if (cutoff == Float.MAX_VALUE)
@@ -390,8 +390,9 @@ public class SmilesAromatic {
         .nextSetBit(i + 1)) {
       Node atom = jmolAtoms[i];
       int z = atom.getElementNumber();
-      int n = atom.getCovalentBondCount() + atom.getMissingHydrogenCount()
-          + atom.getValence() - 4;
+      int n = atom.getCovalentBondCountPlusMissingH();
+      n += atom.getValence();
+      n -= 4;
       if (z == 6) {
         int fc = atom.getFormalCharge(); // add in charge for C
         if (fc != Integer.MIN_VALUE) // SmilesAtom charge not set
@@ -399,7 +400,7 @@ public class SmilesAromatic {
       }
       int pt = (z >= 5 && z <= 8 ? z - 5 // B, C, N, O
           : z == 15 ? 2 // P -> N
-              : z == 34 ? 3 // Se -> O
+              : z == 34 ? 3 // Se - > O
                   : z == 33 ? 4 // As special
                       : z == 16 ? 5 // S special
                           : -1);

@@ -642,12 +642,11 @@ public class Labels extends AtomShape {
     }
   }
 
-  @Override
-  public String getShapeState() {
-    if (!isActive || bsSizeSet == null)
-      return "";
-    return vwr.getShapeState(this);
-  }
+//  @Override
+//  public String getShapeState() {
+//    // not implemented -- see org.jmol.viewer.StateCreator
+//    return null;
+//  }
 
   private int pickedAtom = -1;
   private int pickedOffset = 0;

@@ -55,13 +55,17 @@ import org.jmol.modelset.TickInfo;
 import org.jmol.script.SV;
 import org.jmol.script.T;
 import org.jmol.shape.AtomShape;
+import org.jmol.shape.Axes;
 import org.jmol.shape.Balls;
 import org.jmol.shape.Echo;
+import org.jmol.shape.FontLineShape;
+import org.jmol.shape.Frank;
 import org.jmol.shape.Halos;
 import org.jmol.shape.Hover;
 import org.jmol.shape.Labels;
 import org.jmol.shape.Measures;
 import org.jmol.shape.Shape;
+import org.jmol.shape.Sticks;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.ColorEncoder;
@@ -309,7 +313,7 @@ public class StateCreator extends JmolStateCreator {
         commands.append("  frame orientation " + ms.getModelNumberDotted(i)
             + Escape.matrixToScript(models[i].mat4) + ";\n");
 
-    getShapeState(commands, isAll, Integer.MAX_VALUE);
+    getShapeStatePriv(commands, isAll, Integer.MAX_VALUE);
 
     if (isAll) {
       boolean needOrientations = false;
@@ -339,7 +343,7 @@ public class StateCreator extends JmolStateCreator {
           sb.append("  unitcell ")
               .append(Escape.eAP(m.simpleCage.getUnitCellVectors()))
               .append(";\n");
-          getShapeState(sb, isAll, JC.SHAPE_UCCAGE);
+          getShapeStatePriv(sb, isAll, JC.SHAPE_UCCAGE);
         }
         if (sb.length() > 0)
           commands.append("  frame " + ms.getModelNumberDotted(i) + ";\n")
@@ -363,7 +367,7 @@ public class StateCreator extends JmolStateCreator {
         }
         if (loadUC)
           vwr.shm.loadShape(JC.SHAPE_UCCAGE); // just in case
-        getShapeState(commands, isAll, JC.SHAPE_UCCAGE);
+        getShapeStatePriv(commands, isAll, JC.SHAPE_UCCAGE);
         if (haveModulation) {
           Map<String, BS> temp = new Hashtable<String, BS>();
           int ivib;
@@ -386,28 +390,6 @@ public class StateCreator extends JmolStateCreator {
     if (sfunc != null)
       commands.append("\n}\n\n");
     return commands.toString();
-  }
-
-  private void getShapeState(SB commands, boolean isAll, int iShape) {
-    Shape[] shapes = vwr.shm.shapes;
-    if (shapes == null)
-      return;
-    String cmd;
-    Shape shape;
-    int i;
-    int imax;
-    if (iShape == Integer.MAX_VALUE) {
-      i = 0;
-      imax = JC.SHAPE_MAX;
-    } else {
-      imax = (i = iShape) + 1;
-    }
-    for (; i < imax; ++i)
-      if ((shape = shapes[i]) != null && (isAll || 
-          i >= JC.SHAPE_MIN_SECONDARY && i < JC.SHAPE_MAX_SECONDARY)
-          && (cmd = shape.getShapeState()) != null && cmd.length() > 1)
-        commands.append(cmd);
-    commands.append("  select *;\n");
   }
 
   private String getWindowState(SB sfunc, int width, int height) {
@@ -917,8 +899,7 @@ public class StateCreator extends JmolStateCreator {
     app(sb, key + Escape.eBS(bs));
   }
 
-  @Override
-  String getFontState(String myType, Font font3d) {
+  private String getFontState(String myType, Font font3d) {
     int objId = StateManager.getObjectIdFromName(myType
         .equalsIgnoreCase("axes") ? "axis" : myType);
     if (objId < 0)
@@ -934,20 +915,6 @@ public class StateCreator extends JmolStateCreator {
     if (fcmd.length() > 0)
       fcmd = "  " + fcmd + ";\n";
     return (s + fcmd);
-  }
-
-  @Override
-  String getFontLineShapeState(String s, String myType,
-                                      TickInfo[] tickInfos) {
-    boolean isOff = (s.indexOf(" off") >= 0);
-    SB sb = new SB();
-    sb.append(s);
-    for (int i = 0; i < 4; i++)
-      if (tickInfos[i] != null)
-        appendTickInfo(myType, sb, tickInfos[i]);
-    if (isOff)
-      sb.append("  " + myType + " off;\n");
-    return sb.toString();
   }
 
   private void appendTickInfo(String myType, SB sb, TickInfo t) {
@@ -975,11 +942,12 @@ public class StateCreator extends JmolStateCreator {
       sb.append(" point ").append(Escape.eP(tickInfo.reference));
   }
 
-  @Override
-  String getMeasurementState(Measures shape,
-                                    Lst<Measurement> mList,
-                                    int measurementCount, Font font3d,
-                                    TickInfo ti) {
+  private String getMeasurementState(Measures shape) {
+
+    Lst<Measurement> mList = shape.measurements;
+    int measurementCount = shape.measurementCount;
+    Font font3d = shape.font3d;
+    TickInfo ti = shape.defaultTickInfo;
     SB commands = new SB();
     app(commands, "measures delete");
     for (int i = 0; i < measurementCount; i++) {
@@ -1006,8 +974,7 @@ public class StateCreator extends JmolStateCreator {
       sb.append("; # " + shape.getInfoAsString(i));
       app(commands, sb.toString());
     }
-    app(commands, "select *; set measures "
-        + vwr.g.measureDistanceUnits);
+    app(commands, "select *; set measures " + vwr.g.measureDistanceUnits);
     app(commands, Shape.getFontCommand("measures", font3d));
     int nHidden = 0;
     Map<String, BS> temp = new Hashtable<String, BS>();
@@ -1022,8 +989,7 @@ public class StateCreator extends JmolStateCreator {
         BSUtil.setMapBitSet(temp, i, i, Shape.getColorCommandUnk("measure",
             m.colix, shape.translucentAllowed));
       if (m.strFormat != null)
-        BSUtil.setMapBitSet(temp, i, i, "measure "
-            + PT.esc(m.strFormat));
+        BSUtil.setMapBitSet(temp, i, i, "measure " + PT.esc(m.strFormat));
     }
     if (nHidden > 0)
       if (nHidden == measurementCount)
@@ -1052,8 +1018,34 @@ public class StateCreator extends JmolStateCreator {
   private Map<String, BS> temp2 = new Hashtable<String, BS>();
   private Map<String, BS> temp3 = new Hashtable<String, BS>();
 
-  @Override
-  String getBondState(Shape shape, BS bsOrderSet, boolean reportAll) {
+  private void getShapeStatePriv(SB commands, boolean isAll, int iShape) {
+    Shape[] shapes = vwr.shm.shapes;
+    if (shapes == null)
+      return;
+    int i;
+    int imax;
+    if (iShape == Integer.MAX_VALUE) {
+      i = 0;
+      imax = JC.SHAPE_MAX;
+    } else {
+      imax = (i = iShape) + 1;
+    }
+    for (; i < imax; ++i) {
+      Shape shape = shapes[i];
+      if (shape != null
+          && (isAll || i >= JC.SHAPE_MIN_SECONDARY
+              && i < JC.SHAPE_MAX_SECONDARY)) {
+        String cmd = getShapeState(shape);
+        if (cmd != null && cmd.length() > 1)
+          commands.append(cmd);
+      }
+    }
+    commands.append("  select *;\n");
+  }
+
+  private String getBondState(Sticks shape) {
+    BS bsOrderSet = shape.bsOrderSet;
+    boolean reportAll = shape.reportAll;
     clearTemp();
     ModelSet modelSet = vwr.ms;
     boolean haveTainted = false;
@@ -1101,10 +1093,41 @@ public class StateCreator extends JmolStateCreator {
     temp2.clear();
   }
 
-  @Override
-  String getShapeState(Shape shape) {
+  private String getShapeState(Shape shape) {
     String s;
     switch (shape.shapeID) {
+    case JC.SHAPE_AXES:
+      s = getAxesState((Axes) shape);
+      break;
+    case JC.SHAPE_UCCAGE:
+      if (!vwr.ms.haveUnitCells)
+        return "";
+      String st = s = getFontLineShapeState((FontLineShape) shape);
+      int iAtom = vwr.am.cai;
+      if (iAtom >= 0)
+        s += "  unitcell ({" + iAtom + "});\n"; 
+      SymmetryInterface uc = vwr.getCurrentUnitCell();
+      if (uc != null) { 
+        s += uc.getUnitCellState();
+        s += st; // needs to be after this state as well.
+      }
+      break;
+    case JC.SHAPE_BBCAGE:
+      s = getFontLineShapeState((FontLineShape) shape);
+      break;
+    case JC.SHAPE_FRANK:
+      s = getFontState(shape.myType, ((Frank) shape).baseFont3d);
+      break;
+    case JC.SHAPE_MEASURES:
+      s = getMeasurementState((Measures) shape);
+      break;
+    case JC.SHAPE_STARS:
+    case JC.SHAPE_VECTORS:
+      s = getAtomShapeState((AtomShape) shape);
+      break;
+    case JC.SHAPE_STICKS:
+      s = getBondState((Sticks) shape);
+      break;
     case JC.SHAPE_ECHO:
       Echo es = (Echo) shape;
       SB sb = new SB();
@@ -1112,8 +1135,8 @@ public class StateCreator extends JmolStateCreator {
       for (Text t : es.objects.values()) {
         sb.append(getTextState(t));
         if (t.hidden)
-          sb.append("  set echo ID ").append(PT.esc(t.target)).append(
-              " hidden;\n");
+          sb.append("  set echo ID ").append(PT.esc(t.target))
+              .append(" hidden;\n");
       }
       s = sb.toString();
       break;
@@ -1123,8 +1146,7 @@ public class StateCreator extends JmolStateCreator {
           + (hs.colixSelection == C.USE_PALETTE ? ""
               : hs.colixSelection == C.INHERIT_ALL ? "  color SelectionHalos NONE;\n"
                   : Shape.getColorCommandUnk("selectionHalos",
-                      hs.colixSelection, hs.translucentAllowed)
-                      + ";\n");
+                      hs.colixSelection, hs.translucentAllowed) + ";\n");
       if (hs.bsHighlight != null)
         s += "  set highlight "
             + Escape.eBS(hs.bsHighlight)
@@ -1138,16 +1160,17 @@ public class StateCreator extends JmolStateCreator {
       if (h.atomFormats != null)
         for (int i = vwr.ms.ac; --i >= 0;)
           if (h.atomFormats[i] != null)
-            BSUtil.setMapBitSet(temp, i, i, "set hoverLabel "
-                + PT.esc(h.atomFormats[i]));
-      s = "\n  hover "
-          + PT.esc((h.labelFormat == null ? "" : h.labelFormat)) + ";\n"
-          + getCommands(temp, null, "select");
+            BSUtil.setMapBitSet(temp, i, i,
+                "set hoverLabel " + PT.esc(h.atomFormats[i]));
+      s = "\n  hover " + PT.esc((h.labelFormat == null ? "" : h.labelFormat))
+          + ";\n" + getCommands(temp, null, "select");
       clearTemp();
       break;
     case JC.SHAPE_LABELS:
-      clearTemp();
       Labels l = (Labels) shape;
+      if (l.isActive && l.bsSizeSet != null)
+        return "";
+      clearTemp();
       for (int i = l.bsSizeSet.nextSetBit(0); i >= 0; i = l.bsSizeSet
           .nextSetBit(i + 1)) {
         Text t = l.getLabel(i);
@@ -1164,8 +1187,8 @@ public class StateCreator extends JmolStateCreator {
           BSUtil.setMapBitSet(temp2, i, i, Shape.getColorCommand("label",
               l.paletteIDs[i], l.colixes[i], l.translucentAllowed));
         if (l.bsBgColixSet != null && l.bsBgColixSet.get(i))
-          BSUtil.setMapBitSet(temp2, i, i, "background label "
-              + Shape.encodeColor(l.bgcolixes[i]));
+          BSUtil.setMapBitSet(temp2, i, i,
+              "background label " + Shape.encodeColor(l.bgcolixes[i]));
         Text text = l.getLabel(i);
         float sppm = (text != null ? text.scalePixelsPerMicron : 0);
         if (sppm > 0)
@@ -1173,17 +1196,14 @@ public class StateCreator extends JmolStateCreator {
               + (10000f / sppm));
         if (l.offsets != null && l.offsets.length > i) {
           int offsetFull = l.offsets[i];
-          BSUtil
-              .setMapBitSet(
-                  temp2,
-                  i,
-                  i,
-                  "set "
-                      + (JC.isOffsetAbsolute(offsetFull) ? "labelOffsetAbsolute "
-                          : "labelOffset ")
-                      + JC.getXOffset(offsetFull)
-                      + " "
-                      + JC.getYOffset(offsetFull));
+          BSUtil.setMapBitSet(
+              temp2,
+              i,
+              i,
+              "set "
+                  + (JC.isOffsetAbsolute(offsetFull) ? "labelOffsetAbsolute "
+                      : "labelOffset ") + JC.getXOffset(offsetFull) + " "
+                  + JC.getYOffset(offsetFull));
           String align = JC.getHorizAlignmentName(offsetFull >> 2);
           String pointer = JC.getPointerName(offsetFull);
           if (pointer.length() > 0)
@@ -1201,8 +1221,8 @@ public class StateCreator extends JmolStateCreator {
         if (l.mads != null && l.mads[i] < 0)
           BSUtil.setMapBitSet(temp2, i, i, "set toggleLabel");
         if (l.bsFontSet != null && l.bsFontSet.get(i))
-          BSUtil.setMapBitSet(temp2, i, i, Shape.getFontCommand("label",
-              Font.getFont3D(l.fids[i])));
+          BSUtil.setMapBitSet(temp2, i, i,
+              Shape.getFontCommand("label", Font.getFont3D(l.fids[i])));
       }
       s = getCommands(temp, temp2, "select")
           + getCommands(null, temp3, "select");
@@ -1210,7 +1230,7 @@ public class StateCreator extends JmolStateCreator {
       clearTemp();
       break;
     case JC.SHAPE_BALLS:
-      clearTemp();  
+      clearTemp();
       int ac = vwr.ms.ac;
       Atom[] atoms = vwr.ms.at;
       Balls balls = (Balls) shape;
@@ -1238,8 +1258,76 @@ public class StateCreator extends JmolStateCreator {
       clearTemp();
       break;
     default:
-      s = "";
+      s = shape.getShapeState();
+      break;
     }
+    return s;
+  }
+
+  private String getFontLineShapeState(FontLineShape shape) {
+    String s = getFontState(shape.myType, shape.font3d);
+    if (shape.tickInfos == null)
+      return s;
+    boolean isOff = (s.indexOf(" off") >= 0);
+    SB sb = new SB();
+    sb.append(s);
+    for (int i = 0; i < 4; i++)
+      if (shape.tickInfos[i] != null)
+        appendTickInfo(shape.myType, sb, shape.tickInfos[i]);
+    if (isOff)
+      sb.append("  " + shape.myType + " off;\n");
+    return sb.toString();
+  }
+  
+  private String getAxesState(Axes axes) {
+    SB sb = new SB();
+    sb.append(getFontLineShapeState(axes));
+    sb.append("  axes scale ").appendF(vwr.getFloat(T.axesscale)).append(";\n"); 
+    if (axes.fixedOrigin != null)
+      sb.append("  axes center ")
+          .append(Escape.eP(axes.fixedOrigin)).append(";\n");
+    P3 axisXY = axes.axisXY;
+    if (axisXY.z != 0)
+      sb.append("  axes position [")
+          .appendI((int) axisXY.x).append(" ")
+          .appendI((int) axisXY.y).append(" ")
+          .append(axisXY.z < 0 ? " %" : "").append("];\n");
+    String[] labels = axes.labels;
+    if (labels != null) {
+      sb.append("  axes labels ");
+      for (int i = 0; i < labels.length; i++)
+        if (labels[i] != null)
+          sb.append(PT.esc(labels[i])).append(" ");
+      sb.append(";\n");
+    }
+    if (axes.axisType != null) {
+      sb.append("  axes type " + PT.esc(axes.axisType));
+    }
+    return sb.toString();
+  }
+
+
+  @Override
+  public String getAtomShapeState(AtomShape shape) {
+    // called also by Polyhedra
+    if (!shape.isActive)
+      return "";
+    clearTemp();
+    String type = JC.shapeClassBases[shape.shapeID];
+    boolean isVector = (shape.shapeID == JC.SHAPE_VECTORS);
+    int mad;
+    if (shape.bsSizeSet != null)
+      for (int i = shape.bsSizeSet.nextSetBit(0); i >= 0; i = shape.bsSizeSet
+          .nextSetBit(i + 1))
+        BSUtil.setMapBitSet(temp, i, i, type
+            + " " + ((mad = shape.mads[i]) < 0 ? (isVector && mad < -1 ? "" + -mad :  "on") : PT.escF(mad / 2000f)));
+    if (shape.bsColixSet != null)
+      for (int i = shape.bsColixSet.nextSetBit(0); i >= 0; i = shape.bsColixSet
+          .nextSetBit(i + 1))
+        BSUtil.setMapBitSet(temp2, i, i, Shape.getColorCommand(type,
+            shape.paletteIDs[i], shape.colixes[i], shape.translucentAllowed));
+    String s = getCommands(temp, temp2, "select");
+    clearTemp();
     return s;
   }
 
@@ -1385,27 +1473,6 @@ public class StateCreator extends JmolStateCreator {
     }
     sb.append(sep).append(s.substring(pt, len));
     return sb.toString();
-  }
-
-  @Override
-  String getAtomShapeState(AtomShape shape) {
-    clearTemp();
-    String type = JC.shapeClassBases[shape.shapeID];
-    boolean isVector = (shape.shapeID == JC.SHAPE_VECTORS);
-    int mad;
-    if (shape.bsSizeSet != null)
-      for (int i = shape.bsSizeSet.nextSetBit(0); i >= 0; i = shape.bsSizeSet
-          .nextSetBit(i + 1))
-        BSUtil.setMapBitSet(temp, i, i, type
-            + " " + ((mad = shape.mads[i]) < 0 ? (isVector && mad < -1 ? "" + -mad :  "on") : PT.escF(mad / 2000f)));
-    if (shape.bsColixSet != null)
-      for (int i = shape.bsColixSet.nextSetBit(0); i >= 0; i = shape.bsColixSet
-          .nextSetBit(i + 1))
-        BSUtil.setMapBitSet(temp2, i, i, Shape.getColorCommand(type,
-            shape.paletteIDs[i], shape.colixes[i], shape.translucentAllowed));
-    String s = getCommands(temp, temp2, "select");
-    clearTemp();
-    return s;
   }
 
   @Override

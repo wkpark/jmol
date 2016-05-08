@@ -74,9 +74,10 @@ public class Halos extends AtomShape {
           || mads != null && mads[i] != 0);
   }
 
-  @Override
-  public String getShapeState() {
-    return vwr.getShapeState(this);
-  }
-
+//  @Override
+//  public String getShapeState() {
+//    // not implemented -- see org.jmol.viewer.StateCreator
+//    return null;
+//  }
+//
 }

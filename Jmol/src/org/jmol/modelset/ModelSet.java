@@ -25,19 +25,11 @@
 
 package org.jmol.modelset;
 
-import org.jmol.util.BSUtil;
-import org.jmol.util.BoxInfo;
-import org.jmol.util.Edge;
-import org.jmol.util.Elements;
-import org.jmol.util.Escape;
-import org.jmol.util.JmolMolecule;
-import org.jmol.util.Logger;
-import org.jmol.util.Point3fi;
-import org.jmol.util.Rectangle;
-import org.jmol.util.SimpleUnitCell;
-import org.jmol.util.Tensor;
-import org.jmol.util.Triangulator;
-import org.jmol.util.Vibration;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
 
 import javajs.util.A4;
 import javajs.util.AU;
@@ -53,14 +45,6 @@ import javajs.util.SB;
 import javajs.util.T3;
 import javajs.util.V3;
 
-import org.jmol.viewer.JC;
-import org.jmol.viewer.ShapeManager;
-import org.jmol.viewer.TransformManager;
-import org.jmol.viewer.Viewer;
-import org.jmol.java.BS;
-import org.jmol.modelsetbio.BioModel;
-import org.jmol.modelsetbio.BioModelSet;
-import org.jmol.script.T;
 import org.jmol.api.AtomIndexIterator;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolModulationSet;
@@ -72,14 +56,27 @@ import org.jmol.bspt.CubeIterator;
 import org.jmol.c.PAL;
 import org.jmol.c.STR;
 import org.jmol.c.VDW;
+import org.jmol.java.BS;
+import org.jmol.modelsetbio.BioModel;
+import org.jmol.script.T;
 import org.jmol.shape.Shape;
-
-
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
+import org.jmol.util.BSUtil;
+import org.jmol.util.BoxInfo;
+import org.jmol.util.Edge;
+import org.jmol.util.Elements;
+import org.jmol.util.Escape;
+import org.jmol.util.JmolMolecule;
+import org.jmol.util.Logger;
+import org.jmol.util.Point3fi;
+import org.jmol.util.Rectangle;
+import org.jmol.util.SimpleUnitCell;
+import org.jmol.util.Tensor;
+import org.jmol.util.Triangulator;
+import org.jmol.util.Vibration;
+import org.jmol.viewer.JC;
+import org.jmol.viewer.ShapeManager;
+import org.jmol.viewer.TransformManager;
+import org.jmol.viewer.Viewer;
 
 
 /*
@@ -106,12 +103,6 @@ import java.util.Properties;
  */
 public class ModelSet extends BondCollection {
 
-  /**
-   * If any model in the collection is a BioModel, then
-   * it is also indicated here as a "bioModelset", meaning
-   * 
-   */
-  public BioModelSet bioModelset;
   public boolean haveBioModels;
   
   protected BS bsSymmetry;
@@ -2360,6 +2351,7 @@ public class ModelSet extends BondCollection {
       bsBonds = new BS();
     boolean matchAny = (order == Edge.BOND_ORDER_ANY);
     boolean matchNull = (order == Edge.BOND_ORDER_NULL);
+    boolean isAtrop = (order == Edge.TYPE_ATROPISOMER);
     if (matchNull)
       order = Edge.BOND_COVALENT_SINGLE; //default for setting
     boolean matchHbond = Bond.isOrderH(order);
@@ -2462,6 +2454,8 @@ public class ModelSet extends BondCollection {
           } else {
             if (notAnyAndNoId) {
               bondAB.setOrder(order);
+              if (isAtrop)
+                bondAB.setAtropisomerOptions(bsA, bsB);
               bsAromatic.clear(bondAB.index);
             }
             if (anyOrNoId || order == bondAB.order || newOrder == bondAB.order

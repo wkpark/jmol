@@ -1153,6 +1153,119 @@ public class BioExt {
     return info;
   }
 
+  /**
+   * returns an array if we have special hybridization or charge
+   * 
+   * @param res
+   * @param name
+   * @param ret
+   *        [0] (target valence) may be reduced by one for sp2 for C or O only
+   *        [1] will be set to 1 if positive (lysine or terminal N) or -1 if negative (OXT)
+   *        [2] will be set to 2 if sp2 
+   *        [3] is supplied covalent bond count
+   * @return true for special; false if not
+   */
+  boolean getAminoAcidValenceAndCharge(String res, String name,
+                                                     int[] ret) {
+    int valence = ret[4];
+    ret[4] = 0;
+    if (res == null || res.length() == 0 || res.length() > 3 || name.equals("CA")
+        || name.equals("CB"))
+      return false;
+    char ch0 = name.charAt(0);
+    char ch1 = (name.length() == 1 ? '\0' : name.charAt(1));
+    boolean isSp2 = false;
+    int bondCount = ret[3];
+    switch (res.length()) {
+    case 3:
+      // protein, but also carbohydrate?
+      if (name.length() == 1) {
+        switch (ch0) {
+        case 'N':
+          // terminal N?
+          if (bondCount > 1)
+            return false;
+          ret[1] = 1;
+          break;
+        case 'O':
+          if (valence == 1) {
+            return true;
+          }
+          isSp2 = ("HOH;DOD;WAT".indexOf(res) < 0);
+          break;
+        default:
+          isSp2 = true;
+        }
+      } else {
+        String id = res + ch0;
+        isSp2 = (aaSp2.indexOf(id) >= 0);
+        if (aaPlus.indexOf(id) >= 0) {
+          // LYS N is 1+
+          ret[1] = 1;
+        } else if (ch0 == 'O' && ch1 == 'X') {
+          // terminal O is 1-
+          ret[1] = -1;
+        }
+      }
+      break;
+    case 1:
+    case 2:
+      // dna/rna
+      if (name.length() > 2 && name.charAt(2) == '\'')
+        return false;
+      switch (ch0) {
+      case 'C':
+        if (ch1 == '7') // T CH3
+          return false;
+        break;
+      case 'N':
+        switch (ch1) {
+        case '1':
+        case '3':
+          if (naNoH.indexOf("" + res.charAt(res.length() - 1) + ch1) >= 0)
+            ret[0]--;
+          break;
+        case '7':
+          ret[0]--;
+          break;
+        }
+        break;
+      }
+      isSp2 = true;
+    }
+    if (isSp2) {
+      ret[4] = (aaSp21.indexOf(res + name) >= 0 ? 0 : 1);
+      switch (ch0) {
+      case 'N':
+        ret[2] = 2;
+        if (valence == 2 && bondCount == 1) // already double bonded
+          ret[4]++;
+        break;
+      case 'C':
+        ret[2] = 2;
+        ret[0]--;
+        break;
+      case 'O':
+        if (valence == 2 && bondCount == 1) // already double bonded
+          ret[4]--;
+        ret[0]--;
+        break;
+      }
+    }
+    return true;
+  }
+  private final static String naNoH = 
+  "A3;A1;C3;G3;I3";
+  private final static String aaSp2 = 
+  "ARGN;ASNN;ASNO;ASPO;" +
+  "GLNN;GLNO;GLUO;" +
+  "HISN;HISC;PHEC" +
+  "TRPC;TRPN;TYRC";
+  private final static String aaSp21 = 
+  "ARGNE;ARGNH1;ASNNH2;GLNNE2;TRPNE1;HISNE2";
+  
+  private final static String aaPlus = 
+  "LYSN";
   
 
 }

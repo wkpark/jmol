@@ -25,6 +25,7 @@
 
 package org.jmol.modelset;
 
+import org.jmol.java.BS;
 import org.jmol.util.C;
 import org.jmol.util.Edge;
 import org.jmol.util.Node;
@@ -92,10 +93,6 @@ public class Bond extends Edge {
     return isOrderH(order);
   }
 
-  public static boolean isOrderH(int order) {
-    return (order & BOND_HYDROGEN_MASK) != 0;
-  }
-
   boolean isStereo() {
     return (order & BOND_STEREO_MASK) != 0;
   }
@@ -106,10 +103,6 @@ public class Bond extends Edge {
 
   boolean isAromatic() {
     return (order & BOND_AROMATIC_MASK) != 0;
-  }
-
-  boolean isPymolStyle() {
-    return (order & BOND_PYMOL_MULT) == BOND_PYMOL_MULT;
   }
 
   public float getEnergy() {
@@ -164,8 +157,6 @@ public class Bond extends Edge {
     return (atom1 == thisAtom ? atom2 : atom2 == thisAtom ? atom1 : null);
   }
   
-  ////////////////////////////////////////////////////////////////
-  
   public boolean is(int bondType) {
     return (order & ~BOND_NEW) == bondType;
   }
@@ -175,6 +166,29 @@ public class Bond extends Edge {
     return (atom1 == thisAtom ? atom2 : atom2 == thisAtom ? atom1 : null);
   }
   
+  public void setAtropisomerOptions(BS bsA, BS bsB) {
+    boolean isBA = bsB.get(atom1.i);
+    BS bs1 = (isBA ? bsB : bsA);
+    BS bs2 = (isBA ? bsA : bsB);
+    int i1, i2 = Integer.MAX_VALUE;
+    Bond[] bonds = atom1.bonds;
+    for (i1 = 0; i1 < bonds.length; i1++) {
+      Atom a = bonds[i1].getOtherAtom(atom1);
+      if (bs1.get(a.i) && a != atom2)
+        break;
+    }
+    if (i1 < bonds.length) {
+      bonds = atom2.bonds;
+      for (i2 = 0; i2 < bonds.length; i2++) {
+        Atom a = bonds[i2].getOtherAtom(atom2);
+        if (bs2.get(a.i) && a != atom1)
+          break;
+      }
+    }
+    order = (i1 > 2 || i2 >= bonds.length || i2 > 2 ? BOND_COVALENT_SINGLE
+        : getAtropismOrder(i1 + 1, i2 + 1));
+  }
+
   @Override
   public String toString() {
     return atom1 + " - " + atom2;

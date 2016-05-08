@@ -415,4 +415,10 @@ public class BioShape extends AtomShape {
     }
   }
 
+  @Override
+   public String getShapeState() {
+    // implemented in BioShapeCollection, not here
+    return null;
+  }
+
 }

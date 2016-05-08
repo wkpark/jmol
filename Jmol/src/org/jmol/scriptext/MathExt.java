@@ -649,11 +649,11 @@ public class MathExt {
           return mp.addXStr(vwr.getSmilesMatcher()
               .getRelationship(smiles1, smiles2).toUpperCase());
         String mf1 = (bs1 == null ? vwr.getSmilesMatcher().getMolecularFormula(
-            smiles1, false) : JmolMolecule.getMolecularFormula(vwr.ms.at, bs1,
-            false, null, false));
+            smiles1, false) : JmolMolecule.getMolecularFormulaAtoms(vwr.ms.at, bs1,
+            null, false));
         String mf2 = (bs2 == null ? vwr.getSmilesMatcher().getMolecularFormula(
-            smiles2, false) : JmolMolecule.getMolecularFormula(vwr.ms.at, bs2,
-            false, null, false));
+            smiles2, false) : JmolMolecule.getMolecularFormulaAtoms(vwr.ms.at, bs2,
+            null, false));
         if (!mf1.equals(mf2))
           return mp.addXStr("NONE");
         if (bs1 != null)
@@ -1378,7 +1378,8 @@ public class MathExt {
                   null,
                   isSMARTS ? JC.SMILES_TYPE_SMARTS : JC.SMILES_TYPE_SMILES,
                   !asMap, !allMappings);
-            } catch (Exception e) {
+            } catch (Exception ex) {
+              System.out.println(ex.getMessage());
               return mp.addXInt(-1);
             }
             if (justOne) {
@@ -1392,8 +1393,8 @@ public class MathExt {
           if (isMF && flags.length() != 0)
             return mp.addXBs(JmolMolecule.getBitSetForMF(vwr.ms.at, bs, flags));
           if (isMF || isCF)
-            return mp.addXStr(JmolMolecule.getMolecularFormula(vwr.ms.at, bs,
-                false, (isMF ? null : vwr.ms.getCellWeights(bs)), isON));
+            return mp.addXStr(JmolMolecule.getMolecularFormulaAtoms(vwr.ms.at, bs,
+                 (isMF ? null : vwr.ms.getCellWeights(bs)), isON));
           if (isSequence || isSeq) {
             boolean isHH = (argLast.asString().equalsIgnoreCase("H"));
             isAll |= isHH;

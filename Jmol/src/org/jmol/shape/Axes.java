@@ -27,14 +27,11 @@ package org.jmol.shape;
 
 import javajs.awt.Font;
 import javajs.util.P3;
-import javajs.util.PT;
-import javajs.util.SB;
 import javajs.util.V3;
 
 import org.jmol.api.SymmetryInterface;
 import org.jmol.java.BS;
 import org.jmol.script.T;
-import org.jmol.util.Escape;
 import org.jmol.viewer.JC;
 
 public class Axes extends FontLineShape {
@@ -203,29 +200,9 @@ public class Axes extends FontLineShape {
     }
   }
   
- @Override
-public String getShapeState() {
-    SB sb = new SB();
-    sb.append("  axes scale ").appendF(vwr.getFloat(T.axesscale)).append(";\n"); 
-    if (fixedOrigin != null)
-      sb.append("  axes center ")
-          .append(Escape.eP(fixedOrigin)).append(";\n");
-    if (axisXY.z != 0)
-      sb.append("  axes position [")
-          .appendI((int) axisXY.x).append(" ")
-          .appendI((int) axisXY.y).append(" ")
-          .append(axisXY.z < 0 ? " %" : "").append("];\n");
-    if (labels != null) {
-      sb.append("  axes labels ");
-      for (int i = 0; i < labels.length; i++)
-        if (labels[i] != null)
-          sb.append(PT.esc(labels[i])).append(" ");
-      sb.append(";\n");
-    }
-    if (axisType != null) {
-      sb.append("  axes type " + PT.esc(axisType));
-    }
-    return getShapeStateFL() + sb;
-  }
+// @Override
+//public String getShapeState() {
+//   return null;
+//  }
 
 }

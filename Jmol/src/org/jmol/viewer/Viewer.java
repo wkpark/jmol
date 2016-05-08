@@ -99,20 +99,15 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.LabelToken;
-import org.jmol.modelset.Measurement;
 import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.MeasurementPending;
 import org.jmol.modelset.ModelSet;
 import org.jmol.modelset.Orientation;
 import org.jmol.modelset.StateScript;
-import org.jmol.modelset.TickInfo;
 import org.jmol.modelsetbio.BioResolver;
 import org.jmol.script.SV;
 import org.jmol.script.ScriptContext;
 import org.jmol.script.T;
-import org.jmol.shape.AtomShape;
-import org.jmol.shape.Measures;
-import org.jmol.shape.Shape;
 import org.jmol.thread.TimeoutThread;
 import org.jmol.util.BSUtil;
 import org.jmol.util.BoxInfo;
@@ -1243,10 +1238,6 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   public short getObjectColix(int objId) {
     int argb = g.objColors[objId];
     return (argb == 0 ? cm.colixBackgroundContrast : C.getColix(argb));
-  }
-
-  public String getFontState(String myType, Font font3d) {
-    return getStateCreator().getFontState(myType, font3d);
   }
 
   // for historical reasons, leave these two:
@@ -9024,30 +9015,6 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       return sm.resizeInnerPanel(width, height);
     setScreenDimension(width, height);
     return new int[] { dimScreen.width, dimScreen.height };
-  }
-
-  public String getFontLineShapeState(String s, String myType,
-                                      TickInfo[] tickInfos) {
-    return getStateCreator().getFontLineShapeState(s, myType, tickInfos);
-  }
-
-  public String getMeasurementState(Measures measures, Lst<Measurement> mList,
-                                    int measurementCount, Font font3d,
-                                    TickInfo ti) {
-    return getStateCreator().getMeasurementState(measures, mList,
-        measurementCount, font3d, ti);
-  }
-
-  public String getBondState(Shape shape, BS bsOrderSet, boolean reportAll) {
-    return getStateCreator().getBondState(shape, bsOrderSet, reportAll);
-  }
-
-  public String getShapeState(Shape shape) {
-    return getStateCreator().getShapeState(shape);
-  }
-
-  public String getAtomShapeState(AtomShape shape) {
-    return getStateCreator().getAtomShapeState(shape);
   }
 
   public String getDefaultPropertyParam(int propertyID) {

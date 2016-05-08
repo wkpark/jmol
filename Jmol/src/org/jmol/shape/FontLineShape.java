@@ -65,11 +65,12 @@ public abstract class FontLineShape extends Shape {
 
   @Override
   public String getShapeState() {
-    return getShapeStateFL();
+    // see StateCreator
+    return null;
   }
-
-  protected String getShapeStateFL() {
-    String s = vwr.getFontState(myType, font3d);
-    return (tickInfos == null ? s : vwr.getFontLineShapeState(s, myType, tickInfos));
-  }
+//
+//  protected String getShapeStateFL() {
+//    String s = vwr.getFontState(myType, font3d);
+//    return (tickInfos == null ? s : vwr.getFontLineShapeState(s, myType, tickInfos));
+//  }
 }

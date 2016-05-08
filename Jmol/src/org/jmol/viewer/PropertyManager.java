@@ -946,7 +946,7 @@ public class PropertyManager implements JmolPropertyManager {
       bsTemp.and(m.atomList);
       if (bsTemp.length() > 0) {
         Map<String, Object> info = new Hashtable<String, Object>();
-        info.put("mf", m.getMolecularFormula(false, null, false)); // sets ac and nElements
+        info.put("mf", m.getMolecularFormula(true, null, false)); // sets ac and nElements
         info.put("number", Integer.valueOf(m.moleculeIndex + 1)); //for now
         info.put("modelNumber", vwr.ms.getModelNumberDotted(m.modelIndex));
         info.put("numberInModel", Integer.valueOf(m.indexInModel + 1));
@@ -1697,6 +1697,7 @@ public class PropertyManager implements JmolPropertyManager {
     vwr.ms.getAtomIdentityInfo(atom2.i, infoB, ptTemp);
     info.put("atom1", infoA);
     info.put("atom2", infoB);
+    info.put("jmol_order", "0x" + Integer.toHexString(bond.order));
     info.put("order", Float.valueOf(PT.fVal(Edge
         .getBondOrderNumberFromOrder(bond.order))));
     info.put("type", Edge.getBondOrderNameFromOrder(bond.order));

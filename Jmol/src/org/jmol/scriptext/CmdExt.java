@@ -1770,9 +1770,10 @@ public class CmdExt extends ScriptExt {
           radius = vwr.getFloat(T.strutdefaultradius);
           isColorOrRadius = true;
         }
-        if (!haveOperation)
+        if (!haveOperation) {
           operation = T.modifyorcreate;
-        haveOperation = true;
+          haveOperation = true;
+        }
         //$FALL-THROUGH$
       case T.identifier:
         if (eval.isColorParam(i)) {
@@ -1787,9 +1788,8 @@ public class CmdExt extends ScriptExt {
         // I know -- should have required the COLOR keyword
         //}
         String cmd = paramAsStr(i);
-        if ((bo = ScriptParam.getBondOrderFromString(cmd)) == Edge.BOND_ORDER_NULL) {
+        if ((bo = ScriptParam.getBondOrderFromString(cmd)) == Edge.BOND_ORDER_NULL)
           invArg();
-        }
         // must be bond type
         if (haveType)
           eval.error(ScriptError.ERROR_incompatibleArguments);
@@ -1809,6 +1809,12 @@ public class CmdExt extends ScriptExt {
           if (tokAt(i + 1) == T.integer) {
             bo = (short) (intParameter(++i) << Edge.BOND_HBOND_SHIFT);
             energy = floatParameter(++i);
+          }
+          break;
+        case Edge.TYPE_ATROPISOMER:
+          if (!haveOperation) {
+            operation = T.modify;
+            haveOperation = true;
           }
           break;
         }

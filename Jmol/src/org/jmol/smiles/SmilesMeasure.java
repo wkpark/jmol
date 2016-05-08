@@ -27,6 +27,7 @@ package org.jmol.smiles;
 
 import javajs.util.P3;
 import javajs.util.PT;
+import javajs.util.T3;
 
 public class SmilesMeasure  {
 
@@ -89,9 +90,7 @@ public class SmilesMeasure  {
       d = search.v.vA.angle(search.v.vB) / radiansPerDegree;
       break;
     case 4:
-      setTorsionData(points[0], points[1], points[2], points[3], search.v, true);
-      d = search.v.vTemp1.angle(search.v.vTemp2) / radiansPerDegree
-          * (search.v.vNorm2.dot(search.v.vNorm3) < 0 ? 1 : -1);
+      d = setTorsionData(points[0], points[1], points[2], points[3], search.v, true);
       break;
     }
     for (int i = minmax.length - 2; i >= 0; i -= 2)
@@ -100,16 +99,45 @@ public class SmilesMeasure  {
     return isNot;
   }
 
-  public static void setTorsionData(P3 pt1a, P3 pt1,
-                                    P3 pt2, P3 pt2a,
-                                    VTemp v, boolean isAll) {
+  /**
+   * calculate temporary points
+   * @param pt1a
+   * @param pt1
+   * @param pt2
+   * @param pt2a
+   * @param v
+   * @param withDihedral
+   * @return dihedral or 0
+   */
+  public static float setTorsionData(T3 pt1a, T3 pt1,
+                                    T3 pt2, T3 pt2a,
+                                    VTemp v, boolean withDihedral) {
     // We cross dihedral bonds with the bond axis
     // to get two vector projections in the
     // plane perpendicular to the bond axis
+    
+    //          pt1a_                _pt2a
+    //             |\ vtemp1         /| vtemp2
+    //               \              /
+    //               pt1-----------pt2
+    
+    
+    
     v.vTemp1.sub2(pt1a, pt1);
     v.vTemp2.sub2(pt2a, pt2);
-    if (!isAll)
-      return;
+    if (!withDihedral)
+      return 0;
+    
+    //          pt1a                  pt2a
+    //              \                /
+    //               \              /
+    //               pt1---<vnorm2-pt2
+    
+    //            vtemp1 = (pt1a-pt1) x vnorm2
+    //            vtemp2 = (pt2a-pt2) x vnorm2
+    //            vnorm3 = vtemp1 x vtemp2
+    
+
     v.vNorm2.sub2(pt1, pt2);
     v.vNorm2.normalize();
     v.vTemp1.cross(v.vTemp1, v.vNorm2);
@@ -117,6 +145,9 @@ public class SmilesMeasure  {
     v.vTemp2.cross(v.vTemp2, v.vNorm2);
     v.vTemp2.normalize();
     v.vNorm3.cross(v.vTemp1, v.vTemp2);
+    return v.vTemp1.angle(v.vTemp2) / radiansPerDegree
+        * (v.vNorm2.dot(v.vNorm3) < 0 ? 1 : -1);
+
   }
   
   @Override

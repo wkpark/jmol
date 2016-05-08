@@ -39,7 +39,7 @@ import org.jmol.viewer.JC;
 
 public abstract class AtomShape extends Shape {
 
-  // Balls, Dots, Ellipsoids, Halos, Labels, Polyhedra, Stars, Vectors
+  // Balls, BioShape Dots, Ellipsoids, Halos, Labels, Polyhedra, Stars, Vectors
 
   public short mad = (short)-1;
   public short[] mads;
@@ -224,12 +224,6 @@ public abstract class AtomShape extends Shape {
     }
   }
 
-  @Override
-  public String getShapeState() {
-    // stars and vectors will do this
-    return (isActive ? vwr.getAtomShapeState(this) : "");
-  }
-
   /**
    * @param i  
    * @return script, but only for Measures
@@ -239,4 +233,9 @@ public abstract class AtomShape extends Shape {
     return null;
   }
 
+  @Override
+  public String getShapeState() {
+   // implemented in StateCreator, not here
+   return null;
+ }
 }

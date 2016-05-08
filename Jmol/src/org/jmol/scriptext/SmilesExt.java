@@ -172,18 +172,20 @@ public class SmilesExt {
                                  boolean firstMatchOnly) throws ScriptException {
 
     // just retrieving the SMILES or bioSMILES string
-      if (pattern.length() == 0 || pattern.endsWith("///") || pattern.equals("H") || pattern.equals("*") 
-        || pattern.equalsIgnoreCase("NOAROMATIC")) {
+    if (pattern.length() == 0 || pattern.endsWith("///") || pattern.equals("H")
+        || pattern.equals("top") || pattern.equalsIgnoreCase("NOAROMATIC")) {
       try {
-        
-        return e.vwr.getSmilesOpt(
-            bsSelected,
-            0,
-            0,
-            flags | (pattern.equals("H") ? JC.SMILES_GEN_EXPLICIT_H : 0)
-                | (pattern.equals("*") ? JC.SMILES_GEN_TOPOLOGY : 0)
-                | (pattern.equalsIgnoreCase("NOAROMATIC") ? JC.SMILES_GEN_NOAROMATIC : 0)
-                , (pattern.endsWith("///") ? pattern : null));
+
+        return e.vwr
+            .getSmilesOpt(
+                bsSelected,
+                0,
+                0,
+                flags
+                    | (pattern.equals("H") ? JC.SMILES_GEN_EXPLICIT_H : 0)
+                    | (pattern.equals("top") ? JC.SMILES_GEN_TOPOLOGY : 0)
+                    | (pattern.equalsIgnoreCase("NOAROMATIC") ? JC.SMILES_GEN_NOAROMATIC
+                        : 0), (pattern.endsWith("///") ? pattern : null));
       } catch (Exception ex) {
         e.evalError(ex.getMessage(), null);
       }
@@ -205,7 +207,8 @@ public class SmilesExt {
           for (int j = 0; j < map.length; j++) {
             int[] a = map[j];
             for (int k = a.length; --k >= 0;)
-              bs.set(a[k]);
+              if (a[k] >= 0)
+                bs.set(a[k]);
           }
           if (!isSmarts)
             return new int[bs.cardinality()];

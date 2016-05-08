@@ -58,6 +58,11 @@ protected void setSizeRD2(int i, RadiusData rd, boolean isVisible) {
      mads[i] = (short) -mads[i];
  }
 
+//@Override
+//public String getShapeState() {
+// // see StateCreator
+// return null;
+//}
 
 
 }

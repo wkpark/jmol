@@ -24,36 +24,46 @@
 
 package org.jmol.util;
 
-import org.jmol.modelset.Bond;
 
 public abstract class Edge {
 
   
   /**
    * Extended Bond Definition Types
+   * 
+   * Originally these were short 16-bit values
    *
    */
-
+  
   // 11 1111 1100 0000 0000
   // 76 5432 1098 7654 3210
   // | new connection                 1 << 17  0x20000
   //  | render as single              1 << 16  0x10000
+  //  |   PyMOL render single         2 << 15  0x18000 + covalent order 
+  //  | | PyMOL render multiple       3 << 15  0x18000 + covalent order 
   //    | strut                       1 << 15  0x08000
-  //     ||| | Hydrogen bond 0x3800   F << 11
-  //          |Stereo 0x400           1 << 10  
-  //           |Aromatic 0x200        1 << 9
-  //          ||Pymol style           3 << 9  
-  //            |Sulfur-Sulfur 0x100  1 << 8
-  //              ||| Partial n       7 << 5
-  //                 | |||| Partial m 0x1F
-  //          ||| |||| |||| Covalent 0x3FF
+  //  |  nnm m            | atropisomer        0x10001 + (nnmm << 11)
+  //     ||| | Hydrogen bond          F << 11  0x03800
+  //          |Stereo                 1 << 10  0x00400   
+  //           |Aromatic              1 << 9   0x00200
+  //            |Sulfur-Sulfur        1 << 8   0x00100
+  //              ||| Partial n       7 << 5   0x00E00
+  //                 | |||| Partial m          0x0001F
+  //                    ||| Covalent order     0x00007
+  //          ||| |||| |||| Covalent           0x003FF
   // 00 0000 0000 0001 0001 UNSPECIFIED
   // 00 1111 1111 1111 1111 ANY
   // 01 1111 1111 1111 1111 NULL
-  
+
+  public final static int BOND_RENDER_SINGLE   = 0x10000;
+
+  public final static int TYPE_ATROPISOMER     = 0x10001;
+  public final static int TYPE_ATROPISOMER_REV = 0x10002; // only used by SMILES, for ^^nm-
+  private final static int ATROPISOMER_SHIFT   = 11;
+
   public final static int BOND_STEREO_MASK   = 0x400; // 1 << 10
-  public final static int BOND_STEREO_NEAR   = 0x401; // for JME reader
-  public final static int BOND_STEREO_FAR    = 0x411; // for JME reader
+  public final static int BOND_STEREO_NEAR   = 0x401; // for JME reader and SMILES
+  public final static int BOND_STEREO_FAR    = 0x411; // for JME reader and SMILES
   public final static int BOND_AROMATIC_MASK   = 0x200; // 1 << 9
   public final static int BOND_AROMATIC_SINGLE = 0x201; // same as single
   public final static int BOND_AROMATIC_DOUBLE = 0x202; // same as double
@@ -73,8 +83,8 @@ public abstract class Edge {
   public final static int BOND_ORDER_ANY     = 0x0FFFF;
   public final static int BOND_ORDER_NULL    = 0x1FFFF;
   public static final int BOND_STRUT         = 0x08000;
-  public final static int BOND_PYMOL_SINGLE     = 0x10000;
-  public static final int BOND_PYMOL_MULT   = 0x18000;
+  public final static int BOND_PYMOL_NOMULT  = 0x10000;
+  public static final int BOND_PYMOL_MULT    = 0x18000;
   public final static int BOND_NEW           = 0x20000;
   public final static int BOND_HBOND_SHIFT   = 11;
   public final static int BOND_HYDROGEN_MASK = 0xF << 11;
@@ -132,7 +142,7 @@ public abstract class Edge {
     order &= ~BOND_NEW;
     if (order == BOND_ORDER_NULL || order == BOND_ORDER_ANY)
       return "0"; // I don't think this is possible
-    if (Bond.isOrderH(order) || (order & BOND_SULFUR_MASK) != 0)
+    if (isOrderH(order) || isAtropism(order) || (order & BOND_SULFUR_MASK) != 0)
       return EnumBondOrder.SINGLE.number;
     if ((order & BOND_PARTIAL_MASK) != 0)
       return (order >> 5) + "." + (order & 0x1F);
@@ -175,11 +185,41 @@ public abstract class Edge {
     }
     if ((order & BOND_PARTIAL_MASK) != 0)
       return "partial " + getBondOrderNumberFromOrder(order);
-    if (Bond.isOrderH(order))
+    if (isOrderH(order))
       return EnumBondOrder.H_REGULAR.name;
+    if ((order & TYPE_ATROPISOMER) == TYPE_ATROPISOMER) {
+      int code = getAtropismCode(order);
+      return "atropisomer_" + (code / 4) + (code % 4);
+    }
+      
     if ((order & BOND_SULFUR_MASK) != 0)
       return EnumBondOrder.SINGLE.name;
     return EnumBondOrder.getNameFromCode(order);
+  }
+
+  public static int getAtropismOrder(int nn, int mm) {
+    return getAtropismOrder12(((nn + 1) << 2) + mm + 1);
+  }
+
+  public static int getAtropismOrder12(int nnmm) {
+    return ((nnmm << ATROPISOMER_SHIFT) | TYPE_ATROPISOMER);
+  }
+
+  private static int getAtropismCode(int order) {
+      return  (order >> (ATROPISOMER_SHIFT)) & 0xF;
+  }
+
+  public static Node getAtropismNode(int order, Node a1, boolean isFirst) {
+    int i1 = (order >> (ATROPISOMER_SHIFT + (isFirst ? 2 : 0))) & 3;
+    return a1.getEdges()[i1 - 1].getOtherAtomNode(a1);
+  }
+
+  public static boolean isAtropism(int order) {
+    return (order & TYPE_ATROPISOMER) == TYPE_ATROPISOMER;
+  }
+  
+  public static boolean isOrderH(int order) {
+    return (order & BOND_HYDROGEN_MASK) != 0 && (order & TYPE_ATROPISOMER) == 0;
   }
 
   public final static int getPartialBondDotted(int order) {
@@ -229,7 +269,15 @@ public abstract class Edge {
   }
 
   public static int getBondOrderFromString(String name) {
-    return EnumBondOrder.getCodeFromName(name);
+    int order = EnumBondOrder.getCodeFromName(name);
+    try {
+      if (order == BOND_ORDER_NULL && name.length() == 14
+          && name.toLowerCase().startsWith("atropisomer_"))
+        order = getAtropismOrder(Integer.parseInt(name.substring(12, 13)), Integer.parseInt(name.substring(13, 14)));
+    } catch (NumberFormatException e) {
+      // BOND_ORDER_NULL
+    }
+    return order;
   }
 
   private enum EnumBondOrder {
@@ -247,6 +295,7 @@ public abstract class Edge {
     PARTIAL32(BOND_PARTIAL32,"2.5","partialTriple2"),
     AROMATIC_SINGLE(BOND_AROMATIC_SINGLE,"1","aromaticSingle"),
     AROMATIC_DOUBLE(BOND_AROMATIC_DOUBLE,"2","aromaticDouble"),
+    ATROPISOMER(TYPE_ATROPISOMER, "1", "atropisomer"),
     UNSPECIFIED(BOND_ORDER_UNSPECIFIED,"1","unspecified");
 
     private int code;
@@ -259,21 +308,21 @@ public abstract class Edge {
       this.name = name;
     }
 
-    static int getCodeFromName(String name) {
+    protected static int getCodeFromName(String name) {
       for (EnumBondOrder item : values())
         if (item.name.equalsIgnoreCase(name))
           return item.code;
       return BOND_ORDER_NULL;
     }
 
-    static String getNameFromCode(int code) {
+    protected static String getNameFromCode(int code) {
       for (EnumBondOrder item: values())
         if (item.code == code)
           return item.name;
       return "?";
     }
 
-    static String getNumberFromCode(int code) {
+    protected static String getNumberFromCode(int code) {
       for (EnumBondOrder item: values())
         if (item.code == code)
           return item.number;

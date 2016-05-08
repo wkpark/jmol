@@ -992,4 +992,9 @@ public class BioModelSet {
       }
   }
 
+  public boolean getAminoAcidValenceAndCharge(String s, String atomName,
+                                              int[] aaRet) {
+    return getBioExt().getAminoAcidValenceAndCharge(s, atomName, aaRet);
+  }
+
 }

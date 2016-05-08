@@ -161,11 +161,11 @@ public class JmolMolecule {
     return molecules;
   }
   
-  public static String getMolecularFormula(Node[] atoms, BS bsSelected, boolean includeMissingHydrogens, float[] wts, boolean isEmpirical) {
+  public static String getMolecularFormulaAtoms(Node[] atoms, BS bsSelected,float[] wts, boolean isEmpirical) {
     JmolMolecule m = new JmolMolecule();
     m.nodes = atoms;
     m.atomList = bsSelected;
-    return m.getMolecularFormula(includeMissingHydrogens, wts, isEmpirical);
+    return m.getMolecularFormula(false, wts, isEmpirical);
   }
   
   public String getMolecularFormula(boolean includeMissingHydrogens,
@@ -182,7 +182,10 @@ public class JmolMolecule {
     ac = atomList.cardinality();
     for (int p = 0, i = atomList.nextSetBit(0); i >= 0; i = atomList
         .nextSetBit(i + 1), p++) {
-      int n = nodes[i].getAtomicAndIsotopeNumber();
+      Node node = nodes[i];
+      if (node == null)
+        continue;
+      int n = node.getAtomicAndIsotopeNumber();
       int f = (wts == null ? 1 : (int) (8 * wts[p]));
       if (n < Elements.elementNumberMax) {
         if (elementCounts[n] == 0)
@@ -190,7 +193,7 @@ public class JmolMolecule {
         elementCounts[n] += f;
         elementNumberMax = Math.max(elementNumberMax, n);
         if (includeMissingHydrogens) {
-          int nH = nodes[i].getImplicitHydrogenCount();
+          int nH = node.getImplicitHydrogenCount();
           if (nH > 0) {
             if (elementCounts[1] == 0)
               nElements++;

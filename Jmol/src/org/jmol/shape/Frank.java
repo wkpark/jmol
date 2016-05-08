@@ -41,7 +41,7 @@ public class Frank extends Shape {
 
   public String frankString = "Jmol";
   Font currentMetricsFont3d;
-  Font baseFont3d;
+  public Font baseFont3d;
   public int frankWidth;
   public int frankAscent;
   public int frankDescent;
@@ -116,7 +116,8 @@ public class Frank extends Shape {
   
   @Override
   public String getShapeState() {
-    return vwr.getFontState(myType, baseFont3d);
+    // see StateCreator
+    return null;//vwr.getFontState(myType, baseFont3d);
   }
   
 }

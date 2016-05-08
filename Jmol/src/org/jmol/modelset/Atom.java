@@ -300,34 +300,6 @@ public class Atom extends Point3fi implements BNode {
   }
 
   @Override
-  public int getCovalentBondCount() {
-    if (bonds == null)
-      return 0;
-    int n = 0;
-    Bond b;
-    for (int i = bonds.length; --i >= 0; )
-      if (((b = bonds[i]).order & Edge.BOND_COVALENT_MASK) != 0
-          && !b.getOtherAtom(this).isDeleted())
-        ++n;
-    return n;
-  }
-
-  @Override
-  public int getCovalentHydrogenCount() {
-    if (bonds == null)
-      return 0;
-    int n = 0;
-    for (int i = bonds.length; --i >= 0; ) {
-      if ((bonds[i].order & Edge.BOND_COVALENT_MASK) == 0)
-        continue;
-      Atom a = bonds[i].getOtherAtom(this);
-      if (a.valence >= 0 && a.getElementNumber() == 1)
-        ++n;
-    }
-    return n;
-  }
-
-  @Override
   public Edge[] getEdges() {
     return (bonds == null ? new Edge[0] : bonds);
   }
@@ -460,13 +432,56 @@ public class Atom extends Point3fi implements BNode {
   }
 
   @Override
-  public int getImplicitHydrogenCount() {
-    return group.chain.model.ms.getImplicitHydrogenCount(this, false);
+  public int getCovalentBondCount() {
+    if (bonds == null)
+      return 0;
+    int n = 0;
+    Bond b;
+    for (int i = bonds.length; --i >= 0; )
+      if (((b = bonds[i]).order & Edge.BOND_COVALENT_MASK) != 0
+          && !b.getOtherAtom(this).isDeleted())
+        ++n;
+    return n;
   }
 
   @Override
-  public int getMissingHydrogenCount() {
-    return 0; 
+  public int getCovalentHydrogenCount() {
+    if (bonds == null)
+      return 0;
+    int n = 0;
+    for (int i = bonds.length; --i >= 0; ) {
+      if ((bonds[i].order & Edge.BOND_COVALENT_MASK) == 0)
+        continue;
+      Atom a = bonds[i].getOtherAtom(this);
+      if (a.valence >= 0 && a.getElementNumber() == 1)
+        ++n;
+    }
+    return n;
+  }
+
+  @Override
+  public int getImplicitHydrogenCount() {
+    return group.chain.model.ms.getMissingHydrogenCount(this, false);
+  }
+
+  @Override
+  public int getTotalHydrogenCount() {
+    return getCovalentHydrogenCount() + getImplicitHydrogenCount();
+  }
+
+  @Override
+  public int getTotalValence() {
+    int v = getValence();
+    if (v < 0)
+      return v;
+    int h = getImplicitHydrogenCount();
+    int sp2 = group.chain.model.ms.aaRet[4]; // 1 or 0
+    return v + h + sp2;
+  }
+
+  @Override
+  public int getCovalentBondCountPlusMissingH() {
+    return getCovalentBondCount() + getImplicitHydrogenCount();
   }
 
   int getTargetValence() {
@@ -1430,7 +1445,7 @@ public class Atom extends Point3fi implements BNode {
   public float getFloatProperty(String property) {
     Object data = group.chain.model.ms.vwr.getDataObj(property, null,
         JmolDataManager.DATA_TYPE_AF);
-    float f = 0;
+    float f = Float.NaN;
     if (data != null) {
       try {
         f = ((float[]) data)[i];

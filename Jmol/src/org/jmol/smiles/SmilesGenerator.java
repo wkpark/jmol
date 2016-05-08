@@ -87,20 +87,23 @@ public class SmilesGenerator {
   boolean getAromatic = true;
   private boolean addAtomComment;
   private boolean noBioComment;
+  private boolean aromaticDouble;
   private boolean noStereo;
   private boolean openSMILES;
   public P3 stereoReference;
   private SmilesStereo smilesStereo;
   private boolean isPolyhedral;
   private Lst<BS> aromaticRings;
+  private SmilesMatcher sm;
 
   // generation of SMILES strings
 
-  String getSmiles(Node[] atoms, int ac, BS bsSelected, String comment, int flags)
+  String getSmiles(SmilesMatcher sm, Node[] atoms, int ac, BS bsSelected, String comment, int flags)
       throws InvalidSmilesException {
     int ipt = bsSelected.nextSetBit(0);
     if (ipt < 0)
       return "";
+    this.sm = sm;
     this.flags = flags;
     this.atoms = atoms;
     this.ac = ac;
@@ -114,6 +117,8 @@ public class SmilesGenerator {
       return getBioSmiles(bsSelected, comment, flags);
     openSMILES = ((flags & JC.SMILES_TYPE_OPENSMILES) == JC.SMILES_TYPE_OPENSMILES);
     addAtomComment = ((flags & JC.SMILES_GEN_ATOM_COMMENT) == JC.SMILES_GEN_ATOM_COMMENT);
+    aromaticDouble =  ((flags & SmilesSearch.AROMATIC_DOUBLE) == SmilesSearch.AROMATIC_DOUBLE);
+
     explicitH = ((flags & JC.SMILES_GEN_EXPLICIT_H) == JC.SMILES_GEN_EXPLICIT_H);
     topologyOnly = ((flags & JC.SMILES_GEN_TOPOLOGY) == JC.SMILES_GEN_TOPOLOGY);
     getAromatic = !((flags & JC.SMILES_GEN_NOAROMATIC) == JC.SMILES_GEN_NOAROMATIC);
@@ -299,37 +304,23 @@ public class SmilesGenerator {
         if (a.getElementNumber() == 1 && a.getIsotopeNumber() == 0)
           bsSelected.clear(j);
       }
-    if (getAromatic && !topologyOnly && bsSelected.cardinality() > 2) {
-      // not clear why only with getAromatic do we set bond directions 
-      SmilesSearch search = SmilesParser.getMolecule("A[=&@]A", true);
-      search.jmolAtoms = atoms;
-      if (atoms instanceof BNode[])
-        search.bioAtoms = (BNode[]) atoms;
-      search.setSelected(bsSelected);
-      search.jmolAtomCount = ac;
-      search.ringDataMax = 7;
-      search.flags = flags;
-      Lst<BS>[] vRings = AU.createArrayOfArrayList(4);
-      search.setRingData(null, vRings, true);
-      bsAromatic = search.bsAromatic;
-      ringSets = search.ringSets;
-      aromaticRings = vRings[3];
+    bsAromatic = new BS();
+    if (!topologyOnly && bsSelected.cardinality() > 2) {
+      generateRingData();
       setBondDirections();
-    } else {
-      bsAromatic = new BS();
     }
     bsToDo = BSUtil.copy(bsSelected);
     SB sb = new SB();
 
     // The idea hear is to allow a hypervalent atom to be listed first
-      for (int i = bsToDo.nextSetBit(0); i >= 0; i = bsToDo.nextSetBit(i + 1))
-        if (atoms[i].getCovalentBondCount() > 4 || isPolyhedral) {
-          if (atom == null)
-            sb.append(".");
-          getSmilesAt(sb, atoms[i], allowConnectionsToOutsideWorld, false,
-              explicitH, forceBrackets);
-          atom = null;
-        }
+    for (int i = bsToDo.nextSetBit(0); i >= 0; i = bsToDo.nextSetBit(i + 1))
+      if (atoms[i].getCovalentBondCount() > 4 || isPolyhedral) {
+        if (atom == null)
+          sb.append(".");
+        getSmilesAt(sb, atoms[i], allowConnectionsToOutsideWorld, false,
+            explicitH, forceBrackets);
+        atom = null;
+      }
     if (atom != null)
       while ((atom = getSmilesAt(sb, atom, allowConnectionsToOutsideWorld,
           true, explicitH, forceBrackets)) != null) {
@@ -354,7 +345,49 @@ public class SmilesGenerator {
       dumpRingKeys(sb, htRings);
       throw new InvalidSmilesException("//* ?ring error? *//\n" + sb);
     }
-    return sb.toString();
+    String s = sb.toString();
+    if (s.indexOf("^-") >= 0) {
+      String s0 = s;
+      try {
+      String keys = sm.getAtropisomerKeys(s, atoms, ac, bsSelected, bsAromatic, flags);
+      for (int i = 1; i < keys.length();) {
+        int pt = s.indexOf("^-");
+        if (pt < 0)
+          break;
+        s = s.substring(0, pt + 1) + keys.substring(i, i + 2) + s.substring(pt + 1);
+        i += 3;
+      }
+      } catch (Exception e) {
+        System.out.println("???");
+        s = s0;
+      }
+    }
+    return s;
+  }
+
+  /**
+   * 
+   * get aromaticity, ringSets, and aromaticRings fields so that we can
+   * assign / and \ and also provide inter-aromatic single bond
+   * 
+   * @throws InvalidSmilesException
+   */
+  private void generateRingData() throws InvalidSmilesException {
+    // we are not actually running this search, just getting preliminary data    
+    SmilesSearch search = SmilesParser.getMolecule("[r500]", true);
+    search.jmolAtoms = atoms;
+    if (atoms instanceof BNode[])
+      search.bioAtoms = (BNode[]) atoms;
+    search.setSelected(bsSelected);
+    search.setFlags(flags);
+    search.jmolAtomCount = ac;
+    search.ringDataMax = 7;
+    search.flags = flags;
+    Lst<BS>[] vRings = AU.createArrayOfArrayList(4);
+    search.setRingData(null, vRings, true);
+    bsAromatic = search.bsAromatic;
+    ringSets = search.ringSets;
+    aromaticRings = vRings[3];
   }
 
   /**
@@ -402,7 +435,7 @@ public class SmilesGenerator {
         bsDone.set(index);
         int nCumulene = 0;
         Node a10 = atom1;
-        while (atom2.getBondCount() == 2 && atom2.getValence() == 4) {
+        while (atom2.getCovalentBondCount() == 2 && atom2.getValence() == 4) {
           Edge[] e2 = atom2.getEdges();
           Edge e = e2[e2[0].getOtherAtomNode(atom2) == a10 ? 1 : 0];
           bsDone.set(e.index);
@@ -416,8 +449,6 @@ public class SmilesGenerator {
         Node a0 = null;
         int i0 = 0;
         Node[] atom12 = new Node[] { atom1, atom2 };
-        if (Logger.debugging)
-          Logger.debug(atom1 + " == " + atom2);
         int edgeCount = 1;
         
         // OK, so we have a double bond. Only looking at single bonds around it.
@@ -582,8 +613,6 @@ public class SmilesGenerator {
     // 4) rings
     // 5) branches
 
-    // OK, the above order does not work if the ring has stereochem indicated.
-    // fails at NCI: 
     // add the bond to the previous atom
 
     String strBond = null;
@@ -651,26 +680,33 @@ public class SmilesGenerator {
     // now construct the branches part, which will come after  [Xx] or Xx
 
     SB sbBranches = new SB();
+    Lst<String> vTest = new Lst<String>();
     int stereoFlag0 = stereoFlag;
     int nSp2Atoms0 = nSp2Atoms;
-
-    for (int i = 0; i < v.size(); i++) {
+    for (int i = 0, nb = (prevAtom == null ? 1 : 2); i < v.size(); i++) {
       Edge bond = v.get(i);
       if (!bsBranches.get(bond.index))
         continue;
       Node a = bond.getOtherAtomNode(atom);
       SB s2 = new SB();
-      s2.append("(");
       prevAtom = atom;
       prevSp2Atoms = null;
       Edge bond0t = bond0;
       getSmilesAt(s2, a, allowConnectionsToOutsideWorld, allowBranches,
           explicitH, forceBrackets);
       bond0 = bond0t;
-      s2.append(")");
-      if (sbBranches.indexOf(s2.toString()) >= 0)
-        stereoFlag = 10;
-      sbBranches.appendSB(s2);
+      String branch = s2.toString();
+      // vTest allows for not adding the final parens in a chain at the end 
+      if (vTest != null)
+        for (int k = vTest.size(); --k >= 0;)
+          if (vTest.get(k).equals(branch)) {
+            stereoFlag = 10;
+            vTest = null;
+          }
+      if (bond0 != null || ++nb < nBonds)
+        sbBranches.append("(").append(branch).append(")");
+      else
+        sbBranches.append(branch);
       v.remove(i--);
       if (stereoFlag < 7)
         stereo[stereoFlag++] = a;
@@ -755,7 +791,7 @@ public class SmilesGenerator {
     int isotope = atom.getIsotopeNumber();
     int valence = atom.getValence();
     float osclass = (openSMILES ? atom.getFloatProperty("property_atomclass")
-        : 0);
+        : Float.NaN);
     String atomName = atom.getAtomName();
     String groupType = (atom instanceof BNode ? ((BNode) atom)
         .getBioStructureTypeName() : "");
@@ -830,14 +866,21 @@ public class SmilesGenerator {
    * @param atomIndex
    * @param prevIndex
    * @param isAromatic
-   * @return "-", "=", "#", or ""
+   * @return "-", "=", "#", "$", or ""
    */
   private String getBondOrder(Edge bondPrev, int atomIndex, int prevIndex,
                               boolean isAromatic) {
+    // look for Jmol having CONNECT @[@1|@2} @{@8,@9} atropisomer
+    if ((bondPrev.order & Edge.TYPE_ATROPISOMER) == Edge.TYPE_ATROPISOMER) {
+      return "^-";
+    }
     int border = bondPrev.getCovalentOrder();
     return (!isAromatic || !bsAromatic.get(prevIndex) ? SmilesBond
         .getBondOrderString(border) : border == 1
-        && !isSameAromaticRing(atomIndex, prevIndex) ? "-" : "");
+        && !isSameAromaticRing(atomIndex, prevIndex) ? 
+            "-" 
+            : aromaticDouble
+        && (border == 2 || border == Edge.BOND_AROMATIC_DOUBLE) ? "=" : "");
   }
 
   private boolean isSameAromaticRing(int a1, int a2) {

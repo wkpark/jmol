@@ -126,6 +126,7 @@ public class Hover extends TextShape {
 
   @Override
   public String getShapeState() {
-    return vwr.getShapeState(this);
+    // not implemented -- see org.jmol.viewer.StateCreator
+    return null;
   }
 }

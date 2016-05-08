@@ -55,6 +55,8 @@ import org.openscience.jmol.app.jmolpanel.GuiMap;
 
 public class WebExport extends JPanel implements WindowListener {
 
+  final static String chemappsPath = "http://chemapps.stolaf.edu/jmol/jsmol"; 
+
   private static boolean showMoleculesAndOrbitals = false; //not implemented
 
   //run status
@@ -74,8 +76,8 @@ public class WebExport extends JPanel implements WindowListener {
     super(new BorderLayout());
 
     historyFile = hFile;
-    remoteAppletPath = historyFile.getProperty("webMakerAppletPath", "..");
-    localAppletPath = historyFile.getProperty("webMakerLocalAppletPath", "..");
+    remoteAppletPath = historyFile.getProperty("webMakerAppletPath", chemappsPath);
+    localAppletPath = historyFile.getProperty("webMakerLocalAppletPath", chemappsPath);
     pageAuthorName = historyFile.getProperty("webMakerPageAuthorName",
         GT._("Jmol Web Page Maker"));
     popInWidth=PT.parseInt(historyFile.getProperty("webMakerPopInWidth", "300"));
@@ -236,7 +238,7 @@ public class WebExport extends JPanel implements WindowListener {
   }
 
   static String remoteAppletPath, localAppletPath;
-
+  
   static String getAppletPath(boolean isRemote) {
     return (isRemote ? remoteAppletPath : localAppletPath);
   }
@@ -245,7 +247,7 @@ public class WebExport extends JPanel implements WindowListener {
 
   static void setAppletPath(String path, boolean isRemote) {
     if (path == null)
-      path = "..";
+      path = chemappsPath;
     if (isRemote) {
       remoteAppletPath = path;
       prop.setProperty("webMakerAppletPath", remoteAppletPath);

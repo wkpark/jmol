@@ -26,7 +26,6 @@ package org.jmol.shape;
 
 import org.jmol.java.BS;
 import org.jmol.viewer.JC;
-import org.jmol.viewer.StateManager;
 
 public class Bbcage extends FontLineShape {
 
@@ -51,4 +50,10 @@ public class Bbcage extends FontLineShape {
         .intersects(bboxModels)));
   }
   
+//@Override
+//public String getShapeState() {
+//  // not implemented -- see org.jmol.viewer.StateCreator
+//  return null;
+//}
+
 }

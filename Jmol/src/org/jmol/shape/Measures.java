@@ -67,7 +67,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
   public short colix; // default to none in order to contrast with background
   
   TickInfo tickInfo;
-  TickInfo defaultTickInfo;
+  public TickInfo defaultTickInfo;
   public Font font3d;
   private Map<String, Integer> htMin;
   
@@ -681,10 +681,10 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
     }
   }
   
-  @Override
-  public String getShapeState() {
-    return vwr.getMeasurementState(this, measurements, 
-        measurementCount, font3d, defaultTickInfo);
-  }
+//  @Override
+//  public String getShapeState() {
+//    // see StateCreator
+//    return null;
+//  }
   
 }

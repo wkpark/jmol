@@ -1196,7 +1196,7 @@ public class Polyhedra extends AtomShape {
       appendCmd(s, "polyhedra frontedges");
     else if (drawEdges == EDGES_ALL)
       appendCmd(s, "polyhedra edges");
-    s.append(vwr.getAtomShapeState(this));
+    s.append(vwr.getStateCreator().getAtomShapeState(this));
     int ia;
     for (int i = 0; i < polyhedronCount; i++) {
       Polyhedron p = polyhedrons[i];

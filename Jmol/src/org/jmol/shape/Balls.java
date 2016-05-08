@@ -152,11 +152,12 @@ public class Balls extends AtomShape {
     }
   }
 
-  @Override
-  public String getShapeState() {
-    return vwr.getShapeState(this);
-  }
-
+//  @Override
+//  public String getShapeState() {
+//    // not implemented -- see org.jmol.viewer.StateCreator
+//    return null;
+//  }
+//
   /*
   boolean checkObjectHovered(int x, int y) {
     //just for debugging

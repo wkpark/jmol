@@ -36,4 +36,10 @@ public class Stars extends AtomShape {
     setPropAS(propertyName, value, bs);
   }
   
+//@Override
+//public String getShapeState() {
+//  // see StateCreator
+//  return null;
+//}
+
 }

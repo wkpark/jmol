@@ -46,9 +46,9 @@ import org.jmol.modelset.BondIterator;
 public class Sticks extends Shape {
 
   private int myMask;
-  private boolean reportAll;
+  public boolean reportAll;
   
-  private BS bsOrderSet;
+  public BS bsOrderSet;
   private BS selectedBonds;
 
   @Override
@@ -111,7 +111,7 @@ public class Sticks extends Shape {
     if ("bondOrder" == propertyName) {
       if (bsOrderSet == null)
         bsOrderSet = new BS();
-      int order = ((Integer) value).shortValue();
+      int order = ((Integer) value).intValue();
       BondIterator iter = (selectedBonds != null ? ms
           .getBondIterator(selectedBonds) : ms.getBondIteratorForType(
           Edge.BOND_ORDER_ANY, bs));
@@ -199,7 +199,8 @@ public class Sticks extends Shape {
 
   @Override
   public String getShapeState() {
-    return vwr.getBondState(this, bsOrderSet, reportAll);
+    // not implemented -- see org.jmol.viewer.StateCreator
+    return null;
   }
   
   @Override

@@ -107,7 +107,7 @@ public class SmilesAtom extends P3 implements BNode {
   SmilesStereo stereo;
   
   public int getChiralClass() {
-    return (stereo == null ? 0 : stereo.chiralClass);
+    return (stereo == null ? Integer.MIN_VALUE : stereo.getChiralClass(this));
   }
 
   public boolean isDefined() {

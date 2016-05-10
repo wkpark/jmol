@@ -270,7 +270,7 @@ public class SmilesSearch extends JmolMolecule {
 
   private Lst<Object> vReturn;
   BS bsReturn = new BS();
-  private boolean ignoreStereochemistry;
+  boolean ignoreStereochemistry;
   boolean invertStereochemistry;
   private boolean noAromatic;
   boolean setAtropicity;
@@ -399,7 +399,7 @@ public class SmilesSearch extends JmolMolecule {
       if (i > nAtoms)
         continue;
       String smarts = "*1" + s.substring(0, i - 2) + "*1";
-      SmilesSearch search = SmilesParser.getMolecule(smarts, true);
+      SmilesSearch search = SmilesParser.getMolecule(smarts, true, true);
       Lst<Object> vR = (Lst<Object>) subsearch(search, false, true);
       if (vRings != null && i <= 5) {
         Lst<BS> v = new Lst<BS>();
@@ -1708,7 +1708,7 @@ public class SmilesSearch extends JmolMolecule {
       // this is still not satisfactory for allenes or the second atom of 
       // imines and possibly double bonds. We handle that later.
 
-      if (!sAtom.isFirst && n == 1 && sAtom.getChiralClass() > 0)
+      if (!sAtom.isFirst && n == 1 && sAtom.getChiralClass() >= 0)
         bsFixH.set(ptAtom);
 
       sAtom.setMatchingAtom(null, ptAtom);
@@ -1778,6 +1778,9 @@ public class SmilesSearch extends JmolMolecule {
       bonds[0] = bonds[1];
       bonds[1] = b;
     }
+
+    if (!ignoreStereochemistry)
+      fixChirality();
 
   }
 
@@ -1862,6 +1865,17 @@ public class SmilesSearch extends JmolMolecule {
     vAB.setT((P3) pointA);
     return -vAB.dot(vNorm);
   }
+
+  private void fixChirality()
+      throws InvalidSmilesException {
+    // should also be checking for subsearches and htNested?
+    for (int i = ac; --i >= 0;) {
+      SmilesAtom sAtom = patternAtoms[i];
+      if (sAtom.stereo != null)
+        sAtom.stereo.fixStereo(sAtom);
+    }
+  }
+
 
 }
 

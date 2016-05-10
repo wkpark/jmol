@@ -7741,7 +7741,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   public String extractMolData(String what) {
     if (what == null) {
       int i = am.cmi;
-      if (i < 0)
+      if (i < 0 || ms.ac == 0)
         return null;
       what = getModelNumberDotted(i);
     }
@@ -7766,6 +7766,8 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       return "Type must be H1 or C13";
     String molFile = getModelExtract("selected", true, false, "V2000");
     int pt = molFile.indexOf("\n");
+    if (pt < 0)
+      return null;
     molFile = "Jmol " + version_date + molFile.substring(pt);
     if (isApplet) {
       //TODO -- can do this if connected

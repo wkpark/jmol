@@ -1631,7 +1631,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   }
 
   @Override
-  public Lst<Map<String, Object>> getShapeDetail() {
+  public Object getShapeDetail() {
     Lst<Map<String, Object>> V = new  Lst<Map<String, Object>>();
     for (int i = 0; i < meshCount; i++) {
       Map<String, Object> info = new Hashtable<String, Object>();

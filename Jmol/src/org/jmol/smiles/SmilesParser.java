@@ -96,14 +96,16 @@ public class SmilesParser {
   private int branchLevel;
   private boolean ignoreStereochemistry;
   private boolean bondDirectionPaired = true;
+  private boolean isTarget;
 
-  public static SmilesSearch getMolecule(String pattern, boolean isSmarts)
+  public static SmilesSearch getMolecule(String pattern, boolean isSmarts, boolean isTarget)
       throws InvalidSmilesException {
-    return (new SmilesParser(isSmarts)).parse(pattern);
+    return (new SmilesParser(isSmarts, isTarget)).parse(pattern);
   }
 
-  SmilesParser(boolean isSmarts) {
+  SmilesParser(boolean isSmarts, boolean isTarget) {
     this.isSmarts = isSmarts;
+    this.isTarget = isTarget;
   }
 
   void reset() {
@@ -332,7 +334,13 @@ public class SmilesParser {
       }
     if (!isSmarts && !isBioSequence)
       molecule.elementCounts[1] = molecule.getMissingHydrogenCount();
-    fixChirality(molecule);
+
+ // problem here is that we need to first create a topomap of the structure
+ // sometimes, and that has to be done BEFORE fixChirality, perhaps.
+ // this is only a problem when there is an H attached directly to a 
+ // see-saw, trigonal bipyramidal, or octahedral center.
+    if (!ignoreStereochemistry && !isTarget)
+     fixChirality(molecule);
 
     return molecule;
   }
@@ -359,7 +367,7 @@ public class SmilesParser {
       throws InvalidSmilesException {
     for (int i = molecule.ac; --i >= 0;) {
       SmilesAtom sAtom = molecule.patternAtoms[i];
-      if (sAtom.stereo != null && !ignoreStereochemistry)
+      if (sAtom.stereo != null)
         sAtom.stereo.fixStereo(sAtom);
     }
   }

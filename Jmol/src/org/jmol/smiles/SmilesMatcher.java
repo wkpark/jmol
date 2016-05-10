@@ -134,7 +134,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     // but
     //   $ print "c1ncnc1C".find("SMILES","MF")
     //   H 5 C 4 N 2   (incorrect)
-    SmilesSearch search = SmilesParser.getMolecule("/nostereo/"+pattern, isSmarts);
+    SmilesSearch search = SmilesParser.getMolecule("/nostereo/"+pattern, isSmarts, true);
     search.createTopoMap(null);
     search.nodes = search.jmolAtoms;
     return search.getMolecularFormula(!isSmarts, null, false);
@@ -155,7 +155,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   public int areEqual(String smiles1, String smiles2) throws Exception {
     InvalidSmilesException.clear();
     BS[] result = (BS[]) findPriv(smiles1, SmilesParser.getMolecule(smiles2,
-        false), (smiles1.indexOf("*") >= 0 ? JC.SMILES_TYPE_SMARTS
+        false, true), (smiles1.indexOf("*") >= 0 ? JC.SMILES_TYPE_SMARTS
         : JC.SMILES_TYPE_SMILES) | JC.SMILES_MATCH_ONCE_ONLY, MODE_ARRAY); 
     return (result == null ? -1 : result.length);
   }
@@ -183,7 +183,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    * 
    * @param pattern
    *        SMILES or SMARTS pattern.
-   * @param smiles
+   * @param target
    * @param isSmarts
    *        TRUE for SMARTS strings, FALSE for SMILES strings
    * @param firstMatchOnly
@@ -191,13 +191,13 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    * @throws Exception
    */
   @Override
-  public int[][] find(String pattern, String smiles, boolean isSmarts,
+  public int[][] find(String pattern, String target, boolean isSmarts,
                       boolean firstMatchOnly) throws Exception {
 
     InvalidSmilesException.clear();
-    smiles = SmilesParser.cleanPattern(smiles);
+    target = SmilesParser.cleanPattern(target);
     pattern = SmilesParser.cleanPattern(pattern);
-    SmilesSearch search = SmilesParser.getMolecule(smiles, false);
+    SmilesSearch search = SmilesParser.getMolecule(target, false, true); /// smiles chirality is fixed here
     int[][] array = (int[][]) findPriv(pattern, search,
         (isSmarts ? JC.SMILES_TYPE_SMARTS : JC.SMILES_TYPE_SMILES) 
         | (firstMatchOnly ? JC.SMILES_MATCH_ONCE_ONLY : 0),
@@ -289,7 +289,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
                                   BS bsSelected, Lst<BS> ret,
                                   Lst<BS>[] vRings) throws Exception {
     InvalidSmilesException.clear();
-    SmilesParser sp = new SmilesParser(true);
+    SmilesParser sp = new SmilesParser(true, true); // target setting just turns off stereochemistry check
     SmilesSearch search = null;
     int flags = (JC.SMILES_TYPE_SMARTS | SmilesSearch.AROMATIC_MMFF94);
     search = sp.parse("");
@@ -466,7 +466,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     InvalidSmilesException.clear();
     try {
       boolean isSmarts = ((flags & JC.SMILES_TYPE_SMARTS) == JC.SMILES_TYPE_SMARTS);
-      SmilesSearch search = SmilesParser.getMolecule(pattern, isSmarts);
+      SmilesSearch search = SmilesParser.getMolecule(pattern, isSmarts, false);
       if (!isSmarts && !search.patternAromatic) {
         if (bsAromatic == null)
           bsAromatic = new BS();

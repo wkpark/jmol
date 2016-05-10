@@ -120,6 +120,8 @@ public class JSpecView implements JmolJSpecView {
 
   @Override
   public String processSync(String script, int jsvMode) {
+    if (Logger.debugging)
+      Logger.info("org.jmol.jsv.JSpecView jsvMode=" + jsvMode + " script=" + script);
     switch (jsvMode ) {
     default:
       return null;
@@ -153,7 +155,8 @@ public class JSpecView implements JmolJSpecView {
           .startsWith(FileManager.SIMULATION_PROTOCOL));
       // id='~1.1' is getting tucked into file="...." now
       String id = (!isSimulation || vwr.isApplet ? "" : PT.getQuotedAttribute(filename.replace('\'', '"'), "id"));
-      if (isSimulation && !vwr.isApplet && filename.startsWith(FileManager.SIMULATION_PROTOCOL + "MOL="))
+      if (isSimulation && !vwr.isApplet && 
+          (filename.startsWith(FileManager.SIMULATION_PROTOCOL + "C13/MOL=") || filename.startsWith(FileManager.SIMULATION_PROTOCOL + "H1/MOL=")))
         filename = null; // from our sending; don't reload
       else
         filename = PT.rep(filename, "#molfile", "");
@@ -163,7 +166,7 @@ public class JSpecView implements JmolJSpecView {
       String atoms = PT.getQuotedAttribute(script, "atoms");
       String select = PT.getQuotedAttribute(script, "select");
       String script2 = PT.getQuotedAttribute(script, "script");
-      if (id.length() == 0)
+      if (id == null || id.length() == 0)
         id = (modelID == null ? null : (filename == null ? "" : filename
           + "#")
           + modelID);
@@ -197,9 +200,13 @@ public class JSpecView implements JmolJSpecView {
       // JSpecView sending us the peak information it has
       String[] list = Escape.unescapeStringArray(script.substring(7));
       Lst<String> peaks = new Lst<String>();
-      for (int i = 0; i < list.length; i++)
+      String type = "1HNMR";
+      for (int i = 0; i < list.length; i++) {
+        if (i == 0 && list[i].indexOf(FileManager.SIMULATION_PROTOCOL + "C13/") >= 0)
+          type = "13CNMR";
         peaks.addLast(list[i]);
-      vwr.ms.setInfo(vwr.am.cmi, "jdxAtomSelect_1HNMR", peaks);
+      }
+      vwr.ms.setInfo(vwr.am.cmi, "jdxAtomSelect_" + type, peaks);
       return null;
     }
   }

@@ -717,7 +717,6 @@ public class T {
   public final static int ifcmd        = 9 | 1 << 9 | mathfunc | flowCommand;
   public final static int abs          = 10 | 1 << 9 | mathfunc;
   public final static int javascript   = 12 /* must be even */| 1 << 9 | mathfunc | implicitStringCommand;
-  public final static int eval         = 13 | 1 << 9 | mathfunc;
   public final static int show         = 14 | 1 << 9 | mathfunc | scriptCommand;
   
   // ___.xxx(a)
@@ -742,6 +741,7 @@ public class T {
   public final static int search       = 4 | 2 << 9 | mathfunc;
   public final static int smiles       = 5 | 2 << 9 | mathfunc;
   public final static int contact      = 6 | 2 << 9 | mathfunc | shapeCommand;
+  public final static int eval         = 7 | 2 << 9 | mathfunc;
 
 
   // ___.xxx(a,b)

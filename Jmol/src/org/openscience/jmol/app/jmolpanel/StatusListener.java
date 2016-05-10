@@ -459,12 +459,20 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
     return jmol.resizeInnerPanel(data);
   }
 
+  private String lastSimulate;
+  
   public void setJSpecView(String peaks, boolean doLoadCheck, boolean isFileLoad) {
-    //if (!display.isRotateMode())
-      //return;
     if (peaks.startsWith(":"))
       peaks = peaks.substring(1);
-    boolean isStartup = (peaks.length() == 0 || peaks.equals("H1Simulate:") || peaks.equals("C13Simulate:"));
+    boolean isSimulation = (peaks.equals("H1Simulate:") || peaks.equals("C13Simulate:"));
+    boolean isStartup = (peaks.length() == 0 || isSimulation);
+    boolean newSim = (isSimulation && !peaks.equals(lastSimulate));
+    String data = null;
+    if (isSimulation) {
+      data = vwr.extractMolData(null);
+      if (data == null || data.length() == 0)
+        return;
+    }
     if (jSpecViewFrame == null) {
       jSpecViewFrame = new MainFrame((Component) vwr.display, this);
       jSpecViewFrame.setSize(800, 500);
@@ -476,7 +484,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
         doLoadCheck = true;
       }
     }
-    if (doLoadCheck || jSpecViewForceNew) {
+    if (doLoadCheck || jSpecViewForceNew || newSim) {
       String type = "" + vwr.getP("_modelType");
       if (type.equalsIgnoreCase("jcampdx")) {
         jSpecViewForceNew = false;
@@ -484,14 +492,13 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
         if (file.indexOf("/") < 0)
           return;
         peaks = "hidden true; load CHECK " + PT.esc(file) + ";hidden false";
-      } else if (isFileLoad && !jSpecViewForceNew) {
+      } else if (isFileLoad && !jSpecViewForceNew && !newSim) {
         return;
       } else {
         jSpecViewForceNew = false;
+        if (newSim)
+          lastSimulate = peaks;
         String model = "" + vwr.getP("_modelNumber");
-        String data = vwr.extractMolData(null);
-        if (data == null)
-          return;
         data = PT.replaceAllCharacters(data, "&", "_");
         peaks = "hidden true; load CHECK " + (peaks.equals("H1Simulate:") ? "H1 " : "C13 ")
             + PT.esc("id='~" + model + "';" + data) + ";hidden false #SYNC_PEAKS";

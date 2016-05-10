@@ -546,7 +546,7 @@ public class Polyhedra extends AtomShape {
   }
 
   @Override
-  public Lst<Map<String, Object>> getShapeDetail() {
+  public Object getShapeDetail() {
     Lst<Map<String, Object>> lst = new Lst<Map<String, Object>>();
     for (int i = 0; i < polyhedronCount; i++)
       lst.addLast(polyhedrons[i].getInfo(vwr, false));

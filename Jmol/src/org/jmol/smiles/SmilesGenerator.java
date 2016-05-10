@@ -95,6 +95,7 @@ public class SmilesGenerator {
   private boolean isPolyhedral;
   private Lst<BS> aromaticRings;
   private SmilesMatcher sm;
+  private int iHypervalent;
 
   // generation of SMILES strings
 
@@ -293,15 +294,24 @@ public class SmilesGenerator {
     if (!explicitH && atom.getElementNumber() == 1
         && atom.getEdges().length > 0)
       atom = atoms[atom.getBondedAtomIndex(0)]; // don't start with H
+    
     bsSelected = JmolMolecule.getBranchBitSet(atoms, atom.getIndex(),
         BSUtil.copy(bs), null, -1, true, allowBioResidues);
     bs.andNot(bsSelected);
+    iHypervalent = -1; // this needs to be a bitset
+    
+    for (int i = bsSelected.nextSetBit(0); i >= 0 && iHypervalent < 0; i = bsSelected.nextSetBit(i + 1))
+      if (atoms[i].getCovalentBondCount() > 4 || isPolyhedral)
+        iHypervalent = i;
+//    if (iHypervalent >= 0)
+  //    explicitH = true;
     bsIncludingH = BSUtil.copy(bsSelected);
     if (!explicitH)
       for (int j = bsSelected.nextSetBit(0); j >= 0; j = bsSelected
           .nextSetBit(j + 1)) {
         Node a = atoms[j];
-        if (a.getElementNumber() == 1 && a.getIsotopeNumber() == 0)
+        if (a.getElementNumber() == 1 && a.getIsotopeNumber() == 0 
+            && a.getBondCount() > 0 && a.getBondedAtomIndex(0) != iHypervalent)
           bsSelected.clear(j);
       }
     bsAromatic = new BS();
@@ -317,13 +327,12 @@ public class SmilesGenerator {
       if (atoms[i].getCovalentBondCount() > 4 || isPolyhedral) {
         if (atom == null)
           sb.append(".");
-        getSmilesAt(sb, atoms[i], allowConnectionsToOutsideWorld, false,
-            explicitH, forceBrackets);
+        getSmilesAt(sb, atoms[i], allowConnectionsToOutsideWorld, false, forceBrackets);
         atom = null;
       }
     if (atom != null)
       while ((atom = getSmilesAt(sb, atom, allowConnectionsToOutsideWorld,
-          true, explicitH, forceBrackets)) != null) {
+          true, forceBrackets)) != null) {
       }
     while (bsToDo.cardinality() > 0 || !htRings.isEmpty()) {
       Iterator<Object[]> e = htRings.values().iterator();
@@ -338,7 +347,7 @@ public class SmilesGenerator {
       prevSp2Atoms = null;
       prevAtom = null;
       while ((atom = getSmilesAt(sb, atom, allowConnectionsToOutsideWorld,
-          true, explicitH, forceBrackets)) != null) {
+          true, forceBrackets)) != null) {
       }
     }
     if (!htRings.isEmpty()) {
@@ -374,7 +383,7 @@ public class SmilesGenerator {
    */
   private void generateRingData() throws InvalidSmilesException {
     // we are not actually running this search, just getting preliminary data    
-    SmilesSearch search = SmilesParser.getMolecule("[r500]", true);
+    SmilesSearch search = SmilesParser.getMolecule("[r500]", true, true);
     search.jmolAtoms = atoms;
     if (atoms instanceof BNode[])
       search.bioAtoms = (BNode[]) atoms;
@@ -541,13 +550,13 @@ public class SmilesGenerator {
 
   private Node getSmilesAt(SB sb, Node atom,
                            boolean allowConnectionsToOutsideWorld,
-                           boolean allowBranches, boolean explicitH,
+                           boolean allowBranches,
                            boolean forceBrackets) {
     int atomIndex = atom.getIndex();
-
     if (!bsToDo.get(atomIndex))
       return null;
     bsToDo.clear(atomIndex);
+    boolean includeHs = (atomIndex == iHypervalent || explicitH);
     boolean isExtension = (!bsSelected.get(atomIndex));
     int prevIndex = (prevAtom == null ? -1 : prevAtom.getIndex());
     boolean isAromatic = bsAromatic.get(atomIndex);
@@ -574,7 +583,6 @@ public class SmilesGenerator {
     // first look through the bonds for the best 
     // continuation -- bond0 -- and count hydrogens
     // and create a list of bonds to process.
-
     if (bonds != null)
       for (int i = bonds.length; --i >= 0;) {
         Edge bond = bonds[i];
@@ -586,7 +594,7 @@ public class SmilesGenerator {
           bondPrev = bonds[i];
           continue;
         }
-        boolean isH = !explicitH
+        boolean isH = !includeHs
             && (atom1.getElementNumber() == 1 && atom1.getIsotopeNumber() == 0);
         if (!bsIncludingH.get(index1)) {
           if (!isH && allowConnectionsToOutsideWorld
@@ -637,7 +645,7 @@ public class SmilesGenerator {
         Edge bond = v.get(i);
         Node a = bond.getOtherAtomNode(atom);
         int n = a.getCovalentBondCount()
-            - (explicitH ? 0 : a.getCovalentHydrogenCount());
+            - (includeHs ? 0 : a.getCovalentHydrogenCount());
         int order = bond.getCovalentOrder();
         if (n == 1 && (bond0 != null || i < nBonds - 1)) {
           bsBranches.set(bond.index);
@@ -692,8 +700,7 @@ public class SmilesGenerator {
       prevAtom = atom;
       prevSp2Atoms = null;
       Edge bond0t = bond0;
-      getSmilesAt(s2, a, allowConnectionsToOutsideWorld, allowBranches,
-          explicitH, forceBrackets);
+      getSmilesAt(s2, a, allowConnectionsToOutsideWorld, allowBranches, forceBrackets);
       bond0 = bond0t;
       String branch = s2.toString();
       // vTest allows for not adding the final parens in a chain at the end 

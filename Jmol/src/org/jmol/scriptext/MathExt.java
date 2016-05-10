@@ -2841,19 +2841,21 @@ public class MathExt {
   private boolean evaluateScript(ScriptMathProcessor mp, SV[] args, int tok)
       throws ScriptException {
     // eval(cmd)
+    // eval("JSON",json)
     // javascript(cmd)
     // script(cmd)
     // script(cmd, syncTarget)
     // show(showCmd)
-    if ((tok == T.eval || tok == T.show || tok == T.javascript) && args.length != 1 
-        || args.length == 0
-        || args.length > 2)
+    if ((tok == T.show || tok == T.javascript) && args.length != 1
+        || args.length == 0)
       return false;
     String s = SV.sValue(args[0]);
     SB sb = new SB();
     switch (tok) {
     case T.eval:
-      return mp.addXObj(vwr.evaluateExpressionAsVariable(s));
+      return (args.length == 2 ? s.equalsIgnoreCase("JSON")
+          && mp.addXObj(vwr.parseJSON(SV.sValue(args[1]))) : mp.addXObj(vwr
+          .evaluateExpressionAsVariable(s)));
     case T.script:
       String appID = (args.length == 2 ? SV.sValue(args[1]) : ".");
       // options include * > . or an appletID with or without "jmolApplet"

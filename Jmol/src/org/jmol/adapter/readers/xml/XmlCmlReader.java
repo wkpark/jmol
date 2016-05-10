@@ -809,7 +809,7 @@ public class XmlCmlReader extends XmlReader {
     asc.newAtomSet();
     String val;
     if (htModelAtomMap != null)
-      htModelAtomMap.put("" + asc.iSet, moleculeID);
+      htModelAtomMap.put("" + asc.iSet, "" + moleculeID);
     String collectionName = ((val = atts.get("title")) != null 
         || (val = atts.get("id")) != null ? val : null);
     if (collectionName != null) {

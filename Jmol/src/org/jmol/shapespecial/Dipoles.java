@@ -616,7 +616,7 @@ public class Dipoles extends Shape {
   }
 
   @Override
-  public Lst<Map<String, Object>> getShapeDetail() {
+  public Object getShapeDetail() {
     Lst<Map<String, Object>> V = new  Lst<Map<String,Object>>();
     Map<String, Object> atomInfo;
     P3 ptTemp = new P3();

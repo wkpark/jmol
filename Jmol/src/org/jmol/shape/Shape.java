@@ -348,7 +348,7 @@ public abstract class Shape {
         pid) : colix);
   }
 
-  public Lst<Map<String, Object>> getShapeDetail() {
+  public Object getShapeDetail() {
     return null;
   }
 

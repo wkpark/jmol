@@ -31,8 +31,11 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import javajs.util.AU;
+import javajs.util.BS;
 import javajs.util.Encoding;
+import javajs.util.Lst;
 import javajs.util.OC;
+import javajs.util.P3;
 import javajs.util.PT;
 import javajs.util.SB;
 
@@ -205,25 +208,23 @@ public class JSVFileManager {
 	 * involve mol=..., we want to abbreviate those names for display
 	 * 
 	 * @param name  actual path name to simulation
-	 * @param type "H1" or "C13"
 	 * @return actual name or hashed name
 	 */
-	public static String getAbbrSimulationFileName(String name, String type) {
-		if (type == null)
-			type = getSimulationType(name);
+	public static String getAbbrSimulationFileName(String name) {
+		String type = getSimulationType(name);
 		String filename = getAbbreviatedSimulationName(name, type, true);
-		if (name.indexOf("MOL=") >= 0)
-			cachePut(name, cacheGet(type + name));
+//		if (name.indexOf("MOL=") >= 0)
+//			cachePut(name, cacheGet(type + name));
 		return filename;
 	}
 	
 	static String getAbbreviatedSimulationName(String name, String type, boolean addProtocol) {
 		return (name.indexOf("MOL=") >= 0 ? (addProtocol ? SIMULATION_PROTOCOL : "") + "MOL=" 
-				+ getSimulationHash(name) : name);
+				+ getSimulationHash(name, type) : name);
 	}
 
-	private static String getSimulationHash(String name) {
-		String code = "" + Math.abs(name.substring(name.indexOf("V2000") + 1).hashCode());
+	private static String getSimulationHash(String name, String type) {
+		String code = type + Math.abs(name.substring(name.indexOf("V2000") + 1).hashCode());
 		if (Logger.debugging)
 			System.out.println("JSVFileManager hash for " + name + " = " + code);
 		return code;
@@ -428,12 +429,13 @@ public class JSVFileManager {
 	 * @param name
 	 * @return jcamp data
 	 */
+	@SuppressWarnings({ "unchecked" })
 	private static String getNMRSimulationJCampDX(String name) {
-		System.out.println("JSVFileManager getNMRSimulationJCampDX for " + name);
-		String key = "" + getSimulationHash(name);
 		String type = getSimulationType(name);
+		String key = "" + getSimulationHash(name, type);
 		if (name.startsWith(type))
 			name = name.substring(type.length() + 1);
+		System.out.println("JSVFileManager type=" + type + " key=" + key + " name=" + name);
 		String jcamp = cacheGet(key);
 		if (jcamp != null)
 			return jcamp;
@@ -446,50 +448,123 @@ public class JSVFileManager {
 			Logger.error("no MOL data returned by NCI");
 			return null;
 		}
-		String url = (type.equals("H1") ? nmrdbServerH1 : nmrdbServerC13);
+		boolean is13C = type.equals("C13");
+		String url = (is13C ? nmrdbServerC13 : nmrdbServerH1);
 		String json = getFileAsString(url + molFile);
+		Map<String, Object> map = (new javajs.util.JSJSONParser()).parseMap(json,
+				true);
 		cachePut("json", json);
-		if (json.indexOf("\"error\":") >= 0)
-			return null;
-		json = PT.rep(json, "\\r\\n", "\n");
-		json = PT.rep(json, "\\t", "\t");
-		json = PT.rep(json, "\\n", "\n");
-		String jsonMolFile = getQuotedJSONAttribute(json, "molfile", null);
+		// json = PT.rep(json, "\\r\\n", "\n");
+		// json = PT.rep(json, "\\t", "\t");
+		// json = PT.rep(json, "\\n", "\n");
+		if (is13C)
+			map = (Map<String, Object>) map.get("result");
+		String jsonMolFile = (String) map.get("molfile");
 		if (jsonMolFile == null) {
 			System.out.println("JSVFileManager: no MOL file returned from EPFL");
 			jsonMolFile = molFile;
+		} else {
+			System.out.println("JSVFileManager: MOL file hash="
+					+ jsonMolFile.hashCode());
 		}
-		cachePut("mol", jsonMolFile);
+		// atomMap added in Jmol 14.5.5
+		int[] atomMap = getAtomMap(jsonMolFile, molFile);
+		cachePut("mol", molFile);
 		/**
 		 * @j2sNative
 		 * 
-		 * 		if (!isInline) Jmol.Cache.put("http://SIMULATION/" + type + "/" + name + "#molfile", jsonMolFile.getBytes());
-	   *
+		 *            if (!isInline) Jmol.Cache.put("http://SIMULATION/" + type +
+		 *            "/" + name + "#molfile", molFile.getBytes());
+		 * 
 		 */
 		{
 			// JAVA only
 			System.out.println("type/name: " + type + "/" + name);
-			System.out.println("molFile is \n" + molFile);
+			// System.out.println("molFile is \n" + molFile);
 			System.out.println("jsonMolFile is \n" + jsonMolFile);
-			viewer.syncScript("JSVSTR:" + jsonMolFile);
+			viewer.syncScript("JSVSTR:" + molFile);
 		}
-		String xml = getQuotedJSONAttribute(json, "xml", null);
-		xml = PT.rep(xml, "<Signals>",  "<Signals src=" + PT.esc(PT.rep(nmrdbServerH1,"?POST?molfile=","")) + ">");
-		xml = PT.rep(xml, "</", "\n</");
-		xml = PT.rep(xml, "><", ">\n<");
-		xml = PT.rep(xml, "\\\"", "\"");
+		String xml = "<Signals src="
+				+ PT.esc(PT.rep(is13C ? nmrdbServerC13 : nmrdbServerH1,
+						"?POST?molfile=", "")) + ">\n";
+		if (is13C) {
+			// 13C data -- no XML
+			Map<String, Object> spec = (Map<String, Object>) map.get("spectrum13C");
+			jcamp = (String) ((Map<String, Object>) spec.get("jcamp")).get("value");
+			Lst<Object> lst = (Lst<Object>) spec.get("predCSNuc");
+			SB sb = new SB();
+			for (int i = lst.size(); --i >= 0;) {
+				map = (Map<String, Object>) lst.get(i);
+				sb.append("<Signal ");
+				setAttr(sb, "type", "nucleus", map);
+				if (atomMap == null)
+					setAttr(sb, "atoms", "assignment", map);
+				else
+					sb.append("atoms=\"").appendI(atomMap[PT.parseInt((String) map.get("assignment"))]).append("\" ");
+				setAttr(sb, "multiplicity", "multiplicity", map);
+				map = (Map<String, Object>) map.get("integralData");
+				setAttr(sb, "xMin", "from", map);
+				setAttr(sb, "xMax", "to", map);
+				setAttr(sb, "integral", "value", map);
+				sb.append("></Signal>\n");
+			}
+			sb.append("</Signals>");
+			xml += sb.toString();
+		} else {
+			// <Signals><Signal type="1HNMR" xMin="7.2226225" xMax="7.295377500000001"
+			// atoms="13" multiplicity="dd" integral="1"
+			// diaID="dcND`BePfTfYUYa``bX@GzP`HeT"><Couplings><Coupling atoms="16"
+			// value="4.752"/><Coupling atoms="15"
+			// value="8.799"/></Couplings></Signal><Signal type="1HNMR"
+			// xMin="7.222512500000001" xMax="7.2954875" atoms="14" multiplicity="dd"
+			// integral="1" diaID="dcND`BePfTfYUYa``bX@GzP`HeT"><Couplings><Coupling
+			// atoms="15" value="4.797"/><Coupling atoms="16"
+			// value="8.798"/></Couplings></Signal><Signal type="1HNMR" xMin="6.63251"
+			// xMax="6.705489999999999" atoms="15" multiplicity="dd" integral="1"
+			// diaID="dcND`AIPfTfYwYn``JX@GzP`HeT"><Couplings><Coupling atoms="13"
+			// value="8.799"/><Coupling atoms="14"
+			// value="4.797"/></Couplings></Signal><Signal type="1HNMR"
+			// xMin="6.632625" xMax="6.705374999999999" atoms="16" multiplicity="dd"
+			// integral="1" diaID="dcND`AIPfTfYwYn``JX@GzP`HeT"><Couplings><Coupling
+			// atoms="13" value="4.752"/><Coupling atoms="14"
+			// value="8.798"/></Couplings></Signal><Signal type="1HNMR" xMin="2.0125"
+			// xMax="2.0175" atoms="17" multiplicity="" integral="1"
+			// diaID="dcND`BsPfTeme^Uih@H@GzP`HeT"><Couplings></Couplings></Signal><Signal
+			// type="1HNMR" xMin="2.0125" xMax="2.0175" atoms="18" multiplicity=""
+			// integral="1"
+			// diaID="dcND`BsPfTeme^Uih@H@GzP`HeT"><Couplings></Couplings></Signal><Signal
+			// type="1HNMR" xMin="2.0125" xMax="2.0175" atoms="19" multiplicity=""
+			// integral="1"
+			// diaID="dcND`BsPfTeme^Uih@H@GzP`HeT"><Couplings></Couplings></Signal></Signals>
+			xml = PT.rep((String) map.get("xml"), "<Signals>", xml);
+			if (atomMap != null) {
+				SB sb = new SB();
+				String[] signals = PT.split(xml, " atoms=\"");
+				sb.append(signals[0]);
+				for (int i = 1; i < signals.length; i++) {
+					String s = signals[i];
+					int a = PT.parseInt(s);
+					sb.append(" atoms=\"").appendI(atomMap[a]).append("\"")
+							.append(s.substring(s.indexOf("\"")));
+				}
+				xml = sb.toString();
+			}
+			xml = PT.rep(xml, "</", "\n</");
+			xml = PT.rep(xml, "><", ">\n<");
+			xml = PT.rep(xml, "\\\"", "\"");
+			jcamp = (String) map.get("jcamp");
+		}
+		if (Logger.debugging)
+			Logger.info(xml);
 		cachePut("xml", xml);
-		jcamp = getQuotedJSONAttribute(json, "jcamp", null);
-		if (jcamp.equals("value"))
-			jcamp = getQuotedJSONAttribute(json.substring(json.indexOf("jcamp") + 4), "value", null);
-			
 		jcamp = "##TITLE=" + (isInline ? "JMOL SIMULATION/" + type : name) + "\n"
 				+ jcamp.substring(jcamp.indexOf("\n##") + 1);
 		int pt = molFile.indexOf("\n");
 		pt = molFile.indexOf("\n", pt + 1);
 		if (pt > 0 && pt == molFile.indexOf("\n \n"))
-			molFile = molFile.substring(0, pt + 1) + "Created " + viewer.apiPlatform.getDateFormat("8824") + " by JSpecView " + JSVersion.VERSION
-					+ molFile.substring(pt + 1);
+			molFile = molFile.substring(0, pt + 1) + "Created "
+					+ viewer.apiPlatform.getDateFormat("8824") + " by JSpecView "
+					+ JSVersion.VERSION + molFile.substring(pt + 1);
 		pt = 0;
 		pt = jcamp.indexOf("##.");
 		String id = getAbbreviatedSimulationName(name, type, false);
@@ -503,6 +578,62 @@ public class JSVFileManager {
 		cachePut("jcamp", jcamp);
 		cachePut(key, jcamp);
 		return jcamp;
+	}
+
+	/**
+	 * create a map from JSON to Jmol
+	 * 
+	 * @param jsonMolFile
+	 * @param jmolMolFile
+	 * @return int[]
+	 */
+	private static int[] getAtomMap(String jsonMolFile, String jmolMolFile) {
+		P3[] acJson = getCoord(jsonMolFile);
+		P3[] acJmol = getCoord(jmolMolFile);
+		int n = acJson.length; 
+		if (n != acJmol.length)
+			return null;
+		int[] map = new int[n];
+		BS bs = new BS();
+		bs.setBits(0, n);
+		boolean haveMap = false;
+		for (int i = 0; i < n; i++) {
+			P3 a = acJson[i];
+			for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1)) {
+				if (a.distanceSquared(acJmol[j]) < 0.1f) {
+					bs.clear(j);
+					map[i] = j;
+					if (i != j)
+						haveMap = true;
+					break;
+				}
+			}			
+		}
+		return (haveMap ? map : null);
+	}
+
+	/**
+	 * just extract coordinates from MOL file
+	 * 
+	 * @param mol
+	 * @return P3[]
+	 */
+	private static P3[] getCoord(String mol) {
+		String[] lines = PT.split(mol,  "\n");
+		float[] data = new float[3];
+		int n = Integer.parseInt(lines[3].substring(0, 3).trim());
+		P3[] pts = new P3[n];
+		for (int i = 0; i < n; i++) {
+			String line = lines[4 + i];
+			PT.parseFloatArrayInfested(PT.getTokens(line.substring(0, 31)), data);
+			pts[i] = P3.new3(data[0], data[1], data[2]); 
+		}
+		return pts;
+	}
+
+	private static void setAttr(SB sb, String mykey, String lucsKey,
+			Map<String, Object> map) {
+		sb.append(mykey + "=\"").appendO(map.get(lucsKey)).append("\" ");
 	}
 
 	private static URL getResource(Object object, String fileName, String[] error) {
@@ -567,7 +698,7 @@ public class JSVFileManager {
 		if (isURL(fileName)) {
 			try {
 				if (fileName.startsWith(SIMULATION_PROTOCOL))
-					return getAbbrSimulationFileName(fileName, null);
+					return getAbbrSimulationFileName(fileName);
 				String name = (new URL((URL) null, fileName, null)).getFile();
 				return name.substring(name.lastIndexOf('/') + 1);
 			} catch (IOException e) {
@@ -577,17 +708,17 @@ public class JSVFileManager {
 		return viewer.apiPlatform.newFile(fileName).getName();
 	}
 
-	public static String getQuotedJSONAttribute(String json, String key1,
-			String key2) {
-		if (key2 == null)
-			key2 = key1;
-		key1 = "\"" + key1 + "\":";
-		key2 = "\"" + key2 + "\":";
-		int pt1 = json.indexOf(key1);
-		int pt2 = json.indexOf(key2, pt1);
-		return (pt1 < 0 || pt2 < 0 ? null : PT.getQuotedStringAt(json,
-				pt2 + key2.length()));
-	}
+//	public static String getQuotedJSONAttribute(String json, String key1,
+//			String key2) {
+//		if (key2 == null)
+//			key2 = key1;
+//		key1 = "\"" + key1 + "\":";
+//		key2 = "\"" + key2 + "\":";
+//		int pt1 = json.indexOf(key1);
+//		int pt2 = json.indexOf(key2, pt1);
+//		return (pt1 < 0 || pt2 < 0 ? null : PT.getQuotedStringAt(json,
+//				pt2 + key2.length()));
+//	}
 
 	public static void setDocumentBase(JSViewer v, URL documentBase) {
 		viewer = v;

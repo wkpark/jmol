@@ -1845,7 +1845,7 @@ public class PropertyManager implements JmolPropertyManager {
         Shape shape = shapes[i];
         if (shape != null) {
           String shapeType = JC.shapeClassBases[i];
-          Lst<Map<String, Object>> shapeDetail = shape.getShapeDetail();
+          Object shapeDetail = shape.getShapeDetail();
           if (shapeDetail != null)
             info.put(shapeType, shapeDetail);
         }

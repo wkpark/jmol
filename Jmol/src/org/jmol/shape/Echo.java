@@ -72,7 +72,7 @@ public class Echo extends TextShape {
 
     if ("point" == propertyName) {
       if (currentObject != null) {
-        Text t = (Text) currentObject;
+        Text t = currentObject;
         t.pointerPt = (value == null ? null : (P3) value); // could be an atom.
         t.pointer = (value == null ? JC.LABEL_POINTER_NONE
             : JC.LABEL_POINTER_ON);
@@ -88,7 +88,7 @@ public class Echo extends TextShape {
 
     if ("scale" == propertyName) {
       if (currentObject != null) {
-        ((Text) currentObject).setScale(((Float) value).floatValue());
+        (currentObject).setScale(((Float) value).floatValue());
       } else if (isAll) {
         for (Text t : objects.values())
           t.setScale(((Float) value).floatValue());
@@ -97,7 +97,7 @@ public class Echo extends TextShape {
     }
     if ("image" == propertyName) {
       if (currentObject != null) {
-        ((Text) currentObject).setImage(value);
+        (currentObject).setImage(value);
       } else if (isAll) {
         for (Text t : objects.values())
           t.setImage(value);
@@ -115,7 +115,7 @@ public class Echo extends TextShape {
     if ("hidden" == propertyName) {
       boolean isHidden = ((Boolean) value).booleanValue();
       if (currentObject != null) {
-        ((Text) currentObject).hidden = isHidden;
+        (currentObject).hidden = isHidden;
       } else if (isAll || thisID != null) {
         for (Text t : objects.values())
           if (isAll || PT.isMatch(t.target.toUpperCase(), thisID, true, true))
@@ -246,31 +246,37 @@ public class Echo extends TextShape {
     return getPropShape(property, data);
   }
 
-//  @Override
-//  public String getShapeState() {
-//    // not implemented -- see org.jmol.viewer.StateCreator
-//    return null;
-//  }
-  
+  //  @Override
+  //  public String getShapeState() {
+  //    // not implemented -- see org.jmol.viewer.StateCreator
+  //    return null;
+  //  }
+
   @Override
-  public Lst<Map<String, Object>> getShapeDetail() {
-    Lst<Map<String, Object>> lst = new Lst<Map<String, Object>>();
-    Map<String, Object> key = new Hashtable<String, Object>();
-    for (Entry<String, Text> e: objects.entrySet()) {
+  public Object getShapeDetail() {
+    Map<String, Object> lst = new Hashtable<String, Object>();
+    for (Entry<String, Text> e : objects.entrySet()) {
       Map<String, Object> info = new Hashtable<String, Object>();
       Text t = e.getValue();
       String name = e.getKey();
-      info.put("name", name);
+      info.put("boxXY", t.boxXY);
+      if (t.xyz != null)
+        info.put("xyz", t.xyz);
       Object o = t.image;
-      if (o != null) {
+      if (o == null) {
+        info.put("text", t.text == null ? "" : t.text);
+      } else {
         info.put("imageFile", t.text);
-        info.put("imageWidth", Integer.valueOf(vwr.apiPlatform.getImageWidth(o)));
-        info.put("imageHeight", Integer.valueOf(vwr.apiPlatform.getImageHeight(o)));        
-        key.put(name, info);
+        info.put("imageWidth",
+            Integer.valueOf(vwr.apiPlatform.getImageWidth(o)));
+        info.put("imageHeight",
+            Integer.valueOf(vwr.apiPlatform.getImageHeight(o)));
       }
+      lst.put(name, info);
     }
-    lst.addLast(key);
-    return lst;
+    Lst<Map<String, Object>> lst2 = new Lst<Map<String, Object>>();
+    lst2.addLast(lst);
+    return lst2;
   }
 
 }

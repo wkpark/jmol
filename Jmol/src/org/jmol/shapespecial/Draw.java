@@ -1533,7 +1533,7 @@ private void initDraw() {
   }
   
   @Override
-  public Lst<Map<String, Object>> getShapeDetail() {
+  public Object getShapeDetail() {
     Lst<Map<String, Object>> V = new  Lst<Map<String,Object>>();
     for (int i = 0; i < meshCount; i++) {
       DrawMesh mesh = dmeshes[i];

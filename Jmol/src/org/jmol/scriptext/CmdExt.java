@@ -4212,11 +4212,15 @@ public class CmdExt extends ScriptExt {
       }
       break;
     case T.nmr: {
-      String type = eval.optParameterAsString(2);
+      String type = eval.optParameterAsString(2).toUpperCase();
       // switch to "H1" and "C13"
-      if (type.equals("1H") || type.equals("13C"))
-        type = type.substring(type.length() - 1) + type.substring(0, type.length() - 1);
-      else if (type.equals("H"))
+      if (type.length() == 0 || type.equals("H"))
+        type = "H1";
+      else if (type.equals("C"))
+        type = "C13";
+      else if (type.equals("1H") || type.equals("13C"))
+        type = type.substring(type.length() - 1)
+            + type.substring(0, type.length() - 1);
       if (!chk)
         vwr.getNMRPredict(type);
       return;
@@ -4293,7 +4297,8 @@ public class CmdExt extends ScriptExt {
             PT.rep(sg, "''", "\""), -1);
       }
       if (info != null) {
-        msg = (tok == T.spacegroup ? "" + info.get("spaceGroupInfo") + info.get("spaceGroupNote") : "")
+        msg = (tok == T.spacegroup ? "" + info.get("spaceGroupInfo")
+            + info.get("spaceGroupNote") : "")
             + info.get("symmetryInfo");
         break;
       }

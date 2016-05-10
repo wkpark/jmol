@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javajs.J2SIgnoreImport;
+
 
 
 /**
@@ -12,6 +14,8 @@ import java.util.Map;
  * 
  * A SUBSET of JSON with similarly to window.JSON.parse():
  * 
+ * In JavaScript returns "null" for a null value, not null
+ * 
  *  -- requires quoted strings for keys and values
  *  
  *  -- does not allow /xxx/ objects
@@ -19,6 +23,7 @@ import java.util.Map;
  *  @author Bob Hanson
  *  
  */
+@J2SIgnoreImport({ HashMap.class })
 public class JSJSONParser {
 
   private String str;

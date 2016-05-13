@@ -195,10 +195,9 @@ public class SmilesSearch extends JmolMolecule {
     // but still of possible use in terms of comparing two structures
     // and used by the SMILES generator
 
-    aromaticDouble = ((flags & AROMATIC_DOUBLE) == AROMATIC_DOUBLE); // deprecated
-    System.out.println("smiles arom double" + aromaticDouble);
+    aromaticDouble = ((flags & AROMATIC_DOUBLE) == AROMATIC_DOUBLE); // {1.1}.find("SMILES/aromaticDouble",{2.1})
+
     ignoreStereochemistry = ((flags & IGNORE_STEREOCHEMISTRY) == IGNORE_STEREOCHEMISTRY);
-    invertStereochemistry = ((flags & INVERT_STEREOCHEMISTRY) == INVERT_STEREOCHEMISTRY);
 
     openSMILES = ((flags & JC.SMILES_TYPE_OPENSMILES) == JC.SMILES_TYPE_OPENSMILES);
     

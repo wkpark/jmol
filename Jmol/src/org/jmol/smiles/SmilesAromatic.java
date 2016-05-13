@@ -331,7 +331,6 @@ public class SmilesAromatic {
       sum2 += ((double) v) * v;
     }
     sum = Math.sqrt((sum2 - sum * sum / n) / (n - 1));
-    //System.out.println("stdev = " + sum);
     return (sum < cutoff);
   }
 

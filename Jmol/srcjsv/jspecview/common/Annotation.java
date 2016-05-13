@@ -86,7 +86,7 @@ public class Annotation extends Coordinate {
   }
 
 
-	public static Annotation getColoredAnnotation(GenericGraphics g2d, 
+	public static Annotation getColoredAnnotation(GenericGraphics g2d,
 			Spectrum spec, Lst<String> args, Annotation lastAnnotation) {
 		String arg;
 		int xPt = 0;

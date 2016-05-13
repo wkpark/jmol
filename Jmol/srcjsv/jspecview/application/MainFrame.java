@@ -900,7 +900,7 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 			String url, int firstSpec, int lastSpec, boolean isAppend, String script,
 			String id) {
 		boolean isOne = (vwr.currentSource == null);
-		switch (vwr.openDataOrFile(data, name, specs, url, firstSpec, lastSpec,
+		switch (name == null ? JSViewer.FILE_OPEN_ERROR : vwr.openDataOrFile(data, name, specs, url, firstSpec, lastSpec,
 				isAppend, id)) {
 		case JSViewer.FILE_OPEN_OK:
 			if (script == null && isOne && vwr.currentSource.isCompoundSource
@@ -910,8 +910,10 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 				runScript(script);
 			break;			
 		case JSViewer.FILE_OPEN_ERROR:
-			awaken(true);
 			awaken(false);
+			awaken(true);
+			if (name != null)
+				JOptionPane.showMessageDialog(this, "There was an error reading file " + name);
 			break;
 		}
 		siValidateAndRepaint(false);

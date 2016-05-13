@@ -51,7 +51,6 @@ public class SmilesAtom extends P3 implements BNode {
   }
 
   SmilesAtom() {
-//    System.out.println("new atom");
   }
   SmilesAtom[] atomsOr;
   int nAtomsOr;

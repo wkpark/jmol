@@ -431,20 +431,30 @@ public class JSVFileManager {
 	 */
 	@SuppressWarnings({ "unchecked" })
 	private static String getNMRSimulationJCampDX(String name) {
+		int pt = 0;
+		String molFile = null;
 		String type = getSimulationType(name);
-		String key = "" + getSimulationHash(name, type);
 		if (name.startsWith(type))
 			name = name.substring(type.length() + 1);
-		System.out.println("JSVFileManager type=" + type + " key=" + key + " name=" + name);
+		boolean isInline = name.startsWith("MOL=");
+		if (isInline) {
+			name = name.substring(4);
+			pt = name.indexOf("/n__Jmol");
+			if (pt > 0)
+				name = name.substring(0, pt) + PT.rep(name.substring(pt), "/n", "\n");
+			molFile = name = PT.rep(name, "\\n", "\n");
+		}
+		String key = "" + getSimulationHash(name, type);
+		if (Logger.debugging)
+			Logger.info("JSVFileManager type=" + type + " key=" + key + " name="
+					+ name);
 		String jcamp = cacheGet(key);
 		if (jcamp != null)
 			return jcamp;
-		boolean isInline = name.startsWith("MOL=");
-		String molFile;
 		String src = (isInline ? null : PT.rep(nciResolver, "%FILE",
 				PT.escapeUrl(name)));
-		if ((molFile = (isInline ? PT.rep(name.substring(4), "\\n", "\n")
-				: getFileAsString(src))) == null || molFile.indexOf("<html") >= 0) {
+		if (!isInline && (molFile = getFileAsString(src)) == null
+				|| molFile.indexOf("<html") >= 0) {
 			Logger.error("no MOL data returned by NCI");
 			return null;
 		}
@@ -500,7 +510,9 @@ public class JSVFileManager {
 				if (atomMap == null)
 					setAttr(sb, "atoms", "assignment", map);
 				else
-					sb.append("atoms=\"").appendI(atomMap[PT.parseInt((String) map.get("assignment"))]).append("\" ");
+					sb.append("atoms=\"")
+							.appendI(atomMap[PT.parseInt((String) map.get("assignment"))])
+							.append("\" ");
 				setAttr(sb, "multiplicity", "multiplicity", map);
 				map = (Map<String, Object>) map.get("integralData");
 				setAttr(sb, "xMin", "from", map);
@@ -544,7 +556,7 @@ public class JSVFileManager {
 				for (int i = 1; i < signals.length; i++) {
 					String s = signals[i];
 					int a = PT.parseInt(s);
-					sb.append(" atoms=\"").appendI(atomMap[a]).append("\"")
+					sb.append(" atoms=\"").appendI(atomMap[a])
 							.append(s.substring(s.indexOf("\"")));
 				}
 				xml = sb.toString();
@@ -559,7 +571,7 @@ public class JSVFileManager {
 		cachePut("xml", xml);
 		jcamp = "##TITLE=" + (isInline ? "JMOL SIMULATION/" + type : name) + "\n"
 				+ jcamp.substring(jcamp.indexOf("\n##") + 1);
-		int pt = molFile.indexOf("\n");
+		pt = molFile.indexOf("\n");
 		pt = molFile.indexOf("\n", pt + 1);
 		if (pt > 0 && pt == molFile.indexOf("\n \n"))
 			molFile = molFile.substring(0, pt + 1) + "Created "

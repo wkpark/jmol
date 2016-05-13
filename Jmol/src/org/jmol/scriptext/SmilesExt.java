@@ -199,7 +199,8 @@ public class SmilesExt {
           b = sm.getSubstructureSetArray(pattern, e.vwr.ms.at, e.vwr.ms.ac,
               bsSelected, null, flags);
         } else {
-          int[][] map = sm.find(pattern, smiles, isSmarts, firstMatchOnly);
+          int[][] map = sm.find(pattern, smiles, (isSmarts ? JC.SMILES_TYPE_SMARTS : JC.SMILES_TYPE_SMILES) 
+              | (firstMatchOnly ?  JC.SMILES_MATCH_ONCE_ONLY : 0));
           if (!asOneBitset)
             return (!firstMatchOnly ? map : map.length == 0 ? new int[0]
                 : map[0]);

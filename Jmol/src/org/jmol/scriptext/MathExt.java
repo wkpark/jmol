@@ -731,6 +731,8 @@ public class MathExt {
         // sOpts = "H", "allH", "bestH", "polyhedra", pattern, or null
         boolean hMaps = (("H".equalsIgnoreCase(sOpt)
             || "allH".equalsIgnoreCase(sOpt) || "bestH".equalsIgnoreCase(sOpt)));
+        
+        
         boolean isPolyhedron = ("polyhedra".equalsIgnoreCase(sOpt));
         if (isPolyhedron)
           sOpt = (args.length > (isStdDev ? 5 : 4) ? SV.sValue(args[4]) : null);
@@ -1306,7 +1308,7 @@ public class MathExt {
     boolean isEmpty = (args.length == 0);
     String sFind = (isEmpty ? "" : SV.sValue(args[0]));
     String flags = (args.length > 1 && args[1].tok != T.on
-        && args[1].tok != T.off ? SV.sValue(args[1]) : "");
+        && args[1].tok != T.off  && args[1].tok != T.bitset ? SV.sValue(args[1]) : "");
     boolean isSequence = !isList && sFind.equalsIgnoreCase("SEQUENCE");
     boolean isSeq = !isList && sFind.equalsIgnoreCase("SEQ");
     if (sFind.toUpperCase().startsWith("SMILES/")) {
@@ -1408,7 +1410,7 @@ public class MathExt {
           }
           if (isSmiles || isSMARTS)
             sFind = (args.length > 1 && args[1].tok == T.bitset ? vwr
-                .getSmilesOpt((BS) args[1].value, 0, 0, 0, null) : flags);
+                .getSmilesOpt((BS) args[1].value, 0, 0, 0, flags) : flags);
           flags = flags.toUpperCase();
           BS bsMatch3D = bs2;
           if (asBonds) {

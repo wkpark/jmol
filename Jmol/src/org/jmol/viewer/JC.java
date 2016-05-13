@@ -1114,7 +1114,7 @@ public final class JC {
   public static final int SMILES_GEN_BIO_HH_CROSSLINK          = 0x00900000; // MathExt -> generator
   public static final int SMILES_GEN_BIO_COMMENT               = 0x01100000; // MathExt -> Viewer
   public static final int SMILES_GEN_BIO_NOCOMMENTS            = 0x02100000; // MathExt -> Generator
-  
+  public static final int SMILES_GROUP_BY_MODEL                = 0x04000000; // MathExt -> search
 
   
   public static final int JSV_NOT = -1;
@@ -1129,6 +1129,7 @@ public final class JC {
   public static final int NBO_VIEW = 56;
   public static final int NBO_SEARCH = 63;
   public static final int NBO_CONFIG = 70;
+  public static final int JSV_CLOSE = 77;
 
  
   public static int getServiceCommand(String script) {
@@ -1143,7 +1144,8 @@ public final class JC {
         "NBO:RUN" +
         "NBO:VIE" +
         "NBO:SEA" +
-        "NBO:CON"
+        "NBO:CON" +
+        "NONESIM"
         )
         .indexOf(script.substring(0, 7).toUpperCase()));
   }

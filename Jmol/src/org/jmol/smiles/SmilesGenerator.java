@@ -550,8 +550,7 @@ public class SmilesGenerator {
 
   private Node getSmilesAt(SB sb, Node atom,
                            boolean allowConnectionsToOutsideWorld,
-                           boolean allowBranches,
-                           boolean forceBrackets) {
+                           boolean allowBranches, boolean forceBrackets) {
     int atomIndex = atom.getIndex();
     if (!bsToDo.get(atomIndex))
       return null;
@@ -562,8 +561,6 @@ public class SmilesGenerator {
     boolean isAromatic = bsAromatic.get(atomIndex);
     // prevSp2Atoms is for allene ABC=C=CDE
     boolean havePreviousSp2Atoms = (prevSp2Atoms != null);
-    Node[] sp2Atoms = prevSp2Atoms;
-    int nSp2Atoms = 0;
     int atomicNumber = atom.getElementNumber();
     int nH = 0;
     Lst<Edge> v = new Lst<Edge>();
@@ -576,7 +573,6 @@ public class SmilesGenerator {
     }
     Node aH = null;
     int stereoFlag = (isAromatic ? 10 : 0);
-    Node[] stereo = new Node[7];
     if (Logger.debugging)
       Logger.debug(sb.toString());
 
@@ -616,22 +612,22 @@ public class SmilesGenerator {
     // order of listing is critical for stereochemistry:
     //
     // 1) previous atom
-    // 2) bond to previous atom
+    // 2) bond from previous atom
     // 3) atom symbol (possibly followed with H or Hn if in brackets
-    // 4) rings
+    // 4) connections
     // 5) branches
 
-    // add the bond to the previous atom
-
-    String strBond = null;
+    // add the bond from the previous atom and carry over the prev atom in case it is sp2
+    
+    Node[] sp2Atoms = prevSp2Atoms;
+    int nSp2Atoms = (sp2Atoms == null ? 1 : 2);
     if (sp2Atoms == null)
       sp2Atoms = new Node[5];
+    String strPrev = null;
     if (bondPrev != null) {
-      strBond = getBondOrder(bondPrev, atomIndex, prevIndex, isAromatic);
-      if (prevSp2Atoms == null)
-        sp2Atoms[nSp2Atoms++] = prevAtom;
-      else
-        nSp2Atoms = 2;
+      strPrev = getBondOrder(bondPrev, atomIndex, prevIndex, isAromatic);
+      if (!havePreviousSp2Atoms)
+        sp2Atoms[0] = prevAtom;
     }
     nSp2Atoms += nH;
 
@@ -657,14 +653,18 @@ public class SmilesGenerator {
       }
     Node atomNext = (bond0 == null ? null : bond0.getOtherAtomNode(atom));
     int orderNext = (bond0 == null ? 0 : bond0.getCovalentOrder());
+
     if (isAromatic || orderNext == 2 && nH > 1 || atomNext != null
         && SmilesSearch.isRingBond(ringSets, atomIndex, atomNext.getIndex())) {
       sp2Atoms = null;
     }
 
+    // initialize stereo[] for stereochemistry 
+    Node[] stereo = new Node[7];
+
     if (stereoFlag < 7 && bondPrev != null) {
-      if (bondPrev.getCovalentOrder() == 2 && orderNext == 2
-          && prevSp2Atoms != null && prevSp2Atoms[1] != null) {
+      if (havePreviousSp2Atoms && bondPrev.getCovalentOrder() == 2 && orderNext == 2
+          && prevSp2Atoms[1] != null) {
         // allene continuation
         stereo[stereoFlag++] = prevSp2Atoms[0];
         stereo[stereoFlag++] = prevSp2Atoms[1];
@@ -679,19 +679,21 @@ public class SmilesGenerator {
     boolean deferStereo = (orderNext == 1 && prevSp2Atoms == null);
     char chBond = getBondStereochemistry(bondPrev, prevAtom);
 
-    if (strBond != null || chBond != '\0') {
+    if (strPrev != null || chBond != '\0') {
       if (chBond != '\0')
-        strBond = "" + chBond;
-      sb.append(strBond);
+        strPrev = "" + chBond;
+      sb.append(strPrev);
     }
 
-    // now construct the branches part, which will come after  [Xx] or Xx
+    // We have to output branches after rings, but
+    // we need the branches to determine the rings! 
+    // No problem, except we are tracking stereochemistry
 
-    SB sbBranches = new SB();
-    Lst<String> vTest = new Lst<String>();
     int stereoFlag0 = stereoFlag;
     int nSp2Atoms0 = nSp2Atoms;
-    for (int i = 0, nb = (prevAtom == null ? 1 : 2); i < v.size(); i++) {
+    SB sbBranches = new SB();
+    Lst<String> vBranches = new Lst<String>();
+    for (int i = 0; i < v.size(); i++) {
       Edge bond = v.get(i);
       if (!bsBranches.get(bond.index))
         continue;
@@ -700,21 +702,16 @@ public class SmilesGenerator {
       prevAtom = atom;
       prevSp2Atoms = null;
       Edge bond0t = bond0;
-      getSmilesAt(s2, a, allowConnectionsToOutsideWorld, allowBranches, forceBrackets);
+      getSmilesAt(s2, a, allowConnectionsToOutsideWorld, allowBranches,
+          forceBrackets);
       bond0 = bond0t;
       String branch = s2.toString();
-      // vTest allows for not adding the final parens in a chain at the end 
-      if (vTest != null)
-        for (int k = vTest.size(); --k >= 0;)
-          if (vTest.get(k).equals(branch)) {
-            stereoFlag = 10;
-            vTest = null;
-          }
-      if (bond0 != null || ++nb < nBonds)
-        sbBranches.append("(").append(branch).append(")");
-      else
-        sbBranches.append(branch);
+      // catch is that if there are 
       v.remove(i--);
+      if (bond0 == null)
+        vBranches.addLast(branch);
+      else
+        sbBranches.append("(").append(branch).append(")");
       if (stereoFlag < 7)
         stereo[stereoFlag++] = a;
       if (sp2Atoms != null && nSp2Atoms < 5)
@@ -723,10 +720,7 @@ public class SmilesGenerator {
 
     // from here on, prevBondAtoms and prevAtom must not be used.    
 
-    // process the bond to the next atom
-    // and cancel any double bond stereochemistry if nec.
-
-    // now process any rings
+    // now process any connections
 
     SB sbRings = new SB();
 
@@ -742,14 +736,13 @@ public class SmilesGenerator {
       if (bond == bond0)
         continue;
       Node a = bond.getOtherAtomNode(atom);
-      strBond = getBondOrder(bond, atomIndex, a.getIndex(), isAromatic);
+      strPrev = getBondOrder(bond, atomIndex, a.getIndex(), isAromatic);
       if (!deferStereo) {
         chBond = getBondStereochemistry(bond, atom);
         if (chBond != '\0')
-          strBond = "" + chBond;
+          strPrev = "" + chBond;
       }
-
-      sbRings.append(strBond);
+      sbRings.append(strPrev);
       sbRings.append(getRingCache(atomIndex, a.getIndex(), htRings));
       if (stereoFlag < 7)
         stereo[stereoFlag++] = a;
@@ -757,26 +750,14 @@ public class SmilesGenerator {
         sp2Atoms[nSp2Atoms++] = a;
     }
 
-    // NCI/CACTVS has a bug that does not allow 
-    //
-    // C(/C)\1=C\C=C.C/1=C
-    //
-    // and instead requires
-    //
-    // C\1(/C)=C\C=C.C/1=C
-    //
-    // So we have output sbBranches after sbRings, but
-    // we need the branches to determine the rings! 
-    // No problem, except we are tracking stereochemistry
-    // which almost certainly cannot matter in this situation,
-    // but we might as well reorder the stereo[] array anyway.
-    // It is easy enough to do.
+    // Reorder the stereo[] and sp2Atoms[] arrays because 
+    // they may be out of order with respect to bonds and rings.
 
     if (stereoFlag0 != stereoFlag1 && stereoFlag1 != stereoFlag)
       swapArray(stereo, stereoFlag0, stereoFlag1, stereoFlag);
-    if (sp2Atoms != null && nSp2Atoms0 != nSp2Atoms1 && nSp2Atoms1 != nSp2Atoms) 
-      swapArray(sp2Atoms,  nSp2Atoms0, nSp2Atoms1, nSp2Atoms);
-    
+    if (nSp2Atoms0 != nSp2Atoms1 && nSp2Atoms1 != nSp2Atoms)
+      swapArray(sp2Atoms, nSp2Atoms0, nSp2Atoms1, nSp2Atoms);
+
     // now the atom symbol or bracketed expression
     // we allow for charge, hydrogen count, isotope number,
     // and stereochemistry 
@@ -823,13 +804,29 @@ public class SmilesGenerator {
           atat != null ? atat : noStereo ? null : checkStereoPairs(atom,
               atomIndex, stereo, stereoFlag)));
 
-    sb.appendSB(sbRings).appendSB(sbBranches);
+    // add the rings...
 
-    // check the next bond
-    if (bond0 == null)
+    sb.appendSB(sbRings);
+
+
+    // ...then add the branches
+    
+    if (bond0 != null) {
+      // not the end - all branches get parentheses
+      sb.appendSB(sbBranches);
+    } else {
+      // the last branch has no parentheses
+      int n = vBranches.size() - 1;
+      if (n > 0) {
+        for (int i = 0; i < n; i++)
+          sb.append("(").append(vBranches.get(i)).append(")");
+        sb.append(vBranches.get(n));
+      }
       return null;
+    }
 
-    if (sp2Atoms != null && orderNext == 2 && (nSp2Atoms == 1 || nSp2Atoms == 2)) {
+    if (sp2Atoms != null && orderNext == 2
+        && (nSp2Atoms == 1 || nSp2Atoms == 2)) {
       if (sp2Atoms[0] == null)
         sp2Atoms[0] = atom; // CN=C= , for example. close enough!
       if (sp2Atoms[1] == null)

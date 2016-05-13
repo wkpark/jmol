@@ -184,24 +184,19 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    * @param pattern
    *        SMILES or SMARTS pattern.
    * @param target
-   * @param isSmarts
-   *        TRUE for SMARTS strings, FALSE for SMILES strings
-   * @param firstMatchOnly
+   * @param flags
    * @return array of correlations of occurances of pattern within smiles
    * @throws Exception
    */
   @Override
-  public int[][] find(String pattern, String target, boolean isSmarts,
-                      boolean firstMatchOnly) throws Exception {
+  public int[][] find(String pattern, String target, int flags)
+      throws Exception {
 
     InvalidSmilesException.clear();
     target = SmilesParser.cleanPattern(target);
     pattern = SmilesParser.cleanPattern(pattern);
     SmilesSearch search = SmilesParser.getMolecule(target, false, true); /// smiles chirality is fixed here
-    int[][] array = (int[][]) findPriv(pattern, search,
-        (isSmarts ? JC.SMILES_TYPE_SMARTS : JC.SMILES_TYPE_SMILES) 
-        | (firstMatchOnly ? JC.SMILES_MATCH_ONCE_ONLY : 0),
-        MODE_MAP);
+    int[][] array = (int[][]) findPriv(pattern, search, flags, MODE_MAP);
     for (int i = array.length; --i >= 0;) {
       int[] a = array[i];
       for (int j = a.length; --j >= 0;)

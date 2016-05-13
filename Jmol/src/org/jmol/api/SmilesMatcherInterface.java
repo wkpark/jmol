@@ -15,7 +15,7 @@ public interface SmilesMatcherInterface {
   public int areEqual(String smiles1, String smiles2) throws Exception;
 
   public abstract int[][] find(String pattern,/* ...in... */String smiles,
-                                boolean isSmarts, boolean firstMatchOnly) throws Exception;
+                                int flags) throws Exception;
 
   public abstract String getLastException();
 

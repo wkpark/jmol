@@ -44,7 +44,7 @@ public class SmilesBond extends Edge {
   
   // NOTE: ` is reserved for atropisomer ^^ conversion; ~ is for Jmol bioSMARTS
   
-  private static final String ALL_BONDS =    "-=#$:/\\.~^`+!,&;@";  
+  private static final String ALL_BONDS =    "-=#$:/\\.~^`+!,&;@"; // >> for reaction --> .  
   private static final String SMILES_BONDS = "-=#$:/\\.~^`";  
 
   static String getBondOrderString(int order) {
@@ -106,8 +106,9 @@ public class SmilesBond extends Edge {
   int nPrimitives;
   SmilesBond[] bondsOr;
   int nBondsOr;
-  boolean isRingBond;
+  boolean isConnection;
   int[] atropType; // 1 1,1 2,1 3,2 1,2 2,2 3
+  public boolean isChain; // direct connection
 
   void set(SmilesBond bond) {
     // not the atoms.
@@ -205,14 +206,25 @@ public class SmilesBond extends Edge {
   void setAtom2(SmilesAtom atom, SmilesSearch molecule) {
     atom2 = atom;
     if (atom2 != null) {
-      // NO! could be after . as in .[C@H]12      atom2.isFirst = false;
       atom.addBond(this);
-      isRingBond = true;
+      isConnection = true;
     }
   }
 
+  /**
+   * Check to see if this is the bond to the previous atom
+   * 
+   * @param atom
+   * @return TRUE if other atom is previous atom
+   */
+  boolean isFromPreviousTo(SmilesAtom atom) {
+    return (!isConnection && atom2 == atom);
+ }
+
   static int isBondType(char ch, boolean isSearch, boolean isBioSequence)
       throws InvalidSmilesException {
+    if (ch == '>')
+      return 1;
     if (ALL_BONDS.indexOf(ch) < 0)
       return 0;
     if (!isSearch && SMILES_BONDS.indexOf(ch) < 0)

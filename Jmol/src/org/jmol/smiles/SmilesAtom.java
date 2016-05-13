@@ -111,7 +111,7 @@ public class SmilesAtom extends P3 implements BNode {
   }
 
   public boolean isDefined() {
-    return (hasSubpattern || iNested != 0 || isBioAtom 
+    return (hasSubpattern || iNested != 0 || isBioAtom || component > 0 
     || elementNumber != -2 || nAtomsOr > 0 || nPrimitives > 0);  
   }
 
@@ -476,6 +476,11 @@ public class SmilesAtom extends P3 implements BNode {
   }
 
   @Override
+  public int getMoleculeNumber(boolean inModel) {
+    return component;
+  }
+
+  @Override
   public int getAtomSite() {
     return atomSite;
   }
@@ -532,9 +537,10 @@ public class SmilesAtom extends P3 implements BNode {
     if (primitives != null && primitives.length > nPrimitives)
       primitives = (SmilesAtom[]) AU.arrayCopyObject(primitives, primitives.length);
     for (int i = 0; i < bonds.length; i++) {
-      if (isBioAtom && bonds[i].order == SmilesBond.TYPE_AROMATIC)
-        bonds[i].order = SmilesBond.TYPE_BIO_CROSSLINK;
-      if (bonds[i].atom1.index > bonds[i].atom2.index) {
+      SmilesBond b = bonds[i];
+      if (isBioAtom && b.order == SmilesBond.TYPE_AROMATIC)
+        b.order = SmilesBond.TYPE_BIO_CROSSLINK;
+      if (b.atom1.index > b.atom2.index) {
         // it is possible, particularly for a connection to a an atom 
         // with a branch:   C1(CCCN1)
         // for the second assigned atom to not have the
@@ -542,7 +548,7 @@ public class SmilesAtom extends P3 implements BNode {
         // from checking bonds. (atom 1 in this case, for 
         // example, would be the second atom in a bond for
         // which the first atom (N) would not yet be assigned.
-        bonds[i].switchAtoms();
+        b.switchAtoms();
       }
     }
   }
@@ -843,7 +849,7 @@ public class SmilesAtom extends P3 implements BNode {
         //    + " ar:" + isAromatic 
         //    + " H:" + explicitHydrogenCount
         //    + " h:" + implicitHydrogenCount
-        + "]" + s2;
+        + "]" + s2 + "(" + x + "," + y + "," + z + ")";
   }
 
   @Override
@@ -852,5 +858,6 @@ public class SmilesAtom extends P3 implements BNode {
       return atomClass;
     return Float.NaN;
   }
+
 
 }

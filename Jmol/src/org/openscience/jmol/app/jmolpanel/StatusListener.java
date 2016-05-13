@@ -352,18 +352,6 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
 
   private int modificationMode;
   
-  private void checkJSpecView(boolean closeAll) {
-    if (jSpecViewFrame != null && modificationMode <= 0) {
-      jSpecViewForceNew = jSpecViewFrame.isVisible();
-      if (closeAll) {
-        jSpecViewFrame.syncScript("close ALL");
-      } else {
-        setJSpecView("", true, true);
-      }
-      jSpecViewForceNew = true;
-    }
-  }
-
   private void sendConsoleMessage(String strStatus) {
     JmolAppConsoleInterface appConsole = (JmolAppConsoleInterface) vwr
         .getProperty("DATA_API", "getAppConsole", null);
@@ -461,10 +449,26 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
 
   private String lastSimulate;
   
+  private void checkJSpecView(boolean closeAll) {
+    if (jSpecViewFrame != null && modificationMode <= 0) {
+      jSpecViewForceNew = jSpecViewFrame.isVisible();
+      setJSpecView(closeAll ? "none" : "", true, true);
+      jSpecViewForceNew = true;
+    }
+  }
+
   public void setJSpecView(String peaks, boolean doLoadCheck, boolean isFileLoad) {
     if (peaks.startsWith(":"))
       peaks = peaks.substring(1);
-    boolean isSimulation = (peaks.equals("H1Simulate:") || peaks.equals("C13Simulate:"));
+    if (peaks.equals("NONESimulate:")) {
+      if (jSpecViewFrame != null) {
+        jSpecViewFrame.syncScript("close ALL");
+        jSpecViewFrame.awaken(false);
+      }
+      return;
+    }
+    boolean isC13 = peaks.equals("C13Simulate:");
+    boolean isSimulation = (peaks.equals("H1Simulate:") || isC13);
     boolean isStartup = (peaks.length() == 0 || isSimulation);
     boolean newSim = (isSimulation && !peaks.equals(lastSimulate));
     String data = null;
@@ -475,7 +479,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
     }
     if (jSpecViewFrame == null) {
       jSpecViewFrame = new MainFrame((Component) vwr.display, this);
-      jSpecViewFrame.setSize(800, 500);
+      jSpecViewFrame.setSize(Math.max(1000, jmol.frame.getWidth() + 50), 600);
       jSpecViewFrame.setLocation(jmol.frame.getLocation().x + 10, jmol.frame
           .getLocation().y + 100);
       jSpecViewFrame.register("Jmol", this);
@@ -491,7 +495,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
         String file = "" + vwr.getP("_modelFile");
         if (file.indexOf("/") < 0)
           return;
-        peaks = "hidden true; load CHECK " + PT.esc(file) + ";hidden false";
+        peaks = "hidden true; load CHECK " + PT.esc(file) + ";hidden false" + (newSim && isC13 ? ";scaleby 0.5" : null);
       } else if (isFileLoad && !jSpecViewForceNew && !newSim) {
         return;
       } else {

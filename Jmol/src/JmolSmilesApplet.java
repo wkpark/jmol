@@ -28,6 +28,7 @@ import java.awt.Event;
 import java.awt.Graphics;
 
 import org.jmol.util.Logger;
+import org.jmol.viewer.JC;
 import org.jmol.smiles.InvalidSmilesException;
 import org.jmol.smiles.SmilesMatcher;
 
@@ -88,7 +89,10 @@ public class JmolSmilesApplet extends Applet {
     int ret = -1;
     try {
       SmilesMatcher sm = new SmilesMatcher();
-      int[][] result = sm.find(pattern, smiles, isSmarts, !isAll);
+      
+      int[][] result = sm.find(pattern, smiles, (isSmarts ? 
+          JC.SMILES_TYPE_SMARTS : JC.SMILES_TYPE_SMILES) 
+          | (isAll ? 0 : JC.SMILES_MATCH_ONCE_ONLY));
       ret = (result == null ? -1 : result.length);
     } catch (Exception e) {
       System.out.println(e.getMessage());

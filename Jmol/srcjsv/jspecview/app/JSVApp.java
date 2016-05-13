@@ -394,9 +394,10 @@ public class JSVApp implements PanelListener, JSVAppInterface {
 	}
 
 	/**
-	 * fires peakCallback ONLY if there is a peak found 
+	 * fires peakCallback ONLY if there is a peak found
 	 * 
-	 * fires coordCallback ONLY if there is no peak found or no peakCallback active
+	 * fires coordCallback ONLY if there is no peak found or no peakCallback
+	 * active
 	 * 
 	 * if (peakFound && havePeakCallback) { do the peakCallback } else { do the
 	 * coordCallback }
@@ -411,8 +412,7 @@ public class JSVApp implements PanelListener, JSVAppInterface {
 		Coordinate actualCoord = (peakCallbackFunctionName == null ? null
 				: new Coordinate());
 		// will return true if actualcoord is null (just doing coordCallback)
-		if (!vwr.pd().getPickedCoordinates(coord,
-				actualCoord))
+		if (!vwr.pd().getPickedCoordinates(coord, actualCoord))
 			return;
 		int iSpec = vwr.mainPanel.getCurrentPanelIndex();
 		if (actualCoord == null)
@@ -420,10 +420,14 @@ public class JSVApp implements PanelListener, JSVAppInterface {
 					Double.valueOf(coord.getXVal()), Double.valueOf(coord.getYVal()),
 					Integer.valueOf(iSpec + 1) });
 		else
-			appletFrame.callToJavaScript(peakCallbackFunctionName, new Object[] {
-					Double.valueOf(coord.getXVal()), Double.valueOf(coord.getYVal()),
-					Double.valueOf(actualCoord.getXVal()),
-					Double.valueOf(actualCoord.getYVal()), Integer.valueOf(iSpec + 1) });
+			appletFrame
+					.callToJavaScript(
+							peakCallbackFunctionName,
+							new Object[] { Double.valueOf(coord.getXVal()),
+									Double.valueOf(coord.getYVal()),
+									Double.valueOf(actualCoord.getXVal()),
+									Double.valueOf(actualCoord.getYVal()),
+									Integer.valueOf(iSpec + 1) });
 	}
 
 	// /////////// MISC methods from interfaces /////////////

@@ -729,7 +729,8 @@ public class Atom extends Point3fi implements BNode {
     return mi;
   }
    
-  int getMoleculeNumber(boolean inModel) {
+  @Override
+  public int getMoleculeNumber(boolean inModel) {
     return (group.chain.model.ms.getMoleculeIndex(i, inModel) + 1);
   }
    

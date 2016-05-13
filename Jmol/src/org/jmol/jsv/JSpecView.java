@@ -128,6 +128,7 @@ public class JSpecView implements JmolJSpecView {
     case JC.JSV_SEND_JDXMOL:
       vwr.sm.syncSend(vwr.fullName + "JSpecView" + script.substring(10), ">", 0);
       return null;
+    case JC.JSV_CLOSE:
     case JC.JSV_SEND_H1SIMULATE:
     case JC.JSV_SEND_C13SIMULATE:
       vwr.sm.syncSend(vwr.fullName + "JSpecView:" + script, ">", 0);

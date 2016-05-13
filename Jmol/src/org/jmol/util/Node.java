@@ -43,6 +43,8 @@ public interface Node {
   public int getIsotopeNumber();
   public int getValence();
   public void set(float x, float y, float z);
+  public int getMoleculeNumber(boolean inModel);
+
   
   /**
    * @param property  "property_xxxx"

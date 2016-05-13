@@ -83,7 +83,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 
 import org.jmol.api.JSVInterface;
 import org.jmol.api.JmolSyncInterface;
-import org.jmol.util.Logger;
+import org.jmol.util.Logger;	
 
 import jspecview.api.JSVAppInterface;
 import jspecview.api.JSVPanel;
@@ -130,6 +130,8 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
    */
 	private final static long serialVersionUID = 1L;
 	private final static int MAX_RECENT = 10;
+	
+	private static final int JMOL_MIN_HEIGHT = 130;
 
 	// ----------------------------------------------------------------------
 
@@ -156,8 +158,8 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 	private JmolSyncInterface       jmol;
 	private Component               jmolDisplay;
 	private Dimension               jmolDimensionOld;
-	private Container               jmolFrame;
-	private Dimension               jmolDimensionNew = new Dimension(250, 200);
+	private JPanel                  jmolPanel;
+	private Dimension               jmolDimensionNew = new Dimension(350, 300);
 	private JSVInterface            jmolOrAdvancedApplet;
 	private JSVPanel                prevPanel;
 	private Lst<String>        recentFilePaths = new Lst<String>();
@@ -208,8 +210,10 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 		vwr = new JSViewer(this, false, false);
 		JSVFileManager.setDocumentBase(vwr, null);
 		this.jmolDisplay = jmolDisplay;
-		if (jmolDisplay != null)
-			jmolFrame = jmolDisplay.getParent();
+		if (jmolDisplay != null) {
+			jmolPanel = (JPanel) jmolDisplay.getParent();
+		}
+		
 		this.jmolOrAdvancedApplet = jmolOrAdvancedApplet;
 		advancedApplet = (jmolOrAdvancedApplet instanceof JSVAppPro ? (JSVAppPro) jmolOrAdvancedApplet
 				: null);
@@ -218,41 +222,50 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 
 	void exitJSpecView(boolean withDialog) {
 		jmolOrAdvancedApplet.saveProperties(vwr.properties);
-		if (isEmbedded) {
-			awaken(false);
-			return;
-		}
+		awaken(false);
 		dsp.getDisplaySchemes().remove("Current");
 		jmolOrAdvancedApplet.exitJSpecView(withDialog && showExitDialog, this);
 	}
 
 	private boolean isAwake;
+	private int jmolFrameHeight, jmolFrameWidth;
 	
 	public void awaken(boolean visible) {
+		if (!isEmbedded)
+			return;
 		System.out.println("MAINFRAME visible/awake" + visible + " " + isAwake + " " + jmolDisplay);
 		if (jmolDisplay == null || isAwake == visible)
 			return;
 		try {
       isAwake = visible;
+			Container top = jmolPanel.getTopLevelAncestor(); 
 			if (visible) {
 				jmolDimensionOld = new Dimension(0, 0);
 				jmolDisplay.getSize(jmolDimensionOld);
 				jmolDisplay.setSize(jmolDimensionNew);
-				jmolFrame.remove(jmolDisplay);
-				jmolFrame.add(nullPanel);
+				jmolPanel.remove(jmolDisplay);
+				if (top.getHeight() > JMOL_MIN_HEIGHT) {
+					jmolFrameHeight = top.getHeight();
+					jmolFrameWidth = top.getWidth();
+					top.setSize(jmolFrameWidth, JMOL_MIN_HEIGHT);
+				}
+				jmolPanel.add(nullPanel);
 				sideSplitPane.setBottomComponent(jmolDisplay);
 				sideSplitPane.setDividerLocation(splitPosition);
 				sideSplitPane.validate();
-				jmolFrame.validate();
+				jmolPanel.validate();
 				System.out.println("awakened");
 			} else {
 				sideSplitPane.setBottomComponent(nullPanel);
 				splitPosition = sideSplitPane.getDividerLocation();
-				jmolFrame.add(jmolDisplay);
+				jmolPanel.add(jmolDisplay);
+				if (top.getHeight() <= JMOL_MIN_HEIGHT) {
+					top.setSize(jmolFrameWidth, jmolFrameHeight);
+				}
 				jmolDisplay.getSize(jmolDimensionNew);
 				jmolDisplay.setSize(jmolDimensionOld);
 				sideSplitPane.validate();
-				jmolFrame.validate();
+				jmolPanel.validate();
         System.out.println("sleeping");
 			}
 		} catch (Exception e) {
@@ -370,7 +383,7 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 				windowClosing_actionPerformed();
 			}
 		});
-		setSize(800, 500);
+		setSize(1200, 800);
 
 	}
 
@@ -520,7 +533,7 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 			leftPanel.add(jmolDisplayPanel, BorderLayout.SOUTH);
 			leftPanel.add(spectraTreeScrollPane, BorderLayout.NORTH);
 			sideSplitPane.setTopComponent(spectraTreeScrollPane);
-			sideSplitPane.setDividerLocation(splitPosition = 200);
+			sideSplitPane.setDividerLocation(splitPosition = 300);
 			awaken(true);
 			mainSplitPane.setLeftComponent(sideSplitPane);
 		} else {
@@ -895,6 +908,10 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 				script = "VIEW ALL;PEAK GC/MS ID=#1";
 			if (script != null)
 				runScript(script);
+			break;			
+		case JSViewer.FILE_OPEN_ERROR:
+			awaken(true);
+			awaken(false);
 			break;
 		}
 		siValidateAndRepaint(false);

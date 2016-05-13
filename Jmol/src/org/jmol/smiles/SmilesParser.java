@@ -85,7 +85,7 @@ public class SmilesParser {
    */
   
   
-  private Map<Integer, SmilesBond> ringBonds = new Hashtable<Integer, SmilesBond>();
+  private Map<Integer, SmilesBond> connections = new Hashtable<Integer, SmilesBond>();
   private Map<String, SmilesMeasure> htMeasures = new Hashtable<String, SmilesMeasure>();
 
   private boolean isSmarts;
@@ -97,7 +97,7 @@ public class SmilesParser {
   private boolean ignoreStereochemistry;
   private boolean bondDirectionPaired = true;
   private boolean isTarget;
-
+  
   public static SmilesSearch getMolecule(String pattern, boolean isSmarts, boolean isTarget)
       throws InvalidSmilesException {
     return (new SmilesParser(isSmarts, isTarget)).parse(pattern);
@@ -114,6 +114,7 @@ public class SmilesParser {
   }
 
   private int flags;
+  private int componentCount;
   
   /**
    * Parses a SMILES String
@@ -297,29 +298,12 @@ public class SmilesParser {
     if (!bondDirectionPaired)
       throw new InvalidSmilesException("unmatched '/'");
 
-    if (!ringBonds.isEmpty())
+    if (!connections.isEmpty())
       throw new InvalidSmilesException("Open ring");
 
     // finalize atoms
 
-    molecule.setAtomArray();
-
-    molecule.isTopology = true;
-    molecule.patternAromatic = false;
-    molecule.patternBioSequence = true;
-    for (int i = molecule.ac; --i >= 0;) {
-      SmilesAtom atom = molecule.patternAtoms[i];
-      if (molecule.isTopology && atom.isDefined())
-        molecule.isTopology = false;
-      if (!atom.isBioResidue)
-        molecule.patternBioSequence = false;
-      if (atom.isAromatic)
-        molecule.patternAromatic = true;
-      atom.setBondArray();
-      if (!isSmarts && atom.bioType == '\0' && !atom.setHydrogenCount())
-        throw new InvalidSmilesException("unbracketed atoms must be one of: "
-            + SmilesAtom.UNBRACKETED_SET);
-    }
+    molecule.set();
 
     // set the searches now that we know what's a bioAtom and what's not
 
@@ -394,10 +378,9 @@ public class SmilesParser {
     SmilesBond bond = null;
     boolean wasMeasure = false;
     boolean wasBranch = false;
-    while (pattern != null && pattern.length() != 0) {
+    loop: while (pattern != null && pattern.length() != 0) {
       int index = 0;
-      if (currentAtom == null || bond != null
-          && bond.order == SmilesBond.TYPE_NONE) {
+      if (currentAtom == null) {
         index = checkBioType(pattern, 0);
         if (index == pattern.length())
           pattern += "*";
@@ -408,36 +391,27 @@ public class SmilesParser {
       boolean haveOpen = checkBrace(molecule, ch, '{');
       if (haveOpen)
         ch = getChar(pattern, ++index);
-
-      // Branch -- note that bonds come AFTER '(', not before. 
-
       if (ch == '(') {
+
+        // measure, biosequence, branch, or component
+
         String subString = getSubPattern(pattern, index, '(');
-        if (subString.length() > 0 && PT.isDigit(subString.charAt(0))) {
-          // new idea -- allow (3) to refer to atom 3
-          if ((getDigits(subString, 0, ret)) == subString.length()
-              && ret[0] > 0) {
-            SmilesAtom atom;
-            int ringNum = ret[0] - 1;
-            if (ringNum < 0 || ringNum >= molecule.patternAtoms.length
-                || (atom = molecule.patternAtoms[ringNum]) == null
-                || atom == currentAtom || atom.getBondTo(currentAtom) != null)
-              throw new InvalidSmilesException(
-                  "Improper direct atom reference (" + subString + ").");
-            switch (bond == null ? 0 : bond.order) {
-            case SmilesBond.TYPE_UNKNOWN:
-            case SmilesBond.TYPE_NONE:
-              new SmilesBond(atom, currentAtom, SmilesBond.TYPE_UNKNOWN, false);
-              break;
-            default:
-              setBondAtom(bond, null, atom, molecule);
-            }
-          }
+        boolean isMeasure = (getChar(pattern, index + 1) == '.');
+        if (currentAtom == null) {
+          if (isMeasure || !isSmarts)
+            throw new InvalidSmilesException("No previous atom for measure");
+
+          // component (....)          
+          
+          molecule.haveComponents = true;
+          do {
+            componentCount++;
+            ch = getChar(pattern = pattern.substring(1), 0);
+          } while (ch == '(');          
+          if (!haveOpen && (haveOpen = checkBrace(molecule, ch, '{')) == true)
+            ch = getChar(pattern = pattern.substring(1), 0);
         } else {
-          boolean isMeasure = (getChar(pattern, index + 1) == '.');
-          if (currentAtom == null)
-            throw new InvalidSmilesException("No previous atom for "
-                + (isMeasure ? "measure" : "branch"));
+          // measure, biosequence, or branch
           wasMeasure = wasBranch = false;
           if (subString.startsWith(".")) {
             parseMeasure(molecule, subString.substring(1), currentAtom);
@@ -451,14 +425,17 @@ public class SmilesParser {
             wasBranch = true;
             branchLevel--;
           }
+          index = subString.length() + 2;
+          ch = getChar(pattern, index);
+          if (ch == '}' && checkBrace(molecule, ch, '}'))
+            index++;
+          ch = '\0';
+          // skip next section
         }
-        index = subString.length() + 2;
-        ch = getChar(pattern, index);
-        if (ch == '}' && checkBrace(molecule, ch, '}'))
-          index++;
-        // DAYLIGHT DEPICT doesn't care...if (index == len && !isSmarts && !isBioSequence)
-        //throw new InvalidSmilesException("Pattern must not end with ')'");
-      } else {
+      }
+
+      if (ch != '\0') {
+        // bond-atom-bond-atom...
         pt = index;
         out: while (ch != '\0') {
           switch (SmilesBond.isBondType(ch, isSmarts, isBioSequence)) {
@@ -469,41 +446,62 @@ public class SmilesParser {
           case -1:
             // ^... or ^^...
             // look for nn- or just -
-            if (!((PT.isDigit(getChar(pattern, ++index))
-                && index++ > 0
-                ? PT.isDigit(getChar(pattern, index++)) 
-                : true) && (ch = getChar(pattern, index)) == '-'))
+            if (!((PT.isDigit(getChar(pattern, ++index)) && index++ > 0 ? PT
+                .isDigit(getChar(pattern, index++)) : true) && (ch = getChar(
+                pattern, index)) == '-'))
               throw new InvalidSmilesException(
                   "malformed atropisomerism bond ^nn-  or ^^nn-");
             continue;
           }
           ch = getChar(pattern, ++index);
         }
-
+        ch = getChar(pattern, index);
+        if (ch == ')') {
+          switch (ch = getChar(pattern, ++index)) {
+          case '\0':
+          case ')':
+          case '.':
+            pattern = pattern.substring(index);
+            continue loop;
+          }
+          throw new InvalidSmilesException(
+              "invalid continuation after compontent grouping (SMARTS).(SMARTS)");
+        }
         bond = parseBond(molecule, null, pattern.substring(pt, index), null,
             currentAtom, false, isBranchAtom, index - pt, ret);
+
         if (haveOpen && bond.order != SmilesBond.TYPE_UNKNOWN)
-          index = pt;
-        ch = getChar(pattern, index);
+          ch = getChar(pattern, index = pt);
         if (checkBrace(molecule, ch, '{'))
           ch = getChar(pattern, ++index);
-        if (ch == '~' && bond.order == SmilesBond.TYPE_NONE) {
-          index = checkBioType(pattern, index);
-          if (index == pattern.length())
-            pattern += "*";
+        switch (ch) {
+        case '~':
+          if (bond.order == SmilesBond.TYPE_NONE) {
+            index = checkBioType(pattern, index);
+            if (index == pattern.length())
+              pattern += "*";
+          }
+          break;
+        case '(':
+          do {
+            componentCount++;
+            ch = getChar(pattern, ++index);
+          } while (ch == '(');
+          break;
+        case '\0':
+          if (bond.order == SmilesBond.TYPE_NONE)
+            return;
         }
-        if (ch == '\0' && bond.order == SmilesBond.TYPE_NONE)
-          return;
-        boolean isRing = (PT.isDigit(ch) || ch == '%');
-        boolean isAtom = (!isRing && (ch == '_' || ch == '[' || ch == '*' || PT
+        boolean isConnect = (PT.isDigit(ch) || ch == '%');
+        boolean isAtom = (!isConnect && (ch == '_' || ch == '[' || ch == '*' || PT
             .isLetter(ch)));
-        if (isRing) {
+        if (isConnect) {
           if (wasMeasure || wasBranch)
             throw new InvalidSmilesException(
                 "connection number must immediately follow its connecting atom");
           index = getRingNumber(pattern, index, ch, ret);
           int ringNumber = ret[0];
-          parseRing(molecule, ringNumber, currentAtom, bond);
+          parseConnection(molecule, ringNumber, currentAtom, bond);
           bond = null;
         } else if (isAtom) {
           wasMeasure = wasBranch = false;
@@ -547,8 +545,6 @@ public class SmilesParser {
             index += size;
           }
 
-        } else if (ch == '(') {
-          // going to allow this for atom reference
         } else {
           throw new InvalidSmilesException("Unexpected character: "
               + getChar(pattern, index));
@@ -723,16 +719,32 @@ public class SmilesParser {
     throw new InvalidSmilesException("Unmatched '}'");
   }
 
-  private String parseNested(SmilesSearch molecule, String pattern, String prefix)
-      throws InvalidSmilesException {
+  private String parseNested(SmilesSearch molecule, String pattern,
+                             String prefix) throws InvalidSmilesException {
     int index;
     prefix = "$(" + prefix;
     while ((index = pattern.lastIndexOf(prefix)) >= 0) {
       String s = getSubPattern(pattern, index + 1, '(');
       int pt = index + s.length() + 3;
-      pattern = pattern.substring(0, index) 
-      + "_" + molecule.addNested(s) + "_"
-      + pattern.substring(pt);
+      String ext = pattern.substring(pt);
+      pattern = pattern.substring(0, index);
+      // [$(aaN)$(aaa[CH3])] --> [$(aaN)&$(aaa[CH3])]
+      // [$(aaN)c$(aaa[CH3])] --> [$(aaN)&$([c])&$(aaa)]
+      // [$(aaN)!$(aaa[CH3])] --> [$(aaN)&!$(aaa[CH3])]
+      // [$(aaN)c,C] --> [$(aaN)&c,C)]
+      String pre = "";
+      if (prefix.length() == 2 && index > 1 && !pattern.endsWith("!")) {
+        pt = pattern.length();
+        if (pt > 0 && ",;&".indexOf(pattern.substring(pt - 1)) >= 0) {
+          pre = pattern.substring(pt - 1, pt) + pre;
+          pattern = pattern.substring(pt - 1);
+        } else if (pt > 1) {
+          pre = "&" + pre;           
+        }
+      }
+      if (ext.length() > 1 & ",;&".indexOf(ext.charAt(0)) <0)
+        ext = "&" + ext;
+      pattern = pattern + pre + "_" + molecule.addNested(s) + "_" + ext;
     }
     return pattern;
   }
@@ -760,7 +772,7 @@ public class SmilesParser {
     if (Logger.debugging)
       Logger.info(pattern);
     while ((index = pattern.indexOf("$", ipt)) >= 0) {
-      if (getChar(pattern, ipt + 1) == '(')
+      if (getChar(pattern, index + 1) == '(') // was ipt???
         break;
       ipt = skipTo(pattern, index, '=');
       if (ipt <= index + 1 || getChar(pattern, ipt + 1) != '\"')
@@ -816,6 +828,7 @@ public class SmilesParser {
       throw new InvalidSmilesException("Empty atom definition");
 
     SmilesAtom newAtom = new SmilesAtom();
+    newAtom.component = componentCount;
     if (atomSet == null)
       molecule.appendAtom(newAtom);
     boolean isNewAtom = true;
@@ -1170,18 +1183,18 @@ public class SmilesParser {
    * @param bond
    * @throws InvalidSmilesException
    */
-  private void parseRing(SmilesSearch molecule, int ringNum,
+  private void parseConnection(SmilesSearch molecule, int ringNum,
                          SmilesAtom currentAtom, SmilesBond bond) throws InvalidSmilesException {
 
     // Ring management
       Integer r = Integer.valueOf(ringNum);
-      SmilesBond bond0 = ringBonds.get(r);
+      SmilesBond bond0 = connections.get(r);
       if (bond0 == null) {
-        ringBonds.put(r, bond);
+        connections.put(r, bond);
         molecule.top.ringCount++;
         return;
       }
-      ringBonds.remove(r);
+      connections.remove(r);
     // wnen the bond type is unknown, we go with:
     // (1) the other end, if defined there
     // (2) or if SMARTS, "ANY"
@@ -1248,6 +1261,12 @@ public class SmilesParser {
     char ch;
     if (len > 0) {
       switch (ch = pattern.charAt(0)) {
+      case '>':
+        if (!pattern.equals(">>")) {  // reaction  separator as "."
+          len  = -1;
+          break;
+        }
+        //$FALL-THROUGH$
       case '.':
         if (bond == null && bondSet == null) {
           isBioSequence = (getChar(pattern, 1) == '~');
@@ -1337,7 +1356,13 @@ public class SmilesParser {
                              SmilesAtom currentAtom, boolean isPrimitive,
                              boolean isBranchAtom, int[] ret)
       throws InvalidSmilesException {
-    int pt = pattern.indexOf(',');
+    int pt = pattern.lastIndexOf("!");
+    while (pt > 0) {
+      if (",;&!".indexOf(pattern.charAt(pt - 1)) < 0)
+        pattern = pattern.substring(0, pt) + "&" + pattern.substring(pt);
+      pt = pattern.lastIndexOf("!", pt - 1);
+    }
+    pt = pattern.indexOf(',');
     int len = pattern.length();
     out: while (true) {
       boolean haveOr = (pt > 0);

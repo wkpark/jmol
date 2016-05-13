@@ -33,10 +33,8 @@ public abstract class JDXDataObject extends JDXHeader {
   public String sourceID = "";
 
   public void setFilePath(String filePath) {
-  	if (filePath == null)
-  		return;
-    this.filePath = filePath.trim();
-    filePathForwardSlash = this.filePath.replace('\\','/');
+  	if (filePath != null)
+  		filePathForwardSlash = (this.filePath = filePath.trim()).replace('\\','/');
   }
 
   public String getFilePath() {

@@ -503,17 +503,20 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
         if (newSim)
           lastSimulate = peaks;
         String model = "" + vwr.getP("_modelNumber");
-        data = PT.replaceAllCharacters(data, "&", "_");
-        peaks = "hidden true; load CHECK " + (peaks.equals("H1Simulate:") ? "H1 " : "C13 ")
-            + PT.esc("id='~" + model + "';" + data) + ";hidden false #SYNC_PEAKS";
+        if (data == null) {
+          peaks = "hidden false";
+        } else {
+          data = PT.replaceAllCharacters(data, "&", "_");
+          peaks = "hidden true; load CHECK " + (peaks.equals("H1Simulate:") ? "H1 " : "C13 ")
+              + PT.esc("id='~" + model + "';" + data) + ";hidden false #SYNC_PEAKS";
+        }
         isStartup = false;
       }
     }
-    if (!jSpecViewFrame.isVisible() && peaks.contains("<PeakData"))
-      return;
 
     if (!jSpecViewFrame.isVisible()) {
-    //    && !peaks.toLowerCase().startsWith("hidden")) {
+      if (peaks.contains("<PeakData"))
+        return;
       jSpecViewFrame.awaken(true);
       display.setViewer(vwr);
     }

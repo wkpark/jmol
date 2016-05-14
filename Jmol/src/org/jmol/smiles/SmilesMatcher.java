@@ -407,7 +407,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     String s = null;
     SmilesGenerator g = new SmilesGenerator();
     if (points != null)
-      g.stereoReference = (P3) center;
+      g.polySmilesCenter = (P3) center;
     InvalidSmilesException.clear();
     s = g.getSmiles(this, atoms, atomCount, BSUtil.newBitSet2(0, atomCount),
         null, flags | JC.SMILES_GEN_EXPLICIT_H | JC.SMILES_GEN_NOAROMATIC

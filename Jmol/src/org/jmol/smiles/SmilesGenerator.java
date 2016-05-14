@@ -90,7 +90,7 @@ public class SmilesGenerator {
   private boolean aromaticDouble;
   private boolean noStereo;
   private boolean openSMILES;
-  public P3 stereoReference;
+  public P3 polySmilesCenter;
   private SmilesStereo smilesStereo;
   private boolean isPolyhedral;
   private Lst<BS> aromaticRings;
@@ -567,9 +567,9 @@ public class SmilesGenerator {
     Edge bond0 = null;
     Edge bondPrev = null;
     Edge[] bonds = atom.getEdges();
-    if (stereoReference != null) {
+    if (polySmilesCenter != null) {
       allowBranches = false;
-      sortBonds(atom, prevAtom, stereoReference);
+      sortBonds(atom, prevAtom, polySmilesCenter);
     }
     Node aH = null;
     int stereoFlag = (isAromatic ? 10 : 0);
@@ -728,9 +728,11 @@ public class SmilesGenerator {
     int nSp2Atoms1 = nSp2Atoms;
 
     String atat = null;
-    if (!allowBranches && !noStereo && stereoReference == null
-        && (v.size() == 5 || v.size() == 6))
+    if (!allowBranches && !noStereo && polySmilesCenter == null
+        && (v.size() == 5 || v.size() == 6)) {
+      // only for first hypervalent atom; we are not allowing any branches here
       atat = sortInorganic(atom, v, vTemp);
+    }
     for (int i = 0; i < v.size(); i++) {
       Edge bond = v.get(i);
       if (bond == bond0)
@@ -933,9 +935,10 @@ public class SmilesGenerator {
     for (int i = 0; i < n; i++) {
       bond1 = v.get(i);
       stereo[0] = a1 = bond1.getOtherAtomNode(atom);
+      // just looking for the opposite atom not being identical
       if (i == 0)
-        s = addStereoCheck(atomIndex, stereo, 0, "");
-      else if (isOK && addStereoCheck(atomIndex, stereo, 0, s) != null)
+        s = addStereoCheck(0, atomIndex, a1, "", null);
+      else if (isOK && addStereoCheck(0, atomIndex, a1, s, null) != null)
         isOK = false;
       if (bsDone.get(i))
         continue;
@@ -1014,44 +1017,85 @@ public class SmilesGenerator {
     if (stereoFlag < 4)
       return "";
     if (stereoFlag == 4 && (atom.getElementNumber()) == 6) {
-      // do a quick check for two of the same group.
+      // do a quick check for two of the same group for tetrahedral carbon only
       String s = "";
-      for (int i = 0; i < 4; i++)
-        if ((s = addStereoCheck(atomIndex, stereo, i, s)) == null) {
+      for (int i = 0; i < 4; i++) {
+        if ((s = addStereoCheck(0, atomIndex, stereo[i], s, BSUtil.newAndSetBit(atomIndex))) == null) {
           stereoFlag = 10;
           break;
         }
+      }
     }
     return (stereoFlag > 6 ? "" : SmilesStereo.getStereoFlag(atom, stereo,
         stereoFlag, vTemp));
   }
+  
+  private int chainCheck;
 
   /**
-   * checks a group and either adds a new group to the growing
-   * check string or returns null
+   * checks a group and either adds a new group to the growing check string or
+   * returns null
+   * 
    * @param atomIndex
-   * @param stereo
-   * @param i
+   * @param atom
    * @param s
-   * @return   null if duplicate
+   * @param bsDone
+   * @return null if duplicate
    */
-  private String addStereoCheck(int atomIndex, Node[] stereo, int i, String s) {
-    int n = stereo[i].getAtomicAndIsotopeNumber();
-    int nx = stereo[i].getCovalentBondCount();
-    int nh = (n == 6 && !explicitH ? stereo[i].getCovalentHydrogenCount() : 0);
+  private String addStereoCheck(int level, int atomIndex, Node atom, String s,
+                                BS bsDone) {
+    if (bsDone != null)
+      bsDone.set(atomIndex);
+    //System.out.println("level=" + level + " atomIndex=" + atomIndex + " atom=" + atom + " s=" + s);
+    int n = atom.getAtomicAndIsotopeNumber();
+    int nx = atom.getCovalentBondCount();
+    int nh = (n == 6 && !explicitH ? atom.getCovalentHydrogenCount() : 0);
     // only carbon or singly-connected atoms are checked
     // for C we use nh -- CH3, for example.
     // for other atoms, we use number of bonds.
     // just checking for tetrahedral CH3)
-    if (n == 6 ? nx != 4 || nh != 3 : nx > 1)
+    if (n == 6 ? nx != 4 : n == 1 || nx > 1)
       return s;
-    String sa = ";" + n + "/" + nh + "/" + nx + ",";
+    String sa = ";" + level + "/" + n + "/" + nh + "/" + nx + (level == 0 ? "," : "_");
+    if (n == 6) {
+      switch (nh) {
+      case 1:
+        return s + sa + (++chainCheck);
+      case 0:
+      case 2:
+        if (bsDone == null)
+          return s;
+        Edge[] edges = atom.getEdges();
+        String s2 = "";
+        String sa2 = "";
+        int nunique = (nh == 2 ? 0 : 3);
+        for (int j = atom.getBondCount(); --j >= 0;) {
+          Node a2 = edges[j].getOtherAtomNode(atom);
+          int i2 = a2.getIndex();
+          if (bsDone.get(i2) || !edges[j].isCovalent() || a2.getElementNumber() == 1)
+            continue;
+          bsDone.set(i2);
+          sa2 = addStereoCheck(level + 1, atom.getIndex(), a2, "", bsDone);
+          if (s2.indexOf(sa2) >= 0)
+            nunique--;
+          s2 += sa2;
+        }
+        if (nunique == 3)
+          return s + sa + (++chainCheck);
+        sa = (sa + s2).replace(',','_');
+        if (level > 0)
+          return s + sa;
+              break;
+      case 3:
+        break;
+      }
+    }
     if (s.indexOf(sa) >= 0) {
       if (nh == 3) {
         // must check isotopes for CH3
         int ndt = 0;
         for (int j = 0; j < nx && ndt < 3; j++) {
-          int ia = stereo[i].getBondedAtomIndex(j);
+          int ia = atom.getBondedAtomIndex(j);
           if (ia == atomIndex)
             continue;
           ndt += atoms[ia].getAtomicAndIsotopeNumber();

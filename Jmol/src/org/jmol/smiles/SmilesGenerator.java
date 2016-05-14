@@ -1144,7 +1144,7 @@ public class SmilesGenerator {
   private void dumpRingKeys(SB sb, Map<String, Object[]> ht) {
     Logger.info(sb.toString() + "\n\n");
     for (String key: ht.keySet())
-      Logger.info("unmatched ring key: " + key);
+      Logger.info("unmatched connection: " + key);
   }
 
   protected static String getRingKey(int i0, int i1) {

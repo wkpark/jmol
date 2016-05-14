@@ -819,7 +819,7 @@ public class SmilesGenerator {
     } else {
       // the last branch has no parentheses
       int n = vBranches.size() - 1;
-      if (n > 0) {
+      if (n >= 0) {
         for (int i = 0; i < n; i++)
           sb.append("(").append(vBranches.get(i)).append(")");
         sb.append(vBranches.get(n));

@@ -2,48 +2,49 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <meta name="generator" content="Jmol, see http://www.jmol.org" />
-  <meta name ="author" content = "@AUTHOR@"/>
-  <meta name ="keywords" content = "generated_by_Jmol_Webexport"/>
+  <meta name="generator" content="Jmol, see http://www.jmol.org">
+  <meta name="author" content="@AUTHOR@">
+  <meta name="keywords" content="generated_by_Jmol_Webexport">
   <title>@TITLE@</title>
   <style type="text/css">
-  body {
-  	margin:0px;
-  	padding:0px;
-  	}
-  #visible_page_wrapper{
-      position:absolute;
-      top:0px;
-      /*height:100%;*/
-      width:100%;
-      overflow: scroll;
-  }
+	h1 { font-size:1.5em; text-align:center; }
+	.section { clear:both; padding:0.6em 0; }
+	.sceneWrapper {
+		border:1px solid gray;
+		border-radius:1ex;
+		margin:0.3em 1ex; 
+		font-size:0.9em; 
+	}
+	.sceneWrapper td {
+		padding:0.5ex;
+	}
   .JmolDiv { 
-      padding:0.3em 0.5ex; 
-      font-size:0.9em; 
-      background-repeat:no-repeat; 
-      background-position:center;
-      }
-  .floatRightDiv { 
-      padding:0.3em 0.5ex; 
-      font-size:0.9em; 
-      float:right;
-      }
-  .floatLeftDiv { 
-      padding:0.3em 0.5ex; 
-      font-size:0.9em; 
-      float:left;
-      }
-  .update-info{
-      text-align:right;
-      font-size: small;
-      font-style: italic;
+		padding:0.3em 0.5ex; 
+		font-size:0.9em; 
+		background-repeat:no-repeat; 
+		background-position:center;
   }
+  .floatRight { float:right; }
+  .floatLeft { float:left; }
+  .update-info {
+		clear:both;
+		padding-top:1em;
+		text-align:right;
+		font-size:0.75em;
+		font-style:italic;
+  }
+	.update-info + .update-info {
+		padding-top:0.2em;
+		margin-bottom:1em;
+	}
+	.widgetItemPopin { /* each widget in a PopIn page goes in a div with this class */
+		 margin:0.2em 0;
+	}
   </style>  
 
   <!-- Below is used locally but not on server. May generate warnings. -->
   <script type="text/javascript" src="@LOCALAPPLETPATH@/JSmol.min.js"></script>
-  <script src="JmolPopIn.js" type="text/javascript"></script>
+  <script src="support.js" type="text/javascript"></script>
   @WIDGETJSFILES@
   
   <!-- Below is used on server, but not locally. May generate warnings.-->
@@ -63,11 +64,8 @@
 var s = document.location.search;
 Jmol.debugCode = (s.indexOf("debugcode") >= 0);
 
-
 jmol_isReady = function(jmolApplet) {
-	//TODO will need to activate widgets
- }		
-
+}		
 
 jmolInfo = { //default values
 	width: "100%",
@@ -75,16 +73,16 @@ jmolInfo = { //default values
 	debug: false,
 	color: "white",
 	addSelectionOptions: false,
-	serverURL: "http://chemapps.stolaf.edu/jmol/jsmol/php/jsmol.php", //you can change this to your own server.
 	use: "HTML5",
-    coverImage: "@APPLETNAME0@.png",        // initial image instead of applet
-    coverScript: "",	// special script for click of cover image (otherwise equal to script)
-    deferApplet: true,                  // wait to load applet until click
-    deferUncover: true,                 // wait to uncover applet until script completed
-    //The paths below assume your server is set up with standard JSmol directory.  If not
-    //they will need modification for the page to work.
-    jarPath: "@REMOTEAPPLETPATH@/java", //path to applet .jar files on server.
+	coverImage: "@APPLETNAME0@.png",        // initial image instead of applet
+	coverScript: "",	// special script for click of cover image (otherwise equal to script)
+	deferApplet: true,                  // wait to load applet until click
+	deferUncover: true,                 // wait to uncover applet until script completed
+		//The paths below assume your server is set up with standard JSmol directory.  If not
+		//they will need modification for the page to work.
+	jarPath: "@REMOTEAPPLETPATH@/java", //path to applet .jar files on server.
 	j2sPath: "@REMOTEAPPLETPATH@/j2s",//path to javascript version.
+	serverURL: "@REMOTEAPPLETPATH@/php/jsmol.php", //if your own server does not allow php, you can change to http://chemapps.stolaf.edu/jmol/jsmol/php/jsmol.php
 	makeLiveImg:"@REMOTEAPPLETPATH@/j2s/img/play_make_live.jpg",//path to activate 3-D image.
 	jarFile: "JmolAppletSigned0.jar",
 	isSigned: true,
@@ -114,52 +112,38 @@ jmolInfo = { //default values
    if (protocol == "file:") { 
     jmolInfo.jarPath = "@LOCALAPPLETPATH@/java";
     jmolInfo.j2sPath = "@LOCALAPPLETPATH@/j2s";
+    jmolInfo.serverURL = "http://chemapps.stolaf.edu/jmol/jsmol/php/jsmol.php"; //you can change to your own path
     jmolInfo.makeLiveImg = "@LOCALAPPLETPATH@/j2s/img/play_make_live.jpg";
     jmolInfo.jarFile = "JmolAppletSigned.jar";
     jmolInfo.isSigned= "true";
   }
 })();
 
-Jmol.setDocument(document);
-
-// notice that we are using no document.write() function here. All DOM-based.
-// Jmol.getAppletHtml is working.
-
 $(document).ready(function(){//set up each of the applet locations
-    $("#make_live_icon").attr('src',jmolInfo.makeLiveImg);
-@APPLETINITIALIZATION@
-
+	@APPLETINITIALIZATION@
 });
   </script>
 </head>
 <body>
-  <div id="visible_page_wrapper">
-    <div id="introdiv" style="text-align: left;">
-      <div id="titlediv" style="text-align: center;">
+    <div id="introdiv">
+      <h1 id="titlediv">
         GT_pop_in_template.html_INSERTTITLE
-        <br />
-      </div>
+      </h1>
       GT_pop_in_template.html_INSERTINTRO
     </div>
 
     @APPLETINFO@
 
-    <table style  = "width: 100%;" border="0" cellpadding="0" cellspacing="0">
-      <tbody>
-        @APPLETDEFS@
-      </tbody></table>
+    @APPLETDEFS@
 
-    <div style="margin:0; padding:0;">&nbsp;</div>
-
-    <div id="authordiv" class="update-info">
-      @AUTHORDATA@
-    </div>
     <div id="creationdiv" class="update-info">
       @CREATIONDATA@
     </div>
-    <div id="logdiv" style="text-align: right; display:none">
+    <div id="authordiv" class="update-info">
+      @AUTHORDATA@
+    </div>
+    <div id="logdiv" style="display:none">
       @LOGDATA@
     </div>
-  </div>
 </body>
 </html>

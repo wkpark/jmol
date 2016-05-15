@@ -1,10 +1,8 @@
 /* Jmol Simple JavaScript Color Picker
  by Jonathan Gutow, Angel Herráez
-V1.4
-August 17, 2010
+V2.0
+December 2015 -- Updated for JSmol
 
-requires
-   Jmol.js
 
 Usage
 Where ever you want a popup color picker box include a script like
@@ -73,24 +71,6 @@ function _jmolChangeClass(someObj,someClassName) {
     someObj.setAttribute("className",someClassName);  // this is for IE
 }
 
-// detect if browser supports data:URI   (IE6 & IE7 do not)
-var jmolDataURIsupported = true;
-var jmolTestImg64 = new Image();
-jmolTestImg64.onload = jmolTestImg64.onerror = function() {
-  if(this.width!=1 || this.height!=1) { jmolDataURIsupported=false; }
-}
-jmolTestImg64.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
-
-/* This is only needed and used when there are both a colorPicker and a stereoMode selector (widgets from Jmol Export to Web).
-		IE6 puts the SELECT control on top of the popup colorpicker DIV, so we play a trick in that case:
-*/
-var jmolFixSelectOnTop=false;
-if (/MSIE (\d+\.\d+);/.test(navigator.userAgent)) { //test for MSIE x.x;
-    var jmolIEversion=new Number(RegExp.$1); // capture x.x portion and store as a number
-	 if (jmolIEversion<7) { jmolFixSelectOnTop=true; }
-}
-
-
 //Build the ColorPicker Div.
 
 function _jmolMakeColorPicker(){
@@ -126,13 +106,9 @@ function _jmolMakeColorPicker(){
              [35,0]
      ];
     var htmlStr = '<div id="JmolColorPickerHover" style="width:'+ 8*(rgbs.length) +'px;">';
-    if (jmolDataURIsupported) {
-        htmlStr += '<image id="JmolColorPickerCancel" onclick="_jmolColorPickerPickedColor(\'cancel\');" src="data:image/bmp;base64,Qk3CAQAAAAAAADYAAAAoAAAACwAAAAsAAAABABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdnZ2j4+PoKCgqampqampoKCgj4+PAAAAAAAAAAAAAAAAAAAAAAAAsbGxwsLCysrKysrKwsLCAAAAAAAAAAAAAAAAZWVlAAAAAAAAAAAA29vb5OTk5OTkAAAAAAAAAAAAj4+PAAAAdnZ2oKCgAAAAAAAAAAAA9PT0AAAAAAAAAAAAwsLCoKCgAAAAfn5+qampysrKAAAAAAAAAAAAAAAAAAAA5OTkysrKqampAAAAfn5+qampysrK5OTkAAAAAAAAAAAA9PT05OTkysrKqampAAAAdnZ2oKCgwsLCAAAAAAAAAAAAAAAAAAAA29vbwsLCoKCgAAAAZWVlj4+PAAAAAAAAAAAA5OTkAAAAAAAAAAAAsbGxj4+PAAAATExMAAAAAAAAAAAAwsLCysrKysrKAAAAAAAAAAAAdnZ2AAAAAAAAAAAAAAAAj4+PoKCgqampqampoKCgAAAAAAAAAAAAAAAAAAAAAAAATExMZWVldnZ2fn5+fn5+dnZ2ZWVlAAAAAAAAAAAA">';
-    } else {
-        htmlStr += '<span id="JmolColorPickerCancel" onclick="_jmolColorPickerPickedColor(\'cancel\');" class="JmolColorPickerFakeBtn">X</span>';
-    }
+    htmlStr += '<image id="JmolColorPickerCancel" onclick="_jmolColorPickerPickedColor(\'cancel\');" src="data:image/bmp;base64,Qk3CAQAAAAAAADYAAAAoAAAACwAAAAsAAAABABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdnZ2j4+PoKCgqampqampoKCgj4+PAAAAAAAAAAAAAAAAAAAAAAAAsbGxwsLCysrKysrKwsLCAAAAAAAAAAAAAAAAZWVlAAAAAAAAAAAA29vb5OTk5OTkAAAAAAAAAAAAj4+PAAAAdnZ2oKCgAAAAAAAAAAAA9PT0AAAAAAAAAAAAwsLCoKCgAAAAfn5+qampysrKAAAAAAAAAAAAAAAAAAAA5OTkysrKqampAAAAfn5+qampysrK5OTkAAAAAAAAAAAA9PT05OTkysrKqampAAAAdnZ2oKCgwsLCAAAAAAAAAAAAAAAAAAAA29vbwsLCoKCgAAAAZWVlj4+PAAAAAAAAAAAA5OTkAAAAAAAAAAAAsbGxj4+PAAAATExMAAAAAAAAAAAAwsLCysrKysrKAAAAAAAAAAAAdnZ2AAAAAAAAAAAAAAAAj4+PoKCgqampqampoKCgAAAAAAAAAAAAAAAAAAAAAAAATExMZWVldnZ2fn5+fn5+dnZ2ZWVlAAAAAAAAAAAA">';
     htmlStr += '</div>';	 
-    htmlStr += '<table cellspacing="0" cellpadding="0" border="0"><tbody>';
+    htmlStr += '<table class="JmolColorPickerPalette"><tbody>';
 	 var r,g,b,rgb;
     for (var j = 0; j < hues.length;j++){
     	 htmlStr += '<tr>';
@@ -165,11 +141,6 @@ function _jmolColorPickerPickedColor(colorStr){
         var evalStr = ''+ jmolColorPickerStatus.funcName+'("'+colorStr+'",'+ jmolColorPickerStatus.passThrough+');';
         eval(evalStr);
     }
-		// if needed, redisplay the select for stereo (passThrough holds the applet ID number):
-    if (jmolFixSelectOnTop) {
-		 var x = document.getElementById("StereoMode"+jmolColorPickerStatus.passThrough);
-		 if (x) { x.style.visibility='visible'; }
-	 }
 }
 
 function _jmolColorPickerHoverColor(colorStr){
@@ -188,11 +159,6 @@ function _jmolPopUpPicker(whereID, funcName, passThrough){
     jmolColorPickerStatus.passThrough = passThrough;
     document.getElementById(whereID).appendChild(pickerDiv);
     _jmolChangeClass(pickerDiv,"JmolColorPicker_vis");
-	 // if needed, hide the select for stereo (passThrough holds the applet ID number):
-    if (jmolFixSelectOnTop) {
-		 var x = document.getElementById("StereoMode"+passThrough);
-		 if (x) { x.style.visibility='hidden'; }
-	}
 }
 
 
@@ -213,18 +179,14 @@ function jmolColorPickerBox(scriptStr, startColor, boxID, appletID){
     boxDiv.appendChild(document.createTextNode("building color box..."));
     boxDiv.style.backgroundColor=presentColor;
     boxDiv.style.height='14px';
-    boxDiv.style.width='28px';
-    var htmlStr = '<table class="JmolColorPickerBox" cellspacing="0" cellpadding="0" border="1" onclick=\'_jmolPopUpPicker(';
+    boxDiv.style.width='26px';
+    var htmlStr = '<table class="JmolColorPickerBox" onclick=\'_jmolPopUpPicker(';
     htmlStr += '"'+boxID+'","_jmolColorBoxUpdate",'+boxNum+');\' ';
     htmlStr += '><tbody>';
     htmlStr += '<tr><td>&nbsp;</td><td>';
-    if (jmolDataURIsupported) {
-        // up arrowhead:   "data:image/bmp;base64,Qk3mAQAAAAAAADYAAAAoAAAACwAAAAwAAAABABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIAAAAAAAAAAAAAAAAAAAAAAAAAAAAyMjIyMjIAAAAyMjIyMjIyMjIAAAAAAAAAAAAAAAAAAAAyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIAAAAAAAAAAAAyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAA"
-        // down arrowhead: "data:image/bmp;base64,Qk3mAQAAAAAAADYAAAAoAAAACwAAAAwAAAABABgAAAAAALABAAAAAAAAAAAAAAAAAAAAAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIAAAAAAAAAAAAyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIAAAAAAAAAAAAAAAAAAAAyMjIyMjIyMjIAAAAyMjIyMjIAAAAAAAAAAAAAAAAAAAAAAAAAAAAyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAA"
-        htmlStr += '<image src="data:image/bmp;base64,Qk3mAQAAAAAAADYAAAAoAAAACwAAAAwAAAABABgAAAAAALABAAAAAAAAAAAAAAAAAAAAAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIAAAAAAAAAAAAyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIAAAAAAAAAAAAAAAAAAAAyMjIyMjIyMjIAAAAyMjIyMjIAAAAAAAAAAAAAAAAAAAAAAAAAAAAyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAA">';
-    } else {
-        htmlStr += '<span class="JmolColorPickerFakeBtn">V</span>';
-    }
+		// up arrowhead:       "data:image/bmp;base64,Qk3mAQAAAAAAADYAAAAoAAAACwAAAAwAAAABABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIAAAAAAAAAAAAAAAAAAAAAAAAAAAAyMjIyMjIAAAAyMjIyMjIyMjIAAAAAAAAAAAAAAAAAAAAyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIAAAAAAAAAAAAyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAA"
+		// down arrowhead:     "data:image/bmp;base64,Qk3mAQAAAAAAADYAAAAoAAAACwAAAAwAAAABABgAAAAAALABAAAAAAAAAAAAAAAAAAAAAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIAAAAAAAAAAAAyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIAAAAAAAAAAAAAAAAAAAAyMjIyMjIyMjIAAAAyMjIyMjIAAAAAAAAAAAAAAAAAAAAAAAAAAAAyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAA"
+		htmlStr += '<image src="data:image/bmp;base64,Qk3mAQAAAAAAADYAAAAoAAAACwAAAAwAAAABABgAAAAAALABAAAAAAAAAAAAAAAAAAAAAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIAAAAAAAAAAAAyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIAAAAAAAAAAAAAAAAAAAAyMjIyMjIyMjIAAAAyMjIyMjIAAAAAAAAAAAAAAAAAAAAAAAAAAAAyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAA">';
     htmlStr += '</td></tr></tbody></table>';
     boxDiv.innerHTML = htmlStr;
     var scripts = document.getElementsByTagName("script");
@@ -242,7 +204,7 @@ function _jmolColorBoxUpdate(pickedColor, boxNum){
         jmolColorPickerBoxes[boxNum].scriptStr[0](rgbCodes,jmolColorPickerBoxes[boxNum].scriptStr, jmolColorPickerBoxes[boxNum].appletID);
     }else {
     	var scriptStr = jmolColorPickerBoxes[boxNum].scriptStr.replace('$COLOR$', rgbCodes);
-    	jmolScript(scriptStr,jmolColorPickerBoxes[boxNum].appletID);
+			Jmol.script(window['jmolApplet' + jmolColorPickerBoxes[boxNum].appletID], scriptStr);
     }
 }
 
@@ -251,12 +213,14 @@ function _jmolColorPickerSetCSS() {
 	var colorPickerCSS = document.createElement('style');
 	colorPickerCSS.type = 'text/css';
 	var CSSStr ='.JmolColorPicker_vis {border-style:solid;border-width:thin;clear:both;display:block;overflow:visible;position:absolute;margin-left:-52px;width:104px;z-index:2;} '+
-	 '.JmolColorPicker_hid {height:0;min-height:0;display:none;overflow:hidden;z-index:0;} '+
+	 '.JmolColorPicker_hid {display:none;} '+
 	 '#JmolColorPickerDiv table td {font-size:2px;width:8px;height:8px;padding:0;cursor:default;} '+
 	 '#JmolColorPickerHover {font-size:2px;text-align:right;background-color:white;cursor:default;} '+
-	 '.JmolColorPickerBox {font-size:0px; cursor:default;} '+
-	 '.JmolColorPickerBox td {height:12px; width:11px;} '+
-	 '.JmolColorPickerFakeBtn {font-size:10px;font-weight:bold;padding:0 2px;background-color:#A0A0A0;font-family:Verdana, Arial, Helvetica, sans-serif;} ';
+	 '.JmolColorPickerBox {font-size:0px; cursor:default; border-collapse:collapse; border:2px solid gray;} '+
+	 '.JmolColorPickerBox td {height:12px; width:11px; padding:0;} '+
+	 '.JmolColorPickerFakeBtn {font-size:10px;font-weight:bold;padding:0 2px;background-color:#A0A0A0;font-family:Verdana, Arial, Helvetica, sans-serif;} '+
+	 '.JmolColorPickerPalette { border-collapse:collapse; border:0; } '+
+	 '.JmolColorPickerPalette td { padding:0; } ';	 
 	if (colorPickerCSS.styleSheet) { // IE
 		colorPickerCSS.styleSheet.cssText = CSSStr;
 	} else { // W3C

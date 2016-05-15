@@ -2,8 +2,10 @@
  * $Author jonathan gutow$
  * $Date Aug 5, 2007 9:19:06 AM $
  * $Revision$
+ * Updated Dec. 2015 by Angel Herraez
+ * valid for JSmol
  *
- * Copyright (C) 2005-2007  The Jmol Development Team
+ * Copyright (C) 2005-2016  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -55,7 +57,7 @@ class ScriptButtons extends WebPanel {
     appletSizeSpinnerP = new JSpinner(appletSizeModel);
     //panel to hold spinner and label
     JPanel appletSizePPanel = new JPanel();
-    appletSizePPanel.add(new JLabel(GT._("% of window for applet width:")));
+    appletSizePPanel.add(new JLabel(GT._("% of window for JSmol width:")));
     appletSizePPanel.add(appletSizeSpinnerP);
     return (appletSizePPanel);
   }
@@ -64,38 +66,47 @@ class ScriptButtons extends WebPanel {
   String fixHtml(String html) {
     int size = ((SpinnerNumberModel) (appletSizeSpinnerP.getModel()))
         .getNumber().intValue();
-    double leftpercent = 99.5 - size;
     int appletheightpercent = 100;
     int nbuttons = getInstanceList().getModel().getSize();
     if (!allSelectedWidgets().isEmpty())
       appletheightpercent = 85;
     html = PT.rep(html, "@WIDTHPERCENT@", "" + size);
-    html = PT.rep(html, "@LEFTPERCENT@", "" + leftpercent);
+    html = PT.rep(html, "@LEFTPERCENT@", "" + (100 - size));
     html = PT.rep(html, "@NBUTTONS@", "" + nbuttons);
     html = PT.rep(html, "@HEIGHT@", "" + appletheightpercent);
+    html = PT.rep(html, "@BOTTOMPERCENT@", "" + (100 - appletheightpercent));
     return html;
   }
 
   @Override
   String getAppletDefs(int i, String html, StringBuilder appletDefs,
                        JmolInstance instance) {
-    //TODO add widgets  Could have pure javascript update of widgets for each view.
-    //The widgets should appear below the applet as in Angel's example.  The best
-    //way to do this would be to build the widget div as a hidden div in the
-    //scrolling region and then just copy it to the display area?
+    /* The widgets are built as hidden divs in the scrolling region,
+      upon page load their html is copied into variables,
+      and then when a button is pressed its set of widgets is read from the variable 
+      and filled into the common widget area below the JSmol panel.
+      Note: widget code must be removed from the original place to avoid duplicate IDs.
+    */
     String name = instance.name;
     String buttonname = instance.javaname;
     String widgetDefs = "";
     int row = 0;
     if (!instance.whichWidgets.isEmpty()) {
-      widgetDefs += "<table border = \"0\" width=\"100%\"><tbody><tr>";
+      if (instance.whichWidgets.get(3)) {
+        //special:  widgetList[3] is AnimationWidget, taller than the others, put it to the right
+        widgetDefs += "<div class=\"widgetItemAnim\"> "
+        + theWidgets.widgetList[3].getJavaScript(0, instance)
+        + "</div>";
+      }
+      widgetDefs += "<table><tbody><tr>";
       for (int j = 0; j < nWidgets; j++) {
+        if (j==3) { continue; }
         if (instance.whichWidgets.get(j)) {
           if (row == 3) {
             widgetDefs += "</tr><tr>";
             row = 0;
           }
-          widgetDefs += "<td>"
+          widgetDefs += "<td class=\"widgetItemScBtn\">"
               + theWidgets.widgetList[j].getJavaScript(0, instance)
                   //does nothing? .replace("'", "\'")
                   + "</td>";
@@ -104,21 +115,16 @@ class ScriptButtons extends WebPanel {
       }
       widgetDefs += "</tr></tbody></table>";
     }
-    if (i == 0)
+    if (i == 0) {
       html = PT.rep(html, "@APPLETNAME0@", GT.escapeHTML(buttonname));
-    if (useAppletJS) {
-      String info = "info for " + name;
-      appletDefs.append("\naddAppletButton(" + i + ",'" + buttonname + "',\""
-          + name + "\",\"" + info + "\");");
-    } else {
-      String s = htmlAppletTemplate;
-      s = PT.rep(s, "@APPLETNAME0@", GT.escapeHTML(buttonname));
-      s = PT.rep(s, "@NAME@", GT.escapeHTML(name));
-      s = PT.rep(s, "@LABEL@", GT.escapeHTML(name));
-      s = PT.rep(s, "@I@", ""+i);
-      s = PT.rep(s, "@WIDGETSTR@", widgetDefs);
-      appletDefs.append(s);
     }
+    String s = htmlAppletTemplate;
+    s = PT.rep(s, "@APPLETNAME0@", GT.escapeHTML(buttonname));
+    s = PT.rep(s, "@NAME@", "&#x201C;" + GT.escapeHTML(name) + "&#x201D;");
+    s = PT.rep(s, "@LABEL@", GT.escapeHTML(name));
+    s = PT.rep(s, "@I@", ""+i);
+    s = PT.rep(s, "@WIDGETSTR@", widgetDefs);
+    appletDefs.append(s);
     return html;
   }
 }

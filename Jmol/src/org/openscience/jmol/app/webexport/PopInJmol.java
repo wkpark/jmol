@@ -2,8 +2,10 @@
  * $Author jonathan gutow$
  * $Date Aug 5, 2007 9:19:06 AM $
  * $Revision$
+ * Updated Dec. 2015 by Angel Herraez
+ * valid for JSmol
  *
- * Copyright (C) 2005-2007  The Jmol Development Team
+ * Copyright (C) 2005-2016  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -47,15 +49,15 @@ class PopInJmol extends WebPanel implements ChangeListener {
       int panelIndex) {
     super(vwr, fc, webPanels, panelIndex);
     panelName = "pop_in";
-    listLabel = GT._("These names will be used as filenames for the applets");
-    // description = "Create a web page with images that convert to live Jmol
-    // applets when a user clicks a link";
+    listLabel = GT._("These names will be used as filenames used by JSmol");
+    // description = "Create a web page with images that convert to live JSmol
+    // objects when a user clicks a link";
   }
 
   @Override
   JPanel appletParamPanel() {
     // Create the appletSize spinner so the user can decide how big
-    // the applet should be.
+    // the JSmol object should be.
     SpinnerNumberModel appletSizeModelW = new SpinnerNumberModel(WebExport
         .getPopInWidth(), // initial value
         50, // min
@@ -73,7 +75,7 @@ class PopInJmol extends WebPanel implements ChangeListener {
 
     // panel to hold spinner and label
     JPanel appletSizeWHPanel = new JPanel();
-    appletSizeWHPanel.add(new JLabel(GT._("Applet width:")));
+    appletSizeWHPanel.add(new JLabel(GT._("JSmol width:")));
     appletSizeWHPanel.add(appletSizeSpinnerW);
     appletSizeWHPanel.add(new JLabel(GT._("height:")));
     appletSizeWHPanel.add(appletSizeSpinnerH);
@@ -88,8 +90,10 @@ class PopInJmol extends WebPanel implements ChangeListener {
       String javaname = getInstanceList().getModel().getElementAt(i).javaname;
       s+="   var jmolInfo"+i+"=jmolInfo;\n";
       s+="   jmolInfo"+i+".coverImage=\""+javaname+".png\";\n";
+      s+="   jmolInfo"+i+".coverScript=\"javascript revealPopinWidgets("+i+");\";\n";
       s+="   jmolInfo"+i+".script=\"load "+javaname+".spt\";\n";
       s+="   $(\"#Jmol"+i+"\").html(Jmol.getAppletHtml(\"jmolApplet"+i+"\",jmolInfo"+i+"));\n";
+      
     }
     html = javajs.util.PT.rep(html,"@APPLETINITIALIZATION@",s);
     return html;
@@ -98,47 +102,34 @@ class PopInJmol extends WebPanel implements ChangeListener {
   @Override
   String getAppletDefs(int i, String html, StringBuilder appletDefs,
                        JmolInstance instance) {
-    String divClass = (i % 2 == 0 ? "floatRightDiv" : "floatLeftDiv");
+    String divClass = (i % 2 == 0 ? "floatRight" : "floatLeft");
     String name = instance.name;
     String javaname = instance.javaname;
     int JmolSizeW = instance.width;
     int JmolSizeH = instance.height;
     String widgetDefs = "";
     if (!instance.whichWidgets.isEmpty()) {
-      widgetDefs += "<div id=\"JmolCntl" + i
-          + "\" style=\"display:none;\">";
+      widgetDefs += "<div id=\"JmolCntl" + i + "\">";
       for (int j = 0; j < nWidgets; j++) {
         if (instance.whichWidgets.get(j)) {
-          widgetDefs += "\n<div>" 
+          widgetDefs += "\n<div class=\"widgetItemPopin\">" 
               + theWidgets.widgetList[j].getJavaScript(i, instance) 
               + "</div>\n"; //each widget in one line
         }
       }
       widgetDefs += "</div>";
    }
-    if (useAppletJS) {
-      appletInfoDivs += "\n<div id=\"" + javaname + "_caption\">\n"
-          + GT.escapeHTML(GT.o(GT._("CLICK TO ACTIVATE 3D<br/>insert a caption for {0} here."), name))
-          + "\n</div>";
-      appletInfoDivs += "\n<div id=\"" + javaname + "_note\">\n"
-          + GT.escapeHTML(GT.o(GT._("insert a note for {0} here."), name))
-          + "\n</div>";
-      //TODO fix pure javascript to work with widgets...
-      appletDefs.append("\naddJmolDiv(" + i + ",'" + divClass + "','"
-          + javaname + "'," + JmolSizeW + "," + JmolSizeH + ")");
-    } else {
-      String s = htmlAppletTemplate;
-      s = PT.rep(s, "@CLASS@", "" + divClass);
-      s = PT.rep(s, "@I@", "" + i);
-      s = PT.rep(s, "@WIDTH@", "" + JmolSizeW);
-      s = PT.rep(s, "@HEIGHT@", "" + JmolSizeH);
-      s = PT.rep(s, "@NAME@", GT.escapeHTML(name));
-      s = PT.rep(s, "@APPLETNAME@", GT.escapeHTML(javaname));
-      s = PT.rep(s, "@LEFTWIDGETS@", "");// no left widgets
-                                                           // for now
-      s = PT.rep(s, "@RIGHTWIDGETS@", widgetDefs);
-      appletDefs.append(s);
-    }
+    String s = htmlAppletTemplate;
+    s = PT.rep(s, "@CLASS@", "" + divClass);
+    s = PT.rep(s, "@I@", "" + i);
+    s = PT.rep(s, "@WIDTH@", "" + JmolSizeW);
+    s = PT.rep(s, "@HEIGHT@", "" + JmolSizeH);
+    s = PT.rep(s, "@NAME@", "&#x201C;" + GT.escapeHTML(name) + "&#x201D;");
+    s = PT.rep(s, "@APPLETNAME@", GT.escapeHTML(javaname));
+    s = PT.rep(s, "@LEFTWIDGETS@", "");// no left widgets
+                                                         // for now
+    s = PT.rep(s, "@RIGHTWIDGETS@", widgetDefs);
+    appletDefs.append(s);
     return html;
   }
 

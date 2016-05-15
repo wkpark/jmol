@@ -2,8 +2,10 @@
  * $Author jonathan gutow$
  * $Date Aug 5, 2007 9:19:06 AM $
  * $Revision$
+ * Updated May 2016 by Angel Herraez
+ * valid for JSmol
  *
- * Copyright (C) 2005-2007  The Jmol Development Team
+ * Copyright (C) 2005-2016  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -112,7 +114,6 @@ abstract class WebPanel extends JPanel implements ActionListener,
   protected String htmlAppletTemplate;
   protected String listLabel;
   protected String appletInfoDivs;
-  protected boolean useAppletJS;
 
   protected JSpinner appletSizeSpinnerW;
   protected JSpinner appletSizeSpinnerH;
@@ -158,7 +159,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
     pageAuthorName.setText(WebExport.getPageAuthorName());
     webPageTitle = new JTextField(20);
     webPageTitle.addActionListener(this);
-    webPageTitle.setText(GT._("A web page containing Jmol applets"));
+    webPageTitle.setText(GT._("A web page with JSmol objects"));
   }
 
   // Need the panel maker and the action listener.
@@ -188,14 +189,14 @@ abstract class WebPanel extends JPanel implements ActionListener,
 
     // Create the Instance add button.
     addInstanceButton = new JButton(GT
-        ._("Add Present Jmol State as Instance..."));
+        ._("Add present Jmol state as instance..."));
     addInstanceButton.addActionListener(this);
 
     JPanel buttonPanel = new JPanel();
     buttonPanel.setMaximumSize(new Dimension(350, 50));
-//    showInstanceButton = new JButton(GT._("Show Selected"));
+//    showInstanceButton = new JButton(GT._("Show selected"));
 //    showInstanceButton.addActionListener(this);
-    deleteInstanceButton = new JButton(GT._("Delete Selected"));
+    deleteInstanceButton = new JButton(GT._("Delete selected"));
     deleteInstanceButton.addActionListener(this);
 //    buttonPanel.add(showInstanceButton);
     buttonPanel.add(deleteInstanceButton);
@@ -227,11 +228,8 @@ abstract class WebPanel extends JPanel implements ActionListener,
     rightPanel.add(paramPanel, BorderLayout.NORTH);
     rightPanel.add(instancePanel, BorderLayout.CENTER);
     rightPanel.setBorder(BorderFactory.createTitledBorder(GT
-        ._("Jmol Instances:")));
+        ._("JSmol Instances:")));
 
-    //Create the Widget Panel
-    //TODO this is not being used while widgets are updated to be
-    //JSmol compatible.
     JPanel widgetPanel = new JPanel();
     widgetPanel.setMinimumSize(new Dimension(150,150));
     widgetPanel.setLayout(new BoxLayout(widgetPanel,BoxLayout.Y_AXIS));
@@ -251,8 +249,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
     // Add everything to this panel.
     panel.add(leftPanel, BorderLayout.WEST);
     panel.add(rightPanel, BorderLayout.CENTER);
-    //TODO uncomment when widgets are fixed to be JSmol compatible.
-    //panel.add(widgetPanel, BorderLayout.EAST);
+    panel.add(widgetPanel, BorderLayout.EAST);
 
     enableButtons(instanceList);
     return panel;
@@ -305,13 +302,13 @@ abstract class WebPanel extends JPanel implements ActionListener,
     JPanel pathPanel = new JPanel();
     pathPanel.setLayout(new BorderLayout());
     pathPanel.setBorder(BorderFactory.createTitledBorder(GT
-        ._("Relative server path to jar files:")));
+        ._("Relative server path to JSmol.min.js:")));
     pathPanel.add(remoteAppletPath, BorderLayout.NORTH);
 
     JPanel pathPanel2 = new JPanel();
     pathPanel2.setLayout(new BorderLayout());
     pathPanel2.setBorder(BorderFactory.createTitledBorder(GT
-        ._("Relative local path to jar files:")));
+        ._("Relative local path to JSmol.min.js:")));
     pathPanel2.add(localAppletPath, BorderLayout.NORTH);
 
     // Page Author Panel
@@ -412,7 +409,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
       String label = (instanceList.getSelectedIndices().length != 1 ? ""
           : getInstanceName(-1));
       String name = JOptionPane.showInputDialog(GT
-          ._("Give the occurrence of Jmol a name:"), label);
+          ._("Give the occurrence of JSmol a name:"), label);
       if (name == null || name.length() == 0)
         return;
       DefaultListModel<JmolInstance> listModel = (DefaultListModel<JmolInstance>) instanceList.getModel();
@@ -482,7 +479,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
       vwr.showUrl(htmlPath);
     } else if (e.getSource() == saveButton) {
       fc.setDialogTitle(GT
-          ._("Select a directory to create or an HTML file to save"));
+          ._("Select a folder to create or an HTML file to save"));
       int returnVal = fc.showSaveDialog(this);
       if (returnVal != JFileChooser.APPROVE_OPTION)
         return;
@@ -557,7 +554,6 @@ abstract class WebPanel extends JPanel implements ActionListener,
                                                                           // true
                                                                           // if
                                                                           // successful.
-    useAppletJS = checkOption(vwr.getP("webMakerCreateJS"));
     // JOptionPane.showMessageDialog(null, "Creating directory for data...");
     String datadirPath = file.getPath().replace('\\','/');
     String datadirName = file.getName();
@@ -587,10 +583,10 @@ abstract class WebPanel extends JPanel implements ActionListener,
     LogPanel.log("");
     if (made_datadir) {
       LogPanel.log(GT.o(GT._("Using directory {0}"), datadirPath));
-      LogPanel.log("  " + GT.o(GT._("adding {0}"), "JmolPopIn.js"));
+      LogPanel.log("  " + GT.o(GT._("adding {0}"), "support.js"));
       try{
-      vwr.writeTextFile(datadirPath + "/JmolPopIn.js", 
-          GuiMap.getResourceString(this, "JmolPopIn.js"));
+      vwr.writeTextFile(datadirPath + "/support.js", 
+          GuiMap.getResourceString(this, "support.js"));
       }catch (IOException IOe){
         throw IOe;
       }
@@ -674,9 +670,8 @@ abstract class WebPanel extends JPanel implements ActionListener,
       html=PT.rep(html,"@WIDGETJSFILES@",jsStr);
       appletInfoDivs = "";
       StringBuilder appletDefs = new StringBuilder();
-      if (!useAppletJS)
-        htmlAppletTemplate = GuiMap.getResourceString(this, panelName
-            + "_template2");
+      htmlAppletTemplate = GuiMap.getResourceString(this, panelName
+          + "_template2");
       for (int i = 0; i < listModel.getSize(); i++)
         html = getAppletDefs(i, html, appletDefs, listModel
             .getElementAt(i));
@@ -697,8 +692,6 @@ abstract class WebPanel extends JPanel implements ActionListener,
         appletInfoDivs = "\n<div style='display:none'>\n" + appletInfoDivs
             + "\n</div>\n";
       String str = appletDefs.toString();
-      if (useAppletJS)
-        str = "<script type='text/javascript'>\n" + str + "\n</script>";
       html = PT.rep(html, "@APPLETINFO@", appletInfoDivs);
       html = PT.rep(html, "@APPLETDEFS@", str);
       html = PT.rep(html, "@CREATIONDATA@", GT
@@ -709,7 +702,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
               "@AUTHORDATA@",
               GT
                   .escapeHTML(GT
-                      ._("Based on template by A. Herr&#x00E1;ez as modified by J. Gutow")));
+                      ._("Based on a template by A. Herr&#x00E1;ez and J. Gutow")));
       html = PT.rep(html, "@LOGDATA@", "<pre>\n"
           + LogPanel.getText() + "\n</pre>\n");
       LogPanel.log("      ..." + GT.o(GT._("creating {0}"), fileName));

@@ -767,7 +767,7 @@ public class MathExt {
             null,
             bestMap,
             (isSmiles ? JC.SMILES_TYPE_SMILES : JC.SMILES_TYPE_SMARTS)
-                | (!allMaps && !bestMap ? JC.SMILES_MATCH_ONCE_ONLY : 0));
+                | (!allMaps && !bestMap ? JC.SMILES_FIRST_MATCH_ONLY : 0));
         if (isMap) {
           int nAtoms = ptsA.size();
           if (nAtoms == 0)
@@ -1421,7 +1421,7 @@ public class MathExt {
                 vwr.ms.ac,
                 bs,
                 (isSmiles ? JC.SMILES_TYPE_SMILES : JC.SMILES_TYPE_SMARTS)
-                    | JC.SMILES_MATCH_ONCE_ONLY);
+                    | JC.SMILES_FIRST_MATCH_ONLY);
             ret = (map.length > 0 ? vwr.ms.getDihedralMap(map[0]) : new int[0]);
           } else if (sFind.equalsIgnoreCase("crystalClass")) {
             // {*}.find("crystalClass")
@@ -3007,7 +3007,7 @@ public class MathExt {
     // select smiles(...)
     // select search(...)  now same as substructure
     // print {*}.search(...)
-    if (args.length == 0 || isSelector && args.length != 1)
+    if (args.length == 0 || isSelector && args.length > 1)
       return false;
     BS bs = new BS();
     String pattern = SV.sValue(args[0]);

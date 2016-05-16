@@ -35,6 +35,7 @@ import javajs.util.SB;
 import org.jmol.util.Edge;
 import org.jmol.util.Elements;
 import org.jmol.util.Logger;
+import org.jmol.viewer.JC;
 
 /**
  * Parses a SMILES String to create a <code>SmilesMolecule</code>.
@@ -88,12 +89,17 @@ public class SmilesParser {
   private Map<Integer, SmilesBond> connections = new Hashtable<Integer, SmilesBond>();
   private Map<String, SmilesMeasure> htMeasures = new Hashtable<String, SmilesMeasure>();
 
+  private int flags;
+
   private boolean isSmarts;
   private boolean isBioSequence;
   private char bioType = '\0';
    
   private int braceCount;
   private int branchLevel;
+  private int componentCount;
+  private int componentParenCount;
+
   private boolean ignoreStereochemistry;
   private boolean bondDirectionPaired = true;
   private boolean isTarget;
@@ -108,13 +114,11 @@ public class SmilesParser {
     this.isTarget = isTarget;
   }
 
-  void reset() {
-    braceCount = 0;
-    branchLevel = 0;
-  }
+//  void reset() {
+//    braceCount = 0;
+//    branchLevel = 0;
+//  }
 
-  private int flags;
-  private int componentCount;
   
   /**
    * Parses a SMILES String
@@ -135,7 +139,7 @@ public class SmilesParser {
     int[] ret = new int[1];
     pattern = extractFlags(pattern, ret);
     flags = ret[0];
-    ignoreStereochemistry = ((flags & SmilesSearch.IGNORE_STEREOCHEMISTRY) == SmilesSearch.IGNORE_STEREOCHEMISTRY);
+    ignoreStereochemistry = ((flags & JC.SMILES_IGNORE_STEREOCHEMISTRY) == JC.SMILES_IGNORE_STEREOCHEMISTRY);
     search.setFlags(flags);
     if (pattern.indexOf("$") >= 0)
       pattern = parseVariables(pattern);
@@ -406,6 +410,7 @@ public class SmilesParser {
           molecule.haveComponents = true;
           do {
             componentCount++;
+            componentParenCount++;
             ch = getChar(pattern = pattern.substring(1), 0);
           } while (ch == '(');          
           if (!haveOpen && (haveOpen = checkBrace(molecule, ch, '{')) == true)
@@ -462,10 +467,12 @@ public class SmilesParser {
           case ')':
           case '.':
             pattern = pattern.substring(index);
-            continue loop;
+            componentParenCount--;
+            if (componentParenCount >= 0)
+              continue loop;
           }
           throw new InvalidSmilesException(
-              "invalid continuation after compontent grouping (SMARTS).(SMARTS)");
+              "invalid continuation after component grouping (SMARTS).(SMARTS)");
         }
         bond = parseBond(molecule, null, pattern.substring(pt, index), null,
             currentAtom, false, isBranchAtom, index - pt, ret);
@@ -485,6 +492,7 @@ public class SmilesParser {
         case '(':
           do {
             componentCount++;
+            componentParenCount++;
             ch = getChar(pattern, ++index);
           } while (ch == '(');
           break;
@@ -576,8 +584,8 @@ public class SmilesParser {
     if (molecule != null && bond.order == Edge.BOND_COVALENT_DOUBLE
         && bond.atom1 != null && bond.atom2 != null && bond.atom1.isAromatic
         && bond.atom2.isAromatic
-        && ((flags & SmilesSearch.AROMATIC_DOUBLE) == 0))
-      molecule.setFlags(flags = (flags | SmilesSearch.AROMATIC_DOUBLE));
+        && ((flags & JC.SMILES_AROMATIC_DOUBLE) == 0))
+      molecule.setFlags(flags = (flags | JC.SMILES_AROMATIC_DOUBLE));
   }
 
   static int getRingNumber(String pattern, int index, char ch, int[] ret) throws InvalidSmilesException {
@@ -828,7 +836,8 @@ public class SmilesParser {
       throw new InvalidSmilesException("Empty atom definition");
 
     SmilesAtom newAtom = new SmilesAtom();
-    newAtom.component = componentCount;
+    if (componentParenCount > 0)
+      newAtom.component = componentCount;
     if (atomSet == null)
       molecule.appendAtom(newAtom);
     boolean isNewAtom = true;

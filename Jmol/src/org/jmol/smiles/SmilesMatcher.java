@@ -156,7 +156,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     InvalidSmilesException.clear();
     BS[] result = (BS[]) findPriv(smiles1, SmilesParser.getMolecule(smiles2,
         false, true), (smiles1.indexOf("*") >= 0 ? JC.SMILES_TYPE_SMARTS
-        : JC.SMILES_TYPE_SMILES) | JC.SMILES_MATCH_ONCE_ONLY, MODE_ARRAY); 
+        : JC.SMILES_TYPE_SMILES) | JC.SMILES_FIRST_MATCH_ONLY, MODE_ARRAY); 
     return (result == null ? -1 : result.length);
   }
 
@@ -171,7 +171,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   public boolean areEqualTest(String smiles, SmilesSearch molecule)
       throws Exception {
     BS[] ret = (BS[]) findPriv(smiles, molecule, JC.SMILES_TYPE_SMILES
-        | JC.SMILES_MATCH_ONCE_ONLY, MODE_ARRAY);
+        | JC.SMILES_FIRST_MATCH_ONLY, MODE_ARRAY);
     return (ret != null && ret.length == 1);
   }
 
@@ -272,7 +272,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   @Override
   public BS getSubstructureSet(String pattern, Node[] atoms, int ac, BS bsSelected, int flags) throws Exception {
     return (BS) matchPriv(pattern, atoms, ac, bsSelected, null, true,
-        flags, MODE_BITSET);
+        flags | SmilesParser.getFlags(pattern), MODE_BITSET);
   }
 
   /**
@@ -286,7 +286,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     InvalidSmilesException.clear();
     SmilesParser sp = new SmilesParser(true, true); // target setting just turns off stereochemistry check
     SmilesSearch search = null;
-    int flags = (JC.SMILES_TYPE_SMARTS | SmilesSearch.AROMATIC_MMFF94);
+    int flags = (JC.SMILES_TYPE_SMARTS | JC.SMILES_AROMATIC_MMFF94);
     search = sp.parse("");
     search.exitFirstMatch = false;
     search.jmolAtoms = atoms;
@@ -410,8 +410,8 @@ public class SmilesMatcher implements SmilesMatcherInterface {
       g.polySmilesCenter = (P3) center;
     InvalidSmilesException.clear();
     s = g.getSmiles(this, atoms, atomCount, BSUtil.newBitSet2(0, atomCount),
-        null, flags | JC.SMILES_GEN_EXPLICIT_H | JC.SMILES_GEN_NOAROMATIC
-            | JC.SMILES_GEN_NOSTEREO);
+        null, flags | JC.SMILES_GEN_EXPLICIT_H | JC.SMILES_NO_AROMATIC
+            | JC.SMILES_IGNORE_STEREOCHEMISTRY);
     if ((flags & JC.SMILES_GEN_POLYHEDRAL) == JC.SMILES_GEN_POLYHEDRAL) {
       s = "//* " + center + " *//\t["
           + Elements.elementSymbolFromNumber(center.getElementNumber()) + "@PH"
@@ -461,6 +461,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     InvalidSmilesException.clear();
     try {
       boolean isSmarts = ((flags & JC.SMILES_TYPE_SMARTS) == JC.SMILES_TYPE_SMARTS);
+      // Note that additional flags are set when the pattern is parsed.
       SmilesSearch search = SmilesParser.getMolecule(pattern, isSmarts, false);
       if (!isSmarts && !search.patternAromatic) {
         if (bsAromatic == null)
@@ -483,7 +484,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
         if (!doTestAromatic)
           search.bsAromatic = bsAromatic;
         search.setRingData(null, null, is3D || doTestAromatic);
-        search.exitFirstMatch = ((flags & JC.SMILES_MATCH_ONCE_ONLY) == JC.SMILES_MATCH_ONCE_ONLY);
+        search.exitFirstMatch = ((flags & JC.SMILES_FIRST_MATCH_ONLY) == JC.SMILES_FIRST_MATCH_ONLY);
       }
       switch (mode) {
       case MODE_BITSET:
@@ -495,7 +496,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
         return vb.toArray(new BS[vb.size()]);
       case MODE_ATROP:
         search.exitFirstMatch = true;
-        search.flags |= SmilesSearch.SET_ATROPICITY;
+        search.setAtropicity = true;
         search.search();
         return search.atropKeys;
       case MODE_MAP:

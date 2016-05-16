@@ -95,7 +95,7 @@ public class SmilesExt {
       Atom[] atoms = e.vwr.ms.at;
       int ac = e.vwr.ms.ac;
       int[][] maps = sm.getCorrelationMaps(smiles, atoms, ac, bsA,
-          flags | JC.SMILES_MATCH_ONCE_ONLY);
+          flags | JC.SMILES_FIRST_MATCH_ONLY);
       if (maps == null)
         e.evalError(sm.getLastException(), null);
       if (maps.length == 0)
@@ -184,7 +184,7 @@ public class SmilesExt {
                 flags
                     | (pattern.equals("H") ? JC.SMILES_GEN_EXPLICIT_H : 0)
                     | (pattern.equals("top") ? JC.SMILES_GEN_TOPOLOGY : 0)
-                    | (pattern.equalsIgnoreCase("NOAROMATIC") ? JC.SMILES_GEN_NOAROMATIC
+                    | (pattern.equalsIgnoreCase("NOAROMATIC") ? JC.SMILES_NO_AROMATIC
                         : 0), (pattern.endsWith("///") ? pattern : null));
       } catch (Exception ex) {
         e.evalError(ex.getMessage(), null);
@@ -200,7 +200,7 @@ public class SmilesExt {
               bsSelected, null, flags);
         } else {
           int[][] map = sm.find(pattern, smiles, (isSmarts ? JC.SMILES_TYPE_SMARTS : JC.SMILES_TYPE_SMILES) 
-              | (firstMatchOnly ?  JC.SMILES_MATCH_ONCE_ONLY : 0));
+              | (firstMatchOnly ?  JC.SMILES_FIRST_MATCH_ONLY : 0));
           if (!asOneBitset)
             return (!firstMatchOnly ? map : map.length == 0 ? new int[0]
                 : map[0]);

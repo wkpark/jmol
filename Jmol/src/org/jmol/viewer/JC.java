@@ -1098,23 +1098,71 @@ public final class JC {
   public static final int SMILES_TYPE_SMILES         = 0x1; // placeholder -- DO NOT TEST FOR THIS as it is also in openSMARTS
   public static final int SMILES_TYPE_SMARTS         = 0x2; // CmdExt -> matcher
   public static final int SMILES_TYPE_OPENSMILES     = 0x5; // includes aromatic normalization of pattern; tests true when openSMARTS as well
-  public static final int SMILES_TYPE_OPENSMARTS     = 0x7; // does not include normalization of pattern
+  public static final int SMILES_TYPE_OPENSMARTS     = 0x7; // 
+
+  public static final int SMILES_FIRST_MATCH_ONLY           = 0x8; // 0xFF0 reserved for SmilesMatcher mflag
   
-  public static final int SMILES_MATCH_ONCE_ONLY        = 0x20; // 0xFF0 reserved for SmilesMatcher mflag
+  public final static int SMILES_NO_AROMATIC                = 0x010; //SmilesParser -> SmilesSearch
+ 
+  public final static int SMILES_IGNORE_STEREOCHEMISTRY     = 0x020; //SmilesParser -> SmilesSearch
+
+  public final static int SMILES_INVERT_STEREOCHEMISTRY     = 0x040; //SmilesParser -> SmilesSearch
+
+  /**
+   * AROMATIC_DEFINED draws all aromatic bonds from connection definitions
+   * It is deprecated, because a=a will set it by itself. 
+   */
+  public final static int SMILES_AROMATIC_DEFINED           = 0x080; //SmilesParser -> SmilesSearch
+
+  /**
+   * AROMATIC_STRICT enforces Hueckel 4+2 rule, not allowing acyclic double bonds
+   * 
+   */
+  public final static int SMILES_AROMATIC_STRICT            = 0x100; //SmilesParser -> SmilesSearch
+
+  /**
+   * AROMATIC_DOUBLE allows a distinction between single and double, as for
+   * example is necessary to distinguish between n=cNH2 and ncNH2 (necessary for
+   * MMFF94 atom typing)
+   */
+  public final static int SMILES_AROMATIC_DOUBLE            = 0x200; //SmilesParser -> SmilesSearch
+
+  /**
+   * AROMATIC_MMFF94 also raises the strictness level to force all 6- and
+   * 7-membered rings to have exactly three double bonds.
+   */
+  public static final int SMILES_AROMATIC_MMFF94            = 0x300; // includes AROMATIC_STRICT and AROMATIC_DOUBLE;
+
+  //  /**
+  //   * AROMATIC_JSME_NONCANONICAL matches the JSME noncanonical option.
+  //  * 
+  //   */
+  //  final static int AROMATIC_JSME_NONCANONICAL = 0x800; //SmilesParser -> SmilesSearch
+
+  /**
+   * AROMATIC_PLANAR only invokes planarity (Jmol default through 14.5)
+   * 
+   */
+  public final static int SMILES_AROMATIC_PLANAR            = 0x400; //SmilesParser -> SmilesSearch
+
+  public static final int SMILES_IGNORE_ATOM_CLASS          = 0x800;
 
   public static final int SMILES_GEN_EXPLICIT_H                = 0x00001000; // SmilesExt -> generator
   public static final int SMILES_GEN_TOPOLOGY                  = 0x00002000; // SmilesExt -> generator
-  public static final int SMILES_GEN_NOAROMATIC                = 0x00004000; // SmilesExt -> generator
-  public static final int SMILES_GEN_NOSTEREO                  = 0x00008000; // SmilesExt -> generator
   public static final int SMILES_GEN_POLYHEDRAL                = 0x00010000; // polyhedron -> generator
   public static final int SMILES_GEN_ATOM_COMMENT              = 0x00020000; // polyhedron,Viewer -> generator
+  
   public static final int SMILES_GEN_BIO                       = 0x00100000; // MathExt -> generator
   public static final int SMILES_GEN_BIO_ALLOW_UNMATCHED_RINGS = 0x00300000; // MathExt -> generator
   public static final int SMILES_GEN_BIO_COV_CROSSLINK         = 0x00500000; // MathExt -> generator
   public static final int SMILES_GEN_BIO_HH_CROSSLINK          = 0x00900000; // MathExt -> generator
   public static final int SMILES_GEN_BIO_COMMENT               = 0x01100000; // MathExt -> Viewer
   public static final int SMILES_GEN_BIO_NOCOMMENTS            = 0x02100000; // MathExt -> Generator
+
   public static final int SMILES_GROUP_BY_MODEL                = 0x04000000; // MathExt -> search
+
+  
+
 
   
   public static final int JSV_NOT = -1;
@@ -1157,8 +1205,6 @@ public final class JC {
   public final static int UNITID_ATOM = 4;
   public final static int UNITID_INSCODE = 8;
   public final static int UNITID_TRIM = 16;
-
-
   /**
    * Get a unitID type
    * 
@@ -1182,7 +1228,6 @@ public final class JC {
     }
     return i;
   }
-
 
 
 }

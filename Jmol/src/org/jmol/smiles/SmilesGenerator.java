@@ -118,12 +118,12 @@ public class SmilesGenerator {
       return getBioSmiles(bsSelected, comment, flags);
     openSMILES = ((flags & JC.SMILES_TYPE_OPENSMILES) == JC.SMILES_TYPE_OPENSMILES);
     addAtomComment = ((flags & JC.SMILES_GEN_ATOM_COMMENT) == JC.SMILES_GEN_ATOM_COMMENT);
-    aromaticDouble =  ((flags & SmilesSearch.AROMATIC_DOUBLE) == SmilesSearch.AROMATIC_DOUBLE);
+    aromaticDouble =  ((flags & JC.SMILES_AROMATIC_DOUBLE) == JC.SMILES_AROMATIC_DOUBLE);
 
     explicitH = ((flags & JC.SMILES_GEN_EXPLICIT_H) == JC.SMILES_GEN_EXPLICIT_H);
     topologyOnly = ((flags & JC.SMILES_GEN_TOPOLOGY) == JC.SMILES_GEN_TOPOLOGY);
-    getAromatic = !((flags & JC.SMILES_GEN_NOAROMATIC) == JC.SMILES_GEN_NOAROMATIC);
-    noStereo = ((flags & JC.SMILES_GEN_NOSTEREO) ==  JC.SMILES_GEN_NOSTEREO);
+    getAromatic = !((flags & JC.SMILES_NO_AROMATIC) == JC.SMILES_NO_AROMATIC);
+    noStereo = ((flags & JC.SMILES_IGNORE_STEREOCHEMISTRY) ==  JC.SMILES_IGNORE_STEREOCHEMISTRY);
     isPolyhedral = ((flags & JC.SMILES_GEN_POLYHEDRAL) == JC.SMILES_GEN_POLYHEDRAL);
     return getSmilesComponent(atoms[ipt], bsSelected, true, false, false);
   }
@@ -564,7 +564,7 @@ public class SmilesGenerator {
     int atomicNumber = atom.getElementNumber();
     int nH = 0;
     Lst<Edge> v = new Lst<Edge>();
-    Edge bond0 = null;
+    Edge bondNext = null;
     Edge bondPrev = null;
     Edge[] bonds = atom.getEdges();
     if (polySmilesCenter != null) {
@@ -643,16 +643,16 @@ public class SmilesGenerator {
         int n = a.getCovalentBondCount()
             - (includeHs ? 0 : a.getCovalentHydrogenCount());
         int order = bond.getCovalentOrder();
-        if (n == 1 && (bond0 != null || i < nBonds - 1)) {
+        if (n == 1 && (bondNext != null || i < nBonds - 1)) {
           bsBranches.set(bond.index);
         } else if ((order > 1 || n > nMax)
             && !htRings.containsKey(getRingKey(a.getIndex(), atomIndex))) {
           nMax = (order > 1 ? 1000 + order : n);
-          bond0 = bond;
+          bondNext = bond;
         }
       }
-    Node atomNext = (bond0 == null ? null : bond0.getOtherAtomNode(atom));
-    int orderNext = (bond0 == null ? 0 : bond0.getCovalentOrder());
+    Node atomNext = (bondNext == null ? null : bondNext.getOtherAtomNode(atom));
+    int orderNext = (bondNext == null ? 0 : bondNext.getCovalentOrder());
 
     if (isAromatic || orderNext == 2 && nH > 1 || atomNext != null
         && SmilesSearch.isRingBond(ringSets, atomIndex, atomNext.getIndex())) {
@@ -701,14 +701,14 @@ public class SmilesGenerator {
       SB s2 = new SB();
       prevAtom = atom;
       prevSp2Atoms = null;
-      Edge bond0t = bond0;
+      Edge bond0t = bondNext;
       getSmilesAt(s2, a, allowConnectionsToOutsideWorld, allowBranches,
           forceBrackets);
-      bond0 = bond0t;
+      bondNext = bond0t;
       String branch = s2.toString();
       // catch is that if there are 
       v.remove(i--);
-      if (bond0 == null)
+      if (bondNext == null)
         vBranches.addLast(branch);
       else
         sbBranches.append("(").append(branch).append(")");
@@ -735,7 +735,7 @@ public class SmilesGenerator {
     }
     for (int i = 0; i < v.size(); i++) {
       Edge bond = v.get(i);
-      if (bond == bond0)
+      if (bond == bondNext)
         continue;
       Node a = bond.getOtherAtomNode(atom);
       strPrev = getBondOrder(bond, atomIndex, a.getIndex(), isAromatic);
@@ -813,7 +813,7 @@ public class SmilesGenerator {
 
     // ...then add the branches
     
-    if (bond0 != null) {
+    if (bondNext != null) {
       // not the end - all branches get parentheses
       sb.appendSB(sbBranches);
     } else {
@@ -876,7 +876,10 @@ public class SmilesGenerator {
    */
   private String getBondOrder(Edge bondPrev, int atomIndex, int prevIndex,
                               boolean isAromatic) {
-    // look for Jmol having CONNECT @[@1|@2} @{@8,@9} atropisomer
+    // look for Jmol having LOAD $biphenyl; CONNECT @{@1|@2} @{@7|@8} atropisomer
+    
+    if(topologyOnly)
+      return "";
     if ((bondPrev.order & Edge.TYPE_ATROPISOMER) == Edge.TYPE_ATROPISOMER) {
       return "^-";
     }
@@ -1035,6 +1038,7 @@ public class SmilesGenerator {
   /**
    * checks a group and either adds a new group to the growing check string or
    * returns null
+   * @param level 
    * 
    * @param atomIndex
    * @param atom

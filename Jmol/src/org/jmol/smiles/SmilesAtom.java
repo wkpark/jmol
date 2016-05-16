@@ -110,7 +110,7 @@ public class SmilesAtom extends P3 implements BNode {
   }
 
   public boolean isDefined() {
-    return (hasSubpattern || iNested != 0 || isBioAtom || component > 0 
+    return (hasSubpattern || iNested != 0 || isBioAtom || component != Integer.MIN_VALUE 
     || elementNumber != -2 || nAtomsOr > 0 || nPrimitives > 0);  
   }
 
@@ -175,7 +175,8 @@ public class SmilesAtom extends P3 implements BNode {
     return this;
   }
 
-  int component;
+  int component = Integer.MIN_VALUE;
+  int matchingComponent;
   int atomSite;
   int degree = -1;
   int nonhydrogenDegree = -1;
@@ -185,9 +186,9 @@ public class SmilesAtom extends P3 implements BNode {
   int ringSize = Integer.MIN_VALUE;
   int ringConnectivity = -1;
   private Node matchingNode;
-  public boolean hasSubpattern;
-  public int mapIndex = -1; // in  CCC we have atoms 0, 1, and 2
-  public float atomClass = Float.NaN; // OpenSMILES atom class is an integer
+  boolean hasSubpattern;
+  int mapIndex = -1; // in  CCC we have atoms 0, 1, and 2
+  float atomClass = Float.NaN; // OpenSMILES atom class is an integer
   String symbol;
   private boolean isTopoAtom;
   private int missingHydrogenCount;

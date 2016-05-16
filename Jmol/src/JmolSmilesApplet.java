@@ -92,7 +92,7 @@ public class JmolSmilesApplet extends Applet {
       
       int[][] result = sm.find(pattern, smiles, (isSmarts ? 
           JC.SMILES_TYPE_SMARTS : JC.SMILES_TYPE_SMILES) 
-          | (isAll ? 0 : JC.SMILES_MATCH_ONCE_ONLY));
+          | (isAll ? 0 : JC.SMILES_FIRST_MATCH_ONLY));
       ret = (result == null ? -1 : result.length);
     } catch (Exception e) {
       System.out.println(e.getMessage());

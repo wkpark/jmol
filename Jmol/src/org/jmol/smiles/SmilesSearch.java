@@ -302,10 +302,10 @@ public class SmilesSearch extends JmolMolecule {
   }
 
   int addNested(String pattern) {
-    if (top.htNested == null)
-      top.htNested = new Hashtable<String, Object>();
-    setNested(++top.nNested, pattern);
-    return top.nNested;
+    if (htNested == null)
+      htNested = new Hashtable<String, Object>();
+    setNested(++nNested, pattern);
+    return nNested;
   }
   
   void clear() {

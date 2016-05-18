@@ -790,9 +790,8 @@ public class SmilesParser {
         op = "&";
       if (ext.length() > 1 && ",;&!)]".indexOf(ext.charAt(0)) < 0)
         ext = "&" + ext;
-      pattern = pattern + op + "_" + search.addNested(s) + "_" + ext;
+      pattern = pattern + op + "_" + search.top.addNested(s) + "_" + ext;
     }
-    System.out.println(pattern);
     return pattern;
   }
 

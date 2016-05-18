@@ -31,7 +31,6 @@ import javajs.util.PT;
 
 import org.jmol.api.SmilesMatcherInterface;
 import org.jmol.java.BS;
-import org.jmol.util.BNode;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Edge;
 import org.jmol.util.Elements;
@@ -134,9 +133,9 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     // but
     //   $ print "c1ncnc1C".find("SMILES","MF")
     //   H 5 C 4 N 2   (incorrect)
-    SmilesSearch search = SmilesParser.getMolecule("/nostereo/"+pattern, isSmarts, true);
+    SmilesSearch search = SmilesParser.newSearch("/nostereo/"+pattern, isSmarts, true);
     search.createTopoMap(null);
-    search.nodes = search.jmolAtoms;
+    search.nodes = search.targetAtoms;
     return search.getMolecularFormula(!isSmarts, null, false);
   }
 
@@ -154,7 +153,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   @Override
   public int areEqual(String smiles1, String smiles2) throws Exception {
     InvalidSmilesException.clear();
-    BS[] result = (BS[]) findPriv(smiles1, SmilesParser.getMolecule(smiles2,
+    BS[] result = (BS[]) findPriv(smiles1, SmilesParser.newSearch(smiles2,
         false, true), (smiles1.indexOf("*") >= 0 ? JC.SMILES_TYPE_SMARTS
         : JC.SMILES_TYPE_SMILES) | JC.SMILES_FIRST_MATCH_ONLY, MODE_ARRAY); 
     return (result == null ? -1 : result.length);
@@ -164,14 +163,17 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    * for JUnit test, mainly
    * 
    * @param smiles
-   * @param molecule
+   * @param search
    * @return true only if the SMILES strings match and there are no errors
    * @throws Exception
    */
-  public boolean areEqualTest(String smiles, SmilesSearch molecule)
+  public boolean areEqualTest(String smiles, SmilesSearch search)
       throws Exception {
-    BS[] ret = (BS[]) findPriv(smiles, molecule, JC.SMILES_TYPE_SMILES
+    BS[] ret = (BS[]) findPriv(smiles, search, JC.SMILES_TYPE_SMILES
         | JC.SMILES_FIRST_MATCH_ONLY, MODE_ARRAY);
+    if (ret.length == 0)
+      System.out.println("OHOJH");
+
     return (ret != null && ret.length == 1);
   }
 
@@ -195,12 +197,12 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     InvalidSmilesException.clear();
     target = SmilesParser.cleanPattern(target);
     pattern = SmilesParser.cleanPattern(pattern);
-    SmilesSearch search = SmilesParser.getMolecule(target, false, true); /// smiles chirality is fixed here
+    SmilesSearch search = SmilesParser.newSearch(target, false, true); /// smiles chirality is fixed here
     int[][] array = (int[][]) findPriv(pattern, search, flags, MODE_MAP);
     for (int i = array.length; --i >= 0;) {
       int[] a = array[i];
       for (int j = a.length; --j >= 0;)
-        a[j] = ((SmilesAtom) search.jmolAtoms[a[j]]).mapIndex;
+        a[j] = ((SmilesAtom) search.targetAtoms[a[j]]).mapIndex;
     }
     return array;
   }
@@ -281,16 +283,16 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    */
   @Override
   public void getMMFF94AtomTypes(String[] smarts, Node[] atoms, int ac,
-                                  BS bsSelected, Lst<BS> ret,
-                                  Lst<BS>[] vRings) throws Exception {
+                                 BS bsSelected, Lst<BS> ret, Lst<BS>[] vRings)
+      throws Exception {
     InvalidSmilesException.clear();
     SmilesParser sp = new SmilesParser(true, true); // target setting just turns off stereochemistry check
     SmilesSearch search = null;
     int flags = (JC.SMILES_TYPE_SMARTS | JC.SMILES_AROMATIC_MMFF94);
     search = sp.parse("");
     search.exitFirstMatch = false;
-    search.jmolAtoms = atoms;
-    search.jmolAtomCount = Math.abs(ac);
+    search.targetAtoms = atoms;
+    search.targetAtomCount = Math.abs(ac);
     search.setSelected(bsSelected);
     search.flags = flags;
     search.getRingData(vRings, true, true);
@@ -306,9 +308,8 @@ public class SmilesMatcher implements SmilesMatcherInterface {
         continue;
       }
       search.clear();
-      SmilesSearch ss = sp.getSearch(search,
+      search.subSearches[0] = sp.getSubsearch(search,
           SmilesParser.cleanPattern(smarts[i]), flags);
-      search.subSearches[0] = ss;
       BS bs = BSUtil.copy((BS) search.search());
       ret.addLast(bs);
       bsDone.or(bs);
@@ -450,7 +451,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     BS bsAromatic = new BS();
     search.setFlags(search.flags | SmilesParser.getFlags(pattern));
     search.createTopoMap(bsAromatic);
-    return matchPriv(pattern, search.jmolAtoms, -search.jmolAtoms.length,
+    return matchPriv(pattern, search.targetAtoms, -search.targetAtoms.length,
         null, bsAromatic, bsAromatic.isEmpty(), flags, mode);
   }
 
@@ -462,7 +463,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     try {
       boolean isSmarts = ((flags & JC.SMILES_TYPE_SMARTS) == JC.SMILES_TYPE_SMARTS);
       // Note that additional flags are set when the pattern is parsed.
-      SmilesSearch search = SmilesParser.getMolecule(pattern, isSmarts, false);
+      SmilesSearch search = SmilesParser.newSearch(pattern, isSmarts, false);
       if (!isSmarts && !search.patternAromatic) {
         if (bsAromatic == null)
           bsAromatic = new BS();
@@ -470,17 +471,14 @@ public class SmilesMatcher implements SmilesMatcherInterface {
             search.flags);
         search.isNormalized = true;
       }
-      search.jmolAtoms = atoms;
-      search.jmolAtomCount = Math.abs(ac);
+      search.targetAtoms = atoms;
+      search.targetAtomCount = Math.abs(ac);
       if (ac < 0)
         search.haveTopo = true;
       if (ac != 0 && (bsSelected == null || !bsSelected.isEmpty())) {
         boolean is3D = !(atoms[0] instanceof SmilesAtom);
-        if (atoms[0] instanceof BNode)
-          search.bioAtoms = (BNode[]) atoms;
         search.setSelected(bsSelected);
         search.getSelections();
-        search.bsRequired = null;
         if (!doTestAromatic)
           search.bsAromatic = bsAromatic;
         search.setRingData(null, null, is3D || doTestAromatic);

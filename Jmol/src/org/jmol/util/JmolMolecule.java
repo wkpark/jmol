@@ -77,7 +77,7 @@ public class JmolMolecule {
    * @param bsExclude TODO
    * @return an array of JmolMolecules
    */
-  public final static JmolMolecule[] getMolecules(BNode[] atoms,
+  public final static JmolMolecule[] getMolecules(Node[] atoms,
                                                   BS[] bsModelAtoms,
                                                   Lst<BS> biobranches, BS bsExclude) {
     BS bsToTest = null;
@@ -286,8 +286,7 @@ public class JmolMolecule {
     int atomIndex = atom.getIndex();
     if (!bsToTest.get(atomIndex))
       return allowCyclic;
-    if (!allowBioResidue && atom instanceof BNode
-        && ((BNode) atom).getBioStructureTypeName().length() > 0)
+    if (!allowBioResidue && atom.getBioStructureTypeName().length() > 0)
       return allowCyclic;
     bsToTest.clear(atomIndex);
     if (biobranches != null && !bsResult.get(atomIndex)) {

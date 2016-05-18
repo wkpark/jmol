@@ -30,7 +30,6 @@ import javajs.util.Lst;
 import javajs.util.V3;
 
 import org.jmol.java.BS;
-import org.jmol.util.BNode;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Edge;
 import org.jmol.util.Logger;
@@ -49,7 +48,8 @@ public class SmilesAromatic {
    * @param bsAromatic
    * @param strictness
    * @param isOpenSMILES
-   * @param checkFlatness
+   * @param justCheckBonding
+   * @param checkExplicit 
    * @param v
    * @param vOK
    * @param lstSP2
@@ -58,7 +58,8 @@ public class SmilesAromatic {
    */
   static void setAromatic(int n, Node[] jmolAtoms, BS bsSelected,
                           Lst<Object> vR, BS bsAromatic, int strictness,
-                          boolean isOpenSMILES, boolean checkFlatness, VTemp v,
+                          boolean isOpenSMILES, boolean justCheckBonding, 
+                          boolean checkExplicit, VTemp v,
                           Lst<BS> vOK, Lst<SmilesRing> lstSP2,
                           int[] eCounts, boolean doTestAromatic) {
 
@@ -81,7 +82,8 @@ public class SmilesAromatic {
     for (int r = vR.size(); --r >= 0;) {
       BS bs = (BS) vR.get(r);
       boolean isOK = isSp2Ring(n, jmolAtoms, bsSelected, bs,
-          (!checkFlatness ? Float.MAX_VALUE : strictness > 0 ? 0.1f : 0.01f),
+          (justCheckBonding ? Float.MAX_VALUE : strictness > 0 ? 0.1f : 0.01f),
+          checkExplicit,
           strictness == 0);
       if (!isOK)
         continue;
@@ -147,7 +149,7 @@ public class SmilesAromatic {
   
   
   ///////////////////////////  3D SMILES methods ///////////////////////
-  
+
   /**
    * 3D-SEARCH aromaticity test.
    * 
@@ -164,14 +166,19 @@ public class SmilesAromatic {
    *        must not be null
    * @param cutoff
    *        an arbitrary value to test the standard deviation against. 0.01 is
-   *        appropriate here. Use Float.MAX_VALUE to just do bond connectivity check
+   *        appropriate here. Use Float.MAX_VALUE to just do bond connectivity
+   *        check
+   * @param checkExplicit
+   *        check bonds that are explicit only - for XYZ and QM calcs
    * @param allowSOxide
    *        set TRUE to skip S atoms
    * @return true if standard deviation of vNorm.dot.vMean is less than cutoff
    */
 
-  private final static boolean isSp2Ring(int n, Node[] atoms, BS bsSelected, BS bs,
-                                     float cutoff, boolean allowSOxide) {
+  private final static boolean isSp2Ring(int n, Node[] atoms, BS bsSelected,
+                                         BS bs, float cutoff,
+                                         boolean checkExplicit,
+                                         boolean allowSOxide) {
     ///
     // 
     // Bob Hanson, hansonr@stolaf.edu
@@ -223,15 +230,19 @@ public class SmilesAromatic {
     //      So 1-5c is a very conservative test.   
     //      
     //   3) One could probably dispense with the actual standard deviation 
-    //      calculation, as it is VERY unlikely that an actual nonaromatic rings
+    //      calculation, as it is VERY unlikely that an actual nonaromatic ring
     //      (other than quinones and other such compounds)
     //      would have any chance of passing the first two tests.
     //      
 
-    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-      BNode atom = (BNode) atoms[i];  
-      if (atom.getCovalentBondCountPlusMissingH() > 3)
-        return false;
+    if (checkExplicit) {
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
+        if (atoms[i].getCovalentBondCount() > 3)
+          return false;
+    } else {
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
+        if (atoms[i].getCovalentBondCountPlusMissingH() > 3)
+          return false;
     }
     if (cutoff == Float.MAX_VALUE)
       return true;
@@ -281,7 +292,8 @@ public class SmilesAromatic {
       // check the normal for r1 - iSub - r2 plane
 
       for (int k = 0, j = i; k < 2; k++) {
-        SmilesSearch.getNormalThroughPoints(atoms[r1], atoms[j], atoms[r2], vTemp, vA, vB);
+        SmilesSearch.getNormalThroughPoints(atoms[r1], atoms[j], atoms[r2],
+            vTemp, vA, vB);
         if (!addNormal(vTemp, vMean, maxDev))
           return false;
         vNorms[nNorms++] = V3.newV(vTemp);

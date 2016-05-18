@@ -2354,7 +2354,7 @@ public class ModelSet extends BondCollection {
     boolean isAtrop = (order == Edge.TYPE_ATROPISOMER);
     if (matchNull)
       order = Edge.BOND_COVALENT_SINGLE; //default for setting
-    boolean matchHbond = Bond.isOrderH(order);
+    boolean matchHbond = Edge.isOrderH(order);
     boolean identifyOnly = false;
     boolean idOrModifyOnly = false;
     boolean createOnly = false;
@@ -3320,7 +3320,7 @@ public class ModelSet extends BondCollection {
       short mad = (f.length > 3 ? (short) (1000f * connections[i][3])
           : getDefaultMadFromOrder(order));
       if (order == 0 || mad == 0 && order != Edge.BOND_STRUT
-          && !Bond.isOrderH(order)) {
+          && !Edge.isOrderH(order)) {
         Bond b = at[index1].getBond(at[index2]);
         if (b != null)
           bsDelete.set(b.index);

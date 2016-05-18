@@ -439,10 +439,10 @@ public class SmilesStereo {
     int[] map = new int[cAtoms[4] == null ? 4 : cAtoms[5] == null ? 5 : 6];
     // initially set to index 
     for (int i = 0; i < map.length; i++) {
-      System.out.println(cAtoms[i]);
+      //System.out.println(cAtoms[i]);
       map[i] = (cAtoms[i] == null ? 10004 + i * 10000 : cAtoms[i].getIndex());
     }
-    System.out.println(PT.toJSON(null, map));
+    //System.out.println(PT.toJSON(null, map));
     SmilesBond[] bonds = atom.bonds;
     SmilesBond[] b2 = (SmilesBond[]) (a2 == null ? null : a2.getEdges());
     for (int i = 0; i < map.length; i++) {
@@ -451,11 +451,11 @@ public class SmilesStereo {
         getTopoMapPt(map, i, a2, c, b2, 30000);
     }
     Arrays.sort(map);
-    System.out.println(PT.toJSON(null, map));
+    //System.out.println(PT.toJSON(null, map));
     for (int i = 0; i < map.length; i++) {
       map[i] = map[i] % 10;
     }
-    System.out.println(PT.toJSON(null, map));
+    //System.out.println(PT.toJSON(null, map));
     return map;
   }
 
@@ -535,7 +535,7 @@ public class SmilesStereo {
 
   boolean checkStereoChemistry(SmilesSearch search, VTemp v) {
     this.search = search;
-    jmolAtoms = search.jmolAtoms;
+    jmolAtoms = search.targetAtoms;
     boolean haveTopo = search.haveTopo;
     boolean invertStereochemistry = search.invertStereochemistry;
 

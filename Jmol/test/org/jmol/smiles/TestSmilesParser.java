@@ -248,76 +248,97 @@ public class TestSmilesParser extends TestCase {
     addHydrogen(molecule, atomC4);
     checkMolecule("C/C=C/C", molecule);
   }
-  public void testChapter1_16() throws InvalidSmilesException {    // Test N[C@@H](C)C(=O)O
+  public void testChapter1_16() throws InvalidSmilesException {    
+    // Test N[C@@H](C)C(=O)O
     SmilesSearch molecule = new SmilesSearch();
+    
     SmilesAtom atomN = molecule.addAtom();
     atomN.setSymbol("N");
+    addHydrogen(molecule, atomN);
+    addHydrogen(molecule, atomN);
+    
     SmilesAtom atomC1 = molecule.addAtom();
     atomC1.stereo = new SmilesStereo(SmilesStereo.TETRAHEDRAL, 2, 0, null, null);
     atomC1.setSymbol("C");
     createBond(atomN, atomC1, Edge.BOND_COVALENT_SINGLE, true);
+    addHydrogen(molecule, atomC1);
+    
     SmilesAtom atomC2 = molecule.addAtom();
     atomC2.setSymbol("C");
     createBond(atomC1, atomC2, Edge.BOND_COVALENT_SINGLE, true);
+    addHydrogen(molecule, atomC2);
+    addHydrogen(molecule, atomC2);
+    addHydrogen(molecule, atomC2);
+    
     SmilesAtom atomC3 = molecule.addAtom();
     atomC3.setSymbol("C");
     createBond(atomC1, atomC3, Edge.BOND_COVALENT_SINGLE, true);
+    
     SmilesAtom atomO1 = molecule.addAtom();
     atomO1.setSymbol("O");
     createBond(atomC3, atomO1, Edge.BOND_COVALENT_DOUBLE, true);
+    
     SmilesAtom atomO2 = molecule.addAtom();
     atomO2.setSymbol("O");
     createBond(atomC3, atomO2, Edge.BOND_COVALENT_SINGLE, true);
-    addHydrogen(molecule, atomN);
-    addHydrogen(molecule, atomN);
-    addHydrogen(molecule, atomC1);
-    addHydrogen(molecule, atomC2);
-    addHydrogen(molecule, atomC2);
-    addHydrogen(molecule, atomC2);
     addHydrogen(molecule, atomO2);
+
     checkMolecule("N[C@@H](C)C(=O)O", molecule);
   }
-  public void testChapter1_17() throws InvalidSmilesException {    // Test O[C@H]1CCCC[C@H]1O
+  public void testChapter1_17() throws InvalidSmilesException {    
+    // Test O[C@H]1CCCC[C@H]1O
+
+    // it is critical to order the bond creation carefully, exactly along
+    // the lines of what is in the SMILES string
+    
     SmilesSearch molecule = new SmilesSearch();
+    
     SmilesAtom atomO1 = molecule.addAtom();
     atomO1.setSymbol("O");
     addHydrogen(molecule, atomO1);
+    
     SmilesAtom atomC1 = molecule.addAtom();
     atomC1.stereo = new SmilesStereo(SmilesStereo.TETRAHEDRAL, 1, 0, null, null);
     atomC1.setSymbol("C");
+    createBond(atomO1, atomC1, Edge.BOND_COVALENT_SINGLE, true);
     addHydrogen(molecule, atomC1);
+    SmilesBond b1 = createBond(atomC1, null, Edge.BOND_COVALENT_SINGLE, true);
+    
     SmilesAtom atomC2 = molecule.addAtom();
     atomC2.setSymbol("C");
+    createBond(atomC1, atomC2, Edge.BOND_COVALENT_SINGLE, true);
     addHydrogen(molecule, atomC2);
     addHydrogen(molecule, atomC2);
+    
     SmilesAtom atomC3 = molecule.addAtom();
     atomC3.setSymbol("C");
+    createBond(atomC2, atomC3, Edge.BOND_COVALENT_SINGLE, true);
     addHydrogen(molecule, atomC3);
     addHydrogen(molecule, atomC3);
+    
     SmilesAtom atomC4 = molecule.addAtom();
     atomC4.setSymbol("C");
+    createBond(atomC3, atomC4, Edge.BOND_COVALENT_SINGLE, true);
     addHydrogen(molecule, atomC4);
     addHydrogen(molecule, atomC4);
+    
     SmilesAtom atomC5 = molecule.addAtom();
     atomC5.setSymbol("C");
+    createBond(atomC4, atomC5, Edge.BOND_COVALENT_SINGLE, true);
     addHydrogen(molecule, atomC5);
     addHydrogen(molecule, atomC5);
+    
     SmilesAtom atomC6 = molecule.addAtom();
     atomC6.stereo = new SmilesStereo(SmilesStereo.TETRAHEDRAL, 1, 0, null, null);
     atomC6.setSymbol("C");
+    createBond(atomC5, atomC6, Edge.BOND_COVALENT_SINGLE, true);
     addHydrogen(molecule, atomC6);
+    b1.setAtom2(atomC6, molecule);
+
     SmilesAtom atomO2 = molecule.addAtom();
     atomO2.setSymbol("O");
-    addHydrogen(molecule, atomO2);
-    createBond(atomO1, atomC1, Edge.BOND_COVALENT_SINGLE, true);
-    SmilesBond b = createBond(atomC1, null, Edge.BOND_COVALENT_SINGLE, true);
-    createBond(atomC1, atomC2, Edge.BOND_COVALENT_SINGLE, true);
-    createBond(atomC2, atomC3, Edge.BOND_COVALENT_SINGLE, true);
-    createBond(atomC3, atomC4, Edge.BOND_COVALENT_SINGLE, true);
-    createBond(atomC4, atomC5, Edge.BOND_COVALENT_SINGLE, true);
-    createBond(atomC5, atomC6, Edge.BOND_COVALENT_SINGLE, true);
-    b.setAtom2(atomC6, molecule);
     createBond(atomC6, atomO2, Edge.BOND_COVALENT_SINGLE, true);
+    addHydrogen(molecule, atomO2);
     checkMolecule("O[C@H]1CCCC[C@H]1O", molecule);
   }
   
@@ -1015,10 +1036,12 @@ public class TestSmilesParser extends TestCase {
     addHydrogen(molecule, atomC5);
     checkMolecule("F/C=C/C=CC", molecule);
   }
-  public void testChapter7_12() throws InvalidSmilesException {    // Test N[C@@H](C)C(=O)O
+  public void testChapter7_12() throws InvalidSmilesException {    
+    // Test N[C@@H](C)C(=O)O
     testChapter1_16();
   }
-  public void testChapter7_13() throws InvalidSmilesException {    // Test N[C@H](C)C(=O)O
+  public void testChapter7_13() throws InvalidSmilesException {    
+    // Test N[C@H](C)C(=O)O
     SmilesSearch molecule = new SmilesSearch();
     SmilesAtom atomN = molecule.addAtom();
     atomN.setSymbol("N");
@@ -1026,6 +1049,7 @@ public class TestSmilesParser extends TestCase {
     atomC1.stereo = new SmilesStereo(SmilesStereo.TETRAHEDRAL, 1, 0, null, null);
     atomC1.setSymbol("C");
     createBond(atomN, atomC1, Edge.BOND_COVALENT_SINGLE, true);
+    addHydrogen(molecule, atomC1);
     SmilesAtom atomC2 = molecule.addAtom();
     atomC2.setSymbol("C");
     createBond(atomC1, atomC2, Edge.BOND_COVALENT_SINGLE, true);
@@ -1040,105 +1064,116 @@ public class TestSmilesParser extends TestCase {
     createBond(atomC3, atomO2, Edge.BOND_COVALENT_SINGLE, true);
     addHydrogen(molecule, atomN);
     addHydrogen(molecule, atomN);
-    addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC2);
     addHydrogen(molecule, atomC2);
     addHydrogen(molecule, atomC2);
     addHydrogen(molecule, atomO2);
     checkMolecule("N[C@H](C)C(=O)O", molecule);
   }
-  public void testChapter7_14() throws InvalidSmilesException {    // Test O[C@H]1CCCC[C@H]1O
+  public void testChapter7_14() throws InvalidSmilesException {    
+    // Test O[C@H]1CCCC[C@H]1O
     testChapter1_17();
   }
-  public void testChapter7_15() throws InvalidSmilesException {    // Test C1C[C@H]2CCCC[C@H]2CC1
+  public void testChapter7_15() throws InvalidSmilesException {    
+    // Test C1C[C@H]2CCCC[C@H]2CC1
     SmilesSearch molecule = new SmilesSearch();
     SmilesAtom atomC1 = molecule.addAtom();
     atomC1.setSymbol("C");
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC1);
+    SmilesBond b1 = createBond(atomC1, null, Edge.BOND_COVALENT_SINGLE, true);
     SmilesAtom atomC2 = molecule.addAtom();
+    createBond(atomC1, atomC2, Edge.BOND_COVALENT_SINGLE, true);
     atomC2.setSymbol("C");
     addHydrogen(molecule, atomC2);
     addHydrogen(molecule, atomC2);
     SmilesAtom atomC3 = molecule.addAtom();
     atomC3.stereo = new SmilesStereo(SmilesStereo.TETRAHEDRAL, 1, 0, null, null);
     atomC3.setSymbol("C");
+    createBond(atomC2, atomC3, Edge.BOND_COVALENT_SINGLE, true);
     addHydrogen(molecule, atomC3);
+    SmilesBond b2 = createBond(atomC3, null, Edge.BOND_COVALENT_SINGLE, true);
     SmilesAtom atomC4 = molecule.addAtom();
     atomC4.setSymbol("C");
+    createBond(atomC3, atomC4, Edge.BOND_COVALENT_SINGLE, true);
     addHydrogen(molecule, atomC4);
     addHydrogen(molecule, atomC4);
     SmilesAtom atomC5 = molecule.addAtom();
     atomC5.setSymbol("C");
+    createBond(atomC4, atomC5, Edge.BOND_COVALENT_SINGLE, true);
     addHydrogen(molecule, atomC5);
     addHydrogen(molecule, atomC5);
     SmilesAtom atomC6 = molecule.addAtom();
     atomC6.setSymbol("C");
+    createBond(atomC5, atomC6, Edge.BOND_COVALENT_SINGLE, true);
     addHydrogen(molecule, atomC6);
     addHydrogen(molecule, atomC6);
     SmilesAtom atomC7 = molecule.addAtom();
     atomC7.setSymbol("C");
     addHydrogen(molecule, atomC7);
     addHydrogen(molecule, atomC7);
+    createBond(atomC6, atomC7, Edge.BOND_COVALENT_SINGLE, true);
     SmilesAtom atomC8 = molecule.addAtom();
     atomC8.stereo = new SmilesStereo(SmilesStereo.TETRAHEDRAL, 1, 0, null, null);
-    addHydrogen(molecule, atomC8);
     atomC8.setSymbol("C");
+    createBond(atomC7, atomC8, Edge.BOND_COVALENT_SINGLE, true);
+    addHydrogen(molecule, atomC8);    
+    b2.setAtom2(atomC8, molecule);
     SmilesAtom atomC9 = molecule.addAtom();
     atomC9.setSymbol("C");
+    createBond(atomC8, atomC9, Edge.BOND_COVALENT_SINGLE, true);
     addHydrogen(molecule, atomC9);
     addHydrogen(molecule, atomC9);
     SmilesAtom atomC0 = molecule.addAtom();
     atomC0.setSymbol("C");
-    addHydrogen(molecule, atomC0);
-    addHydrogen(molecule, atomC0);
-    createBond(atomC1, atomC0, Edge.BOND_COVALENT_SINGLE, true);
-    createBond(atomC1, atomC2, Edge.BOND_COVALENT_SINGLE, true);
-    createBond(atomC2, atomC3, Edge.BOND_COVALENT_SINGLE, true);
-    SmilesBond b = createBond(atomC3, null, Edge.BOND_COVALENT_SINGLE, true);
-    createBond(atomC3, atomC4, Edge.BOND_COVALENT_SINGLE, true);
-    createBond(atomC4, atomC5, Edge.BOND_COVALENT_SINGLE, true);
-    createBond(atomC5, atomC6, Edge.BOND_COVALENT_SINGLE, true);
-    createBond(atomC6, atomC7, Edge.BOND_COVALENT_SINGLE, true);
-    createBond(atomC7, atomC8, Edge.BOND_COVALENT_SINGLE, true);
-    b.setAtom2(atomC8, molecule);
-    createBond(atomC8, atomC9, Edge.BOND_COVALENT_SINGLE, true);
     createBond(atomC9, atomC0, Edge.BOND_COVALENT_SINGLE, true);
+    addHydrogen(molecule, atomC0);
+    addHydrogen(molecule, atomC0);
+    b1.setAtom2(atomC0, molecule);
     checkMolecule("C1C[C@H]2CCCC[C@H]2CC1", molecule);
   }
-  public void testChapter7_16() throws InvalidSmilesException {    // Test OC(Cl)=[C@]=C(C)F
+  public void testChapter7_16() throws InvalidSmilesException {    
+ // Test OC(Cl)=[C@]=C(C)F
     SmilesSearch molecule = new SmilesSearch();
     SmilesAtom atomO = molecule.addAtom();
     atomO.setSymbol("O");
     SmilesAtom atomC1 = molecule.addAtom();
+    addHydrogen(molecule, atomO);
+
     atomC1.setSymbol("C");
     createBond(atomO, atomC1, Edge.BOND_COVALENT_SINGLE, true);
+    
     SmilesAtom atomCl = molecule.addAtom();
     atomCl.setSymbol("Cl");
     createBond(atomC1, atomCl, Edge.BOND_COVALENT_SINGLE, true);
+    
     SmilesAtom atomC2 = molecule.addAtom();
     atomC2.stereo = new SmilesStereo(SmilesStereo.ALLENE, 1, 0, null, null);
     atomC2.setSymbol("C");
     createBond(atomC1, atomC2, Edge.BOND_COVALENT_DOUBLE, true);
+    
     SmilesAtom atomC3 = molecule.addAtom();
     atomC3.setSymbol("C");
     createBond(atomC2, atomC3, Edge.BOND_COVALENT_DOUBLE, true);
+    
     SmilesAtom atomC4 = molecule.addAtom();
     atomC4.setSymbol("C");
     createBond(atomC3, atomC4, Edge.BOND_COVALENT_SINGLE, true);
+    addHydrogen(molecule, atomC4);
+    addHydrogen(molecule, atomC4);
+    addHydrogen(molecule, atomC4);
+    
     SmilesAtom atomF = molecule.addAtom();
     atomF.setSymbol("F");
     createBond(atomC3, atomF, Edge.BOND_COVALENT_SINGLE, true);
-    addHydrogen(molecule, atomO);
-    addHydrogen(molecule, atomC4);
-    addHydrogen(molecule, atomC4);
-    addHydrogen(molecule, atomC4);
     checkMolecule("OC(Cl)=[C@]=C(C)F", molecule);
   }
-  public void testChapter7_17() throws InvalidSmilesException {    // Test OC(Cl)=[C@AL1]=C(C)F
+  public void testChapter7_17() throws InvalidSmilesException {    
+    // Test OC(Cl)=[C@AL1]=C(C)F
     SmilesSearch molecule = new SmilesSearch();
     SmilesAtom atomO = molecule.addAtom();
     atomO.setSymbol("O");
+    addHydrogen(molecule, atomO);
     SmilesAtom atomC1 = molecule.addAtom();
     atomC1.setSymbol("C");
     createBond(atomO, atomC1, Edge.BOND_COVALENT_SINGLE, true);
@@ -1154,17 +1189,17 @@ public class TestSmilesParser extends TestCase {
     createBond(atomC2, atomC3, Edge.BOND_COVALENT_DOUBLE, true);
     SmilesAtom atomC4 = molecule.addAtom();
     atomC4.setSymbol("C");
+    addHydrogen(molecule, atomC4);
+    addHydrogen(molecule, atomC4);
+    addHydrogen(molecule, atomC4);
     createBond(atomC3, atomC4, Edge.BOND_COVALENT_SINGLE, true);
     SmilesAtom atomF = molecule.addAtom();
     atomF.setSymbol("F");
     createBond(atomC3, atomF, Edge.BOND_COVALENT_SINGLE, true);
-    addHydrogen(molecule, atomO);
-    addHydrogen(molecule, atomC4);
-    addHydrogen(molecule, atomC4);
-    addHydrogen(molecule, atomC4);
     checkMolecule("OC(Cl)=[C@AL1]=C(C)F", molecule);
   }
-  public void testChapter7_18() throws InvalidSmilesException {    // Test F[Po@SP1](Cl)(Br)I
+  public void testChapter7_18() throws InvalidSmilesException {    
+    // Test F[Po@SP1](Cl)(Br)I
     SmilesSearch molecule = new SmilesSearch();
     SmilesAtom atomF = molecule.addAtom();
     atomF.setSymbol("F");
@@ -1183,7 +1218,8 @@ public class TestSmilesParser extends TestCase {
     createBond(atomPo, atomI, Edge.BOND_COVALENT_SINGLE, true);
     checkMolecule("F[Po@SP1](Cl)(Br)I", molecule);
   }
-  public void testChapter7_19() throws InvalidSmilesException {    // Test O=C[As@](F)(Cl)(Br)S
+  public void testChapter7_19() throws InvalidSmilesException {    
+    // Test O=C[As@](F)(Cl)(Br)S
     SmilesSearch molecule = new SmilesSearch();
     SmilesAtom atomO = molecule.addAtom();
     atomO.setSymbol("O");
@@ -1210,7 +1246,8 @@ public class TestSmilesParser extends TestCase {
     addHydrogen(molecule, atomS);
     checkMolecule("O=C[As@](F)(Cl)(Br)S", molecule);
   }
-  public void testChapter7_20() throws InvalidSmilesException {    // Test O=C[Co@](F)(Cl)(Br)(I)S
+  public void testChapter7_20() throws InvalidSmilesException {    
+    // Test O=C[Co@](F)(Cl)(Br)(I)S
     SmilesSearch molecule = new SmilesSearch();
     SmilesAtom atomO = molecule.addAtom();
     atomO.setSymbol("O");
@@ -1248,8 +1285,10 @@ public class TestSmilesParser extends TestCase {
    * @param expected SMILES molecule
    */
   private static void checkMolecule(String smiles, SmilesSearch expected) {
+    System.out.print("Checking " + smiles + "...");
     try {
       assertTrue(new SmilesMatcher().areEqualTest(smiles, expected));
+      System.out.println("OK");
     } catch (Exception e) {
       assertTrue(false);
     }

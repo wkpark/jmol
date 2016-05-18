@@ -45,10 +45,10 @@ import org.jmol.modelsetbio.BioModel;
 import org.jmol.script.T;
 import org.jmol.util.C;
 import org.jmol.util.Elements;
+import org.jmol.util.Node;
 import org.jmol.util.Point3fi;
 import org.jmol.util.Tensor;
 import org.jmol.util.Edge;
-import org.jmol.util.BNode;
 import org.jmol.util.Vibration;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
@@ -56,7 +56,7 @@ import org.jmol.viewer.Viewer;
 
 
 
-public class Atom extends Point3fi implements BNode {
+public class Atom extends Point3fi implements Node {
 
   // ATOM_IN_FRAME simply associates an atom with the current model
   // but doesn't necessarily mean it is visible
@@ -722,7 +722,7 @@ public class Atom extends Point3fi implements BNode {
   }
    
   /**
-   * SMILES only, for BNode
+   * SMILES only
    */
   @Override
   public int getModelIndex() {
@@ -1414,7 +1414,7 @@ public class Atom extends Point3fi implements BNode {
   }
   
   @Override
-  public boolean isCrossLinked(BNode node) {
+  public boolean isCrossLinked(Node node) {
     return group.isCrossLinked(((Atom) node).group);
   }
 

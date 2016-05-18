@@ -35,7 +35,6 @@ import javajs.util.T3;
 import javajs.util.V3;
 
 import org.jmol.java.BS;
-import org.jmol.util.BNode;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Edge;
 import org.jmol.util.JmolMolecule;
@@ -44,53 +43,106 @@ import org.jmol.util.Node;
 import org.jmol.viewer.JC;
 
 /**
- *  -- was SmilesMolecule, 
- * but this now includes more data than that and the search itself
- * so as to keep this thread safe
- * 
+ * A class to build and carry out a SMILES or SMARTS match
+ * @author Bob Hanson hansonr@stolaf.edu
  */
 public class SmilesSearch extends JmolMolecule {
 
   public SmilesSearch() {
+    top = this;
+    v = new VTemp();
   }
-  
-  @Override
-  public String toString() {
-    SB sb = new SB().append(pattern);
-    sb.append("\nmolecular formula: " + getMolecularFormula(true, null, false)); 
-    return sb.toString();    
-  }
-
-  private final static int INITIAL_ATOMS = 16;
-  SmilesAtom[] patternAtoms = new SmilesAtom[INITIAL_ATOMS];
 
   /* ============================================================= */
   /*                             Setup                             */
   /* ============================================================= */
 
-  String pattern;
-  Node[] jmolAtoms;
-  VTemp v = new VTemp();
-  
-  BNode[] bioAtoms;
-  int jmolAtomCount;
-  private BS bsSelected;
-
   boolean isSmarts;
 
+  SmilesSearch top;
+  
+  String pattern;
+  SmilesAtom[] patternAtoms = new SmilesAtom[16];
+  Node[] targetAtoms;
+  int targetAtomCount;
+  private BS bsSelected;
+
+  VTemp v; // temporary vector set
+  
   boolean aromaticOpen; // will also be openSMARTS if isSmarts is TRUE
   boolean aromaticStrict;
   boolean aromaticPlanar;
   boolean aromaticDouble;
   boolean noAromatic;
-
   boolean ignoreAtomClass;
   boolean ignoreStereochemistry;
   boolean invertStereochemistry;
-  boolean setAtropicity;
-  boolean exitFirstMatch;
-  
+  boolean exitFirstMatch;  
   boolean groupByModel; // or byMolecule (default)
+  boolean setAtropicity;
+
+  /**
+   * Set in set() to indicate to SmilesMatcher that 
+   * the string already has aromatic atoms indicated and so
+   * no aromaticity model should be applied.
+   */
+  
+  boolean patternAromatic; 
+  boolean haveTopo;  
+  boolean isTopology;
+  boolean patternBioSequence;
+  SmilesSearch[] subSearches;
+  boolean haveSelected;
+  boolean haveBondStereochemistry;
+  SmilesStereo stereo;
+  boolean needRingData;
+  boolean needAromatic = true; // we just have to always consider aromatic, except in the case of bioSequences.
+  boolean needRingMemberships;
+
+  int nDouble;
+  int ringDataMax = Integer.MIN_VALUE;
+  SB ringSets;
+  int ringCount;
+
+
+  Lst<SmilesMeasure> measures = new  Lst<SmilesMeasure>();
+  
+  int flags;
+  BS bsAromatic = new BS();
+  BS bsAromatic5 = new BS();
+  BS bsAromatic6 = new BS();
+  String atropKeys;
+  
+  SmilesAtom lastChainAtom;
+
+  boolean asVector;
+  boolean getMaps;
+  boolean isNormalized;
+  boolean haveComponents;
+  
+  void setTop(SmilesSearch parent) {
+    while (parent.top != parent)
+      parent = parent.top;
+    this.top = parent;
+  }
+
+  //  private data 
+  
+  private boolean isSilent;
+  private boolean isRingCheck;
+  private int selectedAtomCount;
+  private BS[] ringData;
+  private int[] ringCounts;
+  private int[] ringConnections;
+  private BS bsFound = new BS(); 
+  private Map<String, Object> htNested;
+  private int nNested;
+  private SmilesBond nestedBond;
+
+  private Lst<Object> vReturn;
+  private BS bsReturn = new BS();
+  
+  private BS bsCheck;
 
   static final int addFlags(int flags, String strFlags) {
     if (strFlags.indexOf("OPEN") >= 0)
@@ -155,7 +207,7 @@ public class SmilesSearch extends JmolMolecule {
 
   void setFlags(int flags) {
     this.flags = flags;
-    
+
     // starting with Jmol 12.3.24, we allow the flag AROMATICDOUBLE to allow a
     // distinction between single and double, as for example is necessary to distinguish
     // between n=cNH2 and ncNH2 (necessary for MMFF94 atom typing
@@ -165,108 +217,31 @@ public class SmilesSearch extends JmolMolecule {
     // and used by the SMILES generator
 
     // |= here, because this might be set explicitly in SmilesMatcher
-    
+
     exitFirstMatch |= ((flags & JC.SMILES_FIRST_MATCH_ONLY) == JC.SMILES_FIRST_MATCH_ONLY);
 
     aromaticOpen = ((flags & JC.SMILES_TYPE_OPENSMILES) == JC.SMILES_TYPE_OPENSMILES);
-    
+
     aromaticDouble = ((flags & JC.SMILES_AROMATIC_DOUBLE) == JC.SMILES_AROMATIC_DOUBLE); // {1.1}.find("SMILES/aromaticDouble",{2.1})
 
     aromaticStrict = ((flags & JC.SMILES_AROMATIC_STRICT) == JC.SMILES_AROMATIC_STRICT);
 
     aromaticPlanar = ((flags & JC.SMILES_AROMATIC_PLANAR) == JC.SMILES_AROMATIC_PLANAR);
-    
+
     groupByModel = ((flags & JC.SMILES_GROUP_BY_MODEL) == JC.SMILES_GROUP_BY_MODEL);
 
     noAromatic = ((flags & JC.SMILES_NO_AROMATIC) == JC.SMILES_NO_AROMATIC);
-    
+
     ignoreAtomClass = ((flags & JC.SMILES_IGNORE_ATOM_CLASS) == JC.SMILES_IGNORE_ATOM_CLASS);
 
     ignoreStereochemistry = ((flags & JC.SMILES_IGNORE_STEREOCHEMISTRY) == JC.SMILES_IGNORE_STEREOCHEMISTRY);
 
-}
-
-  void setSelected(BS bs) {
-    if (bs == null) {
-      // null because this is an atom set
-      // constructed by SmilesParser.getMolecule
-      //  "CCCCC".find("SMARTS","C")
-      bs = BS.newN(jmolAtomCount);
-      bs.setBits(0, jmolAtomCount);
-    }
-    bsSelected = bs;
   }
-  BS bsRequired;
-  /**
-   * Set false by SmilesParser to indicate to SmilesMatcher that 
-   * the string already has aromatic atoms indicated and so
-   * no aromaticity model should be applied.
+
+  /*
+   * Called by SmilesParser when it is done
+   * 
    */
-  boolean patternAromatic = true; 
-  
-  boolean haveTopo;
-  boolean isTopology;
-  boolean patternBioSequence;
-  SmilesSearch[] subSearches;
-  boolean haveSelected;
-  boolean haveBondStereochemistry;
-  SmilesStereo stereo;
-  boolean needRingData;
-  boolean needAromatic = true; // we just have to always consider aromatic, except in the case of bioSequences.
-  boolean needRingMemberships;
-
-  int nDouble;
-  int ringDataMax = Integer.MIN_VALUE;
-  SB ringSets;
-  int ringCount;
-
-
-  Lst<SmilesMeasure> measures = new  Lst<SmilesMeasure>();
-  
-  int flags;
-  BS bsAromatic = new BS();
-  BS bsAromatic5 = new BS();
-  BS bsAromatic6 = new BS();
-  
-  SmilesAtom lastChainAtom;
-
-  boolean asVector;
-  boolean getMaps;
-  
-  SmilesSearch top = this;
-  
-  void setTop(SmilesSearch parent) {
-    if (parent == null)
-      this.top = this;
-    else 
-      this.top = parent.getTop();
-  }
-
-  SmilesSearch getTop() {
-    return (top == this ? this : top.getTop());
-  }
-
-
-  
-  //  private data 
-  
-  private boolean isSilent;
-  private boolean isRingCheck;
-  private int selectedAtomCount;
-  private BS[] ringData;
-  private int[] ringCounts;
-  private int[] ringConnections;
-  BS bsFound = new BS(); 
-  private Map<String, Object> htNested;
-  private int nNested;
-  private SmilesBond nestedBond;
-
-  private Lst<Object> vReturn;
-  private BS bsReturn = new BS();
-  
-  boolean isNormalized;
-  boolean haveComponents;
-  
   void set() throws InvalidSmilesException {
     if (patternAtoms.length > ac)
       patternAtoms = (SmilesAtom[]) AU.arrayCopyObject(patternAtoms, ac);
@@ -305,6 +280,17 @@ public class SmilesSearch extends JmolMolecule {
     }
   }
 
+  void setSelected(BS bs) {
+    if (bs == null) {
+      // null because this is an atom set
+      // constructed by SmilesParser.getMolecule
+      //  "CCCCC".find("SMARTS","C")
+      bs = BS.newN(targetAtomCount);
+      bs.setBits(0, targetAtomCount);
+    }
+    bsSelected = bs;
+  }
+
   SmilesAtom addAtom() {
     return appendAtom(new SmilesAtom());
   }
@@ -330,6 +316,15 @@ public class SmilesSearch extends JmolMolecule {
     clearBsFound(-1);
   }
   
+  private void clearBsFound(int iAtom) {
+    
+    if (iAtom < 0) {
+      if (bsCheck == null) {bsFound.clearAll();}
+      }
+    else
+      bsFound.clear(iAtom);    
+  }
+
   void setNested(int iNested, Object o) {
     top.htNested.put("_" + iNested, o);
   }
@@ -382,21 +377,22 @@ public class SmilesSearch extends JmolMolecule {
     boolean isOpenNotStrict = aromaticOpen && !aromaticStrict;
     int strictness = (!isStrict ? 0
         : (flags & JC.SMILES_AROMATIC_MMFF94) == JC.SMILES_AROMATIC_MMFF94 ? 2 : 1);
+    boolean checkExplicit = (strictness == 0);
     boolean isDefined = ((flags & JC.SMILES_AROMATIC_DEFINED) == JC.SMILES_AROMATIC_DEFINED);
     boolean doFinalize = (needAromatic && doTestAromatic && (isStrict || isOpenNotStrict));
     int aromaticMax = 7;
     Lst<BS> lstAromatic = (vRings == null ? new Lst<BS>()
         : (vRings[3] = new Lst<BS>()));
     Lst<SmilesRing> lstSP2 = (doFinalize ? new Lst<SmilesRing>() : null);
-    int[] eCounts = (doFinalize ? new int[jmolAtomCount] : null);
+    int[] eCounts = (doFinalize ? new int[targetAtomCount] : null);
 
     if (isDefined && needAromatic) {
       // predefined aromatic bonds
-      SmilesAromatic.checkAromaticDefined(jmolAtoms, bsSelected, bsAromatic);
+      SmilesAromatic.checkAromaticDefined(targetAtoms, bsSelected, bsAromatic);
       strictness = 0;
     }
-    int nAtoms = jmolAtomCount;
-    boolean checkFlatness = (nAtoms > 0 && !(jmolAtoms[0] instanceof SmilesAtom));
+    int nAtoms = targetAtomCount;
+    boolean justCheckBonding = (nAtoms == 0 || (targetAtoms[0] instanceof SmilesAtom));
 
     if (ringDataMax < 0)
       ringDataMax = 8;
@@ -404,7 +400,7 @@ public class SmilesSearch extends JmolMolecule {
       ringDataMax = 6;
     if (needRingData) {
       ringCounts = new int[nAtoms];
-      ringConnections = new int[jmolAtomCount];
+      ringConnections = new int[targetAtomCount];
       ringData = new BS[ringDataMax + 1];
     }
 
@@ -417,8 +413,8 @@ public class SmilesSearch extends JmolMolecule {
       if (i > nAtoms)
         continue;
       String smarts = "*1" + s.substring(0, i - 2) + "*1";
-      SmilesSearch search = SmilesParser.getMolecule(smarts, true, true);
-      Lst<Object> vR = (Lst<Object>) subsearch(search, false, true);
+      SmilesSearch search = SmilesParser.newSearch(smarts, true, true);
+      Lst<Object> vR = (Lst<Object>) subsearch(search, SUBMODE_RINGCHECK);
       if (vRings != null && i <= 5) {
         Lst<BS> v = new Lst<BS>();
         for (int j = vR.size(); --j >= 0;)
@@ -428,8 +424,8 @@ public class SmilesSearch extends JmolMolecule {
       if (vR.size() == 0)
         continue;
       if (needAromatic && !isDefined && i >= 4 && i <= aromaticMax)
-        SmilesAromatic.setAromatic(i, jmolAtoms, bsSelected, vR, bsAromatic,
-            strictness, isOpenNotStrict, checkFlatness, v, lstAromatic, lstSP2,
+        SmilesAromatic.setAromatic(i, targetAtoms, bsSelected, vR, bsAromatic,
+            strictness, isOpenNotStrict, justCheckBonding, checkExplicit, v, lstAromatic, lstSP2,
             eCounts, doTestAromatic);
       if (needRingData) {
         ringData[i] = new BS();
@@ -443,7 +439,7 @@ public class SmilesSearch extends JmolMolecule {
     }
     if (needAromatic) {
       if (doFinalize)
-        SmilesAromatic.finalizeAromatic(jmolAtoms, bsAromatic, lstAromatic,
+        SmilesAromatic.finalizeAromatic(targetAtoms, bsAromatic, lstAromatic,
             lstSP2, eCounts, isOpenNotStrict, isStrict);
       // clean out all nonaromatic atoms from the ring list
       // and recreate 5- and 6-membered ring bitsets
@@ -465,7 +461,7 @@ public class SmilesSearch extends JmolMolecule {
     if (needRingData) {
       for (int i = bsSelected.nextSetBit(0); i >= 0; i = bsSelected
           .nextSetBit(i + 1)) {
-        Node atom = jmolAtoms[i];
+        Node atom = targetAtoms[i];
         Edge[] bonds = atom.getEdges();
         if (bonds != null)
           for (int k = bonds.length; --k >= 0;)
@@ -475,56 +471,56 @@ public class SmilesSearch extends JmolMolecule {
     }
   }
 
-  Object subsearch(SmilesSearch search, 
-                            boolean firstAtomOnly, 
-                            boolean isRingCheck) throws InvalidSmilesException {
+  private final static int SUBMODE_NESTED = 1;
+  private final static int SUBMODE_RINGCHECK = 2;
+  private final static int SUBMODE_OR = 3;
+  
+  /**
+   * @param search
+   * @param submode
+   * @return Object
+   * @throws InvalidSmilesException
+   */
+  Object subsearch(SmilesSearch search, int submode) throws InvalidSmilesException {
     search.ringSets = ringSets;
-    search.jmolAtoms = jmolAtoms;
-    search.bioAtoms = bioAtoms;
-    search.jmolAtomCount = jmolAtomCount;
+    search.targetAtoms = targetAtoms;
+    search.targetAtomCount = targetAtomCount;
     search.bsSelected = bsSelected;
     search.htNested = htNested;
     search.haveTopo = haveTopo;
     search.bsCheck = bsCheck;
     search.isSmarts = true;
-    //search.measures = measures;
     search.bsAromatic = bsAromatic;
     search.bsAromatic5 = bsAromatic5;
     search.bsAromatic6 = bsAromatic6;
     search.ringData = ringData;
     search.ringCounts = ringCounts;
     search.ringConnections = ringConnections;
-    if (firstAtomOnly) {
-      search.bsRequired = null;
+    switch (submode) {
+    case SUBMODE_NESTED:
+      // [$(....)]
       search.exitFirstMatch = false;
-      //search.bsFound = bsFound;
-      /*
-       * this statement commented out 5/19/12 revision 17146; it was introduced in 
-       * http://jmol.svn.sourceforge.net/viewvc/jmol/trunk/Jmol/src/org/jmol/smiles/SmilesSearch.java?r1=13475&r2=13476&pathrev=13476&
-       * when the  nested business was set up and apparently this was needed for something with the 3D business. 
-       * It is when nestedBond was set up as well, which makes sense, but this definitely is not a good idea. 
-       * Could be that nesting 3D is not compatible with commenting this out. 
-       * 
-       */
-    } else if (isRingCheck) {
-      search.bsRequired = null;
-      search.isSilent = true;
+      break;
+    case SUBMODE_RINGCHECK:
+      // *1****1
       search.isRingCheck = true;
+      search.isSilent = true;
       search.asVector = true;
-    } else {
-      // processing || 
+      break;
+    case SUBMODE_OR:
+      // processing SMARTS || SMARTS 
       search.ignoreAtomClass = ignoreAtomClass;
       search.aromaticDouble = aromaticDouble;
       search.haveSelected = haveSelected;
-      search.bsRequired = bsRequired;
       search.exitFirstMatch = exitFirstMatch;
       search.getMaps = getMaps;
       search.asVector = asVector;
       search.vReturn = vReturn;
       search.bsReturn = bsReturn;
       search.haveBondStereochemistry = haveBondStereochemistry;
+      break;
     }
-    return search.search2(firstAtomOnly);
+    return search.search2(submode == SUBMODE_NESTED);
   }
   
   /* ============================================================= */
@@ -579,15 +575,16 @@ public class SmilesSearch extends JmolMolecule {
     if (vReturn == null && (asVector || getMaps))
       vReturn = new  Lst<Object>();
     if (bsSelected == null) {
-      bsSelected = BS.newN(jmolAtomCount);
-      bsSelected.setBits(0, jmolAtomCount);
+      bsSelected = BS.newN(targetAtomCount);
+      bsSelected.setBits(0, targetAtomCount);
     }
     selectedAtomCount = bsSelected.cardinality();
     if (subSearches != null) {
+      // SMARTS || SMARTS
       for (int i = 0; i < subSearches.length; i++) {
         if (subSearches[i] == null)
           continue;
-        subsearch(subSearches[i], false, false);
+        subsearch(subSearches[i], SUBMODE_OR);
         if (exitFirstMatch) {
           if (vReturn == null ? bsReturn.nextSetBit(0) >= 0 : vReturn.size() > 0)
             break;
@@ -606,123 +603,8 @@ public class SmilesSearch extends JmolMolecule {
     return (asVector || getMaps ? (Object) vReturn : bsReturn);
   }
 
-  /**
-   * Check for a specific match of a model set atom with a pattern position
-   * 
-   * @param patternAtom
-   *        Atom of the pattern that is currently tested.
-   * @param atomNum
-   *        Current atom of the pattern.
-   * @param iAtom
-   *        Atom number of the Jmol atom that is currently tested to match
-   *        <code>patternAtom</code>.
-   * @param firstAtomOnly
-   *        TODO
-   * @return true to continue or false if oneOnly
-   * @throws InvalidSmilesException
-   */
-  private final boolean nextTargetAtom(SmilesAtom patternAtom, Node jmolAtom, int atomNum,
-                                       int iAtom, boolean firstAtomOnly, int c)
-      throws InvalidSmilesException {
-
-    //if (!isRingCheck)
-    //System.out.println("checkMatch " + patternAtom + " atomnum=" + atomNum + " iAtom=" + iAtom + " " + bsFound + " " + pattern);
-    Edge[] jmolBonds;
-    // check for requested selection or not-selection
-
-    if (!isRingCheck && !isTopology) {
-      // check atoms 
-      if (patternAtom.atomsOr != null) {
-        for (int ii = 0; ii < patternAtom.nAtomsOr; ii++)
-          if (!nextTargetAtom(patternAtom.atomsOr[ii], jmolAtom, atomNum, iAtom,
-              firstAtomOnly, c))
-            return false;
-        return true;
-      }
-
-      if (patternAtom.primitives == null) {
-        if (!checkPrimitiveAtom(patternAtom, iAtom))
-          return true;
-      } else {
-        for (int i = 0; i < patternAtom.nPrimitives; i++)
-          if (!checkPrimitiveAtom(patternAtom.primitives[i], iAtom))
-            return true;
-      }
-    }
-
-    // Check bonds
-
-    jmolBonds = jmolAtom.getEdges();
-    for (int i = patternAtom.getBondCount(); --i >= 0;) {
-      SmilesBond patternBond = patternAtom.getBond(i);
-      // Check only if the current atom is the second atom of the bond
-      if (patternBond.getAtomIndex2() != patternAtom.index)
-        continue;
-
-      // note that there might be more than one of these.
-      // in EACH case we need to ensure that the actual
-      // bonds to the previously assigned atoms matches
-
-      SmilesAtom atom1 = patternBond.atom1;
-      int matchingAtom = atom1.getMatchingAtomIndex();
-
-      // BIOSMILES/BIOSMARTS check is by group
-
-      switch (patternBond.order) {
-      case SmilesBond.TYPE_BIO_SEQUENCE:
-      case SmilesBond.TYPE_BIO_CROSSLINK:
-        if (!checkMatchBond(patternAtom, atom1, patternBond, iAtom,
-            matchingAtom, null))
-          return true;
-        break;
-      default:
-
-        // regular SMILES/SMARTS check 
-        // is to find the bond and test it against the pattern
-
-        int k = 0;
-        Edge jmolBond = null;
-        for (; k < jmolBonds.length; k++)
-          if ((jmolBond = jmolBonds[k]).isCovalent()
-              && (jmolBond.getAtomIndex1() == matchingAtom || jmolBond
-                  .getAtomIndex2() == matchingAtom))
-            break;
-        if (k == jmolBonds.length)
-          return true; // probably wasn't a covalent bond or was an attached implicit H
-
-        if (!checkMatchBond(patternAtom, atom1, patternBond, iAtom,
-            matchingAtom, jmolBond))
-          return true;
-      }
-    }
-    
-    // Note that we explicitly do a reference using
-    // index because this could be a SEARCH [x,x] "sub" atom.
-
-    patternAtom = patternAtoms[patternAtom.index];
-    patternAtom.setMatchingAtom(jmolAtoms[iAtom], iAtom);
-    patternAtom.matchingComponent = c;
-
-    // The atom has passed both the atom and the bond test.
-    // Add this atom to the growing list.
-
-    if (Logger.debugging && !isRingCheck) {//&& !isSilent) {
-      for (int i = 0; i <= atomNum; i++)
-        Logger.debug("pattern atoms " + patternAtoms[i] + " " + patternAtoms[i].matchingComponent);
-      Logger.debug("--ss--");
-    }
-    bsFound.set(iAtom);
-    if (!nextPatternAtom(atomNum, iAtom, firstAtomOnly, c))
-      return false;
-    if (iAtom >= 0)
-      clearBsFound(iAtom);
-    return true;
-  }
-
-  private BS bsCheck;
-  String atropKeys;
-
-  private boolean nextPatternAtom(int atomNum, int iAtom, boolean firstAtomOnly, int c)
+  private boolean nextPatternAtom(int atomNum, int iAtom,
+                                  boolean firstAtomOnly, int c)
       throws InvalidSmilesException {
 
     Node jmolAtom;
@@ -755,10 +637,10 @@ public class SmilesSearch extends JmolMolecule {
           Node a = pa.getMatchingAtom();
           if (pa.isBioAtom) {
             // clear out adjacent residues
-            int ii = ((BNode) a).getOffsetResidueAtom("\0", 1);
+            int ii = a.getOffsetResidueAtom("\0", 1);
             if (ii >= 0)
               bs.set(ii);
-            ii = ((BNode) a).getOffsetResidueAtom("\0", -1);
+            ii = a.getOffsetResidueAtom("\0", -1);
             if (ii >= 0)
               bs.set(ii);
           } else {
@@ -771,48 +653,32 @@ public class SmilesSearch extends JmolMolecule {
         boolean skipGroup = ((newPatternAtom.isBioAtomWild));
         // TODO fix the *.*.*.*.* problem
         int j1 = bsSelected.nextSetBit(0);
-        j1 = (skipGroup && j1 >= 0 ? ((BNode) jmolAtoms[j1])
-            .getOffsetResidueAtom("\0", j1) : j1);
+        j1 = (skipGroup && j1 >= 0 ? targetAtoms[j1].getOffsetResidueAtom("\0",
+            j1) : j1);
         int oldJmolComponent;
-        int oldPatternComponent = (atomNum > 0 ? patternAtoms[atomNum - 1] : newPatternAtom).component;
+        int oldPatternComponent = (atomNum > 0 ? patternAtoms[atomNum - 1]
+            : newPatternAtom).component;
         int thisPatternComponent = newPatternAtom.component;
-        boolean checkComponents = haveComponents && thisPatternComponent != Integer.MIN_VALUE;
+        boolean checkComponents = haveComponents
+            && thisPatternComponent != Integer.MIN_VALUE;
         for (int j = j1; j >= 0; j = bsSelected.nextSetBit(j + 1)) {
           if (!bs.get(j) && !bsFound.get(j)) {
 
-            jmolAtom = jmolAtoms[j];
+            jmolAtom = targetAtoms[j];
             if (checkComponents && !isRingCheck) {
               c = (groupByModel ? jmolAtom.getModelIndex() : jmolAtom
                   .getMoleculeNumber(false));
-              oldJmolComponent = (atomNum > 0 ? patternAtoms[atomNum - 1].matchingComponent : c);
-//                System.out.println(atomNum
-//                        + " "
-//                        + j
-//                        + " c="
-//                        + c
-//                        + " "
-//                        + jmolAtom
-//                        + " "
-//                        + newPatternAtom
-//                        + " oldpat="
-//                        + oldPatternComponent
-//                        + " thispat="
-//                        + thisPatternComponent
-//                        + " thisjmol="
-//                        + thisJmolComponent
-//                        + " oldJmol="
-//                        + oldJmolComponent
-//                        + " isOK:"
-//                        + !((oldPatternComponent == thisPatternComponent) != (oldJmolComponent == c)));
-                if ((oldPatternComponent == thisPatternComponent) != (oldJmolComponent == c))
-                  continue;
+              oldJmolComponent = (atomNum > 0 ? patternAtoms[atomNum - 1].matchingComponent
+                  : c);
+              if ((oldPatternComponent == thisPatternComponent) != (oldJmolComponent == c))
+                continue;
             }
             if (!nextTargetAtom(newPatternAtom, jmolAtom, atomNum, j,
                 firstAtomOnly, c))
               return false;
           }
           if (skipGroup) {
-            j1 = ((BNode) jmolAtoms[j]).getOffsetResidueAtom(
+            j1 = targetAtoms[j].getOffsetResidueAtom(
                 newPatternAtom.bioAtomName, 1);
             if (j1 >= 0)
               j = j1 - 1;
@@ -837,29 +703,31 @@ public class SmilesSearch extends JmolMolecule {
 
       switch (newPatternBond.order) {
       case SmilesBond.TYPE_BIO_SEQUENCE:
-        int nextGroupAtom = ((BNode) jmolAtom).getOffsetResidueAtom(
+        int nextGroupAtom = jmolAtom.getOffsetResidueAtom(
             newPatternAtom.bioAtomName, 1);
         if (nextGroupAtom >= 0) {
           BS bs = BSUtil.copy(bsFound);
-          ((BNode) jmolAtom).getGroupBits(bsFound);
+          jmolAtom.getGroupBits(bsFound);
 
           // working here
-          if (doCheckAtom(nextGroupAtom) && !nextTargetAtom(newPatternAtom, jmolAtoms[nextGroupAtom],
-              atomNum, nextGroupAtom, firstAtomOnly, c))
+          if (doCheckAtom(nextGroupAtom)
+              && !nextTargetAtom(newPatternAtom, targetAtoms[nextGroupAtom],
+                  atomNum, nextGroupAtom, firstAtomOnly, c))
             return false;
           bsFound = bs;
         }
         return true;
       case SmilesBond.TYPE_BIO_CROSSLINK:
         Lst<Integer> vLinks = new Lst<Integer>();
-        ((BNode) jmolAtom).getCrossLinkVector(vLinks, true, true);
+        jmolAtom.getCrossLinkVector(vLinks, true, true);
         BS bs = BSUtil.copy(bsFound);
-        ((BNode) jmolAtom).getGroupBits(bsFound);
+        jmolAtom.getGroupBits(bsFound);
         // here we only use the third entry -- lead atoms
         for (int j = 2; j < vLinks.size(); j += 3) {
           int ia = vLinks.get(j).intValue();
-          if (doCheckAtom(ia) && !nextTargetAtom(newPatternAtom, jmolAtoms[ia], atomNum, ia,
-              firstAtomOnly, c))
+          if (doCheckAtom(ia)
+              && !nextTargetAtom(newPatternAtom, targetAtoms[ia], atomNum, ia,
+                  firstAtomOnly, c))
             return false;
         }
         bsFound = bs;
@@ -883,8 +751,9 @@ public class SmilesSearch extends JmolMolecule {
       if (jmolBonds != null)
         for (int j = 0; j < jmolBonds.length; j++) {
           int ia = jmolAtom.getBondedAtomIndex(j);
-          if (doCheckAtom(ia) && !nextTargetAtom(newPatternAtom, jmolAtoms[ia], atomNum,
-              ia, firstAtomOnly, c))
+          if (doCheckAtom(ia)
+              && !nextTargetAtom(newPatternAtom, targetAtoms[ia], atomNum, ia,
+                  firstAtomOnly, c))
             return false;
         }
 
@@ -916,21 +785,19 @@ public class SmilesSearch extends JmolMolecule {
       nMatch++;
       bs.set(i);
       if (patternAtoms[j].isBioAtomWild)
-        ((BNode) jmolAtoms[i]).getGroupBits(bs);
+        targetAtoms[i].getGroupBits(bs);
       if (firstAtomOnly)
         break; // TODO -- ohoh, I need this?
       if (!isSmarts)
         if (!setAtropicity && patternAtoms[j].explicitHydrogenCount > 0) {
-          Node atom = jmolAtoms[i];
+          Node atom = targetAtoms[i];
           for (int k = 0, n = atom.getEdges().length; k < n; k++) {
             int ia = atom.getBondedAtomIndex(k);
-            if (jmolAtoms[ia].getElementNumber() == 1)
+            if (targetAtoms[ia].getElementNumber() == 1)
               bs.set(ia);
           }
         }
     }
-    if (bsRequired != null && !bsRequired.intersects(bs))
-      return true;
     if (!isSmarts && bs.cardinality() != selectedAtomCount)
       return true;
     if (bsCheck != null) {
@@ -996,41 +863,162 @@ public class SmilesSearch extends JmolMolecule {
     return bsSelected.get(j) && !bsFound.get(j);
   }
 
-  private void clearBsFound(int iAtom) {
-    
-    if (iAtom < 0) {
-      if (bsCheck == null) {bsFound.clearAll();}
+  /**
+   * Check for a specific match of a model set atom with a pattern position
+   * 
+   * @param patternAtom
+   *        Atom of the pattern that is currently tested.
+   * @param jmolAtom
+   * @param atomNum
+   *        Current atom of the pattern.
+   * @param iAtom
+   *        Atom number of the Jmol atom that is currently tested to match
+   *        <code>patternAtom</code>.
+   * @param firstAtomOnly
+   * @param c
+   * @return true to continue or false if oneOnly
+   * @throws InvalidSmilesException
+   */
+  private final boolean nextTargetAtom(SmilesAtom patternAtom, Node jmolAtom,
+                                       int atomNum, int iAtom,
+                                       boolean firstAtomOnly, int c)
+      throws InvalidSmilesException {
+
+    Edge[] jmolBonds;
+    // check for requested selection or not-selection
+
+    if (!isRingCheck && !isTopology) {
+      // check atoms 
+
+      if (patternAtom.subAtoms == null) {
+        if (!checkPrimitiveAtom(patternAtom, iAtom))
+          return true;
+      } else if (patternAtom.isAND) {
+        for (int i = 0; i < patternAtom.nSubAtoms; i++)
+          if (!checkPrimitiveAtom(patternAtom.subAtoms[i], iAtom))
+            return true;
+      } else {
+        for (int i = 0; i < patternAtom.nSubAtoms; i++)
+          if (!nextTargetAtom(patternAtom.subAtoms[i], jmolAtom, atomNum,
+              iAtom, firstAtomOnly, c))
+            return false;
+        return true;
       }
-    else
-      bsFound.clear(iAtom);    
+    }
+
+    // Check bonds
+
+    jmolBonds = jmolAtom.getEdges();
+    for (int i = patternAtom.getBondCount(); --i >= 0;) {
+      SmilesBond patternBond = patternAtom.getBond(i);
+      // Check only if the current atom is the second atom of the bond
+      if (patternBond.getAtomIndex2() != patternAtom.index)
+        continue;
+
+      // note that there might be more than one of these.
+      // in EACH case we need to ensure that the actual
+      // bonds to the previously assigned atoms matches
+
+      SmilesAtom atom1 = patternBond.atom1;
+      int matchingAtom = atom1.getMatchingAtomIndex();
+
+      // BIOSMILES/BIOSMARTS check is by group
+
+      switch (patternBond.order) {
+      case SmilesBond.TYPE_BIO_SEQUENCE:
+      case SmilesBond.TYPE_BIO_CROSSLINK:
+        if (!checkMatchBond(patternAtom, atom1, patternBond, iAtom,
+            matchingAtom, null))
+          return true;
+        break;
+      default:
+
+        // regular SMILES/SMARTS check 
+        // is to find the bond and test it against the pattern
+
+        int k = 0;
+        Edge jmolBond = null;
+        for (; k < jmolBonds.length; k++)
+          if ((jmolBond = jmolBonds[k]).isCovalent()
+              && (jmolBond.getAtomIndex1() == matchingAtom || jmolBond
+                  .getAtomIndex2() == matchingAtom))
+            break;
+        if (k == jmolBonds.length)
+          return true; // probably wasn't a covalent bond or was an attached implicit H
+
+        if (!checkMatchBond(patternAtom, atom1, patternBond, iAtom,
+            matchingAtom, jmolBond))
+          return true;
+      }
+    }
+
+    // Note that we explicitly do a reference using
+    // index because this could be a SEARCH [x,x] "sub" atom.
+
+    patternAtom = patternAtoms[patternAtom.index];
+    patternAtom.setMatchingAtom(targetAtoms[iAtom], iAtom);
+    patternAtom.matchingComponent = c;
+
+    // The atom has passed both the atom and the bond test.
+    // Add this atom to the growing list.
+
+    if (Logger.debugging && !isRingCheck) {//&& !isSilent) {
+      for (int i = 0; i <= atomNum; i++)
+        Logger.debug("pattern atoms " + patternAtoms[i] + " "
+            + patternAtoms[i].matchingComponent);
+      Logger.debug("--ss--");
+    }
+    bsFound.set(iAtom);
+    if (!nextPatternAtom(atomNum, iAtom, firstAtomOnly, c))
+      return false;
+    if (iAtom >= 0)
+      clearBsFound(iAtom);
+    return true;
   }
 
-  private boolean checkPrimitiveAtom(SmilesAtom patternAtom, int iAtom)
+  /**
+   * 
+   * @param patternAtom
+   * @param iTarget
+   * @return true if a match
+   * @throws InvalidSmilesException
+   */
+  private boolean checkPrimitiveAtom(SmilesAtom patternAtom, int iTarget)
       throws InvalidSmilesException {
-    Node atom = jmolAtoms[iAtom];
+    
+    if (patternAtom.nSubAtoms > 0) {
+      // must be ORing here, because you cannot have x & (x & x)
+      // since we have no parenthesis and we have already taken care of x ; x & x
+      for (int i = 0; i < patternAtom.nSubAtoms; i++)
+        if (checkPrimitiveAtom(patternAtom.subAtoms[i], iTarget))
+          return true;
+      return false;
+    }
+
+    Node targetAtom = targetAtoms[iTarget];
     boolean foundAtom = patternAtom.not;
 
     while (true) {
 
-      // _<n> apply "recursive" SEARCH -- for example, [C&$(C[$(aaaO);$(aaC)])]"
+      // _<n> apply "recursive" SEARCH -- for example, C[$(aaaO);$(aaC)] or [C&$(C[$(aaaO);$(aaC)])]"
       if (patternAtom.iNested > 0) {
         Object o = getNested(patternAtom.iNested);
         if (o instanceof SmilesSearch) {
           SmilesSearch search = (SmilesSearch) o;
           if (patternAtom.isBioAtom)
             search.nestedBond = patternAtom.getBondTo(null);
-          o = subsearch(search, true, false);
+          o = subsearch(search, SUBMODE_NESTED);
           if (o == null)
             o = new BS();
           if (!patternAtom.isBioAtom)
             setNested(patternAtom.iNested, o);
         }
-        foundAtom = (patternAtom.not != (((BS) o).get(iAtom)));
+        foundAtom = (patternAtom.not != (((BS) o).get(iTarget)));
         break;
       }
 
       // all types
-      int na = atom.getElementNumber();
+      int na = targetAtom.getElementNumber();
       // #<n> or Symbol Check atomic number
       // look out for atomElemNo == -2 --> "*" in target SMILES
       int n = patternAtom.elementNumber;
@@ -1038,7 +1026,7 @@ public class SmilesSearch extends JmolMolecule {
         break;
 
       if (patternAtom.isBioResidue) {
-        BNode a = (BNode) atom;
+        Node a = targetAtom;
         // <*.name>
         if (patternAtom.bioAtomName != null
             && (patternAtom.isLeadAtom() ? !a.isLeadAtom()
@@ -1116,15 +1104,15 @@ public class SmilesSearch extends JmolMolecule {
         // application-specific 
         // #-<n> application-specific atom number
         if (patternAtom.atomNumber != Integer.MIN_VALUE
-            && patternAtom.atomNumber != (((BNode) atom).getAtomNumber()))
+            && patternAtom.atomNumber != targetAtom.getAtomNumber())
           break;
         // =<n>  Jmol index
         if (patternAtom.jmolIndex >= 0
-            && atom.getIndex() != patternAtom.jmolIndex)
+            && targetAtom.getIndex() != patternAtom.jmolIndex)
           break;
         // <"xxx">
         if (patternAtom.atomType != null
-            && !patternAtom.atomType.equals(atom.getAtomType()))
+            && !patternAtom.atomType.equals(targetAtom.getAtomType()))
           break;
 
         // could  be *
@@ -1133,34 +1121,33 @@ public class SmilesSearch extends JmolMolecule {
         // must match perfectly -- [12C] matches only explicit C-12, not
         // "unlabeled" C
         if ((n = patternAtom.getAtomicMass()) != Integer.MIN_VALUE
-            && (n >= 0 && n != (na = atom.getIsotopeNumber()) || n < 0
+            && (n >= 0 && n != (na = targetAtom.getIsotopeNumber()) || n < 0
                 && na != 0 && -n != na))
           break;
 
         // Check aromatic
-        boolean isAromatic = patternAtom.isAromatic;
         // aromaticAmbiguous could be [#6] or [D3]
         if (!noAromatic && !patternAtom.aromaticAmbiguous
-            && isAromatic != bsAromatic.get(iAtom))
+            && patternAtom.isAromatic != bsAromatic.get(iTarget))
           break;
 
         // <+/-> Check charge
         if ((n = patternAtom.getCharge()) != Integer.MIN_VALUE
-            && n != atom.getFormalCharge())
+            && n != targetAtom.getFormalCharge())
           break;
 
         // H<n> TOTAL H count
         //problem here is that you can have [CH][H]
         n = patternAtom.getCovalentHydrogenCount()
             + patternAtom.explicitHydrogenCount;
-        if (n >= 0 && n != atom.getTotalHydrogenCount())
+        if (n >= 0 && n != targetAtom.getTotalHydrogenCount())
           break;
 
         // h<n> implicit H count -- will be 0 for standard Jmol model; 
         // may be > 0 for SMILES string or PDB model
         // may be -1, from [h] alone to indicate "at least 1"
         if ((n = patternAtom.implicitHydrogenCount) != Integer.MIN_VALUE) {
-          na = atom.getImplicitHydrogenCount();
+          na = targetAtom.getImplicitHydrogenCount();
           if (n == -1 ? na == 0 : n != na)
             break;
         }
@@ -1168,44 +1155,44 @@ public class SmilesSearch extends JmolMolecule {
         // D<n> explicit degree -- does not count missing hydrogens
         // so is NOT appropriate for PDB file MMFF94 calc
         if (patternAtom.degree > 0
-            && patternAtom.degree != atom.getCovalentBondCount()
-                - atom.getImplicitHydrogenCount())
+            && patternAtom.degree != targetAtom.getCovalentBondCount()
+                - targetAtom.getImplicitHydrogenCount())
           break;
 
         // d<n> degree
         if (patternAtom.nonhydrogenDegree > 0
-            && patternAtom.nonhydrogenDegree != atom.getCovalentBondCount()
-                - atom.getCovalentHydrogenCount())
+            && patternAtom.nonhydrogenDegree != targetAtom.getCovalentBondCount()
+                - targetAtom.getCovalentHydrogenCount())
           break;
 
         // v<n> valence
         if (isSmarts && patternAtom.valence > 0
-            && patternAtom.valence != atom.getTotalValence())
+            && patternAtom.valence != targetAtom.getTotalValence())
           break;
 
         // X<n> connectivity  -- includes all missing H atoms
         if (patternAtom.connectivity > 0
-            && patternAtom.connectivity != atom
+            && patternAtom.connectivity != targetAtom
                 .getCovalentBondCountPlusMissingH())
           break;
 
         // #-<n> application-specific atom number
         if (patternAtom.atomNumber != Integer.MIN_VALUE
-            && patternAtom.atomNumber != (((BNode) atom).getAtomNumber()))
+            && patternAtom.atomNumber != targetAtom.getAtomNumber())
           break;
         // =<n>  Jmol index
         if (patternAtom.jmolIndex >= 0
-            && atom.getIndex() != patternAtom.jmolIndex)
+            && targetAtom.getIndex() != patternAtom.jmolIndex)
           break;
         // <"xxx">
         if (patternAtom.atomType != null
-            && !patternAtom.atomType.equals(atom.getAtomType()))
+            && !patternAtom.atomType.equals(targetAtom.getAtomType()))
           break;
 
         if (!ignoreAtomClass || isSmarts) {
           // :<n> atom class  -- will be Float.NaN, and Float.NaN is not equal to any number
           if (!Float.isNaN(patternAtom.atomClass)
-              && patternAtom.atomClass != atom
+              && patternAtom.atomClass != targetAtom
                   .getFloatProperty("property_atomclass"))
             break;
         }
@@ -1214,19 +1201,19 @@ public class SmilesSearch extends JmolMolecule {
           // r<n> ring of a given size or [R]
           if (patternAtom.ringSize >= -1) {
             if (patternAtom.ringSize <= 0) {
-              if ((ringCounts[iAtom] == 0) != (patternAtom.ringSize == 0))
+              if ((ringCounts[iTarget] == 0) != (patternAtom.ringSize == 0))
                 break;
             } else {
               BS rd = ringData[patternAtom.ringSize == 500 ? 5
                   : patternAtom.ringSize == 600 ? 6 : patternAtom.ringSize];
-              if (rd == null || !rd.get(iAtom))
+              if (rd == null || !rd.get(iTarget))
                 break;
               if (!noAromatic)
                 if (patternAtom.ringSize == 500) {
-                  if (!bsAromatic5.get(iAtom))
+                  if (!bsAromatic5.get(iTarget))
                     break;
                 } else if (patternAtom.ringSize == 600) {
-                  if (!bsAromatic6.get(iAtom))
+                  if (!bsAromatic6.get(iTarget))
                     break;
                 }
             }
@@ -1234,14 +1221,14 @@ public class SmilesSearch extends JmolMolecule {
           // R<n> a certain number of rings
           if (patternAtom.ringMembership >= -1) {
             //  R --> -1 implies "!R0"
-            if (patternAtom.ringMembership == -1 ? ringCounts[iAtom] == 0
-                : ringCounts[iAtom] != patternAtom.ringMembership)
+            if (patternAtom.ringMembership == -1 ? ringCounts[iTarget] == 0
+                : ringCounts[iTarget] != patternAtom.ringMembership)
               break;
           }
           // x<n>
           if (patternAtom.ringConnectivity >= 0) {
             // default > 0
-            n = ringConnections[iAtom];
+            n = ringConnections[iTarget];
             if (patternAtom.ringConnectivity == -1 && n == 0
                 || patternAtom.ringConnectivity != -1
                 && n != patternAtom.ringConnectivity)
@@ -1292,11 +1279,11 @@ public class SmilesSearch extends JmolMolecule {
 
     switch (patternBond.order) {
     case SmilesBond.TYPE_BIO_SEQUENCE: // +
-      return (patternBond.isNot != (bioAtoms[iAtom2].getOffsetResidueAtom("\0",
-          1) == bioAtoms[iAtom1].getOffsetResidueAtom("\0", 0)));
+      return (patternBond.isNot != (targetAtoms[iAtom2].getOffsetResidueAtom("\0",
+          1) == targetAtoms[iAtom1].getOffsetResidueAtom("\0", 0)));
     case SmilesBond.TYPE_BIO_CROSSLINK: // :
-      return (patternBond.isNot != bioAtoms[iAtom1]
-          .isCrossLinked(bioAtoms[iAtom2]));
+      return (patternBond.isNot != targetAtoms[iAtom1]
+          .isCrossLinked(targetAtoms[iAtom2]));
     }
 
     boolean isAromatic1 = (!noAromatic && bsAromatic.get(iAtom1));
@@ -1536,13 +1523,8 @@ public class SmilesSearch extends JmolMolecule {
       // the goal here is to match up the Jmol atropisomerism dihedral
       // atoms with the SMILES version
       atropKeys = "";
-      for (int i = 0; i < lstAtrop.size(); i++) {
-        b = lstAtrop.get(i);
-        int i1 = getAtropIndex(b, true);
-        int i2 = getAtropIndex(b, false);
-        //System.out.println("atrop keys i1 + " " + i2);
-        atropKeys += "," + i1 + i2;
-      }      
+      for (int i = 0; i < lstAtrop.size(); i++)
+        atropKeys += "," + getAtropIndex((b = lstAtrop.get(i)), true) + getAtropIndex(b, false);
     }
     return true;
 
@@ -1550,7 +1532,7 @@ public class SmilesSearch extends JmolMolecule {
 
   private int getAtropIndex(SmilesBond b, boolean isFirst) {
     SmilesAtom s1 = (isFirst ? b.atom1 : b.atom2);
-    BNode a1 = (BNode) s1.getMatchingAtom();
+    Node a1 = s1.getMatchingAtom();
     Node a11 = Edge.getAtropismNode(b.matchingBond.order, a1, isFirst);
     SmilesBond[] b1 = s1.bonds;
     for (int i = s1.getBondCount(); --i >= 0;)
@@ -1681,7 +1663,7 @@ public class SmilesSearch extends JmolMolecule {
     boolean isForMF = (bsAro == null);
     int nAtomsMissing = getMissingHydrogenCount();
     SmilesAtom[] atoms = new SmilesAtom[ac + nAtomsMissing];
-    jmolAtoms = atoms;
+    targetAtoms = atoms;
     for (int i = 0, ptAtom = 0; i < ac; i++, ptAtom++) {
       SmilesAtom sAtom = patternAtoms[i];
       // this number will include the number of Hs in [CH2] as well as the number needed by C by itself
@@ -1820,8 +1802,8 @@ public class SmilesSearch extends JmolMolecule {
       throws InvalidSmilesException {
     SmilesSearch ss = new SmilesSearch();
     ss.setFlags(flags);
-    ss.jmolAtoms = atoms;
-    ss.jmolAtomCount = atoms.length;
+    ss.targetAtoms = atoms;
+    ss.targetAtomCount = atoms.length;
     ss.bsSelected = BSUtil.newBitSet2(0, atoms.length);
     Lst<BS>[] vRings = AU.createArrayOfArrayList(4);
     ss.setRingData(null, vRings, true);
@@ -1847,14 +1829,14 @@ public class SmilesSearch extends JmolMolecule {
    */
   void getSelections() {
     Map<String, Object> ht = top.htNested;
-    if (ht == null || jmolAtoms.length == 0)
+    if (ht == null || targetAtoms.length == 0)
       return;
     Map<String, Object> htNew = new Hashtable<String, Object>();
     for (Map.Entry<String, Object> entry : ht.entrySet()) {
       String key = entry.getValue().toString();
       if (key.startsWith("select")) {
         BS bs = (htNew.containsKey(key) ? (BS) htNew.get(key) 
-            : jmolAtoms[0].findAtomsLike(key.substring(6)));
+            : targetAtoms[0].findAtomsLike(key.substring(6)));
         if (bs == null)
           bs = new BS();
         htNew.put(key, bs);
@@ -1900,10 +1882,17 @@ public class SmilesSearch extends JmolMolecule {
     Edge[] edges = atom.getEdges();
     for (int i = edges.length; --i >= 0;) {
       int k = atom.getBondedAtomIndex(i);
-      if (jmolAtoms[k].getElementNumber() == 1 && !bsFound.get(k))
-        return jmolAtoms[k];
+      if (targetAtoms[k].getElementNumber() == 1 && !bsFound.get(k))
+        return targetAtoms[k];
     }
     return null;
+  }
+
+  @Override
+  public String toString() {
+    SB sb = new SB().append(pattern);
+    sb.append("\nmolecular formula: " + getMolecularFormula(true, null, false)); 
+    return sb.toString();    
   }
 
 

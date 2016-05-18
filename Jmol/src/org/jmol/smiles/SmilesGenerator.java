@@ -34,7 +34,6 @@ import javajs.util.P3;
 import javajs.util.SB;
 
 import org.jmol.java.BS;
-import org.jmol.util.BNode;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Edge;
 import org.jmol.util.Elements;
@@ -151,7 +150,7 @@ public class SmilesGenerator {
     try {
       int len = 0;
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-        BNode a = (BNode) atoms[i];
+        Node a = atoms[i];
         String ch = a.getGroup1('?');
         String bioStructureName = a.getBioStructureTypeName();
         boolean unknown = (ch == ch.toLowerCase());
@@ -255,14 +254,13 @@ public class SmilesGenerator {
   private void addBracketedBioName(SB sb, Node atom, String atomName,
                                    boolean addComment) {
     sb.append("[");
-    if (atomName != null && atom instanceof BNode) {
-      BNode a = (BNode) atom;
-      String chain = a.getChainIDStr();
-      sb.append(a.getGroup3(false));
+    if (atomName != null) {
+      String chain = atom.getChainIDStr();
+      sb.append(atom.getGroup3(false));
       if (!atomName.equals(".0"))
-        sb.append(atomName).append("#").appendI(a.getElementNumber());
+        sb.append(atomName).append("#").appendI(atom.getElementNumber());
       if (addComment) {
-        sb.append("//* ").appendI(a.getResno());
+        sb.append("//* ").appendI(atom.getResno());
         if (chain.length() > 0)
           sb.append(":").append(chain);
         sb.append(" *//");
@@ -383,13 +381,11 @@ public class SmilesGenerator {
    */
   private void generateRingData() throws InvalidSmilesException {
     // we are not actually running this search, just getting preliminary data    
-    SmilesSearch search = SmilesParser.getMolecule("[r500]", true, true);
-    search.jmolAtoms = atoms;
-    if (atoms instanceof BNode[])
-      search.bioAtoms = (BNode[]) atoms;
+    SmilesSearch search = SmilesParser.newSearch("[r500]", true, true);
+    search.targetAtoms = atoms;
     search.setSelected(bsSelected);
     search.setFlags(flags);
-    search.jmolAtomCount = ac;
+    search.targetAtomCount = ac;
     search.ringDataMax = 7;
     search.flags = flags;
     Lst<BS>[] vRings = AU.createArrayOfArrayList(4);
@@ -783,8 +779,7 @@ public class SmilesGenerator {
     float osclass = (openSMILES ? atom.getFloatProperty("property_atomclass")
         : Float.NaN);
     String atomName = atom.getAtomName();
-    String groupType = (atom instanceof BNode ? ((BNode) atom)
-        .getBioStructureTypeName() : "");
+    String groupType = atom.getBioStructureTypeName();
     // for bioSMARTS we provide the connecting atom if 
     // present. For example, in 1BLU we have 
     // .[CYS.SG#16] could match either the atom number or the element number 

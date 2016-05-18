@@ -24,6 +24,8 @@
 
 package org.jmol.util;
 
+import javajs.util.Lst;
+
 import org.jmol.java.BS;
 
 public interface Node {
@@ -74,5 +76,23 @@ public interface Node {
   public int getCovalentBondCountPlusMissingH();
   int getTotalHydrogenCount();
   public int getTotalValence();
+
+  // BIOSMILES/BIOSMARTS
+  
+  public String getBioStructureTypeName();
+  public String getGroup1(char c0);
+  public String getGroup3(boolean allowNull);
+  public int getResno();
+  public int getChainID();
+  public String getChainIDStr();
+  public int getOffsetResidueAtom(String name, int offset);
+  public boolean getCrossLinkVector(Lst<Integer> vReturn, boolean crosslinkCovalent, boolean crosslinkHBond);
+  public void getGroupBits(BS bs);
+  public boolean isLeadAtom();
+  public boolean isCrossLinked(Node node);
+  public boolean isPurine();
+  public boolean isPyrimidine();
+  public boolean isDeleted();
+  char getBioSmilesType();
 
 }

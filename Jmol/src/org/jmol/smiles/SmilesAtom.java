@@ -29,7 +29,6 @@ import javajs.util.Lst;
 import javajs.util.P3;
 
 import org.jmol.java.BS;
-import org.jmol.util.BNode;
 import org.jmol.util.Edge;
 import org.jmol.util.Elements;
 import org.jmol.util.Logger;
@@ -40,26 +39,27 @@ import org.jmol.util.Node;
 /**
  * This class represents an atom in a <code>SmilesMolecule</code>.
  */
-public class SmilesAtom extends P3 implements BNode {
+public class SmilesAtom extends P3 implements Node {
 
   //Jmol allows * in SMILES as a wild card
   static final String UNBRACKETED_SET = "B, C, N, O, P, S, F, Cl, Br, I, *,"; 
   
-
   static boolean allowSmilesUnbracketed(String xx) {
     return (UNBRACKETED_SET.indexOf(xx + ",") >= 0);
   }
 
   SmilesAtom() {
   }
-  SmilesAtom[] atomsOr;
-  int nAtomsOr;
-
-  SmilesAtom[] primitives;
-  int nPrimitives;
+  
+  String pattern;
+  int primitiveType;
+  
+  boolean isAND;
+  SmilesAtom[] subAtoms;
+  int nSubAtoms;
 
   int index;
-  String bioAtomName;
+
   String referance;
   String residueName;
   String residueChar;
@@ -71,7 +71,6 @@ public class SmilesAtom extends P3 implements BNode {
   int notBondedIndex = -1;
   boolean notCrossLinked;
   boolean aromaticAmbiguous = true;
-  String atomType;
 
   private int covalentHydrogenCount = -1;
   
@@ -79,6 +78,14 @@ public class SmilesAtom extends P3 implements BNode {
   boolean selected;
   boolean hasSymbol, elementDefined;
   
+  String atomType;
+  String bioAtomName;
+
+  @Override
+  public String getAtomType() {
+    return (atomType == null ? bioAtomName : atomType);
+  }
+
   /**
    * true if this atom is the first SMILES atom or first after a . with no connector
    */
@@ -111,7 +118,7 @@ public class SmilesAtom extends P3 implements BNode {
 
   public boolean isDefined() {
     return (hasSubpattern || iNested != 0 || isBioAtom || component != Integer.MIN_VALUE 
-    || elementNumber != -2 || nAtomsOr > 0 || nPrimitives > 0);  
+    || elementNumber != -2 || nSubAtoms > 0);  
   }
 
   void setBioAtom(char bioType) {
@@ -141,25 +148,15 @@ public class SmilesAtom extends P3 implements BNode {
     this.bonds = bonds;
   }
 
-  public SmilesAtom appendAtomOr(SmilesAtom sAtom) {
-    if (atomsOr == null)
-      atomsOr = new SmilesAtom[2];
-    if (nAtomsOr >= atomsOr.length)
-      atomsOr = (SmilesAtom[]) AU.doubleLength(atomsOr);
+  SmilesAtom addSubAtom(SmilesAtom sAtom, boolean isAND) {
+    this.isAND = isAND;
+    if (subAtoms == null)
+      subAtoms = new SmilesAtom[2];
+    if (nSubAtoms >= subAtoms.length)
+      subAtoms = (SmilesAtom[]) AU.doubleLength(subAtoms);
     sAtom.setIndex(index);
     sAtom.parent = this;
-    atomsOr[nAtomsOr++] = sAtom;
-    return sAtom;
-  }
-
-  public SmilesAtom appendPrimitive(SmilesAtom sAtom) {
-    if (primitives == null)
-      primitives = new SmilesAtom[2];
-    if (nPrimitives >= primitives.length)
-      primitives = (SmilesAtom[]) AU.doubleLength(primitives);
-    sAtom.setIndex(index);
-    sAtom.parent = this;
-    primitives[nPrimitives++] = sAtom;
+    subAtoms[nSubAtoms++] = sAtom;
     setSymbol("*");
     hasSymbol = false;
     return sAtom;
@@ -464,6 +461,8 @@ public class SmilesAtom extends P3 implements BNode {
 
   public void setRingSize(int rs) {
     ringSize = rs;
+    if (ringSize == 500 || ringSize == 600)
+      isAromatic = true;
   }
 
   public void setRingConnectivity(int rc) {
@@ -532,10 +531,8 @@ public class SmilesAtom extends P3 implements BNode {
   public void setBondArray() {
     if (bonds.length > bondCount) 
       bonds = (SmilesBond[]) AU.arrayCopyObject(bonds, bondCount);
-    if (atomsOr != null && atomsOr.length > nAtomsOr)
-      atomsOr = (SmilesAtom[]) AU.arrayCopyObject(atomsOr, atomsOr.length);
-    if (primitives != null && primitives.length > nPrimitives)
-      primitives = (SmilesAtom[]) AU.arrayCopyObject(primitives, primitives.length);
+    if (subAtoms != null && subAtoms.length > nSubAtoms)
+      subAtoms = (SmilesAtom[]) AU.arrayCopyObject(subAtoms, subAtoms.length);
     for (int i = 0; i < bonds.length; i++) {
       SmilesBond b = bonds[i];
       if (isBioAtom && b.order == SmilesBond.TYPE_AROMATIC)
@@ -708,7 +705,7 @@ public class SmilesAtom extends P3 implements BNode {
   }
 
   @Override
-  public boolean isCrossLinked(BNode node) {
+  public boolean isCrossLinked(Node node) {
     SmilesBond bond = getBondTo((SmilesAtom) node);
     return bond.isHydrogen();
   }
@@ -811,15 +808,6 @@ public class SmilesAtom extends P3 implements BNode {
   @Override
   public boolean isDeleted() {
     return false;
-  }
-
-  public void setAtomType(String type) {
-    this.atomType = type;
-  }
-
-  @Override
-  public String getAtomType() {
-    return (atomType == null ? bioAtomName : atomType);
   }
 
   @Override

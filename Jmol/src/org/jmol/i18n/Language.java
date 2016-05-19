@@ -109,7 +109,7 @@ public class Language {
         new Language("pl",    GT._("Polish"),               "Polski",               false),
         new Language("pt",    GT._("Portuguese"),           "Português",            false),
         new Language("pt_BR", GT._("Brazilian Portuguese"), "Português brasileiro", true),
-        new Language("ru",    GT._("Russian"),              "Русский",              false),
+        new Language("ru",    GT._("Russian"),              "Русский",              true),
         new Language("sl",    GT._("Slovenian"),            "Slovenščina",          false),
         new Language("sr",    GT._("Serbian"),              "српски језик",         false),
         new Language("sv",    GT._("Swedish"),              "Svenska",              true),

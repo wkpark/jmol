@@ -29,20 +29,6 @@ import org.jmol.util.Logger;
 abstract public class ScriptParam extends ScriptError {
 
   
-  
-  // upward-directed calls
-
-  abstract public BS atomExpressionAt(int i) throws ScriptException;
-  abstract public BS atomExpression(T[] code, int pcStart, int pcStop,
-                                    boolean allowRefresh, boolean allowUnderflow,
-                                    Object[] ret, boolean andNotDeleted)
-               throws ScriptException;
-  abstract protected P3 getObjectCenter(String id, int index, int modelIndex);
-  abstract protected P4 getPlaneForObject(String id, V3 vAB);
-  abstract protected Lst<SV> parameterExpressionList(int pt, int ptAtom,
-      boolean isArrayItem) throws ScriptException;
-  abstract protected void restrictSelected(boolean isBond, boolean doInvert);
-  
   public Map<String, SV> contextVariables;
   public ScriptContext thisContext;
 
@@ -205,7 +191,7 @@ abstract public class ScriptParam extends ScriptError {
     switch (getToken(i).tok) {
     case T.bitset:
     case T.expressionBegin:
-      BS bs = atomExpression(st, i, 0, true, false, ret, true);
+      BS bs = ((ScriptEval) this).atomExpression(st, i, 0, true, false, ret, true);
       if (bs == null) {
         if (ret == null || !(ret[0] instanceof P3))
           invArg();
@@ -249,7 +235,7 @@ abstract public class ScriptParam extends ScriptError {
         int index = Integer.MIN_VALUE;
         // allow for $pt2.3 -- specific vertex
         if (tokAt(i + 1) == T.leftsquare) {
-          index = parameterExpressionList(-i - 1, -1, true).get(0).asInt();
+          index = ((ScriptExpr) this).parameterExpressionList(-i - 1, -1, true).get(0).asInt();
           if (getToken(--iToken).tok != T.rightsquare)
             invArg();
         }
@@ -260,7 +246,7 @@ abstract public class ScriptParam extends ScriptError {
           index = Integer.MAX_VALUE;
           iToken = i + 2;
         }
-        if ((center = getObjectCenter(id, index, modelIndex)) == null)
+        if ((center = ((ScriptEval) this).getObjectCenter(id, index, modelIndex)) == null)
           errorStr(ERROR_drawObjectNotDefined, id);
         break;
       case T.bitset:
@@ -296,7 +282,7 @@ abstract public class ScriptParam extends ScriptError {
         String id = objectNameParameter(++i);
         if (chk)
           return new P4();
-        plane = getPlaneForObject(id, vTemp);
+        plane = ((ScriptEval) this).getPlaneForObject(id, vTemp);
         break;
       case T.x:
         if (!checkToken(++i) || getToken(i++).tok != T.opEQ)
@@ -898,7 +884,7 @@ abstract public class ScriptParam extends ScriptError {
     int mad = 1;
     switch (getToken(1).tok) {
     case T.only:
-      restrictSelected(false, false);
+      ((ScriptEval) this).restrictSelected(false, false);
       //$FALL-THROUGH$
     case T.on:
       break;
@@ -913,7 +899,7 @@ abstract public class ScriptParam extends ScriptError {
       float f = floatParameterRange(1, -3, 3);
       mad = (Float.isNaN(f) ? Integer.MAX_VALUE : (int) Math.floor(f * 1000 * 2));
       if (mad < 0) {
-        restrictSelected(false, false);
+        ((ScriptEval) this).restrictSelected(false, false);
         mad = -mad;
       }
       break;
@@ -958,7 +944,7 @@ abstract public class ScriptParam extends ScriptError {
       return data;
     }
     if (i > 0)
-      return vwr.ms.getAtomPointVector(atomExpressionAt(i));
+      return vwr.ms.getAtomPointVector(((ScriptExpr) this).atomExpressionAt(i));
     return null;
   }
 

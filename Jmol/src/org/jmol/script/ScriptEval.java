@@ -1017,7 +1017,6 @@ public class ScriptEval extends ScriptExpr {
 
   }
 
-  @Override
   public SV getUserFunctionResult(String name, Lst<SV> params, SV tokenAtom)
       throws ScriptException {
 
@@ -1178,7 +1177,6 @@ public class ScriptEval extends ScriptExpr {
   
   ////////////////////////// defined atom sets ////////////////////////
   
-  @Override
   public void clearDefinedVariableAtomSets() {
     vwr.definedAtomSets.remove("# variable");
   }
@@ -1282,7 +1280,6 @@ public class ScriptEval extends ScriptExpr {
     vwr.definedAtomSets.put(name, statement);
   }
 
-  @Override
   public BS lookupIdentifierValue(String identifier) throws ScriptException {
     
     // called by ScriptExpr and ScriptExt
@@ -1769,7 +1766,10 @@ public class ScriptEval extends ScriptExpr {
     }
   }
 
-  @Override
+  protected void setAtomProp(String prop, Object value, BS bs) {
+    setShapePropertyBs(JC.SHAPE_BALLS, prop, value, bs);
+  }
+
   public void restrictSelected(boolean isBond, boolean doInvert) {
     
     // called by ScriptParam
@@ -2036,7 +2036,6 @@ public class ScriptEval extends ScriptExpr {
    * Refresh the display NOW
    * 
    */
-  @Override
   public void refresh(boolean doDelay) throws ScriptException {
     if (chk)
       return;
@@ -8629,7 +8628,6 @@ public class ScriptEval extends ScriptExpr {
         : null);
   }
 
-  @Override
   protected P3 getObjectCenter(String axisID, int index, int modelIndex) {
 
     // called by ScriptParam
@@ -8645,7 +8643,6 @@ public class ScriptEval extends ScriptExpr {
         : null);
   }
 
-  @Override
   protected P4 getPlaneForObject(String id, V3 vAB) {
 
     // called by ScriptParam
@@ -9205,11 +9202,6 @@ public class ScriptEval extends ScriptExpr {
     }
     str.append("END\n");
     return str.toString();
-  }
-
-  @Override
-  protected void setAtomProp(String prop, Object value, BS bs) {
-    setShapePropertyBs(JC.SHAPE_BALLS, prop, value, bs);
   }
 
 }

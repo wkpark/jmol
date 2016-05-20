@@ -293,8 +293,28 @@ public class IsoExt extends ScriptExt {
             i = eval.iToken + 1;
           }
         }
-        String type = (tokAt(i) == T.scale ? "" : eval.optParameterAsString(i));
-        if (type.equalsIgnoreCase("spacegroup")) {
+        String type;
+        switch(tokAt(i)) {
+        case T.scale: 
+          type = "";
+          break;
+        case T.chemicalshift:
+          type = "Cs";
+          break;
+        case T.dollarsign:
+          Object[] data = new Object[] { eval.objectNameParameter(++i), null };
+          if (chk)
+            return;
+          vwr.shm.getShapePropertyData(JC.SHAPE_POLYHEDRA, "points", data);
+          pts = (P3[]) data[1];
+          if (pts == null)
+            invArg();
+          type = "";
+          break;
+        case T.polyhedra:
+          type = ":poly";
+          break;
+        case T.spacegroup:
           if (center == null)
             center = new P3();
           Lst<P3> crpts = vwr.ms.generateCrystalClass(vwr.bsA().nextSetBit(0),
@@ -306,10 +326,10 @@ public class IsoExt extends ScriptExt {
             pts[j] = crpts.get(j);
           i++;
           type = "";
-        } else if (type.equalsIgnoreCase("chemicalShift")) {
-          type = "cs";
-        } else if (type.equalsIgnoreCase("polyhedra")) {
-          type = ":poly";
+          break;
+        default:
+          type = eval.optParameterAsString(i);
+          break;
         }
         float scale = 1;
         int index = 0;
@@ -1241,7 +1261,8 @@ public class IsoExt extends ScriptExt {
       case T.silent:
         isSilent = true;
         sbCommand.append(" silent");
-        continue;
+        propertyName = "silent";
+        break;
       case T.isosurfacepropertysmoothing:
         smoothing = (getToken(++i).tok == T.on ? Boolean.TRUE
             : eval.theTok == T.off ? Boolean.FALSE : null);

@@ -254,7 +254,8 @@ abstract class AtomDataReader extends VolumeDataReader {
       }
     }
     firstNearbyAtom = myAtomCount;
-    Logger.info(myAtomCount + " atoms will be used in the surface calculation");
+    if (!isQuiet)
+      Logger.info(myAtomCount + " atoms will be used in the surface calculation");
     if (modelInvRotation != null)
       atomData.transformXYZ(modelInvRotation, bsSelected);
 

@@ -436,7 +436,7 @@ public class Polyhedra extends AtomShape {
         p = polyhedrons[i];
         if (p.id == null ? 
             id != null || bsSelected != null && !bsSelected.get(p.centralAtom.i)
-            : id == null || !PT.isLike(id, p.id))
+            : id == null || !PT.isLike(p.id, id))
           continue;
         s += (i + 1) + "\t" + p.getSymmetry(vwr, true) + "\n";
       }     
@@ -587,7 +587,8 @@ public class Polyhedra extends AtomShape {
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       Polyhedron p = polyhedrons[i];
       p.visible = visible;
-      atoms[p.centralAtom.i].setShapeVisibility(vf, visible);
+      if (p.centralAtom != null)
+        atoms[p.centralAtom.i].setShapeVisibility(vf, visible);
     }
   }
 
@@ -983,24 +984,17 @@ public class Polyhedra extends AtomShape {
           break;
         }
       }
-//      if (normix == 563 || normix == 564)
-//        System.out.println(normix);
       if (o == null)
         htNormMap.put(normix, o = new Object[] { new Lst<int[]>() });
     }
 
-    //    System.out.println("testing poly" + PT.toJSON(null, p1) + normix);
-//    if (p1[0] + p1[1] + p1[2] == 19+20+25) {
-//      if (p1[0] == 19 && p1[1] == 20 &&  p1[2] == 25)
-//      i0 = p1[0];
-//    }
-//      if (p1[0] + p1[1] + p1[2] == 19+25+27) {
-//        if (p1[0] == 25 && p1[1] == 19 &&  p1[2] == 27)
-//        i0 = p1[0];
-//      }
-//   
+//    if (p1[0] == 3 && p1[1] == 11 &&  p1[2] == 16)
+//        if (normix == 629) {
+//          System.out.println("testing poly" + PT.toJSON(null, p1) + normix);
+//          System.out.println(normix);
 //
-    //System.out.println(PT.toJSON(null, p1) + " " + normix);
+//        }
+//       
     @SuppressWarnings("unchecked")
     Lst<int[]> faceEdgeList = (Lst<int[]>) o[0];
     for (int i = 0; i < 3; i++)
@@ -1063,7 +1057,7 @@ public class Polyhedra extends AtomShape {
             && testDiff(coord1, coord2, c1, c2))
           return null;
       }
-      return new Object[] { p1, Integer.valueOf(i), new int[] { pt, pt1 }, edge };
+      return new Object[] { p1, Integer.valueOf(i), new int[] { pt, pt1, 0 }, edge };
     }
     // set mask to exclude both of these.
     int[] p10 = (int[]) ((Object[]) o)[0];
@@ -1076,7 +1070,8 @@ public class Polyhedra extends AtomShape {
     for (int j = faceEdgeList.size(); --j >= 0;) {
       int[] f = faceEdgeList.get(j);
       if (f[0] == b[0] && f[1] == b[1]) {
-        faceEdgeList.remove(j);
+        f[2] = -1;
+//        faceEdgeList.remove(j);  No! Need this for final face generation from edges
         break;
       }
     }
@@ -1134,7 +1129,11 @@ public class Polyhedra extends AtomShape {
       @SuppressWarnings("unchecked")
       Lst<int[]> faceEdgeList = (Lst<int[]>)e.getValue()[0];
       n = faceEdgeList.size();
-      int[] face = faces[fpt++] = new int[n];
+      int nOK = 0;
+      for (int i = faceEdgeList.size(); --i >= 0;)
+        if (faceEdgeList.get(i)[2] >= 0)
+          nOK++;
+      int[] face = faces[fpt++] = new int[nOK];
       if (n < 2)
         continue;
       int[] edge = faceEdgeList.get(0);
@@ -1144,11 +1143,11 @@ public class Polyhedra extends AtomShape {
       int pt = 2;
       int i0 = 1;
       int  pt0 =  -1;
-      while (pt < n && pt0 != pt) {
+      while (pt < nOK && pt0 != pt) {
         pt0 = pt;
         for (int i = i0; i < n; i++) {
           edge = faceEdgeList.get(i);
-          if (edge[0] == face[pt - 1]) {
+          if (edge[2] != -1 && edge[0] == face[pt - 1]) {
             face[pt++] = edge[1];
             if (i == i0)
               i0++;

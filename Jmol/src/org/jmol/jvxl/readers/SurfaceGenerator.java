@@ -219,6 +219,11 @@ public class SurfaceGenerator {
       return false; // more to do
     }
 
+    if ("silent" == propertyName) {
+      params.isSilent = true;
+      return true;
+    }
+
     if ("map" == propertyName) {
       params.resetForMapping(((Boolean) value).booleanValue());
       if (surfaceReader != null)
@@ -798,8 +803,8 @@ public class SurfaceGenerator {
     if ("molecular" == propertyName || "solvent" == propertyName
         || "sasurface" == propertyName || "nomap" == propertyName) {
       params.setSolvent(propertyName, ((Float) value).floatValue());
-
-      Logger.info(params.calculationType);
+      if (!params.isSilent)
+        Logger.info(params.calculationType);
       processState();
       return true;
     }
@@ -996,7 +1001,10 @@ public class SurfaceGenerator {
       surfaceReader = newReader("IsoFxyzReader");
       break;
     }
-    Logger.info("Using surface reader " + surfaceReader);
+    if (Logger.debugging)
+      Logger.info("Using surface reader " + surfaceReader);
+    if (params.isSilent && surfaceReader != null)
+      surfaceReader.isQuiet = true;
     return true;
   }
   

@@ -43,15 +43,6 @@ import org.jmol.viewer.JC;
  */
 abstract class ScriptExpr extends ScriptParam {
 
-  // upwardly-directed calls
-  
-  abstract public void clearDefinedVariableAtomSets();
-  abstract public BS lookupIdentifierValue(String identifier) throws ScriptException;
-  abstract public void refresh(boolean doDelay) throws ScriptException;
-  abstract public SV getUserFunctionResult(String name, Lst<SV> params, SV tokenAtom)
-               throws ScriptException;
-  abstract protected void setAtomProp(String prop, Object value, BS bs);  
-  
   public boolean debugHigh;
 
   private CmdExt cmdExt;
@@ -78,7 +69,6 @@ abstract class ScriptExpr extends ScriptParam {
     return Interface.getInterface("org.jmol.scriptext." + type + "Ext", vwr, "script");
   }
 
-  @Override
   @SuppressWarnings("unchecked")
   protected Lst<SV> parameterExpressionList(int pt, int ptAtom,
                                            boolean isArrayItem)
@@ -673,7 +663,6 @@ abstract class ScriptExpr extends ScriptParam {
 
   protected T[] tempStatement;
 
-  @Override
   public BS atomExpressionAt(int index) throws ScriptException {
     if (!checkToken(index)) {
       iToken = index;
@@ -694,7 +683,6 @@ abstract class ScriptExpr extends ScriptParam {
    * @return atom bitset
    * @throws ScriptException
    */
-  @Override
   public BS atomExpression(T[] code, int pcStart, int pcStop,
                            boolean allowRefresh, boolean allowUnderflow,
                            Object[] ret, boolean andNotDeleted)
@@ -865,7 +853,7 @@ abstract class ScriptExpr extends ScriptParam {
       case T.clickable:
         // a bit different, because it requires knowing what got slabbed
         if (!chk && allowRefresh)
-          refresh(false);
+          ((ScriptEval) this).refresh(false);
         rpn.addXBs(chk ? new BS() : vwr.ms.getClickableSet(!allowRefresh));
         allowRefresh = false;
         break;
@@ -879,7 +867,7 @@ abstract class ScriptExpr extends ScriptParam {
             rpn.addXBs(getAtomBits(instruction.tok, value));
         } else {
           // Chime legacy hack.  *.C for _C
-          rpn.addXBs(lookupIdentifierValue("_" + value));
+          rpn.addXBs(((ScriptEval) this).lookupIdentifierValue("_" + value));
         }
         break;
       case T.bonded:
@@ -965,7 +953,7 @@ abstract class ScriptExpr extends ScriptParam {
       case T.helixpi:
       case T.sidechain:
       case T.surface:
-        rpn.addXBs(lookupIdentifierValue((String) value));
+        rpn.addXBs(((ScriptEval) this).lookupIdentifierValue((String) value));
         break;
       case T.opLT:
       case T.opLE:
@@ -1022,7 +1010,7 @@ abstract class ScriptExpr extends ScriptParam {
           val = getStringObjectAsVariable(val);
         // otherwise, this is a new atom expression
         if (val instanceof String)
-          val = lookupIdentifierValue((String) value);
+          val = ((ScriptEval) this).lookupIdentifierValue((String) value);
         rpn.addXObj(val);
         break;
       }
@@ -1712,7 +1700,7 @@ abstract class ScriptExpr extends ScriptParam {
           switch (tok) {
           case T.function:
             bsAtom.set(i);
-            fv = SV.fValue(getUserFunctionResult(userFunction, params, tokenAtom));
+            fv = SV.fValue(((ScriptEval) this).getUserFunctionResult(userFunction, params, tokenAtom));
             bsAtom.clear(i);
             break;
           case T.property:
@@ -2318,7 +2306,7 @@ abstract class ScriptExpr extends ScriptParam {
         value = Integer.valueOf(SV.iValue(tokenValue));
         break;
       }
-      setAtomProp(prop, value, bs);
+      ((ScriptEval) this).setAtomProp(prop, value, bs);
       return;
     case T.label:
     case T.format:
@@ -2327,7 +2315,7 @@ abstract class ScriptExpr extends ScriptParam {
       break;
     case T.element:
     case T.elemno:
-      clearDefinedVariableAtomSets();
+      ((ScriptEval) this).clearDefinedVariableAtomSets();
       isStrProperty = false;
       break;
     }
@@ -2571,7 +2559,7 @@ abstract class ScriptExpr extends ScriptParam {
           fixed[j] = (bs == null ? SV.getVariable(v) : T.o(T.bitset, bs));
         } else {
           // assume we want a center
-          P3 center = getObjectCenter(var, Integer.MIN_VALUE, Integer.MIN_VALUE);
+          P3 center = ((ScriptEval) this).getObjectCenter(var, Integer.MIN_VALUE, Integer.MIN_VALUE);
           if (center == null)
             invArg();
           fixed[j] = T.o(T.point3f, center);

@@ -1656,32 +1656,12 @@ msgstr "Сообщения (полную историю можно просмо�
 msgid "These names will be used as filenames used by JSmol"
 msgstr "Эти названия будут использоваться как имена файлов для апплетов"
 
-<<<<<<< .mine
 #: org/openscience/jmol/app/webexport/PopInJmol.java:78
 #, fuzzy
 msgid "JSmol width:"
-msgstr "ширина:"
-=======
-#: org/openscience/jmol/app/webexport/PopInJmol.java:76
-msgid "Applet width:"
 msgstr "Ширина апплета:"
->>>>>>> .r21120
 
-<<<<<<< .mine
 #: org/openscience/jmol/app/webexport/ScriptButtons.java:47
-=======
-#: org/openscience/jmol/app/webexport/PopInJmol.java:121
-#, java-format
-msgid "CLICK TO ACTIVATE 3D<br/>insert a caption for {0} here."
-msgstr "НАЖМИТЕ ДЛЯ АКТИВАЦИИ 3D<br/>введите подпись для {0} сюда."
-
-#: org/openscience/jmol/app/webexport/PopInJmol.java:124
-#, java-format
-msgid "insert a note for {0} here."
-msgstr "ввести примечания для {0} здесь."
-
-#: org/openscience/jmol/app/webexport/ScriptButtons.java:45
->>>>>>> .r21120
 msgid "These names will be used for button labels"
 msgstr "Эти названия будут использованы как метки кнопок"
 
@@ -2012,9 +1992,8 @@ msgstr "Загрузить вид"
 msgid "unimplemented"
 msgstr "не реализовано"
 
-#, fuzzy
 #~ msgid "CLICK TO ACTIVATE 3D<br/>insert a caption for {0} here."
-#~ msgstr "введите подпись для {0} здесь."
+#~ msgstr "НАЖМИТЕ ДЛЯ АКТИВАЦИИ 3D<br/>введите подпись для {0} сюда."
 
 #~ msgid "insert a note for {0} here."
 #~ msgstr "ввести примечания для {0} здесь."

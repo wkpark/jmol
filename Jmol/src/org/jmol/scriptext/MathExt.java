@@ -384,7 +384,8 @@ public class MathExt {
           || !(u == null ? vwr.getSymTemp() : u).toFromPrimitive(toPrimitive, stype.charAt(0), ucnew))
         return false;
     } else if ("reciprocal".equalsIgnoreCase(op)) {
-      ucnew = SimpleUnitCell.getReciprocal(ucnew, null);
+      ucnew = SimpleUnitCell.getReciprocal(ucnew, null, scale);
+      scale = 1;
     }
     if (scale != 1)
       for (int i = 1; i < 4; i++)

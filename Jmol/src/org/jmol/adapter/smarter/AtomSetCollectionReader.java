@@ -530,7 +530,7 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
       packingError = ((Float) o).floatValue();
     else if (htParams.get("legacyJavaFloat") != null) {
       // earlier versions were not fully JavaScript compatible
-      // becuase XtalSymmetry.isWithinUnitCell was giving different answers
+      // because XtalSymmetry.isWithinUnitCell was giving different answers
       // for floats (Java) as for doubles (JavaScript).
       fixJavaFloat = false;
     }

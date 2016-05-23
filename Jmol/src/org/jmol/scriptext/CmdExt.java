@@ -450,10 +450,10 @@ public class CmdExt extends ScriptExt {
        }
        if (fparams == null || fparams.length != 6 && fparams.length != 9)
          invArg();
-       sOptions.append( " unitcell {");
+       sOptions.append( " unitcell [");
        for (int j = 0; j < fparams.length; j++)
          sOptions.append( (j == 0 ? "" : " ") + fparams[j]);
-       sOptions.append( "}");
+       sOptions.append( "]");
        htParams.put("unitcell", fparams);
        if (iGroup == Integer.MIN_VALUE)
          iGroup = -1;
@@ -3704,7 +3704,7 @@ public class CmdExt extends ScriptExt {
         if (tokAtArray(pt + 1, args) == T.integer)
           quality = SV.iValue(tokenAt(++pt, args));
       } else if (PT.isOneOf(val.toLowerCase(),
-          ";xyz;xyzrn;xyzvib;mol;mol67;sdf;v2000;v3000;json;pdb;pqr;cml;")) {
+          ";xyz;xyzrn;xyzvib;mol;mol67;sdf;v2000;v3000;json;pdb;pqr;cml;cif;")) {
         // this still could be overruled by a type indicated
         type = val.toUpperCase();
         if (pt + 1 == argCount)
@@ -3822,12 +3822,12 @@ public class CmdExt extends ScriptExt {
         && !PT
             .isOneOf(
                 type,
-                ";SCENE;JMOL;ZIP;ZIPALL;SPT;HISTORY;MO;NBO;ISOSURFACE;MESH;PMESH;VAR;FILE;FUNCTION;CML;JSON;XYZ;XYZRN;XYZVIB;MENU;MOL;MOL67;PDB;PGRP;PQR;QUAT;RAMA;SDF;V2000;V3000;INLINE;"))
+                ";SCENE;JMOL;ZIP;ZIPALL;SPT;HISTORY;MO;NBO;ISOSURFACE;MESH;PMESH;VAR;FILE;FUNCTION;CIF;CML;JSON;XYZ;XYZRN;XYZVIB;MENU;MOL;MOL67;PDB;PGRP;PQR;QUAT;RAMA;SDF;V2000;V3000;INLINE;"))
       eval.errorStr2(
           ScriptError.ERROR_writeWhat,
           "COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|INLINE|ISOSURFACE|JMOL|MENU|MO|NBO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
               + "|RAMACHANDRAN|SPT|STATE|VAR x|ZIP|ZIPALL  CLIPBOARD",
-          "CML|GIF|GIFT|JPG|JPG64|JMOL|JVXL|MESH|MOL|PDB|PMESH|PNG|PNGJ|PNGT|PPM|PQR|SDF|CD|JSON|V2000|V3000|SPT|XJVXL|XYZ|XYZRN|XYZVIB|ZIP"
+          "CIf|CML|GIF|GIFT|JPG|JPG64|JMOL|JVXL|MESH|MOL|PDB|PMESH|PNG|PNGJ|PNGT|PPM|PQR|SDF|CD|JSON|V2000|V3000|SPT|XJVXL|XYZ|XYZRN|XYZVIB|ZIP"
               + driverList.toUpperCase().replace(';', '|'));
     if (chk)
       return "";
@@ -3906,7 +3906,7 @@ public class CmdExt extends ScriptExt {
           data = vwr.getCurrentFileAsString("script");
         else
           writeFileData = true;
-      } else if (data == "SDF" || data == "MOL" || data == "MOL67" || data == "V2000"
+      } else if (data == "CIF" || data == "SDF" || data == "MOL" || data == "MOL67" || data == "V2000"
           || data == "V3000" || data == "CD" || data == "JSON" || data == "XYZ"
           || data == "XYZRN" || data == "XYZVIB" || data == "CML") {
         data = vwr.getModelExtract("selected", isCoord, false, data);
@@ -4882,7 +4882,8 @@ public class CmdExt extends ScriptExt {
                       null, T.lattice, 0, -1);
               (u == null ? vwr.getSymTemp() : u).toFromPrimitive(true, stype.charAt(0), oabc);
             } else {
-              SimpleUnitCell.getReciprocal(oabc, oabc);
+              float scale = (slen == i + 1 ? 1 : floatParameter(++i));
+              SimpleUnitCell.getReciprocal(oabc, oabc, scale);
             }
             break;
           }

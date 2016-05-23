@@ -27,6 +27,8 @@ package org.openscience.jmol.app.jmolpanel;
 import java.net.URL;
 import java.net.MalformedURLException;
 
+import javajs.util.PT;
+
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -73,9 +75,11 @@ class AboutDialog extends JDialog implements HyperlinkListener {
       aboutURL = this.getClass().getClassLoader().getResource(
           JmolResourceHandler.getStringX("About.aboutURL"));
       if (aboutURL != null) {
+        URL img = getClass().getResource("../images/Jmol_splash.jpg");
         html = new JEditorPane();
         html.setContentType("text/html");
-        html.setText(GuiMap.getResourceString(this, aboutURL.getPath()));
+        String s = PT.rep(GuiMap.getResourceString(this, aboutURL.getPath()), "SPLASH", img.toString());
+        html.setText(s);
       } else {
         html = new JEditorPane("text/plain", GT.o(GT._(
             "Unable to find url \"{0}\"."), JmolResourceHandler
@@ -92,7 +96,7 @@ class AboutDialog extends JDialog implements HyperlinkListener {
 
       @Override
       public Dimension getPreferredSize() {
-        return new Dimension(500, 400);
+        return new Dimension(750, 650);
       }
 
       @Override
@@ -151,15 +155,9 @@ class AboutDialog extends JDialog implements HyperlinkListener {
 */
     getContentPane().add(container);
     pack();
-    Dimension screenSize = this.getToolkit().getScreenSize();
-    Dimension size = this.getSize();
-    screenSize.height = screenSize.height / 2;
-    screenSize.width = screenSize.width / 2;
-    size.height = size.height / 2;
-    size.width = size.width / 2;
-    int y = screenSize.height - size.height;
-    int x = screenSize.width - size.width;
-    this.setLocation(x, y);
+    Dimension screenSize = getToolkit().getScreenSize();
+    Dimension size = getSize();
+    setLocation(screenSize.width / 2 - size.width / 2, screenSize.height / 2 - size.height / 2);
   }
 /*
   private void visit(URL url) {

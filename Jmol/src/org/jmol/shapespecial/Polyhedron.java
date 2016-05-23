@@ -71,12 +71,14 @@ public class Polyhedron {
 
   public float pointScale;
 
+  private int[][] faceTriangles;
+
   Polyhedron() {
   }
 
   Polyhedron set(String id, int modelIndex, P3 atomOrPt, P3[] points,
                  int nPoints, int vertexCount, int[][] triangles,
-                 int triangleCount, int[][] faces, V3[] normals, BS bsFlat,
+                 int triangleCount, int[][] faces, int[][] faceTriangles, V3[] normals, BS bsFlat,
                  boolean collapsed, float distanceRef, float pointScale) {
     this.pointScale = pointScale;
     this.distanceRef = distanceRef;
@@ -92,6 +94,7 @@ public class Polyhedron {
     this.vertices = new P3[nPoints + 1];
     this.normals = new V3[triangleCount];
     this.faces = faces;
+    this.faceTriangles = faceTriangles;
     this.bsFlat = bsFlat;
     this.triangles = AU.newInt2(triangleCount);
     for (int i = nPoints + 1; --i >= 0;)
@@ -244,8 +247,27 @@ public class Polyhedron {
       info.put("atomNames", names);
       info.put("vertexIndices", indices);
 
-      if (faces != null)
+      if (faces != null && !collapsed && faceTriangles != null) {
         info.put("faceCount", Integer.valueOf(faces.length));
+        info.put("faceTriangles", faceTriangles);
+        int[] faceTypes = new int[faces.length];
+        float[] faceAreas = new float[faces.length];
+        V3 vAB = new V3();
+        V3 vAC = new V3();
+        V3 vTemp = new V3();
+        for (int i = faces.length; --i >= 0;) {
+          faceTypes[i] = faces[i].length;
+          float f = 0;
+          int[] ft = faceTriangles[i];
+          for (int j = ft.length; --j >= 0;) {
+            int[] t = triangles[ft[j]];
+            f += triangleArea(t[0], t[1], t[2], vAB, vAC, vTemp);
+          }
+          faceAreas[i] = f;
+        }
+        info.put("faceTypes", faceTypes);
+        info.put("faceAreas", faceAreas);
+      }
 
       if (smarts != null)
         info.put("smarts", smarts);
@@ -349,10 +371,19 @@ public class Polyhedron {
     float v = 0;
     if (bsFlat.cardinality() < triangles.length)
       for (int i = triangles.length; --i >= 0;) {
-        int[] face = triangles[i];
-        v += triangleVolume(face[0], face[1], face[2], vAB, vAC, vTemp);
+        int[] t = triangles[i];
+        v += triangleVolume(t[0], t[1], t[2], vAB, vAC, vTemp);
       }
     return Float.valueOf(v / 6);
+  }
+
+  private float triangleArea(int i, int j, int k, V3 vAB, V3 vAC, V3 vTemp) {
+    // volume
+    vAB.setT(vertices[i]);
+    vAC.setT(vertices[j]);
+    vTemp.cross(vAB, vAC);
+    vAC.setT(vertices[k]);
+    return vTemp.length();
   }
 
   private float triangleVolume(int i, int j, int k, V3 vAB, V3 vAC, V3 vTemp) {

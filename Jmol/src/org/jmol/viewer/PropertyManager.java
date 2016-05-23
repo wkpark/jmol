@@ -51,6 +51,7 @@ import java.util.Properties;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolDataManager;
 import org.jmol.api.JmolPropertyManager;
+import org.jmol.api.SymmetryInterface;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
@@ -1134,6 +1135,8 @@ public class PropertyManager implements JmolPropertyManager {
   public String getModelExtract(BS bs, boolean doTransform, boolean isModelKit,
                                 String type, boolean allTrajectories) {
     
+    if (type.equalsIgnoreCase("CIF"))
+      return getModelCif(bs);
     if (type.equalsIgnoreCase("CML"))
       return getModelCml(bs, Integer.MAX_VALUE, true, doTransform, allTrajectories);
     
@@ -1260,6 +1263,39 @@ public class PropertyManager implements JmolPropertyManager {
     }
     return (isOK ? mol.toString()
         : "ERROR: Too many atoms or bonds -- use V3000 format.");
+  }
+
+  /**
+   * just a very primitive CIF file reader
+   * @param bs
+   * @return CIf data
+   */
+  private String getModelCif(BS bs) {    
+    SB sb = new SB();
+    sb.append("# primitive CIF file created by Jmol " + Viewer.getJmolVersion() + "\ndata_primitive");
+    SymmetryInterface unitcell = vwr.ms.getUnitCellForAtom(bs.nextSetBit(0));
+    float[] params = (unitcell == null ? new float[] {1,1,1,90,90,90} : unitcell.getUnitCellAsArray(false));
+    sb.append("\n_cell_length_a ").appendF(params[0]);
+    sb.append("\n_cell_length_b ").appendF(params[1]);
+    sb.append("\n_cell_length_c ").appendF(params[2]);
+    sb.append("\n_cell_angle_alpha ").appendF(params[3]);
+    sb.append("\n_cell_angle_beta ").appendF(params[4]);
+    sb.append("\n_cell_angle_gamma ").appendF(params[5]);
+    sb.append("\n\n_symmetry_space_group_name_H-M 'P 1'\nloop_\n_space_group_symop_operation_xyz\n'x,y,z'");
+    sb.append("\n\nloop_\n_atom_site_label\n_atom_site_fract_x\n_atom_site_fract_y\n_atom_site_fract_z\n");
+    Atom[] atoms = vwr.ms.at;
+    P3 p = new P3();
+    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+      Atom a = atoms[i];
+      p.setT(a);
+      if (unitcell != null)
+      unitcell.toFractional(p, false);
+      sb.append(a.getElementSymbol()).append("\t")
+      .append(PT.formatF(p.x, 10, 5, true, false)).append("\t")
+      .append(PT.formatF(p.y, 10, 5, true, false)).append("\t")
+      .append(PT.formatF(p.z, 10, 5, true, false)).append("\n");
+    }
+     return sb.toString();
   }
 
   private boolean addMolFile(int iModel, SB mol, BS bsAtoms, BS bsBonds,

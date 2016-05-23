@@ -696,7 +696,7 @@ class UnitCell extends SimpleUnitCell {
     default:
       return false;
     case 'r': // reciprocal
-      getReciprocal(uc, uc);
+      getReciprocal(uc, uc, 1);
       return true;
     case 'P':
       mf = M3.newA9(new float[] { 1, 0, 0, 0, 1, 0, 0, 0, 1 });

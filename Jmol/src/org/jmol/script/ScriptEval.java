@@ -2034,6 +2034,8 @@ public class ScriptEval extends ScriptExpr {
 
   /**
    * Refresh the display NOW
+   * @param doDelay 
+   * @throws ScriptException 
    * 
    */
   public void refresh(boolean doDelay) throws ScriptException {
@@ -4538,6 +4540,12 @@ public class ScriptEval extends ScriptExpr {
 
     boolean isVariable = false;
     if (filenames == null) {
+      if (filename.equals("string") && vwr.am.cmi >= 0) {
+        filename = PT.getQuotedStringAt(vwr.ms.am[vwr.am.cmi].loadScript.toString(), 0);
+        filename = ScriptCompiler.unescapeString(filename, 0, filename.length());
+        loadScript = new SB().append("load inline ");
+        isInline = true;
+      }
       if (isInline) {
         htParams.put("fileData", filename);
       } else if (filename.startsWith("@") && filename.length() > 1) {
@@ -4590,7 +4598,7 @@ public class ScriptEval extends ScriptExpr {
 
       loadScript.append(" ");
       if (isVariable || isInline) {
-        loadScript.append(PT.esc(filename));
+        loadScript.append(filename.indexOf('\n') >= 0 ? PT.esc(filename) : filename);
       } else if (!isData) {
         if (localName != null)
           localName = vwr.fm.getFilePath(localName, false, false);

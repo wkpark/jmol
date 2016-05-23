@@ -2605,9 +2605,12 @@ public class ScriptCompiler extends ScriptTokenParser {
       if (s.indexOf(";base64,") != 0)
         return s;
     }
-    SB sb = SB.newN(cchToken - 2);
-    int ichMax = ichToken + cchToken - 1;
-    int ich = ichToken + 1;
+    return unescapeString(script, ichToken + 1, cchToken - 2);
+  }
+
+  public static String unescapeString(String script, int ich, int nChar) {
+    SB sb = SB.newN(nChar);
+    int ichMax = ich + nChar;
     while (ich < ichMax) {
       char ch = script.charAt(ich++);
       if (ch == '\\' && ich < ichMax) {

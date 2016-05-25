@@ -3285,6 +3285,12 @@ public class CmdExt extends ScriptExt {
         propertyName = "bonds";
         haveBonds = true;
         break;
+      case T.auto:
+        if (radius != -1)
+          invArg();
+        radius = 0;
+        i--;
+        //$FALL-THROUGH$
       case T.radius:
         i++;
         //$FALL-THROUGH$
@@ -3293,8 +3299,8 @@ public class CmdExt extends ScriptExt {
           invArg();
         if (nAtomSets > 0)
           invPO();
-        propertyName = (radius != 0 ? "radius1" : "radius");
-        propertyValue = Float.valueOf(radius = floatParameter(i));
+        propertyName = (radius <= 0 ? "radius" : "radius1");
+        propertyValue = Float.valueOf(radius = (radius == 0 ? 0 : floatParameter(i)));
         needsGenerating = true;
         break;
       case T.offset:

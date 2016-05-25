@@ -24,7 +24,6 @@
 
 package org.jmol.renderbio;
 
-import org.jmol.api.JmolBioMeshRenderer;
 import org.jmol.c.STR;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
@@ -84,7 +83,7 @@ abstract class BioShapeRenderer extends ShapeRenderer {
   
   protected boolean wireframeOnly;
   private boolean needTranslucent;
-  JmolBioMeshRenderer meshRenderer;
+  BioMeshRenderer meshRenderer;
   BioShape bioShape;
   
   protected abstract void renderBioShape(BioShape bioShape);
@@ -139,7 +138,7 @@ abstract class BioShapeRenderer extends ShapeRenderer {
       invalidateMesh = true;
     aspectRatio = val;
     if (aspectRatio > 0 && meshRenderer == null) {
-      meshRenderer = (JmolBioMeshRenderer) Interface.getInterface("org.jmol.renderbio.BioMeshRenderer");
+      meshRenderer = (BioMeshRenderer) Interface.getInterface("org.jmol.renderbio.BioMeshRenderer");
       meshRenderer.setup(g3d, vwr.ms, shape);
       meshRenderer.setViewerG3dShapeID(vwr, shape.shapeID);
     }
@@ -363,7 +362,7 @@ abstract class BioShapeRenderer extends ShapeRenderer {
         && structureTypes[i] != structureTypes[iPrev]);
     boolean doCap1 = (iNext == iNext2 || thisTypeOnly
         && structureTypes[i] != structureTypes[iNext]);
-    return (meshRenderer != null && meshRenderer.check(doCap0, doCap1));
+    return (aspectRatio > 0 && meshRenderer != null && meshRenderer.check(doCap0, doCap1));
   }
 
   protected void renderHermiteCylinder(P3[] screens, int i) {

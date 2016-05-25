@@ -1050,8 +1050,12 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
     @Override
     public void actionPerformed(ActionEvent e) {
+      try {
       AboutDialog ad = new AboutDialog(frame, vwr);
       ad.setVisible(true);
+      } catch (Exception ee) {
+        Logger.error(ee.getMessage());
+      }
     }
 
   }

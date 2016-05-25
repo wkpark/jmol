@@ -30,7 +30,6 @@ import javajs.util.P3;
 import javajs.util.T3;
 import javajs.util.V3;
 
-import org.jmol.api.JmolBioMeshRenderer;
 import org.jmol.java.BS;
 import org.jmol.render.MeshRenderer;
 import org.jmol.render.ShapeRenderer;
@@ -41,7 +40,7 @@ import org.jmol.util.GData;
 import org.jmol.util.Logger;
 import org.jmol.util.Normix;
 
-public class BioMeshRenderer extends MeshRenderer implements JmolBioMeshRenderer {
+public class BioMeshRenderer extends MeshRenderer {
 
   private Mesh[] meshes;
   private boolean[] meshReady;
@@ -55,7 +54,6 @@ public class BioMeshRenderer extends MeshRenderer implements JmolBioMeshRenderer
     return false;
   }
   
-  @Override
   public void initialize(ShapeRenderer bsr, BioShape bioShape, int monomerCount) {
     this.bsr = (BioShapeRenderer) bsr;
     bsRenderMesh = BS.newN(monomerCount);
@@ -78,7 +76,6 @@ public class BioMeshRenderer extends MeshRenderer implements JmolBioMeshRenderer
   // know what all the options are, and they aren't important,
   // until it gets rendered, if ever.
 
-  @Override
   public void setFancyRibbon(int i) {
     try {
       if ((meshes[i] == null || !meshReady[i])
@@ -95,7 +92,6 @@ public class BioMeshRenderer extends MeshRenderer implements JmolBioMeshRenderer
     }
   }
 
-  @Override
   public void setFancyConic(int i, int tension) {
     try {
       if ((meshes[i] == null || !meshReady[i])
@@ -112,7 +108,6 @@ public class BioMeshRenderer extends MeshRenderer implements JmolBioMeshRenderer
     }
   }
 
-  @Override
   public void setFancyArrowHead(int i) {
     try {
       doCap0 = true;
@@ -379,7 +374,6 @@ public class BioMeshRenderer extends MeshRenderer implements JmolBioMeshRenderer
     }
   }
 
-  @Override
   public void renderMeshes() {
     if (bsRenderMesh.isEmpty())
       return;
@@ -389,12 +383,10 @@ public class BioMeshRenderer extends MeshRenderer implements JmolBioMeshRenderer
       renderBioMesh(meshes[i]);
   }
 
-  @Override
   public void initBS() {
     bsRenderMesh.clearAll();
   }
 
-  @Override
   public boolean check(boolean doCap0, boolean doCap1) {
     this.doCap0 = doCap0;
     this.doCap1 = doCap1;
@@ -405,7 +397,7 @@ public class BioMeshRenderer extends MeshRenderer implements JmolBioMeshRenderer
     }
 
   private boolean checkDiameter(int d) {
-    return (bsr.isHighRes & d > ABSOLUTE_MIN_MESH_SIZE || d >= MIN_MESH_RENDER_SIZE);
+    return (bsr.isHighRes && d > ABSOLUTE_MIN_MESH_SIZE || d >= MIN_MESH_RENDER_SIZE);
   }
 
   /*

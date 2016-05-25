@@ -75,9 +75,6 @@ public class CartoonRenderer extends RocketsRenderer {
     boolean doRockets = false;
     for (int i = monomerCount; --i >= 0;) {
       // runs backwards, so it can render the heads first
-      if (monomers[i].getStructure() != null && !(monomers[i].getStructure() instanceof ProteinStructure)) {
-        System.out.println("BUG HERE IN CARTOONRENDERER");
-      }
       thisStructure = (ProteinStructure) monomers[i].getStructure();
       if (thisStructure != previousStructure) {
         lastWasSheet = false;

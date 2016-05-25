@@ -24,76 +24,32 @@
 package org.openscience.jmol.app.jmolpanel;
 
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.io.IOException;
 import java.net.URL;
-import java.net.MalformedURLException;
 
 import javajs.util.PT;
 
 import javax.swing.JDialog;
+import javax.swing.JEditorPane;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JFrame;
-import javax.swing.JEditorPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.io.IOException;
 
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
-import org.jmol.util.Logger;
 
 class AboutDialog extends JDialog implements HyperlinkListener {
 
-  protected JEditorPane html;
-  protected URL aboutURL;
-  
   private JmolViewer vwr;
-  
-  private JScrollPane scroller;
-  
-/*  
-  private JButton backButton;
-  private List<URL> history = new  List<URL>();
-  private URL thisURL;
-
-  private void addToHistory(URL url) {
-    history.add(url);
-    backButton.setEnabled(true);
-    for (int i = history.size(); --i >= 0;)
-      System.out.println(i + "\t" + history.get(i));
-  }
-*/
-  
-  
-  AboutDialog(JFrame fr, JmolViewer vwr) {
-
+    
+  AboutDialog(JFrame fr, JmolViewer vwr) throws IOException {
     super(fr, GT._("About Jmol"), true);
     this.vwr = vwr;
-    try {
-      aboutURL = this.getClass().getClassLoader().getResource(
-          JmolResourceHandler.getStringX("About.aboutURL"));
-      if (aboutURL != null) {
-        URL img = getClass().getResource("../images/Jmol_splash.jpg");
-        html = new JEditorPane();
-        html.setContentType("text/html");
-        String s = PT.rep(GuiMap.getResourceString(this, aboutURL.getPath()), "SPLASH", img.toString());
-        html.setText(s);
-      } else {
-        html = new JEditorPane("text/plain", GT.o(GT._(
-            "Unable to find url \"{0}\"."), JmolResourceHandler
-                .getStringX("About.aboutURL")));
-      }
-      html.setEditable(false);
-      html.addHyperlinkListener(this);
-    } catch (MalformedURLException e) {
-      Logger.warn("Malformed URL: " + e);
-    } catch (IOException e) {
-      Logger.warn("IOException: " + e);
-    }
-    scroller = new JScrollPane() {
-
+    JScrollPane scroller = new JScrollPane() {
       @Override
       public Dimension getPreferredSize() {
         return new Dimension(750, 650);
@@ -104,69 +60,28 @@ class AboutDialog extends JDialog implements HyperlinkListener {
         return LEFT_ALIGNMENT;
       }
     };
+    JEditorPane html = new JEditorPane();
+    html.setContentType("text/html");
+    html.setText(PT.rep(GuiMap.getResourceString(this, getClass().getClassLoader()
+        .getResource(JmolResourceHandler.getStringX("About.aboutURL")).getPath()),
+        "SPLASH", "" + getClass().getResource("about.jpg")));
+    html.setEditable(false);
+    html.addHyperlinkListener(this);
     scroller.getViewport().add(html);
-
     JPanel htmlWrapper = new JPanel(new BorderLayout());
     htmlWrapper.setAlignmentX(LEFT_ALIGNMENT);
     htmlWrapper.add(scroller, BorderLayout.CENTER);
     JPanel container = new JPanel();
     container.setLayout(new BorderLayout());
     container.add(htmlWrapper, BorderLayout.CENTER);
-
-
-/*    
-    thisURL = aboutURL;
-    JPanel buttonPanel = new JPanel();
-    buttonPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-    buttonPanel.setLayout(new BorderLayout());
-
-    // create browser "back" button
-    backButton = new JButton(GT._("back"));
-    backButton.setEnabled(false);
-
-    backButton.addActionListener(new ActionListener() {
-
-      public void actionPerformed(ActionEvent e) {
-        back();
-      }
-    });
-
-    // create return-to-start dialog button
-    JButton returnUserGuide = new JButton(GT._("back to About"));
-    returnUserGuide.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        backTo(aboutURL);
-      }
-    });
-    buttonPanel.add(returnUserGuide, BorderLayout.WEST);
-    buttonPanel.add(backButton, BorderLayout.CENTER);
-    getRootPane().setDefaultButton(returnUserGuide);
-
-    JButton ok = new JButton(GT._("OK"));
-    final AboutDialog aboutDialog = this;
-    ok.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        aboutDialog.setVisible(false);
-      }
-    });
-    buttonPanel.add(ok, BorderLayout.EAST);
-    getRootPane().setDefaultButton(ok);
-    //container.add(buttonPanel, BorderLayout.SOUTH);
-*/
     getContentPane().add(container);
     pack();
     Dimension screenSize = getToolkit().getScreenSize();
     Dimension size = getSize();
-    setLocation(screenSize.width / 2 - size.width / 2, screenSize.height / 2 - size.height / 2);
+    setLocation(screenSize.width / 2 - size.width / 2, screenSize.height / 2
+        - size.height / 2);
   }
-/*
-  private void visit(URL url) {
-    Cursor cursor = html.getCursor();
-    Cursor waitCursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
-    html.setCursor(waitCursor);
-    SwingUtilities.invokeLater(new PageLoader(url, cursor));
-  }
-*/
+
   @Override
   public void hyperlinkUpdate(HyperlinkEvent e) {
     if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
@@ -182,77 +97,5 @@ class AboutDialog extends JDialog implements HyperlinkListener {
    */
   protected void linkActivated(URL url) {
     vwr.showUrl(url.toString());
-/*
-    if (!url.getProtocol().equals("file")) {
-      vwr.showUrl(url.toString());
-      return;
-    }
-    addToHistory(thisURL);
-    thisURL = url;
-    visit(url);
-*/    
   }
-/*
-  protected void back() {
-    URL u = history.remove(history.size() - 1);
-    backButton.setEnabled(history.size() > 0);
-    visit(u);
-  }
-
-  protected void backTo(URL url) {
-    try {
-      html = new JEditorPane(url);
-    } catch (IOException e) {
-      return;
-    }
-    html.setEditable(false);
-    html.addHyperlinkListener(this);
-    thisURL = url;
-    scroller.getViewport().add(html);
-  }
-
-*/  /*
-   * temporary class that loads synchronously (although later than
-   * the request so that a cursor change can be done).
-   *
-  class PageLoader implements Runnable {
-
-    PageLoader(URL url, Cursor cursor) {
-      this.url = url;
-      this.cursor = cursor;
-    }
-
-    public void run() {
-
-      if (url == null) {
-
-        // restore the original cursor
-        html.setCursor(cursor);
-
-        // remove this hack when automatic validation is
-        // activated.
-        Container parent = html.getParent();
-        parent.repaint();
-      } else {
-        Document doc = html.getDocument();
-        try {
-          html.setContentType("text/html");
-          html.setPage(url);
-        } catch (Exception ioe) {
-          html.setDocument(doc);
-          getToolkit().beep();
-        } finally {
-
-          // schedule the cursor to revert after the paint
-          // has happended.
-          url = null;
-          SwingUtilities.invokeLater(this);
-        }
-      }
-    }
-
-    URL url;
-    Cursor cursor;
-  }
-*/  
 }

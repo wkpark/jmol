@@ -24,6 +24,8 @@
 
 package org.jmol.shapespecial;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -53,7 +55,15 @@ import org.jmol.util.C;
 import org.jmol.util.Logger;
 import org.jmol.util.Normix;
 
-public class Polyhedra extends AtomShape {
+public class Polyhedra extends AtomShape implements Comparator<Object[]>{
+
+  
+  @Override
+  public int compare(Object[] a, Object[] b) {
+    float da = (a[0] == null  ? Float.MAX_VALUE : ((Float)a[0]).floatValue());
+    float db = (b[0] == null ? Float.MAX_VALUE : ((Float)b[0]).floatValue());
+    return (da < db ? -1 : da > db ? 1 : 0);
+  }
 
 //  private final static float DEFAULT_DISTANCE_FACTOR = 1.85f;
   private final static float DEFAULT_FACECENTEROFFSET = 0.25f;
@@ -108,6 +118,7 @@ public class Polyhedra extends AtomShape {
   private Map<String, SV> info;
   private float distanceRef;
   private int modelIndex;
+  private boolean isAuto;
 
   @SuppressWarnings("unchecked")
   @Override
@@ -119,18 +130,15 @@ public class Polyhedra extends AtomShape {
       //distanceFactor = 
       planarParam = Float.NaN;
       radius = radiusMin = pointScale = 0.0f;
-      nVertices = 0;
-      nPoints = 0;
+      nVertices = nPoints = 0;
       modelIndex = -1;
       bsVertices = null;
       thisID = null;
       center = null;
-      useUnitCell = false;
       centers = null;
       info = null;
       bsVertexCount = new BS();
-      bondedOnly = isCollapsed = isFull = iHaveCenterBitSet = false;
-      haveBitSetVertices = false;
+      bondedOnly = isCollapsed = isFull = iHaveCenterBitSet = useUnitCell = isAuto = haveBitSetVertices = false;
       if (Boolean.TRUE == value)
         drawEdges = EDGES_NONE;
       return;
@@ -353,7 +361,12 @@ public class Polyhedra extends AtomShape {
     //    }
 
     if ("radius" == propertyName) {
-      radius = ((Float) value).floatValue();
+      float v = ((Float) value).floatValue();
+      if (v == 0) {
+        isAuto = true;
+        v = 6f;
+      }
+      radius = v;
       return;
     }
 
@@ -628,7 +641,7 @@ public class Polyhedra extends AtomShape {
       addPolyhedron(p);
       return;
     }
-    boolean useBondAlgorithm = radius == 0 || bondedOnly;
+    boolean useBondAlgorithm = (radius == 0 || bondedOnly);
     int buildMode = (info != null ? MODE_INFO : nPoints > 0 ? MODE_POINTS
         : haveBitSetVertices ? MODE_BITSET : useUnitCell ? MODE_UNITCELL
             : useBondAlgorithm ? MODE_BONDING : MODE_RADIUS);
@@ -695,6 +708,8 @@ public class Polyhedra extends AtomShape {
           return null;
       }
     }
+    if (isAuto)
+      otherAtomCount = setGap(atom, otherAtomCount);
     return (otherAtomCount < 3 || nVertices > 0
         && !bsVertexCount.get(otherAtomCount) ? null : validatePolyhedron(atom,
         otherAtomCount));
@@ -766,20 +781,47 @@ public class Polyhedra extends AtomShape {
           continue;
       }
       float r = atom.distanceSquared(pt);
+
       if (other.altloc != atom.altloc && other.altloc != 0 && atom.altloc != 0
           || r > r2 || r < r2min)
         continue;
       if (otherAtomCount == MAX_VERTICES)
         break;
-       for (int i = 0; i < otherAtomCount; i++)
+      for (int i = 0; i < otherAtomCount; i++)
         if (otherAtoms[i].distanceSquared(pt) < 0.01f)
           continue outer;
-
       otherAtoms[otherAtomCount++] = pt;
     }
+    if (isAuto)
+      otherAtomCount = setGap(atom, otherAtomCount);
     return (otherAtomCount < 3 || nVertices > 0
         && !bsVertexCount.get(otherAtomCount) ? null : validatePolyhedron(atom,
         otherAtomCount));
+  }
+
+  private int setGap(P3 atom, int otherAtomCount) {
+    if (otherAtomCount < 4)
+      return otherAtomCount;
+    Object[][] dist = new Object[MAX_VERTICES][2];
+    for (int i = 0; i < otherAtomCount; i++)
+      dist[i][0] = Float.valueOf(atom.distance((P3) (dist[i][1] = otherAtoms[i])));
+    Arrays.sort(dist, this);
+    float maxGap = 0;
+    int iMax = 0;
+    int n = otherAtomCount;
+    float dlast = ((Float)dist[0][0]).floatValue();
+    otherAtoms[0] = (P3) dist[0][1];
+    for (int i = 1; i < n; i++) {
+      float d = ((Float)dist[i][0]).floatValue();
+      float gap = d - dlast;
+      otherAtoms[i] = (P3) dist[i][1];
+      if (gap > maxGap) {
+        maxGap = gap;
+        iMax = i;
+      }
+      dlast = d;
+    }
+    return (iMax == 0 ? otherAtomCount : iMax);
   }
 
   private Polyhedron validatePolyhedron(P3 atomOrPt, int vertexCount) {
@@ -1183,7 +1225,7 @@ public class Polyhedra extends AtomShape {
     }
     int fpt = 0;
     for (Entry<Integer, Object[]> e : htNormMap.entrySet()) {
-      System.out.println("polyhedra normix=" + e.getKey());
+      //System.out.println("polyhedra normix=" + e.getKey());
       Object[] eo = e.getValue();
       if (eo[2] != null && eo[2] != e.getKey())
         continue;

@@ -629,7 +629,8 @@ public class StatusManager {
     // no jmolscript option for syncSend
     if (port != 0 || notifyEnabled(CBK.SYNC)) {
       Object[] o = new Object[] { null, script, appletNameOrProp, Integer.valueOf(port) };
-      cbl.notifyCallback(CBK.SYNC, o);
+      if (cbl != null)
+        cbl.notifyCallback(CBK.SYNC, o);
       return o[0];
     }
     return null;

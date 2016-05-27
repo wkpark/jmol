@@ -306,7 +306,8 @@ public class MathExt {
         true, null, 0, 1));
   }
 
-  private boolean evaluateUnitCell(ScriptMathProcessor mp, SV[] args, boolean isSelector) throws ScriptException {
+  private boolean evaluateUnitCell(ScriptMathProcessor mp, SV[] args,
+                                   boolean isSelector) throws ScriptException {
     // optional last parameter: scale
     // unitcell(uc)
     // unitcell(uc, "reciprocal")
@@ -329,7 +330,7 @@ public class MathExt {
       lastParam--;
       break;
     }
-    int tok0 = (lastParam < 0 ? T.nada : args[0].tok);    
+    int tok0 = (lastParam < 0 ? T.nada : args[0].tok);
     T3[] ucnew = null;
     Lst<SV> uc = null;
     switch (tok0) {
@@ -337,10 +338,13 @@ public class MathExt {
       uc = args[0].getList();
       break;
     case T.string:
-      ucnew = new P3[4];
-      for (int i = 0; i < 4; i++)
-        ucnew[i] = new P3();
-      SimpleUnitCell.setOabc(args[0].asString(), null, ucnew);
+      String s = args[0].asString();
+      if (s.indexOf("a=") == 0) {
+        ucnew = new P3[4];
+        for (int i = 0; i < 4; i++)
+          ucnew[i] = new P3();
+        SimpleUnitCell.setOabc(s, null, ucnew);
+      }
       break;
     }
     SymmetryInterface u = null;
@@ -373,7 +377,7 @@ public class MathExt {
           float[] params = new float[6];
           for (int i = 0; i < 6; i++)
             params[i] = uc.get(i).asFloat();
-          SimpleUnitCell.setOabc(null,  params, ucnew);
+          SimpleUnitCell.setOabc(null, params, ucnew);
           break;
         default:
           return false;
@@ -404,14 +408,17 @@ public class MathExt {
     String op = (ptParam <= lastParam ? args[ptParam].asString() : null);
     boolean toPrimitive = "primitive".equalsIgnoreCase(op);
     if (toPrimitive || "conventional".equalsIgnoreCase(op)) {
-      String stype = (++ptParam > lastParam ? "" : args[ptParam].asString().toUpperCase());
+      String stype = (++ptParam > lastParam ? "" : args[ptParam].asString()
+          .toUpperCase());
       if (stype.equals("BCC"))
         stype = "I";
       else if (stype.length() == 0)
-        stype = (String) vwr.getSymTemp().getSymmetryInfoAtom(vwr.ms, iatom, null, 0, null, null, null,
-            T.lattice, 0, -1);      
-      if (stype == null || stype.length() == 0 
-          || !(u == null ? vwr.getSymTemp() : u).toFromPrimitive(toPrimitive, stype.charAt(0), ucnew))
+        stype = (String) vwr.getSymTemp().getSymmetryInfoAtom(vwr.ms, iatom,
+            null, 0, null, null, null, T.lattice, 0, -1);
+      if (stype == null
+          || stype.length() == 0
+          || !(u == null ? vwr.getSymTemp() : u).toFromPrimitive(toPrimitive,
+              stype.charAt(0), ucnew))
         return false;
     } else if ("reciprocal".equalsIgnoreCase(op)) {
       ucnew = SimpleUnitCell.getReciprocal(ucnew, null, scale);

@@ -470,7 +470,7 @@ public class Polyhedra extends AtomShape implements Comparator<Object[]>{
         p = polyhedrons[i];
         if (p.id == null ? 
             id != null || bsSelected != null && !bsSelected.get(p.centralAtom.i)
-            : id == null || !PT.isLike(p.id, id))
+            : id != null && !PT.isLike(p.id, id))
           continue;
         s += (i + 1) + "\t" + p.getSymmetry(vwr, true) + "\n";
       }     

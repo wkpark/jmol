@@ -27,6 +27,7 @@ package org.jmol.util;
 import javajs.util.AU;
 import javajs.util.M4;
 import javajs.util.P3;
+import javajs.util.PT;
 import javajs.util.T3;
 import javajs.util.V3;
 
@@ -415,6 +416,33 @@ public class SimpleUnitCell {
     for (int i = 0; i < 4; i++)
       ret[i] = rabc[i];
     return ret;
+  }
+
+  /**
+   * set cell vectors by string
+   * 
+   * 
+   * @param abcabg "a=...,b=...,c=...,alpha=...,beta=..., gamma=..." or null  
+   * @param params to use if not null 
+   * @param ucnew  to create and return; null if only to set params
+   * @return T3[4] origin, a, b c
+   */
+  public static T3[] setOabc(String abcabg, float[] params, T3[] ucnew) {
+    if (abcabg != null) {
+      if (params == null)
+        params = new float[6];
+      String[] tokens = PT.split(abcabg.replace(',', '='), "=");
+      if (tokens.length >= 12)
+        for (int i = 0; i < 6; i++)
+          params[i] = PT.parseFloat(tokens[i * 2 + 1]);
+    }
+    if (ucnew == null)
+      return null;
+    float[] f = newA(params).getUnitCellAsArray(true);
+      ucnew[1].set(f[0], f[1], f[2]);
+      ucnew[2].set(f[3], f[4], f[5]);
+      ucnew[3].set(f[6], f[7], f[8]);
+    return ucnew;
   }
 
 }

@@ -843,7 +843,7 @@ public class CifReader extends AtomSetCollectionReader {
   // atom type data
   ////////////////////////////////////////////////////////////////
 
-  private Map<String, Float> atomTypes;
+  private Map<String, Float> htOxStates;
   private Lst<Object[]> bondTypes = new Lst<Object[]>();
 
   private String disorderAssembly = ".";
@@ -878,9 +878,9 @@ public class CifReader extends AtomSetCollectionReader {
           || Float
               .isNaN(oxidationNumber = parseFloatStr(getField(ATOM_TYPE_OXIDATION_NUMBER))))
         continue;
-      if (atomTypes == null)
-        atomTypes = new Hashtable<String, Float>();
-      atomTypes.put(atomTypeSymbol, Float.valueOf(oxidationNumber));
+      if (htOxStates == null)
+        htOxStates = new Hashtable<String, Float>();
+      htOxStates.put(atomTypeSymbol, Float.valueOf(oxidationNumber));
     }
   }
 
@@ -1095,8 +1095,8 @@ public class CifReader extends AtomSetCollectionReader {
             }
           }
           atom.elementSymbol = elementSymbol;
-          if (atomTypes != null && atomTypes.containsKey(field)) {
-            float charge = atomTypes.get(field).floatValue();
+          if (htOxStates != null && htOxStates.containsKey(field)) {
+            float charge = htOxStates.get(field).floatValue();
             atom.formalCharge = Math.round(charge);
             //because otherwise -1.6 is rounded UP to -1, and  1.6 is rounded DOWN to 1
             if (Math.abs(atom.formalCharge - charge) > 0.1)

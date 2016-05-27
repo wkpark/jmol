@@ -624,6 +624,8 @@ class UnitCell extends SimpleUnitCell {
     M3 m3 = new M3();
     if (def instanceof String) {
       String sdef = (String) def;
+      if (sdef.indexOf("a=") == 0)
+        return setOabc(sdef, null, pts);
       // a,b,c;0,0,0
       if (sdef.indexOf(";") < 0)
         sdef += ";0,0,0";

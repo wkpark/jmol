@@ -329,15 +329,26 @@ public class MathExt {
       lastParam--;
       break;
     }
-    int tok0 = (lastParam < 0 ? T.nada : args[0].tok);
-    Lst<SV> uc = (tok0 == T.varray ? args[0].getList() : null);
+    int tok0 = (lastParam < 0 ? T.nada : args[0].tok);    
+    T3[] ucnew = null;
+    Lst<SV> uc = null;
+    switch (tok0) {
+    case T.varray:
+      uc = args[0].getList();
+      break;
+    case T.string:
+      ucnew = new P3[4];
+      for (int i = 0; i < 4; i++)
+        ucnew[i] = new P3();
+      SimpleUnitCell.setOabc(args[0].asString(), null, ucnew);
+      break;
+    }
     SymmetryInterface u = null;
     boolean haveUC = (uc != null);
-    if (haveUC && uc.size() < 4)
+    if (ucnew == null && haveUC && uc.size() < 4)
       return false;
     int ptParam = (haveUC ? 1 : 0);
-    T3[] ucnew = null;
-    if (!haveUC && tok0 != T.point3f) {
+    if (ucnew == null && !haveUC && tok0 != T.point3f) {
       // unitcell() or {1.1}.unitcell
       u = (iatom < 0 ? null : vwr.ms.getUnitCell(vwr.ms.at[iatom].mi));
       ucnew = (u == null ? new P3[] { P3.new3(0, 0, 0), P3.new3(1, 0, 0),
@@ -346,8 +357,27 @@ public class MathExt {
     if (ucnew == null) {
       ucnew = new P3[4];
       if (haveUC) {
-        for (int i = 0; i < 4; i++)
-          ucnew[i] = P3.newP(SV.ptValue(uc.get(i)));
+        switch (uc.size()) {
+        case 3:
+          // [va. vb. vc]
+          ucnew[0] = new P3();
+          for (int i = 0; i < 3; i++)
+            ucnew[i + 1] = P3.newP(SV.ptValue(uc.get(i)));
+          break;
+        case 4:
+          for (int i = 0; i < 4; i++)
+            ucnew[i] = P3.newP(SV.ptValue(uc.get(i)));
+          break;
+        case 6:
+          // unitcell([a b c alpha beta gamma])
+          float[] params = new float[6];
+          for (int i = 0; i < 6; i++)
+            params[i] = uc.get(i).asFloat();
+          SimpleUnitCell.setOabc(null,  params, ucnew);
+          break;
+        default:
+          return false;
+        }
       } else {
         ucnew[0] = SV.ptValue(args[0]);
         switch (lastParam) {

@@ -159,7 +159,7 @@ abstract class ScriptExpr extends ScriptParam {
      * These assignments are made by the compiler when seeing a VAR keyword.
      */
     boolean isImplicitAtomProperty = (localVar != null);
-    boolean isWhere = (localVar == null &&  localVars != null);
+    boolean isWhere = (localVar == null && localVars != null);
     boolean isOneExpressionOnly = (pt < 0);
     boolean returnBoolean = (!asVector && key == null);
     boolean returnString = (!asVector && key != null && key.length() == 0);
@@ -288,8 +288,7 @@ abstract class ScriptExpr extends ScriptParam {
         // are there for now that require it; could go, though.
         BS bsSelect = new BS();
         BS bsX = new BS();
-        String[] sout = (isFor ? new String[bsAtoms.cardinality()]
-            : null);
+        String[] sout = (isFor ? new String[bsAtoms.cardinality()] : null);
         if (localVars == null)
           localVars = new Hashtable<String, SV>();
         bsX.set(0);
@@ -372,16 +371,20 @@ abstract class ScriptExpr extends ScriptParam {
         rpn.addX(SV.newT(theToken));
         break;
       case T.dollarsign:
-        ignoreError = true;
-        P3 ptc;
-        try {
-          ptc = centerParameter(i, null);
-          rpn.addX(SV.newV(T.point3f, ptc));
-        } catch (Exception e) {
-          rpn.addXStr("");
+        if (tokAt(i + 2) == T.per && tokAt(i + 3) == T.getproperty) {
+          rpn.addXStr("$" + paramAsStr(++i));
+        } else {
+          ignoreError = true;
+          P3 ptc;
+          try {
+            ptc = centerParameter(i, null);
+            rpn.addX(SV.newV(T.point3f, ptc));
+          } catch (Exception e) {
+            rpn.addXStr("");
+          }
+          ignoreError = false;
+          i = iToken;
         }
-        ignoreError = false;
-        i = iToken;
         break;
       case T.leftbrace:
         if (tokAt(i + 1) == T.string) {
@@ -574,13 +577,12 @@ abstract class ScriptExpr extends ScriptParam {
                 || (v = PT.getMapValueNoCase(localVars, name)) == null
                 && allContext) {
               if (name.startsWith("_")) {
-               v = (name.equals("_") ? vwr.ms.getAuxiliaryInfo(null) 
-                   : name.equals("_m") && vwr.am.cmi >= 0 ? 
-                       vwr.ms.getModelAuxiliaryInfo(vwr.am.cmi)
-                   : null);
+                v = (name.equals("_") ? vwr.ms.getAuxiliaryInfo(null) : name
+                    .equals("_m") && vwr.am.cmi >= 0 ? vwr.ms
+                    .getModelAuxiliaryInfo(vwr.am.cmi) : null);
               }
               if (v == null)
-                 v = getContextVariableAsVariable(name, false);
+                v = getContextVariableAsVariable(name, false);
               else if (ptEq == 0)
                 invArg();
             }

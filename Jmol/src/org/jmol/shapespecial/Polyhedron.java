@@ -190,10 +190,14 @@ public class Polyhedron {
     return ai;
   }
 
-  Map<String, Object> getInfo(Viewer vwr, boolean isState) {
-    if (!isState && this.info != null && !Logger.debugging)
-      return this.info;
-    Map<String, Object> info = new Hashtable<String, Object>();
+  Map<String, Object> getInfo(Viewer vwr, String property) {
+    boolean isState = (property == null);
+    boolean isFaceCalc = (!isState && property.startsWith("face_"));
+    Map<String, Object> info = this.info;
+    if (!isState && info != null
+        && (!isFaceCalc || info.containsKey("face_types")) && !Logger.debugging)
+      return info;
+    info = new Hashtable<String, Object>();
 
     info.put("vertexCount", Integer.valueOf(nVertices));
 
@@ -250,23 +254,32 @@ public class Polyhedron {
       if (faces != null && !collapsed && faceTriangles != null) {
         info.put("faceCount", Integer.valueOf(faces.length));
         info.put("faceTriangles", faceTriangles);
-        int[] faceTypes = new int[faces.length];
-        float[] faceAreas = new float[faces.length];
-        V3 vAB = new V3();
-        V3 vAC = new V3();
-        V3 vTemp = new V3();
-        for (int i = faces.length; --i >= 0;) {
-          faceTypes[i] = faces[i].length;
-          float f = 0;
-          int[] ft = faceTriangles[i];
-          for (int j = ft.length; --j >= 0;) {
-            int[] t = triangles[ft[j]];
-            f += triangleArea(t[0], t[1], t[2], vAB, vAC, vTemp);
+        if (isFaceCalc) {
+          int[] faceTypes = new int[faces.length];
+          float[] faceAreas = new float[faces.length];
+          Lst<P3[]> facePoints = new Lst<P3[]>();
+          V3 vAB = new V3();
+          V3 vAC = new V3();
+          V3 vTemp = new V3();
+          for (int i = faces.length; --i >= 0;) {
+            int[] face = faces[i];
+            faceTypes[i] = face.length;
+            float f = 0;
+            int[] ft = faceTriangles[i];
+            for (int j = ft.length; --j >= 0;) {
+              int[] t = triangles[ft[j]];
+              f += triangleArea(t[0], t[1], t[2], vAB, vAC, vTemp);
+            }
+            faceAreas[i] = f;
+            P3[] fpts = new P3[face.length];
+            for (int j = face.length; --j >= 0;)
+              fpts[j] = vertices[face[j]];
+            facePoints.addLast(fpts);
           }
-          faceAreas[i] = f;
+          info.put("face_types", faceTypes);
+          info.put("face_areas", faceAreas);
+          info.put("face_points", facePoints);
         }
-        info.put("faceTypes", faceTypes);
-        info.put("faceAreas", faceAreas);
       }
 
       if (smarts != null)
@@ -378,11 +391,10 @@ public class Polyhedron {
   }
 
   private float triangleArea(int i, int j, int k, V3 vAB, V3 vAC, V3 vTemp) {
-    // volume
-    vAB.setT(vertices[i]);
-    vAC.setT(vertices[j]);
+    // area
+    vAB.sub2(vertices[j], vertices[i]);
+    vAC.sub2(vertices[k], vertices[i]);
     vTemp.cross(vAB, vAC);
-    vAC.setT(vertices[k]);
     return vTemp.length();
   }
 
@@ -398,7 +410,7 @@ public class Polyhedron {
   String getState(Viewer vwr) {
     String ident = (id == null ? "({" + centralAtom.i + "})" : "ID "
         + Escape.e(id));
-    return "  polyhedron" + " @{" + Escape.e(getInfo(vwr, true)) + "} "
+    return "  polyhedron" + " @{" + Escape.e(getInfo(vwr, null)) + "} "
         + (isFullyLit ? " fullyLit" : "") + ";"
         + (visible ? "" : "polyhedra " + ident + " off;") + "\n";
   }

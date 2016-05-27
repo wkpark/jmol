@@ -88,7 +88,7 @@ public class Polyhedra extends AtomShape implements Comparator<Object[]>{
    * a dot product comparison term
    */
   private static final float DEFAULT_PLANAR_PARAM = 0.98f;
-  private static final float CONVEX_HULL_MAX = 0.02f;
+  private static final float CONVEX_HULL_MAX = 0.05f;//cos(87.13); was 0.02f = cos(88.15), which is too tight 
 
   public int polyhedronCount;
   public Polyhedron[] polyhedrons = new Polyhedron[32];
@@ -429,7 +429,7 @@ public class Polyhedra extends AtomShape implements Comparator<Object[]>{
 
   @Override
   public Object getProperty(String property, int i) {
-    Map<String, Object> info = polyhedrons[i].getInfo(vwr, false);
+    Map<String, Object> info = polyhedrons[i].getInfo(vwr, property);
     return (property.equalsIgnoreCase("info") ? info : info.get(property));
   }
 
@@ -453,7 +453,7 @@ public class Polyhedra extends AtomShape implements Comparator<Object[]>{
       p = findPoly(id, iatom, true);
       if (p == null)
         return false;
-      data[1] = p.getInfo(vwr, false);
+      data[1] = p.getInfo(vwr, "info");
       return true;
     }
     if (property == "points") {
@@ -532,7 +532,7 @@ public class Polyhedra extends AtomShape implements Comparator<Object[]>{
     if (property == "allInfo") {
       Lst<Map<String, Object>> info = new Lst<Map<String, Object>>();
       for (int i = polyhedronCount; --i >= 0;)
-        info.addLast(polyhedrons[i].getInfo(vwr, false));
+        info.addLast(polyhedrons[i].getInfo(vwr, "info"));
       data[1] = info;
       return true;
     }
@@ -583,7 +583,7 @@ public class Polyhedra extends AtomShape implements Comparator<Object[]>{
   public Object getShapeDetail() {
     Lst<Map<String, Object>> lst = new Lst<Map<String, Object>>();
     for (int i = 0; i < polyhedronCount; i++)
-      lst.addLast(polyhedrons[i].getInfo(vwr, false));
+      lst.addLast(polyhedrons[i].getInfo(vwr, "info"));
     return lst;
   }
 
@@ -1007,7 +1007,7 @@ public class Polyhedra extends AtomShape implements Comparator<Object[]>{
    * @param points
    * @param nPoints
    * @param t
-   * @param index 
+   * @param index
    * @param norm
    * @param pTemp
    * @param vNorm
@@ -1016,19 +1016,21 @@ public class Polyhedra extends AtomShape implements Comparator<Object[]>{
    * @param htEdgeMap
    * @param planarParam
    * @param bsTemp
-   * @param edgeTest 
+   * @param edgeTest
    * @return 0 if no error or value indicating the error
    */
-  private float checkFacet(P3[] points, int nPoints, int[] t, int index, V3 norm,
-                           P4 pTemp, V3 vNorm, V3 vAC,
+  private float checkFacet(P3[] points, int nPoints, int[] t, int index,
+                           V3 norm, P4 pTemp, V3 vNorm, V3 vAC,
                            Map<Integer, Object[]> htNormMap,
                            Map<String, Object> htEdgeMap, float planarParam,
                            BS bsTemp, Object[] edgeTest) {
 
     // Check here for a 3D convex hull:
 
+//    if (t[2] == 3)
+//      System.out.println(index + ": t = " + PT.toJSON(null, t));
     int i0 = t[0];
-    pTemp = Measure.getPlaneThroughPoints(points[i0], points[t[1]],
+    Measure.getPlaneThroughPoints(points[i0], points[t[1]],
         points[t[2]], vNorm, vAC, pTemp);
     // See if all vertices are OUTSIDE the plane we are considering.
     //System.out.println(PT.toJSON(null, p1));
@@ -1050,10 +1052,11 @@ public class Polyhedra extends AtomShape implements Comparator<Object[]>{
       if (v > CONVEX_HULL_MAX) {
         return v;
       }
+      System.out.println(j + " " + v + " " + PT.toJSON(null, t));
     }
     Integer normix = Integer.valueOf(Normix.getNormixV(norm, bsTemp));
     Object[] o = htNormMap.get(normix);
-    //System.out.println(PT.toJSON(null, p1) + " " + normix);
+    //System.out.println(normix + " t = " + PT.toJSON(null, t) + o);
     if (o == null) {
       // We must see if there is a close normix to this.
       // The Jmol lighting model uses 642 normals,
@@ -1070,21 +1073,23 @@ public class Polyhedra extends AtomShape implements Comparator<Object[]>{
           o = e.getValue();
           o[2] = n;
           htNormMap.put(normix, o);
-          normix = n;
+          //System.out.println("switching " + normix + " to " + n);
           break;
         }
       }
       if (o == null)
-        htNormMap.put(normix, o = new Object[] { new Lst<int[]>(), new Lst<Integer>(), null });
+        htNormMap.put(normix, o = new Object[] { new Lst<int[]>(),
+            new Lst<Integer>(), normix });
     }
+    normix = (Integer) o[2];
 
-//    if (p1[0] == 3 && p1[1] == 11 &&  p1[2] == 16)
-//        if (normix == 629) {
-//          System.out.println("testing poly" + PT.toJSON(null, p1) + normix);
-//          System.out.println(normix);
-//
-//        }
-//       
+    //    if (p1[0] == 3 && p1[1] == 11 &&  p1[2] == 16)
+    //        if (normix == 629) {
+    //          System.out.println("testing poly" + PT.toJSON(null, p1) + normix);
+    //          System.out.println(normix);
+    //
+    //        }
+    //       
     @SuppressWarnings("unchecked")
     Lst<int[]> faceEdgeList = (Lst<int[]>) o[0];
     @SuppressWarnings("unchecked")
@@ -1137,6 +1142,9 @@ public class Polyhedra extends AtomShape implements Comparator<Object[]>{
     String edge0 = normix + s1 + s;
     Object o = htEdgeMap.get(edge0);
     int[] b;
+    
+//    if (normix == 389)
+//      System.out.println(normix + " normix " + edge0);
     if (o == null) {
       P3 coord2 = points[pt1];
       P3 coord1 = points[pt];
@@ -1208,12 +1216,26 @@ public class Polyhedra extends AtomShape implements Comparator<Object[]>{
   }
 
 
+  /**
+   * Face: a CCW loop of edges all (within tolerance) in the same plane.
+   * 
+   * Objective is to find all triangles with *essentially* the same normal and to 
+   * then group them into a face. But we have to be careful here; not everything is 
+   * perfect. We can have be so slightly off in a 4- or 6-face, and we still want it
+   * to be called a face. We allow a normal dot product (i.e. cos(theta)) to be < 0.05.
+   * This empirically seems to work.  
+   *  
+   * @param triangles
+   * @param triangleCount
+   * @param htNormMap
+   * @return array of CCW connecting edges
+   */
   private int[][] getFaces(int[][] triangles, int triangleCount,
                            Map<Integer, Object[]> htNormMap) {
     int n = 0;
     for (Entry<Integer, Object[]> e : htNormMap.entrySet()) {
       Object[] eo = e.getValue();
-      if (eo[2] == null || eo[2] == e.getKey())
+      if (eo[2] == e.getKey())
         n++;
     }
       

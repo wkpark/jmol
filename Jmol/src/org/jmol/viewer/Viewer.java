@@ -5072,7 +5072,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   }
 
   public int getHermiteLevel() {
-    return (tm.spinOn ? 0 : g.hermiteLevel);
+    return (tm.spinOn && g.hermiteLevel > 0 ? 0 : g.hermiteLevel);
   }
 
   public int getHoverDelay() {

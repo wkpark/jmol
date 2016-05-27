@@ -438,7 +438,8 @@ public class CmdExt extends ScriptExt {
      float[] fparams = null;
      if (tokAt(i) == T.unitcell) {
        ++i;
-       if (eval.optParameterAsString(i).length() == 0) {
+       String s = eval.optParameterAsString(i); 
+       if (s.length() == 0) {
          // unitcell "" -- use current unit cell
          sg = vwr.getCurrentUnitCell();
          if (sg != null) {
@@ -446,7 +447,12 @@ public class CmdExt extends ScriptExt {
            offset = sg.getCartesianOffset();
          }
        } else {
-         fparams = eval.floatParameterSet(i, 6, 9);
+         if (tokAt(i) == T.string) {
+           fparams = new float[6];
+           SimpleUnitCell.setOabc(s, fparams, null);
+         } else { 
+           fparams = eval.floatParameterSet(i, 6, 9);
+         }
        }
        if (fparams == null || fparams.length != 6 && fparams.length != 9)
          invArg();
@@ -4348,8 +4354,15 @@ public class CmdExt extends ScriptExt {
       break;
     case T.function:
       eval.checkLength23();
+      len = slen;
+      String s = eval.optParameterAsString(2);
+      int pt;
+      if (filter == null && (pt = s.indexOf('/')) >= 0) {
+        filter = s.substring(pt + 1);
+        s = s.substring(0, pt);
+      }
       if (!chk)
-        msg = vwr.getFunctionCalls(eval.optParameterAsString(2));
+        msg = vwr.getFunctionCalls(s);
       break;
     case T.set:
       checkLength(2 + filterLen);
@@ -4882,13 +4895,14 @@ public class CmdExt extends ScriptExt {
             ucname = (u == null ? "" : u.getSpaceGroupName() + " ") + ucname;
             oabc = (u == null ? new P3[] { P3.new3(0, 0, 0), P3.new3(1, 0, 0),
                 P3.new3(0, 1, 0), P3.new3(0, 0, 1) } : u.getUnitCellVectors());
-            if (isPrimitive) {
-              String stype = (String) vwr.getSymTemp()
-                  .getSymmetryInfoAtom(vwr.ms, vwr.getFrameAtoms().nextSetBit(0), null, 0, null, null,
-                      null, T.lattice, 0, -1);
-              (u == null ? vwr.getSymTemp() : u).toFromPrimitive(true, stype.charAt(0), oabc);
-            } else {
-              float scale = (slen == i + 1 ? 1 : floatParameter(++i));
+            String stype = (String) vwr.getSymTemp()
+                .getSymmetryInfoAtom(vwr.ms, vwr.getFrameAtoms().nextSetBit(0), null, 0, null, null,
+                    null, T.lattice, 0, -1);
+            if (u == null)
+              u = vwr.getSymTemp();
+            u.toFromPrimitive(true, stype.length() == 0 ? 'P' : stype.charAt(0), oabc);
+            if (!isPrimitive) {
+              float scale = (slen == i + 1 ? 1 : tokAt(i + 1) == T.integer ? intParameter(++i) * (float) Math.PI : floatParameter(++i));
               SimpleUnitCell.getReciprocal(oabc, oabc, scale);
             }
             break;

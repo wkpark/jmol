@@ -849,7 +849,7 @@ public class SV extends T implements JSONEncodable {
   private static float toFloat(String s) {
     return (s.equalsIgnoreCase("true") ? 1 
         : s.length() == 0 || s.equalsIgnoreCase("false") ? 0 
-        : PT.parseFloatStrict(s));
+        : PT.parseFloatStrict(PT.trim(s," \t\n")));
   }
 
   public static SV concatList(SV x1, SV x2, boolean asNew) {

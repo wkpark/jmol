@@ -868,13 +868,11 @@ public class SymmetryDesc {
         // so if a point is in the plane, then N dot X = -d
         float w = -vtemp.x * pa1.x - vtemp.y * pa1.y - vtemp.z * pa1.z;
         plane = P4.new4(vtemp.x, vtemp.y, vtemp.z, w);
-        Lst<Object> v = new Lst<Object>();
         float margin = (Math.abs(w) < 0.01f && vtemp.x * vtemp.y > 0.4 ? 1.30f
             : 1.05f);
-        v.addLast(uc.getCanonicalCopy(margin, false));
-        modelSet.intersectPlane(plane, v, 3);
-
         // returns triangles and lines
+        Lst<Object> v = modelSet.vwr.getTriangulator().intersectPlane(plane,
+            uc.getCanonicalCopy(margin, false), 3);
         for (int i = v.size(); --i >= 0;) {
           P3[] pts = (P3[]) v.get(i);
           draw1.append(drawid).append("planep").appendI(i).append(" ")

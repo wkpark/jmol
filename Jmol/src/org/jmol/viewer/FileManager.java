@@ -426,7 +426,7 @@ public class FileManager implements BytePoster {
         }
         boolean isApplet = (appletDocumentBaseURL != null);
         if (allowCached && name.indexOf(".png") >= 0 && pngjCache == null
-            && vwr.cachePngFiles())
+            && !vwr.getBoolean(T.testflag1))
           pngjCache = new Hashtable<String, Object>();
         if (isApplet || isURL) {
           if (isApplet && isURL && appletProxy != null)

@@ -1,59 +1,47 @@
 package org.jmol.util;
 
-import javajs.util.AU;
-import javajs.util.Lst;
-
-import org.jmol.java.BS;
-
-import javajs.util.P3;
 import javajs.util.P3i;
-import javajs.util.P4;
 
-public class TriangleData implements Triangulator {
+/**
+ * An adaptation of Marching Cubes that allows for indicating edges on triangles.
+ * 
+ * the triangle data for MarchingCube and Triangulator
+ * 
+ * Used for Marching Cubes as well as calculating the intersection of unit cells 
+ * and bounding boxes with planes.
+ * 
+ */
 
-  /*
-   * the triangle data from Marching Cubes
-   * 
-   * Used for Marching Cubes as well as calculating the intersection of unit cells 
-   * and bounding boxes with planes
-   * 
-   */
+public class TriangleData {
+
+
+// Note that this is NOT the same as for BoxInfo
+//
+//                       Y 
+//                        4 --------4--------- 5                     +z --------4--------- +yz+z                  
+//                       /|                   /|                     /|                   /|
+//                      / |                  / |                    / |                  / |
+//                     /  |                 /  |                   /  |                 /  |
+//                    7   8                5   |                  7   8                5   |
+//                   /    |               /    9                 /    |               /    9
+//                  /     |              /     |                /     |              /     |
+//                 7 --------6--------- 6      |            +z+1 --------6--------- +yz+z+1|
+//                 |      |             |      |               |      |             |      |
+//                 |      0 ---------0--|----- 1    X          |      0 ---------0--|----- +yz    X(outer)    
+//                 |     /              |     /                |     /              |     /
+//                11    /               10   /                11    /               10   /
+//                 |   3                |   1                  |   3                |   1
+//                 |  /                 |  /                   |  /                 |  /
+//                 | /                  | /                    | /                  | /
+//                 3 ---------2-------- 2                     +1 ---------2-------- +yz+1
+//                Z                                           Z (inner)
+//   
+//                                                                streaming data offsets
+//    
+//     
   protected static final int[] Pwr2 = new int[] { 1, 2, 4, 8, 16, 32, 64, 128,
     256, 512, 1024, 2048 };
 
-
-  /*                     Y 
-   *                      4 --------4--------- 5                     +z --------4--------- +yz+z                  
-   *                     /|                   /|                     /|                   /|
-   *                    / |                  / |                    / |                  / |
-   *                   /  |                 /  |                   /  |                 /  |
-   *                  7   8                5   |                  7   8                5   |
-   *                 /    |               /    9                 /    |               /    9
-   *                /     |              /     |                /     |              /     |
-   *               7 --------6--------- 6      |            +z+1 --------6--------- +yz+z+1|
-   *               |      |             |      |               |      |             |      |
-   *               |      0 ---------0--|----- 1    X          |      0 ---------0--|----- +yz    X(outer)    
-   *               |     /              |     /                |     /              |     /
-   *              11    /               10   /                11    /               10   /
-   *               |   3                |   1                  |   3                |   1
-   *               |  /                 |  /                   |  /                 |  /
-   *               | /                  | /                    | /                  | /
-   *               3 ---------2-------- 2                     +1 ---------2-------- +yz+1
-   *              Z                                           Z (inner)
-   * 
-   *                                                              streaming data offsets
-   *  
-   *   
-   */
-
-  private final static int[][] fullCubePolygon = new int[][] {
-    { 0, 4, 5, 3 }, { 5, 1, 0, 3 }, // back
-    { 1, 5, 6, 2 }, { 6, 2, 1, 3 }, 
-    { 2, 6, 7, 2 }, { 7, 3, 2, 3 }, // front
-    { 3, 7, 4, 2 }, { 4, 0, 3, 2 },
-    { 6, 5, 4, 0 }, { 4, 7, 6, 0 }, // top
-    { 0, 1, 2, 0 }, { 2, 3, 0, 0 }, // bottom
-  };
   
   protected final static P3i[] cubeVertexOffsets = { 
     P3i.new3(0, 0, 0), //0 pt
@@ -68,29 +56,33 @@ public class TriangleData implements Triangulator {
 
   protected final static byte edgeVertexes[] = { 
     0, 1, 1, 2, 2, 3, 3, 0, 4, 5,
-  /*0     1     2     3     4  */
+  //0     1     2     3     4  
     5, 6, 6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7 };
-  /*5     6     7     8     9     10    11 */
+  //5     6     7     8     9     10    11 
   
   
   
-  /* the new triangle table. Fourth number in each ABC set is b3b2b1, where
-   * b1 = 1 for AB, b2 = 1 for BC, b3 = 1 for CA lines to be drawn for mesh
+  /** 
+   * 
+   * The new triangle table developed specifically for Jmol. 
+   * The fourth number in each ABC set is three bits, b3b2b1, where
+   * b1 = 1 for AB, b2 = 1 for BC, b3 = 1 for CA, and 
+   * mark lines to be drawn for mesh
    * 
    * So, for example: 
-   
-   1, 8, 3, 6
-   
-   * 6 is 110 in binary, so b3 = 1, b2 = 1, b1 = 0.
+   *   
+   *   1, 8, 3, 6
+   *
+   * 6 is 110 in binary, so b3 = 1, b2 = 1, b1 = 0;
    * b1 refers to the 18 edge, b2 refers to the 83 edge, 
    * and b3 refers to the 31 edge. The 31 and 83, but not 18 edges 
    * should be drawn for a mesh. On the cube above, you can see
    * that the 18 edges is in the interior of the cube. That's why we
    * don't render it with a mesh.
-   
-   
-   Bob Hanson, 3/29/2007
-   
+   *
+   *
+   * Bob Hanson, 3/29/2007
+   *
    */
 
   protected final static byte[][] triangleTable2 = { null, { 0, 8, 3, 7 },
@@ -299,103 +291,4 @@ public class TriangleData implements Triangulator {
       { 2, 3, 8, 3, 2, 8, 10, 4, 0, 1, 8, 5, 1, 10, 8, 1 }, { 1, 10, 2, 7 },
       { 1, 3, 8, 3, 9, 1, 8, 5 }, { 0, 9, 1, 7 }, { 0, 3, 8, 7 }, null };
 
-  /**
-   * a generic cell - plane intersector -- used for finding the plane through a
-   * 
-   * not static so as to allow JavaScript to not load it as core.
-   * 
-   * unit cell
-   * 
-   * @param plane
-   * @param v 
-   * @param flags
-   *          0 -- polygon int[]  1 -- edges only 2 -- triangles only 3 -- both
-   * @return Vector of Point3f[3] triangles and Point3f[2] edge lines
-   */
-
-
-  @Override
-  public Lst<Object> intersectPlane(P4 plane, Lst<Object> v, int flags) {
-    if (plane == null) {
-      v.addLast(fullCubePolygon);
-      return v;
-    }
-    P3[] vertices = (P3[]) v.get(0);
-    if (flags != 0)
-      v.clear();
-    float[] values = new float[8];
-    P3[] edgePoints = new P3[12];
-    int insideMask = 0;
-    for (int i = 0; i < 8; i++) {
-      values[i] = plane.x * vertices[i].x + plane.y * vertices[i].y + plane.z
-          * vertices[i].z + plane.w;
-      if (values[i] < 0)
-        insideMask |= Pwr2[i];
-    }
-    byte[] triangles = triangleTable2[insideMask];
-    if (triangles == null)
-      return null;
-    for (int i = 0; i < 24; i+=2) {
-      int v1 = edgeVertexes[i];
-      int v2 = edgeVertexes[i + 1];
-      // (P - P1) / (P2 - P1) = (0 - v1) / (v2 - v1)
-      // or
-      // P = P1 + (P2 - P1) * (0 - v1) / (v2 - v1)
-      P3 result = P3.newP(vertices[v2]);
-      result.sub(vertices[v1]);
-      result.scale(values[v1] / (values[v1] - values[v2]));
-      result.add(vertices[v1]);
-      edgePoints[i >> 1] = result;
-    }
-    if (flags == 0) {
-      BS bsPoints = new BS();
-      v.clear();
-      for (int i = 0; i < triangles.length; i++) {
-        bsPoints.set(triangles[i]);
-        //System.out.print(triangles[i]+" " );
-        if (i % 4 == 2)
-          i++;
-      }
-      //System.out.println();
-      int nPoints = bsPoints.cardinality();
-      P3[] pts = new P3[nPoints];
-      v.addLast(pts);
-      int[]list = new int[12];
-      int ptList = 0;
-      for (int i = 0; i < triangles.length; i++) {
-        int pt = triangles[i];
-        if (bsPoints.get(pt)) {
-          bsPoints.clear(pt);
-          pts[ptList] = edgePoints[pt];
-          list[pt] = (byte) ptList++;
-        }          
-        if (i % 4 == 2)
-          i++;
-      }
-      
-      int[][]polygons = AU.newInt2(triangles.length >> 2);
-      v.addLast(polygons);
-      for (int i = 0; i < triangles.length; i++)
-          polygons[i >> 2] = new int[] { list[triangles[i++]], 
-              list[triangles[i++]], list[triangles[i++]], triangles[i] };
-      return v;
-    }
-    for (int i = 0; i < triangles.length; i++) {
-      P3 pt1 = edgePoints[triangles[i++]];
-      P3 pt2 = edgePoints[triangles[i++]];
-      P3 pt3 = edgePoints[triangles[i++]];
-      if ((flags & 1) == 1)
-        v.addLast(new P3[] { pt1, pt2, pt3 });
-      if ((flags & 2) == 2) {
-        byte b = triangles[i];
-        if ((b & 1) == 1)
-          v.addLast(new P3[] { pt1, pt2 });
-        if ((b & 2) == 2)
-          v.addLast(new P3[] { pt2, pt3 });
-        if ((b & 4) == 4)
-          v.addLast(new P3[] { pt1, pt3 });
-      }
-    }
-    return v;
-  }
 }

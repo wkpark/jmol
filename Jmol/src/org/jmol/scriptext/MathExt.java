@@ -3217,18 +3217,52 @@ public class MathExt {
     int tok = args[0].tok;
     if (tok == T.string)
       tok = T.getTokFromName(withinStr);
-    boolean isVdw = (tok == T.vanderwaals);
-    if (isVdw) {
-      distance = 100;
-      withinSpec = null;
-    }
-    BS bs;
     ModelSet ms = vwr.ms;
+    boolean isVdw = false;
     boolean isWithinModelSet = false;
     boolean isWithinGroup = false;
-    boolean isDistance = (isVdw || tok == T.decimal || tok == T.integer);
+    boolean isDistance = false;
     RadiusData rd = null;
     switch (tok) {
+    case T.vanderwaals:
+      isVdw = true;
+      withinSpec = null;
+      //$FALL-THROUGH$
+    case T.decimal:
+    case T.integer:
+      isDistance = true;
+      if (len < 2 || len == 3 && args[1].tok == T.varray
+          && args[2].tok != T.varray)
+        return false;
+      distance = (isVdw ? 100 : SV.fValue(args[0]));
+      switch (tok = args[1].tok) {
+      case T.on:
+      case T.off:
+        isWithinModelSet = args[1].asBoolean();
+        if (len > 2 && SV.sValue(args[2]).equalsIgnoreCase("unitcell"))
+          tok = T.unitcell;
+        len = 0;
+        break;
+      case T.string:
+        String s = SV.sValue(args[1]);
+        if (s.startsWith("$"))
+          return mp.addXBs(getAtomsNearSurface(distance, s.substring(1)));
+        if (s.equalsIgnoreCase("group")) {
+          isWithinGroup = true;
+          tok = T.group;
+        } else if (s.equalsIgnoreCase("vanderwaals")
+            || s.equalsIgnoreCase("vdw")) {
+          withinSpec = null;
+          isVdw = true;
+          tok = T.vanderwaals;
+        } else if (s.equalsIgnoreCase("unitcell")) {
+          tok = T.unitcell;
+        } else {
+          return false;
+        }
+        break;
+      }
+      break;
     case T.varray:
       if (len == 1) {
         withinSpec = args[0].asString(); // units ids8
@@ -3273,44 +3307,10 @@ public class MathExt {
           return false;
         len = 2;
       }
-    } else if (isDistance) {
-      if (!isVdw)
-        distance = SV.fValue(args[0]);
-      if (len < 2)
-        return false;
-      switch (tok = args[1].tok) {
-      case T.on:
-      case T.off:
-        isWithinModelSet = args[1].asBoolean();
-        len = 0;
-        if (args.length > 2 && SV.sValue(args[2]).equalsIgnoreCase("unitcell"))
-          tok = T.unitcell;
-        break;
-      case T.string:
-        String s = SV.sValue(args[1]);
-        if (s.startsWith("$"))
-          return mp.addXBs(getAtomsNearSurface(distance, s.substring(1)));
-        if (s.equalsIgnoreCase("group")) {
-          isWithinGroup = true;
-          tok = T.group;
-        } else if (s.equalsIgnoreCase("vanderwaals")
-            || s.equalsIgnoreCase("vdw")) {
-          withinSpec = null;
-          isVdw = true;
-          tok = T.vanderwaals;
-        } else if (s.equalsIgnoreCase("unitcell")) {
-          tok = T.unitcell;
-        } else {
-          return false;
-        }
-        break;
-      }
-    } else {
+    } else if (!isDistance) {
       return false;
     }
 
-    P3 pt = null;
-    P4 plane = null;
     switch (len) {
     case 1:
       // within (sheet)
@@ -3357,6 +3357,7 @@ public class MathExt {
       case T.hkl:
       case T.coord:
       case T.point3f:
+      case T.varray:
         break;
       case T.sequence:
         // within ("sequence", "CII", *.ca)
@@ -3371,6 +3372,9 @@ public class MathExt {
       // within (distance, coord, [point or atom center] )
       break;
     }
+    P4 plane = null;
+    P3 pt = null;
+    Lst<SV> pts1 = null;
     int last = args.length - 1;
     switch (args[last].tok) {
     case T.point4f:
@@ -3382,33 +3386,30 @@ public class MathExt {
         plane = e.getHklPlane(pt);
       break;
     case T.varray:
+      pts1 = (last == 2 && args[1].tok == T.varray ? args[1].getList() : null);
       pt = (last == 2 ? SV.ptValue(args[1]) : last == 1 ? P3.new3(Float.NaN, 0,
           0) : null);
-      if (pt == null)
-        return false;
       break;
     }
-    if (last > 0 && plane == null && pt == null
-        && !(args[last].value instanceof BS))
-      return false;
-    // if we have anything, it must have a point or a plane or a bitset from here on out    
     if (plane != null)
       return mp.addXBs(ms.getAtomsNearPlane(distance, plane));
-
-    bs = (args[last].tok == T.bitset ? (BS) args[last].value : null);
+    BS bs = (args[last].tok == T.bitset ? (BS) args[last].value : null);
+    if (last > 0 && pt == null && pts1 == null && bs == null)
+      return false;
+    // if we have anything, it must have a point or an array or a plane or a bitset from here on out    
     if (tok == T.unitcell) {
       boolean asMap = isWithinModelSet;
-      return mp
-          .addXObj(vwr.ms.getUnitCellPointsWithin(distance, bs, pt, asMap));
+      return ((bs != null || pt != null) && mp.addXObj(vwr.ms
+          .getUnitCellPointsWithin(distance, bs, pt, asMap)));
     }
-    if (pt != null) {
+    if (pt != null || pts1 != null) {
       if (args[last].tok == T.varray) {
         // within(dist, pt, [pt1, pt2, pt3...])
         Lst<SV> sv = args[last].getList();
         Lst<T3> pts = new Lst<T3>();
         Bspt bspt = new Bspt(3, 0);
         CubeIterator iter;
-        if (Float.isNaN(pt.x)) {
+        if (pt != null && Float.isNaN(pt.x)) {
           // internal comparison
           Point3fi p;
           Point3fi[] pt3 = new Point3fi[sv.size()];
@@ -3434,32 +3435,51 @@ public class MathExt {
                 bsp.clear(pt2.i);
             }
           }
-          
+
           for (int i = bsp.nextSetBit(0); i >= 0; i = bsp.nextSetBit(i + 1))
             pts.addLast(P3.newP(pt3[i]));
           return mp.addXList(pts);
 
         }
-        float d2;
         if (distance == 0) {
           // closest
-          P3 pt3 = null, pta;
-          d2 = Float.MAX_VALUE;
-          for (int i = sv.size(); --i >= 0;) {
-            pta = SV.ptValue(sv.get(i));
-            distance = pta.distanceSquared(pt);
-            if (distance < d2) {
-              pt3 = pta;
-              d2 = distance;
+          if (pts1 == null) {
+            float d2 = Float.MAX_VALUE;
+            P3 pt3 = null;
+            for (int i = sv.size(); --i >= 0;) {
+              P3 pta = SV.ptValue(sv.get(i));
+              distance = pta.distanceSquared(pt);
+              if (distance < d2) {
+                pt3 = pta;
+                d2 = distance;
+              }
             }
+            return (pt3 == null ? mp.addXStr("") : mp.addXPt(pt3));
           }
-          return (pt3 == null ? mp.addXStr("") : mp.addXPt(pt3));
+          int[] ptsOut = new int[pts1.size()];
+          for (int i = ptsOut.length; --i >= 0;) {
+            float d2 = Float.MAX_VALUE;
+            int imin = -1;
+            pt = SV.ptValue(pts1.get(i));
+            for (int j = sv.size(); --j >= 0;) {
+              P3 pta = SV.ptValue(sv.get(j));
+              distance = pta.distanceSquared(pt);
+              if (distance < d2) {
+                imin = j;
+                d2 = distance;
+              }
+            }
+            ptsOut[i] = imin;
+          }
+          return mp.addXAI(ptsOut);
         }
-        for (int i = sv.size(); --i >= 0;)
-          bspt.addTuple(SV.ptValue(sv.get(i)));
+        for (int i = sv.size(); --i >= 0;) {
+          P3 ptp = SV.ptValue(sv.get(i));
+          bspt.addTuple(ptp);
+        }
         iter = bspt.allocateCubeIterator();
         iter.initialize(pt, distance, false);
-        d2 = distance * distance;
+        float d2 = distance * distance;
         while (iter.hasMoreElements()) {
           T3 pt2 = iter.nextElement();
           if (pt2.distanceSquared(pt) <= d2)

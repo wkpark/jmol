@@ -50,6 +50,7 @@ import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
 import org.jmol.util.MeshCapper;
 import org.jmol.util.Parser;
+import org.jmol.util.Triangulator;
 
 import javajs.J2SIgnoreImport;
 import javajs.util.AU;
@@ -63,6 +64,7 @@ import javajs.util.P3;
 import javajs.util.P4;
 import javajs.util.PT;
 import javajs.util.Quat;
+import javajs.util.T3;
 import javajs.util.V3;
 
 import org.jmol.util.SimpleUnitCell;
@@ -459,7 +461,7 @@ public class IsoExt extends ScriptExt {
           if (!isPoints && !chk)
             polygons = ((MeshCapper) Interface.getInterface(
                 "org.jmol.util.MeshCapper", vwr, "script")).set(null)
-                .triangulatePolygon(points);
+                .triangulatePolygon(points, -1);
         }
         if (polygons == null && !isPoints) {
           polygons = AU.newInt2(nTriangles);
@@ -791,13 +793,6 @@ public class IsoExt extends ScriptExt {
     finalizeObject(JC.SHAPE_DRAW, colorArgb[0], translucentLevel, intScale,
         havePoints, connections, iptDisplayProperty, null);
   }
-
-  private Lst<Object> getPlaneIntersection(int type, P4 plane,
-                                           SymmetryInterface uc,
-                                           float scale, int flags) {
-    return vwr.ms.getPlaneIntersection(type, plane, scale, flags, uc);
-  }
-
 
   private void mo(boolean isInitOnly, int iShape) throws ScriptException {
     ScriptEval eval = e;
@@ -3787,6 +3782,41 @@ public class IsoExt extends ScriptExt {
     if (!chk)
       showString((String) getShapeProperty(iShape, "list" + s));
     return true;
+  }
+
+  /**
+   * 
+   * @param type
+   * @param plane
+   *        plane to intersect, or null for just the full box
+   * @param scale
+   * @param uc
+   * @param flags
+   *        1 -- edges only 2 -- triangles only 3 -- both
+   * @return Vector
+   */
+  @SuppressWarnings("static-access")
+  private Lst<Object> getPlaneIntersection(int type, P4 plane,
+                                           SymmetryInterface uc, float scale,
+                                           int flags) {
+    T3[] pts = null;
+    switch (type) {
+    case T.unitcell:
+      if (uc == null)
+        return null;
+      pts = uc.getCanonicalCopy(scale, true);
+      break;
+    case T.boundbox:
+      pts = vwr.ms.getBoxInfo().getMyCanonicalCopy(scale);
+      break;
+    }
+    Triangulator t = vwr.getTriangulator();
+    if (plane != null)
+      return t.intersectPlane(plane, pts, flags);
+    Lst<Object> v = new Lst<Object>();
+    v.addLast(pts);
+    v.addLast(t.fullCubePolygon);
+    return v;
   }
 
 

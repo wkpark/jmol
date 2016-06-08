@@ -121,6 +121,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.Rectangle;
 import org.jmol.util.TempArray;
+import org.jmol.util.Triangulator;
 import org.jmol.viewer.binding.Binding;
 
 /*
@@ -5224,6 +5225,24 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       return g.ssbondsBackbone;
     case T.strutsmultiple:
       return g.strutsMultiple;
+    case T.testflag1:
+      // no PNGJ caching
+      return g.testFlag1;
+    case T.testflag2:
+      // passed to MOCalcuation, but not used
+      // nciCalculation special params.testFlag = 2 "absolute" calc.
+      // GIF reducedColors
+      return g.testFlag2;
+    case T.testflag3:
+      // isosurface numbers
+      // polyhedra numbers
+      // pmesh triangles
+      return g.testFlag3;
+    case T.testflag4:
+      // isosurface normals
+      // contact -- true: do not edit Cp list
+      return g.testFlag4;
+
     case T.tracealpha:
       return g.traceAlpha;
     case T.translucent:
@@ -6686,28 +6705,6 @@ public class Viewer extends JmolViewer implements AtomDataServer,
 
   public float getCurrentSolventProbeRadius() {
     return g.solventOn ? g.solventProbeRadius : 0;
-  }
-
-  public boolean getTestFlag(int i) {
-    switch (i) {
-    case 1:
-      // no PNGJ caching
-      return g.testFlag1;
-    case 2:
-      // passed to MOCalcuation, but not used
-      // nciCalculation special params.testFlag = 2 "absolute" calc.
-      // GIF reducedColors
-      return g.testFlag2;
-    case 3:
-      // isosurface numbers
-      // polyhedra numbers
-      return g.testFlag3;
-    case 4:
-      // isosurface normals
-      // contact -- true: do not edit Cp list
-      return g.testFlag4;
-    }
-    return false;
   }
 
   @Override
@@ -9245,10 +9242,6 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     return ms.fixFormalCharges(bs == null ? bsA() : bs);
   }
 
-  public boolean cachePngFiles() {
-    return (!getTestFlag(1));
-  }
-
   public void setModulation(BS bs, boolean isOn, P3 t1, boolean isQ) {
     if (isQ)
       g.setO("_modt", Escape.eP(t1));
@@ -9435,6 +9428,12 @@ public class Viewer extends JmolViewer implements AtomDataServer,
 
   public void setWindowDimensions(float[] dims) {
     resizeInnerPanel((int) dims[0], (int) dims[1]);
+  }
+
+  private Triangulator triangulator;
+  public Triangulator getTriangulator() {
+    return (triangulator == null ? (triangulator = (Triangulator) Interface
+        .getUtil("Triangulator", this, "script")) : triangulator);
   }
 
 }

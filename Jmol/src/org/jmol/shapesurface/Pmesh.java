@@ -65,49 +65,51 @@ public class Pmesh extends Isosurface {
       return null;
     T3[] vs = m.vs;
     Map<String, int[]> htEdges = new Hashtable<String, int[]>();
-    int v1 = 0;
+    int v1 = 0, v0, v01;
     int n = 0;
+    int[] edge0 = null;
     for (int i = m.pc; --i >= 0;) {
       if (m.bsSlabDisplay != null && !m.bsSlabDisplay.get(i))
         continue;
-      int[] face = m.pis[i];
-      int mask = face[3];
+      int[] triangle = m.pis[i];
+      int mask = triangle[3];
       for (int j = 0; j < 3; j++)
         if ((mask & (1 << j)) != 0) {
-          v1 = face[j];
-          int v2 = face[(j + 1) % 3];
+          v1 = triangle[j];
+          int v2 = triangle[(j + 1) % 3];
           String key = v2 + "_" + v1;
           if (htEdges.containsKey(key)) {
             htEdges.remove(key);
             n--;
           } else {
             n++;
-            htEdges.put(v1 + "_" + v2, new int[] { v1, v2 });
-            htEdges.put("" + v1, new int[] { v1, v2 });
+            edge0 = new int[] { v1, v2 };
+            htEdges.put(v1 + "_" + v2, edge0);
+            htEdges.put("" + v1, edge0);
           }
         }
     }
     if (n == 0)
       return null;
     int[][] a = new int[n][2];
-    for (String e : htEdges.keySet()) {
-      a[0] = htEdges.get(e);
-      break;
-    }
+    a[0] = edge0;
     V3 vectorBA = new V3();
     V3 vectorBC = new V3();
-    int v0 = a[0][0];
-    int v01 = v0;
+    v01 = v0 = a[0][0];
     v1 = a[0][1];
     int pt = 0;
+    float min = 0.0001f;
     while (v1 != v0) {
       int[] edge = htEdges.get("" + v1);
       if (edge == null)
         break;
       float angle = Measure.computeAngle(vs[v01], vs[v1], vs[edge[1]],
           vectorBA, vectorBC, true);
+      float d2 = vs[v1].distanceSquared(vs[edge[1]]);
+      //System.out.println("pmesh getFace " + angle + " " + d2 + " " + v01 + " " + v1 + " " + edge[1]);
+      //System.out.println("draw " + vs[v01] + " " + vs[v1] + " " + vs[edge[1]]);
       v1 = edge[1];
-      if (angle < 179) {
+      if (angle < 179 && d2 > min) {
         a[++pt] = edge;
         v01 = edge[0];
       } else {
@@ -115,13 +117,14 @@ public class Pmesh extends Isosurface {
       }
     }
     if (Measure.computeAngle(vs[v01], vs[v1], vs[a[0][1]],
-          vectorBA, vectorBC, true) >= 179) {
+          vectorBA, vectorBC, true) >= 179 || vs[v1].distanceSquared(vs[a[0][1]]) <= min) {
       a[0][0] = a[pt--][0];
     }
-    n = ++pt;
+    n = (pt < 0 ? 1 : ++pt);
     P3[] pts = new P3[n];
     for (int i = 0; i < n; i++)
       pts[i] = P3.newP(vs[a[i][0]]);
+    //System.out.println("pmesh getFace now " + n);
     return pts;
   }
 

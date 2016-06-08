@@ -362,9 +362,10 @@ public class Polyhedra extends AtomShape implements Comparator<Object[]>{
 
     if ("radius" == propertyName) {
       float v = ((Float) value).floatValue();
-      if (v == 0) {
+      if (v <= 0) {
+        // negative sets max
         isAuto = true;
-        v = 6f;
+        v = (v == 0 ? 6f : -v);
       }
       radius = v;
       return;
@@ -635,7 +636,7 @@ public class Polyhedra extends AtomShape implements Comparator<Object[]>{
         p = validatePolyhedron(center, nPoints);
     } else if (info != null && info.containsKey("id")) {
       thisID = info.get("id").asString();
-      p = new Polyhedron().setInfo(info, vwr.ms.at);
+      p = new Polyhedron().setInfo(vwr, info, vwr.ms.at);
     }
     if (p != null) {
       addPolyhedron(p);
@@ -665,7 +666,7 @@ public class Polyhedra extends AtomShape implements Comparator<Object[]>{
         p = constructRadiusPolyhedron(atom, iter);
         break;
       case MODE_INFO:
-        p = new Polyhedron().setInfo(info, vwr.ms.at);
+        p = new Polyhedron().setInfo(vwr, info, vwr.ms.at);
         break;
       case MODE_POINTS:
         p = validatePolyhedron(atom, nPoints);
@@ -815,7 +816,11 @@ public class Polyhedra extends AtomShape implements Comparator<Object[]>{
       float d = ((Float)dist[i][0]).floatValue();
       float gap = d - dlast;
       otherAtoms[i] = (P3) dist[i][1];
+      if (Logger.debugging)
+        Logger.info("polyhedron d=" + d + " " + otherAtoms[i]);
       if (gap > maxGap) {
+        if (Logger.debugging)
+          Logger.info("polyhedron maxGap=" + gap + " for i=" + i + " d=" + d + " " + otherAtoms[i]);
         maxGap = gap;
         iMax = i;
       }
@@ -1052,7 +1057,8 @@ public class Polyhedra extends AtomShape implements Comparator<Object[]>{
       if (v > CONVEX_HULL_MAX) {
         return v;
       }
-      System.out.println(j + " " + v + " " + PT.toJSON(null, t));
+      if (Logger.debugging)
+        Logger.info("checkFacet " + j + " " + v + " " + PT.toJSON(null, t));
     }
     Integer normix = Integer.valueOf(Normix.getNormixV(norm, bsTemp));
     Object[] o = htNormMap.get(normix);

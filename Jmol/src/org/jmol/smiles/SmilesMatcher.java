@@ -171,9 +171,6 @@ public class SmilesMatcher implements SmilesMatcherInterface {
       throws Exception {
     BS[] ret = (BS[]) findPriv(smiles, search, JC.SMILES_TYPE_SMILES
         | JC.SMILES_FIRST_MATCH_ONLY, MODE_ARRAY);
-    if (ret.length == 0)
-      System.out.println("OHOJH");
-
     return (ret != null && ret.length == 1);
   }
 

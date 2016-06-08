@@ -139,6 +139,8 @@ class Node extends Element {
 //    }
   
   static float getDimensionValue(T3 pt, int dim) {
+    if (pt == null)
+      System.out.println("bspt.Node ???");
     switch (dim) {
     case 0:
       return pt.x;

@@ -28,7 +28,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -52,7 +51,6 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -66,14 +64,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
-import javax.swing.border.LineBorder;
-import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.jmol.i18n.GT;
-import org.openscience.jmol.app.jmolpanel.GuiMap;
 import org.openscience.jmol.app.jmolpanel.JmolPanel;
 
 abstract class NBODialogModel extends NBODialogConfig {

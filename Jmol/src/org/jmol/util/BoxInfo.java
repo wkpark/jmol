@@ -26,15 +26,10 @@
 package org.jmol.util;
 
 
-import org.jmol.modelset.ModelSet;
-import javajs.util.Lst;
-
-import javajs.util.Measure;
 import javajs.util.P3;
 import javajs.util.P3i;
-import javajs.util.P4;
-import javajs.util.V3;
 import javajs.util.T3;
+import javajs.util.V3;
 
 /**
  * The BoxInfo class holds critical information about boundboxes. 
@@ -42,7 +37,6 @@ import javajs.util.T3;
  * 
  */
 public class BoxInfo {
-
  
   public final P3 bbCorner0 = new P3();
   public final P3 bbCorner1 = new P3();
@@ -57,11 +51,6 @@ public class BoxInfo {
   private boolean isScaleSet;
   private float margin;
 
-  {
-    for (int i = 8; --i >= 0;)
-      bbVertices[i] = new Point3fi();
-  }
-
   public static char[] bbcageTickEdges = {
     'z', '\0', '\0', 'y', 
     'x', '\0', '\0', '\0', 
@@ -73,34 +62,24 @@ public class BoxInfo {
     '\0', '\0', '\0', '\0'};
   
   public final static byte edges[] = {
-      0,1, 0,2, 0,4, 1,3, 
-      1,5, 2,3, 2,6, 3,7, 
-      4,5, 4,6, 5,7, 6,7
-      };
+    0,1, 0,2, 0,4, 1,3, 
+    1,5, 2,3, 2,6, 3,7, 
+    4,5, 4,6, 5,7, 6,7
+  };
 
   public BoxInfo() {
+    for (int i = 8; --i >= 0;)
+      bbVertices[i] = new Point3fi();
     reset();
   }
   
-  /**
-   * returns a set of points defining the geometric object within the given
-   * plane that spans the unit cell within the given margins
-   * @param modelSet 
-   * @param plane 
-   * @param scale 
-   * @param flags
-   *          0 -- polygon int[]  1 -- edges only 2 -- triangles only 3 -- both
-   * @return    a set of points
-   * 
-   */
-  public Lst<Object> intersectPlane(ModelSet modelSet, P4 plane, float scale, int flags) {
-    Lst<Object> v = new  Lst<Object>();
-    v.addLast(getCanonicalCopy(scale));
-    return modelSet.intersectPlane(plane, v, flags);
+  public void reset() {
+    isScaleSet = false;
+    bbCorner0.set(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+    bbCorner1.set(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
   }
-
-
-  public P3[] getCanonicalCopy(float scale) {
+  
+  public P3[] getMyCanonicalCopy(float scale) {
     return getCanonicalCopy(bbVertices, scale);
   }
 
@@ -127,43 +106,26 @@ public class BoxInfo {
     }
   }
 
-  public static P4[] getFacesFromCriticalPoints(P3[] points) {
-    P4[] faces = new P4[6];
-    V3 vNorm = new V3();
-    V3 vAB = new V3();
-    P3 va = new P3();
-    P3 vb = new P3();
-    P3 vc = new P3();
-    
-    P3[] vertices = getVerticesFromCriticalPoints(points);
-    for (int i = 0; i < 6; i++) {
-      va.setT(vertices[facePoints[i].x]);
-      vb.setT(vertices[facePoints[i].y]);
-      vc.setT(vertices[facePoints[i].z]);
-      faces[i] = Measure.getPlaneThroughPoints(va, vb, vc, vNorm, vAB, new P4());
-    }
-    return faces;
-  }
-
-  /*                     Y 
-   *                      2 --------6--------- 6                            
-   *                     /|                   /|          
-   *                    / |                  / |           
-   *                   /  |                 /  |           
-   *                  5   1               11   |           
-   *                 /    |               /    9           
-   *                /     |              /     |         
-   *               3 --------7--------- 7      |         
-   *               |      |             |      |         
-   *               |      0 ---------2--|----- 4    X        
-   *               |     /              |     /          
-   *               3    /              10    /           
-   *               |   0                |   8            
-   *               |  /                 |  /             
-   *               | /                  | /               
-   *               1 ---------4-------- 5                 
-   *              Z                                       
-   */
+  // note that this box is NOT the same as for Marching Cubes
+  //
+  //                     Y 
+  //                      2 --------6--------- 6                            
+  //                     /|                   /|          
+  //                    / |                  / |           
+  //                   /  |                 /  |           
+  //                  5   1               11   |           
+  //                 /    |               /    9           
+  //                /     |              /     |         
+  //               3 --------7--------- 7      |         
+  //               |      |             |      |         
+  //               |      0 ---------2--|----- 4    X        
+  //               |     /              |     /          
+  //               3    /              10    /           
+  //               |   0                |   8            
+  //               |  /                 |  /             
+  //               | /                  | /               
+  //               1 ---------4-------- 5                 
+  //              Z                                       
   
   public final static P3[] unitCubePoints = { 
     P3.new3(0, 0, 0), // 0
@@ -176,7 +138,7 @@ public class BoxInfo {
     P3.new3(1, 1, 1), // 7
   };
 
-  private static P3i[] facePoints = {
+  public final static P3i[] facePoints = {
     P3i.new3(4, 0, 6),
     P3i.new3(4, 6, 5), 
     P3i.new3(5, 7, 1), 
@@ -197,20 +159,6 @@ public class BoxInfo {
     P3i.new3(1, 1, 1), //6 pt + yz + z + 1
     P3i.new3(0, 1, 1)  //7 pt + z + 1 
   };
-
-  public static P3[] getVerticesFromCriticalPoints(P3[] points) {
-    P3[] vertices = new P3[8];
-    for (int i = 0; i < 8; i++) {
-      vertices[i] = P3.newP(points[0]);
-      if ((i & 1) == 1)
-        vertices[i].add(points[1]);
-      if ((i & 2) == 2)
-        vertices[i].add(points[2]);
-      if ((i & 4) == 4)
-        vertices[i].add(points[3]);
-    }
-    return vertices;
-  }
 
   /**
    * Delivers [center a b c] for generation of unit cells from a boundbox
@@ -301,12 +249,6 @@ public class BoxInfo {
     setBbcage(scale);
   }
 
-  public void reset() {
-    isScaleSet = false;
-    bbCorner0.set(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
-    bbCorner1.set(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
-  }
-  
   public void setMargin(float m) {
     margin = m;
   }
@@ -330,7 +272,7 @@ public class BoxInfo {
     if (pt.z + margin > xyzMax.z)
       xyzMax.z = pt.z + margin;
   }
-
+ 
   public static void addPointXYZ(float x, float y, float z, P3 xyzMin, P3 xyzMax, float margin) {
     if (x - margin < xyzMin.x)
       xyzMin.x = x - margin;

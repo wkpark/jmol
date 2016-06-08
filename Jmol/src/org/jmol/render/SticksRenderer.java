@@ -156,7 +156,7 @@ public class SticksRenderer extends FontLineShapeRenderer {
 
         a = a.group.getLeadAtomOr(a);
         b = b.group.getLeadAtomOr(b);
-      } else if (hbondsBackbone && Bond.isOrderH(order)) {
+      } else if (hbondsBackbone && Edge.isOrderH(order)) {
         a = a.group.getLeadAtomOr(a);
         b = b.group.getLeadAtomOr(b);
       }
@@ -243,7 +243,7 @@ public class SticksRenderer extends FontLineShapeRenderer {
       if ((bondOrder & Edge.BOND_PARTIAL_MASK) != 0) {
         bondOrder = Edge.getPartialBondOrder(order);
         mask = Edge.getPartialBondDotted(order);
-      } else if (Bond.isOrderH(bondOrder)) {
+      } else if (Edge.isOrderH(bondOrder)) {
         bondOrder = 1;
         if (!hbondsSolid)
           mask = -1;

@@ -30,14 +30,9 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.Hashtable;
 
 import javajs.util.PT;
@@ -49,7 +44,6 @@ import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -62,12 +56,8 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.plaf.basic.BasicComboPopup;
-import javax.swing.plaf.basic.ComboPopup;
-import javax.swing.plaf.metal.MetalComboBoxUI;
 
 abstract class NBODialogView extends NBODialogRun {
 

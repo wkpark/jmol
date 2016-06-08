@@ -640,7 +640,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         withinPoints = vwr.ms.getAtomPointVector((BS) o[2]);
     } else if (("nci" == propertyName || "orbital" == propertyName)
         && sg != null) {
-      sg.params.testFlags = (vwr.getTestFlag(2) ? 2 : 0);
+      sg.params.testFlags = (vwr.getBoolean(T.testflag2) ? 2 : 0);
     }
 
     // surface Export3D only (return TRUE) or shared (return FALSE)

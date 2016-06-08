@@ -71,7 +71,6 @@ import org.jmol.util.Point3fi;
 import org.jmol.util.Rectangle;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.Tensor;
-import org.jmol.util.Triangulator;
 import org.jmol.util.Vibration;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.ShapeManager;
@@ -174,7 +173,6 @@ public class ModelSet extends BondCollection {
   public Hashtable<String, BS> htPeaks;
 
   private Quat[] vOrientations;
-  private Triangulator triangulator;
 
   private final P3 ptTemp, ptTemp1, ptTemp2;
   private final M3 matTemp, matInv;
@@ -964,34 +962,6 @@ public class ModelSet extends BondCollection {
       am[modelIndex].simpleCage = simpleCage;
       haveUnitCells = true;
     }
-  }
-
-  /**
-   * 
-   * @param type
-   * @param plane
-   * @param scale
-   * @param uc
-   * @param flags
-   *        1 -- edges only 2 -- triangles only 3 -- both
-   * @return Vector
-   */
-  public Lst<Object> getPlaneIntersection(int type, P4 plane, float scale,
-                                          int flags, SymmetryInterface uc) {
-    T3[] pts = null;
-    switch (type) {
-    case T.unitcell:
-      if (uc == null)
-        return null;
-      pts = uc.getCanonicalCopy(scale, true);
-      break;
-    case T.boundbox:
-      pts = getBoxInfo().getCanonicalCopy(scale);
-      break;
-    }
-    Lst<Object> v = new Lst<Object>();
-    v.addLast(pts);
-    return intersectPlane(plane, v, flags);
   }
 
   public String getModelName(int modelIndex) {
@@ -3552,12 +3522,6 @@ public class ModelSet extends BondCollection {
     }
     return (type == T.volume ? vMin + "\t{" + dx + " " + dy + " " + dz + "}"
         : q.getTheta() == 0 ? "{0 0 0 1}" : q.toString());
-  }
-
-  public Lst<Object> intersectPlane(P4 plane, Lst<Object> v, int i) {
-    return (triangulator == null ? (triangulator = (Triangulator) Interface
-        .getUtil("TriangleData", vwr, "ms")) : triangulator).intersectPlane(
-        plane, v, i);
   }
 
   public SymmetryInterface getUnitCellForAtom(int index) {

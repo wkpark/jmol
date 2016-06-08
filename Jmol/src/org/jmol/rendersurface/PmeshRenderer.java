@@ -23,7 +23,20 @@
  */
 package org.jmol.rendersurface;
 
+import org.jmol.script.T;
+
 
 public class PmeshRenderer extends IsosurfaceRenderer {
+  
+  @Override
+  protected boolean render() {
+    forceShowTriangles = vwr.getBoolean(T.testflag3);
+    return renderIso();
+  }
+
+
   // no changes to renderer
+  
+  ///g3d.setC((short) (Math.round(Math.random() * 10) + 5)))
+
 }

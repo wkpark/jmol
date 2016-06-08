@@ -87,8 +87,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
   private void setGlobals() {
     needTranslucent = false;
     antialias = g3d.isAntialiased(); 
-    iShowNormals = vwr.getTestFlag(4);
-    showNumbers = vwr.getTestFlag(3);
+    iShowNormals = vwr.getBoolean(T.testflag4);
+    showNumbers = vwr.getBoolean(T.testflag3);
     isosurface = (Isosurface) shape;
     // exporters will do two passes here if there is translucency
     // first pass is #2 (translucent), then #1 (opaque).

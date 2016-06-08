@@ -35,7 +35,6 @@ public class GulpReader extends AtomSetCollectionReader {
 
   private boolean isSlab;
   private boolean isPolymer;
-  private boolean isMolecular;
   private boolean isPrimitive;
   private String sep = "-------";
   private boolean coordinatesArePrimitive;

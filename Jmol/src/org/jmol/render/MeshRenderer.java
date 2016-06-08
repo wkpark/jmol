@@ -174,11 +174,14 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected BS bsPolygons;
   protected boolean isTranslucentInherit;
   protected boolean renderLow;
-  protected int meshSlabValue = 100;  
+  protected int meshSlabValue = 100;
+  private boolean showTriangles;
+  protected boolean forceShowTriangles;  
   
   private boolean setVariables() {
     if (mesh.visibilityFlags == 0)
       return false;
+    showTriangles = forceShowTriangles || mesh.showTriangles;
     if (mesh.bsSlabGhost != null)
       g3d.setC(mesh.slabColix); // forces a second pass
     if (mesh.colorsExplicit)
@@ -270,9 +273,9 @@ public abstract class MeshRenderer extends ShapeRenderer {
     if (renderLow || mesh.showPoints || mesh.pc <= 0)
       renderPoints(); 
     if (!renderLow && (isGhostPass ? mesh.slabMeshType == T.mesh : mesh.drawTriangles))
-      renderTriangles(false, mesh.showTriangles, false);
+      renderTriangles(false, showTriangles, false);
     if (!renderLow && mesh.pc > 0 && (isGhostPass ? mesh.slabMeshType == T.fill : mesh.fillTriangles))
-      renderTriangles(true, mesh.showTriangles, generateSet);
+      renderTriangles(true, showTriangles, generateSet);
   }
 
   protected void renderPoints() {

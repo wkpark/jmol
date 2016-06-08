@@ -1784,14 +1784,15 @@ public class SV extends T implements JSONEncodable {
     switch (vm.tok) {
     case hash:
     case varray:
-      if (vm.myName != null) {
+      if ("\r".equals(vm.myName)) {
         vm.myName = null;
         vm = SV.newV(vm.tok, (vm.tok == hash ? new Hashtable<String, SV>() : new Lst<SV>()));
       } else {
-        vm.myName = "recursing";
+        String name0 = vm.myName;
+        vm.myName = "\r";
         SV vm0 = vm;
         vm = newV(vm.tok, deepCopy(vm.value, vm.tok == hash, true));
-        vm0.myName = null;
+        vm0.myName = name0;
       }
       break;
     }

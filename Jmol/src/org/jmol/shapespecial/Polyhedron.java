@@ -11,6 +11,7 @@ import javajs.util.P3;
 import javajs.util.T3;
 import javajs.util.V3;
 
+import org.jmol.api.Interface;
 import org.jmol.api.SmilesMatcherInterface;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.java.BS;
@@ -21,6 +22,7 @@ import org.jmol.util.C;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.MeshCapper;
 import org.jmol.util.Node;
 import org.jmol.util.Normix;
 import org.jmol.util.Point3fi;
@@ -108,8 +110,9 @@ public class Polyhedron {
     return this;
   }
 
-  Polyhedron setInfo(Map<String, SV> info, Atom[] at) {
+  Polyhedron setInfo(Viewer vwr, Map<String, SV> info, Atom[] at) {
     try {
+      SV o;
       collapsed = info.containsKey("collapsed");
       id = (info.containsKey("id") ? info.get("id").asString() : null);
       if (id == null) {
@@ -117,52 +120,77 @@ public class Polyhedron {
         modelIndex = centralAtom.mi;
       } else {
         center = P3.newP(SV.ptValue(info.get("center")));
-        modelIndex = info.get("modelIndex").intValue;
-        colix = C.getColixS(info.get("color").asString());
-        colixEdge = C.getColixS(info.get("colorEdge").asString());
-        if (info.containsKey("offset"))
-          offset = P3.newP(SV.ptValue(info.get("offset")));
-        if (info.containsKey("scale"))
-          scale = SV.fValue(info.get("scale"));
+        o = info.get("modelIndex");
+        modelIndex = (o == null ? vwr.am.cmi : o.intValue);
+        o = info.get("color");
+        colix = C.getColixS(o == null ? "gold" : o.asString());
+        o = info.get("colorEdge");
+        colixEdge = C.getColixS(o == null ? "black" : o.asString());
+        o = info.get("offset");
+        if (o != null)
+          offset = P3.newP(SV.ptValue(o));
+        o = info.get("scale");
+        if (o != null)
+          scale = SV.fValue(o);
       }
       Lst<SV> lst = info.get("vertices").getList();
       SV vc = info.get("vertexCount");
-      if (vc == null) {
-        // old style
-        nVertices = lst.size();
-        vertices = new P3[nVertices + 1];
-        vertices[nVertices] = SV.ptValue(info.get("ptRef"));
-      } else {
+      boolean needTriangles = false;
+      if (vc != null) {
         nVertices = vc.intValue;
         vertices = new P3[lst.size()];
         vc = info.get("r");
         if (vc != null)
           distanceRef = vc.asFloat();
+      } else {
+        nVertices = lst.size();
+        vertices = new P3[nVertices + 1];
+        if (center == null) {
+          // old style
+          vertices[nVertices] = SV.ptValue(info.get("ptRef"));
+        } else {
+          // new format involving center, vertices, and faces only
+          vertices[nVertices] = center;
+          needTriangles = true;
+        }
       }
       // note that nVertices will be smaller than lst.size()
       // because lst will contain the central atom and any collapsed points
       for (int i = lst.size(); --i >= 0;)
         vertices[i] = SV.ptValue(lst.get(i));
-      lst = info.get("elemNos").getList();
-      for (int i = nVertices; --i >= 0;) {
-        int n = lst.get(i).intValue;
-        if (n > 0) {
-          Point3fi p = new Point3fi();
-          p.setT(vertices[i]);
-          p.sD = (short) n;
-          vertices[i] = p;
+      o = info.get("elemNos");
+      if (o != null) {
+        lst = o.getList();
+        for (int i = nVertices; --i >= 0;) {
+          int n = lst.get(i).intValue;
+          if (n > 0) {
+            Point3fi p = new Point3fi();
+            p.setT(vertices[i]);
+            p.sD = (short) n;
+            vertices[i] = p;
+          }
         }
       }
       if (info.containsKey("pointScale"))
         pointScale = Math.max(0, SV.fValue(info.get("pointScale")));
       SV faces = info.get("faces");
-      SV o = info.get("triangles");
-      if (o == null) { // formerly
-        o = faces;
+      this.faces = toInt2(faces);
+      o = info.get("triangles");
+      if (o == null) {
+        if (needTriangles) {
+          // polyhedra {id:"...", center:"...", vertices:"...", faces:"..."}
+          // need to derive triangles from faces
+          faceTriangles = AU.newInt2(this.faces.length);
+          triangles = ((MeshCapper) Interface.getInterface(
+              "org.jmol.util.MeshCapper", vwr, "script")).set(null).triangulateFaces(this.faces, vertices, faceTriangles);
+        } else {
+          // formerly
+          triangles = this.faces;
+          this.faces = null;
+        }
       } else {
-        this.faces = toInt2(faces);
+        triangles = toInt2(o);        
       }
-      triangles = toInt2(o);
       normals = new V3[triangles.length];
       V3 vAB = new V3();
       for (int i = triangles.length; --i >= 0;) {
@@ -171,7 +199,8 @@ public class Polyhedron {
         Measure.getNormalThroughPoints(vertices[a[0]], vertices[a[1]],
             vertices[a[2]], normals[i], vAB);
       }
-      bsFlat = SV.getBitSet(info.get("bsFlat"), false);
+      o = info.get("bsFlat");
+      bsFlat = (o == null ? new BS() : SV.getBitSet(o, false));
     } catch (Exception e) {
       return null;
     }
@@ -192,7 +221,7 @@ public class Polyhedron {
 
   Map<String, Object> getInfo(Viewer vwr, String property) {
     boolean isState = (property == null);
-    boolean isFaceCalc = (!isState && property.startsWith("face_"));
+    boolean isFaceCalc = (!isState);// && property.startsWith("face_"));
     Map<String, Object> info = this.info;
     if (!isState && info != null
         && (!isFaceCalc || info.containsKey("face_types")) && !Logger.debugging)

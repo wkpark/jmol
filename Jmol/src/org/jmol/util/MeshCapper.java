@@ -106,15 +106,56 @@ public class MeshCapper {
   }
 
   /**
+   * generic entry for a set of faces
+   * 
+   * @param faces
+   *        array of pointers into points
+   * @param vertices
+   * @param faceTriangles 
+   * @return array of triangles [a b c mask]
+   */
+  public int[][] triangulateFaces(int[][] faces, P3[] vertices, int[][] faceTriangles) {
+    lstTriangles = new Lst<int[]>();
+    P3[] points = new P3[10];
+    for (int f = 0, n = faces.length; f < n; f++) {
+      int[] face = faces[f];
+      int npts = face.length;
+      if (points.length < npts)
+        points = new P3[npts];
+      int n0 = lstTriangles.size();
+      for (int i = npts; --i >= 0;)
+        points[i] = vertices[face[i]];
+      triangulatePolygon(points, npts);
+      int n1 = lstTriangles.size();
+      int[] ft = faceTriangles[f] = new int[n1 - n0];
+      for (int i = n0; i < n1; i++) {
+        int[] t = lstTriangles.get(i);
+        ft[i - n0] = i;
+        for (int j = 3; --j >= 0;)
+          t[j] = face[t[j]];
+        t[3] = -t[3];
+      }
+    }
+    int[][] triangles = AU.newInt2(lstTriangles.size());
+    lstTriangles.toArray(triangles);
+    return triangles;
+  }
+
+
+  /**
    * generic entry for a polygon
    * 
    * @param points
+   * @param nPoints number of points or -1
    * @return int[][i j k mask]
    */
-  public int[][] triangulatePolygon(P3[] points) {
+  public int[][] triangulatePolygon(P3[] points, int nPoints) {
     clear();
-    // this is winding backward 
-    nPoints = points.length;
+    boolean haveList = (nPoints >= 0);
+    // this is winding backward
+    if (!haveList || lstTriangles == null)
+      lstTriangles = new Lst<int[]>();
+    nPoints = this.nPoints = (haveList ? nPoints : points.length);
     CapVertex v0 = null;
     for (int i = 0; i < nPoints; i++) {
       CapVertex v = new CapVertex(points[i], i);
@@ -125,8 +166,9 @@ public class MeshCapper {
       v0 = v;
     }
     v0.link(vertices.get(0));
-    lstTriangles = new Lst<int[]>();
     createCap(null);
+    if (haveList)
+      return null;
     int[][] a = AU.newInt2(lstTriangles.size());
     for (int i = lstTriangles.size(); --i >= 0;)
       a[i] = lstTriangles.get(i);
@@ -279,7 +321,8 @@ public class MeshCapper {
 
     vs = test(vs);
 
-    Logger.info("MeshCapper using " + vs.length + " vertices");
+    if (Logger.debugging)
+      Logger.info("MeshCapper using " + vs.length + " vertices");
     
     CapVertex v0 = vs[0].sort(vs);
     if (v0 == null) {
@@ -302,7 +345,8 @@ public class MeshCapper {
     }
     if (slicer != null)
       clear();
-    Logger.info("MeshCapper created " + nTriangles + " triangles " + nRegions
+    if (Logger.debugging)
+      Logger.info("MeshCapper created " + nTriangles + " triangles " + nRegions
         + " regions");
 
   }
@@ -782,7 +826,7 @@ public class MeshCapper {
      */
     protected int ok = 1;
 
-    boolean disabled;
+//    boolean disabled;
 
     CapVertex(T3 p, int i) {
       ipt = i;

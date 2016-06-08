@@ -18,6 +18,7 @@ import javajs.util.SB;
 import org.jmol.api.Interface;
 import org.jmol.i18n.GT;
 import org.jmol.java.BS;
+import org.jmol.script.T;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer.ACCESS;
 
@@ -301,7 +302,7 @@ abstract class OutputManager {
     }
     boolean doClose = true;
     try {
-      if (type.equals("Gif") && vwr.getTestFlag(2))
+      if (type.equals("Gif") && vwr.getBoolean(T.testflag2))
         params.put("reducedColors", Boolean.TRUE);
       int w = objImage == null ? -1 : AU.isAI(objImage) ? ((Integer) params
           .get("width")).intValue() : vwr.apiPlatform

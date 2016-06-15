@@ -5084,6 +5084,8 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   @Override
   public boolean getBoolean(int tok) {
     switch (tok) {
+    case T.hiddenlinesdashed:
+      return g.hiddenLinesDashed;
     case T.pdb:
       return ms.getMSInfoB("isPDB");
     case T.allowgestures:
@@ -6030,6 +6032,10 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   private void setBooleanPropertyTok(String key, int tok, boolean value) {
     boolean doRepaint = true;
     switch (tok) {
+    case T.hiddenlinesdashed:
+      // 14.5.1
+      g.hiddenLinesDashed = value;
+      break;
     case T.multiplebondbananas:
       // 14.3.15
       g.multipleBondBananas = value;

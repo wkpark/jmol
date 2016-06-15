@@ -49,7 +49,7 @@ public class LabelsRenderer extends FontLineShapeRenderer {
 
   byte fidPrevious;
 
-  private P3 pTemp = new P3();
+  protected P3 pTemp = new P3();
 
   protected short bgcolix;
   protected short labelColix;
@@ -163,15 +163,7 @@ public class LabelsRenderer extends FontLineShapeRenderer {
         text.colix = labelColix;
         text.bgcolix = bgcolix;
       } else {
-        if (Math.abs(text.pymolOffset[0]) == 1)
-          pTemp.setT(atomPt);
-        else
-          pTemp.set(0, 0, 0);
-        pTemp.add3(text.pymolOffset[4], text.pymolOffset[5],
-            text.pymolOffset[6]);
-        tm.transformPtScr(pTemp, screen);
-        text.setXYZs(screen.x, screen.y, screen.z, zSlab);
-        text.setScalePixelsPerMicron(sppm);
+        text.getPymolScreenOffset(atomPt, screen, zSlab, pTemp, sppm);
       }
     } else {
       boolean isLeft = (textAlign == JC.TEXT_ALIGN_LEFT || textAlign == JC.TEXT_ALIGN_NONE);

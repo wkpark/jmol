@@ -145,6 +145,13 @@ public class BoxInfo {
     P3i.new3(1, 3, 0),
     P3i.new3(6, 2, 7), 
     P3i.new3(1, 0, 5), 
+    
+    P3i.new3(0, 2, 6),
+    P3i.new3(6, 7, 5), 
+    P3i.new3(7, 3, 1), 
+    P3i.new3(3, 2, 0),
+    P3i.new3(2, 3, 7), 
+    P3i.new3(0, 4, 5), 
   };
 
   public final static int[] toCanonical = new int[] {0, 3, 4, 7, 1, 2, 5, 6};

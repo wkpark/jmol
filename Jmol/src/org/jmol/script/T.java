@@ -1001,6 +1001,7 @@ public class T {
   public final static int hbondsrasmol                   = booleanparam | 77;
   public final static int hbondssolid                    = booleanparam | 78;
 // see predefinedset  public final static int hetero                         = booleanparam | 80;
+  public final static int hiddenlinesdashed              = booleanparam | 80;
   public final static int hidenameinpopup                = booleanparam | 82;
   public final static int hidenavigationpoint            = booleanparam | 84;
   public final static int hidenotselected                = booleanparam | 86;
@@ -2237,6 +2238,7 @@ public class T {
        "functionXY",
        "functionXYZ",
        "gridPoints",
+       "hiddenLinesDashed",
        "homo",
        "ignore",
        "InChI",
@@ -3277,6 +3279,7 @@ public class T {
         functionxy,                         //        "functionXY"
         functionxyz,                        //        "functionXYZ"
         gridpoints,                         //        "gridPoints"
+        hiddenlinesdashed,                  //        "hiddenLinesDashed"
         homo,                               //        "homo"
         ignore,                             //        "ignore"
         inchi,                              //        "InChI"

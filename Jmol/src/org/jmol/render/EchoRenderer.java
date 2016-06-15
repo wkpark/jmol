@@ -38,7 +38,7 @@ public class EchoRenderer extends LabelsRenderer {
     if (vwr.isPreviewOnly)
       return false;
     Echo echo = (Echo) shape;
-    float scalePixelsPerMicron = (vwr.getBoolean(T.fontscaling) ? vwr
+    sppm = (vwr.getBoolean(T.fontscaling) ? vwr
         .getScalePixelsPerAngstrom(true) * 10000 : 0);
     imageFontScaling = vwr.imageFontScaling;
     boolean haveTranslucent = false;
@@ -54,7 +54,9 @@ public class EchoRenderer extends LabelsRenderer {
         tm.transformPtScr(t.xyz, pt0i);
         t.setXYZs(pt0i.x, pt0i.y, pt0i.z, pt0i.z);
       }
-      if (t.movableZPercent != Integer.MAX_VALUE) {
+      if (t.pymolOffset != null)
+        t.getPymolScreenOffset(t.xyz, pt0i, zSlab, pTemp, sppm);
+      else if (t.movableZPercent != Integer.MAX_VALUE) {
         int z = vwr.tm.zValueFromPercent(t.movableZPercent % 1000);
         if (t.valign == JC.ECHO_XYZ && Math.abs(t.movableZPercent) >= 1000)
           z = pt0i.z - vwr.tm.zValueFromPercent(0) + z;
@@ -71,7 +73,7 @@ public class EchoRenderer extends LabelsRenderer {
         if (t.zSlab == Integer.MIN_VALUE)
           t.zSlab = 1;
       }
-      if (TextRenderer.render(t, g3d, scalePixelsPerMicron, imageFontScaling,
+      if (TextRenderer.render(t, g3d, sppm, imageFontScaling,
           false, null, xy)
           && t.valign == JC.ECHO_BOTTOM
           && t.align == JC.TEXT_ALIGN_RIGHT)

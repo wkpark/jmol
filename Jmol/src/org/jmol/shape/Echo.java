@@ -182,6 +182,13 @@ public class Echo extends TextShape {
       return;
     }
 
+    if ("offset" == propertyName) {
+      if (currentObject != null) {
+        currentObject.pymolOffset = (float[]) value;
+      }
+      return;
+    }
+    
     if ("target" == propertyName) {
       thisID = null;
       String target = ((String) value).intern().toLowerCase();

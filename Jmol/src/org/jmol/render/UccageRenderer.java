@@ -96,7 +96,7 @@ public class UccageRenderer extends CageRenderer {
     offsetT.setT(unitcell.getFractionalOrigin());
     unitcell.toCartesian(offsetT, true);
     offset.sub(offsetT);
-
+    boolean hiddenLines = vwr.getBoolean(T.hiddenlinesdashed);
     P3 fset = unitcell.getUnitCellMultiplier();
     boolean haveMultiple = (fset != null && fset.distanceSquared(fset0) != 0);
     if (!haveMultiple)
@@ -136,7 +136,7 @@ public class UccageRenderer extends CageRenderer {
         unitcell.toCartesian(v, true);
         verticesT[i].add2(v, offsetT);
       }
-      renderCage(mad10, verticesT, aPoints, firstLine, allow0, allow1, 1);
+      renderCage(mad10, verticesT, (hiddenLines ? BoxInfo.facePoints : null), aPoints, firstLine, allow0, allow1, 1);
     } else
       for (int x = (int) cell0.x; x < cell1.x; x++) {
         for (int y = (int) cell0.y; y < cell1.y; y++) {
@@ -156,8 +156,8 @@ public class UccageRenderer extends CageRenderer {
             allow1 = 0xFF;
             for (int i = 8; --i >= 0;)
               verticesT[i].add2(vertices[i], offsetT);
-            renderCage(mad10, verticesT, aPoints, firstLine, allow0, allow1,
-                scale);
+            renderCage(mad10, verticesT, null, aPoints, firstLine, allow0,
+                allow1, scale);
           }
         }
       }

@@ -564,13 +564,15 @@ public class BioModelSet {
     Atom[] at = ms.at;
     Model[] am = ms.am;
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-      if (at[i].group.isAdded(i))
+      Atom a = at[i];
+      Group g = a.group;
+      if (g.isAdded(i) || g.getBioPolymerLength() == 0) 
         continue;
-      monomerIndexCurrent = at[i].group.setProteinStructureType(type,
+      monomerIndexCurrent = g.setProteinStructureType(type,
           iLast == i - 1 ? monomerIndexCurrent : -1);
-      int modelIndex = at[i].mi;
+      int modelIndex = a.mi;
       ms.proteinStructureTainted = am[modelIndex].structureTainted = true;
-      iLast = i = at[i].group.lastAtomIndex;
+      iLast = i = g.lastAtomIndex;
     }
     int[] lastStrucNo = new int[ms.mc];
     for (int i = 0; i < ms.ac; i++) {

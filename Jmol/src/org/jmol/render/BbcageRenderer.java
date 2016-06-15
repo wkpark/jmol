@@ -23,6 +23,7 @@
  */
 package org.jmol.render;
 
+import org.jmol.script.T;
 import org.jmol.shape.Bbcage;
 import org.jmol.util.BoxInfo;
 import org.jmol.viewer.StateManager;
@@ -37,11 +38,12 @@ public class BbcageRenderer extends CageRenderer {
   @Override
   protected boolean render() {
     Bbcage bbox = (Bbcage) shape;
+    boolean hiddenLines = (vwr.getBoolean(T.hiddenlinesdashed));
     // no translucent bounding box
     if (bbox.isVisible && (isExport || g3d.checkTranslucent(false))
         && !vwr.isJmolDataFrame()) {
       colix = vwr.getObjectColix(StateManager.OBJ_BOUNDBOX);
-      renderCage(vwr.getObjectMad10(StateManager.OBJ_BOUNDBOX), ms.getBBoxVertices(), null, 0, 0xFF, 0xFF, 1);
+      renderCage(vwr.getObjectMad10(StateManager.OBJ_BOUNDBOX), ms.getBBoxVertices(), (hiddenLines ? BoxInfo.facePoints : null), null, 0, 0xFF, 0xFF, 1);
     }
     return false;
   }

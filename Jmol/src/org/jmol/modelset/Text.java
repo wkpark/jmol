@@ -25,6 +25,7 @@ package org.jmol.modelset;
 
 import javajs.awt.Font;
 import javajs.util.P3;
+import javajs.util.P3i;
 import javajs.util.PT;
 import javajs.util.SB;
 
@@ -639,6 +640,22 @@ public class Text {
     }
     return (x >= boxX && x <= boxX + boxWidth && y >= boxY && y <= boxY
         + boxHeight);
+  }
+
+  public void getPymolScreenOffset(P3 atomPt, P3i screen, int zSlab, P3 pTemp, float sppm) {
+    if (atomPt != null && Math.abs(pymolOffset[0]) == 1)
+      pTemp.setT(atomPt);
+    else
+      pTemp.set(0, 0, 0);
+    pTemp.add3(pymolOffset[4], pymolOffset[5],
+        pymolOffset[6]);
+    vwr.tm.transformPtScr(pTemp, screen);
+    setXYZs(screen.x, screen.y, screen.z, zSlab);
+    setScalePixelsPerMicron(sppm);
+
+    
+    // TODO
+    
   }
 
 }

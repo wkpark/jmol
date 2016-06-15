@@ -1040,9 +1040,10 @@ public class MathExt {
     // x = data(someData,ptrFieldOrColumn,nBytes,firstLine) # extraction of a
     // column of data based on a field (nBytes = 0) or column range (nBytes >
     // 0)
-    String selected = SV.sValue(args[0]);
+    String selected = (args.length == 0 ? "" : SV.sValue(args[0]));
     String type = "";
     switch (args.length) {
+    case 0:
     case 1:
       break;
     case 2:

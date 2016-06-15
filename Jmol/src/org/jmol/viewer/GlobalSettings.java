@@ -274,6 +274,7 @@ public class GlobalSettings {
     setI("hermiteLevel", hermiteLevel);
     setB("hideNameInPopup", hideNameInPopup);
     setB("hideNavigationPoint", hideNavigationPoint);
+    setB("hiddenLinesDashed", hiddenLinesDashed);
     setB("highResolution", highResolutionFlag);
     setF("hoverDelay", hoverDelayMs / 1000f);
     setB("imageState", imageState);
@@ -561,6 +562,9 @@ public class GlobalSettings {
   boolean allowModelkit = true;
   boolean allowMultiTouch = true; // but you still need to set the parameter multiTouchSparshUI=true
   boolean allowKeyStrokes = false;
+  
+  boolean hiddenLinesDashed = false;
+  
   int animationFps = 10;
   boolean atomPicking = true;
   boolean autoFps = false;

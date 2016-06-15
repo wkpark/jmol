@@ -7264,6 +7264,16 @@ public class ScriptEval extends ScriptExpr {
         checkLength(pt);
         setShapeProperty(JC.SHAPE_ECHO, namex, Integer.valueOf(posx));
         break;
+      case T.offset:
+        P3 pt3 = getPoint3f(pt, false);
+        if (isPoint3f(pt)) {
+          // minus 1 here means from Jmol, not from PyMOL
+          propertyValue = new float[] { -1, pt3.x, pt3.y, pt3.z, 0, 0, 0 };
+        } else if (isArrayParameter(2)) {
+          // PyMOL offsets -- [1, scrx, scry, scrz, molx, moly, molz] in angstroms
+          propertyValue = floatParameterSet(2, 7, 7);
+        }
+        break;
       case T.off:
         propertyName = "off";
         break;
@@ -7287,7 +7297,8 @@ public class ScriptEval extends ScriptExpr {
             getShapePropertyData(JC.SHAPE_ECHO, "currentTarget", data);
             id = data[0];
           }
-          if (!chk && vwr.ms.getEchoStateActive() && vwr.fm.loadImage(getToken(pt).value, id, !useThreads()))
+          if (!chk && vwr.ms.getEchoStateActive()
+              && vwr.fm.loadImage(getToken(pt).value, id, !useThreads()))
             throw new ScriptInterruption(this, "setEchoImage", 1);
           return;
         }
@@ -7295,7 +7306,8 @@ public class ScriptEval extends ScriptExpr {
         return;
       case T.point:
         propertyName = "point";
-        propertyValue = (isCenterParameter(pt) ? centerParameter(pt, null) : null);
+        propertyValue = (isCenterParameter(pt) ? centerParameter(pt, null)
+            : null);
         pt = iToken + 1;
         break;
       default:

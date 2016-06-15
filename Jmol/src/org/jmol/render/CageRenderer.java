@@ -24,14 +24,14 @@
 package org.jmol.render;
 
 
+import javajs.util.Measure;
+import javajs.util.P3;
+import javajs.util.P3i;
+
 import org.jmol.java.BS;
 import org.jmol.shape.Bbcage;
 import org.jmol.shape.FontLineShape;
 import org.jmol.util.BoxInfo;
-
-import javajs.util.Measure;
-import javajs.util.P3;
-import javajs.util.P3i;
 
 abstract class CageRenderer extends FontLineShapeRenderer {
 
@@ -49,7 +49,6 @@ abstract class CageRenderer extends FontLineShapeRenderer {
   protected boolean isPolymer;
   
   private P3 pt = new P3();
-  private P3 pt1 = new P3();
   
   protected void renderCage(int mad, P3[] vertices, P3i[] faces,
                         P3[] axisPoints, int firstLine, int allowedEdges0,
@@ -57,6 +56,8 @@ abstract class CageRenderer extends FontLineShapeRenderer {
     //clearBox();
     g3d.setC(colix);
     FontLineShape fls = (FontLineShape) shape;
+    boolean hiddenLines = (faces != null);
+    
     imageFontScaling = vwr.imageFontScaling;
     font3d = vwr.gdata.getFont3DScaled(fls.font3d, imageFontScaling);
 
@@ -68,22 +69,23 @@ abstract class CageRenderer extends FontLineShapeRenderer {
         pt.scaleAdd2(scale, pt, vertices[0]);
       }
       tm.transformPtNoClip(pt, p3Screens[i]);
-      System.out.println(i + " " + p3Screens[i]);
       zSum += p3Screens[i].z;
     }
-    BS bsSolid = new BS();
-    if (faces != null)
+    BS bsSolid = null;
+    if (hiddenLines) {
+      // bsSolid marks all points on faces that are front-facing
+      // lines to all other points should be dashed 
+      bsSolid = new BS();
       for (int i = 12; --i >= 0;) {
         P3i face = faces[i];
         Measure.getNormalThroughPoints(p3Screens[face.x], p3Screens[face.y], p3Screens[face.z], pt1, pt);
-        System.out.println(i + " " + face + " " + pt1);
         if (pt1.z <= 0) {
           bsSolid.set(face.x);
           bsSolid.set(face.y);
           bsSolid.set(face.z);
         }
       }
-    System.out.println(bsSolid);
+    }
     int diameter = getDiameter((int) Math.floor(zSum / 8), mad);
     int axisPt = 2;
     char edge = 0;
@@ -93,7 +95,7 @@ abstract class CageRenderer extends FontLineShapeRenderer {
       int d = diameter;
       int edge0 = BoxInfo.edges[i];
       int edge1 = BoxInfo.edges[i + 1];
-      if (!bsSolid.get(edge0) || !bsSolid.get(edge1))
+      if (hiddenLines && (!bsSolid.get(edge0) || !bsSolid.get(edge1)))
         d = -Math.abs(diameter);
       if (axisPoints != null && edge0 == 0)
         tm.transformPtNoClip(axisPoints[axisPt--], p3Screens[0]);

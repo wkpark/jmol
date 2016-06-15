@@ -35,6 +35,7 @@ import org.jmol.util.C;
 import javajs.util.DF;
 import javajs.util.Lst;
 import javajs.util.P3;
+import javajs.util.P3i;
 import javajs.util.PT;
 
 import org.jmol.util.SimpleUnitCell;
@@ -120,6 +121,7 @@ public class UccageRenderer extends CageRenderer {
     boolean drawAllLines = (vwr.getObjectMad10(StateManager.OBJ_AXIS1) == 0
         || vwr.getFloat(T.axesscale) < 2 || axisPoints == null);
     P3[] aPoints = axisPoints;
+    P3i[] faces = (hiddenLines ? BoxInfo.facePoints : null);
     if (fset.z == 0) {
       offsetT.setT(cell0);
       unitcell.toCartesian(offsetT, true);
@@ -136,7 +138,7 @@ public class UccageRenderer extends CageRenderer {
         unitcell.toCartesian(v, true);
         verticesT[i].add2(v, offsetT);
       }
-      renderCage(mad10, verticesT, (hiddenLines ? BoxInfo.facePoints : null), aPoints, firstLine, allow0, allow1, 1);
+      renderCage(mad10, verticesT, faces, aPoints, firstLine, allow0, allow1, 1);
     } else
       for (int x = (int) cell0.x; x < cell1.x; x++) {
         for (int y = (int) cell0.y; y < cell1.y; y++) {
@@ -156,7 +158,7 @@ public class UccageRenderer extends CageRenderer {
             allow1 = 0xFF;
             for (int i = 8; --i >= 0;)
               verticesT[i].add2(vertices[i], offsetT);
-            renderCage(mad10, verticesT, null, aPoints, firstLine, allow0,
+            renderCage(mad10, verticesT, faces, aPoints, firstLine, allow0,
                 allow1, scale);
           }
         }

@@ -297,13 +297,14 @@ public class SticksRenderer extends FontLineShapeRenderer {
   }
     
   private void drawBond(int dottedMask) {
-    if (isCartesian && bondOrder == 1) {
+    boolean isDashed = (dottedMask & 1) != 0;
+    if (isCartesian && bondOrder == 1 && !isDashed) {
       // bypass screen rendering and just use the atoms themselves
       g3d.drawBond(a, b, colixA, colixB, endcaps, mad, -1);
       return;
     }
     boolean isEndOn = (dx == 0 && dy == 0);
-    if (isEndOn && asLineOnly)
+    if (isEndOn && asLineOnly && !isCartesian)
       return;
     boolean doFixedSpacing = (bondOrder > 1 && multipleBondSpacing > 0);
     boolean isPiBonded = doFixedSpacing && (vwr.getHybridizationAndAxes(a.i, z, x, "pz") != null || vwr
@@ -319,7 +320,6 @@ public class SticksRenderer extends FontLineShapeRenderer {
       } while (--bondOrder > 0);
       return;
     }
-    boolean isDashed = (dottedMask & 1) != 0;
     if (bondOrder == 1) {
       if (isDashed)
         drawDashed(xA, yA, zA, xB, yB, zB, dashDots);

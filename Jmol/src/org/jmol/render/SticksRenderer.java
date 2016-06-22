@@ -307,8 +307,10 @@ public class SticksRenderer extends FontLineShapeRenderer {
     if (isEndOn && asLineOnly && !isCartesian)
       return;
     boolean doFixedSpacing = (bondOrder > 1 && multipleBondSpacing > 0);
-    boolean isPiBonded = doFixedSpacing && (vwr.getHybridizationAndAxes(a.i, z, x, "pz") != null || vwr
-            .getHybridizationAndAxes(b.i, z, x, "pz") != null) && !Float.isNaN(x.x);
+    boolean isPiBonded = doFixedSpacing
+        && (vwr.getHybridizationAndAxes(a.i, z, x, "pz") != null || vwr
+            .getHybridizationAndAxes(b.i, z, x, "pz") != null)
+        && !Float.isNaN(x.x);
     if (isEndOn && !doFixedSpacing) {
       // end-on view
       int space = width / 8 + 3;
@@ -329,13 +331,13 @@ public class SticksRenderer extends FontLineShapeRenderer {
     }
     if (doFixedSpacing) {
       if (!isPiBonded) // obscure point
-        z.setT(P3.getUnlikely()); 
+        z.setT(P3.getUnlikely());
       x.sub2(b, a);
       y.cross(x, z);
       y.normalize();
       if (Float.isNaN(y.x)) {
         // in case x and z are parallel (O=C=O)
-        z.setT(P3.getUnlikely()); 
+        z.setT(P3.getUnlikely());
         y.cross(x, z);
         y.cross(y, x);
         y.normalize();
@@ -366,7 +368,7 @@ public class SticksRenderer extends FontLineShapeRenderer {
       p1.sub2(a, x);
       p2.sub2(b, x);
       while (true) {
-        if (isCartesian && !isDashed) {
+        if (isCartesian) {
           // bypass screen rendering and just use the atoms themselves
           g3d.drawBond(p1, p2, colixA, colixB, endcaps, mad, -2);
         } else {
@@ -377,9 +379,9 @@ public class SticksRenderer extends FontLineShapeRenderer {
           else
             fillCylinder(colixA, colixB, endcaps, width, s1.x, s1.y, s1.z,
                 s2.x, s2.y, s2.z);
-          dottedMask >>= 1;
-          isDashed = (dottedMask & 1) != 0;
         }
+        dottedMask >>= 1;
+        isDashed = (dottedMask & 1) != 0;
         if (--bondOrder <= 0)
           break;
         p1.add(y);

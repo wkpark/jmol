@@ -1174,7 +1174,7 @@ public class ScriptCompiler extends ScriptTokenParser {
         }
       }
     }
-    switch (tokCommand) {
+    out: switch (tokCommand) {
     case T.show:
       // allowing for show domains and validation to take up rest of line
       switch (lastToken.tok) {
@@ -1205,7 +1205,7 @@ public class ScriptCompiler extends ScriptTokenParser {
       switch (tokCommand) {
       case T.macro:
         haveMacro = true;
-        break;
+        break out;
       case T.load:
         if (nTokens == 1 || nTokens == 2 && (tokAt(1) == T.append)) {
           boolean isDataBase = Viewer.isDatabaseCode(charAt(ichToken));
@@ -1248,7 +1248,7 @@ public class ScriptCompiler extends ScriptTokenParser {
         }
         BS bs;
         if (script.charAt(ichToken) == '{' || parenCount > 0)
-          break;
+          break out;
         if ((bs = lookingAtBitset()) != null) {
           addTokenToPrefix(T.o(T.bitset, bs));
           return CONTINUE;

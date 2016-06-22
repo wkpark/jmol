@@ -702,6 +702,8 @@ public class MathExt {
           // note: find smiles1 IN smiles2 here
           check = (vwr.getSmilesMatcher().areEqual(smiles2, smiles1) > 0);
         } else {
+          smiles2 = (String) e.getSmilesExt().getSmilesMatches("/strict///", null, bs2,
+              null, JC.SMILES_TYPE_SMILES, true, false);
           check = (((BS) e.getSmilesExt().getSmilesMatches("/strict///" + smiles1, null, bs2,
               null, JC.SMILES_TYPE_SMILES, true, false)).nextSetBit(0) >= 0);
         }
@@ -716,12 +718,14 @@ public class MathExt {
               // reverse chirality centers to see if we have an enantiomer
               // but only if not square planar
               int pt = smiles1.toLowerCase().indexOf("invertstereo"); 
-              smiles1 = (pt >= 0 ? smiles1.substring(0, pt) + smiles1.substring(pt + 12) 
+              smiles1 = (pt >= 0 ? "/strict/" + smiles1.substring(0, pt) + smiles1.substring(pt + 12) 
                   : "/invertstereo strict/" + smiles1);//vwr.getSmilesMatcher().reverseChirality(smiles1);
+              
+              
               if (bs2 == null) {
                 check = (vwr.getSmilesMatcher().areEqual(smiles1, smiles2) > 0);
               } else {
-                check = (((BS) e.getSmilesExt().getSmilesMatches("/strict/" + smiles1, null,
+                check = (((BS) e.getSmilesExt().getSmilesMatches(smiles1, null,
                     bs2, null, JC.SMILES_TYPE_SMILES, true, false)).nextSetBit(0) >= 0);
               }
               if (check)

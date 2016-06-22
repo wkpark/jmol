@@ -167,7 +167,7 @@ public abstract class ScriptError implements JmolScriptEvaluator {
   public final static int ERROR_what = 53;
   public final static int ERROR_writeWhat = 54;
   final static int ERROR_multipleModelsNotOK = 55;
-  final static int ERROR_cannotSet = 56;
+  public final static int ERROR_cannotSet = 56;
 
   /**
    * @param iError

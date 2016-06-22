@@ -2057,7 +2057,8 @@ abstract class ScriptExpr extends ScriptParam {
     boolean settingData = key.startsWith("property_");
     boolean isThrown = key.equals("thrown_value");
     boolean isExpression = (tokAt(1) == T.expressionBegin || tokAt(1) == T.leftparen);
-    SV t = (settingData ? null : key.length() == 0 ? new SV() : getContextVariableAsVariable(key, false));
+    SV t = (settingData ? null : key.length() == 0 ? new SV()
+        : getContextVariableAsVariable(key, false));
     // determine whether this is some sort of 
     // special assignment of a known variable
 
@@ -2082,7 +2083,7 @@ abstract class ScriptExpr extends ScriptParam {
           // not clear what this is about...
           pt = 2;
           break;
-        } 
+        }
         //$FALL-THROUGH$
       case T.per:
       case T.perper:
@@ -2168,7 +2169,7 @@ abstract class ScriptExpr extends ScriptParam {
         int nbs = bs.cardinality();
         propertyName = sel.asString();
         int tok = T.getTokFromName(propertyName);
-        switch(tok) {
+        switch (tok) {
         case T.nada:
           if (propertyName.startsWith("property_")) {
             Object obj = (tv.tok == T.varray ? SV.flistValue(tv, tv.getList()
@@ -2176,9 +2177,9 @@ abstract class ScriptExpr extends ScriptParam {
             vwr.setData(
                 propertyName,
                 new Object[] { propertyName, obj, BSUtil.copy(bs),
-                    Integer.valueOf(JmolDataManager.DATA_TYPE_UNKNOWN) }, nAtoms,
-                0, 0, tv.tok == T.varray ? Integer.MAX_VALUE : Integer.MIN_VALUE,
-                0);
+                    Integer.valueOf(JmolDataManager.DATA_TYPE_UNKNOWN) },
+                nAtoms, 0, 0, tv.tok == T.varray ? Integer.MAX_VALUE
+                    : Integer.MIN_VALUE, 0);
             break;
           }
           iToken = pt;
@@ -2189,8 +2190,7 @@ abstract class ScriptExpr extends ScriptParam {
           vwr.shm.loadShape(JC.SHAPE_LABELS);
           //$FALL-THROUGH$
         default:
-          setBitsetProperty(bs, tok, tv.asInt(),
-              tv.asFloat(), tv);
+          setBitsetProperty(bs, tok, tv.asInt(), tv.asFloat(), tv);
           break;
         }
         break;
@@ -2351,6 +2351,8 @@ abstract class ScriptExpr extends ScriptParam {
         fvalues = null;
       }
     }
+    if (!T.tokAttr(tok, T.settable))
+      error(ERROR_cannotSet);
     vwr.setAtomProperty(bs, tok, iValue, fValue, sValue, fvalues, list);
   }
 

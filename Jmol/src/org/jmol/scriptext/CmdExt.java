@@ -2352,6 +2352,8 @@ public class CmdExt extends ScriptExt {
             vwr.setData(property2, new Object[] { property2, dataOut, bsOut,
                 Integer.valueOf(JmolDataManager.DATA_TYPE_AF), Boolean.TRUE }, vwr.ms.ac, 0,
                 0, Integer.MAX_VALUE, 0);
+          else if (!T.tokAttr(tokProp2, T.settable))
+            error(ScriptError.ERROR_cannotSet);
           else
             vwr.setAtomProperty(bsOut, tokProp2, 0, 0, null, dataOut, null);
         }

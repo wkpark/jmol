@@ -236,6 +236,7 @@ public class SmilesSearch extends JmolMolecule {
 
     ignoreStereochemistry = ((flags & JC.SMILES_IGNORE_STEREOCHEMISTRY) == JC.SMILES_IGNORE_STEREOCHEMISTRY);
 
+    invertStereochemistry = !ignoreStereochemistry && ((flags & JC.SMILES_INVERT_STEREOCHEMISTRY) == JC.SMILES_INVERT_STEREOCHEMISTRY);
   }
 
   /*

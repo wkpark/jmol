@@ -968,7 +968,7 @@ public class ScriptMathProcessor {
         return addXBool(!x2.asBoolean());
       }
     case T.propselector:
-      int iv = op.intValue & ~T.minmaxmask;
+      int iv = (op.intValue == T.opIf ? T.opIf  : op.intValue & ~T.minmaxmask);
       if (chk)
         return addXObj(SV.newS(""));
       if (vwr.allowArrayDotNotation)
@@ -992,6 +992,7 @@ public class ScriptMathProcessor {
       switch (iv) {
       case T.array:
         return addX(x2.toArray());
+      case T.opIf: // '?'
       case T.identifier:
         // special flag to get all properties.
         return (x2.tok == T.bitset && (chk ? addXStr("") : getAllProperties(x2,

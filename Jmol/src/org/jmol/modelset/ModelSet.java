@@ -219,7 +219,6 @@ public class ModelSet extends BondCollection {
     setupBC();
   }
 
-  @Override
   protected void releaseModelSet() {
     am = null;
     closest[0] = null;
@@ -2952,10 +2951,10 @@ public class ModelSet extends BondCollection {
 
     boolean isDelete = false;
     if (atomicNumber > 0) {
-      setElement(atom, atomicNumber);
+      setElement(atom, atomicNumber, false);
       vwr.shm.setShapeSizeBs(JC.SHAPE_BALLS, 0, vwr.rd,
           BSUtil.newAndSetBit(atomIndex));
-      setAtomName(atomIndex, type + atom.getAtomNumber());
+      setAtomName(atomIndex, type + atom.getAtomNumber(), false);
       if (!am[atom.mi].isModelKit)
         taintAtom(atomIndex, TAINT_ATOMNAME);
     } else if (type.equals("Pl")) {
@@ -3131,9 +3130,9 @@ public class ModelSet extends BondCollection {
       growAtomArrays(ac + 100); // only due to added hydrogens
 
     at[ac] = atom;
-    setBFactor(ac, bfactor);
-    setOccupancy(ac, occupancy);
-    setPartialCharge(ac, partialCharge);
+    setBFactor(ac, bfactor, false);
+    setOccupancy(ac, occupancy, false);
+    setPartialCharge(ac, partialCharge, false);
     if (tensors != null)
       setAtomTensors(ac, tensors);
     atom.group = group;

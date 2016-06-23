@@ -380,16 +380,12 @@ public class Atom extends Point3fi implements Node {
   // 100 times the bfactor(temperature) value
   public int getBfactor100() {
     short[] bfactor100s = group.chain.model.ms.bfactor100s;
-    if (bfactor100s == null)
-      return 0;
-    return bfactor100s[i];
+    return (bfactor100s == null ? 0 : bfactor100s[i]);
   }
 
-  private float getHydrophobicity() {
+  public float getHydrophobicity() {
     float[] values = group.chain.model.ms.hydrophobicities;
-    if (values == null)
-      return Elements.getHydrophobicity(group.groupID);
-    return values[i];
+    return (values == null ? Elements.getHydrophobicity(group.groupID) : values[i]);
   }
 
   public boolean setRadius(float radius) {

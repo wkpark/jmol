@@ -73,10 +73,6 @@ abstract public class BondCollection extends AtomCollection {
       freeBonds[i] = new Bond[MAX_NUM_TO_CACHE][];
     setupAC();
   }
-  @Override
-  protected void releaseModelSet() {
-    releaseModelSetBC();
-  }
 
   protected void releaseModelSetBC() {
     bo = null;

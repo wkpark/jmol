@@ -74,6 +74,10 @@ import org.jmol.viewer.Viewer;
 
 abstract public class AtomCollection {
   
+  private final static float almost180 = (float) Math.PI * 0.95f;
+  private final static float sqrt3_2 = (float) (Math.sqrt(3) / 2);
+  private final static V3 vRef = V3.new3(3.14159f, 2.71828f, 1.41421f);
+
   public Viewer vwr;
   protected GData g3d;
   /**
@@ -88,30 +92,6 @@ abstract public class AtomCollection {
 
   public Trajectory trajectory;
 
-  ////////////////////////////////////////////////////////////////
-  // these may or may not be allocated
-  // depending upon the AtomSetCollection characteristics
-  //
-  // used by Atom:
-  //
-  String[] atomNames;
-  String[] atomTypes;
-  int[] atomSerials;
-  int[] atomResnos;
-  int[] atomSeqIDs;
-  public Vibration[] vibrations;
-  public float[] occupancies;
-  short[] bfactor100s;
-  float[] partialCharges;
-  float[] bondingRadii;
-  float[] hydrophobicities;
-  
-  public Object[][] atomTensorList; // specifically now for {*}.adpmin {*}.adpmax
-  public Map<String, Lst<Object>> atomTensors;
-
-  protected int[] surfaceDistance100s;
-
-
   ////////////////////
   
   private LabelToken labeler;
@@ -125,6 +105,8 @@ abstract public class AtomCollection {
   private int bfactor100Lo;
   private int bfactor100Hi;
 
+  private boolean haveBSVisible, haveBSClickable;
+  
   private BS bsSurface;
   private int nSurfaceAtoms;
   private int surfaceDistanceMax;
@@ -141,36 +123,35 @@ abstract public class AtomCollection {
 
   public boolean haveStraightness;
 
-  // be sure to add the name to the list below as well!
-  final public static byte TAINT_ATOMNAME = 0;
-  final public static byte TAINT_ATOMTYPE = 1;
-  final public static byte TAINT_COORD = 2;
-  final public static byte TAINT_ELEMENT = 3;
-  final public static byte TAINT_FORMALCHARGE = 4;
-  final public static byte TAINT_HYDROPHOBICITY = 5;
-  final public static byte TAINT_BONDINGRADIUS = 6;
-  final public static byte TAINT_OCCUPANCY = 7;
-  final public static byte TAINT_PARTIALCHARGE = 8;
-  final public static byte TAINT_TEMPERATURE = 9;
-  final public static byte TAINT_VALENCE = 10;
-  final public static byte TAINT_VANDERWAALS = 11;
-  final public static byte TAINT_VIBRATION = 12;
-  final public static byte TAINT_ATOMNO = 13;
-  final public static byte TAINT_SEQID = 14;
-  final public static byte TAINT_RESNO = 15;
-  final public static byte TAINT_MAX = 16; // 1 more than last number, above
-  
-  public static String[] userSettableValues;
-  
-  private final static float almost180 = (float) Math.PI * 0.95f;
-  private final static float sqrt3_2 = (float) (Math.sqrt(3) / 2);
-  private final static V3 vRef = V3.new3(3.14159f, 2.71828f, 1.41421f);
-
-  public BS[] tainted;
   private BS bsHidden;
   public BS bsVisible, bsClickable, bsModulated;
 
-  private boolean haveBSVisible, haveBSClickable;
+  ////////////////////////////////////////////////////////////////
+  // these may or may not be allocated
+  // depending upon the AtomSetCollection characteristics
+  //
+  // used by Atom:
+  //
+  
+  public Object[][] atomTensorList; // specifically now for {*}.adpmin {*}.adpmax
+  public Map<String, Lst<Object>> atomTensors;
+
+  protected int[] surfaceDistance100s;
+  
+  ///// SETTABLE atomic properties ///////////////
+  //
+  // The following references must be made if a new property is added to this list:
+  //
+  // 1) Add a new static value to the following TAINT_XXXX list.
+  // 2) Add its T.map name to the list in setupAC().
+  // 3) Follow all references to both atomType (for a string), formalCharge (for an int), or partialCharge (for a float) 
+  //    These will include a reference in setAPa() and setAtomData() here and
+  //    to getAtomicPropertyStateBuffer() in viewer.StateCreator
+  // 4) add the settable attribute to the static int XXXX definition in script.T
+  // 5) check that {*}.xxxx = ....; write state test.spt, and script test.spt all work properly
+ 
+  public BS[] tainted;
+  public static String[] userSettableValues;
   
   protected void setupAC() {
     bsHidden = new BS();
@@ -178,13 +159,45 @@ abstract public class AtomCollection {
     bsClickable = new BS();
     // this allows the Google Closure compiler to skip all the TAINTED defs in Clazz.defineStatics
     if (userSettableValues == null)
-      userSettableValues = "atomName atomType coord element formalCharge hydrophobicity ionic occupancy partialCharge temperature valence vanderWaals vibrationVector atomNo seqID resNo".split(" ");
-  }
-  
-  protected void releaseModelSet() {
-    releaseModelSetAC();
+      userSettableValues = ("atomName atomType coord element formalCharge hydrophobicity " +
+          "ionic occupancy partialCharge temperature valence vanderWaals vibrationVector " +
+          "atomNo seqID resNo chain").split(" ");
   }
 
+  final public static int TAINT_ATOMNAME = 0;
+  final public static int TAINT_ATOMTYPE = 1;
+  final public static int TAINT_COORD = 2;
+  final public static int TAINT_ELEMENT = 3;
+  final public static int TAINT_FORMALCHARGE = 4;
+  final public static int TAINT_HYDROPHOBICITY = 5;
+  final public static int TAINT_BONDINGRADIUS = 6;
+  final public static int TAINT_OCCUPANCY = 7;
+  final public static int TAINT_PARTIALCHARGE = 8;
+  final public static int TAINT_TEMPERATURE = 9;
+  final public static int TAINT_VALENCE = 10;
+  final public static int TAINT_VANDERWAALS = 11;
+  final public static int TAINT_VIBRATION = 12;
+  final public static int TAINT_ATOMNO = 13;
+  final public static int TAINT_SEQID = 14;
+  final public static int TAINT_RESNO = 15;
+  final public static int TAINT_CHAIN = 16;
+  final public static int TAINT_MAX = 17; // 1 more than last number, above
+  
+
+  String[] atomNames;
+  String[] atomTypes;
+  // String[] chainIDs; not necessary, as there is a place for this already in atom.group.chain
+  int[] atomSerials;
+  int[] atomResnos;
+  int[] atomSeqIDs;
+  public Vibration[] vibrations;
+  public float[] occupancies;
+  short[] bfactor100s;
+  float[] partialCharges;
+  float[] bondingRadii;
+  float[] hydrophobicities;
+  
+  
   protected void releaseModelSetAC() {
     at = null;
     vwr = null;
@@ -571,20 +584,19 @@ abstract public class AtomCollection {
       Atom atom = at[i];
       switch (tok) {
       case T.atomname:
-        taintAtom(i, TAINT_ATOMNAME);
-        setAtomName(i, sValue);
-        break;
-      case T.atomno:
-        taintAtom(i, TAINT_ATOMNO);
-        setAtomNumber(i, iValue);
-        break;
-      case T.seqid:
-        taintAtom(i, TAINT_SEQID);
-        setAtomSeqID(i, iValue);
+        setAtomName(i, sValue, true);
         break;
       case T.atomtype:
-        taintAtom(i, TAINT_ATOMTYPE);
         setAtomType(i, sValue);
+        break;
+      case T.chain:
+        setChainID(i, sValue);
+        break;
+      case T.atomno:
+        setAtomNumber(i, iValue, true);
+        break;
+      case T.seqid:
+        setAtomSeqID(i, iValue);
         break;
       case T.atomx:
       case T.x:
@@ -617,34 +629,36 @@ abstract public class AtomCollection {
         break;
       case T.elemno:
       case T.element:
-        setElement(atom, iValue);
+        setElement(atom, iValue, true);
         break;
       case T.formalcharge:
         atom.setFormalCharge(iValue);
         taintAtom(i, TAINT_FORMALCHARGE);
         break;
       case T.hydrophobicity:
-        if (setHydrophobicity(i, fValue))
-          taintAtom(i, TAINT_HYDROPHOBICITY);
-        break;
-      case T.label:
-      case T.format:
-        vwr.shm.setAtomLabel(sValue, i);
+        setHydrophobicity(i, fValue);
         break;
       case T.occupancy:
         // a legacy thing
         if (fValue < 2 && fValue > 0.01f)
           fValue = 100 * fValue;
-        if (setOccupancy(i, fValue))
-          taintAtom(i, TAINT_OCCUPANCY);
+        setOccupancy(i, fValue, true);
         break;
       case T.partialcharge:
-        if (setPartialCharge(i, fValue))
-          taintAtom(i, TAINT_PARTIALCHARGE);
+        setPartialCharge(i, fValue, true);
         break;
       case T.bondingradius:
-        if (setBondingRadius(i, fValue))
-          taintAtom(i, TAINT_BONDINGRADIUS);
+        setBondingRadius(i, fValue);
+        break;
+      case T.temperature:
+        setBFactor(i, fValue, true);
+        break;
+      case T.resno:
+        setAtomResno(i,  iValue);
+        break;
+      case T.label:
+      case T.format:
+        vwr.shm.setAtomLabel(sValue, i);
         break;
       case T.radius:
       case T.spacefill:
@@ -656,14 +670,6 @@ abstract public class AtomCollection {
         break;
       case T.selected:
         vwr.slm.setSelectedAtom(atom.i, (fValue != 0));
-        break;
-      case T.temperature:
-        if (setBFactor(i, fValue))
-          taintAtom(i, TAINT_TEMPERATURE);
-        break;
-      case T.resno:
-        setAtomResno(i,  iValue);
-        taintAtom(i, TAINT_RESNO);
         break;
       case T.valence:
         atom.setValence(iValue);
@@ -688,14 +694,6 @@ abstract public class AtomCollection {
     case T.spacefill:
       vwr.setShapeSize(JC.SHAPE_BALLS, Integer.MAX_VALUE, bs);
     }
-  }
-
-  protected void setElement(Atom atom, int atomicNumber) {
-    taintAtom(atom.i, TAINT_ELEMENT);
-    atom.setAtomicAndIsotopeNumber(atomicNumber);
-    atom.paletteID = PAL.CPK.id;
-    atom.colixAtom = vwr.cm.getColixAtomPalette(atom,
-        PAL.CPK.id);
   }
 
   /**
@@ -791,104 +789,143 @@ abstract public class AtomCollection {
     setAtomVibrationVector(atomIndex, v);
   }
 
-  public void setAtomName(int atomIndex, String name) {
-    byte id = (((ModelSet)this).am[at[atomIndex].mi].isBioModel ? vwr.getJBR().lookupSpecialAtomID(name) : 0);
-    at[atomIndex].atomID = id;
-    if (id > 0)
+  public void setAtomName(int atomIndex, String name, boolean doTaint) {
+    if (doTaint && name.equals(at[atomIndex].getAtomName()))
       return;
-    if (atomNames == null)
-      atomNames = new String[at.length];
-    atomNames[atomIndex] = name;
+    // can't set the name of a bioatom
+    byte id = (((ModelSet) this).am[at[atomIndex].mi].isBioModel ? vwr.getJBR()
+        .lookupSpecialAtomID(name) : 0);
+    at[atomIndex].atomID = id;
+    if (id <= 0) {
+      if (atomNames == null)
+        atomNames = new String[at.length];
+      atomNames[atomIndex] = name;
+    }
+    if (doTaint)
+      taintAtom(atomIndex, TAINT_ATOMNAME);
   }
 
-  protected void setAtomType(int atomIndex, String type) {
-      if (atomTypes == null)
-        atomTypes = new String[at.length];
-      atomTypes[atomIndex] = type;
+  private void setAtomType(int atomIndex, String type) {
+    if (type.equals(at[atomIndex].getAtomType()))
+      return;
+    if (atomTypes == null)
+      atomTypes = new String[at.length];
+    atomTypes[atomIndex] = type;
+    return;
   }
   
-  public boolean setAtomNumber(int atomIndex, int atomno) {
-    if (atomSerials == null) {
+  private void setChainID(int atomIndex, String id) {
+    if (id.equals(at[atomIndex].getChainIDStr()))
+      return;
+    int intid = at[atomIndex].getChainID();
+    BS bs = getChainBits(intid);
+    Chain c = at[atomIndex].group.chain;
+    c.chainID = vwr.getChainID(id, true);
+    for (int i = bs.nextSetBit(0); i >= 0; i  = bs.nextSetBit(i + 1))
+      taintAtom(i, TAINT_CHAIN);
+  }
+
+  public void setAtomNumber(int atomIndex, int atomno, boolean doTaint) {
+    if (doTaint && atomno == at[atomIndex].getAtomNumber())
+      return;
+    if (atomSerials == null)
       atomSerials = new int[at.length];
-    }
     atomSerials[atomIndex] = atomno;
-    return true;
+    if (doTaint)
+      taintAtom(atomIndex, TAINT_ATOMNO);
   }
   
-  public boolean setAtomResno(int atomIndex, int resno) {
-    if (atomResnos == null) {
-      atomResnos = new int[at.length];
-    }
-    atomResnos[atomIndex] = resno;
+  protected void setElement(Atom atom, int atomicNumber, boolean doTaint) {
+    if (doTaint && atom.getElementNumber() == atomicNumber)
+      return;
+    atom.setAtomicAndIsotopeNumber(atomicNumber);
+    atom.paletteID = PAL.CPK.id;
+    atom.colixAtom = vwr.cm.getColixAtomPalette(atom,
+        PAL.CPK.id);
+    if (doTaint)
+      taintAtom(atom.i, TAINT_ELEMENT);
+  }
+
+  private void setAtomResno(int atomIndex, int resno) {
+    if (resno == at[atomIndex].getResno())
+      return;
     at[atomIndex].group.setResno(resno);
-    return true;
+    if (atomResnos == null)
+      atomResnos = new int[at.length];
+    atomResnos[atomIndex] = resno;
+    taintAtom(atomIndex, TAINT_RESNO);
   }
   
-  public boolean setAtomSeqID(int atomIndex, int seqID) {
-    if (atomSeqIDs == null) {
+  private void setAtomSeqID(int atomIndex, int seqID) {
+    if (seqID == at[atomIndex].getSeqID())
+      return;
+    if (atomSeqIDs == null)
       atomSeqIDs = new int[at.length];
-    }
     atomSeqIDs[atomIndex] = seqID;
-    return true;
+    taintAtom(atomIndex, TAINT_SEQID);
   }
   
-  protected boolean setOccupancy(int atomIndex, float occupancy) {
+  protected void setOccupancy(int atomIndex, float occupancy, boolean doTaint) {
+    if (doTaint && occupancy == at[atomIndex].getOccupancy100())
+      return;
     if (occupancies == null) {
       if (occupancy == 100)
-        return false; // 100 is the default;
+        return; // 100 is the default;
       occupancies = new float[at.length];
       for (int i = at.length; --i >= 0;)
         occupancies[i] = 100;
     }
     occupancies[atomIndex] = occupancy;
-    return true;
+    if (doTaint)
+      taintAtom(atomIndex, TAINT_OCCUPANCY);
   }
   
-  protected boolean setPartialCharge(int atomIndex, float partialCharge) {
-    if (Float.isNaN(partialCharge))
-      return false;
+  protected void setPartialCharge(int atomIndex, float partialCharge, boolean doTaint) {
+    if (Float.isNaN(partialCharge) || doTaint && partialCharge == at[atomIndex].getPartialCharge())
+      return;
     if (partialCharges == null) {
       if (partialCharge == 0)
-        return false; // no need to store a 0.
+        return; // no need to store a 0.
       partialCharges = new float[at.length];
     }
     partialCharges[atomIndex] = partialCharge;
-    return true;
+    if (doTaint)
+      taintAtom(atomIndex, TAINT_PARTIALCHARGE);
   }
 
-  protected boolean setBondingRadius(int atomIndex, float radius) {
-    if (Float.isNaN(radius))
-      return false;
-    if (bondingRadii == null) {
+  private void setBondingRadius(int atomIndex, float radius) {
+    if (Float.isNaN(radius) || radius == at[atomIndex].getBondingRadius())
+      return;
+    if (bondingRadii == null)
       bondingRadii = new float[at.length];
-    }
     bondingRadii[atomIndex] = radius;
-    return true;
+    taintAtom(atomIndex, TAINT_BONDINGRADIUS);
   }
 
-  protected boolean setBFactor(int atomIndex, float bfactor) {
-    if (Float.isNaN(bfactor))
-      return false;
+  protected void setBFactor(int atomIndex, float bfactor, boolean doTaint) {
+    if (Float.isNaN(bfactor) || doTaint && bfactor == at[atomIndex].getBfactor100())
+      return;
     if (bfactor100s == null) {
-      if (bfactor == 0 && bfactor100s == null) // there's no need to store a 0.
-        return false;
+      if (bfactor == 0) // there's no need to store a 0.
+        return;
       bfactor100s = new short[at.length];
     }
     bfactor100s[atomIndex] = (short) ((bfactor < -327.68f ? -327.68f
         : bfactor > 327.67 ? 327.67 : bfactor) * 100 + (bfactor < 0 ? -0.5 : 0.5));
-    return true;
+    if (doTaint)
+      taintAtom(atomIndex, TAINT_TEMPERATURE);
   }
 
-  protected boolean setHydrophobicity(int atomIndex, float value) {
-    if (Float.isNaN(value))
-      return false;
+  private void setHydrophobicity(int atomIndex, float value) {
+    if (Float.isNaN(value) || value == at[atomIndex].getHydrophobicity())
+      return;
     if (hydrophobicities == null) {
       hydrophobicities = new float[at.length];
       for (int i = 0; i < at.length; i++)
         hydrophobicities[i] = Elements.getHydrophobicity(at[i].group.groupID);
     }
     hydrophobicities[atomIndex] = value;
-    return true;
+    taintAtom(atomIndex, TAINT_HYDROPHOBICITY);
   }
 
   // loading data
@@ -928,8 +965,11 @@ abstract public class AtomCollection {
           fData[atomIndex] = x;
           bs.set(atomIndex);
           continue;
+        case TAINT_ATOMNAME:
+          setAtomName(atomIndex, tokens[pt], true);
+          break;
         case TAINT_ATOMNO:
-          setAtomNumber(atomIndex, (int) x);
+          setAtomNumber(atomIndex, (int) x, true);
           break;
         case TAINT_RESNO:
           setAtomResno(atomIndex, (int) x);
@@ -937,11 +977,11 @@ abstract public class AtomCollection {
         case TAINT_SEQID:
           setAtomSeqID(atomIndex, (int) x);
           break;
-        case TAINT_ATOMNAME:
-          setAtomName(atomIndex, tokens[pt]);
-          break;
         case TAINT_ATOMTYPE:
           setAtomType(atomIndex, tokens[pt]);
+          break;
+        case TAINT_CHAIN:
+          setChainID(atomIndex, tokens[pt]);
           break;
         case TAINT_ELEMENT:
           atom.setAtomicAndIsotopeNumber((int)x);
@@ -958,10 +998,10 @@ abstract public class AtomCollection {
           setBondingRadius(atomIndex, x);          
           break;
         case TAINT_PARTIALCHARGE:
-          setPartialCharge(atomIndex, x);          
+          setPartialCharge(atomIndex, x, true);          
           break;
         case TAINT_TEMPERATURE:
-          setBFactor(atomIndex, x);
+          setBFactor(atomIndex, x, true);
           break;
         case TAINT_VALENCE:
           atom.setValence((int)x);     
@@ -970,7 +1010,7 @@ abstract public class AtomCollection {
           atom.setRadius(x);          
           break;
         }
-        taintAtom(atomIndex, (byte) type);
+        taintAtom(atomIndex, type);
       }
       if (type == TAINT_MAX && n > 0)
         vwr.setData(name, new Object[] {name, fData, bs, Integer.valueOf(JmolDataManager.DATA_TYPE_AF)}, 0, 0, 0, 0, 0);
@@ -1033,11 +1073,11 @@ abstract public class AtomCollection {
     return (isExplicit ? TAINT_MAX : -1);
   }
 
-  public BS getTaintedAtoms(byte type) {
+  public BS getTaintedAtoms(int type) {
     return tainted == null ? null : tainted[type];
   }
   
-  public void taintAtoms(BS bsAtoms, byte type) {
+  public void taintAtoms(BS bsAtoms, int type) {
     canSkipLoad = false;
     if (!preserveState)
       return;
@@ -1045,7 +1085,7 @@ abstract public class AtomCollection {
       taintAtom(i, type);
   }
 
-  protected void taintAtom(int atomIndex, byte type) {
+  protected void taintAtom(int atomIndex, int type) {
     if (!preserveState)
       return;
     if (tainted == null)
@@ -1057,7 +1097,7 @@ abstract public class AtomCollection {
       validateBspfForModel(((ModelSet) this).am[at[atomIndex].mi].trajectoryBaseIndex, false);
   }
 
-  private void untaint(int atomIndex, byte type) {
+  private void untaint(int atomIndex, int type) {
     if (!preserveState)
       return;
     if (tainted == null || tainted[type] == null)
@@ -1065,7 +1105,7 @@ abstract public class AtomCollection {
     tainted[type].clear(atomIndex);
   }
 
-  public void setTaintedAtoms(BS bs, byte type) {
+  public void setTaintedAtoms(BS bs, int type) {
     if (!preserveState)
       return;
     if (bs == null) {
@@ -1081,7 +1121,7 @@ abstract public class AtomCollection {
     BSUtil.copy2(bs, tainted[type]);
   }
 
-  public void unTaintAtoms(BS bs, byte type) {
+  public void unTaintAtoms(BS bs, int type) {
     if (tainted == null || tainted[type] == null)
       return;
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i+1))

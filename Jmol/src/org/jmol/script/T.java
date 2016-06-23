@@ -543,7 +543,7 @@ public class T {
   public final static int atomtype      = strproperty | 1 | settable;
   public final static int atomname      = strproperty | 2 | settable;
   public final static int altloc        = strproperty | 3;
-  public final static int chain         = strproperty | 4;
+  public final static int chain         = strproperty | 4 | settable;
   public final static int element       = strproperty | 5 | settable;
   public final static int group         = strproperty | 6;
   public final static int group1        = strproperty | 7;

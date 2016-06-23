@@ -678,9 +678,9 @@ public final class BioResolver implements Comparator<String[]> {
     if (lastSetH == Integer.MIN_VALUE || atoms[iAtom].mi != atoms[lastSetH].mi) 
       maxSerial = ((int[]) ms.getInfo(atoms[lastSetH = iAtom].mi, "PDB_CONECT_firstAtom_count_max"))[2];
     bsAddedHydrogens.clear(iAtom);
-    ms.setAtomName(iAtom, name);
+    ms.setAtomName(iAtom, name, false);
     atoms[iAtom].setT(pt);
-    ms.setAtomNumber(iAtom, ++maxSerial);
+    ms.setAtomNumber(iAtom, ++maxSerial, false);
     atoms[iAtom].atomSymmetry = atoms[iTo].atomSymmetry;
     ml.undeleteAtom(iAtom);
 

@@ -179,7 +179,7 @@ public class StateCreator extends JmolStateCreator {
   private String getDataState(SB sfunc) {
     SB commands = new SB();
     boolean haveData = false;
-    String atomProps = getAtomicPropertyState((byte) -1, null);
+    String atomProps = getAtomicPropertyState(-1, null);
     if (atomProps.length() > 0) {
       haveData = true;
       commands.append(atomProps);
@@ -1514,18 +1514,18 @@ public class StateCreator extends JmolStateCreator {
     }
   }
 
-  private static boolean isTainted(BS[] tainted, int atomIndex, byte type) {
+  private static boolean isTainted(BS[] tainted, int atomIndex, int type) {
     return (tainted != null && tainted[type] != null && tainted[type]
         .get(atomIndex));
   }
 
   @Override
-  String getAtomicPropertyState(byte taintWhat, BS bsSelected) {
+  String getAtomicPropertyState(int taintWhat, BS bsSelected) {
     if (!vwr.g.preserveState)
       return "";
     BS bs;
     SB commands = new SB();
-    for (byte type = 0; type < AtomCollection.TAINT_MAX; type++)
+    for (int type = 0; type < AtomCollection.TAINT_MAX; type++)
       if (taintWhat < 0 || type == taintWhat)
         if ((bs = (bsSelected != null ? bsSelected : vwr
             .ms.getTaintedAtoms(type))) != null)
@@ -1534,7 +1534,7 @@ public class StateCreator extends JmolStateCreator {
   }
 
   @Override
-  void getAtomicPropertyStateBuffer(SB commands, byte type, BS bs,
+  void getAtomicPropertyStateBuffer(SB commands, int type, BS bs,
                                            String label, float[] fData) {
     if (!vwr.g.preserveState)
       return;
@@ -1562,6 +1562,9 @@ public class StateCreator extends JmolStateCreator {
           break;
         case AtomCollection.TAINT_ATOMNO:
           s.appendI(atoms[i].getAtomNumber());
+          break;
+        case AtomCollection.TAINT_CHAIN:
+          s.append(atoms[i].getChainIDStr());
           break;
         case AtomCollection.TAINT_RESNO:
           s.appendI(atoms[i].group.getResno());
@@ -1729,8 +1732,8 @@ public class StateCreator extends JmolStateCreator {
       sb.append("#" + type + " " + taintedAtom + " " + (new Date()) + "\n");
       if (taintedAtom >= 0) {
         bs = vwr.getModelUndeletedAtomsBitSet(modelIndex);
-        vwr.ms.taintAtoms(bs, (byte) type);
-        sb.append(getAtomicPropertyState((byte) -1, null));
+        vwr.ms.taintAtoms(bs, type);
+        sb.append(getAtomicPropertyState(-1, null));
       } else {
         bs = vwr.getModelUndeletedAtomsBitSet(modelIndex);
         sb.append("zap ");

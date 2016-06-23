@@ -2828,8 +2828,8 @@ public class ScriptCompiler extends ScriptTokenParser {
 
     // to support 1.ca, let's check the character after the dot
     // to determine if it is an alpha
-    char ch1;
-    if (!eol(ch1 = charAt(ichT))) {
+    char ch1 = charAt(ichT);
+    if (!isSpaceOrTab(ch1) && !eol(ch1)) {
       if (PT.isLetter(ch1) || ch1 == '?' || ch1 == '*' || ch1 == '_')
         return false;
       //well, guess what? we also have to look for 86.1Na, so...

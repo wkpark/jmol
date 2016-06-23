@@ -344,6 +344,14 @@ abstract class ScriptExpr extends ScriptParam {
       case T.semicolon: // for (i = 1; i < 3; i=i+1)
         break out;
       case T.integer:
+        // checking here for nnn.? or nnn.*, which is not treated as "float" in the compiler
+        if (tokAt(iToken + 1) == T.per && ((tok = tokAt(iToken + 2)) == T.opIf || tok == T.times)) {
+          theToken.value = Float.valueOf(theToken.intValue);
+          theToken.tok = T.decimal;
+          theToken.intValue = Integer.MAX_VALUE;
+          i++;
+        }
+        //$FALL-THROUGH$
       case T.decimal:
       case T.spec_seqcode:
         rpn.addXNum(theToken);

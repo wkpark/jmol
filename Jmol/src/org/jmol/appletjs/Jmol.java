@@ -361,4 +361,15 @@ public class Jmol extends GenericApplet implements JSInterface {
     jmol.resizeApplet(viewer.html5Applet, new int[] {width, height});
   }
 
+  @Override
+  public void playAudio(String fileOrDataURI) {
+    
+  /**
+   * @j2sNative
+   *
+   * Jmol.playAudio(fileOrDataURI);
+   */
+  {}
+  }
+
 }

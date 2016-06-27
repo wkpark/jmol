@@ -625,6 +625,11 @@ public class StatusManager {
     }
   }
 
+
+    public void playAudio(String fileNameOrDataURI) {
+      syncSend(fileNameOrDataURI, "audio:", -1);
+    }
+
   public Object syncSend(String script, Object appletNameOrProp, int port) {
     // no jmolscript option for syncSend
     if (port != 0 || notifyEnabled(CBK.SYNC)) {
@@ -781,6 +786,7 @@ public class StatusManager {
         && height == vwr.getScreenHeight() ? new int[] { width, height } : jsl
         .resizeInnerPanel("preferredWidthHeight " + width + " " + height + ";"));
   }
+
 
 }
 

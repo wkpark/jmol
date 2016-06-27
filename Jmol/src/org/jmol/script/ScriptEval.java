@@ -4277,6 +4277,10 @@ public class ScriptEval extends ScriptExpr {
         modelName = optParameterAsString(++i);
         tok = T.getTokFromName(modelName);
         break;
+      case T.audio:
+        if (!chk)
+          vwr.playAudio(optParameterAsString(++i));
+         return;
       case T.identifier:
         i++;
         loadScript.append(" " + modelName);

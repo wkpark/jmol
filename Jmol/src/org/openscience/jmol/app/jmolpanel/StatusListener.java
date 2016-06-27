@@ -46,6 +46,10 @@ import org.jmol.viewer.Viewer;
 import org.openscience.jmol.app.jmolpanel.console.AppConsole;
 import org.openscience.jmol.app.webexport.WebExport;
 
+import sun.audio.AudioData;
+import sun.audio.AudioDataStream;
+import sun.audio.AudioPlayer;
+
 class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterface {
 
   /*
@@ -210,6 +214,10 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
       break;
     case SYNC:
       //System.out.println("StatusListener sync; " + strInfo);
+      if ("audio:" == data[2]) {
+        playAudio(strInfo);
+        return;
+      }
       String lc = (strInfo == null ? "" : strInfo.toLowerCase());
       if (lc.startsWith("jspecview")) {
         setJSpecView(strInfo.substring(9).trim(), false, false);
@@ -248,6 +256,23 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
       appConsole.notifyCallback(type, data);
   }
 
+
+  /**
+   * WAV only for application
+   * 
+   * @param fileName
+   */
+  private void playAudio(String fileName) {
+    try {
+      Object ret = vwr.fm.getFileAsBytes(fileName, null);
+      if (ret == null || ret instanceof String) {
+        return;
+      }
+      AudioPlayer.player.start(new AudioDataStream(new AudioData((byte[]) ret)));
+    } catch (Exception e) {
+      Logger.info(e.getMessage());
+    }
+  }
 
   /**
    * @param atomIndex  

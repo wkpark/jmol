@@ -1230,6 +1230,7 @@ public class ScriptCompiler extends ScriptTokenParser {
             case T.smiles:
             case T.trajectory:
             case T.async:
+            case T.audio:
               addTokenToPrefix(token);
               break;
             default:

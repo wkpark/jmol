@@ -157,6 +157,7 @@ public class Jmol extends GenericApplet implements WrappedApplet {
   public Jmol() {
     //
   }
+
   /*
    * see below public String getAppletInfo() { return appletInfo; }
    * 
@@ -296,7 +297,7 @@ public class Jmol extends GenericApplet implements WrappedApplet {
             + haveDocumentAccess);
       }
     }
-    cleanRegistry();    
+    cleanRegistry();
   }
 
   private void addValue(Map<String, Object> info, String key, String putKey,
@@ -363,7 +364,7 @@ public class Jmol extends GenericApplet implements WrappedApplet {
       }
     }
   }
-  
+
   @Override
   protected String getJmolParameter(String paramName) {
     return applet.getParameter(paramName);
@@ -672,11 +673,11 @@ public class Jmol extends GenericApplet implements WrappedApplet {
   protected void doShowStatus(String message) {
     try {
       System.out.println(message);
-      applet
-          .showStatus(PT.rep(PT.split(message, "\n")[0], "'", "\\'"));
+      applet.showStatus(PT.rep(PT.split(message, "\n")[0], "'", "\\'"));
       doSendJsTextStatus(message);
     } catch (Exception e) {
       //ignore if page is closing
     }
   }
+
 }

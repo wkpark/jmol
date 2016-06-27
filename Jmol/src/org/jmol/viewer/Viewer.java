@@ -9442,4 +9442,8 @@ public class Viewer extends JmolViewer implements AtomDataServer,
         .getUtil("Triangulator", this, "script")) : triangulator);
   }
 
+  public void playAudio(String fileNameOrDataURI) {
+    sm.playAudio(fileNameOrDataURI);
+  }
+
 }

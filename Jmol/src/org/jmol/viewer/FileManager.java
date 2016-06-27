@@ -719,28 +719,29 @@ public class FileManager implements BytePoster {
     // but in that case we can get the bytes directly and not
     // fool with a BufferedInputStream, and we certainly do not want to 
     // open it twice in the case of the returned interior file being another PNGJ file
-    Object bytes = (subFileList == null ? null : getPngjOrDroppedBytes(fullName, name));
-    if (bytes != null)
-      return bytes;
-    Object t = getBufferedInputStreamOrErrorMessageFromName(name, fullName,
-        false, false, null, false, true);
-    if (t instanceof String)
-      return "Error:" + t;
-    try {
-      BufferedInputStream bis = (BufferedInputStream) t;
-      bytes = (out != null 
-          || subFileList == null
-          || subFileList.length <= 1 
-          || !Rdr.isZipS(bis) && !Rdr.isPngZipStream(bis) 
-              ? Rdr.getStreamAsBytes(bis,out) 
-          : vwr.getJzt().getZipFileContentsAsBytes(bis, subFileList, 1));
-      bis.close();
-      return bytes;
-    } catch (Exception ioe) {
-      return ioe.toString();
+    Object bytes = (subFileList == null ? null : getPngjOrDroppedBytes(
+        fullName, name));
+    if (bytes == null) {
+      Object t = getBufferedInputStreamOrErrorMessageFromName(name, fullName,
+          false, false, null, false, true);
+      if (t instanceof String)
+        return "Error:" + t;
+      try {
+        BufferedInputStream bis = (BufferedInputStream) t;
+        bytes = (out != null || subFileList == null || subFileList.length <= 1
+            || !Rdr.isZipS(bis) && !Rdr.isPngZipStream(bis) ? Rdr
+            .getStreamAsBytes(bis, out) : vwr.getJzt()
+            .getZipFileContentsAsBytes(bis, subFileList, 1));
+        bis.close();
+      } catch (Exception ioe) {
+        return ioe.toString();
+      }
     }
+    if (out == null || !AU.isAB(bytes))
+      return bytes;
+      out.write((byte[]) bytes, 0, -1);
+    return ((byte[]) bytes).length + " bytes";
   }
-
 
   public Map<String, Object> getFileAsMap(String name) {
     Map<String, Object> bdata = new Hashtable<String, Object>();

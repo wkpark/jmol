@@ -139,10 +139,9 @@ abstract class BioShapeRenderer extends ShapeRenderer {
     aspectRatio = val;
     if (aspectRatio > 0 && meshRenderer == null) {
       meshRenderer = (BioMeshRenderer) Interface.getInterface("org.jmol.renderbio.BioMeshRenderer");
-      meshRenderer.setup(g3d, vwr.ms, shape);
       meshRenderer.setViewerG3dShapeID(vwr, shape.shapeID);
     }
-
+    meshRenderer.setup(g3d, vwr.ms, shape);
     TF = vwr.getBoolean(T.tracealpha);
     if (TF != isTraceAlpha)
       invalidateMesh = true;

@@ -102,11 +102,11 @@ abstract class BioShapeRenderer extends ShapeRenderer {
     needTranslucent = false;
     g3d.addRenderer(T.hermitelevel);
     boolean TF = (!isExport && !vwr.checkMotionRendering(T.cartoon));
-    
+
     if (TF != wireframeOnly)
       invalidateMesh = true;
     wireframeOnly = TF;
-    
+
     TF = (isExport || !wireframeOnly && vwr.getBoolean(T.highresolution));
     if (TF != isHighRes)
       invalidateMesh = true;
@@ -122,7 +122,7 @@ abstract class BioShapeRenderer extends ShapeRenderer {
     if (cartoonsFancy && !wireframeOnly)
       val1 = Math.max(val1, 3); // at least HermiteLevel 3 for "cartoonFancy" and 
     //else if (val1 == 0 && exportType == GData.EXPORT_CARTESIAN)
-      //val1 = 5; // forces hermite for 3D exporters
+    //val1 = 5; // forces hermite for 3D exporters
     if (val1 != hermiteLevel)// && val1 != 0)
       invalidateMesh = true;
     hermiteLevel = Math.min(val1, 8);
@@ -137,11 +137,14 @@ abstract class BioShapeRenderer extends ShapeRenderer {
     if (val != aspectRatio && val != 0 && val1 != 0)
       invalidateMesh = true;
     aspectRatio = val;
-    if (aspectRatio > 0 && meshRenderer == null) {
-      meshRenderer = (BioMeshRenderer) Interface.getInterface("org.jmol.renderbio.BioMeshRenderer");
-      meshRenderer.setViewerG3dShapeID(vwr, shape.shapeID);
+    if (aspectRatio > 0) {
+      if (meshRenderer == null) {
+        meshRenderer = (BioMeshRenderer) Interface
+            .getInterface("org.jmol.renderbio.BioMeshRenderer");
+        meshRenderer.setViewerG3dShapeID(vwr, shape.shapeID);
+      }
+      meshRenderer.setup(g3d, vwr.ms, shape);
     }
-    meshRenderer.setup(g3d, vwr.ms, shape);
     TF = vwr.getBoolean(T.tracealpha);
     if (TF != isTraceAlpha)
       invalidateMesh = true;

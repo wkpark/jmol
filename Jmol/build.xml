@@ -479,7 +479,11 @@ all support for previous versions removed
 
   <target name="jar" id="jar"
           depends="init,classes,jmolGuide,jmolHistory,jmolDevelopersGuide,libjars,main-i18n">
-    <copy todir="${classes.dir}/org/openscience/jmol/Data/guide" >
+    <if><equals arg1="${Private.propertyFile}" arg2="none" />
+    	<then><echo>Skipping jar creation</echo></then><else>
+
+  	
+  	<copy todir="${classes.dir}/org/openscience/jmol/Data/guide" >
       <fileset dir="build/doc/JmolUserGuide">
         <include name="**/*.html" />
       </fileset>
@@ -598,6 +602,7 @@ all support for previous versions removed
       <param name="sign-jar-file-name" value="ChimeToJmol.jar" />
     </antcall>
     -->
+  </else></if>
   </target>
 
   <target name="apis-jar" id="apis-jar" depends="init,apisio-classes">
@@ -625,7 +630,9 @@ all support for previous versions removed
   
   <target name="applet-jar" id="applet-jar"
           depends="applet-classes">
-  	
+  <if><equals arg1="${Private.propertyFile}" arg2="none" />
+    	<then><echo>Skipping applet-jar</echo></then><else>
+	
     <delete dir="build">
       <include name="JmolApplet*"/>
     </delete>
@@ -903,11 +910,14 @@ all support for previous versions removed
       </fileset>
     </jar>
 
-
+  </else></if>
   </target>
 
   <target name="signed-applet" id="signed-applet" depends="applet-jar">
-    <delete dir="build">
+  <if><equals arg1="${Private.propertyFile}" arg2="none" />
+    	<then><echo>Skipping applet jar signing</echo></then><else>
+
+  	<delete dir="build">
       <include name="JmolAppletSigned*"/>
     </delete>
     <echo message="Creating JmolAppletSigned.jar" />
@@ -1157,11 +1167,13 @@ all support for previous versions removed
       <param name="sign-jar-file-dir" value="build" />
       <param name="sign-jar-file-name"  value="JmolApplet*.jar" />
     </antcall>
-
+  </else></if>
   </target>
 
   <target name="smiles-applet-jar" id="smiles-applet-jar"
           depends="applet-classes">
+  <if><equals arg1="${Private.propertyFile}" arg2="none" />
+    	<then><echo>Skipping smiles-applet-jar</echo></then><else>
   	
  <!-- JmolSmilesApplet.jar is skipped for now because it has no HTML5 equivalent
   	
@@ -1201,6 +1213,7 @@ all support for previous versions removed
     </antcall>
     
     -->
+  </else></if>
   </target>
   	
 
@@ -1688,8 +1701,13 @@ all support for previous versions removed
     <jar destfile="${tests.dir}/Tests.jar" basedir="${test-classes.dir}" />
   </target>
 
+
+	
+	
   <!-- tools  -->
   <target name="sign-jar-file" >
+  <if><equals arg1="${Private.propertyFile}" arg2="none" />
+  	<then><echo>Skipping jar signing</echo></then><else>
     <if><available file="${Private.propertyFile}" /><then>
       	<echo>using keystore="${Private.keystore}" alias="${Private.alias} tsa=${tsa.url}"</echo> 
         <signjar keystore="${Private.keystore}"
@@ -1728,6 +1746,7 @@ all support for previous versions removed
 	        </signjar>    	
 	</else></if>
     <!-- to verify that a .jar file is signed: jarsigner -verify foo.jar -->
+  </else></if>
   </target>
 
   <!-- i18n stuff -->

@@ -267,91 +267,97 @@ class PointGroup {
 
     /* flow chart contribution of Dean Johnston */
 
-    int n = getHighestOrder();
-    if (nAxes[c3] > 1) {
-      // must be Ix, Ox, or Tx
-      if (nAxes[c5] > 1) {
-        if (haveInversionCenter) {
-          name = "Ih";
-        } else {
-          name = "I";
-        }
-      } else if (nAxes[c4] > 1) {
-        if (haveInversionCenter) {
-          name = "Oh";
-        } else {
-          name = "O";
-        }
-      } else {
-        if (nPlanes > 0) {
+    try {
+      int n = getHighestOrder();
+      if (nAxes[c3] > 1) {
+        // must be Ix, Ox, or Tx
+        if (nAxes[c5] > 1) {
           if (haveInversionCenter) {
-            name = "Th";
+            name = "Ih";
           } else {
-            name = "Td";
+            name = "I";
+          }
+        } else if (nAxes[c4] > 1) {
+          if (haveInversionCenter) {
+            name = "Oh";
+          } else {
+            name = "O";
           }
         } else {
-          name = "T";
+          if (nPlanes > 0) {
+            if (haveInversionCenter) {
+              name = "Th";
+            } else {
+              name = "Td";
+            }
+          } else {
+            name = "T";
+          }
         }
-      }
-    } else {
-      // Cs, Ci, C1
-      if (n < 2) {
-        if (nPlanes == 1) {
-          name = "Cs";
-          return true;
-        }
-        if (haveInversionCenter) {
-          name = "Ci";
-          return true;
-        }
-        name = "C1";
-      } else if ((n % 2) == 1 && nAxes[c2] > 0 || (n % 2) == 0 && nAxes[c2] > 1) {
-        // Dnh, Dnd, Dn, S4
+      } else {
+        // Cs, Ci, C1
+        if (n < 2) {
+          if (nPlanes == 1) {
+            name = "Cs";
+            return true;
+          }
+          if (haveInversionCenter) {
+            name = "Ci";
+            return true;
+          }
+          name = "C1";
+        } else if ((n % 2) == 1 && nAxes[c2] > 0 || (n % 2) == 0
+            && nAxes[c2] > 1) {
+          // Dnh, Dnd, Dn, S4
 
-        // here based on the presence of C2 axes in any odd-order group
-        // and more than one C2 if even order (since the one will be part of the 
-        // principal axis
+          // here based on the presence of C2 axes in any odd-order group
+          // and more than one C2 if even order (since the one will be part of the 
+          // principal axis
 
-        principalAxis = setPrincipalAxis(n, nPlanes);
-        if (nPlanes == 0) {
+          principalAxis = setPrincipalAxis(n, nPlanes);
+          if (nPlanes == 0) {
+            if (n < firstProper) {
+              name = "S" + n;
+            } else {
+              name = "D" + (n - firstProper);
+            }
+          } else {
+            // highest axis may be S8, but this is really D4h/D4d
+            if (n < firstProper)
+              n = n / 2;
+            else
+              n -= firstProper;
+            if (nPlanes == n) {
+              name = "D" + n + "d";
+            } else {
+              name = "D" + n + "h";
+            }
+          }
+        } else if (nPlanes == 0) {
+          // Cn, S3, S6 
+          principalAxis = axes[n][0];
           if (n < firstProper) {
             name = "S" + n;
           } else {
-            name = "D" + (n - firstProper);
+            name = "C" + (n - firstProper);
           }
+        } else if (nPlanes == n - firstProper) {
+          principalAxis = axes[n][0];
+          name = "C" + nPlanes + "v";
         } else {
-          // highest axis may be S8, but this is really D4h/D4d
+          principalAxis = axes[n < firstProper ? n + firstProper : n][0];
+          principalPlane = axes[0][0];
           if (n < firstProper)
-            n = n / 2;
+            n /= 2;
           else
             n -= firstProper;
-          if (nPlanes == n) {
-            name = "D" + n + "d";
-          } else {
-            name = "D" + n + "h";
-          }
+          name = "C" + n + "h";
         }
-      } else if (nPlanes == 0) {
-        // Cn, S3, S6 
-        principalAxis = axes[n][0];
-        if (n < firstProper) {
-          name = "S" + n;
-        } else {
-          name = "C" + (n - firstProper);
-        }
-      } else if (nPlanes == n - firstProper) {
-        principalAxis = axes[n][0];
-        name = "C" + nPlanes + "v";
-      } else {
-        principalAxis = axes[n < firstProper ? n + firstProper : n][0];
-        principalPlane = axes[0][0];
-        if (n < firstProper)
-          n /= 2;
-        else
-          n -= firstProper;
-        name = "C" + n + "h";
       }
+    } catch (Exception e) {
+      name = "??";
     }
+    Logger.info("Point group found: " + name);
     return true;
   }
 
@@ -440,6 +446,11 @@ class PointGroup {
       radius = Math.max(radius, r2);
     }
     radius = (float) Math.sqrt(radius);
+    if (radius < 1.5f && distanceTolerance > 0.15f) {
+      distanceTolerance = radius / 10;
+      distanceTolerance2 = distanceTolerance * distanceTolerance;
+      System.out.println("PointGroup calculation adjusting distanceTolerance to " + distanceTolerance);
+    }
     return true;
   }
 
@@ -483,6 +494,7 @@ class PointGroup {
         nFound++;
         continue;
       }
+      // did not find the point...
       iter.initialize(pt, distanceTolerance, false);
       while (iter.hasMoreElements()) {
         T3 a2 = iter.nextElement();
@@ -492,6 +504,10 @@ class PointGroup {
         if (centerAtomIndex >= 0 && j == centerAtomIndex || elements[j] != e1)
           continue;
         if (pt.distanceSquared(a2) < distanceTolerance2) {
+          nFound++;
+        //System.out.println("#pt=" + pt + " a2=" + a2 + " dist=" + pt.distanceSquared(a2));
+        //System.out.println("draw pt" + i + " " + pt + " color red");
+        //System.out.println("draw a" + i + " " + a2 + " color green");
           continue out;
         }
       }

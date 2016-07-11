@@ -61,8 +61,8 @@ public class SmilesAtom extends P3 implements Node {
   int index;
 
   String referance;
-  String residueName;
-  String residueChar;
+  String residueName, residueChar;
+  char insCode;
   boolean isBioAtom;
   boolean isBioResidue;
   boolean isBioAtomWild;
@@ -730,6 +730,10 @@ public class SmilesAtom extends P3 implements Node {
     return null;
   }
 
+  @Override
+  public char getInsertionCode() {
+    return insCode;
+  }
   @Override
   public int getResno() {
     return residueNumber;

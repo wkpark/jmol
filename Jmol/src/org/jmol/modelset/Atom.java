@@ -1374,6 +1374,11 @@ public class Atom extends Point3fi implements Node {
     return ""; 
   }
 
+  @Override
+  public char getInsertionCode() {
+    return group.getInsertionCode();
+  }
+  
   public T3 atomPropertyTuple(Viewer vwr, int tok, P3 ptTemp) {
     switch (tok) {
     case T.coord:

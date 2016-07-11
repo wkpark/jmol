@@ -1041,7 +1041,10 @@ public class SmilesSearch extends JmolMolecule {
           break;
         // <res#n
         if (patternAtom.residueNumber != Integer.MIN_VALUE
-            && patternAtom.residueNumber != (a.getResno()))
+            && patternAtom.residueNumber != a.getResno())
+          break;
+        if (patternAtom.insCode != '\0'
+            && patternAtom.insCode != a.getInsertionCode())
           break;
         if (patternAtom.residueChar != null || patternAtom.elementNumber == -2) {
           char atype = a.getBioSmilesType();
@@ -1687,6 +1690,7 @@ public class SmilesSearch extends JmolMolecule {
       atom.residueChar = sAtom.residueChar;
       atom.residueNumber = sAtom.residueNumber;
       atom.atomNumber = sAtom.residueNumber;
+      atom.insCode = sAtom.insCode;
       atom.atomClass = sAtom.atomClass;
       atom.explicitHydrogenCount = 0;
       atom.isBioAtom = sAtom.isBioAtom;

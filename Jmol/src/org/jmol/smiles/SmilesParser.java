@@ -901,14 +901,23 @@ public class SmilesParser {
       int biopt = pattern.indexOf('.');
       if (biopt >= 0) {
         newAtom.isBioResidue = true;
-        // res#nn.name
         String resOrName = pattern.substring(index, biopt);
         pattern = pattern.substring(biopt + 1).toUpperCase();
-        // res#nn
+        // res#nn^inc
+        // res#nn^inc.name
+        int len = resOrName.length();
+        if ((biopt = resOrName.indexOf("^")) >= 0) {
+          if (biopt == len - 2) {
+            ch = resOrName.charAt(len - 1);
+            if (ch != '*')
+              newAtom.insCode = ch;
+          }
+          resOrName = resOrName.substring(0, biopt); 
+        }
         if ((biopt = resOrName.indexOf("#")) >= 0) {
           getDigits(resOrName, biopt + 1, ret);
-          resOrName = resOrName.substring(0, biopt);
           newAtom.residueNumber = ret[0];
+          resOrName = resOrName.substring(0, biopt);
         }
         if (resOrName.length() == 0)
           resOrName = "*";

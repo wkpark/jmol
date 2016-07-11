@@ -83,6 +83,7 @@ public interface Node {
   public String getGroup1(char c0);
   public String getGroup3(boolean allowNull);
   public int getResno();
+  public char getInsertionCode();
   public int getChainID();
   public String getChainIDStr();
   public int getOffsetResidueAtom(String name, int offset);

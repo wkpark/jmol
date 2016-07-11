@@ -797,7 +797,7 @@ public class MMCifReader extends CifReader {
   
   final private static String FAMILY_SHEET = "_struct_sheet_range";
   final private static String[] structSheetRangeFields = {
-      "*_sheet_id", //unused placeholder
+      "*_sheet_id",
       "*_beg_auth_asym_id",
       "*_beg_auth_seq_id",
       "*_pdbx_beg_pdb_ins_code",

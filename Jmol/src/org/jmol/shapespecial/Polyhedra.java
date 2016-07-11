@@ -264,7 +264,7 @@ public class Polyhedra extends AtomShape implements Comparator<Object[]>{
       info = (Map<String, SV>) value;
       centers = (info.containsKey("center") ? null : BSUtil.newAndSetBit(info
           .get("atomIndex").intValue));
-      iHaveCenterBitSet = true;
+      iHaveCenterBitSet = (centers != null);
       return;
     }
 

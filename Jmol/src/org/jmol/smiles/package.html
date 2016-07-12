@@ -293,17 +293,17 @@ Jmol SMARTS adds the following primitives:
 <tr><td>$n(pattern)</td><td>A specific number of occurances of <b>pattern</b>. For example, <b>C[$3(C=C)]C</b> is synonymous with <b>CC=CC=CC=CC</b>.</td></tr>
 <tr><td>$min-max(pattern)</td><td>A variable number of occurances of <b>pattern</b>. 
 For example: <b>A[$0-2(C:G)]A</b> is synonymous with <b>AA</b> or <b>AC(:G)A</b> or <b>AC(:G)C(:G)A</b>.</td></tr>
-<tr><td>residueName#resno.atomName#atomicNumber</b> </td><td>
-Both #resno and #atomicNumber are optional. This primitive may appear with other primitives provided (a) it is first, and (b) it is followed by an operator ("," ,"&", or ";").
+<tr><td>residueName#resno^insCode.atomName#atomicNumber</b> </td><td>
+All five fields are optional; only the period itself is required.
+This primitive may appear with other primitives provided (a) it is first, and (b) it is followed by an operator ("," ,"&", or ";").
 This allows searching a bioSMILES string using SMARTS patterns that only involve standard atom types. In the above example, 
 notice that the connecting atoms to protein chains within the non-bioSEQUENCE component indicates the
 connections to the protein using this extended notation. Thus, both the actual 3D model and the bioSMARTS string for 1d66
 can be searched using the SMARTS search "[Cd][S]" as well as the more specific search "Cd[*.SG]". 
-Wild cards provide additional options: [ALA.*], [*.*], [*.CA]. The special
-designation "0" for an atom name, as in <b>[GLY.0]</b>, indicates the "lead atom" -- the alpha carbon for proteins,
+Wild cards provide additional options: [*#35.], [ALA.*], [*#*^A.] [*.*], [*.CA]; however, their presence is optional: [#35.], [ALA.], [^A.] [.], [.CA]. 
+The special designation "0" for an atom name, as in <b>[GLY.0]</b>, indicates the "lead atom" -- the alpha carbon for proteins,
 the phosphorus atom in nucleic acids, or the anomeric carbon in carbohydrates.    
 </td></tr>
-
 
 
 </table>  

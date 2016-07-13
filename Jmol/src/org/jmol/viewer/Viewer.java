@@ -1,6 +1,6 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date$
+ * $Date: 2016-07-13 14:51:46 -0500 (Wed, 13 Jul 2016) $
  * $Revision: 19253 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org

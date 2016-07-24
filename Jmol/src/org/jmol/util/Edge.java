@@ -99,7 +99,7 @@ public abstract class Edge {
   public final static int BOND_H_MINUS_4     = 8 << 11;
   public final static int BOND_H_NUCLEOTIDE  = 9 << 11;
     
-  public final static int[] argbsHbondType = {
+  private final static int[] argbsHbondType = {
     0xFFFF69B4, // 0  unused - pink
     0xFFFFFF00, // 1  regular yellow
     0xFFFFFF00, // 2  calc -- unspecified; yellow

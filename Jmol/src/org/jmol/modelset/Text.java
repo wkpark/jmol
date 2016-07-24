@@ -73,7 +73,6 @@ public class Text {
 
   /**
    * @param vwr 
-   * @j2sIgnoreSuperConstructor
    */
   private Text(Viewer vwr) {
     this.vwr = vwr;

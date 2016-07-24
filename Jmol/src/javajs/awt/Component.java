@@ -5,7 +5,7 @@ import javajs.util.CU;
 
 abstract public class Component {
 
-  protected boolean visible;  
+  private boolean _visible;  
   protected boolean enabled = true;
   protected String text;    
   protected String name;
@@ -99,11 +99,11 @@ abstract public class Component {
   }
 
   public boolean isVisible() {
-    return visible;
+    return _visible;
   }
 
   public void setVisible(boolean visible) {
-    this.visible = visible;
+    this._visible = visible;
     /**
      * @j2sNative
      * 

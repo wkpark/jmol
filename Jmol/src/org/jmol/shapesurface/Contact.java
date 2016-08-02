@@ -479,14 +479,15 @@ public class Contact extends Isosurface {
       return true;
     Bond[] bondsOther = atomB.bonds;
     Bond[] bonds = atomA.bonds;
-    for (int i = 0; i < bondsOther.length; i++) {
-      Atom atom2 = bondsOther[i].getOtherAtom(atomB);
-      if (atomA.isCovalentlyBonded(atom2))
-        return true;
-      for (int j = 0; j < bonds.length; j++)
-        if (bonds[j].getOtherAtom(atomA).isCovalentlyBonded(atom2))
+    if (bondsOther != null && bonds != null)
+      for (int i = 0; i < bondsOther.length; i++) {
+        Atom atom2 = bondsOther[i].getOtherAtom(atomB);
+        if (atomA.isCovalentlyBonded(atom2))
           return true;
-    }
+        for (int j = 0; j < bonds.length; j++)
+          if (bonds[j].getOtherAtom(atomA).isCovalentlyBonded(atom2))
+            return true;
+      }
     return false;
   }
 

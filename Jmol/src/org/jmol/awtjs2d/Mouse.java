@@ -75,31 +75,31 @@ public class Mouse implements GenericMouseInterface {
 
   @Override
   public boolean processEvent(int id, int x, int y, int modifiers, long time) {
-    if (id != -1)
+    if (id != MouseEvent.MOUSE_WHEEL)
       modifiers = applyLeftMouse(modifiers);
     switch (id) {
-    case -1: // JavaScript
+    case MouseEvent.MOUSE_WHEEL: // JavaScript
       wheeled(time, x, modifiers);
       break;
-    case Event.MOUSE_DOWN:
+    case MouseEvent.MOUSE_PRESSED:
       xWhenPressed = x;
       yWhenPressed = y;
       modifiersWhenPressed10 = modifiers;
       pressed(time, x, y, modifiers, false);
       break;
-    case Event.MOUSE_DRAG:
+    case MouseEvent.MOUSE_DRAGGED:
       dragged(time, x, y, modifiers);
       break;
-    case Event.MOUSE_ENTER:
+    case MouseEvent.MOUSE_ENTERED:
       entry(time, x, y, false);
       break;
-    case Event.MOUSE_EXIT:
+    case MouseEvent.MOUSE_EXITED:
       entry(time, x, y, true);
       break;
-    case Event.MOUSE_MOVE:
+    case MouseEvent.MOUSE_MOVED:
       moved(time, x, y, modifiers);
       break;
-    case Event.MOUSE_UP:
+    case MouseEvent.MOUSE_RELEASED:
       released(time, x, y, modifiers);
       // simulate a mouseClicked event for us
       if (x == xWhenPressed && y == yWhenPressed

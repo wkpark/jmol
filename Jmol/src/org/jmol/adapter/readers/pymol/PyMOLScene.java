@@ -920,7 +920,7 @@ class PyMOLScene implements JmolSceneGenerator {
   }
 
   void addLabel(int atomIndex, int uniqueID, int atomColor,
-                Lst<Object> labelOffset, String label) {
+                float[] labelPos, String label) {
     int icolor = (int) getUniqueFloatDef(uniqueID, PyMOL.label_color,
         labelColor);
     if (icolor == PyMOL.COLOR_BACK || icolor == PyMOL.COLOR_FRONT) {
@@ -928,17 +928,13 @@ class PyMOLScene implements JmolSceneGenerator {
     } else if (icolor < 0) {
       icolor = atomColor;
     }
-    float[] labelPos = new float[7];
-    if (labelOffset == null) {
+    if (labelPos == null) {
       P3 offset = getUniquePoint(uniqueID, PyMOL.label_position, null);
       if (offset == null)
         offset = labelPosition;
       else
         offset.add(labelPosition);
       setLabelPosition(offset, labelPos);
-    } else {
-      for (int i = 0; i < 7; i++)
-        labelPos[i] = floatAt(labelOffset, i);
     }
     labels.put(Integer.valueOf(atomIndex), newTextLabel(label, labelPos,
         icolor, labelFontId, labelSize));
@@ -1693,7 +1689,7 @@ class PyMOLScene implements JmolSceneGenerator {
     for (int i = list.size(); --i >= 0;) {
       Lst<Object> item = PyMOLScene.listAt(list, i);
       if (item != null && item.size() > 0)
-        map.put((String) item.get(0), item);
+        map.put(PyMOLReader.bytesToString(item.get(0)), item);
     }
     return map;
   }

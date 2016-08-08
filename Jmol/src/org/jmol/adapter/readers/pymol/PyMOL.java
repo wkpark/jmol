@@ -297,6 +297,7 @@ class PyMOL {
   final static int dot_width                             =  77;
   final static int draw_frames                           = 436;
   final static int draw_mode                             = 614;
+  final static int dump_binary                           = 749;
   final static int dynamic_measures                      = 637;
   final static int dynamic_width                         = 610;
   final static int dynamic_width_factor                  = 611;
@@ -6300,6 +6301,7 @@ class PyMOL {
     case valence:
     case cgo_transparency:
     case cartoon_putty_transform:
+    case dump_binary:
     case orthoscopic:
     case ribbon_radius:
     case ribbon_smooth:

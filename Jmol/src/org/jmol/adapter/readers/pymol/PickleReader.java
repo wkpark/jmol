@@ -1,11 +1,12 @@
 package org.jmol.adapter.readers.pymol;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Hashtable;
 import java.util.Map;
 
 import javajs.api.GenericBinaryDocument;
+import javajs.util.AU;
 import javajs.util.Lst;
-import javajs.util.SB;
 
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
@@ -35,12 +36,12 @@ class PickleReader {
   private Lst<Integer> marks = new Lst<Integer>();
   private Lst<Object> build = new Lst<Object>();
 
-  private Map<Integer, Object> memo = new Hashtable<Integer, Object>();
+  private Map<Object, Object> memo = new Hashtable<Object, Object>();
   
   private boolean logging;
   private int id;
   private int markCount;
-  private int filePt;
+  private int filePt; 
   private int emptyListPt;
   private Object thisSection;
   private boolean inMovie;
@@ -103,10 +104,13 @@ class PickleReader {
     vwr.log(s + "\0");
   }
   
+  private int ipt = 0;
+  public boolean haveBinaryString;
+
   @SuppressWarnings("unchecked")
-  Map<String, Object> getMap(boolean logging) throws Exception {
+  Map<String, Object> getMap(boolean logging)
+      throws Exception {
     this.logging = logging;
-    String s;
     byte b;
     int i, mark;
     double d;
@@ -114,12 +118,14 @@ class PickleReader {
     byte[] a;
     Map<String, Object> map;
     Lst<Object> l;
+    ipt = 0;
     boolean going = true;
 
     while (going) {
       b = binaryDoc.readByte();
+      ipt++;
       //if (logging)
-        //log(" " + b);
+      //log(" " + b);
       switch (b) {
       case EMPTY_DICT: //}
         push(new Hashtable<String, Object>());
@@ -130,9 +136,10 @@ class PickleReader {
         break;
       case APPENDS:
         l = getObjects(getMark());
-        if (inNames && markCount == 2){// && l.size() > 0 && l.get(0) == thisName) {
+        if (inNames && markCount == 2) {// && l.size() > 0 && l.get(0) == thisName) {
           int pt = (int) binaryDoc.getPosition();
-          System.out.println(" " + thisName + " " + filePt + " " + (pt - filePt));
+          System.out.println(" " + thisName + " " + filePt + " "
+              + (pt - filePt));
           Lst<Object> l2 = new Lst<Object>();
           l2.addLast(Integer.valueOf(filePt));
           l2.addLast(Integer.valueOf(pt - filePt));
@@ -172,48 +179,40 @@ class PickleReader {
       case LONG_BINGET:
         i = binaryDoc.readIntLE();
         o = getMemo(i);
-        if (o == null) {
-          Logger.error("did not find memo item for " + i);
-          push("LONG_BINGET" + (++id));
-        } else {
-          push(o);
-        }
-        
+        push(o == null ? "LONG_BINGET" + (++id) : o);
         break;
       case SHORT_BINSTRING:
         i = binaryDoc.readByte() & 0xff;
         a = new byte[i];
         binaryDoc.readByteArray(a, 0, i);
-        s = new String(a, "UTF-8");
         if (inNames && markCount == 3 && lastMark == stack.size()) {
-          thisName = s;
+          thisName = bytesToString(a);
           filePt = emptyListPt;
         }
-        push(s);
+        push(a);
         break;
       case BINSTRING:
         i = binaryDoc.readIntLE();
         a = new byte[i];
         binaryDoc.readByteArray(a, 0, i);
-        s = new String(a, "UTF-8");
-        push(s);
+        push(a);
+        haveBinaryString = true;
         break;
       case BINUNICODE:
         i = binaryDoc.readIntLE();
         a = new byte[i];
         binaryDoc.readByteArray(a, 0, i);
-        s = new String(a, "UTF-8");
-        push(s);
+        push(a);
         break;
       case EMPTY_LIST:
         emptyListPt = (int) binaryDoc.getPosition() - 1;
-        push(new  Lst<Object>());
+        push(new Lst<Object>());
         break;
       case GLOBAL:
         l = new Lst<Object>();
         l.addLast("global");
-        l.addLast(readString());
-        l.addLast(readString());
+        l.addLast(readStringAsBytes());
+        l.addLast(readStringAsBytes());
         push(l);
         break;
       case BUILD:
@@ -231,10 +230,8 @@ class PickleReader {
         break;
       case SETITEM:
         o = pop();
-        if (!(peek() instanceof String))
-          Logger.error(peek() + " is not a string");
-        s = (String) pop();
-        ((Map<String, Object>) peek()).put(s, o);
+        a = (byte[]) pop();
+        ((Map<String, Object>) peek()).put(bytesToString(a), o);
         break;
       case SETITEMS:
         mark = getMark();
@@ -244,12 +241,11 @@ class PickleReader {
           for (i = 0; i < l.size(); i++)
             ((Lst<Object>) o).addLast(l.get(i));
         } else {
-        map = (Map<String, Object>) o;
-        for (i = l.size(); --i >= 0;) {
-          o = l.get(i);
-          s = (String) l.get(--i);
-          map.put(s, o);
-        }
+          map = (Map<String, Object>) o;
+          for (i = l.size(); --i >= 0;) {
+            o = l.get(i);
+            map.put(bytesToString((byte[]) l.get(--i)), o);
+          }
         }
         break;
       case STOP:
@@ -260,8 +256,8 @@ class PickleReader {
         push(getObjects(getMark()));
         break;
       case INT:
-        /// 0x88000000 for instance
-        s = readString();
+        /// "0x88000000" for instance
+        String s = bytesToString(readStringAsBytes());
         try {
           push(Integer.valueOf(Integer.parseInt(s)));
         } catch (Exception e) {
@@ -351,25 +347,38 @@ class PickleReader {
     }
     if (logging)
       log("");
-    Logger.info("PyMOL Pickle reader cached " + memo.size() + " tokens; retrieved " + retrieveCount);
-    memo = null;
+    Logger.info("PyMOL Pickle reader cached " + memo.size()
+        + " tokens; retrieved " + retrieveCount);
+
     map = (Map<String, Object>) stack.remove(0);
     if (map.size() == 0)
       for (i = stack.size(); --i >= 0;) {
         o = stack.get(i--);
-        s = (String) stack.get(i);
-        map.put(s, o);
+        a = (byte[]) stack.get(i);
+        map.put(bytesToString(a), o);
       }
+    memo = null;
     return map;
   }
   
+  private String bytesToString(byte[] a) {
+    try {
+      return new String(a, "UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      return "";
+    }
+  }
+
   private void putMemo(int i, boolean doCheck) {
     Object o = peek();
     if (o instanceof String) {
       if (doCheck && markCount >= 6 || markCount == 3 && inMovie)
         return;
       memo.put(Integer.valueOf(i), o);
-      //System.out.println("caching string " + o + " at " + binaryDoc.getPosition());
+      if (((String)o).indexOf('\0') >= 0)
+        System.out.println("caching byte["+((String)o).length() + "] at " + binaryDoc.getPosition() + " ipt " + ipt);
+      else
+        System.out.println("caching String \"" + o + "\" at " + binaryDoc.getPosition() + " ipt " + ipt);
     }
   }
 
@@ -397,16 +406,20 @@ class PickleReader {
   //    String s = readString();
   //    return s.getBytes();
   //  }
+  byte[] aTemp = new byte[16];
 
-  private String readString() throws Exception {
-    SB sb = new SB();
+  private byte[] readStringAsBytes() throws Exception {
+    int n = 0;
+    byte[] a = aTemp;
     while (true) {
       byte b = binaryDoc.readByte();
       if (b == 0xA)
         break;
-      sb.appendC((char) b);
+      if (n >= a.length)
+        a = aTemp = AU.arrayCopyByte(a, a.length * 2);
+      a[n++] = b;
     }
-    return sb.toString();
+    return AU.arrayCopyByte(a, n);
   }
 
   private void putMark(int i) {
@@ -416,10 +429,11 @@ class PickleReader {
     markCount++;
     switch (markCount) {
     case 2:
-      thisSection = stack.get(i - 2);
+      Object o = stack.get(i - 2);
       // BH: Note that JavaScript string == object first converts object to string, then checks. 
       // This can be very slow if the object is complex.
-      if (thisSection instanceof String) {
+      if (AU.isAB(o)) {
+        thisSection = bytesToString((byte[]) o);
         inMovie = "movie".equals(thisSection);
         inNames = "names".equals(thisSection);
       }

@@ -86,6 +86,7 @@ public class MMTFReader extends MMCifReader {
   protected void setup(String fullPath, Map<String, Object> htParams, Object reader) {
     isBinary = true;
     isMMCIF = true;
+    iHaveFractionalCoordinates = false;
     setupASCR(fullPath, htParams, reader);
   }
 
@@ -98,7 +99,7 @@ public class MMTFReader extends MMCifReader {
     map = (new MessagePackReader(binaryDoc, true)).readMap();
     if (Logger.debugging) {
       for (String s: map.keySet())
-        Logger.debug(s);
+        Logger.info(s);
     }
     asc.setInfo("noAutoBond", Boolean.TRUE);
     Logger.info("MMTF version " + map.get("mmtfVersion"));
@@ -112,7 +113,7 @@ public class MMTFReader extends MMCifReader {
     if (!isCourseGrained) {
       getBonds(doDoubleBonds);
       if (isDSSP1 || mmtfImplementsDSSP2) 
-        getStructure((byte[]) map.get("secStructList"));
+        getStructure((int[]) decode("secStructList"));
     }
     setSymmetry();
     getBioAssembly();
@@ -430,18 +431,20 @@ public class MMTFReader extends MMCifReader {
   
   private String[] labelAsymList; // created in getAtoms; used in getBioAssembly
   private Atom[] atomMap; // necessary because some atoms may be deleted. 
-    // TODO  - also consider mapping group indices
+
+  // TODO  - also consider mapping group indices
 
   /**
    * set up all atoms, including bonding within a group
    * 
-   * @param doMulti true to add double bonds
+   * @param doMulti
+   *        true to add double bonds
    * 
    * @throws Exception
    */
   @SuppressWarnings("unchecked")
   private void getAtoms(boolean doMulti) throws Exception {
-    
+
     // chains
     int[] chainsPerModel = (int[]) map.get("chainsPerModel");
     int[] groupsPerChain = (int[]) map.get("groupsPerChain"); // note that this is label_asym, not auth_asym
@@ -500,7 +503,7 @@ public class MMTFReader extends MMCifReader {
           iChain = 0;
           setModelPDB(true);
           incrementModel(iModel + 1);
-          
+
           nAtoms0 = asc.ac;
         }
       }
@@ -514,12 +517,12 @@ public class MMTFReader extends MMCifReader {
       for (int ia = 0, pt = 0; ia < len; ia++, iatom++) {
         Atom a = new Atom();
         if (insCode != 0)
-          a.insertionCode = insCode;        
+          a.insertionCode = insCode;
         setAtomCoordXYZ(a, x[iatom], y[iatom], z[iatom]);
         a.elementSymbol = elementList[pt];
         a.atomName = atomNameList[pt++];
         if (seqNo >= 0)
-          a.sequenceNumber = seqNo;
+          maxSerial = Math.max(maxSerial, a.sequenceNumber = seqNo);
         a.group3 = group3;
         setChainID(a, chainID);
         if (bf != null)
@@ -627,7 +630,7 @@ public class MMTFReader extends MMCifReader {
         // now save the 4x4 matrix transform for this operation
         
         String id = "" + (++opCount);
-        addMatrix(id, M4.newA16((float[]) t.get("matrix")), true);
+        addMatrix(id, M4.newA16((float[]) t.get("matrix")), false);
         ops.addLast(id);
       }
     }
@@ -652,7 +655,7 @@ public class MMTFReader extends MMCifReader {
    *  
    * @param a input data
    */
-  private void getStructure(byte[] a) {    
+  private void getStructure(int[] a) {    
     BS[] bsStructures = new BS[] { new BS(), null, new BS(), new BS(), new BS(), null, new BS() };
     if (Logger.debugging)
       Logger.info(PT.toJSON("secStructList", a));

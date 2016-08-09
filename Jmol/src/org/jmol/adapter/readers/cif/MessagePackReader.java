@@ -3,14 +3,13 @@ package org.jmol.adapter.readers.cif;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.jmol.util.Logger;
-
 import javajs.api.GenericBinaryDocument;
 import javajs.util.BC;
 import javajs.util.SB;
 
 /**
  * A simple MessagePack reader. See https://github.com/msgpack/msgpack/blob/master/spec.md
+ * with very few dependencies.
  * 
  * Nuances: 
  * 
@@ -295,6 +294,15 @@ public class MessagePackReader {
 
   /////////////// MMTF MessagePack decoding ///////////////
 
+  /**
+   * This single method takes care of all MMTF needs.
+   * 
+   * See https://github.com/rcsb/mmtf/blob/master/spec.md
+   * 
+   * @param b
+   * 
+   * @return array of int, char, or float, depending upon the type
+   */
   public static Object decode(byte[] b) {
     int type = BC.bytesToInt(b, 0, true);
     int n = BC.bytesToInt(b, 4, true);
@@ -327,7 +335,7 @@ public class MessagePackReader {
     case 15: // one-byte
       return unpack(b, 16 - type, n);
     default:
-      Logger.error("MMTF type " + type + " not found!");
+      System.out.println("MMTF type " + type + " not found!");
       return null;
    }
   }
@@ -340,7 +348,7 @@ public class MessagePackReader {
    * @param b
    * @param n
    * @param divisor
-   * @return float[]
+   * @return array of floats
    */
   public static float[] getFloats(byte[] b, int n, float divisor) {
     if (b == null)
@@ -371,7 +379,8 @@ public class MessagePackReader {
    * @param b
    * @param nbytes
    *        1 (byte), 2 (int16), or 4 (int32)
-   * @return int array
+   *        
+   * @return array of integers
    */
   public static int[] getInts(byte[] b, int nbytes) {
     if (b == null)
@@ -433,7 +442,7 @@ public class MessagePackReader {
    * 
    * @param b
    * @param n
-   * @return array of integers
+   * @return array of characters
    */
   public static char[] rldecode32ToChar(byte[] b, int n) {
     if (b == null)
@@ -520,7 +529,7 @@ public class MessagePackReader {
    * @param b
    * @param n
    * @param divisor
-   * @return array of integers
+   * @return array of floats
    */
   public static float[] unpack16Deltaf(byte[] b, int n, float divisor) {
     if (b == null)
@@ -550,7 +559,7 @@ public class MessagePackReader {
    * @param nBytes 
    * @param n
    * @param divisor 
-   * @return array of integers
+   * @return array of floats
    */
   public static float[] unpackf(byte[] b, int nBytes, int n, float divisor) {
     if (b == null)

@@ -524,7 +524,6 @@ public class Platform implements GenericPlatform {
 
   @Override
   public boolean forceAsyncLoad(String filename) {
-    // TODO
     return Jmol()._isBinaryUrl(filename);
   }
 

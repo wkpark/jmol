@@ -155,7 +155,7 @@ public class XtalSymmetry {
   private void setUnitCell(float[] info, M3 matUnitCellOrientation,
                                    P3 unitCellOffset) {
     unitCellParams = new float[info.length];
-    this.unitCellOffset = unitCellOffset;
+    //this.unitCellOffset = unitCellOffset;
     for (int i = 0; i < info.length; i++)
       unitCellParams[i] = info[i];
     asc.haveUnitCell = true;
@@ -493,7 +493,7 @@ public class XtalSymmetry {
 
   private final P3 ptOffset = new P3();
 
-  private P3 unitCellOffset;
+  //private P3 unitCellOffset;
 
   private P3i minXYZ, maxXYZ;
   private P3 minXYZ0, maxXYZ0;

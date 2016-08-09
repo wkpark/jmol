@@ -1197,6 +1197,8 @@ public class MMCifReader extends CifReader {
 
   private String modelStrings = "";
   
+  protected boolean done;
+  
   @Override
   protected int checkPDBModelField(int modelField, int currentModelNo) throws Exception {
     // the model field value is only used if 
@@ -1223,9 +1225,12 @@ public class MMCifReader extends CifReader {
       }
     }      
     if (iHaveDesiredModel && asc.atomSetCount > 0 && !isAssembly) {
-      parser.skipLoop(false);
-      // but only this atom loop
-      skipping = false;
+      done = true;
+      if (parser != null) {
+        parser.skipLoop(false);
+        // but only this atom loop
+        skipping = false;
+      }
       continuing = true;
       return Integer.MIN_VALUE;
     }

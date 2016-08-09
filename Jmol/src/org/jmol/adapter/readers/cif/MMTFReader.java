@@ -79,6 +79,9 @@ import org.jmol.util.Logger;
 
 public class MMTFReader extends MMCifReader {
 
+  private boolean haveStructure;
+
+
   @Override
   protected void addHeader() {
     // no header for this type
@@ -129,14 +132,22 @@ public class MMTFReader extends MMCifReader {
       id = "?";
     fileAtomCount = ((Integer) map.get("numAtoms")).intValue();
     int nBonds = ((Integer) map.get("numBonds")).intValue();
-    Logger.info("id atoms bonds " + id + " " + fileAtomCount + " " + nBonds);
+
+    groupCount = ((Integer) map.get("numGroups")).intValue();
+    groupModels = new int[groupCount]; // group model (file-based)
+    groupDSSP = new int[groupCount];   // group structure type (Jmol-based)
+    groupMap = new int[groupCount];    // file->jmol group index map
+    
+    int modelCount = ((Integer) map.get("numModels")).intValue();
+    appendLoadNote("id=" + id + " numAtoms=" + fileAtomCount + " numBonds="
+        + nBonds + " numGroups=" + groupCount + " numModels=" + modelCount);
     getMMTFAtoms(doDoubleBonds);
     if (!isCourseGrained) {
-      int[] bo = (int[]) decode("bondOrderList");    
+      int[] bo = (int[]) decode("bondOrderList");
       int[] bi = (int[]) decode("bondAtomList");
       addMMTFBonds(bo, bi, 0, doDoubleBonds, true);
       if (isDSSP1 || mmtfImplementsDSSP2)
-        getStructure((int[]) decode("secStructList"));
+        getStructure();
     }
     setMMTFSymmetry();
     getMMTFBioAssembly();
@@ -145,15 +156,27 @@ public class MMTFReader extends MMCifReader {
       Logger.info(SV.getVariable(map).asString());
   }
 
+  @Override
+  public void applySymmetryAndSetTrajectory() throws Exception {
+    ac0 = ac;
+    super.applySymmetryAndSetTrajectory();
+    if (haveStructure)
+      addStructureSymmetry();
+  }
+  
   //////////////////////////////// MMTF-Specific /////////////////////////  
 
   private Map<String, Object> map; // input JSON-like map from MessagePack binary file  
   private int fileAtomCount;
   private int opCount = 0;
-  private int[] groupModels;
+  private int[] groupModels, groupMap, groupDSSP, atomGroup;
   private String[] labelAsymList; // created in getAtoms; used in getBioAssembly
   private Atom[] atomMap; // necessary because some atoms may be deleted. 
   private Object[] entities;
+  private int groupCount;
+  private int ac0;
+  private BS[] bsStructures;
+  private int lastGroup;
 
 
   // TODO  - also consider mapping group indices
@@ -177,23 +200,17 @@ public class MMTFReader extends MMCifReader {
 
     // groups
     int[] groupTypeList = (int[]) decode("groupTypeList");
-    int groupCount = groupTypeList.length;
-    groupModels = new int[groupCount];
     int[] groupIdList = (int[]) decode("groupIdList");
     Object[] groupList = (Object[]) map.get("groupList");
     char[] insCodes = (char[]) decode("insCodeList");
-
-    int[] atomId = (int[]) decode("atomIdList");
+    int[] atomId =    (int[]) decode("atomIdList");
     boolean haveSerial = (atomId != null);
-
     char[] altloc = (char[]) decode("altLocList"); // rldecode32
     float[] occ = (float[]) decode("occupancyList");
-
     float[] x = (float[]) decode("xCoordList");//getFloatsSplit("xCoord", 1000f);
     float[] y = (float[]) decode("yCoordList");
     float[] z = (float[]) decode("zCoordList");
     float[] bf = (float[]) decode("bFactorList");
-    int iatom = 0;
     String[] nameList = (useAuthorChainID ? authAsymList : labelAsymList);
     int iModel = -1;
     int iChain = 0;
@@ -202,15 +219,13 @@ public class MMTFReader extends MMCifReader {
     int nGroup = 0;
     int chainpt = 0;
     int seqNo = 0;
+    int iatom = 0;
     String chainID = "";
     String authAsym = "", labelAsym = "";
     char insCode = '\0';
     atomMap = new Atom[fileAtomCount];
-    for (int j = 0; j < groupCount; j++) {
-      int a0 = iatom;
-      if (insCodes != null)
-        insCode = insCodes[j];
-      seqNo = groupIdList[j];
+    atomGroup = new int[fileAtomCount];
+    for (int j = 0, thisGroup = -1; j < groupCount; j++) {
       if (++iGroup >= nGroup) {
         chainID = nameList[chainpt];
         authAsym = authAsymList[chainpt];
@@ -224,11 +239,24 @@ public class MMTFReader extends MMCifReader {
           setModelPDB(true);
           incrementModel(iModel + 1);
           nAtoms0 = asc.ac;
+          if (done)
+            return;
         }
       }
       Map<String, Object> g = (Map<String, Object>) groupList[groupTypeList[j]];
+      String[] atomNameList = (String[]) g.get("atomNameList");
+      int len = atomNameList.length;
+      if (skipping) {
+        iatom += len;
+        continue;
+      }          
+      int a0 = iatom;
+      if (insCodes != null)
+        insCode = insCodes[j];
+      seqNo = groupIdList[j];
       String group3 = (String) g.get("groupName");
-      if (vwr.getJBR().isHetero(group3)) {
+      boolean isHetero = vwr.getJBR().isHetero(group3);
+      if (isHetero) {
         // looking for CHEM_COMP_NAME here... "IRON/SULFUR CLUSTER" for SF4 in 1blu
         String hetName = "" + g.get("chemCompType");
         if (htHetero == null || !htHetero.containsKey(group3)) {
@@ -250,11 +278,11 @@ public class MMTFReader extends MMCifReader {
           addHetero(group3, hetName, false, true);
         }
       }
-      String[] atomNameList = (String[]) g.get("atomNameList");
       String[] elementList = (String[]) g.get("elementList");
-      int len = atomNameList.length;
+      boolean haveAtom = false;
       for (int ia = 0, pt = 0; ia < len; ia++, iatom++) {
         Atom a = new Atom();
+        a.isHetero = isHetero;
         if (insCode != 0)
           a.insertionCode = insCode;
         setAtomCoordXYZ(a, x[iatom], y[iatom], z[iatom]);
@@ -274,13 +302,20 @@ public class MMTFReader extends MMCifReader {
           a.atomSerial = atomId[iatom];
         if (!filterAtom(a, -1) || !processSubclassAtom(a, labelAsym, authAsym))
           continue;
+        
+        if (!haveAtom) {
+          thisGroup++;
+          haveAtom = true;
+        }
         if (haveSerial) {
           asc.addAtomWithMappedSerialNumber(a);
         } else {
           asc.addAtom(a);
         }
         atomMap[iatom] = a;
-        ++ac;
+        atomGroup[ac] = j;
+        groupMap[j] = lastGroup = thisGroup;
+        ac++;
       }
       if (!isCourseGrained) {
         int[] bo = (int[]) g.get("bondOrderList");
@@ -301,7 +336,7 @@ public class MMTFReader extends MMCifReader {
         Bond bond = new Bond(a1.index, a2.index, doMulti ? bo[bj] : 1);
         asc.addBond(bond);
         if (Logger.debugging && isInter) {
-          Logger.info("inter-group bond " + a1.group3 + a1.sequenceNumber + "." + a1.atomName
+          Logger.info("inter-group (" + (a1.atomSetIndex + 1) + "." + a1.index + "/" + (a2.atomSetIndex + 1) + "." + a2.index + ") bond " + a1.group3 + a1.sequenceNumber + "." + a1.atomName
               + " - " + a2.group3 + a2.sequenceNumber + "." + a2.atomName + " "
               + bond.order);
         }
@@ -385,32 +420,68 @@ public class MMTFReader extends MMCifReader {
   /**
    * Get and translate the DSSP string from digit format
    * 
-   * @param a
    *        input data
    */
-  private void getStructure(int[] a) {
-    BS[] bsStructures = new BS[] { new BS(), null, new BS(), new BS(),
-        new BS(), null, new BS() };
+  private void getStructure() {
+    int[] a = (int[]) decode("secStructList");
     if (Logger.debugging)
       Logger.info(PT.toJSON("secStructList", a));
+    bsStructures = new BS[] { new BS(), null, new BS(), new BS(),
+        new BS(), null, new BS() };
     int lastGroup = -1;
-    for (int i = 0; i < a.length; i++) {
-      int type = a[i];
+    for (int j = 0; j < a.length; j++) {
+      int type = a[j];
       switch (type) {
       case 0: // PI
       case 2: // alpha
       case 3: // sheet
       case 4: // 3-10
       case 6: // turn
-        bsStructures[type].set(i);
-        lastGroup = i;
+        int igroup = groupMap[j];
+        bsStructures[type].set(igroup);
+        groupDSSP[igroup] = type + 1;
+        lastGroup = j;
       }
     }
 
     int n = (isDSSP1 ? asc.iSet : groupModels[lastGroup]);
-    if (lastGroup >= 0)
+    if (lastGroup >= 0) {
+      // a single structure takes care of everything
+      haveStructure = true;
       asc.addStructure(new Structure(n, null, null, null, 0, 0, bsStructures));
+    }
   }
+
+  /**
+   * We must add groups to the proper bsStructure element
+   *
+   */
+  private void addStructureSymmetry() {
+    if (asc.ac == 0)
+      return;
+    Atom[] atoms = asc.atoms;
+    BS bsAtoms = asc.bsAtoms;
+
+    // must point to groups here.
+    
+    int ptGroup = lastGroup;
+    int mygroup = -1;
+    for (int i = ac0, n = asc.ac; i < n; i++) {
+      if (bsAtoms == null || bsAtoms.get(i)) {
+        Atom a = atoms[i];
+        int igroup = atomGroup[a.atomSite];
+        if (igroup != mygroup) {
+          mygroup = igroup;
+          ptGroup++;
+        }
+        int dssp = groupDSSP[igroup];
+        if (dssp > 0) {
+          bsStructures[dssp - 1].set(ptGroup);
+        }
+      }
+    }
+  }
+
 
   /////////////// MessagePack decoding ///////////////
 
@@ -446,8 +517,10 @@ public class MMTFReader extends MMCifReader {
     case 14: // two-byte
     case 15: // one-byte
       return unpack(b, 16 - type, n);
+    default:
+      Logger.error("MMTF type " + type + " not found!");
+      return null;
    }
-    return null;
   }
 
   /**
@@ -558,7 +631,7 @@ public class MMTFReader extends MMCifReader {
       return null;
     char[] ret = new char[n];
     for (int i = 0, pt = 3; i < n;) {
-      char val = (char) b[(pt++) << 2];
+      char val = (char) b[((pt++) << 2) + 3];
       for (int j = BC.bytesToInt(b, (pt++) << 2, true); --j >= 0;)
         ret[i++] = val;
     }

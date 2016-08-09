@@ -96,6 +96,10 @@ public class MMTFReader extends MMCifReader {
     boolean mmtfImplementsDSSP2 = false; // so far!
     applySymmetryToBonds = true;
     map = (new MessagePackReader(binaryDoc, true)).readMap();
+    if (Logger.debugging) {
+      for (String s: map.keySet())
+        Logger.debug(s);
+    }
     asc.setInfo("noAutoBond", Boolean.TRUE);
     Logger.info("MMTF version " + map.get("mmtfVersion"));
     Logger.info("MMTF Producer " + map.get("mmtfProducer"));
@@ -119,103 +123,92 @@ public class MMTFReader extends MMCifReader {
 
 /////////////// MessagePack decoding ///////////////
   
-  /**
-   * Decode an array of int32 using run-length decoding
-   * 
-   * @param b
-   * @param n
-   * @return array of integers
-   */
-  private int[] rldecode32(byte[] b, int n) {
-    if (b == null)
-      return null;
-    int[] ret = new int[n];
-    for (int i = 0, pt = -1; i < n;) {
-      int val = BC.bytesToInt(b, (++pt) << 2, true);
-      for (int j = BC.bytesToInt(b, (++pt) << 2, true); --j >= 0;)
-         ret[i++] = val;
+  private Object decode(String key) {
+    byte[] b = (byte[]) map.get(key);
+    int type = BC.bytesToInt(b, 0, true);
+    int n = BC.bytesToInt(b, 4, true);
+    int param = BC.bytesToInt(b, 8, true);
+    switch (type) {
+    case 1:
+      return getFloats(b, 4, 1);
+    case 2:
+    case 3:
+    case 4:
+      return getInts(b, 1 << (type - 2));
+    case 5:
+      return rldecode32ToStr(b);
+    case 6:
+      return rldecode32ToChar(b, n);
+    case 7:
+      return rldecode32(b, n);
+    case 8:
+      return rldecode32Delta(b, n);
+    case 9:
+      return rldecode32f(b, n, param);
+    case 10:
+      return recursiveIndex16Deltaf(b, n, param);
+    case 11:
+      return getFloats(b, 2, param);
     }
-    return ret;
+    return null;
   }
 
   /**
-   * Decode an array of int32 using run-length decoding
-   * of a difference array.
+   * mmtf type 1 and 11
    * 
+   * byte[4] to float32
+   *  
    * @param b
-   * @param n
-   * @return array of integers
-   */
-  private int[] rldecode32Delta(byte[] b, int n) {
+   * @param n 
+   * @param divisor 
+   * @return float[]
+   */ 
+  protected float[] getFloats(byte[] b, int n, float divisor) {
     if (b == null)
       return null;
-    int[] ret = new int[n];
-    for (int i = 0, pt = 0, val = 0; i < n;) {
-      int diff = BC.bytesToInt(b, (pt++) << 2, true);
-      for (int j = BC.bytesToInt(b, (pt++) << 2, true); --j >= 0;)
-         ret[i++] = (val = val + diff);
+    int len = (b.length - 12) / n;
+    float[] a = new float[len];
+    try {
+      switch (n) {
+      case 2:
+        for (int i = 0, j = 12; i < len; i++, j += 2)
+          a[i] = BC.bytesToShort(b, j, false) / divisor;
+        break;
+      case 4:
+        for (int i = 0, j = 12; i < len; i++, j += 4)
+          a[i] = BC.bytesToFloat(b, j, false);
+        break;
+      }
+    } catch (Exception e) {
     }
-    return ret;
+    return a;
   }
   
   /**
-   * Do a split delta to a float[] array
-   * @param xyz label "x", "y", "z", or "bFactor"
-   * @param factor for dividing in the end -- 1000f or 100f 
-   * @return float[]
+   * mmtf types 2-4
    * 
-   */ 
-  private float[] getFloatsSplit(String xyz, float factor) {
-    byte[] big = (byte[]) map.get(xyz + "Big");
-    return (big == null ? null : splitDelta(big,
-        (byte[]) map.get(xyz + "Small"), fileAtomCount, factor));
-  }
-
-  /**
-   * Do a split delta to a float[] array
-   * 
-   * @param big
-   *        [n m n m n m...] where n is a "big delta" and m is a number of
-   *        "small deltas
-   * @param small
-   *        array containing the small deltas
-   * @param n
-   *        the size of the final array
-   * @param factor
-   *        to divide the final result by -- 1000f or 100f here
-   * @return float[]
-   */
-  private float[] splitDelta(byte[] big, byte[] small, int n, float factor) {
-    float[] ret = new float[n];
-    for (int i = 0, smallpt = 0, val = 0, datapt = 0, len = big.length >> 2; i < len; i++) {
-      ret[datapt++] = (val = val + BC.bytesToInt(big, i << 2, true)) / factor;
-      if (++i < len)
-        for (int j = BC.bytesToInt(big, i << 2, true); --j >= 0; smallpt++)
-          ret[datapt++] = (val = val + BC.bytesToShort(small, smallpt << 1, true))
-              / factor;
-    }
-    return ret;
-  }
-
-  /**
-   * decode a byte array into an int array
+   * Decode a byte array into a byte, short, or int array.
    *   
    * @param b
-   * @param nbytes  2 (int16) or 4 (int32)
+   * @param nbytes  1 (byte), 2 (int16), or 4 (int32)
    * @return int array
    */
-  private int[] getInts(byte[] b, int nbytes) {
+  protected int[] getInts(byte[] b, int nbytes) {
     if (b == null)
       return null;
-    int len = b.length / nbytes;
+    int len = (b.length - 12) / nbytes;
     int[] a = new int[len];
     switch (nbytes) {
+    case 1:
+      for (int i = 0, j = 12; i < len; i++, j++)
+        a[i] = b[j];
+      break;
     case 2:
-      for (int i = 0, j = 0; i < len; i++, j += nbytes)
+      for (int i = 0, j = 12; i < len; i++, j += 2)
         a[i] = BC.bytesToShort(b, j, true);
       break;
     case 4:
-      for (int i = 0, j = 0; i < len; i++, j += nbytes)
+      for (int i = 0, j = 12; i < len; i++, j += 4)
         a[i] = BC.bytesToInt(b, j, true);
       break;
     }
@@ -223,13 +216,17 @@ public class MMTFReader extends MMCifReader {
   }
   
   /**
-   * Decode each four bytes as a 1- to 4-character string label 
+   * mmtf type 5 
+   * 
+   * Decode each four bytes as a 1- to 4-character string label
+   * where a 0 byte indicates end-of-string.
+   *  
    * @param b a byte array
    * @return String[]
    */
-  private String[] bytesTo4CharArray(byte[] b) {
-    String[] id = new String[b.length / 4];
-    out: for (int i = 0, len = id.length, pt = 0; i < len; i++) {
+  protected String[] rldecode32ToStr(byte[] b) {
+    String[] id = new String[(b.length - 12) / 4];
+    out: for (int i = 0, len = id.length, pt = 12; i < len; i++) {
       SB sb = new SB();
       for (int j = 0; j < 4; j++) {
         switch (b[pt]) {
@@ -239,12 +236,190 @@ public class MMTFReader extends MMCifReader {
           continue out;
         default:
           sb.appendC((char) b[pt++]);
+          if (j == 3)
+            id[i] = sb.toString();
           continue;
         }
       }        
     }    
     return id;
   }
+
+  /**
+   * mmtf type 6 
+   * 
+   * Decode an array of int32 using run-length decoding to one
+   * char per int.
+   * 
+   * @param b
+   * @param n
+   * @return array of integers
+   */
+  protected char[] rldecode32ToChar(byte[] b, int n) {
+    if (b == null)
+      return null;
+    char[] ret = new char[n];
+    for (int i = 0, pt = 2; i < n;) {
+      char val = (char) b[(++pt) << 2];
+      for (int j = BC.bytesToInt(b, (++pt) << 2, true); --j >= 0;)
+         ret[i++] = val;
+    }
+    return ret;
+  }
+
+  /**
+   * mmtf type 7 
+   * 
+   * Decode an array of int32 using run-length decoding.
+   * 
+   * @param b
+   * @param n
+   * @return array of integers
+   */
+  protected int[] rldecode32(byte[] b, int n) {
+    if (b == null)
+      return null;
+    int[] ret = new int[n];
+    for (int i = 0, pt = 2; i < n;) {
+      int val = BC.bytesToInt(b, (++pt) << 2, true);
+      for (int j = BC.bytesToInt(b, (++pt) << 2, true); --j >= 0;)
+         ret[i++] = val;
+    }
+    return ret;
+  }
+
+  /**
+   * mmtf type 8
+   * 
+   * Decode an array of int32 using run-length decoding
+   * of a difference array.
+   * 
+   * @param b
+   * @param n
+   * @return array of integers
+   */
+  protected int[] rldecode32Delta(byte[] b, int n) {
+    if (b == null)
+      return null;
+    int[] ret = new int[n];
+    for (int i = 0, pt = 3, val = 0; i < n;) {
+      int diff = BC.bytesToInt(b, (pt++) << 2, true);
+      for (int j = BC.bytesToInt(b, (pt++) << 2, true); --j >= 0;)
+        ret[i++] = (val = val + diff);
+    }
+    return ret;
+  }
+  
+  /**
+   * mmtf type 9 
+   * 
+   * Decode an array of int32 using run-length decoding.
+   * 
+   * @param b
+   * @param n
+   * @param divisor 
+   * @return array of floats
+   */
+  protected float[] rldecode32f(byte[] b, int n,  float divisor) {
+    if (b == null)
+      return null;
+    float[] ret = new float[n];
+    for (int i = 0, pt = 2; i < n;) {
+      int val = BC.bytesToInt(b, (++pt) << 2, true);
+      for (int j = BC.bytesToInt(b, (++pt) << 2, true); --j >= 0;)
+         ret[i++] = val / divisor;
+    }
+    return ret;
+  }
+
+  /**
+   * 
+   * mmtf type 10 (first part)
+   * 
+   * Decode an array of int16 using run-length decoding of a difference array.
+   * 
+   * @param b
+   * @param n
+   * @param divisor 
+   * @return array of integers
+   */
+  protected float[] recursiveIndex16Deltaf(byte[] b, int n, float divisor) {
+    if (b == null)
+      return null;
+    float[] ret = new float[n];
+    for (int i = 0, pt = 6, val = 0, buf = 0; i < n;) {
+      int diff = BC.bytesToShort(b, (pt++) << 1, true);
+      if (diff == 32767 || diff == -32768) {
+        buf += diff;
+      } else {
+        ret[i++] = (val = val + diff + buf) / divisor;
+        buf = 0;
+      }
+    }
+    return ret;
+  }
+
+//  /**
+//   * Decode an array of int16 using run-length decoding
+//   * of a difference array.
+//   * 
+//   * @param b
+//   * @param n
+//   * @param i0 
+//   * @return array of integers
+//   */
+//  protected int[] rldecode16Delta(byte[] b, int n, int i0) {
+//    if (b == null)
+//      return null;
+//    int[] ret = new int[n];
+//    for (int i = 0, pt = i0 / 2, val = 0; i < n;) {
+//      int diff = BC.bytesToShort(b, (pt++) << 1, true);
+//      for (int j = BC.bytesToShort(b, (pt++) << 1, true); --j >= 0;)
+//        ret[i++] = (val = val + diff);
+//    }
+//    return ret;
+//  }
+
+  
+//  /**
+//   * Do a split delta to a float[] array
+//   * @param xyz label "x", "y", "z", or "bFactor"
+//   * @param factor for dividing in the end -- 1000f or 100f 
+//   * @return float[]
+//   * 
+//   */ 
+//  protected float[] getFloatsSplit(String xyz, float factor) {
+//    byte[] big = (byte[]) map.get(xyz + "Big");
+//    return (big == null ? null : splitDelta(big,
+//        (byte[]) map.get(xyz + "Small"), fileAtomCount, factor));
+//  }
+
+//  /**
+//   * Do a split delta to a float[] array
+//   * 
+//   * @param big
+//   *        [n m n m n m...] where n is a "big delta" and m is a number of
+//   *        "small deltas
+//   * @param small
+//   *        array containing the small deltas
+//   * @param n
+//   *        the size of the final array
+//   * @param factor
+//   *        to divide the final result by -- 1000f or 100f here
+//   * @return float[]
+//   */
+//  protected float[] splitDelta(byte[] big, byte[] small, int n, float factor) {
+//    float[] ret = new float[n];
+//    for (int i = 0, smallpt = 0, val = 0, datapt = 0, len = big.length >> 2; i < len; i++) {
+//      ret[datapt++] = (val = val + BC.bytesToInt(big, i << 2, true)) / factor;
+//      if (++i < len)
+//        for (int j = BC.bytesToInt(big, i << 2, true); --j >= 0; smallpt++)
+//          ret[datapt++] = (val = val + BC.bytesToShort(small, smallpt << 1, true))
+//              / factor;
+//    }
+//    return ret;
+//  }
+//
 
 //////////////////////////////// MMTF-Specific /////////////////////////  
   
@@ -254,17 +429,150 @@ public class MMTFReader extends MMCifReader {
   private int[] groupModels;
   
   private String[] labelAsymList; // created in getAtoms; used in getBioAssembly
-  private int[] atomMap; // necessary because some atoms may be delete. 
+  private Atom[] atomMap; // necessary because some atoms may be deleted. 
     // TODO  - also consider mapping group indices
 
+  /**
+   * set up all atoms, including bonding within a group
+   * 
+   * @param doMulti true to add double bonds
+   * 
+   * @throws Exception
+   */
+  @SuppressWarnings("unchecked")
+  private void getAtoms(boolean doMulti) throws Exception {
+    
+    // chains
+    int[] chainsPerModel = (int[]) map.get("chainsPerModel");
+    int[] groupsPerChain = (int[]) map.get("groupsPerChain"); // note that this is label_asym, not auth_asym
+    labelAsymList = (String[]) decode("chainIdList"); // label_asym
+    String[] authAsymList = (String[]) decode("chainNameList"); // Auth_asym
+
+    // groups
+    int[] groupTypeList = (int[]) decode("groupTypeList");
+    int groupCount = groupTypeList.length;
+    groupModels = new int[groupCount];
+    int[] groupIdList = (int[]) decode("groupIdList");
+    Object[] groupList = (Object[]) map.get("groupList");
+    char[] insCodes = (char[]) decode("insCodeList");
+
+    //o = map.get("entityList");
+    //o = map.get("altLabelList");
+    // 1crn: [7, 3, 3, 7, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 6, 6, 6, 7, 7, 2, 2, 2, 2, 2, 2, 2, 2, 1, 7, 3, 3, 7, 1, 1, 1, 7, 7, 7, 4, 4, 4, 7, 7]
+
+    int[] atomId = (int[]) decode("atomIdList");
+    boolean haveSerial = (atomId != null);
+
+    char[] altloc = (char[]) decode("altLocList"); // rldecode32
+    float[] occ = (float[]) decode("occupancyList");
+
+    float[] x = (float[]) decode("xCoordList");//getFloatsSplit("xCoord", 1000f);
+    float[] y = (float[]) decode("yCoordList");
+    float[] z = (float[]) decode("zCoordList");
+    float[] bf = (float[]) decode("bFactorList");
+    int iatom = 0;
+    String[] nameList = (useAuthorChainID ? authAsymList : labelAsymList);
+    int iModel = -1;
+    int iChain = 0;
+    int nChain = 0;
+    int iGroup = 0;
+    int nGroup = 0;
+    int chainpt = 0;
+    int seqNo = 0;
+    String chainID = "";
+    String authAsym = "", labelAsym = "";
+    char insCode = '\0';
+    atomMap = new Atom[fileAtomCount];
+    for (int j = 0; j < groupCount; j++) {
+      int a0 = iatom;
+      if (insCodes != null)
+        insCode = insCodes[j];
+      seqNo = groupIdList[j];
+      if (++iGroup >= nGroup) {
+        chainID = nameList[chainpt];
+        authAsym = authAsymList[chainpt];
+        labelAsym = labelAsymList[chainpt];
+        nGroup = groupsPerChain[chainpt++];
+        iGroup = 0;
+        if (++iChain >= nChain) {
+          groupModels[j] = ++iModel;
+          nChain = chainsPerModel[iModel];
+          iChain = 0;
+          setModelPDB(true);
+          incrementModel(iModel + 1);
+          
+          nAtoms0 = asc.ac;
+        }
+      }
+      Map<String, Object> g = (Map<String, Object>) groupList[groupTypeList[j]];
+      String group3 = (String) g.get("groupName");
+      addHetero(group3, "" + g.get("chemCompType"), true);
+      //System.out.println(group3 + " " + g.get("chemCompType"));
+      String[] atomNameList = (String[]) g.get("atomNameList");
+      String[] elementList = (String[]) g.get("elementList");
+      int len = atomNameList.length;
+      for (int ia = 0, pt = 0; ia < len; ia++, iatom++) {
+        Atom a = new Atom();
+        if (insCode != 0)
+          a.insertionCode = insCode;        
+        setAtomCoordXYZ(a, x[iatom], y[iatom], z[iatom]);
+        a.elementSymbol = elementList[pt];
+        a.atomName = atomNameList[pt++];
+        if (seqNo >= 0)
+          a.sequenceNumber = seqNo;
+        a.group3 = group3;
+        setChainID(a, chainID);
+        if (bf != null)
+          a.bfactor = bf[iatom];
+        if (altloc != null)
+          a.altLoc = altloc[iatom];
+        if (occ != null)
+          a.foccupancy = occ[iatom];
+        if (haveSerial)
+          a.atomSerial = atomId[iatom];
+        if (!filterAtom(a, -1) || !processSubclassAtom(a, labelAsym, authAsym))
+          continue;
+        if (haveSerial) {
+          asc.addAtomWithMappedSerialNumber(a);
+        } else {
+          asc.addAtom(a);
+        }
+        atomMap[iatom] = a;
+        ++ac;
+      }
+      if (!isCourseGrained) {
+        int[] bo = (int[]) g.get("bondOrderList");
+        if (bo != null) {
+          int[] bi = (int[]) g.get("bondAtomList");
+          for (int bj = 0, pt = 0, nj = bo.length; bj < nj; bj++) {
+            Atom a1 = atomMap[bi[pt++] + a0];
+            Atom a2 = atomMap[bi[pt++] + a0];
+            if (a1 != null && a2 != null)
+              addBond(new Bond(a1.index, a2.index, doMulti ? bo[bj] : 1), false);
+          }
+        }
+      }
+    }
+  }
+
+  private void addBond(Bond bond, boolean isInter) {
+    asc.addBond(bond);
+    if (Logger.debugging && isInter) {
+      Atom a1 =  asc.atoms[bond.atomIndex1];
+      Atom a2 =  asc.atoms[bond.atomIndex2];
+      Logger.info("bond " +a1.group3 + a1.sequenceNumber + "." + a1.atomName 
+          + " " + a2.group3 + a2.sequenceNumber + "." + a2.atomName + " " + bond.order);
+    }
+  }
+
   private void getBonds(boolean doMulti) {
-    byte[] b = (byte[]) map.get("bondOrderList");
-    int[] bi = getInts((byte[]) map.get("bondAtomList"), 4);
+    int[] b = (int[]) decode("bondOrderList");
+    int[] bi = (int[]) decode("bondAtomList");
     for (int i = 0, pt = 0, n = b.length; i < n; i++) {
-      int a1 = atomMap[bi[pt++]] - 1;
-      int a2 = atomMap[bi[pt++]] - 1;
-      if (a1 >= 0 && a2 >= 0)
-        addBond(new Bond(a1, a2, doMulti ? b[i] : 1), true);
+      Atom a1 = atomMap[bi[pt++]];
+      Atom a2 = atomMap[bi[pt++]];
+      if (a1 != null && a2 != null)
+        addBond(new Bond(a1.index, a2.index, doMulti ? b[i] : 1), true);
     }
   }
 
@@ -323,137 +631,6 @@ public class MMTFReader extends MMCifReader {
         ops.addLast(id);
       }
     }
-  }
-
-  /**
-   * set up all atoms, including bonding within a group
-   * 
-   * @param doMulti true to add double bonds
-   * 
-   * @throws Exception
-   */
-  @SuppressWarnings("unchecked")
-  private void getAtoms(boolean doMulti) throws Exception {
-    
-    // chains
-    int[] chainsPerModel = (int[]) map.get("chainsPerModel");
-    int[] groupsPerChain = (int[]) map.get("groupsPerChain"); // note that this is label_asym, not auth_asym
-    labelAsymList = bytesTo4CharArray((byte[]) map.get("chainIdList")); // label_asym
-    String[] authAsymList = bytesTo4CharArray((byte[]) map.get("chainNameList")); // Auth_asym
-
-    // groups
-    int[] groupTypeList = getInts((byte[]) map.get("groupTypeList"), 4);
-    int groupCount = groupTypeList.length;
-    groupModels = new int[groupCount];
-    int[] groupIdList = rldecode32Delta((byte[]) map.get("groupIdList"),
-        groupCount);
-    Object[] groupList = (Object[]) map.get("groupList");
-    int[] insCodes = rldecode32((byte[]) map.get("insCodeList"), groupCount);
-
-    //o = map.get("entityList");
-    //o = map.get("altLabelList");
-    // 1crn: [7, 3, 3, 7, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 6, 6, 6, 7, 7, 2, 2, 2, 2, 2, 2, 2, 2, 1, 7, 3, 3, 7, 1, 1, 1, 7, 7, 7, 4, 4, 4, 7, 7]
-
-    int[] atomId = rldecode32Delta((byte[]) map.get("atomIdList"), fileAtomCount);
-    boolean haveSerial = (atomId != null);
-
-    int[] altloc = rldecode32((byte[]) map.get("altLocList"), fileAtomCount);
-    int[] occ = rldecode32((byte[]) map.get("occupancyList"), fileAtomCount);
-
-    float[] x = getFloatsSplit("xCoord", 1000f);
-    float[] y = getFloatsSplit("yCoord", 1000f);
-    float[] z = getFloatsSplit("zCoord", 1000f);
-    float[] bf = getFloatsSplit("bFactor", 100f);
-    int iatom = 0;
-    String[] nameList = (useAuthorChainID ? authAsymList : labelAsymList);
-    int iModel = -1;
-    int iChain = 0;
-    int nChain = 0;
-    int iGroup = 0;
-    int nGroup = 0;
-    int chainpt = 0;
-    int seqNo = 0;
-    String chainID = "";
-    String authAsym = "", labelAsym = "";
-    int insCode = 0;
-    atomMap = new int[fileAtomCount];
-    for (int j = 0; j < groupCount; j++) {
-      int a0 = iatom;
-      if (insCodes != null)
-        insCode = insCodes[j];
-      seqNo = groupIdList[j];
-      if (++iGroup >= nGroup) {
-        chainID = nameList[chainpt];
-        authAsym = authAsymList[chainpt];
-        labelAsym = labelAsymList[chainpt];
-        nGroup = groupsPerChain[chainpt++];
-        iGroup = 0;
-        if (++iChain >= nChain) {
-          groupModels[j] = ++iModel;
-          nChain = chainsPerModel[iModel];
-          iChain = 0;
-          setModelPDB(true);
-          incrementModel(iModel + 1);
-          
-          nAtoms0 = asc.ac;
-        }
-      }
-      Map<String, Object> g = (Map<String, Object>) groupList[groupTypeList[j]];
-      String group3 = (String) g.get("groupName");
-      addHetero(group3, "" + g.get("chemCompType"), true);
-      //System.out.println(group3 + " " + g.get("chemCompType"));
-      String[] atomNameList = (String[]) g.get("atomNameList");
-      String[] elementList = (String[]) g.get("elementList");
-      int len = atomNameList.length;
-      for (int ia = 0, pt = 0; ia < len; ia++, iatom++) {
-        Atom a = new Atom();
-        if (insCode != 0)
-          a.insertionCode = (char) insCode;        
-        setAtomCoordXYZ(a, x[iatom], y[iatom], z[iatom]);
-        a.elementSymbol = elementList[pt];
-        a.atomName = atomNameList[pt++];
-        if (seqNo >= 0)
-          a.sequenceNumber = seqNo;
-        a.group3 = group3;
-        setChainID(a, chainID);
-        if (bf != null)
-          a.bfactor = bf[iatom];
-        if (altloc != null)
-          a.altLoc = (char) altloc[iatom];
-        if (occ != null)
-          a.foccupancy = occ[iatom] / 100f;
-        if (haveSerial)
-          a.atomSerial = atomId[iatom];
-        if (!filterAtom(a, -1) || !processSubclassAtom(a, labelAsym, authAsym))
-          continue;
-        if (haveSerial) {
-          asc.addAtomWithMappedSerialNumber(a);
-        } else {
-          asc.addAtom(a);
-        }
-        // map to [1....n] not [0...n] so that
-        atomMap[iatom] = ++ac;
-      }
-      if (!isCourseGrained) {
-        int[] bo = (int[]) g.get("bondOrderList");
-        if (bo != null) {
-          int[] bi = (int[]) g.get("bondAtomList");
-          for (int bj = 0, pt = 0, nj = bo.length; bj < nj; bj++) {
-            int a1 = atomMap[bi[pt++] + a0] - 1;
-            int a2 = atomMap[bi[pt++] + a0] - 1;
-            if (a1 >= 0 && a2 >= 0)
-              addBond(new Bond(a1, a2, doMulti ? bo[bj] : 1), false);
-          }
-        }
-      }
-    }
-  }
-
-  private void addBond(Bond bond, boolean isInter) {
-    asc.addBond(bond);
-    if (Logger.debugging && isInter)
-      Logger.info("bond " + asc.atoms[bond.atomIndex1].group3 + "." + asc.atoms[bond.atomIndex1].atomName 
-          + " " + asc.atoms[bond.atomIndex2].atomName + " " + bond.order);
   }
 
   //  Code  Name

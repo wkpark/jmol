@@ -666,7 +666,7 @@ public class MMCifReader extends CifReader {
     while (parser.getData())
       if (!isNull(groupName = getField(CHEM_COMP_ID))
           && !isNull(hetName = getField(CHEM_COMP_NAME)))
-        addHetero(groupName, hetName, true);
+        addHetero(groupName, hetName, true, true);
     return true;
   }
 
@@ -700,12 +700,12 @@ public class MMCifReader extends CifReader {
 //    return true;
 //  }
 
-  protected void addHetero(String groupName, String hetName, boolean addNote) {
-    if (!vwr.getJBR().isHetero(groupName))
+  protected void addHetero(String groupName, String hetName, boolean doCheck, boolean addNote) {
+    if (doCheck && !vwr.getJBR().isHetero(groupName))
       return;
     if (htHetero == null)
       htHetero = new Hashtable<String, String>();
-    if (htHetero.containsKey(groupName))
+    if (doCheck && htHetero.containsKey(groupName))
       return;
     htHetero.put(groupName, hetName);
     if (addNote)

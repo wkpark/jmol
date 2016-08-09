@@ -533,6 +533,7 @@ public class CifReader extends AtomSetCollectionReader {
   private String processChemicalInfo(String type) throws Exception {
     if (type.equals("name")) {
       chemicalName = data = parser.fullTrim(data);
+      appendLoadNote(chemicalName);
       if (!data.equals("?"))
         asc.setInfo("modelLoadNote", data);
     } else if (type.equals("structuralFormula")) {

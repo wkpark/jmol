@@ -138,8 +138,8 @@ class PickleReader {
         l = getObjects(getMark());
         if (inNames && markCount == 2) {// && l.size() > 0 && l.get(0) == thisName) {
           int pt = (int) binaryDoc.getPosition();
-          System.out.println(" " + thisName + " " + filePt + " "
-              + (pt - filePt));
+//          System.out.println(" " + thisName + " " + filePt + " "
+//              + (pt - filePt));
           Lst<Object> l2 = new Lst<Object>();
           l2.addLast(Integer.valueOf(filePt));
           l2.addLast(Integer.valueOf(pt - filePt));
@@ -244,7 +244,11 @@ class PickleReader {
           map = (Map<String, Object>) o;
           for (i = l.size(); --i >= 0;) {
             o = l.get(i);
-            map.put(bytesToString((byte[]) l.get(--i)), o);
+            Object oo = l.get(--i);
+            if (AU.isAB(oo))
+              map.put(bytesToString((byte[]) oo), o);
+            else
+              map.put(oo.toString(), o);
           }
         }
         break;
@@ -371,14 +375,18 @@ class PickleReader {
 
   private void putMemo(int i, boolean doCheck) {
     Object o = peek();
+    if (AU.isAB(o))
+      o = bytesToString((byte[]) o);
     if (o instanceof String) {
       if (doCheck && markCount >= 6 || markCount == 3 && inMovie)
         return;
       memo.put(Integer.valueOf(i), o);
-      if (((String)o).indexOf('\0') >= 0)
-        System.out.println("caching byte["+((String)o).length() + "] at " + binaryDoc.getPosition() + " ipt " + ipt);
-      else
-        System.out.println("caching String \"" + o + "\" at " + binaryDoc.getPosition() + " ipt " + ipt);
+//      if (((String) o).indexOf('\0') >= 0)
+//        System.out.println("caching byte[" + ((String) o).length() + "] at "
+//            + binaryDoc.getPosition() + " ipt " + ipt);
+//      else
+//        System.out.println("caching String \"" + o + "\" at "
+//            + binaryDoc.getPosition() + " ipt " + ipt);
     }
   }
 

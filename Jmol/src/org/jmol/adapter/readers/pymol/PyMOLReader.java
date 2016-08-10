@@ -1776,10 +1776,9 @@ PROTEKTED,   118, //  unsigned char protekted : 2;  // 0,1,2
   
   @SuppressWarnings("unchecked")
   public static Lst<Object> sublistAt(Lst<Object> mesh, int... pt) {
-    int i = 0;
-    for (; i < pt.length - 1; i++)
+    for (int i = 0; i < pt.length; i++)
       mesh = (Lst<Object>) mesh.get(pt[i]);
-    return (Lst<Object>) mesh.get(i);
+    return mesh;
   }
 
 

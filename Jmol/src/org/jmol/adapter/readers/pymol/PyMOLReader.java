@@ -237,7 +237,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     if (haveScenes) {
       String[] scenes = new String[sceneOrder.size()];
       for (int i = scenes.length; --i >= 0;)
-        scenes[i] = (String) sceneOrder.get(i);
+        scenes[i] = stringAt(sceneOrder, i);
       vwr.ms.msInfo.put("scenes", scenes);
     }
     
@@ -790,7 +790,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       return;
     if (isHidden)
       return;
-    Lst<Object> data = listAt(listAt(pymolObject, 2), 0);
+    Lst<Object> data = sublistAt(pymolObject, 2, 0);
     int color = PyMOL.getRGB(intAt(listAt(pymolObject, 0), 2));
     String name = pymolScene.addCGO(data, color);
     if (name != null)
@@ -845,7 +845,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     if (isHidden)
       return; // will have to reconsider this if there is a movie, though
     Logger.info("PyMOL measure " + objectName);
-    Lst<Object> measure = listAt(listAt(pymolObject, 2), 0);
+    Lst<Object> measure = sublistAt(pymolObject, 2, 0);
     int pt;
     int nCoord = (measure.get(pt = 1) instanceof Lst<?> ? 2 : measure
         .get(pt = 4) instanceof Lst<?> ? 3
@@ -1009,8 +1009,8 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
   private void processMolCryst(Lst<Object> cryst) {
     if (cryst == null || cryst.size() == 0)
       return;
-    Lst<Object> l = listAt(listAt(cryst, 0), 0);
-    Lst<Object> a = listAt(listAt(cryst, 0), 1);
+    Lst<Object> l = sublistAt(cryst, 0, 0);
+    Lst<Object> a = sublistAt(cryst, 0, 1);
     setUnitCell(floatAt(l, 0), floatAt(l, 1), floatAt(l, 2), floatAt(a, 0),
         floatAt(a, 1), floatAt(a, 2));
     setSpaceGroupName(stringAt(cryst, 1));
@@ -1658,7 +1658,7 @@ PROTEKTED,   118, //  unsigned char protekted : 2;  // 0,1,2
         pymolScene.mepList += ";" + isosurfaceName + ";";
       } else {
         tok = T.mesh;
-        mapName = stringAt(listAt(listAt(obj, 2), 0), 1);
+        mapName = stringAt(sublistAt(obj, 2, 0), 1);
       }
       Lst<Object> surface = volumeData.get(mapName);
       if (surface == null)
@@ -1773,6 +1773,16 @@ PROTEKTED,   118, //  unsigned char protekted : 2;  // 0,1,2
     Object o = list.get(i);
     return (o instanceof Lst<?> ? (Lst<Object>) o : null);
   }
+  
+  @SuppressWarnings("unchecked")
+  public static Lst<Object> sublistAt(Lst<Object> mesh, int... pt) {
+    int i = 0;
+    for (; i < pt.length - 1; i++)
+      mesh = (Lst<Object>) mesh.get(pt[i]);
+    return (Lst<Object>) mesh.get(i);
+  }
+
+
 
   /**
    * return a map of lists of the type: [ [name1,...], [name2,...], ...]

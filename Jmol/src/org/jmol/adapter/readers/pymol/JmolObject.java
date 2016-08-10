@@ -336,10 +336,9 @@ class JmolObject {
           .append(m.getModelNumberDotted(modelIndex))
           .append(" color ").append(Escape.escapeColor(argb)).append("  ").append(PT.esc(cacheID)).append(" ")
           .append(PT.esc(sID)).append(" mesh nofill frontonly");
-      float within = PyMOLReader.floatAt(PyMOLReader.listAt(PyMOLReader.listAt(
-          mesh, 2), 0), 11);
-      Lst<Object> list = PyMOLReader.listAt(PyMOLReader.listAt(PyMOLReader
-          .listAt(mesh, 2), 0), 12);
+      Lst<Object> list = PyMOLReader.sublistAt(mesh, 2, 0);
+      float within = PyMOLReader.floatAt(list, 11);  
+      list = PyMOLReader.listAt(list, 12);
       if (within > 0) {
         P3 pt = new P3();
         sb.append(";isosurface slab within ").appendF(within).append(" [ ");

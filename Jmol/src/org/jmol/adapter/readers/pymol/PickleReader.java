@@ -350,7 +350,7 @@ class PickleReader {
     Logger.info("PyMOL Pickle reader cached " + memo.size()
         + " tokens; retrieved " + retrieveCount);
 
-    map = (Map<String, Object>) stack.remove(0);
+    map = (Map<String, Object>) stack.removeItemAt(0);
     if (map.size() == 0)
       for (i = stack.size(); --i >= 0;) {
         o = stack.get(i--);
@@ -398,7 +398,7 @@ class PickleReader {
     for (int i = mark; i < stack.size(); ++i)
       args.addLast(stack.get(i));
     for (int i = stack.size(); --i >= mark;)
-      stack.remove(i);
+      stack.removeItemAt(i);
     return args;
   }
 
@@ -444,7 +444,7 @@ class PickleReader {
   }
 
   private int getMark() {
-    return marks.remove(--markCount).intValue();
+    return marks.removeItemAt(--markCount).intValue();
   }
 
   private void push(Object o) {
@@ -459,7 +459,7 @@ class PickleReader {
   }
 
   private Object pop() {
-    return stack.remove(stack.size() - 1);
+    return stack.removeItemAt(stack.size() - 1);
   }
 
 }

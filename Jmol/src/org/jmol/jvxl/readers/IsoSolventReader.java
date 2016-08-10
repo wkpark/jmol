@@ -261,7 +261,7 @@ class IsoSolventReader extends AtomDataReader {
         if (((Boolean) info.get(i)[2]).booleanValue()
             && info.get(i)[0] instanceof P4) {
           volumeData.capData((P4) info.get(i)[0], params.cutoff);
-          info.remove(i--);
+          info.removeItemAt(i--);
         }
   }
 

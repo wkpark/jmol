@@ -567,10 +567,10 @@ public class SmilesAromatic {
     checkBridges(lstAromatic, bsBad, lstSP2, bsBad2, bs);
     for (int i = lstAromatic.size(); --i >= 0;)
       if (bsBad.get(i))
-        lstAromatic.remove(i);
+        lstAromatic.removeItemAt(i);
     for (int i = lstSP2.size(); --i >= 0;)
       if (bsBad2.get(i))
-        lstSP2.remove(i);
+        lstSP2.removeItemAt(i);
   }
 
   private static void checkBridges(Lst<?> lst, BS bsBad, Lst<?> lst2,

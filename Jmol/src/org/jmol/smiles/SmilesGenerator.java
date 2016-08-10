@@ -703,7 +703,7 @@ public class SmilesGenerator {
       bondNext = bond0t;
       String branch = s2.toString();
       // catch is that if there are 
-      v.remove(i--);
+      v.removeItemAt(i--);
       if (bondNext == null)
         vBranches.addLast(branch);
       else

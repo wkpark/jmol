@@ -94,7 +94,7 @@ final public class CommandHistory {
     if (maxSize < 2)
       maxSize = 2;
     while (nextCommand > maxSize) {
-      commandList.remove(0);
+      commandList.removeItemAt(0);
       nextCommand--;
     }
     if (nextCommand > maxSize)
@@ -228,7 +228,7 @@ final public class CommandHistory {
   public String removeCommand(int n) {
     if (n < 0 || n >= nextCommand)
       return "";
-    String str = commandList.remove(n);
+    String str = commandList.removeItemAt(n);
     nextCommand--;
     return str; 
   }
@@ -244,7 +244,7 @@ final public class CommandHistory {
     if (command.endsWith(NOHISTORYLINE_FLAG))
       return;
     if (nextCommand >= maxSize) {
-      commandList.remove(0);
+      commandList.removeItemAt(0);
       nextCommand = maxSize - 1;
     }
     commandList.add(nextCommand, command);

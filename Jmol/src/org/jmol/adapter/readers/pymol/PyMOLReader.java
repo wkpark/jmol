@@ -481,7 +481,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       String name = stringAt(sceneOrder, i);
       Lst<Object> thisScene = getMapList(scenes, name);
       if (thisScene == null || thisScene.get(2) == null)
-        sceneOrder.remove(i--);
+        sceneOrder.removeItemAt(i--);
     }
     return (sceneOrder != null && sceneOrder.size() != 0);
   }

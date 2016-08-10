@@ -1524,7 +1524,7 @@ public class SV extends T implements JSONEncodable {
           if (i < 0)
               i += len;
           if (i >= 0 && i < len) {
-            v = lst.remove(i);
+            v = lst.removeItemAt(i);
           }
         } else {
           v = m.remove(mapKey.asString());
@@ -1536,7 +1536,7 @@ public class SV extends T implements JSONEncodable {
     } else {
       Lst<SV> x = getList();
       if (value == null || x == null)
-        return (x == null || x.size() == 0 ? newS("") : x.remove(x.size() - 1));
+        return (x == null || x.size() == 0 ? newS("") : x.removeItemAt(x.size() - 1));
       x.addLast(newI(0).setv(value));
     }
     return this;

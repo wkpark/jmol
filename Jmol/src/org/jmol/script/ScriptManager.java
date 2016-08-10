@@ -183,7 +183,7 @@ public class ScriptManager implements JmolScriptManager {
     for (int i = scriptQueue.size(); --i >= 0;) {
       String strScript = (String) (scriptQueue.get(i).get(0));
       if (strScript.indexOf(command) == 0) {
-        scriptQueue.remove(i);
+        scriptQueue.removeItemAt(i);
         if (Logger.debugging)
           Logger.debug(scriptQueue.size() + " scripts; removed: " + strScript);
       }

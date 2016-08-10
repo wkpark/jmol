@@ -464,7 +464,7 @@ public class Contact extends Isosurface {
     }
     for (int i = bsBad.length(); --i >= 0;)
       if (bsBad.get(i))
-        list.remove(i);
+        list.removeItemAt(i);
     if (Logger.debugging)
       for (int i = 0; i < list.size(); i++)
         Logger.debug(list.get(i).toString());

@@ -2612,7 +2612,7 @@ abstract public class AtomCollection {
       for (int i = list.size(); --i >= 0;) {
         Tensor t = (Tensor) list.get(i);
         if (bsAtoms.get(t.atomIndex1) || t.atomIndex2 >= 0 && bsAtoms.get(t.atomIndex2))
-          list.remove(i);
+          list.removeItemAt(i);
       }
       if (list.size() == 0)
         toDelete.addLast(key);

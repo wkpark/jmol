@@ -77,7 +77,7 @@ public class ScriptParallelProcessor extends ScriptFunction implements JmolParal
         sm.setParallel();
         vShapeManagers.addLast(sm);
       }
-      runProcess(processes.remove(0), sm);
+      runProcess(processes.removeItemAt(0), sm);
     }
 
     synchronized (lock) {

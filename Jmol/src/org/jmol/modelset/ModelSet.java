@@ -640,7 +640,7 @@ public class ModelSet extends BondCollection {
     moleculeCount = 0;
     for (int i = stateScripts.size(); --i >= 0;) {
       if (stateScripts.get(i).isConnect()) {
-        stateScripts.remove(i);
+        stateScripts.removeItemAt(i);
       }
     }
     deleteAllBonds2();
@@ -809,7 +809,7 @@ public class ModelSet extends BondCollection {
     // correct stateScripts, particularly CONNECT scripts
     for (int i = stateScripts.size(); --i >= 0;) {
       if (!stateScripts.get(i).deleteAtoms(modelIndex, bsBonds, bsModelAtoms)) {
-        stateScripts.remove(i);
+        stateScripts.removeItemAt(i);
       }
     }
     deleteModelAtoms(firstAtomIndex, nAtoms, bsModelAtoms);

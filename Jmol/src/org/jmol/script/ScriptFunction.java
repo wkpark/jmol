@@ -159,7 +159,7 @@ public class ScriptFunction implements JmolScriptFunction {
       }
     }
     for (int i = pt; --i >= cmdpt0;) {
-      lltoken.remove(i);
+      lltoken.removeItemAt(i);
       lineIndices[i][0] = lineIndices[i][1] = 0;
     }
   }

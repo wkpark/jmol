@@ -115,7 +115,7 @@ class NBOJobQueueManager {
           if (!running || interrupted())
             break;
           busy = true;
-          thisJob = list.remove(0);
+          thisJob = list.removeItemAt(0);
           thisJob.service.jobCanceled = false;
           thisJob.run();
           busy = false;

@@ -598,7 +598,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     if (bsInputAtomsIgnore.nextSetBit(0) >= 0)
       for (int i = n; --i >= 0;)
         if (bsInputAtomsIgnore.get(i))
-          vCoords.remove(i);
+          vCoords.removeItemAt(i);
     ac = vCoords.size();
     Logger.info(nPrim + " primitive atoms and " + ac
         + " conventionalAtoms");

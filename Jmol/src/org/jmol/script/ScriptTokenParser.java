@@ -368,7 +368,7 @@ abstract class ScriptTokenParser {
     if (token.tok == T.leftsquare && (lastToken.tok == T.per || lastToken.tok == T.perper)) {
       // new notation
       int ipt = ltokenPostfix.size() - 1;
-      ltokenPostfix.remove(ipt);
+      ltokenPostfix.removeItemAt(ipt);
       ltokenPostfix.addLast(T.tokenRightParen);
       int pcount = 0;
       int tok;      
@@ -592,7 +592,7 @@ abstract class ScriptTokenParser {
     if (isHash) {
       isImplicitExpression = false;
       returnToken();
-      ltokenPostfix.remove(ltokenPostfix.size() - 1);
+      ltokenPostfix.removeItemAt(ltokenPostfix.size() - 1);
       addNextToken();
       int nBrace = 1;
       while (nBrace != 0) {

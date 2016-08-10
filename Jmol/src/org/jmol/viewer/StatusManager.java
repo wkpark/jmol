@@ -198,7 +198,7 @@ public class StatusManager {
     if (statusRecordSet == null)
       messageQueue.put(statusName, statusRecordSet = new  Lst<Lst<Object>>());
     else if (statusRecordSet.size() == MAXIMUM_QUEUE_LENGTH)
-      statusRecordSet.remove(0);    
+      statusRecordSet.removeItemAt(0);    
     statusRecordSet.addLast(msgRecord);
   }
   

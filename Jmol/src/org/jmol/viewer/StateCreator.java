@@ -1700,7 +1700,7 @@ public class StateCreator extends JmolStateCreator {
       if (list1.size() == 0 || undoWorking)
         return;
       undoWorking = true;
-      list2.add(0, list1.remove(0));
+      list2.add(0, list1.removeItemAt(0));
       s = vwr.actionStatesRedo.get(0);
       if (type == T.undomove && list2.size() == 1) {
         // must save current state, coord, etc.
@@ -1753,7 +1753,7 @@ public class StateCreator extends JmolStateCreator {
         vwr.actionStatesRedo.add(1, sb.toString());
       }
       if (vwr.actionStates.size() == MAX_ACTION_UNDO) {
-        vwr.actionStates.remove(MAX_ACTION_UNDO - 1);
+        vwr.actionStates.removeItemAt(MAX_ACTION_UNDO - 1);
       }
     }
     undoWorking = !clearRedo;

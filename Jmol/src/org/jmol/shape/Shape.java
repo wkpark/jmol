@@ -203,7 +203,7 @@ public abstract class Shape {
         bsSelected = vwr.bsA();
       Lst<Object[]> propertyList = (Lst<Object[]>) value;
       while (propertyList.size() > 0) {
-        Object[] data = propertyList.remove(0);
+        Object[] data = propertyList.removeItemAt(0);
         setProperty(((String) data[0]).intern(), data[1], bsSelected);
       }
       return;

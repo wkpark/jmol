@@ -559,7 +559,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
     if (i >= measurements.size() || i < 0)
       return;
     String msg = getMessage(measurements.get(i), true);
-    measurements.remove(i);
+    measurements.removeItemAt(i);
     measurementCount--;
     vwr.setStatusMeasuring("measureDeleted", i, msg, 0);
   }
@@ -578,7 +578,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
           break;
         case T.delete:
           String msg = getMessage(measurements.get(i), true);
-          measurements.remove(i);
+          measurements.removeItemAt(i);
           measurementCount--;
           vwr.setStatusMeasuring("measureDeleted", i, msg, 0);
           break;

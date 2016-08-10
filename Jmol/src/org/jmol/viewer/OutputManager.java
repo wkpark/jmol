@@ -276,9 +276,9 @@ abstract class OutputManager {
           return true;          
         }
         objImage = null;
-        v.remove(0);
-        v.remove(0); // also "_IMAGE_"
-        params.put("pngImgData", v.remove(0));
+        v.removeItemAt(0);
+        v.removeItemAt(0); // also "_IMAGE_"
+        params.put("pngImgData", v.removeItemAt(0));
         OC oz = getOutputChannel(null, null);
         errRet[0] = writeZipFile(oz, v, "OK JMOL", null);
         params.put("type", "PNGJ");
@@ -286,7 +286,7 @@ abstract class OutputManager {
         params.put("pngAppPrefix", "Jmol Type");
         params.put("pngAppData", oz.toByteArray());
       } else if (v.size() == 1) {
-        byte[] b = (byte[]) v.remove(0);
+        byte[] b = (byte[]) v.removeItemAt(0);
         out.write(b, 0, b.length);
         return true;
       } else {

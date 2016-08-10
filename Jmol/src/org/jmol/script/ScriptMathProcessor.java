@@ -143,7 +143,7 @@ public class ScriptMathProcessor {
         for (int i = 0; i <= xPt; i++)
           result.addLast(isSpecialAssignment ? xStack[i] : SV.selectItemVar(xStack[i]));
         if (lastAssignedString != null) {
-          result.remove(0);
+          result.removeItemAt(0);
           result.add(0, lastAssignedString);
           lastAssignedString.intValue = xStack[0].intValue;
         }    

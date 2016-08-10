@@ -52,7 +52,7 @@ abstract public class Container extends Component {
   }
 
   public void remove(int i) {
-    Component c = list.remove(i);
+    Component c = list.removeItemAt(i);
     c.parent = null;
     cList = null;
   }

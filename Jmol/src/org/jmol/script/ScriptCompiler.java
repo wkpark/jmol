@@ -720,7 +720,7 @@ public class ScriptCompiler extends ScriptTokenParser {
         // ...{...
         if (lastFlowCommand == null) {
           parenCount = setBraceCount = braceCount = 0;
-          ltoken.remove(0);
+          ltoken.removeItemAt(0);
           T t = ContextToken.newContext(true);
           addTokenToPrefix(setCommand(t));
           pushContext(t);
@@ -729,7 +729,7 @@ public class ScriptCompiler extends ScriptTokenParser {
           parenCount = setBraceCount = 0;
           setCommand(lastFlowCommand);
           if (lastFlowCommand.tok != T.process && (tokAt(0) == T.leftbrace))
-            ltoken.remove(0);
+            ltoken.removeItemAt(0);
           lastFlowCommand = null;
           forceFlowContext = flowContext;
 //          lastFlowImplicitEnd = flowContext.nextFlowImplicitEnd;
@@ -753,7 +753,7 @@ public class ScriptCompiler extends ScriptTokenParser {
         case T.define:
           break;
         default:
-          T t = ltoken.remove(2);
+          T t = ltoken.removeItemAt(2);
           ltoken.add(
               2,
               T.o(T.string,
@@ -1005,7 +1005,7 @@ public class ScriptCompiler extends ScriptTokenParser {
   }
 
   private void replaceCommand(T token) {
-    ltoken.remove(0);
+    ltoken.removeItemAt(0);
     ltoken.add(0, setCommand(token));
   }
 
@@ -1738,7 +1738,7 @@ public class ScriptCompiler extends ScriptTokenParser {
             && isFlowIfContextOK(forceFlowContext)) {
           flowContext = forceFlowContext;
           flowContext.forceEndIf = true;
-          lltoken.remove(--iCommand);
+          lltoken.removeItemAt(--iCommand);
         } else if (flowContext != null && flowContext.addLine > 0) {
           while (flowContext != null && !isFlowIfContextOK(flowContext)) {
             if (flowContext.checkForceEndIf(0)) {
@@ -2167,8 +2167,8 @@ public class ScriptCompiler extends ScriptTokenParser {
     if (iBrace <= 0 || vBraces.get(iBrace - 1).tok != T.rightbrace)
       return OK;
     // time to execute end
-    vBraces.remove(--iBrace);
-    T token = vBraces.remove(--iBrace);
+    vBraces.removeItemAt(--iBrace);
+    T token = vBraces.removeItemAt(--iBrace);
     if (theTok == T.leftbrace) {
       //
       // }
@@ -2178,7 +2178,7 @@ public class ScriptCompiler extends ScriptTokenParser {
       parenCount--;
     }
     if (token.tok == T.push) {
-      vPush.remove(--pushCount);
+      vPush.removeItemAt(--pushCount);
       // close this context
       addTokenToPrefix(setCommand(ContextToken.newContext(false)));
       isEndOfCommand = true;
@@ -2417,7 +2417,7 @@ public class ScriptCompiler extends ScriptTokenParser {
     case T.process:
     case T.whilecmd:
       if (!isExplicitEnd)
-        vPush.remove(--pushCount);
+        vPush.removeItemAt(--pushCount);
       break;
     case T.parallel:
     case T.function:
@@ -2428,10 +2428,10 @@ public class ScriptCompiler extends ScriptTokenParser {
             lineNumbers, lineIndices, lltoken);
       }
       thisFunction = (vFunctionStack.size() == 0 ? null
-          : (ScriptFunction) vFunctionStack.remove(0));
+          : (ScriptFunction) vFunctionStack.removeItemAt(0));
       tokenCommand.intValue = 0;
       if (tok == T.trycmd)
-        vPush.remove(--pushCount);
+        vPush.removeItemAt(--pushCount);
       break;
     default:
       return errorStr(ERROR_unrecognizedToken, "end " + ident);

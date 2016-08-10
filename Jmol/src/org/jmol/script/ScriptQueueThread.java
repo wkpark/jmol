@@ -102,7 +102,7 @@ public class ScriptQueueThread extends JmolThread {
           + "] scripts; running: " + script);
     }
     //System.out.println("removing: " + scriptItem + " " + script);
-    queue.remove(0);
+    queue.removeItemAt(0);
     //System.out.println("removed: " + scriptItem);
 //    if (isScriptFile) {
 //      script = "script " + PT.esc(script);

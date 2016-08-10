@@ -154,7 +154,7 @@ public class BinaryDocument extends BC implements GenericBinaryDocument {
     out.write(b, 0, b.length);
   }
   
-  public void writeBytes(byte[] b, int off, int n) {
+  public void writeBytes(byte[] b, int off, int n) throws IOException {
     out.write(b, off, n);
   }
 
@@ -378,7 +378,8 @@ public class BinaryDocument extends BC implements GenericBinaryDocument {
   @Override
   public void setOutputChannel(GenericOutputChannel out) {
       this.out = out;
-      isBigendianOut = out.isBigEndian();
+      if (out != null)
+        isBigendianOut = out.isBigEndian();
   }
 
   @Override

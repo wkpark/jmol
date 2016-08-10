@@ -125,7 +125,7 @@ public class IntegrationDialog extends JSVDialog {
 	private void deleteIntegral() {
 		if (!checkSelectedIntegral())
 			return;
-		xyData.remove(iSelected);
+		xyData.removeItemAt(iSelected);
 		iSelected = -1;
 		iRowColSelected = -1;
 		applyFromFields();

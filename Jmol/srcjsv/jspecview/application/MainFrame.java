@@ -912,7 +912,7 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 		case JSViewer.FILE_OPEN_ERROR:
 			awaken(false);
 			awaken(true);
-			JOptionPane.showMessageDialog(this, "There was an error reading file " + name + " " + url);
+			JOptionPane.showMessageDialog(this, "There was an error reading " + (name != null ? name : url));
 			break;
 		}
 		siValidateAndRepaint(false);
@@ -1080,7 +1080,7 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 		if (filePath.length() > 100)
 			return;
 		if (recentFilePaths.size() >= MAX_RECENT)
-			recentFilePaths.remove(MAX_RECENT - 1);
+			recentFilePaths.removeItemAt(MAX_RECENT - 1);
 		if (recentFilePaths.contains(filePath))
 			recentFilePaths.removeObj(filePath);
 		recentFilePaths.add(0, filePath);

@@ -523,7 +523,7 @@ public class JSVApplet extends JApplet implements JSVAppletInterface,
 					if (commandWatcherThread != null) {
 						Lst<String> q = app.vwr.scriptQueue;
 						if (q.size() > 0) {
-							String scriptItem = q.remove(0);
+							String scriptItem = q.removeItemAt(0);
 							if (scriptItem != null)
 								app.siProcessCommand(scriptItem);
 						}

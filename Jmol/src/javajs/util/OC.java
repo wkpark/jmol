@@ -310,7 +310,7 @@ public class OC extends OutputStream implements GenericOutputChannel {
     /**
      * @j2sNative
      * 
-     *            jmol = Jmol; self.J2S || Jmol; _function = (typeof this.fileName == "function" ?
+     *            jmol = self.J2S || Jmol; _function = (typeof this.fileName == "function" ?
      *            this.fileName : null);
      * 
      */

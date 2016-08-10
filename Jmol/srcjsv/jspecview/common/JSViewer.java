@@ -1549,7 +1549,7 @@ public class JSViewer implements PlatformViewer, BytePoster  {
 		if (panelNodes != null)
 			for (int i = panelNodes.size(); --i >= 0;) {
 				panelNodes.get(i).dispose();
-				panelNodes.remove(i);
+				panelNodes.removeItemAt(i);
 			}
 	}
 

@@ -38,10 +38,10 @@ public class GenericMouse implements GenericMouseInterface {
 				jsvp.showMenu(x, y);
 			return true;
 		}
-		if (id != -1)
+		if (id != MouseEvent.MOUSE_WHEEL)
 			modifiers = applyLeftMouse(modifiers);
 		switch (id) {
-		case -1: // JavaScript
+		case MouseEvent.MOUSE_WHEEL: // JavaScript
 			wheeled(time, x, modifiers | Event.MOUSE_WHEEL);
 			break;
 		case Event.MOUSE_DOWN:

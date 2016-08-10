@@ -103,7 +103,7 @@ class FormContext {
           strError = "misplaced #end";
           return;
         }
-        cmdPtr = cmds.remove(0).intValue();
+        cmdPtr = cmds.removeItemAt(0).intValue();
         formTokens.get(cmdPtr).endPtr = ptr;
       } else {
         commandLevel++;
@@ -128,7 +128,7 @@ class FormContext {
             return;
           }
           cmdType = VT_ELSEIF;
-          cmdPtr = cmds.remove(0).intValue();
+          cmdPtr = cmds.removeItemAt(0).intValue();
           FormToken vt = formTokens.get(cmdPtr);
           checkIf = true;
           vt.endPtr = ptr;
@@ -140,7 +140,7 @@ class FormContext {
           }
           cmdType = VT_ELSE;
           checkIf = true;
-          cmdPtr = cmds.remove(0).intValue();
+          cmdPtr = cmds.removeItemAt(0).intValue();
           formTokens.get(cmdPtr).endPtr = ptr;
           cmds.add(0, new Integer(ptr));
         } else {

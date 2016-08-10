@@ -319,7 +319,7 @@ public class IntegralData extends MeasurementData {
 	
 	@Override
 	public Measurement remove(int i) {
-		return super.remove(i);
+		return removeItemAt(i);
 	}
 
 	public BS getBitSet() {
@@ -440,7 +440,7 @@ public class IntegralData extends MeasurementData {
 	public void setMinimumIntegral(double val) {
 		for (int i = size(); --i >= 0;)
 			if (get(i).getValue() < val)
-				remove(i);
+				removeItemAt(i);
 	}
 
 }

@@ -603,7 +603,7 @@ class GraphSet implements XYScaleConverter {
 			if (annotation.is2D ? isNearby(annotations.get(i), annotation, imageView,
 					10) : annotation.equals(annotations.get(i))) {
 				removed = true;
-				annotations.remove(i);
+				annotations.removeItemAt(i);
 			}
 		if (annotation.text.length() > 0 && (!removed || !isToggle))
 			annotations.addLast(annotation);
@@ -1016,7 +1016,7 @@ class GraphSet implements XYScaleConverter {
 		else
 			for (int i = highlights.size(); --i >= 0;)
 				if (highlights.get(i).spectrum == spec)
-					highlights.remove(i);
+					highlights.removeItemAt(i);
 	}
 
 	private Coordinate setCoordClicked(int xPixel, double x, double y) {
@@ -1360,7 +1360,7 @@ class GraphSet implements XYScaleConverter {
 		// add to and clean the zoom list
 		if (viewList.size() > currentZoomIndex + 1)
 			for (int i = viewList.size() - 1; i > currentZoomIndex; i--)
-				viewList.remove(i);
+				viewList.removeItemAt(i);
 		viewList.addLast(viewData);
 		currentZoomIndex++;
 	}
@@ -1383,7 +1383,7 @@ class GraphSet implements XYScaleConverter {
 		setZoom(0, 0, 0, 0);
 		// leave first zoom
 		for (int i = viewList.size(); --i >= 1;)
-			viewList.remove(i);
+			viewList.removeItemAt(i);
 	}
 
 	private void drawAll(Object gMain, Object gFront, Object gRear, int iSplit,
@@ -3546,7 +3546,7 @@ synchronized void checkWidgetEvent(int xPixel, int yPixel, boolean isPress) {
 	 *          the index of the highlight in the list
 	 */
 	void removeHighlight(int index) {
-		highlights.remove(index);
+		highlights.removeItemAt(index);
 	}
 
 	/**
@@ -3561,7 +3561,7 @@ synchronized void checkWidgetEvent(int xPixel, int yPixel, boolean isPress) {
 		for (int i = highlights.size(); --i >= 0;) {
 			Highlight h = highlights.get(i);
 			if (h.x1 == x1 && h.x2 == x2)
-				highlights.remove(i);
+				highlights.removeItemAt(i);
 		}
 	}
 
@@ -3731,7 +3731,7 @@ synchronized void checkWidgetEvent(int xPixel, int yPixel, boolean isPress) {
 	void setSpectrumJDX(Spectrum spec) {
 		// T/A conversion for IR
 		int pt = getFixedSelectedSpectrumIndex();
-		spectra.remove(pt);
+		spectra.removeItemAt(pt);
 		spectra.add(pt, spec);
 		pendingMeasurement = null;
 		clearViews();

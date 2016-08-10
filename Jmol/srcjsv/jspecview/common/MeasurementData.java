@@ -149,7 +149,7 @@ public class MeasurementData extends Lst<Measurement> implements
 		for (int i = size(); --i >= 0;) {
 			Measurement in = get(i);
 			if (in.text.length() == 0 || in.overlaps(x1, x2)) {
-				remove(i);
+				removeItemAt(i);
 			}
 		}
 

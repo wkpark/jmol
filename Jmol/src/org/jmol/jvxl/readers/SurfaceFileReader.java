@@ -46,8 +46,7 @@ abstract class SurfaceFileReader extends SurfaceReader {
   }
 
   protected void setStream(String fileName, boolean isBigEndian) {
-    binarydoc.setStream(((Viewer) sg.atomDataServer).getJzt(),
-        fileName == null ? null : sg.atomDataServer
+    binarydoc.setStream(fileName == null ? null : sg.atomDataServer
             .getBufferedInputStream(fileName), isBigEndian);
   }
 

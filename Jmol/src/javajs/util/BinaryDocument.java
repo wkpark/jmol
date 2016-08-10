@@ -28,19 +28,10 @@ import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.util.Map;
 
-
 import javajs.api.GenericBinaryDocument;
-import javajs.api.GenericZipTools;
-
-
-//import java.io.RandomAccessFile;
+import javajs.api.GenericOutputChannel;
 
 /* a basic binary file reader (extended by CompoundDocument). 
- * 
- * random access file info: 
- * http://java.sun.com/docs/books/tutorial/essential/io/rafs.html
- * 
- * SHOOT! random access is only for applications, not applets!
  * 
  * Note that YOU are responsible for determining whether a file
  * is bigEndian or littleEndian; the default is bigEndian.
@@ -65,8 +56,7 @@ public class BinaryDocument extends BC implements GenericBinaryDocument {
   protected DataInputStream stream;
   protected boolean isRandom = false;
   public boolean isBigEndian = true;
-  protected GenericZipTools jzt;
-  private byte[] magic4;
+  private BufferedInputStream bis;
 
   @Override
   public void close() {
@@ -81,19 +71,17 @@ public class BinaryDocument extends BC implements GenericBinaryDocument {
   }
   
   @Override
-  public void setStream(GenericZipTools jzt, BufferedInputStream bis, boolean isBigEndian) {
-    if (jzt != null)
-      this.jzt = jzt;
+  public void setStream(BufferedInputStream bis, boolean isBigEndian) {
+    this.bis = bis;
     if (bis != null) {
-      magic4 = Rdr.getMagic(bis, 4);
       stream = new DataInputStream(bis);
     }
     this.isBigEndian = isBigEndian;
   }
-  
+
   @Override
-  public byte[] getMagic() {
-    return  magic4;
+  public BufferedInputStream getInputStream() {
+    return bis;
   }
   
   @Override
@@ -354,9 +342,9 @@ public class BinaryDocument extends BC implements GenericBinaryDocument {
     return nBytes;
   }
 
-  OC out;
+  GenericOutputChannel out;
   @Override
-  public void setOutputChannel(OC out) {
+  public void setOutputChannel(GenericOutputChannel out) {
       this.out = out;
   }
 

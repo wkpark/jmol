@@ -2,15 +2,15 @@ package javajs.api;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
+import java.io.InputStream;
 import java.util.Map;
 
 
-import javajs.util.OC;
 import javajs.util.SB;
 
 public interface GenericBinaryDocument {
 
-  void setStream(GenericZipTools jzt, BufferedInputStream bis, boolean isBigEndian);
+  void setStream(BufferedInputStream bis, boolean isBigEndian);
 
   void setStreamData(DataInputStream dataInputStream, boolean isBigEndian);
 
@@ -52,8 +52,8 @@ public interface GenericBinaryDocument {
 
   void close();
 
-  void setOutputChannel(OC out);
+  void setOutputChannel(GenericOutputChannel out);
 
-  byte[] getMagic();
+  InputStream getInputStream();
 
 }

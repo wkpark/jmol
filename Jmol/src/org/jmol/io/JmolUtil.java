@@ -34,10 +34,10 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import javajs.api.GenericBinaryDocument;
 import javajs.api.GenericPlatform;
 import javajs.api.GenericZipTools;
 import javajs.util.AU;
+import javajs.util.CompoundDocument;
 import javajs.util.Lst;
 import javajs.util.OC;
 import javajs.util.PT;
@@ -292,9 +292,9 @@ public class JmolUtil {
         } else {
           String sData;
           if (Rdr.isCompoundDocumentB(bytes)) {
-            GenericBinaryDocument jd = (GenericBinaryDocument) Interface
+            CompoundDocument jd = (CompoundDocument) Interface
                 .getInterface("javajs.util.CompoundDocument", vwr, "file");
-            jd.setStream(zpt, Rdr.getBIS(bytes), true);
+            jd.setDocStream(zpt, Rdr.getBIS(bytes));
             sData = jd.getAllDataFiles("Molecule", "Input").toString();
           } else {
             // could be a PNGJ file with an internal pdb.gz entry, for instance

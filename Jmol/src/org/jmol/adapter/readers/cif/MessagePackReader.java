@@ -1,7 +1,10 @@
 package org.jmol.adapter.readers.cif;
 
+import java.io.BufferedInputStream;
 import java.util.Hashtable;
 import java.util.Map;
+
+import org.jmol.api.Interface;
 
 import javajs.api.GenericBinaryDocument;
 import javajs.util.BC;
@@ -21,6 +24,22 @@ import javajs.util.SB;
  *  homogeneousArrays == true will deliver null for empty array.
  * 
  * 
+ * Use in MMTF:
+ * 
+ * 
+ *     BufferedInputStream bs = [whatever]
+ *     
+ *      GenericBinaryDocument binaryDoc =  new javajs.util.BinaryDocument();
+ *   
+ *      binaryDoc.setStream(bs, true);
+ * 
+ * 
+ *     map = (new MessagePackReader(binaryDoc, true)).readMap();
+ * 
+ *     entities = (Object[]) map.get("entityList");
+ *
+ *     float[] x = (float[]) decode((byte[]) map.get("xCoordList"))
+ *     
  * 
  * @author Bob Hanson hansonr@stolaf.edu
  */

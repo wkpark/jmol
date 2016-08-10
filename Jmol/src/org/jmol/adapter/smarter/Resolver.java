@@ -33,7 +33,6 @@ import javajs.util.LimitedLineReader;
 import javajs.util.PT;
 import javajs.util.Rdr;
 
-
 import org.jmol.api.Interface;
 import org.jmol.util.Logger;
 import org.jmol.viewer.FileManager;
@@ -235,10 +234,11 @@ public class Resolver {
 
     // We must do this in a very specific order. DON'T MESS WITH THIS!
 
+    
     if (readerOrDocument instanceof GenericBinaryDocument) {
       GenericBinaryDocument doc = (GenericBinaryDocument) readerOrDocument;
-      return (Rdr.isPickleB(doc.getMagic()) ? "PyMOL" : Rdr.isMessagePackB(doc
-          .getMagic()) ? "MMTF" : "binary file type not recognized");
+      byte[] magic4 = Rdr.getMagic(doc.getInputStream(), 4);
+      return (Rdr.isPickleB(magic4) ? "PyMOL" : Rdr.isMessagePackB(magic4) ? "MMTF" : "binary file type not recognized");
     }
 
     String readerName;

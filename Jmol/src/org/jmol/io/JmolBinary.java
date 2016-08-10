@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import javajs.api.GenericBinaryDocument;
+import javajs.util.CompoundDocument;
 import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.Rdr;
@@ -344,9 +345,9 @@ public class JmolBinary {
       bis = (BufferedInputStream) t;
       if (Rdr.isCompoundDocumentS(bis)) {
         // very specialized reader; assuming we have a Spartan document here
-        GenericBinaryDocument doc = (GenericBinaryDocument) Interface
+        CompoundDocument doc = (CompoundDocument) Interface
             .getInterface("javajs.util.CompoundDocument", fm.vwr, "file");
-        doc.setStream(fm.vwr.getJzt(), bis, true);
+        doc.setDocStream(fm.vwr.getJzt(), bis);
         doc.getAllDataMapped(name, "Molecule", fileData);
       } else if (Rdr.isZipS(bis)) {
         fm.vwr.getJzt().getAllZipData(bis, subFileList, name, "Molecule",
@@ -355,7 +356,7 @@ public class JmolBinary {
         // used for Spartan binary file reading
         GenericBinaryDocument bd = (GenericBinaryDocument) Interface
             .getInterface("javajs.util.BinaryDocument", fm.vwr, "file");
-        bd.setStream(fm.vwr.getJzt(), bis, false);
+        bd.setStream(bis, false);
         sb = new SB();
         //note -- these headers must match those in ZipUtil.getAllData and CompoundDocument.getAllData
         if (header != null)

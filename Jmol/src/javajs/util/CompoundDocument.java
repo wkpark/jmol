@@ -57,6 +57,8 @@ public class CompoundDocument extends BinaryDocument{
   Lst<CompoundDocDirEntry> directory = new  Lst<CompoundDocDirEntry>();
   CompoundDocDirEntry rootEntry;
 
+  protected GenericZipTools jzt;
+
   int[] SAT;
   int[] SSAT;
   int sectorSize;
@@ -72,16 +74,7 @@ public class CompoundDocument extends BinaryDocument{
     this.isBigEndian = true;
   }
   
-  @Override
-  public void setStream(GenericZipTools jzt, BufferedInputStream bis, boolean isBigEndian) {
-    // isBigEndian is ignored here; it must be true
-    /*    try {
-     file = new RandomAccessFile(fileName, "r");
-     isRandom = true;
-     } catch (Exception e) {
-     // probably an applet
-     }
-     */
+  public void setDocStream(GenericZipTools jzt, BufferedInputStream bis) {
     this.jzt = jzt;
     if (!isRandom) {
       stream = new DataInputStream(bis);

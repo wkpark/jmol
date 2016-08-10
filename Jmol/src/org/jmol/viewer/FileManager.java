@@ -40,6 +40,7 @@ import javajs.api.GenericFileInterface;
 import javajs.util.AU;
 import javajs.util.BArray;
 import javajs.util.Base64;
+import javajs.util.CompoundDocument;
 import javajs.util.DataReader;
 import javajs.util.LimitedLineReader;
 import javajs.util.Lst;
@@ -654,9 +655,9 @@ public class FileManager implements BytePoster {
         return bis;
       if (Rdr.isCompoundDocumentS(bis)) {
         // very specialized reader; assuming we have a Spartan document here
-        GenericBinaryDocument doc = (GenericBinaryDocument) Interface
+        CompoundDocument doc = (CompoundDocument) Interface
             .getInterface("javajs.util.CompoundDocument", vwr, "file");
-        doc.setStream(vwr.getJzt(), bis, true);
+        doc.setDocStream(vwr.getJzt(), bis);
         String s = doc.getAllDataFiles("Molecule", "Input").toString();
         return (forceInputStream ? Rdr.getBIS(s.getBytes()) : Rdr.getBR(s));
       }

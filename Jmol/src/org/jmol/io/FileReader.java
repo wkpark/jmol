@@ -117,7 +117,7 @@ public class FileReader {
     if (t instanceof BufferedInputStream) {
       GenericBinaryDocument bd = (GenericBinaryDocument) Interface
           .getInterface("javajs.util.BinaryDocument", vwr, "file");
-      bd.setStream(vwr.getJzt(), (BufferedInputStream) t, true);
+      bd.setStream((BufferedInputStream) t, true);
       reader = bd;
     }
     if (reader != null) {

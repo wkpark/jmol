@@ -11,6 +11,7 @@ import java.io.OutputStreamWriter;
 
 import javajs.J2SIgnoreImport;
 import javajs.api.BytePoster;
+import javajs.api.GenericOutputChannel;
 import javajs.api.JmolObjectInterface;
 
 /**
@@ -47,7 +48,7 @@ import javajs.api.JmolObjectInterface;
  */
 
 @J2SIgnoreImport({ java.io.FileOutputStream.class })
-public class OC extends OutputStream {
+public class OC extends OutputStream implements GenericOutputChannel {
  
   private BytePoster bytePoster; // only necessary for writing to http:// or https://
   private String fileName;
@@ -137,6 +138,7 @@ public class OC extends OutputStream {
     return this;
   }
 
+  @Override
   public void reset() {
     sb = null;
     initOS();
@@ -194,6 +196,7 @@ public class OC extends OutputStream {
   /**
    * @param b  
    */
+  @Override
   public void writeByteAsInt(int b) {
     if (os == null)
       initOS();
@@ -251,6 +254,7 @@ public class OC extends OutputStream {
     closeChannel();
   }
 
+  @Override
   @SuppressWarnings({ "null", "unused" })
   public String closeChannel() {
     if (closed)

@@ -45,6 +45,7 @@ import org.jmol.util.Logger;
 
 import javajs.util.AU;
 import javajs.util.BC;
+import javajs.util.CU;
 import javajs.util.P3;
 import javajs.util.PT;
 import javajs.util.V3;
@@ -515,6 +516,8 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     return max;
   }
 
+  private final P3 ptTemp = new P3();
+
   /**
    * Add new colors from the main "colors" map object.
    * Not 100% clear how color clamping works.
@@ -528,8 +531,8 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     // note, we are ignoring lookup-table colors
     for (int i = colors.size(); --i >= 0;) {
       Lst<Object> c = listAt(colors, i);
-      PyMOL.addColor((Integer) c.get(1), isClamped ? PyMOLScene.colorSettingClamped(c)
-          : PyMOLScene.getColorPt(c.get(2)));
+      PyMOL.addColor((Integer) c.get(1), isClamped ? colorSettingClamped(c, ptTemp)
+          : getColorPt(c.get(2), ptTemp));
     }
   }
 
@@ -1326,11 +1329,16 @@ PROTEKTED,   118, //  unsigned char protekted : 2;  // 0,1,2
    *        list of atom details
    * @param apt
    *        array pointer into pymolAtoms
+   * @param atomArray 
+   * @param vArray 
+   * @param lexStr 
    * @param icoord
    *        array pointer into coords (/3)
    * @param coords
    *        coordinates array
+   * @param coordArray 
    * @param labelPositions
+   * @param labelArray 
    * @param bsState
    *        this state -- Jmol atomIndex
    * @param iState
@@ -1409,7 +1417,7 @@ PROTEKTED,   118, //  unsigned char protekted : 2;  // 0,1,2
       bonded = (intAt(a, 25) != 0);
       uniqueID = (a.size() > 40 && intAt(a, 40) == 1 ? intAt(a, 32) : -1);
       if (a.size() > 46)
-        anisou = PyMOLScene.floatsAt(a, 41, new float[8], 6);
+        anisou = floatsAt(a, 41, new float[8], 6);
     }
 
     String insCode = (resi.length() > 3 ? resi.substring(3) : " ");
@@ -1686,13 +1694,12 @@ PROTEKTED,   118, //  unsigned char protekted : 2;  // 0,1,2
   private void processSelectionsAndScenes(Map<String, Object> map) {
     if (!pymolScene.needSelections())
       return;
-    Map<String, Lst<Object>> htObjNames = PyMOLScene.listToMap(getMapList(
+    Map<String, Lst<Object>> htObjNames = listToMap(getMapList(
         map, "names"));
     if (haveScenes) {
       Map<String, Object> scenes = (Map<String, Object>) map.get("scene_dict");
       finalizeSceneData();
-      Map<String, Lst<Object>> htSecrets = PyMOLScene
-          .listToMap(getMapList(map, "selector_secrets"));
+      Map<String, Lst<Object>> htSecrets = listToMap(getMapList(map, "selector_secrets"));
       for (int i = 0; i < sceneOrder.size(); i++) {
         String name = stringAt(sceneOrder, i);
         Lst<Object> thisScene = getMapList(scenes, name);
@@ -1737,12 +1744,53 @@ PROTEKTED,   118, //  unsigned char protekted : 2;  // 0,1,2
 
   // generally useful static methods
 
-  private static int intAt(Lst<Object> list, int i) {
+  static int intAt(Lst<Object> list, int i) {
     // PyMOL 1.7.5 may simply have a null list for a setting
     return (list == null ? -1 : ((Number) list.get(i)).intValue());
   }
 
-  private static String stringAt(Lst<Object> list, int i) {
+  static P3 pointAt(Lst<Object> list, int i, P3 pt) {
+    pt.set(floatAt(list, i++), floatAt(list, i++), floatAt(list, i));
+    return pt;
+  }
+
+  static float[] floatsAt(Lst<Object> a, int pt, float[] data, int len) {
+    if (a == null)
+      return null;
+    for (int i = 0; i < len; i++)
+      data[i] = floatAt(a, pt++);
+    return data;
+  }
+
+  static float floatAt(Lst<Object> list, int i) {
+    return (list == null ? 0 : ((Number) list.get(i)).floatValue());
+  }
+
+  @SuppressWarnings("unchecked")
+  static Lst<Object> listAt(Lst<Object> list, int i) {
+    if (list == null || i >= list.size())
+      return null;
+    Object o = list.get(i);
+    return (o instanceof Lst<?> ? (Lst<Object>) o : null);
+  }
+
+  /**
+   * return a map of lists of the type: [ [name1,...], [name2,...], ...]
+   * 
+   * @param list
+   * @return Hashtable
+   */
+  static Map<String, Lst<Object>> listToMap(Lst<Object> list) {
+    Hashtable<String, Lst<Object>> map = new Hashtable<String, Lst<Object>>();
+    for (int i = list.size(); --i >= 0;) {
+      Lst<Object> item = listAt(list, i);
+      if (item != null && item.size() > 0)
+        map.put(stringAt(item, 0), item);
+    }
+    return map;
+  }
+
+  static String stringAt(Lst<Object> list, int i) {
     if (!AU.isAB(list.get(i)))
       System.out.println("??");
     byte[] a = (byte[]) list.get(i);
@@ -1755,6 +1803,16 @@ PROTEKTED,   118, //  unsigned char protekted : 2;  // 0,1,2
     } catch (UnsupportedEncodingException e) {
       return object.toString();
     }
+  }
+
+  static int colorSettingClamped(Lst<Object> c, P3 ptTemp) {
+    return getColorPt(c.get(c.size() < 6 || intAt(c, 4) == 0 ? 2 : 5), ptTemp);
+  }
+
+  @SuppressWarnings("unchecked")
+  static int getColorPt(Object o, P3 ptTemp) {
+    return (o == null ? 0 : o instanceof Integer ? ((Integer) o).intValue() : CU
+        .colorPtToFFRGB(PyMOLReader.pointAt((Lst<Object>) o, 0, ptTemp)));
   }
 
   @SuppressWarnings("unchecked")
@@ -1772,14 +1830,6 @@ PROTEKTED,   118, //  unsigned char protekted : 2;  // 0,1,2
         bsReps.set(i);
     }
     return bsReps;
-  }
-
-  private float floatAt(Lst<Object> a, int i) {
-    return PyMOLScene.floatAt(a, i);
-  }
-
-  private Lst<Object> listAt(Lst<Object> list, int i) {
-    return PyMOLScene.listAt(list, i);
   }
 
   /// PymolAtomReader interface
@@ -1808,7 +1858,5 @@ PROTEKTED,   118, //  unsigned char protekted : 2;  // 0,1,2
   public boolean compareAtoms(int iPrev, int i) {
     return atoms[iPrev].chainID != atoms[i].chainID;
   }
-
-
 
 }

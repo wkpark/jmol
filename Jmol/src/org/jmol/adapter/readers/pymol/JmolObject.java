@@ -315,8 +315,8 @@ class JmolObject {
       Lst<Object> mep = (Lst<Object>) info;
       sID = mep.get(mep.size() - 2).toString();
       String mapID = mep.get(mep.size() - 1).toString();
-      float min = PyMOLScene.floatAt(PyMOLScene.listAt(mep, 3), 0);
-      float max = PyMOLScene.floatAt(PyMOLScene.listAt(mep, 3), 2);
+      float min = PyMOLReader.floatAt(PyMOLReader.listAt(mep, 3), 0);
+      float max = PyMOLReader.floatAt(PyMOLReader.listAt(mep, 3), 2);
       sb = new SB();
       sb.append(";isosurface ID ").append(PT.esc(sID)).append(" map ").append(PT.esc(cacheID)).append(" ")
           .append(PT.esc(mapID)).append(
@@ -336,15 +336,15 @@ class JmolObject {
           .append(m.getModelNumberDotted(modelIndex))
           .append(" color ").append(Escape.escapeColor(argb)).append("  ").append(PT.esc(cacheID)).append(" ")
           .append(PT.esc(sID)).append(" mesh nofill frontonly");
-      float within = PyMOLScene.floatAt(PyMOLScene.listAt(PyMOLScene.listAt(
+      float within = PyMOLReader.floatAt(PyMOLReader.listAt(PyMOLReader.listAt(
           mesh, 2), 0), 11);
-      Lst<Object> list = PyMOLScene.listAt(PyMOLScene.listAt(PyMOLScene
+      Lst<Object> list = PyMOLReader.listAt(PyMOLReader.listAt(PyMOLReader
           .listAt(mesh, 2), 0), 12);
       if (within > 0) {
         P3 pt = new P3();
         sb.append(";isosurface slab within ").appendF(within).append(" [ ");
         for (int j = list.size() - 3; j >= 0; j -= 3) {
-          PyMOLScene.pointAt(list, j, pt);
+          PyMOLReader.pointAt(list, j, pt);
           sb.append(Escape.eP(pt));
         }
         sb.append(" ]");

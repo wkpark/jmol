@@ -234,20 +234,20 @@ class PyMOLScene implements JmolSceneGenerator {
 
   @SuppressWarnings("unchecked")
   private int colorSetting(int i) {
-    Lst<Object> pos = listAt(settings, i);
+    Lst<Object> pos = PyMOLReader.listAt(settings, i);
     Object o = (pos == null || pos.size() != 3 ? null : pos.get(2));
     if (o == null)
       return (int) PyMOL.getDefaultSetting(i, pymolVersion);
     return (o instanceof Integer ? ((Integer) o).intValue() : CU
-        .colorPtToFFRGB(pointAt((Lst<Object>) o, 0, ptTemp)));
+        .colorPtToFFRGB(PyMOLReader.pointAt((Lst<Object>) o, 0, ptTemp)));
   }
   
   @SuppressWarnings("unchecked")
   private P3 pointSetting(int i) {
     P3 pt = new P3();
-    Lst<Object> pos = listAt(settings, i);
+    Lst<Object> pos = PyMOLReader.listAt(settings, i);
     if (pos != null && pos.size() == 3) 
-      return pointAt((Lst<Object>) pos.get(2), 0, pt);
+      return PyMOLReader.pointAt((Lst<Object>) pos.get(2), 0, pt);
     return PyMOL.getDefaultSettingPt(i, pymolVersion, pt); 
   }
 
@@ -260,7 +260,7 @@ class PyMOLScene implements JmolSceneGenerator {
                      Lst<Object> listStateSettings, String ext) {
     objectName = name;
     objectHidden = isHidden;
-    objectNameID = (objectName == null ? null : PyMOLScene.fixName(objectName
+    objectNameID = (objectName == null ? null : fixName(objectName
         + ext));
     objectSettings = new Hashtable<Integer, Lst<Object>>();
     stateSettings = new Hashtable<Integer, Lst<Object>>();
@@ -285,7 +285,7 @@ class PyMOLScene implements JmolSceneGenerator {
   }
 
   @SuppressWarnings("unchecked")
-  private static void listToSettings(Lst<Object> list,
+  private void listToSettings(Lst<Object> list,
                               Map<Integer, Lst<Object>> objectSettings) {
     if (list != null && list.size() != 0) {
 //      if (debugging)
@@ -329,7 +329,7 @@ class PyMOLScene implements JmolSceneGenerator {
     labelPosition = new P3();
     try {
       Lst<Object> setting = getObjectSetting(PyMOL.label_position);
-      pointAt(listAt(setting, 2), 0, labelPosition);
+      PyMOLReader.pointAt(PyMOLReader.listAt(setting, 2), 0, labelPosition);
     } catch (Exception e) {
       // no problem.
     }
@@ -404,7 +404,7 @@ class PyMOLScene implements JmolSceneGenerator {
     smap.put("pymolFrame", frame);
     smap.put("generator", this);
     smap.put("name", name);
-    Lst<Object> view = listAt(thisScene, 0);
+    Lst<Object> view = PyMOLReader.listAt(thisScene, 0);
     if (view != null)
       smap.put("pymolView", getPymolView(view, false));
 
@@ -421,23 +421,23 @@ class PyMOLScene implements JmolSceneGenerator {
     Object[] reps = new Object[PyMOL.REP_LIST.length];
     for (int j = PyMOL.REP_LIST.length; --j >= 0;) {
       Lst<Object> list = htObjNames.get(sname + PyMOL.REP_LIST[j]);
-      Lst<Object> data = listAt(list, 5);
+      Lst<Object> data = PyMOLReader.listAt(list, 5);
       if (data != null && data.size() > 0)
-        reps[j] = listToMap(data);
+        reps[j] = PyMOLReader.listToMap(data);
     }
     smap.put("moleculeReps", reps);
 
     // there's no real point in getting 
     // get all colors from selector_secrets
     sname = "_!c_" + name + "_";
-    Lst<Object> colorection = listAt(thisScene, 3);
+    Lst<Object> colorection = PyMOLReader.listAt(thisScene, 3);
     int n = colorection.size();
     // [color/selEntry,color/selEntry,color/selEntry.....]
     // [3, 262,        0, 263,        4, 264,       .....]
     // see layer3/Selector.c SelectorColorectionApply
     Object[] colors = new Object[n / 2];
     for (int j = 0, i = 0; j < n; j += 2) {
-      int color = intAt(colorection, j);
+      int color = PyMOLReader.intAt(colorection, j);
       Lst<Object> c = htSecrets.get(sname + color);
       if (c != null && c.size() > 1)
         colors[i++] = new Object[] { Integer.valueOf(color), c.get(1) };
@@ -512,7 +512,7 @@ class PyMOLScene implements JmolSceneGenerator {
     String id = selection.get(0).toString();
     id = "_" + (id.equals("sele") ? id : "sele_" + id); 
     PyMOLGroup g = getGroup(id);
-    getSelectionAtoms(listAt(selection, 5), 0, g.bsAtoms);
+    getSelectionAtoms(PyMOLReader.listAt(selection, 5), 0, g.bsAtoms);
   }
 
   /**
@@ -526,7 +526,7 @@ class PyMOLScene implements JmolSceneGenerator {
   private BS getSelectionAtoms(Lst<Object> molecules, int istate, BS bs) {
     if (molecules != null)
       for (int j = molecules.size(); --j >= 0;)
-        selectAllAtoms(listAt(molecules, j), istate, bs);
+        selectAllAtoms(PyMOLReader.listAt(molecules, j), istate, bs);
     return bs;
   }
 
@@ -538,9 +538,9 @@ class PyMOLScene implements JmolSceneGenerator {
    * @param bs
    */
   private void selectAllAtoms(Lst<Object> obj, int istate, BS bs) {
-    String name = (String) obj.get(0);
+    String name = PyMOLReader.stringAt(obj, 0);
     setSceneObject(name, istate);
-    Lst<Object> atomList = listAt(obj, 1);
+    Lst<Object> atomList = PyMOLReader.listAt(obj, 1);
     int k0 = (istate == 0 ? 1 : istate);
     int k1 = (istate == 0 ? stateCount : istate);
     for (int k = k0; k <= k1; k++) {
@@ -570,7 +570,7 @@ class PyMOLScene implements JmolSceneGenerator {
       if (name.equals("all"))
         continue;
       Lst<Object> list = (Lst<Object>) e.getValue();
-      int tok = (intAt(list, 0) == 1 ? T.display : T.hide);
+      int tok = (PyMOLReader.intAt(list, 0) == 1 ? T.display : T.hide);
       if (tok == T.hide)
         htHiddenObjects.put(name, Boolean.TRUE);
       switch (getObjectType(name)) {
@@ -607,7 +607,7 @@ class PyMOLScene implements JmolSceneGenerator {
           MeasurementData[] mdList = htMeasures.get(name);
           if (mdList != null)
             addMeasurements(mdList, mdList[0].points.size(), null,
-                getBS(listAt(list, 2)), intAt(list, 3), null, true);
+                getBS(PyMOLReader.listAt(list, 2)), PyMOLReader.intAt(list, 3), null, true);
         }
         info += "_*";
         break;
@@ -654,26 +654,16 @@ class PyMOLScene implements JmolSceneGenerator {
   private BS getBS(Lst<Object> list) {
     BS bs = new BS();
     for (int i = list.size(); --i >= 0;)
-      bs.set(intAt(list, i));
+      bs.set(PyMOLReader.intAt(list, i));
     return bs;
   }
 
   private void getBsAtoms(Lst<Object> list, int[] atomMap, BS bs) {
     for (int i = list.size(); --i >= 0;)
-      bs.set(atomMap[intAt(list, i)]);
+      bs.set(atomMap[PyMOLReader.intAt(list, i)]);
   }
 
-  private final static P3 ptTemp = new P3();
-
-  @SuppressWarnings("unchecked")
-  static int getColorPt(Object o) {
-    return (o == null ? 0 : o instanceof Integer ? ((Integer) o).intValue() : CU
-        .colorPtToFFRGB(pointAt((Lst<Object>) o, 0, ptTemp)));
-  }
-
-  static int intAt(Lst<Object> list, int i) {
-    return ((Number) list.get(i)).intValue();
-  }
+  private final P3 ptTemp = new P3();
 
   void setReaderObjects() {
     clearReaderData();
@@ -735,22 +725,22 @@ class PyMOLScene implements JmolSceneGenerator {
     int i = 0;
     // x-axis
     for (int j = 0; j < 3; j++)
-      pymolView[pt++] = floatAt(view, i++);
+      pymolView[pt++] = PyMOLReader.floatAt(view, i++);
     if (isViewObj)
       i++;
     // y-axis
     for (int j = 0; j < 3; j++)
-      pymolView[pt++] = floatAt(view, i++);
+      pymolView[pt++] = PyMOLReader.floatAt(view, i++);
     if (isViewObj)
       i++;
     // z-axis (not used)
     for (int j = 0; j < 3; j++)
-      pymolView[pt++] = floatAt(view, i++);
+      pymolView[pt++] = PyMOLReader.floatAt(view, i++);
     if (isViewObj)
       i += 5;
     // xTrans, yTrans, -distanceToCenter, center(x,y,z), distanceToSlab, distanceToDepth
     for (int j = 0; j < 8; j++)
-      pymolView[pt++] = floatAt(view, i++);
+      pymolView[pt++] = PyMOLReader.floatAt(view, i++);
 
     boolean isOrtho = booleanSetting(PyMOL.orthoscopic); // 23
     float fov = floatSetting(PyMOL.field_of_view); // 152
@@ -829,7 +819,7 @@ class PyMOLScene implements JmolSceneGenerator {
     if (htCarveSets.isEmpty())
       return;
     for (Entry<String, BS> e: htCarveSets.entrySet())
-      getSelectionAtoms(listAt(htObjNames.get(e.getKey()), 5), 0, e.getValue());
+      getSelectionAtoms(PyMOLReader.listAt(htObjNames.get(e.getKey()), 5), 0, e.getValue());
   }
 
   private void setGroupVisibilities() {
@@ -851,7 +841,7 @@ class PyMOLScene implements JmolSceneGenerator {
     htDefinedAtoms.put(getJmolName(name), bs);
   }
 
-  private static String getJmolName(String name) {
+  private String getJmolName(String name) {
     return "__" + fixName(name);
   }
 
@@ -958,7 +948,7 @@ class PyMOLScene implements JmolSceneGenerator {
         || (setting = uniqueSettings.get(Integer.valueOf((id << 10) + key))) == null)
       return pt;
     pt = new P3();
-    pointAt((Lst<Object>) setting.get(2), 0, pt);
+    PyMOLReader.pointAt((Lst<Object>) setting.get(2), 0, pt);
     Logger.info("Pymol unique setting for " + id + ": " + key + " = " + pt);
     return pt;
   }
@@ -998,32 +988,7 @@ class PyMOLScene implements JmolSceneGenerator {
     return setting;
   }
 
-  static P3 pointAt(Lst<Object> list, int i, P3 pt) {
-    pt.set(floatAt(list, i++), floatAt(list, i++), floatAt(list, i));
-    return pt;
-  }
-
-  static float floatAt(Lst<Object> list, int i) {
-    return (list == null ? 0 : ((Number) list.get(i)).floatValue());
-  }
-
-  static float[] floatsAt(Lst<Object> a, int pt, float[] data, int len) {
-    if (a == null)
-      return null;
-    for (int i = 0; i < len; i++)
-      data[i] = floatAt(a, pt++);
-    return data;
-  }
-
-  @SuppressWarnings("unchecked")
-  static Lst<Object> listAt(Lst<Object> list, int i) {
-    if (list == null || i >= list.size())
-      return null;
-    Object o = list.get(i);
-    return (o instanceof Lst<?> ? (Lst<Object>) o : null);
-  }
-
-  static float[] setLabelPosition(P3 offset, float[] labelPos) {
+  float[] setLabelPosition(P3 offset, float[] labelPos) {
     labelPos[0] = 1;
     labelPos[1] = offset.x;
     labelPos[2] = offset.y;
@@ -1069,8 +1034,8 @@ class PyMOLScene implements JmolSceneGenerator {
       if (isNew) {
         Lst<Object> points = new Lst<Object>();
         for (int i = 0; i < nCoord; i++, p += 3)
-          points.addLast(pointAt(list, p, new Point3fi()));
-        offset = floatsAt(listAt(offsets, index), 0, new float[7], 7);
+          points.addLast(PyMOLReader.pointAt(list, p, new Point3fi()));
+        offset = PyMOLReader.floatsAt(PyMOLReader.listAt(offsets, index), 0, new float[7], 7);
         if (offset == null)
           offset = setLabelPosition(labelPosition, new float[7]);
         md = mdList[index] = vwr.newMeasurementData(objectNameID + "_"
@@ -1126,10 +1091,6 @@ class PyMOLScene implements JmolSceneGenerator {
     return C.getColixTranslucent3(colix, translucency > 0, translucency);
   }
 
-  static int colorSettingClamped(Lst<Object> c) {
-    return getColorPt(c.get(c.size() < 6 || intAt(c, 4) == 0 ? 2 : 5));
-  }
-
   void setAtomColor(int atomColor) {
     atomColorList.addLast(Integer.valueOf(getColix(atomColor, 0)));
   }
@@ -1145,7 +1106,7 @@ class PyMOLScene implements JmolSceneGenerator {
     frameObj = null;
   }
 
-  private static String fixName(String name) {
+  private String fixName(String name) {
     char[] chars = name.toLowerCase().toCharArray();
     for (int i = chars.length; --i >= 0;)
       if (!PT.isLetterOrDigit(chars[i]))
@@ -1678,22 +1639,6 @@ class PyMOLScene implements JmolSceneGenerator {
     return bs;
   }
 
-  /**
-   * return a map of lists of the type: [ [name1,...], [name2,...], ...]
-   * 
-   * @param list
-   * @return Hashtable
-   */
-  static Map<String, Lst<Object>> listToMap(Lst<Object> list) {
-    Hashtable<String, Lst<Object>> map = new Hashtable<String, Lst<Object>>();
-    for (int i = list.size(); --i >= 0;) {
-      Lst<Object> item = PyMOLScene.listAt(list, i);
-      if (item != null && item.size() > 0)
-        map.put(PyMOLReader.bytesToString(item.get(0)), item);
-    }
-    return map;
-  }
-  
   Map<String, Object> setAtomDefs() {
     setGroupVisibilities();
     Map<String, Object> defs = new Hashtable<String, Object>();
@@ -1781,7 +1726,7 @@ class PyMOLScene implements JmolSceneGenerator {
     setSceneObject(objName, -1);
     int meshColor = (int) floatSetting(PyMOL.mesh_color);
     if (meshColor < 0)
-      meshColor = intAt(listAt(obj, 0), 2);
+      meshColor = PyMOLReader.intAt(PyMOLReader.listAt(obj, 0), 2);
     if (!isMep) {
       jo.setSize(meshWidth);
       jo.argb = PyMOL.getRGB(meshColor);

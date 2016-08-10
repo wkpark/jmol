@@ -144,7 +144,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
 
   private int bondCount;
 
-  private boolean haveBinaryArrays;
+  private boolean haveBinaryArrays = true;
 
   @Override
   protected void setup(String fullPath, Map<String, Object> htParams, Object reader) {
@@ -203,7 +203,6 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
 
     PickleReader reader = new PickleReader(binaryDoc, vwr);
     Map<String, Object> map = reader.getMap(logging && Logger.debuggingHigh);
-    haveBinaryArrays = reader.haveBinaryString;
     reader = null;
     process(map);
   }
@@ -274,6 +273,8 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
 
     // create settings and uniqueSettings lists
     Lst<Object> settings = fixSettings(getMapList(map, "settings"));
+    Lst<Object> lst = listAt(settings, PyMOL.dump_binary);
+    haveBinaryArrays = (lst != null  && floatAt(lst, 2) == 1);
     sceneOrder = getMapList(map, "scene_order");
     haveScenes = getFrameScenes(map);
     Lst<Object> file = listAt(settings, PyMOL.session_file);
@@ -556,8 +557,10 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
         if (ns > stateCount)
           stateCount = ns;
         int nAtoms, nBonds;
+        Object o = listAt(pymolObject, 6).get(1);
+        haveBinaryArrays = AU.isAB(o);
         if (haveBinaryArrays) {
-          nBonds = ((byte[]) listAt(pymolObject, 6).get(1)).length / 20;
+          nBonds = ((byte[]) o).length / 20;
           nAtoms = ((byte[]) listAt(pymolObject, 7).get(1)).length / 120;
           n += nAtoms;
         } else {
@@ -1763,7 +1766,7 @@ PROTEKTED,   118, //  unsigned char protekted : 2;  // 0,1,2
   }
 
   static float floatAt(Lst<Object> list, int i) {
-    return (list == null ? 0 : ((Number) list.get(i)).floatValue());
+    return (list == null || i >= list.size() ? 0 : ((Number) list.get(i)).floatValue());
   }
 
   @SuppressWarnings("unchecked")

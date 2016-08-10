@@ -105,8 +105,7 @@ class PickleReader {
   }
   
   private int ipt = 0;
-  public boolean haveBinaryString;
-
+  
   @SuppressWarnings("unchecked")
   Map<String, Object> getMap(boolean logging)
       throws Exception {
@@ -195,8 +194,8 @@ class PickleReader {
         i = binaryDoc.readIntLE();
         a = new byte[i];
         binaryDoc.readByteArray(a, 0, i);
+        //System.out.println(bytesToString(a));
         push(a);
-        haveBinaryString = true;
         break;
       case BINUNICODE:
         i = binaryDoc.readIntLE();
@@ -230,8 +229,8 @@ class PickleReader {
         break;
       case SETITEM:
         o = pop();
-        a = (byte[]) pop();
-        ((Map<String, Object>) peek()).put(bytesToString(a), o);
+        String s = bytesToString(pop());
+        ((Map<String, Object>) peek()).put(s, o);
         break;
       case SETITEMS:
         mark = getMark();
@@ -244,11 +243,7 @@ class PickleReader {
           map = (Map<String, Object>) o;
           for (i = l.size(); --i >= 0;) {
             o = l.get(i);
-            Object oo = l.get(--i);
-            if (AU.isAB(oo))
-              map.put(bytesToString((byte[]) oo), o);
-            else
-              map.put(oo.toString(), o);
+            map.put(bytesToString(l.get(--i)), o);
           }
         }
         break;
@@ -261,7 +256,7 @@ class PickleReader {
         break;
       case INT:
         /// "0x88000000" for instance
-        String s = bytesToString(readStringAsBytes());
+        s = bytesToString(readStringAsBytes());
         try {
           push(Integer.valueOf(Integer.parseInt(s)));
         } catch (Exception e) {
@@ -365,9 +360,9 @@ class PickleReader {
     return map;
   }
   
-  private String bytesToString(byte[] a) {
+  private String bytesToString(Object o) {
     try {
-      return new String(a, "UTF-8");
+      return (AU.isAB(o) ? new String((byte[]) o, "UTF-8") : o.toString());
     } catch (UnsupportedEncodingException e) {
       return "";
     }

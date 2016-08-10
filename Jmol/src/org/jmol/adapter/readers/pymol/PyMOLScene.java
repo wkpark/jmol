@@ -754,7 +754,7 @@ class PyMOLScene implements JmolSceneGenerator {
 
   @SuppressWarnings("unchecked")
   float globalSetting(int i) {
-    Lst<Object> setting = (Lst<Object>) settings.get(i);
+    Lst<Object> setting = PyMOLReader.listAt(settings, i);
     if (setting != null && setting.size() == 3)
       return ((Number) setting.get(2)).floatValue();
     return PyMOL.getDefaultSetting(i, pymolVersion);

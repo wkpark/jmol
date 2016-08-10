@@ -328,11 +328,11 @@ public class MessagePackReader {
     int param = BC.bytesToInt(b, 8, true);
     switch (type) {
     case 1:
-      return getFloats(b, 4, 1);
+      return getFloats(b, n, 1);
     case 2: // 1-byte
     case 3: // 2-byte
     case 4: // 4-byte
-      return getInts(b, 1 << (type - 2));
+      return getInts(b, n);
     case 5:
       return rldecode32ToStr(b);
     case 6:
@@ -346,7 +346,7 @@ public class MessagePackReader {
     case 10:
       return unpack16Deltaf(b, n, param);
     case 11:
-      return getFloats(b, 2, param);
+      return getFloats(b, n, param);
     case 12: // two-byte
     case 13: // one-byte
       return unpackf(b, 14 - type, n, param);
@@ -372,16 +372,15 @@ public class MessagePackReader {
   public static float[] getFloats(byte[] b, int n, float divisor) {
     if (b == null)
       return null;
-    int len = (b.length - 12) / n;
-    float[] a = new float[len];
+    float[] a = new float[n];
     try {
-      switch (n) {  
+      switch ((b.length - 12) / n) {  
       case 2:
-        for (int i = 0, j = 12; i < len; i++, j += 2)
+        for (int i = 0, j = 12; i < n; i++, j += 2)
           a[i] = BC.bytesToShort(b, j, false) / divisor;
         break;
       case 4:
-        for (int i = 0, j = 12; i < len; i++, j += 4)
+        for (int i = 0, j = 12; i < n; i++, j += 4)
           a[i] = BC.bytesToFloat(b, j, false);
         break;
       }
@@ -396,27 +395,25 @@ public class MessagePackReader {
    * Decode a byte array into a byte, short, or int array.
    * 
    * @param b
-   * @param nbytes
-   *        1 (byte), 2 (int16), or 4 (int32)
+   * @param n
    *        
    * @return array of integers
    */
-  public static int[] getInts(byte[] b, int nbytes) {
+  public static int[] getInts(byte[] b, int n) {
     if (b == null)
       return null;
-    int len = (b.length - 12) / nbytes;
-    int[] a = new int[len];
-    switch (nbytes) {
+    int[] a = new int[n];
+    switch ((b.length - 12) / n) {
     case 1:
-      for (int i = 0, j = 12; i < len; i++, j++)
+      for (int i = 0, j = 12; i < n; i++, j++)
         a[i] = b[j];
       break;
     case 2:
-      for (int i = 0, j = 12; i < len; i++, j += 2)
+      for (int i = 0, j = 12; i < n; i++, j += 2)
         a[i] = BC.bytesToShort(b, j, true);
       break;
     case 4:
-      for (int i = 0, j = 12; i < len; i++, j += 4)
+      for (int i = 0, j = 12; i < n; i++, j += 4)
         a[i] = BC.bytesToInt(b, j, true);
       break;
     }
@@ -520,7 +517,8 @@ public class MessagePackReader {
   /**
    * mmtf type 9
    * 
-   * Decode an array of int32 using run-length decoding.
+   * Decode an array of int32 using run-length decoding and divide by a divisor
+   * to give a float32.
    * 
    * @param b
    * @param n

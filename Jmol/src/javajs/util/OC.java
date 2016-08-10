@@ -64,6 +64,17 @@ public class OC extends OutputStream implements GenericOutputChannel {
 	private OutputStream os0;
 	private byte[] bytes; // preset bytes; output only
   
+	public boolean bigEndian = true;
+  
+  @Override
+  public boolean isBigEndian() {
+    return bigEndian;
+  }
+
+  public void setBigEndian(boolean TF) {
+  	bigEndian = TF;
+  }
+
   public OC setParams(BytePoster bytePoster, String fileName,
                                      boolean asWriter, OutputStream os) {
     this.bytePoster = bytePoster;
@@ -299,7 +310,7 @@ public class OC extends OutputStream implements GenericOutputChannel {
     /**
      * @j2sNative
      * 
-     *            jmol = Jmol; _function = (typeof this.fileName == "function" ?
+     *            jmol = Jmol; self.J2S || Jmol; _function = (typeof this.fileName == "function" ?
      *            this.fileName : null);
      * 
      */

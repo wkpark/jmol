@@ -432,6 +432,7 @@ class PyMOLScene implements JmolSceneGenerator {
     sname = "_!c_" + name + "_";
     Lst<Object> colorection = PyMOLReader.listAt(thisScene, 3);
     int n = colorection.size();
+    n -= n % 2;
     // [color/selEntry,color/selEntry,color/selEntry.....]
     // [3, 262,        0, 263,        4, 264,       .....]
     // see layer3/Selector.c SelectorColorectionApply

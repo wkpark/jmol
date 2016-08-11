@@ -557,10 +557,8 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
         if (ns > stateCount)
           stateCount = ns;
         int nAtoms, nBonds;
-        Object o = listAt(pymolObject, 6).get(1);
-        haveBinaryArrays = AU.isAB(o);
         if (haveBinaryArrays) {
-          nBonds = ((byte[]) o).length / 20;
+          nBonds = ((byte[]) listAt(pymolObject, 6).get(1)).length / 20;
           nAtoms = ((byte[]) listAt(pymolObject, 7).get(1)).length / 120;
           n += nAtoms;
         } else {
@@ -1803,8 +1801,6 @@ PROTEKTED,   118, //  unsigned char protekted : 2;  // 0,1,2
   }
 
   static String stringAt(Lst<Object> list, int i) {
-    if (!AU.isAB(list.get(i)))
-      System.out.println("??");
     byte[] a = (byte[]) list.get(i);
     return (a.length == 0 ? " " : bytesToString(a));
   }
@@ -1812,7 +1808,7 @@ PROTEKTED,   118, //  unsigned char protekted : 2;  // 0,1,2
   static String bytesToString(Object object) {
     try {
       return new String((byte[]) object, "UTF-8");
-    } catch (UnsupportedEncodingException e) {
+    } catch (Exception e) {
       return object.toString();
     }
   }

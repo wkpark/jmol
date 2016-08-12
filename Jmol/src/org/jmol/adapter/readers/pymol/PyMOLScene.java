@@ -1424,6 +1424,8 @@ class PyMOLScene implements JmolSceneGenerator {
         return;
       jo = addJmolObject(JC.SHAPE_LABELS, bs, labels);
       break;
+    case PyMOL.REP_DASHES:
+      // TODO
     case PyMOL.REP_LINES:
       jo = addJmolObject(T.wireframe, bs, null);
       jo.setSize(floatSetting(PyMOL.line_width) / 15);

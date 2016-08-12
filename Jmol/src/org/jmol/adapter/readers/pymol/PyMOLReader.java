@@ -923,11 +923,16 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
 
     if (iState == 0 || !isTrajectory) {
       pymolScene.ensureCapacity(n);
-      String[] lexStr = (haveBinaryArrays ? getLexStr((byte[])pymolAtoms.get(2)) : null);
-      byte[] atomArray = (haveBinaryArrays ? (byte[])pymolAtoms.get(1) : null);
-      int ver = intAt(pymolAtoms,  0);
-      System.out.println("PyMOL atom dump version " + ver);
-      int[] vArray = (haveBinaryArrays ? PyMOL.getVArray(ver) : null);
+      String[] lexStr = null;
+      byte[] atomArray = null;
+      int[] vArray = null;
+      if (haveBinaryArrays) {
+        int ver = intAt(pymolAtoms,  0);
+        atomArray = (byte[])pymolAtoms.get(1);
+        lexStr = getLexStr((byte[])pymolAtoms.get(2));
+        System.out.println("PyMOL atom dump version " + ver);
+        vArray = (haveBinaryArrays ? PyMOL.getVArray(ver) : null);
+      }
       for (int idx = 0; idx < n; idx++) {
         P3 a = addAtom(pymolAtoms, (idxToAtm != null ? intAt(idxToAtm, idx)
             : idxArray != null ? idxArray[idx] : idx),

@@ -408,6 +408,7 @@ public class Labels extends AtomShape {
     // from PyMOL reader
     setScaling();
     int n = checkStringLength(ac);
+    checkColixLength((short)-1, n);
     for (int i = bsSelected.nextSetBit(0); i >= 0 && i < n; i = bsSelected
         .nextSetBit(i + 1))
       setPymolLabel(i, labels.get(Integer.valueOf(i)), null);

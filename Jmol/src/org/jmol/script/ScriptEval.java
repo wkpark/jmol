@@ -2368,7 +2368,7 @@ public class ScriptEval extends ScriptExpr {
       break;
     case T.initialize:
       if (!chk)
-        vwr.initialize(!isStateScript);
+        vwr.initialize(!isStateScript, false);
       break;
     case T.invertSelected:
       cmdInvertSelected();

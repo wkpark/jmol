@@ -1078,7 +1078,7 @@ class PyMOLScene implements JmolSceneGenerator {
     s = "[x" + s.substring(s.length() - 6) + "]";
     sb.append(";background " + s);
     sb.append(";moveto 0 PyMOL " + Escape.eAF(pymolView));
-    sb.append(";save orientation 'default';");
+    sb.append(";save orientation 'default';"); // DO NOT set antialiasDisplay here! It can cause immediate rendering problem in Java
     return sb;
   }
 
@@ -1103,7 +1103,6 @@ class PyMOLScene implements JmolSceneGenerator {
     if (frameObj == null)
       return;
     frameObj.finalizeObject(this, vwr.ms, null, false);
-    vwr.setBooleanProperty("antialiasDisplay", true);
     frameObj = null;
   }
 

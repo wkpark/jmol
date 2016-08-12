@@ -528,7 +528,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       (rm = (JmolRepaintManager) o).set(this, shm);
     // again we through a JS error if in async mode
     ms = new ModelSet(this, null);
-    initialize(true);
+    initialize(true, false);
     fm = new FileManager(this);
     definedAtomSets = new Hashtable<String, Object>();
     setJmolStatusListener(statusListener);
@@ -767,7 +767,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   // delegated to StateManager
   // ///////////////////////////////////////////////////////////////
 
-  public void initialize(boolean clearUserVariables) {
+  public void initialize(boolean clearUserVariables, boolean isPyMOL) {
     g = new GlobalSettings(this, g, clearUserVariables);
     setStartupBooleans();
     setWidthHeightVar();
@@ -787,7 +787,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     am.setAnimationOn(false);
     am.setAnimationFps(g.animationFps);
     sm.allowStatusReporting = g.statusReporting;
-    setBooleanProperty("antialiasDisplay", g.antialiasDisplay);
+    setBooleanProperty("antialiasDisplay", (isPyMOL ? true : g.antialiasDisplay));
     stm.resetLighting();
     tm.setDefaultPerspective();
   }
@@ -6984,19 +6984,23 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   }
 
   private void setAntialias(int tok, boolean TF) {
-
+    boolean isChanged = false;
     switch (tok) {
     case T.antialiasdisplay:
+      isChanged = (g.antialiasDisplay != TF);
       g.antialiasDisplay = TF;
       break;
     case T.antialiastranslucent:
+      isChanged = (g.antialiasTranslucent != TF);
       g.antialiasTranslucent = TF;
       break;
     case T.antialiasimages:
       g.antialiasImages = TF;
       return;
     }
-    resizeImage(0, 0, false, false, true);
+    if (isChanged)
+      refresh(3, "Viewer:setAntialias()");
+//    resizeImage(0, 0, false, false, true);
   }
 
   // //////////////////////////////////////////////////////////////

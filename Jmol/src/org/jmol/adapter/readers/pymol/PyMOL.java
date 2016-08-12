@@ -6431,14 +6431,14 @@ class PyMOL {
   final static int SEGI = 35;
   final static int NAME = 36;
   final static int ELEM = 37;
-  final static int RESI = 38;
+  final static int RESI = 38; // not 181
   final static int SSTYPE = 39;
   final static int ALTLOC = 40;
   final static int RESN = 41;
-  final static int INSCODE = 42;
+  final static int INSCODE = 42; // 181 only
   final static int CHEMFLAG = 43;
   final static int PROTEKTED = 44;
-  final static int ANISOU = 45;
+  final static int ANISOU = 45; // not 177
   
   final static int HETMASK = 46;
   final static int BONMASK = 47;
@@ -6448,7 +6448,7 @@ class PyMOL {
   final static int SETMASK = 51;
   
   //1.7.6 type
-  final static int[] v176 = { LEN, 154,
+  final static int[] v176 = { LEN, 164,
     RESV,           0,
     CUSTOMTYPE,     4,
     PRIORITY,       8,
@@ -6500,14 +6500,15 @@ class PyMOL {
     NAME,         105, // 5
     ELEM,         110, // 5
     RESI,         115, // 6
-    //HASPROP,      111,
-    SSTYPE,       112,
-    ALTLOC,       114,
-    RESN,         116,
-    ANISOU,       122,
-    //OLDID,        146
-    //PROPID,       150,
-  
+    //HASPROP,      121,
+    SSTYPE,       122,
+    ALTLOC,       124,
+    
+    
+    RESN,         126,
+    ANISOU,       132,
+    //OLDID,        156
+    //PROPID,       160, // 4  
   };
 
 //  typedef struct AtomInfoType_1_7_6 {

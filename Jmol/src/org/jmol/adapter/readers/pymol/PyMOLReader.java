@@ -433,7 +433,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     pymolScene.finalizeVisibility();
     if (!isStateScript) {
       // same idea as for a Jmol state -- session reinitializes
-      vwr.initialize(false);
+      vwr.initialize(false, true);
       addJmolScript(pymolScene.getViewScript(getMapList(map, "view"))
           .toString());
     }
@@ -1149,13 +1149,14 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
                      Lst<Object> labelPositions, float[] labelArray,
                      BS bsState, int iState) {
     atomMap[apt] = -1;
-    String chainID, altLoc, group3, name, sym, label, ssType, resi;
+    String chainID, altLoc, group3, name, sym, label, ssType, resi, insCode = null;
     float bfactor, occupancy, radius, partialCharge;
     int seqNo, intReps, formalCharge, atomColor, serNo, cartoonType, flags, uniqueID = -1;
     boolean isHetero, bonded;
     float[] anisou = null;
     BS bsReps = null;
     if (haveBinaryArrays) {
+      int vpt;
       int pt = apt * vArray[PyMOL.LEN];
       seqNo = atomInt(atomArray, pt, vArray[PyMOL.RESV]);
       chainID = atomStr(atomArray, pt, vArray[PyMOL.CHAIN], lexStr);
@@ -1168,8 +1169,12 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       label = atomStr(atomArray, pt, vArray[PyMOL.LABEL], lexStr);
       ssType = atomStr(atomArray, pt, vArray[PyMOL.SSTYPE], null);
       altLoc = atomStr(atomArray, pt, vArray[PyMOL.ALTLOC], null);
-      byte b = atomArray[pt + vArray[PyMOL.INSCODE]];
-      resi = (b == 0 ? "" : "xxx" + (char) b);
+      if ((vpt = vArray[PyMOL.INSCODE]) == 0) {
+        resi = atomStr(atomArray, pt, vArray[PyMOL.RESI], null);
+      } else {
+        byte b = atomArray[pt + vpt];
+        insCode = (b == 0 ? " " :"" + (char) b);        
+      }
       bfactor = atomFloat(atomArray, pt, vArray[PyMOL.BFACTOR]);
       occupancy = atomFloat(atomArray, pt, vArray[PyMOL.OCCUPANCY]);
       radius= atomFloat(atomArray, pt, vArray[PyMOL.VDW]);
@@ -1187,8 +1192,9 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       if (uniqueID == 0)
         uniqueID = -1;
       anisou = new float[8];
-      for (int i = 0; i < 6; i++)
-        anisou[i] = BC.bytesToShort(atomArray, pt + vArray[PyMOL.ANISOU] + (i << 1), false);
+      if ((vpt = vArray[PyMOL.ANISOU]) > 0)
+        for (int i = 0; i < 6; i++)
+          anisou[i] = BC.bytesToShort(atomArray, pt + vpt + (i << 1), false);
       bonded = atomBool(atomArray, pt, vArray[PyMOL.BONDED], vArray[PyMOL.BONMASK]);
       isHetero = atomBool(atomArray, pt, vArray[PyMOL.HETATM], vArray[PyMOL.HETMASK]);
     } else {
@@ -1219,8 +1225,11 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       if (a.size() > 46)
         anisou = floatsAt(a, 41, new float[8], 6);
     }
-
-    String insCode = (resi.length() > 3 ? resi.substring(3) : " ");
+    if (insCode == null) {
+      int len = resi.length();
+      char ch = (len > 0 ? resi.charAt(len - 1) : ' ');
+      insCode = (PT.isDigit(ch) ? " "  : "" + ch);
+    }
 
     if (group3.length() > 3)
       group3 = group3.substring(0, 3);

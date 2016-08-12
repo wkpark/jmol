@@ -206,6 +206,8 @@ public abstract class AtomShape extends Shape {
   }
   
   protected void setColixAndPalette(short colix, byte paletteID, int atomIndex) {
+    if (colixes == null)
+      System.out.println("ATOMSHAPE ERROR");
     colixes[atomIndex] = colix = getColixI(colix, paletteID, atomIndex);
     bsColixSet.setBitTo(atomIndex, colix != C.INHERIT_ALL || shapeID == JC.SHAPE_BALLS);
     paletteIDs[atomIndex] = paletteID;

@@ -925,7 +925,9 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       pymolScene.ensureCapacity(n);
       String[] lexStr = (haveBinaryArrays ? getLexStr((byte[])pymolAtoms.get(2)) : null);
       byte[] atomArray = (haveBinaryArrays ? (byte[])pymolAtoms.get(1) : null);
-      int[] vArray = (haveBinaryArrays ? getVArray(intAt(pymolAtoms,  0)) : null);
+      int ver = intAt(pymolAtoms,  0);
+      System.out.println("PyMOL atom dump version " + ver);
+      int[] vArray = (haveBinaryArrays ? PyMOL.getVArray(ver) : null);
       for (int idx = 0; idx < n; idx++) {
         P3 a = addAtom(pymolAtoms, (idxToAtm != null ? intAt(idxToAtm, idx)
             : idxArray != null ? idxArray[idx] : idx),
@@ -945,21 +947,6 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     Logger.info("reading " + (ac - ac0) + " atoms and " + nBonds + " bonds");
     Logger.info("----------");
     return bsAtoms;
-  }
-
-  private int[] getVArray(int version) {
-    int[] va = null;
-    int[] varray = null;
-    switch (version) {
-    case 181:
-      va = v181;
-      varray = new int[60];
-      break;
-    }
-    if (varray != null)
-      for (int i = 0; i < va.length;)
-        varray[va[i++]] = va[i++];
-    return varray;
   }
 
   private String[] getLexStr(byte[] lex) {
@@ -1024,46 +1011,35 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
    * @return list of bonds
    */
   private Lst<Bond> getBondList(Lst<Object> bonds) {
-    boolean asSingle = pymolScene.booleanSetting(PyMOL.valence);
-    int[] array = null;
+    boolean asSingle = !pymolScene.booleanSetting(PyMOL.valence);
+    byte[] b = null;
+    int[] vArray = null;
     int n = bonds.size();
+    int len = 0;
     if (haveBinaryArrays && n == 2) {
-      byte[] b = (byte[]) bonds.get(1);
-      n = b.length / 4 / 5;
-      array = new int[n * 5];
-      fillIntArrayFromBytes(b, array);
+      int ver = intAt(bonds, 0);
+      System.out.println("PyMOL bond dump version " + ver);
+      vArray  = PyMOL.getVArrayB(ver);
+      b = (byte[]) bonds.get(1);
+      len = vArray[PyMOL.LEN];
+      n = b.length / len;
     }
     Lst<Bond> bondList = new Lst<Bond>();
     bondList.ensureCapacity(n);
     int ia, ib, order, uid = -1;
-    for (int i = 0, pt = 0; i < n; i++) {
+    for (int i = 0, apt = 0; i < n; i++) {
       if (haveBinaryArrays) {
-        
-//      typedef struct BondType {
-//      int index[2];
-//      int id;
-//      int unique_id;
-//    #ifdef _PYMOL_IP_EXTRAS
-//      int oldid;
-//    #endif
-//      signed char order;    // 0-4
-//      signed char temp1;    // bool? where used?
-//      signed char stereo;   // 0-6 Only for SDF (MOL) format in/out
-//      bool has_setting;     /* setting based on unique_id */
-//    } BondType;
-
-
-        ia = array[pt++];
-        ib = array[pt++];
-        pt++; // id
-        uid = array[pt++]; 
-        order = array[pt++] & 0xFF;
+        ia = BC.bytesToInt(b, apt + vArray[PyMOL.BATOM1], false);
+        ib = BC.bytesToInt(b, apt + vArray[PyMOL.BATOM2], false);
+        uid = (b[apt + vArray[PyMOL.BHASSETTING]] == 0 ? -1: BC.bytesToInt(b, apt + vArray[PyMOL.BUNIQUEID], false));
+        order = b[apt + vArray[PyMOL.BORDER]];
+        apt += len;
       } else {
-        Lst<Object> b = listAt(bonds, i);
-        ia = intAt(b, 0);
-        ib = intAt(b, 1);
-        order = intAt(b, 2);
-        uid = (b.size() > 6 && intAt(b, 6) != 0 ? intAt(b, 5) : -1);
+        Lst<Object> lst = listAt(bonds, i);
+        ia = intAt(lst, 0);
+        ib = intAt(lst, 1);
+        order = intAt(lst, 2);
+        uid = (lst.size() > 6 && intAt(lst, 6) != 0 ? intAt(lst, 5) : -1);
       }
       if (order < 1 || order > 3)
         order = 1;
@@ -1140,191 +1116,6 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
   // [46] Float     U23
 
 
-//1.7.6 type
-//typedef struct AtomInfoType {
-// int resv;
-// int customType;
-// int priority;
-// float b, q, vdw, partialCharge;
-// int selEntry;
-// int color;
-// int id;                       // PDB ID
-// unsigned int flags;
-// int temp1;                    /* kludge fields - to remove */
-// int unique_id;                /* introduced in version 0.77 */
-// int discrete_state;           /* state+1 for atoms in discrete objects */
-// float elec_radius;            /* radius for PB calculations */
-// int rank;
-// int textType;
-// int custom;
-// int label;
-// int visRep;                   /* bitmask for all reps */
-//
-// /* be careful not to write at these as (int*) */
-//
-// signed char formalCharge;     // values typically in range -2..+2
-// signed char stereo;           /* for 2D representation */
-// signed char mmstereo;           /* from MMStereo */
-// signed char cartoon;          /* 0 = default which is auto (use ssType) */
-//
-// // boolean flags
-// signed char hetatm;
-// signed char bonded;
-// signed char chemFlag;         // 0,1,2
-// signed char geom;             // cAtomInfo*
-//
-// signed char valence;
-//
-// // boolean flags
-// signed char deleteFlag;
-// signed char masked;
-//
-// signed char protekted;        // 0,1,2
-//
-// signed char protons;          /* atomic number */
-//
-// // boolean flags
-// signed char hb_donor;
-// signed char hb_acceptor;
-// signed char has_setting;      /* setting based on unique_id */
-//
-// ov_word chain;
-// Chain alt;
-// ResIdent resi;
-// SegIdent segi;
-// ResName resn;
-// AtomName name;
-// ElemName elem;                // redundant with "protons" ?
-//
-// SSType ssType;                /* blank or 'L' = turn/loop, 'H' = helix, 'S' = beta-strand/sheet */
-//
-// // replace with pointer?
-// float U11, U22, U33, U12, U13, U23;
-// int oldid;
-//
-
-private final static int LEN = 0;
-private final static int RESV = 1;
-private final static int CUSTOMTYPE = 2;
-private final static int PRIORITY = 3;
-
-private final static int BFACTOR = 4;
-private final static int OCCUPANCY = 5;
-private final static int VDW = 6;
-private final static int PARTIALCHARGE = 7;
-
-//private final static int SELENTRY = 8;
-private final static int COLOR = 9;
-private final static int ID = 10;
-private final static int FLAGS = 11;
-//private final static int TEMP1 = 12;
-private final static int UNIQUEID = 13;
-private final static int DISCRETESTATE = 14;
-
-private final static int ELECRADIUS = 15;
-
-private final static int RANK = 16;
-private final static int TEXTTYPE = 17;
-private final static int CUSTOM = 18;
-private final static int LABEL = 19;
-private final static int VISREP = 20;
-
-private final static int HETATM = 21;
-private final static int BONDED = 22;
-//private final static int DELETEFLAG = 23;
-private final static int MASK = 24;
-private final static int HBDONOR = 25;
-private final static int HBACCEPT = 26;
-private final static int HASSETTING = 27;
-
-private final static int FORMALCHARGE = 28;
-private final static int MMSTEREO = 29;
-private final static int CARTOON = 30;
-private final static int GEOM = 31;
-private final static int VALENCE = 32;
-private final static int PROTONS = 33;
-
-private final static int CHAIN = 34;
-private final static int SEGI = 35;
-private final static int NAME = 36;
-private final static int ELEM = 37;
-private final static int RESI = 38;
-private final static int SSTYPE = 39;
-private final static int ALTLOC = 40;
-private final static int RESN = 41;
-private final static int INSCODE = 42;
-private final static int CHEMFLAG = 43;
-private final static int PROTEKTED = 44;
-private final static int ANISOU = 45;
-
-private final static int HETMASK = 46;
-private final static int BONMASK = 47;
-private final static int MASMASK = 48;
-private final static int HBDMASK = 49;
-private final static int HBAMASK = 50;
-private final static int SETMASK = 51;
-
-
-
-private final static int[] v181 = { LEN, 120,  
-//  struct AtomInfoType_1_8_1 {
-  
-ANISOU,       0,  //  short anisou[6];
-SEGI,        -12, //  lexidx_t segi;
-CHAIN,       -16, //  lexidx_t chain;
-RESN,        -20, //  lexidx_t resn;
-NAME,        -24, //  lexidx_t name;
-TEXTTYPE,    -28, //  lexidx_t textType;
-CUSTOM,      -32, //  lexidx_t custom;
-LABEL,       -36, //  lexidx_t label;
-
-RESV,         40, //  int resv;
-CUSTOMTYPE,   44, //  int customType;
-PRIORITY,     48, //  int priority;
-BFACTOR,      52, //  float b;
-OCCUPANCY,    56, //  float q;
-VDW,          60, //  float vdw;
-PARTIALCHARGE,64, //  float partialCharge;
-COLOR,        68, //  int color;
-ID,           72, //  int id;                       // PDB ID
-
-FLAGS,        76, //  unsigned int flags;
-UNIQUEID,     80, //  int unique_id;                /* introduced in version 0.77 */
-DISCRETESTATE,84, //  int discrete_state;           /* state+1 for atoms in discrete objects */
-ELECRADIUS,   88, //  float elec_radius;            /* radius for PB calculations */
-RANK,         92, //  int rank;
-VISREP,       96, //  int visRep;                   /* bitmask for all reps */
-
-HETATM,      100, //  bool hetatm : 1;
-BONDED,      100, //  bool bonded : 1;
-MASK,        100, //  bool masked : 1;
-HBDONOR,     100, //  bool hb_donor : 1;
-HBACCEPT,    100, //  bool hb_acceptor : 1;
-HASSETTING,  100, //  bool has_setting : 1;      /* setting based on unique_id */
-
-HETMASK,    0x01, 
-BONMASK,    0x02,
-MASMASK,    0x04,
-HBDMASK,    0x08,
-HBAMASK,    0x10,
-SETMASK,    0x20,
-
-FORMALCHARGE,101, //  signed char formalCharge;     // values typically in range -2..+2
-CARTOON,     102, //  signed char cartoon;          /* 0 = default which is auto (use ssType) */
-GEOM,        103, //  signed char geom;             // cAtomInfo*
-VALENCE,     104, //  signed char valence;          // 0-4
-PROTONS,     105, //  signed char protons;          /* atomic number */
-INSCODE,     106, //  char inscode;
-
-ELEM,        107, // [5] ElemName elem;               // redundant with "protons" ?
-SSTYPE,      112, // [2] SSType ssType;               /* blank or 'L' = turn/loop, 'H' = helix, 'S' = beta-strand/sheet */
-ALTLOC,      114, // [2] Chain alt;
-MMSTEREO,    116, //  unsigned char stereo : 2;     // 0-3 Only for SDF (MOL) format in/out
-CHEMFLAG,    117, //  unsigned char chemFlag : 2;   // 0,1,2
-PROTEKTED,   118, //  unsigned char protekted : 2;  // 0,1,2
-// empty byte?
-};
-
   /**
    * @param pymolAtoms
    *        list of atom details
@@ -1360,38 +1151,41 @@ PROTEKTED,   118, //  unsigned char protekted : 2;  // 0,1,2
     float[] anisou = null;
     BS bsReps = null;
     if (haveBinaryArrays) {
-      int pt = apt * vArray[LEN];
-      seqNo = atomInt(atomArray, pt, vArray[RESV]);
-      chainID = atomStr(atomArray, pt, vArray[CHAIN], lexStr);
-      resi =  atomStr(atomArray, pt, vArray[RESI], lexStr);
-      group3 = atomStr(atomArray, pt, vArray[RESN], lexStr).substring(0, 3);
-      name = atomStr(atomArray, pt, vArray[NAME], lexStr);
-      sym = atomStr(atomArray, pt, vArray[ELEM], lexStr);
-      label = atomStr(atomArray, pt, vArray[LABEL], lexStr);
-      ssType = atomStr(atomArray, pt, vArray[SSTYPE], null);
-      altLoc = atomStr(atomArray, pt, vArray[ALTLOC], null);
-      byte b = atomArray[pt + vArray[INSCODE]];
+      int pt = apt * vArray[PyMOL.LEN];
+      seqNo = atomInt(atomArray, pt, vArray[PyMOL.RESV]);
+      chainID = atomStr(atomArray, pt, vArray[PyMOL.CHAIN], lexStr);
+      resi =  atomStr(atomArray, pt, vArray[PyMOL.RESI], lexStr);
+      group3 = atomStr(atomArray, pt, vArray[PyMOL.RESN], lexStr);
+      if (group3.length() > 3)
+        group3 = group3.substring(0, 3);
+      name = atomStr(atomArray, pt, vArray[PyMOL.NAME], lexStr);
+      sym = atomStr(atomArray, pt, vArray[PyMOL.ELEM], lexStr);
+      label = atomStr(atomArray, pt, vArray[PyMOL.LABEL], lexStr);
+      ssType = atomStr(atomArray, pt, vArray[PyMOL.SSTYPE], null);
+      altLoc = atomStr(atomArray, pt, vArray[PyMOL.ALTLOC], null);
+      byte b = atomArray[pt + vArray[PyMOL.INSCODE]];
       resi = (b == 0 ? "" : "xxx" + (char) b);
-      bfactor = atomFloat(atomArray, pt, vArray[BFACTOR]);
-      occupancy = atomFloat(atomArray, pt, vArray[OCCUPANCY]);
-      radius= atomFloat(atomArray, pt, vArray[VDW]);
-      partialCharge = atomFloat(atomArray, pt, vArray[PARTIALCHARGE]);
-      formalCharge = atomArray[pt + vArray[FORMALCHARGE]];
+      bfactor = atomFloat(atomArray, pt, vArray[PyMOL.BFACTOR]);
+      occupancy = atomFloat(atomArray, pt, vArray[PyMOL.OCCUPANCY]);
+      radius= atomFloat(atomArray, pt, vArray[PyMOL.VDW]);
+      partialCharge = atomFloat(atomArray, pt, vArray[PyMOL.PARTIALCHARGE]);
+      formalCharge = atomArray[pt + vArray[PyMOL.FORMALCHARGE]];
       if (formalCharge > 125)
         formalCharge -= 512;
-      intReps = atomInt(atomArray, pt, vArray[VISREP]);
-      atomColor = atomInt(atomArray, pt, vArray[COLOR]);
-      serNo = atomInt(atomArray, pt, vArray[ID]);
-      cartoonType = atomInt(atomArray, pt, vArray[CARTOON]);
-      flags = atomInt(atomArray, pt, vArray[FLAGS]);
-      uniqueID = atomInt(atomArray, pt, vArray[UNIQUEID]);
+      intReps = atomInt(atomArray, pt, vArray[PyMOL.VISREP]);
+//      System.out.println(apt + " " + pt + " " + intReps);
+      atomColor = atomInt(atomArray, pt, vArray[PyMOL.COLOR]);
+      serNo = atomInt(atomArray, pt, vArray[PyMOL.ID]);
+      cartoonType = atomInt(atomArray, pt, vArray[PyMOL.CARTOON]);
+      flags = atomInt(atomArray, pt, vArray[PyMOL.FLAGS]);
+      uniqueID = atomInt(atomArray, pt, vArray[PyMOL.UNIQUEID]);
       if (uniqueID == 0)
         uniqueID = -1;
       anisou = new float[8];
       for (int i = 0; i < 6; i++)
-        anisou[i] = BC.bytesToShort(atomArray, pt + vArray[ANISOU] + i * 2, false);
-      bonded = atomBool(atomArray, pt, vArray[BONDED], vArray[BONMASK]);
-      isHetero = atomBool(atomArray, pt, vArray[HETATM], vArray[HETMASK]);
+        anisou[i] = BC.bytesToShort(atomArray, pt + vArray[PyMOL.ANISOU] + (i << 1), false);
+      bonded = atomBool(atomArray, pt, vArray[PyMOL.BONDED], vArray[PyMOL.BONMASK]);
+      isHetero = atomBool(atomArray, pt, vArray[PyMOL.HETATM], vArray[PyMOL.HETMASK]);
     } else {
       Lst<Object> a = listAt(pymolAtoms, apt);
       seqNo = intAt(a, 0); // may be negative

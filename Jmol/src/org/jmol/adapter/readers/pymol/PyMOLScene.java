@@ -753,7 +753,6 @@ class PyMOLScene implements JmolSceneGenerator {
     return pymolView;
   }
 
-  @SuppressWarnings("unchecked")
   float globalSetting(int i) {
     Lst<Object> setting = PyMOLReader.listAt(settings, i);
     if (setting != null && setting.size() == 3)
@@ -1104,6 +1103,7 @@ class PyMOLScene implements JmolSceneGenerator {
     if (frameObj == null)
       return;
     frameObj.finalizeObject(this, vwr.ms, null, false);
+    vwr.setBooleanProperty("antialiasDisplay", true);
     frameObj = null;
   }
 

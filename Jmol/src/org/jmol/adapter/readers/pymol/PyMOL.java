@@ -6282,7 +6282,6 @@ class PyMOL {
     case depth_cue:
     case fog:
     case cartoon_round_helices:
-    case cartoon_fancy_helices:
     case label_digits:
     case ribbon_sampling:
       return 1;
@@ -6300,6 +6299,7 @@ class PyMOL {
     case all_states:
     case valence:
     case cgo_transparency:
+    case cartoon_fancy_helices:
     case cartoon_putty_transform:
     case dump_binary:
     case orthoscopic:
@@ -6351,6 +6351,10 @@ class PyMOL {
       return 30;
     case stick_radius:
       return 0.25f;
+    case cartoon_oval_length:
+      return 1.2f;
+    case cartoon_oval_width:
+      return 0.25f;
     default:
       Logger.error("PyMOL " + pymolVersion + " default float setting not found: " + i);
       return 0;
@@ -6380,4 +6384,503 @@ class PyMOL {
     return "";
   }
 
+  /////// binary AtomInfo structures ////////////
+  
+  final static int LEN = 0;
+  final static int RESV = 1;
+  final static int CUSTOMTYPE = 2;
+  final static int PRIORITY = 3;
+  
+  final static int BFACTOR = 4;
+  final static int OCCUPANCY = 5;
+  final static int VDW = 6;
+  final static int PARTIALCHARGE = 7;
+  
+  //final static int SELENTRY = 8;
+  final static int COLOR = 9;
+  final static int ID = 10;
+  final static int FLAGS = 11;
+  //final static int TEMP1 = 12;
+  final static int UNIQUEID = 13;
+  final static int DISCRETESTATE = 14;
+  
+  final static int ELECRADIUS = 15;
+  
+  final static int RANK = 16;
+  final static int TEXTTYPE = 17;
+  final static int CUSTOM = 18;
+  final static int LABEL = 19;
+  final static int VISREP = 20;
+  
+  final static int HETATM = 21;
+  final static int BONDED = 22;
+  //final static int DELETEFLAG = 23;
+  final static int MASK = 24;
+  final static int HBDONOR = 25;
+  final static int HBACCEPT = 26;
+  final static int HASSETTING = 27;
+  
+  final static int FORMALCHARGE = 28;
+  final static int MMSTEREO = 29;
+  final static int CARTOON = 30;
+  final static int GEOM = 31;
+  final static int VALENCE = 32;
+  final static int PROTONS = 33;
+  
+  final static int CHAIN = 34;
+  final static int SEGI = 35;
+  final static int NAME = 36;
+  final static int ELEM = 37;
+  final static int RESI = 38;
+  final static int SSTYPE = 39;
+  final static int ALTLOC = 40;
+  final static int RESN = 41;
+  final static int INSCODE = 42;
+  final static int CHEMFLAG = 43;
+  final static int PROTEKTED = 44;
+  final static int ANISOU = 45;
+  
+  final static int HETMASK = 46;
+  final static int BONMASK = 47;
+  final static int MASMASK = 48;
+  final static int HBDMASK = 49;
+  final static int HBAMASK = 50;
+  final static int SETMASK = 51;
+  
+  //1.7.6 type
+  final static int[] v176 = { LEN, 154,
+    RESV,           0,
+    CUSTOMTYPE,     4,
+    PRIORITY,       8,
+    BFACTOR,       12,
+    OCCUPANCY,     16,
+    VDW,           20,
+    PARTIALCHARGE, 24,
+    //SELENTRY,      28,
+    COLOR,         32,
+    ID,            36,
+    FLAGS,         40,
+    //TEMP1,         44,
+    UNIQUEID,      48,
+    DISCRETESTATE, 52,
+    ELECRADIUS,    56,
+    RANK,          60,
+    TEXTTYPE,     -64,
+    CUSTOM,       -68,
+    LABEL,        -72,
+    VISREP,        76,
+    FORMALCHARGE,  80,
+    //STEREO,       81,
+    MMSTEREO,      82,
+    CARTOON,       83,
+    HETATM,        84,
+    BONDED,        85,
+    CHEMFLAG,      86,
+    GEOM,          87,
+    
+    VALENCE,       88,
+    //DELETEFLAG,      89,
+    MASK,          90,
+    PROTEKTED,     91,
+    
+    PROTONS,       92,
+    HBDONOR,       93,
+    HBACCEPT,      94,
+    HASSETTING,    95,
+
+    HETMASK,     0x01, 
+    BONMASK,     0x01,
+    MASMASK,     0x01,
+    HBDMASK,     0x01,
+    HBAMASK,     0x01,
+    SETMASK,     0x01,
+    
+    CHAIN,         96,
+    SEGI,         100, // 5
+    NAME,         105, // 5
+    ELEM,         110, // 5
+    RESI,         115, // 6
+    //HASPROP,      111,
+    SSTYPE,       112,
+    ALTLOC,       114,
+    RESN,         116,
+    ANISOU,       122,
+    //OLDID,        146
+    //PROPID,       150,
+  
+  };
+
+//  typedef struct AtomInfoType_1_7_6 {
+//    int resv;
+//    int customType;
+//    int priority;
+//    float b, q, vdw, partialCharge;
+//    int selEntry;
+//    int color;
+//    int id;                       // PDB ID
+//    unsigned int flags;
+//    int temp1;                    /* kludge fields - to remove */
+//    int unique_id;                /* introduced in version 0.77 */
+//    int discrete_state;           /* state+1 for atoms in discrete objects */
+//    float elec_radius;            /* radius for PB calculations */
+//    int rank;
+//    int textType;
+//    int custom;
+//    int label;
+//    int visRep;                   /* bitmask for all reps */
+//
+//    /* be careful not to write at these as (int*) */
+//
+//    signed char formalCharge;     // values typically in range -2..+2
+//    signed char stereo;           /* for 2D representation */
+//    signed char mmstereo;           /* from MMStereo */
+//    signed char cartoon;          /* 0 = default which is auto (use ssType) */
+//
+//    // boolean flags
+//    signed char hetatm;
+//    signed char bonded;
+//    signed char chemFlag;         // 0,1,2
+//    signed char geom;             // cAtomInfo*
+//
+//    signed char valence;
+//
+//    // boolean flags
+//    signed char deleteFlag;
+//    signed char masked;
+//
+//    signed char protekted;        // 0,1,2
+//
+//    signed char protons;          /* atomic number */
+//
+//    // boolean flags
+//    signed char hb_donor;
+//    signed char hb_acceptor;
+//    signed char has_setting;      /* setting based on unique_id */
+//
+//    int chain;
+//    SegIdent segi;
+//    AtomName name;
+//    ElemName elem;                // redundant with "protons" ?
+//    ResIdent resi;
+//    char has_prop;
+//    SSType ssType;                /* blank or 'L' = turn/loop, 'H' = helix, 'S' = beta-strand/sheet */
+//    Chain alt;
+//    ResName resn;
+//
+//    // replace with pointer?
+//    float U11, U22, U33, U12, U13, U23;
+//
+//    int oldid; // for undo
+//
+//    int prop_id;
+  
+  final static int[] v177 = {LEN, 144,
+  //  typedef struct AtomInfoType_1_7_7 {
+  //    union {
+  //      float * anisou;               // only allocate with get_anisou
+  //      int64_t dummyanisou;
+  //    };
+    RESV, 8,
+  //    int resv;
+    CUSTOMTYPE, 12,
+  //    int customType;
+    PRIORITY, 16,
+  //    int priority;
+    BFACTOR,   20,
+    OCCUPANCY, 24,
+    VDW,       28,
+    PARTIALCHARGE, 32,
+  //    float b, q, vdw, partialCharge;
+    //SELENTRY, 36;
+  //    int selEntry;
+    COLOR, 40,
+  //    int color;
+    ID,    44,
+  //    int id;                       // PDB ID
+    FLAGS, 48,
+  //    unsigned int flags;
+    //TEMP1, 52,
+  //    int temp1;                    /* kludge fields - to remove */
+    UNIQUEID, 56,
+  //    int unique_id;                /* introduced in version 0.77 */
+    DISCRETESTATE, 60,
+  //    int discrete_state;           /* state+1 for atoms in discrete objects */
+    ELECRADIUS,    64,
+  //    float elec_radius;            /* radius for PB calculations */
+    RANK,          68,
+  //    int rank;
+    TEXTTYPE,      -72,
+  //    int textType;
+    CUSTOM,        -76,
+  //    int custom;
+    LABEL,         -80,
+  //    int label;
+    VISREP,         84,
+  //    int visRep;                   /* bitmask for all reps */
+    //OLDID,          88,
+  //    int oldid;                    // for undo
+    //PROPID,           92,
+  //    int prop_id;
+  //
+    HETATM,      96, //  bool hetatm : 1;
+    BONDED,      96, //  bool bonded : 1;
+    // deleteFlag
+    MASK,        96, //  bool masked : 1;
+    
+    HBDONOR,     97, //  bool hb_donor : 1;
+    HBACCEPT,    97, //  bool hb_acceptor : 1;
+    HASSETTING,  97, //  bool has_setting : 1;      /* setting based on unique_id */
+    //HASPROP,     97,
+    
+    HETMASK,    0x01, 
+    BONMASK,    0x02,
+    // deleteFlag 0x04,
+    MASMASK,    0x08,
+    
+    HBDMASK,    0x01,
+    HBAMASK,    0x02,
+    SETMASK,    0x04,
+    // hasprop 0x08
+
+  //    // boolean flags
+  //    bool hetatm : 1;
+  //    bool bonded : 1;
+  //    bool deleteFlag : 1;
+  //    bool masked : 1;
+    
+  //    bool hb_donor : 1;
+  //    bool hb_acceptor : 1;
+  //    bool has_setting : 1;      /* setting based on unique_id */
+  //    bool has_prop : 1;
+  //
+  //    /* be careful not to write at these as (int*) */
+  //
+    FORMALCHARGE, 98,
+  //    signed char formalCharge;     // values typically in range -2..+2
+    MMSTEREO,     99,
+  //    signed char mmstereo;           /* from MMStereo */
+    CARTOON,     100,
+  //    signed char cartoon;          /* 0 = default which is auto (use ssType) */
+    GEOM,        101,
+  //    signed char geom;             // cAtomInfo*
+    VALENCE,     102,
+  //    signed char valence;          // 0-4
+    PROTONS,     103,
+  //    signed char protons;          /* atomic number */
+    CHAIN,       104,
+  //    int chain;
+    SEGI,        108, // 5
+  //    SegIdent segi;
+    NAME,        113, // 5
+  //    AtomName name;
+    ELEM,        118, // 5
+  //    ElemName elem;                // redundant with "protons" ?
+    RESI,        123, // 6
+  //    ResIdent resi;
+    SSTYPE,      129,
+  //    SSType ssType;                /* blank or 'L' = turn/loop, 'H' = helix, 'S' = beta-strand/sheet */
+    ALTLOC,      131,
+  //    Chain alt;
+    RESN,        133,           
+  //    ResName resn; // 6
+    //STEREO     139,
+  //    unsigned char stereo : 2;     // 0-3 Only for SDF (MOL) format in/out
+    CHEMFLAG,    140,
+  //    unsigned char chemFlag : 2;   // 0,1,2
+    PROTEKTED,   141
+  //    unsigned char protekted : 2;  // 0,1,2
+  // padding,    142  // 2
+  //
+  };
+
+  final static int[] v181 = { LEN, 120,  
+  //  struct AtomInfoType_1_8_1 {
+    
+    ANISOU,       0,  //  short anisou[6];
+    SEGI,        -12, //  lexidx_t segi;
+    CHAIN,       -16, //  lexidx_t chain;
+    RESN,        -20, //  lexidx_t resn;
+    NAME,        -24, //  lexidx_t name;
+    TEXTTYPE,    -28, //  lexidx_t textType;
+    CUSTOM,      -32, //  lexidx_t custom;
+    LABEL,       -36, //  lexidx_t label;
+    
+    RESV,         40, //  int resv;
+    CUSTOMTYPE,   44, //  int customType;
+    PRIORITY,     48, //  int priority;
+    BFACTOR,      52, //  float b;
+    OCCUPANCY,    56, //  float q;
+    VDW,          60, //  float vdw;
+    PARTIALCHARGE,64, //  float partialCharge;
+    COLOR,        68, //  int color;
+    ID,           72, //  int id;                       // PDB ID
+    
+    FLAGS,        76, //  unsigned int flags;
+    UNIQUEID,     80, //  int unique_id;                /* introduced in version 0.77 */
+    DISCRETESTATE,84, //  int discrete_state;           /* state+1 for atoms in discrete objects */
+    ELECRADIUS,   88, //  float elec_radius;            /* radius for PB calculations */
+    RANK,         92, //  int rank;
+    VISREP,       96, //  int visRep;                   /* bitmask for all reps */
+    
+    HETATM,      100, //  bool hetatm : 1;
+    BONDED,      100, //  bool bonded : 1;
+    MASK,        100, //  bool masked : 1;
+    HBDONOR,     100, //  bool hb_donor : 1;
+    HBACCEPT,    100, //  bool hb_acceptor : 1;
+    HASSETTING,  100, //  bool has_setting : 1;      /* setting based on unique_id */
+    
+    HETMASK,    0x01, 
+    BONMASK,    0x02,
+    MASMASK,    0x04,
+    HBDMASK,    0x08,
+    HBAMASK,    0x10,
+    SETMASK,    0x20,
+    
+    FORMALCHARGE,101, //  signed char formalCharge;     // values typically in range -2..+2
+    CARTOON,     102, //  signed char cartoon;          /* 0 = default which is auto (use ssType) */
+    GEOM,        103, //  signed char geom;             // cAtomInfo*
+    VALENCE,     104, //  signed char valence;          // 0-4
+    PROTONS,     105, //  signed char protons;          /* atomic number */
+    INSCODE,     106, //  char inscode;
+    
+    ELEM,        107, // [5] ElemName elem;               // redundant with "protons" ?
+    SSTYPE,      112, // [2] SSType ssType;               /* blank or 'L' = turn/loop, 'H' = helix, 'S' = beta-strand/sheet */
+    ALTLOC,      114, // [2] Chain alt;
+    MMSTEREO,    116, //  unsigned char stereo : 2;     // 0-3 Only for SDF (MOL) format in/out
+    CHEMFLAG,    117, //  unsigned char chemFlag : 2;   // 0,1,2
+    PROTEKTED,   118, //  unsigned char protekted : 2;  // 0,1,2
+    // padding   119, // 1
+  };
+
+  static int[] getVArray(int version) {
+    int[] va = null;
+    int[] varray = null;
+    switch (version) {
+    case 176:
+      va = v176;
+      break;
+    case 177:
+      va = v177;
+      break;
+    case 181:
+      va = v181;
+      break;
+    }
+    if (va != null) {
+      varray = new int[60];
+      for (int i = 0; i < va.length;)
+        varray[va[i++]] = va[i++];
+    }
+    return varray;
+  }
+
+  /////// binary BondInfo structures ////////////
+
+  static final int BATOM1 = 1;
+  static final int BATOM2 = 2;
+  static final int BORDER = 3;
+  static final int BID    = 4;
+  static final int BUNIQUEID = 5;
+  static final int BHASSETTING = 6;
+  
+  final static int[] v176b = { LEN, 32,
+    BATOM1, 0,
+    BATOM2, 4,
+    BORDER, 8,
+    BID,   12,
+    BUNIQUEID, 16,
+    //    BTEMP1,    20,
+    //    BSTEREO,   24,  // short
+    BHASSETTING, 26,    // short lower byte
+    // null byte,    27 // short higher byte
+    //    BOLDID,      28
+  };
+  
+  //typedef struct BondType_1_7_6 {
+  //int index[2];
+  //int order;
+  //int id;
+  //int unique_id;
+  //int temp1;
+  //short int stereo;             /* to preserve 2D rep */
+  //short int has_setting;        /* setting based on unique_id */
+  //int oldid;
+  //} BondType_1_7_6;
+    
+
+    
+  final static int[] v177b = { LEN, 24,
+    BATOM1, 0,
+    BATOM2, 4,
+    BID,    8,
+    BUNIQUEID, 12,
+    //    BOLDID,      16
+    BORDER, 20,           // byte
+    //    BTEMP1,    21,  // byte
+    //    BSTEREO,   22,  // byte
+    BHASSETTING, 23,      // byte
+    
+  };
+  
+  
+//
+//typedef struct BondType_1_7_7 {
+//int index[2];
+//int id;
+//int unique_id;
+//int oldid;
+//signed char order;    // 0-4
+//signed char temp1;    // bool? where used?
+//signed char stereo;   // 0-6 Only for SDF (MOL) format in/out
+//bool has_setting;     /* setting based on unique_id */
+//} BondType_1_7_7;
+//
+
+  final static int[] v181b = { LEN, 20,
+    BATOM1, 0,
+    BATOM2, 4,
+    BID,    8,
+    BUNIQUEID, 12,
+    BORDER, 16,           // byte
+    //    BSTEREO,   17,  // byte
+    BHASSETTING, 18,      // byte    
+    //    padding, 19,    // byte
+  };
+  
+  
+///*
+//* This is not identical to the 1.8.2 BondType, it's missing all members
+//* which are not relevant or unsupported with pse_binary_dump (oldid, temp1)
+//*/
+//struct BondType_1_8_1 {
+//int index[2];
+//int id;
+//int unique_id;
+//signed char order;    // 0-4
+//signed char stereo;   // 0-6 Only for SDF (MOL) format in/out
+//bool has_setting;     /* setting based on unique_id */
+//};
+
+
+  static int[] getVArrayB(int version) {
+    int[] va = null;
+    int[] varray = null;
+    switch (version) {
+    case 176:
+      va = v176b;
+      break;
+    case 177:
+      va = v177b;
+      break;
+    case 181:
+      va = v181b;
+      break;
+    }
+    if (va != null) {
+      varray = new int[10];
+      for (int i = 0; i < va.length;)
+        varray[va[i++]] = va[i++];
+    }
+    return varray;
+  }
 }

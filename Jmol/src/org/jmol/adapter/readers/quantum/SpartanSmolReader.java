@@ -107,8 +107,9 @@ public class SpartanSmolReader extends SpartanInputReader {
         checkLastModel();
         return false;
       }
-      if (!isInputFirst)
-        asc.newAtomSet();
+      if (!isInputFirst) {
+        makeNewAtomSet();
+      }
       moData = new Hashtable<String, Object>();
       moData.put("isNormalized", Boolean.TRUE);
       boolean isOK = false;
@@ -136,7 +137,7 @@ public class SpartanSmolReader extends SpartanInputReader {
         if (!iHaveModelStatement)
           isInputFirst = true;
         if (isInputFirst) {
-          asc.newAtomSet();
+          makeNewAtomSet();
         }
         bondData = "";
         title = readInputRecords();
@@ -173,6 +174,13 @@ public class SpartanSmolReader extends SpartanInputReader {
     if (line.indexOf("5D shell") >= 0)
       moData.put("calculationType", calculationType = line);
     return true;
+  }
+
+  private void makeNewAtomSet() {
+    // Spartan 16 files may have an empty first model
+    if (asc.ac == 0)
+      asc.removeCurrentAtomSet();
+    asc.newAtomSet();
   }
 
   @Override

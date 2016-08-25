@@ -80,8 +80,8 @@ public final class JC {
     // _#DOCACHE_ flag indicates that the loaded file should be saved in any state in full
     // ' at start indicates a Jmol script evaluation
     "ams", "'http://rruff.geo.arizona.edu/AMS/viewJmol.php?'+(0+'%file'==0? 'mineral':('%file'.length==7? 'amcsd':'id'))+'=%file&action=showcif#_DOCACHE_'",
-    "pdbemap", "http://wwwdev.ebi.ac.uk/pdbe/coordinates/files/%file.ccp4",
-    "pdbemapdiff", "http://wwwdev.ebi.ac.uk/pdbe/coordinates/files/%file_diff.ccp4"
+    "pdbemap", "http://www.ebi.ac.uk/pdbe/coordinates/files/%file.ccp4",
+    "pdbemapdiff", "http://www.ebi.ac.uk/pdbe/coordinates/files/%file_diff.ccp4"
   };
 
   /**

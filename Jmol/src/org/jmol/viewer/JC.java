@@ -55,33 +55,34 @@ public final class JC {
   // note list of RCSB access points: http://www.rcsb.org/pdb/static.do?p=download/http/index.html
   
   public static String[] databases = { 
+    "aflowbin", "http://aflowlib.mems.duke.edu/users/jmolers/binary_new/%FILE.aflow_binary",
+    "aflow", "http://aflowlib.mems.duke.edu/users/jmolers/binary_new/%FILE.aflow_binary",
+    // _#DOCACHE_ flag indicates that the loaded file should be saved in any state in full
+    // ' at start indicates a Jmol script evaluation
+    "ams", "'http://rruff.geo.arizona.edu/AMS/viewJmol.php?'+(0+'%file'==0? 'mineral':('%file'.length==7? 'amcsd':'id'))+'=%file&action=showcif#_DOCACHE_'",    
     "dssr", "http://dssr-jmol.x3dna.org/report.php?id=%FILE&opts=--json=ebi",
     "dssrModel", "http://dssr-jmol.x3dna.org/report.php?POST?opts=--json=ebi&model=", // called in DSSR1.java
     "iucr", "http://scripts.iucr.org/cgi-bin/sendcif_yard?%FILE", // e.g. wf5113sup1
-    "ligand", "http://www.rcsb.org/pdb/files/ligand/%FILE.cif",
-    "mp", "https://www.materialsproject.org/materials/mp-%FILE/cif#_DOCACHE_", // e.g. https://materialsproject.org/rest/v1/materials/mp-24972/cif 
-    "nci", "https://cactus.nci.nih.gov/chemical/structure/%FILE",
     "cod", "http://www.crystallography.net/cod/cif/%c1/%c2%c3/%c4%c5/%FILE.cif",
     "nmr", "http://www.nmrdb.org/new_predictor?POST?molfile=",
     "nmrdb", "http://www.nmrdb.org/service/predictor?POST?molfile=",
     "nmrdb13", "http://www.nmrdb.org/service/jsmol13c?POST?molfile=",
     //"pdb", "http://ftp.wwpdb.org/pub/pdb/data/structures/divided/pdb/%c2%c3/pdb%file.ent.gz", // new Jmol 14.5.0 10/28/2015
-    "mmtf", "http://mmtf.rcsb.org/full/%FILE", // new Jmol 14.5.4 4/2016
-    "pdb", "http://files.rcsb.org/view/%FILE.pdb", // new Jmol 14.4.4 3/2016
-    "pdb0", "http://files.rcsb.org/view/%FILE.pdb", // used in JSmol
-    "pdbe", "http://www.ebi.ac.uk/pdbe/entry-files/download/%FILE.cif",
-    "pdbe2", "http://www.ebi.ac.uk/pdbe/static/entry/%FILE_updated.cif",
-    "pubchem", "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/%FILE/SDF?record_type=3d",
-    "map", "http://www.ebi.ac.uk/pdbe/api/%TYPE/%FILE?pretty=false&metadata=true", 
-    "rna3d", "http://rna.bgsu.edu/rna3dhub/%TYPE/download/%FILE",
-    "aflowbin", "http://aflowlib.mems.duke.edu/users/jmolers/binary_new/%FILE.aflow_binary",
-    "aflow", "http://aflowlib.mems.duke.edu/users/jmolers/binary_new/%FILE.aflow_binary",
     "magndata", "http://webbdcrista1.ehu.es/magndata/mcif/%FILE.mcif",
-    // _#DOCACHE_ flag indicates that the loaded file should be saved in any state in full
-    // ' at start indicates a Jmol script evaluation
-    "ams", "'http://rruff.geo.arizona.edu/AMS/viewJmol.php?'+(0+'%file'==0? 'mineral':('%file'.length==7? 'amcsd':'id'))+'=%file&action=showcif#_DOCACHE_'",
-    "pdbemap", "http://www.ebi.ac.uk/pdbe/coordinates/files/%file.ccp4",
-    "pdbemapdiff", "http://www.ebi.ac.uk/pdbe/coordinates/files/%file_diff.ccp4"
+    "mmtf", "http://mmtf.rcsb.org/v1.0/full/%FILE", // new Jmol 14.5.4 4/2016
+    "rna3d", "http://rna.bgsu.edu/rna3dhub/%TYPE/download/%FILE",
+    // now https:
+    "ligand", "https://files.rcsb.org/ligands/download/%FILE.cif",
+    "mp", "https://www.materialsproject.org/materials/mp-%FILE/cif#_DOCACHE_", // e.g. https://materialsproject.org/rest/v1/materials/mp-24972/cif 
+    "nci", "https://cactus.nci.nih.gov/chemical/structure/%FILE",
+    "pdb", "https://files.rcsb.org/view/%FILE.pdb", // new Jmol 14.4.4 3/2016
+    "pdb0", "https://files.rcsb.org/view/%FILE.pdb", // used in JSmol
+    "pdbe", "https://www.ebi.ac.uk/pdbe/entry-files/download/%FILE.cif",
+    "pdbe2", "https://www.ebi.ac.uk/pdbe/static/entry/%FILE_updated.cif",
+    "pubchem", "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/%FILE/SDF?record_type=3d",
+    "map", "https://www.ebi.ac.uk/pdbe/api/%TYPE/%FILE?pretty=false&metadata=true", 
+    "pdbemap", "https://www.ebi.ac.uk/pdbe/coordinates/files/%file.ccp4",
+    "pdbemapdiff", "https://www.ebi.ac.uk/pdbe/coordinates/files/%file_diff.ccp4"
   };
 
   /**

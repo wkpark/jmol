@@ -80,7 +80,7 @@ public class GlobalSettings {
     pdbLoadLigandFormat = databases.get("ligand");
     nmrUrlFormat = databases.get("nmr");
     nmrPredictFormat = databases.get("nmrdb");
-    smilesUrlFormat = databases.get("nci") + "/file?format=sdf&get3d=True";
+    smilesUrlFormat = databases.get("nci") + "/file?format=sdf&get3d=true";
     nihResolverFormat = databases.get("nci");
     pubChemFormat = databases.get("pubchem");
 
@@ -902,7 +902,7 @@ public class GlobalSettings {
         if (database.equals("pubchem"))
           id = "name/" + id;
         else if (database.equals("nci"))
-          id += "/file?format=sdf&get3d=True";
+          id += "/file?format=sdf&get3d=true";
       }
       if (format.startsWith("'")) {
         // needs evaluation

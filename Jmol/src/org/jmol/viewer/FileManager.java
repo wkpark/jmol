@@ -364,13 +364,20 @@ public class FileManager implements BytePoster {
    * 
    * @param fullPathName
    * @param name
-   * @param reader
+   * @param reader could be a BufferedInputStream
    * @param htParams 
    * @return fileData
    */
   Object createAtomSetCollectionFromReader(String fullPathName, String name,
                                            Object reader,
                                            Map<String, Object> htParams) {
+    if (reader instanceof BufferedInputStream) {
+      boolean isLittleEndian = htParams.containsKey("isLittleEndian");
+      GenericBinaryDocument bd = (GenericBinaryDocument) Interface
+          .getInterface("javajs.util.BinaryDocument", vwr, "file");
+      bd.setStream((BufferedInputStream) reader, !isLittleEndian);
+      reader = bd;
+    }
     FileReader fileReader = new FileReader(this, vwr, name, fullPathName, name, null,
         reader, htParams, false);
     fileReader.run();

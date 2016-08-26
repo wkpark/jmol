@@ -1684,7 +1684,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
 
       atomSetCollection = openFileFull(fileName, isAppend, htParams, loadScript);
 
-    } else if (reader instanceof Reader) {
+    } else if (reader instanceof Reader || reader instanceof BufferedInputStream) {
 
       // 3) a file reader (not used by Jmol) 
 
@@ -8718,7 +8718,8 @@ public class Viewer extends JmolViewer implements AtomDataServer,
 
   @Override
   public String getSmiles(BS bs) throws Exception {
-    return getSmilesOpt(bs, -1, -1, bs == null && Logger.debugging ? JC.SMILES_GEN_ATOM_COMMENT :0, null);  
+    boolean is2D = ("2D".equals(ms.getInfoM("dimension"))); 
+    return getSmilesOpt(bs, -1, -1, (bs == null && Logger.debugging ? JC.SMILES_GEN_ATOM_COMMENT :0) | (is2D ? JC.SMILES_IGNORE_STEREOCHEMISTRY : 0), null);  
   }
 
   @Override

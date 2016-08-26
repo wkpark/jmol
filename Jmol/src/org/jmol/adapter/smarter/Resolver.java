@@ -764,7 +764,7 @@ public class Resolver {
   { "SpartanSmol" , "|PropertyArchive", "_spartan", "spardir", "BEGIN Directory Entry Molecule" };
 
   private final static String[] spartanContainsRecords =
-  { "Spartan", "Spartan" };  // very old Spartan files?
+  { "Spartan", "Spartan", "converted archive file" };  // very old Spartan files; sparchive files
 
   private final static String[] adfContainsRecords =
   { "Adf", "Amsterdam Density Functional" };

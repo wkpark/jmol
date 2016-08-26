@@ -75,8 +75,8 @@ public final class JC {
     "ligand", "https://files.rcsb.org/ligands/download/%FILE.cif",
     "mp", "https://www.materialsproject.org/materials/mp-%FILE/cif#_DOCACHE_", // e.g. https://materialsproject.org/rest/v1/materials/mp-24972/cif 
     "nci", "https://cactus.nci.nih.gov/chemical/structure/%FILE",
-    "pdb", "https://files.rcsb.org/view/%FILE.pdb", // new Jmol 14.4.4 3/2016
-    "pdb0", "https://files.rcsb.org/view/%FILE.pdb", // used in JSmol
+    "pdb", "https://files.rcsb.org/download/%FILE.pdb", // new Jmol 14.4.4 3/2016
+    "pdb0", "https://files.rcsb.org/download/%FILE.pdb", // used in JSmol
     "pdbe", "https://www.ebi.ac.uk/pdbe/entry-files/download/%FILE.cif",
     "pdbe2", "https://www.ebi.ac.uk/pdbe/static/entry/%FILE_updated.cif",
     "pubchem", "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/%FILE/SDF?record_type=3d",

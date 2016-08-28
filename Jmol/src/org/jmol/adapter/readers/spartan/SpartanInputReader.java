@@ -22,10 +22,11 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.adapter.readers.quantum;
+package org.jmol.adapter.readers.spartan;
 
 import javajs.util.PT;
 
+import org.jmol.adapter.readers.quantum.BasisFunctionReader;
 import org.jmol.adapter.smarter.Bond;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.JmolAdapter;

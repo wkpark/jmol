@@ -207,8 +207,8 @@ public class JmolUtil {
     // 0 entry is manifest
 
     try {
-      SB spartanData = (isSpartanZip(zipDirectory) ? vwr.fm.getJmb()
-          .getSpartanData(is, zipDirectory) : null);
+      SB spartanData = (isSpartanZip(zipDirectory) ? vwr.fm.spartanUtil()
+          .getData(is, zipDirectory) : null);
       GenericZipTools zpt = vwr.getJzt();
       Object ret;
       if (spartanData != null) {

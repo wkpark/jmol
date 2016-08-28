@@ -159,8 +159,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     asc.setInfo("noAutoBond",
         Boolean.TRUE);
     asc.setCurrentModelInfo("pdbNoHydrogens", Boolean.TRUE);
-    asc
-        .setInfo("isPyMOL", Boolean.TRUE);
+    asc.setInfo("isPyMOL", Boolean.TRUE);
     if (isTrajectory)
       trajectorySteps = new Lst<P3[]>();
 

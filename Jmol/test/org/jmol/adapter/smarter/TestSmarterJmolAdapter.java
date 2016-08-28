@@ -5,25 +5,25 @@
 package org.jmol.adapter.smarter;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Hashtable;
 import java.util.zip.GZIPInputStream;
 
+import javajs.util.BinaryDocument;
+import javajs.util.CompoundDocument;
 import javajs.util.PT;
-
-import org.jmol.util.JUnitLogger;
-import org.jmol.util.Logger;
-
+import javajs.util.Rdr;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+
+import org.jmol.util.JUnitLogger;
+import org.jmol.util.Logger;
 
 public class TestSmarterJmolAdapter extends TestSuite {
 
@@ -69,6 +69,7 @@ public class TestSmarterJmolAdapter extends TestSuite {
     result.addDirectory("castep", "cell;phonon", "Castep");
     result.addDirectory("cif", "mmcif", "MMCif");
     result.addDirectory("cif", "cif", "Cif");
+    result.addDirectory("cif", "mmtf", "MMTF");
     result.addDirectory("c3xml", "c3xml", "XmlChem3d");
     result.addDirectory("cml", "cml", "XmlCml");
     result.addDirectory("crystal", "out;outp", "Crystal");
@@ -101,6 +102,7 @@ public class TestSmarterJmolAdapter extends TestSuite {
     result.addDirectory("odyssey", "xodydata", "XmlOdyssey");
     result.addDirectory("nwchem", "nwo", "NWChem");
     result.addDirectory("pdb", "pdb;pdb.gz", "Pdb");
+    result.addDirectory("pymol", "pse", "PyMOL");
     // result.pmesh files are not molecular data files
     result.addDirectory("quantumEspresso", "out", "Espresso");
     result.addDirectory("psi3", "out", "Psi");
@@ -214,18 +216,27 @@ class TestSmarterJmolAdapterImpl extends TestCase {
   public void testFile() throws FileNotFoundException, IOException {
     if (!continuing)
       return;
+    String fname = file.getCanonicalPath();
+    System.out.println(fname);
     JUnitLogger.setInformation(file.getPath());
     InputStream iStream = new FileInputStream(file);
-    iStream = new BufferedInputStream(iStream);
-    if (gzipped) {
+    if (gzipped)
       iStream = new GZIPInputStream(iStream, 512);
-    }
+    BufferedInputStream bis = new BufferedInputStream(iStream);
     Logger.info(file.getPath());
-    BufferedReader bReader = new BufferedReader(new InputStreamReader(iStream));
     SmarterJmolAdapter adapter = new SmarterJmolAdapter();
     String type = null;
     boolean ok = true;
-    String fileType = adapter.getFileTypeName(bReader);
+    Object reader;
+    String fileType = adapter.getFileTypeName(bis);
+    System.out.println(fileType);
+    if (fileType == null) {
+      reader = Rdr.getBufferedReader(bis,  null);
+      fileType = adapter.getFileTypeName(reader);
+    } else {
+      //PyMOL or MMTF
+      reader = new BinaryDocument().setStream(bis, true);
+    }
     ok = (typeAllowed.equals(fileType) || typeAllowed.indexOf(";" + fileType
         + ";") >= 0);
     if (ok == mustForce) {
@@ -236,9 +247,10 @@ class TestSmarterJmolAdapterImpl extends TestCase {
     if (mustForce)
       type = typeAllowed;
     Hashtable<String, Object> htParams = new Hashtable<String, Object>();
-    htParams.put("fullPathName", file.getCanonicalPath());
+    htParams.put("fullPathName", fname);
     Object result = adapter.getAtomSetCollectionFromReaderType(file.getName(),
-        type, bReader, htParams);
+        type, reader, htParams);
+    System.out.println(result);
     continuing = (result != null && result instanceof AtomSetCollection);
     assertNotNull("Nothing read for " + file.getPath(), result);
     assertFalse("Error returned for " + file.getPath() + ": " + result,

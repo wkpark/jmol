@@ -598,8 +598,6 @@ public class ScriptManager implements JmolScriptManager {
       return "dssr";
     Object br = vwr.fm.getUnzippedReaderOrStreamFromName(fileName, null,
         true, false, true, true, null);
-    if (br instanceof BufferedReader)
-      return vwr.getModelAdapter().getFileTypeName(br);
     if (br instanceof ZInputStream) {
       String zipDirectory = getZipDirectoryAsString(fileName);
       if (zipDirectory.indexOf("JmolManifest") >= 0)
@@ -607,6 +605,8 @@ public class ScriptManager implements JmolScriptManager {
       return vwr.getModelAdapter().getFileTypeName(
           Rdr.getBR(zipDirectory));
     }
+    if (br instanceof BufferedReader || br instanceof BufferedInputStream)
+      return vwr.getModelAdapter().getFileTypeName(br);
     if (AU.isAS(br)) {
       return ((String[]) br)[0];
     }

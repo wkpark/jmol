@@ -24,7 +24,6 @@
 
 package org.jmol.api;
 
-import java.io.Reader;
 import java.net.URL;
 import java.util.Hashtable;
 import java.util.List;
@@ -304,24 +303,40 @@ abstract public class JmolViewer {
 
   abstract public int getMotionEventNumber();
 
+
+  /**
+   * Opens the file and creates the model set, given the reader.
+   * 
+   * not used in Jmol
+   * 
+   * @param fullPathName full path name or null
+   * @param reader a Reader, byte[], or BufferedInputStream
+   * 
+   * @return       null or error message
+   */
+   
+  public String openReader(String fullPathName, Object reader) {
+    return openReader(fullPathName == null ? "String" : fullPathName, null, reader);
+  }
+  
+
   /**
    * Opens the file and creates the model set, given the reader.
    * 
    * name is a text name of the file ... to be displayed in the window no need
    * to pass a BufferedReader ... ... the FileManager will wrap a buffer around
    * it
+   *
+   * not used in Jmol
    * 
-   * DO NOT USE IN JMOL -- THIS METHOD IS ONLY HERE BECAUSE IT IS
-   * PART OF THE LEGACY INTERFACE
-   * IF USED BY ANOTHER APPLICATION, YOU ARE RESPONSIBLE FOR CLOSING THE READER
+   * @param fullPathName or null
+   * @param fileName (no path) or null
+   * @param reader Reader, byte[], or BufferedInputStream
    * 
-   * @param fullPathName
-   * @param fileName
-   * @param reader
    * @return       null or error message
    */
    
-  abstract public String openReader(String fullPathName, String fileName, Reader reader);
+  abstract public String openReader(String fullPathName, String fileName, Object reader);
   
   /*
    * REMOVED -- this method does not actually open the file

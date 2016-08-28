@@ -91,14 +91,14 @@ public class FilesReader implements JmolFilesReaderInterface {
     String name = fullPathNamesIn[i];
     String[] subFileList = null;
     htParams.remove("subFileList");
-    if (name.indexOf("|") >= 0  && !htParams.containsKey("isStateScript")) {
+    if (name.indexOf("|") >= 0 && !htParams.containsKey("isStateScript")) {
       subFileList = PT.split(name, "|");
       name = subFileList[0];
     }
     if (name.contains("#_DOCACHE_"))
       return FileReader.getChangeableReader(vwr, namesAsGivenIn[i], name);
-    Object t = fm.getUnzippedReaderOrStreamFromName(name, null,
-        true, forceBinary, false, true, htParams);
+    Object t = fm.getUnzippedReaderOrStreamFromName(name, null, true,
+        forceBinary, false, true, htParams);
     if (t instanceof ZipInputStream) {
       if (subFileList != null)
         htParams.put("subFileList", subFileList);
@@ -108,14 +108,11 @@ public class FilesReader implements JmolFilesReaderInterface {
       t = fm.getJzu().getAtomSetCollectionOrBufferedReaderFromZip(vwr,
           (BufferedInputStream) t, name, zipDirectory, htParams, 1, true);
     }
-    if (t instanceof BufferedInputStream) {
-      GenericBinaryDocument jd = (GenericBinaryDocument) Interface
-          .getInterface("javajs.util.BinaryDocument", vwr, "file");
-      jd.setStream((BufferedInputStream) t, true);
-      return jd;
-    }
-    return (t instanceof BufferedReader || t instanceof GenericBinaryDocument ? t :
-      t == null ? "error opening:" + namesAsGivenIn[i] : (String) t);
+    return (t instanceof BufferedInputStream ? ((GenericBinaryDocument) Interface
+        .getInterface("javajs.util.BinaryDocument", vwr, "file")).setStream(
+        (BufferedInputStream) t, true) : t instanceof BufferedReader
+        || t instanceof GenericBinaryDocument ? t
+        : t == null ? "error opening:" + namesAsGivenIn[i] : (String) t);
   }
 
   @Override

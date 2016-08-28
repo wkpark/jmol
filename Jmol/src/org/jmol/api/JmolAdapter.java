@@ -33,6 +33,7 @@ import javajs.util.PT;
 import org.jmol.api.JmolFilesReaderInterface;
 import org.jmol.util.Elements;
 import org.jmol.util.Edge;
+import org.jmol.viewer.Viewer;
 
 /****************************************************************
  * The JmolAdapter interface defines the API used by the JmolViewer to
@@ -169,17 +170,15 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
    * @param type
    * @param bufferedReader
    * @param htParams
-   * @return           AtomSetCollection or error string
+   * @return AtomSetCollection or error string
    */
   public Object getAtomSetCollectionFromReaderType(String name, String type,
-                                               Object bufferedReader,
-                                               Map<String, Object> htParams) {
-    if (htParams == null)
-      htParams = new Hashtable<String, Object>();
+                                                   Object bufferedReader,
+                                                   Map<String, Object> htParams) {
     // vwr is now needed for CIF and GenNBO file reading
-    if (!htParams.containsKey("vwr"))
-      htParams.put("vwr", JmolViewer.allocateViewer(null, this));
-    Object a = getAtomSetCollectionReader(name, type, bufferedReader, htParams);
+    Object a = getAtomSetCollectionReader(name, type, bufferedReader,
+        ((Viewer) JmolViewer.allocateViewer(null, this)).setLoadParameters(
+            htParams, false));
     if (a instanceof String)
       return a;
     return getAtomSetCollection(a);

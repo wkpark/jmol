@@ -40,36 +40,54 @@ import javajs.util.Rdr;
 
 import org.jmol.api.Interface;
 import org.jmol.util.Logger;
-import org.jmol.viewer.FileManager;
 import org.jmol.viewer.Viewer;
 
 public class FileReader {
   /**
    * 
    */
-  private final FileManager fm;
   private final Viewer vwr;
   private String fileNameIn;
   private String fullPathNameIn;
   private String nameAsGivenIn;
   private String fileTypeIn;
   private Object atomSetCollection;
-  private Object reader;
+  private Object readerOrDocument;
   private Map<String, Object> htParams;
   private boolean isAppend;
-  private byte[] bytes;
+  private Object bytesOrStream;
 
-  public FileReader(FileManager fileManager, Viewer vwr, String fileName, String fullPathName, String nameAsGiven,
-      String type, Object reader, Map<String, Object> htParams,
-      boolean isAppend) {
-    fm = fileManager;
+  /**
+   * 
+   * @param vwr
+   * @param fileName  "t.xyz" may be null
+   * @param fullPathName "c:\temp\t.xyz" may be null
+   * @param nameAsGiven "c:/temp/t.xyz" may be null
+   * @param type forced file type
+   * @param reader optional Reader, BufferedReader, byte[], or BufferedInputStream
+   * @param htParams information for file reader
+   * @param isAppend append to current models or not
+   */
+  public FileReader(Viewer vwr, String fileName,
+      String fullPathName, String nameAsGiven, String type, Object reader,
+      Map<String, Object> htParams, boolean isAppend) {
     this.vwr = vwr;
-    fileNameIn = fileName;
-    fullPathNameIn = fullPathName;
-    nameAsGivenIn = nameAsGiven;
+    fileNameIn = (fileName == null ? fullPathName : fileName);
+    fullPathNameIn = (fullPathName == null ? fileNameIn : fullPathName);
+    nameAsGivenIn = (nameAsGiven == null ? fileNameIn : nameAsGiven);
     fileTypeIn = type;
-    this.reader = (reader instanceof BufferedReader ? reader : reader instanceof Reader ? new BufferedReader((Reader) reader) : null);
-    this.bytes = (AU.isAB(reader) ? (byte[]) reader : null);
+    if (reader != null) {
+      if (AU.isAB(reader) || reader instanceof BufferedInputStream) {
+        // we allow an external program to submit a BufferedInputStream or byte[] 
+        // for any file type.
+        bytesOrStream = reader;
+        reader = null;
+      } else if (reader instanceof Reader
+          && !(reader instanceof BufferedReader)) {
+        reader = new BufferedReader((Reader) reader);
+      }
+    }
+    this.readerOrDocument = reader;
     this.htParams = htParams;
     this.isAppend = isAppend;
   }
@@ -80,10 +98,11 @@ public class FileReader {
     String errorMessage = null;
     Object t = null;
     if (fullPathNameIn.contains("#_DOCACHE_"))
-      reader = getChangeableReader(vwr, nameAsGivenIn, fullPathNameIn);
-    if (reader == null) {
-      t = fm.getUnzippedReaderOrStreamFromName(fullPathNameIn,
-          bytes, true, false, false, true, htParams);
+      readerOrDocument = getChangeableReader(vwr, nameAsGivenIn, fullPathNameIn);
+    if (readerOrDocument == null) {
+      // note that since bytes comes from reader, bytes will never be non-null here
+           t = vwr.fm.getUnzippedReaderOrStreamFromName(fullPathNameIn,
+          bytesOrStream, true, false, false, true, htParams);
       if (t == null || t instanceof String) {
         errorMessage = (t == null ? "error opening:" + nameAsGivenIn
             : (String) t);
@@ -93,7 +112,7 @@ public class FileReader {
         return;
       }
       if (t instanceof BufferedReader) {
-        reader = t;
+        readerOrDocument = t;
       } else if (t instanceof ZInputStream) {
         String name = fullPathNameIn;
         String[] subFileList = null;
@@ -105,8 +124,8 @@ public class FileReader {
         if (subFileList != null)
           htParams.put("subFileList", subFileList);
         InputStream zis = (InputStream) t;
-        String[] zipDirectory = fm.getZipDirectory(name, true, true);
-        atomSetCollection = t = fm.getJzu().getAtomSetCollectionOrBufferedReaderFromZip(vwr, zis, name, zipDirectory, htParams, 1, false);
+        String[] zipDirectory = vwr.fm.getZipDirectory(name, true, true);
+        atomSetCollection = t = vwr.fm.getJzu().getAtomSetCollectionOrBufferedReaderFromZip(vwr, zis, name, zipDirectory, htParams, 1, false);
         try {
           zis.close();
         } catch (Exception e) {
@@ -114,23 +133,20 @@ public class FileReader {
         }
       }
     }
-    if (t instanceof BufferedInputStream) {
-      GenericBinaryDocument bd = (GenericBinaryDocument) Interface
-          .getInterface("javajs.util.BinaryDocument", vwr, "file");
-      bd.setStream((BufferedInputStream) t, true);
-      reader = bd;
-    }
-    if (reader != null) {
+    if (t instanceof BufferedInputStream)
+      readerOrDocument = ((GenericBinaryDocument) Interface
+          .getInterface("javajs.util.BinaryDocument", vwr, "file")).setStream((BufferedInputStream) t, !htParams.containsKey("isLittleEndian"));
+    if (readerOrDocument != null) {
       atomSetCollection = vwr.getModelAdapter().getAtomSetCollectionReader(
-          fullPathNameIn, fileTypeIn, reader, htParams);
+          fullPathNameIn, fileTypeIn, readerOrDocument, htParams);
       if (!(atomSetCollection instanceof String))
         atomSetCollection = vwr.getModelAdapter().getAtomSetCollection(
             atomSetCollection);
       try {
-        if (reader instanceof BufferedReader)
-          ((BufferedReader) reader).close();
-        else if (reader instanceof GenericBinaryDocument)
-          ((GenericBinaryDocument) reader).close();
+        if (readerOrDocument instanceof BufferedReader)
+          ((BufferedReader) readerOrDocument).close();
+        else if (readerOrDocument instanceof GenericBinaryDocument)
+          ((GenericBinaryDocument) readerOrDocument).close();
       } catch (IOException e) {
         // ignore
       }
@@ -142,7 +158,7 @@ public class FileReader {
     if (!isAppend && !vwr.displayLoadErrors)
       vwr.zap(false, true, false);
 
-    fm.setFileInfo(new String[] { fullPathNameIn, fileNameIn, nameAsGivenIn });
+    vwr.fm.setFileInfo(new String[] { fullPathNameIn, fileNameIn, nameAsGivenIn });
   }
   
   final static BufferedReader getChangeableReader(Viewer vwr, 

@@ -22,7 +22,8 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.adapter.readers.quantum;
+package org.jmol.adapter.readers.spartan;
+
 
 /*
  * Wavefunction Odyssey reader -- old style -- just the INPUT section

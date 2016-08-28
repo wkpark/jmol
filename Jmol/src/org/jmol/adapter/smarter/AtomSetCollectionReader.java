@@ -227,11 +227,11 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
 
   public int baseAtomIndex;
 
-  protected void setup(String fullPath, Map<String, Object> htParams, Object reader) {
-    setupASCR(fullPath, htParams, reader);
+  protected void setup(String fullPath, Map<String, Object> htParams, Object readerOrDocument) {
+    setupASCR(fullPath, htParams, readerOrDocument);
   }
 
-  protected void setupASCR(String fullPath, Map<String, Object> htParams, Object reader) {
+  protected void setupASCR(String fullPath, Map<String, Object> htParams, Object readerOrDocument) {
     if (fullPath == null)
       return;
     debugging = Logger.debugging;
@@ -239,10 +239,10 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
     filePath = "" + htParams.get("fullPathName");
     int i = filePath.lastIndexOf('/');
     fileName = filePath.substring(i + 1);
-    if (reader instanceof BufferedReader)
-      this.reader = (BufferedReader) reader;
-    else if (reader instanceof GenericBinaryDocument)
-      binaryDoc = (GenericBinaryDocument) reader;
+    if (readerOrDocument instanceof BufferedReader)
+      this.reader = (BufferedReader) readerOrDocument;
+    else if (readerOrDocument instanceof GenericBinaryDocument)
+      binaryDoc = (GenericBinaryDocument) readerOrDocument;
   }
 
   Object readData() throws Exception {

@@ -21,7 +21,7 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.jmol.io;
+package org.jmol.adapter.readers.spartan;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -46,60 +46,31 @@ import org.jmol.viewer.FileManager;
 /**
  * A class to isolate Spartan file reading methods from the rest of Jmol.
  * 
+ * Two public methods: getFileList and getData
+ * 
  */
-public class JmolBinary {
+public class SpartanUtil {
 
   public FileManager fm;
 
-  public JmolBinary() {
+  public SpartanUtil() {
     // for reflection
   }
   
-  public JmolBinary set(FileManager fm) {
+  public SpartanUtil set(FileManager fm) {
     this.fm = fm;
     return this;
   }
  
-  
-  /**
-   * called by SmarterJmolAdapter via JmolUtil to 
-   * open a Spartan directory and get all the needed data as a string.
-   * 
-   * @param is
-   * @param zipDirectory
-   * @return String data for processing
-   */
-  public SB getSpartanData(InputStream is, String[] zipDirectory) {
-    SB data = new SB();
-    data.append("Zip File Directory: ").append("\n")
-        .append(Escape.eAS(zipDirectory, true)).append("\n");
-    Map<String, String> fileData = new Hashtable<String, String>();
-    fm.vwr.getJzt().getAllZipData(is, new String[] {}, "", "Molecule", "__MACOSX", fileData);
-    String prefix = "|";
-    String outputData = fileData.get(prefix + "output");
-    if (outputData == null)
-      outputData = fileData.get((prefix = "|" + zipDirectory[1]) + "output");
-    data.append(outputData);
-    String[] files = getSpartanFileList(prefix, getSpartanDirs(outputData));
-    for (int i = 2; i < files.length; i++) {
-      String name = files[i];
-      if (fileData.containsKey(name))
-        data.append(fileData.get(name));
-      else
-        data.append(name + "\n");
-    }
-    return data;
-  }
-
   /**
    * get a complete critical file list for a spartan file Mac directory based on
    * file extension ".spardir.zip" or ".spardir"
    * 
    * @param name
    * @param isTypeCheckOnly
-   * @return critical files list or buffered reader
+   * @return critical files list if just checking type or a buffered reader for a String containing all data
    */
-  public Object getSpartanFileList(String name, boolean isTypeCheckOnly) {
+  public Object getFileList(String name, boolean isTypeCheckOnly) {
     int pt = name.lastIndexOf(".spardir");
     String[] info = null;
     // check for zipped up spardir -- we'll automatically take first file there
@@ -159,6 +130,37 @@ public class JmolBinary {
       fm.spardirCache = new Hashtable<String, byte[]>();
     fm.spardirCache.put(name00.replace('\\', '/'), s.getBytes());
     return Rdr.getBR(s);
+  }
+
+  
+  /**
+   * called by SmarterJmolAdapter via JmolUtil to 
+   * open a Spartan directory and get all the needed data as a string.
+   * 
+   * @param is
+   * @param zipDirectory
+   * @return String data for processing
+   */
+  public SB getData(InputStream is, String[] zipDirectory) {
+    SB data = new SB();
+    data.append("Zip File Directory: ").append("\n")
+        .append(Escape.eAS(zipDirectory, true)).append("\n");
+    Map<String, String> fileData = new Hashtable<String, String>();
+    fm.vwr.getJzt().getAllZipData(is, new String[] {}, "", "Molecule", "__MACOSX", fileData);
+    String prefix = "|";
+    String outputData = fileData.get(prefix + "output");
+    if (outputData == null)
+      outputData = fileData.get((prefix = "|" + zipDirectory[1]) + "output");
+    data.append(outputData);
+    String[] files = getSpartanFileList(prefix, getSpartanDirs(outputData));
+    for (int i = 2; i < files.length; i++) {
+      String name = files[i];
+      if (fileData.containsKey(name))
+        data.append(fileData.get(name));
+      else
+        data.append(name + "\n");
+    }
+    return data;
   }
 
   /**

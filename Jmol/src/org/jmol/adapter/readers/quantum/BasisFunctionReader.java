@@ -41,12 +41,12 @@ import java.util.Map;
  * 
  * @author hansonr <hansonr@stolaf.edu>
  */
-abstract class BasisFunctionReader extends AtomSetCollectionReader {
+public abstract class BasisFunctionReader extends AtomSetCollectionReader {
 
   public Lst<int[]> shells;
 
-  protected Map<String, Object> moData = new Hashtable<String, Object>();
-  protected Lst<Map<String, Object>> orbitals = new  Lst<Map<String, Object>>();
+  public Map<String, Object> moData = new Hashtable<String, Object>();
+  public Lst<Map<String, Object>> orbitals = new  Lst<Map<String, Object>>();
   protected int nOrbitals = 0;
   protected boolean ignoreMOs = false;
   protected String alphaBeta = "";
@@ -95,7 +95,7 @@ abstract class BasisFunctionReader extends AtomSetCollectionReader {
     return isOK;
   }
 
-  protected void setMO(Map<String, Object> mo) {
+  public void setMO(Map<String, Object> mo) {
     if (dfCoefMaps != null)
       mo.put("dfCoefMaps", dfCoefMaps);
     orbitals.addLast(mo);

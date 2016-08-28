@@ -26,6 +26,7 @@ package org.jmol.adapter.smarter;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 
 import javajs.api.GenericBinaryDocument;
@@ -69,6 +70,8 @@ public class SmarterJmolAdapter extends JmolAdapter {
       return ((AtomSetCollection)ascOrReader).fileTypeName;
     if (ascOrReader instanceof BufferedReader)
       return Resolver.getFileType((BufferedReader)ascOrReader);
+    if (ascOrReader instanceof InputStream)
+      return Resolver.getBinaryType((InputStream) ascOrReader);
     return null;
   }
 
@@ -117,11 +120,11 @@ public class SmarterJmolAdapter extends JmolAdapter {
 
   @Override
   public Object getAtomSetCollectionFromReader(String fname,
-                                            Object reader, Map<String, Object> htParams) throws Exception {
-    Object ret = Resolver.getAtomCollectionReader(fname, null, reader,
+                                            Object readerOrDocument, Map<String, Object> htParams) throws Exception {
+    Object ret = Resolver.getAtomCollectionReader(fname, null, readerOrDocument,
         htParams, -1);
     if (ret instanceof AtomSetCollectionReader) {
-      ((AtomSetCollectionReader) ret).setup(fname, htParams, reader);
+      ((AtomSetCollectionReader) ret).setup(fname, htParams, readerOrDocument);
       return ((AtomSetCollectionReader) ret).readData();
     }
     return "" + ret;    

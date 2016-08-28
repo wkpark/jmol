@@ -44,6 +44,7 @@ import javajs.api.GenericZipTools;
 import javajs.api.PlatformViewer;
 import javajs.awt.Dimension;
 import javajs.awt.Font;
+import javajs.util.AU;
 import javajs.util.CU;
 import javajs.util.DF;
 import javajs.util.JSJSONParser;
@@ -1455,7 +1456,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     return fm.getBufferedInputStream(fullPathName);
   }
 
-  private Map<String, Object> setLoadParameters(Map<String, Object> htParams,
+  public Map<String, Object> setLoadParameters(Map<String, Object> htParams,
                                                 boolean isAppend) {
     if (htParams == null)
       htParams = new Hashtable<String, Object>();
@@ -1569,12 +1570,12 @@ public class Viewer extends JmolViewer implements AtomDataServer,
    * Opens the file, given an already-created reader.
    * 
    * @param fullPathName
-   * @param fileName
-   * @param reader
+   * @param fileName name without path or can just be null
+   * @param reader could be Reader, BufferedInputStream, or byte[]
    * @return null or error message
    */
   @Override
-  public String openReader(String fullPathName, String fileName, Reader reader) {
+  public String openReader(String fullPathName, String fileName, Object reader) {
     zap(true, true, false);
     return loadModelFromFileRepaint(fullPathName, fileName, null, reader);
   }
@@ -1619,11 +1620,13 @@ public class Viewer extends JmolViewer implements AtomDataServer,
    * ModelLoader.
    * 
    * @param fullPathName
-   *        TODO
+   *        may be null; used only when reader != null
    * @param fileName
+   *        must not be null
    * @param fileNames
+   *        when present, reader is ignored
    * @param reader
-   *        TODO
+   *        may be a Reader, BufferedReader, byte[], or BufferedInputStream
    * @param isAppend
    * @param htParams
    * @param loadScript
@@ -1644,6 +1647,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     Object atomSetCollection;
     String[] saveInfo = fm.getFileInfo();
     
+    // testing only reader = fm.getFileAsBytes(fileName,  null);
     if (fileNames != null) {
 
       // 1) a set of file names
@@ -1684,18 +1688,21 @@ public class Viewer extends JmolViewer implements AtomDataServer,
 
       atomSetCollection = openFileFull(fileName, isAppend, htParams, loadScript);
 
-    } else if (reader instanceof Reader || reader instanceof BufferedInputStream) {
+    } else if (reader instanceof Reader || reader instanceof BufferedInputStream
+        || AU.isAB(reader)
+        ) {
 
-      // 3) a file reader (not used by Jmol) 
+      // 3) a file reader, BufferedInputStream, or byte[] (not used by Jmol) 
 
       atomSetCollection = fm.createAtomSetCollectionFromReader(fullPathName,
-          fileName, reader, htParams);
+          fileName, reader, setLoadParameters(htParams, isAppend));
 
     } else {
 
       // 4) a DOM reader (could be used by Jmol) 
 
-      atomSetCollection = fm.createAtomSetCollectionFromDOM(reader, htParams);
+      atomSetCollection = fm.createAtomSetCollectionFromDOM(reader, setLoadParameters(htParams, isAppend));
+
     }
 
     // OK, the file has been read and is now closed.

@@ -24,7 +24,9 @@
 
 package org.jmol.adapter.smarter;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -49,11 +51,12 @@ public class Resolver {
     "molxyz.", ";Mol3D;Mol;Xyz;",
     "more.", ";BinaryDcd;Gromacs;Jcampdx;MdCrd;MdTop;Mol2;TlsDataOnly;",
     "quantum.", ";Adf;Csf;Dgrid;GamessUK;GamessUS;Gaussian;GaussianFchk;GaussianWfn;Jaguar;" +
-                 "Molden;MopacGraphf;GenNBO;NWChem;Odyssey;Psi;Qchem;Spartan;SpartanSmol;" +
+                 "Molden;MopacGraphf;GenNBO;NWChem;Psi;Qchem;" +
                  "WebMO;MO;", // MO is for XmlMolpro 
     "pdb.", ";Pdb;Pqr;P2n;JmolData;",
     "pymol.", ";PyMOL;",
-    "simple.", ";Alchemy;Ampac;Cube;FoldingXyz;GhemicalMM;HyperChem;Jme;JSON;Mopac;MopacArchive;Tinker;Input;", 
+    "simple.", ";Alchemy;Ampac;Cube;FoldingXyz;GhemicalMM;HyperChem;Jme;JSON;Mopac;MopacArchive;Tinker;Input;",
+    "spartan.", ";Spartan;SpartanSmol;Odyssey;",
     "xtal.", ";Abinit;Aims;Bilbao;Castep;Cgd;Crystal;Dmol;Espresso;Gulp;Jana;Magres;Shelx;Siesta;VaspOutcar;" +
              "VaspPoscar;Wien2k;Xcrysden;",
     "xml.",  ";XmlArgus;XmlCml;XmlChem3d;XmlMolpro;XmlOdyssey;XmlXsd;XmlVasp;XmlQE;",
@@ -94,14 +97,14 @@ public class Resolver {
    * 
    * @param fullName
    * @param type
-   * @param bufferedReader
+   * @param readerOrDocument
    * @param htParams
    * @param ptFile
    * @return an AtomSetCollection or a String error
    * @throws Exception
    */
   static Object getAtomCollectionReader(String fullName, String type,
-                                        Object bufferedReader,
+                                        Object readerOrDocument,
                                         Map<String, Object> htParams, int ptFile)
       throws Exception {
     String readerName;
@@ -121,7 +124,7 @@ public class Resolver {
       else
         Logger.info("The Resolver assumes " + readerName);
     } else {
-      readerName = determineAtomSetCollectionReader(bufferedReader, true);
+      readerName = determineAtomSetCollectionReader(readerOrDocument, true);
       if (readerName.charAt(0) == '\n') {
         type = (String) htParams.get("defaultType");
         if (type != null) {
@@ -140,7 +143,7 @@ public class Resolver {
         Logger.info("The Resolver thinks " + readerName);
     }
     if (errMsg != null) {
-      SmarterJmolAdapter.close(bufferedReader);
+      SmarterJmolAdapter.close(readerOrDocument);
       return errMsg;
     }
     htParams.put("ptFile", Integer.valueOf(ptFile));
@@ -234,14 +237,19 @@ public class Resolver {
 
     // We must do this in a very specific order. DON'T MESS WITH THIS!
 
-    
+    String readerName;
+
     if (readerOrDocument instanceof GenericBinaryDocument) {
       GenericBinaryDocument doc = (GenericBinaryDocument) readerOrDocument;
-      byte[] magic4 = Rdr.getMagic(doc.getInputStream(), 4);
-      return (Rdr.isPickleB(magic4) ? "PyMOL" : Rdr.isMessagePackB(magic4) ? "MMTF" : "binary file type not recognized");
+      readerName = getBinaryType(doc.getInputStream());
+      return (readerName == null ? "binary file type not recognized" : readerName);
     }
-
-    String readerName;
+    if (readerOrDocument instanceof InputStream) {
+      readerName = getBinaryType((InputStream) readerOrDocument);
+      if (readerName != null)
+        return readerName;
+      readerOrDocument = Rdr.getBufferedReader(new BufferedInputStream((InputStream) readerOrDocument), null);
+    }
 
     LimitedLineReader llr = new LimitedLineReader(
         (BufferedReader) readerOrDocument, 16384);
@@ -258,7 +266,7 @@ public class Resolver {
       return "spt"; // presume embedded script --- allows dragging into Jmol
     if (leader.indexOf("\"num_pairs\"") >= 0)
       return "dssr";
-    
+
     // Test 2. check starting 64 bytes of file
 
     if ((readerName = checkFileStart(leader)) != null) {
@@ -306,6 +314,10 @@ public class Resolver {
   ////////////////////////////////////////////////////////////////
   // Test 2. check to see if first few bytes (trimmed) start with any of these strings
   ////////////////////////////////////////////////////////////////
+
+  public static String getBinaryType(InputStream inputStream) {
+    return (Rdr.isPickleS(inputStream) ? "PyMOL" : Rdr.isMessagePackS(inputStream) ? "MMTF" : null);
+  }
 
   private static String checkFileStart(String leader) {
     for (int i = 0; i < fileStartsWithRecords.length; ++i) {

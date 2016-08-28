@@ -35,7 +35,6 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import javajs.api.BytePoster;
-import javajs.api.GenericBinaryDocument;
 import javajs.api.GenericFileInterface;
 import javajs.util.AU;
 import javajs.util.BArray;
@@ -49,11 +48,11 @@ import javajs.util.PT;
 import javajs.util.Rdr;
 import javajs.util.SB;
 
+import org.jmol.adapter.readers.spartan.SpartanUtil;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolDomReaderInterface;
 import org.jmol.api.JmolFilesReaderInterface;
 import org.jmol.io.FileReader;
-import org.jmol.io.JmolBinary;
 import org.jmol.io.JmolUtil;
 import org.jmol.script.SV;
 import org.jmol.script.T;
@@ -73,10 +72,14 @@ public class FileManager implements BytePoster {
     clear();
   }
 
-  private JmolBinary jmb;
+  private SpartanUtil spartanDoc;
   
-  public JmolBinary getJmb() {
-    return (jmb == null ? jmb = ((JmolBinary) Interface.getInterface("org.jmol.io.JmolBinary", vwr, "fm getJmb()")).set(this) : jmb);  
+  /**
+   * An isolated class to retrieve Spartan file data from compound documents, zip files, and directories
+   * @return a SpartanUtil
+   */
+  public SpartanUtil spartanUtil() {
+    return (spartanDoc == null ? spartanDoc = ((SpartanUtil) Interface.getInterface("org.jmol.adapter.readers.spartan.SpartanUtil", vwr, "fm getSpartanUtil()")).set(this) : spartanDoc);  
   }
   
   JmolUtil jzu;
@@ -221,7 +224,7 @@ public class FileManager implements BytePoster {
         + FileManager.fixDOSName(fullPathName));
     if (vwr.getBoolean(T.messagestylechime) && vwr.getBoolean(T.debugscript))
       vwr.getChimeMessenger().update(fullPathName);
-    FileReader fileReader = new FileReader(this, vwr, fileName, fullPathName, nameAsGiven,
+    FileReader fileReader = new FileReader(vwr, fileName, fullPathName, nameAsGiven,
         fileType, null, htParams, isAppend);
     fileReader.run();
     return fileReader.getAtomSetCollection();
@@ -263,7 +266,7 @@ public class FileManager implements BytePoster {
     setLoadState(htParams);
     boolean isAddH = (strModel.indexOf(JC.ADD_HYDROGEN_TITLE) >= 0);
     String[] fnames = (isAddH ? getFileInfo() : null);
-    FileReader fileReader = new FileReader(this, vwr, "string", "string", "string", null,
+    FileReader fileReader = new FileReader(vwr, "string", null, null, null,
         Rdr.getBR(strModel), htParams, isAppend);
     fileReader.run();
     if (fnames != null)
@@ -364,21 +367,14 @@ public class FileManager implements BytePoster {
    * 
    * @param fullPathName
    * @param name
-   * @param reader could be a BufferedInputStream
+   * @param reader could be a Reader, or a BufferedInputStream or byte[]
    * @param htParams 
    * @return fileData
    */
   Object createAtomSetCollectionFromReader(String fullPathName, String name,
                                            Object reader,
                                            Map<String, Object> htParams) {
-    if (reader instanceof BufferedInputStream) {
-      boolean isLittleEndian = htParams.containsKey("isLittleEndian");
-      GenericBinaryDocument bd = (GenericBinaryDocument) Interface
-          .getInterface("javajs.util.BinaryDocument", vwr, "file");
-      bd.setStream((BufferedInputStream) reader, !isLittleEndian);
-      reader = bd;
-    }
-    FileReader fileReader = new FileReader(this, vwr, name, fullPathName, name, null,
+    FileReader fileReader = new FileReader(vwr, name, fullPathName, null, null,
         reader, htParams, false);
     fileReader.run();
     return fileReader.getAtomSetCollection();
@@ -611,8 +607,8 @@ public class FileManager implements BytePoster {
   /**
    * 
    * @param name
-   * @param bytes
-   *        cached bytes
+   * @param bytesOrStream
+   *        cached bytes or a BufferedInputStream
    * @param allowZipStream
    *        if the file is a zip file, allow a return that is a ZipInputStream
    * @param forceInputStream
@@ -621,36 +617,45 @@ public class FileManager implements BytePoster {
    * @param isTypeCheckOnly
    *        when possibly reading a spartan file for content (doSpecialLoad ==
    *        true), just return the compound document's file list
-   * @param doSpecialLoad check for a Spartan file
+   * @param doSpecialLoad
+   *        check for a Spartan file
    * @param htParams
-   * @return String if error or String[] if a type check or BufferedReader or BufferedInputStream
+   * @return String if error or String[] if a type check or BufferedReader or
+   *         BufferedInputStream
    */
-  public Object getUnzippedReaderOrStreamFromName(String name, byte[] bytes,
+  @SuppressWarnings("resource")
+  public Object getUnzippedReaderOrStreamFromName(String name,
+                                                  Object bytesOrStream,
                                                   boolean allowZipStream,
                                                   boolean forceInputStream,
                                                   boolean isTypeCheckOnly,
                                                   boolean doSpecialLoad,
                                                   Map<String, Object> htParams) {
-    if (doSpecialLoad && bytes == null) {
-      Object o = checkOpenSpartanFile(name, isTypeCheckOnly);
+    if (doSpecialLoad && bytesOrStream == null) {
+      Object o = (name.endsWith(".spt") ? new String[] { null, null, null } // DO NOT actually load any file
+          : name.indexOf(".spardir") < 0 ? null 
+          : spartanUtil().getFileList(name, isTypeCheckOnly));
       if (o != null)
         return o;
     }
     name = JC.fixProtocol(name);
-    if (bytes == null && (bytes = getCachedPngjBytes(name)) != null && htParams != null)
-        htParams.put("sourcePNGJ", Boolean.TRUE);
+    if (bytesOrStream == null
+        && (bytesOrStream = getCachedPngjBytes(name)) != null
+        && htParams != null)
+      htParams.put("sourcePNGJ", Boolean.TRUE);
     name = name.replace("#_DOCACHE_", "");
     String fullName = name;
     String[] subFileList = null;
     if (name.indexOf("|") >= 0) {
       subFileList = PT.split(name.replace('\\', '/'), "|");
-      if (bytes == null)
+      if (bytesOrStream == null)
         Logger.info("FileManager opening zip " + name);
       name = subFileList[0];
     }
-    Object t = (bytes == null ? getBufferedInputStreamOrErrorMessageFromName(
-        name, fullName, true, false, null, !forceInputStream, true) : Rdr
-        .getBIS(bytes));
+    Object t = (bytesOrStream == null ? getBufferedInputStreamOrErrorMessageFromName(
+        name, fullName, true, false, null, !forceInputStream, true) : AU
+        .isAB(bytesOrStream) ? Rdr.getBIS((byte[]) bytesOrStream)
+        : (BufferedInputStream) bytesOrStream);
     try {
       if (t instanceof String || t instanceof BufferedReader)
         return t;
@@ -662,12 +667,13 @@ public class FileManager implements BytePoster {
         return bis;
       if (Rdr.isCompoundDocumentS(bis)) {
         // very specialized reader; assuming we have a Spartan document here
-        CompoundDocument doc = (CompoundDocument) Interface
-            .getInterface("javajs.util.CompoundDocument", vwr, "file");
+        CompoundDocument doc = (CompoundDocument) Interface.getInterface(
+            "javajs.util.CompoundDocument", vwr, "file");
         doc.setDocStream(vwr.getJzt(), bis);
         String s = doc.getAllDataFiles("Molecule", "Input").toString();
         return (forceInputStream ? Rdr.getBIS(s.getBytes()) : Rdr.getBR(s));
       }
+      // check for PyMOL or MMTF
       if (Rdr.isPickleS(bis) || Rdr.isMessagePackS(bis))
         return bis;
       bis = Rdr.getPngZipStream(bis, true);
@@ -684,20 +690,6 @@ public class FileManager implements BytePoster {
     }
   }
 
-  /**
-   * Check to see if we need to open just a subset of a spartan file.
-   *  
-   * @param name
-   * @param isTypeCheckOnly just return a String[] containing critical information
-   * @return String[] or BufferedReader
-   */
-  private Object checkOpenSpartanFile(String name, boolean isTypeCheckOnly) {
-    // check for .spt file type -- Jmol script
-    return (
-        name.endsWith(".spt") ?  new String[] { null, null, null } // DO NOT actually load any file
-      : name.indexOf(".spardir") < 0 ? null 
-      : getJmb().getSpartanFileList(name, isTypeCheckOnly));
-  }
 
   /**
    * 

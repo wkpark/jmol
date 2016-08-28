@@ -15,7 +15,6 @@ import java.util.Hashtable;
 import java.util.zip.GZIPInputStream;
 
 import javajs.util.BinaryDocument;
-import javajs.util.CompoundDocument;
 import javajs.util.PT;
 import javajs.util.Rdr;
 import junit.framework.Test;
@@ -87,7 +86,8 @@ public class TestSmarterJmolAdapter extends TestSuite {
     result.addDirectory("ghemical", "gpr", "GhemicalMM");
     result.addDirectory("gromacs", "gro", "Gromacs");
     result.addDirectory("gulp", "gout;got", "Gulp");
-    result.addDirectory("hin", "hin", "HyperChem");
+    result.addDirectory("hyperchem", "hin", "HyperChem");
+    result.addDirectory("hyperchem", "hpr", "HyperChem");
     result.addDirectory("jaguar", "out", "Jaguar");
     result.addDirectory("modifiedGroups", "cif", "MMCif");
     result.addDirectory("modifiedGroups", "pdb", "Pdb");

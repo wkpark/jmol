@@ -237,12 +237,13 @@ public class SmarterJmolAdapter extends JmolAdapter {
 
     for (int i = 0; i < size; i++) {
       try {
-        if (r != null)
-          htParams.put("vwr", vwr);
+        htParams.put("vwr", vwr);
         if (reader == null)
           reader = filesReader.getBufferedReaderOrBinaryDocument(i, false);
         if (!(reader instanceof BufferedReader || reader instanceof GenericBinaryDocument))
           return reader;
+        String fullPathName = names[i];
+        htParams.put("fullPathName", fullPathName);
         Object ret = Resolver.getAtomCollectionReader(names[i],
             (types == null ? null : types[i]), reader, htParams, i);
         if (!(ret instanceof AtomSetCollectionReader))

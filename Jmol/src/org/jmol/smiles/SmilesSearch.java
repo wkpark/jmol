@@ -1666,7 +1666,8 @@ public class SmilesSearch extends JmolMolecule {
   void createTopoMap(BS bsAro) throws InvalidSmilesException {
     boolean isForMF = (bsAro == null);
     int nAtomsMissing = getMissingHydrogenCount();
-    SmilesAtom[] atoms = new SmilesAtom[ac + nAtomsMissing];
+    int totalAtoms = ac + nAtomsMissing;
+    SmilesAtom[] atoms = new SmilesAtom[totalAtoms];
     targetAtoms = atoms;
     for (int i = 0, ptAtom = 0; i < ac; i++, ptAtom++) {
       SmilesAtom sAtom = patternAtoms[i];
@@ -1770,7 +1771,7 @@ public class SmilesSearch extends JmolMolecule {
       }
     }
     // fix H atoms
-    for (int i = 0; i < ac; i++) {
+    for (int i = 0; i < totalAtoms; i++) {
       SmilesAtom a = atoms[i];
       SmilesBond[] bonds = a.bonds;
       if (bonds.length < 2 || bonds[0].isFromPreviousTo(a))
@@ -1780,6 +1781,7 @@ public class SmilesSearch extends JmolMolecule {
           SmilesBond b = bonds[k];
           bonds[k] = bonds[0];
           bonds[0] = b;
+          break;          
         }
     }
     if (!ignoreStereochemistry)

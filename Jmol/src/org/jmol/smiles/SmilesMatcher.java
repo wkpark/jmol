@@ -194,6 +194,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     InvalidSmilesException.clear();
     target = SmilesParser.cleanPattern(target);
     pattern = SmilesParser.cleanPattern(pattern);
+    // search flags will be set in findPriv
     SmilesSearch search = SmilesParser.newSearch(target, false, true); /// smiles chirality is fixed here
     int[][] array = (int[][]) findPriv(pattern, search, flags, MODE_MAP);
     for (int i = array.length; --i >= 0;) {
@@ -496,6 +497,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
         return search.atropKeys;
       case MODE_MAP:
         search.getMaps = true;
+        search.setFlags(flags); // important for COMPARE command - no stereochem
         Lst<int[]> vl = (Lst<int[]>) search.search();
         return vl.toArray(AU.newInt2(vl.size()));
       }

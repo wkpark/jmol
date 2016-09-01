@@ -4347,6 +4347,7 @@ public class CmdExt extends ScriptExt {
     case T.vanderwaals:
       VDW vdwType = null;
       if (slen > 2) {
+        len = slen;
         vdwType = VDW.getVdwType(paramAsStr(2));
         if (vdwType == null)
           invArg();

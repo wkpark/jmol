@@ -167,7 +167,7 @@ class SpaceGroup {
    */
   private static SpaceGroup createSGFromList(String name, Lst<?> data) {
     // try unconventional Hall symbol
-    SpaceGroup sg = new SpaceGroup(-1, "0;--;--;--", true);
+    SpaceGroup sg = new SpaceGroup(-1, "0;0;--;--;--", true);
     sg.doNormalize = false;
     sg.name = name;
     int n = data.size();

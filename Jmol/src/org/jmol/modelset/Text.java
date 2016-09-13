@@ -71,18 +71,17 @@ public class Text {
 
   private Viewer vwr;
 
-  /**
-   * @param vwr 
-   */
-  private Text(Viewer vwr) {
-    this.vwr = vwr;
+  public Text() {
+    // for reflection
+    // requires .newLabel or .newEcho
     boxXY =  new float[5];
   }
 
   static public Text newLabel(Viewer vwr, Font font, String text,
                               short colix, short bgcolix, int align, float scalePixelsPerMicron) {
     // for labels and hover
-    Text t = new Text(vwr);
+    Text t = new Text();
+    t.vwr = vwr;
     t.set(font, colix, align, true, scalePixelsPerMicron);
     t.setText(text);
     t.bgcolix = bgcolix;
@@ -92,7 +91,8 @@ public class Text {
   public static Text newEcho(Viewer vwr, Font font, String target,
                       short colix, int valign, int align,
                       float scalePixelsPerMicron) {
-    Text t = new Text(vwr);
+    Text t = new Text();
+    t.vwr = vwr;
     t.isEcho = true;
     t.set(font, colix, align, false, scalePixelsPerMicron);
     t.target = target;
@@ -220,7 +220,7 @@ public class Text {
     float dy = offsetY * imageFontScaling;
     xAdj = (fontScale >= 2 ? 8 : 4);
     yAdj = ascent - lineHeight + xAdj;
-    if (isLabelOrHover) {
+    if (isLabelOrHover) { // could be measurement
       boxXY[0] = movableX;
       boxXY[1] = movableY;
       if (pymolOffset != null) {
@@ -256,13 +256,13 @@ public class Text {
         int dh = ascent - descent;
         dy = -getPymolXYOffset(-pymolOffset[2], dh, pixelsPerAngstrom)
             - (textHeight + dh) / 2;
-        
+
         //dy: added -lineHeight (for one line)
-        if (pymolOffset[0] == 1) { 
+        if (pymolOffset[0] == 1) {
           // from PyMOL - back to original plan
-         dy -= descent;
+          dy -= descent;
         }
-        
+
         // xAdj and yAdj are the adjustments for the box itself relative to the text 
         xAdj = (fontScale >= 2 ? 8 : 4);
         yAdj = -descent;
@@ -273,6 +273,18 @@ public class Text {
       } else {
         boxYoff2 = 0;
       }
+      switch (align) {
+      case JC.TEXT_ALIGN_CENTER:
+        dy = 0;
+        dx = 0;
+        break;
+      case JC.TEXT_ALIGN_RIGHT:
+        boxXY[0] -= boxWidth;
+        //$FALL-THROUGH$
+      case JC.TEXT_ALIGN_LEFT:
+        dy = 0;
+      }
+      System.out.println(dx + " Text " + dy + " " + boxWidth + " " + boxHeight);
       setBoxXY(boxWidth, boxHeight, dx, dy, boxXY, isAbsolute);
     } else {
       setPos(fontScale);

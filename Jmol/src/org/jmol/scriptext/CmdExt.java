@@ -1412,6 +1412,7 @@ public class CmdExt extends ScriptExt {
     TickInfo tickInfo = null;
     int nBitSets = 0;
     int mad = 0;
+    String alignment = null;
     for (int i = 1; i < slen; ++i) {
       switch (getToken(i).tok) {
       case T.id:
@@ -1431,6 +1432,9 @@ public class CmdExt extends ScriptExt {
           invArg();
         i++;
         isNotConnected = true;
+        break;
+      case T.align:
+        alignment =  paramAsStr(++i).toLowerCase();
         break;
       case T.connected:
       case T.allconnected:
@@ -1602,11 +1606,13 @@ public class CmdExt extends ScriptExt {
       if (value != null && strFormat != null && tokAction == T.opToggle)
         tokAction = T.define;
       Text text = null;
-      if (font != null)
+      if (font != null || alignment != null || strFormat != null && strFormat.indexOf('\n') >= 0)
         text = ((Text) Interface.getInterface("org.jmol.modelset.Text", vwr, "script")).newLabel(
             vwr, font, "", colix, (short) 0, 0, 0);
-      if (text != null)
+      if (text != null) {
         text.pymolOffset = offset;
+        text.setAlignmentLCR(alignment);
+      } 
       setShapeProperty(
           JC.SHAPE_MEASURES,
           "measure",

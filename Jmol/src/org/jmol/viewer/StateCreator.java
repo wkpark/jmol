@@ -962,7 +962,10 @@ public class StateCreator extends JmolStateCreator {
       if (m.colix != 0)
         sb.append(" color ").append(Escape.escapeColor(C.getArgb(m.colix)));
       if (m.text != null) {
-        sb.append(" font ").append(m.text.font.getInfo());
+        if (m.text.font != null)
+          sb.append(" font ").append(m.text.font.getInfo());
+        if (m.text.align != JC.TEXT_ALIGN_NONE)
+          sb.append(" align ").append(JC.getHorizAlignmentName(m.text.align));
         if (m.text.pymolOffset != null)
           sb.append(" offset ").append(Escape.eAF(m.text.pymolOffset));
       }

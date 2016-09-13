@@ -200,6 +200,8 @@ public class LabelsRenderer extends FontLineShapeRenderer {
       newText = true;
     }
     if (text.pymolOffset == null) {
+      if (text.font == null)
+        text.setFontFromFid(font3d.fid);
       text.setOffset(offset);
       if (textAlign != JC.TEXT_ALIGN_NONE)
         text.setAlignment(textAlign);

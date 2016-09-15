@@ -4545,8 +4545,7 @@ public class ScriptEval extends ScriptExpr {
     boolean isVariable = false;
     if (filenames == null) {
       if (filename.equals("string") && vwr.am.cmi >= 0) {
-        filename = PT.getQuotedStringAt(vwr.ms.am[vwr.am.cmi].loadScript.toString(), 0);
-        filename = ScriptCompiler.unescapeString(filename, 0, filename.length());
+        filename = vwr.getCurrentFileAsString(null);
         loadScript = new SB().append("load inline ");
         isInline = true;
       }

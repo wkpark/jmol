@@ -58,6 +58,7 @@ import org.jmol.c.STR;
 import org.jmol.c.VDW;
 import org.jmol.java.BS;
 import org.jmol.modelsetbio.BioModel;
+import org.jmol.script.ScriptCompiler;
 import org.jmol.script.T;
 import org.jmol.shape.Shape;
 import org.jmol.util.BSUtil;
@@ -3175,8 +3176,10 @@ public class ModelSet extends BondCollection {
         if ((data = am[modelIndex].loadScript).length() > 0)
           break;
     int pt = data.lastIndexOf("data \"");
-    if (pt < 0)
-      return null;
+    if (pt < 0) { // load inline ...
+      String s = PT.getQuotedStringAt(data.toString(), 0);
+      return ScriptCompiler.unescapeString(s, 0, s.length());
+    }
     pt = data.indexOf2("\"", pt + 7);
     int pt2 = data.lastIndexOf("end \"");
     if (pt2 < pt || pt < 0)

@@ -4244,50 +4244,59 @@ public class CmdExt extends ScriptExt {
           + filterLen);
       if (chk)
         return;
-      try {
-        if (tok != T.smiles) {
-          msg = vwr.ms.getModelDataBaseName(vwr.bsA());
-          // this does not work for NCI, because, for example, "$menthol" returns an enantiomer, but menthol/smiles uses nonstereo option
-          // but we don't want to be generating our own SMILES here, do we?
-          // what is the solution?
-          if (msg != null && (msg.startsWith("$") || msg.startsWith(":"))) {
-            msg = msg.substring(1);
-          } else {
-            msg = null;
-          }
-        } else if (eval.optParameterAsString(2).equalsIgnoreCase("true")) {
-          msg = vwr.getBioSmiles(null);
-          filter = null;
-        } else if (filter != null) {
-          msg = vwr.getSmilesOpt(null, -1, -1, JC.SMILES_TYPE_SMILES, filter
-              + "///");
-          filter = null;
-        }
-        if (msg == null)
-          msg = (tok == T.smiles ? vwr.getSmiles(null) : vwr
-              .getOpenSmiles(null));
-      } catch (Exception ex) {
-        msg = ex.getMessage();
+      String param2 = eval.optParameterAsString(2);
+      if (tok == T.chemical && "formula".equals(param2)) {
+        msg = (String) vwr.ms.getInfo(vwr.am.cmi, "formula");
+        // cif files will have formula already
+        if (msg != null)
+          msg = PT.rep(msg, " ", "");
       }
-      switch (tok) {
-      case T.smiles:
-        break;
-      case T.drawing:
-        if (msg.length() > 0) {
-          vwr.fm.loadImage(vwr.setLoadFormat("_" + msg, '2', false),
-              "\1" + msg, false);
-          return;
+      if (msg == null) {
+        try {
+          if (tok != T.smiles) {
+            msg = vwr.ms.getModelDataBaseName(vwr.bsA());
+            // this does not work for NCI, because, for example, "$menthol" returns an enantiomer, but menthol/smiles uses nonstereo option
+            // but we don't want to be generating our own SMILES here, do we?
+            // what is the solution?
+            if (msg != null && (msg.startsWith("$") || msg.startsWith(":"))) {
+              msg = msg.substring(1);
+            } else {
+              msg = null;
+            }
+          } else if (param2.equalsIgnoreCase("true")) {
+            msg = vwr.getBioSmiles(null);
+            filter = null;
+          } else if (filter != null) {
+            msg = vwr.getSmilesOpt(null, -1, -1, JC.SMILES_TYPE_SMILES, filter
+                + "///");
+            filter = null;
+          }
+          if (msg == null)
+            msg = (tok == T.smiles ? vwr.getSmiles(null) : vwr
+                .getOpenSmiles(null));
+        } catch (Exception ex) {
+          msg = ex.getMessage();
         }
-        msg = "Could not show drawing -- Either insufficient atoms are selected or the model is a PDB file.";
-        break;
-      case T.chemical:
-        len = 3;
-        if (msg.length() > 0) {
-          msg = vwr.getChemicalInfo(msg, getToken(2).value.toString());
-          if (msg.indexOf("FileNotFound") >= 0)
-            msg = "?";
-        } else {
-          msg = "Could not show name -- Either insufficient atoms are selected or the model is a PDB file.";
+        switch (tok) {
+        case T.smiles:
+          break;
+        case T.drawing:
+          if (msg.length() > 0) {
+            vwr.fm.loadImage(vwr.setLoadFormat("_" + msg, '2', false), "\1"
+                + msg, false);
+            return;
+          }
+          msg = "Could not show drawing -- Either insufficient atoms are selected or the model is a PDB file.";
+          break;
+        case T.chemical:
+          len = 3;
+          if (msg.length() > 0) {
+            msg = vwr.getChemicalInfo(msg, param2);
+            if (msg.indexOf("FileNotFound") >= 0)
+              msg = "?";
+          } else {
+            msg = "Could not show name -- Either insufficient atoms are selected or the model is a PDB file.";
+          }
         }
       }
       break;

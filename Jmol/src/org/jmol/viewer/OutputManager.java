@@ -934,6 +934,7 @@ abstract class OutputManager {
             .replaceAllCharacters(name, "/:?\"'=&", "_") : FileManager
             .stripPath(name));
         newName = PT.replaceAllCharacters(newName, "[]", "_");
+        newName = PT.rep(newName, "#_DOCACHE_", "");
         boolean isSparDir = (fm.spardirCache != null && fm.spardirCache
             .containsKey(name));
         if (isLocal && name.indexOf("|") < 0 && !isSparDir) {

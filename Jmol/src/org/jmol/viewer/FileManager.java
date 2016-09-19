@@ -882,7 +882,8 @@ public class FileManager implements BytePoster {
     }
     if (!vwr.isJS && image != null && bytes != null)
       nameOrError = ";base64," + Base64.getBase64(bytes).toString();
-    if (!vwr.isJS || isPopupImage && nameOrError == null)
+    if (!vwr.isJS || isPopupImage && nameOrError == null
+        || !isPopupImage && image != null)
       return vwr.loadImageData(image, nameOrError, echoName, null);
     return isAsynchronous;
     // JSmol will call that from awtjs2d.Platform.java asynchronously

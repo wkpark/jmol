@@ -497,7 +497,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
         return search.atropKeys;
       case MODE_MAP:
         search.getMaps = true;
-        search.setFlags(flags); // important for COMPARE command - no stereochem
+        search.setFlags(flags | search.flags); // important for COMPARE command - no stereochem
         Lst<int[]> vl = (Lst<int[]>) search.search();
         return vl.toArray(AU.newInt2(vl.size()));
       }

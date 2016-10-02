@@ -313,6 +313,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
                                              String commandOptions,
                                              JmolStatusListener statusListener,
                                              GenericPlatform implementedPlatform) {
+        
     Map<String, Object> info = new Hashtable<String, Object>();
     info.put("display", display);
     info.put("adapter", modelAdapter);
@@ -531,6 +532,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     ms = new ModelSet(this, null);
     initialize(true, false);
     fm = new FileManager(this);
+
     definedAtomSets = new Hashtable<String, Object>();
     setJmolStatusListener(statusListener);
     if (isApplet) {
@@ -9458,4 +9460,8 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     sm.playAudio(fileNameOrDataURI);
   }
 
+  
+
 }
+
+

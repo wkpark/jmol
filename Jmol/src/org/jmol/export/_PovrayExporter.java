@@ -64,7 +64,7 @@ public class _PovrayExporter extends __RayTracerExporter {
   }
 
   @Override
-  String finalizeOutput() {
+  protected String finalizeOutput() {
     finalizeOutput2();
     return getAuxiliaryFileData();
   }
@@ -339,7 +339,7 @@ public class _PovrayExporter extends __RayTracerExporter {
     fName = fName.substring(fName.lastIndexOf("\\") + 1);    
     return "; Created by: Jmol " + Viewer.getJmolVersion()
         + "\n; Creation date: " + getExportDate() 
-        + "\n; File created: "  + fileName + " (" + out.getByteCount() + " bytes)\n\n" 
+        + "\n; File created: "  + fileName + " (" + getByteCount() + " bytes)\n\n" 
         + (commandLineOptions != null ? commandLineOptions :
           "\n; Jmol state: (embedded in input file)" 
         + "\nInput_File_Name=" + fName 
@@ -417,7 +417,7 @@ public class _PovrayExporter extends __RayTracerExporter {
   protected void outputSurface(T3[] vertices, T3[] normals,
                                   short[] colixes, int[][] indices, 
                                   short[] polygonColixes,
-                                  int nVertices, int nPolygons, int nFaces, BS bsPolygons,
+                                  int nVertices, int nPolygons, int nTriangles, BS bsPolygons,
                                   int faceVertexMax, short colix,
                                   Lst<Short> colorList, Map<Short, Integer> htColixes, P3 offset) {
     if (polygonColixes != null) {
@@ -467,7 +467,7 @@ public class _PovrayExporter extends __RayTracerExporter {
         output("\n, texture{pigment{rgbt<" + color4(colorList.get(i).shortValue()) + finish);
       output("\n}\n");
     }
-    output("face_indices { " + nFaces);
+    output("face_indices { " + nTriangles);
     boolean isAll = (bsPolygons == null);
     int i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit(0));
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsPolygons.nextSetBit(i + 1))) {

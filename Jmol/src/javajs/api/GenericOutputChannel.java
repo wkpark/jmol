@@ -8,9 +8,15 @@ public interface GenericOutputChannel {
 
   void write(byte[] b, int off, int n);
 
+  void writeInt(int i);
+
   void reset();
 
   String closeChannel();
+
+  void writeLong(long b);
+
+  void writeShort(short i);
 
 
 }

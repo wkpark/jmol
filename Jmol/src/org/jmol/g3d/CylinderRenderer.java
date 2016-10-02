@@ -63,7 +63,7 @@ class CylinderRenderer {
   //private int evenCorrection;
   private int diameter;
   private byte endcaps;
-  private boolean tEndcapOpen;
+  private boolean endCapHidden;
   private int xEndcap, yEndcap, zEndcap;
   private int argbEndcap;
   private short colixEndcap;
@@ -123,7 +123,7 @@ class CylinderRenderer {
     interpolate(1, 2, xyzfRaster, xyztRaster);
 
     int[][] xyzf = xyzfRaster;
-    if (endcaps == GData.ENDCAPS_FLAT || endcaps == GData.ENDCAPS_OPENEND)
+    if (endcaps == GData.ENDCAPS_FLAT)
       renderFlatEndcap(true, false, xyzf);
     g.setZMargin(5);
     int width = g.width;
@@ -140,7 +140,7 @@ class CylinderRenderer {
       int x = xr[i];
       int y = yr[i];
       int z = zr[i];
-      if (tEndcapOpen && argbEndcap != 0) {
+      if (endCapHidden && argbEndcap != 0) {
         if (clipped) {
           g.plotPixelClippedArgb(argbEndcap, xEndcap + x, yEndcap + y, zEndcap - z
               - 1, width, zbuf, p);
@@ -241,7 +241,7 @@ class CylinderRenderer {
       int x = xr[i];
       int y = yr[i];
       int z = zr[i];
-      if (tEndcapOpen && argbEndcap != 0) {
+      if (endCapHidden && argbEndcap != 0) {
         if (clipped) {
           g.plotPixelClippedArgb(argbEndcap, xEndcap + x, yEndcap + y, zEndcap
               - z - 1, width, zbuf, p);
@@ -320,7 +320,7 @@ class CylinderRenderer {
     float[] zr = xyztRaster[2];
     int[] fr = xyzfRaster[3];
     int[] sA = shadesA;
-    boolean doOpen = (tEndcapOpen && argbEndcap != 0);
+    boolean doOpen = (endCapHidden && argbEndcap != 0);
     for (int i = rasterCount; --i >= 0;) {
       float x = xr[i];
       float y = yr[i];
@@ -544,8 +544,6 @@ class CylinderRenderer {
       yT = yA;
       zT = zA;
       if (isCylinder && dzB < 0) {
-        if (endcaps == GData.ENDCAPS_OPENEND)
-          return;
         xT += dxB;
         yT += dyB;
         zT += dzB;
@@ -623,7 +621,7 @@ class CylinderRenderer {
     tEvenDiameter = ((diameter & 1) == 0);
     radius = diameter / 2.0f;
     radius2 = radius * radius;
-    tEndcapOpen = false;
+    endCapHidden = false;
     float dzf = (isFloat ? dzBf : (float) dzB);
     if (endcaps == GData.ENDCAPS_SPHERICAL || dzf == 0)
       return;
@@ -649,7 +647,7 @@ class CylinderRenderer {
     if (endcapShadeIndex > Shader.SHADE_INDEX_NOISY_LIMIT)
       endcapShadeIndex = Shader.SHADE_INDEX_NOISY_LIMIT;
     argbEndcap = shadesEndcap[endcapShadeIndex];
-    tEndcapOpen = (endcaps == GData.ENDCAPS_OPEN);
+    endCapHidden = (endcaps == GData.ENDCAPS_HIDDEN);
   }
 
 }

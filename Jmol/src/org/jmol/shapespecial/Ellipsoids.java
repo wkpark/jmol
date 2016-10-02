@@ -84,7 +84,7 @@ public class Ellipsoids extends AtomShape {
         if (isNew)
           atomEllipsoids.put(t,
               e = Ellipsoid.getEllipsoidForAtomTensor(t, atoms[t.atomIndex1]));
-        if (e != null && (isNew || size != Integer.MAX_VALUE)) { // MAX_VALUE --> "create only"
+        if (e != null) {// && (isNew || size != Integer.MAX_VALUE)) { // MAX_VALUE --> "create only"
           e.setScale(size, true);
         }
       }

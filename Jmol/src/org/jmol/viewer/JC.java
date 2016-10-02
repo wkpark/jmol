@@ -246,7 +246,7 @@ public final class JC {
 
   //note: Eval.write() processing requires drivers to be first-letter-capitalized.
   //do not capitalize any other letter in the word. Separate by semicolon.
-  public final static String EXPORT_DRIVER_LIST = "Idtf;Maya;Povray;Vrml;X3d;Tachyon;Obj"; 
+  public final static String EXPORT_DRIVER_LIST = "Idtf;Maya;Povray;Vrml;X3d;Stl;Tachyon;Obj"; 
 
   public final static V3 center = V3.new3(0, 0, 0);
   public final static V3 axisX = V3.new3(1, 0, 0);

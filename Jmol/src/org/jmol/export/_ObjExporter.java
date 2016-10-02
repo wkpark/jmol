@@ -249,7 +249,7 @@ public class _ObjExporter extends __CartesianExporter {
    * @see org.jmol.export.__CartesianExporter#outputSphere(javax.vecmath.Point3f, float, short)
    */
   @Override
-  protected void outputSphere(T3 center, float radius, short colix, boolean checkRadius) {
+  protected void outputSphere(P3 center, float radius, short colix, boolean checkRadius) {
     // Note center is called ptAtom2 in the _CartesianExporter superclass
     // Note radius is called f in the _CartesianExporter superclass
     // Atom extends Point3fi extends Point3f, so this may be passed an Atom
@@ -463,8 +463,7 @@ public class _ObjExporter extends __CartesianExporter {
    * @see org.jmol.export.___Exporter#finalizeOutput()
    */
   @Override
-  // TODO should be protected in __Exporter
-  String finalizeOutput() {
+  protected String finalizeOutput() {
     debugPrint("finalizeOutput");
     String retVal = finalizeOutput2();
 

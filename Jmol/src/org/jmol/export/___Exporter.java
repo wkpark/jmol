@@ -135,6 +135,8 @@ public abstract class ___Exporter {
   // The following fields and methods are required for instantiation or provide
   // generally useful functionality:
 
+  protected boolean isBinary, solidOnly; // _STL
+  
   protected Viewer vwr;
   protected TransformManager tm;
   protected double privateKey;
@@ -232,6 +234,10 @@ public abstract class ___Exporter {
     out.append(data);
   }
 
+  protected int getByteCount() {
+    return out.getByteCount();
+  }
+
   protected void outputComment(String comment) {
     if (commentChar != null)
       output(commentChar + comment + "\n");
@@ -254,8 +260,8 @@ public abstract class ___Exporter {
   }
 
   protected void outputVertex(T3 pt, T3 offset) {
-    setTempVertex(pt, offset, tempP1);
-    output(tempP1);
+    setTempVertex(pt, offset, tempV1);
+    output(tempV1);
   }
 
   abstract protected void output(T3 pt);
@@ -291,7 +297,7 @@ public abstract class ___Exporter {
     // implementation-specific
   }
 
-  String finalizeOutput() {
+  protected String finalizeOutput() {
     return finalizeOutput2();
   }
   
@@ -464,7 +470,7 @@ public abstract class ___Exporter {
     int nVertices = meshSurface.vc;
     if (nVertices == 0)
       return;
-    int nFaces = 0;
+    int nTriangles = 0;
     int nPolygons = meshSurface.pc;
     BS bsPolygons = meshSurface.bsPolygons;
     int faceVertexMax = (meshSurface.haveQuads ? 4 : 3);
@@ -472,8 +478,8 @@ public abstract class ___Exporter {
     boolean isAll = (bsPolygons == null);
     int i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit(0));
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsPolygons.nextSetBit(i + 1)))
-      nFaces += (faceVertexMax == 4 && indices[i].length == 4 ? 2 : 1);
-    if (nFaces == 0)
+      nTriangles += (faceVertexMax == 4 && indices[i].length == 4 ? 2 : 1);
+    if (nTriangles == 0)
       return;
 
     T3[] vertices = meshSurface.getVertices();
@@ -494,7 +500,7 @@ public abstract class ___Exporter {
         colorList = getColorList(0, colixes, nVertices, null, htColixes);
     }
     outputSurface(vertices, normals, colixes, indices, polygonColixes,
-        nVertices, nPolygons, nFaces, bsPolygons, faceVertexMax, colix,
+        nVertices, nPolygons, nTriangles, bsPolygons, faceVertexMax, colix,
         colorList, htColixes, meshSurface.offset);
   }
 
@@ -508,7 +514,7 @@ public abstract class ___Exporter {
    * @param polygonColixes face-based colixes
    * @param nVertices      vertices[nVertices-1] is last vertex
    * @param nPolygons     indices[nPolygons - 1] is last polygon
-   * @param nFaces        number of triangular faces required
+   * @param nTriangles        number of triangular faces required
    * @param bsPolygons    number of polygons (triangles or quads)   
    * @param faceVertexMax (3) triangles only, indices[][i] may have more elements
    *                      (4) triangles and quads; indices[][i].length determines 
@@ -521,7 +527,7 @@ public abstract class ___Exporter {
   protected void outputSurface(T3[] vertices, T3[] normals,
                                 short[] colixes, int[][] indices,
                                 short[] polygonColixes,
-                                int nVertices, int nPolygons, int nFaces, BS bsPolygons,
+                                int nVertices, int nPolygons, int nTriangles, BS bsPolygons,
                                 int faceVertexMax, short colix, Lst<Short> colorList,
                                 Map<Short, Integer> htColixes, P3 offset) {
     // not implemented in _ObjExporter

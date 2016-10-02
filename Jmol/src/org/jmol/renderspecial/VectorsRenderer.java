@@ -258,7 +258,7 @@ public class VectorsRenderer extends ShapeRenderer {
     if (drawShaft) {
       pTemp3.set(atom.sX, atom.sY, atom.sZ);
       if (standardVector)
-        g3d.fillCylinderBits(GData.ENDCAPS_OPEN, diameter, pTemp3, screenArrowHead);
+        g3d.fillCylinderBits(GData.ENDCAPS_FLAT, diameter, pTemp3, screenArrowHead);
       else 
         g3d.fillCylinderBits(GData.ENDCAPS_FLAT, diameter, screenVectorStart, screenArrowHead);
     }

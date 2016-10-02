@@ -1542,8 +1542,9 @@ public class CifReader extends AtomSetCollectionReader {
   private void processGeomBondLoopBlock() throws Exception {
     // broken in 13.3.4_dev_2013.08.20c
     // fixed in 14.4.3_2016.02.16
-    boolean bondLoopBug = (stateScriptVersionInt >= 130304 && stateScriptVersionInt < 140403
-        || stateScriptVersionInt >= 150000 && stateScriptVersionInt < 150403);
+    boolean bondLoopBug = (stateScriptVersionInt >= 130304
+        && stateScriptVersionInt < 140403 || stateScriptVersionInt >= 150000
+        && stateScriptVersionInt < 150403);
     parseLoopParameters(geomBondFields);
     if (bondLoopBug || !checkAllFieldsPresent(geomBondFields, 2, true)) {
       parser.skipLoop(false);
@@ -1552,9 +1553,14 @@ public class CifReader extends AtomSetCollectionReader {
     int bondCount = 0;
     String name1, name2 = null;
     while (parser.getData()) {
+      name2 = null;
       if (asc.getAtomIndex(name1 = getField(GEOM_BOND_ATOM_SITE_LABEL_1)) < 0
-          || asc.getAtomIndex(name2 = getField(GEOM_BOND_ATOM_SITE_LABEL_2)) < 0)
-        continue;
+          || asc.getAtomIndex(name2 = getField(GEOM_BOND_ATOM_SITE_LABEL_2)) < 0) {
+        // COD has error here in CIF files
+        if (name2 == null && asc.getAtomIndex(name1 = name1.toUpperCase()) < 0
+            || asc.getAtomIndex(name2 = name2.toUpperCase()) < 0)
+          continue;
+      }
       int order = getBondOrder(getField(CCDC_GEOM_BOND_TYPE));
       String sdist = getField(GEOM_BOND_DISTANCE);
       float distance = parseFloatStr(sdist);
@@ -1856,7 +1862,6 @@ public class CifReader extends AtomSetCollectionReader {
                 }
               bsMolecule.set(k);
             }
-            //System.out.println("returning true\n" + bsMolecule);
             return true;
           }
     return false;
@@ -1880,7 +1885,6 @@ public class CifReader extends AtomSetCollectionReader {
     asc.addNewBondWithOrder(i, j, order);
     if (!isMolecular)
       return;
-    //System.out.println("bonding " + i + " " + j);
     bsConnected[i].set(j);
     bsConnected[j].set(i);
   }

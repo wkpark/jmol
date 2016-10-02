@@ -172,7 +172,7 @@ public class JSExporter extends __CartesianExporter {
   }
 
 @Override
-  protected void outputSphere(T3 ptCenter, float radius, short colix,
+  protected void outputSphere(P3 ptCenter, float radius, short colix,
                               boolean checkRadius) {
     int iRad = Math.round(radius * 100);
     String check = round(ptCenter) + (checkRadius ? " " + iRad : "");
@@ -240,13 +240,13 @@ public class JSExporter extends __CartesianExporter {
   protected void outputSurface(T3[] vertices, T3[] normals,
                                short[] vertexColixes, int[][] indices,
                                short[] polygonColixes, int nVertices,
-                               int nPolygons, int nFaces, BS bsPolygons,
+                               int nPolygons, int nTriangles, BS bsPolygons,
                                int faceVertexMax, short colix,
                                Lst<Short> colorList,
                                Map<Short, Integer> htColixes, P3 offset) {
     int[] vertexColors = getColors(vertexColixes);
     int[] polygonColors = getColors(polygonColixes);
-    jsSurface(html5Applet, vertices, normals, indices, nVertices, nPolygons, nFaces,
+    jsSurface(html5Applet, vertices, normals, indices, nVertices, nPolygons, nTriangles,
         bsPolygons, faceVertexMax, gdata.getColorArgbOrGray(colix), vertexColors,
         polygonColors);
   }

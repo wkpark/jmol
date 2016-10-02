@@ -78,7 +78,7 @@ public class MainPopupResourceBundle extends PopupResource {
       {   "saveMenu", "writeFileTextVARIABLE writeState writeHistory SIGNEDwriteJmol SIGNEDwriteIsosurface "} ,      
       {   "exportMenu", "SIGNEDNOGLwriteGif SIGNEDNOGLwriteJpg SIGNEDNOGLwritePng " +
       		"SIGNEDNOGLwritePngJmol SIGNEDNOGLwritePovray - "
-            + "SIGNEDNOGLwriteVrml SIGNEDNOGLwriteX3d" },
+            + "SIGNEDNOGLwriteVrml SIGNEDNOGLwriteX3d SIGNEDNOGLwriteSTL" },
       {   "selectMenuText",
           "hideNotSelectedCB showSelectionsCB - selectAll selectNone invertSelection - elementsComputedMenu SYMMETRYSelectComputedMenu - "
               + "PDBproteinMenu PDBnucleicMenu PDBheteroMenu PDBcarboMenu PDBnoneOfTheAbove" },
@@ -629,6 +629,7 @@ public class MainPopupResourceBundle extends PopupResource {
         "SIGNEDNOGLwriteMaya", GT.o(exm, "Maya"),      
         "SIGNEDNOGLwriteVrml", GT.o(exm, "VRML"),      
         "SIGNEDNOGLwriteX3d", GT.o(exm, "X3D"),      
+        "SIGNEDNOGLwriteSTL", GT.o(exm, "STL"),      
         "SIGNEDNOGLwriteGif", GT.o(exi, "GIF"),    
         "SIGNEDNOGLwriteJpg", GT.o(exi, "JPG"),      
         "SIGNEDNOGLwritePng", GT.o(exi, "PNG"),      
@@ -952,6 +953,7 @@ public class MainPopupResourceBundle extends PopupResource {
       { "SIGNEDNOGLwritePovray", "write POVRAY \"?FILEROOT?.pov\"" },      
       { "SIGNEDNOGLwriteVrml", "write VRML \"?FILEROOT?.wrl\"" },      
       { "SIGNEDNOGLwriteX3d", "write X3D \"?FILEROOT?.x3d\"" },      
+      { "SIGNEDNOGLwriteX3d", "write STL \"?FILEROOT?.stl\"" },      
       { "SIGNEDNOGLwriteIdtf", "write IDTF \"?FILEROOT?.idtf\"" },      
       { "SIGNEDNOGLwriteMaya", "write MAYA \"?FILEROOT?.ma\"" },       
       { "SYMMETRYshowSymmetry", "console on;show symmetry" },

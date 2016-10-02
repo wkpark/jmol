@@ -3806,6 +3806,9 @@ public class CmdExt extends ScriptExt {
       } else if (type.equals("X3D")) {
         type = "X3d";
         isExport = true;
+      } else if (type.equals("STL")) {
+        type = "Stl";
+        isExport = true;
       } else if (type.equals("IDTF")) {
         type = "Idtf";
         isExport = true;

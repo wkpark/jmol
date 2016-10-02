@@ -35,14 +35,29 @@ import java.util.Map;
 
 import org.jmol.java.BS;
 import org.jmol.util.GData;
+import org.jmol.util.Geodesic;
+
 import javajs.util.P3;
 
 import javajs.util.A4;
+import javajs.util.AU;
 import javajs.util.PT;
 import javajs.util.Quat;
 import javajs.util.T3;
+import javajs.util.V3;
+
 import org.jmol.viewer.Viewer;
 
+/**
+ * A basic VRML generator. Modified 10/2016 to no longer
+ * use high-level objects Cone, Sphere, and Cylinder. 
+ * 
+ * Makes substantial use of DEF and USE to reduce file size
+ * hugely.
+ *  
+ *  
+ * @author Bob Hanson 
+ */
 public class _VrmlExporter extends __CartesianExporter {
 
   /*
@@ -59,7 +74,7 @@ public class _VrmlExporter extends __CartesianExporter {
   
   @Override
   protected void output(T3 pt) {
-    output(round(scalePt(pt)));
+    output(round(/*scalePt*/(pt)));
   }
   
   protected UseTable useTable;
@@ -89,10 +104,19 @@ public class _VrmlExporter extends __CartesianExporter {
     output(" " + -viewpoint.angle);
     output("\n jump TRUE description \"v1\"\n}\n\n");
     output(getJmolPerspective());
-    output("\nTransform{children Transform{translation ");
+    outputInitialTransform();
+  }
+
+  protected void outputInitialTransform() {
+    if (exportScale != 1) {
+      pushMatrix();
+      outputScale(exportScale, exportScale, exportScale);
+      output("\nchildren [\n");
+    }
+    pushMatrix();
     tempP1.setT(center);
     tempP1.scale(-1);
-    output(tempP1);
+    outputTranslation(tempP1);
     output("\nchildren [\n");
   }
 
@@ -102,17 +126,19 @@ public class _VrmlExporter extends __CartesianExporter {
         : viewpoint.z));
     return (float) (aperatureAngle * Math.PI / 180);
   }  
-  
+ 
   @Override
   protected void outputFooter() {
     useTable = null;
-    output("\n]\n");
-    output("}}\n");
+    output("\n]}\n");
+    if (exportScale != 1) {
+      output("]}");
+    }
   }
 
   protected void outputAppearance(short colix, boolean isText) {
-    String def = useTable.getDef((isText ? "T" : "") + colix);
-    output(" appearance ");
+    String def = getDef((isText ? "T" : "") + colix);
+    output("appearance ");
     if (def.charAt(0) == '_') {
       String color = rgbFractionalFromColix(colix);
       output(" DEF " + def + " Appearance{material Material{diffuseColor ");
@@ -129,94 +155,122 @@ public class _VrmlExporter extends __CartesianExporter {
   @Override
   protected void outputCircle(P3 pt1, P3 pt2, float radius, short colix,
                             boolean doFill) {
+    // not in _StlExport
     if (doFill) {
       // draw filled circle
 
       output("Transform{translation ");
-      tempV1.ave(pt1, pt2);
-      output(tempV1);
-      output(" children Billboard{axisOfRotation 0 0 0 children Transform{rotation 1 0 0 1.5708");
-      outputCylinderChildScaled(pt1, pt2, colix, GData.ENDCAPS_FLAT,
-          radius * 2000);
-      output("}}}\n");
+        tempV1.ave(pt1, pt2);
+        outputTranslation(tempV1);
+        output(" children [ Billboard{axisOfRotation 0 0 0 children [ Transform{rotation 1 0 0 1.5708");
+          float height =/*scale*/(pt1.distance(pt2));
+          outputScale(radius, height, radius);
+          outputCylinderChildScaled(colix, GData.ENDCAPS_FLAT);
+        output("}] }]\n");
+      output("}\n");
       return;
     }
 
     // draw a thin torus
 
-    String child = useTable.getDef("C" + colix + "_" + radius);
-    outputTransRot(pt1, pt2, 0, 0, 1);
-    tempP3.set(1, 1, 1);
-    tempP3.scale(radius);
-    output(" scale ");
-    output(tempP3);
-    output(" children ");
-    if (child.charAt(0) == '_') {
-      output("DEF " + child);
-      output(" Billboard{axisOfRotation 0 0 0 children Transform{children");
-      output(" Shape{geometry Extrusion{beginCap FALSE convex FALSE endCap FALSE creaseAngle 1.57");
-      output(" crossSection [");
-      float rpd = 3.1415926f / 180;
-      float scale = 0.02f / radius;
-      for (int i = 0; i <= 360; i += 10) {
-        output(round(Math.cos(i * rpd) * scale) + " ");
-        output(round(Math.sin(i * rpd) * scale) + " ");
+    String child = getDef("C" + colix + "_" + radius);
+    output("Transform{");
+    outputTransRot(pt1, pt2, 0, 0, 1, " ", "");
+    outputScale(radius, radius, radius);
+    output(" children [");
+      if (child.charAt(0) == '_') {
+        output("DEF " + child);
+        output(" Billboard{axisOfRotation 0 0 0 children [ Transform{children[");
+          output(" Shape{");
+            output("geometry Extrusion{beginCap FALSE convex FALSE endCap FALSE creaseAngle 1.57");
+              output(" crossSection [");
+              float rpd = 3.1415926f / 180;
+              float scale = 0.02f / radius;
+              for (int i = 0; i <= 360; i += 10) {
+                output(round(Math.cos(i * rpd) * scale) + " ");
+                output(round(Math.sin(i * rpd) * scale) + " ");
+              }
+              output("] spine [");
+              for (int i = 0; i <= 360; i += 10) {
+                output(round(Math.cos(i * rpd)) + " ");
+                output(round(Math.sin(i * rpd)) + " 0 ");
+              }
+              output("]");
+            output("}");
+            outputAppearance(colix, false);
+          output("}");
+        output("]} ]}");
+      } else {
+        output(child);
       }
-      output("] spine [");
-      for (int i = 0; i <= 360; i += 10) {
-        output(round(Math.cos(i * rpd)) + " ");
-        output(round(Math.sin(i * rpd)) + " 0 ");
-      }
-      output("]}");
-      outputAppearance(colix, false);
-      output("}}}");
-    } else {
-      output(child);
-    }
-    output("}\n");
+    output("]}\n");
   }
 
   @Override
   protected void outputCone(P3 ptBase, P3 ptTip, float radius,
                             short colix) {
-    radius = scale(radius);
-    float height = scale(ptBase.distance(ptTip));
-    outputTransRot(ptBase, ptTip, 0, 1, 0);
-    output(" children ");
-    String cone = "o" + (int) (height * 100) + "_" + (int) (radius * 100);
-    String child = useTable.getDef("c" + cone + "_" + colix);
-    if (child.charAt(0) == '_') {
-      output("DEF " + child + " Shape{geometry ");
-      cone = useTable.getDef(cone);
-      if (cone.charAt(0) == '_') {
-        output("DEF " + cone + " Cone{height " + round(height)
-            + " bottomRadius " + round(radius) + "}");
-      } else {
-        output(cone);
-      }
-      outputAppearance(colix, false);
-      output("}");
-    } else {
-      output(child);  
+    //radius =/*scale*/(radius);
+    float height =/*scale*/(ptBase.distance(ptTip));
+    pushMatrix();
+      outputTransRot(ptBase, ptTip, 0, 1, 0, " ", "");
+      outputScale(radius, height, radius);
+      output(" children[Shape{geometry ");
+        String child = getDef("c");// + cone + "_" + colix);
+        if (child.charAt(0) == '_') {
+          output("DEF " + child + " IndexedFaceSet {");
+          outputConeGeometry(true);
+          output(" }\n");
+        } else {
+          output(child);  
+        }
+        outputAppearance(colix, false);
+      output("}]");
+    popMatrix();
+  }
+
+  protected void outputConeGeometry(boolean addBase) {
+    //output("DEF " + cone + " Cone{height " + round(height)
+      //     + " bottomRadius " + round(radius) + "}");
+    int ndeg = 10;
+    int n = 360 / ndeg;
+    int vertexCount = n + (addBase ? 2 : 1);
+    int[][] faces = AU.newInt2(n * (addBase ? 2 : 1));
+    for (int i = 0, fpt = 0; i < n; i++) {
+      faces[fpt++] = new int[] { i, (i + n - 1) % n, n };
+      if (addBase)
+        faces[fpt++] = new int[] { i, (i + 1) % n, n + 1 };   
     }
-    output("}\n");
+    P3[] vertexes = new P3[vertexCount];
+    for (int i = 0; i < n; i++) {
+      float x = (float) (Math.cos(i * ndeg / 180. * Math.PI)); 
+      float y = (float) (Math.sin(i * ndeg / 180. * Math.PI)); 
+      vertexes[i] = P3.new3(x, -0.5f, y);
+    }    
+    vertexes[n++] = P3.new3(0, 0.5f, 0);
+    if (addBase)
+      vertexes[n++] = P3.new3(0, -0.5f, 0);
+    outputGeometry(vertexes, null, null, faces, null, vertexCount, faces.length, null, 3,
+        null, null, null);
   }
 
   @Override
   protected boolean outputCylinder(P3 ptCenter, P3 pt1, P3 pt2,
                                    short colix, byte endcaps, float radius,
                                    P3 ptX, P3 ptY, boolean checkRadius) {
-    if (ptX == null) {
-      outputTransRot(pt1, pt2, 0, 1, 0);
-    } else {
-      output("Transform{translation ");
-      output(ptCenter);
-      outputQuaternionFrame(ptCenter, ptY, pt1, ptX, 2, " ", "");
-      pt1.set(0, 0, -1);
-      pt2.set(0, 0, 1);
-    }
-    outputCylinderChildScaled(pt1, pt2, colix, endcaps, radius);
-    output("}\n");
+    float height =/*scale*/(pt1.distance(pt2));
+    pushMatrix();
+      if (ptX == null) {
+        outputTransRot(pt1, pt2, 0, 1, 0, " ", "");
+        outputScale(radius, height, radius);
+      } else {
+        // arcs of ellipsoid rendering only
+        outputTranslation(ptCenter);
+        outputQuaternionFrame(ptCenter, ptY, pt1, ptX, 2, 2, 2, " ", "");
+        pt1.set(0, 0, -0.5f);
+        pt2.set(0, 0, 0.5f);
+      }
+      outputCylinderChildScaled(colix, endcaps);
+    popMatrix();
     if (endcaps == GData.ENDCAPS_SPHERICAL) {
       outputSphere(pt1, radius * 1.01f, colix, checkRadius);
       outputSphere(pt2, radius * 1.01f, colix, checkRadius);
@@ -224,54 +278,18 @@ public class _VrmlExporter extends __CartesianExporter {
     return true;
   }
 
-  protected void outputCylinderChildScaled(P3 pt1, P3 pt2, short colix,
-                                   byte endcaps, float radius) {
-    output(" children ");    
-    float length = scale(pt1.distance(pt2));
-    radius = scale(radius);
-    String child = useTable.getDef("C" + colix + "_" + (int) (length * 100) + "_" + radius
-        + "_" + endcaps);
-    if (child.charAt(0) == '_') {
-      output("DEF " + child);
-      output(" Shape{geometry ");
-      String cyl = useTable.getDef("c" + round(length) + "_" + endcaps + "_" + radius);
-      if (cyl.charAt(0) == '_') {
-        output("DEF " + cyl + " Cylinder{height " 
-            + round(length) + " radius " + radius 
-            + (endcaps == GData.ENDCAPS_FLAT ? "" : " top FALSE bottom FALSE") + "}");
-      } else {
-        output(cyl);
-      }
-      outputAppearance(colix, false);
-      output("}");
-    } else {
-      output(child);
-    }
+  
+  protected void pushMatrix() {
+    output("Transform{");
   }
 
-  @Override
-  protected void outputEllipsoid(P3 ptCenter, P3[] points, short colix) {
-    output("Transform{translation ");
-    output(ptCenter);
-
-    // Hey, hey -- quaternions to the rescue!
-    // Just send three points to Quaternion to define a plane and return
-    // the AxisAngle required to rotate to that position. That's all there is to
-    // it.
-
-    outputQuaternionFrame(ptCenter, points[1], points[3], points[5], 1, " ", "");
-    output(" children ");
-    tempP3.set(0, 0, 0);
-    outputSphereChildUnscaled(tempP3, 1.0f, colix);
+  protected void popMatrix() {
     output("}\n");
   }
 
-  private P3 tempQ1 = new P3();
-  private P3 tempQ2 = new P3();
-
-  protected void outputQuaternionFrame(P3 ptCenter, P3 ptX,
-                                       P3 ptY, P3 ptZ, float yScale,
-                                       String pre, String post) {
+  protected void outputQuaternionFrame(P3 ptCenter, P3 ptX, P3 ptY, P3 ptZ,
+                                       float xScale, float yScale,
+                                       float zScale, String pre, String post) {
 
     //Hey, hey -- quaternions to the rescue!
     // Just send three points to Quaternion to define a plane and return
@@ -279,41 +297,115 @@ public class _VrmlExporter extends __CartesianExporter {
 
     tempQ1.setT(ptX);
     tempQ2.setT(ptY);
-    A4 a = Quat.getQuaternionFrame(ptCenter, tempQ1, tempQ2)
-        .toAxisAngle4f();
+    A4 a = Quat.getQuaternionFrame(ptCenter, tempQ1, tempQ2).toAxisAngle4f();
     if (!Float.isNaN(a.x)) {
-      output(" rotation");
+      if (isBinary) {
+        tempQ1.set(a.x, a.y, a.z);
+        outputRotation(a);
+      } else {
+        output(" rotation");
+        output(pre);
+        output(a.x + " " + a.y + " " + a.z + " " + a.angle);
+        output(post);
+      }
+    }
+    float sx = /*scale*/(ptX.distance(ptCenter) * xScale);
+    float sy = /*scale*/(ptY.distance(ptCenter) * yScale);
+    float sz = /*scale*/(ptZ.distance(ptCenter) * zScale);
+    if (isBinary) {
+      outputScale(sx, sy, sz);
+    } else {
+      output(" scale");
       output(pre);
-      output(a.x + " " + a.y + " " + a.z + " " + a.angle);
+      output(round(sx) + " " + round(sy) + " " + round(sz));
       output(post);
     }
-    float sx = scale(ptX.distance(ptCenter));
-    float sy = scale(ptY.distance(ptCenter) * yScale);
-    float sz = scale(ptZ.distance(ptCenter));
-    output(" scale");
-    output(pre);
-    output(sx + " " + sy + " " + sz);
-    output(post);
+  }
+
+  protected void outputCylinderChildScaled(short colix, byte endcaps) {
+    output(" children[Shape{geometry ");
+      String child = getDef("C" + "_" + endcaps);
+      if (child.charAt(0) == '_') {
+        output("DEF " + child + " IndexedFaceSet {");
+        outputCylinderGeometry(endcaps == GData.ENDCAPS_FLAT);
+        output("}\n");
+      } else {
+        output(child);
+      }
+      outputAppearance(colix, false);
+    output("}]");
+  }
+
+  
+  protected void outputCylinderGeometry(boolean addEndCaps) {
+    //" Cylinder{height " 
+    //+ round(length) + " radius " + radius 
+    //+ (endcaps == GData.ENDCAPS_FLAT ? "" : " top FALSE bottom FALSE") + "}");
+    int ndeg = 10;
+    int n = 360 / ndeg;
+    int vertexCount = n * 2 + (addEndCaps ? 2 : 0);
+    int[][] faces = AU.newInt2(n * (addEndCaps ? 4 : 2));
+    for (int i = 0, fpt = 0; i < n; i++) {
+      faces[fpt++] = new int[] { i, (i + 1) % n, i + n };
+      faces[fpt++] = new int[] { (i + 1) % n, (i + 1) % n + n, i + n };
+      if (addEndCaps) {
+        faces[fpt++] = new int[] { i, (i + n - 1) % n, vertexCount - 2 };
+        faces[fpt++] = new int[] { i + n, (i + n + 1) % n + n, vertexCount - 1 };
+      }
+    }
+    P3[] vertexes = new P3[vertexCount];
+    for (int i = 0; i < n; i++) {
+      float x = (float) (Math.cos(i * ndeg / 180. * Math.PI)); 
+      float y = (float) (Math.sin(i * ndeg / 180. * Math.PI)); 
+      vertexes[i] = P3.new3(x, 0.5f, y);
+    }
+    for (int i = 0; i < n; i++) {
+      float x = (float) (Math.cos((i + 0.5) * ndeg / 180 * Math.PI)); 
+      float y = (float) (Math.sin((i + 0.5) * ndeg / 180 * Math.PI)); 
+      vertexes[i + n] = P3.new3(x, -0.5f, y);
+    }
+    if (addEndCaps) {
+      vertexes[vertexCount - 2] = P3.new3(0, 0.5f, 0);
+      vertexes[vertexCount - 1] = P3.new3(0, -0.5f, 0);
+    }
+    outputGeometry(vertexes, null, null, faces, null, vertexCount, faces.length, null, 3,
+        null, null, null);
   }
 
 
+  protected P3 tempQ1 = new P3();
+  protected P3 tempQ2 = new P3();
+  protected P3 tempQ3 = new P3();
+
   @Override
-  protected void outputSurface(T3[] vertices, T3[] normals,
+  protected void outputSurface(T3[] vertices, T3[] normals, short[] colixes,
+                               int[][] indices, short[] polygonColixes,
+                               int nVertices, int nPolygons, int nTriangles,
+                               BS bsPolygons, int faceVertexMax, short colix,
+                               Lst<Short> colorList,
+                               Map<Short, Integer> htColixes, P3 offset) {
+    output("Shape {geometry IndexedFaceSet {");
+    outputGeometry(vertices, normals, colixes, indices, polygonColixes,
+        nVertices, nPolygons, bsPolygons, faceVertexMax, colorList, htColixes,
+        offset);
+    output("}\n");
+    outputAppearance(colix, false);
+    output("}\n");
+  }
+
+  protected void outputGeometry(T3[] vertices, T3[] normals,
                                short[] colixes, int[][] indices,
                                short[] polygonColixes,
-                               int nVertices, int nPolygons, int nFaces, BS bsPolygons,
-                               int faceVertexMax, short colix,
+                               int nVertices, int nPolygons, BS bsPolygons,
+                               int faceVertexMax,
                                Lst<Short> colorList, Map<Short, Integer> htColixes, P3 offset) {
-    output("Shape {\n");
-    outputAppearance(colix, false);
-    output(" geometry IndexedFaceSet {\n");
-
+    output("  creaseAngle 0.5  \n");
     if (polygonColixes != null)
       output(" colorPerVertex FALSE\n");
 
     // coordinates
 
-    output("coord Coordinate {\n   point [\n");
+    output("coord Coordinate {\npoint [\n");
     outputVertices(vertices, nVertices, offset);
     output("   ]\n");
     output("  }\n");
@@ -349,9 +441,6 @@ public class _VrmlExporter extends __CartesianExporter {
       outputColorIndices(indices, nPolygons, bsPolygons, faceVertexMax, htColixes, colixes, polygonColixes);
       output("  ]\n");
     }
-
-    output(" }\n");
-    output("}\n");
   }
 
   @Override
@@ -401,30 +490,92 @@ public class _VrmlExporter extends __CartesianExporter {
   private Map<String, Boolean> htSpheresRendered = new Hashtable<String, Boolean>();
 
   @Override
-  protected void outputSphere(T3 ptCenter, float radius, short colix, boolean checkRadius) {
-    radius = scale(radius);
-    String check = round(scalePt(ptCenter)) + (checkRadius ? " " + (int) (radius * 100) : "");
+  protected void outputSphere(P3 ptCenter, float radius, short colix, boolean checkRadius) {
+    //radius =/*scale*/(radius);
+    String check = round(/*scalePt*/(ptCenter)) + (checkRadius ? " " + (int) (radius * 100) : "");
     if (htSpheresRendered.get(check) != null)
       return;
     htSpheresRendered.put(check, Boolean.TRUE);
-    outputSphereChildUnscaled(ptCenter, radius, colix);
+    outputSphereChildScaled(ptCenter, radius, null, colix);
   }
 
-  protected void outputSphereChildUnscaled(T3 ptCenter, float radius, short colix) {
-    int iRad = (int) (radius * 100);
-    String child = useTable.getDef("S" + colix + "_" + iRad);
-    output("Transform{translation ");
-    output(ptCenter);
-    output(" children ");
-    if (child.charAt(0) == '_') {
-      output("DEF " + child);
-      output(" Shape{geometry Sphere{radius " + radius + "}");
-      outputAppearance(colix, false);
-      output("}");
-    } else {
-      output(child);
-    }
+  @Override
+  protected void outputEllipsoid(P3 ptCenter, P3[] points, short colix) {
+    outputSphereChildScaled(ptCenter, 1.0f, points, colix);
+  }
+
+  protected void outputSphereChildScaled(P3 ptCenter, float radius, P3[] points, short colix) {
+
+    // Hey, hey -- quaternions to the rescue!
+    // Just send three points to Quaternion to define a plane and return
+    // the AxisAngle required to rotate to that position. That's all there is to
+    // it.
+    
+    String child = getDef("S");
+    pushMatrix();
+      outputTranslation(ptCenter);
+      if (points == null) 
+        outputScale(radius, radius, radius);
+      else
+        outputQuaternionFrame(ptCenter, points[1], points[3], points[5], 1, 1, 1, " ", "");  
+      output(" children[Shape{geometry ");
+        if (child.charAt(0) == '_') {
+          output("DEF " + child + " IndexedFaceSet {");
+          outputSphereGeometry();
+          output("}\n");
+        } else {
+          output(child);
+        }
+        outputAppearance(colix, false);
+      output("}]");
+    popMatrix();
+  }
+  
+  protected void outputSphereGeometry() {
+    //was output(" Shape{geometry Sphere{radius " + radius + "}");
+    
+    V3[] vertices = Geodesic.getVertexVectors();
+    int nVertices = 162;
+    short[] faceList = Geodesic.getFaceVertexes(2);
+    int nFaces = faceList.length / 3;
+    int[][] indices = new int[nFaces][3];
+    for (int i = 0, p = 0; i < nFaces; i++)
+      for (int j = 0; j < 3; j++)
+        indices[i][j] = faceList[p++];
+    outputGeometry(vertices, null, null, indices, null, nVertices, 
+        nFaces, null, 3, null, null, null);    
+  }
+
+  private int[][] oneFace;
+  private P3[] threeVertices;
+  @Override
+  protected void outputTriangle(T3 pt1, T3 pt2, T3 pt3, short colix) {    
+    // called by fillQuadrilateral, fillTriangle3CN, fillTriangle3CNBits
+    // fillTriangle3f, fillTriangle3i, fillTriangleTwoSided
+    
+    // hermite, rockets, cartoons, labels
+    // mesh, isosurface
+    // mesh, isosurface
+    // rockets
+    // cartoon, for nucleic acid bases
+    // polyhedra
+
+    output("Shape{geometry IndexedFaceSet{solid FALSE "); 
+    outputTriangleGeometry(pt1, pt2, pt3, colix);    
     output("}\n");
+    outputAppearance(colix, false);
+    output("}\n");
+  }
+
+  private void outputTriangleGeometry(T3 pt1, T3 pt2, T3 pt3, short colix) {
+    if (oneFace == null) {
+      oneFace = new int[][] {new int[] { 0, 1, 2 }};
+      threeVertices = new P3[] { tempP1, tempP2, tempP3 };
+    }
+    threeVertices[0].setT(pt1);
+    threeVertices[1].setT(pt2);
+    threeVertices[2].setT(pt3);
+    outputGeometry(threeVertices, null, null, oneFace, null, 3, 1, null, 3, null, null, null);
   }
 
   @Override
@@ -434,7 +585,7 @@ public class _VrmlExporter extends __CartesianExporter {
 //    output("Transform{translation ");
 //    output(pt);
 //    output(" children ");
-//    String child = useTable.getDef("p" + argb);
+//    String child = getDef("p" + argb);
 //    if (child.charAt(0) == '_') {
 //      output("DEF " + child + " Shape{geometry Sphere{radius 0.01}");
 //      output(" appearance Appearance{material Material{diffuseColor 0 0 0 specularColor 0 0 0 ambientIntensity 0.0 shininess 0.0 emissiveColor "
@@ -445,43 +596,45 @@ public class _VrmlExporter extends __CartesianExporter {
 //    output("}\n");
   }
 
-  protected void outputTransRot(P3 pt1, P3 pt2, int x, int y, int z) {    
-    output("Transform{");
-    outputTransRot(pt1, pt2, x, y, z, " ", "");
-  }
-  
   protected void outputTransRot(P3 pt1, P3 pt2, int x, int y, int z,
                                 String pre, String post) {
     tempV1.ave(pt2, pt1);
-    output("translation");
-    output(pre);
-    output(tempV1);
-    output(post);
+    if (isBinary) {
+      outputTranslation(tempV1);
+    } else {
+      output("translation");
+      output(pre);
+      output(tempV1);
+      output(post);
+    }
     tempV1.sub(pt1);
     tempV1.normalize();
     tempV2.set(x, y, z);
     tempV2.add(tempV1);
-    output(" rotation");
-    output(pre);
-    output(tempV2);
-    output(" ");
-    output(round((float) Math.PI));
-    output(post);
+    if (isBinary) {
+      outputRotation(A4.newVA(tempV2, (float) Math.PI));
+    } else {
+      output(" rotation");
+      output(pre);
+      output(tempV2);
+      output(" ");
+      output(round((float) Math.PI));
+      output(post);
+    }
   }
 
-  @Override
-  protected void outputTriangle(T3 pt1, T3 pt2, T3 pt3, short colix) {
-    // nucleic base
-    // cartoons
-    output("Shape{geometry IndexedFaceSet{solid FALSE coord Coordinate{point[");
-    output(pt1);
-    output(" ");
-    output(pt2);
-    output(" ");
-    output(pt3);
-    output("]}coordIndex[ 0 1 2 -1 ]}");
-    outputAppearance(colix, false);
-    output("}\n");
+  protected void outputScale(float x, float y, float z) {
+    output(" scale " + round(x) + " " + round(y) + " " + round(z));
+    // TODO
+    
+  }
+  
+  protected void outputTranslation(T3 pt) {
+    output("translation " + pt.x + " " + pt.y + " " + pt.z);
+  }
+
+  protected void outputRotation(A4 a) {
+    // STL only
   }
 
   protected float fontSize;
@@ -491,16 +644,17 @@ public class _VrmlExporter extends __CartesianExporter {
 
   @Override
   void plotText(int x, int y, int z, short colix, String text, Font font3d) {
+    // not in _StlExport
     output("Transform{translation ");
     output(setFont(x, y, z, colix, text, font3d));
     // These x y z are 3D coordinates of echo or the atom the label is attached
     // to.
-    output(" children ");
+    output(" children [ ");
     if (fontChild.charAt(0) == '_') {
       output("DEF " + fontChild + " Billboard{axisOfRotation 0 0 0 children Transform{children Shape{");
       outputAppearance(colix, true);
       output(" geometry Text{fontStyle ");
-      String fontstyle = useTable.getDef("F" + fontFace + fontStyle);
+      String fontstyle = getDef("F" + fontFace + fontStyle);
       if (fontstyle.charAt(0) == '_') {
         output("DEF " + fontstyle + " FontStyle{size " + fontSize + " family \"" + fontFace
             + "\" style \"" + fontStyle + "\"}");      
@@ -511,7 +665,7 @@ public class _VrmlExporter extends __CartesianExporter {
     } else {
       output(fontChild);
     }
-    output("}\n");
+    output("]}\n");
   }
 
   protected T3 setFont(int x, int y, int z, short colix, String text, Font font3d) {
@@ -522,8 +676,12 @@ public class _VrmlExporter extends __CartesianExporter {
     fontFace = (fontFace.equals("MONOSPACED") ? "TYPEWRITER" 
         : fontFace.equals("SERIF") ? "SERIF" : "Arial");
     fontSize = font3d.fontSize * 0.015f;
-    fontChild = useTable.getDef("T" + colix + fontFace + fontStyle + fontSize + "_" + text);
+    fontChild = getDef("T" + colix + fontFace + fontStyle + fontSize + "_" + text);
     return tempP1;
+  }
+
+  protected String getDef(String key) {
+    return (useTable == null ? "_" : useTable.getDef(key));
   }
 
   /*

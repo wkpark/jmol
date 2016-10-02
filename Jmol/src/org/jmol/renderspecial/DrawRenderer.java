@@ -453,7 +453,7 @@ public class DrawRenderer extends MeshRenderer {
       g3d.fillConeScreen3f(GData.ENDCAPS_FLAT, headDiameter, s1f, s2f,
           isBarb);
     if (withShaft)
-      g3d.fillCylinderScreen3I(GData.ENDCAPS_OPENEND, diameter, s0f, s1f, null, null, 0);
+      g3d.fillCylinderScreen3I(GData.ENDCAPS_FLAT, diameter, s0f, s1f, null, null, 0);
   }
 
   private float getArrowScale() {

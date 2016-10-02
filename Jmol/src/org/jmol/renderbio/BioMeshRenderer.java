@@ -292,6 +292,7 @@ public class BioMeshRenderer extends MeshRenderer {
           break;
         }
         pt.add2(pt1, wingT);
+        //System.out.println(pt);
         mesh.addV(pt, true);
       }
       if (p > 0) {
@@ -303,6 +304,9 @@ public class BioMeshRenderer extends MeshRenderer {
           int b = nPoints - nPer + ((k + 1) % nPer);
           int c = nPoints + ((k + 1) % nPer);
           int d = nPoints + k;
+          // can happen at arrow point
+//          if (wing1.length() == 0 && mesh.vs[c].distanceSquared(mesh.vs[d]) == 0)
+//            d = c;
           if (k < nLast / 2)
             mesh.addQuad(a, b, c, d);
           else

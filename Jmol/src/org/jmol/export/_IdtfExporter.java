@@ -298,7 +298,7 @@ public class _IdtfExporter extends __CartesianExporter {
   }
 
   @Override
-  String finalizeOutput() {
+  protected String finalizeOutput() {
     finalizeOutput2();
     return getAuxiliaryFileData();
   }
@@ -319,7 +319,7 @@ public class _IdtfExporter extends __CartesianExporter {
      */
     return "% Created by: Jmol " + Viewer.getJmolVersion()
         + "\n% Creation date: " + getExportDate()
-        + "\n% File created: "  + fileName + " (" + out.getByteCount() + " bytes)\n\n"
+        + "\n% File created: "  + fileName + " (" + getByteCount() + " bytes)\n\n"
         + "\n\\documentclass[12pt,letter]{article}"
         + "\n\\usepackage{hyperref}"
         + "\n\\usepackage{media9}"
@@ -595,10 +595,10 @@ public class _IdtfExporter extends __CartesianExporter {
     int vertexCount = Geodesic.getVertexCount(2);
     short[] f = Geodesic.getFaceVertexes(2);
     int nFaces = f.length / 3;
-    int[][] faces = AU.newInt2(nFaces);
-    int fpt = -1;
-    for (int i = 0; i < nFaces; i++)
-      faces[i] = new int[] { f[++fpt], f[++fpt], f[++fpt] };
+    int[][] faces = new int[nFaces][3];
+    for (int i = 0, p = 0; i < nFaces; i++)
+      for (int j = 0; j < 3; j++)
+        faces[i][j] = f[++p];
     V3[] vertexes = new V3[vertexCount];
     for (int i = 0; i < vertexCount;i++)
       vertexes[i] = Geodesic.getVertexVector(i);
@@ -843,7 +843,7 @@ public class _IdtfExporter extends __CartesianExporter {
   protected void outputSurface(T3[] vertices, T3[] normals,
                                short[] colixes, int[][] indices,
                                short[] polygonColixes, int nVertices,
-                               int nPolygons, int nFaces, BS bsPolygons,
+                               int nPolygons, int nTriangles, BS bsPolygons,
                                int faceVertexMax, short colix,
                                Lst<Short> colorList, Map<Short, Integer> htColixes,
                                P3 offset) {
@@ -925,7 +925,7 @@ public class _IdtfExporter extends __CartesianExporter {
       }
     }
     String key = "mesh" + (++iObj);
-    addMeshData(key, nFaces, nCoord, nNormals, nColors, sbFaceCoordIndices,
+    addMeshData(key, nTriangles, nCoord, nNormals, nColors, sbFaceCoordIndices,
         sbFaceNormalIndices, sbColorIndexes, sbCoords, sbNormals, sbColors);
     Lst<String> v = new  Lst<String>();
     htNodes.put(key, v);
@@ -1015,7 +1015,7 @@ public class _IdtfExporter extends __CartesianExporter {
   }
   
   @Override
-  protected void outputSphere(T3 center, float radius, short colix, boolean checkRadius) {
+  protected void outputSphere(P3 center, float radius, short colix, boolean checkRadius) {
     setSphereMatrix(center, radius, radius, radius, null, sphereMatrix);
     outputEllipsoid(center, sphereMatrix, colix);
   }

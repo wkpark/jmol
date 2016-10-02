@@ -278,7 +278,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
         if (!antialias && diam == 1) {
           g3d.drawLineAB(pt1f, pt2f);
         } else {
-          g3d.fillCylinderBits(GData.ENDCAPS_OPEN, diam, pt1f,
+          g3d.fillCylinderBits(GData.ENDCAPS_HIDDEN, diam, pt1f,
               pt2f);
         }
       }

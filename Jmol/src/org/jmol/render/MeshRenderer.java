@@ -464,11 +464,11 @@ public abstract class MeshRenderer extends ShapeRenderer {
     if (antialias)
       diam <<= 1;
     if ((check & 1) == 1)
-      g3d.fillCylinderBits2(colixA, colixB, GData.ENDCAPS_OPEN, diam, screenA, screenB);
+      g3d.fillCylinderBits2(colixA, colixB, GData.ENDCAPS_HIDDEN, diam, screenA, screenB);
     if ((check & 2) == 2)
-      g3d.fillCylinderBits2(colixB, colixC, GData.ENDCAPS_OPEN, diam, screenB, screenC);
+      g3d.fillCylinderBits2(colixB, colixC, GData.ENDCAPS_HIDDEN, diam, screenB, screenC);
     if ((check & 4) == 4)
-      g3d.fillCylinderBits2(colixA, colixC, GData.ENDCAPS_OPEN, diam, screenA, screenC);
+      g3d.fillCylinderBits2(colixA, colixC, GData.ENDCAPS_HIDDEN, diam, screenA, screenC);
   }
 
   protected void drawTriangle(P3i screenA, short colixA, P3i screenB,
@@ -482,13 +482,13 @@ public abstract class MeshRenderer extends ShapeRenderer {
     if (antialias)
       diam <<= 1;
     if ((check & 1) == 1)
-      g3d.fillCylinderXYZ(colixA, colixB, GData.ENDCAPS_OPEN, diam, screenA.x,
+      g3d.fillCylinderXYZ(colixA, colixB, GData.ENDCAPS_HIDDEN, diam, screenA.x,
           screenA.y, screenA.z, screenB.x, screenB.y, screenB.z);
     if ((check & 2) == 2)
-      g3d.fillCylinderXYZ(colixB, colixC, GData.ENDCAPS_OPEN, diam, screenB.x,
+      g3d.fillCylinderXYZ(colixB, colixC, GData.ENDCAPS_HIDDEN, diam, screenB.x,
           screenB.y, screenB.z, screenC.x, screenC.y, screenC.z);
     if ((check & 4) == 4)
-      g3d.fillCylinderXYZ(colixA, colixC, GData.ENDCAPS_OPEN, diam, screenA.x,
+      g3d.fillCylinderXYZ(colixA, colixC, GData.ENDCAPS_HIDDEN, diam, screenA.x,
           screenA.y, screenA.z, screenC.x, screenC.y, screenC.z);
   }
 

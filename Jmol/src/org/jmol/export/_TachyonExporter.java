@@ -249,7 +249,7 @@ public class _TachyonExporter extends __RayTracerExporter {
   protected void outputSurface(T3[] vertices, T3[] normals,
                                short[] colixes, int[][] indices,
                                short[] polygonColixes, int nVertices,
-                               int nPolygons, int nFaces, BS bsPolygons,
+                               int nPolygons, int nTriangles, BS bsPolygons,
                                int faceVertexMax, short colix,
                                Lst<Short> colorList, Map<Short, Integer> htColixes, P3 offset) {
     if (polygonColixes != null) {
@@ -281,7 +281,7 @@ public class _TachyonExporter extends __RayTracerExporter {
       output((colixes == null ? rgb : rgbFractionalFromColix(colixes[i])) + "\n");
     }
     outputTextureCode();
-    output("\nTriMesh " + nFaces + "\n");
+    output("\nTriMesh " + nTriangles + "\n");
     boolean isAll = (bsPolygons == null);
     int i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit(0));
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsPolygons.nextSetBit(i + 1))) {

@@ -195,7 +195,7 @@ abstract public class __CartesianExporter extends ___Exporter {
   abstract protected void outputEllipsoid(P3 center, P3[] points,
                                           short colix);
 
-  abstract protected void outputSphere(T3 ptAtom2, float f, short colix, boolean checkRadius);
+  abstract protected void outputSphere(P3 ptCenter, float f, short colix, boolean checkRadius);
 
   abstract protected void outputTextPixel(P3 pt, int argb);
 

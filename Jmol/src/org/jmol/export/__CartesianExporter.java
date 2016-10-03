@@ -40,6 +40,7 @@ import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.util.C;
 import org.jmol.util.GData;
+import org.jmol.util.Logger;
 
 /*
  * for programs that use the standard 3D coordinates.
@@ -225,6 +226,8 @@ abstract public class __CartesianExporter extends ___Exporter {
 
   @Override
   void drawAtom(Atom atom) {
+    if (Logger.debugging)
+      outputComment("atom " + atom);
     short colix = atom.colixAtom;
     outputSphere(atom, atom.madAtom / 2000f, colix, C.isColixTranslucent(colix));
   }
@@ -291,6 +294,8 @@ abstract public class __CartesianExporter extends ___Exporter {
                     byte endcaps, int mad, int bondOrder) {
     setTempPoints(ptA, ptB, bondOrder < 0);
     float radius = mad / 2000f;
+    if (Logger.debugging)
+      outputComment("bond " + ptA + " " + ptB);
     if (colix1 == colix2) {
       outputCylinder(null, tempP1, tempP2, colix1, endcaps, radius, null, null, bondOrder != -1);
     } else {

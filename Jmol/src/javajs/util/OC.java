@@ -272,19 +272,20 @@ public class OC extends OutputStream implements GenericOutputChannel {
     byteCount++;
   }
 
-  /**
-   * Will break if used; no equivalent in JavaScript.
-   * 
-   * @j2sIgnore
-   * 
-   * @param b
-   */
-  @Override
-  @Deprecated
-  public void write(byte[] b) {
-    // not used in JavaScript due to overloading problem there
-    write(b, 0, b.length);
-  }
+// not in JSmol's OutputStream class, so not overriding  
+//  /**
+//   * Will break if used; no equivalent in JavaScript.
+//   * 
+//   * @j2sIgnore
+//   * 
+//   * @param b
+//   */
+//  @Override
+//  @Deprecated
+//  public void write(byte[] b) {
+//    // not used in JavaScript due to overloading problem there
+//    write(b, 0, b.length);
+//  }
 
   public void cancel() {
     isCanceled = true;

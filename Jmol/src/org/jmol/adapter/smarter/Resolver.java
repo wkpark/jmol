@@ -349,7 +349,7 @@ public class Resolver {
   {"WebMO", "[HEADER]"};
   
   private final static String[] moldenFileStartRecords =
-  {"Molden", "[Molden"};
+  {"Molden", "[Molden", "MOLDEN", "[MOLDEN"};
 
   private final static String[] dcdFileStartRecords =
   {"BinaryDcd", "T\0\0\0CORD", "\0\0\0TCORD"};

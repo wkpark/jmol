@@ -135,7 +135,7 @@ public abstract class ___Exporter {
   // The following fields and methods are required for instantiation or provide
   // generally useful functionality:
 
-  protected boolean isBinary, solidOnly; // _STL
+  protected boolean solidOnly; // _STL
   
   protected Viewer vwr;
   protected TransformManager tm;
@@ -157,7 +157,7 @@ public abstract class ___Exporter {
   protected P3 referenceCenter;
   protected P3 cameraPosition;
   protected float cameraDistance;
-  protected float aperatureAngle;
+  protected float apertureAngle;
   protected float scalePixelsPerAngstrom;
   protected float exportScale = 1; // currently VRML and X3D only
 
@@ -205,7 +205,10 @@ public abstract class ___Exporter {
     backgroundColix = vwr.getObjectColix(StateManager.OBJ_BACKGROUND);
     center.setT(tm.fixedRotationCenter);
     exportScale = vwr.getFloat(T.exportscale);
-
+    if (exportScale == 0) {
+      exportScale = 10; // default is 1 cm/Angstrom -- 1 : 100,000,000
+    }
+    Logger.info("__Exporter exportScale: ");
     if ((screenWidth <= 0) || (screenHeight <= 0)) {
       screenWidth = vwr.getScreenWidth();
       screenHeight = vwr.getScreenHeight();
@@ -218,7 +221,7 @@ public abstract class ___Exporter {
     cameraPosition = cameraFactors[1];
     fixedRotationCenter = cameraFactors[2];
     cameraDistance = cameraFactors[3].x;
-    aperatureAngle = cameraFactors[3].y;
+    apertureAngle = cameraFactors[3].y;
     scalePixelsPerAngstrom = cameraFactors[3].z;
     out = (OC) params.get("outputChannel");
     commandLineOptions = (String) params.get("params");
@@ -279,7 +282,7 @@ public abstract class ___Exporter {
     sb.append("\n").append(commentChar).append("screen width height dim: " + screenWidth + " " + screenHeight + " " + vwr.getScreenDim());
     sb.append("\n").append(commentChar).append("perspectiveDepth: " + vwr.tm.perspectiveDepth);
     sb.append("\n").append(commentChar).append("cameraDistance(angstroms): " + cameraDistance);
-    sb.append("\n").append(commentChar).append("aperatureAngle(degrees): " + aperatureAngle);
+    sb.append("\n").append(commentChar).append("aperatureAngle(degrees): " + apertureAngle);
     sb.append("\n").append(commentChar).append("scalePixelsPerAngstrom: " + scalePixelsPerAngstrom);
     sb.append("\n").append(commentChar).append("light source: " + lightSource);
     sb.append("\n").append(commentChar).append("lighting: " + vwr.getLightingState().replace('\n', ' '));

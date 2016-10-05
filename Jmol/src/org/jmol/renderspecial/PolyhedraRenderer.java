@@ -37,6 +37,7 @@ import org.jmol.shapespecial.Polyhedra;
 import org.jmol.shapespecial.Polyhedron;
 import org.jmol.util.C;
 import org.jmol.util.GData;
+import org.jmol.util.MeshSurface;
 
 public class PolyhedraRenderer extends ShapeRenderer {
 
@@ -48,6 +49,7 @@ public class PolyhedraRenderer extends ShapeRenderer {
   private boolean vibs;
   private BS bsSelected;
   private boolean showNumbers;
+  private MeshSurface meshSurface;
 
   @Override
   protected boolean render() {
@@ -109,6 +111,7 @@ public class PolyhedraRenderer extends ShapeRenderer {
       }
       vertices = v;
     }
+
     if (screens3f == null || screens3f.length < vertices.length) {
       screens3f = new P3[vertices.length];
       for (int i = vertices.length; --i >= 0;)
@@ -122,8 +125,8 @@ public class PolyhedraRenderer extends ShapeRenderer {
       P3 v = sc[i];
       if (atom == null) {
         tm.transformPtScrT3(vertices[i], v);
-//      } else if (atom.isVisible(myVisibilityFlag)) {
-  //      v.set(atom.sX, atom.sY, atom.sZ);
+        //      } else if (atom.isVisible(myVisibilityFlag)) {
+        //      v.set(atom.sX, atom.sY, atom.sZ);
       } else if (vibs && atom.hasVibration()) {
         scrVib = tm.transformPtVib(atom, ms.vibrations[atom.i]);
         v.set(scrVib.x, scrVib.y, scrVib.z);
@@ -131,7 +134,7 @@ public class PolyhedraRenderer extends ShapeRenderer {
         tm.transformPt3f(atom, v);
       }
       if (elemNos != null
-          && i < elemNos.length 
+          && i < elemNos.length
           && g3d.setC(elemNos[i] < 0 ? C.BLACK : vwr.cm.setElementArgb(
               elemNos[i], Integer.MAX_VALUE))) {
         g3d.fillSphereBits(
@@ -154,20 +157,31 @@ public class PolyhedraRenderer extends ShapeRenderer {
     // no edges to new points when not collapsed
     //int m = (int) ( Math.random() * 24);
     short[] normixes = p.getNormixes();
-    if (!needTranslucent || g3d.setC(colix))
-      for (int i = planes.length; --i >= 0;) {
-        int[] pl = planes[i];
-        try {
-          if (!showNumbers
-              || g3d.setC((short) (Math.round(Math.random() * 10) + 5)))
-            g3d.fillTriangleTwoSided(normixes[i], sc[pl[0]], sc[pl[1]],
-                sc[pl[2]]);
-        } catch (Exception e) {
-          System.out.println("PolyhedraRendererError");
+    if (!needTranslucent || g3d.setC(colix)) {
+      if (exportType == GData.EXPORT_CARTESIAN && !p.collapsed) {
+        if (meshSurface == null)
+          meshSurface = new MeshSurface();
+        meshSurface.vs = vertices;
+        meshSurface.pis = planes;
+        meshSurface.pc = planes.length;
+        meshSurface.vc = vertices.length;
+        g3d.drawSurface(meshSurface, colix);
+      } else {
+        for (int i = planes.length; --i >= 0;) {
+          int[] pl = planes[i];
+          try {
+            if (!showNumbers
+                || g3d.setC((short) (Math.round(Math.random() * 10) + 5)))
+              g3d.fillTriangleTwoSided(normixes[i], sc[pl[0]], sc[pl[1]],
+                  sc[pl[2]]);
+          } catch (Exception e) {
+            System.out.println("PolyhedraRendererError");
+          }
         }
         //        if (pl[3] >= 0)
         //        g3d.fillTriangleTwoSided(normixes[i], sc[pl[2]], sc[pl[3]], sc[pl[0]]);
       }
+    }
     // edges are not drawn translucently ever
     if (isSelected)
       colix = C.GOLD;

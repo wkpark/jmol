@@ -73,8 +73,6 @@ public class _StlExporter extends _VrmlExporter {
   public _StlExporter() {
     super();
     useTable = null;
-    isBinary = true;
-    solidOnly = true;
     isDebug = Logger.debugging;
     if (!isDebug) {
       oc = new OC();
@@ -149,13 +147,6 @@ public class _StlExporter extends _VrmlExporter {
     m4 = lstMatrix.removeItemAt(lstMatrix.size() - 1);
   }
 
-  @Override
-  protected void outputTranslation(T3 pt) {
-    m4a.setIdentity();
-    m4a.setTranslation(pt);
-    m4.mul(m4a);
-  }
-
   private M4 m4a = new M4();
 
   @Override
@@ -164,17 +155,26 @@ public class _StlExporter extends _VrmlExporter {
     m4.mul(m4a);
   }
 
+  @Override
+  protected void outputAttrPt(String attr, T3 pt) {
+    outputAttr(attr, pt.x, pt.y, pt.z);
+  }
 
   @Override
-  protected void outputScale(float x, float y, float z) {
+  protected void outputAttr(String attr, float x, float y, float z) {
     m4a.setIdentity();
-    m4a.m00 = x;
-    m4a.m11 = y;
-    m4a.m22 = z;
+    if (attr == "scale") {
+      m4a.m00 = x;
+      m4a.m11 = y;
+      m4a.m22 = z;
+    } else if (attr == "translation") {
+      m4a.m03 = x;
+      m4a.m13 = y;
+      m4a.m23 = z;
+    }
     m4.mul(m4a);
   }
   
-
   private int nTri;
 
   @Override

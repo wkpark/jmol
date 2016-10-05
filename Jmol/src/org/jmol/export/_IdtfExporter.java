@@ -340,7 +340,7 @@ public class _IdtfExporter extends __CartesianExporter {
         + "\n            3Droo=" + cameraDistance + ","
         + "\n            3Dcoo= 0.0 0.0 0.0,"
         + "\n            3Dc2c=0.0 0.0 1.0,"
-        + "\n            3Daac=" + aperatureAngle + ","
+        + "\n            3Daac=" + apertureAngle + ","
         + "\n            3Droll=0.0,"
         + "\n            3Dbg=" + rgbFractionalFromColix(backgroundColix) + ", % to set the background color for 3D vwr; white = 1 1 1; so, you need to do the proportion: '255:1=[RGB]:x'"
         + "\n            transparent=false,"

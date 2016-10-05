@@ -588,7 +588,7 @@ public class GlobalSettings {
   boolean drawPicking = false;
   boolean dsspCalcHydrogen = true;
   public String energyUnits = "kJ";
-  float exportScale = 1f;
+  float exportScale = 0f;
   String helpPath = JC.DEFAULT_HELP_PATH;
   boolean fontScaling = false;
   boolean fontCaching = true;

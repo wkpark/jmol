@@ -33,6 +33,7 @@ package org.jmol.export;
 import java.util.Map;
 
 import javajs.awt.Font;
+import javajs.util.A4;
 import javajs.util.Lst;
 import javajs.util.P3;
 import javajs.util.PT;
@@ -45,6 +46,7 @@ import org.jmol.viewer.Viewer;
 public class _X3dExporter extends _VrmlExporter {
 
   public _X3dExporter() {
+    super();
     useTable = new UseTable("USE='");
   }
   
@@ -78,32 +80,68 @@ public class _X3dExporter extends _VrmlExporter {
     float angle = getViewpoint();
     output("<Viewpoint fieldOfView='" + angle);
     output("' position='");
+    // remove export scaling for from Viewpoint so on-screen version is good.
+    cameraPosition.z *= exportScale;
     output(cameraPosition);
     output("' orientation='");
     output(tempP1);
     output(" " + -viewpoint.angle + "'\n jump='true' description='v1'/>\n");
-    output("\n  <!-- ");
+    output("\n  <!-- \n");
     output(getJmolPerspective());
     output("\n  -->\n\n");
-
-    output("<Transform translation='");
+    commentChar = null;
+    pushMatrix();
+    outputAttr("scale", exportScale, exportScale, exportScale);
+    output(">\n");
+    pushMatrix();
     tempP1.setT(center);
     tempP1.scale(-1);
-    output(tempP1);
-    output("'>\n");
+    outputAttrPt("translation", tempP1);
+    output(">\n");
   }
+
+  @Override
+  protected void outputAttrPt(String attr, T3 pt) {
+    output(" " + attr + "='" + pt.x + " " + pt.y + " " + pt.z + "'");
+  }
+
+  @Override
+  protected void pushMatrix() {
+    output("<Transform ");
+  }
+
+  @Override
+  protected void popMatrix() {
+    output("</Transform>\n");
+  }
+
+  @Override
+  protected void outputAttr(String attr, float x, float y, float z) {
+    output(" " + attr + "='" + round(x) + " " + round(y) + " " + round(z) + "'");
+  }
+  
+  @Override
+  protected void outputRotation(A4 a) {
+    output(" rotation='");
+    output(tempV2);
+    output(" ");
+    output(round((float) Math.PI));
+    output("'");
+  }
+
 
   @Override
   protected void outputFooter() {
     useTable = null;
-    output("</Transform>\n");
+    popMatrix();
+    popMatrix();
     output("</Scene>\n");
     output("</X3D>\n");
   }
 
   @Override
   protected void outputAppearance(short colix, boolean isText) {  
-    String def = useTable.getDef((isText ? "T" : "") + colix);
+    String def = getDef((isText ? "T" : "") + colix);
     output("<Appearance ");
     if (def.charAt(0) == '_') {
       String color = rgbFractionalFromColix(colix);
@@ -120,164 +158,134 @@ public class _X3dExporter extends _VrmlExporter {
   }
   
   @Override
+  protected void outputChildShapeStart() {
+    outputShapeStart();
+  }
+
+  @Override
+  protected void outputShapeStart() {
+    output("<Shape>");
+    outputFaceSetStart();
+  }
+
+  @Override
+  protected void outputDefChildFaceSet(String child) {
+    if (child != null)
+      output("DEF='" + child + "'");
+  }
+
+  @Override
+  protected void outputFaceSetStart() {
+    output("<IndexedFaceSet ");
+  }
+
+  @Override
+  protected void outputFaceSetClose() {
+    output("</IndexedFaceSet>\n");
+  }
+
+  @Override
+  protected void outputUseChildClose(String child) {
+    output(child + "/>");
+  }
+
+  @Override
+  protected void outputChildShapeClose() {
+    outputShapeClose();
+  }
+
+  @Override
+  protected void outputShapeClose() {
+    output("</Shape>\n");
+  }
+
+  @Override
+  protected void outputCloseTag() {
+    output(">\n");
+  }
+
+
+  @Override
+  protected void outputTriangle(T3 pt1, T3 pt2, T3 pt3, short colix) {
+    // nucleic base
+    // cartoons
+    output("<Shape>\n");
+    output("<IndexedFaceSet solid='false' ");
+    output("coordIndex='0 1 2 -1'>");
+    output("<Coordinate point='");
+    output(pt1);
+    output(" ");
+    output(pt2);
+    output(" ");
+    output(pt3);
+    output("'/>");
+    output("</IndexedFaceSet>\n");
+    outputAppearance(colix, false);
+    output("\n</Shape>\n");
+  }
+
+
+  @Override
   protected void outputCircle(P3 pt1, P3 pt2, float radius, short colix,
                               boolean doFill) {
+    
+    // not fixed -- still duplicated in X3d
     if (doFill) {
 
       // draw filled circle
-      
-      output("<Transform translation='");
-      tempV1.ave(tempP3, pt1);
-      output(tempV1);
-      output("'><Billboard axisOfRotation='0 0 0'><Transform rotation='1 0 0 1.5708'");
-      float height = scale(pt1.distance(pt2));
-      radius = scale(radius);
-      output(" scale='" + radius + " " + round(height) + " " + radius + "'");
-      output(">");
-      outputCylinderChildScaled(colix, GData.ENDCAPS_FLAT);
-      output("</Transform></Billboard>");
-      output("</Transform>\n");
+      pushMatrix();
+        output("translation='");
+        tempV1.ave(tempP3, pt1);
+        output(tempV1);
+        output("'><Billboard axisOfRotation='0 0 0'>");
+        pushMatrix();
+          output ("rotation='1 0 0 1.5708'");
+          float height = pt1.distance(pt2);
+          outputAttr("scale", radius, height, radius);
+          output(">");
+          outputCylinderChildScaled(colix, GData.ENDCAPS_FLAT);
+        popMatrix();
+        output("</Billboard>");
+      popMatrix();
       
       return;
     }
     
     // draw a thin torus
 
-    String child = useTable.getDef("C" + colix + "_" + radius);
-    output("<Transform ");
-    outputTransRot(tempP3, pt1, 0, 0, 1, "='", "'");
-    tempP3.set(1, 1, 1);
-    tempP3.scale(radius);
-    output(" scale='");
-    output(tempP3);
-    output("'>\n<Billboard ");
-    if (child.charAt(0) == '_') {
-      output("DEF='" + child + "'");
-      output(" axisOfRotation='0 0 0'><Transform>");
-      output("<Shape><Extrusion beginCap='false' convex='false' endCap='false' creaseAngle='1.57'");
-      output(" crossSection='");
-      float rpd = 3.1415926f / 180;
-      float scale = 0.02f / radius;
-      for (int i = 0; i <= 360; i += 10) {
-        output(round(Math.cos(i * rpd) * scale) + " ");
-        output(round(Math.sin(i * rpd) * scale) + " ");
+    String child = getDef("C" + colix + "_" + radius);
+    pushMatrix();
+      outputTransRot(tempP3, pt1, 0, 0, 1);
+      tempP3.set(1, 1, 1);
+      tempP3.scale(radius);
+      outputAttr("scale", tempP3.x, tempP3.y, tempP3.z);
+      output(">\n<Billboard ");
+      if (child.charAt(0) == '_') {
+        output("DEF='" + child + "'");
+        output(" axisOfRotation='0 0 0'>");
+        pushMatrix();
+          output("<Shape><Extrusion beginCap='false' convex='false' endCap='false' creaseAngle='1.57'");
+          output(" crossSection='");
+          float rpd = 3.1415926f / 180;
+          float scale = 0.02f / radius;
+          for (int i = 0; i <= 360; i += 10) {
+            output(round(Math.cos(i * rpd) * scale) + " ");
+            output(round(Math.sin(i * rpd) * scale) + " ");
+          }
+          output("' spine='");
+          for (int i = 0; i <= 360; i += 10) {
+            output(round(Math.cos(i * rpd)) + " ");
+            output(round(Math.sin(i * rpd)) + " 0 ");
+          }
+          output("'/>");
+          outputAppearance(colix, false);
+          output("</Shape>");
+        popMatrix();
+      } else {
+        output(child + ">");
       }
-      output("' spine='");
-      for (int i = 0; i <= 360; i += 10) {
-        output(round(Math.cos(i * rpd)) + " ");
-        output(round(Math.sin(i * rpd)) + " 0 ");
-      }
-      output("'/>");
-      outputAppearance(colix, false);
-      output("</Shape></Transform>");
-    } else {
-      output(child + ">");
-    }
-    output("</Billboard>\n");
-    output("</Transform>\n");
-  }
-
-  @Override
-  protected void outputCone(P3 ptBase, P3 ptTip, float radius,
-                            short colix) {
-    radius = scale(radius);
-    float height = scale(ptBase.distance(ptTip));
-    output("<Transform ");
-    outputTransRot(ptBase, ptTip, 0, 1, 0, "='", "'");
-    output(" scale='" + round(radius) + " " + round(height) + " " + round(radius) + "'");
-    output(">\n<Shape><IndexedFaceSet ");
-    String child = useTable.getDef("c");
-    if (child.charAt(0) == '_') {
-      output(" DEF='" + child + "'");
-      outputConeGeometry(true);
-      output("</IndexedFaceSet>");
-    } else {
-      output(child + "/>");
-    }
-    outputAppearance(colix, false);
-    output("</Shape>\n");
-    output("</Transform>\n");
-  }
-
-  @Override
-  protected boolean outputCylinder(P3 ptCenter, P3 pt1, P3 pt2,
-                                short colix, byte endcaps, float radius, P3 ptX, P3 ptY, boolean checkRadius) {
-    float height = scale(pt1.distance(pt2));
-    radius = scale(radius);
-    output("<Transform ");
-    if (ptX == null) {
-      outputTransRot(pt1, pt2, 0, 1, 0, "='", "'");
-      output(" scale='" + scale(radius) + " " + round(height) + " " + scale(radius) + "'");
-    } else {
-      output("translation='");
-      output(ptCenter);
-      output("'");
-      outputQuaternionFrame(ptCenter, ptY, pt1, ptX, 2, 2, 2, "='", "'");
-      pt1.set(0, 0, -0.5f);
-      pt2.set(0, 0, 0.5f);
-    }
-    output(">\n");
-      outputCylinderChildScaled(colix, endcaps);
-    output("\n</Transform>\n");
-    if (endcaps == GData.ENDCAPS_SPHERICAL) {
-      outputSphere(pt1, radius * 1.01f, colix, true);
-      outputSphere(pt2, radius * 1.01f, colix, true);
-    }
-    return true;
-  }
-
-  @Override
-  protected void outputSphereChildScaled(P3 ptCenter, float radius, P3[] points, short colix) {
-    output("<Transform translation='");
-    output(ptCenter);
-    if (points == null)
-      output("' scale='"  + radius + " " + radius + " " + radius + "'");
-    else
-      outputQuaternionFrame(center, points[1], points[3], points[5], 1, 1, 1, "='", "'");
-    output(">\n<Shape><IndexedFaceSet ");
-    String child = useTable.getDef("S");
-    if (child.charAt(0) == '_') {
-      output(" DEF='" + child + "'");
-      outputSphereGeometry();
-      output("</IndexedFaceSet>");
-    } else {
-      output(child + " />");
-    }
-    outputAppearance(colix, false);
-    output("</Shape>\n");
-    output("</Transform>\n");
-  }
-
-  @Override
-  protected void outputCylinderChildScaled(short colix,
-                                   byte endcaps) {
-    String child = useTable.getDef("C" + "_" + endcaps);
-    output("<Shape><IndexedFaceSet ");
-    if (child.charAt(0) == '_') {
-      output("DEF='" + child + "'");
-      outputCylinderGeometry(endcaps == GData.ENDCAPS_FLAT);
-      output("</IndexedFaceSet>");
-    } else {
-      output(child + " />");
-    }
-    outputAppearance(colix, false);
-    output("</Shape>\n");
-  }
-  
-  @Override
-  protected void outputSurface(T3[] vertices, T3[] normals,
-                               short[] colixes, int[][] indices,
-                               short[] polygonColixes,
-                               int nVertices, int nPolygons, int nTriangles, BS bsPolygons,
-                               int faceVertexMax, short colix,
-                               Lst<Short> colorList, Map<Short, Integer> htColixes, P3 offset) {
-    output("<Shape><IndexedFaceSet \n");
-    outputGeometry(vertices, normals, colixes, indices, polygonColixes,
-        nVertices, nPolygons, bsPolygons, faceVertexMax, colorList,
-        htColixes, offset);
-    output("</IndexedFaceSet>");
-    outputAppearance(colix, false);
-    output("</Shape>\n");
+      output("</Billboard>\n");
+    popMatrix();
   }
 
   @Override
@@ -349,32 +357,13 @@ public class _X3dExporter extends _VrmlExporter {
   }
 
   @Override
-  protected void outputTriangle(T3 pt1, T3 pt2, T3 pt3, short colix) {
-    // nucleic base
-    // cartoons
-    output("<Shape>\n");
-    output("<IndexedFaceSet solid='false' ");
-    output("coordIndex='0 1 2 -1'>");
-    output("<Coordinate point='");
-    output(pt1);
-    output(" ");
-    output(pt2);
-    output(" ");
-    output(pt3);
-    output("'/>");
-    output("</IndexedFaceSet>\n");
-    outputAppearance(colix, false);
-    output("\n</Shape>\n");
-  }
-
-  @Override
   protected void outputTextPixel(P3 pt, int argb) {
 //    // text only
 //    String color = rgbFractionalFromArgb(argb);
 //    output("<Transform translation='");
 //    output(pt);
 //    output("'>\n<Shape ");
-//    String child = useTable.getDef("p" + argb);
+//    String child = getDef("p" + argb);
 //    if (child.charAt(0) == '_') {
 //      output("DEF='" + child + "'>");
 //      output("<Sphere radius='0.01'/>");
@@ -390,45 +379,123 @@ public class _X3dExporter extends _VrmlExporter {
 
   @Override
   void plotText(int x, int y, int z, short colix, String text, Font font3d) {
-    output("<Transform translation='");
-    output(setFont(x, y, z, colix, text, font3d));
-    output("'>");
-    // These x y z are 3D coordinates of echo or the atom the label is attached
-    // to.
-    output("<Billboard ");
-    if (fontChild.charAt(0) == '_') {
-      output("DEF='" + fontChild + "' axisOfRotation='0 0 0'>"
-        + "<Transform translation='0.0 0.0 0.0'>"
-        + "<Shape>");
-      outputAppearance(colix, true);
-      output("<Text string=" + PT.esc(text) + ">");
-      output("<FontStyle ");
-      String fontstyle = useTable.getDef("F" + fontFace + fontStyle);
-      if (fontstyle.charAt(0) == '_') {
-        output("DEF='" + fontstyle + "' size='"+fontSize+"' family='" + fontFace
-            + "' style='" + fontStyle + "'/>");      
-      } else {
-        output(fontstyle + "/>");
-      }
-      output("</Text>");
-      output("</Shape>");
-      output("</Transform>");
-    } else {
-      output(fontChild + ">");
-    }
-    output("</Billboard>\n");
-    output("</Transform>\n");
-
-    /*
-     * Unsolved issues: # Non-label texts: echos, measurements :: need to get
-     * space coordinates, not screen coord. # Font size: not implemented; 0.4A
-     * is hardcoded (resizes with zoom) Java VRML font3d.fontSize = 13.0 size
-     * (numeric), but in angstroms, not pixels font3d.fontSizeNominal = 13.0 #
-     * Label offsets: not implemented; hardcoded to 0.25A in each x,y,z #
-     * Multi-line labels: only the first line is received # Sub/superscripts not
-     * interpreted
-     */
+//    output("<Transform translation='");
+//    output(setFont(x, y, z, colix, text, font3d));
+//    output("'>");
+//    // These x y z are 3D coordinates of echo or the atom the label is attached
+//    // to.
+//    output("<Billboard ");
+//    if (fontChild.charAt(0) == '_') {
+//      output("DEF='" + fontChild + "' axisOfRotation='0 0 0'>"
+//        + "<Transform translation='0.0 0.0 0.0'>"
+//        + "<Shape>");
+//      outputAppearance(colix, true);
+//      output("<Text string=" + PT.esc(text) + ">");
+//      output("<FontStyle ");
+//      String fontstyle = getDef("F" + fontFace + fontStyle);
+//      if (fontstyle.charAt(0) == '_') {
+//        output("DEF='" + fontstyle + "' size='"+fontSize+"' family='" + fontFace
+//            + "' style='" + fontStyle + "'/>");      
+//      } else {
+//        output(fontstyle + "/>");
+//      }
+//      output("</Text>");
+//      output("</Shape>");
+//      output("</Transform>");
+//    } else {
+//      output(fontChild + ">");
+//    }
+//    output("</Billboard>\n");
+//    output("</Transform>\n");
+//
+//    /*
+//     * Unsolved issues: # Non-label texts: echos, measurements :: need to get
+//     * space coordinates, not screen coord. # Font size: not implemented; 0.4A
+//     * is hardcoded (resizes with zoom) Java VRML font3d.fontSize = 13.0 size
+//     * (numeric), but in angstroms, not pixels font3d.fontSizeNominal = 13.0 #
+//     * Label offsets: not implemented; hardcoded to 0.25A in each x,y,z #
+//     * Multi-line labels: only the first line is received # Sub/superscripts not
+//     * interpreted
+//     */
   }
+
+  //  @Override
+  //  protected void outputCone(P3 ptBase, P3 ptTip, float radius,
+  //                            short colix) {
+  //    float height = ptBase.distance(ptTip);
+  //    pushMatrix();
+  //      outputTransRot(ptBase, ptTip, 0, 1, 0);
+  //      outputAttr("scale", radius, height, radius);
+  //      outputCloseTag();
+  //      outputShapeStart();
+  //      String child = getDef("c");
+  //      if (child.charAt(0) == '_') {
+  //        outputDefChildFaceSet(child);
+  //        outputConeGeometry(true);
+  //        outputCloseFaceSet();
+  //      } else {
+  //        outputChildClose(child);
+  //      }
+  //      outputAppearance(colix, false);
+  //      outputShapeClose();
+  //    popMatrix();
+  //  }
+  //
+  //  @Override
+  //  protected boolean outputCylinder(P3 ptCenter, P3 pt1, P3 pt2,
+  //                                short colix, byte endcaps, float radius, P3 ptX, P3 ptY, boolean checkRadius) {
+  //    float height = pt1.distance(pt2);
+  //    pushMatrix();
+  //      if (ptX == null) {
+  //        outputTransRot(pt1, pt2, 0, 1, 0);
+  //        outputAttr("scale", radius, height, radius);
+  //      } else {
+  //        outputAttrPt("translation", ptCenter);
+  //        outputQuaternionFrame(ptCenter, ptY, pt1, ptX, 2, 2, 2);
+  //        pt1.set(0, 0, -0.5f);
+  //        pt2.set(0, 0, 0.5f);
+  //      }
+  //      outputCloseTag();
+  //      outputCylinderChildScaled(colix, endcaps);
+  //    popMatrix();
+  ////    if (endcaps == GData.ENDCAPS_SPHERICAL) {
+  ////      outputSphere(pt1, radius * 1.01f, colix, true);
+  ////      outputSphere(pt2, radius * 1.01f, colix, true);
+  ////    }
+  //    return true;
+  //  }
+  //
+  //  @Override
+  //  protected void outputCylinderChildScaled(short colix,
+  //                                   byte endcaps) {
+  //    outputShapeStart();
+  //    String child = getDef("C" + "_" + endcaps);
+  //    if (child.charAt(0) == '_') {
+  //      outputDefChildFaceSet(child);
+  //      outputCylinderGeometry(endcaps);
+  //      outputCloseFaceSet();
+  //    } else {
+  //      outputUseChildClose(child);
+  //    }
+  //    outputAppearance(colix, false);
+  //    outputShapeClose();
+  //  }
+
+//  @Override
+//  protected void outputSurface(T3[] vertices, T3[] normals,
+//                               short[] colixes, int[][] indices,
+//                               short[] polygonColixes,
+//                               int nVertices, int nPolygons, int nTriangles, BS bsPolygons,
+//                               int faceVertexMax, short colix,
+//                               Lst<Short> colorList, Map<Short, Integer> htColixes, P3 offset) {
+//    output("<Shape><IndexedFaceSet \n");
+//    outputGeometry(vertices, normals, colixes, indices, polygonColixes,
+//        nVertices, nPolygons, bsPolygons, faceVertexMax, colorList,
+//        htColixes, offset);
+//    output("</IndexedFaceSet>");
+//    outputAppearance(colix, false);
+//    output("</Shape>\n");
+//  }
 
 
 }

@@ -49,12 +49,14 @@ import org.jmol.util.Logger;
  */
 abstract public class __CartesianExporter extends ___Exporter {
 
+  protected A4 viewpoint = new A4();
+  protected boolean canCapCylinders;
+  protected boolean solidOnly; // _STL, VRML
+
   public __CartesianExporter() {
     exportType = GData.EXPORT_CARTESIAN;
     lineWidthMad = 100;
   }
-
-  protected A4 viewpoint = new A4();
 
   protected P3 getModelCenter() {
     // "center" is the center of rotation, not
@@ -107,31 +109,6 @@ abstract public class __CartesianExporter extends ___Exporter {
       tm.unTransformPoint(ptA, tempP1);
       tm.unTransformPoint(ptB, tempP2);
     }
-  }
-
-  /**
-   * used only for VRML and X3D; could be expanded
-   * 
-   * @param f
-   * @return f*exportScale
-   */
-  protected float scale(float f) {
-    return f * exportScale;
-  }
-  
-  protected P3 ptScaled = new P3();
-  /**
-   * used only for VRML and X3D; could be expanded
-   * 
-   * @param pt
-   * @return pt or pt scaled by exportScale
-   */
-  protected T3 scalePt(T3 pt) {
-    if (exportScale == 1)
-      return pt;
-    ptScaled.setT(pt);
-    ptScaled.scale(exportScale);
-    return ptScaled;
   }
 
   protected int getCoordinateMap(T3[] vertices, int[] coordMap, BS bsValid) {
@@ -301,7 +278,11 @@ abstract public class __CartesianExporter extends ___Exporter {
     } else {
       tempV2.ave(tempP2, tempP1);
       tempP3.setT(tempV2);
-      outputCylinder(null, tempP1, tempP3, colix1,
+      if (solidOnly && endcaps == GData.ENDCAPS_NONE)
+        endcaps = GData.ENDCAPS_FLAT;
+      else if (canCapCylinders && endcaps == GData.ENDCAPS_SPHERICAL)
+        endcaps = (solidOnly ? GData.ENDCAPS_FLAT_TO_SPHERICAL : GData.ENDCAPS_OPEN_TO_SPHERICAL);
+      outputCylinder(null, tempP3, tempP1, colix1,
           (endcaps == GData.ENDCAPS_SPHERICAL ? GData.ENDCAPS_NONE
               : endcaps), radius, null, null, true);
       outputCylinder(null, tempP3, tempP2, colix2,
@@ -350,14 +331,22 @@ abstract public class __CartesianExporter extends ___Exporter {
   }
 
   @Override
-  protected void fillTriangle(short colix, T3 ptA, T3 ptB,
-                              T3 ptC, boolean twoSided) {
-      tm.unTransformPoint(ptA, tempP1);
-      tm.unTransformPoint(ptB, tempP2);
-      tm.unTransformPoint(ptC, tempP3);
-    outputTriangle(tempP1, tempP2, tempP3, colix);
-    if (twoSided)
-      outputTriangle(tempP1, tempP3, tempP2, colix);
+  protected void fillTriangle(short colix, T3 ptA, T3 ptB, T3 ptC,
+                              boolean twoSided) {
+    tm.unTransformPoint(ptA, tempP1);
+    tm.unTransformPoint(ptB, tempP2);
+    tm.unTransformPoint(ptC, tempP3);
+    if (twoSided && solidOnly) {
+      outputSolidPlate(tempP1, tempP2, tempP3, colix);
+    } else {
+      outputTriangle(tempP1, tempP2, tempP3, colix);
+      if (twoSided)
+        outputTriangle(tempP1, tempP3, tempP2, colix);
+    }
+  }
+
+  protected void outputSolidPlate(P3 tempP1, P3 tempP2, P3 tempP3, short colix) {
+    // VRML/STL only
   }
 
   protected M4 sphereMatrix = new M4();

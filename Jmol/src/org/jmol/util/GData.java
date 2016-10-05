@@ -58,6 +58,8 @@ public class GData implements JmolGraphicsInterface {
   public final static byte ENDCAPS_HIDDEN = 1; // no cap, but interior
   public final static byte ENDCAPS_FLAT = 2;
   public final static byte ENDCAPS_SPHERICAL = 3;
+  public final static byte ENDCAPS_OPEN_TO_SPHERICAL = 4;
+  public final static byte ENDCAPS_FLAT_TO_SPHERICAL = 5;
   
   /**
    * It is possible to instantiate this class with no Graphics3D. 

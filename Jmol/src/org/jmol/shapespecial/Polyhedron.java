@@ -41,7 +41,7 @@ public class Polyhedron {
   public int[][] triangles;
   public int[][] faces;
   int nVertices;
-  boolean collapsed;
+  public boolean collapsed;
   private BS bsFlat;
   private float distanceRef;
   private V3[] normals;

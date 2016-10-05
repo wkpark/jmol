@@ -107,7 +107,7 @@ public class _PovrayExporter extends __RayTracerExporter {
       f = 1f/vwr.tm.getPerspectiveFactor((vwr.tm.getCameraDepth() - 0.5f) * vwr.getScreenDim());
 //      f = 1f/vwr.tm.getPerspectiveFactor(2500);
       output("  perspective\n");
-      output("  angle " + aperatureAngle + "\n");
+      output("  angle " + apertureAngle + "\n");
       output("  right < " + screenWidth + ", 0, 0>\n");
       output("  up < 0, " + -screenHeight + ", 0 >\n");
     } else {

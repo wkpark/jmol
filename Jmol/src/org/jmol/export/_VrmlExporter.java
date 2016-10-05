@@ -26,26 +26,23 @@
 package org.jmol.export;
 
 
-import javajs.awt.Font;
-import javajs.util.Lst;
 import java.util.Hashtable;
-
 import java.util.Map;
 
-
-import org.jmol.java.BS;
-import org.jmol.util.GData;
-import org.jmol.util.Geodesic;
-
-import javajs.util.P3;
-
+import javajs.awt.Font;
 import javajs.util.A4;
 import javajs.util.AU;
+import javajs.util.Lst;
+import javajs.util.Measure;
+import javajs.util.P3;
 import javajs.util.PT;
 import javajs.util.Quat;
 import javajs.util.T3;
 import javajs.util.V3;
 
+import org.jmol.java.BS;
+import org.jmol.util.GData;
+import org.jmol.util.Geodesic;
 import org.jmol.viewer.Viewer;
 
 /**
@@ -70,11 +67,13 @@ public class _VrmlExporter extends __CartesianExporter {
   public _VrmlExporter() {
     useTable = new UseTable("USE ");
     commentChar = "# ";
+    canCapCylinders = true;
+    solidOnly = true;
   }
   
   @Override
   protected void output(T3 pt) {
-    output(round(/*scalePt*/(pt)));
+    output(round(pt));
   }
   
   protected UseTable useTable;
@@ -98,6 +97,8 @@ public class _VrmlExporter extends __CartesianExporter {
     float angle = getViewpoint();
     output("Viewpoint{fieldOfView " + angle);
     output(" position ");
+    // remove export scaling for from Viewpoint so on-screen version is good.
+    cameraPosition.z *= exportScale;
     output(cameraPosition);
     output(" orientation ");
     output(tempP1);
@@ -108,15 +109,13 @@ public class _VrmlExporter extends __CartesianExporter {
   }
 
   protected void outputInitialTransform() {
-    if (exportScale != 1) {
-      pushMatrix();
-      outputScale(exportScale, exportScale, exportScale);
-      output("\nchildren [\n");
-    }
+    pushMatrix();
+    outputAttr("scale", exportScale, exportScale, exportScale);
+    output("\nchildren [\n");
     pushMatrix();
     tempP1.setT(center);
     tempP1.scale(-1);
-    outputTranslation(tempP1);
+    outputAttr("translation", tempP1.x, tempP1.y, tempP1.z);
     output("\nchildren [\n");
   }
 
@@ -124,16 +123,14 @@ public class _VrmlExporter extends __CartesianExporter {
     viewpoint.setM(vwr.tm.matrixRotate);
     tempP1.set(viewpoint.x, viewpoint.y, (viewpoint.angle == 0 ? 1
         : viewpoint.z));
-    return (float) (aperatureAngle * Math.PI / 180);
+    return (float) (apertureAngle * Math.PI / 180);
   }  
  
   @Override
   protected void outputFooter() {
     useTable = null;
     output("\n]}\n");
-    if (exportScale != 1) {
-      output("]}");
-    }
+    output("]}"); // scale
   }
 
   protected void outputAppearance(short colix, boolean isText) {
@@ -152,79 +149,174 @@ public class _VrmlExporter extends __CartesianExporter {
     output(def);
   }
   
+  protected void pushMatrix() {
+    output("Transform{");
+  }
+
+  protected void popMatrix() {
+    output("}\n");
+  }
+
+  protected void outputAttrPt(String attr, T3 pt) {
+    output(" " + attr + " " + pt.x + " " + pt.y + " " + pt.z);
+  }
+
+  protected void outputAttr(String attr, float x, float y, float z) {
+    output(" " + attr + " " + round(x) + " " + round(y) + " " + round(z));
+  }
+  
+  protected void outputRotation(A4 a) {
+    output(" rotation ");
+    output(tempV2);
+    output(" ");
+    output(round((float) Math.PI));
+  }
+
+  protected void outputTransRot(P3 pt1, P3 pt2, int x, int y, int z) {
+    tempV1.ave(pt2, pt1);
+    outputAttrPt("translation", tempV1);
+    tempV1.sub(pt1);
+    tempV1.normalize();
+    tempV2.set(x, y, z);
+    tempV2.add(tempV1);
+    outputRotation(A4.newVA(tempV2, (float) Math.PI));
+  }
+
+  protected void outputQuaternionFrame(P3 ptCenter, P3 ptX, P3 ptY, P3 ptZ,
+                                       float xScale, float yScale,
+                                       float zScale) {
+
+    //Hey, hey -- quaternions to the rescue!
+    // Just send three points to Quaternion to define a plane and return
+    // the AxisAngle required to rotate to that position. That's all there is to it.
+
+    tempQ1.setT(ptX);
+    tempQ2.setT(ptY);
+    A4 a = Quat.getQuaternionFrame(ptCenter, tempQ1, tempQ2).toAxisAngle4f();
+    if (!Float.isNaN(a.x)) {
+      tempQ1.set(a.x, a.y, a.z);
+      outputRotation(a);
+    }
+    float sx =  (ptX.distance(ptCenter) * xScale);
+    float sy =  (ptY.distance(ptCenter) * yScale);
+    float sz =  (ptZ.distance(ptCenter) * zScale);
+    outputAttr("scale", sx, sy, sz);
+  }
+
+  protected void outputChildShapeStart() {
+    output(" children[");
+    outputShapeStart();
+  }
+
+  protected void outputShapeStart() {
+    output(" Shape{geometry ");
+  }
+
+  protected void outputDefChildFaceSet(String child) {
+    if (child != null)
+      output("DEF " + child + " ");
+    outputFaceSetStart();
+  }
+
+  protected void outputFaceSetStart() {
+    output("IndexedFaceSet {");
+  }
+
+  protected void outputFaceSetClose() {
+    output("}\n");
+  }
+
+  protected void outputUseChildClose(String child) {
+    output(child);
+  }
+  
+  protected void outputChildShapeClose() {
+    outputShapeClose();
+    output("]");
+  }
+
+  protected void outputShapeClose() {
+    output("}");
+  }
+
+  protected void outputCloseTag() {
+    // nothing to do
+  }
+
   @Override
   protected void outputCircle(P3 pt1, P3 pt2, float radius, short colix,
                             boolean doFill) {
     // not in _StlExport
+    // not fixed -- still duplicated in X3d
     if (doFill) {
       // draw filled circle
-
-      output("Transform{translation ");
+      pushMatrix();
         tempV1.ave(pt1, pt2);
-        outputTranslation(tempV1);
+        outputAttr("translation", tempV1.x, tempV1.y, tempV1.z);
         output(" children [ Billboard{axisOfRotation 0 0 0 children [ Transform{rotation 1 0 0 1.5708");
-          float height =/*scale*/(pt1.distance(pt2));
-          outputScale(radius, height, radius);
+          float height = (pt1.distance(pt2));
+          outputAttr("scale", radius, height, radius);
           outputCylinderChildScaled(colix, GData.ENDCAPS_FLAT);
         output("}] }]\n");
-      output("}\n");
+      popMatrix();
       return;
     }
 
     // draw a thin torus
 
     String child = getDef("C" + colix + "_" + radius);
-    output("Transform{");
-    outputTransRot(pt1, pt2, 0, 0, 1, " ", "");
-    outputScale(radius, radius, radius);
-    output(" children [");
-      if (child.charAt(0) == '_') {
-        output("DEF " + child);
-        output(" Billboard{axisOfRotation 0 0 0 children [ Transform{children[");
-          output(" Shape{");
-            output("geometry Extrusion{beginCap FALSE convex FALSE endCap FALSE creaseAngle 1.57");
-              output(" crossSection [");
-              float rpd = 3.1415926f / 180;
-              float scale = 0.02f / radius;
-              for (int i = 0; i <= 360; i += 10) {
-                output(round(Math.cos(i * rpd) * scale) + " ");
-                output(round(Math.sin(i * rpd) * scale) + " ");
-              }
-              output("] spine [");
-              for (int i = 0; i <= 360; i += 10) {
-                output(round(Math.cos(i * rpd)) + " ");
-                output(round(Math.sin(i * rpd)) + " 0 ");
-              }
-              output("]");
+    pushMatrix();
+      outputTransRot(pt1, pt2, 0, 0, 1);
+      outputAttr("scale", radius, radius, radius);
+      output(" children [");
+        if (child.charAt(0) == '_') {
+          output("DEF " + child);
+          output(" Billboard{axisOfRotation 0 0 0 children [ Transform{children[");
+            output(" Shape{");
+              output("geometry Extrusion{beginCap FALSE convex FALSE endCap FALSE creaseAngle 1.57");
+                output(" crossSection [");
+                float rpd = 3.1415926f / 180;
+                float scale = 0.02f / radius;
+                for (int i = 0; i <= 360; i += 10) {
+                  output(round(Math.cos(i * rpd) * scale) + " ");
+                  output(round(Math.sin(i * rpd) * scale) + " ");
+                }
+                output("] spine [");
+                for (int i = 0; i <= 360; i += 10) {
+                  output(round(Math.cos(i * rpd)) + " ");
+                  output(round(Math.sin(i * rpd)) + " 0 ");
+                }
+                output("]");
+              output("}");
+              outputAppearance(colix, false);
             output("}");
-            outputAppearance(colix, false);
-          output("}");
-        output("]} ]}");
-      } else {
-        output(child);
-      }
-    output("]}\n");
+          output("]} ]}");
+        } else {
+          output(child);
+        }
+      output("]");
+    popMatrix();
   }
 
   @Override
   protected void outputCone(P3 ptBase, P3 ptTip, float radius,
                             short colix) {
-    //radius =/*scale*/(radius);
-    float height =/*scale*/(ptBase.distance(ptTip));
+    float height = (ptBase.distance(ptTip));
     pushMatrix();
-      outputTransRot(ptBase, ptTip, 0, 1, 0, " ", "");
-      outputScale(radius, height, radius);
-      output(" children[Shape{geometry ");
-        String child = getDef("c");// + cone + "_" + colix);
+      outputTransRot(ptBase, ptTip, 0, 1, 0);
+      outputAttr("scale", radius, height, radius);
+      outputCloseTag();
+      outputChildShapeStart();
+        String child = getDef("c");
         if (child.charAt(0) == '_') {
-          output("DEF " + child + " IndexedFaceSet {");
+          outputDefChildFaceSet(child);
           outputConeGeometry(true);
-          output(" }\n");
+          outputFaceSetClose();
         } else {
-          output(child);  
+          outputUseChildClose(child);  
         }
         outputAppearance(colix, false);
-      output("}]");
+      outputChildShapeClose();
     popMatrix();
   }
 
@@ -254,101 +346,70 @@ public class _VrmlExporter extends __CartesianExporter {
   }
 
   @Override
-  protected boolean outputCylinder(P3 ptCenter, P3 pt1, P3 pt2,
-                                   short colix, byte endcaps, float radius,
-                                   P3 ptX, P3 ptY, boolean checkRadius) {
-    float height =/*scale*/(pt1.distance(pt2));
+  protected boolean outputCylinder(P3 ptCenter, P3 pt1, P3 pt2, short colix,
+                                   byte endcaps, float radius, P3 ptX, P3 ptY,
+                                   boolean checkRadius) {
+    float height = (pt1.distance(pt2));
+    if (radius < 0.01f)
+      return false; // nucleic edges are 0.005f
     pushMatrix();
-      if (ptX == null) {
-        outputTransRot(pt1, pt2, 0, 1, 0, " ", "");
-        outputScale(radius, height, radius);
-      } else {
-        // arcs of ellipsoid rendering only
-        outputTranslation(ptCenter);
-        outputQuaternionFrame(ptCenter, ptY, pt1, ptX, 2, 2, 2, " ", "");
-        pt1.set(0, 0, -0.5f);
-        pt2.set(0, 0, 0.5f);
-      }
-      outputCylinderChildScaled(colix, endcaps);
-    popMatrix();
-    if (endcaps == GData.ENDCAPS_SPHERICAL) {
-      outputSphere(pt1, radius * 1.01f, colix, checkRadius);
-      outputSphere(pt2, radius * 1.01f, colix, checkRadius);
+    if (ptX == null) {
+      outputTransRot(pt1, pt2, 0, 1, 0);
+      outputAttr("scale", radius, height, radius);
+    } else {
+      // arcs of ellipsoid rendering only
+      outputAttrPt("translation", ptCenter);
+      outputQuaternionFrame(ptCenter, ptY, pt1, ptX, 2, 2, 2);
+      pt1.set(0, 0, -0.5f);
+      pt2.set(0, 0, 0.5f);
     }
+    outputCloseTag();
+    outputCylinderChildScaled(colix, endcaps);
+    popMatrix();
+    //    if (endcaps == GData.ENDCAPS_SPHERICAL) {
+    //      outputSphere(pt1, radius * 1.01f, colix, checkRadius);
+    //      outputSphere(pt2, radius * 1.01f, colix, checkRadius);
+    //    }
     return true;
   }
-
   
-  protected void pushMatrix() {
-    output("Transform{");
-  }
-
-  protected void popMatrix() {
-    output("}\n");
-  }
-
-  protected void outputQuaternionFrame(P3 ptCenter, P3 ptX, P3 ptY, P3 ptZ,
-                                       float xScale, float yScale,
-                                       float zScale, String pre, String post) {
-
-    //Hey, hey -- quaternions to the rescue!
-    // Just send three points to Quaternion to define a plane and return
-    // the AxisAngle required to rotate to that position. That's all there is to it.
-
-    tempQ1.setT(ptX);
-    tempQ2.setT(ptY);
-    A4 a = Quat.getQuaternionFrame(ptCenter, tempQ1, tempQ2).toAxisAngle4f();
-    if (!Float.isNaN(a.x)) {
-      if (isBinary) {
-        tempQ1.set(a.x, a.y, a.z);
-        outputRotation(a);
-      } else {
-        output(" rotation");
-        output(pre);
-        output(a.x + " " + a.y + " " + a.z + " " + a.angle);
-        output(post);
-      }
-    }
-    float sx = /*scale*/(ptX.distance(ptCenter) * xScale);
-    float sy = /*scale*/(ptY.distance(ptCenter) * yScale);
-    float sz = /*scale*/(ptZ.distance(ptCenter) * zScale);
-    if (isBinary) {
-      outputScale(sx, sy, sz);
-    } else {
-      output(" scale");
-      output(pre);
-      output(round(sx) + " " + round(sy) + " " + round(sz));
-      output(post);
-    }
-  }
-
   protected void outputCylinderChildScaled(short colix, byte endcaps) {
-    output(" children[Shape{geometry ");
-      String child = getDef("C" + "_" + endcaps);
-      if (child.charAt(0) == '_') {
-        output("DEF " + child + " IndexedFaceSet {");
-        outputCylinderGeometry(endcaps == GData.ENDCAPS_FLAT);
-        output("}\n");
-      } else {
-        output(child);
-      }
-      outputAppearance(colix, false);
-    output("}]");
+    outputChildShapeStart();
+    String child = getDef("C" + "_" + endcaps);
+    if (child.charAt(0) == '_') {
+      outputDefChildFaceSet(child);
+      outputCylinderGeometry(endcaps);
+      outputFaceSetClose();
+    } else {
+      outputUseChildClose(child);
+    }
+    outputAppearance(colix, false);
+    outputChildShapeClose();
   }
-
   
-  protected void outputCylinderGeometry(boolean addEndCaps) {
+  protected void outputCylinderGeometry(int endcaps) {
     //" Cylinder{height " 
     //+ round(length) + " radius " + radius 
     //+ (endcaps == GData.ENDCAPS_FLAT ? "" : " top FALSE bottom FALSE") + "}");
     int ndeg = 10;
     int n = 360 / ndeg;
-    int vertexCount = n * 2 + (addEndCaps ? 2 : 0);
-    int[][] faces = AU.newInt2(n * (addEndCaps ? 4 : 2));
+    int vertexCount = n * 2;
+    boolean addEndcaps = false;
+    switch (endcaps) {  
+    case GData.ENDCAPS_SPHERICAL:
+    case GData.ENDCAPS_FLAT_TO_SPHERICAL:
+    case GData.ENDCAPS_OPEN_TO_SPHERICAL:
+      // TODO  endcaps in VRML, X3D, STL
+    case GData.ENDCAPS_FLAT:
+      vertexCount += 2;
+      addEndcaps = true;
+      break;
+    }
+    int[][] faces = AU.newInt2(n * (addEndcaps ? 4 : 2));
     for (int i = 0, fpt = 0; i < n; i++) {
       faces[fpt++] = new int[] { i, (i + 1) % n, i + n };
       faces[fpt++] = new int[] { (i + 1) % n, (i + 1) % n + n, i + n };
-      if (addEndCaps) {
+      if (addEndcaps) {
         faces[fpt++] = new int[] { i, (i + n - 1) % n, vertexCount - 2 };
         faces[fpt++] = new int[] { i + n, (i + n + 1) % n + n, vertexCount - 1 };
       }
@@ -364,7 +425,7 @@ public class _VrmlExporter extends __CartesianExporter {
       float y = (float) (Math.sin((i + 0.5) * ndeg / 180 * Math.PI)); 
       vertexes[i + n] = P3.new3(x, -0.5f, y);
     }
-    if (addEndCaps) {
+    if (addEndcaps) {
       vertexes[vertexCount - 2] = P3.new3(0, 0.5f, 0);
       vertexes[vertexCount - 1] = P3.new3(0, -0.5f, 0);
     }
@@ -372,127 +433,11 @@ public class _VrmlExporter extends __CartesianExporter {
         null, null, null);
   }
 
-
-  protected P3 tempQ1 = new P3();
-  protected P3 tempQ2 = new P3();
-  protected P3 tempQ3 = new P3();
-
-  @Override
-  protected void outputSurface(T3[] vertices, T3[] normals, short[] colixes,
-                               int[][] indices, short[] polygonColixes,
-                               int nVertices, int nPolygons, int nTriangles,
-                               BS bsPolygons, int faceVertexMax, short colix,
-                               Lst<Short> colorList,
-                               Map<Short, Integer> htColixes, P3 offset) {
-    output("Shape {geometry IndexedFaceSet {");
-    outputGeometry(vertices, normals, colixes, indices, polygonColixes,
-        nVertices, nPolygons, bsPolygons, faceVertexMax, colorList, htColixes,
-        offset);
-    output("}\n");
-    outputAppearance(colix, false);
-    output("}\n");
-  }
-
-  protected void outputGeometry(T3[] vertices, T3[] normals,
-                               short[] colixes, int[][] indices,
-                               short[] polygonColixes,
-                               int nVertices, int nPolygons, BS bsPolygons,
-                               int faceVertexMax,
-                               Lst<Short> colorList, Map<Short, Integer> htColixes, P3 offset) {
-    output("  creaseAngle 0.5  \n");
-    if (polygonColixes != null)
-      output(" colorPerVertex FALSE\n");
-
-    // coordinates
-
-    output("coord Coordinate {\npoint [\n");
-    outputVertices(vertices, nVertices, offset);
-    output("   ]\n");
-    output("  }\n");
-    output("  coordIndex [\n");
-    int[] map = new int[nVertices];
-    getCoordinateMap(vertices, map, null);
-    outputIndices(indices, map, nPolygons, bsPolygons, faceVertexMax);
-    output("  ]\n");
-
-    // normals
-
-    if (normals != null) {
-      Lst<String> vNormals = new  Lst<String>();
-      map = getNormalMap(normals, nVertices, null, vNormals);
-      output("  solid FALSE\n  normalPerVertex TRUE\n   normal Normal {\n  vector [\n");
-      outputNormals(vNormals);
-      output("   ]\n");
-      output("  }\n");
-      output("  normalIndex [\n");
-      outputIndices(indices, map, nPolygons, bsPolygons, faceVertexMax);
-      output("  ]\n");
-    }
-
-    map = null;
-    
-    // colors
-
-    if (colorList != null) {
-      output("  color Color { color [\n");
-      outputColors(colorList);
-      output("  ] } \n");
-      output("  colorIndex [\n");
-      outputColorIndices(indices, nPolygons, bsPolygons, faceVertexMax, htColixes, colixes, polygonColixes);
-      output("  ]\n");
-    }
-  }
-
-  @Override
-  protected void outputFace(int[] face, int[] map, int faceVertexMax) {
-    output(map[face[0]] + " " + map[face[1]] + " " + map[face[2]] + " -1\n");
-    if (faceVertexMax == 4 && face.length == 4)
-      output(map[face[0]] + " " + map[face[2]] + " " + map[face[3]] + " -1\n");
-  }
-
-  protected void outputNormals(Lst<String> vNormals) {
-    int n = vNormals.size();
-    for (int i = 0; i < n; i++) {
-      output(vNormals.get(i));
-    }
-  }
-
-  protected void outputColors(Lst<Short> colorList) {
-    int nColors = colorList.size();
-    for (int i = 0; i < nColors; i++) {
-      String color = rgbFractionalFromColix(colorList.get(i).shortValue());
-      output(" ");
-      output(color);
-      output("\n");
-    }
-  }
-
-  protected void outputColorIndices(int[][] indices, int nPolygons, BS bsPolygons,
-                                  int faceVertexMax, Map<Short, Integer> htColixes,
-                                  short[] colixes, short[] polygonColixes) {
-    boolean isAll = (bsPolygons == null);
-    int i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit(0));
-    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsPolygons.nextSetBit(i + 1))) {
-      if (polygonColixes == null) {
-        output(htColixes.get(Short.valueOf(colixes[indices[i][0]])) + " "
-            + htColixes.get(Short.valueOf(colixes[indices[i][1]])) + " "
-            + htColixes.get(Short.valueOf(colixes[indices[i][2]])) + " -1\n");
-        if (faceVertexMax == 4 && indices[i].length == 4)
-          output(htColixes.get(Short.valueOf(colixes[indices[i][0]])) + " "
-              + htColixes.get(Short.valueOf(colixes[indices[i][2]])) + " "
-              + htColixes.get(Short.valueOf(colixes[indices[i][3]])) + " -1\n");
-      } else {
-        output(htColixes.get(Short.valueOf(polygonColixes[i])) + "\n");
-      }
-    }
-  }
-
   private Map<String, Boolean> htSpheresRendered = new Hashtable<String, Boolean>();
 
   @Override
   protected void outputSphere(P3 ptCenter, float radius, short colix, boolean checkRadius) {
-    //radius =/*scale*/(radius);
-    String check = round(/*scalePt*/(ptCenter)) + (checkRadius ? " " + (int) (radius * 100) : "");
+    String check = round(ptCenter) + (checkRadius ? " " + (int) (radius * 100) : "");
     if (htSpheresRendered.get(check) != null)
       return;
     htSpheresRendered.put(check, Boolean.TRUE);
@@ -504,30 +449,32 @@ public class _VrmlExporter extends __CartesianExporter {
     outputSphereChildScaled(ptCenter, 1.0f, points, colix);
   }
 
-  protected void outputSphereChildScaled(P3 ptCenter, float radius, P3[] points, short colix) {
+  protected void outputSphereChildScaled(P3 ptCenter, float radius,
+                                         P3[] points, short colix) {
 
     // Hey, hey -- quaternions to the rescue!
     // Just send three points to Quaternion to define a plane and return
     // the AxisAngle required to rotate to that position. That's all there is to
     // it.
-    
-    String child = getDef("S");
+
     pushMatrix();
-      outputTranslation(ptCenter);
-      if (points == null) 
-        outputScale(radius, radius, radius);
-      else
-        outputQuaternionFrame(ptCenter, points[1], points[3], points[5], 1, 1, 1, " ", "");  
-      output(" children[Shape{geometry ");
-        if (child.charAt(0) == '_') {
-          output("DEF " + child + " IndexedFaceSet {");
-          outputSphereGeometry();
-          output("}\n");
-        } else {
-          output(child);
-        }
-        outputAppearance(colix, false);
-      output("}]");
+    outputAttrPt("translation", ptCenter);
+    if (points == null)
+      outputAttr("scale", radius, radius, radius);
+    else
+      outputQuaternionFrame(ptCenter, points[1], points[3], points[5], 1, 1, 1);
+    outputCloseTag();
+    outputChildShapeStart();
+    String child = getDef("S");
+    if (child.charAt(0) == '_') {
+      outputDefChildFaceSet(child);
+      outputSphereGeometry();
+      outputFaceSetClose();
+    } else {
+      outputUseChildClose(child);
+    }
+    outputAppearance(colix, false);
+    outputChildShapeClose();
     popMatrix();
   }
   
@@ -546,10 +493,165 @@ public class _VrmlExporter extends __CartesianExporter {
         nFaces, null, 3, null, null, null);    
   }
 
+  private T3[] plateVertices;
+  private int[][] plateIndices;
+  private short[] plateColixes;
+
+  @Override
+  protected void outputSolidPlate(P3 tempP1, P3 tempP2, P3 tempP3, short colix) {
+    // nucleic plates
+    //  0   1    2
+    // 
+    //  3   4    5
+    if (plateVertices == null) {
+      plateVertices = new P3[6];
+      for (int i = 0; i < 6; i++)
+        plateVertices[i] = new P3();
+      //plateColixes = new short[8];
+      plateIndices = new int[][] { { 0, 1, 2 }, { 5, 4, 3 }, { 0, 3, 1 },
+          { 1, 3, 4 }, { 1, 4, 2 }, { 2, 4, 5 }, { 2, 5, 0 }, { 0, 5, 3 } };
+    }
+    Measure.calcNormalizedNormal(tempP1, tempP2, tempP3, tempV1, tempV2);
+    tempV1.scale(0.2f);
+    plateVertices[0].setT(tempP1);
+    plateVertices[1].setT(tempP2);
+    plateVertices[2].setT(tempP3);
+    for (int i = 0; i < 3; i++)
+      plateVertices[i].add(tempV1);
+    tempV1.scale(-2);
+    for (int i = 3; i < 6; i++)
+      plateVertices[i].add2(plateVertices[i - 3], tempV1);
+    //for (int i = 0; i < 8; i++)
+    //plateColixes[i] = colix;
+
+    outputSurface(plateVertices, null, null, plateIndices, plateColixes, 6, 8,
+        8, null, 3, colix, null, null, null);
+  }
+
+
+  protected P3 tempQ1 = new P3();
+  protected P3 tempQ2 = new P3();
+  protected P3 tempQ3 = new P3();
+
+  @Override
+  protected void outputSurface(T3[] vertices, T3[] normals, short[] colixes,
+                               int[][] indices, short[] polygonColixes,
+                               int nVertices, int nPolygons, int nTriangles,
+                               BS bsPolygons, int faceVertexMax, short colix,
+                               Lst<Short> colorList,
+                               Map<Short, Integer> htColixes, P3 offset) {
+    outputShapeStart();
+    outputDefChildFaceSet(null);
+    outputGeometry(vertices, normals, colixes, indices, polygonColixes,
+        nVertices, nPolygons, bsPolygons, faceVertexMax, colorList, htColixes,
+        offset);
+    outputFaceSetClose();
+    outputAppearance(colix, false);
+    outputShapeClose();
+  }
+
+  protected void outputGeometry(T3[] vertices, T3[] normals,
+                                short[] colixes, int[][] indices,
+                                short[] polygonColixes,
+                                int nVertices, int nPolygons, BS bsPolygons,
+                                int faceVertexMax,
+                                Lst<Short> colorList, Map<Short, Integer> htColixes, P3 offset) {
+     if (polygonColixes == null) 
+       output("  creaseAngle 0.5  \n");
+     else
+       output(" colorPerVertex FALSE\n");
+
+     // coordinates
+
+     output("coord Coordinate {\npoint [\n");
+     outputVertices(vertices, nVertices, offset);
+     output("   ]\n");
+     output("  }\n");
+     output("  coordIndex [\n");
+     int[] map = new int[nVertices];
+     getCoordinateMap(vertices, map, null);
+     outputIndices(indices, map, nPolygons, bsPolygons, faceVertexMax);
+     output("  ]\n");
+
+     // normals
+
+     if (normals != null) {
+       Lst<String> vNormals = new  Lst<String>();
+       map = getNormalMap(normals, nVertices, null, vNormals);
+       output("  solid FALSE\n  normalPerVertex TRUE\n   normal Normal {\n  vector [\n");
+       outputNormals(vNormals);
+       output("   ]\n");
+       output("  }\n");
+       output("  normalIndex [\n");
+       outputIndices(indices, map, nPolygons, bsPolygons, faceVertexMax);
+       output("  ]\n");
+     }
+
+     map = null;
+     
+     // colors
+
+     if (colorList != null) {
+       output("  color Color { color [\n");
+       outputColors(colorList);
+       output("  ] } \n");
+       output("  colorIndex [\n");
+       outputColorIndices(indices, nPolygons, bsPolygons, faceVertexMax, htColixes, colixes, polygonColixes);
+       output("  ]\n");
+     }
+   }
+
+   @Override
+   protected void outputFace(int[] face, int[] map, int faceVertexMax) {
+     output(map[face[0]] + " " + map[face[1]] + " " + map[face[2]] + " -1\n");
+     if (faceVertexMax == 4 && face.length == 4)
+       output(map[face[0]] + " " + map[face[2]] + " " + map[face[3]] + " -1\n");
+   }
+
+   protected void outputNormals(Lst<String> vNormals) {
+     int n = vNormals.size();
+     for (int i = 0; i < n; i++) {
+       output(vNormals.get(i));
+     }
+   }
+
+   protected void outputColors(Lst<Short> colorList) {
+     int nColors = colorList.size();
+     for (int i = 0; i < nColors; i++) {
+       String color = rgbFractionalFromColix(colorList.get(i).shortValue());
+       output(" ");
+       output(color);
+       output("\n");
+     }
+   }
+
+   protected void outputColorIndices(int[][] indices, int nPolygons, BS bsPolygons,
+                                   int faceVertexMax, Map<Short, Integer> htColixes,
+                                   short[] colixes, short[] polygonColixes) {
+     boolean isAll = (bsPolygons == null);
+     int i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit(0));
+     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsPolygons.nextSetBit(i + 1))) {
+       if (polygonColixes == null) {
+         output(htColixes.get(Short.valueOf(colixes[indices[i][0]])) + " "
+             + htColixes.get(Short.valueOf(colixes[indices[i][1]])) + " "
+             + htColixes.get(Short.valueOf(colixes[indices[i][2]])) + " -1\n");
+         if (faceVertexMax == 4 && indices[i].length == 4)
+           output(htColixes.get(Short.valueOf(colixes[indices[i][0]])) + " "
+               + htColixes.get(Short.valueOf(colixes[indices[i][2]])) + " "
+               + htColixes.get(Short.valueOf(colixes[indices[i][3]])) + " -1\n");
+       } else {
+         output(htColixes.get(Short.valueOf(polygonColixes[i])) + "\n");
+       }
+     }
+   }
+
   private int[][] oneFace;
   private P3[] threeVertices;
   @Override
-  protected void outputTriangle(T3 pt1, T3 pt2, T3 pt3, short colix) {    
+  protected void outputTriangle(T3 pt1, T3 pt2, T3 pt3, short colix) {  
+    
+    // TODO  -- this is a problem - not a closed surface
+    
     // called by fillQuadrilateral, fillTriangle3CN, fillTriangle3CNBits
     // fillTriangle3f, fillTriangle3i, fillTriangleTwoSided
     
@@ -560,7 +662,7 @@ public class _VrmlExporter extends __CartesianExporter {
     // cartoon, for nucleic acid bases
     // polyhedra
 
-    output("Shape{geometry IndexedFaceSet{solid FALSE "); 
+    output("Shape{geometry IndexedFaceSet{ "); 
     outputTriangleGeometry(pt1, pt2, pt3, colix);    
     output("}\n");
     outputAppearance(colix, false);
@@ -594,47 +696,6 @@ public class _VrmlExporter extends __CartesianExporter {
 //      output(child);
 //    }
 //    output("}\n");
-  }
-
-  protected void outputTransRot(P3 pt1, P3 pt2, int x, int y, int z,
-                                String pre, String post) {
-    tempV1.ave(pt2, pt1);
-    if (isBinary) {
-      outputTranslation(tempV1);
-    } else {
-      output("translation");
-      output(pre);
-      output(tempV1);
-      output(post);
-    }
-    tempV1.sub(pt1);
-    tempV1.normalize();
-    tempV2.set(x, y, z);
-    tempV2.add(tempV1);
-    if (isBinary) {
-      outputRotation(A4.newVA(tempV2, (float) Math.PI));
-    } else {
-      output(" rotation");
-      output(pre);
-      output(tempV2);
-      output(" ");
-      output(round((float) Math.PI));
-      output(post);
-    }
-  }
-
-  protected void outputScale(float x, float y, float z) {
-    output(" scale " + round(x) + " " + round(y) + " " + round(z));
-    // TODO
-    
-  }
-  
-  protected void outputTranslation(T3 pt) {
-    output("translation " + pt.x + " " + pt.y + " " + pt.z);
-  }
-
-  protected void outputRotation(A4 a) {
-    // STL only
   }
 
   protected float fontSize;

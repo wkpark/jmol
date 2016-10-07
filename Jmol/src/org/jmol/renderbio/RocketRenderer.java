@@ -1,16 +1,22 @@
 package org.jmol.renderbio;
 
+import javajs.util.AU;
 import javajs.util.P3;
+import javajs.util.T3;
 import javajs.util.V3;
 
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.c.STR;
 import org.jmol.java.BS;
 import org.jmol.modelsetbio.AlphaMonomer;
+import org.jmol.modelsetbio.AlphaPolymer;
+import org.jmol.modelsetbio.AminoMonomer;
+import org.jmol.modelsetbio.AminoPolymer;
 import org.jmol.modelsetbio.Helix;
 import org.jmol.modelsetbio.ProteinStructure;
 import org.jmol.modelsetbio.Sheet;
 import org.jmol.util.GData;
+import org.jmol.util.MeshSurface;
 import org.jmol.viewer.TransformManager;
 import org.jmol.viewer.Viewer;
 
@@ -96,7 +102,8 @@ public class RocketRenderer {
       renderPendingRocketSegment(endIndexPending, segments[startIndexPending],
           segments[endIndexPending], segments[endIndexPending + 1],
           renderArrowHead);
-    else if (proteinstructurePending instanceof Sheet)
+    else if (proteinstructurePending instanceof Sheet 
+        && ((Sheet)proteinstructurePending).apolymer instanceof AminoPolymer)
       renderPendingSheetPlank(segments[startIndexPending],
           segments[endIndexPending], segments[endIndexPending + 1],
           renderArrowHead);
@@ -140,26 +147,31 @@ public class RocketRenderer {
     }
   }
 
-  private final static byte[] boxFaces =
+  private final static int[][] boxFaces =
   {
-    0, 1, 3, 2,
-    0, 2, 6, 4,
-    0, 4, 5, 1,
-    7, 5, 4, 6,
-    7, 6, 2, 3,
-    7, 3, 1, 5 };
+    { 0, 1, 3, 2 },
+    { 0, 2, 6, 4 },
+    { 0, 4, 5, 1 },
+    { 7, 5, 4, 6 },
+    { 7, 6, 2, 3 },
+    { 7, 3, 1, 5 } };
 
-  private final static byte arrowHeadFaces[] =
-  {0, 1, 3, 2,
-   0, 4, 5, 2,
-   1, 4, 5, 3};
-
+  private final static int[][] arrowHeadFaces =
+  {
+    { 1, 0, 4 },
+    { 2, 3, 5 },
+    { 0, 1, 3, 2 },
+    { 2, 5, 4, 0 },
+    { 1, 4, 5, 3 }
+  };
+  
   private P3 ptC, ptTip;
   private P3[] corners, screenCorners;
   private V3 vW, vH;
+  private MeshSurface meshSurface;
 
-  private void renderPendingSheetPlank(P3 ptStart, P3 pointBeforeEnd,
-                                  P3 ptEnd, boolean renderArrowHead) {
+  private void renderPendingSheetPlank(P3 ptStart, P3 pointBeforeEnd, P3 ptEnd,
+                                       boolean renderArrowHead) {
     if (!g3d.setC(colix))
       return;
     if (corners == null) {
@@ -169,12 +181,11 @@ public class RocketRenderer {
       vH = new V3();
       screenCorners = new P3[8];
       corners = new P3[8];
-    }
-    if (corners[0] == null)
       for (int i = 8; --i >= 0;) {
         corners[i] = new P3();
         screenCorners[i] = new P3();
       }
+    }
     if (renderArrowHead) {
       setBox(1.25f, 0.333f, pointBeforeEnd);
       ptTip.scaleAdd2(-0.5f, vH, ptEnd);
@@ -185,25 +196,10 @@ public class RocketRenderer {
           corner.add(vW);
         if ((i & 2) != 0)
           corner.add(vH);
-        tm.transformPt3f(corner, screenCorners[i]);
       }
       corners[4].setT(ptTip);
-      tm.transformPt3f(ptTip, screenCorners[4]);
       corners[5].add2(ptTip, vH);
-      tm.transformPt3f(corners[5], screenCorners[5]);
-
-      g3d.fillTriangle3f(screenCorners[0], screenCorners[1], screenCorners[4],
-          true);
-      g3d.fillTriangle3f(screenCorners[2], screenCorners[3], screenCorners[5],
-          true);
-      for (int i = 0; i < 12; i += 4) {
-        int i0 = arrowHeadFaces[i];
-        int i1 = arrowHeadFaces[i + 1];
-        int i2 = arrowHeadFaces[i + 2];
-        int i3 = arrowHeadFaces[i + 3];
-        g3d.fillQuadrilateral(screenCorners[i0], screenCorners[i1],
-            screenCorners[i2], screenCorners[i3]);
-      }
+      renderPart(arrowHeadFaces);
       ptEnd = pointBeforeEnd;
     }
     setBox(1f, 0.25f, ptStart);
@@ -211,16 +207,9 @@ public class RocketRenderer {
     if (vtemp.lengthSquared() == 0)
       return;
     buildBox(ptC, vW, vH, vtemp);
-    for (int i = 0; i < 6; ++i) {
-      int i0 = boxFaces[i * 4];
-      int i1 = boxFaces[i * 4 + 1];
-      int i2 = boxFaces[i * 4 + 2];
-      int i3 = boxFaces[i * 4 + 3];
-      g3d.fillQuadrilateral(screenCorners[i0], screenCorners[i1],
-          screenCorners[i2], screenCorners[i3]);
-    }
+    renderPart(boxFaces);
   }
-
+  
   private void setBox(float w, float h, P3 pt) {
     ((Sheet) proteinstructurePending).setBox(w, h, pt, vW, vH, ptC, mad / 1000f);
   }
@@ -236,8 +225,34 @@ public class RocketRenderer {
         corner.add(scaledHeightVector);
       if ((i & 4) != 0)
         corner.add(lengthVector);
-      tm.transformPt3f(corner, screenCorners[i]);
     }
   }
 
+  private void renderPart(int[][] planes) {
+    if (rr.exportType == GData.EXPORT_CARTESIAN) {
+      if (meshSurface == null) {
+        meshSurface = new MeshSurface();
+        meshSurface.vs = corners;
+        meshSurface.haveQuads = true;
+        meshSurface.vc = corners.length;
+      }
+      meshSurface.pis = planes;
+      meshSurface.pc = planes.length;
+      g3d.drawSurface(meshSurface, colix);
+    } else {
+      for (int i = 8; --i >= 0;)
+        tm.transformPt3f(corners[i], screenCorners[i]);
+      for (int i = planes.length; --i >= 0;) {
+        int[] f = planes[i];
+        if (f.length == 3)
+          g3d.fillTriangle3f(screenCorners[f[0]], screenCorners[f[1]],
+              screenCorners[f[2]], true);
+        else
+          g3d.fillQuadrilateral(screenCorners[f[0]], screenCorners[f[1]],
+              screenCorners[f[2]], screenCorners[f[3]]);
+      }
+    }
+  }
+
+  
 }

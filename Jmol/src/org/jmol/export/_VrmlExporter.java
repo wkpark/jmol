@@ -166,10 +166,7 @@ public class _VrmlExporter extends __CartesianExporter {
   }
   
   protected void outputRotation(A4 a) {
-    output(" rotation ");
-    output(tempV2);
-    output(" ");
-    output(round((float) Math.PI));
+    output(" rotation " + a.x + " " + a.y + " " + a.z + " " + a.angle);
   }
 
   protected void outputTransRot(P3 pt1, P3 pt2, int x, int y, int z) {
@@ -320,7 +317,7 @@ public class _VrmlExporter extends __CartesianExporter {
     popMatrix();
   }
 
-  protected void outputConeGeometry(boolean addBase) {
+  private void outputConeGeometry(boolean addBase) {
     //output("DEF " + cone + " Cone{height " + round(height)
       //     + " bottomRadius " + round(radius) + "}");
     int ndeg = 10;
@@ -366,10 +363,18 @@ public class _VrmlExporter extends __CartesianExporter {
     outputCloseTag();
     outputCylinderChildScaled(colix, endcaps);
     popMatrix();
-    //    if (endcaps == GData.ENDCAPS_SPHERICAL) {
-    //      outputSphere(pt1, radius * 1.01f, colix, checkRadius);
-    //      outputSphere(pt2, radius * 1.01f, colix, checkRadius);
-    //    }
+    if (radius > 0.1f)
+      switch (endcaps) {
+      case GData.ENDCAPS_SPHERICAL:
+        outputSphere(pt1, radius * 1.01f, colix, checkRadius);
+        //$FALL-THROUGH$
+      case GData.ENDCAPS_FLAT_TO_SPHERICAL:
+      case GData.ENDCAPS_OPEN_TO_SPHERICAL:
+        outputSphere(pt2, radius * 1.01f, colix, checkRadius);
+        break;
+      case GData.ENDCAPS_FLAT:
+        break;
+      }
     return true;
   }
   
@@ -387,7 +392,7 @@ public class _VrmlExporter extends __CartesianExporter {
     outputChildShapeClose();
   }
   
-  protected void outputCylinderGeometry(int endcaps) {
+  private void outputCylinderGeometry(int endcaps) {
     //" Cylinder{height " 
     //+ round(length) + " radius " + radius 
     //+ (endcaps == GData.ENDCAPS_FLAT ? "" : " top FALSE bottom FALSE") + "}");
@@ -449,7 +454,7 @@ public class _VrmlExporter extends __CartesianExporter {
     outputSphereChildScaled(ptCenter, 1.0f, points, colix);
   }
 
-  protected void outputSphereChildScaled(P3 ptCenter, float radius,
+  private void outputSphereChildScaled(P3 ptCenter, float radius,
                                          P3[] points, short colix) {
 
     // Hey, hey -- quaternions to the rescue!
@@ -478,7 +483,7 @@ public class _VrmlExporter extends __CartesianExporter {
     popMatrix();
   }
   
-  protected void outputSphereGeometry() {
+  private void outputSphereGeometry() {
     //was output(" Shape{geometry Sphere{radius " + radius + "}");
     
     V3[] vertices = Geodesic.getVertexVectors();
@@ -652,15 +657,7 @@ public class _VrmlExporter extends __CartesianExporter {
     
     // TODO  -- this is a problem - not a closed surface
     
-    // called by fillQuadrilateral, fillTriangle3CN, fillTriangle3CNBits
-    // fillTriangle3f, fillTriangle3i, fillTriangleTwoSided
-    
-    // hermite, rockets, cartoons, labels
-    // mesh, isosurface
-    // mesh, isosurface
-    // rockets
-    // cartoon, for nucleic acid bases
-    // polyhedra
+    // from __CartesianExporter.fillTriangle only
 
     output("Shape{geometry IndexedFaceSet{ "); 
     outputTriangleGeometry(pt1, pt2, pt3, colix);    

@@ -115,7 +115,7 @@ public class AminoMonomer extends AlphaMonomer {
     return getAtomFromOffsetIndex(N);
   }
 
-  Atom getCarbonylCarbonAtom() {
+  public Atom getCarbonylCarbonAtom() {
     return getAtomFromOffsetIndex(C);
   }
 

@@ -122,11 +122,7 @@ public class _X3dExporter extends _VrmlExporter {
   
   @Override
   protected void outputRotation(A4 a) {
-    output(" rotation='");
-    output(tempV2);
-    output(" ");
-    output(round((float) Math.PI));
-    output("'");
+    output(" rotation='" + a.x + " " + a.y + " " + a.z + " " + a.angle + "'");
   }
 
 

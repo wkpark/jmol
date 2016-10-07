@@ -54,7 +54,7 @@ public abstract class ShapeRenderer {
   //working values
   public short colix;
   public short mad;
-  protected int exportType;
+  public int exportType;
   protected boolean isExport;
 
   protected void initRenderer() {}

@@ -1515,7 +1515,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   @Override
   public void fillTriangle3CNBits(P3 screenA, short colixA, short normixA, P3 screenB,
                                   short colixB, short normixB, P3 screenC, short colixC,
-                                  short normixC) {
+                                  short normixC, boolean twoSided) {
     // mesh, isosurface
     ((TriangleRenderer) triangle3d).fillTriangleP3f(screenA, screenB, screenC,
         checkGouraud(colixA, colixB, colixC, normixA, normixB, normixC), true);
@@ -1763,7 +1763,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   
       while (--count >= 0) {
         int zCurrent = line3d.getZCurrent(a, b, x++);
-        if (zCurrent >= slab && zCurrent <= depth && zCurrent < zb[offsetPbuf]) {
+        if (zCurrent >= slab && zCurrent <= depth) {// && zCurrent < zb[offsetPbuf]) {
           seed = ((seed << 16) + (seed << 1) + seed) & 0x7FFFFFFF;
           int bits = (seed >> 16) & 0x07;
             

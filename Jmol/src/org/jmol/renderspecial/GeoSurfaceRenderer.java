@@ -91,6 +91,7 @@ protected void renderConvex(short colix, BS visibilityMap, int nPoints) {
     //Logger.debug("geod frag "+mapMax+" "+dotCount);
     if (screenDotCount < mapMax)
       mapMax = screenDotCount;
+    // TODO use a mesh for this
     for (int f = 0; f < faces.length;) {
       p1 = faces[f++];
       p2 = faces[f++];
@@ -105,7 +106,7 @@ protected void renderConvex(short colix, BS visibilityMap, int nPoints) {
       facePt3.set(coords[faceMap[p3]], coords[faceMap[p3] + 1],
           coords[faceMap[p3] + 2]);
       g3d.fillTriangle3CNBits(facePt1, colix, p1, facePt2, colix, p2, facePt3,
-          colix, p3);
+          colix, p3, false);
     }
   }  
 }

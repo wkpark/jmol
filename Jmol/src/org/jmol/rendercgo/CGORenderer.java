@@ -358,7 +358,7 @@ public class CGORenderer extends DrawRenderer {
 
   private void fillTriangle() {
     g3d.fillTriangle3CNBits(pt0, colix0, normix0, pt1, colix1, normix1, pt2,
-        colix2, normix2);
+        colix2, normix2, false);
   }
 
 //  private void drawTriangleRGB(P3i s1, P3i s2, P3i s3, int c1,

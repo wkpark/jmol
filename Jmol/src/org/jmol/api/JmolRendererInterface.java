@@ -286,7 +286,7 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
 
   public abstract void fillTriangle3CNBits(P3 pA, short colixA, short nA,
                                            P3 pB, short colixB, short nB,
-                                           P3 pC, short colixC, short nC);
+                                           P3 pC, short colixC, short nC, boolean twoSided);
 
   public abstract void drawLineBits(short colixA, short colixB, P3 pointA, P3 pointB);
 

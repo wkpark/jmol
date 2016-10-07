@@ -333,6 +333,33 @@ abstract public class __CartesianExporter extends ___Exporter {
   @Override
   protected void fillTriangle(short colix, T3 ptA, T3 ptB, T3 ptC,
                               boolean twoSided) {
+    
+    // fillQuadrilateral
+    //   for cartoon (ribbon, not meshes, irrelevant here), rockets (boxes)
+    //   TODO: fix RocketRenderer
+    
+    // fillTriangle3CN, 
+    //   TODO: DrawRenderer draw POLYGON sets up a mesh set. Need to use it.
+    
+    // fillTriangle3CNBits
+    //   TODO: DrawRenderer needs to create wedges (two-sided)
+    //   TODO: EllipsoidRenderer needs to create a mesh or start a triangle set
+    //   TODO: GeosurfaceRenderer needs to use a mesh
+    
+    // fillTriangle3f, fillTriangle3i, 
+    
+    // fillTriangleTwoSided -     no problem
+    
+    
+
+    
+    // mesh, isosurface
+    // mesh, isosurface
+    // rockets
+    // cartoon, for nucleic acid bases
+    // polyhedra
+
+
     tm.unTransformPoint(ptA, tempP1);
     tm.unTransformPoint(ptB, tempP2);
     tm.unTransformPoint(ptC, tempP3);

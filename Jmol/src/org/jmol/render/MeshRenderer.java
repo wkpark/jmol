@@ -367,7 +367,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
         if (fill) {
           if (isPrecision)
             g3d.fillTriangle3CNBits(p3Screens[iA], colix, normix,
-                p3Screens[iB], colix, normix, p3Screens[iC], colix, normix);
+                p3Screens[iB], colix, normix, p3Screens[iC], colix, normix, false);
           else
             g3d.fillTriangle3CN(screens[iA], colix, normix, screens[iB], colix,
                 normix, screens[iC], colix, normix);
@@ -403,7 +403,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
           }
           if (isPrecision)
             g3d.fillTriangle3CNBits(p3Screens[iA], colix, nA, p3Screens[iB],
-                colix, nB, p3Screens[iC], colix, nC);
+                colix, nB, p3Screens[iC], colix, nC, false);
           else
             g3d.fillTriangle3CN(screens[iA], colix, nA, screens[iB], colix, nB,
                 screens[iC], colix, nC);
@@ -430,9 +430,9 @@ public abstract class MeshRenderer extends ShapeRenderer {
           }
           if (isPrecision) {
           g3d.fillTriangle3CNBits(p3Screens[iA], colix, nA, p3Screens[iB],
-              colix, nB, p3Screens[iC], colix, nC);
+              colix, nB, p3Screens[iC], colix, nC, false);
           g3d.fillTriangle3CNBits(p3Screens[iA], colix, nA, p3Screens[iC],
-              colix, nC, p3Screens[iD], colix, nD);
+              colix, nC, p3Screens[iD], colix, nD, false);
           } else {
             g3d.fillTriangle3CN(screens[iA], colix, nA, screens[iB],
                 colix, nB, screens[iC], colix, nC);

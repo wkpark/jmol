@@ -623,13 +623,13 @@ public class Export3D implements JmolRendererInterface {
   @Override
   public void fillTriangle3CNBits(P3 pA, short colixA, short nA, P3 pB,
                                   short colixB, short nB, P3 pC, short colixC,
-                                  short nC) {
-    // mesh, isosurface
+                                  short nC, boolean twoSided) {
+    // draw, ellipsoid
     if (colixA != colixB || colixB != colixC) {
       // shouldn't be here, because that uses renderIsosurface
       return;
     }
-    exporter.fillTriangle(colixA, pA, pB, pC, false);
+    exporter.fillTriangle(colixA, pA, pB, pC, twoSided);
   }
 
   @Override
@@ -674,6 +674,7 @@ public class Export3D implements JmolRendererInterface {
 
   @Override
   public void fillQuadrilateral(P3 pointA, P3 pointB, P3 pointC, P3 pointD) {
+    // fillTextRect
     // hermite, rockets, cartoons, labels
     exporter.fillTriangle(colix, pointA, pointB, pointC, false);
     exporter.fillTriangle(colix, pointA, pointC, pointD, false);

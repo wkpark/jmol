@@ -64,8 +64,8 @@ class Pixelator {
 
   public void addImagePixel(byte shade, int tLog, int offset, int z, int argb,
                             int bgargb) {
-    if (zb != g.zbuf)
-      System.out.println("OH");
+//    if (zb != g.zbuf)
+//      System.out.println("OH");
     if (z < zb[offset]) {
       switch (shade) {
       case 0:

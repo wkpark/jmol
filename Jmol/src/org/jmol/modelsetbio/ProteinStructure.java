@@ -44,7 +44,7 @@ public abstract class ProteinStructure implements Structure {
   int strandCount = 1;
 
   public int nRes;
-  protected AlphaPolymer apolymer;
+  public AlphaPolymer apolymer;
   protected int monomerIndexFirst;
   int monomerIndexLast;
   protected P3 axisA, axisB;

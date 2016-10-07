@@ -208,7 +208,7 @@ public abstract class ___Exporter {
     if (exportScale == 0) {
       exportScale = 10; // default is 1 cm/Angstrom -- 1 : 100,000,000
     }
-    Logger.info("__Exporter exportScale: ");
+    Logger.info("__Exporter exportScale: " + exportScale);
     if ((screenWidth <= 0) || (screenHeight <= 0)) {
       screenWidth = vwr.getScreenWidth();
       screenHeight = vwr.getScreenHeight();

@@ -63,6 +63,10 @@ public class PrecisionRenderer {
 
   
   protected void setRastAB(float xa, float za, float xb, float zb) {
+    xa = (int) xa;
+    xb = (int) xb;
+    za = (int) za;
+    zb = (int) zb;
     float zdif = (zb - za);
     float xdif = (xb - xa);
     if (zdif == 0 || xdif == 0) {

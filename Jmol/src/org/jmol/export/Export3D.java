@@ -56,7 +56,12 @@ public class Export3D implements JmolRendererInterface {
 
   String exportName;
 
-  private boolean isWebGL;
+  private boolean webGL;
+  
+  @Override
+  public boolean isWebGL() {
+    return webGL;
+  }
 
   private boolean isCartesian;
 
@@ -68,8 +73,8 @@ public class Export3D implements JmolRendererInterface {
   public Object initializeExporter(Viewer vwr, double privateKey,
                                    GData gdata, Map<String, Object> params) {
     exportName = (String) params.get("type");
-    isWebGL = exportName.equals("JS");
-    if ((exporter = (___Exporter) Interface.getOption("export." + (isWebGL ? "" : "_") + exportName + "Exporter", vwr, "export")) == null)
+    webGL = exportName.equals("JS");
+    if ((exporter = (___Exporter) Interface.getOption("export." + (webGL ? "" : "_") + exportName + "Exporter", vwr, "export")) == null)
       return null;
     exporter.export3D = this;
     isCartesian = (exporter.exportType == GData.EXPORT_CARTESIAN);
@@ -125,8 +130,8 @@ public class Export3D implements JmolRendererInterface {
   }
 
   @Override
-  public void drawAtom(Atom atom) {
-    exporter.drawAtom(atom);
+  public void drawAtom(Atom atom, float radius) {
+    exporter.drawAtom(atom, radius);
   }
 
   /**
@@ -147,7 +152,7 @@ public class Export3D implements JmolRendererInterface {
    */
   @Override
   public void drawRect(int x, int y, int z, int zSlab, int rWidth, int rHeight) {
-    if (isWebGL) {
+    if (webGL) {
       //TODO
       return;
     }
@@ -624,7 +629,7 @@ public class Export3D implements JmolRendererInterface {
   public void fillTriangle3CNBits(P3 pA, short colixA, short nA, P3 pB,
                                   short colixB, short nB, P3 pC, short colixC,
                                   short nC, boolean twoSided) {
-    // draw, ellipsoid
+    // draw polygon, polyhedron, geosurface
     if (colixA != colixB || colixB != colixC) {
       // shouldn't be here, because that uses renderIsosurface
       return;
@@ -636,26 +641,26 @@ public class Export3D implements JmolRendererInterface {
   public void fillTriangle3CN(P3i pointA, short colixA, short normixA,
                               P3i pointB, short colixB, short normixB,
                               P3i pointC, short colixC, short normixC) {
-    // mesh, isosurface
-    if (colixA != colixB || colixB != colixC) {
-      // shouldn't be here, because that uses renderIsosurface
-      return;
-    }
-    ptA.set(pointA.x, pointA.y, pointA.z);
-    ptB.set(pointB.x, pointB.y, pointB.z);
-    ptC.set(pointC.x, pointC.y, pointC.z);
-    exporter.fillTriangle(colixA, ptA, ptB, ptC, false);
+//    // (isosourface irrelevant)
+//    if (colixA != colixB || colixB != colixC) {
+//      // shouldn't be here, because that uses renderIsosurface
+//      return;
+//    }
+//    ptA.set(pointA.x, pointA.y, pointA.z);
+//    ptB.set(pointB.x, pointB.y, pointB.z);
+//    ptC.set(pointC.x, pointC.y, pointC.z);
+//    exporter.fillTriangle(colixA, ptA, ptB, ptC, false);
   }
 
   @Override
   public void fillTriangleTwoSided(short normix, P3 a, P3 b, P3 c) {
-    // polyhedra
+    // polyhedra (collapsed)
     exporter.fillTriangle(colix, a, b, c, true);
   }
 
   @Override
   public void fillTriangle3f(P3 pointA, P3 pointB, P3 pointC, boolean setNoisy) {
-    // rockets
+    // rockets (not cartesian)
     exporter.fillTriangle(colix, pointA, pointB, pointC, false);
   }
 
@@ -792,7 +797,7 @@ public class Export3D implements JmolRendererInterface {
   public void plotImagePixel(int argb, int x, int y, int z, byte shade,
                              int bgargb, int width, int height, int[] pbuf, Object p, int transpLog) {
     // from Text3D
-    if (isWebGL)
+    if (webGL)
       return;
     z = Math.max(slab, z);
     if (shade != 0) {
@@ -808,7 +813,7 @@ public class Export3D implements JmolRendererInterface {
   public void drawHermite7(boolean fill, boolean border, int tension, P3 s0,
                            P3 s1, P3 s2, P3 s3, P3 s4, P3 s5, P3 s6,
                            P3 s7, int aspectRatio, short colixBack) {
-    if (colixBack == 0 || isWebGL) {
+    if (colixBack == 0 || webGL) {
       hermite3d.renderHermiteRibbon(fill, border, tension, s0, s1, s2, s3, s4,
           s5, s6, s7, aspectRatio, 0);
       return;
@@ -824,7 +829,7 @@ public class Export3D implements JmolRendererInterface {
 
   @Override
   public void renderAllStrings(Object jr) {
-    if (isWebGL) {
+    if (webGL) {
       // TODO
       return;
     }

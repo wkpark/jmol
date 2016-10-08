@@ -90,16 +90,9 @@ public class _X3dExporter extends _VrmlExporter {
     output(getJmolPerspective());
     output("\n  -->\n\n");
     commentChar = null;
-    pushMatrix();
-    outputAttr("scale", exportScale, exportScale, exportScale);
-    output(">\n");
-    pushMatrix();
-    tempP1.setT(center);
-    tempP1.scale(-1);
-    outputAttrPt("translation", tempP1);
-    output(">\n");
+    outputInitialTransform();
   }
-
+  
   @Override
   protected void outputAttrPt(String attr, T3 pt) {
     output(" " + attr + "='" + pt.x + " " + pt.y + " " + pt.z + "'");

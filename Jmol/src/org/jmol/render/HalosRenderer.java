@@ -30,6 +30,7 @@ import org.jmol.modelset.Atom;
 import org.jmol.script.T;
 import org.jmol.shape.Halos;
 import org.jmol.util.C;
+import org.jmol.util.GData;
 import org.jmol.viewer.JC;
 
 
@@ -63,8 +64,12 @@ public class HalosRenderer extends ShapeRenderer {
           continue;
         if (mad == 0)
           mad = -1; // unsized
-        if (colix == C.INHERIT_ALL)
+        if (colix == C.INHERIT_ALL) {
+          // don't export selection halos, even to VRML
+          if (exportType == GData.EXPORT_CARTESIAN && !g3d.isWebGL())
+            continue;
           colix = halos.colixSelection;
+        }
         if (colix == C.USE_PALETTE)
           colix = C.GOLD;
         else if (colix == C.INHERIT_ALL)

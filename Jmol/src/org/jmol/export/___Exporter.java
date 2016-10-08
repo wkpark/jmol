@@ -461,7 +461,7 @@ public abstract class ___Exporter {
   // The following methods are called by a variety of shape renderers and 
   // Export3D, replacing methods in org.jmol.g3d. More will be added as needed. 
 
-  abstract void drawAtom(Atom atom);
+  abstract void drawAtom(Atom atom, float radius);
 
   abstract void drawCircle(int x, int y, int z,
                                    int diameter, short colix, boolean doFill);  //draw circle 

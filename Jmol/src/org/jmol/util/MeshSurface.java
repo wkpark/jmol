@@ -62,7 +62,7 @@ public class MeshSurface {
 
   public boolean colorsExplicit;
 
-  public boolean isTriangleSet; // just a set of flat polygons
+  public boolean isDrawPolygon; // just a set of flat polygons
   public boolean haveQuads;
   public short colix;
   public short colixBack;

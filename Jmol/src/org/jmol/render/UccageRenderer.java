@@ -118,7 +118,7 @@ public class UccageRenderer extends CageRenderer {
         || vwr.getObjectMad10(StateManager.OBJ_AXIS1) == 0 || axes.axisXY.z != 0
         || axes.fixedOrigin != null || axes.fixedOriginUC.lengthSquared() > 0 ? null
         : axes.axisPoints);
-    boolean drawAllLines = (vwr.getObjectMad10(StateManager.OBJ_AXIS1) == 0
+    boolean drawAllLines = (isExport || vwr.getObjectMad10(StateManager.OBJ_AXIS1) == 0
         || vwr.getFloat(T.axesscale) < 2 || axisPoints == null);
     P3[] aPoints = axisPoints;
     P3i[] faces = (hiddenLines ? BoxInfo.facePoints : null);

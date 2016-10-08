@@ -25,13 +25,11 @@
 
 package org.jmol.export;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Map;
 
 import javajs.awt.Font;
 import javajs.util.A4;
-import javajs.util.BinaryDocument;
 import javajs.util.Lst;
 import javajs.util.M4;
 import javajs.util.Measure;
@@ -110,31 +108,8 @@ public class _StlExporter extends _VrmlExporter {
     endloop
   endfacet
    */
-  private void writePoint(String s, T3 p) {
-    if (isDebug)
-      out.append(s);
-    writeFloat(p.x);
-    writeFloat(p.y);
-    writeFloat(p.z);
-    if (isDebug)
-      out.append("\n");
-  }
-
-  private void writeFloat(float f) {
-    if (isDebug)
-      out.append(" " + f);
-    else
-      oc.writeInt(Float.floatToIntBits(f));
-  }
-
-  @Override
-  protected void output(String data) {
-    // not used!
-  }
-
   Lst<M4> lstMatrix;
   
-  private T3 trans = new P3();
   
   @Override
   protected void pushMatrix() {
@@ -145,6 +120,21 @@ public class _StlExporter extends _VrmlExporter {
   @Override
    protected void popMatrix() {
     m4 = lstMatrix.removeItemAt(lstMatrix.size() - 1);
+  }
+
+  @Override
+  protected void output(String data) {
+    // not used!
+  }
+
+  @Override
+  protected void outputChildStart() {
+    // not used!
+  }
+
+  @Override
+  protected void outputChildClose() {
+    // not used!
   }
 
   private M4 m4a = new M4();
@@ -244,31 +234,50 @@ public class _StlExporter extends _VrmlExporter {
     // not implemented for solids
   }
 
-  @SuppressWarnings("unused")
-  private void checkFile(String fname) {
-    BinaryDocument doc = new BinaryDocument();
-    doc.setStream((BufferedInputStream) vwr.fm
-        .getBufferedReaderOrErrorMessageFromName(fname, null, true, false),
-        false);
-    try {
-      for (int j = 0; j < 20; j++)
-        doc.readInt();
-      System.out.println(doc.readInt());
-      for (int j = 0; j < 10; j++) {
-        for (int k = 0; k < 12; k++) {
-          float f = doc.readFloat();
-          System.out.println(j + " " + f + "\t"
-              + Integer.toHexString(Float.floatToIntBits(f)));
-          if (k % 3 == 2)
-            System.out.println("");
-        }
-        System.out.println(j + " " + doc.readShort() + "\n");
-      }
-    } catch (Exception e) {
-      // TODO
-    }
-    doc.close();
-  }
+  ///////////////  raw ASCII/binary write methods
   
+  private void writePoint(String s, T3 p) {
+    if (isDebug)
+      out.append(s);
+    writeFloat(p.x);
+    writeFloat(p.y);
+    writeFloat(p.z);
+    if (isDebug)
+      out.append("\n");
+  }
+
+  private void writeFloat(float f) {
+    if (isDebug)
+      out.append(" " + f);
+    else
+      oc.writeInt(Float.floatToIntBits(f));
+  }
+
+//@SuppressWarnings("unused")
+//private void checkFile(String fname) {
+//  BinaryDocument doc = new BinaryDocument();
+//  doc.setStream((BufferedInputStream) vwr.fm
+//      .getBufferedReaderOrErrorMessageFromName(fname, null, true, false),
+//      false);
+//  try {
+//    for (int j = 0; j < 20; j++)
+//      doc.readInt();
+//    System.out.println(doc.readInt());
+//    for (int j = 0; j < 10; j++) {
+//      for (int k = 0; k < 12; k++) {
+//        float f = doc.readFloat();
+//        System.out.println(j + " " + f + "\t"
+//            + Integer.toHexString(Float.floatToIntBits(f)));
+//        if (k % 3 == 2)
+//          System.out.println("");
+//      }
+//      System.out.println(j + " " + doc.readShort() + "\n");
+//    }
+//  } catch (Exception e) {
+//    // ignore
+//  }
+//  doc.close();
+//}
+
 
 }

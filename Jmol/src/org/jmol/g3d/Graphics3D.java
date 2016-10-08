@@ -225,6 +225,11 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   private int stringCount;
 
   @Override
+  public boolean isWebGL() {
+    return false;
+  }
+
+  @Override
   public void clear() {
     stringCount = 0;
     strings = null;
@@ -1763,7 +1768,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   
       while (--count >= 0) {
         int zCurrent = line3d.getZCurrent(a, b, x++);
-        if (zCurrent >= slab && zCurrent <= depth) {// && zCurrent < zb[offsetPbuf]) {
+        if (zCurrent >= slab && zCurrent <= depth && zCurrent < zb[offsetPbuf]) {
           seed = ((seed << 16) + (seed << 1) + seed) & 0x7FFFFFFF;
           int bits = (seed >> 16) & 0x07;
             
@@ -1917,7 +1922,8 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   }
 
   @Override
-  public void drawAtom(Atom atom) {
+  public void drawAtom(Atom atom, float radius) {
+    // radius is used for Cartesian Export only
     fillSphereXYZ(atom.sD, atom.sX, atom.sY, atom.sZ);
   }
 

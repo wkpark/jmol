@@ -637,7 +637,7 @@ private void initDraw() {
       if (polygon != null) {
         if (polygon.size() == 0)
           return false;
-        thisMesh.isTriangleSet = true;
+        thisMesh.isDrawPolygon = true;
         thisMesh.vs = (P3[]) polygon.get(0);
         thisMesh.pis = (int[][]) polygon.get(1);
         thisMesh.drawVertexCount = thisMesh.vc = thisMesh.vs.length;
@@ -1280,15 +1280,15 @@ private void initDraw() {
     pt.y = y;
     vwr.tm.unTransformPoint(pt, newcoord);
     move.sub2(newcoord, coord);
-    if (mesh.isTriangleSet)
+    if (mesh.isDrawPolygon)
       iVertex = ptVertex; // operate on entire set of vertices, not just the
                           // one for this model
     int n = (!moveAll ? iVertex + 1 
-        : mesh.isTriangleSet ? mesh.vs.length : vertexes.length);
+        : mesh.isDrawPolygon ? mesh.vs.length : vertexes.length);
     BS bsMoved = new BS();
     for (int i = (moveAll ? 0 : iVertex); i < n; i++)
       if (moveAll || i == iVertex) {
-        int k = (mesh.isTriangleSet ? i : vertexes[i]);
+        int k = (mesh.isDrawPolygon ? i : vertexes[i]);
         if (bsMoved.get(k))
           continue;
         bsMoved.set(k);
@@ -1321,16 +1321,16 @@ private void initDraw() {
     for (int i = 0; i < meshCount; i++) {
       DrawMesh m = dmeshes[i];
       if (m.visibilityFlags != 0) {
-        int mCount = (m.isTriangleSet ? m.pc
+        int mCount = (m.isDrawPolygon ? m.pc
             : m.modelFlags == null ? 1 : vwr.ms.mc);
         for (int iModel = mCount; --iModel >= 0;) {
           if (m.modelFlags != null
               && !m.modelFlags.get(iModel)
               || m.pis == null
-              || !m.isTriangleSet
+              || !m.isDrawPolygon
               && (iModel >= m.pis.length || m.pis[iModel] == null))
             continue;
-          for (int iVertex = (m.isTriangleSet ? 3
+          for (int iVertex = (m.isDrawPolygon ? 3
               : m.pis[iModel].length); --iVertex >= 0;) {
             try {
               int iv = m.pis[iModel][iVertex];

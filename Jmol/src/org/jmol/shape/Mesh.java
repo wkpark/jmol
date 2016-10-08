@@ -168,7 +168,7 @@ public class Mesh extends MeshSurface {
     havePlanarContours = false;
     haveXyPoints = false;
     isModelConnected = false;
-    isTriangleSet = false;
+    isDrawPolygon = false;
     isTwoSided = false;
     lattice = null;
     mat4 = null;
@@ -224,7 +224,7 @@ public class Mesh extends MeshSurface {
   }
 
   public V3[] getNormals(T3[] vertices, P4 plane) {
-    normixCount = (isTriangleSet ? pc : vc);
+    normixCount = (isDrawPolygon ? pc : vc);
     if (normixCount < 0)
       return null;
     V3[] normals = new V3[normixCount];
@@ -237,7 +237,7 @@ public class Mesh extends MeshSurface {
       for (int i = normixCount; --i >= 0;)
         normals[i] = normal;
     }
-    if (!isTriangleSet)
+    if (!isDrawPolygon)
       for (int i = normixCount; --i >= 0;) {
         normals[i].normalize();
       }
@@ -307,7 +307,7 @@ public class Mesh extends MeshSurface {
             || vA.distanceSquared(vC) < min)
           continue;
         Measure.calcNormalizedNormal(vA, vB, vC, m.vTemp, m.vAB);
-        if (m.isTriangleSet) {
+        if (m.isDrawPolygon) {
           normals[i].setT(m.vTemp);
         } else {
           float l = m.vTemp.length();

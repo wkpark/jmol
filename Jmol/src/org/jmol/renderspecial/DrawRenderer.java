@@ -69,7 +69,7 @@ public class DrawRenderer extends MeshRenderer {
     needTranslucent = false;
     imageFontScaling = vwr.imageFontScaling;
     Draw draw = (Draw) shape;
-    isPrecision = true;//vwr.tm.perspectiveDepth;
+    //isPrecision = true;//vwr.tm.perspectiveDepth;
     for (int i = draw.meshCount; --i >= 0;) {
       Mesh mesh = dmesh = (DrawMesh) draw.meshes[i];
       if (mesh.connectedAtoms != null) {
@@ -483,7 +483,7 @@ public class DrawRenderer extends MeshRenderer {
         int[] vertexIndexes = dmesh.pis[i];
         if (vertexIndexes == null)
           continue;
-        for (int j = (dmesh.isTriangleSet ? 3 : vertexIndexes.length); --j >= 0;) {
+        for (int j = (dmesh.isDrawPolygon ? 3 : vertexIndexes.length); --j >= 0;) {
           int k = vertexIndexes[j];
           if (bsHandles.get(k))
             continue;

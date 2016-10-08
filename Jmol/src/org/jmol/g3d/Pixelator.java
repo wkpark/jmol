@@ -46,6 +46,7 @@ class Pixelator {
   }
 
   void setBuf() {
+    stopped = false;
     zb = g.zbuf;
     pb = g.pbuf;
     
@@ -57,7 +58,12 @@ class Pixelator {
       zb[offset] = Integer.MAX_VALUE;
   }
   
+  boolean stopped;
   void addPixel(int offset, int z, int p) {
+//    if (offset == 64054) {
+//     System.out.println("pixelator " + Integer.toHexString(p) + " " + z);
+//     System.out.println("---");
+//    }
     zb[offset] = z;
     pb[offset] = p;
   }

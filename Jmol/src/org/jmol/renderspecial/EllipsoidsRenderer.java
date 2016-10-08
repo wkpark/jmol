@@ -457,13 +457,10 @@ final public class EllipsoidsRenderer extends ShapeRenderer {
       g3d.drawEllipse(center, points[5], points[0], fillArc, bOptions[OPT_WIREFRAME]);
       return;
     }
-    for (int i = 1; i < 8; i += 2) {
-      int pt = i*3;
-     // if (i != 1 && i != 3)continue;
-    //if (i == 1) 
+    for (int i = 1, pt = 3; i < 8; i += 2, pt += 6) {
+    //if (i == 3 || i == 7) 
     	renderArc(octants[pt], octants[pt + 1]);
-   // if (i == 3) 
-    	renderArc(octants[pt + 1], octants[pt + 2]);
+      renderArc(octants[pt + 1], octants[pt + 2]);
       renderArc(octants[pt + 2], octants[pt]);
     }
   }
@@ -486,9 +483,10 @@ final public class EllipsoidsRenderer extends ShapeRenderer {
       pt2.scaleAdd2(cossin[pt + 1] * d2, v2, pt2);
       tm.transformPtScrT3(pt2, s2);
       if (fillArc) {
-       // if (i ==12 && ptA == octants[3]|| i == 17 && ptA == octants[10])
+//       colix = (short) Math.ceil(Math.random()  * 20);
+//        if (i < 4 && i > 1)
         g3d.fillTriangle3CNBits(s0, colix, normix, s1, colix, normix, s2, colix,
-            normix, false);
+            normix, true);
       }
       else if (bOptions[OPT_WIREFRAME])
         g3d.fillCylinderBits(GData.ENDCAPS_FLAT, diameter, s1, s2);

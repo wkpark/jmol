@@ -24,7 +24,7 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
 
   public abstract boolean checkTranslucent(boolean isAlphaTranslucent);
 
-  public abstract void drawAtom(Atom atom);
+  public abstract void drawAtom(Atom atom, float radius);
 
   public abstract void drawBond(P3 atomA, P3 atomB, short colixA,
                                 short colixB, byte endcaps, short mad, int bondOrder);
@@ -247,6 +247,8 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
   public abstract String finalizeOutput();
 
   public abstract String getExportName();
+
+  public abstract boolean isWebGL();
 
   public abstract int getExportType();
 

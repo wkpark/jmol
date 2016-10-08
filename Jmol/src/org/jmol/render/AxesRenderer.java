@@ -166,8 +166,10 @@ public class AxesRenderer extends CageRenderer {
     for (int i = nPoints; --i >= 0;) {
       if (checkAxisType
           && !axes.axisType.contains(axesTypes[i])
-          || Math.abs(xCenter - p3Screens[i].x)
-              + Math.abs(yCenter - p3Screens[i].y) <= 2
+          ||
+          exportType != GData.EXPORT_CARTESIAN && 
+          (Math.abs(xCenter - p3Screens[i].x)
+              + Math.abs(yCenter - p3Screens[i].y) <= 2)
           && (!(showOrigin = false)) // setting showOrigin here
       )
         continue;

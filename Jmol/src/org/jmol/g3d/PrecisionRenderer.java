@@ -58,20 +58,20 @@ public class PrecisionRenderer {
   boolean isOrthographic;
 
   protected int getZCurrent(float a, float b, int x) {
-    return (int) (a == Float.MIN_VALUE ? b : isOrthographic ? a * x + b : a / (b - x));
+    return Math.round(a == Float.MIN_VALUE ? b : isOrthographic ? a * x + b : a / (b - x));
   }
 
   
   protected void setRastAB(float xa, float za, float xb, float zb) {
-    xa = (int) xa;
-    xb = (int) xb;
-    za = (int) za;
-    zb = (int) zb;
+    xa = Math.round(xa);
+    za = Math.round(za);
+    xb = Math.round(xb);
+    zb = Math.round(zb);
     float zdif = (zb - za);
     float xdif = (xb - xa);
-    if (zdif == 0 || xdif == 0) {
+    if (xa == Float.MIN_VALUE || zdif == 0 || xdif == 0) {
       a = Float.MIN_VALUE;
-      b = za;
+      b = zb;
       return;
     }
     if (isOrthographic) {

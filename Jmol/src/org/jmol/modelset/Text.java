@@ -284,7 +284,7 @@ public class Text {
       case JC.TEXT_ALIGN_LEFT:
         dy = 0;
       }
-      System.out.println(dx + " Text " + dy + " " + boxWidth + " " + boxHeight);
+      //System.out.println(dx + " Text " + dy + " " + boxWidth + " " + boxHeight);
       setBoxXY(boxWidth, boxHeight, dx, dy, boxXY, isAbsolute);
     } else {
       setPos(fontScale);

@@ -202,11 +202,11 @@ abstract public class __CartesianExporter extends ___Exporter {
   }
 
   @Override
-  void drawAtom(Atom atom) {
+  void drawAtom(Atom atom, float radius) {
     if (Logger.debugging)
       outputComment("atom " + atom);
     short colix = atom.colixAtom;
-    outputSphere(atom, atom.madAtom / 2000f, colix, C.isColixTranslucent(colix));
+    outputSphere(atom, radius == 0 ? atom.madAtom / 2000f : radius, colix, C.isColixTranslucent(colix));
   }
 
   @Override
@@ -334,36 +334,22 @@ abstract public class __CartesianExporter extends ___Exporter {
   protected void fillTriangle(short colix, T3 ptA, T3 ptB, T3 ptC,
                               boolean twoSided) {
     
+    // fillTriangleTwoSided
+    //   for Polyhedra (collapsed)
+
     // fillQuadrilateral
-    //   for cartoon (ribbon, not meshes, irrelevant here), rockets (boxes)
-    //   TODO: fix RocketRenderer
-    
-    // fillTriangle3CN, 
-    //   TODO: DrawRenderer draw POLYGON sets up a mesh set. Need to use it.
+    //   for Rockets (boxes)
     
     // fillTriangle3CNBits
-    //   TODO: DrawRenderer needs to create wedges (two-sided)
-    //   TODO: EllipsoidRenderer needs to create a mesh or start a triangle set
-    //   TODO: GeosurfaceRenderer needs to use a mesh
+    //   for GeoSurfaceRenderer (not exported), Draw polygons, Ellipsoid arc fill 
     
-    // fillTriangle3f, fillTriangle3i, 
+    // fillTriangle3i
+    //   for Cartoon nucleic bases
     
-    // fillTriangleTwoSided -     no problem
-    
-    
-
-    
-    // mesh, isosurface
-    // mesh, isosurface
-    // rockets
-    // cartoon, for nucleic acid bases
-    // polyhedra
-
-
     tm.unTransformPoint(ptA, tempP1);
     tm.unTransformPoint(ptB, tempP2);
     tm.unTransformPoint(ptC, tempP3);
-    if (twoSided && solidOnly) {
+    if (solidOnly) {
       outputSolidPlate(tempP1, tempP2, tempP3, colix);
     } else {
       outputTriangle(tempP1, tempP2, tempP3, colix);
@@ -372,6 +358,11 @@ abstract public class __CartesianExporter extends ___Exporter {
     }
   }
 
+  /**
+   * @param tempP1  
+   * @param tempP2  
+   * @param tempP3  
+   */
   protected void outputSolidPlate(P3 tempP1, P3 tempP2, P3 tempP3, short colix) {
     // VRML/STL only
   }

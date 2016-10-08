@@ -98,7 +98,7 @@ public class _VrmlExporter extends __CartesianExporter {
     output("Viewpoint{fieldOfView " + angle);
     output(" position ");
     // remove export scaling for from Viewpoint so on-screen version is good.
-    cameraPosition.z *= exportScale;
+    cameraPosition.scale(exportScale);
     output(cameraPosition);
     output(" orientation ");
     output(tempP1);
@@ -106,19 +106,23 @@ public class _VrmlExporter extends __CartesianExporter {
     output("\n jump TRUE description \"v1\"\n}\n\n");
     output(getJmolPerspective());
     outputInitialTransform();
+    output("\n");
   }
 
   protected void outputInitialTransform() {
     pushMatrix();
     outputAttr("scale", exportScale, exportScale, exportScale);
-    output("\nchildren [\n");
+    outputCloseTag();
+    outputChildStart();
     pushMatrix();
     tempP1.setT(center);
     tempP1.scale(-1);
-    outputAttr("translation", tempP1.x, tempP1.y, tempP1.z);
-    output("\nchildren [\n");
+    
+    outputAttrPt("translation", tempP1);
+    outputCloseTag();
+    outputChildStart();
   }
-
+  
   protected float getViewpoint() {
     viewpoint.setM(vwr.tm.matrixRotate);
     tempP1.set(viewpoint.x, viewpoint.y, (viewpoint.angle == 0 ? 1
@@ -201,8 +205,12 @@ public class _VrmlExporter extends __CartesianExporter {
   }
 
   protected void outputChildShapeStart() {
-    output(" children[");
+    outputChildStart();
     outputShapeStart();
+  }
+
+  protected void outputChildStart() {
+    output(" children[");
   }
 
   protected void outputShapeStart() {
@@ -229,6 +237,10 @@ public class _VrmlExporter extends __CartesianExporter {
   
   protected void outputChildShapeClose() {
     outputShapeClose();
+    outputChildClose();
+  }
+
+  protected void outputChildClose() {
     output("]");
   }
 
@@ -347,7 +359,7 @@ public class _VrmlExporter extends __CartesianExporter {
                                    byte endcaps, float radius, P3 ptX, P3 ptY,
                                    boolean checkRadius) {
     float height = (pt1.distance(pt2));
-    if (radius < 0.01f)
+    if (radius < 0.01f || height == 0)
       return false; // nucleic edges are 0.005f
     pushMatrix();
     if (ptX == null) {
@@ -703,39 +715,49 @@ public class _VrmlExporter extends __CartesianExporter {
   @Override
   void plotText(int x, int y, int z, short colix, String text, Font font3d) {
     // not in _StlExport
-    output("Transform{translation ");
-    output(setFont(x, y, z, colix, text, font3d));
-    // These x y z are 3D coordinates of echo or the atom the label is attached
-    // to.
-    output(" children [ ");
+    // not worked out for X3D
+    pushMatrix();
+    tempP3.set(x, y, fixScreenZ(z));
+    tm.unTransformPoint(tempP3, tempP1);
+    outputAttrPt("translation", tempP1);
+    setFont(colix, text, font3d);
+    // These x y z are 3D coordinates of echo or the atom that the label is attached to
+    outputChildStart();
+    
     if (fontChild.charAt(0) == '_') {
-      output("DEF " + fontChild + " Billboard{axisOfRotation 0 0 0 children Transform{children Shape{");
-      outputAppearance(colix, true);
-      output(" geometry Text{fontStyle ");
+      output("DEF " + fontChild + " Billboard{");
+      outputAttr("axisOfRotation", 0, 0, 0);
+      outputChildStart();
+      pushMatrix();
+      outputChildShapeStart();
+      output("Text{fontStyle ");
       String fontstyle = getDef("F" + fontFace + fontStyle);
       if (fontstyle.charAt(0) == '_') {
-        output("DEF " + fontstyle + " FontStyle{size " + fontSize + " family \"" + fontFace
-            + "\" style \"" + fontStyle + "\"}");      
+        output("DEF " + fontstyle + " FontStyle{size " + fontSize
+            + " family \"" + fontFace + "\" style \"" + fontStyle + "\"}");
       } else {
         output(fontstyle);
       }
-      output(" string " + PT.esc(text) + "}}}}");
+      output(" string " + PT.esc(text) + "}"); 
+      outputAppearance(colix, true);
+      outputChildShapeClose();
+      popMatrix();
+      outputChildClose();
+      output("}");
     } else {
       output(fontChild);
     }
-    output("]}\n");
+    outputChildClose();
+    popMatrix();
   }
 
-  protected T3 setFont(int x, int y, int z, short colix, String text, Font font3d) {
-    tempP3.set(x, y, fixScreenZ(z));
-    tm.unTransformPoint(tempP3, tempP1);
+  private void setFont(short colix, String text, Font font3d) {
     fontStyle = font3d.fontStyle.toUpperCase();
     fontFace = font3d.fontFace.toUpperCase();
     fontFace = (fontFace.equals("MONOSPACED") ? "TYPEWRITER" 
         : fontFace.equals("SERIF") ? "SERIF" : "Arial");
     fontSize = font3d.fontSize * 0.015f;
     fontChild = getDef("T" + colix + fontFace + fontStyle + fontSize + "_" + text);
-    return tempP1;
   }
 
   protected String getDef(String key) {

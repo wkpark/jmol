@@ -158,6 +158,8 @@ public class TriangleRenderer extends PrecisionRenderer implements G3DRenderer {
 
   void fillTriangleP3f(P3 screenA, P3 screenB, P3 screenC, boolean useGouraud,
                        boolean isPrecise) {
+    
+    //System.out.println("draw @{point(" + screenA + ",false)} @{point(" + screenB + ",false)} @{point(" + screenC + ",false)}");
     ax[0] = Math.round(screenA.x);
     ax[1] = Math.round(screenB.x);
     ax[2] = Math.round(screenC.x);
@@ -273,8 +275,8 @@ public class TriangleRenderer extends PrecisionRenderer implements G3DRenderer {
               \   /
                max
       */
-      generateRaster(nLines, iMinY, iMaxY, axW, azW, aa, isPrecise, 0, gouraudW, false);
-      generateRaster(nLines, iMidY, iMaxY, axE, azE, bb, isPrecise, 0, gouraudE, true);
+      generateRaster(nLines, iMinY, iMaxY, axW, azW, aa, isPrecise, 0, gouraudW);
+      generateRaster(nLines, iMidY, iMaxY, axE, azE, bb, isPrecise, 0, gouraudE);
     } else if (yMid == yMax) {
       // flat bottom
       if (ax[iMaxY] < ax[iMidY]) {
@@ -290,8 +292,8 @@ public class TriangleRenderer extends PrecisionRenderer implements G3DRenderer {
        *   /         \
        *  mid ------ max
        */
-      generateRaster(nLines, iMinY, iMidY, axW, azW, aa, isPrecise, 0, gouraudW, false);
-      generateRaster(nLines, iMinY, iMaxY, axE, azE, bb, isPrecise, 0, gouraudE, true);
+      generateRaster(nLines, iMinY, iMidY, axW, azW, aa, isPrecise, 0, gouraudW);
+      generateRaster(nLines, iMinY, iMaxY, axE, azE, bb, isPrecise, 0, gouraudE);
     } else {
       int dxMaxMin = ax[iMaxY] - ax[iMinY];
       int roundFactor;
@@ -311,10 +313,10 @@ public class TriangleRenderer extends PrecisionRenderer implements G3DRenderer {
 
         // Trick is that we need to overlap so as to generate the IDENTICAL
         // raster on each segment, but then we always throw out the FIRST raster
-        generateRaster(nLines, iMinY, iMaxY, axW, azW, aa, isPrecise, 0, gouraudW, false);
-        generateRaster(dyMidMin + 1, iMinY, iMidY, axE, azE, bb, isPrecise, 0, gouraudE, true);
+        generateRaster(nLines, iMinY, iMaxY, axW, azW, aa, isPrecise, 0, gouraudW);
+        generateRaster(dyMidMin + 1, iMinY, iMidY, axE, azE, bb, isPrecise, 0, gouraudE);
         generateRaster(nLines - dyMidMin, iMidY, iMaxY, axE, azE, bb, isPrecise, dyMidMin,
-            gouraudE, true);
+            gouraudE);
 
       } else {
 
@@ -328,10 +330,10 @@ public class TriangleRenderer extends PrecisionRenderer implements G3DRenderer {
          *       B->    max
          */
 
-        generateRaster(dyMidMin + 1, iMinY, iMidY, axW, azW, aa, isPrecise, 0, gouraudW, false);
+        generateRaster(dyMidMin + 1, iMinY, iMidY, axW, azW, aa, isPrecise, 0, gouraudW);
         generateRaster(nLines - dyMidMin, iMidY, iMaxY, axW, azW, aa, isPrecise, dyMidMin,
-            gouraudW, false);
-        generateRaster(nLines, iMinY, iMaxY, axE, azE, bb, isPrecise, 0, gouraudE, true);
+            gouraudW);
+        generateRaster(nLines, iMinY, iMaxY, axE, azE, bb, isPrecise, 0, gouraudE);
       }
     }
     g3d.setZMargin(5);
@@ -425,7 +427,7 @@ public class TriangleRenderer extends PrecisionRenderer implements G3DRenderer {
  
   private void generateRaster(int dy, int iN, int iS, int[] axRaster,
                               int[] azRaster, float[] ab, boolean isPrecise,
-                              int iRaster, Rgb16[] gouraud, boolean isEast) {
+                              int iRaster, Rgb16[] gouraud) {
     int xN = ax[iN], zN = az[iN];
     int xS = ax[iS], zS = az[iS];
     int dx = xS - xN, dz = zS - zN;
@@ -440,8 +442,6 @@ public class TriangleRenderer extends PrecisionRenderer implements G3DRenderer {
       width = -dx;
       errorTerm = 1 - dy;
     }
-    if (isPrecise)
-      setRastAB(abc[iN].y, abc[iN].z, abc[iS].y, abc[iS].z);
     int xMajorIncrement;
     int xMajorError;
     if (width <= dy) {
@@ -454,21 +454,31 @@ public class TriangleRenderer extends PrecisionRenderer implements G3DRenderer {
       xMajorError = width % dy;
     }
     if (isPrecise) {
-      float a0 = this.a;
-      float b0 = this.b;
-      int zy = ay[iN];
-      int len = ab.length;
-      for (int y = 0, i = iRaster; y < dy; ++i, ++y) {
-        axRaster[i] = xCurrent;
+      boolean isEast = (ab == bb);
+//      if (isEast && ax[0] == 211 && ax[1] ==  139 && ax[2] ==  138)
+//        System.out.println("trianglerenderer");
+
+      setRastAB(abc[iN].y, abc[iN].z, abc[iS].y, abc[iS].z);
+      float a0 = a;
+      float b0 = b;
+      for (int y = 0, zy = ay[iN], len = ab.length, lastY = dy - 1, i = iRaster; y <= lastY; ++i, ++y, ++zy) {
         if (i == 0 || i > iRaster) { // must always skip first on second time around
           if (i >= len)
             System.out.println("triangle rend errror");
-          azRaster[i] = (int) (ab[i] = getZCurrent(a0, b0, zy++));
+          axRaster[i] = (y == lastY ? ax[iS] : xCurrent);
+          azRaster[i] = (int) (ab[i] = getZCurrent(a0, b0, zy));
+//          if ((ab[i] != Math.round(abc[iN].z)) && (ab[i] != Math.round(abc[iS].z)) && 
+//              ((ab[i] < Math.round(abc[iN].z)) != (ab[i] > Math.round(abc[iS].z))))
+//          System.out.println(Math.round(abc[iN].z) + "  "+ ab[i] + " " + Math.round(abc[iS].z));
           if (isEast) {
-            //aa[i] and bb[i] are derived z values now
             //System.out.println(i + " axw " + axW[i] + " aa " + aa[i] + " x "
-              //  + xCurrent + " ab " + ab[i]);
-            setRastAB(axW[i], aa[i], xCurrent, ab[i]);
+            //  + xCurrent + " ab " + ab[i]);
+
+            //aa[i] and bb[i] are derived z values now
+            setRastAB(axW[i], aa[i], axRaster[i], ab[i]);
+            
+//            if (ab[i] != getZCurrent(a, b, xCurrent))
+//              System.out.println(a + " " + b + " " + axW[i] + " " + aa[i] +  " " + ab[i] + " " + getZCurrent(a, b, axRaster[i]));
             aa[i] = a;
             bb[i] = b;
           }

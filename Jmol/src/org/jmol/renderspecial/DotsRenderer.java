@@ -30,6 +30,7 @@ import org.jmol.render.ShapeRenderer;
 import org.jmol.script.T;
 import org.jmol.shapespecial.Dots;
 import org.jmol.util.C;
+import org.jmol.util.GData;
 import org.jmol.util.Geodesic;
 
 import javajs.util.P3i;
@@ -64,8 +65,6 @@ public class DotsRenderer extends ShapeRenderer {
     return false;
   }
 
-  protected float testRadiusAdjust;
-  
   protected void render1(Dots dots) {
     //dots.timeBeginExecution = System.currentTimeMillis();
     if (!iShowSolid && !g3d.setC(C.BLACK)) // no translucent for dots
@@ -86,8 +85,13 @@ public class DotsRenderer extends ShapeRenderer {
           || !g3d.isInDisplayRange(atom.sX, atom.sY))
         continue;
       try {
-        float radius = dots.ec.getAppropriateRadius(i)
-            + testRadiusAdjust;
+        float radius = dots.ec.getAppropriateRadius(i);
+        if (iShowSolid && exportType == GData.EXPORT_CARTESIAN) {
+          // for VRML, X3D, and STL, just output the atom;
+          // (not showing unclosed surfaces)
+          g3d.drawAtom(atom, radius);
+          continue;
+        }
         int nPoints = 0;
         int j = 0;
         int iDot = Math.min(map.size(), screenDotCount); 

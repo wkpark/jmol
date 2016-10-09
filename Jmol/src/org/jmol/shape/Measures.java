@@ -88,7 +88,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
 
   @Override
   protected void setSize(int size, BS bsSelected) {
-    mad = (short)size;
+    mad = (short) size;
   }
 
   @Override

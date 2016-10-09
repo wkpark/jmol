@@ -861,7 +861,7 @@ public class Parameters {
     }
     if (mappedDataMin == Float.MAX_VALUE || mappedDataMin == mappedDataMax) {
       float[] minMax = surfaceReader.getMinMaxMappedValues(haveData);
-      //System.out.println("parameters - setmapranges " + Escape.escape(minMax));
+      System.out.println("parameters - setmapranges " + minMax[0] + " " + minMax[1]);
       mappedDataMin = minMax[0];
       mappedDataMax = minMax[1];
     }

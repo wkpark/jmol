@@ -167,7 +167,7 @@ abstract public class QuantumCalculation {
     if (points == null || nX != 1)
       initializeOnePoint();
     points[0].setT(pt);
-    voxelDataTemp[0][0][0] = 0;
+    voxelData[0][0][0] = voxelDataTemp[0][0][0] = 0;
     setXYZBohr(points);
     processPoints();
     //System.out.println("qc pt=" + pt + " " + voxelData[0][0][0]);

@@ -104,7 +104,8 @@ public class MolecularOrbital extends Isosurface {
       moNumber = (!thisModel.containsKey("moNumber") ? 0 : ((Integer) thisModel
           .get("moNumber")).intValue());
       moLinearCombination = (float[]) thisModel.get("moLinearCombination");
-      moSquareData = moSquareLinear = null;
+      moSquareData = (moLinearCombination != null ? null : (Boolean) thisModel.get("moSquareData"));
+      moSquareLinear = (moLinearCombination == null ? null : (Boolean) thisModel.get("moSquareLinear"));
       return;
     }
 
@@ -139,14 +140,20 @@ public class MolecularOrbital extends Isosurface {
     }
 
     if ("squareData" == propertyName) {
-      thisModel.put("moSquareData", Boolean.TRUE);
-      moSquareData = Boolean.TRUE;
+      if (value == Boolean.TRUE)
+        thisModel.put("moSquareData", Boolean.TRUE);
+      else
+        thisModel.remove("moSquareData");
+      moSquareData = (Boolean) value;
       return;
     }
 
     if ("squareLinear" == propertyName) {
-      thisModel.put("moSquareLinear", Boolean.TRUE);
-      moSquareLinear = Boolean.TRUE;
+      if (value == Boolean.TRUE)
+        thisModel.put("moSquareLinear", Boolean.TRUE);
+      else
+        thisModel.remove("moSquareLinear");
+      moSquareLinear = (Boolean) value;
       return;
     }
 
@@ -332,6 +339,10 @@ public class MolecularOrbital extends Isosurface {
       return Integer.valueOf(moNumber);
     if (propertyName == "moLinearCombination")
       return moLinearCombination;
+    if (propertyName == "moSquareData")
+      return moSquareData;
+    if (propertyName == "moSquareLinear")
+      return moSquareLinear;
     if (propertyName == "showMO") {
       SB str = new SB();
       Lst<Map<String, Object>> mos = (Lst<Map<String, Object>>) (sg.params.moData
@@ -483,8 +494,11 @@ public class MolecularOrbital extends Isosurface {
     if (moPlane != null) {
       setPropI("plane", moPlane, null);
       if (moCutoff != null) {
-        setPropI("red", Float.valueOf(-moCutoff.floatValue()), null);
-        setPropI("blue", moCutoff, null);
+        float max = moCutoff.floatValue();
+        if (moSquareData == Boolean.TRUE || moSquareLinear == Boolean.TRUE)
+          max = max * max;
+        setPropI("red", Float.valueOf(-max), null);
+        setPropI("blue", Float.valueOf(max), null);
       }
     } else {
       if (moCutoff != null)

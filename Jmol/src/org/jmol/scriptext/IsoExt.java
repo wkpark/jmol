@@ -798,7 +798,7 @@ public class IsoExt extends ScriptExt {
     ScriptEval eval = e;
     int offset = Integer.MAX_VALUE;
     boolean isNegOffset = false;
-    String nboType = null; 
+    String nboType = null;
     BS bsModels = vwr.getVisibleFramesBitSet();
     Lst<Object[]> propertyList = new Lst<Object[]>();
     int i0 = 1;
@@ -827,17 +827,21 @@ public class IsoExt extends ScriptExt {
       if (tokAt(i) == T.list && listIsosurface(iShape))
         return;
       setShapeProperty(iShape, "init", Integer.valueOf(iModel));
+      if (isInitOnly)
+        return;// (moNumber != 0);
       String title = null;
       int moNumber = ((Integer) getShapeProperty(iShape, "moNumber"))
           .intValue();
       float[] linearCombination = (float[]) getShapeProperty(iShape,
           "moLinearCombination");
-      if (isInitOnly)
-        return;// (moNumber != 0);
+      Boolean squared = (Boolean) getShapeProperty(iShape, "moSquareData");
+      Boolean linearSquared = (linearCombination == null ? null
+          : (Boolean) getShapeProperty(iShape, "moSquareLinear"));
       if (moNumber == 0)
         moNumber = Integer.MAX_VALUE;
       String propertyName = null;
       Object propertyValue = null;
+      boolean ignoreSquared = false;
 
       switch (getToken(i).tok) {
       case T.type:
@@ -845,7 +849,7 @@ public class IsoExt extends ScriptExt {
           mo(isInitOnly, JC.SHAPE_NBO);
           return;
         }
-        nboType = paramAsStr(++i).toUpperCase(); 
+        nboType = paramAsStr(++i).toUpperCase();
         break;
       case T.cap:
       case T.slab:
@@ -854,8 +858,7 @@ public class IsoExt extends ScriptExt {
         i = eval.iToken;
         break;
       case T.density:
-        propertyName = "squareLinear";
-        propertyValue = Boolean.TRUE;
+        linearSquared = Boolean.TRUE;
         linearCombination = new float[] { 1 };
         offset = moNumber = 0;
         break;
@@ -864,6 +867,7 @@ public class IsoExt extends ScriptExt {
         linearCombination = moCombo(propertyList);
         if (linearCombination == null && moNumber < 0)
           linearCombination = new float[] { -100, -moNumber };
+        ignoreSquared = true;
         break;
       case T.minus:
         switch (tokAt(++i)) {
@@ -881,21 +885,25 @@ public class IsoExt extends ScriptExt {
           invArg();
         moNumber = 0;
         linearCombination = moCombo(propertyList);
+        ignoreSquared = true;
         break;
       case T.next:
         moNumber = T.next;
         linearCombination = moCombo(propertyList);
+        ignoreSquared = true;
         break;
       case T.prev:
         moNumber = T.prev;
         linearCombination = moCombo(propertyList);
+        ignoreSquared = true;
         break;
       case T.color:
         setColorOptions(null, i + 1, iShape, 2);
         break;
       case T.plane:
         propertyName = "plane";
-        propertyValue = (tokAt(e.iToken = ++i) == T.none ? null : eval.planeParameter(i));
+        propertyValue = (tokAt(e.iToken = ++i) == T.none ? null : eval
+            .planeParameter(i));
         break;
       case T.point:
         addShapeProperty(propertyList, "randomSeed",
@@ -929,8 +937,11 @@ public class IsoExt extends ScriptExt {
         propertyValue = Float.valueOf(floatParameter(i + 1));
         break;
       case T.squared:
-        propertyName = "squareData";
-        propertyValue = Boolean.TRUE;
+        if (linearCombination == null)
+          squared = Boolean.TRUE;
+        else
+          linearSquared = Boolean.TRUE;
+        ignoreSquared = false;
         break;
       case T.titleformat:
         if (i + 1 < slen && tokAt(i + 1) == T.string) {
@@ -945,7 +956,8 @@ public class IsoExt extends ScriptExt {
         if (eval.isArrayParameter(i)) {
           linearCombination = eval.floatParameterSet(i, 1, Integer.MAX_VALUE);
           if (tokAt(eval.iToken + 1) == T.squared) {
-            addShapeProperty(propertyList, "squareLinear", Boolean.TRUE);
+            ignoreSquared = false;
+            linearSquared = Boolean.TRUE;
             eval.iToken++;
           }
           break;
@@ -961,7 +973,7 @@ public class IsoExt extends ScriptExt {
         addShapeProperty(propertyList, propertyName, propertyValue);
       boolean haveMO = (moNumber != Integer.MAX_VALUE || linearCombination != null);
       if (chk)
-        return;        
+        return;
       if (nboType != null || haveMO) {
         if (haveMO && tokAt(eval.iToken + 1) == T.string)
           title = paramAsStr(++eval.iToken);
@@ -970,6 +982,10 @@ public class IsoExt extends ScriptExt {
             isNegOffset, iModel, title, nboType);
         if (haveMO)
           addShapeProperty(propertyList, "finalize", null);
+      }
+      if (!ignoreSquared) {
+          setShapeProperty(iShape, "squareLinear", linearSquared);
+          setShapeProperty(iShape, "squareData", squared);
       }
       if (propertyList.size() > 0)
         setShapeProperty(iShape, "setProperties", propertyList);

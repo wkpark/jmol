@@ -49,7 +49,7 @@ import org.jmol.util.Logger;
 
 public class Dipoles extends Shape {
 
-  final static short DEFAULT_MAD = 5;
+  final static short DEFAULT_MAD = 10;
   final static float DEFAULT_OFFSETSIDE = 0.40f;
 
   public int dipoleCount = 0;
@@ -67,7 +67,8 @@ public class Dipoles extends Shape {
   private int atomIndex2;
   private short colix;
   private V3 calculatedDipole;
-  private String wildID;  
+  private String wildID;
+  private short mad;  
 
   @Override
   public void initShape() {
@@ -85,12 +86,16 @@ public class Dipoles extends Shape {
       tempDipole.modelIndex = -1;
       dipoleValue = 0;
       calculatedDipole = null;
+      mad = -1;
       isUserValue = isBond = iHaveTwoEnds = false;
       return;
     }
 
     if ("calculate" == propertyName) {
-      calculatedDipole = vwr.calculateMolecularDipole((BS) value);
+      try {
+        calculatedDipole = vwr.calculateMolecularDipole((BS) value);
+      } catch (Exception e) {
+      }
       Logger.info("calculated molecular dipole = " + calculatedDipole + " "
           + (calculatedDipole == null ? "" : "" + calculatedDipole.length()));
       return;
@@ -149,7 +154,7 @@ public class Dipoles extends Shape {
     }
 
     if ("width" == propertyName) {
-      short mad = tempDipole.mad = (short) (((Float) value).floatValue() * 1000);
+      mad = tempDipole.mad = (short) (((Float) value).floatValue() * 1000);
       if (currentDipole == null)
         setPropertyTok(T.wireframe, isBond, mad, 0); //
       return;
@@ -230,13 +235,20 @@ public class Dipoles extends Shape {
 
     if ("atomBitset" == propertyName) {
       BS atomset = (BS) value;
-      if (atomset.cardinality() > 2) {
+      switch (atomset.cardinality()) {
+      case 0:
+        return;
+      case 1:
+        break;
+      case 2:
+        atomIndex1 = atomset.nextSetBit(0);
+        startCoord = ms.at[atomIndex1];
+        atomset.clear(atomIndex1);
+        break;
+      default:
         getMolecular(atomset);
         return;
       }
-      atomIndex1 = atomset.nextSetBit(0);
-      startCoord = ms.at[atomIndex1];
-      atomset.clear(atomIndex1);
       propertyName = "endSet";
       //passes to endSet
     }
@@ -253,6 +265,8 @@ public class Dipoles extends Shape {
           tempDipole = currentDipole;
           if (dipoleValue > 0)
             tempDipole.dipoleValue = dipoleValue;
+          if (mad > 0)
+            tempDipole.mad = mad;
         }
       } else {
         tempDipole.set2Value(startCoord, ms.getAtomSetCenter(atomset),
@@ -319,7 +333,10 @@ public class Dipoles extends Shape {
           + (v != null ? "" + v.length() : ""));
     }
     if (v == null)
-      calculatedDipole = v = vwr.calculateMolecularDipole(bsMolecule);
+      try {
+        calculatedDipole = v = vwr.calculateMolecularDipole(bsMolecule);
+      } catch (Exception e) {
+      }
     if (v == null) {
       Logger
           .warn("No molecular dipole found for this model; setting to {0 0 0}");
@@ -331,7 +348,7 @@ public class Dipoles extends Shape {
       getAllMolecularDipoles(bsMolecule);
     }    
     tempDipole.type = Dipole.DIPOLE_TYPE_MOLECULAR;
-    if (currentDipole.thisID == null || bsMolecule == null)
+    if (currentDipole == null || currentDipole.thisID == null || bsMolecule == null)
       tempDipole.thisID = "molecular";
     setDipole();
   }
@@ -341,7 +358,11 @@ public class Dipoles extends Shape {
     for (int i = mols.length; --i >= 0;) {
       JmolMolecule m = mols[i];
       if (m.atomList.intersects(bsAtoms)) {
-        V3 v = ms.calculateMolecularDipole(0, m.atomList);
+        V3 v = null;
+        try {
+          v = vwr.calculateMolecularDipole(m.atomList);
+        } catch (Exception e) {
+        }
         if (v == null)
           continue;
         P3 center = ms.getAtomSetCenter(m.atomList);

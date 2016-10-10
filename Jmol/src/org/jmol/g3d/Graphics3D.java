@@ -1277,20 +1277,21 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   @Override
   public void drawDashedLineBits(int run, int rise, P3 pointA, P3 pointB) {
     // measures only
-    line3d.plotDashedLineBits(argbCurrent, run, rise, pointA, pointB);
+    setScreeni(pointA, sA);
+    setScreeni(pointB, sB);
+    line3d.plotLineBits(argbCurrent, argbCurrent, sA, sB, run, rise, true);
   }
 
-  @Override
-  public void drawDottedLineBits(P3 pointA, P3 pointB) {
-    //axes, bbcage only
-    // these were just too short at 2, 1
-    line3d.plotDashedLineBits(argbCurrent, 8, 4, pointA, pointB);
+  private void setScreeni(P3 pt, P3i p) {
+    p.x = Math.round(pt.x);
+    p.y = Math.round(pt.y);
+    p.z = Math.round(pt.z);
   }
 
   @Override
   public void drawLineXYZ(int x1, int y1, int z1, int x2, int y2, int z2) {
-    // stars
-    line3d.plotLineOld(argbCurrent, argbCurrent, x1, y1, z1, x2, y2, z2, true);
+    // stars, text
+    line3d.plotLineOld(argbCurrent, argbCurrent, x1, y1, z1, x2, y2, z2);
   }
 
   @Override
@@ -1303,7 +1304,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     if (!setC(colixB))
       colixB = 0;
     if (colixA != 0 || colixB != 0)
-      line3d.plotLineOld(argbA, argbCurrent, x1, y1, z1, x2, y2, z2, true);
+      line3d.plotLineOld(argbA, argbCurrent, x1, y1, z1, x2, y2, z2);
   }
 
   @Override
@@ -1314,15 +1315,19 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     int argbA = argbCurrent;
     if (!setC(colixB))
       colixB = 0;
-    if (colixA != 0 || colixB != 0)
-      line3d.plotLineBits(argbA, argbCurrent, pointA, pointB);
+    if (colixA != 0 || colixB != 0) {
+      setScreeni(pointA, sA);
+      setScreeni(pointB, sB);
+      line3d.plotLineBits(argbA, argbCurrent, sA, sB, 0, 0, false);
+    }
   }
 
   @Override
   public void drawLineAB(P3 pointA, P3 pointB) {
     // draw quadrilateral and hermite
-    line3d.plotLineBits(argbCurrent, argbCurrent, pointA,
-        pointB);
+    setScreeni(pointA, sA);
+    setScreeni(pointB, sB);
+    line3d.plotLineBits(argbCurrent, argbCurrent, sA, sB, 0, 0, false);
   }
 
   @Override
@@ -1380,7 +1385,9 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                                P3 screenB) {
     // dipole cross, cartoonRockets, draw line
     if (diameter <= ht3 && screenA.z != 1 && screenB.z != 1) {
-      cylinder3d.renderBits(colixCurrent, colixCurrent, 0, endcaps, diameter, screenA, screenB);
+      setScreeni(screenA, sA);
+      setScreeni(screenB, sB);
+      cylinder3d.renderBits(colixCurrent, colixCurrent, 0, endcaps, diameter, sA, sB);
     }
   }
 
@@ -1402,7 +1409,9 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
       screen += 1;
     if (colixA == 0 && colixB == 0)
       return;
-    cylinder3d.renderBits(colixA, colixB, screen, endcaps, diameter, screenA, screenB);
+    setScreeni(screenA, sA);
+    setScreeni(screenB, sB);
+    cylinder3d.renderBits(colixA, colixB, screen, endcaps, diameter, sA, sB);
   }
 
   @Override
@@ -1467,21 +1476,30 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                                    P3 screenC) {
     // polyhedra
     setColorNoisy(getShadeIndex(normix));
-    ((TriangleRenderer) triangle3d).fillTriangleP3f(screenA, screenB, screenC,
-        false, true);
+    fillTriangleP3f(screenA, screenB, screenC, false);
+  }
+
+  private P3i sA = new P3i(), sB = new P3i(), sC = new P3i();
+  
+  private void fillTriangleP3f(P3 screenA, P3 screenB, P3 screenC, boolean useGouraud) {
+    setScreeni(screenA, sA);
+    setScreeni(screenB, sB);
+    setScreeni(screenC, sC);
+    ((TriangleRenderer) triangle3d).fillTriangle(sA, sB, sC, useGouraud);
   }
 
   @Override
   public void fillTriangle3f(P3 screenA, P3 screenB, P3 screenC,
-                             boolean setNoisy) {
-    // rockets
-    int i = getShadeIndexP3(screenA, screenB, screenC);
-    if (setNoisy)
+                             boolean isSolid) {
+    // rocket box, cartoon ribbon
+    int i = getShadeIndexP3(screenA, screenB, screenC, isSolid);
+    if (i < 0)
+      return;
+    if (isSolid)
       setColorNoisy(i);
     else
       setColor(shadesCurrent[i]);
-    ((TriangleRenderer) triangle3d).fillTriangleP3f(screenA, screenB, screenC,
-        false, true);
+    fillTriangleP3f(screenA, screenB, screenC, false);
   }
 
   @Override
@@ -1505,15 +1523,14 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
         shadeIndex = Shader.SHADE_INDEX_NOISY_LIMIT;
       setColorNoisy(shadeIndex);
     }
-    ((TriangleRenderer) triangle3d).fillTriangleP3f(screenA, screenB, screenC,
-        false, false);
+    fillTriangleP3f(screenA, screenB, screenC, false);
   }
 
   @Override
   public void fillTriangle3CN(P3i screenA, short colixA, short normixA,
                               P3i screenB, short colixB, short normixB,
                               P3i screenC, short colixC, short normixC) {
-    ((TriangleRenderer) triangle3d).fillTriangleP3i(screenA, screenB, screenC,
+    ((TriangleRenderer) triangle3d).fillTriangle(screenA, screenB, screenC,
         checkGouraud(colixA, colixB, colixC, normixA, normixB, normixC));
   }
 
@@ -1522,8 +1539,8 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                                   short colixB, short normixB, P3 screenC, short colixC,
                                   short normixC, boolean twoSided) {
     // mesh, isosurface
-    ((TriangleRenderer) triangle3d).fillTriangleP3f(screenA, screenB, screenC,
-        checkGouraud(colixA, colixB, colixC, normixA, normixB, normixC), true);
+    fillTriangleP3f(screenA, screenB, screenC,
+        checkGouraud(colixA, colixB, colixC, normixA, normixB, normixC));
   }
 
   private boolean checkGouraud(short colixA, short colixB, short colixC,
@@ -1572,17 +1589,16 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
    * ***************************************************************/
 
   @Override
-  public void fillQuadrilateral(P3 screenA, P3 screenB, P3 screenC, P3 screenD) {
-    // hermite, rockets, cartoons
-    int i = getShadeIndexP3(screenA, screenB, screenC);
+  public void fillQuadrilateral(P3 screenA, P3 screenB, P3 screenC, P3 screenD, boolean isSolid) {
+    // cartoon ribbon, rocket boxes
+    int i = getShadeIndexP3(screenA, screenB, screenC, isSolid);
+    if (i < 0)
+      return;
     setColorNoisy(i);
-    ((TriangleRenderer) triangle3d).fillTriangleP3f(screenA, screenB, screenC,
-        false, true);    
+    fillTriangleP3f(screenA, screenB, screenC, false);
     // don't do the following; it creates a moire pattern in cartoons
-    // i = getShadeIndexP3(screenA, screenC, screenD);
     // setColorNoisy(i);
-    ((TriangleRenderer) triangle3d).fillTriangleP3f(screenA, screenC, screenD,
-        false, true);
+    fillTriangleP3f(screenA, screenC, screenD, false);
   }
 
   @Override
@@ -1744,6 +1760,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                                int zPastRight, Rgb16 rgb16Left, Rgb16 rgb16Right, float a, float b) {
     // cylinder3d.renderFlatEndcap, triangle3d.fillRaster
     int depth, slab;
+
     if (count <= 0 || y < 0 || y >= height || x >= width
         || (zAtLeft < (slab = this.slab) && zPastRight < slab)
         || (zAtLeft > (depth = this.depth) && zPastRight > depth))
@@ -1900,14 +1917,14 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     argbNoisyDn = shadesCurrent[shadeIndex > 0 ? shadeIndex - 1 : 0];
   }
 
-  private int getShadeIndexP3(P3 screenA, P3 screenB, P3 screenC) {
+  private int getShadeIndexP3(P3 screenA, P3 screenB, P3 screenC, boolean isSolid) {
     // for fillTriangle and fillQuad.
     vectorAB.sub2(screenB, screenA);
     vectorAC.sub2(screenC, screenA);
     V3 v = vectorNormal;
     v.cross(vectorAB, vectorAC);
-    int i = (v.z >= 0 ? shader.getShadeIndex(-v.x, -v.y, v.z) : shader
-        .getShadeIndex(v.x, v.y, -v.z));
+    int i = (v.z < 0 ? shader
+        .getShadeIndex(v.x, v.y, -v.z)  : isSolid ? -1 : shader.getShadeIndex(-v.x, -v.y, v.z));
 
     return i;
   }

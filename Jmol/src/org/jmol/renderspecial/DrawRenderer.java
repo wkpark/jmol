@@ -389,7 +389,7 @@ public class DrawRenderer extends MeshRenderer {
     if (diameter == 0)
       diameter = 1;
     if (diameter < 0)
-      g3d.drawDottedLineBits(pt0, pt1);
+      g3d.drawDashedLineBits(8, 4, pt0, pt1);
     else
       g3d.fillCylinderBits(GData.ENDCAPS_FLAT, diameter, pt0, pt1);
     renderArrowHead(pt0, pt1, 0, true, false, false);

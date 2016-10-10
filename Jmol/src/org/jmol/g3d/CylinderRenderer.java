@@ -25,7 +25,7 @@
 package org.jmol.g3d;
 
 import javajs.util.AU;
-import javajs.util.P3;
+import javajs.util.P3i;
 
 import org.jmol.util.GData;
 import org.jmol.util.Shader;
@@ -166,28 +166,25 @@ class CylinderRenderer {
       renderSphericalEndcaps();
   }
 
-  private P3 ptA0, ptB0;
+  private P3i ptA0 = new P3i();
+  private P3i ptB0 = new P3i();
   
-  void renderBits(short colixA, short colixB, int screen, byte endcaps, int diameter, P3 ptA, P3 ptB) {
+  void renderBits(short colixA, short colixB, int screen, byte endcaps, int diameter, P3i ptA, P3i ptB) {
     Graphics3D g = this.g3d;
     if (diameter == 0 || diameter == 1) {
-      line3d.plotLineBits(g.getColorArgbOrGray(colixA), g.getColorArgbOrGray(colixB), ptA, ptB);
+      line3d.plotLineBits(g.getColorArgbOrGray(colixA), g.getColorArgbOrGray(colixB), ptA, ptB, 0, 0, false);
       return;
-    }
-    if (ptA0 == null) {
-      ptA0 = new P3();
-      ptB0 = new P3();
     }
     ptA0.setT(ptA);
     // dipole cross, cartoonRockets, draw mesh nofill or width = -1
     // oops -- problem here if diameter < 0 is that we may have already clipped it!
     int r = diameter / 2 + 1;
-    int ixA = Math.round(ptA.x);
-    int iyA = Math.round(ptA.y);
-    int izA = Math.round(ptA.z);
-    int ixB = Math.round(ptB.x);
-    int iyB = Math.round(ptB.y);
-    int izB = Math.round(ptB.z);
+    int ixA = ptA.x;
+    int iyA = ptA.y;
+    int izA = ptA.z;
+    int ixB = ptB.x;
+    int iyB = ptB.y;
+    int izB = ptB.z;
     int codeMinA = g.clipCode3(ixA - r, iyA - r, izA - r);
     int codeMaxA = g.clipCode3(ixA + r, iyA + r, izA + r);
     int codeMinB = g.clipCode3(ixB - r, iyB - r, izB - r);
@@ -204,21 +201,21 @@ class CylinderRenderer {
     dzBf = ptB.z - ptA.z;
     if (diameter > 0) {
       this.diameter = diameter;
-      this.xAf = ptA.x;
-      this.yAf = ptA.y;
-      this.zAf = ptA.z;
+      xAf = ptA.x;
+      yAf = ptA.y;
+      zAf = ptA.z;
     }
     boolean drawBackside = (screen == 0 && (clipped 
         || endcaps == GData.ENDCAPS_FLAT || endcaps == GData.ENDCAPS_NONE));
-    this.xA = (int) xAf;
-    this.yA = (int) yAf;
-    this.zA = (int) zAf;
-    this.dxB = (int) dxBf;
-    this.dyB = (int) dyBf;
-    this.dzB = (int) dzBf;
+    xA = (int) xAf;
+    yA = (int) yAf;
+    zA = (int) zAf;
+    dxB = (int) dxBf;
+    dyB = (int) dyBf;
+    dzB = (int) dzBf;
 
-    this.shadesA = g.getShades(this.colixA = colixA);
-    this.shadesB = g.getShades(this.colixB = colixB);
+    shadesA = g.getShades(this.colixA = colixA);
+    shadesB = g.getShades(this.colixB = colixB);
     this.endcaps = endcaps;
     calcArgbEndcap(true, true);
     int[][] xyzf = xyzfRaster;
@@ -284,15 +281,15 @@ class CylinderRenderer {
     dxBf = (xtip) - (xAf = xa);
     dyBf = (ytip) - (yAf = ya);
     dzBf = (ztip) - (zAf = za);
-    this.xA = (int) Math.floor(xAf);
-    this.yA = (int) Math.floor(yAf);
-    this.zA = (int) Math.floor(zAf);
-    this.dxB = (int) Math.floor(dxBf);
-    this.dyB = (int) Math.floor(dyBf);
-    this.dzB = (int) Math.floor(dzBf);
-    this.xTip = xtip;
-    this.yTip = ytip;
-    this.zTip = ztip;
+    xA = (int) Math.floor(xAf);
+    yA = (int) Math.floor(yAf);
+    zA = (int) Math.floor(zAf);
+    dxB = (int) Math.floor(dxBf);
+    dyB = (int) Math.floor(dyBf);
+    dzB = (int) Math.floor(dzBf);
+    xTip = xtip;
+    yTip = ytip;
+    zTip = ztip;
     shadesA = g3d.getShades(colixA = colix);
     int shadeIndexTip = shader.getShadeIndex(dxB, dyB, -dzB);
     Graphics3D g3d = this.g3d;
@@ -305,8 +302,8 @@ class CylinderRenderer {
     this.diameter = diameter;
     if (diameter <= 1) {
       if (diameter == 1)
-        line3d.plotLineDeltaOld(colixA, colixA, this.xA,
-            this.yA, this.zA, dxB, dyB, dzB, clipped);
+        line3d.plotLineDeltaOld(colixA, colixA, xA,
+            yA, zA, dxB, dyB, dzB, clipped);
       return;
     }
     this.endcaps = endcap;

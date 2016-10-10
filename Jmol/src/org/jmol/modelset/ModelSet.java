@@ -74,6 +74,7 @@ import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.Tensor;
 import org.jmol.util.Vibration;
 import org.jmol.viewer.JC;
+import org.jmol.viewer.JmolAsyncException;
 import org.jmol.viewer.ShapeManager;
 import org.jmol.viewer.TransformManager;
 import org.jmol.viewer.Viewer;
@@ -1748,14 +1749,14 @@ public class ModelSet extends BondCollection {
     return dipole;
   }
 
-  public V3 calculateMolecularDipole(int modelIndex, BS bsAtoms) {
+  public V3 calculateMolecularDipole(int modelIndex, BS bsAtoms) throws JmolAsyncException {
     if (bsAtoms != null) {
       int ia = bsAtoms.nextSetBit(0);
       if (ia < 0)
         return null;
       modelIndex = at[ia].mi;
     }
-    if (partialCharges == null || modelIndex < 0)
+    if (modelIndex < 0)
       return null;
     int nPos = 0;
     int nNeg = 0;
@@ -1765,6 +1766,7 @@ public class ModelSet extends BondCollection {
     V3 neg = new V3();
     if (bsAtoms == null)
       bsAtoms = getModelAtomBitSetIncludingDeleted(-1, false);
+    vwr.getOrCalcPartialCharges(am[modelIndex].bsAtoms, null);
     for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
       if (at[i].mi != modelIndex || at[i].isDeleted()) {
         continue;

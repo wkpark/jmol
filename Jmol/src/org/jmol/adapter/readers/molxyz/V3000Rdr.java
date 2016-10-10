@@ -29,6 +29,7 @@ import java.util.Map;
 
 import javajs.util.PT;
 
+import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 
 /**
@@ -143,6 +144,11 @@ public class V3000Rdr {
             pc = name;
           else if (!pc.equals(name))
             isPartial = false;
+        }
+        if (isPartial) {
+          Atom[] at = mr.asc.atoms;
+          for (int i = mr.asc.getLastAtomSetAtomIndex(), n = mr.asc.ac; i < n; i++)
+            at[i].partialCharge = 0;
         }
         String[] a = null;
         float f = 0;

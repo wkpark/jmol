@@ -288,17 +288,17 @@ public class HermiteRenderer implements G3DRenderer {
                   c2.sub2(c, depth1);
                   d1.add2(d, depth1);
                   d2.sub2(d, depth1);
-                  g3d.fillQuadrilateral(a1, b1, d1, c1);
-                  g3d.fillQuadrilateral(a2, b2, d2, c2);
-                  g3d.fillQuadrilateral(a1, b1, b2, a2);
-                  g3d.fillQuadrilateral(c1, d1, d2, c2);
+                  g3d.fillQuadrilateral(a1, b1, d1, c1, false);
+                  g3d.fillQuadrilateral(a2, b2, d2, c2, false);
+                  g3d.fillQuadrilateral(a1, b1, b2, a2, false);
+                  g3d.fillQuadrilateral(c1, d1, d2, c2, false);
                   closeEnd = true;
                 } else {
                   if (fillType == 0) {
                     if (isRev)
-                      g3d.fillQuadrilateral(c, d, b, a);
+                      g3d.fillQuadrilateral(c, d, b, a, false);
                     else
-                      g3d.fillQuadrilateral(a, b, d, c);
+                      g3d.fillQuadrilateral(a, b, d, c, false);
 
                   } else {
                     if (isRev) {
@@ -362,7 +362,7 @@ public class HermiteRenderer implements G3DRenderer {
       c1.z += 1;
       c2.z += 1;
       a2.z += 1;
-      g3d.fillQuadrilateral(a1, c1, c2, a2);
+      g3d.fillQuadrilateral(a1, c1, c2, a2, false);
     }
   }
  

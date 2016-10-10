@@ -8406,6 +8406,9 @@ public class ScriptEval extends ScriptExpr {
       // the state must not save them as paletteIDs, only as pure
       // color values.
       switch (tok) {
+      case T.partialcharge:
+        getPartialCharges(bs);
+        break;
       case T.surfacedistance:
       case T.straightness:
         vwr.autoCalculate(tok);
@@ -8459,6 +8462,14 @@ public class ScriptEval extends ScriptExpr {
    * +30% 130% (0 
    * 80% percent (0
    */
+
+  public void getPartialCharges(BS bs) throws ScriptException  {
+    try {
+      vwr.getOrCalcPartialCharges(bs, null);
+    } catch (Exception e) {
+      throw new ScriptInterruption(this, "partialcharge", 1); 
+    }
+  }
 
   public RadiusData encodeRadiusParameter(int index, boolean isOnly,
                                           boolean allowAbsolute)

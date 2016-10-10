@@ -45,7 +45,7 @@ package org.jmol.g3d;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javajs.util.P3;
+import javajs.util.P3i;
 
 import org.jmol.java.BS;
 import org.jmol.util.GData;
@@ -70,8 +70,6 @@ final class LineRenderer extends PrecisionRenderer {
   //int test = 5;
   private Map<Float, BS> lineCache = new Hashtable<Float, BS>();
   private Float slopeKey;
-  private P3 ptAtrimmed;
-  private P3 ptBtrimmed;
 
   void setLineBits(float dx, float dy) {
     // from cylinder
@@ -117,7 +115,7 @@ final class LineRenderer extends PrecisionRenderer {
   }
 
   void plotLineOld(int argbA, int argbB, int xA, int yA, int zA, int xB,
-                   int yB, int zB, boolean clipped) {
+                   int yB, int zB) {
     // primary method for mesh triangle, quadrilateral, hermite, backbone,
     // sticks, and stars
     x1t = xA;
@@ -126,14 +124,14 @@ final class LineRenderer extends PrecisionRenderer {
     y2t = yB;
     z1t = zA;
     z2t = zB;
-    if (clipped)
-      switch (getTrimmedLineImpl()) {
-      case VISIBILITY_UNCLIPPED:
-        clipped = false;
-        break;
-      case VISIBILITY_OFFSCREEN:
-        return;
-      }
+    boolean clipped = true;
+    switch (getTrimmedLineImpl()) {
+    case VISIBILITY_UNCLIPPED:
+      clipped = false;
+      break;
+    case VISIBILITY_OFFSCREEN:
+      return;
+    }
     plotLineClippedOld(argbA, argbB, xA, yA, zA, xB - xA, yB - yA, zB - zA,
         clipped, 0, 0);
   }
@@ -332,15 +330,15 @@ final class LineRenderer extends PrecisionRenderer {
     }
   }
 
-  void plotLineDeltaABits(int[] shades1, int[] shades2, int shadeIndex, P3 ptA,
-                          P3 ptB, int screenMask, boolean clipped) {
+  void plotLineDeltaABits(int[] shades1, int[] shades2, int shadeIndex, P3i ptA,
+                          P3i ptB, int screenMask, boolean clipped) {
     // from cylinder -- cartoonRockets
-    int x = Math.round(ptA.x);
-    int y = Math.round(ptA.y);
-    int z = Math.round(ptA.z);
-    int bx = Math.round(ptB.x);
-    int by = Math.round(ptB.y);
-    int bz = Math.round(ptB.z);
+    int x = ptA.x;
+    int y = ptA.y;
+    int z = ptA.z;
+    int bx = ptB.x;
+    int by = ptB.y;
+    int bz = ptB.z;
     int dx = bx - x;
     int dy = by - y;
 
@@ -446,52 +444,127 @@ final class LineRenderer extends PrecisionRenderer {
     }
   }
 
-  void plotLineBits(int argbA, int argbB, P3 ptA, P3 ptB) {
+  void plotLineBits(int argbA, int argbB, P3i ptA, P3i ptB, int run, int rise, boolean andClip) {
+    // standard, dashed or not dashed
+    // measures, axes, bbcage, mesh, cylinders 
     if (ptA.z <= 1 || ptB.z <= 1)
       return;
     boolean clipped = true;
-    switch (getTrimmedLineP3(ptA, ptB)) {
-    case VISIBILITY_OFFSCREEN:
-      return;
-    case VISIBILITY_UNCLIPPED:
-      clipped = false;
-      break;
-    }
-    plotLineClippedBits(argbA, argbB, ptA, ptB, clipped, 0, 0);
-  }
-
-  void plotDashedLineBits(int argb, int run, int rise, P3 ptA, P3 ptB) {
-    // measures, axes, bbcage only    
-    if (ptA.z <= 1 || ptB.z <= 1)
-      return;
-    boolean clipped = true;
-    switch (getTrimmedLineP3(ptA, ptB)) {
+    x1t = ptA.x;
+    y1t = ptA.y;
+    z1t = ptA.z;
+    x2t = ptB.x;
+    y2t = ptB.y;
+    z2t = ptB.z;
+    switch (getTrimmedLineImpl()) {
     case VISIBILITY_OFFSCREEN:
       return;
     case VISIBILITY_UNCLIPPED:
       clipped = false;
       break;
     default:
-      if (ptAtrimmed == null) {
-        ptAtrimmed = new P3();
-        ptBtrimmed = new P3();
+      if (andClip) {
+        ptA.set(x1t, y1t, z1t);
+        ptB.set(x2t, y2t, z2t);
       }
-      ptAtrimmed.set(x1t, y1t, z1t);
-      ptBtrimmed.set(x2t, y2t, z2t);
-      ptA = ptAtrimmed;
-      ptB = ptBtrimmed;
     }
-    plotLineClippedBits(argb, argb, ptA, ptB, clipped, run, rise);
-  }
+    int[] zbuf = g3d.zbuf;
+    int width = g3d.width;
+    int runIndex = 0;
+    if (run == 0) {
+      rise = Integer.MAX_VALUE;
+      run = 1;
+    }
+    int x = ptA.x;
+    int y = ptA.y;
+    int z = ptA.z;
+    int dx = ptB.x - x;
+    int x2 = x + dx;
+    int dy = ptB.y - y;
+    int y2 = y + dy;
+    int offset = y * width + x;
+    int offsetMax = g3d.bufferSize;
+    //boolean flipflop = (((x ^ y) & 1) != 0);
+    //boolean tScreened = tScreened1;
+    int argb = argbA;
+    Pixelator p = g3d.pixel;
+    if (argb != 0 && !clipped && offset >= 0 && offset < offsetMax
+        && z < zbuf[offset])
+      p.addPixel(offset, z, argb);
 
-  private int getTrimmedLineP3(P3 ptA, P3 ptB) {
-    x1t = (int) ptA.x;
-    y1t = (int) ptA.y;
-    z1t = (int) ptA.z;
-    x2t = (int) ptB.x;
-    y2t = (int) ptB.y;
-    z2t = (int) ptB.z;
-    return getTrimmedLineImpl();
+    if (dx == 0 && dy == 0)
+      return;
+    int xIncrement = 1, yIncrement = 1;
+    int yOffsetIncrement = width;
+
+    if (dx < 0) {
+      dx = -dx;
+      xIncrement = -1;
+    }
+    if (dy < 0) {
+      dy = -dy;
+      yOffsetIncrement = -width;
+      yIncrement = -1;
+    }
+    int twoDx = dx + dx, twoDy = dy + dy;
+
+    // the z dimension and the z increment are stored with a fractional
+    // component in the bottom 10 bits.
+    if (dy <= dx) {
+      // using x
+      setRastAB(ptA.x, ptA.z, ptB.x, ptB.z);
+      int twoDxAccumulatedYError = 0;
+      int n1 = Math.abs(x2 - x2t) - 1;
+      int n2 = Math.abs(x2 - x1t) - 1;
+      for (int n = dx - 1, nMid = n / 2; --n >= n1;) {
+        if (n == nMid) {
+          argb = argbB;
+          if (argb == 0)
+            return;
+        }
+        offset += xIncrement;
+        x += xIncrement;
+        twoDxAccumulatedYError += twoDy;
+        if (twoDxAccumulatedYError > dx) {
+          offset += yOffsetIncrement;
+          twoDxAccumulatedYError -= twoDx;
+        }
+        if (argb != 0 && n < n2 && offset >= 0 && offset < offsetMax
+            && runIndex < rise) {
+          int zCurrent = getZCurrent(a, b, x);
+          if (zCurrent < zbuf[offset])
+            p.addPixel(offset, zCurrent, argb);
+        }
+        runIndex = (runIndex + 1) % run;
+      }
+    } else {
+      // using y
+      setRastAB(ptA.y, ptA.z, ptB.y, ptB.z);
+      int twoDyAccumulatedXError = 0;
+      int n1 = Math.abs(y2 - y2t) - 1;
+      int n2 = Math.abs(y2 - y1t) - 1;
+      for (int n = dy - 1, nMid = n / 2; --n >= n1;) {
+        if (n == nMid) {
+          argb = argbB;
+          if (argb == 0)
+            return;
+        }
+        offset += yOffsetIncrement;
+        y += yIncrement;
+        twoDyAccumulatedXError += twoDx;
+        if (twoDyAccumulatedXError > dy) {
+          offset += xIncrement;
+          twoDyAccumulatedXError -= twoDy;
+        }
+        if (argb != 0 && n < n2 && offset >= 0 && offset < offsetMax
+            && runIndex < rise) {
+          int zCurrent = getZCurrent(a, b, y);
+          if (zCurrent < zbuf[offset])
+            p.addPixel(offset, zCurrent, argb);
+        }
+        runIndex = (runIndex + 1) % run;
+      }
+    }
   }
 
   private final static int VISIBILITY_UNCLIPPED = 0;
@@ -714,108 +787,6 @@ final class LineRenderer extends PrecisionRenderer {
         if (argb != 0 && n < n2 && offset >= 0 && offset < offsetMax
             && runIndex < rise) {
           int zCurrent = zCurrentScaled >> 10;
-          if (zCurrent < zbuf[offset])
-            p.addPixel(offset, zCurrent, argb);
-        }
-        runIndex = (runIndex + 1) % run;
-      }
-    }
-  }
-
-  private void plotLineClippedBits(int argb1, int argb2, P3 ptA, P3 ptB,
-                                   boolean clipped, int run, int rise) {
-    // standard, dashed or not dashed -- isosurface mesh
-    int[] zbuf = g3d.zbuf;
-    int width = g3d.width;
-    int runIndex = 0;
-    if (run == 0) {
-      rise = Integer.MAX_VALUE;
-      run = 1;
-    }
-    int x = (int) ptA.x;
-    int y = (int) ptA.y;
-    int z = (int) ptA.z;
-    int dx = (int) ptB.x - x;
-    int x2 = x + dx;
-    int dy = (int) ptB.y - y;
-    int y2 = y + dy;
-    int offset = y * width + x;
-    int offsetMax = g3d.bufferSize;
-    //boolean flipflop = (((x ^ y) & 1) != 0);
-    //boolean tScreened = tScreened1;
-    int argb = argb1;
-    Pixelator p = g3d.pixel;
-    if (argb != 0 && !clipped && offset >= 0 && offset < offsetMax
-        && z < zbuf[offset])
-      p.addPixel(offset, z, argb);
-
-    if (dx == 0 && dy == 0)
-      return;
-    int xIncrement = 1, yIncrement = 1;
-    int yOffsetIncrement = width;
-
-    if (dx < 0) {
-      dx = -dx;
-      xIncrement = -1;
-    }
-    if (dy < 0) {
-      dy = -dy;
-      yOffsetIncrement = -width;
-      yIncrement = -1;
-    }
-    int twoDx = dx + dx, twoDy = dy + dy;
-
-    // the z dimension and the z increment are stored with a fractional
-    // component in the bottom 10 bits.
-    if (dy <= dx) {
-      // using x
-      setRastAB(ptA.x, ptA.z, ptB.x, ptB.z);
-      int twoDxAccumulatedYError = 0;
-      int n1 = Math.abs(x2 - x2t) - 1;
-      int n2 = Math.abs(x2 - x1t) - 1;
-      for (int n = dx - 1, nMid = n / 2; --n >= n1;) {
-        if (n == nMid) {
-          argb = argb2;
-          if (argb == 0)
-            return;
-        }
-        offset += xIncrement;
-        x += xIncrement;
-        twoDxAccumulatedYError += twoDy;
-        if (twoDxAccumulatedYError > dx) {
-          offset += yOffsetIncrement;
-          twoDxAccumulatedYError -= twoDx;
-        }
-        if (argb != 0 && n < n2 && offset >= 0 && offset < offsetMax
-            && runIndex < rise) {
-          int zCurrent = getZCurrent(a, b, x);
-          if (zCurrent < zbuf[offset])
-            p.addPixel(offset, zCurrent, argb);
-        }
-        runIndex = (runIndex + 1) % run;
-      }
-    } else {
-      // using y
-      setRastAB(ptA.y, ptA.z, ptB.y, ptB.z);
-      int twoDyAccumulatedXError = 0;
-      int n1 = Math.abs(y2 - y2t) - 1;
-      int n2 = Math.abs(y2 - y1t) - 1;
-      for (int n = dy - 1, nMid = n / 2; --n >= n1;) {
-        if (n == nMid) {
-          argb = argb2;
-          if (argb == 0)
-            return;
-        }
-        offset += yOffsetIncrement;
-        y += yIncrement;
-        twoDyAccumulatedXError += twoDx;
-        if (twoDyAccumulatedXError > dy) {
-          offset += xIncrement;
-          twoDyAccumulatedXError -= twoDy;
-        }
-        if (argb != 0 && n < n2 && offset >= 0 && offset < offsetMax
-            && runIndex < rise) {
-          int zCurrent = getZCurrent(a, b, y);
           if (zCurrent < zbuf[offset])
             p.addPixel(offset, zCurrent, argb);
         }

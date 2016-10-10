@@ -28,6 +28,22 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javajs.awt.Font;
+import javajs.util.AU;
+import javajs.util.BArray;
+import javajs.util.Base64;
+import javajs.util.Lst;
+import javajs.util.M3;
+import javajs.util.M4;
+import javajs.util.Measure;
+import javajs.util.P3;
+import javajs.util.P4;
+import javajs.util.PT;
+import javajs.util.Quat;
+import javajs.util.SB;
+import javajs.util.T3;
+import javajs.util.V3;
+
 import org.jmol.api.Interface;
 import org.jmol.api.JmolDataManager;
 import org.jmol.api.SymmetryInterface;
@@ -59,35 +75,15 @@ import org.jmol.script.T;
 import org.jmol.util.BSUtil;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.C;
+import org.jmol.util.Edge;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
-import org.jmol.util.Edge;
+import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.Point3fi;
 import org.jmol.util.SimpleUnitCell;
-
-import javajs.awt.Font;
-import javajs.util.AU;
-import javajs.util.Lst;
-import javajs.util.SB;
-
-import org.jmol.util.Logger;
-
-import javajs.util.BArray;
-import javajs.util.Base64;
-import javajs.util.M3;
-import javajs.util.M4;
-import javajs.util.Measure;
-import javajs.util.P3;
-import javajs.util.P4;
-import javajs.util.PT;
-import javajs.util.Quat;
-import javajs.util.T3;
-import javajs.util.V3;
-
 import org.jmol.viewer.FileManager;
 import org.jmol.viewer.JC;
-import org.jmol.viewer.JmolAsyncException;
 import org.jmol.viewer.ShapeManager;
 import org.jmol.viewer.StateManager;
 import org.jmol.viewer.TransformManager;
@@ -672,11 +668,7 @@ public class CmdExt extends ScriptExt {
         bs1 = (slen == 2 ? null : atomExpressionAt(2));
         eval.checkLast(eval.iToken);
         if (!chk)
-          try {
-            vwr.calculatePartialCharges(bs1);
-          } catch (JmolAsyncException e1) {
-            eval.loadFileResourceAsync(e1.getFileName());
-          }
+          eval.getPartialCharges(bs1);
         return;
       case T.symmetry:
       case T.pointgroup:
@@ -4248,11 +4240,15 @@ public class CmdExt extends ScriptExt {
       if (chk)
         return;
       String param2 = eval.optParameterAsString(2);
-      if (tok == T.chemical && "formula".equals(param2)) {
-        msg = (String) vwr.ms.getInfo(vwr.am.cmi, "formula");
-        // cif files will have formula already
-        if (msg != null)
-          msg = PT.rep(msg, " ", "");
+      if (tok == T.chemical) {
+        if ("mf".equals(param2))
+          param2 = "formula";
+        if ("formula".equals(param2)) {
+          msg = (String) vwr.ms.getInfo(vwr.am.cmi, "formula");
+          // cif files will have formula already
+          if (msg != null)
+            msg = PT.rep(msg, " ", "");
+        }
       }
       if (msg == null) {
         try {

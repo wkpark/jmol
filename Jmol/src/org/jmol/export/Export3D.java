@@ -341,7 +341,7 @@ public class Export3D implements JmolRendererInterface {
     ptB.set(x + widthFill, y, z);
     ptC.set(x + widthFill, y + heightFill, z);
     ptD.set(x, y + heightFill, z);
-    fillQuadrilateral(ptA, ptB, ptC, ptD);
+    fillQuadrilateral(ptA, ptB, ptC, ptD, false);
   }
 
   /**
@@ -459,22 +459,12 @@ public class Export3D implements JmolRendererInterface {
   @Override
   public void drawDashedLineBits(int run, int rise, P3 pointA, P3 pointB) {
     // axes and such -- ignored dashed for exporters
-    exporter.fillCylinderScreenMad(colix, GData.ENDCAPS_FLAT,
-        exporter.lineWidthMad, pointA, pointB);
-    // ptA.set(pointA.x, pointA.y, pointA.z);
-    // ptB.set(pointB.x, pointB.y, pointB.z);
-    // exporter.drawDashedLine(colix, run, rise, ptA, ptB);
-  }
-
-  @Override
-  public void drawDottedLineBits(P3 pointA, P3 pointB) {
-    // TODO
     // axes, bbcage only
     exporter.fillCylinderScreenMad(colix, GData.ENDCAPS_FLAT,
         exporter.lineWidthMad, pointA, pointB);
     // ptA.set(pointA.x, pointA.y, pointA.z);
     // ptB.set(pointB.x, pointB.y, pointB.z);
-    // exporter.drawDashedLine(colix, 2, 1, ptA, ptB);
+    // exporter.drawDashedLine(colix, run, rise, ptA, ptB);
   }
 
   @Override
@@ -678,7 +668,7 @@ public class Export3D implements JmolRendererInterface {
    */
 
   @Override
-  public void fillQuadrilateral(P3 pointA, P3 pointB, P3 pointC, P3 pointD) {
+  public void fillQuadrilateral(P3 pointA, P3 pointB, P3 pointC, P3 pointD, boolean isSolid) {
     // fillTextRect
     // hermite, rockets, cartoons, labels
     exporter.fillTriangle(colix, pointA, pointB, pointC, false);

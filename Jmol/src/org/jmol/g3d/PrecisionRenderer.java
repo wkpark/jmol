@@ -62,11 +62,7 @@ public class PrecisionRenderer {
   }
 
   
-  protected void setRastAB(float xa, float za, float xb, float zb) {
-    xa = Math.round(xa);
-    za = Math.round(za);
-    xb = Math.round(xb);
-    zb = Math.round(zb);
+  protected void setRastAB(int xa, int za, int xb, int zb) {
     float zdif = (zb - za);
     float xdif = (xb - xa);
     if (xa == Float.MIN_VALUE || zdif == 0 || xdif == 0) {
@@ -88,15 +84,15 @@ public class PrecisionRenderer {
       a = zdif / xdif;
       b = za - a * xa;
     } else {
-//             z = a / (b - x)
+//       z = a / (b - x)
 //             
-      //           where 
-      //           
-//            a = (xb - xa) * za * (zb / (zb - za))
+//           where 
+//           
+//       a = (xb - xa) * za * (zb / (zb - za))
 //            
 //           and
 //           
-//            b = (xb * zb - xa * za) / (zb - za)
+//       b = (xb * zb - xa * za) / (zb - za)
 
       a = xdif * za * (zb / zdif);
       b = (xb * zb - xa * za) / zdif;

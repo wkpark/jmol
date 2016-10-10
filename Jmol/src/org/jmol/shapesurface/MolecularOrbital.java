@@ -494,7 +494,7 @@ public class MolecularOrbital extends Isosurface {
     if (moPlane != null) {
       setPropI("plane", moPlane, null);
       if (moCutoff != null) {
-        float max = moCutoff.floatValue();
+        float max = moCutoff.floatValue();        
         if (moSquareData == Boolean.TRUE || moSquareLinear == Boolean.TRUE)
           max = max * max;
         setPropI("red", Float.valueOf(-max), null);

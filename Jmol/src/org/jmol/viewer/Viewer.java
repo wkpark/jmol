@@ -7326,8 +7326,14 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     return ms.getModelDipole(am.cmi);
   }
 
-  public V3 calculateMolecularDipole(BS bsAtoms) {
-    return ms.calculateMolecularDipole(am.cmi, bsAtoms);
+  public V3 calculateMolecularDipole(BS bsAtoms) throws Exception {
+    try {
+      return ms.calculateMolecularDipole(am.cmi, bsAtoms);
+    } catch (JmolAsyncException e) {
+      if (eval != null)
+        eval.loadFileResourceAsync(e.getFileName());
+      return  null;
+    }
   }
 
   public void setDefaultLattice(P3 p) {
@@ -8042,10 +8048,6 @@ public class Viewer extends JmolViewer implements AtomDataServer,
 
   public void setSyncDriver(int mode) {
     sm.setSyncDriver(mode);
-  }
-
-  public float[] getPartialCharges() {
-    return ms.getPartialCharges();
   }
 
   public void setProteinType(STR type, BS bs) {
@@ -8966,16 +8968,28 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     return (haveDisplay ? TimeoutThread.showTimeout(timeouts, name) : "");
   }
 
+  public float[] getOrCalcPartialCharges(BS bsSelected, BS bsIgnore) throws JmolAsyncException {
+    if (bsSelected == null)
+      bsSelected = bsA();
+    bsSelected = BSUtil.copy(bsSelected);
+    BSUtil.andNot(bsSelected, bsIgnore);
+    BSUtil.andNot(bsSelected, ms.bsPartialCharges);
+    if (!bsSelected.isEmpty())
+      calculatePartialCharges(bsSelected);
+    return ms.getPartialCharges();
+  }
+
   public void calculatePartialCharges(BS bsSelected) throws JmolAsyncException {
     if (bsSelected == null || bsSelected.isEmpty())
       bsSelected = getModelUndeletedAtomsBitSetBs(getVisibleFramesBitSet());
     int pt = bsSelected.nextSetBit(0);
     if (pt < 0)
       return;
-    // this forces an array if it does not exist 
-    setAtomProperty(BSUtil.newAndSetBit(pt), T.partialcharge, 0, 1f, null, null, null);
-    getMinimizer(true).calculatePartialCharges(ms.bo, ms.bondCount, ms.at,
-        bsSelected);
+//    // this forces an array if it does not exist 
+//    setAtomProperty(BSUtil.newAndSetBit(pt), T.partialcharge, 0, 1f, null,
+//        null, null);
+    Logger.info("Calculating MMFF94 partial charges for " + bsSelected.cardinality() + " atoms");
+    getMinimizer(true).calculatePartialCharges(ms, bsSelected);
   }
 
   public void setCurrentModelID(String id) {
@@ -9459,6 +9473,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   public void playAudio(String fileNameOrDataURI) {
     sm.playAudio(fileNameOrDataURI);
   }
+
 
   
 

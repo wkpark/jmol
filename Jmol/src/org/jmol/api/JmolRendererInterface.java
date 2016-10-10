@@ -32,8 +32,6 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
   public abstract void drawDashedLineBits(int run, int rise, P3 screenA,
                                       P3 screenB);
 
-  public abstract void drawDottedLineBits(P3 screenA, P3 screenB);
-
   public abstract boolean drawEllipse(P3 ptAtom, P3 ptX, P3 ptY,
                                       boolean fillArc, boolean wireframeOnly);
 
@@ -174,7 +172,7 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
                                    P3 s3);
 
   public abstract void fillQuadrilateral(P3 screenA, P3 screenB,
-                                         P3 screenC, P3 screenD);
+                                         P3 screenC, P3 screenD, boolean isSolid);
 
   /**
    * fills background rectangle for label

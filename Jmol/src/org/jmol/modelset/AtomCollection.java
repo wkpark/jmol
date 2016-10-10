@@ -196,6 +196,7 @@ abstract public class AtomCollection {
   float[] partialCharges;
   float[] bondingRadii;
   float[] hydrophobicities;
+  public BS bsPartialCharges;
   
   
   protected void releaseModelSetAC() {
@@ -216,6 +217,7 @@ abstract public class AtomCollection {
     occupancies = null;
     bfactor100s = null;
     partialCharges = null;
+    bsPartialCharges = null;
     bondingRadii = null;
     atomTensors = null;
   }
@@ -232,6 +234,7 @@ abstract public class AtomCollection {
     bfactor100s = mergeModelSet.bfactor100s;
     bondingRadii = mergeModelSet.bondingRadii;
     partialCharges = mergeModelSet.partialCharges;
+    bsPartialCharges = mergeModelSet.bsPartialCharges;
     atomTensors = mergeModelSet.atomTensors;
     atomTensorList = mergeModelSet.atomTensorList;
     bsModulated = mergeModelSet.bsModulated;
@@ -881,14 +884,16 @@ abstract public class AtomCollection {
   }
   
   protected void setPartialCharge(int atomIndex, float partialCharge, boolean doTaint) {
-    if (Float.isNaN(partialCharge) || doTaint && partialCharge == at[atomIndex].getPartialCharge())
+    if (Float.isNaN(partialCharge))
       return;
     if (partialCharges == null) {
+      bsPartialCharges = new BS();
       if (partialCharge == 0)
         return; // no need to store a 0.
       partialCharges = new float[at.length];
     }
-    partialCharges[atomIndex] = partialCharge;
+    bsPartialCharges.set(atomIndex);
+    partialCharges[atomIndex] = partialCharge;   
     if (doTaint)
       taintAtom(atomIndex, TAINT_PARTIALCHARGE);
   }
@@ -2576,6 +2581,7 @@ abstract public class AtomCollection {
         firstAtomIndex, nAtoms);
     partialCharges = (float[]) AU.deleteElements(partialCharges,
         firstAtomIndex, nAtoms);
+    bsPartialCharges = BSUtil.deleteBits(bsPartialCharges, bsAtoms);
     atomTensorList = (Object[][]) AU.deleteElements(atomTensorList,
         firstAtomIndex, nAtoms);
     vibrations = (Vibration[]) AU.deleteElements(vibrations,

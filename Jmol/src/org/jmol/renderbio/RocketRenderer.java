@@ -1,16 +1,12 @@
 package org.jmol.renderbio;
 
-import javajs.util.AU;
 import javajs.util.P3;
-import javajs.util.T3;
 import javajs.util.V3;
 
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.c.STR;
 import org.jmol.java.BS;
 import org.jmol.modelsetbio.AlphaMonomer;
-import org.jmol.modelsetbio.AlphaPolymer;
-import org.jmol.modelsetbio.AminoMonomer;
 import org.jmol.modelsetbio.AminoPolymer;
 import org.jmol.modelsetbio.Helix;
 import org.jmol.modelsetbio.ProteinStructure;
@@ -249,7 +245,7 @@ public class RocketRenderer {
               screenCorners[f[2]], true);
         else
           g3d.fillQuadrilateral(screenCorners[f[0]], screenCorners[f[1]],
-              screenCorners[f[2]], screenCorners[f[3]]);
+              screenCorners[f[2]], screenCorners[f[3]], true);
       }
     }
   }

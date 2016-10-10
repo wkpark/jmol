@@ -38,6 +38,7 @@ import org.jmol.minimize.forcefield.ForceFieldUFF;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
+import org.jmol.modelset.ModelSet;
 import org.jmol.thread.JmolThread;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
@@ -675,10 +676,9 @@ public class Minimizer {
   }
 
   
-  public void calculatePartialCharges(Bond[] bonds, int bondCount,
-                                      Atom[] atoms, BS bsAtoms) throws JmolAsyncException {
+  public void calculatePartialCharges(ModelSet ms, BS bsAtoms) throws JmolAsyncException {
     ForceFieldMMFF ff = new ForceFieldMMFF(this);
-    ff.setArrays(atoms, bsAtoms, bonds, bondCount, true, true);
+    ff.setArrays(ms.at, bsAtoms, ms.bo, ms.bondCount, true, true);
     vwr.setAtomProperty(bsAtoms, T.atomtype, 0, 0, null, null,
         ff.getAtomTypeDescriptions());
     vwr.setAtomProperty(bsAtoms, T.partialcharge, 0, 0, null,

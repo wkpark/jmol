@@ -175,7 +175,7 @@ public class MainPopupResourceBundle extends PopupResource {
           "[color_backbone]Menu [color_cartoon]sMenu [color_ribbon]sMenu [color_rockets]Menu [color_strands]Menu [color_trace]Menu" },
 
       {   "schemeMenu",
-            "cpk molecule formalcharge partialcharge#CHARGE - altloc#PDB amino#PDB chain#PDB group#PDB monomer#PDB shapely#PDB structure#PDB relativeTemperature#BFACTORS fixedTemperature#BFACTORS property_vxyz#VIBRATION" },
+            "cpk molecule formalcharge partialcharge - altloc#PDB amino#PDB chain#PDB group#PDB monomer#PDB shapely#PDB structure#PDB relativeTemperature#BFACTORS fixedTemperature#BFACTORS property_vxyz#VIBRATION" },
 
       {   "[color_]schemeMenu", null },
 
@@ -231,7 +231,7 @@ public class MainPopupResourceBundle extends PopupResource {
 
 
       {   "surfaceMenu",
-          "surfDots surfVDW surfSolventAccessible14 surfSolvent14 surfMolecular CHARGEsurf2MEP CHARGEsurfMEP surfMoComputedMenuText - surfOpaque surfTranslucent surfOff" },
+          "surfDots surfVDW surfSolventAccessible14 surfSolvent14 surfMolecular surf2MEP surfMEP surfMoComputedMenuText - surfOpaque surfTranslucent surfOff" },
 
       {   "FILEUNITMenu",
           "SYMMETRYShowComputedMenu FILEMOLload FILEUNITone FILEUNITnine FILEUNITnineRestricted FILEUNITninePoly" },
@@ -425,8 +425,8 @@ public class MainPopupResourceBundle extends PopupResource {
         "showModel", GT._("Model"),
         "FRAMESbyModelComputedMenu", GT._("Model/Frame"),
         "modelKitMode", GT._("modelKitMode"),
-        "CHARGEsurf2MEP", GT._("Molecular Electrostatic Potential (range -0.1 0.1)"),
-        "CHARGEsurfMEP", GT._("Molecular Electrostatic Potential (range ALL)"),
+        "surf2MEP", GT._("Molecular Electrostatic Potential (range -0.1 0.1)"),
+        "surfMEP", GT._("Molecular Electrostatic Potential (range ALL)"),
         "showMo", GT._("Molecular orbital JVXL data"),
         "surfMoComputedMenuText", GT._("Molecular Orbitals ({0})"),
         "surfMolecular", GT._("Molecular Surface"),
@@ -472,7 +472,7 @@ public class MainPopupResourceBundle extends PopupResource {
         "orchid", GT._("Orchid"),
         "showOrient", GT._("Orientation"),
         "palindrome", GT._("Palindrome"),
-        "partialcharge#CHARGE", GT._("Partial Charge"),
+        "partialcharge", GT._("Partial Charge"),
         "pause", GT._("Pause"),
         "perspectiveDepthCB", GT._("Perspective Depth"),      
         "byPixelMenu", GT._("Pixel Width"), 
@@ -971,9 +971,9 @@ public class MainPopupResourceBundle extends PopupResource {
           "isosurface delete resolution 0 solvent 1.4 translucent" },
       { "surfSolventAccessible14",
           "isosurface delete resolution 0 sasurface 1.4 translucent" },
-      { "CHARGEsurfMEP",
+      { "surfMEP",
           "isosurface delete resolution 0 vdw color range all map MEP translucent" },
-      { "CHARGEsurf2MEP",
+      { "surf2MEP",
           "isosurface delete resolution 0 vdw color range -0.1 0.1 map MEP translucent" },
       { "surfOpaque", "mo opaque;isosurface opaque" },
       { "surfTranslucent", "mo translucent;isosurface translucent" },

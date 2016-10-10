@@ -274,6 +274,8 @@ public class MolReader extends AtomSetCollectionReader {
       if (line.toUpperCase().contains("_PARTIAL_CHARGES")) {
         try {
           Atom[] atoms = asc.atoms;
+          for (int i = asc.getLastAtomSetAtomIndex(), n = asc.ac; i < n; i++)
+            atoms[i].partialCharge = 0;
           for (int i = parseIntStr(rd()); --i >= 0;) {
             String[] tokens = PT.getTokens(rd());
             int atomIndex = parseIntStr(tokens[0]) + iatom0 - 1;

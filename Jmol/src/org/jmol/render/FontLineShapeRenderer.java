@@ -96,7 +96,7 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
                             boolean drawTicks) {
     // used by Bbcage, Uccage, and axes
     if (diameter < 0)
-      g3d.drawDottedLineBits(p0, p1);
+      g3d.drawDashedLineBits(8, 4, p0, p1);
     else
       g3d.fillCylinderBits(endcap, diameter, p0, p1);
     if (!drawTicks || tickInfo == null)

@@ -41,6 +41,7 @@ import org.jmol.script.SV;
 import org.jmol.script.ScriptError;
 import org.jmol.script.ScriptEval;
 import org.jmol.script.ScriptException;
+import org.jmol.script.ScriptInterruption;
 import org.jmol.script.T;
 import org.jmol.shape.MeshCollection;
 import org.jmol.util.BSUtil;
@@ -70,6 +71,7 @@ import javajs.util.V3;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.TempArray;
 import org.jmol.viewer.JC;
+import org.jmol.viewer.JmolAsyncException;
 
 @J2SIgnoreImport(org.jmol.quantum.QS.class)
 public class IsoExt extends ScriptExt {
@@ -121,6 +123,8 @@ public class IsoExt extends ScriptExt {
     boolean iHaveAtoms = false;
     boolean iHaveCoord = false;
     boolean idSeen = false;
+    boolean getCharges = false;
+    BS bsSelected = null;
 
     eval.sm.loadShape(JC.SHAPE_DIPOLES);
     if (tokAt(1) == T.list && listIsosurface(JC.SHAPE_DIPOLES))
@@ -136,6 +140,7 @@ public class IsoExt extends ScriptExt {
       switch (getToken(i).tok) {
       case T.all:
         propertyName = "all";
+        getCharges = true;
         break;
       case T.on:
         propertyName = "on";
@@ -163,11 +168,12 @@ public class IsoExt extends ScriptExt {
       case T.expressionBegin:
         if (propertyName == null)
           propertyName = (iHaveAtoms || iHaveCoord ? "endSet" : "startSet");
-        propertyValue = atomExpressionAt(i);
+        propertyValue = bsSelected = atomExpressionAt(i);
         i = eval.iToken;
         if (tokAt(i + 1) == T.nada && propertyName == "startSet")
           propertyName = "atomBitset";
         iHaveAtoms = true;
+        getCharges = true;
         break;
       case T.leftbrace:
       case T.point3f:
@@ -180,11 +186,13 @@ public class IsoExt extends ScriptExt {
         break;
       case T.bonds:
         propertyName = "bonds";
+        getCharges = true;
         break;
       case T.calculate:
+        getCharges = true;
         propertyName = "calculate";
         if (tokAt(i+1) == T.bitset || tokAt(i + 1) == T.expressionBegin) {
-          propertyValue = atomExpressionAt(++i);
+          propertyValue = bsSelected = atomExpressionAt(++i);
           i = eval.iToken;
         }
         break;
@@ -237,6 +245,12 @@ public class IsoExt extends ScriptExt {
         invArg();
       }
       idSeen = (eval.theTok != T.delete && eval.theTok != T.calculate);
+      if (getCharges) {
+        // ensures that we do have charges and catch the Script interruption if asynchronous
+        if (!chk)
+          eval.getPartialCharges(bsSelected);
+        getCharges = false;
+      }
       if (propertyName != null)
         setShapeProperty(JC.SHAPE_DIPOLES, propertyName, propertyValue);
     }
@@ -1945,11 +1959,11 @@ public class IsoExt extends ScriptExt {
         }
         if (!chk)
           try {
-            data = (fname == null && isMep ? vwr.getPartialCharges()
+            data = (fname == null && isMep ? vwr.getOrCalcPartialCharges(bsSelect, bsIgnore)
                 : getAtomicPotentials(bsSelect, bsIgnore, fname));
-          } catch (Exception ex) {
-            // ignore
-          }
+            } catch (JmolAsyncException e1) {
+              throw new ScriptInterruption(e, "partialcharge", 1);
+            }
         if (!chk && data == null)
           error(ScriptError.ERROR_noPartialCharges);
         propertyValue = data;
@@ -3400,19 +3414,21 @@ public class IsoExt extends ScriptExt {
    * @param bsIgnore
    * @param fileName
    * @return calculated atom potentials
-   * @throws Exception
    */
   private float[] getAtomicPotentials(BS bsSelected, BS bsIgnore,
-                                      String fileName) throws Exception {
+                                      String fileName) {
     float[] potentials = new float[vwr.ms.ac];
     MepCalculation m = (MepCalculation) Interface
         .getOption("quantum.MlpCalculation", vwr, "script");
     m.set(vwr);
     String data = (fileName == null ? null : vwr.getFileAsString3(fileName,
         false, null));
-    m.assignPotentials(vwr.ms.at, potentials, vwr
-        .getSmartsMatch("a", bsSelected), vwr.getSmartsMatch(
-        "/noAromatic/[$(C=O),$(O=C),$(NC=O)]", bsSelected), bsIgnore, data);
+    try {
+      m.assignPotentials(vwr.ms.at, potentials, vwr
+          .getSmartsMatch("a", bsSelected), vwr.getSmartsMatch(
+          "/noAromatic/[$(C=O),$(O=C),$(NC=O)]", bsSelected), bsIgnore, data);
+    } catch (Exception e) {
+    }
     return potentials;
   }
 

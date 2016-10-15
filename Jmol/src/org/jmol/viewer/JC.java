@@ -69,7 +69,7 @@ public final class JC {
     "nmrdb13", "http://www.nmrdb.org/service/jsmol13c?POST?molfile=",
     //"pdb", "http://ftp.wwpdb.org/pub/pdb/data/structures/divided/pdb/%c2%c3/pdb%file.ent.gz", // new Jmol 14.5.0 10/28/2015
     "magndata", "http://webbdcrista1.ehu.es/magndata/mcif/%FILE.mcif",
-    "mmtf", "http://mmtf.rcsb.org/full/%FILE", // new Jmol 14.5.4 4/2016
+    "mmtf", "https://mmtf.rcsb.org/full/%FILE", // new Jmol 14.5.4 4/2016
     "rna3d", "http://rna.bgsu.edu/rna3dhub/%TYPE/download/%FILE",
     // now https:
     "ligand", "https://files.rcsb.org/ligands/download/%FILE.cif",

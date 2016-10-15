@@ -394,6 +394,20 @@ public class SticksRenderer extends FontLineShapeRenderer {
     int dyB = dy * dy;
     mag2d = (int) Math.round(Math.sqrt(dxB + dyB));
     resetAxisCoordinates();
+    if (isCartesian && bondOrder == 3) {
+      fillCylinder(colixA, colixB, endcaps, width, xAxis1, yAxis1, zA,
+          xAxis2, yAxis2, zB);
+      stepAxisCoordinates();
+      x.sub2(b, a);
+      x.scale(0.05f);
+      p1.sub2(a, x);
+      p2.add2(b, x);
+      g3d.drawBond(p1, p2, colixA, colixB, endcaps, mad, -2);
+      stepAxisCoordinates();
+      fillCylinder(colixA, colixB, endcaps, width, xAxis1, yAxis1, zA,
+          xAxis2, yAxis2, zB);
+      return;
+    }
     while (true) {
       if ((dottedMask & 1) != 0)
         drawDashed(xAxis1, yAxis1, zA, xAxis2, yAxis2, zB, dashDots);

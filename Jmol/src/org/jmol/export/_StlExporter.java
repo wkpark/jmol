@@ -71,6 +71,7 @@ public class _StlExporter extends _VrmlExporter {
   public _StlExporter() {
     super();
     useTable = null;
+    noColor = true;
     isDebug = Logger.debugging;
     if (!isDebug) {
       oc = new OC();

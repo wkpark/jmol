@@ -51,7 +51,7 @@ abstract public class __CartesianExporter extends ___Exporter {
 
   protected A4 viewpoint = new A4();
   protected boolean canCapCylinders;
-  protected boolean solidOnly; // _STL, VRML
+  protected boolean noColor;
 
   public __CartesianExporter() {
     exportType = GData.EXPORT_CARTESIAN;
@@ -273,7 +273,7 @@ abstract public class __CartesianExporter extends ___Exporter {
     float radius = mad / 2000f;
     if (Logger.debugging)
       outputComment("bond " + ptA + " " + ptB);
-    if (colix1 == colix2) {
+    if (colix1 == colix2 || noColor) {
       outputCylinder(null, tempP1, tempP2, colix1, endcaps, radius, null, null, bondOrder != -1);
     } else {
       tempV2.ave(tempP2, tempP1);

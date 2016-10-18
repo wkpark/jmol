@@ -598,7 +598,7 @@ public class _IdtfExporter extends __CartesianExporter {
     int[][] faces = new int[nFaces][3];
     for (int i = 0, p = 0; i < nFaces; i++)
       for (int j = 0; j < 3; j++)
-        faces[i][j] = f[++p];
+        faces[i][j] = f[p++];
     V3[] vertexes = new V3[vertexCount];
     for (int i = 0; i < vertexCount;i++)
       vertexes[i] = Geodesic.getVertexVector(i);

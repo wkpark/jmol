@@ -4601,7 +4601,7 @@ public class ScriptEval extends ScriptExpr {
 
       loadScript.append(" ");
       if (isVariable || isInline) {
-        loadScript.append(filename.indexOf('\n') >= 0 ? PT.esc(filename) : filename);
+        loadScript.append(filename.indexOf('\n') >= 0 || isVariable ? PT.esc(filename) : filename);
       } else if (!isData) {
         if (localName != null)
           localName = vwr.fm.getFilePath(localName, false, false);

@@ -953,7 +953,7 @@ public class MainPopupResourceBundle extends PopupResource {
       { "SIGNEDNOGLwritePovray", "write POVRAY \"?FILEROOT?.pov\"" },      
       { "SIGNEDNOGLwriteVrml", "write VRML \"?FILEROOT?.wrl\"" },      
       { "SIGNEDNOGLwriteX3d", "write X3D \"?FILEROOT?.x3d\"" },      
-      { "SIGNEDNOGLwriteX3d", "write STL \"?FILEROOT?.stl\"" },      
+      { "SIGNEDNOGLwriteSTL", "write STL \"?FILEROOT?.stl\"" },      
       { "SIGNEDNOGLwriteIdtf", "write IDTF \"?FILEROOT?.idtf\"" },      
       { "SIGNEDNOGLwriteMaya", "write MAYA \"?FILEROOT?.ma\"" },       
       { "SYMMETRYshowSymmetry", "console on;show symmetry" },

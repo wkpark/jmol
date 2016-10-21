@@ -158,6 +158,16 @@ public class _X3dExporter extends _VrmlExporter {
   }
 
   @Override
+  protected void outputChildStart() {
+    // not used!
+  }
+
+  @Override
+  protected void outputChildClose() {
+    // not used!
+  }
+
+  @Override
   protected void outputDefChildFaceSet(String child) {
     if (child != null)
       output("DEF='" + child + "'");

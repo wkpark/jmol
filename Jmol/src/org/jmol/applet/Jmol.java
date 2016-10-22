@@ -529,6 +529,11 @@ public class Jmol extends GenericApplet implements WrappedApplet {
 
   @Override
   protected String doSendCallback(String callback, Object[] data, String strInfo) {
+    if (callback == null) {
+      // from reading of the DOM by the Java applet only
+      getJsObjectInfo(data);
+      return null;
+    }
     JSObject jso = JSObject.getWindow(applet);
     if (callback.equals("alert")) {
       jso.call(callback, new Object[] { strInfo });
@@ -550,6 +555,34 @@ public class Jmol extends GenericApplet implements WrappedApplet {
     //System.out.println("OK -- calling " + jso + " " + callback + " " + data);
     return "" + jso.call(callback, data);
   }
+  
+  /**
+   * probably never used -- only by Java applet reading directly from the DOM in an XHTML document.
+   * 
+   * @param data
+   */
+  private void getJsObjectInfo(Object[] data) {
+    data[0] = null;
+    try {
+      String method = (String) data[1];
+      Object[] jsObject = (Object[]) data[2];
+      Object[] args = (Object[]) data[3];
+      JSObject DOMNode = (JSObject) jsObject[0];
+      if (method == null) {
+        String namespaceURI = (String) DOMNode.getMember("namespaceURI");
+        String localName = (String) DOMNode.getMember("localName");
+        data[0] = "namespaceURI=\"" + namespaceURI + "\" localName=\""
+            + localName + "\"";
+      } else {
+        data[0] = (args == null ? DOMNode.getMember(method) : DOMNode.call(
+            method, args));
+      }
+    } catch (Exception e) {
+      //
+    }
+  }
+
+
 
   private Boolean allowJSEval;
   private JSObject jsoDocument = null;

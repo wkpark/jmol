@@ -11,22 +11,20 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
-import javax.swing.JDialog;
-
-
-import netscape.javascript.JSObject;
-
-import org.jmol.api.Interface;
-
-import javajs.api.GenericImageDialog;
-import javajs.api.GenericPlatform;
 import javajs.api.GenericFileInterface;
-import javajs.api.GenericMouseInterface;
+import javajs.api.GenericImageDialog;
 import javajs.api.GenericMenuInterface;
+import javajs.api.GenericMouseInterface;
+import javajs.api.GenericPlatform;
 import javajs.api.PlatformViewer;
 import javajs.awt.Font;
 import javajs.util.P3;
 import javajs.util.Rdr;
+
+import javax.swing.JDialog;
+
+import org.jmol.api.Interface;
+import org.jmol.viewer.Viewer;
 
 public class Platform implements GenericPlatform {
 
@@ -228,13 +226,9 @@ public class Platform implements GenericPlatform {
 
   @Override
   public Object getJsObjectInfo(Object[] jsObject, String method, Object[] args) {
-    JSObject DOMNode = (JSObject) jsObject[0];
-    if (method == null) {
-      String namespaceURI = (String) DOMNode.getMember("namespaceURI");
-      String localName = (String) DOMNode.getMember("localName");
-      return "namespaceURI=\"" + namespaceURI + "\" localName=\"" + localName + "\"";
-    }
-    return (args == null ? DOMNode.getMember(method) : DOMNode.call(method, args));
+    Object[] obj = new Object[] {null, method, jsObject, args};
+   ((Viewer) vwr).sm.cbl.notifyCallback(null, obj);
+    return obj[0];
   }
 
   @Override

@@ -591,10 +591,14 @@ public abstract class GenericApplet implements JmolAppletInterface,
     return (callbacks.get(type) != null);
   }
 
+  /**
+   * @param type the callback type or null for getJsObjectInfo() -- Java applet only
+   * @param data type-dependent
+   */
   @Override
   public void notifyCallback(CBK type, Object[] data) {
-    String callback = callbacks.get(type);
-    boolean doCallback = (callback != null && (data == null || data[0] == null));
+    String callback = (type == null ? null : callbacks.get(type));
+    boolean doCallback = (type == null || callback != null && (data == null || data[0] == null));
     boolean toConsole = false;
     if (data != null)
       data[0] = htmlName;
@@ -603,6 +607,7 @@ public abstract class GenericApplet implements JmolAppletInterface,
 
     //System.out.println("Jmol.java notifyCallback " + type + " " + callback
     //+ " " + strInfo);
+    if (type != null)
     switch (type) {
     case APPLETREADY:
       data[3] = appletObject;

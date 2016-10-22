@@ -83,7 +83,7 @@ public class StatusManager {
 
   protected Viewer vwr;
   JmolStatusListener jsl;
-  JmolCallbackListener cbl;
+  public JmolCallbackListener cbl;
   public String statusList = "";
 
   StatusManager(Viewer vwr) {

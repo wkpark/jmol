@@ -27,15 +27,20 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
@@ -44,6 +49,8 @@ import javajs.util.SB;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -51,361 +58,397 @@ import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSlider;
+import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
-import javax.swing.border.TitledBorder;
+import javax.swing.ListCellRenderer;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.basic.BasicComboPopup;
 import javax.swing.plaf.basic.ComboPopup;
 import javax.swing.plaf.metal.MetalComboBoxUI;
 
 import org.jmol.i18n.GT;
+import org.jmol.script.SV;
+import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
 import org.openscience.jmol.app.jmolpanel.GuiMap;
 import org.openscience.jmol.app.jmolpanel.JmolPanel;
 
 abstract class NBODialogConfig extends JDialog {
+  
 
   protected static final String sep = System.getProperty("line.separator");
-
-  protected static final String DEFAULT_PARAMS = "PLOT CMO DIPOLE STERIC";
-
-  abstract protected boolean connect();
-  abstract protected void goRunClicked(String defaultParams, String ess, File inputFile, Runnable load47Done);
-  abstract protected boolean showWorkpathDialogM(String st, String type);
-  abstract protected void readInputFile(File f);
-  abstract protected void showWorkpathDialog(String s);
-  abstract protected void setBonds(String[] atoms, String key);
-  
-  protected JPanel topPanel,statusPanel;
-
-  protected NBOService nboService;
-  protected boolean haveService;
-  boolean isJmolNBO;
-  protected JLabel icon;
   
   protected Viewer vwr;
+  protected NBOService nboService;
 
-  protected JButton browse, helpBtn, modelButton,runButton,viewButton,searchButton;  
-  protected JButton[] mainButtons;
-  protected JTextField serverPathLabel;
-  protected JCheckBox jCheckAtomNum;
-  protected JCheckBox jCheckNboView;
+  protected JLabel icon;
+
+  protected JSplitPane centerPanel;
+  protected JPanel modulePanel;
   
-  protected JLabel statusLab = new JLabel();
-  protected Hashtable<String,String> lonePairs;
+  //abstract protected void notifyLoad();
+  //abstract protected void rawInput(String str);
+  
+  protected FileHndlr fileHndlr;
+  final static protected Font nboFont = new Font("Monospaced", Font.BOLD, 16);
+  final static protected Font titleFont = new Font("Arial",Font.BOLD | Font.ITALIC,18);
+  final static protected Color titleColor = Color.blue;
+  
+  protected JTextPane jpNboOutput;
+  protected String bodyText = "";
+  
+  protected boolean showAtNum,nboView,useWireMesh;
+  protected char dialogMode;
+  
+  protected Color orbColor1, orbColor2;
+  protected String color1,color2;
+  protected float opacityOp;
+  
+  //protected Hashtable<String, String[]> lists;
 
   protected String reqInfo;
 
-  protected JTextPane jpNboOutput;
-  protected String bodyText = "";
-
-  protected String jobStem;
-  protected Font nboFont = new Font("Monospaced", Font.BOLD, 16);
-  protected boolean nboView = false;
+  
+  protected NBODialogConfig(JFrame f){
+    super(f);
+  }
 
   /**
    * Creates a dialog for getting info related to output frames in nbo format.
-   * 
-   * @param f
-   *        The frame associated with the dialog
+   *
+   * @return settings panel 
    */
-  protected NBODialogConfig(JFrame f) {
-    super(f, GT._("NBO Server Interface"), false);
-  }
-
-  protected void setComponents(Component comp, Color forColor, Color backColor){
-    if(comp instanceof JTextField ||comp instanceof JTextPane || comp instanceof JButton)
-      return;
-    if(comp instanceof JComboBox)
-      comp.setBackground(new Color(248,248,248));
-    if(forColor!=null)comp.setForeground(forColor);
-    if(backColor!=null)comp.setBackground(backColor);
-    if(comp instanceof Container){
-      for(Component c:((Container)comp).getComponents()){
-        setComponents(c, forColor, backColor);
-      }
-    }
-  }
-  
-  protected void enableComponentsR(Component c,boolean b){
-    c.setEnabled(b);
-    if(c instanceof Container){
-      if(!(c instanceof JComboBox)) c.setVisible(true);
-      if(c.equals(topPanel)) return;
-      for(Component c2:((Container) c).getComponents())
-        enableComponentsR(c2,b);
-    }
-  }  
-  
-  protected void buildConfig(Container p) {
-    p.removeAll();
-    p.setLayout(new BorderLayout());
-    topPanel=buildTopPanel();
-    p.add(topPanel,BorderLayout.NORTH);
-    p.add(statusPanel,BorderLayout.SOUTH);
-    p.add(buildFilePanel(),BorderLayout.CENTER);
-    placeNBODialog(this);
-  }
-  
-  private JPanel buildFilePanel() {
-    JPanel filePanel = new JPanel(new BorderLayout());
-    filePanel.setBorder(BorderFactory.createLoweredBevelBorder());
-
+  @SuppressWarnings("unchecked")
+  protected JPanel buildSettingsPanel() {
+    JPanel filePanel = new JPanel();
+    filePanel.setLayout(new BoxLayout(filePanel,BoxLayout.Y_AXIS));
+    
     //GUI for NBO path selection
-    Box box = Box.createHorizontalBox();
-    box.setBorder(BorderFactory.createTitledBorder(new TitledBorder("Location of NBOServe executable:")));
-    serverPathLabel = new JTextField("");
-    serverPathLabel.setEditable(false);
-    serverPathLabel.setBorder(null);
-    serverPathLabel.setText(nboService.serverPath);
-    box.add(serverPathLabel);
-    box.add(new JLabel("  "));
-    JButton nboPathButton = new JButton("Browse...");
-    nboPathButton.addActionListener(new ActionListener() {
+    JTextField serverPath = new JTextField(nboService.serverPath);
+    JButton browse = new JButton("Browse");
+    filePanel.add(titleBox(" Location of NBOServe.exe ", null));
+    Box serverBox = borderBox(true);
+    serverBox.add(addPathBox(serverPath,0,browse));
+    filePanel.add(serverBox);
+    final JLabel lab = new JLabel();
+    lab.setAlignmentX(0.5f);
+    if(nboService.restartIfNecessary()){
+      lab.setText("NBOServe is successfully connected");
+      lab.setForeground(Color.black);
+    }else{
+      vwr.alert("Could not connect to NBOserve!");
+      lab.setForeground(Color.red);
+    }
+
+    serverBox.setMaximumSize(new Dimension(350,50));
+    filePanel.add(serverBox);
+    //Job files
+    filePanel.add(titleBox(" Location of Working Directory ", null));
+    Box workBox = borderBox(true);
+    filePanel.add(workBox);
+    java.util.Properties props = JmolPanel.historyFile.getProperties();
+    String workingPath = (props.getProperty("workingPath",
+        System.getProperty("user.home")));
+    JTextField runPath = new JTextField(workingPath);
+    browse = new JButton("Browse");
+    workBox.add(addPathBox(runPath,1,browse));
+    workBox.setMaximumSize(new Dimension(350,80));
+    filePanel.add(workBox);
+    JLabel label = new JLabel("(This directory must be different than NBOServe's directory)");
+    label.setAlignmentX(0.5f);
+    workBox.add(label);
+    //Settings
+    filePanel.add(titleBox( " Settings ", null));
+    JCheckBox jCheckAtomNum = new JCheckBox("Show Atom Numbers");//.setAlignmentX(0.5f);
+    jCheckAtomNum.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        showNBOPathDialog();
+        showAtNum = !showAtNum;
+        showAtomNums(false);
       }
     });
-    box.add(nboPathButton);
-    JButton b = new JButton("Connect");
-    b.addActionListener(new ActionListener() {
+    showAtNum = true;
+    jCheckAtomNum.setSelected(true);
+    Box settingsBox = borderBox(true);
+    settingsBox.add(jCheckAtomNum);
+
+    JCheckBox jCheckSelHalo = new JCheckBox("Show selection halos on atoms");
+    jCheckSelHalo.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        connect();
+        if(!((JCheckBox)e.getSource()).isSelected())
+          runScriptQueued("select off");
+        else runScriptQueued("select on");
       }
     });
-    box.add(b);
-    filePanel.add(box, BorderLayout.NORTH);
-    (jpNboOutput = new JTextPane()).setFont(new Font("Arial",Font.PLAIN,16));
-    jpNboOutput.setContentType("text/html");
-    JScrollPane p = new JScrollPane();
-    p.getViewport().add(jpNboOutput);
-    p.setBorder(BorderFactory.createTitledBorder(new TitledBorder("NBO Output:")));
-    filePanel.add(p, BorderLayout.CENTER);
+    jCheckSelHalo.doClick();
+    settingsBox.add(jCheckSelHalo);
+    
+    //ORBITAL DISPLAY OPTIONS//////////////////////
+    String viewOps = props.getProperty("viewOptions");
+    if(viewOps != null){
+      if(!viewOps.equals("nboView")){
+        String[] toks = viewOps.split(",");
+        orbColor1 = new Color(Integer.parseInt(toks[0]));
+        orbColor2 = new Color(Integer.parseInt(toks[1]));
+        opacityOp = Float.parseFloat(toks[2]);
+        if(toks[3].contains("true")){
+          useWireMesh = true;
+          runScriptQueued("nbo nofill mesh");
+        }else
+          runScriptQueued("nbo fill nomesh");
+      }else{
+        orbColor1 = Color.cyan;
+        orbColor2 = Color.yellow;
+        opacityOp = 0.3f;
+        useWireMesh = false;
+      }
+    }else{
+      orbColor1 = Color.blue;
+      orbColor2 = Color.red;
+      opacityOp = 0;
+      useWireMesh = true;
+    }
+    color1 = "["  + orbColor1.getRed() + " " + orbColor1.getGreen() 
+        + " " + orbColor1.getBlue() + "]";
+    color2 = "[" + orbColor2.getRed() + " " + orbColor2.getGreen() 
+        + " " + orbColor2.getBlue() + "]";
+    final JCheckBox jCheckWireMesh = new JCheckBox("Use wire mesh for orbital display");
+    
+    settingsBox.add(jCheckWireMesh);
+    Color[] colors = 
+      { Color.red, Color.orange, Color.yellow, Color.green, 
+        Color.cyan, Color.blue, Color.magenta,
+        };
+    
+    JPanel displayOps = new JPanel(new GridLayout(1,4));
+    displayOps.add(new JLabel("(+) color: "));
+    final JComboBox<Color> colorBox1 = new JComboBox<Color>(colors);
+    colorBox1.setRenderer(new ColorRenderer());
+    colorBox1.setSelectedItem(orbColor1);
+    displayOps.add(colorBox1);
+    colorBox1.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        orbColor1 = ((Color)colorBox1.getSelectedItem());
+        color1 = 
+            "["  + orbColor1.getRed() + " " + orbColor1.getGreen() 
+            + " " + orbColor1.getBlue() + "]";
+        runScriptQueued("nbo color " + color2 + " " + color1 
+            + ";mo color " + color2 + " " + color1);
+        java.util.Properties props = new java.util.Properties();
+        props.setProperty("viewOptions", 
+            orbColor1.getRGB() + "," + orbColor2.getRGB() 
+            + "," + opacityOp + "," + useWireMesh);
+        JmolPanel.historyFile.addProperties(props);
+      }
+    });
+    
+    displayOps.add(new JLabel("  (-) color: "));
+    final JComboBox<Color> colorBox2 = new JComboBox<Color>(colors);
+    colorBox2.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        orbColor2 = ((Color)colorBox2.getSelectedItem());
+        color2 = 
+            "[" + orbColor2.getRed() + " " + orbColor2.getGreen() 
+            + " " + orbColor2.getBlue() + "]";
+        runScriptQueued("nbo color " + color2 + " " + color1 
+            + ";mo color " + color2 + " " + color1);
+        java.util.Properties props = new java.util.Properties();
+        props.setProperty("viewOptions", 
+            orbColor1.getRGB() + "," + orbColor2.getRGB() 
+            + "," + opacityOp + "," + useWireMesh);
+        JmolPanel.historyFile.addProperties(props);
+      }
+    });
+    colorBox2.setSelectedItem(orbColor2);
+    colorBox2.setRenderer(new ColorRenderer());
+    
+    displayOps.add(colorBox2);
+    displayOps.setAlignmentX(0.0f);
+    settingsBox.add(displayOps);
+    settingsBox.add(Box.createRigidArea(new Dimension(10,10)));
+    
+    //Opacity slider///////////////////
+    final JSlider opacity = new JSlider();
+    opacity.setMinimum(0);
+    opacity.setMaximum(10);
+    opacity.setMajorTickSpacing(1);
+    opacity.setPaintTicks(true);
+    Hashtable<Integer,JLabel> labelTable = new Hashtable<Integer,JLabel>();
+    for(int i = 0; i < 10; i++)
+      labelTable.put( new Integer(i), new JLabel("0."+i) );
+    labelTable.put(new Integer(10), new JLabel("1"));
+    opacity.setPaintLabels(true);
+    opacity.setLabelTable(labelTable);
+    opacity.addChangeListener(new ChangeListener(){
+      @Override
+      public void stateChanged(ChangeEvent e) {
+        opacityOp = (float)opacity.getValue()/10;
+        runScriptQueued("nbo translucent " + opacityOp + 
+            ";mo translucent " + opacityOp);
+        java.util.Properties props = new java.util.Properties();
+        props.setProperty("viewOptions", 
+            orbColor1.getRGB() + "," + orbColor2.getRGB() 
+            + "," + opacityOp + "," + useWireMesh);
+        JmolPanel.historyFile.addProperties(props);
+      }
+    });
+    Box opacBox = Box.createHorizontalBox();
+    opacBox.add(new JLabel("Orbital opacity:  "));
+    opacBox.setAlignmentX(0.0f);
+    opacBox.add(opacity);
+    settingsBox.add(opacBox);
+
+    jCheckWireMesh.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        useWireMesh = !useWireMesh;
+        if(useWireMesh){
+          opacity.setValue(0);
+          runScriptQueued("nbo nofill mesh;mo nofill mesh");
+        }else
+          runScriptQueued("nbo fill nomesh;mo fill nomesh");
+        java.util.Properties props = new java.util.Properties();
+        props.setProperty("viewOptions", 
+            orbColor1.getRGB() + "," + orbColor2.getRGB() + "," + opacityOp + "," + useWireMesh);
+        JmolPanel.historyFile.addProperties(props);
+      }
+    });
+    if(useWireMesh)
+      jCheckWireMesh.setSelected(true);
+    JCheckBox jCheckNboView = new JCheckBox("Emulate NBO View");
+    settingsBox.add(jCheckNboView);
+    jCheckNboView.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        if(((JCheckBox)e.getSource()).isSelected()){
+          setNBOColorScheme();
+          colorBox1.setSelectedItem(Color.cyan);
+          colorBox2.setSelectedItem(Color.yellow);
+          opacity.setValue(3);
+          if(jCheckWireMesh.isSelected())
+            jCheckWireMesh.doClick();
+          java.util.Properties props = new java.util.Properties();
+          props.setProperty("viewOptions", "nboView");
+          JmolPanel.historyFile.addProperties(props);
+        }else
+          resetColorScheme();
+        
+      }
+    });
+    if(viewOps.equals("nboView"))
+      jCheckNboView.doClick();
+    else
+      opacity.setValue((int)(opacityOp*10));
+    
+    settingsBox.setMaximumSize(new Dimension(350,180));
+    settingsBox.setBorder(BorderFactory.createLineBorder(Color.black));
+    filePanel.add(settingsBox);
     return filePanel;
   }
   
-  /**
-   * Top panel with logo/modules/file choosing options
-   * @return top panel
-   */
-  protected JPanel buildTopPanel(){
-    JPanel p = new JPanel();
-    p.add(modelButton);
-    p.add(Box.createRigidArea(new Dimension(10,0)));
-    p.add(runButton);
-    p.add(Box.createRigidArea(new Dimension(10,0)));
-    p.add(viewButton);
-    p.add(Box.createRigidArea(new Dimension(10,0)));
-    p.add(searchButton);
-    p.add(Box.createRigidArea(new Dimension(10,0)));
-    p.add(Box.createRigidArea(new Dimension(100,0)));
-    JButton btn = new JButton("About");
-    btn.setFont(new Font("Arial",Font.PLAIN,14));
-    btn.setForeground(Color.WHITE);
-    btn.setBackground(Color.BLACK);
-    btn.setBorder(null);
-    p.add(btn);
-    icon = new JLabel();
-    p.add(icon);
-    p.setBackground(Color.BLACK);
-    p.setPreferredSize(new Dimension(500,60));
-    return p;
-  }
-
-  protected JPanel folderBox() {
-    JPanel p = new JPanel(new GridBagLayout());
-    GridBagConstraints c = new GridBagConstraints();
-    c.gridx=0;
-    c.gridy=0;
-    c.fill=GridBagConstraints.BOTH;
-    if(tfFolder == null)
-      (tfFolder = new JTextField()).setPreferredSize(new Dimension(110,20));
-    tfFolder.addActionListener(new ActionListener() {
+  
+  private Box addPathBox(final JTextField tf,final int m, JButton b){
+    Box box = Box.createHorizontalBox();
+    box.add(tf);
+    box.add(b);
+    b.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        if(dialogMode == DIALOG_MODEL)
-          showWorkpathDialogM(null,null);
-        else
-          showWorkpathDialog(workingPath);
+        showNBOPathDialog(tf, tf.getText(),m);
       }
     });
-    p.add(tfFolder,c);
-    c.gridx=1;
-    if(tfName == null)
-      (tfName = new JTextField()).setPreferredSize(new Dimension(100,20));
-    tfName.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        if(dialogMode == DIALOG_MODEL)
-          showWorkpathDialogM(null,null);
-        else
-          showWorkpathDialog(workingPath);
-      }
-    });
-    p.add(tfName,c);
-    c.gridx=0;
-    c.gridy=1;
-    p.add(new JLabel("         folder"),c);
-    c.gridx=1;
-    p.add(new JLabel("          name"),c);
-    c.gridx=2;
-    c.gridy=0;
-    (tfExt = new JTextField()).setPreferredSize(new Dimension(40,20));
-    tfExt.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        if(dialogMode == DIALOG_MODEL)
-          showWorkpathDialogM(null,null);
-        else
-          showWorkpathDialog(workingPath);
-      }
-    });
-    if(this.dialogMode!=DIALOG_VIEW&&this.dialogMode!=DIALOG_SEARCH){
-    p.add(tfExt,c);
-    c.gridy=1;
-    p.add(new JLabel("  ext"),c);
-    }
-    c.gridx=3;
-    c.gridy=0;
-    c.gridheight=2;
-    p.add(browse,c);
-    return p;
-  }
-
-  protected void rawCmd(String name, final String cmd, final int mode) {
-    nboService.queueJob(name, null, new Runnable() {
-      @Override
-      public void run() {
-        nboService.rawCmdNew(cmd, null, false, mode);
-      }
-    });
+    return box;
   }
   
   /**
-   * Just saves the path settings from this session.
+   * Show a file selector for choosing NBOServe.exe from config.
+   * @param tf 
+   * @param f 
+   * @param mode 
    */
-  protected void saveHistory() {
-    java.util.Properties props = new java.util.Properties();
-    props.setProperty("nboServerPath", nboService.serverPath);
-    //props.setProperty("nboWorkingPath", workingPath);
-    JmolPanel.historyFile.addProperties(props);
-  }
-  
-  protected void saveWorkHistory(){
-    java.util.Properties props = new java.util.Properties();
-    props.setProperty("workingPath", workingPath);
-    JmolPanel.historyFile.addProperties(props);
-  }
-
-  @Override
-  public void setVisible(boolean b) {
-    super.setVisible(b);
-    }
-  
-  /**
-   * Show a file selector when the savePath button is pressed.
-   */
-  protected void showNBOPathDialog() {
+  protected void showNBOPathDialog(final JTextField tf, String f, int mode) {
     JFileChooser myChooser = new JFileChooser();
-    String fname = serverPathLabel.getText();
-    myChooser.setFileFilter(new FileNameExtensionFilter("exe", "exe"));
+    String fname = f;
+    String exe = "";
+    if(mode == 0){ exe = "exe";
+    myChooser.setFileFilter(new FileNameExtensionFilter(exe, exe));
     myChooser.setFileHidingEnabled(true);
-    myChooser.setSelectedFile(new File(fname));
+    myChooser.setSelectedFile(new File(f));
+    }else{
+    myChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+    myChooser.setSelectedFile(new File(fname+"/ "));
+    }
     int button = myChooser.showDialog(this, GT._("Select"));
     if (button == JFileChooser.APPROVE_OPTION) {
       File newFile = myChooser.getSelectedFile();
       String path = newFile.toString();
-      if (path.indexOf("NBO") < 0)
-        return;
-      serverPathLabel.setText(path);
-      nboService.serverPath = path;
-      saveHistory();
+      switch(mode){
+      case 0:
+        nboService.setServerPath(path);
+        //nboService.serverPath = path;
+        System.out.println(path);
+        tf.setText(path);
+        appendOutputWithCaret("NBOServe location changed changed:<br> "+ path,'b');
+        saveNBOServePath();
+        connect();
+        break;
+      case 1:
+        String workingPath = path;
+        java.util.Properties props = new java.util.Properties();
+        props.setProperty("workingPath", workingPath);
+        JmolPanel.historyFile.addProperties(props);
+        tf.setText(path);
+        appendOutputWithCaret("Run file directory changed:<br> "+ path,'b');
+        break;
+      }
+      
     }
   }
-
+  
   /**
-   * Centers the dialog on the screen.
-   * @param d 
+   * makes the title blocks with background color for headers
+   * @param st - title for the section
+   * @param c 
+   * @return Box formatted title box
    */
-  protected void centerDialog(JDialog d){
-    int x = this.getWidth()/2  - d.getWidth()/2 + this.getX();
-    int y = this.getHeight()/2 - d.getHeight()/2;
-    d.setLocation(x,y);
+  protected static Box titleBox(String st, Component c){
+    Box box = Box.createVerticalBox();
+    JLabel title = new JLabel(st);
+    title.setAlignmentX(0.0f);
+    title.setBackground(titleColor);
+    title.setForeground(Color.white);
+    title.setFont(titleFont);
+    title.setOpaque(true);
+    if(c != null){
+      JPanel box2 = new JPanel(new BorderLayout());
+      box2.setAlignmentX(0.0f);
+      box2.add(title,BorderLayout.WEST);
+      box2.add(c,BorderLayout.EAST);
+      box2.setMaximumSize(new Dimension(355,25));
+      box.add(box2);
+    }else
+      box.add(title);
+    box.setAlignmentX(0.0f);
+    
+    return box;
   }
   
-  protected void placeNBODialog(JDialog d) {
-    Dimension screenSize = d.getToolkit().getScreenSize();
-    Dimension size = d.getSize();
-    int y = d.getParent().getY();
-    int x = Math.min(screenSize.width - size.width,
-    d.getParent().getX()+d.getParent().getWidth());
-    d.setLocation(x, y);
+  protected Box borderBox(boolean vert){    
+    Box box = vert ? Box.createVerticalBox() : Box.createHorizontalBox();
+    box.setAlignmentX(0.0f);
+    box.setBorder(BorderFactory.createLineBorder(Color.black));
+    return box;
   }
-  
-  protected void appendOutputWithCaret(String line, char format) {
-    if(line.trim().equals("")) return;
-    String fontFamily = jpNboOutput.getFont().getFamily();
-    if (jpNboOutput == null)
-      return;
-    if (line.trim().length() >= 1)
-      if(format == 'p')
-        jpNboOutput.setText("<html><body style=\"font-family: " + fontFamily + "\"" +
-            (bodyText = bodyText + line + "<br>") + "</html>" );
-      else
-        jpNboOutput.setText("<html><body style=\"font-family: " + fontFamily + "\"" +
-            (bodyText = bodyText + "<"+format+">"+line + "</"+format+"><br>") + "</html>" );
-    jpNboOutput.setCaretPosition(jpNboOutput.getDocument().getLength());
-  }
-  
-  protected void appendOutput(String cmd) {
-    jpNboOutput.setText(jpNboOutput.getText() + cmd + "\n");
-  }
-
-  protected void clearOutput(){
-    bodyText = "";
-    String fontFamily = jpNboOutput.getFont().getFamily();
-    jpNboOutput.setText("<html><body style=\"font-family: " + fontFamily +
-        bodyText + "</html>" );
-  }
-
-  protected void appendToFile(String s, SB sb) {
-    sb.append(s);
-  }
-
-  protected JTextField tfFolder, tfName, tfExt;
-  protected int jmolAtomCount;
-  protected File inputFile;
-  protected String workingPath;
-
-  protected void nboReset() {
-    // see subclasses
-  }
-
-  protected Runnable showWorkPathDone = new Runnable() {
-    @Override
-    public void run() {
-      nboService.runScriptQueued("load " + inputFile.toString() +";refresh");
-      //jmolAtomCount = ;
-      while(vwr.ms.ac==0){
-        try{
-          Thread.sleep(10);
-        }catch(Exception e){}
-      }
-      setBonds(null,null);
-      if(nboView){
-        String s = nboService.runScriptNow("print {*}.bonds");
-        nboService.runScriptQueued("select "+s+";color bonds lightgrey; wireframe 0.1");
-      }
-      if(jCheckAtomNum.isSelected())
-        showAtomNums();
-    }
-  };
   
   /**
    * Sets color scheme to emulate look of NBO view
@@ -417,554 +460,219 @@ abstract class NBODialogConfig extends JDialog {
     try {
       atomColors = GuiMap.getResourceString(this, fname);
     } catch (IOException e) {
-      // TODO
+      vwr.alert("Atom colors not found");
     }
-    nboService.runScriptNow(atomColors);
-    String s = nboService.runScriptNow("print {*}.bonds");
-    nboService.runScriptQueued("select "+s+";color bonds lightgrey; wireframe 0.1");
-    nboService.runScriptQueued("nbo color yellow [134,254,253]; nbo fill nomesh translucent 0.3");
-    nboService.runScriptNow("refresh");
+    runScriptNow(atomColors);
+    runScriptQueued("refresh");
   }
-  
+
   /**
    * Resets Jmol look and feel
    */
   protected void resetColorScheme(){
     nboView = false;
-    nboService.runScriptNow("background black;set defaultcolors Jmol;refresh;nbo mesh translucent 1");
+    runScriptNow("background black;set defaultcolors Jmol;refresh;");
   }
-  
-  protected void setInputFile(File inputFile, String useExt, final Runnable whenDone){
-    clearInputFile();
-    this.inputFile = inputFile;
-    if (inputFile.getName().indexOf(".") > 0)
-      jobStem = getJobStem(inputFile);
-    tfFolder.setText(inputFile.getParent());
-    tfName.setText(jobStem);
-    tfExt.setText(useExt);
-    //jmolAtomCount = nboService.evaluateJmol("{*}.count").asInt();
-    if (getExt(inputFile).equals("47")){
-      if((inputFile.getParent()+"/").equals(nboService.serverDir)){
-        JOptionPane.showMessageDialog(this, "Select a directory that does not contain the NBOServe executable," +
-        		"\nor select a new location for your NBOServe executable");
-        return;
-      }
-      isJmolNBO = true;
-      workingPath = inputFile.toString();
-      saveWorkHistory();
-      Runnable load47Done = new Runnable() {
-        @Override
-        public void run() {
-          statusLab.setText("");
-          if (whenDone != null)
-            whenDone.run();
-        }
-      };
-      readInputFile(inputFile);
-      File f = newNBOFile(inputFile, "46");
-      if (!f.exists()||f.length()==0) {
-        showConfirmationDialog("Plot files not found. Run now with PLOT keyword?", inputFile,"47",2);
-        return;
-      }
-      load47Done.run();
+
+  /**
+   * sets components visible recursively
+   * @param c
+   * @param b
+   */
+  protected void enableComponentsR(Component c,boolean b){
+    c.setEnabled(b);
+    if(c instanceof Container){
+      if(!(c instanceof JComboBox)) c.setVisible(true);
+      for(Component c2:((Container) c).getComponents())
+        enableComponentsR(c2,b);
     }
   }
   
-  protected abstract void showConfirmationDialog(String st, final File newFile, final String ext, final int mode);
-  
-  protected void showNboOutput(String f){
-    String data = nboService.getFileData(f);
-    JDialog d = new JDialog();
-    d.setLayout(new BorderLayout());
-    JTextPane p = new JTextPane();
-    JScrollPane sp = new JScrollPane();
-    sp.getViewport().add(p);
-    p.setEditable(false);
-    p.setText(data);
-    d.add(sp,BorderLayout.CENTER);
-    centerDialog(d);
-    d.setSize(new Dimension(500,500));
-    d.setVisible(true);
-  }
-  protected Runnable showRunDone;
-  
-  protected void showSelected(String[] s){
-    nboService.runScriptQueued("select remove {*}");
-    for(String x:s)
-      nboService.runScriptQueued("select add {*}["+x+"]");
-    nboService.runScriptQueued("select on");
-  } 
-  
-  protected void showAtomNums(){
-    if(!jCheckAtomNum.isSelected()){
-      nboService.runScriptQueued("select {*};label off; select remove {*}");
+  /**
+   * label atoms: (number lone pairs)+atomnum
+   * @param alpha 
+   */
+  protected void showAtomNums(boolean alpha){
+    if(!showAtNum){
+      runScriptQueued("select {*};label off; select remove {*}");
       return;
     }
-    nboService.runScriptQueued("select {*};label %a;");
-    if(lonePairs!=null){
-      for(String x: lonePairs.keySet()){
-        if(!lonePairs.get(x).equals("0"))
-          nboService.runScriptQueued("select (atomno=" + x + ");label (" + lonePairs.get(x) + ") %a");
-      }
+    SB sb = new SB();
+    sb.append("select {*};label %a;");
+    String color = "black";
+    if(!nboView) color = "gray";
+
+    sb.append("select {*};color labels white;");
+    sb.append("select {H*};color labels " + color + ";" +
+        "set labeloffset 0 0 {*}; select remove {*};");
+
+    
+    runScriptQueued(sb.toString());
+  }
+
+
+  
+//  protected void rawCmd(String name, final String cmd, final int mode) {
+//    nboService.queueJob(name, null, new Runnable() {
+//      @Override
+//      public void run() {
+//        nboService.rawCmdNew(cmd, null, false, mode);
+//      }
+//    });
+//  }
+  
+
+
+
+  @Override
+  public void setVisible(boolean b) {
+    super.setVisible(b);
     }
-    if(nboView)
-    nboService.runScriptQueued("select {*};color labels white;select {H*};color labels black;" +
-    		"set labeloffset 0 0 {*}; select remove {*};");
-    else
-
-      nboService.runScriptQueued("select {*};color labels black;" +
-          "set labeloffset 0 0 {*}; select remove {*};");
-  }
   
-  // useful file manipulation methods
-  
-  protected File newNBOFile(File f, String ext) {
-    String fname = f.toString();
-    if(fname.lastIndexOf(".")<0)
-      return new File(fname+"."+ext);
-    return new File(fname.substring(0, fname.lastIndexOf(".")) + "." + ext);
+  /**
+   * Centers the dialog on the screen.
+   * @param d 
+   */
+  protected void centerDialog(JDialog d){
+    int x = getWidth()/2  - d.getWidth()/2 + this.getX();
+    int y = getHeight()/2 - d.getHeight()/2;
+    d.setLocation(x,y);
   }
-
-  protected String getJobStem(File inputFile) {
-    String fname = inputFile.getName();
-    return fname.substring(0, fname.lastIndexOf("."));
-  }
-
-  protected String getExt(File newFile) {
-    String fname = 
-    newFile.toString();
-    return fname.substring(fname.lastIndexOf(".") + 1);
-  }
-  
-  protected boolean checkJmolNBO(){
-    return (vwr.ms.getInfo(vwr.am.cmi, "nboType") != null || 
-        getExt(new File(nboService.getJmolFilename())).equals("47"));
-  }
-  protected void clearInputFile(){
-    tfFolder.setText("");
-    tfName.setText("");
-    tfExt.setText("");
-    inputFile=null;
-    nboService.runScriptQueued("zap");
-  }
-
-  protected static String helpConfig;
-  
-  protected static final String helpModel ="NBOModel COMMAND SYNTAX\n"
-      +" \n"
-      +"Command verbs are case-insensitive and can"
-      +"be abbreviated by the leading unique characters."
-      +"Arguments are separated by commas or spaces."
-      +"Parameters are attached to the command verb"
-      +"after a dot (viz., DRAW.ap MODEL).  Arguments"
-      +"and parameters are case-insensitive, except"
-      +"for chemical formulas and group acronyms."
-      +"Use 'HELP <command>' (e.g., 'HELP SHOW') for"
-      +"further specifics of each COMMAND type.\n"
-      +" \n"
-      +"COMMAND(.t)   arguments\n"
-      +"------------------------------------\n"
-      +"ALTER         IA [IB IC ID] newvalue\n"
-      +"CLIP          IA IB\n"
-      +"DRAW          filename\n"
-      +"FUSE(.R)      IA IB\n"
-      +"HELP          command\n"
-      +"LINK          IA IB\n"
-      +"MUTATE        IA formula\n"
-      +"REBOND        IA symtype\n"
-      +"ROTATE        AXIS angle\n"
-      +"SAVE.t        filename\n"
-      +"SHOW          formula\n"
-      +"SWITCH        IA IB\n"
-      +"SYMMETRY\n"
-      +"TRANSLATE     AXIS shift\n"
-      +"TWIST         IA IB IC ID newvalue\n"
-      +"UNIFY         CFI1 CFI2 IA1 IB1 IA2 IB2 dist\n"
-      +"USE.t         filename\n"
-      +"VALUE         IA [IB IC ID]\n"
-      +"3CHB          IA IB :Ligand\n",
-      alterHelp = "ALTER IA newval     (nuclear charge of atom IA)\n"
-      +"      IA IB newval          (bond length IA-IB)\n"
-      +"      IA IB IC newval  (valence angle IA-IB-IC)\n"
-      +"      IA IB IC ID newval (dihedral IA-IB-IC-IC)\n"
-      +" \n"
-      +"Examples:\n"
-      +" ALTER 10 14.   [change atom 10 to Si (Z = 14)]\n"
-      +" ALTER  2 5 1.69  [change R(5-8) bond to 1.69A]\n"
-      +" ALTER  1 2 3 4 180.   [change 1-2-3-4 dihedral\n"
-      +"                          angle to 180 degrees]\n"
-      +" \n"
-      +"Note that 'ALTER 1 2 3 4 180.' changes ONLY"
-      +"the 1-2-3-4 dihedral (often giving unphysical"
-      +"distorted geometry).  Use 'TWIST 1 2 3 4 180.'"
-      +"to form a proper torsional rotamer.\n"
-      +" \n"
-      +"Use VFILE to determine which angles can be"
-      +"safely ALTERed.  Otherwise, the coordinates"
-      +"may be re-defined, with unexpected effects"
-      +"on other variables.",
-      clipHelp = "CLIP IA IB          (erase bond between IA, IB)\n"
-      +" \n"
-      +"Example:\n"
-      +" CLIP 1 2        [erase bond between atoms 1,2]\n"
-      +" \n"
-      +"Note that CLIP takes no account of electronic"
-      +"requirements for a Lewis-compliant model.",
-      fuseHelp = "FUSE IA,IB       (remove IA,IB and join the two\n"
-      +"                'dangling' sites by a new bond)\n"
-      +" \n"
-      +"Allowed parameter:\n"
-      +" .r = ring-forming (conformational search)\n"
-      +" \n"
-      +"Examples:\n"
-      +" FUSE 4 12    [remove atoms 4, 12 and draw a new\n"
-      +"          bond between resulting radical centers\n"
-      +"          (e.g., 3-11), with no geometry change]\n"
-      +" FUSE.r 4 12      [similar, but a conformational\n"
-      +"            search is performed to find the most\n"
-      +"                 suitable ring-closing geometry]\n"
-      +" \n"
-      +"Note that IA, IB must have similar valency, so\n"
-      +"the resulting structure remains Lewis-compliant.\n",
-      linkHelp = "LINK IA IB  (draw a 'bond' between atoms IA, IB)\n"
-      +"Examples:\n"
-      +" LINK 3 17    [draws a 'bond: between atoms 3-17\n"
-      +"Note that this command (unlike FUSE) takes no\n"
-      +"account of chemical reasonability.\n",
-      mutateHelp = "MUTATE IA formula (replace atom IA by the group\n"
-      +"               of specified chemical 'formula',\n"
-      +"             if both are of consistent valency)\n"
-      +" \n"
-      +"Example:\n"
-      +" MUTATE 4 CH3     [remove monovalent atom 4 and\n"
-      +"           attach a methyl (CH3) radical in its\n"
-      +"         place, preserving valence consistency]\n",
-      rebondHelp = "REBOND IA symtype   (select a new Lewis valence\n"
-      +"                   isomer of 'symtype' symmetry\n"
-      +"                   at transition metal atom IA)\n"
-      +" \n"
-      +"Allowed 'symtype' parameters (TM species only):\n"
-      +" \n"
-      +" ML6 bonding: c3vo      ('Outer' C3v [default])\n"
-      +"              c3vi       ('Inner' C3v symmetry)\n"
-      +"              c5vo       ('Outer' C5v symmetry)\n"
-      +"              c5vi       ('Inner' C5v symmetry)\n"
-      +" \n"
-      +" ML5 bonding: c4vo      ('Outer' C4v [default])\n"
-      +"              c4vi       ('Inner' C4v symmetry)\n"
-      +" \n"
-      +" ML4 bonding: td        (Td symmetry [default])\n"
-      +"              c3vi       ('Inner' C3v symmetry)\n"
-      +"              c4v        (C4v symmetry)\n"
-      +"Example:\n"
-      +" SHOW WH6       [Tungsten hexahydride, in ideal\n"
-      +"                        'c3vo' isomer geometry]\n"
-      +" REBOND 2 c5vi     [reform preceding WH6 isomer\n"
-      +"                     to alternative 'inner C5v'\n"
-      +"                         geometry at TM atom 2]\n",
-      saveHelp = "SAVE.t filename     (save current model as file\n"
-      +"              'filename' of type 't' extension)\n"
-      +" \n"
-      +"Parameters: \n"
-      +" .v   = valence coordinate VFILE ([.vfi])\n"
-      +" .c   = cartesian coordinate CFILE (.cfi)\n"
-      +" .adf = ADF input file (.adf)\n"
-      +" .g   = Gaussian input file (.gau)\n"
-      +" .gms = GAMESS input file (.gms)\n"
-      +" .jag = Jaguar input file (.jag)\n"
-      +" .mm  = MM2 molecular mechanics file (.mm2)\n"
-      +" .mnd = AM1/MINDO-type input file (.mnd)\n"
-      +" .mp  = Molpro input file (.mp)\n"
-      +" .nw  = NWChem input file (.nw)\n"
-      +" .orc = Orca input file (.orc)\n"
-      +" .pqs = PQS input file (.pqs)\n"
-      +" .qc  = Q-Chem input file (.qc)\n"
-      +"Example:\n"
-      +" SAVE.G job   [save Gaussian-type 'job.gau' file]\n",
-      showHelp = "SHOW <formula> (create a molecule model from\n"
-      +"                its 'formula')\n"
-      +"SHOW <acceptor> <donor-1> <donor-2>...\n"
-      +"               (create supramolecular model from\n"
-      +"                radical 'acceptor' and ligand\n"
-      +"                'donor-i' formulas)\n"
-      //+"SHOW.O         (Ortep plot of current species)\n"
-      +"The chemical 'formula' is a valid Lewis-type"
-      +"line formula, similar to textbook examples."
-      +"Use colons to denote multiple bonds (C::O double"
-      +"bond, C:::N triple bond, etc.) and parentheses"
-      +"to identify repeat units or side groups."
-      +"Atomic symbols in the range H-Cf (Z = 1-98)"
-      +"and repetition numbers 1-9 are allowed."
-      +"Chemical formula symbols are case-sensitive.\n"
-      +" \n"
-      +"Ligated free radicals (with free-valent acceptor"
-      +"sites) can also be formed in specified hapticity"
-      +"motifs with chosen molecular ligands. Radical"
-      +"<acceptor> and ligand <donor-i> monomers are"
-      +"specified by valid line formulas, with each"
-      +"ligand <donor> formula preceded by a number of"
-      +"colons (:) representing the number of 2e sites"
-      +"in the desired ligand denticity (such as ':NH3'"
-      +"for monodentate ammine ligand, '::NH2CH::CH2'"
-      +"for bidentate vinylamine ligand, or ':::Bz' for"
-      +"tridentate benzene ligand). Each such ligation"
-      +"symbol may be prefixed with a stoichiometric"
-      +"coefficient 2-9 for the number of ligands.\n"
-      +" \n"
-      +"In both molecular and supramolecular formulas,"
-      +"valid transition metal duodectet structures"
-      +"are also accepted. For d-block molecular species,"
-      +"the default idealized metal hybridization isomer"
-      +"can be altered with the REBOND command."
-      +"For d-block species one can also include"
-      +"coordinative ligands (:Lig), enclosed in"
-      +"parentheses and preceded by a colon symbol."
-      +"Formal 'ylidic' charges are allowed only for"
-      +"adjacent atom pairs (e.g., dative pi-bonds).\n"
-      +" \n"
-      +"Models may also be specified by using acronyms"
-      +"from a library of pre-formed species (many"
-      +"at B3LYP/6-31+G* optimized level). Each such"
-      +"acronym can also be used as a monovalent ligand"
-      +"in MUTATE commands, as illustrated below.\n"
-      +" \n"
-      +"Common cyclic aromatic species\n"
-      +" Bz        C6H6   benzene\n"
-      +" A10R2L    C10H8  naphthalene\n"
-      +" A14R3L    C14H12 anthracene\n"
-      +" A18R4L    C18H16 tetracene\n"
-      +" A22R5L    C22H20 pentacene\n"
-      +" A14R3     C14H10 phenanthrene\n"
-      +" A14R4     C14H12 chrysene\n"
-      +" A16R4     C16H10 pyrene\n"
-      +" A18R4     C18H12 triphenylene\n"
-      +" A20R5     C20H12 benzopyrene\n"
-      +" A20R6     C20H10 corannulene\n"
-      +" A24R7     C24H12 coronene\n"
-      +" A32R10    C32H14 ovalene\n"
-      +"Common cyclic saturated species\n"
-      +" R6C       C6H12 cyclohexane (chair)\n"
-      +" R6B         '        '      (boat t.s.) \n"
-      +" R6T         '        '      (twist-boat)\n"
-      +" R5        C5H10 cyclopentane\n"
-      +" R4        C4H8  cyclobutane\n"
-      +" R3        C3H6  cyclopropane\n"
-      +" RB222     [2,2,2]bicyclooctane\n"
-      +" RB221     [2,2,1]bicycloheptane (norbornane)\n"
-      +" RB211     [2,1,1]bicyclohexane\n"
-      +" RB111     [1,1,1]bicyclopentane (propellane)\n"
-      +" R5S       spiropentane\n"
-      +" RAD       adamantane\n"
-      +" \n"
-      +"Common inorganic ligands\n"
-      +" acac   acetylacetonate anion   (bidentate)\n"
-      +" bipy   2,2\"\"-bipyridine         (bidentate)\n"
-      +" cp     cyclopentadienyl anion  (:, ::, :::)\n"
-      +" dien   diethylenetriamine      (tridentate)\n"
-      +" dppe   1,2-bis(diphenylphosphino)ethane\n"
-      +"                                (bidentate)\n"
-      +" edta   ethylenediaminetetraacetate anion\n"
-      +"                                (hexadentate)\n"
-      +" en     ethylenediamine         (bidentate)\n"
-      +" phen   1,10-phenanthroline     (bidentate)\n"
-      +" tren   tris(2-aminoethyl)amine (tetradentate)\n"
-      +" trien  triethylenetetramine    (tetradentate)\n"
-      +" \n"
-      +"Peptide fragments (HC::ONHCH2R)\n"
-      +" GLY       glycine\n"
-      +" ALA       alanine\n"
-      +" VAL       valine\n"
-      +" LEU       leucine\n"
-      +" ILE       isoleucine\n"
-      +" PRO       proline\n"
-      +" PHE       phenylalanine\n"
-      +" TYR       tyrosine\n"
-      +" TRP       tryptophan\n"
-      +" SER       serine\n"
-      +" THR       threonine\n"
-      +" CYS       cysteine\n"
-      +" MET       methionine\n"
-      +" ASN       asparagine\n"
-      +" GLN       glutamine\n"
-      +" ASP       aspartate\n"
-      +" GLU       glutamate\n"
-      +" LYS       lysine\n"
-      +" ARG       argenine\n"
-      +" HIS       histidine\n"
-      +" \n"
-      +"Nucleic acid fragments\n"
-      +" NA_G      guanine\n"
-      +" NA_C      cytosine\n"
-      +" NA_A      adenine\n"
-      +" NA_T      thymine\n"
-      +" NA_U      uracil\n"
-      +" NA_R      ribose backbone fragment\n"
-      +" \n"
-      +"In addition, the SHOW command recognizes\n"
-      +"'D3H' (trigonal bipyramid) or 'D4H' (octahedral)\n"
-      +"species, created as SF5, SF6, respectively.\n"
-      +" \n"
-      +"('SHOW' and 'FORM' are synonymous commands.) \n"
-      +"Molecular examples:\n"
-      +" SHOW CH3C::OOH      acetic acid\n"
-      +" SHOW CH3(CH2)4CH3   n-hexane\n"
-      +" SHOW WH2(:NH3)2     diammine of WH2\n"
-      +" SHOW NA_C           cytosine\n"
-      +" SHOW CH4            methane\n"
-      +"  MUTATE 3 RAD       methyladamantane\n"
-      +" SHOW ALA            alanine\n"
-      +"  MUTATE 7 ALA       ala-ala\n"
-      +"  MUTATE 17 ALA      ala-ala-ala, etc.\n"
-      +"Supramolecular examples:\n"
-      +" SHOW CH3 :H2O       hydrated methyl radical\n"
-      +" SHOW Cr 2:::Bz      dibenzene chromium\n"
-      +" SHOW CrCl3 2:H2O :NH3\n"
-      +" SHOW Cr 3::acac\n"
-      +" SHOW Cr ::::::edta\n",
-      switchHelp = "SWITCH IA IB      [switch atoms IA, IB (and\n"
-      +"                  attached groups) to invert\n"
-      +"                  configuration at an attached\n"
-      +"                  stereocenter.]\n"
-      +"Example:\n"
-      +" SHOW ALA         (L-alanine)\n"
-      +" SWITCH 6 7       (switch to D-alanine)\n",
-      symHelp = "SYMMETRY           (determine point group)\n"
-      +" \n"
-      +"Note that exact point-group symmetry is a"
-      +"mathematical idealization. NBOModel recognizes"
-      +"'effective' symmetry, adequate for chemical"
-      +"purposes even if actual atom positions deviate"
-      +"slightly (say, ~0.02A) from idealized symmetry.",
-      twistHelp = "TWIST IA IB IC IC newval\n"
-      +"              IA-IB-IC-ID angle to 'newval')\n"
-      +" \n"
-      +"Example:\n"
-      +" SHOW C2H6          ethane (staggered)\n"
-      +" TWIST 1 2 3 4 0.   ethane (eclipsed)\n",
-      unifyHelp = "UNIFY CFI-1 CFI-2 IA1 IB1 IA2 IB2 dist\n"
-      +"          (form a complex from molecules in\n"
-      +"           cfiles CFI-1, CFI-2, chosen to have\n"
-      +"           linear IA1-IB1-IB2-IA2 alignment\n"
-      +"           and IA1-IA2 separation 'dist')\n"
-      +" \n"
-      +"CFI-1 and CFI-2 are two CFILES (previously\n"
-      +"created with SAVE.C); IA1, IB1 are two atoms\n"
-      +"of CFI-1 and IA2, IB2 are two atoms of CFI-2\n"
-      +"that will be 'unified' in linear IA1-IB1-IB2-IA2\n"
-      +"arrangement, with specified IA1-IA2 'dist'.\n"
-      +" \n"
-      +"Example:\n"
-      +" SHOW H2C::O       (create formaldehyde)\n"
-      +" SAVE.C H2CO       (save H2CO.cfi)\n"
-      +" SHOW NH3          (create ammonia)\n"
-      +" SAVE.C NH3        (save NH3.cfi)\n"
-      +" UNIFY H2CO.cfi NH3.cfi 2 3 1 2 4.3\n"
-      +"                   (creates H-bonded complex)\n",
-      useHelp = "USE.t filename  (use file 'filename' of type 't'\n"
-      +"                 to initiate a modeling session)\n"
-      +" \n"
-      +"'t' parameters: \n"
-      +" .v   = valence coordinate VFILE ([.vfi])\n"
-      +" .c   = cartesian coordinate CFILE (.cfi)\n"
-      +" .a   = NBO archive file (.47)\n"
-      +" .adf = ADF input file (.adf)\n"
-      +" .g   = Gaussian input file (.gau)\n"
-      +" .gms = GAMESS input file (.gms)\n"
-      +" .jag = Jaguar input file (.jag)\n"
-      +" .l   = Gaussian log file (.log)\n"
-      +" .mp  = Molpro input file (.mp)\n"
-      +" .nw  = NWChem input file (.nw)\n"
-      +" .orc = Orca input file (.orc)\n"
-      +" .pqs = PQS input file (.pqs)\n"
-      +" .qc  = Q-Chem input file (.qc)\n"
-      +"Example:\n"
-      +" USE.G ACETIC   (use Gaussian-type ACETIC.GAU\n"
-      +"                input file to start session)\n",
-      chbHelp = "3CHB IA IB :Lig     (form 3-center hyperbond\n"
-      +"                    IA-IB-Lig to ligand :Lig)\n"
-      +"Examples:\n"
-      +" SHOW W(:NH3)3      (normal-valent W triammine)\n"
-      +" 3CHB  1 2 :NH3     (hyperbonded N-W-N triad)\n"
-      +" SHOW H2O           (water monomer)\n"
-      +" 3CHB  2 3 :OH2     (H-bonded water dimer)\n";
-  protected final static String searchHelp = "             NBOSearch: COMMAND SYNTAX AND PROGRAM OVERVIEW\n"
-      +"PROGRAM OVERVIEW:\n"
-      +"Follow menu prompts through the decision tree to the "
-      +"keyword module and datum "
-      +"of interest. Each menu appears with "
-      +"'Current [V-list] settings' and a scrolling "
-      +"list of output values. All output lines are "
-      +"also echoed to an external "
-      +"NBOLOG$$.DAT file and error messages go to NBOERR$$.DAT for "
-      +"later reference.\n\n"
-      +"GENERAL 'M V n' COMMAND SYNTAX:\n"
-      +"NBOSearch user responses generally consist of 'commands' \n"
-      +"(replies to prompts)\n"
-      +"of the form 'M (V (n))', where\n"
-      +"   M (integer)   = [M]enu selection from displayed items\n"
-      +"   V (character) = [V]ariable data type to be selected\n"
-      +"                   [J](obname)\n"
-      +"                   [B](asis)\n"
-      +"                   [O](rbital number)\n"
-      +"                   [A](tom number, in context)\n"
-      +"                   [U](nit number)\n"
-      +"                   [d](onor NBO number)\n"
-      +"                   [a](cceptor NBO number, in context)\n"
-      +"   n (integer)   = [n]umber of the desired O/A/U/d/a selection\n"
-      +"Responses may also be of simple 'M', 'V', or 'Vn' form , where\n"
-      +"  'M' : selects a numbered menu choice (for current [V] choices)\n"
-      +"  'V' : requests a menu of [V] choices\n"
-      +"  'Vn': selects [V] number 'n' (and current [S])\n"
-      +"Note that [V]-input is case-insensitive, so 'A' (or 'a') is "
-      +"interpreted as "
-      +"'atom' or 'acceptor' according to context.  Note also that "
-      +"'Vn' commands can be\n"
-      +"given in separated 'V n' form. Although not explicitly "
-      +"included in each active "
-      +"[V]-select list, the 'H'(elp) key is recognized at each prompt.  "
-      +"For NRT search (only), variable [V] may also be 'R' (for "
-      +"'resonance structure' "
-      +"and A' (for 'interacting atom'). Current A (atom) "
-      +" and A' (interacting "
-      +"atom) values determine the current A-A\' 'bond' selection "
-      +"small fractional bond order.)\n\n"
-      +"EXAMPLES:\n"
-      +"  '2 a7'  : requests menu item 2 for atom 7 (if A-select active)\n"
-      +"  '3 o2'  : requests menu item 3 for orbital 2 \n";
-  
-  protected int dialogMode;
-  static final int DIALOG_CONFIG = 0;
-  static final int DIALOG_MODEL = 10;
-  static final int DIALOG_RUN = 20;
-  static final int DIALOG_VIEW = 30;
-  static final int DIALOG_SEARCH = 40;
-  static final int DIALOG_LIST = -1; // used only for addLine
-  
-
-  private final static Map<String, String> htHelp = new HashMap<String, String>();
   
   /**
    * Retrieve and cache a help string.
    *  
-   * @param key
-   * @return resource string or a message that it cannot be found
+   * @param st
    * 
    */
-  synchronized protected String getHelp(String key) {
-    String help = htHelp.get(key);
-    if (help == null) {
-      try {
-        String fname = "org/openscience/jmol/app/nbo/help/" + key + ".txt";
-        help = GuiMap.getResourceString(this, fname);
-      } catch (IOException e) {
-        help = "<resource not found>";
-      }
-      htHelp.put(key, help);
+  synchronized protected void getHelp(String st) {
+    JDialog help = new JDialog(this, "NBO Help");
+    JTextPane p = new JTextPane();
+    p.setEditable(false);
+    p.setFont(new Font("Arial", Font.PLAIN, 16));
+    p.setText(getHelpContents(st));
+    JScrollPane sp = new JScrollPane();
+    sp.getViewport().add(p);
+    help.add(sp);
+    help.setSize(new Dimension(400, 400));
+    p.setCaretPosition(0);
+    centerDialog(help);
+    help.setVisible(true);
+    //return getHelpContents(htHelp.get(c));
+  }
+  
+  protected String getHelpContents(String s){
+    String help = "<error>";
+    try {
+      String fname = "org/openscience/jmol/app/nbo/help/" + s + ".txt";
+      help = GuiMap.getResourceString(this, fname);
+    } catch (IOException e) {
+      help = "<resource not found>";
     }
     return help;
   }
   
+  /**
+   * appends output to session dialog panel
+   * @param line - output message to append
+   * @param format - html format code
+   */
+    protected void appendOutputWithCaret(final String line, final char format) {
+      if(line.trim().equals("")) return;
+      String fontFamily = jpNboOutput.getFont().getFamily();
+      if (jpNboOutput == null)
+        return;
+      if (line.trim().length() >= 1)
+        if(format == 'p')
+          jpNboOutput.setText("<html><body style=\"font-family: " + fontFamily + "\"" +
+              (bodyText = bodyText + line + "<br>")+ "</html>" );
+        else
+          jpNboOutput.setText("<html><body style=\"font-family: " + fontFamily + "\" " +
+              (bodyText = bodyText + "<"+format+">"+line + "</"+format+"><br>") + "</html>" );
+      jpNboOutput.setCaretPosition(jpNboOutput.getDocument().getLength());
+      
+    }
 
+  void runScriptQueued(String script) {
+    Logger.info("NBO->JMOL ASYNC: " + script);
+    vwr.script(script);
+  }
+
+  synchronized String runScriptNow(String script) {
+    //synchronized (lock) {
+      Logger.info("NBO->JMOL SYNC: " + script);
+      return vwr.runScript(script);
+    //}
+  }
+ 
+  /**
+   * Just saves the path settings from this session.
+   */
+  protected void saveNBOServePath() {
+    java.util.Properties props = new java.util.Properties();
+    props.setProperty("nboServerPath", nboService.serverPath);
+    //props.setProperty("nboWorkingPath", workingPath);
+    JmolPanel.historyFile.addProperties(props);
+  }
+  
+  protected boolean connect() {
+    //if (System.getProperty("sun.arch.data.model").equals("64"))
+    String arch = System.getenv("PROCESSOR_ARCHITECTURE");
+    File f = new File(nboService.serverDir+"gennbo.bat");
+    if(!f.exists()){
+      appendOutputWithCaret("gennbo.bat not found, make sure gennbo.bat is in same directory as nboserve.exe",'b');
+      return false;
+    }
+    String wow64Arch = System.getenv("PROCESSOR_ARCHITEW6432");
+    String realArch = arch.endsWith("64")
+                      || wow64Arch != null && wow64Arch.endsWith("64")
+                          ? "64" : "32";
+    BufferedReader b = null;
+    try {
+      b = new BufferedReader(new FileReader(f));
+      String line;
+      //String contents = "";
+      while((line = b.readLine())!=null){
+        if(line.startsWith("set INT=")){
+          line = (realArch.equals("64")?"set INT=i8":"set INT=i4");
+        }
+        //contents += line + System.getProperty("line.seperator");
+      }
+      //nboService.writeToFile(contents, f);
+      b.close();
+    } catch (FileNotFoundException e) {
+      appendOutputWithCaret("Error opening gennbo.bat",'b');
+      return false;
+    } catch (IOException e) {
+      appendOutputWithCaret("Error opening gennbo.bat",'b');
+      return false;
+    }
+    boolean isOK = checkEnabled(); 
+    if(isOK) this.icon.setText("Connected");
+    //appendOutputWithCaret(isOK ? "NBOServe successfully connected" : "Could not connect",'p');
+    return isOK;
+  }
+  
+  protected boolean checkEnabled() {
+    boolean haveService = (nboService.serverPath.length() > 0);
+    boolean enabled = (haveService && nboService.restartIfNecessary());    
+    
+    return enabled;
+  }
+  
+
+  public SV evaluateJmol(String expr) {
+    return vwr.evaluateExpressionAsVariable(expr);
+  }
+
+  public String evaluateJmolString(String expr) {
+      return evaluateJmol(expr).asString();
+  }
+
+  public String getJmolFilename() {
+    return evaluateJmolString("getProperty('filename')");
+  }
+   
   class StyledComboBoxUI extends MetalComboBoxUI {
     int height;
     int width;
@@ -987,5 +695,57 @@ abstract class NBODialogConfig extends JDialog {
       return popup;
     }
   }
+}
 
+@SuppressWarnings("rawtypes")
+class ColorRenderer extends JButton implements ListCellRenderer {  
+
+  boolean b=false;
+  
+  public ColorRenderer() {  
+      setOpaque(true); 
+  }
+
+
+  @Override
+  public void setBackground(Color bg) {
+    if(!b)
+      return;
+    super.setBackground(bg);
+  }
+
+ @Override
+public Component getListCellRendererComponent(
+      JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)  
+  {  
+      b=true;
+      setText(" ");  
+      setBackground((Color)value);   
+      b=false;
+      return this;  
+  }  
+
+}
+
+class HelpBtn extends JButton implements ActionListener{
+  String url;
+  public HelpBtn(String url){
+    super("Help");
+    setBackground(Color.black);
+    setForeground(Color.white);
+    this.url = url;
+    addActionListener(this);
+  }
+
+  @Override
+  public void actionPerformed(ActionEvent arg0) {
+    try {
+      URI uri = new URI("http://nbo6.chem.wisc.edu/jmol_help/" + url);
+      Desktop.getDesktop().browse(uri);
+    } catch (URISyntaxException e) {
+      // TODO
+    } catch (IOException e) {
+      // TODO
+    }
+  }
 }

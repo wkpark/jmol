@@ -201,7 +201,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
   private static final String copyScriptActionProperty = "copyScript";
   private static final String surfaceToolActionProperty = "surfaceTool";  private static final String pasteClipboardActionProperty = "pasteClipboard";
   private static final String gaussianAction = "gauss";
-//  private static final String nboAction = "nbo";
+  private static final String nboAction = "nbo";
   private static final String resizeAction = "resize";
   //private static final String saveasAction = "saveas";
   //private static final String vibAction = "vibrate";
@@ -616,6 +616,14 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       serverService.close();
       serverService = null;
     }
+    if(nboDialog != null){
+      nboDialog.close();
+      nboDialog = null;
+    }
+    if(nboService != null){
+      nboService.closeProcess();
+      nboService = null;
+    }
     if (numWindows <= 1) {
       // Close Jmol
       report(GT._("Closing Jmol..."));
@@ -952,8 +960,8 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
           String menuKey = ((JmolAbstractButton) e.getSource()).getKey();
           if (menuKey.equals("display") || menuKey.equals("tools"))
             setMenuState();
-          if (menuKey.equals("nboMenu"))
-            setMenuNBO((JMenu) e.getSource());
+//          if (menuKey.equals("nboMenu"))
+//            setMenuNBO((JMenu) e.getSource());
         }
         @Override
         public void menuDeselected(MenuEvent e) {
@@ -1012,7 +1020,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       new RecentFilesAction(), povrayAction, writeAction, toWebAction, 
       new ScriptWindowAction(), new ScriptEditorAction(),
       new AtomSetChooserAction(), viewMeasurementTableAction, 
-      new GaussianAction(), /*new NBOAction(),*/ new ResizeAction(), surfaceToolAction }
+      new GaussianAction(), new NBOAction(), new ResizeAction(), surfaceToolAction }
   ;
 
   class CloseAction extends AbstractAction {
@@ -1098,6 +1106,21 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     }
   }
     
+  class NBOAction extends AbstractAction{
+    public NBOAction(){
+      super(nboAction);
+    }
+    @Override
+    public void actionPerformed(ActionEvent arg0) {
+      getNBOService();
+
+      if (nboDialog == null)
+        nboDialog = new NBODialog(frame, vwr, nboService);
+      else
+        nboDialog.setVisible(true);
+    }
+  }
+    
   class NewwinAction extends AbstractAction {
 
     NewwinAction() {
@@ -1150,8 +1173,8 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       nboDialog = new NBODialog(frame, vwr, nboService);
     else
       nboDialog.setVisible(true);
-    if (type != null)
-      nboDialog.openPanel(type.charAt(0));
+    //if (type != null)
+      //nboDialog.openPanel(type.charAt(0));
     
   }
 

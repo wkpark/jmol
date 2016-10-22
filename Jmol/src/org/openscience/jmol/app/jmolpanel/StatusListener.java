@@ -191,8 +191,8 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
         if ("nbo".equals(service)) {
           if ("showPanel".equals(info.get("action")))
           jmol.startNBO(null);
-          else
-          jmol.getNBOService().processRequest(info, 0);
+          //else
+          //jmol.getNBOService().processRequest(info, 0);
         }
       } catch (Exception e) {
         // ignore

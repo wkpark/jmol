@@ -895,14 +895,14 @@ public class M4 extends M34 {
    */
   @Override
   public int hashCode() {
-    return Float.floatToIntBits(m00) ^ Float.floatToIntBits(m01)
-        ^ Float.floatToIntBits(m02) ^ Float.floatToIntBits(m03)
-        ^ Float.floatToIntBits(m10) ^ Float.floatToIntBits(m11)
-        ^ Float.floatToIntBits(m12) ^ Float.floatToIntBits(m13)
-        ^ Float.floatToIntBits(m20) ^ Float.floatToIntBits(m21)
-        ^ Float.floatToIntBits(m22) ^ Float.floatToIntBits(m23)
-        ^ Float.floatToIntBits(m30) ^ Float.floatToIntBits(m31)
-        ^ Float.floatToIntBits(m32) ^ Float.floatToIntBits(m33);
+    return T3.FloatToIntBits(m00) ^ T3.FloatToIntBits(m01)
+        ^ T3.FloatToIntBits(m02) ^ T3.FloatToIntBits(m03)
+        ^ T3.FloatToIntBits(m10) ^ T3.FloatToIntBits(m11)
+        ^ T3.FloatToIntBits(m12) ^ T3.FloatToIntBits(m13)
+        ^ T3.FloatToIntBits(m20) ^ T3.FloatToIntBits(m21)
+        ^ T3.FloatToIntBits(m22) ^ T3.FloatToIntBits(m23)
+        ^ T3.FloatToIntBits(m30) ^ T3.FloatToIntBits(m31)
+        ^ T3.FloatToIntBits(m32) ^ T3.FloatToIntBits(m33);
   }
 
   /**

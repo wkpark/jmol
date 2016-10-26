@@ -298,10 +298,14 @@ public abstract class T3 implements JSONEncodable, Serializable {
   @Override
   public int hashCode() {
     long bits = 1L;
-    bits = 31L * bits + Float.floatToIntBits(x);
-    bits = 31L * bits + Float.floatToIntBits(y);
-    bits = 31L * bits + Float.floatToIntBits(z);
+    bits = 31L * bits + floatToIntBits(x);
+    bits = 31L * bits + floatToIntBits(y);
+    bits = 31L * bits + floatToIntBits(z);
     return (int) (bits ^ (bits >> 32));
+  }
+
+  static int floatToIntBits(float x) {
+    return (x == 0 ? 0 : Float.floatToIntBits(x));
   }
 
   /**

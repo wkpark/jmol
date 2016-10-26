@@ -213,8 +213,8 @@ public class A4 implements JSONEncodable, Serializable {
    */
   @Override
   public int hashCode() {
-    return T3.FloatToIntBits(x) ^ T3.FloatToIntBits(y)
-        ^ T3.FloatToIntBits(z) ^ T3.FloatToIntBits(angle);
+    return T3.floatToIntBits(x) ^ T3.floatToIntBits(y)
+        ^ T3.floatToIntBits(z) ^ T3.floatToIntBits(angle);
   }
 
   /**

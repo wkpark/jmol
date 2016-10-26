@@ -213,8 +213,8 @@ public class A4 implements JSONEncodable, Serializable {
    */
   @Override
   public int hashCode() {
-    return T3.floatToIntBits0(x) ^ T3.floatToIntBits0(y)
-        ^ T3.floatToIntBits0(z) ^ T3.floatToIntBits0(angle);
+    return Float.floatToIntBits(x) ^ Float.floatToIntBits(y)
+        ^ Float.floatToIntBits(z) ^ Float.floatToIntBits(angle);
   }
 
   /**

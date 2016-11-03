@@ -883,6 +883,8 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
       getNewSymmetry().setUnitCell(unitCellParams, false);
       checkUnitCellOffset();
     }
+    if (symmetry == null) // cif file with no symmetry triggers exception on LOAD {1 1 1}
+      iHaveUnitCell = false;
     return symmetry;
   }
   private void checkUnitCellOffset() {
@@ -898,7 +900,8 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
   }
 
   protected void fractionalizeCoordinates(boolean toFrac) {
-    getSymmetry();
+    if (getSymmetry() == null)
+      return;
     Atom[] a = asc.atoms;
     if (toFrac)
       for (int i = asc.ac; --i >= 0;)

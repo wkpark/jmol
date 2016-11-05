@@ -503,10 +503,10 @@ public class ModulationSet extends Vibration implements JmolModulationSet {
     }
     // magnetic moment part
     if (mxyz != null)
-      setVib(isReset);
+      setVib(isReset, scale);
   }
 
-  private void setVib(boolean isReset) {
+  private void setVib(boolean isReset, float scale) {
     vib.setT(v0);
     if (isReset)
       return;

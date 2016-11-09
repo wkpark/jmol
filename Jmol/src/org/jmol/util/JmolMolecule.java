@@ -180,6 +180,7 @@ public class JmolMolecule {
     elementCounts = new int[Elements.elementNumberMax];
     altElementCounts = new int[Elements.altElementMax];
     ac = atomList.cardinality();
+    nElements=0;
     for (int p = 0, i = atomList.nextSetBit(0); i >= 0; i = atomList
         .nextSetBit(i + 1), p++) {
       Node node = nodes[i];

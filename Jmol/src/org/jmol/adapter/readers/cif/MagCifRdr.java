@@ -23,24 +23,7 @@
  */
 package org.jmol.adapter.readers.cif;
 
-import java.util.Hashtable;
-import java.util.Map;
-
-import javajs.util.Lst;
-import javajs.util.M4;
-import javajs.util.P3;
-import javajs.util.PT;
-import javajs.util.SB;
-
-import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
-import org.jmol.adapter.smarter.Structure;
-import org.jmol.api.JmolAdapter;
-import org.jmol.c.STR;
-import org.jmol.java.BS;
-import org.jmol.util.BSUtil;
-import org.jmol.util.Logger;
-import org.jmol.util.SimpleUnitCell;
 
 
 /**

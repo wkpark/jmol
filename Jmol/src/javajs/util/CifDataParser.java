@@ -10,6 +10,7 @@ import javajs.api.GenericCifDataParser;
 import javajs.api.GenericLineReader;
 
 
+// BH 11/21/16 -- adds support for array grouping [...] - used in 2016-format magCIF files
 
 /**
 *
@@ -616,7 +617,7 @@ public class CifDataParser implements GenericCifDataParser {
    * @return  the next line or null if EOF
    * @throws Exception
    */
-  private String setStringNextLine() throws Exception {
+  protected String setStringNextLine() throws Exception {
     setString(readLine());
     if (line == null || line.length() == 0)
       return line;
@@ -644,7 +645,7 @@ public class CifDataParser implements GenericCifDataParser {
    * @return TRUE if there are more tokens in the line buffer
    * 
    */
-  private boolean strHasMoreTokens() {
+  protected boolean strHasMoreTokens() {
     if (str == null)
       return false;
     char ch = '#';
@@ -662,12 +663,12 @@ public class CifDataParser implements GenericCifDataParser {
    *
    * @return null if no more tokens, "\0" if '.' or '?', or next token 
    */
-  private String nextStrToken() {
+  protected String nextStrToken() {
     if (ich == cch)
       return null;
     int ichStart = ich;
     char ch = str.charAt(ichStart);
-    if (ch != '\'' && ch != '"' && ch != '\1') {
+    if (ch != '\'' && ch != '"' && ch != '\1') {// && ch != '[') {
       wasUnQuoted = true;
       while (ich < cch && (ch = str.charAt(ich)) != ' ' && ch != '\t')
         ++ich;
@@ -678,18 +679,19 @@ public class CifDataParser implements GenericCifDataParser {
       return s;
     }
     wasUnQuoted = false;
-    char chOpeningQuote = ch;
+    boolean isArray = (ch  == '[');
+    char chClosingQuote = (isArray ? ']' : ch);
     boolean previousCharacterWasQuote = false;
     while (++ich < cch) {
       ch = str.charAt(ich);
       if (previousCharacterWasQuote && (ch == ' ' || ch == '\t'))
         break;
-      previousCharacterWasQuote = (ch == chOpeningQuote);
+      previousCharacterWasQuote = (ch == chClosingQuote);
     }
-    if (ich == cch) {
-      if (previousCharacterWasQuote) // close quote was last char of string
+    if (ich == cch || isArray) {
+      if (previousCharacterWasQuote && !isArray) // close quote was last char of string
         return str.substring(ichStart + 1, ich - 1);
-      // reached the end of the string without finding closing '
+      // reached the end of the string without finding closing ', or we have [...]
       return str.substring(ichStart, ich);
     }
     ++ich; // throw away the last white character

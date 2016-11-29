@@ -47,7 +47,7 @@ public class Resolver {
   private final static String classBase = "org.jmol.adapter.readers.";
   private final static String[] readerSets = new String[] {
     "aflow.", ";AFLOW;",
-    "cif.", ";Cif;MMCif;MMTF;",
+    "cif.", ";Cif;Cif2;MMCif;MMTF;MagCif",
     "molxyz.", ";Mol3D;Mol;Xyz;",
     "more.", ";BinaryDcd;Gromacs;Jcampdx;MdCrd;MdTop;Mol2;TlsDataOnly;",
     "quantum.", ";Adf;Csf;Dgrid;GamessUK;GamessUS;Gaussian;GaussianFchk;GaussianWfn;Jaguar;" +
@@ -383,6 +383,10 @@ public class Resolver {
 
   private final static String[] p2nStartRecords = 
   { "P2n", "REMARK   1 P2N" };
+  
+  private final static String[] cif2StartRecords = 
+  { "Cif2", "#\\#CIF_2.0" };
+  
 
   private final static String[] xmlStartRecords = 
   { "Xml", "<?xml" };
@@ -393,7 +397,7 @@ public class Resolver {
     moldenFileStartRecords, dcdFileStartRecords, tlsDataOnlyFileStartRecords,
     inputFileStartRecords, magresFileStartRecords, pymolStartRecords, 
     janaStartRecords, jsonStartRecords, jcampdxStartRecords, 
-    jmoldataStartRecords, pqrStartRecords, p2nStartRecords };
+    jmoldataStartRecords, pqrStartRecords, p2nStartRecords, cif2StartRecords };
 
   ////////////////////////////////////////////////////////////////
   // Test 3. check first time for special file types
@@ -833,6 +837,9 @@ public class Resolver {
   private final static String[] aflowContainsRecords =
   { "AFLOW", "/AFLOWDATA/"};
 
+  private final static String[] magCifContainsRecords =
+  { "MagCif", "_space_group_magn"};
+
   private final static String[][] headerContainsRecords =
   { sptRecords, bilbaoContainsRecords, xmlContainsRecords, gaussianContainsRecords, 
     ampacContainsRecords, mopacContainsRecords, qchemContainsRecords, 
@@ -844,7 +851,7 @@ public class Resolver {
     dmolContainsRecords, gulpContainsRecords, 
     espressoContainsRecords, siestaContainsRecords, xcrysDenContainsRecords,
     mopacArchiveContainsRecords,abinitContainsRecords,gaussianFchkContainsRecords,
-    inputContainsRecords, aflowContainsRecords
+    inputContainsRecords, aflowContainsRecords, magCifContainsRecords
     
   };
   

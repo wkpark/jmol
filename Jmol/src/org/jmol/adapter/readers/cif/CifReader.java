@@ -77,7 +77,8 @@ import javajs.util.V3;
 public class CifReader extends AtomSetCollectionReader {
 
   private static final String titleRecords = "__citation_title__publ_section_title__active_magnetic_irreps_details__";
-  private MSCifRdr mr;
+  private MSCifRdr modr; // Modulated Structure subreader
+//  private MagCifRdr magr;// Magnetic CIF subreader - not necessary
 
   // no need for reflection here -- the CIF reader is already
   // protected by reflection
@@ -97,7 +98,7 @@ public class CifReader extends AtomSetCollectionReader {
   protected boolean iHaveDesiredModel;
   protected boolean isMMCIF;
   protected boolean isLigand;
-  boolean isMagCIF;
+  protected boolean isMagCIF;
   boolean haveHAtoms;
   private String molecularType = "GEOM_BOND default";
   private char lastAltLoc = '\0';
@@ -167,7 +168,7 @@ public class CifReader extends AtomSetCollectionReader {
      * than that, we are checking here for proper CIF syntax, and Jmol will
      * report if it finds data where a key is supposed to be.
      */
-    parser = new CifDataParser().set(this, null);
+    parser = getCifDataParser();
     line = "";
     while ((key = parser.peekToken()) != null)
       if (!readAllData())
@@ -179,6 +180,11 @@ public class CifReader extends AtomSetCollectionReader {
         if (!readAllData())
           break;
     }
+  }
+
+  protected GenericCifDataParser getCifDataParser() {
+    // overridden in Cif2Reader
+    return new CifDataParser().set(this, null);
   }
 
   private boolean readAllData() throws Exception {
@@ -276,7 +282,9 @@ public class CifReader extends AtomSetCollectionReader {
           || key.contains("_magn_name") || key.contains("_bns_name") // PRELIM
       ) {
         processSymmetrySpaceGroupName();
-      } else if (key.startsWith("_space_group_transform")) {
+      } else if (key.startsWith("_space_group_transform") 
+          || key.startsWith("_parent_space_group") 
+          || key.startsWith("_space_group_magn_transform")) {
         processUnitCellTransform();
       } else if (key.contains("_database_code")) {
         addModelTitle("ID");
@@ -302,9 +310,28 @@ public class CifReader extends AtomSetCollectionReader {
 
   private void processUnitCellTransform() {
     data = PT.replaceAllCharacters(data, " ", "");
-    if (key.contains("_from_parent"))
+    
+    // old:
+      
+      
+    // _magnetic_space_group.transform_from_parent_Pp_abc  '-1/3a+1/3b-2/3c,-a-b,-4/3a+4/3b+4/3c;0,0,0'
+    // _magnetic_space_group.transform_to_standard_Pp_abc  'a-c,-b,-2a+c;0,0,0'
+      
+    // new: 
+    // _parent_space_group.child_transform_Pp_abc   '-1/3a+1/3b-2/3c,-a-b,-4/3a+4/3b+4/3c;0,0,0'
+    // _space_group_magn.transform_BNS_Pp_abc    '-a-c,-b,c;0,0,0'
+      
+    //  related:
+        
+    // _space_group_magn.transform_OG_Pp_abc     '-a-c,-b,1/2c;0,0,0'
+    // _parent_space_group.transform_Pp_abc   'a,b,c;0,0,0'
+
+    
+      
+    
+    if (key.contains("_from_parent") || key.contains("child_transform"))
       addCellType("parent", data, true);
-    else if (key.contains("_to_standard"))
+    else if (key.contains("_to_standard") || key.contains("transform_bns_pp_abc"))
       addCellType("standard", data, false);
     appendLoadNote(key + ": " + data);
   }
@@ -339,15 +366,25 @@ public class CifReader extends AtomSetCollectionReader {
   }
 
   private MSCifRdr getModulationReader() throws Exception {
-    return (mr == null ? initializeMSCIF() : mr);
+    return (modr == null ? initializeMSCIF() : modr);
   }
 
   private MSCifRdr initializeMSCIF() throws Exception {
-    if (mr == null)
-      ms = mr = (MSCifRdr) getInterface("org.jmol.adapter.readers.cif.MSCifRdr");
-    modulated = (mr.initialize(this, modDim) > 0);
-    return mr;
+    if (modr == null)
+      ms = modr = (MSCifRdr) getInterface("org.jmol.adapter.readers.cif.MSCifRdr");
+    modulated = (modr.initialize(this, modDim) > 0);
+    return modr;
   }
+
+//  private MagCifRdr getMagCifReader() throws Exception {
+//    return (magr == null ? initializeMagCIF() : magr);
+//  }
+
+//  private MagCifRdr initializeMagCIF() throws Exception {
+//    if (magr == null)
+//      magr = (MagCifRdr) getInterface("org.jmol.adapter.readers.cif.MagCifRdr");
+//    return magr;
+//  }
 
   public Map<String, Integer> modelMap;
 
@@ -466,7 +503,7 @@ public class CifReader extends AtomSetCollectionReader {
       addLatticeVectors();
       asc.setTensors();
       getModulationReader().setModulation(true, sym);
-      mr.finalizeModulation();
+      modr.finalizeModulation();
     }
     if (isMagCIF) {
       asc.setNoAutoBond();
@@ -609,9 +646,13 @@ public class CifReader extends AtomSetCollectionReader {
       }
     }
     if (lattvecs != null && lattvecs.size() > 0
-        && asc.getSymmetry().addLatticeVectors(lattvecs))
+        && asc.getSymmetry().addLatticeVectors(lattvecs)) {
       appendLoadNote("Note! " + lattvecs.size()
           + " symmetry operators added for lattice centering " + latticeType);
+      for (int i = 0; i < lattvecs.size(); i++)
+        appendLoadNote(PT.toJSON(null, lattvecs.get(i)));
+    }
+    
     latticeType = null;
   }
 

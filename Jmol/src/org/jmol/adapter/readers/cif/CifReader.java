@@ -233,7 +233,8 @@ public class CifReader extends AtomSetCollectionReader {
      * tokenizer.getTokenPeeked(); continue; }
      */
     if (key.indexOf("_") != 0) {
-      Logger.warn("CIF ERROR ? should be an underscore: " + key);
+      Logger.warn(key.startsWith("save_") ? 
+          "CIF reader ignoring save_" : "CIF ERROR ? should be an underscore: " + key);
       parser.getTokenPeeked();
     } else if (!getData()) {
       return true;
@@ -733,7 +734,7 @@ public class CifReader extends AtomSetCollectionReader {
     key = parser.getTokenPeeked();
     data = parser.getNextToken();
     //if (debugging && data != null && data.charAt(0) != '\0')
-    //Logger.debug(key  + " " + data);
+    Logger.debug(">> " + key  + " " + data);
     if (data == null) {
       Logger.warn("CIF ERROR ? end of file; data missing: " + key);
       return false;

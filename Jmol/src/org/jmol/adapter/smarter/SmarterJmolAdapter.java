@@ -194,8 +194,6 @@ public class SmarterJmolAdapter extends JmolAdapter {
     //FilesOpenThread
     Viewer vwr = (Viewer) htParams.get("vwr"); // don't pass this on to user
     int size = names.length;
-    AtomSetCollectionReader[] readers = (getReadersOnly ? new AtomSetCollectionReader[size]
-        : null);
     Object reader = null;
     if (htParams.containsKey("concatenate")) {
       String s = "";
@@ -231,6 +229,8 @@ public class SmarterJmolAdapter extends JmolAdapter {
       size = 1;
       reader = Rdr.getBR(s);
     }
+    AtomSetCollectionReader[] readers = (getReadersOnly ? new AtomSetCollectionReader[size]
+        : null);
     AtomSetCollection[] atomsets = (getReadersOnly ? null
         : new AtomSetCollection[size]);
     AtomSetCollectionReader r = null;
@@ -299,6 +299,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
         : (AtomSetCollection[]) atomsets);
     if (atomsets == null) {
       for (int i = 0; i < readers.length; i++) {
+        if (readers[i] != null)
         try {
           Object ret = readers[i].readData();
           if (!(ret instanceof AtomSetCollection))

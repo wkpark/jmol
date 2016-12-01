@@ -1,6 +1,12 @@
 package org.jmol.adapter.readers.cif;
 
+import java.util.Hashtable;
+import java.util.Map;
+
+import org.jmol.util.Logger;
+
 import javajs.util.CifDataParser;
+import javajs.util.Lst;
 import javajs.util.PT;
 
 /**
@@ -9,9 +15,24 @@ import javajs.util.PT;
  * 
  * see http://journals.iucr.org/j/issues/2016/01/00/aj5269/index.html
  * 
+ * Will deliver JSON versions of the data while file reading and Java List/Map structures when 
+ * called by 
+ * 
+ *    x = getProperty("cifInfo", filename)
+ *    
+ * Validated using the test-data suite by John Bollinger (John.Bollinger@stjude.org)
+ * found at https://github.com/COMCIFS/cif_api  
+ * 
  * @author Bob Hanson hansonr@stolaf.edu 
  */
 public class Cif2DataParser extends CifDataParser {
+
+  
+  @Override
+  protected int getVersion() {
+    return 2;
+  }
+
 
 //  3.1. Character set and encoding
 //
@@ -144,7 +165,7 @@ public class Cif2DataParser extends CifDataParser {
   @Override
   protected boolean isQuote(char ch) {
     switch (ch) {
-    case '\1': // CIF 1.1 encoded multi-line semicolon-encoded string
+    case '\1': // preprocessed CIF 1.1 encoded multi-line semicolon-encoded string
     case '\'':
     case '\"':
     case '[':
@@ -158,7 +179,7 @@ public class Cif2DataParser extends CifDataParser {
   }
 
   /**
-   * preprocess all operators
+   * preprocess operators
    * 
    */
   @Override
@@ -177,7 +198,7 @@ public class Cif2DataParser extends CifDataParser {
    */
   @Override
   protected Object getQuotedStringOrObject(char ch) {
-    return processQuotedString(false);
+    return processQuotedString();
   }
 
   /**
@@ -185,10 +206,10 @@ public class Cif2DataParser extends CifDataParser {
    */
   @Override
   protected String preprocessString() {
-    return processQuotedString(true);
+    return (String) processQuotedString();
   }
   
-  private String processQuotedString(boolean isPreprocessing) {
+  private Object processQuotedString() {
     String str = null;
     char quoteChar = this.str.charAt(ich);
     String tripleChar = null;
@@ -196,50 +217,47 @@ public class Cif2DataParser extends CifDataParser {
       switch (quoteChar) {
       case '\1':
         str = this.str.substring(1, (ich = this.str.indexOf("\1", ich + 1)));
-        if (cterm != '\0')
-          str = PT.esc(str);
         ich++;
+        if (cterm != '\0')
+          return (asObject ? str : PT.esc(str));
         break;
       case ';':
         line = (ich == 0 ? this.str : this.str.substring(ich));
         str = processSemiString();
         return setString(str);
       case '[':
-        str = readListAsJSON(ich + 1);
-        break;
+        return readList(ich + 1);
       case ']':
         str = "]";
         ich++;
         break;
       case '{':
-        str = readTableAsJSON(ich + 1);
-        break;
+        return readTable(ich + 1);
       case '}':
         str = "}";
         ich++;
         break;
       case '\'':
       case '"':
-        line = this.str.substring(ich);
-        if (line.indexOf("'''") == 0)
+        //line = this.str.substring(ich);
+        if (this.str.indexOf("'''") == ich)
           tripleChar = "'''";
-        else if (line.indexOf("\"\"\"") == 0)
+        else if (this.str.indexOf("\"\"\"") == ich)
           tripleChar = "\"\"\"";
         int nchar = (tripleChar == null ? 1 : 3);
-        int pt = nchar;
+        int pt = ich + nchar;
         int pt1 = 0;
-        str = "";
-        while (line != null
-            && (pt1 = (tripleChar == null ? line.indexOf(quoteChar, pt) : line
-                .indexOf(tripleChar, pt))) < 0) {
-          str += "\n" + line.substring(pt);
-          readLine();
-          pt = 0;
+        while ((pt1 = (tripleChar == null ? this.str.indexOf(quoteChar, pt) : 
+              this.str.indexOf(tripleChar, pt))) < 0) {
+          if (readLine() == null)
+            break;
+          this.str += line;
         }
-        str += (line == null ? "" : line.substring(pt, pt1));
-        setString(line.substring(pt1 + nchar));
+        ich = pt1 + nchar;
+        cch  = this.str.length();
+        str = this.str.substring(pt, pt1);
         if (cterm != '\0')
-          str = PT.esc(str);
+          return (asObject ? str : PT.esc(str));
         break;
       }
     } catch (Exception e) {
@@ -281,53 +299,66 @@ public class Cif2DataParser extends CifDataParser {
     return fixLineFolding(str);
   }
 
-  public String readListAsJSON(int ichStart) throws Exception {
+  public Object readList(int ichStart) throws Exception {
     String str = "";
-    ich = ichStart;
+    ich = ichStart; 
     int n = 0;
     char cterm0 = cterm;
     cterm = ']';
+    Lst<Object> lst = (asObject ? new Lst<Object>() : null);
+    String ns = nullString;
     nullString = null;
     while (true) {
-      String s = getNextToken();
+      Object s = (asObject ? getNextTokenObject() : getNextToken());
       if (s == null || s.equals("]"))
         break;
+      if (asObject) {
+        lst.addLast(s);
+        continue;
+      }
       if (n++ > 0)
         str += ",";
       str += s;
     }
     cterm = cterm0;
     str = "[" + str + "]";
-//    if (cterm == '\0')
-//      System.out.println("CIF2 list: " + str);
-    nullString = "\0";
-    return str;
+    if (cterm == '\0' && debugging) 
+      Logger.debug("CIF2 list: " + str);
+    nullString = ns;
+    return (asObject ? lst : str);
   }
 
-  public String readTableAsJSON(int ichStart) throws Exception {
+  public Object readTable(int ichStart) throws Exception {
     String str = "";
     int n = 0;
     ich = ichStart;
     char cterm0 = cterm;
     cterm = '}';
+    String ns = nullString;
     nullString = null;
+    Map<String, Object> map = (asObject ? new Hashtable<String, Object>()
+        : null);
     while (true) {
       String key = getNextToken();
-      if (key == null || key.equals("}")) 
+      if (key == null || key.equals("}"))
         break;
       while (isSpaceOrColon(ich))
         ich++;
-      String value = getNextToken();
-      if (n++ > 0)
-        str += ",";
-      str += key + ":" + value;
+      if (asObject) {
+        map.put(key, getNextTokenObject());
+      } else {
+        String value = getNextToken();
+        if (n++ > 0)
+          str += ",";
+        str += key + ":" + value;
+      }
     }
     cterm = cterm0;
     str = "{" + str + "}";
-    nullString = "\0";
-//    if (cterm == '\0')
-//      System.out.println("CIF2 table: " + str);
-    return str;
+    nullString = ns;
+    if (cterm == '\0' && debugging)
+      Logger.debug("CIF2 table: " + str);
+    return (asObject ? map : str);
   }
     
 
@@ -344,8 +375,8 @@ public class Cif2DataParser extends CifDataParser {
   }
 
   @Override
-  protected String unquoted(String s) {
-    if (cterm == '\0')
+  protected Object unquoted(String s) {
+    if (cterm == '\0' && !asObject)
       return s;
     int n = s.length();
     if (n > 0) {
@@ -358,18 +389,22 @@ public class Cif2DataParser extends CifDataParser {
           s = s.substring(0, pt);
         try {
           if (isFloat) {
-            s = "" + Float.parseFloat(s);
+            float f = Float.parseFloat(s);
+            if (asObject)
+              return Float.valueOf(f);
+            s = "" + f;
             if (s.indexOf(".") < 0 && s.indexOf("E") < 0)
               s += ".0";
             return s;
           }
-          return "" + Integer.parseInt(s);
+          int i = Integer.parseInt(s);
+          return (asObject ? Integer.valueOf(i) : "" + i);
         } catch (Throwable e) {
           // ignore
         }
       }
     }
-    return PT.esc(s);
+    return (asObject ? s : PT.esc(s));
   }
 
 
@@ -403,7 +438,8 @@ public class Cif2DataParser extends CifDataParser {
       if (pt < eol)
         str = str.substring(0, pt) + str.substring(eol + 1);
     }
-    //System.out.println("fixed: >>" + str + "<<");
+    if (debugging) 
+      Logger.debug("CIF2 folded: " + str.replace("\1", "~~"));
     return str;
   }
 

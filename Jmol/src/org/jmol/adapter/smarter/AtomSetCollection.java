@@ -131,8 +131,8 @@ public class AtomSetCollection {
       int n = 0;
       readerList = new Lst<AtomSetCollectionReader>();
       for (int i = 0; i < array.length; i++)
-        if (array[i].ac > 0 || array[i].reader != null
-            && array[i].reader.mustFinalizeModelSet)
+        if (array[i] != null && (array[i].ac > 0 || array[i].reader != null
+            && array[i].reader.mustFinalizeModelSet))
           appendAtomSetCollection(n++, array[i]);
       if (n > 1)
         setInfo("isMultiFile", Boolean.TRUE);

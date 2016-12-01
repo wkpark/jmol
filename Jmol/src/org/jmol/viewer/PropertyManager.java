@@ -174,6 +174,7 @@ public class PropertyManager implements JmolPropertyManager {
     "domainInfo"  , atomExpression, "{visible}",
     "validationInfo"  , atomExpression, "{visible}",
     "service"    , "<hashTable>", "",
+    "CIFInfo"        , "<filename>", "_modelFile",
 
   };
 
@@ -228,7 +229,8 @@ public class PropertyManager implements JmolPropertyManager {
   private final static int PROP_DOM_INFO = 42;
   private final static int PROP_VAL_INFO = 43;
   private final static int PROP_SERVICE = 44;
-  private final static int PROP_COUNT = 45;
+  private final static int PROP_CIF_INFO = 45;
+  private final static int PROP_COUNT = 46;
 
   //// static methods used by Eval and Viewer ////
 
@@ -766,6 +768,8 @@ public class PropertyManager implements JmolPropertyManager {
       return vwr.getModelExtract(myParam, true, false, "MOL");
     case PROP_FILE_INFO:
       return getFileInfo(vwr.getFileData(), myParam.toString());
+    case PROP_CIF_INFO:
+      return vwr.readCifData(myParam.toString(), null);
     case PROP_FILENAME:
       return vwr.fm.getFullPathName(false);
     case PROP_FILEHEADER:

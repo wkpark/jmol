@@ -87,19 +87,23 @@ public class CifDataParser implements GenericCifDataParser {
   protected int ich;
   protected int cch;
   protected boolean wasUnquoted;
-  private String strPeeked;
+  protected char cterm = '\0';
+  protected String nullString = "\0";
+  protected boolean debugging;
+
+
+  private Object strPeeked;
   private int ichPeeked;
   private int columnCount;
   private String[] columnNames;
-  private String[] columnData = new String[KEY_MAX];
+  private Object[] columnData = new Object[KEY_MAX];
   private boolean isLoop;
   private boolean haveData;
-  protected String nullString = "\0";
-
   private SB fileHeader = new SB();
   private boolean isHeader = true;
 
-  protected char cterm = '\0';
+  protected boolean asObject;
+
 
   /**
    * Set the string value of what is returned for "." and "?"
@@ -127,7 +131,7 @@ public class CifDataParser implements GenericCifDataParser {
   }
     
   @Override
-  public String getColumnData(int i) {
+  public Object getColumnData(int i) {
     return columnData[i];
   }
 
@@ -151,14 +155,21 @@ public class CifDataParser implements GenericCifDataParser {
    * 
    * @param reader  Anything that can deliver a line of text or null
    * @param br      A standard BufferedReader.
+   * @param debugging 
    *  
    */
   @Override
-  public CifDataParser set(GenericLineReader reader, BufferedReader br) {
+  public CifDataParser set(GenericLineReader reader, BufferedReader br, boolean debugging) {
     this.reader = reader;
     this.br = br;
+    this.debugging = debugging;
     return this;
   }
+
+  protected int getVersion() {
+    return 1;
+  }
+
 
   /**
    * 
@@ -182,14 +193,17 @@ public class CifDataParser implements GenericCifDataParser {
   public Map<String, Object> getAllCifData() {
     line = "";
     String key;
-    Map<String, Object> data = null;
+    Map<String, Object> data = null, data0 = null;
     Map<String, Object> allData = new Hashtable<String, Object>();
     Lst<Map<String, Object>> models = new  Lst<Map<String,Object>>();
     allData.put("models", models);
+    asObject = (getVersion() >= 2);
+    nullString = null;
+    Lst<Map<String, Object>> saveFrames = new Lst<Map<String, Object>>();
     try {
       while ((key = getNextToken()) != null) {
         if (key.startsWith("global_") || key.startsWith("data_")) {
-          models.addLast(data = new Hashtable<String, Object>());
+          models.addLast(data0 = data = new Hashtable<String, Object>());
           data.put("name", key);
           continue;
         }
@@ -198,13 +212,26 @@ public class CifDataParser implements GenericCifDataParser {
           continue;
         }
         if (key.startsWith("save_")) {
-          System.out.println("CIF reader ignoring save_");
+          if (key.equals("save_")) {
+            int n = saveFrames.size();
+            if (n == 0) {
+              System.out.println("CIF ERROR ? save_ without corresponding save_xxxx");
+              data = data0;
+            } else {
+              data = saveFrames.removeItemAt(n - 1);
+            }
+          } else {
+            saveFrames.addLast(data);
+            Map<String, Object> d = data;
+            data = new Hashtable<String, Object>();
+            d.put(key, data);
+          }
           continue;
         }
         if (key.charAt(0) != '_') {
           System.out.println("CIF ERROR ? should be an underscore: " + key);
         } else {
-          String value = getNextToken();
+          Object value = (asObject ? getNextTokenObject() : getNextToken());
           if (value == null) {
             System.out.println("CIF ERROR ? end of file; data missing: " + key);
           } else {
@@ -215,12 +242,14 @@ public class CifDataParser implements GenericCifDataParser {
     } catch (Exception e) {
       // ?
     }
+    asObject = false;
     try {
       if (br != null)
         br.close();
     } catch (Exception e) {
       // ?
     }
+    nullString = "\0";
     return allData;
   }
 
@@ -236,17 +265,23 @@ public class CifDataParser implements GenericCifDataParser {
   private void getAllCifLoopData(Map<String, Object> data) throws Exception {
     String key;
     Lst<String> keyWords = new  Lst<String>();
-    while ((key = peekToken()) != null && key.charAt(0) == '_') {
-      key = fixKey(getTokenPeeked());
+    Object o;
+    while ((o = peekToken()) != null && o instanceof String &&  ((String) o).charAt(0) == '_') {
+      key = fixKey((String) getTokenPeeked());
       keyWords.addLast(key);
       data.put(key, new  Lst<String>());
     }
     columnCount = keyWords.size();
     if (columnCount == 0)
       return;
-    while (getData())
+    isLoop = true;
+    int n = 0;
+    while (getData()) {
       for (int i = 0; i < columnCount; i++)
-        ((Lst<String>)data.get(keyWords.get(i))).addLast(columnData[i]);
+        ((Lst<Object>)data.get(keyWords.get(i))).addLast(columnData[i]);
+      n++;
+    }
+    isLoop = false;
   }
 
   @Override
@@ -300,7 +335,7 @@ public class CifDataParser implements GenericCifDataParser {
     String str;
     SB ret = (doReport ? new SB() : null);
     int n = 0;
-    while ((str = peekToken()) != null && str.charAt(0) == '_') {
+    while ((str = (String) peekToken()) != null && str.charAt(0) == '_') {
       if (ret != null)
         ret.append(str).append("\n");
       getTokenPeeked();
@@ -309,7 +344,7 @@ public class CifDataParser implements GenericCifDataParser {
     if (n == 0)
       n = columnCount; // end-of-label-section skip 
     int m = 0;
-    while ((str = getNextDataToken()) != null) {
+    while ((str = (String) getNextDataToken()) != null) {
       if (ret == null)
         continue; 
       ret.append(str).append(" ");
@@ -327,10 +362,20 @@ public class CifDataParser implements GenericCifDataParser {
   @Override
   public String getNextToken() throws Exception {
     wasUnquoted = true;
+    return (String) getNextTokenProtected();
+  }
+
+  /**
+   * 
+   * @return the next token of any kind, or null
+   * @throws Exception
+   */
+  public Object getNextTokenObject() throws Exception {
+    wasUnquoted = true;
     return getNextTokenProtected();
   }
 
-  protected String getNextTokenProtected() throws Exception {
+  protected Object getNextTokenProtected() throws Exception {
     return (getNextLine() ? nextStrToken() : null);
   }
 
@@ -343,16 +388,19 @@ public class CifDataParser implements GenericCifDataParser {
    * @throws Exception
    */
   @Override
-  public String getNextDataToken() throws Exception { 
-    String str = peekToken();
-    if (str == null)
+  public Object getNextDataToken() throws Exception { 
+    Object o = peekToken();
+    if (o == null)
       return null;
-    if (wasUnquoted)
+    if (wasUnquoted && o instanceof String) {
+      String str = (String) o;
       if (str.charAt(0) == '_' || str.startsWith("loop_")
           || str.startsWith("data_")
+          || str.startsWith("save_")
           || str.startsWith("stop_")
           || str.startsWith("global_"))
         return null;
+    }
     return getTokenPeeked();
   }
   
@@ -364,7 +412,7 @@ public class CifDataParser implements GenericCifDataParser {
    * @throws Exception
    */
   @Override
-  public String peekToken() throws Exception {
+  public Object peekToken() throws Exception {
     if (!getNextLine())
       return null;
     int ich = this.ich;
@@ -386,7 +434,7 @@ public class CifDataParser implements GenericCifDataParser {
    * @return the token last acquired; may be null
    */
   @Override
-  public String getTokenPeeked() {
+  public Object getTokenPeeked() {
     ich = ichPeeked;
     return strPeeked;
   }
@@ -486,6 +534,7 @@ public class CifDataParser implements GenericCifDataParser {
   public void parseDataBlockParameters(String[] fields, String key,
                                  String data, int[] key2col, int[] col2key) throws Exception {
     isLoop = (key == null);
+    Object o;
     String s;
     if (fields == null) {
       // for reading full list of keys, as for matrices
@@ -501,18 +550,18 @@ public class CifDataParser implements GenericCifDataParser {
     int pt, i;
     if (isLoop) {
       while (true) {
-        s = peekToken();
-        if (s == null) {
+        o = peekToken();
+        if (o == null) {
           // we are PREMATURELY done; reset
           columnCount = 0;
           break;
         }
         // end of the loop is a new token not starting with underscore
-        if (s.charAt(0) != '_')
+        if (!(o instanceof String) || ((String) o).charAt(0) != '_')
           break;
 
         pt = columnCount++;
-        s = fixKey(getTokenPeeked());
+        s = fixKey((String) getTokenPeeked());
         if (fields == null) {
           // just make a linear model, saving the list
           columnNames[col2key[pt] = key2col[pt] = pt] = s;
@@ -530,14 +579,14 @@ public class CifDataParser implements GenericCifDataParser {
         // end of the loop is a new token not starting with underscore
         pt = columnCount++;
         if (key == null) {
-          key = getTokenPeeked();
+          key = (String) getTokenPeeked();
           data = getNextToken();
         }
         Integer iField = htFields.get(fixKey(key));
         i = (iField == null ? NONE : iField.intValue());
         if ((col2key[pt] = i) != NONE) 
           columnData[key2col[i] = pt] = data;
-        if ((s = peekToken()) == null || !s.startsWith(str0))
+        if ((o = peekToken()) == null || !(o instanceof String) ||  !((String) o).startsWith(str0))
           break;
         key = null;
       }
@@ -700,13 +749,13 @@ public class CifDataParser implements GenericCifDataParser {
    * 
    * @return null if no more tokens, "\0" if '.' or '?', or next token
    */
-  protected String nextStrToken() {
+  private Object nextStrToken() {
     if (ich == cch)
       return null;
     char ch = str.charAt(ich);
     if (isQuote(ch)) {
       wasUnquoted = false;
-      return (String) getQuotedStringOrObject(ch);
+      return getQuotedStringOrObject(ch);
     }
     int ichStart = ich;
     wasUnquoted = true;
@@ -720,7 +769,7 @@ public class CifDataParser implements GenericCifDataParser {
     return unquoted(s);
   }
 
-  protected String unquoted(String s) {
+  protected Object unquoted(String s) {
     return s;
   }
 

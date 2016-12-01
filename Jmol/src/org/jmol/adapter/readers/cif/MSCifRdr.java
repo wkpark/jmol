@@ -603,7 +603,7 @@ public class MSCifRdr extends MSRdr {
   }
 
   private int fieldProperty(CifReader cr, int i) {
-    return ((field = cr.parser.getColumnData(i)).length() > 0 
+    return ((field = (String) cr.parser.getColumnData(i)).length() > 0 
         && field.charAt(0) != '\0' ? 
             cr.col2key[i] : NONE);
   }

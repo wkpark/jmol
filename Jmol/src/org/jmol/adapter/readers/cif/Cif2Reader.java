@@ -40,7 +40,7 @@ public class Cif2Reader extends CifReader {
   
   @Override
   protected GenericCifDataParser getCifDataParser() {
-    return new Cif2DataParser().set(this, null);
+    return new Cif2DataParser().set(this, null, debugging);
   }
 
 

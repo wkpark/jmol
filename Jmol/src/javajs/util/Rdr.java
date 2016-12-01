@@ -67,7 +67,7 @@ public class Rdr implements GenericLineReader {
   }
 
   public static Map<String, Object> readCifData(GenericCifDataParser parser, BufferedReader br) {
-    return parser.set(null, br).getAllCifData();
+    return parser.set(null, br, false).getAllCifData();
   }
   
   

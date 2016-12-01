@@ -170,13 +170,13 @@ public class CifReader extends AtomSetCollectionReader {
      */
     parser = getCifDataParser();
     line = "";
-    while ((key = parser.peekToken()) != null)
+    while ((key = (String) parser.peekToken()) != null)
       if (!readAllData())
         break;
     if (appendedData != null) {
       parser = ((GenericCifDataParser) getInterface("javajs.util.CifDataParser"))
-          .set(null, Rdr.getBR(appendedData));
-      while ((key = parser.peekToken()) != null)
+          .set(null, Rdr.getBR(appendedData), debugging);
+      while ((key = (String) parser.peekToken()) != null)
         if (!readAllData())
           break;
     }
@@ -184,13 +184,13 @@ public class CifReader extends AtomSetCollectionReader {
 
   protected GenericCifDataParser getCifDataParser() {
     // overridden in Cif2Reader
-    return new CifDataParser().set(this, null);
+    return new CifDataParser().set(this, null, debugging);
   }
 
   private boolean readAllData() throws Exception {
     if (key.startsWith("data_")) {
       isLigand = false;
-      if (asc.atomSetCount == 0)
+      if (asc.atomSetCount == 0)  
         iHaveDesiredModel = false;
       if (iHaveDesiredModel)
         return false;
@@ -731,10 +731,10 @@ public class CifReader extends AtomSetCollectionReader {
    * @throws Exception
    */
   private boolean getData() throws Exception {
-    key = parser.getTokenPeeked();
+    key = (String) parser.getTokenPeeked();
     data = parser.getNextToken();
-    //if (debugging && data != null && data.charAt(0) != '\0')
-    Logger.debug(">> " + key  + " " + data);
+    if (debugging && data != null && data.length() > 0 && data.charAt(0) != '\0')
+      Logger.debug(">> " + key  + " " + data);
     if (data == null) {
       Logger.warn("CIF ERROR ? end of file; data missing: " + key);
       return false;
@@ -753,7 +753,7 @@ public class CifReader extends AtomSetCollectionReader {
    */
   protected void processLoopBlock() throws Exception {
     parser.getTokenPeeked(); //loop_
-    key = parser.peekToken();
+    key = (String) parser.peekToken();
     if (key == null)
       return;
     key = parser.fixKey(key0 = key);
@@ -822,13 +822,13 @@ public class CifReader extends AtomSetCollectionReader {
     String str;
     int n = 0;
     try {
-      while ((str = parser.peekToken()) != null && str.charAt(0) == '_') {
+      while ((str = (String) parser.peekToken()) != null && str.charAt(0) == '_') {
         parser.getTokenPeeked();
         n++;
       }
       int m = 0;
       String s = "";
-      while ((str = parser.getNextDataToken()) != null) {
+      while ((str = (String) parser.getNextDataToken()) != null) {
         s += str + (m % n == 0 ? "=" : " ");
         if (++m % n == 0) {
           appendUunitCellInfo(s.trim());
@@ -840,7 +840,7 @@ public class CifReader extends AtomSetCollectionReader {
   }
 
   protected int fieldProperty(int i) {
-    return (i >= 0 && (field = parser.getColumnData(i)).length() > 0
+    return (i >= 0 && (field = (String) parser.getColumnData(i)).length() > 0
         && (firstChar = field.charAt(0)) != '\0' ? col2key[i] : NONE);
   }
 
@@ -1251,7 +1251,7 @@ public class CifReader extends AtomSetCollectionReader {
           if (field.equalsIgnoreCase("Uiso")) {
             int j = key2col[U_ISO_OR_EQUIV];
             if (j != NONE)
-              asc.setU(atom, 7, parseFloatStr(parser.getColumnData(j)));
+              asc.setU(atom, 7, parseFloatStr((String) parser.getColumnData(j)));
           }
           break;
         case ANISO_U11:
@@ -1964,7 +1964,7 @@ public class CifReader extends AtomSetCollectionReader {
 
   protected String getField(byte type) {
     int i = key2col[type];
-    return (i == NONE ? "\0" : parser.getColumnData(i));
+    return (i == NONE ? "\0" : (String) parser.getColumnData(i));
   }
 
   protected boolean isNull(String key) {

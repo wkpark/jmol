@@ -2108,9 +2108,8 @@ public class Viewer extends JmolViewer implements AtomDataServer,
                                              Map<String, Object> htParams,
                                              boolean isAppend) {
     // loadInline, openStringInline
-
-    BufferedReader br = Rdr.getBR(strModel);
-    String type = getModelAdapter().getFileTypeName(br);
+    
+    String type = getModelAdapter().getFileTypeName(Rdr.getBR(strModel));
     if (type == null)
       return "unknown file type";
     if (type.equals("spt")) {
@@ -2860,10 +2859,20 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   }
 
   public Map<String, Object> getCifData(int modelIndex) {
-    String data = getFileAsString3(ms.getModelFileName(modelIndex), false, null);
-    return (data == null ? null : Rdr.readCifData(
+    return readCifData(ms.getModelFileName(modelIndex), ms.getModelFileType(modelIndex));
+  }
+
+  public Map<String, Object> readCifData(String fileName, String type) {
+    String data = getFileAsString3(
+        (fileName == null || fileName.length() == 0 ? getCurrentFileAsString("script"): fileName), false, null);
+    if (data == null)
+      return null;
+    BufferedReader rdr = Rdr.getBR(data);
+    if (type == null)
+      type = getModelAdapter().getFileTypeName(rdr);
+    return (type == null ? null : Rdr.readCifData(
         (GenericCifDataParser) Interface.getInterface(
-            "javajs.util.CifDataParser", this, "script"), Rdr.getBR(data)));
+            ("cif2".equals(type.toLowerCase()) ? "org.jmol.adapter.readers.cif.Cif2DataParser" : "javajs.util.CifDataParser"), this, "script"), rdr));
   }
 
   JmolStateCreator jsc;

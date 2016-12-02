@@ -857,49 +857,48 @@ public class CifDataParser implements GenericCifDataParser {
   /**
    * CIF 1.0 only; we handle various quote types here 
    * @param ch
-   * @return true if this character is a (starting) qyuote
+   * @return true if this character is a (starting) quote
    */
   protected boolean isQuote(char ch) {
     switch (ch) {
     case '\'':
     case '\"':
     case '\1':
-    case '[':
       return  true;
     }
     return false;
   }
 
   /**
-   * CIF 1.0 only, with addition of SIMPLE arrays due to the fact that 
-   * the MagCIF format includes one data value of that type even though it is not a CIF 2.0 file.
+   * CIF 1.0 only. 
    * 
-   * This is just a rudimentary hack to allow simple [....] in  magCIF files.
-   * See Cif2DataParser for the real thing.
    *  
    * @param ch current character being pointed to
    * @return a String data object
    */
   protected Object getQuotedStringOrObject(char ch) {
     int ichStart = ich;
-    boolean isArray = (ch  == '[');
-    char chClosingQuote = (isArray ? ']' : ch);
+    char chClosingQuote = ch;
     boolean wasQuote = false;
     while (++ich < cch) {
       ch = str.charAt(ich);
-      // CIF 1.0 rules require that the closing ' or ""  be followed by space or tab 
+      // CIF 1.0 rules require that the closing ' or ""  be followed by space or tab or EOL
       if (wasQuote && (ch == ' ' || ch == '\t'))
         break;
       wasQuote = (ch == chClosingQuote);
     }
-    if (ich == cch || isArray) {
-      if (wasQuote && !isArray) // close quote was last char of string
-        return str.substring(ichStart + 1, ich - 1);
-      // reached the end of the string without finding closing ', or we have [...]
-      return str.substring(ichStart, ich);
+    int pt1 = ichStart + 1;
+    int pt2 = ich - 1;
+    if (ich == cch && !wasQuote) {
+      // reached the end of the string without finding closing '
+      // so take the whole thing. Probably a bad CIF file.
+      pt1--;
+      pt2++;
+    } else {
+      // throw away the last white character
+      ++ich; 
     }
-    ++ich; // throw away the last white character
-    return str.substring(ichStart + 1, ich - 2);
+    return str.substring(pt1, pt2);
   }
 
   

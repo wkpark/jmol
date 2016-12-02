@@ -174,7 +174,7 @@ public class PropertyManager implements JmolPropertyManager {
     "domainInfo"  , atomExpression, "{visible}",
     "validationInfo"  , atomExpression, "{visible}",
     "service"    , "<hashTable>", "",
-    "CIFInfo"        , "<filename>", "_modelFile",
+    "CIFInfo"        , "<filename>", "",
 
   };
 

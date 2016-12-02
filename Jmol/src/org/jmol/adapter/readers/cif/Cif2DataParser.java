@@ -3,8 +3,6 @@ package org.jmol.adapter.readers.cif;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.jmol.util.Logger;
-
 import javajs.util.CifDataParser;
 import javajs.util.Lst;
 import javajs.util.PT;
@@ -158,7 +156,16 @@ public class Cif2DataParser extends CifDataParser {
 //
 // 
 
-  
+
+  /**
+   * There is no need to convert to unicode in CIF 2.0.
+   * 
+   */
+  @Override
+  public String toUnicode(String data) {
+    return data;
+  }
+
   /**
    * Includes all possible operator tokens
    */

@@ -14,7 +14,9 @@ import javajs.api.GenericLineReader;
 
 /**
 *
-* A special tokenizer class for dealing with quoted strings in CIF files.
+* A CIF 1.0 tokenizer class for dealing with quoted strings in CIF files.
+* 
+* Subclassed by org.jmol.adapters.readers.cif.Cif2DataParser
 * 
 * Greek letters implemented in Jmol 13.3.9 and only for 
 * titles and space groups. All other mark ups ignored.
@@ -72,6 +74,10 @@ import javajs.api.GenericLineReader;
 
 public class CifDataParser implements GenericCifDataParser {
 
+  protected int getVersion() {
+    return 1;
+  }
+
   /**
    * The maximum number of columns (data keys) passed to the parser or found in the file
    * for a given loop_ or category.subkey listing.
@@ -82,16 +88,61 @@ public class CifDataParser implements GenericCifDataParser {
   private GenericLineReader reader;
   private BufferedReader br;
 
-  protected String line;  
+  /**
+   * from buffered reader
+   */
+  protected String line;
+  
+  /**
+   * working string (buffer)
+   * 
+   */
   protected String str;
+  
+  /**
+   * pointer to current character on str
+   */
   protected int ich;
+  
+  /**
+   * length of str
+   * 
+   */
   protected int cch;
+  
+  /**
+   * whether we are processing an unquoted value or key
+   */
   protected boolean wasUnquoted;
+  
+  /**
+   * optional token terminator; in CIF 2.0 could be } or ] 
+   */
   protected char cterm = '\0';
+  
+  /**
+   * string to return for CIF data value . and ?
+   */
   protected String nullString = "\0";
+
+  /**
+   * A flag to create and return Java objects, not strings.
+   * Used only by Jmol scripting x = getProperty("cifInfo", filename).
+   */
+  protected boolean asObject;
+
+  
+  /**
+   * debugging flag passed from reader; unused
+   * 
+   */
   protected boolean debugging;
 
 
+  /**
+   * private processing fields
+   * 
+   */
   private Object strPeeked;
   private int ichPeeked;
   private int columnCount;
@@ -99,10 +150,12 @@ public class CifDataParser implements GenericCifDataParser {
   private Object[] columnData = new Object[KEY_MAX];
   private boolean isLoop;
   private boolean haveData;
-  private SB fileHeader = new SB();
+  
+  /**
+   * comments at the top of a file, including #\#CIF_2.0, for example
+   */
+  private SB fileHeader = new SB(); 
   private boolean isHeader = true;
-
-  protected boolean asObject;
 
 
   /**
@@ -148,7 +201,7 @@ public class CifDataParser implements GenericCifDataParser {
   /**
    * A Chemical Information File data parser.
    * 
-   * Should be called immediately upon construction.
+   * set() should be called immediately upon construction.
    *  
    * Two options; one of reader or br should be null, or reader will be
    * ignored. Just simpler this way...
@@ -164,10 +217,6 @@ public class CifDataParser implements GenericCifDataParser {
     this.br = br;
     this.debugging = debugging;
     return this;
-  }
-
-  protected int getVersion() {
-    return 1;
   }
 
 
@@ -426,6 +475,13 @@ public class CifDataParser implements GenericCifDataParser {
     return strPeeked;
   }
   
+  /**
+   * grab a new line if necessary and prepare it 
+   * if it starts with ";"
+   * 
+   * @return updated this.str
+   * @throws Exception
+   */
   private boolean getNextLine() throws Exception {
     while (!strHasMoreTokens())
       if (prepareNextLine() == null)
@@ -685,6 +741,8 @@ public class CifDataParser implements GenericCifDataParser {
    * that full multiline string. Uses \1 to indicate that 
    * this is a special quotation. 
    * 
+   * 
+   * 
    * @return  the next line or null if EOF
    * @throws Exception
    */
@@ -700,9 +758,12 @@ public class CifDataParser implements GenericCifDataParser {
  }
 
   /**
-   * preprocess the string to produce a string with a \1 ... \1 segment
-   * that will be picked up next, probably from multiline data 
+   * Preprocess the string on a line starting with a semicolon
+   * to produce a string with a \1 ... \1 segment
+   * that will be picked up in the next round
+   *  
    * @return escaped part with attached extra data
+   * @throws Exception 
    */
   protected String preprocessString() throws Exception {
     return setString(preprocessSemiString());
@@ -774,8 +835,8 @@ public class CifDataParser implements GenericCifDataParser {
 
   /**
    * In CIF 2.0, this method turns a String into an Integer or Float
-   * Method is only used in CIF 2.0.
-   * @param s
+   * In CIF 1.0 (here) just return the unchanged value.
+   * @param s unquoted string
    * @return unchanged value
    */
   protected Object unquoted(String s) {
@@ -810,26 +871,29 @@ public class CifDataParser implements GenericCifDataParser {
   }
 
   /**
-   * CIF 1.1 only, with addition of SIMPLE arrays due to the fact that 
+   * CIF 1.0 only, with addition of SIMPLE arrays due to the fact that 
    * the MagCIF format includes one data value of that type even though it is not a CIF 2.0 file.
    * 
-   * @param ch current character being ponted to
+   * This is just a rudimentary hack to allow simple [....] in  magCIF files.
+   * See Cif2DataParser for the real thing.
+   *  
+   * @param ch current character being pointed to
    * @return a String data object
    */
   protected Object getQuotedStringOrObject(char ch) {
     int ichStart = ich;
     boolean isArray = (ch  == '[');
     char chClosingQuote = (isArray ? ']' : ch);
-    boolean previousCharacterWasQuote = false;
+    boolean wasQuote = false;
     while (++ich < cch) {
       ch = str.charAt(ich);
-      // CIF 1.0 rules require that  the closing ' or ""  be followed by space or tab 
-      if (previousCharacterWasQuote && (ch == ' ' || ch == '\t'))
+      // CIF 1.0 rules require that the closing ' or ""  be followed by space or tab 
+      if (wasQuote && (ch == ' ' || ch == '\t'))
         break;
-      previousCharacterWasQuote = (ch == chClosingQuote);
+      wasQuote = (ch == chClosingQuote);
     }
     if (ich == cch || isArray) {
-      if (previousCharacterWasQuote && !isArray) // close quote was last char of string
+      if (wasQuote && !isArray) // close quote was last char of string
         return str.substring(ichStart + 1, ich - 1);
       // reached the end of the string without finding closing ', or we have [...]
       return str.substring(ichStart, ich);

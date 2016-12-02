@@ -275,12 +275,9 @@ public class CifDataParser implements GenericCifDataParser {
     if (columnCount == 0)
       return;
     isLoop = true;
-    int n = 0;
-    while (getData()) {
+    while (getData())
       for (int i = 0; i < columnCount; i++)
         ((Lst<Object>)data.get(keyWords.get(i))).addLast(columnData[i]);
-      n++;
-    }
     isLoop = false;
   }
 
@@ -355,6 +352,7 @@ public class CifDataParser implements GenericCifDataParser {
   }
 
   /**
+   * Get a token as a String value (for the reader)
    * 
    * @return the next token of any kind, or null
    * @throws Exception
@@ -366,6 +364,7 @@ public class CifDataParser implements GenericCifDataParser {
   }
 
   /**
+   * Get the token as a Java Object
    * 
    * @return the next token of any kind, or null
    * @throws Exception
@@ -375,6 +374,11 @@ public class CifDataParser implements GenericCifDataParser {
     return getNextTokenProtected();
   }
 
+  /**
+   * Just makes sure
+   * @return String from buffer.
+   * @throws Exception
+   */
   protected Object getNextTokenProtected() throws Exception {
     return (getNextLine() ? nextStrToken() : null);
   }
@@ -705,9 +709,12 @@ public class CifDataParser implements GenericCifDataParser {
   }
 
   /**
-   * encapsulate a multi-line ; .... ;  string with \1 ... \1
+   * Encapsulate a multi-line ; .... ;  string with \1 ... \1
+   * 
+   * CIF 1.0 and CIF 2.0
    * 
    * @return ecapsulated string
+   * @throws Exception 
    */
   protected String preprocessSemiString() throws Exception {
     ich = 1;
@@ -728,7 +735,7 @@ public class CifDataParser implements GenericCifDataParser {
    * @return TRUE if there are more tokens in the line buffer
    * 
    */
-  protected boolean strHasMoreTokens() {
+  private boolean strHasMoreTokens() {
     if (str == null)
       return false;
     char ch = '#';
@@ -765,14 +772,32 @@ public class CifDataParser implements GenericCifDataParser {
     return unquoted(s);
   }
 
+  /**
+   * In CIF 2.0, this method turns a String into an Integer or Float
+   * Method is only used in CIF 2.0.
+   * @param s
+   * @return unchanged value
+   */
   protected Object unquoted(String s) {
     return s;
   }
 
+  /**
+   * The token terminator is space or tab in CIF 1.0, 
+   * but it can be quoted strings in CIF 2.0.
+   * 
+   * @param c
+   * @return true if this character is a terminator
+   */
   protected boolean isTerminator(char c) {
     return  c == ' ' || c == '\t' || c == cterm ;
   }
 
+  /**
+   * CIF 1.0 only; we handle various quote types here 
+   * @param ch
+   * @return true if this character is a (starting) qyuote
+   */
   protected boolean isQuote(char ch) {
     switch (ch) {
     case '\'':
@@ -788,8 +813,7 @@ public class CifDataParser implements GenericCifDataParser {
    * CIF 1.1 only, with addition of SIMPLE arrays due to the fact that 
    * the MagCIF format includes one data value of that type even though it is not a CIF 2.0 file.
    * 
-   * @param ichStart
-   * @param ch
+   * @param ch current character being ponted to
    * @return a String data object
    */
   protected Object getQuotedStringOrObject(char ch) {
@@ -799,6 +823,7 @@ public class CifDataParser implements GenericCifDataParser {
     boolean previousCharacterWasQuote = false;
     while (++ich < cch) {
       ch = str.charAt(ich);
+      // CIF 1.0 rules require that  the closing ' or ""  be followed by space or tab 
       if (previousCharacterWasQuote && (ch == ' ' || ch == '\t'))
         break;
       previousCharacterWasQuote = (ch == chClosingQuote);

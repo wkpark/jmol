@@ -179,21 +179,6 @@ public class Cif2DataParser extends CifDataParser {
   }
 
   /**
-   * preprocess operators
-   * 
-   */
-  @Override
-  protected boolean doPreProcess(char ch) {
-    switch (ch) {
-    case '\1': // CIF 1.1 encoded multi-line semicolon-encoded string
-    case ';':
-      return  true;
-    default:
-      return false;
-    }
-  }
-
-  /**
    * final get for quoted object
    */
   @Override
@@ -202,13 +187,20 @@ public class Cif2DataParser extends CifDataParser {
   }
 
   /**
-   * initial processing; returns to string.
+   * initial processing; returns a string bounded by \1
+   * @throws Exception 
    */
   @Override
-  protected String preprocessString() {
-    return (String) processQuotedString();
+  protected String preprocessString() throws Exception {
+    line = (ich == 0 ? this.str : this.str.substring(ich));
+    return setString(processSemiString());
   }
-  
+
+  /**
+   * Handle all forms of quotation, 
+   * including '...', "...", '''...''', """...""", and ;...\n...\n; 
+   * @return a string or data structure, depending upon setting asObject
+   */
   private Object processQuotedString() {
     String str = null;
     char quoteChar = this.str.charAt(ich);
@@ -216,30 +208,22 @@ public class Cif2DataParser extends CifDataParser {
     try {
       switch (quoteChar) {
       case '\1':
+        // produced from ;....; in a preprocessing stage
         str = this.str.substring(1, (ich = this.str.indexOf("\1", ich + 1)));
         ich++;
-        if (cterm != '\0')
-          return (asObject ? str : PT.esc(str));
         break;
-      case ';':
-        line = (ich == 0 ? this.str : this.str.substring(ich));
-        str = processSemiString();
-        return setString(str);
       case '[':
-        return readList(ich + 1);
+        return readList();
       case ']':
-        str = "]";
         ich++;
-        break;
+        return  "]";
       case '{':
-        return readTable(ich + 1);
+        return readTable();
       case '}':
-        str = "}";
         ich++;
-        break;
+        return "}";
       case '\'':
       case '"':
-        //line = this.str.substring(ich);
         if (this.str.indexOf("'''") == ich)
           tripleChar = "'''";
         else if (this.str.indexOf("\"\"\"") == ich)
@@ -247,6 +231,7 @@ public class Cif2DataParser extends CifDataParser {
         int nchar = (tripleChar == null ? 1 : 3);
         int pt = ich + nchar;
         int pt1 = 0;
+        // read enough lines from the stream to finish this quote.
         while ((pt1 = (tripleChar == null ? this.str.indexOf(quoteChar, pt) : 
               this.str.indexOf(tripleChar, pt))) < 0) {
           if (readLine() == null)
@@ -256,19 +241,20 @@ public class Cif2DataParser extends CifDataParser {
         ich = pt1 + nchar;
         cch  = this.str.length();
         str = this.str.substring(pt, pt1);
-        if (cterm != '\0')
-          return (asObject ? str : PT.esc(str));
         break;
       }
     } catch (Exception e) {
       System.out.println("exception in Cif2DataParser ; " + e);
     }
-    return str;
+    // the global flag cterm can be  ']' or '}', indicating that 
+    // we are working within a list or table, where we should not
+    // escape the string ever.
+    return (cterm == '\0' || asObject ? str : PT.esc(str));
   }
 
   /**
-   * sets a multiline semicolon-eclipsed string to be parsed from the beginning, allowing for
-   * CIF 2.0-type prefixed text lines and removing line folding.
+   * Sets a multiline semicolon-eclipsed string to be parsed from the beginning,
+   * allowing for CIF 2.0-type prefixed text lines and removing line folding.
    * 
    * ;xxxx\comments here
    * 
@@ -280,18 +266,24 @@ public class Cif2DataParser extends CifDataParser {
    * 
    * ;
    * 
-   * @return \1....\1 string
-   * @throws Exception 
+   * @return \1...quote....\1
+   * @throws Exception
    */
   protected String processSemiString() throws Exception {
     int pt1, pt2;
     String str = preprocessSemiString();
     // note that this string is already escaped with \1...\1 
     if (str.indexOf(';') != 1 // "...and it does not begin with a semicolon" 
-        &&(pt1 = str.indexOf('\\')) > 1 && ((pt2 = str.indexOf('\n')) > pt1 || pt2 < 0)) {
+        && (pt1 = str.indexOf('\\')) > 1 // ...and it is followed by a backslash 
+        && ((pt2 = str.indexOf('\n')) > pt1 // ...and theree is no EOL prior to that 
+             || pt2 < 0)  
+        ) {
       String prefix = str.substring(1, pt1);
-      // remove just the next \ if it is there, or the first full line
+      // (1) Remove the prefix from each line, including the first.
+      // (2) If the remaining part of the first line starts with two backslashes then remove the first of them; 
+      //     otherwise remove the whole first line. 
       str = PT.rep(str,  "\n" + prefix, "\n");
+      // remove just the next \ if it is there, or the first full line
       str = "\1" + str.substring(str.charAt(pt1 + 1) == '\\' ? pt1 + 1 : pt2 < 0 ? str.length() - 1 : pt2 + 1);
       // Note: Jmol's CIF 1.0 CifReader does not already recognize "\\\n" as a line folding indicator. 
     }
@@ -299,46 +291,69 @@ public class Cif2DataParser extends CifDataParser {
     return fixLineFolding(str);
   }
 
-  public Object readList(int ichStart) throws Exception {
-    String str = "";
-    ich = ichStart; 
-    int n = 0;
+  /**
+   * Read a CIF 2.0 list structure, converting it to either a JSON string or to
+   * a Java data structure
+   * 
+   * @return a string or data structure, depending upon setting asObject
+   * @throws Exception
+   */
+  public Object readList() throws Exception {
+    ich++;
+    // save the current globals cterm and nullString, 
+    // and restore them afterward. 
+    // nullString is what is returned for '.' and '?'; 
+    // for the Jmol CifReader only, this needs to be "\0"
     char cterm0 = cterm;
     cterm = ']';
-    Lst<Object> lst = (asObject ? new Lst<Object>() : null);
     String ns = nullString;
     nullString = null;
+    Lst<Object> lst = (asObject ? new Lst<Object>() : null);
+    int n = 0;
+    String str = "";
     while (true) {
-      Object s = (asObject ? getNextTokenObject() : getNextToken());
-      if (s == null || s.equals("]"))
+      // Iteratively pick up all the objects until the closing bracket
+      // This is akin to an array "deep copy"
+      Object value = (asObject ? getNextTokenObject() : getNextToken());
+      if (value == null || value.equals("]"))
         break;
       if (asObject) {
-        lst.addLast(s);
-        continue;
+        lst.addLast(value);
+      } else {
+        if (n++ > 0)
+          str += ",";
+        str += value;
       }
-      if (n++ > 0)
-        str += ",";
-      str += s;
     }
     cterm = cterm0;
-    str = "[" + str + "]";
-    if (cterm == '\0' && debugging) 
-      Logger.debug("CIF2 list: " + str);
     nullString = ns;
-    return (asObject ? lst : str);
+    return (asObject ? lst : "[" + str + "]");
   }
 
-  public Object readTable(int ichStart) throws Exception {
-    String str = "";
-    int n = 0;
-    ich = ichStart;
+  /**
+   * Read a CIF 2.0 table into either a JSON string 
+   * or a java data structure
+   * 
+   * @return an Object or String, depending upon settings
+   * @throws Exception
+   */
+  public Object readTable() throws Exception {
+    ich++;
+    // save the current globals cterm and nullString, 
+    // and restore them afterward. 
+    // nullString is what is returned for '.' and '?'; 
+    // for the Jmol CifReader only, this needs to be "\0"
     char cterm0 = cterm;
     cterm = '}';
-    String ns = nullString;
+    String ns = nullString; 
     nullString = null;
     Map<String, Object> map = (asObject ? new Hashtable<String, Object>()
         : null);
+    int n = 0;
+    String str = "";
     while (true) {
+      // Iteratively pick up all the objects until the closing bracket
+      // This is akin to a map "deep copy"
       String key = getNextToken();
       if (key == null || key.equals("}"))
         break;
@@ -347,21 +362,22 @@ public class Cif2DataParser extends CifDataParser {
       if (asObject) {
         map.put(key, getNextTokenObject());
       } else {
-        String value = getNextToken();
         if (n++ > 0)
           str += ",";
-        str += key + ":" + value;
+        str += key + " : " + getNextToken();
       }
     }
     cterm = cterm0;
-    str = "{" + str + "}";
     nullString = ns;
-    if (cterm == '\0' && debugging)
-      Logger.debug("CIF2 table: " + str);
-    return (asObject ? map : str);
+    return (asObject ? map : "{" + str + "}");
   }
     
 
+  /** used by readTable
+   * 
+   * @param ich buffer pointer
+   * @return true if whitespace or colon 
+   */
   private boolean isSpaceOrColon(int ich) {
     if (ich < cch)
       switch (line.charAt(ich)) {
@@ -374,16 +390,23 @@ public class Cif2DataParser extends CifDataParser {
     return false;
   }
 
+  /**
+   * Handle unquoted value as Integer or Float if we can.
+   * 
+   */
   @Override
   protected Object unquoted(String s) {
     if (cterm == '\0' && !asObject)
       return s;
     int n = s.length();
     if (n > 0) {
+      // look for a leading character in the set {0123456789.-}
       char c = s.charAt(0);
       if (PT.isDigit(c) || c == '-' || c == '.' && n > 1) {
-        int pt = s.indexOf('(');
         // trim off (10)  in 1.345(10)
+        // other implementers may want to handle this some other way
+        int pt = s.indexOf('(');
+        // guess type
         boolean isFloat = (s.indexOf(".") >= 0);
         if (n > 1 && pt > 0 && s.indexOf(')', pt + 1) == n - 1)
           s = s.substring(0, pt);
@@ -410,7 +433,8 @@ public class Cif2DataParser extends CifDataParser {
 
   /**
    * allow white space between \ and \n
-   * @param str
+   * 
+   * @param str already enclosed in \1.....\1
    * @return fixed line
    */
   private String fixLineFolding(String str) {
@@ -438,11 +462,7 @@ public class Cif2DataParser extends CifDataParser {
       if (pt < eol)
         str = str.substring(0, pt) + str.substring(eol + 1);
     }
-    if (debugging) 
-      Logger.debug("CIF2 folded: " + str.replace("\1", "~~"));
     return str;
   }
-
-
 
 }

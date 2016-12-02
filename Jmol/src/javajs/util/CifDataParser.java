@@ -688,16 +688,12 @@ public class CifDataParser implements GenericCifDataParser {
     setString(readLine());
     if (line == null || line.length() == 0)
       return line;
-    if (doPreProcess(line.charAt(0)))
+    if (line.charAt(0) == ';')
       return preprocessString();
     if (str.startsWith("###non-st#"))
         ich = 10;
     return line;
  }
-
-  protected boolean doPreProcess(char ch) {
-    return ch == ';';
-  }
 
   /**
    * preprocess the string to produce a string with a \1 ... \1 segment

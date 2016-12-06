@@ -617,6 +617,8 @@ public class PropertyManager implements JmolPropertyManager {
         // SELECT a,b,c WHERE x.in(...)
 
         String ucKey = key.toUpperCase();
+        if (ucKey.startsWith("WHERE"))
+          ucKey = (key = "SELECT * " + key).toUpperCase(); 
         if (ucKey.startsWith("SELECT ")) {
           if (argsNew == null)
             argsNew = (SV[]) AU.arrayCopyObject(args, args.length);

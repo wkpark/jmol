@@ -308,7 +308,8 @@ public class DSSR1 extends AnnotationParser {
     if (!doCache) {
       key = PT.rep(key, "NOCACHE", "").trim();
     }
-    BS bs = (doCache ? (BS) annotationCache.get(key) : null);
+    System.out.println("testing DSSR1");
+    BS bs = null;// (doCache ? (BS) annotationCache.get(key) : null);
     if (bs != null)
       return bs;
     bs = new BS();
@@ -316,18 +317,43 @@ public class DSSR1 extends AnnotationParser {
       annotationCache.put(key, bs);
     try {
       // drilling
-      int pt = key.toLowerCase().indexOf(" where ");
+      // allow  select on within(dssr, "nts[SELECT * WHERE v0>1 and v1 <0]")
+      // allow  select on within(dssr, "nts[WHERE v0>1 and v1 <0]")
+      key = PT.rep(key, "[where", "[select * where");
+      key = PT.rep(key, "[WHERE", "[select * where");
+      
+      String ext = "";
+      int n = Integer.MIN_VALUE;
+      int pt = key.toLowerCase().indexOf("[select");
+      if (pt >= 0) {
+        ext = key.substring(pt);
+        key = key.substring(0, pt);
+        // allow  select on within(dssr, "nts[WHERE v0>1 and v1 <0]..2")
+        pt = ext.lastIndexOf("]..");
+        if (pt >= 0 && (n = PT.parseInt(ext.substring(pt + 3))) != Integer.MIN_VALUE) 
+          ext = ext.substring(0, pt + 1);          
+      }
+      pt = key.toLowerCase().indexOf(" where ");
       if (pt < 0) {
         // pairs   stems    etc.
         key = key.toLowerCase();
+        pt = (n == Integer.MIN_VALUE ? key.lastIndexOf(".") : -1);
+        // allow  select on within(dssr, "nts.2")
+        if (pt >= 0 && (n = PT.parseInt(key.substring(pt +1))) != Integer.MIN_VALUE) 
+          key = key.substring(0, pt);          
         pt = DSSR_PATHS.indexOf(".." + key) + 2;
         int len = key.length();
         if (pt < 2)
           return bs;
         while (pt >= 2 && len > 0) {
-          if (DSSR_PATHS.substring(pt + len, pt + len + 2).equals(".."))
+          if (key.indexOf(".") < 0 && DSSR_PATHS.substring(pt + len, pt + len + 2).equals("..")) {
             key = "[select (" + key + ")]";
+          }
           dbObj = vwr.extractProperty(dbObj, key, -1);
+          if (ext != null) {
+            dbObj = vwr.extractProperty(dbObj, ext, -1);
+            ext = null;
+          }
           pt += len + 1;
           int pt1 = DSSR_PATHS.indexOf(".", pt);
           key = DSSR_PATHS.substring(pt, pt1);
@@ -336,9 +362,11 @@ public class DSSR1 extends AnnotationParser {
       } else {
         // select within(dssr, "pairs where bp='G-C' or bp='C-G'")
         key = key.substring(0, pt).trim() + "[select * "
-            + key.substring(pt + 1) + "]";
+            + key.substring(pt + 1) + "]" + ext;
         dbObj = vwr.extractProperty(dbObj, key, -1);
       }
+      if (n != Integer.MIN_VALUE && dbObj instanceof Lst)
+        dbObj = ((Lst) dbObj).get(n);        
       bs.or(vwr.ms.getAtoms(T.sequence, dbObj.toString()));
       bs.and(bsModel);
     } catch (Exception e) {

@@ -140,7 +140,7 @@ public class DSSR1 extends AnnotationParser {
           fixDSSRJSONMap(x);
           setBioPolymers((BioModel) vwr.ms.am[modelIndex], false);
         }
-      } catch (Exception e) {
+      } catch (Throwable e) {
         info = null;
         out = "" + e;
       }
@@ -178,7 +178,7 @@ public class DSSR1 extends AnnotationParser {
         s += "_M.dssr.counts = " + map.get("counts").toString() + "\n";
       if (map.containsKey("dbn"))
         s += "_M.dssr.dbn = " + map.get("dbn").toString();
-    } catch (Exception e) {
+    } catch (Throwable e) {
       // ignore??
     }
 
@@ -267,7 +267,7 @@ public class DSSR1 extends AnnotationParser {
           for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1))
             setRes(atoms[j]);
         }
-    } catch (Exception e) {
+    } catch (Throwable e) {
       Logger.error("Exception " + e + " in DSSRParser.getBasePairs");
     }
 
@@ -337,24 +337,27 @@ public class DSSR1 extends AnnotationParser {
       if (pt < 0) {
         // pairs   stems    etc.
         key = key.toLowerCase();
-        pt = (n == Integer.MIN_VALUE ? key.lastIndexOf(".") : -1);
+        pt = (n == Integer.MIN_VALUE ? key.lastIndexOf('.') : -1);
         // allow  select on within(dssr, "nts.2")
-        if (pt >= 0 && (n = PT.parseInt(key.substring(pt +1))) != Integer.MIN_VALUE) 
-          key = key.substring(0, pt);          
+        boolean haveIndex = false;
+        if (pt >= 0 && 
+            (haveIndex = (n = PT.parseInt(key.substring(pt +1))) != Integer.MIN_VALUE)) 
+          key = key.substring(0, pt);
         pt = DSSR_PATHS.indexOf(".." + key) + 2;
         int len = key.length();
         if (pt < 2)
           return bs;
-        while (pt >= 2 && len > 0) {
+        int ptLast = (haveIndex ? pt + len : Integer.MAX_VALUE);
+        while (pt >= 2 && pt < ptLast && len > 0) {
           if (key.indexOf(".") < 0 && DSSR_PATHS.substring(pt + len, pt + len + 2).equals("..")) {
             key = "[select (" + key + ")]";
           }
           dbObj = vwr.extractProperty(dbObj, key, -1);
-          if (ext != null) {
-            dbObj = vwr.extractProperty(dbObj, ext, -1);
-            ext = null;
-          }
           pt += len + 1;
+          if (ext.length() > 0) {
+            dbObj = vwr.extractProperty(dbObj, ext, -1);
+            ext = "";
+          }
           int pt1 = DSSR_PATHS.indexOf(".", pt);
           key = DSSR_PATHS.substring(pt, pt1);
           len = key.length();
@@ -365,11 +368,15 @@ public class DSSR1 extends AnnotationParser {
             + key.substring(pt + 1) + "]" + ext;
         dbObj = vwr.extractProperty(dbObj, key, -1);
       }
-      if (n != Integer.MIN_VALUE && dbObj instanceof Lst)
-        dbObj = ((Lst) dbObj).get(n);        
+      if (n != Integer.MIN_VALUE && dbObj instanceof Lst) {
+        if (n <= 0)
+          n += ((Lst) dbObj).size();
+        dbObj = ((Lst) dbObj).get(n - 1);        
+      }
       bs.or(vwr.ms.getAtoms(T.sequence, dbObj.toString()));
       bs.and(bsModel);
-    } catch (Exception e) {
+    } catch (Throwable e) {
+      // "Throwable" because array out of bounds in JavaScript is not an Exception
       System.out.println(e.toString() + " in AnnotationParser");
       bs.clearAll();
     }
@@ -409,7 +416,7 @@ public class DSSR1 extends AnnotationParser {
         vHBonds.addLast(new HBond(ms.at[a1], ms.at[a2], Edge.BOND_H_REGULAR,
             (short) 1, C.INHERIT_ALL, energy));
       }
-    } catch (Exception e) {
+    } catch (Throwable e) {
     }
     return "DSSR reports " + list.size() + " hydrogen bonds";
   }

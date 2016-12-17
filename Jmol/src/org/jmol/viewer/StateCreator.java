@@ -1392,7 +1392,10 @@ public class StateCreator extends JmolStateCreator {
       s.append("  ").append(echoCmd).append(" point ").append(
           t.pointerPt instanceof Atom ? "({" + ((Atom) t.pointerPt).i
               + "})" : Escape.eP(t.pointerPt)).append(";\n");
-
+    }
+    if (t.pymolOffset != null) {
+      s.append("  ").append(echoCmd).append(" offset ").append(
+          Escape.escapeFloatA(t.pymolOffset, true)).append(";\n");
     }
     //    }
     //isDefine and target==top: do all

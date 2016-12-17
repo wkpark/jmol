@@ -40,7 +40,6 @@ public class EchoRenderer extends LabelsRenderer {
     Echo echo = (Echo) shape;
     sppm = (vwr.getBoolean(T.fontscaling) ? vwr
         .getScalePixelsPerAngstrom(true) * 10000 : 0);
-    imageFontScaling = vwr.imageFontScaling;
     boolean haveTranslucent = false;
     for (Text t : echo.objects.values()) {
       if (!t.visible || t.hidden) {

@@ -7268,13 +7268,16 @@ public class ScriptEval extends ScriptExpr {
         setShapeProperty(JC.SHAPE_ECHO, namex, Integer.valueOf(posx));
         break;
       case T.offset:
-        P3 pt3 = getPoint3f(pt, false);
+        propertyName = "offset";
         if (isPoint3f(pt)) {
+          P3 pt3 = getPoint3f(pt, false);
           // minus 1 here means from Jmol, not from PyMOL
           propertyValue = new float[] { -1, pt3.x, pt3.y, pt3.z, 0, 0, 0 };
-        } else if (isArrayParameter(2)) {
+          pt = iToken + 1;
+        } else if (isArrayParameter(pt)) {
           // PyMOL offsets -- [1, scrx, scry, scrz, molx, moly, molz] in angstroms
-          propertyValue = floatParameterSet(2, 7, 7);
+          propertyValue = floatParameterSet(pt, 7, 7);
+          pt = iToken + 1;
         }
         break;
       case T.off:

@@ -220,10 +220,11 @@ public class Text {
     float dy = offsetY * imageFontScaling;
     xAdj = (fontScale >= 2 ? 8 : 4);
     yAdj = ascent - lineHeight + xAdj;
-    if (isLabelOrHover) { // could be measurement
+    if (isLabelOrHover || pymolOffset != null) {
       boxXY[0] = movableX;
       boxXY[1] = movableY;
-      if (pymolOffset != null) {
+      if (pymolOffset != null && pymolOffset[0] != 2 && pymolOffset[0] != 3) {
+        // [1,2,3] are in Angstroms, not screen pixels
         float pixelsPerAngstrom = vwr.tm.scaleToScreen(z, 1000);
         float pz = pymolOffset[3];
         float dz = (pz < 0 ? -1 : 1) * Math.max(0, Math.abs(pz) - 1)
@@ -273,17 +274,18 @@ public class Text {
       } else {
         boxYoff2 = 0;
       }
-      switch (align) {
-      case JC.TEXT_ALIGN_CENTER:
-        dy = 0;
-        dx = 0;
-        break;
-      case JC.TEXT_ALIGN_RIGHT:
-        boxXY[0] -= boxWidth;
-        //$FALL-THROUGH$
-      case JC.TEXT_ALIGN_LEFT:
-        dy = 0;
-      }
+      if (pymolOffset == null)
+        switch (align) {
+        case JC.TEXT_ALIGN_CENTER:
+          dy = 0;
+          dx = 0;
+          break;
+        case JC.TEXT_ALIGN_RIGHT:
+          boxXY[0] -= boxWidth;
+          //$FALL-THROUGH$
+        case JC.TEXT_ALIGN_LEFT:
+          dy = 0;
+        }
       //System.out.println(dx + " Text " + dy + " " + boxWidth + " " + boxHeight);
       setBoxXY(boxWidth, boxHeight, dx, dy, boxXY, isAbsolute);
     } else {
@@ -653,20 +655,55 @@ public class Text {
         + boxHeight);
   }
 
-  public void getPymolScreenOffset(P3 atomPt, P3i screen, int zSlab, P3 pTemp, float sppm) {
-    if (atomPt != null && Math.abs(pymolOffset[0]) == 1)
+//  
+//  new feature: set labelOffset [mode sx sy sz ax ay az] (3.1.15, never documented)
+//  new feature: PyMOL-like label offset options:
+//     
+//     set labelOffset [sx, sy, sz]
+//     set labelOffset [mode, sx, sy, sz, ax, ay, az]
+//     
+//   where
+//     
+//     sx,sy,sz are screen coord offsets 
+//      -- applied after view rotation
+//      -- sy > 0 LOWERS label
+//     ax,ay,az are xyz position (in Angstroms; applied before view rotation)
+//     mode == 0 indicates xyz position is absolute and sx sy sz are Angstroms
+//     mode == 1 indicates xyz position is relative to atom position and sx sy sz are Angstroms
+//     mode == 2 indicates xyz is absolute, and sx sy sz positions are screen pixels
+//     mode == 3 indicates xyz is relative, and sx sy sz positions are screen pixels
+//     defaults: mode == 1; ax = ay = az = 0
+//     
+//     
+
+  /**
+   * PyMOL will use 1 here for pymolOffset[0] for relative, 0 or absolute. Jmol
+   * set labelOffset or set echo offset or measure offset will set -1, when
+   * using {sx sy sz}.
+   * 
+   * 
+   * @param atomPt
+   * @param screen
+   * @param zSlab
+   * @param pTemp
+   * @param sppm
+   */
+  public void getPymolScreenOffset(P3 atomPt, P3i screen, int zSlab, P3 pTemp,
+                                   float sppm) {
+    float mode = pymolOffset[0];
+    if (atomPt != null && (Math.abs(mode) % 2) == 1)
       pTemp.setT(atomPt);
     else
       pTemp.set(0, 0, 0);
-    pTemp.add3(pymolOffset[4], pymolOffset[5],
-        pymolOffset[6]);
+    pTemp.add3(pymolOffset[4], pymolOffset[5], pymolOffset[6]);
     vwr.tm.transformPtScr(pTemp, screen);
+    if (mode == 2 || mode == 3) {
+      screen.x += pymolOffset[1];
+      screen.y += pymolOffset[2];
+      screen.z += pymolOffset[3];
+    }
     setXYZs(screen.x, screen.y, screen.z, zSlab);
     setScalePixelsPerMicron(sppm);
-
-    
-    // TODO
-    
   }
 
 }

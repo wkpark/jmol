@@ -20,7 +20,20 @@
   <property name="web.host"        value="frs.sourceforge.net" /> 
   <property name="prefix.release"  value="Jmol " />
 
-	<echo message="${dist.dir}" />
+  <echo message="${dist.dir}" />
+	
+<!--
+
+12/17/2016	
+Release Note: switching to semantic versioning (http://semver.org/)
+Release Note: incrementing will be at the xx.x.xx level; digits after that are a date stamp
+Release Note: for example, the version after 14.8.1020161217-beta will be 14.8.11yyyymmdd-beta
+Release Note: When releasing stable version, remove "-beta"
+Release Note: (note that semantic versioning does not specify the value of the increment)
+	
+-->
+	
+	
   <property file="${dist.dir}/Jmol.properties" prefix="Jmol.properties" />
   <property name="version" value="${Jmol.properties.Jmol.___JmolVersion}" />
   <propertyregex property="version"

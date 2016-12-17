@@ -56,7 +56,7 @@ Release Note: When releasing stable version, remove "-beta"
 	  <string value="${version}"/>
 	  <filterchain>
 	    <tokenfilter>
-		      <replaceregex pattern="([0-9]+[.][0-9]+)+[.][0-9]+)(.*)" replace="\1"/>
+		      <replaceregex pattern="([^-]*)(-beta)(.*)" replace="\1"/>
 	    </tokenfilter>
 	  </filterchain>
 	</loadresource>
@@ -70,9 +70,19 @@ Release Note: When releasing stable version, remove "-beta"
 	    </tokenfilter>
 	  </filterchain>
 	</loadresource>
+	<property name="pathdir-full" value="Jmol/Version" />
+  	<if>
+     <equals arg1="${betaFlag}" arg2="${version}" />
+  	 <then>
+  		<property name="pathdir"    value="${pathdir-full}" />
+    </then>
+  	<else>
+  		<property name="pathdir"    value="Jmol-beta/Jmol" />
+  	</else>
+  	</if>
 	<echo message="betaFlag: ${betaFlag}"/>
 
-	<property name="path.release"    value="Jmol${betaFlag}/Jmol ${versionMajorMinor}" />
+	<property name="path.release"    value="${pathdir} ${versionMajorMinor}" />
 	<echo message="path.release: ${path.release}"/>
 
 
@@ -84,7 +94,7 @@ Release Note: When releasing stable version, remove "-beta"
 
     <input
       message="Destination Path for ${version} (clear to exit)"
-      defaultvalue="${path.release}/${prefix.release}${versionNoDate}"
+      defaultvalue="${path.release}/${prefix.release}${versionMajorMinorPatch}"
       addproperty="uploadPath"
     />
 
@@ -128,7 +138,7 @@ Release Note: When releasing stable version, remove "-beta"
     </then>
   	</if>
   	<if>
-     <equals arg1="${betaFlag}" arg2="" />
+     <equals arg1="${pathdir}" arg2="${pathdir-full}" />
   	 <then>
 	    <copy todir="${temp.dir}/${uploadPath}"
 	          file="${dist.dir}/Jmol-${version}-binary.tar.gz" />

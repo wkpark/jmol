@@ -18,7 +18,6 @@
   <property name="temp.dir"        value="build/release" />
   <property name="web.dir"         value="/home/frs/project/j/jm/jmol" />
   <property name="web.host"        value="frs.sourceforge.net" /> 
-  <property name="path.release"    value="Jmol-beta/Jmol 14.7" />
   <property name="prefix.release"  value="Jmol " />
 
 	<echo message="${dist.dir}" />
@@ -37,13 +36,36 @@
 	  <string value="${version}"/>
 	  <filterchain>
 	    <tokenfilter>
-	      <replaceregex pattern="([0-9.]+)_([0-9.]+)" replace="\1"/>
+		      <replaceregex pattern="([0-9]+[.][0-9]+[.][0-9][0-9])(.*)" replace="\1"/>
 	    </tokenfilter>
 	  </filterchain>
 	</loadresource>
 	<echo message="versionNoDate: ${versionNoDate}"/>
 	
-  <!-- Copying files to website -->
+	<loadresource property="versionMajorMinor">
+	  <string value="${version}"/>
+	  <filterchain>
+	    <tokenfilter>
+		      <replaceregex pattern="([0-9]+[.][0-9]+)(.*)" replace="\1"/>
+	    </tokenfilter>
+	  </filterchain>
+	</loadresource>
+	<echo message="versionMajorMinor: ${versionMajorMinor}"/>
+	
+	<loadresource property="betaFlag">
+	  <string value="${version}"/>
+	  <filterchain>
+	    <tokenfilter>
+	      <replaceregex pattern="([^-]*)([-].*)" replace="\2"/>
+	    </tokenfilter>
+	  </filterchain>
+	</loadresource>
+	<echo message="betaFlag: ${betaFlag}"/>
+
+	<property name="path.release"    value="Jmol${betaFlag}/Jmol ${versionMajorMinor}" />
+
+
+	<!-- Copying files to website -->
   <target name="deploy" >
 
   	

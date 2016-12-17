@@ -4,7 +4,7 @@
   -->
 <!--
 
-Developer note from Bob Hanson, 11/2013
+Developer note from Bob Hanson, 12/2016
 
 The Jmol project uses resources from two other projects, JSmol and JSpecView.
 You can modify Jmol without those projects, but both of these projects share code
@@ -12,6 +12,7 @@ from Jmol and, though separate projects, provide the files in Jmol for final dis
 
 Required checkouts include:
 
+svn+ssh://svn.code.sf.net/p/smol/code, Trunk:trunk
 svn+ssh://svn.code.sf.net/p/jsmol/code, Trunk:trunk
 svn+ssh://svn.code.sf.net/p/jspecview/svn:dev2/JSpecView
 svn+ssh://svn.code.sf.net/p/jspecview/svn:dev2/JSpecViewLib
@@ -23,9 +24,9 @@ Relevant files created in this project by build scripts in those projects includ
   
   appletweb/jsmol.zip is created using:
 
-   JSmol/build_01_fromjmol.xml
-   JSmol/build_02_fromjspecview.xml 
-   JSmol/build_03b_tojs.xml
+   JSmol/build_11_fromjmol.xml
+   JSmol/build_12_fromjspecview.xml 
+   JSmol/build_13_tojs.xml
    
   jars/JSpecView.jar is created using 
 
@@ -39,17 +40,16 @@ The overall sequence for full HTML5 code creation
 when the Jmol or JSpecView code is modified, is as follows:
 
 1) Do all coding modifications in the Jmol and JSpecView projects. Never modify JSmol/src.
+2) use jmol/buildmin.xml to create the JAR files.
 2) Build JSpecViewLib and JSpecView if there are changes there. 
    The JSpecView*.jar files will be copied into this project.
-3) Build JSmol using the build_01.., build_02.., build_03b.. 
-   jsmol.zip will be created and copied to appletweb/.
+3) Build JSmol using the build_11.., build_12.., build_13.. 
+   jsmol.zip will be created and copied to jmol/appletweb/.
 
-Note that I have had trouble with signjar ramdomly stopping with an IOException. 
-I just do it a second time, and it works. 
+4) for distribution, then 
 
-[This tracked down to http://tsa.starfieldtech.com on Apr 9, 2014]
-
-Bob Hanson hansonr@stolaf.edu 11/26/2013
+	a) run jmol/builddist.xml
+	b) run jmol/tools/jmol-release.xml
 
   -->
 	
